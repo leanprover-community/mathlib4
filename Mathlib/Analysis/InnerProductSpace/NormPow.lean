@@ -26,8 +26,8 @@ section ContDiffNormPow
 open Asymptotics Real Topology
 open scoped NNReal
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace ℝ E]
+variable {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
 
 theorem hasFDerivAt_norm_rpow (x : E) {p : ℝ} (hp : 1 < p) :
     HasFDerivAt (fun x : E ↦ ‖x‖ ^ p) ((p * ‖x‖ ^ (p - 2)) • innerSL ℝ x) x := by
@@ -43,7 +43,7 @@ theorem hasFDerivAt_norm_rpow (x : E) {p : ℝ} (hp : 1 < p) :
           ring_nf
       _ =o[𝓝 0] (fun x : E ↦ ‖x‖ * 1) := by
         refine (isBigO_refl _ _).mul_isLittleO <| (isLittleO_const_iff <| by simp).mpr ?_
-        convert! continuousAt_id.norm.rpow_const (.inr h2p.le) |>.tendsto
+        convert! (continuousAt_id.norm (E := E)).rpow_const (.inr h2p.le) |>.tendsto
         simp [h2p.ne']
       _ =O[𝓝 0] (fun (x : E) ↦ x - 0) := by
         simp_rw [mul_one, isBigO_norm_left (f' := fun x ↦ x), sub_zero, isBigO_refl]

@@ -39,9 +39,10 @@ instance : ENorm ℝ≥0∞ where
 
 @[simp] lemma enorm_eq_self (x : ℝ≥0∞) : ‖x‖ₑ = x := rfl
 
-noncomputable instance : ENormedAddCommMonoid ℝ≥0∞ where
+instance : ContinuousENorm ℝ≥0∞ where
   continuous_enorm := continuous_id
-  enorm_zero := by simp
+
+instance : IsENormedAddMonoid ℝ≥0∞ where
   enorm_eq_zero := by simp
   enorm_add_le := by simp
 
@@ -56,7 +57,9 @@ instance norm : Norm ℝ where
 theorem norm_eq_abs (r : ℝ) : ‖r‖ = |r| :=
   rfl
 
-instance normedAddCommGroup : NormedAddCommGroup ℝ :=
+instance : NormMetric ℝ where
+
+instance : IsNormedAddGroup ℝ :=
   ⟨fun _r _y => by rw [Real.dist_eq, ← abs_neg, neg_sub, add_comm, sub_eq_add_neg, norm_eq_abs]⟩
 
 theorem norm_of_nonneg (hr : 0 ≤ r) : ‖r‖ = r :=
@@ -119,8 +122,8 @@ end Real
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedCommMonoid ε]
+variable [NormPseudoMetric E] [CommGroup E] [IsNormedGroup E] [NormPseudoMetric F] [CommGroup F] [IsNormedGroup F] {a b : E} {r : ℝ}
+variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε] [CommMonoid ε] [IsESeminormedMonoid ε]
 
 @[to_additive (attr := simp high) norm_norm] -- Higher priority as a shortcut lemma.
 lemma norm_norm' (x : E) : ‖‖x‖‖ = ‖x‖ := Real.norm_of_nonneg (norm_nonneg' _)

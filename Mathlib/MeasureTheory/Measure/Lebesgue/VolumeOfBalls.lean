@@ -48,7 +48,7 @@ section general_case
 open MeasureTheory MeasureTheory.Measure Module ENNReal
 
 theorem MeasureTheory.measure_unitBall_eq_integral_div_gamma {E : Type*} {p : ℝ}
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E]
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E]
     [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] (hp : 0 < p) :
     μ (Metric.ball 0 1) =
       .ofReal ((∫ (x : E), Real.exp (-‖x‖ ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)) := by
@@ -82,7 +82,8 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
   -- We copy `E` to a new type `F` on which we will put the norm defined by `g`
   letI F : Type _ := E
   let p : AddGroupNorm F := ⟨⟨g, h1, h3, h2⟩, fun x hx ↦ h4 hx⟩
-  letI : NormedAddCommGroup F := AddGroupNorm.toNormedAddCommGroup p
+  letI : NormMetric F := p.toNormMetric
+  haveI : IsNormedAddGroup F := p.toIsNormedAddGroup
   letI : NormedSpace ℝ F := { norm_smul_le := fun _ _ ↦ h5 _ _ }
   -- We put the new topology on F
   letI : TopologicalSpace F := UniformSpace.toTopologicalSpace
@@ -115,7 +116,8 @@ theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
   -- We copy `E` to a new type `F` on which we will put the norm defined by `g`
   letI F : Type _ := E
   let p : AddGroupNorm F := ⟨⟨g, h1, h3, h2⟩, fun x hx ↦ h4 hx⟩
-  letI : NormedAddCommGroup F := AddGroupNorm.toNormedAddCommGroup p
+  letI : NormMetric F := p.toNormMetric
+  haveI : IsNormedAddGroup F := p.toIsNormedAddGroup
   letI : NormedSpace ℝ F := { norm_smul_le := fun _ _ ↦ h5 _ _ }
   -- We put the new topology on F
   letI : TopologicalSpace F := UniformSpace.toTopologicalSpace
@@ -337,7 +339,7 @@ namespace InnerProductSpace
 open scoped Nat
 open MeasureTheory MeasureTheory.Measure ENNReal Real Module Metric
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E]
 
 section Nontrivial

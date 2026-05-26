@@ -34,7 +34,7 @@ namespace BoundedContinuousFunction
 
 section NormedAddCommGroup
 
-variable [TopologicalSpace α] [SeminormedAddCommGroup β]
+variable [TopologicalSpace α] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β]
 variable (f g : α →ᵇ β) {x : α} {C : ℝ}
 
 instance instNorm : Norm (α →ᵇ β) := ⟨(dist · 0)⟩
@@ -115,13 +115,13 @@ theorem norm_const_eq [h : Nonempty α] (b : β) : ‖const α b‖ = ‖b‖ :=
 
 /-- Constructing a bounded continuous function from a uniformly bounded continuous
 function taking values in a normed group. -/
-def ofNormedAddCommGroup {α : Type u} {β : Type v} [TopologicalSpace α] [SeminormedAddCommGroup β]
+def ofNormedAddCommGroup {α : Type u} {β : Type v} [TopologicalSpace α] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β]
     (f : α → β) (Hf : Continuous f) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) : α →ᵇ β :=
   ⟨⟨fun n => f n, Hf⟩, ⟨_, dist_le_two_norm' H⟩⟩
 
 @[simp]
 theorem coe_ofNormedAddCommGroup {α : Type u} {β : Type v} [TopologicalSpace α]
-    [SeminormedAddCommGroup β] (f : α → β) (Hf : Continuous f) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) :
+    [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] (f : α → β) (Hf : Continuous f) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) :
     (ofNormedAddCommGroup f Hf C H : α → β) = f := rfl
 
 theorem norm_ofNormedAddCommGroup_le {f : α → β} (hfc : Continuous f) {C : ℝ} (hC : 0 ≤ C)
@@ -131,12 +131,12 @@ theorem norm_ofNormedAddCommGroup_le {f : α → β} (hfc : Continuous f) {C : �
 /-- Constructing a bounded continuous function from a uniformly bounded
 function on a discrete space, taking values in a normed group. -/
 def ofNormedAddCommGroupDiscrete {α : Type u} {β : Type v} [TopologicalSpace α] [DiscreteTopology α]
-    [SeminormedAddCommGroup β] (f : α → β) (C : ℝ) (H : ∀ x, norm (f x) ≤ C) : α →ᵇ β :=
+    [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] (f : α → β) (C : ℝ) (H : ∀ x, norm (f x) ≤ C) : α →ᵇ β :=
   ofNormedAddCommGroup f continuous_of_discreteTopology C H
 
 @[simp]
 theorem coe_ofNormedAddCommGroupDiscrete {α : Type u} {β : Type v} [TopologicalSpace α]
-    [DiscreteTopology α] [SeminormedAddCommGroup β] (f : α → β) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) :
+    [DiscreteTopology α] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] (f : α → β) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) :
     (ofNormedAddCommGroupDiscrete f C H : α → β) = f := rfl
 
 /-- Taking the pointwise norm of a bounded continuous function with values in a
@@ -199,13 +199,13 @@ instance instAddCommGroup : AddCommGroup (α →ᵇ β) := fast_instance%
   DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
     fun _ _ => coe_zsmul _ _
 
-instance instSeminormedAddCommGroup : SeminormedAddCommGroup (α →ᵇ β) where
+instance instNormPseudoMetric : NormPseudoMetric (α →ᵇ β) where
+
+instance instIsNormedAddGroup : IsNormedAddGroup (α →ᵇ β) where
   dist_eq f g := by simp only [norm_eq, dist_eq, dist_eq_norm_neg_add, add_apply, neg_apply]
 
-instance instNormedAddCommGroup {α β} [TopologicalSpace α] [NormedAddCommGroup β] :
-    NormedAddCommGroup (α →ᵇ β) :=
-  { instSeminormedAddCommGroup with
-    eq_of_dist_eq_zero }
+instance instNormMetric {α β} [TopologicalSpace α] [NormMetric β] [AddCommGroup β] :
+    NormMetric (α →ᵇ β) where
 
 theorem nnnorm_def : ‖f‖₊ = nndist f 0 := rfl
 
@@ -249,7 +249,7 @@ end NormedAddCommGroup
 section NormedSpace
 
 variable {𝕜 : Type*}
-variable [TopologicalSpace α] [SeminormedAddCommGroup β]
+variable [TopologicalSpace α] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β]
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 
 instance instNormedSpace [NormedField 𝕜] [NormedSpace 𝕜 β] : NormedSpace 𝕜 (α →ᵇ β) :=
@@ -259,7 +259,7 @@ instance instNormedSpace [NormedField 𝕜] [NormedSpace 𝕜 β] : NormedSpace 
       norm_smul c (f x) ▸ mul_le_mul_of_nonneg_left (f.norm_coe_le_norm _) (norm_nonneg _)⟩
 
 variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 β]
-variable [SeminormedAddCommGroup γ] [NormedSpace 𝕜 γ]
+variable [NormPseudoMetric γ] [AddCommGroup γ] [IsNormedAddGroup γ] [NormedSpace 𝕜 γ]
 variable (α)
 
 -- TODO does this work in the `IsBoundedSMul` setting, too?
@@ -291,15 +291,13 @@ section NonUnital
 
 section Seminormed
 
-variable [NonUnitalSeminormedRing R]
+variable [NormPseudoMetric R] [NonUnitalRing R] [IsNormedRing R]
 
 instance instNonUnitalRing : NonUnitalRing (α →ᵇ R) := fast_instance%
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
 
-instance instNonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) where
-  __ := instSeminormedAddCommGroup
-  __ := instNonUnitalRing
+instance instIsNormedRing : IsNormedRing (α →ᵇ R) where
   norm_mul_le f g := norm_ofNormedAddCommGroup_le _ (by positivity)
     (fun x ↦ (norm_mul_le _ _).trans <| mul_le_mul
       (norm_coe_le_norm f x) (norm_coe_le_norm g x) (norm_nonneg _) (norm_nonneg _))
@@ -343,23 +341,23 @@ lemma nnnorm_sum_eq_sup [IsCancelMulZero R] {ι : Type*} {f : ι → (α →ᵇ 
 
 end Seminormed
 
-instance instNonUnitalSeminormedCommRing [NonUnitalSeminormedCommRing R] :
-    NonUnitalSeminormedCommRing (α →ᵇ R) where
+instance instNonUnitalCommRing [NormPseudoMetric R] [NonUnitalCommRing R] [IsNormedRing R] :
+    NonUnitalCommRing (α →ᵇ R) where
   mul_comm _ _ := ext fun _ ↦ mul_comm ..
 
-instance instNonUnitalNormedRing [NonUnitalNormedRing R] : NonUnitalNormedRing (α →ᵇ R) where
-  __ := instNonUnitalSeminormedRing
-  __ := instNormedAddCommGroup
+example [NormPseudoMetric R] [NonUnitalCommRing R] [IsNormedRing R] :
+    NonUnitalSeminormedCommRing (α →ᵇ R) where
 
-instance instNonUnitalNormedCommRing [NonUnitalNormedCommRing R] :
+example [NormMetric R] [NonUnitalRing R] [IsNormedRing R] : NonUnitalNormedRing (α →ᵇ R) where
+
+example [NormMetric R] [NonUnitalCommRing R] [IsNormedRing R] :
     NonUnitalNormedCommRing (α →ᵇ R) where
-  mul_comm := mul_comm
 
 end NonUnital
 
 section Seminormed
 
-variable [SeminormedRing R]
+variable [NormPseudoMetric R] [Ring R] [IsNormedRing R]
 
 @[simp]
 theorem coe_npowRec (f : α →ᵇ R) : ∀ n, ⇑(npowRec n f) = (⇑f) ^ n
@@ -393,24 +391,20 @@ instance instRing : Ring (α →ᵇ R) := fast_instance%
     (fun _ _ => coe_nsmul _ _) (fun _ _ => coe_zsmul _ _) (fun _ _ => coe_pow _ _) coe_natCast
     coe_intCast
 
-instance instSeminormedRing : SeminormedRing (α →ᵇ R) where
-  __ := instRing
-  __ := instNonUnitalSeminormedRing
+example : SeminormedRing (α →ᵇ R) where
 
 /-- Composition on the left by a (lipschitz-continuous) homomorphism of topological semirings, as a
 `RingHom`. Similar to `RingHom.compLeftContinuous`. -/
 @[simps!]
 protected def _root_.RingHom.compLeftContinuousBounded (α : Type*)
-    [TopologicalSpace α] [SeminormedRing β] [SeminormedRing γ]
+    [TopologicalSpace α] [NormPseudoMetric β] [Ring β] [IsNormedRing β] [NormPseudoMetric γ] [Ring γ] [IsNormedRing γ]
     (g : β →+* γ) {C : NNReal} (hg : LipschitzWith C g) : (α →ᵇ β) →+* (α →ᵇ γ) :=
   { g.toMonoidHom.compLeftContinuousBounded α hg,
     g.toAddMonoidHom.compLeftContinuousBounded α hg with }
 
 end Seminormed
 
-instance instNormedRing [NormedRing R] : NormedRing (α →ᵇ R) where
-  __ := instRing
-  __ := instNonUnitalNormedRing
+example [NormMetric R] [Ring R] [IsNormedRing R] : NormedRing (α →ᵇ R) where
 
 end NormedRing
 
@@ -418,23 +412,19 @@ section NormedCommRing
 
 variable [TopologicalSpace α] {R : Type*}
 
-instance instCommRing [SeminormedCommRing R] : CommRing (α →ᵇ R) where
+instance instCommRing [NormPseudoMetric R] [CommRing R] [IsNormedRing R] : CommRing (α →ᵇ R) where
   mul_comm _ _ := ext fun _ ↦ mul_comm _ _
 
-instance instSeminormedCommRing [SeminormedCommRing R] : SeminormedCommRing (α →ᵇ R) where
-  __ := instCommRing
-  __ := instNonUnitalSeminormedRing
+example [NormPseudoMetric R] [CommRing R] [IsNormedRing R] : SeminormedCommRing (α →ᵇ R) where
 
-instance instNormedCommRing [NormedCommRing R] : NormedCommRing (α →ᵇ R) where
-  __ := instSeminormedCommRing
-  __ := instNormedAddCommGroup
+example [NormMetric R] [CommRing R] [IsNormedRing R] : NormedCommRing (α →ᵇ R) where
 
 end NormedCommRing
 
 section NonUnitalAlgebra
 
 -- these hypotheses could be generalized if we generalize `IsBoundedSMul` to `Bornology`.
-variable {𝕜 : Type*} [PseudoMetricSpace 𝕜] [TopologicalSpace α] [NonUnitalSeminormedRing β]
+variable {𝕜 : Type*} [PseudoMetricSpace 𝕜] [TopologicalSpace α] [NormPseudoMetric β] [NonUnitalRing β] [IsNormedRing β]
 variable [Zero 𝕜] [SMul 𝕜 β] [IsBoundedSMul 𝕜 β]
 
 instance [IsScalarTower 𝕜 β β] : IsScalarTower 𝕜 (α →ᵇ β) (α →ᵇ β) where
@@ -451,7 +441,7 @@ end NonUnitalAlgebra
 section NormedAlgebra
 
 variable {𝕜 : Type*} [NormedField 𝕜] [TopologicalSpace α]
-variable [NormedRing γ] [NormedAlgebra 𝕜 γ]
+variable [NormMetric γ] [Ring γ] [IsNormedRing γ] [NormedAlgebra 𝕜 γ]
 
 /-- `BoundedContinuousFunction.const` as a `RingHom`. -/
 def C : 𝕜 →+* α →ᵇ γ where
@@ -479,7 +469,7 @@ variable (𝕜)
 /-- Composition on the left by a (lipschitz-continuous) homomorphism of topological `R`-algebras,
 as an `AlgHom`. Similar to `AlgHom.compLeftContinuous`. -/
 @[simps!]
-protected def AlgHom.compLeftContinuousBounded [NormedRing β] [NormedAlgebra 𝕜 β]
+protected def AlgHom.compLeftContinuousBounded [NormMetric β] [Ring β] [IsNormedRing β] [NormedAlgebra 𝕜 β]
     (g : β →ₐ[𝕜] γ) {C : NNReal} (hg : LipschitzWith C g) : (α →ᵇ β) →ₐ[𝕜] (α →ᵇ γ) :=
   { g.toRingHom.compLeftContinuousBounded α hg with
     commutes' := fun _ => DFunLike.ext _ _ fun _ => g.commutes' _ }
@@ -497,7 +487,7 @@ def toContinuousMapₐ : (α →ᵇ γ) →ₐ[𝕜] C(α, γ) where
 @[simp]
 theorem coe_toContinuousMapₐ (f : α →ᵇ γ) : (f.toContinuousMapₐ 𝕜 : α → γ) = f := rfl
 
-variable {𝕜} [SeminormedAddCommGroup β] [NormedSpace 𝕜 β]
+variable {𝕜} [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [NormedSpace 𝕜 β]
 
 /-! ### Structure as normed module over scalar functions
 
@@ -532,7 +522,7 @@ end NormedAlgebra
 section NormedLatticeOrderedGroup
 
 variable [TopologicalSpace α]
-  [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
+  [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
 
 instance instPartialOrder : PartialOrder (α →ᵇ β) :=
   PartialOrder.lift (fun f => f.toFun) (by simp [Injective])

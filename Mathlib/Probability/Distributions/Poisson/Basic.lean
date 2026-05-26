@@ -57,7 +57,7 @@ instance isProbabilityMeasure_poissonMeasure (r : ℝ≥0) :
 
 section Integral
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 
 lemma integrable_poissonMeasure_iff {r : ℝ≥0} {f : ℕ → E} :
     Integrable f (poissonMeasure r) ↔ Summable (fun n ↦ exp (-r) * r ^ n / (n)! * ‖f n‖) := by

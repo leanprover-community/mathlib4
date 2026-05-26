@@ -139,7 +139,7 @@ end deriv
 
 section fderiv
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {x : E}
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] {f : E → ℝ} {x : E}
   {f' : StrongDual ℝ E} {s : Set E}
 
 theorem HasFDerivWithinAt.log (hf : HasFDerivWithinAt f f' s x) (hx : f x ≠ 0) :

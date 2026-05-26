@@ -69,7 +69,7 @@ self-adjoint operator, spectral theorem, diagonalization theorem
 @[expose] public section
 
 variable {𝕜 : Type*} [RCLike 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -375,7 +375,7 @@ theorem sort_roots_charpoly_eq_eigenvalues (hT : T.IsSymmetric) (hn : Module.fin
   simp_rw [decide_eq_true_eq, ← List.sortedGE_iff_pairwise]
   convert! (hT.eigenvalues_antitone hn).sortedGE_ofFn
 
-theorem eigenvalues_eq_eigenvalues_iff {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+theorem eigenvalues_eq_eigenvalues_iff {E' : Type*} [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [InnerProductSpace 𝕜 E']
     [FiniteDimensional 𝕜 E'] {T' : E' →ₗ[𝕜] E'} (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
     (hT' : T'.IsSymmetric) (hn' : Module.finrank 𝕜 E' = n) :
     hT.eigenvalues hn = hT'.eigenvalues hn' ↔ T.charpoly = T'.charpoly where

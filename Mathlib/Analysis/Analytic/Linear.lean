@@ -20,9 +20,9 @@ polynomial, i.e., they admit a finite power series.
 
 @[expose] public section
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*}
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+  [NormedSpace 𝕜 E] {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] {G : Type*}
+  [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
 
 open scoped Topology NNReal ENNReal
 open Set Filter Asymptotics
@@ -78,7 +78,7 @@ protected theorem analyticOn (f : E →L[𝕜] F) (s : Set E) : AnalyticOn 𝕜 
 multilinear series expansion of `uncurry f`. It is given by
 `f.uncurryBilinear ![(x, y), (x', y')] = f x y'`. -/
 def uncurryBilinear (f : E →L[𝕜] F →L[𝕜] G) : E × F [×2]→L[𝕜] G :=
-  @ContinuousLinearMap.uncurryLeft 𝕜 1 (fun _ => E × F) G _ _ _ _ _ <|
+  ContinuousLinearMap.uncurryLeft <|
     (↑(continuousMultilinearCurryFin1 𝕜 (E × F) G).symm : (E × F →L[𝕜] G) →L[𝕜] _).comp <|
       f.bilinearComp (fst _ _ _) (snd _ _ _)
 

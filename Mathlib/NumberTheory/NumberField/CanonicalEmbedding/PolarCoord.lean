@@ -138,7 +138,7 @@ theorem polarCoordReal_symm_target_ae_eq_univ :
   exact set_prod_ae_eq .rfl pi_polarCoord_symm_target_ae_eq_univ
 
 open scoped Classical in
-theorem integral_comp_polarCoordReal_symm {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem integral_comp_polarCoordReal_symm {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
     (f : realMixedSpace K → E) :
     ∫ x in (polarCoordReal K).target, (∏ w : {w // IsComplex w}, (x.2 w).1) •
       f ((polarCoordReal K).symm x) = ∫ x, f x := by
@@ -202,7 +202,7 @@ theorem normAtPlace_polarCoord_symm_of_isComplex (x : realMixedSpace K)
   simp [normAtPlace_apply_of_isComplex hw]
 
 open scoped Classical in
-protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+protected theorem integral_comp_polarCoord_symm {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
     (f : mixedSpace K → E) :
     ∫ x in (mixedEmbedding.polarCoord K).target,
       (∏ w : {w // IsComplex w}, (x.2 w).1) • f ((mixedEmbedding.polarCoord K).symm x) =
@@ -322,7 +322,7 @@ theorem polarSpaceCoord_target' [NumberField K] :
     not_isReal_iff_isComplex, Subtype.forall, Complex.polarCoord_target, Set.mem_prod, forall_and]
 
 open scoped Classical in
-theorem integral_comp_polarSpaceCoord_symm [NumberField K] {E : Type*} [NormedAddCommGroup E]
+theorem integral_comp_polarSpaceCoord_symm [NumberField K] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
     [NormedSpace ℝ E] (f : mixedSpace K → E) :
     ∫ x in (polarSpaceCoord K).target,
       (∏ w : {w // IsComplex w}, x.1 w.1) • f ((polarSpaceCoord K).symm x) = ∫ x, f x := by

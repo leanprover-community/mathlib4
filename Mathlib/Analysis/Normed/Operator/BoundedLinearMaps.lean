@@ -65,9 +65,9 @@ open Metric ContinuousLinearMap
 section Semiring
 
 variable {𝕜 E F G : Type*} [Semiring 𝕜]
-    [SeminormedAddCommGroup E] [Module 𝕜 E]
-    [SeminormedAddCommGroup F] [Module 𝕜 F]
-    [SeminormedAddCommGroup G] [Module 𝕜 G]
+    [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [Module 𝕜 E]
+    [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [Module 𝕜 F]
+    [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G] [Module 𝕜 G]
     {f g : E → F}
 
 variable (𝕜 f) in
@@ -122,7 +122,7 @@ theorem snd : IsBoundedLinearMap 𝕜 fun x : E × F => x.2 := by
   rw [one_mul]
   exact le_max_right _ _
 
-theorem smul {𝕜' : Type*} (c : 𝕜') [SeminormedRing 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F]
+theorem smul {𝕜' : Type*} (c : 𝕜') [NormPseudoMetric 𝕜'] [Ring 𝕜'] [IsNormedRing 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F]
     [SMulCommClass 𝕜 𝕜' F] (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap 𝕜 (c • f) :=
   let ⟨hlf, M, _, hM⟩ := hf
   (c • hlf.mk' f).isLinear.with_bound (‖c‖ * M) fun x =>
@@ -278,11 +278,11 @@ end Semiring
 
 section CommSemiring
 
-variable {𝕜 A : Type*} [CommSemiring 𝕜] [SeminormedRing A] [Algebra 𝕜 A]
+variable {𝕜 A : Type*} [CommSemiring 𝕜] [NormPseudoMetric A] [Ring A] [IsNormedRing A] [Algebra 𝕜 A]
 
 /-- Scalar multiplication (for a normed `𝕜`-algebra acting on a normed `𝕜`-module) as a bounded
 bilinear map. -/
-theorem isBoundedBilinearMap_smul {E : Type*} [SeminormedAddCommGroup E] [Module 𝕜 E]
+theorem isBoundedBilinearMap_smul {E : Type*} [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [Module 𝕜 E]
     [Module A E] [IsBoundedSMul A E] [IsScalarTower 𝕜 A E] :
     IsBoundedBilinearMap 𝕜 fun p : A × E ↦ p.1 • p.2 where
   add_left := add_smul
@@ -298,9 +298,9 @@ theorem isBoundedBilinearMap_mul :
 
 end CommSemiring
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*}
-  [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+  [NormedSpace 𝕜 E] {F : Type*} [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] {G : Type*}
+  [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
 
 /-- A continuous linear map satisfies `IsBoundedLinearMap` -/
 theorem ContinuousLinearMap.isBoundedLinearMap (f : E →L[𝕜] F) : IsBoundedLinearMap 𝕜 f :=
@@ -324,7 +324,7 @@ variable {ι : Type*} [Fintype ι]
 
 /-- Taking the Cartesian product of two continuous multilinear maps is a bounded linear
 operation. -/
-theorem isBoundedLinearMap_prod_multilinear {E : ι → Type*} [∀ i, SeminormedAddCommGroup (E i)]
+theorem isBoundedLinearMap_prod_multilinear {E : ι → Type*} [∀ i, NormPseudoMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] :
     IsBoundedLinearMap 𝕜 fun p : ContinuousMultilinearMap 𝕜 E F × ContinuousMultilinearMap 𝕜 E G =>
       p.1.prod p.2 :=
@@ -399,7 +399,7 @@ theorem isBoundedBilinearMap_smulRight :
 /-- The composition of a continuous linear map with a continuous multilinear map is a bounded
 bilinear operation. -/
 theorem isBoundedBilinearMap_compMultilinear {ι : Type*} {E : ι → Type*} [Fintype ι]
-    [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] :
+    [∀ i, NormMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] :
     IsBoundedBilinearMap 𝕜 fun p : (F →L[𝕜] G) × ContinuousMultilinearMap 𝕜 E F =>
       p.1.compContinuousMultilinearMap p.2 :=
   (compContinuousMultilinearMapL 𝕜 E F G).isBoundedBilinearMap
@@ -426,7 +426,7 @@ theorem IsBoundedBilinearMap.deriv_apply (h : IsBoundedBilinearMap 𝕜 f) (p q 
 variable (𝕜) in
 /-- The function `ContinuousLinearMap.mulLeftRight : 𝕜' × 𝕜' → (𝕜' →L[𝕜] 𝕜')` is a bounded
 bilinear map. -/
-theorem ContinuousLinearMap.mulLeftRight_isBoundedBilinear (𝕜' : Type*) [SeminormedRing 𝕜']
+theorem ContinuousLinearMap.mulLeftRight_isBoundedBilinear (𝕜' : Type*) [NormPseudoMetric 𝕜'] [Ring 𝕜'] [IsNormedRing 𝕜']
     [NormedAlgebra 𝕜 𝕜'] :
     IsBoundedBilinearMap 𝕜 fun p : 𝕜' × 𝕜' => ContinuousLinearMap.mulLeftRight 𝕜 𝕜' p.1 p.2 :=
   (ContinuousLinearMap.mulLeftRight 𝕜 𝕜').isBoundedBilinearMap
@@ -524,8 +524,8 @@ end
 namespace ContinuousLinearEquiv
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 
 open Set
 open scoped Topology

@@ -18,7 +18,7 @@ open TopologicalSpace MeasureTheory Filter
 open scoped NNReal ENNReal ComplexConjugate
 
 variable {α E F G : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ : Measure α}
-  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G]
 
 namespace MeasureTheory
 
@@ -58,7 +58,7 @@ theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul' {f : α → ε} {g : α �
 
 section ESeminormedAddMonoid
 
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
+variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε] [AddMonoid ε] [IsESeminormedAddMonoid ε]
 
 /-- If `‖f x‖ₑ ≤ c * ‖g x‖ₑ` a.e., `eLpNorm' f p μ ≤ c * eLpNorm' g p μ` for all `p ∈ (0, ∞)`. -/
 theorem eLpNorm'_le_mul_eLpNorm'_of_ae_le_mul {f : α → ε} {c : ℝ≥0∞} {g : α → ε'} {p : ℝ}
@@ -160,7 +160,7 @@ theorem eLpNorm_le_mul_eLpNorm_of_ae_le_mul' {f : α → ε} {g : α → ε'} {c
     eLpNorm f p μ ≤ c * eLpNorm g p μ := by
   apply eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' h
 
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε] in
+variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε] [AddMonoid ε] [IsESeminormedAddMonoid ε] in
 /-- If `‖f x‖ₑ ≤ c * ‖g x‖ₑ`, then `eLpNorm f p μ ≤ c * eLpNorm g p μ`.
 
 This version allows `c = ∞`, but requires `g` to be a.e. strongly measurable. -/
@@ -217,7 +217,7 @@ theorem le_eLpNorm_of_bddBelow (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → F} (
 
 section Star
 
-variable {R : Type*} [NormedAddCommGroup R] [StarAddMonoid R] [NormedStarGroup R]
+variable {R : Type*} [NormMetric R] [AddCommGroup R] [IsNormedAddGroup R] [StarAddMonoid R] [NormedStarGroup R]
 
 @[simp]
 theorem eLpNorm_star {p : ℝ≥0∞} {f : α → R} : eLpNorm (star f) p μ = eLpNorm f p μ :=

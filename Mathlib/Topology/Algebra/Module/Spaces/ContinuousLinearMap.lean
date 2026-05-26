@@ -149,7 +149,7 @@ and `s` is a von Neumann bounded set in the domain,
 then the set `{f x | (f ∈ S) (x ∈ s)}` is von Neumann bounded.
 
 See also `isVonNBounded_iff` for an `Iff` version with stronger typeclass assumptions. -/
-theorem isVonNBounded_image2_apply {R : Type*} [SeminormedRing R]
+theorem isVonNBounded_image2_apply {R : Type*} [NormPseudoMetric R] [Ring R] [IsNormedRing R]
     [TopologicalSpace F] [IsTopologicalAddGroup F]
     [DistribMulAction R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜₂ R F]
     {S : Set (E →SL[σ] F)} (hS : IsVonNBounded R S) {s : Set E} (hs : IsVonNBounded 𝕜₁ s) :

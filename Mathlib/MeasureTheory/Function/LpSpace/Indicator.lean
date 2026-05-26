@@ -29,7 +29,7 @@ noncomputable section
 open MeasureTheory Filter
 open scoped NNReal ENNReal Topology symmDiff
 
-variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α} [NormedAddCommGroup E]
+variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 
 namespace MeasureTheory
 
@@ -262,7 +262,7 @@ theorem Lp.norm_const_le : ‖Lp.const p μ c‖ ≤ ‖c‖ * μ.real Set.univ 
   exact norm_indicatorConstLp_le
 
 /-- `MeasureTheory.Lp.const` as a `LinearMap`. -/
-@[simps] protected def Lp.constₗ (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] :
+@[simps] protected def Lp.constₗ (𝕜 : Type*) [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] :
     E →ₗ[𝕜] Lp E p μ where
   toFun := Lp.const p μ
   map_add' := map_add _
@@ -270,7 +270,7 @@ theorem Lp.norm_const_le : ‖Lp.const p μ c‖ ≤ ‖c‖ * μ.real Set.univ 
 
 /-- `MeasureTheory.Lp.const` as a `ContinuousLinearMap`. -/
 @[simps! apply]
-protected def Lp.constL (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [Fact (1 ≤ p)] :
+protected def Lp.constL (𝕜 : Type*) [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [Fact (1 ≤ p)] :
     E →L[𝕜] Lp E p μ :=
   (Lp.constₗ p μ 𝕜).mkContinuous (μ.real Set.univ ^ (1 / p.toReal)) fun _ ↦
     (Lp.norm_const_le _ _ _).trans_eq (mul_comm _ _)
@@ -305,7 +305,7 @@ theorem indicatorConstLp_eq_toSpanSingleton_compLp {s : Set α} [NormedSpace ℝ
     (ContinuousLinearMap.toSpanSingleton ℝ x).coeFn_compLp (indicatorConstLp 2 hs hμs (1 : ℝ))
   rw [← EventuallyEq] at h_compLp
   refine EventuallyEq.trans ?_ h_compLp.symm
-  refine (@indicatorConstLp_coeFn _ _ _ 2 μ _ s hs hμs (1 : ℝ)).mono fun y hy => ?_
+  refine (@indicatorConstLp_coeFn _ _ _ 2 μ _ _ _ s hs hμs (1 : ℝ)).mono fun y hy => ?_
   dsimp only
   rw [hy]
   simp_rw [ContinuousLinearMap.toSpanSingleton_apply]

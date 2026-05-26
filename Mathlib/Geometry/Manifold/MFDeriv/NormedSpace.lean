@@ -33,27 +33,27 @@ open scoped Topology Manifold
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
   -- declare a charted space `M` over the pair `(E, H)`.
   {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   -- declare a `C^n` manifold `M'` over the pair `(E', H')`.
   {E' : Type*}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   [IsManifold I' n M']
   -- declare a `C^n` manifold `N` over the pair `(F, G)`.
   {F : Type*}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
   {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
   [IsManifold J n N]
   -- declare a `C^n` manifold `N'` over the pair `(F', G')`.
   {F' : Type*}
-  [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
+  [NormMetric F'] [AddCommGroup F'] [IsNormedAddGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
   {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
   [IsManifold J' n N']
   -- F₁, F₂, F₃, F₄ are normed spaces
-  {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormedAddCommGroup F₂]
-  [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
-  [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
+  {F₁ : Type*} [NormMetric F₁] [AddCommGroup F₁] [IsNormedAddGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormMetric F₂] [AddCommGroup F₂] [IsNormedAddGroup F₂]
+  [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormMetric F₃] [AddCommGroup F₃] [IsNormedAddGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
+  [NormMetric F₄] [AddCommGroup F₄] [IsNormedAddGroup F₄] [NormedSpace 𝕜 F₄]
   -- declare functions, sets, points and smoothness indices
   {f f₁ : M → M'} {s t : Set M} {x : M} {m n : ℕ∞}
 
@@ -89,7 +89,7 @@ end Module
 
 section extChartAt
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : M → F}
+variable {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] {f : M → F}
 
 -- TODO: add pre-composition version also
 theorem MDifferentiableWithinAt.differentiableWithinAt_comp_extChartAt_symm (hf : MDiffAt[s] f x) :
@@ -257,7 +257,7 @@ section smul
 
 open NormedSpace ContinuousLinearMap
 
-variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
+variable {V : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace 𝕜 V]
 variable {f : M → 𝕜} {g : M → V}
 
 /-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, if
@@ -433,7 +433,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
 -- can never be.
 @[app_delab mvfderiv] meta def delabMVFDeriv : Delab := do
   whenPPOption getPPNotation do
-  withOverApp 15 do
+  withOverApp 19 do
   let fs ← withAppArg delab
   `(d% $fs) >>= annotateGoToSyntaxDef
 

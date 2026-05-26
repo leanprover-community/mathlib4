@@ -67,7 +67,7 @@ integral, circle, Cauchy integral
 
 @[expose] public section
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 
 noncomputable section
 
@@ -185,7 +185,7 @@ theorem circleIntegrable_const (a : E) (c : ℂ) (R : ℝ) : CircleIntegrable (f
 
 namespace CircleIntegrable
 
-variable {f g : ℂ → E} {c : ℂ} {R : ℝ} {A : Type*} [NormedRing A] {a : A}
+variable {f g : ℂ → E} {c : ℂ} {R : ℝ} {A : Type*} [NormMetric A] [Ring A] [IsNormedRing A] {a : A}
 
 /--
 Analogue of `IntervalIntegrable.abs`: If a real-valued function `f` is circle integrable, then so is
@@ -238,7 +238,7 @@ theorem const_fun_smul {f : ℂ → A} (h : CircleIntegrable f c R) :
     CircleIntegrable (fun z ↦ a • f z) c R := const_smul h
 
 variable
-  {𝕜 F : Type*} [NormedRing 𝕜] [NormedAddCommGroup F] [Module 𝕜 F] [NormSMulClass 𝕜 F]
+  {𝕜 F : Type*} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [Module 𝕜 F] [NormSMulClass 𝕜 F]
 
 /--
 If `g` is continuous on the circle `sphere c |R|` and `f` is circle integrable, then `g • f` is

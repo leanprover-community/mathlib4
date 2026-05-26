@@ -25,7 +25,7 @@ open Filter Function Metric Bornology
 open scoped ENNReal NNReal Uniformity Pointwise Topology
 
 section SeminormedGroup
-variable [SeminormedGroup E] [SeminormedGroup F] {s : Set E} {a b : E} {r : ℝ}
+variable [NormPseudoMetric E] [Group E] [IsNormedGroup E] [NormPseudoMetric F] [Group F] [IsNormedGroup F] {s : Set E} {a b : E} {r : ℝ}
 
 @[to_additive]
 instance NormedGroup.to_isIsometricSMul : IsIsometricSMul E E :=
@@ -197,7 +197,7 @@ end SeminormedGroup
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a₁ a₂ b₁ b₂ : E} {r₁ r₂ : ℝ}
+variable [NormPseudoMetric E] [CommGroup E] [IsNormedGroup E] [NormPseudoMetric F] [CommGroup F] [IsNormedGroup F] {a₁ a₂ b₁ b₂ : E} {r₁ r₂ : ℝ}
 
 @[to_additive]
 instance NormedGroup.to_isIsometricSMul_right : IsIsometricSMul Eᵐᵒᵖ E :=
@@ -266,7 +266,7 @@ theorem edist_mul_mul_le (a₁ a₂ b₁ b₂ : E) :
   apply nndist_mul_mul_le
 
 section PseudoEMetricSpace
-variable {α E : Type*} [SeminormedCommGroup E] [PseudoEMetricSpace α] {K Kf Kg : ℝ≥0}
+variable {α E : Type*} [NormPseudoMetric E] [CommGroup E] [IsNormedGroup E] [PseudoEMetricSpace α] {K Kf Kg : ℝ≥0}
   {f g : α → E} {s : Set α}
 
 @[to_additive (attr := simp)]
@@ -371,7 +371,7 @@ end PseudoEMetricSpace
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) SeminormedCommGroup.to_lipschitzMul : LipschitzMul E :=
+instance (priority := 100) IsNormedGroup.to_lipschitzMul : LipschitzMul E :=
   ⟨⟨1 + 1, LipschitzWith.prod_fst.mul LipschitzWith.prod_snd⟩⟩
 
 -- See note [lower instance priority]
@@ -379,13 +379,13 @@ instance (priority := 100) SeminormedCommGroup.to_lipschitzMul : LipschitzMul E 
 continuous. -/
 @[to_additive /-- A seminormed group is a uniform additive group, i.e., addition and subtraction are
 uniformly continuous. -/]
-instance (priority := 100) SeminormedCommGroup.to_isUniformGroup : IsUniformGroup E :=
+instance (priority := 100) IsNormedGroup.to_isUniformGroup : IsUniformGroup E :=
   ⟨(LipschitzWith.prod_fst.div LipschitzWith.prod_snd).uniformContinuous⟩
 
 -- short-circuit type class inference
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) SeminormedCommGroup.toIsTopologicalGroup : IsTopologicalGroup E :=
+instance (priority := 100) IsNormedGroup.toIsTopologicalGroup : IsTopologicalGroup E :=
   inferInstance
 
 /-! ### SeparationQuotient -/
@@ -396,13 +396,15 @@ namespace SeparationQuotient
 instance instMulNorm : Norm (SeparationQuotient E) where
   norm := lift Norm.norm fun _ _ h => h.norm_eq_norm'
 
+@[to_additive instNormMetric]
+instance instMulNormMetric : NormMetric (SeparationQuotient E) where
+
 set_option linter.docPrime false in
 @[to_additive (attr := simp) norm_mk]
 theorem norm_mk' (p : E) : ‖mk p‖ = ‖p‖ := rfl
 
 @[to_additive]
-instance : NormedCommGroup (SeparationQuotient E) where
-  __ : CommGroup (SeparationQuotient E) := instCommGroup
+instance : IsNormedGroup (SeparationQuotient E) where
   dist_eq := Quotient.ind₂ dist_eq_norm_inv_mul
 
 @[to_additive]
@@ -430,10 +432,10 @@ theorem cauchySeq_prod_of_eventually_eq {u v : ℕ → E} {N : ℕ} (huv : ∀ n
   simp [huv m (le_of_lt hm)]
 
 @[to_additive CauchySeq.norm_bddAbove]
-lemma CauchySeq.mul_norm_bddAbove {G : Type*} [SeminormedGroup G] {u : ℕ → G}
+lemma CauchySeq.mul_norm_bddAbove {G : Type*} [NormPseudoMetric G] [Group G] [IsNormedGroup G] {u : ℕ → G}
     (hu : CauchySeq u) : BddAbove (Set.range (fun n ↦ ‖u n‖)) := by
   obtain ⟨C, -, hC⟩ := cauchySeq_bdd hu
-  simp_rw [SeminormedGroup.dist_eq] at hC
+  simp_rw [IsNormedGroup.dist_eq] at hC
   have : ∀ n, ‖u n‖ ≤ C + ‖u 0‖ := by
     intro n
     rw [add_comm]

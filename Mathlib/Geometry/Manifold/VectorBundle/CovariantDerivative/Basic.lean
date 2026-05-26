@@ -72,10 +72,10 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 /-! ## Local unbundled theory -/
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  (F : Type*) [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
   {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
   [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)]
   [∀ x : M, TopologicalSpace (V x)]

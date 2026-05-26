@@ -62,9 +62,9 @@ duplicated.
 open EuclideanGeometry
 open scoped Finset RealInnerProductSpace
 
-variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 variable [NormedAddTorsor V P]
-variable {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂] [MetricSpace P₂]
+variable {V₂ P₂ : Type*} [NormMetric V₂] [AddCommGroup V₂] [IsNormedAddGroup V₂] [InnerProductSpace ℝ V₂] [MetricSpace P₂]
 variable [NormedAddTorsor V₂ P₂]
 
 noncomputable section

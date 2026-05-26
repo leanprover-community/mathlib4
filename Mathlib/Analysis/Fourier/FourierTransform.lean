@@ -72,8 +72,8 @@ namespace VectorFourier
 
 variable {𝕜 : Type*} [CommRing 𝕜] {V : Type*} [AddCommGroup V] [Module 𝕜 V] [MeasurableSpace V]
   {W : Type*} [AddCommGroup W] [Module 𝕜 W]
-  {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedAddCommGroup F] [NormedSpace ℂ F]
-  [NormedAddCommGroup G] [NormedSpace ℂ G]
+  {E F G : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℂ E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℂ F]
+  [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace ℂ G]
 
 section Defs
 
@@ -296,12 +296,12 @@ end VectorFourier
 namespace VectorFourier
 
 variable {𝕜 ι E F V W : Type*} [Fintype ι] [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup V] [NormedSpace 𝕜 V] [MeasurableSpace V] [BorelSpace V]
-  [NormedAddCommGroup W] [NormedSpace 𝕜 W]
+  [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace 𝕜 V] [MeasurableSpace V] [BorelSpace V]
+  [NormMetric W] [AddCommGroup W] [IsNormedAddGroup W] [NormedSpace 𝕜 W]
   {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →L[𝕜] W →L[𝕜] 𝕜}
-  [NormedAddCommGroup F] [NormedSpace ℝ F]
-  [NormedAddCommGroup E] [NormedSpace ℂ E]
-  {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace ℝ (M i)]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℂ E]
+  {M : ι → Type*} [∀ i, NormMetric (M i)] [∀ i, AddCommGroup (M i)] [∀ i, IsNormedAddGroup (M i)] [∀ i, NormedSpace ℝ (M i)]
 
 theorem fourierIntegral_continuousLinearMap_apply
     {f : V → (F →L[ℝ] E)} {a : F} {w : W} (he : Continuous e) (hf : Integrable f μ) :
@@ -330,7 +330,7 @@ end VectorFourier
 
 namespace Fourier
 
-variable {𝕜 : Type*} [CommRing 𝕜] [MeasurableSpace 𝕜] {E : Type*} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [CommRing 𝕜] [MeasurableSpace 𝕜] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
   [NormedSpace ℂ E]
 
 section Defs
@@ -370,7 +370,7 @@ namespace Real
 
 open FourierTransform
 
-variable {V W E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {V W E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℂ E]
 
 theorem vector_fourierIntegral_eq_integral_exp_smul {V : Type*} [AddCommGroup V] [Module ℝ V]
     [MeasurableSpace V] {W : Type*} [AddCommGroup W] [Module ℝ W] (L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ)
@@ -384,8 +384,8 @@ theorem vector_fourierIntegral_eq_integral_exp_smul {V : Type*} [AddCommGroup V]
 continuous bilinear function `L`. For the specialization to the inner product in an inner product
 space, see `Real.fourierIntegral_convergent_iff`. -/
 @[simp]
-theorem fourierIntegral_convergent_iff' {V W : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
-    [NormedAddCommGroup W] [NormedSpace ℝ W] [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
+theorem fourierIntegral_convergent_iff' {V W : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace ℝ V]
+    [NormMetric W] [AddCommGroup W] [IsNormedAddGroup W] [NormedSpace ℝ W] [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
     {f : V → E} (L : V →L[ℝ] W →L[ℝ] ℝ) (w : W) :
     Integrable (fun v : V ↦ 𝐞 (- L v w) • f v) μ ↔ Integrable f μ :=
   VectorFourier.fourierIntegral_convergent_iff (E := E) (L := L.toLinearMap₁₂)
@@ -394,11 +394,11 @@ theorem fourierIntegral_convergent_iff' {V W : Type*} [NormedAddCommGroup V] [No
 section Apply
 
 variable {ι F V W : Type*} [Fintype ι]
-  [NormedAddCommGroup V] [NormedSpace ℝ V] [MeasurableSpace V] [BorelSpace V]
-  [NormedAddCommGroup W] [NormedSpace ℝ W]
+  [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace ℝ V] [MeasurableSpace V] [BorelSpace V]
+  [NormMetric W] [AddCommGroup W] [IsNormedAddGroup W] [NormedSpace ℝ W]
   {μ : Measure V} {L : V →L[ℝ] W →L[ℝ] ℝ}
-  [NormedAddCommGroup F] [NormedSpace ℝ F]
-  {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace ℝ (M i)]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
+  {M : ι → Type*} [∀ i, NormMetric (M i)] [∀ i, AddCommGroup (M i)] [∀ i, IsNormedAddGroup (M i)] [∀ i, NormedSpace ℝ (M i)]
 
 theorem fourierIntegral_continuousLinearMap_apply'
     {f : V → (F →L[ℝ] E)} {a : F} {w : W} (hf : Integrable f μ) :
@@ -414,8 +414,8 @@ theorem fourierIntegral_continuousMultilinearMap_apply'
 
 end Apply
 
-variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MeasurableSpace V] [BorelSpace V]
-  [NormedAddCommGroup W] [InnerProductSpace ℝ W] [MeasurableSpace W] [BorelSpace W]
+variable [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [InnerProductSpace ℝ V] [MeasurableSpace V] [BorelSpace V]
+  [NormMetric W] [AddCommGroup W] [IsNormedAddGroup W] [InnerProductSpace ℝ W] [MeasurableSpace W] [BorelSpace W]
   [FiniteDimensional ℝ W]
 
 open scoped RealInnerProductSpace
@@ -521,7 +521,7 @@ theorem fourier_real_eq_integral_exp_smul (f : ℝ → E) (w : ℝ) :
 alias fourierIntegral_real_eq_integral_exp_smul := fourier_real_eq_integral_exp_smul
 
 theorem fourier_continuousLinearMap_apply
-    {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
     {f : V → (F →L[ℝ] E)} {a : F} {v : V} (hf : Integrable f) :
     𝓕 f v a = 𝓕 (fun x ↦ f x a) v :=
   fourierIntegral_continuousLinearMap_apply' (L := innerSL ℝ) hf
@@ -530,7 +530,7 @@ theorem fourier_continuousLinearMap_apply
 alias fourierIntegral_continuousLinearMap_apply := fourier_continuousLinearMap_apply
 
 theorem fourier_continuousMultilinearMap_apply {ι : Type*} [Fintype ι]
-    {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace ℝ (M i)]
+    {M : ι → Type*} [∀ i, NormMetric (M i)] [∀ i, AddCommGroup (M i)] [∀ i, IsNormedAddGroup (M i)] [∀ i, NormedSpace ℝ (M i)]
     {f : V → ContinuousMultilinearMap ℝ M E} {m : (i : ι) → M i} {v : V} (hf : Integrable f) :
     𝓕 f v m = 𝓕 (fun x ↦ f x m) v :=
   fourierIntegral_continuousMultilinearMap_apply' (L := innerSL ℝ) hf

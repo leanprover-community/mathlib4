@@ -28,7 +28,7 @@ section SameSpace
 
 variable {α ε ε' : Type*} {m : MeasurableSpace α} {μ : Measure α} {f : α → ε}
   [TopologicalSpace ε] [ContinuousENorm ε]
-  [TopologicalSpace ε'] [ESeminormedAddMonoid ε']
+  [TopologicalSpace ε'] [ContinuousENorm ε'] [AddMonoid ε'] [IsESeminormedAddMonoid ε']
 
 theorem eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) (hpq : p ≤ q)
     (hf : AEStronglyMeasurable f μ) :
@@ -159,7 +159,7 @@ end SameSpace
 section Bilinear
 
 variable {α E F G : Type*} {m : MeasurableSpace α}
-  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G] {μ : Measure α}
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] {μ : Measure α}
   {f : α → E} {g : α → F}
 
 open NNReal
@@ -276,9 +276,9 @@ end Bilinear
 
 section IsBoundedSMul
 
-variable {𝕜 α E F : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedRing 𝕜]
-  [NormedAddCommGroup E] [MulActionWithZero 𝕜 E] [IsBoundedSMul 𝕜 E]
-  [NormedAddCommGroup F] [MulActionWithZero 𝕜 F] [IsBoundedSMul 𝕜 F] {f : α → E}
+variable {𝕜 α E F : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜]
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [MulActionWithZero 𝕜 E] [IsBoundedSMul 𝕜 E]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [MulActionWithZero 𝕜 F] [IsBoundedSMul 𝕜 F] {f : α → E}
 
 theorem eLpNorm_smul_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (hf : AEStronglyMeasurable f μ)
     (φ : α → 𝕜) : eLpNorm (φ • f) p μ ≤ eLpNorm φ ∞ μ * eLpNorm f p μ := by
@@ -314,7 +314,7 @@ end IsBoundedSMul
 
 section Mul
 
-variable {α : Type*} {_ : MeasurableSpace α} {𝕜 : Type*} [NormedRing 𝕜] {μ : Measure α}
+variable {α : Type*} {_ : MeasurableSpace α} {𝕜 : Type*} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] {μ : Measure α}
   {p q r : ℝ≥0∞} {f : α → 𝕜} {φ : α → 𝕜}
 
 theorem MemLp.mul (hf : MemLp f q μ) (hφ : MemLp φ p μ) [hpqr : HolderTriple p q r] :
@@ -330,7 +330,7 @@ theorem MemLp.mul' (hf : MemLp f q μ) (hφ : MemLp φ p μ) [hpqr : HolderTripl
 end Mul
 
 section Prod
-variable {ι α 𝕜 : Type*} {_ : MeasurableSpace α} [NormedCommRing 𝕜] {μ : Measure α} {f : ι → α → 𝕜}
+variable {ι α 𝕜 : Type*} {_ : MeasurableSpace α} [NormMetric 𝕜] [CommRing 𝕜] [IsNormedRing 𝕜] {μ : Measure α} {f : ι → α → 𝕜}
   {p : ι → ℝ≥0∞} {s : Finset ι}
 
 open Finset in

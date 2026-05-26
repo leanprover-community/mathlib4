@@ -66,7 +66,7 @@ open Topology
 
 section NormedAddCommGroup
 
-variable {α β : Type*} [NormedAddCommGroup β]
+variable {α β : Type*} [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β]
 
 variable {u v w : α → β} {l : Filter α}
 
@@ -222,7 +222,7 @@ end NormedField
 
 section SMul
 
-theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
     {a b : α → 𝕜} {u v : α → E} {l : Filter α} (hab : a ~[l] b) (huv : u ~[l] v) :
     (fun x ↦ a x • u x) ~[l] fun x ↦ b x • v x := by
   rcases hab.exists_eq_mul with ⟨φ, hφ, habφ⟩
@@ -382,7 +382,7 @@ open Filter Asymptotics
 
 open Asymptotics
 
-variable {α β β₂ : Type*} [NormedAddCommGroup β] [Norm β₂] {l : Filter α}
+variable {α β β₂ : Type*} [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] [Norm β₂] {l : Filter α}
 
 theorem Filter.EventuallyEq.isEquivalent {u v : α → β} (h : u =ᶠ[l] v) : u ~[l] v :=
   IsEquivalent.congr_right (isLittleO_refl_left _ _) h

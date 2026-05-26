@@ -30,10 +30,12 @@ variable {F α : Type*} [FunLike F α ℝ]
 `AddGroupSeminormClass` that satisfies `IsNonarchimedean`, the group has an `IsUltrametricDist`. -/
 lemma AddGroupSeminormClass.isUltrametricDist [AddGroup α] [AddGroupSeminormClass F α ℝ]
     [inst : Dist α] {f : F} (hna : IsNonarchimedean f)
-    (hd : inst = (AddGroupSeminormClass.toSeminormedAddGroup f).toDist := by rfl) :
+    (hd : inst = (AddGroupSeminormClass.toNormPseudoMetric f).toDist := by rfl) :
     IsUltrametricDist α :=
   ⟨fun x y z ↦ by
+    let := AddGroupSeminormClass.toNormPseudoMetric f
+    have := AddGroupSeminormClass.toIsNormedAddGroup f
     simp +instances only [hd, dist_eq_norm_neg_add,
-      AddGroupSeminormClass.toSeminormedAddGroup_norm_eq]
+      AddGroupSeminormClass.toNormPseudoMetric_norm_eq]
     convert! hna (-x + y) (-y + z) using 2
     rw [add_assoc, ← add_assoc y, add_neg_cancel, zero_add]⟩

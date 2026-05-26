@@ -39,9 +39,9 @@ namespace Simplex
 
 open Finset AffineSubspace EuclideanGeometry
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
-variable {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂] [MetricSpace P₂]
+variable {V₂ P₂ : Type*} [NormMetric V₂] [AddCommGroup V₂] [IsNormedAddGroup V₂] [InnerProductSpace ℝ V₂] [MetricSpace P₂]
 variable [NormedAddTorsor V₂ P₂]
 
 /-- An altitude of a simplex is the line that passes through a vertex
@@ -233,7 +233,10 @@ lemma altitudeFoot_mem_altitude {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : 
 
 /-- The height of a vertex of a simplex is the distance between it and the foot of the altitude
 from that vertex. -/
-def height {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : ℝ :=
+-- bundled classes expanded in this definition so that the positivity extension below works fine.
+def height {V P : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V]
+    [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+    {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : ℝ :=
   dist (s.points i) (s.altitudeFoot i)
 
 @[simp] lemma height_reindex {m n : ℕ} [NeZero m] [NeZero n] (s : Simplex ℝ P n)
@@ -262,7 +265,7 @@ open Qq Mathlib.Meta.Positivity in
 @[positivity height _ _]
 meta def evalHeight : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
-  | 0, ~q(ℝ), ~q(@height $V $P $i1 $i2 $i3 $i4 $n $hn $s $i) =>
+  | 0, ~q(ℝ), ~q(@height $V $P $i1 $i2 $i3 $i4 $i5 $i6 $n $hn $s $i) =>
     assertInstancesCommute
     return .positive q(height_pos $s $i)
   | _, _, _ => throwError "not Simplex.height"

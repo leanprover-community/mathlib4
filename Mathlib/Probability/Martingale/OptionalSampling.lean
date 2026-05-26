@@ -41,7 +41,7 @@ namespace MeasureTheory
 
 namespace Martingale
 
-variable {Ω E : Type*} {m : MeasurableSpace Ω} {μ : Measure Ω} [NormedAddCommGroup E]
+variable {Ω E : Type*} {m : MeasurableSpace Ω} {μ : Measure Ω} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
   [NormedSpace ℝ E] [CompleteSpace E]
 
 section FirstCountableTopology

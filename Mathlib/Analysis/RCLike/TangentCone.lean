@@ -18,7 +18,7 @@ A set of unique differentiability for `ℝ` is also a set of unique differentiab
 public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [h𝕜 : IsRCLikeNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace ℝ E]
+  {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [NormedSpace ℝ E]
   {s : Set E} {x : E}
 
 theorem tangentConeAt_real_subset_isRCLikeNormedField :

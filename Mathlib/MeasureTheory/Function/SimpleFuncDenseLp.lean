@@ -64,7 +64,7 @@ namespace SimpleFunc
 
 section Lp
 
-variable [MeasurableSpace β] [MeasurableSpace E] [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable [MeasurableSpace β] [MeasurableSpace E] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
   {q : ℝ} {p : ℝ≥0∞}
 
 theorem nnnorm_approxOn_le [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f) {s : Set E}
@@ -179,7 +179,7 @@ theorem tendsto_approxOn_range_Lp [BorelSpace E] {f : β → E} [hp : Fact (1 �
 
 /-- Any function in `ℒp` can be approximated by a simple function if `p < ∞`. -/
 theorem _root_.MeasureTheory.MemLp.exists_simpleFunc_eLpNorm_sub_lt {E : Type*}
-    [NormedAddCommGroup E] {f : β → E} {μ : Measure β} (hf : MemLp f p μ) (hp_ne_top : p ≠ ∞)
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] {f : β → E} {μ : Measure β} (hf : MemLp f p μ) (hp_ne_top : p ≠ ∞)
     {ε : ℝ≥0∞} (hε : ε ≠ 0) : ∃ g : β →ₛ E, eLpNorm (f - ⇑g) p μ < ε ∧ MemLp g p μ := by
   borelize E
   let f' := hf.1.mk f
@@ -206,7 +206,7 @@ end Lp
 section Integrable
 
 variable [MeasurableSpace β]
-variable [MeasurableSpace E] [NormedAddCommGroup E]
+variable [MeasurableSpace E] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 
 theorem tendsto_approxOn_L1_enorm [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f)
     {s : Set E} {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s] {μ : Measure β}
@@ -240,7 +240,7 @@ end Integrable
 section SimpleFuncProperties
 
 variable [MeasurableSpace α]
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
 variable {μ : Measure α} {p : ℝ≥0∞}
 
 /-!
@@ -373,7 +373,7 @@ namespace Lp
 
 open AEEqFun
 
-variable [MeasurableSpace α] [NormedAddCommGroup E] [NormedAddCommGroup F] (p : ℝ≥0∞)
+variable [MeasurableSpace α] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] (p : ℝ≥0∞)
   (μ : Measure α)
 
 variable (E)
@@ -413,7 +413,7 @@ which does not permit this (but has the advantage of working when `E` itself is 
 i.e. has no scalar action). -/
 
 
-variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a `SMul`. Not declared as an
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
@@ -492,7 +492,7 @@ theorem toLp_sub (f g : α →ₛ E) (hf : MemLp f p μ) (hg : MemLp g p μ) :
     toLp (f - g) (hf.sub hg) = toLp f hf - toLp g hg := by
   simp only [sub_eq_add_neg, ← toLp_neg, ← toLp_add]
 
-variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 theorem toLp_smul (f : α →ₛ E) (hf : MemLp f p μ) (c : 𝕜) :
     toLp (c • f) (hf.const_smul c) = c • toLp f hf :=
@@ -574,7 +574,7 @@ theorem sub_toSimpleFunc (f g : Lp.simpleFunc E p μ) :
   simp only [AddSubgroup.coe_sub, Pi.sub_apply]
   repeat' intro h; rw [h]
 
-variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 theorem smul_toSimpleFunc (k : 𝕜) (f : Lp.simpleFunc E p μ) :
     toSimpleFunc (k • f) =ᵐ[μ] k • ⇑(toSimpleFunc f) := by
@@ -686,7 +686,7 @@ protected theorem denseRange (hp_ne_top : p ≠ ∞) :
 protected theorem dense (hp_ne_top : p ≠ ∞) : Dense (Lp.simpleFunc E p μ : Set (Lp E p μ)) := by
   simpa only [denseRange_subtype_val] using simpleFunc.denseRange (E := E) (μ := μ) hp_ne_top
 
-variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 variable (α E 𝕜)
 
 /-- The embedding of Lp simple functions into Lp functions, as a continuous linear map. -/
@@ -698,7 +698,7 @@ end CoeToLp
 
 section Order
 
-variable {G : Type*} [NormedAddCommGroup G]
+variable {G : Type*} [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G]
 
 theorem coeFn_le [PartialOrder G] (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← Lp.coeFn_le]
@@ -792,7 +792,7 @@ end simpleFunc
 
 end Lp
 
-variable [MeasurableSpace α] [NormedAddCommGroup E] {f : α → E} {p : ℝ≥0∞} {μ : Measure α}
+variable [MeasurableSpace α] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] {f : α → E} {p : ℝ≥0∞} {μ : Measure α}
 
 /-- To prove something for an arbitrary `Lp` function in a second countable Borel normed group, it
 suffices to show that
@@ -907,7 +907,7 @@ theorem MemLp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop)
 section Integrable
 
 @[inherit_doc MeasureTheory.Lp.simpleFunc]
-notation:25 α " →₁ₛ[" μ "] " E => @MeasureTheory.Lp.simpleFunc α E _ _ 1 μ
+notation:25 α " →₁ₛ[" μ "] " E => MeasureTheory.Lp.simpleFunc (α := α) E 1 μ
 
 theorem L1.SimpleFunc.toLp_one_eq_toL1 (f : α →ₛ E) (hf : Integrable f μ) :
     (toLp f (memLp_one_iff_integrable.2 hf) : α →₁[μ] E) = hf.toL1 f :=

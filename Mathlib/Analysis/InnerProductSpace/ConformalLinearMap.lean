@@ -18,7 +18,7 @@ public section
 
 
 variable {E F : Type*}
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
 variable [InnerProductSpace ℝ E] [InnerProductSpace ℝ F]
 
 open LinearIsometry ContinuousLinearMap

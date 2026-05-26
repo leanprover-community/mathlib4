@@ -39,7 +39,7 @@ namespace SchwartzMap
 open scoped SchwartzMap
 
 variable [RCLike 𝕜]
-  [NormedAddCommGroup E] [NormedAddCommGroup F]
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
   [InnerProductSpace ℝ E] [NormedSpace ℂ F] [NormedSpace 𝕜 F] [SMulCommClass ℂ 𝕜 F]
   [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
 
@@ -132,7 +132,7 @@ namespace TemperedDistribution
 
 open scoped SchwartzMap
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
   [InnerProductSpace ℝ E] [NormedSpace ℂ F]
   [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
 

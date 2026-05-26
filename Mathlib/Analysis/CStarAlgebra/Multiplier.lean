@@ -66,7 +66,7 @@ universe u v
 
 If `x : 𝓜(𝕜, A)`, then `x.fst` and `x.snd` are what is usually referred to as $L$ and $R$. -/
 structure DoubleCentralizer (𝕜 : Type u) (A : Type v) [NontriviallyNormedField 𝕜]
-    [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A] extends
+    [NormMetric A] [NonUnitalRing A] [IsNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A] extends
     (A →L[𝕜] A) × (A →L[𝕜] A) where
   /-- The centrality condition that the maps linear maps intertwine one another. -/
   central : ∀ x y : A, snd x * y = x * fst y
@@ -78,7 +78,7 @@ open MultiplierAlgebra
 
 @[ext]
 lemma DoubleCentralizer.ext (𝕜 : Type u) (A : Type v) [NontriviallyNormedField 𝕜]
-    [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
+    [NormMetric A] [NonUnitalRing A] [IsNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
     (a b : 𝓜(𝕜, A)) (h : a.toProd = b.toProd) : a = b := by
   cases a
   cases b
@@ -88,7 +88,7 @@ namespace DoubleCentralizer
 
 section NontriviallyNormed
 
-variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NonUnitalNormedRing A]
+variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NormMetric A] [NonUnitalRing A] [IsNormedRing A]
 variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
 
 /-!
@@ -485,11 +485,16 @@ that `𝓜(𝕜, A)` is also a C⋆-algebra. Moreover, in this case, for `a : �
 `‖a‖ = ‖a.fst‖ = ‖a.snd‖`. -/
 
 
-/-- The normed group structure is inherited as the pullback under the ring monomorphism
-`DoubleCentralizer.toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ`. -/
-noncomputable instance : NormedRing 𝓜(𝕜, A) :=
-  NormedRing.induced _ _ (toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ)
+noncomputable instance : NormMetric 𝓜(𝕜, A) :=
+  NormMetric.induced _ _ (toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ)
     (by simpa using toProdMulOpposite_injective)
+
+/-- The normed ring structure is inherited as the pullback under the ring monomorphism
+`DoubleCentralizer.toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ`. -/
+instance : IsNormedRing 𝓜(𝕜, A) :=
+  IsNormedRing.induced _ _ (toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ)
+
+noncomputable example : NormedRing 𝓜(𝕜, A) where
 
 -- even though the definition is actually in terms of `DoubleCentralizer.toProdMulOpposite`, we
 -- choose to see through that here to avoid `MulOpposite.op` appearing.
@@ -580,7 +585,7 @@ end NontriviallyNormed
 section DenselyNormed
 
 variable {𝕜 A : Type*} [DenselyNormedField 𝕜] [StarRing 𝕜]
-variable [NonUnitalNormedRing A] [StarRing A] [CStarRing A]
+variable [NormMetric A] [NonUnitalRing A] [IsNormedRing A] [StarRing A] [CStarRing A]
 variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A] [StarModule 𝕜 A]
 
 instance instCStarRing : CStarRing 𝓜(𝕜, A) where

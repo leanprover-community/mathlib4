@@ -64,7 +64,7 @@ open MeasureTheory Filter
 open scoped NNReal ENNReal
 
 variable {α 𝕜 𝕜' E F : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
-  [NormedAddCommGroup E] [NormedAddCommGroup F]
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
 
 namespace MeasureTheory
 
@@ -75,17 +75,17 @@ The space of equivalence classes of measurable functions for which `eLpNorm f p 
 -/
 
 @[simp]
-theorem eLpNorm_aeeqFun {α E : Type*} [MeasurableSpace α] {μ : Measure α} [NormedAddCommGroup E]
+theorem eLpNorm_aeeqFun {α E : Type*} [MeasurableSpace α] {μ : Measure α} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
     {p : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeasurable f μ) :
     eLpNorm (AEEqFun.mk f hf) p μ = eLpNorm f p μ :=
   eLpNorm_congr_ae (AEEqFun.coeFn_mk _ _)
 
 theorem MemLp.eLpNorm_mk_lt_top {α E : Type*} [MeasurableSpace α] {μ : Measure α}
-    [NormedAddCommGroup E] {p : ℝ≥0∞} {f : α → E} (hfp : MemLp f p μ) :
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] {p : ℝ≥0∞} {f : α → E} (hfp : MemLp f p μ) :
     eLpNorm (AEEqFun.mk f hfp.1) p μ < ∞ := by simp [hfp.2]
 
 /-- Lp space -/
-def Lp {α} (E : Type*) {m : MeasurableSpace α} [NormedAddCommGroup E] (p : ℝ≥0∞)
+def Lp {α} (E : Type*) {m : MeasurableSpace α} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] (p : ℝ≥0∞)
     (μ : Measure α := by volume_tac) : AddSubgroup (α →ₘ[μ] E) where
   carrier := { f | eLpNorm f p μ < ∞ }
   zero_mem' := by simp [eLpNorm_congr_ae AEEqFun.coeFn_zero, eLpNorm_zero]
@@ -371,8 +371,8 @@ theorem norm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ} (hC :
   have := nnnorm_le_of_ae_bound hfC
   rwa [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_rpow] at this
 
-instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E p μ) :=
-  { AddGroupNorm.toNormedAddCommGroup
+instance instNormMetric [hp : Fact (1 ≤ p)] : NormMetric (Lp E p μ) :=
+  { AddGroupNorm.toNormMetric
       { toFun := (norm : Lp E p μ → ℝ)
         map_zero' := norm_zero
         neg' := by simp only [norm_neg, implies_true] -- squeezed for performance reasons
@@ -387,6 +387,10 @@ instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E
     edist := edist
     edist_dist := Lp.edist_dist }
 
+instance instIsNormedAddGroup [hp : Fact (1 ≤ p)] : IsNormedAddGroup (Lp E p μ) where
+
+example [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E p μ) where
+
 -- check no diamond is created
 example [Fact (1 ≤ p)] : PseudoEMetricSpace.toEDist = (Lp.instEDist : EDist (Lp E p μ)) := by
   with_reducible_and_instances rfl
@@ -396,7 +400,7 @@ example [Fact (1 ≤ p)] : SeminormedAddGroup.toNNNorm = (Lp.instNNNorm : NNNorm
 
 section IsBoundedSMul
 
-variable [NormedRing 𝕜] [NormedRing 𝕜'] [Module 𝕜 E] [Module 𝕜' E]
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [NormMetric 𝕜'] [Ring 𝕜'] [IsNormedRing 𝕜'] [Module 𝕜 E] [Module 𝕜' E]
 variable [IsBoundedSMul 𝕜 E] [IsBoundedSMul 𝕜' E]
 
 theorem const_smul_mem_Lp (c : 𝕜) (f : Lp E p μ) : c • (f : α →ₘ[μ] E) ∈ Lp E p μ := by
@@ -451,7 +455,7 @@ end Lp
 
 namespace MemLp
 
-variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 theorem toLp_const_smul {f : α → E} (c : 𝕜) (hf : MemLp f p μ) :
     (hf.const_smul c).toLp (c • f) = c • hf.toLp f :=
@@ -603,7 +607,7 @@ theorem compMeasurePreserving_iterate {f : α → α} (hf : MeasurePreserving f 
     nth_rewrite 1 [add_comm n 1]
     simp [Function.iterate_add, h, compMeasurePreserving_comp (hf.iterate n) hf]
 
-variable (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+variable (𝕜 : Type*) [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 /-- `MeasureTheory.Lp.compMeasurePreserving` as a linear map. -/
 @[simps]
@@ -639,7 +643,7 @@ section Composition
 variable {g : E → F} {c : ℝ≥0}
 
 theorem LipschitzWith.comp_memLp {α E F} {K} [MeasurableSpace α] {μ : Measure α}
-    [NormedAddCommGroup E] [NormedAddCommGroup F] {f : α → E} {g : E → F} (hg : LipschitzWith K g)
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] {f : α → E} {g : E → F} (hg : LipschitzWith K g)
     (g0 : g 0 = 0) (hL : MemLp f p μ) : MemLp (g ∘ f) p μ :=
   have : ∀ x, ‖g (f x)‖ ≤ K * ‖f x‖ := fun x ↦ by
     -- TODO: add `LipschitzWith.nnnorm_sub_le` and `LipschitzWith.nnnorm_le`
@@ -647,7 +651,7 @@ theorem LipschitzWith.comp_memLp {α E F} {K} [MeasurableSpace α] {μ : Measure
   hL.of_le_mul (hg.continuous.comp_aestronglyMeasurable hL.1) (Eventually.of_forall this)
 
 theorem MeasureTheory.MemLp.of_comp_antilipschitzWith {α E F} {K'} [MeasurableSpace α]
-    {μ : Measure α} [NormedAddCommGroup E] [NormedAddCommGroup F] {f : α → E} {g : E → F}
+    {μ : Measure α} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] {f : α → E} {g : E → F}
     (hL : MemLp (g ∘ f) p μ) (hg : UniformContinuous g) (hg' : AntilipschitzWith K' g)
     (g0 : g 0 = 0) : MemLp f p μ := by
   have A : ∀ x, ‖f x‖ ≤ K' * ‖g (f x)‖ := by
@@ -668,7 +672,7 @@ lemma MeasureTheory.MemLp.continuousLinearMap_comp [NontriviallyNormedField 𝕜
 namespace LipschitzWith
 
 theorem memLp_comp_iff_of_antilipschitz {α E F} {K K'} [MeasurableSpace α] {μ : Measure α}
-    [NormedAddCommGroup E] [NormedAddCommGroup F] {f : α → E} {g : E → F} (hg : LipschitzWith K g)
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] {f : α → E} {g : E → F} (hg : LipschitzWith K g)
     (hg' : AntilipschitzWith K' g) (g0 : g 0 = 0) : MemLp (g ∘ f) p μ ↔ MemLp f p μ :=
   ⟨fun h => h.of_comp_antilipschitzWith hg.uniformContinuous hg' g0, fun h => hg.comp_memLp g0 h⟩
 
@@ -761,7 +765,7 @@ theorem add_compLp (L L' : E →SL[σ] F) (f : Lp E p μ) :
   grw [Lp.coeFn_add, coeFn_compLp', coeFn_compLp', coeFn_compLp']
   rfl
 
-theorem smul_compLp {𝕜''} [NormedRing 𝕜''] [Module 𝕜'' F] [IsBoundedSMul 𝕜'' F]
+theorem smul_compLp {𝕜''} [NormMetric 𝕜''] [Ring 𝕜''] [IsNormedRing 𝕜''] [Module 𝕜'' F] [IsBoundedSMul 𝕜'' F]
     [SMulCommClass 𝕜' 𝕜'' F] (c : 𝕜'') (L : E →SL[σ] F) (f : Lp E p μ) :
     (c • L).compLp f = c • L.compLp f := by
   ext1
@@ -807,7 +811,7 @@ theorem coeFn_compLpL [Fact (1 ≤ p)] (L : E →SL[σ] F) (f : Lp E p μ) :
 theorem add_compLpL [Fact (1 ≤ p)] (L L' : E →SL[σ] F) :
     (L + L').compLpL p μ = L.compLpL p μ + L'.compLpL p μ := by ext1 f; exact add_compLp L L' f
 
-theorem smul_compLpL [Fact (1 ≤ p)] {𝕜''} [NormedRing 𝕜''] [Module 𝕜'' F] [IsBoundedSMul 𝕜'' F]
+theorem smul_compLpL [Fact (1 ≤ p)] {𝕜''} [NormMetric 𝕜''] [Ring 𝕜''] [IsNormedRing 𝕜''] [Module 𝕜'' F] [IsBoundedSMul 𝕜'' F]
     [SMulCommClass 𝕜' 𝕜'' F] (c : 𝕜'') (L : E →SL[σ] F) :
     (c • L).compLpL p μ = c • L.compLpL p μ := by
   ext1 f; exact smul_compLp c L f
@@ -896,7 +900,7 @@ theorem meas_ge_le_mul_pow_enorm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_t
 
 section Star
 
-variable {R : Type*} [NormedAddCommGroup R] [StarAddMonoid R] [NormedStarGroup R]
+variable {R : Type*} [NormMetric R] [AddCommGroup R] [IsNormedAddGroup R] [StarAddMonoid R] [NormedStarGroup R]
 
 protected noncomputable instance {p : ℝ≥0∞} : Star (Lp R p μ) where
   star f := ⟨star (f : α →ₘ[μ] R),

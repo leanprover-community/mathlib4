@@ -22,7 +22,7 @@ C⋆-algebra that involve the norm.
 
 public section
 
-variable {A : Type*} [NonUnitalNormedRing A] [NormedSpace ℝ A] [SMulCommClass ℝ A A]
+variable {A : Type*} [NormMetric A] [NonUnitalRing A] [IsNormedRing A] [NormedSpace ℝ A] [SMulCommClass ℝ A A]
   [IsScalarTower ℝ A A] [StarRing A]
   [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 

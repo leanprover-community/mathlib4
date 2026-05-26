@@ -25,7 +25,7 @@ open scoped ENNReal
 
 namespace DomMulAct
 
-variable {M N α E : Type*} [MeasurableSpace α] [NormedAddCommGroup E]
+variable {M N α E : Type*} [MeasurableSpace α] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
   {μ : MeasureTheory.Measure α} {p : ℝ≥0∞}
 
 section SMul
@@ -66,11 +66,11 @@ instance [SMul N α] [SMulCommClass M N α] [SMulInvariantMeasure N α μ] [Meas
     SMulCommClass Mᵈᵐᵃ Nᵈᵐᵃ (Lp E p μ) :=
   Subtype.val_injective.smulCommClass (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
-instance {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] :
+instance {𝕜 : Type*} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] :
     SMulCommClass Mᵈᵐᵃ 𝕜 (Lp E p μ) :=
   Subtype.val_injective.smulCommClass (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
-instance {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] :
+instance {𝕜 : Type*} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] :
     SMulCommClass 𝕜 Mᵈᵐᵃ (Lp E p μ) :=
   .symm _ _ _
 

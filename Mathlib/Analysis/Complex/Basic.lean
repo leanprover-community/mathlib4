@@ -69,7 +69,7 @@ instance {R : Type*} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ
   norm_smul_le r x := by
     rw [← algebraMap_smul ℝ r x, real_smul, norm_mul, norm_real, norm_algebraMap']
 
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℂ E]
 
 -- see Note [lower instance priority]
 /-- The module structure from `Module.complexToReal` is a normed space. -/
@@ -78,7 +78,7 @@ instance (priority := 900) _root_.NormedSpace.complexToReal : NormedSpace ℝ E 
 
 -- see Note [lower instance priority]
 /-- The algebra structure from `Algebra.complexToReal` is a normed algebra. -/
-instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [SeminormedRing A]
+instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [NormPseudoMetric A] [Ring A] [IsNormedRing A]
     [NormedAlgebra ℂ A] : NormedAlgebra ℝ A :=
   NormedAlgebra.restrictScalars ℝ ℂ A
 
@@ -707,7 +707,7 @@ end Complex
 
 section realPart_imaginaryPart
 
-variable {A : Type*} [SeminormedAddCommGroup A] [StarAddMonoid A] [NormedSpace ℂ A] [StarModule ℂ A]
+variable {A : Type*} [NormPseudoMetric A] [AddCommGroup A] [IsNormedAddGroup A] [StarAddMonoid A] [NormedSpace ℂ A] [StarModule ℂ A]
   [NormedStarGroup A]
 
 lemma realPart.norm_le (x : A) : ‖realPart x‖ ≤ ‖x‖ := by

@@ -108,25 +108,48 @@ private def PosSemidef.preInnerProductSpace {M : Matrix n n 𝕜} (hM : M.PosSem
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- A positive semi-definite matrix `M` induces a norm `‖x‖ = sqrt (re xᴴMx)`. -/
+noncomputable abbrev toNormPseudoMetric (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
+    NormPseudoMetric (n → 𝕜) :=
+  @InnerProductSpace.Core.toNormPseudoMetric _ _ _ _ _ hM.preInnerProductSpace
+
+lemma toIsNormedAddGroup (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
+    letI := M.toNormPseudoMetric hM
+    IsNormedAddGroup (n → 𝕜) :=
+  @InnerProductSpace.Core.toIsNormedAddGroup _ _ _ _ _ hM.preInnerProductSpace
+
+set_option linter.deprecated false in
+/-- A positive semi-definite matrix `M` induces a norm `‖x‖ = sqrt (re xᴴMx)`. -/
+@[deprecated toIsNormedAddGroup (since := "2026-05-17")]
 noncomputable abbrev toSeminormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
-    SeminormedAddCommGroup (n → 𝕜) :=
-  @InnerProductSpace.Core.toSeminormedAddCommGroup _ _ _ _ _ hM.preInnerProductSpace
+    SeminormedAddCommGroup (n → 𝕜) where
+  toNormPseudoMetric := M.toNormPseudoMetric hM
+  toIsNormedAddGroup := M.toIsNormedAddGroup hM
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- A positive definite matrix `M` induces a norm `‖x‖ = sqrt (re xᴴMx)`. -/
-noncomputable abbrev toNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDef) :
-    NormedAddCommGroup (n → 𝕜) :=
-  @InnerProductSpace.Core.toNormedAddCommGroup _ _ _ _ _
+noncomputable abbrev toNormMetric (M : Matrix n n 𝕜) (hM : M.PosDef) :
+    NormMetric (n → 𝕜) :=
+  @InnerProductSpace.Core.toNormMetric _ _ _ _ _
   { __ := hM.posSemidef.preInnerProductSpace
     definite x (hx : _ ⬝ᵥ _ = 0) := by
       by_contra! h
       simpa [hx, lt_irrefl, dotProduct_comm] using hM.re_dotProduct_pos h }
 
+set_option linter.deprecated false in
+/-- A positive definite matrix `M` induces a norm `‖x‖ = sqrt (re xᴴMx)`. -/
+@[deprecated toIsNormedAddGroup (since := "2026-05-17")]
+noncomputable abbrev toNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDef) :
+    NormedAddCommGroup (n → 𝕜) where
+  toNormMetric := M.toNormMetric hM
+  toIsNormedAddGroup := M.toIsNormedAddGroup hM.posSemidef
+
 /-- A positive semi-definite matrix `M` induces an inner product `⟪x, y⟫ = xᴴMy`. -/
 @[implicit_reducible]
-def toInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
-    @InnerProductSpace 𝕜 (n → 𝕜) _ (M.toSeminormedAddCommGroup hM) :=
+noncomputable def toInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
+    letI := M.toNormPseudoMetric hM
+    haveI := M.toIsNormedAddGroup hM
+    InnerProductSpace 𝕜 (n → 𝕜) :=
   InnerProductSpace.ofCore _
 
 end Matrix

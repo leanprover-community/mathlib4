@@ -25,7 +25,7 @@ variable {X : Type*} {mX : MeasurableSpace X} {μ : Measure X} {p q : ℝ≥0∞
 
 section Pi
 
-variable {ι : Type*} [Fintype ι] {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] {f : X → PiLp q E}
+variable {ι : Type*} [Fintype ι] {E : ι → Type*} [∀ i, NormMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] {f : X → PiLp q E}
 
 lemma memLp_piLp_iff : MemLp f p μ ↔ ∀ i, MemLp (f · i) p μ := by
   simp_rw [← memLp_pi_iff, ← Function.comp_apply (f := WithLp.ofLp)]
@@ -51,7 +51,7 @@ end Pi
 
 section Prod
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] {f : X → WithLp q (E × F)}
+variable {E F : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] {f : X → WithLp q (E × F)}
 
 lemma memLp_prodLp_iff :
     MemLp f p μ ↔ MemLp (fun x ↦ (f x).fst) p μ ∧ MemLp (fun x ↦ (f x).snd) p μ := by

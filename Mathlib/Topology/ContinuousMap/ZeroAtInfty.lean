@@ -448,16 +448,23 @@ field `𝕜` whenever `β` is as well.
 
 section NormedSpace
 
-noncomputable instance instSeminormedAddCommGroup [SeminormedAddCommGroup β] :
-    SeminormedAddCommGroup C₀(α, β) := fast_instance%
-  SeminormedAddCommGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
+noncomputable instance instNormPseudoMetric [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] :
+    NormPseudoMetric C₀(α, β) := fast_instance%
+  .induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
 
-noncomputable instance instNormedAddCommGroup [NormedAddCommGroup β] :
-    NormedAddCommGroup C₀(α, β) := fast_instance%
-  NormedAddCommGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
-    (toBCF_injective α β)
+instance instIsNormedAddGroup [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] :
+    IsNormedAddGroup C₀(α, β) :=
+  .induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
 
-variable [SeminormedAddCommGroup β] {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 β]
+noncomputable example [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] : SeminormedAddCommGroup C₀(α, β) where
+
+noncomputable instance instNormMetric [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] :
+    NormMetric C₀(α, β) := fast_instance%
+  .induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β) (toBCF_injective α β)
+
+noncomputable example [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] : NormedAddCommGroup C₀(α, β) where
+
+variable [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 β]
 
 @[simp]
 theorem norm_toBCF_eq_norm {f : C₀(α, β)} : ‖f.toBCF‖ = ‖f‖ :=
@@ -470,22 +477,17 @@ end NormedSpace
 
 section NormedRing
 
-noncomputable instance instNonUnitalSeminormedRing [NonUnitalSeminormedRing β] :
-    NonUnitalSeminormedRing C₀(α, β) :=
-  { instNonUnitalRing, instSeminormedAddCommGroup with
-    norm_mul_le f g := norm_mul_le f.toBCF g.toBCF }
+instance instIsNormedRing [NormPseudoMetric β] [NonUnitalRing β] [IsNormedRing β] :
+    IsNormedRing C₀(α, β) where
+  norm_mul_le f g := norm_mul_le f.toBCF g.toBCF
 
-noncomputable instance instNonUnitalNormedRing [NonUnitalNormedRing β] :
-    NonUnitalNormedRing C₀(α, β) :=
-  { instNonUnitalSeminormedRing, instNormedAddCommGroup with }
+noncomputable example [NormPseudoMetric β] [NonUnitalRing β] [IsNormedRing β] : NonUnitalSeminormedRing C₀(α, β) where
 
-noncomputable instance instNonUnitalSeminormedCommRing [NonUnitalSeminormedCommRing β] :
-    NonUnitalSeminormedCommRing C₀(α, β) :=
-  { instNonUnitalSeminormedRing, instNonUnitalCommRing with }
+noncomputable example [NormMetric β] [NonUnitalRing β] [IsNormedRing β] : NonUnitalNormedRing C₀(α, β) where
 
-noncomputable instance instNonUnitalNormedCommRing [NonUnitalNormedCommRing β] :
-    NonUnitalNormedCommRing C₀(α, β) :=
-  { instNonUnitalNormedRing, instNonUnitalCommRing with }
+noncomputable example [NormPseudoMetric β] [NonUnitalCommRing β] [IsNormedRing β] : NonUnitalSeminormedCommRing C₀(α, β) where
+
+noncomputable example [NormMetric β] [NonUnitalCommRing β] [IsNormedRing β] : NonUnitalNormedCommRing C₀(α, β) where
 
 end NormedRing
 
@@ -528,7 +530,7 @@ end Star
 
 section NormedStar
 
-variable [NormedAddCommGroup β] [StarAddMonoid β] [NormedStarGroup β]
+variable [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] [StarAddMonoid β] [NormedStarGroup β]
 
 instance instNormedStarGroup : NormedStarGroup C₀(α, β) where
   norm_star_le f := (norm_star f.toBCF :).le
@@ -558,7 +560,7 @@ end StarRing
 
 section CStarRing
 
-instance instCStarRing [NonUnitalNormedRing β] [StarRing β] [CStarRing β] : CStarRing C₀(α, β) where
+instance instCStarRing [NormMetric β] [NonUnitalRing β] [IsNormedRing β] [StarRing β] [CStarRing β] : CStarRing C₀(α, β) where
   norm_mul_self_le f := CStarRing.norm_mul_self_le (x := f.toBCF)
 
 end CStarRing

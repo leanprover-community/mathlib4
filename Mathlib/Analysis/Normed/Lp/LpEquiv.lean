@@ -47,7 +47,7 @@ open scoped ENNReal
 section LpPiLp
 
 
-variable {α : Type*} {E : α → Type*} [∀ i, NormedAddCommGroup (E i)] {p : ℝ≥0∞}
+variable {α : Type*} {E : α → Type*} [∀ i, NormMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] {p : ℝ≥0∞}
 
 section Finite
 
@@ -123,8 +123,8 @@ open scoped BoundedContinuousFunction
 open BoundedContinuousFunction
 
 variable {α E R A : Type*} (𝕜 : Type*) [TopologicalSpace α] [DiscreteTopology α]
-variable [NormedRing A] [NormOneClass A] [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 A]
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NonUnitalNormedRing R]
+variable [NormMetric A] [Ring A] [IsNormedRing A] [NormOneClass A] [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 A]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [NormMetric R] [NonUnitalRing R] [IsNormedRing R]
 
 section NormedAddCommGroup
 
@@ -164,7 +164,7 @@ section RingAlgebra
 
 /-- The canonical map between `lp (fun _ : α ↦ R) ∞` and `α →ᵇ R` as a `RingEquiv`. -/
 noncomputable def RingEquiv.lpBCF : lp (fun _ : α ↦ R) ∞ ≃+* (α →ᵇ R) :=
-  { @AddEquiv.lpBCF _ R _ _ _ with
+  { AddEquiv.lpBCF (E := R) with
     map_mul' := fun _f _g => rfl }
 
 theorem coe_ringEquiv_lpBCF (f : lp (fun _ : α ↦ R) ∞) : (RingEquiv.lpBCF f : α → R) = f :=

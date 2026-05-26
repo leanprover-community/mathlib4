@@ -25,8 +25,8 @@ open MeasureTheory RCLike
 open scoped ENNReal NNReal
 
 variable {X Y E F Fₗ : Type*} [MeasurableSpace X] {μ : Measure X} {𝕜 𝕜' : Type*} [RCLike 𝕜]
-  [RCLike 𝕜'] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜' F]
-  [NormedAddCommGroup Fₗ] [NormedSpace 𝕜 Fₗ] {p : ℝ≥0∞}
+  [RCLike 𝕜'] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜' F]
+  [NormMetric Fₗ] [AddCommGroup Fₗ] [IsNormedAddGroup Fₗ] [NormedSpace 𝕜 Fₗ] {p : ℝ≥0∞}
 
 namespace ContinuousLinearMap
 
@@ -69,7 +69,7 @@ theorem integral_comp_commSL [CompleteSpace E] (hσ : ∀ (r : ℝ) (x : 𝕜), 
 theorem integral_comp_comm [CompleteSpace E] (L : E →L[𝕜] Fₗ) {φ : X → E} (φ_int : Integrable φ μ) :
     ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := integral_comp_commSL (by simp) L φ_int
 
-theorem integral_apply {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {φ : X → H →L[𝕜] E}
+theorem integral_apply {H : Type*} [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] [NormedSpace 𝕜 H] {φ : X → H →L[𝕜] E}
     (φ_int : Integrable φ μ) (v : H) : (∫ x, φ x ∂μ) v = ∫ x, φ x v ∂μ := by
   by_cases hE : CompleteSpace E
   · exact ((ContinuousLinearMap.apply 𝕜 E v).integral_comp_comm φ_int).symm
@@ -80,7 +80,7 @@ theorem integral_apply {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {
       simp [integral, hE, this]
 
 theorem _root_.ContinuousMultilinearMap.integral_apply {ι : Type*} [Fintype ι] {M : ι → Type*}
-    [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)]
+    [∀ i, NormMetric (M i)] [∀ i, AddCommGroup (M i)] [∀ i, IsNormedAddGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)]
     {φ : X → ContinuousMultilinearMap 𝕜 M E} (φ_int : Integrable φ μ) (m : ∀ i, M i) :
     (∫ x, φ x ∂μ) m = ∫ x, φ x m ∂μ := by
   by_cases hE : CompleteSpace E
@@ -143,7 +143,7 @@ lemma ContinuousMap.integral_apply [NormedSpace ℝ E] [CompleteSpace E] {f : X 
     _ = _ := rfl
 
 open scoped ContinuousMapZero in
-theorem ContinuousMapZero.integral_apply {R : Type*} [NormedCommRing R] [Zero Y]
+theorem ContinuousMapZero.integral_apply {R : Type*} [NormMetric R] [CommRing R] [IsNormedRing R] [Zero Y]
     [NormedAlgebra ℝ R] [CompleteSpace R] {f : X → C(Y, R)₀}
     (hf : MeasureTheory.Integrable f μ) (y : Y) :
     (∫ (x : X), f x ∂μ) y = ∫ (x : X), (f x) y ∂μ := by
@@ -230,7 +230,7 @@ theorem integral_smul_const {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [C
 Note that the integrability hypothesis in the two lemmas below is necessary: consider the case
 where `A = ℝ × ℝ`, `c = (1,0)`, and `f` is only integrable on the first component.
 -/
-lemma integral_const_mul_of_integrable {A : Type*} [NonUnitalNormedRing A] [NormedSpace ℝ A]
+lemma integral_const_mul_of_integrable {A : Type*} [NormMetric A] [NonUnitalRing A] [IsNormedRing A] [NormedSpace ℝ A]
     [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {f : X → A} (hf : Integrable f μ) {c : A} :
     ∫ x, c * f x ∂μ = c * ∫ x, f x ∂μ := by
   by_cases hA : CompleteSpace A
@@ -238,7 +238,7 @@ lemma integral_const_mul_of_integrable {A : Type*} [NonUnitalNormedRing A] [Norm
     rw [ContinuousLinearMap.integral_comp_comm _ hf]
   · simp [integral, hA]
 
-lemma integral_mul_const_of_integrable {A : Type*} [NonUnitalNormedRing A] [NormedSpace ℝ A]
+lemma integral_mul_const_of_integrable {A : Type*} [NormMetric A] [NonUnitalRing A] [IsNormedRing A] [NormedSpace ℝ A]
     [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {f : X → A} (hf : Integrable f μ) {c : A} :
     ∫ x, f x * c ∂μ = (∫ x, f x ∂μ) * c := by
   by_cases hA : CompleteSpace A

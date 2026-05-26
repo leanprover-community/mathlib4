@@ -39,13 +39,13 @@ universe u
 open scoped ContDiff
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-  {EM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM]
+  {EM : Type*} [NormMetric EM] [AddCommGroup EM] [IsNormedAddGroup EM] [NormedSpace 𝕜 EM]
   {HM : Type*} [TopologicalSpace HM] (IM : ModelWithCorners 𝕜 EM HM)
   {M : Type u} [TopologicalSpace M] [ChartedSpace HM M]
-  {EN : Type*} [NormedAddCommGroup EN] [NormedSpace 𝕜 EN]
+  {EN : Type*} [NormMetric EN] [AddCommGroup EN] [IsNormedAddGroup EN] [NormedSpace 𝕜 EN]
   {HN : Type*} [TopologicalSpace HN] (IN : ModelWithCorners 𝕜 EN HN)
   {N : Type u} [TopologicalSpace N] [ChartedSpace HN N]
-  {EP : Type*} [NormedAddCommGroup EP] [NormedSpace 𝕜 EP]
+  {EP : Type*} [NormMetric EP] [AddCommGroup EP] [IsNormedAddGroup EP] [NormedSpace 𝕜 EP]
   {HP : Type*} [TopologicalSpace HP] (IP : ModelWithCorners 𝕜 EP HP)
   {P : Type u} [TopologicalSpace P] [ChartedSpace HP P]
 

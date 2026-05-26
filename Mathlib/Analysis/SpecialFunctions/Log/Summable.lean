@@ -129,7 +129,7 @@ lemma Multipliable.eventually_bounded_finsetProd {v : ι → ℝ} (hv : Multipli
 @[deprecated (since := "2026-04-08")]
 alias Multipliable.eventually_bounded_finset_prod := Multipliable.eventually_bounded_finsetProd
 
-variable {R : Type*} [NormedCommRing R] [NormOneClass R] {f : ι → R}
+variable {R : Type*} [NormMetric R] [CommRing R] [IsNormedRing R] [NormOneClass R] {f : ι → R}
 
 lemma multipliable_norm_one_add_of_summable_norm (hf : Summable fun i ↦ ‖f i‖) :
     Multipliable fun i ↦ ‖1 + f i‖ := by

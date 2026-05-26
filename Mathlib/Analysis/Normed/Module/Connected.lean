@@ -130,7 +130,7 @@ end TopologicalVectorSpace
 
 section NormedSpace
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
 
 section Ball
 

@@ -30,7 +30,7 @@ namespace Real
 /-- The type of angles -/
 def Angle : Type :=
   AddCircle (2 * π)
-deriving NormedAddCommGroup, Inhabited
+deriving AddCommGroup, NormMetric, IsNormedAddGroup, Inhabited
 
 namespace Angle
 

@@ -20,7 +20,7 @@ open scoped ENNReal
 namespace MeasureTheory
 
 variable {α F : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ : Measure α}
-  [NormedAddCommGroup F] {f : α → F}
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] {f : α → F}
 
 section Lp
 
@@ -31,7 +31,7 @@ In this section we show inequalities on the norm.
 
 section IsBoundedSMul
 
-variable {𝕜 : Type*} [NormedRing 𝕜] [MulActionWithZero 𝕜 F] [IsBoundedSMul 𝕜 F] {c : 𝕜}
+variable {𝕜 : Type*} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [MulActionWithZero 𝕜 F] [IsBoundedSMul 𝕜 F] {c : 𝕜}
 
 theorem eLpNorm'_const_smul_le (hq : 0 < q) : eLpNorm' (c • f) q μ ≤ ‖c‖ₑ * eLpNorm' f q μ :=
   eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul (Eventually.of_forall fun _ => nnnorm_smul_le ..) hq
@@ -58,8 +58,8 @@ end IsBoundedSMul
 
 section ENormSMulClass
 
-variable {𝕜 : Type*} [NormedRing 𝕜]
-  {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε] [SMul 𝕜 ε] [ENormSMulClass 𝕜 ε]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜]
+  {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε] [AddMonoid ε] [IsESeminormedAddMonoid ε] [SMul 𝕜 ε] [ENormSMulClass 𝕜 ε]
   {c : 𝕜} {f : α → ε}
 
 theorem eLpNorm'_const_smul_le' (hq : 0 < q) : eLpNorm' (c • f) q μ ≤ ‖c‖ₑ * eLpNorm' f q μ :=

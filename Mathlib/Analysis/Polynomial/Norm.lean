@@ -42,7 +42,7 @@ the polynomial's value on the unit circle.
 
 @[expose] public section supnorm_seminorm
 
-variable {A : Type*} [SeminormedRing A] (p : Polynomial A)
+variable {A : Type*} [NormPseudoMetric A] [Ring A] [IsNormedRing A] (p : Polynomial A)
 
 namespace Polynomial
 
@@ -100,7 +100,7 @@ end supnorm_seminorm
 
 namespace Polynomial
 
-variable {A : Type*} [NormedRing A] (p : Polynomial A)
+variable {A : Type*} [NormMetric A] [Ring A] [IsNormedRing A] (p : Polynomial A)
 
 lemma supNorm_eq_zero_iff : p.supNorm = 0 ↔ p = 0 := gaussNorm_eq_zero_iff _ _ (by simp) (by simp)
 

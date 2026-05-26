@@ -260,7 +260,7 @@ alias continuous_convexComboPair' := continuous_convexCombPair'
 
 attribute [local instance] AddTorsor.toConvexSpace in
 instance (priority := low) {V P : Type*}
-    [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P] :
+    [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P] :
     IsConvexDist P where
   dist_iConvexComb_fst_snd_le f := by
     let p : P := Nonempty.some inferInstance

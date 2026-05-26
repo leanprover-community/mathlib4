@@ -15,7 +15,7 @@ public import Mathlib.Data.Complex.Basic
 
 This file defines inner product spaces.
 Hilbert spaces can be obtained using the set of assumptions
-`[RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]`.
+`[RCLike 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]`.
 For convenience, a variable alias `HilbertSpace` is provided so that one can write
 `variable? [HilbertSpace 𝕜 E]` and get this as a suggestion.
 
@@ -103,7 +103,7 @@ Note that `NormedSpace` does not assume that `‖x‖=0` implies `x=0` (it is ra
 
 To construct a seminorm from an inner product, see `PreInnerProductSpace.ofCore`.
 -/
-class InnerProductSpace (𝕜 : Type*) (E : Type*) [RCLike 𝕜] [SeminormedAddCommGroup E] extends
+class InnerProductSpace (𝕜 : Type*) (E : Type*) [RCLike 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] extends
     NormedSpace 𝕜 E, Inner 𝕜 E where
   /-- The inner product induces the norm. -/
   norm_sq_eq_re_inner : ∀ x : E, ‖x‖ ^ 2 = re (inner x x)
@@ -171,7 +171,7 @@ instance (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
 by `PreInnerProductSpace.Core.norm` is propositionally but not definitionally equal to the original
 norm. -/
 @[implicit_reducible]
-def PreInnerProductSpace.toCore [SeminormedAddCommGroup E] [c : InnerProductSpace 𝕜 E] :
+def PreInnerProductSpace.toCore [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [c : InnerProductSpace 𝕜 E] :
     PreInnerProductSpace.Core 𝕜 E where
   __ := c
   re_inner_nonneg x := by rw [← InnerProductSpace.norm_sq_eq_re_inner]; apply sq_nonneg
@@ -181,7 +181,7 @@ def PreInnerProductSpace.toCore [SeminormedAddCommGroup E] [c : InnerProductSpac
 `InnerProductSpace.Core.norm` is propositionally but not definitionally equal to the original
 norm. -/
 @[implicit_reducible]
-def InnerProductSpace.toCore [NormedAddCommGroup E] [c : InnerProductSpace 𝕜 E] :
+def InnerProductSpace.toCore [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [c : InnerProductSpace 𝕜 E] :
     InnerProductSpace.Core 𝕜 E :=
   { c with
     re_inner_nonneg := fun x => by
@@ -391,10 +391,10 @@ theorem norm_inner_le_norm (x y : F) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ :=
       _ ≤ re ⟪x, x⟫ * re ⟪y, y⟫ := inner_mul_inner_self_le x y
       _ = ‖x‖ * ‖y‖ * (‖x‖ * ‖y‖) := by simp only [inner_self_eq_norm_mul_norm]; ring
 
-/-- Seminormed group structure constructed from a `PreInnerProductSpace.Core` structure -/
+/-- `NormPseudoMetric` structure constructed from a `PreInnerProductSpace.Core` structure -/
 @[instance_reducible]
-def toSeminormedAddCommGroup : SeminormedAddCommGroup F :=
-  AddGroupSeminorm.toSeminormedAddCommGroup
+def toNormPseudoMetric : NormPseudoMetric F :=
+  AddGroupSeminorm.toNormPseudoMetric
     { toFun := fun x => √(re ⟪x, x⟫)
       map_zero' := by simp only [sqrt_zero, inner_zero_right, map_zero]
       neg' := fun x => by simp only [inner_neg_left, neg_neg, inner_neg_right]
@@ -408,7 +408,16 @@ def toSeminormedAddCommGroup : SeminormedAddCommGroup F :=
           linarith
         exact nonneg_le_nonneg_of_sq_le_sq (add_nonneg (sqrt_nonneg _) (sqrt_nonneg _)) this }
 
-attribute [local instance] toSeminormedAddCommGroup
+attribute [local instance] toNormPseudoMetric
+
+lemma toIsNormedAddGroup : IsNormedAddGroup F where
+
+attribute [local instance] toIsNormedAddGroup
+
+set_option linter.deprecated false in
+/-- Seminormed group structure constructed from a `PreInnerProductSpace.Core` structure -/
+@[deprecated toIsNormedAddGroup (since := "2026-05-17")]
+def toSeminormedAddCommGroup : SeminormedAddCommGroup F where
 
 /-- Normed space (which is actually a seminorm in general) structure constructed from a
 `PreInnerProductSpace.Core` structure -/
@@ -464,10 +473,12 @@ theorem inner_self_ne_zero {x : F} : ⟪x, x⟫ ≠ 0 ↔ x ≠ 0 :=
 
 attribute [local instance] toNorm
 
-/-- Normed group structure constructed from an `InnerProductSpace.Core` structure -/
+section
+
+/-- `NormMetric` structure constructed from a `PreInnerProductSpace.Core` structure -/
 @[instance_reducible]
-def toNormedAddCommGroup : NormedAddCommGroup F :=
-  AddGroupNorm.toNormedAddCommGroup
+def toNormMetric : NormMetric F :=
+  AddGroupNorm.toNormMetric
     { toFun := fun x => √(re ⟪x, x⟫)
       map_zero' := by simp only [sqrt_zero, inner_zero_right, map_zero]
       neg' := fun x => by simp only [inner_neg_left, neg_neg, inner_neg_right]
@@ -483,9 +494,14 @@ def toNormedAddCommGroup : NormedAddCommGroup F :=
       eq_zero_of_map_eq_zero' := fun _ hx =>
         normSq_eq_zero.1 <| (sqrt_eq_zero inner_self_nonneg).1 hx }
 
-section
+attribute [local instance] toNormMetric
 
-attribute [local instance] toNormedAddCommGroup
+attribute [local instance] toIsNormedAddGroup
+
+set_option linter.deprecated false in
+/-- Normed group structure constructed from an `InnerProductSpace.Core` structure -/
+@[deprecated toIsNormedAddGroup (since := "2026-05-17")]
+def toNormedAddCommGroup : NormedAddCommGroup F where
 
 omit cd in
 /-- Normed space core structure constructed from an `InnerProductSpace.Core` structure -/
@@ -506,9 +522,10 @@ lemma topology_eq
     [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
-    tF = cd.toNormedAddCommGroup.toMetricSpace.toUniformSpace.toTopologicalSpace := by
-  let p : Seminorm 𝕜 F := @normSeminorm 𝕜 F _ cd.toNormedAddCommGroup.toSeminormedAddCommGroup
-    InnerProductSpace.Core.toNormedSpace
+    tF = cd.toNormMetric.toMetricSpace.toUniformSpace.toTopologicalSpace := by
+  let : NormMetric F := cd.toNormMetric
+  have : IsNormedAddGroup F := InnerProductSpace.Core.toIsNormedAddGroup
+  let p : Seminorm 𝕜 F := @normSeminorm 𝕜 F _ _ _ _ InnerProductSpace.Core.toNormedSpace
   suffices WithSeminorms (fun (i : Fin 1) ↦ p) by
     rw [(SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _).1 this]
     simp
@@ -527,14 +544,35 @@ lemma topology_eq
     exact Iio_mem_nhds (by positivity)
   exact A B
 
-/-- Normed space structure constructed from an `InnerProductSpace.Core` structure, adjusting the
+/-- `NormMetric` structure constructed from an `InnerProductSpace.Core` structure, adjusting the
 topology to make sure it is defeq to an already existing topology. -/
-@[reducible] def toNormedAddCommGroupOfTopology
+@[reducible] def toNormMetricOfTopology
     [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
-    NormedAddCommGroup F :=
-  NormedAddCommGroup.ofCoreReplaceTopology cd.toNormedSpaceCore (cd.topology_eq h h')
+    NormMetric F :=
+  .ofCoreReplaceTopology cd.toNormedSpaceCore (cd.topology_eq h h')
+
+lemma toIsNormedAddGroupOfTopology
+    [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+    (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
+    (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
+    letI := toNormMetricOfTopology h h'
+    IsNormedAddGroup F :=
+  letI := toNormMetricOfTopology h h'
+  {}
+
+set_option linter.deprecated false in
+/-- Normed space structure constructed from an `InnerProductSpace.Core` structure, adjusting the
+topology to make sure it is defeq to an already existing topology. -/
+@[deprecated toIsNormedAddGroupOfTopology (since := "2026-05-17"), reducible]
+def toNormedAddCommGroupOfTopology
+    [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+    (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
+    (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
+    NormedAddCommGroup F where
+  toNormMetric := toNormMetricOfTopology h h'
+  toIsNormedAddGroup := toIsNormedAddGroupOfTopology h h'
 
 /-- Normed space structure constructed from an `InnerProductSpace.Core` structure, adjusting the
 topology to make sure it is defeq to an already existing topology. -/
@@ -542,9 +580,11 @@ topology to make sure it is defeq to an already existing topology. -/
     [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
-    letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h';
+    letI : NormMetric F := cd.toNormMetricOfTopology h h'
+    haveI : IsNormedAddGroup F := cd.toIsNormedAddGroupOfTopology h h'
     NormedSpace 𝕜 F :=
-  letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h'
+  letI : NormMetric F := cd.toNormMetricOfTopology h h'
+  haveI : IsNormedAddGroup F := cd.toIsNormedAddGroupOfTopology h h'
   { norm_smul_le r x := by
       rw [norm_eq_sqrt_re_inner, inner_smul_left, inner_smul_right, ← mul_assoc]
       rw [RCLike.conj_mul, ← ofReal_pow, re_ofReal_mul, sqrt_mul, ← ofReal_normSq_eq_inner_self,
@@ -558,7 +598,8 @@ end InnerProductSpace.Core
 
 section
 
-attribute [local instance] InnerProductSpace.Core.toSeminormedAddCommGroup
+attribute [local instance] InnerProductSpace.Core.toNormPseudoMetric
+  InnerProductSpace.Core.toIsNormedAddGroup
 
 /-- Given a `PreInnerProductSpace.Core` structure on a space, one can use it to turn
 the space into a pre-inner product space (i.e., `SeminormedAddCommGroup` and `InnerProductSpace`).
@@ -585,9 +626,11 @@ def InnerProductSpace.ofCoreOfTopology [AddCommGroup F] [hF : Module 𝕜 F] [To
     (cd : InnerProductSpace.Core 𝕜 F)
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
-    letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h';
+    letI : NormMetric F := cd.toNormMetricOfTopology h h'
+    haveI : IsNormedAddGroup F := cd.toIsNormedAddGroupOfTopology h h'
     InnerProductSpace 𝕜 F :=
-  letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h'
+  letI : NormMetric F := cd.toNormMetricOfTopology h h'
+  haveI : IsNormedAddGroup F := cd.toIsNormedAddGroupOfTopology h h'
   letI : NormedSpace 𝕜 F := cd.toNormedSpaceOfTopology h h'
   { cd with
     norm_sq_eq_re_inner := fun x => by
@@ -598,7 +641,7 @@ def InnerProductSpace.ofCoreOfTopology [AddCommGroup F] [hF : Module 𝕜 F] [To
 /-- A Hilbert space is a complete normed inner product space. -/
 @[variable_alias]
 structure HilbertSpace (𝕜 E : Type*) [RCLike 𝕜]
-  [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]
 
 namespace PUnit
 

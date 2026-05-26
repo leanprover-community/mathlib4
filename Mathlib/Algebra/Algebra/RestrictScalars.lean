@@ -83,9 +83,19 @@ def RestrictScalars (_R _S M : Type*) : Type _ := M
 
 instance [I : Inhabited M] : Inhabited (RestrictScalars R S M) := I
 
-instance [I : AddCommMonoid M] : AddCommMonoid (RestrictScalars R S M) := I
+instance [I : AddMonoid M] : AddMonoid (RestrictScalars R S M) := I
 
-instance [I : AddCommGroup M] : AddCommGroup (RestrictScalars R S M) := I
+instance [I : AddGroup M] : AddGroup (RestrictScalars R S M) where
+  toAddMonoid := instAddMonoidRestrictScalars _ _ _
+  __ := I
+
+instance [I : AddCommMonoid M] : AddCommMonoid (RestrictScalars R S M) where
+  toAddMonoid := instAddMonoidRestrictScalars _ _ _
+  __ := I
+
+instance [I : AddCommGroup M] : AddCommGroup (RestrictScalars R S M) where
+  toAddGroup := instAddGroupRestrictScalars _ _ _
+  __ := I
 
 section Module
 
@@ -194,13 +204,37 @@ end Module
 
 section Algebra
 
-instance [I : Semiring A] : Semiring (RestrictScalars R S A) := I
+instance [I : NonUnitalSemiring A] : NonUnitalSemiring (RestrictScalars R S A) where
+  toAddCommMonoid := instAddCommMonoidRestrictScalars _ _ _
+  __ := I
 
-instance [I : Ring A] : Ring (RestrictScalars R S A) := I
+instance [I : NonUnitalRing A] : NonUnitalRing (RestrictScalars R S A) where
+  toNonUnitalSemiring := instNonUnitalSemiringRestrictScalars _ _ _
+  __ := I
 
-instance [I : CommSemiring A] : CommSemiring (RestrictScalars R S A) := I
+instance [I : NonUnitalCommSemiring A] : NonUnitalCommSemiring (RestrictScalars R S A) where
+  toNonUnitalSemiring := instNonUnitalSemiringRestrictScalars _ _ _
+  __ := I
 
-instance [I : CommRing A] : CommRing (RestrictScalars R S A) := I
+instance [I : NonUnitalCommRing A] : NonUnitalCommRing (RestrictScalars R S A) where
+  toNonUnitalRing := instNonUnitalRingRestrictScalars _ _ _
+  __ := I
+
+instance [I : Semiring A] : Semiring (RestrictScalars R S A) where
+  toNonUnitalSemiring := instNonUnitalSemiringRestrictScalars _ _ _
+  __ := I
+
+instance [I : Ring A] : Ring (RestrictScalars R S A) where
+  toSemiring := instSemiringRestrictScalars _ _ _
+  __ := I
+
+instance [I : CommSemiring A] : CommSemiring (RestrictScalars R S A) where
+  toSemiring := instSemiringRestrictScalars _ _ _
+  __ := I
+
+instance [I : CommRing A] : CommRing (RestrictScalars R S A) where
+  toRing := instRingRestrictScalars _ _ _
+  __ := I
 
 variable [Semiring A]
 

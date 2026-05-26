@@ -22,8 +22,8 @@ noncomputable section
 
 open scoped Manifold
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {f : E → E'}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+  [NormedSpace 𝕜 E] {E' : Type*} [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormedSpace 𝕜 E'] {f : E → E'}
   {s : Set E} {x : E}
 
 section MFDerivFDeriv

@@ -24,7 +24,7 @@ This file proves a dominated convergence theorem for infinite products of terms 
 
 open Topology Filter
 
-variable {α R β : Type*} [NormedCommRing R] [NormOneClass R] [CompleteSpace R] {g : β → R}
+variable {α R β : Type*} [NormMetric R] [CommRing R] [IsNormedRing R] [NormOneClass R] [CompleteSpace R] {g : β → R}
   {bound : β → ℝ}
 
 /-- Dominated convergence for infinite products: if `f n k → g k` for all `k` and

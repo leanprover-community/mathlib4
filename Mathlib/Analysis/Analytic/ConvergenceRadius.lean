@@ -80,8 +80,8 @@ end FormalMultilinearSeries
 
 /-! ### The radius of a formal multilinear series -/
 
-variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable [NontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
+  [NormedSpace 𝕜 F] [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
 
 namespace FormalMultilinearSeries
 
@@ -275,8 +275,8 @@ theorem le_mul_pow_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F) (h : 0 <
   exact hCp n
 
 lemma radius_le_of_le {𝕜' E' F' : Type*}
-    [NontriviallyNormedField 𝕜'] [NormedAddCommGroup E'] [NormedSpace 𝕜' E']
-    [NormedAddCommGroup F'] [NormedSpace 𝕜' F']
+    [NontriviallyNormedField 𝕜'] [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormedSpace 𝕜' E']
+    [NormMetric F'] [AddCommGroup F'] [IsNormedAddGroup F'] [NormedSpace 𝕜' F']
     {p : FormalMultilinearSeries 𝕜 E F} {q : FormalMultilinearSeries 𝕜' E' F'}
     (h : ∀ n, ‖p n‖ ≤ ‖q n‖) : q.radius ≤ p.radius := by
   apply le_of_forall_nnreal_lt (fun r hr ↦ ?_)
@@ -301,7 +301,7 @@ theorem min_radius_le_radius_add (p q : FormalMultilinearSeries 𝕜 E F) :
 theorem radius_neg (p : FormalMultilinearSeries 𝕜 E F) : (-p).radius = p.radius := by
   simp only [radius, neg_apply, norm_neg]
 
-theorem radius_le_smul {p : FormalMultilinearSeries 𝕜 E F} {𝕜' : Type*} {c : 𝕜'} [NormedRing 𝕜']
+theorem radius_le_smul {p : FormalMultilinearSeries 𝕜 E F} {𝕜' : Type*} {c : 𝕜'} [NormMetric 𝕜'] [Ring 𝕜'] [IsNormedRing 𝕜']
     [Module 𝕜' F] [SMulCommClass 𝕜 𝕜' F] [IsBoundedSMul 𝕜' F] :
     p.radius ≤ (c • p).radius := by
   simp only [radius, smul_apply]

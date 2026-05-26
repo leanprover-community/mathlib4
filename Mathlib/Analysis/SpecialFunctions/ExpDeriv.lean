@@ -36,7 +36,7 @@ section
 
 open Complex
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℂ E]
   {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
 
 /-- The function `Complex.exp` is complex analytic. -/
@@ -153,7 +153,7 @@ end
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ] {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f : E → ℂ} {f' : E →L[𝕜] ℂ} {x : E} {s : Set E}
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {f : E → ℂ} {f' : E →L[𝕜] ℂ} {x : E} {s : Set E}
 
 theorem HasStrictFDerivAt.cexp (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun x => Complex.exp (f x)) (Complex.exp (f x) • f') x :=
@@ -216,7 +216,7 @@ section
 
 open Real
 
-variable {x : ℝ} {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {s : Set E}
+variable {x : ℝ} {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] {f : E → ℝ} {s : Set E}
 
 /-- The function `Real.exp` is real analytic. -/
 theorem analyticOnNhd_rexp : AnalyticOnNhd ℝ exp univ := by
@@ -326,7 +326,7 @@ section
 function, for standalone use and use with `simp`. -/
 
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {f' : StrongDual ℝ E}
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] {f : E → ℝ} {f' : StrongDual ℝ E}
   {x : E} {s : Set E}
 
 @[fun_prop]

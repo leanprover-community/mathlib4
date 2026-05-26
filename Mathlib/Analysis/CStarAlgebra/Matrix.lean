@@ -133,20 +133,37 @@ lemma inner_toEuclideanCLM (A : Matrix n n ℝ) (x y : EuclideanSpace ℝ n) :
   rw [mul_comm (x.ofLp i)]
   simp [Pi.single_apply]
 
+/-- An auxiliary definition used only to construct the true `NormMetric`
+structure provided by `Matrix.instMetricSpaceL2Op` and `Matrix.instNormedAddCommGroupL2Op`. -/
+@[implicit_reducible]
+def l2OpNormMetricAux : NormMetric (Matrix m n 𝕜) :=
+  .induced _ _ _ (toEuclideanLin.trans toContinuousLinearMap).injective
+
+lemma l2OpIsNormedAddGroupAux :
+    letI : NormMetric (Matrix m n 𝕜) := l2OpNormMetricAux
+    IsNormedAddGroup (Matrix m n 𝕜) :=
+  .induced (𝓕 := (Matrix m n 𝕜) ≃ₗ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 m))
+    _ _ (toEuclideanLin.trans toContinuousLinearMap)
+
 /-- An auxiliary definition used only to construct the true `NormedAddCommGroup` (and `Metric`)
 structure provided by `Matrix.instMetricSpaceL2Op` and `Matrix.instNormedAddCommGroupL2Op`. -/
 @[implicit_reducible]
-def l2OpNormedAddCommGroupAux : NormedAddCommGroup (Matrix m n 𝕜) :=
-  @NormedAddCommGroup.induced ((Matrix m n 𝕜) ≃ₗ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 m)) _
-    _ _ _ ContinuousLinearMap.toNormedAddCommGroup.toNormedAddGroup _ _ <|
-    (toEuclideanLin.trans toContinuousLinearMap).injective
+def l2OpNormedAddCommGroupAux : NormedAddCommGroup (Matrix m n 𝕜) where
+  toNormMetric := l2OpNormMetricAux
+  toIsNormedAddGroup := l2OpIsNormedAddGroupAux
+
+lemma l2OpIsNormedRingAux :
+    letI : NormMetric (Matrix n n 𝕜) := l2OpNormMetricAux
+    IsNormedRing (Matrix n n 𝕜) :=
+  .induced (F := (Matrix n n 𝕜) ≃⋆ₐ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n))
+    _ _ toEuclideanCLM
 
 /-- An auxiliary definition used only to construct the true `NormedRing` (and `Metric`) structure
 provided by `Matrix.instMetricSpaceL2Op` and `Matrix.instNormedRingL2Op`. -/
 @[implicit_reducible]
-def l2OpNormedRingAux : NormedRing (Matrix n n 𝕜) :=
-  @NormedRing.induced ((Matrix n n 𝕜) ≃⋆ₐ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n)) _
-    _ _ _ ContinuousLinearMap.toNormedRing _ _ toEuclideanCLM.injective
+def l2OpNormedRingAux : NormedRing (Matrix n n 𝕜) where
+  toNormMetric := l2OpNormMetricAux
+  toIsNormedRing := l2OpIsNormedRingAux
 
 open Bornology Filter
 open scoped Topology Uniformity
@@ -157,13 +174,15 @@ open scoped Topology Uniformity
 def instL2OpMetricSpace : MetricSpace (Matrix m n 𝕜) := by
   /- We first replace the topology so that we can automatically replace the uniformity using
   `IsUniformAddGroup.toUniformSpace_eq`. -/
-  letI normed_add_comm_group : NormedAddCommGroup (Matrix m n 𝕜) :=
-    { l2OpNormedAddCommGroupAux.replaceTopology <|
-        (toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n)).trans toContinuousLinearMap
-        |>.toContinuousLinearEquiv.toHomeomorph.isInducing.eq_induced with
-      norm := l2OpNormedAddCommGroupAux.norm
-      dist_eq := l2OpNormedAddCommGroupAux.dist_eq }
-  exact normed_add_comm_group.replaceUniformity <| by
+  letI metricSpace : MetricSpace (Matrix m n 𝕜) :=
+    l2OpNormMetricAux.toMetricSpace.replaceTopology <|
+      (toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n)).trans toContinuousLinearMap
+      |>.toContinuousLinearEquiv.toHomeomorph.isInducing.eq_induced
+  letI normMetric : NormMetric (Matrix m n 𝕜) :=
+    { norm := l2OpNormMetricAux.norm }
+  haveI isNormedAddGroup : IsNormedAddGroup (Matrix m n 𝕜) :=
+    { dist_eq := l2OpIsNormedAddGroupAux.dist_eq }
+  exact metricSpace.replaceUniformity <| by
     congr
     rw [← @IsUniformAddGroup.rightUniformSpace_eq _ (Matrix.instUniformSpace m n 𝕜) _ _]
     rw [@IsUniformAddGroup.rightUniformSpace_eq _ PseudoEMetricSpace.toUniformSpace _ _]
@@ -175,11 +194,22 @@ open scoped Matrix.Norms.L2Operator
 /-- The norm structure on `Matrix m n 𝕜` arising from the operator norm given by the identification
 with (continuous) linear maps of `EuclideanSpace`. -/
 @[instance_reducible]
-def instL2OpNormedAddCommGroup : NormedAddCommGroup (Matrix m n 𝕜) where
-  norm := l2OpNormedAddCommGroupAux.norm
-  dist_eq := l2OpNormedAddCommGroupAux.dist_eq
+def instL2OpNormMetric : NormMetric (Matrix m n 𝕜) where
+  norm := l2OpNormMetricAux.norm
 
-scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instL2OpNormedAddCommGroup
+lemma instL2OpIsNormedAddGroup :
+    letI : NormMetric (Matrix m n 𝕜) := instL2OpNormMetric
+    IsNormedAddGroup (Matrix m n 𝕜) :=
+  letI : NormMetric (Matrix m n 𝕜) := instL2OpNormMetric
+  { dist_eq := l2OpIsNormedAddGroupAux.dist_eq }
+
+scoped[Matrix.Norms.L2Operator]
+attribute [instance] Matrix.instL2OpNormMetric Matrix.instL2OpIsNormedAddGroup
+
+/-- The norm structure on `Matrix m n 𝕜` arising from the operator norm given by the identification
+with (continuous) linear maps of `EuclideanSpace`. -/
+@[instance_reducible]
+def instL2OpNormedAddCommGroup : NormedAddCommGroup (Matrix m n 𝕜) where
 
 lemma l2_opNorm_def (A : Matrix m n 𝕜) :
     ‖A‖ = ‖(toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n)).trans toContinuousLinearMap A‖ := rfl
@@ -258,14 +288,18 @@ def instL2OpNormedSpace : NormedSpace 𝕜 (Matrix m n 𝕜) where
 
 scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instL2OpNormedSpace
 
+lemma instL2OpIsNormedRing :
+    letI : NormMetric (Matrix n n 𝕜) := instL2OpNormMetric
+    IsNormedRing (Matrix n n 𝕜) :=
+  letI : NormMetric (Matrix n n 𝕜) := instL2OpNormMetric
+  { norm_mul_le := l2OpIsNormedRingAux.norm_mul_le }
+
+scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instL2OpIsNormedRing
+
 /-- The normed ring structure on `Matrix n n 𝕜` arising from the operator norm given by the
 identification with (continuous) linear endomorphisms of `EuclideanSpace 𝕜 n`. -/
 @[instance_reducible]
 def instL2OpNormedRing : NormedRing (Matrix n n 𝕜) where
-  dist_eq := l2OpNormedRingAux.dist_eq
-  norm_mul_le := l2OpNormedRingAux.norm_mul_le
-
-scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instL2OpNormedRing
 
 /-- This is the same as `Matrix.l2_opNorm_def`, but with a more bundled RHS for square matrices. -/
 lemma cstar_norm_def (A : Matrix n n 𝕜) : ‖A‖ = ‖toEuclideanCLM (n := n) (𝕜 := 𝕜) A‖ := rfl

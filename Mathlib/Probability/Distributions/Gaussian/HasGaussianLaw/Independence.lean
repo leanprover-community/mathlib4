@@ -51,7 +51,7 @@ namespace ContinuousLinearMap
 section Pi
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
-  {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace ℝ (E i)]
+  {E : ι → Type*} [∀ i, NormMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] [∀ i, NormedSpace ℝ (E i)]
   {L : (i : ι) → StrongDual ℝ (E i) →L[ℝ] StrongDual ℝ (E i) →L[ℝ] ℝ}
 
 /-- Given `L i : (E i)' × (E i)' → ℝ` a family of continuous bilinear forms,
@@ -97,7 +97,7 @@ end Pi
 section Prod
 
 variable {E F : Type*}
-  [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F]
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
   {L₁ : StrongDual ℝ E →L[ℝ] StrongDual ℝ E →L[ℝ] ℝ}
   {L₂ : StrongDual ℝ F →L[ℝ] StrongDual ℝ F →L[ℝ] ℝ}
 
@@ -160,7 +160,7 @@ namespace ProbabilityTheory
 section iIndepFun
 
 variable {ι : Type*} [Finite ι] {E : ι → Type*}
-  [∀ i, NormedAddCommGroup (E i)] [∀ i, MeasurableSpace (E i)]
+  [∀ i, NormMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] [∀ i, MeasurableSpace (E i)]
   [∀ i, CompleteSpace (E i)] [∀ i, BorelSpace (E i)] [∀ i, SecondCountableTopology (E i)]
 
 section NormedSpace
@@ -205,7 +205,8 @@ lemma HasGaussianLaw.iIndepFun_of_covariance_strongDual (hX : HasGaussianLaw (fu
     sum_sub_distrib, ← sum_mul, this]
   congr
   · simp_rw [← Complex.ofReal_sum]
-    rw [integral_finsetSum _ fun i _ ↦ ((hX.eval i).map_fun _).integrable.ofReal]
+    rw [integral_finsetSum]
+    exact fun i _ ↦ ((hX.eval i).map_fun _).integrable.ofReal
   · rw [variance_fun_sum fun i ↦ ((hX.eval i).map_fun _).memLp_two]
     simp only [← sum_div, ← ofReal_sum, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
       div_left_inj', ofReal_inj]
@@ -272,9 +273,9 @@ end iIndepFun
 section IndepFun
 
 variable {E F : Type*}
-    [NormedAddCommGroup E] [MeasurableSpace E]
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [MeasurableSpace E]
     [CompleteSpace E] [BorelSpace E] [SecondCountableTopology E]
-    [NormedAddCommGroup F] [MeasurableSpace F]
+    [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [MeasurableSpace F]
     [CompleteSpace F] [BorelSpace F] [SecondCountableTopology F]
 
 /-- Independent Gaussian random variables are jointly Gaussian. -/
@@ -378,7 +379,7 @@ end IndepFun
 
 section AddSub
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
   [SecondCountableTopology E]
 
 lemma iIndepFun.hasGaussianLaw_sum [CompleteSpace E] {ι : Type*} [Fintype ι] {X : ι → Ω → E}

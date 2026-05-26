@@ -79,7 +79,7 @@ noncomputable section
 open Filter Topology LinearMap Set ENNReal NNReal
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X]
+variable {X : Type*} [NormMetric X] [AddCommGroup X] [IsNormedAddGroup X] [NormedSpace 𝕜 X]
 
 open scoped Classical in
 /--
@@ -96,7 +96,7 @@ and `UnconditionalSchauderBasis` for the unconditional case.
 -/
 @[ext]
 structure GeneralSchauderBasis (β : Type*) (𝕜 : Type*)
-    (X : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup X] [NormedSpace 𝕜 X]
+    (X : Type*) [NontriviallyNormedField 𝕜] [NormMetric X] [AddCommGroup X] [IsNormedAddGroup X] [NormedSpace 𝕜 X]
     (L : SummationFilter β) where
   /-- The basis vectors. -/
   basis : β → X
@@ -112,7 +112,7 @@ variable {L : SummationFilter β}
 
 /-- A classical Schauder basis indexed by `ℕ` with conditional convergence. -/
 abbrev SchauderBasis (𝕜 : Type*) (X : Type*) [NontriviallyNormedField 𝕜]
-    [NormedAddCommGroup X] [NormedSpace 𝕜 X] :=
+    [NormMetric X] [AddCommGroup X] [IsNormedAddGroup X] [NormedSpace 𝕜 X] :=
   GeneralSchauderBasis ℕ 𝕜 X (SummationFilter.conditional ℕ)
 
 /--
@@ -128,7 +128,7 @@ This structure generalizes the classical Schauder basis by replacing sequential
 convergence with summability over the directed set of finite subsets.
 -/
 abbrev UnconditionalSchauderBasis (β : Type*)
-    (𝕜 : Type*) (X : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup X] [NormedSpace 𝕜 X] :=
+    (𝕜 : Type*) (X : Type*) [NontriviallyNormedField 𝕜] [NormMetric X] [AddCommGroup X] [IsNormedAddGroup X] [NormedSpace 𝕜 X] :=
   GeneralSchauderBasis β 𝕜 X (SummationFilter.unconditional β)
 
 /-- Coercion from a `GeneralSchauderBasis` to the underlying basis function. -/

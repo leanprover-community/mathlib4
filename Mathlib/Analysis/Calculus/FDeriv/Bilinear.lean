@@ -27,10 +27,10 @@ noncomputable section
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
+variable {G : Type*} [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
+variable {G' : Type*} [NormMetric G'] [AddCommGroup G'] [IsNormedAddGroup G'] [NormedSpace 𝕜 G']
 
 section BilinearMap
 

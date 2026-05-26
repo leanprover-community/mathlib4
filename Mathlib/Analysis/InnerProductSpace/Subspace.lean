@@ -26,7 +26,7 @@ variable {𝕜 E F : Type*} [RCLike 𝕜]
 
 section Submodule
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -42,11 +42,11 @@ theorem Submodule.coe_inner (W : Submodule 𝕜 E) (x y : W) : ⟪x, y⟫ = ⟪(
   rfl
 
 theorem Orthonormal.codRestrict {ι : Type*} {v : ι → E} (hv : Orthonormal 𝕜 v) (s : Submodule 𝕜 E)
-    (hvs : ∀ i, v i ∈ s) : @Orthonormal 𝕜 s _ _ _ ι (Set.codRestrict v s hvs) :=
+    (hvs : ∀ i, v i ∈ s) : Orthonormal 𝕜 (E := s) (Set.codRestrict v s hvs) :=
   s.subtypeₗᵢ.orthonormal_comp_iff.mp hv
 
 theorem orthonormal_span {ι : Type*} {v : ι → E} (hv : Orthonormal 𝕜 v) :
-    @Orthonormal 𝕜 (Submodule.span 𝕜 (Set.range v)) _ _ _ ι fun i : ι =>
+    Orthonormal 𝕜 (E := Submodule.span 𝕜 (Set.range v)) fun i : ι =>
       ⟨v i, Submodule.subset_span (Set.mem_range_self i)⟩ :=
   hv.codRestrict (Submodule.span 𝕜 (Set.range v)) fun i =>
     Submodule.subset_span (Set.mem_range_self i)
@@ -57,7 +57,7 @@ end Submodule
 
 section OrthogonalFamily_Seminormed
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -77,12 +77,12 @@ product space structure on each of the submodules is important -- for example, w
 their Hilbert sum (`PiLp V 2`).  For example, given an orthonormal set of vectors `v : ι → E`,
 we have an associated orthogonal family of one-dimensional subspaces of `E`, which it is convenient
 to be able to discuss using `ι → 𝕜` rather than `Π i : ι, span 𝕜 (v i)`. -/
-def OrthogonalFamily (G : ι → Type*) [∀ i, SeminormedAddCommGroup (G i)]
+def OrthogonalFamily (G : ι → Type*) [∀ i, NormPseudoMetric (G i)] [∀ i, AddCommGroup (G i)] [∀ i, IsNormedAddGroup (G i)]
     [∀ i, InnerProductSpace 𝕜 (G i)] (V : ∀ i, G i →ₗᵢ[𝕜] E) : Prop :=
   Pairwise fun i j => ∀ v : G i, ∀ w : G j, ⟪V i v, V j w⟫ = 0
 
 variable {𝕜}
-variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
+variable {G : ι → Type*} [∀ i, NormMetric (G i)] [∀ i, AddCommGroup (G i)] [∀ i, IsNormedAddGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
   {V : ∀ i, G i →ₗᵢ[𝕜] E}
 
 theorem Orthonormal.orthogonalFamily {v : ι → E} (hv : Orthonormal 𝕜 v) :
@@ -239,7 +239,7 @@ end OrthogonalFamily_Seminormed
 
 section OrthogonalFamily
 
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 

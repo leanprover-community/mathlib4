@@ -106,7 +106,7 @@ lemma spectralRadius_pow_le' [Nontrivial A] (a : A) (n : ℕ) :
 
 end Algebra
 
-variable [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 theorem isOpen_resolventSet (a : A) : IsOpen (ρ a) :=
   Units.isOpen.preimage (by fun_prop)
@@ -154,14 +154,14 @@ grind_pattern spectrum.isCompact => IsCompact (spectrum 𝕜 a)
 instance instCompactSpace [ProperSpace 𝕜] (a : A) : CompactSpace (spectrum 𝕜 a) :=
   isCompact_iff_compactSpace.mp <| spectrum.isCompact a
 
-instance instCompactSpaceNNReal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
+instance instCompactSpaceNNReal {A : Type*} [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra ℝ A]
     (a : A) [CompactSpace (spectrum ℝ a)] : CompactSpace (spectrum ℝ≥0 a) := by
   rw [← isCompact_iff_compactSpace] at *
   rw [← preimage_algebraMap ℝ]
   exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
 
 @[simp]
-theorem isCompact_nnreal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
+theorem isCompact_nnreal {A : Type*} [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra ℝ A]
     (a : A) [CompactSpace (spectrum ℝ a)] : IsCompact (spectrum ℝ≥0 a) := by
   rw [isCompact_iff_compactSpace]
   infer_instance
@@ -170,7 +170,7 @@ grind_pattern isCompact_nnreal => IsCompact (spectrum ℝ≥0 a)
 
 section QuasispectrumCompact
 
-variable {B : Type*} [NonUnitalNormedRing B] [NormedSpace 𝕜 B] [CompleteSpace B]
+variable {B : Type*} [NormMetric B] [NonUnitalRing B] [IsNormedRing B] [NormedSpace 𝕜 B] [CompleteSpace B]
 variable [IsScalarTower 𝕜 B B] [SMulCommClass 𝕜 B B] [ProperSpace 𝕜]
 
 @[simp]
@@ -208,7 +208,7 @@ section NNReal
 
 open NNReal
 
-variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] [NormOneClass A]
+variable {A : Type*} [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] [NormOneClass A]
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 theorem le_nnnorm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ spectrum ℝ≥0 a) :
@@ -284,7 +284,7 @@ section resolvent
 
 open Filter Asymptotics Bornology Topology
 
-variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable [NontriviallyNormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 local notation "ρ" => resolventSet 𝕜
 local notation "↑ₐ" => algebraMap 𝕜 A
@@ -317,7 +317,7 @@ open ContinuousMultilinearMap ENNReal FormalMultilinearSeries
 
 open scoped NNReal ENNReal
 
-variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
+variable [NontriviallyNormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A]
 
 variable (𝕜) in
 /-- In a Banach algebra `A` over a nontrivially normed field `𝕜`, for any `a : A` the
@@ -369,7 +369,7 @@ section ExpMapping
 local notation "↑ₐ" => algebraMap 𝕜 A
 
 /-- For `𝕜 = ℝ` or `𝕜 = ℂ`, `exp` maps the spectrum of `a` into the spectrum of `exp a`. -/
-theorem exp_mem_exp [RCLike 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+theorem exp_mem_exp [RCLike 𝕜] [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
     (a : A) {z : 𝕜} (hz : z ∈ spectrum 𝕜 a) : exp z ∈ spectrum 𝕜 (exp a) := by
   let +nondep : NormedAlgebra ℚ A := .restrictScalars ℚ 𝕜 A
   have hexpmul : exp a = exp (a - ↑ₐ z) * ↑ₐ (exp z) := by
@@ -405,7 +405,7 @@ namespace AlgHom
 
 section NormedField
 
-variable {F : Type*} [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable {F : Type*} [NormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 local notation "↑ₐ" => algebraMap 𝕜 A
 
@@ -437,7 +437,7 @@ end NormedField
 
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable [NontriviallyNormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 local notation "↑ₐ" => algebraMap 𝕜 A
 
@@ -456,7 +456,7 @@ namespace WeakDual
 
 namespace CharacterSpace
 
-variable [NontriviallyNormedField 𝕜] [NormedRing A] [CompleteSpace A]
+variable [NontriviallyNormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A] [CompleteSpace A]
 variable [NormedAlgebra 𝕜 A]
 
 /-- The equivalence between characters and algebra homomorphisms into the base field. -/
@@ -482,7 +482,7 @@ section BoundarySpectrum
 
 local notation "σ" => spectrum
 
-variable {𝕜 A SA : Type*} [NormedRing A] [CompleteSpace A] [SetLike SA A] [SubringClass SA A]
+variable {𝕜 A SA : Type*} [NormMetric A] [Ring A] [IsNormedRing A] [CompleteSpace A] [SetLike SA A] [SubringClass SA A]
 
 open Topology Filter Set
 
@@ -614,7 +614,7 @@ open NNReal ENNReal
 is an element whose `𝕜₂` spectrum restricts to `𝕜₁`, then the spectral radii over each scalar
 field coincide. -/
 lemma spectralRadius_eq {𝕜₁ 𝕜₂ A : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂]
-    [NormedRing A] [NormedAlgebra 𝕜₁ A] [NormedAlgebra 𝕜₂ A] [NormedAlgebra 𝕜₁ 𝕜₂]
+    [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜₁ A] [NormedAlgebra 𝕜₂ A] [NormedAlgebra 𝕜₁ 𝕜₂]
     [IsScalarTower 𝕜₁ 𝕜₂ A] {f : 𝕜₂ → 𝕜₁} {a : A} (h : SpectrumRestricts a f) :
     spectralRadius 𝕜₁ a = spectralRadius 𝕜₂ a := by
   rw [spectralRadius, spectralRadius]
@@ -651,7 +651,7 @@ lemma nnreal_iff_spectralRadius_le [Algebra ℝ A] {a : A} {t : ℝ≥0} (ht : s
     rw [← NNReal.coe_le_coe, coe_nnnorm, Real.norm_eq_abs, abs_le] at h_le
     linarith [h_le.2]
 
-lemma _root_.NNReal.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
+lemma _root_.NNReal.spectralRadius_mem_spectrum {A : Type*} [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra ℝ A]
     [CompleteSpace A] {a : A} (ha : (spectrum ℝ a).Nonempty)
     (ha' : SpectrumRestricts a ContinuousMap.realToNNReal) :
     (spectralRadius ℝ a).toNNReal ∈ spectrum ℝ≥0 a := by
@@ -661,13 +661,13 @@ lemma _root_.NNReal.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [Norm
   convert! hx₁
   simpa
 
-lemma _root_.Real.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
+lemma _root_.Real.spectralRadius_mem_spectrum {A : Type*} [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra ℝ A]
     [CompleteSpace A] {a : A} (ha : (spectrum ℝ a).Nonempty)
     (ha' : SpectrumRestricts a ContinuousMap.realToNNReal) :
     (spectralRadius ℝ a).toReal ∈ spectrum ℝ a :=
   NNReal.spectralRadius_mem_spectrum ha ha'
 
-lemma _root_.Real.spectralRadius_mem_spectrum_or {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
+lemma _root_.Real.spectralRadius_mem_spectrum_or {A : Type*} [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra ℝ A]
     [CompleteSpace A] {a : A} (ha : (spectrum ℝ a).Nonempty) :
     (spectralRadius ℝ a).toReal ∈ spectrum ℝ a ∨ -(spectralRadius ℝ a).toReal ∈ spectrum ℝ a := by
   obtain ⟨x, hx₁, hx₂⟩ := spectrum.exists_nnnorm_eq_spectralRadius_of_nonempty ha
@@ -698,7 +698,7 @@ open Filter Set Topology
 variable (𝕜 A)
 
 lemma upperHemicontinuous_spectrum [NormedField 𝕜] [ProperSpace 𝕜]
-    [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A] :
+    [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A] :
     UpperHemicontinuous (spectrum 𝕜 : A → Set 𝕜) := by
   /- It suffices to use the sequential characterization of upper hemicontinuity.
   Suppose that `a : ℕ → A` converges to `a₀`, `x : ℕ → 𝕜` converges to `x₀`, and for all `n`,
@@ -722,7 +722,7 @@ lemma upperHemicontinuous_spectrum [NormedField 𝕜] [ProperSpace 𝕜]
       (continuous_algebraMap 𝕜 A |>.tendsto x₀ |>.comp hx |>.sub ha) <| .of_forall hx_mem
 
 /-- The map `a ↦ spectrum ℝ≥0 a` is upper hemicontinuous. -/
-theorem upperHemicontinuous_spectrum_nnreal [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] :
+theorem upperHemicontinuous_spectrum_nnreal [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] :
     UpperHemicontinuous (spectrum ℝ≥0 : A → Set ℝ≥0) := by
   obtain ⟨⟨h₁, -⟩, h₂⟩ : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := NNReal.isClosedEmbedding_coe
   exact upperHemicontinuous_spectrum ℝ A |>.isInducing_comp h₁ h₂
@@ -730,7 +730,7 @@ theorem upperHemicontinuous_spectrum_nnreal [NormedRing A] [NormedAlgebra ℝ A]
 open WithLp in
 /-- The map `a ↦ quasispectrum 𝕜 a` is upper hemicontinuous. -/
 theorem upperHemicontinuous_quasispectrum [NontriviallyNormedField 𝕜] [ProperSpace 𝕜]
-    [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
+    [NormMetric A] [NonUnitalRing A] [IsNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
     [CompleteSpace A] :
     UpperHemicontinuous (quasispectrum 𝕜 : A → Set 𝕜) := by
   convert!
@@ -742,7 +742,7 @@ theorem upperHemicontinuous_quasispectrum [NontriviallyNormedField 𝕜] [Proper
   congr
 
 /-- The map `a ↦ quasispectrum ℝ≥0 a` is upper hemicontinuous. -/
-theorem upperHemicontinuous_quasispectrum_nnreal [NonUnitalNormedRing A]
+theorem upperHemicontinuous_quasispectrum_nnreal [NormMetric A] [NonUnitalRing A] [IsNormedRing A]
     [NormedSpace ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A] [CompleteSpace A] :
     UpperHemicontinuous (quasispectrum ℝ≥0 : A → Set ℝ≥0) := by
   obtain ⟨⟨h₁, -⟩, h₂⟩ := NNReal.isClosedEmbedding_coe

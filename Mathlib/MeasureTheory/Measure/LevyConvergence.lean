@@ -36,7 +36,7 @@ open scoped Topology RealInnerProductSpace ENNReal
 
 namespace MeasureTheory
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E]
 
 /-- If the characteristic functions of a sequence of measures `μ : ℕ → Measure E` converge pointwise

@@ -33,8 +33,8 @@ open scoped Topology Interval ENNReal
 variable {X Y ε ε' ε'' E F R : Type*} [MeasurableSpace X] [TopologicalSpace X]
 variable [MeasurableSpace Y] [TopologicalSpace Y]
 variable [TopologicalSpace ε] [ContinuousENorm ε] [TopologicalSpace ε'] [ContinuousENorm ε']
-  [TopologicalSpace ε''] [ESeminormedAddMonoid ε'']
-  [NormedAddCommGroup E] [NormedAddCommGroup F] {f g : X → ε} {μ ν : Measure X} {s : Set X}
+  [TopologicalSpace ε''] [ContinuousENorm ε''] [AddMonoid ε''] [IsESeminormedAddMonoid ε'']
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] {f g : X → ε} {μ ν : Measure X} {s : Set X}
 
 namespace MeasureTheory
 
@@ -197,7 +197,7 @@ theorem locallyIntegrableOn_iff [PseudoMetrizableSpace ε]
 
 theorem _root_.ContinuousLinearMap.locallyIntegrableOn_comp {E H 𝕜 𝕜' : Type*}
     [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
-    [NormedAddCommGroup E] [NormedSpace 𝕜' E] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜' E] [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] [NormedSpace 𝕜 H]
     {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ] {f : X → H} (L : H →SL[σ] E)
     (hf : LocallyIntegrableOn f s μ) : LocallyIntegrableOn (L ∘ f) s μ :=
   (L.integrableAtFilter_comp <| hf · ·)
@@ -414,7 +414,7 @@ protected theorem LocallyIntegrable.neg {f : X → E} (hf : LocallyIntegrable f 
     LocallyIntegrable (-f) μ ↔ LocallyIntegrable f μ := by
   simp [← locallyIntegrableOn_univ]
 
-protected theorem LocallyIntegrable.smul {f : X → E} {𝕜 : Type*} [NormedAddCommGroup 𝕜]
+protected theorem LocallyIntegrable.smul {f : X → E} {𝕜 : Type*} [NormMetric 𝕜] [AddCommGroup 𝕜] [IsNormedAddGroup 𝕜]
     [SMulZeroClass 𝕜 E] [IsBoundedSMul 𝕜 E] (hf : LocallyIntegrable f μ) (c : 𝕜) :
     LocallyIntegrable (c • f) μ := fun x ↦ (hf x).smul c
 
@@ -424,7 +424,7 @@ protected theorem LocallyIntegrable.smul {f : X → E} {𝕜 : Type*} [NormedAdd
     LocallyIntegrable (c • f) μ ↔ c = 0 ∨ LocallyIntegrable f μ := by
   simp [← locallyIntegrableOn_univ]
 
-variable {ε''' : Type*} [TopologicalSpace ε'''] [ESeminormedAddCommMonoid ε''']
+variable {ε''' : Type*} [TopologicalSpace ε'''] [ContinuousENorm ε'''] [AddCommMonoid ε'''] [IsESeminormedAddMonoid ε''']
   [ContinuousAdd ε'''] in
 theorem locallyIntegrable_finsetSum' {ι} (s : Finset ι) {f : ι → X → ε'''}
     (hf : ∀ i ∈ s, LocallyIntegrable (f i) μ) : LocallyIntegrable (∑ i ∈ s, f i) μ :=
@@ -434,7 +434,7 @@ theorem locallyIntegrable_finsetSum' {ι} (s : Finset ι) {f : ι → X → ε''
 @[deprecated (since := "2026-04-08")]
 alias locallyIntegrable_finset_sum' := locallyIntegrable_finsetSum'
 
-variable {ε''' : Type*} [TopologicalSpace ε'''] [ESeminormedAddCommMonoid ε''']
+variable {ε''' : Type*} [TopologicalSpace ε'''] [ContinuousENorm ε'''] [AddCommMonoid ε'''] [IsESeminormedAddMonoid ε''']
   [ContinuousAdd ε'''] in
 theorem locallyIntegrable_finsetSum {ι} (s : Finset ι) {f : ι → X → ε'''}
     (hf : ∀ i ∈ s, LocallyIntegrable (f i) μ) : LocallyIntegrable (fun a ↦ ∑ i ∈ s, f i a) μ := by
@@ -446,7 +446,7 @@ alias locallyIntegrable_finset_sum := locallyIntegrable_finsetSum
 /-- If `f` is locally integrable and `g` is continuous with compact support,
 then `g • f` is integrable. -/
 theorem LocallyIntegrable.integrable_smul_left_of_hasCompactSupport
-    {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+    {𝕜 : Type*} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
     [OpensMeasurableSpace X] [T2Space X] {f : X → E} (hf : LocallyIntegrable f μ)
     {g : X → 𝕜} (hg : Continuous g) (h'g : HasCompactSupport g) :
     Integrable (fun x ↦ g x • f x) μ := by
@@ -466,7 +466,7 @@ theorem LocallyIntegrable.integrable_smul_left_of_hasCompactSupport
 /-- If `f` is locally integrable and `g` is continuous with compact support,
 then `f • g` is integrable. -/
 theorem LocallyIntegrable.integrable_smul_right_of_hasCompactSupport
-     {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+     {𝕜 : Type*} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
      [OpensMeasurableSpace X] [T2Space X] {f : X → 𝕜} (hf : LocallyIntegrable f μ)
      {g : X → E} (hg : Continuous g) (h'g : HasCompactSupport g) :
     Integrable (fun x ↦ f x • g x) μ := by
@@ -717,7 +717,7 @@ variable [OpensMeasurableSpace X] {A K : Set X}
 
 section Mul
 
-variable [NormedRing R] [SecondCountableTopologyEither X R] {g g' : X → R}
+variable [NormMetric R] [Ring R] [IsNormedRing R] [SecondCountableTopologyEither X R] {g g' : X → R}
 
 theorem IntegrableOn.mul_continuousOn_of_subset (hg : IntegrableOn g A μ) (hg' : ContinuousOn g' K)
     (hA : MeasurableSet A) (hK : IsCompact K) (hAK : A ⊆ K) :
@@ -745,7 +745,7 @@ end Mul
 
 section SMul
 
-variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
 
 theorem IntegrableOn.continuousOn_smul_of_subset [SecondCountableTopologyEither X 𝕜] {f : X → 𝕜}
     (hf : ContinuousOn f K) {g : X → E} (hg : IntegrableOn g A μ)
@@ -777,28 +777,28 @@ end SMul
 
 namespace LocallyIntegrableOn
 
-theorem continuousOn_mul [LocallyCompactSpace X] [T2Space X] [NormedRing R]
+theorem continuousOn_mul [LocallyCompactSpace X] [T2Space X] [NormMetric R] [Ring R] [IsNormedRing R]
     [SecondCountableTopologyEither X R] {f g : X → R} {s : Set X} (hf : LocallyIntegrableOn f s μ)
     (hg : ContinuousOn g s) (hs : IsLocallyClosed s) :
     LocallyIntegrableOn (fun x => g x * f x) s μ := by
   rw [MeasureTheory.locallyIntegrableOn_iff hs] at hf ⊢
   exact fun k hk_sub hk_c => (hf k hk_sub hk_c).continuousOn_mul (hg.mono hk_sub) hk_c
 
-theorem mul_continuousOn [LocallyCompactSpace X] [T2Space X] [NormedRing R]
+theorem mul_continuousOn [LocallyCompactSpace X] [T2Space X] [NormMetric R] [Ring R] [IsNormedRing R]
     [SecondCountableTopologyEither X R] {f g : X → R} {s : Set X} (hf : LocallyIntegrableOn f s μ)
     (hg : ContinuousOn g s) (hs : IsLocallyClosed s) :
     LocallyIntegrableOn (fun x => f x * g x) s μ := by
   rw [MeasureTheory.locallyIntegrableOn_iff hs] at hf ⊢
   exact fun k hk_sub hk_c => (hf k hk_sub hk_c).mul_continuousOn (hg.mono hk_sub) hk_c
 
-theorem continuousOn_smul [LocallyCompactSpace X] [T2Space X] {𝕜 : Type*} [NormedRing 𝕜]
+theorem continuousOn_smul [LocallyCompactSpace X] [T2Space X] {𝕜 : Type*} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜]
     [SecondCountableTopologyEither X 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E] {f : X → E} {g : X → 𝕜}
     {s : Set X} (hs : IsLocallyClosed s) (hf : LocallyIntegrableOn f s μ) (hg : ContinuousOn g s) :
     LocallyIntegrableOn (fun x => g x • f x) s μ := by
   rw [MeasureTheory.locallyIntegrableOn_iff hs] at hf ⊢
   exact fun k hk_sub hk_c => (hf k hk_sub hk_c).continuousOn_smul (hg.mono hk_sub) hk_c
 
-theorem smul_continuousOn [LocallyCompactSpace X] [T2Space X] {𝕜 : Type*} [NormedRing 𝕜]
+theorem smul_continuousOn [LocallyCompactSpace X] [T2Space X] {𝕜 : Type*} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜]
     [SecondCountableTopologyEither X E] [Module 𝕜 E] [NormSMulClass 𝕜 E] {f : X → 𝕜} {g : X → E}
     {s : Set X} (hs : IsLocallyClosed s) (hf : LocallyIntegrableOn f s μ) (hg : ContinuousOn g s) :
     LocallyIntegrableOn (fun x => f x • g x) s μ := by

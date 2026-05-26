@@ -30,9 +30,9 @@ variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Typ
   {R' : Type*} {𝕜 : Type*} {𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
-variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']
-  [NormedAddCommGroup E''] [NormedAddCommGroup F''] [NormedAddCommGroup G''] [SeminormedRing R]
-  [SeminormedRing R']
+variable [NormPseudoMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormPseudoMetric F'] [AddCommGroup F'] [IsNormedAddGroup F'] [NormPseudoMetric G'] [AddCommGroup G'] [IsNormedAddGroup G']
+  [NormMetric E''] [AddCommGroup E''] [IsNormedAddGroup E''] [NormMetric F''] [AddCommGroup F''] [IsNormedAddGroup F''] [NormMetric G''] [AddCommGroup G''] [IsNormedAddGroup G''] [NormPseudoMetric R] [Ring R] [IsNormedRing R]
+  [NormPseudoMetric R'] [Ring R'] [IsNormedRing R']
 
 variable [NormedField 𝕜] [NormedField 𝕜']
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
@@ -322,7 +322,7 @@ end Asymptotics
 
 namespace ContinuousOn
 
-variable {α E F : Type*} [NormedAddGroup E] [SeminormedAddGroup F] [TopologicalSpace α]
+variable {α E F : Type*} [NormMetric E] [AddGroup E] [IsNormedAddGroup E] [NormPseudoMetric F] [AddGroup F] [IsNormedAddGroup F] [TopologicalSpace α]
   {s : Set α} {f : α → E} {c : F}
 
 protected theorem isTheta_principal

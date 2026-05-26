@@ -48,7 +48,7 @@ variable {R R' 𝕜 𝕜₂ 𝕜₃ 𝕝 E E₂ E₃ F ι : Type*}
 
 /-- A seminorm on a module over a normed ring is a function to the reals that is positive
 semidefinite, positive homogeneous, and subadditive. -/
-structure Seminorm (𝕜 : Type*) (E : Type*) [SeminormedRing 𝕜] [AddGroup E] [SMul 𝕜 E] extends
+structure Seminorm (𝕜 : Type*) (E : Type*) [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [AddGroup E] [SMul 𝕜 E] extends
   AddGroupSeminorm E where
   /-- The seminorm of a scalar multiplication is the product of the absolute value of the scalar
   and the original seminorm. -/
@@ -59,7 +59,7 @@ attribute [nolint docBlame] Seminorm.toAddGroupSeminorm
 /-- `SeminormClass F 𝕜 E` states that `F` is a type of seminorms on the `𝕜`-module `E`.
 
 You should extend this class when you extend `Seminorm`. -/
-class SeminormClass (F : Type*) (𝕜 E : outParam Type*) [SeminormedRing 𝕜] [AddGroup E]
+class SeminormClass (F : Type*) (𝕜 E : outParam Type*) [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [AddGroup E]
   [SMul 𝕜 E] [FunLike F E ℝ] : Prop extends AddGroupSeminormClass F E ℝ where
   /-- The seminorm of a scalar multiplication is the product of the absolute value of the scalar
   and the original seminorm. -/
@@ -71,7 +71,7 @@ section Of
 
 /-- Alternative constructor for a `Seminorm` on an `AddCommGroup E` that is a module over a
 `SeminormedRing 𝕜`. -/
-def Seminorm.of [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E → ℝ)
+def Seminorm.of [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E → ℝ)
     (add_le : ∀ x y : E, f (x + y) ≤ f x + f y) (smul : ∀ (a : 𝕜) (x : E), f (a • x) = ‖a‖ * f x) :
     Seminorm 𝕜 E where
   toFun := f
@@ -102,7 +102,7 @@ namespace Seminorm
 
 section SeminormedRing
 
-variable [SeminormedRing 𝕜]
+variable [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜]
 
 section AddGroup
 
@@ -265,7 +265,7 @@ end AddGroup
 
 section Module
 
-variable [SeminormedRing 𝕜₂] [SeminormedRing 𝕜₃]
+variable [NormPseudoMetric 𝕜₂] [Ring 𝕜₂] [IsNormedRing 𝕜₂] [NormPseudoMetric 𝕜₃] [Ring 𝕜₃] [IsNormedRing 𝕜₃]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 variable {σ₂₃ : 𝕜₂ →+* 𝕜₃} [RingHomIsometric σ₂₃]
 variable {σ₁₃ : 𝕜 →+* 𝕜₃} [RingHomIsometric σ₁₃]
@@ -402,7 +402,7 @@ end SeminormedRing
 
 section SeminormedCommRing
 
-variable [SeminormedRing 𝕜] [SeminormedCommRing 𝕜₂]
+variable [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [NormPseudoMetric 𝕜₂] [CommRing 𝕜₂] [IsNormedRing 𝕜₂]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 variable [AddCommGroup E] [AddCommGroup E₂] [Module 𝕜 E] [Module 𝕜₂ E₂]
 
@@ -596,7 +596,7 @@ end NormedField
 
 section SeminormedRing
 
-variable [SeminormedRing 𝕜]
+variable [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜]
 
 section AddCommGroup
 
@@ -723,27 +723,35 @@ theorem sub_mem_closedBall (p : Seminorm 𝕜 E) (x₁ x₂ y : E) (r : ℝ) :
   simp_rw [mem_closedBall, sub_sub]
 
 lemma ball_eq_metric :
-    letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
+    letI := p.toAddGroupSeminorm.toNormPseudoMetric
+    haveI := p.toAddGroupSeminorm.toIsNormedAddGroup
     p.ball x r = Metric.ball x r := by
+  let := p.toAddGroupSeminorm.toNormPseudoMetric
+  have := p.toAddGroupSeminorm.toIsNormedAddGroup
   ext
   simp only [mem_ball_iff_norm]
   rfl
 
 lemma closedBall_eq_metric :
-    letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
+    letI := p.toAddGroupSeminorm.toNormPseudoMetric
+    haveI := p.toAddGroupSeminorm.toIsNormedAddGroup
     p.closedBall x r = Metric.closedBall x r := by
+  let := p.toAddGroupSeminorm.toNormPseudoMetric
+  have := p.toAddGroupSeminorm.toIsNormedAddGroup
   ext
   simp only [mem_closedBall_iff_norm]
   rfl
 
 /-- The image of a ball under addition with a singleton is another ball. -/
 theorem vadd_ball (p : Seminorm 𝕜 E) : x +ᵥ p.ball y r = p.ball (x +ᵥ y) r := by
-  letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
+  let := p.toAddGroupSeminorm.toNormPseudoMetric
+  have := p.toAddGroupSeminorm.toIsNormedAddGroup
   simp [ball_eq_metric]
 
 /-- The image of a closed ball under addition with a singleton is another closed ball. -/
 theorem vadd_closedBall (p : Seminorm 𝕜 E) : x +ᵥ p.closedBall y r = p.closedBall (x +ᵥ y) r := by
-  letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
+  let := p.toAddGroupSeminorm.toNormPseudoMetric
+  have := p.toAddGroupSeminorm.toIsNormedAddGroup
   simp [closedBall_eq_metric]
 
 end SMul
@@ -751,7 +759,7 @@ end SMul
 section Module
 
 variable [Module 𝕜 E]
-variable [SeminormedRing 𝕜₂] [AddCommGroup E₂] [Module 𝕜₂ E₂]
+variable [NormPseudoMetric 𝕜₂] [Ring 𝕜₂] [IsNormedRing 𝕜₂] [AddCommGroup E₂] [Module 𝕜₂ E₂]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 theorem ball_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (x : E) (r : ℝ) :
@@ -1031,7 +1039,7 @@ end Convex
 
 section RestrictScalars
 
-variable (𝕜) {𝕜' : Type*} [NormedField 𝕜] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable (𝕜) {𝕜' : Type*} [NormedField 𝕜] [NormPseudoMetric 𝕜'] [Ring 𝕜'] [IsNormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
   [NormOneClass 𝕜'] [AddCommGroup E] [Module 𝕜' E] [SMul 𝕜 E] [IsScalarTower 𝕜 𝕜' E]
 
 /-- Reinterpret a seminorm over a field `𝕜'` as a seminorm over a smaller field `𝕜`. This will
@@ -1060,7 +1068,7 @@ end RestrictScalars
 
 section Continuity
 
-variable [NontriviallyNormedField 𝕜] [SeminormedRing 𝕝] [AddCommGroup E] [Module 𝕜 E]
+variable [NontriviallyNormedField 𝕜] [NormPseudoMetric 𝕝] [Ring 𝕝] [IsNormedRing 𝕝] [AddCommGroup E] [Module 𝕜 E]
 variable [Module 𝕝 E]
 
 /-- A seminorm is continuous at `0` if `p.closedBall 0 r ∈ 𝓝 0` for *all* `r > 0`.
@@ -1183,16 +1191,16 @@ lemma uniformSpace_eq_of_hasBasis
     {ι} [UniformSpace E] [IsUniformAddGroup E] [ContinuousConstSMul 𝕜 E]
     {p' : ι → Prop} {s : ι → Set E} (p : Seminorm 𝕜 E) (hb : (𝓝 0 : Filter E).HasBasis p' s)
     (h₁ : ∃ r, p.closedBall 0 r ∈ 𝓝 0) (h₂ : ∀ i, p' i → ∃ r > 0, p.ball 0 r ⊆ s i) :
-    ‹UniformSpace E› = p.toAddGroupSeminorm.toSeminormedAddGroup.toUniformSpace := by
-  refine IsUniformAddGroup.ext ‹_›
-    p.toAddGroupSeminorm.toSeminormedAddCommGroup.to_isUniformAddGroup ?_
+    ‹UniformSpace E› = p.toAddGroupSeminorm.toNormPseudoMetric.toUniformSpace := by
+  let := p.toAddGroupSeminorm.toNormPseudoMetric
+  have := p.toAddGroupSeminorm.toIsNormedAddGroup
+  refine IsUniformAddGroup.ext ‹_› inferInstance ?_
   apply le_antisymm
-  · rw [← @comap_norm_nhds_zero E p.toAddGroupSeminorm.toSeminormedAddGroup, ← tendsto_iff_comap]
+  · rw [← comap_norm_nhds_zero, ← tendsto_iff_comap]
     suffices Continuous p from this.tendsto' 0 _ (map_zero p)
     rcases h₁ with ⟨r, hr⟩
     exact p.continuous' hr
-  · rw [(@NormedAddGroup.nhds_zero_basis_norm_lt E
-      p.toAddGroupSeminorm.toSeminormedAddGroup).le_basis_iff hb]
+  · rw [NormedAddGroup.nhds_zero_basis_norm_lt.le_basis_iff hb]
     simpa only [subset_def, mem_ball_zero] using h₂
 
 lemma uniformity_eq_of_hasBasis
@@ -1307,7 +1315,7 @@ end Seminorm
 
 section normSeminorm
 
-variable (𝕜) (E) [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
+variable (𝕜) (E) [NormedField 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {r : ℝ}
 
 /-- The norm of a seminormed group as a seminorm. -/
 def normSeminorm : Seminorm 𝕜 E :=
@@ -1366,7 +1374,7 @@ lemma rescale_to_shell_semi_normed {c : 𝕜} (hc : 1 < ‖c‖) {ε : ℝ} (εp
     ∃ d : 𝕜, d ≠ 0 ∧ ‖d • x‖ < ε ∧ (ε / ‖c‖ ≤ ‖d • x‖) ∧ (‖d‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
   (normSeminorm 𝕜 E).rescale_to_shell hc εpos hx
 
-lemma rescale_to_shell_zpow [NormedAddCommGroup F] [NormedSpace 𝕜 F] {c : 𝕜} (hc : 1 < ‖c‖)
+lemma rescale_to_shell_zpow [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] {c : 𝕜} (hc : 1 < ‖c‖)
     {ε : ℝ} (εpos : 0 < ε) {x : F} (hx : x ≠ 0) :
     ∃ n : ℤ, c ^ n ≠ 0 ∧ ‖c ^ n • x‖ < ε ∧ (ε / ‖c‖ ≤ ‖c ^ n • x‖) ∧
       (‖c ^ n‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
@@ -1375,7 +1383,7 @@ lemma rescale_to_shell_zpow [NormedAddCommGroup F] [NormedSpace 𝕜 F] {c : �
 /-- If there is a scalar `c` with `‖c‖>1`, then any element can be moved by scalar multiplication to
 any shell of width `‖c‖`. Also recap information on the norm of the rescaling element that shows
 up in applications. -/
-lemma rescale_to_shell [NormedAddCommGroup F] [NormedSpace 𝕜 F] {c : 𝕜} (hc : 1 < ‖c‖)
+lemma rescale_to_shell [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] {c : 𝕜} (hc : 1 < ‖c‖)
     {ε : ℝ} (εpos : 0 < ε) {x : F} (hx : x ≠ 0) :
     ∃ d : 𝕜, d ≠ 0 ∧ ‖d • x‖ < ε ∧ (ε / ‖c‖ ≤ ‖d • x‖) ∧ (‖d‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
   rescale_to_shell_semi_normed hc εpos (norm_ne_zero_iff.mpr hx)

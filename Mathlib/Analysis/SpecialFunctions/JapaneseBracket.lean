@@ -36,7 +36,7 @@ open scoped NNReal Filter Topology ENNReal
 
 open Asymptotics Filter Set Real MeasureTheory Module
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 
 theorem sqrt_one_add_norm_sq_le (x : E) : √((1 : ℝ) + ‖x‖ ^ 2) ≤ 1 + ‖x‖ := by
   rw [sqrt_le_left (by positivity)]

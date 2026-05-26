@@ -262,17 +262,17 @@ end MetricSpace
 
 section SeminormedAddCommGroup
 
-variable [MetricSpace X] [NormedAddCommGroup Y]
+variable [MetricSpace X] [NormMetric Y] [AddCommGroup Y] [IsNormedAddGroup Y]
 variable {r : ℝ≥0} {f g : X → Y}
 
 lemma MemHolder.add (hf : MemHolder r f) (hg : MemHolder r g) : MemHolder r (f + g) :=
   (hf.holderWith.add hg.holderWith).memHolder
 
-lemma MemHolder.smul {𝕜} [SeminormedRing 𝕜] [Module 𝕜 Y] [IsBoundedSMul 𝕜 Y]
+lemma MemHolder.smul {𝕜} [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 Y] [IsBoundedSMul 𝕜 Y]
     {c : 𝕜} (hf : MemHolder r f) : MemHolder r (c • f) :=
   (hf.holderWith.smul c).memHolder
 
-lemma MemHolder.smul_iff {𝕜} [SeminormedRing 𝕜] [Module 𝕜 Y] [NormSMulClass 𝕜 Y]
+lemma MemHolder.smul_iff {𝕜} [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 Y] [NormSMulClass 𝕜 Y]
     {c : 𝕜} (hc : ‖c‖₊ ≠ 0) : MemHolder r (c • f) ↔ MemHolder r f := by
   refine ⟨fun ⟨h, hh⟩ => ⟨h * ‖c‖₊⁻¹, ?_⟩, .smul⟩
   rw [← HolderWith.smul_iff _ hc, inv_mul_cancel_right₀ hc]
@@ -297,7 +297,7 @@ lemma eHolderNorm_add_le :
     obtain (h | h) := hfg
     all_goals simp [h]
 
-lemma eHolderNorm_smul {α} [NormedRing α] [Module α Y] [NormSMulClass α Y] (c : α) :
+lemma eHolderNorm_smul {α} [NormMetric α] [Ring α] [IsNormedRing α] [Module α Y] [NormSMulClass α Y] (c : α) :
     eHolderNorm r (c • f) = ‖c‖₊ * eHolderNorm r f := by
   by_cases hc : ‖c‖₊ = 0
   · rw [nnnorm_eq_zero] at hc
@@ -318,7 +318,7 @@ lemma eHolderNorm_smul {α} [NormedRing α] [Module α Y] [NormSMulClass α Y] (
     intro h
     exact h.eHolderNorm_lt_top.ne hf
 
-lemma MemHolder.nnHolderNorm_smul {α} [NormedRing α] [Module α Y] [NormSMulClass α Y]
+lemma MemHolder.nnHolderNorm_smul {α} [NormMetric α] [Ring α] [IsNormedRing α] [Module α Y] [NormSMulClass α Y]
     (hf : MemHolder r f) (c : α) :
     nnHolderNorm r (c • f) = ‖c‖₊ * nnHolderNorm r f := by
   rw [← ENNReal.coe_inj, coe_mul, hf.coe_nnHolderNorm_eq_eHolderNorm,

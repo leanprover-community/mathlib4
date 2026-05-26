@@ -21,9 +21,9 @@ taking values in the continuous alternating maps in `n` variables.
 @[expose] public section
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
+  [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
   {n : ℕ}
 
 namespace ContinuousAlternatingMap

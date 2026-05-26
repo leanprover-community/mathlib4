@@ -43,7 +43,7 @@ section
 
 /-- info: Ring.toNonAssocRing.toNonUnitalNonAssocSemiring -/
 #guard_msgs in
-variable {A : Type} [NormedRing A] [NormedAlgebra ℂ A] [StarRing A]
+variable {A : Type} [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra ℂ A] [StarRing A]
   [CStarRing A] [StarModule ℂ A] (x : A) in
 #synth NonUnitalNonAssocSemiring (StarAlgebra.elemental ℂ x)
 

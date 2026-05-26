@@ -30,7 +30,7 @@ subspace as a submodule of `E`.
 
 @[expose] public section
 
-variable {M : Type*} [SeminormedCommGroup M]
+variable {M : Type*} [NormPseudoMetric M] [CommGroup M] [IsNormedGroup M]
 
 variable (M) in
 /-- The null subgroup with respect to the norm. -/
@@ -52,7 +52,7 @@ lemma isClosed_nullSubgroup : IsClosed (nullSubgroup M : Set M) := by
 lemma mem_nullSubgroup_iff {x : M} : x ∈ nullSubgroup M ↔ ‖x‖ = 0 := Iff.rfl
 
 variable {𝕜 E : Type*}
-variable [SeminormedAddCommGroup E] [SeminormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 variable (𝕜 E) in
 /-- The null space with respect to the norm. -/

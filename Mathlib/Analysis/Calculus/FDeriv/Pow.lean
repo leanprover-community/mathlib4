@@ -29,7 +29,7 @@ public section
 variable {𝕜 𝔸 E : Type*}
 
 section NormedRing
-variable [NontriviallyNormedField 𝕜] [NormedRing 𝔸] [NormedAddCommGroup E]
+variable [NontriviallyNormedField 𝕜] [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 variable [NormedAlgebra 𝕜 𝔸] [NormedSpace 𝕜 E] {f : E → 𝔸} {f' : E →L[𝕜] 𝔸} {x : E} {s : Set E}
 
 open scoped RightActions
@@ -158,7 +158,7 @@ theorem fderivWithin_pow_ring' {s : Set 𝔸} {x : 𝔸} (n : ℕ) (hxs : Unique
 end NormedRing
 
 section NormedCommRing
-variable [NontriviallyNormedField 𝕜] [NormedCommRing 𝔸] [NormedAddCommGroup E]
+variable [NontriviallyNormedField 𝕜] [NormMetric 𝔸] [CommRing 𝔸] [IsNormedRing 𝔸] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 variable [NormedAlgebra 𝕜 𝔸] [NormedSpace 𝕜 E] {f : E → 𝔸} {f' : E →L[𝕜] 𝔸} {x : E} {s : Set E}
 
 private theorem aux_sum_eq_pow (n : ℕ) :

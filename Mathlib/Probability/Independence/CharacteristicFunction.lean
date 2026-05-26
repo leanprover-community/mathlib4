@@ -30,9 +30,9 @@ variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
 section IndepFun
 
 variable [IsFiniteMeasure P] {E F : Type*}
-  {mE : MeasurableSpace E} [NormedAddCommGroup E]
+  {mE : MeasurableSpace E} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
   [BorelSpace E] [SecondCountableTopology E]
-  {mF : MeasurableSpace F} [NormedAddCommGroup F] [CompleteSpace F]
+  {mF : MeasurableSpace F} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [CompleteSpace F]
   [BorelSpace F] [SecondCountableTopology F]
   {X : Ω → E} {Y : Ω → F}
 
@@ -128,7 +128,7 @@ variable {ι : Type*} {s : Finset ι}
 
 section Sum
 
-variable {E : Type*} [MeasurableSpace E] [NormedAddCommGroup E]
+variable {E : Type*} [MeasurableSpace E] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
     [BorelSpace E] [SecondCountableTopology E] {X : ι → Ω → E}
 
 lemma iIndepFun.charFunDual_map_finsetSum_eq_prod [NormedSpace ℝ E]
@@ -225,7 +225,7 @@ lemma charFun_map_sum_pi_eq_prod [Fintype ι] [InnerProductSpace ℝ E]
 end Sum
 
 variable [Fintype ι] [IsProbabilityMeasure P] {E : ι → Type*}
-  {mE : ∀ i, MeasurableSpace (E i)} [∀ i, NormedAddCommGroup (E i)] [∀ i, CompleteSpace (E i)]
+  {mE : ∀ i, MeasurableSpace (E i)} [∀ i, NormMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] [∀ i, CompleteSpace (E i)]
   [∀ i, BorelSpace (E i)] [∀ i, SecondCountableTopology (E i)] {X : (i : ι) → Ω → E i}
 
 section InnerProductSpace

@@ -225,7 +225,7 @@ end Continuous
 
 section fderiv
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {s : Set E} {a : E}
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] {f : E → ℝ} {s : Set E} {a : E}
   {f' : StrongDual ℝ E} {n : ℕ∞}
 
 theorem HasStrictFDerivAt.arsinh (hf : HasStrictFDerivAt f f' a) :

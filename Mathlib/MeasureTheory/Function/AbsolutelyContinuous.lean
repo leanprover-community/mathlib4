@@ -57,7 +57,7 @@ absolutely continuous
 
 @[expose] public section
 
-variable {X F : Type*} [PseudoMetricSpace X] [SeminormedAddCommGroup F]
+variable {X F : Type*} [PseudoMetricSpace X] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F]
 
 open Set Filter Function MeasureTheory
 
@@ -206,7 +206,7 @@ theorem sub (hf : AbsolutelyContinuousOnInterval f a b)
     AbsolutelyContinuousOnInterval (f - g) a b := by
   simpa [sub_eq_add_neg] using hf.add (hg.neg)
 
-theorem const_smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
+theorem const_smul {M : Type*} [NormPseudoMetric M] [Ring M] [IsNormedRing M] [Module M F] [NormSMulClass M F]
     (α : M) (hf : AbsolutelyContinuousOnInterval f a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ α • f x) a b := by
   apply squeeze_zero (fun t ↦ ?_) (fun t ↦ ?_) (by simpa using hf.const_mul ‖α‖)
@@ -254,7 +254,7 @@ theorem exists_bound (hf : AbsolutelyContinuousOnInterval f a b) :
 /-- If `f` and `g` are absolutely continuous on `uIcc a b`, then `f • g` is absolutely continuous
 on `uIcc a b`. -/
 @[to_fun]
-theorem smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
+theorem smul {M : Type*} [NormPseudoMetric M] [Ring M] [IsNormedRing M] [Module M F] [NormSMulClass M F]
     {f : ℝ → M} {g : ℝ → F}
     (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
     AbsolutelyContinuousOnInterval (f • g) a b := by
@@ -309,7 +309,7 @@ theorem _root_.LipschitzOnWith.absolutelyContinuousOnInterval {f : ℝ → X} {K
     _ = ε := by field
 
 /-- If `f` is `C^1` on `uIcc a b`, then `f` is absolutely continuous on `uIcc a b`. -/
-theorem _root_.ContDiffOn.absolutelyContinuousOnInterval {E : Type*} [NormedAddCommGroup E]
+theorem _root_.ContDiffOn.absolutelyContinuousOnInterval {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
     [NormedSpace ℝ E] {f : ℝ → E} (hf : ContDiffOn ℝ 1 f (uIcc a b)) :
     AbsolutelyContinuousOnInterval f a b := by
   obtain ⟨K, hK⟩ := hf.exists_lipschitzOnWith (by decide) (convex_Icc _ _) isCompact_Icc

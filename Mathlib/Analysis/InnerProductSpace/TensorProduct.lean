@@ -47,10 +47,10 @@ inner product spaces.
 @[expose] public section
 
 variable {𝕜 E F G H : Type*} [RCLike 𝕜]
-  [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-  [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-  [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
-  [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [InnerProductSpace 𝕜 F]
+  [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [InnerProductSpace 𝕜 G]
+  [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] [InnerProductSpace 𝕜 H]
 
 open scoped TensorProduct
 
@@ -131,18 +131,20 @@ private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
   rw [inner_mapIncl_mapIncl, inner_self y e f, RCLike.ofReal_re]
   exact Finset.sum_nonneg fun _ _ ↦ sq_nonneg _
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (E ⊗[𝕜] F) :=
+noncomputable instance instNormMetric : NormMetric (E ⊗[𝕜] F) :=
   letI : InnerProductSpace.Core 𝕜 (E ⊗[𝕜] F) :=
   { conj_inner_symm x y :=
       x.induction_on (by simp [inner]) (y.induction_on (by simp [inner]) (by simp)
         (by simp_all [inner])) (by simp_all [inner])
     add_left _ _ _ := LinearMap.map_add₂ _ _ _ _
     smul_left _ _ _ := LinearMap.map_smulₛₗ₂ _ _ _ _
-    definite := TensorProduct.inner_definite
-    re_inner_nonneg := TensorProduct.re_inner_self_nonneg }
-  this.toNormedAddCommGroup
+    definite := private TensorProduct.inner_definite
+    re_inner_nonneg := private TensorProduct.re_inner_self_nonneg }
+  this.toNormMetric
+
+instance instIsNormedAddGroup : IsNormedAddGroup (E ⊗[𝕜] F) where
+
+noncomputable example : NormedAddCommGroup (E ⊗[𝕜] F) where
 
 instance instInnerProductSpace : InnerProductSpace 𝕜 (E ⊗[𝕜] F) := .ofCore _
 

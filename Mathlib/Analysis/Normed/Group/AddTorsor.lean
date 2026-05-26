@@ -34,17 +34,17 @@ structure and require the distance to be the same as results from the
 norm (which in fact implies the distance yields a pseudometric space, but
 bundling just the distance and using an instance for the pseudometric space
 results in type class problems). -/
-class NormedAddTorsor (V : outParam Type*) (P : Type*) [SeminormedAddCommGroup V]
+class NormedAddTorsor (V : outParam Type*) (P : Type*) [NormPseudoMetric V] [AddCommGroup V]
   [PseudoMetricSpace P] extends AddTorsor V P where
   dist_eq_norm' : ∀ x y : P, dist x y = ‖(x -ᵥ y : V)‖
 
 /-- Shortcut instance to help typeclass inference out. -/
-instance (priority := 100) NormedAddTorsor.toAddTorsor' {V P : Type*} [NormedAddCommGroup V]
+instance (priority := 100) NormedAddTorsor.toAddTorsor' {V P : Type*} [NormMetric V] [AddCommGroup V]
     [MetricSpace P] [NormedAddTorsor V P] : AddTorsor V P :=
   NormedAddTorsor.toAddTorsor
 
-variable {α V P W Q : Type*} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
-  [SeminormedAddCommGroup W] [PseudoMetricSpace Q] [NormedAddTorsor W Q]
+variable {α V P W Q : Type*} [NormPseudoMetric V] [AddCommGroup V] [IsNormedAddGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
+  [NormPseudoMetric W] [AddCommGroup W] [IsNormedAddGroup W] [PseudoMetricSpace Q] [NormedAddTorsor W Q]
 
 instance (priority := 100) NormedAddTorsor.to_isIsIsometricVAdd : IsIsometricVAdd V P :=
   ⟨fun c => Isometry.of_dist_eq fun x y => by
@@ -70,6 +70,7 @@ section
 
 variable (V W)
 
+omit [IsNormedAddGroup V] in
 /-- The distance equals the norm of subtracting two points. In this
 lemma, it is necessary to have `V` as an explicit argument; otherwise
 `rw dist_eq_norm_vsub` sometimes doesn't work. -/
@@ -80,6 +81,7 @@ theorem nndist_eq_nnnorm_vsub (x y : P) : nndist x y = ‖x -ᵥ y‖₊ :=
   NNReal.eq <| dist_eq_norm_vsub V x y
 
 
+omit [IsNormedAddGroup V] in
 /-- The distance equals the norm of subtracting two points. In this
 lemma, it is necessary to have `V` as an explicit argument; otherwise
 `rw dist_eq_norm_vsub'` sometimes doesn't work. -/
@@ -91,9 +93,11 @@ theorem nndist_eq_nnnorm_vsub' (x y : P) : nndist x y = ‖y -ᵥ x‖₊ :=
 
 end
 
+omit [IsNormedAddGroup V] in
 theorem dist_vadd_cancel_left (v : V) (x y : P) : dist (v +ᵥ x) (v +ᵥ y) = dist x y :=
   dist_vadd _ _ _
 
+omit [IsNormedAddGroup V] in
 theorem nndist_vadd_cancel_left (v : V) (x y : P) : nndist (v +ᵥ x) (v +ᵥ y) = nndist x y :=
   NNReal.eq <| dist_vadd_cancel_left _ _ _
 
@@ -105,6 +109,7 @@ theorem dist_vadd_cancel_right (v₁ v₂ : V) (x : P) : dist (v₁ +ᵥ x) (v�
 theorem nndist_vadd_cancel_right (v₁ v₂ : V) (x : P) : nndist (v₁ +ᵥ x) (v₂ +ᵥ x) = nndist v₁ v₂ :=
   NNReal.eq <| dist_vadd_cancel_right _ _ _
 
+omit [IsNormedAddGroup V] in
 @[simp]
 theorem dist_vadd_left (v : V) (x : P) : dist (v +ᵥ x) x = ‖v‖ := by
   simp [dist_eq_norm_vsub V _ x]
@@ -113,6 +118,7 @@ theorem dist_vadd_left (v : V) (x : P) : dist (v +ᵥ x) x = ‖v‖ := by
 theorem nndist_vadd_left (v : V) (x : P) : nndist (v +ᵥ x) x = ‖v‖₊ :=
   NNReal.eq <| dist_vadd_left _ _
 
+omit [IsNormedAddGroup V] in
 @[simp]
 theorem dist_vadd_right (v : V) (x : P) : dist x (v +ᵥ x) = ‖v‖ := by rw [dist_comm, dist_vadd_left]
 
@@ -182,7 +188,7 @@ theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
 /-- The pseudodistance defines a pseudometric space structure on the torsor. This
 is not an instance because it depends on `V` to define a `MetricSpace P`. -/
 @[implicit_reducible]
-def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [SeminormedAddCommGroup V]
+def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [NormPseudoMetric V] [AddCommGroup V] [IsNormedAddGroup V]
     [AddTorsor V P] : PseudoMetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
   dist_self x := by simp
@@ -194,7 +200,7 @@ def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [SeminormedAd
 /-- The distance defines a metric space structure on the torsor. This
 is not an instance because it depends on `V` to define a `MetricSpace P`. -/
 @[implicit_reducible]
-def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [NormedAddCommGroup V]
+def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V]
     [AddTorsor V P] : MetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
   dist_self x := by simp

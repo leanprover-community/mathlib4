@@ -62,8 +62,8 @@ public noncomputable section
 open Manifold Set TopologicalSpace
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+  {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
   {H : Type*} [TopologicalSpace H]
   {G : Type*} [TopologicalSpace G]
   (I : ModelWithCorners 𝕜 E H) (J : ModelWithCorners 𝕜 F G)

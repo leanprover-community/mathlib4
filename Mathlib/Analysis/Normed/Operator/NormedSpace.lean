@@ -27,7 +27,7 @@ open scoped NNReal
 variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G : Type*}
 
 section SeminormedAddCommGroup
-variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup G]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G]
   [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G]
   {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} (f : E →SL[σ₁₂] F)
@@ -87,8 +87,8 @@ end SeminormedAddCommGroup
 
 section Normed
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
-  [NormedAddCommGroup Fₗ]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G]
+  [NormMetric Fₗ] [AddCommGroup Fₗ] [IsNormedAddGroup Fₗ]
 
 open Metric ContinuousLinearMap
 
@@ -162,14 +162,11 @@ theorem opNorm_zero_iff [RingHomIsometric σ₁₂] : ‖f‖ = 0 ↔ f = 0 :=
       rintro rfl
       exact opNorm_zero)
 
-/-- Continuous linear maps themselves form a normed space with respect to the operator norm. -/
-instance toNormedAddCommGroup [RingHomIsometric σ₁₂] : NormedAddCommGroup (E →SL[σ₁₂] F) :=
-  NormedAddCommGroup.ofSeparation fun f => (opNorm_zero_iff f).mp
+instance toNormMetric [RingHomIsometric σ₁₂] : NormMetric (E →SL[σ₁₂] F) :=
+  .ofAddSeparation fun f => (opNorm_zero_iff f).mp
 
 /-- Continuous linear maps form a normed ring with respect to the operator norm. -/
-instance toNormedRing : NormedRing (E →L[𝕜] E) where
-  __ := toNormedAddCommGroup
-  __ := toSeminormedRing
+example : NormedRing (E →L[𝕜] E) where
 
 /-- If a continuous linear map is a topology embedding, then it is expands the distances
 by a positive factor. -/
@@ -187,7 +184,7 @@ variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [Nontr
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G] [NormedSpace 𝕜 Fₗ]
   {σ₂₃ : 𝕜₂ →+* 𝕜₃}
 
-variable {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₂'] {F' : Type*} [NormedAddCommGroup F']
+variable {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₂'] {F' : Type*} [NormMetric F'] [AddCommGroup F'] [IsNormedAddGroup F']
   [NormedSpace 𝕜₂' F'] {σ₂' : 𝕜₂' →+* 𝕜₂} {σ₂'' : 𝕜₂ →+* 𝕜₂'} {σ₂₃' : 𝕜₂' →+* 𝕜₃}
   [RingHomInvPair σ₂' σ₂''] [RingHomInvPair σ₂'' σ₂'] [RingHomCompTriple σ₂' σ₂₃ σ₂₃']
   [RingHomCompTriple σ₂'' σ₂₃' σ₂₃] [RingHomIsometric σ₂₃] [RingHomIsometric σ₂']
@@ -290,13 +287,13 @@ end Normed
 /-- A bounded bilinear form `B` in a real normed space is *coercive*
 if there is some positive constant C such that `C * ‖u‖ * ‖u‖ ≤ B u u`.
 -/
-def IsCoercive [SeminormedAddCommGroup E] [NormedSpace ℝ E] (B : E →L[ℝ] E →L[ℝ] ℝ) : Prop :=
+def IsCoercive [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] (B : E →L[ℝ] E →L[ℝ] ℝ) : Prop :=
   ∃ C, 0 < C ∧ ∀ u, C * ‖u‖ * ‖u‖ ≤ B u u
 
 section Equicontinuous
 
 variable {ι : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
-  [RingHomIsometric σ₁₂] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
+  [RingHomIsometric σ₁₂] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] (f : ι → E →SL[σ₁₂] F)
 
 /-- Equivalent characterizations for equicontinuity of a family of continuous linear maps
@@ -357,16 +354,16 @@ variable {ι : Type*} [Fintype ι] [DecidableEq ι]
     (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : ι → Type*)
 
 /-- The injection `x ↦ Pi.single i x` as a linear isometry. -/
-protected def LinearIsometry.single [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+protected def LinearIsometry.single [∀ i, NormPseudoMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
     (i : ι) : E i →ₗᵢ[𝕜] Π j, E j :=
   (LinearMap.single 𝕜 E i).toLinearIsometry (.single i)
 
-lemma ContinuousLinearMap.norm_single_le_one [∀ i, SeminormedAddCommGroup (E i)]
+lemma ContinuousLinearMap.norm_single_le_one [∀ i, NormPseudoMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] (i : ι) :
     ‖ContinuousLinearMap.single 𝕜 E i‖ ≤ 1 :=
   (LinearIsometry.single 𝕜 E i).norm_toContinuousLinearMap_le
 
-lemma ContinuousLinearMap.norm_single [∀ i, SeminormedAddCommGroup (E i)]
+lemma ContinuousLinearMap.norm_single [∀ i, NormPseudoMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] (i : ι) [NontrivialTopology (E i)] :
     ‖ContinuousLinearMap.single 𝕜 E i‖ = 1 :=
   (LinearIsometry.single 𝕜 E i).norm_toContinuousLinearMap
@@ -378,42 +375,42 @@ section inl_inr
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E F : Type*)
 
 /-- The injection `x ↦ LinearMap.inl E F x` as a linear isometry. -/
-protected def LinearIsometry.inl [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] : E →ₗᵢ[𝕜] E × F :=
+protected def LinearIsometry.inl [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+    [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] : E →ₗᵢ[𝕜] E × F :=
   (LinearMap.inl 𝕜 E F).toLinearIsometry .inl
 
 @[simp]
-lemma LinearIsometry.inl_apply [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] (x : E) :
+lemma LinearIsometry.inl_apply [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+    [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] (x : E) :
     LinearIsometry.inl 𝕜 E F x = (x, 0) := rfl
 
 /-- The injection `x ↦ LinearMap.inr E F x` as a linear isometry. -/
-protected def LinearIsometry.inr [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] : F →ₗᵢ[𝕜] E × F :=
+protected def LinearIsometry.inr [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+    [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] : F →ₗᵢ[𝕜] E × F :=
   (LinearMap.inr 𝕜 E F).toLinearIsometry .inr
 
 @[simp]
-lemma LinearIsometry.inr_apply [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] (y : F) :
+lemma LinearIsometry.inr_apply [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+    [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] (y : F) :
     LinearIsometry.inr 𝕜 E F y = (0, y) := rfl
 
-lemma ContinuousLinearMap.norm_inl_le_one [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] :
+lemma ContinuousLinearMap.norm_inl_le_one [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+    [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] :
     ‖ContinuousLinearMap.inl 𝕜 E F‖ ≤ 1 :=
   (LinearIsometry.inl 𝕜 E F).norm_toContinuousLinearMap_le
 
-lemma ContinuousLinearMap.norm_inr_le_one [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] :
+lemma ContinuousLinearMap.norm_inr_le_one [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+    [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] :
     ‖ContinuousLinearMap.inr 𝕜 E F‖ ≤ 1 :=
   (LinearIsometry.inr 𝕜 E F).norm_toContinuousLinearMap_le
 
-lemma ContinuousLinearMap.norm_inl [SeminormedAddCommGroup E] [NontrivialTopology E]
-    [NormedSpace 𝕜 E] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] :
+lemma ContinuousLinearMap.norm_inl [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NontrivialTopology E]
+    [NormedSpace 𝕜 E] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] :
     ‖ContinuousLinearMap.inl 𝕜 E F‖ = 1 :=
   (LinearIsometry.inl 𝕜 E F).norm_toContinuousLinearMap
 
-lemma ContinuousLinearMap.norm_inr [SeminormedAddCommGroup E] [NontrivialTopology E]
-    [NormedSpace 𝕜 E] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] [NontrivialTopology F] :
+lemma ContinuousLinearMap.norm_inr [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NontrivialTopology E]
+    [NormedSpace 𝕜 E] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] [NontrivialTopology F] :
     ‖ContinuousLinearMap.inr 𝕜 E F‖ = 1 :=
   (LinearIsometry.inr 𝕜 E F).norm_toContinuousLinearMap
 

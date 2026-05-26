@@ -27,7 +27,7 @@ public section
 open Function Set Pointwise
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
   {γ γ' : ℝ → E} {v : ℝ → E → E} {s s' : Set ℝ} {t₀ : ℝ}
 
 /-! ### Translation lemmas -/

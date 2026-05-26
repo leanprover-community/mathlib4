@@ -41,9 +41,9 @@ open scoped Topology ContDiff
 
 attribute [local instance 1001] NormedAddCommGroup.toAddCommGroup AddCommGroup.toAddCommMonoid
 
-variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X] {s t : Set E} {f : E → F}
+variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
+  {X : Type*} [NormMetric X] [AddCommGroup X] [IsNormedAddGroup X] [NormedSpace 𝕜 X] {s t : Set E} {f : E → F}
   {g : F → G} {x x₀ : E} {m n : ℕ∞ω}
 
 section comp
@@ -419,7 +419,7 @@ theorem contDiff_prod_iff (f : E → F × G) :
 section NAry
 
 variable {E₁ E₂ E₃ : Type*}
-variable [NormedAddCommGroup E₁] [NormedAddCommGroup E₂] [NormedAddCommGroup E₃]
+variable [NormMetric E₁] [AddCommGroup E₁] [IsNormedAddGroup E₁] [NormMetric E₂] [AddCommGroup E₂] [IsNormedAddGroup E₂] [NormMetric E₃] [AddCommGroup E₃] [IsNormedAddGroup E₃]
   [NormedSpace 𝕜 E₁] [NormedSpace 𝕜 E₂] [NormedSpace 𝕜 E₃]
 
 theorem ContDiff.comp₂ {g : E₁ × E₂ → G} {f₁ : F → E₁} {f₂ : F → E₂} (hg : ContDiff 𝕜 n g)

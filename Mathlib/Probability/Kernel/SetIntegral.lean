@@ -21,7 +21,7 @@ open MeasureTheory ProbabilityTheory
 namespace ProbabilityTheory.Kernel
 
 variable {X Y E : Type*} {mX : MeasurableSpace X} {mY : MeasurableSpace Y}
-  [NormedAddCommGroup E] [NormedSpace ℝ E] (κ : Kernel X Y)
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] (κ : Kernel X Y)
 
 lemma integral_integral_indicator (μ : Measure X) (f : X → Y → E) {s : Set X}
     (hs : MeasurableSet s) :

@@ -50,8 +50,8 @@ public section
 
 open MeasureTheory Measure Module Topology
 
-variable {E F G W : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F]
-  [NormedSpace ℝ F] [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedAddCommGroup W]
+variable {E F G W : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
+  [NormedSpace ℝ F] [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace ℝ G] [NormMetric W] [AddCommGroup W] [IsNormedAddGroup W]
   [NormedSpace ℝ W] [MeasurableSpace E] {μ : Measure E}
 
 lemma integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable_aux1 [SigmaFinite μ]

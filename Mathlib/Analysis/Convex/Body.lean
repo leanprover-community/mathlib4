@@ -171,7 +171,7 @@ end TVS
 
 section SeminormedAddCommGroup
 
-variable [SeminormedAddCommGroup V] [NormedSpace ℝ V] (K L : ConvexBody V)
+variable [NormPseudoMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace ℝ V] (K L : ConvexBody V)
 
 protected theorem isBounded : Bornology.IsBounded (K : Set V) :=
   K.isCompact.isBounded
@@ -233,7 +233,7 @@ end SeminormedAddCommGroup
 
 section NormedAddCommGroup
 
-variable [NormedAddCommGroup V] [NormedSpace ℝ V]
+variable [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace ℝ V]
 
 /-- Convex bodies in a fixed normed space `V` form a metric space under the Hausdorff metric. -/
 noncomputable instance : MetricSpace (ConvexBody V) where

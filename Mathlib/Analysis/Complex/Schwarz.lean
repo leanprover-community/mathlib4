@@ -129,7 +129,7 @@ public section
 section NormedSpace
 
 variable {E F : Type*}
-  [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedAddCommGroup F] [NormedSpace ℂ F]
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℂ E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℂ F]
   {R R₁ R₂ : ℝ} {f : E → F} {c z : E}
 
 open AffineMap in
@@ -245,7 +245,7 @@ end NormedSpace
 
 section DimOne
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {R R₁ R₂ : ℝ} {f : ℂ → E}
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℂ E] {R R₁ R₂ : ℝ} {f : ℂ → E}
   {c z z₀ : ℂ}
 
 /-- The **Schwarz Lemma**: if `f : ℂ → E` is complex analytic

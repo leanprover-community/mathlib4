@@ -31,9 +31,9 @@ open RealInnerProductSpace
 
 namespace EuclideanGeometry
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
-variable {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂] [MetricSpace P₂]
+variable {V₂ P₂ : Type*} [NormMetric V₂] [AddCommGroup V₂] [IsNormedAddGroup V₂] [InnerProductSpace ℝ V₂] [MetricSpace P₂]
 variable [NormedAddTorsor V₂ P₂]
 
 /-- The second intersection of a sphere with a line through a point on that sphere; that point

@@ -45,7 +45,7 @@ However, continuity in the pair (map, vector) needs the domain to be a locally b
 We have no typeclass for a locally bounded TVS,
 so we require it to be a seminormed space instead. -/
 instance ContinuousAlternatingMap.instContinuousEval {𝕜 ι E F : Type*}
-    [NormedField 𝕜] [Finite ι] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [NormedField 𝕜] [Finite ι] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
     [TopologicalSpace F] [AddCommGroup F] [IsTopologicalAddGroup F] [Module 𝕜 F] :
     ContinuousEval (E [⋀^ι]→L[𝕜] F) (ι → E) F :=
   .of_continuous_forget continuous_toContinuousMultilinearMap
@@ -55,9 +55,9 @@ section Seminorm
 universe u wE wF wG v
 variable {𝕜 : Type u} {n : ℕ} {E : Type wE} {F : Type wF} {G : Type wG} {ι : Type v}
   [NontriviallyNormedField 𝕜]
-  [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
-  [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+  [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+  [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
+  [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
 
 /-!
 ### Continuity properties of alternating maps
@@ -171,13 +171,15 @@ variable [Fintype ι] {f : E [⋀^ι]→L[𝕜] F} {m : ι → E}
 theorem bound (f : E [⋀^ι]→L[𝕜] F) : ∃ (C : ℝ), 0 < C ∧ (∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) :=
   f.toContinuousMultilinearMap.bound
 
+instance instNormPseudoMetric : NormPseudoMetric (E [⋀^ι]→L[𝕜] F) where
+  toPseudoMetricSpace := .induced toContinuousMultilinearMap inferInstance
+  norm f := ‖f.toContinuousMultilinearMap‖
+
 /-- Continuous alternating maps form a seminormed additive commutative group.
 We override projection to `PseudoMetricSpace` to ensure that instances commute
 in `with_reducible_and_instances`. -/
-instance instSeminormedAddCommGroup : SeminormedAddCommGroup (E [⋀^ι]→L[𝕜] F) where
-  toPseudoMetricSpace := .induced toContinuousMultilinearMap inferInstance
-  __ := SeminormedAddCommGroup.induced _ _ (toMultilinearAddHom : E [⋀^ι]→L[𝕜] F →+ _)
-  norm f := ‖f.toContinuousMultilinearMap‖
+instance instIsNormedAddGroup : IsNormedAddGroup (E [⋀^ι]→L[𝕜] F) :=
+  .induced _ _ (toMultilinearAddHom : E [⋀^ι]→L[𝕜] F →+ _)
 
 @[simp] theorem norm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖ = ‖f‖ := rfl
 @[simp] theorem nnnorm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖₊ = ‖f‖₊ := rfl
@@ -267,11 +269,11 @@ theorem opNNNorm_prod (f : E [⋀^ι]→L[𝕜] F) (g : E [⋀^ι]→L[𝕜] G) 
 theorem opNorm_prod (f : E [⋀^ι]→L[𝕜] F) (g : E [⋀^ι]→L[𝕜] G) : ‖f.prod g‖ = max (‖f‖) (‖g‖) :=
   f.1.opNorm_prod g.1
 
-theorem opNNNorm_pi {ι' : Type*} [Fintype ι'] {F : ι' → Type*} [∀ i', SeminormedAddCommGroup (F i')]
+theorem opNNNorm_pi {ι' : Type*} [Fintype ι'] {F : ι' → Type*} [∀ i', NormPseudoMetric (F i')] [∀ i', AddCommGroup (F i')] [∀ i', IsNormedAddGroup (F i')]
     [∀ i', NormedSpace 𝕜 (F i')] (f : ∀ i', E [⋀^ι]→L[𝕜] F i') : ‖pi f‖₊ = ‖f‖₊ :=
   ContinuousMultilinearMap.opNNNorm_pi fun i ↦ (f i).1
 
-theorem opNorm_pi {ι' : Type*} [Fintype ι'] {F : ι' → Type*} [∀ i', SeminormedAddCommGroup (F i')]
+theorem opNorm_pi {ι' : Type*} [Fintype ι'] {F : ι' → Type*} [∀ i', NormPseudoMetric (F i')] [∀ i', AddCommGroup (F i')] [∀ i', IsNormedAddGroup (F i')]
     [∀ i', NormedSpace 𝕜 (F i')] (f : ∀ i', E [⋀^ι]→L[𝕜] F i') : ‖pi f‖ = ‖f‖ :=
   ContinuousMultilinearMap.opNorm_pi fun i ↦ (f i).1
 
@@ -341,7 +343,7 @@ def prodLIE : (E [⋀^ι]→L[𝕜] F) × (E [⋀^ι]→L[𝕜] G) ≃ₗᵢ[�
 variable (𝕜 E) in
 /-- `ContinuousAlternatingMap.pi` as a `LinearIsometryEquiv`. -/
 @[simps!]
-def piLIE {ι' : Type*} [Fintype ι'] {F : ι' → Type*} [∀ i', SeminormedAddCommGroup (F i')]
+def piLIE {ι' : Type*} [Fintype ι'] {F : ι' → Type*} [∀ i', NormPseudoMetric (F i')] [∀ i', AddCommGroup (F i')] [∀ i', IsNormedAddGroup (F i')]
     [∀ i', NormedSpace 𝕜 (F i')] :
     (∀ i', E [⋀^ι]→L[𝕜] F i') ≃ₗᵢ[𝕜] (E [⋀^ι]→L[𝕜] (∀ i, F i)) where
   toLinearEquiv := piLinearEquiv
@@ -618,15 +620,16 @@ universe u wE wF v
 variable {𝕜 : Type u} {n : ℕ} {E : Type wE} {F : Type wF} {ι : Type v}
   [Fintype ι]
   [NontriviallyNormedField 𝕜]
-  [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 
 namespace ContinuousAlternatingMap
 
+instance instNormMetric : NormMetric (E [⋀^ι]→L[𝕜] F) :=
+  NormMetric.ofAddSeparation fun _f hf ↦ toContinuousMultilinearMap_injective <| norm_eq_zero.mp hf
+
 /-- Continuous alternating maps themselves form a normed group with respect to the operator norm. -/
-instance instNormedAddCommGroup : NormedAddCommGroup (E [⋀^ι]→L[𝕜] F) :=
-  NormedAddCommGroup.ofSeparation fun _f hf ↦
-    toContinuousMultilinearMap_injective <| norm_eq_zero.mp hf
+example : NormedAddCommGroup (E [⋀^ι]→L[𝕜] F) where
 
 variable (𝕜 F) in
 theorem norm_ofSubsingleton_id [Subsingleton ι] [Nontrivial F] (i : ι) :

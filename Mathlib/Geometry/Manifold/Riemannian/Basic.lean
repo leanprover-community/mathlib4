@@ -32,7 +32,7 @@ The following code block is the standard way to say "Let `M` be a `C^∞` Rieman
 ```
 open scoped Bundle
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
   {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold I ∞ M]
   [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
@@ -59,7 +59,7 @@ local notation "⟪" x ", " y "⟫" => inner ℝ x y
 noncomputable section
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {n : ℕ∞ω}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
@@ -94,7 +94,7 @@ satisfies the `IsRiemannianManifold 𝓘(ℝ, E) E` predicate, i.e., the extende
 two points is the infimum of the length of paths between these points.
 -/
 
-variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [InnerProductSpace ℝ F]
 
 set_option backward.isDefEq.respectTransparency false in
 variable (F) in
@@ -213,6 +213,21 @@ open scoped NNReal
 variable [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
   [IsManifold I 1 M] [IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]
 
+/-- Register on the tangent space to a normed vector space the same `NormMetric` structure
+as in the vector space.
+
+Should not be a global instance, as it does not coincide definitionally with the Riemannian
+structure for inner product spaces, but can be activated locally. -/
+@[instance_reducible]
+def normMetricTangentSpaceVectorSpace (x : E) :
+    NormMetric (TangentSpace 𝓘(ℝ, E) x) :=
+  inferInstanceAs (NormMetric E)
+
+lemma isNormedAddGroupTangentSpaceVectorSpace (x : E) :
+    letI := normMetricTangentSpaceVectorSpace x
+    IsNormedAddGroup (TangentSpace 𝓘(ℝ, E) x) :=
+  inferInstanceAs (IsNormedAddGroup E)
+
 /-- Register on the tangent space to a normed vector space the same `NormedAddCommGroup` structure
 as in the vector space.
 
@@ -220,10 +235,11 @@ Should not be a global instance, as it does not coincide definitionally with the
 structure for inner product spaces, but can be activated locally. -/
 @[instance_reducible]
 def normedAddCommGroupTangentSpaceVectorSpace (x : E) :
-    NormedAddCommGroup (TangentSpace 𝓘(ℝ, E) x) :=
-  inferInstanceAs (NormedAddCommGroup E)
+    NormedAddCommGroup (TangentSpace 𝓘(ℝ, E) x) where
+  toNormMetric := normMetricTangentSpaceVectorSpace x
+  toIsNormedAddGroup := isNormedAddGroupTangentSpaceVectorSpace x
 
-attribute [local instance] normedAddCommGroupTangentSpaceVectorSpace
+attribute [local instance] normMetricTangentSpaceVectorSpace isNormedAddGroupTangentSpaceVectorSpace
 
 /-- Register on the tangent space to a normed vector space the same `NormedSpace` structure
 as in the vector space.
@@ -267,7 +283,7 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_comp_lt (x : M) :
   rw [TangentBundle.symmL_trivializationAt h'y] at hy
   have A : (extChartAt I x).symm (extChartAt I x y) = y :=
     (extChartAt I x).left_inv (by simpa using h'y)
-  convert! hy using 3 <;> congr
+  convert! hy
 
 lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
     ∃ C > 0, ∀ᶠ y in 𝓝[range I] (extChartAt I x x),

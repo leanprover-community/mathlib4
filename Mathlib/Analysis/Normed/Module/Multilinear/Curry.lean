@@ -57,9 +57,9 @@ universe u v v' wE wE₁ wE' wEi wG wG'
 
 variable {𝕜 : Type u} {ι : Type v} {ι' : Type v'} {n : ℕ} {E : ι → Type wE}
   {Ei : Fin n.succ → Type wEi} {G : Type wG} {G' : Type wG'} [Fintype ι]
-  [Fintype ι'] [NontriviallyNormedField 𝕜] [∀ i, NormedAddCommGroup (E i)]
-  [∀ i, NormedSpace 𝕜 (E i)] [∀ i, NormedAddCommGroup (Ei i)] [∀ i, NormedSpace 𝕜 (Ei i)]
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+  [Fintype ι'] [NontriviallyNormedField 𝕜] [∀ i, NormMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)]
+  [∀ i, NormedSpace 𝕜 (E i)] [∀ i, NormMetric (Ei i)] [∀ i, AddCommGroup (Ei i)] [∀ i, IsNormedAddGroup (Ei i)] [∀ i, NormedSpace 𝕜 (Ei i)]
+  [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G] [NormMetric G'] [AddCommGroup G'] [IsNormedAddGroup G'] [NormedSpace 𝕜 G']
 
 theorem ContinuousLinearMap.norm_map_removeNth_le {i : Fin (n + 1)}
     (f : Ei i →L[𝕜] ContinuousMultilinearMap 𝕜 (fun j ↦ Ei (i.succAbove j)) G) (m : ∀ i, Ei i) :
@@ -655,8 +655,8 @@ end ContinuousMultilinearMap
 
 namespace ContinuousLinearMap
 
-variable {F G : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {F G : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
+  [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
 
 /-- Given a linear map into continuous multilinear maps
 `B : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F`, one cannot always uncurry it as `G` and `E` might

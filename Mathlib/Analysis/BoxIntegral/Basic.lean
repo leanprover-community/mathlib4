@@ -65,8 +65,8 @@ namespace BoxIntegral
 
 universe u v w
 
-variable {ι : Type u} {E : Type v} {F : Type w} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] {I J : Box ι} {π : TaggedPrepartition I}
+variable {ι : Type u} {E : Type v} {F : Type w} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F] {I J : Box ι} {π : TaggedPrepartition I}
 
 open TaggedPrepartition
 

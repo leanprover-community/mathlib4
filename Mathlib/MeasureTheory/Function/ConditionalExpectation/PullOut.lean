@@ -44,8 +44,8 @@ open scoped NNReal ENNReal Topology MeasureTheory
 namespace MeasureTheory
 
 variable {Ω : Type*} {m mΩ : MeasurableSpace Ω} {μ : Measure Ω}
-  {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedAddCommGroup G] [NormedSpace ℝ G]
+  {E F G : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F] [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace ℝ G]
   [CompleteSpace G] (B : F →L[ℝ] E →L[ℝ] G)
 
 /-- Auxiliary lemma for `condExp_bilin_of_stronglyMeasurable_left`. -/
@@ -72,8 +72,8 @@ theorem condExp_stronglyMeasurable_simpleFunc_bilin [CompleteSpace E]
       μ[fun ω ↦ B (g₁ ω + g₂ ω) (g ω) | m] =ᵐ[μ]
           μ[fun ω ↦ B (g₁ ω) (g ω) | m] + μ[fun ω ↦ B (g₂ ω) (g ω) | m] := by
         simp_rw [B.map_add]
-        obtain ⟨C₁, hC₁⟩ := @SimpleFunc.exists_forall_norm_le _ _ m _ g₁
-        obtain ⟨C₂, hC₂⟩ := @SimpleFunc.exists_forall_norm_le _ _ m _ g₂
+        obtain ⟨C₁, hC₁⟩ := @SimpleFunc.exists_forall_norm_le _ _ m _ _ _ g₁
+        obtain ⟨C₂, hC₂⟩ := @SimpleFunc.exists_forall_norm_le _ _ m _ _ _ g₂
         exact condExp_add
           (B.integrable_of_bilin_of_bdd_left C₁ (g₁.stronglyMeasurable.mono hm).aestronglyMeasurable
             (ae_of_all _ hC₁) hg)

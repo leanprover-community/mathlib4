@@ -27,7 +27,7 @@ open ENNReal Filter NNReal Uniformity Pointwise Topology
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G]
+variable [NormPseudoMetric E] [Group E] [IsNormedGroup E] [NormPseudoMetric F] [Group F] [IsNormedGroup F] [NormPseudoMetric G] [Group G] [IsNormedGroup G]
 
 open Finset
 
@@ -126,25 +126,19 @@ end SeminormedGroup
 section Instances
 
 @[to_additive]
-instance SeminormedGroup.toContinuousENorm [SeminormedGroup E] : ContinuousENorm E where
+instance SeminormedGroup.toContinuousENorm [NormPseudoMetric E] [Group E] [IsNormedGroup E] : ContinuousENorm E where
   continuous_enorm := ENNReal.isOpenEmbedding_coe.continuous.comp continuous_nnnorm'
 
 @[to_additive]
-instance NormedGroup.toENormedMonoid {F : Type*} [NormedGroup F] : ENormedMonoid F where
-  enorm_zero := by simp [enorm_eq_nnnorm]
+instance NormedGroup.toIsENormedMonoid {F : Type*} [NormMetric F] [Group F] [IsNormedGroup F] : IsENormedMonoid F where
   enorm_eq_zero := by simp [enorm_eq_nnnorm]
   enorm_mul_le := by simp [enorm_eq_nnnorm, ← coe_add, nnnorm_mul_le']
-
-@[to_additive]
-instance NormedCommGroup.toENormedCommMonoid [NormedCommGroup E] : ENormedCommMonoid E where
-  __ := NormedGroup.toENormedMonoid
-  __ := ‹NormedCommGroup E›
 
 end Instances
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E} {a : E}
+variable [NormPseudoMetric E] [Group E] [IsNormedGroup E] [NormPseudoMetric F] [Group F] [IsNormedGroup F] [NormPseudoMetric G] [Group G] [IsNormedGroup G] {s : Set E} {a : E}
 
 set_option linter.docPrime false in
 @[to_additive Inseparable.norm_eq_norm]
@@ -214,7 +208,7 @@ end ContinuousENorm
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E} {a : E}
+variable [NormPseudoMetric E] [Group E] [IsNormedGroup E] [NormPseudoMetric F] [Group F] [IsNormedGroup F] [NormPseudoMetric G] [Group G] [IsNormedGroup G] {s : Set E} {a : E}
 
 section
 
@@ -295,7 +289,7 @@ end SeminormedGroup
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
+variable [NormPseudoMetric E] [CommGroup E] [IsNormedGroup E] [NormPseudoMetric F] [CommGroup F] [IsNormedGroup F] {a b : E} {r : ℝ}
 
 @[to_additive]
 theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
@@ -375,7 +369,7 @@ end SeminormedCommGroup
 
 section NormedGroup
 
-variable [NormedGroup E] {a b : E}
+variable [NormMetric E] [Group E] [IsNormedGroup E] {a b : E}
 
 /-- See `tendsto_norm_one` for a version with full neighborhoods. -/
 @[to_additive /-- See `tendsto_norm_zero` for a version with full neighborhoods. -/]
@@ -397,7 +391,7 @@ lemma comap_norm_nhdsGT_zero' : comap norm (𝓝[>] 0) = 𝓝[≠] (1 : E) := by
   simp [nhdsWithin, comap_norm_nhds_one, Set.preimage, Set.compl_def]
 
 @[to_additive]
-theorem tendsto_norm_div_self_nhdsNE {E : Type*} [NormedCommGroup E] (a : E) :
+theorem tendsto_norm_div_self_nhdsNE {E : Type*} [NormMetric E] [CommGroup E] [IsNormedGroup E] (a : E) :
     Tendsto (fun x => ‖x / a‖) (𝓝[≠] a) (𝓝[>] 0) := by
   simp_rw [← norm_inv_mul]
   exact tendsto_norm_inv_mul_self_nhdsNE a

@@ -41,7 +41,7 @@ variable {𝕜 E : Type*}
 
 section AbsolutelyConvexSets
 
-variable [TopologicalSpace E] [AddCommMonoid E] [SeminormedRing 𝕜]
+variable [TopologicalSpace E] [AddCommMonoid E] [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜]
 variable [SMul 𝕜 E]
 variable (𝕜 E) [PartialOrder 𝕜]
 

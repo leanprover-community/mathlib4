@@ -34,29 +34,29 @@ section SpecificFunctions
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare a charted space `M` over the pair `(E, H)`.
-  {E : Type*} [NormedAddCommGroup E]
+  {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*}
   [TopologicalSpace M] [ChartedSpace H M]
   -- declare a charted space `M'` over the pair `(E', H')`.
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  {E' : Type*} [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   -- declare a charted space `M''` over the pair `(E'', H'')`.
-  {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E'']
+  {E'' : Type*} [NormMetric E''] [AddCommGroup E''] [IsNormedAddGroup E''] [NormedSpace 𝕜 E'']
   {H'' : Type*} [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*}
   [TopologicalSpace M''] [ChartedSpace H'' M'']
   -- declare a charted space `N` over the pair `(F, G)`.
   {F : Type*}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
   {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
   -- declare a charted space `N'` over the pair `(F', G')`.
   {F' : Type*}
-  [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
+  [NormMetric F'] [AddCommGroup F'] [IsNormedAddGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
   {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
   -- F₁, F₂, F₃, F₄ are normed spaces
   {F₁ : Type*}
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormedAddCommGroup F₂]
-  [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
-  [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
+  [NormMetric F₁] [AddCommGroup F₁] [IsNormedAddGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormMetric F₂] [AddCommGroup F₂] [IsNormedAddGroup F₂]
+  [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormMetric F₃] [AddCommGroup F₃] [IsNormedAddGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
+  [NormMetric F₄] [AddCommGroup F₄] [IsNormedAddGroup F₄] [NormedSpace 𝕜 F₄]
 
 namespace ContinuousLinearMap
 
@@ -716,7 +716,7 @@ theorem hasMFDerivWithinAt_inl :
 
 theorem hasMFDerivAt_inl :
     HasMFDerivAt% (@Sum.inl M M') q (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
-  simpa [HasMFDerivAt, hasMFDerivWithinAt_univ] using hasMFDerivWithinAt_inl (s := Set.univ)
+  simpa [← hasMFDerivWithinAt_univ] using hasMFDerivWithinAt_inl
 
 theorem hasMFDerivWithinAt_inr {t : Set M'} :
     HasMFDerivAt[t] (@Sum.inr M M') q' (ContinuousLinearMap.id 𝕜 (TangentSpace I q')) := by
@@ -729,7 +729,7 @@ theorem hasMFDerivWithinAt_inr {t : Set M'} :
 
 theorem hasMFDerivAt_inr :
     HasMFDerivAt% (@Sum.inr M M') q' (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
-  simpa [HasMFDerivAt, hasMFDerivWithinAt_univ] using hasMFDerivWithinAt_inr (t := Set.univ)
+  simpa [← hasMFDerivWithinAt_univ] using hasMFDerivWithinAt_inr
 
 theorem mfderivWithin_sumInl (hU : UniqueMDiffWithinAt I s q) :
     mfderiv[s] (@Sum.inl M M') q = ContinuousLinearMap.id 𝕜 (TangentSpace I p) :=
@@ -926,7 +926,7 @@ end Group
 section AlgebraOverRing
 open scoped RightActions
 
-variable {z : M} {F' : Type*} [NormedRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
+variable {z : M} {F' : Type*} [NormMetric F'] [Ring F'] [IsNormedRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
   {p' q' : TangentSpace I z →L[𝕜] F'}
 
 theorem HasMFDerivWithinAt.mul' (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p')
@@ -976,7 +976,7 @@ end AlgebraOverRing
 
 section AlgebraOverCommRing
 
-variable {z : M} {F' : Type*} [NormedCommRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
+variable {z : M} {F' : Type*} [NormMetric F'] [CommRing F'] [IsNormedRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
   {p' q' : TangentSpace I z →L[𝕜] F'}
 
 set_option backward.isDefEq.respectTransparency false in

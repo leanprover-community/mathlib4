@@ -28,7 +28,7 @@ public section
 variable {𝕜 𝔸 : Type*}
 
 section NormedRing
-variable [NontriviallyNormedField 𝕜] [NormedRing 𝔸]
+variable [NontriviallyNormedField 𝕜] [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸]
 variable [NormedAlgebra 𝕜 𝔸] {f : 𝕜 → 𝔸} {f' : 𝔸} {x : 𝕜} {s : Set 𝕜}
 
 theorem HasStrictDerivAt.fun_pow' (h : HasStrictDerivAt f f' x) (n : ℕ) :
@@ -86,7 +86,7 @@ theorem deriv_pow' (h : DifferentiableAt 𝕜 f x) (n : ℕ) :
 end NormedRing
 
 section NormedCommRing
-variable [NontriviallyNormedField 𝕜] [NormedCommRing 𝔸]
+variable [NontriviallyNormedField 𝕜] [NormMetric 𝔸] [CommRing 𝔸] [IsNormedRing 𝔸]
 variable [NormedAlgebra 𝕜 𝔸] {f : 𝕜 → 𝔸} {f' : 𝔸} {x : 𝕜} {s : Set 𝕜}
 
 open scoped RightActions

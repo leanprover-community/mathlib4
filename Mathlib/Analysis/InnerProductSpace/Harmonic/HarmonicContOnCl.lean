@@ -18,8 +18,8 @@ and prove basic facts about this predicate.
 public section
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+  {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
   {f f₁ f₂ : E → F}
   {x : E} {s : Set E} {c : ℝ}
 

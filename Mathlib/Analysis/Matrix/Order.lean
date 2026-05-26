@@ -305,17 +305,31 @@ set_option backward.privateInPublic.warn false in
 /-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`
 `‖x‖ = sqrt (x * M * xᴴ).trace`. -/
 @[implicit_reducible]
+noncomputable def toMatrixNormPseudoMetric (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
+    NormPseudoMetric (Matrix n n 𝕜) :=
+  @InnerProductSpace.Core.toNormPseudoMetric _ _ _ _ _ hM.matrixPreInnerProductSpace
+
+lemma toMatrixIsNormedAddGroup (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
+    letI := M.toMatrixNormPseudoMetric hM
+    IsNormedAddGroup (Matrix n n 𝕜) :=
+  @InnerProductSpace.Core.toIsNormedAddGroup _ _ _ _ _ hM.matrixPreInnerProductSpace
+
+set_option linter.deprecated false in
+/-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`
+`‖x‖ = sqrt (x * M * xᴴ).trace`. -/
+@[deprecated toMatrixIsNormedAddGroup (since := "2026-05-17"), implicit_reducible]
 noncomputable def toMatrixSeminormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
-    SeminormedAddCommGroup (Matrix n n 𝕜) :=
-  @InnerProductSpace.Core.toSeminormedAddCommGroup _ _ _ _ _ hM.matrixPreInnerProductSpace
+    SeminormedAddCommGroup (Matrix n n 𝕜) where
+  toNormPseudoMetric := M.toMatrixNormPseudoMetric hM
+  toIsNormedAddGroup := M.toMatrixIsNormedAddGroup hM
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`:
 `‖x‖ = sqrt (x * M * xᴴ).trace`. -/
 @[implicit_reducible]
-noncomputable def toMatrixNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDef) :
-    NormedAddCommGroup (Matrix n n 𝕜) :=
+noncomputable def toMatrixNormMetric (M : Matrix n n 𝕜) (hM : M.PosDef) :
+    NormMetric (Matrix n n 𝕜) :=
   letI : InnerProductSpace.Core 𝕜 (Matrix n n 𝕜) :=
   { __ := hM.posSemidef.matrixPreInnerProductSpace
     definite x hx := by
@@ -327,13 +341,23 @@ noncomputable def toMatrixNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDe
         conjTranspose_conjTranspose, mul_assoc, trace_conjTranspose_mul_self_eq_zero_iff] at hx
       lift y to (Matrix n n 𝕜)ˣ using hy
       simpa [← mul_assoc] using congr(y⁻¹ * $hx) }
-  this.toNormedAddCommGroup
+  this.toNormMetric
+
+set_option linter.deprecated false in
+/-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`:
+`‖x‖ = sqrt (x * M * xᴴ).trace`. -/
+@[deprecated toMatrixIsNormedAddGroup (since := "2026-05-17"), implicit_reducible]
+noncomputable def toMatrixNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDef) :
+    NormedAddCommGroup (Matrix n n 𝕜) where
+  toNormMetric := M.toMatrixNormMetric hM
+  toIsNormedAddGroup := M.toMatrixIsNormedAddGroup hM.posSemidef
 
 /-- A positive semi-definite matrix `M` induces an inner product on `Matrix n n 𝕜`:
 `⟪x, y⟫ = (y * M * xᴴ).trace`. -/
 @[implicit_reducible]
-def toMatrixInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
-    letI : SeminormedAddCommGroup (Matrix n n 𝕜) := M.toMatrixSeminormedAddCommGroup hM
+noncomputable def toMatrixInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
+    letI : NormPseudoMetric (Matrix n n 𝕜) := M.toMatrixNormPseudoMetric hM
+    haveI : IsNormedAddGroup (Matrix n n 𝕜) := M.toMatrixIsNormedAddGroup hM
     InnerProductSpace 𝕜 (Matrix n n 𝕜) :=
   InnerProductSpace.ofCore _
 

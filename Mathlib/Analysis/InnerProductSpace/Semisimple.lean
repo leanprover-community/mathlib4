@@ -18,7 +18,7 @@ product spaces.
 
 public section
 
-variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable {𝕜 E : Type*} [RCLike 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 namespace LinearMap.IsSymmetric
 

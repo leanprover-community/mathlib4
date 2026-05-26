@@ -24,15 +24,12 @@ variable {α β : Type*}
 
 namespace Equiv
 
-/-- Transfer a `SeminormedRing` across an `Equiv` -/
-protected abbrev seminormedRing [SeminormedRing β] (e : α ≃ β) :
-    SeminormedRing α :=
+/-- Transfer a `IsNormedRing` across an `Equiv` -/
+protected lemma isNormedRing [NormPseudoMetric β] [Ring β] [IsNormedRing β] (e : α ≃ β) :
+    letI := e.ring
+    letI := NormPseudoMetric.induced _ _ e
+    IsNormedRing α :=
   letI := e.ring
   .induced α β e.ringEquiv
-
-/-- Transfer a `NormedRing` across an `Equiv` -/
-protected abbrev normedRing [NormedRing β] (e : α ≃ β) : NormedRing α :=
-  letI := e.ring
-  .induced α β e.ringEquiv e.injective
 
 end Equiv

@@ -70,7 +70,7 @@ section WeightedSMul
 
 open ContinuousLinearMap
 
-variable [NormedAddCommGroup F] [NormedSpace ℝ F] {m : MeasurableSpace α} {μ : Measure α}
+variable [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F] {m : MeasurableSpace α} {μ : Measure α}
 
 /-- Given a set `s`, return the continuous linear map `fun x => μ.real s • x`. The extension
 of that set function through `setToL1` gives the Bochner integral of L1 functions. -/
@@ -186,7 +186,7 @@ and prove basic properties of this integral.
 
 open Finset
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
   {m : MeasurableSpace α} {μ : Measure α}
 
 /-- Bochner integral of simple functions whose codomain is a real `NormedSpace`.
@@ -371,7 +371,7 @@ namespace L1
 
 open AEEqFun Lp.simpleFunc Lp
 
-variable [NormedAddCommGroup E] {m : MeasurableSpace α} {μ : Measure α}
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] {m : MeasurableSpace α} {μ : Measure α}
 
 namespace SimpleFunc
 
@@ -409,7 +409,7 @@ section SimpleFuncIntegral
 Define the Bochner integral on `α →₁ₛ[μ] E` by extension from the simple functions `α →₁ₛ[μ] E`,
 and prove basic properties of this integral. -/
 
-variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E]
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E]
 
 attribute [local instance] simpleFunc.isBoundedSMul simpleFunc.module simpleFunc.normedSpace
 
@@ -514,7 +514,7 @@ open SimpleFunc
 
 local notation "Integral" => @integralCLM α E _ _ _ _ _ μ _
 
-variable [NormedSpace ℝ E] [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [SMulCommClass ℝ 𝕜 E]
+variable [NormedSpace ℝ E] [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [SMulCommClass ℝ 𝕜 E]
   [CompleteSpace E]
 
 section IntegrationInL1
@@ -601,7 +601,7 @@ theorem nnnorm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)�
 theorem norm_integral_le (f : α →₁[μ] E) : ‖integral f‖ ≤ ‖f‖ :=
   calc
     ‖integral f‖ = ‖integralCLM f‖ := by simp only [integral]
-    _ ≤ ‖integralCLM (α := α) (μ := μ)‖ * ‖f‖ := le_opNorm _ _
+    _ ≤ ‖integralCLM (α := α) (μ := μ) (E := E)‖ * ‖f‖ := le_opNorm _ _
     _ ≤ 1 * ‖f‖ := mul_le_mul_of_nonneg_right norm_Integral_le_one <| norm_nonneg _
     _ = ‖f‖ := one_mul _
 

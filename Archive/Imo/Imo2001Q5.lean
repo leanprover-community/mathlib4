@@ -26,7 +26,7 @@ open Affine EuclideanGeometry
 open scoped Real
 
 variable {V X : Type*}
-variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace X] [NormedAddTorsor V X]
+variable [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [InnerProductSpace ℝ V] [MetricSpace X] [NormedAddTorsor V X]
 
 noncomputable section
 

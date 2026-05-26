@@ -58,7 +58,7 @@ open Complex Filter
 
 open scoped Topology
 
-variable {α : Type*} [TopologicalSpace α] {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {α : Type*} [TopologicalSpace α] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℂ E]
 
 theorem HasStrictFDerivAt.clog {f : E → ℂ} {f' : StrongDual ℂ E} {x : E}
     (h₁ : HasStrictFDerivAt f f' x) (h₂ : f x ∈ slitPlane) :

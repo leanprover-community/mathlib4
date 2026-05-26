@@ -72,7 +72,7 @@ open scoped Topology ContDiff
 section General
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E F : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
+  {E F : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
   [NormedSpace 𝕜 F] {s t : Set E} {f : E → F} {x : E}
 
 variable (𝕜) in
@@ -204,7 +204,7 @@ end General
 
 section Real
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F]
+variable {E F : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
   [NormedSpace ℝ F] {s : Set E} (s_conv : Convex ℝ s) {f : E → F} {f' : E → E →L[ℝ] F}
   {f'' : E →L[ℝ] E →L[ℝ] F} (hf : ∀ x ∈ interior s, HasFDerivAt f (f' x) x) {x : E} (xs : x ∈ s)
   (hx : HasFDerivWithinAt f' f'' (interior s) x)
@@ -457,7 +457,7 @@ end Real
 section IsRCLikeNormedField
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E F : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
+  {E F : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
   [NormedSpace 𝕜 F] {s : Set E} {f : E → F} {x : E}
 
 theorem second_derivative_symmetric_of_eventually [IsRCLikeNormedField 𝕜]

@@ -44,7 +44,7 @@ open scoped Manifold ENNReal ContDiff Topology
 noncomputable section
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {n : ℕ∞ω}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 

@@ -38,7 +38,7 @@ section Parts
 
 section Mul
 
-variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] {u v u' v' : ℝ → A}
+variable {A : Type*} [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] {u v u' v' : ℝ → A}
 
 /-- The integral of the derivative of a product of two maps.
 For improper integrals, see `MeasureTheory.integral_deriv_mul_eq_sub`,
@@ -150,7 +150,7 @@ end Mul
 section SMul
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [CompleteSpace E]
 variable [IsScalarTower ℝ 𝕜 E]
 
 variable {u u' : ℝ → 𝕜}
@@ -227,7 +227,7 @@ end Parts
 
 section SMul
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f f' : ℝ → ℝ} {g g' : ℝ → E}
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] {f f' : ℝ → ℝ} {g g' : ℝ → E}
 
 /-- Change of variables, general form. If `f` is continuous on `[a, b]` and has
 right-derivative `f'` in `(a, b)`, `g` is continuous on `f '' (a, b)` and integrable on

@@ -630,9 +630,14 @@ namespace CStarMatrix
 variable {m n A : Type*} [Fintype m] [Fintype n]
   [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-private noncomputable local instance normedAddCommGroupAux :
-    NormedAddCommGroup (CStarMatrix m n A) :=
+private noncomputable local instance normMetricAux :
+    NormMetric (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
+
+private local instance isNormedAddGroupAux :
+    IsNormedAddGroup (CStarMatrix m n A) where
+
+noncomputable example : NormedAddCommGroup (CStarMatrix m n A) where
 
 @[implicit_reducible]
 private noncomputable def normedSpaceAux : NormedSpace ℂ (CStarMatrix m n A) :=
@@ -741,20 +746,24 @@ instance instContinuousSMul {R : Type*} [SMul R A] [TopologicalSpace R] [Continu
     ContinuousSMul R (CStarMatrix m n A) :=
   inferInstanceAs <| ContinuousSMul R (Matrix m n A)
 
-noncomputable instance instNormedAddCommGroup :
-    NormedAddCommGroup (CStarMatrix m n A) :=
+noncomputable instance instNormMetric :
+    NormMetric (CStarMatrix m n A) :=
   fast_instance% .ofCoreReplaceAll CStarMatrix.normedSpaceCore ?_ (fun _ ↦ ?_)
 where finally
   exacts [CStarMatrix.uniformity_eq_aux.symm, Filter.ext_iff.1 CStarMatrix.cobounded_eq_aux.symm _]
 
+instance instIsNormedAddGroup : IsNormedAddGroup (CStarMatrix m n A) where
+
+noncomputable example : NormedAddCommGroup (CStarMatrix m n A) where
+
 noncomputable instance instNormedSpace : NormedSpace ℂ (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 
-noncomputable instance instNonUnitalNormedRing :
-    NonUnitalNormedRing (CStarMatrix n n A) where
-  __ : NonUnitalRing (CStarMatrix n n A) := inferInstance
-  __ : NormedAddCommGroup (CStarMatrix n n A) := inferInstance
+instance instIsNormedRing :
+    IsNormedRing (CStarMatrix n n A) where
   norm_mul_le _ _ := by simpa only [norm_def', map_mul] using norm_mul_le _ _
+
+noncomputable example : NonUnitalNormedRing (CStarMatrix n n A) where
 
 open ContinuousLinearMap CStarModule in
 /-- Matrices with entries in a C⋆-algebra form a C⋆-algebra. -/
@@ -804,9 +813,7 @@ variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 variable {n : Type*} [Fintype n] [DecidableEq n]
 
-noncomputable instance instNormedRing : NormedRing (CStarMatrix n n A) where
-  dist_eq _ _ := rfl
-  norm_mul_le := norm_mul_le
+noncomputable example : NormedRing (CStarMatrix n n A) where
 
 noncomputable instance instNormedAlgebra : NormedAlgebra ℂ (CStarMatrix n n A) where
   norm_smul_le r M := by simpa only [norm_def, map_smul] using (toCLM M).opNorm_smul_le r

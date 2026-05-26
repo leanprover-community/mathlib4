@@ -125,11 +125,11 @@ end
 
 section
 
-variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [NontriviallyNormedField 𝕜] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
   [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)] {EB : Type*}
-  [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
+  [NormMetric EB] [AddCommGroup EB] [IsNormedAddGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
   {IB : ModelWithCorners 𝕜 EB HB} (E' : B → Type*) [∀ x, Zero (E' x)] {EM : Type*}
-  [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
+  [NormMetric EM] [AddCommGroup EM] [IsNormedAddGroup EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
   {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
 
 variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
@@ -260,12 +260,12 @@ end
 /-! ### `C^n` vector bundles -/
 
 
-variable [NontriviallyNormedField 𝕜] {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
+variable [NontriviallyNormedField 𝕜] {EB : Type*} [NormMetric EB] [AddCommGroup EB] [IsNormedAddGroup EB] [NormedSpace 𝕜 EB]
   {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB} [TopologicalSpace B]
-  [ChartedSpace HB B] {EM : Type*} [NormedAddCommGroup EM]
+  [ChartedSpace HB B] {EM : Type*} [NormMetric EM] [AddCommGroup EM] [IsNormedAddGroup EM]
   [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM] {IM : ModelWithCorners 𝕜 EM HM}
   [TopologicalSpace M] [ChartedSpace HM M]
-  [∀ x, AddCommMonoid (E x)] [∀ x, Module 𝕜 (E x)] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [∀ x, AddCommMonoid (E x)] [∀ x, Module 𝕜 (E x)] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 
 section WithTopology
 
@@ -596,10 +596,10 @@ instance Bundle.Trivial.contMDiffVectorBundle :
 
 section Prod
 
-variable (F₁ : Type*) [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] (E₁ : B → Type*)
+variable (F₁ : Type*) [NormMetric F₁] [AddCommGroup F₁] [IsNormedAddGroup F₁] [NormedSpace 𝕜 F₁] (E₁ : B → Type*)
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, AddCommMonoid (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
 
-variable (F₂ : Type*) [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] (E₂ : B → Type*)
+variable (F₂ : Type*) [NormMetric F₂] [AddCommGroup F₂] [IsNormedAddGroup F₂] [NormedSpace 𝕜 F₂] (E₂ : B → Type*)
   [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, AddCommMonoid (E₂ x)] [∀ x, Module 𝕜 (E₂ x)]
 
 variable [∀ x : B, TopologicalSpace (E₁ x)] [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₁ E₁]
@@ -672,8 +672,9 @@ theorem mk_contMDiffCoordChange (he : e ∈ a.pretrivializationAtlas)
 
 variable (IB) in
 /-- Make a `ContMDiffVectorBundle` from a `ContMDiffVectorPrebundle`. -/
-theorem contMDiffVectorBundle : @ContMDiffVectorBundle n
-    _ _ F E _ _ _ _ _ _ IB _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle a.toVectorBundle :=
+theorem contMDiffVectorBundle :
+    letI := a.totalSpaceTopology; letI := a.toFiberBundle; letI := a.toVectorBundle
+    ContMDiffVectorBundle n F E IB :=
   letI := a.totalSpaceTopology; letI := a.toFiberBundle; letI := a.toVectorBundle
   { contMDiffOn_coordChangeL := by
       rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩

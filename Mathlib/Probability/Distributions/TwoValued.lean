@@ -33,7 +33,7 @@ lemma integral_of_ae_eq_zero_or_one (hXmeas : AEMeasurable X μ) (hX : ∀ᵐ ω
   by_cases h : μ {ω | X ω = 1} = ⊤
   · simp [h, Measure.real, Set.preimage, integral_undef, Integrable, HasFiniteIntegral]
   rw [integral_add_measure ⟨by fun_prop, by simp [HasFiniteIntegral]⟩ <|
-    .smul_measure (by simp [integrable_dirac]) h]
+    .smul_measure (by simp [integrable_dirac]) (by exact h)]
   simp [Measure.real, Set.preimage]
 
 /-- If a random variable is ae equal to `0` or `1`, then one minus its expectation is equal to the

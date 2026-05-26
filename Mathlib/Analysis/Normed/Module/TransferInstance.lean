@@ -26,26 +26,59 @@ namespace Equiv
 
 variable (e : α ≃ β)
 
-/-- Transfer a `SeminormedCommGroup` across an `Equiv` -/
-@[to_additive /-- Transfer a `SeminormedAddCommGroup` across an `Equiv` -/]
-protected abbrev seminormedCommGroup [SeminormedCommGroup β] (e : α ≃ β) :
-    SeminormedCommGroup α :=
-  letI := e.commGroup
-  { SeminormedCommGroup.induced _ _ e.mulEquiv with toPseudoMetricSpace := e.pseudometricSpace }
+/-- Transfer a `NormPseudoMetric` across an `Equiv` -/
+protected abbrev normPseudoMetric [NormPseudoMetric β] (e : α ≃ β) :
+    NormPseudoMetric α :=
+  { NormPseudoMetric.induced _ _ e with toPseudoMetricSpace := e.pseudometricSpace }
 
-/-- Transfer a `NormedCommGroup` across an `Equiv` -/
-@[to_additive /-- Transfer a `NormedAddCommGroup` across an `Equiv` -/]
-protected abbrev normedCommGroup [NormedCommGroup β] (e : α ≃ β) : NormedCommGroup α :=
+/-- Transfer a `NormMetric` across an `Equiv` -/
+protected abbrev normMetric [NormMetric β] (e : α ≃ β) :
+    NormMetric α :=
+  { NormMetric.induced _ _ e e.injective with toMetricSpace := e.metricSpace }
+
+/-- Transfer a `IsNormedGroup` across an `Equiv` -/
+@[to_additive /-- Transfer a `IsNormedAddGroup` across an `Equiv` -/]
+protected lemma isNormedGroup [NormPseudoMetric β] [CommGroup β] [IsNormedGroup β] (e : α ≃ β) :
+    letI := e.normPseudoMetric
+    letI := e.commGroup
+    IsNormedGroup α :=
+  letI := e.normPseudoMetric
   letI := e.commGroup
-  { NormedCommGroup.induced _ _ e.mulEquiv e.injective
-    with toPseudoMetricSpace := e.pseudometricSpace }
+  .induced _ _ e.mulEquiv
+
+set_option linter.deprecated false in
+/-- Transfer a `SeminormedCommGroup` across an `Equiv` -/
+@[to_additive /-- Transfer a `SeminormedCommGroup` across an `Equiv` -/]
+protected abbrev seminormedCommGroup [NormPseudoMetric β] [CommGroup β] [IsNormedGroup β] (e : α ≃ β) :
+    SeminormedCommGroup α where
+  __ := e.normPseudoMetric
+  __ := e.commGroup
+  toIsNormedGroup := e.isNormedGroup
+
+set_option linter.deprecated false in
+/-- Transfer a `NormedCommGroup` across an `Equiv` -/
+@[to_additive /-- Transfer a `NormedCommGroup` across an `Equiv` -/]
+protected abbrev normedCommGroup [NormMetric β] [CommGroup β] [IsNormedGroup β] (e : α ≃ β) :
+    NormedCommGroup α where
+  __ := e.normMetric
+  __ := e.commGroup
+  toIsNormedGroup := .induced _ _ e.mulEquiv
+
+attribute [deprecated Equiv.isNormedGroup (since := "2026-05-17")]
+  Equiv.seminormedCommGroup Equiv.normedCommGroup
+attribute [deprecated Equiv.isNormedAddGroup (since := "2026-05-17")]
+  Equiv.seminormedAddCommGroup Equiv.normedAddCommGroup
 
 /-- Transfer `NormedSpace` across an `Equiv` -/
 protected abbrev normedSpace (𝕜 : Type*) [NormedField 𝕜]
-    [SeminormedAddCommGroup β] [NormedSpace 𝕜 β] (e : α ≃ β) :
-    letI := Equiv.seminormedAddCommGroup e
+    [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [NormedSpace 𝕜 β] (e : α ≃ β) :
+    letI := e.normPseudoMetric
+    letI := e.addCommGroup
+    letI := e.isNormedAddGroup
     NormedSpace 𝕜 α :=
-  letI := e.seminormedAddCommGroup
+  letI := e.normPseudoMetric
+  letI := e.addCommGroup
+  letI := e.isNormedAddGroup
   letI := e.module 𝕜
   .induced _ _ _ (e.linearEquiv _)
 

@@ -22,7 +22,7 @@ public section
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
   {n : ℕ} {x : 𝕜} {s : Set 𝕜} (hx : x ∈ s) (h : UniqueDiffOn 𝕜 s) {f g : 𝕜 → F}
   -- For maximum generality, results about `smul` involve a second type besides `𝕜`,
   -- with varying hypotheses.
@@ -32,7 +32,7 @@ variable
   -- `GroupWithZero` if we had a `DistribSMulWithZero` typeclass.)
   {𝕝 : Type*} [DivisionSemiring 𝕝] [Module 𝕝 F] [SMulCommClass 𝕜 𝕝 F] [ContinuousConstSMul 𝕝 F]
   -- * `𝔸`: normed `𝕜`-algebra.
-  {𝔸 : Type*} [NormedRing 𝔸] [NormedAlgebra 𝕜 𝔸] [Module 𝔸 F] [IsBoundedSMul 𝔸 F]
+  {𝔸 : Type*} [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸] [NormedAlgebra 𝕜 𝔸] [Module 𝔸 F] [IsBoundedSMul 𝔸 F]
     [IsScalarTower 𝕜 𝔸 F]
   -- * `𝕜'`: normed `𝕜`-division algebra.
   {𝕜' : Type*} [NormedDivisionRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
@@ -61,7 +61,7 @@ protected lemma Filter.EventuallyEq.iteratedDerivWithin {s : Set 𝕜} (h : f =�
 
 theorem Filter.EventuallyEq.iteratedDerivWithin_eq_of_nhds_insert
     {𝕜 F : Type*} [NontriviallyNormedField 𝕜]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] (n : ℕ) {f g : 𝕜 → F} {x : 𝕜} {s : Set 𝕜}
+    [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] (n : ℕ) {f g : 𝕜 → F} {x : 𝕜} {s : Set 𝕜}
     (hfg : f =ᶠ[𝓝[insert x s] x] g) :
     iteratedDerivWithin n f s x = iteratedDerivWithin n g s x :=
   (hfg.filter_mono (by simp)).iteratedDerivWithin_eq (hfg.eq_of_nhdsWithin (by simp))
@@ -305,7 +305,7 @@ end
 
 /-- If two functions agree in a neighborhood, then so do their iterated derivatives. -/
 protected lemma Filter.EventuallyEq.iteratedDeriv
-    {𝕜 : Type*} [NontriviallyNormedField 𝕜] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
     {f₁ f₂ : 𝕜 → F} {x : 𝕜} (h : f₁ =ᶠ[𝓝 x] f₂) (n : ℕ) :
     iteratedDeriv n f₁ =ᶠ[𝓝 x] iteratedDeriv n f₂ := by
   simp_all [← nhdsWithin_univ, ← iteratedDerivWithin_univ, EventuallyEq.iteratedDerivWithin]

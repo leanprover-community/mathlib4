@@ -20,7 +20,7 @@ open MeasureTheory
 namespace ProbabilityTheory
 
 variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {κ : Kernel α β}
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : β → E} {a : α}
+  {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] {f : β → E} {a : α}
 
 namespace Kernel
 

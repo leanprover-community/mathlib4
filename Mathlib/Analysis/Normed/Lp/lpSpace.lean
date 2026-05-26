@@ -63,7 +63,7 @@ noncomputable section
 
 open scoped NNReal ENNReal Function
 
-variable {𝕜 𝕜' : Type*} {α : Type*} {E : α → Type*} {p q : ℝ≥0∞} [∀ i, NormedAddCommGroup (E i)]
+variable {𝕜 𝕜' : Type*} {α : Type*} {E : α → Type*} {p q : ℝ≥0∞} [∀ i, NormMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)]
 
 /-!
 ### `Memℓp` predicate
@@ -174,7 +174,7 @@ theorem mono {f : (i : α) → E i} {g : α → ℝ}
 /-- Often it is more convenient to use `Memℓp.mono`, where the bounding function is real-valued.
 This version is provable from that one using `Memℓp.toNorm` applied to the argument with type
 `Memℓp g p`. -/
-theorem mono' {F : α → Type*} [∀ i, NormedAddCommGroup (F i)] {f : (i : α) → E i}
+theorem mono' {F : α → Type*} [∀ i, NormMetric (F i)] [∀ i, AddCommGroup (F i)] [∀ i, IsNormedAddGroup (F i)] {f : (i : α) → E i}
     {g : (i : α) → F i} (hg : Memℓp g p) (hfg : ∀ i, ‖f i‖ ≤ ‖g i‖) :
     Memℓp f p :=
   hg.norm.mono hfg
@@ -189,7 +189,7 @@ theorem summable (hp : 0 < p.toReal) {f : ∀ i, E i} (hf : Memℓp f p) :
     Summable fun i => ‖f i‖ ^ p.toReal :=
   (memℓp_gen_iff hp).1 hf
 
-lemma summable_of_one {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
+lemma summable_of_one {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [CompleteSpace E]
     {x : α → E} (hx : Memℓp x 1) : Summable x :=
   .of_norm <| by simpa using hx.summable
 
@@ -288,7 +288,7 @@ theorem finsetSum {ι} (s : Finset ι) {f : ι → ∀ i, E i} (hf : ∀ i ∈ s
 
 section IsBoundedSMul
 
-variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)]
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)]
 
 theorem const_smul {f : ∀ i, E i} (hf : Memℓp f p) (c : 𝕜) : Memℓp (c • f) p := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -334,7 +334,7 @@ We choose to deal with this issue by making a type synonym for `∀ i, E i` rath
 subgroup itself, because this allows all the spaces `lp E p` (for varying `p`) to be subgroups of
 the same ambient group, which permits lemma statements like `lp.monotone` (below). -/
 @[nolint unusedArguments]
-def PreLp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] : Type _ :=
+def PreLp (E : α → Type*) [∀ i, NormMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] : Type _ :=
   ∀ i, E i
 deriving AddCommGroup
 
@@ -347,7 +347,7 @@ of those functions `f` such that `Memℓp f p` (i.e., `f` has finite `p`-norm).
 The non-dependent version comes equipped with the notation `ℓ^p(ι, E)` in the `lp` namespace. When
 `p` takes the values `0`, `1` or `2`, the notation `ℓ⁰(ι, E)`, `ℓ¹(ι, E)`, `ℓ²(ι, E)` is also
 available. -/
-def lp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : AddSubgroup (PreLp E) where
+def lp (E : α → Type*) [∀ i, NormMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] (p : ℝ≥0∞) : AddSubgroup (PreLp E) where
   carrier := { f | Memℓp f p }
   zero_mem' := zero_memℓp
   add_mem' := Memℓp.add
@@ -525,8 +525,8 @@ theorem norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
     apply (lp.hasSum_norm hp (-f)).unique
     simpa only [coeFn_neg, Pi.neg_apply, _root_.norm_neg] using lp.hasSum_norm hp f
 
-instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) :=
-  fast_instance% AddGroupNorm.toNormedAddCommGroup
+instance instNormMetric [hp : Fact (1 ≤ p)] : NormMetric (lp E p) :=
+  fast_instance% AddGroupNorm.toNormMetric
     { toFun := norm
       map_zero' := norm_zero
       neg' := norm_neg
@@ -554,6 +554,8 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
           gcongr
           apply norm_add_le
       eq_zero_of_map_eq_zero' := fun _ => norm_eq_zero_iff.1 }
+
+instance instIsNormedAddGroup [hp : Fact (1 ≤ p)] : IsNormedAddGroup (lp E p) where
 
 -- TODO: define an `ENNReal` version of `HolderConjugate`, and then express this inequality
 -- in a better version which also covers the case `p = 1, q = ∞`.
@@ -623,7 +625,7 @@ theorem norm_le_of_forall_sum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f
     (hf : ∀ s : Finset α, ∑ i ∈ s, ‖f i‖ ^ p.toReal ≤ C ^ p.toReal) : ‖f‖ ≤ C :=
   norm_le_of_tsum_le hp hC (((lp.memℓp f).summable hp).tsum_le_of_sum_le hf)
 
-lemma norm_mono {F : α → Type*} [∀ i, NormedAddCommGroup (F i)]
+lemma norm_mono {F : α → Type*} [∀ i, NormMetric (F i)] [∀ i, AddCommGroup (F i)] [∀ i, IsNormedAddGroup (F i)]
     {p : ℝ≥0∞} (hp : p ≠ 0) {x : lp E p} {y : lp F p} (h : ∀ i, ‖x i‖ ≤ ‖y i‖) :
     ‖x‖ ≤ ‖y‖ := by
   obtain (rfl | rfl | hp) := p.trichotomy
@@ -638,7 +640,7 @@ end ComparePointwise
 
 section IsBoundedSMul
 
-variable [NormedRing 𝕜] [NormedRing 𝕜']
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [NormMetric 𝕜'] [Ring 𝕜'] [IsNormedRing 𝕜']
 variable [∀ i, Module 𝕜 (E i)] [∀ i, Module 𝕜' (E i)]
 
 instance : Module 𝕜 (PreLp E) :=
@@ -718,14 +720,14 @@ end IsBoundedSMul
 
 section Sum
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 
 lemma norm_tsum_le (f : ℓ¹(α, E)) :
     ‖∑' i, f i‖ ≤ ‖f‖ := calc
   ‖∑' i, f i‖ ≤ ∑' i, ‖f i‖ := norm_tsum_le_tsum_norm (.of_norm (by simpa using f.2.summable))
   _ = ‖f‖ := by simp [norm_eq_tsum_rpow]
 
-variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [CompleteSpace E]
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [CompleteSpace E]
 
 variable (α 𝕜 E) in
 /-- Summation (i.e., `tsum`) in `ℓ¹(α, E)` as a continuous linear map. -/
@@ -808,7 +810,7 @@ instance [hp : Fact (1 ≤ p)] : NormedStarGroup (lp E p) where
     · simp only [lp.norm_eq_ciSup, lp.star_apply, norm_star]
     · simp only [lp.norm_eq_tsum_rpow h, lp.star_apply, norm_star]
 
-variable [Star 𝕜] [NormedRing 𝕜]
+variable [Star 𝕜] [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜]
 variable [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] [∀ i, StarModule 𝕜 (E i)]
 
 instance : StarModule 𝕜 (lp E p) where
@@ -818,7 +820,7 @@ end NormedStarGroup
 
 section NonUnitalNormedRing
 
-variable {I : Type*} {B : I → Type*} [∀ i, NonUnitalNormedRing (B i)]
+variable {I : Type*} {B : I → Type*} [∀ i, NormMetric (B i)] [∀ i, NonUnitalRing (B i)] [∀ i, IsNormedRing (B i)]
 
 theorem _root_.Memℓp.infty_mul {f g : ∀ i, B i} (hf : Memℓp f ∞) (hg : Memℓp g ∞) :
     Memℓp (f * g) ∞ := by
@@ -843,23 +845,25 @@ instance nonUnitalRing : NonUnitalRing (lp B ∞) := fast_instance%
   Function.Injective.nonUnitalRing lp.coeFun.coe Subtype.coe_injective (lp.coeFn_zero B ∞)
     lp.coeFn_add infty_coeFn_mul lp.coeFn_neg lp.coeFn_sub (fun _ _ => rfl) fun _ _ => rfl
 
-instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
-  { lp.nonUnitalRing, lp.normedAddCommGroup with
-    norm_mul_le f g := lp.norm_le_of_forall_le (by positivity) fun i ↦ calc
-      ‖(f * g) i‖ ≤ ‖f i‖ * ‖g i‖ := norm_mul_le _ _
-      _ ≤ ‖f‖ * ‖g‖ := mul_le_mul (lp.norm_apply_le_norm ENNReal.top_ne_zero f i)
-        (lp.norm_apply_le_norm ENNReal.top_ne_zero g i) (norm_nonneg _) (norm_nonneg _) }
+instance instIsNormedRing : IsNormedRing (lp B ∞) where
+  norm_mul_le f g := lp.norm_le_of_forall_le (by positivity) fun i ↦ calc
+    ‖(f * g) i‖ ≤ ‖f i‖ * ‖g i‖ := norm_mul_le _ _
+    _ ≤ ‖f‖ * ‖g‖ := mul_le_mul (lp.norm_apply_le_norm ENNReal.top_ne_zero f i)
+      (lp.norm_apply_le_norm ENNReal.top_ne_zero g i) (norm_nonneg _) (norm_nonneg _)
 
-instance nonUnitalNormedCommRing {B : I → Type*} [∀ i, NonUnitalNormedCommRing (B i)] :
-    NonUnitalNormedCommRing (lp B ∞) where
+instance instNonUnitalCommRing {B : I → Type*} [∀ i, NormMetric (B i)] [∀ i, NonUnitalCommRing (B i)] [∀ i, IsNormedRing (B i)] :
+    NonUnitalCommRing (lp B ∞) where
   mul_comm _ _ := ext <| mul_comm ..
 
+example {B : I → Type*} [∀ i, NormMetric (B i)] [∀ i, NonUnitalCommRing (B i)] [∀ i, IsNormedRing (B i)] :
+    NonUnitalNormedCommRing (lp B ∞) where
+
 -- we also want a `NonUnitalNormedCommRing` instance, but this has to wait for https://github.com/leanprover-community/mathlib3/pull/13719
-instance infty_isScalarTower {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, IsBoundedSMul 𝕜 (B i)]
+instance infty_isScalarTower {𝕜} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, IsBoundedSMul 𝕜 (B i)]
     [∀ i, IsScalarTower 𝕜 (B i) (B i)] : IsScalarTower 𝕜 (lp B ∞) (lp B ∞) :=
   ⟨fun r f g => lp.ext <| smul_assoc (N := ∀ i, B i) (α := ∀ i, B i) r (⇑f) (⇑g)⟩
 
-instance infty_smulCommClass {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, IsBoundedSMul 𝕜 (B i)]
+instance infty_smulCommClass {𝕜} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, IsBoundedSMul 𝕜 (B i)]
     [∀ i, SMulCommClass 𝕜 (B i) (B i)] : SMulCommClass 𝕜 (lp B ∞) (lp B ∞) :=
   ⟨fun r f g => lp.ext <| smul_comm (N := ∀ i, B i) (α := ∀ i, B i) r (⇑f) (⇑g)⟩
 
@@ -884,7 +888,7 @@ end NonUnitalNormedRing
 
 section NormedRing
 
-variable {I : Type*} {B : I → Type*} [∀ i, NormedRing (B i)]
+variable {I : Type*} {B : I → Type*} [∀ i, NormMetric (B i)] [∀ i, Ring (B i)] [∀ i, IsNormedRing (B i)]
 
 instance _root_.PreLp.ring : Ring (PreLp B) :=
   inferInstanceAs (Ring (∀ i, B i))
@@ -934,24 +938,25 @@ theorem infty_coeFn_intCast (z : ℤ) : ⇑(z : lp B ∞) = z :=
 instance [Nonempty I] : NormOneClass (lp B ∞) where
   norm_one := by simp_rw [lp.norm_eq_ciSup, infty_coeFn_one, Pi.one_apply, norm_one, ciSup_const]
 
-instance inftyNormedRing : NormedRing (lp B ∞) :=
-  { lp.inftyRing, lp.nonUnitalNormedRing with }
+example : NormedRing (lp B ∞) where
 
 end NormedRing
 
 section NormedCommRing
 
-variable {I : Type*} {B : I → Type*} [∀ i, NormedCommRing (B i)] [∀ i, NormOneClass (B i)]
+variable {I : Type*} {B : I → Type*} [∀ i, NormMetric (B i)] [∀ i, CommRing (B i)] [∀ i, IsNormedRing (B i)] [∀ i, NormOneClass (B i)]
 
-instance inftyNormedCommRing : NormedCommRing (lp B ∞) where
+instance inftyCommRing : CommRing (lp B ∞) where
   mul_comm := mul_comm
+
+example : NormedCommRing (lp B ∞) where
 
 end NormedCommRing
 
 section Algebra
 
 variable {I : Type*} {B : I → Type*}
-variable [NormedField 𝕜] [∀ i, NormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
+variable [NormedField 𝕜] [∀ i, NormMetric (B i)] [∀ i, Ring (B i)] [∀ i, IsNormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
 
 instance _root_.PreLp.algebra : Algebra 𝕜 (PreLp B) :=
   inferInstanceAs <| Algebra 𝕜 (∀ i, B i)
@@ -982,7 +987,7 @@ end Algebra
 
 section Single
 
-variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)]
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)]
 variable [DecidableEq α]
 
 /-- The element of `lp E p` which is `a : E i` at the index `i`, and zero elsewhere. -/
@@ -1205,7 +1210,7 @@ end Single
 
 section OfLE
 
-variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] {p q r : ℝ≥0∞}
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] {p q r : ℝ≥0∞}
 
 variable (𝕜 E) in
 /-- The `AddSubgroup.inclusion` between `lp` spaces, as a linear map. -/
@@ -1234,7 +1239,7 @@ end OfLE
 
 section Eval
 
-variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] {p q r : ℝ≥0∞}
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] {p q r : ℝ≥0∞}
 
 variable (E p) in
 /-- Evaluation at a single coordinate, as a linear map on `lp E p`. -/

@@ -34,17 +34,14 @@ open scoped NNReal Nat ContDiff
 
 universe u uE uF uG
 
-attribute [local instance 1001]
-  NormedAddCommGroup.toAddCommGroup AddCommGroup.toAddCommMonoid
-
 open Set Fin Filter Function
 
 open scoped Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type uE} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type uF}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X] {s t : Set E} {f : E → F}
+  {E : Type uE} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {F : Type uF}
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] {G : Type uG} [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
+  {X : Type*} [NormMetric X] [AddCommGroup X] [IsNormedAddGroup X] [NormedSpace 𝕜 X] {s t : Set E} {f : E → F}
   {g : F → G} {x x₀ : E} {b : E × F → G} {m n : ℕ∞ω} {p : E → FormalMultilinearSeries 𝕜 E F}
 
 /-!
@@ -53,7 +50,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 section Pi
 
-variable {ι ι' : Type*} [Fintype ι] [Fintype ι'] {F' : ι → Type*} [∀ i, NormedAddCommGroup (F' i)]
+variable {ι ι' : Type*} [Fintype ι] [Fintype ι'] {F' : ι → Type*} [∀ i, NormMetric (F' i)] [∀ i, AddCommGroup (F' i)] [∀ i, IsNormedAddGroup (F' i)]
   [∀ i, NormedSpace 𝕜 (F' i)] {φ : ∀ i, E → F' i} {p' : ∀ i, E → FormalMultilinearSeries 𝕜 E (F' i)}
   {Φ : E → ∀ i, F' i} {P' : E → FormalMultilinearSeries 𝕜 E (∀ i, F' i)}
 
@@ -431,7 +428,7 @@ theorem iteratedFDeriv_sum {ι : Type*} {f : ι → E → F} {u : Finset ι} {i 
 
 section MulProd
 
-variable {𝔸 𝔸' ι 𝕜' : Type*} [NormedRing 𝔸] [NormedAlgebra 𝕜 𝔸] [NormedCommRing 𝔸']
+variable {𝔸 𝔸' ι 𝕜' : Type*} [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸] [NormedAlgebra 𝕜 𝔸] [NormMetric 𝔸'] [CommRing 𝔸'] [IsNormedRing 𝔸']
   [NormedAlgebra 𝕜 𝔸'] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
 -- The product is smooth.
@@ -548,7 +545,7 @@ end MulProd
 
 section SMul
 
-variable {𝕜' : Type*} [NormedRing 𝕜']
+variable {𝕜' : Type*} [NormMetric 𝕜'] [Ring 𝕜'] [IsNormedRing 𝕜']
   [NormedAlgebra 𝕜 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
 
 -- The scalar multiplication is smooth.
@@ -592,7 +589,7 @@ drop `ContDiff*` assumptions in some lemmas about `iteratedFDeriv` and `iterated
 section ConstSMul
 
 variable {R A : Type*} [DistribSMul R F] [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F]
-  [NormedRing A] [NormedAlgebra 𝕜 A] [Module A F] [IsScalarTower 𝕜 A F] [IsBoundedSMul A F]
+  [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [Module A F] [IsScalarTower 𝕜 A F] [IsBoundedSMul A F]
 
 /-- Scalar multiplication is smooth (as a function of the vector variable). -/
 @[fun_prop]
@@ -705,8 +702,8 @@ end ConstSMul
 
 section prodMap
 
-variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-variable {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+variable {E' : Type*} [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormedSpace 𝕜 E']
+variable {F' : Type*} [NormMetric F'] [AddCommGroup F'] [IsNormedAddGroup F'] [NormedSpace 𝕜 F']
 
 /-- The product map of two `C^n` functions within a set at a point is `C^n`
 within the product set at the product point. -/
@@ -725,8 +722,8 @@ theorem ContDiffWithinAt.prodMap {s : Set E} {t : Set E'} {f : E → F} {g : E' 
 
 /-- The product map of two `C^n` functions on a set is `C^n` on the product set. -/
 @[fun_prop]
-theorem ContDiffOn.prodMap {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {F' : Type*}
-    [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {s : Set E} {t : Set E'} {f : E → F} {g : E' → F'}
+theorem ContDiffOn.prodMap {E' : Type*} [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormedSpace 𝕜 E'] {F' : Type*}
+    [NormMetric F'] [AddCommGroup F'] [IsNormedAddGroup F'] [NormedSpace 𝕜 F'] {s : Set E} {t : Set E'} {f : E → F} {g : E' → F'}
     (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn 𝕜 n g t) : ContDiffOn 𝕜 n (Prod.map f g) (s ×ˢ t) :=
   (hf.comp contDiffOn_fst (prod_subset_preimage_fst _ _)).prodMk
     (hg.comp contDiffOn_snd (prod_subset_preimage_snd _ _))
@@ -770,7 +767,7 @@ end prodMap
 section AlgebraInverse
 
 variable (𝕜)
-variable {R : Type*} [NormedRing R] [NormedAlgebra 𝕜 R]
+variable {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R] [NormedAlgebra 𝕜 R]
 
 open NormedRing ContinuousLinearMap Ring
 

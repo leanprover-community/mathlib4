@@ -24,7 +24,7 @@ open Set Filter Topology
 
 variable {β : Type v}
 
-theorem CauSeq.tendsto_limit [NormedRing β] [hn : IsAbsoluteValue (norm : β → ℝ)]
+theorem CauSeq.tendsto_limit [NormMetric β] [Ring β] [IsNormedRing β] [hn : IsAbsoluteValue (norm : β → ℝ)]
     (f : CauSeq β norm) [CauSeq.IsComplete β norm] : Tendsto f atTop (𝓝 f.lim) :=
   tendsto_nhds.mpr
     (by

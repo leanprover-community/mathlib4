@@ -46,7 +46,7 @@ lemma gram_apply [Inner 𝕜 E] (v : n → E) (i j : n) :
 variable [RCLike 𝕜]
 
 section SemiInnerProductSpace
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 @[simp]
 lemma gram_zero : gram 𝕜 (0 : n → E) = 0 := Matrix.ext fun _ _ ↦ inner_zero_left _
@@ -104,7 +104,7 @@ theorem linearIndependent_of_det_gram_ne_zero [Fintype n] [DecidableEq n] {v : n
 end SemiInnerProductSpace
 
 section NormedInnerProductSpace
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [Finite n]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E] [Finite n]
 
 /-- In a normed space, linear independence of `v` implies positive definiteness of `gram 𝕜 v`. -/
 theorem posDef_gram_of_linearIndependent
@@ -136,7 +136,7 @@ theorem gram_eq_conjTranspose_mul {ι : Type*} [Fintype ι] (b : OrthonormalBasi
 
 omit [Finite n] in
 /-- Inequality `‖f x‖ ≤ ‖f‖ * ‖x‖` lifted to Gram matrices. -/
-theorem posSemidef_opNorm_smul_gram_sub_gram {F} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+theorem posSemidef_opNorm_smul_gram_sub_gram {F} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [InnerProductSpace 𝕜 F]
     (v : n → E) (f : E →L[𝕜] F) : (‖f‖ ^ 2 • gram 𝕜 v - gram 𝕜 (f ∘ v)).PosSemidef := by
   refine ⟨(isHermitian_gram 𝕜 v).smul (((Pi.isSelfAdjoint.mpr (congrFun rfl)).apply f).pow 2)
     |>.sub (isHermitian_gram 𝕜 (f ∘ v)), fun c ↦ ?_⟩

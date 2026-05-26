@@ -45,9 +45,9 @@ open Filter MeasureTheory Complex Module Metric Real Bornology
 
 open scoped Topology FourierTransform RealInnerProductSpace Complex
 
-variable {V E : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+variable {V E : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [InnerProductSpace ℝ V]
   [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
-  [NormedAddCommGroup E] [NormedSpace ℂ E] {f : V → E}
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℂ E] {f : V → E}
 
 namespace Real
 

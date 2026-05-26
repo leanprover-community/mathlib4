@@ -23,11 +23,11 @@ open scoped Manifold ContDiff
 
 open TopologicalSpace
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+  [NormedSpace 𝕜 E] {E' : Type*} [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
   [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {N : Type*} [TopologicalSpace N] [ChartedSpace H N]
-  {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
+  {E'' : Type*} [NormMetric E''] [AddCommGroup E''] [IsNormedAddGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
   {I'' : ModelWithCorners 𝕜 E'' H''} {N' : Type*} [TopologicalSpace N'] [ChartedSpace H'' N']
   {n : ℕ∞ω}
 
@@ -234,27 +234,27 @@ field `𝕜` inherit a vector space structure.
 -/
 
 
-instance instSMul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
+instance instSMul {V : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace 𝕜 V] :
     SMul 𝕜 C^n⟮I, N; 𝓘(𝕜, V), V⟯ :=
   ⟨fun r f ↦ ⟨r • ⇑f, contMDiff_const.smul (I := 𝓘(𝕜)) f.contMDiff⟩⟩
 
 @[simp]
-theorem coe_smul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (r : 𝕜)
+theorem coe_smul {V : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace 𝕜 V] (r : 𝕜)
     (f : C^n⟮I, N; 𝓘(𝕜, V), V⟯) : ⇑(r • f) = r • ⇑f :=
   rfl
 
 @[simp]
-theorem smul_comp {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (r : 𝕜)
+theorem smul_comp {V : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace 𝕜 V] (r : 𝕜)
     (g : C^n⟮I'', N'; 𝓘(𝕜, V), V⟯) (h : C^n⟮I, N; I'', N'⟯) : (r • g).comp h = r • g.comp h :=
   rfl
 
-instance module {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
+instance module {V : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace 𝕜 V] :
     Module 𝕜 C^n⟮I, N; 𝓘(𝕜, V), V⟯ :=
   Function.Injective.module 𝕜 coeFnAddMonoidHom ContMDiffMap.coe_injective coe_smul
 
 /-- Coercion to a function as a `LinearMap`. -/
 @[simps]
-def coeFnLinearMap {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
+def coeFnLinearMap {V : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace 𝕜 V] :
     C^n⟮I, N; 𝓘(𝕜, V), V⟯ →ₗ[𝕜] N → V :=
   { (coeFnAddMonoidHom : C^n⟮I, N; 𝓘(𝕜, V), V⟯ →+ _) with
     toFun := (↑)
@@ -272,7 +272,7 @@ inherit an algebra structure.
 -/
 
 
-variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] [ContMDiffRing 𝓘(𝕜, A) n A]
+variable {A : Type*} [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [ContMDiffRing 𝓘(𝕜, A) n A]
 
 /-- `C^n` constant functions as a `RingHom`. -/
 def C : 𝕜 →+* C^n⟮I, N; 𝓘(𝕜, A), A⟯ where
@@ -310,20 +310,20 @@ If `V` is a module over `𝕜`, then we show that the space of `C^n` functions f
 is naturally a vector space over the ring of `C^n` functions from `N` to `𝕜`. -/
 
 /-- `C^n` scalar-valued functions act by left-multiplication on `C^n` functions. -/
-instance instSMul' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
+instance instSMul' {V : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace 𝕜 V] :
     SMul C^n⟮I, N; 𝕜⟯ C^n⟮I, N; 𝓘(𝕜, V), V⟯ :=
   ⟨fun f g => ⟨fun x => f x • g x, ContMDiff.smul f.2 g.2⟩⟩
 
 /-- The left multiplication with a `C^n` scalar function commutes with composition. -/
 @[simp]
-theorem smul_comp' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (f : C^n⟮I'', N'; 𝕜⟯)
+theorem smul_comp' {V : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace 𝕜 V] (f : C^n⟮I'', N'; 𝕜⟯)
     (g : C^n⟮I'', N'; 𝓘(𝕜, V), V⟯) (h : C^n⟮I, N; I'', N'⟯) :
     (f • g).comp h = f.comp h • g.comp h :=
   rfl
 
 /-- The space of `C^n` functions with values in a space `V` is a module over the space of `C^n`
 functions with values in `𝕜`. -/
-instance module' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
+instance module' {V : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace 𝕜 V] :
     Module C^n⟮I, N; 𝓘(𝕜), 𝕜⟯ C^n⟮I, N; 𝓘(𝕜, V), V⟯ where
   smul_add c f g := by ext x; exact smul_add (c x) (f x) (g x)
   add_smul c₁ c₂ f := by ext x; exact add_smul (c₁ x) (c₂ x) (f x)

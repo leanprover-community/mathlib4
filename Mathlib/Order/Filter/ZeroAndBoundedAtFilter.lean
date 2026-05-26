@@ -75,7 +75,7 @@ if `f =O[l] 1`. -/
 def BoundedAtFilter [Norm β] (l : Filter α) (f : α → β) : Prop :=
   Asymptotics.IsBigO l f (1 : α → ℝ)
 
-theorem ZeroAtFilter.boundedAtFilter [SeminormedAddGroup β] {l : Filter α} {f : α → β}
+theorem ZeroAtFilter.boundedAtFilter [NormPseudoMetric β] [AddGroup β] [IsNormedAddGroup β] {l : Filter α} {f : α → β}
     (hf : ZeroAtFilter l f) : BoundedAtFilter l f :=
   ((Asymptotics.isLittleO_one_iff _).mpr hf).isBigO
 
@@ -85,31 +85,31 @@ theorem const_boundedAtFilter [Norm β] (l : Filter α) (c : β) :
 
 -- TODO(https://github.com/leanprover-community/mathlib4/issues/19288): Remove all Comm in the next
 -- three lemmas. This would require modifying the corresponding general asymptotics lemma.
-nonrec theorem BoundedAtFilter.add [SeminormedAddCommGroup β] {l : Filter α} {f g : α → β}
+nonrec theorem BoundedAtFilter.add [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] {l : Filter α} {f g : α → β}
     (hf : BoundedAtFilter l f) (hg : BoundedAtFilter l g) : BoundedAtFilter l (f + g) := by
   simpa using hf.add hg
 
-theorem BoundedAtFilter.neg [SeminormedAddCommGroup β] {l : Filter α} {f : α → β}
+theorem BoundedAtFilter.neg [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] {l : Filter α} {f : α → β}
     (hf : BoundedAtFilter l f) : BoundedAtFilter l (-f) :=
   hf.neg_left
 
 theorem BoundedAtFilter.smul
-    [SeminormedRing 𝕜] [SeminormedAddCommGroup β] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
+    [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
     {l : Filter α} {f : α → β} (c : 𝕜) (hf : BoundedAtFilter l f) : BoundedAtFilter l (c • f) :=
   hf.const_smul_left c
 
-nonrec theorem BoundedAtFilter.mul [SeminormedRing β] {l : Filter α} {f g : α → β}
+nonrec theorem BoundedAtFilter.mul [NormPseudoMetric β] [Ring β] [IsNormedRing β] {l : Filter α} {f g : α → β}
     (hf : BoundedAtFilter l f) (hg : BoundedAtFilter l g) : BoundedAtFilter l (f * g) := by
   refine (hf.mul hg).trans ?_
   convert! Asymptotics.isBigO_refl (E := ℝ) _ l
   simp
 
-theorem ZeroAtFilter.mul_boundedAtFilter [SeminormedRing β] {l : Filter α}
+theorem ZeroAtFilter.mul_boundedAtFilter [NormPseudoMetric β] [Ring β] [IsNormedRing β] {l : Filter α}
     {f g : α → β} (hf : ZeroAtFilter l f) (hg : BoundedAtFilter l g) : ZeroAtFilter l (f * g) := by
   rw [ZeroAtFilter, ← Asymptotics.isLittleO_one_iff (F := ℝ)] at hf ⊢
   simpa using hf.mul_isBigO hg
 
-theorem BoundedAtFilter.mul_zeroAtFilter [SeminormedRing β] {l : Filter α}
+theorem BoundedAtFilter.mul_zeroAtFilter [NormPseudoMetric β] [Ring β] [IsNormedRing β] {l : Filter α}
     {f g : α → β} (hf : BoundedAtFilter l f) (hg : ZeroAtFilter l g) : ZeroAtFilter l (f * g) := by
   rw [ZeroAtFilter, ← Asymptotics.isLittleO_one_iff (F := ℝ)] at hg ⊢
   simpa using hf.mul_isLittleO hg
@@ -117,7 +117,7 @@ theorem BoundedAtFilter.mul_zeroAtFilter [SeminormedRing β] {l : Filter α}
 variable (𝕜) in
 /-- The submodule of functions that are bounded along a filter `l`. -/
 def boundedFilterSubmodule
-    [SeminormedRing 𝕜] [SeminormedAddCommGroup β] [Module 𝕜 β] [IsBoundedSMul 𝕜 β] (l : Filter α) :
+    [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [Module 𝕜 β] [IsBoundedSMul 𝕜 β] (l : Filter α) :
     Submodule 𝕜 (α → β) where
   carrier := BoundedAtFilter l
   zero_mem' := const_boundedAtFilter l 0
@@ -127,14 +127,14 @@ def boundedFilterSubmodule
 variable (𝕜) in
 /-- The subalgebra of functions that are bounded along a filter `l`. -/
 def boundedFilterSubalgebra
-    [SeminormedCommRing 𝕜] [SeminormedRing β] [Algebra 𝕜 β] [IsBoundedSMul 𝕜 β] (l : Filter α) :
+    [NormPseudoMetric 𝕜] [CommRing 𝕜] [IsNormedRing 𝕜] [NormPseudoMetric β] [Ring β] [IsNormedRing β] [Algebra 𝕜 β] [IsBoundedSMul 𝕜 β] (l : Filter α) :
     Subalgebra 𝕜 (α → β) :=
   Submodule.toSubalgebra
     (boundedFilterSubmodule 𝕜 l)
     (const_boundedAtFilter l (1 : β))
     (fun f g hf hg ↦ by simpa only [Pi.one_apply, mul_one, norm_mul] using hf.mul hg)
 
-theorem BoundedAtFilter.prod {ι : Type} (s : Finset ι) [SeminormedCommRing β]
+theorem BoundedAtFilter.prod {ι : Type} (s : Finset ι) [NormPseudoMetric β] [CommRing β] [IsNormedRing β]
     {l : Filter α} {f : ι → α → β} (h : ∀ i ∈ s, BoundedAtFilter l (f i)) :
     BoundedAtFilter l (∏ i ∈ s, f i) :=
   (boundedFilterSubalgebra β l).prod_mem (f := f) h

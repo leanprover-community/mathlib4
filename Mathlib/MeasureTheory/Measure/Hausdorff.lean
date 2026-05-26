@@ -738,7 +738,7 @@ end LipschitzWith
 
 open scoped Pointwise
 
-theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedAddCommGroup E]
+theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
     [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E] [MeasurableSpace E] [BorelSpace E]
     {d : ℝ} (hd : 0 ≤ d) {r : 𝕜} (hr : r ≠ 0) (s : Set E) :
     μH[d] (r • s) = ‖r‖₊ ^ d • μH[d] s := by
@@ -964,7 +964,7 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
       · simp only [ENNReal.ofReal_ne_top, Ne, not_false_iff]
 
 instance isAddHaarMeasure_hausdorffMeasure {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
     [MeasurableSpace E] [BorelSpace E] :
     IsAddHaarMeasure (G := E) μH[finrank ℝ E] where
   lt_top_of_isCompact K hK := by
@@ -1019,7 +1019,7 @@ section Geometric
 
 variable {𝕜 E P : Type*}
 
-theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem hausdorffMeasure_smul_right_image [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
     [MeasurableSpace E] [BorelSpace E] (v : E) (s : Set ℝ) :
     μH[1] ((fun r => r • v) '' s) = ‖v‖₊ • μH[1] s := by
   obtain rfl | hv := eq_or_ne v 0
@@ -1041,7 +1041,7 @@ theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace �
 
 section NormedFieldAffine
 
-variable [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpace P]
+variable [NormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [MeasurableSpace P]
 variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 
 /-- Scaling by `c` around `x` scales the measure by `‖c‖₊ ^ d`. -/
@@ -1070,7 +1070,7 @@ end NormedFieldAffine
 
 section RealAffine
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace P]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [MeasurableSpace P]
 variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 
 /-- Mapping a set of reals along a line segment scales the measure by the length of a segment.
@@ -1095,7 +1095,7 @@ end RealAffine
 
 /-- The measure of a segment is the distance between its endpoints. -/
 @[simp]
-theorem hausdorffMeasure_segment {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem hausdorffMeasure_segment {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
     [MeasurableSpace E] [BorelSpace E] (x y : E) : μH[1] (segment ℝ x y) = edist x y := by
   rw [← affineSegment_eq_segment, hausdorffMeasure_affineSegment]
 
@@ -1105,7 +1105,7 @@ Hausdorff measure of the orthogonal projection of `s` onto `K` is less than or e
 `d`-dimensional Hausdorff measure of `s`.
 -/
 theorem hausdorffMeasure_orthogonalProjection_le [RCLike 𝕜]
-    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
     (K : Submodule 𝕜 E) [K.HasOrthogonalProjection]
     (d : ℝ) (s : Set E) (hs : 0 ≤ d) :
     μH[d] (K.orthogonalProjection '' s) ≤ μH[d] s := by

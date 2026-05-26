@@ -57,8 +57,8 @@ open Set NormedAddGroupHom UniformSpace
 
 section Completion
 
-variable {G : Type*} [SeminormedAddCommGroup G] {H : Type*} [SeminormedAddCommGroup H]
-  {K : Type*} [SeminormedAddCommGroup K]
+variable {G : Type*} [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G] {H : Type*} [NormPseudoMetric H] [AddCommGroup H] [IsNormedAddGroup H]
+  {K : Type*} [NormPseudoMetric K] [AddCommGroup K] [IsNormedAddGroup K]
 
 /-- The normed group hom induced between completions. -/
 def NormedAddGroupHom.completion (f : NormedAddGroupHom G H) :
@@ -180,8 +180,8 @@ end Completion
 
 section Extension
 
-variable {G : Type*} [SeminormedAddCommGroup G]
-variable {H : Type*} [SeminormedAddCommGroup H] [T0Space H] [CompleteSpace H]
+variable {G : Type*} [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G]
+variable {H : Type*} [NormPseudoMetric H] [AddCommGroup H] [IsNormedAddGroup H] [T0Space H] [CompleteSpace H]
 
 /-- If `H` is complete, the extension of `f : NormedAddGroupHom G H` to a
 `NormedAddGroupHom (completion G) H`. -/

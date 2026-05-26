@@ -48,7 +48,7 @@ namespace spectrum
 
 section NonTriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable [NontriviallyNormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 theorem hasDerivAt_resolvent_const_left {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
     HasDerivAt (resolvent a) (-resolvent a k ^ 2) k := by
@@ -81,7 +81,7 @@ theorem hasDerivAt_resolvent_const_right [NontriviallyNormedField 𝕜] [Nontriv
 open ENNReal in
 /-- In a Banach algebra `A` over `𝕜`, for `a : A` the function `fun z ↦ (1 - z • a)⁻¹` is
 differentiable on any closed ball centered at zero of radius `r < (spectralRadius 𝕜 a)⁻¹`. -/
-theorem differentiableOn_inverse_one_sub_smul [NontriviallyNormedField 𝕜] [NormedRing A]
+theorem differentiableOn_inverse_one_sub_smul [NontriviallyNormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A]
     [NormedAlgebra 𝕜 A] [CompleteSpace A] {a : A} {r : ℝ≥0}
     (hr : (r : ℝ≥0∞) < (spectralRadius 𝕜 a)⁻¹) :
     DifferentiableOn 𝕜 (fun z : 𝕜 => (1 - z • a)⁻¹ʳ) (Metric.closedBall 0 r) := by
@@ -96,7 +96,7 @@ theorem differentiableOn_inverse_one_sub_smul [NontriviallyNormedField 𝕜] [No
 
 section Complex
 
-variable [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
+variable [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
 
 open ContinuousMultilinearMap in
 /-- The `limsup` relationship for the spectral radius used to prove `spectrum.gelfand_formula`. -/
@@ -205,11 +205,10 @@ noncomputable def _root_.NormedRing.algEquivComplexOfComplete (hA : ∀ {a : A},
   let nt : Nontrivial A := ⟨⟨1, 0, hA.mp ⟨⟨1, 1, mul_one _, mul_one _⟩, rfl⟩⟩⟩
   { Algebra.ofId ℂ A with
     toFun := algebraMap ℂ A
-    invFun := fun a => (@spectrum.nonempty _ _ _ _ nt a).some
+    invFun := fun a => (spectrum.nonempty a).some
     left_inv := fun z => by
-      simpa only [@scalar_eq _ _ _ _ _ nt _] using
-        (@spectrum.nonempty _ _ _ _ nt <| algebraMap ℂ A z).some_mem
-    right_inv := fun a => algebraMap_eq_of_mem (@hA) (@spectrum.nonempty _ _ _ _ nt a).some_mem }
+      simpa only [scalar_eq] using (spectrum.nonempty <| algebraMap ℂ A z).some_mem
+    right_inv := fun a => algebraMap_eq_of_mem (@hA) (spectrum.nonempty a).some_mem }
 
 end Complex
 

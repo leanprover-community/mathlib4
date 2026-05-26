@@ -36,9 +36,9 @@ open Filter Asymptotics Set
 open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {F : Type v} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
+variable {E : Type w} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+variable {G : Type*} [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
 variable {f : 𝕜 → F}
 variable {f' : F}
 variable {x : 𝕜}
@@ -99,7 +99,7 @@ section SMul
 /-! ### Derivative of the multiplication of a scalar function and a vector function -/
 
 
-variable {𝕜' : Type*} [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F]
+variable {𝕜' : Type*} [NormMetric 𝕜'] [Ring 𝕜'] [IsNormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F]
   [IsScalarTower 𝕜 𝕜' F] {c : 𝕜 → 𝕜'} {c' : 𝕜'}
 
 @[to_fun]
@@ -256,7 +256,7 @@ section Mul
 /-! ### Derivative of the multiplication of two functions -/
 
 
-variable {𝕜' 𝔸 : Type*} [NormedDivisionRing 𝕜'] [NormedRing 𝔸] [NormedAlgebra 𝕜 𝕜']
+variable {𝕜' 𝔸 : Type*} [NormedDivisionRing 𝕜'] [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸] [NormedAlgebra 𝕜 𝕜']
   [NormedAlgebra 𝕜 𝔸] {c d : 𝕜 → 𝔸} {c' d' : 𝔸} {u v : 𝕜 → 𝕜'}
 
 @[to_fun]
@@ -405,7 +405,7 @@ section Prod
 
 section HasDeriv
 
-variable {ι : Type*} [DecidableEq ι] {𝔸' : Type*} [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸']
+variable {ι : Type*} [DecidableEq ι] {𝔸' : Type*} [NormMetric 𝔸'] [CommRing 𝔸'] [IsNormedRing 𝔸'] [NormedAlgebra 𝕜 𝔸']
   {u : Finset ι} {f : ι → 𝕜 → 𝔸'} {f' : ι → 𝔸'}
 
 theorem HasDerivAt.fun_finsetProd (hf : ∀ i ∈ u, HasDerivAt (f i) (f' i) x) :
@@ -482,7 +482,7 @@ theorem derivWithin_finsetProd (hf : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f
 
 end HasDeriv
 
-variable {ι : Type*} {𝔸' : Type*} [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸']
+variable {ι : Type*} {𝔸' : Type*} [NormMetric 𝔸'] [CommRing 𝔸'] [IsNormedRing 𝔸'] [NormedAlgebra 𝕜 𝔸']
   {u : Finset ι} {f : ι → 𝕜 → 𝔸'}
 
 @[fun_prop]
@@ -605,7 +605,7 @@ section CLMCompApply
 
 open ContinuousLinearMap
 
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {c : 𝕜 → F →L[𝕜] G} {c' : F →L[𝕜] G}
+variable {G : Type*} [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G] {c : 𝕜 → F →L[𝕜] G} {c' : F →L[𝕜] G}
   {d : 𝕜 → E →L[𝕜] F} {d' : E →L[𝕜] F} {u : 𝕜 → F} {u' : F}
 
 theorem HasStrictDerivAt.clm_comp (hc : HasStrictDerivAt c c' x) (hd : HasStrictDerivAt d d' x) :

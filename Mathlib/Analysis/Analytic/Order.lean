@@ -27,7 +27,7 @@ Uniformize API between analytic and meromorphic functions
 open Filter Set
 open scoped Topology
 
-variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 
 /-!
 ## Vanishing Order at a Point: Definition and Characterization
@@ -88,7 +88,8 @@ lemma AnalyticAt.analyticOrderAt_eq_natCast (hf : AnalyticAt 𝕜 f z₀) :
     analyticOrderAt f z₀ = n ↔
       ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z := by
   unfold analyticOrderAt
-  split_ifs with h
+  -- bug with split_ifs and Jovan's bundled classes
+  split_ifs with h' h
   · simp only [ENat.top_ne_coe, false_iff]
     contrapose h
     rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff]
@@ -96,6 +97,8 @@ lemma AnalyticAt.analyticOrderAt_eq_natCast (hf : AnalyticAt 𝕜 f z₀) :
   · rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff] at h
     refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
     rw [AnalyticAt.unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']
+  · exact absurd hf h'
+  · exact absurd hf h'
 
 /-- The order of an analytic function `f` at `z₀` equals a natural number `n` iff `f` can locally
 be written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic and does not vanish at `z₀`. -/
@@ -154,7 +157,8 @@ lemma natCast_le_analyticOrderAt (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
     n ≤ analyticOrderAt f z₀ ↔
       ∃ g, AnalyticAt 𝕜 g z₀ ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z := by
   unfold analyticOrderAt
-  split_ifs with h
+  -- bug with split_ifs and Jovan's bundled classes
+  split_ifs with h' h
   · simpa using ⟨0, analyticAt_const .., by simpa⟩
   · let m := (hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose
     obtain ⟨g, hg, hg_ne, hm⟩ := (hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose_spec
@@ -171,6 +175,8 @@ lemma natCast_le_analyticOrderAt (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
         rw [← inv_smul_eq_iff₀ (pow_ne_zero _ <| sub_ne_zero_of_ne hz), hf'', smul_comm,
           ← mul_smul] at hf'
         rw [pow_sub₀ _ (sub_ne_zero_of_ne hz) (by lia), ← hf']
+  · exact absurd hf h'
+  · exact absurd hf h'
 
 /-- If two functions agree in a neighborhood of `z₀`, then their orders at `z₀` agree. -/
 lemma analyticOrderAt_congr (hfg : f =ᶠ[𝓝 z₀] g) :
@@ -345,7 +351,7 @@ lemma natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero [CharZero 𝕜] [Comp
       -Order.lt_add_one_iff, Nat.forall_lt_succ_left, hfz]
 
 lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜] [CharZero 𝕜]
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
     (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} (horder : analyticOrderAt f z₀ = n + 1) :
     analyticOrderAt (deriv f) z₀ = n := by
   have ⟨g, hg, hg₀, hfg⟩ := (AnalyticAt.analyticOrderAt_eq_natCast hf).1 horder
@@ -354,7 +360,7 @@ lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NontriviallyNorme
   simpa [hz₀, sub_zero, horder] using hf.analyticOrderAt_deriv_add_one
 
 lemma analyticOrderAt_iterated_deriv {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜]
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
     (hf : AnalyticAt 𝕜 f z₀) {k n : ℕ} [CharZero 𝕜] :
     n = analyticOrderAt f z₀ → n ≠ 0 → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by
   induction k generalizing n with

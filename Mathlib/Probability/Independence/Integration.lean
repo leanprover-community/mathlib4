@@ -176,9 +176,9 @@ theorem IndepFun.integrable_op
 /-- A continuous bilinear map applied to two independent and integrable random variables
 is integrable. -/
 theorem IndepFun.integrable_bilin {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpace E] [OpensMeasurableSpace E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] [MeasurableSpace F] [OpensMeasurableSpace F]
-    [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+    [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [MeasurableSpace E] [OpensMeasurableSpace E]
+    [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] [MeasurableSpace F] [OpensMeasurableSpace F]
+    [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
     {X : Ω → E} {Y : Ω → F} (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ) (hY : Integrable Y μ)
     (B : E →L[𝕜] F →L[𝕜] G) :
     Integrable (fun ω ↦ B (X ω) (Y ω)) μ := by
@@ -193,7 +193,7 @@ This is useful for the case where `B` is scalar multiplication, as it will allow
 integrability hypotheses. -/
 theorem IndepFun.integrable_left_of_integrable_op
     [TopologicalSpace E] [ContinuousENorm E] [MeasurableSpace E] [OpensMeasurableSpace E]
-    [NormedAddGroup F] [MeasurableSpace F] [OpensMeasurableSpace F]
+    [NormMetric F] [AddGroup F] [IsNormedAddGroup F] [MeasurableSpace F] [OpensMeasurableSpace F]
     [TopologicalSpace G] [ContinuousENorm G]
     {X : Ω → E} {Y : Ω → F} (hXY : X ⟂ᵢ[μ] Y)
     (B : E → F → G) (c : ℝ≥0) (hc : c ≠ 0) (hB : ∀ x y, c * ‖x‖ₑ * ‖y‖ₑ ≤ ‖B x y‖ₑ)
@@ -225,7 +225,7 @@ almost-surely `0` and `c * ‖x‖ₑ * ‖y‖ₑ ≤ ‖B x y‖ₑ`, then `Y`
 This is useful for the case where `B` is scalar multiplication, as it will allow to drop
 integrability hypotheses. -/
 theorem IndepFun.integrable_right_of_integrable_op
-    [NormedAddGroup E] [MeasurableSpace E] [OpensMeasurableSpace E]
+    [NormMetric E] [AddGroup E] [IsNormedAddGroup E] [MeasurableSpace E] [OpensMeasurableSpace E]
     [TopologicalSpace F] [ContinuousENorm F] [MeasurableSpace F] [OpensMeasurableSpace F]
     [TopologicalSpace G] [ContinuousENorm G]
     {X : Ω → E} {Y : Ω → F} (hXY : X ⟂ᵢ[μ] Y)
@@ -241,9 +241,9 @@ theorem IndepFun.integrable_right_of_integrable_op
 and `B` is a continuous bilinear map, then
 `∫ ω, B (f (X ω)) (g (Y ω)) ∂μ = B (∫ ω, f (X ω) ∂μ) (∫ ω, g (Y ω) ∂μ).` -/
 theorem IndepFun.integral_bilin_comp_comp
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
-    [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
-    [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
+    [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
+    [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
     {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → E} {g : 𝓨 → F} (hXY : X ⟂ᵢ[μ] Y)
     (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
     (hf : Integrable f (μ.map X)) (hg : Integrable g (μ.map Y)) (B : E →L[𝕜] F →L[𝕜] G) :
@@ -272,9 +272,9 @@ The assumption on `B` allows to drop the integrability condition in
 `IndepFun.integral_bilin_comp_comp`, which is useful for the versions where `B` is the scalar
 multiplication or the multiplication. -/
 theorem IndepFun.integral_bilin_comp_comp'
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
-    [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
-    [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
+    [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
+    [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
     {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → E} {g : 𝓨 → F} (hXY : X ⟂ᵢ[μ] Y)
     (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
     (hf : AEStronglyMeasurable f (μ.map X)) (hg : AEStronglyMeasurable g (μ.map Y))
@@ -312,11 +312,11 @@ theorem IndepFun.integral_bilin_comp_comp'
 /-- If `X` and `Y` are independent and integrable random variables and `B`
 is a continuous bilinear map, then `∫ ω, B (X ω) (Y ω) ∂μ = B μ[X] μ[Y].` -/
 theorem IndepFun.integral_bilin
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
     [MeasurableSpace E] [BorelSpace E]
-    [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
+    [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
     [MeasurableSpace F] [BorelSpace F]
-    [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
+    [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
     {X : Ω → E} {Y : Ω → F} (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ) (hY : Integrable Y μ)
     (B : E →L[ℝ] F →L[ℝ] G) :
     ∫ ω, B (X ω) (Y ω) ∂μ = B μ[X] μ[Y] :=
@@ -333,11 +333,11 @@ The assumption on `B` allows to drop the integrability condition in
 `IndepFun.integral_bilin'`, which is useful for the versions where `B` is the scalar
 multiplication or the multiplication. -/
 theorem IndepFun.integral_bilin'
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
     [MeasurableSpace E] [BorelSpace E]
-    [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
+    [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
     [MeasurableSpace F] [BorelSpace F]
-    [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
+    [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
     {X : Ω → E} {Y : Ω → F} (hXY : X ⟂ᵢ[μ] Y) (hX : AEStronglyMeasurable X μ)
     (hY : AEStronglyMeasurable Y μ)
     (B : E →L[ℝ] F →L[ℝ] G) (c : ℝ≥0) (hc : c ≠ 0) (hB : ∀ x y, c * ‖x‖ * ‖y‖ ≤ ‖B x y‖) :
@@ -368,7 +368,7 @@ theorem IndepFun.integrable_mul
   IndepFun.integrable_right_of_integrable_op
 
 lemma IndepFun.integral_fun_comp_smul_comp
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
     {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → 𝕜} {g : 𝓨 → E}
     (hXY : X ⟂ᵢ[μ] Y) (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
     (hf : AEStronglyMeasurable f (μ.map X)) (hg : AEStronglyMeasurable g (μ.map Y)) :
@@ -385,7 +385,7 @@ lemma IndepFun.integral_fun_comp_mul_comp
   hXY.integral_fun_comp_smul_comp hX hY hf hg
 
 lemma IndepFun.integral_comp_smul_comp
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
     {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → 𝕜} {g : 𝓨 → E}
     (hXY : X ⟂ᵢ[μ] Y) (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
     (hf : AEStronglyMeasurable f (μ.map X)) (hg : AEStronglyMeasurable g (μ.map Y)) :
@@ -400,7 +400,7 @@ lemma IndepFun.integral_comp_mul_comp
   hXY.integral_fun_comp_mul_comp hX hY hf hg
 
 lemma IndepFun.integral_smul_eq_smul_integral
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
     {X : Ω → 𝕜} {Y : Ω → E} (hXY : X ⟂ᵢ[μ] Y)
     (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) :
     μ[X • Y] = μ[X] • μ[Y] := by
@@ -414,7 +414,7 @@ lemma IndepFun.integral_mul_eq_mul_integral
   hXY.integral_smul_eq_smul_integral hX hY
 
 lemma IndepFun.integral_fun_smul_eq_smul_integral
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
     {X : Ω → 𝕜} {Y : Ω → E} (hXY : X ⟂ᵢ[μ] Y)
     (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) :
     ∫ ω, X ω • Y ω ∂μ = (∫ ω, X ω ∂μ) • ∫ ω, Y ω ∂μ :=

@@ -338,7 +338,7 @@ lemma eventually_cofinite_not_isRoot {R : Type*} [CommRing R] [IsDomain R] {P : 
 
 open Bornology
 
-variable {R : Type*} [NormedRing R] [NormMulClass R] {P Q : R[X]}
+variable {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R] [NormMulClass R] {P Q : R[X]}
 
 lemma isEquivalent_cobounded_leading_monomial :
     P.eval ~[cobounded R] (P.leadingCoeff * · ^ P.natDegree) := by

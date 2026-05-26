@@ -45,7 +45,7 @@ variable {𝕜 R V W W₂ Q : Type*}
 
 section Seminormed
 
-variable [SeminormedAddCommGroup V] [SeminormedAddCommGroup W] [SeminormedAddCommGroup W₂]
+variable [NormPseudoMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormPseudoMetric W] [AddCommGroup W] [IsNormedAddGroup W] [NormPseudoMetric W₂] [AddCommGroup W₂] [IsNormedAddGroup W₂]
 variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [NormedSpace 𝕜 W₂]
 variable [PseudoMetricSpace Q] [NormedAddTorsor W Q]
 
@@ -75,7 +75,9 @@ theorem norm_eq (h : f 0 = 0) : ‖f‖ = ‖f.contLinear‖ :=
 noncomputable instance : PseudoMetricSpace (V →ᴬ[𝕜] Q) :=
   (decompEquiv 𝕜 V Q).pseudometricSpace
 
-noncomputable instance : SeminormedAddCommGroup (V →ᴬ[𝕜] W) where
+noncomputable instance : NormPseudoMetric (V →ᴬ[𝕜] W) where
+
+instance : IsNormedAddGroup (V →ᴬ[𝕜] W) where
   dist_eq _ _ := dist_eq_norm_neg_add (E := W × (V →L[𝕜] W)) _ _
 
 noncomputable instance : NormedAddTorsor (V →ᴬ[𝕜] W) (V →ᴬ[𝕜] Q) where
@@ -148,16 +150,14 @@ end Seminormed
 
 section Normed
 
-variable [NormedAddCommGroup V] [NormedAddCommGroup W]
+variable [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormMetric W] [AddCommGroup W] [IsNormedAddGroup W]
 variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W]
 variable [MetricSpace Q] [NormedAddTorsor W Q]
 
 noncomputable instance : MetricSpace (V →ᴬ[𝕜] Q) :=
   (decompEquiv 𝕜 V Q).metricSpace
 
-noncomputable instance : NormedAddCommGroup (V →ᴬ[𝕜] W) where
-  __ : SeminormedAddCommGroup (V →ᴬ[𝕜] W) := inferInstance
-  __ : MetricSpace (V →ᴬ[𝕜] W) := inferInstance
+noncomputable instance : NormMetric (V →ᴬ[𝕜] W) where
 
 end Normed
 

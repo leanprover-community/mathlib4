@@ -450,7 +450,7 @@ open Real
 
 section NonUnitalCFC
 
-variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℝ A] [SMulCommClass ℝ A A]
+variable {A : Type*} [NormMetric A] [NonUnitalRing A] [IsNormedRing A] [StarRing A] [NormedSpace ℝ A] [SMulCommClass ℝ A A]
   [IsScalarTower ℝ A A] [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
   [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 

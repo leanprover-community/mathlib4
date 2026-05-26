@@ -17,16 +17,16 @@ bundled maps.
 
 @[expose] public section
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+  [NormedSpace 𝕜 E] {E' : Type*} [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
   [TopologicalSpace H] {H' : Type*} [TopologicalSpace H'] {I : ModelWithCorners 𝕜 E H}
   {I' : ModelWithCorners 𝕜 E' H'} (M : Type*) [TopologicalSpace M] [ChartedSpace H M] (M' : Type*)
-  [TopologicalSpace M'] [ChartedSpace H' M'] {E'' : Type*} [NormedAddCommGroup E'']
+  [TopologicalSpace M'] [ChartedSpace H' M'] {E'' : Type*} [NormMetric E''] [AddCommGroup E''] [IsNormedAddGroup E'']
   [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''}
   {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
   -- declare a manifold `N` over the pair `(F, G)`.
   {F : Type*}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
   {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N] (n : WithTop ℕ∞)
 
 open scoped Manifold
@@ -57,7 +57,7 @@ instance instFunLike : FunLike C^n⟮I, M; I', M'⟯ M M' where
 
 protected theorem contMDiff (f : C^n⟮I, M; I', M'⟯) : CMDiff n f := f.prop
 
-attribute [to_additive_ignore_args 21] ContMDiffMap ContMDiffMap.instFunLike
+attribute [to_additive_ignore_args 25] ContMDiffMap ContMDiffMap.instFunLike
 
 variable {f g : C^n⟮I, M; I', M'⟯}
 

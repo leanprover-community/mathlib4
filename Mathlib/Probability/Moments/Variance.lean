@@ -522,8 +522,8 @@ end Prod
 
 section NormedSpace
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
-  [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
+variable {E F : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
   {μ : Measure E} [IsProbabilityMeasure μ] {ν : Measure F} [IsProbabilityMeasure ν]
 
 lemma variance_dual_prod' {L : StrongDual ℝ (E × F)}

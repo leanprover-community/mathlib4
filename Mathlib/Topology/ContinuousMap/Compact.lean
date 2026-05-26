@@ -35,7 +35,7 @@ open NNReal BoundedContinuousFunction Set Metric
 namespace ContinuousMap
 
 variable {α β E : Type*}
-variable [TopologicalSpace α] [CompactSpace α] [PseudoMetricSpace β] [SeminormedAddCommGroup E]
+variable [TopologicalSpace α] [CompactSpace α] [PseudoMetricSpace β] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 
 section
 
@@ -168,19 +168,17 @@ theorem _root_.BoundedContinuousFunction.norm_toContinuousMap_eq (f : α →ᵇ 
 
 open BoundedContinuousFunction
 
-instance : SeminormedAddCommGroup C(α, E) where
-  __ := ContinuousMap.instPseudoMetricSpace _ _
-  __ := ContinuousMap.instAddCommGroupContinuousMap
+instance : NormPseudoMetric C(α, E) where
+
+instance : IsNormedAddGroup C(α, E) where
   dist_eq x y := by rw [← norm_mkOfCompact, ← dist_mkOfCompact, dist_eq_norm_neg_add,
     mkOfCompact_add, mkOfCompact_neg]
-  dist := dist
-  norm := norm
 
-instance {E : Type*} [NormedAddCommGroup E] : NormedAddCommGroup C(α, E) where
-  __ : SeminormedAddCommGroup C(α, E) := inferInstance
-  __ : MetricSpace C(α, E) := inferInstance
+instance {E : Type*} [NormMetric E] [AddCommGroup E] : NormMetric C(α, E) where
 
-instance [Nonempty α] {E : Type*} [NormedAddCommGroup E] [Nontrivial E] :
+example {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] : NormedAddCommGroup C(α, E) where
+
+instance [Nonempty α] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [Nontrivial E] :
     NontrivialTopology C(α, E) := by
   simpa [nontrivialTopology_iff_exists_norm_ne_zero] using exists_ne (0 : C(α, E))
 
@@ -202,19 +200,19 @@ theorem dist_le_two_norm (x y : α) : dist (f x) (f y) ≤ 2 * ‖f‖ :=
 
 /-- The norm of a function is controlled by the supremum of the pointwise norms. -/
 theorem norm_le {C : ℝ} (C0 : (0 : ℝ) ≤ C) : ‖f‖ ≤ C ↔ ∀ x : α, ‖f x‖ ≤ C :=
-  @BoundedContinuousFunction.norm_le _ _ _ _ (mkOfCompact f) _ C0
+  @BoundedContinuousFunction.norm_le _ _ _ _ _ _ (mkOfCompact f) _ C0
 
 theorem norm_le_of_nonempty [Nonempty α] {M : ℝ} : ‖f‖ ≤ M ↔ ∀ x, ‖f x‖ ≤ M :=
-  @BoundedContinuousFunction.norm_le_of_nonempty _ _ _ _ _ (mkOfCompact f) _
+  @BoundedContinuousFunction.norm_le_of_nonempty _ _ _ _ _ _ _ (mkOfCompact f) _
 
 theorem norm_lt_iff {M : ℝ} (M0 : 0 < M) : ‖f‖ < M ↔ ∀ x, ‖f x‖ < M :=
-  @BoundedContinuousFunction.norm_lt_iff_of_compact _ _ _ _ _ (mkOfCompact f) _ M0
+  @BoundedContinuousFunction.norm_lt_iff_of_compact _ _ _ _ _ _ _ (mkOfCompact f) _ M0
 
 theorem nnnorm_lt_iff {M : ℝ≥0} (M0 : 0 < M) : ‖f‖₊ < M ↔ ∀ x : α, ‖f x‖₊ < M :=
   f.norm_lt_iff M0
 
 theorem norm_lt_iff_of_nonempty [Nonempty α] {M : ℝ} : ‖f‖ < M ↔ ∀ x, ‖f x‖ < M :=
-  @BoundedContinuousFunction.norm_lt_iff_of_nonempty_compact _ _ _ _ _ _ (mkOfCompact f) _
+  @BoundedContinuousFunction.norm_lt_iff_of_nonempty_compact _ _ _ _ _ _ _ _ (mkOfCompact f) _
 
 theorem nnnorm_lt_iff_of_nonempty [Nonempty α] {M : ℝ≥0} : ‖f‖₊ < M ↔ ∀ x, ‖f x‖₊ < M :=
   f.norm_lt_iff_of_nonempty
@@ -249,44 +247,30 @@ section
 
 variable {R : Type*}
 
-instance [NonUnitalSeminormedRing R] : NonUnitalSeminormedRing C(α, R) where
-  __ : SeminormedAddCommGroup C(α, R) := inferInstance
-  __ : NonUnitalRing C(α, R) := inferInstance
+instance [NormPseudoMetric R] [NonUnitalRing R] [IsNormedRing R] : IsNormedRing C(α, R) where
   norm_mul_le f g := norm_mul_le (mkOfCompact f) (mkOfCompact g)
 
-instance [NonUnitalSeminormedCommRing R] : NonUnitalSeminormedCommRing C(α, R) where
-  __ : NonUnitalSeminormedRing C(α, R) := inferInstance
-  __ : NonUnitalCommRing C(α, R) := inferInstance
+example [NormPseudoMetric R] [NonUnitalRing R] [IsNormedRing R] : NonUnitalSeminormedRing C(α, R) where
 
-instance [SeminormedRing R] : SeminormedRing C(α, R) where
-  __ : NonUnitalSeminormedRing C(α, R) := inferInstance
-  __ : Ring C(α, R) := inferInstance
+example [NormPseudoMetric R] [NonUnitalCommRing R] [IsNormedRing R] : NonUnitalSeminormedCommRing C(α, R) where
 
-instance [SeminormedCommRing R] : SeminormedCommRing C(α, R) where
-  __ : SeminormedRing C(α, R) := inferInstance
-  __ : CommRing C(α, R) := inferInstance
+example [NormPseudoMetric R] [Ring R] [IsNormedRing R] : SeminormedRing C(α, R) where
 
-instance [NonUnitalNormedRing R] : NonUnitalNormedRing C(α, R) where
-  __ : NormedAddCommGroup C(α, R) := inferInstance
-  __ : NonUnitalSeminormedRing C(α, R) := inferInstance
+example [NormPseudoMetric R] [CommRing R] [IsNormedRing R] : SeminormedCommRing C(α, R) where
 
-instance [NonUnitalNormedCommRing R] : NonUnitalNormedCommRing C(α, R) where
-  __ : NonUnitalNormedRing C(α, R) := inferInstance
-  __ : NonUnitalCommRing C(α, R) := inferInstance
+example [NormMetric R] [NonUnitalRing R] [IsNormedRing R] : NonUnitalNormedRing C(α, R) where
 
-instance [NormedRing R] : NormedRing C(α, R) where
-  __ : NormedAddCommGroup C(α, R) := inferInstance
-  __ : SeminormedRing C(α, R) := inferInstance
+example [NormMetric R] [NonUnitalCommRing R] [IsNormedRing R] : NonUnitalNormedCommRing C(α, R) where
 
-instance [NormedCommRing R] : NormedCommRing C(α, R) where
-  __ : NormedRing C(α, R) := inferInstance
-  __ : CommRing C(α, R) := inferInstance
+example [NormMetric R] [Ring R] [IsNormedRing R] : NormedRing C(α, R) where
+
+example [NormMetric R] [CommRing R] [IsNormedRing R] : NormedCommRing C(α, R) where
 
 end
 
 section
 
-variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 instance normedSpace {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E] : NormedSpace 𝕜 C(α, E) where
   norm_smul_le := norm_smul_le
@@ -338,19 +322,19 @@ theorem linearIsometryBoundedOfCompact_of_compact_toEquiv :
 
 end
 
-@[simp] lemma nnnorm_smul_const {R β : Type*} [SeminormedAddCommGroup β] [SeminormedRing R]
+@[simp] lemma nnnorm_smul_const {R β : Type*} [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [NormPseudoMetric R] [Ring R] [IsNormedRing R]
     [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖₊ = ‖f‖₊ * ‖b‖₊ := by
   simp only [nnnorm_eq_iSup_nnnorm, smul_apply', const_apply, nnnorm_smul, iSup_mul]
 
-@[simp] lemma norm_smul_const {R β : Type*} [SeminormedAddCommGroup β] [SeminormedRing R]
+@[simp] lemma norm_smul_const {R β : Type*} [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [NormPseudoMetric R] [Ring R] [IsNormedRing R]
     [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖ = ‖f‖ * ‖b‖ := by
   simp only [← coe_nnnorm, NNReal.coe_mul, nnnorm_smul_const]
 
 section NormSum
 
-variable {R : Type*} [NonUnitalSeminormedRing R] [IsCancelMulZero R]
+variable {R : Type*} [NormPseudoMetric R] [NonUnitalRing R] [IsNormedRing R] [IsCancelMulZero R]
 
 open BoundedContinuousFunction
 
@@ -392,7 +376,7 @@ end NormSum
 
 section
 
-variable {𝕜 : Type*} {γ : Type*} [NormedField 𝕜] [SeminormedRing γ] [NormedAlgebra 𝕜 γ]
+variable {𝕜 : Type*} {γ : Type*} [NormedField 𝕜] [NormPseudoMetric γ] [Ring γ] [IsNormedRing γ] [NormedAlgebra 𝕜 γ]
 
 instance : NormedAlgebra 𝕜 C(α, γ) :=
   { ContinuousMap.normedSpace, ContinuousMap.algebra with }
@@ -448,7 +432,7 @@ of `C(X, E)` (i.e. locally uniform convergence). -/
 open TopologicalSpace
 
 variable {X : Type*} [TopologicalSpace X] [LocallyCompactSpace X]
-variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [CompleteSpace E]
 
 theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     (hF : ∀ K : Compacts X, Summable fun i => ‖(F i).restrict K‖) : Summable F := by
@@ -477,7 +461,7 @@ Furthermore, if `α` is compact and `β` is a C⋆-ring, then `C(α, β)` is a C
 section NormedSpace
 
 variable {α : Type*} {β : Type*}
-variable [TopologicalSpace α] [SeminormedAddCommGroup β] [StarAddMonoid β] [NormedStarGroup β]
+variable [TopologicalSpace α] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [StarAddMonoid β] [NormedStarGroup β]
 
 theorem _root_.BoundedContinuousFunction.mkOfCompact_star [CompactSpace α] (f : C(α, β)) :
     mkOfCompact (star f) = star (mkOfCompact f) :=
@@ -495,7 +479,7 @@ section CStarRing
 variable {α : Type*} {β : Type*}
 variable [TopologicalSpace α] [CompactSpace α]
 
-instance [NonUnitalNormedRing β] [StarRing β] [CStarRing β] : CStarRing C(α, β) where
+instance [NormMetric β] [NonUnitalRing β] [IsNormedRing β] [StarRing β] [CStarRing β] : CStarRing C(α, β) where
   norm_mul_self_le f := by
     rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _),
       ContinuousMap.norm_le _ (Real.sqrt_nonneg _)]

@@ -190,7 +190,9 @@ instance : Norm ℤ_[p] := ⟨fun z => ‖(z : ℚ_[p])‖⟩
 variable {p} in
 theorem norm_def {z : ℤ_[p]} : ‖z‖ = ‖(z : ℚ_[p])‖ := rfl
 
-instance : NormedCommRing ℤ_[p] where
+instance : NormMetric ℤ_[p] where
+
+instance : IsNormedRing ℤ_[p] where
   dist_eq := by
     rintro ⟨x, hx⟩ ⟨y, hy⟩
     exact dist_eq_norm_neg_add x y

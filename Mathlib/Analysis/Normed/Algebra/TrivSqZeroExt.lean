@@ -195,21 +195,26 @@ end Topology
 noncomputable section Seminormed
 
 section Ring
-variable [SeminormedCommRing S] [SeminormedRing R] [SeminormedAddCommGroup M]
+variable [NormPseudoMetric S] [CommRing S] [IsNormedRing S] [NormPseudoMetric R] [Ring R] [IsNormedRing R] [NormPseudoMetric M] [AddCommGroup M] [IsNormedAddGroup M]
 variable [Algebra S R] [Module S M]
 variable [IsBoundedSMul S R] [IsBoundedSMul S M]
 
-instance instL1SeminormedAddCommGroup : SeminormedAddCommGroup (tsze R M) :=
+instance instL1NormPseudoMetric : NormPseudoMetric (tsze R M) :=
   fast_instance% {
-    WithLp.seminormedAddCommGroupToProd 1 R M with
+    WithLp.normPseudoMetricToProd 1 R M with
     toUniformSpace := inferInstance }
+
+instance instL1IsNormedAddGroup : IsNormedAddGroup (tsze R M) :=
+  WithLp.isNormedAddGroupToProd 1 R M
+
+example : SeminormedAddCommGroup (tsze R M) where
 
 example :
     (TrivSqZeroExt.instUniformSpace : UniformSpace (tsze R M)) =
     PseudoMetricSpace.toUniformSpace := rfl
 
 theorem norm_def (x : tsze R M) : ‖x‖ = ‖fst x‖ + ‖snd x‖ := by
-  erw [WithLp.norm_seminormedAddCommGroupToProd]
+  erw [WithLp.norm_normPseudoMetricToProd]
   rw [WithLp.prod_norm_eq_add (by norm_num)]
   simp only [WithLp.toLp_fst, ENNReal.toReal_one, Real.rpow_one, WithLp.toLp_snd, ne_eq,
     one_ne_zero, not_false_eq_true, div_self, fst, snd]
@@ -226,7 +231,7 @@ theorem nnnorm_def (x : tsze R M) : ‖x‖₊ = ‖fst x‖₊ + ‖snd x‖₊
 variable [Module R M] [IsBoundedSMul R M] [Module Rᵐᵒᵖ M] [IsBoundedSMul Rᵐᵒᵖ M]
   [SMulCommClass R Rᵐᵒᵖ M]
 
-instance instL1SeminormedRing : SeminormedRing (tsze R M) where
+instance instL1IsNormedRing : IsNormedRing (tsze R M) where
   norm_mul_le
   | ⟨r₁, m₁⟩, ⟨r₂, m₂⟩ => by
     simp_rw [norm_def]
@@ -240,8 +245,8 @@ instance instL1SeminormedRing : SeminormedRing (tsze R M) where
       apply le_add_of_nonneg_right
       positivity
     _ = (‖r₁‖ + ‖m₁‖) * (‖r₂‖ + ‖m₂‖) := by ring
-  __ : Ring (tsze R M) := inferInstance
-  __ : SeminormedAddCommGroup (tsze R M) := inferInstance
+
+example : SeminormedRing (tsze R M) where
 
 instance instL1IsBoundedSMul : IsBoundedSMul S (tsze R M) :=
   WithLp.isBoundedSMulSeminormedAddCommGroupToProd 1 R M
@@ -253,13 +258,11 @@ end Ring
 
 section CommRing
 
-variable [SeminormedCommRing R] [SeminormedAddCommGroup M]
+variable [NormPseudoMetric R] [CommRing R] [IsNormedRing R] [NormPseudoMetric M] [AddCommGroup M] [IsNormedAddGroup M]
 variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
 variable [IsBoundedSMul R M]
 
-instance instL1SeminormedCommRing : SeminormedCommRing (tsze R M) where
-  __ : SeminormedRing (tsze R M) := inferInstance
-  __ : CommRing (tsze R M) := inferInstance
+example : SeminormedCommRing (tsze R M) where
 
 end CommRing
 
@@ -269,33 +272,31 @@ noncomputable section Normed
 
 section Ring
 
-variable [NormedRing R] [NormedAddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M]
+variable [NormMetric R] [Ring R] [IsNormedRing R] [NormMetric M] [AddCommGroup M] [IsNormedAddGroup M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 
-instance instL1NormedAddCommGroup : NormedAddCommGroup (tsze R M) :=
-  fast_instance% WithLp.normedAddCommGroupToProd 1 R M
+instance instL1NormMetric : NormMetric (tsze R M) :=
+  fast_instance% WithLp.normMetricToProd 1 R M
 
-instance instL1NormedRing : NormedRing (tsze R M) where
-  __ : SeminormedRing (tsze R M) := inferInstance
-  __ : NormedAddCommGroup (tsze R M) := inferInstance
+example : NormedAddCommGroup (tsze R M) where
+
+example : NormedRing (tsze R M) where
 
 end Ring
 
 section CommRing
 
-variable [NormedCommRing R] [NormedAddCommGroup M]
+variable [NormMetric R] [CommRing R] [IsNormedRing R] [NormMetric M] [AddCommGroup M] [IsNormedAddGroup M]
 variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
 variable [IsBoundedSMul R M]
 
-instance instL1NormedCommRing : NormedCommRing (tsze R M) where
-  __ : NormedRing (tsze R M) := inferInstance
-  __ : CommRing (tsze R M) := inferInstance
+example : NormedCommRing (tsze R M) where
 
 end CommRing
 
 section Algebra
 
-variable [NormedField 𝕜] [NormedRing R] [NormedAddCommGroup M]
+variable [NormedField 𝕜] [NormMetric R] [Ring R] [IsNormedRing R] [NormMetric M] [AddCommGroup M] [IsNormedAddGroup M]
 variable [NormedAlgebra 𝕜 R] [NormedSpace 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
@@ -313,7 +314,7 @@ end Normed
 
 section
 
-variable [NormedRing R] [NormedAddCommGroup M]
+variable [NormMetric R] [Ring R] [IsNormedRing R] [NormMetric M] [AddCommGroup M] [IsNormedAddGroup M]
 variable [NormedAlgebra ℚ R] [NormedSpace ℚ M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [CompleteSpace R] [CompleteSpace M]

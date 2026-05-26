@@ -38,7 +38,7 @@ namespace MeasureTheory
 
 section
 
-variable {α F : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup F]
+variable {α F : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
 
 theorem MemLp.integrable_sq {f : α → ℝ} (h : MemLp f 2 μ) : Integrable (fun x => f x ^ 2) μ := by
   simpa [← memLp_one_iff_integrable] using h.norm_rpow two_ne_zero ENNReal.ofNat_ne_top
@@ -60,7 +60,7 @@ end
 section InnerProductSpace
 
 variable {α : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
-variable {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable {E 𝕜 : Type*} [RCLike 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -100,8 +100,8 @@ end InnerProductSpace
 
 namespace L2
 
-variable {α E F 𝕜 : Type*} [RCLike 𝕜] [MeasurableSpace α] {μ : Measure α} [NormedAddCommGroup E]
-  [InnerProductSpace 𝕜 E] [NormedAddCommGroup F]
+variable {α E F 𝕜 : Type*} [RCLike 𝕜] [MeasurableSpace α] {μ : Measure α} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+  [InnerProductSpace 𝕜 E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -205,7 +205,7 @@ equal to the integral of the inner product over `s`: `∫ x in s, ⟪c, f x⟫ �
 theorem inner_indicatorConstLp_eq_setIntegral_inner (f : Lp E 2 μ) (hs : MeasurableSet s) (c : E)
     (hμs : μ s ≠ ∞) : (⟪indicatorConstLp 2 hs hμs c, f⟫ : 𝕜) = ∫ x in s, ⟪c, f x⟫ ∂μ := by
   rw [inner_def, ← integral_indicator hs]
-  refine integral_congr_ae ((@indicatorConstLp_coeFn _ _ _ 2 μ _ s hs hμs c).mono fun x hx ↦ ?_)
+  refine integral_congr_ae ((@indicatorConstLp_coeFn _ _ _ 2 μ _ _ _ s hs hμs c).mono fun x hx ↦ ?_)
   have : ⟪indicatorConstLp 2 hs hμs c x, f x⟫ = s.indicator (fun x ↦ ⟪c, f x⟫) x := by
     by_cases hxs : x ∈ s <;> simp [hx, hxs]
   simpa

@@ -31,10 +31,10 @@ noncomputable section
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
+variable {G : Type*} [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
+variable {G' : Type*} [NormMetric G'] [AddCommGroup G'] [IsNormedAddGroup G'] [NormedSpace 𝕜 G']
 variable {f : E → F} {f' : E →L[𝕜] F} {x : E} {s : Set E} {c : F}
 
 namespace ContinuousLinearEquiv
@@ -369,8 +369,8 @@ section
   we can use scalar multiplication in the `tendsto` characterization
   of the Fréchet derivative.
 -/
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
+variable {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
 variable {f : E → F} {f' : E →L[ℝ] F} {x : E}
 
 theorem has_fderiv_at_filter_real_equiv {L : Filter E} :
@@ -393,8 +393,8 @@ open scoped Pointwise
 
 section TangentCone
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {s : Set E}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+  [NormedSpace 𝕜 E] {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] {f : E → F} {s : Set E}
   {f' : E →L[𝕜] F} {x : E}
 
 /-- The image of a tangent cone under the differential of a map is included in the tangent cone to
@@ -463,8 +463,8 @@ end TangentCone
 
 section SMulLeft
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {s : Set E}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+  [NormedSpace 𝕜 E] {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] {f : E → F} {s : Set E}
   {f' : E →L[𝕜] F} {x : E}
 
 theorem hasFDerivWithinAt_comp_smul_smul_iff {c : 𝕜} :

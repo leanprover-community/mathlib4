@@ -72,13 +72,13 @@ namespace MeasureTheory
 
 section NormedAddCommGroup
 
-theorem HasFiniteIntegral.restrict_of_bounded [NormedAddCommGroup E] {f : α → E} {s : Set α}
+theorem HasFiniteIntegral.restrict_of_bounded [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] {f : α → E} {s : Set α}
     {μ : Measure α} (C : ℝ) (hs : μ s < ∞) (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ C) :
     HasFiniteIntegral f (μ.restrict s) :=
   haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rwa [Measure.restrict_apply_univ]⟩
   .of_bounded hf
 
-variable [NormedAddCommGroup E] {f g : α → ε} {s t : Set α} {μ ν : Measure α}
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] {f g : α → ε} {s t : Set α} {μ ν : Measure α}
   [TopologicalSpace ε] [ContinuousENorm ε]
 
 theorem HasFiniteIntegral.restrict_of_bounded_enorm {C : ℝ≥0∞} (hC : ‖C‖ₑ ≠ ∞ := by finiteness)
@@ -95,7 +95,7 @@ def IntegrableOn (f : α → ε) (s : Set α) (μ : Measure α := by volume_tac)
 theorem IntegrableOn.integrable (h : IntegrableOn f s μ) : Integrable f (μ.restrict s) :=
   h
 
-variable [TopologicalSpace ε'] [ESeminormedAddMonoid ε']
+variable [TopologicalSpace ε'] [ContinuousENorm ε'] [AddMonoid ε'] [IsESeminormedAddMonoid ε']
 
 @[simp]
 theorem integrableOn_empty : IntegrableOn f ∅ μ := by
@@ -361,7 +361,7 @@ theorem IntegrableOn.indicator (h : IntegrableOn f s μ) (ht : MeasurableSet t) 
     IntegrableOn (indicator t f) s μ :=
   Integrable.indicator h ht
 
-theorem integrable_indicatorConstLp {E} [NormedAddCommGroup E] {p : ℝ≥0∞} {s : Set α}
+theorem integrable_indicatorConstLp {E} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] {p : ℝ≥0∞} {s : Set α}
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
     Integrable (indicatorConstLp p hs hμs c) μ := by
   rw [integrable_congr indicatorConstLp_coeFn, integrable_indicator_iff hs, IntegrableOn,
@@ -396,7 +396,7 @@ theorem IntegrableOn.restrict_toMeasurable {f : α → ε'}
 -- TODO: investigate generalising this section to e-seminormed monoids
 section ENormedAddMonoid
 
-variable {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε'] [PseudoMetrizableSpace ε']
+variable {ε' : Type*} [TopologicalSpace ε'] [ContinuousENorm ε'] [AddMonoid ε'] [IsENormedAddMonoid ε'] [PseudoMetrizableSpace ε']
 
 -- TODO: generalise this to e-seminormed commutative monoids,
 -- by merely assuming ‖f x‖ₑ vanishes on t \ s
@@ -459,7 +459,7 @@ theorem integrableOn_iff_integrable_of_support_subset
 
 end ENormedAddMonoid
 
-theorem integrableOn_Lp_of_measure_ne_top {E} [NormedAddCommGroup E] {p : ℝ≥0∞} {s : Set α}
+theorem integrableOn_Lp_of_measure_ne_top {E} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] {p : ℝ≥0∞} {s : Set α}
     (f : Lp E p μ) (hp : 1 ≤ p) (hμs : μ s ≠ ∞) : IntegrableOn f s μ := by
   refine memLp_one_iff_integrable.mp ?_
   have hμ_restrict_univ : (μ.restrict s) Set.univ < ∞ := by
@@ -479,7 +479,7 @@ theorem IntegrableOn.setLIntegral_lt_top {f : α → ℝ} {s : Set α} (hf : Int
 
 theorem _root_.ContinuousLinearMap.integrableOn_comp {E H 𝕜 𝕜' : Type*}
     [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
-    [NormedAddCommGroup E] [NormedSpace 𝕜' E] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜' E] [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] [NormedSpace 𝕜 H]
     {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ] {f : α → H} (L : H →SL[σ] E) (hf : IntegrableOn f s μ) :
     IntegrableOn (L ∘ f) s μ :=
   L.integrable_comp hf
@@ -568,7 +568,7 @@ protected theorem IntegrableAtFilter.sub {f g : α → E}
   rw [sub_eq_add_neg]
   exact hf.add hg.neg
 
-protected theorem IntegrableAtFilter.smul {𝕜 : Type*} [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 E]
+protected theorem IntegrableAtFilter.smul {𝕜 : Type*} [NormMetric 𝕜] [AddCommGroup 𝕜] [IsNormedAddGroup 𝕜] [SMulZeroClass 𝕜 E]
     [IsBoundedSMul 𝕜 E] {f : α → E} (hf : IntegrableAtFilter f l μ) (c : 𝕜) :
     IntegrableAtFilter (c • f) l μ := by
   rcases hf with ⟨s, sl, hs⟩
@@ -620,7 +620,7 @@ theorem IntegrableAtFilter.inf_ae_iff {l : Filter α} :
 
 alias ⟨IntegrableAtFilter.of_inf_ae, _⟩ := IntegrableAtFilter.inf_ae_iff
 
-variable {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε'] in
+variable {ε' : Type*} [TopologicalSpace ε'] [ContinuousENorm ε'] [AddMonoid ε'] [IsENormedAddMonoid ε'] in
 @[simp]
 theorem integrableAtFilter_top [PseudoMetrizableSpace ε'] {f : α → ε'} :
     IntegrableAtFilter f ⊤ μ ↔ Integrable f μ := by
@@ -636,7 +636,7 @@ theorem IntegrableAtFilter.sup_iff [PseudoMetrizableSpace ε'] {f : α → ε'} 
 
 theorem _root_.ContinuousLinearMap.integrableAtFilter_comp {E H 𝕜 𝕜' : Type*}
     [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
-    [NormedAddCommGroup E] [NormedSpace 𝕜' E] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜' E] [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] [NormedSpace 𝕜 H]
     {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ] {f : α → H} (L : H →SL[σ] E)
     (hf : IntegrableAtFilter f l μ) : IntegrableAtFilter (L ∘ f) l μ :=
   let ⟨s, hs, hf⟩ := hf; ⟨s, hs, L.integrableOn_comp hf⟩
@@ -705,7 +705,7 @@ end MeasureTheory
 
 open MeasureTheory
 
-variable [NormedAddCommGroup E]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 
 /-- A function which is continuous on a set `s` is almost everywhere measurable with respect to
 `μ.restrict s`. -/
@@ -845,7 +845,7 @@ the unprimed ones use `[NoAtoms μ]`.
 section PartialOrder
 
 variable [PartialOrder α] [MeasurableSingletonClass α]
-  [TopologicalSpace ε'] [ESeminormedAddMonoid ε'] [PseudoMetrizableSpace ε']
+  [TopologicalSpace ε'] [ContinuousENorm ε'] [AddMonoid ε'] [IsESeminormedAddMonoid ε'] [PseudoMetrizableSpace ε']
   {f : α → ε'} {μ : Measure α} {a b : α}
 
 theorem integrableOn_Icc_iff_integrableOn_Ioc'

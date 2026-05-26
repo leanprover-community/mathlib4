@@ -45,8 +45,8 @@ open scoped Topology
 
 variable
   {B : Type*} [TopologicalSpace B]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddCommGroup (E x)]
+  {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
+  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormMetric (E x)] [∀ x, AddCommGroup (E x)] [∀ x, IsNormedAddGroup (E x)]
   [∀ x, InnerProductSpace ℝ (E x)]
   [FiberBundle F E] [VectorBundle ℝ F E]
 
@@ -67,7 +67,7 @@ class IsContinuousRiemannianBundle : Prop where
 
 section Trivial
 
-variable {F₁ : Type*} [NormedAddCommGroup F₁] [InnerProductSpace ℝ F₁]
+variable {F₁ : Type*} [NormMetric F₁] [AddCommGroup F₁] [IsNormedAddGroup F₁] [InnerProductSpace ℝ F₁]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A trivial vector bundle, in which the model fiber has an inner product,
@@ -351,7 +351,7 @@ section Construction
 
 variable
   {B : Type*} [TopologicalSpace B]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)]
   [∀ b, TopologicalSpace (E b)] [∀ b, AddCommGroup (E b)] [∀ b, Module ℝ (E b)]
   [∀ b, IsTopologicalAddGroup (E b)] [∀ b, ContinuousConstSMul ℝ (E b)]
@@ -413,7 +413,7 @@ bundle, like for the tangent bundle. This should *not* be used to express theore
 bundles with a metric. Instead, use
 ```
 variable {E : B → Type*} [TopologicalSpace (TotalSpace F E)]
-  [∀ x, NormedAddCommGroup (E x)] [∀ x, InnerProductSpace ℝ (E x)]
+  [∀ x, NormMetric (E x)] [∀ x, AddCommGroup (E x)] [∀ x, IsNormedAddGroup (E x)] [∀ x, InnerProductSpace ℝ (E x)]
   [FiberBundle F E] [VectorBundle ℝ F E] [IsContinuousRiemannianBundle F E]
 ```
 -/
@@ -422,7 +422,7 @@ class RiemannianBundle where
   g : RiemannianMetric E
 
 /-- A fiber in a bundle satisfying the `[RiemannianBundle E]` typeclass inherits
-a `NormedAddCommGroup` structure.
+a `NormMetric` structure.
 
 The normal priority for an instance which always applies like this one should be 100.
 We use 80 as this is rather specialized, so we want other paths to be tried first typically.
@@ -440,8 +440,50 @@ noncomputable scoped instance (priority := 80)
     at different depth levels. See lean4#13063. -/
     [h : RiemannianBundle E] [∀ (b : B), IsTopologicalAddGroup (E b)]
     [∀ (b : B), ContinuousConstSMul ℝ (E b)] (b : B) :
-    NormedAddCommGroup (E b) := fast_instance%
-  (h.g.toCore b).toNormedAddCommGroupOfTopology (h.g.continuousAt b) (h.g.isVonNBounded b)
+    NormMetric (E b) := fast_instance%
+  (h.g.toCore b).toNormMetricOfTopology (h.g.continuousAt b) (h.g.isVonNBounded b)
+
+/-- A fiber in a bundle satisfying the `[RiemannianBundle E]` typeclass inherits
+a `IsNormedAddGroup` structure.
+
+The normal priority for an instance which always applies like this one should be 100.
+We use 80 as this is rather specialized, so we want other paths to be tried first typically.
+As this instance is quite specific and very costly because of higher-order unification, we
+also scope it to the `Bundle` namespace. -/
+scoped instance (priority := 80)
+    {B : Type*} {E : B → Type*} [(b : B) → TopologicalSpace (E b)]
+    [(b : B) → AddCommGroup (E b)] [(b : B) → Module ℝ (E b)]
+    /- We are careful about the parameter order, putting `RiemannianBundle E`
+    before `IsTopologicalAddGroup` to avoid the following loop: to put a `IsTopologicalAddGroup`
+    structure on `E b`, one tries to find a `NormedAddCommGroup`, then one tries to apply the
+    current instance. If `IsTopologicalAddGroup (E b)` were before `RiemannianBundle`, then one
+    would try to find a `IsTopologicalAddGroup` to apply the instance, and loop.
+    Normally, loops are detected by typeclass inference but here it is not the case as the loop is
+    at different depth levels. See lean4#13063. -/
+    [h : RiemannianBundle E] [∀ (b : B), IsTopologicalAddGroup (E b)]
+    [∀ (b : B), ContinuousConstSMul ℝ (E b)] (b : B) :
+    IsNormedAddGroup (E b) where
+
+/-- A fiber in a bundle satisfying the `[RiemannianBundle E]` typeclass inherits
+a `NormedAddCommGroup` structure.
+
+The normal priority for an instance which always applies like this one should be 100.
+We use 80 as this is rather specialized, so we want other paths to be tried first typically.
+As this instance is quite specific and very costly because of higher-order unification, we
+also scope it to the `Bundle` namespace. -/
+noncomputable example
+    {B : Type*} {E : B → Type*} [(b : B) → TopologicalSpace (E b)]
+    [(b : B) → AddCommGroup (E b)] [(b : B) → Module ℝ (E b)]
+    /- We are careful about the parameter order, putting `RiemannianBundle E`
+    before `IsTopologicalAddGroup` to avoid the following loop: to put a `IsTopologicalAddGroup`
+    structure on `E b`, one tries to find a `NormedAddCommGroup`, then one tries to apply the
+    current instance. If `IsTopologicalAddGroup (E b)` were before `RiemannianBundle`, then one
+    would try to find a `IsTopologicalAddGroup` to apply the instance, and loop.
+    Normally, loops are detected by typeclass inference but here it is not the case as the loop is
+    at different depth levels. See lean4#13063. -/
+    [h : RiemannianBundle E] [∀ (b : B), IsTopologicalAddGroup (E b)]
+    [∀ (b : B), ContinuousConstSMul ℝ (E b)] (b : B) :
+    NormedAddCommGroup (E b) where
 
 /-- A fiber in a bundle satisfying the `[RiemannianBundle E]` typeclass inherits
 an `InnerProductSpace ℝ` structure.

@@ -43,13 +43,13 @@ the basepoint.
 -/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {H : Type*} [TopologicalSpace H] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
   {I : ModelWithCorners 𝕜 E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormedSpace 𝕜 E']
   {I' : ModelWithCorners 𝕜 E' H'}
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  {H'' : Type*} [TopologicalSpace H''] {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E'']
+  {H'' : Type*} [TopologicalSpace H''] {E'' : Type*} [NormMetric E''] [AddCommGroup E''] [IsNormedAddGroup E''] [NormedSpace 𝕜 E'']
   {I'' : ModelWithCorners 𝕜 E'' H''}
   {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
   {f : M → M'} {s t : Set M} {x x₀ : M}
@@ -212,8 +212,10 @@ theorem _root_.Filter.EventuallyEq.mlieBracketWithin_vectorField_eq
     mlieBracketWithin I V₁ W₁ s x = mlieBracketWithin I V W s x := by
   simp only [mlieBracketWithin_apply]
   congr 1
-  let I1 : NormedAddCommGroup (TangentSpace 𝓘(𝕜, E) (extChartAt I x x)) :=
-    inferInstanceAs (NormedAddCommGroup E)
+  let : NormMetric (TangentSpace 𝓘(𝕜, E) (extChartAt I x x)) :=
+    inferInstanceAs (NormMetric E)
+  have : IsNormedAddGroup (TangentSpace 𝓘(𝕜, E) (extChartAt I x x)) :=
+    inferInstanceAs (IsNormedAddGroup E)
   let _I2 : NormedSpace 𝕜 (TangentSpace 𝓘(𝕜, E) (extChartAt I x x)) :=
     ‹NormedSpace 𝕜 E›
   apply Filter.EventuallyEq.lieBracketWithin_vectorField_eq

@@ -28,15 +28,15 @@ open scoped Topology Manifold
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare a charted space `M` over the pair `(E, H)`.
   {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   -- declare normed spaces `E'`, `F`, `F'`, `F₁`, `F₂`, `F₃`, `F₄`.
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
-  {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormedAddCommGroup F₂]
-  [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
-  [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
+  {E' : Type*} [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormedSpace 𝕜 E']
+  {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
+  {F' : Type*} [NormMetric F'] [AddCommGroup F'] [IsNormedAddGroup F'] [NormedSpace 𝕜 F']
+  {F₁ : Type*} [NormMetric F₁] [AddCommGroup F₁] [IsNormedAddGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormMetric F₂] [AddCommGroup F₂] [IsNormedAddGroup F₂]
+  [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormMetric F₃] [AddCommGroup F₃] [IsNormedAddGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
+  [NormMetric F₄] [AddCommGroup F₄] [IsNormedAddGroup F₄] [NormedSpace 𝕜 F₄]
   -- declare functions, sets, points and smoothness indices
   {s : Set M} {x : M} {n : WithTop ℕ∞}
 

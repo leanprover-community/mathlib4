@@ -676,11 +676,11 @@ lemma norm_nnratCast (q : ℚ≥0) : ‖(q : K)‖ = q := by
 lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnnorm]; rfl
 
 variable (K) in
-lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
+lemma norm_nsmul [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
   simpa [Nat.cast_smul_eq_nsmul] using norm_smul (n : K) x
 
 variable (K) in
-lemma nnnorm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
+lemma nnnorm_nsmul [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
     ‖n • x‖₊ = n • ‖x‖₊ := by simpa [Nat.cast_smul_eq_nsmul] using nnnorm_smul (n : K) x
 
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
@@ -1297,9 +1297,9 @@ noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (h
   star_mul := by subst h''; exact h.star_mul
   star_add := by subst h''; exact h.star_add
   -- algebra fields
-  smul := (@Algebra.toSMul _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra)).smul
+  smul := (@Algebra.toSMul _ _ _ (_) h.toNormedAlgebra.toAlgebra).smul
   algebraMap :=
-  { toFun := @Algebra.algebraMap _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra)
+  { toFun := @Algebra.algebraMap _ _ _ (_) h.toNormedAlgebra.toAlgebra
     map_one' := by subst h''; exact h.algebraMap.map_one'
     map_mul' := by subst h''; exact h.algebraMap.map_mul'
     map_zero' := by subst h''; exact h.algebraMap.map_zero'
@@ -1336,8 +1336,8 @@ noncomputable def IsRCLikeNormedField.rclike (𝕜 : Type*)
 end
 
 namespace LinearIsometryEquiv
-variable {𝕜 V W G : Type*} [RCLike 𝕜] [SeminormedAddCommGroup V] [Module 𝕜 V]
-  [SeminormedAddCommGroup W] [NormedSpace 𝕜 W] [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {𝕜 V W G : Type*} [RCLike 𝕜] [NormPseudoMetric V] [AddCommGroup V] [IsNormedAddGroup V] [Module 𝕜 V]
+  [NormPseudoMetric W] [AddCommGroup W] [IsNormedAddGroup W] [NormedSpace 𝕜 W] [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
 
 /-- Left scalar multiplication of a unit with norm one and a linear isometric equivalence,
 as a linear isometric equivalence. -/

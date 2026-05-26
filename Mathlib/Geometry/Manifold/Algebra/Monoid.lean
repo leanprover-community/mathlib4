@@ -49,7 +49,7 @@ instances `AddMonoid G` and `ContMDiffAdd I n G`.
 
 See also `ContMDiffVAdd I I' n G M` for `C^n` actions of `G` on a manifold `M`. -/
 class ContMDiffAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
     (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω)
     (G : Type*) [Add G] [TopologicalSpace G] [ChartedSpace H G] : Prop
     extends IsManifold I n G where
@@ -63,7 +63,7 @@ and `ContMDiffMul I n G`.
 See also `ContMDiffSMul I I' n G M` for `C^n` actions of `G` on a manifold `M`. -/
 @[to_additive]
 class ContMDiffMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
     (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω)
     (G : Type*) [Mul G] [TopologicalSpace G] [ChartedSpace H G] : Prop
     extends IsManifold I n G where
@@ -72,8 +72,8 @@ class ContMDiffMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
 section ContMDiffMul
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω}
-  {G : Type*} [Mul G] [TopologicalSpace G] [ChartedSpace H G] {E' : Type*} [NormedAddCommGroup E']
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω}
+  {G : Type*} [Mul G] [TopologicalSpace G] [ChartedSpace H G] {E' : Type*} [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E']
   [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
 
@@ -241,9 +241,9 @@ end
 -- Instance of product
 @[to_additive prod]
 instance ContMDiffMul.prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) (G : Type*) [TopologicalSpace G] [ChartedSpace H G] [Mul G]
-    [ContMDiffMul I n G] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
+    [ContMDiffMul I n G] {E' : Type*} [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
     [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H') (G' : Type*) [TopologicalSpace G']
     [ChartedSpace H' G'] [Mul G'] [ContMDiffMul I' n G'] : ContMDiffMul (I.prod I') n (G × G') :=
   { IsManifold.prod G G' with
@@ -257,9 +257,9 @@ section Monoid
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
   {H : Type*} [TopologicalSpace H] {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*} [Monoid G]
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*} [Monoid G]
   [TopologicalSpace G] [ChartedSpace H G] [ContMDiffMul I n G] {H' : Type*} [TopologicalSpace H']
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {I' : ModelWithCorners 𝕜 E' H'}
+  {E' : Type*} [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormedSpace 𝕜 E'] {I' : ModelWithCorners 𝕜 E' H'}
   {G' : Type*} [Monoid G'] [TopologicalSpace G'] [ChartedSpace H' G'] [ContMDiffMul I' n G']
 
 @[to_additive]
@@ -316,9 +316,9 @@ section CommMonoid
 open Function
 
 variable {ι 𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω} {H : Type*} [TopologicalSpace H]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
+  {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
   {G : Type*} [CommMonoid G] [TopologicalSpace G] [ChartedSpace H G] [ContMDiffMul I n G]
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {E' : Type*} [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormedSpace 𝕜 E']
   {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
   {s : Set M} {x x₀ : M} {t : Finset ι} {f : ι → M → G} {p : ι → Prop}
@@ -485,7 +485,7 @@ end CommMonoid
 
 section
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
   [NormedSpace 𝕜 E] {n : ℕ∞ω}
 
 instance instContMDiffAddSelf : ContMDiffAdd 𝓘(𝕜, E) n E := by
@@ -499,9 +499,9 @@ section DivConst
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
   {H : Type*} [TopologicalSpace H] {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
   {G : Type*} [DivInvMonoid G] [TopologicalSpace G] [ChartedSpace H G] [ContMDiffMul I n G]
-  {E' : Type*} [NormedAddCommGroup E']
+  {E' : Type*} [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E']
   [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
 

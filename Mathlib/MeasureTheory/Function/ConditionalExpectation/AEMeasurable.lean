@@ -61,7 +61,7 @@ theorem AEStronglyMeasurable.comp_ae_measurable' {α β γ : Type*} [Topological
 variable {α F 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- F for a Lp submodule
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 
 section LpMeas
 
@@ -247,7 +247,7 @@ theorem lpMeasToLpTrim_smul (hm : m ≤ m0) (c : 𝕜) (f : lpMeas F 𝕜 m p μ
   grw [Lp.coeFn_smul, lpMeasToLpTrim_ae_eq]
 
 /-- `lpMeasSubgroupToLpTrim` preserves the norm. -/
-theorem lpMeasSubgroupToLpTrim_norm_map [hp : Fact (1 ≤ p)] (hm : m ≤ m0)
+theorem lpMeasSubgroupToLpTrim_norm_map (hm : m ≤ m0)
     (f : lpMeasSubgroup F m p μ) : ‖lpMeasSubgroupToLpTrim F p μ hm f‖ = ‖f‖ := by
   rw [Lp.norm_def, eLpNorm_trim hm (Lp.stronglyMeasurable _),
     eLpNorm_congr_ae (lpMeasSubgroupToLpTrim_ae_eq hm _), ← Lp.norm_def]
@@ -371,7 +371,7 @@ theorem Lp.induction_stronglyMeasurable_aux (hm : m ≤ m0) (hp_ne_top : p ≠ �
   change P ↑f'
   rw [hfg]
   refine
-    @Lp.induction α F m _ p (μ.trim hm) _ hp_ne_top
+    @Lp.induction α F m _ _ _ p (μ.trim hm) _ hp_ne_top
       (fun g => P ((lpMeasToLpTrimLie F ℝ p μ hm).symm g)) ?_ ?_ ?_ g
   · intro b t ht hμt
     rw [@Lp.simpleFunc.coe_indicatorConst _ _ m, lpMeasToLpTrimLie_symm_indicator ht hμt.ne b]

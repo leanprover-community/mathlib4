@@ -28,9 +28,9 @@ universe u uD uE uF uG
 
 open Set Fin Filter Function
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {D : Type uD} [NormedAddCommGroup D]
-  [NormedSpace 𝕜 D] {E : Type uE} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type uF}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {D : Type uD} [NormMetric D] [AddCommGroup D] [IsNormedAddGroup D]
+  [NormedSpace 𝕜 D] {E : Type uE} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {F : Type uF}
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] {G : Type uG} [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
   {s s₁ t u : Set E}
 
 /-!## Quantitative bounds -/
@@ -40,8 +40,8 @@ iterated derivatives of `f` and `g` when `B` is bilinear. This lemma is an auxil
 assuming all spaces live in the same universe, to enable an induction. Use instead
 `ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear` that removes this assumption. -/
 theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu Fu Gu : Type u}
-    [NormedAddCommGroup Du] [NormedSpace 𝕜 Du] [NormedAddCommGroup Eu] [NormedSpace 𝕜 Eu]
-    [NormedAddCommGroup Fu] [NormedSpace 𝕜 Fu] [NormedAddCommGroup Gu] [NormedSpace 𝕜 Gu]
+    [NormMetric Du] [AddCommGroup Du] [IsNormedAddGroup Du] [NormedSpace 𝕜 Du] [NormMetric Eu] [AddCommGroup Eu] [IsNormedAddGroup Eu] [NormedSpace 𝕜 Eu]
+    [NormMetric Fu] [AddCommGroup Fu] [IsNormedAddGroup Fu] [NormedSpace 𝕜 Fu] [NormMetric Gu] [AddCommGroup Gu] [IsNormedAddGroup Gu] [NormedSpace 𝕜 Gu]
     (B : Eu →L[𝕜] Fu →L[𝕜] Gu) {f : Du → Eu} {g : Du → Fu} {n : ℕ} {s : Set Du} {x : Du}
     (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn 𝕜 n g s) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     ‖iteratedFDerivWithin 𝕜 n (fun y => B (f y) (g y)) s x‖ ≤
@@ -260,7 +260,7 @@ end
 
 section
 
-variable {ι : Type*} {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] {A' : Type*} [NormedCommRing A']
+variable {ι : Type*} {A : Type*} [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] {A' : Type*} [NormMetric A'] [CommRing A'] [IsNormedRing A']
   [NormedAlgebra 𝕜 A']
 
 theorem norm_iteratedFDerivWithin_mul_le {f : E → A} {g : E → A} {N : ℕ∞ω}
@@ -345,8 +345,8 @@ of `g ∘ f` is bounded by `n! * C * D^n`.
 This lemma proves this estimate assuming additionally that two of the spaces live in the same
 universe, to make an induction possible. Use instead `norm_iteratedFDerivWithin_comp_le` that
 removes this assumption. -/
-theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGroup Fu]
-    [NormedSpace 𝕜 Fu] [NormedAddCommGroup Gu] [NormedSpace 𝕜 Gu] {g : Fu → Gu} {f : E → Fu} {n : ℕ}
+theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormMetric Fu] [AddCommGroup Fu] [IsNormedAddGroup Fu]
+    [NormedSpace 𝕜 Fu] [NormMetric Gu] [AddCommGroup Gu] [IsNormedAddGroup Gu] [NormedSpace 𝕜 Gu] {g : Fu → Gu} {f : E → Fu} {n : ℕ}
     {s : Set E} {t : Set Fu} {x : E} (hg : ContDiffOn 𝕜 n g t) (hf : ContDiffOn 𝕜 n f s)
     (ht : UniqueDiffOn 𝕜 t) (hs : UniqueDiffOn 𝕜 s) (hst : MapsTo f s t) (hx : x ∈ s) {C : ℝ}
     {D : ℝ} (hC : ∀ i, i ≤ n → ‖iteratedFDerivWithin 𝕜 i g t (f x)‖ ≤ C)

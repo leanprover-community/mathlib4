@@ -54,7 +54,7 @@ noncomputable section
 
 universe u
 
-variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] {n : ℕ}
+variable {E : Type u} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] {n : ℕ}
 
 namespace BoxIntegral
 

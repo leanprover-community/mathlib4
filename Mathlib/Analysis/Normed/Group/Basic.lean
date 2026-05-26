@@ -30,12 +30,12 @@ open ENNReal Filter NNReal Uniformity Pointwise Topology
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E}
+variable [NormPseudoMetric E] [Group E] [IsNormedGroup E] [NormPseudoMetric F] [Group F] [IsNormedGroup F] [NormPseudoMetric G] [Group G] [IsNormedGroup G] {s : Set E}
   {a a₁ a₂ b c d : E} {r r₁ r₂ : ℝ}
 
 @[to_additive]
 theorem dist_eq_norm_inv_mul (a b : E) : dist a b = ‖a⁻¹ * b‖ :=
-  SeminormedGroup.dist_eq _ _
+  IsNormedGroup.dist_eq _ _
 
 @[to_additive]
 theorem dist_eq_norm_inv_mul' (a b : E) : dist a b = ‖b⁻¹ * a‖ := by
@@ -82,7 +82,7 @@ theorem norm_zpow_isUnit (a : E) {n : ℤ} (hn : IsUnit n) : ‖a ^ n‖ = ‖a�
   rw [← norm_pow_natAbs, Int.isUnit_iff_natAbs_eq.mp hn, pow_one]
 
 @[simp]
-theorem norm_units_zsmul {E : Type*} [SeminormedAddGroup E] (n : ℤˣ) (a : E) : ‖n • a‖ = ‖a‖ :=
+theorem norm_units_zsmul {E : Type*} [NormPseudoMetric E] [AddGroup E] [IsNormedAddGroup E] (n : ℤˣ) (a : E) : ‖n • a‖ = ‖a‖ :=
   norm_isUnit_zsmul a n.isUnit
 
 open scoped symmDiff in
@@ -281,13 +281,13 @@ theorem norm_div_sub_norm_div_le_norm_div (u v w : E) : ‖u / w‖ - ‖v / w�
   simpa using norm_mul_le' (u / v) (v / w)
 
 @[to_additive norm_add_sub_norm_sub_le_two_mul]
-lemma norm_mul_sub_norm_div_le_two_mul {E : Type*} [SeminormedGroup E] (u v : E) :
+lemma norm_mul_sub_norm_div_le_two_mul {E : Type*} [NormPseudoMetric E] [Group E] [IsNormedGroup E] (u v : E) :
     ‖u * v‖ - ‖u / v‖ ≤ 2 * ‖v‖ := by
   simpa [-tsub_le_iff_right, tsub_le_iff_left, two_mul, add_assoc]
     using norm_mul₃_le' (a := (u / v)) (b := v) (c := v)
 
 @[to_additive norm_add_sub_norm_sub_le_two_mul_min]
-lemma norm_mul_sub_norm_div_le_two_mul_min {E : Type*} [SeminormedCommGroup E] (u v : E) :
+lemma norm_mul_sub_norm_div_le_two_mul_min {E : Type*} [NormPseudoMetric E] [CommGroup E] [IsNormedGroup E] (u v : E) :
     ‖u * v‖ - ‖u / v‖ ≤ 2 * min ‖u‖ ‖v‖ := by
   rw [mul_min_of_nonneg _ _ (by positivity)]
   refine le_min ?_ (norm_mul_sub_norm_div_le_two_mul u v)
@@ -459,7 +459,7 @@ theorem nnnorm_zpow_isUnit (a : E) {n : ℤ} (hn : IsUnit n) : ‖a ^ n‖₊ = 
   NNReal.eq <| norm_zpow_isUnit a hn
 
 @[simp]
-theorem nnnorm_units_zsmul {E : Type*} [SeminormedAddGroup E] (n : ℤˣ) (a : E) : ‖n • a‖₊ = ‖a‖₊ :=
+theorem nnnorm_units_zsmul {E : Type*} [NormPseudoMetric E] [AddGroup E] [IsNormedAddGroup E] (n : ℤˣ) (a : E) : ‖n • a‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_isUnit_zsmul a n.isUnit
 
 @[to_additive (attr := simp)]
@@ -608,11 +608,11 @@ end NNNorm
 section ENorm
 
 @[to_additive (attr := simp) enorm_zero]
-lemma enorm_one' {E : Type*} [TopologicalSpace E] [ESeminormedMonoid E] : ‖(1 : E)‖ₑ = 0 := by
-  rw [ESeminormedMonoid.enorm_zero]
+lemma enorm_one' {E : Type*} [TopologicalSpace E] [ContinuousENorm E] [Monoid E] [IsESeminormedMonoid E] : ‖(1 : E)‖ₑ = 0 := by
+  rw [IsESeminormedMonoid.enorm_zero]
 
 @[to_additive exists_enorm_lt]
-lemma exists_enorm_lt' (E : Type*) [TopologicalSpace E] [ESeminormedMonoid E]
+lemma exists_enorm_lt' (E : Type*) [TopologicalSpace E] [ContinuousENorm E] [Monoid E] [IsESeminormedMonoid E]
     [hbot : NeBot (𝓝[≠] (1 : E))] {c : ℝ≥0∞} (hc : c ≠ 0) : ∃ x ≠ (1 : E), ‖x‖ₑ < c :=
   frequently_iff_neBot.mpr hbot |>.and_eventually
     (ContinuousENorm.continuous_enorm.tendsto' 1 0 (by simp) |>.eventually_lt_const hc.bot_lt)
@@ -633,7 +633,7 @@ theorem edist_eq_enorm_inv_mul (a b : E) : edist a b = ‖a⁻¹ * b‖ₑ := by
 @[deprecated (since := "2026-02-11")] alias edist_zero_eq_enorm := edist_zero_right
 
 @[to_additive]
-lemma enorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ = ‖b / a‖ₑ := by
+lemma enorm_div_rev {E : Type*} [NormPseudoMetric E] [Group E] [IsNormedGroup E] (a b : E) : ‖a / b‖ₑ = ‖b / a‖ₑ := by
   rw [← enorm_inv', inv_div]
 
 @[to_additive]
@@ -650,10 +650,10 @@ end ENorm
 
 section ESeminormedMonoid
 
-variable {E : Type*} [TopologicalSpace E] [ESeminormedMonoid E]
+variable {E : Type*} [TopologicalSpace E] [ContinuousENorm E] [Monoid E] [IsESeminormedMonoid E]
 
 @[to_additive enorm_add_le]
-lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ESeminormedMonoid.enorm_mul_le a b
+lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := IsESeminormedMonoid.enorm_mul_le a b
 
 @[to_additive enorm_add_le_of_le]
 theorem enorm_mul_le_of_le' {r₁ r₂ : ℝ≥0∞} {a₁ a₂ : E}
@@ -672,11 +672,11 @@ end ESeminormedMonoid
 
 section ENormedMonoid
 
-variable {E : Type*} [TopologicalSpace E] [ENormedMonoid E]
+variable {E : Type*} [TopologicalSpace E] [ContinuousENorm E] [Monoid E] [IsENormedMonoid E]
 
 @[to_additive (attr := simp) enorm_eq_zero]
 lemma enorm_eq_zero' {a : E} : ‖a‖ₑ = 0 ↔ a = 1 := by
-  simp [ENormedMonoid.enorm_eq_zero]
+  simp [IsENormedMonoid.enorm_eq_zero]
 
 @[to_additive enorm_ne_zero]
 lemma enorm_ne_zero' {a : E} : ‖a‖ₑ ≠ 0 ↔ a ≠ 1 :=
@@ -704,55 +704,54 @@ end SeminormedGroup
 section Induced
 
 variable (E F)
+
+/-- missing doc -/
+abbrev NormPseudoMetric.induced [NormPseudoMetric F] (f : E → F) :
+    NormPseudoMetric E where
+  norm := fun x => ‖f x‖
+  toPseudoMetricSpace := .induced f toPseudoMetricSpace
+
+/-- missing doc -/
+abbrev NormMetric.induced [NormMetric F] (f : E → F) (hf : Injective f) :
+    NormMetric E where
+  norm := fun x => ‖f x‖
+  toMetricSpace := .induced f hf toMetricSpace
+
 variable [FunLike 𝓕 E F]
 
--- See note [reducible non-instances]
-/-- A group homomorphism from a `Group` to a `SeminormedGroup` induces a `SeminormedGroup`
-structure on the domain. -/
-@[to_additive /-- A group homomorphism from an `AddGroup` to a
-`SeminormedAddGroup` induces a `SeminormedAddGroup` structure on the domain. -/]
-abbrev SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
-    SeminormedGroup E :=
-  fast_instance% { PseudoMetricSpace.induced f toPseudoMetricSpace with
-    norm := fun x => ‖f x‖
-    dist_eq := fun x y => by simp only [map_mul, map_inv, ← dist_eq_norm_inv_mul]; rfl }
-
--- See note [reducible non-instances]
-/-- A group homomorphism from a `CommGroup` to a `SeminormedGroup` induces a
-`SeminormedCommGroup` structure on the domain. -/
-@[to_additive /-- A group homomorphism from an `AddCommGroup` to a
-`SeminormedAddGroup` induces a `SeminormedAddCommGroup` structure on the domain. -/]
-abbrev SeminormedCommGroup.induced
-    [CommGroup E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
-    SeminormedCommGroup E :=
-  fast_instance% { SeminormedGroup.induced E F f with
-    mul_comm := mul_comm }
-
--- See note [reducible non-instances].
-/-- An injective group homomorphism from a `Group` to a `NormedGroup` induces a `NormedGroup`
-structure on the domain. -/
-@[to_additive /-- An injective group homomorphism from an `AddGroup` to a
-`NormedAddGroup` induces a `NormedAddGroup` structure on the domain. -/]
-abbrev NormedGroup.induced
-    [Group E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) (h : Injective f) :
-    NormedGroup E :=
-  fast_instance% { SeminormedGroup.induced E F f, MetricSpace.induced f h _ with }
-
--- See note [reducible non-instances].
-/-- An injective group homomorphism from a `CommGroup` to a `NormedGroup` induces a
-`NormedCommGroup` structure on the domain. -/
-@[to_additive /-- An injective group homomorphism from a `CommGroup` to a
-`NormedCommGroup` induces a `NormedCommGroup` structure on the domain. -/]
-abbrev NormedCommGroup.induced [CommGroup E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕)
-    (h : Injective f) : NormedCommGroup E :=
-  fast_instance% { SeminormedCommGroup.induced E F f, MetricSpace.induced f h _ with }
+@[to_additive]
+lemma IsNormedGroup.induced [Group E] [NormPseudoMetric F] [Group F] [IsNormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
+    letI : NormPseudoMetric E := .induced E F f
+    IsNormedGroup E :=
+  letI : NormPseudoMetric E := .induced E F f
+  { dist_eq x y := by simp +instances only [norm, map_mul, map_inv, ← dist_eq_norm_inv_mul]; rfl }
 
 end Induced
 
+namespace Subtype
+
+variable {p : α → Prop}
+
+instance [Norm α] : Norm (Subtype p) where
+  norm x := ‖(x : α)‖
+
+@[simp]
+theorem coe_norm [Norm α] (x : Subtype p) : ‖x‖ = ‖(x : α)‖ :=
+  rfl
+
+@[norm_cast]
+theorem norm_coe [Norm α] (x : Subtype p) : ‖(x : α)‖ = ‖x‖ :=
+  rfl
+
+instance [NormPseudoMetric α] : NormPseudoMetric (Subtype p) where
+instance [NormMetric α] : NormMetric (Subtype p) where
+
+end Subtype
+
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedCommMonoid ε]
+variable [NormPseudoMetric E] [CommGroup E] [IsNormedGroup E] [NormPseudoMetric F] [CommGroup F] [IsNormedGroup F] {a b : E} {r : ℝ}
+variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε] [CommMonoid ε] [IsESeminormedMonoid ε]
 
 @[to_additive]
 theorem dist_eq_norm_div (a b : E) : dist a b = ‖a / b‖ := by
@@ -800,11 +799,11 @@ theorem edist_eq_enorm_div (a b : E) : edist a b = ‖a / b‖ₑ := by
 theorem dist_inv (x y : E) : dist x⁻¹ y = dist x y⁻¹ := by
   simp_rw [dist_eq_norm_inv_mul, ← norm_inv' (x⁻¹ * y⁻¹), mul_inv, inv_inv]
 
-theorem norm_multiset_sum_le {E} [SeminormedAddCommGroup E] (m : Multiset E) :
+theorem norm_multiset_sum_le {E} [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] (m : Multiset E) :
     ‖m.sum‖ ≤ (m.map fun x => ‖x‖).sum :=
   m.le_sum_of_subadditive norm norm_zero.le norm_add_le
 
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddCommMonoid ε] in
+variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε] [AddCommMonoid ε] [IsESeminormedAddMonoid ε] in
 theorem enorm_multisetSum_le (m : Multiset ε) :
     ‖m.sum‖ₑ ≤ (m.map fun x => ‖x‖ₑ).sum :=
   m.le_sum_of_subadditive enorm enorm_zero.le enorm_add_le
@@ -813,20 +812,20 @@ theorem enorm_multisetSum_le (m : Multiset ε) :
 theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x => ‖x‖).sum :=
   m.apply_prod_le_sum_map _ norm_one'.le norm_mul_le'
 
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedCommMonoid ε] in
+variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε] [CommMonoid ε] [IsESeminormedMonoid ε] in
 @[to_additive existing]
 theorem enorm_multisetProd_le (m : Multiset ε) :
     ‖m.prod‖ₑ ≤ (m.map fun x => ‖x‖ₑ).sum :=
   m.apply_prod_le_sum_map _ enorm_one'.le enorm_mul_le'
 
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddCommMonoid ε] in
+variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε] [AddCommMonoid ε] [IsESeminormedAddMonoid ε] in
 @[bound]
 theorem enorm_sum_le (s : Finset ι) (f : ι → ε) :
     ‖∑ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ :=
   s.le_sum_of_subadditive enorm enorm_zero.le enorm_add_le f
 
 @[bound]
-theorem norm_sum_le {E} [SeminormedAddCommGroup E] (s : Finset ι) (f : ι → E) :
+theorem norm_sum_le {E} [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] (s : Finset ι) (f : ι → E) :
     ‖∑ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ :=
   s.le_sum_of_subadditive norm norm_zero.le norm_add_le f
 
@@ -985,7 +984,7 @@ end SeminormedCommGroup
 
 section NormedGroup
 
-variable [NormedGroup E] {a b : E}
+variable [NormMetric E] [Group E] [IsNormedGroup E] {a b : E}
 
 @[to_additive (attr := simp) norm_le_zero_iff]
 lemma norm_le_zero_iff' : ‖a‖ ≤ 0 ↔ a = 1 := by rw [← dist_one_right, dist_le_zero]
@@ -1049,7 +1048,7 @@ end NormedGroup
 
 section NormedAddGroup
 
-variable [NormedAddGroup E] [TopologicalSpace α] {f : α → E}
+variable [NormMetric E] [AddGroup E] [IsNormedAddGroup E] [TopologicalSpace α] {f : α → E}
 
 /-! Some relations with `HasCompactSupport` -/
 
@@ -1072,13 +1071,15 @@ on non-one inputs. -/
 meta def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
-    let _seminormedGroup_E ← synthInstanceQ q(SeminormedGroup $E)
+    let _group_E ← synthInstanceQ q(Group $E)
+    let _normPseudoMetric_E ← synthInstanceQ q(NormPseudoMetric $E)
+    let _isNormedGroup_E ← synthInstanceQ q(IsNormedGroup $E)
     assertInstancesCommute
     -- Check whether we are in a normed group and whether the context contains a `a ≠ 1` assumption
-    let o : Option (Q(NormedGroup $E) × Q($a ≠ 1)) := ← do
-      let .some normedGroup_E ← trySynthInstanceQ q(NormedGroup $E) | return none
+    let o : Option (Q(NormMetric $E) × Q($a ≠ 1)) := ← do
+      let .some normMetric_E ← trySynthInstanceQ q(NormMetric $E) | return none
       let some pa ← findLocalDeclWithTypeQ? q($a ≠ 1) | return none
-      return some (normedGroup_E, pa)
+      return some (normMetric_E, pa)
     match o with
     -- If so, return a proof of `0 < ‖a‖`
     | some (_normedGroup_E, pa) =>
@@ -1094,13 +1095,15 @@ on non-zero inputs. -/
 meta def evalAddNorm : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
-    let _seminormedAddGroup_E ← synthInstanceQ q(SeminormedAddGroup $E)
+    let _addGroup_E ← synthInstanceQ q(AddGroup $E)
+    let _normPseudoMetric_E ← synthInstanceQ q(NormPseudoMetric $E)
+    let _isNormedAddGroup_E ← synthInstanceQ q(IsNormedAddGroup $E)
     assertInstancesCommute
     -- Check whether we are in a normed group and whether the context contains a `a ≠ 0` assumption
-    let o : Option (Q(NormedAddGroup $E) × Q($a ≠ 0)) := ← do
-      let .some normedAddGroup_E ← trySynthInstanceQ q(NormedAddGroup $E) | return none
+    let o : Option (Q(NormMetric $E) × Q($a ≠ 0)) := ← do
+      let .some normMetric_E ← trySynthInstanceQ q(NormMetric $E) | return none
       let some pa ← findLocalDeclWithTypeQ? q($a ≠ 0) | return none
-      return some (normedAddGroup_E, pa)
+      return some (normMetric_E, pa)
     match o with
     -- If so, return a proof of `0 < ‖a‖`
     | some (_normedAddGroup_E, pa) =>

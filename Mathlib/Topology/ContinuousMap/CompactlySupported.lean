@@ -835,7 +835,7 @@ end toRealPositiveLinear
 section pullback
 
 variable [R1Space α] [Group α] [TopologicalSpace β] [R1Space β] [Group β] [ContinuousMul β]
-  [NormedAddCommGroup γ] {φ : α →* β} (hφ : Topology.IsClosedEmbedding φ)
+  [NormMetric γ] [AddCommGroup γ] [IsNormedAddGroup γ] {φ : α →* β} (hφ : Topology.IsClosedEmbedding φ)
 
 open scoped Pointwise in
 /-- Pull back a continuous compactly supported function `f` on `β` along a closed embedding

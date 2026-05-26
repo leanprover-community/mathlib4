@@ -43,8 +43,8 @@ section BasicProperties_Seminormed
 
 open scoped InnerProductSpace
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
+variable [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -57,7 +57,7 @@ theorem inner_conj_symm (x y : E) : ⟪y, x⟫† = ⟪x, y⟫ :=
   InnerProductSpace.conj_inner_symm _ _
 
 theorem real_inner_comm (x y : F) : ⟪y, x⟫_ℝ = ⟪x, y⟫_ℝ :=
-  @inner_conj_symm ℝ _ _ _ _ x y
+  inner_conj_symm x y
 
 theorem inner_eq_zero_symm {x y : E} : ⟪x, y⟫ = 0 ↔ ⟪y, x⟫ = 0 := by
   rw [← inner_conj_symm]
@@ -204,7 +204,7 @@ theorem inner_self_nonneg {x : E} : 0 ≤ re ⟪x, x⟫ :=
   PreInnerProductSpace.toCore.re_inner_nonneg x
 
 theorem real_inner_self_nonneg {x : F} : 0 ≤ ⟪x, x⟫_ℝ :=
-  @inner_self_nonneg ℝ F _ _ _ x
+  inner_self_nonneg (𝕜 := ℝ)
 
 theorem inner_self_ofReal_re (x : E) : (re ⟪x, x⟫ : 𝕜) = ⟪x, x⟫ :=
   ((RCLike.is_real_TFAE (⟪x, x⟫ : 𝕜)).out 2 3).2 (inner_self_im (𝕜 := 𝕜) x)
@@ -223,7 +223,7 @@ theorem inner_self_ofReal_norm (x : E) : (‖⟪x, x⟫‖ : 𝕜) = ⟪x, x⟫ 
   exact inner_self_ofReal_re _
 
 theorem real_inner_self_abs (x : F) : |⟪x, x⟫_ℝ| = ⟪x, x⟫_ℝ :=
-  @inner_self_ofReal_norm ℝ F _ _ _ x
+  inner_self_ofReal_norm (x := x)
 
 theorem norm_inner_symm (x y : E) : ‖⟪x, y⟫‖ = ‖⟪y, x⟫‖ := by rw [← inner_conj_symm, norm_conj]
 
@@ -288,7 +288,7 @@ theorem real_inner_mul_inner_self_le (x y : F) : ⟪x, y⟫_ℝ * ⟪x, y⟫_ℝ
     ⟪x, y⟫_ℝ * ⟪x, y⟫_ℝ ≤ ‖⟪x, y⟫_ℝ‖ * ‖⟪y, x⟫_ℝ‖ := by
       rw [real_inner_comm y, ← norm_mul]
       exact le_abs_self _
-    _ ≤ ⟪x, x⟫_ℝ * ⟪y, y⟫_ℝ := @inner_mul_inner_self_le ℝ _ _ _ _ x y
+    _ ≤ ⟪x, x⟫_ℝ * ⟪y, y⟫_ℝ := inner_mul_inner_self_le x y
 
 theorem inner_eq_ofReal_norm_sq_left_iff {v w : E} : ⟪v, w⟫_𝕜 = ‖v‖ ^ 2 ↔ ⟪v, v - w⟫_𝕜 = 0 := by
   rw [inner_sub_right, sub_eq_zero, inner_self_eq_norm_sq_to_K, eq_comm]
@@ -306,8 +306,8 @@ end BasicProperties_Seminormed
 
 section BasicProperties
 
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
+variable [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -369,8 +369,8 @@ section Norm_Seminormed
 
 open scoped InnerProductSpace
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
+variable [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -382,7 +382,7 @@ theorem norm_eq_sqrt_re_inner (x : E) : ‖x‖ = √(re ⟪x, x⟫) :=
     _ = √(re ⟪x, x⟫) := congr_arg _ (norm_sq_eq_re_inner _)
 
 theorem norm_eq_sqrt_real_inner (x : F) : ‖x‖ = √⟪x, x⟫_ℝ :=
-  @norm_eq_sqrt_re_inner ℝ _ _ _ _ x
+  norm_eq_sqrt_re_inner (𝕜 := ℝ) x
 
 theorem inner_self_eq_norm_mul_norm (x : E) : re ⟪x, x⟫ = ‖x‖ * ‖x‖ := by
   rw [@norm_eq_sqrt_re_inner 𝕜, ← sqrt_mul inner_self_nonneg (re ⟪x, x⟫),
@@ -392,7 +392,7 @@ theorem inner_self_eq_norm_sq (x : E) : re ⟪x, x⟫ = ‖x‖ ^ 2 := by
   rw [pow_two, inner_self_eq_norm_mul_norm]
 
 theorem real_inner_self_eq_norm_mul_norm (x : F) : ⟪x, x⟫_ℝ = ‖x‖ * ‖x‖ := by
-  have h := @inner_self_eq_norm_mul_norm ℝ F _ _ _ x
+  have h := inner_self_eq_norm_mul_norm (𝕜 := ℝ) x
   simpa using h
 
 theorem real_inner_self_eq_norm_sq (x : F) : ⟪x, x⟫_ℝ = ‖x‖ ^ 2 := by
@@ -409,7 +409,7 @@ alias norm_add_pow_two := norm_add_sq
 
 /-- Expand the square -/
 theorem norm_add_sq_real (x y : F) : ‖x + y‖ ^ 2 = ‖x‖ ^ 2 + 2 * ⟪x, y⟫_ℝ + ‖y‖ ^ 2 := by
-  have h := @norm_add_sq ℝ _ _ _ _ x y
+  have h := norm_add_sq (𝕜 := ℝ) x y
   simpa using h
 
 alias norm_add_pow_two_real := norm_add_sq_real
@@ -423,19 +423,19 @@ theorem norm_add_mul_self (x y : E) :
 /-- Expand the square -/
 theorem norm_add_mul_self_real (x y : F) :
     ‖x + y‖ * ‖x + y‖ = ‖x‖ * ‖x‖ + 2 * ⟪x, y⟫_ℝ + ‖y‖ * ‖y‖ := by
-  have h := @norm_add_mul_self ℝ _ _ _ _ x y
+  have h := norm_add_mul_self (𝕜 := ℝ) x y
   simpa using h
 
 /-- Expand the square -/
 theorem norm_sub_sq (x y : E) : ‖x - y‖ ^ 2 = ‖x‖ ^ 2 - 2 * re ⟪x, y⟫ + ‖y‖ ^ 2 := by
-  rw [sub_eq_add_neg, @norm_add_sq 𝕜 _ _ _ _ x (-y), norm_neg, inner_neg_right, map_neg, mul_neg,
+  rw [sub_eq_add_neg, norm_add_sq (𝕜 := 𝕜) x (-y), norm_neg, inner_neg_right, map_neg, mul_neg,
     sub_eq_add_neg]
 
 alias norm_sub_pow_two := norm_sub_sq
 
 /-- Expand the square -/
 theorem norm_sub_sq_real (x y : F) : ‖x - y‖ ^ 2 = ‖x‖ ^ 2 - 2 * ⟪x, y⟫_ℝ + ‖y‖ ^ 2 :=
-  @norm_sub_sq ℝ _ _ _ _ _ _
+  norm_sub_sq (𝕜 := ℝ) _ _
 
 alias norm_sub_pow_two_real := norm_sub_sq_real
 
@@ -448,7 +448,7 @@ theorem norm_sub_mul_self (x y : E) :
 /-- Expand the square -/
 theorem norm_sub_mul_self_real (x y : F) :
     ‖x - y‖ * ‖x - y‖ = ‖x‖ * ‖x‖ - 2 * ⟪x, y⟫_ℝ + ‖y‖ * ‖y‖ := by
-  have h := @norm_sub_mul_self ℝ _ _ _ _ x y
+  have h := norm_sub_mul_self (𝕜 := ℝ) x y
   simpa using h
 
 /-- Cauchy–Schwarz inequality with norm -/
@@ -644,8 +644,8 @@ section Norm
 
 open scoped InnerProductSpace
 
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
+variable [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [InnerProductSpace ℝ F]
 variable {ι : Type*}
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
@@ -757,7 +757,7 @@ norms, has absolute value 1 if and only if they are nonzero and one is
 a multiple of the other. One form of equality case for Cauchy-Schwarz. -/
 theorem abs_real_inner_div_norm_mul_norm_eq_one_iff (x y : F) :
     |⟪x, y⟫_ℝ / (‖x‖ * ‖y‖)| = 1 ↔ x ≠ 0 ∧ ∃ r : ℝ, r ≠ 0 ∧ y = r • x :=
-  @norm_inner_div_norm_mul_norm_eq_one_iff ℝ F _ _ _ x y
+  norm_inner_div_norm_mul_norm_eq_one_iff (𝕜 := ℝ) x y
 
 theorem inner_eq_norm_mul_iff_div {x y : E} (h₀ : x ≠ 0) :
     ⟪x, y⟫ = (‖x‖ : 𝕜) * ‖y‖ ↔ (‖y‖ / ‖x‖ : 𝕜) • x = y := by
@@ -873,7 +873,7 @@ end Norm
 
 section Induced
 
-variable {G : Type*} [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E] [AddCommGroup G]
+variable {G : Type*} [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E] [AddCommGroup G]
     [Module 𝕜 G]
 
 /-- A linear map from a `Module` to an `InnerProductSpace` induces an `InnerProductSpace`
@@ -881,9 +881,11 @@ structure on the domain using the `SeminormedAddCommGroup.induced` norm.
 
 See note [reducible non-instances]. -/
 abbrev InnerProductSpace.induced {F : Type*} [FunLike F G E] [LinearMapClass F 𝕜 G E] (f : F) :
-    letI := SeminormedAddCommGroup.induced G E f
+    letI := NormPseudoMetric.induced G E f
+    haveI := IsNormedAddGroup.induced G E f
     InnerProductSpace 𝕜 G :=
-  letI := SeminormedAddCommGroup.induced G E f
+  letI := NormPseudoMetric.induced G E f
+  haveI := IsNormedAddGroup.induced G E f
   letI := NormedSpace.induced 𝕜 G E f
   { inner x y := inner 𝕜 (f x) (f y)
     add_left x y z := by rw [map_add, inner_add_left]
@@ -924,7 +926,7 @@ open scoped InnerProductSpace
 
 variable {G : Type*}
 variable (𝕜 E)
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -970,7 +972,7 @@ theorem real_inner_I_smul_self (x : E) :
 creates a diamond with `PiLp.innerProductSpace` because `re (sum i, ⟪x i, y i⟫)` and
 `sum i, re ⟪x i, y i⟫` are not defeq. -/
 @[implicit_reducible]
-def InnerProductSpace.complexToReal [SeminormedAddCommGroup G] [InnerProductSpace ℂ G] :
+def InnerProductSpace.complexToReal [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G] [InnerProductSpace ℂ G] :
     InnerProductSpace ℝ G :=
   InnerProductSpace.rclikeToReal ℂ G
 
@@ -1002,7 +1004,7 @@ example :
 
 section IsPosSemidef
 
-variable [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace ℝ E]
 
 lemma isSymm_inner : LinearMap.IsSymm (innerₗ E) where
   eq x y := by simp [real_inner_comm]

@@ -38,7 +38,7 @@ open scoped Topology
 
 open Set
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
 
 /-- `IsIntegralCurveOn γ v s` means `γ t` is tangent to `v t (γ t)` within `s` for all `t ∈ s`. -/
 def IsIntegralCurveOn (γ : ℝ → E) (v : ℝ → E → E) (s : Set ℝ) : Prop :=

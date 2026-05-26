@@ -57,7 +57,7 @@ section SeminormedRing
 section Zero
 
 variable (𝕜)
-variable [SeminormedRing 𝕜] [SMul 𝕜 E] [Zero E]
+variable [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [SMul 𝕜 E] [Zero E]
 variable [TopologicalSpace E]
 
 /-- A set `s` is von Neumann bounded if every neighborhood of 0 absorbs `s`. -/
@@ -121,7 +121,7 @@ end Zero
 
 section ContinuousAdd
 
-variable [SeminormedRing 𝕜] [AddZeroClass E] [TopologicalSpace E] [ContinuousAdd E]
+variable [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [AddZeroClass E] [TopologicalSpace E] [ContinuousAdd E]
   [DistribSMul 𝕜 E] {s t : Set E}
 
 protected theorem IsVonNBounded.add (hs : IsVonNBounded 𝕜 s) (ht : IsVonNBounded 𝕜 t) :
@@ -133,7 +133,7 @@ end ContinuousAdd
 
 section IsTopologicalAddGroup
 
-variable [SeminormedRing 𝕜] [AddGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+variable [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [AddGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]
   [DistribMulAction 𝕜 E] {s t : Set E}
 
 protected theorem IsVonNBounded.neg (hs : IsVonNBounded 𝕜 s) : IsVonNBounded 𝕜 (-s) := fun U hU ↦ by
@@ -157,7 +157,7 @@ end SeminormedRing
 
 section MultipleTopologies
 
-variable [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 /-- If a topology `t'` is coarser than `t`, then any set `s` that is bounded with respect to
 `t` is bounded with respect to `t'`. -/
@@ -429,7 +429,7 @@ theorem Filter.Tendsto.isVonNBounded_range [NormedField 𝕜] [AddCommGroup E] [
 
 variable (𝕜) in
 protected theorem Bornology.IsVonNBounded.restrict_scalars_of_nontrivial
-    [NormedField 𝕜] [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [Nontrivial 𝕜']
+    [NormedField 𝕜] [NormMetric 𝕜'] [Ring 𝕜'] [IsNormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [Nontrivial 𝕜']
     [Zero E] [TopologicalSpace E]
     [SMul 𝕜 E] [MulAction 𝕜' E] [IsScalarTower 𝕜 𝕜' E] {s : Set E}
     (h : IsVonNBounded 𝕜' s) : IsVonNBounded 𝕜 s := by
@@ -441,7 +441,7 @@ protected theorem Bornology.IsVonNBounded.restrict_scalars_of_nontrivial
 
 variable (𝕜) in
 protected theorem Bornology.IsVonNBounded.restrict_scalars
-    [NormedField 𝕜] [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
+    [NormedField 𝕜] [NormMetric 𝕜'] [Ring 𝕜'] [IsNormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
     [Zero E] [TopologicalSpace E]
     [SMul 𝕜 E] [MulActionWithZero 𝕜' E] [IsScalarTower 𝕜 𝕜' E] {s : Set E}
     (h : IsVonNBounded 𝕜' s) : IsVonNBounded 𝕜 s :=
@@ -459,7 +459,7 @@ namespace NormedSpace
 section NormedField
 
 variable (𝕜)
-variable [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NormedField 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 
 theorem isVonNBounded_of_isBounded {s : Set E} (h : Bornology.IsBounded s) :
     Bornology.IsVonNBounded 𝕜 s := by
@@ -480,7 +480,7 @@ theorem isVonNBounded_closedBall (r : ℝ) :
 end NormedField
 
 variable (𝕜)
-variable [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NontriviallyNormedField 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 
 theorem isVonNBounded_iff {s : Set E} : Bornology.IsVonNBounded 𝕜 s ↔ Bornology.IsBounded s := by
   refine ⟨fun h ↦ ?_, isVonNBounded_of_isBounded _⟩
@@ -535,13 +535,13 @@ section QuasiCompleteSpace
 
 /-- A locally convex space is quasi-complete if every closed and von Neumann bounded set is
 complete. -/
-class QuasiCompleteSpace (𝕜 : Type*) (E : Type*) [Zero E] [UniformSpace E] [SeminormedRing 𝕜]
+class QuasiCompleteSpace (𝕜 : Type*) (E : Type*) [Zero E] [UniformSpace E] [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜]
     [SMul 𝕜 E] : Prop where
   /-- A locally convex space is quasi-complete if every closed and von Neumann bounded set is
   complete. -/
   quasiComplete : ∀ ⦃s : Set E⦄, Bornology.IsVonNBounded 𝕜 s → IsClosed s → IsComplete s
 
-variable {𝕜 : Type*} {E : Type*} [Zero E] [UniformSpace E] [SeminormedRing 𝕜] [SMul 𝕜 E]
+variable {𝕜 : Type*} {E : Type*} [Zero E] [UniformSpace E] [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [SMul 𝕜 E]
 
 /-- A complete space is quasi-complete with respect to any scalar ring. -/
 instance [CompleteSpace E] : QuasiCompleteSpace 𝕜 E where

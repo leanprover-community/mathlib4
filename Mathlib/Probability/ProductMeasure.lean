@@ -565,7 +565,7 @@ end Measure
 
 section Integral
 
-theorem integral_restrict_infinitePi {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem integral_restrict_infinitePi {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
     {s : Finset ι} {f : (Π i : s, X i) → E}
     (hf : AEStronglyMeasurable f (Measure.pi (fun i : s ↦ μ i))) :
     ∫ y, f (s.restrict y) ∂infinitePi μ = ∫ y, f y ∂Measure.pi (fun i : s ↦ μ i) := by
@@ -580,7 +580,7 @@ theorem lintegral_restrict_infinitePi {s : Finset ι}
 
 open Filtration
 
-theorem integral_infinitePi_of_piFinset [DecidableEq ι] {E : Type*} [NormedAddCommGroup E]
+theorem integral_infinitePi_of_piFinset [DecidableEq ι] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
     [NormedSpace ℝ E] {s : Finset ι} {f : (Π i, X i) → E}
     (mf : StronglyMeasurable[piFinset s] f) (x : Π i, X i) :
     ∫ y, f y ∂infinitePi μ =

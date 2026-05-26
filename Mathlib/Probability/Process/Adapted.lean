@@ -126,7 +126,7 @@ protected theorem smul [∀ i, SMul ℝ (β i)] [∀ i, ContinuousConstSMul ℝ 
     StronglyAdapted f (c • u) := fun i => (hu i).const_smul c
 
 /-- The norm of a strongly adapted process is strongly adapted. -/
-protected lemma norm {β : ι → Type*} {u : (i : ι) → Ω → β i} [∀ i, SeminormedAddCommGroup (β i)]
+protected lemma norm {β : ι → Type*} {u : (i : ι) → Ω → β i} [∀ i, NormPseudoMetric (β i)] [∀ i, AddCommGroup (β i)] [∀ i, IsNormedAddGroup (β i)]
     (hu : StronglyAdapted f u) :
     StronglyAdapted f (fun t ω ↦ ‖u t ω‖) := fun t ↦ (hu t).norm
 
@@ -241,9 +241,9 @@ protected theorem div [Group β] [MeasurableDiv₂ β] (hu : IsProgressive f u)
   fun i ↦ Measurable.div (hu i) (hv i)
 
 /-- The norm of a progressive process is progressive. -/
-protected lemma norm [NormedAddCommGroup β] [OpensMeasurableSpace β] (hu : IsProgressive f u) :
+protected lemma norm [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] [OpensMeasurableSpace β] (hu : IsProgressive f u) :
     IsProgressive f fun t ω ↦ ‖u t ω‖ :=
-  fun i ↦ by apply @(hu i).norm; infer_instance
+  fun i ↦ by apply @(hu i).norm; all_goals infer_instance
 
 end Arithmetic
 
@@ -329,7 +329,7 @@ protected theorem div' [Group β] [ContinuousDiv β] (hu : IsStronglyProgressive
   (hu i).div' (hv i)
 
 /-- The norm of a strongly progressive process is strongly progressive. -/
-protected lemma norm {β : Type*} {u : ι → Ω → β} [SeminormedAddCommGroup β]
+protected lemma norm {β : Type*} {u : ι → Ω → β} [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β]
     (hu : IsStronglyProgressive f u) :
     IsStronglyProgressive f fun t ω ↦ ‖u t ω‖ := fun t ↦ (hu t).norm
 

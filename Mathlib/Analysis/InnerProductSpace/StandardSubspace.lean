@@ -49,7 +49,7 @@ open scoped ComplexInnerProductSpace
 
 section ScalarSMulCLE
 
-variable (H : Type*) [NormedAddCommGroup H] [InnerProductSpace ℂ H]
+variable (H : Type*) [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] [InnerProductSpace ℂ H]
 
 /-- the scalar product by a non-zero complex number as a continuous real-linear equivalence. -/
 noncomputable def scalarSMulCLE (c : ℂˣ) : H ≃L[ℝ] H := ContinuousLinearEquiv.smulLeft c
@@ -64,7 +64,7 @@ end ScalarSMulCLE
 
 namespace ClosedSubmodule
 
-variable {H : Type*} [NormedAddCommGroup H] [ipc : InnerProductSpace ℂ H]
+variable {H : Type*} [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] [ipc : InnerProductSpace ℂ H]
 
 /-- `H` as a real Hilbert space. This instance is declared inside `ClosedSubmodule` namespace. If
 one needs this structure (for example when considering standard subspaces), one should just `open
@@ -170,7 +170,7 @@ end ClosedSubmodule
 
 section Def
 
-variable (H : Type*) [NormedAddCommGroup H] [InnerProductSpace ℂ H]
+variable (H : Type*) [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] [InnerProductSpace ℂ H]
 
 /-- A standard subspace `S` of a complex Hilbert space (or just an inner product space) `H` is a
 closed real subspace `S` such that `S ⊓ i S = ⊥` and `S ⊔ i S = ⊤`. -/
@@ -189,7 +189,7 @@ namespace StandardSubspace
 
 open ClosedSubmodule
 
-variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
+variable {H : Type*} [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] [InnerProductSpace ℂ H]
 
 @[simp]
 lemma toClosedSubmodule_inj {S T : StandardSubspace H} :

@@ -61,8 +61,16 @@ protected theorem norm_map_zero' : ‖(0 : ℂ)‖ = 0 :=
 protected theorem norm_neg' (z : ℂ) : ‖-z‖ = ‖z‖ := by
   rw [Complex.norm_def, norm_def, normSq_neg]
 
-instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
-  AddGroupNorm.toNormedAddCommGroup
+instance instNormMetric : NormMetric ℂ :=
+  AddGroupNorm.toNormMetric
+  { toFun := norm
+    map_zero' := Complex.norm_map_zero'
+    add_le' := Complex.norm_add_le'
+    neg' := Complex.norm_neg'
+    eq_zero_of_map_eq_zero' := fun _ ↦ Complex.norm_eq_zero_iff.mp }
+
+instance instIsNormedAddGroup : IsNormedAddGroup ℂ :=
+  AddGroupNorm.toIsNormedAddGroup
   { toFun := norm
     map_zero' := Complex.norm_map_zero'
     add_le' := Complex.norm_add_le'

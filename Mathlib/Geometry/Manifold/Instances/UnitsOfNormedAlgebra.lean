@@ -21,7 +21,7 @@ over a field `𝕜`, the `𝕜`-linear endomorphisms of `V` are a normed `𝕜`-
 `ContinuousLinearMap.toNormedAlgebra`), so this construction provides a Lie group structure on
 its group of units, the general linear group GL(`𝕜`, `V`), as demonstrated by:
 ```
-example {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V] (n : ℕ∞ω) :
+example {V : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace 𝕜 V] [CompleteSpace V] (n : ℕ∞ω) :
     LieGroup 𝓘(𝕜, V →L[𝕜] V) n (V →L[𝕜] V)ˣ := inferInstance
 ```
 
@@ -37,7 +37,7 @@ open scoped Manifold ContDiff
 
 namespace Units
 
-variable {R : Type*} [NormedRing R] [CompleteSpace R] {n : ℕ∞ω}
+variable {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R] [CompleteSpace R] {n : ℕ∞ω}
 
 instance : ChartedSpace R Rˣ :=
   isOpenEmbedding_val.singletonChartedSpace
@@ -49,7 +49,7 @@ theorem chartAt_source {a : Rˣ} : (chartAt R a).source = Set.univ :=
   rfl
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 R]
-  {H : Type*} [TopologicalSpace H] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 instance : IsManifold 𝓘(𝕜, R) n Rˣ :=
@@ -88,11 +88,11 @@ instance contMDiffSMul [MulAction R M] [ContMDiffSMul 𝓘(𝕜, R) I n R M] :
   MulAction.contMDiffSMul_compHom (f := coeHom R) contMDiff_val
 
 /-- The general linear group `(V →L[𝕜] V)ˣ` of a Banach space `V` is a Lie group. -/
-example {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V] (n : ℕ∞ω) :
+example {V : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace 𝕜 V] [CompleteSpace V] (n : ℕ∞ω) :
     LieGroup 𝓘(𝕜, V →L[𝕜] V) n (V →L[𝕜] V)ˣ := inferInstance
 
 /-- The general linear group `(V →L[𝕜] V)ˣ` of a Banach space `V` acts smoothly on `V`. -/
-example {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V] (n : ℕ∞ω) :
+example {V : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace 𝕜 V] [CompleteSpace V] (n : ℕ∞ω) :
     ContMDiffSMul 𝓘(𝕜, V →L[𝕜] V) 𝓘(𝕜, V) n (V →L[𝕜] V)ˣ V :=
   inferInstance
 

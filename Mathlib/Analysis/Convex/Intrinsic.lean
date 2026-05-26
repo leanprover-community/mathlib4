@@ -215,7 +215,7 @@ end AddTorsor
 
 namespace AffineIsometry
 
-variable [NormedField 𝕜] [SeminormedAddCommGroup V] [SeminormedAddCommGroup W] [NormedSpace 𝕜 V]
+variable [NormedField 𝕜] [NormPseudoMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormPseudoMetric W] [AddCommGroup W] [IsNormedAddGroup W] [NormedSpace 𝕜 V]
   [NormedSpace 𝕜 W] [MetricSpace P] [PseudoMetricSpace Q] [NormedAddTorsor V P]
   [NormedAddTorsor W Q]
 
@@ -262,7 +262,7 @@ end AffineIsometry
 
 section NormedAddTorsor
 
-variable (𝕜) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormedAddCommGroup V] [NormedSpace 𝕜 V]
+variable (𝕜) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace 𝕜 V]
   [FiniteDimensional 𝕜 V] [MetricSpace P] [NormedAddTorsor V P] (s : Set P)
 
 @[simp]
@@ -309,7 +309,7 @@ private theorem aux {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] 
     (s : Set β) : (interior s).Nonempty ↔ (interior (φ ⁻¹' s)).Nonempty := by
   rw [← φ.image_symm, ← φ.symm.image_interior, image_nonempty]
 
-variable [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V] {s : Set V}
+variable [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V] {s : Set V}
 
 /-- The intrinsic interior of a nonempty convex set is nonempty. -/
 protected theorem Set.Nonempty.intrinsicInterior (hscv : Convex ℝ s) (hsne : s.Nonempty) :

@@ -67,7 +67,7 @@ open MeasureTheory TopologicalSpace ContinuousMap Set Bornology
 
 variable {α : Type*} [TopologicalSpace α] [NormalSpace α]
   [MeasurableSpace α] [BorelSpace α]
-variable {E : Type*} [NormedAddCommGroup E] {μ : Measure α} {p : ℝ≥0∞}
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] {μ : Measure α} {p : ℝ≥0∞}
 
 namespace MeasureTheory
 
@@ -342,7 +342,7 @@ end Lp
 end MeasureTheory
 
 variable [SecondCountableTopologyEither α E] [_i : Fact (1 ≤ p)]
-variable (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [NormedSpace ℝ E]
+variable (𝕜 : Type*) [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [NormedSpace ℝ E]
 
 variable (E) (μ)
 

@@ -66,7 +66,7 @@ open scoped Topology Convex NNReal
 
 section Module
 
-variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type u} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
   {f : E → ℝ} {f' : StrongDual ℝ E} {s : Set E} {a x y : E}
 
 /-!

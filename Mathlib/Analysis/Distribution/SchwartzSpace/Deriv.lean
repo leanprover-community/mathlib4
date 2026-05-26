@@ -44,7 +44,7 @@ variable {ι 𝕜 𝕜' D E F V F F₁ F₂ F₃ : Type*}
 
 namespace SchwartzMap
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
 
 section Derivatives
 
@@ -165,7 +165,7 @@ alias iteratedPDeriv_eq_iteratedFDeriv := iteratedLineDerivOp_eq_iteratedFDeriv
 
 end fderiv
 
-variable [NormedAddCommGroup D] [NormedSpace ℝ D]
+variable [NormMetric D] [AddCommGroup D] [IsNormedAddGroup D] [NormedSpace ℝ D]
 
 theorem lineDerivOp_compCLMOfContinuousLinearEquiv (m : D) (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
     ∂_{m} (compCLMOfContinuousLinearEquiv 𝕜 g f) =
@@ -244,7 +244,7 @@ open ENNReal MeasureTheory
 
 section one_dim
 
-variable [NormedAddCommGroup V] [NormedSpace ℝ V]
+variable [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace ℝ V]
 
 /-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
 
@@ -256,7 +256,7 @@ theorem integral_bilinear_deriv_right_eq_neg_left (f : 𝓢(ℝ, E)) (g : 𝓢(�
     (fun x _ ↦ f.hasDerivAt x) (fun x _ ↦ g.hasDerivAt x) (pairing L f (derivCLM ℝ F g)).integrable
     (pairing L (derivCLM ℝ E f) g).integrable (pairing L f g).integrable
 
-variable [NormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
 /-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
 
 Version for multiplication of scalar-valued Schwartz functions. -/
@@ -283,8 +283,8 @@ theorem integral_clm_comp_deriv_right_eq_neg_left (f : 𝓢(ℝ, F →L[𝕜] V)
 
 end one_dim
 
-variable [NormedAddCommGroup V] [NormedSpace ℝ V]
-  [NormedAddCommGroup D] [NormedSpace ℝ D]
+variable [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace ℝ V]
+  [NormMetric D] [AddCommGroup D] [IsNormedAddGroup D] [NormedSpace ℝ D]
   [MeasurableSpace D] {μ : Measure D} [BorelSpace D] [FiniteDimensional ℝ D] [μ.IsAddHaarMeasure]
 
 open scoped LineDeriv
@@ -301,7 +301,7 @@ theorem integral_bilinear_lineDerivOp_right_eq_neg_left (f : 𝓢(D, E)) (g : �
     (bilinLeftCLM L g.hasTemperateGrowth _).integrable
   all_goals exact fun x _ ↦ (hasFDerivAt _ x).hasLineDerivAt v
 
-variable [NormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
 /-- Integration by parts of Schwartz functions for directional derivatives.
 
 Version for multiplication of scalar-valued Schwartz functions. -/
@@ -335,9 +335,9 @@ open MeasureTheory Laplacian LineDeriv
 /-! ### Integration by parts -/
 
 variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-  [NormedAddCommGroup F₁] [NormedSpace ℝ F₁]
-  [NormedAddCommGroup F₂] [NormedSpace ℝ F₂]
-  [NormedAddCommGroup F₃] [NormedSpace ℝ F₃]
+  [NormMetric F₁] [AddCommGroup F₁] [IsNormedAddGroup F₁] [NormedSpace ℝ F₁]
+  [NormMetric F₂] [AddCommGroup F₂] [IsNormedAddGroup F₂] [NormedSpace ℝ F₂]
+  [NormMetric F₃] [AddCommGroup F₃] [IsNormedAddGroup F₃] [NormedSpace ℝ F₃]
   [MeasurableSpace E] {μ : Measure E} [BorelSpace E] [μ.IsAddHaarMeasure]
 
 /-- Integration by parts of Schwartz functions for the Laplacian.
@@ -353,7 +353,7 @@ theorem integral_bilinear_laplacian_right_eq_left (f : 𝓢(E, F₁)) (g : 𝓢(
   · exact fun _ _ ↦ (pairing L (∂_{_} <| ∂_{_} f) g).integrable
   · exact fun _ _ ↦ (pairing L f (∂_{_} <| ∂_{_} g)).integrable
 
-variable [NormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
 /-- Integration by parts of Schwartz functions for the Laplacian.
 
 Version for multiplication of scalar-valued Schwartz functions. -/
