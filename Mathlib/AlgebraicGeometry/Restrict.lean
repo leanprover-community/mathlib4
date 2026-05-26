@@ -711,20 +711,6 @@ def morphismRestrictRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V :
   · exact image_morphismRestrict_preimage f U V
   · simp [← cancel_mono (Scheme.Opens.ι _)]
 
-@[reassoc]
-lemma morphismRestrict_ι_image_ι_isoImage_inv
-    {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V : U.toScheme.Opens) :
-    f ∣_ U.ι ''ᵁ V ≫ (U.ι.isoImage V).inv = (X.homOfLE (image_morphismRestrict_preimage f U V).ge ≫
-      ((f ⁻¹ᵁ U).ι.isoImage ((f ∣_ U) ⁻¹ᵁ V)).inv) ≫ f ∣_ U ∣_ V :=
-  (morphismRestrictRestrict f U V).inv.w'
-
-@[reassoc]
-lemma morphismRestrictRestrict_ι_isoImage_hom
-    {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V : U.toScheme.Opens) :
-    f ∣_ U ∣_ V ≫ (U.ι.isoImage V).hom = (((f ⁻¹ᵁ U).ι.isoImage ((f ∣_ U) ⁻¹ᵁ V)).hom ≫
-      X.homOfLE (image_morphismRestrict_preimage f U V).le) ≫ f ∣_ U.ι ''ᵁ V :=
-  (morphismRestrictRestrict f U V).hom.w'
-
 set_option backward.isDefEq.respectTransparency false in
 /-- Restricting a morphism twice onto a basic open set is isomorphic to one restriction. -/
 def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (r : Γ(Y, U)) :

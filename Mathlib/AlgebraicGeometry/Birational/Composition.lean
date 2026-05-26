@@ -63,7 +63,7 @@ lemma comp_restrict_left (f : X.PartialMap Y) [IsDominant f.hom] (U : X.Opens)
       ι_image_homOfLE_eq_ι_image_inf]
   · simp only [comp_hom, comp_domain, restrict_hom, restrict_domain, Hom.comp_preimage,
       morphismRestrict_comp, Category.assoc, isoOfEq_hom, homOfLE_homOfLE_assoc,
-      ι_isoImage_inv_morphismRestrict_homOfLE_assoc]
+      isoImage_ι_inv_morphismRestrict_homOfLE_assoc]
 
 lemma comp_restrict_right (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.PartialMap Z)
     (V : Y.Opens) (hV : Dense (V : Set Y)) (hV' : V ≤ g.domain) :
@@ -131,7 +131,7 @@ lemma comp_toPartialMap (f : X.PartialMap Y) [IsDominant f.hom] (g : Y ⟶ Z) :
   ext1
   · simp
   · simp_rw [comp_hom, Hom.toPartialMap_domain, Hom.toPartialMap_hom, compHom_hom, topIso_hom,
-      morphismRestrict_ι_assoc, f.domain.ι_isoImage_inv_ι_assoc, isoOfEq_hom]
+      morphismRestrict_ι_assoc, f.domain.isoImage_ι_inv_ι_assoc, isoOfEq_hom]
     rfl
 
 @[simp]
@@ -190,7 +190,7 @@ lemma PartialMap.id_comp {X Y : Scheme.{u}} [IrreducibleSpace X] (f : X.PartialM
       ← X.topIso_hom, ← Hom.inv_image, ← Hom.comp_image, Iso.inv_hom_id, Hom.id_image]
   · simp_rw [comp_hom, Hom.toPartialMap_hom, Hom.toPartialMap_domain, morphismRestrict_comp,
       morphismRestrict_id, ← X.topIso_hom, Hom.comp_preimage, Hom.id_preimage,
-      Category.comp_id, morphismRestrict_eq_isoImage_hom_homOfLE, Category.assoc,
+      Category.comp_id, ← X.topIso.hom.isoImage_preimage_hom_homOfLE, Category.assoc,
       Iso.inv_hom_id_assoc]
     rfl
 
