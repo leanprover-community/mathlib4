@@ -22,8 +22,19 @@ universe w v u
 
 open CategoryTheory Limits
 
-instance {J : Type*} [PartialOrder J] (j : J) :
-    HasTerminal ({j} : Set J) := sorry
+section
+
+-- this should be generalized to `Quiver.IsThin`
+def Preorder.isTerminalOfUnique (J : Type*) [Preorder J] [Unique J] :
+    IsTerminal (default : J) :=
+  IsTerminal.ofUniqueHom (fun k ↦ homOfLE (by rw [Subsingleton.elim k default]))
+    (fun _ _ ↦ by subsingleton)
+
+instance (J : Type*) [Preorder J] [Unique J] :
+    HasTerminal J :=
+  (Preorder.isTerminalOfUnique J).hasTerminal
+
+end
 
 namespace Cardinal
 
@@ -284,23 +295,27 @@ noncomputable def desc : X ⟶ s.pt := p.isColimit.desc (coconeDesc hκ p s)
 omit [IsCardinalFiltered J κ₁] in
 @[reassoc (attr := simp)]
 lemma fac (j : J) :
-    p.ι.app j ≫ desc s = colimit.ι _ _ _ (by simp) ≫ s.ι.app (singleton hκ j) :=
+    dsimp% p.ι.app j ≫ desc s = colimit.ι _ _ _ (by simp) ≫ s.ι.app (singleton hκ j) :=
   p.isColimit.fac (coconeDesc hκ p s) j
+
+omit [IsCardinalFiltered J κ₁] in
+@[reassoc]
+lemma fac' (A : Subtype (prop hκ J)) :
+    colimit.π p A ≫ desc s = s.ι.app A := by
+  ext j hj
+  let φ : singleton hκ j ⟶ A := homOfLE (by
+    rw [Subtype.mk_le_mk]
+    simpa)
+  simp [colimit.ι_π_assoc, fac, ← s.w φ]
 
 end isColimit
 
 open isColimit in
 noncomputable def isColimit : IsColimit (cocone hκ p) where
   desc s := desc s
-  fac s A := by
-    dsimp
-    ext j hj
-    have := p.isColimit.fac (coconeDesc hκ p s) j
-    dsimp at this
-    sorry
+  fac s A := fac' s A
   uniq s m hm :=
-    p.isColimit.hom_ext (fun j ↦ by
-      sorry)
+    p.isColimit.hom_ext (fun j ↦ by simp [fac s j, ← hm])
 
 end
 
