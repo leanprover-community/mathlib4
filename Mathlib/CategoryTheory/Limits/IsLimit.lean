@@ -51,6 +51,7 @@ variable {F : J ⥤ C}
 
 /-- A cone `t` on `F` is a limit cone if each cone on `F` admits a unique
 cone morphism to `t`. -/
+@[stacks 002E]
 structure IsLimit (t : Cone F) where
   /-- There is a morphism from any cone point to `t.pt` -/
   lift : ∀ s : Cone F, s.pt ⟶ t.pt
@@ -62,7 +63,7 @@ structure IsLimit (t : Cone F) where
 
 /-- A cocone `t` on `F` is a colimit cocone if each cocone on `F` admits a unique
 cocone morphism from `t`. -/
-@[to_dual (attr := stacks 002F)]
+@[stacks 002F, to_dual]
 structure IsColimit (t : Cocone F) where
   /-- `t.pt` maps to all other cocone covertices -/
   desc : ∀ s : Cocone F, t.pt ⟶ s.pt
