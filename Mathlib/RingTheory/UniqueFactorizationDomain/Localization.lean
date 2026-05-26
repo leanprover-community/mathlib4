@@ -31,7 +31,7 @@ theorem UniqueFactorizationMonoid.of_isLocalization {M : Submonoid R} (hM : M �
   rw [← Ideal.span_singleton_prime]
   · rw [← Set.image_singleton, ← Ideal.map_span]
     refine IsLocalization.isPrime_of_isPrime_disjoint M S _
-      (Ideal.span_singleton_isPrime_of_prime hpx) ?_
+      (Ideal.isPrime_span_singleton_of_prime hpx) ?_
     rw [← IsLocalization.map_algebraMap_ne_top_iff_disjoint M S]
     intro h
     exact Ideal.IsPrime.ne_top' (top_unique (h.symm.trans_le (by simpa [Ideal.map_span] using hxp)))

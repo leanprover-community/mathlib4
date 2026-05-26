@@ -6,6 +6,7 @@ Authors: Yongle Hu
 module
 
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+public import Mathlib.RingTheory.Localization.Away.Lemmas
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Localization
 
 /-!
@@ -25,7 +26,7 @@ variable {R : Type*} [CommRing R] [IsDomain R]
 
 theorem UniqueFactorizationMonoid.isPrincipal_of_height_eq_one [UniqueFactorizationMonoid R]
     {p : Ideal R} [p.IsPrime] (hph : p.height = 1) : p.IsPrincipal := by
-  have hpn : p ≠ ⊥ := p.height_eq_zero_iff_eq_bot.not.1 (ne_zero_of_eq_one hph)
+  have hpn : p ≠ ⊥ := p.height_eq_zero_iff_eq_bot.not.mp (ne_zero_of_eq_one hph)
   obtain ⟨x, hxmem, hxp⟩ := Ideal.IsPrime.exists_mem_prime_of_ne_bot ‹_› hpn
   exact ⟨x, p.eq_span_singleton_of_height_eq_one hph hxmem hxp⟩
 
@@ -35,13 +36,13 @@ theorem UniqueFactorizationMonoid.of_forall_isPrincipal_of_height_eq_one [IsNoet
   rw [UniqueFactorizationMonoid.iff_exists_prime_mem_of_isPrime]
   intro I hIn _
   rcases I.ne_bot_iff.mp hIn with ⟨x, hxI, hx0⟩
-  rcases Ideal.exists_minimalPrimes_le (I.span_singleton_le_iff_mem.2 hxI) with ⟨p, hpmin, hpl⟩
+  rcases Ideal.exists_minimalPrimes_le (I.span_singleton_le_iff_mem.mpr hxI) with ⟨p, hpmin, hpl⟩
   have : p.IsPrime := hpmin.isPrime
   have hpn : p ≠ ⊥ := fun hpb ↦ hx0 <|
-    Ideal.span_singleton_eq_bot.1 <| bot_unique (hpmin.le.trans_eq hpb)
+    Ideal.span_singleton_eq_bot.mp <| bot_unique (hpmin.le.trans_eq hpb)
   have hpp : p.IsPrincipal := h p <| le_antisymm
     ((Ideal.span {x}).height_le_one_of_isPrincipal_of_mem_minimalPrimes p hpmin)
-      (ENat.one_le_iff_ne_zero.2 (p.height_eq_zero_iff_eq_bot.not.2 hpn))
+      (ENat.one_le_iff_ne_zero.mpr (p.height_eq_zero_iff_eq_bot.not.mpr hpn))
   exact ⟨hpp.generator p, hpl (hpp.generator_mem p), hpp.prime_generator_of_isPrime p hpn⟩
 
 /-- Let `R` be a Noetherian domain. Then `R` is a UFD if and only if every height `1` prime ideal is
@@ -49,7 +50,7 @@ theorem UniqueFactorizationMonoid.of_forall_isPrincipal_of_height_eq_one [IsNoet
 @[stacks 0AFT]
 theorem UniqueFactorizationMonoid.iff_forall_isPrincipal_of_height_eq_one [IsNoetherianRing R] :
     UniqueFactorizationMonoid R ↔ ∀ (p : Ideal R) [p.IsPrime], p.height = 1 → p.IsPrincipal :=
-  ⟨fun _ _ _ ↦ height_one_primes_principal, of_height_one_primes_principal⟩
+  ⟨fun _ _ _ ↦ isPrincipal_of_height_eq_one, of_forall_isPrincipal_of_height_eq_one⟩
 
 theorem Ideal.isPrincipal_of_isPrincipal_isLocalization_away_of_prime
     [WfDvdMonoid R] {x : R} (hx : Prime x) {p : Ideal R} [p.IsPrime] (hxp : x ∉ p)
@@ -84,14 +85,14 @@ theorem UniqueFactorizationMonoid.iff_isLocalization_away_of_prime
   refine ⟨fun _ ↦ of_isLocalization (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero) S, ?_⟩
   intro
   have : IsNoetherianRing S := IsLocalization.isNoetherianRing (Submonoid.powers x) S inferInstance
-  rw [iff_height_one_primes_principal]
+  rw [iff_forall_isPrincipal_of_height_eq_one]
   intro p hp h1
   by_cases hxp : x ∈ p
   · exact ⟨x, p.eq_span_singleton_of_height_eq_one h1 hxp hx⟩
   · have hd := by rwa [← Ideal.disjoint_powers_iff_notMem_of_isPrime x] at hxp
     have := IsLocalization.isPrime_of_isPrime_disjoint (Submonoid.powers x) S p hp hd
     exact p.isPrincipal_of_isPrincipal_isLocalization_away_of_prime hx hxp S <|
-      height_one_primes_principal <| by
+      isPrincipal_of_height_eq_one <| by
         rw [← IsLocalization.height_under (Submonoid.powers x),
           IsLocalization.under_map_of_isPrime_disjoint (Submonoid.powers x) S hp hd, h1]
 
