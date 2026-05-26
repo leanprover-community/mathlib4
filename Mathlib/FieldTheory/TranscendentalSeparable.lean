@@ -539,7 +539,6 @@ lemma Algebra.isTranscendentalSeparable_of_perfectField [PerfectField k] :
   rcases CharP.exists' k with char0|⟨p, prime, charp⟩
   · exact Algebra.isTranscendentalSeparable_of_charZero k K
   · apply ((Algebra.isTranscendentalSeparable_tfae k K p prime.out).out 0 2).mpr
-    have perf : PerfectRing k p := inferInstance
     have bij : Function.Bijective (Algebra.ofId k (AdjoinPthRoots k)) :=
       ⟨RingHom.injective _,
         IsPurelyInseparable.surjective_algebraMap_of_isSeparable k (AdjoinPthRoots k)⟩
