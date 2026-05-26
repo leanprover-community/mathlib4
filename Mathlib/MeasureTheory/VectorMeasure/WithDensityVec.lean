@@ -321,13 +321,18 @@ lemma variation_withDensity [CompleteSpace G]
     apply le_trans ?_ (enorm_measure_le_variation _ _)
     simp [Measure.toSignedMeasure_apply, hs, Measure.real, Real.enorm_eq_ofReal]
 
+#check variation_transpose_le
+
 @[simp] lemma foo {μ : Measure X} [IsFiniteMeasure μ] {f : X → G} :
     ∫ᵛ x, f x ∂[(ContinuousLinearMap.lsmul ℝ ℝ).flip ; μ.toSignedMeasure]
     = ∫ x, f x ∂μ := by
   by_cases hG : CompleteSpace G; swap
   · simp [integral_of_not_completeSpace, hG]
     sorry
-
+  by_cases hf : Integrable f μ; swap
+  · rw [integral_undef, MeasureTheory.integral_undef hf]
+    simp [VectorMeasure.Integrable, transpose]
+    rw [variation_transpose_map_le]
 
 
 #exit

@@ -168,6 +168,47 @@ instance [IsFiniteMeasure μ.variation] :
     IsFiniteMeasure (μ.transpose B).variation :=
   isFiniteMeasure_of_le _ (variation_transpose_le μ B)
 
+lemma variation_transpose_eq_smul [Nontrivial E] {C : ℝ≥0}
+    (hB : ∀ x y, ‖B x y‖₊ = C * ‖x‖₊ * ‖y‖₊) :
+    (μ.transpose B).variation = C • μ.variation := by
+  apply le_antisymm
+  · apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
+    apply opENorm_le_bound _ (fun x ↦ ?_)
+    simp only [transpose, mapRange_apply, LinearMap.toAddMonoidHom_coe, coe_coe, flip_apply,
+      enorm_eq_nnnorm, hB, ENNReal.coe_mul, Measure.smul_apply, Measure.nnreal_smul_coe_apply]
+    rw [mul_assoc, mul_comm (‖x‖₊ : ℝ≥0∞), ← mul_assoc]
+    gcongr
+    rw [← enorm_eq_nnnorm]
+    apply enorm_measure_le_variation
+  · rcases eq_or_ne C 0 with rfl | hC
+    · simp [Measure.zero_le]
+    suffices μ.variation ≤ C⁻¹ • (μ.transpose B).variation by
+      grw [this, smul_smul, mul_inv_cancel₀ hC, one_smul]
+    apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
+    have : ‖μ s‖ₑ ≤ C⁻¹ • ‖(μ.transpose B) s‖ₑ := by
+      simp only [transpose, mapRange_apply, LinearMap.toAddMonoidHom_coe, coe_coe]
+      obtain ⟨x, hx⟩ : ∃ (x : E), x ≠ 0 := exists_ne 0
+      have : ‖B.flip (μ s) x‖₊ ≤ ‖B.flip (μ s)‖₊ * ‖x‖₊ := le_opNNNorm _ _
+      simp only [flip_apply, hB] at this
+      rw [mul_comm C, mul_assoc, mul_comm _ (‖x‖₊), mul_le_mul_iff_right₀ (by simp [hx]),
+        ← le_div_iff₀' (by positivity), div_eq_inv_mul] at this
+      exact ENNReal.coe_le_coe_of_le this
+    grw [this]
+    simp only [Measure.smul_apply, ge_iff_le]
+    gcongr
+    apply enorm_measure_le_variation
+
+lemma variation_transpose_eq [Nontrivial E] (hB : ∀ x y, ‖B x y‖₊ = ‖x‖₊ * ‖y‖₊) :
+    (μ.transpose B).variation = μ.variation := by
+  have : μ.variation = (1 : ℝ≥0) • μ.variation := by simp
+  rw [this]
+  apply variation_transpose_eq_smul
+  simpa using hB
+
+@[simp] lemma variation_transpose_lsmul :
+    (μ.transpose (ContinuousLinearMap.lsmul ℝ ℝ)).variation = μ.variation :=
+  variation_transpose_eq _ _ (by simp [nnnorm_smul])
+
 /-- `f : X → E` is said to be integrable with respect to `μ` and `B` if it is integrable with
 respect to `(μ.transpose B).variation`. -/
 protected abbrev Integrable (μ : VectorMeasure X F) (f : X → E) (B : E →L[ℝ] F →L[ℝ] G) : Prop :=
