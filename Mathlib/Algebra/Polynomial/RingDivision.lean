@@ -67,6 +67,17 @@ theorem smul_divByMonic (c : R) (p : R[X]) : c • p /ₘ q = c • (p /ₘ q) :
 theorem smul_modByMonic (c : R) (p : R[X]) : c • p %ₘ q = c • (p %ₘ q) :=
   (smul_div_modByMonic c p).2
 
+/-- `_ /ₘ q` as an `R`-linear map. -/
+@[simps]
+def divByMonicHom (q : R[X]) : R[X] →ₗ[R] R[X] where
+  toFun p := p /ₘ q
+  map_add' := add_divByMonic
+  map_smul' := smul_divByMonic
+
+theorem mem_ker_divByMonic [Nontrivial R] (hq : q.Monic) {p : R[X]} :
+    p ∈ LinearMap.ker (divByMonicHom q) ↔ degree p < degree q :=
+  LinearMap.mem_ker.trans (divByMonic_eq_zero_iff hq)
+
 /-- `_ %ₘ q` as an `R`-linear map. -/
 @[simps]
 def modByMonicHom (q : R[X]) : R[X] →ₗ[R] R[X] where
