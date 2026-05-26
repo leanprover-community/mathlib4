@@ -148,6 +148,7 @@ def comap (S' : SubmonoidFunctor M') : SubmonoidFunctor M where
     exact Submonoid.mem_comap.mp (Set.mem_of_mem_of_subset h (S'.map _))
 
 variable (M) in
+@[simp]
 lemma comap_id : comap (𝟙 M) ⊤ = ⊤ := rfl
 
 @[simp]
