@@ -33,7 +33,7 @@ open Matrix hiding mul_smul
 
 open scoped Modular MatrixGroups ComplexConjugate ModularForm
 
-variable {E : Type*} [SeminormedAddCommGroup E]
+variable {E : Type*} [AddCommGroup E] [SeminormedAddCommGroup E]
 
 namespace ModularGroup
 
