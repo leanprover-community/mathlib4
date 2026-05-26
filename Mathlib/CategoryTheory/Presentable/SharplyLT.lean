@@ -205,6 +205,24 @@ abbrev singleton (j : J) : Subtype (prop hκ J) :=
   ⟨{j}, isCardinalFiltered_of_hasTerminal _ _,
     hasCardinalLT_of_finite _ _ (IsRegular.aleph0_le Fact.out)⟩
 
+abbrev pair {j j' : J} (h : j ≤ j') : Subtype (prop hκ J) :=
+  ⟨{j, j'}, by
+    have : OrderTop ({j, j'} : Set J) :=
+      { top := ⟨j', by simp⟩
+        le_top := by aesop }
+    apply isCardinalFiltered_of_hasTerminal,
+    hasCardinalLT_of_finite _ _ (IsRegular.aleph0_le Fact.out)⟩
+
+lemma le_pair {j j' : J} (h : j ≤ j') :
+    singleton hκ j ≤ pair hκ h := by
+  rw [Subtype.mk_le_mk]
+  simp
+
+lemma le_pair' {j j' : J} (h : j ≤ j') :
+    singleton hκ j' ≤ pair hκ h := by
+  rw [Subtype.mk_le_mk]
+  simp
+
 variable {hκ}
 noncomputable abbrev colimit (A : Subtype (prop hκ J)) : C :=
     Limits.colimit ((Subtype.mono_coe A.val).functor ⋙ p.diag)
@@ -286,7 +304,10 @@ variable (s : Cocone (functor hκ p))
 noncomputable def coconeDesc : Cocone p.diag where
   pt := s.pt
   ι.app j := colimit.ι _ _ _ (by simp) ≫ s.ι.app (singleton hκ j)
-  ι.naturality := sorry
+  ι.naturality j j' f := by
+    simpa [← s.w (homOfLE (le_pair hκ (leOfHom f))),
+        ← s.w (homOfLE (le_pair' hκ (leOfHom f)))]
+      using colimit.w_assoc ..
 
 variable {hκ p}
 
