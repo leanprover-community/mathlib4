@@ -150,6 +150,7 @@ def comap (S' : SubmonoidFunctor M') : SubmonoidFunctor M where
 variable (M) in
 lemma comap_id : comap (𝟙 M) ⊤ = ⊤ := rfl
 
+@[simp]
 lemma comap_comp (p' : M' ⟶ M'') : S''.comap (p ≫ p') = (S''.comap p').comap p := by rfl
 
 @[simp]
