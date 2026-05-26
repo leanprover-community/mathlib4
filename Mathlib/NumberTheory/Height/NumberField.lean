@@ -140,7 +140,32 @@ lemma totalWeight_pos : 0 < totalWeight K := by
     using Fintype.sum_pos
       (Function.ne_iff.mpr ⟨default, (default : InfinitePlace K).mult_ne_zero⟩).pos
 
-open IsDedekindDomain.HeightOneSpectrum Ideal UniqueFactorizationMonoid FinitePlace Finite in
+open IsDedekindDomain.HeightOneSpectrum Ideal FinitePlace Finite in
+/- This statement is a stepping stone for the proof of the next one, which is strictly stronger. -/
+private lemma absNorm_mul_finprod_finitePlace_eq_one_aux {ι : Type*} [Finite ι] [Nonempty ι]
+    {x : ι → 𝓞 K} (hx : ∀ i, x i ≠ 0) :
+    (span <| Set.range x).absNorm * ∏ᶠ v : FinitePlace K, ⨆ i, v (x i) = 1 := by
+  have H j : span {x j} ≠ ⊥ := mt span_singleton_eq_bot.mp (hx j)
+  have hx' : ⨆ i, span {x i} ≠ ⊥ :=
+    iSup_eq_bot.not.mpr <| not_forall.mpr ⟨Classical.ofNonempty, H _⟩
+  rw [span_range_eq_iSup, ← finprod_finitePlace_pow_multiplicity hx',
+    map_finprod _ <| hasFiniteMulSupport_fun_pow_multiplicity hx' (·), Nat.cast_finprod',
+    ← finprod_mul_distrib ?hf <| .iSup (FinitePlace.hasFiniteMulSupport <| mod_cast hx ·)]
+  case hf =>
+    simp only [map_pow, Nat.cast_pow]
+    exact hasFiniteMulSupport_fun_pow_multiplicity hx' fun v ↦ (v.absNorm : ℝ)
+  refine finprod_eq_one_of_forall_eq_one fun v ↦ ?_
+  have hn := absNorm_eq_zero_iff.not.mpr v.maximalIdeal.ne_bot
+  have h {m : ℕ} : (0 : ℝ) < ↑(absNorm v.maximalIdeal.asIdeal ^ m) := by positivity
+  rw [multiplicity_iSup _ H, map_pow, mul_eq_one_iff_inv_eq₀ h.ne',
+    map_iInf_of_monotone (fun _ ↦ multiplicity ..) (pow_right_monotone <| by lia),
+    map_iInf_of_monotone _ Nat.mono_cast,
+    map_iInf_of_antitoneOn antitoneOn_inv_pos fun _ ↦ Set.mem_setOf.mpr h]
+  refine iSup_congr fun i ↦ ?_
+  rw [← mul_eq_one_iff_inv_eq₀ h.ne', mul_comm, Nat.cast_pow]
+  exact apply_mul_absNorm_pow_eq_one v (hx i)
+
+open Ideal RingOfIntegers in
 /-- This statement is equivalent to the fact that the "finite part" of the multiplicative
 height of a (non-zero) tuple `x` is the inverse of the absolute norm of the ideal generated
 by the values of `x`. We state it in a way that avoids taking an inverse. -/
@@ -149,33 +174,12 @@ lemma absNorm_mul_finprod_finitePlace_eq_one {ι : Type*} [Finite ι] {x : ι �
   obtain ⟨i₀, hi₀⟩ := Function.ne_iff.mp hx
   simp only [Pi.zero_def] at hi₀
   let i' : { j // (x j : K) ≠ 0 } := ⟨i₀, mod_cast hi₀⟩
+  have : Nonempty _ := .intro i'
   have hI : span (Set.range x) = span (Set.range fun i : { j // (x j : K) ≠ 0 } ↦ x i.val) := by
     convert span_range_eq_span_range_support x <;> norm_cast
   have hx₀ : (fun i ↦ (x i : K)) ≠ 0 := Function.ne_iff.mpr ⟨i', i'.prop⟩
-  simp_rw [coe_apply, iSup_eq_iSup_subtype hx₀, hI]
-  have : Nonempty _ := .intro i'
-  have Hj (j : { j // (x j : K) ≠ 0 }) : x j.val ≠ 0 := RingOfIntegers.coe_ne_zero_iff.mp j.prop
-  have H (j : { j // (x j : K) ≠ 0 }) : span {x ↑j} ≠ ⊥ := mt span_singleton_eq_bot.mp <| Hj j
-  have hxι' : ⨆ i : { j // (x j : K) ≠ 0 }, span {x i.val} ≠ ⊥ := by
-    rw [Ne, iSup_eq_bot, not_forall]
-    exact ⟨i', H i'⟩
-  rw [span_range_eq_iSup, ← finprod_finitePlace_pow_multiplicity hxι',
-    map_finprod _ <| hasFiniteMulSupport_fun_pow_multiplicity hxι' (·), Nat.cast_finprod',
-    ← finprod_mul_distrib ?hf ?hg]
-  case hf =>
-    simp only [map_pow, Nat.cast_pow]
-    exact hasFiniteMulSupport_fun_pow_multiplicity hxι' fun v ↦ (v.absNorm : ℝ)
-  case hg => exact .iSup fun j ↦ FinitePlace.hasFiniteMulSupport j.prop
-  refine finprod_eq_one_of_forall_eq_one fun v ↦ ?_
-  have hn := mt absNorm_eq_zero_iff.mp v.maximalIdeal.ne_bot
-  have h {m : ℕ} : (0 : ℝ) < ↑(absNorm v.maximalIdeal.asIdeal ^ m) := mod_cast Nat.pow_pos <| by lia
-  rw [multiplicity_iSup _ H, map_pow, mul_eq_one_iff_inv_eq₀ h.ne',
-    map_iInf_of_monotone (fun _ ↦ multiplicity ..) (pow_right_monotone <| by lia),
-    map_iInf_of_monotone _ Nat.mono_cast,
-    map_iInf_of_antitoneOn antitoneOn_inv_pos fun _ ↦ Set.mem_setOf.mpr h]
-  refine iSup_congr fun i ↦ ?_
-  rw [← mul_eq_one_iff_inv_eq₀ h.ne', mul_comm, Nat.cast_pow]
-  exact apply_mul_absNorm_pow_eq_one v <| Function.mem_support.mp <| Hj i
+  simp_rw [FinitePlace.coe_apply, Finite.iSup_eq_iSup_subtype hx₀, hI]
+  exact absNorm_mul_finprod_finitePlace_eq_one_aux fun j ↦ coe_ne_zero_iff.mp j.prop
 
 end NumberField
 
