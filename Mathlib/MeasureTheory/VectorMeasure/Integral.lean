@@ -317,7 +317,7 @@ theorem integral_finsetSum_vectorMeasure {μ : ι → VectorMeasure X F}
   · by_cases! hs : s.Nonempty
     · simp only [integral, hG, ↓reduceDIte, transpose_finsetSum_vectorMeasure, coe_finsetSum,
         transpose_eq_cbmApplyMeasure, ← setToFun_finsetSum_measure hs
-        (fun i ↦ dominatedFinMeasAdditive_cbmApplyMeasure (μ i) B) hf]
+          (fun i ↦ dominatedFinMeasAdditive_cbmApplyMeasure (μ i) B) hf]
       refine (setToFun_congr_measure_of_integrable 1 ENNReal.one_ne_top ?_ _ _ f ?_).symm
       · simpa using variation_finsetSum_le s _
       · exact integrable_finsetSum_measure.2 hf
