@@ -81,7 +81,7 @@ open scoped Topology Manifold
 
 -- Let `M` be a manifold with corners over the pair `(E, H)`.
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
@@ -162,7 +162,7 @@ lemma _root_.range_mem_nhds_isInteriorPoint {x : M} (h : I.IsInteriorPoint x) :
 /-- Type class for manifold without boundary. This differs from `ModelWithCorners.Boundaryless`,
 which states that the `ModelWithCorners` maps to the whole model vector space. -/
 class _root_.BoundarylessManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
     (M : Type*) [TopologicalSpace M] [ChartedSpace H M] : Prop where
   isInteriorPoint' : ∀ x : M, IsInteriorPoint I x
@@ -222,7 +222,8 @@ section ChartIndependence
 closed convex set `s` with nonempty interior and has surjective differential at `x`, it must send
 `x` to the interior of `s`. -/
 lemma _root_.DifferentiableAt.mem_interior_convex_of_surjective_fderiv
-    {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup H] [NormedSpace ℝ H]
+    {E H : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [AddCommGroup H]
+    [NormedAddCommGroup H] [NormedSpace ℝ H]
     {f : E → H} {x : E} (hf : DifferentiableAt ℝ f x) {u : Set E} (hu : u ∈ 𝓝 x) {s : Set H}
     (hs : Convex ℝ s) (hs' : IsClosed s) (hs'' : (interior s).Nonempty) (hfus : Set.MapsTo f u s)
     (hfx : Function.Surjective (fderiv ℝ f x)) : f x ∈ interior s := by
@@ -343,7 +344,7 @@ section Diffeomorph
 open ModelWithCorners
 
 variable
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
   {n : WithTop ℕ∞}
@@ -484,7 +485,7 @@ end opens
 section prod
 
 variable
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {H' : Type*} [TopologicalSpace H']
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
   {J : ModelWithCorners 𝕜 E' H'} {x : M} {y : N}
