@@ -178,7 +178,7 @@ lemma tsum_symmetricIco_tsum_eq_S_act :
 private lemma telescope_aux (z : ℂ) (m : ℤ) (b : ℕ) :
     ∑ n ∈ Ico (-b : ℤ) b, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) =
     1 / (m * z - b) - 1 / (m * z + b) := by
-  convert sum_Ico_int_sub b (fun n ↦ 1 / ((m : ℂ) * z + n)) using 2 <;>
+  convert! sum_Ico_int_sub b (fun n ↦ 1 / ((m : ℂ) * z + n)) using 2 <;>
   simp [add_assoc, sub_eq_add_neg]
 
 lemma tsum_symmetricIco_linear_sub_linear_add_one_eq_zero (m : ℤ) :
@@ -272,7 +272,7 @@ lemma tsum_symmetricIco_tsum_sub_eq :
 
 lemma tsum_tsum_symmetricIco_sub_eq :
     ∑' m : ℤ, ∑'[symmetricIco ℤ] n : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) = 0 := by
-  convert tsum_zero
+  convert! tsum_zero
   exact tsum_symmetricIco_linear_sub_linear_add_one_eq_zero z _
 
 end Auxiliary
