@@ -177,9 +177,9 @@ lemma absNorm_mul_finprod_finitePlace_eq_one {ι : Type*} [Finite ι] {x : ι �
   have : Nonempty _ := .intro i'
   have hI : span (Set.range x) = span (Set.range fun i : { j // (x j : K) ≠ 0 } ↦ x i.val) := by
     convert span_range_eq_span_range_support x <;> norm_cast
-  have hx₀ : (fun i ↦ (x i : K)) ≠ 0 := Function.ne_iff.mpr ⟨i', i'.prop⟩
-  simp_rw [FinitePlace.coe_apply, Finite.iSup_eq_iSup_subtype hx₀, hI]
-  exact absNorm_mul_finprod_finitePlace_eq_one_aux fun j ↦ coe_ne_zero_iff.mp j.prop
+  have hx₀ : (fun i ↦ (x i : K)) ≠ 0 := Function.ne_iff.mpr ⟨_, i'.prop⟩
+  simp_rw [Finite.iSup_eq_iSup_subtype hx₀, hI]
+  exact absNorm_mul_finprod_finitePlace_eq_one_aux fun j ↦ mod_cast j.prop
 
 end NumberField
 
