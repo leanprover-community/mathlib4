@@ -275,7 +275,7 @@ theorem mem_compl {U : Opens α} {x : α} : x ∈ Uᶜ ↔ ∃ V : Opens α, Dis
 theorem interior_compl {U : Opens α} : Opens.interior (U : Set α)ᶜ = Uᶜ := by
   simp [←himp_bot, himp_def]
 
-theorem coe_compl {U : Opens α} : ↑(Uᶜ) = interior (U : Set α)ᶜ := by
+theorem coe_compl_eq_interior_compl {U : Opens α} : ↑(Uᶜ) = interior (U : Set α)ᶜ := by
   rw [←interior_compl, coe_interior]
 
 /-- The coercion from open sets to sets as a `FrameHom`. -/
