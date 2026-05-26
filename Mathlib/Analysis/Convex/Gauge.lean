@@ -493,7 +493,7 @@ theorem gauge_le_eq_closure_smul [T1Space E] (hc : Convex ℝ s) (hb : Bornology
       closure_singleton, Set.mem_singleton_iff]
     exact ⟨fun h => (gauge_eq_zero (absorbent_nhds_zero hs₀) hb).mp
       (le_antisymm h (gauge_nonneg _)), fun h => h ▸ gauge_zero.le⟩
-  · exact gauge_le_eq_closure_smul_of_pos hc hs₀ ha
+  · exact setOf_gauge_le_eq_closure_smul_of_pos hc hs₀ ha
 
 omit [IsTopologicalAddGroup E] in
 theorem mem_of_gauge_lt (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) (ha : gauge s x < a) :
