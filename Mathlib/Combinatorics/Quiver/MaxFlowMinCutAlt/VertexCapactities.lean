@@ -14,8 +14,8 @@ structure FlowNetworkVertex (V : Type*) [Fintype V] extends FlowNetwork V where
 /-- A ValidVertexFlow is a relaxedFlow that also satisfies both edge and vertex capacity
   constraints defined in a FlowNetworkVertex. -/
 def ValidVertexFlow
-(V : Type*) [Fintype V] (G : FlowNetworkVertex V) (g : RelaxedFlow V G.toSTVertices) : Prop :=
-  ValidFlow V G.toFlowNetwork g ∧ ∀ u : V, mk_in g.f {u} ≤ G.vc u
+(V : Type*) [Fintype V] (G : FlowNetworkVertex V) (g : RelaxedFlow G.toSTVertices) : Prop :=
+  ValidFlow G.toFlowNetwork g ∧ ∀ u : V, mk_in g.f {u} ≤ G.vc u
 
 /-- just a simple set with two elements to indicate whether a node is an in or an out
    node. I could have used booleans (which already has nice properties like finiteness and norm_num)
@@ -67,50 +67,34 @@ def ExpandedFlowNetworkVertex (V : Type*) [DecidableEq V] [Fintype V] (G : FlowN
     · grind [G.nonneg_capacity u v]
     · gcongr
 
+lemma flow_eq_zero_of_cap_zero {V : Type*} [DecidableEq V] [Fintype V]
+    (G : FlowNetworkVertex V)
+    (g : RelaxedFlow (ExpandedFlowNetworkVertex V G).toSTVertices)
+    (hg : ValidFlow (ExpandedFlowNetworkVertex V G) g)
+    {a b : V × NodeSide}
+    (hc : (ExpandedFlowNetworkVertex V G).c a b = 0) : g.f a b = 0 := by
+  have h_le := hg a b
+  have h_nonneg := g.nonneg_flow a b
+  rw [hc] at h_le
+  linarith
 
 open NodeSide in
 /-- Flow into an Out vertex is the same has the flow into an In vertex -/
 lemma flow_in_out_eq_flow_in_in
     (V : Type*) [DecidableEq V] [Fintype V]
     (G : FlowNetworkVertex V)
-    (g : RelaxedFlow (V × NodeSide) (ExpandedFlowNetworkVertex V G).toSTVertices)
-    (hg : ValidFlow (V × NodeSide) (ExpandedFlowNetworkVertex V G) g)
+    (g : RelaxedFlow (ExpandedFlowNetworkVertex V G).toSTVertices)
+    (hg : ValidFlow (ExpandedFlowNetworkVertex V G) g)
     (u : V) :
     g.f (u, In) (u, Out) = ∑ x, g.f (u, In) x := by
-  have h1 := hg (u, Out) (u, Out)
-  have h2 := hg (u, In) (u, In)
-  have hzero : ∀ (a b : V × NodeSide),
-    (ExpandedFlowNetworkVertex V G).c a b = 0 → g.f a b = 0 := by
-      intro a b hc
-      have hle := hg a b
-      linarith [hg a b, g.nonneg_flow a b]
-  have hzeroin : ∀ (v : V) (b : NodeSide), (v, b) ≠ (u, In) →
-      g.f (v, b) (u, Out) = 0 := by
-    intro v b hvb
-    apply hzero
-    simp only [ExpandedFlowNetworkVertex]
-    rcases b with _ | _
-    · simp_all only [ExpandedFlowNetworkVertex, dite_eq_ite, ne_eq, Std.le_refl, Prod.forall,
-      Prod.mk.injEq, and_true, ↓reduceDIte]
-    · simp
-  have lhs : ∑ x, g.f x (u, Out) = g.f (u, In) (u, Out) :=
-  Finset.sum_eq_single (u, In)
-    (fun ⟨v, b⟩ _ hvb => hzeroin v b (by grind))
-    (by simp)
-  have hzeroout : ∀ (v : V) (b : NodeSide), (v, b) ≠ (u, Out) →
-      g.f (u, In) (v, b)  = 0 := by
-    intro v b hvb
-    apply hzero
-    simp only [ExpandedFlowNetworkVertex]
-    rcases b with _ | _
-    · simp_all only [ExpandedFlowNetworkVertex, dite_eq_ite, ne_eq, Std.le_refl, Prod.forall,
-      Prod.mk.injEq, not_and]
-    · exact dif_neg fun a ↦ hvb (congrFun (congrArg Prod.mk (id (Eq.symm a))) Out)
-  have rhs : ∑ x, g.f (u, In) x = g.f (u, In) (u, Out) :=
-  Finset.sum_eq_single (u, Out)
-    (fun ⟨v, b⟩ _ hvb => hzeroout v b (by grind))
-    (by simp)
-  simp_all
+  symm
+  apply Finset.sum_eq_single (u, Out)
+  · intro ⟨v, b⟩ _ hvb
+    apply flow_eq_zero_of_cap_zero G g hg
+    -- Simplifies the capacity definition and resolves the unmatched sides
+    simp [ExpandedFlowNetworkVertex]
+    cases b <;> aesop
+  · intro h; simp_all only [ExpandedFlowNetworkVertex, dite_eq_ite, mem_univ, not_true_eq_false]
 
 open NodeSide in
 /-- Given a flow on the expanded network, recover the corresponding flow on the original
@@ -119,9 +103,9 @@ open NodeSide in
 
   We have to use ValidFlow on the expanded graph here because otherwise conservation may not hold -/
 def ContractedFlow (V : Type*) [DecidableEq V] [Fintype V] (G : FlowNetworkVertex V)
-    (g : RelaxedFlow (V × NodeSide) (ExpandedFlowNetworkVertex V G).toSTVertices)
-    (hg : ValidFlow (V × NodeSide) (ExpandedFlowNetworkVertex V G) g) :
-    RelaxedFlow V G.toSTVertices where
+    (g : RelaxedFlow (ExpandedFlowNetworkVertex V G).toSTVertices)
+    (hg : ValidFlow (ExpandedFlowNetworkVertex V G) g) :
+    RelaxedFlow G.toSTVertices where
   f u v := g.f (u, Out) (v, In)
   nonneg_flow := fun u v => g.nonneg_flow (u, Out) (v, In)
   conservation := by
@@ -201,15 +185,15 @@ def ContractedFlow (V : Type*) [DecidableEq V] [Fintype V] (G : FlowNetworkVerte
 
 open NodeSide in
 theorem FlowInducesValidVertexFlow (V : Type*) [DecidableEq V] [Fintype V] (G : FlowNetworkVertex V)
-    (g : RelaxedFlow (V × NodeSide) (ExpandedFlowNetworkVertex V G).toSTVertices)
-    (hg : ValidFlow (V × NodeSide) (ExpandedFlowNetworkVertex V G) g) :
+    (g : RelaxedFlow (ExpandedFlowNetworkVertex V G).toSTVertices)
+    (hg : ValidFlow (ExpandedFlowNetworkVertex V G) g) :
     ValidVertexFlow V G (ContractedFlow V G g hg) := by
   constructor
   · intro u v
     have hcg := hg (u, Out) (v, In)
     have h1 := hg (u, Out) (v, In)
     simp only [ContractedFlow, ExpandedFlowNetworkVertex] at *
-    split_ifs at h1 <;> linarith [G.nonneg_capacity u v, g.nonneg_flow (u, Out) (v, In)]
+    split_ifs at h1 <;> try linarith [G.nonneg_capacity u v, g.nonneg_flow (u, Out) (v, In)]
   · intro u
     by_cases h : u = G.s
     · simp_all only [mk_in, ContractedFlow, ExpandedFlowNetworkVertex, dite_eq_ite, sum_singleton,
