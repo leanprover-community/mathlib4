@@ -1,3 +1,10 @@
+/-
+  Formalisation of the following statement:
+  https://web.cs.dal.ca/~nzeh/Teaching/4113/book/maxflow/augpath/ford_fulkerson/non_termination.html
+
+  This shows that there exists an instance of the Ford-Fulkerson Algorithm on a graph with
+  irrational capacities that does not terminate and does not converge to the correct maximum flow.
+-/
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Finite.Basic
@@ -10,7 +17,7 @@ open Filter Topology
 
 open Finset
 
-/-- Residual capacity given a plain function, no ValidFlow needed. -/
+/-- Residual capacity given a plain function, no ValidFlow needed -/
 noncomputable def rawResCap {V : Type*} [Fintype V]
     (G : FlowNetwork V) (f : V → V → ℝ) (u v : V) : ℝ :=
   G.c u v - f u v + f v u
@@ -21,8 +28,9 @@ def rawPathValid {V : Type*} [Fintype V] [DecidableEq V]
   ∀ (i : ℕ) (h : i < p.verts.length - 1),
     rawResCap G f p.verts[i] p.verts[i+1] > 0
 
-/-- Bottleneck of a path under raw residual caps: min residual cap along the path.
-    This is what the augmentation amount should equal. -/
+/-- Bottleneck of a path under raw residual caps: min residual cap along the path,
+    this is what the augmentation amount should equal in order to be a valid instance
+    of the Ford-Fulkerson algorithm -/
 noncomputable def rawBottleneck {V : Type*} [Fintype V] [DecidableEq V]
     (G : FlowNetwork V) (f : V → V → ℝ) (p : uvPath G.s G.t) : ℝ :=
   let caps := List.zipWith (rawResCap G f) p.verts p.verts.tail
@@ -36,7 +44,7 @@ noncomputable def rawBottleneck {V : Type*} [Fintype V] [DecidableEq V]
     omega
   )
 
-/-- The flow induced by a path: send rawBottleneck along each edge. -/
+/-- The flow induced by a path: send rawBottleneck along each edge (does not require validity) -/
 noncomputable def rawPathFlow {V : Type*} [Fintype V] [DecidableEq V]
     (G : FlowNetwork V) (f : V → V → ℝ) (p : uvPath G.s G.t) : V → V → ℝ :=
   fun u v =>
@@ -44,12 +52,12 @@ noncomputable def rawPathFlow {V : Type*} [Fintype V] [DecidableEq V]
     then rawBottleneck G f p
     else 0
 
-/-- Augmentation of f by g: cancel 2-cycles, same as the Mul instance on RelaxedFlow. -/
+/-- Augmentation of f by g: cancel 2-cycles, same as the Mul instance on RelaxedFlow -/
 noncomputable def rawAugment {V : Type*} [Fintype V]
     (f g : V → V → ℝ) : V → V → ℝ :=
   fun u v => max (f u v + g u v - f v u - g v u) 0
 
-/-- The FF flow sequence as plain functions, no ValidFlow anywhere. -/
+/-- The FF flow sequence as plain functions, no ValidFlow -/
 noncomputable def rawFFFlows {V : Type*} [Fintype V] [DecidableEq V]
     (G : FlowNetwork V) (paths : ℕ → uvPath G.s G.t) : ℕ → V → V → ℝ
   | 0     => fun _ _ => 0
@@ -57,14 +65,16 @@ noncomputable def rawFFFlows {V : Type*} [Fintype V] [DecidableEq V]
       let f := rawFFFlows G paths n
       rawAugment f (rawPathFlow G f (paths n))
 
-
+/-- set of vertices of our counterexample -/
 inductive FFVert | s | t | a | b | c | d
   deriving DecidableEq, Repr
 
+/-- need to prove that set with six elements is finite (Fields medal when?) -/
 instance : Fintype FFVert where
   elems := ⟨[FFVert.s, FFVert.t, FFVert.a, FFVert.b, FFVert.c, FFVert.d], by decide⟩
   complete := fun x => by cases x <;> decide
 
+/-- golden boi -/
 noncomputable def ρ : ℝ := (√5 - 1) / 2
 
 lemma ρ_pos : 0 < ρ := by
@@ -99,16 +109,16 @@ lemma ρ_pow2 (k : ℕ) (h : k ≥ 1) : ρ ^ k ≤ ρ:= by
         exact Std.IsPreorder.le_trans (ρ ^ (n + 1)) (ρ ^ (n + 1 - 1)) ρ (h_pos (n + 1)) ih
 
 lemma ρ_pow_transition (k : ℕ) (hk : k ≥ 1) : ρ ^ (k - 1) - ρ ^ k = ρ ^ (k + 1) := by
-  -- ρ satisfies ρ² = 1 - ρ
+  -- ρ satisfies ρ^2 = 1 - ρ
   have hρ_sq : ρ ^ 2 = 1 - ρ := by
     have h5 : Real.sqrt 5 ^ 2 = 5 := Real.sq_sqrt (by norm_num)
     unfold ρ; nlinarith [h5]
   -- Eliminate the natural number subtraction by substituting k = n + 1
   obtain ⟨n, rfl⟩ : ∃ n, k = n + 1 := ⟨k - 1, by omega⟩
   simp only [Nat.add_sub_cancel]
-  have h1 : ρ ^ n - ρ ^ (n + 1) = ρ ^ n * (1 - ρ)   := by ring
-  have h2 : ρ ^ n * (1 - ρ)     = ρ ^ n * ρ ^ 2      := by rw [hρ_sq]
-  have h3 : ρ ^ n * ρ ^ 2       = ρ ^ (n + 2)        := by ring
+  have h1 : ρ ^ n - ρ ^ (n + 1) = ρ ^ n * (1 - ρ) := by ring
+  have h2 : ρ ^ n * (1 - ρ) = ρ ^ n * ρ ^ 2 := by rw [hρ_sq]
+  have h3 : ρ ^ n * ρ ^ 2 = ρ ^ (n + 2) := by ring
   linarith
 
 lemma ρ_pow_transition' (k : ℕ) : ρ ^ k - ρ ^ (k + 1) = ρ ^ (k + 2) := by
@@ -124,6 +134,7 @@ lemma ρ_pow_transition' (k : ℕ) : ρ ^ k - ρ ^ (k + 1) = ρ ^ (k + 2) := by
 variable (X : ℝ) (hX : X > 2)
 
 open FFVert in
+/-- the actual counter example graph -/
 noncomputable def FFNetwork : FlowNetwork FFVert where
   s := s
   t := t
@@ -144,7 +155,10 @@ noncomputable def FFNetwork : FlowNetwork FFVert where
     split <;> simp <;> try grind
     grind [ρ_pos]
 
+-- Augmenting paths
 open FFVert in
+/-- For some reason, the textbook starts out with this flow, but it is only applied once
+    It is just here for parity I guess -/
 def rawPath1 : uvPath (V := FFVert) s t where
   verts := [s, b, c, t]
   nonempty := by decide
@@ -184,13 +198,14 @@ def cycleChoice : ℕ → uvPath FFVert.s FFVert.t
     | 2     => rawPath2
     | _     => rawPath4
 
+/-- Our instance of the (non-terminating) Ford-Fulkerson algorithm -/
 noncomputable def ffRawFlows : ℕ → FFVert → FFVert → ℝ :=
   rawFFFlows (FFNetwork X hX) cycleChoice
 
 open FFVert
 
-/-- Total function representing the exact expected residual capacity for ALL pairs.
-    Directly incorporates the network capacities and outer flows to bypass Option matching. -/
+/-- Total function representing the exact expected residual capacity for ALL pairs of vertices
+    at each step of the algorithm -/
 noncomputable def expectedResCap (X : ℝ) (k : ℕ) (step : Fin 4) (u v : FFVert) : ℝ :=
   match step, u, v with
   -- Step 0: Figure 5.6
@@ -272,8 +287,8 @@ noncomputable def expectedResCap (X : ℝ) (k : ℕ) (step : Fin 4) (u v : FFVer
   -- All remaining implicit zero-capacity structural back-edges
   | _, _, _ => 0
 
-/-- Optimized, fast-breaking cycle invariant -/
-def cycleInvariant (X : ℝ) (hX : X > 2) (f : FFVert → FFVert → ℝ) (k : ℕ) (step : Fin 4) : Prop :=
+/-- Wrapper for for the invariant above -/
+def cycleInvariant (f : FFVert → FFVert → ℝ) (k : ℕ) (step : Fin 4) : Prop :=
   ∀ u v, rawResCap (FFNetwork X hX) f u v = expectedResCap X k step u v
 
 macro "solve_rawBottleneck" h:ident k:ident : tactic => `(tactic|
@@ -297,6 +312,7 @@ macro "solve_rawBottleneck" h:ident k:ident : tactic => `(tactic|
 )
 
 open FFVert in
+/-- alternative way of describing which edges rawPath has -/
 lemma rawPath1_has_edge (u v : FFVert) :
     (∃ (i : ℕ) (h : i < rawPath1.verts.length - 1), u = rawPath1.verts[i] ∧ v = rawPath1.verts[i+1])
     ↔ (u = s ∧ v = b) ∨ (u = b ∧ v = c) ∨ (u = c ∧ v = t) := by
@@ -387,7 +403,6 @@ lemma rawBottleneck_path4 (X : ℝ) (hX : X > 2) (f : FFVert → FFVert → ℝ)
     (h : cycleInvariant X hX f k 3) :
     rawBottleneck (FFNetwork X hX) f rawPath4 = ρ ^ (k+1) := by solve_rawBottleneck h k
 
-
 open FFVert in
 /-- Step 0 -> 1: Augmenting along rawPath2 -/
 lemma step0_to_1 (X : ℝ) (hX : X > 2) (f : FFVert → FFVert → ℝ) (k : ℕ) (hk : k ≥ 1)
@@ -414,7 +429,6 @@ lemma step1_to_2 (X : ℝ) (hX : X > 2) (f : FFVert → FFVert → ℝ) (k : ℕ
   simp only [rawPath3_has_edge]
   unfold expectedResCap
   cases u <;> cases v <;> simp <;> linarith [ρ_pow_transition k hk]
-
 
 /-- Step 2 -> 3: Augmenting along rawPath2 (again) -/
 lemma step2_to_3 (X : ℝ) (hX : X > 2) (f : FFVert → FFVert → ℝ) (k : ℕ) (hk : k ≥ 1)
@@ -455,83 +469,65 @@ lemma ffRawFlows_invariant (n : ℕ) :
   induction n with
   | zero => left; rfl
   | succ n ih =>
-    -- Helper to fold one rawFFFlows step back into ffRawFlows
-    have fold : ∀ j path,
-        cycleChoice j = path →
-        rawAugment (ffRawFlows X hX j)
-          (rawPathFlow (FFNetwork X hX) (ffRawFlows X hX j) path) =
-          ffRawFlows X hX (j + 1) := by
-      intros j path hpath
-      change _ = rawAugment (ffRawFlows X hX j)
-                 (rawPathFlow (FFNetwork X hX) (ffRawFlows X hX j) (cycleChoice j))
-      rw [hpath]
+    -- Helper to unfold a step directly, replacing the manual `fold` lemma
+    have step_def : ∀ j, ffRawFlows X hX (j + 1) =
+      rawAugment (ffRawFlows X hX j)
+        (rawPathFlow (FFNetwork X hX) (ffRawFlows X hX j) (cycleChoice j)) := fun _ => rfl
     rcases ih with rfl | ⟨m, rfl, h⟩ | ⟨m, rfl, h⟩ | ⟨m, rfl, h⟩ | ⟨m, rfl, h⟩
-    · -- n was 0 → successor is 1 = 4*0+1
+    · -- Case: n = 0 -> successor is 1 = 4 * 0 + 1
       right; left; refine ⟨0, rfl, ?_⟩
-      have h_bottleneck : rawBottleneck (FFNetwork X hX) (fun _ _ => 0) rawPath1 = 1 := by
+      rw [step_def 0]
+      have h_bot : rawBottleneck (FFNetwork X hX) (fun _ _ => 0) rawPath1 = 1 := by
         simp [rawBottleneck, rawPath1, rawResCap, FFNetwork, List.min]; grind
       have h_flow : rawPathFlow (FFNetwork X hX) (fun _ _ => 0) rawPath1 =
           fun u v => if (u = s ∧ v = b) ∨ (u = b ∧ v = c) ∨ (u = c ∧ v = t) then 1 else 0 := by
-        ext u v; unfold rawPathFlow; rw [h_bottleneck]; simp only [rawPath1_has_edge]
+        ext u v; unfold rawPathFlow; rw [h_bot]; simp only [rawPath1_has_edge]
       have h_aug : rawAugment (fun _ _ => 0)
-          (fun u v => if (u = s ∧ v = b) ∨ (u = b ∧ v = c) ∨ (u = c ∧ v = t) then 1 else 0) =
-          (fun u v => if (u = s ∧ v = b) ∨ (u = b ∧ v = c) ∨ (u = c ∧ v = t) then 1 else 0) := by
-        ext u v; unfold rawAugment; simp only
-        by_cases h1 : (u = s ∧ v = b) ∨ (u = b ∧ v = c) ∨ (u = c ∧ v = t)
-        · by_cases h2 : (v = s ∧ u = b) ∨ (v = b ∧ u = c) ∨ (v = c ∧ u = t)
-          · simp only [h1, ↓reduceIte, zero_add, sub_zero, h2, sub_self, max_self, zero_ne_one]
-            rcases h1 with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
-            all_goals rcases h2 with ⟨h, _⟩ | ⟨h, _⟩ | ⟨h, _⟩
-            all_goals contradiction
-          · simp [h1, h2]
-        · by_cases h2 : (v = s ∧ u = b) ∨ (v = b ∧ u = c) ∨ (v = c ∧ u = t)
-          · simp [h1, h2]
-          · simp [h1, h2]
-      change cycleInvariant X hX (ffRawFlows X hX 1) 1 0
+        (fun u v => if (u = s ∧ v = b) ∨ (u = b ∧ v = c) ∨ (u = c ∧ v = t) then 1 else 0) =
+          fun u v => if (u = s ∧ v = b) ∨ (u = b ∧ v = c) ∨ (u = c ∧ v = t) then 1 else 0 := by
+        ext u v; cases u <;> cases v <;> simp [rawAugment]
       change cycleInvariant X hX
         (rawAugment (fun _ _ => 0) (rawPathFlow (FFNetwork X hX) (fun _ _ => 0) rawPath1)) 1 0
       rw [h_flow, h_aug]
-      unfold cycleInvariant; simp only [rawResCap, FFNetwork, expectedResCap, Fin.isValue,
-        zero_add, tsub_self, pow_zero, sub_self, pow_one, sub_zero,
-        add_sub_cancel_right, Nat.reduceAdd]
-      intro u v; cases u <;> cases v <;> grind
-    · -- Step 0 → 1
-      right; right; left; use m
-      have hk : 2 * m + 1 ≥ 1 := by omega
-      have h_path : cycleChoice (4 * m + 1) = rawPath2 := by
-        have h_def : cycleChoice (4 * m + 1) = match (4 * m) % 4 with
-          | 0 => rawPath2 | 1 => rawPath3 | 2 => rawPath2 | _ => rawPath4 := rfl
-        rw [h_def]; norm_num
-      have h_next := step0_to_1 X hX (ffRawFlows X hX (4 * m + 1)) (2 * m + 1) hk h
-      simp only [← fold (4 * m + 1) rawPath2 h_path, Fin.isValue, true_and]; exact h_next
-    · -- Step 1 → 2
-      right; right; right; left; use m
-      have hk : 2 * m + 1 ≥ 1 := by omega
-      have h_path : cycleChoice (4 * m + 2) = rawPath3 := by
-        have h_def : cycleChoice (4 * m + 2) = match (4 * m + 1) % 4 with
-          | 0 => rawPath2 | 1 => rawPath3 | 2 => rawPath2 | _ => rawPath4 := rfl
-        rw [h_def]; norm_num
-      have h_next := step1_to_2 X hX (ffRawFlows X hX (4 * m + 2)) (2 * m + 1) hk h
-      simp only [← fold (4 * m + 2) rawPath3 h_path, Fin.isValue, true_and]; exact h_next
-    · -- Step 2 → 3
-      right; right; right; right; use m
-      have hk : 2 * m + 1 ≥ 1 := by omega
-      have h_path : cycleChoice (4 * m + 3) = rawPath2 := by
-        have h_def : cycleChoice (4 * m + 3) = match (4 * m + 2) % 4 with
-          | 0 => rawPath2 | 1 => rawPath3 | 2 => rawPath2 | _ => rawPath4 := rfl
-        rw [h_def]; norm_num
-      have h_next := step2_to_3 X hX (ffRawFlows X hX (4 * m + 3)) (2 * m + 1) hk h
-      simp only [← fold (4 * m + 3) rawPath2 h_path, Fin.isValue, true_and]; exact h_next
-    · -- Step 3 → 0 (next cycle)
-      right; left; use m + 1
-      have hk : 2 * m + 1 ≥ 1 := by omega
-      have h_path : cycleChoice (4 * m + 4) = rawPath4 := by
-        have h_def : cycleChoice (4 * m + 4) = match (4 * m + 3) % 4 with
-          | 0 => rawPath2 | 1 => rawPath3 | 2 => rawPath2 | _ => rawPath4 := rfl
-        rw [h_def]; norm_num
-      have h_next := step3_to_0 X hX (ffRawFlows X hX (4 * m + 4)) (2 * m + 1) hk h
-      simp only [Nat.add_right_cancel_iff, ← fold (4 * m + 4) rawPath4 h_path, Fin.isValue]; trivial
+      intro u v; cases u <;> cases v
+      <;> grind [rawResCap, FFNetwork, expectedResCap, cycleInvariant]
+    · -- Case: Step 0 -> 1
+      right; right; left; exact ⟨m, rfl, by
+        rw [step_def (4 * m + 1)]
+        have h_path : cycleChoice (4 * m + 1) = rawPath2 := by
+          have : (4 * m) % 4 = 0 := by omega
+          simp only [cycleChoice, this]
+        rw [h_path]
+        exact step0_to_1 X hX _ (2 * m + 1) (by omega) h⟩
+    · -- Case: Step 1 -> 2
+      right; right; right; left; exact ⟨m, rfl, by
+        rw [step_def (4 * m + 2)]
+        have h_path : cycleChoice (4 * m + 2) = rawPath3 := by
+          have : (4 * m + 1) % 4 = 1 := by omega
+          simp only [cycleChoice, this]
+        rw [h_path]
+        exact step1_to_2 X hX _ (2 * m + 1) (by omega) h⟩
+    · -- Case: Step 2 -> 3
+      right; right; right; right; exact ⟨m, rfl, by
+        rw [step_def (4 * m + 3)]
+        have h_path : cycleChoice (4 * m + 3) = rawPath2 := by
+          have : (4 * m + 2) % 4 = 2 := by omega
+          simp only [cycleChoice, this]
+        rw [h_path]
+        exact step2_to_3 X hX _ (2 * m + 1) (by omega) h⟩
+    · -- Case: Step 3 -> 0 (next cycle)
+      right; left; exact ⟨m + 1, by omega, by
+        rw [step_def (4 * m + 4)]
+        have h_path : cycleChoice (4 * m + 4) = rawPath4 := by
+          have : (4 * m + 3) % 4 = 3 := by omega
+          simp only [cycleChoice, this]
+        rw [h_path]
+        have h_next := step3_to_0 X hX _ (2 * m + 1) (by omega) h
+        have h_eq : 2 * (m + 1) + 1 = (2 * m + 1) + 2 := by omega
+        rw [h_eq]
+        exact h_next⟩
 
+/-- This is the way the textbook represented the invariant theorem, it is technically not needed -/
 lemma ffState_induction (n : ℕ) :
     cycleInvariant X hX (ffRawFlows X hX (4 * n + 1)) (2 * n + 1) 0 := by
   rcases ffRawFlows_invariant X hX (4 * n + 1) with
@@ -541,13 +537,11 @@ lemma ffState_induction (n : ℕ) :
     subst this; exact hc
   all_goals omega
 
-
 /-- The raw residual capacity function is definitionally equal to the capacity
-    of the formalized ResidualNetwork. -/
+    of the formalized ResidualNetwork -/
 lemma rawResCap_eq_residualCap {V : Type*} [Fintype V] (G : FlowNetwork V)
     (F : RelaxedFlow G.toSTVertices) (h_valid : ValidFlow G F) (u v : V) :
     rawResCap G F.f u v = (ResidualNetwork G F h_valid).c u v := by
-  unfold rawResCap ResidualNetwork
   rfl
 
 /-- If a path is valid in the raw sense, its raw bottleneck equals the formal
@@ -556,7 +550,6 @@ lemma rawBottleneck_eq_formal_bottleneck {V : Type*} [Fintype V] [DecidableEq V]
     (G : FlowNetwork V) (F : RelaxedFlow G.toSTVertices) (h_valid : ValidFlow G F)
     (p : uvPath G.s G.t) :
     rawBottleneck G F.f p = p.bottleneck (ResidualNetwork G F h_valid) G.source_not_sink := by
-  unfold rawBottleneck uvPath.bottleneck
   rfl
 
 open FFVert in
@@ -568,7 +561,6 @@ lemma expectedResCap_pos (X : ℝ) (hX : X > 2) (k : ℕ) (step : Fin 4) (p : uv
       | 3 => rawPath4) :
     ∀ (i : ℕ) (h : i < p.verts.length - 1),
         expectedResCap X k step p.verts[i] p.verts[i+1] > 0 := by
-  -- Hoist all arithmetic facts once; linarith picks them up in every branch
   have hρ  := ρ_pos
   have hρ1 := ρ_lt_1
   have hpow  : ∀ n : ℕ, 0 < ρ ^ n   := fun n => pow_pos hρ n
@@ -622,7 +614,8 @@ noncomputable def step_as_augmentingPath
 }
 
 /-- Important Theorem: At each step, the chosen path is a valid augmenting path
-    whose formal Flow_value equals its bottleneck. -/
+    whose formal Flow_value equals its bottleneck. This makes our
+    example an instance of the FF algorithm -/
 theorem step_flow_value_eq_bottleneck
     (F : RelaxedFlow (FFNetwork X hX).toSTVertices)
     (h_valid : ValidFlow (FFNetwork X hX) F)
@@ -749,7 +742,7 @@ noncomputable def ffFlowValues (X : ℝ) (hX : X > 2) : ℕ → ℝ :=
   fun n => Flow_value (FFNetwork X hX).toSTVertices (sequence_of_flows X hX n).F
 
 /-- The limit the FF flow sequence converges to, per the textbook:
-    1 + ∑ i=1..∞ 2ρⁱ = 2/(1-ρ) - 1 = 2 + √5 ≈ 4.236 -/
+    1 + ∑ i=1..∞ 2ρ^i = 2/(1-ρ) - 1 = 2 + √5 = 4.236... -/
 noncomputable def ffFlowLimit : ℝ := 2 + Real.sqrt 5
 
 lemma geom_series_eval : (∑' i : ℕ, 2 * ρ ^ (i + 1)) = (2 * ρ) * (1 - ρ)⁻¹ := by
@@ -944,7 +937,7 @@ lemma rawBottleneck_4m4 (X : ℝ) (hX : X > 2) (m : ℕ) :
   rw [h_path]
   -- Need step-3 invariant
   have hc3 : cycleInvariant X hX (ffRawFlows X hX (4 * m + 4)) (2 * m + 1) 3 := by
-    -- Build up through steps 0→1→2→3
+    -- Build up through steps 0->1->2->3
     have h0 := ffState_induction X hX m
     have h1 : cycleInvariant X hX (ffRawFlows X hX (4 * m + 2)) (2 * m + 1) 1 := by
       have h_path2 : cycleChoice (4 * m + 1) = rawPath2 := by simp [cycleChoice]
@@ -1123,7 +1116,7 @@ lemma explicitFlowSum_odd_tendsto :
 lemma explicitFlowSum_even_tendsto {L : ℝ}
     (h_prev : Tendsto (fun M => explicitFlowSum (2 * M - 1)) atTop (𝓝 L)) :
     Tendsto (fun M => explicitFlowSum (2 * M)) atTop (𝓝 L) := by
-  -- 1. Prove ρ ^ M converges to 0 as M → ∞
+  -- 1. Prove ρ ^ M converges to 0 as M -> ∞
   have h_rho : Tendsto (fun M => ρ ^ M) atTop (𝓝 0) := by
     exact tendsto_pow_atTop_nhds_zero_of_lt_one ρ_pos.le ρ_lt_1
   -- 2. Add the two limits together: L + 0 = L
@@ -1153,7 +1146,7 @@ lemma explicitFlowSum_odd_minus_one_tendsto {L : ℝ}
   exact hN (m - 1) h_m
 
 /-- Combining the even and odd limits to prove the entire sequence converges to L. -/
-theorem explicitFlowSum_tendsto_of_even_odd {L : ℝ}
+lemma explicitFlowSum_tendsto_of_even_odd {L : ℝ}
     (h_odd : Tendsto (fun M => explicitFlowSum (2 * M + 1)) atTop (𝓝 L))
     (h_even : Tendsto (fun M => explicitFlowSum (2 * M)) atTop (𝓝 L)) :
     Tendsto explicitFlowSum atTop (𝓝 L) := by
@@ -1177,7 +1170,7 @@ theorem explicitFlowSum_tendsto_of_even_odd {L : ℝ}
     exact hNo m hm
 
 /-- The final master theorem putting it all together for your specific Ford-Fulkerson limit -/
-theorem explicitFlowSum_converges :
+lemma explicitFlowSum_converges :
     Tendsto explicitFlowSum atTop (𝓝 (1 + (2 * ρ) * (1 - ρ)⁻¹)) := by
   have h_odd := explicitFlowSum_odd_tendsto
   have h_minus_1 := explicitFlowSum_odd_minus_one_tendsto h_odd
