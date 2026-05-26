@@ -164,13 +164,7 @@ lemma tsum_primeLogDivMulPred_split_two_three : ∑' p : Nat.Primes, log p / (p 
   let p2 : Nat.Primes := ⟨2, by decide⟩
   let p3 : Nat.Primes := ⟨3, by decide⟩
   let s : Finset Nat.Primes := {p2, p3}
-  have hp23 : p2 ≠ p3 := by
-    intro h
-    have : 2 = 3 := congrArg Subtype.val h
-    norm_num at this
-  have hsum : (∑ x ∈ s, log x / (x * (x - 1))) = log 2 / 2 + log 3 / 6 := by
-    simp [s, sum_insert, hp23, p2, p3]
-    norm_num
+  have hsum : ∑ x ∈ s, log x / (x * (x - 1)) = log 2 / 2 + log 3 / 6 := by grind
   have htail : ∑' q : {q : Nat.Primes // q ∉ s}, log q / (q * (q - 1))
         = ∑' p : {p : Nat.Primes // 5 ≤ (p : ℕ)}, log p / (p * (p - 1)) := by
     have hmem_iff (q : Nat.Primes): q ∉ s ↔ 5 ≤ (q : ℕ) := by
@@ -185,14 +179,7 @@ lemma tsum_primeLogDivMulPred_split_two_three : ∑' p : Nat.Primes, log p / (p 
           exact (by decide : ¬ Nat.Prime 4) hq4
         have h2le : 2 ≤ (q : ℕ) := q.property.two_le
         lia
-      · intro h5
-        constructor
-        · intro hq
-          have : (q : ℕ) = 2 := congrArg Subtype.val hq
-          lia
-        · intro hq
-          have : (q : ℕ) = 3 := congrArg Subtype.val hq
-          lia
+      · grind
     let e : {q : Nat.Primes // q ∉ s} ≃ {p : Nat.Primes // 5 ≤ (p : ℕ)} :=
       Equiv.subtypeEquiv (Equiv.refl Nat.Primes) hmem_iff
     exact e.tsum_eq (fun p ↦ log p / (p * (p - 1)))
