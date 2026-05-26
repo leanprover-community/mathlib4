@@ -18,7 +18,7 @@ public section
 
 open SeminormedAddGroup IsUniformAddGroup Filter
 
-variable {F : Type*} [NormedField F]
+variable {F : Type*} [NormMetric F] [Field F] [IsNormedField F]
 
 instance NormedField.instCompletableTopField : CompletableTopField F where
   nice f hc hn := by

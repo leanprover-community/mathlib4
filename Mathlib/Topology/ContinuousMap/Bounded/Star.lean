@@ -48,7 +48,7 @@ completeness is guaranteed when `β` is complete (see
 
 section NormedAddCommGroup
 
-variable {𝕜 : Type*} [NormedField 𝕜] [StarRing 𝕜] [TopologicalSpace α] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [StarRing 𝕜] [TopologicalSpace α] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β]
   [StarAddMonoid β] [NormedStarGroup β]
 
 variable [NormedSpace 𝕜 β] [StarModule 𝕜 β]
@@ -96,7 +96,7 @@ end CStarRing
 
 section NormedAlgebra
 
-variable (𝕜 : Type*) [NormedField 𝕜] [TopologicalSpace α]
+variable (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [TopologicalSpace α]
   [NormMetric β] [Ring β] [IsNormedRing β] [NormedAlgebra 𝕜 β] [StarAddMonoid β] [NormedStarGroup β]
 
 /-- The ⋆-algebra-homomorphism forgetting that a bounded continuous function is bounded. -/

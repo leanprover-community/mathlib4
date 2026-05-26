@@ -354,7 +354,7 @@ end HasSummableGeometricSeries
 
 section Geometric
 
-variable {K : Type*} [NormedDivisionRing K] {ξ : K}
+variable {K : Type*} [NormMetric K] [DivisionRing K] [IsNormedField K] {ξ : K}
 
 theorem hasSum_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : HasSum (fun n : ℕ ↦ ξ ^ n) (1 - ξ)⁻¹ := by
   have xi_ne_one : ξ ≠ 1 := by
@@ -397,7 +397,7 @@ end Geometric
 
 section MulGeometric
 
-variable {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R] {𝕜 : Type*} [NormedDivisionRing 𝕜]
+variable {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R] {𝕜 : Type*} [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜]
 
 theorem summable_norm_mul_geometric_of_norm_lt_one {k : ℕ} {r : R}
     (hr : ‖r‖ < 1) {u : ℕ → ℕ} (hu : (fun n ↦ (u n : ℝ)) =O[atTop] (fun n ↦ (↑(n ^ k) : ℝ))) :
@@ -687,7 +687,7 @@ theorem not_summable_of_ratio_test_tendsto_gt_one {α : Type*} [NormPseudoMetric
 
 section NormedDivisionRing
 
-variable [NormedDivisionRing α] [CompleteSpace α] {f : ℕ → α}
+variable [NormMetric α] [DivisionRing α] [IsNormedField α] [CompleteSpace α] {f : ℕ → α}
 
 /-- If a power series converges at `w`, it converges absolutely at all `z` of smaller norm. -/
 theorem summable_powerSeries_of_norm_lt {w z : α}

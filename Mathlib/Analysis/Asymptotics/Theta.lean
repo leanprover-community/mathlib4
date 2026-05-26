@@ -34,7 +34,7 @@ variable [NormPseudoMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormPseu
   [NormMetric E''] [AddCommGroup E''] [IsNormedAddGroup E''] [NormMetric F''] [AddCommGroup F''] [IsNormedAddGroup F''] [NormMetric G''] [AddCommGroup G''] [IsNormedAddGroup G''] [NormPseudoMetric R] [Ring R] [IsNormedRing R]
   [NormPseudoMetric R'] [Ring R'] [IsNormedRing R']
 
-variable [NormedField 𝕜] [NormedField 𝕜']
+variable [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormMetric 𝕜'] [Field 𝕜'] [IsNormedField 𝕜']
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
 variable {f' : α → E'} {g' : α → F'} {k' : α → G'}
 variable {f'' : α → E''} {g'' : α → F''}

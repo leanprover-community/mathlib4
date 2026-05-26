@@ -93,7 +93,7 @@ theorem equiv_lpPiLp_norm [Fintype α] (f : lp E p) : ‖Equiv.lpPiLp f‖ = ‖
 
 section Equivₗᵢ
 
-variable [Fintype α] (𝕜 : Type*) [NontriviallyNormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
+variable [Fintype α] (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
 variable (E)
 
 /-- The canonical `LinearIsometryEquiv` between `lp E p` and `PiLp p E` when `E : α → Type u`
@@ -123,7 +123,7 @@ open scoped BoundedContinuousFunction
 open BoundedContinuousFunction
 
 variable {α E R A : Type*} (𝕜 : Type*) [TopologicalSpace α] [DiscreteTopology α]
-variable [NormMetric A] [Ring A] [IsNormedRing A] [NormOneClass A] [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 A]
+variable [NormMetric A] [Ring A] [IsNormedRing A] [NormOneClass A] [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 A]
 variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [NormMetric R] [NonUnitalRing R] [IsNormedRing R]
 
 section NormedAddCommGroup

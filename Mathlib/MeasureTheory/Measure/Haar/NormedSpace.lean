@@ -33,7 +33,7 @@ example {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [Normed
 
 section LinearEquiv
 
-variable {𝕜 G H : Type*} [MeasurableSpace G] [MeasurableSpace H] [NontriviallyNormedField 𝕜]
+variable {𝕜 G H : Type*} [MeasurableSpace G] [MeasurableSpace H] [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   [TopologicalSpace G] [TopologicalSpace H] [AddCommGroup G] [AddCommGroup H]
   [IsTopologicalAddGroup G] [IsTopologicalAddGroup H] [Module 𝕜 G] [Module 𝕜 H] (μ : Measure G)
   [IsAddHaarMeasure μ] [BorelSpace G] [BorelSpace H]

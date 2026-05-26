@@ -739,7 +739,7 @@ end LipschitzWith
 open scoped Pointwise
 
 theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
-    [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E] [MeasurableSpace E] [BorelSpace E]
+    [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E] [MeasurableSpace E] [BorelSpace E]
     {d : ℝ} (hd : 0 ≤ d) {r : 𝕜} (hr : r ≠ 0) (s : Set E) :
     μH[d] (r • s) = ‖r‖₊ ^ d • μH[d] s := by
   have {r : 𝕜} (s : Set E) : μH[d] (r • s) ≤ ‖r‖₊ ^ d • μH[d] s := by
@@ -1041,7 +1041,7 @@ theorem hausdorffMeasure_smul_right_image [NormMetric E] [AddCommGroup E] [IsNor
 
 section NormedFieldAffine
 
-variable [NormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [MeasurableSpace P]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [MeasurableSpace P]
 variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 
 /-- Scaling by `c` around `x` scales the measure by `‖c‖₊ ^ d`. -/

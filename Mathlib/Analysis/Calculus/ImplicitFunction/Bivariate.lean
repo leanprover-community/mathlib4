@@ -33,7 +33,7 @@ public section
 open Filter
 open scoped Topology
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
   {E₁ : Type*} [NormMetric E₁] [AddCommGroup E₁] [IsNormedAddGroup E₁] [NormedSpace 𝕜 E₁] [CompleteSpace E₁]
   {E₂ : Type*} [NormMetric E₂] [AddCommGroup E₂] [IsNormedAddGroup E₂] [NormedSpace 𝕜 E₂] [CompleteSpace E₂]
   {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]

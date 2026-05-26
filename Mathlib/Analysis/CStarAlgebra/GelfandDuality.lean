@@ -317,7 +317,7 @@ namespace WeakDual
 
 namespace CharacterSpace
 
-variable {A B C 𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {A B C 𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 variable [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A] [StarRing A]
 variable [NormMetric B] [Ring B] [IsNormedRing B] [NormedAlgebra 𝕜 B] [CompleteSpace B] [StarRing B]
 variable [NormMetric C] [Ring C] [IsNormedRing C] [NormedAlgebra 𝕜 C] [CompleteSpace C] [StarRing C]

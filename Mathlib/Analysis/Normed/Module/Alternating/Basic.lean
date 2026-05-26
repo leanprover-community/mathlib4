@@ -45,7 +45,7 @@ However, continuity in the pair (map, vector) needs the domain to be a locally b
 We have no typeclass for a locally bounded TVS,
 so we require it to be a seminormed space instead. -/
 instance ContinuousAlternatingMap.instContinuousEval {𝕜 ι E F : Type*}
-    [NormedField 𝕜] [Finite ι] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+    [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [Finite ι] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
     [TopologicalSpace F] [AddCommGroup F] [IsTopologicalAddGroup F] [Module 𝕜 F] :
     ContinuousEval (E [⋀^ι]→L[𝕜] F) (ι → E) F :=
   .of_continuous_forget continuous_toContinuousMultilinearMap
@@ -54,7 +54,7 @@ section Seminorm
 
 universe u wE wF wG v
 variable {𝕜 : Type u} {n : ℕ} {E : Type wE} {F : Type wF} {G : Type wG} {ι : Type v}
-  [NontriviallyNormedField 𝕜]
+  [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
   [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
   [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
@@ -277,7 +277,7 @@ theorem opNorm_pi {ι' : Type*} [Fintype ι'] {F : ι' → Type*} [∀ i', NormP
     [∀ i', NormedSpace 𝕜 (F i')] (f : ∀ i', E [⋀^ι]→L[𝕜] F i') : ‖pi f‖ = ‖f‖ :=
   ContinuousMultilinearMap.opNorm_pi fun i ↦ (f i).1
 
-instance instNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜 𝕜' F] :
+instance instNormedSpace {𝕜' : Type*} [NormMetric 𝕜'] [Field 𝕜'] [IsNormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜 𝕜' F] :
     NormedSpace 𝕜' (E [⋀^ι]→L[𝕜] F) :=
   ⟨fun c f ↦ f.1.opNorm_smul_le c⟩
 
@@ -351,7 +351,7 @@ def piLIE {ι' : Type*} [Fintype ι'] {F : ι' → Type*} [∀ i', NormPseudoMet
 
 section restrictScalars
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+variable {𝕜' : Type*} [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
 variable [NormedSpace 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
 variable [NormedSpace 𝕜' E] [IsScalarTower 𝕜' 𝕜 E]
 
@@ -619,7 +619,7 @@ section Norm
 universe u wE wF v
 variable {𝕜 : Type u} {n : ℕ} {E : Type wE} {F : Type wF} {ι : Type v}
   [Fintype ι]
-  [NontriviallyNormedField 𝕜]
+  [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
   [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 

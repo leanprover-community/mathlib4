@@ -33,7 +33,7 @@ structure AlgebraNorm (R : Type*) [NormPseudoMetric R] [CommRing R] [IsNormedRin
 
 attribute [nolint docBlame] AlgebraNorm.toSeminorm AlgebraNorm.toRingNorm
 
-instance (K : Type*) [NormedField K] : Inhabited (AlgebraNorm K K) :=
+instance (K : Type*) [NormMetric K] [Field K] [IsNormedField K] : Inhabited (AlgebraNorm K K) :=
   ⟨{  toFun     := norm
       map_zero' := norm_zero
       add_le'   := norm_add_le
@@ -127,7 +127,7 @@ structure MulAlgebraNorm (R : Type*) [NormPseudoMetric R] [CommRing R] [IsNormed
 
 attribute [nolint docBlame] MulAlgebraNorm.toSeminorm MulAlgebraNorm.toMulRingNorm
 
-instance (K : Type*) [NormedField K] : Inhabited (MulAlgebraNorm K K) :=
+instance (K : Type*) [NormMetric K] [Field K] [IsNormedField K] : Inhabited (MulAlgebraNorm K K) :=
   ⟨{  toFun     := norm
       map_zero' := norm_zero
       add_le'   := norm_add_le
@@ -192,7 +192,7 @@ end MulAlgebraNorm
 
 namespace NormedAlgebra
 
-variable (K L : Type*) [NormedField K] [NormedField L] [NormedAlgebra K L]
+variable (K L : Type*) [NormMetric K] [Field K] [IsNormedField K] [NormMetric L] [Field L] [IsNormedField L] [NormedAlgebra K L]
 
 /-- Given a normed field extension `L / K`, the norm on `L` is a multiplicative `K`-algebra norm. -/
 def toMulAlgebraNorm : MulAlgebraNorm K L where

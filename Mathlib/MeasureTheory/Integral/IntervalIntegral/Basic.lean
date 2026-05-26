@@ -377,7 +377,7 @@ theorem continuousOn_smul (hg : IntervalIntegrable g μ a b)
 end SMul
 
 @[simp]
-theorem div_const {𝕜 : Type*} {f : ℝ → 𝕜} [NormedDivisionRing 𝕜] (h : IntervalIntegrable f μ a b)
+theorem div_const {𝕜 : Type*} {f : ℝ → 𝕜} [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] (h : IntervalIntegrable f μ a b)
     (c : 𝕜) : IntervalIntegrable (fun x => f x / c) μ a b := by
   simpa only [div_eq_mul_inv] using mul_const h c⁻¹
 
@@ -786,7 +786,7 @@ theorem integral_sub (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegrable
 ensure that for `c ≠ 0`, `c • f` is integrable iff `f` is. For scalar multiplication by more
 general rings assuming integrability, see `IntervalIntegrable.integral_smul`. -/
 @[simp]
-nonrec theorem integral_smul [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
+nonrec theorem integral_smul [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
     [SMulCommClass ℝ 𝕜 E] (r : 𝕜) (f : ℝ → E) :
     ∫ x in a..b, r • f x ∂μ = r • ∫ x in a..b, f x ∂μ := by
   simp only [intervalIntegral, integral_smul, smul_sub]
@@ -804,7 +804,7 @@ nonrec theorem integral_smul_const [CompleteSpace E]
   simp only [intervalIntegral_eq_integral_uIoc, integral_smul_const, smul_assoc]
 
 @[simp]
-theorem integral_const_mul [NormedDivisionRing 𝕜] [NormedAlgebra ℝ 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
+theorem integral_const_mul [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] [NormedAlgebra ℝ 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
     ∫ x in a..b, r * f x ∂μ = r * ∫ x in a..b, f x ∂μ :=
   integral_smul r f
 

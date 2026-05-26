@@ -80,7 +80,7 @@ open Set Function
 open scoped Topology Manifold
 
 -- Let `M` be a manifold with corners over the pair `(E, H)`.
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
@@ -161,7 +161,7 @@ lemma _root_.range_mem_nhds_isInteriorPoint {x : M} (h : I.IsInteriorPoint x) :
 
 /-- Type class for manifold without boundary. This differs from `ModelWithCorners.Boundaryless`,
 which states that the `ModelWithCorners` maps to the whole model vector space. -/
-class _root_.BoundarylessManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+class _root_.BoundarylessManifold {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
     {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
     (M : Type*) [TopologicalSpace M] [ChartedSpace H M] : Prop where

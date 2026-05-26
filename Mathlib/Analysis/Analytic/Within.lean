@@ -30,7 +30,7 @@ noncomputable section
 open scoped Topology Filter ENNReal
 open Set Filter Metric
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 
 variable {E F : Type*}
   [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]

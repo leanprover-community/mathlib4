@@ -28,7 +28,7 @@ public section
 variable {𝕜 𝔸 : Type*}
 
 section NormedRing
-variable [NontriviallyNormedField 𝕜] [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸]
 variable [NormedAlgebra 𝕜 𝔸] {f : 𝕜 → 𝔸} {f' : 𝔸} {x : 𝕜} {s : Set 𝕜}
 
 theorem HasStrictDerivAt.fun_pow' (h : HasStrictDerivAt f f' x) (n : ℕ) :
@@ -86,7 +86,7 @@ theorem deriv_pow' (h : DifferentiableAt 𝕜 f x) (n : ℕ) :
 end NormedRing
 
 section NormedCommRing
-variable [NontriviallyNormedField 𝕜] [NormMetric 𝔸] [CommRing 𝔸] [IsNormedRing 𝔸]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric 𝔸] [CommRing 𝔸] [IsNormedRing 𝔸]
 variable [NormedAlgebra 𝕜 𝔸] {f : 𝕜 → 𝔸} {f' : 𝔸} {x : 𝕜} {s : Set 𝕜}
 
 open scoped RightActions
@@ -124,7 +124,7 @@ theorem deriv_pow (h : DifferentiableAt 𝕜 f x) (n : ℕ) :
 end NormedCommRing
 
 section NontriviallyNormedField
-variable [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜} {c : 𝕜 → 𝕜}
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜} {c : 𝕜 → 𝕜}
 
 theorem hasStrictDerivAt_pow (n : ℕ) (x : 𝕜) :
     HasStrictDerivAt (fun x : 𝕜 ↦ x ^ n) (n * x ^ (n - 1)) x := by

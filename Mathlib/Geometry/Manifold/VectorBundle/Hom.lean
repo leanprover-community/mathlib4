@@ -32,7 +32,7 @@ open scoped Manifold Bundle Topology
 section
 
 variable {𝕜 B F₁ F₂ M : Type*} {n : WithTop ℕ∞}
-  {E₁ : B → Type*} {E₂ : B → Type*} [NontriviallyNormedField 𝕜]
+  {E₁ : B → Type*} {E₂ : B → Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [NormMetric F₁] [AddCommGroup F₁] [IsNormedAddGroup F₁] [NormedSpace 𝕜 F₁]
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)] [∀ x, AddCommGroup (E₂ x)]
   [∀ x, Module 𝕜 (E₂ x)] [NormMetric F₂] [AddCommGroup F₂] [IsNormedAddGroup F₂] [NormedSpace 𝕜 F₂]
@@ -140,7 +140,7 @@ and two vector bundles `E₁` and `E₂` respectively over `B₁` and `B₂` (wi
 
 Also a third manifold `M`, which will be the source of all our maps.
 -/
-variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B₂ → Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B₂ → Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [NormMetric F₁] [AddCommGroup F₁] [IsNormedAddGroup F₁] [NormedSpace 𝕜 F₁]
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)] [∀ x, AddCommGroup (E₂ x)]
   [∀ x, Module 𝕜 (E₂ x)] [NormMetric F₂] [AddCommGroup F₂] [IsNormedAddGroup F₂] [NormedSpace 𝕜 F₂]
@@ -230,7 +230,7 @@ and three vector bundles `E₁`, `E₂` and `E₃` over `B` (with model fibers `
 
 Also a second manifold `M`, which will be the source of all our maps.
 -/
-variable {𝕜 B F₁ F₂ F₃ M : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
+variable {𝕜 B F₁ F₂ F₃ M : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
   {E₁ : B → Type*}
   [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [NormMetric F₁] [AddCommGroup F₁] [IsNormedAddGroup F₁] [NormedSpace 𝕜 F₁]
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)]

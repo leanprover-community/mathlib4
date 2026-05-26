@@ -82,7 +82,7 @@ theorem ofScalars_apply_zero (n : ℕ) :
   cases n <;> simp
 
 @[simp]
-lemma coeff_ofScalars {𝕜 : Type*} [NontriviallyNormedField 𝕜] {p : ℕ → 𝕜} {n : ℕ} :
+lemma coeff_ofScalars {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {p : ℕ → 𝕜} {n : ℕ} :
     (FormalMultilinearSeries.ofScalars 𝕜 p).coeff n = p n := by
   simp [FormalMultilinearSeries.coeff, FormalMultilinearSeries.ofScalars, List.prod_ofFn]
 
@@ -162,7 +162,7 @@ section Seminormed
 open Filter ENNReal
 open scoped Topology NNReal
 
-variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [NormPseudoMetric E] [Ring E] [IsNormedRing E]
+variable {𝕜 : Type*} (E : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormPseudoMetric E] [Ring E] [IsNormedRing E]
     [NormedAlgebra 𝕜 E] (c : ℕ → 𝕜) (n : ℕ)
 
 @[simp]
@@ -185,7 +185,7 @@ section Normed
 open Filter ENNReal
 open scoped Topology NNReal
 
-variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [NormMetric E] [Ring E] [IsNormedRing E]
+variable {𝕜 : Type*} (E : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric E] [Ring E] [IsNormedRing E]
     [NormedAlgebra 𝕜 E] (c : ℕ → 𝕜) (n : ℕ)
 
 private theorem tendsto_succ_norm_div_norm {r r' : ℝ≥0} (hr' : r' ≠ 0)

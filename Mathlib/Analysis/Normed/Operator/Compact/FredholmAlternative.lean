@@ -40,7 +40,7 @@ public section
 
 namespace IsCompactOperator
 
-variable {𝕜 X : Type*} [NontriviallyNormedField 𝕜] [NormMetric X] [AddCommGroup X] [IsNormedAddGroup X] [NormedSpace 𝕜 X]
+variable {𝕜 X : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric X] [AddCommGroup X] [IsNormedAddGroup X] [NormedSpace 𝕜 X]
 variable {T : X →L[𝕜] X} {μ : 𝕜}
 
 open Module End

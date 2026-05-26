@@ -272,7 +272,7 @@ section
 
 variable {𝕜 : Type*} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
-instance normedSpace {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E] : NormedSpace 𝕜 C(α, E) where
+instance normedSpace {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormedSpace 𝕜 E] : NormedSpace 𝕜 C(α, E) where
   norm_smul_le := norm_smul_le
 
 section
@@ -376,7 +376,7 @@ end NormSum
 
 section
 
-variable {𝕜 : Type*} {γ : Type*} [NormedField 𝕜] [NormPseudoMetric γ] [Ring γ] [IsNormedRing γ] [NormedAlgebra 𝕜 γ]
+variable {𝕜 : Type*} {γ : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormPseudoMetric γ] [Ring γ] [IsNormedRing γ] [NormedAlgebra 𝕜 γ]
 
 instance : NormedAlgebra 𝕜 C(α, γ) :=
   { ContinuousMap.normedSpace, ContinuousMap.algebra with }

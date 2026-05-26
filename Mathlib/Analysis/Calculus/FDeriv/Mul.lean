@@ -29,7 +29,7 @@ open Asymptotics ContinuousLinearMap Topology
 
 section
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 variable {G : Type*} [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
@@ -717,7 +717,7 @@ counterparts in commutative fields involve simpler expressions, and are given in
 
 section DivisionRingInverse
 
-variable {R : Type*} [NormedDivisionRing R] [NormedAlgebra 𝕜 R]
+variable {R : Type*} [NormMetric R] [DivisionRing R] [IsNormedField R] [NormedAlgebra 𝕜 R]
 
 open NormedRing ContinuousLinearMap Ring
 

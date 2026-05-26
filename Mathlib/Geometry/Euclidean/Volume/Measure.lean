@@ -153,7 +153,7 @@ theorem Isometry.map_euclideanHausdorffMeasure {f : X → Y} {d : ℕ} (hf : Iso
 
 open scoped Pointwise in
 theorem MeasureTheory.Measure.euclideanHausdorffMeasure_smul₀ {𝕜 : Type*} {E : Type*}
-    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
     [MeasurableSpace E] [BorelSpace E] (d : ℕ) {r : 𝕜} (hr : r ≠ 0) (s : Set E) :
     μHE[d] (r • s) = ‖r‖₊ ^ d • μHE[d] s := by
   rw [euclideanHausdorffMeasure_def, Measure.smul_apply, hausdorffMeasure_smul₀ (by simp) hr,
@@ -161,7 +161,7 @@ theorem MeasureTheory.Measure.euclideanHausdorffMeasure_smul₀ {𝕜 : Type*} {
   simp
 
 section Homothety
-variable {𝕜 V P : Type*} [NormedField 𝕜] [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace 𝕜 V]
+variable {𝕜 V P : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace 𝕜 V]
   [MeasurableSpace P] [MetricSpace P] [NormedAddTorsor V P] [BorelSpace P]
 
 theorem MeasureTheory.euclideanHausdorffMeasure_homothety_image (d : ℕ) (x : P) {c : 𝕜}

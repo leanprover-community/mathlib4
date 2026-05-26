@@ -50,7 +50,7 @@ namespace NormedSpace
 
 section inclusionInDoubleDual
 
-variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+variable (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 variable (E : Type*) [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 
 /-- The inclusion of a normed space in its double (topological) strong dual, considered
@@ -105,7 +105,7 @@ end BidualIsometry
 
 section Embedding
 
-variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+variable (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 variable (X : Type*) [NormPseudoMetric X] [AddCommGroup X] [IsNormedAddGroup X] [NormedSpace 𝕜 X]
 
 /-- The map from a normed space with the weak topology into the weak-star bidual, as a continuous

@@ -122,7 +122,7 @@ open scoped ContDiff Pointwise
 
 universe u uE uF
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type uE} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+variable {𝕜 : Type u} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {E : Type uE} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
   [NormedSpace 𝕜 E] {F : Type uF} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
   {s t u : Set E} {f f₁ : E → F} {x : E} {m n N : ℕ∞ω}
   {p : E → FormalMultilinearSeries 𝕜 E F}

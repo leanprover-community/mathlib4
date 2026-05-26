@@ -19,7 +19,7 @@ is an analytic function.
 
 public section
 
-variable {𝕜 E A B : Type*} [NontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+variable {𝕜 E A B : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
   [CommSemiring A] {z : E} {s : Set E}
 
 section Polynomial

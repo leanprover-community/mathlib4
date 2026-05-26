@@ -35,7 +35,7 @@ public section
 
 section DescPochhammer
 
-variable {n : ℕ} {𝕜 : Type*} {k : 𝕜} [NontriviallyNormedField 𝕜]
+variable {n : ℕ} {𝕜 : Type*} {k : 𝕜} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 
 /-- `descPochhammer 𝕜 n` is differentiable. -/
 theorem differentiable_descPochhammer_eval : Differentiable 𝕜 (descPochhammer 𝕜 n).eval := by

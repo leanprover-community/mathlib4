@@ -41,7 +41,7 @@ The second section deduces the corresponding differentiability results when `ι`
 public section
 
 variable {𝕜 ι E : Type*} {F G : ι → Type*} {H : Type*}
-  [NontriviallyNormedField 𝕜]
+  [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
   [∀ i, NormMetric (F i)] [∀ i, AddCommGroup (F i)] [∀ i, IsNormedAddGroup (F i)] [∀ i, NormedSpace 𝕜 (F i)]
   [∀ i, NormMetric (G i)] [∀ i, AddCommGroup (G i)] [∀ i, IsNormedAddGroup (G i)] [∀ i, NormedSpace 𝕜 (G i)]

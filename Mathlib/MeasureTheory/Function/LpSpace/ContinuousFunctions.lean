@@ -113,7 +113,7 @@ theorem range_toLp :
 
 variable {p}
 
-theorem toLp_norm_le {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] :
+theorem toLp_norm_le {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] :
     ‖(toLp p μ 𝕜 : (α →ᵇ E) →L[𝕜] Lp E p μ)‖ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ :=
   LinearMap.mkContinuous_norm_le _ (measureUnivNNReal μ ^ p.toReal⁻¹).coe_nonneg _
 
@@ -194,7 +194,7 @@ theorem hasSum_of_hasSum_Lp {β : Type*} [μ.IsOpenPosMeasure]
   convert! Summable.hasSum hg
   exact toLp_injective μ (hg2.unique ((toLp p μ 𝕜).hasSum <| Summable.hasSum hg))
 
-variable (μ) {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
+variable (μ) {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
 
 theorem toLp_norm_eq_toLp_norm_coe :
     ‖(toLp p μ 𝕜 : C(α, E) →L[𝕜] Lp E p μ)‖ =
@@ -207,7 +207,7 @@ theorem toLp_norm_le :
   rw [toLp_norm_eq_toLp_norm_coe]
   exact BoundedContinuousFunction.toLp_norm_le μ
 
-lemma memLp (𝕜' : Type*) [NormedField 𝕜'] [NormedSpace 𝕜' E] (f : C(α, E)) :
+lemma memLp (𝕜' : Type*) [NormMetric 𝕜'] [Field 𝕜'] [IsNormedField 𝕜'] [NormedSpace 𝕜' E] (f : C(α, E)) :
     MemLp f p μ := by
   have := Lp.mem_Lp_iff_memLp.mp (Subtype.val_prop (f.toLp p μ 𝕜'))
   rwa [coe_toLp, memLp_congr_ae (coeFn_toAEEqFun _ _)] at this

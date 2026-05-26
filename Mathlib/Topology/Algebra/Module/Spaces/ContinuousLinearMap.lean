@@ -60,7 +60,7 @@ section BoundedConvergence
 
 /-! ### Topology of bounded convergence  -/
 
-variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃] {σ : 𝕜₁ →+* 𝕜₂}
+variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormMetric 𝕜₁] [Field 𝕜₁] [IsNormedField 𝕜₁] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNormedField 𝕜₂] [NormMetric 𝕜₃] [Field 𝕜₃] [IsNormedField 𝕜₃] {σ : 𝕜₁ →+* 𝕜₂}
   {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] {E F G : Type*} [AddCommGroup E]
   [Module 𝕜₁ E] [AddCommGroup F] [Module 𝕜₂ F]
   [AddCommGroup G] [Module 𝕜₃ G] [TopologicalSpace E]
@@ -161,7 +161,7 @@ iff for any von Neumann bounded set `s`,
 the set `{f x | (f ∈ S) (x ∈ s)}` is von Neumann bounded.
 
 For the forward implication with weaker typeclass assumptions, see `isVonNBounded_image2_apply`. -/
-theorem isVonNBounded_iff {R : Type*} [NormedDivisionRing R]
+theorem isVonNBounded_iff {R : Type*} [NormMetric R] [DivisionRing R] [IsNormedField R]
     [TopologicalSpace F] [IsTopologicalAddGroup F]
     [Module R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜₂ R F]
     {S : Set (E →SL[σ] F)} :
@@ -241,7 +241,7 @@ in curried form, it defines a continuous linear map `E →L[𝕜] F →L[𝕜] G
 In the normed setting, the converse is true, see `ContinuousLinearMap.continuous₂`.
 In general, however, hypocontinuity is a strictly weaker condition than joint continuity. -/
 theorem continuous_of_continuous_uncurry
-    {𝕜₁ : Type*} [NontriviallyNormedField 𝕜₁] {σ : 𝕜₁ →+* 𝕜₂} [Module 𝕜₁ E]
+    {𝕜₁ : Type*} [NormMetric 𝕜₁] [Field 𝕜₁] [IsNontriviallyNormedField 𝕜₁] {σ : 𝕜₁ →+* 𝕜₂} [Module 𝕜₁ E]
     {τ : 𝕜₃ →+* 𝕜₂} [RingHomSurjective τ]
     [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
     [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜₂ F]
@@ -254,7 +254,7 @@ end BoundedConvergence
 
 section Pi
 
-variable (𝕜 : Type*) [NormedField 𝕜] (E : Type*) {ι : Type*} (F : ι → Type*)
+variable (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] (E : Type*) {ι : Type*} (F : ι → Type*)
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
   [∀ i, IsTopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜 (F i)]
@@ -282,7 +282,7 @@ If `f` is a continuous bilinear map, to use the corresponding rules for the seco
 
 section AddCommMonoid
 variable
-  [Semiring R] [NormedField 𝕜₂] [NormedField 𝕜₃]
+  [Semiring R] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNormedField 𝕜₂] [NormMetric 𝕜₃] [Field 𝕜₃] [IsNormedField 𝕜₃]
   [AddCommMonoid E] [Module R E] [TopologicalSpace E]
   [AddCommGroup F] [Module 𝕜₂ F] [TopologicalSpace F]
   [AddCommGroup G] [Module 𝕜₃ G]
@@ -317,7 +317,7 @@ end AddCommMonoid
 
 section Nonsemilinear
 variable
-  [NormedField 𝕜₂] [NormedField 𝕜₃]
+  [NormMetric 𝕜₂] [Field 𝕜₂] [IsNormedField 𝕜₂] [NormMetric 𝕜₃] [Field 𝕜₃] [IsNormedField 𝕜₃]
   [AddCommMonoid E] [Module 𝕜₃ E] [TopologicalSpace E]
   [AddCommGroup F] [Module 𝕜₂ F] [TopologicalSpace F]
   [AddCommGroup G] [Module 𝕜₃ G]
@@ -332,7 +332,7 @@ end Nonsemilinear
 
 section AddCommGroup
 variable
-  [Semiring R] [NormedField 𝕜₂] [NormedField 𝕜₃]
+  [Semiring R] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNormedField 𝕜₂] [NormMetric 𝕜₃] [Field 𝕜₃] [IsNormedField 𝕜₃]
   [AddCommGroup E] [Module R E] [TopologicalSpace E]
   [AddCommGroup F] [Module 𝕜₂ F] [TopologicalSpace F]
   [AddCommGroup G] [Module 𝕜₃ G]
@@ -348,7 +348,7 @@ theorem map_neg₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (x : E) (y : F) :
 end AddCommGroup
 
 section BilinForm
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 
 /-- Send a continuous bilinear form to an abstract bilinear form (forgetting continuity). -/
 def toBilinForm (L : E →L[𝕜] E →L[𝕜] 𝕜) : LinearMap.BilinForm 𝕜 E := L.toLinearMap₁₂
@@ -369,14 +369,14 @@ end BilinearMaps
 
 section RestrictScalars
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   {E : Type*} [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
   {F : Type*} [AddCommGroup F]
 
 section UniformSpace
 
 variable [UniformSpace F] [IsUniformAddGroup F] [Module 𝕜 F]
-  (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+  (𝕜' : Type*) [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
   [Module 𝕜' E] [IsScalarTower 𝕜' 𝕜 E] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -393,7 +393,7 @@ theorem uniformContinuous_restrictScalars :
 end UniformSpace
 
 variable [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜 F]
-  (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+  (𝕜' : Type*) [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
   [Module 𝕜' E] [IsScalarTower 𝕜' 𝕜 E] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
 
 theorem isEmbedding_restrictScalars :
@@ -430,7 +430,7 @@ end RestrictScalars
 
 section Prod
 
-variable {𝕜 E F G : Type*} (S : Type*) [NormedField 𝕜] [Semiring S]
+variable {𝕜 E F G : Type*} (S : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [Semiring S]
   [AddCommGroup E] [Module 𝕜 E]
   [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
   [AddCommGroup F] [Module 𝕜 F]
@@ -463,7 +463,7 @@ def prodL : ((E →L[𝕜] F) × (E →L[𝕜] G)) ≃L[S] (E →L[𝕜] F × G)
 
 end Prod
 
-variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable {𝕜 E : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
   [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 
 /-- `ContinuousLinearMap.toSpanSingleton` as a continuous linear equivalence. -/
@@ -486,7 +486,7 @@ section Semilinear
 
 variable {𝕜 : Type*} {𝕜₂ : Type*} {𝕜₃ : Type*} {𝕜₄ : Type*} {E : Type*} {F : Type*}
   {G : Type*} {H : Type*} [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
-  [NormedField 𝕜] [NormedField 𝕜₂] [NormedField 𝕜₃] [NormedField 𝕜₄]
+  [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNormedField 𝕜₂] [NormMetric 𝕜₃] [Field 𝕜₃] [IsNormedField 𝕜₃] [NormMetric 𝕜₄] [Field 𝕜₄] [IsNormedField 𝕜₄]
   [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜₃ G] [Module 𝕜₄ H]
   [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G] [TopologicalSpace H]
   [IsTopologicalAddGroup G] [IsTopologicalAddGroup H] [ContinuousConstSMul 𝕜₃ G]
@@ -517,7 +517,7 @@ end Semilinear
 section Linear
 
 variable {𝕜 : Type*} {E : Type*} {F : Type*} {G : Type*} {H : Type*} [AddCommGroup E]
-  [AddCommGroup F] [AddCommGroup G] [AddCommGroup H] [NormedField 𝕜] [Module 𝕜 E]
+  [AddCommGroup F] [AddCommGroup G] [AddCommGroup H] [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [Module 𝕜 E]
   [Module 𝕜 F] [Module 𝕜 G] [Module 𝕜 H] [TopologicalSpace E] [TopologicalSpace F]
   [TopologicalSpace G] [TopologicalSpace H] [IsTopologicalAddGroup G] [IsTopologicalAddGroup H]
   [ContinuousConstSMul 𝕜 G] [ContinuousConstSMul 𝕜 H]

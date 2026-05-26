@@ -91,7 +91,7 @@ open scoped Topology
 
 namespace ContinuousLinearMap
 
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+variable {𝕜 E F : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
   [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 
 theorem measurable_apply₂ [MeasurableSpace E] [OpensMeasurableSpace E]
@@ -103,7 +103,7 @@ end ContinuousLinearMap
 
 section fderiv
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 variable {f : E → F} (K : Set (E →L[𝕜] F))
@@ -780,7 +780,7 @@ to the previous sections, some assumptions are needed for this: if `f p.1` depen
 then the proofs in the previous sections adapt readily, as the set `A` defined above is open, so
 that the differentiability set `D` is measurable. -/
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E]
   {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
   {α : Type*} [TopologicalSpace α]

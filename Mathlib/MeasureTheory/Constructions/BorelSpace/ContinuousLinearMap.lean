@@ -40,7 +40,7 @@ end ContinuousLinearMap
 
 namespace ContinuousLinearMap
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
   [NormedSpace 𝕜 F]
 
@@ -67,7 +67,7 @@ end ContinuousLinearMap
 
 section ContinuousLinearMapNontriviallyNormedField
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
   {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 
@@ -85,7 +85,7 @@ end ContinuousLinearMapNontriviallyNormedField
 
 section NormedSpace
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [MeasurableSpace 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [MeasurableSpace 𝕜]
 variable [BorelSpace 𝕜] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [MeasurableSpace E]
   [BorelSpace E]
 

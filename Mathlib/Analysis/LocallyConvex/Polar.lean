@@ -136,7 +136,7 @@ end NormedRing
 
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [AddCommMonoid E] [AddCommMonoid F]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 variable [Module 𝕜 E] [Module 𝕜 F]
 
 
@@ -198,11 +198,11 @@ def polar (R : Type*) [NormMetric R] [CommRing R] [IsNormedRing R] {M : Type*} [
 /-- Given a subset `s` in a monoid `M` (over a field `𝕜`) closed under scalar multiplication,
 the polar `polarSubmodule 𝕜 s` is the submodule of `StrongDual 𝕜 M` consisting of those functionals
 which evaluate to zero at all points `z ∈ s`. -/
-def polarSubmodule (𝕜 : Type*) [NontriviallyNormedField 𝕜] {M : Type*} [AddCommMonoid M]
+def polarSubmodule (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {M : Type*} [AddCommMonoid M]
     [TopologicalSpace M] [Module 𝕜 M] {S : Type*} [SetLike S M] [SMulMemClass S 𝕜 M] (m : S) :
     Submodule 𝕜 (StrongDual 𝕜 M) := (topDualPairing 𝕜 M).flip.polarSubmodule m
 
-variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+variable (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [Module 𝕜 E]
 
 lemma polarSubmodule_eq_polar (m : SubMulAction 𝕜 E) :
@@ -246,7 +246,7 @@ end
 
 section
 
-variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+variable (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
 
 open Set

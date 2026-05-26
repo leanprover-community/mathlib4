@@ -161,7 +161,7 @@ end SeminormedRing
 
 section NormedField
 
-variable [NormedDivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
+variable [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
 
 @[simp]
 theorem balancedCoreAux_empty : balancedCoreAux 𝕜 (∅ : Set E) = ∅ := by
@@ -218,7 +218,7 @@ end balancedHull
 
 section Topology
 
-variable [NormedDivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [ContinuousSMul 𝕜 E] {U : Set E}
 
 protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCore 𝕜 U) := by

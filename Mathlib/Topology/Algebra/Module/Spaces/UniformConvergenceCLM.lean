@@ -71,7 +71,7 @@ open scoped UniformConvergence Uniformity
 
 /-! ### 𝔖-Topologies -/
 
-variable {𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] (σ : 𝕜₁ →+* 𝕜₂)
+variable {𝕜₁ 𝕜₂ : Type*} [NormMetric 𝕜₁] [Field 𝕜₁] [IsNormedField 𝕜₁] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNormedField 𝕜₂] (σ : 𝕜₁ →+* 𝕜₂)
   {E F G : Type*}
   [AddCommGroup E] [Module 𝕜₁ E] [TopologicalSpace E]
   [AddCommGroup F] [Module 𝕜₂ F]
@@ -310,7 +310,7 @@ variable {σ F} in
 /-- A set `S` of continuous linear maps with topology of uniform convergence on sets `s ∈ 𝔖`
 is von Neumann bounded iff for any `s ∈ 𝔖`,
 the set `{f x | (f ∈ S) (x ∈ s)}` is von Neumann bounded. -/
-theorem isVonNBounded_iff {R : Type*} [NormedDivisionRing R]
+theorem isVonNBounded_iff {R : Type*} [NormMetric R] [DivisionRing R] [IsNormedField R]
     [TopologicalSpace F] [IsTopologicalAddGroup F]
     [Module R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜₂ R F]
     {𝔖 : Set (Set E)} {S : Set (E →SLᵤ[σ, 𝔖] F)} :
@@ -349,7 +349,7 @@ theorem tendsto_iff_tendstoUniformlyOn {ι : Type*} {p : Filter ι} [UniformSpac
 variable {F} in
 theorem isUniformInducing_postcomp
     [AddCommGroup G] [UniformSpace G] [IsUniformAddGroup G]
-    {𝕜₃ : Type*} [NormedField 𝕜₃] [Module 𝕜₃ G]
+    {𝕜₃ : Type*} [NormMetric 𝕜₃] [Field 𝕜₃] [IsNormedField 𝕜₃] [Module 𝕜₃ G]
     {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] [UniformSpace F] [IsUniformAddGroup F]
     (g : F →SL[τ] G) (hg : IsUniformInducing g) (𝔖 : Set (Set E)) :
     IsUniformInducing (α := E →SLᵤ[σ, 𝔖] F) (β := E →SLᵤ[ρ, 𝔖] G)
@@ -360,7 +360,7 @@ theorem isUniformInducing_postcomp
 variable {F} in
 theorem isUniformEmbedding_postcomp
     [AddCommGroup G] [UniformSpace G] [IsUniformAddGroup G]
-    {𝕜₃ : Type*} [NormedField 𝕜₃] [Module 𝕜₃ G]
+    {𝕜₃ : Type*} [NormMetric 𝕜₃] [Field 𝕜₃] [IsNormedField 𝕜₃] [Module 𝕜₃ G]
     {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] [UniformSpace F] [IsUniformAddGroup F]
     (g : F →SL[τ] G) (hg : IsUniformEmbedding g) (𝔖 : Set (Set E)) :
     IsUniformEmbedding (α := E →SLᵤ[σ, 𝔖] F) (β := E →SLᵤ[ρ, 𝔖] G)
@@ -398,7 +398,7 @@ theorem topologicalSpace_mono [TopologicalSpace F] [IsTopologicalAddGroup F] (h 
   simp_rw [← uniformity_toTopologicalSpace_eq]
   exact UniformSpace.toTopologicalSpace_mono (uniformSpace_mono σ F h)
 
-variable {𝕜₁ : Type*} [NontriviallyNormedField 𝕜₁] {σ : 𝕜₁ →+* 𝕜₂} [Module 𝕜₁ E] in
+variable {𝕜₁ : Type*} [NormMetric 𝕜₁] [Field 𝕜₁] [IsNontriviallyNormedField 𝕜₁] {σ : 𝕜₁ →+* 𝕜₂} [Module 𝕜₁ E] in
 variable {F} in
 /-- Let `𝔖` be a family of bounded subsets of `F`, and `B : E × F → G` a bilinear map.
 If `B` is (jointly) continuous, then it is `𝔖`-**hypocontinuous**:
@@ -407,7 +407,7 @@ in curried form, it defines a continuous linear map `E →L[𝕜] (F →Lᵤ[�
 Note that, in full generality, the converse is not true.
 See also `ContinuousLinearMap.continuous_of_continuous_uncurry`. -/
 protected theorem continuous_of_continuous_uncurry [AddCommGroup G]
-    {𝕜₃ : Type*} [NormedField 𝕜₃] [Module 𝕜₃ G]
+    {𝕜₃ : Type*} [NormMetric 𝕜₃] [Field 𝕜₃] [IsNormedField 𝕜₃] [Module 𝕜₃ G]
     {τ : 𝕜₃ →+* 𝕜₂} [RingHomSurjective τ]
     [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜₂ F]
     [TopologicalSpace G] [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
@@ -459,7 +459,7 @@ namespace ContinuousLinearMap
 
 open scoped UniformConvergenceCLM
 
-variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃] {σ : 𝕜₁ →+* 𝕜₂}
+variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormMetric 𝕜₁] [Field 𝕜₁] [IsNormedField 𝕜₁] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNormedField 𝕜₂] [NormMetric 𝕜₃] [Field 𝕜₃] [IsNormedField 𝕜₃] {σ : 𝕜₁ →+* 𝕜₂}
   {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] {E F G : Type*} [AddCommGroup E]
   [Module 𝕜₁ E] [AddCommGroup F] [Module 𝕜₂ F]
   [AddCommGroup G] [Module 𝕜₃ G] [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G]
@@ -522,7 +522,7 @@ section Pi
 
 open scoped UniformConvergenceCLM
 
-variable (𝕜 : Type*) [NormedField 𝕜] {E ι : Type*} (F : ι → Type*)
+variable (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] {E ι : Type*} (F : ι → Type*)
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
   [∀ i, IsTopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜 (F i)]
@@ -573,7 +573,7 @@ section Semilinear
 
 variable {𝕜 : Type*} {𝕜₂ : Type*} {𝕜₃ : Type*} {𝕜₄ : Type*} {E : Type*} {F : Type*}
   {G : Type*} {H : Type*} [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
-  [NormedField 𝕜] [NormedField 𝕜₂] [NormedField 𝕜₃] [NormedField 𝕜₄]
+  [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNormedField 𝕜₂] [NormMetric 𝕜₃] [Field 𝕜₃] [IsNormedField 𝕜₃] [NormMetric 𝕜₄] [Field 𝕜₄] [IsNormedField 𝕜₄]
   [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜₃ G] [Module 𝕜₄ H]
   [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G] [TopologicalSpace H]
   [IsTopologicalAddGroup G] [IsTopologicalAddGroup H]
@@ -624,7 +624,7 @@ section Linear
 
 variable {𝕜 : Type*} {E : Type*} {F : Type*} {G : Type*} {H : Type*}
   [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
-  [NormedField 𝕜] [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G] [Module 𝕜 H]
+  [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G] [Module 𝕜 H]
   [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G] [TopologicalSpace H]
   [IsTopologicalAddGroup G] [IsTopologicalAddGroup H]
   [ContinuousConstSMul 𝕜 G] [ContinuousConstSMul 𝕜 H]

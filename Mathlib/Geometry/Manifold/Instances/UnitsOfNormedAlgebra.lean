@@ -48,7 +48,7 @@ theorem chartAt_apply {a : Rˣ} {b : Rˣ} : chartAt R a b = b :=
 theorem chartAt_source {a : Rˣ} : (chartAt R a).source = Set.univ :=
   rfl
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 R]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 R]
   {H : Type*} [TopologicalSpace H] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 

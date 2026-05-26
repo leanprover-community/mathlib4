@@ -40,7 +40,7 @@ open Filter ContinuousAlternatingMap Finset VectorField
 open scoped Topology
 
 variable {𝕜 E F : Type*}
-  [NontriviallyNormedField 𝕜]
+  [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
   [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
   {n m k : ℕ} {r : WithTop ℕ∞}

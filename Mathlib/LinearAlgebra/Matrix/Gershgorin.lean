@@ -22,7 +22,7 @@ of matrices and some applications.
 
 public section
 
-variable {K n : Type*} [NormedField K] [Fintype n] [DecidableEq n] {A : Matrix n n K}
+variable {K n : Type*} [NormMetric K] [Field K] [IsNormedField K] [Fintype n] [DecidableEq n] {A : Matrix n n K}
 
 /-- **Gershgorin's circle theorem**: for any eigenvalue `μ` of a square matrix `A`, there exists an
 index `k` such that `μ` lies in the closed ball of center the diagonal term `A k k` and of

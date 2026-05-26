@@ -48,7 +48,7 @@ public section
 
 /-- If `f` is multiplicative and summable, then its values at natural numbers `> 1`
 have norm strictly less than `1`. -/
-lemma Summable.norm_lt_one {F : Type*} [NormedDivisionRing F] [CompleteSpace F] {f : ℕ →* F}
+lemma Summable.norm_lt_one {F : Type*} [NormMetric F] [DivisionRing F] [IsNormedField F] [CompleteSpace F] {f : ℕ →* F}
     (hsum : Summable f) {p : ℕ} (hp : 1 < p) :
     ‖f p‖ < 1 := by
   refine summable_geometric_iff_norm_lt_one.mp ?_
@@ -276,7 +276,7 @@ Then we can use the formula for geometric series to simplify the statement. This
 `EulerProduct.eulerProduct_completely_multiplicative_hasProd` and variants.
 -/
 
-variable {F : Type*} [NormedField F] [CompleteSpace F]
+variable {F : Type*} [NormMetric F] [Field F] [IsNormedField F] [CompleteSpace F]
 
 namespace EulerProduct
 

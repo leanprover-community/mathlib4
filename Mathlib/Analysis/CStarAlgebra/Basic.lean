@@ -73,7 +73,7 @@ instance (priority := 100) NormedStarGroup.to_continuousStar : ContinuousStar E 
   ⟨star_isometry.continuous⟩
 
 noncomputable
-instance [NormedField 𝕜] [NormedSpace 𝕜 E] [Star 𝕜] [TrivialStar 𝕜] [StarModule 𝕜 E] :
+instance [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormedSpace 𝕜 E] [Star 𝕜] [TrivialStar 𝕜] [StarModule 𝕜 E] :
     NormedSpace 𝕜 (selfAdjoint E) where
   norm_smul_le _ _ := norm_smul_le _ (_ : E)
 
@@ -296,7 +296,7 @@ end starₗᵢ
 
 namespace StarSubalgebra
 
-example {𝕜 A : Type*} [NormedField 𝕜] [StarRing 𝕜] [NormPseudoMetric A] [Ring A] [IsNormedRing A] [StarRing A]
+example {𝕜 A : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [StarRing 𝕜] [NormPseudoMetric A] [Ring A] [IsNormedRing A] [StarRing A]
     [NormedAlgebra 𝕜 A] [StarModule 𝕜 A] (S : StarSubalgebra 𝕜 A) :
     NormedAlgebra 𝕜 S := by infer_instance
 

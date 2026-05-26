@@ -14,7 +14,7 @@ public import Mathlib.Analysis.Calculus.Deriv.Basic
 
 public section
 
-variable {𝕜 ι : Type*} [DecidableEq ι] [NontriviallyNormedField 𝕜]
+variable {𝕜 ι : Type*} [DecidableEq ι] [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 
 theorem hasDerivAt_update (x : ι → 𝕜) (i : ι) (y : 𝕜) :
     HasDerivAt (Function.update x i) (Pi.single i (1 : 𝕜)) y := by

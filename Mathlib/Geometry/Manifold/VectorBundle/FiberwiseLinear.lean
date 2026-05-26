@@ -25,7 +25,7 @@ open scoped Manifold Topology ContDiff
 
 
 variable {𝕜 B F : Type*} [TopologicalSpace B]
-variable [NontriviallyNormedField 𝕜] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 
 namespace FiberwiseLinear
 

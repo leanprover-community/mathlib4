@@ -33,7 +33,7 @@ There are elementary examples of functions `d` where `∏ᶠ u, (· - u) ^ d u` 
 public section
 
 variable
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
   {U : Set 𝕜}
 

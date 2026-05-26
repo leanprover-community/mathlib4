@@ -22,7 +22,7 @@ open scoped Manifold ContDiff
 
 section ContMDiffRing
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
   [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {n : ℕ∞ω}
 
 -- See note [Design choices about smooth algebraic structures]
@@ -51,7 +51,7 @@ end ContMDiffRing
 set_option backward.isDefEq.respectTransparency false in
 -- see Note [lower instance priority]
 instance (priority := 100) instFieldContMDiffRing
-    {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω} :
+    {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {n : ℕ∞ω} :
     ContMDiffRing 𝓘(𝕜) n 𝕜 :=
   { instNormedSpaceLieAddGroup with
     contMDiff_mul := by
@@ -61,7 +61,7 @@ instance (priority := 100) instFieldContMDiffRing
       rw [contDiffOn_univ]
       exact contDiff_mul }
 
-variable {𝕜 R E H : Type*} [TopologicalSpace R] [TopologicalSpace H] [NontriviallyNormedField 𝕜]
+variable {𝕜 R E H : Type*} [TopologicalSpace R] [TopologicalSpace H] [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [ChartedSpace H R] (I : ModelWithCorners 𝕜 E H)
   (n : ℕ∞ω)
 

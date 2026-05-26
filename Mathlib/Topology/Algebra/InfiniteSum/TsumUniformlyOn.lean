@@ -64,7 +64,7 @@ lemma SummableLocallyUniformlyOn_of_locally_bounded [TopologicalSpace β] [Local
 
 end UniformlyOn
 
-variable {ι 𝕜 F : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
+variable {ι 𝕜 F : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
     [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] {s : Set 𝕜}
 
 /-- The `derivWithin` of a sum whose derivative is absolutely and uniformly convergent sum on an

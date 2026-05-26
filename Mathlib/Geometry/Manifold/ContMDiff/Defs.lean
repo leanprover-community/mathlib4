@@ -55,7 +55,7 @@ open scoped Topology Manifold ContDiff
 /-! ### Definition of `Cⁿ` functions between manifolds -/
 
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   -- Prerequisite typeclasses to say that `M` is a manifold over the pair `(E, H)`
   {E : Type*}
   [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]

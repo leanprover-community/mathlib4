@@ -33,7 +33,7 @@ namespace Completion
 
 variable (𝕜 E : Type*)
 
-instance [NormedField 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] :
+instance [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] :
     NormedSpace 𝕜 (Completion E) where
   norm_smul_le := norm_smul_le
 
@@ -62,7 +62,7 @@ theorem coe_toComplL : ⇑(toComplL : E →L[𝕜] Completion E) = ((↑) : E �
   rfl
 
 @[simp]
-theorem norm_toComplL {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+theorem norm_toComplL {𝕜 E : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
     [NormedSpace 𝕜 E] [Nontrivial E] : ‖(toComplL : E →L[𝕜] Completion E)‖ = 1 :=
   (toComplₗᵢ : E →ₗᵢ[𝕜] Completion E).norm_toContinuousLinearMap
 
@@ -82,11 +82,11 @@ example [NormPseudoMetric A] [Ring A] [IsNormedRing A] : NormedRing (Completion 
 
 example [NormPseudoMetric A] [CommRing A] [IsNormedRing A] : NormedCommRing (Completion A) where
 
-instance [NormedField 𝕜] [NormPseudoMetric A] [CommRing A] [IsNormedRing A] [NormedAlgebra 𝕜 A] :
+instance [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormPseudoMetric A] [CommRing A] [IsNormedRing A] [NormedAlgebra 𝕜 A] :
     NormedAlgebra 𝕜 (Completion A) where
   norm_smul_le := norm_smul_le
 
-instance [NormedField A] [CompletableTopField A] :
+instance [NormMetric A] [Field A] [IsNormedField A] [CompletableTopField A] :
     NormedField (UniformSpace.Completion A) where
   __ : IsNormedRing (Completion A) := inferInstance
   __ : Field (Completion A) := inferInstance

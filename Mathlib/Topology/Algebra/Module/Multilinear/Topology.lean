@@ -30,7 +30,7 @@ open scoped UniformConvergence Filter
 namespace ContinuousMultilinearMap
 
 variable {𝕜 ι : Type*} {E : ι → Type*} {F : Type*}
-  [NormedField 𝕜]
+  [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜]
   [∀ i, TopologicalSpace (E i)] [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
   [AddCommGroup F] [Module 𝕜 F]
 
@@ -150,7 +150,7 @@ end CompleteSpace
 
 section RestrictScalars
 
-variable (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+variable (𝕜' : Type*) [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
   [∀ i, Module 𝕜' (E i)] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
   [∀ i, ContinuousSMul 𝕜 (E i)]
 
@@ -277,7 +277,7 @@ instance instT3Space [T2Space F] : T3Space (ContinuousMultilinearMap 𝕜 E F) :
 
 section RestrictScalars
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+variable {𝕜' : Type*} [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
   [∀ i, Module 𝕜' (E i)] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
 
 theorem isEmbedding_restrictScalars :
@@ -331,7 +331,7 @@ end ContinuousMultilinearMap
 
 namespace ContinuousLinearMap
 
-variable {𝕜 ι : Type*} {E : ι → Type*} {F G : Type*} [NormedField 𝕜] [∀ i, TopologicalSpace (E i)]
+variable {𝕜 ι : Type*} {E : ι → Type*} {F G : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [∀ i, TopologicalSpace (E i)]
   [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
   [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
   [ContinuousConstSMul 𝕜 F]
@@ -390,7 +390,7 @@ end ContinuousLinearMap
 
 namespace ContinuousLinearEquiv
 
-variable {𝕜 ι : Type*} {E E₁ : ι → Type*} {F G : Type*} [NormedField 𝕜]
+variable {𝕜 ι : Type*} {E E₁ : ι → Type*} {F G : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜]
   [∀ i, TopologicalSpace (E i)] [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
   [∀ i, TopologicalSpace (E₁ i)] [∀ i, AddCommGroup (E₁ i)] [∀ i, Module 𝕜 (E₁ i)]
   [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]

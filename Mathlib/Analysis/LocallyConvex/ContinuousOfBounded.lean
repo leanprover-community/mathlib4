@@ -32,8 +32,8 @@ variable [AddCommGroup F] [TopologicalSpace F]
 
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
-variable [NormedField 𝕜'] [Module 𝕜' F]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
+variable [NormMetric 𝕜'] [Field 𝕜'] [IsNormedField 𝕜'] [Module 𝕜' F]
 variable {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ]
 
 /-- Construct a continuous linear map from a linear map `f : E →ₛₗ[σ] F` and the existence of a

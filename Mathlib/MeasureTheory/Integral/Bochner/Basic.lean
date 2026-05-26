@@ -151,7 +151,7 @@ Define the Bochner integral on functions generally to be the `L1` Bochner integr
 functions, and 0 otherwise; prove its basic properties.
 -/
 
-variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedDivisionRing 𝕜]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜]
   [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F] [CompleteSpace F]
   {G : Type*} [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace ℝ G]
 

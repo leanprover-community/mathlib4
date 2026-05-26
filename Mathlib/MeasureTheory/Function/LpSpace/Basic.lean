@@ -444,7 +444,7 @@ end IsBoundedSMul
 
 section NormedSpace
 
-variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormedSpace 𝕜 E]
 
 instance instNormedSpace [Fact (1 ≤ p)] : NormedSpace 𝕜 (Lp E p μ) where
   norm_smul_le _ _ := norm_smul_le _ _
@@ -663,7 +663,7 @@ theorem MeasureTheory.MemLp.of_comp_antilipschitzWith {α E F} {K'} [MeasurableS
     (hg'.isUniformEmbedding hg).isEmbedding.aestronglyMeasurable_comp_iff.1 hL.1
   exact hL.of_le_mul B (Filter.Eventually.of_forall A)
 
-lemma MeasureTheory.MemLp.continuousLinearMap_comp [NontriviallyNormedField 𝕜]
+lemma MeasureTheory.MemLp.continuousLinearMap_comp [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
     [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {f : α → E}
     (h_Lp : MemLp f p μ) (L : E →L[𝕜] F) :
     MemLp (fun x ↦ L (f x)) p μ :=
@@ -720,7 +720,7 @@ end LipschitzWith
 
 namespace ContinuousLinearMap
 
-variable {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜 E]
+variable {𝕜 𝕜' : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜'] [NormedSpace 𝕜 E]
   [NormedSpace 𝕜' F]
 variable {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ]
 

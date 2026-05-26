@@ -35,7 +35,7 @@ end SMulZeroClass
 
 section DivisionRing
 
-variable [NormedDivisionRing 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+variable [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 variable [Module 𝕜 E] [NormSMulClass 𝕜 E]
 
 theorem ediam_smul₀ (c : 𝕜) (s : Set E) : ediam (c • s) = ‖c‖₊ • ediam s := by
@@ -72,7 +72,7 @@ theorem infDist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
 end DivisionRing
 
 
-variable [NormedField 𝕜]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜]
 
 section SeminormedAddCommGroup
 

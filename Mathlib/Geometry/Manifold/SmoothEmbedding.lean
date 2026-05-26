@@ -50,7 +50,7 @@ noncomputable section
 
 namespace Manifold
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   {E₁ E₂ E₃ E₄ : Type*} [NormMetric E₁] [AddCommGroup E₁] [IsNormedAddGroup E₁] [NormedSpace 𝕜 E₁]
   [NormMetric E₂] [AddCommGroup E₂] [IsNormedAddGroup E₂] [NormedSpace 𝕜 E₂]
   [NormMetric E₃] [AddCommGroup E₃] [IsNormedAddGroup E₃] [NormedSpace 𝕜 E₃] [NormMetric E₄] [AddCommGroup E₄] [IsNormedAddGroup E₄] [NormedSpace 𝕜 E₄]

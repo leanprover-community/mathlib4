@@ -49,7 +49,7 @@ section
 
 open Polynomial
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [ProperSpace 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [ProperSpace 𝕜]
 
 theorem Polynomial.isCoveringMapOn_eval (p : 𝕜[X]) :
     IsCoveringMapOn p.eval (p.eval '' {k | p.derivative.eval k = 0})ᶜ := by

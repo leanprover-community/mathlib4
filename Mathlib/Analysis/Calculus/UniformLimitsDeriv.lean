@@ -104,7 +104,7 @@ open scoped uniformity Filter Topology
 section LimitsOfDerivatives
 
 variable {ι : Type*} {l : Filter ι} {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] {𝕜 : Type*}
-  [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
+  [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
   [NormedSpace 𝕜 E] {G : Type*} [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G] {f : ι → E → G}
   {g : E → G} {f' : ι → E → E →L[𝕜] G} {g' : E → E →L[𝕜] G} {x : E}
 
@@ -444,7 +444,7 @@ In this section, we provide `deriv` equivalents of the `fderiv` lemmas in the pr
 -/
 
 
-variable {ι : Type*} {l : Filter ι} {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {ι : Type*} {l : Filter ι} {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   {G : Type*} [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G]
   [NormedSpace 𝕜 G] {f : ι → 𝕜 → G} {g : 𝕜 → G} {f' : ι → 𝕜 → G} {g' : 𝕜 → G} {x : 𝕜}
 

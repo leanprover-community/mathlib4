@@ -167,7 +167,7 @@ theorem IsVonNBounded.of_topologicalSpace_le {t t' : TopologicalSpace E} (h : t 
 
 end MultipleTopologies
 
-lemma isVonNBounded_iff_tendsto_smallSets_nhds {𝕜 E : Type*} [NormedDivisionRing 𝕜]
+lemma isVonNBounded_iff_tendsto_smallSets_nhds {𝕜 E : Type*} [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜]
     [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] {S : Set E} :
     IsVonNBounded 𝕜 S ↔ Tendsto (· • S : 𝕜 → Set E) (𝓝 0) (𝓝 0).smallSets := by
   rw [tendsto_smallSets_iff]
@@ -177,12 +177,12 @@ lemma isVonNBounded_iff_tendsto_smallSets_nhds {𝕜 E : Type*} [NormedDivisionR
 
 alias ⟨IsVonNBounded.tendsto_smallSets_nhds, _⟩ := isVonNBounded_iff_tendsto_smallSets_nhds
 
-lemma isVonNBounded_iff_absorbing_le {𝕜 E : Type*} [NormedDivisionRing 𝕜]
+lemma isVonNBounded_iff_absorbing_le {𝕜 E : Type*} [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜]
     [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] {S : Set E} :
     IsVonNBounded 𝕜 S ↔ Filter.absorbing 𝕜 S ≤ 𝓝 0 :=
   .rfl
 
-lemma isVonNBounded_pi_iff {𝕜 ι : Type*} {E : ι → Type*} [NormedDivisionRing 𝕜]
+lemma isVonNBounded_pi_iff {𝕜 ι : Type*} {E : ι → Type*} [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜]
     [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)]
     {S : Set (∀ i, E i)} : IsVonNBounded 𝕜 S ↔ ∀ i, IsVonNBounded 𝕜 (eval i '' S) := by
   simp_rw [isVonNBounded_iff_tendsto_smallSets_nhds, nhds_pi, Filter.pi, smallSets_iInf,
@@ -191,7 +191,7 @@ lemma isVonNBounded_pi_iff {𝕜 ι : Type*} {E : ι → Type*} [NormedDivisionR
 
 section Image
 
-variable {𝕜₁ 𝕜₂ : Type*} [NormedDivisionRing 𝕜₁] [NormedDivisionRing 𝕜₂] [AddCommGroup E]
+variable {𝕜₁ 𝕜₂ : Type*} [NormMetric 𝕜₁] [DivisionRing 𝕜₁] [IsNormedField 𝕜₁] [NormMetric 𝕜₂] [DivisionRing 𝕜₂] [IsNormedField 𝕜₂] [AddCommGroup E]
   [Module 𝕜₁ E] [AddCommGroup F] [Module 𝕜₂ F] [TopologicalSpace E] [TopologicalSpace F]
 
 /-- A continuous linear image of a bounded set is bounded. -/
@@ -207,14 +207,14 @@ end Image
 
 section sequence
 
-theorem IsVonNBounded.smul_tendsto_zero [NormedField 𝕜]
+theorem IsVonNBounded.smul_tendsto_zero [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜]
     [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
     {S : Set E} {ε : ι → 𝕜} {x : ι → E} {l : Filter ι}
     (hS : IsVonNBounded 𝕜 S) (hxS : ∀ᶠ n in l, x n ∈ S) (hε : Tendsto ε l (𝓝 0)) :
     Tendsto (ε • x) l (𝓝 0) :=
   (hS.tendsto_smallSets_nhds.comp hε).of_smallSets <| hxS.mono fun _ ↦ smul_mem_smul_set
 
-variable [NontriviallyNormedField 𝕜]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousSMul 𝕜 E]
 
 theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕜} {l : Filter ι} [l.NeBot]
@@ -251,9 +251,9 @@ end sequence
 /-- If a set is von Neumann bounded with respect to a smaller field,
 then it is also von Neumann bounded with respect to a larger field.
 See also `Bornology.IsVonNBounded.restrict_scalars` below. -/
-theorem IsVonNBounded.extend_scalars [NontriviallyNormedField 𝕜]
+theorem IsVonNBounded.extend_scalars [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
     {E : Type*} [AddCommGroup E] [Module 𝕜 E]
-    (𝕝 : Type*) [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝]
+    (𝕝 : Type*) [NormMetric 𝕝] [Field 𝕝] [IsNontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝]
     [Module 𝕝 E] [TopologicalSpace E] [ContinuousSMul 𝕝 E] [IsScalarTower 𝕜 𝕝 E]
     {s : Set E} (h : IsVonNBounded 𝕜 s) : IsVonNBounded 𝕝 s := by
   obtain ⟨ε, hε, hε₀⟩ : ∃ ε : ℕ → 𝕜, Tendsto ε atTop (𝓝 0) ∧ ∀ᶠ n in atTop, ε n ≠ 0 := by
@@ -264,7 +264,7 @@ theorem IsVonNBounded.extend_scalars [NontriviallyNormedField 𝕜]
 
 section NormedField
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [TopologicalSpace E]
 
 /-- The closure of a bounded set is bounded. -/
@@ -384,7 +384,7 @@ end Bornology
 
 section IsUniformAddGroup
 
-variable (𝕜) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable (𝕜) [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [UniformSpace E] [IsUniformAddGroup E] [ContinuousSMul 𝕜 E]
 
 theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
@@ -412,7 +412,7 @@ theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
 end IsUniformAddGroup
 
 variable (𝕜) in
-theorem IsCompact.isVonNBounded [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+theorem IsCompact.isVonNBounded [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] {s : Set E}
     (hs : IsCompact s) : Bornology.IsVonNBounded 𝕜 s :=
   letI := IsTopologicalAddGroup.rightUniformSpace E
@@ -420,7 +420,7 @@ theorem IsCompact.isVonNBounded [NormedField 𝕜] [AddCommGroup E] [Module 𝕜
   hs.totallyBounded.isVonNBounded 𝕜
 
 variable (𝕜) in
-theorem Filter.Tendsto.isVonNBounded_range [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+theorem Filter.Tendsto.isVonNBounded_range [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
     {f : ℕ → E} {x : E} (hf : Tendsto f atTop (𝓝 x)) : Bornology.IsVonNBounded 𝕜 (range f) :=
   letI := IsTopologicalAddGroup.rightUniformSpace E
@@ -429,7 +429,7 @@ theorem Filter.Tendsto.isVonNBounded_range [NormedField 𝕜] [AddCommGroup E] [
 
 variable (𝕜) in
 protected theorem Bornology.IsVonNBounded.restrict_scalars_of_nontrivial
-    [NormedField 𝕜] [NormMetric 𝕜'] [Ring 𝕜'] [IsNormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [Nontrivial 𝕜']
+    [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormMetric 𝕜'] [Ring 𝕜'] [IsNormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [Nontrivial 𝕜']
     [Zero E] [TopologicalSpace E]
     [SMul 𝕜 E] [MulAction 𝕜' E] [IsScalarTower 𝕜 𝕜' E] {s : Set E}
     (h : IsVonNBounded 𝕜' s) : IsVonNBounded 𝕜 s := by
@@ -441,7 +441,7 @@ protected theorem Bornology.IsVonNBounded.restrict_scalars_of_nontrivial
 
 variable (𝕜) in
 protected theorem Bornology.IsVonNBounded.restrict_scalars
-    [NormedField 𝕜] [NormMetric 𝕜'] [Ring 𝕜'] [IsNormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
+    [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormMetric 𝕜'] [Ring 𝕜'] [IsNormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
     [Zero E] [TopologicalSpace E]
     [SMul 𝕜 E] [MulActionWithZero 𝕜' E] [IsScalarTower 𝕜 𝕜' E] {s : Set E}
     (h : IsVonNBounded 𝕜' s) : IsVonNBounded 𝕜 s :=
@@ -459,7 +459,7 @@ namespace NormedSpace
 section NormedField
 
 variable (𝕜)
-variable [NormedField 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 
 theorem isVonNBounded_of_isBounded {s : Set E} (h : Bornology.IsBounded s) :
     Bornology.IsVonNBounded 𝕜 s := by
@@ -480,7 +480,7 @@ theorem isVonNBounded_closedBall (r : ℝ) :
 end NormedField
 
 variable (𝕜)
-variable [NontriviallyNormedField 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 
 theorem isVonNBounded_iff {s : Set E} : Bornology.IsVonNBounded 𝕜 s ↔ Bornology.IsBounded s := by
   refine ⟨fun h ↦ ?_, isVonNBounded_of_isBounded _⟩
@@ -548,7 +548,7 @@ instance [CompleteSpace E] : QuasiCompleteSpace 𝕜 E where
   quasiComplete _ _ := IsClosed.isComplete
 
 /-- [Bourbaki, *Topological Vector Spaces*, III §1.6][bourbaki1987] -/
-theorem isCompact_closure_of_totallyBounded_quasiComplete {E : Type*} {𝕜 : Type*} [NormedField 𝕜]
+theorem isCompact_closure_of_totallyBounded_quasiComplete {E : Type*} {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜]
     [AddCommGroup E] [Module 𝕜 E] [UniformSpace E] [IsUniformAddGroup E] [ContinuousSMul 𝕜 E]
     [QuasiCompleteSpace 𝕜 E] {s : Set E} (hs : TotallyBounded s) : IsCompact (closure s) :=
   hs.closure.isCompact_of_isComplete

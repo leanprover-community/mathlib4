@@ -252,13 +252,13 @@ variable {𝕜 : Type*}
 variable [TopologicalSpace α] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β]
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 
-instance instNormedSpace [NormedField 𝕜] [NormedSpace 𝕜 β] : NormedSpace 𝕜 (α →ᵇ β) :=
+instance instNormedSpace [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormedSpace 𝕜 β] : NormedSpace 𝕜 (α →ᵇ β) :=
   ⟨fun c f => by
     refine norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) ?_
     exact fun x =>
       norm_smul c (f x) ▸ mul_le_mul_of_nonneg_left (f.norm_coe_le_norm _) (norm_nonneg _)⟩
 
-variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 β]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormedSpace 𝕜 β]
 variable [NormPseudoMetric γ] [AddCommGroup γ] [IsNormedAddGroup γ] [NormedSpace 𝕜 γ]
 variable (α)
 
@@ -440,7 +440,7 @@ end NonUnitalAlgebra
 
 section NormedAlgebra
 
-variable {𝕜 : Type*} [NormedField 𝕜] [TopologicalSpace α]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [TopologicalSpace α]
 variable [NormMetric γ] [Ring γ] [IsNormedRing γ] [NormedAlgebra 𝕜 γ]
 
 /-- `BoundedContinuousFunction.const` as a `RingHom`. -/

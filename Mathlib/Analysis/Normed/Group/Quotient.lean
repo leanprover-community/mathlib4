@@ -466,7 +466,7 @@ instance Submodule.Quotient.instIsBoundedSMul (𝕜 : Type*)
         _ ≤ ‖k‖ * ‖a‖ := (norm_mk_le ..).trans (norm_smul_le k a)
         _ ≤ _ := (sub_lt_iff_lt_add'.mp h.1).le
 
-instance Submodule.Quotient.normedSpace (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 M] [SMul 𝕜 R]
+instance Submodule.Quotient.normedSpace (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormedSpace 𝕜 M] [SMul 𝕜 R]
     [IsScalarTower 𝕜 R M] : NormedSpace 𝕜 (M ⧸ S) where
   norm_smul_le := norm_smul_le
 
@@ -515,7 +515,7 @@ instance Ideal.Quotient.instIsNormedRing : IsNormedRing (R ⧸ I) where
       _ ≤ ‖a‖ * ‖b‖ := (Ideal.Quotient.norm_mk_le I (a * b)).trans (norm_mul_le a b)
       _ ≤ _ := (sub_lt_iff_lt_add'.mp h.1).le
 
-variable (𝕜 : Type*) [NormedField 𝕜]
+variable (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜]
 
 instance Ideal.Quotient.normedAlgebra [NormedAlgebra 𝕜 R] : NormedAlgebra 𝕜 (R ⧸ I) :=
   { Submodule.Quotient.normedSpace I 𝕜, Ideal.Quotient.algebra 𝕜 with }

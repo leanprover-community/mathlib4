@@ -38,7 +38,7 @@ open Set Fin Filter Function
 
 open scoped Topology
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   {E : Type uE} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {F : Type uF}
   [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] {G : Type uG} [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
   {X : Type*} [NormMetric X] [AddCommGroup X] [IsNormedAddGroup X] [NormedSpace 𝕜 X] {s t : Set E} {f : E → F}
@@ -429,7 +429,7 @@ theorem iteratedFDeriv_sum {ι : Type*} {f : ι → E → F} {u : Finset ι} {i 
 section MulProd
 
 variable {𝔸 𝔸' ι 𝕜' : Type*} [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸] [NormedAlgebra 𝕜 𝔸] [NormMetric 𝔸'] [CommRing 𝔸'] [IsNormedRing 𝔸']
-  [NormedAlgebra 𝕜 𝔸'] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+  [NormedAlgebra 𝕜 𝔸'] [NormMetric 𝕜'] [Field 𝕜'] [IsNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
 -- The product is smooth.
 @[fun_prop]
@@ -780,7 +780,7 @@ theorem contDiffAt_ringInverse [HasSummableGeomSeries R] (x : Rˣ) :
     Units.isOpen.uniqueDiffOn x x.isUnit
   exact this.contDiffAt (Units.isOpen.mem_nhds x.isUnit)
 
-variable {𝕜' : Type*} [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable {𝕜' : Type*} [NormMetric 𝕜'] [Field 𝕜'] [IsNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
 @[fun_prop]
 theorem contDiffAt_inv {x : 𝕜'} (hx : x ≠ 0) {n} : ContDiffAt 𝕜 n Inv.inv x := by
@@ -1021,7 +1021,7 @@ over `𝕜`.
 
 
 variable (𝕜)
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable {𝕜' : Type*} [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
 variable [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
 variable [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
 variable {p' : E → FormalMultilinearSeries 𝕜' E F}

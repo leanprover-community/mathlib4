@@ -32,7 +32,7 @@ open Filter Asymptotics Set
 
 open ContinuousLinearMap (toSpanSingleton)
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜}
+variable {𝕜 : Type u} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜}
 
 section Inverse
 
@@ -138,7 +138,7 @@ section Division
 
 /-! ### Derivative of `x ↦ c x / d x` -/
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {c d : 𝕜 → 𝕜'} {c' d' : 𝕜'}
+variable {𝕜' : Type*} [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {c d : 𝕜 → 𝕜'} {c' d' : 𝕜'}
 
 theorem HasDerivWithinAt.fun_div (hc : HasDerivWithinAt c c' s x) (hd : HasDerivWithinAt d d' s x)
     (hx : d x ≠ 0) :

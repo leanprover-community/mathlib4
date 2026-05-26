@@ -995,7 +995,7 @@ end SeminormedAddCommGroup
 section NormedSpace
 
 /-- The product of two normed spaces is a normed space, with the `L^p` norm. -/
-instance instProdNormedSpace [NormedField 𝕜] [NormedSpace 𝕜 α] [NormedSpace 𝕜 β] :
+instance instProdNormedSpace [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormedSpace 𝕜 α] [NormedSpace 𝕜 β] :
     NormedSpace 𝕜 (WithLp p (α × β)) where
   norm_smul_le := norm_smul_le
 
@@ -1091,7 +1091,7 @@ lemma normSMulClassSeminormedAddCommGroupToProd
 /-- This definition allows to endow `α × β` with a normed space structure corresponding to
 the Lp norm. It is useful for type synonyms of `α × β`. -/
 abbrev normedSpaceSeminormedAddCommGroupToProd
-    [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] {R : Type*} [NormedField R]
+    [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] {R : Type*} [NormMetric R] [Field R] [IsNormedField R]
     [NormedSpace R α] [NormedSpace R β] :
     letI := normPseudoMetricToProd p α β
     haveI := isNormedAddGroupToProd p α β

@@ -32,7 +32,7 @@ section SpecificFunctions
 
 /-! ### Differentiability of specific functions -/
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   -- declare a charted space `M` over the pair `(E, H)`.
   {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*}
@@ -1043,7 +1043,7 @@ end AlgebraOverCommRing
 section DivisionRing
 open scoped RightActions
 
-variable {z : M} {F' : Type*} [NormedDivisionRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
+variable {z : M} {F' : Type*} [NormMetric F'] [DivisionRing F'] [IsNormedField F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
   {p' q' : TangentSpace I z →L[𝕜] F'}
 
 lemma HasMFDerivWithinAt.inv' (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p') (hp_ne : p z ≠ 0) :
@@ -1094,7 +1094,7 @@ end DivisionRing
 
 section Field
 
-variable {z : M} {F' : Type*} [NormedField F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
+variable {z : M} {F' : Type*} [NormMetric F'] [Field F'] [IsNormedField F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
   {p' q' : TangentSpace I z →L[𝕜] F'}
 
 lemma HasMFDerivWithinAt.inv (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p') (hp_ne : p z ≠ 0) :

@@ -23,7 +23,7 @@ This file contains results about smoothness of affine maps.
 public section
 namespace ContinuousAffineMap
 
-variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 V W : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 variable [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace 𝕜 V]
 variable [NormMetric W] [AddCommGroup W] [IsNormedAddGroup W] [NormedSpace 𝕜 W]
 

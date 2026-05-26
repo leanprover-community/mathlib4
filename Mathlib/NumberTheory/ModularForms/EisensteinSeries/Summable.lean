@@ -224,7 +224,7 @@ lemma summable_one_div_norm_rpow {k : ℝ} (hk : 2 < k) :
 
 /-- If the inverse of a function `isBigO` to `(|(n : ℝ)| ^ a)⁻¹` for `1 < a`, then the function is
 Summable. -/
-lemma summable_inv_of_isBigO_rpow_inv {α : Type*} [NormedField α] [CompleteSpace α]
+lemma summable_inv_of_isBigO_rpow_inv {α : Type*} [NormMetric α] [Field α] [IsNormedField α] [CompleteSpace α]
     {f : ℤ → α} {a : ℝ} (hab : 1 < a)
     (hf : (fun n ↦ (f n)⁻¹) =O[cofinite] fun n ↦ (|(n : ℝ)| ^ a)⁻¹) :
     Summable fun n ↦ (f n)⁻¹ :=

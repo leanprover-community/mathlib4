@@ -145,7 +145,7 @@ private lemma norm_eq_of_isMinOn_of_forall_le {X E : Type*} [TopologicalSpace X]
 open Filter Bornology Set in
 /-- In a normed algebra `F` over a normed field `𝕜` that is a proper space, the function
 `z : 𝕜 ↦ ‖x - algebraMap 𝕜 F z‖` achieves a global minimum for every `x : F`. -/
-lemma exists_isMinOn_norm_sub_smul (𝕜 : Type*) {F : Type*} [NormedField 𝕜] [ProperSpace 𝕜]
+lemma exists_isMinOn_norm_sub_smul (𝕜 : Type*) {F : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [ProperSpace 𝕜]
     [NormPseudoMetric F] [Ring F] [IsNormedRing F] [NormedAlgebra 𝕜 F] [NormOneClass F] (x : F) :
     ∃ z : 𝕜, IsMinOn (‖x - algebraMap 𝕜 F ·‖) univ z := by
   have : Tendsto (‖x - algebraMap 𝕜 F ·‖) (cobounded 𝕜) atTop := by
@@ -404,7 +404,7 @@ lemma exists_isMonicOfDegree_two_and_aeval_eq_zero (x : F) :
 
 If a field `F` is a normed `ℝ`-algebra, then `F` is isomorphic as an `ℝ`-algebra
 either to `ℝ` or to `ℂ`. -/
-theorem nonempty_algEquiv_or (F : Type*) [NormedField F] [NormedAlgebra ℝ F] :
+theorem nonempty_algEquiv_or (F : Type*) [NormMetric F] [Field F] [IsNormedField F] [NormedAlgebra ℝ F] :
     Nonempty (F ≃ₐ[ℝ] ℝ) ∨ Nonempty (F ≃ₐ[ℝ] ℂ) := by
   have : Algebra.IsAlgebraic ℝ F := by
     refine ⟨fun x ↦ ?_⟩

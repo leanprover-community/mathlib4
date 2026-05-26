@@ -197,7 +197,7 @@ private theorem decay_neg_aux (k n : ℕ) (f : 𝓢(E, F)) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (-f : E → F) x‖ = ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ := by
   rw [iteratedFDeriv_neg_apply, norm_neg]
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] in
+variable [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] in
 private theorem decay_smul_aux (k n : ℕ) (f : 𝓢(E, F)) (c : 𝕜) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (c • (f : E → F)) x‖ =
       ‖c‖ * ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ := by
@@ -230,7 +230,7 @@ end SeminormAux
 
 section SMul
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] [NormedField 𝕜'] [NormedSpace 𝕜' F]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] [NormMetric 𝕜'] [Field 𝕜'] [IsNormedField 𝕜'] [NormedSpace 𝕜' F]
   [SMulCommClass ℝ 𝕜' F]
 
 instance instSMul : SMul 𝕜 𝓢(E, F) :=
@@ -396,7 +396,7 @@ end AddCommGroup
 
 section Module
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 instance instModule : Module 𝕜 𝓢(E, F) :=
   coeHom_injective.module 𝕜 (coeHom E F) fun _ _ => rfl
@@ -408,7 +408,7 @@ section Seminorms
 /-! ### Seminorms on Schwartz space -/
 
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 variable (𝕜)
 
 /-- The seminorms of the Schwartz space given by the best constants in the definition of
@@ -514,7 +514,7 @@ section Topology
 /-! ### The topology on the Schwartz space -/
 
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 variable (𝕜 E F)
 
 instance instTopologicalSpace : TopologicalSpace 𝓢(E, F) :=
@@ -579,7 +579,7 @@ section CLM
 /-! ### Construction of continuous linear maps between Schwartz spaces -/
 
 
-variable [NormedField 𝕜] [NormedField 𝕜']
+variable [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormMetric 𝕜'] [Field 𝕜'] [IsNormedField 𝕜']
 variable [NormMetric D] [AddCommGroup D] [IsNormedAddGroup D] [NormedSpace ℝ D]
 variable [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
 variable [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
@@ -646,7 +646,7 @@ end CLM
 
 section EvalCLM
 
-variable [NormedField 𝕜]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜]
 variable [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [SMulCommClass ℝ 𝕜 G]
 
 variable (𝕜 E G) in
@@ -675,7 +675,7 @@ end EvalCLM
 
 section Multiplication
 
-variable [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
   [NormMetric D] [AddCommGroup D] [IsNormedAddGroup D] [NormedSpace ℝ D]
   [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace ℝ G]
   [NormedSpace 𝕜 F]
@@ -1016,7 +1016,7 @@ def compCLMOfContinuousLinearEquiv (g : D ≃L[ℝ] E) :
 @[simp] lemma compCLMOfContinuousLinearEquiv_apply (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
     compCLMOfContinuousLinearEquiv 𝕜 g f = f ∘ g := rfl
 
-variable [NontriviallyNormedField 𝕜'] [NormedAlgebra ℝ 𝕜'] [NormedSpace 𝕜' F]
+variable [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜'] [NormedAlgebra ℝ 𝕜'] [NormedSpace 𝕜' F]
 
 theorem smulLeftCLM_compCLMOfContinuousLinearEquiv {u : D → 𝕜'} (hu : u.HasTemperateGrowth)
     (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
@@ -1262,7 +1262,7 @@ open MeasureTheory
 open scoped NNReal ENNReal
 
 variable [NormMetric D] [AddCommGroup D] [IsNormedAddGroup D] [MeasurableSpace D] [MeasurableSpace E] [OpensMeasurableSpace E]
-  [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+  [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 variable (𝕜 F) in
 /-- The `L^p` norm of a Schwartz function is controlled by a finite family of Schwartz seminorms.

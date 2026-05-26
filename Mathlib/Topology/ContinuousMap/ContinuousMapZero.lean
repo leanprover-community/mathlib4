@@ -487,7 +487,7 @@ noncomputable instance [NormMetric R] [CommRing R] [IsNormedRing R] : IsNormedRi
 
 noncomputable example [NormMetric R] [CommRing R] [IsNormedRing R] : NonUnitalNormedCommRing C(α, R)₀ where
 
-noncomputable instance [NormedField 𝕜] [NormMetric R] [CommRing R] [IsNormedRing R] [NormedAlgebra 𝕜 R] :
+noncomputable instance [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormMetric R] [CommRing R] [IsNormedRing R] [NormedAlgebra 𝕜 R] :
     NormedSpace 𝕜 C(α, R)₀ where
   norm_smul_le r f := norm_smul_le r (f : C(α, R))
 

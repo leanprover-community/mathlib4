@@ -15,7 +15,7 @@ Interaction of operator norm with Cartesian products.
 
 @[expose] public section
 
-variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 E F G : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 
 open Set Real Metric ContinuousLinearMap
 

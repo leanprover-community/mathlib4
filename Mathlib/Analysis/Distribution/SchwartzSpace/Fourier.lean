@@ -152,7 +152,7 @@ end definition
 
 section eval
 
-variable {𝕜' : Type*} [NormedField 𝕜']
+variable {𝕜' : Type*} [NormMetric 𝕜'] [Field 𝕜'] [IsNormedField 𝕜']
   {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
   {G : Type*} [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace ℂ G] [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
 

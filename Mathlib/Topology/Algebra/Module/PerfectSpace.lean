@@ -15,7 +15,7 @@ public section
 open Filter Set
 open scoped Topology
 
-variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Nontrivial E]
+variable (𝕜 E : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Nontrivial E]
   [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E]
 
 include 𝕜 in

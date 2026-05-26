@@ -20,7 +20,7 @@ The theorem that this gives a bound to polynomial roots is `Polynomial.IsRoot.no
 
 @[expose] public section
 
-variable {K : Type*} [NormedDivisionRing K]
+variable {K : Type*} [NormMetric K] [DivisionRing K] [IsNormedField K]
 
 namespace Polynomial
 

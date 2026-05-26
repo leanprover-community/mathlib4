@@ -23,7 +23,7 @@ open scoped Convex
 section SeminormedAddCommGroup
 
 variable {𝕜 E F : Type*}
-  [NormedField 𝕜] [PartialOrder 𝕜]
+  [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [PartialOrder 𝕜]
   [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
   [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 
@@ -39,7 +39,7 @@ lemma LinearIsometryEquiv.strictConvex_image {s : Set E} (e : E ≃ₗᵢ[𝕜] 
 
 end SeminormedAddCommGroup
 
-variable {𝕜 E F : Type*} [NormedField 𝕜] [PartialOrder 𝕜]
+variable {𝕜 E F : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [PartialOrder 𝕜]
 
 lemma StrictConvex.linearIsometry_preimage [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
     [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] {s : Set F}

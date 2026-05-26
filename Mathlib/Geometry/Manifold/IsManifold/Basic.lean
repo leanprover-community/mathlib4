@@ -162,7 +162,7 @@ to do calculus and covers the standard examples of manifolds with boundary. Over
 we require that the range is `univ`, as there is no relevant notion of manifold with boundary there.
 -/
 @[ext]
-structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
+structure ModelWithCorners (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] (E : Type*)
     [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] extends
     PartialEquiv H E where
   source_eq : source = univ
@@ -179,13 +179,13 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
   continuous_toFun : Continuous toFun := by fun_prop
   continuous_invFun : Continuous invFun := by fun_prop
 
-lemma ModelWithCorners.range_eq_target {𝕜 E H : Type*} [NontriviallyNormedField 𝕜]
+lemma ModelWithCorners.range_eq_target {𝕜 E H : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
     [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) :
     range I.toPartialEquiv = I.target := by
   rw [← I.image_source_eq_target, I.source_eq, image_univ.symm]
 
 /-- If a model with corners has full range, the `convex_range'` condition is satisfied. -/
-def ModelWithCorners.ofTargetUniv (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+def ModelWithCorners.ofTargetUniv (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
     {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (φ : PartialEquiv H E) (hsource : φ.source = univ) (htarget : φ.target = univ)
     (hcont : Continuous φ) (hcont_inv : Continuous φ.symm) : ModelWithCorners 𝕜 E H where
@@ -208,7 +208,7 @@ alias ModelWithCorners.of_target_univ := ModelWithCorners.ofTargetUniv
 attribute [simp, mfld_simps] ModelWithCorners.source_eq
 
 /-- A vector space is a model with corners, denoted as `𝓘(𝕜, E)` within the `Manifold` namespace. -/
-def modelWithCornersSelf (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
+def modelWithCornersSelf (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] (E : Type*)
     [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] : ModelWithCorners 𝕜 E E :=
   ModelWithCorners.ofTargetUniv 𝕜 (PartialEquiv.refl E) rfl rfl continuous_id continuous_id
 
@@ -219,7 +219,7 @@ scoped[Manifold] notation "𝓘(" 𝕜 ")" => modelWithCornersSelf 𝕜 𝕜
 
 section
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
 
 namespace ModelWithCorners
@@ -237,12 +237,12 @@ protected def symm : PartialEquiv E H :=
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
 because it is a composition of multiple projections. -/
-def Simps.apply (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*) [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+def Simps.apply (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] (E : Type*) [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
     [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) : H → E :=
   I
 
 /-- See Note [custom simps projection] -/
-def Simps.symm_apply (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*) [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+def Simps.symm_apply (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] (E : Type*) [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
     [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) : E → H :=
   I.symm
 
@@ -498,7 +498,7 @@ structure on the tangent bundle to a manifold modelled on `(E, H)`: it will be m
 `(E × E, H × E)`. See note [Manifold type tags] for explanation about `ModelProd H H'`
 vs `H × H'`. -/
 @[simps -isSimp]
-def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
+def ModelWithCorners.prod {𝕜 : Type u} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {E : Type v}
     [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) {E' : Type v'} [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormedSpace 𝕜 E']
     {H' : Type w'} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H') :
@@ -526,7 +526,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given a finite family of `ModelWithCorners` `I i` on `(E i, H i)`, we define the model with
 corners `pi I` on `(Π i, E i, ModelPi H)`. See note [Manifold type tags] for explanation about
 `ModelPi H`. -/
-def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Type v} [Fintype ι]
+def ModelWithCorners.pi {𝕜 : Type u} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {ι : Type v} [Fintype ι]
     {E : ι → Type w} [∀ i, NormMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] {H : ι → Type u'}
     [∀ i, TopologicalSpace (H i)] (I : ∀ i, ModelWithCorners 𝕜 (E i) (H i)) :
     ModelWithCorners 𝕜 (∀ i, E i) (ModelPi H) where
@@ -547,12 +547,12 @@ def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Typ
 
 /-- Special case of product model with corners, which is trivial on the second factor. This shows up
 as the model to tangent bundles. -/
-abbrev ModelWithCorners.tangent {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
+abbrev ModelWithCorners.tangent {𝕜 : Type u} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {E : Type v}
     [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) : ModelWithCorners 𝕜 (E × E) (ModelProd H E) :=
   I.prod 𝓘(𝕜, E)
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
   [NormedSpace 𝕜 E] {E' : Type*} [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormedSpace 𝕜 E'] {F : Type*}
   [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
   {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H'] {G : Type*}
@@ -590,19 +590,19 @@ section Boundaryless
 /-- Property ensuring that the model with corners `I` defines manifolds without boundary. This
 differs from the more general `BoundarylessManifold`, which requires every point on the manifold
 to be an interior point. -/
-class ModelWithCorners.Boundaryless {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+class ModelWithCorners.Boundaryless {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {E : Type*}
     [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) : Prop where
   range_eq_univ : range I = univ
 
-theorem ModelWithCorners.range_eq_univ {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+theorem ModelWithCorners.range_eq_univ {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {E : Type*}
     [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] :
     range I = univ := ModelWithCorners.Boundaryless.range_eq_univ
 
 /-- If `I` is a `ModelWithCorners.Boundaryless` model, then it is a homeomorphism. -/
 @[simps +simpRhs]
-def ModelWithCorners.toHomeomorph {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+def ModelWithCorners.toHomeomorph {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {E : Type*}
     [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] : H ≃ₜ E where
   __ := I
@@ -610,12 +610,12 @@ def ModelWithCorners.toHomeomorph {𝕜 : Type*} [NontriviallyNormedField 𝕜] 
   right_inv _ := I.right_inv <| I.range_eq_univ.symm ▸ mem_univ _
 
 /-- The trivial model with corners has no boundary -/
-instance modelWithCornersSelf_boundaryless (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
+instance modelWithCornersSelf_boundaryless (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] (E : Type*)
     [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] : (modelWithCornersSelf 𝕜 E).Boundaryless :=
   ⟨by simp⟩
 
 /-- If two model with corners are boundaryless, their product also is -/
-instance ModelWithCorners.range_eq_univ_prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
+instance ModelWithCorners.range_eq_univ_prod {𝕜 : Type u} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {E : Type v}
     [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] {E' : Type v'} [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E']
     [NormedSpace 𝕜 E'] {H' : Type w'} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
@@ -632,7 +632,7 @@ section contDiffGroupoid
 /-! ### `C^n` functions on models with corners -/
 
 
-variable {m n : ℕ∞ω} {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+variable {m n : ℕ∞ω} {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {E : Type*}
   [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M]
 
@@ -782,21 +782,21 @@ field `𝕜`. This definition includes the model with corners `I` (which might a
 or not, so this class covers both manifolds with boundary and manifolds without boundary), and
 a smoothness parameter `n : ℕ∞ω` (where `n = 0` means topological manifold, `n = ∞` means
 smooth manifold and `n = ω` means analytic manifold). -/
-class IsManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+class IsManifold {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {E : Type*}
     [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω) (M : Type*)
     [TopologicalSpace M] [ChartedSpace H M] : Prop
     extends HasGroupoid M (contDiffGroupoid n I)
 
 /-- Building a `C^n` manifold from a `HasGroupoid` assumption. -/
-theorem IsManifold.mk' {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+theorem IsManifold.mk' {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {E : Type*}
     [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω)
     (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     [gr : HasGroupoid M (contDiffGroupoid n I)] : IsManifold I n M :=
   { gr with }
 
-theorem isManifold_of_contDiffOn {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+theorem isManifold_of_contDiffOn {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
     {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω) (M : Type*)
     [TopologicalSpace M] [ChartedSpace H M]
@@ -808,7 +808,7 @@ theorem isManifold_of_contDiffOn {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     apply StructureGroupoid.compatible
 
 /-- For any model with corners, the model space is a `C^n` manifold -/
-instance instIsManifoldModelSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+instance instIsManifoldModelSpace {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {E : Type*}
     [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω} : IsManifold I n H :=
   { hasGroupoid_model_space _ _ with }
@@ -820,7 +820,7 @@ namespace IsManifold
 /- We restate in the namespace `IsManifold` some lemmas that hold for general
 charted space with a structure groupoid, avoiding the need to specify the groupoid
 `contDiffGroupoid n I` explicitly. -/
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
   {n : ℕ∞ω} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
@@ -927,7 +927,7 @@ example [Unique E] : IsManifold (𝓘(𝕜, E)) n (Fin 2) := of_discreteTopology
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The product of two `C^n` manifolds is naturally a `C^n` manifold. -/
-instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+instance prod {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
     [NormedSpace 𝕜 E] {E' : Type*} [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
     [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type*} [TopologicalSpace H']
     {I' : ModelWithCorners 𝕜 E' H'} (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
@@ -994,7 +994,7 @@ end DisjointUnion
 end IsManifold
 
 theorem OpenPartialHomeomorph.isManifold_singleton
-    {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+    {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω}
     {M : Type*} [TopologicalSpace M] (e : OpenPartialHomeomorph M H) (h : e.source = Set.univ) :
     letI := e.singletonChartedSpace h
@@ -1003,7 +1003,7 @@ theorem OpenPartialHomeomorph.isManifold_singleton
   IsManifold.mk' _ _ _ (gr := e.singleton_hasGroupoid h (contDiffGroupoid n I))
 
 theorem Topology.IsOpenEmbedding.isManifold_singleton {𝕜 E H : Type*}
-    [NontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H]
+    [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H]
     {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω}
     {M : Type*} [TopologicalSpace M] [Nonempty M] {f : M → H} (h : IsOpenEmbedding f) :
     letI := h.singletonChartedSpace
@@ -1014,7 +1014,7 @@ namespace TopologicalSpace.Opens
 
 open TopologicalSpace
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I n M]
   (s : Opens M)
@@ -1040,7 +1040,7 @@ The definition of `TangentSpace` is not reducible so that type class inference
 does not pick wrong instances.
 -/
 @[nolint unusedArguments]
-def TangentSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+def TangentSpace {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
     {E : Type u} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
     {M : Type*} [TopologicalSpace M] [ChartedSpace H M] (_x : M) : Type u := E
@@ -1051,7 +1051,7 @@ deriving
   -- which takes a long time to be found. We register a shortcut instance instead
   ContinuousConstSMul 𝕜
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}

@@ -41,7 +41,7 @@ public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 /-! ### Topology of pointwise convergence -/
 
 variable {α ι : Type*} [TopologicalSpace α]
-variable {𝕜 𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜] [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃]
+variable {𝕜 𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormMetric 𝕜₁] [Field 𝕜₁] [IsNormedField 𝕜₁] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNormedField 𝕜₂] [NormMetric 𝕜₃] [Field 𝕜₃] [IsNormedField 𝕜₃]
 variable {σ : 𝕜₁ →+* 𝕜₂} {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ]
 variable {E F Fᵤ G : Type*} [AddCommGroup E] [TopologicalSpace E]
   [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]

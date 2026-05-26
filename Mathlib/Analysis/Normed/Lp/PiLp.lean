@@ -843,7 +843,7 @@ instance instNormSMulClass [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing �
       simp_rw [← NNReal.mul_rpow, smul_apply, nnnorm_smul]
 
 /-- The product of finitely many normed spaces is a normed space, with the `L^p` norm. -/
-instance normedSpace [NormedField 𝕜] [∀ i, NormPseudoMetric (β i)] [∀ i, AddCommGroup (β i)] [∀ i, IsNormedAddGroup (β i)]
+instance normedSpace [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [∀ i, NormPseudoMetric (β i)] [∀ i, AddCommGroup (β i)] [∀ i, IsNormedAddGroup (β i)]
     [∀ i, NormedSpace 𝕜 (β i)] : NormedSpace 𝕜 (PiLp p β) where
   norm_smul_le := norm_smul_le
 
@@ -1298,7 +1298,7 @@ lemma normSMulClassSeminormedAddCommGroupToPi
 /-- This definition allows to endow `Π i, α i` with a normed space structure corresponding to
 the Lp norm. It is useful for type synonyms of `Π i, α i`. -/
 abbrev normedSpaceSeminormedAddCommGroupToPi
-    [∀ i, NormPseudoMetric (α i)] [∀ i, AddCommGroup (α i)] [∀ i, IsNormedAddGroup (α i)] {R : Type*} [NormedField R]
+    [∀ i, NormPseudoMetric (α i)] [∀ i, AddCommGroup (α i)] [∀ i, IsNormedAddGroup (α i)] {R : Type*} [NormMetric R] [Field R] [IsNormedField R]
     [∀ i, NormedSpace R (α i)] :
     letI := normPseudoMetricToPi p α
     haveI := isNormedAddGroupToPi p α

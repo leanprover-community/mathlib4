@@ -27,7 +27,7 @@ Uniformize API between analytic and meromorphic functions
 open Filter Set
 open scoped Topology
 
-variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+variable {𝕜 E : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 
 /-!
 ## Vanishing Order at a Point: Definition and Characterization
@@ -350,7 +350,7 @@ lemma natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero [CharZero 𝕜] [Comp
     simp [← this, IH hf.deriv, iteratedDeriv_succ',
       -Order.lt_add_one_iff, Nat.forall_lt_succ_left, hfz]
 
-lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜] [CharZero 𝕜]
+lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [CharZero 𝕜]
     [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
     (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} (horder : analyticOrderAt f z₀ = n + 1) :
     analyticOrderAt (deriv f) z₀ = n := by
@@ -359,7 +359,7 @@ lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NontriviallyNorme
     simpa [sub_self, zero_pow, zero_smul] using Filter.Eventually.self_of_nhds hfg
   simpa [hz₀, sub_zero, horder] using hf.analyticOrderAt_deriv_add_one
 
-lemma analyticOrderAt_iterated_deriv {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜]
+lemma analyticOrderAt_iterated_deriv {𝕜 : Type*} {E : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
     [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
     (hf : AnalyticAt 𝕜 f z₀) {k n : ℕ} [CharZero 𝕜] :
     n = analyticOrderAt f z₀ → n ≠ 0 → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by

@@ -295,7 +295,7 @@ end VectorFourier
 
 namespace VectorFourier
 
-variable {𝕜 ι E F V W : Type*} [Fintype ι] [NontriviallyNormedField 𝕜]
+variable {𝕜 ι E F V W : Type*} [Fintype ι] [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace 𝕜 V] [MeasurableSpace V] [BorelSpace V]
   [NormMetric W] [AddCommGroup W] [IsNormedAddGroup W] [NormedSpace 𝕜 W]
   {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →L[𝕜] W →L[𝕜] 𝕜}

@@ -25,7 +25,7 @@ instance.
 @[expose] public section
 
 variable
-    {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+    {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
     {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
     [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] [FiniteDimensional 𝕜 E] [T2Space E]
     {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]

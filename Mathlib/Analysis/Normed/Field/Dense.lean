@@ -42,7 +42,7 @@ open Polynomial
 
 /-- If `K` is an algebraically closed dense subfield of a complete nonarchimedean normed field `L`
 of characteristic zero, then `L` is also algebraically closed. -/
-theorem IsAlgClosed.of_denseRange {K L : Type*} [Field K] [NontriviallyNormedField L]
+theorem IsAlgClosed.of_denseRange {K L : Type*} [Field K] [NormMetric L] [Field L] [IsNontriviallyNormedField L]
     [CompleteSpace L] [CharZero L] [IsUltrametricDist L] [Algebra K L]
     (hi : DenseRange (algebraMap K L)) [IsAlgClosed K] : IsAlgClosed L := by
   -- Fix any monic irreducible polynomial `f` in `L`.

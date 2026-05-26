@@ -19,7 +19,7 @@ We show that `‖χ a‖ = 1` if `a` is a unit and `‖χ a‖ ≤ 1` in general
 
 public section
 
-variable {F : Type*} [NormedField F] {n : ℕ} (χ : DirichletCharacter F n)
+variable {F : Type*} [NormMetric F] [Field F] [IsNormedField F] {n : ℕ} (χ : DirichletCharacter F n)
 
 namespace DirichletCharacter
 

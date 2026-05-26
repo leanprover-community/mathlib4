@@ -22,7 +22,7 @@ suppress_compilation
 open Metric
 open scoped NNReal Topology Uniformity
 
-variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 E : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 
 section SemiNormed
 
@@ -108,7 +108,7 @@ class _root_.RegularNormedAlgebra : Prop where
   isometry_mul' : Isometry (mul 𝕜 R)
 
 /-- Every (unital) normed algebra such that `‖1‖ = 1` is a `RegularNormedAlgebra`. -/
-instance _root_.NormedAlgebra.instRegularNormedAlgebra {𝕜 R : Type*} [NontriviallyNormedField 𝕜]
+instance _root_.NormedAlgebra.instRegularNormedAlgebra {𝕜 R : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
     [NormPseudoMetric R] [Ring R] [IsNormedRing R] [NormedAlgebra 𝕜 R] [NormOneClass R] : RegularNormedAlgebra 𝕜 R where
   isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 R) <|
     fun x => le_antisymm (opNorm_mul_apply_le _ _ _) <| by
@@ -250,7 +250,7 @@ end
 
 This is `ContinuousLinearMap.opNorm_lsmul_le` as an equality. -/
 @[simp]
-theorem opNorm_lsmul [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module R E] [NormSMulClass R E]
+theorem opNorm_lsmul [NormMetric R] [DivisionRing R] [IsNormedField R] [NormedAlgebra 𝕜 R] [Module R E] [NormSMulClass R E]
     [IsScalarTower 𝕜 R E] [Nontrivial E] : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖ = 1 := by
   refine ContinuousLinearMap.opNorm_eq_of_bounds zero_le_one (fun x => ?_) fun N _ h => ?_
   · rw [one_mul]

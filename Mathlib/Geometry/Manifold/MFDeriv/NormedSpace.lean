@@ -30,7 +30,7 @@ public section
 open Set ChartedSpace IsManifold
 open scoped Topology Manifold
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
   -- declare a charted space `M` over the pair `(E, H)`.
   {E : Type*}
   [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]

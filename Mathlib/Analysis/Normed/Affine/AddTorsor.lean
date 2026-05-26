@@ -33,7 +33,7 @@ variable {V P W Q : Type*} [NormPseudoMetric V] [AddCommGroup V] [IsNormedAddGro
 
 section NormedSpace
 
-variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W]
 
 open AffineMap
 
@@ -241,7 +241,7 @@ section
 
 open Dilation
 
-variable {𝕜 E : Type*} [NormedDivisionRing 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+variable {𝕜 E : Type*} [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 variable [Module 𝕜 E] [NormSMulClass 𝕜 E] {P : Type*} [PseudoMetricSpace P] [NormedAddTorsor E P]
 
 -- TODO: reimplement this as a `ContinuousAffineEquiv`.

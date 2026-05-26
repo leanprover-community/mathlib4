@@ -166,7 +166,7 @@ end NormSMulClassModule
 
 section NormedDivisionRing
 
-variable [NormedDivisionRing α] [NormPseudoMetric β] [AddGroup β] [IsNormedAddGroup β]
+variable [NormMetric α] [DivisionRing α] [IsNormedField α] [NormPseudoMetric β] [AddGroup β] [IsNormedAddGroup β]
 variable [MulActionWithZero α β] [IsBoundedSMul α β]
 
 /-- For a normed division ring, a sub-multiplicative norm is actually strictly multiplicative.
@@ -185,7 +185,7 @@ lemma NormedDivisionRing.toNormSMulClass : NormSMulClass α β where
 end NormedDivisionRing
 
 section NormedDivisionRingModule
-variable [NormedDivisionRing α] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [Module α β] [NormSMulClass α β]
+variable [NormMetric α] [DivisionRing α] [IsNormedField α] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [Module α β] [NormSMulClass α β]
 
 theorem Metric.smul_image_ball {s : α} (hs : s ≠ 0) (x : β) (ε : ℝ) :
     (s • ·) '' ball x ε = ball (s • x) (‖s‖ * ε) := by

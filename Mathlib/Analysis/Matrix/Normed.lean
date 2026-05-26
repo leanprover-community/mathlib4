@@ -217,7 +217,7 @@ protected theorem normSMulClass [NormPseudoMetric R] [Ring R] [IsNormedRing R] [
     [NormSMulClass R α] : NormSMulClass R (Matrix m n α) :=
   Pi.instNormSMulClass
 
-variable [NormedField R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormedSpace R α]
+variable [NormMetric R] [Field R] [IsNormedField R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormedSpace R α]
 
 /-- Normed space instance (using sup norm of sup norm) for matrices over a normed space.  Not
 declared as an instance because there are several natural choices for defining the norm of a
@@ -319,7 +319,7 @@ protected theorem linftyOpNormSMulClass
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
-protected def linftyOpNormedSpace [NormedField R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormedSpace R α] :
+protected def linftyOpNormedSpace [NormMetric R] [Field R] [IsNormedField R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormedSpace R α] :
     NormedSpace R (Matrix m n α) :=
   letI := PiLp.normPseudoMetricToPi 1 (fun _ : n ↦ α)
   haveI := PiLp.isNormedAddGroupToPi 1 (fun _ : n ↦ α)
@@ -448,13 +448,13 @@ protected def linftyOpNormedRing [NormMetric α] [Ring α] [IsNormedRing α] [De
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
-protected def linftyOpNormedAlgebra [NormedField R] [NormPseudoMetric α] [Ring α] [IsNormedRing α] [NormedAlgebra R α]
+protected def linftyOpNormedAlgebra [NormMetric R] [Field R] [IsNormedField R] [NormPseudoMetric α] [Ring α] [IsNormedRing α] [NormedAlgebra R α]
     [DecidableEq n] : NormedAlgebra R (Matrix n n α) :=
   { Matrix.linftyOpNormedSpace, Matrix.instAlgebra with }
 
 
 section
-variable [NormedDivisionRing α] [NormedAlgebra ℝ α]
+variable [NormMetric α] [DivisionRing α] [IsNormedField α] [NormedAlgebra ℝ α]
 
 /-- Auxiliary construction; an element of norm 1 such that `a * unitOf a = ‖a‖`. -/
 private def unitOf (a : α) : α := by classical exact if a = 0 then 1 else ‖a‖ • a⁻¹
@@ -479,7 +479,7 @@ For a matrix over a field, the norm defined in this section agrees with the oper
 `ContinuousLinearMap`s between function types (which have the infinity norm).
 -/
 section
-variable [NontriviallyNormedField α] [NormedAlgebra ℝ α]
+variable [NormMetric α] [Field α] [IsNontriviallyNormedField α] [NormedAlgebra ℝ α]
 
 lemma linfty_opNNNorm_eq_opNNNorm (A : Matrix m n α) :
     ‖A‖₊ = ‖ContinuousLinearMap.mk (Matrix.mulVecLin A)‖₊ := by
@@ -604,7 +604,7 @@ theorem frobeniusNormSMulClass [NormPseudoMetric R] [Ring R] [IsNormedRing R] [N
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
-def frobeniusNormedSpace [NormedField R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormedSpace R α] :
+def frobeniusNormedSpace [NormMetric R] [Field R] [IsNormedField R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormedSpace R α] :
     NormedSpace R (Matrix m n α) :=
   fast_instance%
   letI := PiLp.normPseudoMetricToPi 2 (fun _ : n ↦ α)
@@ -736,7 +736,7 @@ def frobeniusNormedRing [DecidableEq m] : NormedRing (Matrix m m α) where
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
-def frobeniusNormedAlgebra [DecidableEq m] [NormedField R] [NormedAlgebra R α] :
+def frobeniusNormedAlgebra [DecidableEq m] [NormMetric R] [Field R] [IsNormedField R] [NormedAlgebra R α] :
     NormedAlgebra R (Matrix m m α) :=
   { Matrix.frobeniusNormedSpace, Matrix.instAlgebra with }
 

@@ -215,7 +215,7 @@ end AddTorsor
 
 namespace AffineIsometry
 
-variable [NormedField 𝕜] [NormPseudoMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormPseudoMetric W] [AddCommGroup W] [IsNormedAddGroup W] [NormedSpace 𝕜 V]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormPseudoMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormPseudoMetric W] [AddCommGroup W] [IsNormedAddGroup W] [NormedSpace 𝕜 V]
   [NormedSpace 𝕜 W] [MetricSpace P] [PseudoMetricSpace Q] [NormedAddTorsor V P]
   [NormedAddTorsor W Q]
 
@@ -262,7 +262,7 @@ end AffineIsometry
 
 section NormedAddTorsor
 
-variable (𝕜) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace 𝕜 V]
+variable (𝕜) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace 𝕜 V]
   [FiniteDimensional 𝕜 V] [MetricSpace P] [NormedAddTorsor V P] (s : Set P)
 
 @[simp]

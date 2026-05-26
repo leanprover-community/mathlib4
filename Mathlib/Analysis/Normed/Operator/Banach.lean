@@ -25,7 +25,7 @@ open Function Metric Set Filter Finset Topology NNReal
 
 open LinearMap (range ker)
 
-variable {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜'] {σ : 𝕜 →+* 𝕜'}
+variable {𝕜 𝕜' : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜'] {σ : 𝕜 →+* 𝕜'}
 variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜' F] (f : E →SL[σ] F)
 

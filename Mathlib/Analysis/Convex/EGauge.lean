@@ -105,7 +105,7 @@ end SMulZero
 
 section NormedDivisionRing
 
-variable {𝕜 : Type*} [NormedDivisionRing 𝕜] {E : Type*} [AddCommGroup E] [Module 𝕜 E]
+variable {𝕜 : Type*} [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] {E : Type*} [AddCommGroup E] [Module 𝕜 E]
     {c : 𝕜} {s : Set E} {x : E}
 
 /-- If `c • x ∈ s` and `c ≠ 0`, then `egauge 𝕜 s x` is at most `(‖c‖₊⁻¹ : ℝ≥0)`.
@@ -235,7 +235,7 @@ end NormedDivisionRing
 section Pi
 
 variable {𝕜 : Type*} {ι : Type*} {E : ι → Type*}
-variable [NormedDivisionRing 𝕜] [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
+variable [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
 
 /-- The extended gauge of a point `x` in an indexed product
 with respect to a product of finitely many balanced sets `U i`, `i ∈ I`,
@@ -310,7 +310,7 @@ end Pi
 
 section SeminormedAddCommGroup
 
-variable (𝕜 : Type*) [NormedField 𝕜] {E : Type*} [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+variable (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] {E : Type*} [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 
 lemma div_le_egauge_closedBall (r : ℝ≥0) (x : E) : ‖x‖ₑ / r ≤ egauge 𝕜 (closedBall 0 r) x := by
   rw [le_egauge_iff]

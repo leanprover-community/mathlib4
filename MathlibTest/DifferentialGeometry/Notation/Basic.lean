@@ -6,7 +6,7 @@ set_option pp.unicode.fun true
 open Bundle Filter Function Topology
 open scoped Manifold
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 
 section
 

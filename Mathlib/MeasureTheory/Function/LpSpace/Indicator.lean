@@ -275,7 +275,7 @@ protected def Lp.constL (𝕜 : Type*) [NormMetric 𝕜] [Ring 𝕜] [IsNormedRi
   (Lp.constₗ p μ 𝕜).mkContinuous (μ.real Set.univ ^ (1 / p.toReal)) fun _ ↦
     (Lp.norm_const_le _ _ _).trans_eq (mul_comm _ _)
 
-theorem Lp.norm_constL_le (𝕜 : Type*) [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
+theorem Lp.norm_constL_le (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
     [Fact (1 ≤ p)] :
     ‖(Lp.constL p μ 𝕜 : E →L[𝕜] Lp E p μ)‖ ≤ μ.real Set.univ ^ (1 / p.toReal) :=
   LinearMap.mkContinuous_norm_le _ (by positivity) _

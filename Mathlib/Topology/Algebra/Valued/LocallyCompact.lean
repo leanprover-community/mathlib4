@@ -33,7 +33,7 @@ section NormedField
 
 open scoped NormedField
 
-variable {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K]
+variable {K : Type*} [NormMetric K] [Field K] [IsNontriviallyNormedField K] [IsUltrametricDist K]
 
 @[simp]
 lemma NormedField.v_eq_valuation (x : K) : Valued.v x = NormedField.valuation x := rfl

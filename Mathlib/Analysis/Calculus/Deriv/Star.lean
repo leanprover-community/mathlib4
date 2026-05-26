@@ -24,7 +24,7 @@ public section
 
 universe u v w
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] [StarRing 𝕜]
+variable {𝕜 : Type u} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [StarRing 𝕜]
   {F : Type v} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] [StarAddMonoid F] [StarModule 𝕜 F]
   [ContinuousStar F] {f : 𝕜 → F} {f' : F} {x : 𝕜}
 

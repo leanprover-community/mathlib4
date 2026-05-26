@@ -26,7 +26,7 @@ section
 
 variable {𝕜 B B' F M : Type*} {E : B → Type*}
 
-variable [NontriviallyNormedField 𝕜] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
   [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)] {EB : Type*}
   [NormMetric EB] [AddCommGroup EB] [IsNormedAddGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
   (IB : ModelWithCorners 𝕜 EB HB) (E' : B → Type*) [∀ x, Zero (E' x)] {EM : Type*}
@@ -335,7 +335,7 @@ variable {𝕜 B B' F M : Type*} {E : B → Type*}
 variable
   -- Let `E` be a fiber bundle with base `B` and fiber `F` (a vector space over `𝕜`)
   [TopologicalSpace B] [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)]
-  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 F] [FiberBundle F E]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormedSpace 𝕜 F] [FiberBundle F E]
   -- Moreover let `E` be a vector bundle
   [(x : B) → AddCommGroup (E x)] [(x : B) → Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
   -- Let the base `B` be charted over a fixed model space `HB`
@@ -589,7 +589,7 @@ and two vector bundles `E₁` and `E₂` respectively over `B₁` and `B₂` (wi
 
 Also a third manifold `M`, which will be the source of all our maps.
 -/
-variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B₂ → Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B₂ → Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [NormMetric F₁] [AddCommGroup F₁] [IsNormedAddGroup F₁] [NormedSpace 𝕜 F₁]
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)] [∀ x, AddCommGroup (E₂ x)]
   [∀ x, Module 𝕜 (E₂ x)] [NormMetric F₂] [AddCommGroup F₂] [IsNormedAddGroup F₂] [NormedSpace 𝕜 F₂]
@@ -668,7 +668,7 @@ end
 section extend
 
 namespace FiberBundle
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]

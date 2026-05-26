@@ -73,7 +73,7 @@ universe u v v' wE wE₁ wE' wG wG'
 section continuous_eval
 
 variable {𝕜 ι : Type*} {E : ι → Type*} {F : Type*}
-    [NormedField 𝕜] [Finite ι] [∀ i, NormPseudoMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+    [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [Finite ι] [∀ i, NormPseudoMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
     [TopologicalSpace F] [AddCommGroup F] [IsTopologicalAddGroup F] [Module 𝕜 F]
 
 instance ContinuousMultilinearMap.instContinuousEval :
@@ -115,7 +115,7 @@ section Seminorm
 
 variable {𝕜 : Type u} {ι : Type v} {ι' : Type v'} {E : ι → Type wE} {E₁ : ι → Type wE₁}
   {E' : ι' → Type wE'} {G : Type wG} {G' : Type wG'}
-  [Fintype ι'] [NontriviallyNormedField 𝕜] [∀ i, NormPseudoMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)]
+  [Fintype ι'] [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [∀ i, NormPseudoMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)]
   [∀ i, NormedSpace 𝕜 (E i)] [∀ i, NormPseudoMetric (E₁ i)] [∀ i, AddCommGroup (E₁ i)] [∀ i, IsNormedAddGroup (E₁ i)] [∀ i, NormedSpace 𝕜 (E₁ i)]
   [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G] [NormPseudoMetric G'] [AddCommGroup G'] [IsNormedAddGroup G'] [NormedSpace 𝕜 G']
 
@@ -507,7 +507,7 @@ example : SeminormedAddCommGroup (ContinuousMultilinearMap 𝕜 (fun _ : ι => G
 instance : IsBoundedSMul 𝕜' (ContinuousMultilinearMap 𝕜 E G) := .of_norm_smul_le opNorm_smul_le
 
 section NormedField
-variable {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' G] [SMulCommClass 𝕜 𝕜' G]
+variable {𝕜' : Type*} [NormMetric 𝕜'] [Field 𝕜'] [IsNormedField 𝕜'] [NormedSpace 𝕜' G] [SMulCommClass 𝕜 𝕜' G]
 
 instance normedSpace : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 E G) :=
   ⟨fun c f => f.opNorm_smul_le c⟩
@@ -637,7 +637,7 @@ end
 
 section RestrictScalars
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+variable {𝕜' : Type*} [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
 variable [NormedSpace 𝕜' G] [IsScalarTower 𝕜' 𝕜 G]
 variable [∀ i, NormedSpace 𝕜' (E i)] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)]
 
@@ -1243,7 +1243,7 @@ namespace ContinuousMultilinearMap
 `SeminormedAddCommGroup`). -/
 
 variable {𝕜 : Type u} {ι : Type v} {E : ι → Type wE} {G : Type wG} {G' : Type wG'} [Fintype ι]
-  [NontriviallyNormedField 𝕜] [∀ i, NormPseudoMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+  [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [∀ i, NormPseudoMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
   [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G] [NormPseudoMetric G'] [AddCommGroup G'] [IsNormedAddGroup G'] [NormedSpace 𝕜 G']
 
 /-- A continuous linear map is zero iff its norm vanishes. -/
@@ -1281,7 +1281,7 @@ section Norm
 `SeminormedAddCommGroup`). -/
 
 variable {𝕜 : Type u} {ι : Type v} {E : ι → Type wE} {G : Type wG} [Fintype ι]
-  [NontriviallyNormedField 𝕜] [∀ i, NormMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+  [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [∀ i, NormMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
   [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
 
 namespace MultilinearMap

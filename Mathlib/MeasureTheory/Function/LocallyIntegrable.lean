@@ -196,7 +196,7 @@ theorem locallyIntegrableOn_iff [PseudoMetrizableSpace ε]
   exact hf (Z ∩ K) (fun y hy ↦ ⟨hKU hy.2, hy.1⟩) (.inter_left hK hZ)
 
 theorem _root_.ContinuousLinearMap.locallyIntegrableOn_comp {E H 𝕜 𝕜' : Type*}
-    [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
+    [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜']
     [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜' E] [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] [NormedSpace 𝕜 H]
     {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ] {f : X → H} (L : H →SL[σ] E)
     (hf : LocallyIntegrableOn f s μ) : LocallyIntegrableOn (L ∘ f) s μ :=
@@ -220,12 +220,12 @@ protected theorem LocallyIntegrableOn.neg {f : X → E} (hf : LocallyIntegrableO
   simp_rw [MeasureTheory.integrableAtFilter_neg_iff]
 
 -- TODO: generalise this to ENormed spaces, once there are suitable typeclasses
-protected theorem LocallyIntegrableOn.smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+protected theorem LocallyIntegrableOn.smul {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormedSpace 𝕜 E]
     {f : X → E} (hf : LocallyIntegrableOn f s μ) (c : 𝕜) :
   LocallyIntegrableOn (c • f) s μ := fun x hx ↦ (hf x hx).smul c
 
 -- TODO: generalise this to ENormed spaces, once there are suitable typeclasses
-@[simp] theorem locallyIntegrableOn_smul_iff {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+@[simp] theorem locallyIntegrableOn_smul_iff {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormedSpace 𝕜 E]
     {f : X → E} (c : 𝕜) :
     LocallyIntegrableOn (c • f) s μ ↔ c = 0 ∨ LocallyIntegrableOn f s μ := by
   unfold LocallyIntegrableOn
@@ -419,7 +419,7 @@ protected theorem LocallyIntegrable.smul {f : X → E} {𝕜 : Type*} [NormMetri
     LocallyIntegrable (c • f) μ := fun x ↦ (hf x).smul c
 
 -- TODO: generalise this to ENormed spaces, once there are suitable typeclasses
-@[simp] theorem locallyIntegrable_smul_iff {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+@[simp] theorem locallyIntegrable_smul_iff {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormedSpace 𝕜 E]
     {f : X → E} (c : 𝕜) :
     LocallyIntegrable (c • f) μ ↔ c = 0 ∨ LocallyIntegrable f μ := by
   simp [← locallyIntegrableOn_univ]

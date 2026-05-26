@@ -48,7 +48,7 @@ namespace spectrum
 
 section NonTriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 theorem hasDerivAt_resolvent_const_left {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
     HasDerivAt (resolvent a) (-resolvent a k ^ 2) k := by
@@ -72,7 +72,7 @@ theorem hasFDerivAt_resolvent {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a
 
 end NonTriviallyNormedField
 
-theorem hasDerivAt_resolvent_const_right [NontriviallyNormedField 𝕜] [NontriviallyNormedField A]
+theorem hasDerivAt_resolvent_const_right [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric A] [Field A] [IsNontriviallyNormedField A]
     [NormedAlgebra 𝕜 A] [CompleteSpace A] {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
     HasDerivAt (resolvent · k) (resolvent a k ^ 2) a := by
   convert! hasFDerivAt_resolvent (𝕜 := A) hk |>.hasDerivAt
@@ -81,7 +81,7 @@ theorem hasDerivAt_resolvent_const_right [NontriviallyNormedField 𝕜] [Nontriv
 open ENNReal in
 /-- In a Banach algebra `A` over `𝕜`, for `a : A` the function `fun z ↦ (1 - z • a)⁻¹` is
 differentiable on any closed ball centered at zero of radius `r < (spectralRadius 𝕜 a)⁻¹`. -/
-theorem differentiableOn_inverse_one_sub_smul [NontriviallyNormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A]
+theorem differentiableOn_inverse_one_sub_smul [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A]
     [NormedAlgebra 𝕜 A] [CompleteSpace A] {a : A} {r : ℝ≥0}
     (hr : (r : ℝ≥0∞) < (spectralRadius 𝕜 a)⁻¹) :
     DifferentiableOn 𝕜 (fun z : 𝕜 => (1 - z • a)⁻¹ʳ) (Metric.closedBall 0 r) := by

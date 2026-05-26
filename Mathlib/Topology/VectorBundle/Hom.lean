@@ -37,7 +37,7 @@ noncomputable section
 open Bundle Set ContinuousLinearMap Topology
 open scoped Bundle
 
-variable {𝕜₁ : Type*} [NontriviallyNormedField 𝕜₁] {𝕜₂ : Type*} [NontriviallyNormedField 𝕜₂]
+variable {𝕜₁ : Type*} [NormMetric 𝕜₁] [Field 𝕜₁] [IsNontriviallyNormedField 𝕜₁] {𝕜₂ : Type*} [NormMetric 𝕜₂] [Field 𝕜₂] [IsNontriviallyNormedField 𝕜₂]
   (σ : 𝕜₁ →+* 𝕜₂)
 
 variable {B : Type*}
@@ -306,7 +306,7 @@ over `B₁` and `B₂` (with model fibers `F₁` and `F₂`).
 
 Also a third space `M`, which will be the source of all our maps.
 -/
-variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B₂ → Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B₂ → Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [NormMetric F₁] [AddCommGroup F₁] [IsNormedAddGroup F₁] [NormedSpace 𝕜 F₁]
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)] [∀ x, AddCommGroup (E₂ x)]
   [∀ x, Module 𝕜 (E₂ x)] [NormMetric F₂] [AddCommGroup F₂] [IsNormedAddGroup F₂] [NormedSpace 𝕜 F₂]
@@ -388,7 +388,7 @@ section
 
 Also a second space `M`, which will be the source of all our maps.
 -/
-variable {𝕜 B F₁ F₂ F₃ M : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
+variable {𝕜 B F₁ F₂ F₃ M : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
   {E₁ : B → Type*}
   [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [NormMetric F₁] [AddCommGroup F₁] [IsNormedAddGroup F₁] [NormedSpace 𝕜 F₁]
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)]

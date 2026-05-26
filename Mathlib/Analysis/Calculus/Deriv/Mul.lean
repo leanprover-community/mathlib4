@@ -35,7 +35,7 @@ open Filter Asymptotics Set
 
 open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type u} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 variable {F : Type v} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 variable {E : Type w} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 variable {G : Type*} [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
@@ -256,7 +256,7 @@ section Mul
 /-! ### Derivative of the multiplication of two functions -/
 
 
-variable {𝕜' 𝔸 : Type*} [NormedDivisionRing 𝕜'] [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸] [NormedAlgebra 𝕜 𝕜']
+variable {𝕜' 𝔸 : Type*} [NormMetric 𝕜'] [DivisionRing 𝕜'] [IsNormedField 𝕜'] [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸] [NormedAlgebra 𝕜 𝕜']
   [NormedAlgebra 𝕜 𝔸] {c d : 𝕜 → 𝔸} {c' d' : 𝔸} {u v : 𝕜 → 𝕜'}
 
 @[to_fun]
@@ -556,7 +556,7 @@ end Prod
 
 section Div
 
-variable {𝕜' : Type*} [NormedDivisionRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] {c : 𝕜 → 𝕜'} {c' : 𝕜'}
+variable {𝕜' : Type*} [NormMetric 𝕜'] [DivisionRing 𝕜'] [IsNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {c : 𝕜 → 𝕜'} {c' : 𝕜'}
 
 theorem HasDerivAt.div_const (hc : HasDerivAt c c' x) (d : 𝕜') :
     HasDerivAt (fun x => c x / d) (c' / d) x := by

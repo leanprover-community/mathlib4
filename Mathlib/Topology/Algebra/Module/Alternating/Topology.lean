@@ -25,7 +25,7 @@ open scoped UniformConvergence Filter
 
 namespace ContinuousAlternatingMap
 
-variable {𝕜 E F ι : Type*} [NormedField 𝕜]
+variable {𝕜 E F ι : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [AddCommGroup F] [Module 𝕜 F]
 
 section IsClosedRange
@@ -113,7 +113,7 @@ end CompleteSpace
 
 section RestrictScalars
 
-variable (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+variable (𝕜' : Type*) [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
   [Module 𝕜' E] [IsScalarTower 𝕜' 𝕜 E] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F] [ContinuousSMul 𝕜 E]
 
 theorem isUniformEmbedding_restrictScalars :
@@ -197,7 +197,7 @@ instance instT3Space [T2Space F] : T3Space (E [⋀^ι]→L[𝕜] F) :=
 
 section RestrictScalars
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+variable {𝕜' : Type*} [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
   [Module 𝕜' E] [IsScalarTower 𝕜' 𝕜 E] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
 
 theorem isEmbedding_restrictScalars :
@@ -291,7 +291,7 @@ theorem tsum_eval [T2Space F] (hp : Summable p) (m : ι → E) : (∑' a, p a) m
 end ContinuousAlternatingMap
 
 namespace ContinuousLinearMap
-variable (𝕜 E F G ι : Type*) [NormedField 𝕜]
+variable (𝕜 E F G ι : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousSMul 𝕜 E]
   [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
   [ContinuousConstSMul 𝕜 F]
@@ -330,7 +330,7 @@ def compContinuousAlternatingMapCLM :
 end ContinuousLinearMap
 
 namespace ContinuousLinearEquiv
-variable {𝕜 E E' F G ι : Type*} [NormedField 𝕜]
+variable {𝕜 E E' F G ι : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [AddCommGroup E'] [Module 𝕜 E'] [TopologicalSpace E']
   [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]

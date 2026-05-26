@@ -70,7 +70,7 @@ attribute [deprecated Equiv.isNormedAddGroup (since := "2026-05-17")]
   Equiv.seminormedAddCommGroup Equiv.normedAddCommGroup
 
 /-- Transfer `NormedSpace` across an `Equiv` -/
-protected abbrev normedSpace (𝕜 : Type*) [NormedField 𝕜]
+protected abbrev normedSpace (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜]
     [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [NormedSpace 𝕜 β] (e : α ≃ β) :
     letI := e.normPseudoMetric
     letI := e.addCommGroup

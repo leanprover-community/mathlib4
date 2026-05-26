@@ -89,7 +89,7 @@ section Bounded
 open Module Polynomial Set
 
 variable {K : Type*} [Field K] [NumberField K]
-variable {A : Type*} [NormedField A] [IsAlgClosed A] [NormedAlgebra ℚ A]
+variable {A : Type*} [NormMetric A] [Field A] [IsNormedField A] [IsAlgClosed A] [NormedAlgebra ℚ A]
 
 theorem coeff_bdd_of_norm_le {B : ℝ} {x : K} (h : ∀ φ : K →+* A, ‖φ x‖ ≤ B) (i : ℕ) :
     ‖(minpoly ℚ x).coeff i‖ ≤ max B 1 ^ finrank ℚ K * (finrank ℚ K).choose (finrank ℚ K / 2) := by
@@ -148,7 +148,7 @@ end NumberField.Embeddings
 
 section Place
 
-variable {K : Type*} [Field K] {A : Type*} [NormedDivisionRing A] [Nontrivial A] (φ : K →+* A)
+variable {K : Type*} [Field K] {A : Type*} [NormMetric A] [DivisionRing A] [IsNormedField A] [Nontrivial A] (φ : K →+* A)
 
 /-- An embedding into a normed division ring defines a place of `K` -/
 def NumberField.place : AbsoluteValue K ℝ :=

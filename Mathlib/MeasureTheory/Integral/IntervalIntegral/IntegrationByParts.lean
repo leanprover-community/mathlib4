@@ -149,7 +149,7 @@ end Mul
 
 section SMul
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
 variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [CompleteSpace E]
 variable [IsScalarTower ℝ 𝕜 E]
 

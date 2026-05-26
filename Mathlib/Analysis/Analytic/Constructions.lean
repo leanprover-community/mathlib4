@@ -29,13 +29,13 @@ open scoped Topology Ring
 open Filter Asymptotics ENNReal NNReal
 
 variable {α : Type*}
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 variable {E F G H : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
   [NormedSpace 𝕜 F] [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G] [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H]
   [NormedSpace 𝕜 H]
 
 variable {A : Type*} [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A]
-variable {𝕝 : Type*} [NormedDivisionRing 𝕝] [NormedAlgebra 𝕜 𝕝]
+variable {𝕝 : Type*} [NormMetric 𝕝] [DivisionRing 𝕝] [IsNormedField 𝕝] [NormedAlgebra 𝕜 𝕝]
 
 /-!
 ### Constants are analytic
@@ -722,7 +722,7 @@ lemma AnalyticOnNhd.zpow_nonneg {f : E → 𝕝} {s : Set E} {n : ℤ} (hf : Ana
 
 section
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable {𝕜' : Type*} [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
   [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
   [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
   {f : E → F} {p : FormalMultilinearSeries 𝕜' E F} {x : E} {s : Set E} {r : ℝ≥0∞}

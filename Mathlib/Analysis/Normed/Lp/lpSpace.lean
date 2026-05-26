@@ -747,7 +747,7 @@ end Sum
 
 section DivisionRing
 
-variable [NormedDivisionRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)]
+variable [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)]
 
 theorem norm_const_smul (hp : p ≠ 0) {c : 𝕜} (f : lp E p) : ‖c • f‖ = ‖c‖ * ‖f‖ := by
   obtain rfl | hc := eq_or_ne c 0
@@ -760,7 +760,7 @@ end DivisionRing
 
 section NormedSpace
 
-variable [NormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
 
 instance instNormedSpace [Fact (1 ≤ p)] : NormedSpace 𝕜 (lp E p) where
   norm_smul_le c f := norm_smul_le c f
@@ -956,7 +956,7 @@ end NormedCommRing
 section Algebra
 
 variable {I : Type*} {B : I → Type*}
-variable [NormedField 𝕜] [∀ i, NormMetric (B i)] [∀ i, Ring (B i)] [∀ i, IsNormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [∀ i, NormMetric (B i)] [∀ i, Ring (B i)] [∀ i, IsNormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
 
 instance _root_.PreLp.algebra : Algebra 𝕜 (PreLp B) :=
   inferInstanceAs <| Algebra 𝕜 (∀ i, B i)

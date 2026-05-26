@@ -23,7 +23,7 @@ The norm must send one to one.
 
 A `[NormMetric R] [Ring R] [IsNormedRing R]` only assumes a submultiplicative norm and does not have `[NormOneClass R]`.
 The weakest ring-like structure that has a bundled norm such that `‖1‖ = 1` is
-`[NormedDivisionRing K]`.
+`[NormMetric K] [DivisionRing K] [IsNormedField K]`.
 Since the statements below hold in any context, we can state them
 in an unbundled fashion using `[NormOneClass R]`.
 In fact one can actually prove all these lemmas only assuming

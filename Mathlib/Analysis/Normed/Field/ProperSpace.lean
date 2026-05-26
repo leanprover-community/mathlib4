@@ -35,7 +35,7 @@ open Metric Filter
 This is a specialization of `ProperSpace.of_locallyCompactSpace`
 which holds for `NormedSpace`s but requires more imports. -/
 lemma ProperSpace.of_nontriviallyNormedField_of_weaklyLocallyCompactSpace
-    (𝕜 : Type*) [NontriviallyNormedField 𝕜] [WeaklyLocallyCompactSpace 𝕜] :
+    (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [WeaklyLocallyCompactSpace 𝕜] :
     ProperSpace 𝕜 := by
   rcases exists_isCompact_closedBall (0 : 𝕜) with ⟨r, rpos, hr⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩

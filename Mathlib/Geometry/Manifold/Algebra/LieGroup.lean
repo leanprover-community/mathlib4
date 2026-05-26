@@ -59,7 +59,7 @@ open scoped Manifold ContDiff
 -- See note [Design choices about smooth algebraic structures]
 /-- An additive Lie group is a group and a `C^n` manifold at the same time in which
 the addition and negation operations are `C^n`. -/
-class LieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
+class LieAddGroup {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
     (n : ℕ∞ω) (G : Type*)
     [AddGroup G] [TopologicalSpace G] [ChartedSpace H G] : Prop extends ContMDiffAdd I n G where
@@ -70,7 +70,7 @@ class LieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Top
 /-- A (multiplicative) Lie group is a group and a `C^n` manifold at the same time in which
 the multiplication and inverse operations are `C^n`. -/
 @[to_additive]
-class LieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
+class LieGroup {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
     (n : ℕ∞ω) (G : Type*)
     [Group G] [TopologicalSpace G] [ChartedSpace H G] : Prop extends ContMDiffMul I n G where
@@ -85,7 +85,7 @@ class LieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Topolo
   `f / g` (i.e., the point-wise product of `f` and the point-wise inverse of `g`) is also `C^n`. -/
 section PointwiseDivision
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
   [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω} {G : Type*}
   [TopologicalSpace G] [ChartedSpace H G] [Group G] {E' : Type*}
   [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
@@ -181,7 +181,7 @@ section Product
 
 -- Instance of product group
 @[to_additive]
-instance Prod.instLieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
+instance Prod.instLieGroup {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {n : ℕ∞ω}
     {H : Type*} [TopologicalSpace H] {E : Type*}
     [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*}
     [TopologicalSpace G] [ChartedSpace H G] [Group G] [LieGroup I n G] {E' : Type*}
@@ -194,7 +194,7 @@ end Product
 
 /-! ### Normed spaces are Lie groups -/
 
-instance instNormedSpaceLieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
+instance instNormedSpaceLieAddGroup {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {n : ℕ∞ω}
     {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] : LieAddGroup 𝓘(𝕜, E) n E where
   contMDiff_neg := contDiff_neg.contMDiff
 
@@ -208,20 +208,20 @@ section ContMDiffInv₀
 -- See note [Design choices about smooth algebraic structures]
 /-- A `C^n` manifold with `0` and `Inv` such that `fun x ↦ x⁻¹` is `C^n` at all nonzero points.
 Any complete normed (semi)field has this property. -/
-class ContMDiffInv₀ {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
+class ContMDiffInv₀ {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
     (n : ℕ∞ω) (G : Type*)
     [Inv G] [Zero G] [TopologicalSpace G] [ChartedSpace H G] : Prop where
   /-- Inversion is `C^n` away from `0`. -/
   contMDiffAt_inv₀ : ∀ ⦃x : G⦄, x ≠ 0 → CMDiffAt n (fun (y : G) ↦ y⁻¹) x
 
-instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω} : ContMDiffInv₀ 𝓘(𝕜) n 𝕜 where
+instance {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {n : ℕ∞ω} : ContMDiffInv₀ 𝓘(𝕜) n 𝕜 where
   contMDiffAt_inv₀ x hx := by
     change ContMDiffAt 𝓘(𝕜) 𝓘(𝕜) n Inv.inv x
     rw [contMDiffAt_iff_contDiffAt]
     exact contDiffAt_inv 𝕜 hx
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {n : ℕ∞ω}
   {H : Type*} [TopologicalSpace H] {E : Type*}
   [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*}
   [TopologicalSpace G] [ChartedSpace H G] [Inv G] [Zero G] {E' : Type*}
@@ -295,7 +295,7 @@ functions `f : M → N` is `C^n` whenever the denominator is non-zero.
 -/
 section Div
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {n : ℕ∞ω}
 {H : Type*} [TopologicalSpace H] {E : Type*}
   [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*}
   [TopologicalSpace G] [ChartedSpace H G] [GroupWithZero G] [ContMDiffInv₀ I n G]

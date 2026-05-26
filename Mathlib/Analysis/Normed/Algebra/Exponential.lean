@@ -269,7 +269,7 @@ section Normed
 
 section AnyFieldAnyAlgebra
 
-variable {𝕂 𝔸 𝔹 : Type*} [NontriviallyNormedField 𝕂]
+variable {𝕂 𝔸 𝔹 : Type*} [NormMetric 𝕂] [Field 𝕂] [IsNontriviallyNormedField 𝕂]
 variable [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸] [NormMetric 𝔹] [Ring 𝔹] [IsNormedRing 𝔹] [NormedAlgebra 𝕂 𝔸]
 
 theorem norm_expSeries_summable_of_mem_ball (x : 𝔸)
@@ -399,7 +399,7 @@ end AnyFieldAnyAlgebra
 
 section AnyFieldDivisionAlgebra
 
-variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 𝔸 : Type*} [NormMetric 𝕂] [Field 𝕂] [IsNontriviallyNormedField 𝕂] [NormMetric 𝔸] [DivisionRing 𝔸] [IsNormedField 𝔸] [NormedAlgebra 𝕂 𝔸]
 variable (𝕂)
 
 theorem norm_expSeries_div_summable_of_mem_ball (x : 𝔸)
@@ -428,7 +428,7 @@ end AnyFieldDivisionAlgebra
 
 section AnyFieldCommAlgebra
 
-variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormMetric 𝔸] [CommRing 𝔸] [IsNormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 𝔸 : Type*} [NormMetric 𝕂] [Field 𝕂] [IsNontriviallyNormedField 𝕂] [NormMetric 𝔸] [CommRing 𝔸] [IsNormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
   [CompleteSpace 𝔸]
 
 /-- In a commutative Banach-algebra `𝔸` over a normed field `𝕂` of characteristic zero,
@@ -443,7 +443,7 @@ end AnyFieldCommAlgebra
 
 section AnyAlgebra
 
-variable (𝕂 𝔸 : Type*) [NontriviallyNormedField 𝕂] [CharZero 𝕂] [ContinuousSMul ℚ 𝕂]
+variable (𝕂 𝔸 : Type*) [NormMetric 𝕂] [Field 𝕂] [IsNontriviallyNormedField 𝕂] [CharZero 𝕂] [ContinuousSMul ℚ 𝕂]
 variable [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
 
 /-- In a normed algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`, the series defining the exponential map
@@ -624,7 +624,7 @@ end Rat
 
 section DivisionAlgebra
 
-variable {𝔸 : Type*} [NormedDivisionRing 𝔸] [NormedAlgebra ℚ 𝔸]
+variable {𝔸 : Type*} [NormMetric 𝔸] [DivisionRing 𝔸] [IsNormedField 𝔸] [NormedAlgebra ℚ 𝔸]
 
 theorem norm_expSeries_div_summable (x : 𝔸) : Summable fun n => ‖(x ^ n / n ! : 𝔸)‖ :=
   norm_expSeries_div_summable_of_mem_ball ℚ x

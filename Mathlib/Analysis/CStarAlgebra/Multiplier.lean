@@ -65,7 +65,7 @@ universe u v
 `𝓜(𝕜, A)`, of a non-unital normed algebra.
 
 If `x : 𝓜(𝕜, A)`, then `x.fst` and `x.snd` are what is usually referred to as $L$ and $R$. -/
-structure DoubleCentralizer (𝕜 : Type u) (A : Type v) [NontriviallyNormedField 𝕜]
+structure DoubleCentralizer (𝕜 : Type u) (A : Type v) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
     [NormMetric A] [NonUnitalRing A] [IsNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A] extends
     (A →L[𝕜] A) × (A →L[𝕜] A) where
   /-- The centrality condition that the maps linear maps intertwine one another. -/
@@ -77,7 +77,7 @@ scoped[MultiplierAlgebra] notation "𝓜(" 𝕜 ", " A ")" => DoubleCentralizer 
 open MultiplierAlgebra
 
 @[ext]
-lemma DoubleCentralizer.ext (𝕜 : Type u) (A : Type v) [NontriviallyNormedField 𝕜]
+lemma DoubleCentralizer.ext (𝕜 : Type u) (A : Type v) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
     [NormMetric A] [NonUnitalRing A] [IsNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
     (a b : 𝓜(𝕜, A)) (h : a.toProd = b.toProd) : a = b := by
   cases a
@@ -88,7 +88,7 @@ namespace DoubleCentralizer
 
 section NontriviallyNormed
 
-variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NormMetric A] [NonUnitalRing A] [IsNormedRing A]
+variable (𝕜 A : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric A] [NonUnitalRing A] [IsNormedRing A]
 variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
 
 /-!
@@ -584,7 +584,7 @@ end NontriviallyNormed
 
 section DenselyNormed
 
-variable {𝕜 A : Type*} [DenselyNormedField 𝕜] [StarRing 𝕜]
+variable {𝕜 A : Type*} [NormMetric 𝕜] [Field 𝕜] [IsDenselyNormedField 𝕜] [StarRing 𝕜]
 variable [NormMetric A] [NonUnitalRing A] [IsNormedRing A] [StarRing A] [CStarRing A]
 variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A] [StarModule 𝕜 A]
 

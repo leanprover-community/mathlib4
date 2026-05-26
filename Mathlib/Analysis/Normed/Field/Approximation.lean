@@ -42,7 +42,7 @@ namespace Polynomial
 
 section ContinuityOfRoots
 
-variable [NormedField K] [NormedField L] [NormedAlgebra K L] {f g : Polynomial K}
+variable [NormMetric K] [Field K] [IsNormedField K] [NormMetric L] [Field L] [IsNormedField L] [NormedAlgebra K L] {f g : Polynomial K}
   {f g : Polynomial K} {ε : ℝ}
 
 /-- **Continuity of Roots.** Let `f` and `g` be two monic polynomials with `g` splits.
@@ -125,7 +125,7 @@ end ContinuityOfRoots
 
 section Approximation
 
-variable [Field K] [NormedField L] [Algebra K L]
+variable [Field K] [NormMetric L] [Field L] [IsNormedField L] [Algebra K L]
 
 /-- If `K` is a dense subfield of `L`, then every monic polynomial in `L` can be
 approximated by a monic polynomial in `K` of the same degree. -/

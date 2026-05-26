@@ -51,7 +51,7 @@ namespace PiTensorProduct
 
 section NormedField
 
-variable [NormedField 𝕜]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜]
 
 /-- A lift of the projective seminorm to `FreeAddMonoid (𝕜 × Π i, Eᵢ)`, useful to prove the
 properties of `projectiveSeminorm`. -/
@@ -122,7 +122,7 @@ end NormedField
 
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
 
 theorem norm_eval_le_projectiveSeminorm {G : Type*} [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G]
     [NormedSpace 𝕜 G] (f : ContinuousMultilinearMap 𝕜 E G) (x : ⨂[𝕜] i, E i) :

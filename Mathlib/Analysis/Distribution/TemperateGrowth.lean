@@ -225,7 +225,7 @@ end Addition
 
 section Multiplication
 
-variable [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
   [NormMetric D] [AddCommGroup D] [IsNormedAddGroup D] [NormedSpace ℝ D]
   [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace ℝ G]
   [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]

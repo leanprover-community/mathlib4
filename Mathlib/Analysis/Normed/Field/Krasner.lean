@@ -44,7 +44,7 @@ public section
 
 open IntermediateField
 
-variable (K L : Type*) [NormedField L]
+variable (K L : Type*) [NormMetric L] [Field L] [IsNormedField L]
 
 /--
 Given a field extension `L / K` where `L` is a normed field, `IsKrasner K L` is the abstraction
@@ -66,7 +66,7 @@ theorem krasner [Field K] [Algebra K L]
     (h : (∀ x' : L, IsConjRoot K x x' → x ≠ x' → ‖x - y‖ < ‖x - x'‖)) : x ∈ K⟮y⟯ :=
   IsKrasner.krasner' hx sp hy h
 
-variable [NontriviallyNormedField K] [CompleteSpace K] [IsUltrametricDist K]
+variable [NormMetric K] [Field K] [IsNontriviallyNormedField K] [CompleteSpace K] [IsUltrametricDist K]
     [NormedAlgebra K L] [Algebra.IsAlgebraic K L]
 
 /-- Krasner's lemma assuming `Normal K L`. -/

@@ -21,7 +21,7 @@ as a limit.
 @[expose] public section
 
 variable
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
   {f g : 𝕜 → E} {x : 𝕜}
 

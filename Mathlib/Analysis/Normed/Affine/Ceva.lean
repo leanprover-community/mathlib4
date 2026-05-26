@@ -24,7 +24,7 @@ public section
 
 open scoped Affine
 
-variable {𝕜 V P : Type*} [NormPseudoMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedField 𝕜] [NormedSpace 𝕜 V]
+variable {𝕜 V P : Type*} [NormPseudoMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormedSpace 𝕜 V]
 
 namespace Affine.Triangle
 

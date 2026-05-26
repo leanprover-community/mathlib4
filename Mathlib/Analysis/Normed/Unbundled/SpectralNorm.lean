@@ -195,7 +195,7 @@ end Normed
 
 section NormedDivisionRing
 
-variable [NormedDivisionRing R]
+variable [NormMetric R] [DivisionRing R] [IsNormedField R]
 
 /-- The spectral value of a monic polynomial `P` is less than or equal to one if and only
 if all of its coefficients have norm less than or equal to 1. -/
@@ -228,7 +228,7 @@ section BddBySpectralValue
 
 open Real
 
-variable {K : Type*} [NormedField K] {L : Type*} [Field L] [Algebra K L]
+variable {K : Type*} [NormMetric K] [Field K] [IsNormedField K] {L : Type*} [Field L] [Algebra K L]
 
 open Nat in
 /-- The norm of any root of `p` is bounded by the spectral value of `p`. See
@@ -371,7 +371,7 @@ section NormedField
 
 open IntermediateField
 
-variable (K : Type*) [NormedField K] (L : Type*) [Field L] [Algebra K L]
+variable (K : Type*) [NormMetric K] [Field K] [IsNormedField K] (L : Type*) [Field L] [Algebra K L]
 
 /-- If `L` is an algebraic extension of a normed field `K` and `y : L` then the spectral norm
   `spectralNorm K y : ℝ` of `y` (written `|y|_sp` in the textbooks) is the spectral value of the
@@ -686,7 +686,7 @@ open IntermediateField
 
 universe u v
 
-variable {K : Type u} [NontriviallyNormedField K] {L : Type v} [Field L] [Algebra K L]
+variable {K : Type u} [NormMetric K] [Field K] [IsNontriviallyNormedField K] {L : Type v} [Field L] [Algebra K L]
   [Algebra.IsAlgebraic K L] [hu : IsUltrametricDist K]
 
 /-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
@@ -785,7 +785,7 @@ variable (K) in
 /-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
   `L/K` is an algebraic normed field extension, then the norm on `L` coincides with the spectral
   norm. -/
-theorem NormedAlgebra.norm_eq_spectralNorm {L : Type*} [NormedField L] [NormedAlgebra K L]
+theorem NormedAlgebra.norm_eq_spectralNorm {L : Type*} [NormMetric L] [Field L] [IsNormedField L] [NormedAlgebra K L]
     [Algebra.IsAlgebraic K L] [CompleteSpace K] (x : L) : ‖x‖ = spectralNorm K L x := by
   rw [← toMulAlgebraNorm_apply K L x, ← spectralAlgNorm_def, ← MulAlgebraNorm.coe_AlgebraNorm,
       spectralNorm_unique (f := (toMulAlgebraNorm K L).toAlgebraNorm)
@@ -923,7 +923,7 @@ def normedAlgebra :
 /-- `L` with the spectral norm is a `NormedAlgebra` over any intermediate `E`
 that is a normed algebra over `K`. -/
 @[implicit_reducible]
-def normedAlgebra' (E L : Type*) [Field L] [Algebra K L] [Algebra.IsAlgebraic K L] [NormedField E]
+def normedAlgebra' (E L : Type*) [Field L] [Algebra K L] [Algebra.IsAlgebraic K L] [NormMetric E] [Field E] [IsNormedField E]
     [NormedAlgebra K E] [Algebra E L] [IsScalarTower K E L] :
     letI := normMetric K L
     haveI := isNormedRing K L

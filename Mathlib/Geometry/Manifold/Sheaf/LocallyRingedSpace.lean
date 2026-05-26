@@ -38,7 +38,7 @@ universe u
 
 open scoped ContDiff
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type u} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   {EM : Type*} [NormMetric EM] [AddCommGroup EM] [IsNormedAddGroup EM] [NormedSpace 𝕜 EM]
   {HM : Type*} [TopologicalSpace HM] (IM : ModelWithCorners 𝕜 EM HM)
   {M : Type u} [TopologicalSpace M] [ChartedSpace HM M]

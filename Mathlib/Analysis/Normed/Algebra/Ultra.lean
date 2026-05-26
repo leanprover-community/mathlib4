@@ -16,7 +16,7 @@ This file contains the proof that a normed division ring over an ultrametric fie
 
 public section
 
-variable {K L : Type*} [NormedField K]
+variable {K L : Type*} [NormMetric K] [Field K] [IsNormedField K]
 
 variable (L) in
 /--
@@ -35,7 +35,7 @@ variable (K) in
 Let `K` be a normed field. If a normed division ring `L` is a normed `K`-algebra,
 then `L` is ultrametric (i.e. the norm on `L` is nonarchimedean) if `K` is.
 -/
-theorem IsUltrametricDist.of_normedAlgebra [NormedDivisionRing L] [NormedAlgebra K L]
+theorem IsUltrametricDist.of_normedAlgebra [NormMetric L] [DivisionRing L] [IsNormedField L] [NormedAlgebra K L]
     [h : IsUltrametricDist K] : IsUltrametricDist L := by
   rw [isUltrametricDist_iff_forall_norm_natCast_le_one] at h ⊢
   exact fun n => (algebraMap.coe_natCast (R := K) (A := L) n) ▸ norm_algebraMap' L (n : K) ▸ h n
@@ -45,6 +45,6 @@ variable (K L) in
 Let `K` be a normed field. If a normed division ring `L` is a normed `K`-algebra,
 then `L` is ultrametric (i.e. the norm on `L` is nonarchimedean) if and only if `K` is.
 -/
-theorem IsUltrametricDist.normedAlgebra_iff [NormedDivisionRing L] [NormedAlgebra K L] :
+theorem IsUltrametricDist.normedAlgebra_iff [NormMetric L] [DivisionRing L] [IsNormedField L] [NormedAlgebra K L] :
     IsUltrametricDist L ↔ IsUltrametricDist K :=
   ⟨fun _ => IsUltrametricDist.of_normedAlgebra' L, fun _ => IsUltrametricDist.of_normedAlgebra K⟩

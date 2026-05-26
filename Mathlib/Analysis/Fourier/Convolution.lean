@@ -36,7 +36,7 @@ namespace Real
 
 open MeasureTheory Convolution
 
-variable [NontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
   [NormMetric F₁] [AddCommGroup F₁] [IsNormedAddGroup F₁] [NormMetric F₂] [AddCommGroup F₂] [IsNormedAddGroup F₂] [NormMetric F₃] [AddCommGroup F₃] [IsNormedAddGroup F₃]
   [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
   [NormedSpace 𝕜 F₁] [NormedSpace 𝕜 F₂] [NormedSpace 𝕜 F₃]

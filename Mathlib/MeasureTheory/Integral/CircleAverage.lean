@@ -36,7 +36,7 @@ open Complex Filter Metric Real Set Topology
 variable
   {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
   {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F] [CompleteSpace F]
-  {𝕜 : Type*} [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E] [SMulCommClass ℝ 𝕜 E]
+  {𝕜 : Type*} [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E] [SMulCommClass ℝ 𝕜 E]
   {f f₁ f₂ : ℂ → E} {c : ℂ} {R : ℝ} {a : 𝕜}
 
 namespace Real

@@ -478,7 +478,7 @@ theorem IntegrableOn.setLIntegral_lt_top {f : α → ℝ} {s : Set α} (hf : Int
   Integrable.lintegral_lt_top hf
 
 theorem _root_.ContinuousLinearMap.integrableOn_comp {E H 𝕜 𝕜' : Type*}
-    [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
+    [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜']
     [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜' E] [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] [NormedSpace 𝕜 H]
     {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ] {f : α → H} (L : H →SL[σ] E) (hf : IntegrableOn f s μ) :
     IntegrableOn (L ∘ f) s μ :=
@@ -575,14 +575,14 @@ protected theorem IntegrableAtFilter.smul {𝕜 : Type*} [NormMetric 𝕜] [AddC
   exact ⟨s, sl, hs.smul c⟩
 
 -- See `integrableAtFilter_smul_iff` below for the fully general version.
-private theorem integrableAtFilter_smul_iff' {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+private theorem integrableAtFilter_smul_iff' {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormedSpace 𝕜 E]
     {f : α → E} {c : 𝕜} (hc : c ≠ 0) :
     IntegrableAtFilter (c • f) l μ ↔ IntegrableAtFilter f l μ := by
   refine ⟨fun hf ↦ ?_, fun h ↦ h.smul c⟩
   convert! hf.smul c⁻¹
   simp [← smul_assoc, inv_mul_cancel₀ hc]
 
-theorem integrableAtFilter_smul_iff {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+theorem integrableAtFilter_smul_iff {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormedSpace 𝕜 E]
     {f : α → E} (c : 𝕜) :
     IntegrableAtFilter (c • f) l μ ↔ c = 0 ∨ IntegrableAtFilter f l μ := by
   by_cases hc : c = 0
@@ -635,7 +635,7 @@ theorem IntegrableAtFilter.sup_iff [PseudoMetrizableSpace ε'] {f : α → ε'} 
   · exact fun ⟨⟨s, hsl, hs⟩, ⟨t, htl, ht⟩⟩ ↦ ⟨s ∪ t, union_mem_sup hsl htl, hs.union ht⟩
 
 theorem _root_.ContinuousLinearMap.integrableAtFilter_comp {E H 𝕜 𝕜' : Type*}
-    [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
+    [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜']
     [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜' E] [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] [NormedSpace 𝕜 H]
     {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ] {f : α → H} (L : H →SL[σ] E)
     (hf : IntegrableAtFilter f l μ) : IntegrableAtFilter (L ∘ f) l μ :=

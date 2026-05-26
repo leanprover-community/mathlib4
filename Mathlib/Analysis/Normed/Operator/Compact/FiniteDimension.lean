@@ -19,7 +19,7 @@ is that `Mathlib.Topology.Algebra.Module.FiniteDimension` is quite a heavy impor
 
 @[expose] public section
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
   {E : Type*} [AddCommGroup E] [Module 𝕜 E]
   [TopologicalSpace E] [T2Space E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 

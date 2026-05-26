@@ -87,7 +87,7 @@ end CommRing
 ### The completion of a field at an absolute value.
 -/
 
-variable {K : Type*} [Field K] {v : AbsoluteValue K ℝ} {L : Type*} [NormedField L]
+variable {K : Type*} [Field K] {v : AbsoluteValue K ℝ} {L : Type*} [NormMetric L] [Field L] [IsNormedField L]
   {f : WithAbs v →+* L}
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
@@ -138,7 +138,7 @@ namespace Completion
 noncomputable instance : Coe K v.Completion where
   coe k : v.Completion := ↑(toAbs v k)
 
-variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {v}
+variable {L : Type*} [NormMetric L] [Field L] [IsNormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {v}
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field
 `L`, then we can extend that embedding to an embedding on the completion `v.Completion →+* L`. -/

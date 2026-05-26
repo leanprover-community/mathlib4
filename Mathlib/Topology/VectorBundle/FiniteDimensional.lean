@@ -16,7 +16,7 @@ namespace VectorBundle
 open Bundle FiberBundle
 
 variable (R : Type*) {B : Type*} (F : Type*) (E : B → Type*)
-  [NontriviallyNormedField R] [TopologicalSpace B]
+  [NormMetric R] [Field R] [IsNontriviallyNormedField R] [TopologicalSpace B]
   [TopologicalSpace (TotalSpace F E)]
   [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace R F]
   [(x : B) → TopologicalSpace (E x)] [FiberBundle F E]

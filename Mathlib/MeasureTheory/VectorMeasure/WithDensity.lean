@@ -104,7 +104,7 @@ theorem withDensityᵥ_sub' (hf : Integrable f μ) (hg : Integrable g μ) :
   withDensityᵥ_sub hf hg
 
 @[simp]
-theorem withDensityᵥ_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
+theorem withDensityᵥ_smul {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
     [SMulCommClass ℝ 𝕜 E] (f : α → E) (r : 𝕜) : μ.withDensityᵥ (r • f) = r • μ.withDensityᵥ f := by
   by_cases hf : Integrable f μ
   · ext1 i hi
@@ -116,7 +116,7 @@ theorem withDensityᵥ_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [Norme
     · rw [withDensityᵥ, withDensityᵥ, dif_neg hf, dif_neg, smul_zero]
       rwa [integrable_smul_iff hr f]
 
-theorem withDensityᵥ_smul' {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
+theorem withDensityᵥ_smul' {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
     [SMulCommClass ℝ 𝕜 E] (f : α → E) (r : 𝕜) :
     (μ.withDensityᵥ fun x => r • f x) = r • μ.withDensityᵥ f :=
   withDensityᵥ_smul f r

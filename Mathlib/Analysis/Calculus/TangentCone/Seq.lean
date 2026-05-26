@@ -50,7 +50,7 @@ theorem mem_tangentConeAt_iff_exists_seq {R E : Type*} [AddCommGroup E] [SMul R 
     exact mem_tangentConeAt_of_seq atTop c d hd₀ hds hcd
 
 section
-variable {𝕜 E : Type*} [NormedDivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable {𝕜 E : Type*} [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
   [TopologicalSpace E] [ContinuousSMul 𝕜 E] {s : Set E} {x y : E} {r : 𝕜}
 
 /-- Auxiliary lemma ensuring that, under the assumptions from an old definition of the tangent cone,
@@ -87,7 +87,7 @@ In most cases, `exists_fun_of_mem_tangentConeAt` and/or `mem_tangentConeAt_of_se
 can be used to generalize a proof using this lemma to topological vector spaces.
 -/
 theorem mem_tangentConeAt_iff_exists_seq_norm_tendsto_atTop {𝕜 E : Type*}
-    [NontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+    [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
     {s : Set E} {x y : E} :
     y ∈ tangentConeAt 𝕜 s x ↔
       ∃ (c : ℕ → 𝕜) (d : ℕ → E), Tendsto (‖c ·‖) atTop atTop ∧ (∀ᶠ n in atTop, x + d n ∈ s) ∧

@@ -115,7 +115,7 @@ noncomputable section
 
 section
 section DerivativeUniqueness
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E]
   [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E]
 variable {F : Type*} [AddCommGroup F] [Module 𝕜 F]
@@ -177,7 +177,7 @@ theorem HasFDerivAt.unique (h₀ : HasFDerivAt f f' x) (h₁ : HasFDerivAt f f�
 
 end DerivativeUniqueness
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 
@@ -724,7 +724,7 @@ end id
 end
 
 section NormedCodomain
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 
@@ -778,7 +778,7 @@ end NormedCodomain
 -- These lemmas won't generalize to Topological Vector Spaces, at least without changing the
 -- statement.
 section not_TVS
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 
@@ -950,7 +950,7 @@ section Semilinear
 /-!
 ## Results involving semilinear maps
 -/
-variable {𝕜 V V' W W' : Type*} [NontriviallyNormedField 𝕜] {σ σ' : RingHom 𝕜 𝕜}
+variable {𝕜 V V' W W' : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {σ σ' : RingHom 𝕜 𝕜}
   [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace 𝕜 V] [NormMetric V'] [AddCommGroup V'] [IsNormedAddGroup V'] [NormedSpace 𝕜 V']
   [NormMetric W] [AddCommGroup W] [IsNormedAddGroup W] [NormedSpace 𝕜 W] [NormMetric W'] [AddCommGroup W'] [IsNormedAddGroup W'] [NormedSpace 𝕜 W']
   [RingHomIsometric σ] [RingHomInvPair σ σ'] (L : W →SL[σ] W') (R : V' →SL[σ'] V)

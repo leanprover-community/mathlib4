@@ -88,7 +88,7 @@ distributions
 open TopologicalSpace Set Function UniformSpace WithSeminorms
 open scoped BoundedContinuousFunction Topology NNReal ContDiff
 
-variable (𝕜 E F F' : Type*) [NontriviallyNormedField 𝕜]
+variable (𝕜 E F F' : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
   [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
   [NormMetric F'] [AddCommGroup F'] [IsNormedAddGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [SMulCommClass ℝ 𝕜 F']
@@ -303,7 +303,7 @@ lemma toBoundedContinuousFunctionLM_apply (f : 𝓓^{n}_{K}(E, F)) :
     toBoundedContinuousFunctionLM 𝕜 f = f :=
   rfl
 
-lemma toBoundedContinuousFunctionLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+lemma toBoundedContinuousFunctionLM_eq_of_scalars (𝕜' : Type*) [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜']
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
     (toBoundedContinuousFunctionLM 𝕜 : 𝓓^{n}_{K}(E, F) → _) = toBoundedContinuousFunctionLM 𝕜' :=
   rfl
@@ -361,7 +361,7 @@ lemma monoLM_eq_zero (H : ¬ (n₂ ≤ n₁ ∧ K₁ ≤ K₂)) :
   ext; simp [H]
 
 lemma monoLM_eq_of_scalars (𝕜' : Type*)
-    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
     (monoLM 𝕜 : 𝓓^{n₁}_{K₁}(E, F) → 𝓓^{n₂}_{K₂}(E, F)) = monoLM 𝕜' :=
   rfl
 
@@ -408,7 +408,7 @@ lemma fderivLM_apply_of_gt (f : 𝓓^{n}_{K}(E, F)) (hk : n < k + 1) :
   ext : 1
   simp [not_le_of_gt hk]
 
-lemma fderivLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+lemma fderivLM_eq_of_scalars (𝕜' : Type*) [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜']
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
     (fderivLM 𝕜 n k : 𝓓^{n}_{K}(E, F) → _) = fderivLM 𝕜' n k :=
   rfl
@@ -464,7 +464,7 @@ lemma iteratedFDerivLM_apply_of_gt {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) (hin : n <
   ext : 1
   simp [not_le_of_gt hin]
 
-lemma iteratedFDerivLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+lemma iteratedFDerivLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜']
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
     (iteratedFDerivLM 𝕜 n k i : 𝓓^{n}_{K}(E, F) → _)
       = iteratedFDerivLM 𝕜' n k i :=
@@ -498,7 +498,7 @@ lemma structureMapLM_top_apply {i : ℕ} (f : 𝓓_{K}(E, F)) :
     structureMapLM 𝕜 ⊤ i f = iteratedFDeriv ℝ i f := by
   simp [structureMapLM_eq]
 
-lemma structureMapLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+lemma structureMapLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜']
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
     (structureMapLM 𝕜 n i : 𝓓^{n}_{K}(E, F) → _) = structureMapLM 𝕜' n i :=
   rfl
@@ -560,7 +560,7 @@ lemma structureMapCLM_top_apply {i : ℕ} (f : 𝓓_{K}(E, F)) :
     structureMapCLM 𝕜 ⊤ i f = iteratedFDeriv ℝ i f := by
   simp [structureMapCLM, structureMapLM_top_apply]
 
-lemma structureMapCLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+lemma structureMapCLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜']
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
     (structureMapCLM 𝕜 n i : 𝓓^{n}_{K}(E, F) → _) = structureMapCLM 𝕜' n i :=
   rfl
@@ -721,7 +721,7 @@ lemma toBoundedContinuousFunctionCLM_apply (f : 𝓓^{n}_{K}(E, F)) :
     toBoundedContinuousFunctionCLM 𝕜 f = f :=
   rfl
 
-lemma toBoundedContinuousFunctionCLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+lemma toBoundedContinuousFunctionCLM_eq_of_scalars (𝕜' : Type*) [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜']
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
     (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}_{K}(E, F) → _) = toBoundedContinuousFunctionCLM 𝕜' :=
   rfl
@@ -815,7 +815,7 @@ lemma monoCLM_eq_zero (H : ¬ (n₂ ≤ n₁ ∧ K₁ ≤ K₂)) :
   ext; simp [H]
 
 lemma monoCLM_eq_of_scalars (𝕜' : Type*)
-    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
     (monoCLM 𝕜 : 𝓓^{n₁}_{K₁}(E, F) → 𝓓^{n₂}_{K₂}(E, F)) = monoCLM 𝕜' :=
   rfl
 
@@ -859,7 +859,7 @@ lemma fderivCLM_apply_of_gt (f : 𝓓^{n}_{K}(E, F)) (hk : n < k + 1) :
     fderivCLM 𝕜 n k f = 0 :=
   fderivLM_apply_of_gt 𝕜 f hk
 
-lemma fderivCLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+lemma fderivCLM_eq_of_scalars (𝕜' : Type*) [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜']
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
     (fderivCLM 𝕜 n k : 𝓓^{n}_{K}(E, F) → _) = fderivCLM 𝕜' n k :=
   rfl

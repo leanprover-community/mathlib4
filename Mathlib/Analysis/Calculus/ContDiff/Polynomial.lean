@@ -19,7 +19,7 @@ public section
 namespace Polynomial
 
 /-- Polynomials are smooth -/
-lemma contDiff_aeval {R 𝕜 : Type*} [CommSemiring R] [NontriviallyNormedField 𝕜] [Algebra R 𝕜]
+lemma contDiff_aeval {R 𝕜 : Type*} [CommSemiring R] [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [Algebra R 𝕜]
     (f : Polynomial R) (n : WithTop ℕ∞) : ContDiff 𝕜 n (fun x : 𝕜 ↦ f.aeval x) := by
   induction f using Polynomial.induction_on' with
   | add f g fc gc => simpa using fc.add gc

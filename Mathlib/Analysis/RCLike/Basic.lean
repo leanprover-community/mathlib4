@@ -771,7 +771,7 @@ end Instances
 namespace RCLike
 
 section NormedField
-variable [NormedField E] [CharZero E] [NormedSpace K E]
+variable [NormMetric E] [Field E] [IsNormedField E] [CharZero E] [NormedSpace K E]
 include K
 
 variable (K) in

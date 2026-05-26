@@ -31,7 +31,7 @@ open scoped Cardinal Topology
 
 /-- A complete nontrivially normed field has cardinality at least continuum. -/
 theorem continuum_le_cardinal_of_nontriviallyNormedField
-    (𝕜 : Type*) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] : 𝔠 ≤ #𝕜 := by
+    (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [CompleteSpace 𝕜] : 𝔠 ≤ #𝕜 := by
   suffices ∃ f : (ℕ → Bool) → 𝕜, range f ⊆ univ ∧ Continuous f ∧ Injective f by
     rcases this with ⟨f, -, -, f_inj⟩
     simpa using lift_mk_le_lift_mk_of_injective f_inj
@@ -51,7 +51,7 @@ theorem continuum_le_cardinal_of_nontriviallyNormedField
 /-- A nontrivial module over a complete nontrivially normed field has cardinality at least
 continuum. -/
 theorem continuum_le_cardinal_of_module
-    (𝕜 : Type u) (E : Type v) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+    (𝕜 : Type u) (E : Type v) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
     [AddCommGroup E] [Module 𝕜 E] [Nontrivial E] : 𝔠 ≤ #E := by
   have A : lift.{v} (𝔠 : Cardinal.{u}) ≤ lift.{v} (#𝕜) := by
     simpa using continuum_le_cardinal_of_nontriviallyNormedField 𝕜
@@ -62,7 +62,7 @@ the same cardinality as the whole space.
 
 See also `cardinal_eq_of_mem_nhds`. -/
 lemma cardinal_eq_of_mem_nhds_zero
-    {E : Type*} (𝕜 : Type*) [NontriviallyNormedField 𝕜] [Zero E] [MulActionWithZero 𝕜 E]
+    {E : Type*} (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [Zero E] [MulActionWithZero 𝕜 E]
     [TopologicalSpace E] [ContinuousSMul 𝕜 E] {s : Set E} (hs : s ∈ 𝓝 (0 : E)) : #s = #E := by
   /- As `s` is a neighborhood of `0`, the space is covered by the rescaled sets `c^n • s`,
   where `c` is any element of `𝕜` with norm `> 1`. All these sets are in bijection and have
@@ -99,7 +99,7 @@ lemma cardinal_eq_of_mem_nhds_zero
 /-- In a topological vector space over a nontrivially normed field, any neighborhood of a point has
 the same cardinality as the whole space. -/
 theorem cardinal_eq_of_mem_nhds
-    {E : Type*} (𝕜 : Type*) [NontriviallyNormedField 𝕜] [AddGroup E] [MulActionWithZero 𝕜 E]
+    {E : Type*} (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [AddGroup E] [MulActionWithZero 𝕜 E]
     [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E]
     {s : Set E} {x : E} (hs : s ∈ 𝓝 x) : #s = #E := by
   let g := Homeomorph.addLeft x
@@ -112,7 +112,7 @@ theorem cardinal_eq_of_mem_nhds
 /-- In a topological vector space over a nontrivially normed field, any nonempty open set has
 the same cardinality as the whole space. -/
 theorem cardinal_eq_of_isOpen
-    {E : Type*} (𝕜 : Type*) [NontriviallyNormedField 𝕜] [AddGroup E] [MulActionWithZero 𝕜 E]
+    {E : Type*} (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [AddGroup E] [MulActionWithZero 𝕜 E]
     [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E] {s : Set E}
     (hs : IsOpen s) (h's : s.Nonempty) : #s = #E := by
   rcases h's with ⟨x, hx⟩
@@ -121,7 +121,7 @@ theorem cardinal_eq_of_isOpen
 /-- In a nontrivial topological vector space over a complete nontrivially normed field, any nonempty
 open set has cardinality at least continuum. -/
 theorem continuum_le_cardinal_of_isOpen
-    {E : Type*} (𝕜 : Type*) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [AddCommGroup E]
+    {E : Type*} (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [AddCommGroup E]
     [Module 𝕜 E] [Nontrivial E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E]
     {s : Set E} (hs : IsOpen s) (h's : s.Nonempty) : 𝔠 ≤ #s := by
   simpa [cardinal_eq_of_isOpen 𝕜 hs h's] using continuum_le_cardinal_of_module 𝕜 E
@@ -129,7 +129,7 @@ theorem continuum_le_cardinal_of_isOpen
 /-- In a nontrivial topological vector space over a complete nontrivially normed field, any
 countable set has dense complement. -/
 theorem Set.Countable.dense_compl
-    {E : Type u} (𝕜 : Type*) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [AddCommGroup E]
+    {E : Type u} (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [AddCommGroup E]
     [Module 𝕜 E] [Nontrivial E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E]
     {s : Set E} (hs : s.Countable) : Dense sᶜ := by
   rw [← interior_eq_empty_iff_dense_compl]

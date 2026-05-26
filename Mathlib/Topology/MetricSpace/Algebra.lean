@@ -114,7 +114,7 @@ distinguished points `0`, requiring compatibility of the action in the sense tha
 `dist (x • y₁) (x • y₂) ≤ dist x 0 * dist y₁ y₂` and
 `dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0`.
 
-If `[NormedDivisionRing α] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [Module α β]` are assumed, then prefer writing
+If `[NormMetric α] [DivisionRing α] [IsNormedField α] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [Module α β]` are assumed, then prefer writing
 `[NormSMulClass α β]` instead of using `[IsBoundedSMul α β]`, since while equivalent, typeclass
 search can only infer the latter from the former and not vice versa. -/
 class IsBoundedSMul : Prop where

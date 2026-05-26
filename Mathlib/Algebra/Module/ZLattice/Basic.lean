@@ -66,7 +66,7 @@ variable {E ι : Type*}
 
 section NormedLatticeField
 
-variable {K : Type*} [NormedField K]
+variable {K : Type*} [NormMetric K] [Field K] [IsNormedField K]
 variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace K E]
 variable (b : Basis ι K E)
 
@@ -432,7 +432,7 @@ open Submodule Module ZSpan
 -- TODO: generalize this class to other rings than `ℤ`
 /-- `L : Submodule ℤ E` where `E` is a vector space over a normed field `K` is a `ℤ`-lattice if
 it is discrete and spans `E` over `K`. -/
-class IsZLattice (K : Type*) [NormedField K] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace K E]
+class IsZLattice (K : Type*) [NormMetric K] [Field K] [IsNormedField K] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace K E]
     (L : Submodule ℤ E) [DiscreteTopology L] : Prop where
   /-- `L` spans the full space `E` over `K`. -/
   span_top : span K (L : Set E) = ⊤
@@ -444,7 +444,7 @@ instance instIsZLatticeRealSpan {E ι : Type*} [NormMetric E] [AddCommGroup E] [
 
 section NormedLinearOrderedField
 
-variable (K : Type*) [NormedField K] [LinearOrder K] [IsStrictOrderedRing K]
+variable (K : Type*) [NormMetric K] [Field K] [IsNormedField K] [LinearOrder K] [IsStrictOrderedRing K]
   [HasSolidNorm K] [FloorRing K]
 variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace K E] [FiniteDimensional K E]
 variable [ProperSpace E] (L : Submodule ℤ E) [DiscreteTopology L]
@@ -691,7 +691,7 @@ end Basis
 
 section comap
 
-variable (K : Type*) [NormedField K] {E F : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace K E]
+variable (K : Type*) [NormMetric K] [Field K] [IsNormedField K] {E F : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace K E]
     [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace K F] (L : Submodule ℤ E)
 
 /-- Let `e : E → F` a linear map, the map that sends a `L : Submodule ℤ E` to the
@@ -771,7 +771,7 @@ end comap
 
 section NormedLinearOrderedField_comap
 
-variable (K : Type*) [NormedField K] [LinearOrder K] [IsStrictOrderedRing K] [HasSolidNorm K]
+variable (K : Type*) [NormMetric K] [Field K] [IsNormedField K] [LinearOrder K] [IsStrictOrderedRing K] [HasSolidNorm K]
   [FloorRing K]
 variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace K E] [FiniteDimensional K E]
   [ProperSpace E]

@@ -25,7 +25,7 @@ variable {α β : Type*}
 namespace Equiv
 
 /-- Transfer a `NormedField` across an `Equiv` -/
-protected abbrev normedField [NormedField β] (e : α ≃ β) : NormedField α :=
+protected abbrev normedField [NormMetric β] [Field β] [IsNormedField β] (e : α ≃ β) : NormedField α :=
   letI := e.field
   .induced α β e.ringEquiv e.injective
 

@@ -38,7 +38,7 @@ open scoped Bundle
 
 namespace ContinuousAlternatingMap
 
-variable {𝕜 ι : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 ι : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 
 variable {B₁ : Type*} (F₁ : Type*) [NormMetric F₁] [AddCommGroup F₁] [IsNormedAddGroup F₁] [NormedSpace 𝕜 F₁]
   {E₁ : B₁ → Type*} [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
@@ -99,7 +99,7 @@ open ContinuousAlternatingMap (inCoordinates)
 
 namespace Bundle.Pretrivialization
 
-variable {𝕜 ι : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 ι : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 
 variable {B : Type*} [TopologicalSpace B]
 
@@ -228,7 +228,7 @@ namespace Bundle.ContinuousAlternatingMap
 
 open Pretrivialization
 
-variable {𝕜 ι : Type*} [NontriviallyNormedField 𝕜] [Fintype ι]
+variable {𝕜 ι : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [Fintype ι]
 
 variable {B : Type*} [TopologicalSpace B]
 
@@ -302,7 +302,7 @@ end Bundle.ContinuousAlternatingMap
 
 namespace Bundle.Trivialization
 
-variable {𝕜 ι : Type*} [NontriviallyNormedField 𝕜] [Fintype ι]
+variable {𝕜 ι : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [Fintype ι]
 
 variable {B : Type*} [TopologicalSpace B]
 
@@ -353,7 +353,7 @@ end Bundle.Trivialization
 
 namespace FiberBundle
 
-variable {𝕜 ι : Type*} [NontriviallyNormedField 𝕜] [Fintype ι]
+variable {𝕜 ι : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [Fintype ι]
 
 variable {B : Type*} [TopologicalSpace B]
 
@@ -404,7 +404,7 @@ end FiberBundle
 
 section Continuity
 
-variable {𝕜 ι : Type*} [NontriviallyNormedField 𝕜] [Fintype ι]
+variable {𝕜 ι : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [Fintype ι]
 
 variable {B : Type*} [TopologicalSpace B]
 

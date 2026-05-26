@@ -176,7 +176,7 @@ protected lemma inr : (ContinuousLinearMap.inr R F G).HasLeftInverse := by
 
 section NontriviallyNormedField
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E F : Type*}
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {E F : Type*}
   [TopologicalSpace E] [AddCommGroup E] [Module 𝕜 E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
   [TopologicalSpace F] [AddCommGroup F] [Module 𝕜 F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
   [T2Space F] {f : E →L[𝕜] F}
@@ -243,7 +243,7 @@ end Ring
 
 section
 
-variable {R E F : Type*} [NontriviallyNormedField R]
+variable {R E F : Type*} [NormMetric R] [Field R] [IsNontriviallyNormedField R]
   [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace R E] [CompleteSpace E]
   [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace R F] [CompleteSpace F]
 
@@ -340,7 +340,7 @@ protected lemma snd : (ContinuousLinearMap.snd R F G).HasRightInverse := by
 
 section NontriviallyNormedField
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E F : Type*}
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {E F : Type*}
   [TopologicalSpace E] [AddCommGroup E] [Module 𝕜 E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
   [TopologicalSpace F] [AddCommGroup F] [Module 𝕜 F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
   [T2Space F] {f : E →L[𝕜] F}

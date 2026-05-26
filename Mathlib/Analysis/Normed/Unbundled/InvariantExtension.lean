@@ -45,7 +45,7 @@ open scoped NNReal
 
 noncomputable section
 
-variable {K : Type*} [NormedField K] {L : Type*} [Field L] [Algebra K L]
+variable {K : Type*} [NormMetric K] [Field K] [IsNormedField K] {L : Type*} [Field L] [Algebra K L]
   [h_fin : FiniteDimensional K L] [hu : IsUltrametricDist K]
 
 namespace IsUltrametricDist

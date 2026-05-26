@@ -28,7 +28,7 @@ variable (𝕜 : Type*) {E : Type*}
 
 namespace ContinuousLinearMap
 
-variable [NontriviallyNormedField 𝕜] [NormMetric E] [NonUnitalRing E] [IsNormedRing E] [StarRing E] [NormedStarGroup E]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric E] [NonUnitalRing E] [IsNormedRing E] [StarRing E] [NormedStarGroup E]
 variable [NormedSpace 𝕜 E] [IsScalarTower 𝕜 E E] [SMulCommClass 𝕜 E E] [RegularNormedAlgebra 𝕜 E]
 
 lemma opNorm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖ = ‖a‖ := by
@@ -52,7 +52,7 @@ lemma isometry_mul_flip : Isometry (mul 𝕜 E).flip :=
 
 end ContinuousLinearMap
 
-variable [DenselyNormedField 𝕜] [NormMetric E] [NonUnitalRing E] [IsNormedRing E] [StarRing E] [CStarRing E]
+variable [NormMetric 𝕜] [Field 𝕜] [IsDenselyNormedField 𝕜] [NormMetric E] [NonUnitalRing E] [IsNormedRing E] [StarRing E] [CStarRing E]
 variable [NormedSpace 𝕜 E] [IsScalarTower 𝕜 E E] [SMulCommClass 𝕜 E E]
 variable (E)
 

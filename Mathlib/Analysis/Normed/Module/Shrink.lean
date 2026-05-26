@@ -19,7 +19,7 @@ noncomputable section
 namespace Shrink
 
 universe v
-variable {R 𝕜 α : Type*} [Small.{v} α] [Semiring R] [NormedField 𝕜]
+variable {R 𝕜 α : Type*} [Small.{v} α] [Semiring R] [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜]
 
 instance [NormPseudoMetric α] : NormPseudoMetric (Shrink.{v} α) :=
   (equivShrink α).symm.normPseudoMetric

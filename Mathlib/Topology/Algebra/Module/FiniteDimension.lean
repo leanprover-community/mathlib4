@@ -503,7 +503,7 @@ end NormedField
 
 section IsUniformAddGroup
 
-variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜]
+variable (𝕜 E : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   [CompleteSpace 𝕜] [AddCommGroup E] [UniformSpace E] [T2Space E] [IsUniformAddGroup E]
   [Module 𝕜 E] [ContinuousSMul 𝕜 E]
 
@@ -523,7 +523,7 @@ theorem Submodule.complete_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDi
 
 end IsUniformAddGroup
 
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+variable {𝕜 E F : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
   [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E] [Module 𝕜 E]
   [ContinuousSMul 𝕜 E]
   [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜 F]
@@ -598,7 +598,7 @@ and `[ContinuousSMul K V]`), and `K` is locally compact, then `V` is locally com
 
 This is not an instance because `K` cannot be inferred. -/
 theorem LocallyCompactSpace.of_finiteDimensional_of_complete (K V : Type*)
-    [NontriviallyNormedField K] [CompleteSpace K] [LocallyCompactSpace K]
+    [NormMetric K] [Field K] [IsNontriviallyNormedField K] [CompleteSpace K] [LocallyCompactSpace K]
     [AddCommGroup V] [TopologicalSpace V] [IsTopologicalAddGroup V]
     [Module K V] [ContinuousSMul K V] [FiniteDimensional K V] :
     LocallyCompactSpace V :=
@@ -612,7 +612,7 @@ theorem LocallyCompactSpace.of_finiteDimensional_of_complete (K V : Type*)
 
 section Riesz
 
-variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+variable (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
   {E Eᵤ : Type*} [AddCommGroup E] [AddCommGroup Eᵤ] [Module 𝕜 E] [Module 𝕜 Eᵤ]
   [TopologicalSpace E] [UniformSpace Eᵤ] [T2Space E] [T2Space Eᵤ]
   [IsTopologicalAddGroup E] [IsUniformAddGroup Eᵤ]

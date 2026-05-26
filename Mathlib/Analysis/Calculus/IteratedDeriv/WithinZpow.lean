@@ -22,7 +22,7 @@ public section
 
 open scoped Nat
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {s : Set 𝕜}
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {s : Set 𝕜}
 
 theorem iteratedDerivWithin_zpow (m : ℤ) (k : ℕ) (hs : IsOpen s) :
     s.EqOn (iteratedDerivWithin k (fun y ↦ y ^ m) s)

@@ -22,7 +22,7 @@ public section
 open Filter Metric Set
 open scoped Topology
 
-variable {𝕜 : Type*} [NormedDivisionRing 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜]
 
 /-- The tangent cone at a non-isolated point in dimension 1 is the whole space. -/
 theorem tangentConeAt_eq_univ {s : Set 𝕜} {x : 𝕜} (hx : AccPt x (𝓟 s)) :

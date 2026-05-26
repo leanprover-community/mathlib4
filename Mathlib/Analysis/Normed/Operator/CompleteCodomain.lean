@@ -27,7 +27,7 @@ open scoped Topology
 
 namespace SeparatingDual
 
-variable (𝕜 E F : Type*) [NontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+variable (𝕜 E F : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
     [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] [SeparatingDual 𝕜 E] [Nontrivial E]
 
 /-- If a space of linear maps from `E` to `F` is complete, and `E` is nontrivial, then `F` is

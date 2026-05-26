@@ -43,7 +43,7 @@ section CompactSets
 
 /-! ### Topology of compact convergence for continuous linear maps -/
 
-variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃] {σ : 𝕜₁ →+* 𝕜₂}
+variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormMetric 𝕜₁] [Field 𝕜₁] [IsNormedField 𝕜₁] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNormedField 𝕜₂] [NormMetric 𝕜₃] [Field 𝕜₃] [IsNormedField 𝕜₃] {σ : 𝕜₁ →+* 𝕜₂}
   {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] {E F G : Type*}
   [AddCommGroup E] [Module 𝕜₁ E]
   [AddCommGroup F] [Module 𝕜₂ F]
@@ -175,7 +175,7 @@ section Semilinear
 
 variable {𝕜 : Type*} {𝕜₂ : Type*} {𝕜₃ : Type*} {𝕜₄ : Type*} {E : Type*} {F : Type*}
   {G : Type*} {H : Type*} [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
-  [NormedField 𝕜] [NormedField 𝕜₂] [NormedField 𝕜₃] [NormedField 𝕜₄]
+  [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNormedField 𝕜₂] [NormMetric 𝕜₃] [Field 𝕜₃] [IsNormedField 𝕜₃] [NormMetric 𝕜₄] [Field 𝕜₄] [IsNormedField 𝕜₄]
   [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜₃ G] [Module 𝕜₄ H]
   [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G] [TopologicalSpace H]
   [IsTopologicalAddGroup G] [IsTopologicalAddGroup H]
@@ -212,7 +212,7 @@ section Linear
 
 variable {𝕜 : Type*} {E : Type*} {F : Type*} {G : Type*} {H : Type*}
   [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
-  [NormedField 𝕜] [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G] [Module 𝕜 H]
+  [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G] [Module 𝕜 H]
   [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G] [TopologicalSpace H]
   [IsTopologicalAddGroup G] [IsTopologicalAddGroup H]
   [ContinuousConstSMul 𝕜 G] [ContinuousConstSMul 𝕜 H]

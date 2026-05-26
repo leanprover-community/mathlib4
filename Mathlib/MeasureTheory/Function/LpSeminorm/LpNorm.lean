@@ -121,7 +121,7 @@ lemma lpNorm_sub_comm (f g : α → E) (p : ℝ≥0∞) (μ : Measure α) :
     aestronglyMeasurable_const]
 
 section NormedField
-variable {𝕜 : Type*} [NormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜]
 
 @[simp] lemma lpNorm_one (hp : p ≠ 0) (hμ : μ ≠ 0) :
     lpNorm (1 : α → 𝕜) p μ = μ.real .univ ^ (p.toReal⁻¹ : ℝ) := by

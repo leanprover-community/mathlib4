@@ -24,7 +24,7 @@ that it is locally convex in the topological sense
 
 @[expose] public section
 
-variable {α R 𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃]
+variable {α R 𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormMetric 𝕜₁] [Field 𝕜₁] [IsNormedField 𝕜₁] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNormedField 𝕜₂] [NormMetric 𝕜₃] [Field 𝕜₃] [IsNormedField 𝕜₃]
   {σ : 𝕜₁ →+* 𝕜₂} {τ : 𝕜₃ →+* 𝕜₂} {D E F G : Type*}
   [AddCommGroup E] [TopologicalSpace E] [Module 𝕜₁ E]
 

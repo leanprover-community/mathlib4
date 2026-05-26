@@ -50,7 +50,7 @@ coerced into an element of `ℝ≥0∞`. Note that it is possible for `spectrum 
 case, `spectralRadius a = 0`. It is also possible that `spectrum 𝕜 a` be unbounded (though
 not for Banach algebras, see `spectrum.isBounded`, below).  In this case,
 `spectralRadius a = ∞`. -/
-noncomputable def spectralRadius (𝕜 : Type*) {A : Type*} [NormedField 𝕜] [Ring A] [Algebra 𝕜 A]
+noncomputable def spectralRadius (𝕜 : Type*) {A : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [Ring A] [Algebra 𝕜 A]
     (a : A) : ℝ≥0∞ :=
   ⨆ k ∈ spectrum 𝕜 a, ‖k‖₊
 
@@ -62,7 +62,7 @@ section SpectrumCompact
 
 open Filter
 
-variable [NormedField 𝕜]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜]
 
 local notation "σ" => spectrum 𝕜
 local notation "ρ" => resolventSet 𝕜
@@ -284,7 +284,7 @@ section resolvent
 
 open Filter Asymptotics Bornology Topology
 
-variable [NontriviallyNormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 local notation "ρ" => resolventSet 𝕜
 local notation "↑ₐ" => algebraMap 𝕜 A
@@ -317,7 +317,7 @@ open ContinuousMultilinearMap ENNReal FormalMultilinearSeries
 
 open scoped NNReal ENNReal
 
-variable [NontriviallyNormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A]
 
 variable (𝕜) in
 /-- In a Banach algebra `A` over a nontrivially normed field `𝕜`, for any `a : A` the
@@ -405,7 +405,7 @@ namespace AlgHom
 
 section NormedField
 
-variable {F : Type*} [NormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable {F : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 local notation "↑ₐ" => algebraMap 𝕜 A
 
@@ -437,7 +437,7 @@ end NormedField
 
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 local notation "↑ₐ" => algebraMap 𝕜 A
 
@@ -456,7 +456,7 @@ namespace WeakDual
 
 namespace CharacterSpace
 
-variable [NontriviallyNormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A] [CompleteSpace A]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A] [CompleteSpace A]
 variable [NormedAlgebra 𝕜 A]
 
 /-- The equivalence between characters and algebra homomorphisms into the base field. -/
@@ -488,7 +488,7 @@ open Topology Filter Set
 
 section NormedField
 
-variable [NormedField 𝕜] [NormedAlgebra 𝕜 A] [instSMulMem : SMulMemClass SA 𝕜 A]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormedAlgebra 𝕜 A] [instSMulMem : SMulMemClass SA 𝕜 A]
 variable (S : SA) [hS : IsClosed (S : Set A)] (x : S)
 
 open SubalgebraClass in
@@ -588,7 +588,7 @@ lemma Subalgebra.spectrum_isBounded_connectedComponentIn {z : 𝕜} (hz : z ∈ 
 
 end NormedField
 
-variable [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 A] [SMulMemClass SA 𝕜 A]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 A] [SMulMemClass SA 𝕜 A]
 variable (S : SA) [hS : IsClosed (S : Set A)] (x : S)
 
 /-- Let `S` be a closed subalgebra of a Banach algebra `A`. If for `x : S` the complement of the
@@ -613,7 +613,7 @@ open NNReal ENNReal
 /-- If `𝕜₁` is a normed field contained as subfield of a larger normed field `𝕜₂`, and if `a : A`
 is an element whose `𝕜₂` spectrum restricts to `𝕜₁`, then the spectral radii over each scalar
 field coincide. -/
-lemma spectralRadius_eq {𝕜₁ 𝕜₂ A : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂]
+lemma spectralRadius_eq {𝕜₁ 𝕜₂ A : Type*} [NormMetric 𝕜₁] [Field 𝕜₁] [IsNormedField 𝕜₁] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNormedField 𝕜₂]
     [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜₁ A] [NormedAlgebra 𝕜₂ A] [NormedAlgebra 𝕜₁ 𝕜₂]
     [IsScalarTower 𝕜₁ 𝕜₂ A] {f : 𝕜₂ → 𝕜₁} {a : A} (h : SpectrumRestricts a f) :
     spectralRadius 𝕜₁ a = spectralRadius 𝕜₂ a := by
@@ -697,7 +697,7 @@ open Filter Set Topology
 
 variable (𝕜 A)
 
-lemma upperHemicontinuous_spectrum [NormedField 𝕜] [ProperSpace 𝕜]
+lemma upperHemicontinuous_spectrum [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [ProperSpace 𝕜]
     [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A] :
     UpperHemicontinuous (spectrum 𝕜 : A → Set 𝕜) := by
   /- It suffices to use the sequential characterization of upper hemicontinuity.
@@ -729,7 +729,7 @@ theorem upperHemicontinuous_spectrum_nnreal [NormMetric A] [Ring A] [IsNormedRin
 
 open WithLp in
 /-- The map `a ↦ quasispectrum 𝕜 a` is upper hemicontinuous. -/
-theorem upperHemicontinuous_quasispectrum [NontriviallyNormedField 𝕜] [ProperSpace 𝕜]
+theorem upperHemicontinuous_quasispectrum [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [ProperSpace 𝕜]
     [NormMetric A] [NonUnitalRing A] [IsNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
     [CompleteSpace A] :
     UpperHemicontinuous (quasispectrum 𝕜 : A → Set 𝕜) := by

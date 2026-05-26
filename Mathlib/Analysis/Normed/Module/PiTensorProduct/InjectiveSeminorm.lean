@@ -81,7 +81,7 @@ space.
 universe uι u𝕜 uE uF
 
 variable {ι : Type uι} [Fintype ι]
-variable {𝕜 : Type u𝕜} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type u𝕜} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 variable {E : ι → Type uE} [∀ i, NormPseudoMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
 variable {F : Type uF} [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 

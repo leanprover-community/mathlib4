@@ -41,7 +41,7 @@ anyway: this means that in order for `ContMDiffVAdd` to be meaningful, smoothnes
 have to be required separately. For example, to state that `G` is a Cⁿ additive Lie group with a Cⁿ
 additive action on a Cⁿ manifold `M`, one can use the typeclasses
 `[LieAddGroup I n G] [IsManifold I' n M] [ContMDiffVAdd I I' n G M]`. -/
-class ContMDiffVAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
+class ContMDiffVAdd {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
     {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormedSpace 𝕜 E']
     (I' : ModelWithCorners 𝕜 E' H') (n : ℕ∞ω)
@@ -58,7 +58,7 @@ have to be required separately. For example, to state that `G` is a Cⁿ Lie gro
 a Cⁿ manifold `M`, one can use the typeclasses
 `[LieGroup I n G] [IsManifold I' n M] [ContMDiffSMul I I' n G M]`. -/
 @[to_additive]
-class ContMDiffSMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
+class ContMDiffSMul {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
     {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormedSpace 𝕜 E']
     (I' : ModelWithCorners 𝕜 E' H') (n : ℕ∞ω)
@@ -70,7 +70,7 @@ export ContMDiffVAdd (contMDiff_vadd)
 
 export ContMDiffSMul (contMDiff_smul)
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
   {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
   {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormedSpace 𝕜 E']
   {I' : ModelWithCorners 𝕜 E' H'} {H'' : Type*} [TopologicalSpace H''] {E'' : Type*}

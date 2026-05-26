@@ -49,7 +49,7 @@ section SemiNormed
 variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormPseudoMetric Fₗ] [AddCommGroup Fₗ] [IsNormedAddGroup Fₗ]
   [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G]
 
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNontriviallyNormedField 𝕜₂] [NormMetric 𝕜₃] [Field 𝕜₃] [IsNontriviallyNormedField 𝕜₃]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ] [NormedSpace 𝕜₃ G]
   {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
@@ -392,7 +392,7 @@ def toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F) wher
 theorem nnnorm_id [NontrivialTopology E] : ‖ContinuousLinearMap.id 𝕜 E‖₊ = 1 :=
   NNReal.eq norm_id
 
-instance toNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F] :
+instance toNormedSpace {𝕜' : Type*} [NormMetric 𝕜'] [Field 𝕜'] [IsNormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F] :
     NormedSpace 𝕜' (E →SL[σ₁₂] F) :=
   ⟨opNorm_smul_le⟩
 
@@ -441,7 +441,7 @@ end OpNorm
 
 section RestrictScalars
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+variable {𝕜' : Type*} [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
 variable [NormedSpace 𝕜' E] [IsScalarTower 𝕜' 𝕜 E]
 variable [NormedSpace 𝕜' Fₗ] [IsScalarTower 𝕜' 𝕜 Fₗ]
 

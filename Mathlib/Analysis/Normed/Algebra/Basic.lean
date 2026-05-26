@@ -32,7 +32,7 @@ public section
 
 namespace IntermediateField
 
-variable {K L : Type*} [NontriviallyNormedField K] [NormedField L] [NormedAlgebra K L]
+variable {K L : Type*} [NormMetric K] [Field K] [IsNontriviallyNormedField K] [NormMetric L] [Field L] [IsNormedField L] [NormedAlgebra K L]
 
 instance (F : IntermediateField K L) : NontriviallyNormedField F where
   __ := SubfieldClass.toNormedField F
@@ -49,7 +49,7 @@ namespace WeakDual
 
 namespace CharacterSpace
 
-variable [NontriviallyNormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 theorem norm_le_norm_one (φ : characterSpace 𝕜 A) : ‖toStrongDual (φ : WeakDual 𝕜 A)‖ ≤ ‖(1 : A)‖ :=
   ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg (1 : A)) fun a =>

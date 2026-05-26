@@ -103,7 +103,7 @@ end Ring
 
 section NormedField
 
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
   [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric Eₗ] [AddCommGroup Eₗ] [IsNormedAddGroup Eₗ] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormMetric Fₗ] [AddCommGroup Fₗ] [IsNormedAddGroup Fₗ]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜 Eₗ] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₂ Fₗ] [CompleteSpace F]
   (f g : E →SL[σ₁₂] F) {e : E →L[𝕜] Eₗ}
@@ -177,7 +177,7 @@ end compInv
 
 section NormedDivisionRing
 
-variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
+variable [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] [NormMetric 𝕜₂] [DivisionRing 𝕜₂] [IsNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
   [AddCommGroup E] [NormPseudoMetric Eₗ] [AddCommGroup Eₗ] [IsNormedAddGroup Eₗ] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
   [Module 𝕜 E] [Module 𝕜₂ F] [IsBoundedSMul 𝕜₂ F] [Module 𝕜 Eₗ] [IsBoundedSMul 𝕜 Eₗ]
   [CompleteSpace F]
@@ -219,7 +219,7 @@ end NormedDivisionRing
 
 section NormedField
 
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
   [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormPseudoMetric Eₗ] [AddCommGroup Eₗ] [IsNormedAddGroup Eₗ]
   [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Eₗ]
   [AddCommGroup E] [Module 𝕜 E] [CompleteSpace F]
@@ -238,7 +238,7 @@ namespace LinearEquiv
 
 section extend
 
-variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂]
+variable [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] [NormMetric 𝕜₂] [DivisionRing 𝕜₂] [IsNormedField 𝕜₂]
   [AddCommGroup E] [NormMetric Eₗ] [AddCommGroup Eₗ] [IsNormedAddGroup Eₗ] [AddCommGroup F] [NormMetric Fₗ] [AddCommGroup Fₗ] [IsNormedAddGroup Fₗ]
   [Module 𝕜 E] [Module 𝕜 Eₗ] [IsBoundedSMul 𝕜 Eₗ] [Module 𝕜₂ F] [Module 𝕜₂ Fₗ] [IsBoundedSMul 𝕜₂ Fₗ]
   [CompleteSpace Eₗ] [CompleteSpace Fₗ]
@@ -308,7 +308,7 @@ end extend
 
 section extendOfIsometry
 
-variable [NormedField 𝕜] [NormedField 𝕜₂]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNormedField 𝕜₂]
   [AddCommGroup E] [Module 𝕜 E]
   [AddCommGroup F] [Module 𝕜₂ F]
   [NormMetric Eₗ] [AddCommGroup Eₗ] [IsNormedAddGroup Eₗ] [NormedSpace 𝕜 Eₗ] [CompleteSpace Eₗ]

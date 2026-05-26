@@ -178,7 +178,7 @@ instance _root_.Algebra.IsCentral.instContinuousLinearMap [Algebra.IsCentral S R
 
 open ContinuousLinearMap ContinuousLinearEquiv in
 theorem _root_.ContinuousLinearEquiv.conjContinuousAlgEquiv_ext_iff
-    {R V W : Type*} [NormedField R] [AddCommGroup V] [AddCommGroup W] [TopologicalSpace R]
+    {R V W : Type*} [NormMetric R] [Field R] [IsNormedField R] [AddCommGroup V] [AddCommGroup W] [TopologicalSpace R]
     [TopologicalSpace V] [TopologicalSpace W] [IsTopologicalRing R] [Module R V] [Module R W]
     [SeparatingDual R V] [IsTopologicalAddGroup V] [IsTopologicalAddGroup W]
     [ContinuousSMul R V] [ContinuousSMul R W] (f g : V ≃L[R] W) :

@@ -107,7 +107,7 @@ theorem mellin_cpow_smul (f : ℝ → E) (s a : ℂ) :
 general rings assuming *a priori* that the Mellin transform is defined, see
 `hasMellin_const_smul`. -/
 theorem mellin_const_smul (f : ℝ → E) (s : ℂ) {𝕜 : Type*}
-    [NormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E] (c : 𝕜) :
+    [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E] (c : 𝕜) :
     mellin (fun t => c • f t) s = c • mellin f s := by
   simp only [mellin, smul_comm, integral_smul]
 

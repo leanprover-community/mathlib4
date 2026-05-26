@@ -46,7 +46,7 @@ variable {𝕜 R V W W₂ Q : Type*}
 section Seminormed
 
 variable [NormPseudoMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormPseudoMetric W] [AddCommGroup W] [IsNormedAddGroup W] [NormPseudoMetric W₂] [AddCommGroup W₂] [IsNormedAddGroup W₂]
-variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [NormedSpace 𝕜 W₂]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [NormedSpace 𝕜 W₂]
 variable [PseudoMetricSpace Q] [NormedAddTorsor W Q]
 
 variable (f : V →ᴬ[𝕜] W)
@@ -151,7 +151,7 @@ end Seminormed
 section Normed
 
 variable [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormMetric W] [AddCommGroup W] [IsNormedAddGroup W]
-variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W]
 variable [MetricSpace Q] [NormedAddTorsor W Q]
 
 noncomputable instance : MetricSpace (V →ᴬ[𝕜] Q) :=

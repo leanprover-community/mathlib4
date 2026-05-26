@@ -296,7 +296,7 @@ end CommRing
 
 section Algebra
 
-variable [NormedField 𝕜] [NormMetric R] [Ring R] [IsNormedRing R] [NormMetric M] [AddCommGroup M] [IsNormedAddGroup M]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormMetric R] [Ring R] [IsNormedRing R] [NormMetric M] [AddCommGroup M] [IsNormedAddGroup M]
 variable [NormedAlgebra 𝕜 R] [NormedSpace 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]

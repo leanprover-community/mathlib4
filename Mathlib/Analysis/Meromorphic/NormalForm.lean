@@ -28,7 +28,7 @@ form at a single point and along a set, respectively.
 open Topology WithTop
 
 variable
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
   {f : 𝕜 → E} {g : 𝕜 → 𝕜}
   {x : 𝕜}

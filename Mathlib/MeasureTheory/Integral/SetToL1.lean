@@ -780,7 +780,7 @@ theorem setToFun_sub (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f �
     (hg : Integrable g μ) : setToFun μ T hT (f - g) = setToFun μ T hT f - setToFun μ T hT g := by
   rw [sub_eq_add_neg, sub_eq_add_neg, setToFun_add hT hf hg.neg, setToFun_neg hT g]
 
-theorem setToFun_smul [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
+theorem setToFun_smul [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
     [Module 𝕜 F] [NormSMulClass 𝕜 F]
     (hT : DominatedFinMeasAdditive μ T C) (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (c : 𝕜)
     (f : α → E) : setToFun μ T hT (c • f) = c • setToFun μ T hT f := by

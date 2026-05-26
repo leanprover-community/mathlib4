@@ -975,12 +975,12 @@ theorem _root_.IsUnit.integrable_smul_iff [NormMetric 𝕜] [Ring 𝕜] [IsNorme
     Integrable (c • f) μ ↔ Integrable f μ :=
   and_congr hc.aestronglyMeasurable_const_smul_iff (hasFiniteIntegral_smul_iff hc f)
 
-theorem integrable_smul_iff [NormedDivisionRing 𝕜] [MulActionWithZero 𝕜 β]
+theorem integrable_smul_iff [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] [MulActionWithZero 𝕜 β]
     [IsBoundedSMul 𝕜 β] {c : 𝕜} (hc : c ≠ 0) (f : α → β) :
     Integrable (c • f) μ ↔ Integrable f μ :=
   (IsUnit.mk0 _ hc).integrable_smul_iff f
 
-theorem integrable_fun_smul_iff [NormedDivisionRing 𝕜] [MulActionWithZero 𝕜 β] [IsBoundedSMul 𝕜 β]
+theorem integrable_fun_smul_iff [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] [MulActionWithZero 𝕜 β] [IsBoundedSMul 𝕜 β]
     {c : 𝕜} (hc : c ≠ 0) (f : α → β) :
     Integrable (fun x ↦ c • f x) μ ↔ Integrable f μ :=
   integrable_smul_iff hc f
@@ -1016,7 +1016,7 @@ end IsBoundedSMul
 
 section NormedSpaceOverCompleteField
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
 variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 
 theorem integrable_smul_const {f : α → 𝕜} {c : E} (hc : c ≠ 0) :
@@ -1091,7 +1091,7 @@ end NormedRing
 
 section NormedDivisionRing
 
-variable {𝕜 : Type*} [NormedDivisionRing 𝕜] {f : α → 𝕜}
+variable {𝕜 : Type*} [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] {f : α → 𝕜}
 
 @[fun_prop]
 theorem Integrable.div_const {f : α → 𝕜} (h : Integrable f μ) (c : 𝕜) :
@@ -1182,7 +1182,7 @@ section ContinuousLinearMap
 open MeasureTheory
 
 variable {E H : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H]
-  {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
+  {𝕜 𝕜' : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric 𝕜'] [Field 𝕜'] [IsNontriviallyNormedField 𝕜']
   [NormedSpace 𝕜' E] [NormedSpace 𝕜 H]
 
 variable {σ : 𝕜 →+* 𝕜'} {σ' : 𝕜' →+* 𝕜} [RingHomIsometric σ] [RingHomIsometric σ']

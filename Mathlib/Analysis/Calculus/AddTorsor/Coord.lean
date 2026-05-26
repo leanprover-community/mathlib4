@@ -14,7 +14,7 @@ public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 
 public section
 
-variable {ι 𝕜 E P : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+variable {ι 𝕜 E P : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
 variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 variable [MetricSpace P] [NormedAddTorsor E P]
 variable [FiniteDimensional 𝕜 E]

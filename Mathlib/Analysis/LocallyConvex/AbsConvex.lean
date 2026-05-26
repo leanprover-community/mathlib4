@@ -186,7 +186,7 @@ end AbsolutelyConvex
 
 section NormedField
 
-variable [NormedField 𝕜] [PartialOrder 𝕜]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [PartialOrder 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 
@@ -204,7 +204,7 @@ end NormedField
 section NontriviallyNormedField
 
 variable (𝕜 E)
-variable [NontriviallyNormedField 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [TopologicalSpace E] [LocallyConvexSpace 𝕜 E] [ContinuousSMul 𝕜 E]
 
 theorem nhds_hasBasis_absConvex :
@@ -234,7 +234,7 @@ end NontriviallyNormedField
 
 section
 
-variable (𝕜) [NontriviallyNormedField 𝕜] [PartialOrder 𝕜]
+variable (𝕜) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [PartialOrder 𝕜]
 variable [AddCommGroup E] [Module 𝕜 E]
 
 theorem absConvexHull_add_subset {s t : Set E} :
@@ -285,7 +285,7 @@ theorem convexHull_union_neg_eq_absConvexHull {s : Set E} :
       exact convexHull_mono balancedHull_subset_convexHull_union_neg)
 
 variable (E 𝕜) {s : Set E}
-variable [NontriviallyNormedField 𝕜] [PartialOrder 𝕜] [Module 𝕜 E] [SMulCommClass ℝ 𝕜 E]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [PartialOrder 𝕜] [Module 𝕜 E] [SMulCommClass ℝ 𝕜 E]
 variable [UniformSpace E] [IsUniformAddGroup E] [lcs : LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
 
 -- TVS II.25 Prop3

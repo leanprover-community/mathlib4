@@ -64,7 +64,7 @@ open scoped Nat Topology ENNReal
 
 section AnyFieldAnyAlgebra
 
-variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸] [CharZero 𝕂] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 𝔸 : Type*} [NormMetric 𝕂] [Field 𝕂] [IsNontriviallyNormedField 𝕂] [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸] [CharZero 𝕂] [NormedAlgebra 𝕂 𝔸]
   [CompleteSpace 𝔸]
 
 /-- The exponential in a Banach algebra `𝔸` over a normed field `𝕂` has strict Fréchet derivative
@@ -86,7 +86,7 @@ end AnyFieldAnyAlgebra
 
 section AnyFieldCommAlgebra
 
-variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormMetric 𝔸] [CommRing 𝔸] [IsNormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 𝔸 : Type*} [NormMetric 𝕂] [Field 𝕂] [IsNontriviallyNormedField 𝕂] [NormMetric 𝔸] [CommRing 𝔸] [IsNormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
   [CompleteSpace 𝔸] [CharZero 𝕂]
 
 /-- The exponential map in a commutative Banach algebra `𝔸` over a normed field `𝕂` of
@@ -121,7 +121,7 @@ end AnyFieldCommAlgebra
 
 section deriv
 
-variable {𝕂 : Type*} [NontriviallyNormedField 𝕂] [CompleteSpace 𝕂] [CharZero 𝕂]
+variable {𝕂 : Type*} [NormMetric 𝕂] [Field 𝕂] [IsNontriviallyNormedField 𝕂] [CompleteSpace 𝕂] [CharZero 𝕂]
 
 /-- The exponential map in a complete normed field `𝕂` of characteristic zero has strict derivative
 `NormedSpace.exp x` at any point `x` in the disk of convergence. -/
@@ -247,7 +247,7 @@ open Asymptotics Filter
 
 section MemBall
 
-variable [NontriviallyNormedField 𝕂] [CharZero 𝕂]
+variable [NormMetric 𝕂] [Field 𝕂] [IsNontriviallyNormedField 𝕂] [CharZero 𝕂]
 variable [NormMetric 𝕊] [CommRing 𝕊] [IsNormedRing 𝕊] [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸]
 variable [NormedSpace 𝕂 𝕊] [NormedAlgebra 𝕂 𝔸] [Algebra 𝕊 𝔸] [ContinuousSMul 𝕊 𝔸]
 variable [IsScalarTower 𝕂 𝕊 𝔸]

@@ -347,7 +347,7 @@ end Bundle
 
 open Bundle
 
-variable [NontriviallyNormedField R] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
+variable [NormMetric R] [Field R] [IsNontriviallyNormedField R] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
   [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace R F] [TopologicalSpace B] [TopologicalSpace (TotalSpace F E)]
   [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
 
@@ -769,7 +769,7 @@ end
 
 section
 
-variable [NontriviallyNormedField R] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
+variable [NormMetric R] [Field R] [IsNontriviallyNormedField R] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
   [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace R F] [TopologicalSpace B] [∀ x, TopologicalSpace (E x)]
 
 open TopologicalSpace
@@ -911,7 +911,7 @@ end VectorPrebundle
 
 namespace ContinuousLinearMap
 
-variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [NontriviallyNormedField 𝕜₂]
+variable {𝕜₁ 𝕜₂ : Type*} [NormMetric 𝕜₁] [Field 𝕜₁] [IsNontriviallyNormedField 𝕜₁] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNontriviallyNormedField 𝕜₂]
 variable {σ : 𝕜₁ →+* 𝕜₂}
 variable {B' : Type*} [TopologicalSpace B']
 variable [NormedSpace 𝕜₁ F] [∀ x, Module 𝕜₁ (E x)] [TopologicalSpace (TotalSpace F E)]

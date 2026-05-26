@@ -125,7 +125,7 @@ end
 
 section
 
-variable [NontriviallyNormedField 𝕜] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
   [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)] {EB : Type*}
   [NormMetric EB] [AddCommGroup EB] [IsNormedAddGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
   {IB : ModelWithCorners 𝕜 EB HB} (E' : B → Type*) [∀ x, Zero (E' x)] {EM : Type*}
@@ -260,7 +260,7 @@ end
 /-! ### `C^n` vector bundles -/
 
 
-variable [NontriviallyNormedField 𝕜] {EB : Type*} [NormMetric EB] [AddCommGroup EB] [IsNormedAddGroup EB] [NormedSpace 𝕜 EB]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {EB : Type*} [NormMetric EB] [AddCommGroup EB] [IsNormedAddGroup EB] [NormedSpace 𝕜 EB]
   {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB} [TopologicalSpace B]
   [ChartedSpace HB B] {EM : Type*} [NormMetric EM] [AddCommGroup EM] [IsNormedAddGroup EM]
   [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM] {IM : ModelWithCorners 𝕜 EM HM}

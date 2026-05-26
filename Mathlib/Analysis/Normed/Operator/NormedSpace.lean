@@ -28,7 +28,7 @@ variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G : Type*}
 
 section SeminormedAddCommGroup
 variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G]
-  [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
+  [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNontriviallyNormedField 𝕜₂] [NormMetric 𝕜₃] [Field 𝕜₃] [IsNontriviallyNormedField 𝕜₃]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G]
   {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} (f : E →SL[σ₁₂] F)
 
@@ -94,7 +94,7 @@ open Metric ContinuousLinearMap
 
 section
 
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNontriviallyNormedField 𝕜₂] [NormMetric 𝕜₃] [Field 𝕜₃] [IsNontriviallyNormedField 𝕜₃]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G] [NormedSpace 𝕜 Fₗ]
   {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} (f : E →SL[σ₁₂] F)
 
@@ -180,11 +180,11 @@ end
 
 namespace ContinuousLinearMap
 
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNontriviallyNormedField 𝕜₂] [NormMetric 𝕜₃] [Field 𝕜₃] [IsNontriviallyNormedField 𝕜₃]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G] [NormedSpace 𝕜 Fₗ]
   {σ₂₃ : 𝕜₂ →+* 𝕜₃}
 
-variable {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₂'] {F' : Type*} [NormMetric F'] [AddCommGroup F'] [IsNormedAddGroup F']
+variable {𝕜₂' : Type*} [NormMetric 𝕜₂'] [Field 𝕜₂'] [IsNontriviallyNormedField 𝕜₂'] {F' : Type*} [NormMetric F'] [AddCommGroup F'] [IsNormedAddGroup F']
   [NormedSpace 𝕜₂' F'] {σ₂' : 𝕜₂' →+* 𝕜₂} {σ₂'' : 𝕜₂ →+* 𝕜₂'} {σ₂₃' : 𝕜₂' →+* 𝕜₃}
   [RingHomInvPair σ₂' σ₂''] [RingHomInvPair σ₂'' σ₂'] [RingHomCompTriple σ₂' σ₂₃ σ₂₃']
   [RingHomCompTriple σ₂'' σ₂₃' σ₂₃] [RingHomIsometric σ₂₃] [RingHomIsometric σ₂']
@@ -218,7 +218,7 @@ end ContinuousLinearMap
 
 namespace Submodule
 
-variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
 
 theorem norm_subtypeL (K : Submodule 𝕜 E) [Nontrivial K] : ‖K.subtypeL‖ = 1 :=
   K.subtypeₗᵢ.norm_toContinuousLinearMap
@@ -227,7 +227,7 @@ end Submodule
 
 namespace ContinuousLinearEquiv
 
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNontriviallyNormedField 𝕜₂]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ₁₂ σ₂₁]
   [RingHomInvPair σ₂₁ σ₁₂]
 
@@ -292,7 +292,7 @@ def IsCoercive [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [Norme
 
 section Equicontinuous
 
-variable {ι : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
+variable {ι : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
   [RingHomIsometric σ₁₂] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] (f : ι → E →SL[σ₁₂] F)
 
@@ -351,7 +351,7 @@ end Equicontinuous
 section single
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
-    (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : ι → Type*)
+    (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] (E : ι → Type*)
 
 /-- The injection `x ↦ Pi.single i x` as a linear isometry. -/
 protected def LinearIsometry.single [∀ i, NormPseudoMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
@@ -372,7 +372,7 @@ end single
 
 section inl_inr
 
-variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E F : Type*)
+variable (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] (E F : Type*)
 
 /-- The injection `x ↦ LinearMap.inl E F x` as a linear isometry. -/
 protected def LinearIsometry.inl [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]

@@ -84,7 +84,7 @@ derivative, differentiable, Fréchet, calculus
 
 open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 
 noncomputable section TVS
 /-!

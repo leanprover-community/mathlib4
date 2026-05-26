@@ -111,7 +111,7 @@ noncomputable section
 open Filter Function Bornology Metric Set Topology Filter
 
 variable {𝕜 M E : Type*}
-variable [NontriviallyNormedField 𝕜]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 variable [AddCommGroup M] [TopologicalSpace M] [Module 𝕜 M]
 variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 

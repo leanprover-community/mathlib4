@@ -90,7 +90,7 @@ namespace AffineIsometry
 
 open AffineMap
 
-variable {𝕜 : Type*} {V₁ V₂ : Type*} {P₁ P₂ : Type*} [NormedField 𝕜] [NormMetric V₁] [AddCommGroup V₁] [IsNormedAddGroup V₁]
+variable {𝕜 : Type*} {V₁ V₂ : Type*} {P₁ P₂ : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormMetric V₁] [AddCommGroup V₁] [IsNormedAddGroup V₁]
   [NormPseudoMetric V₂] [AddCommGroup V₂] [IsNormedAddGroup V₂] [NormedSpace 𝕜 V₁] [NormedSpace 𝕜 V₂] [MetricSpace P₁]
   [PseudoMetricSpace P₂] [NormedAddTorsor V₁ P₁] [NormedAddTorsor V₂ P₂]
 
@@ -117,7 +117,7 @@ end AffineIsometry
 
 section CompleteField
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+variable {𝕜 : Type u} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {E : Type v} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
   [NormedSpace 𝕜 E] {F : Type w} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] [CompleteSpace 𝕜]
 
 section Affine
@@ -458,7 +458,7 @@ theorem FiniteDimensional.of_isCompact_closedBall {V : Type*} [NormMetric V] [Ad
   .of_isCompact_closedBall₀ 𝕜 rpos <| by simpa using h.vadd (-c)
 
 /-- A locally compact normed vector space is proper. -/
-lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*}
+lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {E : Type*}
     [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E] : ProperSpace E := by
   rcases exists_isCompact_closedBall (0 : E) with ⟨r, rpos, hr⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
@@ -516,7 +516,7 @@ end CompleteField
 
 section LocallyCompactField
 
-variable (𝕜 : Type u) [NontriviallyNormedField 𝕜] (E : Type v) [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+variable (𝕜 : Type u) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] (E : Type v) [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
   [NormedSpace 𝕜 E] [LocallyCompactSpace 𝕜]
 
 /-- Any finite-dimensional vector space over a locally compact field is proper.
@@ -538,7 +538,7 @@ instance (priority := 900) FiniteDimensional.proper_real (E : Type u) [NormMetri
 
 /-- A submodule of a locally compact space over a complete field is also locally compact (and even
 proper). -/
-instance {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+instance {𝕜 E : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
     [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E] (S : Submodule 𝕜 E) :
     ProperSpace S := by
   nontriviality E
@@ -692,7 +692,7 @@ alias IsEquivalent.summable_iff_nat := Asymptotics.IsEquivalent.summable_iff_nat
 namespace Module.Basis
 
 variable {ι R M : Type*} [Finite ι]
-  [NontriviallyNormedField R] [CompleteSpace R]
+  [NormMetric R] [Field R] [IsNontriviallyNormedField R] [CompleteSpace R]
   [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M] [T2Space M]
   [Module R M] [ContinuousSMul R M] (B : Module.Basis ι R M)
 

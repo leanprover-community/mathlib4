@@ -27,7 +27,7 @@ section NormedField
 
 /-- If `f : 𝕜 → E` is bounded in a punctured neighborhood of `a`, then `f(x) = o((x - a)⁻¹)` as
 `x → a`, `x ≠ a`. -/
-theorem Filter.IsBoundedUnder.isLittleO_sub_self_inv {𝕜 E : Type*} [NormedField 𝕜] [Norm E] {a : 𝕜}
+theorem Filter.IsBoundedUnder.isLittleO_sub_self_inv {𝕜 E : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [Norm E] {a : 𝕜}
     {f : 𝕜 → E} (h : IsBoundedUnder (· ≤ ·) (𝓝[≠] a) (norm ∘ f)) :
     f =o[𝓝[≠] a] fun x => (x - a)⁻¹ := by
   refine (h.isBigO_const (one_ne_zero' ℝ)).trans_isLittleO (isLittleO_const_left.2 <| Or.inr ?_)
@@ -97,7 +97,7 @@ end LinearOrderedField
 
 section NormedLinearOrderedField
 
-variable {𝕜 : Type*} [NormedField 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜]
 
 theorem Asymptotics.isLittleO_pow_pow_atTop_of_lt
     [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜] {p q : ℕ} (hpq : p < q) :
@@ -206,7 +206,7 @@ end Real
 
 section NormedLinearOrderedField
 
-variable {R : Type*} [NormedField R] [LinearOrder R] [IsStrictOrderedRing R]
+variable {R : Type*} [NormMetric R] [Field R] [IsNormedField R] [LinearOrder R] [IsStrictOrderedRing R]
   [OrderTopology R] [FloorRing R]
 
 theorem Asymptotics.isEquivalent_nat_floor :

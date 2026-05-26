@@ -20,7 +20,7 @@ In particular, it applies to discontinuous quadratic forms on infinite-dimension
 
 public section
 
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable {𝕜 E F : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
   [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 
 namespace QuadraticMap

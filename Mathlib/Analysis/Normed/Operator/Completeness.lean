@@ -27,7 +27,7 @@ open scoped NNReal Topology Uniformity
 variable {𝕜 𝕜₂ E F Fₗ : Type*}
 variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormMetric Fₗ] [AddCommGroup Fₗ] [IsNormedAddGroup Fₗ]
 
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNontriviallyNormedField 𝕜₂]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ]
   {σ₁₂ : 𝕜 →+* 𝕜₂} (f g : E →SL[σ₁₂] F)
 

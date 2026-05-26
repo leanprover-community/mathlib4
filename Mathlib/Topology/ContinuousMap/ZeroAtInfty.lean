@@ -464,7 +464,7 @@ noncomputable instance instNormMetric [NormMetric β] [AddCommGroup β] [IsNorme
 
 noncomputable example [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] : NormedAddCommGroup C₀(α, β) where
 
-variable [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 β]
+variable [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormedSpace 𝕜 β]
 
 @[simp]
 theorem norm_toBCF_eq_norm {f : C₀(α, β)} : ‖f.toBCF‖ = ‖f‖ :=

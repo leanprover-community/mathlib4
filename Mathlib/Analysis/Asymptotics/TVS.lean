@@ -129,7 +129,7 @@ variable {α β 𝕜 E F G : Type*}
 
 section TopologicalSpace
 
-variable [NontriviallyNormedField 𝕜]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
   [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
   [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F]
   [AddCommGroup G] [TopologicalSpace G] [Module 𝕜 G]
@@ -751,7 +751,7 @@ end TopologicalSpace
 
 section NormedSpace
 
-variable [NontriviallyNormedField 𝕜]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 variable {f : α → E} {g : α → F} {l : Filter α}
 

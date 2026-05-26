@@ -186,30 +186,30 @@ def Submonoid.unitSphere (𝕜 : Type*) [NormPseudoMetric 𝕜] [Ring 𝕜] [IsN
     simp [*]
   one_mem' := mem_sphere_zero_iff_norm.2 norm_one
 
-instance Metric.unitSphere.instInv [NormedDivisionRing 𝕜] : Inv (sphere (0 : 𝕜) 1) where
+instance Metric.unitSphere.instInv [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] : Inv (sphere (0 : 𝕜) 1) where
   inv x := ⟨x⁻¹, mem_sphere_zero_iff_norm.2 <| by
     rw [norm_inv, mem_sphere_zero_iff_norm.1 x.coe_prop, inv_one]⟩
 
 @[simp, norm_cast]
-theorem Metric.unitSphere.coe_inv [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) :
+theorem Metric.unitSphere.coe_inv [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] (x : sphere (0 : 𝕜) 1) :
     ↑x⁻¹ = (x⁻¹ : 𝕜) :=
   rfl
 
-instance Metric.unitSphere.instDiv [NormedDivisionRing 𝕜] : Div (sphere (0 : 𝕜) 1) where
+instance Metric.unitSphere.instDiv [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] : Div (sphere (0 : 𝕜) 1) where
   div x y := .mk (x / y) <| mem_sphere_zero_iff_norm.2 <| by
     rw [norm_div, mem_sphere_zero_iff_norm.1 x.2, mem_sphere_zero_iff_norm.1 y.coe_prop, div_one]
 
 @[simp, norm_cast]
-protected theorem Metric.unitSphere.coe_div [NormedDivisionRing 𝕜] (x y : sphere (0 : 𝕜) 1) :
+protected theorem Metric.unitSphere.coe_div [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] (x y : sphere (0 : 𝕜) 1) :
     ↑(x / y) = (x / y : 𝕜) :=
   rfl
 
-instance Metric.unitSphere.instZPow [NormedDivisionRing 𝕜] : Pow (sphere (0 : 𝕜) 1) ℤ where
+instance Metric.unitSphere.instZPow [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] : Pow (sphere (0 : 𝕜) 1) ℤ where
   pow x n := .mk ((x : 𝕜) ^ n) <| by
     rw [mem_sphere_zero_iff_norm, norm_zpow, mem_sphere_zero_iff_norm.1 x.coe_prop, one_zpow]
 
 @[simp, norm_cast]
-theorem Metric.unitSphere.coe_zpow [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) (n : ℤ) :
+theorem Metric.unitSphere.coe_zpow [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] (x : sphere (0 : 𝕜) 1) (n : ℤ) :
     ↑(x ^ n) = (x : 𝕜) ^ n :=
   rfl
 
@@ -237,20 +237,20 @@ theorem Metric.unitSphere.coe_pow [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedR
   rfl
 
 /-- Monoid homomorphism from the unit sphere in a normed division ring to the group of units. -/
-def unitSphereToUnits (𝕜 : Type*) [NormedDivisionRing 𝕜] : sphere (0 : 𝕜) 1 →* Units 𝕜 :=
+def unitSphereToUnits (𝕜 : Type*) [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] : sphere (0 : 𝕜) 1 →* Units 𝕜 :=
   Units.liftRight (Submonoid.unitSphere 𝕜).subtype
     (fun x => Units.mk0 x <| ne_zero_of_mem_unit_sphere _) fun _x => rfl
 
 @[simp]
-theorem unitSphereToUnits_apply_coe [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) :
+theorem unitSphereToUnits_apply_coe [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] (x : sphere (0 : 𝕜) 1) :
     (unitSphereToUnits 𝕜 x : 𝕜) = x :=
   rfl
 
-theorem unitSphereToUnits_injective [NormedDivisionRing 𝕜] :
+theorem unitSphereToUnits_injective [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] :
     Function.Injective (unitSphereToUnits 𝕜) := fun x y h =>
   Subtype.ext <| by convert! congr_arg Units.val h
 
-instance Metric.unitSphere.instGroup [NormedDivisionRing 𝕜] : Group (sphere (0 : 𝕜) 1) :=
+instance Metric.unitSphere.instGroup [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] : Group (sphere (0 : 𝕜) 1) :=
   fast_instance% unitSphereToUnits_injective.group (unitSphereToUnits 𝕜) (Units.ext rfl)
     (fun _x _y => Units.ext rfl)
     (fun _x => Units.ext rfl) (fun _x _y => Units.ext <| div_eq_mul_inv _ _)
@@ -265,8 +265,8 @@ instance Metric.sphere.instContinuousMul [NormPseudoMetric 𝕜] [Ring 𝕜] [Is
     ContinuousMul (sphere (0 : 𝕜) 1) :=
   (Submonoid.unitSphere 𝕜).continuousMul
 
-instance Metric.sphere.instIsTopologicalGroup [NormedDivisionRing 𝕜] :
+instance Metric.sphere.instIsTopologicalGroup [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] :
     IsTopologicalGroup (sphere (0 : 𝕜) 1) where
   continuous_inv := (continuous_subtype_val.inv₀ ne_zero_of_mem_unit_sphere).subtype_mk _
 
-instance Metric.sphere.instCommGroup [NormedField 𝕜] : CommGroup (sphere (0 : 𝕜) 1) where
+instance Metric.sphere.instCommGroup [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] : CommGroup (sphere (0 : 𝕜) 1) where

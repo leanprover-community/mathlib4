@@ -395,7 +395,7 @@ lemma QuotientGroup.integral_eq_integral_automorphize {E : Type*} [NormMetric E]
   function `f` on `G` times the lift to `G` of a function `g` on the quotient `G ⧸ Γ` with respect
   to a right-invariant measure `μ` on `G`, is equal to the integral over the quotient of the
   automorphization of `f` times `g`. -/
-lemma QuotientGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [NormedField K]
+lemma QuotientGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [NormMetric K] [Field K] [IsNormedField K]
     [NormedSpace ℝ K] [μ.IsMulRightInvariant] {f : G → K}
     (f_ℒ_1 : Integrable f μ) {g : G ⧸ Γ → K} (hg : AEStronglyMeasurable g μ_𝓕)
     (g_ℒ_infinity : essSup (fun x ↦ ↑‖g x‖ₑ) μ_𝓕 ≠ ∞)
@@ -437,7 +437,7 @@ local notation "μ_𝓕" => Measure.map (@QuotientAddGroup.mk G' _ Γ') (μ'.res
   integral of a function `f` on `G'` times the lift to `G'` of a function `g` on the quotient
   `G' ⧸ Γ'` with respect to a right-invariant measure `μ` on `G'`, is equal to the integral over
   the quotient of the automorphization of `f` times `g`. -/
-lemma QuotientAddGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [NormedField K]
+lemma QuotientAddGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [NormMetric K] [Field K] [IsNormedField K]
     [NormedSpace ℝ K] [μ'.IsAddRightInvariant] {f : G' → K}
     (f_ℒ_1 : Integrable f μ') {g : G' ⧸ Γ' → K} (hg : AEStronglyMeasurable g μ_𝓕)
     (g_ℒ_infinity : essSup (‖g ·‖ₑ) μ_𝓕 ≠ ∞)

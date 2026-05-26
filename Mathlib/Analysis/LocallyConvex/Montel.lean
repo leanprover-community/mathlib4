@@ -63,7 +63,7 @@ section Normed
 namespace MontelSpace
 
 variable {𝕜 E F : Type*}
-variable [NontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [CompleteSpace 𝕜]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [CompleteSpace 𝕜]
   [hM : MontelSpace 𝕜 E]
 
 theorem finiteDimensional_of_normedSpace : FiniteDimensional 𝕜 E :=
@@ -75,7 +75,7 @@ end MontelSpace
 
 end Normed
 
-variable {𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] {σ : 𝕜₁ →+* 𝕜₂}
+variable {𝕜₁ 𝕜₂ : Type*} [NormMetric 𝕜₁] [Field 𝕜₁] [IsNormedField 𝕜₁] [NormMetric 𝕜₂] [Field 𝕜₂] [IsNormedField 𝕜₂] {σ : 𝕜₁ →+* 𝕜₂}
 variable {E F : Type*}
   [AddCommGroup E] [Module 𝕜₁ E]
   [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜₁ E]

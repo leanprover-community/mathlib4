@@ -74,20 +74,20 @@ theorem binomialSeries_eq_ordinaryHypergeometricSeries {𝕂 : Type u} [Field �
 
 /-- The radius of convergence of `binomialSeries 𝔸 a` is `⊤` for natural `a`. -/
 theorem binomialSeries_radius_eq_top_of_nat {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type u}
-    [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸] {a : ℕ} :
+    [NormMetric 𝔸] [DivisionRing 𝔸] [IsNormedField 𝔸] [NormedAlgebra 𝕂 𝔸] {a : ℕ} :
     (binomialSeries 𝔸 (a : 𝕂)).radius = ⊤ := by
   simp [binomialSeries_eq_ordinaryHypergeometricSeries (b := (1 : 𝕂)) (by norm_cast; simp),
     ordinaryHypergeometric_radius_top_of_neg_nat₁]
 
 /-- The radius of convergence of `binomialSeries 𝔸 a` is `1`, when `a` is not natural. -/
-theorem binomialSeries_radius_eq_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type u} [NormedDivisionRing 𝔸]
+theorem binomialSeries_radius_eq_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type u} [NormMetric 𝔸] [DivisionRing 𝔸] [IsNormedField 𝔸]
     [NormedAlgebra 𝕂 𝔸] {a : 𝕂} (ha : ∀ (k : ℕ), a ≠ k) : (binomialSeries 𝔸 a).radius = 1 := by
   simp only [binomialSeries_eq_ordinaryHypergeometricSeries (b := (1 : 𝕂)) (by norm_cast; simp),
     FormalMultilinearSeries.radius_compNeg]
   conv at ha => ext; rw [ne_comm]
   exact ordinaryHypergeometricSeries_radius_eq_one _ _ _ _ (by norm_cast; grind)
 
-theorem binomialSeries_radius_ge_one {𝕂 : Type*} [RCLike 𝕂] {𝔸 : Type*} [NormedDivisionRing 𝔸]
+theorem binomialSeries_radius_ge_one {𝕂 : Type*} [RCLike 𝕂] {𝔸 : Type*} [NormMetric 𝔸] [DivisionRing 𝔸] [IsNormedField 𝔸]
     [NormedAlgebra 𝕂 𝔸] {a : 𝕂} :
     1 ≤ (binomialSeries 𝔸 a).radius := by
   by_cases ha : ∀ (k : ℕ), a ≠ k

@@ -14,7 +14,7 @@ public import Mathlib.Analysis.Calculus.FDeriv.Const
 
 public section
 
-variable {𝕜 ι : Type*} [DecidableEq ι] [NontriviallyNormedField 𝕜]
+variable {𝕜 ι : Type*} [DecidableEq ι] [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 variable {E : ι → Type*} [∀ i, NormMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
 
 @[fun_prop]

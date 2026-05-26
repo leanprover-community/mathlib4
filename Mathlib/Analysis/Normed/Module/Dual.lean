@@ -45,7 +45,7 @@ section PolarSets
 
 open Metric Set StrongDual
 
-variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+variable (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 variable {E : Type*} [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 
 theorem isClosed_polar (s : Set E) : IsClosed (StrongDual.polar 𝕜 s) := by

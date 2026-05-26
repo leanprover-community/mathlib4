@@ -16,7 +16,7 @@ public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
 public section
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {f : 𝕜 → 𝕜} {x : 𝕜}
+variable {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜] {f : 𝕜 → 𝕜} {x : 𝕜}
   [CompleteSpace 𝕜] [CharZero 𝕜]
 
 namespace AnalyticAt

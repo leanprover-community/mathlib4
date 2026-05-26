@@ -103,7 +103,7 @@ variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric E'] [A
 namespace MeasureTheory
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜]
+variable [NormMetric 𝕜] [Field 𝕜] [IsNontriviallyNormedField 𝕜]
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 E'] [NormedSpace 𝕜 E''] [NormedSpace 𝕜 F]
 variable (L : E →L[𝕜] E' →L[𝕜] F)
 
