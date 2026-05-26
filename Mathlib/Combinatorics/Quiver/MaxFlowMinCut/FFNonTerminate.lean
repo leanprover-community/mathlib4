@@ -8,7 +8,7 @@
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Combinatorics.Quiver.MaxFlowMinCutAlt.MaxFlowMinCutAlt
+import Mathlib.Combinatorics.Quiver.MaxFlowMinCut.MaxFlowMinCutAlt
 import Mathlib.Tactic
 import Mathlib.Topology.Instances.Real.Lemmas
 import Mathlib.Analysis.SpecificLimits.Basic
