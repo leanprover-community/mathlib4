@@ -130,23 +130,25 @@ theorem TendstoInDistribution.continuous_comp {F : Type*} [OpensMeasurableSpace 
       rw [AEMeasurable.map_map_of_aemeasurable hg.aemeasurable h.aemeasurable_limit]
 
 /-- Almost sure convergence implies convergence in distribution. -/
-theorem tendstoInDistribution_of_ae_tendsto [NeBot l] [l.IsCountablyGenerated]
+theorem tendstoInDistribution_of_ae_tendsto [l.IsCountablyGenerated]
     [OpensMeasurableSpace E] {X : ι → Ω' → E}
     (hX₁ : ∀ i, AEMeasurable (X i) μ') (hZ : AEMeasurable Z μ')
-    (hX₂ : ∀ᵐ ω ∂μ', Tendsto (fun i ↦ X i ω) l (nhds (Z ω))) :
-    TendstoInDistribution X l Z (fun _ ↦ μ') μ' := by
-  refine .mk (by measurability) hZ ?_
-  simp_rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto, ProbabilityMeasure.coe_mk]
-  intro f
-  rw [lintegral_map' (by measurability) hZ]
-  conv in ∫⁻ _, _ ∂_ => rw [lintegral_map' (by measurability) (by measurability)]
-  apply tendsto_lintegral_filter_of_dominated_convergence' (bound := fun _ ↦ edist 0 f)
-  · exact .of_forall (fun _ ↦ by measurability)
-  · refine .of_forall <| fun n ↦ .of_forall <| fun ω ↦ ?_
-    simpa [← ENNReal.coe_le_coe] using f.apply_le_nndist_zero (X n ω)
-  · simpa [lintegral_eq_const] using ENNReal.coe_ne_top (r := nndist 0 f)
-  filter_upwards [hX₂] with ω hω
-  simpa using f.continuous.tendsto (Z ω) |>.comp hω
+    (hX₂ : ∀ᵐ ω ∂μ', Tendsto (fun i ↦ X i ω) l (𝓝 (Z ω))) :
+    TendstoInDistribution X l Z (fun _ ↦ μ') μ' where
+  forall_aemeasurable i := by fun_prop
+  aemeasurable_limit := hZ
+  tendsto := by
+    simp_rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto, ProbabilityMeasure.coe_mk]
+    intro f
+    rw [lintegral_map' (by fun_prop) hZ]
+    conv in ∫⁻ _, _ ∂_ => rw [lintegral_map' (by fun_prop) (by fun_prop)]
+    apply tendsto_lintegral_filter_of_dominated_convergence' (bound := fun _ ↦ edist 0 f)
+    · exact .of_forall (fun _ ↦ by fun_prop)
+    · refine .of_forall <| fun n ↦ .of_forall <| fun ω ↦ ?_
+      simpa [← ENNReal.coe_le_coe] using f.apply_le_nndist_zero (X n ω)
+    · simpa [lintegral_eq_const] using ENNReal.coe_ne_top (r := nndist 0 f)
+    filter_upwards [hX₂] with ω hω
+    simpa using f.continuous.tendsto (Z ω) |>.comp hω
 
 end TendstoInDistribution
 
