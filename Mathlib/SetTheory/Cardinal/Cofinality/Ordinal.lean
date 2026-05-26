@@ -153,7 +153,7 @@ theorem cof_omega0 : cof ω = ℵ₀ :=
 
 variable (α) in
 /-- Every well-order has a cofinal subset of order type `(cof α).ord`. -/
-theorem ord_cof_eq [LinearOrder α] [WellFoundedLT α] :
+theorem exists_ord_cof_eq [LinearOrder α] [WellFoundedLT α] :
     ∃ s : Set α, IsCofinal s ∧ typeLT s = (Order.cof α).ord := by
   obtain ⟨s, hs, hs'⟩ := Order.cof_eq α
   obtain ⟨r, hr, hr'⟩ := exists_ord_eq s
@@ -168,10 +168,12 @@ theorem ord_cof_eq [LinearOrder α] [WellFoundedLT α] :
     · obtain ⟨x, z, hz, rfl⟩ := x
       exact (hz _ hxy').asymm hxy
 
+@[deprecated (since := "2026-05-25")] alias ord_cof_eq := exists_ord_cof_eq
+
 /-- Every cofinal set has a cofinal subset of order type `(cof α).ord`. -/
 theorem exists_ord_cof_eq_of_isCofinal [LinearOrder α] [WellFoundedLT α]
     {s : Set α} (hs : IsCofinal s) : ∃ t ⊆ s, IsCofinal t ∧ typeLT t = (Order.cof α).ord := by
-  obtain ⟨t, ht, ht'⟩ := ord_cof_eq s
+  obtain ⟨t, ht, ht'⟩ := exists_ord_cof_eq s
   rw [cof_eq_of_isCofinal hs] at ht'
   refine ⟨t, ?_, hs.trans ht, ?_⟩
   · simp
@@ -181,7 +183,7 @@ theorem exists_ord_cof_eq_of_isCofinal [LinearOrder α] [WellFoundedLT α]
 @[simp]
 theorem _root_.Order.cof_ord_cof (α : Type*) [LinearOrder α] [WellFoundedLT α] :
     (Order.cof α).ord.cof = Order.cof α := by
-  obtain ⟨s, hs, hs'⟩ := ord_cof_eq α
+  obtain ⟨s, hs, hs'⟩ := exists_ord_cof_eq α
   rw [← hs', cof_type, cof_eq_of_isCofinal hs]
 
 @[simp]
@@ -649,7 +651,7 @@ theorem lt_power_cof_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : c < c ^ c.ord.cof 
   have : NoMaxOrder α := by
     rw [← isSuccPrelimit_type_lt_iff, ← hα]
     exact (isSuccLimit_ord hc).isSuccPrelimit
-  obtain ⟨s, hs, hs'⟩ := ord_cof_eq α
+  obtain ⟨s, hs, hs'⟩ := exists_ord_cof_eq α
   rw [hα, cof_type, ← card_ord (Order.cof _), ← hs', card_type, ← prod_const']
   refine (mk_iUnion_le_sum_mk.trans' ?_).trans_lt (sum_lt_prod _ _ fun i ↦ mk_Iio_lt i.1 hα)
   rw [← mk_univ, ← isCofinal_iff_iUnion_Iio_eq_univ.1 hs, iUnion_coe_set]
