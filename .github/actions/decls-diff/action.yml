@@ -67,8 +67,7 @@ runs:
           exit 1
         fi
 
-        STAGE="${RUNNER_TEMP:-/tmp}/decls-diff-action"
-        mkdir -p "$STAGE"
+        STAGE="$(mktemp -d "${RUNNER_TEMP:-/tmp}/decls-diff.XXXXXX")"
         DECLS_OVERRIDE="$STAGE/decls_override.md"
         DIFF_FILE="$STAGE/decls_diff.txt"
         COUNTS="$STAGE/decls_counts.txt"
