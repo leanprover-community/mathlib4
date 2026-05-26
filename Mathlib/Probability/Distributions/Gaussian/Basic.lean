@@ -102,7 +102,8 @@ lemma isGaussian_map_of_measurable {E F : Type*} [TopologicalSpace E] [AddCommMo
   rw [Measure.map_map (by fun_prop) hL, ← ContinuousLinearMap.coe_comp',
     IsGaussian.map_eq_gaussianReal]
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
+variable {E F : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
+  [BorelSpace E] [AddCommGroup F]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
   {μ : Measure E} [IsGaussian μ]
 
@@ -188,8 +189,8 @@ section charFun
 open InnerProductSpace
 open scoped RealInnerProductSpace
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [MeasurableSpace E]
-    [BorelSpace E] {μ : Measure E}
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+  [MeasurableSpace E] [BorelSpace E] {μ : Measure E}
 
 lemma IsGaussian.charFun_eq [IsGaussian μ] (t : E) :
     charFun μ t = exp (μ[fun x ↦ ⟪t, x⟫] * I - Var[fun x ↦ ⟪t, x⟫; μ] / 2) := by
