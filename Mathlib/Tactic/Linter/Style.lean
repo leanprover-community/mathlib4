@@ -529,7 +529,7 @@ by the `defsWithUnderscore` linter. Namely, we do not lint
 * names containing guillemets `«»` (these tend to be `term<something>` declarations,
   i.e. internal names for notation, not user-facing commands),
 * names with a component starting with `term` (e.g. `Nat.term_!`)
-* names starting with `Mathlib.Tactic`, `Mathlib.Parser` or containing a `Simps` component
+* names starting with `Mathlib.Tactic`, `Parser` or containing a `Simps` component
   (these are probably custom simps projections, i.e. affect how `simps` names its auto-generated
   lemmas: we usually prefer a generated name `coe_support` over `coeSupport`, which requires a
   projection named `coe_support`)
