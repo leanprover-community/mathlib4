@@ -242,6 +242,7 @@ variable (A)
 def MulActionWithZero.compHom (f : M₀' →*₀ M₀) : MulActionWithZero M₀' A where
   toSMul := SMul.comp _ f -- re-supply this to avoid `f.toZeroHom` when unfolding
   __ := SMulWithZero.compHom A f.toZeroHom
+  -- `MulAction.compHom` is not imported here, so we reprove these two fields
   mul_smul r s m := by simp [SMul.comp_smul_def, mul_smul]
   one_smul m := by simp [SMul.comp_smul_def]
 
