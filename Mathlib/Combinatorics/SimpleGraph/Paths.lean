@@ -79,8 +79,6 @@ structure IsPath {u v : V} (p : G.Walk u v) : Prop extends isTrail : IsTrail p w
 structure IsCircuit {u : V} (p : G.Walk u u) : Prop extends isTrail : IsTrail p where
   ne_nil : p ≠ nil
 
-attribute [simp] IsCircuit.ne_nil
-
 /-- A *cycle* at `u : V` is a circuit at `u` whose only repeating vertex
 is `u` (which appears exactly twice). -/
 structure IsCycle {u : V} (p : G.Walk u u) : Prop extends isCircuit : IsCircuit p where
