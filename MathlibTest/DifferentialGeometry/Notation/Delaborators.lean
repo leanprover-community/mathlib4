@@ -15,7 +15,7 @@ open Bundle Filter Function Topology
 open scoped Manifold ContDiff
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M]
   [ChartedSpace H M] [IsManifold I ∞ M]
   (f : M → M) (x : M) (s : Set M)
@@ -109,11 +109,12 @@ with the goal
   MDiff id
 
 Note: The full type of `@mdifferentiable_id` is
-  ∀ {𝕜 : Type _} [inst : NontriviallyNormedField 𝕜] {E : Type _} [inst_1 : NormedAddCommGroup E]
-    [inst_2 : NormedSpace 𝕜 E] {H : Type _} [inst_3 : TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type _}
-    [inst_4 : TopologicalSpace M] [inst_5 : ChartedSpace H M], MDiff id
+  ∀ {𝕜 : Type _} [inst : NontriviallyNormedField 𝕜] {E : Type _} [inst_1 : AddCommGroup E]
+    [inst_2 : NormedAddCommGroup E] [inst_3 : NormedSpace 𝕜 E] {H : Type _} [inst_4 : TopologicalSpace H]
+    {I : ModelWithCorners 𝕜 E H} {M : Type _} [inst_5 : TopologicalSpace M] [inst_6 : ChartedSpace H M], MDiff id
 
 E : Type u_1
+inst✝⁶ : AddCommGroup E
 inst✝⁵ : NormedAddCommGroup E
 inst✝⁴ : NormedSpace ℝ E
 H : Type u_2

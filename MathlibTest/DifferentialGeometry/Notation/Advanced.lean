@@ -27,13 +27,13 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 section
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
-variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+variable {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
-variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable (F : Type*) [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   -- `F` model fiber
   (n : WithTop ℕ∞)
   (V : M → Type*) [TopologicalSpace (TotalSpace F V)]
@@ -71,7 +71,7 @@ end ErrorMetavars
 /-! Additional tests for the elaborators for `MDifferentiable{WithinAt,At,On}`. -/
 section differentiability
 
-variable {EM' : Type*} [NormedAddCommGroup EM']
+variable {EM' : Type*} [AddCommGroup EM'] [NormedAddCommGroup EM']
   [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
 
@@ -81,8 +81,8 @@ variable {EM' : Type*} [NormedAddCommGroup EM']
 section
 
 variable {k' : Type*} [RCLike k']
-  {E'' : Type*} [NormedAddCommGroup E''] [h: InnerProductSpace k' E'']
-  {E' H' M' : Type*} [NormedAddCommGroup E'] [NormedSpace k' E']
+  {E'' : Type*} [AddCommGroup E''] [NormedAddCommGroup E''] [h: InnerProductSpace k' E'']
+  {E' H' M' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace k' E']
   [TopologicalSpace H'] [TopologicalSpace M'] [ChartedSpace H' M']
   (I'' : ModelWithCorners k' E' H') {g' : M' → E''}
 
@@ -318,8 +318,8 @@ noncomputable instance : NormedField RealCopy := inferInstanceAs (NormedField �
 
 noncomputable instance : NontriviallyNormedField RealCopy := inferInstanceAs (NontriviallyNormedField ℝ)
 
-variable {E'' E''' : Type*} [NormedAddCommGroup E''] [NormedAddCommGroup E''']
-  [NormedSpace ℝ E''] [NormedSpace RealCopy E''']
+variable {E'' E''' : Type*} [AddCommGroup E''] [NormedAddCommGroup E''] [AddCommGroup E''']
+  [NormedAddCommGroup E'''] [NormedSpace ℝ E''] [NormedSpace RealCopy E''']
 
 def id' : ℝ →+* RealCopy := RingHom.id ℝ
 
@@ -340,7 +340,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
       Couldn't find a `NormedSpace` structure on `M` among local instances.
 [Elab.DiffGeo.MDiff] ✅️ Manifold
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
-  [Elab.DiffGeo.MDiff] `M` is a charted space over `H` via `inst✝²²`
+  [Elab.DiffGeo.MDiff] `M` is a charted space over `H` via `inst✝²⁷`
   [Elab.DiffGeo.MDiff] Found model: `I`
 [Elab.DiffGeo.MDiff] Finding a model with corners for: `ContinuousLinearMap id' E'' E'''`
 [Elab.DiffGeo.MDiff] 💥️ TotalSpace
@@ -414,7 +414,7 @@ Hint: failures to find a model with corners can be debugged with the command `se
 
 -- Testing the case of a map that is not the identity: we infer a model with corners, but
 -- it will not match the desired type exactly.
-variable {E'''' : Type*} [NormedAddCommGroup E''''] [NormedSpace ℝ E'''']
+variable {E'''' : Type*} [AddCommGroup E''''] [NormedAddCommGroup E''''] [NormedSpace ℝ E'''']
   {σ : ℝ →+* ℝ} [RingHomIsometric σ]
 
 variable {f : M → E'' →SL[σ] E''''} in
@@ -443,7 +443,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
       Couldn't find a `NormedSpace` structure on `M` among local instances.
 [Elab.DiffGeo.MDiff] ✅️ Manifold
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
-  [Elab.DiffGeo.MDiff] `M` is a charted space over `H` via `inst✝²⁵`
+  [Elab.DiffGeo.MDiff] `M` is a charted space over `H` via `inst✝³¹`
   [Elab.DiffGeo.MDiff] Found model: `I`
 [Elab.DiffGeo.MDiff] Finding a model with corners for: `ContinuousLinearMap σ E'' E''''`
 [Elab.DiffGeo.MDiff] 💥️ TotalSpace
@@ -509,8 +509,8 @@ section RealInterval
 -- Make a new real manifold N with model J.
 -- TODO: change this line to modify M and E instead (thus testing if everything
 -- still works in the presence of two instances over different fields).
-variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℝ E''] {J : ModelWithCorners ℝ E'' H}
-  {N : Type} [TopologicalSpace N] [ChartedSpace H N] [IsManifold J 2 N]
+variable {E'' : Type*} [AddCommGroup E''] [NormedAddCommGroup E''] [NormedSpace ℝ E'']
+  {J : ModelWithCorners ℝ E'' H} {N : Type} [TopologicalSpace N] [ChartedSpace H N] [IsManifold J 2 N]
 
 variable {g : unitInterval → M} in
 /-- info: MDifferentiable (modelWithCornersEuclideanHalfSpace 1) J g : Prop -/
@@ -820,8 +820,8 @@ open scoped UpperHalfPlane
 -- Make a new complex manifold N with model J.
 -- TODO: change this line to modify M and E instead (thus testing if everything
 -- still works in the presence of two instances over different fields).
-variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℂ E''] {J : ModelWithCorners ℂ E'' H}
-  {N : Type} [TopologicalSpace N] [ChartedSpace H N] [IsManifold J 2 N]
+variable {E'' : Type*} [AddCommGroup E''] [NormedAddCommGroup E''] [NormedSpace ℂ E'']
+  {J : ModelWithCorners ℂ E'' H} {N : Type} [TopologicalSpace N] [ChartedSpace H N] [IsManifold J 2 N]
 
 variable {g : ℍ → N} {h : E'' → ℍ} {k : ℍ → ℂ} {y : ℍ}
 
@@ -857,7 +857,7 @@ variable {f : Rˣ → 𝕜} in
 #guard_msgs in
 #check MDiff f
 
-variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V]
+variable {V : Type*} [AddCommGroup V] [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V]
 
 -- #check LieGroup 𝓘(𝕜, V →L[𝕜] V) 2 (V →L[𝕜] V)ˣ passes
 
@@ -886,7 +886,7 @@ end differentiability
 /-! Tests for the custom elaborators for `mfderiv` and `mfderivWithin` -/
 section mfderiv
 
-variable {EM' : Type*} [NormedAddCommGroup EM']
+variable {EM' : Type*} [AddCommGroup EM'] [NormedAddCommGroup EM']
   [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
 
@@ -1067,7 +1067,7 @@ end mfderiv
 /-! Tests for the custom elaborators for `HasMFDeriv` and `HasMFDerivWithin` -/
 section HasMFDeriv
 
-variable {EM' : Type*} [NormedAddCommGroup EM']
+variable {EM' : Type*} [AddCommGroup EM'] [NormedAddCommGroup EM']
   [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
 

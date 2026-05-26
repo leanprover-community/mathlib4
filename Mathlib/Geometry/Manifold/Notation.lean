@@ -582,7 +582,7 @@ where
           let normedSpace? ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
             trace[Elab.DiffGeo.MDiff] "considering instances of type `{type}`"
             match_expr type with
-            | NormedSpace k R _ _ =>
+            | NormedSpace k R _ _ _ =>
               -- We use reducible transparency to allow using a type synonym: this should not
               -- be unfolded.
               if ← withReducible (pureIsDefEq R V) then
@@ -1013,7 +1013,7 @@ arguments that can use the `T%` elaborator. -/
     let σe := b.getAppArgs[4]!.getAppFn
     guard <| σe.isFVar
     let Tσs ← withAppArg do
-      let σs ← withBindingBody n <| withNaryArg 5 <| withNaryFn delab
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
       `(T% $σs) >>= annotateGoToSyntaxDef
     `(mfderiv% ($Tσs)) >>= annotateGoToSyntaxDef
   catch _ =>
@@ -1034,7 +1034,7 @@ arguments that can use the `T%` elaborator. -/
     let σe := b.getAppArgs[4]!.getAppFn
     guard <| σe.isFVar
     let Tσs ← withAppArg do
-      let σs ← withBindingBody n <| withNaryArg 5 <| withNaryFn delab
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
       `((T% $σs)) >>= annotateGoToSyntaxDef
     `(MDiff $Tσs) >>= annotateGoToSyntaxDef
   catch _ =>
@@ -1053,7 +1053,7 @@ arguments that can use the `T%` elaborator. -/
     let σe := b.getAppArgs[4]!.getAppFn
     guard <| σe.isFVar
     let Tσs ← withAppArg do
-      let σs ← withBindingBody n <| withNaryArg 5 <| withNaryFn delab
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
       `((T% $σs)) >>= annotateGoToSyntaxDef
     `(MDiffAt $Tσs) >>= annotateGoToSyntaxDef
   catch _ =>
@@ -1067,13 +1067,13 @@ arguments that can use the `T%` elaborator. -/
   withOverApp 24 do
   let ss ← withAppArg delab
   try
-    let f := (← getExpr).getAppArgs[20]!
+    let f := (← getExpr).getAppArgs[22]!
     let .lam n _ b _ := f | failure
     guard <| b.isAppOf ``Bundle.TotalSpace.mk'
     let σe := b.getAppArgs[4]!.getAppFn
     guard <| σe.isFVar
-    let Tσs ← withNaryArg 20 do
-      let σs ← withBindingBody n <| withNaryArg 5 <| withNaryFn delab
+    let Tσs ← withNaryArg 22 do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
       `((T% $σs)) >>= annotateGoToSyntaxDef
     `(MDiff[$ss] $Tσs) >>= annotateGoToSyntaxDef
   catch _ =>
@@ -1087,13 +1087,13 @@ arguments that can use the `T%` elaborator. -/
   withOverApp 24 do
   let ss ← withAppArg delab
   try
-    let f := (← getExpr).getAppArgs[20]!
+    let f := (← getExpr).getAppArgs[22]!
     let .lam n _ b _ := f | failure
     guard <| b.isAppOf ``Bundle.TotalSpace.mk'
     let s := b.getAppArgs[4]!.getAppFn
     guard <| s.isFVar
     let Tσs ← withNaryArg 22 do
-      let σs ← withBindingBody n <| withNaryArg 5 <| withNaryFn delab
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
       `((T% $σs)) >>= annotateGoToSyntaxDef
     `(MDiffAt[$ss] $Tσs) >>= annotateGoToSyntaxDef
   catch _ =>
