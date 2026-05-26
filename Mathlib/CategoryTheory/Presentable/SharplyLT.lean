@@ -22,6 +22,9 @@ universe w v u
 
 open CategoryTheory Limits
 
+instance {J : Type*} [PartialOrder J] (j : J) :
+    HasTerminal ({j} : Set J) := sorry
+
 namespace Cardinal
 
 variable {κ₁ κ₂ : Cardinal.{w}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegular]
@@ -187,6 +190,10 @@ instance (A : Subtype (prop hκ J)) :
   have : IsCardinalFiltered (Subtype A.val) κ₁ := A.prop.1
   infer_instance
 
+abbrev singleton (j : J) : Subtype (prop hκ J) :=
+  ⟨{j}, isCardinalFiltered_of_hasTerminal _ _,
+    hasCardinalLT_of_finite _ _ (IsRegular.aleph0_le Fact.out)⟩
+
 variable {hκ}
 noncomputable abbrev colimit (A : Subtype (prop hκ J)) : C :=
     Limits.colimit ((Subtype.mono_coe A.val).functor ⋙ p.diag)
@@ -256,10 +263,46 @@ noncomputable def cocone : Cocone (functor hκ p) where
   pt := X
   ι.app j := colimit.π p j
 
-def isColimit [IsCardinalFiltered J κ₁] : IsColimit (cocone hκ p) where
-  desc := sorry
-  fac := sorry
-  uniq := sorry
+section
+
+variable [IsCardinalFiltered J κ₁]
+
+namespace isColimit
+
+variable (s : Cocone (functor hκ p))
+
+@[simps]
+noncomputable def coconeDesc : Cocone p.diag where
+  pt := s.pt
+  ι.app j := colimit.ι _ _ _ (by simp) ≫ s.ι.app (singleton hκ j)
+  ι.naturality := sorry
+
+variable {hκ p}
+
+noncomputable def desc : X ⟶ s.pt := p.isColimit.desc (coconeDesc hκ p s)
+
+omit [IsCardinalFiltered J κ₁] in
+@[reassoc (attr := simp)]
+lemma fac (j : J) :
+    p.ι.app j ≫ desc s = colimit.ι _ _ _ (by simp) ≫ s.ι.app (singleton hκ j) :=
+  p.isColimit.fac (coconeDesc hκ p s) j
+
+end isColimit
+
+open isColimit in
+noncomputable def isColimit : IsColimit (cocone hκ p) where
+  desc s := desc s
+  fac s A := by
+    dsimp
+    ext j hj
+    have := p.isColimit.fac (coconeDesc hκ p s) j
+    dsimp at this
+    sorry
+  uniq s m hm :=
+    p.isColimit.hom_ext (fun j ↦ by
+      sorry)
+
+end
 
 include hκ' in
 lemma isCardinalFiltered_subtype_prop [IsCardinalFiltered J κ₁] :
