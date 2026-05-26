@@ -708,7 +708,7 @@ lemma IsPath.isCycle_append {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPa
   rw [isCycle_def, isTrail_append]
   refine ⟨⟨hp.isTrail, hq.isTrail, ?_⟩, ?_, ?_⟩
   · grind [IsPath.disjoint_edges_of_disjoint_support, List.Disjoint.symm]
-  · grind [nil_append_iff, nil_iff_length_eq]
+  · grind [nil_append_iff, length_eq_zero_iff]
   · rw [tail_support_append, List.nodup_append']
     exact ⟨hp.support_nodup.tail, hq.support_nodup.tail, h⟩
 
