@@ -44,18 +44,19 @@ def IsCollinear : Prop := ∃ (M : Subspace K V), Module.Finite K M.submodule �
 lemma IsCollinear_iff : IsCollinear S ↔ ∃ (M : Subspace K V), Module.Finite K M.submodule ∧
   Module.finrank K M.submodule ≤ 2 ∧ S ⊆ M := Iff.rfl
 
+-- attribute [local instance] Fintype.ofFinite in
 @[simp]
-lemma isColin_empty : IsCollinear (∅ : Set (Projectivization K V)) := by
+lemma isCollinear_empty : IsCollinear (∅ : Set (Projectivization K V)) := by
   obtain ⟨⟨ι, b⟩⟩ : Module.Free K V := Module.Free.of_divisionRing K V
   obtain hV | ⟨x, y, hxy⟩ : (Module.Finite K V ∧ Module.finrank K V < 2) ∨ (∃ a b : ι, a ≠ b) := by
     rcases subsingleton_or_nontrivial ι with hι | hι
-    · have : Fintype ι := Fintype.ofFinite ι
+    · let : Fintype ι := Fintype.ofFinite ι
       refine Or.inl ⟨Module.Finite.of_basis b, ?_⟩
       rw [Module.finrank_eq_card_basis b]
       have : Fintype.card ι ≤ 1 := Fintype.card_le_one_iff_subsingleton.mpr hι
       omega
     · exact Or.inr hι.exists_pair_ne
-  · haveI : Module.Finite K V := hV.1
+  · have : Module.Finite K V := hV.1
     refine ⟨(⊤ : Submodule K V).projectivization, ?_, ?_, Set.empty_subset _⟩
     · rw [Subspace.submodule.apply_symm_apply]; infer_instance
     · rw [Subspace.submodule.apply_symm_apply, finrank_top]
@@ -64,20 +65,18 @@ lemma isColin_empty : IsCollinear (∅ : Set (Projectivization K V)) := by
     · rw [Subspace.submodule.apply_symm_apply]
       exact Module.Finite.span_of_finite _ (Set.toFinite _)
     · rw [Subspace.submodule.apply_symm_apply]
-      convert le_of_eq <| @finrank_span_eq_card K V _ _ _ _ _ ({x, y} : Set ι)
-        (Set.Finite.fintype <| Set.toFinite {x, y}) (b ∘ Subtype.val)
-        (linearIndependent_comp_subtype_iff.2 <| b.linearIndepOn _)
-      all_goals try simp
-      exact (Set.card_insert {y} hxy).symm
+      classical
+      grw [finrank_span_le_card]
+      simp [Finset.card_le_two]
 
 open scoped LinearAlgebra.Projectivization
 
-lemma isColin_subset (s t : Set (ℙ K V)) (hst : s ⊆ t) (h : IsCollinear t) : IsCollinear s := by
+lemma isCollinear_subset (s t : Set (ℙ K V)) (hst : s ⊆ t) (h : IsCollinear t) : IsCollinear s := by
   obtain ⟨M, hMfin, hM1, hM2⟩ := h
   exact ⟨M, hMfin, hM1, hst.trans hM2⟩
 
 @[simp]
-lemma isColin_singleton' (a : ℙ K V) : IsCollinear {a} := by
+lemma isCollinear_singleton' (a : ℙ K V) : IsCollinear {a} := by
   induction a using ind with | h v hv =>
   refine ⟨(Submodule.span K {v}).projectivization, ?_, ?_, ?_⟩
   · rw [Subspace.submodule.apply_symm_apply]
@@ -86,11 +85,11 @@ lemma isColin_singleton' (a : ℙ K V) : IsCollinear {a} := by
     omega
   · simp [Submodule.mem_span_of_mem]
 
-lemma isColin_subsingleton (hS : S.Subsingleton) :
+lemma isCollinear_subsingleton (hS : S.Subsingleton) :
     IsCollinear S := by
   obtain hS' | ⟨x, hx⟩ := hS.eq_empty_or_singleton <;> simp_all
 
-lemma isColin_pair (a b : ℙ K V) : IsCollinear {a, b} := by
+lemma isCollinear_pair (a b : ℙ K V) : IsCollinear {a, b} := by
   if h : a = b then simp [h] else
   induction a using Projectivization.ind with | h v hv =>
   induction b using Projectivization.ind with | h w hw =>
@@ -103,9 +102,9 @@ lemma isColin_pair (a b : ℙ K V) : IsCollinear {a, b} := by
     simp [finrank_span_eq_card h]
   all_goals rintro rfl; simp [Submodule.mem_span_of_mem]
 
-lemma isColin_of_card_eq_two (hS : S.ncard = 2) : IsCollinear S := by
+lemma isCollinear_of_card_eq_two (hS : S.ncard = 2) : IsCollinear S := by
   obtain ⟨x, y, _, rfl⟩ := Set.ncard_eq_two.1 hS
-  exact isColin_pair x y
+  exact isCollinear_pair x y
 
 lemma line_unique' {u v : V} (hu : u ≠ 0) (hv : v ≠ 0) (huv : LinearIndependent K ![u, v])
     (p : Submodule K V) (hp1 : Module.finrank K p = 2)
