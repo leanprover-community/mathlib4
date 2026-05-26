@@ -166,6 +166,7 @@ class IsNontriviallyNormedField (α : Type*) [NormMetric α] [Field α] extends
   /-- The norm attains a value exceeding 1. -/
   non_trivial : ∃ x : α, 1 < ‖x‖
 
+/-- missing doc -/
 @[deprecated IsNontriviallyNormedField (since := "2026-05-25")]
 structure NontriviallyNormedField (α : Type*) extends NormedField α where
   /-- The norm attains a value exceeding 1. -/
@@ -179,6 +180,7 @@ class IsDenselyNormedField (α : Type*) [NormMetric α] [Field α] extends
   /-- The range of the norm is dense in the collection of nonnegative real numbers. -/
   lt_norm_lt : ∀ x y : ℝ, 0 ≤ x → x < y → ∃ a : α, x < ‖a‖ ∧ ‖a‖ < y
 
+/-- missing doc -/
 @[deprecated IsDenselyNormedField (since := "2026-05-25")]
 structure DenselyNormedField (α : Type*) extends NormedField α where
   /-- The range of the norm is dense in the collection of nonnegative real numbers. -/
@@ -313,8 +315,7 @@ end NormedField
 
 /-- A normed field is nontrivially normed
 provided that the norm of some nonzero element is not one. -/
-@[implicit_reducible]
-def IsNontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜]
+lemma IsNontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜]
     (h : ∃ x : 𝕜, x ≠ 0 ∧ ‖x‖ ≠ 1) : IsNontriviallyNormedField 𝕜 where
   non_trivial := by
     rcases h with ⟨x, hx, hx1⟩
