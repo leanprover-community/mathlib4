@@ -819,8 +819,8 @@ theorem norm_compLpL_le [Fact (1 ≤ p)] (L : E →SL[σ] F) : ‖L.compLpL p μ
 
 section Bilinear
 
-variable {F G : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {F G : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 variable (μ p) in
 /-- Given a continuous bilinear map `G → E → F`, construct the associated bilinear map
