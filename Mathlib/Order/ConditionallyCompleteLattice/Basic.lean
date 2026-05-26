@@ -889,7 +889,9 @@ noncomputable instance WithBot.conditionallyCompleteLattice {α : Type*}
 noncomputable instance {α : Type*} [ConditionallyCompleteLinearOrder α] :
     ConditionallyCompleteLinearOrder (WithTop α) where
   le_total
-  toDecidableLE := Classical.decRel _
+  toDecidableLE := inferInstance
+  toDecidableEq := inferInstance
+  toDecidableLT := inferInstance
   csSup_of_not_bddAbove s := absurd <| OrderTop.bddAbove s
   csInf_of_not_bddBelow s hs := by
     rw [WithTop.sInf_empty]
@@ -905,7 +907,9 @@ noncomputable instance {α : Type*} [ConditionallyCompleteLinearOrderBot α] :
 noncomputable instance {α : Type*} [ConditionallyCompleteLinearOrder α] :
     ConditionallyCompleteLinearOrderBot (WithBot α) where
   le_total
-  toDecidableLE := Classical.decRel _
+  toDecidableLE := inferInstance
+  toDecidableEq := inferInstance
+  toDecidableLT := inferInstance
   csSup_of_not_bddAbove s hs := by
     rw [WithBot.sSup_empty]
     dsimp only [sSup, sInf]
