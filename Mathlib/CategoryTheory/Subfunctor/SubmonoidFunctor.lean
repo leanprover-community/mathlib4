@@ -160,7 +160,7 @@ section lift
 variable (p : M ⟶ M') (S : SubmonoidFunctor M) (S' : SubmonoidFunctor M')
   (hp : image p ⊤ ≤ S')
 
-/-- If the image of morphism `M' ⟶ M` lands in a submonoid functor `S`,
+/-- If the image of morphism `M ⟶ M'` lands in a submonoid functor `S'`,
 then the morphism factors through it. -/
 @[simps! app]
 def lift : M ⟶ S'.toFunctor where
