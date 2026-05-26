@@ -347,15 +347,15 @@ def BinaryBicone.ofLimitCone {X Y : C} {t : Cone (pair X Y)} (ht : IsLimit t) :
   pt := t.pt
   fst := t.π.app ⟨WalkingPair.left⟩
   snd := t.π.app ⟨WalkingPair.right⟩
-  inl := ht.lift (BinaryFan.mk (𝟙 X) 0)
-  inr := ht.lift (BinaryFan.mk 0 (𝟙 Y))
+  inl := BinaryFan.IsLimit.lift ht (𝟙 X) 0
+  inr := BinaryFan.IsLimit.lift ht 0 (𝟙 Y)
 
 theorem inl_of_isLimit {X Y : C} {t : BinaryBicone X Y} (ht : IsLimit t.toCone) :
-    t.inl = ht.lift (BinaryFan.mk (𝟙 X) 0) := by
+    t.inl = BinaryFan.IsLimit.lift ht (𝟙 X) 0 := by
   apply ht.uniq (BinaryFan.mk (𝟙 X) 0); rintro ⟨⟨⟩⟩ <;> simp
 
 theorem inr_of_isLimit {X Y : C} {t : BinaryBicone X Y} (ht : IsLimit t.toCone) :
-    t.inr = ht.lift (BinaryFan.mk 0 (𝟙 Y)) := by
+    t.inr = BinaryFan.IsLimit.lift ht 0 (𝟙 Y) := by
   apply ht.uniq (BinaryFan.mk 0 (𝟙 Y)); rintro ⟨⟨⟩⟩ <;> simp
 
 /-- In a preadditive category, any binary bicone which is a limit cone is in fact a bilimit
@@ -388,18 +388,18 @@ set_option backward.isDefEq.respectTransparency false in
 def BinaryBicone.ofColimitCocone {X Y : C} {t : Cocone (pair X Y)} (ht : IsColimit t) :
     BinaryBicone X Y where
   pt := t.pt
-  fst := ht.desc (BinaryCofan.mk (𝟙 X) 0)
-  snd := ht.desc (BinaryCofan.mk 0 (𝟙 Y))
+  fst := BinaryCofan.IsColimit.desc ht (𝟙 X) 0
+  snd := BinaryCofan.IsColimit.desc ht 0 (𝟙 Y)
   inl := t.ι.app ⟨WalkingPair.left⟩
   inr := t.ι.app ⟨WalkingPair.right⟩
 
 theorem fst_of_isColimit {X Y : C} {t : BinaryBicone X Y} (ht : IsColimit t.toCocone) :
-    t.fst = ht.desc (BinaryCofan.mk (𝟙 X) 0) := by
+    t.fst = BinaryCofan.IsColimit.desc ht (𝟙 X) 0 := by
   apply ht.uniq (BinaryCofan.mk (𝟙 X) 0)
   rintro ⟨⟨⟩⟩ <;> simp
 
 theorem snd_of_isColimit {X Y : C} {t : BinaryBicone X Y} (ht : IsColimit t.toCocone) :
-    t.snd = ht.desc (BinaryCofan.mk 0 (𝟙 Y)) := by
+    t.snd = BinaryCofan.IsColimit.desc ht 0 (𝟙 Y) := by
   apply ht.uniq (BinaryCofan.mk 0 (𝟙 Y))
   rintro ⟨⟨⟩⟩ <;> simp
 
