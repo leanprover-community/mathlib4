@@ -686,8 +686,14 @@ lemma add_divByMonic (p₁ p₂ : R[X]) : (p₁ + p₂) /ₘ q = p₁ /ₘ q + p
 lemma add_modByMonic (p₁ p₂ : R[X]) : (p₁ + p₂) %ₘ q = p₁ %ₘ q + p₂ %ₘ q :=
   (add_div_modByMonic p₁ p₂).2
 
+lemma neg_divByMonic (p q : R[X]) : (-p) /ₘ q = -(p /ₘ q) := by
+  rw [eq_neg_iff_add_eq_zero, ← add_divByMonic, neg_add_cancel, zero_divByMonic]
+
 lemma neg_modByMonic (p q : R[X]) : (-p) %ₘ q = -(p %ₘ q) := by
   rw [eq_neg_iff_add_eq_zero, ← add_modByMonic, neg_add_cancel, zero_modByMonic]
+
+lemma sub_divByMonic (p₁ p₂ q : R[X]) : (p₁ - p₂) /ₘ q = p₁ /ₘ q - p₂ /ₘ q := by
+  simp [sub_eq_add_neg, add_divByMonic, neg_divByMonic]
 
 lemma sub_modByMonic (p₁ p₂ q : R[X]) : (p₁ - p₂) %ₘ q = p₁ %ₘ q - p₂ %ₘ q := by
   simp [sub_eq_add_neg, add_modByMonic, neg_modByMonic]
