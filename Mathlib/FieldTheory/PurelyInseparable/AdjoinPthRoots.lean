@@ -28,6 +28,8 @@ public section
 variable (k : Type*) [Field k]
 
 /-- Adjoining all `p`-th root to a field of characteristic `p`. -/
+-- Note: It is defined as a typeclass synonym of the field `k` itself
+-- with a `k`-algebra structure given by the frobenius map.
 def AdjoinPthRoots := k
 
 @[no_expose]
@@ -39,8 +41,6 @@ noncomputable instance : Algebra k (AdjoinPthRoots k) := (frobenius k (ringExpCh
 instance (p : ℕ) [ExpChar k p] : ExpChar (AdjoinPthRoots k) p := inferInstanceAs (ExpChar k p)
 
 /-- The `p`-th root map `k → AdjoinPthRoots k p`, as a `RingEquiv`. -/
--- Note: It is defined as a typeclass synonym of the field `k` itself
--- with a `k`-algebra structure given by the frobenius map.
 noncomputable def AdjoinPthRoots.root : k ≃+* AdjoinPthRoots k := RingEquiv.refl k
 
 variable (p : ℕ) [ExpChar k p]
