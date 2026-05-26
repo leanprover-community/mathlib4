@@ -45,11 +45,7 @@ variable [PrespectralSpace Y]
 
 variable (f) in
 /--
-The pushforward of a function `c` of locally finite support
-by a spectral map with respect to a weight function `w`. This is mainly used when interpretting
-locally fin supp functions as algebraic cycles (in this case the weight function would be as
-described in stacks 02R4, where the weight function is the degree of the corresponding extension of
-residue fields if the dimensions of the points correspond, and is zero otherwise).
+The pushforward of a function `c` of locally finite support by a spectral map with respect to a weight function `w`.
 -/
 noncomputable
 def map (hf : IsSpectralMap f) (c : locallyFinsupp X R) : Function.locallyFinsupp Y R where
