@@ -364,7 +364,7 @@ theorem integral_add_cbm (hB : μ.Integrable f B) (hC : μ.Integrable f C) :
   by_cases hG : CompleteSpace G
   · simp only [integral, hG, ↓reduceDIte, transpose_add_cbm, coe_add, transpose_eq_cbmApplyMeasure,
       ← setToFun_add_measure (dominatedFinMeasAdditive_cbmApplyMeasure μ B)
-      (dominatedFinMeasAdditive_cbmApplyMeasure μ C) hB hC]
+        (dominatedFinMeasAdditive_cbmApplyMeasure μ C) hB hC]
     refine (setToFun_congr_measure_of_integrable 1 ENNReal.one_ne_top ?_ _ _ f ?_).symm
     · simpa using variation_add_le
     · exact hB.add_measure hC
