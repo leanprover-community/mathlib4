@@ -1,5 +1,6 @@
 module  -- shake: keep-all
 
+public import Mathlib.Data.List.PerronFrobenius
 public import Std
 public import Batteries
 public import Mathlib.Algebra.AddConstMap.Basic
