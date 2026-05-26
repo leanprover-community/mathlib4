@@ -297,14 +297,14 @@ Precedence:
    uploaded artifacts while keeping trusted-nightly consumers strictly
    isolated from `pr-toolchain-tests`.
 -/
-def effectiveGetURLs (repo : String) : IO (List String) := do
+def effectiveGetURLs (repo : String) : IO (List (Option Container × String)) := do
   if let some url ← IO.getEnv "MATHLIB_CACHE_GET_URL" then
-    return [url]
+    return [(none, url)]
   let cliOverride? ← cacheFromOverride.get
   let branchTrust? ← branchTrust.get
   let containers :=
     cliOverride?.getD (containersForRepoAndBranch repo branchTrust?)
-  return containers.map Container.azureURL
+  return containers.map fun c => (some c, c.azureURL)
 
 /-- Authentication method used for cache upload operations. -/
 inductive UploadAuth where
@@ -325,22 +325,37 @@ def getUploadAuth : IO UploadAuth := do
     "environment variable MATHLIB_CACHE_AZURE_BEARER_TOKEN or MATHLIB_CACHE_SAS must be set to upload caches"
 
 /--
-Given a file name like `"1234.tar.gz"`, makes the URL to that file on the server.
+Construct the URL for the cache file `fileName` in repo `repo`, against the
+container reachable at `containerURL`.
 
-The `f/` prefix means that it's a common file for caching.
+The `f/` prefix marks files (vs commits, which use `c/`). Whether the rest of
+the path is flat (`/f/<fileName>`) or namespaced by repo (`/f/<repo>/<fileName>`)
+is decided by the *container*, not the repo (see `Container.flatPath`):
+the same hash uploaded under `repo = MATHLIBREPO` lands flat in `master` and
+prefixed in `forks`, because the trust-classified containers have to be
+unambiguous across all their writers — including canonical-repo writers
+whose trust level is fork-equivalent (e.g. `ci-dev/*`, `bors trying`).
+
+`container` is `none` only in the `MATHLIB_CACHE_GET_URL` /
+`MATHLIB_CACHE_PUT_URL` escape-hatch path, where the URL is user-supplied and
+we don't know which container's policy to apply; we fall back to the legacy
+"flat for canonical, prefixed otherwise" rule there so dev/local overrides
+behave exactly as they did before the per-container split.
 -/
-def mkFileURL (repo containerURL fileName : String) : String :=
-  -- Canonical mathlib4 uploads land at `/f/{hash}` directly; fork-built artifacts
-  -- get a `/f/{repo}/` prefix so multiple forks can coexist in one container.
-  let pre := if repo == MATHLIBREPO then "" else s!"{repo}/"
+def mkFileURL (container : Option Container) (repo containerURL fileName : String) :
+    String :=
+  let flat := match container with
+    | some c => c.flatPath repo
+    | none => repo == MATHLIBREPO
+  let pre := if flat then "" else s!"{repo}/"
   s!"{containerURL}/f/{pre}{fileName}"
 
 section Get
 
 /-- Formats the config file for `curl`, containing the list of files to be downloaded
 from a single container's base URL. -/
-def mkGetConfigContent (repo containerURL : String) (hashMap : IO.ModuleHashMap) :
-    IO String := do
+def mkGetConfigContent (container : Option Container) (repo containerURL : String)
+    (hashMap : IO.ModuleHashMap) : IO String := do
   hashMap.toArray.foldlM (init := "") fun acc ⟨_, hash⟩ => do
     let fileName := hash.asLTar
     -- Below we use `String.quote`, which is intended for quoting for use in Lean code
@@ -356,14 +371,15 @@ def mkGetConfigContent (repo containerURL : String) (hashMap : IO.ModuleHashMap)
 
     -- Note we append a '.part' to the filenames here,
     -- which `downloadFiles` then removes when the download is successful.
-    pure <| acc ++ s!"url = {mkFileURL repo containerURL fileName}\n\
+    pure <| acc ++ s!"url = {mkFileURL container repo containerURL fileName}\n\
       -o {(IO.CACHEDIR / (fileName ++ ".part")).toString.quote}\n"
 
 /-- Calls `curl` to download a single file from a specific container to `CACHEDIR`
 (`.cache`). Returns `true` on success, `false` on any error including 404. -/
-def downloadFile (repo containerURL : String) (hash : UInt64) : IO Bool := do
+def downloadFile (container : Option Container) (repo containerURL : String)
+    (hash : UInt64) : IO Bool := do
   let fileName := hash.asLTar
-  let url := mkFileURL repo containerURL fileName
+  let url := mkFileURL container repo containerURL fileName
   let path := IO.CACHEDIR / fileName
   let partFileName := fileName ++ ".part"
   let partPath := IO.CACHEDIR / partFileName
@@ -547,12 +563,13 @@ def monitorCurl (args : Array String) (size : Nat)
 serial mode). Side effect: any files successfully fetched are written to
 `CACHEDIR` with their final names. -/
 private def downloadFilesFromContainer
-    (repo containerURL : String) (hashMap : IO.ModuleHashMap)
+    (container : Option Container) (repo containerURL : String)
+    (hashMap : IO.ModuleHashMap)
     (parallel : Bool) (decompConfig : Option DecompConfig) :
     IO (Nat × TransferState) := do
   let size := hashMap.size
   if parallel then
-    IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent repo containerURL hashMap)
+    IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent container repo containerURL hashMap)
     let args := #["--request", "GET", "--parallel",
         -- commented as this creates a big slowdown on curl 8.13.0: "--fail",
         "--silent",
@@ -563,7 +580,7 @@ private def downloadFilesFromContainer
     return (s.failed, s)
   else
     let r ← hashMap.foldM (init := []) fun acc _ hash => do
-      pure <| (← IO.asTask do downloadFile repo containerURL hash) :: acc
+      pure <| (← IO.asTask do downloadFile container repo containerURL hash) :: acc
     let failed := r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
     let emptyState : TransferState := ⟨0, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
     return (failed, emptyState)
@@ -605,10 +622,10 @@ def downloadFiles
   let mut finalState : TransferState := ⟨0, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
   let mut downloadFailed := 0
   let mut roundIdx := 0
-  for url in containerURLs do
+  for (container?, url) in containerURLs do
     if remaining.isEmpty then break
     IO.println s!"Attempting to download {remaining.size} file(s) from {repo} cache at {url}"
-    let (failed, s) ← downloadFilesFromContainer repo url remaining parallel decompConfig
+    let (failed, s) ← downloadFilesFromContainer container? repo url remaining parallel decompConfig
     -- Carry forward the decompression-related state across container rounds.
     -- Counter fields (success/failed/done) reflect only the last round; we
     -- aggregate `downloadFailed` separately below.
@@ -838,9 +855,13 @@ Precedence:
    from reaching the per-trust-level containers. Once all branches have
    absorbed this PR's workflow files, tighten this back to a hard error.
 -/
-def effectiveUploadURL (container : Option Container) : IO String := do
+def effectiveUploadURL (container : Option Container) :
+    IO (Option Container × String) := do
   if let some url ← IO.getEnv "MATHLIB_CACHE_PUT_URL" then
-    return url
+    -- Env-var override: we don't know which container's URL-shape policy
+    -- applies, so signal that with `none` and let `mkFileURL` fall back to
+    -- legacy semantics.
+    return (none, url)
   match container with
   | none =>
     IO.eprintln <|
@@ -849,8 +870,8 @@ def effectiveUploadURL (container : Option Container) : IO String := do
       "         transitional fallback for workflow files that pre-date the\n" ++
       "         per-trust-level container split. Pass --container=NAME\n" ++
       "         explicitly when you next update this workflow."
-    return Container.legacy.azureURL
-  | some c => return c.azureURL
+    return (some Container.legacy, Container.legacy.azureURL)
+  | some c => return (some c, c.azureURL)
 
 def azureBearerApiVersionHeader : String := "x-ms-version: 2026-02-06"
 
@@ -862,14 +883,16 @@ def getAzureDateHeader : IO String := do
   return s!"x-ms-date: {out.stdout.trimAscii.copy}"
 
 /-- Formats the config file for `curl`, containing the list of files to be uploaded.
-The destination base URL is the explicit `uploadURL` argument. -/
-def mkPutConfigContent (repo uploadURL : String) (files : Array FilePath) (auth : UploadAuth) :
-    IO String := do
+The destination base URL is the explicit `uploadURL` argument. `container` is
+threaded through to `mkFileURL` so the per-container URL-shape policy applies;
+it is `none` only when `MATHLIB_CACHE_PUT_URL` is overriding the endpoint. -/
+def mkPutConfigContent (container : Option Container) (repo uploadURL : String)
+    (files : Array FilePath) (auth : UploadAuth) : IO String := do
   let token := match auth with
     | .azureSas token => s!"?{token}"
     | _ => ""
   let l ← files.toList.mapM fun file : FilePath => do
-    pure s!"-T {file.toString}\nurl = {mkFileURL repo uploadURL file.fileName.get!}{token}"
+    pure s!"-T {file.toString}\nurl = {mkFileURL container repo uploadURL file.fileName.get!}{token}"
   return "\n".intercalate l
 
 /-- Calls `curl` to send a set of files to the server. The destination container
@@ -883,8 +906,9 @@ def putFilesAbsolute
   let _ := overwrite
   let size := files.size
   if size > 0 then
-    let uploadURL ← effectiveUploadURL container
-    IO.FS.writeFile tempConfigFilePath (← mkPutConfigContent repo uploadURL files auth)
+    let (urlContainer?, uploadURL) ← effectiveUploadURL container
+    IO.FS.writeFile tempConfigFilePath
+      (← mkPutConfigContent urlContainer? repo uploadURL files auth)
     let target := container.map Container.name |>.getD "(env override)"
     IO.println s!"Attempting to upload {size} file(s) to {repo} cache (container: {target})"
     let azureDateHeader ← getAzureDateHeader
@@ -982,7 +1006,9 @@ def commit (container : Option Container) (hashMap : IO.ModuleHashMap) (overwrit
   IO.FS.createDirAll IO.CACHEDIR
   IO.FS.writeFile path <| ("\n".intercalate <| hashMap.hashes.toList.map toString) ++ "\n"
   let azureDateHeader ← getAzureDateHeader
-  let uploadURL ← effectiveUploadURL container
+  -- Commit files are never namespaced by repo (they always live at `/c/<hash>`),
+  -- so we only need the URL from `effectiveUploadURL`, not the URL-shape container.
+  let (_, uploadURL) ← effectiveUploadURL container
   match auth with
   | .azureSas token =>
     let params := if overwrite

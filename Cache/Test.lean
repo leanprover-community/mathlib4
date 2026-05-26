@@ -109,6 +109,40 @@ def test_Container_azureURL : IO Unit := do
     "https://lakecache.blob.core.windows.net/mathlib4"
     Container.legacy.azureURL
 
+/-- URL-shape policy per container. `mkFileURL` reads this to decide whether
+to namespace under `/f/<repo>/...` or write flat at `/f/...`. The policy is
+asymmetric on purpose: master is canonical-only, legacy keeps its mixed
+historical behavior, and the new per-trust-level containers always prefix
+so multiple writers can coexist. -/
+def test_Container_flatPath : IO Unit := do
+  IO.println "Container.flatPath:"
+  -- master is canonical-only and the layout is always flat — even (defensively)
+  -- if some non-canonical repo were passed through, RBAC blocks the write anyway.
+  assert "master is flat for canonical mathlib4"
+    (Container.master.flatPath MATHLIBREPO == true)
+  assert "master is flat for any repo (canonical-only by RBAC)"
+    (Container.master.flatPath "alice/mathlib4" == true)
+  -- legacy: historical mixed behavior. Flat for canonical (where old readers
+  -- look for master artifacts), prefixed for forks (the historical fork
+  -- upload shape).
+  assert "legacy is flat for canonical mathlib4 (historical master path)"
+    (Container.legacy.flatPath MATHLIBREPO == true)
+  assert "legacy is prefixed for fork repos (historical fork path)"
+    (Container.legacy.flatPath "alice/mathlib4" == false)
+  -- New per-trust-level containers are ALWAYS prefixed, including for the
+  -- canonical mathlib4 repo. This is what makes uploads from `ci-dev/*` and
+  -- `bors trying` (canonical repo dispatched to `forks`) findable.
+  assert "forks is prefixed for canonical mathlib4 (trust-dispatch override)"
+    (Container.forks.flatPath MATHLIBREPO == false)
+  assert "forks is prefixed for fork repos"
+    (Container.forks.flatPath "alice/mathlib4" == false)
+  assert "nightly-testing is prefixed for nightly-testing repo"
+    (Container.nightlyTesting.flatPath NIGHTLY_TESTING_REPO == false)
+  assert "nightly-testing is prefixed for canonical mathlib4"
+    (Container.nightlyTesting.flatPath MATHLIBREPO == false)
+  assert "pr-toolchain-tests is prefixed for nightly-testing repo"
+    (Container.prToolchainTests.flatPath NIGHTLY_TESTING_REPO == false)
+
 end ContainerModel
 
 section PerRepoAllowlist
@@ -181,35 +215,68 @@ end PerRepoAllowlist
 
 section MkFileURL
 
-/-- URL path shape: container is the host segment, repo is the path prefix.
-The asymmetry is that canonical mathlib4 uploads land at `/f/{hash}`, while
-fork uploads land at `/f/{repo}/{hash}` — this lets multiple forks share a
-container without colliding. -/
+/-- URL path shape is decided by the *container*, not the repo (see
+`Container.flatPath`). `master` is always flat (canonical-only); the new
+per-trust-level containers (`forks`, `nightly-testing`, `pr-toolchain-tests`)
+always namespace by repo, including for canonical-repo writers whose trust
+level is fork-equivalent (e.g. `ci-dev/*`, `bors trying` on the canonical
+repo dispatch to `forks`); `legacy` keeps its historical mixed behavior
+(flat for canonical, prefixed for forks) so older readers still find their
+artifacts; the env-var override path (`container = none`) falls back to
+legacy semantics. -/
 def test_mkFileURL : IO Unit := do
   IO.println "mkFileURL:"
-  -- Canonical mathlib4 repo → no `/f/{repo}/` prefix; this matches where
-  -- master CI actually publishes artifacts (in the new `mathlib4-master` container).
-  assertEq "master × mathlib4 (no prefix)"
+  -- master is flat for canonical mathlib4 (where master CI publishes).
+  assertEq "master × mathlib4 (flat)"
     "https://lakecache.blob.core.windows.net/mathlib4-master/f/abc.ltar"
-    (mkFileURL MATHLIBREPO Container.master.azureURL "abc.ltar")
-  -- Fork repo prefix is independent of which container — same path scheme everywhere.
-  assertEq "forks × fork (alt container + prefix)"
+    (mkFileURL (some .master) MATHLIBREPO Container.master.azureURL "abc.ltar")
+  -- master is *always* flat regardless of repo — by policy. RBAC enforces
+  -- master-only writes anyway, so this branch shouldn't see fork repos in
+  -- practice, but pinning the policy keeps the shape unambiguous if it does.
+  assertEq "master × fork (still flat by policy)"
+    "https://lakecache.blob.core.windows.net/mathlib4-master/f/abc.ltar"
+    (mkFileURL (some .master) "alice/mathlib4" Container.master.azureURL "abc.ltar")
+  -- The key new behavior: `forks` namespaces by repo *even for canonical
+  -- mathlib4*. This covers the trust-dispatch case where the canonical repo
+  -- runs at fork-level trust (`ci-dev/*`, `bors trying`) and the workflow
+  -- routes the upload to the `forks` container. Without the prefix, those
+  -- writes would land flat in `forks` and collide / be unfindable.
+  assertEq "forks × mathlib4 (prefixed; trust-dispatch override)"
+    "https://lakecache.blob.core.windows.net/mathlib4-forks/f/leanprover-community/mathlib4/abc.ltar"
+    (mkFileURL (some .forks) MATHLIBREPO Container.forks.azureURL "abc.ltar")
+  -- forks × fork: the original fork-PR upload shape, unchanged.
+  assertEq "forks × fork (prefixed)"
     "https://lakecache.blob.core.windows.net/mathlib4-forks/f/alice/mathlib4/abc.ltar"
-    (mkFileURL "alice/mathlib4" Container.forks.azureURL "abc.ltar")
-  -- Sanity: nightly-testing in its own container still gets the repo prefix
-  -- (the `no-prefix-for-MATHLIBREPO` rule must not over-match).
-  assertEq "nightly-testing × nightly-testing repo"
+    (mkFileURL (some .forks) "alice/mathlib4" Container.forks.azureURL "abc.ltar")
+  -- nightly-testing and pr-toolchain-tests follow the same policy: always
+  -- prefixed, so multiple writers within a container stay disambiguated.
+  assertEq "nightly-testing × nightly-testing repo (prefixed)"
     "https://lakecache.blob.core.windows.net/mathlib4-nightly-testing/f/leanprover-community/mathlib4-nightly-testing/abc.ltar"
-    (mkFileURL NIGHTLY_TESTING_REPO Container.nightlyTesting.azureURL "abc.ltar")
-  -- Legacy container with the canonical mathlib4 repo: bare `/f/{hash}.ltar`
-  -- (where master CI historically published).
-  assertEq "legacy × mathlib4 (no prefix, historical master path)"
+    (mkFileURL (some .nightlyTesting) NIGHTLY_TESTING_REPO
+      Container.nightlyTesting.azureURL "abc.ltar")
+  assertEq "pr-toolchain-tests × nightly-testing repo (prefixed)"
+    "https://lakecache.blob.core.windows.net/mathlib4-pr-toolchain-tests/f/leanprover-community/mathlib4-nightly-testing/abc.ltar"
+    (mkFileURL (some .prToolchainTests) NIGHTLY_TESTING_REPO
+      Container.prToolchainTests.azureURL "abc.ltar")
+  -- Legacy preserves the historical mixed behavior: flat for canonical, prefixed
+  -- otherwise. Older readers that point at the bare `mathlib4` container still
+  -- find what they expect.
+  assertEq "legacy × mathlib4 (flat, historical master path)"
     "https://lakecache.blob.core.windows.net/mathlib4/f/abc.ltar"
-    (mkFileURL MATHLIBREPO Container.legacy.azureURL "abc.ltar")
-  -- Legacy container with a fork repo: the historical fork upload location.
-  assertEq "legacy × fork (historical fork path)"
+    (mkFileURL (some .legacy) MATHLIBREPO Container.legacy.azureURL "abc.ltar")
+  assertEq "legacy × fork (prefixed, historical fork path)"
     "https://lakecache.blob.core.windows.net/mathlib4/f/alice/mathlib4/abc.ltar"
-    (mkFileURL "alice/mathlib4" Container.legacy.azureURL "abc.ltar")
+    (mkFileURL (some .legacy) "alice/mathlib4" Container.legacy.azureURL "abc.ltar")
+  -- Env-var override (MATHLIB_CACHE_GET_URL / MATHLIB_CACHE_PUT_URL): container
+  -- is `none`, so the URL-shape decision falls back to legacy semantics. This
+  -- preserves the exact behavior dev/local override users had before the
+  -- per-container split.
+  assertEq "env-var override × mathlib4 (legacy semantics: flat)"
+    "https://custom.example/cache/f/abc.ltar"
+    (mkFileURL none MATHLIBREPO "https://custom.example/cache" "abc.ltar")
+  assertEq "env-var override × fork (legacy semantics: prefixed)"
+    "https://custom.example/cache/f/alice/mathlib4/abc.ltar"
+    (mkFileURL none "alice/mathlib4" "https://custom.example/cache" "abc.ltar")
 
 end MkFileURL
 
@@ -413,6 +480,7 @@ def runAll : IO Unit := do
   test_Container_name
   test_Container_parse
   test_Container_azureURL
+  test_Container_flatPath
   test_defaultContainersForRepo
   test_containersForRepoAndBranch
   test_mkFileURL

@@ -94,6 +94,36 @@ def azureContainerName : Container → String
 def azureURL (c : Container) : String :=
   s!"https://lakecache.blob.core.windows.net/{c.azureContainerName}"
 
+/--
+Whether file lookups in this container use the flat `/f/<hash>` layout for
+the given `repo`, or namespace under `/f/<repo>/<hash>`.
+
+The decision is *per container*, not per repo: a single container can be fed
+by several writers whose `repo` argument doesn't always match the trust
+implied by the container, and a stable layout per container is what keeps
+readers and writers in sync.
+
+- `master` is canonical-only — only trusted master CI is admitted by RBAC,
+  and those writes always carry `repo == MATHLIBREPO`. The layout is flat.
+- `legacy` is the historical monolithic `mathlib4` container. It encoded the
+  writer's trust in the path: canonical-repo writers landed at `/f/<hash>`
+  (where older mathlib4 readers still expect to find them), fork writers
+  landed at `/f/<repo>/<hash>`. We preserve that mixed behavior for
+  back-compat with consumers that still read from the bare container.
+- Every other per-trust-level container (`forks`, `nightly-testing`,
+  `pr-toolchain-tests`) always namespaces by repo. These hold artifacts
+  from multiple writers — different forks, different toolchain refs, plus
+  canonical-repo builds whose trust level is fork-equivalent (e.g.
+  `ci-dev/*` and `bors trying` on the canonical repo, both of which dispatch
+  to the `forks` container). A flat layout there would collide on identical
+  hashes from different writers, and the container alone doesn't disambiguate.
+-/
+def flatPath (c : Container) (repo : String) : Bool :=
+  match c with
+  | .master => true
+  | .legacy => repo == MATHLIBREPO
+  | _ => false
+
 end Container
 
 /--
