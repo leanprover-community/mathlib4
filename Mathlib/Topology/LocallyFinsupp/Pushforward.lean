@@ -17,13 +17,14 @@ of algebraic cycles in algebraic geometry.
 
 ## Main declarations
 
-- `Function.locallyFinsupp.map`: If `f : X → Y` is a spectral map between spectral spaces and `c : X → R` is a
-  locally of finite support, the pushforward of `c` along `f` at `y : Y` is `∑ᶠ x ∈ f ⁻¹' {z}, c x * w x`, where
-  `w : X → R` is a weight function.
+- `Function.locallyFinsupp.map`: If `f : X → Y` is a spectral map between spectral spaces and
+  `c : X → R` is locally of finite support, the pushforward of `c` along `f` at `y : Y` is
+  `∑ᶠ x ∈ f ⁻¹' {z}, c x * w x`, where `w : X → R` is a weight function.
 
 ## Notes
 
-In the case of algebraic cycles, the weight function used in `Function.locallyFinsupp.map` will be specialized to the degree of the residue field extension
+In the case of algebraic cycles, the weight function used in `Function.locallyFinsupp.map` will be
+specialized to the degree of the residue field extension
 (see https://stacks.math.columbia.edu/tag/02R4).
 -/
 
@@ -41,7 +42,8 @@ variable [Semiring R] {W : Set Y} (hW : IsOpen W) (c : Function.locallyFinsupp X
 
 variable (f) in
 /--
-The pushforward of a function `c` of locally finite support by a spectral map with respect to a weight function `w`.
+The pushforward of a function `c` of locally finite support by a spectral map with respect to a
+weight function `w`.
 -/
 noncomputable
 def map (hf : IsSpectralMap f) (c : locallyFinsupp X R) : Function.locallyFinsupp Y R where
