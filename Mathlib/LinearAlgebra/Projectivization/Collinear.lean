@@ -11,20 +11,20 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 /-!
 
-# Colinearity in Projective Space
+# Collinearity in Projective Space
 
-This file defines colinearity of points in projective space and proves
+This file defines collinearity of points in projective space and proves
 the uniqueness of the line through two distinct points.
 
 ## Main Results
 
-* `Projectivization.IsColinear`: A family of points in projective space is colinear if there exists
+* `Projectivization.IsCollinear`: A family of points in projective space is collinear if there exists
   a submodule of dimension at most 2 containing all points in the family.
 * `Projectivization.line_unique`: Given two distinct points in projective space, there is a unique
   line (submodule of dimension 2) containing both points.
 
 ## Tags
-Projective space, colinearity, projective geometry
+Projective space, collinearity, projective geometry
 
 -/
 
@@ -36,16 +36,16 @@ variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
 namespace Projectivization
 
 /-- If there exists a submodule of dimension at most 2 containing all points in
-  `S`, then `S` is colinear. The finite-dimensionality is required so that this notion is
+  `S`, then `S` is collinear. The finite-dimensionality is required so that this notion is
   meaningful even when `V` is infinite-dimensional. -/
-def IsColinear : Prop := ∃ (M : Subspace K V), Module.Finite K M.submodule ∧
+def IsCollinear : Prop := ∃ (M : Subspace K V), Module.Finite K M.submodule ∧
   Module.finrank K M.submodule ≤ 2 ∧ S ⊆ M
 
-lemma IsColinear_iff : IsColinear S ↔ ∃ (M : Subspace K V), Module.Finite K M.submodule ∧
+lemma IsCollinear_iff : IsCollinear S ↔ ∃ (M : Subspace K V), Module.Finite K M.submodule ∧
   Module.finrank K M.submodule ≤ 2 ∧ S ⊆ M := Iff.rfl
 
 @[simp]
-lemma isColin_empty : IsColinear (∅ : Set (Projectivization K V)) := by
+lemma isColin_empty : IsCollinear (∅ : Set (Projectivization K V)) := by
   obtain ⟨⟨ι, b⟩⟩ : Module.Free K V := Module.Free.of_divisionRing K V
   obtain hV | ⟨x, y, hxy⟩ : (Module.Finite K V ∧ Module.finrank K V < 2) ∨ (∃ a b : ι, a ≠ b) := by
     rcases subsingleton_or_nontrivial ι with hι | hι
@@ -72,12 +72,12 @@ lemma isColin_empty : IsColinear (∅ : Set (Projectivization K V)) := by
 
 open scoped LinearAlgebra.Projectivization
 
-lemma isColin_subset (s t : Set (ℙ K V)) (hst : s ⊆ t) (h : IsColinear t) : IsColinear s := by
+lemma isColin_subset (s t : Set (ℙ K V)) (hst : s ⊆ t) (h : IsCollinear t) : IsCollinear s := by
   obtain ⟨M, hMfin, hM1, hM2⟩ := h
   exact ⟨M, hMfin, hM1, hst.trans hM2⟩
 
 @[simp]
-lemma isColin_singleton' (a : ℙ K V) : IsColinear {a} := by
+lemma isColin_singleton' (a : ℙ K V) : IsCollinear {a} := by
   induction a using ind with | h v hv =>
   refine ⟨(Submodule.span K {v}).projectivization, ?_, ?_, ?_⟩
   · rw [Subspace.submodule.apply_symm_apply]
@@ -87,10 +87,10 @@ lemma isColin_singleton' (a : ℙ K V) : IsColinear {a} := by
   · simp [Submodule.mem_span_of_mem]
 
 lemma isColin_subsingleton (hS : S.Subsingleton) :
-    IsColinear S := by
+    IsCollinear S := by
   obtain hS' | ⟨x, hx⟩ := hS.eq_empty_or_singleton <;> simp_all
 
-lemma isColin_pair (a b : ℙ K V) : IsColinear {a, b} := by
+lemma isColin_pair (a b : ℙ K V) : IsCollinear {a, b} := by
   if h : a = b then simp [h] else
   induction a using Projectivization.ind with | h v hv =>
   induction b using Projectivization.ind with | h w hw =>
@@ -103,7 +103,7 @@ lemma isColin_pair (a b : ℙ K V) : IsColinear {a, b} := by
     simp [finrank_span_eq_card h]
   all_goals rintro rfl; simp [Submodule.mem_span_of_mem]
 
-lemma isColin_of_card_eq_two (hS : S.ncard = 2) : IsColinear S := by
+lemma isColin_of_card_eq_two (hS : S.ncard = 2) : IsCollinear S := by
   obtain ⟨x, y, _, rfl⟩ := Set.ncard_eq_two.1 hS
   exact isColin_pair x y
 
