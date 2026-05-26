@@ -157,7 +157,6 @@ lemma natCast_le_analyticOrderAt (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
     n ≤ analyticOrderAt f z₀ ↔
       ∃ g, AnalyticAt 𝕜 g z₀ ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z := by
   unfold analyticOrderAt
-  -- bug with split_ifs and Jovan's bundled classes
   split_ifs with h' h
   · simpa using ⟨0, analyticAt_const .., by simpa⟩
   · let m := (hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose

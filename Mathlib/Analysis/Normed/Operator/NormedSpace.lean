@@ -111,7 +111,7 @@ that produces a concrete bound.
 -/
 theorem bound_of_ball_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[𝕜] Fₗ)
     (h : ∀ z ∈ Metric.ball (0 : E) r, ‖f z‖ ≤ c) : ∃ C, ∀ z : E, ‖f z‖ ≤ C * ‖z‖ := by
-  obtain ⟨k, hk⟩ := @NontriviallyNormedField.non_trivial 𝕜 _
+  obtain ⟨k, hk⟩ := @IsNontriviallyNormedField.non_trivial 𝕜 _ _ _
   use c * (‖k‖ / r)
   intro z
   refine bound_of_shell _ r_pos hk (fun x hko hxo => ?_) _
@@ -128,7 +128,7 @@ theorem antilipschitz_of_comap_nhds_le [h : RingHomIsometric σ₁₂] (f : E �
   rcases ((nhds_basis_ball.comap _).le_basis_iff nhds_basis_ball).1 hf 1 one_pos with ⟨ε, ε0, hε⟩
   simp only [Set.subset_def, Set.mem_preimage, mem_ball_zero_iff] at hε
   lift ε to ℝ≥0 using ε0.le
-  rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
+  rcases IsNormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
   refine ⟨ε⁻¹ * ‖c‖₊, AddMonoidHomClass.antilipschitz_of_bound f fun x => ?_⟩
   by_cases hx : f x = 0
   · rw [← hx] at hf

@@ -39,9 +39,9 @@ open scoped NNReal
 
 section
 
-variable {K : Type*} [hK : NormedField K] [IsUltrametricDist K]
+variable {K : Type*} [NormMetric K] [Field K] [hK : IsNormedField K] [IsUltrametricDist K]
 
-namespace NormedField
+namespace IsNormedField
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The valuation on a nonarchimedean normed field `K` defined as `nnnorm`. -/
@@ -66,8 +66,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The valued field structure on a nonarchimedean normed field `K`, determined by the norm. -/
 @[instance_reducible]
 def toValued : Valued K ℝ≥0 :=
-  { hK.toUniformSpace,
-    (inferInstance : IsUniformAddGroup K) with
+  { (inferInstance : IsUniformAddGroup K) with
     v := valuation
     is_topological_valuation := fun U => by
       rw [Metric.mem_nhds_iff]
@@ -106,6 +105,16 @@ instance {K : Type*} [NormMetric K] [Field K] [IsNontriviallyNormedField K] [IsU
   exists_val_nontrivial := (exists_one_lt_norm K).imp fun x h ↦ by
     have h' : x ≠ 0 := norm_eq_zero.not.mp (h.gt.trans' (by simp)).ne'
     simp [valuation_apply, ← NNReal.coe_inj, h.ne', h']
+
+end IsNormedField
+
+namespace NormedField
+
+open IsNormedField
+
+@[deprecated (since := "2026-05-26")] alias valuation := valuation
+@[deprecated (since := "2026-05-26")] alias valuation_apply := valuation_apply
+@[deprecated (since := "2026-05-26")] alias toValued := toValued
 
 end NormedField
 
@@ -149,9 +158,8 @@ open Valuation
 set_option backward.isDefEq.respectTransparency false in
 /-- The normed field structure determined by a rank one valuation. -/
 @[instance_reducible]
-def toNormedField : NormedField L :=
-  { (inferInstance : Field L) with
-    norm := val.v.norm
+def toNormMetric : NormMetric L :=
+  { norm := val.v.norm
     dist := fun x y => val.v.norm (x - y)
     dist_self := fun x => by
       simp only [sub_self, Valuation.norm, Valuation.map_zero, hv.hom.map_zero, NNReal.coe_zero]
@@ -161,10 +169,6 @@ def toNormedField : NormedField L :=
       exact le_trans (val.v.norm_add_le _ _)
         (max_le_add_of_nonneg (val.v.norm_nonneg _) (val.v.norm_nonneg _))
     eq_of_dist_eq_zero := fun hxy => eq_of_sub_eq_zero (val.v.norm_eq_zero hxy)
-    dist_eq := fun x y => by
-      simp only [Valuation.norm]
-      rw [← v.restrict.map_neg, neg_sub, sub_eq_add_neg, add_comm]
-    norm_mul := fun x y => by simp only [Valuation.norm, ← NNReal.coe_mul, map_mul]
     toUniformSpace := Valued.toUniformSpace
     uniformity_dist := by
       haveI : Nonempty { ε : ℝ // ε > 0 } := nonempty_Ioi_subtype
@@ -199,10 +203,20 @@ def toNormedField : NormedField L :=
         exact ⟨fun a b hab => lt_of_lt_of_le hab (min_le_left _ _), fun a b hab =>
             lt_of_lt_of_le hab (min_le_right _ _)⟩ }
 
+scoped[Valued] attribute [instance] Valued.toNormMetric
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The normed field structure determined by a rank one valuation. -/
+lemma toIsNormedField : IsNormedField L where
+  dist_eq := fun x y => by
+    simp only [‖·‖, dist, Valuation.norm]
+    rw [← v.restrict.map_neg, neg_sub, sub_eq_add_neg, add_comm]
+  norm_mul := fun x y => by simp only [‖·‖, Valuation.norm, ← NNReal.coe_mul, map_mul]
+
 -- When a field is valued, one inherits a `NormedField`.
 -- Scoped instance to avoid a typeclass loop or non-defeq topology or norms.
-scoped[Valued] attribute [instance] Valued.toNormedField
-scoped[NormedField] attribute [instance] NormedField.toValued
+scoped[Valued] attribute [instance] Valued.toIsNormedField
+scoped[IsNormedField] attribute [instance] IsNormedField.toValued
 
 section NormedField
 
@@ -218,7 +232,7 @@ instance : IsUltrametricDist L :=
     rfl ⟩
 
 lemma coe_valuation_eq_rankOne_hom_comp_valuation :
-    ⇑NormedField.valuation = hv.hom ∘ val.v.restrict := rfl
+    ⇑IsNormedField.valuation = hv.hom ∘ val.v.restrict := rfl
 
 end NormedField
 namespace toNormedField
@@ -272,8 +286,7 @@ end toNormedField
 The nontrivially normed field structure determined by a rank one valuation.
 -/
 @[instance_reducible]
-def toNontriviallyNormedField : NontriviallyNormedField L := {
-  val.toNormedField with
+def toIsNontriviallyNormedField : IsNontriviallyNormedField L where
   non_trivial := by
     obtain ⟨x, hx⟩ := Valuation.RankOne.nontrivial val.v
     rcases Valuation.val_le_one_or_val_inv_le_one val.v x with h | h
@@ -283,8 +296,7 @@ def toNontriviallyNormedField : NontriviallyNormedField L := {
     · use x
       simp only [map_inv₀, inv_le_one₀ <| zero_lt_iff.mpr hx.1] at h
       simp only [toNormedField.one_lt_norm_iff, lt_of_le_of_ne h hx.2.symm]
-}
 
-scoped[Valued] attribute [instance] Valued.toNontriviallyNormedField
+scoped[Valued] attribute [instance] Valued.toIsNontriviallyNormedField
 
 end Valued

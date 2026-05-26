@@ -34,10 +34,9 @@ namespace IntermediateField
 
 variable {K L : Type*} [NormMetric K] [Field K] [IsNontriviallyNormedField K] [NormMetric L] [Field L] [IsNormedField L] [NormedAlgebra K L]
 
-instance (F : IntermediateField K L) : NontriviallyNormedField F where
-  __ := SubfieldClass.toNormedField F
+instance (F : IntermediateField K L) : IsNontriviallyNormedField F where
   non_trivial := by
-    obtain ⟨k, hk⟩ := @NontriviallyNormedField.non_trivial K _
+    obtain ⟨k, hk⟩ := IsNontriviallyNormedField.non_trivial (α := K)
     use algebraMap K F k
     simp [hk]
 

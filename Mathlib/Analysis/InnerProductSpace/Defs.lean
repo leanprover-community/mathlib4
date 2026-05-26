@@ -525,7 +525,7 @@ lemma topology_eq
     tF = cd.toNormMetric.toMetricSpace.toUniformSpace.toTopologicalSpace := by
   let : NormMetric F := cd.toNormMetric
   have : IsNormedAddGroup F := InnerProductSpace.Core.toIsNormedAddGroup
-  let p : Seminorm 𝕜 F := @normSeminorm 𝕜 F _ _ _ _ InnerProductSpace.Core.toNormedSpace
+  let p : Seminorm 𝕜 F := @normSeminorm 𝕜 F _ _ _ _ _ _ InnerProductSpace.Core.toNormedSpace
   suffices WithSeminorms (fun (i : Fin 1) ↦ p) by
     rw [(SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _).1 this]
     simp

@@ -795,14 +795,15 @@ instance metricSpace : MetricSpace ℚ_[p] where
 instance : Norm ℚ_[p] :=
   ⟨fun x ↦ padicNormE x⟩
 
-instance normedField : NormedField ℚ_[p] where
+instance instNormedField : NormMetric ℚ_[p] where
+
+instance instIsNormedField : IsNormedField ℚ_[p] where
   dist_eq x y := by
     rw [add_comm, ← sub_eq_add_neg]
     change ‖x - y‖ = ‖y - x‖
     have : y - x = (-1) * (x - y) := by ring
     simp only [this, Norm.norm, map_mul, map_neg_eq_map, AbsoluteValue.map_one, one_mul]
   norm_mul := by simp [Norm.norm, map_mul]
-  norm := norm
 
 instance isAbsoluteValue : IsAbsoluteValue fun a : ℚ_[p] ↦ ‖a‖ where
   abv_nonneg' := norm_nonneg
@@ -867,12 +868,11 @@ theorem norm_p_zpow (n : ℤ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n) := by
 theorem norm_p_pow (n : ℕ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) := by
   rw [← norm_p_zpow, zpow_natCast]
 
-instance : NontriviallyNormedField ℚ_[p] :=
-  { Padic.normedField p with
-    non_trivial :=
-      ⟨p⁻¹, by
-        rw [norm_inv, norm_p, inv_inv]
-        exact mod_cast hp.1.one_lt⟩ }
+instance : IsNontriviallyNormedField ℚ_[p] where
+  non_trivial :=
+    ⟨p⁻¹, by
+      rw [norm_inv, norm_p, inv_inv]
+      exact mod_cast hp.1.one_lt⟩
 
 protected theorem padicNormE.image {q : ℚ_[p]} : q ≠ 0 → ∃ n : ℤ, ‖q‖ = ↑((p : ℚ) ^ (-n)) :=
   Quotient.inductionOn q fun f hf ↦

@@ -86,7 +86,7 @@ lemma norm_coe (x : WithAbs v.1) :
 instance : CompletableTopField (WithAbs v.1) :=
   v.isometry_embedding.isUniformInducing.completableTopField
 
-example : NormedField v.Completion := inferInstance
+example : IsNormedField v.Completion := inferInstance
 example : Algebra K v.Completion := inferInstance
 example : IsTopologicalRing v.Completion := inferInstance
 

@@ -62,9 +62,8 @@ theorem Polynomial.isCoveringMapOn_eval (p : 𝕜[X]) :
 
 theorem isCoveringMapOn_npow (n : ℕ) (hn : (n : 𝕜) ≠ 0) :
     IsCoveringMapOn (fun x : 𝕜 ↦ x ^ n) {0}ᶜ := by
-  convert! (X ^ n).isCoveringMapOn_eval.mono fun x' h ↦ _ with x
+  convert! ((X ^ n).isCoveringMapOn_eval (𝕜 := 𝕜)).mono fun x' h ↦ _ with x
   · simp
-  · assumption
   · simpa [derivative_X_pow, hn, show n ≠ 0 by aesop] using fun _ ↦ Ne.symm h
 
 /-- `(· ^ n) : 𝕜 \ {0} → 𝕜 \ {0}` is a covering map (if `n ≠ 0` in `𝕜`). -/

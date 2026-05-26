@@ -57,8 +57,8 @@ local notation "𝓚" => algebraMap ℝ _
 /--
 This typeclass captures properties shared by ℝ and ℂ, with an API that closely matches that of ℂ.
 -/
-class RCLike (K : semiOutParam Type*) extends DenselyNormedField K, StarRing K,
-    NormedAlgebra ℝ K, CompleteSpace K where
+class RCLike (K : semiOutParam Type*) extends NormMetric K, Field K, IsDenselyNormedField K,
+    StarRing K, NormedAlgebra ℝ K, CompleteSpace K where
   /-- The real part as an additive monoid homomorphism -/
   re : K →+ ℝ
   /-- The imaginary part as an additive monoid homomorphism -/
@@ -1255,62 +1255,64 @@ section
 /-- A mixin over a normed field, saying that the norm field structure is the same as `ℝ` or `ℂ`.
 To endow such a field with a compatible `RCLike` structure in a proof, use
 `letI := IsRCLikeNormedField.rclike 𝕜`. -/
-class IsRCLikeNormedField (𝕜 : Type*) [hk : NormedField 𝕜] : Prop where
-  out : ∃ h : RCLike 𝕜, hk = h.toNormedField
+class IsRCLikeNormedField (𝕜 : Type*) [hk1 : NormMetric 𝕜] [hk2 : Field 𝕜] : Prop where
+  out : ∃ h : RCLike 𝕜, hk1 = h.toNormMetric ∧ hk2 = h.toField
 
-instance (priority := 100) (𝕜 : Type*) [h : RCLike 𝕜] : IsRCLikeNormedField 𝕜 := ⟨⟨h, rfl⟩⟩
+instance (priority := 100) (𝕜 : Type*) [h : RCLike 𝕜] : IsRCLikeNormedField 𝕜 := ⟨⟨h, rfl, rfl⟩⟩
 
 /-- A copy of an `RCLike` field in which the `NormedField` field is adjusted to be become defeq
 to a propeq one. -/
 @[implicit_reducible]
-noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (hk : NormedField 𝕜)
-    (h'' : hk = h.toNormedField) : RCLike 𝕜 where
-  __ := hk
+noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜)
+    (hk1 : NormMetric 𝕜) (hk2 : Field 𝕜)
+    (hhk1 : hk1 = h.toNormMetric) (hhk2 : hk2 = h.toField) : RCLike 𝕜 where
+  __ := hk1
+  __ := hk2
+  toIsDenselyNormedField := by subst hhk1 hhk2; exact h.toIsDenselyNormedField
   toPartialOrder := h.toPartialOrder
   toDecidableEq := h.toDecidableEq
-  complete := by subst h''; exact h.complete
-  lt_norm_lt := by subst h''; exact h.lt_norm_lt
+  complete := by subst hhk1; exact h.complete
   -- star fields
   star := (@StarMul.toInvolutiveStar _ (_) (@StarRing.toStarMul _ (_) h.toStarRing)).star
-  star_involutive := by subst h''; exact h.star_involutive
-  star_mul := by subst h''; exact h.star_mul
-  star_add := by subst h''; exact h.star_add
+  star_involutive := by subst hhk1; exact h.star_involutive
+  star_mul := by subst hhk2; exact h.star_mul
+  star_add := by subst hhk2; exact h.star_add
   -- algebra fields
   smul := (@Algebra.toSMul _ _ _ (_) h.toNormedAlgebra.toAlgebra).smul
   algebraMap :=
   { toFun := @Algebra.algebraMap _ _ _ (_) h.toNormedAlgebra.toAlgebra
-    map_one' := by subst h''; exact h.algebraMap.map_one'
-    map_mul' := by subst h''; exact h.algebraMap.map_mul'
-    map_zero' := by subst h''; exact h.algebraMap.map_zero'
-    map_add' := by subst h''; exact h.algebraMap.map_add' }
-  commutes' := by subst h''; exact h.commutes'
-  smul_def' := by subst h''; exact h.smul_def'
-  norm_smul_le := by subst h''; exact h.norm_smul_le
+    map_one' := by subst hhk2; exact h.algebraMap.map_one'
+    map_mul' := by subst hhk2; exact h.algebraMap.map_mul'
+    map_zero' := by subst hhk2; exact h.algebraMap.map_zero'
+    map_add' := by subst hhk2; exact h.algebraMap.map_add' }
+  commutes' := by subst hhk2; exact h.commutes'
+  smul_def' := by subst hhk2; exact h.smul_def'
+  norm_smul_le := by subst hhk1; exact h.norm_smul_le
   -- RCLike fields
-  re := by subst h''; exact h.re
-  im := by subst h''; exact h.im
+  re := by subst hhk2; exact h.re
+  im := by subst hhk2; exact h.im
   I := h.I
-  I_re_ax := by subst h''; exact h.I_re_ax
-  I_mul_I_ax := by subst h''; exact h.I_mul_I_ax
-  re_add_im_ax := by subst h''; exact h.re_add_im_ax
-  ofReal_re_ax := by subst h''; exact h.ofReal_re_ax
-  ofReal_im_ax := by subst h''; exact h.ofReal_im_ax
-  mul_re_ax := by subst h''; exact h.mul_re_ax
-  mul_im_ax := by subst h''; exact h.mul_im_ax
-  conj_re_ax := by subst h''; exact h.conj_re_ax
-  conj_im_ax := by subst h''; exact h.conj_im_ax
-  conj_I_ax := by subst h''; exact h.conj_I_ax
-  norm_sq_eq_def_ax := by subst h''; exact h.norm_sq_eq_def_ax
-  mul_im_I_ax := by subst h''; exact h.mul_im_I_ax
-  le_iff_re_im := by subst h''; exact h.le_iff_re_im
+  I_re_ax := by subst hhk2; exact h.I_re_ax
+  I_mul_I_ax := by subst hhk2; exact h.I_mul_I_ax
+  re_add_im_ax := by subst hhk2; exact h.re_add_im_ax
+  ofReal_re_ax := by subst hhk2; exact h.ofReal_re_ax
+  ofReal_im_ax := by subst hhk2; exact h.ofReal_im_ax
+  mul_re_ax := by subst hhk2; exact h.mul_re_ax
+  mul_im_ax := by subst hhk2; exact h.mul_im_ax
+  conj_re_ax := by subst hhk2; exact h.conj_re_ax
+  conj_im_ax := by subst hhk2; exact h.conj_im_ax
+  conj_I_ax := by subst hhk2; exact h.conj_I_ax
+  norm_sq_eq_def_ax := by subst hhk1 hhk2; exact h.norm_sq_eq_def_ax
+  mul_im_I_ax := by subst hhk2; exact h.mul_im_I_ax
+  le_iff_re_im := by subst hhk2; exact h.le_iff_re_im
 
 /-- Given a normed field `𝕜` satisfying `IsRCLikeNormedField 𝕜`, build an associated `RCLike 𝕜`
 structure on `𝕜` which is definitionally compatible with the given normed field structure. -/
 @[implicit_reducible]
 noncomputable def IsRCLikeNormedField.rclike (𝕜 : Type*)
-    [hk : NormedField 𝕜] [h : IsRCLikeNormedField 𝕜] : RCLike 𝕜 := by
-  choose p hp using h.out
-  exact p.copy_of_normedField hk hp
+    [hk1 : NormMetric 𝕜] [hk2 : Field 𝕜] [h : IsRCLikeNormedField 𝕜] : RCLike 𝕜 := by
+  choose p hp1 hp2 using h.out
+  exact p.copy_of_normedField hk1 hk2 hp1 hp2
 
 end
 

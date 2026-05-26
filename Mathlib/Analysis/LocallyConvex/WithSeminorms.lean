@@ -1021,7 +1021,7 @@ theorem withSeminorms_iInf {κ : ι → Type*}
     (hp : ∀ i, WithSeminorms (topology := t i) (p i)) :
     WithSeminorms (topology := ⨅ i, t i) (SeminormFamily.sigma p) := by
   have : ∀ i, @IsTopologicalAddGroup E (t i) _ :=
-    fun i ↦ @WithSeminorms.topologicalAddGroup _ _ _ _ _ _ (t i) _ (hp i)
+    fun i ↦ @WithSeminorms.topologicalAddGroup _ _ _ _ _ _ _ _ (t i) _ (hp i)
   have : @IsTopologicalAddGroup E (⨅ i, t i) _ := topologicalAddGroup_iInf inferInstance
   simp_rw [@SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _ _ _ _ _ _ _ (_)] at hp ⊢
   rw [iInf_sigma]

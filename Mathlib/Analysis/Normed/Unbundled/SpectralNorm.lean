@@ -807,7 +807,7 @@ def algNormFromConst (h1 : (spectralAlgNorm K L).toRingSeminorm 1 ≤ 1) {x : L}
       have h : spectralNorm K L (algebraMap K L k) =
         seminormFromConst' x (spectralAlgNorm K L).toRingSeminorm (algebraMap K L k) := by
           rw [seminormFromConst_apply_of_isMul h1 hx' spectralAlgNorm_isPowMul h_mul]; rfl
-      rw [← @spectralNorm_extends K _ L _ _ k, Algebra.smul_def, h]
+      rw [← spectralNorm_extends (L := L) k, Algebra.smul_def, h]
       exact seminormFromConst_isMul_of_isMul h1 hx' spectralAlgNorm_isPowMul h_mul y }
 
 theorem algNormFromConst_def (h1 : (spectralAlgNorm K L).toRingSeminorm 1 ≤ 1) {x y : L}
@@ -877,25 +877,28 @@ lemma normMulClass :
   { norm_mul x y := by simp [‖·‖, ← spectralMulAlgNorm_def, map_mul] }
 
 /-- `L` with the spectral norm is a `NormedField`. -/
-@[implicit_reducible]
-def normedField : NormedField L :=
-  { (inferInstance : Field L) with
-    toNormMetric := normMetric K L
-    dist_eq := (isNormedAddGroup K L).dist_eq
+lemma isNormedField :
+    letI := normMetric K L
+    IsNormedField L :=
+  letI := normMetric K L
+  { dist_eq := (isNormedAddGroup K L).dist_eq
     norm_mul := (normMulClass K L).norm_mul }
 
 /-- `L` with the spectral norm is a `NontriviallyNormedField`. -/
-@[implicit_reducible]
-def nontriviallyNormedField : NontriviallyNormedField L where
-  __ := spectralNorm.normedField K L
-  non_trivial :=
-    let ⟨x, hx⟩ := NontriviallyNormedField.non_trivial (α := K)
-    ⟨algebraMap K L x, hx.trans_eq <| (spectralNorm_extends _).symm⟩
+lemma isNontriviallyNormedField :
+    letI := normMetric K L
+    IsNontriviallyNormedField L :=
+  letI := normMetric K L
+  { toIsNormedField := isNormedField K L
+    non_trivial :=
+      let ⟨x, hx⟩ := IsNontriviallyNormedField.non_trivial (α := K)
+      ⟨algebraMap K L x, hx.trans_eq <| (spectralNorm_extends _).symm⟩ }
 
 lemma isNormedRing :
     letI := normMetric K L
     IsNormedRing L :=
-  letI := normedField K L
+  letI := normMetric K L
+  haveI := isNormedField K L
   inferInstance
 
 /-- `L` with the spectral norm is a `NormedSpace` over `K`. -/
@@ -917,7 +920,8 @@ def normedAlgebra :
     letI := normMetric K L
     haveI := isNormedRing K L
     NormedAlgebra K L :=
-  letI _ := normedField K L
+  letI := normMetric K L
+  haveI := isNormedField K L
   { normedSpace K L, (inferInstance : Algebra K L) with }
 
 /-- `L` with the spectral norm is a `NormedAlgebra` over any intermediate `E`
@@ -928,7 +932,8 @@ def normedAlgebra' (E L : Type*) [Field L] [Algebra K L] [Algebra.IsAlgebraic K 
     letI := normMetric K L
     haveI := isNormedRing K L
     NormedAlgebra E L :=
-  letI _ := normedField K L
+  letI := normMetric K L
+  haveI := isNormedField K L
   letI _ := normedAlgebra K L
   letI _ := Algebra.IsAlgebraic.tower_bot K E L
   { (inferInstance : Algebra E L) with
@@ -940,7 +945,7 @@ def normedAlgebra' (E L : Type*) [Field L] [Algebra K L] [Algebra.IsAlgebraic K 
 
 /-- The metric space structure on `L` induced by the spectral norm. -/
 @[implicit_reducible]
-def metricSpace : MetricSpace L := (normedField K L).toMetricSpace
+def metricSpace : MetricSpace L := (normMetric K L).toMetricSpace
 
 /-- The uniform space structure on `L` induced by the spectral norm. -/
 @[implicit_reducible]
@@ -1010,9 +1015,9 @@ theorem spectralNorm_eq_norm_coeff_zero_rpow (x : L) :
     IsSplittingField.IsScalarTower.isAlgebraic E (mapAlg K L (minpoly K x))
   have : Algebra.IsAlgebraic K E := Algebra.IsAlgebraic.trans K L E
   rw [one_div, Real.eq_rpow_inv (spectralNorm_nonneg x) (norm_nonneg ((minpoly K x).coeff 0)),
-    Real.rpow_natCast, @spectralNorm.eq_of_tower K _ E,
-    ← @spectralNorm_extends K _ L _ _ ((minpoly K x).coeff 0),
-    @spectralNorm.eq_of_tower K _ E _ _ L, ← spectralMulAlgNorm_def,
+    Real.rpow_natCast, spectralNorm.eq_of_tower (L := E),
+    ← spectralNorm_extends (L := L) ((minpoly K x).coeff 0),
+    spectralNorm.eq_of_tower (L := E) (E := L), ← spectralMulAlgNorm_def,
     ← spectralMulAlgNorm_def, Polynomial.coeff_zero_of_isScalarTower,
     hspl.coeff_zero_eq_prod_roots_of_monic _, map_mul, map_pow,
     map_neg_eq_map, map_one, one_pow, one_mul, spectralNorm_pow_natDegree_eq_prod_roots _ _ x]

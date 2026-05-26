@@ -227,7 +227,7 @@ lemma one_div_sub_sq_sub_one_div_sq_hasFPowerSeriesOnBall_zero (w x : ℂ) (hw :
   · simpa only [sub_sub_sub_cancel_right, zero_add, sub_sq_comm w, zpow_neg, zpow_natCast, mul_comm]
       using (one_div_sub_sq_hasFPowerSeriesOnBall_zero
         (z := w - x) (by simp [sub_eq_zero, hw])).comp_sub x
-  · convert! hasFPowerSeriesOnBall_const.mono _ le_top
+  · convert! (hasFPowerSeriesOnBall_const (𝕜 := ℂ)).mono _ le_top
     · ext (_ | _) <;> simp [zpow_ofNat]
     · simpa [sub_eq_zero]
 

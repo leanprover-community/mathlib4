@@ -31,12 +31,15 @@ open NNReal
 
 section NormedField
 
-open scoped NormedField
+open scoped IsNormedField
 
 variable {K : Type*} [NormMetric K] [Field K] [IsNontriviallyNormedField K] [IsUltrametricDist K]
 
 @[simp]
-lemma NormedField.v_eq_valuation (x : K) : Valued.v x = NormedField.valuation x := rfl
+lemma IsNormedField.v_eq_valuation (x : K) : Valued.v x = IsNormedField.valuation x := rfl
+
+@[deprecated (since := "2026-05-26")]
+alias NormedField.v_eq_valuation := IsNormedField.v_eq_valuation
 
 namespace Valued.integer
 
@@ -47,19 +50,19 @@ namespace Valued.integer
 lemma mem_iff {x : K} : x ∈ 𝒪[K] ↔ ‖x‖ ≤ 1 := by
   simp [Valuation.mem_integer_iff, ← NNReal.coe_le_coe]
 
-lemma norm_le_one (x : 𝒪[K]) : ‖x‖ ≤ 1 := mem_iff.mp x.prop
+lemma norm_le_one (x : 𝒪[K]) : ‖x‖ ≤ 1 := (mem_iff (K := K)).mp x.prop
 
 @[simp]
 lemma norm_coe_unit (u : 𝒪[K]ˣ) : ‖((u : 𝒪[K]) : K)‖ = 1 := by
   simpa [← NNReal.coe_inj] using
-    (Valuation.integer.integers (NormedField.valuation (K := K))).valuation_unit u
+    (Valuation.integer.integers (IsNormedField.valuation (K := K))).valuation_unit u
 
 lemma norm_unit (u : 𝒪[K]ˣ) : ‖(u : 𝒪[K])‖ = 1 := by
   simp
 
 lemma isUnit_iff_norm_eq_one {u : 𝒪[K]} : IsUnit u ↔ ‖u‖ = 1 := by
   simpa [← NNReal.coe_inj] using
-    (Valuation.integer.integers (NormedField.valuation (K := K))).isUnit_iff_valuation_eq_one
+    (Valuation.integer.integers (IsNormedField.valuation (K := K))).isUnit_iff_valuation_eq_one
 
 lemma norm_irreducible_lt_one {ϖ : 𝒪[K]} (h : Irreducible ϖ) : ‖ϖ‖ < 1 :=
   Valuation.integer.v_irreducible_lt_one h
@@ -83,7 +86,7 @@ lemma _root_.Irreducible.maximalIdeal_pow_eq_closedBall_pow [IsDiscreteValuation
 
 variable (K) in
 lemma exists_norm_coe_lt_one : ∃ x : 𝒪[K], 0 < ‖(x : K)‖ ∧ ‖(x : K)‖ < 1 := by
-  obtain ⟨x, hx, hx'⟩ := NormedField.exists_norm_lt_one K
+  obtain ⟨x, hx, hx'⟩ := IsNormedField.exists_norm_lt_one K
   refine ⟨⟨x, hx'.le⟩, ?_⟩
   simpa [hx', Subtype.ext_iff] using hx
 
@@ -347,7 +350,7 @@ lemma properSpace_iff_completeSpace_and_isDiscreteValuationRing_integer_and_fini
       compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField,
       toNormedField.setOf_mem_integer_eq_closedBall,
       completeSpace_iff_isComplete_univ (α := 𝒪[K]), Subtype.isComplete_iff,
-      NormedField.completeSpace_iff_isComplete_closedBall, Set.image_univ,
+      IsNormedField.completeSpace_iff_isComplete_closedBall, Set.image_univ,
       Subtype.range_coe_subtype]
 
 end Valued.integer

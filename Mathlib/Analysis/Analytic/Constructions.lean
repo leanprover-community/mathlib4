@@ -830,7 +830,7 @@ analytic at any unit. -/
 lemma analyticAt_inverse [HasSummableGeomSeries A] (z : Aˣ) :
     AnalyticAt 𝕜 Ring.inverse (z : A) := by
   rcases subsingleton_or_nontrivial A with hA | hA
-  · convert! analyticAt_const (v := (0 : A))
+  · convert! analyticAt_const (𝕜 := 𝕜) (v := (0 : A))
   · let f1 : A → A := fun a ↦ a * z.inv
     let f2 : A → A := fun b ↦ (1 - b)⁻¹ʳ
     let f3 : A → A := fun c ↦ 1 - z.inv * c

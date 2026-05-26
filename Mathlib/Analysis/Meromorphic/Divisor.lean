@@ -180,7 +180,7 @@ The divisor of a constant function is `0`.
 -/
 @[simp] theorem divisor_ofNat (n : ℕ) :
     divisor (ofNat(n) : 𝕜 → 𝕜) U = 0 := by
-  convert! divisor_const (n : 𝕜)
+  convert! divisor_const (𝕜 := 𝕜) (n : 𝕜)
   simp [Semiring.toGrindSemiring_ofNat 𝕜 n]
 
 /-!

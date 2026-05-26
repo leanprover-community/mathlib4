@@ -224,17 +224,17 @@ lemma NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop {m : ℤ} (hm : m < 0) :
 
 end NormedDivisionRing
 
-namespace NormedField
+namespace IsNormedField
 
 /-- A normed field is either nontrivially normed or has a discrete topology.
 In the discrete topology case, all the norms are 1, by `norm_eq_one_iff_ne_zero_of_discrete`.
 The nontrivially normed field instance is provided by a subtype with a proof that the
 forgetful inheritance to the existing `NormedField` instance is definitionally true.
 This allows one to have the new `NontriviallyNormedField` instance without data clashes. -/
-lemma discreteTopology_or_nontriviallyNormedField (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [h : IsNormedField 𝕜] :
-    DiscreteTopology 𝕜 ∨ Nonempty ({h' : NontriviallyNormedField 𝕜 // h'.toNormedField = h}) := by
+lemma discreteTopology_or_nontriviallyNormedField (𝕜 : Type*) [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] :
+    DiscreteTopology 𝕜 ∨ IsNontriviallyNormedField 𝕜 := by
   by_cases H : ∃ x : 𝕜, x ≠ 0 ∧ ‖x‖ ≠ 1
-  · exact Or.inr ⟨(⟨NontriviallyNormedField.ofNormNeOne H, rfl⟩)⟩
+  · exact Or.inr (.ofNormNeOne H)
   · simp_rw [discreteTopology_iff_isOpen_singleton_zero, Metric.isOpen_singleton_iff, dist_eq_norm,
              sub_zero]
     refine Or.inl ⟨1, zero_lt_one, ?_⟩
@@ -246,10 +246,10 @@ lemma discreteTopology_or_nontriviallyNormedField (𝕜 : Type*) [NormMetric �
 lemma discreteTopology_of_bddAbove_range_norm {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜]
     (h : BddAbove (Set.range fun k : 𝕜 ↦ ‖k‖)) :
     DiscreteTopology 𝕜 := by
-  refine (NormedField.discreteTopology_or_nontriviallyNormedField _).resolve_right ?_
-  rintro ⟨_, rfl⟩
+  refine (IsNormedField.discreteTopology_or_nontriviallyNormedField _).resolve_right ?_
+  intro _
   obtain ⟨x, h⟩ := h
-  obtain ⟨k, hk⟩ := NormedField.exists_lt_norm 𝕜 x
+  obtain ⟨k, hk⟩ := IsNormedField.exists_lt_norm 𝕜 x
   exact hk.not_ge (h (Set.mem_range_self k))
 
 section Densely
@@ -258,7 +258,7 @@ variable (α) [NormMetric α] [Field α] [IsDenselyNormedField α]
 
 theorem denseRange_nnnorm : DenseRange (nnnorm : α → ℝ≥0) :=
   dense_of_exists_between fun _ _ hr =>
-    let ⟨x, h⟩ := exists_lt_nnnorm_lt α hr
+    let ⟨x, h⟩ := IsNormedField.exists_lt_nnnorm_lt α hr
     ⟨‖x‖₊, ⟨x, rfl⟩, h⟩
 
 end Densely
@@ -276,34 +276,46 @@ protected lemma continuousAt_zpow : ContinuousAt (fun x ↦ x ^ n) x ↔ x ≠ 0
 
 @[simp]
 protected lemma continuousAt_inv : ContinuousAt Inv.inv x ↔ x ≠ 0 := by
-  simpa using NormedField.continuousAt_zpow (n := -1) (x := x)
+  simpa using IsNormedField.continuousAt_zpow (n := -1) (x := x)
 
 end NontriviallyNormedField
+end IsNormedField
+
+namespace NormedField
+
+open IsNormedField
+
+@[deprecated (since := "2026-05-26")]
+alias discreteTopology_or_nontriviallyNormedField := discreteTopology_or_nontriviallyNormedField
+@[deprecated (since := "2026-05-26")]
+alias discreteTopology_of_bddAbove_range_norm := discreteTopology_of_bddAbove_range_norm
+@[deprecated (since := "2026-05-26")] alias denseRange_nnnorm := denseRange_nnnorm
+@[deprecated (since := "2026-05-26")] alias continuousAt_zpow := continuousAt_zpow
+@[deprecated (since := "2026-05-26")] alias continuousAt_inv := continuousAt_inv
+
 end NormedField
 
-instance Rat.instNormedField : NormedField ℚ where
-  __ := instField
-  __ := instIsNormedAddGroup
+instance Rat.instIsNormedField : IsNormedField ℚ where
   norm_mul a b := by simp only [norm, Rat.cast_mul, abs_mul]
 
-instance Rat.instDenselyNormedField : DenselyNormedField ℚ where
+instance Rat.instIsDenselyNormedField : IsDenselyNormedField ℚ where
   lt_norm_lt r₁ r₂ h₀ hr :=
     let ⟨q, h⟩ := exists_rat_btwn hr
     ⟨q, by rwa [← Rat.norm_cast_real, Real.norm_eq_abs, abs_of_pos (h₀.trans_lt h.1)]⟩
 
 section Complete
 
-lemma NormedField.completeSpace_iff_isComplete_closedBall {K : Type*} [NormMetric K] [Field K] [IsNormedField K] :
+lemma IsNormedField.completeSpace_iff_isComplete_closedBall {K : Type*} [NormMetric K] [Field K] [IsNormedField K] :
     CompleteSpace K ↔ IsComplete (Metric.closedBall 0 1 : Set K) := by
   constructor <;> intro h
   · exact Metric.isClosed_closedBall.isComplete
-  rcases NormedField.discreteTopology_or_nontriviallyNormedField K with _ | ⟨_, rfl⟩
+  rcases IsNormedField.discreteTopology_or_nontriviallyNormedField K with _ | _
   · rwa [completeSpace_iff_isComplete_univ,
          ← NormedDivisionRing.unitClosedBall_eq_univ_of_discrete]
   refine Metric.complete_of_cauchySeq_tendsto fun u hu ↦ ?_
   obtain ⟨k, hk⟩ := hu.norm_bddAbove
   have kpos : 0 ≤ k := (_root_.norm_nonneg (u 0)).trans (hk (by simp))
-  obtain ⟨x, hx⟩ := NormedField.exists_lt_norm K k
+  obtain ⟨x, hx⟩ := IsNormedField.exists_lt_norm K k
   have hu' : CauchySeq ((· / x) ∘ u) := (uniformContinuous_div_const' x).comp_cauchySeq hu
   have hb : ∀ n, ((· / x) ∘ u) n ∈ Metric.closedBall 0 1 := by
     intro
@@ -316,5 +328,9 @@ lemma NormedField.completeSpace_iff_isComplete_closedBall {K : Type*} [NormMetri
     contrapose! hx
     simp [hx, kpos]
   simp [div_mul_cancel₀ _ hx']
+
+@[deprecated (since := "2026-05-26")]
+alias NormedField.completeSpace_iff_isComplete_closedBall :=
+  IsNormedField.completeSpace_iff_isComplete_closedBall
 
 end Complete

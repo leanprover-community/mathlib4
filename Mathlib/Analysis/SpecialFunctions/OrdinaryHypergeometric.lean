@@ -199,7 +199,7 @@ are non-positive integers. -/
 theorem ordinaryHypergeometricSeries_radius_eq_one
     (habc : ∀ kn : ℕ, ↑kn ≠ -a ∧ ↑kn ≠ -b ∧ ↑kn ≠ -c) :
     (ordinaryHypergeometricSeries 𝔸 a b c).radius = 1 := by
-  convert! ofScalars_radius_eq_of_tendsto 𝔸 _ one_ne_zero ?_
+  convert! ofScalars_radius_eq_of_tendsto (𝕜 := 𝕂) 𝔸 _ one_ne_zero ?_
   suffices Tendsto (fun k : ℕ ↦ (a + k)⁻¹ * (b + k)⁻¹ * (c + k) * ((1 : 𝕂) + k)) atTop (𝓝 1) by
     simp_rw [ordinaryHypergeometricSeries_norm_div_succ_norm a b c _ (fun n _ ↦ habc n)]
     simp only [← norm_inv, ← norm_mul, NNReal.coe_one]

@@ -60,7 +60,7 @@ theorem hasDerivWithinAt_inv (x_ne_zero : x ≠ 0) (s : Set 𝕜) :
   (hasDerivAt_inv x_ne_zero).hasDerivWithinAt
 
 theorem differentiableAt_inv_iff : DifferentiableAt 𝕜 (fun x => x⁻¹) x ↔ x ≠ 0 :=
-  ⟨fun H => NormedField.continuousAt_inv.1 H.continuousAt, fun H =>
+  ⟨fun H => IsNormedField.continuousAt_inv.1 H.continuousAt, fun H =>
     (hasDerivAt_inv H).differentiableAt⟩
 
 theorem deriv_inv : deriv (fun x => x⁻¹) x = -(x ^ 2)⁻¹ := by

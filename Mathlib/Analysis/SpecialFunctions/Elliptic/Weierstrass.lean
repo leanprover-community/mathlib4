@@ -313,7 +313,7 @@ lemma not_continuousAt_weierstrassP (x : ℂ) (hx : x ∈ L.lattice) : ¬ Contin
   eta_expand
   simp_rw [← L.weierstrassPExcept_add ⟨x, hx⟩]
   intro H
-  apply (NormedField.continuousAt_zpow (n := -2) (x := (0 : ℂ))).not.mpr (by simp)
+  apply (IsNormedField.continuousAt_zpow (n := -2) (x := (0 : ℂ))).not.mpr (by simp)
   simpa [Function.comp_def] using
     (((H.sub ((L.differentiableOn_weierstrassPExcept x).differentiableAt
       (L.compl_lattice_diff_singleton_mem_nhds x)).continuousAt).add

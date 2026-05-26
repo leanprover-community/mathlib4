@@ -87,9 +87,8 @@ instance [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜] [NormPseudoMetric A
   norm_smul_le := norm_smul_le
 
 instance [NormMetric A] [Field A] [IsNormedField A] [CompletableTopField A] :
-    NormedField (UniformSpace.Completion A) where
+    IsNormedField (UniformSpace.Completion A) where
   __ : IsNormedRing (Completion A) := inferInstance
-  __ : Field (Completion A) := inferInstance
   norm_mul x y := induction_on₂ x y (isClosed_eq (by fun_prop) (by fun_prop)) (by simp [← coe_mul])
 
 end Algebra

@@ -86,7 +86,7 @@ theorem norm_star (a : ℍ) : ‖star a‖ = ‖a‖ := by
 theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_star a
 
-instance : NormedDivisionRing ℍ where
+instance : IsNormedField ℍ where
   dist_eq _ _ := rfl
   norm_mul _ _ := by simp_rw [norm_eq_sqrt_real_inner, inner_self]; simp
 

@@ -156,8 +156,12 @@ lemma rankOne_hom'_def :
       (valueGroup₀_equiv_withZeroMulInt Valued.v).toMonoidWithZeroHom := rfl
 
 /-- The `v`-adic completion of `K` is a normed field. -/
-noncomputable instance instNormedFieldValuedAdicCompletion : NormedField (adicCompletion K v) :=
-  Valued.toNormedField (adicCompletion K v) ℤᵐ⁰
+noncomputable instance instNormMetricValuedAdicCompletion : NormMetric (adicCompletion K v) :=
+  Valued.toNormMetric (adicCompletion K v) ℤᵐ⁰
+
+/-- The `v`-adic completion of `K` is a normed field. -/
+instance instIsNormedFieldValuedAdicCompletion : IsNormedField (adicCompletion K v) :=
+  Valued.toIsNormedField (adicCompletion K v) ℤᵐ⁰
 
 lemma toNNReal_valued_eq_adicAbv (x : WithVal (v.valuation K)) :
     toNNReal (absNorm_ne_zero v) (Valued.v x) = adicAbv K v (WithVal.equiv _ x) := rfl
@@ -190,7 +194,7 @@ alias NumberField.RingOfIntegers.HeightOneSpectrum.isNonarchimedean_adicAbv :=
 @[deprecated (since := "2026-03-11")]
 alias NumberField.instRankOneAdicCompletion := instRankOneAdicCompletion
 @[deprecated (since := "2026-03-11")]
-alias NumberField.instNormedFieldValuedAdicCompletion := instNormedFieldValuedAdicCompletion
+alias NumberField.instNormedFieldValuedAdicCompletion := instIsNormedFieldValuedAdicCompletion
 @[deprecated (since := "2026-03-11")]
 alias NumberField.rankOne_hom'_def := rankOne_hom'_def
 @[deprecated (since := "2026-03-11")]

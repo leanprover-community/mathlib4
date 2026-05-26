@@ -36,9 +36,10 @@ variable [Field R] {T : Type*} [Field T] (v : AbsoluteValue R S)
 
 instance : Field (WithAbs v) := fast_instance% (equiv v).field
 
-noncomputable instance normedField (v : AbsoluteValue R ℝ) : NormedField (WithAbs v) :=
-  letI := v.toNormedField
-  fast_instance% (equiv v).normedField
+instance instIsNormedField (v : AbsoluteValue R ℝ) : IsNormedField (WithAbs v) :=
+  letI := v.toNormMetric
+  haveI := v.toIsNormedField
+  (equiv v).isNormedField
 
 instance [Module R T] [FiniteDimensional R T] :
     FiniteDimensional (WithAbs v) T :=
@@ -102,7 +103,7 @@ induced by `f`. -/
 @[deprecated "Use `Isometry.dist_eq` in combination with `AddMonoidHomClass.isometry_of_norm`"
   (since := "2025-11-28")]
 theorem pseudoMetricSpace_induced_of_comp (h : ∀ x, ‖f x‖ = v x.ofAbs) :
-    PseudoMetricSpace.induced f inferInstance = (normedField v).toPseudoMetricSpace := by
+    PseudoMetricSpace.induced f inferInstance = (instNormMetric v).toPseudoMetricSpace := by
   ext; exact AddMonoidHomClass.isometry_of_norm _ h |>.dist_eq _ _
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
@@ -111,7 +112,7 @@ induced by `f`. -/
 @[deprecated "Use `IsUniformInducing.comap_uniformSpace in combination` with
   AddMonoidHomClass.isometry_of_norm" (since := "2025-11-28")]
 theorem uniformSpace_comap_eq_of_comp (h : ∀ x, ‖f x‖ = v x.ofAbs) :
-    UniformSpace.comap f inferInstance = (normedField v).toUniformSpace :=
+    UniformSpace.comap f inferInstance = (instNormMetric v).toUniformSpace :=
   IsUniformInducing.comap_uniformSpace
     (AddMonoidHomClass.isometry_of_norm _ h).isUniformInducing
 

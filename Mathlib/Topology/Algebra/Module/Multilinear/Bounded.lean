@@ -51,7 +51,7 @@ theorem image_multilinear' [Nonempty ι] {s : Set (∀ i, E i)} (hs : IsVonNBoun
   if h₁ : ∀ c : 𝕜, ‖c‖ ≤ 1 then
     exact absorbs_iff_norm.2 ⟨2, fun c hc ↦ by linarith [h₁ c]⟩
   else
-    let _ : NontriviallyNormedField 𝕜 := ⟨by simpa using h₁⟩
+    let _ : IsNontriviallyNormedField 𝕜 := ⟨by simpa using h₁⟩
     obtain ⟨I, t, ht₀, hft⟩ :
         ∃ (I : Finset ι) (t : ∀ i, Set (E i)), (∀ i, t i ∈ 𝓝 0) ∧ Set.pi I t ⊆ f ⁻¹' V := by
       have hfV : f ⁻¹' V ∈ 𝓝 0 := (map_continuous f).tendsto' _ _ f.map_zero hV
@@ -60,7 +60,7 @@ theorem image_multilinear' [Nonempty ι] {s : Set (∀ i, E i)} (hs : IsVonNBoun
       rw [isVonNBounded_pi_iff] at hs
       have := (hs i).tendsto_smallSets_nhds.eventually (mem_lift' (ht₀ i))
       rcases NormedAddGroup.nhds_zero_basis_norm_lt.eventually_iff.1 this with ⟨r, hr₀, hr⟩
-      rcases NormedField.exists_norm_lt 𝕜 hr₀ with ⟨c, hc₀, hc⟩
+      rcases IsNormedField.exists_norm_lt 𝕜 hr₀ with ⟨c, hc₀, hc⟩
       refine ⟨c, norm_pos_iff.1 hc₀, fun c' hle x hx ↦ ?_⟩
       exact hr (hle.trans_lt hc) ⟨_, ⟨x, hx, rfl⟩, rfl⟩
     choose c hc₀ hc using this

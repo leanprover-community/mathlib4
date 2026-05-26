@@ -51,7 +51,8 @@ theorem IsAlgClosed.of_denseRange {K L : Type*} [Field K] [NormMetric L] [Field 
   intro f fmon firr
   have fnatdeg0 : f.natDegree ≠ 0 := (Irreducible.natDegree_pos firr).ne'
   let F := f.SplittingField
-  letI : NormedField F := spectralNorm.normedField L F
+  let : NormMetric F := spectralNorm.normMetric L F
+  have : IsNontriviallyNormedField F := spectralNorm.isNontriviallyNormedField L F
   letI : NormedAlgebra L F := spectralNorm.normedAlgebra L F
   let a := rootOfSplits (SplittingField.splits f)
       (by simpa using degree_ne_of_natDegree_ne fnatdeg0)

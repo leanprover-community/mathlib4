@@ -64,7 +64,11 @@ theorem coe_eq : (Coe.coe : ℚ_[p] → PadicAlgCl p) = algebraMap ℚ_[p] (Padi
 
 /-- `PadicAlgCl p` is a normed field, where the norm is the `p`-adic norm, that is, the
 spectral norm induced by the `p`-adic norm on `ℚ_[p]`. -/
-instance normedField : NormedField (PadicAlgCl p) := spectralNorm.normedField ℚ_[p] (PadicAlgCl p)
+instance : NormMetric (PadicAlgCl p) := spectralNorm.normMetric ℚ_[p] (PadicAlgCl p)
+
+/-- `PadicAlgCl p` is a normed field, where the norm is the `p`-adic norm, that is, the
+spectral norm induced by the `p`-adic norm on `ℚ_[p]`. -/
+instance : IsNormedField (PadicAlgCl p) := spectralNorm.isNormedField ℚ_[p] (PadicAlgCl p)
 
 /-- The norm on `PadicAlgCl p` is nonarchimedean. -/
 theorem isNonarchimedean : IsNonarchimedean (norm : PadicAlgCl p → ℝ) :=
@@ -86,7 +90,7 @@ instance isUltrametricDist : IsUltrametricDist (PadicAlgCl p) :=
   IsUltrametricDist.isUltrametricDist_of_forall_norm_add_le_max_norm (PadicAlgCl.isNonarchimedean p)
 
 /-- `PadicAlgCl p` is a valued field, with the valuation corresponding to the `p`-adic norm. -/
-instance valued : Valued (PadicAlgCl p) ℝ≥0 := NormedField.toValued
+instance valued : Valued (PadicAlgCl p) ℝ≥0 := IsNormedField.toValued
 
 /-- The valuation of `x : PadicAlgCl p` agrees with its `ℝ≥0`-valued norm. -/
 theorem valuation_def (x : PadicAlgCl p) : Valued.v x = ‖x‖₊ := rfl
@@ -119,9 +123,9 @@ instance : UniformContinuousConstSMul ℚ_[p] (PadicAlgCl p) :=
   uniformContinuousConstSMul_of_continuousConstSMul ℚ_[p] (PadicAlgCl p)
 
 /-- The norm on `PadicAlgCl p` is nontrivial. -/
-instance nontriviallyNormedField : NontriviallyNormedField (PadicAlgCl p) where
+instance : IsNontriviallyNormedField (PadicAlgCl p) where
   non_trivial := by
-    choose x hx using NontriviallyNormedField.non_trivial (α := ℚ_[p])
+    choose x hx using IsNontriviallyNormedField.non_trivial (α := ℚ_[p])
     use x
     rw [PadicAlgCl.norm_extends]
     exact hx
@@ -181,7 +185,10 @@ instance : RankOne (PadicComplex.valued p).v where
 theorem RankOne.hom_eq_embedding : RankOne.hom (PadicComplex.valued p).v = embedding := rfl
 
 /-- `ℂ_[p]` is a normed field, where the norm extends from `PadicAlgCl` along completion. -/
-instance normedField : NormedField ℂ_[p] := inferInstance
+instance : NormMetric ℂ_[p] := inferInstance
+
+/-- `ℂ_[p]` is a normed field, where the norm extends from `PadicAlgCl` along completion. -/
+instance : IsNormedField ℂ_[p] := inferInstance
 
 -- Ensure that the norm instance on `ℂ_[p]` is extended from `PadicAlgCl p`.
 example : (‖·‖ : ℂ_[p] → ℝ) = (UniformSpace.Completion.instNorm (PadicAlgCl p)).norm := by
@@ -206,9 +213,8 @@ theorem isNonarchimedean : IsNonarchimedean (Norm.norm : ℂ_[p] → ℝ) :=
 theorem norm_eq_norm' : (‖·‖ : ℂ_[p] → ℝ) = Valued.v.norm := by
   apply UniformSpace.Completion.extension_unique (f := @norm (PadicAlgCl p) _) (g := Valued.v.norm)
   · exact uniformContinuous_norm
-  · letI := (Valued.toNormedField ℂ_[p] NNReal).toNormMetric
-    letI := (Valued.toNormedField ℂ_[p] NNReal).toNormedDivisionRing.toIsNormedRing
-      |>.toIsNormedAddGroup
+  · let := Valued.toNormMetric ℂ_[p] NNReal
+    have := Valued.toIsNormedField ℂ_[p] NNReal
     exact uniformContinuous_norm
   · intro x
     simp [Valued.v.norm_def, restrict_def]
@@ -229,9 +235,9 @@ theorem nnnorm_extends' (x : ℚ_[p]) : ‖(x : ℂ_[p])‖₊ = ‖x‖₊ := b
   simp
 
 /-- The norm on `ℂ_[p]` is nontrivial. -/
-instance nontriviallyNormedField : NontriviallyNormedField ℂ_[p] where
+instance : IsNontriviallyNormedField ℂ_[p] where
   non_trivial := by
-    choose x hx using NontriviallyNormedField.non_trivial (α := ℚ_[p])
+    choose x hx using IsNontriviallyNormedField.non_trivial (α := ℚ_[p])
     use x
     simpa only [norm_extends']
 

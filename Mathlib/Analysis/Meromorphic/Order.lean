@@ -370,7 +370,7 @@ The order of a constant function is `⊤` if the constant is zero and `0` otherw
 /-- The order of `(· - x) ^ n` at `x` is `n`. -/
 @[simp, to_fun] theorem meromorphicOrderAt_pow_id_sub_const {n : ℕ} :
     meromorphicOrderAt ((· - x) ^ n) x = n := by
-  convert! meromorphicOrderAt_zpow_id_sub_const
+  convert! meromorphicOrderAt_zpow_id_sub_const (𝕜 := 𝕜)
   simp only [zpow_natCast]
 
 /-- The order of `· - x` at `x` is `1`. -/

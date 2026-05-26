@@ -197,7 +197,7 @@ instance (priority := 100) IsDenselyNormedField.toIsNontriviallyNormedField
 
 end NormedField
 
-namespace NormedField
+namespace IsNormedField
 
 section Nontrivially
 
@@ -283,6 +283,32 @@ instance denselyOrdered_range_nnnorm : DenselyOrdered (Set.range (nnnorm : α �
 
 end Densely
 
+end IsNormedField
+
+namespace NormedField
+
+open IsNormedField
+
+@[deprecated (since := "2026-05-26")] alias exists_one_lt_norm := exists_one_lt_norm
+@[deprecated (since := "2026-05-26")] alias exists_one_lt_nnnorm := exists_one_lt_nnnorm
+@[deprecated (since := "2026-05-26")] alias exists_one_lt_enorm := exists_one_lt_enorm
+@[deprecated (since := "2026-05-26")] alias exists_lt_norm := exists_lt_norm
+@[deprecated (since := "2026-05-26")] alias exists_lt_nnnorm := exists_lt_nnnorm
+@[deprecated (since := "2026-05-26")] alias exists_lt_enorm := exists_lt_enorm
+@[deprecated (since := "2026-05-26")] alias exists_norm_lt := exists_norm_lt
+@[deprecated (since := "2026-05-26")] alias exists_nnnorm_lt := exists_nnnorm_lt
+@[deprecated (since := "2026-05-26")] alias exists_enorm_lt := IsNormedField.exists_enorm_lt
+@[deprecated (since := "2026-05-26")] alias exists_norm_lt_one := exists_norm_lt_one
+@[deprecated (since := "2026-05-26")] alias exists_nnnorm_lt_one := exists_nnnorm_lt_one
+@[deprecated (since := "2026-05-26")] alias exists_enorm_lt_one := exists_enorm_lt_one
+@[deprecated (since := "2026-05-26")] alias nhdsNE_neBot := nhdsNE_neBot
+@[deprecated (since := "2026-05-26")] alias nhdsWithin_isUnit_neBot := nhdsWithin_isUnit_neBot
+@[deprecated (since := "2026-05-26")] alias exists_lt_norm_lt := exists_lt_norm_lt
+@[deprecated (since := "2026-05-26")] alias exists_lt_nnnorm_lt := exists_lt_nnnorm_lt
+@[deprecated (since := "2026-05-26")] alias denselyOrdered_range_norm := denselyOrdered_range_norm
+@[deprecated (since := "2026-05-26")]
+alias denselyOrdered_range_nnnorm := denselyOrdered_range_nnnorm
+
 end NormedField
 
 /-- A normed field is nontrivially normed
@@ -297,6 +323,9 @@ def IsNontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [NormMetric 𝕜] [Fiel
       rw [norm_inv]
       exact (one_lt_inv₀ (norm_pos_iff.2 hx)).2 hlt
     · exact ⟨x, hlt⟩
+
+@[deprecated (since := "2026-05-26")]
+alias NontriviallyNormedField.ofNormNeOne := IsNontriviallyNormedField.ofNormNeOne
 
 instance Real.isNormedField : IsNormedField ℝ where
   norm_mul := abs_mul
