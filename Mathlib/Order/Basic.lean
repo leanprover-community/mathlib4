@@ -13,6 +13,7 @@ public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.SimpRw
 public import Mathlib.Tactic.GCongr.Core
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Basic definitions about `≤` and `<`
@@ -527,7 +528,7 @@ theorem compl_gt [LinearOrder α] : (· > · : α → α → _)ᶜ = (· ≤ ·)
 theorem compl_ge [LinearOrder α] : (· ≥ · : α → α → _)ᶜ = (· < ·) := by simp [compl]
 
 instance Ne.instIsEquiv_compl : IsEquiv α (· ≠ ·)ᶜ := by
-  convert eq_isEquiv α
+  convert! eq_isEquiv α
   simp [compl]
 
 /-! ### Order instances on the function space -/
@@ -834,10 +835,10 @@ theorem coe_lt_coe [LT α] {p : α → Prop} {x y : Subtype p} : (x : α) < y �
   Iff.rfl
 
 instance preorder [Preorder α] (p : α → Prop) : Preorder (Subtype p) :=
-  Preorder.lift (fun (a : Subtype p) ↦ (a : α))
+  fast_instance% Preorder.lift (fun (a : Subtype p) ↦ (a : α))
 
 instance partialOrder [PartialOrder α] (p : α → Prop) : PartialOrder (Subtype p) :=
-  PartialOrder.lift (fun (a : Subtype p) ↦ (a : α)) Subtype.coe_injective
+  fast_instance% PartialOrder.lift (fun (a : Subtype p) ↦ (a : α)) Subtype.coe_injective
 
 instance decidableLE [Preorder α] [h : DecidableLE α] {p : α → Prop} :
     DecidableLE (Subtype p) := fun a b ↦ h a b
@@ -849,7 +850,7 @@ instance decidableLT [Preorder α] [h : DecidableLT α] {p : α → Prop} :
 equality and decidable order in order to ensure the decidability instances are all definitionally
 equal. -/
 instance instLinearOrder [LinearOrder α] (p : α → Prop) : LinearOrder (Subtype p) :=
-  @LinearOrder.lift (Subtype p) _ _ ⟨fun x y ↦ ⟨max x y, max_rec' _ x.2 y.2⟩⟩
+  fast_instance% @LinearOrder.lift (Subtype p) _ _ ⟨fun x y ↦ ⟨max x y, max_rec' _ x.2 y.2⟩⟩
     ⟨fun x y ↦ ⟨min x y, min_rec' _ x.2 y.2⟩⟩ (fun (a : Subtype p) ↦ (a : α))
     Subtype.coe_injective (fun _ _ ↦ rfl) fun _ _ ↦
     rfl
@@ -1099,23 +1100,3 @@ instance Prop.partialOrder : PartialOrder Prop where
   le_antisymm _ _ Hab Hba := propext ⟨Hab, Hba⟩
 
 end «Prop»
-
-/-- Type synonym to create an instance of `LinearOrder` from a `PartialOrder` and `IsTotal α (≤)`.
-
-**Do not use this**: instead, build a `LinearOrder` instance directly. -/
-@[deprecated "build a `LinearOrder` instance directly instead" (since := "2025-10-28")]
-def AsLinearOrder (α : Type*) :=
-  α
-
-set_option linter.deprecated false in
-@[deprecated "`AsLinearOrder` is deprecated" (since := "2025-10-28")]
-instance [Inhabited α] : Inhabited (AsLinearOrder α) :=
-  ⟨(default : α)⟩
-
-set_option linter.deprecated false in
-@[deprecated "`AsLinearOrder` is deprecated" (since := "2025-10-28")]
-noncomputable instance AsLinearOrder.linearOrder [PartialOrder α] [IsTotal α (· ≤ ·)] :
-    LinearOrder (AsLinearOrder α) where
-  __ := (inferInstance : PartialOrder α)
-  le_total := @total_of α (· ≤ ·) _
-  toDecidableLE := Classical.decRel _

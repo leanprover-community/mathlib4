@@ -170,7 +170,7 @@ theorem sInf_toSubfield (S : Set (IntermediateField F E)) :
 @[simp]
 theorem sSup_toSubfield (S : Set (IntermediateField F E)) (hS : S.Nonempty) :
     (sSup S).toSubfield = sSup (toSubfield '' S) := by
-  have h : toSubfield '' S = Subfield.closure '' (SetLike.coe '' S) := by
+  have h : toSubfield '' S = Subfield.closure '' SetLike.coe '' S := by
     rw [Set.image_image]
     congr! with x
     exact x.toSubfield.closure_eq.symm
@@ -496,9 +496,9 @@ theorem adjoin_algHom_ext {s : Set E} ⦃φ₁ φ₂ : adjoin F s →ₐ[F] K⦄
     (h : ∀ x hx, φ₁ ⟨x, subset_adjoin _ _ hx⟩ = φ₂ ⟨x, subset_adjoin _ _ hx⟩) :
     φ₁ = φ₂ :=
   AlgHom.ext fun ⟨x, hx⟩ ↦ adjoin_induction _ h (fun _ ↦ φ₂.commutes _ ▸ φ₁.commutes _)
-    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
+    (fun _ _ _ _ h₁ h₂ ↦ by convert! congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
     (fun _ _ ↦ eq_on_inv₀ _ _)
-    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl)
+    (fun _ _ _ _ h₁ h₂ ↦ by convert! congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl)
     hx
 
 theorem algHom_ext_of_eq_adjoin {S : IntermediateField F E} {s : Set E} (hS : S = adjoin F s)
