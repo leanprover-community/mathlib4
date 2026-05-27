@@ -295,6 +295,8 @@ lemma continuousOn_termTSum : ContinuousOn termTSum (Ici 1) := by
     refine setIntegral_nonneg measurableSet_Ioc (fun x hx ↦ div_nonneg ?_ (rpow_nonneg ?_ _))
     all_goals linarith [hx.1]
 
+@[deprecated (since := "2026-05-27")] alias continuousOn_term_tsum := continuousOn_termTSum
+
 /-- First version of the limit formula, with a limit over real numbers tending to 1 from above. -/
 lemma tendsto_riemannZeta_sub_one_div_nhds_right :
     Tendsto (fun s : ℝ ↦ riemannZeta s - 1 / (s - 1)) (𝓝[>] 1) (𝓝 γ) := by
