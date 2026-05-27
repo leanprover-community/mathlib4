@@ -129,11 +129,11 @@ protected theorem Reachable.map {u v : V} {G : SimpleGraph V} {G' : SimpleGraph 
     (h : G.Reachable u v) : G'.Reachable (f u) (f v) :=
   h.elim fun p => ⟨p.map f⟩
 
-@[mono]
+@[gcongr, mono]
 protected lemma Reachable.mono {u v : V} {G G' : SimpleGraph V}
     (h : G ≤ G') (Guv : G.Reachable u v) : G'.Reachable u v := Guv.map (.ofLE h)
 
-@[mono]
+@[gcongr, mono]
 theorem Reachable.mono' {G G' : SimpleGraph V} (h : G ≤ G') : G.Reachable ≤ G'.Reachable :=
   fun _ _ ↦ Reachable.mono h
 
@@ -230,7 +230,7 @@ theorem Preconnected.map {G : SimpleGraph V} {H : SimpleGraph V'} (f : G →g H)
     (hG : G.Preconnected) : H.Preconnected :=
   hf.forall₂.2 fun _ _ => Nonempty.map (Walk.map _) <| hG _ _
 
-@[mono]
+@[gcongr, mono]
 protected lemma Preconnected.mono {G G' : SimpleGraph V} (h : G ≤ G') (hG : G.Preconnected) :
     G'.Preconnected := fun u v => (hG u v).mono h
 
@@ -238,7 +238,7 @@ lemma preconnected_iff_reachable_eq_top : G.Preconnected ↔ G.Reachable = ⊤ :
   aesop (add simp Preconnected)
 
 lemma preconnected_bot_iff_subsingleton : (⊥ : SimpleGraph V).Preconnected ↔ Subsingleton V := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by simpa [subsingleton_iff, ← reachable_bot] using h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [Preconnected]⟩
   contrapose! h
   simp [nontrivial_iff.mp h, Preconnected, reachable_bot]
 
@@ -329,7 +329,7 @@ theorem Connected.map {G : SimpleGraph V} {H : SimpleGraph V'} (f : G →g H) (h
   haveI := hG.nonempty.map f
   ⟨hG.preconnected.map f hf⟩
 
-@[mono]
+@[gcongr, mono]
 protected lemma Connected.mono {G G' : SimpleGraph V} (h : G ≤ G')
     (hG : G.Connected) : G'.Connected where
   preconnected := hG.preconnected.mono h
@@ -709,7 +709,7 @@ def homOfConnectedComponents (G : SimpleGraph V) {H : SimpleGraph V'}
   map_rel' := fun hab ↦ by
     have h : (G.connectedComponentMk _).toSimpleGraph.Adj ⟨_, rfl⟩
         ⟨_, ((G.connectedComponentMk _).mem_supp_congr_adj hab).1 rfl⟩ := by simpa using hab
-    convert (C (G.connectedComponentMk _)).map_rel h using 3 <;>
+    convert! (C (G.connectedComponentMk _)).map_rel h using 3 <;>
       rw [ConnectedComponent.connectedComponentMk_eq_of_adj hab]
 
 -- TODO: Extract as lemma about general equivalence relation
@@ -952,7 +952,7 @@ lemma Preconnected.induce_of_degree_eq_one (hG : G.Preconnected) {s : Set V}
   rintro ⟨u, hu⟩ ⟨v, hv⟩
   obtain ⟨p, hp⟩ := hG.exists_isPath u v
   constructor
-  convert p.induce s _
+  convert! p.induce s _
   rintro w hwp
   by_contra hws
   exact hp.not_mem_support_of_subsingleton_neighborSet (by grind) (by grind) (hs _ hws) hwp

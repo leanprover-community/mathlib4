@@ -21,7 +21,7 @@ variable {C : Type*} [Category* C] [MonoidalCategory C] [BraidedCategory C] {X Y
 namespace CategoryTheory.BraidedCategory
 
 set_option backward.privateInPublic true in
-/-- coevaluation_evaluation' field of `ExactPairing Y X` in a braided category -/
+/-- `coevaluation_evaluation'` field of `ExactPairing Y X` in a braided category -/
 private theorem coevaluation_evaluation_braided' [inst : ExactPairing X Y] :
     X ◁ (η_ X Y ≫ (β_ Y X).inv) ≫ (α_ X Y X).inv ≫ ((β_ X Y).hom ≫ ε_ X Y) ▷ X
       = (ρ_ X).hom ≫ (λ_ X).inv := by
@@ -48,7 +48,7 @@ private theorem coevaluation_evaluation_braided' [inst : ExactPairing X Y] :
       simp [monoidalComp]
 
 set_option backward.privateInPublic true in
-/-- evaluation_coevaluation' field of `ExactPairing Y X` in a braided category -/
+/-- `evaluation_coevaluation'` field of `ExactPairing Y X` in a braided category -/
 private theorem evaluation_coevaluation_braided' [inst : ExactPairing X Y] :
     (η_ X Y ≫ (β_ Y X).inv) ▷ Y ≫ (α_ Y X Y).hom ≫ Y ◁ ((β_ X Y).hom ≫ ε_ X Y) =
       (λ_ Y).hom ≫ (ρ_ Y).inv := by

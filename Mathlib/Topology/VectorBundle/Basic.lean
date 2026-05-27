@@ -466,6 +466,27 @@ protected theorem zeroSection (e : Trivialization F (π F E)) [e.IsLinear R] {x 
     (hx : x ∈ e.baseSet) : e (zeroSection F E x) = (x, 0) := by
   simp_rw [zeroSection, e.apply_eq_prod_continuousLinearEquivAt R x hx 0, map_zero]
 
+/-- The zero section of a vector bundle is continuous. -/
+theorem continuous_zeroSection [VectorBundle R F E] :
+    Continuous (zeroSection F E) := by
+  refine continuous_iff_continuousAt.2 fun x => ?_
+  unfold zeroSection
+  rw [FiberBundle.continuousAt_section]
+  apply (continuousAt_const (y := 0)).congr_of_eventuallyEq
+  filter_upwards [(trivializationAt F E x).open_baseSet.mem_nhds
+    (mem_baseSet_trivializationAt F E x)] with y hy
+    using congr_arg Prod.snd <| (trivializationAt F E x).zeroSection R hy
+
+/-- The zero section of a vector bundle is continuous on any set. -/
+theorem continuousOn_zeroSection [VectorBundle R F E] (s : Set B) :
+    ContinuousOn (zeroSection F E) s :=
+  (continuous_zeroSection R).continuousOn
+
+/-- The zero section of a vector bundle is continuous at each point. -/
+theorem continuousAt_zeroSection [VectorBundle R F E] (x : B) :
+    ContinuousAt (zeroSection F E) x :=
+  (continuous_zeroSection R).continuousAt
+
 variable {R}
 
 theorem symm_apply_eq_mk_continuousLinearEquivAt_symm (e : Trivialization F (π F E)) [e.IsLinear R]
@@ -483,7 +504,7 @@ theorem comp_continuousLinearEquivAt_eq_coord_change (e e' : Trivialization F (�
 
 end Bundle.Trivialization
 
-variable (F E) [TopologicalSpace (TotalSpace F E)] [FiberBundle F E] [VectorBundle R F E] in
+variable (F E) [VectorBundle R F E] in
 /-- A continuous linear equivalence between the fiber at `b` and the model fiber,
 induced by the preferred trivialisation at each `b`. -/
 @[simps!]

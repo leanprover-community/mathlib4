@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.TotalComplex
 
-/-! The symmetry of the total complex of a bicomplex
+/-! # The symmetry of the total complex of a bicomplex
 
 Let `K : HomologicalComplex₂ C c₁ c₂` be a bicomplex. If we assume both
 `[TotalComplexShape c₁ c₂ c]` and `[TotalComplexShape c₂ c₁ c]`, we may form
