@@ -417,6 +417,13 @@ theorem IsLocalization.AtPrime.ringKrullDim_eq_height (I : Ideal R) [I.IsPrime] 
       ← IsLocalization.height_under I.primeCompl,
       ← IsLocalization.AtPrime.under_maximalIdeal A I]
 
+lemma IsLocalization.AtPrime.ringKrullDim_lt_of_lt_maximalIdeal [IsLocalRing R]
+    {P : Ideal R} [P.IsPrime] [P.FiniteHeight] (hP : P < IsLocalRing.maximalIdeal R) :
+    ringKrullDim (Localization.AtPrime P) < ringKrullDim R := by
+  rw [IsLocalization.AtPrime.ringKrullDim_eq_height P _]
+  exact lt_of_lt_of_eq (by exact_mod_cast Ideal.height_strict_mono_of_isPrime hP)
+    IsLocalRing.maximalIdeal_height_eq_ringKrullDim
+
 lemma IsLocalization.height_map_of_disjoint {S : Type*} [CommRing S] [Algebra R S] (M : Submonoid R)
     [IsLocalization M S] (p : Ideal R) [p.IsPrime] (h : Disjoint (M : Set R) (p : Set R)) :
     (p.map <| algebraMap R S).height = p.height := by
