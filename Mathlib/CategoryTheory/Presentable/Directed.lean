@@ -664,7 +664,7 @@ the cartesian product `J × κ.ord.toType`.
 -/
 
 @[stacks 0032]
-lemma ExistsCardinalDirected (J : Type w) [SmallCategory J] (κ : Cardinal.{w})
+lemma exists_cardinal_directed (J : Type w) [SmallCategory J] (κ : Cardinal.{w})
     [Fact κ.IsRegular] [IsCardinalFiltered J κ] :
     ∃ (α : Type w) (_ : PartialOrder α) (_ : IsCardinalFiltered α κ)
       (F : α ⥤ J), F.Final := by
