@@ -394,6 +394,8 @@ def tryRfl (mvs : List MVarId) : MetaM (List MVarId) := do
         return [g]
   return (assignable.flatten ++ tried_rfl.flatten)
 
+@[deprecated (since := "2026-05-27")] alias try_rfl := tryRfl
+
 /--
 `splitApply mvs static` takes two lists of `MVarId`s.  The first list, `mvs`,
 corresponds to goals that are potentially within the scope of `compute_degree`:

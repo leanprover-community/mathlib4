@@ -37,6 +37,8 @@ def getNNRealtoRealArg? (e : Expr) : Option Expr :=
   | .app (.const ``NNReal.toReal _) n => some n
   | _ => none
 
+@[deprecated (since := "2026-05-27")] alias isNNRealtoReal := getNNRealtoRealArg?
+
 /--
 `getNNRealComparisons e` returns a list of all subexpressions of `e` of the form `(x : ℝ)`.
 -/
@@ -57,6 +59,8 @@ def mkToRealNonnegProof? (e : Expr) : MetaM (Option Expr) :=
   catch e => do
     trace[linarith] "Got exception when using `coe_nonneg` {e.toMessageData}"
     return none
+
+@[deprecated (since := "2026-05-27")] alias mk_toReal_nonneg_prf := mkToRealNonnegProof?
 
 initialize nnrealToRealTransform.set fun l => do
   let l ← l.mapM fun e => do

@@ -269,6 +269,8 @@ def coherenceLoop (maxSteps := 37) : TacticM Unit :=
       -- and whose second terms can be identified by recursively called `coherence`.
       coherenceLoop maxSteps'
 
+@[deprecated (since := "2026-05-27")] alias coherence_loop := coherenceLoop
+
 open Lean.Parser.Tactic
 
 /--
