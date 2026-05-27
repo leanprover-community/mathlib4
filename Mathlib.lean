@@ -4343,6 +4343,7 @@ public import Mathlib.Data.Set.SymmDiff
 public import Mathlib.Data.Set.UnionLift
 public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Data.SetLike.Fintype
+public import Mathlib.Data.SetLike.Pointwise
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Data.Setoid.Partition
 public import Mathlib.Data.Setoid.Partition.Card
@@ -4862,6 +4863,7 @@ public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Pointwise
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Mathlib.LinearAlgebra.AffineSpace.Centroid
 public import Mathlib.LinearAlgebra.AffineSpace.Ceva
