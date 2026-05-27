@@ -188,7 +188,7 @@ theorem toMvPowerSeries_injective (i : σ) : Function.Injective (toMvPowerSeries
 
 theorem toMvPowerSeries_inj (i : σ) {p q : R⟦X⟧} :
     p.toMvPowerSeries i = q.toMvPowerSeries i ↔ p = q :=
-  ⟨fun h ↦ toMvPowerSeries_injective i h, fun h ↦ by rw [h]⟩
+  (toMvPowerSeries_injective i).eq_iff
 
 section CommRing
 
