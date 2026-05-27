@@ -56,20 +56,20 @@ lemma evalE₄E₆_monomial (a b : ℕ) :
     evalE₄E₆ (MvPolynomial.X 0 ^ a * MvPolynomial.X 1 ^ b) =
       DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ a *
         DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ b := by
-  simp [map_mul, map_pow]
+  simp
 
 private lemma evalE₄E₆_X_sq :
     evalE₄E₆ (MvPolynomial.X 0 ^ 2) = DirectSum.of (ModularForm 𝒮ℒ) 8 (E₄.mul E₄) := by
   rw [map_pow, evalE₄E₆_X0, pow_two, DirectSum.of_mul_of]
   exact DirectSum.of_eq_of_gradedMonoid_eq
-    (ModularForm.gradedMonoid_eq_of_cast (show ((4 : ℤ) + 4 : ℤ) = 8 by norm_num).symm rfl)
+    (ModularForm.gradedMonoid_eq_of_cast (by norm_num : (4 : ℤ) + 4 = 8) rfl)
 
 private lemma evalE₄E₆_X0_X1 :
     evalE₄E₆ (MvPolynomial.X 0 * MvPolynomial.X 1) =
       DirectSum.of (ModularForm 𝒮ℒ) 10 (E₄.mul E₆) := by
   rw [map_mul, evalE₄E₆_X0, evalE₄E₆_X1, DirectSum.of_mul_of]
   exact DirectSum.of_eq_of_gradedMonoid_eq
-    (ModularForm.gradedMonoid_eq_of_cast (show ((4 : ℤ) + 6 : ℤ) = 10 by norm_num).symm rfl)
+    (ModularForm.gradedMonoid_eq_of_cast (by norm_num : (4 : ℤ) + 6 = 10) rfl)
 
 private lemma exists_monomial_weight {k : ℕ} (hk : 4 ≤ k) (hkeven : Even k) :
     ∃ a b : ℕ, 4 * a + 6 * b = k := by
@@ -96,10 +96,7 @@ private lemma directSum_of_E₄_pow_mul_E₆_pow_apply {a b n : ℕ}
       DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ a *
         DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ b := by
   rw [DirectSum.ofPow, DirectSum.ofPow, DirectSum.of_mul_of,
-    show (↑n : ℤ) = a • (4 : ℤ) + b • (6 : ℤ) by
-      simp only [Int.nsmul_eq_mul]
-      push_cast [← hab]
-      ring,
+    show (↑n : ℤ) = a • (4 : ℤ) + b • (6 : ℤ) by push_cast [← hab]; ring,
     DirectSum.of_eq_same]
 
 private lemma monomial_qExpansion_coeff_zero_eq_one {n a b : ℕ} (hab : 4 * a + 6 * b = n) :
@@ -120,7 +117,7 @@ private lemma cuspForm_eq_discriminant_mul {n : ℕ} (g : ModularForm 𝒮ℒ �
         (CuspForm.discriminantEquiv (ModularForm.toCuspForm g
           ((ModularForm.isCuspForm_iff_coeffZero_eq_zero g).mp hg))) *
         DirectSum.of (ModularForm 𝒮ℒ) 12
-          ((CuspForm.discriminant : CuspForm 𝒮ℒ 12) : ModularForm 𝒮ℒ 12) := by
+          (CuspForm.discriminant : ModularForm 𝒮ℒ 12) := by
   rw [DirectSum.of_mul_of]
   symm
   refine DirectSum.of_eq_of_gradedMonoid_eq
@@ -128,7 +125,7 @@ private lemma cuspForm_eq_discriminant_mul {n : ℕ} (g : ModularForm 𝒮ℒ �
   ext z
   let hcusp := (ModularForm.isCuspForm_iff_coeffZero_eq_zero g).mp hg
   change ((CuspForm.discriminantEquiv (ModularForm.toCuspForm g hcusp)).mul
-      ((CuspForm.discriminant : CuspForm 𝒮ℒ 12) : ModularForm 𝒮ℒ 12)) z = g z
+      (CuspForm.discriminant : ModularForm 𝒮ℒ 12)) z = g z
   rw [ModularForm.coe_mul, Pi.mul_apply, CuspForm.discriminantEquiv_apply]
   exact div_mul_cancel₀ _ (discriminant_ne_zero z)
 
@@ -138,15 +135,15 @@ private noncomputable def discriminantPoly : MvPolynomial (Fin 2) ℂ :=
 private lemma evalE₄E₆_discriminantPoly :
     evalE₄E₆ discriminantPoly =
       DirectSum.of (ModularForm 𝒮ℒ) 12
-        ((CuspForm.discriminant : CuspForm 𝒮ℒ 12) : ModularForm 𝒮ℒ 12) := by
+        (CuspForm.discriminant : ModularForm 𝒮ℒ 12) := by
   rw [discriminantPoly, map_smul, map_sub, map_pow, map_pow, evalE₄E₆_X0, evalE₄E₆_X1,
     ← discriminant_eq_E₄_cube_sub_E₆_sq_graded]
 
-private lemma discriminant_mem_range_evalE₄E₆ :
-    DirectSum.of (ModularForm 𝒮ℒ) 12
-        ((CuspForm.discriminant : CuspForm 𝒮ℒ 12) : ModularForm 𝒮ℒ 12) ∈
-      Set.range evalE₄E₆ :=
-  ⟨_, evalE₄E₆_discriminantPoly⟩
+private lemma discriminantPoly_smul_eq :
+    (1728 : ℂ) • discriminantPoly =
+      MvPolynomial.X (0 : Fin 2) ^ 3 - MvPolynomial.X (1 : Fin 2) ^ 2 := by
+  simp only [discriminantPoly, smul_smul]
+  norm_num
 
 private lemma surj_at_weight_inductive {n : ℕ} (hn12 : 12 ≤ n) (hk_even : Even (n : ℤ))
     (ih : ∀ m < n, ∀ (f : ModularForm 𝒮ℒ ↑m),
@@ -160,12 +157,11 @@ private lemma surj_at_weight_inductive {n : ℕ} (hn12 : 12 ≤ n) (hk_even : Ev
   set c := (qExpansion 1 f).coeff 0
   have hg_cusp : ModularForm.IsCuspForm (f - c • mn) :=
     ModularForm.sub_smul_isCuspForm f mn (monomial_qExpansion_coeff_zero_eq_one hab)
-  have hcast : ((↑n : ℤ) - 12 : ℤ) = ((n - 12 : ℕ) : ℤ) := by lia
   obtain ⟨p1, hp1⟩ : DirectSum.of (ModularForm 𝒮ℒ) ((↑n : ℤ) - 12)
       (CuspForm.discriminantEquiv (ModularForm.toCuspForm (f - c • mn)
         ((ModularForm.isCuspForm_iff_coeffZero_eq_zero _).mp hg_cusp))) ∈
         Set.range evalE₄E₆ := by
-    rw [DirectSum.of_eq_of_eq hcast]
+    rw [DirectSum.of_eq_of_eq (show ((↑n : ℤ) - 12 : ℤ) = ((n - 12 : ℕ) : ℤ) by lia)]
     exact ih _ (by lia) _
   rw [DirectSum.of_eq_sub_add_smul f mn c, directSum_of_E₄_pow_mul_E₆_pow_apply hab]
   exact ⟨p1 * discriminantPoly + MvPolynomial.C c * (MvPolynomial.X 0 ^ a * MvPolynomial.X 1 ^ b),
@@ -177,8 +173,7 @@ private lemma surj_at_weight_inductive {n : ℕ} (hn12 : 12 ≤ n) (hk_even : Ev
 private lemma rank_one_of_lt_twelve {k : ℕ} (hk3 : 3 ≤ k) (hk2 : Even k) (hk12 : k < 12) :
     Module.rank ℂ (ModularForm 𝒮ℒ (↑k : ℤ)) = 1 := by
   rw [ModularForm.rank_eq_one_add_rank_cuspForm hk3 hk2,
-    CuspForm.rank_eq_zero_of_weight_lt_twelve (mod_cast hk12 : (↑k : ℤ) < 12)]
-  norm_cast
+    CuspForm.rank_eq_zero_of_weight_lt_twelve (mod_cast hk12 : (↑k : ℤ) < 12), add_zero]
 
 private lemma one_ne_zero_modularForm : (1 : ModularForm 𝒮ℒ 0) ≠ 0 := fun h ↦
   one_ne_zero (α := ℂ) (congr_fun (congr_arg (DFunLike.coe (F := ModularForm 𝒮ℒ 0)) h)
@@ -223,14 +218,13 @@ private lemma surj_of_weight : ∀ (k : ℤ) (f : ModularForm 𝒮ℒ k),
   by_cases hk_neg : k < 0
   · exact surj_of_zero_form
       (rank_zero_iff_forall_zero.mp (ModularForm.levelOne_neg_weight_rank_zero hk_neg)) f
-  push Not at hk_neg
   obtain ⟨n, rfl⟩ : ∃ n : ℕ, k = (n : ℤ) := ⟨k.toNat, by lia⟩
   clear hk_neg
   revert f
   induction n using Nat.strong_induction_on with | _ n ih => ?_
   intro f
   by_cases hk_odd : Odd (n : ℤ)
-  · exact surj_of_zero_form (fun f ↦ ModularForm.levelOne_odd_weight_eq_zero hk_odd f) f
+  · exact surj_of_zero_form (ModularForm.levelOne_odd_weight_eq_zero hk_odd) f
   rw [Int.not_odd_iff_even] at hk_odd
   by_cases hn12 : n < 12
   · exact surj_at_small_weight hn12 hk_odd f
@@ -276,7 +270,7 @@ private lemma no_weight_monomial_of_two (d : Fin 2 →₀ ℕ) :
 private lemma unique_small_weight_solution {a₁ b₁ a₂ b₂ : ℕ}
     (ha₁ : a₁ < 3) (ha₂ : a₂ < 3)
     (h : a₁ * 4 + b₁ * 6 = a₂ * 4 + b₂ * 6) : a₁ = a₂ ∧ b₁ = b₂ :=
-  ⟨by interval_cases a₁ <;> interval_cases a₂ <;> lia, by lia⟩
+  ⟨by interval_cases a₁ <;> lia, by lia⟩
 
 private lemma monomial_fin2_eq {R : Type*} [CommSemiring R] (d : Fin 2 →₀ ℕ) (c : R) :
     MvPolynomial.monomial d c =
@@ -289,8 +283,7 @@ private lemma evalE₄E₆_X_pow_mul_apply_eq_zero_of_ne (a b : ℕ) (k : ℤ)
     (evalE₄E₆ (MvPolynomial.X 0 ^ a * MvPolynomial.X 1 ^ b)) k = 0 := by
   rw [evalE₄E₆_monomial, DirectSum.ofPow, DirectSum.ofPow, DirectSum.of_mul_of]
   refine DirectSum.of_eq_of_ne _ _ _ fun heq ↦ hk ?_
-  simp only [Int.nsmul_eq_mul] at heq
-  lia
+  simpa using heq
 
 private lemma evalE₄E₆_monomial_apply_eq_zero_of_ne (d : Fin 2 →₀ ℕ) (c : ℂ) (k : ℤ)
     (hk : k ≠ (↑(d 0) * 4 + ↑(d 1) * 6 : ℤ)) :
@@ -350,18 +343,26 @@ private lemma discriminantPoly_isWeightedHomogeneous :
     MvPolynomial.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) discriminantPoly 12 := by
   rw [discriminantPoly, MvPolynomial.smul_eq_C_mul]
   refine MvPolynomial.IsWeightedHomogeneous.C_mul (.sub ?_ ?_) _
-  · convert (MvPolynomial.isWeightedHomogeneous_X ℂ (![4, 6] : Fin 2 → ℕ) (0 : Fin 2)).pow 3 using 1
-  · convert (MvPolynomial.isWeightedHomogeneous_X ℂ (![4, 6] : Fin 2 → ℕ) (1 : Fin 2)).pow 2 using 1
+  · exact (MvPolynomial.isWeightedHomogeneous_X ℂ (![4, 6] : Fin 2 → ℕ) (0 : Fin 2)).pow 3
+  · exact (MvPolynomial.isWeightedHomogeneous_X ℂ (![4, 6] : Fin 2 → ℕ) (1 : Fin 2)).pow 2
+
+private lemma evalE₄E₆_discriminantPoly_mul_apply {n : ℕ}
+    (s : MvPolynomial (Fin 2) ℂ)
+    (hs : MvPolynomial.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) s (n - 12))
+    (hcast : (12 : ℤ) + ((n - 12 : ℕ) : ℤ) = (↑n : ℤ)) :
+    (evalE₄E₆ (discriminantPoly * s)) (↑n : ℤ) =
+      hcast ▸ GradedMonoid.GMul.mul (CuspForm.discriminant : ModularForm 𝒮ℒ 12)
+        ((evalE₄E₆ s) ↑(n - 12)) := by
+  conv_lhs => rw [map_mul, evalE₄E₆_discriminantPoly, evalE₄E₆_eq_of_apply (n - 12) s hs,
+    DirectSum.of_mul_of, DirectSum.of_apply, dif_pos hcast]
 
 private lemma evalE₄E₆_discriminantPoly_mul_coeff_zero {n : ℕ} (hn12 : 12 ≤ n)
     (s : MvPolynomial (Fin 2) ℂ)
     (hs : MvPolynomial.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) s (n - 12)) :
     (qExpansion 1 ↑((evalE₄E₆ (discriminantPoly * s)) (↑n : ℤ))).coeff 0 = 0 := by
-  rw [map_mul, evalE₄E₆_discriminantPoly,
-    evalE₄E₆_eq_of_apply (n - 12) s hs, DirectSum.of_mul_of]
   have hcast : (12 : ℤ) + ((n - 12 : ℕ) : ℤ) = (↑n : ℤ) := by lia
-  rw [DirectSum.of_apply, dif_pos hcast]
-  set f := ((CuspForm.discriminant : CuspForm 𝒮ℒ 12) : ModularForm 𝒮ℒ 12)
+  rw [evalE₄E₆_discriminantPoly_mul_apply s hs hcast]
+  set f := (CuspForm.discriminant : ModularForm 𝒮ℒ 12)
   set g := (evalE₄E₆ s) ((n - 12 : ℕ) : ℤ)
   rw [show ((hcast ▸ GradedMonoid.GMul.mul f g : ModularForm 𝒮ℒ ↑n) : ℍ → ℂ) =
       ((f.mul g : ModularForm 𝒮ℒ (12 + ((n - 12 : ℕ) : ℤ))) : ℍ → ℂ) from
@@ -431,12 +432,7 @@ private lemma discriminantPoly_piece_isWeightedHomogeneous {n : ℕ} (hn12 : 12 
         (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) *
           MvPolynomial.X (1 : Fin 2) ^ (d 1)))) n := by
   apply MvPolynomial.IsWeightedHomogeneous.C_mul
-  rw [MvPolynomial.smul_eq_C_mul,
-    show MvPolynomial.C (1728 : ℂ) * discriminantPoly *
-        (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) * MvPolynomial.X (1 : Fin 2) ^ d 1) =
-        MvPolynomial.C (1728 : ℂ) * (discriminantPoly *
-          (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) *
-            MvPolynomial.X (1 : Fin 2) ^ d 1)) from by ring]
+  rw [MvPolynomial.smul_eq_C_mul, mul_assoc]
   apply MvPolynomial.IsWeightedHomogeneous.C_mul
   convert discriminantPoly_isWeightedHomogeneous.mul
     (X0_pow_mul_X1_pow_isWeightedHomogeneous (d 0 - 3) (d 1) (n - 12) (by lia))
@@ -449,10 +445,6 @@ private lemma discriminantPoly_piece_eq_monomial_sub
         (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) * MvPolynomial.X (1 : Fin 2) ^ d 1)) =
     MvPolynomial.monomial d c - MvPolynomial.monomial
       (Finsupp.single (0 : Fin 2) (d 0 - 3) + Finsupp.single (1 : Fin 2) (d 1 + 2)) c := by
-  have h1728 : (1728 : ℂ) • discriminantPoly =
-      MvPolynomial.X (0 : Fin 2) ^ 3 - MvPolynomial.X (1 : Fin 2) ^ 2 := by
-    simp only [discriminantPoly, smul_smul]
-    norm_num
   have hX0 : (MvPolynomial.X (0 : Fin 2) : MvPolynomial (Fin 2) ℂ) ^ d 0 =
       MvPolynomial.X 0 ^ 3 * MvPolynomial.X 0 ^ (d 0 - 3) := by
     rw [← pow_add]
@@ -462,12 +454,13 @@ private lemma discriminantPoly_piece_eq_monomial_sub
       = d 0 - 3 := by simp
   have h1 : (Finsupp.single (0 : Fin 2) (d 0 - 3) + Finsupp.single (1 : Fin 2) (d 1 + 2)) 1
       = d 1 + 2 := by simp
-  rw [h1728, monomial_fin2_eq, monomial_fin2_eq, h0, h1, hX0,
+  rw [discriminantPoly_smul_eq, monomial_fin2_eq, monomial_fin2_eq, h0, h1, hX0,
     pow_add (MvPolynomial.X (1 : Fin 2)) (d 1) 2]
   ring
 
-private lemma sum_lt_sum_of_replace {α : Type*} [DecidableEq α]
-    (S S' : Finset α) (f : α → ℕ) (d d' : α)
+private lemma Finset.sum_lt_sum_of_subset_erase_union_singleton {α M : Type*} [DecidableEq α]
+    [AddCommMonoid M] [PartialOrder M] [CanonicallyOrderedAdd M] [AddLeftStrictMono M]
+    {S S' : Finset α} {f : α → M} {d d' : α}
     (hd_mem : d ∈ S) (hd_not : d ∉ S')
     (hS' : S' ⊆ S.erase d ∪ {d'})
     (hlt : f d' < f d) :
@@ -480,22 +473,23 @@ private lemma sum_lt_sum_of_replace {α : Type*} [DecidableEq α]
             | .inl h => Finset.mem_of_mem_erase h
             | .inr h => Finset.mem_singleton.mp h ▸ hd'S⟩)
       _ < ∑ x ∈ S.erase d, f x + f d :=
-          Nat.lt_add_of_pos_right (Nat.pos_of_ne_zero (by lia))
+          lt_add_of_pos_right _ (zero_le.trans_lt hlt)
       _ = ∑ x ∈ S, f x := Finset.sum_erase_add S f hd_mem
   · calc ∑ x ∈ S', f x
         ≤ ∑ x ∈ S.erase d ∪ {d'}, f x := Finset.sum_le_sum_of_subset hS'
       _ = ∑ x ∈ S.erase d, f x + f d' := by
           rw [Finset.sum_union (Finset.disjoint_singleton_right.mpr
             (fun h ↦ hd'S (Finset.mem_of_mem_erase h))), Finset.sum_singleton]
-      _ < ∑ x ∈ S.erase d, f x + f d := Nat.add_lt_add_left hlt _
+      _ < ∑ x ∈ S.erase d, f x + f d := add_lt_add_right hlt _
       _ = ∑ x ∈ S, f x := Finset.sum_erase_add S f hd_mem
 
 open Classical in
-private lemma mvPolynomial_support_after_reduction {σ R : Type*} [CommRing R] [DecidableEq σ]
-    (p : MvPolynomial σ R) (d d' : σ →₀ ℕ) (c : R)
+private lemma MvPolynomial.support_sub_monomial_sub_monomial {σ R : Type*} [CommRing R]
+    [DecidableEq σ] (p : MvPolynomial σ R) (d d' : σ →₀ ℕ) (c : R)
     (hdd' : d ≠ d') (hc : MvPolynomial.coeff d p = c) :
-    let δ := MvPolynomial.monomial d c - MvPolynomial.monomial d' c
-    d ∉ (p - δ).support ∧ (p - δ).support ⊆ p.support.erase d ∪ {d'} := by
+    d ∉ (p - (MvPolynomial.monomial d c - MvPolynomial.monomial d' c)).support ∧
+      (p - (MvPolynomial.monomial d c - MvPolynomial.monomial d' c)).support ⊆
+        p.support.erase d ∪ {d'} := by
   have hd_not : d ∉ (p - (MvPolynomial.monomial d c -
       MvPolynomial.monomial d' c)).support := by
     rw [MvPolynomial.notMem_support_iff, MvPolynomial.coeff_sub, MvPolynomial.coeff_sub,
@@ -516,7 +510,7 @@ private lemma mvPolynomial_support_after_reduction {σ R : Type*} [CommRing R] [
   · exact absurd h2 (Finset.notMem_empty _)
   exact Finset.mem_union_right _ (by rwa [Finset.mem_singleton] at h2 ⊢)
 
-private lemma support_sum_lt_after_sub_δ_piece (p : MvPolynomial (Fin 2) ℂ)
+private lemma support_degreeSum_lt_of_sub_discriminantPoly_piece (p : MvPolynomial (Fin 2) ℂ)
     {d : Fin 2 →₀ ℕ} (hd_mem : d ∈ p.support) (hd_ge : 3 ≤ d 0) :
     ∑ d' ∈ (p - MvPolynomial.C (MvPolynomial.coeff d p) * ((1728 : ℂ) • discriminantPoly *
           (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) *
@@ -529,8 +523,8 @@ private lemma support_sum_lt_after_sub_δ_piece (p : MvPolynomial (Fin 2) ℂ)
       ne_eq, zero_ne_one, not_false_eq_true, Finsupp.single_eq_of_ne, add_zero] at h0
     lia
   obtain ⟨hd_not, hsupp⟩ := (discriminantPoly_piece_eq_monomial_sub d hd_ge _ : _ = _) ▸
-    mvPolynomial_support_after_reduction p d d' _ hdd' rfl
-  refine sum_lt_sum_of_replace p.support _ (· 0) d d' hd_mem hd_not hsupp ?_
+    MvPolynomial.support_sub_monomial_sub_monomial p d d' _ hdd' rfl
+  refine Finset.sum_lt_sum_of_subset_erase_union_singleton hd_mem hd_not hsupp ?_
   simp [d', Finsupp.add_apply]
   lia
 
@@ -559,7 +553,7 @@ private lemma weightedHomogeneous_poly_Delta_decomp_step {n : ℕ} (hn12 : 12 �
   refine ⟨p - δ_piece, q₁, hp.sub
       (discriminantPoly_piece_isWeightedHomogeneous hn12 d hd_ge hwd c),
     .C_mul (X0_pow_mul_X1_pow_isWeightedHomogeneous (d 0 - 3) (d 1) (n - 12) (by lia)) _, ?_,
-    support_sum_lt_after_sub_δ_piece p hd_mem hd_ge⟩
+    support_degreeSum_lt_of_sub_discriminantPoly_piece p hd_mem hd_ge⟩
   rw [← hδ_eq]
   ring
 
@@ -589,19 +583,15 @@ private lemma reduced_isWeightedHomogeneous_eq_monomial {n : ℕ}
     (hr : MvPolynomial.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) r n)
     (hr_red : ∀ d ∈ r.support, d 0 < 3) {d₀ : Fin 2 →₀ ℕ} (hd₀ : d₀ ∈ r.support) :
     r = MvPolynomial.monomial d₀ (MvPolynomial.coeff d₀ r) := by
-  have hwd₀ := hr (MvPolynomial.mem_support_iff.mp hd₀)
   ext d
   rw [MvPolynomial.coeff_monomial]
   by_cases hd : d = d₀
   · simp [hd]
   rw [if_neg (Ne.symm hd)]
   by_cases hd_supp : d ∈ r.support
-  · have h1 := weight_eq_4a_6b d
-    rw [hr (MvPolynomial.mem_support_iff.mp hd_supp)] at h1
-    have h2 := weight_eq_4a_6b d₀
-    rw [hwd₀] at h2
-    obtain ⟨ha, hb⟩ := unique_small_weight_solution (hr_red d hd_supp) (hr_red d₀ hd₀)
-      (show d 0 * 4 + d 1 * 6 = d₀ 0 * 4 + d₀ 1 * 6 by lia)
+  · obtain ⟨ha, hb⟩ := unique_small_weight_solution (hr_red d hd_supp) (hr_red d₀ hd₀)
+      (by rw [← weight_eq_4a_6b, ← weight_eq_4a_6b,
+        hr (MvPolynomial.mem_support_iff.mp hd_supp), hr (MvPolynomial.mem_support_iff.mp hd₀)])
     exact absurd (Finsupp.ext fun i ↦ by fin_cases i <;> [exact ha; exact hb]) hd
   · rwa [MvPolynomial.mem_support_iff, not_not] at hd_supp
 
@@ -641,8 +631,7 @@ private lemma reduced_part_eq_zero {n : ℕ} (hn12 : 12 ≤ n)
       (Q ((evalE₄E₆ (discriminantPoly * s)) (↑n : ℤ))).coeff 0 = 0 := by
     rw [← LinearMap.map_add, ← Q.map_add, heval, map_zero, map_zero]
   rw [show (Q ((evalE₄E₆ (discriminantPoly * s)) (↑n : ℤ))).coeff 0 = 0 from
-      evalE₄E₆_discriminantPoly_mul_coeff_zero hn12 s hs,
-    add_zero,
+      evalE₄E₆_discriminantPoly_mul_coeff_zero hn12 s hs, add_zero,
     show (Q ((evalE₄E₆ (MvPolynomial.monomial d₀ c)) (↑n : ℤ))).coeff 0 = c from
       evalE₄E₆_monomial_qExpansion_coeff_zero hd₀_weight c] at hQ
   exact hQ
@@ -652,10 +641,8 @@ private lemma eval_discriminantPoly_mul_eq_zero_imp_eval_eq_zero {n : ℕ} (hn12
     (hs : MvPolynomial.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) s (n - 12))
     (hds : (evalE₄E₆ (discriminantPoly * s)) (↑n : ℤ) = 0) :
     (evalE₄E₆ s) (↑(n - 12) : ℤ) = 0 := by
-  rw [map_mul, evalE₄E₆_discriminantPoly,
-    evalE₄E₆_eq_of_apply (n - 12) s hs, DirectSum.of_mul_of] at hds
   have hcast : (12 : ℤ) + ((n - 12 : ℕ) : ℤ) = (↑n : ℤ) := by lia
-  rw [DirectSum.of_apply, dif_pos hcast] at hds
+  rw [evalE₄E₆_discriminantPoly_mul_apply s hs hcast] at hds
   ext z
   have hpw := DFunLike.congr_fun hds z
   simp only [ModularForm.zero_apply, ModularForm.cast_apply hcast] at hpw ⊢
@@ -712,8 +699,7 @@ theorem evalE₄E₆_injective : Function.Injective evalE₄E₆ := by
     ← MvPolynomial.sum_weightedHomogeneousComponent ((![4, 6] : Fin 2 → ℕ)) (p - q)]
   refine finsum_eq_zero_of_forall_eq_zero fun n ↦ per_weight_injective n _
     (MvPolynomial.weightedHomogeneousComponent_isWeightedHomogeneous _ _) ?_
-  rw [evalE₄E₆_component_eq, map_sub, hpq, sub_self]
-  rfl
+  rw [evalE₄E₆_component_eq, map_sub, hpq, sub_self, DirectSum.zero_apply]
 
 /-- The graded ring of level-1 modular forms is isomorphic to the polynomial ring
 `ℂ[X₀, X₁]` via evaluation at `E₄` and `E₆`. -/

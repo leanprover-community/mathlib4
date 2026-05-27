@@ -269,7 +269,7 @@ theorem eq_monomial_of_unique_weight {w : σ → M} (hφ : IsWeightedHomogeneous
   by_cases hd : d = d₀
   · simp [hd]
   rw [if_neg (Ne.symm hd)]
-  exact hφ.coeff_eq_zero d (fun h => hd (huniq d h))
+  exact hφ.coeff_eq_zero d fun h ↦ hd (huniq d h)
 
 /-- The sum of weighted homogeneous polynomials of degree `n` is weighted homogeneous of
   weighted degree `n`. -/
