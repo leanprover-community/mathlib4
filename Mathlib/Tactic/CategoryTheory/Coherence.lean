@@ -142,6 +142,8 @@ def monoidalCoherence (g : MVarId) : TermElabM Unit := g.withContext do
   let [] ← g₂.applyConst ``Subsingleton.elim
     | exception g "This shouldn't happen; Subsingleton.elim does not create goals."
 
+@[deprecated (since := "2026-05-27")] alias monoidal_coherence := monoidalCoherence
+
 open Mathlib.Tactic.BicategoryCoherence
 
 /--
