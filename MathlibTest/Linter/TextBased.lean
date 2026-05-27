@@ -665,14 +665,21 @@ open Mathlib.Linter.TextBased.UnicodeLinter
 /- A character either does or doesn't have an abbreviation in the VSCode extension. -/
 #guard withVSCodeAbbrev.toList ∩ othersInMathlib.toList = ∅
 
-/- A character either is or isn't an emoji. -/
+/- No character is both an emoji and not an emoji. -/
 #guard emojis.toList ∩ nonEmojis.toList = ∅
+
+/- No character is both an emoji and unrestricted. -/
+#guard emojis.toList ∩ unrestricted.toList = ∅
+
+/- No character is both a non-emoji and unrestricted. -/
+#guard nonEmojis.toList ∩ unrestricted.toList = ∅
 
 def allLinterDefinedCharacterLists : List (List Char) := [
   withVSCodeAbbrev,
   othersInMathlib,
   emojis,
-  nonEmojis
+  nonEmojis,
+  unrestricted
 ].map Array.toList
 
 /- Ensure none of the lists contain duplicates -/
