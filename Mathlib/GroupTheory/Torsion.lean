@@ -349,15 +349,6 @@ lemma torsion_prod : torsion (G × H) = (torsion G).prod (torsion H) := by
 variable (G)
 
 @[to_additive]
-lemma _root_.MulEquiv.comap_torsion (e : G ≃* H) : (torsion H).comap e = torsion G := by
-  ext x
-  exact e.injective.isOfFinOrder_iff
-
-@[to_additive]
-lemma _root_.MulEquiv.map_torsion (e : G ≃* H) : (torsion G).map e = torsion H := by
-  rw [Subgroup.map_equiv_eq_comap_symm, e.symm.comap_torsion]
-
-@[to_additive]
 lemma isTorsion_quotient_range_powMonoidHom {n : ℕ} (hn : n ≠ 0) :
     Monoid.IsTorsion (G ⧸ (powMonoidHom (α := G) n).range) := by
   simp only [Monoid.IsTorsion, isOfFinOrder_iff_pow_eq_one]
@@ -422,7 +413,7 @@ theorem freeRank_eq_zero_of_finite [Finite G] [Group.FG G] : freeRank G = 0 :=
 
 @[to_additive]
 theorem freeRank_congr (e : G ≃* H) [Group.FG G] [Group.FG H] : freeRank G = freeRank H :=
-  Group.rank_congr (QuotientGroup.congr  (torsion G) (torsion H) e e.map_torsion)
+  Group.rank_congr (QuotientGroup.congr (torsion G) (torsion H) e e.map_torsion)
 
 variable (G H)
 
