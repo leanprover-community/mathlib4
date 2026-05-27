@@ -29,7 +29,7 @@ We also prove that independent Gaussian random variables are jointly Gaussian.
 * `IndepFun.hasGaussianLaw`: Independent Gaussian random variables are jointly Gaussian,
   product version.
 * `HasGaussianLaw.iIndepFun_of_covariance_eq_zero`: If $(X_i)_{i \in \iota}$ are jointly Gaussian,
-  then they are independent if for all $i \ne j$, \mathrm{Cov}(X_i, X_j) = 0$.
+  then they are independent if for all $i \ne j$, $\mathrm{Cov}(X_i, X_j) = 0$.
 * `HasGaussianLaw.indepFun_of_covariance_eq_zero`: If $(X, Y)$ is Gaussian,
   then $X$ and $Y$ are independent if $\mathrm{Cov}(X, Y) = 0$.
 
@@ -205,7 +205,7 @@ lemma HasGaussianLaw.iIndepFun_of_covariance_strongDual (hX : HasGaussianLaw (fu
     sum_sub_distrib, ← sum_mul, this]
   congr
   · simp_rw [← Complex.ofReal_sum]
-    rw [integral_finset_sum _ fun i _ ↦ ((hX.eval i).map_fun _).integrable.ofReal]
+    rw [integral_finsetSum _ fun i _ ↦ ((hX.eval i).map_fun _).integrable.ofReal]
   · rw [variance_fun_sum fun i ↦ ((hX.eval i).map_fun _).memLp_two]
     simp only [← sum_div, ← ofReal_sum, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
       div_left_inj', ofReal_inj]
@@ -232,7 +232,6 @@ end InnerProductSpace
 
 section Real
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If $((X_{i,j})_{j \in \kappa_i})_{i \in \iota}$ are jointly Gaussian, then they are independent
 if for all $i_1 \ne i_2 \in \iota$ and for all $j_1 \in \kappa_{i_1}, j_2 \in \kappa_{i_2}$,
 $\mathrm{Cov}(X_{i_1, j_1}, X_{i_2, j_2}) = 0$. -/
@@ -257,9 +256,8 @@ lemma HasGaussianLaw.iIndepFun_of_covariance_eval {κ : ι → Type*} [∀ i, Fi
   · simpa using fun j ↦ ((hX.eval i).eval j).memLp_two.const_mul _
   · simpa using fun i ↦ ((hX.eval j).eval i).memLp_two.const_mul _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If $(X_i)_{i \in \iota}$ are jointly Gaussian, then they are independent if for all $i \ne j$,
-\mathrm{Cov}(X_i, X_j) = 0$. -/
+$\mathrm{Cov}(X_i, X_j) = 0$. -/
 lemma HasGaussianLaw.iIndepFun_of_covariance_eq_zero {X : ι → Ω → ℝ}
     (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) (h : ∀ i j : ι, i ≠ j → cov[X i, X j; P] = 0) :
     iIndepFun X P :=
@@ -336,7 +334,6 @@ lemma HasGaussianLaw.indepFun_of_covariance_inner [InnerProductSpace ℝ E] [Inn
   hXY.indepFun_of_covariance_strongDual fun L₁ L₂ ↦ by
     simpa using h ((toDual ℝ E).symm L₁) ((toDual ℝ F).symm L₂)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If $((X_i)_{i \in \iota}, (Y_j)_{j \in \kappa})$ is Gaussian, then $(X_i)_{i \in \iota}$ and
 $(Y_j)_{j \in \kappa}$ are independent if for all $i \in \iota, j \in \kappa$,
 $\mathrm{Cov}(X_i, Y_j) = 0$. -/
@@ -369,7 +366,6 @@ lemma HasGaussianLaw.indepFun_of_covariance_eval {ι κ : Type*} [Finite ι] [Fi
       EuclideanSpace.basisFun_inner]
     exact fun j ↦ (hXY.snd.eval j).memLp_two.const_mul _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If $(X, Y)$ is Gaussian, then $X$ and $Y$ are independent if $\mathrm{Cov}(X, Y) = 0$. -/
 lemma HasGaussianLaw.indepFun_of_covariance_eq_zero {X Y : Ω → ℝ}
     (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) (h : cov[X, Y; P] = 0) :

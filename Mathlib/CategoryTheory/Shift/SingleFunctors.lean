@@ -194,7 +194,7 @@ lemma inv_hom_id_hom_app (e : F ≅ G) (n : A) (X : C) :
   rw [← NatTrans.comp_app, inv_hom_id_hom, NatTrans.id_app]
 
 instance (f : F ⟶ G) [IsIso f] (n : A) : IsIso (f.hom n) :=
-  (inferInstance : IsIso ((evaluation C D n).map f))
+  inferInstanceAs <| IsIso ((evaluation C D n).map f)
 
 variable (F)
 

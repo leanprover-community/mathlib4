@@ -5,7 +5,7 @@ Authors: Jeremy Tan
 -/
 module
 
-public import Mathlib.Combinatorics.Enumerative.Catalan
+public import Mathlib.Combinatorics.Enumerative.Catalan.Tree
 
 import Batteries.Data.List.Count
 import Mathlib.Tactic.Positivity.Finset
@@ -173,7 +173,7 @@ def nest : DyckWord where
     rw [take_of_length_le (show [U].length ≤ i by rwa [length_singleton]), count_singleton']
     simp only [reduceCtorEq, ite_false]
     rw [add_comm]
-    exact add_le_add (zero_le _) (count_le_length.trans (by simp))
+    exact add_le_add zero_le (count_le_length.trans (by simp))
 
 @[simp] lemma nest_ne_zero : p.nest ≠ 0 := by simp [← toList_ne_nil, nest]
 
@@ -244,7 +244,7 @@ lemma semilength_eq_count_D : p.semilength = p.toList.count D := by
 @[simp]
 lemma two_mul_semilength_eq_length : 2 * p.semilength = p.toList.length := by
   nth_rw 1 [two_mul, semilength, p.count_U_eq_count_D, semilength]
-  convert (p.toList.length_eq_countP_add_countP (· == D)).symm
+  convert! (p.toList.length_eq_countP_add_countP (· == D)).symm
   rw [count]; congr!; rename_i s; cases s <;> tauto
 
 end Semilength
@@ -262,8 +262,7 @@ def firstReturn : ℕ :=
 include h in
 lemma firstReturn_pos : 0 < p.firstReturn := by
   rw [← not_le, Nat.le_zero, firstReturn, findIdx_eq, getElem_range]
-  · simp only [not_lt_zero', IsEmpty.forall_iff]
-    rw [← p.cons_tail_dropLast_concat h]
+  · rw! [← p.cons_tail_dropLast_concat h]
     simp
   · rw [length_range, length_pos_iff]
     exact toList_ne_nil.mpr h
@@ -366,7 +365,7 @@ lemma outsidePart_add : (p + q).outsidePart = p.outsidePart + q := by
 @[simp]
 lemma insidePart_nest : p.nest.insidePart = p := by
   simp_rw [insidePart, nest_ne_zero, dite_false, firstReturn_nest]
-  convert p.denest_nest; rw [DyckWord.ext_iff]; apply take_of_length_le
+  convert! p.denest_nest; rw [DyckWord.ext_iff]; apply take_of_length_le
   simp_rw [nest, length_append, length_singleton]; lia
 
 @[simp]
@@ -468,7 +467,7 @@ lemma monotone_semilength : Monotone semilength := fun p q pq ↦ by
 lemma strictMono_semilength : StrictMono semilength := fun p q pq ↦ by
   obtain ⟨plq, pnq⟩ := lt_iff_le_and_ne.mp pq
   apply lt_of_le_of_ne (monotone_semilength plq)
-  contrapose! pnq
+  contrapose pnq
   replace pnq := congr(2 * $(pnq))
   simp_rw [two_mul_semilength_eq_length] at pnq
   exact DyckWord.ext ((infix_of_le plq).eq_of_length pnq)
@@ -546,7 +545,7 @@ instance {n : ℕ} : Fintype { p : DyckWord // p.semilength = n } :=
 theorem card_dyckWord_semilength_eq_catalan (n : ℕ) :
     Fintype.card { p : DyckWord // p.semilength = n } = catalan n := by
   rw [← Fintype.ofEquiv_card (equivTreesOfNumNodesEq n), ← treesOfNumNodesEq_card_eq_catalan]
-  convert Fintype.card_coe _
+  convert! Fintype.card_coe _
 
 end Tree
 

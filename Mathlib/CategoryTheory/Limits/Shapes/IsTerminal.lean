@@ -115,9 +115,7 @@ def isInitialEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (X : C) :
     { desc := fun s => (u s.pt).default
       uniq := fun s _ _ => (u s.pt).2 _ }
   left_inv := by dsimp [Function.LeftInverse]; intro; simp only [eq_iff_true_of_subsingleton]
-  right_inv := by
-    #adaptation_note /-- 19-07-2025 grind stopped working -/
-    intro x; dsimp
+  right_inv := by grind
 
 /-- An object `X` is initial if for every `Y` there is a unique morphism `X ⟶ Y`
     (as an instance). -/
@@ -467,4 +465,30 @@ def IsTerminal.unop {X : Cᵒᵖ} (hX : IsTerminal X) : IsInitial X.unop :=
   IsInitial.ofUniqueHom (fun _ ↦ (hX.from _).unop)
     (fun _ _ ↦ Quiver.Hom.op_inj (hX.hom_ext _ _))
 
-end CategoryTheory.Limits
+end Limits
+
+namespace Functor
+open Limits
+variable (C : Type*) [Category* C] {D : Type*} [Category* D]
+
+/-- The constant functor returning a specific terminal object is indeed terminal. -/
+def isTerminalConst {X : D} (hX : IsTerminal X) :
+    IsTerminal ((Functor.const C).obj X) :=
+  .ofUniqueHom (fun Y => { app Z := hX.from (Y.obj Z) }) (by intros; ext; apply hX.hom_ext)
+
+@[simp]
+lemma isTerminalConst_from_app {X : D} (hX : IsTerminal X)
+    (F : C ⥤ D) (Y : C) : ((isTerminalConst C hX).from F).app Y = hX.from (F.obj Y) := rfl
+
+/-- The constant functor returning a specific initial object is indeed initial. -/
+def isInitialConst {X : D} (hX : IsInitial X) :
+    IsInitial ((Functor.const C).obj X) :=
+  .ofUniqueHom (fun Y => { app Z := hX.to (Y.obj Z) }) (by intros; ext; apply hX.hom_ext)
+
+@[simp]
+lemma isInitialConst_to_app {X : D} (hX : IsInitial X)
+    (F : C ⥤ D) (Y : C) : ((isInitialConst C hX).to F).app Y = hX.to (F.obj Y) := rfl
+
+end Functor
+
+end CategoryTheory

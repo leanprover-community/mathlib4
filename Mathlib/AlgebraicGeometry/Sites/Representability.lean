@@ -102,7 +102,7 @@ noncomputable def yonedaGluedToSheaf :
       apply yonedaEquiv.symm.injective
       dsimp only [glueData_V, glueData_J, glueData_U, glueData_f, glueData_t]
       rw [yonedaEquiv_naturality, Equiv.symm_apply_apply,
-        FunctorToTypes.map_comp_apply, yonedaEquiv_naturality, yonedaEquiv_naturality,
+        Functor.map_comp_apply, yonedaEquiv_naturality, yonedaEquiv_naturality,
         Equiv.symm_apply_apply, ← Functor.map_comp_assoc,
         Functor.relativelyRepresentable.symmetry_fst, ((hf i).rep.isPullback' (f j)).w]))
 
@@ -111,20 +111,21 @@ lemma yoneda_toGlued_yonedaGluedToSheaf (i : ι) :
     yoneda.map (toGlued hf i) ≫ (yonedaGluedToSheaf hf).hom = f i := by
   apply yonedaEquiv.injective
   rw [yonedaGluedToSheaf, yonedaEquiv_apply, yonedaEquiv_apply,
-    FunctorToTypes.comp, yoneda_map_app, id_comp, yonedaEquiv_symm_app_apply]
-  apply GlueData.sheafValGluedMk_val
+    NatTrans.comp_app_apply, yoneda_map_app]
+  simpa using GlueData.sheafValGluedMk_val _ _ _ _
 
 @[simp]
 lemma yonedaGluedToSheaf_app_toGlued {i : ι} :
-    (yonedaGluedToSheaf hf).hom.app _ (toGlued hf i) = yonedaEquiv (f i) := by
+    dsimp% (yonedaGluedToSheaf hf).hom.app _ (toGlued hf i) = yonedaEquiv (f i) := by
   rw [← yoneda_toGlued_yonedaGluedToSheaf hf i, yonedaEquiv_comp,
     yonedaEquiv_yoneda_map]
+  rfl
 
 @[simp]
 lemma yonedaGluedToSheaf_app_comp {V U : Scheme.{u}} (γ : V ⟶ U) (α : U ⟶ (glueData hf).glued) :
-    (yonedaGluedToSheaf hf).hom.app (op V) (γ ≫ α) =
+    dsimp% (yonedaGluedToSheaf hf).hom.app (op V) (γ ≫ α) =
       F.obj.map γ.op ((yonedaGluedToSheaf hf).hom.app (op U) α) :=
-  congr_fun ((yonedaGluedToSheaf hf).hom.naturality γ.op) α
+  ConcreteCategory.congr_hom ((yonedaGluedToSheaf hf).hom.naturality γ.op) α
 
 set_option backward.isDefEq.respectTransparency false in
 instance [Presheaf.IsLocallySurjective Scheme.zariskiTopology (Sigma.desc f)] :
@@ -155,7 +156,7 @@ instance : Sheaf.IsLocallyInjective (yonedaGluedToSheaf hf) where
     rintro V (γ : _ ⟶ U) ⟨⟨W₁, a, _, ⟨i⟩, fac₁⟩, ⟨W₂, b, _, ⟨j⟩, fac₂⟩⟩
     change γ ≫ α = γ ≫ β
     replace h : (yonedaGluedToSheaf hf).hom.app _ (γ ≫ α) =
-        (yonedaGluedToSheaf hf).hom.app _ (γ ≫ β) := by simp [h]
+        (yonedaGluedToSheaf hf).hom.app _ (γ ≫ β) := by dsimp at h; simp [h]
     rw [← fac₁, ← fac₂] at h ⊢
     apply comp_toGlued_eq
     simpa [Scheme.GlueData.openCover_X, yonedaEquiv_naturality] using h

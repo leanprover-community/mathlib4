@@ -5,8 +5,8 @@ Authors: Kyle Miller
 -/
 module
 
-public meta import Mathlib.Tactic.Basic
-public import Mathlib.Tactic.Basic
+public import Mathlib.Init
+public meta import Lean.Elab.Tactic.Conv.Basic
 
 /-! # Tactics that transform types into definitionally equal types
 
@@ -309,7 +309,7 @@ def etaStruct? (e : Expr) (tryWhnfR : Bool := true) : MetaM (Option Expr) := do
   let .const f _ := e.getAppFn | return none
   let some (ConstantInfo.ctorInfo fVal) := (← getEnv).find? f | return none
   unless 0 < fVal.numFields && e.getAppNumArgs == fVal.numParams + fVal.numFields do return none
-  unless isStructureLike (← getEnv) fVal.induct do return none
+  unless isNonRecStructure (← getEnv) fVal.induct do return none
   let args := e.getAppArgs
   let mut x? ← findProj fVal args pure
   if tryWhnfR then

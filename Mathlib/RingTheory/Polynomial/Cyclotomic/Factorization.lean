@@ -40,7 +40,6 @@ private lemma f_ne_zero : f ≠ 0 := fun h0 ↦ not_subsingleton K <|
 
 variable [hp : Fact p.Prime]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The degree of an irreducible monic factor of the `n`-th cyclotomic polynomial over a finite
   field. This is a special case of `natDegree_of_dvd_cyclotomic_of_irreducible` below. -/
 private theorem natDegree_of_dvd_cyclotomic_of_irreducible_of_monic (hP : P ∣ cyclotomic n K)
@@ -67,7 +66,7 @@ private theorem natDegree_of_dvd_cyclotomic_of_irreducible_of_monic (hP : P ∣ 
   refine dvd_antisymm
     (orderOf_dvd_iff_pow_eq_one.mpr <| AlgEquiv.coe_algHom_injective <| pB.algHom_ext ?_)
     (orderOf_dvd_iff_pow_eq_one.mpr <| Units.ext ?_)
-  · simp only [AlgHom.coe_coe, AlgEquiv.coe_pow, AlgEquiv.one_apply,
+  · simp only [AlgEquiv.coe_algHom, AlgEquiv.coe_pow, AlgEquiv.one_apply,
       coe_frobeniusAlgEquivOfAlgebraic, pow_iterate, hK]
     nth_rewrite 2 [← pow_one pB.gen]
     rw [powerBasis_gen hPirr.ne_zero, hζ'.pow_eq_pow_iff_modEq, ← hζ.eq_orderOf,

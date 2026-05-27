@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 /-!
 # Matrices of multivariate polynomials
 
-In this file, we prove results about matrices over an `MVPolynomial` ring.
+In this file, we prove results about matrices over an `MvPolynomial` ring.
 In particular, we provide `Matrix.mvPolynomialX` which associates every entry of a matrix with a
 unique variable.
 

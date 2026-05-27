@@ -79,6 +79,10 @@ theorem map_zero {f : ArithmeticFunction R} : f 0 = 0 :=
 theorem coe_inj {f g : ArithmeticFunction R} : (f : ℕ → R) = g ↔ f = g :=
   DFunLike.coe_fn_eq
 
+theorem range_coe : Set.range ((↑) : ArithmeticFunction R → (ℕ → R)) = {f | f 0 = 0} := by
+  ext f
+  exact ⟨by rintro ⟨f, rfl⟩; simp, fun hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
+
 @[simp]
 theorem zero_apply {x : ℕ} : (0 : ArithmeticFunction R) x = 0 :=
   rfl
@@ -333,6 +337,11 @@ instance {S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] :
     Algebra R (ArithmeticFunction S) :=
   .ofModule (fun x f g ↦ ext fun n ↦ by simp [Finset.smul_sum])
     fun x f g ↦ ext fun n ↦ by simp [Finset.smul_sum]
+
+@[simp]
+theorem algebraMap_apply_one {S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (x : R) :
+    algebraMap R (ArithmeticFunction S) x 1 = algebraMap R S x := by
+  simp [Algebra.algebraMap_eq_smul_one]
 
 instance {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
     Module (ArithmeticFunction R) (ArithmeticFunction M) where

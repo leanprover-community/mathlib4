@@ -15,7 +15,7 @@ This is of course just the well-known fact that filtered colimits commute with f
 the category of types.
 -/
 
-@[expose] public section
+public section
 
 universe v
 

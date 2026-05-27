@@ -114,12 +114,14 @@ def equivOp (H : Subgroup G) : H ≃ H.op :=
   MulOpposite.opEquiv.subtypeEquiv fun _ => Iff.rfl
 
 @[to_additive]
-theorem op_normalizer (H : Subgroup G) : H.normalizer.op = H.op.normalizer := by
+theorem op_normalizer (H : Subgroup G) : (normalizer H : Subgroup G).op = normalizer H.op := by
   ext x
-  simp [mem_normalizer_iff', iff_comm]
+  rw [mem_op, mem_normalizer_iff', mem_normalizer_iff']
+  simp [iff_comm]
 
 @[to_additive]
-theorem unop_normalizer (H : Subgroup Gᵐᵒᵖ) : H.normalizer.unop = H.unop.normalizer := by
+theorem unop_normalizer (H : Subgroup Gᵐᵒᵖ) :
+    (normalizer H).unop = normalizer (H.unop : Set G) := by
   rw [← op_inj, op_unop, op_normalizer, op_unop]
 
 end Subgroup

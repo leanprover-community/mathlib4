@@ -38,7 +38,7 @@ theorem factorization_eq_zero_iff_remainder {p r : ℕ} (i : ℕ) (pp : p.Prime)
   contrapose! h
   refine ⟨pp, ?_, ?_⟩
   · rwa [← Nat.dvd_add_iff_right (dvd_mul_right p i)]
-  · contrapose! hr0
+  · contrapose hr0
     exact (add_eq_zero.1 hr0).2
 
 /-- The only numbers with empty prime factorization are `0` and `1` -/
@@ -52,7 +52,7 @@ theorem factorization_eq_zero_iff' (n : ℕ) : n.factorization = 0 ↔ n = 0 ∨
 theorem factorization_prod_apply {α : Type*} {p : ℕ}
     {S : Finset α} {g : α → ℕ} (hS : ∀ x ∈ S, g x ≠ 0) :
     (S.prod g).factorization p = S.sum fun x => (g x).factorization p := by
-  rw [factorization_prod hS, finset_sum_apply]
+  rw [factorization_prod hS, finsetSum_apply]
 
 /-- A product over `n.factorization` can be written as a product over `n.primeFactors`; -/
 lemma prod_factorization_eq_prod_primeFactors {β : Type*} [CommMonoid β] (f : ℕ → ℕ → β) :
@@ -73,7 +73,7 @@ theorem factorization_pow_self {p n : ℕ} (hp : p.Prime) : (p ^ n).factorizatio
 /-- If the factorization of `n` contains just one number `p` then `n` is a power of `p` -/
 theorem eq_pow_of_factorization_eq_single {n p k : ℕ} (hn : n ≠ 0)
     (h : n.factorization = Finsupp.single p k) : n = p ^ k := by
-  rw [← Nat.factorization_prod_pow_eq_self hn, h]
+  rw [← Nat.prod_factorization_pow_eq_self hn, h]
   simp
 
 /-- The only prime factor of prime `p` is `p` itself. -/
@@ -465,7 +465,7 @@ theorem eq_iff_prime_padicValNat_eq (a b : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) :
 
 theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < m) :
     ∏ p ∈ range m with p.Prime, p ^ padicValNat p n = n := by
-  nth_rw 2 [← factorization_prod_pow_eq_self hn]
+  nth_rw 2 [← prod_factorization_pow_eq_self hn]
   rw [eq_comm]
   apply Finset.prod_subset_one_on_sdiff
   · exact fun p hp => Finset.mem_filter.mpr ⟨Finset.mem_range.2 <| pr.trans_le' <|
@@ -479,7 +479,7 @@ theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < 
 
 lemma prod_pow_primeFactors_factorization (hn : n ≠ 0) :
     n = ∏ (p : n.primeFactors), (p : ℕ) ^ (n.factorization p) := by
-  nth_rw 1 [← factorization_prod_pow_eq_self hn]
+  nth_rw 1 [← prod_factorization_pow_eq_self hn]
   rw [prod_factorization_eq_prod_primeFactors _]
   exact prod_subtype n.primeFactors (fun _ ↦ Iff.rfl) fun a ↦ a ^ n.factorization a
 
