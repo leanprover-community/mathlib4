@@ -52,7 +52,7 @@ partial def getNNRealCoes (e : Expr) : List Expr :=
     | _ => []
 
 /-- If `e : ℝ≥0`, returns a proof of `0 ≤ (e : ℝ)`. -/
-def mk_toReal_nonneg_prf (e : Expr) : MetaM (Option Expr) :=
+def mkToRealNonnegProof (e : Expr) : MetaM (Option Expr) :=
   try commitIfNoEx (mkAppM ``NNReal.coe_nonneg #[e])
   catch e => do
     trace[linarith] "Got exception when using `coe_nonneg` {e.toMessageData}"
@@ -71,7 +71,7 @@ initialize nnrealToRealTransform.set fun l => do
       discard <| (getNNRealCoes a).mapM AtomM.addAtom
       discard <| (getNNRealCoes b).mapM AtomM.addAtom
     return (← get).atoms.toList
-  let nonneg_pfs : List Expr ← atoms.filterMapM mk_toReal_nonneg_prf
-  return nonneg_pfs ++ l
+  let nonnegProofs : List Expr ← atoms.filterMapM mkToRealNonnegProof
+  return nonnegProofs ++ l
 
 end  Mathlib.Tactic.Linarith
