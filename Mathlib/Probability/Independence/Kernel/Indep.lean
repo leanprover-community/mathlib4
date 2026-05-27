@@ -322,6 +322,12 @@ theorem indep_of_indep_of_le_right {m₁ m₂ m₃ : MeasurableSpace Ω} {_mΩ :
     Indep m₁ m₃ κ μ :=
   fun t1 t2 ht1 ht2 => h_indep t1 t2 ht1 (h32 _ ht2)
 
+theorem indep_of_indep_of_le {m₁ m₂ m₃ m₄ : MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
+    {κ : Kernel α Ω} {μ : Measure α} (h_indep : Indep m₁ m₂ κ μ)
+    (h31 : m₃ ≤ m₁) (h42 : m₄ ≤ m₂) :
+    Indep m₃ m₄ κ μ :=
+  indep_of_indep_of_le_left (indep_of_indep_of_le_right h_indep h42) h31
+
 theorem iIndep_of_iIndep_of_le {m₁ m₂ : ι → MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} (h_indep : iIndep m₂ κ μ) (h_le : ∀ i, m₁ i ≤ m₂ i) :
     iIndep m₁ κ μ :=
