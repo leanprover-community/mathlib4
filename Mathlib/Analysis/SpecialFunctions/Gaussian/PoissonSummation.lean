@@ -88,13 +88,12 @@ theorem Complex.tsum_exp_neg_quadratic {a : ℂ} (ha : 0 < a.re) (b : ℂ) :
     (∑' n : ℤ, cexp (-π * a * n ^ 2 + 2 * π * b * n)) =
       1 / a ^ (1 / 2 : ℂ) * ∑' n : ℤ, cexp (-π / a * (n + I * b) ^ 2) := by
   let f : ℝ → ℂ := fun x ↦ cexp (-π * a * x ^ 2 + 2 * π * b * x)
-  have hCf : Continuous f := by fun_prop
   have hFf : 𝓕 f = fun x : ℝ ↦ 1 / a ^ (1 / 2 : ℂ) * cexp (-π / a * (x + I * b) ^ 2) :=
     fourier_gaussian_pi' ha b
-  have h1 : 0 < (↑π * a).re := by
+  have h1 : 0 < (π * a).re := by
     rw [re_ofReal_mul]
     exact mul_pos pi_pos ha
-  have h2 : 0 < (↑π / a).re := by
+  have h2 : 0 < (π / a).re := by
     rw [div_eq_mul_inv, re_ofReal_mul, inv_re]
     refine mul_pos pi_pos (div_pos ha <| normSq_pos.mpr ?_)
     contrapose! ha
@@ -110,9 +109,9 @@ theorem Complex.tsum_exp_neg_quadratic {a : ℂ} (ha : 0 < a.re) (b : ℂ) :
     simp_rw [this]
     conv => enter [2, x]; rw [Complex.exp_add, ← mul_assoc _ _ (Complex.exp _), mul_comm]
     refine ((cexp_neg_quadratic_isLittleO_abs_rpow_cocompact
-      (?_) (-2 * π * I * b / a) (-2)).isBigO.const_mul_left _).const_mul_left _
+      ?_ (-2 * π * I * b / a) (-2)).isBigO.const_mul_left _).const_mul_left _
     rwa [neg_div, neg_re, neg_lt_zero]
-  convert! Real.tsum_eq_tsum_fourier_of_rpow_decay hCf one_lt_two f_bd Ff_bd 0 using 1
+  convert! Real.tsum_eq_tsum_fourier_of_rpow_decay (by fun_prop) one_lt_two f_bd Ff_bd 0 using 1
   · simp only [f, zero_add, ofReal_intCast]
   · simp [← tsum_mul_left, hFf]
 
