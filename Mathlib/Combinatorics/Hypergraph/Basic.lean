@@ -230,7 +230,7 @@ theorem ne_bot_iff : H ≠ ⊥ ↔ H.IsNonempty := by
       apply Set.not_nonempty_empty
     · rw [h.2]
       apply Set.not_nonempty_empty
-    
+
 
 alias ⟨_, IsNonempty.ne_bot⟩ := ne_bot_iff
 
