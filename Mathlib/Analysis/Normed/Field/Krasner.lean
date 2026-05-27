@@ -67,7 +67,7 @@ theorem krasner [Field K] [Algebra K L]
   IsKrasner.krasner' hx sp hy h
 
 variable [NontriviallyNormedField K] [CompleteSpace K] [IsUltrametricDist K]
-    [NormedAlgebra K L] [Algebra.IsAlgebraic K L]
+    [NormedAlgebra K L]
 
 /-- Krasner's lemma assuming `Normal K L`. -/
 theorem of_completeSpace_of_normal [Normal K L] : IsKrasner K L where
@@ -114,7 +114,7 @@ If `K` is a complete nontrivially normed field and `L` is an algebraic extension
 such that the norm of `L` extends the norm on `K`, then `IsKrasner K L` holds.
 This corresponds to the classical Krasner's lemma.
 -/
-instance of_completeSpace : IsKrasner K L where
+instance of_completeSpace [Algebra.IsAlgebraic K L] : IsKrasner K L where
   krasner' {x} {y} xsep sp yint kr := by
     -- Reduce to the case `L = algebraic closure of K` to apply the previous lemma.
     let C := AlgebraicClosure K
