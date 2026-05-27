@@ -588,7 +588,7 @@ variable [SecondCountableTopology α] [OrderClosedTopology α]
 @[fun_prop]
 theorem Measurable.max {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun a => max (f a) (g a) := by
-  simpa only [max_def'] using hf.piecewise (measurableSet_le hg hf) hg
+  simpa only [max_def'] using! hf.piecewise (measurableSet_le hg hf) hg
 
 @[fun_prop]
 nonrec theorem AEMeasurable.max {f g : δ → α} {μ : Measure δ} (hf : AEMeasurable f μ)
@@ -599,7 +599,7 @@ nonrec theorem AEMeasurable.max {f g : δ → α} {μ : Measure δ} (hf : AEMeas
 @[fun_prop]
 theorem Measurable.min {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun a => min (f a) (g a) := by
-  simpa only [min_def] using hf.piecewise (measurableSet_le hf hg) hg
+  simpa only [min_def] using! hf.piecewise (measurableSet_le hf hg) hg
 
 @[fun_prop]
 nonrec theorem AEMeasurable.min {f g : δ → α} {μ : Measure δ} (hf : AEMeasurable f μ)
@@ -978,10 +978,10 @@ theorem AEMeasurable.biSup {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ �
   let g : ι → δ → α := fun i ↦ if hi : i ∈ s then (hf i hi).mk (f i) else fun _b ↦ sSup ∅
   have : ∀ i ∈ s, Measurable (g i) := by
     intro i hi
-    simpa [g, hi] using (hf i hi).measurable_mk
+    simpa [g, hi] using! (hf i hi).measurable_mk
   refine ⟨fun b ↦ ⨆ (i) (_ : i ∈ s), g i b, .biSup s hs this, ?_⟩
   have : ∀ i ∈ s, ∀ᵐ b ∂μ, f i b = g i b :=
-    fun i hi ↦ by simpa [g, hi] using (hf i hi).ae_eq_mk
+    fun i hi ↦ by simpa [g, hi] using! (hf i hi).ae_eq_mk
   filter_upwards [(ae_ball_iff hs).2 this] with b hb
   exact iSup_congr fun i => iSup_congr (hb i)
 

@@ -107,7 +107,7 @@ lemma norm_eq_of_mul_norm_lt_max {x y : S} (h : ‖x * y‖ < max ‖x‖ ‖y�
 @[to_additive /-- All triangles are isosceles in an ultrametric normed additive group. -/]
 lemma nnnorm_mul_eq_max_of_nnnorm_ne_nnnorm
     {x y : S} (h : ‖x‖₊ ≠ ‖y‖₊) : ‖x * y‖₊ = max ‖x‖₊ ‖y‖₊ := by
-  simpa only [← NNReal.coe_inj, NNReal.coe_max] using
+  simpa only [← NNReal.coe_inj, NNReal.coe_max] using!
     norm_mul_eq_max_of_norm_ne_norm (NNReal.coe_injective.ne h)
 
 @[to_additive]
@@ -125,7 +125,7 @@ lemma norm_div_eq_max_of_norm_div_ne_norm_div (x y z : S) (h : ‖x / y‖ ≠ �
 @[to_additive /-- All triangles are isosceles in an ultrametric normed additive group. -/]
 lemma nnnorm_div_eq_max_of_nnnorm_div_ne_nnnorm_div (x y z : S) (h : ‖x / y‖₊ ≠ ‖y / z‖₊) :
     ‖x / z‖₊ = max ‖x / y‖₊ ‖y / z‖₊ := by
-  simpa only [← NNReal.coe_inj, NNReal.coe_max] using
+  simpa only [← NNReal.coe_inj, NNReal.coe_max] using!
     norm_div_eq_max_of_norm_div_ne_norm_div _ _ _ (NNReal.coe_injective.ne h)
 
 @[to_additive]
@@ -225,7 +225,7 @@ lemma _root_.Finset.nnnorm_prod_le_sup_nnnorm (s : Finset ι) (f : ι → M) :
   rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
   · simpa only [← Finset.sup'_eq_sup hs, Finset.le_sup'_iff, coe_le_coe, coe_nnnorm']
-      using hs.norm_prod_le_sup'_norm f
+      using! hs.norm_prod_le_sup'_norm f
 
 /--
 Generalised ultrametric triangle inequality for finite products in commutative groups with

@@ -298,7 +298,7 @@ lemma mem_closure_of_mem_span_closure [AddMonoid M] [Nontrivial R] {m : M} {s : 
   have h' : Submonoid.map (of R M) s' = Submonoid.closure (of R M '' s) :=
     MonoidHom.map_mclosure _ _
   rw [Set.image_congr' (show ∀ x, of' R M x = of R M x from fun x => of'_eq_of x), ← h'] at h
-  simpa using of'_mem_span.1 h
+  simpa using! of'_mem_span.1 h
 
 lemma liftNC_smul [AddZeroClass M] (f : S →+* R) (g : Multiplicative M →* R) (c : S) (φ : S[M]) :
     liftNC (f : S →+ R) g (c • φ) = f c * liftNC (f : S →+ R) g φ := by

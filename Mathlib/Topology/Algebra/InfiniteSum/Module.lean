@@ -121,7 +121,7 @@ variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [Module R M] [AddCommMon
 /-- Applying a continuous linear map commutes with taking an (infinite) sum. -/
 protected theorem ContinuousLinearMap.hasSum {f : ι → M} (φ : M →SL[σ] M₂) {x : M}
     (hf : HasSum f x L) : HasSum (fun b : ι ↦ φ (f b)) (φ x) L := by
-  simpa only using hf.map φ.toLinearMap.toAddMonoidHom φ.continuous
+  simpa only using! hf.map φ.toLinearMap.toAddMonoidHom φ.continuous
 
 alias HasSum.mapL := ContinuousLinearMap.hasSum
 

@@ -39,7 +39,7 @@ def toAlgHom {A B : Under R} (f : A ⟶ B) : A →ₐ[R] B where
   __ := f.right.hom
   commutes' a := by
     have : (A.hom ≫ f.right) a = B.hom a := by simp
-    simpa only [Functor.const_obj_obj, Functor.id_obj, CommRingCat.comp_apply] using this
+    simpa only [Functor.const_obj_obj, Functor.id_obj, CommRingCat.comp_apply] using! this
 
 @[simp]
 lemma toAlgHom_id (A : Under R) : toAlgHom (𝟙 A) = AlgHom.id R A := rfl

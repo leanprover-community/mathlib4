@@ -416,7 +416,7 @@ def logEmbeddingEquiv :
     ⟨fun _ _ ↦ by
       rw [AddMonoidHom.coe_toIntLinearMap, AddMonoidHom.codRestrict_apply,
         AddMonoidHom.codRestrict_apply, Subtype.mk.injEq]
-      apply logEmbeddingQuot_injective K, fun ⟨a, ⟨b, _, ha⟩⟩ ↦ ⟨⟦b⟧, by simpa using ha⟩⟩
+      apply logEmbeddingQuot_injective K, fun ⟨a, ⟨b, _, ha⟩⟩ ↦ ⟨⟦b⟧, by simpa using! ha⟩⟩
 
 @[simp]
 theorem logEmbeddingEquiv_apply (x : (𝓞 K)ˣ) :

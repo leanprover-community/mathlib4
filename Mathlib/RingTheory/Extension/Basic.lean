@@ -373,7 +373,7 @@ instance Cotangent.module : Module S P.Cotangent where
     simpa [sub_eq_zero, sub_smul]
   mul_smul := fun r s x ↦ by
     have := smul_eq_zero_of_mem (P.σ (r * s) - (P.σ r * P.σ s) : P.Ring) (by simp) x
-    simpa only [sub_smul, mul_smul, sub_eq_zero] using this
+    simpa only [sub_smul, mul_smul, sub_eq_zero] using! this
 
 noncomputable
 instance {R₀} [CommRing R₀] [Algebra R₀ S] : Module R₀ P.Cotangent :=

@@ -244,7 +244,7 @@ protected lemma ext {f g : X ⟶ Y} (h_base : f.base = g.base)
   apply LocallyRingedSpace.Hom.ext'
   ext : 1
   · exact h_base
-  · exact TopCat.Presheaf.ext (fun U ↦ by simpa using h_app U)
+  · exact TopCat.Presheaf.ext (fun U ↦ by simpa using! h_app U)
 
 /-- An alternative ext lemma for scheme morphisms. -/
 protected lemma ext' {f g : X ⟶ Y} (h : f.toLRSHom = g.toLRSHom) : f = g := by

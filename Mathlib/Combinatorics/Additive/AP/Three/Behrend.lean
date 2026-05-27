@@ -484,6 +484,6 @@ theorem roth_lower_bound : (N : ℝ) * exp (-4 * √(log N)) ≤ rothNumberNat N
   obtain h₁ | h₁ := le_or_gt 4096 N
   · exact (roth_lower_bound_explicit h₁).le
   · apply (lower_bound_le_one hN h₁.le).trans
-    simpa using rothNumberNat.monotone hN
+    simpa using! rothNumberNat.monotone hN
 
 end Behrend

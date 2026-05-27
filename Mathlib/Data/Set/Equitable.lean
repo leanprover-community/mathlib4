@@ -52,7 +52,7 @@ theorem equitableOn_iff_exists_le_le_add_one {s : Set α} {f : α → ℕ} :
 
 theorem equitableOn_iff_exists_image_subset_icc {s : Set α} {f : α → ℕ} :
     s.EquitableOn f ↔ ∃ b, f '' s ⊆ Icc b (b + 1) := by
-  simpa only [image_subset_iff] using equitableOn_iff_exists_le_le_add_one
+  simpa only [image_subset_iff] using! equitableOn_iff_exists_le_le_add_one
 
 theorem equitableOn_iff_exists_eq_eq_add_one {s : Set α} {f : α → ℕ} :
     s.EquitableOn f ↔ ∃ b, ∀ a ∈ s, f a = b ∨ f a = b + 1 := by

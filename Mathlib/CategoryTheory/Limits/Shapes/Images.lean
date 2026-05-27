@@ -420,7 +420,7 @@ theorem image.lift_mk_comp {C : Type u} [Category.{v} C] {X Y Z : C}
 -- (uniqueness of the lift comes for free).
 instance image.lift_mono (F' : MonoFactorisation f) : Mono (image.lift F') := by
   refine @mono_of_mono _ _ _ _ _ _ F'.m ?_
-  simpa using MonoFactorisation.m_mono _
+  simpa using! MonoFactorisation.m_mono _
 
 theorem HasImage.uniq (F' : MonoFactorisation f) (l : image f ⟶ F'.I) (w : l ≫ F'.m = image.ι f) :
     l = image.lift F' :=

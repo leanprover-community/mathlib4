@@ -210,7 +210,7 @@ theorem cons_injective_iff {α} {x₀ : α} {x : Fin n → α} :
   · rintro ⟨i, hi⟩
     replace h := @h i.succ 0
     simp [hi] at h
-  · simpa [Function.comp] using h.comp (Fin.succ_injective _)
+  · simpa [Function.comp] using! h.comp (Fin.succ_injective _)
 
 theorem exists_cons {α : Fin (n + 1) → Type*} (q : ∀ i, α i) :
     ∃ (x₀ : α 0) (x : ∀ i : Fin n, α i.succ), q = cons x₀ x :=

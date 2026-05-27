@@ -815,7 +815,7 @@ lemma IsSymm.nondegenerate_restrict_of_isCompl_ker {B : M →ₗ[R] M →ₗ[R] 
   rw [LinearMap.IsRefl.nondegenerate_iff_separatingLeft hB']
   intro ⟨x, hx⟩ hx'
   simp only [Submodule.mk_eq_zero]
-  replace hx' : ∀ y ∈ W, B x y = 0 := by simpa [Subtype.forall] using hx'
+  replace hx' : ∀ y ∈ W, B x y = 0 := by simpa [Subtype.forall] using! hx'
   replace hx' : x ∈ W ⊓ ker B := by
     refine ⟨hx, ?_⟩
     ext y
@@ -823,7 +823,7 @@ lemma IsSymm.nondegenerate_restrict_of_isCompl_ker {B : M →ₗ[R] M →ₗ[R] 
       rw [← Submodule.mem_sup, hW.sup_eq_top]; exact Submodule.mem_top
     suffices B x u = 0 by rw [mem_ker] at hv; simpa [← hB.eq v, hv]
     exact hx' u hu
-  simpa [hW.inf_eq_bot] using hx'
+  simpa [hW.inf_eq_bot] using! hx'
 
 /-- The restriction of a reflexive bilinear map `B` onto a submodule `W` is
 nondegenerate if `W` has trivial intersection with its orthogonal complement,

@@ -943,7 +943,7 @@ theorem IsCompact.mem_closure_iff_exists_inseparable {K : Set X} (hK : IsCompact
   have : Disjoint (𝓝 y) (𝓝ˢ K) := hK.disjoint_nhdsSet_right.2 fun x hx ↦
     (disjoint_nhds_nhds_iff_not_inseparable.2 (hy x hx)).symm
   simpa only [disjoint_iff, notMem_closure_iff_nhdsWithin_eq_bot]
-    using this.mono_right principal_le_nhdsSet
+    using! this.mono_right principal_le_nhdsSet
 
 theorem IsCompact.closure_eq_biUnion_inseparable {K : Set X} (hK : IsCompact K) :
     closure K = ⋃ x ∈ K, {y | Inseparable x y} := by

@@ -199,7 +199,7 @@ In this section we prove the following results:
 /-- If a preconnected set contains endpoints of an interval, then it includes the whole interval. -/
 theorem IsPreconnected.Icc_subset {s : Set α} (hs : IsPreconnected s) {a b : α} (ha : a ∈ s)
     (hb : b ∈ s) : Icc a b ⊆ s := by
-  simpa only [image_id] using hs.intermediate_value ha hb continuousOn_id
+  simpa only [image_id] using! hs.intermediate_value ha hb continuousOn_id
 
 theorem IsPreconnected.ordConnected {s : Set α} (h : IsPreconnected s) : OrdConnected s :=
   ⟨fun _ hx _ hy => h.Icc_subset hx hy⟩

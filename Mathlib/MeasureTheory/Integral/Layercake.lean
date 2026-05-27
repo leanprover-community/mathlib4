@@ -280,7 +280,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
     rwa [this] at Hg
   -- let `M` be the largest number such that `g` vanishes ae on `(0, M]`.
   let M : ℝ := sSup {s : ℝ | g =ᵐ[volume.restrict (Ioc (0 : ℝ) s)] 0}
-  have zero_mem : 0 ∈ {s : ℝ | g =ᵐ[volume.restrict (Ioc (0 : ℝ) s)] 0} := by simpa using trivial
+  have zero_mem : 0 ∈ {s : ℝ | g =ᵐ[volume.restrict (Ioc (0 : ℝ) s)] 0} := by simpa using! trivial
   have M_nonneg : 0 ≤ M := le_csSup M_bdd zero_mem
   -- Then the function `g` indeed vanishes ae on `(0, M]`.
   have hgM : g =ᵐ[volume.restrict (Ioc (0 : ℝ) M)] 0 := by

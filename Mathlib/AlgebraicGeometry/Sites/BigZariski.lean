@@ -95,7 +95,7 @@ def affineOneHypercover (X : Scheme.{u}) : zariskiTopology.OneHypercover X :=
     (X.affineCover.refineOneHypercover fun i j ↦
       (pullback (X.affineCover.f i) (X.affineCover.f j)).affineCover.toPreZeroHypercover)
     X.affineCover.mem_grothendieckTopology
-    fun i j ↦ by simpa using Cover.mem_grothendieckTopology _
+    fun i j ↦ by simpa using! Cover.mem_grothendieckTopology _
 
 end Scheme
 

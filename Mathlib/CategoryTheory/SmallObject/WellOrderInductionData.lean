@@ -273,7 +273,7 @@ noncomputable def sectionsMk (val₀ : F.obj (op ⊥)) : F.sections where
 
 lemma sectionsMk_val_op_bot (val₀ : F.obj (op ⊥)) :
     (d.sectionsMk val₀).val (op ⊥) = val₀ := by
-  simpa using (default : d.Extension val₀ ⊥).map_zero
+  simpa using! (default : d.Extension val₀ ⊥).map_zero
 
 include d in
 lemma surjective :

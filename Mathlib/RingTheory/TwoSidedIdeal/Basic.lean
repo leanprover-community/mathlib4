@@ -117,9 +117,9 @@ lemma lt_iff (I J : TwoSidedIdeal R) : I < J ↔ (I : Set R) ⊂ (J : Set R) := 
 
 lemma zero_mem : 0 ∈ I := I.ringCon.refl 0
 
-lemma add_mem {x y} (hx : x ∈ I) (hy : y ∈ I) : x + y ∈ I := by simpa using I.ringCon.add hx hy
+lemma add_mem {x y} (hx : x ∈ I) (hy : y ∈ I) : x + y ∈ I := by simpa using! I.ringCon.add hx hy
 
-lemma neg_mem {x} (hx : x ∈ I) : -x ∈ I := by simpa using I.ringCon.neg hx
+lemma neg_mem {x} (hx : x ∈ I) : -x ∈ I := by simpa using! I.ringCon.neg hx
 
 instance : AddSubgroupClass (TwoSidedIdeal R) R where
   zero_mem := zero_mem
@@ -129,10 +129,10 @@ instance : AddSubgroupClass (TwoSidedIdeal R) R where
 lemma sub_mem {x y} (hx : x ∈ I) (hy : y ∈ I) : x - y ∈ I := _root_.sub_mem hx hy
 
 lemma mul_mem_left (x y) (hy : y ∈ I) : x * y ∈ I := by
-  simpa using I.ringCon.mul (I.ringCon.refl x) hy
+  simpa using! I.ringCon.mul (I.ringCon.refl x) hy
 
 lemma mul_mem_right (x y) (hx : x ∈ I) : x * y ∈ I := by
-  simpa using I.ringCon.mul hx (I.ringCon.refl y)
+  simpa using! I.ringCon.mul hx (I.ringCon.refl y)
 
 lemma nsmul_mem {x} (n : ℕ) (hx : x ∈ I) : n • x ∈ I := _root_.nsmul_mem hx _
 

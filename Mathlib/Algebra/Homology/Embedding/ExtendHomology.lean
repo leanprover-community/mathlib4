@@ -207,7 +207,7 @@ lemma d_comp_desc_eq_zero_iff ⦃W : C⦄ (φ : W ⟶ cocone.pt) :
       φ ≫ ((isColimitCokernelCofork K e hj' hi hi' cocone hcocone).desc
       (CokernelCofork.ofπ ((K.extend e).d j' k') (d_comp_d _ _ _ _))) = 0 :=
   d_comp_desc_eq_zero_iff' K e hj' hk hk' cocone hcocone _ (hcocone.fac _ _) _ (by
-    simpa using (isColimitCokernelCofork K e hj' hi hi' cocone hcocone).fac _
+    simpa using! (isColimitCokernelCofork K e hj' hi hi' cocone hcocone).fac _
       WalkingParallelPair.one) _
 
 set_option backward.isDefEq.respectTransparency false in

@@ -702,7 +702,7 @@ theorem uniformity_mulOpposite [UniformSpace α] :
 @[to_additive (attr := simp)]
 theorem comap_uniformity_mulOpposite [UniformSpace α] :
     comap (fun p : α × α => (MulOpposite.op p.1, MulOpposite.op p.2)) (𝓤 αᵐᵒᵖ) = 𝓤 α := by
-  simpa [uniformity_mulOpposite, comap_comap, (· ∘ ·)] using comap_id
+  simpa [uniformity_mulOpposite, comap_comap, (· ∘ ·)] using! comap_id
 
 namespace MulOpposite
 

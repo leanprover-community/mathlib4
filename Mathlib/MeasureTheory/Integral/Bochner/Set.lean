@@ -380,7 +380,7 @@ theorem integral_union_eq_left_of_ae (ht_eq : ∀ᵐ x ∂μ.restrict t, f x = 0
     ∫ x in s ∪ t, f x ∂μ = ∫ x in s, f x ∂μ := by
   have ht : IntegrableOn f t μ := by apply integrableOn_zero.congr_fun_ae; symm; exact ht_eq
   by_cases H : IntegrableOn f (s ∪ t) μ; swap
-  · rw [integral_undef H, integral_undef]; simpa [integrableOn_union, ht] using H
+  · rw [integral_undef H, integral_undef]; simpa [integrableOn_union, ht] using! H
   let f' := H.1.mk f
   calc
     ∫ x : X in s ∪ t, f x ∂μ = ∫ x : X in s ∪ t, f' x ∂μ := integral_congr_ae H.1.ae_eq_mk

@@ -487,7 +487,7 @@ instance measurableSMul₂_of_mul (M : Type*) [Mul M] [MeasurableSpace M] [Measu
 @[to_additive]
 instance Submonoid.instMeasurableConstSMul {M α} [MeasurableSpace α] [Monoid M] [MulAction M α]
     [MeasurableConstSMul M α] (s : Submonoid M) : MeasurableConstSMul s α where
-  measurable_const_smul c := by simpa only using measurable_const_smul (c : M)
+  measurable_const_smul c := by simpa only using! measurable_const_smul (c : M)
 
 @[to_additive]
 instance Submonoid.instMeasurableSMul {M α} [MeasurableSpace M] [MeasurableSpace α] [Monoid M]
@@ -732,7 +732,7 @@ nonrec instance MeasurableSMul.op {M α} [MeasurableSpace M] [MeasurableSpace α
     [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] [MeasurableSMul M α] : MeasurableSMul Mᵐᵒᵖ α where
   measurable_smul_const x :=
     show Measurable fun c => op (unop c) • x by
-      simpa only [op_smul_eq_smul] using (measurable_smul_const x).comp measurable_mul_unop
+      simpa only [op_smul_eq_smul] using! (measurable_smul_const x).comp measurable_mul_unop
 
 /-- If a scalar is central, then its right action is measurable when its left action is. -/
 nonrec instance MeasurableSMul₂.op {M α} [MeasurableSpace M] [MeasurableSpace α] [SMul M α]

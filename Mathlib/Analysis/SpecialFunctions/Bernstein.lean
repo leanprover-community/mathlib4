@@ -256,7 +256,7 @@ theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) 
         conv_lhs => rw [← one_mul (bernstein _ _ _)]
         gcongr
         simpa [one_le_div₀, hδ₀, sq_le_sq, S, abs_of_pos, ← Real.dist_eq, dist_comm (x : ℝ)]
-          using hk
+          using! hk
       -- Again enlarging the sum from `Sᶜ` to all of `Fin (n+1)`
       _ ≤ C * ∑ k : Fin (n + 1), ((x : ℝ) - k/ₙ) ^ 2 / δ ^ 2 * bernstein n k x := by
         gcongr; exact Sᶜ.subset_univ

@@ -55,7 +55,7 @@ lemma truncLE'_d_eq {i j : ι} (hij : c.Rel i j) {i' j' : ι'}
     (hi' : e.f i = i') (hj' : e.f j = j') (hj : ¬ e.BoundaryLE j) :
     (K.truncLE' e).d i j = (K.truncLE'XIso e hi' (e.not_boundaryLE_prev hij)).hom ≫ K.d i' j' ≫
         (K.truncLE'XIso e hj' hj).inv :=
-  Quiver.Hom.op_inj (by simpa using K.op.truncGE'_d_eq e.op hij hj' hi' (by simpa))
+  Quiver.Hom.op_inj (by simpa using! K.op.truncGE'_d_eq e.op hij hj' hi' (by simpa))
 
 lemma truncLE'_d_eq_toCycles {i j : ι} (hij : c.Rel i j) {i' j' : ι'}
     (hi' : e.f i = i') (hj' : e.f j = j') (hj : e.BoundaryLE j) :
@@ -63,7 +63,7 @@ lemma truncLE'_d_eq_toCycles {i j : ι} (hij : c.Rel i j) {i' j' : ι'}
       K.toCycles i' j' ≫ (K.truncLE'XIsoCycles e hj' hj).inv :=
   Quiver.Hom.op_inj (by
     simpa [truncLE', truncLE'XIso, truncLE'XIsoCycles]
-      using K.op.truncGE'_d_eq_fromOpcycles e.op hij hj' hi' (by simpa))
+      using! K.op.truncGE'_d_eq_fromOpcycles e.op hij hj' hi' (by simpa))
 
 section
 
@@ -115,7 +115,7 @@ lemma truncLE'Map_f_eq {i : ι} (hi : ¬ e.BoundaryLE i) {i' : ι'} (h : e.f i =
     (truncLE'Map φ e).f i =
       (K.truncLE'XIso e h hi).hom ≫ φ.f i' ≫ (L.truncLE'XIso e h hi).inv :=
   Quiver.Hom.op_inj
-    (by simpa using truncGE'Map_f_eq ((opFunctor C c').map φ.op) e.op (by simpa) h)
+    (by simpa using! truncGE'Map_f_eq ((opFunctor C c').map φ.op) e.op (by simpa) h)
 
 variable (K) in
 @[simp]

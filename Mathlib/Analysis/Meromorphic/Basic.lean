@@ -314,8 +314,8 @@ lemma div {f g : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) (hg : MeromorphicAt g 
 @[to_fun (attr := fun_prop)]
 lemma pow {f : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) (n : ℕ) : MeromorphicAt (f ^ n) x := by
   induction n with
-  | zero => simpa only [pow_zero] using MeromorphicAt.const 1 x
-  | succ m hm => simpa only [pow_succ] using hm.mul hf
+  | zero => simpa only [pow_zero] using! MeromorphicAt.const 1 x
+  | succ m hm => simpa only [pow_succ] using! hm.mul hf
 
 @[to_fun (attr := fun_prop)]
 lemma zpow {f : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) (n : ℤ) : MeromorphicAt (f ^ n) x := by
@@ -646,7 +646,7 @@ theorem countable_compl_analyticAt_inter [SecondCountableTopology 𝕜] [Complet
     ({z | AnalyticAt 𝕜 f z}ᶜ ∩ U).Countable := by
   apply (HereditarilyLindelofSpace.isLindelof _).countable_of_isDiscrete
     (isDiscrete_of_codiscreteWithin _)
-  simpa using eventually_codiscreteWithin_analyticAt f h
+  simpa using! eventually_codiscreteWithin_analyticAt f h
 
 end MeromorphicOn
 

@@ -356,7 +356,7 @@ theorem is_simple_module_of_finrank_eq_one {A} [Semiring A] [Module A V] [SMul K
   rw [← restrictScalars_inj K] at hn ⊢
   haveI : FiniteDimensional _ _ := .of_finrank_eq_succ h
   refine eq_top_of_finrank_eq ((Submodule.finrank_le _).antisymm ?_)
-  simpa only [h, finrank_bot] using Submodule.finrank_strictMono (Ne.bot_lt hn)
+  simpa only [h, finrank_bot] using! Submodule.finrank_strictMono (Ne.bot_lt hn)
 
 end finrank_eq_one
 

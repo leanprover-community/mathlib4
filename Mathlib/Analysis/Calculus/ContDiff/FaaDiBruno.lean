@@ -943,7 +943,7 @@ theorem taylorComp_sub_taylorComp_isBigO
       hqf _ <| c.partSize_le _
     rw [← Asymptotics.isBigO_pi] at H₂ H₃ H₄
     have H₅ := ((H₂.prod_left H₃).norm_left.pow (c.length - 1)).mul H₄.norm_norm
-    simpa [mul_assoc] using H₁.norm_left.mul <| H₅.const_mul_left c.length
+    simpa [mul_assoc] using! H₁.norm_left.mul <| H₅.const_mul_left c.length
   · have H₁ : (fun a ↦ p₁ a c.length - p₂ a c.length) =O[l] f := hpf _ c.length_le
     have H₂ : ∀ i, (q₂ · (c.partSize i)) =O[l] (1 : α → ℝ) := fun i ↦
       (hq₂_bdd _ <| c.partSize_le i).isBigO_one ℝ

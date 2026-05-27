@@ -183,7 +183,8 @@ lemma rothNumberNat_le_ruzsaSzemerediNumberNat (n : ℕ) :
     (2 * n + 1) * rothNumberNat n ≤ ruzsaSzemerediNumberNat (6 * n + 3) := by
   let α := Fin (2 * n + 1)
   have : Nat.Coprime 2 (2 * n + 1) := by simp
-  haveI : Fact (IsUnit (2 : Fin (2 * n + 1))) := ⟨by simpa using (ZMod.unitOfCoprime 2 this).isUnit⟩
+  haveI : Fact (IsUnit (2 : Fin (2 * n + 1))) := ⟨by simpa
+    using! (ZMod.unitOfCoprime 2 this).isUnit⟩
   open scoped Fin.CommRing in
   calc
     (2 * n + 1) * rothNumberNat n

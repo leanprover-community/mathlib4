@@ -252,7 +252,7 @@ def glueDataT'Aux (U V W U₀ : X.affineOpens) (hU₀ : U.1 ⊓ W ≤ U₀) :
         exact (Set.range_comp_subset_range _ _).trans (by simp)
       · rw [pullback.condition_assoc, pullback.condition_assoc, X.homOfLE_ι,
           ← Category.assoc, Scheme.Hom.comp_base, TopCat.coe_comp]
-        exact (Set.range_comp_subset_range _ _).trans (by simpa using hU₀))) (by
+        exact (Set.range_comp_subset_range _ _).trans (by simpa using! hU₀))) (by
       rw [← cancel_mono (Scheme.Opens.ι _)]
       simp [pullback.condition_assoc])
 

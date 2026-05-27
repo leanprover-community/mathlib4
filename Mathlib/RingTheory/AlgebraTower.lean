@@ -103,7 +103,7 @@ theorem linearIndependent_smul {ι : Type*} {b : ι → S} {ι' : Type*} {c : ι
   classical
   rw [← linearIndependent_equiv' (.prodComm ..) (g := fun p : ι' × ι ↦ b p.2 • c p.1) rfl,
     LinearIndependent, linearCombination_smul]
-  simpa using Function.Injective.comp hc
+  simpa using! Function.Injective.comp hc
     ((mapRange_injective _ (map_zero _) hb).comp <| Equiv.injective _)
 
 variable (R)

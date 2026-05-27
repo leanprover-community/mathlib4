@@ -219,7 +219,7 @@ lemma succ_signVariations_X_sub_C_mul_monomial {d c} (hc : c ≠ 0) (hη : 0 < �
     simp [hη, hc, Left.sign_neg, sign_mul]
   simpa [h₁, h₂, h₃, hc, hη.ne', signVariations, List.destutter_cons_cons,
     ← leadingCoeff_cons_eraseLead, coeffList_eraseLead, leadingCoeff_eraseLead_eq_nextCoeff]
-  using List.length_pos_of_ne_nil (List.destutter'_ne_nil _ _)
+  using! List.length_pos_of_ne_nil (List.destutter'_ne_nil _ _)
 
 private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (h₂ : P.nextCoeff ≠ 0) :
     ∃ c₀ cs, ((X - C η) * P).coeffList = P.leadingCoeff :: c₀ :: cs ∧

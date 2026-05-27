@@ -868,7 +868,7 @@ instance {D : Type*} [Category* D] {F : C ⥤ D} (J : Precoverage D) [Small.{w} 
     Small.{w} (J.comap F) where
   zeroHypercoverSmall {X} E := by
     refine ⟨(E.map F le_rfl).restrictIndexOfSmall.I₀, ZeroHypercover.Small.restrictFun _, ?_⟩
-    simpa using (E.map F le_rfl).restrictIndexOfSmall.mem₀
+    simpa using! (E.map F le_rfl).restrictIndexOfSmall.mem₀
 
 lemma Small.inf {J K : Precoverage C} [Small.{w} J]
     (of_le : ∀ ⦃X : C⦄ ⦃R S : Presieve X⦄, R ≤ S → S ∈ K X → R ∈ K X) :

@@ -255,8 +255,32 @@ lemma continuous_convexCombPair' [BoundedSpace X]
       (add_sub_cancel ..) (x i) (y i) :=
   continuous_convexCombPair_of_isBounded f hf hf0 hf1 x y hx hy (.all _) (.all _)
 
-@[deprecated (since := "2026-05-15")]
-alias continuous_convexComboPair' := continuous_convexCombPair'
+section Convex
+
+/-- A convex subset of a vector space is a convex space. -/
+-- TODO: this should generalize to arbitrary convex space once `Convex` is redefined.
+@[implicit_reducible]
+noncomputable def ConvexSpace.ofConvex
+    {R E : Type*} [LinearOrder R] [Field R] [IsStrictOrderedRing R]
+      [AddCommGroup E] [Module R E] {S : Set E} (H : Convex R S) :
+    ConvexSpace R S where
+  convexCombination f :=
+    letI : ConvexSpace R E := inferInstance
+    ⟨convexCombination (f.map (↑)), by
+    simpa [convexCombination_eq_sum, StdSimplex.map, Finsupp.sum_mapDomain_index, add_smul] using!
+      H.sum_mem (fun _ _ ↦ f.nonneg _) f.total fun i _ ↦ i.2⟩
+  assoc f := by
+    simp [convexCombination_eq_sum, StdSimplex.map, Finsupp.sum_mapDomain_index, add_smul,
+      StdSimplex.join, Finsupp.sum_sum_index, Finsupp.sum_smul_index, mul_smul, Finsupp.smul_sum]
+  single x := by simp [convexCombination_eq_sum, ← StdSimplex.mk_single, StdSimplex.map]
+
+@[simp]
+lemma ConvexSpace.ofConvex.coe_convexCombination
+      {R E : Type*} [LinearOrder R] [Field R] [IsStrictOrderedRing R]
+      [AddCommGroup E] [Module R E] (S : Set E) (H : Convex R S) (f : StdSimplex R S) :
+    letI : ConvexSpace R E := inferInstance; letI : ConvexSpace R S := .ofConvex H
+    (↑(convexCombination f) : E) = convexCombination (f.map (↑)) :=
+  rfl
 
 attribute [local instance] AddTorsor.toConvexSpace in
 instance (priority := low) {V P : Type*}

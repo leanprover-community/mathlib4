@@ -268,7 +268,7 @@ theorem integral_image_eq_integral_deriv_smul_of_monotoneOn (hs : MeasurableSet 
     ∫ x in f '' s, g x = ∫ x in s, f' x • g (f x) := by
   by_cases H : IntegrableOn g (f '' s); swap
   · rw [integral_undef H, integral_undef]
-    simpa [integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn hs hf' hf] using H
+    simpa [integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn hs hf' hf] using! H
   have H' : IntegrableOn (fun x ↦ (f' x) • g (f x)) s :=
     (integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn hs hf' hf g).1 H
   rcases exists_decomposition_of_monotoneOn_hasDerivWithinAt hs hf hf' with

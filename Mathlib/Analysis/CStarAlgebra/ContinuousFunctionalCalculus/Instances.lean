@@ -143,8 +143,8 @@ theorem RCLike.nonUnitalContinuousFunctionalCalculus :
       simp only [coe_comp, NonUnitalStarAlgHom.coe_coe, Function.comp_def,
         inrRangeEquiv_symm_apply, coe_codRestrict, ψ]
       fun_prop
-    case injective => simpa [ψ] using
-      (inrRangeEquiv 𝕜 A).symm.injective.comp ((cfcₙAux_injective hp₁ a ha).codRestrict _)
+    case injective => simpa [ψ] using!
+      (inrRangeEquiv 𝕜 A).symm.injective.comp (cfcₙAux_injective hp₁ a ha).codRestrict
     case map_id => exact inr_injective (R := 𝕜) <| coe_ψ _ ▸ cfcₙAux_id hp₁ a ha
     case map_spec =>
       exact quasispectrum_eq_spectrum_inr' 𝕜 𝕜 (ψ f) ▸ coe_ψ _ ▸ spec_cfcₙAux hp₁ a ha f

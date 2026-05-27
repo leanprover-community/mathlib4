@@ -538,7 +538,7 @@ theorem strong_law_aux5 :
     · exact (sub_self _).symm
     · have : -(n : ℝ) < X n ω := by
         apply lt_of_lt_of_le _ (hnonneg n ω)
-        simpa only [Right.neg_neg_iff, Nat.cast_pos] using npos
+        simpa only [Right.neg_neg_iff, Nat.cast_pos] using! npos
       simp only [this, true_and, not_le] at h
       exact (hn h).elim
   filter_upwards [B] with ω hω
@@ -608,7 +608,7 @@ theorem strong_law_ae_real {Ω : Type*} {m : MeasurableSpace Ω} {μ : Measure �
       intro i
       exact (hident i).symm.ae_snd (p := fun x ↦ x = 0) measurableSet_eq h
     filter_upwards [I] with ω hω
-    simpa [hω] using (integral_eq_zero_of_ae h).symm
+    simpa [hω] using! (integral_eq_zero_of_ae h).symm
   have : IsProbabilityMeasure μ :=
     hint.isProbabilityMeasure_of_indepFun (X 0) (X 1) h (hindep zero_ne_one)
   -- then consider separately the positive and the negative part, and apply the result

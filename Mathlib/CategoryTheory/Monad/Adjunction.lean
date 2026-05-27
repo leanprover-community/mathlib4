@@ -187,7 +187,7 @@ instance [R.Faithful] (h : L ⊣ R) : (Monad.comparison h).Faithful where
   map_injective {_ _} _ _ w := R.map_injective (congr_arg Monad.Algebra.Hom.f w :)
 
 instance (T : Monad C) : (Monad.comparison T.adj).Full where
-  map_surjective {_ _} f := ⟨⟨f.f, by simpa using f.h⟩, rfl⟩
+  map_surjective {_ _} f := ⟨⟨f.f, by simpa using! f.h⟩, rfl⟩
 
 set_option backward.defeqAttrib.useBackward true in
 instance (T : Monad C) : (Monad.comparison T.adj).EssSurj where
@@ -237,7 +237,7 @@ instance Comonad.comparison_faithful_of_faithful [L.Faithful] (h : L ⊣ R) :
   map_injective {_ _} _ _ w := L.map_injective (congr_arg Comonad.Coalgebra.Hom.f w :)
 
 instance (G : Comonad C) : (Comonad.comparison G.adj).Full where
-  map_surjective f := ⟨⟨f.f, by simpa using f.h⟩, rfl⟩
+  map_surjective f := ⟨⟨f.f, by simpa using! f.h⟩, rfl⟩
 
 set_option backward.defeqAttrib.useBackward true in
 instance (G : Comonad C) : (Comonad.comparison G.adj).EssSurj where

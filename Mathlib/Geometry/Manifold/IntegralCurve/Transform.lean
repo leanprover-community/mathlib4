@@ -57,7 +57,7 @@ lemma isMIntegralCurveOn_comp_add {dt : ℝ} :
 
 lemma isMIntegralCurveOn_comp_sub {dt : ℝ} :
     IsMIntegralCurveOn (γ ∘ (· - dt)) v { t | t - dt ∈ s } ↔ IsMIntegralCurveOn γ v s := by
-  simpa using isMIntegralCurveOn_comp_add (dt := -dt)
+  simpa using! isMIntegralCurveOn_comp_add (dt := -dt)
 
 lemma IsMIntegralCurveAt.comp_add (hγ : IsMIntegralCurveAt γ v t₀) (dt : ℝ) :
     IsMIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) := by
@@ -78,7 +78,7 @@ lemma isMIntegralCurveAt_comp_add {dt : ℝ} :
 
 lemma isMIntegralCurveAt_comp_sub {dt : ℝ} :
     IsMIntegralCurveAt (γ ∘ (· - dt)) v (t₀ + dt) ↔ IsMIntegralCurveAt γ v t₀ := by
-  simpa using isMIntegralCurveAt_comp_add (dt := -dt)
+  simpa using! isMIntegralCurveAt_comp_add (dt := -dt)
 
 lemma IsMIntegralCurve.comp_add (hγ : IsMIntegralCurve γ v) (dt : ℝ) :
     IsMIntegralCurve (γ ∘ (· + dt)) v := by
@@ -94,7 +94,7 @@ lemma isMIntegralCurve_comp_add {dt : ℝ} :
 
 lemma isMIntegralCurve_comp_sub {dt : ℝ} :
     IsMIntegralCurve (γ ∘ (· - dt)) v ↔ IsMIntegralCurve γ v := by
-  simpa using isMIntegralCurve_comp_add (dt := -dt)
+  simpa using! isMIntegralCurve_comp_add (dt := -dt)
 
 end Translation
 

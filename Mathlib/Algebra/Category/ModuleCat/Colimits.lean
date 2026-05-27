@@ -178,7 +178,7 @@ def finsuppCoconeIsColimit : IsColimit (finsuppCocone R M ι) where
   fac := by aesop (add simp finsuppCocone)
   uniq s f h := by
     ext : 1
-    exact Finsupp.lhom_ext' fun i ↦ LinearMap.ext fun x ↦ by simpa using congr($(h ⟨i⟩) (x : M))
+    exact Finsupp.lhom_ext' fun i ↦ LinearMap.ext fun x ↦ by simpa using! congr($(h ⟨i⟩) (x : M))
 
 end
 

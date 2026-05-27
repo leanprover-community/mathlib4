@@ -723,7 +723,7 @@ theorem preimage_ennreal_ofReal (h : u.OrdConnected) : (ENNReal.ofReal ⁻¹' u)
   h.preimage_coe_nnreal_ennreal.preimage_real_toNNReal
 
 theorem image_ennreal_ofReal (h : s.OrdConnected) : (ENNReal.ofReal '' s).OrdConnected := by
-  simpa only [image_image] using h.image_real_toNNReal.image_coe_nnreal_ennreal
+  simpa only [image_image] using! h.image_real_toNNReal.image_coe_nnreal_ennreal
 
 end OrdConnected
 

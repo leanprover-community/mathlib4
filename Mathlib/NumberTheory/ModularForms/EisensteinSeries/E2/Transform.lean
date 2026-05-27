@@ -151,13 +151,13 @@ lemma G2_S_action_eq_tsum_G2Term (z : ℍ) : ((z : ℂ) ^ 2)⁻¹ * G2 (S • z)
         Matrix.cons_val_fin_one, mul_inv_rev]
       nth_rw 1 [← aux_identity z M N]
       ring
-    · simpa using linear_left_summable (ne_zero z) N le_rfl
-    · simpa [add_assoc] using summable_left_one_div_linear_sub_one_div_linear z N (N + 1)
+    · simpa using! linear_left_summable (ne_zero z) N le_rfl
+    · simpa [add_assoc] using! summable_left_one_div_linear_sub_one_div_linear z N (N + 1)
   · apply HasSum.summable (a := (z.1 ^ 2)⁻¹ * G2 (S • z))
     rw [hasSum_symmetricIco_int_iff]
     apply (tendsto_double_sum_S_act z).congr (fun x ↦ ?_)
     rw [Summable.tsum_finsetSum (fun i hi ↦ ?_)]
-    simpa using linear_left_summable (ne_zero z) i (k := 2) (by norm_num)
+    simpa using! linear_left_summable (ne_zero z) i (k := 2) (by norm_num)
   · apply HasSum.summable (a := -2 * π * I / z)
     rw [hasSum_symmetricIco_int_iff, ← tendsto_comp_val_Ioi_atTop]
     exact tendsto_tsum_one_div_linear_sub_succ_eq z

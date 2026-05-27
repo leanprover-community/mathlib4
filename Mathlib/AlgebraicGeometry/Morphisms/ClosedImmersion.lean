@@ -247,7 +247,7 @@ lemma isDominant_of_of_appTop_injective [CompactSpace X]
   have : f.ker = ⊥ := Scheme.IdealSheafData.ext_of_isAffine
     (by simpa [f.ker_apply ⟨⊤, isAffineOpen_top Y⟩, ← RingHom.injective_iff_ker_eq_bot])
   exact ⟨by simpa only [Scheme.Hom.support_ker, Scheme.IdealSheafData.support_bot,
-    Closeds.coe_top, ← dense_iff_closure_eq] using (congr((↑($this).support : Set Y)) :)⟩
+    Closeds.coe_top, ← dense_iff_closure_eq] using! (congr((↑($this).support : Set Y)) :)⟩
 
 instance [CompactSpace X] : IsDominant X.toSpecΓ :=
   isDominant_of_of_appTop_injective (by

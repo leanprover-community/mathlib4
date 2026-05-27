@@ -73,7 +73,7 @@ lemma support_eq_univ_iff {L : SummationFilter β} :
   refine ⟨fun h s hs ↦ ?_, fun h b ↦ .filter_mono h ?_⟩
   · obtain ⟨t, ht⟩ := mem_atTop_sets.mp hs
     have := (Filter.biInter_finset_mem t).mpr fun b hb ↦ h b
-    exact Filter.mem_of_superset this fun r hr ↦ ht r (by simpa using hr)
+    exact Filter.mem_of_superset this fun r hr ↦ ht r (by simpa using! hr)
   · filter_upwards [eventually_ge_atTop {b}] using by simp
 
 @[simp] lemma support_eq_univ (L : SummationFilter β) [L.LeAtTop] : L.support = univ :=
@@ -218,7 +218,7 @@ finite: this corresponds to limits of finite sums over larger and larger interva
 
 instance : (conditional β).LeAtTop := ⟨support_eq_univ_iff.mp <| by
   simpa [eq_univ_iff_forall, support, -eventually_and]
-    using fun x ↦ prod_mem_prod (eventually_le_atBot x) (eventually_ge_atTop x)⟩
+    using! fun x ↦ prod_mem_prod (eventually_le_atBot x) (eventually_ge_atTop x)⟩
 
 set_option linter.flexible false in -- simp followed by infer_instance
 instance [Nonempty β] [IsDirectedOrder β] [IsCodirectedOrder β] : (conditional β).NeBot :=

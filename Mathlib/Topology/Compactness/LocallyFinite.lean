@@ -41,7 +41,7 @@ theorem finite_nonempty_of_compact [CompactSpace X] {f : ι → Set X}
 finitely many elements, `Set.Finite` version. -/
 theorem finite_of_compact [CompactSpace X] {f : ι → Set X}
     (hf : LocallyFinite f) (hne : ∀ i, (f i).Nonempty) : (univ : Set ι).Finite := by
-  simpa only [hne] using hf.finite_nonempty_of_compact
+  simpa only [hne] using! hf.finite_nonempty_of_compact
 
 /-- If `X` is a compact space, then a locally finite family of nonempty sets of `X` can have only
 finitely many elements, `Fintype` version. -/

@@ -93,7 +93,7 @@ theorem PolynomialLaw.isCompat_apply'
     {S : Type u} [CommSemiring S] [Algebra R S] {S' : Type u} [CommSemiring S'] [Algebra R S']
     (φ : S →ₐ[R] S') (x : S ⊗[R] M) :
     (φ.toLinearMap.rTensor N) ((f.toFun' S) x) = (f.toFun' S') (φ.toLinearMap.rTensor M x) := by
-  simpa only using congr_fun (f.isCompat' φ) x
+  simpa only using! congr_fun (f.isCompat' φ) x
 
 attribute [local simp] PolynomialLaw.isCompat_apply'
 

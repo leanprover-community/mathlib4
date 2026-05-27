@@ -154,7 +154,7 @@ theorem supIndep_univ_fin_two (f : Fin 2 → α) :
 
 @[simp]
 theorem supIndep_attach : (s.attach.SupIndep fun a => f a) ↔ s.SupIndep f := by
-  simpa [Finset.attach_map_val] using (supIndep_map (s := s.attach) (g := .subtype _)).symm
+  simpa [Finset.attach_map_val] using! (supIndep_map (s := s.attach) (g := .subtype _)).symm
 
 alias ⟨_, SupIndep.attach⟩ := supIndep_attach
 
@@ -196,8 +196,8 @@ protected theorem SupIndep.sigma {β : ι → Type*} {s : Finset ι} {g : ∀ i,
   classical
   rw [Finset.sigma_eq_biUnion]
   apply Finset.SupIndep.biUnion
-  · simpa using hs
-  · simpa [Finset.supIndep_map] using hg
+  · simpa using! hs
+  · simpa [Finset.supIndep_map] using! hg
 
 protected theorem SupIndep.product {s : Finset ι} {t : Finset ι'} {f : ι × ι' → α}
     (hs : s.SupIndep fun i => t.sup fun i' => f (i, i'))
@@ -205,7 +205,7 @@ protected theorem SupIndep.product {s : Finset ι} {t : Finset ι'} {f : ι × �
   classical
   rw [Finset.product_eq_biUnion]
   apply Finset.SupIndep.biUnion
-  · simpa using hs
+  · simpa using! hs
   · exact fun i' hi' ↦ (ht.mono fun i hi ↦ Finset.le_sup (f := fun i' ↦ f (i', i)) hi').image
 
 protected theorem SupIndep.disjoint_sup_sup {s : Finset ι} {f : ι → α} {u v : Finset ι}

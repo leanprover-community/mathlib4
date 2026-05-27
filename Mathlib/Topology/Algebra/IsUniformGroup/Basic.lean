@@ -470,8 +470,8 @@ theorem tendsto_div_comap_self (de : IsDenseInducing e) (x₀ : α) :
     ext t
     simp
   have lim : Tendsto (fun x : α × α => x.2 / x.1) (𝓝 (x₀, x₀)) (𝓝 (e 1)) := by
-    simpa using (continuous_div'.comp (@continuous_swap α α _ _)).tendsto (x₀, x₀)
-  simpa using de.tendsto_comap_nhds_nhds lim comm
+    simpa using! (continuous_div'.comp (@continuous_swap α α _ _)).tendsto (x₀, x₀)
+  simpa using! de.tendsto_comap_nhds_nhds lim comm
 
 end
 
@@ -641,7 +641,7 @@ instance QuotientGroup.completeSpace_right' (G : Type u) [Group G] [TopologicalS
   have key₀ : ∀ i j : ℕ, ∃ M : ℕ, j < M ∧ ∀ a b : ℕ, M ≤ a → M ≤ b →
       ∀ g : G, x b = g → ∃ g' : G, g / g' ∈ u i ∧ x a = g' := by
     have h𝓤GN : (𝓤 (G ⧸ N)).HasBasis (fun _ ↦ True) fun i ↦ { x | x.snd / x.fst ∈ (↑) '' u i } := by
-      simpa [uniformity_eq_comap_nhds_one', div_eq_mul_inv] using hv.comap _
+      simpa [uniformity_eq_comap_nhds_one', div_eq_mul_inv] using! hv.comap _
     rw [h𝓤GN.cauchySeq_iff] at hx
     simp only [mem_setOf_eq, forall_true_left, mem_image] at hx
     intro i j
@@ -681,7 +681,7 @@ instance QuotientGroup.completeSpace_right' (G : Type u) [Group G] [TopologicalS
     is to show by decreasing induction that `x' m / x' n ∈ u m` if `m ≤ n`. -/
   have x'_cauchy : CauchySeq fun n => (x' n).fst := by
     have h𝓤G : (𝓤 G).HasBasis (fun _ => True) fun i => { x | x.snd / x.fst ∈ u i } := by
-      simpa [uniformity_eq_comap_nhds_one', div_eq_mul_inv] using hu.toHasBasis.comap _
+      simpa [uniformity_eq_comap_nhds_one', div_eq_mul_inv] using! hu.toHasBasis.comap _
     rw [h𝓤G.cauchySeq_iff']
     simp only [mem_setOf_eq, forall_true_left]
     exact fun m =>

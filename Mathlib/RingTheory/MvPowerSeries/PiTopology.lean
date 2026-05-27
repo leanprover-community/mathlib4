@@ -245,7 +245,7 @@ theorem hasSum_of_monomials_self (f : MvPowerSeries σ R) :
     HasSum (fun d : σ →₀ ℕ => monomial d (coeff d f)) f := by
   rw [Pi.hasSum]
   intro d
-  simpa using hasSum_single d (fun d' h ↦ coeff_monomial_ne h.symm _)
+  simpa using! hasSum_single d (fun d' h ↦ coeff_monomial_ne h.symm _)
 
 /-- If the coefficient space is T2, then the multivariate power series is `tsum` of its monomials -/
 theorem as_tsum [T2Space R] (f : MvPowerSeries σ R) :
@@ -268,7 +268,7 @@ theorem summable_iff_summable_coeff :
     exact ⟨coeff n a, h n⟩
   · intro h
     choose a h using h
-    exact ⟨a, by simpa using h⟩
+    exact ⟨a, by simpa using! h⟩
 
 variable [LinearOrder ι] [LocallyFiniteOrderBot ι]
 

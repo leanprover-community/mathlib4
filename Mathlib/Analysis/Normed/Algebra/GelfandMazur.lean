@@ -129,7 +129,7 @@ private lemma norm_eq_of_isMinOn_of_forall_le {X E : Type*} [TopologicalSpace X]
     (hx : ‖f x‖ = M) (h : IsMinOn (‖f ·‖) univ x) (hf : Continuous f)
     (H : ∀ {y} z, ‖f y‖ = M → ∀ n > 0, ‖f z‖ ≤ M * (1 + (‖f z - f y‖ / M) ^ n)) (y : X) :
     ‖f y‖ = M := by
-  suffices {y | ‖f y‖ = M} = univ by simpa only [← this, hx] using mem_univ y
+  suffices {y | ‖f y‖ = M} = univ by simpa only [← this, hx] using! mem_univ y
   refine IsClopen.eq_univ ⟨isClosed_eq (by fun_prop) (by fun_prop), ?_⟩ <| nonempty_of_mem hx
   rw [isOpen_iff_eventually]
   intro w hw

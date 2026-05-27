@@ -75,7 +75,7 @@ lemma logTaylor_zero : logTaylor 0 = fun _ ↦ 0 := by
 lemma logTaylor_succ (n : ℕ) :
     logTaylor (n + 1) = logTaylor n + (fun z : ℂ ↦ (-1) ^ (n + 1) * z ^ n / n) := by
   funext
-  simpa only [logTaylor] using Finset.sum_range_succ ..
+  simpa only [logTaylor] using! Finset.sum_range_succ ..
 
 lemma logTaylor_at_zero (n : ℕ) : logTaylor n 0 = 0 := by
   induction n with

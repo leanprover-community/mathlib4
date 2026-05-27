@@ -158,7 +158,7 @@ theorem hasAntitoneBasis_cobounded_compl_ball (c : α) :
 @[simp]
 theorem comap_dist_right_atTop (c : α) : comap (dist · c) atTop = cobounded α :=
   (atTop_basis.comap _).eq_of_same_basis <| by
-    simpa only [compl_def, mem_ball, not_lt] using hasBasis_cobounded_compl_ball c
+    simpa only [compl_def, mem_ball, not_lt] using! hasBasis_cobounded_compl_ball c
 
 @[simp]
 theorem comap_dist_left_atTop (c : α) : comap (dist c) atTop = cobounded α := by

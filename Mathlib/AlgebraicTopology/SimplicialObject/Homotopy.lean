@@ -104,25 +104,25 @@ def whiskerRight (H : Homotopy f g) {D : Type u'} [Category.{v'} D] (F : C ⥤ D
       (((SimplicialObject.whiskering C D).obj F).map g) where
   h i := F.map (H.h i)
   h_zero_comp_δ_zero n := by
-    simpa [SimplicialObject.δ] using
+    simpa [SimplicialObject.δ] using!
       congrArg (fun k => F.map k) (H.h_zero_comp_δ_zero n)
   h_last_comp_δ_last n := by
-    simpa [SimplicialObject.δ] using
+    simpa [SimplicialObject.δ] using!
       congrArg (fun k => F.map k) (H.h_last_comp_δ_last n)
   h_succ_comp_δ_castSucc_of_lt i j hij := by
-    simpa [SimplicialObject.δ] using
+    simpa [SimplicialObject.δ] using!
       congrArg (fun k => F.map k) (H.h_succ_comp_δ_castSucc_of_lt i j hij)
   h_succ_comp_δ_castSucc_succ j := by
-    simpa [SimplicialObject.δ] using
+    simpa [SimplicialObject.δ] using!
       congrArg (fun k => F.map k) (H.h_succ_comp_δ_castSucc_succ j)
   h_castSucc_comp_δ_succ_of_lt i j hji := by
-    simpa [SimplicialObject.δ] using
+    simpa [SimplicialObject.δ] using!
       congrArg (fun k => F.map k) (H.h_castSucc_comp_δ_succ_of_lt i j hji)
   h_comp_σ_castSucc_of_le i j hij := by
-    simpa [SimplicialObject.σ] using
+    simpa [SimplicialObject.σ] using!
       congrArg (fun k => F.map k) (H.h_comp_σ_castSucc_of_le i j hij)
   h_comp_σ_succ_of_lt i j hji := by
-    simpa [SimplicialObject.σ] using
+    simpa [SimplicialObject.σ] using!
       congrArg (fun k => F.map k) (H.h_comp_σ_succ_of_lt i j hji)
 
 /-- Postcompose a simplicial homotopy with a morphism of simplicial objects. -/

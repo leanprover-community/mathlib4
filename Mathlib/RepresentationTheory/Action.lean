@@ -246,7 +246,7 @@ variable (k G) in
 def linearizeTrivialIso (X : Type w) : (linearize k G (Action.trivial _ X)).Equiv
     (trivial k G (X →₀ k)) :=
   .mk (LinearEquiv.refl _ _) fun g ↦ by
-    simpa using linearizeTrivial_def (k := k) X g
+    simpa using! linearizeTrivial_def (k := k) X g
 
 open CategoryTheory
 lemma linearizeTrivialIso_apply {X : Type w} (f : (Action.trivial _ X).V →₀ k) :

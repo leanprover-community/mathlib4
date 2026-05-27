@@ -112,7 +112,7 @@ lemma addContent_biUnion {ι : Type*} {a : Finset ι} {f : ι → Set α} (hf : 
   have A : ⋃ i ∈ a, f i = ⋃₀ (a.image f) := by simp
   rw [A, addContent_sUnion]; rotate_left
   · grind
-  · simpa using h_dis.image
+  · simpa using! h_dis.image
   · rwa [← A]
   rw [sum_image_of_pairwise_eq_zero]
   refine h_dis.imp ?_

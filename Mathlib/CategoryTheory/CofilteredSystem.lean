@@ -313,7 +313,7 @@ theorem eval_section_surjective_of_surjective (i : J) :
   let s : Set (F.obj i) := {x}
   haveI := F.toPreimages_nonempty_of_surjective s Fsur (singleton_nonempty x)
   obtain ⟨sec, h⟩ := nonempty_sections_of_finite_cofiltered_system (F.toPreimages s)
-  refine ⟨⟨fun j => (sec j).val, fun jk => by simpa [Subtype.ext_iff] using h jk⟩, ?_⟩
+  refine ⟨⟨fun j => (sec j).val, fun jk => by simpa [Subtype.ext_iff] using! h jk⟩, ?_⟩
   · have := (sec i).prop
     simp only [mem_iInter, mem_preimage] at this
     have := this (𝟙 i)

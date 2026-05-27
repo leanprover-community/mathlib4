@@ -387,7 +387,7 @@ lemma height_eq_sum {i : ι} {f : ι → ℤ} (heq : P.root i = ∑ j ∈ b.supp
   have aux (j : b.support) := Fintype.linearIndependent_iffₛ.mp
       (b.linearIndepOn_root.restrict_scalars' ℤ) ((b.exists_root_eq_sum_int i).choose ∘ (↑))
       (f ∘ (↑)) (by simpa) j
-  simpa using aux ⟨j, hj⟩
+  simpa using! aux ⟨j, hj⟩
 
 lemma height_ne_zero (i : ι) :
     b.height i ≠ 0 := by

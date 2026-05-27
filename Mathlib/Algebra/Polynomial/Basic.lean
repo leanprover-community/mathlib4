@@ -428,7 +428,7 @@ theorem monomial_eq_monomial_iff {m n : ℕ} {a b : R} :
   rw [← toFinsupp_inj, toFinsupp_monomial, toFinsupp_monomial, Finsupp.single_eq_single_iff]
 
 theorem support_add : (p + q).support ⊆ p.support ∪ q.support := by
-  simpa [support] using Finsupp.support_add
+  simpa [support] using! Finsupp.support_add
 
 /-- `C a` is the constant polynomial `a`.
 `C` is provided as a ring homomorphism.
@@ -706,7 +706,7 @@ theorem forall_eq_iff_forall_eq : (∀ f g : R[X], f = g) ↔ ∀ a b : R, a = b
 theorem ext_iff {p q : R[X]} : p = q ↔ ∀ n, coeff p n = coeff q n := by
   rcases p with ⟨f : ℕ →₀ R⟩
   rcases q with ⟨g : ℕ →₀ R⟩
-  simpa [coeff] using DFunLike.ext_iff (f := f) (g := g)
+  simpa [coeff] using! DFunLike.ext_iff (f := f) (g := g)
 
 @[ext]
 theorem ext {p q : R[X]} : (∀ n, coeff p n = coeff q n) → p = q :=

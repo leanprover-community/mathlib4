@@ -403,7 +403,7 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
     suffices ∀ j : Fin n, ite (j = j') x' ((cs i).b j.succ) ∈ c.side j.succ by
       simpa [p', bottom, toSet, tail, side_tail]
     intro j₂
-    by_cases hj₂ : j₂ = j'; · simpa [hj₂] using tail_sub h2i' _ hx'.1
+    by_cases hj₂ : j₂ = j'; · simpa [hj₂] using! tail_sub h2i' _ hx'.1
     simp only [if_false, hj₂]; apply tail_sub hi; apply b_mem_side
   rcases v.1 hp' with ⟨_, ⟨i'', rfl⟩, hi''⟩
   have h2i'' : i'' ∈ bcubes cs c := ⟨hi''.1.symm, v.2.1 i'' hi''.1.symm ⟨tail p', hi''.2, hp'.2⟩⟩
@@ -413,7 +413,7 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
       simp only [toSet, forall_iff_succ, hi.1, bottom_mem_side h2i', true_and, mem_setOf_eq]
       intro j₂; by_cases hj₂ : j₂ = j
       · simpa [p', side_tail, hj'.symm, hj₂] using hi''.2 j
-      · simpa [p, hj₂] using hi'.2 j₂
+      · simpa [p, hj₂] using! hi'.2 j₂
     apply not_disjoint_iff.mpr ⟨(cs i).b, (cs i).b_mem_toSet, this⟩ (h.1 i_i')
   have i_i'' : i ≠ i'' := by intro h; induction h; simpa [p', hx'.2] using hi''.2 j'
   apply Not.elim _ (h.1 i'_i'')
@@ -482,10 +482,10 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
     have h3i'' : (cs i).w < (cs i'').w := by
       apply mi_strict_minimal _ h2i''; rintro rfl; apply h2p3; convert! hi''.2
     let p' := @cons n (fun _ => ℝ) (cs i).xm p3
-    have hp' : p' ∈ (cs i').toSet := by simpa [i, p', toSet, forall_iff_succ, hi'.symm] using h1p3
+    have hp' : p' ∈ (cs i').toSet := by simpa [i, p', toSet, forall_iff_succ, hi'.symm] using! h1p3
     have h2p' : p' ∈ (cs i'').toSet := by
       simp only [p', toSet, forall_iff_succ, cons_succ, cons_zero, mem_setOf_eq]
-      refine ⟨?_, by simpa [toSet] using hi''.2⟩
+      refine ⟨?_, by simpa [toSet] using! hi''.2⟩
       have : (cs i).b 0 = (cs i'').b 0 := by rw [hi.1, h2i''.1]
       simp [side, hw', xm, this, h3i'']
     apply not_disjoint_iff.mpr ⟨p', hp', h2p'⟩

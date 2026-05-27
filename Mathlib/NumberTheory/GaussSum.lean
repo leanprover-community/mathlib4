@@ -355,6 +355,6 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
   · rw [(by norm_num : (8 : F) = 2 ^ 2 * 2), mul_pow,
       (FiniteField.isSquare_iff hF <| hp2 2).mp ⟨2, pow_two 2⟩, one_mul]
   apply (algebraMap F FF).injective
-  simpa only [map_pow, map_ofNat, map_intCast, Nat.cast_ofNat] using h
+  simpa only [map_pow, map_ofNat, map_intCast, Nat.cast_ofNat] using! h
 
 end GaussSumTwo

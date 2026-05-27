@@ -148,7 +148,7 @@ theorem addHaar_eq_zero_of_disjoint_translates_aux {E : Type*} [NormedAddCommGro
     _ = ∑' n : ℕ, μ ({u n} + s) := by
       congr 1; ext1 n; simp only [image_add_left, measure_preimage_add, singleton_add]
     _ = μ (⋃ n, {u n} + s) := Eq.symm <| measure_iUnion hs fun n => by
-      simpa only [image_add_left, singleton_add] using measurable_id.const_add _ h's
+      simpa only [image_add_left, singleton_add] using! measurable_id.const_add _ h's
     _ = μ (range u + s) := by rw [← iUnion_add, iUnion_singleton_eq_range]
     _ < ∞ := (hu.add sb).measure_lt_top
 
@@ -395,7 +395,7 @@ theorem NullMeasurableSet.const_smul (hs : NullMeasurableSet s μ) (r : ℝ) :
   obtain rfl | hs' := s.eq_empty_or_nonempty
   · simp
   obtain rfl | hr := eq_or_ne r 0
-  · simpa [zero_smul_set hs'] using nullMeasurableSet_singleton _
+  · simpa [zero_smul_set hs'] using! nullMeasurableSet_singleton _
   obtain ⟨t, ht, hst⟩ := hs
   refine ⟨_, ht.const_smul_of_ne_zero hr, ?_⟩
   rw [← measure_symmDiff_eq_zero_iff] at hst ⊢

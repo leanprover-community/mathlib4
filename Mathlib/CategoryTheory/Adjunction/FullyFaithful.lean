@@ -79,7 +79,7 @@ instance unit_isIso_of_L_fully_faithful [L.Full] [L.Faithful] : IsIso (Adjunctio
 /-- If the right adjoint is faithful, then each component of the counit is an epimorphism. -/
 instance counit_epi_of_R_faithful [R.Faithful] (X : D) : Epi (h.counit.app X) where
   left_cancellation {Y} f g hfg :=
-    R.map_injective <| (h.homEquiv (R.obj X) Y).symm.injective <| by simpa using hfg
+    R.map_injective <| (h.homEquiv (R.obj X) Y).symm.injective <| by simpa using! hfg
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

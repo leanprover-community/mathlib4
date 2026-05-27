@@ -147,12 +147,12 @@ theorem iff_quotient_mvPolynomial' :
     refine
       ⟨ULift (Fin n), inferInstance, f.comp ulift_var.toAlgHom, hfs.comp ulift_var.surjective,
         Ideal.fg_ker_comp _ _ ?_ hfk ulift_var.surjective⟩
-    simpa using Submodule.fg_bot
+    simpa using! Submodule.fg_bot
   · rintro ⟨ι, hfintype, f, hf⟩
     have equiv := MvPolynomial.renameEquiv R (Fintype.equivFin ι)
     use Fintype.card ι, f.comp equiv.symm, hf.1.comp (AlgEquiv.symm equiv).surjective
     refine Ideal.fg_ker_comp (S := MvPolynomial ι R) (A := A) _ f ?_ hf.2 equiv.symm.surjective
-    simpa using Submodule.fg_bot
+    simpa using! Submodule.fg_bot
 
 universe v in
 /-- If `A` is a finitely presented `R`-algebra, then `MvPolynomial (Fin n) A` is finitely presented

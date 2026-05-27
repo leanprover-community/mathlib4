@@ -322,7 +322,7 @@ theorem isVonNBounded_iff {R : Type*} [NormedDivisionRing R]
   filter_upwards [h s hs hU, eventually_ne_cobounded 0] with c hc hc₀ f hf
   rw [mem_smul_set_iff_inv_smul_mem₀ hc₀]
   intro x hx
-  simpa only [mem_smul_set_iff_inv_smul_mem₀ hc₀] using hc (mem_image2_of_mem hf hx)
+  simpa only [mem_smul_set_iff_inv_smul_mem₀ hc₀] using! hc (mem_image2_of_mem hf hx)
 
 instance instUniformContinuousConstSMul (M : Type*)
     [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]

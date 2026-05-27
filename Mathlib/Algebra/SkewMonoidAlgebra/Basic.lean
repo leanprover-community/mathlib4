@@ -329,7 +329,7 @@ theorem coeff_one_one : coeff (1 : SkewMonoidAlgebra k G) 1 = 1 := by
 theorem coeff_one {a : G} [Decidable (a = 1)] :
     (1 : SkewMonoidAlgebra k G).coeff a = if a = 1 then 1 else 0 := by
   classical
-  simpa [eq_comm (a := a)] using coeff_single_apply
+  simpa [eq_comm (a := a)] using! coeff_single_apply
 
 theorem natCast_def (n : ℕ) : (n : SkewMonoidAlgebra k G) = single (1 : G) (n : k) := by
   induction n <;> simp_all

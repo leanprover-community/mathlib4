@@ -74,7 +74,7 @@ instance functor_category_isIdempotentComplete [IsIdempotentComplete C] :
       naturality := fun _ _ _ => by rw [equalizer.lift_ι] }
   let e : F ⟶ Y :=
     { app := fun j =>
-        equalizer.lift (p.app j) (by simpa only [comp_id] using (congr_app hp j).symm)
+        equalizer.lift (p.app j) (by simpa only [comp_id] using! (congr_app hp j).symm)
       naturality := fun j j' φ => equalizer.hom_ext (by simp [Y]) }
   use Y, i, e
   constructor

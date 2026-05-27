@@ -619,7 +619,7 @@ lemma top_supp_eq_univ (c : ConnectedComponent (⊤ : SimpleGraph V)) :
     c.supp = (Set.univ : Set V) := by
   obtain ⟨w, rfl⟩ := c.exists_rep
   ext v
-  simpa [-ConnectedComponent.eq] using ConnectedComponent.sound (G := ⊤)
+  simpa [-ConnectedComponent.eq] using! ConnectedComponent.sound (G := ⊤)
 
 lemma reachable_of_mem_supp {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
     (hu : u ∈ C.supp) (hv : v ∈ C.supp) : G.Reachable u v := by
@@ -708,8 +708,8 @@ def homOfConnectedComponents (G : SimpleGraph V) {H : SimpleGraph V'}
   toFun := fun x ↦ (C (G.connectedComponentMk x)) ⟨x, ConnectedComponent.connectedComponentMk_mem⟩
   map_rel' := fun hab ↦ by
     have h : (G.connectedComponentMk _).toSimpleGraph.Adj ⟨_, rfl⟩
-        ⟨_, ((G.connectedComponentMk _).mem_supp_congr_adj hab).1 rfl⟩ := by simpa using hab
-    convert! (C (G.connectedComponentMk _)).map_rel h using 3 <;>
+        ⟨_, ((G.connectedComponentMk _).mem_supp_congr_adj hab).1 rfl⟩ := by simpa using! hab
+    convert (C (G.connectedComponentMk _)).map_rel h using 3 <;>
       rw [ConnectedComponent.connectedComponentMk_eq_of_adj hab]
 
 -- TODO: Extract as lemma about general equivalence relation

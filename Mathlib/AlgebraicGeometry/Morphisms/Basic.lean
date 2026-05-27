@@ -634,7 +634,7 @@ theorem isStableUnderBaseChange (hP' : Q.IsStableUnderBaseChange) :
           (pullbackRightPullbackFstIso (S.affineCover.f i) g
             (pullback.snd f (S.affineCover.f i))).symm
         exact asIso
-          (pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simpa using pullback.condition) (by simp))
+          (pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simpa using! pullback.condition) (by simp))
       have : e.hom ≫ pullback.fst _ _ =
           pullback.snd (pullback.fst f g) ((S.affineCover.pullback₁ f).f i) := by
         simp [e]

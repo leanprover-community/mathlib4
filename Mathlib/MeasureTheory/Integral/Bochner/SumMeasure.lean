@@ -129,7 +129,7 @@ theorem hasSum_integral_measure (hf : Integrable f (Measure.sum μ)) :
   refine ((hasSum_lintegral_measure (fun x ↦ ‖f x‖ₑ) μ).eventually hmem).mono fun s hs ↦ ?_
   obtain ⟨ν, hν⟩ : ∃ ν, (∑ i ∈ s, μ i) + ν = Measure.sum μ := by
     refine ⟨Measure.sum fun i : ↥(sᶜ : Set ι) ↦ μ i, ?_⟩
-    simpa only [← Measure.sum_coe_finset] using Measure.sum_add_sum_compl (s : Set ι) μ
+    simpa only [← Measure.sum_coe_finset] using! Measure.sum_add_sum_compl (s : Set ι) μ
   rw [Metric.mem_ball, ← coe_nndist, NNReal.coe_lt_coe, ← ENNReal.coe_lt_coe, ← hν]
   rw [← hν, integrable_add_measure] at hf
   refine (nndist_integral_add_measure_le_lintegral hf.1 hf.2).trans_lt ?_

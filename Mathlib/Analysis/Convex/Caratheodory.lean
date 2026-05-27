@@ -106,7 +106,7 @@ variable {s : Set E} {x : E}
 cardinality, whose convex hull contains `x`. -/
 noncomputable def minCardFinsetOfMemConvexHull (hx : x ∈ convexHull 𝕜 s) : Finset E :=
   Function.argminOn Finset.card { t | ↑t ⊆ s ∧ x ∈ convexHull 𝕜 (t : Set E) } <| by
-    simpa only [convexHull_eq_union_convexHull_finite_subsets s, exists_prop, mem_iUnion] using hx
+    simpa only [convexHull_eq_union_convexHull_finite_subsets s, exists_prop, mem_iUnion] using! hx
 
 variable (hx : x ∈ convexHull 𝕜 s)
 

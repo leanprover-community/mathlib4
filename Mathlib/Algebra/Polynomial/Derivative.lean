@@ -597,7 +597,7 @@ theorem derivative_prod [DecidableEq ι] {s : Multiset ι} {f : ι → R[X]} :
 theorem derivative_prod_finset [DecidableEq ι] {s : Finset ι} {f : ι → R[X]} :
     derivative (∏ b ∈ s, f b) =
       ∑ a ∈ s, (∏ b ∈ s.erase a, f b) * derivative (f a) := by
-  simpa using derivative_prod
+  simpa using! derivative_prod
 
 end CommSemiring
 

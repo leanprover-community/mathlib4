@@ -490,7 +490,7 @@ theorem iSup_sup_eq : ⨆ x, f x ⊔ g x = (⨆ x, f x) ⊔ ⨆ x, g x :=
 @[to_dual]
 lemma Equiv.biSup_comp {ι ι' : Type*} {g : ι' → α} (e : ι ≃ ι') (s : Set ι') :
     ⨆ i ∈ e.symm '' s, g (e i) = ⨆ i ∈ s, g i := by
-  simpa only [iSup_subtype'] using (image e.symm s).symm.iSup_comp (g := g ∘ (↑))
+  simpa only [iSup_subtype'] using! (image e.symm s).symm.iSup_comp (g := g ∘ (↑))
 
 @[to_dual biInf_le]
 lemma le_biSup {ι : Type*} {s : Set ι} (f : ι → α) {i : ι} (hi : i ∈ s) : f i ≤ ⨆ i ∈ s, f i :=
@@ -734,7 +734,7 @@ theorem iSup_of_empty [IsEmpty ι] (f : ι → α) : iSup f = ⊥ :=
 
 @[to_dual]
 theorem isLUB_biSup {s : Set β} {f : β → α} : IsLUB (f '' s) (⨆ x ∈ s, f x) := by
-  simpa only [range_comp, Subtype.range_coe, iSup_subtype'] using
+  simpa only [range_comp, Subtype.range_coe, iSup_subtype'] using!
     @isLUB_iSup α s _ (f ∘ fun x => (x : β))
 
 @[to_dual]
