@@ -389,6 +389,22 @@ theorem mem_dropLast_of_mem_of_ne_getLast? {a : α} (ha : a ∈ l) (ha' : a ≠ 
     a ∈ l.dropLast :=
   mem_dropLast_of_mem_of_ne_getLast ha <| by grind
 
+/-- Any `x ∈ l` gives a decomposition `l = l₁ ++ x :: l₂`. -/
+theorem exists_mem_split {l : List α} {x : α} (h : x ∈ l) :
+    ∃ l₁ l₂, l = l₁ ++ x :: l₂ := by
+  induction l with
+  | nil => cases h
+  | cons y ys ih =>
+    rcases mem_cons.mp h with rfl | h'
+    · exact ⟨[], ys, rfl⟩
+    · obtain ⟨l₁, l₂, rfl⟩ := ih h'
+      exact ⟨y :: l₁, l₂, rfl⟩
+
+theorem get_eq_get_dropLast {l : List α} {i : Nat} (hi : i < l.length - 1) :
+    l.get ⟨i, Nat.lt_of_lt_pred hi⟩ =
+      l.dropLast.get ⟨i, by rw [length_dropLast]; omega⟩ := by
+  simp [get_eq_getElem, dropLast_eq_take, getElem_take]
+
 /-! ### head(!?) and tail -/
 
 @[simp]
