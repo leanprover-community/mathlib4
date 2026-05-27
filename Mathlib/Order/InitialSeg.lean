@@ -568,8 +568,8 @@ noncomputable def InitialSeg.total (r s) [IsWellOrder α r] [IsWellOrder β s] :
 noncomputable def PrincipalSeg.trichotomy (r s) [IsWellOrder α r] [IsWellOrder β s] :
     (r ≺i s) ⊕ (r ≃r s) ⊕ (s ≺i r) :=
   match InitialSeg.total r s with
-  | .inl f => (f.principalSumRelIso).elim .inl (.inr ∘ .inl)
-  | .inr g => (g.principalSumRelIso).elim (.inr ∘ .inr) (.inr ∘ .inl ∘ .symm)
+  | .inl f => f.principalSumRelIso.elim .inl (.inr ∘ .inl)
+  | .inr g => g.principalSumRelIso.elim (.inr ∘ .inr) (.inr ∘ .inl ∘ .symm)
 
 /-! ### Initial or principal segments with `<` -/
 
