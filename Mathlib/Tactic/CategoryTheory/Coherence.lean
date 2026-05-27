@@ -238,7 +238,7 @@ def insertTrailingIds (g : MVarId) : MetaM MVarId := do
 -- Porting note: this is an ugly port, using too many `evalTactic`s.
 -- We can refactor later into either a `macro` (but the flow control is awkward)
 -- or a `MetaM` tactic.
-def coherence_loop (maxSteps := 37) : TacticM Unit :=
+def coherenceLoop (maxSteps := 37) : TacticM Unit :=
   match maxSteps with
   | 0 => exception' "`coherence` tactic reached iteration limit"
   | maxSteps' + 1 => do
@@ -265,7 +265,7 @@ def coherence_loop (maxSteps := 37) : TacticM Unit :=
       evalTactic (← `(tactic| rfl)) <|>
         exception' "`coherence` tactic failed, non-structural morphisms don't match"
       -- and whose second terms can be identified by recursively called `coherence`.
-      coherence_loop maxSteps'
+      coherenceLoop maxSteps'
 
 open Lean.Parser.Tactic
 
@@ -317,7 +317,7 @@ elab_rules : tactic
     (simp -failIfUnchanged only [bicategoricalComp, monoidalComp]);
     whisker_simps -failIfUnchanged;
     monoidal_simps -failIfUnchanged))
-  coherence_loop
+  coherenceLoop
 
 end Coherence
 
