@@ -47,7 +47,7 @@ private lemma qExpansion_norm_order_ge_qExpansion_order
   have hn_pos : 0 < integerCuspWidth 𝒢 := integerCuspWidth_pos
   have hnR_pos : (0 : ℝ) < integerCuspWidth 𝒢 := by exact_mod_cast hn_pos
   have hw_pos : (0 : ℝ) < 𝒢.strictWidthInfty :=
-    𝒢.strictWidthInfty_nonneg.lt_of_ne fun heq => by
+    𝒢.strictWidthInfty_nonneg.lt_of_ne fun heq ↦ by
       rw [← heq, mul_zero] at hnRw
       exact hnR_pos.ne' hnRw
   have hf_w_per : Function.Periodic ((f : ℍ → ℂ) ∘ ofComplex) 𝒢.strictWidthInfty :=
@@ -84,7 +84,7 @@ theorem sturm_bound_finiteIndex [DiscreteTopology 𝒢.strictPeriods]
     (h : (↑((k * Nat.card (𝒮ℒ ⧸ 𝒢.subgroupOf 𝒮ℒ)).toNat / 12) : ℕ∞) <
       (qExpansion 𝒢.strictWidthInfty f).order) : f = 0 := by
   rw [← coe_eq_zero_iff, ← ModularForm.norm_eq_zero_iff (ℋ := 𝒮ℒ)]
-  exact sturm_bound_levelOne (ModularForm.norm 𝒮ℒ f) <|
+  exact sturm_bound_levelOne <|
     h.trans_le (qExpansion_norm_order_ge_qExpansion_order f)
 
 /-- **Classical Sturm bound for finite-index subgroups of `SL(2, ℤ)`.** -/
@@ -122,7 +122,7 @@ instance finiteDimensional_modularForm_finiteIndex
       map_smul' a f := by
         ext i
         simp [ModularForm.qExpansion_smul hh hΓ a f] }
-  refine Module.Finite.of_injective T ((injective_iff_map_eq_zero T).mpr fun f hf => ?_)
+  refine Module.Finite.of_injective T ((injective_iff_map_eq_zero T).mpr fun f hf ↦ ?_)
   refine sturm_bound_finiteIndex f <| lt_of_lt_of_le ?_ <|
     PowerSeries.nat_le_order _ _ fun i hi ↦ congr_fun hf ⟨i, hi⟩
   exact_mod_cast (hN ▸ Nat.lt_succ_self ((k * μ).toNat / 12) :
