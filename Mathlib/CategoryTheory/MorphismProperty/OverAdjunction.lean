@@ -56,6 +56,7 @@ def Over.mapCongr [Q.RespectsIso] {X Y : T} {f g : X ⟶ Y} (hfg : f = g) (hf : 
     Over.map Q hf ≅ Over.map (f := g) Q (by cat_disch) :=
   NatIso.ofComponents (fun Y ↦ Over.isoMk (Iso.refl _))
 
+set_option linter.overlappingInstances false in
 /-- `Over.map` preserves identities. -/
 @[simps!]
 def Over.mapId [P.IsMultiplicative] [Q.RespectsIso] (X : T) (f : X ⟶ X := 𝟙 X)
@@ -157,6 +158,15 @@ noncomputable def Over.pullbackMapHomPullback [P.IsStableUnderComposition]
     Over.homMk (pullback.map _ _ _ _ (𝟙 A.left) f (𝟙 Z) (by simp) (by cat_disch))
     (by simp) (Q.pullbackMap (Q.id_mem _) hQf (by simp) (by cat_disch))
 
+/-- `MorphismProperty.Over.pullback` commutes with `MorphismProperty.Over.forget`. -/
+@[simps!]
+noncomputable
+def Over.pullbackCompForgetIso {X Y : T} (f : X ⟶ Y) [HasPullbacksAlong f]
+    [P.IsStableUnderBaseChangeAlong f] [Q.IsStableUnderBaseChange] :
+    Over.pullback P Q f ⋙ Over.forget _ _ _ ≅
+      Over.forget _ _ _ ⋙ CategoryTheory.Over.pullback f :=
+  Iso.refl _
+
 end Pullback
 
 section Adjunction
@@ -216,6 +226,7 @@ def Under.mapCongr [Q.RespectsIso] {X Y : T} {f g : X ⟶ Y} (hfg : f = g) (hf :
     Under.map Q hf ≅ Under.map (f := g) Q (by cat_disch) :=
   NatIso.ofComponents (fun Y ↦ Under.isoMk (Iso.refl _))
 
+set_option linter.overlappingInstances false in
 /-- `Under.map` preserves identities. -/
 @[simps!]
 def Under.mapId [P.IsMultiplicative] [Q.RespectsIso] (X : T) (f : X ⟶ X := 𝟙 X)
@@ -296,6 +307,15 @@ lemma Under.pushoutCongr_hom_app_left_fst {f : X ⟶ Y} [P.HasPushoutsAlong f] {
     pushout.inl _ _ ≫ ((Under.pushoutCongr h).hom.app A).right = pushout.inl _ _ := by
   subst h
   simp [pushoutCongr]
+
+/-- `MorphismProperty.Under.pushout` commutes with `MorphismProperty.Under.forget`. -/
+@[simps!]
+noncomputable
+def Under.pushoutCompForgetIso {X Y : T} (f : X ⟶ Y) [HasPushoutsAlong f]
+    [P.IsStableUnderCobaseChangeAlong f] [Q.IsStableUnderCobaseChange] :
+    Under.pushout P Q f ⋙ Under.forget _ _ _ ≅
+      Under.forget _ _ _ ⋙ CategoryTheory.Under.pushout f :=
+  Iso.refl _
 
 end Pushout
 
