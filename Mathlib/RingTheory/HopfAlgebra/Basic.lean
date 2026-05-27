@@ -248,12 +248,8 @@ noncomputable abbrev ofConvInverse [CommSemiring R] [Semiring A] [Bialgebra R A]
       toConv LinearMap.id * toConv antipode = (1 : WithConv (A →ₗ[R] A))) :
     HopfAlgebra R A where
   antipode := antipode
-  mul_antipode_rTensor_comul := by
-    simpa [convMul_def, convOne_def, ofConv_toConv, rTensor]
-      using congr(($mul_antipode_rTensor_comul).ofConv)
-  mul_antipode_lTensor_comul := by
-    simpa [convMul_def, convOne_def, ofConv_toConv, lTensor]
-      using congr(($mul_antipode_lTensor_comul).ofConv)
+  mul_antipode_rTensor_comul := by simpa using congr(($mul_antipode_rTensor_comul).ofConv)
+  mul_antipode_lTensor_comul := by simpa using congr(($mul_antipode_lTensor_comul).ofConv)
 
 /-- Upgrade a commutative bialgebra to a Hopf algebra by specifying the antipode `A →ₐ[R] A`
 with appropriate conditions. -/
