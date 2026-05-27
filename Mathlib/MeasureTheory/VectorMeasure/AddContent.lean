@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.MeasureTheory.Measure.AddContent
 public import Mathlib.MeasureTheory.Measure.MeasuredSets
+public import Mathlib.MeasureTheory.Measure.Trim
 public import Mathlib.MeasureTheory.VectorMeasure.Basic
 
 /-!
@@ -315,5 +316,16 @@ theorem exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
       nth_rewrite 1 [← Set.inter_self s]
       exact ae_le_set_inter Filter.EventuallyLE.rfl (hD s hs)
   exact ⟨m', h, fun s ↦ (h' s).trans (Measure.restrict_apply_le (⋃₀ D) s)⟩
+
+#check Measure.trim_le
+
+theorem exists_extension_of_isSetSemiring_of_le_measure
+    [IsFiniteMeasure μ] {C : Set (Set α)} {m : AddContent E C} (hC : IsSetSemiring C)
+    (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s) (h'C : ∀ s ∈ C, MeasurableSet s) :
+    ∃ m' : VectorMeasure α E, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ s := by
+  let M : MeasurableSpace α := generateFrom C
+  have : M ≤ hα := generateFrom_le h'C
+  let μ' := μ.trim this
+
 
 end MeasureTheory.VectorMeasure
