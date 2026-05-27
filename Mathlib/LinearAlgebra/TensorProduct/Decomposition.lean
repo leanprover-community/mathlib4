@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau
+Authors: Kenny Lau, Scott Carnahan
 -/
 module
 
@@ -10,9 +10,13 @@ public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 
 /-! # Decomposition of tensor product
 
-In this file we show that if `ℳ` is a decomposition of an `R`-module `M` indexed by a type `ι`,
-then the `S`-module `S ⊗[R] M` has a decomposition `fun i ↦ (ℳ i).baseChange S` indexed by the
-same `ι`.
+In this file, we describe the properties of decomposition under tensor product. Suppose `ℳ` is a
+decomposition of an `R`-module `M` indexed by a type `ι`. Given an `R`-module `N`, the `R`-module
+`M ⊗[R] N` has a decomposition into pieces `fun i ↦ (ℳ i) ⊗[R] N`. Given a commutative `R`-algebra
+`S`, the `S`-module `S ⊗[R] M` has a decomposition `fun i ↦ (ℳ i).baseChange S`.
+
+## Declarations
+
 -/
 
 public section
@@ -21,13 +25,13 @@ open TensorProduct LinearMap
 
 namespace DirectSum
 
-variable {ι R M S : Type*} [DecidableEq ι]
+variable {ι R M S : Type*}
   [CommSemiring R] [AddCommMonoid M] [Module R M]
   (ℳ : ι → Submodule R M)
-  [CommSemiring S] [Algebra R S]
 
-section Decomposition
-variable [Decomposition ℳ]
+section BaseChange
+
+variable [DecidableEq ι] [Decomposition ℳ] [CommSemiring S] [Algebra R S]
 
 instance Decomposition.baseChange : Decomposition fun i ↦ (ℳ i).baseChange S := by
   refine .ofLinearMap _ (lmap (ℳ · |>.toBaseChange S) ∘ₗ
@@ -52,95 +56,82 @@ theorem toBaseChange_injective (i : ι) : Function.Injective ((ℳ i).toBaseChan
 theorem toBaseChange_bijective (i : ι) : Function.Bijective ((ℳ i).toBaseChange S) :=
   ⟨toBaseChange_injective ℳ i, (ℳ i).toBaseChange_surjective S⟩
 
-/-- The submodule of a tensor product corresponding to a decomposition on the left. -/
-def decomposeTensor (N : Type*) [AddCommMonoid N] [Module R N] :
-    ι → Submodule R (M ⊗[R] N) :=
-  fun i ↦ LinearMap.range ((ℳ i).subtype.rTensor N)
+end BaseChange
 
-lemma subtype_rTensor_injective (N : Type*) [AddCommMonoid N] [Module R N] (i : ι) :
+section TensorModule
+
+variable (N : Type*) [AddCommMonoid N] [Module R N]
+
+/-- The submodule of a tensor product corresponding to a decomposition on the left. -/
+def decomposeTensor : ι → Submodule R (M ⊗[R] N) :=
+  fun i ↦ ((ℳ i).subtype.rTensor N).range
+
+lemma decomposeTensor_apply {i : ι} :
+    decomposeTensor ℳ N i = ((ℳ i).subtype.rTensor N).range := by
+  exact Submodule.toSubMulAction_inj.mp rfl
+
+variable [DecidableEq ι] [Decomposition ℳ]
+
+lemma subtype_rTensor_injective (i : ι) :
     Function.Injective ((ℳ i).subtype.rTensor N) :=
   injective_of_comp_eq_id ((ℳ i).subtype.rTensor N) (((component R ι (fun i ↦ ↥(ℳ i)) i) ∘ₗ
     (DirectSum.decomposeLinearEquiv ℳ).toLinearMap).rTensor N) (by ext; simp)
 
 /-- The linear isomorphism to the submodule from the tensor product with a summand. -/
-noncomputable def toDecomposeTensor (N : Type*) [AddCommMonoid N] [Module R N]
-    (i : ι) : (ℳ i) ⊗[R] N ≃ₗ[R] decomposeTensor ℳ N i :=
+noncomputable def decomposeTensorEquiv (i : ι) :
+    (ℳ i) ⊗[R] N ≃ₗ[R] decomposeTensor ℳ N i :=
   LinearEquiv.ofInjective ((ℳ i).subtype.rTensor N) (subtype_rTensor_injective ℳ N i)
 
 @[simp]
-lemma toDecomposeTensor_apply (N : Type*) [AddCommMonoid N] [Module R N] {i : ι}
-    (x : (ℳ i) ⊗[R] N) :
-    toDecomposeTensor ℳ N i x = ((ℳ i).subtype.rTensor N) x := by rfl
+lemma decomposeTensorEquiv_apply {i : ι} (x : (ℳ i) ⊗[R] N) :
+    decomposeTensorEquiv ℳ N i x = ((ℳ i).subtype.rTensor N) x := by rfl
 
-lemma toDecomposeTensor_of_apply (N : Type*) [AddCommMonoid N] [Module R N] {i : ι}
-    (x : (ℳ i) ⊗[R] N) :
-    (congrLinearEquiv fun a ↦ toDecomposeTensor ℳ N a) ((of (fun i ↦ ↥(ℳ i) ⊗[R] N) i) x) =
-    (of (fun i ↦ ↥(decomposeTensor ℳ N i)) i) (toDecomposeTensor ℳ N i x) := by
+lemma decomposeTensorEquiv_of_apply {i : ι} (x : (ℳ i) ⊗[R] N) :
+    (congrLinearEquiv fun a ↦ decomposeTensorEquiv ℳ N a) ((of (fun i ↦ ↥(ℳ i) ⊗[R] N) i) x) =
+    (of (fun i ↦ ↥(decomposeTensor ℳ N i)) i) (decomposeTensorEquiv ℳ N i x) := by
   ext; simp [coe_congrLinearEquiv]
 
-/-lemma toDecomposeTensor_symm_apply (N : Type*) [AddCommMonoid N] [Module R N] {i : ι}
-    (x : decomposeTensor ℳ N i) :
-    (toDecomposeTensor ℳ N i).symm x = (((component R ι (fun i ↦ (ℳ i)) i) ∘ₗ
-      ((DirectSum.decomposeLinearEquiv ℳ))).rTensor N) x := by sorry
+lemma decomposeLinearEquiv_comp_subtype {i : ι} :
+    (decomposeLinearEquiv ℳ) ∘ₗ (ℳ i).subtype = lof R ι (fun i ↦ ℳ i) i := by
+  ext; simp
 
-lemma congrLinearEquiv_coeAddMonoidHom (N : Type*) [AddCommGroup N] [Module R N]
-    (x : ⨁ (i : ι), ↥(ℳ i) ⊗[R] N) :
-    (DirectSum.coeAddMonoidHom (decomposeTensor ℳ N))
-      ((DirectSum.congrLinearEquiv fun a ↦ toDecomposeTensor ℳ N a) x) =
-    ((DirectSum.decomposeLinearEquiv ℳ).symm.rTensor N)
-      ((TensorProduct.directSumLeft R R (fun a ↦ ℳ a) N).symm x) := by
-  induction x using DirectSum.induction_on with
-  | zero => simp
-  | of i x =>
-
-    sorry
-  | add x y hx hy => simp [hx, hy]
-
-lemma coe_decomposeTensor (N : Type*) [AddCommGroup N] [Module R N]
-    (x : (⨁ (i : ι), decomposeTensor ℳ N i)) :
+lemma coe_decomposeTensor_apply (x : (⨁ (i : ι), decomposeTensor ℳ N i)) :
     (DirectSum.coeAddMonoidHom (decomposeTensor ℳ N)) x =
     ((DirectSum.decomposeLinearEquiv ℳ).symm.rTensor N)
     ((TensorProduct.directSumLeft R R (fun a ↦ ℳ a) N).symm
-      ((DirectSum.congrLinearEquiv fun a ↦ toDecomposeTensor ℳ N a).symm x)) := by
-  have : (LinearEquiv.rTensor N (decomposeLinearEquiv ℳ).symm) =
-      (LinearEquiv.rTensor N (decomposeLinearEquiv ℳ)).symm := rfl
-  rw [this, LinearEquiv.eq_symm_apply]
+      ((DirectSum.congrLinearEquiv fun a ↦ decomposeTensorEquiv ℳ N a).symm x)) := by
+  rw [← LinearEquiv.rTensor_symm, LinearEquiv.eq_symm_apply]
   induction x using DirectSum.induction_on with
   | zero => simp
   | of i x =>
-    simp only [coeAddMonoidHom_of, toDecomposeTensor]
-    rw [LinearEquiv.eq_symm_apply, LinearEquiv.eq_symm_apply]
-    ext j
-    by_cases h : i = j
-    · rw [← h]
-      simp only [of_eq_same, SetLike.coe_eq_coe]
-
-      sorry
-    · simp [of_apply, h]
-
-      sorry
+    obtain ⟨x, y, h⟩ := x
+    simp only [← h, coeAddMonoidHom_of]
+    rw [LinearEquiv.eq_symm_apply, LinearEquiv.eq_symm_apply, LinearEquiv.rTensor_apply,
+      ← rTensor_comp_apply, decomposeLinearEquiv_comp_subtype]
+    have : (rTensor N (lof R ι (fun i ↦ ↥(ℳ i)) i)) y =
+        (directSumLeft R R (fun i ↦ ℳ i) N).symm ((of (fun i ↦ ℳ i ⊗[R] N) i) y) :=
+      (TensorProduct.directSumLeft_symm_of R R (M₁ := fun i ↦ ℳ i) y).symm
+    rw [this, LinearEquiv.apply_symm_apply, decomposeTensorEquiv_of_apply]
+    rfl
   | add x y hx hy => simp [hx, hy]
 
-noncomputable instance (N : Type*) [AddCommGroup N] [Module R N] :
+/-- The decomposition of a tensor product induced by a decomposition of the left module. -/
+@[reducible]
+noncomputable def tensorDecomposition (N : Type*) [AddCommGroup N] [Module R N] :
     DirectSum.Decomposition (decomposeTensor ℳ N) where
-  decompose' x := (DirectSum.congrLinearEquiv fun a ↦ toDecomposeTensor ℳ N a)
+  decompose' x := (DirectSum.congrLinearEquiv fun a ↦ decomposeTensorEquiv ℳ N a)
     (TensorProduct.directSumLeft R R (fun a ↦ ℳ a) N
       ((DirectSum.decomposeLinearEquiv ℳ).rTensor N x))
   left_inv x := by
-    rw [coe_decomposeTensor ℳ N _]
-    simp only [LinearEquiv.symm_apply_apply]
-    have : (LinearEquiv.rTensor N (decomposeLinearEquiv ℳ).symm) =
-        (LinearEquiv.rTensor N (decomposeLinearEquiv ℳ)).symm := rfl
-    simp [this]
+    simp [coe_decomposeTensor_apply ℳ N _, ← LinearEquiv.rTensor_symm]
   right_inv x := by
-    rw [coe_decomposeTensor ℳ N _]
-    have : (LinearEquiv.rTensor N (decomposeLinearEquiv ℳ).symm) =
-        (LinearEquiv.rTensor N (decomposeLinearEquiv ℳ)).symm := rfl
-    simp [this]
--/
-end Decomposition
+    simp [coe_decomposeTensor_apply ℳ N _, ← LinearEquiv.rTensor_symm]
+
+end TensorModule
 
 namespace IsInternal
+
+variable [DecidableEq ι] [CommSemiring S] [Algebra R S]
 
 theorem baseChange (hm : IsInternal ℳ) : IsInternal fun i ↦ (ℳ i).baseChange S :=
   haveI := hm.chooseDecomposition
