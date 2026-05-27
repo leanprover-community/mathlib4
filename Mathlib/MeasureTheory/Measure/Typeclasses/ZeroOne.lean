@@ -117,7 +117,7 @@ lemma exists_eq_dirac_of_measurableAtom_eq_iInter [NeZero μ] [∀ (A : Set α),
     simp only [dite_eq_ite, compl_iInter, measure_iUnion_null_iff, B]
     intro n
     have := μ.zero_one (A n)
-    split_ifs with h <;> simp_all
+    split_ifs <;> simp_all
   obtain ⟨x₀, hx₀⟩ : (⋂ n, B n).Nonempty := by by_contra! h; simp [h] at hBn
   have hBA n : B n = if x₀ ∈ A n then A n else (A n)ᶜ := by
     simp only [mem_iInter] at hx₀
@@ -165,7 +165,6 @@ theorem exists_eq_dirac [MeasurableSpace.CountablySeparated α] [NeZero μ] :
   refine ⟨fun h ↦ by simp [h]; grind, fun h ↦ ?_⟩
   symm
   refine hAsep fun n ↦ ?_
-  specialize h n
   grind
 
 end IsZeroOneMeasure
