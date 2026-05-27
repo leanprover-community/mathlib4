@@ -55,7 +55,7 @@ lemma withDensity_zero_vectorMeasure : (0 : VectorMeasure X F).withDensity f B =
   ext s hs
   simp [withDensity_apply]
 
-@[simp]
+@[to_fun (attr := simp) withDensity_fun_zero]
 lemma withDensity_zero : μ.withDensity 0 B = 0 := by
   ext s hs
   simp [withDensity_apply]
@@ -92,8 +92,10 @@ density `f` wrt `μ` is the measure with density `‖f‖ₑ` with respect to th
 The condition on `B` is necessary: for a counterexample without it, let `B` be the scalar
 product in `ℝ²` and `f x` everywhere horizontal and `μ s` everywhere vertical.
 Then `μ.withDensity f B = 0` so its variation is zero, while the integral of `‖f‖ₑ` is not.
+
+See also `variation_withDensity` under the very common condition `‖B x y‖ = ‖x‖ ‖y‖`.
 -/
-lemma variation_withDensity [CompleteSpace G]
+lemma variation_withDensity' [CompleteSpace G]
     (hf : μ.Integrable f B) (hB : ∀ x y, ‖B x y‖₊ = ‖B.flip y‖₊ * ‖x‖₊) :
     (μ.withDensity f B).variation = (μ.transpose B).variation.withDensity (fun x ↦ ‖f x‖ₑ) := by
   apply le_antisymm variation_WithDensity_le
@@ -311,37 +313,66 @@ lemma variation_withDensity [CompleteSpace G]
     simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, ENNReal.coe_div, ENNReal.coe_ofNat, δ]
     rw [ENNReal.mul_div_cancel (by simp) (by simp)]
 
+/-- If `‖B x y‖ = ‖x‖ * ‖y‖` for all `x, y`, then the variation of a vector measure with
+density `f` wrt `μ` is the measure with density `‖f‖ₑ` with respect to the variation of `μ`.
+
+The condition on `B` is necessary: for a counterexample without it, let `B` be the scalar
+product in `ℝ²` and `f x` everywhere horizontal and `μ s` everywhere vertical.
+Then `μ.withDensity f B = 0` so its variation is zero, while the integral of `‖f‖ₑ` is not.
+-/
+lemma variation_withDensity [CompleteSpace G]
+    (hf : μ.Integrable f B) (hB : ∀ x y, ‖B x y‖₊ = ‖x‖₊ * ‖y‖₊) :
+    (μ.withDensity f B).variation = (μ.transpose B).variation.withDensity (fun x ↦ ‖f x‖ₑ) := by
+  apply variation_withDensity' hf (fun x y ↦ ?_)
+  refine le_antisymm (ContinuousLinearMap.le_opNorm (B.flip y) x) ?_
+  rw [hB, mul_comm]
+  gcongr
+  apply ContinuousLinearMap.opNNNorm_le_bound
+  simp [hB, mul_comm]
+
+/-- The variation of a vecture measure with density `f` with respect to a positive measure `μ`
+is the measure with density `‖f‖ₑ` with respect to `μ`. -/
 lemma variation_withDensityᵥ [CompleteSpace E]
     {μ : Measure X} {f : X → E} (hf : Integrable f μ) :
     (μ.withDensityᵥ f).variation = μ.withDensity (fun x ↦ ‖f x‖ₑ) := by
+  /- We deduce this statement from the statement `variation_withDensity` for vector measures
+  with density. For this, we write `μ.withDensityᵥ f` as the vector measure with density `f / ‖f‖`
+  with respect to the measure `μ.withDensity ‖f‖` interpreted as a signed measure. -/
+  rcases subsingleton_or_nontrivial E with hE | hE
+  · simp [show f = 0 from Subsingleton.elim _ _]
   have : IsFiniteMeasure (μ.withDensity fun x ↦ ‖f x‖ₑ) := ⟨by simpa using hf.2⟩
+  have I : (μ.withDensity fun x ↦ ‖f x‖ₑ).toSignedMeasure.Integrable (fun x ↦ ‖f x‖⁻¹ • f x)
+      (ContinuousLinearMap.lsmul ℝ ℝ).flip := by
+    apply Integrable.mono_measure _ (variation_transpose_le _ _)
+    apply Integrable.smul_measure_nnreal
+    simp only [variation_toSignedMeasure]
+    apply Integrable.of_bound (C := 1)
+    · apply AEStronglyMeasurable.mono_ac (withDensity_absolutelyContinuous _ _)
+      exact hf.aestronglyMeasurable.norm.inv₀.smul hf.aestronglyMeasurable
+    · filter_upwards with x using by simp [norm_smul, inv_mul_le_one]
   have : μ.withDensityᵥ f = (μ.withDensity (‖f ·‖ₑ)).toSignedMeasure.withDensity
       (fun x ↦ ‖f x‖⁻¹ • f x) (ContinuousLinearMap.lsmul ℝ ℝ).flip := by
     ext s hs
-    rw [withDensityᵥ_apply hf hs, withDensity_apply]; swap
-    · simp only [VectorMeasure.Integrable]
-      apply Integrable.mono_measure _ (variation_transpose_le _ _)
-      apply Integrable.smul_measure_nnreal
-      simp only [variation_toSignedMeasure]
-      apply Integrable.of_bound (C := 1)
-      · apply AEStronglyMeasurable.mono_ac (withDensity_absolutelyContinuous _ _)
-        exact hf.aestronglyMeasurable.norm.inv₀.smul hf.aestronglyMeasurable
-      · filter_upwards with x using by simp [norm_smul, inv_mul_le_one]
-    · rw [setIntegral_toSignedMeasure hs,
+    rw [withDensityᵥ_apply hf hs, withDensity_apply I, setIntegral_toSignedMeasure hs,
         setIntegral_withDensity_eq_setIntegral_toReal_smul₀ _ _ _ hs]; rotate_left
-      · exact hf.aestronglyMeasurable.restrict.enorm
-      · filter_upwards with x using by simp
-      congr with x
-      rcases eq_or_ne (f x) 0 with hx | hx
-      · simp [hx]
-      · simp only [toReal_enorm, smul_smul]
-        rw [mul_inv_cancel₀, one_smul]
-        simpa using hx
-  rw [this, variation_withDensity]; rotate_left
-  · sorry
-  · simp [norm_smul, ContinuousLinearMap.lsmul]
-    rw [norm_lsmul]
-
+    · exact hf.aestronglyMeasurable.restrict.enorm
+    · filter_upwards with x using by simp
+    congr with x
+    rcases eq_or_ne (f x) 0 with hx | hx
+    · simp [hx]
+    simp only [toReal_enorm, smul_smul]
+    rw [mul_inv_cancel₀, one_smul]
+    simpa using hx
+  rw [this, variation_withDensity I (by simp [nnnorm_smul, mul_comm]),
+    variation_transpose_eq _ _ (by simp [nnnorm_smul, mul_comm]), variation_toSignedMeasure,
+    ← withDensity_mul₀ hf.aestronglyMeasurable.enorm]; swap
+  · exact (hf.aestronglyMeasurable.norm.inv₀.smul hf.aestronglyMeasurable).enorm
+  congr with x
+  rcases eq_or_ne (f x) 0 with hx | hx
+  · simp [hx]
+  have h'x : ‖f x‖ ≠ 0 := by simp [hx]
+  simp only [enorm_smul, Pi.mul_apply, ne_eq, h'x, not_false_eq_true, enorm_inv, enorm_norm]
+  rw [ENNReal.inv_mul_cancel (by simpa using hx) (by simp), mul_one]
 
 
 
