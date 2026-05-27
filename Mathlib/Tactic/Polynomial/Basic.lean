@@ -145,7 +145,7 @@ elab (name := polynomialNF) "polynomial_nf" tk:"!"? loc:(location)?  : tactic =>
   liftMetaTactic' Polynomial.preprocess
   liftMetaTactic' Algebra.preprocess
   let mut cfg := {}
-  -- if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
+  if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   let m := AtomM.recurse s cfg.toConfig (wellBehavedDischarge := true) (evalExprPoly) (cleanup cfg)
