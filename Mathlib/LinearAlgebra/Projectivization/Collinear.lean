@@ -8,6 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Projectivization.Subspace
 public import Mathlib.LinearAlgebra.Projectivization.Independence
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 
 /-!
 
@@ -18,8 +19,8 @@ the uniqueness of the line through two distinct points.
 
 ## Main Results
 
-* `Projectivization.IsCollinear`: A family of points in projective space is collinear if there exists
-  a submodule of dimension at most 2 containing all points in the family.
+* `Projectivization.IsCollinear`: A family of points in projective space is collinear if there
+  exists a submodule of dimension at most 2 containing all points in the family.
 * `Projectivization.line_unique`: Given two distinct points in projective space, there is a unique
   line (submodule of dimension 2) containing both points.
 
@@ -44,30 +45,21 @@ def IsCollinear : Prop := ∃ (M : Subspace K V), Module.Finite K M.submodule �
 lemma IsCollinear_iff : IsCollinear S ↔ ∃ (M : Subspace K V), Module.Finite K M.submodule ∧
   Module.finrank K M.submodule ≤ 2 ∧ S ⊆ M := Iff.rfl
 
--- attribute [local instance] Fintype.ofFinite in
+lemma IsCollinear_iff_rank :
+    IsCollinear S ↔
+      ∃ (M : Subspace K V), Module.rank K M.submodule ≤ 2 ∧ S ⊆ M := by
+  rw [IsCollinear_iff]
+  refine ⟨fun ⟨M, hM1, hM2, hM3⟩ ↦ ⟨M, ?_, hM3⟩, fun ⟨M, hM1, hM2⟩ ↦ ⟨M, ?_, ?_, hM2⟩⟩
+  · exact FiniteDimensional.finrank_le_iff_rank_le (K := K) (V := M.submodule) (n := 2)|>.1 hM2
+  · exact Module.rank_lt_aleph0_iff.1 (hM1.trans_lt (by norm_num))
+  · exact Module.finrank_le_of_rank_le hM1
+
 @[simp]
 lemma isCollinear_empty : IsCollinear (∅ : Set (Projectivization K V)) := by
-  obtain ⟨⟨ι, b⟩⟩ : Module.Free K V := Module.Free.of_divisionRing K V
-  obtain hV | ⟨x, y, hxy⟩ : (Module.Finite K V ∧ Module.finrank K V < 2) ∨ (∃ a b : ι, a ≠ b) := by
-    rcases subsingleton_or_nontrivial ι with hι | hι
-    · let : Fintype ι := Fintype.ofFinite ι
-      refine Or.inl ⟨Module.Finite.of_basis b, ?_⟩
-      rw [Module.finrank_eq_card_basis b]
-      have : Fintype.card ι ≤ 1 := Fintype.card_le_one_iff_subsingleton.mpr hι
-      omega
-    · exact Or.inr hι.exists_pair_ne
-  · have : Module.Finite K V := hV.1
-    refine ⟨(⊤ : Submodule K V).projectivization, ?_, ?_, Set.empty_subset _⟩
-    · rw [Subspace.submodule.apply_symm_apply]; infer_instance
-    · rw [Subspace.submodule.apply_symm_apply, finrank_top]
-      omega
-  · refine ⟨(Submodule.span K {b x, b y}).projectivization, ?_, ?_, Set.empty_subset _⟩
-    · rw [Subspace.submodule.apply_symm_apply]
-      exact Module.Finite.span_of_finite _ (Set.toFinite _)
-    · rw [Subspace.submodule.apply_symm_apply]
-      classical
-      grw [finrank_span_le_card]
-      simp [Finset.card_le_two]
+  rw [IsCollinear_iff_rank]
+  use ⊥
+  rw [map_bot]
+  simp
 
 open scoped LinearAlgebra.Projectivization
 
