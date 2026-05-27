@@ -203,7 +203,6 @@ noncomputable instance : LinearOrder (DedekindCut α) where
   min_def x y := congrFun₂ inf_eq_minDefault x y
   max_def x y := congrFun₂ sup_eq_maxDefault x y
   le_total := total_of _
-  toDecidableLE := inferInstance
 
 noncomputable instance : CompleteLinearOrder (DedekindCut α) where
   __ := (inferInstance : LinearOrder _)

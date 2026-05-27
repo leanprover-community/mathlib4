@@ -144,7 +144,6 @@ instance linearOrder : LinearOrder Bool where
   le_trans := by decide
   le_antisymm := by decide
   le_total := by decide
-  toDecidableLE := inferInstance
   toDecidableEq := inferInstance
   toDecidableLT := inferInstance
   lt_iff_le_not_ge := by decide

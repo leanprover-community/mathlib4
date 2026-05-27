@@ -204,7 +204,6 @@ def Relation.linearOrderOfSymmGen [PartialOrder α]
     [decLE : DecidableLE α] [decLT : DecidableLT α] [decEq : DecidableEq α]
     (h : ∀ a b : α, Relation.SymmGen (· ≤ ·) a b) : LinearOrder α where
   le_total := h
-  toDecidableLE := decLE
   toDecidableEq := decEq
   toDecidableLT := decLT
 

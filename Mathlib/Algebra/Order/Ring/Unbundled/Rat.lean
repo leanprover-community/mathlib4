@@ -71,7 +71,6 @@ instance linearOrder : LinearOrder ℚ where
   le_antisymm _ _ := Rat.le_antisymm
   le_total _ _ := Rat.le_total
   toDecidableEq := inferInstance
-  toDecidableLE := inferInstance
   toDecidableLT := inferInstance
   lt_iff_le_not_ge := Rat.lt_iff_le_not_ge
 

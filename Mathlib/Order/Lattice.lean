@@ -599,7 +599,6 @@ theorem inf_eq_minDefault [SemilatticeInf α] [DecidableLE α] [@Std.Total α (�
 See note [reducible non-instances]. -/
 abbrev Lattice.toLinearOrder (α : Type u) [Lattice α] [DecidableEq α]
     [DecidableLE α] [DecidableLT α] [@Std.Total α (· ≤ ·)] : LinearOrder α where
-  toDecidableLE := ‹_›
   toDecidableEq := ‹_›
   toDecidableLT := ‹_›
   le_total := total_of (· ≤ ·)

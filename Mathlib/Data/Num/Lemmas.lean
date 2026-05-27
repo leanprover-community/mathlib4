@@ -556,9 +556,8 @@ instance linearOrder : LinearOrder PosNum where
     intro a b
     transfer_rw
     apply le_total
-  toDecidableLT := by infer_instance
-  toDecidableLE := by infer_instance
   toDecidableEq := by infer_instance
+  toDecidableLT := by infer_instance
 
 @[simp]
 theorem cast_to_num (n : PosNum) : ↑n = Num.pos n := by rw [← cast_to_nat, ← of_to_nat n]

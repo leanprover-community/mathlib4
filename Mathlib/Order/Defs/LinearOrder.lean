@@ -62,7 +62,7 @@ class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α w
   /-- A linear order is total. -/
   protected le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  toDecidableLE : DecidableLE α
+  [toDecidableLE : DecidableLE α]
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
   toDecidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ toDecidableLE
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/

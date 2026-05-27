@@ -697,7 +697,6 @@ abbrev Function.Injective.linearOrder [LinearOrder β] [LE α] [LT α] [Max α] 
     (compare : ∀ x y, compare (f x) (f y) = compare x y) :
     LinearOrder α where
   toPartialOrder := hf.partialOrder _ le lt
-  toDecidableLE := ‹_›
   toDecidableEq := ‹_›
   toDecidableLT := ‹_›
   le_total _ _ := by simp only [← le, le_total]

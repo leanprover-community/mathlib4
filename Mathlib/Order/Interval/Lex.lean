@@ -78,7 +78,6 @@ instance [LinearOrder α] : LinearOrder (Lex (NonemptyInterval α)) := fast_inst
   { LinearOrder.lift' (fun x : Lex (NonemptyInterval α) => toLex (ofLex x).toDualProd) <|
       toLex.injective.comp <| toDualProd_injective.comp ofLex.injective with
     toDecidableEq := inferInstance
-    toDecidableLT := inferInstance
-    toDecidableLE := inferInstance }
+    toDecidableLT := inferInstance }
 
 end NonemptyInterval
