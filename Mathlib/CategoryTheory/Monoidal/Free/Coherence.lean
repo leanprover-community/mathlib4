@@ -6,7 +6,6 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Free.Basic
-public import Mathlib.CategoryTheory.Discrete.Basic
 
 /-!
 # The monoidal coherence theorem
@@ -135,6 +134,7 @@ section
 
 variable (C)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Our normalization procedure works by first defining a functor `F C ⥤ (N C ⥤ N C)` (which turns
 out to be very easy), and then obtain a functor `F C ⥤ N C` by plugging in the normal object
 `𝟙_ C`. -/
@@ -275,7 +275,7 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
   NatIso.ofComponents (normalizeIsoAux C) <| by
     intro X Y f
     ext ⟨n⟩
-    convert normalize_naturality n f using 1
+    convert! normalize_naturality n f using 1
     any_goals dsimp; rw [normalizeIsoApp_eq]
 
 /-- The isomorphism between an object and its normal form is natural. -/

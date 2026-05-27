@@ -148,7 +148,7 @@ theorem LinearIndepOn.injOn [Nontrivial R] (hv : LinearIndepOn R v s) : InjOn v 
   injOn_iff_injective.2 <| LinearIndependent.injective hv
 
 theorem LinearIndependent.smul_left_injective (hv : LinearIndependent R v) (i : ι) :
-    Injective fun r : R ↦ r • v i := by convert hv.comp (Finsupp.single_injective i); simp
+    Injective fun r : R ↦ r • v i := by convert! hv.comp (Finsupp.single_injective i); simp
 
 theorem LinearIndependent.ne_zero [Nontrivial R] (i : ι) (hv : LinearIndependent R v) :
     v i ≠ 0 := by
@@ -251,7 +251,7 @@ theorem linearIndependent_iff''ₛ :
   exact linearIndependent_iff'ₛ.trans
     ⟨fun H s f g eq hv i ↦ if his : i ∈ s then H s f g hv i his else eq i his,
       fun H s f g eq i hi ↦ by
-      convert
+      convert!
         H s (fun j ↦ if j ∈ s then f j else 0) (fun j ↦ if j ∈ s then g j else 0)
           (fun j hj ↦ (if_neg hj).trans (if_neg hj).symm)
           (by simp_rw [ite_smul, zero_smul, Finset.sum_extend_by_zero, eq]) i <;>
@@ -611,7 +611,7 @@ theorem linearIndependent_iffₒₛ :
         (a := ∑ i ∈ s with g i ≤ f i, g i • v i + ∑ i ∈ s with f i < g i, f i • v i)]
       conv_lhs => rw [← add_assoc, ← Finset.sum_add_distrib]
       conv_rhs => rw [add_left_comm, ← Finset.sum_add_distrib]
-      convert heq
+      convert! heq
         <;> simp_rw [← Finset.sum_filter_add_sum_filter_not s (fun i => g i ≤ f i), not_le]
         <;> congr! 2 with i hi
         <;> simp only [Finset.mem_filter] at hi
@@ -648,7 +648,7 @@ nonrec theorem Fintype.linearIndependent_iffₒₛ [DecidableEq ι] [Fintype ι]
     · exact h.2 i (Finset.mem_compl.2 hi)
   · specialize h t₁ (fun i => if i ∈ t₁ ∨ i ∈ t₂ then f i else 0) ?_
     · rw [← Finset.sum_subset ht₁t₂.le_compl_left]
-      · convert heq using 2 with i hi i hi <;> simp [hi]
+      · convert! heq using 2 with i hi i hi <;> simp [hi]
       · intro i hi hi'
         simp [Finset.mem_compl.1 hi, hi']
     refine ⟨fun i hi => ?_, fun i hi => ?_⟩ <;> simpa [hi] using h i
@@ -732,9 +732,9 @@ theorem linearIndependent_iff' :
       ∀ s : Finset ι, ∀ g : ι → R, ∑ i ∈ s, g i • v i = 0 → ∀ i ∈ s, g i = 0 := by
   rw [linearIndependent_iff'ₛ]
   refine ⟨fun h s f ↦ ?_, fun h s f g ↦ ?_⟩
-  · convert h s f 0; simp_rw [Pi.zero_apply, zero_smul, Finset.sum_const_zero]
+  · convert! h s f 0; simp_rw [Pi.zero_apply, zero_smul, Finset.sum_const_zero]
   · rw [← sub_eq_zero, ← Finset.sum_sub_distrib]
-    convert h s (f - g) using 3; simp only [Pi.sub_apply, sub_smul, sub_eq_zero]
+    convert! h s (f - g) using 3; simp only [Pi.sub_apply, sub_smul, sub_eq_zero]
 
 /-- A version of `linearIndependent_iff` where the linear combination is a `Finset` sum
 of a function with support contained in the `Finset`. -/
@@ -744,7 +744,7 @@ theorem linearIndependent_iff'' :
   classical
   exact linearIndependent_iff'.trans
     ⟨fun H s g hg hv i => if his : i ∈ s then H s g hv i his else hg i his, fun H s g hg i hi => by
-      convert
+      convert!
         H s (fun j => if j ∈ s then g j else 0) (fun j hj => if_neg hj)
           (by simp_rw [ite_smul, zero_smul, Finset.sum_extend_by_zero, hg]) i
       exact (if_pos hi).symm⟩
@@ -894,10 +894,6 @@ lemma LinearIndependent.of_subsingleton [Subsingleton ι] (i : ι) (hi : v i ≠
     LinearIndependent R v := .of_subsingleton' i (by simp [hi])
 
 lemma LinearIndepOn.singleton (hi : v i ≠ 0) : LinearIndepOn R v {i} := by simp [hi]
-
-variable (R) in
-@[deprecated LinearIndepOn.singleton (since := "2025-11-11")]
-lemma LinearIndepOn.id_singleton {x : M} (hx : x ≠ 0) : LinearIndepOn R id {x} := .singleton hx
 
 end Module
 
