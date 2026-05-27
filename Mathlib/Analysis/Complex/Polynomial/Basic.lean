@@ -47,6 +47,8 @@ theorem exists_root {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z :
   obtain rfl : f = C 0 := Polynomial.funext fun z ↦ inv_injective <| by simp [this]
   simp at hf
 
+/-- **Fundamental theorem of algebra**: the field `ℂ` of complex numbers is algebraically closed. -/
+@[wikidata Q192760]
 instance isAlgClosed : IsAlgClosed ℂ :=
   IsAlgClosed.of_exists_root _ fun _p _ hp => Complex.exists_root <| degree_pos_of_irreducible hp
 
