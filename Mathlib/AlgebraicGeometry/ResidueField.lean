@@ -135,7 +135,7 @@ lemma residueFieldMap_id (x : X) :
     Hom.residueFieldMap (𝟙 X) x = 𝟙 (X.residueField x) :=
   LocallyRingedSpace.residueFieldMap_id _
 
-@[simp]
+@[reassoc]
 lemma residueFieldMap_comp {Z : Scheme.{u}} (g : Y ⟶ Z) (x : X) :
     (f ≫ g).residueFieldMap x = g.residueFieldMap (f x) ≫ f.residueFieldMap x :=
   LocallyRingedSpace.residueFieldMap_comp _ _ _
@@ -207,6 +207,13 @@ lemma residue_residueFieldCongr (X : Scheme) {x y : X} (h : x = y) :
 lemma Hom.residueFieldMap_congr {f g : X ⟶ Y} (e : f = g) (x : X) :
     f.residueFieldMap x = (Y.residueFieldCongr (by subst e; rfl)).hom ≫ g.residueFieldMap x := by
   subst e; simp
+
+@[reassoc]
+lemma Hom.residueFieldMap_congr' {f : X ⟶ Y} {x₁ x₂ : X} (e : x₁ = x₂) :
+    f.residueFieldMap x₁ ≫ (X.residueFieldCongr e).hom =
+      (Y.residueFieldCongr (congrArg f e)).hom ≫ f.residueFieldMap x₂ := by
+  subst e
+  simp
 
 end congr
 
@@ -317,6 +324,7 @@ lemma SpecToEquivOfField_eq_iff {K : Type*} [Field K] {X : Scheme}
 
 /-- For a field `K` and a scheme `X`, the morphisms `Spec K ⟶ X` bijectively correspond
 to pairs of points `x` of `X` and embeddings `κ(x) ⟶ K`. -/
+@[simps]
 def SpecToEquivOfField (K : Type u) [Field K] (X : Scheme.{u}) :
     (Spec (.of K) ⟶ X) ≃ Σ x, X.residueField x ⟶ .of K where
   toFun f :=
@@ -331,6 +339,16 @@ def SpecToEquivOfField (K : Type u) [Field K] (X : Scheme.{u}) :
     grind [Scheme.descResidueField_stalkClosedPointTo_fromSpecResidueField,
       Scheme.fromSpecResidueField_apply,
       Scheme.residueFieldCongr_fromSpecResidueField]
+
+lemma SpecToEquivOfField_comp_fst {K : Type u} [Field K] (g : Spec (.of K) ⟶ X) :
+    (SpecToEquivOfField K Y (g ≫ f)).fst = f (SpecToEquivOfField K X g).fst :=
+  rfl
+
+lemma SpecToEquivOfField_comp_snd {K : Type u} [Field K] (g : Spec (.of K) ⟶ X) :
+    (SpecToEquivOfField K Y (g ≫ f)).snd =
+      f.residueFieldMap (SpecToEquivOfField K X g).fst ≫ (SpecToEquivOfField K X g).snd := by
+  simp [stalkClosedPointTo_comp, ← cancel_epi (Y.residue _), residue_descResidueField]
+  rfl
 
 end Scheme
 
