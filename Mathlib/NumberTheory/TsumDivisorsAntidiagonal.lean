@@ -43,7 +43,6 @@ lemma divisorsAntidiagonalFactors_one (x : Nat.divisorsAntidiagonal 1) :
   simp only [mul_eq_one, ne_eq, one_ne_zero, not_false_eq_true, and_true] at h
   simp [divisorsAntidiagonalFactors, h.1, h.2]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence from the union over `n` of `Nat.divisorsAntidiagonal n` to `ℕ+ × ℕ+`
 given by sending `n = a * b` to `(a, b)`. -/
 def sigmaAntidiagonalEquivProd : (Σ n : ℕ+, Nat.divisorsAntidiagonal n) ≃ ℕ+ × ℕ+ where
@@ -75,7 +74,6 @@ lemma summable_norm_pow_mul_geometric_div_one_sub (k : ℕ) {r : 𝕜} (hr : ‖
   simpa only [Nat.cofinite_eq_atTop] using
    tendsto_const_nhds.div ((tendsto_pow_atTop_nhds_zero_of_norm_lt_one hr).const_sub 1) (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma summable_divisorsAntidiagonal_aux (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     Summable fun c : (n : ℕ+) × {x // x ∈ (n : ℕ).divisorsAntidiagonal} ↦
     (c.2.1.2) ^ k * (r ^ (c.2.1.1 * c.2.1.2)) := by
@@ -105,7 +103,6 @@ theorem summable_prod_mul_pow (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
 -- access notation `σ`
 open scoped sigma
 
-set_option backward.isDefEq.respectTransparency false in
 theorem tsum_prod_pow_eq_tsum_sigma (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     ∑' d : ℕ+, ∑' c : ℕ+, c ^ k * r ^ (d * c : ℕ) = ∑' e : ℕ+, σ k e * r ^ (e : ℕ) := by
   suffices ∑' c : ℕ+ × ℕ+, c.2 ^ k * r ^ (c.1 * c.2 : ℕ) =

@@ -95,7 +95,6 @@ theorem pNilradical_prime {R : Type*} [CommSemiring R] {p : ℕ} (hp : p.Prime) 
 theorem pNilradical_one {R : Type*} [CommSemiring R] :
     pNilradical R 1 = ⊥ := pNilradical_eq_bot' rfl.le
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_pNilradical {R : Type*} [CommSemiring R] {p : ℕ} {x : R} :
     x ∈ pNilradical R p ↔ ∃ n : ℕ, x ^ p ^ n = 0 := by
   by_cases hp : 1 < p
@@ -168,7 +167,7 @@ theorem IsPRadical.comap_pNilradical [IsPRadical i p] :
 variable (K) in
 instance IsPRadical.of_id : IsPRadical (RingHom.id K) p where
   pow_mem' x := ⟨0, x, by simp⟩
-  ker_le' x h := by convert Ideal.zero_mem _
+  ker_le' x h := by convert! Ideal.zero_mem _
 
 /-- Composition of `p`-radical ring homomorphisms is also `p`-radical. -/
 theorem IsPRadical.trans [IsPRadical i p] [IsPRadical f p] :

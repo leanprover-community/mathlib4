@@ -392,7 +392,6 @@ def equivCongr (e : α ≃ β) : Sym α n ≃ Sym β n where
   left_inv x := by rw [map_map, Equiv.symm_comp_self, map_id]
   right_inv x := by rw [map_map, Equiv.self_comp_symm, map_id]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- "Attach" a proof that `a ∈ s` to each element `a` in `s` to produce
 an element of the symmetric power on `{x // x ∈ s}`. -/
 def attach (s : Sym α n) : Sym { x // x ∈ s } n :=
@@ -608,7 +607,7 @@ theorem decode_encode [DecidableEq α] (s : Sym (Option α) n.succ) : decode (en
   · simp [h]
   · simp only [decode, h, not_false_iff, encode_of_none_notMem, Embedding.some_apply, map_map,
       comp_apply, Option.some_get]
-    convert s.attach_map_coe
+    convert! s.attach_map_coe
 
 @[simp]
 theorem encode_decode [DecidableEq α] (s : Sym (Option α) n ⊕ Sym α n.succ) :

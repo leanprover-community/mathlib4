@@ -103,11 +103,11 @@ theorem PairwiseDisjoint.prod_left {f : ι × ι' → α}
   rw [mem_prod] at hi hj
   obtain rfl | hij := eq_or_ne i j
   · refine (ht hi.2 hj.2 <| (Prod.mk_right_injective _).ne_iff.1 h).mono ?_ ?_
-    · convert le_iSup₂ (α := α) i hi.1; rfl
-    · convert le_iSup₂ (α := α) i hj.1; rfl
+    · convert! le_iSup₂ (α := α) i hi.1; rfl
+    · convert! le_iSup₂ (α := α) i hj.1; rfl
   · refine (hs hi.1 hj.1 hij).mono ?_ ?_
-    · convert le_iSup₂ (α := α) i' hi.2; rfl
-    · convert le_iSup₂ (α := α) j' hj.2; rfl
+    · convert! le_iSup₂ (α := α) i' hi.2; rfl
+    · convert! le_iSup₂ (α := α) j' hj.2; rfl
 
 end CompleteLattice
 
@@ -161,7 +161,6 @@ section
 
 variable {f : ι → Set α} {s t : Set ι}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Set.pairwiseDisjoint_iff :
     s.PairwiseDisjoint f ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → (f i ∩ f j).Nonempty → i = j := by
   simp [Set.PairwiseDisjoint, Set.Pairwise, Function.onFun, not_imp_comm (a := _ = _),

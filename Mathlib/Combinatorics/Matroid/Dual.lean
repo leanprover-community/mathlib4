@@ -42,7 +42,6 @@ variable {α : Type*} {M : Matroid α} {I B X : Set α}
 
 section dual
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `M : Matroid α`, the `IndepMatroid α` whose independent sets are
   the subsets of `M.E` that are disjoint from some base of `M` -/
 @[simps] def dualIndepMatroid (M : Matroid α) : IndepMatroid α where
@@ -62,7 +61,7 @@ set_option backward.isDefEq.respectTransparency false in
     rw [← compl_subset_compl, ← hIB.sdiff_eq_right, ← union_diff_distrib, diff_eq, compl_inter,
       compl_compl, union_subset_iff, compl_subset_compl] at hB''₂
     have hssu := (subset_inter (hB''₂.2) hIE).ssubset_of_ne
-      (by { rintro rfl; apply hI; convert hB''; simp [hB''.subset_ground] })
+      (by { rintro rfl; apply hI; convert! hB''; simp [hB''.subset_ground] })
     obtain ⟨e, ⟨(heB'' : e ∉ _), heE⟩, heI⟩ := exists_of_ssubset hssu
     use e
     simp_rw [mem_diff, insert_subset_iff, and_iff_left heI, and_iff_right heE, and_iff_right hIE]
@@ -122,7 +121,6 @@ theorem dual_indep_iff_exists (hI : I ⊆ M.E := by aesop_mat) :
     M✶.Indep I ↔ (∃ B, M.IsBase B ∧ Disjoint I B) := by
   rw [dual_indep_iff_exists', and_iff_right hI]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem dual_dep_iff_forall : (M✶.Dep I) ↔ (∀ B, M.IsBase B → (I ∩ B).Nonempty) ∧ I ⊆ M.E := by
   simp_rw [dep_iff, dual_indep_iff_exists', dual_ground, and_congr_left_iff, not_and,
     not_exists, not_and, not_disjoint_iff_nonempty_inter, Classical.imp_iff_right_iff,
@@ -175,7 +173,6 @@ theorem IsBase.compl_isBase_of_dual (h : M✶.IsBase B) : M.IsBase (M.E \ B) :=
 theorem IsBase.compl_isBase_dual (h : M.IsBase B) : M✶.IsBase (M.E \ B) := by
   rwa [dual_isBase_iff, diff_diff_cancel_left h.subset_ground]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsBase.compl_inter_isBasis_of_inter_isBasis (hB : M.IsBase B) (hBX : M.IsBasis (B ∩ X) X) :
     M✶.IsBasis ((M.E \ B) ∩ (M.E \ X)) (M.E \ X) := by
   refine Indep.isBasis_of_forall_insert ?_ inter_subset_right (fun e he ↦ ?_)

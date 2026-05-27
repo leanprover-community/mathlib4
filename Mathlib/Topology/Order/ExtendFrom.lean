@@ -24,8 +24,10 @@ section RegularSpace
 variable [RegularSpace β]
 
 theorem continuousOn_Icc_extendFrom_Ioo
-    (hab : a ≠ b) (hf : ContinuousOn f (Ioo a b)) (ha : Tendsto f (𝓝[>] a) (𝓝 la))
+    (hf : ContinuousOn f (Ioo a b)) (ha : Tendsto f (𝓝[>] a) (𝓝 la))
     (hb : Tendsto f (𝓝[<] b) (𝓝 lb)) : ContinuousOn (extendFrom (Ioo a b) f) (Icc a b) := by
+  by_cases! hab : a = b
+  · simp [hab]
   apply continuousOn_extendFrom
   · rw [closure_Ioo hab]
   · intro x x_in
@@ -35,20 +37,24 @@ theorem continuousOn_Icc_extendFrom_Ioo
     · exact ⟨f x, hf x h⟩
 
 theorem continuousOn_uIcc_extendFrom_uIoo
-    (hab : a ≠ b) (hf : ContinuousOn f (uIoo a b))
+    (hf : ContinuousOn f (uIoo a b))
     (ha : Tendsto f (𝓝[uIoo a b] a) (𝓝 la)) (hb : Tendsto f (𝓝[uIoo a b] b) (𝓝 lb)) :
     ContinuousOn (extendFrom (uIoo a b) f) (uIcc a b) := by
+  by_cases! hab : a = b
+  · simp [hab]
   obtain hab' | hba' := hab.lt_or_gt
   · simp only [hab', uIoo_of_lt, nhdsWithin_Ioo_eq_nhdsGT, nhdsWithin_Ioo_eq_nhdsLT,
       uIcc_of_lt] at ha hb hf ⊢
-    exact continuousOn_Icc_extendFrom_Ioo hab hf ha hb
+    exact continuousOn_Icc_extendFrom_Ioo hf ha hb
   · simp only [hba', uIoo_of_gt, nhdsWithin_Ioo_eq_nhdsGT, nhdsWithin_Ioo_eq_nhdsLT,
       uIcc_of_gt] at ha hb hf ⊢
-    exact continuousOn_Icc_extendFrom_Ioo hab.symm hf hb ha
+    exact continuousOn_Icc_extendFrom_Ioo hf hb ha
 
 theorem continuousOn_Ico_extendFrom_Ioo
-    (hab : a < b) (hf : ContinuousOn f (Ioo a b)) (ha : Tendsto f (𝓝[>] a) (𝓝 la)) :
+    (hf : ContinuousOn f (Ioo a b)) (ha : Tendsto f (𝓝[>] a) (𝓝 la)) :
     ContinuousOn (extendFrom (Ioo a b) f) (Ico a b) := by
+  by_cases! hab : a ≥ b
+  · simp [hab]
   apply continuousOn_extendFrom
   · rw [closure_Ioo hab.ne]
     exact Ico_subset_Icc_self
@@ -59,9 +65,10 @@ theorem continuousOn_Ico_extendFrom_Ioo
     · exact ⟨f x, hf x h⟩
 
 theorem continuousOn_Ioc_extendFrom_Ioo
-    (hab : a < b) (hf : ContinuousOn f (Ioo a b)) (hb : Tendsto f (𝓝[<] b) (𝓝 lb)) :
+    (hf : ContinuousOn f (Ioo a b)) (hb : Tendsto f (𝓝[<] b) (𝓝 lb)) :
     ContinuousOn (extendFrom (Ioo a b) f) (Ioc a b) := by
-  have := continuousOn_Ico_extendFrom_Ioo (f := f ∘ OrderDual.ofDual) (la := lb) hab.dual
+  have := continuousOn_Ico_extendFrom_Ioo (f := f ∘ OrderDual.ofDual) (a := OrderDual.toDual b)
+    (b := OrderDual.toDual a) (la := lb)
   rw [Ico_toDual, Ioi_toDual, Ioo_toDual] at this
   exact this hf hb
 

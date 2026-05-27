@@ -150,6 +150,9 @@ instance (X : C) : Fibration (HoCat.pResolutionObj X) :=
 instance (X : C) : WeakEquivalence (HoCat.pResolutionObj X) :=
   (HoCat.exists_resolution X).choose_spec.choose_spec.choose_spec.2
 
+instance (X : C) [IsFibrant X] : IsFibrant (HoCat.resolutionObj X) :=
+  isFibrant_of_fibration (HoCat.pResolutionObj X)
+
 lemma HoCat.exists_resolution_map {X Y : C} (f : X ⟶ Y) :
     ∃ (g : resolutionObj X ⟶ resolutionObj Y),
       g ≫ pResolutionObj Y = pResolutionObj X ≫ f := by

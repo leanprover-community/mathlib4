@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Mon_
+public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
 public import Mathlib.CategoryTheory.Monoidal.Transport
 public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
@@ -79,8 +79,6 @@ class IsComonHom (f : M ⟶ N) : Prop where
   hom_counit (f) : f ≫ ε = ε := by cat_disch
   hom_comul (f) : f ≫ Δ = Δ ≫ (f ⊗ₘ f) := by cat_disch
 
-@[deprecated (since := "2025-09-15")] alias IsComon_Hom := IsComonHom
-
 attribute [reassoc (attr := simp)] IsComonHom.hom_counit IsComonHom.hom_comul
 
 instance : IsComonHom (𝟙 M) where
@@ -102,8 +100,6 @@ structure Comon where
   /-- The underlying object of a comonoid object. -/
   X : C
   [comon : ComonObj X]
-
-@[deprecated (since := "2025-09-15")] alias Comon_ := Comon
 
 attribute [instance] Comon.comon
 
@@ -246,7 +242,6 @@ instance : HasTerminal (Comon C) :=
 
 open Opposite
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `ComonToMonOpOpObj`. -/
 abbrev ComonToMonOpOpObjMon (A : Comon C) : MonObj (op A.X) where
   one := ε[A.X].op
@@ -262,8 +257,6 @@ abbrev ComonToMonOpOpObjMon (A : Comon C) : MonObj (op A.X) where
       comul_assoc_flip, op_comp, op_comp_assoc]
     rfl
 
-@[deprecated (since := "2025-09-15")] alias Comon_ToMon_OpOpObjMon := ComonToMonOpOpObjMon
-
 /--
 Turn a comonoid object into a monoid object in the opposite category.
 -/
@@ -271,9 +264,6 @@ Turn a comonoid object into a monoid object in the opposite category.
   X := op A.X
   mon := ComonToMonOpOpObjMon A
 
-@[deprecated (since := "2025-09-15")] alias Comon_ToMon_OpOpObj := ComonToMonOpOpObj
-
-set_option backward.isDefEq.respectTransparency false in
 variable (C) in
 /--
 The contravariant functor turning comonoid objects into monoid objects in the opposite category.
@@ -285,9 +275,6 @@ The contravariant functor turning comonoid objects into monoid objects in the op
       isMonHom_hom.one_hom := by apply Quiver.Hom.unop_inj; simp
       isMonHom_hom.mul_hom := by apply Quiver.Hom.unop_inj; simp }
 
-@[deprecated (since := "2025-09-15")] alias Comon_ToMon_OpOp := ComonToMonOpOp
-
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `MonOpOpToComonObj`. -/
 abbrev MonOpOpToComonObjComon (A : Mon Cᵒᵖ) : ComonObj (unop A.X) where
   counit := η[A.X].unop
@@ -299,8 +286,6 @@ abbrev MonOpOpToComonObjComon (A : Mon Cᵒᵖ) : ComonObj (unop A.X) where
       MonObj.mul_assoc_flip]
     rfl
 
-@[deprecated (since := "2025-09-15")] alias Mon_OpOpToComonObjComon := MonOpOpToComonObjComon
-
 /--
 Turn a monoid object in the opposite category into a comonoid object.
 -/
@@ -308,11 +293,8 @@ Turn a monoid object in the opposite category into a comonoid object.
   X := unop A.X
   comon := MonOpOpToComonObjComon A
 
-@[deprecated (since := "2025-09-15")] alias Mon_OpOpToComonObj := MonOpOpToComonObj
-
 variable (C)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The contravariant functor turning monoid objects in the opposite category into comonoid objects.
 -/
@@ -323,8 +305,6 @@ def MonOpOpToComon : (Mon Cᵒᵖ)ᵒᵖ ⥤ Comon C where
     { hom := f.unop.hom.unop
       isComonHom_hom.hom_counit := by apply Quiver.Hom.op_inj; simp
       isComonHom_hom.hom_comul := by apply Quiver.Hom.op_inj; simp [op_tensorHom] }
-
-@[deprecated (since := "2025-09-15")] alias Mon_OpOpToComon_ := MonOpOpToComon
 
 set_option backward.isDefEq.respectTransparency false in
 /--
@@ -379,7 +359,6 @@ theorem tensorObj_comul' (A B : C) [ComonObj A] [ComonObj B] :
       (Δ[A] ⊗ₘ Δ[B]) ≫ (tensorμ (op A) (op B) (op A) (op B)).unop := by
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The comultiplication on the tensor product of two comonoids is
 the tensor product of the comultiplications followed by the tensor strength

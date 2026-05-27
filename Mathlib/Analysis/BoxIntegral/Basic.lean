@@ -88,7 +88,6 @@ theorem integralSum_biUnionTagged (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[
   refine (π.sum_biUnion_boxes _ _).trans <| sum_congr rfl fun J hJ => sum_congr rfl fun J' hJ' => ?_
   rw [π.tag_biUnionTagged hJ hJ']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integralSum_biUnion_partition (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F)
     (π : TaggedPrepartition I) (πi : ∀ J, Prepartition J) (hπi : ∀ J ∈ π, (πi J).IsPartition) :
     integralSum f vol (π.biUnionPrepartition πi) = integralSum f vol π := by
@@ -187,7 +186,7 @@ theorem hasIntegral_iff : HasIntegral I l f vol y ↔
     ∀ ε > (0 : ℝ), ∃ r : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ), (∀ c, l.RCond (r c)) ∧
       ∀ c π, l.MemBaseSet I c (r c) π → IsPartition π → dist (integralSum f vol π) y ≤ ε :=
   ((l.hasBasis_toFilteriUnion_top I).tendsto_iff nhds_basis_closedBall).trans <| by
-    simp [@forall_swap ℝ≥0 (TaggedPrepartition I)]
+    simp [@forall_comm ℝ≥0 (TaggedPrepartition I)]
 
 /-- Quite often it is more natural to prove an estimate of the form `a * ε`, not `ε` in the RHS of
 `BoxIntegral.hasIntegral_iff`, so we provide this auxiliary lemma. -/
@@ -282,7 +281,6 @@ theorem integral_sub (hf : Integrable I l f vol) (hg : Integrable I l g vol) :
     integral I l (f - g) vol = integral I l f vol - integral I l g vol :=
   (hf.hasIntegral.sub hg.hasIntegral).integral_eq
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hasIntegral_const (c : E) : HasIntegral I l (fun _ => c) vol (vol I c) :=
   tendsto_const_nhds.congr' <| (l.eventually_isPartition I).mono fun _π hπ => Eq.symm <|
     (vol.map ⟨⟨fun g : E →L[ℝ] F ↦ g c, rfl⟩, fun _ _ ↦ rfl⟩).sum_partition_boxes le_top hπ
@@ -485,7 +483,10 @@ theorem to_subbox_aux (h : Integrable I l f vol) (hJ : J ≤ I) :
       Tendsto (integralSum f vol) (l.toFilteriUnion I (Prepartition.single I J hJ)) (𝓝 y) := by
   refine (cauchy_map_iff_exists_tendsto.1
     (h.cauchy_map_integralSum_toFilteriUnion (.single I J hJ))).imp fun y hy ↦ ⟨?_, hy⟩
-  convert hy.comp (l.tendsto_embedBox_toFilteriUnion_top hJ) -- faster than `exact` here
+  convert!
+    hy.comp
+      (l.tendsto_embedBox_toFilteriUnion_top hJ) -- faster than `exact` here
+         -- faster than `exact` here
 
 /-- If `f` is integrable on a box `I`, then it is integrable on any subbox of `I`. -/
 theorem to_subbox (h : Integrable I l f vol) (hJ : J ≤ I) : Integrable J l f vol :=
@@ -625,7 +626,6 @@ open Prepartition EMetric ENNReal BoxAdditiveMap Finset Metric TaggedPrepartitio
 
 variable (l)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A function that is bounded and a.e. continuous on a box `I` is integrable on `I`. -/
 theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : Box ι} {f : ℝⁿ → E}
     (hb : ∃ C : ℝ, ∀ x ∈ Box.Icc I, ‖f x‖ ≤ C) (μ : Measure ℝⁿ) [IsLocallyFiniteMeasure μ]
@@ -808,7 +808,7 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
       rw [Finset.mem_filter] at hJ; obtain ⟨hJ, hJs⟩ := hJ
       refine Hδ₁ c _ ⟨π.tag_mem_Icc _, hJs⟩ _ (hεs0 _) _ (π.le_of_mem' _ hJ) ?_
         (hπδ.2 hlH J hJ) fun hD => (Finset.le_sup hJ).trans (hπδ.3 hD)
-      convert hπδ.1 J hJ using 3; exact (if_pos hJs).symm
+      convert! hπδ.1 J hJ using 3; exact (if_pos hJs).symm
     refine (dist_sum_sum_le_of_le _ this).trans ?_
     rw [sum_comp]
     refine (sum_le_sum ?_).trans (hεs _ ?_)
@@ -828,7 +828,7 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
       rw [Finset.mem_filter] at hJ; obtain ⟨hJ, hJs⟩ := hJ
       refine Hδ₂ c _ ⟨π.tag_mem_Icc _, hJs⟩ _ ε'0 _ (π.le_of_mem' _ hJ) ?_ (fun hH => hπδ.2 hH J hJ)
         fun hD => (Finset.le_sup hJ).trans (hπδ.3 hD)
-      convert hπδ.1 J hJ using 3; exact (if_neg hJs).symm
+      convert! hπδ.1 J hJ using 3; exact (if_neg hJs).symm
     _ ≤ ∑ J ∈ π.boxes, ε' * B J := by
       gcongr
       · exact fun _ _ _ ↦ mul_nonneg ε'0.le (hB0 _)

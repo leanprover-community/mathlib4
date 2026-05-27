@@ -244,7 +244,6 @@ theorem roots_prod {ι : Type*} (f : ι → R[X]) (s : Finset ι) :
   rcases s with ⟨m, hm⟩
   simpa [Multiset.prod_eq_zero_iff, Multiset.bind_map] using roots_multiset_prod (m.map f)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem roots_pow (p : R[X]) (n : ℕ) : (p ^ n).roots = n • p.roots := by
   induction n with
@@ -365,7 +364,7 @@ def nthRootsFinset (n : ℕ) {R : Type*} (a : R) [CommRing R] [IsDomain R] : Fin
 lemma nthRootsFinset_def (n : ℕ) {R : Type*} (a : R) [CommRing R] [IsDomain R] [DecidableEq R] :
     nthRootsFinset n a = Multiset.toFinset (nthRoots n a) := by
   unfold nthRootsFinset
-  convert rfl
+  convert! rfl
 
 @[simp]
 theorem mem_nthRootsFinset {n : ℕ} (h : 0 < n) (a : R) {x : R} :
@@ -541,7 +540,7 @@ def rootSet (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] : Set S :=
 theorem rootSet_def (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] [DecidableEq S] :
     p.rootSet S = (p.aroots S).toFinset := by
   rw [rootSet]
-  convert rfl
+  convert! rfl
 
 @[simp]
 theorem rootSet_C [CommRing S] [IsDomain S] [Algebra T S] (a : T) : (C a).rootSet S = ∅ := by
@@ -638,7 +637,6 @@ theorem mem_rootSet_of_injective [CommRing S] {p : S[X]} [Algebra S R]
   classical
   exact Multiset.mem_toFinset.trans (mem_roots_map_of_injective h hp)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nthRootsFinset_toSet {n : ℕ} (h : 0 < n) (a : R) :
     nthRootsFinset n a = {r | r ^ n = a} := by
@@ -689,7 +687,6 @@ instance [CommRing S] [Algebra S R] (G H : Type*)
 
 end Roots
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero {R} [CommRing R] [IsDomain R]
     (p : R[X]) {ι} [Fintype ι] {f : ι → R} (hf : Function.Injective f)
     (heval : ∀ i, p.eval (f i) = 0) (hcard : natDegree p < Fintype.card ι) : p = 0 := by
@@ -819,7 +816,7 @@ theorem C_leadingCoeff_mul_prod_multiset_X_sub_C (hroots : Multiset.card p.roots
 can be written `p = ∏(X - a)`, for `a` in `p.roots`. -/
 theorem prod_multiset_X_sub_C_of_monic_of_roots_card_eq (hp : p.Monic)
     (hroots : Multiset.card p.roots = p.natDegree) : (p.roots.map fun a => X - C a).prod = p := by
-  convert C_leadingCoeff_mul_prod_multiset_X_sub_C hroots
+  convert! C_leadingCoeff_mul_prod_multiset_X_sub_C hroots
   rw [hp.leadingCoeff, C_1, one_mul]
 
 theorem Monic.isUnit_leadingCoeff_of_dvd {a p : R[X]} (hp : Monic p) (hap : a ∣ p) :
@@ -829,7 +826,7 @@ theorem Monic.isUnit_leadingCoeff_of_dvd {a p : R[X]} (hp : Monic p) (hap : a �
 theorem card_roots_le_one_of_irreducible (hirr : Irreducible p) : p.roots.card ≤ 1 := by
   obtain hp | ⟨x, hx⟩ := p.roots.empty_or_exists_mem
   · simp [hp]
-  convert p.card_roots'
+  convert! p.card_roots'
   exact (natDegree_eq_of_degree_eq_some <| degree_eq_one_of_irreducible_of_root hirr <|
     isRoot_of_mem_roots hx).symm
 
@@ -889,7 +886,7 @@ theorem count_map_roots [IsDomain A] [DecidableEq B] {p : A[X]} {f : A →+* B} 
   rw [← Multiset.filter_eq]
   refine
     (Multiset.prod_dvd_prod_of_le <| Multiset.map_le_map <| Multiset.filter_le (Eq b) _).trans ?_
-  convert Polynomial.map_dvd f p.prod_multiset_X_sub_C_dvd
+  convert! Polynomial.map_dvd f p.prod_multiset_X_sub_C_dvd
   simp only [Polynomial.map_multiset_prod, Multiset.map_map, Function.comp_apply,
     Polynomial.map_sub, map_X, map_C]
 

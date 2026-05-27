@@ -37,7 +37,6 @@ public section
 
 open Real Set NNReal
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Real.exp` is strictly convex on the whole real line. -/
 theorem strictConvexOn_exp : StrictConvexOn ℝ univ exp := by
   apply strictConvexOn_of_slope_strict_mono_adjacent convex_univ
@@ -106,18 +105,18 @@ theorem one_add_mul_self_lt_rpow_one_add {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
   · exact hs2.trans_lt (rpow_pos_of_pos hs1 _)
   have hs3 : 1 + s ≠ 1 := hs' ∘ add_eq_left.mp
   have hs4 : 1 + p * s ≠ 1 := by
-    contrapose! hs'; rwa [add_eq_left, mul_eq_zero, eq_false_intro hp'.ne', false_or] at hs'
+    contrapose hs'; rwa [add_eq_left, mul_eq_zero, eq_false_intro hp'.ne', false_or] at hs'
   rw [rpow_def_of_pos hs1, ← exp_log hs2]
   apply exp_strictMono
   rcases lt_or_gt_of_ne hs' with hs' | hs'
   · rw [← div_lt_iff₀ hp', ← div_lt_div_right_of_neg hs']
-    convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs2 hs1 hs4 hs3 _ using 1
+    convert! strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs2 hs1 hs4 hs3 _ using 1
     · rw [add_sub_cancel_left, log_one, sub_zero]
     · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
     · gcongr
       exact mul_lt_of_one_lt_left hs' hp
   · rw [← div_lt_iff₀ hp', ← div_lt_div_iff_of_pos_right hs']
-    convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs1 hs2 hs3 hs4 _ using 1
+    convert! strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs1 hs2 hs3 hs4 _ using 1
     · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
     · rw [add_sub_cancel_left, log_one, sub_zero]
     · gcongr
@@ -133,7 +132,6 @@ theorem one_add_mul_self_le_rpow_one_add {s : ℝ} (hs : -1 ≤ s) {p : ℝ} (hp
   · simp [hs']
   exact (one_add_mul_self_lt_rpow_one_add hs hs' hp).le
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Bernoulli's inequality** for real exponents, strict version: for `0 < p < 1` and `-1 ≤ s`,
 with `s ≠ 0`, we have `(1 + s) ^ p < 1 + p * s`. -/
 theorem rpow_one_add_lt_one_add_mul_self {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 0) {p : ℝ} (hp1 : 0 < p)
@@ -148,18 +146,18 @@ theorem rpow_one_add_lt_one_add_mul_self {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
     · exact neg_one_lt_zero.trans (mul_pos hp1 h)
   have hs3 : 1 + s ≠ 1 := hs' ∘ add_eq_left.mp
   have hs4 : 1 + p * s ≠ 1 := by
-    contrapose! hs'; rwa [add_eq_left, mul_eq_zero, eq_false_intro hp1.ne', false_or] at hs'
+    contrapose hs'; rwa [add_eq_left, mul_eq_zero, eq_false_intro hp1.ne', false_or] at hs'
   rw [rpow_def_of_pos hs1, ← exp_log hs2]
   apply exp_strictMono
   rcases lt_or_gt_of_ne hs' with hs' | hs'
   · rw [← lt_div_iff₀ hp1, ← div_lt_div_right_of_neg hs']
-    convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs1 hs2 hs3 hs4 _ using 1
+    convert! strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs1 hs2 hs3 hs4 _ using 1
     · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
     · rw [add_sub_cancel_left, log_one, sub_zero]
     · gcongr
       exact lt_mul_of_lt_one_left hs' hp2
   · rw [← lt_div_iff₀ hp1, ← div_lt_div_iff_of_pos_right hs']
-    convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs2 hs1 hs4 hs3 _ using 1
+    convert! strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs2 hs1 hs4 hs3 _ using 1
     · rw [add_sub_cancel_left, log_one, sub_zero]
     · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
     · gcongr
@@ -177,7 +175,6 @@ theorem rpow_one_add_le_one_add_mul_self {s : ℝ} (hs : -1 ≤ s) {p : ℝ} (hp
   · simp [hs']
   exact (rpow_one_add_lt_one_add_mul_self hs hs' hp1 hp2).le
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For `p : ℝ` with `1 < p`, `fun x ↦ x ^ p` is strictly convex on $[0, +∞)$. -/
 theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) fun x : ℝ ↦ x ^ p := by
   apply strictConvexOn_of_slope_strict_mono_adjacent (convex_Ici (0 : ℝ))
@@ -213,7 +210,7 @@ theorem convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : �
   exact (strictConvexOn_rpow hp).convexOn
 
 theorem convexOn_rpow_left {b : ℝ} (hb : 0 < b) : ConvexOn ℝ Set.univ (fun (x : ℝ) => b ^ x) := by
-  convert convexOn_exp.comp_linearMap (LinearMap.mul ℝ ℝ (Real.log b)) using 1
+  convert! convexOn_exp.comp_linearMap (LinearMap.mul ℝ ℝ (Real.log b)) using 1
   ext x
   simp [Real.rpow_def_of_pos hb]
 
@@ -222,7 +219,7 @@ theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
   intro x (hx : x < 0) y (hy : y < 0) hxy a b ha hb hab
   have hx' : 0 < -x := by linarith
   have hy' : 0 < -y := by linarith
-  have hxy' : -x ≠ -y := by contrapose! hxy; linarith
+  have hxy' : -x ≠ -y := by contrapose hxy; linarith
   calc
     a • log x + b • log y = a • log (-x) + b • log (-y) := by simp_rw [log_neg_eq_log]
     _ < log (a • -x + b • -y) := strictConcaveOn_log_Ioi.2 hx' hy' hxy' ha hb hab
@@ -231,7 +228,6 @@ theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
 
 namespace Real
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exp_mul_le_cosh_add_mul_sinh {t : ℝ} (ht : |t| ≤ 1) (x : ℝ) :
     exp (t * x) ≤ cosh x + t * sinh x := by
   rw [abs_le] at ht

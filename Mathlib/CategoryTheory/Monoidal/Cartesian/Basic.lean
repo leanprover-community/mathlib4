@@ -277,6 +277,14 @@ lemma lift_comp_fst_snd {X Y Z : C} (f : X ⟶ Y ⊗ Z) :
     lift (f ≫ fst _ _) (f ≫ snd _ _) = f := by
   cat_disch
 
+/-- The universal property of a cartesian `⊗` as an equivalence. -/
+@[simps]
+def liftEquiv {T X Y : C} : (T ⟶ X) × (T ⟶ Y) ≃ (T ⟶ X ⊗ Y) where
+  toFun f := lift f.1 f.2
+  invFun f := ⟨f ≫ fst _ _, f ≫ snd _ _⟩
+  left_inv := by cat_disch
+  right_inv := by cat_disch
+
 @[reassoc (attr := simp)]
 lemma whiskerLeft_fst (X : C) {Y Z : C} (f : Y ⟶ Z) : X ◁ f ≫ fst _ _ = fst _ _ := by
   simp [fst_def, ← whiskerLeft_comp_assoc]
@@ -466,6 +474,7 @@ instance (priority := low) toSymmetricCategory : SymmetricCategory C where
 
 /-- `CartesianMonoidalCategory` implies `BraidedCategory`.
 This is not an instance to prevent diamonds. -/
+@[implicit_reducible]
 def _root_.CategoryTheory.BraidedCategory.ofCartesianMonoidalCategory : BraidedCategory C where
   braiding X Y := { hom := lift (snd _ _) (fst _ _), inv := lift (snd _ _) (fst _ _) }
 
@@ -783,7 +792,6 @@ open Limits
 
 variable {P : ObjectProperty C}
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: Introduce `ClosedUnderFiniteProducts`?
 /-- The restriction of a Cartesian-monoidal category along an object property that's closed under
 finite products is Cartesian-monoidal. -/

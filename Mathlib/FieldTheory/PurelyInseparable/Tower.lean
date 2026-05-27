@@ -73,12 +73,12 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_isSeparable [IsPurelyIns
   have := (expChar_pow_pos F q n).ne'
   replace hf (i : ι) : l i ^ q ^ n ∈ (algebraMap F E).range := by
     by_cases hs : i ∈ l.support
-    · convert pow_mem (hf i) (q ^ (n - f i)) using 1
+    · convert! pow_mem (hf i) (q ^ (n - f i)) using 1
       rw [← pow_mul, ← pow_add, Nat.add_sub_of_le (Finset.le_sup hs)]
     exact ⟨0, by rw [map_zero, Finsupp.notMem_support_iff.1 hs, zero_pow this]⟩
   choose lF hlF using hf
   let lF₀ := Finsupp.onFinset l.support lF fun i ↦ by
-    contrapose!
+    contrapose
     refine fun hs ↦ (injective_iff_map_eq_zero _).mp (algebraMap F E).injective _ ?_
     rw [hlF, Finsupp.notMem_support_iff.1 hs, zero_pow this]
   replace h := linearIndependent_iff.1 (h.map_pow_expChar_pow_of_isSeparable' q n hsep) lF₀ <| by
@@ -89,7 +89,7 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_isSeparable [IsPurelyIns
     refine Finset.sum_congr rfl fun i _ ↦ ?_
     simp_rw [Algebra.smul_def, mul_pow, IsScalarTower.algebraMap_apply F E K, hlF, map_pow]
   refine eq_zero_of_pow_eq_zero ((hlF _).symm.trans ?_)
-  convert map_zero (algebraMap F E)
+  convert! map_zero (algebraMap F E)
   exact congr($h i)
 
 variable {F K} in
@@ -142,14 +142,13 @@ lemma insepDegree_eq_of_isSeparable [Algebra.IsSeparable F E] :
   rw [insepDegree, insepDegree, separableClosure.eq_restrictScalars_of_isSeparable F E K]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable,
 then $[K:F]_s = [K:E]_s$.
 It is a special case of `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`, and is an
 intermediate result used to prove it. -/
 lemma sepDegree_eq_of_isPurelyInseparable [IsPurelyInseparable F E] :
     sepDegree F K = sepDegree E K := by
-  convert sepDegree_eq_of_isPurelyInseparable_of_isSeparable F E (separableClosure E K)
+  convert! sepDegree_eq_of_isPurelyInseparable_of_isSeparable F E (separableClosure E K)
   haveI : IsScalarTower F (separableClosure E K) K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   rw [sepDegree, ← separableClosure.map_eq_of_separableClosure_eq_bot F
     (separableClosure.separableClosure_eq_bot E K)]
@@ -173,7 +172,6 @@ lemma rank_mul_insepDegree_of_isPurelyInseparable (K : Type v) [Field K] [Algebr
     Module.rank F E * insepDegree E K = insepDegree F K := by
   simpa only [Cardinal.lift_id] using lift_rank_mul_lift_insepDegree_of_isPurelyInseparable F E K
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then their
 separable degrees satisfy the tower law: $[E:F]_s [K:E]_s = [K:F]_s$. -/
 theorem lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic [Algebra.IsAlgebraic F E] :
@@ -189,7 +187,6 @@ theorem sepDegree_mul_sepDegree_of_isAlgebraic (K : Type v) [Field K] [Algebra F
     sepDegree F E * sepDegree E K = sepDegree F K := by
   simpa only [Cardinal.lift_id] using lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic F E K
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then their
 inseparable degrees satisfy the tower law: $[E:F]_i [K:E]_i = [K:F]_i$. -/
 theorem lift_insepDegree_mul_lift_insepDegree_of_isAlgebraic [Algebra.IsAlgebraic F E] :
@@ -215,7 +212,6 @@ theorem finInsepDegree_mul_finInsepDegree_of_isAlgebraic [Algebra.IsAlgebraic F 
 
 end Field
 
-set_option backward.isDefEq.respectTransparency false in
 variable {F K} in
 /-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable, then
 for any subset `S` of `K` such that `F(S) / F` is algebraic, the `E(S) / E` and `F(S) / F` have
@@ -262,7 +258,6 @@ theorem IntermediateField.sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInsepara
   have := sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInseparable (F := F) E (S : Set K)
   rwa [adjoin_self] at this
 
-set_option backward.isDefEq.respectTransparency false in
 variable {F K} in
 /-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable, then
 for any element `x` of `K` separable over `F`, it has the same minimal polynomials over `F` and

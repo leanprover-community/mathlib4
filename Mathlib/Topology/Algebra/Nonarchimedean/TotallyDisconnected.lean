@@ -29,15 +29,14 @@ is implied by the fact that a nonarchimedean group is totally separated.
 See Proposition 2.3.9 and Problem 63 in [F. Q. Gouvêa, *p-adic numbers*][gouvea1997].
 -/
 
-@[expose] public section
+public section
 
-open Pointwise TopologicalSpace
+open scoped Pointwise
 
 variable {G : Type*} [TopologicalSpace G] [Group G] [NonarchimedeanGroup G] [T2Space G]
 
 namespace NonarchimedeanGroup
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma exists_openSubgroup_separating {a b : G} (h : a ≠ b) :
     ∃ V : OpenSubgroup G, Disjoint (a • (V : Set G)) (b • V) := by

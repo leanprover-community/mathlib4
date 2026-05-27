@@ -22,6 +22,7 @@ The maps are
 - `Algebra.H1Cotangent.δ`
 - `KaehlerDifferential.mapBaseChange`
 - `KaehlerDifferential.map`
+
 and the exactness lemmas are
 - `Algebra.H1Cotangent.exact_map_δ`
 - `Algebra.H1Cotangent.exact_δ_mapBaseChange`
@@ -81,7 +82,7 @@ lemma Cotangent.exact :
     ext x
     obtain ⟨⟨x, hx⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
     simp only [map_mk, val_mk, LinearMap.zero_apply, val_zero]
-    convert Q.ker.toCotangent.map_zero
+    convert! Q.ker.toCotangent.map_zero
     trans ((IsScalarTower.toAlgHom R _ _).comp (IsScalarTower.toAlgHom R P.Ring S)) x
     · congr
       refine MvPolynomial.algHom_ext fun i ↦ ?_
@@ -132,7 +133,7 @@ section instanceProblem
 
 -- Note: these instances are needed to prevent instance search timeouts.
 attribute [local instance 999999] Zero.toOfNat0 SemilinearMapClass.distribMulActionSemiHomClass
-  SemilinearEquivClass.instSemilinearMapClass TensorProduct.addZeroClass AddZero.toZero
+  SemilinearEquivClass.instSemilinearMapClass instAddZeroClassTensorProduct AddZero.toZero
 
 lemma CotangentSpace.compEquiv_symm_inr :
     (compEquiv Q P).symm.toLinearMap ∘ₗ

@@ -185,14 +185,14 @@ noncomputable def contract (p : ℕ) (f : R[X]) : R[X] :=
 
 theorem coeff_contract {p : ℕ} (hp : p ≠ 0) (f : R[X]) (n : ℕ) :
     (contract p f).coeff n = f.coeff (n * p) := by
-  simp only [contract, coeff_monomial, sum_ite_eq', finset_sum_coeff, mem_range, not_lt,
+  simp only [contract, coeff_monomial, sum_ite_eq', finsetSum_coeff, mem_range, not_lt,
     ite_eq_left_iff]
   intro hn
   apply (coeff_eq_zero_of_natDegree_lt _).symm
   calc
     f.natDegree < f.natDegree + 1 := Nat.lt_succ_self _
     _ ≤ n * 1 := by simpa only [mul_one] using hn
-    _ ≤ n * p := mul_le_mul_of_nonneg_left (show 1 ≤ p from hp.bot_lt) (zero_le n)
+    _ ≤ n * p := by gcongr; exact hp.bot_lt
 
 theorem map_contract {p : ℕ} (hp : p ≠ 0) {f : R →+* S} {q : R[X]} :
     (q.contract p).map f = (q.map f).contract p := ext fun n ↦ by
@@ -309,7 +309,6 @@ section IsDomain
 
 variable (R : Type u) [CommRing R] [IsDomain R]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isLocalHom_expand {p : ℕ} (hp : 0 < p) : IsLocalHom (expand R p) := by
   refine ⟨fun f hf1 => ?_⟩
   have hf2 := eq_C_of_degree_eq_zero (degree_eq_zero_of_isUnit hf1)

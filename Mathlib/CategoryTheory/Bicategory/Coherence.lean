@@ -72,7 +72,6 @@ bicategory.
 def inclusionPath (a b : B) : Discrete (Path.{v} a b) ⥤ Hom a b :=
   Discrete.functor inclusionPathAux
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion from the locally discrete bicategory on the path category into the free bicategory
 as a prelax functor. This will be promoted to a pseudofunctor after proving the coherence theorem.
 See `inclusion`.

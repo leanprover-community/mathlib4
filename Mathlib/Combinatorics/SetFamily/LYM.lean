@@ -102,7 +102,7 @@ theorem local_lubell_yamamoto_meshalkin_inequality_div (hr : r ≠ 0)
     · exact (hr rfl).elim
     rw [tsub_add_eq_add_tsub hr', add_tsub_add_eq_tsub_right] at h𝒜
     apply le_of_mul_le_mul_right _ (pos_iff_ne_zero.2 hr)
-    convert Nat.mul_le_mul_right ((Fintype.card α).choose r) h𝒜 using 1
+    convert! Nat.mul_le_mul_right ((Fintype.card α).choose r) h𝒜 using 1
     · simpa [mul_assoc, Nat.choose_succ_right_eq] using Or.inl (mul_comm _ _)
     · simp only [mul_assoc, choose_succ_right_eq, mul_eq_mul_left_iff]
       exact Or.inl (mul_comm _ _)
@@ -180,7 +180,7 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
   | zero =>
     simp only [cast_one, cast_le, sum_singleton, div_one, choose_self, range_one,
       zero_add, range_one, sum_singleton,
-      choose_self, cast_one, div_one, cast_le]
+      choose_self, cast_one, div_one, cast_le, tsub_zero]
     exact card_le_card (slice_subset_falling _ _)
   | succ k ih =>
     rw [sum_range_succ, ← slice_union_shadow_falling_succ,
@@ -229,7 +229,6 @@ theorem lubell_yamamoto_meshalkin_inequality_sum_inv_choose
 
 /-! ### Sperner's theorem -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Sperner's theorem**. The size of an antichain in `Finset α` is bounded by the size of the
 maximal layer in `Finset α`. This precisely means that `Finset α` is a Sperner order. -/
 theorem _root_.IsAntichain.sperner (h𝒜 : IsAntichain (· ⊆ ·) (SetLike.coe 𝒜)) :

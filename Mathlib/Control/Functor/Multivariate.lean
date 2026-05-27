@@ -211,6 +211,7 @@ theorem LiftR_RelLast_iff (x y : F (α ::: β)) :
 end LiftPLastPredIff
 
 /-- Any type function that is (extensionally) equivalent to a functor, is itself a functor -/
+@[implicit_reducible]
 def ofEquiv {F F' : TypeVec.{u} n → Type*} [MvFunctor F'] (eqv : ∀ α, F α ≃ F' α) :
     MvFunctor F where
   map f x := (eqv _).symm <| f <$$> eqv _ x

@@ -59,7 +59,6 @@ def largeSchroder : ℕ → ℕ
 @[simp] theorem largeSchroder_one : largeSchroder 1 = 2 := by simp [largeSchroder]
 @[simp] theorem largeSchroder_two : largeSchroder 2 = 6 := by simp [largeSchroder]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem largeSchroder_succ (n : ℕ) :
     largeSchroder (n + 1) = largeSchroder n + ∑ i ≤ n, largeSchroder i * largeSchroder (n - i) := by
   simp [largeSchroder, ← Iio_add_one_eq_Iic, Nat.Iio_eq_range, ← Fin.sum_univ_eq_sum_range]

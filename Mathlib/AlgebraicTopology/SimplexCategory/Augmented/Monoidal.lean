@@ -56,8 +56,6 @@ def tensorObj (m n : AugmentedSimplexCategory) : AugmentedSimplexCategory :=
   | .star, x => x
   | x, .star => x
 
--- TODO: fix non-terminal simp: run on four different goals with different simp sets
-set_option linter.flexible false in
 /-- The action of the tensor product on maps coming from `SimplexCategory`. -/
 def tensorHomOf {x₁ y₁ x₂ y₂ : SimplexCategory} (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) :
     tensorObjOf x₁ x₂ ⟶ tensorObjOf y₁ y₂ :=
@@ -72,11 +70,8 @@ def tensorHomOf {x₁ y₁ x₂ y₂ : SimplexCategory} (f₁ : x₁ ⟶ y₁) (
         cases i using Fin.addCases <;>
         cases j using Fin.addCases <;>
         rw [Fin.le_def] at h ⊢ <;>
-        simp [Fin.addCases_left, Fin.addCases_right] at h ⊢
-        · case left.left i j => exact f₁.toOrderHom.monotone h
-        · case left.right i j => lia
-        · case right.left i j => lia
-        · case right.right i j => exact f₂.toOrderHom.monotone h }
+        simp at h ⊢ <;>
+        grind only [OrderHom.apply_mono] }
   (eqToHom (congrArg _ (Nat.succ_add _ _)).symm ≫ (SimplexCategory.mkHom f₁) ≫
     eqToHom (congrArg _ (Nat.succ_add _ _)) : _ ⟶ ⦋y₁.len + y₂.len + 1⦌)
 
@@ -191,7 +186,6 @@ lemma inr'_eval (x y : SimplexCategory) (i : Fin (y.len + 1)) :
   ext
   simp [OrderEmbedding.toOrderHom]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- We can characterize morphisms out of a tensor product via their precomposition with `inl` and
 `inr`. -/
 @[ext]
@@ -225,7 +219,6 @@ theorem tensorObj_hom_ext {x y z : AugmentedSimplexCategory} (f g : x ⊗ y ⟶ 
   | .star, .star, .of z, f, g => rfl
   | .star, .star, .star, f, g => rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
     (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) : inl x₁ x₂ ≫ (f₁ ⊗ₘ f₂) = f₁ ≫ inl y₁ y₂ :=
@@ -251,7 +244,6 @@ lemma inl_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
   | _, _, .star, _, f₁, f₂ => by cat_disch
   | .star, _, _, _, _, _ => rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
     (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) : inr x₁ x₂ ≫ (f₁ ⊗ₘ f₂) = f₂ ≫ inr y₁ y₂ :=

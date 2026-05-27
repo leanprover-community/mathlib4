@@ -162,9 +162,6 @@ theorem mul_one {n} (a : ⨂[R]^n M) : cast R M (add_zero _) (a ₜ* ₜ1) = a :
   | smul_tprod r a =>
     rw [← TensorProduct.smul_tmul', map_smul, map_smul, ← gMul_def, tprod_mul_tprod R a _,
       cast_tprod]
-    congr 2 with i
-    rw [Fin.append_elim0]
-    refine congr_arg a (Fin.ext ?_)
     simp
   | add x y hx hy =>
     rw [TensorProduct.add_tmul, map_add, map_add, hx, hy]
@@ -225,7 +222,6 @@ theorem algebraMap₀_mul_algebraMap₀ (r s : R) :
   rw [← smul_eq_mul, map_smul]
   exact algebraMap₀_mul r (@algebraMap₀ R M _ _ _ s)
 
-set_option backward.isDefEq.respectTransparency false in
 instance gsemiring : DirectSum.GSemiring fun i => ⨂[R]^i M :=
   { TensorPower.gmonoid with
     mul_zero := fun _ => map_zero _

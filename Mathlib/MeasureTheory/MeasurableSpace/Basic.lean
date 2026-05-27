@@ -59,6 +59,7 @@ variable {m m₁ m₂ : MeasurableSpace α} {m' : MeasurableSpace β} {f : α �
 
 /-- The forward image of a measurable space under a function. `map f m` contains the sets
   `s : Set β` whose preimage under `f` is measurable. -/
+@[implicit_reducible]
 protected def map (f : α → β) (m : MeasurableSpace α) : MeasurableSpace β where
   MeasurableSet' s := MeasurableSet[m] <| f ⁻¹' s
   measurableSet_empty := m.measurableSet_empty
@@ -77,6 +78,7 @@ theorem map_comp {f : α → β} {g : β → γ} : (m.map f).map g = m.map (g �
 
 /-- The reverse image of a measurable space under a function. `comap f m` contains the sets
   `s : Set α` such that `s` is the `f`-preimage of a measurable set in `β`. -/
+@[implicit_reducible]
 protected def comap (f : α → β) (m : MeasurableSpace β) : MeasurableSpace α where
   MeasurableSet' s := ∃ s', MeasurableSet[m] s' ∧ f ⁻¹' s' = s
   measurableSet_empty := ⟨∅, m.measurableSet_empty, rfl⟩
@@ -210,7 +212,6 @@ lemma Measurable.sup_of_right {mα mα' : MeasurableSpace α} {_ : MeasurableSpa
 theorem measurable_id'' {m mα : MeasurableSpace α} (hm : m ≤ mα) : @Measurable α α mα m id :=
   measurable_id.mono le_rfl hm
 
-@[measurability]
 theorem measurable_from_top [MeasurableSpace β] {f : α → β} : Measurable[⊤] f := fun _ _ => trivial
 
 theorem measurable_generateFrom [MeasurableSpace α] {s : Set (Set β)} {f : α → β}
@@ -230,11 +231,11 @@ section TypeclassMeasurableSpace
 
 variable [MeasurableSpace α] [MeasurableSpace β]
 
-@[nontriviality, measurability]
+@[nontriviality]
 theorem Subsingleton.measurable [Subsingleton α] : Measurable f := fun _ _ =>
   @Subsingleton.measurableSet α _ _ _
 
-@[nontriviality, measurability]
+@[nontriviality, fun_prop]
 theorem measurable_of_subsingleton_codomain [Subsingleton β] (f : α → β) : Measurable f :=
   fun s _ => Subsingleton.set_cases MeasurableSet.empty MeasurableSet.univ s
 
@@ -253,7 +254,7 @@ for functions between empty types. -/
 theorem measurable_const' {f : β → α} (hf : ∀ x y, f x = f y) : Measurable f := by
   nontriviality β
   inhabit β
-  convert @measurable_const α β _ _ (f default) using 2
+  convert! @measurable_const α β _ _ (f default) using 2
   apply hf
 
 @[fun_prop]
@@ -314,7 +315,7 @@ which takes a constant value `b ≠ 0` on a set `A` and `0` elsewhere. -/
 lemma measurable_indicator_const_iff [Zero β] [MeasurableSingletonClass β] (b : β) [NeZero b] :
     Measurable (s.indicator (fun (_ : α) ↦ b)) ↔ MeasurableSet s := by
   constructor <;> intro h
-  · convert h (MeasurableSet.singleton (0 : β)).compl
+  · convert! h (MeasurableSet.singleton (0 : β)).compl
     ext a
     simp [NeZero.ne b]
   · exact measurable_const.indicator h

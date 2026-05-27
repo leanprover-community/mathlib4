@@ -26,7 +26,7 @@ Archimedean classes of the group. The theorem is stated as `hahnEmbedding_isOrde
 
 -/
 
-@[expose] public section
+public section
 
 open ArchimedeanClass HahnSeries
 
@@ -35,7 +35,6 @@ variable (M : Type*) [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
 section Module
 variable [Module ℚ M] [IsOrderedModule ℚ M]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Nonempty (HahnEmbedding.Seed ℚ M ℝ) := by
   obtain ⟨strata⟩ : Nonempty (HahnEmbedding.ArchimedeanStrata ℚ M) := inferInstance
   choose f hf using fun c ↦ Archimedean.exists_orderAddMonoidHom_real_injective (strata.stratum c)
@@ -51,7 +50,6 @@ theorem hahnEmbedding_isOrderedModule_rat :
 
 end Module
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 **Hahn embedding theorem**
 

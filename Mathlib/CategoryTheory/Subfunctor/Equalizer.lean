@@ -37,8 +37,8 @@ protected def equalizer : Subfunctor F₁ where
   map φ x := by
     rintro ⟨hx, h⟩
     exact ⟨A.map _ hx,
-      (FunctorToTypes.naturality _ _ f φ ⟨x, hx⟩).trans (Eq.trans (by rw [h])
-        (FunctorToTypes.naturality _ _ g φ ⟨x, hx⟩).symm)⟩
+      (NatTrans.naturality_apply f φ ⟨x, hx⟩).trans (Eq.trans (by rw [h])
+        (NatTrans.naturality_apply g φ ⟨x, hx⟩).symm)⟩
 
 attribute [local simp] equalizer_obj
 
@@ -56,7 +56,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma range_le_equalizer_iff {G : C ⥤ Type w} (φ : G ⟶ A.toFunctor) :
     range (φ ≫ A.ι) ≤ Subfunctor.equalizer f g ↔ φ ≫ f = φ ≫ g := by
   rw [NatTrans.ext_iff]
-  simp [le_def, Set.subset_def, funext_iff, CategoryTheory.types_ext_iff]
+  simp [le_def, Set.subset_def, ConcreteCategory.hom_ext_iff, funext_iff]
 
 lemma equalizer_eq_iff :
     Subfunctor.equalizer f g = A ↔ f = g := by

@@ -112,7 +112,7 @@ namespace PushoutCocone
 @[simps!]
 def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     PullbackCone f.unop g.unop :=
-  Cocone.unop ((Cocones.precompose (opCospan f.unop g.unop).hom).obj
+  Cocone.unop ((Cocone.precompose (opCospan f.unop g.unop).hom).obj
     (Cocone.whisker walkingCospanOpEquiv.functor c))
 
 theorem unop_fst {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
@@ -124,7 +124,7 @@ theorem unop_snd {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocon
 /-- The obvious map `PushoutCocone f.op g.op → PullbackCone f g` -/
 @[simps!]
 def op {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : PullbackCone f.op g.op :=
-  (Cones.postcompose (cospanOp f g).symm.hom).obj
+  (Cone.postcompose (cospanOp f g).symm.hom).obj
     (Cone.whisker walkingSpanOpEquiv.inverse (Cocone.op c))
 
 theorem op_fst {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
@@ -142,7 +142,7 @@ namespace PullbackCone
 def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     PushoutCocone f.unop g.unop :=
   Cone.unop
-    ((Cones.postcompose (opSpan f.unop g.unop).symm.hom).obj
+    ((Cone.postcompose (opSpan f.unop g.unop).symm.hom).obj
       (Cone.whisker walkingSpanOpEquiv.functor c))
 
 theorem unop_inl {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
@@ -154,7 +154,7 @@ theorem unop_inr {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone
 /-- The obvious map `PullbackCone f g → PushoutCocone f.op g.op` -/
 @[simps!]
 def op {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : PushoutCocone f.op g.op :=
-  (Cocones.precompose (spanOp f g).hom).obj
+  (Cocone.precompose (spanOp f g).hom).obj
     (Cocone.whisker walkingCospanOpEquiv.inverse (Cone.op c))
 
 theorem op_inl {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :

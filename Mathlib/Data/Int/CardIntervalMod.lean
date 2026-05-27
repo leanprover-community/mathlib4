@@ -138,7 +138,6 @@ theorem count_modEq_card_eq_ceil (v : ℕ) :
     zero_mul, neg_lt_neg_iff, cast_lt]
   exact ⟨mod_lt _ hr, by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- There are `b / r + [v % r < b % r]` numbers in `[0, b)` congruent to `v` mod `r`,
 where `[·]` is the Iverson bracket. -/
 theorem count_modEq_card (v : ℕ) :

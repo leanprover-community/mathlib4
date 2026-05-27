@@ -60,7 +60,6 @@ lemma triangleRemovalBound_le (hε₁ : ε ≤ 1) :
     triangleRemovalBound ε ≤ (1 - ε / 4) * (ε / (16 * bound (ε / 8) ⌈4 / ε⌉₊)) ^ 3 := by
   simp [triangleRemovalBound, hε₁]
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma aux {n k : ℕ} (hk : 0 < k) (hn : k ≤ n) : n < 2 * k * (n / k) := by
   rw [mul_assoc, two_mul, ← add_lt_add_iff_right (n % k), add_right_comm, add_assoc,
     mod_add_div n k, add_comm, add_lt_add_iff_right]

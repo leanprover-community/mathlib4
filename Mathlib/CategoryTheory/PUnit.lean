@@ -5,7 +5,6 @@ Authors: Kim Morrison, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.Const
 public import Mathlib.CategoryTheory.Discrete.Basic
 public import Mathlib.Data.ULift
 
@@ -61,7 +60,6 @@ def equiv : Discrete PUnit.{w + 1} ⥤ C ≌ C where
 
 end Functor
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A category being equivalent to `PUnit` is equivalent to it having a unique morphism between
   any two objects. (In fact, such a category is also a groupoid;
   see `CategoryTheory.Groupoid.ofHomUnique`) -/
@@ -71,8 +69,8 @@ theorem equiv_punit_iff_unique :
   · rintro ⟨h⟩
     refine ⟨⟨h.inverse.obj ⟨⟨⟩⟩⟩, fun x y => Nonempty.intro ?_⟩
     let f : x ⟶ y := by
-      have hx : x ⟶ h.inverse.obj ⟨⟨⟩⟩ := by convert h.unit.app x
-      have hy : h.inverse.obj ⟨⟨⟩⟩ ⟶ y := by convert h.unitInv.app y
+      have hx : x ⟶ h.inverse.obj ⟨⟨⟩⟩ := by convert! h.unit.app x
+      have hy : h.inverse.obj ⟨⟨⟩⟩ ⟶ y := by convert! h.unitInv.app y
       exact hx ≫ hy
     suffices sub : Subsingleton (x ⟶ y) from uniqueOfSubsingleton f
     have : ∀ z, z = h.unit.app x ≫ (h.functor ⋙ h.inverse).map z ≫ h.unitInv.app y := by

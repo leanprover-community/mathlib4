@@ -27,9 +27,7 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
 
-open Localization Limits ZeroObject DerivedCategory Pretriangulated
-
-open Abelian
+open Localization Limits ZeroObject DerivedCategory Pretriangulated Abelian
 
 namespace ShortComplex
 
@@ -88,7 +86,7 @@ lemma extClass_hom [HasDerivedCategory.{w'} C] : hS.extClass.hom = hS.singleδ :
   dsimp [extClass, SmallShiftedHom.equiv]
   erw [SmallHom.equiv_comp]
   rw [SmallHom.equiv_mkInv, SmallHom.equiv_mk]
-  dsimp [singleδ, triangleOfSESδ]
+  dsimp [-Q_obj_single_obj, singleδ, triangleOfSESδ]
   rw [Category.assoc, Category.assoc, Category.assoc,
     singleFunctorsPostcompQIso_hom_hom, singleFunctorsPostcompQIso_inv_hom,
     NatTrans.id_app, Category.id_comp, NatTrans.id_app]
@@ -126,6 +124,14 @@ lemma extClass_comp_assoc {Y : C} {n : ℕ} (γ : Ext S.X₂ Y n) {n' : ℕ} {h 
     hS.extClass.comp ((Ext.mk₀ S.f).comp γ (zero_add n)) h = 0 := by
   rw [← Ext.comp_assoc (a₁₂ := 1) _ _ _ (by lia) (by lia) (by lia),
     extClass_comp, Ext.zero_comp]
+
+lemma extClass_naturality {S₁ S₂ : ShortComplex C}
+    (h₁ : S₁.ShortExact) (h₂ : S₂.ShortExact) (f : S₁ ⟶ S₂) :
+    h₁.extClass.comp (Ext.mk₀ f.τ₁) (add_zero 1) =
+      (Ext.mk₀ f.τ₃).comp h₂.extClass (zero_add 1) := by
+  letI := HasDerivedCategory.standard C
+  ext
+  simpa [ShiftedHom.comp_mk₀, ShiftedHom.mk₀_comp] using (singleTriangle.map h₁ h₂ f).comm₃
 
 end ShortExact
 

@@ -59,7 +59,7 @@ namespace OreLocalization
 variable {R : Type*} [Monoid R] (S : Submonoid R) [OreSet S] (X) [MulAction R X]
 
 /-- The setoid on `R × S` used for the Ore localization. -/
-@[to_additive (attr := instance_reducible) AddOreLocalization.oreEqv
+@[to_additive (attr := implicit_reducible) AddOreLocalization.oreEqv
   /-- The setoid on `R × S` used for the Ore localization. -/]
 def oreEqv : Setoid (X × S) where
   r rs rs' := ∃ (u : S) (v : R), u • rs'.1 = v • rs.1 ∧ u * rs'.2 = v * rs.2
@@ -548,6 +548,7 @@ protected def hsmul (c : R) :
     rw [← mul_one (oreDenom (c • 1) s), ← oreDiv_smul_oreDiv, ← mul_one (oreDenom (c • 1) _),
       ← oreDiv_smul_oreDiv, ← OreLocalization.expand])
 
+set_option linter.overlappingInstances false in
 /- Warning: This gives a diamond on `SMul R[S⁻¹] M[S⁻¹][S⁻¹]`, but we will almost never localize
 at the same monoid twice. -/
 /- Although the definition does not require `IsScalarTower R M X`,

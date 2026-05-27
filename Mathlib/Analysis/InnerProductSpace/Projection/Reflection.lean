@@ -33,7 +33,6 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 variable (K : Submodule 𝕜 E)
 variable [K.HasOrthogonalProjection]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `reflection`: the reflection as a linear equivalence. -/
 def reflectionLinearEquiv : E ≃ₗ[𝕜] E :=
   LinearEquiv.ofInvolutive
@@ -52,7 +51,7 @@ def reflection : E ≃ₗᵢ[𝕜] E :=
       let w : K := K.orthogonalProjection x
       let v := x - w
       have : ⟪v, w⟫ = 0 := starProjection_inner_eq_zero x w w.2
-      convert norm_sub_eq_norm_add this using 2
+      convert! norm_sub_eq_norm_add this using 2
       · dsimp [reflectionLinearEquiv, v, w]
         abel
       · simp only [v, add_sub_cancel] }
@@ -130,7 +129,7 @@ theorem reflection_map {E E' : Type*} [NormedAddCommGroup E] [NormedAddCommGroup
     reflection (K.map (f.toLinearEquiv : E →ₗ[𝕜] E')) = f.symm.trans (K.reflection.trans f) :=
   LinearIsometryEquiv.ext <| reflection_map_apply f K
 
-/-- Reflection through the trivial subspace {0} is just negation. -/
+/-- Reflection through the trivial subspace `{0}` is just negation. -/
 @[simp]
 theorem reflection_bot : reflection (⊥ : Submodule 𝕜 E) = LinearIsometryEquiv.neg 𝕜 := by
   ext; simp [reflection_apply]
@@ -161,7 +160,7 @@ theorem reflection_sub {v w : F} (h : ‖v‖ = ‖w‖) : reflection (ℝ ∙ (
     rw [Submodule.mem_orthogonal_singleton_iff_inner_left]
     rw [real_inner_add_sub_eq_zero_iff]
     exact h
-  convert congr_arg₂ (· + ·) h₂ h₁ using 1
+  convert! congr_arg₂ (· + ·) h₂ h₁ using 1
   · simp
   · abel
 

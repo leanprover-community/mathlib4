@@ -83,7 +83,7 @@ theorem toIcoMod_mem_Ico (a b : α) : toIcoMod hp a b ∈ Set.Ico a (a + p) :=
   sub_toIcoDiv_zsmul_mem_Ico hp a b
 
 theorem toIcoMod_mem_Ico' (b : α) : toIcoMod hp 0 b ∈ Set.Ico 0 p := by
-  convert toIcoMod_mem_Ico hp 0 b
+  convert! toIcoMod_mem_Ico hp 0 b
   exact (zero_add p).symm
 
 theorem toIocMod_mem_Ioc (a b : α) : toIocMod hp a b ∈ Set.Ioc a (a + p) :=
@@ -1351,14 +1351,12 @@ section LinearOrderedField
 variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
   {p : α} (hp : 0 < p)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toIcoDiv_eq_floor (a b : α) : toIcoDiv hp a b = ⌊(b - a) / p⌋ := by
   refine toIcoDiv_eq_of_sub_zsmul_mem_Ico hp ?_
   rw [Set.mem_Ico, zsmul_eq_mul, ← sub_nonneg, add_comm, sub_right_comm, ← sub_lt_iff_lt_add,
     sub_right_comm _ _ a]
   exact ⟨Int.sub_floor_div_mul_nonneg _ hp, Int.sub_floor_div_mul_lt _ hp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toIocDiv_eq_neg_floor (a b : α) : toIocDiv hp a b = -⌊(a + p - b) / p⌋ := by
   refine toIocDiv_eq_of_sub_zsmul_mem_Ioc hp ?_
   rw [Set.mem_Ioc, zsmul_eq_mul, Int.cast_neg, neg_mul, sub_neg_eq_add, ← sub_nonneg,
@@ -1404,21 +1402,19 @@ variable {α : Type*} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
   {p : α} (hp : 0 < p) (a : α)
 include hp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iUnion_Ioc_add_zsmul : ⋃ n : ℤ, Ioc (a + n • p) (a + (n + 1) • p) = univ := by
   refine eq_univ_iff_forall.mpr fun b => mem_iUnion.mpr ?_
   rcases sub_toIocDiv_zsmul_mem_Ioc hp a b with ⟨hl, hr⟩
   refine ⟨toIocDiv hp a b, ⟨lt_sub_iff_add_lt.mp hl, ?_⟩⟩
   rw [add_smul, one_smul, ← add_assoc]
-  convert sub_le_iff_le_add.mp hr using 1; abel
+  convert! sub_le_iff_le_add.mp hr using 1; abel
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iUnion_Ico_add_zsmul : ⋃ n : ℤ, Ico (a + n • p) (a + (n + 1) • p) = univ := by
   refine eq_univ_iff_forall.mpr fun b => mem_iUnion.mpr ?_
   rcases sub_toIcoDiv_zsmul_mem_Ico hp a b with ⟨hl, hr⟩
   refine ⟨toIcoDiv hp a b, ⟨le_sub_iff_add_le.mp hl, ?_⟩⟩
   rw [add_smul, one_smul, ← add_assoc]
-  convert sub_lt_iff_lt_add.mp hr using 1; abel
+  convert! sub_lt_iff_lt_add.mp hr using 1; abel
 
 theorem iUnion_Icc_add_zsmul : ⋃ n : ℤ, Icc (a + n • p) (a + (n + 1) • p) = univ := by
   simpa only [iUnion_Ioc_add_zsmul hp a, univ_subset_iff] using

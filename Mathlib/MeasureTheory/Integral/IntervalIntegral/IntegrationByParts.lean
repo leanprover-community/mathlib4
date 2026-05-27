@@ -5,8 +5,7 @@ Authors: Yury Kudryashov, Patrick Massot, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Mul
-public import Mathlib.Analysis.Calculus.Deriv.Slope
+public import Mathlib.MeasureTheory.Function.JacobianOneDim
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
 /-!
@@ -230,15 +229,14 @@ section SMul
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f f' : ℝ → ℝ} {g g' : ℝ → E}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Change of variables, general form. If `f` is continuous on `[a, b]` and has
 right-derivative `f'` in `(a, b)`, `g` is continuous on `f '' (a, b)` and integrable on
 `f '' [a, b]`, and `f' x • (g ∘ f) x` is integrable on `[a, b]`,
 then we can substitute `u = f x` to get `∫ x in a..b, f' x • (g ∘ f) x = ∫ u in f a..f b, g u`.
 
-If the function `f` is monotone or antitone, see also
-`integral_image_eq_integral_deriv_smul_of_monotoneOn` dropping all assumptions on `g`. -/
-theorem integral_comp_smul_deriv''' (hf : ContinuousOn f [[a, b]])
+If the function `f` is monotone or antitone, see also `integral_deriv_smul_comp_of_deriv_nonneg`
+and `integral_deriv_smul_comp_of_deriv_nonpos` dropping all assumptions on `g`. -/
+theorem integral_deriv_smul_comp''' (hf : ContinuousOn f [[a, b]])
     (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivWithinAt f (f' x) (Ioi x) x)
     (hg_cont : ContinuousOn g (f '' Ioo (min a b) (max a b))) (hg1 : IntegrableOn g (f '' [[a, b]]))
     (hg2 : IntegrableOn (fun x ↦ f' x • (g ∘ f) x) [[a, b]]) :
@@ -280,65 +278,208 @@ theorem integral_comp_smul_deriv''' (hf : ContinuousOn f [[a, b]])
   rw [← intervalIntegrable_iff'] at hg2
   simp_rw [integral_eq_sub_of_hasDeriv_right h_cont h_der hg2, integral_same, sub_zero]
 
+@[deprecated (since := "2026-03-19")]
+alias integral_comp_smul_deriv''' := integral_deriv_smul_comp'''
+
 /-- Change of variables for continuous integrands. If `f` is continuous on `[a, b]` and has
 continuous right-derivative `f'` in `(a, b)`, and `g` is continuous on `f '' [a, b]` then we can
 substitute `u = f x` to get `∫ x in a..b, f' x • (g ∘ f) x = ∫ u in f a..f b, g u`.
 
-If the function `f` is monotone or antitone, see also
-`integral_image_eq_integral_deriv_smul_of_monotoneOn` dropping all assumptions on `g`. -/
-theorem integral_comp_smul_deriv'' (hf : ContinuousOn f [[a, b]])
+If the function `f` is monotone or antitone, see also `integral_deriv_smul_comp_of_deriv_nonneg`
+and `integral_deriv_smul_comp_of_deriv_nonpos` dropping all assumptions on `g`. -/
+theorem integral_deriv_smul_comp'' (hf : ContinuousOn f [[a, b]])
     (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivWithinAt f (f' x) (Ioi x) x)
     (hf' : ContinuousOn f' [[a, b]]) (hg : ContinuousOn g (f '' [[a, b]])) :
     (∫ x in a..b, f' x • (g ∘ f) x) = ∫ u in f a..f b, g u := by
-  refine integral_comp_smul_deriv''' hf hff' (hg.mono <| image_mono Ioo_subset_Icc_self) ?_
+  refine integral_deriv_smul_comp''' hf hff' (hg.mono <| image_mono Ioo_subset_Icc_self) ?_
     (hf'.smul (hg.comp hf <| subset_preimage_image f _)).integrableOn_Icc
   rw [hf.image_uIcc] at hg ⊢
   exact hg.integrableOn_Icc
 
+@[deprecated (since := "2026-03-19")]
+alias integral_comp_smul_deriv'' := integral_deriv_smul_comp''
+
 /-- Change of variables. If `f` has continuous derivative `f'` on `[a, b]`,
 and `g` is continuous on `f '' [a, b]`, then we can substitute `u = f x` to get
 `∫ x in a..b, f' x • (g ∘ f) x = ∫ u in f a..f b, g u`.
-Compared to `intervalIntegral.integral_comp_smul_deriv` we only require that `g` is continuous on
+Compared to `intervalIntegral.integral_deriv_smul_comp` we only require that `g` is continuous on
 `f '' [a, b]`.
 
-If the function `f` is monotone or antitone, see also
-`integral_image_eq_integral_deriv_smul_of_monotoneOn` dropping all assumptions on `g`. -/
-theorem integral_comp_smul_deriv' (h : ∀ x ∈ uIcc a b, HasDerivAt f (f' x) x)
+If the function `f` is monotone or antitone, see also `integral_deriv_smul_comp_of_deriv_nonneg`
+and `integral_deriv_smul_comp_of_deriv_nonpos` dropping all assumptions on `g`. -/
+theorem integral_deriv_smul_comp' (h : ∀ x ∈ uIcc a b, HasDerivAt f (f' x) x)
     (h' : ContinuousOn f' (uIcc a b)) (hg : ContinuousOn g (f '' [[a, b]])) :
     (∫ x in a..b, f' x • (g ∘ f) x) = ∫ x in f a..f b, g x :=
-  integral_comp_smul_deriv'' (fun x hx ↦ (h x hx).continuousAt.continuousWithinAt)
+  integral_deriv_smul_comp'' (fun x hx ↦ (h x hx).continuousAt.continuousWithinAt)
     (fun x hx ↦ (h x <| Ioo_subset_Icc_self hx).hasDerivWithinAt) h' hg
+
+@[deprecated (since := "2026-03-19")]
+alias integral_comp_smul_deriv' := integral_deriv_smul_comp'
 
 /-- Change of variables, most common version. If `f` has continuous derivative `f'` on `[a, b]`,
 and `g` is continuous, then we can substitute `u = f x` to get
 `∫ x in a..b, f' x • (g ∘ f) x = ∫ u in f a..f b, g u`.
 
-If the function `f` is monotone or antitone, see also
-`integral_image_eq_integral_deriv_smul_of_monotoneOn` dropping all assumptions on `g`. -/
-theorem integral_comp_smul_deriv (h : ∀ x ∈ uIcc a b, HasDerivAt f (f' x) x)
+If the function `f` is monotone or antitone, see also `integral_deriv_smul_comp_of_deriv_nonneg`
+and `integral_deriv_smul_comp_of_deriv_nonpos` dropping all assumptions on `g`. -/
+theorem integral_deriv_smul_comp (h : ∀ x ∈ uIcc a b, HasDerivAt f (f' x) x)
     (h' : ContinuousOn f' (uIcc a b)) (hg : Continuous g) :
     (∫ x in a..b, f' x • (g ∘ f) x) = ∫ x in f a..f b, g x :=
-  integral_comp_smul_deriv' h h' hg.continuousOn
+  integral_deriv_smul_comp' h h' hg.continuousOn
+
+@[deprecated (since := "2026-03-19")]
+alias integral_comp_smul_deriv := integral_deriv_smul_comp
+
+/-- Change of variables for monotone functions.
+If `f` is continuous on `[a, b]` and has a nonnegative derivative `f'` in `(a, b)`,
+then we can substitute `u = f x` to get `∫ x in a..b, f' x • (g ∘ f) x = ∫ u in f a..f b, g u`. -/
+theorem integral_deriv_smul_comp_of_deriv_nonneg (hf : ContinuousOn f [[a, b]])
+    (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt f (f' x) x)
+    (hf' : ∀ x ∈ Ioo (min a b) (max a b), 0 ≤ f' x) :
+    (∫ x in a..b, f' x • (g ∘ f) x) = ∫ u in f a..f b, g u := by
+  have M : MonotoneOn f (uIcc a b) := by
+    apply monotoneOn_of_deriv_nonneg (convex_uIcc a b) hf
+    · rw [uIcc, interior_Icc]
+      exact fun z hz ↦ (hff' z hz).differentiableAt.differentiableWithinAt
+    · rw [uIcc, interior_Icc]
+      intro z hz
+      simpa [(hff' z hz).deriv] using hf' z hz
+  simp only [Function.comp_apply]
+  rcases le_or_gt a b with hab | hab
+  · rw [integral_of_le hab, ← integral_Icc_eq_integral_Ioc,
+      integral_Icc_deriv_smul_of_deriv_nonneg, integral_of_le, ← integral_Icc_eq_integral_Ioc]
+    · apply M left_mem_uIcc right_mem_uIcc hab
+    · rwa [uIcc_of_le hab] at hf
+    · grind
+    · grind
+    · exact hab
+  · rw [integral_of_ge hab.le, ← integral_Icc_eq_integral_Ioc,
+      integral_Icc_deriv_smul_of_deriv_nonneg, integral_of_ge, ← integral_Icc_eq_integral_Ioc]
+    · apply M right_mem_uIcc left_mem_uIcc hab.le
+    · rwa [uIcc_of_ge hab.le] at hf
+    · grind
+    · grind
+    · exact hab.le
+
+lemma integrable_deriv_smul_comp_iff_of_deriv_nonneg (hf : ContinuousOn f [[a, b]])
+    (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt f (f' x) x)
+    (hf' : ∀ x ∈ Ioo (min a b) (max a b), 0 ≤ f' x) :
+    IntervalIntegrable (fun x ↦ f' x • (g ∘ f) x) volume a b ↔
+      IntervalIntegrable g volume (f a) (f b) := by
+  have M : MonotoneOn f (uIcc a b) := by
+    apply monotoneOn_of_deriv_nonneg (convex_uIcc a b) hf
+    · rw [uIcc, interior_Icc]
+      exact fun z hz ↦ (hff' z hz).differentiableAt.differentiableWithinAt
+    · rw [uIcc, interior_Icc]
+      intro z hz
+      simpa [(hff' z hz).deriv] using hf' z hz
+  simp only [Function.comp_apply]
+  rcases le_or_gt a b with hab | hab
+  · rw [intervalIntegrable_iff_integrableOn_Icc_of_le hab,
+      integrableOn_Icc_deriv_smul_iff_of_deriv_nonneg,
+      intervalIntegrable_iff_integrableOn_Icc_of_le]
+    · apply M left_mem_uIcc right_mem_uIcc hab
+    · rwa [uIcc_of_le hab] at hf
+    · grind
+    · grind
+    · exact hab
+  · rw [IntervalIntegrable.symm_iff, intervalIntegrable_iff_integrableOn_Icc_of_le hab.le,
+      integrableOn_Icc_deriv_smul_iff_of_deriv_nonneg,
+      IntervalIntegrable.symm_iff, intervalIntegrable_iff_integrableOn_Icc_of_le]
+    · apply M right_mem_uIcc left_mem_uIcc hab.le
+    · rwa [uIcc_of_ge hab.le] at hf
+    · grind
+    · grind
+    · exact hab.le
+
+/-- Change of variables for antitone functions.
+If `f` is continuous on `[a, b]` and has a nonpositive derivative `f'` in `(a, b)`,
+then we can substitute `u = f x` to get `∫ x in a..b, f' x • (g ∘ f) x = ∫ u in f a..f b, g u`. -/
+theorem integral_deriv_smul_comp_of_deriv_nonpos (hf : ContinuousOn f [[a, b]])
+    (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt f (f' x) x)
+    (hf' : ∀ x ∈ Ioo (min a b) (max a b), f' x ≤ 0) :
+    (∫ x in a..b, f' x • (g ∘ f) x) = ∫ u in f a..f b, g u := by
+  have M : AntitoneOn f (uIcc a b) := by
+    apply antitoneOn_of_deriv_nonpos (convex_uIcc a b) hf
+    · rw [uIcc, interior_Icc]
+      exact fun z hz ↦ (hff' z hz).differentiableAt.differentiableWithinAt
+    · rw [uIcc, interior_Icc]
+      intro z hz
+      simpa [(hff' z hz).deriv] using hf' z hz
+  simp only [Function.comp_apply]
+  rcases le_or_gt a b with hab | hab
+  · rw [integral_of_le hab, ← integral_Icc_eq_integral_Ioc,
+      integral_Icc_deriv_smul_of_deriv_nonpos, integral_of_ge, ← integral_Icc_eq_integral_Ioc]
+    · apply M left_mem_uIcc right_mem_uIcc hab
+    · rwa [uIcc_of_le hab] at hf
+    · grind
+    · grind
+    · exact hab
+  · rw [integral_of_ge hab.le, ← integral_Icc_eq_integral_Ioc,
+      integral_Icc_deriv_smul_of_deriv_nonpos, integral_of_le, ← integral_Icc_eq_integral_Ioc,
+      neg_neg]
+    · apply M right_mem_uIcc left_mem_uIcc hab.le
+    · rwa [uIcc_of_ge hab.le] at hf
+    · grind
+    · grind
+    · exact hab.le
+
+lemma integrable_deriv_smul_comp_iff_of_deriv_nonpos (hf : ContinuousOn f [[a, b]])
+    (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt f (f' x) x)
+    (hf' : ∀ x ∈ Ioo (min a b) (max a b), f' x ≤ 0) :
+    IntervalIntegrable (fun x ↦ f' x • (g ∘ f) x) volume a b ↔
+      IntervalIntegrable g volume (f a) (f b) := by
+  have M : AntitoneOn f (uIcc a b) := by
+    apply antitoneOn_of_deriv_nonpos (convex_uIcc a b) hf
+    · rw [uIcc, interior_Icc]
+      exact fun z hz ↦ (hff' z hz).differentiableAt.differentiableWithinAt
+    · rw [uIcc, interior_Icc]
+      intro z hz
+      simpa [(hff' z hz).deriv] using hf' z hz
+  simp only [Function.comp_apply]
+  rcases le_or_gt a b with hab | hab
+  · rw [intervalIntegrable_iff_integrableOn_Icc_of_le hab,
+      integrableOn_Icc_deriv_smul_iff_of_deriv_nonpos,
+      IntervalIntegrable.symm_iff, intervalIntegrable_iff_integrableOn_Icc_of_le]
+    · apply M left_mem_uIcc right_mem_uIcc hab
+    · rwa [uIcc_of_le hab] at hf
+    · grind
+    · grind
+    · exact hab
+  · rw [IntervalIntegrable.symm_iff, intervalIntegrable_iff_integrableOn_Icc_of_le hab.le,
+      integrableOn_Icc_deriv_smul_iff_of_deriv_nonpos,
+      intervalIntegrable_iff_integrableOn_Icc_of_le]
+    · apply M right_mem_uIcc left_mem_uIcc hab.le
+    · rwa [uIcc_of_ge hab.le] at hf
+    · grind
+    · grind
+    · exact hab.le
 
 section CompleteSpace
 
 variable [CompleteSpace E]
 
-theorem integral_deriv_comp_smul_deriv' (hf : ContinuousOn f [[a, b]])
+theorem integral_deriv_smul_deriv_comp' (hf : ContinuousOn f [[a, b]])
     (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivWithinAt f (f' x) (Ioi x) x)
     (hf' : ContinuousOn f' [[a, b]]) (hg : ContinuousOn g [[f a, f b]])
     (hgg' : ∀ x ∈ Ioo (min (f a) (f b)) (max (f a) (f b)), HasDerivWithinAt g (g' x) (Ioi x) x)
     (hg' : ContinuousOn g' (f '' [[a, b]])) :
     (∫ x in a..b, f' x • (g' ∘ f) x) = (g ∘ f) b - (g ∘ f) a := by
-  rw [integral_comp_smul_deriv'' hf hff' hf' hg',
+  rw [integral_deriv_smul_comp'' hf hff' hf' hg',
     integral_eq_sub_of_hasDeriv_right hg hgg' (hg'.mono _).intervalIntegrable]
   exacts [rfl, intermediate_value_uIcc hf]
 
-theorem integral_deriv_comp_smul_deriv (hf : ∀ x ∈ uIcc a b, HasDerivAt f (f' x) x)
+@[deprecated (since := "2026-03-19")]
+alias integral_deriv_comp_smul_deriv' := integral_deriv_smul_deriv_comp'
+
+theorem integral_deriv_smul_deriv_comp (hf : ∀ x ∈ uIcc a b, HasDerivAt f (f' x) x)
     (hg : ∀ x ∈ uIcc a b, HasDerivAt g (g' (f x)) (f x)) (hf' : ContinuousOn f' (uIcc a b))
     (hg' : Continuous g') : (∫ x in a..b, f' x • (g' ∘ f) x) = (g ∘ f) b - (g ∘ f) a :=
   integral_eq_sub_of_hasDerivAt (fun x hx ↦ (hg x hx).scomp x <| hf x hx)
     (hf'.smul (hg'.comp_continuousOn <| HasDerivAt.continuousOn hf)).intervalIntegrable
+
+@[deprecated (since := "2026-03-19")]
+alias integral_deriv_comp_smul_deriv := integral_deriv_smul_deriv_comp
 
 end CompleteSpace
 
@@ -358,7 +499,7 @@ theorem integral_comp_mul_deriv''' {a b : ℝ} {f f' : ℝ → ℝ} {g : ℝ →
     (hg2 : IntegrableOn (fun x ↦ (g ∘ f) x * f' x) [[a, b]]) :
     (∫ x in a..b, (g ∘ f) x * f' x) = ∫ u in f a..f b, g u := by
   have hg2' : IntegrableOn (fun x ↦ f' x • (g ∘ f) x) [[a, b]] := by simpa [mul_comm] using hg2
-  simpa [mul_comm] using integral_comp_smul_deriv''' hf hff' hg_cont hg1 hg2'
+  simpa [mul_comm] using integral_deriv_smul_comp''' hf hff' hg_cont hg1 hg2'
 
 /-- Change of variables for continuous integrands. If `f` is continuous on `[a, b]` and has
 continuous right-derivative `f'` in `(a, b)`, and `g` is continuous on `f '' [a, b]` then we can
@@ -368,7 +509,7 @@ theorem integral_comp_mul_deriv'' {f f' g : ℝ → ℝ} (hf : ContinuousOn f [[
     (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivWithinAt f (f' x) (Ioi x) x)
     (hf' : ContinuousOn f' [[a, b]]) (hg : ContinuousOn g (f '' [[a, b]])) :
     (∫ x in a..b, (g ∘ f) x * f' x) = ∫ u in f a..f b, g u := by
-  simpa [mul_comm] using integral_comp_smul_deriv'' hf hff' hf' hg
+  simpa [mul_comm] using integral_deriv_smul_comp'' hf hff' hf' hg
 
 /-- Change of variables. If `f` has continuous derivative `f'` on `[a, b]`,
 and `g` is continuous on `f '' [a, b]`, then we can substitute `u = f x` to get
@@ -379,7 +520,7 @@ Compared to `intervalIntegral.integral_comp_mul_deriv` we only require that `g` 
 theorem integral_comp_mul_deriv' {f f' g : ℝ → ℝ} (h : ∀ x ∈ uIcc a b, HasDerivAt f (f' x) x)
     (h' : ContinuousOn f' (uIcc a b)) (hg : ContinuousOn g (f '' [[a, b]])) :
     (∫ x in a..b, (g ∘ f) x * f' x) = ∫ x in f a..f b, g x := by
-  simpa [mul_comm] using integral_comp_smul_deriv' h h' hg
+  simpa [mul_comm] using integral_deriv_smul_comp' h h' hg
 
 /-- Change of variables, most common version. If `f` has continuous derivative `f'` on `[a, b]`,
 and `g` is continuous, then we can substitute `u = f x` to get
@@ -390,19 +531,51 @@ theorem integral_comp_mul_deriv {f f' g : ℝ → ℝ} (h : ∀ x ∈ uIcc a b, 
     (∫ x in a..b, (g ∘ f) x * f' x) = ∫ x in f a..f b, g x :=
   integral_comp_mul_deriv' h h' hg.continuousOn
 
+/-- Change of variables for monotone functions.
+If `f` is continuous on `[a, b]` and has a nonnegative derivative `f'` in `(a, b)`,
+then we can substitute `u = f x` to get `∫ x in a..b, (g ∘ f) x * f' x = ∫ u in f a..f b, g u`. -/
+theorem integral_comp_mul_deriv_of_deriv_nonneg {f f' g : ℝ → ℝ} (hf : ContinuousOn f [[a, b]])
+    (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt f (f' x) x)
+    (hf' : ∀ x ∈ Ioo (min a b) (max a b), 0 ≤ f' x) :
+    (∫ x in a..b, (g ∘ f) x * f' x) = ∫ u in f a..f b, g u := by
+  simpa [mul_comm] using integral_deriv_smul_comp_of_deriv_nonneg hf hff' hf'
+
+/-- Change of variables for monotone functions.
+If `f` is continuous on `[a, b]` and has a nonnegative derivative `f'` in `(a, b)`,
+then we can substitute `u = f x` to get `∫ x in a..b, (g ∘ f) x * f' x = ∫ u in f a..f b, g u`. -/
+theorem integral_comp_mul_deriv_of_deriv_nonpos {f f' g : ℝ → ℝ} (hf : ContinuousOn f [[a, b]])
+    (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt f (f' x) x)
+    (hf' : ∀ x ∈ Ioo (min a b) (max a b), f' x ≤ 0) :
+    (∫ x in a..b, (g ∘ f) x * f' x) = ∫ u in f a..f b, g u := by
+  simpa [mul_comm] using integral_deriv_smul_comp_of_deriv_nonpos hf hff' hf'
+
+lemma integrable_comp_mul_deriv_iff_of_deriv_nonneg {f f' g : ℝ → ℝ} (hf : ContinuousOn f [[a, b]])
+    (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt f (f' x) x)
+    (hf' : ∀ x ∈ Ioo (min a b) (max a b), 0 ≤ f' x) :
+    IntervalIntegrable (fun x ↦ (g ∘ f) x * f' x) volume a b ↔
+      IntervalIntegrable g volume (f a) (f b) := by
+  simpa [mul_comm] using integrable_deriv_smul_comp_iff_of_deriv_nonneg hf hff' hf'
+
+lemma integrable_comp_mul_deriv_iff_of_deriv_nonpos {f f' g : ℝ → ℝ} (hf : ContinuousOn f [[a, b]])
+    (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt f (f' x) x)
+    (hf' : ∀ x ∈ Ioo (min a b) (max a b), f' x ≤ 0) :
+    IntervalIntegrable (fun x ↦ (g ∘ f) x * f' x) volume a b ↔
+      IntervalIntegrable g volume (f a) (f b) := by
+  simpa [mul_comm] using integrable_deriv_smul_comp_iff_of_deriv_nonpos hf hff' hf'
+
 theorem integral_deriv_comp_mul_deriv' {f f' g g' : ℝ → ℝ} (hf : ContinuousOn f [[a, b]])
     (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivWithinAt f (f' x) (Ioi x) x)
     (hf' : ContinuousOn f' [[a, b]]) (hg : ContinuousOn g [[f a, f b]])
     (hgg' : ∀ x ∈ Ioo (min (f a) (f b)) (max (f a) (f b)), HasDerivWithinAt g (g' x) (Ioi x) x)
     (hg' : ContinuousOn g' (f '' [[a, b]])) :
     (∫ x in a..b, (g' ∘ f) x * f' x) = (g ∘ f) b - (g ∘ f) a := by
-  simpa [mul_comm] using integral_deriv_comp_smul_deriv' hf hff' hf' hg hgg' hg'
+  simpa [mul_comm] using integral_deriv_smul_deriv_comp' hf hff' hf' hg hgg' hg'
 
 theorem integral_deriv_comp_mul_deriv {f f' g g' : ℝ → ℝ}
     (hf : ∀ x ∈ uIcc a b, HasDerivAt f (f' x) x)
     (hg : ∀ x ∈ uIcc a b, HasDerivAt g (g' (f x)) (f x)) (hf' : ContinuousOn f' (uIcc a b))
     (hg' : Continuous g') : (∫ x in a..b, (g' ∘ f) x * f' x) = (g ∘ f) b - (g ∘ f) a := by
-  simpa [mul_comm] using integral_deriv_comp_smul_deriv hf hg hf' hg'
+  simpa [mul_comm] using integral_deriv_smul_deriv_comp hf hg hf' hg'
 
 end Mul
 

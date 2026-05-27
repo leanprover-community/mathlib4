@@ -54,6 +54,22 @@ noncomputable def ιTruncLE (n : ℤ) : K.truncLE n ⟶ K :=
 noncomputable def πTruncGE (n : ℤ) : K ⟶ K.truncGE n :=
   HomologicalComplex.πTruncGE K (embeddingUpIntGE n)
 
+lemma quasiIsoAt_ιTruncLE (n q : ℤ) (hq : q ≤ n) :
+    QuasiIsoAt (K.ιTruncLE n) q := by
+  obtain ⟨k, rfl⟩ := Int.le.dest hq
+  exact HomologicalComplex.quasiIsoAt_ιTruncLE (j := k) _ _ (by simp)
+
+lemma quasiIsoAt_πTruncGE (n q : ℤ) (hq : n ≤ q) :
+    QuasiIsoAt (K.πTruncGE n) q := by
+  obtain ⟨k, rfl⟩ := Int.le.dest hq
+  exact HomologicalComplex.quasiIsoAt_πTruncGE (j := k) _ _ (by simp)
+
+instance (n : ℤ) : QuasiIsoAt (K.πTruncGE n) n :=
+  quasiIsoAt_πTruncGE _ _ _ (by lia)
+
+instance (n : ℤ) : QuasiIsoAt (K.ιTruncLE n) n :=
+  quasiIsoAt_ιTruncLE _ _ _ (by lia)
+
 section
 
 variable {K L}

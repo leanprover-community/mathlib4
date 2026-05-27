@@ -62,7 +62,6 @@ open Finpartition Finpartition.IsEquipartition
 
 variable {hP G ε}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The increment partition has a prescribed (very big) size in terms of the original partition. -/
 theorem card_increment (hPα : #P.parts * 16 ^ #P.parts ≤ card α) (hPG : ¬P.IsUniform G ε) :
     #(increment hP G ε).parts = stepBound #P.parts := by
@@ -94,7 +93,6 @@ private noncomputable def distinctPairs (x : {x // x ∈ P.parts.offDiag}) :
 
 variable {hP G ε}
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem distinctPairs_increment :
     P.parts.offDiag.attach.biUnion (distinctPairs hP G ε) ⊆ (increment hP G ε).parts.offDiag := by
   rintro ⟨Ui, Vj⟩

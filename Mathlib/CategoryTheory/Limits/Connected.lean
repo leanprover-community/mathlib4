@@ -103,7 +103,7 @@ limit it is sufficient to check that `limMap c.π` is an isomorphism. The conver
 true, see `Cone.isLimit_iff_isIso_limMap_π`. -/
 def Cone.isLimitOfIsIsoLimMapπ {F : J ⥤ C} [HasLimit F] (c : Cone F)
     [IsIso (limMap c.π)] : IsLimit c := by
-  refine IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext ((asIso (limMap c.π)).symm ≪≫
+  refine IsLimit.ofIsoLimit (limit.isLimit _) (Cone.ext ((asIso (limMap c.π)).symm ≪≫
     (limit.isLimit _).conePointUniqueUpToIso (isLimitConstCone J c.pt)) ?_)
   intro j
   simp only [limit.cone_x, Functor.const_obj_obj, limit.cone_π, Iso.trans_hom, Iso.symm_hom,
@@ -133,7 +133,7 @@ colimit it is sufficient to check that `colimMap c.ι` is an isomorphism. The co
 true, see `Cocone.isColimit_iff_isIso_colimMap_ι`. -/
 def Cocone.isColimitOfIsIsoColimMapι {F : J ⥤ C} [HasColimit F] (c : Cocone F)
     [IsIso (colimMap c.ι)] : IsColimit c :=
-  IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (asIso (colimMap c.ι) ≪≫
+  IsColimit.ofIsoColimit (colimit.isColimit _) (Cocone.ext (asIso (colimMap c.ι) ≪≫
     (colimit.isColimit _).coconePointUniqueUpToIso (isColimitConstCocone J c.pt)) (by simp))
 
 set_option backward.isDefEq.respectTransparency false in

@@ -57,7 +57,8 @@ namespace ContinuousWithinAt
 
 theorem oscillationWithin_eq_zero [TopologicalSpace E] {f : E → F} {D : Set E}
     {x : E} (hf : ContinuousWithinAt f D x) : oscillationWithin f D x = 0 := by
-  refine le_antisymm (_root_.le_of_forall_pos_le_add fun ε hε ↦ ?_) (zero_le _)
+  rw [← nonpos_iff_eq_zero]
+  refine _root_.le_of_forall_pos_le_add fun ε hε ↦ ?_
   rw [zero_add]
   have : eball (f x) (ε / 2) ∈ (𝓝[D] x).map f :=
     hf <| eball_mem_nhds _ (by simp [ne_of_gt hε])
@@ -103,7 +104,6 @@ namespace IsCompact
 variable [PseudoEMetricSpace E] {K : Set E}
 variable {f : E → F} {D : Set E} {ε : ENNReal}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `oscillationWithin f D x < ε` at every `x` in a compact set `K`, then there exists `δ > 0`
 such that the oscillation of `f` on `ball x δ ∩ D` is less than `ε` for every `x` in `K`. -/
 theorem uniform_oscillationWithin (comp : IsCompact K) (hK : ∀ x ∈ K, oscillationWithin f D x < ε) :
@@ -157,7 +157,7 @@ theorem uniform_oscillation {K : Set E} (comp : IsCompact K)
     {f : E → F} {ε : ENNReal} (hK : ∀ x ∈ K, oscillation f x < ε) :
     ∃ δ > 0, ∀ x ∈ K, ediam (f '' (eball x (ENNReal.ofReal δ))) ≤ ε := by
   simp only [← oscillationWithin_univ_eq_oscillation] at hK
-  convert ← comp.uniform_oscillationWithin hK
+  convert! ← comp.uniform_oscillationWithin hK
   exact inter_univ _
 
 end IsCompact

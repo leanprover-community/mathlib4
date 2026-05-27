@@ -127,7 +127,6 @@ theorem mapGen_apply_apply_of_surjective
   refine ⟨fun ⟨a, b, h₁, h₂, h₃⟩ ↦ ?_, by grind⟩
   exact c.trans (h h₂.symm) <| c.trans h₁ <| h h₃
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a ring congruence relation `c` on a semiring `M`, the order-preserving
 bijection between the set of ring congruence relations containing `c` and the
 ring congruence relations on the quotient of `M` by `c`. -/
@@ -341,7 +340,7 @@ noncomputable def comapQuotientEquivOfSurj
 @[simp] lemma comapQuotientEquivOfSurj_symm_mk' (c : RingCon M) (f : N ≃+* M)
     {d : RingCon N} (hcd : d = c.comap f) (x : N) :
     (comapQuotientEquivOfSurj c (f : N →+* M) f.surjective hcd).symm ⟦f x⟧ = ↑x := by
-  convert RingEquiv.symm_apply_apply _ _
+  convert! RingEquiv.symm_apply_apply _ _
   rw [comapQuotientEquivOfSurj_mk, RingEquiv.coe_toRingHom]
   rfl
 

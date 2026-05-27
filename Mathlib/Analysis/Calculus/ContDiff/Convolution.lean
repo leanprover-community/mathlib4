@@ -25,7 +25,7 @@ Criteria for a convolution of functions to be differentiable.
 
 -/
 
-@[expose] public section
+public section
 open Set Function Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
 open Bornology ContinuousLinearMap Metric Topology
@@ -40,13 +40,6 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup E'] [NormedAddCommGroup E'']
   [NormedAddCommGroup F] {f f' : G → E} {g g' : G → E'} {x x' : G} {y y' : E}
 
 namespace MeasureTheory
-section NontriviallyNormedField
-
-variable [NontriviallyNormedField 𝕜]
-variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 E'] [NormedSpace 𝕜 E''] [NormedSpace 𝕜 F]
-variable (L : E →L[𝕜] E' →L[𝕜] F)
-
-end NontriviallyNormedField
 
 open scoped Convolution
 
@@ -122,7 +115,7 @@ variable [IsAddLeftInvariant μ] [SFinite μ]
 theorem _root_.HasCompactSupport.hasDerivAt_convolution_right (hf : LocallyIntegrable f₀ μ)
     (hcg : HasCompactSupport g₀) (hg : ContDiff 𝕜 1 g₀) (x₀ : 𝕜) :
     HasDerivAt (f₀ ⋆[L, μ] g₀) ((f₀ ⋆[L, μ] deriv g₀) x₀) x₀ := by
-  convert (hcg.hasFDerivAt_convolution_right L hf hg x₀).hasDerivAt using 1
+  convert! (hcg.hasFDerivAt_convolution_right L hf hg x₀).hasDerivAt using 1
   rw [convolution_precompR_apply L hf (hcg.fderiv 𝕜) (hg.continuous_fderiv one_ne_zero)]
   rfl
 
@@ -141,7 +134,6 @@ variable [RCLike 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 E'] [NormedSpace �
   [NormedSpace 𝕜 G] [NormedAddCommGroup P] [NormedSpace 𝕜 P] {μ : Measure G}
   (L : E →L[𝕜] E' →L[𝕜] F)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The derivative of the convolution `f * g` is given by `f * Dg`, when `f` is locally integrable
 and `g` is `C^1` and compactly supported. Version where `g` depends on an additional parameter in an
 open subset `s` of a parameter space `P` (and the compact support `k` is independent of the
@@ -330,7 +322,7 @@ theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP}
         rintro ⟨p, y⟩ ⟨hp, hy⟩
         exact hgs p y hp hy
       apply ih (L.precompR (P × G) :) B
-      convert hg.2.2
+      convert! hg.2.2
   | top ih =>
     rw [contDiffOn_infty] at hg ⊢
     exact fun n ↦ ih n L hgs (hg n)

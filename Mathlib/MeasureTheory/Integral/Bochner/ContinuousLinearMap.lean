@@ -62,7 +62,7 @@ theorem integral_comp_commSL [CompleteSpace E] (hσ : ∀ (r : ℝ) (x : 𝕜), 
       integral_add (μ := μ) (L.integrable_comp f_int) (L.integrable_comp g_int), hf, hg]
   · exact isClosed_eq L.continuous_integral_comp_L1 (L.continuous.comp continuous_integral)
   · intro f g hfg _ hf
-    convert hf using 1 <;> clear hf
+    convert! hf using 1 <;> clear hf
     · exact integral_congr_ae (hfg.fun_comp L).symm
     · rw [integral_congr_ae hfg.symm]
 
@@ -135,7 +135,6 @@ section ContinuousMap
 
 variable [TopologicalSpace Y] [CompactSpace Y]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ContinuousMap.integral_apply [NormedSpace ℝ E] [CompleteSpace E] {f : X → C(Y, E)}
     (hf : Integrable f μ) (y : Y) : (∫ x, f x ∂μ) y = ∫ x, f x y ∂μ := by
   calc (∫ x, f x ∂μ) y = ContinuousMap.evalCLM ℝ y (∫ x, f x ∂μ) := rfl
@@ -143,7 +142,6 @@ lemma ContinuousMap.integral_apply [NormedSpace ℝ E] [CompleteSpace E] {f : X 
           (ContinuousLinearMap.integral_comp_comm _ hf).symm
     _ = _ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped ContinuousMapZero in
 theorem ContinuousMapZero.integral_apply {R : Type*} [NormedCommRing R] [Zero Y]
     [NormedAlgebra ℝ R] [CompleteSpace R] {f : X → C(Y, R)₀}
@@ -160,6 +158,7 @@ end ContinuousMap
 theorem integral_ofReal {f : X → ℝ} : ∫ x, (f x : 𝕜) ∂μ = ↑(∫ x, f x ∂μ) :=
   (@RCLike.ofRealLI 𝕜 _).integral_comp_comm f
 
+@[norm_cast]
 theorem integral_complex_ofReal {f : X → ℝ} : ∫ x, (f x : ℂ) ∂μ = ∫ x, f x ∂μ := integral_ofReal
 
 theorem integral_re {f : X → 𝕜} (hf : Integrable f μ) :
@@ -248,7 +247,6 @@ lemma integral_mul_const_of_integrable {A : Type*} [NonUnitalNormedRing A] [Norm
     rw [ContinuousLinearMap.integral_comp_comm _ hf]
   · simp [integral, hA]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Measurable f) (g : X → E) :
     ∫ x, g x ∂μ.withDensity (fun x => f x) = ∫ x, f x • g x ∂μ := by
   by_cases hE : CompleteSpace E; swap; · simp [integral, hE]
@@ -281,7 +279,7 @@ theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Meas
     have C2 : Continuous fun u : Lp E 1 (μ.withDensity fun x => f x) => ∫ x, f x • u x ∂μ := by
       have : Continuous ((fun u : Lp E 1 μ => ∫ x, u x ∂μ) ∘ withDensitySMulLI (E := E) μ f_meas) :=
         continuous_integral.comp (withDensitySMulLI (E := E) μ f_meas).continuous
-      convert this with u
+      convert! this with u
       simp only [Function.comp_apply, withDensitySMulLI_apply]
       exact integral_congr_ae (memL1_smul_of_L1_withDensity f_meas u).coeFn_toLp.symm
     exact isClosed_eq C1 C2

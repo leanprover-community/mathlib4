@@ -76,7 +76,6 @@ def endMonoidalStarFunctor : (EndMonoidal (MonoidalSingleObj.star C)) ⥤ C wher
   obj X := X
   map f := f
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (endMonoidalStarFunctor C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _

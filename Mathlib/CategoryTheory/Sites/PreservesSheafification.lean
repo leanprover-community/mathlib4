@@ -165,17 +165,18 @@ def sheafComposeNatTrans :
     dsimp
     erw [← adj₂.homEquiv_naturality_left_symm,
       ← adj₂.homEquiv_naturality_right_symm]
-    dsimp
-    rw [← whiskerRight_comp, ← whiskerRight_comp]
-    erw [adj₁.unit.naturality f]
-    rfl
+    congr 1
+    ext X
+    have := NatTrans.congr_app (adj₁.unit.naturality f) X
+    dsimp at this ⊢
+    grind
 
 set_option backward.isDefEq.respectTransparency false in
 lemma sheafComposeNatTrans_fac (P : Cᵒᵖ ⥤ A) :
     adj₂.unit.app (P ⋙ F) ≫
       (sheafToPresheaf J B).map ((sheafComposeNatTrans J F adj₁ adj₂).app P) =
         whiskerRight (adj₁.unit.app P) F := by
-  simp [sheafComposeNatTrans, -sheafToPresheaf_obj, -sheafToPresheaf_map,
+  simp [sheafComposeNatTrans, -ObjectProperty.ι_obj, -ObjectProperty.ι_map,
     Adjunction.homEquiv_counit]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -249,19 +250,20 @@ namespace GrothendieckTopology
 
 section
 
-variable {D E : Type*} [Category.{max v u} D] [Category.{max v u} E] (F : D ⥤ E)
+variable {D E : Type*} [Category* D] [Category* E] (F : D ⥤ E)
   [∀ (J : MulticospanShape.{max v u, max v u}), HasLimitsOfShape (WalkingMulticospan J) D]
   [∀ (J : MulticospanShape.{max v u, max v u}), HasLimitsOfShape (WalkingMulticospan J) E]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ E]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
   [∀ (X : C) (W : J.Cover X) (P : Cᵒᵖ ⥤ D), PreservesLimit (W.index P).multicospan F]
-  {FD : D → D → Type*} {CD : D → Type (max v u)} {FE : E → E → Type*} {CE : E → Type (max v u)}
+  {FD : D → D → Type*} {CD : D → Type*} {FE : E → E → Type*} {CE : E → Type*}
   [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [∀ X Y, FunLike (FE X Y) (CE X) (CE Y)]
   [instCCD : ConcreteCategory D FD] [instCCE : ConcreteCategory E FE]
   [∀ X, PreservesColimitsOfShape (Cover J X)ᵒᵖ (forget D)]
   [∀ X, PreservesColimitsOfShape (Cover J X)ᵒᵖ (forget E)]
-  [PreservesLimits (forget D)] [PreservesLimits (forget E)]
+  [PreservesLimitsOfSize.{max v u, max v u} (forget D)]
+  [PreservesLimitsOfSize.{max v u, max v u} (forget E)]
   [(forget D).ReflectsIsomorphisms] [(forget E).ReflectsIsomorphisms]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -275,7 +277,7 @@ lemma sheafToPresheaf_map_sheafComposeNatTrans_eq_sheafifyCompIso_inv (P : Cᵒ�
     rw [this]
     rfl
   apply ((plusPlusAdjunction J E).homEquiv _ _).injective
-  convert sheafComposeNatTrans_fac J F (plusPlusAdjunction J D) (plusPlusAdjunction J E) P
+  convert! sheafComposeNatTrans_fac J F (plusPlusAdjunction J D) (plusPlusAdjunction J E) P
   dsimp [plusPlusAdjunction]
   simp
 

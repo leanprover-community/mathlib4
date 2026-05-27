@@ -100,7 +100,7 @@ end AEEqFun
 
 namespace L1
 
-
+@[fun_prop]
 theorem integrable_coeFn (f : α →₁[μ] β) : Integrable f μ := by
   rw [← memLp_one_iff_integrable]
   exact Lp.memLp f
@@ -213,6 +213,10 @@ theorem norm_toL1_eq_lintegral_norm (f : α → β) (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) := by
   rw [norm_toL1, lintegral_norm_eq_lintegral_edist]
 
+theorem norm_toL1_eq_lintegral_enorm (f : α → β) (hf : Integrable f μ) :
+    ‖hf.toL1 f‖ = (∫⁻ a, ‖f a‖ₑ ∂μ).toReal := by
+  simp_rw [norm_toL1, edist_zero_right]
+
 @[simp]
 theorem edist_toL1_toL1 (f g : α → β) (hf : Integrable f μ) (hg : Integrable g μ) :
     edist (hf.toL1 f) (hg.toL1 g) = ∫⁻ a, edist (f a) (g a) ∂μ := by
@@ -220,7 +224,6 @@ theorem edist_toL1_toL1 (f g : α → β) (hf : Integrable f μ) (hg : Integrabl
     Pi.sub_apply, toReal_one, ENNReal.rpow_one, ne_eq, not_false_eq_true, div_self, ite_false]
   simp [edist_eq_enorm_sub]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem edist_toL1_zero (f : α → β) (hf : Integrable f μ) :
     edist (hf.toL1 f) 0 = ∫⁻ a, edist (f a) 0 ∂μ := by
   simp only [edist_zero_right, Lp.enorm_def, toL1_eq_mk, eLpNorm_aeeqFun]

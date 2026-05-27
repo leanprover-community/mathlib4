@@ -223,7 +223,6 @@ private lemma prop_red_T (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → 
   rw [show B = T⁻¹ • T • B by simp, ← T_S_rel_smul]
   solve_by_elim (maxDepth := 10)
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma prop_red_T_pow (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → C (T • B)) :
      ∀ B (n : ℤ), C (T ^ n • B) ↔ C B := by
   intro B n
@@ -252,7 +251,6 @@ theorem induction_on {C : Δ m → Prop} {A : Δ m} (hm : m ≠ 0)
   rw [← reduce_reduceStep hc] at hA
   simpa only [reduceStep, prop_red_S hS, prop_red_T_pow hS hT] using ih hA
 
-set_option backward.isDefEq.respectTransparency false in
 lemma reps_one_id (A : FixedDetMatrix (Fin 2) ℤ 1) (a1 : A.1 1 0 = 0) (a4 : 0 < A.1 0 0)
     (a6 : |A.1 0 1| < |(A.1 1 1)|) : A = (1 : SL(2, ℤ)) := by
   have := Int.mul_eq_one_iff_eq_one_or_neg_one.mp (A_c_eq_zero a1)

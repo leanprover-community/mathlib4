@@ -37,8 +37,8 @@ namespace Complex
 `cosh x`. -/
 theorem hasStrictDerivAt_sinh (x : ℂ) : HasStrictDerivAt sinh (cosh x) x := by
   simp only [cosh, div_eq_mul_inv]
-  convert ((hasStrictDerivAt_exp x).sub (hasStrictDerivAt_id x).fun_neg.cexp).mul_const (2 : ℂ)⁻¹
-    using 1
+  convert!
+    ((hasStrictDerivAt_exp x).sub (hasStrictDerivAt_id x).fun_neg.cexp).mul_const (2 : ℂ)⁻¹ using 1
   rw [id, mul_neg_one, sub_eq_add_neg, neg_neg]
 
 /-- The complex hyperbolic sine function is everywhere differentiable, with the derivative
@@ -84,8 +84,8 @@ theorem deriv_sinh : deriv sinh = cosh :=
 derivative `sinh x`. -/
 theorem hasStrictDerivAt_cosh (x : ℂ) : HasStrictDerivAt cosh (sinh x) x := by
   simp only [sinh, div_eq_mul_inv]
-  convert ((hasStrictDerivAt_exp x).add (hasStrictDerivAt_id x).fun_neg.cexp).mul_const (2 : ℂ)⁻¹
-    using 1
+  convert!
+    ((hasStrictDerivAt_exp x).add (hasStrictDerivAt_id x).fun_neg.cexp).mul_const (2 : ℂ)⁻¹ using 1
   rw [id, mul_neg_one, sub_eq_add_neg]
 
 /-- The complex hyperbolic cosine function is everywhere differentiable, with the derivative
@@ -439,7 +439,6 @@ theorem one_le_cosh (x : ℝ) : 1 ≤ cosh x :=
 theorem one_lt_cosh : 1 < cosh x ↔ x ≠ 0 :=
   cosh_zero ▸ cosh_lt_cosh.trans (by simp only [_root_.abs_zero, abs_pos])
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sinh_sub_id_strictMono : StrictMono fun x => sinh x - x := by
   refine strictMono_of_odd_strictMonoOn_nonneg (fun x => by simp; abel) ?_
   refine strictMonoOn_of_deriv_pos (convex_Ici _) ?_ fun x hx => ?_

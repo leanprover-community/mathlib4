@@ -109,7 +109,7 @@ noncomputable def Cofan.IsColimit.op {c : Cofan Z} (hc : IsColimit c) : IsLimit 
     (Discrete.functor Z).op := Discrete.natIso (fun _ ↦ Iso.refl _)
   refine IsLimit.ofIsoLimit ((IsLimit.postcomposeInvEquiv e _).2
     (IsLimit.whiskerEquivalence hc.op (Discrete.opposite α).symm))
-    (Cones.ext (Iso.refl _) (fun ⟨a⟩ ↦ ?_))
+    (Cone.ext (Iso.refl _) (fun ⟨a⟩ ↦ ?_))
   simp [e, Cofan.inj]
 
 /--
@@ -183,8 +183,9 @@ theorem desc_op_comp_opCoproductIsoProduct'_hom {c : Cofan Z} {f : Fan (op <| Z 
 
 theorem desc_op_comp_opCoproductIsoProduct_hom [HasCoproduct Z] {X : C} (π : (a : α) → Z a ⟶ X) :
     (Sigma.desc π).op ≫ (opCoproductIsoProduct Z).hom = Pi.lift (fun a ↦ (π a).op) := by
-  convert desc_op_comp_opCoproductIsoProduct'_hom (coproductIsCoproduct Z)
-    (productIsProduct (op <| Z ·)) (Cofan.mk _ π)
+  convert!
+    desc_op_comp_opCoproductIsoProduct'_hom (coproductIsCoproduct Z) (productIsProduct (op <| Z ·))
+      (Cofan.mk _ π)
   · simp [Sigma.desc, coproductIsCoproduct]
   · simp [Pi.lift, productIsProduct]
 
@@ -218,7 +219,7 @@ noncomputable def Fan.IsLimit.op {f : Fan Z} (hf : IsLimit f) : IsColimit f.op :
     (Discrete.functor Z).op := Discrete.natIso (fun _ ↦ Iso.refl _)
   refine IsColimit.ofIsoColimit ((IsColimit.precomposeHomEquiv e _).2
     (IsColimit.whiskerEquivalence hf.op (Discrete.opposite α).symm))
-    (Cocones.ext (Iso.refl _) (fun ⟨a⟩ ↦ ?_))
+    (Cocone.ext (Iso.refl _) (fun ⟨a⟩ ↦ ?_))
   simp [e, Fan.proj]
 
 /--
@@ -279,8 +280,9 @@ theorem opProductIsoCoproduct'_inv_comp_lift {f : Fan Z} {c : Cofan (op <| Z ·)
 
 theorem opProductIsoCoproduct_inv_comp_lift [HasProduct Z] {X : C} (π : (a : α) → X ⟶ Z a) :
     (opProductIsoCoproduct Z).inv ≫ (Pi.lift π).op = Sigma.desc (fun a ↦ (π a).op) := by
-  convert opProductIsoCoproduct'_inv_comp_lift (productIsProduct Z)
-    (coproductIsCoproduct (op <| Z ·)) (Fan.mk _ π)
+  convert!
+    opProductIsoCoproduct'_inv_comp_lift (productIsProduct Z) (coproductIsCoproduct (op <| Z ·))
+      (Fan.mk _ π)
   · simp [Pi.lift, productIsProduct]
   · simp [Sigma.desc, coproductIsCoproduct]
 
@@ -293,7 +295,7 @@ variable {A B : C} [HasBinaryProduct A B]
 instance : HasBinaryCoproduct (op A) (op B) := by
   have : HasProduct fun x ↦ (WalkingPair.casesOn x A B : C) := ‹_›
   change HasCoproduct _
-  convert inferInstanceAs (HasCoproduct fun x ↦ op (WalkingPair.casesOn x A B : C)) with x
+  convert! (inferInstance : HasCoproduct fun x ↦ op (WalkingPair.casesOn x A B : C)) with x
   cases x <;> rfl
 
 set_option backward.isDefEq.respectTransparency false in

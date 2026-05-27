@@ -21,7 +21,7 @@ kernels.
   the identity function.
 * `ProbabilityTheory.Kernel.copy α`: the deterministic kernel that maps `x : α` to
   the Dirac measure at `(x, x) : α × α`.
-* `ProbabilityTheory.Kernel.discard α`: the Markov kernel to the type `Unit`.
+* `ProbabilityTheory.Kernel.discard α`: the Markov kernel to the type `PUnit`.
 * `ProbabilityTheory.Kernel.swap α β`: the deterministic kernel that maps `(x, y)` to
   the Dirac measure at `(y, x)`.
 * `ProbabilityTheory.Kernel.const α (μβ : measure β)`: constant kernel `a ↦ μβ`.
@@ -140,15 +140,15 @@ end Copy
 
 section Discard
 
-/-- The Markov kernel to the `Unit` type. -/
+/-- The Markov kernel to the `PUnit` type. -/
 noncomputable
-def discard (α : Type*) [MeasurableSpace α] : Kernel α Unit :=
-  Kernel.deterministic (fun _ ↦ ()) measurable_const
+def discard (α : Type*) [MeasurableSpace α] : Kernel α PUnit :=
+  Kernel.deterministic (fun _ ↦ PUnit.unit) measurable_const
 
 instance : IsMarkovKernel (discard α) := by rw [discard]; infer_instance
 
 @[simp]
-lemma discard_apply (a : α) : discard α a = Measure.dirac () := deterministic_apply _ _
+lemma discard_apply (a : α) : discard α a = Measure.dirac PUnit.unit := deterministic_apply _ _
 
 end Discard
 
@@ -228,7 +228,7 @@ theorem lintegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} :
 theorem setLIntegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} {s : Set β} :
     ∫⁻ x in s, f x ∂const α μ a = ∫⁻ x in s, f x ∂μ := by rw [const_apply]
 
-lemma discard_eq_const : discard α = const α (Measure.dirac ()) := rfl
+lemma discard_eq_const : discard α = const α (Measure.dirac PUnit.unit) := rfl
 
 end Const
 
@@ -411,7 +411,7 @@ lemma exists_ae_eq_isMarkovKernel {μ : Measure α}
     refine ⟨toMeasurable μ {a | ¬ IsProbabilityMeasure (κ a)}, measurableSet_toMeasurable _ _,
       by simpa [measure_toMeasurable] using h, ?_⟩
     intro a ha
-    contrapose! ha
+    contrapose ha
     exact subset_toMeasurable _ _ ha
   obtain ⟨a, ha⟩ : sᶜ.Nonempty := by
     contrapose! h'; simpa [μs, h'] using measure_univ_le_add_compl s (μ := μ)

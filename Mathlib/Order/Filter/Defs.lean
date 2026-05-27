@@ -107,6 +107,7 @@ protected theorem mem_sets : s ∈ f.sets ↔ s ∈ f :=
 theorem univ_mem : univ ∈ f :=
   f.univ_sets
 
+@[gcongr]
 theorem mem_of_superset {x y : Set α} (hx : x ∈ f) (hxy : x ⊆ y) : y ∈ f :=
   f.sets_of_superset hx hxy
 
@@ -271,6 +272,7 @@ class NeBot (f : Filter α) : Prop where
   /-- The filter is nontrivial: `f ≠ ⊥` or equivalently, `∅ ∉ f`. -/
   ne' : f ≠ ⊥
 
+@[push ←]
 theorem neBot_iff {f : Filter α} : NeBot f ↔ f ≠ ⊥ :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 
@@ -299,6 +301,7 @@ def EventuallyEq (l : Filter α) (f g : α → β) : Prop :=
 notation:50 f " =ᶠ[" l:50 "] " g:50 => EventuallyEq l f g
 
 /-- A function `f` is eventually less than or equal to a function `g` at a filter `l`. -/
+@[to_dual self (reorder := f g)]
 def EventuallyLE [LE β] (l : Filter α) (f g : α → β) : Prop :=
   ∀ᶠ x in l, f x ≤ g x
 
@@ -324,7 +327,8 @@ equivalent conditions hold.
 1. There exists a set `t ∈ f` such that `m ⁻¹' t ⊆ s`. This is used as a definition.
 2. The set `kernImage m s = {y | ∀ x, m x = y → x ∈ s}` belongs to `f`, see `Filter.mem_comap'`.
 3. The set `(m '' sᶜ)ᶜ` belongs to `f`, see `Filter.mem_comap_iff_compl` and
-`Filter.compl_mem_comap`. -/
+   `Filter.compl_mem_comap`.
+-/
 def comap (m : α → β) (f : Filter β) : Filter α where
   sets := { s | ∃ t ∈ f, m ⁻¹' t ⊆ s }
   univ_sets := ⟨univ, univ_mem, subset_univ _⟩

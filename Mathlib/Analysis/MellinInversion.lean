@@ -36,7 +36,6 @@ private theorem rexp_neg_image_aux : rexp ∘ Neg.neg '' univ = Ioi 0 := by
 private theorem rexp_neg_injOn_aux : univ.InjOn (rexp ∘ Neg.neg) :=
   Real.exp_injective.injOn.comp neg_injective.injOn (univ.mapsTo_univ _)
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem rexp_cexp_aux (x : ℝ) (s : ℂ) (f : E) :
     rexp (-x) • cexp (-↑x) ^ (s - 1) • f = cexp (-s * ↑x) • f := by
   change (rexp (-x) : ℂ) • _ = _ • f
@@ -47,7 +46,6 @@ private theorem rexp_cexp_aux (x : ℝ) (s : ℂ) (f : E) :
     Complex.log_exp (by simp [pi_pos]) (by simpa using pi_nonneg)]
   ring_nf
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mellin_eq_fourier (f : ℝ → E) {s : ℂ} :
     mellin f s = 𝓕 (fun (u : ℝ) ↦ (Real.exp (-s.re * u) • f (Real.exp (-u)))) (s.im / (2 * π)) :=
   calc
@@ -74,7 +72,6 @@ theorem mellin_eq_fourier (f : ℝ → E) {s : ℂ} :
 @[deprecated (since := "2025-11-16")]
 alias mellin_eq_fourierIntegral := mellin_eq_fourier
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mellinInv_eq_fourierInv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx : 0 < x) :
     mellinInv σ f x =
     (x : ℂ) ^ (-σ : ℂ) • 𝓕⁻ (fun (y : ℝ) ↦ f (σ + 2 * π * y * I)) (-Real.log x) := calc

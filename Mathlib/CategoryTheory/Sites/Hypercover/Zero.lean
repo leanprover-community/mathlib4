@@ -77,6 +77,20 @@ lemma presieve₀_singleton (f : S ⟶ T) : (singleton f).presieve₀ = .singlet
 instance (f : S ⟶ T) : Unique (PreZeroHypercover.singleton f).I₀ :=
   inferInstanceAs <| Unique PUnit
 
+variable (S) in
+/-- The empty pre-`0`-hypercover. -/
+@[simps]
+def empty : PreZeroHypercover.{w} S where
+  I₀ := PEmpty
+  X := PEmpty.elim
+  f i := i.elim
+
+instance : IsEmpty (empty S).I₀ := inferInstanceAs <| IsEmpty PEmpty
+
+@[simp]
+lemma presieve₀_empty : (empty.{w} S).presieve₀ = ⊥ := by
+  grind
+
 /-- Pullback of a pre-`0`-hypercover along a morphism. The components are `pullback f (E.f i)`. -/
 @[simps]
 noncomputable
@@ -222,7 +236,7 @@ def add (E : PreZeroHypercover.{w} S) {T : C} (f : T ⟶ S) : PreZeroHypercover.
   simp [add, presieve₀_reindex, presieve₀_sum]
 
 /-- The single object pre-`0`-hypercover obtained from taking the coproduct of the components. -/
-@[simps I₀ X]
+@[simps I₀ X, simps -isSimp f]
 def sigmaOfIsColimit (E : PreZeroHypercover.{w} S) {c : Cofan E.X} (hc : IsColimit c) :
     PreZeroHypercover.{w} S where
   I₀ := PUnit
@@ -234,6 +248,11 @@ lemma inj_sigmaOfIsColimit_f (E : PreZeroHypercover.{w} S) {c : Cofan E.X} (hc :
     (i : E.I₀) (r : PUnit) :
     c.inj i ≫ (E.sigmaOfIsColimit hc).f r = E.f i := by
   simp [PreZeroHypercover.sigmaOfIsColimit]
+
+@[simp]
+lemma presieve₀_sigmaOfIsColimit (E : PreZeroHypercover.{w} S) {c : Cofan E.X} (hc : IsColimit c) :
+    (E.sigmaOfIsColimit hc).presieve₀ = Presieve.singleton (Cofan.IsColimit.desc hc E.f) :=
+  Presieve.ofArrows_pUnit _
 
 section Category
 
@@ -349,7 +368,7 @@ lemma Hom.sieve₀_le_sieve₀ {E F : PreZeroHypercover S} (f : E.Hom F) : E.sie
   intro i
   rw [← f.w₀ i]
   apply Sieve.downward_closed
-  exact Sieve.le_generate _ _ ⟨f.s₀ i⟩
+  exact Sieve.le_generate _ _ _ ⟨f.s₀ i⟩
 
 lemma sieve₀_eq_of_iso {E F : PreZeroHypercover S} (e : E ≅ F) : E.sieve₀ = F.sieve₀ :=
   le_antisymm e.hom.sieve₀_le_sieve₀ e.inv.sieve₀_le_sieve₀
@@ -369,6 +388,9 @@ def map (F : C ⥤ D) (E : PreZeroHypercover.{w} S) : PreZeroHypercover.{w} (F.o
 
 lemma presieve₀_map : (E.map F).presieve₀ = E.presieve₀.map F :=
   (Presieve.map_ofArrows _).symm
+
+lemma sieve₀_map : (E.map F).sieve₀ = E.sieve₀.functorPushforward F := by
+  simp [← Sieve.generate_map_eq_functorPushforward, Presieve.map_ofArrows, map]
 
 end Functoriality
 
@@ -785,7 +807,7 @@ instance (E : ZeroHypercover.{w} J S) : ZeroHypercover.Small.{max u v} E where
       simp
     choose j h₁ h₂ using this
     refine ⟨ι, fun i ↦ j _ _ (.mk i), ?_⟩
-    convert E.mem₀
+    convert! E.mem₀
     exact le_antisymm (fun Z g ⟨i⟩ ↦ ⟨_⟩) (h ▸ fun Z g ⟨i⟩ ↦ .mk' i (h₁ _ _ _) (h₂ _ _ _))
 
 /-- Restrict a `w'`-small `0`-hypercover to a `w'`-`0`-hypercover. -/
@@ -849,7 +871,7 @@ lemma Small.inf {J K : Precoverage C} [Small.{w} J]
 instance [IsStableUnderBaseChange J] : RespectsIso J where
   of_iso {S E F} e h := by
     refine J.mem_coverings_of_isPullback (fun i ↦ E.f (e.inv.s₀ i)) ?_ (𝟙 S) _ (fun i ↦ ?_) ?_
-    · convert h
+    · convert! h
       exact Presieve.ofArrows_comp_eq_of_surjective _ (fun i ↦ ⟨e.hom.s₀ i, by simp⟩)
     · exact e.inv.h₀ i
     · intro i

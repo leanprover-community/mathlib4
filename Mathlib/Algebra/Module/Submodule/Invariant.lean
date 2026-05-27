@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.LinearAlgebra.Span.Defs
@@ -27,7 +28,7 @@ open Submodule (span)
 
 namespace Module.End
 
-variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] (f : End R M)
+variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] (f g : End R M)
 
 /-- Given an endomorphism, `f` of some module, this is the sublattice of all `f`-invariant
 submodules. -/
@@ -63,6 +64,26 @@ lemma mem_invtSubmodule_symm_iff_le_map {f : M ≃ₗ[R] M} {p : Submodule R M} 
     p ∈ invtSubmodule f.symm ↔ p ≤ p.map (f : M →ₗ[R] M) :=
   (mem_invtSubmodule_iff_map_le _).trans (f.toEquiv.symm.subset_symm_image _ _).symm
 
+lemma invtSubmodule_inf_invtSubmodule_le_invtSubmodule_add :
+    f.invtSubmodule ⊓ g.invtSubmodule ≤ (f + g).invtSubmodule :=
+  fun p ⟨hfp, hgp⟩ _ hx ↦ p.add_mem (hfp hx) (hgp hx)
+
+section CommRing
+
+variable {R S : Type*} [Semiring R] [Semiring S] [Module R M] [Module S M]
+  [DistribSMul S R] [SMulCommClass R S M] [IsScalarTower S R M] (f : End R M)
+
+lemma invtSubmodule_le_invtSubmodule_smul (c : S) : f.invtSubmodule ≤ (c • f).invtSubmodule :=
+  fun p hfp _ hx ↦ p.smul_of_tower_mem c (hfp hx)
+
+@[simp]
+lemma invtSubmodule_smul (c : Sˣ) : (c • f).invtSubmodule = f.invtSubmodule := by
+  apply le_antisymm ?_ (invtSubmodule_le_invtSubmodule_smul f c.1)
+  grw [invtSubmodule_le_invtSubmodule_smul (c.1 • f) c⁻¹.1]
+  simp [smul_smul]
+
+end CommRing
+
 namespace invtSubmodule
 
 variable {f}
@@ -89,13 +110,11 @@ instance : BoundedOrder (f.invtSubmodule) where
   le_top := fun ⟨p, hp⟩ ↦ by simp
   bot_le := fun ⟨p, hp⟩ ↦ by simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected lemma zero :
     (0 : End R M).invtSubmodule = ⊤ :=
   eq_top_iff.mpr fun x ↦ by simp [invtSubmodule]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected lemma id :
     invtSubmodule (LinearMap.id : End R M) = ⊤ :=

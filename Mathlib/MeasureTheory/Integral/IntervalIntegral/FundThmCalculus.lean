@@ -143,7 +143,7 @@ Other instances could be added when needed (in that case, one also needs to add 
 integral, fundamental theorem of calculus, FTC-1, FTC-2
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists HasDerivAt.mul -- guard against import creep
 
@@ -967,7 +967,6 @@ section FTC2
 
 variable {g' g φ : ℝ → ℝ} {a b : ℝ}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Hard part of FTC-2 for integrable derivatives, real-valued functions: one has
 `g b - g a ≤ ∫ y in a..b, g' y` when `g'` is integrable.
 Auxiliary lemma in the proof of `integral_eq_sub_of_hasDeriv_right_of_le`.
@@ -1058,7 +1057,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
   calc
     g b - g a ≤ ∫ y in a..b, (G' y).toReal := main (right_mem_Icc.2 hab)
     _ ≤ (∫ y in a..b, φ y) + ε := by
-      convert hG'.le <;>
+      convert! hG'.le <;>
         · rw [intervalIntegral.integral_of_le hab]
           simp only [integral_Icc_eq_integral_Ioc', Real.volume_singleton]
 
@@ -1098,8 +1097,9 @@ theorem integral_le_sub_of_hasDeriv_right_of_le (hab : a ≤ b) (hcont : Continu
     (hderiv : ∀ x ∈ Ioo a b, HasDerivWithinAt g (g' x) (Ioi x) x) (φint : IntegrableOn φ (Icc a b))
     (hφg : ∀ x ∈ Ioo a b, φ x ≤ g' x) : (∫ y in a..b, φ y) ≤ g b - g a := by
   rw [← neg_le_neg_iff]
-  convert sub_le_integral_of_hasDeriv_right_of_le hab hcont.neg (fun x hx => (hderiv x hx).neg)
-    φint.neg fun x hx => neg_le_neg (hφg x hx) using 1
+  convert!
+    sub_le_integral_of_hasDeriv_right_of_le hab hcont.neg (fun x hx => (hderiv x hx).neg) φint.neg
+      fun x hx => neg_le_neg (hφg x hx) using 1
   · abel
   · simp only [← integral_neg]; rfl
 
@@ -1118,7 +1118,7 @@ variable [CompleteSpace E] {f f' : ℝ → E}
 theorem integral_eq_sub_of_hasDeriv_right_of_le (hab : a ≤ b) (hcont : ContinuousOn f (Icc a b))
     (hderiv : ∀ x ∈ Ioo a b, HasDerivWithinAt f (f' x) (Ioi x) x)
     (f'int : IntervalIntegrable f' volume a b) : ∫ y in a..b, f' y = f b - f a := by
-  refine (NormedSpace.eq_iff_forall_dual_eq ℝ).2 fun g => ?_
+  refine (SeparatingDual.eq_iff_forall_dual_eq (R := ℝ)).2 fun g => ?_
   rw [← g.intervalIntegral_comp_comm f'int, g.map_sub]
   exact integral_eq_sub_of_hasDeriv_right_of_le_real hab (g.continuous.comp_continuousOn hcont)
     (fun x hx => g.hasFDerivAt.comp_hasDerivWithinAt x (hderiv x hx))
@@ -1211,7 +1211,7 @@ lemma integral_unitInterval_deriv_eq_sub [RCLike 𝕜] [NormedSpace 𝕜 E] [IsS
   have hderiv' (t) (ht : t ∈ Set.uIcc (0 : ℝ) 1) : HasDerivAt (f ∘ γ) (z₁ • (f' ∘ γ) t) t := by
     refine (hderiv t <| (Set.uIcc_of_le (α := ℝ) zero_le_one).symm ▸ ht).scomp t <| .const_add _ ?_
     simp [hasDerivAt_iff_isLittleO, sub_smul]
-  convert (integral_eq_sub_of_hasDerivAt hderiv' hint) using 1
+  convert! (integral_eq_sub_of_hasDerivAt hderiv' hint) using 1
   · simp_rw [← integral_smul, Function.comp_apply, γ]
   · simp only [γ, Function.comp_apply, one_smul, zero_smul, add_zero]
 
@@ -1219,7 +1219,6 @@ lemma integral_unitInterval_deriv_eq_sub [RCLike 𝕜] [NormedSpace 𝕜 E] [IsS
 ### Automatic integrability for nonnegative derivatives
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When the right derivative of a function is nonnegative, then it is automatically integrable. -/
 theorem integrableOn_deriv_right_of_nonneg (hcont : ContinuousOn g (Icc a b))
     (hderiv : ∀ x ∈ Ioo a b, HasDerivWithinAt g (g' x) (Ioi x) x)
@@ -1250,7 +1249,7 @@ theorem integrableOn_deriv_right_of_nonneg (hcont : ContinuousOn g (Icc a b))
     rw [← integral_Ioc_eq_integral_Ioo, ← intervalIntegral.integral_of_le hab.le]
     refine integral_le_sub_of_hasDeriv_right_of_le hab.le hcont hderiv ?_ fun x hx => ?_
     · rwa [integrableOn_Icc_iff_integrableOn_Ioo]
-    · convert NNReal.coe_le_coe.2 (fle x)
+    · convert! NNReal.coe_le_coe.2 (fle x)
       simp only [Real.norm_of_nonneg (g'pos x hx), coe_nnnorm]
   exact lt_irrefl _ (hf.trans_le (ENNReal.ofReal_le_ofReal B))
 

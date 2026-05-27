@@ -83,7 +83,7 @@ variable (m' : MeasurableSpace Ω) {mΩ : MeasurableSpace Ω} [StandardBorelSpac
 respect to a measure `μ` if for any finite set of indices `s = {i_1, ..., i_n}`, for any sets
 `f i_1 ∈ π i_1, ..., f i_n ∈ π i_n`, then `μ⟦⋂ i in s, f i | m'⟧ =ᵐ[μ] ∏ i ∈ s, μ⟦f i | m'⟧`.
 See `ProbabilityTheory.iCondIndepSets_iff`.
-It will be used for families of pi_systems. -/
+It will be used for families of π-systems. -/
 def iCondIndepSets (π : ι → Set (Set Ω)) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] :
     Prop :=
   Kernel.iIndepSets π (condExpKernel μ m') (μ.trim hm')
@@ -255,7 +255,7 @@ theorem condIndepSets_singleton_iff {μ : Measure Ω} [IsFiniteMeasure μ]
     {s t : Set Ω} (hs : MeasurableSet s) (ht : MeasurableSet t) :
     CondIndepSets m' hm' {s} {t} μ ↔ (μ⟦s ∩ t | m'⟧) =ᵐ[μ] (μ⟦s | m'⟧) * (μ⟦t | m'⟧) := by
   rw [condIndepSets_iff _ _ _ _ ?_ ?_]
-  · simp only [Set.mem_singleton_iff, forall_eq_apply_imp_iff, forall_eq]
+  · simp
   · intro s' hs'
     rw [Set.mem_singleton_iff] at hs'
     rwa [hs']
@@ -405,8 +405,6 @@ theorem CondIndepSets.biUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)}
     {u : Set ι} (hyp : ∀ n ∈ u, CondIndepSets m' hm' (s n) s' μ) :
     CondIndepSets m' hm' (⋃ n ∈ u, s n) s' μ :=
   Kernel.IndepSets.biUnion hyp
-
-@[deprecated (since := "2025-11-02")] alias CondIndepSets.bUnion := CondIndepSets.biUnion
 
 theorem CondIndepSets.inter {s₁ s' : Set (Set Ω)} (s₂ : Set (Set Ω))
     (h₁ : CondIndepSets m' hm' s₁ s' μ) :
@@ -690,7 +688,7 @@ theorem iCondIndepFun_iff_condExp_inter_preimage_eq_mul {β : ι → Type*}
         intro i hi
         rw [(h_sets i hi).choose_spec.2.symm]
         simp only [g, dif_pos hi]
-      convert h with i hi i hi <;> exact hg i hi
+      convert! h with i hi i hi <;> exact hg i hi
 
 theorem condIndepFun_iff_condIndepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     (hf : Measurable f) (hg : Measurable g) :
@@ -853,11 +851,11 @@ theorem condIndepFun_iff_map_prod_eq_prod_condDistrib_prod_condDistrib
     rw [@Measure.dirac_apply' _ (mγ.comap k) _ _ (hk_meas hs)]
     congr
   refine ⟨fun h s t u hs ht hu ↦ ?_, fun h ↦ ?_⟩
-  · convert h (hk_meas hs) ht hu
+  · convert! h (hk_meas hs) ht hu
     · exact h_left hs ht hu
     · exact h_right hs ht hu
   · rintro - t u ⟨s, hs, rfl⟩ ht hu
-    convert h hs ht hu
+    convert! h hs ht hu
     · exact (h_left hs ht hu).symm
     · exact (h_right hs ht hu).symm
 
@@ -907,9 +905,6 @@ theorem condIndepFun_iff_condDistrib_prod_ae_eq_prodMkRight
       Measure.map_id]
   rw [h1, h2]
   exact ⟨fun h ↦ by rw [h], fun h ↦ by rw [h1_symm, h1, h2_symm, h2, h]⟩
-
-@[deprecated (since := "2025-10-14")] alias condIndepFun_iff_condDistrib_prod_ae_eq_prodMkLeft :=
-  condIndepFun_iff_condDistrib_prod_ae_eq_prodMkRight
 
 section iCondIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
@@ -998,11 +993,19 @@ section CommMonoid
 variable {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂ β] {f : ι → Ω → β}
 
 @[to_additive]
-theorem iCondIndepFun.condIndepFun_finset_prod_of_notMem
+theorem iCondIndepFun.condIndepFun_finsetProd_of_notMem
     (hf_Indep : iCondIndepFun m' hm' f μ) (hf_meas : ∀ i, Measurable (f i))
     {s : Finset ι} {i : ι} (hi : i ∉ s) :
     CondIndepFun m' hm' (∏ j ∈ s, f j) (f i) μ :=
-  Kernel.iIndepFun.indepFun_finset_prod_of_notMem hf_Indep hf_meas hi
+  Kernel.iIndepFun.indepFun_finsetProd_of_notMem hf_Indep hf_meas hi
+
+@[deprecated (since := "2026-04-08")]
+alias iCondIndepFun.condIndepFun_finset_sum_of_notMem :=
+  iCondIndepFun.condIndepFun_finsetSum_of_notMem
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias iCondIndepFun.condIndepFun_finset_prod_of_notMem :=
+  iCondIndepFun.condIndepFun_finsetProd_of_notMem
 
 @[to_additive]
 theorem iCondIndepFun.condIndepFun_prod_range_succ {f : ℕ → Ω → β}

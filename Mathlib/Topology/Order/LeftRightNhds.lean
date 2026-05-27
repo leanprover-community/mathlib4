@@ -105,7 +105,6 @@ theorem countable_setOf_isolated_left [SecondCountableTopology α] :
     { x : α | 𝓝[<] x = ⊥ }.Countable :=
   countable_setOf_isolated_right (α := αᵒᵈ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The set of points in a set which are isolated on the right in this set is countable when the
 space is second-countable. -/
 theorem countable_setOf_isolated_right_within [SecondCountableTopology α] {s : Set α} :
@@ -212,8 +211,8 @@ theorem nhdsLT_basis [NoMinOrder α] (a : α) : (𝓝[<] a).HasBasis (· < a) (I
   nhdsLT_basis_of_exists_lt <| exists_lt a
 
 theorem nhdsLT_eq_bot_iff {a : α} : 𝓝[<] a = ⊥ ↔ IsBot a ∨ ∃ b, b ⋖ a := by
-  convert (config := { preTransparency := .default }) nhdsGT_eq_bot_iff (a := OrderDual.toDual a)
-    using 4
+  convert! (config := { preTransparency := .default })
+    nhdsGT_eq_bot_iff (a := OrderDual.toDual a) using 4
   exact ofDual_covBy_ofDual_iff
 
 open List in
@@ -369,7 +368,6 @@ theorem Filter.Tendsto.mul_atTop' {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Ten
   refine tendsto_atTop_mul_left_of_le' _ C' ?_ hg
   exact (hf.eventually (lt_mem_nhds hC')).mono fun x => le_of_lt
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a linearly ordered commutative group with the order topology,
 if `f` tends to `C` and `g` tends to `atBot` then `f * g` tends to `atBot`. -/
 @[to_additive add_atBot /-- In a linearly ordered additive commutative group with the order
@@ -407,7 +405,7 @@ theorem nhds_basis_mabs_div_lt [NoMaxOrder α] (a : α) :
 @[to_additive]
 theorem nhds_basis_Ioo_one_lt [NoMaxOrder α] (a : α) :
     (𝓝 a).HasBasis (fun ε : α => (1 : α) < ε) fun ε => Ioo (a / ε) (a * ε) := by
-  convert nhds_basis_mabs_div_lt a
+  convert! nhds_basis_mabs_div_lt a
   simp only [Ioo, mabs_lt, ← div_lt_iff_lt_mul, inv_lt_div_iff_lt_mul, div_lt_comm]
 
 @[to_additive]

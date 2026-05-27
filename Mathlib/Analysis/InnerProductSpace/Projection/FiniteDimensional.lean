@@ -57,7 +57,6 @@ variable [FiniteDimensional 𝕜 K]
 theorem topologicalClosure_eq_self : K.topologicalClosure = K :=
   K.closed_of_finiteDimensional.submodule_topologicalClosure_eq
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem det_reflection : LinearMap.det K.reflection.toLinearMap = (-1) ^ finrank 𝕜 Kᗮ := by
   by_cases hK : FiniteDimensional 𝕜 Kᗮ
@@ -112,7 +111,7 @@ theorem finrank_add_inf_finrank_orthogonal' {K₁ K₂ : Submodule 𝕜 E}
 that of `E`. -/
 theorem finrank_add_finrank_orthogonal [FiniteDimensional 𝕜 E] (K : Submodule 𝕜 E) :
     finrank 𝕜 K + finrank 𝕜 Kᗮ = finrank 𝕜 E := by
-  convert Submodule.finrank_add_inf_finrank_orthogonal (le_top : K ≤ ⊤) using 1
+  convert! Submodule.finrank_add_inf_finrank_orthogonal (le_top : K ≤ ⊤) using 1
   · rw [inf_top_eq]
   · simp
 
@@ -135,7 +134,6 @@ end Submodule
 
 open Module Submodule
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An element `φ` of the orthogonal group of `F` can be factored as a product of reflections, and
 specifically at most as many reflections as the dimension of the complement of the fixed subspace
 of `φ`. -/
@@ -250,7 +248,6 @@ theorem OrthogonalFamily.isInternal_iff_of_isComplete [DecidableEq ι] {V : ι �
   simp only [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, hV.independent,
     true_and, orthogonal_eq_bot_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An orthogonal family of subspaces of `E` satisfies `DirectSum.IsInternal` (that is,
 they provide an internal direct sum decomposition of `E`) if and only if their span has trivial
 orthogonal complement. -/
@@ -405,7 +402,7 @@ theorem maximal_orthonormal_iff_basis_of_finiteDimensional (hv : Orthonormal �
   have hv_coe : range ((↑) : v → E) = v := by simp
   constructor
   · refine fun h => ⟨Basis.mk hv.linearIndependent _, Basis.coe_mk _ ?_⟩
-    convert h.ge
+    convert! h.ge
   · rintro ⟨h, coe_h⟩
     rw [← h.span_eq, coe_h, hv_coe]
 

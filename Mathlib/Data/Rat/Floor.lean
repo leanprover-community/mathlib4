@@ -36,17 +36,6 @@ namespace Rat
 variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
 variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
 
-@[deprecated Rat.le_floor_iff (since := "2025-09-02")]
-protected theorem le_floor {z : ℤ} : ∀ {r : ℚ}, z ≤ Rat.floor r ↔ (z : ℚ) ≤ r
-  | ⟨n, d, h, c⟩ => by
-    simp only [Rat.floor_def]
-    rw [mk_eq_divInt]
-    have h' := Int.ofNat_lt.2 (Nat.pos_of_ne_zero h)
-    conv =>
-      rhs
-      rw [intCast_eq_divInt, Rat.divInt_le_divInt zero_lt_one h', mul_one]
-    exact Int.le_ediv_iff_mul_le h'
-
 instance : FloorRing ℚ :=
   (FloorRing.ofFloor ℚ Rat.floor) fun _ _ => Rat.le_floor_iff.symm
 
@@ -128,7 +117,6 @@ theorem isInt_intFloor {R} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [Flo
     (r : R) (m : ℤ) :
     IsInt r m → IsInt ⌊r⌋ m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isNat_intFloor_ofIsNNRat (r : α) (n : ℕ) (d : ℕ) :
     IsNNRat r n d → IsNat ⌊r⌋ (n / d) := by
   rintro ⟨inv, rfl⟩
@@ -137,7 +125,6 @@ theorem isNat_intFloor_ofIsNNRat (r : α) (n : ℕ) (d : ℕ) :
   rw [← Int.ofNat_ediv_ofNat, ← floor_natCast_div_natCast n d,
     ← floor_cast (α := α), Rat.cast_div, cast_natCast, cast_natCast]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isInt_intFloor_ofIsRat_neg (r : α) (n : ℕ) (d : ℕ) :
     IsRat r (.negOfNat n) d → IsInt ⌊r⌋ (.negOfNat (-(-n / d) : ℤ).toNat) := by
   rintro ⟨inv, rfl⟩
@@ -190,7 +177,6 @@ theorem isInt_intCeil {R} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [Floo
     (r : R) (m : ℤ) :
     IsInt r m → IsInt ⌈r⌉ m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isNat_intCeil_ofIsNNRat (r : α) (n : ℕ) (d : ℕ) :
     IsNNRat r n d → IsNat ⌈r⌉ (-(-n / d) : ℤ).toNat := by
   rintro ⟨inv, rfl⟩
@@ -200,7 +186,6 @@ theorem isNat_intCeil_ofIsNNRat (r : α) (n : ℕ) (d : ℕ) :
     cast_intCast, cast_natCast, Int.cast_natCast,
     Int.natCast_toNat_eq_self.mpr (ceil_nonneg (div_nonneg n.cast_nonneg d.cast_nonneg))]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isInt_intCeil_ofIsRat_neg (r : α) (n : ℕ) (d : ℕ) :
     IsRat r (.negOfNat n) d → IsInt ⌈r⌉ (.negOfNat (n / d)) := by
   rintro ⟨inv, rfl⟩
@@ -249,14 +234,12 @@ theorem isNat_intFract_of_isNat (r : R) (m : ℕ) : IsNat r m → IsNat (Int.fra
 theorem isNat_intFract_of_isInt (r : R) (m : ℤ) : IsInt r m → IsNat (Int.fract r) 0 := by
   rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isNNRat_intFract_of_isNNRat (r : α) (n d : ℕ) :
     IsNNRat r n d → IsNNRat (Int.fract r) (n % d) d := by
   rintro ⟨inv, rfl⟩
   refine ⟨inv, ?_⟩
   simp only [invOf_eq_inv, ← div_eq_mul_inv, fract_div_natCast_eq_div_natCast_mod]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isRat_intFract_of_isRat_negOfNat (r : α) (n d : ℕ) :
     IsRat r (negOfNat n) d → IsRat (Int.fract r) (-n % d) d := by
   rintro ⟨inv, rfl⟩
@@ -311,7 +294,6 @@ theorem isInt_round {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R]
     (r : R) (m : ℤ) : IsInt r m → IsInt (round r) m := by
   rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsRat.isInt_round {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
     [FloorRing R] (r : R) (n : ℤ) (d : ℕ) (res : ℤ) (hres : round (n / d : ℚ) = res) :
     IsRat r n d → IsInt (round r) res := by
@@ -412,8 +394,7 @@ theorem fract_inv_num_lt_num_of_pos {q : ℚ} (q_pos : 0 < q) : (fract q⁻¹).n
       suffices ((q.den : ℤ) - q.num * ⌊q_inv⌋).natAbs.Coprime q.num.natAbs from
         mod_cast Rat.num_div_eq_of_coprime q_num_pos this
       have tmp := Nat.coprime_sub_mul_floor_rat_div_of_coprime q.reduced.symm
-      #adaptation_note /-- We can remove `_root_.` after https://github.com/leanprover/lean4/pull/12504 -/
-      simpa only [Nat.cast_natAbs, _root_.abs_of_nonneg q_num_pos.le] using tmp
+      simpa only [Nat.cast_natAbs, abs_of_nonneg q_num_pos.le] using tmp
     rwa [this]
   -- to show the claim, start with the following inequality
   have q_inv_num_denom_ineq : q⁻¹.num - ⌊q⁻¹⌋ * q⁻¹.den < q⁻¹.den := by

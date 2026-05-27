@@ -32,7 +32,6 @@ theorem cast_pos_of_pos (hq : 0 < q) : (0 : K) < q := by
   rw [Rat.cast_def]
   exact div_pos (Int.cast_pos.2 <| num_pos.2 hq) (Nat.cast_pos.2 q.pos)
 
-set_option backward.isDefEq.respectTransparency false in
 @[gcongr, mono]
 theorem cast_strictMono : StrictMono ((↑) : ℚ → K) := fun p q => by
   simpa only [sub_pos, cast_sub] using cast_pos_of_pos (K := K) (q := q - p)
@@ -153,7 +152,7 @@ theorem cast_strictMono : StrictMono ((↑) : ℚ≥0 → K) := fun p q h => by
   · simp
   · simp
 
-@[mono]
+@[gcongr, mono]
 theorem cast_mono : Monotone ((↑) : ℚ≥0 → K) :=
   cast_strictMono.monotone
 
@@ -167,7 +166,7 @@ def castOrderEmbedding : ℚ≥0 ↪o K :=
 @[simp] lemma cast_nonpos : (q : K) ≤ 0 ↔ q ≤ 0 := by norm_cast
 @[simp] lemma cast_pos : (0 : K) < q ↔ 0 < q := by norm_cast
 @[norm_cast] lemma cast_lt_zero : (q : K) < 0 ↔ q < 0 := by norm_cast
-@[simp] lemma not_cast_lt_zero : ¬(q : K) < 0 := mod_cast not_lt_zero'
+@[simp] lemma not_cast_lt_zero : ¬(q : K) < 0 := mod_cast not_lt_zero
 @[simp] lemma cast_le_one : (p : K) ≤ 1 ↔ p ≤ 1 := by norm_cast
 @[simp] lemma one_le_cast : 1 ≤ (p : K) ↔ 1 ≤ p := by norm_cast
 @[simp] lemma cast_lt_one : (p : K) < 1 ↔ p < 1 := by norm_cast

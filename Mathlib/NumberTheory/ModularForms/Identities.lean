@@ -19,11 +19,10 @@ public section
 
 noncomputable section
 
-open ModularForm UpperHalfPlane Matrix CongruenceSubgroup Matrix.SpecialLinearGroup
+open ModularForm UpperHalfPlane Matrix CongruenceSubgroup Matrix.SpecialLinearGroup MatrixGroups
 
 namespace SlashInvariantForm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem vAdd_apply_of_mem_strictPeriods {Γ : Subgroup (GL (Fin 2) ℝ)} {k : ℤ}
     {F : Type*} [FunLike F ℍ ℂ] [SlashInvariantFormClass F Γ k]
     (f : F) (τ : ℍ) {h : ℝ} (hH : h ∈ Γ.strictPeriods) :
@@ -35,7 +34,6 @@ theorem vAdd_apply_of_mem_strictPeriods {Γ : Subgroup (GL (Fin 2) ℝ)} {k : �
   ext
   simp [σ, num, denom, coe_vadd, UpperHalfPlane.coe_smul, num, add_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem vAdd_width_periodic (N : ℕ) (k n : ℤ) (f : SlashInvariantForm (Gamma N) k) (z : ℍ) :
     f ((N * n : ℝ) +ᵥ z) = f z := by
   apply vAdd_apply_of_mem_strictPeriods
@@ -50,5 +48,21 @@ lemma slash_S_apply (f : ℍ → ℂ) (k : ℤ) (z : ℍ) :
     (f ∣[k] ModularGroup.S) z = f (.mk _ z.im_inv_neg_coe_pos) * z ^ (-k) := by
   rw [SL_slash_apply, modular_S_smul]
   simp [ModularGroup.S, denom]
+
+section Generators
+
+theorem slash_action_generators {f : ℍ → ℂ} {Γ : Subgroup (GL (Fin 2) ℝ)}
+    {s : Set (GL (Fin 2) ℝ)} (hΓ : Γ = Subgroup.closure s) {k : ℤ} :
+    (∀ γ ∈ Γ, f ∣[k] γ = f) ↔ (∀ γ ∈ s, f ∣[k] γ = f) := by
+  constructor <;> intro h γ hγ
+  · exact h γ (hΓ ▸ Subgroup.mem_closure_of_mem hγ)
+  · apply Subgroup.closure_induction (p := fun γ _ ↦ f ∣[k] γ = f) h (by simp)
+    · simp +contextual [SlashAction.slash_mul]
+    · intro x hx hf
+      rw [← hf, ← SlashAction.slash_mul]
+      simp [hf]
+    · simpa [← hΓ]
+
+end Generators
 
 end SlashInvariantForm

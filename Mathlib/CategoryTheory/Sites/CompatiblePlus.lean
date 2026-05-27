@@ -26,11 +26,11 @@ namespace CategoryTheory.GrothendieckTopology
 
 open CategoryTheory Limits Opposite Functor
 
-universe w₁ w₂ v u
+universe v u
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-variable {D : Type w₁} [Category.{max v u} D]
-variable {E : Type w₂} [Category.{max v u} E]
+variable {D : Type*} [Category* D]
+variable {E : Type*} [Category* E]
 variable (F : D ⥤ E)
 variable [∀ (J : MulticospanShape.{max v u, max v u}), HasLimitsOfShape (WalkingMulticospan J) D]
 variable [∀ (J : MulticospanShape.{max v u, max v u}), HasLimitsOfShape (WalkingMulticospan J) E]
@@ -86,7 +86,7 @@ def plusCompIso : J.plusObj P ⋙ F ≅ J.plusObj (P ⋙ F) :=
         simp only [← F.map_comp]
         dsimp [colimMap, IsColimit.map, colimit.pre]
         simp only [colimit.ι_desc_assoc, colimit.ι_desc]
-        dsimp [Cocones.precompose]
+        dsimp [Cocone.precompose]
         simp only [Category.assoc, colimit.ι_desc]
         dsimp [Cocone.whisker]
         rw [F.map_comp]
@@ -158,7 +158,7 @@ theorem plusCompIso_whiskerRight {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
   simp only [← Category.assoc, ← F.map_comp]
   dsimp [colimMap, IsColimit.map]
   simp only [colimit.ι_desc]
-  dsimp [Cocones.precompose]
+  dsimp [Cocone.precompose]
   simp only [Functor.map_comp, Category.assoc, ι_plusCompIso_hom]
   simp only [← Category.assoc]
   congr 1

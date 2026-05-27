@@ -87,7 +87,7 @@ theorem exists_root_sum_quadratic [Fintype R] {f g : R[X]} (hf2 : degree f = 2) 
   suffices ¬Disjoint (univ.image fun x : R => eval x f)
     (univ.image fun x : R => eval x (-g)) by
     simp only [disjoint_left, mem_image] at this
-    push_neg at this
+    push Not at this
     rcases this with ⟨x, ⟨a, _, ha⟩, ⟨b, _, hb⟩⟩
     exact ⟨a, b, by rw [ha, ← hb, eval_neg, neg_add_cancel]⟩
   fun hd : Disjoint _ _ =>
@@ -162,11 +162,10 @@ theorem sum_subgroup_units_eq_zero [Ring K] [NoZeroDivisors K]
   have hzero : (((a : Kˣ) : K) - 1) = 0 ∨ ∑ x : ↥G, ((x : Kˣ) : K) = 0 := by
     rw [← mul_eq_zero, sub_mul, ← h_sum_map, one_mul, sub_self]
   apply Or.resolve_left hzero
-  contrapose! ha
+  contrapose ha
   ext
   rwa [← sub_eq_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The sum of a subgroup of the units of a field is 1 if the subgroup is trivial and 1 otherwise -/
 @[simp]
 theorem sum_subgroup_units [Ring K] [NoZeroDivisors K]
@@ -379,7 +378,7 @@ theorem orderOf_frobeniusAlgHom : orderOf (frobeniusAlgHom K L) = Module.finrank
       have := DFunLike.congr_fun eq x
       rw [AlgHom.coe_pow, coe_frobeniusAlgHom, pow_iterate, AlgHom.one_apply, ← sub_eq_zero] at this
       refine ⟨fun h ↦ ?_, this⟩
-      simpa [if_neg (Nat.one_lt_pow pos.ne' Fintype.one_lt_card).ne] using congr_arg (coeff · 1) h
+      simpa [Fintype.one_lt_card.ne, pos.ne, eqComm] using congr_arg (coeff · 1) h
     refine this.not_gt (((natDegree_sub_le ..).trans_eq ?_).trans_lt <|
       (Nat.pow_lt_pow_right Fintype.one_lt_card lt).trans_eq Module.card_eq_pow_finrank.symm)
     simp [Nat.one_le_pow _ _ Fintype.card_pos]
@@ -457,7 +456,7 @@ theorem roots_X_pow_card_sub_X : roots (X ^ q - X : K[X]) = Finset.univ.val := b
     rw [← this, Multiset.toFinset_val, eq_comm, Multiset.dedup_eq_self]
     apply nodup_roots
     rw [separable_def]
-    convert isCoprime_one_right.neg_right (R := K[X]) using 1
+    convert! isCoprime_one_right.neg_right (R := K[X]) using 1
     rw [derivative_sub, derivative_X, derivative_X_pow, Nat.cast_card_eq_zero K, C_0,
       zero_mul, zero_sub]
 
@@ -490,9 +489,8 @@ open FiniteField Polynomial
 
 set_option backward.isDefEq.respectTransparency false in
 theorem sq_add_sq (p : ℕ) [hp : Fact p.Prime] (x : ZMod p) : ∃ a b : ZMod p, a ^ 2 + b ^ 2 = x := by
-  rcases hp.1.eq_two_or_odd with hp2 | hp_odd
-  · subst p
-    change Fin 2 at x
+  rcases hp.1.eq_two_or_odd with rfl | hp_odd
+  · change Fin 2 at x
     fin_cases x
     · use 0; simp
     · use 0, 1; simp
@@ -571,7 +569,6 @@ namespace ZMod
 
 variable {p : ℕ} [Fact p.Prime]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Subsingleton (Subfield (ZMod p)) :=
   subsingleton_of_bot_eq_top <| top_unique (a := ⊥) fun n _ ↦
   have := zsmul_mem (one_mem (⊥ : Subfield (ZMod p))) n.val
@@ -611,7 +608,6 @@ theorem pow_card_sub_one_eq_one {a : ZMod p} (ha : a ≠ 0) :
   have h := FiniteField.pow_card_sub_one_eq_one a ha
   rwa [ZMod.card p] at h
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pow_card_sub_one (a : ZMod p) :
     a ^ (p - 1) = if a ≠ 0 then 1 else 0 := by
   split_ifs with ha
@@ -653,7 +649,6 @@ theorem Int.ModEq.pow_prime_eq_self {p : ℕ} (hp : Nat.Prime p) (n : ℤ) : n ^
 theorem Int.prime_dvd_pow_self_sub {p : ℕ} (hp : Nat.Prime p) (n : ℤ) : (p : ℤ) ∣ n ^ p - n :=
   (ModEq.pow_prime_eq_self hp n).symm.dvd
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Int.ModEq.pow_eq_pow {p x y : ℕ} (hp : Nat.Prime p) (h : p - 1 ∣ x - y) (hxy : y ≤ x)
     (hy : 0 < y) (n : ℤ) : n ^ x ≡ n ^ y [ZMOD p] := by
   rw [← Nat.mul_div_eq_iff_dvd] at h
@@ -676,7 +671,6 @@ theorem Nat.pow_card_sub_one_sub_one_mod_card {p : ℕ} (hp : p.Prime) {n : ℕ}
     (n ^ (p - 1) - 1) % p = 0 :=
   Nat.sub_mod_eq_zero_of_mod_eq (Nat.ModEq.pow_card_sub_one_eq_one hp hpn)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pow_pow_modEq_one (p m a : ℕ) : (1 + p * a) ^ (p ^ m) ≡ 1 [MOD p ^ m] := by
   induction m with
   | zero => exact Nat.modEq_one
@@ -728,6 +722,7 @@ theorem Subfield.card_bot : Nat.card (⊥ : Subfield F) = p := by
     ← Nat.card_eq_of_bijective _ (RingHom.rangeRestrictField_bijective _), Nat.card_zmod]
 
 /-- The prime subfield is finite. -/
+@[implicit_reducible]
 def Subfield.fintypeBot : Fintype (⊥ : Subfield F) :=
   Fintype.subtype (univ.map ⟨_, (ZMod.castHom (m := p) dvd_rfl F).injective⟩)
     fun _ ↦ by simp_rw [Finset.mem_map, mem_univ, true_and, ← fieldRange_castHom_eq_bot p]; rfl

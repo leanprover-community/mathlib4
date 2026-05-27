@@ -136,7 +136,6 @@ lemma exists_constructibleSetData_iff {s : Set (PrimeSpectrum R)} :
     refine ⟨S ∪ T, ?_⟩
     simp only [ConstructibleSetData.toSet, Set.biUnion_union, ← Finset.mem_coe, Finset.coe_union]
 
-set_option backward.isDefEq.respectTransparency false in
 universe u in
 @[stacks 00F8 "without the finite presentation part"]
 -- TODO: show that the constructed `f` is of finite presentation

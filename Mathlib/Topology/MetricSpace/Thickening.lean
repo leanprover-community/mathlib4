@@ -112,7 +112,6 @@ theorem frontier_thickening_subset (E : Set α) {δ : ℝ} :
     frontier (thickening δ E) ⊆ { x : α | infEDist x E = ENNReal.ofReal δ } :=
   frontier_lt_subset_eq continuous_infEDist continuous_const
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Function in -- required for scoped `on` notation
 theorem frontier_thickening_disjoint (A : Set α) :
     Pairwise (Disjoint on fun r : ℝ => frontier (thickening r A)) := by
@@ -337,13 +336,11 @@ theorem thickening_mem_nhdsSet (E : Set α) {δ : ℝ} (hδ : 0 < δ) : thickeni
 theorem cthickening_mem_nhdsSet (E : Set α) {δ : ℝ} (hδ : 0 < δ) : cthickening δ E ∈ 𝓝ˢ E :=
   mem_of_superset (thickening_mem_nhdsSet E hδ) (thickening_subset_cthickening _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem thickening_union (δ : ℝ) (s t : Set α) :
     thickening δ (s ∪ t) = thickening δ s ∪ thickening δ t := by
   simp_rw [thickening, infEDist_union, min_lt_iff, setOf_or]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cthickening_union (δ : ℝ) (s t : Set α) :
     cthickening δ (s ∪ t) = cthickening δ s ∪ cthickening δ t := by
@@ -675,10 +672,26 @@ theorem frontier_cthickening_disjoint (A : Set α) :
 
 end Cthickening
 
-theorem thickening_ball [PseudoMetricSpace α] (x : α) (ε δ : ℝ) :
+section PseudoMetricSpace
+
+variable {α β E : Type*} [PseudoMetricSpace α] {l : Filter β} {s : Set α}
+
+theorem thickening_ball (x : α) (ε δ : ℝ) :
     thickening ε (ball x δ) ⊆ ball x (ε + δ) := by
   rw [← thickening_singleton, ← thickening_singleton]
   apply thickening_thickening_subset
+
+theorem tendsto_nhdsSet {f : β → α} (hs₁ : IsCompact s) (hs₂ : Set.Nonempty s) :
+    Tendsto f l (𝓝ˢ s) ↔ ∀ ε > 0, ∀ᶠ x in l, infDist (f x) s < ε := by
+  rw [(hasBasis_nhdsSet_thickening hs₁).tendsto_right_iff]
+  congrm (∀ ε hε, ?_)
+  simp [mem_thickening_iff_infDist_lt hs₂]
+
+theorem mem_nhdsSet_iff {t : Set α} (hs : IsCompact s) :
+    t ∈ 𝓝ˢ s ↔ ∃ ε > 0, Metric.thickening ε s ⊆ t := by
+  rw [(hasBasis_nhdsSet_thickening hs).mem_iff]
+
+end PseudoMetricSpace
 
 end Metric
 
@@ -693,7 +706,7 @@ lemma IsClopen.of_thickening_subset_self {δ : ℝ} (hδ : 0 < δ) (hs : thicken
   replace hs : thickening δ s = s := le_antisymm hs (self_subset_thickening hδ s)
   refine ⟨?_, hs ▸ isOpen_thickening⟩
   rw [← closure_subset_iff_isClosed, closure_eq_iInter_thickening]
-  exact Set.biInter_subset_of_mem hδ |>.trans_eq hs
+  exact Set.iInter₂_subset δ hδ |>.trans_eq hs
 
 lemma IsClopen.of_cthickening_subset_self {δ : ℝ} (hδ : 0 < δ) (hs : cthickening δ s ⊆ s) :
     IsClopen s :=

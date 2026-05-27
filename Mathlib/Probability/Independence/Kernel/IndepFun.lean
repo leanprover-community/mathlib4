@@ -164,7 +164,6 @@ theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type*} {β : ι → Ty
 
 alias ⟨iIndepFun.measure_inter_preimage_eq_mul, _⟩ := iIndepFun_iff_measure_inter_preimage_eq_mul
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iIndepFun.congr' {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
     {f g : Π i, Ω → β i} (hf : iIndepFun f κ μ)
     (h : ∀ i, ∀ᵐ a ∂μ, f i =ᵐ[κ a] g i) :
@@ -184,7 +183,7 @@ theorem iIndepFun.congr' {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i
     filter_upwards [(ae_ball_iff (Finset.countable_toSet S)).2 ha] with ω hω
     change (ω ∈ ⋂ i ∈ S, g i ⁻¹' sets i) = (ω ∈ ⋂ i ∈ S, f i ⁻¹' sets i)
     simp +contextual [hω]
-  convert h'a using 2 with i hi
+  convert! h'a using 2 with i hi
   exact A i hi
 
 theorem iIndepFun_congr' {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
@@ -318,7 +317,7 @@ theorem indepFun_iff_compProd_map_prod_eq_compProd_prod_map_map
     specialize h hu hs ht
     rw [Measure.compProd_apply_prod hu (hs.prod ht),
       Measure.compProd_apply_prod hu (hs.prod ht)] at h
-    convert h with ω ω
+    convert! h with ω ω
     · rw [map_apply' _ (by fun_prop) _ (hs.prod ht), mk_preimage_prod]
     · rw [prod_apply_prod, map_apply' _ (by fun_prop) _ hs, map_apply' _ (by fun_prop) _ ht]
 
@@ -326,7 +325,6 @@ section iIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
 
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a family of mutually independent random variables (`iIndepFun m f μ`) and `S, T` are
 two disjoint finite index sets, then the tuple formed by `f i` for `i ∈ S` is independent of the
 tuple `(f i)_i` for `i ∈ T`. -/
@@ -615,7 +613,7 @@ section CommMonoid
 variable {β : Type*} {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂ β] {f : ι → Ω → β}
 
 @[to_additive]
-theorem iIndepFun.indepFun_finset_prod_of_notMem (hf_Indep : iIndepFun f κ μ)
+theorem iIndepFun.indepFun_finsetProd_of_notMem (hf_Indep : iIndepFun f κ μ)
     (hf_meas : ∀ i, Measurable (f i)) {s : Finset ι} {i : ι} (hi : i ∉ s) :
     IndepFun (∏ j ∈ s, f j) (f i) κ μ := by
   classical
@@ -636,12 +634,18 @@ theorem iIndepFun.indepFun_finset_prod_of_notMem (hf_Indep : iIndepFun f κ μ)
     (hf_Indep.indepFun_finset s {i} (Finset.disjoint_singleton_left.mpr hi).symm hf_meas).comp
       h_meas_left h_meas_right
 
+@[deprecated (since := "2026-04-08")]
+alias iIndepFun.indepFun_finset_sum_of_notMem := iIndepFun.indepFun_finsetSum_of_notMem
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias iIndepFun.indepFun_finset_prod_of_notMem := iIndepFun.indepFun_finsetProd_of_notMem
+
 @[to_additive]
-theorem iIndepFun.indepFun_finset_prod_of_notMem₀ (hf_Indep : iIndepFun f κ μ)
+theorem iIndepFun.indepFun_finsetProd_of_notMem₀ (hf_Indep : iIndepFun f κ μ)
     (hf_meas : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ)) {s : Finset ι} {i : ι} (hi : i ∉ s) :
     IndepFun (∏ j ∈ s, f j) (f i) κ μ := by
   have h : IndepFun (∏ j ∈ s, (hf_meas j).mk (f j)) ((hf_meas i).mk (f i)) κ μ := by
-    refine iIndepFun.indepFun_finset_prod_of_notMem ?_ (fun i ↦ (hf_meas i).measurable_mk) hi
+    refine iIndepFun.indepFun_finsetProd_of_notMem ?_ (fun i ↦ (hf_meas i).measurable_mk) hi
     exact iIndepFun.congr' hf_Indep fun i ↦ Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk
   refine IndepFun.congr' h ?_ ?_
   · have : ∀ᵐ a ∂μ, ∀ (i : s), f i =ᵐ[κ a] (hf_meas i).mk := by
@@ -653,18 +657,24 @@ theorem iIndepFun.indepFun_finset_prod_of_notMem₀ (hf_Indep : iIndepFun f κ �
     exact Finset.prod_congr rfl fun i hi ↦ (hω ⟨i, hi⟩).symm
   · exact Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk.symm
 
+@[deprecated (since := "2026-04-08")]
+alias iIndepFun.indepFun_finset_sum_of_notMem₀ := iIndepFun.indepFun_finsetSum_of_notMem₀
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias iIndepFun.indepFun_finset_prod_of_notMem₀ := iIndepFun.indepFun_finsetProd_of_notMem₀
+
 
 @[to_additive]
 theorem iIndepFun.indepFun_prod_range_succ {f : ℕ → Ω → β}
     (hf_Indep : iIndepFun f κ μ) (hf_meas : ∀ i, Measurable (f i)) (n : ℕ) :
     IndepFun (∏ j ∈ Finset.range n, f j) (f n) κ μ :=
-  hf_Indep.indepFun_finset_prod_of_notMem hf_meas Finset.notMem_range_self
+  hf_Indep.indepFun_finsetProd_of_notMem hf_meas Finset.notMem_range_self
 
 @[to_additive]
 theorem iIndepFun.indepFun_prod_range_succ₀ {f : ℕ → Ω → β}
     (hf_Indep : iIndepFun f κ μ) (hf_meas : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ)) (n : ℕ) :
     IndepFun (∏ j ∈ Finset.range n, f j) (f n) κ μ :=
-  hf_Indep.indepFun_finset_prod_of_notMem₀ hf_meas Finset.notMem_range_self
+  hf_Indep.indepFun_finsetProd_of_notMem₀ hf_meas Finset.notMem_range_self
 
 end CommMonoid
 
@@ -683,6 +693,12 @@ theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β
       (MeasurableSet.ite' (fun _ => hsi.compl) fun _ => ?_)
   · exact @MeasurableSet.empty _ (generateFrom {s i})
   · exact @MeasurableSet.empty _ (generateFrom {s i})
+
+lemma Indep.indicator_const_indepFun {m : MeasurableSpace Ω} {M 𝓧 : Type*}
+    [Zero M] [MeasurableSpace M] (c : M) [NeZero c] {m𝓧 : MeasurableSpace 𝓧} {A : Set Ω}
+    {X : Ω → 𝓧} (hA : MeasurableSet[m] A) (h : Indep m (m𝓧.comap X) κ μ) :
+    IndepFun (A.indicator (fun _ ↦ c)) X κ μ :=
+  indep_of_indep_of_le_left h (measurable_const.indicator hA).comap_le
 
 variable {mβ : MeasurableSpace β} {X : ι → Ω → α} {Y : ι → Ω → β}
   {f : _ → Set Ω} {t : ι → Set β} {s : Finset ι}

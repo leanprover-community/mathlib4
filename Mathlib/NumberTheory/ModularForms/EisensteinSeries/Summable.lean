@@ -114,7 +114,6 @@ lemma auxbound2 (c : ℝ) {d : ℝ} (hd : 1 ≤ d ^ 2) : r z ≤ ‖c * (z : ℂ
   simpa only [r, norm_def, normSq_apply, add_re, re_ofReal_mul, coe_re, ofReal_re, ← pow_two,
     add_im, im_ofReal_mul, coe_im, ofReal_im, add_zero, min_le_iff] using Or.inr H1
 
-set_option backward.isDefEq.respectTransparency false in
 lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
     1 ≤ (x 0 / ‖x‖) ^ 2 ∨ 1 ≤ (x 1 / ‖x‖) ^ 2 := by
   refine (max_choice (x 0).natAbs (x 1).natAbs).imp (fun H0 ↦ ?_) (fun H1 ↦ ?_)
@@ -139,7 +138,6 @@ lemma r_mul_max_le {x : Fin 2 → ℤ} (hx : x ≠ 0) : r z * ‖x‖ ≤ ‖x 0
     · simpa only [norm_eq_max_natAbs, ofReal_div, ofReal_intCast] using auxbound1 z (x 1 / ‖x‖) H1
     · simpa only [norm_eq_max_natAbs, ofReal_div, ofReal_intCast] using auxbound2 z (x 0 / ‖x‖) H2
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Upper bound for the summand `|c * z + d| ^ (-k)`, as a product of a function of `z` and a
 function of `c, d`. -/
 lemma summand_bound {k : ℝ} (hk : 0 ≤ k) (x : Fin 2 → ℤ) :
@@ -205,7 +203,6 @@ lemma tendsto_zero_inv_linear_sub (z : ℂ) (b : ℤ) :
 
 end bounding_functions
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The function `ℤ ^ 2 → ℝ` given by `x ↦ ‖x‖ ^ (-k)` is summable if `2 < k`. We prove this by
 splitting into boxes using `Finset.box`. -/
 lemma summable_one_div_norm_rpow {k : ℝ} (hk : 2 < k) :
@@ -240,7 +237,7 @@ lemma linear_right_summable (z : ℂ) (c : ℤ) {k : ℤ} (hk : 2 ≤ k) :
   apply summable_inv_of_isBigO_rpow_inv (a := k) (by norm_cast)
   lift k to ℕ using by lia
   grind [(linear_inv_isBigO_right c z).abs_right.pow k,
-    zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow, ← abs_inv]
+    zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow]
 
 /-- For `z : ℂ` the function `c : ℤ ↦ ((c z + d) ^ k)⁻¹` is Summable for `2 ≤ k`. -/
 lemma linear_left_summable {z : ℂ} (hz : z ≠ 0) (d : ℤ) {k : ℤ} (hk : 2 ≤ k) :

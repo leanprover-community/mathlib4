@@ -78,7 +78,7 @@ The images of `x` by the embeddings of `K` in `A` are exactly the roots in `A` o
 the minimal polynomial of `x` over `ℚ`. -/
 theorem range_eval_eq_rootSet_minpoly :
     (range fun φ : K →+* A => φ x) = (minpoly ℚ x).rootSet A := by
-  convert (NumberField.isAlgebraic K).range_eval_eq_rootSet_minpoly A x using 1
+  convert! (NumberField.isAlgebraic K).range_eval_eq_rootSet_minpoly A x using 1
   ext a
   exact ⟨fun ⟨φ, hφ⟩ => ⟨φ.toRatAlgHom, hφ⟩, fun ⟨φ, hφ⟩ => ⟨φ.toRingHom, hφ⟩⟩
 
@@ -148,7 +148,7 @@ end NumberField.Embeddings
 
 section Place
 
-variable {K : Type*} [Field K] {A : Type*} [NormedDivisionRing A] [Nontrivial A] (φ : K →+* A)
+variable {K : Type*} [Field K] {A : Type*} [NormedDivisionRing A] (φ : K →+* A)
 
 /-- An embedding into a normed division ring defines a place of `K` -/
 def NumberField.place : AbsoluteValue K ℝ :=
@@ -238,7 +238,7 @@ lemma IsReal.comp (f : k →+* K) {φ : K →+* ℂ} (hφ : IsReal φ) :
 
 lemma isReal_comp_iff {f : k ≃+* K} {φ : K →+* ℂ} :
     IsReal (φ.comp (f : k →+* K)) ↔ IsReal φ :=
-  ⟨fun H ↦ by convert H.comp f.symm.toRingHom; ext1; simp, IsReal.comp _⟩
+  ⟨fun H ↦ by convert! H.comp f.symm.toRingHom; ext1; simp, IsReal.comp _⟩
 
 lemma exists_comp_symm_eq_of_comp_eq [Algebra k K] [IsGalois k K] (φ ψ : K →+* ℂ)
     (h : φ.comp (algebraMap k K) = ψ.comp (algebraMap k K)) :
@@ -303,17 +303,31 @@ lemma orderOf_isConj_two_of_ne_one (hσ : IsConj φ σ) (hσ' : σ ≠ 1) :
 
 section Extension
 
-variable {K : Type*} (L : Type*) [Field K] [Field L] (ψ : K →+* ℂ) [Algebra K L]
+variable {K : Type*} {L : Type*} [Field K] [Field L] (ψ : K →+* ℂ) [Algebra K L]
+
+/-- If `L/K`, `ψ : K →+* ℂ`, and `φ : L →+* ℂ`, then `φ` lies over `ψ` if the restriction of
+`φ` to `K` is `ψ`. -/
+protected class LiesOver (φ : L →+* ℂ) (ψ : K →+* ℂ) : Prop where
+  over (φ ψ) : φ.comp (algebraMap K L) = ψ
+
+theorem LiesOver.over_apply (φ : L →+* ℂ) (ψ : K →+* ℂ) [ComplexEmbedding.LiesOver φ ψ] {x : K} :
+    φ (algebraMap K L x) = ψ x := RingHom.ext_iff.1 (LiesOver.over φ ψ) _
+
+theorem liesOver_iff {φ : L →+* ℂ} {ψ : K →+* ℂ} :
+    ComplexEmbedding.LiesOver φ ψ ↔ φ.comp (algebraMap K L) = ψ :=
+  ⟨fun _ ↦ LiesOver.over φ ψ, fun h ↦ ⟨h⟩⟩
+
+variable (L)
 
 /-- If `L/K` and `ψ : K →+* ℂ`, then the type of `ComplexEmbedding.Extension L ψ` consists of all
 `φ : L →+* ℂ` such that `φ.comp (algebraMap K L) = ψ`. -/
-protected abbrev Extension := { φ : L →+* ℂ // φ.comp (algebraMap K L) = ψ }
+protected abbrev Extension := { φ : L →+* ℂ // ComplexEmbedding.LiesOver φ ψ }
 
 namespace Extension
 
 variable (φ : ComplexEmbedding.Extension L ψ) {L ψ}
 
-theorem comp_eq : φ.1.comp (algebraMap K L) = ψ := φ.2
+theorem comp_eq : φ.1.comp (algebraMap K L) = ψ := φ.2.over
 
 theorem conjugate_comp_ne (h : ¬IsReal ψ) : (conjugate φ).comp (algebraMap K L) ≠ ψ := by
   simp_all [ComplexEmbedding.isReal_iff, comp_eq]
@@ -346,6 +360,22 @@ abbrev IsUnmixed (φ : L →+* ℂ) := IsReal (φ.comp (algebraMap K L)) → IsR
 theorem IsUnmixed.isReal_iff_isReal {φ : L →+* ℂ} (h : IsUnmixed K φ) :
     IsReal (φ.comp (algebraMap K L)) ↔ IsReal φ := by
   aesop (add simp [IsReal.comp])
+
+variable {K} (L) (ψ)
+
+/-- The set of all complex embeddings of `L` that lie over `ψ` and are mixed. -/
+def mixedEmbeddingsOver : Set (L →+* ℂ) := { φ | ComplexEmbedding.LiesOver φ ψ ∧ IsMixed K φ }
+/-- The set of all complex embeddings of `L` that lie over `ψ` and are unmixed. -/
+def unmixedEmbeddingsOver : Set (L →+* ℂ) := { φ | ComplexEmbedding.LiesOver φ ψ ∧ IsUnmixed K φ }
+
+theorem disjoint_unmixedEmbeddingsOver_mixedEmbeddingsOver :
+    Disjoint (unmixedEmbeddingsOver L ψ) (mixedEmbeddingsOver L ψ) := by
+  grind [mixedEmbeddingsOver, unmixedEmbeddingsOver]
+
+theorem union_unmixedEmbeddingsOver_mixedEmbeddingsOver :
+    (unmixedEmbeddingsOver L ψ) ∪ (mixedEmbeddingsOver L ψ) =
+      { φ | ComplexEmbedding.LiesOver φ ψ } := by
+  grind [unmixedEmbeddingsOver, mixedEmbeddingsOver, ← Set.setOf_or]
 
 end Extension
 

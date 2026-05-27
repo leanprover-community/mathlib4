@@ -86,7 +86,6 @@ lemma mulEnergy_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : Eₘ[s₁, t₁
 @[to_additive] lemma mulEnergy_mono_right (ht : t₁ ⊆ t₂) : Eₘ[s, t₁] ≤ Eₘ[s, t₂] :=
   mulEnergy_mono Subset.rfl ht
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive] lemma le_mulEnergy : #s * #t ≤ Eₘ[s, t] := by
   rw [← card_product]
   exact card_le_card_of_injOn (fun x => ((x.1, x.1), x.2, x.2)) (by simp [Set.MapsTo]) (by simp)
@@ -168,7 +167,7 @@ variable [CommMonoid α]
 
 @[to_additive] lemma mulEnergy_comm (s t : Finset α) : Eₘ[s, t] = Eₘ[t, s] := by
   rw [mulEnergy, ← Finset.card_map (Equiv.prodComm _ _).toEmbedding, map_filter]
-  simp [-Finset.card_map, mulEnergy, mul_comm, map_eq_image, Function.comp_def]
+  simp [mulEnergy, mul_comm, map_eq_image]
 
 end CommMonoid
 

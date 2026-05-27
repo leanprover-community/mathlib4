@@ -49,7 +49,6 @@ variable (p : 𝕜) [T0Space (AddCircle p)]
   (with import `Mathlib.Topology.Algebra.Order.ArchimedeanDiscrete`)
 and `𝕜 := ℝ` satisfies both. -/
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isAddQuotientCoveringMap_zsmul {n : ℤ} (hn : IsUnit (n : 𝕜)) :
     IsAddQuotientCoveringMap (n • · : AddCircle p → _)
       (zsmulAddGroupHom (α := AddCircle p) n).ker := by
@@ -63,20 +62,20 @@ theorem isAddQuotientCoveringMap_zsmul {n : ℤ} (hn : IsUnit (n : 𝕜)) :
 theorem isAddQuotientCoveringMap_nsmul {n : ℕ} (hn : IsUnit (n : 𝕜)) :
     IsAddQuotientCoveringMap (n • · : AddCircle p → _)
       (nsmulAddMonoidHom (α := AddCircle p) n).ker := by
-  convert isAddQuotientCoveringMap_zsmul p (n := n) (mod_cast hn)
+  convert! isAddQuotientCoveringMap_zsmul p (n := n) (mod_cast hn)
   all_goals ext; simp
 
 theorem isAddQuotientCoveringMap_zsmul_of_ne_zero [Algebra ℚ 𝕜] (n : ℤ) [NeZero n] :
     IsAddQuotientCoveringMap (n • · : AddCircle p → _)
       (zsmulAddGroupHom (α := AddCircle p) n).ker :=
   isAddQuotientCoveringMap_zsmul p (n := n) <| by
-    convert (Int.cast_ne_zero.mpr <| NeZero.ne n).isUnit.map (algebraMap ℚ 𝕜); simp
+    convert! (Int.cast_ne_zero.mpr <| NeZero.ne n).isUnit.map (algebraMap ℚ 𝕜); simp
 
 theorem isAddQuotientCoveringMap_nsmul_of_ne_zero [Algebra ℚ 𝕜] (n : ℕ) [NeZero n] :
     IsAddQuotientCoveringMap (n • · : AddCircle p → _)
       (nsmulAddMonoidHom (α := AddCircle p) n).ker :=
   isAddQuotientCoveringMap_nsmul p (n := n) <| by
-    convert (Nat.cast_ne_zero.mpr <| NeZero.ne n).isUnit.map (algebraMap ℚ 𝕜); simp
+    convert! (Nat.cast_ne_zero.mpr <| NeZero.ne n).isUnit.map (algebraMap ℚ 𝕜); simp
 
 end Field
 

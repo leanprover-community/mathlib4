@@ -728,6 +728,23 @@ end HomotopyEquiv
 
 end Homotopy
 
+section
+
+variable (S : ShortComplex C) [S.HasLeftHomology] {A : C}
+    (k k' : A ⟶ S.X₂) (hk : k ≫ S.g = 0) (hk' : k' ≫ S.g = 0)
+
+lemma add_liftCycles :
+    S.liftCycles k hk + S.liftCycles k' hk' =
+      S.liftCycles (k + k') (by rw [add_comp, hk, hk', add_zero]) := by
+  simp only [← cancel_mono S.iCycles, liftCycles_i, add_comp]
+
+lemma sub_liftCycles :
+    S.liftCycles k hk - S.liftCycles k' hk' =
+      S.liftCycles (k - k') (by rw [sub_comp, hk, hk', sub_zero]) := by
+  simp only [← cancel_mono S.iCycles, liftCycles_i, sub_comp]
+
+end
+
 end ShortComplex
 
 end CategoryTheory

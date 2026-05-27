@@ -41,6 +41,8 @@ lemma hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
     HasEigenvector (toLin' (diagonal d)) (d i) (Pi.basisFun R n i) :=
   hasEigenvector_toLin_diagonal _ _ (Pi.basisFun R n)
 
+set_option linter.overlappingInstances false
+
 /-- Eigenvalues of a diagonal linear operator are the diagonal entries. -/
 lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} [IsDomain R] [IsTorsionFree R M]
     (b : Basis n R M) : HasEigenvalue (toLin b b (diagonal d)) μ ↔ ∃ i, d i = μ := by
@@ -100,7 +102,7 @@ lemma maxGenEigenspace_toLin_diagonal_eq_eigenspace [IsDomain R] :
   have aux (j : n) : (b.repr x j * d j) • b j = μ • (b.repr x j • b j) := by
     rcases hk j with hj | hj
     · simp [hj]
-    · rw [← hj.1, mul_comm, SemigroupAction.mul_smul]
+    · rw [← hj.1, mul_comm, mul_smul]
   simp [toLin_apply, mulVec_eq_sum, diagonal_apply, aux, ← Finset.smul_sum]
 
 @[simp]
