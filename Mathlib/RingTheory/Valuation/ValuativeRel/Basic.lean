@@ -564,8 +564,8 @@ instance : LinearOrder (ValueGroupWithZero R) where
     rw [ValueGroupWithZero.mk_le_mk, ValueGroupWithZero.mk_le_mk]
     apply vle_total
   toDecidableLE := Classical.decRel _
-  toDecidableEq := @decidableEqOfDecidableLE _ _ <| Classical.decRel _
-  toDecidableLT := @decidableLTOfDecidableLE _ _ <| Classical.decRel _
+  toDecidableEq := Classical.decRel _
+  toDecidableLT := Classical.decRel _
 
 @[simp]
 theorem ValueGroupWithZero.mk_lt_mk (x y : R) (t s : posSubmonoid R) :
