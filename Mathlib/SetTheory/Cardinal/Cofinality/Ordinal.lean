@@ -169,6 +169,7 @@ theorem exists_ord_cof_eq [LinearOrder α] [WellFoundedLT α] :
 
 @[deprecated (since := "2026-05-25")] alias ord_cof_eq := exists_ord_cof_eq
 
+variable (α) in
 @[simp]
 theorem _root_.Order.cof_ord_cof [LinearOrder α] [WellFoundedLT α] :
     (Order.cof α).ord.cof = Order.cof α := by
