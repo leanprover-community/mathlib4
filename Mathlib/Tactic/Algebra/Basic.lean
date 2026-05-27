@@ -315,8 +315,8 @@ def preprocess (mvarId : MVarId) : MetaM MVarId := do
 def cleanupSMul (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
   let thms : SimpTheorems := {}
   let thms ← [``add_zero, ``add_assoc_rev, ``_root_.mul_one, ``mul_assoc_rev, ``_root_.pow_one,
-    ``mul_neg, ``add_neg, ``one_smul, ``mul_smul_comm, ``Nat.algebraMap_eq_cast,
-    ``Int.algebraMap_eq_cast].foldlM (·.addConst ·) thms
+    ``mul_neg, ``add_neg, ``one_smul, ``mul_smul_comm, ``Algebra.algebraMap_eq_smul_one
+    ].foldlM (·.addConst ·) thms
   let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_neg,
       ``nnrat_rawCast, ``rat_rawCast_neg].foldlM (·.addConst · (post := false)) thms
   let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
@@ -481,5 +481,25 @@ elab (name := algebraWith) "algebra" " with " R:term : tactic =>
     let ⟨u, R⟩ ← getLevelQ' (← elabTerm R none)
     let g ← getMainGoal
     AtomM.run .default (proveEq (some ⟨u, R⟩) g)
+
+/-- The core of `algebra_nf with R` - normalize the expression `e` over the base ring `R`
+Also used internally in `polynomial_nf`. -/
+def evalExpr {u : Lean.Level} (R : Q(Type u)) (e : Expr) : AtomM Simp.Result := do
+  let e ← withReducible <| whnf e
+  guard e.isApp -- all interesting ring expressions are applications
+  let ⟨v, A, e⟩ ← inferTypeQ' e
+  let sA ← synthInstanceQ q(CommSemiring $A)
+  let sR ← synthInstanceQ q(CommSemiring $R)
+  let sAlg ← synthInstanceQ q(Algebra $R $A)
+  let cr ← Algebra.mkCache sR
+  let ca ← Algebra.mkCache sA
+  assumeInstancesCommute
+  let ⟨a, _, pa⟩ ← match
+    ← Common.isAtomOrDerivable (ringCompute q($sAlg) cr ca) ca.toCache q($e) with
+    -- `none` indicates that `eval` will find something algebraic.
+  | none => Common.eval rcℕ (ringCompute sAlg cr ca) ca.toCache e
+  | some none => failure -- No point rewriting atoms
+  | some (some r) => pure r -- Nothing algebraic for `eval` to use, but `norm_num` simplifies.
+  pure { expr := a, proof? := pa }
 
 end Mathlib.Tactic.Algebra

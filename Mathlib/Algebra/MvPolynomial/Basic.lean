@@ -1071,7 +1071,7 @@ meta section Meta
 
 open Mathlib.Tactic.Polynomial in
 /-- Infer base ring for `MvPolynomial _ R`. Used by the `polynomial` tactic. -/
-@[infer_polynomial_base]
+@[polynomial_infer_base]
 def mvPolynomialInferBaseImpl : PolynomialExt where
   infer := fun e ↦ do
   match_expr e with

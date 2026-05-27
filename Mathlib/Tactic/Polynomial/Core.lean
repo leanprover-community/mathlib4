@@ -16,8 +16,8 @@ This file initializes the environment extensions and simp sets used by the `poly
 
 These extensions let downstream users use their own polynomial-like types (such as `PowerSeries`)
 with the `polynomial` tactic suite.
-
 -/
+
 namespace Mathlib.Tactic.Polynomial
 
 open Lean Lean.Meta Lean.Elab Term
@@ -42,7 +42,7 @@ initialize polynomialPostExt : SimpExtension ←
 
 /-- Attribute for identifying `polynomial` extensions. Used to tag procedures that infer the base
 ring of polynomial-like types. -/
-syntax (name := inferPolyBaseAttr) "infer_polynomial_base" : attr
+syntax (name := PolyInferBaseAttr) "polynomial_infer_base" : attr
 
 /-- An extension for `polynomial`. -/
 structure PolynomialExt where
@@ -73,12 +73,12 @@ initialize registerBuiltinAttribute {
   descr := "adds a polynomial extension that infers the base ring of a polynomial-like type"
   applicationTime := .afterCompilation
   add := fun declName stx kind => match stx with
-    | `(attr| infer_polynomial_base) => do
+    | `(attr| polynomial_infer_base) => do
       unless kind == AttributeKind.global do
-        throwError "invalid attribute infer_polynomial_base', must be global"
+        throwError "invalid attribute 'polynomial_infer_base', must be global"
       let env ← getEnv
       unless (env.getModuleIdxFor? declName).isNone do
-        throwError "invalid attribute 'infer_polynomial_base', declaration is in an imported module"
+        throwError "invalid attribute 'polynomial_infer_base', declaration is in an imported module"
       if (IR.getSorryDep env declName).isSome then return -- ignore in progress definitions
       let ext ← mkPolynomialExt declName
       setEnv <| polynomialExt.addEntry env (declName, ext)
