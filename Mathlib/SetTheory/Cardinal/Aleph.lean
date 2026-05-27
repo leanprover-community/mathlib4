@@ -586,7 +586,7 @@ theorem preBeth_add_one (o : Ordinal) : preBeth (o + 1) = 2 ^ preBeth o := by
   rw [preBeth, ← succ_eq_add_one, Iio_succ]
   exact ciSup_Iic o fun x y h ↦ power_le_power_left two_ne_zero (preBeth_mono h)
 
--- TODO: deprecate
+@[deprecated preBeth_add_one (since := "2026-05-26")]
 theorem preBeth_succ (o : Ordinal) : preBeth (succ o) = 2 ^ preBeth o :=
   preBeth_add_one o
 
@@ -596,7 +596,7 @@ theorem preBeth_limit {o : Ordinal} (ho : IsSuccPrelimit o) :
   apply (ciSup_mono bddAbove_of_small fun _ ↦ (cantor _).le).antisymm'
   rw [ciSup_le_iff' bddAbove_of_small]
   intro a
-  rw [← preBeth_succ]
+  rw [← preBeth_add_one]
   exact le_ciSup bddAbove_of_small (⟨_, ho.succ_lt a.2⟩ : Iio o)
 
 theorem isNormal_preBeth : Order.IsNormal preBeth := by
@@ -670,8 +670,8 @@ theorem lift_preBeth (o : Ordinal) : lift.{v} (preBeth o) = preBeth (Ordinal.lif
       rw [mem_Iio, Ordinal.lift_lt] at hi
       exact ⟨⟨i, hi⟩, IH _ hi⟩
 
-/-- The Beth function is defined so that `beth 0 = ℵ₀'`, `beth (succ o) = 2 ^ beth o`, and that for
-a limit ordinal `o`, `beth o` is the supremum of `beth a` for `a < o`.
+/-- The Beth function is defined so that `beth 0 = ℵ₀`, `beth (succ o) = 2 ^ beth o`, and that for a
+limit ordinal `o`, `beth o` is the supremum of `beth a` for `a < o`.
 
 Assuming the generalized continuum hypothesis, which is undecidable in ZFC, we have `ℶ_ o = ℵ_ o`
 for all ordinals.

@@ -453,9 +453,9 @@ open Filter Asymptotics Topology
 lemma Real.summable_one_div_nat_add_rpow (a : ℝ) (s : ℝ) :
     Summable (fun n : ℕ ↦ 1 / |n + a| ^ s) ↔ 1 < s := by
   have hnorm : Tendsto (fun n : ℕ ↦ ‖(n : ℝ)‖) atTop atTop :=
-    Tendsto.congr' (by simp) tendsto_natCast_atTop_atTop
+    tendsto_natCast_atTop_atTop.congr' (by simp)
   have h_abs : (fun n : ℕ ↦ |n + a|) ~[atTop] (·) := by
-    apply (IsEquivalent.add_const_of_norm_tendsto_atTop IsEquivalent.refl hnorm).congr_left
+    apply (IsEquivalent.refl.add_const_of_norm_tendsto_atTop hnorm).congr_left
     · filter_upwards [eventually_gt_atTop (Nat.ceil |a|)] with _ hn
       rw [abs_of_pos]
       linarith [lt_of_abs_lt ((abs_neg a).symm ▸ Nat.lt_of_ceil_lt hn)]
