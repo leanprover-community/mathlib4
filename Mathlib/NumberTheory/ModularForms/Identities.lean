@@ -50,42 +50,29 @@ lemma slash_S_apply (f : ℍ → ℂ) (k : ℤ) (z : ℍ) :
   simp [ModularGroup.S, denom]
 
 /-- The denominator of an `upperRightHom x = [[1, x], [0, 1]]` matrix at any `τ` is `1`. -/
-@[simp]
 lemma denom_upperRightHom (x : ℝ) (τ : ℂ) :
     denom (Matrix.GeneralLinearGroup.upperRightHom x) τ = 1 := by
-  simp [denom, Matrix.GeneralLinearGroup.upperRightHom_apply]
+  simp [denom]
 
 /-- The Möbius action of `upperRightHom x` on `τ : ℍ` is the shift `x +ᵥ τ`. -/
-@[simp]
 lemma upperRightHom_smul (x : ℝ) (τ : ℍ) :
-    (Matrix.GeneralLinearGroup.upperRightHom x) • τ = (x +ᵥ τ : ℍ) := by
-  have hdet : 0 < (Matrix.GeneralLinearGroup.upperRightHom x).det.val := by
-    rw [Matrix.GeneralLinearGroup.val_det_apply]
-    simp [Matrix.GeneralLinearGroup.upperRightHom_apply, Matrix.det_fin_two]
+    (Matrix.GeneralLinearGroup.upperRightHom x) • τ = x +ᵥ τ := by
   ext1
-  rw [coe_smul_of_det_pos hdet]
-  simp [num, denom, Matrix.GeneralLinearGroup.upperRightHom_apply,
-    UpperHalfPlane.coe_vadd, add_comm]
+  rw [coe_smul_of_det_pos (by simp)]
+  simp [num, denom, Matrix.GeneralLinearGroup.upperRightHom_apply, add_comm]
 
-/-- Pointwise: `σ (upperRightHom x) z = z`, since `det = 1 > 0` makes `σ` the identity. -/
-@[simp]
+/-- The automorphism `σ (upperRightHom x)` is the identity: `σ (upperRightHom x) z = z`. -/
 lemma σ_upperRightHom_apply (x : ℝ) (z : ℂ) :
     σ (Matrix.GeneralLinearGroup.upperRightHom x) z = z := by
-  unfold σ
-  rw [if_pos]
-  · rfl
-  · rw [Matrix.GeneralLinearGroup.val_det_apply]
-    simp [Matrix.GeneralLinearGroup.upperRightHom_apply, Matrix.det_fin_two]
+  simp [σ]
 
 /-- The action of `T^j` on a function `g : ℍ → ℂ` via the slash action of weight `k` is the
 shift `g((j : ℝ) +ᵥ τ)`. -/
 lemma slash_T_zpow_apply_general (k : ℤ) (j : ℤ) (g : ℍ → ℂ) (τ : ℍ) :
-    (g ∣[k] ((ModularGroup.T : SL(2, ℤ))^j : GL (Fin 2) ℝ)) τ =
-      g ((j : ℝ) +ᵥ τ) := by
+    (g ∣[k] ((ModularGroup.T : SL(2, ℤ))^j : GL (Fin 2) ℝ)) τ = g ((j : ℝ) +ᵥ τ) := by
   change (g ∣[k] ((Matrix.SpecialLinearGroup.mapGL ℝ (ModularGroup.T : SL(2, ℤ)))^j)) τ = _
   rw [← Matrix.SpecialLinearGroup.mapGL_zpow, ModularGroup.mapGL_T_zpow_eq_upperRightHom,
-    slash_apply, σ_upperRightHom_apply, upperRightHom_smul, denom_upperRightHom,
-    Matrix.GeneralLinearGroup.det_upperRightHom]
+    slash_apply, σ_upperRightHom_apply, upperRightHom_smul, denom_upperRightHom]
   simp
 
 section Generators
