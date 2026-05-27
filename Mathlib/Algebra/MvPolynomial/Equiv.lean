@@ -99,6 +99,25 @@ theorem uniqueAlgEquiv_symm_monomial [Unique σ] {d : σ →₀ ℕ} {r : R} :
       = MvPolynomial.monomial d r := by
   simp [MvPolynomial.monomial_eq]
 
+/-- The coefficient of `X ^ n` in `uniqueAlgEquiv R σ P` is the coefficient of the unique
+monomial of degree `n` in `P`. -/
+theorem coeff_uniqueAlgEquiv [Unique σ] (P : MvPolynomial σ R) (n : ℕ) :
+    (MvPolynomial.uniqueAlgEquiv R σ P : Polynomial R).coeff n =
+      coeff (Finsupp.single default n) P := by
+  induction P using induction_on' with
+  | monomial d r =>
+      rw [uniqueAlgEquiv_monomial, Finsupp.unique_single d]
+      simp [Polynomial.coeff_monomial, MvPolynomial.coeff_monomial]
+  | add P Q hP hQ =>
+      simpa using congrArg₂ (· + ·) hP hQ
+
+/-- The coefficient of a monomial in `(uniqueAlgEquiv R σ).symm P` is the coefficient of the
+corresponding univariate monomial in `P`. -/
+theorem coeff_uniqueAlgEquiv_symm [Unique σ] (P : Polynomial R) (d : σ →₀ ℕ) :
+    coeff d ((MvPolynomial.uniqueAlgEquiv R σ).symm P) = P.coeff (d default) := by
+  rw [Finsupp.unique_single d, ← coeff_uniqueAlgEquiv R, AlgEquiv.apply_symm_apply,
+    Finsupp.single_eq_same]
+
 /-- The algebra isomorphism between multivariable polynomials in a single variable and
 polynomials over the ground ring. -/
 @[deprecated uniqueAlgEquiv (since := "2026-04-15")]
@@ -480,7 +499,7 @@ theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Op
   let φ : (MvPolynomial S₁ R)[X] →ₐ[R] R[X] :=
     { Polynomial.mapRingHom (eval s) with
       commutes' := fun r => by
-        convert Polynomial.map_C (eval s)
+        convert! Polynomial.map_C (eval s)
         exact (eval_C _).symm }
   change
     aeval (fun x ↦ Option.elim x y s) f =
@@ -488,10 +507,10 @@ theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Op
   congr 2
   apply MvPolynomial.algHom_ext
   rw [Option.forall]
-  simp only [aeval_X, Option.elim_none, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, comp_apply,
-    Polynomial.coe_aeval_eq_eval, AlgHom.coe_mk, Polynomial.coe_mapRingHom, AlgHom.coe_coe,
-    optionEquivLeft_apply, Polynomial.map_X, Polynomial.eval_X, Option.elim_some, Polynomial.map_C,
-    eval_X, Polynomial.eval_C, implies_true, and_self, φ]
+  simp only [aeval_X, Option.elim_none, AlgHom.coe_comp, Polynomial.coe_aeval_eq_eval,
+    AlgHom.coe_mk, Polynomial.coe_mapRingHom, AlgEquiv.coe_algHom, comp_apply,
+    optionEquivLeft_apply, Polynomial.map_X, Polynomial.eval_X, Option.elim_some,
+    Polynomial.map_C, eval_X, Polynomial.eval_C, implies_true, and_self, φ]
 
 theorem mem_support_coeff_optionEquivLeft {f : MvPolynomial (Option σ) R} {i : ℕ} {m : σ →₀ ℕ} :
     m ∈ ((optionEquivLeft R σ f).coeff i).support ↔ m.optionElim i ∈ f.support := by
@@ -639,7 +658,7 @@ theorem finSuccEquiv_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fin (
   | monomial j r =>
     simp only [finSuccEquiv_apply, coe_eval₂Hom, eval₂_monomial, RingHom.coe_comp, Finsupp.prod_pow,
       Polynomial.coeff_C_mul, coeff_C_mul, coeff_monomial, Fin.prod_univ_succ, Fin.cases_zero,
-      Fin.cases_succ, ← map_prod, ← map_pow, Function.comp_apply]
+      Fin.cases_succ, ← _root_.map_prod, ← map_pow, Function.comp_apply]
     rw [← mul_boole, mul_comm (Polynomial.X ^ j 0), Polynomial.coeff_C_mul_X_pow]; congr 1
     obtain rfl | hjmi := eq_or_ne j (m.cons i)
     · simpa only [cons_zero, cons_succ, if_pos rfl, monomial_eq, C_1, one_mul,
@@ -662,7 +681,7 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
   let φ : (MvPolynomial (Fin n) R)[X] →ₐ[R] R[X] :=
     { Polynomial.mapRingHom (eval s) with
       commutes' := fun r => by
-        convert Polynomial.map_C (eval s)
+        convert! Polynomial.map_C (eval s)
         exact (eval_C _).symm }
   change
     aeval (Fin.cons y s : Fin (n + 1) → R) f =
@@ -670,11 +689,11 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
   congr 2
   apply MvPolynomial.algHom_ext
   rw [Fin.forall_iff_succ]
-  simp only [φ, aeval_X, Fin.cons_zero, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp,
-    Polynomial.coe_aeval_eq_eval, Polynomial.map_C, AlgHom.coe_mk,
-    Polynomial.coe_mapRingHom, comp_apply, finSuccEquiv_apply, eval₂Hom_X',
-    Fin.cases_zero, Polynomial.map_X, Polynomial.eval_X, Fin.cons_succ,
-    Fin.cases_succ, eval_X, Polynomial.eval_C, AlgHom.coe_coe, implies_true, and_self]
+  simp only [aeval_X, Fin.cons_zero, AlgHom.coe_comp, Polynomial.coe_aeval_eq_eval,
+    AlgHom.coe_mk, Polynomial.coe_mapRingHom, AlgEquiv.coe_algHom,
+    comp_apply, finSuccEquiv_apply, eval₂Hom_X', Fin.cases_zero, Polynomial.map_X,
+    Polynomial.eval_X, Fin.cons_succ, Fin.cases_succ, Polynomial.map_C, eval_X, Polynomial.eval_C,
+    implies_true, and_self, φ]
 
 theorem coeff_eval_eq_eval_coeff (s' : S₁ → R) (f : Polynomial (MvPolynomial S₁ R))
     (i : ℕ) : Polynomial.coeff (Polynomial.map (eval s') f) i = eval s' (Polynomial.coeff f i) := by
@@ -706,7 +725,7 @@ lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (
                           (fun s => Finsupp.sum s fun _ e => e)
   -- Then cons i σ is a monomial index of p with total degree equal to the desired bound
   let σ' : Fin (n + 1) →₀ ℕ := cons i σ
-  convert le_totalDegree (s := σ') _
+  convert! le_totalDegree (s := σ') _
   · rw [totalDegree, hσ2, sum_cons, add_comm]
   · rw [← mem_support_coeff_finSuccEquiv]
     exact hσ1
@@ -783,7 +802,7 @@ lemma degreeOf_eq_natDegree [DecidableEq σ] (a : σ) (p : MvPolynomial σ R) :
     degreeOf a p =
       (optionEquivLeft R {b // b ≠ a} (rename (Equiv.optionSubtypeNe a).symm p)).natDegree := by
   rw [natDegree_optionEquivLeft, eq_comm]
-  convert degreeOf_rename_of_injective (Equiv.injective (Equiv.optionSubtypeNe a).symm) a
+  convert! degreeOf_rename_of_injective (Equiv.injective (Equiv.optionSubtypeNe a).symm) a
   rw [Equiv.optionSubtypeNe_symm_apply, dif_pos rfl]
 
 theorem degreeOf_coeff_finSuccEquiv (p : MvPolynomial (Fin (n + 1)) R) (j : Fin n) (i : ℕ) :
@@ -851,9 +870,13 @@ lemma Polynomial.toMvPolynomial_eq_rename_comp (i : σ) :
 
 lemma Polynomial.toMvPolynomial_injective (i : σ) :
     Function.Injective (toMvPolynomial (R := R) i) := by
-  simp only [toMvPolynomial_eq_rename_comp, AlgHom.coe_comp, AlgHom.coe_coe,
+  simp only [toMvPolynomial_eq_rename_comp, AlgHom.coe_comp, AlgEquiv.coe_algHom,
     EquivLike.injective_comp]
   exact MvPolynomial.rename_injective (fun x ↦ i) fun _ _ _ ↦ rfl
+
+lemma Polynomial.toMvPolynomial_inj {i : σ} {p q : R[X]} :
+    toMvPolynomial (R := R) i p = toMvPolynomial i q ↔ p = q :=
+  ⟨fun h ↦ Polynomial.toMvPolynomial_injective i h, fun h ↦ by rw [h]⟩
 
 @[simp]
 lemma MvPolynomial.eval_comp_toMvPolynomial (f : σ → R) (i : σ) :
