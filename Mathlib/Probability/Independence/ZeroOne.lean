@@ -61,10 +61,21 @@ theorem Kernel.measure_eq_zero_or_one_of_indepSet_self [h : ∀ a, IsFiniteMeasu
     ∀ᵐ a ∂μα, κ a t = 0 ∨ κ a t = 1 :=
   Kernel.measure_eq_zero_or_one_of_indepSet_self' (ae_of_all μα h) h_indep
 
+lemma Kernel.measure_eq_zero_or_one_of_indep_self [h : ∀ a, IsFiniteMeasure (κ a)]
+    (hm : Indep m m κ μα) {t : Set Ω} (ht : MeasurableSet[m] t) :
+    ∀ᵐ a ∂μα, κ a t = 0 ∨ κ a t = 1 :=
+  measure_eq_zero_or_one_of_indepSet_self
+    (indep_of_indep_of_le hm (generateFrom_singleton_le ht) (generateFrom_singleton_le ht))
+
 theorem measure_eq_zero_or_one_of_indepSet_self [IsFiniteMeasure μ] {t : Set Ω}
     (h_indep : IndepSet t t μ) : μ t = 0 ∨ μ t = 1 := by
   simpa only [ae_dirac_eq, Filter.eventually_pure]
     using Kernel.measure_eq_zero_or_one_of_indepSet_self h_indep
+
+lemma measure_eq_zero_or_one_of_indep_self [IsFiniteMeasure μ] (hm : Indep m m μ)
+    {t : Set Ω} (ht : MeasurableSet[m] t) :
+    μ t = 0 ∨ μ t = 1 := by
+  simpa using Kernel.measure_eq_zero_or_one_of_indep_self hm ht
 
 theorem condExp_eq_zero_or_one_of_condIndepSet_self
     [StandardBorelSpace Ω]
