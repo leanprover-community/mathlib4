@@ -565,6 +565,7 @@ such names violate the naming convention. -/
   test declName := do
     unless ← (pure <| wasOriginallyDefn (← getEnv) declName) <&&> notM (isAutoDecl declName) do
       return none
+    if isDeprecated (← getEnv) declName then return none
     -- We also exclude simprocs: these should be named like normal lemmas.
     -- check if their type is `Lean.Meta.Simp.Simproc`.
     let { type .. } ← getConstVal declName
