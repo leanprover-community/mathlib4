@@ -354,8 +354,8 @@ def map₂CompMap₂Iso {C' : Type u₆} [Category.{v₆} C'] {D' : Type u₅} [
     (β' : R'' ⋙ G' ⟶ F' ⋙ R) :
     map₂ α' β' ⋙ map₂ α β ≅
     map₂ (α ≫ G.map α')
-      ((Functor.associator _ _ _).inv ≫ Functor.whiskerRight β' _ ≫ (Functor.associator _ _ _).hom ≫
-        Functor.whiskerLeft _ β ≫ (Functor.associator _ _ _).inv) :=
+      ((Functor.associator ..).inv ≫ Functor.whiskerRight β' _ ≫ (Functor.associator ..).hom ≫
+        Functor.whiskerLeft _ β ≫ (Functor.associator ..).inv) :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _))
 
 /-- `map₂` is invariant under isomorphisms. -/
@@ -388,22 +388,22 @@ def map₂Iso {F : C ≌ A} {G : D ≌ B}
     (hα'α : α' ≫ G.inverse.map α = G.unitIso.hom.app _)
     (hββ' :
       (Functor.rightUnitor _).hom ≫ (Functor.leftUnitor _).inv ≫
-        Functor.whiskerRight F.unitIso.hom _ ≫ (Functor.associator _ _ _).hom =
-        Functor.whiskerLeft R G.unitIso.hom ≫ (Functor.associator _ _ _).inv ≫
+        Functor.whiskerRight F.unitIso.hom _ ≫ (Functor.associator ..).hom =
+        Functor.whiskerLeft R G.unitIso.hom ≫ (Functor.associator ..).inv ≫
         Functor.whiskerRight β _ ≫
-        (Functor.associator _ _ _).hom ≫ Functor.whiskerLeft _ β')
+        (Functor.associator ..).hom ≫ Functor.whiskerLeft _ β')
     (hβ'β :
-      Functor.whiskerRight β' G.functor ≫ (Functor.associator _ _ _).hom ≫
-        Functor.whiskerLeft _ β ≫ (Functor.associator _ _ _).inv ≫
+      Functor.whiskerRight β' G.functor ≫ (Functor.associator ..).hom ≫
+        Functor.whiskerLeft _ β ≫ (Functor.associator ..).inv ≫
         Functor.whiskerRight F.counitIso.hom _ =
-        (Functor.associator _ _ _).hom ≫ Functor.whiskerLeft _ G.counitIso.hom ≫
+        (Functor.associator ..).hom ≫ Functor.whiskerLeft _ G.counitIso.hom ≫
         (Functor.rightUnitor _).hom ≫ (Functor.leftUnitor _).inv) :
     StructuredArrow L R ≌ StructuredArrow L' R' where
   functor := map₂ α β
   inverse := map₂ α' β'
   unitIso := (map₂IdIso _ _ _ rfl rfl).symm ≪≫ map₂Congr _ _ F.unitIso G.unitIso _ _ ?_ ?_ ≪≫
-    (map₂CompMap₂Iso _ _ _ _).symm
-  counitIso := map₂CompMap₂Iso _ _ _ _ ≪≫
+    (map₂CompMap₂Iso ..).symm
+  counitIso := map₂CompMap₂Iso .. ≪≫
     map₂Congr _ _ F.counitIso G.counitIso _ _ ?_ ?_ ≪≫ map₂IdIso _ _ _ rfl rfl
   functor_unitIso_comp := ?_
 where finally
@@ -794,8 +794,8 @@ def map₂CompMap₂Iso {C' : Type u₆} [Category.{v₆} C'] {D' : Type u₅} [
     {R : C' ⥤ D'} {F' : C' ⥤ C} {G' : D' ⥤ D} {X : D'} (α' : F' ⋙ S ⟶ R ⋙ G') (β' : G'.obj X ⟶ T) :
     map₂ α' β' ⋙ map₂ α β ≅
     map₂ (F := F' ⋙ F) (G := G' ⋙ G)
-      ((Functor.associator _ _ _).hom ≫ Functor.whiskerLeft _ α ≫
-        (Functor.associator _ _ _).inv ≫ Functor.whiskerRight α' _ ≫ (Functor.associator _ _ _).hom)
+      ((Functor.associator ..).hom ≫ Functor.whiskerLeft _ α ≫
+        (Functor.associator ..).inv ≫ Functor.whiskerRight α' _ ≫ (Functor.associator ..).hom)
       (G.map β' ≫ β) :=
   NatIso.ofComponents fun X ↦ isoMk (.refl _)
 
@@ -825,14 +825,14 @@ def map₂IdIso (α : 𝟭 _ ⋙ S ⟶ S ⋙ 𝟭 _) (T : D) (β : (𝟭 _).obj 
 def map₂Iso {F : C ≌ A} {G : D ≌ B} (α : F.functor ⋙ U ⟶ S ⋙ G.functor)
     (α' : F.inverse ⋙ S ⟶ U ⋙ G.inverse)
     (hα'α : (Functor.leftUnitor _).hom ≫ (Functor.rightUnitor _).inv ≫
-      Functor.whiskerLeft _ G.unitIso.hom ≫ (Functor.associator _ _ _).inv =
-      Functor.whiskerRight F.unitIso.hom _ ≫ (Functor.associator _ _ _).hom ≫
+      Functor.whiskerLeft _ G.unitIso.hom ≫ (Functor.associator ..).inv =
+      Functor.whiskerRight F.unitIso.hom _ ≫ (Functor.associator ..).hom ≫
       Functor.whiskerLeft F.functor α' ≫
-      (Functor.associator _ _ _).inv ≫ Functor.whiskerRight α _)
-    (hαα' : Functor.whiskerLeft F.inverse α ≫ (Functor.associator _ _ _).inv ≫
+      (Functor.associator ..).inv ≫ Functor.whiskerRight α _)
+    (hαα' : Functor.whiskerLeft F.inverse α ≫ (Functor.associator ..).inv ≫
       Functor.whiskerRight α' _ ≫
-      (Functor.associator _ _ _).hom ≫ Functor.whiskerLeft _ G.counitIso.hom =
-      (Functor.associator _ _ _).inv ≫ Functor.whiskerRight F.counitIso.hom _ ≫
+      (Functor.associator ..).hom ≫ Functor.whiskerLeft _ G.counitIso.hom =
+      (Functor.associator ..).inv ≫ Functor.whiskerRight F.counitIso.hom _ ≫
       (Functor.leftUnitor _).hom ≫ (Functor.rightUnitor _).inv)
     (β : G.functor.obj T ⟶ V) (β' : G.inverse.obj V ⟶ T)
     (hββ' : G.inverse.map β ≫ β' = G.unitIso.inv.app _)
@@ -841,8 +841,8 @@ def map₂Iso {F : C ≌ A} {G : D ≌ B} (α : F.functor ⋙ U ⟶ S ⋙ G.func
   functor := CostructuredArrow.map₂ α β
   inverse := CostructuredArrow.map₂ α' β'
   unitIso := (map₂IdIso _ _ _ rfl rfl).symm ≪≫ map₂Congr _ _ F.unitIso G.unitIso _ _ ?_ ?_ ≪≫
-    (map₂CompMap₂Iso _ _ _ _).symm
-  counitIso := map₂CompMap₂Iso _ _ _ _ ≪≫
+    (map₂CompMap₂Iso ..).symm
+  counitIso := map₂CompMap₂Iso .. ≪≫
     map₂Congr _ _ F.counitIso G.counitIso _ _ ?_ ?_ ≪≫ map₂IdIso _ _ _ rfl rfl
   functor_unitIso_comp := ?_
 where finally
