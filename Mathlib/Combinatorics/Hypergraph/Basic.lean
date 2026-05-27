@@ -14,10 +14,12 @@ An *undirected hypergraph* (here abbreviated as *hypergraph*) `H` is a generaliz
 (see `Mathlib.Combinatorics.Graph` or `Mathlib.Combinatorics.SimpleGraph`) and consists of a set of
 *vertices*, usually denoted `V` or `V(H)`, and a set of *hyperedges*, here called *edges* and
 denoted `E` or `E(H)`. In contrast with a graph, where edges are unordered pairs of vertices, in
-hypergraphs, edges are (unordered) sets of vertices; i.e., they are subsets of the vertex set `V`.
+hypergraphs, edges are unordered sets of vertices; i.e., they are subsets of the vertex set `V`.
 
-A hypergraph where `V = ∅` and `E = ∅` is *empty*. A hypergraph with a nonempty
-vertex set (`V ≠ ∅`) and empty edge set is *trivial*.
+A hypergraph where `V = ∅` and `E = ∅` is *empty*, denoted `⊥`. A hypergraph with a nonempty
+vertex set (`V ≠ ∅`) and empty edge set is *trivial*. A hypergraph where the edge set is the power
+set of the vertex set (or, equivalently, where all possible subsets of the vertex sets are in the
+edge set) is *complete*.
 
 If a edge `e` contains only one vertex (i.e., `|e| = 1`), then it is a *loop*.
 
@@ -124,7 +126,7 @@ def Adj (H : Hypergraph α) (x : α) (y : α) : Prop :=
 
 lemma Adj.symm (h : H.Adj x y) : H.Adj y x := by grind [Adj]
 
-lemma adj_comm (x y : α) : H.Adj x y ↔ H.Adj y x := ⟨.symm, .symm⟩
+lemma Adj.comm (x y : α) : H.Adj x y ↔ H.Adj y x := ⟨.symm, .symm⟩
 
 /--
 Predicate for edge adjacency. Analogous to `Hypergraph.Adj`, edges `e` and `f` are
@@ -143,7 +145,7 @@ lemma EAdj.symm (h : H.EAdj e f) : H.EAdj f e := by grind [EAdj]
 lemma EAdj.inter_nonempty (hef : H.EAdj e f) : (e ∩ f).Nonempty :=
   Set.inter_nonempty.mpr hef.2.2
 
-lemma eAdj_comm (e f) : H.EAdj e f ↔ H.EAdj f e := ⟨.symm, .symm⟩
+lemma EAdj.comm (e f) : H.EAdj e f ↔ H.EAdj f e := ⟨.symm, .symm⟩
 
 /-! ## Basic Hypergraph Definitions & Predicates-/
 
