@@ -74,7 +74,7 @@ postcomposing it with derivatives of extended charts.
 Concrete version of `inTangentCoordinates_eq`. -/
 lemma inTangentCoordinates_eq_mfderiv_comp
     {N : Type*} {f : N → M} {g : N → M'}
-    {ϕ : Π x : N, TangentSpace I (f x) →L[𝕜] TangentSpace I' (g x)} {x₀ : N} {x : N}
+    {ϕ : Π x : N, TangentSpace% (f x) →L[𝕜] TangentSpace% (g x)} {x₀ : N} {x : N}
     (hx : f x ∈ (chartAt H (f x₀)).source) (hy : g x ∈ (chartAt H' (g x₀)).source) :
     inTangentCoordinates I I' f g ϕ x₀ x =
     (mfderiv% (extChartAt I' (g x₀)) (g x)) ∘L (ϕ x) ∘L
