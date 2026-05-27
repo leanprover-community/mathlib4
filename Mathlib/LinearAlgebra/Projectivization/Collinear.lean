@@ -36,7 +36,7 @@ variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
 
 namespace Projectivization
 
-/-- If there exists a submodule of dimension at most 2 containing all points in
+/-- If there exists a submodule of dimension at most `2` containing all points in
   `S`, then `S` is collinear. The finite-dimensionality is required so that this notion is
   meaningful even when `V` is infinite-dimensional. -/
 def IsCollinear : Prop := ∃ (M : Subspace K V), Module.Finite K M.submodule ∧
