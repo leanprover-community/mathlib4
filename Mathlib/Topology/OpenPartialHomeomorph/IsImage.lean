@@ -381,7 +381,7 @@ namespace Homeomorph
 
 variable (e : X ≃ₜ Y) (e' : Y ≃ₜ Z)
 
-/-! Register as simp lemmas that the fields of an open partial homeomorphism built from a
+/- Register as simp lemmas that the fields of an open partial homeomorphism built from a
 homeomorphism correspond to the fields of the original homeomorphism. -/
 
 @[simp, mfld_simps]
