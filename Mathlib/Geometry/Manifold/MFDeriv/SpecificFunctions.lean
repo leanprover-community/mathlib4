@@ -126,7 +126,7 @@ section id
 /-! #### Identity -/
 
 theorem hasMFDerivAt_id (x : M) :
-    HasMFDerivAt I I (@id M) x (ContinuousLinearMap.id 𝕜 (TangentSpace I x)) := by
+    HasMFDerivAt% (@id M) x (ContinuousLinearMap.id 𝕜 (TangentSpace I x)) := by
   refine ⟨continuousAt_id, ?_⟩
   have : ∀ᶠ y in 𝓝[range I] (extChartAt I x) x, (extChartAt I x ∘ (extChartAt I x).symm) y = y := by
     apply Filter.mem_of_superset (extChartAt_target_mem_nhdsWithin x)
