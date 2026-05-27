@@ -53,6 +53,9 @@ noncomputable def termSum (s : ℝ) (N : ℕ) : ℝ := ∑ n ∈ Finset.range N,
 /-- Topological sum of `term`s. -/
 noncomputable def termTSum (s : ℝ) : ℝ := ∑' n, term (n + 1) s
 
+@[deprecated (since := "2026-05-27")] alias term_sum := termSum
+@[deprecated (since := "2026-05-27")] alias term_tsum := termTSum
+
 lemma term_nonneg (n : ℕ) (s : ℝ) : 0 ≤ term n s := by
   rw [term, intervalIntegral.integral_of_le (by simp)]
   refine setIntegral_nonneg measurableSet_Ioc (fun x hx ↦ ?_)
