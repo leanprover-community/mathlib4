@@ -868,6 +868,7 @@ lemma Polynomial.toMvPolynomial_eq_rename_comp (i : σ) :
   ext
   simp
 
+@[grind inj]
 lemma Polynomial.toMvPolynomial_inj (i : σ) :
     Function.Injective (toMvPolynomial (R := R) i) := by
   simp only [toMvPolynomial_eq_rename_comp, AlgHom.coe_comp, AlgEquiv.coe_algHom,
