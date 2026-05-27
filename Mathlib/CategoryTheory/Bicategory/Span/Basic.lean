@@ -11,7 +11,19 @@ public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
 /-! # Bicategories of spans in a category
 
 In this file, given a category `C` and two morphism properties
-Wₗ Wᵣ in C satisfying suitable assumptions regarding identities and base changes,
+Wₗ and Wᵣ in C that are stable under compositions, contain identities and
+such that for any morphism `b : x₃ ⟶ x₄` in Wₗ and any morphism `r : x₂ → x₃` in Wᵣ,
+there exists a pullback square
+```
+     t
+  x₁ --> x₂
+  |      |
+l |      | r
+  v      v
+  x₃ --> x₄
+     b
+```
+in `C` such that `t` satisfies `Wₗ` and `l` satisfies `Wᵣ`,
 we construct the bicategory of spans in C with left morphism in Wₗ and right morphism
 in Wᵣ (TODO @robin-carlier).
 
