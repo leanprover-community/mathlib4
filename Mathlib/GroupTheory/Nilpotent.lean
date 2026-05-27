@@ -939,6 +939,7 @@ lemma upperCentralSeries.card_image_eq_of_le_nilpotencyClass {a : ℕ}
 end Subgroup
 
 variable (G) in
+@[to_additive]
 theorem Group.IsNilpotent.center_ne_bot [Nontrivial G] [IsNilpotent G] : center G ≠ ⊥ := by
   rw [← upperCentralSeries_zero, ← upperCentralSeries_one]
   have ⟨n, hn⟩ := IsNilpotent.nilpotent G
