@@ -634,7 +634,7 @@ If `G` is an additive group with additive automorphism group `Γ`, then there is
 of `AddDistribAddAction Γ G`. -/
 @[ext]
 class AddDistribAddAction (M N : Type*) [AddMonoid M] [AddMonoid N] extends AddAction M N where
-  /-- Multiplying `1` by a scalar gives `1` -/
+  /-- Acting on `0` by a scalar gives `0` -/
   vadd_zero : ∀ r : M, r +ᵥ (0 : N) = 0
   /-- Distributivity of `+ᵥ` across `+` -/
   vadd_add : ∀ (r : M) (x y : N), r +ᵥ (x + y) = (r +ᵥ x) + (r +ᵥ y)
