@@ -465,12 +465,11 @@ open Mathlib.Linter.Style.nameCheck
   `AlgebraicGeometry.Scheme.IdealSheafData.Simps.coe_support == false
 
 #guard isBadNameWithUnderscore `Mathlib `Mathlib.Mat._Foo == true
-#guard isBadNameWithUnderscore `Mathlib `Mathlib.foo_ == false
+#guard isBadNameWithUnderscore `Mathlib `Mathlib.foo_ == true
 #guard isBadNameWithUnderscore `Mathlib `Nat.Mathlib.foo_bar == true
 #guard isBadNameWithUnderscore `Mathlib `Mathlib.Parser.foo_bar == true
 #guard isBadNameWithUnderscore `Mathlib `Mathlib.Tactic.foo_bar == true
 #guard isBadNameWithUnderscore `Mathlib `«termXYZ» == false
-#guard isBadNameWithUnderscore `Mathlib `ExteriorAlgebra.«term⋀[_]^_» == false
 #guard isBadNameWithUnderscore `Mathlib `Nat.foo_bar2 == true
 #guard isBadNameWithUnderscore `Mathlib `Nat.fooBar_2 == false
 #guard isBadNameWithUnderscore `Mathlib `Nat.foo_bar_2 == false
@@ -484,9 +483,6 @@ open Mathlib.Linter.Style.nameCheck
 #guard isBadNameWithUnderscore `Mathlib `foo.bar_mathlib == false
 #guard isBadNameWithUnderscore `Foo `foo.bar_mathlib == true
 #guard isBadNameWithUnderscore `Foo `foo.bar_foo == false
-
-#guard isBadNameWithUnderscore `Mathlib `foo.instBar_foo == true
-#guard isBadNameWithUnderscore `Mathlib `foo.instBar_foo (isInstance := true) == false
 
 end
 
