@@ -20,7 +20,7 @@ In this file, we formalize the proof by Deligne (SGA 4 I 8.1.6) that for
 any (small) filtered category `J`, there exists a final functor `F : α ⥤ J`
 where `α` is a directed partially ordered set (`IsFiltered.exists_directed`).
 The construction applies more generally to `κ`-filtered categories and
-`κ`-directed posets (`IsCardinalFiltered.ExistsCardinalDirected`).
+`κ`-directed posets (`IsCardinalFiltered.exists_cardinal_directed`).
 
 Note: the argument by Deligne is reproduced (without reference) in the book
 by Adámek and Rosický (theorem 1.5), but with a mistake:
@@ -686,7 +686,7 @@ lemma IsFiltered.exists_directed
     ∃ (α : Type w) (_ : PartialOrder α) (_ : IsDirected α (· ≤ ·)) (_ : Nonempty α)
       (F : α ⥤ J), F.Final := by
   have := (isCardinalFiltered_aleph0_iff.{w} J).2 inferInstance
-  obtain ⟨α, _, _, F, _⟩ := IsCardinalFiltered.ExistsCardinalDirected J .aleph0
+  obtain ⟨α, _, _, F, _⟩ := IsCardinalFiltered.exists_cardinal_directed J .aleph0
   have : IsFiltered α := by rwa [← isCardinalFiltered_aleph0_iff.{w}]
   exact ⟨α, _, IsFiltered.isDirectedOrder _, nonempty, F, inferInstance⟩
 
