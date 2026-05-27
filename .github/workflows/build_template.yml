@@ -760,7 +760,10 @@ jobs:
         with:
           name: crossref-tags-baseline
           path: crossref-tags.tsv
-          retention-days: 5
+          # 30 days: PRs that sit idle for a week or two should still find a
+          # baseline at their merge-base SHA. The TSV is ~55 KB so the
+          # storage cost is trivial.
+          retention-days: 30
 
       - name: prepare crossref bridge outputs
         # The privileged crossref_review.yml workflow_run job only fires
