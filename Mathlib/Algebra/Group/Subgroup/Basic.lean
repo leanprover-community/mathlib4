@@ -338,6 +338,11 @@ theorem mem_normalizer_iff_conj_image_eq {s : Set G} {g : G} :
   refine forall_congr' fun h ↦ ?_
   simp_rw [mul_inv_eq_iff_eq_mul, ← eq_inv_mul_iff_mul_eq, ← mul_assoc, exists_eq_right, iff_comm]
 
+@[to_additive]
+theorem mem_normalizer_iff_map_conj_eq {H : Subgroup G} {g : G} :
+    g ∈ normalizer H ↔ H.map (MulAut.conj g) = H :=
+  .trans mem_normalizer_iff_conj_image_eq (.symm SetLike.ext'_iff)
+
 @[deprecated (since := "2026-05-12")]
 alias _root_.AddSubgroup.mem_normalizer_iff_conj_image_eq :=
   AddSubgroup.mem_normalizer_iff_addConj_image_eq
@@ -378,11 +383,9 @@ theorem le_normalizer_iff : H ≤ normalizer K ↔ ∀ h ∈ H, ∀ k ∈ K, h *
 theorem le_normalizer_closure_iff {s : Set G} :
     H ≤ normalizer (closure s) ↔ ∀ h ∈ H, ∀ g ∈ s, h * g * h⁻¹ ∈ closure s := by
   refine ⟨fun hH h hh g hg ↦ hH hh g |>.mp <| mem_closure_of_mem hg, fun hH h hh ↦ ?_⟩
-  have : MulAut.conj h '' (closure s) = closure (MulAut.conj h '' s) :=
-    congr($(MulAut.conj h |>.toMonoidHom.map_closure s))
-  rw [mem_normalizer_iff_conj_image_eq, this]
-  apply subset_antisymm <| by simpa using hH h hh
-  rw [SetLike.coe_subset_coe, closure_le, ← this]
+  rw [mem_normalizer_iff_map_conj_eq, MonoidHom.map_closure]
+  apply le_antisymm <| by simpa using hH h hh
+  rw [closure_le, ← MonoidHom.map_closure]
   exact fun g hg ↦ ⟨_, hH _ (inv_mem hh) g hg, by simp [mul_assoc]⟩
 
 variable {N : Type*} [Group N]
@@ -397,17 +400,12 @@ theorem le_normalizer_comap (f : N →* G) :
 
 /-- The image of the normalizer is contained in the normalizer of the image. -/
 @[to_additive /-- The image of the normalizer is contained in the normalizer of the image. -/]
-theorem le_normalizer_map (f : G →* N) : (normalizer H).map f ≤ normalizer (H.map f) := fun _ => by
-  simp only [and_imp, mem_map, exists_imp, mem_normalizer_iff]
-  rintro x hx rfl n
-  constructor
-  · rintro ⟨y, hy, rfl⟩
-    use x * y * x⁻¹, (hx y).1 hy
-    simp
-  · rintro ⟨y, hyH, hy⟩
-    use x⁻¹ * y * x
-    rw [hx]
-    simp [hy, hyH, mul_assoc]
+theorem le_normalizer_map (f : G →* N) : (normalizer H).map f ≤ normalizer (H.map f) := by
+  intro x hx
+  obtain ⟨y, hy, rfl⟩ := Subgroup.mem_map.mp hx
+  have : .comp (MulAut.conj (f y)) f = f.comp (MulAut.conj y) := by ext; simp -- todo: extract lemma
+  rw [mem_normalizer_iff_conj_image_eq, ← MonoidHom.coe_coe, ← coe_map, ← SetLike.ext'_iff] at hy ⊢
+  rw [map_map, this, ← map_map, hy]
 
 @[to_additive]
 theorem comap_normalizer_eq_of_le_range {f : N →* G} (h : H ≤ f.range) :
