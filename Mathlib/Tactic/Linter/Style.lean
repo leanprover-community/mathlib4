@@ -554,8 +554,7 @@ by the `defsWithUnderscore` linter. Namely, we do not lint
 We assume private usernames have already been turned into their corresponding user-facing names.
 -/
 public def isBadNameWithUnderscore (project : Name) (declName : Name) : Bool :=
-  !(`LibraryNote).isPrefixOf declName &&
-    isBadNameWithUnderscoreAux (moduleToSuffix project) false declName
+  isBadNameWithUnderscoreAux (moduleToSuffix project) false declName
 
 open Batteries.Tactic.Lint in
 /-- Linter that checks for definitions whose name contains an underscore:
@@ -570,7 +569,8 @@ such names violate the naming convention. -/
     -- check if their type is `Lean.Meta.Simp.Simproc`.
     let { type .. } ← getConstVal declName
     if type.isConstOf `Lean.Meta.Simp.Simproc ||
-        type.isConstOf ``ParserDescr || type.isConstOf ``TrailingParserDescr
+        type.isConstOf ``ParserDescr || type.isConstOf ``TrailingParserDescr ||
+        type.isConstOf `Batteries.Util.LibraryNote
     then
       return none
     let project := ((← getEnv).getModuleFor? declName).elim .anonymous (·.getRoot)
