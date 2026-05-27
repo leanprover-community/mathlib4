@@ -74,8 +74,8 @@ theorem of_semilinearEquiv {S : Type u'} [Ring S] [Small.{v'} S]
   | succ _ n F K f g hf hg he hk ih =>
       let : Module S F := compHom F σ'
       let : Module S K := compHom K σ'
-      let eF : F ≃ₛₗ[σ] F := compHom.self_equiv σ σ' F
-      let eK : K ≃ₛₗ[σ] K := compHom.self_equiv σ σ' K
+      let eF : F ≃ₛₗ[σ] F := compHom.selfEquiv σ σ' F
+      let eK : K ≃ₛₗ[σ] K := compHom.selfEquiv σ σ' K
       let fS : K →ₗ[S] F := (eF.toLinearMap ∘ₛₗ f) ∘ₛₗ eK.symm.toLinearMap
       let gS : F →ₗ[S] N := (e.toLinearMap ∘ₛₗ g) ∘ₛₗ eF.symm.toLinearMap
       have : Free S F := Free.of_equiv eF
