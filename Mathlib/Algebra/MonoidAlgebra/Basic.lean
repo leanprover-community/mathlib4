@@ -656,10 +656,10 @@ lemma algHom_ext_iff {φ₁ φ₂ : R[M] →ₐ[R] A} : (∀ x, φ₁ (single x 
 variable (R A) in
 /-- `AddMonoidAlgebra.domCongr` as an `AddMonoidHom` from `AddAut`. -/
 @[simps]
-def domCongrAut : AddAut M →* A[M] ≃ₐ[R] A[M] where
-  toFun := AddMonoidAlgebra.domCongr R A
-  map_one' := by ext; simp [AddAut.one_def]
-  map_mul' _ _ := by ext; simp [AddAut.mul_def]
+def domCongrAut : AddAut M →+ Additive (A[M] ≃ₐ[R] A[M]) where
+  toFun f := .ofMul (AddMonoidAlgebra.domCongr R A f)
+  map_zero' := by ext; simp [AddAut.zero_def]
+  map_add' _ _ := by ext; simp [AddAut.add_def]
 
 end lift
 

@@ -5,6 +5,7 @@ Authors: Vasilii Nesterov
 -/
 module
 
+public meta import Lean.Elab.Tactic.Omega
 public meta import Mathlib.Tactic.Order.CollectFacts
 public meta import Mathlib.Tactic.Order.Graph.Basic
 public import Mathlib.Tactic.ByContra
