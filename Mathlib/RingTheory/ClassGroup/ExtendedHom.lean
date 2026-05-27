@@ -18,6 +18,15 @@ pushing fractional ideals forward along the algebra map.
 ## Main definitions
 
 - `ClassGroup.extendedHom A B`: the induced map between the class groups.
+- `ClassGroup.extendedIdeal A B`: the extension of a nonzero integral ideal.
+
+## Main results
+
+- `ClassGroup.extendedHom_mk`: compatibility with representatives as fractional ideals.
+- `ClassGroup.extendedHom_mk0`: compatibility with representatives as nonzero integral ideals.
+- `ClassGroup.extendedHom_comp`: compatibility of extension in a tower `A → B → C`.
+- `ClassGroup.extendedHom_eq_one_of_forall_isPrincipal`: if the extension of every ideal is
+  principal, then `ClassGroup.extendedHom A B` is trivial.
 -/
 
 public section
@@ -69,13 +78,6 @@ theorem extendedIdeal_extendedIdeal (C : Type*) [CommRing C] [IsDomain C] [Algeb
   simp [Ideal.map_map, IsScalarTower.algebraMap_eq A B C]
 
 variable [IsDedekindDomain A]
-
-/-- `ClassGroup.mk0` factors through the canonical quotient projection on
-`(FractionalIdeal A⁰ (FractionRing A))ˣ`. -/
-lemma mk0_eq_quotientMk (I : (Ideal A)⁰) :
-    (ClassGroup.mk0 I : ClassGroup A) =
-      QuotientGroup.mk (FractionalIdeal.mk0 (FractionRing A) I) :=
-  (ClassGroup.mk_mk0 (K := FractionRing A) I).symm.trans (ClassGroup.Quot_mk_eq_mk _).symm
 
 lemma extendedHom_mk0 [IsDedekindDomain B] (I : (Ideal A)⁰) :
     extendedHom A B (ClassGroup.mk0 I) = ClassGroup.mk0 (extendedIdeal A B I) := by
