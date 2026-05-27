@@ -81,7 +81,7 @@ noncomputable local instance {α : Type u} [PartialOrder α] : PartialOrder (Lin
   le_refl := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.1.1.1.1
   le_trans := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.1.1.2.1
   le_antisymm := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.1.2.1
-in
+
 noncomputable instance {α : Type u} [PartialOrder α] : LinearOrder (LinearExtension α) where
   le_total := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.2.1
   toDecidableLE := Classical.decRel _

@@ -556,7 +556,7 @@ local instance : PartialOrder (ValueGroupWithZero R) where
     induction a using ValueGroupWithZero.ind
     induction b using ValueGroupWithZero.ind
     exact ValueGroupWithZero.sound hab hba
-in
+
 instance : LinearOrder (ValueGroupWithZero R) where
   le_total a b := by
     induction a using ValueGroupWithZero.ind

@@ -118,7 +118,7 @@ local instance : PartialOrder (Quotient s) where
       cases h₂ with
       | inr h => exact (Quotient.sound h).symm
       | inl h₂ => exact congrArg _ (h₁.antisymm h₂)
-in
+
 instance instLinearOrder [DecidableRel (· ≈ · : α → α → Prop)] : LinearOrder (Quotient s) where
   le_total := total_of _
   toDecidableLT := decidableLTOfDecidableLE

@@ -291,7 +291,7 @@ local instance : PartialOrder (DivisibleHull M) where
     rw [mk_le_mk] at h h'
     rw [mk_eq_mk_iff_smul_eq_smul]
     exact le_antisymm h h'
-in
+
 instance : LinearOrder (DivisibleHull M) where
   le_total a b := by
     induction a with | mk ma sa

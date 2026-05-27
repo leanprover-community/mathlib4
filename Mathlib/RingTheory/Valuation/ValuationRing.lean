@@ -161,7 +161,7 @@ noncomputable local instance : PartialOrder (ValueGroup A K) where
       exact IsFractionRing.injective _ _ (mul_right_cancel₀ hb hf).symm
     apply Quotient.sound'
     exact ⟨this.unit, rfl⟩
-in
+
 noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
   le_total := ValuationRing.le_total _ _
   toDecidableLE := Classical.decRel _

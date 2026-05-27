@@ -1047,7 +1047,7 @@ local instance {α : Type*} [Subsingleton α] : PartialOrder α where
   le_trans x y z _ _ := trivial
   le_antisymm x y _ _ := Subsingleton.elim x y
   lt_iff_le_not_ge _ _ := by simp
-in
+
 /-- Construct the trivial linear order on any type with at most one element. -/
 abbrev LinearOrder.ofSubsingleton {α : Type*} [Subsingleton α] : LinearOrder α where
   le_total _ _ := .inl trivial

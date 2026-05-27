@@ -98,7 +98,7 @@ local instance : PartialOrder SignType where
   le_refl a := by cases a <;> constructor
   le_antisymm := by decide
   le_trans := by decide
-in
+
 instance : LinearOrder SignType where
   le_total := by decide
   toDecidableLT := decidableLTOfDecidableLE
