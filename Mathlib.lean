@@ -3372,6 +3372,8 @@ public import Mathlib.CategoryTheory.Sites.Point.Over
 public import Mathlib.CategoryTheory.Sites.Point.Presheaf
 public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
 public import Mathlib.CategoryTheory.Sites.Precoverage
+public import Mathlib.CategoryTheory.Sites.Precoverage.Generates
+public import Mathlib.CategoryTheory.Sites.Precoverage.Subsheaf
 public import Mathlib.CategoryTheory.Sites.PrecoverageToGrothendieck
 public import Mathlib.CategoryTheory.Sites.Preserves
 public import Mathlib.CategoryTheory.Sites.PreservesLimits
