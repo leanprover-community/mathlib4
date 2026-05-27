@@ -745,12 +745,11 @@ jobs:
       - name: clean up the import graph file
         run: rm import_graph.dot
 
+      # PR-only: this only feeds crossref_review.yml's PR comment.
+      # See scripts/dump_crossref_tags.lean for the output format and the
+      # (defence-in-depth) size cap; the trusted bound is in mathlib-ci's
+      # post-comment.sh.
       - name: dump cross-reference tags to TSV
-        # Walks Mathlib.CrossRef.tagExt and writes one TSV row per @[stacks ...] /
-        # @[kerodon ...] / @[wikidata ...] tag for the privileged workflow_run
-        # job (crossref_review.yml) to consume. No network, defence-in-depth
-        # size cap (the trusted bound is in mathlib-ci's post-comment.sh).
-        # Only useful when there's a PR to comment on, so skip on push runs.
         if: github.event.pull_request.number != ''
         run: lake env lean --run scripts/dump_crossref_tags.lean crossref-tags.tsv
 
