@@ -241,12 +241,11 @@ lemma codChart_mem_maximalAtlas (h : IsImmersionAtOfComplement F I J n f x) :
 
 lemma source_subset_preimage_source (h : IsImmersionAtOfComplement F I J n f x) :
     h.domChart.source ⊆ f ⁻¹' h.codChart.source :=
-  h.source_subset_preimage_source
+  LiftSourceTargetPropertyAt.source_subset_preimage_source h
 
 lemma mapsto_domChart_source_codChart_source (h : IsImmersionAtOfComplement F I J n f x) :
-    MapsTo f h.domChart.source h.codChart.source := by
-  rw [IsImmersionAtOfComplement_def] at h
-  exact h.source_subset_preimage_source
+    MapsTo f h.domChart.source h.codChart.source :=
+  h.source_subset_preimage_source
 
 /-- A linear equivalence `E × F ≃L[𝕜] E''` which belongs to the data of an immersion `f` at `x`:
 the particular equivalence is arbitrary, but this choice matches the witnesses given by
