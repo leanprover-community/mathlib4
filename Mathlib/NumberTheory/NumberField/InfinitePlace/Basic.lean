@@ -306,8 +306,11 @@ theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) : #{φ | mk φ =
     rwa [Ne, eq_comm, ← ComplexEmbedding.isReal_iff, ← isReal_iff]
 
 open scoped Classical in
-noncomputable instance NumberField.InfinitePlace.fintype [NumberField K] :
+protected noncomputable instance fintype [NumberField K] :
     Fintype (InfinitePlace K) := Set.fintypeRange _
+
+@[deprecated (since := "2026-05-24")]
+alias NumberField.InfinitePlace.fintype := InfinitePlace.fintype
 
 open scoped Classical in
 @[to_additive]
