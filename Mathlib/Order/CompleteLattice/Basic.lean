@@ -36,7 +36,7 @@ In lemma names,
 * `⨅ i, f i` : `iInf f`, the infimum of the range of `f`.
 -/
 
-@[expose] public section
+public section
 
 open Function OrderDual Set
 
@@ -186,7 +186,7 @@ theorem Equiv.iSup_comp {g : ι' → α} (e : ι ≃ ι') : ⨆ x, g (e x) = ⨆
 @[to_dual]
 protected theorem Function.Surjective.iSup_congr {g : ι' → α} (h : ι → ι') (h1 : Surjective h)
     (h2 : ∀ x, g (h x) = f x) : ⨆ x, f x = ⨆ y, g y := by
-  convert h1.iSup_comp g
+  convert! h1.iSup_comp g
   exact (h2 _).symm
 
 @[to_dual]
@@ -303,10 +303,6 @@ theorem iSup_le_iff : iSup f ≤ a ↔ ∀ i, f i ≤ a :=
 @[to_dual le_iInf₂_iff]
 theorem iSup₂_le_iff {f : ∀ i, κ i → α} : ⨆ (i) (j), f i j ≤ a ↔ ∀ i j, f i j ≤ a := by
   simp_rw [iSup_le_iff]
-
-@[to_dual lt_iInf_iff]
-theorem iSup_lt_iff : iSup f < a ↔ ∃ b, b < a ∧ ∀ i, f i ≤ b :=
-  ⟨fun h => ⟨iSup f, h, le_iSup f⟩, fun ⟨_, h, hb⟩ => (iSup_le hb).trans_lt h⟩
 
 @[to_dual]
 theorem sSup_eq_iSup {s : Set α} : sSup s = ⨆ a ∈ s, a :=
@@ -665,7 +661,7 @@ theorem iSup_split (f : β → α) (p : β → Prop) :
 
 @[to_dual]
 theorem iSup_split_single (f : β → α) (i₀ : β) : ⨆ i, f i = f i₀ ⊔ ⨆ (i) (_ : i ≠ i₀), f i := by
-  convert iSup_split f (fun i => i = i₀)
+  convert! iSup_split f (fun i => i = i₀)
   simp
 
 @[to_dual]
@@ -818,10 +814,6 @@ end
 section CompleteLinearOrder
 
 variable [CompleteLinearOrder α]
-
-@[to_dual]
-theorem iSup_eq_top (f : ι → α) : iSup f = ⊤ ↔ ∀ b < ⊤, ∃ i, b < f i := by
-  simp only [← sSup_range, sSup_eq_top, Set.exists_range_iff]
 
 @[to_dual]
 lemma iSup₂_eq_top (f : ∀ i, κ i → α) : ⨆ i, ⨆ j, f i j = ⊤ ↔ ∀ b < ⊤, ∃ i j, b < f i j := by
@@ -1000,7 +992,7 @@ namespace Equiv
 variable (e : α ≃ β)
 
 /-- Transfer `CompleteLattice` across an `Equiv`. -/
-protected abbrev completeLattice (e : α ≃ β) [CompleteLattice β] : CompleteLattice α := by
+protected abbrev completeLattice [CompleteLattice β] : CompleteLattice α := by
   let top := e.top
   let bot := e.bot
   let supSet := e.supSet

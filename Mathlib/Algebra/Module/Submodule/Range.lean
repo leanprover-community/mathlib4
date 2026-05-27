@@ -7,7 +7,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
 module
 
 public import Mathlib.Algebra.Module.Submodule.Ker
-public import Mathlib.Algebra.Module.Submodule.RestrictScalars
 public import Mathlib.Data.Set.Finite.Range
 
 /-!
@@ -262,6 +261,17 @@ theorem ker_le_iff [RingHomSurjective τ₁₂] {p : Submodule R M} :
 
 end Ring
 
+section CommSemiring
+
+variable [Semiring R] [CommSemiring R₂]
+variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
+variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
+
+theorem range_smul_le_range (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) : range (c • f) ≤ range f := by
+  simpa only [range_eq_map] using Submodule.map_smul_le_map _ _ _
+
+end CommSemiring
+
 section Semifield
 
 variable [Semifield K]
@@ -444,12 +454,25 @@ variable [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂)
 theorem surjective_rangeRestrict : Surjective f.rangeRestrict := by
   rw [← range_eq_top, range_rangeRestrict]
 
-@[simp] theorem ker_rangeRestrict : ker f.rangeRestrict = ker f := LinearMap.ker_codRestrict _ _ _
+theorem ker_rangeRestrict : ker f.rangeRestrict = ker f := LinearMap.ker_codRestrict _ _ _
 
 @[simp] theorem injective_rangeRestrict_iff : Injective f.rangeRestrict ↔ Injective f :=
   Set.injective_codRestrict _
 
 end rangeRestrict
+
+section restrict
+
+open Submodule
+
+variable [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) {p : Submodule R M} {q : Submodule R₂ M₂}
+
+@[simp]
+theorem range_restrict (h : ∀ x ∈ p, f x ∈ q) :
+    range (f.restrict h) = comap q.subtype (map f p) := by
+  rw [← Submodule.map_top, map_restrict, Submodule.map_top, p.range_subtype]
+
+end restrict
 
 end Semiring
 
