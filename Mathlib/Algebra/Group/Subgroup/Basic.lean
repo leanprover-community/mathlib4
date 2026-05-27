@@ -350,10 +350,8 @@ alias _root_.AddSubgroup.mem_normalizer_iff_conj_image_eq :=
 @[to_additive]
 theorem normalizer_le_normalizer_closure (s : Set G) : normalizer s ≤ normalizer (closure s) := by
   intro g hg
-  have : MulAut.conj g '' (closure s) = closure (MulAut.conj g '' s) :=
-    congr($(MulAut.conj g |>.toMonoidHom.map_closure s))
-  rw [mem_normalizer_iff_conj_image_eq.mp hg] at this
-  rwa [mem_normalizer_iff_conj_image_eq]
+  rw [mem_normalizer_iff_conj_image_eq] at hg
+  rw [mem_normalizer_iff_map_conj_eq, MonoidHom.map_closure, MonoidHom.coe_coe, hg]
 
 variable {H}
 
