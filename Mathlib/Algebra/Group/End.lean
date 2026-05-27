@@ -635,9 +635,8 @@ namespace MulAut
 
 variable (M) [Mul M]
 
-/-- The group operation on multiplicative automorphisms is defined by `g h => MulEquiv.trans h g`.
-This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
--/
+/-- If `M` is a type with multiplicative, then multiplicative automorphisms of `M` have the
+structure of a group. -/
 @[to_additive /-- If `M` is a type with addition, then additive automorphisms of `M` have the
 structure of a group. We give `AddAut M` the structure of an additive group rather than a
 multiplicative group to help with `to_additive` translation. -/]
@@ -713,8 +712,8 @@ def toPerm : MulAut M →* Equiv.Perm M where
 mapping multiplication in `G` into multiplication in the automorphism group `MulAut G`.
 See also the type `ConjAct G` for any group `G`, which has a `MulAction (ConjAct G) G` instance
 where `conj G` acts on `G` by conjugation. -/
-@[to_additive /-- Group conjugation, `AddAut.addConj g h = g + h + -g`, as a monoid homomorphism
-mapping addition in `G` into addition in the automorphism group `AddAut G`. -/]
+@[to_additive /-- Group conjugation, `AddAut.addConj g h = g + h + -g`, as an additive homomorphism
+mapping addition in `G` into addition in the additive automorphism group `AddAut G`. -/]
 def conj [Group G] : G →* MulAut G where
   toFun g :=
     { toFun h := g * h * g⁻¹
@@ -738,7 +737,7 @@ theorem conj_inv_apply [Group G] (g h : G) : (conj g)⁻¹ h = g⁻¹ * h * g :=
   rfl
 
 /-- Isomorphic groups have isomorphic automorphism groups. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps) /-- Isomorphic groups have isomorphic automorphism groups. -/]
 def congr [Group G] {H : Type*} [Group H] (ϕ : G ≃* H) :
     MulAut G ≃* MulAut H where
   toFun f := ϕ.symm.trans (f.trans ϕ)

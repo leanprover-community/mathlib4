@@ -614,8 +614,8 @@ end CompatibleScalar
 /-- Typeclass for multiplicative actions on multiplicative structures.
 
 The key axiom here is `smul_mul : g • (x * y) = (g • x) * (g • y)`.
-If `G` is a group (with group law multiplication) and `Γ` is its automorphism
-group then there is a natural instance of `MulDistribMulAction Γ G`.
+If `G` is a group with automorphism group `Γ`, then there is a natural instance of
+`MulDistribMulAction Γ G`.
 
 The axiom is also satisfied by a Galois group $Gal(L/K)$ acting on the field `L`,
 but here you can use the even stronger class `MulSemiringAction`, which captures
@@ -630,8 +630,8 @@ class MulDistribMulAction (M N : Type*) [Monoid M] [Monoid N] extends MulAction 
 /-- Typeclass for additive actions on additive structures.
 
 The key axiom here is `vadd_add : g +ᵥ (x + y) = (g +ᵥ x) + (g +ᵥ y)`.
-If `G` is a additive group (with group law multiplication) and `Γ` is its additive automorphism
-group then there is a natural instance of `AddDistribAddAction Γ G`. -/
+If `G` is an additive group with additive automorphism group `Γ`, then there is a natural instance
+of `AddDistribAddAction Γ G`. -/
 @[ext]
 class AddDistribAddAction (M N : Type*) [AddMonoid M] [AddMonoid N] extends AddAction M N where
   /-- Multiplying `1` by a scalar gives `1` -/
