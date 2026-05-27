@@ -646,7 +646,7 @@ section compHom
 
 /-- Let `M` be a `R`-module. Viewing `M` as an `S`-module via `σ' : S →+* R`, then the identity map
 gives a semilinear equivalence over `σ: R →+* S`. -/
-def Module.compHom.self_equiv {R S : Type*} [Semiring R] [Semiring S] (σ : R →+* S) (σ' : S →+* R)
+def Module.compHom.selfEquiv {R S : Type*} [Semiring R] [Semiring S] (σ : R →+* S) (σ' : S →+* R)
   [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) [AddCommMonoid M] [Module R M] :
   letI : Module S M := compHom M σ'; M ≃ₛₗ[σ] M :=
   letI : Module S M := compHom M σ'
