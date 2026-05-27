@@ -157,6 +157,7 @@ theorem exists_mem_nhds_isMIntegralCurveOn_Ioo_of_contMDiffAt [CompleteSpace E]
         ((continuousAt_extChartAt' hx'.2).comp continuousAt_fst) continuousAt_snd
     · exact fun ⟨x', t'⟩ ⟨hx', ht'⟩ ↦ interior_subset (hf_at hx' ht').2.2
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Existence of local integral curves for a $C^1$ vector field at interior points of a $C^1$
 manifold. -/
 theorem exists_isMIntegralCurveAt_of_contMDiffAt [CompleteSpace E]

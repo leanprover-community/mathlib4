@@ -308,7 +308,8 @@ theorem cycleType_extendDomain {β : Type*} [Fintype β] [DecidableEq β] {p : �
   | induction_disjoint σ τ hd _ hσ hτ =>
     rw [hd.cycleType_mul, ← extendDomain_mul, (hd.extendDomain f).cycleType_mul, hσ, hτ]
 
-theorem cycleType_ofSubtype {p : α → Prop} [DecidablePred p] {g : Perm (Subtype p)} :
+theorem cycleType_ofSubtype {p : α → Prop} [DecidablePred p] [Fintype (Subtype p)]
+    {g : Perm (Subtype p)} :
     cycleType (ofSubtype g) = cycleType g :=
   cycleType_extendDomain (Equiv.refl (Subtype p))
 
@@ -529,7 +530,7 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
 order `p` in `G`. This is the additive version of Cauchy's theorem. -/
 theorem _root_.exists_prime_addOrderOf_dvd_card {G : Type*} [AddGroup G] [Fintype G] (p : ℕ)
     [Fact p.Prime] (hdvd : p ∣ Fintype.card G) : ∃ x : G, addOrderOf x = p :=
-  @exists_prime_orderOf_dvd_card (Multiplicative G) _ _ _ _ (by convert hdvd)
+  @exists_prime_orderOf_dvd_card (Multiplicative G) _ _ _ _ (by convert! hdvd)
 
 attribute [to_additive existing] exists_prime_orderOf_dvd_card
 
