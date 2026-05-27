@@ -71,9 +71,9 @@ bracket equal to its ring commutator.
 
 Note that this cannot be a global instance because it would create a diamond when `M = A`,
 specifically we can build two mathematically-different `bracket A A`s:
- 1. `@Ring.bracket A _` which says `⁅a, b⁆ = a * b - b * a`
- 2. `(@LieRingModule.ofAssociativeModule A _ A _ _).toBracket` which says `⁅a, b⁆ = a • b`
-    (and thus `⁅a, b⁆ = a * b`)
+1. `@Ring.bracket A _` which says `⁅a, b⁆ = a * b - b * a`
+2. `(@LieRingModule.ofAssociativeModule A _ A _ _).toBracket` which says `⁅a, b⁆ = a • b`
+  (and thus `⁅a, b⁆ = a * b`)
 
 See note [reducible non-instances] -/
 abbrev LieRingModule.ofAssociativeModule : LieRingModule A M where
@@ -394,7 +394,6 @@ variable {R : Type u} {M₁ : Type v} {M₂ : Type w}
 variable [CommRing R] [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
 variable (e : M₁ ≃ₗ[R] M₂)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A linear equivalence of two modules induces a Lie algebra equivalence of their endomorphisms. -/
 def lieConj : Module.End R M₁ ≃ₗ⁅R⁆ Module.End R M₂ :=
   { e.conj with
