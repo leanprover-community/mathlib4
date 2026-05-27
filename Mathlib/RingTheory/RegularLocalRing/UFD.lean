@@ -35,7 +35,7 @@ private lemma ufd_localization_away_of_prime_of_nonmaximal_localizations_ufd [Is
     UniqueFactorizationMonoid (Localization.Away x) := by
   let M : Submonoid R := Submonoid.powers x
   have : IsDomain (Localization.Away x) := Localization.Away.isDomain hxp.ne_zero
-  rw [UniqueFactorizationMonoid.iff_height_one_primes_principal]
+  rw [UniqueFactorizationMonoid.iff_forall_isPrincipal_of_height_eq_one]
   intro Q hQ hQheight
   have : Module.Invertible (Localization.Away x) Q := by
     refine Module.Invertible.of_localized_maximal (fun P _ ↦ ?_)
@@ -60,7 +60,7 @@ private lemma ufd_localization_away_of_prime_of_nonmaximal_localizations_ufd [Is
       have hQh : Q'.height = 1 := by
         simp [Q', IsLocalization.under_map_of_isPrime_disjoint P.primeCompl (Localization.AtPrime P)
           inferInstance hd, hQheight, ← IsLocalization.height_under P.primeCompl Q']
-      have := UniqueFactorizationMonoid.height_one_primes_principal hQh
+      have := UniqueFactorizationMonoid.isPrincipal_of_height_eq_one hQh
       exact Module.Invertible.congr <| Q'.isoBaseOfIsPrincipal
         (Ideal.height_eq_zero_iff_eq_bot.not.mp (by simp [hQh])) ≪≫ₗ eIdeal.symm
     · exact Module.Invertible.congr <| LinearEquiv.symm <| eIdeal.trans <| LinearEquiv.ofTop Q' <|
