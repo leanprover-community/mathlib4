@@ -161,6 +161,7 @@ example : 0 = 0 := by
 
 set_option linter.unusedTactic true
 
+-- TODO: we somehow solved the false positive, is that good news or did something else break?
 -- This is a false positive. Before `convert_to`, there is an mvar for the `DecidableEq` instance
 -- used with `Finset.instInsert` that is not properly handled
 
@@ -169,7 +170,7 @@ set_option linter.unusedTactic true
 Try this:
   [apply] grind
 -/
-#guard_msgs in
+-- #guard_msgs in
 theorem Associated.prod' {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) (f : ι → M)
     (g : ι → M) (h : ∀ i, i ∈ s → Associated (f i) (g i)) : Associated (∏ i ∈ s, f i) (∏ i ∈ s, g i) := by
   induction s using Finset.induction with
@@ -571,3 +572,39 @@ example : True := by
 end
 
 end verifyGrindSuggestions
+
+/--
+warning:
+  r̵e̵f̵i̵n̵e̵ ̵h̵q̵r̵ ̵<̵|̵ ̵h̵p̵q̵ ̵?̵_̵
+  ̵ ̵ ̵e̵x̵a̵c̵t̵ ̵h̵p̵e̲x̲a̲c̲t̲ ̲h̲q̲r̲ ̲<̲|̲ ̲h̲p̲q̲ ̲h̲p̲
+-/
+#guard_msgs in
+set_option linter.tacticAnalysis.refineExactMerge true in
+example {P Q R : Prop} (hp : P) (hpq : P → Q) (hqr : Q → R) : R := by
+  refine hqr <| hpq ?_
+  exact hp
+
+-- TODO: support
+set_option linter.tacticAnalysis.refineExactMerge true in
+example {P Q R : Prop} (hp : P) (hpq : P → Q) (hqr : Q → R) : R := by
+  refine hqr ?_
+  refine hpq ?_
+  exact hp
+
+/--
+warning:
+  r̵e̵f̵i̵n̵e̵ ̵h̵p̵q̵ ̵?̵_̵
+  ̵ ̵ ̵ ̵ ̵e̵x̵a̵c̵t̵ ̵h̵p̵e̲x̲a̲c̲t̲ ̲h̲p̲q̲ ̲h̲p̲
+---
+warning:
+  r̵e̵f̵i̵n̵e̵ ̵h̵q̵r̵ ̵<̵|̵ ̵h̵p̵q̵ ̵?̵f̵o̵o̵
+  ̵ ̵ ̵ ̵ ̵e̵x̵a̵c̵t̵ ̵h̵p̵e̲x̲a̲c̲t̲ ̲h̲q̲r̲ ̲<̲|̲ ̲h̲p̲q̲ ̲h̲p̲
+-/
+#guard_msgs in
+set_option linter.tacticAnalysis.refineExactMerge true in
+example {P Q R : Prop} (hp : P) (hpq : P → Q) (hqr : Q → R) : Q ∧ R := by
+  constructor
+  · refine hpq ?_
+    exact hp
+  · refine hqr <| hpq ?foo
+    exact hp
