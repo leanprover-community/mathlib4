@@ -211,22 +211,21 @@ lemma galoisProd_zero_eq_one {g : ℍ → α} : galoisProd 0 g = 1 :=
   funext fun _ ↦ Finset.prod_range_zero _
 
 /-- The Galois product of a constant function `c` is `c^N`. -/
-@[simp]
 lemma galoisProd_const (c : α) (τ : ℍ) :
     galoisProd N (fun _ ↦ c) τ = c ^ N := by
-  rw [galoisProd_apply, Finset.prod_const, Finset.card_range]
+  simp
 
 /-- The Galois product distributes over pointwise multiplication of functions. -/
 lemma galoisProd_mul (g h : ℍ → α) :
     galoisProd N (g * h) = galoisProd N g * galoisProd N h := by
   ext τ
-  simp [Pi.mul_apply, Finset.prod_mul_distrib]
+  simp [Finset.prod_mul_distrib]
 
 /-- The Galois product distributes over multiplication by a constant function. -/
 lemma galoisProd_const_mul (c : α) (g : ℍ → α) :
     galoisProd N (fun τ ↦ c * g τ) = fun τ ↦ c ^ N * galoisProd N g τ := by
   ext τ
-  simp [Finset.prod_mul_distrib, Finset.prod_const, Finset.card_range]
+  simp [Finset.prod_mul_distrib]
 
 end GaloisProd
 
@@ -242,8 +241,7 @@ lemma galoisProd_periodic_one (hN : 0 < N)
   simp only [Function.comp_apply, galoisProd_apply]
   obtain ⟨n, rfl⟩ : ∃ n, N = n + 1 := ⟨N - 1, by lia⟩
   by_cases hw : 0 < w.im
-  · have hw1 : 0 < (w + 1).im := by simpa using hw
-    rw [ofComplex_apply_of_im_pos hw1, ofComplex_apply_of_im_pos hw,
+  · rw [ofComplex_apply_of_im_pos (by simpa using hw), ofComplex_apply_of_im_pos hw,
       Finset.prod_range_succ' (fun j ↦ f (ofComplex (w + 1 - ↑j))),
       Finset.prod_range_succ (fun j ↦ f (ofComplex (w - ↑j)))]
     have hinner : ∏ j ∈ Finset.range n, f (ofComplex (w + 1 - ↑(j + 1))) =
@@ -256,9 +254,8 @@ lemma galoisProd_periodic_one (hN : 0 < N)
       rw [show w + 1 - ↑(0 : ℕ) = (w - ↑n) + ↑(n + 1 : ℕ) by push_cast; ring]
       exact hf_per (w - ↑n)
     rw [hinner, hbdry]
-  · have hw0 : w.im ≤ 0 := not_lt.mp hw
-    have hw1 : (w + 1).im ≤ 0 := by simpa using hw0
-    rw [ofComplex_apply_of_im_nonpos hw1, ofComplex_apply_of_im_nonpos hw0]
+  · rw [ofComplex_apply_of_im_nonpos (by simpa using not_lt.mp hw),
+      ofComplex_apply_of_im_nonpos (not_lt.mp hw)]
 
 /-- If `f` is holomorphic on `ℍ`, so is `galoisProd N f`. -/
 lemma galoisProd_mdiff (hf_mdiff : MDiff f) : MDiff (galoisProd N f) := by
@@ -329,7 +326,7 @@ lemma cuspFunction_one_galoisProd_pow_eq (hN : 0 < N)
     simp only [Function.Periodic.qParam, ← Complex.exp_nat_mul, Complex.ofReal_one, div_one,
       Complex.ofReal_natCast]
     congr 1
-    field_simp
+    field_simp [hNC_ne]
   rw [hqN, eq_cuspFunction τ one_ne_zero (galoisProd_periodic_one hN hf_per), galoisProd_apply]
   refine Finset.prod_congr rfl fun j _ ↦ ?_
   have him : 0 < ((τ : ℂ) - ↑j).im := by
@@ -369,8 +366,7 @@ lemma qExpansion_one_galoisProd_order_eq_qExpansion_self_order (hN : 0 < N)
       analyticOrderAt_congr (cuspFunction_one_galoisProd_pow_eq hN hf_per hf_bdd hf_mdiff),
       ← Finset.prod_fn, analyticOrderAt_prod h_factor_an,
       Finset.sum_congr rfl h_factor_order, Finset.sum_const, Finset.card_range, nsmul_eq_mul]
-  rw [mul_comm ML] at h_combine
-  exact ENat.mul_left_cancel₀ (mod_cast hN.ne') (ENat.coe_ne_top _) h_combine
+  exact ENat.mul_left_cancel₀ (mod_cast hN.ne') (ENat.coe_ne_top _) (mul_comm ML _ ▸ h_combine)
 
 end GaloisProdComplex
 
