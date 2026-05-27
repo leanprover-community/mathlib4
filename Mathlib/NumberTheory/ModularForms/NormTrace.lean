@@ -202,21 +202,19 @@ lemma galoisProd_apply (τ : ℍ) :
 /-- The Galois product of the zero function is zero when `N > 0`. -/
 @[simp]
 lemma galoisProd_zero {β : Type*} [CommMonoidWithZero β] (hN : 0 < N) :
-    galoisProd N (0 : ℍ → β) = 0 := by
-  ext τ
-  simp [Finset.prod_eq_zero (Finset.mem_range.mpr hN)]
+    galoisProd N (0 : ℍ → β) = 0 :=
+  funext fun _ ↦ Finset.prod_eq_zero (Finset.mem_range.mpr hN) rfl
 
 /-- The Galois product over an empty range is the constant function `1`. -/
 @[simp]
-lemma galoisProd_zero_nat {g : ℍ → α} : galoisProd 0 g = 1 := by
-  ext τ
-  simp
+lemma galoisProd_zero_eq_one {g : ℍ → α} : galoisProd 0 g = 1 :=
+  funext fun _ ↦ Finset.prod_range_zero _
 
 /-- The Galois product of a constant function `c` is `c^N`. -/
 @[simp]
 lemma galoisProd_const (c : α) (τ : ℍ) :
     galoisProd N (fun _ ↦ c) τ = c ^ N := by
-  simp [Finset.prod_const, Finset.card_range]
+  rw [galoisProd_apply, Finset.prod_const, Finset.card_range]
 
 /-- The Galois product distributes over pointwise multiplication of functions. -/
 lemma galoisProd_mul (g h : ℍ → α) :
@@ -231,8 +229,6 @@ lemma galoisProd_const_mul (c : α) (g : ℍ → α) :
   simp [Finset.prod_mul_distrib, Finset.prod_const, Finset.card_range]
 
 end GaloisProd
-
-/-! ### ℂ-valued specialisation: analytic and q-expansion properties -/
 
 section GaloisProdComplex
 
