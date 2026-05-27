@@ -20,12 +20,12 @@ In this file, we formalize the proof by Deligne (SGA 4 I 8.1.6) that for
 any (small) filtered category `J`, there exists a final functor `F : α ⥤ J`
 where `α` is a directed partially ordered set (`IsFiltered.exists_directed`).
 The construction applies more generally to `κ`-filtered categories and
-`κ`-directed posets (`IsCardinalFiltered.exists_cardinal_directed`).
+`κ`-directed posets (`IsCardinalFiltered.ExistsCardinalDirected`).
 
 Note: the argument by Deligne is reproduced (without reference) in the book
 by Adámek and Rosický (theorem 1.5), but with a mistake:
 the construction by Deligne involves considering diagrams
-(see `CategoryTheory.IsCardinalFiltered.exists_cardinal_directed.DiagramWithUniqueTerminal`)
+(see `CategoryTheory.IsCardinalFiltered.ExistsCardinalDirected.DiagramWithUniqueTerminal`)
 which are not necessarily *subcategories* (the class of morphisms `W` does not
 have to be multiplicative.)
 
@@ -46,7 +46,7 @@ open Limits
 
 namespace IsCardinalFiltered
 
-namespace exists_cardinal_directed
+namespace ExistsCardinalDirected
 
 variable (J : Type w) [SmallCategory J] (κ : Cardinal.{w})
 
@@ -511,12 +511,151 @@ lemma aux :
   ⟨DiagramWithUniqueTerminal J κ, _, isCardinalFiltered J κ hJ,
     functor J κ, final_functor J κ hJ⟩
 
-end exists_cardinal_directed
+end ExistsCardinalDirected
+
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram := ExistsCardinalDirected.Diagram
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.ext := ExistsCardinalDirected.Diagram.ext
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.ext_iff := ExistsCardinalDirected.Diagram.ext_iff
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.mk := ExistsCardinalDirected.Diagram.mk
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.W := ExistsCardinalDirected.Diagram.W
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.P := ExistsCardinalDirected.Diagram.P
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.src := ExistsCardinalDirected.Diagram.src
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.tgt := ExistsCardinalDirected.Diagram.tgt
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.hW := ExistsCardinalDirected.Diagram.hW
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.hP := ExistsCardinalDirected.Diagram.hP
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.IsTerminal := ExistsCardinalDirected.Diagram.IsTerminal
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.IsTerminal.mk := ExistsCardinalDirected.Diagram.IsTerminal.mk
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.IsTerminal.prop_id :=
+  ExistsCardinalDirected.Diagram.IsTerminal.prop_id
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.IsTerminal.lift :=
+  ExistsCardinalDirected.Diagram.IsTerminal.lift
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.IsTerminal.hlift :=
+  ExistsCardinalDirected.Diagram.IsTerminal.hlift
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.IsTerminal.uniq :=
+  ExistsCardinalDirected.Diagram.IsTerminal.uniq
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.IsTerminal.comm :=
+  ExistsCardinalDirected.Diagram.IsTerminal.comm
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.IsTerminal.comm_assoc :=
+  ExistsCardinalDirected.Diagram.IsTerminal.comm_assoc
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.IsTerminal.prop :=
+  ExistsCardinalDirected.Diagram.IsTerminal.prop
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.IsTerminal.lift_self :=
+  ExistsCardinalDirected.Diagram.IsTerminal.lift_self
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.IsTerminal.ofExistsUnique :=
+  ExistsCardinalDirected.Diagram.IsTerminal.ofExistsUnique
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.DiagramWithUniqueTerminal :=
+  ExistsCardinalDirected.DiagramWithUniqueTerminal
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.DiagramWithUniqueTerminal.mk :=
+  ExistsCardinalDirected.DiagramWithUniqueTerminal.mk
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.DiagramWithUniqueTerminal.top :=
+  ExistsCardinalDirected.DiagramWithUniqueTerminal.top
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.DiagramWithUniqueTerminal.isTerminal :=
+  ExistsCardinalDirected.DiagramWithUniqueTerminal.isTerminal
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.DiagramWithUniqueTerminal.uniq_terminal :=
+  ExistsCardinalDirected.DiagramWithUniqueTerminal.uniq_terminal
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.DiagramWithUniqueTerminal.ext :=
+  ExistsCardinalDirected.DiagramWithUniqueTerminal.ext
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.DiagramWithUniqueTerminal.ext_iff :=
+  ExistsCardinalDirected.DiagramWithUniqueTerminal.ext_iff
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.functorMap := ExistsCardinalDirected.functorMap
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.functorMap_id := ExistsCardinalDirected.functorMap_id
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.functorMap_comp := ExistsCardinalDirected.functorMap_comp
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.functorMap_comp_assoc := ExistsCardinalDirected.functorMap_comp_assoc
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.functor := ExistsCardinalDirected.functor
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.functor_obj := ExistsCardinalDirected.functor_obj
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.functor_map := ExistsCardinalDirected.functor_map
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.single := ExistsCardinalDirected.Diagram.single
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.single_W := ExistsCardinalDirected.Diagram.single_W
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.single_P := ExistsCardinalDirected.Diagram.single_P
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.DiagramWithUniqueTerminal.single :=
+  ExistsCardinalDirected.DiagramWithUniqueTerminal.single
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.iSup := ExistsCardinalDirected.Diagram.iSup
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.iSup_W := ExistsCardinalDirected.Diagram.iSup_W
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.iSup_P := ExistsCardinalDirected.Diagram.iSup_P
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.sup := ExistsCardinalDirected.Diagram.sup
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.sup_W := ExistsCardinalDirected.Diagram.sup_W
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.Diagram.sup_P := ExistsCardinalDirected.Diagram.sup_P
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.isCardinalFiltered_aux :=
+  ExistsCardinalDirected.isCardinalFiltered_aux
+@[deprecated (since := "2026-05-26")] alias exists_cardinal_directed.D₁ := ExistsCardinalDirected.D₁
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.D₁_W := ExistsCardinalDirected.D₁_W
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.D₁_P := ExistsCardinalDirected.D₁_P
+@[deprecated (since := "2026-05-26")] alias exists_cardinal_directed.D₂ := ExistsCardinalDirected.D₂
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.D₂_W := ExistsCardinalDirected.D₂_W
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.D₂_P := ExistsCardinalDirected.D₂_P
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.eq_id_of_D₂_W := ExistsCardinalDirected.eq_id_of_D₂_W
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.isCardinalFiltered := ExistsCardinalDirected.isCardinalFiltered
+@[deprecated (since := "2026-05-26")] alias exists_cardinal_directed.D₃ := ExistsCardinalDirected.D₃
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.D₃_W := ExistsCardinalDirected.D₃_W
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.D₃_P := ExistsCardinalDirected.D₃_P
+@[deprecated (since := "2026-05-26")] alias exists_cardinal_directed.D₄ := ExistsCardinalDirected.D₄
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.D₄_W := ExistsCardinalDirected.D₄_W
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.D₄_P := ExistsCardinalDirected.D₄_P
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.final_functor := ExistsCardinalDirected.final_functor
+@[deprecated (since := "2026-05-26")]
+alias exists_cardinal_directed.aux := ExistsCardinalDirected.aux
 
 /-!
-The previous lemma `IsCardinalFiltered.exists_cardinal_directed.aux`
+The previous lemma `IsCardinalFiltered.ExistsCardinalDirected.aux`
 is the particular case of the main lemma
-`IsCardinalFiltered.exists_cardinal_directed` below in the particular
+`IsCardinalFiltered.ExistsCardinalDirected` below in the particular
 case the `κ`-filtered category `J` has no object `m : J` such that for any
 object `j : J`, there exists a map `j ⟶ m`.
 
@@ -525,13 +664,13 @@ the cartesian product `J × κ.ord.toType`.
 -/
 
 @[stacks 0032]
-lemma exists_cardinal_directed (J : Type w) [SmallCategory J] (κ : Cardinal.{w})
+lemma ExistsCardinalDirected (J : Type w) [SmallCategory J] (κ : Cardinal.{w})
     [Fact κ.IsRegular] [IsCardinalFiltered J κ] :
     ∃ (α : Type w) (_ : PartialOrder α) (_ : IsCardinalFiltered α κ)
       (F : α ⥤ J), F.Final := by
   have := isFiltered_of_isCardinalFiltered κ.ord.ToType κ
   obtain ⟨α, _, _, F, _⟩ :=
-    exists_cardinal_directed.aux (J × κ.ord.ToType) κ (fun ⟨j, x⟩ ↦
+    ExistsCardinalDirected.aux (J × κ.ord.ToType) κ (fun ⟨j, x⟩ ↦
       ⟨⟨j, Order.succ x⟩, (𝟙 _, homOfLE (Order.le_succ x)), ⟨fun ⟨_, f⟩ ↦ by
         have : NoMaxOrder κ.ord.ToType :=
           Cardinal.noMaxOrder (Cardinal.IsRegular.aleph0_le Fact.out)
@@ -547,7 +686,7 @@ lemma IsFiltered.exists_directed
     ∃ (α : Type w) (_ : PartialOrder α) (_ : IsDirected α (· ≤ ·)) (_ : Nonempty α)
       (F : α ⥤ J), F.Final := by
   have := (isCardinalFiltered_aleph0_iff.{w} J).2 inferInstance
-  obtain ⟨α, _, _, F, _⟩ := IsCardinalFiltered.exists_cardinal_directed J .aleph0
+  obtain ⟨α, _, _, F, _⟩ := IsCardinalFiltered.ExistsCardinalDirected J .aleph0
   have : IsFiltered α := by rwa [← isCardinalFiltered_aleph0_iff.{w}]
   exact ⟨α, _, IsFiltered.isDirectedOrder _, nonempty, F, inferInstance⟩
 
