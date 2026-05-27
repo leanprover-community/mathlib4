@@ -211,7 +211,7 @@ theorem emultiplicity_choose' {p n k b : ℕ} (hp : p.Prime) (hnb : log p (n + k
 theorem emultiplicity_choose {p n k b : ℕ} (hp : p.Prime) (hkn : k ≤ n) (hnb : log p n < b) :
     emultiplicity p (choose n k) = #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + (n - k) % p ^ i} := by
   have := Nat.sub_add_cancel hkn
-  convert @emultiplicity_choose' p (n - k) k b hp _
+  convert! @emultiplicity_choose' p (n - k) k b hp _
   · rw [this]
   exact this.symm ▸ hnb
 
@@ -271,7 +271,6 @@ theorem dvd_choose_pow_iff (hp : Prime p) : p ∣ (p ^ n).choose k ↔ k ≠ 0 �
 
 end Prime
 
-set_option backward.isDefEq.respectTransparency false in
 theorem emultiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), emultiplicity 2 n ! < n := by
   have h2 := prime_two.prime
   refine binaryRec ?_ ?_

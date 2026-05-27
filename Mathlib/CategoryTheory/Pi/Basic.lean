@@ -102,6 +102,7 @@ def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ 
   { app := fun X b => 𝟙 (X (g (f b)))
     naturality := fun X Y f' => by simp only [comap, Function.comp]; funext; simp }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism between pulling back then evaluating, and just evaluating. -/
 @[simps!]
 def comapEvalIsoEval (h : J → I) (j : J) : comap C h ⋙ eval (C ∘ h) j ≅ eval C (h j) :=
@@ -114,12 +115,8 @@ section
 variable {J : Type w₀} {D : J → Type u₁} [∀ j, Category.{v₁} (D j)]
 
 instance sumElimCategory : ∀ s : I ⊕ J, Category.{v₁} (Sum.elim C D s)
-  | Sum.inl i => by
-    dsimp
-    infer_instance
-  | Sum.inr j => by
-    dsimp
-    infer_instance
+  | Sum.inl i => inferInstanceAs <| Category (C i)
+  | Sum.inr j => inferInstanceAs <| Category (D j)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The bifunctor combining an `I`-indexed family of objects with a `J`-indexed family of objects
@@ -350,7 +347,6 @@ namespace Equivalence
 variable {C}
 variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Assemble an `I`-indexed family of equivalences of categories
 into a single equivalence. -/
 @[simps]

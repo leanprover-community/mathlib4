@@ -65,7 +65,7 @@ written `≠ ∞` rather than `< ∞`. See `Ne.lt_top` and `ne_of_lt` to switch 
 separable measure, measure-dense, Lp space, second-countable
 -/
 
-@[expose] public section
+public section
 
 open MeasurableSpace Set ENNReal TopologicalSpace symmDiff Real
 
@@ -101,7 +101,7 @@ theorem Measure.MeasureDense.nonempty' (h𝒜 : μ.MeasureDense 𝒜) :
     {s | s ∈ 𝒜 ∧ μ s ≠ ∞}.Nonempty := by
   rcases h𝒜.approx ∅ MeasurableSet.empty (by simp) 1 (by simp) with ⟨t, ht, hμt⟩
   refine ⟨t, ht, ?_⟩
-  convert ne_top_of_lt hμt
+  convert! ne_top_of_lt hμt
   rw [← bot_eq_empty, bot_symmDiff]
 
 /-- The set of measurable sets is measure-dense. -/
@@ -115,7 +115,7 @@ theorem Measure.MeasureDense.completion (h𝒜 : μ.MeasureDense 𝒜) : μ.comp
     obtain ⟨t, ht, hμst⟩ :=
       h𝒜.approx (toMeasurable μ s) (measurableSet_toMeasurable μ s) (by simpa) ε ε_pos
     refine ⟨t, ht, ?_⟩
-    convert hμst using 1
+    convert! hμst using 1
     rw [completion_apply]
     exact measure_congr <| ae_eq_set_symmDiff (NullMeasurableSet.toMeasurable_ae_eq hs).symm
       Filter.EventuallyEq.rfl
@@ -159,9 +159,8 @@ theorem Measure.MeasureDense.indicatorConstLp_subset_closure (h𝒜 : μ.Measure
           gcongr
           exact ofReal_ne_top
       _ = ε := by
-        rw [toReal_ofReal (rpow_nonneg (div_nonneg hε.le (norm_nonneg _)) _),
-          one_div, Real.rpow_rpow_inv (div_nonneg hε.le (norm_nonneg _))
-            (toReal_pos p_pos.ne.symm p_ne_top.elim).ne.symm,
+        rw [toReal_ofReal (by positivity),
+          one_div, Real.rpow_rpow_inv (by positivity) (toReal_pos p_pos.ne.symm p_ne_top.elim).ne',
           mul_div_cancel₀ _ (norm_ne_zero_iff.2 hc)]
 
 /-- If a family of sets `𝒜` is measure-dense in `X`, then it is also the case for the sets in `𝒜`
@@ -465,8 +464,7 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
       apply ne_of_lt at hμs
       rw [SeminormedAddCommGroup.mem_closure_iff]
       intro ε ε_pos
-      have μs_pow_nonneg : 0 ≤ μ.real s ^ (1 / p.toReal) :=
-        Real.rpow_nonneg ENNReal.toReal_nonneg _
+      have μs_pow_nonneg : 0 ≤ μ.real s ^ (1 / p.toReal) := by positivity
       -- To do so, we first pick `b ∈ u` such that `‖a - b‖ < ε / (3 * (1 + (μ s)^(1/p)))`.
       have approx_a_pos : 0 < ε / (3 * (1 + μ.real s ^ (1 / p.toReal))) :=
         div_pos ε_pos (by linarith [μs_pow_nonneg])

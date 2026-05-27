@@ -139,9 +139,9 @@ def polynomialQuotientEquivQuotientPolynomial (I : Ideal R) :
 @[simp]
 theorem polynomialQuotientEquivQuotientPolynomial_symm_mk (I : Ideal R) (f : R[X]) :
     I.polynomialQuotientEquivQuotientPolynomial.symm (Quotient.mk _ f) = f.map (Quotient.mk I) := by
-  rw [polynomialQuotientEquivQuotientPolynomial, RingEquiv.symm_mk, RingEquiv.coe_mk,
-    Equiv.coe_fn_mk, Quotient.lift_mk, coe_eval₂RingHom, eval₂_eq_eval_map, ← Polynomial.map_map,
-    ← eval₂_eq_eval_map, Polynomial.eval₂_C_X]
+  simp only [polynomialQuotientEquivQuotientPolynomial, coe_eval₂RingHom, RingEquiv.symm_mk,
+    RingEquiv.coe_mk, Equiv.coe_fn_symm_mk, Quotient.lift_mk]
+  rw [eval₂_eq_eval_map, ← Polynomial.map_map, ← eval₂_eq_eval_map, Polynomial.eval₂_C_X]
 
 @[simp]
 theorem polynomialQuotientEquivQuotientPolynomial_map_mk (I : Ideal R) (f : R[X]) :
@@ -155,7 +155,6 @@ theorem isDomain_map_C_quotient {P : Ideal R} (_ : IsPrime P) :
     IsDomain (R[X] ⧸ (map (C : R →+* R[X]) P : Ideal R[X])) :=
   MulEquiv.isDomain (Polynomial (R ⧸ P)) (polynomialQuotientEquivQuotientPolynomial P).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given any ring `R` and an ideal `I` of `R[X]`, we get a map `R → R[x] → R[x]/I`.
   If we let `R` be the image of `R` in `R[x]/I` then we also have a map `R[x] → R'[x]`.
   In particular we can map `I` across this map, to get `I'` and a new map `R' → R'[x] → R'[x]/I`.

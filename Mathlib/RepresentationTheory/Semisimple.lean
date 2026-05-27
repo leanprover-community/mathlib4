@@ -23,7 +23,7 @@ namespace Representation
 
 variable {k G V : Type*}
 
-@[expose] public section
+public section
 
 open scoped MonoidAlgebra
 

@@ -25,7 +25,7 @@ We show that the following are analytic:
 
 noncomputable section
 
-open scoped Topology
+open scoped Topology Ring
 open Filter Asymptotics ENNReal NNReal
 
 variable {α : Type*}
@@ -259,7 +259,6 @@ end
 ### Cartesian products are analytic
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The radius of the Cartesian product of two formal series is the minimum of their radii. -/
 lemma FormalMultilinearSeries.radius_prod_eq_min
     (p : FormalMultilinearSeries 𝕜 E F) (q : FormalMultilinearSeries 𝕜 E G) :
@@ -795,8 +794,9 @@ lemma formalMultilinearSeries_geometric_apply_norm [NormOneClass A] (n : ℕ) :
 
 lemma one_le_formalMultilinearSeries_geometric_radius :
     1 ≤ (formalMultilinearSeries_geometric 𝕜 A).radius := by
-  convert formalMultilinearSeries_geometric_eq_ofScalars 𝕜 A ▸
-    FormalMultilinearSeries.inv_le_ofScalars_radius_of_tendsto A _ one_ne_zero (by simp)
+  convert!
+    formalMultilinearSeries_geometric_eq_ofScalars 𝕜 A ▸
+      FormalMultilinearSeries.inv_le_ofScalars_radius_of_tendsto A _ one_ne_zero (by simp)
   simp
 
 lemma formalMultilinearSeries_geometric_radius [NormOneClass A] :
@@ -805,7 +805,7 @@ lemma formalMultilinearSeries_geometric_radius [NormOneClass A] :
     FormalMultilinearSeries.ofScalars_radius_eq_of_tendsto A _ one_ne_zero (by simp)
 
 lemma hasFPowerSeriesOnBall_inverse_one_sub [HasSummableGeomSeries A] :
-    HasFPowerSeriesOnBall (fun x : A ↦ Ring.inverse (1 - x))
+    HasFPowerSeriesOnBall (fun x : A ↦ (1 - x)⁻¹ʳ)
       (formalMultilinearSeries_geometric 𝕜 A) 0 1 := by
   constructor
   · exact one_le_formalMultilinearSeries_geometric_radius 𝕜 A
@@ -819,7 +819,7 @@ lemma hasFPowerSeriesOnBall_inverse_one_sub [HasSummableGeomSeries A] :
 
 @[fun_prop]
 lemma analyticAt_inverse_one_sub [HasSummableGeomSeries A] :
-    AnalyticAt 𝕜 (fun x : A ↦ Ring.inverse (1 - x)) 0 :=
+    AnalyticAt 𝕜 (fun x : A ↦ (1 - x)⁻¹ʳ) 0 :=
   ⟨_, ⟨_, hasFPowerSeriesOnBall_inverse_one_sub 𝕜 A⟩⟩
 
 end Geometric
@@ -830,11 +830,11 @@ analytic at any unit. -/
 lemma analyticAt_inverse [HasSummableGeomSeries A] (z : Aˣ) :
     AnalyticAt 𝕜 Ring.inverse (z : A) := by
   rcases subsingleton_or_nontrivial A with hA | hA
-  · convert analyticAt_const (v := (0 : A))
+  · convert! analyticAt_const (v := (0 : A))
   · let f1 : A → A := fun a ↦ a * z.inv
-    let f2 : A → A := fun b ↦ Ring.inverse (1 - b)
+    let f2 : A → A := fun b ↦ (1 - b)⁻¹ʳ
     let f3 : A → A := fun c ↦ 1 - z.inv * c
-    have feq : ∀ᶠ y in 𝓝 (z : A), (f1 ∘ f2 ∘ f3) y = Ring.inverse y := by
+    have feq : ∀ᶠ y in 𝓝 (z : A), (f1 ∘ f2 ∘ f3) y = y⁻¹ʳ := by
       have : Metric.ball (z : A) (‖(↑z⁻¹ : A)‖⁻¹) ∈ 𝓝 (z : A) := by
         apply Metric.ball_mem_nhds
         simp
@@ -863,7 +863,7 @@ lemma analyticOnNhd_inverse [HasSummableGeomSeries A] :
 variable (𝕜 𝕝) in
 lemma hasFPowerSeriesOnBall_inv_one_sub :
     HasFPowerSeriesOnBall (fun x : 𝕝 ↦ (1 - x)⁻¹) (formalMultilinearSeries_geometric 𝕜 𝕝) 0 1 := by
-  convert hasFPowerSeriesOnBall_inverse_one_sub 𝕜 𝕝
+  convert! hasFPowerSeriesOnBall_inverse_one_sub 𝕜 𝕝
   exact Ring.inverse_eq_inv'.symm
 
 variable (𝕝) in
@@ -875,7 +875,7 @@ lemma analyticAt_inv_one_sub : AnalyticAt 𝕜 (fun x : 𝕝 ↦ (1 - x)⁻¹) 0
 away from 0. -/
 @[fun_prop]
 lemma analyticAt_inv {z : 𝕝} (hz : z ≠ 0) : AnalyticAt 𝕜 Inv.inv z := by
-  convert analyticAt_inverse (𝕜 := 𝕜) (Units.mk0 _ hz)
+  convert! analyticAt_inverse (𝕜 := 𝕜) (Units.mk0 _ hz)
   exact Ring.inverse_eq_inv'.symm
 
 /-- `x⁻¹` is analytic away from zero -/
@@ -973,19 +973,13 @@ theorem analyticAt_iff_analytic_smul [Module 𝕝 F] [IsBoundedSMul 𝕝 F] [IsS
   analyticAt_iff_analytic_fun_smul h₁f h₂f
 
 /- A function is analytic at a point iff it is analytic after multiplication
-  with a non-vanishing analytic function. -/
-theorem analyticAt_iff_analytic_fun_mul {f g : E → 𝕝} {z : E} (h₁f : AnalyticAt 𝕜 f z)
-    (h₂f : f z ≠ 0) :
-    AnalyticAt 𝕜 g z ↔ AnalyticAt 𝕜 (fun z ↦ f z * g z) z := by
-  simp_rw [← smul_eq_mul]
-  exact analyticAt_iff_analytic_smul h₁f h₂f
-
-/- A function is analytic at a point iff it is analytic after multiplication
-  with a non-vanishing analytic function. -/
+with a non-vanishing analytic function. -/
+@[to_fun analyticAt_iff_analytic_fun_mul]
 theorem analyticAt_iff_analytic_mul {f g : E → 𝕝} {z : E} (h₁f : AnalyticAt 𝕜 f z)
     (h₂f : f z ≠ 0) :
-    AnalyticAt 𝕜 g z ↔ AnalyticAt 𝕜 (f * g) z :=
-  analyticAt_iff_analytic_fun_mul h₁f h₂f
+    AnalyticAt 𝕜 g z ↔ AnalyticAt 𝕜 (f * g) z := by
+  simp_rw [← smul_eq_mul]
+  exact analyticAt_iff_analytic_smul h₁f h₂f
 
 /-- `f x / g x` is analytic away from `g x = 0` -/
 theorem AnalyticWithinAt.div {f g : E → 𝕝} {s : Set E} {x : E}
@@ -1017,9 +1011,10 @@ theorem AnalyticOnNhd.div {f g : E → 𝕝} {s : Set E}
 -/
 
 /-- Finite sums of analytic functions are analytic -/
-theorem Finset.analyticWithinAt_fun_sum {f : α → E → F} {c : E} {s : Set E}
+@[to_fun Finset.analyticWithinAt_fun_sum]
+theorem Finset.analyticWithinAt_sum {f : α → E → F} {c : E} {s : Set E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
-    AnalyticWithinAt 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s c := by
+    AnalyticWithinAt 𝕜 (∑ n ∈ N, f n) s c := by
   classical
   induction N using Finset.induction with
   | empty =>
@@ -1031,47 +1026,22 @@ theorem Finset.analyticWithinAt_fun_sum {f : α → E → F} {c : E} {s : Set E}
     exact (h a (Or.inl rfl)).add (hB fun b m ↦ h b (Or.inr m))
 
 /-- Finite sums of analytic functions are analytic -/
-theorem Finset.analyticWithinAt_sum {f : α → E → F} {c : E} {s : Set E}
-    (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
-    AnalyticWithinAt 𝕜 (∑ n ∈ N, f n) s c := by
-  convert N.analyticWithinAt_fun_sum h
-  simp
-
-/-- Finite sums of analytic functions are analytic -/
-@[fun_prop]
-theorem Finset.analyticAt_fun_sum {f : α → E → F} {c : E}
-    (N : Finset α) (h : ∀ n ∈ N, AnalyticAt 𝕜 (f n) c) :
-    AnalyticAt 𝕜 (fun z ↦ ∑ n ∈ N, f n z) c := by
-  simp_rw [← analyticWithinAt_univ] at h ⊢
-  exact N.analyticWithinAt_fun_sum h
-
-/-- Finite sums of analytic functions are analytic -/
-@[fun_prop]
+@[to_fun (attr := fun_prop) Finset.analyticAt_fun_sum]
 theorem Finset.analyticAt_sum {f : α → E → F} {c : E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticAt 𝕜 (f n) c) :
     AnalyticAt 𝕜 (∑ n ∈ N, f n) c := by
-  convert N.analyticAt_fun_sum h
-  simp
+  simp_rw [← analyticWithinAt_univ] at h ⊢
+  exact N.analyticWithinAt_sum h
 
 /-- Finite sums of analytic functions are analytic -/
-theorem Finset.analyticOn_fun_sum {f : α → E → F} {s : Set E}
-    (N : Finset α) (h : ∀ n ∈ N, AnalyticOn 𝕜 (f n) s) :
-    AnalyticOn 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s :=
-  fun z zs ↦ N.analyticWithinAt_fun_sum (fun n m ↦ h n m z zs)
-
-/-- Finite sums of analytic functions are analytic -/
+@[to_fun Finset.analyticOn_fun_sum]
 theorem Finset.analyticOn_sum {f : α → E → F} {s : Set E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticOn 𝕜 (f n) s) :
     AnalyticOn 𝕜 (∑ n ∈ N, f n) s :=
   fun z zs ↦ N.analyticWithinAt_sum (fun n m ↦ h n m z zs)
 
 /-- Finite sums of analytic functions are analytic -/
-theorem Finset.analyticOnNhd_fun_sum {f : α → E → F} {s : Set E}
-    (N : Finset α) (h : ∀ n ∈ N, AnalyticOnNhd 𝕜 (f n) s) :
-    AnalyticOnNhd 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s :=
-  fun z zs ↦ N.analyticAt_fun_sum (fun n m ↦ h n m z zs)
-
-/-- Finite sums of analytic functions are analytic -/
+@[to_fun Finset.analyticOnNhd_fun_sum]
 theorem Finset.analyticOnNhd_sum {f : α → E → F} {s : Set E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticOnNhd 𝕜 (f n) s) :
     AnalyticOnNhd 𝕜 (∑ n ∈ N, f n) s :=
@@ -1095,7 +1065,7 @@ theorem Finset.analyticWithinAt_fun_prod {A : Type*} [NormedCommRing A] [NormedA
 theorem Finset.analyticWithinAt_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {c : E} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
     AnalyticWithinAt 𝕜 (∏ n ∈ N, f n) s c := by
-  convert N.analyticWithinAt_fun_prod h
+  convert! N.analyticWithinAt_fun_prod h
   simp
 
 /-- Finite products of analytic functions are analytic -/
@@ -1111,7 +1081,7 @@ theorem Finset.analyticAt_fun_prod {A : Type*} [NormedCommRing A] [NormedAlgebra
 theorem Finset.analyticAt_prod {α : Type*} {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {c : E} (N : Finset α) (h : ∀ n ∈ N, AnalyticAt 𝕜 (f n) c) :
     AnalyticAt 𝕜 (∏ n ∈ N, f n) c := by
-  convert N.analyticAt_fun_prod h
+  convert! N.analyticAt_fun_prod h
   simp
 
 /-- Finite products of analytic functions are analytic -/
@@ -1212,7 +1182,7 @@ theorem HasFPowerSeriesWithinOnBall.compContinuousLinearMap
     simp only [ENNReal.div_pos_iff, ne_eq, enorm_ne_top, not_false_eq_true, and_true]
     exact pos_iff_ne_zero.mp hf.r_pos
   hasSum hy1 hy2 := by
-    convert hf.hasSum _ _
+    convert! hf.hasSum _ _
     · simp
     · simp only [Set.mem_insert_iff, add_eq_left, Set.mem_preimage, map_add] at hy1 ⊢
       rcases hy1 with (hy1 | hy1) <;> simp [hy1]

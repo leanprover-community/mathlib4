@@ -70,15 +70,14 @@ theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0)
     ((Nat.castRingHom ℝ).toMonoidHom.comp absNorm.toMonoidHom).map_finprod_of_preimage_one
       (by simp) _
   rw [h_prod, ← finprod_mul_distrib h_fin₁ h_fin₂]
-  exact finprod_eq_one_of_forall_eq_one fun v ↦ v.embedding_mul_absNorm h_x_nezero
+  exact finprod_eq_one_of_forall_eq_one fun v ↦ embedding_mul_absNorm _ v h_x_nezero
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For any non-zero `x` in `K`, the product of `w x`, where `w` runs over `FinitePlace K`, is
 equal to the inverse of the absolute value of `Algebra.norm ℚ x`. -/
 theorem FinitePlace.prod_eq_inv_abs_norm {x : K} (h_x_nezero : x ≠ 0) :
     ∏ᶠ w : FinitePlace K, w x = |(Algebra.norm ℚ) x|⁻¹ := by
   --reduce to 𝓞 K
-  rcases IsFractionRing.div_surjective (A := 𝓞 K) x with ⟨a, b, hb, rfl⟩
+  rcases IsFractionRing.div_surjective (𝓞 K) x with ⟨a, b, hb, rfl⟩
   apply nonZeroDivisors.ne_zero at hb
   have ha : a ≠ 0 := by
     rintro rfl

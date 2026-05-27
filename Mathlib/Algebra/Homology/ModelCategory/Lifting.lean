@@ -96,7 +96,7 @@ lemma π_f_cochain₁_v_ι_f (n m : ℤ) (hnm : n + 1 = m) :
   (exists_hom sq hsq hQ hK n m hnm).choose_spec
 
 /-- A `1`-cocycle from a cokernel `Q` of `i : A ⟶ B` to a kernel `K` of
-`p : X ⟶ Y`. If this is a coboundary, then the square in `CochainCompplex C ℤ`
+`p : X ⟶ Y`. If this is a coboundary, then the square in `CochainComplex C ℤ`
 has a lifting, see the lemma `hasLift` below. -/
 noncomputable def cocycle₁ : Cocycle Q K 1 :=
   Cocycle.mk (cochain₁ sq hsq hQ hK) 2 (by simp) (by

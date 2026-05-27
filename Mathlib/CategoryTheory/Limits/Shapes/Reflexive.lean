@@ -518,14 +518,12 @@ def mk {X : C} (π : F.obj zero ⟶ X) (h : F.map left ≫ π = F.map right ≫ 
 lemma mk_π {X : C} (π : F.obj zero ⟶ X) (h : F.map left ≫ π = F.map right ≫ π) :
     (mk π h).π = π := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma condition (G : ReflexiveCofork F) : F.map left ≫ G.π = F.map right ≫ G.π := by
   rw [Cocone.w G left, Cocone.w G right]
 
 @[simp]
 lemma app_one_eq_π (G : ReflexiveCofork F) : G.ι.app zero = G.π := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The underlying `Cofork` of a `ReflexiveCofork`. -/
 abbrev toCofork (G : ReflexiveCofork F) : Cofork (F.map left) (F.map right) :=
   Cofork.ofπ G.π (by simp)
@@ -543,7 +541,7 @@ coforks on the underlying parallel pair. -/
 def reflexiveCoforkEquivCofork :
     ReflexiveCofork F ≌ Cofork (F.map left) (F.map right) :=
   (Functor.Final.coconesEquiv _ F).symm.trans (Cocone.precomposeEquivalence
-    (diagramIsoParallelPair (WalkingParallelPair.inclusionWalkingReflexivePair ⋙ F))).symm
+    (diagramIsoParallelPair (WalkingParallelPair.inclusionWalkingReflexivePair ⋙ F)))
 
 @[simp]
 lemma reflexiveCoforkEquivCofork_functor_obj_π (G : ReflexiveCofork F) :

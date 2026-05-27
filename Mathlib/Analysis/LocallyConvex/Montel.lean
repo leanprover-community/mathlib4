@@ -5,7 +5,8 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
+public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 /-!
 # Montel spaces
@@ -77,7 +78,7 @@ end Normed
 variable {𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] {σ : 𝕜₁ →+* 𝕜₂}
 variable {E F : Type*}
   [AddCommGroup E] [Module 𝕜₁ E]
-  [UniformSpace E] [IsUniformAddGroup E] [ContinuousSMul 𝕜₁ E]
+  [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜₁ E]
   [AddCommGroup F] [Module 𝕜₂ F]
   [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜₂ F]
 
@@ -109,7 +110,7 @@ def _root_.ContinuousLinearEquiv.toCompactConvergenceCLM [T1Space E] [MontelSpac
     apply hs.mono
     apply UniformConvergenceCLM.topologicalSpace_mono
     intro x hx
-    exact hx.totallyBounded.isVonNBounded 𝕜₁
+    exact hx.isVonNBounded 𝕜₁
   continuous_invFun := by
     apply continuous_of_continuousAt_zero (LinearEquiv.toCompactConvergenceCLM σ E F).symm
     rw [ContinuousAt, _root_.map_zero, CompactConvergenceCLM.hasBasis_nhds_zero.tendsto_iff

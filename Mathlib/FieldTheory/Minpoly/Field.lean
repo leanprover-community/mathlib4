@@ -161,6 +161,11 @@ theorem eq_of_irreducible [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
   · rw [aeval_mul, hp2, zero_mul]
   · rwa [Polynomial.Monic, leadingCoeff_mul, leadingCoeff_C, mul_inv_cancel₀]
 
+theorem Irreducible.eq_minpoly [Nontrivial B] {p : A[X]} (hi : Irreducible p)
+    (hx : Polynomial.aeval x p = 0) : p = C p.leadingCoeff * minpoly A x := by
+  rw [← minpoly.eq_of_irreducible hi hx, mul_comm, mul_assoc, ← C_mul,
+    inv_mul_cancel₀ (leadingCoeff_ne_zero.mpr hi.ne_zero), C_1, mul_one]
+
 theorem add_algebraMap {B : Type*} [CommRing B] [Algebra A B] (x : B)
     (a : A) : minpoly A (x + algebraMap A B a) = (minpoly A x).comp (X - C a) := by
   by_cases hx : IsIntegral A x
@@ -219,7 +224,7 @@ noncomputable def Fintype.subtypeProd {E : Type*} {X : Set E} (hX : X.Finite) {L
 variable (F E K : Type*) [Field F] [Ring E] [CommRing K] [IsDomain K] [Algebra F E] [Algebra F K]
   [FiniteDimensional F E]
 
-/-- Function from Hom_K(E,L) to pi type Π (x : basis), roots of min poly of x -/
+/-- Function from `Hom_K(E,L)` to pi type Π (x : basis), roots of min poly of x -/
 def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
     (x : range (Module.finBasis F E : _ → E)) :
     { l : K // l ∈ (minpoly F x.1).aroots K } :=
@@ -305,7 +310,7 @@ theorem coeff_zero_eq_zero (hx : IsIntegral A x) : coeff (minpoly A x) 0 = 0 ↔
 
 /-- The minimal polynomial of a nonzero element has nonzero constant coefficient. -/
 theorem coeff_zero_ne_zero (hx : IsIntegral A x) (h : x ≠ 0) : coeff (minpoly A x) 0 ≠ 0 := by
-  contrapose! h
+  contrapose h
   simpa only [hx, coeff_zero_eq_zero] using h
 
 end IsDomain

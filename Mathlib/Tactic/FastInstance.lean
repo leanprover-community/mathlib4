@@ -11,6 +11,7 @@ public meta import Lean.Meta.Closure
 public meta import Lean.Elab.SyntheticMVars
 public meta import Lean.Elab.Term
 public meta import Lean.Elab.Command
+public meta import Lean.Linter.Basic
 
 /-!
 # The `fast_instance%`, `inferInstanceAs%`, and `#check_instance` elaborators
@@ -32,6 +33,11 @@ namespace Mathlib.Elab.FastInstance
 open Lean Meta Elab Term
 
 initialize registerTraceClass `Elab.fast_instance
+
+/-- Show a warning if `fast_instance%` can be replaced with `inferInstance`. -/
+register_option linter.fast_instance_existing : Bool := {
+  defValue := true
+  descr := "Show a warning if `fast_instance%` can be replaced with `inferInstance`." }
 
 /--
 Throw an error for `makeFastInstance`. The trace is a list of fields.
@@ -68,10 +74,10 @@ When `warnLeaky` is `true` (the default), a warning is emitted when synthesis fi
 sub-instance that is not canonical at instances transparency. Pass `warnLeaky := false` to
 suppress this (used internally to prevent nested warnings during leakiness checks).
 -/
-partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #[])
+partial def makeFastInstance (inst expectedType : Expr) (root := true) (trace : Array Name := #[])
     (warnLeaky : Bool := true) :
     MetaM Expr := withReducible do
-  withTraceNode `Elab.fast_instance (fun e => return m!"{exceptEmoji e} type: {expectedType}") do
+  withTraceNode `Elab.fast_instance (fun _ => return m!"type: {expectedType}") do
   let some className ← isClass? expectedType
     | error trace m!"Can only be used for classes, but type is{indentExpr expectedType}"
   trace[Elab.fast_instance] "class is {className}"
@@ -81,11 +87,11 @@ partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #
     return inst
 
   -- Try to synthesize a total replacement for this term:
-  let synth? : Option Expr ← do
-    match ← trySynthInstance expectedType with
-    | .some e => pure (some e)
-    | _ => pure none
-  if let .some new := synth? then
+  if let .some new ← trySynthInstance expectedType then
+    if root then
+      Linter.logLintIf linter.fast_instance_existing (← getRef) m!"\
+        An instance of `{expectedType}` already exists.\n\
+        Please use `inferInstance` instead of `fast_instance%`"
     if ← withDefault <| isDefEq inst new then
       -- Optionally warn if the synthesized instance has leaky binder types.
       -- We temporarily evict the instance so synthesis won't trivially find it again,
@@ -94,7 +100,7 @@ partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #
         try
           if let .const instName _ := new.getAppFn then
             let canonical ← withDisabledInstance instName <| withNewMCtxDepth <|
-              makeFastInstance new expectedType (warnLeaky := false)
+              makeFastInstance new expectedType (root := false) (warnLeaky := false)
             let isClean ← withNewMCtxDepth <|
               withTransparency .instances <| isDefEq new canonical
             unless isClean do
@@ -151,12 +157,12 @@ partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #
       -- We propagate `warnLeaky` so that nested leakiness checks respect the flag.
       else if bi.isInstImplicit then
         let trace' := trace.push (className ++ mvarDecl.userName)
-        mvarId.assign (← makeFastInstance arg argExpectedType (trace := trace')
+        mvarId.assign (← makeFastInstance arg argExpectedType (root := false) (trace := trace')
           (warnLeaky := warnLeaky))
       else
         -- For data fields, make sure that the lambda binders have the right type.
-        forallTelescopeReducing argExpectedType fun xs _ ↦ do
-          mvarId.assign <| ← mkLambdaFVars xs (arg.beta xs)
+        mvarId.assign <| ← forallTelescopeReducing argExpectedType fun xs _ ↦ do
+          mkLambdaFVars xs (← whnfI (mkAppN arg xs))
     return mkAppN f (← mvars.mapM instantiateMVars)
 
 
@@ -196,7 +202,7 @@ This is preferred over `inferInstanceAs` when the instance can be reduced to
 constructor applications. In that case, the parameters of the constructors will be filled in
 using the expected type, so that the instance will unfold nicely during unification. -/
 macro "inferInstanceAs% " source:term : term =>
-  `(fast_instance% inferInstanceAs $source)
+  `(fast_instance% _root_.inferInstanceAs <| $source)
 
 /-- Find the first data-field binder type mismatch between `inst` and `canonical`
 (the constructor-normalized form from `makeFastInstance`). Returns

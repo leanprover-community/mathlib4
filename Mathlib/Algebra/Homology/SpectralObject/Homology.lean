@@ -120,7 +120,6 @@ noncomputable def dShortComplex
     ShortComplex C :=
   ShortComplex.mk _ _ (X.d_d f₁ f₂ f₃ f₄ f₅ f₆ f₇ n₀ n₁ n₂ n₃ n₄)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_fourδ₁Toδ₀_EMap_fourδ₄Toδ₃
     (hn₂ : n₁ + 1 = n₂ := by lia) (hn₃ : n₂ + 1 = n₃ := by lia) :

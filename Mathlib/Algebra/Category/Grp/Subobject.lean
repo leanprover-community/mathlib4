@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Subobject
 # The category of abelian groups is well-powered
 -/
 
-@[expose] public section
+public section
 
 
 open CategoryTheory

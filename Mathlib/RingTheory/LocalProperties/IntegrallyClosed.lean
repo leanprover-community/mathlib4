@@ -28,7 +28,6 @@ open Localization Ideal IsLocalization
 
 variable {R K : Type*} [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsIntegrallyClosed.iInf {ι : Type*} (S : ι → Subalgebra R K)
     (h : ∀ i, IsIntegrallyClosed (S i)) :
     IsIntegrallyClosed (⨅ i, S i : Subalgebra R K) := by
@@ -76,7 +75,7 @@ theorem IsIntegrallyClosed.of_localization_maximal [IsDomain R]
   · rintro ⟨p, rfl⟩
     exact h p.asIdeal (Ring.ne_bot_of_isMaximal_of_not_isField p.isMaximal hf)
   · rw [iInf_range]
-    convert MaximalSpectrum.iInf_localization_eq_bot R (FractionRing R)
+    convert! MaximalSpectrum.iInf_localization_eq_bot R (FractionRing R)
     rw [subalgebra.ofField_eq, MaximalSpectrum.toPrimeSpectrum]
 
 theorem isIntegrallyClosed_ofLocalizationMaximal :
