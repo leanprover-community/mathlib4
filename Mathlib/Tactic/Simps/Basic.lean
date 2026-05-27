@@ -901,9 +901,6 @@ structure Config where
   current declaration name, or the empty string if the declaration is an instance and the instance
   is named according to the `inst` convention. -/
   nameStem : Option String := none
-  /-- Whether the source definition body is exposed. When false, we skip @[defeq] inference to
-  avoid validation errors. Computed once at initialization to avoid repeated checks. -/
-  bodyExposed : Bool := false
   deriving Inhabited
 
 /-- Function elaborating `Config` -/
@@ -967,9 +964,11 @@ def getProjectionExprs (stx : Syntax) (tgt : Expr) (rhs : Expr) (cfg : Config) :
 variable (ref : Syntax) (univs : List Name)
 
 /-- Add a lemma with `nm` stating that `lhs = rhs`. `type` is the type of both `lhs` and `rhs`,
-`args` is the list of local constants occurring, and `univs` is the list of universe variables. -/
+`args` is the list of local constants occurring, and `univs` is the list of universe variables.
+`bodyExposed` records whether the source definition body is exposed; when `false` we skip
+`@[defeq]` inference to avoid validation errors. -/
 def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
-    (cfg : Config) : MetaM Unit := do
+    (cfg : Config) (bodyExposed : Bool) : MetaM Unit := do
   trace[simps.debug] "Planning to add the equality{indentD m!"{lhs} = ({rhs} : {type})"}"
   let env ← getEnv
   -- simplify `rhs` if `cfg.simpRhs` is true
@@ -1009,7 +1008,7 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
       value := declValue }
   -- Only infer @[defeq] if the source definition body is exposed, to avoid validation errors.
   -- See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/.40.5Bsimps.5D.20respects.20non-exposed.20body.3F
-  if cfg.bodyExposed then
+  if bodyExposed then
     inferDefEqAttr declName
   -- add term info and apply attributes
   addDeclarationRangesFromSyntax declName (← getRef) ref
@@ -1058,7 +1057,7 @@ was just used. In that case we need to apply these projections before we continu
 `simpLemmas`: names of the simp lemmas added so far.(simpLemmas : Array Name)
 -/
 private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
-    (args : Array Expr) (mustBeStr : Bool) (cfg : Config)
+    (args : Array Expr) (mustBeStr : Bool) (cfg : Config) (bodyExposed : Bool)
     (todo : List (String × Syntax)) (toApply : List Nat) : MetaM (Array Name) := do
   -- we don't want to unfold non-reducible definitions (like `Set`) to apply more arguments
   trace[simps.debug] "Type of the Expression before normalizing: {type}"
@@ -1094,9 +1093,9 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
         {(splitOnNotNumber firstTodo "_")[1]!} doesn't exist, \
         because target {str} is not a structure."
     if cfg.fullyApplied then
-      addProjection stxProj univs nm.toName tgt lhsAp rhsAp newArgs cfg
+      addProjection stxProj univs nm.toName tgt lhsAp rhsAp newArgs cfg bodyExposed
     else
-      addProjection stxProj univs nm.toName type lhs rhs args cfg
+      addProjection stxProj univs nm.toName type lhs rhs args cfg bodyExposed
     return #[nm.toName]
   -- if the type is a structure
   let some (.inductInfo { isRec := false, ctors := [ctor], .. }) := env.find? str | unreachable!
@@ -1107,9 +1106,9 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
   if addThisProjection then
     -- we pass the precise argument of simps as syntax argument to `addProjection`
     if cfg.fullyApplied then
-      addProjection stxProj univs nm.toName tgt lhsAp rhsEta newArgs cfg
+      addProjection stxProj univs nm.toName tgt lhsAp rhsEta newArgs cfg bodyExposed
     else
-      addProjection stxProj univs nm.toName type lhs rhs args cfg
+      addProjection stxProj univs nm.toName type lhs rhs args cfg bodyExposed
   let rhsWhnf ← withTransparency cfg.rhsMd <| whnf rhsEta
   trace[simps.debug] "The right-hand-side {indentExpr rhsAp}\n reduces to {indentExpr rhsWhnf}"
   if !rhsWhnf.getAppFn.isConstOf ctor then
@@ -1138,7 +1137,7 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
         multiplication, then you need to mark it as `@[simps!]`, since the attribute needs to \
         unfold the corresponding `Equiv` to get to the `toFun` field."
       let nms ← addProjections nm type lhs rhs args mustBeStr
-        { cfg with rhsMd := .default, simpRhs := true } todo toApply
+        { cfg with rhsMd := .default, simpRhs := true } bodyExposed todo toApply
       return if addThisProjection then nms.push nm.toName else nms
     if !toApply.isEmpty then
       throwError "Invalid simp lemma {nm.toName}.\nThe given definition is not a constructor \
@@ -1151,9 +1150,9 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
         The given definition is not a constructor application:{indentExpr rhsWhnf}"
     if !addThisProjection then
       if cfg.fullyApplied then
-        addProjection stxProj univs nm.toName tgt lhsAp rhsEta newArgs cfg
+        addProjection stxProj univs nm.toName tgt lhsAp rhsEta newArgs cfg bodyExposed
       else
-        addProjection stxProj univs nm.toName type lhs rhs args cfg
+        addProjection stxProj univs nm.toName type lhs rhs args cfg bodyExposed
     return #[nm.toName]
   -- if the value is a constructor application
   trace[simps.debug] "Generating raw projection information..."
@@ -1166,7 +1165,7 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
     let newType ← inferType newRhs
     trace[simps.debug] "Applying a custom composite projection. Todo: {toApply}. Current lhs:\
       {indentExpr lhsAp}"
-    return ← addProjections nm newType lhsAp newRhs newArgs false cfg todo rest
+    return ← addProjections nm newType lhsAp newRhs newArgs false cfg bodyExposed todo rest
   trace[simps.debug] "Not in the middle of applying a custom composite projection"
   /- We stop if no further projection is specified or if we just reduced an eta-expansion and we
   automatically choose projections -/
@@ -1197,7 +1196,7 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
     let newLhs := projExpr.instantiateLambdasOrApps #[lhsAp]
     let newName := nm.update proj.lastComponentAsString isPrefix
     trace[simps.debug] "Recursively add projections for:{indentExpr newLhs}"
-    addProjections newName newType newLhs newRhs newArgs false cfg newTodo projNrs
+    addProjections newName newType newLhs newRhs newArgs false cfg bodyExposed newTodo projNrs
   return if addThisProjection then nms.push nm.toName else nms
 
 end Simps
@@ -1215,8 +1214,10 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
   let some d := env.find? nm | throwError "Declaration {nm} doesn't exist."
   let lhs : Expr := mkConst d.name <| d.levelParams.map Level.param
   let todo := todo.eraseDups |>.map fun (proj, stx) ↦ (proj ++ "_", stx)
+  -- Whether the source definition body is exposed; when false we skip `@[defeq]` inference to
+  -- avoid validation errors. This is not a user-facing `Config` option, so it is threaded
+  -- through `addProjection`(`s`) as a separate argument.
   let bodyExposed := (← getEnv).setExporting true |>.find? d.name |>.any (·.hasValue)
-  let mut cfg := { cfg with bodyExposed := bodyExposed }
   let nm : NameStruct :=
     { parent := nm.getPrefix
       components :=
@@ -1226,7 +1227,7 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
           let s := nm.lastComponentAsString
           if (← isInstance nm) ∧ s.startsWith "inst" then [] else [s]}
   MetaM.run' <| addProjections ref d.levelParams
-    nm d.type lhs (d.value! (allowOpaque := true)) #[] (mustBeStr := true) cfg todo []
+    nm d.type lhs (d.value! (allowOpaque := true)) #[] (mustBeStr := true) cfg bodyExposed todo []
 
 /-- elaborate the syntax and run `simpsTac`. -/
 def simpsTacFromSyntax (nm : Name) (stx : Syntax) : AttrM (Array Name) :=
