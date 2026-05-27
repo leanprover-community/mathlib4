@@ -303,7 +303,7 @@ public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.EuclideanDomain.Defs
 public import Mathlib.Algebra.EuclideanDomain.Field
 public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Algebra.Expr
 public import Mathlib.Algebra.Field.Action.ConjAct
 public import Mathlib.Algebra.Field.Basic
