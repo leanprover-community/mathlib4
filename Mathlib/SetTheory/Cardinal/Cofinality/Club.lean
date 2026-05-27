@@ -257,16 +257,6 @@ theorem IsStationary.of_not_isCofinal_compl (hs : ¬ IsCofinal sᶜ) : IsStation
   contrapose! ha
   exact ⟨b, ha, hb'⟩
 
-theorem isStationary_iff_not_isCofinal_compl [WellFoundedLT α] (hα : cof α ≤ ℵ₀) :
-    IsStationary s ↔ ¬ IsCofinal (sᶜ) where
-  mp hs h := by
-    obtain ⟨t, hts, ht, htα⟩ := ord_cof_eq_of_isCofinal h
-    have ht' := dirSupClosed_of_type_le_omega0 ht (htα.trans_le ?_)
-    · cases hs ⟨ht', ht⟩
-      grind
-    · simpa using ord_mono hα
-  mpr := .of_not_isCofinal_compl
-
 theorem isStationary_sUnion_iff_of_cof_le_one {s : Set (Set α)} (hα : cof α ≤ 1) :
     IsStationary (⋃₀ s) ↔ ∃ x ∈ s, IsStationary x where
   mp h := by

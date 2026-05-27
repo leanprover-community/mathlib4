@@ -158,6 +158,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Differentials.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Differentials.Presheaf
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Ext.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
 public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
@@ -779,6 +780,7 @@ public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Module.LinearMap.DivisionRing
 public import Mathlib.Algebra.Module.LinearMap.End
+public import Mathlib.Algebra.Module.LinearMap.FiniteRange
 public import Mathlib.Algebra.Module.LinearMap.Polynomial
 public import Mathlib.Algebra.Module.LinearMap.Prod
 public import Mathlib.Algebra.Module.LinearMap.Rat
@@ -1690,6 +1692,7 @@ public import Mathlib.Analysis.CStarAlgebra.Unitary.Maps
 public import Mathlib.Analysis.CStarAlgebra.Unitary.Span
 public import Mathlib.Analysis.CStarAlgebra.Unitization
 public import Mathlib.Analysis.CStarAlgebra.lpSpace
+public import Mathlib.Analysis.Calculus.AbsolutelyMonotone
 public import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
 public import Mathlib.Analysis.Calculus.AddTorsor.Coord
 public import Mathlib.Analysis.Calculus.BumpFunction.Basic
@@ -5916,8 +5919,7 @@ public import Mathlib.Order.Cover
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Order.Defs.PartialOrder
 public import Mathlib.Order.Defs.Unbundled
-public import Mathlib.Order.DirSupClosed.Basic
-public import Mathlib.Order.DirSupClosed.Finite
+public import Mathlib.Order.DirSupClosed
 public import Mathlib.Order.Directed
 public import Mathlib.Order.DirectedInverseSystem
 public import Mathlib.Order.Disjoint
