@@ -25,6 +25,10 @@ an epimorphism after sheafification.
 - `CategoryTheory.ObjectProperty.localEpi_mem_range_iff_epi`: If `F ⊣ G` and `G`
   is fully faithful, then `f : X ⟶ Y` is a local epimorphism if and only if `F.map f` is an
   epimorphism.
+
+## References
+
+The terminology is from [M. Kashiwara, P. Schapira, *Categories and Sheaves*, 16.1][Kashiwara2006].
 -/
 
 @[expose] public section
