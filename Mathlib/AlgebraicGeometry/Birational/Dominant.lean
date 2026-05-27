@@ -34,7 +34,7 @@ namespace Scheme
 
 namespace PartialMap
 
-/-- Restricting a dominant partial map yields a dominant partial map. -/
+/-- Restricting a dominant partial map to a dense open yields a dominant partial map. -/
 instance isDominant_restrict_hom (f : X.PartialMap Y) [IsDominant f.hom] (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) : IsDominant (f.restrict U hU hU').hom := by
   dsimp only [restrict_domain, restrict_hom]
@@ -77,11 +77,11 @@ lemma PartialMap.isDominant_toRationalMap_iff (f : X.PartialMap Y) :
     f.toRationalMap.IsDominant ↔ IsDominant f.hom :=
   f.toRationalMap.isDominant_iff
 
-instance PartialMap.isDominant_toRationalMap (f : X.PartialMap Y) [IsDominant f.hom] :
+instance (f : X.PartialMap Y) [IsDominant f.hom] :
     f.toRationalMap.IsDominant := by
   rwa [f.isDominant_toRationalMap_iff]
 
-instance RationalMap.isDominant_representative (f : X ⤏ Y) [f.IsDominant] :
+instance (f : X ⤏ Y) [f.IsDominant] :
     IsDominant f.representative.hom := by
   rwa [← f.representative.isDominant_toRationalMap_iff, f.toRationalMap_representative]
 

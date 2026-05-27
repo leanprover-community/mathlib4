@@ -153,6 +153,7 @@ lemma prod_filter_not_mul_prod_filter (s : Finset ι) (p : ι → Prop) [Decidab
     (∏ x ∈ s with ¬p x, f x) * ∏ x ∈ s with p x, f x = ∏ x ∈ s, f x := by
   rw [mul_comm, prod_filter_mul_prod_filter_not]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem prod_filter_xor (p q : ι → Prop) [DecidablePred p] [DecidablePred q] :
     (∏ x ∈ s with (Xor (p x) (q x)), f x) =
@@ -596,7 +597,7 @@ theorem prod_multiset_map_count [DecidableEq ι] (s : Multiset ι) {M : Type*} [
 @[to_additive]
 theorem prod_multiset_count [DecidableEq M] (s : Multiset M) :
     s.prod = ∏ m ∈ s.toFinset, m ^ s.count m := by
-  convert prod_multiset_map_count s id
+  convert! prod_multiset_map_count s id
   rw [Multiset.map_id]
 
 @[to_additive]
