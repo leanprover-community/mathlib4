@@ -868,11 +868,14 @@ lemma Polynomial.toMvPolynomial_eq_rename_comp (i : σ) :
   ext
   simp
 
-lemma Polynomial.toMvPolynomial_injective (i : σ) :
+lemma Polynomial.toMvPolynomial_inj (i : σ) :
     Function.Injective (toMvPolynomial (R := R) i) := by
   simp only [toMvPolynomial_eq_rename_comp, AlgHom.coe_comp, AlgEquiv.coe_algHom,
     EquivLike.injective_comp]
   exact MvPolynomial.rename_injective (fun x ↦ i) fun _ _ _ ↦ rfl
+
+@[deprecated (since := "2026-05-27")]
+alias Polynomial.toMvPolynomial_injective := Polynomial.toMvPolynomial_inj
 
 @[simp]
 lemma MvPolynomial.eval_comp_toMvPolynomial (f : σ → R) (i : σ) :
