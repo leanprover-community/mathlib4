@@ -445,6 +445,7 @@ theorem condExpL1CLM_of_aestronglyMeasurable' (f : α →₁[μ] F') (hfm : AESt
 
 end CondExpL1CLM
 
+set_option linter.overlappingInstances false in
 /-- Conditional expectation of a function, in L1. Its value is 0 if the function is not
 integrable. The function-valued `condExp` should be used instead in most cases. -/
 def condExpL1 (hm : m ≤ m0) (μ : Measure α) [SigmaFinite (μ.trim hm)]
