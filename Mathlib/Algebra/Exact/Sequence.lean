@@ -17,7 +17,7 @@ In this file we provide some API for handling exact sequences.
 ## Main definitions / results:
 
 * `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`: the Euler characteristic of a finite exact
-  sequence  of linear maps is the alternating sum of dimensions of the terms.
+  sequence is zero.
 
 ## TODO
 
