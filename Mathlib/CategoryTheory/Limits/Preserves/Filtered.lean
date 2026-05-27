@@ -67,6 +67,15 @@ instance (priority := 100) PreservesColimits.preservesFilteredColimits (F : C �
     [PreservesColimitsOfSize.{w, w'} F] : PreservesFilteredColimitsOfSize.{w, w'} F where
   preserves_filtered_colimits _ := inferInstance
 
+lemma PreservesFilteredColimitsOfSize.of_iso {F F' : C ⥤ D}
+    [PreservesFilteredColimitsOfSize.{w, w'} F] (e : F ≅ F') :
+    PreservesFilteredColimitsOfSize.{w, w'} F' :=
+  ⟨fun J _ _ ↦ preservesColimitsOfShape_of_natIso (J := J) e⟩
+
+lemma PreservesFilteredColimitsOfSize.iff_of_iso {F F' : C ⥤ D} (e : F ≅ F') :
+    PreservesFilteredColimitsOfSize.{w, w'} F ↔ PreservesFilteredColimitsOfSize.{w, w'} F' :=
+  ⟨fun _ ↦ .of_iso e, fun _ ↦ .of_iso e.symm⟩
+
 instance comp_preservesFilteredColimits (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFilteredColimitsOfSize.{w, w'} F] [PreservesFilteredColimitsOfSize.{w, w'} G] :
       PreservesFilteredColimitsOfSize.{w, w'} (F ⋙ G) where
@@ -182,6 +191,15 @@ attribute [instance 100] PreservesCofilteredLimitsOfSize.preserves_cofiltered_li
 instance (priority := 100) PreservesLimits.preservesCofilteredLimits (F : C ⥤ D)
     [PreservesLimitsOfSize.{w, w'} F] : PreservesCofilteredLimitsOfSize.{w, w'} F where
   preserves_cofiltered_limits _ := inferInstance
+
+lemma PreservesCofilteredLimitsOfSize.of_iso {F F' : C ⥤ D}
+    [PreservesCofilteredLimitsOfSize.{w, w'} F] (e : F ≅ F') :
+    PreservesCofilteredLimitsOfSize.{w, w'} F' :=
+  ⟨fun J _ _ ↦ preservesLimitsOfShape_of_natIso (J := J) e⟩
+
+lemma PreservesCofilteredLimitsOfSize.iff_of_iso {F F' : C ⥤ D} (e : F ≅ F') :
+    PreservesCofilteredLimitsOfSize.{w, w'} F ↔ PreservesCofilteredLimitsOfSize.{w, w'} F' :=
+  ⟨fun _ ↦ .of_iso e, fun _ ↦ .of_iso e.symm⟩
 
 instance comp_preservesCofilteredLimits (F : C ⥤ D) (G : D ⥤ E)
     [PreservesCofilteredLimitsOfSize.{w, w'} F] [PreservesCofilteredLimitsOfSize.{w, w'} G] :

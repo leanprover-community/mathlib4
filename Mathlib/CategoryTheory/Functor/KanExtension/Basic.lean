@@ -311,6 +311,34 @@ lemma leftKanExtension_hom_ext {G : D ⥤ H} (γ₁ γ₂ : leftKanExtension L F
 
 end
 
+section Opposite
+
+variable {L : C ⥤ D} {F : C ⥤ H} {G : D ⥤ H} (α : F ⟶ L ⋙ G)
+
+/-- The opposite of a left extension. -/
+@[simps! left hom]
+def LeftExtension.op (G : L.LeftExtension F) : L.op.RightExtension F.op :=
+  CostructuredArrow.mk ((Functor.opComp L G.right).inv ≫ NatTrans.op G.hom)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Left extensions of `F` along `L` are the same as right extensions of `F.op` along `L.op`. -/
+@[simps!]
+def LeftExtension.opEquiv : (L.LeftExtension F)ᵒᵖ ≌ L.op.RightExtension F.op :=
+  (structuredArrowOpEquivalence _ _).trans <|
+    CostructuredArrow.map₂Iso
+      (F := (Functor.opUnopEquiv _ _))
+      (G := (Functor.opUnopEquiv _ _))
+      (.mk (fun X ↦ (Functor.opComp _ _).inv))
+      (.mk (fun X ↦ .op (Functor.unopComp _ _).hom)
+        (by intros; apply Quiver.Hom.unop_inj; ext; simp))
+      (by ext; apply Quiver.Hom.unop_inj; ext; simp)
+      (by cat_disch)
+      (𝟙 _)
+      (𝟙 _)
+      (by cat_disch) (by cat_disch)
+
+end Opposite
+
 section
 
 variable {L : C ⥤ D} {L' : C ⥤ D'} (G : D ⥤ D')
@@ -602,6 +630,8 @@ end
 
 section transitivity
 
+section Left
+
 /-- A variant of `LeftExtension.precomp` where we precompose, and then
 "whisker" the diagram by a given natural transformation `(α : F₀ ⟶ L ⋙ F₁)` -/
 @[simps!]
@@ -630,32 +660,15 @@ def LeftExtension.isUniversalPrecomp₂
       mk y.right <|
         hα.desc <| LeftExtension.mk _ <|
           y.hom ≫ (L.associator L' y.right).hom
-    refine
-      ⟨⟨StructuredArrow.homMk (hb.desc u) <| by
-          ext x
-          haveI hb_fac_app := congr_app (hb.fac u) (L.obj x)
-          haveI hα_fac_app :=
-            congr_app (hα.fac <| LeftExtension.mk _ <|
-              y.hom ≫ (L.associator L' y.right).hom) x
-          dsimp at hα_fac_app hb_fac_app
-          simp [hb_fac_app, u, hα_fac_app]⟩, fun a => ?_⟩
-    dsimp
-    ext1
+    have _ (X : C) := congr_app (hb.fac u) (L.obj X)
+    have _ (a : (precomp₂ L' α).obj b ⟶ y) (X : C) := congr_app a.w X
+    have _ (X : C) :=
+      congr_app (hα.fac <| LeftExtension.mk _ <| y.hom ≫ (L.associator L' y.right).hom) X
+    refine ⟨⟨StructuredArrow.homMk (hb.desc u) (by cat_disch)⟩, fun a ↦ ?_⟩
+    ext : 1
     apply hb.hom_ext
     apply hα.hom_ext
-    ext t
-    dsimp
-    have a_w_t := congr_app a.w t
-    have hb_fac_app := congr_app (hb.fac u) (L.obj t)
-    have hα_fac_app :=
-      congr_app
-        (hα.fac <| LeftExtension.mk _ <|
-          y.hom ≫ (L.associator L' y.right).hom) t
-    dsimp at hb_fac_app hα_fac_app
-    simp only [whiskeringLeft_obj_obj, comp_obj,
-      precomp₂_obj_right, whiskeringLeft_obj_map, NatTrans.comp_app,
-      precomp₂_obj_hom_app, whiskerLeft_app, assoc] at a_w_t
-    simp [← a_w_t, hb_fac_app, u, hα_fac_app]
+    cat_disch
   apply IsInitial.ofUnique
 
 /-- If the left extension defined by `α : F₀ ⟶ L ⋙ F₁` is universal,
@@ -671,21 +684,12 @@ def LeftExtension.isUniversalOfPrecomp₂
   letI (y : L'.LeftExtension F₁) : Unique (b ⟶ y) := by
     let u : (LeftExtension.precomp₂ L' α).obj b ⟶
       (LeftExtension.precomp₂ L' α).obj y := hb.to _
-    refine
-      ⟨⟨StructuredArrow.homMk u.right <| by
-          apply hα.hom_ext
-          ext t
-          have := congr_app u.w t
-          dsimp at this
-          simp only [precomp₂_obj_hom_app, assoc] at this
-          simp [this]⟩, fun a => ?_⟩
-    ext1
+    have (X : C) := congr_app u.w X
+    refine ⟨⟨StructuredArrow.homMk u.right <| hα.hom_ext (by cat_disch)⟩, fun a ↦ ?_⟩
+    ext : 1
     apply hb.hom_ext
-    ext t
-    have := congr_app u.w t
-    dsimp at this
-    simp only [precomp₂_obj_hom_app, assoc] at this
-    simp [this, ← a.w]
+    have := a.w.symm
+    cat_disch
   apply IsInitial.ofUnique
 
 /-- If the left extension defined by `α : F₀ ⟶ L ⋙ F₁` is universal,
@@ -715,7 +719,7 @@ theorem isLeftKanExtension_iff_postcompose [F₁.IsLeftKanExtension α]
   obtain ⟨⟨hα⟩⟩ := (inferInstance : F₁.IsLeftKanExtension α)
   refine ⟨fun ⟨⟨h⟩⟩ => ⟨⟨?_⟩⟩, fun ⟨⟨h⟩⟩ => ⟨⟨?_⟩⟩⟩
   · apply IsInitial.isInitialIffObj Ψ.inverse _ |>.invFun
-    haveI := LeftExtension.isUniversalPrecomp₂ α hα h
+    have := LeftExtension.isUniversalPrecomp₂ α hα h
     let i :
         (LeftExtension.precomp₂ L' α).obj (LeftExtension.mk F₂ β) ≅
         Ψ.inverse.obj (LeftExtension.mk F₂ γ) :=
@@ -731,6 +735,8 @@ theorem isLeftKanExtension_iff_postcompose [F₁.IsLeftKanExtension α]
           LeftExtension.mk F₂ β :=
       StructuredArrow.isoMk (NatIso.ofComponents fun _ ↦ .refl _)
     exact IsInitial.ofIso h i
+
+end Left
 
 end transitivity
 
@@ -887,6 +893,28 @@ instance isRightKanExtensionAlongEquivalence' (L : C ⥤ D) (α : L ⋙ F₁ ⟶
     F₁.IsRightKanExtension α :=
   inferInstanceAs <|
     F₁.IsRightKanExtension (asIso α : (asEquivalence L).functor ⋙ F₁ ≅ F₀).hom
+
+lemma IsLeftKanExtension.of_iso₃ {F F' : D ⥤ H} {L L' : C ⥤ D} {G G' : C ⥤ H}
+    (e₁ : F ≅ F') (e₂ : L ≅ L') (e₃ : G ≅ G') (α : G ⟶ L ⋙ F) (α' : G' ⟶ L' ⋙ F')
+    (h : α ≫ Functor.whiskerLeft _ e₁.hom ≫ Functor.whiskerRight e₂.hom _ = e₃.hom ≫ α')
+    [F.IsLeftKanExtension α] :
+    F'.IsLeftKanExtension α' := by
+  rw [isLeftKanExtension_iff_of_iso₂ _ (α ≫ Functor.whiskerRight e₂.hom _) e₃.symm e₁.symm]
+  · rw [← Functor.isLeftKanExtension_iff_postcompose (L := L) (L' := 𝟭 _) (L'' := L') α
+      (Functor.rightUnitor _ ≪≫ e₂) (Functor.leftUnitor _).hom _]
+    infer_instance
+  · rw [eq_comm, ← e₃.eq_inv_comp] at h
+    ext
+    simp [h]
+
+lemma isLeftKanExtension_iff_of_iso₃ {F F' : D ⥤ H} {L L' : C ⥤ D} {G G' : C ⥤ H} {α : G ⟶ L ⋙ F}
+    {α' : G' ⟶ L' ⋙ F'} (e₁ : F ≅ F') (e₂ : L ≅ L') (e₃ : G ≅ G')
+    (h : α ≫ Functor.whiskerLeft _ e₁.hom ≫ Functor.whiskerRight e₂.hom _ = e₃.hom ≫ α') :
+    F.IsLeftKanExtension α ↔ F'.IsLeftKanExtension α' := by
+  refine ⟨fun ha ↦ .of_iso₃ e₁ e₂ e₃ α α' h, fun ha ↦ .of_iso₃ e₁.symm e₂.symm e₃.symm α' α ?_⟩
+  rw [eq_comm, ← e₃.eq_inv_comp] at h
+  ext
+  simp [h, ← Functor.map_comp]
 
 end
 

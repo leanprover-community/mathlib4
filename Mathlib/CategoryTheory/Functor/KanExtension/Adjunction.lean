@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 public import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Functor
@@ -277,6 +278,14 @@ instance coreflective' [∀ (F : C ⥤ H), HasPointwiseLeftKanExtension L F] :
 
 end
 
+instance (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasPointwiseLeftKanExtension G] [L.Full] [L.Faithful] :
+    (L.lan : _ ⥤ D ⥤ H).Full :=
+  (L.lanAdjunction _).fullyFaithfulLOfIsIsoUnit.full
+
+instance (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasPointwiseLeftKanExtension G] [L.Full] [L.Faithful] :
+    (L.lan : _ ⥤ D ⥤ H).Faithful :=
+  (L.lanAdjunction _).fullyFaithfulLOfIsIsoUnit.faithful
+
 end lan
 
 section ran
@@ -430,6 +439,14 @@ instance reflective' [∀ (F : C ⥤ H), HasPointwiseRightKanExtension L F] :
   apply NatIso.isIso_of_isIso_app _
 
 end
+
+instance (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasPointwiseRightKanExtension G] [L.Full] [L.Faithful] :
+    (L.ran : _ ⥤ D ⥤ H).Full :=
+  (L.ranAdjunction _).fullyFaithfulROfIsIsoCounit.full
+
+instance (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasPointwiseRightKanExtension G] [L.Full] [L.Faithful] :
+    (L.ran : _ ⥤ D ⥤ H).Faithful :=
+  (L.ranAdjunction _).fullyFaithfulROfIsIsoCounit.faithful
 
 end ran
 

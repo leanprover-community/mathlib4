@@ -217,4 +217,9 @@ lemma faithful_of_comp_essSurj (F : D ⥤ E) (L : C ⥤ D) [EssSurj L]
 
 end Functor
 
+@[simp]
+lemma ObjectProperty.essImage_ι (P : ObjectProperty C) : P.ι.essImage = P.isoClosure :=
+  le_antisymm (fun _ ⟨Y, ⟨e⟩⟩ ↦ ⟨Y.obj, Y.property, ⟨e.symm⟩⟩)
+    fun _ ⟨_, h, ⟨e⟩⟩ ↦ ⟨⟨_, h⟩, ⟨e.symm⟩⟩
+
 end CategoryTheory

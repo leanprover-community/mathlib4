@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
+public import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # Pointwise Kan extensions
@@ -161,6 +162,46 @@ lemma hasPointwiseRightKanExtensionAt_iff_of_equivalence
       (isoWhiskerRight eL.symm _ ≪≫ Functor.associator _ _ _ ≪≫
         isoWhiskerLeft L E.unitIso.symm ≪≫ L.rightUnitor) Y' Y
       (E.inverse.mapIso e.symm ≪≫ E.unitIso.symm.app Y)
+
+set_option backward.isDefEq.respectTransparency false in
+lemma HasPointwiseLeftKanExtensionAt.of_natIso {L L' : C ⥤ D} {F F' : C ⥤ H} (Y : D)
+    [L.HasPointwiseLeftKanExtensionAt F Y] (e₁ : L ≅ L') (e₂ : F ≅ F') :
+    L'.HasPointwiseLeftKanExtensionAt F' Y := by
+  rw [hasPointwiseLeftKanExtensionAt_iff_of_natIso _ e₁.symm]
+  let e : CostructuredArrow.proj L Y ⋙ F' ≅ CostructuredArrow.proj L Y ⋙ F :=
+    NatIso.ofComponents fun X ↦ (e₂.app _).symm
+  rw [HasPointwiseLeftKanExtensionAt, hasColimit_iff_of_iso e]
+  infer_instance
+
+set_option backward.isDefEq.respectTransparency false in
+lemma HasPointwiseRightKanExtensionAt.of_natIso {L L' : C ⥤ D} {F F' : C ⥤ H} (Y : D)
+    [L.HasPointwiseRightKanExtensionAt F Y] (e₁ : L ≅ L') (e₂ : F ≅ F') :
+    L'.HasPointwiseRightKanExtensionAt F' Y := by
+  rw [hasPointwiseRightKanExtensionAt_iff_of_natIso _ e₁.symm]
+  let e : StructuredArrow.proj Y L ⋙ F' ≅ StructuredArrow.proj Y L ⋙ F :=
+    NatIso.ofComponents fun X ↦ (e₂.app _).symm
+  rw [HasPointwiseRightKanExtensionAt, hasLimit_iff_of_iso e]
+  infer_instance
+
+lemma HasPointwiseLeftKanExtension.of_iso {L L' : C ⥤ D} {F F' : C ⥤ H}
+    [L.HasPointwiseLeftKanExtension F] (e₁ : L ≅ L') (e₂ : F ≅ F') :
+    L'.HasPointwiseLeftKanExtension F' :=
+  fun _ ↦ .of_natIso _ e₁ e₂
+
+lemma HasPointwiseRightKanExtension.of_iso {L L' : C ⥤ D} {F F' : C ⥤ H}
+    [L.HasPointwiseRightKanExtension F] (e₁ : L ≅ L') (e₂ : F ≅ F') :
+    L'.HasPointwiseRightKanExtension F' :=
+  fun _ ↦ .of_natIso _ e₁ e₂
+
+lemma hasPointwiseLeftKanExtension_iff_of_iso {L L' : C ⥤ D} {F F' : C ⥤ H} (e₁ : L ≅ L')
+    (e₂ : F ≅ F') :
+    L.HasPointwiseLeftKanExtension F ↔ L'.HasPointwiseLeftKanExtension F' :=
+  ⟨fun _ ↦ .of_iso e₁ e₂, fun _ ↦ .of_iso e₁.symm e₂.symm⟩
+
+lemma hasPointwiseRightKanExtension_iff_of_iso {L L' : C ⥤ D} {F F' : C ⥤ H} (e₁ : L ≅ L')
+    (e₂ : F ≅ F') :
+    L.HasPointwiseRightKanExtension F ↔ L'.HasPointwiseRightKanExtension F' :=
+  ⟨fun _ ↦ .of_iso e₁ e₂, fun _ ↦ .of_iso e₁.symm e₂.symm⟩
 
 namespace LeftExtension
 
@@ -340,6 +381,22 @@ lemma IsPointwiseLeftKanExtension.isIso_hom [L.Full] [L.Faithful] :
     IsIso (E.hom) :=
   have := fun X => (h (L.obj X)).isIso_hom_app
   NatIso.isIso_of_isIso_app ..
+
+/-- Let `F` be a left-extension of `G` along `L ⋙ L'` and `d : D`. The cocone of `F` as an extension
+along `L` at `d` is isomorphic to the whiskered cocone of `F` at `d`. -/
+def coconeAtPostcomp₁Iso {L' : D ⥤ D'} {G : C ⥤ H} (F : (L ⋙ L').LeftExtension G) (d : D) :
+    ((LeftExtension.postcomp₁ L' (𝟙 (L ⋙ L')) G).obj F).coconeAt d ≅
+      Cocone.whisker (CostructuredArrow.post L L' d) (F.coconeAt (L'.obj d)) :=
+  Cocone.ext (Iso.refl _) fun j ↦ by simp
+
+/-- If `F` is the pointwise left Kan extension of `G` along `L ⋙ L'` and `L'` is fully faithful,
+then `L' ⋙ F` is the pointwise left Kan extension of `G` along `L`. -/
+noncomputable def IsPointwiseLeftKanExtension.postcomp₁ {L' : D ⥤ D'} {G : C ⥤ H}
+    (F : (L ⋙ L').LeftExtension G) [L'.Full] [L'.Faithful] (h : F.IsPointwiseLeftKanExtension) :
+    ((LeftExtension.postcomp₁ L' (𝟙 _) G).obj F).IsPointwiseLeftKanExtension := by
+  intro d
+  refine .ofIsoColimit ?_ (Functor.LeftExtension.coconeAtPostcomp₁Iso F d).symm
+  exact (Functor.Final.isColimitWhiskerEquiv _ _).symm (h _)
 
 end LeftExtension
 
@@ -615,6 +672,17 @@ noncomputable def isPointwiseLeftKanExtensionOfIsLeftKanExtension (F' : D ⥤ H)
     (IsColimit.coconePointUniqueUpToIso (pointwiseLeftKanExtensionIsUniversal L F)
       (F'.isUniversalOfIsLeftKanExtension α))
     (pointwiseLeftKanExtensionIsPointwiseLeftKanExtension L F)
+
+/-- Fully faithful functors reflect pointwise left Kan extensions. -/
+lemma isLeftKanExtension_comp_left {F : D' ⥤ H} {L : C ⥤ D} {L' : D ⥤ D'} {G : C ⥤ H} [L'.Faithful]
+    [L'.Full] (α : G ⟶ (L ⋙ L') ⋙ F) [F.IsLeftKanExtension α]
+    [(L ⋙ L').HasPointwiseLeftKanExtension G] :
+    (L' ⋙ F).IsLeftKanExtension (α ≫ (Functor.associator _ _ _).hom) := by
+  let e : (LeftExtension.mk _ α).IsPointwiseLeftKanExtension :=
+    isPointwiseLeftKanExtensionOfIsLeftKanExtension F α
+  convert e.postcomp₁.isLeftKanExtension
+  ext
+  simp
 
 end
 

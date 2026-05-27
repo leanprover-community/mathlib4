@@ -2837,6 +2837,7 @@ public import Mathlib.CategoryTheory.Limits.Indization.IndObject
 public import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
 public import Mathlib.CategoryTheory.Limits.Indization.ParallelPair
 public import Mathlib.CategoryTheory.Limits.Indization.Products
+public import Mathlib.CategoryTheory.Limits.Indization.UniversalProperty
 public import Mathlib.CategoryTheory.Limits.IsConnected
 public import Mathlib.CategoryTheory.Limits.IsLimit
 public import Mathlib.CategoryTheory.Limits.Lattice
