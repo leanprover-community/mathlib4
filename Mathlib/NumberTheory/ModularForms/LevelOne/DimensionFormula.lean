@@ -5,10 +5,8 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.Data.Nat.ModEq
 public import Mathlib.NumberTheory.ModularForms.CuspFormSubmodule
 public import Mathlib.NumberTheory.ModularForms.Discriminant
-public import Mathlib.RingTheory.PowerSeries.Order
 
 import Mathlib.Algebra.Order.Floor.Semifield
 
