@@ -151,8 +151,7 @@ theorem cof_omega0 : cof ω = ℵ₀ :=
 
 @[deprecated (since := "2026-02-18")] alias cof_eq_one_iff_is_succ := cof_eq_one_iff
 
-variable (α) in
-theorem exists_ord_cof_eq [LinearOrder α] [WellFoundedLT α] :
+theorem exists_ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
     ∃ s : Set α, IsCofinal s ∧ typeLT s = (Order.cof α).ord := by
   obtain ⟨s, hs, hs'⟩ := exists_cof_eq α
   obtain ⟨r, hr, hr'⟩ := exists_ord_eq s
@@ -169,9 +168,8 @@ theorem exists_ord_cof_eq [LinearOrder α] [WellFoundedLT α] :
 
 @[deprecated (since := "2026-05-25")] alias ord_cof_eq := exists_ord_cof_eq
 
-variable (α) in
 @[simp]
-theorem _root_.Order.cof_ord_cof [LinearOrder α] [WellFoundedLT α] :
+theorem _root_.Order.cof_ord_cof (α : Type*) [LinearOrder α] [WellFoundedLT α] :
     (Order.cof α).ord.cof = Order.cof α := by
   obtain ⟨s, hs, hs'⟩ := exists_ord_cof_eq α
   rw [← hs', cof_type]

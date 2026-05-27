@@ -288,7 +288,7 @@ lemma dirSupInaccOn_Iic (a : α) : DirSupInaccOn D (Iic a) :=
 
 end Preorder
 
-section PartialOrder
+namespace PartialOrder
 variable [PartialOrder α]
 
 theorem dirSupClosed_singleton (a : α) : DirSupClosed {a} := by
