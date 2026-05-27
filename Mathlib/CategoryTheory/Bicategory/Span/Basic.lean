@@ -64,7 +64,8 @@ attribute [grind =] id_hom comp_hom
 @[ext, grind ext]
 lemma hom_ext {S S' : Span Wₗ Wᵣ c c'} {f g : S ⟶ S'} (h : f.hom = g.hom) :
     f = g := by
-  cases f; cases g
+  cases f
+  cases g
   grind
 
 set_option mathlib.tactic.category.grind true in
@@ -82,12 +83,10 @@ variable [Wₗ.ContainsIdentities] [Wᵣ.ContainsIdentities] [Wₗ.HasPullbacksA
     [Wₗ.IsStableUnderBaseChangeAgainst Wᵣ] [Wᵣ.IsStableUnderBaseChangeAgainst Wₗ]
     [Wₗ.IsStableUnderComposition] [Wᵣ.IsStableUnderComposition]
 
-instance {c c' c'' : C}
-    (S₁ : Span Wₗ Wᵣ c c') (S₂ : Span Wₗ Wᵣ c' c'') :
-    Limits.HasPullback S₁.r S₂.l :=
-  letI : Limits.HasPullback S₂.l S₁.r :=
-    Limits.hasPullback_ofHasPullbacksAgainst S₂.wl S₁.wr
-  Limits.hasPullback_symmetry _ _
+open Limits in
+instance {c c' c'' : C} (S₁ : Span Wₗ Wᵣ c c') (S₂ : Span Wₗ Wᵣ c' c'') : HasPullback S₁.r S₂.l :=
+  letI : HasPullback S₂.l S₁.r := hasPullback_ofHasPullbacksAgainst S₂.wl S₁.wr
+  hasPullback_symmetry _ _
 
 instance (S₁ : Span Wₗ Wᵣ c c') : Wₗ.IsStableUnderBaseChangeAlong S₁.r :=
   MorphismProperty.IsStableUnderBaseChangeAgainst.isStableUnderBaseChangeAlong _ S₁.wr
@@ -117,7 +116,7 @@ total span
  /  \   /  \
 c     c'    c''
 ```
-where the top diamond is a pullbacks square
+where the top diamond is a pullback square
 -/
 @[simps (attr := grind =)]
 noncomputable def comp {c c' c'' : C}
