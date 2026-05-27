@@ -23,6 +23,7 @@ This proves the lattice `Seminorm ℝ (ℝ × ℝ)` is not distributive.
 
 @[expose] public section
 
+
 open Seminorm
 
 open scoped NNReal

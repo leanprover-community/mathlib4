@@ -17,7 +17,7 @@ This file defines subrepresentations of a monoid representation.
 
 @[expose] public section
 
-open Pointwise
+open scoped Pointwise
 open scoped MonoidAlgebra
 
 variable {A G W M : Type*}

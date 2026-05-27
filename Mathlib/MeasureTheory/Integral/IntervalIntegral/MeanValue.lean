@@ -31,7 +31,7 @@ We prove versions of the first mean value theorem for interval integrals.
 mean value theorem, interval integral
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Set intervalIntegral
 

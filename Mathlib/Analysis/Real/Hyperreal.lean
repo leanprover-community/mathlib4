@@ -33,16 +33,13 @@ principle on `Hyperreal`.
 
 open ArchimedeanClass Filter Germ Topology
 
+noncomputable section
+
 /-- Hyperreal numbers on the ultrafilter extending the cofinite filter. -/
 def Hyperreal : Type :=
   Germ (hyperfilter ℕ : Filter ℕ) ℝ
+deriving Inhabited
 
-noncomputable section
-
-#adaptation_note
-/-- After nightly-2025-05-07 we had to remove `deriving Inhabited` on `Hyperreal` above,
-as there is a new error about this instance having to be noncomputable, and `deriving` doesn't allow
-for adding this! -/
 namespace Hyperreal
 
 @[inherit_doc] notation "ℝ*" => Hyperreal
@@ -788,7 +785,7 @@ theorem infinitePos_add_not_infiniteNeg {x y : ℝ*} :
     InfinitePos x → ¬InfiniteNeg y → InfinitePos (x + y) := by
   intro hip hnin r
   obtain ⟨r₂, hr₂⟩ := not_forall.mp hnin
-  convert add_lt_add_of_lt_of_le (hip (r + -r₂)) (not_lt.mp hr₂) using 1
+  convert! add_lt_add_of_lt_of_le (hip (r + -r₂)) (not_lt.mp hr₂) using 1
   simp
 
 set_option linter.deprecated false in

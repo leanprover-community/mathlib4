@@ -560,14 +560,19 @@ theorem toReal_le_coe_of_le_coe {a : ℝ≥0∞} {b : ℝ≥0} (h : a ≤ b) : a
   lift a to ℝ≥0 using ne_top_of_le_ne_top coe_ne_top h
   simpa using h
 
-@[simp] theorem max_eq_zero_iff : max a b = 0 ↔ a = 0 ∧ b = 0 := max_eq_bot
-@[simp] theorem min_eq_zero_iff : min a b = 0 ↔ a = 0 ∨ b = 0 := min_eq_bot
+@[deprecated max_eq_zero (since := "2026-05-07")]
+theorem max_eq_zero_iff : max a b = 0 ↔ a = 0 ∧ b = 0 := max_eq_bot
 
+@[deprecated min_eq_zero (since := "2026-05-07")]
+theorem min_eq_zero_iff : min a b = 0 ↔ a = 0 ∨ b = 0 := min_eq_bot
+
+@[deprecated zero_max (since := "2026-05-07")]
 theorem max_zero_left : max 0 a = a :=
-  max_eq_right (zero_le a)
+  max_eq_right zero_le
 
+@[deprecated max_zero (since := "2026-05-07")]
 theorem max_zero_right : max a 0 = a :=
-  max_eq_left (zero_le a)
+  max_eq_left zero_le
 
 theorem lt_iff_exists_rat_btwn :
     a < b ↔ ∃ q : ℚ, 0 ≤ q ∧ a < Real.toNNReal q ∧ (Real.toNNReal q : ℝ≥0∞) < b :=

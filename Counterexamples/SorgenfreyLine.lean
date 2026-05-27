@@ -38,8 +38,7 @@ Prove that the Sorgenfrey line is a paracompact space.
 @[expose] public section
 
 open Set Filter TopologicalSpace
-
-open scoped Topology Filter Cardinal
+open scoped Topology Cardinal
 
 namespace Counterexample
 
@@ -226,7 +225,7 @@ theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ
     exact closure_minimal (hs : s ⊆ {x | x.1 + x.2 = c}) (isClosed_antidiagonal c) H
   rcases mem_closure_iff.1 H (Ici (x, y)) (isClopen_Ici_prod _).2 self_mem_Ici with
     ⟨⟨x', y'⟩, ⟨hx : x ≤ x', hy : y ≤ y'⟩, H⟩
-  convert H
+  convert! H
   · refine hx.antisymm ?_
     rwa [← add_le_add_iff_right, hs _ H, add_le_add_iff_left]
   · refine hy.antisymm ?_

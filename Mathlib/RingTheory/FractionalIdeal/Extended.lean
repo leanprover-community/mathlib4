@@ -167,7 +167,7 @@ theorem extended_coeIdeal_eq_map (I₀ : Ideal A) :
 
 /--
 The ring homomorphism version of `FractionalIdeal.extended`.
-See `FractionalIdeal.extendedHom` for a more convient version that is often enough.
+See `FractionalIdeal.extendedHom` for a more convenient version that is often enough.
 -/
 @[simps]
 def extendedHom' : FractionalIdeal M K →+* FractionalIdeal N L where
@@ -243,6 +243,8 @@ theorem extendedHom_le_one_iff [IsIntegrallyClosed A] [IsIntegrallyClosed B] :
 @[deprecated (since := "2026-04-16")] alias extendedHomₐ_le_one_iff := extendedHom_le_one_iff
 
 section IsDedekindDomain
+
+set_option linter.overlappingInstances false
 
 variable [IsDedekindDomain A] [IsDedekindDomain B]
 

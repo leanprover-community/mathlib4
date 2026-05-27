@@ -23,7 +23,7 @@ These are deduced from the same results on finite-dimensional real manifolds, gi
 as `ae_eq_zero_of_integral_contMDiff_smul_eq_zero` and `ae_eq_of_integral_contMDiff_smul_eq`.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Filter Metric Function Set TopologicalSpace
 

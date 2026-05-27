@@ -287,7 +287,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
   have I1 : ∀ n, ε / 2 ≤ f (↑(s (n + 1)) \ ↑(s n)) := by
     intro n
     rw [div_le_iff₀' (show (0 : ℝ) < 2 by simp), hε]
-    convert hF (s n) u using 2
+    convert! hF (s n) u using 2
     · dsimp
       ext x
       simp only [u, not_exists, mem_iUnion, mem_diff]
@@ -365,7 +365,7 @@ theorem discretePart_apply (f : BoundedAdditiveMeasure α) (s : Set α) :
 theorem continuousPart_apply_eq_zero_of_countable (f : BoundedAdditiveMeasure α) (s : Set α)
     (hs : s.Countable) : f.continuousPart s = 0 := by
   simp only [continuousPart, restrict_apply]
-  convert f.apply_countable s hs using 2
+  convert! f.apply_countable s hs using 2
   ext x
   simp [and_comm]
 
@@ -461,27 +461,13 @@ along horizontals). Such a set cannot be measurable as it would contradict Fubin
 We need the continuum hypothesis to construct it.
 -/
 
-
+-- TODO: deprecate in favor of `Cardinal.exists_rel_mk_fibers_lt`
 theorem sierpinski_pathological_family (Hcont : #ℝ = ℵ₁) :
     ∃ f : ℝ → Set ℝ, (∀ x, (univ \ f x).Countable) ∧ ∀ y, {x : ℝ | y ∈ f x}.Countable := by
-  rcases Cardinal.exists_ord_eq ℝ with ⟨r, hr, H⟩
-  refine ⟨fun x => {y | r x y}, fun x => ?_, fun y => ?_⟩
-  · have : univ \ {y | r x y} = {y | r y x} ∪ {x} := by
-      ext y
-      simp only [true_and, mem_univ, mem_setOf_eq, mem_insert_iff, union_singleton, mem_diff]
-      rcases trichotomous_of r x y with (h | rfl | h)
-      · simp only [h, not_or, false_iff, not_true]
-        constructor
-        · rintro rfl; exact irrefl_of r y h
-        · exact asymm h
-      · simp only [true_or, iff_true]; exact irrefl x
-      · simp only [h, iff_true, or_true]; exact asymm h
-    rw [this]
-    apply Countable.union _ (countable_singleton _)
-    rw [← Cardinal.le_aleph0_iff_set_countable, ← Cardinal.lt_aleph_one_iff, ← Hcont]
-    exact Cardinal.card_typein_lt x H
-  · rw [← Cardinal.le_aleph0_iff_set_countable, ← Cardinal.lt_aleph_one_iff, ← Hcont]
-    exact Cardinal.card_typein_lt y H
+  obtain ⟨r, hr₁, hr₂⟩ := Cardinal.exists_rel_mk_fibers_lt ℝ
+  refine ⟨fun x ↦ setOf (r x), ?_, ?_⟩
+  · simpa [Hcont, ← Set.compl_eq_univ_diff] using hr₁
+  · simpa [Hcont] using hr₂
 
 /-- A family of sets in `ℝ` which only miss countably many points, but such that any point is
 contained in only countably many of them. -/

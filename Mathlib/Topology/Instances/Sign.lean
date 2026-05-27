@@ -15,7 +15,7 @@ This file gives `SignType` the discrete topology, and proves continuity results 
 in an `OrderTopology`.
 -/
 
-@[expose] public section
+public section
 
 instance : TopologicalSpace SignType :=
   ⊥

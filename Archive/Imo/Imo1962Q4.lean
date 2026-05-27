@@ -21,8 +21,6 @@ in fact the simplest form of the set of solutions, and then prove it equals the 
 
 open Real
 
-open scoped Real
-
 namespace Imo1962Q4
 
 noncomputable section

@@ -21,7 +21,7 @@ public import Mathlib.RingTheory.OreLocalization.OreSet
 - `rank_quotient_add_rank_of_isDomain`: The **rank-nullity theorem** for commutative domains.
 -/
 
-@[expose] public section
+public section
 
 open Cardinal Module nonZeroDivisors
 
@@ -208,7 +208,7 @@ lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R�
       (by simp [← Fin.sum_univ_eq_sum_range, ← hg]) i i.prop
   intro g x hg i hin
   induction n generalizing g x i with
-  | zero => exact (hin.not_ge (zero_le i)).elim
+  | zero => contradiction
   | succ n IH =>
     rw [Finset.sum_range_succ'] at hg
     by_cases hg0 : g 0 = 0
