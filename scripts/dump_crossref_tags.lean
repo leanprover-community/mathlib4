@@ -69,7 +69,8 @@ unsafe def run (outPath : System.FilePath) : IO UInt32 := do
       | .kerodon  => "kerodon"
       | .stacks   => "stacks"
       | .wikidata => "wikidata"
-    rows := rows.push s!"{dbName}\t{sanitiseField tag.tag}\t{tag.declName}\t\
+    rows := rows.push s!"{dbName}\t{sanitiseField tag.tag}\t\
+      {sanitiseField tag.declName.toString}\t\
       {sanitiseField file}\t{sanitiseField tag.comment}"
   let body := String.intercalate "\n" rows.toList ++ if rows.isEmpty then "" else "\n"
   if body.utf8ByteSize > maxBytes then
