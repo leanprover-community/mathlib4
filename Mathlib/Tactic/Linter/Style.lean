@@ -573,7 +573,7 @@ such names violate the naming convention. -/
         type.isConstOf `Batteries.Util.LibraryNote
     then
       return none
-    let project := ((← getEnv).getModuleFor? declName).elim .anonymous (·.getRoot)
+    let project := ((← getEnv).getModuleFor? declName).elim `NoProjectFound (·.getRoot)
     let declName := privateToUserName declName
     if isBadNameWithUnderscore project declName then
       return m!"The definition `{declName}` contains an underscore. \
