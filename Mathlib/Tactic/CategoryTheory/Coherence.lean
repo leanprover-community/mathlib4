@@ -49,55 +49,63 @@ It must be the case that `projectObj id (LiftObj.lift x) = x` by defeq. -/
 class LiftObj (X : C) where
   protected lift : FreeMonoidalCategory C
 
-instance LiftObj_unit : LiftObj (𝟙_ C) := ⟨unit⟩
+namespace LiftObj
 
-instance LiftObj_tensor (X Y : C) [LiftObj X] [LiftObj Y] : LiftObj (X ⊗ Y) where
+nonrec instance unit : LiftObj (𝟙_ C) := ⟨unit⟩
+
+instance tensor (X Y : C) [LiftObj X] [LiftObj Y] : LiftObj (X ⊗ Y) where
   lift := LiftObj.lift X ⊗ LiftObj.lift Y
 
-instance (priority := 100) LiftObj_of (X : C) : LiftObj X := ⟨of X⟩
+nonrec instance (priority := 100) of (X : C) : LiftObj X := ⟨of X⟩
+
+end LiftObj
 
 /-- A typeclass carrying a choice of lift of a morphism from `C` to `FreeMonoidalCategory C`.
 It must be the case that `projectMap id _ _ (LiftHom.lift f) = f` by defeq. -/
 class LiftHom {X Y : C} [LiftObj X] [LiftObj Y] (f : X ⟶ Y) where
   protected lift : LiftObj.lift X ⟶ LiftObj.lift Y
 
-instance LiftHom_id (X : C) [LiftObj X] : LiftHom (𝟙 X) := ⟨𝟙 _⟩
+namespace LiftHom
 
-instance LiftHom_left_unitor_hom (X : C) [LiftObj X] : LiftHom (λ_ X).hom where
+instance id (X : C) [LiftObj X] : LiftHom (𝟙 X) := ⟨𝟙 _⟩
+
+instance leftUnitorHom (X : C) [LiftObj X] : LiftHom (λ_ X).hom where
   lift := (λ_ (LiftObj.lift X)).hom
 
-instance LiftHom_left_unitor_inv (X : C) [LiftObj X] : LiftHom (λ_ X).inv where
+instance leftUnitorInv (X : C) [LiftObj X] : LiftHom (λ_ X).inv where
   lift := (λ_ (LiftObj.lift X)).inv
 
-instance LiftHom_right_unitor_hom (X : C) [LiftObj X] : LiftHom (ρ_ X).hom where
+instance rightUnitorHom (X : C) [LiftObj X] : LiftHom (ρ_ X).hom where
   lift := (ρ_ (LiftObj.lift X)).hom
 
-instance LiftHom_right_unitor_inv (X : C) [LiftObj X] : LiftHom (ρ_ X).inv where
+instance rightUnitorInv (X : C) [LiftObj X] : LiftHom (ρ_ X).inv where
   lift := (ρ_ (LiftObj.lift X)).inv
 
-instance LiftHom_associator_hom (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] :
+instance associatorHom (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] :
     LiftHom (α_ X Y Z).hom where
   lift := (α_ (LiftObj.lift X) (LiftObj.lift Y) (LiftObj.lift Z)).hom
 
-instance LiftHom_associator_inv (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] :
+instance associatorInv (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] :
     LiftHom (α_ X Y Z).inv where
   lift := (α_ (LiftObj.lift X) (LiftObj.lift Y) (LiftObj.lift Z)).inv
 
-instance LiftHom_comp {X Y Z : C} [LiftObj X] [LiftObj Y] [LiftObj Z] (f : X ⟶ Y) (g : Y ⟶ Z)
+instance comp {X Y Z : C} [LiftObj X] [LiftObj Y] [LiftObj Z] (f : X ⟶ Y) (g : Y ⟶ Z)
     [LiftHom f] [LiftHom g] : LiftHom (f ≫ g) where
   lift := LiftHom.lift f ≫ LiftHom.lift g
 
-instance liftHom_WhiskerLeft (X : C) [LiftObj X] {Y Z : C} [LiftObj Y] [LiftObj Z]
+instance whiskerLeft (X : C) [LiftObj X] {Y Z : C} [LiftObj Y] [LiftObj Z]
     (f : Y ⟶ Z) [LiftHom f] : LiftHom (X ◁ f) where
   lift := LiftObj.lift X ◁ LiftHom.lift f
 
-instance liftHom_WhiskerRight {X Y : C} (f : X ⟶ Y) [LiftObj X] [LiftObj Y] [LiftHom f]
+instance whiskerRight {X Y : C} (f : X ⟶ Y) [LiftObj X] [LiftObj Y] [LiftHom f]
     {Z : C} [LiftObj Z] : LiftHom (f ▷ Z) where
   lift := LiftHom.lift f ▷ LiftObj.lift Z
 
-instance LiftHom_tensor {W X Y Z : C} [LiftObj W] [LiftObj X] [LiftObj Y] [LiftObj Z]
+instance tensor {W X Y Z : C} [LiftObj W] [LiftObj X] [LiftObj Y] [LiftObj Z]
     (f : W ⟶ X) (g : Y ⟶ Z) [LiftHom f] [LiftHom g] : LiftHom (f ⊗ₘ g) where
   lift := LiftHom.lift f ⊗ₘ LiftHom.lift g
+
+end LiftHom
 
 end lifting
 
