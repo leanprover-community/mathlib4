@@ -745,17 +745,26 @@ jobs:
       - name: clean up the import graph file
         run: rm import_graph.dot
 
-      # PR-only: this only feeds crossref_review.yml's PR comment.
-      # See scripts/dump_crossref_tags.lean for the output format and the
-      # (defence-in-depth) size cap; the trusted bound is in mathlib-ci's
-      # post-comment.sh.
+      # Always-on: produce the TSV for every build (PR + push to master).
+      # Master pushes upload it as a plain artifact (`crossref-tags-baseline`)
+      # so that workflow_run jobs on PRs can subtract the merge-base baseline
+      # and only render tags this PR actually changed.
+      # PR runs additionally emit a privileged bridge artifact for
+      # `crossref_review.yml` to consume.
+      # See scripts/dump_crossref_tags.lean for the output format.
       - name: dump cross-reference tags to TSV
-        if: github.event.pull_request.number != ''
         run: lake env lean --run scripts/dump_crossref_tags.lean crossref-tags.tsv
 
+      - name: upload crossref-tags baseline artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: crossref-tags-baseline
+          path: crossref-tags.tsv
+          retention-days: 5
+
       - name: prepare crossref bridge outputs
-        # We only emit the crossref bridge artifact when this build is for a PR
-        # (the `crossref_review.yml` workflow_run job has nothing to post otherwise).
+        # The privileged crossref_review.yml workflow_run job only fires
+        # for PRs; non-PR builds don't need the bridge artifact.
         id: crossref_outputs
         env:
           EVENT_NAME: ${{ github.event_name }}
