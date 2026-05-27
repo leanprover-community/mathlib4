@@ -501,7 +501,7 @@ lemma T_zpow_integerCuspWidth_mem :
 `𝒮ℒ ⧸ 𝒢.subgroupOf 𝒮ℒ`. -/
 lemma quotient_T_pow_injective_integerCuspWidth
     [DiscreteTopology 𝒢.strictPeriods] :
-    Function.Injective (fun j : Fin (integerCuspWidth 𝒢) =>
+    Function.Injective (fun j : Fin (integerCuspWidth 𝒢) ↦
       (⟦(Matrix.SpecialLinearGroup.mapGL ℝ).rangeRestrict
           ((ModularGroup.T : SL(2, ℤ))^(j : ℕ))⟧ :
         𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ))) := by
@@ -523,7 +523,7 @@ lemma quotient_T_pow_injective_integerCuspWidth
     show (((j₂ : ℤ) - (j₁ : ℤ) : ℤ) : ℝ) = ((j₂ : ℝ) - (j₁ : ℝ)) by push_cast; ring,
     ← Subgroup.mem_strictPeriods_iff] at hj
   have h_min_zero : ∀ d : ℕ, d < integerCuspWidth 𝒢 → (d : ℝ) ∈ 𝒢.strictPeriods → d = 0 :=
-    fun d hd_lt hd_mem => by
+    fun d hd_lt hd_mem ↦ by
       by_contra hd_ne
       have hd_lt' : d < Nat.find (exists_pos_nat_mem_strictPeriods 𝒢) := hd_lt
       exact Nat.find_min (exists_pos_nat_mem_strictPeriods 𝒢) hd_lt'
@@ -549,7 +549,7 @@ lemma integerCuspWidth_eq_nat_mul_strictWidthInfty [DiscreteTopology 𝒢.strict
         integerCuspWidth_mem_strictPeriods
     exact ⟨m, by rw [← hm, zsmul_eq_mul]⟩
   have hw_pos : (0 : ℝ) < 𝒢.strictWidthInfty :=
-    𝒢.strictWidthInfty_nonneg.lt_of_ne fun heq => by
+    𝒢.strictWidthInfty_nonneg.lt_of_ne fun heq ↦ by
       rw [← heq, mul_zero] at hm
       exact hnR_pos.ne' hm
   have hm_pos : 0 < m := by
