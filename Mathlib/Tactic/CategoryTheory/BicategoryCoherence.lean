@@ -114,7 +114,7 @@ def mkLiftMap₂LiftExpr (e : Expr) : TermElabM Expr := do
     none
 
 /-- Coherence tactic for bicategories. -/
-def bicategory_coherence (g : MVarId) : TermElabM Unit := g.withContext do
+def bicategoryCoherence (g : MVarId) : TermElabM Unit := g.withContext do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 256 (synthInstance.maxSize.get opts))) do
   let thms := [``BicategoricalCoherence.iso, ``Iso.trans, ``Iso.symm, ``Iso.refl,
