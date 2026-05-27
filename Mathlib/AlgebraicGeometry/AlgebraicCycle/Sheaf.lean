@@ -100,13 +100,10 @@ def add_mem' [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (U : X.Ope
       by_cases hZ : coheight Z = 1
       · have := krullDimLE_of_coheight hZ
         by_cases o : Z ∈ U
-        · simp [restrict_eq_of_mem _ _ _ o,
-                div_eq_ord_of_coheight_eq_one _ _ _ hZ, Scheme.ord]
+        · simp only [restrict_eq_of_mem _ _ _ o, div_eq_ord_of_coheight_eq_one _ _ _ hZ]
           have : IsDiscreteValuationRing ↑(X.presheaf.stalk Z) :=
               IsRegularInCodimensionOne.stalk_dvr Z hZ
-          have := @ordFrac_add (X.presheaf.stalk Z)
-            _ _ _ (X.functionField) _ (stalkFunctionFieldAlgebra X Z) _ a b h
-          simp_all
+          exact ordZ_add hZ ha0 hb0 h
         · simp [restrict_eq_zero_of_not_mem _ _ _ o]
       · by_cases o : Z ∈ U
         · simp only [restrict_eq_of_mem _ _ _ o, inf_le_iff]
@@ -150,16 +147,12 @@ def smul_mem_nonempty (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] (a :
           this
     by_cases hz : coheight z = 1
     · by_cases o : z ∈ U
-      · simp only [restrict_eq_of_mem _ _ _ o, div_eq_ord_of_coheight_eq_one _ _ _ hz, Scheme.ord,
-        Multiplicative.toAdd_le, WithZero.unzero_le_unzero]
+      · simp only [restrict_eq_of_mem _ _ _ o, div_eq_ord_of_coheight_eq_one _ _ _ hz]
         let i := TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨z, o⟩
         have : Ring.KrullDimLE 1 ↑(X.presheaf.stalk z) := krullDimLE_of_coheight hz
         let test : IsScalarTower ↑Γ(X, U) ↑(X.presheaf.stalk z) ↑X.functionField :=
             AlgebraicGeometry.functionField_isScalarTower X U ⟨z, o⟩
-        apply @ordFrac_le_smul _ _ _ _ _ _ _ _ _ _ _ _ _ test a ?_ f
-        · suffices ((algebraMap ↑Γ(X, U) ↑(X.presheaf.stalk z)) a) • f ≠ 0 by
-            exact left_ne_zero_of_smul this
-          simpa [algebraMap_smul]
+        exact ordZ_le_smul _ o (left_ne_zero_of_smul nez) _
       · simp [restrict_eq_zero_of_not_mem _ _ _ o]
     · by_cases o : z ∈ U
       · simp [restrict_eq_of_mem _ _ _ o,
@@ -655,6 +648,101 @@ def Valuation.integer' {R : Type u} {Γ₀ : Type v} [Ring R] [LinearOrderedComm
       suffices x • y ∈ {x | v x ≤ n} by exact Set.mem_setOf.mpr this
       simp only [smul_eq_mul, Set.mem_setOf_eq, map_mul]
       exact mul_le_of_le_one_of_le hx hy
+
+def testing {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
+    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (x : X) (hx : coheight x = 1) :
+    (TopCat.Presheaf.stalk D.sheaf.val.presheaf x).1 =
+    {f : X.functionField | X.ord x hx f ≥ WithZero.coe (Multiplicative.ofAdd D x)} := by
+
+  sorry
+
+noncomputable
+def stalkCocone {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
+    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (x : X) :
+    Cocone <| ((inclusion x).op ⋙ D.sheaf.val.presheaf) where
+  pt := (forget₂ RingCat Ab).obj ((forget₂ CommRingCat RingCat).obj X.functionField)
+  ι := {
+    app U :=
+      AddCommGrpCat.ofHom {
+        toFun f := f.1
+        map_zero' := rfl
+        map_add' := fun _ _ ↦ rfl
+      }
+    naturality U V f := by
+      haveI : Nonempty ((inclusion x).op.obj V).unop := ⟨⟨x, V.unop.2⟩⟩
+      apply AddCommGrpCat.hom_ext
+      ext s
+      exact Sheaf.mapFunApplyNonempty D _ s
+  }
+
+noncomputable
+def stalkToFunctionField {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
+    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (x : X) :
+    (TopCat.Presheaf.stalk D.sheaf.val.presheaf x) ⟶ ((forget₂ CommRingCat RingCat ⋙
+    forget₂ RingCat Ab).obj X.functionField) :=
+  colimit.desc _ (D.stalkCocone x)
+
+@[simp]
+lemma stalkToFunctionField_germ {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
+    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (x : X) (U : X.Opens) (hxU : x ∈ U)
+    (s : Sheaf.carrier D U) :
+    D.stalkToFunctionField x (TopCat.Presheaf.germ D.sheaf.val.presheaf U x hxU s) = s.1 := by
+  simpa [stalkToFunctionField, TopCat.Presheaf.germ] using colimit.ι_desc_apply _ _ _
+
+lemma stalkToFunctionField_injective {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
+    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (x : X) :
+    Function.Injective (D.stalkToFunctionField x) := by
+  intro a b hab
+  obtain ⟨U, hxU, sa, rfl⟩ := TopCat.Presheaf.germ_exist D.sheaf.val.presheaf x a
+  obtain ⟨V, hxV, sb, rfl⟩ := TopCat.Presheaf.germ_exist D.sheaf.val.presheaf x b
+  rw [stalkToFunctionField_germ, stalkToFunctionField_germ] at hab
+  refine TopCat.Presheaf.germ_ext (F := D.sheaf.val.presheaf) (U ⊓ V) ⟨hxU, hxV⟩
+    (homOfLE inf_le_left) (homOfLE inf_le_right) ?_
+  haveI : Nonempty (U ⊓ V : X.Opens) := ⟨⟨x, ⟨hxU, hxV⟩⟩⟩
+  apply Subtype.ext
+  exact (Sheaf.mapFunApplyNonempty D inf_le_left sa).trans
+    (hab.trans (Sheaf.mapFunApplyNonempty D inf_le_right sb).symm)
+
+#check exists_nhd_mem_support_implies_specializes_of_mem_support_within
+lemma sdfn {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
+    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ)
+    {f : X.functionField} (z : X) :
+    ∃ U : X.Opens, z ∈ U ∧ ∀ x ∈ U, (h : coheight x = 1) → ordZ x h f ≠ 0 → x ⤳ z  := by
+  by_cases o : f = 0
+  · /-
+    Note, this holds by our choice of junk value for div 0 (which we have chosen to just be the zero
+    divisor)
+    -/
+    use ⊤
+    simp [o, ordZ]
+  obtain ⟨U, hU1, hU2, hU3⟩ := exists_nhd_mem_support_implies_specializes_of_mem_support_within (div f o) z (by simp)
+
+  use ⟨U, hU1⟩
+  refine ⟨hU2, ?_⟩
+  simp [div] at hU3
+
+
+  /-
+  We can use the set we constructed which only has points in the support of div f which specialize
+  to z, then we're basically done
+  -/
+  sorry
+
+lemma range_stalkToFunctionField {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
+    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (x : X) (hx : coheight x = 1) :
+    Set.range (D.stalkToFunctionField x) = {f : X.functionField | X.ordZ x hx ≤ D x} := by
+  ext f
+  constructor
+  · intro h
+    /-
+    Again I think this is just a case of constructing a set where `f` has no zeros or poles.
+    -/
+    sorry
+  · intro h
+    /-
+    Here we want to construct a set where `f` has no zeros or poles
+    -/
+    sorry
 
 noncomputable
 def genericStalkToFunctionField {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
