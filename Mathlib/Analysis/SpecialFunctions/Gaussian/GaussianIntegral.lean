@@ -292,7 +292,7 @@ theorem integral_gaussian_complex_Ioi {b : ℂ} (hb : 0 < re b) :
   have h_eq : ∫ x : ℝ in Iic 0, f x = ∫ x : ℝ in Ioi 0, f x := by
     calc
       ∫ x : ℝ in Iic 0, f x = ∫ x : ℝ in Ioi 0, f (-x) := by
-        simpa [f] using (integral_comp_neg_Ioi (c := 0) (f := f)).symm
+        simpa [f] using (integral_comp_neg_Ioi 0 f).symm
       _ = ∫ x : ℝ in Ioi 0, f x := by
         refine setIntegral_congr_fun measurableSet_Ioi ?_
         intro x hx

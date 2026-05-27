@@ -71,8 +71,8 @@ theorem continuous_of_linear_of_boundₛₗ {f : E → F} (h_add : ∀ x y, f (x
 
 theorem continuous_of_linear_of_bound {f : E → G} (h_add : ∀ x y, f (x + y) = f x + f y)
     (h_smul : ∀ (c : 𝕜) (x), f (c • x) = c • f x) {C : ℝ} (h_bound : ∀ x, ‖f x‖ ≤ C * ‖x‖) :
-    Continuous f := by
-  simpa using (continuous_of_linear_of_boundₛₗ (σ := RingHom.id 𝕜) h_add h_smul h_bound)
+    Continuous f :=
+  continuous_of_linear_of_boundₛₗ (σ := RingHom.id 𝕜) h_add h_smul h_bound
 
 @[simp, norm_cast]
 theorem LinearMap.mkContinuous_coe (C : ℝ) (h : ∀ x, ‖f x‖ ≤ C * ‖x‖) :
