@@ -505,7 +505,7 @@ lemma exists_mem_support_mem_erase_mem_support_takeUntil_eq_empty (s : Finset V)
     have := p.length_takeUntil_le hx
     lia
   obtain ⟨y, hys, hyp, h⟩ := ih _ this (s.erase x) h rfl
-  use y, mem_of_mem_erase hys, support_takeUntil_subset p hx hyp
+  use y, mem_of_mem_erase hys, support_takeUntil_subset_support p hx hyp
   rwa [takeUntil_takeUntil, erase_right_comm, filter_erase, erase_eq_of_notMem] at h
   simp only [mem_filter, mem_erase, ne_eq, not_and, and_imp]
   rintro hxy -
@@ -577,6 +577,15 @@ set_option backward.isDefEq.respectTransparency false in
 lemma preconnected_induce_iff {s : Set V} :
     (G.induce s).Preconnected ↔ ((⊤ : G.Subgraph).induce s).Preconnected := by
   rw [induce_eq_coe_induce_top, ← Subgraph.preconnected_iff]
+
+lemma preconnected_induce_iff_forall_exists_walk {s : Set V} :
+    (G.induce s).Preconnected ↔
+    ∀ ⦃u v⦄, u ∈ s → v ∈ s → ∃ p : G.Walk u v, ∀ x ∈ p.support, x ∈ s := by
+  refine ⟨fun hs u v hu hv => ?_,
+    fun h ⟨u, hu⟩ ⟨v, hv⟩ => (h hu hv).elim fun p hp => ⟨p.induce s hp⟩⟩
+  obtain ⟨p, hp⟩ := (Subgraph.preconnected_iff_forall_exists_walk_subgraph _).mp
+    (preconnected_induce_iff.mp hs) hu hv
+  exact ⟨p, fun x hx => hp.1 (p.mem_verts_toSubgraph.mpr hx)⟩
 
 set_option backward.isDefEq.respectTransparency false in
 lemma connected_induce_iff {s : Set V} :
