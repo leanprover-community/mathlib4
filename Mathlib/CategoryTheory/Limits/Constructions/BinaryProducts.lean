@@ -64,9 +64,9 @@ def isPullbackOfIsTerminalIsProduct {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (h
     IsLimit (PullbackCone.mk _ _ (show h ≫ f = k ≫ g from H₁.hom_ext _ _)) := by
   apply PullbackCone.isLimitAux'
   intro s
-  use H₂.lift (BinaryFan.mk s.fst s.snd)
-  use H₂.fac (BinaryFan.mk s.fst s.snd) ⟨WalkingPair.left⟩
-  use H₂.fac (BinaryFan.mk s.fst s.snd) ⟨WalkingPair.right⟩
+  use BinaryFan.IsLimit.lift H₂ s.fst s.snd
+  use BinaryFan.IsLimit.lift_fst _ _ _
+  use BinaryFan.IsLimit.lift_snd _ _ _
   intro m h₁ h₂
   apply H₂.hom_ext
   rintro ⟨⟨⟩⟩
@@ -171,9 +171,9 @@ def isPushoutOfIsInitialIsCoproduct {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (h
     IsColimit (PushoutCocone.mk _ _ (show h ≫ f = k ≫ g from H₁.hom_ext _ _)) := by
   apply PushoutCocone.isColimitAux'
   intro s
-  use H₂.desc (BinaryCofan.mk s.inl s.inr)
-  use H₂.fac (BinaryCofan.mk s.inl s.inr) ⟨WalkingPair.left⟩
-  use H₂.fac (BinaryCofan.mk s.inl s.inr) ⟨WalkingPair.right⟩
+  use BinaryCofan.IsColimit.desc H₂ s.inl s.inr
+  use BinaryCofan.IsColimit.inl_desc H₂ _ _
+  use BinaryCofan.IsColimit.inr_desc H₂ _ _
   intro m h₁ h₂
   apply H₂.hom_ext
   rintro ⟨⟨⟩⟩
