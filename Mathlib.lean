@@ -4040,6 +4040,7 @@ public import Mathlib.Data.List.Perm.Basic
 public import Mathlib.Data.List.Perm.Lattice
 public import Mathlib.Data.List.Perm.Subperm
 public import Mathlib.Data.List.Permutation
+public import Mathlib.Data.List.PerronFrobenius
 public import Mathlib.Data.List.Pi
 public import Mathlib.Data.List.Prime
 public import Mathlib.Data.List.ProdSigma
