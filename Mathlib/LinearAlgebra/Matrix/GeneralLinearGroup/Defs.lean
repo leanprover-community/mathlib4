@@ -279,10 +279,7 @@ lemma mapGL_coe_matrix (g : SpecialLinearGroup n R) :
     ((mapGL S g) : Matrix n n S) = g.map (algebraMap R S) :=
   rfl
 
-/-- The chained coercion `SL(n, R) → GL(n, S)` commutes with integer powers: coercing a power
-equals raising the coerced base to the same power. (Just `MonoidHom.map_zpow` applied to
-`mapGL S`, which is the explicit form of this coercion; but stated as a `@[simp]` rewrite in
-the direction Lean's elaborator produces.) -/
+/-- `mapGL` commutes with integer powers. -/
 @[simp]
 lemma mapGL_zpow (g : SpecialLinearGroup n R) (k : ℤ) :
     mapGL S (g^k) = (mapGL S g)^k :=

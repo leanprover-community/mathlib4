@@ -211,22 +211,21 @@ lemma galoisProd_zero_eq_one {g : ℍ → α} : galoisProd 0 g = 1 :=
   funext fun _ ↦ Finset.prod_range_zero _
 
 /-- The Galois product of a constant function `c` is `c^N`. -/
-@[simp]
 lemma galoisProd_const (c : α) (τ : ℍ) :
     galoisProd N (fun _ ↦ c) τ = c ^ N := by
-  rw [galoisProd_apply, Finset.prod_const, Finset.card_range]
+  simp
 
 /-- The Galois product distributes over pointwise multiplication of functions. -/
 lemma galoisProd_mul (g h : ℍ → α) :
     galoisProd N (g * h) = galoisProd N g * galoisProd N h := by
   ext τ
-  simp [Pi.mul_apply, Finset.prod_mul_distrib]
+  simp [Finset.prod_mul_distrib]
 
 /-- The Galois product distributes over multiplication by a constant function. -/
 lemma galoisProd_const_mul (c : α) (g : ℍ → α) :
     galoisProd N (fun τ ↦ c * g τ) = fun τ ↦ c ^ N * galoisProd N g τ := by
   ext τ
-  simp [Finset.prod_mul_distrib, Finset.prod_const, Finset.card_range]
+  simp [Finset.prod_mul_distrib]
 
 end GaloisProd
 
@@ -242,8 +241,7 @@ lemma galoisProd_periodic_one (hN : 0 < N)
   simp only [Function.comp_apply, galoisProd_apply]
   obtain ⟨n, rfl⟩ : ∃ n, N = n + 1 := ⟨N - 1, by lia⟩
   by_cases hw : 0 < w.im
-  · have hw1 : 0 < (w + 1).im := by simpa using hw
-    rw [ofComplex_apply_of_im_pos hw1, ofComplex_apply_of_im_pos hw,
+  · rw [ofComplex_apply_of_im_pos (by simpa using hw), ofComplex_apply_of_im_pos hw,
       Finset.prod_range_succ' (fun j ↦ f (ofComplex (w + 1 - ↑j))),
       Finset.prod_range_succ (fun j ↦ f (ofComplex (w - ↑j)))]
     have hinner : ∏ j ∈ Finset.range n, f (ofComplex (w + 1 - ↑(j + 1))) =
@@ -256,9 +254,8 @@ lemma galoisProd_periodic_one (hN : 0 < N)
       rw [show w + 1 - ↑(0 : ℕ) = (w - ↑n) + ↑(n + 1 : ℕ) by push_cast; ring]
       exact hf_per (w - ↑n)
     rw [hinner, hbdry]
-  · have hw0 : w.im ≤ 0 := not_lt.mp hw
-    have hw1 : (w + 1).im ≤ 0 := by simpa using hw0
-    rw [ofComplex_apply_of_im_nonpos hw1, ofComplex_apply_of_im_nonpos hw0]
+  · rw [ofComplex_apply_of_im_nonpos (by simpa using not_lt.mp hw),
+      ofComplex_apply_of_im_nonpos (not_lt.mp hw)]
 
 /-- If `f` is holomorphic on `ℍ`, so is `galoisProd N f`. -/
 lemma galoisProd_mdiff (hf_mdiff : MDiff f) : MDiff (galoisProd N f) := by
@@ -329,7 +326,7 @@ lemma cuspFunction_one_galoisProd_pow_eq (hN : 0 < N)
     simp only [Function.Periodic.qParam, ← Complex.exp_nat_mul, Complex.ofReal_one, div_one,
       Complex.ofReal_natCast]
     congr 1
-    field_simp
+    field_simp [hNC_ne]
   rw [hqN, eq_cuspFunction τ one_ne_zero (galoisProd_periodic_one hN hf_per), galoisProd_apply]
   refine Finset.prod_congr rfl fun j _ ↦ ?_
   have him : 0 < ((τ : ℂ) - ↑j).im := by
@@ -369,8 +366,7 @@ lemma qExpansion_one_galoisProd_order_eq_qExpansion_self_order (hN : 0 < N)
       analyticOrderAt_congr (cuspFunction_one_galoisProd_pow_eq hN hf_per hf_bdd hf_mdiff),
       ← Finset.prod_fn, analyticOrderAt_prod h_factor_an,
       Finset.sum_congr rfl h_factor_order, Finset.sum_const, Finset.card_range, nsmul_eq_mul]
-  rw [mul_comm ML] at h_combine
-  exact ENat.mul_left_cancel₀ (mod_cast hN.ne') (ENat.coe_ne_top _) h_combine
+  exact ENat.mul_left_cancel₀ (mod_cast hN.ne') (ENat.coe_ne_top _) (mul_comm ML _ ▸ h_combine)
 
 end GaloisProdComplex
 
@@ -436,12 +432,10 @@ lemma image_T_pow_invariant_under_T_mul
     group]
   by_cases hj1 : (j : ℕ) + 1 < 𝒢.integerCuspWidth
   · exact ⟨⟨(j : ℕ) + 1, hj1⟩, Finset.mem_univ _, rfl⟩
-  · have hj_eq : (j : ℕ) + 1 = 𝒢.integerCuspWidth := by
-      have := j.isLt
-      lia
+  · have hj_eq : (j : ℕ) + 1 = 𝒢.integerCuspWidth := by lia
     refine ⟨⟨0, Subgroup.integerCuspWidth_pos⟩, Finset.mem_univ _, ?_⟩
     rw [hj_eq, QuotientGroup.eq, Subgroup.mem_subgroupOf]
-    simpa using Subgroup.T_zpow_integerCuspWidth_mem (𝒢 := 𝒢)
+    simpa using Subgroup.T_pow_integerCuspWidth_mem (𝒢 := 𝒢)
 
 /-- The action of `T` (via `mapGL`) on `𝒮ℒ ⧸ (𝒢 ⊓ 𝒮ℒ)` permutes the image of the `T^j` cosets. -/
 lemma image_T_pow_invariant_under_T_smul
@@ -483,7 +477,7 @@ lemma image_T_pow_smul_inv_iff
     Finset.univ.image (fun j : Fin 𝒢.integerCuspWidth ↦
       (⟦(Matrix.SpecialLinearGroup.mapGL ℝ).rangeRestrict
           ((ModularGroup.T : SL(2, ℤ))^(j : ℕ))⟧ :
-        𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ))) with himage_def
+        𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ)))
   refine ⟨fun hq ↦ ?_, fun hq ↦ ?_⟩
   · have h := image_T_pow_invariant_under_T_smul (𝒢 := 𝒢) hq
     rwa [smul_inv_smul] at h
@@ -542,7 +536,7 @@ lemma analyticAt_cuspFunction_one_norm_rest
     ∃ rest : ℍ → ℂ,
       Function.Periodic (rest ∘ ofComplex) 1 ∧
       AnalyticAt ℂ (cuspFunction 1 rest) 0 ∧
-      ∀ τ : ℍ, (ModularForm.norm 𝒮ℒ f : ℍ → ℂ) τ =
+      ∀ τ : ℍ, ModularForm.norm 𝒮ℒ f τ =
         (∏ j ∈ Finset.range 𝒢.integerCuspWidth, f (ofComplex ((τ : ℂ) - j))) * rest τ := by
   classical
   set h_𝒢 := 𝒢.integerCuspWidth
@@ -556,7 +550,7 @@ lemma analyticAt_cuspFunction_one_norm_rest
     Subgroup.quotient_T_pow_injective_integerCuspWidth (𝒢 := 𝒢)
   let rest : ℍ → ℂ := fun τ ↦
     ∏ q ∈ Finset.univ.filter (· ∉ image), SlashInvariantForm.quotientFunc f q τ
-  have h_rest_eq : (rest : ℍ → ℂ) =
+  have h_rest_eq : rest =
       ∏ q ∈ Finset.univ.filter (· ∉ image), SlashInvariantForm.quotientFunc f q :=
     funext fun _ ↦ (Finset.prod_apply ..).symm
   have h_rest_mdiff : MDiff rest :=
