@@ -240,7 +240,16 @@ theorem not_isNonempty_iff : ¬H.IsNonempty ↔ H = ⊥ :=
 
 variable (H) in
 lemma eq_bot_or_isNonempty : H = ⊥ ∨ H.IsNonempty := by
-  
+  have h : (V(H) = ∅ ∧ E(H) = ∅) ∨ (V(H).Nonempty ∨ E(H).Nonempty) := by grind [Set.Nonempty]
+  cases h with
+  | inl empty => (
+    left
+    apply Hypergraph.ext empty.1 empty.2
+  )
+  | inr nonempty => (
+    right
+    grind [IsNonempty]
+  )
 
 /-- A hypergraph is trivial if it has at least one vertex but no edges. -/
 @[expose]
