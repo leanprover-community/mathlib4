@@ -54,7 +54,8 @@ practice.
 diffeomorphism, manifold
 -/
 
-public section
+@[expose] public section
+
 
 open scoped Manifold Topology ContDiff
 
@@ -145,7 +146,7 @@ theorem coe_toEquiv (h : M ≃ₘ^n⟮I, I'⟯ M') : ⇑h.toEquiv = h :=
 
 @[simp, norm_cast]
 theorem coe_coe (h : M ≃ₘ^n⟮I, I'⟯ M') : ⇑(h : C^n⟮I, M; I', M'⟯) = h :=
-  (rfl)
+  rfl
 
 @[simp]
 theorem toEquiv_inj {h h' : M ≃ₘ^n⟮I, I'⟯ M'} : h.toEquiv = h'.toEquiv ↔ h = h' :=
@@ -174,11 +175,11 @@ protected def refl : M ≃ₘ^n⟮I, I⟯ M where
 
 @[simp]
 theorem refl_toEquiv : (Diffeomorph.refl I M n).toEquiv = Equiv.refl _ :=
-  (rfl)
+  rfl
 
 @[simp]
 theorem coe_refl : ⇑(Diffeomorph.refl I M n) = id :=
-  (rfl)
+  rfl
 
 end
 
@@ -199,10 +200,10 @@ theorem refl_trans (h : M ≃ₘ^n⟮I, I'⟯ M') : (Diffeomorph.refl I M n).tra
 
 @[simp]
 theorem coe_trans (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : M' ≃ₘ^n⟮I', J⟯ N) : ⇑(h₁.trans h₂) = h₂ ∘ h₁ :=
-  (rfl)
+  rfl
 
 /-- Inverse of a diffeomorphism. -/
-@[expose, symm]
+@[symm]
 protected def symm (h : M ≃ₘ^n⟮I, J⟯ N) : N ≃ₘ^n⟮J, I⟯ M where
   contMDiff_toFun := h.contMDiff_invFun
   contMDiff_invFun := h.contMDiff_toFun
@@ -231,15 +232,15 @@ theorem symm_trans_self (h : M ≃ₘ^n⟮I, J⟯ N) : h.symm.trans h = Diffeomo
 @[simp]
 theorem symm_trans' (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : M' ≃ₘ^n⟮I', J⟯ N) :
     (h₁.trans h₂).symm = h₂.symm.trans h₁.symm :=
-  (rfl)
+  rfl
 
 @[simp]
 theorem symm_toEquiv (h : M ≃ₘ^n⟮I, J⟯ N) : h.symm.toEquiv = h.toEquiv.symm :=
-  (rfl)
+  rfl
 
 @[simp, mfld_simps]
 theorem toEquiv_coe_symm (h : M ≃ₘ^n⟮I, J⟯ N) : ⇑h.toEquiv.symm = h.symm :=
-  (rfl)
+  rfl
 
 theorem image_eq_preimage_symm (h : M ≃ₘ^n⟮I, J⟯ N) (s : Set M) : h '' s = h.symm ⁻¹' s :=
   h.toEquiv.image_eq_preimage_symm s
@@ -261,24 +262,24 @@ theorem symm_image_image (h : M ≃ₘ^n⟮I, J⟯ N) (s : Set M) : h.symm '' h 
   h.toEquiv.symm_image_image s
 
 /-- A diffeomorphism is a homeomorphism. -/
-@[expose] def toHomeomorph (h : M ≃ₘ^n⟮I, J⟯ N) : M ≃ₜ N :=
+def toHomeomorph (h : M ≃ₘ^n⟮I, J⟯ N) : M ≃ₜ N :=
   ⟨h.toEquiv, h.continuous, h.symm.continuous⟩
 
 @[simp]
 theorem toHomeomorph_toEquiv (h : M ≃ₘ^n⟮I, J⟯ N) : h.toHomeomorph.toEquiv = h.toEquiv :=
-  (rfl)
+  rfl
 
 @[simp]
 theorem symm_toHomeomorph (h : M ≃ₘ^n⟮I, J⟯ N) : h.symm.toHomeomorph = h.toHomeomorph.symm :=
-  (rfl)
+  rfl
 
 @[simp]
 theorem coe_toHomeomorph (h : M ≃ₘ^n⟮I, J⟯ N) : ⇑h.toHomeomorph = h :=
-  (rfl)
+  rfl
 
 @[simp]
 theorem coe_toHomeomorph_symm (h : M ≃ₘ^n⟮I, J⟯ N) : ⇑h.toHomeomorph.symm = h.symm :=
-  (rfl)
+  rfl
 
 @[simp]
 theorem contMDiffWithinAt_comp_diffeomorph_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) {f : N → M'} {s x}
@@ -369,22 +370,22 @@ namespace ContinuousLinearEquiv
 variable (e : E ≃L[𝕜] E')
 
 /-- A continuous linear equivalence between normed spaces is a diffeomorphism. -/
-@[expose] def toDiffeomorph : E ≃ₘ[𝕜] E' where
+def toDiffeomorph : E ≃ₘ[𝕜] E' where
   contMDiff_toFun := e.contDiff.contMDiff
   contMDiff_invFun := e.symm.contDiff.contMDiff
   toEquiv := e.toLinearEquiv.toEquiv
 
 @[simp]
 theorem coe_toDiffeomorph : ⇑e.toDiffeomorph = e :=
-  (rfl)
+  rfl
 
 @[simp]
 theorem symm_toDiffeomorph : e.symm.toDiffeomorph = e.toDiffeomorph.symm :=
-  (rfl)
+  rfl
 
 @[simp]
 theorem coe_toDiffeomorph_symm : ⇑e.toDiffeomorph.symm = e.symm :=
-  (rfl)
+  rfl
 
 end ContinuousLinearEquiv
 
@@ -420,22 +421,22 @@ def transContinuousLinearEquiv : ModelWithCorners 𝕜 E' H where
 
 @[simp, mfld_simps]
 theorem coe_transContinuousLinearEquiv : ⇑(I.transContinuousLinearEquiv e) = e ∘ I :=
-  (rfl)
+  rfl
 
 @[simp, mfld_simps]
 theorem coe_transContinuousLinearEquiv_symm :
-    ⇑(I.transContinuousLinearEquiv e).symm = I.symm ∘ e.symm := (rfl)
+    ⇑(I.transContinuousLinearEquiv e).symm = I.symm ∘ e.symm := rfl
 
 theorem transContinuousLinearEquiv_range : range (I.transContinuousLinearEquiv e) = e '' range I :=
   range_comp e I
 
 theorem coe_extChartAt_transContinuousLinearEquiv (x : M) :
     ⇑(extChartAt (I.transContinuousLinearEquiv e) x) = e ∘ extChartAt I x :=
-  (rfl)
+  rfl
 
 theorem coe_extChartAt_transContinuousLinearEquiv_symm (x : M) :
     ⇑(extChartAt (I.transContinuousLinearEquiv e) x).symm = (extChartAt I x).symm ∘ e.symm :=
-  (rfl)
+  rfl
 
 theorem extChartAt_transContinuousLinearEquiv_target (x : M) :
     (extChartAt (I.transContinuousLinearEquiv e) x).target
@@ -541,12 +542,12 @@ def prodCongr (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : N ≃ₘ^n⟮J, J'⟯ N'
 @[simp]
 theorem prodCongr_symm (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : N ≃ₘ^n⟮J, J'⟯ N') :
     (h₁.prodCongr h₂).symm = h₁.symm.prodCongr h₂.symm :=
-  (rfl)
+  rfl
 
 @[simp]
 theorem coe_prodCongr (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : N ≃ₘ^n⟮J, J'⟯ N') :
     ⇑(h₁.prodCongr h₂) = Prod.map h₁ h₂ :=
-  (rfl)
+  rfl
 
 section
 
@@ -560,11 +561,11 @@ def prodComm : (M × N) ≃ₘ^n⟮I.prod J, J.prod I⟯ N × M where
 
 @[simp]
 theorem prodComm_symm : (prodComm I J M N n).symm = prodComm J I N M n :=
-  (rfl)
+  rfl
 
 @[simp]
 theorem coe_prodComm : ⇑(prodComm I J M N n) = Prod.swap :=
-  (rfl)
+  rfl
 
 /-- `(M × N) × N'` is diffeomorphic to `M × (N × N')`. -/
 def prodAssoc : ((M × N) × N') ≃ₘ^n⟮(I.prod J).prod J', I.prod (J.prod J')⟯ M × N × N' where
@@ -595,17 +596,17 @@ def sumCongr (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
   contMDiff_invFun := ContMDiff.sumMap φ.contMDiff_invFun ψ.contMDiff_invFun
 
 lemma sumCongr_symm_symm (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
-    sumCongr φ.symm ψ.symm = (sumCongr φ ψ).symm := (rfl)
+    sumCongr φ.symm ψ.symm = (sumCongr φ ψ).symm := rfl
 
 @[simp, mfld_simps]
 lemma sumCongr_coe (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
-    sumCongr φ ψ = Sum.map φ ψ := (rfl)
+    sumCongr φ ψ = Sum.map φ ψ := rfl
 
 lemma sumCongr_inl (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
-    (sumCongr φ ψ) ∘ Sum.inl = Sum.inl ∘ φ := (rfl)
+    (sumCongr φ ψ) ∘ Sum.inl = Sum.inl ∘ φ := rfl
 
 lemma sumCongr_inr (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
-    (sumCongr φ ψ) ∘ Sum.inr = Sum.inr ∘ ψ := (rfl)
+    (sumCongr φ ψ) ∘ Sum.inr = Sum.inr ∘ ψ := rfl
 
 variable (I M M' n) in
 /-- The canonical diffeomorphism `M ⊕ M' → M' ⊕ M`: this is `Sum.swap` as a diffeomorphism -/
@@ -615,10 +616,10 @@ def sumComm : Diffeomorph I I (M ⊕ M') (M' ⊕ M) n where
   contMDiff_invFun := ContMDiff.swap
 
 @[simp, mfld_simps]
-theorem sumComm_coe : (Diffeomorph.sumComm I M n M' : (M ⊕ M') → (M' ⊕ M)) = Sum.swap := (rfl)
+theorem sumComm_coe : (Diffeomorph.sumComm I M n M' : (M ⊕ M') → (M' ⊕ M)) = Sum.swap := rfl
 
 @[simp, mfld_simps]
-theorem sumComm_symm : (Diffeomorph.sumComm I M n M').symm = Diffeomorph.sumComm I M' n M := (rfl)
+theorem sumComm_symm : (Diffeomorph.sumComm I M n M').symm = Diffeomorph.sumComm I M' n M := rfl
 
 variable (I M M' n) in
 lemma sumComm_inl : (Diffeomorph.sumComm I M n M') ∘ Sum.inl = Sum.inr := by
@@ -645,7 +646,7 @@ def sumAssoc : Diffeomorph I I ((M ⊕ M') ⊕ M'') (M ⊕ (M' ⊕ M'')) n where
 
 @[simp]
 theorem sumAssoc_coe :
-    (sumAssoc I M n M' M'' : (M ⊕ M') ⊕ M'' → M ⊕ (M' ⊕ M'')) = Equiv.sumAssoc M M' M'' := (rfl)
+    (sumAssoc I M n M' M'' : (M ⊕ M') ⊕ M'' → M ⊕ (M' ⊕ M'')) = Equiv.sumAssoc M M' M'' := rfl
 
 variable (I M n) in
 /-- The canonical diffeomorphism `M ⊕ ∅ → M` -/
@@ -655,10 +656,10 @@ def sumEmpty [IsEmpty M'] : Diffeomorph I I (M ⊕ M') M n where
   contMDiff_invFun := ContMDiff.inl
 
 @[simp, mfld_simps]
-theorem sumEmpty_toEquiv [IsEmpty M'] : (sumEmpty I M n).toEquiv = Equiv.sumEmpty M M' := (rfl)
+theorem sumEmpty_toEquiv [IsEmpty M'] : (sumEmpty I M n).toEquiv = Equiv.sumEmpty M M' := rfl
 
 @[simp, mfld_simps]
-lemma sumEmpty_apply_inl [IsEmpty M'] (x : M) : (sumEmpty I M (M' := M') n) (Sum.inl x) = x := (rfl)
+lemma sumEmpty_apply_inl [IsEmpty M'] (x : M) : (sumEmpty I M (M' := M') n) (Sum.inl x) = x := rfl
 
 /-- The unique diffeomorphism between two empty types -/
 protected def empty [IsEmpty M] [IsEmpty M'] : Diffeomorph I I M M' n where
