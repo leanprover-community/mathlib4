@@ -131,7 +131,7 @@ instance : IsNontrivial v where
 
 section Restrict
 
-instance isNontrivial_restrict [v.IsNontrivial] : (v.restrict).IsNontrivial where
+instance isNontrivial_restrict : (v.restrict).IsNontrivial where
   exists_val_nontrivial := by
     obtain ⟨x, ⟨hx0, hx1⟩⟩ := IsNontrivial.exists_val_nontrivial (v := v)
     exact ⟨x, by simp [hx0], by grind [restrict_eq_one_iff]⟩
@@ -158,7 +158,7 @@ theorem exists_val_lt {γ : ℝ≥0} (hγ : γ ≠ 0) : ∃ x ≠ 0, RankOne.hom
     by_contra h0
     rw [dif_pos (by rw [dif_pos ((zero_iff v).mpr h0)]), eq_comm] at hk
     simp at hk
-  · convert h
+  · convert! h
     simp only [restrict_RankOne_hom_eq, coe_comp, Function.comp_apply, ← hk]
     congr 1
     exact (embedding_restrict₀ k).symm
