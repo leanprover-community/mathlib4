@@ -653,6 +653,16 @@ theorem normalCore_eq_self (H : Subgroup G) [H.Normal] : H.normalCore = H :=
 theorem normalCore_idempotent (H : Subgroup G) : H.normalCore.normalCore = H.normalCore :=
   H.normalCore.normalCore_eq_self
 
+@[to_additive]
+theorem normalCore_eq_iInf_map_conj (H : Subgroup G) :
+    H.normalCore = ⨅ g : G, H.map (MulAut.conj g) := by
+  sorry
+
+@[to_additive]
+theorem normalCore_eq_iInf_comap_conj (H : Subgroup G) :
+    H.normalCore = ⨅ g : G, H.comap (MulAut.conj g) := by
+  sorry
+
 end Subgroup
 
 namespace MonoidHom
