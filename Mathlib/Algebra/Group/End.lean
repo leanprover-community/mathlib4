@@ -638,8 +638,13 @@ variable (M) [Mul M]
 /-- If `M` is a type with multiplicative, then multiplicative automorphisms of `M` have the
 structure of a group. -/
 @[to_additive /-- If `M` is a type with addition, then additive automorphisms of `M` have the
-structure of a group. We give `AddAut M` the structure of an additive group rather than a
-multiplicative group to help with `to_additive` translation. -/]
+structure of a group.
+
+We give `AddAut M` the structure of an additive group rather than a multiplicative group to help
+with `to_additive` translation. Without this, any proof in group theory making use of the
+conjugation action `G →* MulAut G` would be impossible to `to_additive`-ize because a correct
+additivization would require inserting `Additive` around `AddAut G` and dealing with these extra
+`Additive`s in the proof, but `to_additive` is unable to do this automatically. -/]
 instance : Group (MulAut M) where
   mul g h := MulEquiv.trans h g
   one := MulEquiv.refl _

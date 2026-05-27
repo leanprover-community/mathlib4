@@ -404,7 +404,7 @@ theorem le_normalizer_map (f : G →* N) : (normalizer H).map f ≤ normalizer (
   intro x hx
   obtain ⟨y, hy, rfl⟩ := Subgroup.mem_map.mp hx
   have : .comp (MulAut.conj (f y)) f = f.comp (MulAut.conj y) := by ext; simp -- todo: extract lemma
-  rw [mem_normalizer_iff_conj_image_eq, ← MonoidHom.coe_coe, ← coe_map, ← SetLike.ext'_iff] at hy ⊢
+  rw [mem_normalizer_iff_map_conj_eq] at hy ⊢
   rw [map_map, this, ← map_map, hy]
 
 @[to_additive]

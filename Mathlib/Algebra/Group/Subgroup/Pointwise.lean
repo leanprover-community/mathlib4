@@ -334,8 +334,7 @@ theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
 lemma normalizer_inf_normalizer_le_normalizer_sup (H K : Subgroup G) :
     normalizer H ⊓ normalizer K ≤ normalizer ((H ⊔ K : Subgroup G) : Set G) := by
   intro g hg
-  simp_rw [mem_inf, mem_normalizer_iff_conj_image_eq, ← MonoidHom.coe_coe (MulAut.conj g),
-    ← coe_map, ← SetLike.ext'_iff, map_sup, hg.1, hg.2] at hg ⊢
+  simp_rw [mem_inf, mem_normalizer_iff_map_conj_eq, map_sup, hg.1, hg.2] at hg ⊢
 
 @[to_additive]
 lemma conj_mem_sup_of_mem_inf_normalizer_of_mem_inf
