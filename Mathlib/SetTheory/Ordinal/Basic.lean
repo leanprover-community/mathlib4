@@ -501,7 +501,7 @@ theorem enum_zero_le {r : α → α → Prop} [IsWellOrder α r] (h0 : 0 < type 
   rw [← enum_typein r a, enum_le_enum r]
   exact bot_le (α := Ordinal)
 
-theorem enum_zero_le {o : Ordinal} (h0 : 0 < o) (a : o.ToType) :
+theorem enum_zero_le' {o : Ordinal} (h0 : 0 < o) (a : o.ToType) :
     enum (α := o.ToType) (· < ·) ⟨0, type_toType _ ▸ h0⟩ ≤ a := by
   rw [← not_lt]
   apply enum_zero_le
@@ -552,7 +552,7 @@ instance small_Ioc (a b : Ordinal.{u}) : Small.{u} (Ioc a b) := small_subset Ioc
 @[implicit_reducible, deprecated WellFoundedLT.toOrderBot (since := "2026-04-12")]
 def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.ToType where
   bot := (enum (· < ·)) ⟨0, _⟩
-  bot_le := enum_zero_le (bot_lt_iff_ne_bot.2 ho)
+  bot_le := enum_zero_le' (bot_lt_iff_ne_bot.2 ho)
 
 set_option linter.deprecated false in
 @[deprecated "use `WellFoundedLT.toOrderBot` if you need an `OrderBot` instance"

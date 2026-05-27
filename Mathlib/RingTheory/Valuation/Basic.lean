@@ -424,9 +424,9 @@ theorem val_eq_one_iff (v : Valuation K Γ₀) {x : K} : v x = 1 ↔ v x⁻¹ = 
   simp
 
 theorem val_le_one_or_val_inv_lt_one (v : Valuation K Γ₀) (x : K) : v x ≤ 1 ∨ v x⁻¹ < 1 := by
-  by_cases h : x = 0
-  · simp [h]
-  · simp [← one_lt_val_iff v h, le_or_gt]
+  obtain rfl | h := eq_or_ne x 0
+  · simp
+  · simp only [← one_lt_val_iff v h, le_or_gt]
 
 /--
 This theorem is a weaker version of `Valuation.val_le_one_or_val_inv_lt_one`, but more symmetric
