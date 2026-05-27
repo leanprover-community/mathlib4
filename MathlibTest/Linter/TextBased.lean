@@ -485,6 +485,9 @@ open Mathlib.Linter.Style.nameCheck
 #guard isBadNameWithUnderscore `Foo `foo.bar_mathlib == true
 #guard isBadNameWithUnderscore `Foo `foo.bar_foo == false
 
+#guard isBadNameWithUnderscore `Mathlib `foo.instBar_foo == true
+#guard isBadNameWithUnderscore `Mathlib `foo.instBar_foo (isInstance := true) == false
+
 end
 
 /- Tests for the `openClassical` linter -/
