@@ -343,7 +343,7 @@ def HasLimit.isoOfEquivalence {F : J ⥤ C} [HasLimit F] {G : K ⥤ C} [HasLimit
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-@[simp]
+@[reassoc (attr := simp)]
 theorem HasLimit.isoOfEquivalence_hom_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C} [HasLimit G]
     (e : J ≌ K) (w : e.functor ⋙ G ≅ F) (k : K) :
     (HasLimit.isoOfEquivalence e w).hom ≫ limit.π G k =
@@ -353,7 +353,7 @@ theorem HasLimit.isoOfEquivalence_hom_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-@[simp]
+@[reassoc (attr := simp)]
 theorem HasLimit.isoOfEquivalence_inv_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C} [HasLimit G]
     (e : J ≌ K) (w : e.functor ⋙ G ≅ F) (j : J) :
     (HasLimit.isoOfEquivalence e w).inv ≫ limit.π F j =
@@ -916,8 +916,8 @@ def HasColimit.isoOfEquivalence {F : J ⥤ C} [HasColimit F] {G : K ⥤ C} [HasC
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-@[simp]
-theorem HasColimit.isoOfEquivalence_hom_π {F : J ⥤ C} [HasColimit F] {G : K ⥤ C} [HasColimit G]
+@[reassoc (attr := simp)]
+theorem HasColimit.ι_isoOfEquivalence_hom {F : J ⥤ C} [HasColimit F] {G : K ⥤ C} [HasColimit G]
     (e : J ≌ K) (w : e.functor ⋙ G ≅ F) (j : J) :
     colimit.ι F j ≫ (HasColimit.isoOfEquivalence e w).hom =
       F.map (e.unit.app j) ≫ w.inv.app _ ≫ colimit.ι G _ := by
@@ -925,12 +925,18 @@ theorem HasColimit.isoOfEquivalence_hom_π {F : J ⥤ C} [HasColimit F] {G : K �
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-@[simp]
-theorem HasColimit.isoOfEquivalence_inv_π {F : J ⥤ C} [HasColimit F] {G : K ⥤ C} [HasColimit G]
+@[reassoc (attr := simp)]
+theorem HasColimit.ι_isoOfEquivalence_inv {F : J ⥤ C} [HasColimit F] {G : K ⥤ C} [HasColimit G]
     (e : J ≌ K) (w : e.functor ⋙ G ≅ F) (k : K) :
     colimit.ι G k ≫ (HasColimit.isoOfEquivalence e w).inv =
       G.map (e.counitInv.app k) ≫ w.hom.app (e.inverse.obj k) ≫ colimit.ι F (e.inverse.obj k) := by
   simp [HasColimit.isoOfEquivalence, IsColimit.coconePointsIsoOfEquivalence_inv]
+
+@[deprecated (since := "2026-05-25")]
+alias HasColimit.isoOfEquivalence_hom_π := HasColimit.ι_isoOfEquivalence_hom
+
+@[deprecated (since := "2026-05-25")]
+alias HasColimit.isoOfEquivalence_inv_π := HasColimit.ι_isoOfEquivalence_inv
 
 section Pre
 

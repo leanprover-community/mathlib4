@@ -282,6 +282,18 @@ instance instZero : Zero (VectorMeasure α M) :=
 instance instInhabited : Inhabited (VectorMeasure α M) :=
   ⟨0⟩
 
+@[nontriviality]
+lemma apply_eq_zero_of_isEmpty [IsEmpty α] (μ : VectorMeasure α M) (s : Set α) :
+    μ s = 0 := by
+  simp [eq_empty_of_isEmpty s]
+
+instance [IsEmpty α] : Subsingleton (VectorMeasure α M) :=
+  ⟨fun μ ν => by ext; rw [apply_eq_zero_of_isEmpty, apply_eq_zero_of_isEmpty]⟩
+
+@[nontriviality]
+theorem eq_zero_of_isEmpty [IsEmpty α] (μ : VectorMeasure α M) : μ = 0 :=
+  Subsingleton.elim μ 0
+
 @[simp]
 theorem coe_zero : ⇑(0 : VectorMeasure α M) = 0 := rfl
 
@@ -313,6 +325,10 @@ def coeFnAddMonoidHom : VectorMeasure α M →+ Set α → M where
   toFun := (⇑)
   map_zero' := coe_zero
   map_add' := coe_add
+
+@[simp]
+theorem coe_finsetSum {ι} (I : Finset ι) (v : ι → VectorMeasure α M) :
+    ⇑(∑ i ∈ I, v i) = ∑ i ∈ I, ⇑(v i) := map_sum coeFnAddMonoidHom v I
 
 end AddCommMonoid
 
