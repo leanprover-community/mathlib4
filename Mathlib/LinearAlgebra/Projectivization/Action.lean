@@ -5,7 +5,6 @@ Authors: David Loeffler, Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.Matrix.Action
 public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.LinearAlgebra.Projectivization.Basic
@@ -128,11 +127,12 @@ theorem smul_eq_self_iff' {M : Type*} [AddCommGroup M] [Module K M]
     specialize ha 1 rfl
     exact (smul_eq_zero_iff_eq g).mp (by aesop)
 
+/-- The fixed points of an invertible matrix acting on the projectivization of a vector
+space are precisely the eigenspaces. -/
 theorem smul_eq_self_iff {ι : Type*} [Fintype ι] [DecidableEq ι]
     {g : GL ι K} {y : Projectivization K (ι → K)} :
     g • y = y ↔ ∃ a, y.submodule ≤ Module.End.eigenspace g.toLin a :=
   smul_eq_self_iff' (g := g.toLin)
-open MulAction LinearEquiv SpecialLinearGroup
 
 theorem specialLinearGroup_smul_def (g : SpecialLinearGroup K V) (D : ℙ K V) :
     g • D = g.toLinearEquiv • D := rfl

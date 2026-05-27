@@ -17,7 +17,7 @@ public import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
 open UpperHalfPlane
 open Matrix GeneralLinearGroup
 
-lemma toOnePoint_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (τ : ℍ) :
+lemma UpperHalfPlane.toOnePoint_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (τ : ℍ) :
     (↑(g • τ) : OnePoint ℂ) = (g.map Complex.ofRealHom) • τ := by
   have : g 1 0 * (τ : ℂ) + g 1 1 ≠ 0 := UpperHalfPlane.denom_ne_zero g τ
   simp [OnePoint.smul_some_eq_ite, this, UpperHalfPlane.coe_smul_of_det_pos hg, num, denom]
@@ -68,15 +68,17 @@ lemma UpperHalfPlane.smul_ne_self_of_isHyperbolic {g : GL (Fin 2) ℝ} (hg : 0 <
 /-- The unique fixed point in the upper half-plane of an elliptic matrix.
 (Junk if `g` is not elliptic.) -/
 def Matrix.GeneralLinearGroup.ellipticFixedPoint (g : GL (Fin 2) ℝ) : ℍ :=
-  .ofComplex ( (g 0 0 - g 1 1) / (2 * g 1 0)
-      + .I * Real.sqrt ( -( (g 0 0 - g 1 1) ^ 2 + 4 * g 1 0 * g 0 1) / (4 * g 1 0 ^ 2) ))
+  letI a := g 0 0; letI b := g 0 1; letI c := g 1 0; letI d := g 1 1
+  .ofComplex <| (a - d) / (2 * c) + .I * Real.sqrt ( -( (a - d) ^ 2 + 4 * c * b) / (4 * c ^ 2) )
 
 lemma Matrix.GeneralLinearGroup.IsElliptic.coe_ellipticFixedPoint {g : GL (Fin 2) ℝ}
-    (hg : g.IsElliptic) : (g.ellipticFixedPoint : ℂ) = ( (g 0 0 - g 1 1) / (2 * g 1 0)
-      + .I * Real.sqrt ( -((g 0 0 - g 1 1) ^ 2 + 4 * g 1 0 * g 0 1) / (4 * g 1 0 ^ 2) )) := by
+    (hg : g.IsElliptic) :
+    letI a := g 0 0; letI b := g 0 1; letI c := g 1 0; letI d := g 1 1
+    (g.ellipticFixedPoint : ℂ) = ( (a - d) / (2 * c)
+      + .I * Real.sqrt ( -((a - d) ^ 2 + 4 * c * b) / (4 * c ^ 2) )) := by
+  letI a := g 0 0; letI b := g 0 1; letI c := g 1 0; letI d := g 1 1
   rw [ellipticFixedPoint, ofComplex_apply_of_im_pos]
-  suffices 0 < -((g 0 0 - g 1 1) ^ 2 + 4 * g 1 0 * g 0 1) / (4 * g 1 0 ^ 2) by
-    simpa [Complex.div_im]
+  suffices 0 < -((a - d) ^ 2 + 4 * c * b) / (4 * c ^ 2) by simpa [Complex.div_im]
   have := hg.c_ne_zero
   simp only [IsElliptic, Matrix.IsElliptic, discr_fin_two, trace_fin_two, det_fin_two] at hg
   apply div_pos
@@ -187,7 +189,10 @@ lemma forall_smul_pos_mul_I_eq_iff {g : GL (Fin 2) ℝ} :
       refine lt_of_le_of_ne' ?_ (Units.ne_zero _)
       simp [Units.smul_def, sq_nonneg]
     rw [eq_false_intro this, false_or]
-    conv => enter [1, t, ht, 1]; rw [← J_smul_pos_mul_I ht, ← SemigroupAction.mul_smul, ← inv_J]
+    conv =>
+      enter [1, t, ht, 1]
+      rw [← (J_smul_eq_self_iff (x := ⟨t * .I, by simpa⟩)).mpr (by simp),
+        ← SemigroupAction.mul_smul, ← inv_J]
     rw [forall_smul_pos_mul_I_eq_iff_of_det_pos]
     · simp only [mul_inv_eq_iff_eq_mul (a := g), smul_one_mul]
     · rw [map_mul, map_inv, det_J, inv_neg_one, mul_neg_one, Units.val_neg]

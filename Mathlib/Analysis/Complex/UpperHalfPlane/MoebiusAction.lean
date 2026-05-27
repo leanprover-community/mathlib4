@@ -408,10 +408,10 @@ lemma denom_J_mul (g : GL (Fin 2) ℝ) (τ : ℂ) : denom (J * g) τ = denom g �
 
 @[simp] lemma inv_J : J⁻¹ = J := by rw [inv_eq_iff_mul_eq_one, ← sq, J_sq]
 
-@[simp] lemma J_smul_pos_mul_I {t : ℝ} (ht : 0 < t) :
-    J • (⟨t * .I, by simpa⟩ : ℍ) = ⟨t * .I, by simpa⟩ := by
-  ext
-  simp [coe_J_smul]
+@[simp] lemma J_smul_eq_self_iff {x : ℍ} : J • x = x ↔ x.re = 0 :=
+  calc
+    J • x = x ↔ -x.re = x.re := by simp [UpperHalfPlane.ext_iff, Complex.ext_iff, coe_J_smul]
+    _ ↔ x.re = 0 := by grind
 
 end J
 
