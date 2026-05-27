@@ -200,9 +200,6 @@ instance commShiftι : P.ι.CommShift A :=
   Functor.CommShift.ofHasShiftOfFullyFaithful _ _ _
 
 -- these definitions are made irreducible to prevent any abuse of defeq
-#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12247
-this requires `allowUnsafeReducibility`. -/
-set_option allowUnsafeReducibility true in
 attribute [irreducible] hasShift commShiftι
 
 section

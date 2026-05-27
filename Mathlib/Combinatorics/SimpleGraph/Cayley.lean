@@ -89,10 +89,6 @@ theorem mulCayley_union (s₁ s₂ : Set M) : mulCayley (s₁ ∪ s₂) = mulCay
 
 end Mul
 
-section MulCommClass
-end MulCommClass
-
-
 section Semigroup
 variable [Semigroup M]
 

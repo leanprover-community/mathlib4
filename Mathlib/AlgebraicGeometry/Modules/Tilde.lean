@@ -112,7 +112,7 @@ theorem toOpen_res (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U) :
     toOpen M U ≫ (modulesSpecToSheaf.obj (tilde M)).presheaf.map i.op = toOpen M V :=
   rfl
 
-instance (f : R) : IsLocalizedModule (.powers f) (toOpen M (basicOpen f)).hom :=
+instance (f : R) : IsLocalizedModule.Away f (toOpen M (basicOpen f)).hom :=
   .of_linearEquiv (.powers f) (StructureSheaf.toOpenₗ R M (basicOpen f))
     ((modulesSpecToSheafIso M).app _).toLinearEquiv.symm
 
@@ -384,7 +384,7 @@ def presentationTilde (s : Set M) (hs : Submodule.span R s = ⊤)
           tilde.map (ModuleCat.ofHom (Finsupp.linearCombination R (↑)))) (by
     simp only [Category.assoc, Iso.hom_inv_id_assoc, Preadditive.IsIso.comp_left_eq_zero]
     rw [← tilde.map_comp, ← ModuleCat.ofHom_comp]
-    convert tilde.map_zero
+    convert! tilde.map_zero
     exact congr(ModuleCat.ofHom $(H₁.linearMap_comp_eq_zero))) ?_
   letI h₁ := ModuleCat.isColimitCokernelCofork _ _ H₁
     (by simp [← LinearMap.range_eq_top, Finsupp.range_linearCombination, hs])

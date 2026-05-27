@@ -107,12 +107,12 @@ theorem tendsto_rpow_div_mul_add (a b c : ℝ) (hb : 0 ≠ b) :
 
 /-- The function `x ^ (1 / x)` tends to `1` at `+∞`. -/
 theorem tendsto_rpow_div : Tendsto (fun x => x ^ ((1 : ℝ) / x)) atTop (𝓝 1) := by
-  convert tendsto_rpow_div_mul_add (1 : ℝ) _ (0 : ℝ) zero_ne_one
+  convert! tendsto_rpow_div_mul_add (1 : ℝ) _ (0 : ℝ) zero_ne_one
   ring
 
 /-- The function `x ^ (-1 / x)` tends to `1` at `+∞`. -/
 theorem tendsto_rpow_neg_div : Tendsto (fun x => x ^ (-(1 : ℝ) / x)) atTop (𝓝 1) := by
-  convert tendsto_rpow_div_mul_add (-(1 : ℝ)) _ (0 : ℝ) zero_ne_one
+  convert! tendsto_rpow_div_mul_add (-(1 : ℝ)) _ (0 : ℝ) zero_ne_one
   ring
 
 /-- The function `exp(x) / x ^ s` tends to `+∞` at `+∞`, for any real number `s`. -/
@@ -373,7 +373,7 @@ theorem isLittleO_log_rpow_rpow_atTop {s : ℝ} (r : ℝ) (hs : 0 < s) :
         filter_upwards [tendsto_log_atTop.eventually_ge_atTop 1] with x hx
         rw [Real.norm_of_nonneg (by positivity)]
         gcongr
-        exacts [hx, le_max_left _ _]
+        exact le_max_left _ _
     _ =o[atTop] fun x => (x ^ (s / r')) ^ r' :=
       ((isLittleO_log_rpow_atTop H).rpow hr <|
         (_root_.tendsto_rpow_atTop H).eventually <| eventually_ge_atTop 0)

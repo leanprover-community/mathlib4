@@ -57,7 +57,7 @@ theorem card_singleton : card {x} = 1 := by
   simpa [notMem_singleton] using card_insert (notMem_empty x)
 
 theorem card_pair_of_ne (h : x ≠ y) : card {x, y} = 2 := by
-  convert card_insert (notMem_singleton.2 h)
+  convert! card_insert (notMem_singleton.2 h)
   rw [card_singleton, one_add_one_eq_two]
 
 theorem card_union_le : card (x ∪ y) ≤ card x + card y := by
@@ -80,7 +80,7 @@ theorem lift_card_range_le {α} [Small.{v, u} α] {f : α → ZFSet.{v}} :
 
 theorem iSup_card_le_card_iUnion {α} [Small.{v, u} α] {f : α → ZFSet.{v}} :
     ⨆ i, card (f i) ≤ card (⋃ i, f i) := by
-  simpa [cardinalMk_coe_sort, ← coe_iUnion, ← lift_iSup (bddAbove_of_small _), -mem_iUnion] using
+  simpa [cardinalMk_coe_sort, ← coe_iUnion, ← lift_iSup bddAbove_of_small, -mem_iUnion] using
     iSup_mk_le_mk_iUnion (f := SetLike.coe ∘ f)
 
 theorem lift_card_iUnion_le_sum_card {α} [Small.{v, u} α] {f : α → ZFSet.{v}} :

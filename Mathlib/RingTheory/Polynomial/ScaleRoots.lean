@@ -169,7 +169,7 @@ theorem scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero {p : S[X]} {f : S →+
     (hs : s ∈ nonZeroDivisors S) : eval₂ f (f r) (scaleRoots p s) = 0 := by
   -- if we don't specify the type with `(_ : S)`, the proof is much slower
   nontriviality S using Subsingleton.eq_zero (_ : S)
-  convert @scaleRoots_eval₂_eq_zero _ _ _ _ p f _ s hr
+  convert! @scaleRoots_eval₂_eq_zero _ _ _ _ p f _ s hr
   rw [← mul_div_assoc, mul_comm, mul_div_cancel_right₀]
   exact map_ne_zero_of_mem_nonZeroDivisors _ hf hs
 
@@ -333,7 +333,7 @@ lemma rootMultiplicity_scaleRoots (p : R[X]) {r a : R} (hr : IsLeftRegular r) :
   obtain rfl | hp := eq_or_ne p 0
   · simp
   obtain ⟨q, e, hq⟩ := exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp a
-  have hq0 : q ≠ 0 := by contrapose! hp; simp_all
+  have hq0 : q ≠ 0 := by contrapose hp; simp_all
   conv_lhs => rw [e]
   rw [mul_scaleRoots', pow_scaleRoots', X_sub_C_scaleRoots, mul_comm, mul_comm _ (q.scaleRoots r),
     rootMultiplicity_mul_X_sub_C_pow (q.scaleRoots_ne_zero hq0 _)]

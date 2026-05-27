@@ -296,7 +296,7 @@ theorem mem_toPSet_iff {o : Ordinal} {x : PSet} : x ∈ o.toPSet ↔ ∃ a < o, 
 theorem rank_toPSet (o : Ordinal) : o.toPSet.rank = o := by
   rw [toPSet, PSet.rank]
   conv_rhs => rw [← _root_.iSup_succ o]
-  convert ToType.mk.symm.iSup_comp (g := fun x ↦ Order.succ x.1.toPSet.rank)
+  convert! ToType.mk.symm.iSup_comp (g := fun x ↦ Order.succ x.1.toPSet.rank)
   rw [rank_toPSet]
 termination_by o
 decreasing_by rename_i x; exact x.2

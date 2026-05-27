@@ -83,7 +83,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
   tfae_have 5 → 1 := by
     rintro ⟨ι, hne, f, hfs, rfl⟩
     exact closure_mono (range_subset_iff.2 hfs) <| csSup_mem_closure (range_nonempty f)
-      (bddAbove_range.{u, u} f)
+      bddAbove_of_small
   tfae_finish
 
 theorem mem_closure_iff_iSup :
@@ -154,12 +154,12 @@ theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
     suffices enumOrd s (⨆ i, g i) = ⨆ i, f i by
       rw [← this]
       exact enumOrd_mem hs _
-    rw [h.map_iSup (bddAbove_of_small _)]
+    rw [h.map_iSup bddAbove_of_small]
     congr
     ext x
     change (enumOrdOrderIso s hs _).val = f x
     rw [OrderIso.apply_symm_apply]
-  · have := csSup_mem_closure (ha.nonempty_Iio.image (enumOrd s)) (bddAbove_of_small _)
+  · have := csSup_mem_closure (ha.nonempty_Iio.image (enumOrd s)) bddAbove_of_small
     have := h.closure_eq ▸ closure_mono (t := s) ?_ this
     · apply (Set.image_subset_range ..).trans_eq
       rw [range_enumOrd hs]
@@ -167,7 +167,7 @@ theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
       · apply csSup_le'
         grind [upperBounds]
       · exact fun b hb ↦ (enumOrd_strictMono hs (lt_add_one b)).trans_le <|
-          le_csSup (bddAbove_of_small _) <| Set.mem_image_of_mem _ (ha.add_one_lt hb)
+          le_csSup bddAbove_of_small <| Set.mem_image_of_mem _ (ha.add_one_lt hb)
 
 open Set Filter Set.Notation
 

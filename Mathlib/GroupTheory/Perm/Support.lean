@@ -95,7 +95,7 @@ theorem Disjoint.inv_right (h : Disjoint f g) : Disjoint f g⁻¹ :=
 @[simp]
 theorem disjoint_inv_left_iff : Disjoint f⁻¹ g ↔ Disjoint f g := by
   refine ⟨fun h => ?_, Disjoint.inv_left⟩
-  convert h.inv_left
+  convert! h.inv_left
 
 @[simp]
 theorem disjoint_inv_right_iff : Disjoint f g⁻¹ ↔ Disjoint f g := by
@@ -194,16 +194,8 @@ def IsSwap (f : Perm α) : Prop :=
 
 @[simp]
 theorem ofSubtype_swap_eq {p : α → Prop} [DecidablePred p] (x y : Subtype p) :
-    ofSubtype (Equiv.swap x y) = Equiv.swap ↑x ↑y :=
-  Equiv.ext fun z => by
-    by_cases hz : p z
-    · rw [swap_apply_def, ofSubtype_apply_of_mem _ hz]
-      split_ifs with hzx hzy
-      · simp_rw [hzx, Subtype.coe_eta, swap_apply_left]
-      · simp_rw [hzy, Subtype.coe_eta, swap_apply_right]
-      · rw [swap_apply_of_ne_of_ne] <;>
-        simp [Subtype.ext_iff, *]
-    · rw [ofSubtype_apply_of_not_mem _ hz, swap_apply_of_ne_of_ne] <;> grind
+    ofSubtype (Equiv.swap x y) = Equiv.swap ↑x ↑y := by
+  grind [ofSubtype_apply_of_mem, ofSubtype_apply_of_not_mem]
 
 theorem IsSwap.of_subtype_isSwap {p : α → Prop} [DecidablePred p] {f : Perm (Subtype p)}
     (h : f.IsSwap) : (ofSubtype f).IsSwap :=
@@ -459,7 +451,7 @@ theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
     and_self_iff, List.nodup_nil] at h
   push Not at h
   apply le_antisymm
-  · convert support_mul_le (swap x y) (swap y z) using 1
+  · convert! support_mul_le (swap x y) (swap y z) using 1
     rw [support_swap h.left.left, support_swap h.right.left]
     simp [-Finset.union_singleton]
   · intro
@@ -481,7 +473,7 @@ theorem support_swap_mul_ge_support_diff (f : Perm α) (x y : α) :
 theorem support_swap_mul_eq (f : Perm α) (x : α) (h : f (f x) ≠ x) :
     (swap x (f x) * f).support = f.support \ {x} := by
   by_cases hx : f x = x
-  · simp [hx, sdiff_singleton_eq_erase, notMem_support.mpr hx, erase_eq_of_notMem]
+  · simp [hx, sdiff_singleton_eq_erase, notMem_support.mpr hx, erase_eq_of_notMem, pull_end]
   ext z
   by_cases hzx : z = x
   · simp [hzx]

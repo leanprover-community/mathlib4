@@ -151,7 +151,7 @@ theorem isClosed_image_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : Is
 
 theorem subfield_ne_real_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
     (extensionEmbedding v).fieldRange ≠ Complex.ofRealHom.fieldRange := by
-  contrapose! hv
+  contrapose hv
   simp only [not_isComplex_iff_isReal, isReal_iff]
   ext x
   obtain ⟨r, hr⟩ := hv ▸ RingHom.mem_fieldRange_self (extensionEmbedding v) (x : v.Completion)
@@ -173,8 +173,10 @@ theorem bijective_extensionEmbedding_of_isComplex {v : InfinitePlace K} (hv : Is
 /-- The ring isomorphism `v.Completion ≃+* ℂ`, when `v` is complex, given by the bijection
 `v.Completion →+* ℂ`. -/
 def ringEquivComplexOfIsComplex {v : InfinitePlace K} (hv : IsComplex v) :
-    v.Completion ≃+* ℂ :=
-  RingEquiv.ofBijective _ (bijective_extensionEmbedding_of_isComplex hv)
+    v.Completion ≃+* ℂ := RingEquiv.ofBijective _ (bijective_extensionEmbedding_of_isComplex hv)
+
+@[simp] theorem ringEquivComplexOfIsComplex_apply {v : InfinitePlace K} (hv : IsComplex v)
+    (x : v.Completion) : ringEquivComplexOfIsComplex hv x = extensionEmbedding v x := rfl
 
 /-- If the infinite place `v` is complex, then `v.Completion` is isometric to `ℂ`. -/
 def isometryEquivComplexOfIsComplex {v : InfinitePlace K} (hv : IsComplex v) :
@@ -198,6 +200,9 @@ theorem bijective_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal 
 def ringEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion ≃+* ℝ :=
   RingEquiv.ofBijective _ (bijective_extensionEmbeddingOfIsReal hv)
 
+@[simp] theorem ringEquivRealOfIsReal_apply {v : InfinitePlace K} (hv : IsReal v)
+    (x : v.Completion) : ringEquivRealOfIsReal hv x = extensionEmbeddingOfIsReal hv x := rfl
+
 /-- If the infinite place `v` is real, then `v.Completion` is isometric to `ℝ`. -/
 def isometryEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion ≃ᵢ ℝ where
   toEquiv := ringEquivRealOfIsReal hv
@@ -213,6 +218,16 @@ theorem algebraMap_coe (x : WithAbs v.1) :
   have := IsScalarTower.algebraMap_apply (WithAbs v.1) v.Completion w.Completion x
   rw [algebraMap_def] at this
   simp [this, algebraMap_def, Algebra.algebraMap_self]
+
+end Completion
+
+section LiesOver
+
+variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) (v : InfinitePlace K)
+
+namespace Completion
+
+variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
 
 /-- Assume that `w.Completion` forms an algebra over `v.Completion` with continuous scalar action,
 such that `IsScalarTower K v.Completion w.Completion`.
@@ -242,28 +257,39 @@ theorem liesOver_conjugate_extensionEmbedding [ContinuousSMul v.Completion w.Com
     · simp [WithAbs.algebraMap_left_apply, WithAbs.algebraMap_right_apply,
         ← ComplexEmbedding.LiesOver.over (conjugate w.embedding) v.embedding]
 
+omit [Algebra K L] in
+@[simp]
+theorem liesOver_extensionEmbedding_apply {φ : w.Completion →+* ℂ}
+    [ComplexEmbedding.LiesOver φ (extensionEmbedding v)] {x : v.Completion} :
+    φ (algebraMap v.Completion w.Completion x) = (extensionEmbedding v) x := by
+  simp_all [liesOver_iff, RingHom.ext_iff]
+
 end Completion
 
 namespace LiesOver
 
 open Completion
 
-variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) [w.1.LiesOver v.1] {v}
+variable [w.1.LiesOver v.1]
 
 theorem isometry_algebraMap : Isometry (algebraMap (WithAbs v.1) (WithAbs w.1)) :=
   AddMonoidHomClass.isometry_of_norm _ fun x ↦ by
     simpa [WithAbs.norm_eq_apply_ofAbs] using
       WithAbs.ofAbs_algebraMap v.1 w.1 x ▸ comp_of_comap_eq (comap_eq w v) x.ofAbs
 
+variable {v}
+
 theorem embedding_liesOver_of_isReal (h : v.IsReal) :
     ComplexEmbedding.LiesOver w.embedding v.embedding where
   over := (comap_eq w v ▸ comap_embedding_of_isReal _ (comap_eq w v ▸ h)).symm
 
 variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
+  [ContinuousSMul v.Completion w.Completion]
 
-theorem extensionEmbedding_liesOver_of_isReal
-    [ContinuousSMul v.Completion w.Completion] (h : v.IsReal) :
+theorem extensionEmbedding_liesOver_of_isReal (h : v.IsReal) :
     ComplexEmbedding.LiesOver (extensionEmbedding w) (extensionEmbedding v) :=
-  letI := embedding_liesOver_of_isReal w h; liesOver_extensionEmbedding w
+  let := embedding_liesOver_of_isReal w h; liesOver_extensionEmbedding w v
+
+end LiesOver
 
 end NumberField.InfinitePlace.LiesOver

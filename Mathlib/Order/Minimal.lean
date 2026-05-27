@@ -514,7 +514,7 @@ namespace OrderIso
 @[to_dual]
 theorem image_setOf_minimal (f : α ≃o β) (P : α → Prop) :
     f '' {x | Minimal P x} = {x | Minimal (fun x ↦ P (f.symm x)) x} := by
-  convert _root_.image_monotone_setOf_minimal (f := f) (by simp [f.le_iff_le])
+  convert! _root_.image_monotone_setOf_minimal (f := f) (by simp [f.le_iff_le])
   aesop
 
 @[to_dual]
