@@ -103,7 +103,7 @@ theorem Complex.tsum_exp_neg_quadratic {a : ℂ} (ha : 0 < a.re) (b : ℂ) :
     rwa [neg_mul, neg_re, neg_lt_zero]
   have Ff_bd : (𝓕 f) =O[cocompact ℝ] (fun x => |x| ^ (-2 : ℝ)) := by
     rw [hFf]
-    have : ∀ (x : ℝ), -↑π / a * (↑x + I * b) ^ 2 =
+    have : ∀ (x : ℝ), -π / a * (x + I * b) ^ 2 =
         -π / a * x ^ 2 + (-2 * π * I * b) / a * x + π * b ^ 2 / a := by
       intro x; ring_nf; rw [I_sq]; ring
     simp_rw [this]
