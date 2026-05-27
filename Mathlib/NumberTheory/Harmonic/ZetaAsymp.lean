@@ -125,6 +125,8 @@ lemma termSum_one (N : ℕ) : termSum 1 N = log (N + 1) - harmonic (N + 1) + 1 :
     push_cast
     ring_nf
 
+@[deprecated (since := "2026-05-27")] alias term_sum_one := termSum_one
+
 /-- The topological sum of `ZetaAsymptotics.term (n + 1) 1` over all `n : ℕ` is `1 - γ`. This is
 proved by directly evaluating the sum of the first `N` terms and using the limit definition of `γ`.
 -/
@@ -198,6 +200,8 @@ lemma termSum_of_lt (N : ℕ) {s : ℝ} (hs : 1 < s) :
       congr 1
       ring_nf
 
+@[deprecated (since := "2026-05-27")] alias term_sum_of_lt := termSum_of_lt
+
 /-- For `1 < s`, the topological sum of `ZetaAsymptotics.term (n + 1) s` over all `n : ℕ` is
 `1 / (s - 1) - ζ s / s`.
 -/
@@ -231,6 +235,8 @@ lemma termTSum_of_lt {s : ℝ} (hs : 1 < s) :
           rw [rpow_sub_one, ← div_mul, div_one, mul_comm, one_div, inv_rpow, ← div_eq_mul_inv]
           · norm_cast
           all_goals positivity
+
+@[deprecated (since := "2026-05-27")] alias term_tsum_of_lt := termTSum_of_lt
 
 /-- Reformulation of `ZetaAsymptotics.termTSum_of_lt` which is useful for some computations
 below. -/
