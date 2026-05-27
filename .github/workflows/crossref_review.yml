@@ -44,13 +44,21 @@ jobs:
             pr_number=outputs.pr_number
             head_sha=outputs.head_sha
 
-      - name: Checkout mathlib-ci
+      # Use the local composite action so the pinned mathlib-ci ref is the
+      # single source of truth (matches olean_report.yaml, etc.). The
+      # validate-ci-scripts-paths lint requires this.
+      - name: Checkout local actions
         if: steps.bridge.outputs.pr_number != ''
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          repository: leanprover-community/mathlib-ci
-          ref: master
-          path: mathlib-ci
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+
+      - name: Get mathlib-ci
+        if: steps.bridge.outputs.pr_number != ''
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
       - name: Run cross-reference review
         if: steps.bridge.outputs.pr_number != ''
@@ -59,4 +67,4 @@ jobs:
           PR_NUMBER: ${{ steps.bridge.outputs.pr_number }}
           HEAD_SHA: ${{ steps.bridge.outputs.head_sha }}
           TSV_PATH: ${{ github.workspace }}/.bridge/crossref-tags.tsv
-        run: bash mathlib-ci/scripts/crossref_review/post-comment.sh
+        run: bash "${CI_SCRIPTS_DIR}/crossref_review/post-comment.sh"
