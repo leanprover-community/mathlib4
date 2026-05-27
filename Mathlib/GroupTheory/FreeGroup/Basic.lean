@@ -971,6 +971,7 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
         simp [zpow_add, ih, sub_eq_add_neg])
 
 /-- The multiplicative equivalence between the free group on a singleton and `Multiplicative ℤ`. -/
+@[simps]
 def freeGroupUnitMulEquivInt : FreeGroup Unit ≃* Multiplicative ℤ where
   toFun x := Multiplicative.ofAdd (freeGroupUnitEquivInt x)
   invFun n := freeGroupUnitEquivInt.symm n.toAdd
