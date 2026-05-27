@@ -25,6 +25,10 @@ This file defines the extension of a fractional ideal along a ring homomorphism.
 ## Main results
 
 * `FractionalIdeal.extendedHom_injective`: the map `FractionalIdeal.extendedHom` is injective.
+* `FractionalIdeal.extended_extended`: extending fractional ideals is compatible with composition
+  of ring homomorphisms.
+* `FractionalIdeal.extendedHom'_comp`: the homomorphisms induced by extension of fractional
+  ideals compose in towers.
 * `Ideal.map_algebraMap_injective`: For `A ⊆ B` an extension of Dedekind domains, the map that
   sends an ideal `I` of `A` to `I·B` is injective.
 
@@ -152,6 +156,9 @@ theorem extended_mul : (I * J).extended L hf = (I.extended L hf) * (J.extended L
   · rcases Set.mem_mul.mp h with ⟨y, ⟨i, hi, rfl⟩, z, ⟨j, hj, rfl⟩, rfl⟩
     exact Submodule.subset_span ⟨i * j, mul_mem_mul hi hj, by simp⟩
 
+/-- Pointwise compatibility of extension of fractional ideals with composition of ring
+homomorphisms. See `FractionalIdeal.extendedHom'_comp` for the corresponding statement as an
+equality of homomorphisms. -/
 theorem extended_extended {C W : Type*} [CommRing C] [CommRing W] [Algebra C W]
     {P : Submonoid C} [IsLocalization P W] {g : B →+* C} (hg : N ≤ Submonoid.comap g P) :
       (I.extended L hf).extended W hg =
@@ -210,6 +217,18 @@ def extendedHom' : FractionalIdeal M K →+* FractionalIdeal N L where
   map_zero' := extended_zero L hf
   map_mul' := extended_mul L hf
   map_add' := extended_add L hf
+
+/-- The homomorphisms induced by extension of fractional ideals compose in towers. -/
+theorem extendedHom'_comp {C W : Type*} [CommRing C] [CommRing W] [Algebra C W]
+    {P : Submonoid C} [IsLocalization P W] {g : B →+* C} (hg : N ≤ Submonoid.comap g P) :
+    (extendedHom' (A := B) (K := L) W hg).comp
+      (extendedHom' (A := A) (K := K) L hf) =
+        extendedHom' (A := A) (B := C) (f := g.comp f) (K := K) W
+          (hf.trans (Submonoid.monotone_comap (f := f) hg)) := by
+  apply RingHom.ext
+  intro I
+  exact extended_extended (A := A) (B := B) (f := f) (K := K) (M := M) (L := L)
+    (N := N) (hf := hf) (I := I) (C := C) (W := W) (P := P) (g := g) hg
 
 end RingHom
 
