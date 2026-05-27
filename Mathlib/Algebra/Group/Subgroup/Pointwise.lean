@@ -331,29 +331,16 @@ theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
   exact mul_mem hyz (inv_mem (h hz))
 
 @[to_additive]
-lemma conj_mem_sup_of_mem_inf_normalizer_of_mem_inf
-    {H K : Subgroup G} {s : G} (hs : s ∈ normalizer H ⊓ normalizer K) (g : G) (hg : g ∈ H ⊔ K) :
-    s * g * s⁻¹ ∈ H ⊔ K := by
-  simp only [mem_inf, mem_normalizer_iff] at hs
-  rw [sup_eq_closure] at hg
-  refine closure_induction ?_ ?_ ?_ ?_ hg
-  · intro x hx
-    obtain hl | hr := (mem_union x _ _).mpr hx
-    · exact mem_sup_left (by rwa [← hs.1])
-    · exact mem_sup_right (by rwa [← hs.2])
-  · simp
-  · intros x y hx hy hsx hsy
-    rw [show s * (x * y) * s⁻¹ = (s * x * s⁻¹) * (s * y * s⁻¹) by simp]
-    exact mul_mem hsx hsy
-  · intros x hx hsx
-    exact inv_mem_iff.mp (by simpa [← mul_assoc])
-
-@[to_additive]
 lemma normalizer_inf_normalizer_le_normalizer_sup (H K : Subgroup G) :
     normalizer H ⊓ normalizer K ≤ normalizer ((H ⊔ K : Subgroup G) : Set G) := by
-  intro s hs g
-  refine ⟨conj_mem_sup_of_mem_inf_normalizer_of_mem_inf hs g, ?_⟩
-  simpa [← mul_assoc] using conj_mem_sup_of_mem_inf_normalizer_of_mem_inf (inv_mem hs) (s * g * s⁻¹)
+  intro g hg
+  simp_rw [mem_inf, mem_normalizer_iff_map_conj_eq, map_sup, hg.1, hg.2] at hg ⊢
+
+@[to_additive]
+lemma conj_mem_sup_of_mem_inf_normalizer_of_mem_inf
+    {H K : Subgroup G} {s : G} (hs : s ∈ normalizer H ⊓ normalizer K) (g : G) (hg : g ∈ H ⊔ K) :
+    s * g * s⁻¹ ∈ H ⊔ K :=
+  (normalizer_inf_normalizer_le_normalizer_sup H K hs g).mp hg
 
 @[to_additive]
 lemma normalizer_le_normalizer_sup_of_normalizer_le_left
@@ -393,13 +380,13 @@ theorem smul_mem_of_mem_closure_of_mem {X : Type*} [MulAction G X] {s : Set G} {
 
 @[to_additive]
 theorem smul_opposite_image_mul_preimage' (g : G) (h : Gᵐᵒᵖ) (s : Set G) :
-    (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) := by
+    (fun y => h • y) '' (g * ·) ⁻¹' s = (g * ·) ⁻¹' (fun y => h • y) '' s := by
   simp [preimage_preimage, mul_assoc]
 
 -- TODO: deprecate?
 @[to_additive]
 theorem smul_opposite_image_mul_preimage {H : Subgroup G} (g : G) (h : H.op) (s : Set G) :
-    (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) :=
+    (fun y => h • y) '' (g * ·) ⁻¹' s = (g * ·) ⁻¹' (fun y => h • y) '' s :=
   smul_opposite_image_mul_preimage' g h s
 
 /-! ### Pointwise action -/

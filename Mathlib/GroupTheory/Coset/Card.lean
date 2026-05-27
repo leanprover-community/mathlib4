@@ -60,7 +60,7 @@ lemma card_mul_eq_card_subgroup_mul_card_quotient (s : Subgroup α) (t : Set α)
   rw [← Nat.card_prod, Nat.card_congr]
   apply Equiv.trans _ (QuotientGroup.preimageMkEquivSubgroupProdSet _ _)
   rw [QuotientGroup.preimage_image_mk]
-  convert Equiv.refl ↑(t * s)
+  convert! Equiv.refl ↑(t * s)
   aesop (add simp [Set.mem_mul])
 
 /-- **Lagrange's Theorem**: The order of a subgroup divides the order of its ambient group. -/

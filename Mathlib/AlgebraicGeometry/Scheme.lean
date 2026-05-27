@@ -350,7 +350,7 @@ unif_hint forget_obj_eq_coe (X : Scheme) where ⊢ forget.obj X ≟ (X : Type*)
 
 @[simp] lemma forget_obj (X) : Scheme.forget.obj X = X := rfl
 lemma forget_map' {X Y} (f : X ⟶ Y) : (forget.map f : _ → _) = f := rfl
-@[simp] lemma forget_map {X Y} (f : X ⟶ Y) : forget.map f = TypeCat.ofHom f := rfl
+@[simp] lemma forget_map {X Y} (f : X ⟶ Y) : forget.map f = ↾f := rfl
 
 namespace Hom
 
@@ -449,7 +449,7 @@ def copyBase {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) : X ⟶
   c := f.c ≫ (TopCat.Presheaf.pushforwardEq (by subst h; rfl) _).hom
   prop x := by
     subst h
-    convert f.prop x using 4
+    convert! f.prop x using 4
     cat_disch
 
 lemma copyBase_eq {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) :
@@ -862,7 +862,7 @@ theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
 @[simp]
 theorem basicOpen_eq_of_affine' {R : CommRingCat} (f : Γ(Spec R, ⊤)) :
     (Spec R).basicOpen f = PrimeSpectrum.basicOpen ((Scheme.ΓSpecIso R).hom f) := by
-  convert basicOpen_eq_of_affine ((Scheme.ΓSpecIso R).hom f)
+  convert! basicOpen_eq_of_affine ((Scheme.ΓSpecIso R).hom f)
   exact (Iso.hom_inv_id_apply (Scheme.ΓSpecIso R) f).symm
 
 set_option backward.isDefEq.respectTransparency false in
@@ -913,7 +913,7 @@ theorem Spec_zeroLocus_eq_zeroLocus {R : CommRingCat} (s : Set R) :
 
 theorem Spec_zeroLocus {R : CommRingCat} (s : Set Γ(Spec R, ⊤)) :
     (Spec R).zeroLocus s = PrimeSpectrum.zeroLocus ((Scheme.ΓSpecIso R).inv ⁻¹' s) := by
-  convert Spec_zeroLocus_eq_zeroLocus ((Scheme.ΓSpecIso R).inv ⁻¹' s)
+  convert! Spec_zeroLocus_eq_zeroLocus ((Scheme.ΓSpecIso R).inv ⁻¹' s)
   rw [Set.image_preimage_eq]
   exact (ConcreteCategory.bijective_of_isIso (C := CommRingCat) _).2
 section Stalks

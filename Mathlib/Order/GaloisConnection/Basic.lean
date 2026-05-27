@@ -57,6 +57,8 @@ variable [Preorder α] [Preorder β] {l : α → β} {u : β → α}
 variable (gc : GaloisConnection l u)
 include gc
 
+to_dual_name_hint U L
+
 @[to_dual]
 theorem upperBounds_l_image (s : Set α) :
     upperBounds (l '' s) = u ⁻¹' upperBounds s :=
