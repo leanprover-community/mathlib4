@@ -118,7 +118,7 @@ theorem cof_add_one (o) : cof (o + 1) = 1 :=
 theorem cof_one : cof 1 = 1 := by
   simpa using cof_add_one 0
 
--- TODO: deprecate in favor of `cof_add_one`
+@[deprecated cof_add_one (since := "2026-05-25")]
 theorem cof_succ (o) : cof (succ o) = 1 :=
   cof_add_one o
 
@@ -151,9 +151,9 @@ theorem cof_omega0 : cof ω = ℵ₀ :=
 
 @[deprecated (since := "2026-02-18")] alias cof_eq_one_iff_is_succ := cof_eq_one_iff
 
-theorem ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
+theorem exists_ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
     ∃ s : Set α, IsCofinal s ∧ typeLT s = (Order.cof α).ord := by
-  obtain ⟨s, hs, hs'⟩ := Order.cof_eq α
+  obtain ⟨s, hs, hs'⟩ := exists_cof_eq α
   obtain ⟨r, hr, hr'⟩ := exists_ord_eq s
   have ht := hs.trans (isCofinal_setOf_imp_lt r)
   refine ⟨_, ht, (ord_le.2 (cof_le ht)).antisymm' ?_⟩
@@ -166,10 +166,12 @@ theorem ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
     · obtain ⟨x, z, hz, rfl⟩ := x
       exact (hz _ hxy').asymm hxy
 
+@[deprecated (since := "2026-05-25")] alias ord_cof_eq := exists_ord_cof_eq
+
 @[simp]
 theorem _root_.Order.cof_ord_cof (α : Type*) [LinearOrder α] [WellFoundedLT α] :
     (Order.cof α).ord.cof = Order.cof α := by
-  obtain ⟨s, hs, hs'⟩ := ord_cof_eq α
+  obtain ⟨s, hs, hs'⟩ := exists_ord_cof_eq α
   rw [← hs', cof_type]
   apply le_antisymm
   · rw [← card_ord (Order.cof α), ← hs', card_type]
@@ -235,12 +237,12 @@ alias cof_eq_of_isNormal := cof_map_of_isNormal
 alias IsNormal.cof_eq := cof_eq_of_isNormal
 
 theorem le_cof_map_of_isNormal {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) := by
-  rcases zero_or_succ_or_isSuccLimit a with (rfl | ⟨b, rfl⟩ | ha)
-  · rw [cof_zero]
-    exact zero_le
-  · rw [cof_succ, Cardinal.one_le_iff_ne_zero, cof_eq_zero.ne]
-    exact (hf.strictMono (lt_succ b)).ne_zero
-  · rw [cof_map_of_isNormal hf ha]
+  cases a using limitRecOn with
+  | zero => simp
+  | add_one a =>
+    rw [cof_add_one, Cardinal.one_le_iff_ne_zero, cof_eq_zero.ne]
+    exact (hf.strictMono (lt_succ a)).ne_zero
+  | limit a ha => rw [cof_map_of_isNormal hf ha]
 
 @[deprecated (since := "2026-03-19")]
 alias cof_le_of_isNormal := le_cof_map_of_isNormal
@@ -547,7 +549,7 @@ theorem cof_eq' (r : α → α → Prop) [H : IsWellOrder α r] (h : IsSuccLimit
   let := linearOrderOfSTO r
   have : WellFoundedLT α := H.toIsWellFounded
   have : NoMaxOrder α := isSuccPrelimit_type_lt_iff.1 h.isSuccPrelimit
-  obtain ⟨s, hs, hs'⟩ := Order.cof_eq α
+  obtain ⟨s, hs, hs'⟩ := exists_cof_eq α
   refine ⟨s, ?_, hs'⟩
   rwa [← not_bddAbove_iff_isCofinal, not_bddAbove_iff] at hs
 
@@ -557,17 +559,6 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} := by
   simp_rw [univ, ← lift_cof, ← lift_card, Cardinal.lift_le, cof_type, card_type, le_cof_iff,
     ← not_bddAbove_iff_isCofinal]
   exact fun s hs ↦ mk_le_of_injective (enumOrdOrderIso s hs).injective
-
-@[simp]
-theorem _root_.Order.cof_ordinal : Order.cof Ordinal.{u} = Cardinal.univ.{u, u + 1} := by
-  have := (OrderIso.ofRelIsoLT liftPrincipalSeg.subrelIso.{u, u + 1}).lift_cof_congr
-  rw [Cardinal.lift_id'.{_, u + 2}] at this
-  change Order.cof (Iio univ) = _ at this
-  rwa [cof_Iio, ← lift_cof, Cardinal.lift_inj, cof_univ, eq_comm] at this
-
-@[simp]
-theorem _root_.Order.cof_cardinal : Order.cof Cardinal.{u} = Cardinal.univ.{u, u + 1} := by
-  rw [← preAleph.cof_congr, cof_ordinal]
 
 end Ordinal
 
@@ -642,7 +633,7 @@ theorem lt_power_cof_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : c < c ^ c.ord.cof 
   have : NoMaxOrder α := by
     rw [← isSuccPrelimit_type_lt_iff, ← hα]
     exact (isSuccLimit_ord hc).isSuccPrelimit
-  obtain ⟨s, hs, hs'⟩ := ord_cof_eq α
+  obtain ⟨s, hs, hs'⟩ := exists_ord_cof_eq α
   rw [hα, cof_type, ← card_ord (Order.cof _), ← hs', card_type, ← prod_const']
   refine (mk_iUnion_le_sum_mk.trans' ?_).trans_lt (sum_lt_prod _ _ fun i ↦ mk_Iio_lt i.1 hα)
   rw [← mk_univ, ← isCofinal_iff_iUnion_Iio_eq_univ.1 hs, iUnion_coe_set]

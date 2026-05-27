@@ -261,6 +261,17 @@ theorem ker_le_iff [RingHomSurjective τ₁₂] {p : Submodule R M} :
 
 end Ring
 
+section CommSemiring
+
+variable [Semiring R] [CommSemiring R₂]
+variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
+variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
+
+theorem range_smul_le_range (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) : range (c • f) ≤ range f := by
+  simpa only [range_eq_map] using Submodule.map_smul_le_map _ _ _
+
+end CommSemiring
+
 section Semifield
 
 variable [Semifield K]
