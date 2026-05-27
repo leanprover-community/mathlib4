@@ -670,8 +670,8 @@ theorem lift_preBeth (o : Ordinal) : lift.{v} (preBeth o) = preBeth (Ordinal.lif
       rw [mem_Iio, Ordinal.lift_lt] at hi
       exact ⟨⟨i, hi⟩, IH _ hi⟩
 
-/-- The Beth function is defined so that `beth 0 = ℵ₀'`, `beth (succ o) = 2 ^ beth o`, and that for
-a limit ordinal `o`, `beth o` is the supremum of `beth a` for `a < o`.
+/-- The Beth function is defined so that `beth 0 = ℵ₀`, `beth (succ o) = 2 ^ beth o`, and that for a
+limit ordinal `o`, `beth o` is the supremum of `beth a` for `a < o`.
 
 Assuming the generalized continuum hypothesis, which is undecidable in ZFC, we have `ℶ_ o = ℵ_ o`
 for all ordinals.
