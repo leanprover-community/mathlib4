@@ -398,6 +398,8 @@ def linearOrderOfModels [h : M ⊨ L.linearOrderTheory]
   __ := L.partialOrderOfModels M
   le_total := (Relations.realize_total.mp <|
     Theory.model_iff _ |>.mp h _ <| by simp [linearOrderTheory]).total
+  toDecidableEq := decidableEqOfDecidableLE
+  toDecidableLT := decidableLTOfDecidableLE
 
 end structure_to_order
 
