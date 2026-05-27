@@ -679,7 +679,7 @@ def ofValuation
   vle_mul_cancel h0 h := by
     rw [map_zero, le_zero_iff] at h0
     simp only [map_mul] at h
-    exact le_of_mul_le_mul_right h (lt_of_le_of_ne' zero_le h0)
+    exact le_of_mul_le_mul_right h h0.pos
   not_vle_one_zero := by simp
 
 lemma _root_.Valuation.Compatible.ofValuation
