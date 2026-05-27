@@ -655,7 +655,7 @@ alias exists_cardinal_directed.aux := ExistsCardinalDirected.aux
 /-!
 The previous lemma `IsCardinalFiltered.ExistsCardinalDirected.aux`
 is the particular case of the main lemma
-`IsCardinalFiltered.ExistsCardinalDirected` below in the particular
+`IsCardinalFiltered.exists_cardinal_directed` below in the particular
 case the `κ`-filtered category `J` has no object `m : J` such that for any
 object `j : J`, there exists a map `j ⟶ m`.
 
