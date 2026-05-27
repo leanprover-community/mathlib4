@@ -74,8 +74,7 @@ theorem qParam_left_inv_mod_period (hh : h ≠ 0) (z : ℂ) :
 theorem qParam_sub (z j : ℂ) :
     𝕢 h (z - j) = 𝕢 h z * exp (-2 * π * I * j / h) := by
   simp only [qParam, ← exp_add]
-  congr 1
-  ring
+  ring_nf
 
 theorem norm_qParam_lt_iff (hh : 0 < h) (A : ℝ) (z : ℂ) :
     ‖qParam h z‖ < Real.exp (-2 * π * A / h) ↔ A < im z := by
