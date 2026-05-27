@@ -938,6 +938,15 @@ lemma upperCentralSeries.card_image_eq_of_le_nilpotencyClass {a : ℕ}
 
 end Subgroup
 
+variable (G) in
+theorem Group.IsNilpotent.center_ne_bot [Nontrivial G] [IsNilpotent G] : center G ≠ ⊥ := by
+  rw [← upperCentralSeries_zero, ← upperCentralSeries_one]
+  intro h
+  have ⟨n, hn⟩ := IsNilpotent.nilpotent G
+  have := upperCentralSeries.eq_ge_of_eq_succ zero_le h.symm |>.trans hn
+  rw [upperCentralSeries_zero] at this
+  exact bot_ne_top this
+
 section Prod
 
 variable {G₁ G₂ : Type*} [Group G₁] [Group G₂]
