@@ -16,7 +16,7 @@ public import Mathlib.CategoryTheory.Presentable.SharplyLT
 
 universe w v v' u u'
 
-open CategoryTheory Limits in
+open CategoryTheory Limits Cardinal.SharplyLT.IsCardinalFilteredAndHasCardinalLT in
 lemma Cardinal.SharplyLT.exists_retract_of_isCardinalPresentable
     {κ₁ κ₂ : Cardinal.{w}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegular]
     (hκ : κ₁.SharplyLT κ₂) {C : Type u} [Category.{v} C]
@@ -31,12 +31,12 @@ lemma Cardinal.SharplyLT.exists_retract_of_isCardinalPresentable
       obtain ⟨J₀, _, _, ⟨p₀⟩⟩ := hκ₁.exists_colimitsOfShape X
       obtain ⟨J, _, _, F, _⟩ := IsCardinalFiltered.exists_cardinal_directed J₀ κ₁
       exact ⟨_, _, inferInstance, ⟨p₀.reindex F⟩⟩
-  have : IsCardinalFiltered (Subtype (isCardinalAccessible.prop κ₁ κ₂ J)) κ₂ :=
-    isCardinalAccessible.isCardinalFiltered_subtype_prop hκ.exists_isCardinalFiltered_set
+  have : IsCardinalFiltered (Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) κ₂ :=
+    isCardinalFiltered_subtype hκ.exists_isCardinalFiltered_set
   obtain ⟨K, i, hi⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ₂
-    (isCardinalAccessible.isColimit κ₁ κ₂ p) (𝟙 X)
-  exact ⟨isCardinalAccessible.colimit κ₁ κ₂ p K,
-    { i := i, r := isCardinalAccessible.colimit.π κ₁ κ₂ p K }, Subtype K.val,
+    (isColimit κ₁ κ₂ p) (𝟙 X)
+  exact ⟨colimit κ₁ κ₂ p K,
+    { i := i, r := colimit.π κ₁ κ₂ p K }, Subtype K.val,
     inferInstance, K.prop.1, K.prop.2, ⟨.colimit _ (fun k ↦ p.prop_diag_obj _)⟩⟩
 
 namespace CategoryTheory
