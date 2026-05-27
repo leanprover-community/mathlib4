@@ -298,8 +298,8 @@ theorem AnalyticAt.analyticOrderAt_deriv_add_one {x : 𝕜} (hf : AnalyticAt �
       · simp_rw [← Nat.cast_smul_eq_nsmul 𝕜]
         fun_prop
     rwa [← Pi.add_def, analyticOrderAt_add_eq_right_of_lt]
-    rw [this, ← Order.succ_le_iff_of_not_isMax (not_isMax_iff.mpr ⟨⊤, ENat.coe_lt_top s⟩),
-      ENat.succ_def, ← Nat.cast_add_one, natCast_le_analyticOrderAt (by fun_prop)]
+    rw [this, ← ENat.add_one_le_iff (ENat.coe_ne_top _), ← Nat.cast_add_one,
+      natCast_le_analyticOrderAt (by fun_prop)]
     exact ⟨deriv F, hFa.deriv, by simp⟩
 
 theorem AnalyticAt.analyticOrderAt_sub_eq_one_of_deriv_ne_zero {x : 𝕜} (hf : AnalyticAt 𝕜 f x)
