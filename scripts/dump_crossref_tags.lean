@@ -30,15 +30,18 @@ Implementation: we use `importModules (loadExts := true)` rather than the
 `withImportModules` wrapper, because the latter passes `loadExts := false`
 and would leave `tagExt` empty for imported modules.
 
-Safety: fields are normalised (tabs / newlines in comments become single
-spaces) and the whole file is capped at `maxBytes` to bound what a malicious
-PR could emit.
+Hygiene: fields are normalised (tabs / newlines in comments become single
+spaces) so they can't break the TSV framing, and the whole file is capped
+at `maxBytes`. This script lives in `scripts/` and runs with the PR's
+permissions, so the cap is defence-in-depth — the trusted consumer
+(mathlib-ci's `post-comment.sh`) enforces its own cap on the artifact
+before parsing.
 -/
 
 open Lean Mathlib.CrossRef
 
-/-- Hard cap on the output. The current population is ~55 KB (539 tags); we
-allow ~50× headroom and refuse to emit anything larger. -/
+/-- Hard cap on the output. The current population is ~55 KB (491 tags);
+2 MB is ample headroom. -/
 def maxBytes : Nat := 2 * 1024 * 1024
 
 /-- Replace tabs, newlines, and carriage returns with single spaces so a
