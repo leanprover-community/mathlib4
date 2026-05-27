@@ -987,12 +987,6 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
           exact bot_le,
     fun a haS ↦ (WithTop.isGLB_sInf' ⟨a, haS⟩).2 haS⟩
 
-noncomputable instance WithTop.WithBot.completeLinearOrder {α : Type*}
-    [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithTop (WithBot α)) where
-  __ := completeLattice
-  __ := linearOrder
-  __ := linearOrder.toBiheytingAlgebra
-
 noncomputable instance WithBot.WithTop.completeLattice {α : Type*}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithBot (WithTop α)) where
   isLUB_sSup := (WithTop.WithBot.completeLattice (α := αᵒᵈ)).isGLB_sInf
