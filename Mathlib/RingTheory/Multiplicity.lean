@@ -490,6 +490,10 @@ theorem emultiplicity_zero (a : α) : emultiplicity a 0 = ⊤ :=
   emultiplicity_eq_top.2 (fun v ↦ v.ne_zero rfl)
 
 @[simp]
+theorem multiplicity_zero (a : α) : multiplicity a 0 = 1 :=
+  multiplicity_eq_one_of_not_finiteMultiplicity fun h ↦ h.ne_zero rfl
+
+@[simp]
 theorem emultiplicity_zero_eq_zero_of_ne_zero (a : α) (ha : a ≠ 0) : emultiplicity 0 a = 0 :=
   emultiplicity_eq_zero.2 <| mt zero_dvd_iff.1 ha
 
