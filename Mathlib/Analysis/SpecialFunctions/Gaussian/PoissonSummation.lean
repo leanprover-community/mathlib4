@@ -89,6 +89,8 @@ theorem Complex.tsum_exp_neg_quadratic {a : ℂ} (ha : 0 < a.re) (b : ℂ) :
       1 / a ^ (1 / 2 : ℂ) * ∑' n : ℤ, cexp (-π / a * (n + I * b) ^ 2) := by
   let f : ℝ → ℂ := fun x ↦ cexp (-π * a * x ^ 2 + 2 * π * b * x)
   have hCf : Continuous f := by fun_prop
+  have hFf : 𝓕 f = fun x : ℝ ↦ 1 / a ^ (1 / 2 : ℂ) * cexp (-π / a * (x + I * b) ^ 2) :=
+    fourier_gaussian_pi' ha b
   have h1 : 0 < (↑π * a).re := by
     rw [re_ofReal_mul]
     exact mul_pos pi_pos ha
@@ -97,8 +99,6 @@ theorem Complex.tsum_exp_neg_quadratic {a : ℂ} (ha : 0 < a.re) (b : ℂ) :
     refine mul_pos pi_pos (div_pos ha <| normSq_pos.mpr ?_)
     contrapose! ha
     rw [ha, zero_re]
-  have hFf : 𝓕 f = fun x : ℝ ↦ 1 / a ^ (1 / 2 : ℂ) * cexp (-π / a * (x + I * b) ^ 2) :=
-    fourier_gaussian_pi' ha b
   have f_bd : f =O[cocompact ℝ] (fun x => |x| ^ (-2 : ℝ)) := by
     convert! (cexp_neg_quadratic_isLittleO_abs_rpow_cocompact ?_ _ (-2)).isBigO
     rwa [neg_mul, neg_re, neg_lt_zero]
