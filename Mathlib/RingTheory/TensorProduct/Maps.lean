@@ -413,6 +413,7 @@ attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 lemma commRight_symm_tmul (s : S) (a : A) :
     (commRight R S A).symm (a ⊗ₜ[R] s) = s ⊗ₜ a := rfl
 
+set_option linter.dupNamespace false in
 @[deprecated (since := "2026-05-24")]
 alias Algebra.TensorProduct.commRight_symm_tmul := commRight_symm_tmul
 
