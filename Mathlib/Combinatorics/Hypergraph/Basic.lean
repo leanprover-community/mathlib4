@@ -208,6 +208,40 @@ lemma IsNonempty.of_nonempty_vertexSet (hV : V(H).Nonempty) : H.IsNonempty :=
 lemma IsNonempty.of_nonempty_edgeSet (hE : E(H).Nonempty) : H.IsNonempty :=
   .inr hE
 
+@[simp]
+theorem ne_bot_iff : H ≠ ⊥ ↔ H.IsNonempty := by
+  constructor
+  · contrapose
+    intro h
+    unfold IsNonempty at h
+    apply not_or.mp at h
+    apply Hypergraph.ext
+    · simp only [bot_vertexSet]
+      grind [Set.Nonempty]
+    · simp only [bot_edgeSet]
+      grind [Set.Nonempty]
+  · contrapose
+    intro h
+    apply Hypergraph.ext_iff.mp at h
+    unfold IsNonempty
+    apply not_or.mpr
+    constructor
+    · rw [h.1]
+      apply Set.not_nonempty_empty
+    · rw [h.2]
+      apply Set.not_nonempty_empty
+    
+
+alias ⟨_, IsNonempty.ne_bot⟩ := ne_bot_iff
+
+@[simp]
+theorem not_isNonempty_iff : ¬H.IsNonempty ↔ H = ⊥ :=
+  not_iff_comm.mp ne_bot_iff
+
+variable (H) in
+lemma eq_bot_or_isNonempty : H = ⊥ ∨ H.IsNonempty := by
+  
+
 /-- A hypergraph is trivial if it has at least one vertex but no edges. -/
 @[expose]
 def IsTrivial (H : Hypergraph α) : Prop := Set.Nonempty V(H) ∧ E(H) = ∅
