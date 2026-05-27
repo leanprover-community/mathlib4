@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Topology.GDelta.Basic
 public import Mathlib.Topology.Constructions
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Baire spaces
