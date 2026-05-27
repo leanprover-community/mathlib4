@@ -325,13 +325,17 @@ lemma IsStandardSmoothOfRelativeDimension.iff_of_isStandardSmooth [Nontrivial S]
   apply Nat.cast_injective (R := Cardinal)
   rwa [← P.rank_kaehlerDifferential]
 
-instance IsStandardSmoothOfRelationDimension.subsingleton_kaehlerDifferential
+instance IsStandardSmoothOfRelativeDimension.subsingleton_kaehlerDifferential
     [IsStandardSmoothOfRelativeDimension 0 R S] : Subsingleton Ω[S⁄R] := by
   cases subsingleton_or_nontrivial S
   · exact Module.subsingleton S _
   haveI : IsStandardSmooth R S := IsStandardSmoothOfRelativeDimension.isStandardSmooth 0
   exact Module.subsingleton_of_rank_zero
     (IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential 0)
+
+@[deprecated (since := "2026-05-22")]
+alias IsStandardSmoothOfRelationDimension.subsingleton_kaehlerDifferential :=
+  IsStandardSmoothOfRelativeDimension.subsingleton_kaehlerDifferential
 
 end
 
