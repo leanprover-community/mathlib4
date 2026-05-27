@@ -37,6 +37,7 @@ lake exe cache get Mathlib.Algebra.Group.Basic
 | `clean`         | Delete non-linked files                                             |
 | `clean!`        | Delete everything on the local cache                                |
 | `lookup [ARGS]` | Show information about cache files for the given Lean files         |
+| `query`         | Find the most recent commit with cached entries on the current branch |
 
 ### Privilege Required (CI/Maintainers)
 
@@ -65,6 +66,7 @@ When arguments are provided, only the specified files and their transitive impor
 |---------------------|--------------------------------------------------------------------------------------------|
 | `--repo=OWNER/REPO` | Override the repository to fetch cache from (e.g., `--repo=leanprover-community/mathlib4`) |
 | `--cache-from=LIST` | For `get`/`get!`/`get-`/`lookup`: trust-ordered, comma-separated list of containers to read from. Overrides the per-repo default (see [Trust-ordered containers](#trust-ordered-containers)). |
+| `--scope=REF`       | For `get`/`get!`/`get-`: read from the SHA-scoped namespace for the given git ref (anything `git rev-parse` accepts: `HEAD`, branch, tag, SHA). Use the SHA reported by `cache query`. Wins over the `MATHLIB_CACHE_REPO_SCOPE` env var. Triggers the non-default-scope security notice. |
 | `--container=NAME`  | For `put`/`put!`/`put-unpacked`/`put-staged`/`commit`/`commit!`: target container for upload. Required unless `MATHLIB_CACHE_PUT_URL` is set. |
 
 Container names (known to both flags): `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`.
@@ -175,6 +177,95 @@ The cache covers these packages:
 - `ProofWidgets`
 - `Archive`
 - `Counterexamples`
+
+## Finding Cached Commits with `query`
+
+For branches with per-commit SHA scoping (e.g., fork PRs), you can use
+`lake exe cache query` to discover which recent commits on your branch have
+cached entries. This is useful when your current branch has diverged from
+upstream and you want to avoid waiting for CI to build everything.
+
+```bash
+# Find the most recent cached commit on the current branch
+lake exe cache query
+
+# Example output:
+# Most recent cached commit on branch: 5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e
+# Repository: leanprover-community/mathlib4
+# Container: forks
+#
+# To use this cache, run:
+#   lake exe cache get --scope=5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e
+
+# Or specify the containers explicitly:
+#   lake exe cache get --scope=5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e --cache-from=forks,legacy
+```
+
+The `query` command walks your git log backwards from `HEAD`, stopping at the
+merge base with `master` or a hard cap of 50 commits (whichever comes first),
+and probes each commit for the per-SHA marker blob (`/m/{repo}/{sha}`) in the
+`forks` container. The marker is written by `put-staged` after a successful
+SHA-scoped upload, so its presence is a reliable "this commit was cached"
+signal. `query` prints the SHA to stdout (and does not auto-apply it) — you
+manually copy the result into your `cache get` command if desired.
+
+### Boolean probe on a single commit
+
+`lake exe cache query <REF>` checks a specific commit and exits with 0 (cached)
+or 1 (not cached). The ref can be `HEAD`, a branch name, a tag, or a SHA — anything
+`git rev-parse` accepts.
+
+```bash
+# Is the current checkout's HEAD cached?
+lake exe cache query HEAD && echo "yes" || echo "no"
+
+# Is a specific SHA cached?
+lake exe cache query 5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e
+# prints "cached: 5a3c7e9a..." (exit 0) or "not cached: 5a3c7e9a..." (exit 1)
+```
+
+By default `query` (both modes) targets the cwd's git remote — pass `--repo=`
+to override.
+
+### Heads-up note from `cache get`
+
+When you run `cache get` on a fork-trust repo and HEAD has not been built and
+cached at fork-trust level, the tool prints a stderr note pointing you at
+`cache query` (and warning that picking a different commit means trusting its
+artifacts). Costs one HTTP HEAD per `cache get` invocation; only fires when the
+resolved repo's default chain includes `forks` and no `--scope=` / `--cache-from`
+override is supplied.
+
+## Security Warning: Non-Default Scope
+
+When you read cache artifacts at a non-default scope, the cache tool prints a
+security warning to stderr. This happens when:
+
+1. **`MATHLIB_CACHE_REPO_SCOPE` is set** — you are reading from a specific commit's
+   namespace instead of the repo's default trust chain.
+2. **`--cache-from` widens the read chain** — you are explicitly telling the tool
+   to trust containers beyond the repo default.
+3. **`--repo` overrides the detected git remote** — you are reading cache for a
+   different repository than your cwd's git remote.
+
+Example warning:
+
+```
+=================================================================
+SECURITY: reading cache at a non-default scope
+=================================================================
+You are reading cache artifacts at a scope outside the default trust
+boundary for this repo. The cache cannot verify the contents of these
+artifacts; you are choosing to trust whoever uploaded them.
+
+Repository: leanprover-community/mathlib4
+Reason: MATHLIB_CACHE_REPO_SCOPE=5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e (explicit per-commit scope)
+=================================================================
+```
+
+This warning is always printed — it cannot be suppressed with `--quiet`. The
+warning is purely informational; it does not prompt for confirmation (so it
+doesn't interfere with CI).
 
 ## Tests
 

@@ -129,8 +129,10 @@ different keys cannot collide unless an attacker can align all root-hash
 inputs. With Layer 3 in place, an attacker cannot modify those inputs
 between elaboration and pack time.
 
-This layer is insufficient on its own: it depends on Layer 3 to keep the
-inputs honest, and on Layer 1 to bound damage if it ever fails.
+This layer is insufficient on its own: it depends on Layer 2 to ensure
+the cache binary that computes the hashes is itself honest, on Layer 3 to
+keep the inputs honest at compute time, and on Layer 1 to bound damage if
+the partitioning ever fails.
 
 ## CI dispatch: how (repo, branch) gets routed
 

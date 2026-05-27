@@ -21,6 +21,8 @@ Commands:
   clean          Delete non-linked files
   clean!         Delete everything on the local cache
   lookup [ARGS]  Show information about cache files for the given Lean files
+  query [REF]    Without REF: find most recent cached commit on this branch.
+                 With REF (e.g. HEAD, a SHA): boolean probe; exit 0 if cached, 1 if not.
 
   # Privilege required
   put          Run 'pack' then upload linked files missing on the server
@@ -43,6 +45,12 @@ Options:
                      (e.g. `--cache-from=master,legacy`). Overrides the per-repo default.
                      Known containers: master, forks, nightly-testing,
                      pr-toolchain-tests, legacy.
+  --scope=REF        Read from the SHA-scoped namespace for the given commit ref
+                     (any git ref `git rev-parse` accepts: HEAD, branch, tag, SHA).
+                     Use the SHA reported by `cache query`. Wins over the
+                     MATHLIB_CACHE_REPO_SCOPE env var. Reading at a non-default
+                     scope means trusting the artifacts produced at that commit;
+                     `cache get` prints a security notice when this is set.
   --container=NAME   Target container for upload commands (put/put!/put-unpacked/
                      put-staged/commit/commit!). Known containers: master, forks,
                      nightly-testing, pr-toolchain-tests, legacy. If neither this
@@ -98,7 +106,7 @@ def leanTarArgs : List String :=
   ["get", "get!", "put", "put!", "put-unpacked", "pack", "pack!", "unpack", "lookup", "stage", "stage!"]
 
 /-- The named options supported by the CLI. -/
-def knownNamedOpts : List String := ["repo", "staging-dir", "cache-from", "container"]
+def knownNamedOpts : List String := ["repo", "staging-dir", "cache-from", "container", "scope"]
 
 /-- The flag options supported by the CLI. -/
 def knownFlagOpts : List String := ["help"]
@@ -141,6 +149,15 @@ def main (args : List String) : IO Unit := do
   let stagingDir? ← parseNamedOpt "staging-dir" options
   let cacheFromStr? ← parseNamedOpt "cache-from" options
   let containerStr? ← parseNamedOpt "container" options
+  let scopeStr? ← parseNamedOpt "scope" options
+
+  -- Apply `--scope=` to the process-wide override read by `getRepoScope`.
+  -- Accepts any git ref `git rev-parse` resolves (HEAD, branch, tag, SHA);
+  -- falls through to the literal value if `git rev-parse` is unavailable
+  -- (e.g. invoked outside a git checkout with a bare SHA).
+  if let some s := scopeStr? then
+    let resolved ← try resolveGitRef s catch _ => pure s
+    scopeOverride.set (some resolved)
 
   -- Apply `--cache-from` to the process-wide override read by `effectiveGetURLs`.
   if let some s := cacheFromStr? then
@@ -162,6 +179,24 @@ def main (args : List String) : IO Unit := do
           Known containers: {", ".intercalate (Container.all.map Container.name)}."
         Process.exit 1
 
+  -- Early dispatch for `query`: avoids running `parseArgs` (which would try to
+  -- interpret a git ref like `HEAD` as a Lean module) and skips the expensive
+  -- hash-memo build below — the query only needs git + a single HTTP probe.
+  match args with
+  | ["query"] =>
+    let repo ← resolveQueryRepo repo?
+    cacheQuery repo (cap := 50)
+    return
+  | ["query", ref] =>
+    let repo ← resolveQueryRepo repo?
+    let sha ← resolveGitRef ref
+    cacheQuerySingle repo sha
+    return
+  | "query" :: _ =>
+    IO.eprintln "Usage: cache query [REF]"
+    Process.exit 1
+  | _ => pure ()
+
   let mut roots : Std.HashMap Lean.Name FilePath ← parseArgs args
   if roots.isEmpty then do
     -- No arguments means to start from `Mathlib.lean`
@@ -176,6 +211,12 @@ def main (args : List String) : IO Unit := do
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   let get (args : List String) (force := false) (decompress := true) := do
     let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
+    -- Warn if reading at a non-default scope (before performing reads)
+    let cliOverride? ← cacheFromOverride.get
+    let resolvedRepo := repo?.getD MATHLIBREPO
+    warnIfNonDefaultScope repo? cliOverride? resolvedRepo
+    -- Otherwise, if HEAD has no fork-trust marker, hint at the new SHA-scoped UX
+    informIfHeadNotBuilt repo?
     getFiles repo? hashMap force force goodCurl decompress
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
@@ -193,8 +234,15 @@ def main (args : List String) : IO Unit := do
     if !(←stagingDir.isDir) then IO.println "--staging-dir must be a directory" return
     else
       let fileSet ← getFilesWithExtension stagingDir "ltar"
+      let auth ← getUploadAuth
       putFilesAbsolute repo container? fileSet (tempConfigFilePath := stagingDir / "curl.config")
-        (overwrite := false) (← getUploadAuth)
+        (overwrite := false) auth
+      -- After artifacts upload, write the per-SHA marker if the upload is
+      -- SHA-scoped. The marker lets `cache query` discover cached commits
+      -- with a cheap HEAD probe.
+      if let some sha ← getRepoScope then
+        if let some c := container? then
+          uploadMarker c repo sha auth
 
   match args with
   | "get"  :: args => get args

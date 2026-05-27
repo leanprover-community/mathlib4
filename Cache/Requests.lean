@@ -342,16 +342,20 @@ def mkFileURL (container : Option Container) (repo containerURL fileName : Strin
   s!"{containerURL}/f/{pre}{fileName}"
 
 /--
-Optional extra path component appended to the per-repo prefix for non-flat
-container paths, read from `MATHLIB_CACHE_REPO_SCOPE`. CI sets this to the
-PR head's commit SHA when uploading to a fork-trust container, so each
-commit's uploads land in their own namespace and stale artifacts from
-closed/hidden PRs cannot be served to later honest builds.
+Process-wide override for the per-SHA scope, set by the `--scope=` CLI flag.
+When set, it wins over `MATHLIB_CACHE_REPO_SCOPE`. Mirrors the
+`cacheFromOverride` pattern.
+-/
+initialize scopeOverride : IO.Ref (Option String) ← IO.mkRef none
 
-Returns `none` on user machines and in CI jobs where the dispatch decided
-no scoping is needed (master CI, trusted-nightly).
+/--
+Resolved repo-scope SHA. Precedence: `--scope=` flag > `MATHLIB_CACHE_REPO_SCOPE`
+env var > `none`. Both sources mean "the user has explicitly opted into a
+SHA-scoped read"; the non-default-scope warning fires for either.
 -/
 def getRepoScope : IO (Option String) := do
+  if let some s ← scopeOverride.get then
+    return some s
   let s? ← IO.getEnv "MATHLIB_CACHE_REPO_SCOPE"
   match s? with
   | some s =>
@@ -1079,5 +1083,390 @@ def getFilesInfo (q : QueryType) : IO <| List (String × String) := do
       | _ => formatError
 
 end Collect
+
+section Marker
+
+/--
+URL for the per-SHA marker blob: `{container}/m/{repo}/{sha}`.
+
+The marker is uploaded by `put-staged` as the last step when an upload is
+SHA-scoped (`MATHLIB_CACHE_REPO_SCOPE` set). Its presence at this URL
+indicates that the full `.ltar` upload completed for this commit, and lets
+`cache query` discover cached commits with a cheap HEAD probe rather than
+a blob-listing call.
+-/
+def markerURL (container : Container) (repo sha : String) : String :=
+  s!"{container.azureURL}/m/{repo}/{sha}"
+
+/--
+Upload a tiny marker blob to `/m/{repo}/{sha}` in the given container. The
+blob content is the SHA itself, as a debugging aid; existence is the
+signal.
+
+Called from `put-staged` after the `.ltar` artifact uploads complete. If
+this PUT fails the artifacts are already uploaded — the only loss is that
+`cache query` will not find this commit — so failures here are logged but
+not fatal.
+-/
+def uploadMarker (container : Container) (repo sha : String) (auth : UploadAuth) :
+    IO Unit := do
+  let url := markerURL container repo sha
+  let path := IO.CACHEDIR / s!"marker-{sha}"
+  IO.FS.createDirAll IO.CACHEDIR
+  IO.FS.writeFile path s!"{sha}\n"
+  let azureDateHeader ← getAzureDateHeader
+  try
+    match auth with
+    | .azureSas token =>
+      let params := #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob"]
+      discard <| IO.runCurl <| params ++ #["-T", path.toString, s!"{url}?{token}"]
+    | .azureBearer token =>
+      let params := #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H",
+        azureBearerApiVersionHeader, "-H", azureDateHeader, "--oauth2-bearer", token]
+      discard <| IO.runCurl <| params ++ #["-T", path.toString, url]
+  catch e =>
+    IO.eprintln s!"warning: marker upload to {url} failed: {e}"
+  IO.FS.removeFile path
+
+end Marker
+
+section Query
+
+/--
+Walk git log backwards from HEAD, starting from `startRef`, stopping at
+`stopRef` or after `cap` commits (whichever comes first).
+
+Returns the list of commit SHAs in reverse chronological order (most recent first).
+-/
+def gitLogWalk (startRef stopRef : String) (cap : Nat) (cwd : FilePath := ".") :
+    IO (List String) := do
+  -- Construct git log command: walk from startRef to stopRef (if provided) using first-parent.
+  -- First-parent follows the main branch across merges, which is the intended behavior.
+  let args := if stopRef.isEmpty then
+    #["log", startRef, "--first-parent", "--pretty=format:%H", s!"--max-count={cap}"]
+  else
+    #["log", s!"{startRef}...{stopRef}", "--first-parent", "--pretty=format:%H", s!"--max-count={cap}"]
+  let out ← IO.Process.output {cmd := "git", args := args, cwd := cwd}
+  unless out.exitCode == 0 do
+    throw <| IO.userError
+      s!"git log failed (exit code {out.exitCode}):\n{out.stderr.trimAscii}"
+  let shas := out.stdout.trimAscii.toString.splitOn "\n" |>.filter (· ≠ "")
+  pure shas
+
+/--
+Determine the merge base between `HEAD` and a target ref (typically `master`).
+Falls back to a cap-only walk if the ref is not reachable.
+-/
+def gitMergeBase (targetRef : String) (cwd : FilePath := ".") : IO (Option String) := do
+  let out ← IO.Process.output
+    {cmd := "git", args := #["merge-base", "HEAD", targetRef], cwd := cwd}
+  if out.exitCode == 0 then
+    pure (some out.stdout.trimAscii.toString)
+  else
+    -- merge-base failed (target ref not reachable); return none to signal cap-only walk
+    pure none
+
+/--
+Probe a single container for the per-SHA marker blob.
+
+Issues an anonymous HEAD against `{container}/m/{repo}/{sha}` and returns
+`true` iff the response is 200. The marker is uploaded by `put-staged`
+after a successful upload, so its existence is a reliable "this commit
+was fully cached" signal.
+
+Cheaper than blob-listing: deterministic URL, headers-only response,
+billed as a Read op.
+-/
+def probeContainerForSHA (container : Container) (repo sha : String) :
+    IO Bool := do
+  let url := markerURL container repo sha
+  let out ← IO.Process.output
+    {cmd := (← IO.getCurl),
+     args := #["-s", "-o", "/dev/null", "-w", "%{http_code}", "-I", url],
+     cwd := "."}
+  if out.exitCode != 0 then
+    -- Network error; assume no cache at this SHA
+    pure false
+  else
+    pure (out.stdout.trimAscii.toString == "200")
+
+/--
+Given a list of SHAs, find the most recent one that has cached entries in the
+forks container under the SHA-scoped namespace. Returns the first SHA the probe
+accepts, or none if none are found.
+-/
+def findMostRecentSHAWithCache (shas : List String) (repo : String) :
+    IO (Option String) := do
+  -- For now, always probe the forks container since that's where SHA scoping applies.
+  -- Other containers (master, nightly-testing, pr-toolchain-tests) do not use SHA scoping
+  -- in the current implementation.
+  let container := Container.forks
+  for sha in shas do
+    let found ← probeContainerForSHA container repo sha
+    if found then
+      return (some sha)
+  pure none
+
+/--
+Resolve a git ref (HEAD, branch name, tag, short SHA, full SHA) to a full
+commit SHA via `git rev-parse`. Errors propagate if the ref is unknown.
+-/
+def resolveGitRef (ref : String) (cwd : FilePath := ".") : IO String := do
+  let out ← IO.Process.output {cmd := "git", args := #["rev-parse", ref], cwd := cwd}
+  unless out.exitCode == 0 do
+    throw <| IO.userError
+      s!"git rev-parse {ref} failed (exit code {out.exitCode}):\n{out.stderr.trimAscii}"
+  pure out.stdout.trimAscii.toString
+
+/--
+Resolve the repo to use for a `cache query` invocation.
+
+Precedence: the explicit `--repo=` flag (if passed) > the cwd's git remote
+> `MATHLIBREPO`. Defaulting to the git remote is intentional for `query` —
+the typical user is asking "what's cached for *my* commits", not for
+canonical mathlib's commits.
+-/
+def resolveQueryRepo (repoExplicit? : Option String) : IO String := do
+  match repoExplicit? with
+  | some r => pure r
+  | none =>
+    match ← getRemoteRepo "." with
+    | some info => pure info.repo
+    | none => pure MATHLIBREPO
+
+/--
+Boolean probe for a single commit: prints `cached` or `not cached` and exits
+with status 0 / 1 respectively. Intended for scripting.
+
+Probes the `forks` container's per-SHA marker, the only SHA-scoped container
+today; extend `findMostRecentSHAWithCache` alongside this if SHA scoping is
+extended to other containers (Follow-up §6).
+-/
+def cacheQuerySingle (repo sha : String) : IO Unit := do
+  let cached ← probeContainerForSHA Container.forks repo sha
+  if cached then
+    IO.println s!"cached: {sha}"
+  else
+    IO.println s!"not cached: {sha}"
+    (← IO.getStdout).flush
+    IO.Process.exit 1
+
+/--
+Implement the `cache query` subcommand.
+
+Walks git log backwards from HEAD, stopping at the merge base with `master`
+(or a hard cap if the merge base is not reachable), and probes each commit's
+SHA-scoped namespace to find the most recent commit that has cache entries.
+
+This is a diagnostic-only command: it prints the SHA to stdout but does not
+auto-apply it. The user manually passes the result to `cache get` if desired.
+-/
+def cacheQuery (repo : String) (cap : Nat := 50) (cwd : FilePath := ".") : IO Unit := do
+  -- Determine merge base with master. If not reachable, use cap-only walk.
+  let mergeBase? ← gitMergeBase "master" cwd
+  let stopRef := mergeBase?.getD ""
+
+  -- Walk git log backwards from HEAD.
+  let shas ← gitLogWalk "HEAD" stopRef cap cwd
+  if shas.isEmpty then
+    IO.println "No commits found to walk (repository history is empty)"
+    return
+
+  -- Probe each SHA in order (most recent first).
+  let found? ← findMostRecentSHAWithCache shas repo
+  match found? with
+  | some sha =>
+    IO.println s!"Most recent cached commit on branch: {sha}"
+    IO.println s!"Repository: {repo}"
+    IO.println s!"Container: {Container.forks.name}"
+    IO.println s!""
+    IO.println s!"To use this cache, run:"
+    IO.println s!"  lake exe cache get --scope={sha}"
+    IO.println s!""
+    IO.println s!"Or specify the containers explicitly:"
+    IO.println s!"  lake exe cache get --scope={sha} --cache-from=forks,legacy"
+  | none =>
+    IO.println s!"No scoped cache entries found within the last {cap} commits on this branch."
+    IO.println s!"This typically means:"
+    IO.println s!"  - The commits are too old (before the forks container SHA scoping was deployed)"
+    IO.println s!"  - The branch is disconnected from the main Mathlib CI (forked, isolated branch)"
+    IO.println s!"  - CI hasn't built the commits yet"
+
+end Query
+
+section Warning
+
+/--
+Condition to determine if a non-default scope warning should be printed.
+
+Returns `true` if any of these hold:
+1. `MATHLIB_CACHE_REPO_SCOPE` is set in the environment (any non-empty value)
+2. `--cache-from` was passed and widens the read chain beyond `defaultContainersForRepo` for the resolved repo
+3. `--repo` was passed and does not match the cwd's `git remote origin` (or active remote)
+
+Otherwise returns `false` (default read chain, no warning needed).
+-/
+def shouldWarnNonDefaultScope (repoExplicit? : Option String)
+    (cliCacheFromOverride? : Option (List Container)) (resolvedRepo : String) :
+    IO Bool := do
+  -- Condition 1: `--scope=` flag or `MATHLIB_CACHE_REPO_SCOPE` env var supplied
+  if (← getRepoScope).isSome then return true
+
+  -- Condition 2: --cache-from CLI override widens the chain
+  match cliCacheFromOverride? with
+  | some cliOverride =>
+    let defaultContainers := defaultContainersForRepo resolvedRepo
+    unless cliOverride == defaultContainers do
+      return true
+  | none => pure ()
+
+  -- Condition 3: --repo was explicitly passed AND does not match cwd's git remote.
+  -- Only fires when the user explicitly overrode --repo; defaulting to MATHLIBREPO
+  -- from a fork checkout is normal and does not warn.
+  match repoExplicit? with
+  | some explicitRepo =>
+    let curRemoteRepo? ← getRemoteRepo "."
+    match curRemoteRepo? with
+    | some repoInfo =>
+      unless explicitRepo == repoInfo.repo do
+        return true
+    | none =>
+      -- Can't determine current repo; don't warn
+      pure ()
+  | none => pure ()
+
+  return false
+
+/--
+Print a prominent security warning to stderr when reading at a non-default scope.
+
+The warning includes:
+- A clear statement that the user is trusting artifacts at a non-default scope
+- The scope details (container, repo, SHA as applicable)
+- Why the warning is being issued (which condition triggered it)
+-/
+def printNonDefaultScopeWarning (repo : String) (triggerReason : String) : IO Unit := do
+  let lines : List String := [
+    "=================================================================",
+    "SECURITY: reading cache at a non-default scope",
+    "=================================================================",
+    "You are reading cache artifacts at a scope outside the default trust",
+    "boundary for this repo. The cache cannot verify the contents of these",
+    "artifacts; you are choosing to trust whoever uploaded them.",
+    "",
+    s!"Repository: {repo}",
+    s!"Reason: {triggerReason}",
+    "=================================================================",
+  ]
+  for line in lines do
+    IO.eprintln line
+
+/--
+Determine the reason why a non-default scope warning is being issued.
+
+Returns a human-readable string describing which condition triggered the warning.
+-/
+def getNonDefaultScopeReason (repoExplicit? : Option String)
+    (cliCacheFromOverride? : Option (List Container)) (resolvedRepo : String) :
+    IO String := do
+  -- Check conditions in order; return the first that matches.
+
+  -- Condition 1: `--scope=` flag (preferred form) or `MATHLIB_CACHE_REPO_SCOPE`
+  -- env var (CI form). Reported with the source that set it.
+  if let some s ← scopeOverride.get then
+    return s!"--scope={s} (explicit per-commit scope)"
+  let scope? ← IO.getEnv "MATHLIB_CACHE_REPO_SCOPE"
+  if let some scope := scope? then
+    let trimmed := scope.trimAscii
+    if !trimmed.isEmpty then
+      return s!"MATHLIB_CACHE_REPO_SCOPE={trimmed} (explicit per-commit scope)"
+
+  -- Condition 2: --cache-from override
+  if let some cliOverride := cliCacheFromOverride? then
+    let defaultContainers := defaultContainersForRepo resolvedRepo
+    if cliOverride ≠ defaultContainers then
+      let overrideStr := ", ".intercalate (cliOverride.map Container.name)
+      return s!"--cache-from={overrideStr} (explicit container override)"
+
+  -- Condition 3: --repo was explicitly passed AND doesn't match cwd's git remote
+  match repoExplicit? with
+  | some explicitRepo =>
+    let curRemoteRepo? ← getRemoteRepo "."
+    match curRemoteRepo? with
+    | some repoInfo =>
+      if explicitRepo ≠ repoInfo.repo then
+        return s!"--repo={explicitRepo} (overrides detected git remote: {repoInfo.repo})"
+    | none => pure ()
+  | none => pure ()
+
+  return "unknown reason"
+
+/--
+Check if a non-default scope warning should be printed and issue it if so.
+
+This is called before performing read operations (cache get). It checks
+the three conditions and prints the warning if any hold, but does not
+prompt for confirmation (so as not to break CI).
+-/
+def warnIfNonDefaultScope (repoExplicit? : Option String)
+    (cliCacheFromOverride? : Option (List Container)) (resolvedRepo : String) :
+    IO Unit := do
+  if (← shouldWarnNonDefaultScope repoExplicit? cliCacheFromOverride? resolvedRepo) then
+    let reason ← getNonDefaultScopeReason repoExplicit? cliCacheFromOverride? resolvedRepo
+    printNonDefaultScopeWarning resolvedRepo reason
+
+/--
+If the user is on a commit that hasn't been cached at the fork-trust level
+(no marker present at `forks/m/{repo}/{HEAD-sha}`), print an informational
+note explaining the new SHA-scoped behavior and pointing at `cache query`.
+
+Fires only on naive `cache get` invocations:
+- no `--scope=` / `MATHLIB_CACHE_REPO_SCOPE` set (else the user has already
+  picked a scope and the non-default-scope warning is doing the talking)
+- no `--cache-from` override (else they've already taken explicit
+  responsibility for the read chain)
+- the resolved repo's default chain reads from `forks` (otherwise SHA
+  scoping is not relevant)
+
+One HEAD probe per invocation; the message is stderr-only so it doesn't
+mix with `cache get`'s stdout output.
+-/
+def informIfHeadNotBuilt (repoExplicit? : Option String) : IO Unit := do
+  if (← getRepoScope).isSome then return
+  if (← cacheFromOverride.get).isSome then return
+  -- Resolve repo: --repo= flag wins; otherwise use the git remote (same as
+  -- `getFiles` does when no --repo is passed). Skip silently if neither
+  -- yields, since we have nowhere to probe.
+  let repo ← match repoExplicit? with
+    | some r => pure r
+    | none =>
+      match ← getRemoteRepo "." with
+      | some info => pure info.repo
+      | none => return
+  unless (defaultContainersForRepo repo).contains Container.forks do return
+  let sha ← try getGitCommitHash catch _ => return
+  let hasMarker ← probeContainerForSHA Container.forks repo sha
+  if hasMarker then return
+  let lines : List String := [
+    "",
+    s!"NOTE: HEAD ({sha}) was not built and cached at fork-trust level.",
+    "Reads will fall back to master/legacy; you may see cache misses for",
+    "files unique to this PR.",
+    "",
+    "To pick up a prior CI run on this branch, find a built commit:",
+    "    lake exe cache query",
+    "",
+    "then re-run with:",
+    "    lake exe cache get --scope=<that-sha>",
+    "",
+    "Important: using another commit's scope means trusting the artifacts",
+    "produced at that commit. `cache get` will print a security notice",
+    "when you do.",
+    "",
+  ]
+  for line in lines do
+    IO.eprintln line
+
+end Warning
 
 end Cache.Requests
