@@ -10,7 +10,7 @@ public import Mathlib.Order.IsNormal
 public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
 
 /-!
-# Club sets
+# Club sets and stationary sets
 
 A subset of a well-ordered type `α` is called a **club set** when it is closed in the order topology
 and cofinal. If `α` has no maximum, then an equivalent condition is that `α` is closed and
