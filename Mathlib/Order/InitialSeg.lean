@@ -564,6 +564,13 @@ noncomputable def InitialSeg.total (r s) [IsWellOrder α r] [IsWellOrder β s] :
       · exact ⟨Sum.inr <| (g.codRestrict {x | Sum.Lex r s x f.top}
           (fun a => _root_.trans (g.lt_top a) h) h).transRelIso f.subrelIso⟩
 
+/-- For any two well orders, one is a principal segment of the other, or they are isomorphic. -/
+noncomputable def PrincipalSeg.trichotomy (r s) [IsWellOrder α r] [IsWellOrder β s] :
+    (r ≺i s) ⊕ (r ≃r s) ⊕ (s ≺i r) :=
+  match InitialSeg.total r s with
+  | .inl f => (f.principalSumRelIso).elim .inl (.inr ∘ .inl)
+  | .inr g => (g.principalSumRelIso).elim (.inr ∘ .inr) (.inr ∘ .inl ∘ .symm)
+
 /-! ### Initial or principal segments with `<` -/
 
 namespace InitialSeg
