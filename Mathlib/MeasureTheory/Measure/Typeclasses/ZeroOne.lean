@@ -162,9 +162,7 @@ theorem exists_eq_dirac [MeasurableSpace.CountablySeparated α] [NeZero μ] :
   ext y
   simp only [mem_iInter, mem_singleton_iff]
   specialize hAsep x (mem_univ x) y (mem_univ y)
-  refine ⟨fun h ↦ by simp [h]; grind, fun h ↦ ?_⟩
-  symm
-  refine hAsep fun n ↦ ?_
+refine ⟨fun h ↦ by simp [h]; grind, fun h ↦ symm <| hAsep fun n ↦ ?_⟩
   grind
 
 end IsZeroOneMeasure
