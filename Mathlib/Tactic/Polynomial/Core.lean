@@ -69,7 +69,7 @@ initialize polynomialExt : PersistentEnvExtension Name (Name × PolynomialExt)
   }
 
 initialize registerBuiltinAttribute {
-  name := `inferPolyBaseAttr
+  name := `PolyInferBaseAttr
   descr := "adds a polynomial extension that infers the base ring of a polynomial-like type"
   applicationTime := .afterCompilation
   add := fun declName stx kind => match stx with
