@@ -29,6 +29,7 @@ This file defines tree decompositions on simple graphs and the treewidth.
 ## Main statements
 
 * `treeWidth_le_card` shows that a finite graph must have finite treewidth.
+* `cliqueNum_le_treeWidth` relates a graph's clique number and treewidth.
 
 ## References
 
@@ -378,4 +379,95 @@ theorem treeWidth_ne_zero_iff_ne_bot [Finite V] : 0 < G.treeWidth ↔ G ≠ ⊥ 
     exact (t.le_width t.ewidth_ne_top_of_finite).mpr ⟨w, by omega⟩
 
 end TreeWidth
+
+section Clique
+
+/-- A tree decomposition is trivial if some bag contains every element. -/
+def TreeDecomp.IsTrivial (t : G.TreeDecomp) : Prop := ∃ w : t.W, ∀ v : V, v ∈ t.𝓧 w
+
+/-- A tree decomposition is trivial iff every pair of distinct vertices is contained in some bag. -/
+lemma TreeDecomp.isTrivial_iff [Nonempty V] [Finite V] (t : G.TreeDecomp) : t.IsTrivial ↔
+    ∀ u v : V, u ≠ v → ∃ w : t.W, u ∈ t.𝓧 w ∧ v ∈ t.𝓧 w := by
+  letI := Fintype.ofFinite V
+  simp only [IsTrivial]
+  refine ⟨fun ⟨w, hw⟩ u v _ ↦ ⟨w, hw u, hw v⟩, fun h ↦ ?_⟩
+  let f (x : V) := {w | x ∈ t.𝓧 w}
+  have h_conn : ∀ i ∈ (univ : Finset V), (t.T.induce (f i)).Connected := fun v _ ↦ by
+    rw [connected_iff]
+    obtain ⟨w, hw⟩ := t.vertexCover v
+    exact ⟨t.connectedBags v, ⟨⟨w, hw⟩⟩⟩
+  have h_pair : ∀ i ∈ (univ : Finset V), ∀ j ∈ (univ : Finset V), (f i ∩ f j).Nonempty := by
+    intro i _ j _
+    by_cases hij : i = j
+    · subst hij; exact (t.vertexCover i).imp fun _ hw ↦ ⟨hw, hw⟩
+    · exact h i j hij
+  obtain ⟨w, hw⟩ := t.isTree.inter_nonempty_of_pairwise Finset.univ_nonempty h_conn h_pair
+  use w
+  simp only [mem_univ, Set.iInter_true, Set.mem_iInter, Set.mem_setOf_eq, f] at hw
+  exact hw
+
+/-- If a tree decomposition is not trivial, there is a pair of vertices that aren't covered by any
+bag. -/
+lemma TreeDecomp.not_isTrivial_iff [Nonempty V] [Finite V] (t : G.TreeDecomp) : ¬t.IsTrivial ↔
+    ∃ u v : V, u ≠ v ∧ ∀ w : t.W, u ∉ t.𝓧 w ∨ v ∉ t.𝓧 w := by
+  simp [isTrivial_iff, imp_iff_not_or]
+
+/-- A trivial tree decomposition has width (card V) - 1. -/
+lemma TreeDecomp.isTrivial_width [Nonempty V] [Fintype V] (t : G.TreeDecomp) :
+    t.IsTrivial ↔ t.width = card V - 1 := by
+  have hwidth := t.ewidth_ne_top_of_finite
+  refine ⟨fun ⟨w, hw⟩ ↦ le_antisymm t.width_le_card ?_, fun h ↦ ?_⟩
+  · rw [t.le_width hwidth]
+    exact ⟨w, by rw [eq_univ_iff_forall.mpr hw, card_univ]⟩
+  · by_cases hV : card V ≤ 1
+    · rw [isTrivial_iff]
+      rw [← Finset.card_univ, card_le_one_iff] at hV
+      intro v v' hne
+      exact absurd (hV (mem_univ _) (mem_univ _)) hne
+    · obtain ⟨w, hw⟩ := (t.le_width hwidth).mp h.ge
+      have hle : #(t.𝓧 w) ≤ card V := card_le_univ _
+      exact ⟨w, fun v ↦ ((t.𝓧 w).card_eq_iff_eq_univ.mp (by omega)).symm ▸ mem_univ v⟩
+
+lemma TreeDecomp.not_isTrivial_width_iff [Nonempty V] [Fintype V] (t : G.TreeDecomp) :
+    ¬t.IsTrivial ↔ t.width < card V - 1 := by
+  rw [t.isTrivial_width, lt_iff_le_and_ne, and_iff_right t.width_le_card]
+
+/-- The treewidth of a complete graph is (card V) - 1. -/
+theorem treewidth_top [Fintype V] : (⊤ : SimpleGraph V).treeWidth = card V - 1 := by
+  refine le_antisymm treeWidth_le_card ?_
+  rcases isEmpty_or_nonempty V with hV | hV
+  · simp
+  simp only [le_treeWidth_iff]
+  intro t
+  exact (t.isTrivial_width.mp <|
+    t.isTrivial_iff.mpr fun u v huv ↦ t.edgeCover ((top_adj u v).mpr huv)).ge
+
+@[simp]
+lemma etreewidth_top [Fintype V] : (⊤ : SimpleGraph V).etreeWidth = (card V - 1 : ℕ) := by
+  rw [← coe_treeWidth_of_finite, treewidth_top]
+
+/-- If s is a clique in G, the extended treewidth of G is at least (#s - 1). -/
+theorem isClique_card_le_etreeWidth (s : Finset V) :
+    G.IsClique s → s.card - 1 ≤ G.etreeWidth := by
+  rw [isClique_iff_induce_eq]
+  intro h
+  calc (s.card - 1 : ℕ∞)
+      = (induce (↑s) G).etreeWidth := by simp [h]
+    _ ≤ G.etreeWidth := etreeWidth_mono_of_embedding (SimpleGraph.Embedding.induce (↑s : Set V))
+
+/-- For finite graphs, if s is a clique in G, the treewidth of G is at least (#s - 1). -/
+theorem isClique_card_le_treeWidth [Finite V] (s : Finset V) (h : G.IsClique s) :
+    s.card - 1 ≤ G.treeWidth := by
+  have := isClique_card_le_etreeWidth s h
+  rw [← coe_treeWidth_of_finite] at this
+  exact_mod_cast this
+
+/-- The clique number minus one is less than the treewidth. -/
+theorem cliqueNum_le_treeWidth [Finite V] : G.cliqueNum - 1 ≤ G.treeWidth := by
+  obtain ⟨s, hs⟩ := G.maximumClique_exists
+  have := maximumClique_card_eq_cliqueNum s hs
+  exact this ▸ isClique_card_le_treeWidth s hs.isClique
+
+end Clique
+
 end SimpleGraph
