@@ -263,8 +263,7 @@ instance [Subsingleton M] : Subsingleton (MulArchimedeanClass M) :=
 noncomputable
 instance : LinearOrder (MulArchimedeanClass M) :=
   open Classical in
-  -- TODO: why does `inferInstanceAs` not work here?
-  fast_instance% (inferInstance : LinearOrder (Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·)))
+  inferInstanceAs <| LinearOrder <| Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·)
 
 @[to_additive]
 theorem mk_le_mk : mk a ≤ mk b ↔ ∃ n, |b|ₘ ≤ |a|ₘ ^ n := .rfl
