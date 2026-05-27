@@ -177,7 +177,6 @@ lemma hasPointwiseLeftKanExtension_iff_of_natIso {L L' : C ⥤ D} {F F' : C ⥤ 
     L.HasPointwiseLeftKanExtensionAt F Y ↔ L'.HasPointwiseLeftKanExtensionAt F' Y :=
   ⟨fun _ ↦ .of_natIso Y e₁ e₂, fun _ ↦ .of_natIso Y e₁.symm e₂.symm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma HasPointwiseRightKanExtensionAt.of_natIso {L L' : C ⥤ D} {F F' : C ⥤ H} (Y : D)
     [L.HasPointwiseRightKanExtensionAt F Y] (e₁ : L ≅ L') (e₂ : F ≅ F') :
     L'.HasPointwiseRightKanExtensionAt F' Y := by
