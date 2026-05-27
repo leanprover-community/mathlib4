@@ -73,7 +73,7 @@ theorem OpenPartialHomeomorph.hasStrictDerivAt_symm (f : OpenPartialHomeomorph �
 theorem HasDerivAt.of_comp_left {f g h : 𝕜 → 𝕜} {f' h' a : 𝕜} (hst : ContinuousAt g a)
     (hf : HasDerivAt f f' (g a)) (hh : HasDerivAt h h' a) (hf' : f' ≠ 0)
     (hcomp : f ∘ g =ᶠ[𝓝 a] h) : HasDerivAt g (h' / f') a := by
-  convert hf.hasFDerivAt.of_comp_of_leftInverse hst hh hcomp (f'symm := .toSpanSingleton 𝕜 f'⁻¹)
+  convert! hf.hasFDerivAt.of_comp_of_leftInverse hst hh hcomp (f'symm := .toSpanSingleton 𝕜 f'⁻¹)
     (fun _ ↦ by simp [hf']) |>.hasDerivAt using 1
   simp [div_eq_mul_inv]
 
