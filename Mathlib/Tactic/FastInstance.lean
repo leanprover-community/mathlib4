@@ -154,10 +154,10 @@ partial def makeFastInstance (inst expectedType : Expr) (root := true) (trace : 
         else
           throwError "Proof `{arg}` does not have expected type `{argExpectedType}`"
       -- Recurse into instance arguments of the constructor.
-      -- We propagate `warnLeaky` so that nested leakiness checks respect the flag.
       else if bi.isInstImplicit then
         let trace' := trace.push (className ++ mvarDecl.userName)
         mvarId.assign (← makeFastInstance arg argExpectedType (root := false) (trace := trace')
+          -- Ensure we propagate the configuration settings.
           (warnLeaky := warnLeaky))
       else
         -- For data fields, make sure that the lambda binders have the right type.

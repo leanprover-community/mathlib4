@@ -59,6 +59,7 @@ public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.ExistsI
 public import Mathlib.Tactic.ExtractGoal
 public import Mathlib.Tactic.FailIfNoProgress
+public import Mathlib.Tactic.FastInstance
 public import Mathlib.Tactic.Find
 public import Mathlib.Tactic.FunProp
 public import Mathlib.Tactic.GCongr
