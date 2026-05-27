@@ -59,60 +59,13 @@ abbrev of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [Conti
 lemma coe_of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
     [ContinuousSMul R M] : (of R M) = M := rfl
 
-set_option backward.privateInPublic true in
 variable {R} in
-/-- Homs in `TopModuleCat` as one field structures over `ContinuousLinearMap`. -/
-structure Hom (X Y : TopModuleCat.{v} R) where
-  -- use `ofHom` instead
-  private ofHom' ::
-  /-- The underlying continuous linear map. Use `hom` instead. -/
-  hom' : X →L[R] Y
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : Category (TopModuleCat R) where
-  Hom := Hom
-  id M := ⟨ContinuousLinearMap.id R M⟩
-  comp φ ψ := ⟨ψ.hom' ∘L φ.hom'⟩
-
-set_option linter.style.whitespace false in -- manual alignment is not recognised
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : ConcreteCategory (TopModuleCat R) (· →L[R] ·) where
-  hom   := Hom.hom'
-  ofHom := Hom.ofHom'
-
-variable {R} in
-/-- Cast a hom in `TopModuleCat` into a continuous linear map. -/
-abbrev Hom.hom {X Y : TopModuleCat R} (f : X.Hom Y) : X →L[R] Y :=
-  ConcreteCategory.hom (C := TopModuleCat R) f
-
-variable {R} in
-/-- Construct a hom in `TopModuleCat` from a continuous linear map. -/
-abbrev ofHom {X Y : Type v}
+mk_concrete_category (TopModuleCat.{v} R) (· →L[R] ·)
+  (fun (M : TopModuleCat.{v} R) ↦ ContinuousLinearMap.id R M) ContinuousLinearMap.comp
+  with_of_hom {X Y : Type v}
     [AddCommGroup X] [Module R X] [TopologicalSpace X] [ContinuousAdd X] [ContinuousSMul R X]
     [AddCommGroup Y] [Module R Y] [TopologicalSpace Y] [ContinuousAdd Y] [ContinuousSMul R Y]
-    (f : X →L[R] Y) : of R X ⟶ of R Y :=
-  ConcreteCategory.ofHom f
-
-@[simp] lemma hom_ofHom {X Y : Type v}
-    [AddCommGroup X] [Module R X] [TopologicalSpace X] [ContinuousAdd X] [ContinuousSMul R X]
-    [AddCommGroup Y] [Module R Y] [TopologicalSpace Y] [ContinuousAdd Y] [ContinuousSMul R Y]
-    (f : X →L[R] Y) :
-    (ofHom f).hom = f := rfl
-
-@[simp] lemma ofHom_hom {X Y : TopModuleCat R} (f : X.Hom Y) : ofHom f.hom = f := rfl
-
-@[simp] lemma hom_comp {X Y Z : TopModuleCat R} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
-
-@[simp] lemma hom_id (X : TopModuleCat R) : hom (𝟙 X) = .id _ _ := rfl
-
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (A B : TopModuleCat.{v} R) (f : A.Hom B) :=
-  f.hom
-
-initialize_simps_projections Hom (hom' → hom)
+  hom_type (X →L[R] Y) from (of R X) to (of R Y)
 
 variable {R} in
 /-- Construct an iso in `TopModuleCat` from a continuous linear equiv. -/

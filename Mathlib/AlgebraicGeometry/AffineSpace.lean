@@ -176,9 +176,8 @@ def isoOfIsAffine [IsAffine S] :
       hom_inv_id := by
         ext1
         · simp only [Category.assoc, homOfVector_over, Category.id_comp]
-          rw [← Spec.map_comp_assoc, ← CommRingCat.ofHom_comp, eval₂Hom_comp_C,
-            CommRingCat.ofHom_hom, ← Scheme.toSpecΓ_naturality_assoc]
-          simp [Scheme.isoSpec]
+          rw [← Spec.map_comp_assoc, ← CommRingCat.ofHom_comp, eval₂Hom_comp_C]
+          simp [← Scheme.toSpecΓ_naturality_assoc]
         · simp
       inv_hom_id := by
         apply ext_of_isAffine
@@ -299,7 +298,7 @@ lemma map_SpecMap {R S : CommRingCat.{max u v}} (φ : R ⟶ S) :
   ext1
   · simp only [map_over, Category.assoc, SpecIso_inv_over, SpecIso_inv_over_assoc,
       ← Spec.map_comp, ← CommRingCat.ofHom_comp]
-    rw [map_comp_C, CommRingCat.ofHom_comp, CommRingCat.ofHom_hom]
+    simp
   · simp only [TopologicalSpace.Opens.map_top, Scheme.Hom.comp_app, CommRingCat.comp_apply]
     conv_lhs => enter [2]; tactic => exact map_appTop_coord _ _
     conv_rhs => enter [2]; tactic => exact SpecIso_inv_appTop_coord _ _
