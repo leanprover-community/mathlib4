@@ -162,7 +162,7 @@ end MvPowerSeries
 
 section toMvPowerSeries
 
-variable {R S σ τ : Type*} [CommSemiring R] [CommSemiring S] {f : PowerSeries R} (i : σ) (r : R)
+variable {R σ τ : Type*} [CommSemiring R] {f : PowerSeries R} (i : σ) (r : R)
 
 open Function PowerSeries Filter Finsupp
 namespace PowerSeries
@@ -197,11 +197,15 @@ variable {R : Type*} [CommRing R] {f : R⟦X⟧} {i : σ}
 theorem toMvPowerSeries_eq_subst : f.toMvPowerSeries i = f.subst (MvPowerSeries.X i) := by
   rw [toMvPowerSeries_apply, MvPowerSeries.rename_eq_subst, comp_def, subst]
 
+theorem subst_toMvPowerSeries {a : σ → MvPowerSeries τ R} (ha : MvPowerSeries.HasSubst a) :
+    (f.toMvPowerSeries i).subst a = f.subst (a i) := by
+  rw [toMvPowerSeries_eq_subst, subst, MvPowerSeries.subst_comp_subst_apply
+    (HasSubst.const (HasSubst.X _)) ha, MvPowerSeries.subst_X ha, subst]
+
 lemma toMvPowerSeries_coeff_eq_zero {d : σ →₀ ℕ} (hd : d i = 0) (hf : f.constantCoeff = 0) :
     ((PowerSeries.toMvPowerSeries i) f).coeff d = 0 := by classical
-  have : (.subst (.X (R := R) ∘ fun x ↦ i) f) = f.subst (.X i) := rfl
-  rw [toMvPowerSeries_apply, MvPowerSeries.rename_eq_subst, this, coeff_subst (HasSubst.X _),
-    finsum_eq_zero_of_forall_eq_zero]
+  rw [toMvPowerSeries_apply, MvPowerSeries.rename_eq_subst, subst_X_comp_const,
+    coeff_subst (HasSubst.X _), finsum_eq_zero_of_forall_eq_zero]
   simp only [MvPowerSeries.X_pow_eq, MvPowerSeries.coeff_monomial, smul_eq_mul, mul_ite, mul_one,
     mul_zero, ite_eq_right_iff]
   intro _ a
@@ -214,11 +218,6 @@ theorem _root_.MvPowerSeries.HasSubst.toMvPowerSeries (hf : f.constantCoeff = 0)
   coeff_zero d := Set.Finite.subset (Finite.of_fintype d.support) fun s => by
     contrapose
     simpa using fun hd ↦ toMvPowerSeries_coeff_eq_zero hd hf
-
-theorem toMvPowerSeries_val {a : σ → MvPowerSeries τ R} (ha : MvPowerSeries.HasSubst a) :
-    (f.toMvPowerSeries i).subst a = f.subst (a i) := by
-  rw [toMvPowerSeries_eq_subst, subst, MvPowerSeries.subst_comp_subst_apply
-    (HasSubst.const (HasSubst.X _)) ha, MvPowerSeries.subst_X ha, subst]
 
 end CommRing
 
