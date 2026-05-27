@@ -265,10 +265,9 @@ theorem eq_monomial_of_unique_weight {w : σ → M} (hφ : IsWeightedHomogeneous
   classical
   ext d
   rw [coeff_monomial]
-  rcases eq_or_ne d d₀ with rfl | hd
-  · rw [if_pos rfl]
-  rw [if_neg hd.symm]
-  exact hφ.coeff_eq_zero d fun h ↦ hd (huniq d h)
+  split_ifs with hd
+  · rw [hd]
+  exact hφ.coeff_eq_zero d fun h ↦ hd (huniq d h).symm
 
 /-- The sum of weighted homogeneous polynomials of degree `n` is weighted homogeneous of
   weighted degree `n`. -/
