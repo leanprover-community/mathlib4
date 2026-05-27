@@ -85,8 +85,7 @@ lemma isCollinear_pair (a b : ℙ K V) : IsCollinear {a, b} := by
   if h : a = b then simp [h] else
   induction a using Projectivization.ind with | h v hv =>
   induction b using Projectivization.ind with | h w hw =>
-  change _ ≠ _ at h
-  rw [← independent_pair_iff_ne, independent_mk_iff_LinearIndependent] at h
+  rw [← ne_eq, ← independent_pair_iff_ne, independent_mk_iff_LinearIndependent] at h
   refine ⟨(Submodule.span K {v, w}).projectivization, ?_, ?_, fun s hs ↦ hs.casesOn ?_ ?_⟩
   · rw [Subspace.submodule.apply_symm_apply]
     exact Module.Finite.span_of_finite _ (Set.toFinite _)
