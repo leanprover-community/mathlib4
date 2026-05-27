@@ -183,9 +183,12 @@ theorem toMvPowerSeries_C : (C r).toMvPowerSeries i = MvPowerSeries.C r := by
 theorem toMvPowerSeries_X : X.toMvPowerSeries i = MvPowerSeries.X i (R := R) := by
   rw [toMvPowerSeries_apply, X_apply, MvPowerSeries.rename_X]
 
-@[grind inj]
-theorem toMvPowerSeries_inj (i : σ) : Function.Injective (toMvPowerSeries (R := R) i) :=
+theorem toMvPowerSeries_injective (i : σ) : Function.Injective (toMvPowerSeries (R := R) i) :=
   MvPowerSeries.rename_injective (Embedding.punit i)
+
+theorem toMvPowerSeries_inj (i : σ) {p q : R⟦X⟧} :
+    p.toMvPowerSeries i = q.toMvPowerSeries i ↔ p = q :=
+  ⟨fun h ↦ toMvPowerSeries_injective i h, fun h ↦ by rw [h]⟩
 
 section CommRing
 
