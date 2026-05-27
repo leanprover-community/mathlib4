@@ -131,9 +131,6 @@ theorem cof_congr_of_strictMono {f : α → γ} (hf : StrictMono f) (hf' : IsCof
     cof α = cof γ := by
   simpa using lift_cof_congr_of_strictMono hf hf'
 
-theorem cof_eq_of_isCofinal {s : Set α} (hs : IsCofinal s) : cof s = cof α :=
-  cof_congr_of_strictMono (Subtype.strictMono_coe _) (by simpa)
-
 @[simp]
 theorem cof_lt_aleph0_iff : Order.cof α < ℵ₀ ↔ Order.cof α ≤ 1 := by
   refine ⟨fun h ↦ ?_, (lt_of_le_of_lt · one_lt_aleph0)⟩
