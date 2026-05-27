@@ -34,12 +34,16 @@ section Ring
 
 variable {R : Type*} [Ring R] [Module R M] [Module R N] (f : M →ₗ[R] N)
 
-/-- The index of a linear map.
+/-- The index of a linear map with sign convention `index = dim ker - dim coker`.
 
 In the case that either the kernel or cokernel has infinite rank, the value is junk. -/
 public def index : ℤ := finrank R f.ker - finrank R (N ⧸ f.range)
 
 variable {f}
+
+public lemma index_eq_finrank_sub :
+    f.index = finrank R f.ker - finrank R (N ⧸ f.range) := by
+  rfl
 
 @[nontriviality] public lemma index_of_subsingleton [Subsingleton R] :
     f.index = 0 := by

@@ -776,6 +776,11 @@ alias alternatingProd_eq_finset_prod := alternatingProd_eq_finsetProd
 
 end List
 
+/-- This is a classic "telescoping sum" lemma. Simplifying very slightly it says:
+`(r₀ - 0) + (r₁ - r₀) + (r₂ - r₁) + ⋯ + (rₙ - rₙ₋₁) + (0 - rₙ) = 0`.
+
+The chosen spelling, which gives definitional power over `d`, is influenced by downstream
+applications such as `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`. -/
 lemma Fin.sum_neg_one_pow_eq_zero {α : Type*} [AddCommGroup α]
     {n : ℕ} (d : Fin (n + 2) → α) (r : Fin (n + 1) → α)
     (h_first : d 0 = r 0)
@@ -792,6 +797,6 @@ lemma Fin.sum_neg_one_pow_eq_zero {α : Type*} [AddCommGroup α]
       ∑ i : Fin n, (-1 : ℤ) ^ (i.val + 1) • r (Fin.castSucc i) +
       ∑ i : Fin n, (-1 : ℤ) ^ (i.val + 1) • r (Fin.succ i) := by
     simp_rw [zsmul_add, Finset.sum_add_distrib]
-  have h₃ := Fin.sum_univ_castSucc fun i ↦ (-1 : ℤ) ^ (i : ℕ) • r i
+  have h₃ := Fin.sum_univ_castSucc fun i ↦ (-1 : ℤ) ^ i.val • r i
   simp_all [Fin.sum_univ_succ, pow_succ']
   grind

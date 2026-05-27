@@ -35,8 +35,7 @@ open Function
 
 variable {k : Type*} [DivisionRing k]
 
-/-- The Euler characteristic of a finite exact sequence is the alternating sum of dimensions of the
-terms. -/
+/-- The Euler characteristic of a finite exact sequence is zero. -/
 public lemma sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} (V : Fin (n + 2) → Type*)
     [∀ i, AddCommGroup (V i)] [∀ i, Module k (V i)] [∀ i, FiniteDimensional k (V i)]
     (f : (i : Fin (n + 1)) → V i.castSucc →ₗ[k] V i.succ)
@@ -71,33 +70,14 @@ private lemma sum_neg_one_pow_finrank_eq_zero_of_exact_six_aux {V₀ V₁ V₂ V
     (finrank k V₀ : ℤ) - finrank k V₁ + finrank k V₂ -
       finrank k V₃ + finrank k V₄ - finrank k V₅ = 0 := by
   letI Vs := ![V₀, V₁, V₂, V₃, V₄, V₅]
-  letI (i : Fin 6) : AddCommGroup (Vs i) := by unfold Vs; exact match i with
-  | 0 => inferInstanceAs (AddCommGroup V₀)
-  | 1 => inferInstanceAs (AddCommGroup V₁)
-  | 2 => inferInstanceAs (AddCommGroup V₂)
-  | 3 => inferInstanceAs (AddCommGroup V₃)
-  | 4 => inferInstanceAs (AddCommGroup V₄)
-  | 5 => inferInstanceAs (AddCommGroup V₅)
-  letI (i : Fin 6) : Module k (Vs i) := by unfold Vs; exact match i with
-  | 0 => inferInstanceAs (Module k V₀)
-  | 1 => inferInstanceAs (Module k V₁)
-  | 2 => inferInstanceAs (Module k V₂)
-  | 3 => inferInstanceAs (Module k V₃)
-  | 4 => inferInstanceAs (Module k V₄)
-  | 5 => inferInstanceAs (Module k V₅)
+  letI (i : Fin 6) : AddCommGroup (Vs i) := match i with
+  | 0 => ‹_› | 1 => ‹_› | 2 => ‹_› | 3 => ‹_› | 4 => ‹_› | 5 => ‹_›
+  letI (i : Fin 6) : Module k (Vs i) := match i with
+  | 0 => ‹_› | 1 => ‹_› | 2 => ‹_› | 3 => ‹_› | 4 => ‹_› | 5 => ‹_›
   have (i : Fin 6) : FiniteDimensional k (Vs i) := match i with
-  | 0 => inferInstanceAs (FiniteDimensional k V₀)
-  | 1 => inferInstanceAs (FiniteDimensional k V₁)
-  | 2 => inferInstanceAs (FiniteDimensional k V₂)
-  | 3 => inferInstanceAs (FiniteDimensional k V₃)
-  | 4 => inferInstanceAs (FiniteDimensional k V₄)
-  | 5 => inferInstanceAs (FiniteDimensional k V₅)
+  | 0 => ‹_› | 1 => ‹_› | 2 => ‹_› | 3 => ‹_› | 4 => ‹_› | 5 => ‹_›
   letI fs (i : Fin 5) : Vs i.castSucc →ₗ[k] Vs i.succ := match i with
-  | 0 => f₀
-  | 1 => f₁
-  | 2 => f₂
-  | 3 => f₃
-  | 4 => f₄
+  | 0 => f₀ | 1 => f₁ | 2 => f₂ | 3 => f₃ | 4 => f₄
   simpa [Fin.sum_univ_six] using Module.sum_neg_one_pow_finrank_eq_zero_of_exact Vs fs inj
     (fun i ↦ by fin_cases i; exacts [exact₁, exact₂, exact₃, exact₄]) surj
 
