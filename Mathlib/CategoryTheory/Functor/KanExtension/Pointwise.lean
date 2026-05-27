@@ -83,8 +83,7 @@ lemma hasPointwiseRightKanExtensionAt_iff_of_iso {Y₁ Y₂ : D} (e : Y₁ ≅ Y
   infer_instance
 
 variable {L} in
-/-- `HasPointwiseLeftKanExtensionAt` is invariant when we replace `L` by an equivalent functor. -/
-lemma hasPointwiseLeftKanExtensionAt_iff_of_natIso {L' : C ⥤ D} (e : L ≅ L') (Y : D) :
+private lemma hasPointwiseLeftKanExtensionAt_iff_of_natIso {L' : C ⥤ D} (e : L ≅ L') (Y : D) :
     HasPointwiseLeftKanExtensionAt L F Y ↔
       HasPointwiseLeftKanExtensionAt L' F Y := by
   revert L L' e
@@ -98,8 +97,7 @@ lemma hasPointwiseLeftKanExtensionAt_iff_of_natIso {L' : C ⥤ D} (e : L ≅ L')
   exact hasColimit_of_iso e'
 
 variable {L} in
-/-- `HasPointwiseRightKanExtensionAt` is invariant when we replace `L` by an equivalent functor. -/
-lemma hasPointwiseRightKanExtensionAt_iff_of_natIso {L' : C ⥤ D} (e : L ≅ L') (Y : D) :
+private lemma hasPointwiseRightKanExtensionAt_iff_of_natIso {L' : C ⥤ D} (e : L ≅ L') (Y : D) :
     HasPointwiseRightKanExtensionAt L F Y ↔
       HasPointwiseRightKanExtensionAt L' F Y := by
   revert L L' e
@@ -172,6 +170,13 @@ lemma HasPointwiseLeftKanExtensionAt.of_natIso {L L' : C ⥤ D} {F F' : C ⥤ H}
   rw [HasPointwiseLeftKanExtensionAt, hasColimit_iff_of_iso e]
   infer_instance
 
+/-- `HasPointwiseLeftKanExtensionAt` is invariant when we replace `L` and `F` by isomorphic
+functors. -/
+lemma hasPointwiseLeftKanExtension_iff_of_natIso {L L' : C ⥤ D} {F F' : C ⥤ H} {Y : D}
+    (e₁ : L ≅ L') (e₂ : F ≅ F') :
+    L.HasPointwiseLeftKanExtensionAt F Y ↔ L'.HasPointwiseLeftKanExtensionAt F' Y :=
+  ⟨fun _ ↦ .of_natIso Y e₁ e₂, fun _ ↦ .of_natIso Y e₁.symm e₂.symm⟩
+
 set_option backward.isDefEq.respectTransparency false in
 lemma HasPointwiseRightKanExtensionAt.of_natIso {L L' : C ⥤ D} {F F' : C ⥤ H} (Y : D)
     [L.HasPointwiseRightKanExtensionAt F Y] (e₁ : L ≅ L') (e₂ : F ≅ F') :
@@ -181,6 +186,13 @@ lemma HasPointwiseRightKanExtensionAt.of_natIso {L L' : C ⥤ D} {F F' : C ⥤ H
     NatIso.ofComponents fun X ↦ (e₂.app _).symm
   rw [HasPointwiseRightKanExtensionAt, hasLimit_iff_of_iso e]
   infer_instance
+
+/-- `HasPointwiseRightKanExtensionAt` is invariant when we replace `L` and `F` by isomorphic
+functors. -/
+lemma hasPointwiseRightKanExtension_iff_of_natIso {L L' : C ⥤ D} {F F' : C ⥤ H} {Y : D}
+    (e₁ : L ≅ L') (e₂ : F ≅ F') :
+    L.HasPointwiseRightKanExtensionAt F Y ↔ L'.HasPointwiseRightKanExtensionAt F' Y :=
+  ⟨fun _ ↦ .of_natIso Y e₁ e₂, fun _ ↦ .of_natIso Y e₁.symm e₂.symm⟩
 
 lemma HasPointwiseLeftKanExtension.of_iso {L L' : C ⥤ D} {F F' : C ⥤ H}
     [L.HasPointwiseLeftKanExtension F] (e₁ : L ≅ L') (e₂ : F ≅ F') :
