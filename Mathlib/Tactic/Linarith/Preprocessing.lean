@@ -104,7 +104,7 @@ partial def getNatComparisons (e : Expr) : List (Expr × Expr) :=
     | _ => []
 
 /-- If `e : ℕ`, returns a proof of `0 ≤ (e : C)`. -/
-def mk_natCast_nonneg_prf (p : Expr × Expr) : MetaM (Option Expr) :=
+def mkNatCastNonnegProof? (p : Expr × Expr) : MetaM (Option Expr) :=
   match p with
   | ⟨e, target⟩ => try commitIfNoEx (mkAppM ``natCast_nonneg #[target, e])
     catch e => do
@@ -146,9 +146,9 @@ def natToInt : GlobalBranchingPreprocessor where
         pure <| (es.insertMany indices_a).insertMany indices_b
       catch _ => pure es
     let atoms : Array Expr := (← get).atoms
-    let nonneg_pfs : List Expr ← nonnegs.toList.filterMapM fun p => do
-      mk_natCast_nonneg_prf (atoms[p.1]!, atoms[p.2]!)
-    pure [(g, nonneg_pfs ++ l)]
+    let nonnegProofs : List Expr ← nonnegs.toList.filterMapM fun p => do
+      mkNatCastNonnegProof? (atoms[p.1]!, atoms[p.2]!)
+    pure [(g, nonnegProofs ++ l)]
 
 end natToInt
 
@@ -159,7 +159,7 @@ If `pf` is a proof of a strict inequality `(a : ℤ) < b`,
 `mkNonstrictIntProof pf` returns a proof of `a + 1 ≤ b`,
 and similarly if `pf` proves a negated weak inequality.
 -/
-def mkNonstrictIntProof (pf : Expr) : MetaM (Option Expr) := do
+def mkNonstrictIntProof? (pf : Expr) : MetaM (Option Expr) := do
   match ← (← inferType pf).ineqOrNotIneq? with
   | (true, Ineq.lt, .const ``Int [], a, b) =>
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) pf
@@ -172,7 +172,7 @@ def mkNonstrictIntProof (pf : Expr) : MetaM (Option Expr) := do
 into a proof of `t1 ≤ t2 + 1`. -/
 def strengthenStrictInt : Preprocessor where
   description := "strengthen strict inequalities over int"
-  transform h := return [(← mkNonstrictIntProof h).getD h]
+  transform h := return [(← mkNonstrictIntProof? h).getD h]
 
 end strengthenStrictInt
 
@@ -182,7 +182,7 @@ section compWithZero
 `rearrangeComparison e` takes a proof `e` of an equality, inequality, or negation thereof,
 and turns it into a proof of a comparison `_ R 0`, where `R ∈ {=, ≤, <}`.
 -/
-partial def rearrangeComparison (e : Expr) : MetaM (Option Expr) := do
+partial def rearrangeComparison? (e : Expr) : MetaM (Option Expr) := do
   match ← (← inferType e).ineq? with
   | (Ineq.le, _) => try? <| mkAppM ``Linarith.sub_nonpos_of_le #[e]
   | (Ineq.lt, _) => try? <| mkAppM ``Linarith.sub_neg_of_lt #[e]
@@ -194,7 +194,7 @@ and turns it into a proof of a comparison `_ R 0`, where `R ∈ {=, ≤, <}`.
 -/
 def compWithZero : Preprocessor where
   description := "make comparisons with zero"
-  transform e := return (← rearrangeComparison e).toList
+  transform e := return (← rearrangeComparison? e).toList
 
 end compWithZero
 
