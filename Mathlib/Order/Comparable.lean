@@ -203,8 +203,6 @@ end Preorder
 def Relation.linearOrderOfSymmGen [PartialOrder α] [DecidableLE α] [DecidableLT α] [DecidableEq α]
     (h : ∀ a b : α, Relation.SymmGen (· ≤ ·) a b) : LinearOrder α where
   le_total := h
-  toDecidableEq := ‹_›
-  toDecidableLT := ‹_›
 
 set_option linter.deprecated false in
 /-- A partial order where any two elements are comparable is a linear order. -/

@@ -38,9 +38,6 @@ instance instLinearOrder : LinearOrder ℤ where
   le_antisymm := @Int.le_antisymm
   lt_iff_le_not_ge := @Int.lt_iff_le_and_not_ge
   le_total := Int.le_total
-  toDecidableEq := instDecidableEq
-  toDecidableLE := decLe
-  toDecidableLT := decLt
 
 protected alias ⟨eq_zero_or_eq_zero_of_mul_eq_zero, _⟩ := Int.mul_eq_zero
 

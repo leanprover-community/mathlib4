@@ -70,8 +70,6 @@ instance linearOrder : LinearOrder ℚ where
   le_trans _ _ _ := Rat.le_trans
   le_antisymm _ _ := Rat.le_antisymm
   le_total _ _ := Rat.le_total
-  toDecidableEq := inferInstance
-  toDecidableLT := inferInstance
   lt_iff_le_not_ge := Rat.lt_iff_le_not_ge
 
 theorem mkRat_nonneg_iff (a : ℤ) {b : ℕ} (hb : b ≠ 0) : 0 ≤ mkRat a b ↔ 0 ≤ a :=

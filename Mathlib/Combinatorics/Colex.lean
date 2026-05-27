@@ -271,7 +271,6 @@ variable [LinearOrder α] [LinearOrder β] {f : α → β} {𝒜 𝒜₁ 𝒜₂
 
 instance instLinearOrder : LinearOrder (Colex (Finset α)) where
   le_total s t := by
-    classical
     obtain rfl | hts := eq_or_ne t s
     · simp
     have ⟨a, ha, hamax⟩ := exists_max_image _ id
@@ -279,7 +278,6 @@ instance instLinearOrder : LinearOrder (Colex (Finset α)) where
     simp_rw [mem_symmDiff] at ha hamax
     exact ha.imp (fun ha b hbs hbt ↦ ⟨a, ha.1, ha.2, hamax _ <| Or.inr ⟨hbs, hbt⟩⟩)
       (fun ha b hbt hbs ↦ ⟨a, ha.1, ha.2, hamax _ <| Or.inl ⟨hbt, hbs⟩⟩)
-  toDecidableLT := instDecidableLT
 
 open scoped symmDiff
 

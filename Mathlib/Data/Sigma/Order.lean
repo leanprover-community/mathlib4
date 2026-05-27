@@ -167,12 +167,10 @@ instance partialOrder [Preorder ι] [∀ i, PartialOrder (α i)] :
 
 /-- The lexicographical linear order on a sigma type. -/
 instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] :
-    LinearOrder (Σₗ i, α i) :=
-  { Lex.partialOrder with
-    le_total := total_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
-    toDecidableEq := Sigma.instDecidableEqSigma
-    toDecidableLE := Lex.decidable _ _
-    toDecidableLT := Lex.decidable _ _ }
+    LinearOrder (Σₗ i, α i) where
+  le_total := total_of <| (Lex (· < ·)) fun _ ↦ (· ≤ ·)
+  toDecidableLE := Lex.decidable _ _
+  toDecidableLT := Lex.decidable _ _
 
 /-- The lexicographical linear order on a sigma type. -/
 instance orderBot [PartialOrder ι] [OrderBot ι] [∀ i, Preorder (α i)] [OrderBot (α ⊥)] :

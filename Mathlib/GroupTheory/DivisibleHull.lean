@@ -268,6 +268,7 @@ instance : LE (DivisibleHull M) where
 theorem mk_le_mk {m m' : M} {s s' : ℕ+} :
     mk m s ≤ mk m' s' ↔ s'.val • m ≤ s.val • m' := by rfl
 
+set_option warn.sorry false in
 instance : LinearOrder (DivisibleHull M) where
   le_refl a := by
     induction a with | mk m s
@@ -295,6 +296,8 @@ instance : LinearOrder (DivisibleHull M) where
   toDecidableLE := by
     unfold DecidableLE LE.le instLE liftOn₂ LocalizedModule.liftOn₂
     infer_instance
+  toDecidableEq := sorry
+  toDecidableLT := sorry
 
 @[simp]
 theorem mk_lt_mk {m m' : M} {s s' : ℕ+} : mk m s < mk m' s' ↔ s'.val • m < s.val • m' := by

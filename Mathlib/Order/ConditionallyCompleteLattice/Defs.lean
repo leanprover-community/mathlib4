@@ -69,9 +69,9 @@ class ConditionallyCompleteLinearOrder (α : Type*)
   /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
   [toDecidableLE : DecidableLE α]
   /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
-  toDecidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ toDecidableLE
+  [toDecidableEq : DecidableEq α]
   /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
-  toDecidableLT : DecidableLT α := @decidableLTOfDecidableLE _ _ toDecidableLE
+  [toDecidableLT : DecidableLT α]
   /-- If a set is not bounded above, its supremum is by convention `sSup ∅`. -/
   csSup_of_not_bddAbove : ∀ s, ¬BddAbove s → sSup s = sSup (∅ : Set α)
   /-- If a set is not bounded below, its infimum is by convention `sInf ∅`. -/

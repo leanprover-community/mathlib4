@@ -95,18 +95,17 @@ instance partialOrder [PartialOrder ι] [∀ i, PartialOrder (α i)] : PartialOr
       · rw [hlt₁.antisymm hlt₂] }
 
 /-- Dictionary / lexicographic `LinearOrder` for pairs. -/
-instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] : LinearOrder (Σₗ' i, α i) :=
-  { Lex.partialOrder with
-    le_total := by
-      rintro ⟨i, a⟩ ⟨j, b⟩
-      obtain hij | rfl | hji := lt_trichotomy i j
-      · exact Or.inl (Lex.left _ _ hij)
-      · obtain hab | hba := le_total a b
-        · exact Or.inl (Lex.right _ hab)
-        · exact Or.inr (Lex.right _ hba)
-      · exact Or.inr (Lex.left _ _ hji),
-    toDecidableEq := PSigma.decidableEq, toDecidableLE := Lex.decidable _ _,
-    toDecidableLT := Lex.decidable _ _ }
+instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] : LinearOrder (Σₗ' i, α i) where
+  le_total := by
+    rintro ⟨i, a⟩ ⟨j, b⟩
+    obtain hij | rfl | hji := lt_trichotomy i j
+    · exact Or.inl (Lex.left _ _ hij)
+    · obtain hab | hba := le_total a b
+      · exact Or.inl (Lex.right _ hab)
+      · exact Or.inr (Lex.right _ hba)
+    · exact Or.inr (Lex.left _ _ hji)
+  toDecidableLE := Lex.decidable _ _
+  toDecidableLT := Lex.decidable _ _
 
 /-- The lexicographical linear order on a sigma type. -/
 instance orderBot [PartialOrder ι] [OrderBot ι] [∀ i, Preorder (α i)] [OrderBot (α ⊥)] :

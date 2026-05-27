@@ -321,11 +321,12 @@ instance partialOrder : PartialOrder Ordinal where
     Quotient.inductionOn₂ a b fun _ _ ⟨h₁⟩ ⟨h₂⟩ =>
       Quot.sound ⟨InitialSeg.antisymm h₁ h₂⟩
 
-instance : LinearOrder Ordinal :=
-  { (inferInstance : PartialOrder Ordinal) with
-    le_total := fun a b => Quotient.inductionOn₂ a b fun ⟨_, r, _⟩ ⟨_, s, _⟩ =>
-      (InitialSeg.total r s).recOn (fun f => Or.inl ⟨f⟩) fun f => Or.inr ⟨f⟩
-    toDecidableLE := Classical.decRel _ }
+instance : LinearOrder Ordinal where
+  le_total a b := Quotient.inductionOn₂ a b fun ⟨_, r, _⟩ ⟨_, s, _⟩ ↦
+    (InitialSeg.total r s).recOn (fun f ↦ .inl ⟨f⟩) fun f ↦ .inr ⟨f⟩
+  toDecidableLE := Classical.decRel _
+  toDecidableEq := @decidableEqOfDecidableLE _ _ <| Classical.decRel _
+  toDecidableLT := @decidableLTOfDecidableLE _ _ <| Classical.decRel _
 
 theorem _root_.InitialSeg.ordinal_type_le {α β} {r : α → α → Prop} {s : β → β → Prop}
     [IsWellOrder α r] [IsWellOrder β s] (h : r ≼i s) : type r ≤ type s :=

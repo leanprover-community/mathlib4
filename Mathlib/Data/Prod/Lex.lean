@@ -186,9 +186,8 @@ instance [Ord α] [Ord β] [Std.TransOrd α] [Std.TransOrd β] : Std.TransOrd (�
 /-- Dictionary / lexicographic linear order for pairs. -/
 instance instLinearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : LinearOrder (α ×ₗ β) where
   le_total := total_of (Prod.Lex _ _)
-  toDecidableLE := Prod.Lex.decidable _ _
-  toDecidableLT := Prod.Lex.decidable _ _
-  toDecidableEq := instDecidableEqLex _
+  toDecidableLE := Lex.decidable _ _
+  toDecidableLT := Lex.decidable _ _
   compare_eq_compareOfLessAndEq := fun a b => by
     have : DecidableLT (α ×ₗ β) := Prod.Lex.decidable _ _
     have : Std.LawfulBEqOrd (α ×ₗ β) := ⟨by

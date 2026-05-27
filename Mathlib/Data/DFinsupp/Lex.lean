@@ -178,14 +178,12 @@ instance Lex.linearOrder : LinearOrder (Lex (Π₀ i, α i)) where
   __ := Lex.partialOrder
   le_total := total_of _
   toDecidableLT := decidableLT
-  toDecidableLE := decidableLE
 
 /-- The linear order on `DFinsupp`s obtained by the colexicographic ordering. -/
 instance Colex.linearOrder : LinearOrder (Colex (Π₀ i, α i)) where
   __ := Colex.partialOrder
   le_total := total_of _
   toDecidableLT := decidableLT
-  toDecidableLE := decidableLE
 
 end LinearOrder
 

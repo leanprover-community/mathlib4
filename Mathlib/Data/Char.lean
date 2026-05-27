@@ -30,6 +30,3 @@ instance : LinearOrder Char where
   le_total := fun _ _ => @le_total ℕ _ _ _
   min := fun a b => if a ≤ b then a else b
   max := fun a b => if a ≤ b then b else a
-  toDecidableLE := inferInstance
-  toDecidableEq := inferInstance
-  toDecidableLT := inferInstance

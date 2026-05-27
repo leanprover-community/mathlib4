@@ -89,8 +89,6 @@ instance (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
   le_total a b := le_total (α := α) b a
   min_def := max_def' (α := α)
   max_def := min_def' (α := α)
-  toDecidableLT := inferInstance
-  toDecidableEq := inferInstance
   compare_eq_compareOfLessAndEq a b := by
     simp only [compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, eq_comm]
     rfl

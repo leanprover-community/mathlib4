@@ -112,13 +112,10 @@ end OrderedCancelCommMonoid
 
 @[to_additive]
 instance [CommMonoid α] [LinearOrder α] [IsOrderedCancelMonoid α] {s : Submonoid α} :
-    LinearOrder (Localization s) :=
-  { le_total := fun a b =>
-      Localization.induction_on₂ a b fun _ _ => by
-        simp_rw [mk_le_mk]
-        exact le_total _ _
-    toDecidableLE := Localization.decidableLE
-    toDecidableLT := Localization.decidableLT
-    toDecidableEq := Localization.decidableEq }
+    LinearOrder (Localization s) where
+  le_total a b :=
+    Localization.induction_on₂ a b fun _ _ ↦ by
+      simp_rw [mk_le_mk]
+      apply le_total
 
 end Localization

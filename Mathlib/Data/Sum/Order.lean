@@ -403,12 +403,10 @@ end Preorder
 instance partialOrder [PartialOrder α] [PartialOrder β] : PartialOrder (α ⊕ₗ β) :=
   { Lex.preorder with le_antisymm := fun _ _ => antisymm_of (Lex (· ≤ ·) (· ≤ ·)) }
 
-instance linearOrder [LinearOrder α] [LinearOrder β] : LinearOrder (α ⊕ₗ β) :=
-  { Lex.partialOrder with
-    le_total := total_of (Lex (· ≤ ·) (· ≤ ·)),
-    toDecidableLE := instDecidableRelSumLex,
-    toDecidableLT := instDecidableRelSumLex,
-    toDecidableEq := instDecidableEqSum }
+instance linearOrder [LinearOrder α] [LinearOrder β] : LinearOrder (α ⊕ₗ β) where
+  le_total := total_of <| Lex (· ≤ ·) (· ≤ ·)
+  toDecidableLE := instDecidableRelSumLex
+  toDecidableLT := instDecidableRelSumLex
 
 /-- The lexicographical bottom of a sum is the bottom of the left component. -/
 instance orderBot [LE α] [OrderBot α] [LE β] :

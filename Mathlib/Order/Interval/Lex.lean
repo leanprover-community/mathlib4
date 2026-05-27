@@ -75,9 +75,7 @@ instance [PartialOrder α] : PartialOrder (Lex (NonemptyInterval α)) := fast_in
     toLex.injective.comp <| toDualProd_injective.comp ofLex.injective
 
 instance [LinearOrder α] : LinearOrder (Lex (NonemptyInterval α)) := fast_instance%
-  { LinearOrder.lift' (fun x : Lex (NonemptyInterval α) => toLex (ofLex x).toDualProd) <|
-      toLex.injective.comp <| toDualProd_injective.comp ofLex.injective with
-    toDecidableEq := inferInstance
-    toDecidableLT := inferInstance }
+  LinearOrder.lift' (fun x ↦ toLex (ofLex x).toDualProd) <|
+    toLex.injective.comp <| toDualProd_injective.comp ofLex.injective
 
 end NonemptyInterval

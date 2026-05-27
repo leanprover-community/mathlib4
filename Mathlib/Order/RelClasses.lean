@@ -111,7 +111,8 @@ abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearO
       | _, Or.inr (Or.inr h) => Or.inr (Or.inr h),
     toMin := minOfLe,
     toMax := maxOfLe,
-    toDecidableLE := hD }
+    toDecidableLE := hD,
+    toDecidableEq := @decidableEqOfDecidableLE _ _ hD }
 
 @[deprecated inferInstance (since := "2026-04-28")]
 theorem IsStrictTotalOrder.swap (r) [IsStrictTotalOrder α r] : IsStrictTotalOrder α (swap r) :=

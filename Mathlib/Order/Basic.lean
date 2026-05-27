@@ -697,8 +697,6 @@ abbrev Function.Injective.linearOrder [LinearOrder β] [LE α] [LT α] [Max α] 
     (compare : ∀ x y, compare (f x) (f y) = compare x y) :
     LinearOrder α where
   toPartialOrder := hf.partialOrder _ le lt
-  toDecidableEq := ‹_›
-  toDecidableLT := ‹_›
   le_total _ _ := by simp only [← le, le_total]
   min_def _ _ := by simp_rw [← hf.eq_iff, ← le, apply_ite f, ← min_def, min]
   max_def _ _ := by simp_rw [← hf.eq_iff, ← le, apply_ite f, ← max_def, max]
@@ -1042,16 +1040,20 @@ lemma eq_or_eq_or_eq_of_forall_not_lt_lt [LinearOrder α]
   rcases hne.2.2.lt_or_gt with h₃ | h₃
   exacts [h h₁ h₂, h h₂ h₃, h h₃ h₂, h h₃ h₁, h h₁ h₃, h h₂ h₃, h h₁ h₃, h h₂ h₁]
 
-/-- Construct the trivial linear order on any type with at most one element. -/
-abbrev LinearOrder.ofSubsingleton {α : Type*} [Subsingleton α] : LinearOrder α where
+local instance {α : Type*} [Subsingleton α] : PartialOrder α where
   le _ _ := True
   lt _ _ := False
   le_refl _ := trivial
   le_trans x y z _ _ := trivial
   le_antisymm x y _ _ := Subsingleton.elim x y
-  le_total _ _ := .inl trivial
   lt_iff_le_not_ge _ _ := by simp
+in
+/-- Construct the trivial linear order on any type with at most one element. -/
+abbrev LinearOrder.ofSubsingleton {α : Type*} [Subsingleton α] : LinearOrder α where
+  le_total _ _ := .inl trivial
   toDecidableLE _ _ := instDecidableTrue
+  toDecidableEq := @decidableEqOfDecidableLE _ _ fun _ _ ↦ instDecidableTrue
+  toDecidableLT := @decidableLTOfDecidableLE _ _ fun _ _ ↦ instDecidableTrue
 
 instance : LinearOrder Empty := .ofSubsingleton
 instance : LinearOrder PEmpty := .ofSubsingleton

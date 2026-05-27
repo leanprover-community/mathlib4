@@ -768,22 +768,17 @@ protected def IsSimpleOrder.preorder {α} [LE α] [BoundedOrder α] [IsSimpleOrd
       · rcases eq_bot_or_eq_top c with (rfl | rfl) <;> simp
       · simp
 
+instance [DecidableEq α] : DecidableLE α := fun a b ↦
+  if ha : a = ⊥ then isTrue (ha.le.trans bot_le) else
+  if hb : b = ⊤ then isTrue (le_top.trans hb.ge) else
+  isFalse (hb <| top_unique <| (top_le_iff.mpr <| (eq_bot_or_eq_top a).resolve_left ha).trans ·)
+
 /-- A simple partial ordered `BoundedOrder` induces a linear order.
 This is not an instance to prevent loops. -/
 @[implicit_reducible]
-protected def IsSimpleOrder.linearOrder [DecidableEq α] : LinearOrder α :=
-  { (inferInstance : PartialOrder α) with
-    le_total := fun a b => by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
-    -- Note from https://github.com/leanprover-community/mathlib4/issues/23976: do we want this inlined or should this be a separate definition?
-    toDecidableLE := fun a b =>
-      if ha : a = ⊥ then isTrue (ha.le.trans bot_le)
-      else
-        if hb : b = ⊤ then isTrue (le_top.trans hb.ge)
-        else
-          isFalse fun H =>
-            hb (top_unique (le_trans (top_le_iff.mpr (Or.resolve_left
-              (eq_bot_or_eq_top a) ha)) H))
-    toDecidableEq := ‹_› }
+protected def IsSimpleOrder.linearOrder [DecidableEq α] : LinearOrder α where
+  le_total a b := by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
+  toDecidableLT := decidableLTOfDecidableLE
 
 theorem isAtom_top : IsAtom (⊤ : α) :=
   ⟨top_ne_bot, fun a ha => Or.resolve_right (eq_bot_or_eq_top a) (ne_of_lt ha)⟩

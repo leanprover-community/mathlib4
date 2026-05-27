@@ -379,17 +379,10 @@ instance isOrderedCancelAddMonoid : IsOrderedCancelAddMonoid Num where
   add_le_add_left a b h c := by revert h; transfer_rw; exact fun h => add_le_add_left h c
   le_of_add_le_add_left a b c := by transfer_rw; apply le_of_add_le_add_left
 
-instance linearOrder : LinearOrder Num :=
-  { le_total := by
-      intro a b
-      transfer_rw
-      apply le_total
-    toDecidableLT := Num.decidableLT
-    toDecidableLE := Num.decidableLE
-    -- This is relying on an automatically generated instance name,
-    -- generated in a `deriving` handler.
-    -- See https://github.com/leanprover/lean4/issues/2343
-    toDecidableEq := instDecidableEqNum }
+instance linearOrder : LinearOrder Num where
+  le_total a b := by
+    transfer_rw
+    apply le_total
 
 instance isStrictOrderedRing : IsStrictOrderedRing Num where
   zero_le_one := by decide
@@ -556,8 +549,6 @@ instance linearOrder : LinearOrder PosNum where
     intro a b
     transfer_rw
     apply le_total
-  toDecidableEq := by infer_instance
-  toDecidableLT := by infer_instance
 
 @[simp]
 theorem cast_to_num (n : PosNum) : ↑n = Num.pos n := by rw [← cast_to_nat, ← of_to_nat n]

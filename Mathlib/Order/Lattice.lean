@@ -599,11 +599,9 @@ theorem inf_eq_minDefault [SemilatticeInf α] [DecidableLE α] [@Std.Total α (�
 See note [reducible non-instances]. -/
 abbrev Lattice.toLinearOrder (α : Type u) [Lattice α] [DecidableEq α]
     [DecidableLE α] [DecidableLT α] [@Std.Total α (· ≤ ·)] : LinearOrder α where
-  toDecidableEq := ‹_›
-  toDecidableLT := ‹_›
   le_total := total_of (· ≤ ·)
-  max_def := by exact congr_fun₂ sup_eq_maxDefault
-  min_def := by exact congr_fun₂ inf_eq_minDefault
+  max_def := congr_fun₂ sup_eq_maxDefault
+  min_def := congr_fun₂ inf_eq_minDefault
 
 -- see Note [lower instance priority]
 instance (priority := 100) {α : Type u} [LinearOrder α] : DistribLattice α where
