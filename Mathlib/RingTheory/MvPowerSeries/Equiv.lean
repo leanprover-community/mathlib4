@@ -176,10 +176,11 @@ def toMvPowerSeries : PowerSeries R →ₐ[R] MvPowerSeries σ R :=
 
 theorem toMvPowerSeries_apply : f.toMvPowerSeries i = f.rename (fun _ => i) := rfl
 
+@[simp]
 theorem toMvPowerSeries_C : (C r).toMvPowerSeries i = MvPowerSeries.C r := by
-  have : C r = MvPowerSeries.C r := rfl
-  rw [toMvPowerSeries_apply, this, MvPowerSeries.rename_C]
+  rw [toMvPowerSeries_apply, C, MvPowerSeries.rename_C]
 
+@[simp]
 theorem toMvPowerSeries_X : X.toMvPowerSeries i = MvPowerSeries.X i (R := R) := by
   rw [toMvPowerSeries_apply, X, MvPowerSeries.rename_X]
 
@@ -193,24 +194,26 @@ variable {R : Type*} [CommRing R] {f : PowerSeries R} (i : σ) (r : R) (p : R⟦
 theorem toMvPowerSeries_eq_subst : f.toMvPowerSeries i = f.subst (MvPowerSeries.X i) := by
   rw [toMvPowerSeries_apply, MvPowerSeries.rename_eq_subst, comp_def, subst]
 
+lemma toMvPowerSeries_coeff_eq_zero {d : σ →₀ ℕ} {s : σ} (hd : d s = 0) (hf : f.constantCoeff = 0) :
+    ((PowerSeries.toMvPowerSeries s) f).coeff d = 0 := by classical
+  have : (.subst (.X (R := R) ∘ fun x ↦ s) f) = f.subst (.X s) := rfl
+  rw [toMvPowerSeries_apply, MvPowerSeries.rename_eq_subst, this, coeff_subst (HasSubst.X _),
+    finsum_eq_zero_of_forall_eq_zero]
+  simp only [MvPowerSeries.X_pow_eq, MvPowerSeries.coeff_monomial, smul_eq_mul, mul_ite, mul_one,
+    mul_zero, ite_eq_right_iff]
+  intro _ a
+  subst a
+  simp_all
+
 theorem _root_.MvPowerSeries.HasSubst.toMvPowerSeries (hf : f.constantCoeff = 0) :
     MvPowerSeries.HasSubst (f.toMvPowerSeries · (σ := σ)) (S := R) where
   const_coeff := by simp_all [constantCoeff, toMvPowerSeries_apply]
-  coeff_zero d := Set.Finite.subset (Finite.of_fintype d.support) fun s => by classical
+  coeff_zero d := Set.Finite.subset (Finite.of_fintype d.support) fun s => by
     contrapose
-    simp only [SetLike.mem_coe, mem_support_iff, Decidable.not_not, Set.mem_setOf_eq]
-    have : (.subst (.X (R := R) ∘ fun x ↦ s) f) = f.subst (.X s) := rfl
-    intro hd
-    rw [toMvPowerSeries_apply, MvPowerSeries.rename_eq_subst, this, coeff_subst (HasSubst.X _),
-      finsum_eq_zero_of_forall_eq_zero]
-    simp only [MvPowerSeries.X_pow_eq, MvPowerSeries.coeff_monomial, smul_eq_mul, mul_ite, mul_one,
-      mul_zero, ite_eq_right_iff]
-    intro _ a
-    subst a
-    simp_all
+    simpa using fun hd ↦ toMvPowerSeries_coeff_eq_zero hd hf
 
-theorem toMvPowerSeries_val {a : σ → MvPowerSeries τ R} (i : σ)
-    (ha : MvPowerSeries.HasSubst a) : (f.toMvPowerSeries i).subst a = f.subst (a i) := by
+theorem toMvPowerSeries_val {a : σ → MvPowerSeries τ R} (i : σ) (ha : MvPowerSeries.HasSubst a) :
+    (f.toMvPowerSeries i).subst a = f.subst (a i) := by
   rw [toMvPowerSeries_eq_subst, subst, MvPowerSeries.subst_comp_subst_apply
     (HasSubst.const (HasSubst.X _)) ha, MvPowerSeries.subst_X ha, subst]
 
