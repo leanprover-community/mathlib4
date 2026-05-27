@@ -15,7 +15,7 @@ Given a group homomorphism `f : H →* G`, we have the restriction functor
 
 -/
 
-@[expose] public section
+public section
 
 universe t w u v v1 v2
 
@@ -91,8 +91,7 @@ abbrev ofQuotient : Rep k (G ⧸ S) := Rep.of (A.ρ.ofQuotient S)
 /-- A `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially induces a
 `G ⧸ S`-representation on `A`, and composing this with the quotient map `G → G ⧸ S` gives the
 original representation by definition. Useful for typechecking. -/
-abbrev resOfQuotientIso [Representation.IsTrivial (A.ρ.comp S.subtype)] :
-    (res (QuotientGroup.mk' S) (A.ofQuotient S)) ≅ A := Iso.refl _
+abbrev resOfQuotientIso : (res (QuotientGroup.mk' S) (A.ofQuotient S)) ≅ A := Iso.refl _
 
 end
 

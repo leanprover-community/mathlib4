@@ -406,7 +406,7 @@ theorem nnnorm_pow_le' (a : α) : ∀ {n : ℕ}, 0 < n → ‖a ^ n‖₊ ≤ �
 /-- If `α` is a seminormed ring with `‖1‖₊ = 1`, then `‖a ^ n‖₊ ≤ ‖a‖₊ ^ n`.
 See also `nnnorm_pow_le'`. -/
 theorem nnnorm_pow_le [NormOneClass α] (a : α) (n : ℕ) : ‖a ^ n‖₊ ≤ ‖a‖₊ ^ n :=
-  Nat.recOn n (by simp only [pow_zero, nnnorm_one, le_rfl])
+  Nat.recOn n (by simp)
     fun k _hk => nnnorm_pow_le' a k.succ_pos
 
 /-- If `α` is a seminormed ring, then `‖a ^ n‖ ≤ ‖a‖ ^ n` for `n > 0`. See also `norm_pow_le`. -/
@@ -416,7 +416,7 @@ theorem norm_pow_le' (a : α) {n : ℕ} (h : 0 < n) : ‖a ^ n‖ ≤ ‖a‖ ^ 
 /-- If `α` is a seminormed ring with `‖1‖ = 1`, then `‖a ^ n‖ ≤ ‖a‖ ^ n`.
 See also `norm_pow_le'`. -/
 theorem norm_pow_le [NormOneClass α] (a : α) (n : ℕ) : ‖a ^ n‖ ≤ ‖a‖ ^ n :=
-  Nat.recOn n (by simp only [pow_zero, norm_one, le_rfl])
+  Nat.recOn n (by simp)
     fun n _hn => norm_pow_le' a n.succ_pos
 
 theorem eventually_norm_pow_le (a : α) : ∀ᶠ n : ℕ in atTop, ‖a ^ n‖ ≤ ‖a‖ ^ n :=

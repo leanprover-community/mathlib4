@@ -202,7 +202,6 @@ def isoOfIsAffine [IsAffine S] :
           simp only [eval₂_X]
           exact homOfVector_appTop_coord _ _ _
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 @[simp]
 lemma isoOfIsAffine_hom_appTop [IsAffine S] :
     (isoOfIsAffine n S).hom.appTop =
@@ -319,7 +318,7 @@ lemma isPullback_map {S T : Scheme.{max u v}} (f : S ⟶ T) :
     IsPullback (map n f) (𝔸(n; S) ↘ S) (𝔸(n; T) ↘ T) f := by
   refine (IsPullback.paste_horiz_iff (.flip <| .of_hasPullback _ _) (map_over f)).mp ?_
   simp only [terminal.comp_from, ]
-  convert (IsPullback.of_hasPullback _ _).flip
+  convert! (IsPullback.of_hasPullback _ _).flip
   rw [← toSpecMvPoly, ← toSpecMvPoly, map_toSpecMvPoly]
 
 /-- `𝔸(n; S)` is functorial w.r.t. `n`. -/
@@ -375,7 +374,7 @@ instance [Finite n] : LocallyOfFinitePresentation (𝔸(n; S) ↘ S) :=
   rw [← terminal.comp_from (Spec.map (CommRingCat.ofHom C)),
     MorphismProperty.cancel_right_of_respectsIso (P := @LocallyOfFinitePresentation),
     HasRingHomProperty.Spec_iff (P := @LocallyOfFinitePresentation), RingHom.FinitePresentation]
-  convert (inferInstance : Algebra.FinitePresentation (ULift ℤ) ℤ[n])
+  convert! (inferInstance : Algebra.FinitePresentation (ULift ℤ) ℤ[n])
   exact Algebra.algebra_ext _ _ fun _ ↦ rfl
 
 lemma isOpenMap_over : IsOpenMap (𝔸(n; S) ↘ S) := by
@@ -425,10 +424,10 @@ lemma isIntegralHom_over_iff_isEmpty : IsIntegralHom (𝔸(n; S) ↘ S) ↔ IsEm
     obtain ⟨p : Polynomial R, hp, hp'⟩ :=
       (MorphismProperty.arrow_mk_iso_iff (RingHom.toMorphismProperty RingHom.IsIntegral)
         (arrowIsoΓSpecOfIsAffine _)).mpr h.2 (X i)
-    have : (rename fun _ ↦ i).comp (pUnitAlgEquiv.{_, v} _).symm.toAlgHom p = 0 := by
+    have : (rename fun _ ↦ i).comp (uniqueAlgEquiv.{_, v} _ PUnit).symm.toAlgHom p = 0 := by
       simp [← hp', ← algebraMap_eq]
     rw [AlgHom.comp_apply, map_eq_zero_iff _ (rename_injective _ (fun _ _ _ ↦ rfl))] at this
-    simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_coe, EmbeddingLike.map_eq_zero_iff] at this
+    simp only [AlgEquiv.coe_algHom, EmbeddingLike.map_eq_zero_iff] at this
     simp [this] at hp
   · rintro (_ | _) <;> infer_instance
 

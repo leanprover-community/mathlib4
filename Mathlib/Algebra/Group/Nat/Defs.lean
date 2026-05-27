@@ -15,7 +15,7 @@ This file contains the additive and multiplicative monoid instances on the natur
 See note [foundational algebra order theory].
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 

@@ -16,7 +16,7 @@ public import Mathlib.CategoryTheory.Limits.Yoneda
 # Facts about (co)limits of functors into concrete categories
 -/
 
-@[expose] public section
+public section
 
 
 universe s t w v u r
