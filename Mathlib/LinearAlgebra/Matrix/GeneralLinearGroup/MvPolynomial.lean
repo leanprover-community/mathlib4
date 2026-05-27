@@ -34,26 +34,17 @@ theorem eq_of_eval_eq_on_gl {m k : Type*} [Fintype m] [DecidableEq m] [Field k] 
            MvPolynomial.eval (fun ij : m × m => (g : Matrix m m k) ij.1 ij.2) p =
            MvPolynomial.eval (fun ij : m × m => (g : Matrix m m k) ij.1 ij.2) q) :
     p = q := by
-  have hdet_ne : Matrix.det (Matrix.mvPolynomialX m m k) ≠ 0 :=
-    Matrix.det_mvPolynomialX_ne_zero m k
   have hprod : (p - q) * Matrix.det (Matrix.mvPolynomialX m m k) = 0 := by
     apply MvPolynomial.funext
     intro s
-    rw [map_mul, map_sub, map_zero]
-    have hdet_eval :
-        MvPolynomial.eval s (Matrix.det (Matrix.mvPolynomialX m m k)) =
-          Matrix.det (Matrix.of fun i j : m => s (i, j)) := by
-      rw [(MvPolynomial.eval s).map_det]
-      congr 1
-      ext i j
-      simp [Matrix.mvPolynomialX]
-    rw [hdet_eval]
+    rw [map_mul, map_sub, map_zero, Matrix.eval_det_mvPolynomialX]
     by_cases hs_det : Matrix.det (Matrix.of fun i j : m => s (i, j)) = 0
     · rw [hs_det, mul_zero]
     · have hh : (eval s) p = (eval s) q :=
         h (Matrix.GeneralLinearGroup.mkOfDetNeZero
           (Matrix.of fun i j : m => s (i, j)) hs_det)
       rw [hh, sub_self, zero_mul]
-  exact sub_eq_zero.mp ((mul_eq_zero.mp hprod).resolve_right hdet_ne)
+  exact sub_eq_zero.mp
+    ((mul_eq_zero.mp hprod).resolve_right (Matrix.det_mvPolynomialX_ne_zero m k))
 
 end MvPolynomial
