@@ -1098,8 +1098,7 @@ lemma generators_toList_isRegular_of_spanFinrank_eq [IsNoetherianRing R]
   let _ : Fintype J.generators := (Submodule.FG.finite_generators fg).fintype
   use J.generators.toFinset.toList
   have len : J.generators.toFinset.toList.length = ringKrullDim R := by
-    simp [Finset.length_toList, ← rank, ← Submodule.FG.generators_ncard fg,
-      Set.ncard_eq_toFinset_card']
+    simp [Finset.length_toList, ← rank, ← Submodule.FG.generators_ncard fg]
   have gen : Ideal.ofList J.generators.toFinset.toList = J := by
     simpa [Ideal.ofList] using Submodule.span_generators J
   rw [← gen] at h
