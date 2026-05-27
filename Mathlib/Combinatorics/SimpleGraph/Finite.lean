@@ -8,6 +8,7 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Sym.Card
+public import Mathlib.Order.Interval.Finset.Defs
 
 /-!
 # Definitions for finite and locally finite graphs
@@ -528,6 +529,25 @@ theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
   simp [commonNeighbors_top_eq, ← Set.toFinset_card, Finset.card_sdiff, h]
 
 end Finite
+
+section LocallyFiniteOrder
+
+variable [Fintype V]
+
+/-- `G ≤ H` is decidable when adjacency is decidable on both sides. -/
+instance decidableLE {G H : SimpleGraph V}
+    [DecidableRel G.Adj] [DecidableRel H.Adj] : Decidable (G ≤ H) :=
+  decidable_of_iff (∀ v w, G.Adj v w → H.Adj v w) Iff.rfl
+
+/-- The lattice of simple graphs on a finite type is locally finite when the order is
+decidable. -/
+instance [DecidableEq V] [DecidableLE (SimpleGraph V)] :
+    LocallyFiniteOrder (SimpleGraph V) :=
+  LocallyFiniteOrder.ofIcc' (SimpleGraph V)
+    (fun G₁ G₂ => {G | G₁ ≤ G ∧ G ≤ G₂})
+    (fun _ _ _ => by simp)
+
+end LocallyFiniteOrder
 
 namespace Iso
 
