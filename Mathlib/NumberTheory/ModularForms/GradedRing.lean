@@ -458,58 +458,6 @@ private lemma discriminantPoly_piece_eq_monomial_sub
     pow_add (MvPolynomial.X (1 : Fin 2)) (d 1) 2]
   ring
 
-private lemma Finset.sum_lt_sum_of_subset_erase_union_singleton {α M : Type*} [DecidableEq α]
-    [AddCommMonoid M] [PartialOrder M] [CanonicallyOrderedAdd M] [AddLeftStrictMono M]
-    {S S' : Finset α} {f : α → M} {d d' : α}
-    (hd_mem : d ∈ S) (hd_not : d ∉ S')
-    (hS' : S' ⊆ S.erase d ∪ {d'})
-    (hlt : f d' < f d) :
-    ∑ x ∈ S', f x < ∑ x ∈ S, f x := by
-  by_cases hd'S : d' ∈ S
-  · calc ∑ x ∈ S', f x
-        ≤ ∑ x ∈ S.erase d, f x := Finset.sum_le_sum_of_subset (fun x hx ↦
-          Finset.mem_erase.mpr ⟨fun h ↦ hd_not (h ▸ hx),
-            match Finset.mem_union.mp (hS' hx) with
-            | .inl h => Finset.mem_of_mem_erase h
-            | .inr h => Finset.mem_singleton.mp h ▸ hd'S⟩)
-      _ < ∑ x ∈ S.erase d, f x + f d :=
-          lt_add_of_pos_right _ (zero_le.trans_lt hlt)
-      _ = ∑ x ∈ S, f x := Finset.sum_erase_add S f hd_mem
-  · calc ∑ x ∈ S', f x
-        ≤ ∑ x ∈ S.erase d ∪ {d'}, f x := Finset.sum_le_sum_of_subset hS'
-      _ = ∑ x ∈ S.erase d, f x + f d' := by
-          rw [Finset.sum_union (Finset.disjoint_singleton_right.mpr
-            (fun h ↦ hd'S (Finset.mem_of_mem_erase h))), Finset.sum_singleton]
-      _ < ∑ x ∈ S.erase d, f x + f d := add_lt_add_right hlt _
-      _ = ∑ x ∈ S, f x := Finset.sum_erase_add S f hd_mem
-
-open Classical in
-private lemma MvPolynomial.support_sub_monomial_sub_monomial {σ R : Type*} [CommRing R]
-    [DecidableEq σ] (p : MvPolynomial σ R) (d d' : σ →₀ ℕ) (c : R)
-    (hdd' : d ≠ d') (hc : MvPolynomial.coeff d p = c) :
-    d ∉ (p - (MvPolynomial.monomial d c - MvPolynomial.monomial d' c)).support ∧
-      (p - (MvPolynomial.monomial d c - MvPolynomial.monomial d' c)).support ⊆
-        p.support.erase d ∪ {d'} := by
-  have hd_not : d ∉ (p - (MvPolynomial.monomial d c -
-      MvPolynomial.monomial d' c)).support := by
-    rw [MvPolynomial.notMem_support_iff, MvPolynomial.coeff_sub, MvPolynomial.coeff_sub,
-      MvPolynomial.coeff_monomial, MvPolynomial.coeff_monomial,
-      if_pos rfl, if_neg hdd'.symm, sub_zero, hc, sub_self]
-  refine ⟨hd_not, fun x hx ↦ ?_⟩
-  rcases Finset.mem_union.mp (MvPolynomial.support_sub σ p _ hx) with hp | hdelta
-  · by_cases hxd : x = d
-    · exact absurd (hxd ▸ hx) hd_not
-    exact Finset.mem_union_left _ (Finset.mem_erase.mpr ⟨hxd, hp⟩)
-  rcases Finset.mem_union.mp (MvPolynomial.support_sub σ _ _ hdelta) with h1 | h2
-  · rw [MvPolynomial.support_monomial] at h1
-    split_ifs at h1
-    · exact absurd h1 (Finset.notMem_empty _)
-    exact absurd ((Finset.mem_singleton.mp h1) ▸ hx) hd_not
-  rw [MvPolynomial.support_monomial] at h2
-  split_ifs at h2
-  · exact absurd h2 (Finset.notMem_empty _)
-  exact Finset.mem_union_right _ (by rwa [Finset.mem_singleton] at h2 ⊢)
-
 private lemma support_degreeSum_lt_of_sub_discriminantPoly_piece (p : MvPolynomial (Fin 2) ℂ)
     {d : Fin 2 →₀ ℕ} (hd_mem : d ∈ p.support) (hd_ge : 3 ≤ d 0) :
     ∑ d' ∈ (p - MvPolynomial.C (MvPolynomial.coeff d p) * ((1728 : ℂ) • discriminantPoly *
