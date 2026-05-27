@@ -48,8 +48,8 @@ lemma derivedSet_mono (A B : Set X) (h : A ⊆ B) : derivedSet A ⊆ derivedSet 
 
 /-- The relative derived set operator viewed as a monotone self-map of `Set X`. -/
 def relDerivedSet : Set X →o Set X where
-  toFun := fun s => derivedSet s ∩ s
-  monotone' := fun _ _ h ↦ Set.inter_subset_inter (derivedSet_mono _ _ h) (h)
+  toFun s := derivedSet s ∩ s
+  monotone' s t h := Set.inter_subset_inter (derivedSet_mono s t h) h
 
 @[simp] lemma relDerivedSet_apply (A : Set X) : relDerivedSet A = derivedSet A ∩ A := rfl
 
