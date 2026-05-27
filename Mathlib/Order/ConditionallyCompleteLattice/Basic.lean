@@ -946,17 +946,21 @@ noncomputable instance [CompleteLinearOrder α] : CompleteLinearOrder (WithBot �
 
 noncomputable instance [ConditionallyCompleteLinearOrder α] :
     ConditionallyCompleteLinearOrder (WithTop α) where
-  le_total := WithTop.linearOrder.le_total
+  le_total
   toDecidableLE := inferInstance
-  csSup_of_not_bddAbove s h := absurd (OrderTop.bddAbove s) h
+  toDecidableEq := inferInstance
+  toDecidableLT := inferInstance
+  csSup_of_not_bddAbove s := absurd <| OrderTop.bddAbove s
   csInf_of_not_bddBelow s h := by simp [h]
 
 noncomputable instance [ConditionallyCompleteLinearOrder α] :
     ConditionallyCompleteLinearOrderBot (WithBot α) where
-  le_total := WithBot.linearOrder.le_total
+  le_total
   toDecidableLE := inferInstance
+  toDecidableEq := inferInstance
+  toDecidableLT := inferInstance
   csSup_of_not_bddAbove s h := by simp [h]
-  csInf_of_not_bddBelow s h := absurd (OrderBot.bddBelow s) h
+  csInf_of_not_bddBelow s := absurd <| OrderBot.bddBelow s
   csSup_empty := WithBot.sSup_empty
 
 open Classical in
