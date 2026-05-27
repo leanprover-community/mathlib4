@@ -5,11 +5,15 @@ Authors: Anatole Dedecker, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Topology.Algebra.Algebra.Equiv
-public import Mathlib.Topology.Algebra.Module.Equiv
-public import Mathlib.Topology.Algebra.Module.UniformConvergence
-public import Mathlib.Topology.Algebra.SeparationQuotient.Section
 public import Mathlib.Topology.Hom.ContinuousEvalConst
+public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+
+import Mathlib.Topology.Algebra.Module.Equiv
+import Mathlib.Topology.Algebra.SeparationQuotient.Section
+import Mathlib.Topology.Algebra.Module.UniformConvergence
 
 /-!
 # Topologies of uniform convergence on the space of continuous linear maps
@@ -95,6 +99,11 @@ scoped[UniformConvergenceCLM]
 notation:25 E' " →Lᵤ[" R ", " 𝔖 "] " F => UniformConvergenceCLM (RingHom.id R) (E := E') F 𝔖
 
 namespace UniformConvergenceCLM
+
+/-- Reinterpret `f : E →SL[σ] F` as an element of `E →SLᵤ[σ, 𝔖] F`. -/
+@[implicit_reducible]
+def ofFun [TopologicalSpace F] (𝔖 : Set (Set E)) : (E →SL[σ] F) ≃ (E →SLᵤ[σ, 𝔖] F) :=
+  ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
 
 instance instFunLike [TopologicalSpace F] (𝔖 : Set (Set E)) :
     FunLike (E →SLᵤ[σ, 𝔖] F) E F :=
@@ -215,8 +224,9 @@ theorem t2Space [TopologicalSpace F] [IsTopologicalAddGroup F] [T2Space F]
 
 instance instDistribMulAction (M : Type*) [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
-    DistribMulAction M (E →SLᵤ[σ, 𝔖] F) :=
-  inferInstanceAs <| DistribMulAction M (E →SL[σ] F)
+    DistribMulAction M (E →SLᵤ[σ, 𝔖] F) where
+  smul c f := (ofFun σ F 𝔖) (c • (ofFun σ F 𝔖).symm f)
+  __ : DistribMulAction M (E →SLᵤ[σ, 𝔖] F) := inferInstanceAs <| DistribMulAction M (E →SL[σ] F)
 
 @[simp]
 theorem smul_apply {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
@@ -368,8 +378,10 @@ theorem completeSpace [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul �
   apply IsClosed.isComplete
   have H₁ : IsClosed {f : E →ᵤ[𝔖] F | Continuous ((UniformOnFun.toFun 𝔖) f)} :=
     UniformOnFun.isClosed_setOf_continuous h𝔖
-  convert H₁.inter <| (LinearMap.isClosed_range_coe E F σ).preimage
-    (UniformOnFun.uniformContinuous_toFun h𝔖U).continuous
+  convert!
+    H₁.inter <|
+      (LinearMap.isClosed_range_coe E F σ).preimage
+        (UniformOnFun.uniformContinuous_toFun h𝔖U).continuous
   exact ContinuousLinearMap.range_coeFn_eq
 
 variable {𝔖₁ 𝔖₂ : Set (Set E)}

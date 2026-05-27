@@ -53,7 +53,7 @@ theorem top : x ≡ y [SMOD (⊤ : Submodule R M)] :=
 theorem bot : x ≡ y [SMOD (⊥ : Submodule R M)] ↔ x = y := by
   rw [SModEq.def, Submodule.Quotient.eq, mem_bot, sub_eq_zero]
 
-@[mono]
+@[gcongr, mono]
 theorem mono (HU : U₁ ≤ U₂) (hxy : x ≡ y [SMOD U₁]) : x ≡ y [SMOD U₂] :=
   (Submodule.Quotient.eq U₂).2 <| HU <| (Submodule.Quotient.eq U₁).1 hxy
 
