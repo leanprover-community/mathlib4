@@ -50,14 +50,14 @@ instance : P.localEpi.IsMultiplicative where
   id_mem X Z _ := by simpa using Function.injective_id
   comp_mem f g hf hg T hT _ _ huv := hg hT (hf hT <| by simpa using huv)
 
-lemma localEpi_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] : P.localEpi f := by
+lemma localEpi.of_epi {X Y : C} (f : X ⟶ Y) [Epi f] : P.localEpi f := by
   intro Z hZ u v huv
   rwa [← cancel_epi f]
 
 @[simp]
 lemma localEpi_top_apply_iff {X Y : C} {f : X ⟶ Y} :
     (⊤ : ObjectProperty C).localEpi f ↔ Epi f :=
-  ⟨fun h ↦ ⟨fun _ _ huv ↦ h trivial huv⟩, fun _ ↦ localEpi_of_epi _⟩
+  ⟨fun h ↦ ⟨fun _ _ huv ↦ h trivial huv⟩, fun _ ↦ .of_epi _⟩
 
 lemma localEpi_top_eq_epimorphisms : (⊤ : ObjectProperty C).localEpi = .epimorphisms C := by
   ext
@@ -77,7 +77,7 @@ lemma isLocal_le_localEpi : P.isLocal ≤ P.localEpi :=
   fun _ _ _ hf Z hZ ↦ (hf Z hZ).injective
 
 instance : P.localEpi.RespectsIso :=
-  MorphismProperty.respectsIso_of_isStableUnderComposition fun _ _ _ _ ↦ localEpi_of_epi _
+  MorphismProperty.respectsIso_of_isStableUnderComposition fun _ _ _ _ ↦ .of_epi _
 
 instance (W : MorphismProperty C) : P.localEpi.HasOfPrecompProperty W where
   of_precomp {X Y Z} f g _ hfg T hT u v huv := hfg hT (by simp [huv])
