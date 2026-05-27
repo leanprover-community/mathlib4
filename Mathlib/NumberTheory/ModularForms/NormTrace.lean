@@ -50,13 +50,13 @@ lemma quotientFunc_smul {h} (hh : h ∈ ℋ) (q : 𝒬) :
 /-- Each `quotientFunc f q` is holomorphic on the upper half plane. -/
 lemma quotientFunc_mdiff [ModularFormClass F 𝒢 k] (q : 𝒬) :
     MDiff (quotientFunc f q) :=
-  Quotient.inductionOn q fun r => (ModularForm.translate f r.val⁻¹).holo'
+  Quotient.inductionOn q fun r ↦ (ModularForm.translate f r.val⁻¹).holo'
 
 /-- Each `quotientFunc f q` is bounded at `∞`. -/
 lemma quotientFunc_isBoundedAtImInfty [ModularFormClass F 𝒢 k] [𝒢.IsFiniteRelIndex ℋ]
     [Fact (IsCusp OnePoint.infty ℋ)] (q : 𝒬) :
     IsBoundedAtImInfty (quotientFunc f q) :=
-  Quotient.inductionOn q fun ⟨_, hr⟩ => OnePoint.isBoundedAt_infty_iff.mp <|
+  Quotient.inductionOn q fun ⟨_, hr⟩ ↦ OnePoint.isBoundedAt_infty_iff.mp <|
     (ModularForm.translate f _).bdd_at_cusps'
       ((Fact.out : IsCusp _ _).of_isFiniteRelIndex_conj hr)
 
@@ -215,7 +215,7 @@ lemma galoisProd_zero_nat {g : ℍ → α} : galoisProd 0 g = 1 := by
 /-- The Galois product of a constant function `c` is `c^N`. -/
 @[simp]
 lemma galoisProd_const (c : α) (τ : ℍ) :
-    galoisProd N (fun _ => c) τ = c ^ N := by
+    galoisProd N (fun _ ↦ c) τ = c ^ N := by
   simp [Finset.prod_const, Finset.card_range]
 
 /-- The Galois product distributes over pointwise multiplication of functions. -/
@@ -226,7 +226,7 @@ lemma galoisProd_mul (g h : ℍ → α) :
 
 /-- The Galois product distributes over multiplication by a constant function. -/
 lemma galoisProd_const_mul (c : α) (g : ℍ → α) :
-    galoisProd N (fun τ => c * g τ) = fun τ => c ^ N * galoisProd N g τ := by
+    galoisProd N (fun τ ↦ c * g τ) = fun τ ↦ c ^ N * galoisProd N g τ := by
   ext τ
   simp [Finset.prod_mul_distrib, Finset.prod_const, Finset.card_range]
 
@@ -248,11 +248,11 @@ lemma galoisProd_periodic_one (hN : 0 < N)
   by_cases hw : 0 < w.im
   · have hw1 : 0 < (w + 1).im := by simpa using hw
     rw [ofComplex_apply_of_im_pos hw1, ofComplex_apply_of_im_pos hw,
-      Finset.prod_range_succ' (fun j => f (ofComplex (w + 1 - ↑j))),
-      Finset.prod_range_succ (fun j => f (ofComplex (w - ↑j)))]
+      Finset.prod_range_succ' (fun j ↦ f (ofComplex (w + 1 - ↑j))),
+      Finset.prod_range_succ (fun j ↦ f (ofComplex (w - ↑j)))]
     have hinner : ∏ j ∈ Finset.range n, f (ofComplex (w + 1 - ↑(j + 1))) =
         ∏ j ∈ Finset.range n, f (ofComplex (w - ↑j)) :=
-      Finset.prod_congr rfl fun j _ => by
+      Finset.prod_congr rfl fun j _ ↦ by
         congr 2
         push_cast
         ring
@@ -271,9 +271,9 @@ lemma galoisProd_mdiff (hf_mdiff : MDiff f) : MDiff (galoisProd N f) := by
     mdifferentiable_iff.mp hf_mdiff
   intro τ
   rw [mdifferentiableAt_iff]
-  have hτj : ∀ j : ℕ, 0 < ((τ : ℂ) - ↑j).im := fun j => by
+  have hτj : ∀ j : ℕ, 0 < ((τ : ℂ) - ↑j).im := fun j ↦ by
     simp [Complex.sub_im, Complex.natCast_im, τ.im_pos]
-  refine DifferentiableAt.fun_finsetProd fun j _ =>
+  refine DifferentiableAt.fun_finsetProd fun j _ ↦
     DifferentiableAt.congr_of_eventuallyEq
       (((hfo ((τ : ℂ) - j) (hτj j)).differentiableAt
         (isOpen_upperHalfPlaneSet.mem_nhds (hτj j))).comp (τ : ℂ)
@@ -286,9 +286,9 @@ lemma galoisProd_isBoundedAtImInfty (hf_bdd : IsBoundedAtImInfty f) :
     IsBoundedAtImInfty (galoisProd N f) := by
   unfold galoisProd IsBoundedAtImInfty Filter.BoundedAtFilter
   rw [← Finset.prod_fn]
-  refine Filter.BoundedAtFilter.prod _ fun j _ => hf_bdd.comp_tendsto ?_
+  refine Filter.BoundedAtFilter.prod _ fun j _ ↦ hf_bdd.comp_tendsto ?_
   simp only [atImInfty, Filter.tendsto_comap_iff, Function.comp_def]
-  refine Filter.tendsto_comap.congr' (.of_forall fun τ => ?_)
+  refine Filter.tendsto_comap.congr' (.of_forall fun τ ↦ ?_)
   have him : 0 < ((τ : ℂ) - ↑j).im := by
     simp [Complex.sub_im, Complex.natCast_im, τ.im_pos]
   simp [ofComplex_apply_of_im_pos him]
@@ -298,9 +298,9 @@ copies of the cusp function of `f` (period `N`). -/
 lemma cuspFunction_one_galoisProd_pow_eq (hN : 0 < N)
     (hf_per : Function.Periodic (f ∘ ofComplex) (N : ℝ))
     (hf_bdd : IsBoundedAtImInfty f) (hf_mdiff : MDiff f) :
-    (fun q : ℂ => cuspFunction 1 (galoisProd N f) (q ^ N))
+    (fun q : ℂ ↦ cuspFunction 1 (galoisProd N f) (q ^ N))
       =ᶠ[𝓝 0]
-    (fun q : ℂ => ∏ j ∈ Finset.range N,
+    (fun q : ℂ ↦ ∏ j ∈ Finset.range N,
       cuspFunction (N : ℝ) f (q * Complex.exp (-2 * Real.pi * Complex.I * j / N))) := by
   have hNR : (0 : ℝ) < N := by exact_mod_cast hN
   have hNR_ne : (N : ℝ) ≠ 0 := hNR.ne'
@@ -308,18 +308,18 @@ lemma cuspFunction_one_galoisProd_pow_eq (hN : 0 < N)
   have hRHS_an : AnalyticAt ℂ (cuspFunction (N : ℝ) f) 0 :=
     analyticAt_cuspFunction_zero hNR hf_per hf_mdiff hf_bdd
   have hLHS_cts : ContinuousAt
-      (fun q : ℂ => cuspFunction 1 (galoisProd N f) (q ^ N)) 0 :=
+      (fun q : ℂ ↦ cuspFunction 1 (galoisProd N f) (q ^ N)) 0 :=
     (analyticAt_cuspFunction_zero one_pos (galoisProd_periodic_one hN hf_per)
       (galoisProd_mdiff hf_mdiff) (galoisProd_isBoundedAtImInfty hf_bdd)).continuousAt.comp_of_eq
       (by fun_prop) (by simp [zero_pow hN.ne'])
   have h_factor_cts : ∀ j ∈ Finset.range N, ContinuousAt
-      (fun q : ℂ => cuspFunction (N : ℝ) f
-        (q * Complex.exp (-2 * Real.pi * Complex.I * j / N))) 0 := fun _ _ =>
+      (fun q : ℂ ↦ cuspFunction (N : ℝ) f
+        (q * Complex.exp (-2 * Real.pi * Complex.I * j / N))) 0 := fun _ _ ↦
     hRHS_an.continuousAt.comp_of_eq (by fun_prop) (by simp)
   have hRHS_cts : ContinuousAt
-      (fun q : ℂ => ∏ j ∈ Finset.range N,
+      (fun q : ℂ ↦ ∏ j ∈ Finset.range N,
         cuspFunction (N : ℝ) f (q * Complex.exp (-2 * Real.pi * Complex.I * j / N))) 0 :=
-    tendsto_finsetProd _ fun j hj => (h_factor_cts j hj).tendsto
+    tendsto_finsetProd _ fun j hj ↦ (h_factor_cts j hj).tendsto
   rw [← hLHS_cts.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE hRHS_cts,
     eventuallyEq_nhdsWithin_iff]
   filter_upwards [Metric.ball_mem_nhds (0 : ℂ) zero_lt_one] with q hq_lt hq_ne
@@ -335,7 +335,7 @@ lemma cuspFunction_one_galoisProd_pow_eq (hN : 0 < N)
     congr 1
     field_simp
   rw [hqN, eq_cuspFunction τ one_ne_zero (galoisProd_periodic_one hN hf_per), galoisProd_apply]
-  refine Finset.prod_congr rfl fun j _ => ?_
+  refine Finset.prod_congr rfl fun j _ ↦ ?_
   have him : 0 < ((τ : ℂ) - ↑j).im := by
     simp [Complex.sub_im, Complex.natCast_im, τ.im_pos]
   have hqj : q * Complex.exp (-2 * Real.pi * Complex.I * j / N) =
@@ -360,12 +360,12 @@ lemma qExpansion_one_galoisProd_order_eq_qExpansion_self_order (hN : 0 < N)
   set ML := analyticOrderAt (cuspFunction 1 (galoisProd N f)) 0
   set MR := analyticOrderAt (cuspFunction (N : ℝ) f) 0
   have h_factor_an : ∀ j ∈ Finset.range N,
-      AnalyticAt ℂ (fun q : ℂ => cuspFunction (N : ℝ) f
-        (q * Complex.exp (-2 * Real.pi * Complex.I * j / N))) 0 := fun j _ =>
+      AnalyticAt ℂ (fun q : ℂ ↦ cuspFunction (N : ℝ) f
+        (q * Complex.exp (-2 * Real.pi * Complex.I * j / N))) 0 := fun j _ ↦
     hRHS_an.comp_of_eq (by fun_prop) (by simp)
   have h_factor_order : ∀ j ∈ Finset.range N,
-      analyticOrderAt (fun q : ℂ => cuspFunction (N : ℝ) f
-        (q * Complex.exp (-2 * Real.pi * Complex.I * j / N))) 0 = MR := fun j _ => by
+      analyticOrderAt (fun q : ℂ ↦ cuspFunction (N : ℝ) f
+        (q * Complex.exp (-2 * Real.pi * Complex.I * j / N))) 0 = MR := fun j _ ↦ by
     rw [← Function.comp_def, analyticOrderAt_comp_of_deriv_ne_zero
       (f := cuspFunction (N : ℝ) f) (by fun_prop) (by simp [Complex.exp_ne_zero]), zero_mul]
   have h_combine : ML * (N : ℕ∞) = (N : ℕ∞) * MR := by
@@ -418,13 +418,13 @@ lemma image_T_pow_invariant_under_T_mul
     [DiscreteTopology 𝒢.strictPeriods]
     [DecidableEq (𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ))] {x : 𝒮ℒ}
     (hx : (⟦x⟧ : 𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ)) ∈
-        Finset.univ.image (fun j : Fin 𝒢.integerCuspWidth =>
+        Finset.univ.image (fun j : Fin 𝒢.integerCuspWidth ↦
           (⟦(Matrix.SpecialLinearGroup.mapGL ℝ).rangeRestrict
               ((ModularGroup.T : SL(2, ℤ))^(j : ℕ))⟧ :
             𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ)))) :
     (⟦(Matrix.SpecialLinearGroup.mapGL ℝ).rangeRestrict (ModularGroup.T : SL(2, ℤ)) * x⟧ :
         𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ)) ∈
-      Finset.univ.image (fun j : Fin 𝒢.integerCuspWidth =>
+      Finset.univ.image (fun j : Fin 𝒢.integerCuspWidth ↦
         (⟦(Matrix.SpecialLinearGroup.mapGL ℝ).rangeRestrict
             ((ModularGroup.T : SL(2, ℤ))^(j : ℕ))⟧ :
           𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ))) := by
@@ -452,13 +452,13 @@ lemma image_T_pow_invariant_under_T_smul
     [DiscreteTopology 𝒢.strictPeriods]
     [DecidableEq (𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ))]
     {q : 𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ)}
-    (hq : q ∈ Finset.univ.image (fun j : Fin 𝒢.integerCuspWidth =>
+    (hq : q ∈ Finset.univ.image (fun j : Fin 𝒢.integerCuspWidth ↦
         (⟦(Matrix.SpecialLinearGroup.mapGL ℝ).rangeRestrict
             ((ModularGroup.T : SL(2, ℤ))^(j : ℕ))⟧ :
           𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ)))) :
     ((Matrix.SpecialLinearGroup.mapGL ℝ).rangeRestrict (ModularGroup.T : SL(2, ℤ)) • q :
         𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ)) ∈
-      Finset.univ.image (fun j : Fin 𝒢.integerCuspWidth =>
+      Finset.univ.image (fun j : Fin 𝒢.integerCuspWidth ↦
         (⟦(Matrix.SpecialLinearGroup.mapGL ℝ).rangeRestrict
             ((ModularGroup.T : SL(2, ℤ))^(j : ℕ))⟧ :
           𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ))) := by
@@ -472,11 +472,11 @@ lemma image_T_pow_smul_inv_iff
     [DecidableEq (𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ))]
     (q : 𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ)) :
     ((Matrix.SpecialLinearGroup.mapGL ℝ).rangeRestrict (ModularGroup.T : SL(2, ℤ)))⁻¹ • q ∈
-        Finset.univ.image (fun j : Fin 𝒢.integerCuspWidth =>
+        Finset.univ.image (fun j : Fin 𝒢.integerCuspWidth ↦
           (⟦(Matrix.SpecialLinearGroup.mapGL ℝ).rangeRestrict
               ((ModularGroup.T : SL(2, ℤ))^(j : ℕ))⟧ :
             𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ))) ↔
-      q ∈ Finset.univ.image (fun j : Fin 𝒢.integerCuspWidth =>
+      q ∈ Finset.univ.image (fun j : Fin 𝒢.integerCuspWidth ↦
         (⟦(Matrix.SpecialLinearGroup.mapGL ℝ).rangeRestrict
             ((ModularGroup.T : SL(2, ℤ))^(j : ℕ))⟧ :
           𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ))) := by
@@ -484,18 +484,18 @@ lemma image_T_pow_smul_inv_iff
   set T_𝒮ℒ : 𝒮ℒ := (Matrix.SpecialLinearGroup.mapGL ℝ).rangeRestrict
     (ModularGroup.T : SL(2, ℤ))
   set image : Finset (𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ)) :=
-    Finset.univ.image (fun j : Fin 𝒢.integerCuspWidth =>
+    Finset.univ.image (fun j : Fin 𝒢.integerCuspWidth ↦
       (⟦(Matrix.SpecialLinearGroup.mapGL ℝ).rangeRestrict
           ((ModularGroup.T : SL(2, ℤ))^(j : ℕ))⟧ :
         𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ))) with himage_def
-  refine ⟨fun hq => ?_, fun hq => ?_⟩
+  refine ⟨fun hq ↦ ?_, fun hq ↦ ?_⟩
   · have h := image_T_pow_invariant_under_T_smul (𝒢 := 𝒢) hq
     rwa [smul_inv_smul] at h
   · have h_inj : Function.Injective
-        (fun q : 𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ) => T_𝒮ℒ • q) :=
+        (fun q : 𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ) ↦ T_𝒮ℒ • q) :=
       MulAction.injective T_𝒮ℒ
-    have h_smul_image : image.image (fun q => T_𝒮ℒ • q) = image := by
-      refine Finset.eq_of_subset_of_card_le (fun q hq' => ?_) ?_
+    have h_smul_image : image.image (fun q ↦ T_𝒮ℒ • q) = image := by
+      refine Finset.eq_of_subset_of_card_le (fun q hq' ↦ ?_) ?_
       · obtain ⟨q', hq'', rfl⟩ := Finset.mem_image.mp hq'
         exact image_T_pow_invariant_under_T_smul (𝒢 := 𝒢) hq''
       · rw [Finset.card_image_of_injective _ h_inj]
@@ -512,13 +512,13 @@ lemma prod_quotientFunc_filter_image_one_vadd
     [Fintype (𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ))]
     (τ : ℍ) :
     (∏ q ∈ Finset.univ.filter (· ∉ Finset.univ.image
-          (fun j : Fin 𝒢.integerCuspWidth =>
+          (fun j : Fin 𝒢.integerCuspWidth ↦
             (⟦(Matrix.SpecialLinearGroup.mapGL ℝ).rangeRestrict
                 ((ModularGroup.T : SL(2, ℤ))^(j : ℕ))⟧ :
               𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ)))),
         SlashInvariantForm.quotientFunc f q ((1 : ℝ) +ᵥ τ)) =
       ∏ q ∈ Finset.univ.filter (· ∉ Finset.univ.image
-          (fun j : Fin 𝒢.integerCuspWidth =>
+          (fun j : Fin 𝒢.integerCuspWidth ↦
             (⟦(Matrix.SpecialLinearGroup.mapGL ℝ).rangeRestrict
                 ((ModularGroup.T : SL(2, ℤ))^(j : ℕ))⟧ :
               𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ)))),
@@ -534,10 +534,10 @@ lemma prod_quotientFunc_filter_image_one_vadd
           (SlashInvariantForm.slash_T_zpow_apply_general k 1 (SlashInvariantForm.quotientFunc f q)
             τ).symm,
       SlashInvariantForm.quotientFunc_smul f T_𝒮ℒ.2]
-  refine (Finset.prod_congr rfl fun q _ => h_step1 q).trans <|
+  refine (Finset.prod_congr rfl fun q _ ↦ h_step1 q).trans <|
     Finset.prod_equiv (MulAction.toPerm T_𝒮ℒ⁻¹)
-      (fun q => by simpa using (image_T_pow_smul_inv_iff (𝒢 := 𝒢) q).symm.not)
-      (fun _ _ => rfl)
+      (fun q ↦ by simpa using (image_T_pow_smul_inv_iff (𝒢 := 𝒢) q).symm.not)
+      (fun _ _ ↦ rfl)
 
 /-- Decomposition of the norm of `f` at the cusp `∞`: `(norm f) τ` equals the product of
 `f (ofComplex (τ - j))` for `j < integerCuspWidth 𝒢` times an analytic remainder term. -/
@@ -551,24 +551,24 @@ lemma analyticAt_cuspFunction_one_norm_rest
   classical
   set h_𝒢 := 𝒢.integerCuspWidth
   letI : Fintype (𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ)) := Fintype.ofFinite _
-  set imgFn : Fin h_𝒢 → 𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ) := fun j =>
+  set imgFn : Fin h_𝒢 → 𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ) := fun j ↦
     ⟦(Matrix.SpecialLinearGroup.mapGL ℝ).rangeRestrict
         ((ModularGroup.T : SL(2, ℤ))^(j : ℕ))⟧
   set image : Finset (𝒮ℒ ⧸ (𝒢.subgroupOf 𝒮ℒ)) :=
     Finset.univ.image imgFn with himage_def
   have h_imgFn_inj : Function.Injective imgFn :=
     Subgroup.quotient_T_pow_injective_integerCuspWidth (𝒢 := 𝒢)
-  let rest : ℍ → ℂ := fun τ =>
+  let rest : ℍ → ℂ := fun τ ↦
     ∏ q ∈ Finset.univ.filter (· ∉ image), SlashInvariantForm.quotientFunc f q τ
   have h_rest_eq : (rest : ℍ → ℂ) =
       ∏ q ∈ Finset.univ.filter (· ∉ image), SlashInvariantForm.quotientFunc f q :=
-    funext fun _ => (Finset.prod_apply ..).symm
+    funext fun _ ↦ (Finset.prod_apply ..).symm
   have h_rest_mdiff : MDiff rest :=
-    h_rest_eq ▸ MDifferentiable.prod fun q _ => SlashInvariantForm.quotientFunc_mdiff f q
+    h_rest_eq ▸ MDifferentiable.prod fun q _ ↦ SlashInvariantForm.quotientFunc_mdiff f q
   have h_rest_bdd : IsBoundedAtImInfty rest :=
-    h_rest_eq ▸ Filter.BoundedAtFilter.prod _ fun q _ =>
+    h_rest_eq ▸ Filter.BoundedAtFilter.prod _ fun q _ ↦
       SlashInvariantForm.quotientFunc_isBoundedAtImInfty f q
-  have h_rest_periodic : Function.Periodic (rest ∘ ofComplex) 1 := fun w => by
+  have h_rest_periodic : Function.Periodic (rest ∘ ofComplex) 1 := fun w ↦ by
     simp only [Function.comp_apply]
     by_cases! hw : 0 < w.im
     · have hw1 : 0 < (w + 1).im := by simpa using hw
@@ -578,12 +578,12 @@ lemma analyticAt_cuspFunction_one_norm_rest
       exact prod_quotientFunc_filter_image_one_vadd f ⟨w, hw⟩
     · rw [ofComplex_apply_eq_of_im_nonpos (by simpa using hw) hw]
   refine ⟨rest, h_rest_periodic,
-    analyticAt_cuspFunction_zero one_pos h_rest_periodic h_rest_mdiff h_rest_bdd, fun τ => ?_⟩
+    analyticAt_cuspFunction_zero one_pos h_rest_periodic h_rest_mdiff h_rest_bdd, fun τ ↦ ?_⟩
   rw [ModularForm.coe_norm, Finset.prod_apply,
     ← Finset.prod_filter_mul_prod_filter_not _ (· ∈ image), Finset.filter_univ_mem,
     himage_def, Finset.prod_image h_imgFn_inj.injOn,
-    Finset.prod_congr rfl fun j _ => quotientFunc_T_pow_apply f j τ,
-    Fin.prod_univ_eq_prod_range (fun n => f (ofComplex ((τ : ℂ) - (n : ℕ)))) h_𝒢]
+    Finset.prod_congr rfl fun j _ ↦ quotientFunc_T_pow_apply f j τ,
+    Fin.prod_univ_eq_prod_range (fun n ↦ f (ofComplex ((τ : ℂ) - (n : ℕ)))) h_𝒢]
 
 end NormDecomposition
 
