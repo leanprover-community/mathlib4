@@ -200,18 +200,16 @@ end Preorder
 
 /-- A partial order where any two elements are comparable is a linear order. -/
 @[implicit_reducible]
-def Relation.linearOrderOfSymmGen [PartialOrder α]
-    [decLE : DecidableLE α] [decLT : DecidableLT α] [decEq : DecidableEq α]
+def Relation.linearOrderOfSymmGen [PartialOrder α] [DecidableLE α] [DecidableLT α] [DecidableEq α]
     (h : ∀ a b : α, Relation.SymmGen (· ≤ ·) a b) : LinearOrder α where
   le_total := h
-  toDecidableEq := decEq
-  toDecidableLT := decLT
+  toDecidableEq := ‹_›
+  toDecidableLT := ‹_›
 
 set_option linter.deprecated false in
 /-- A partial order where any two elements are comparable is a linear order. -/
 @[deprecated linearOrderOfSymmGen (since := "2026-01-25"), implicit_reducible]
-def linearOrderOfComprel [PartialOrder α]
-    [decLE : DecidableLE α] [decLT : DecidableLT α] [decEq : DecidableEq α]
+def linearOrderOfComprel [PartialOrder α] [DecidableLE α] [DecidableLT α] [DecidableEq α]
     (h : ∀ a b : α, CompRel (· ≤ ·) a b) : LinearOrder α :=
   linearOrderOfSymmGen h
 
