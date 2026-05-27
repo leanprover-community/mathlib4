@@ -18,7 +18,7 @@ public import Mathlib.Topology.Instances.Nat
 The structure of a metric space on `ℚ` is introduced in this file, induced from `ℝ`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Metric Set Topology
 

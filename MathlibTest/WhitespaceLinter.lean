@@ -315,6 +315,7 @@ omit  [h : Add Nat]  [Add Nat]
 -- Include statements are not linted.
 include     h
 
+set_option linter.overlappingInstances false in
 /--
 warning: extra space in the source
 

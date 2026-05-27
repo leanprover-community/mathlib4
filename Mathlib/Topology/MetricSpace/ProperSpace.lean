@@ -23,7 +23,7 @@ public import Mathlib.Topology.Order.IsLUB
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter
 

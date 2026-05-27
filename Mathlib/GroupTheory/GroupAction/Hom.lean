@@ -228,9 +228,9 @@ lemma _root_.FaithfulSMul.of_injective
 variable {ψ χ} (M N)
 
 /-- The identity map as an equivariant map. -/
-@[to_additive /-- The identity map as an equivariant map. -/]
+@[to_additive (attr := implicit_reducible) /-- The identity map as an equivariant map. -/]
 protected def id : X →[M] X :=
-  ⟨id, fun _ _ => rfl⟩
+  ⟨fun x ↦ x, fun _ _ => rfl⟩
 
 variable {M N Z}
 
@@ -249,10 +249,10 @@ variable {φ ψ χ X Y Z}
 -- attribute [instance] CompTriple.id_comp CompTriple.comp_id
 
 /-- Composition of two equivariant maps. -/
-@[to_additive /-- Composition of two equivariant maps. -/]
+@[to_additive (attr := implicit_reducible) /-- Composition of two equivariant maps. -/]
 def comp (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) [κ : CompTriple φ ψ χ] :
     X →ₑ[χ] Z :=
-  ⟨g ∘ f, fun m x =>
+  ⟨fun x ↦ g (f x), fun m x =>
     calc
       g (f (m • x)) = g (φ m • f x) := by rw [map_smulₛₗ]
       _ = ψ (φ m) • g (f x) := by rw [map_smulₛₗ]
@@ -733,7 +733,7 @@ protected theorem map_smulₑ (f : A →ₑ*[φ] B) (m : M) (x : A) : f (m • x
 variable (M)
 
 /-- The identity map as an equivariant monoid homomorphism. -/
-@[to_additive (dont_translate := M)
+@[to_additive (dont_translate := M) (attr := implicit_reducible)
 /-- The identity map as an equivariant additive monoid homomorphism. -/]
 protected def id : A →*[M] A :=
   ⟨MulActionHom.id _, rfl, fun _ _ => rfl⟩
@@ -775,7 +775,7 @@ instance {A : Type*} [AddMonoid A] [DistribMulAction M A]
   ⟨0⟩
 
 /-- Composition of two equivariant monoid homomorphisms. -/
-@[to_additive (dont_translate := M N P)
+@[to_additive (dont_translate := M N P) (attr := implicit_reducible)
 /-- Composition of two equivariant additive monoid homomorphisms. -/]
 def comp [κ : MonoidHom.CompTriple φ ψ χ]
     (g : B →ₑ*[ψ] C) (f : A →ₑ*[φ] B) : A →ₑ*[χ] C :=
@@ -951,6 +951,7 @@ namespace MulSemiringActionHom
 variable (M) {R}
 
 /-- The identity map as an equivariant ring homomorphism. -/
+@[implicit_reducible]
 protected def id : R →+*[M] R :=
   ⟨DistribMulActionHom.id _, rfl, (fun _ _ => rfl)⟩
 
@@ -969,6 +970,7 @@ variable {R S T}
 variable {φ φ' ψ χ}
 
 /-- Composition of two equivariant additive ring homomorphisms. -/
+@[implicit_reducible]
 def comp (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) [κ : MonoidHom.CompTriple φ ψ χ] : R →ₑ+*[χ] T :=
   { DistribMulActionHom.comp (g : S →ₑ+[ψ] T) (f : R →ₑ+[φ] S),
     RingHom.comp (g : S →+* T) (f : R →+* S) with }

@@ -30,7 +30,7 @@ as we do not impose cardinality bounds, and manage universes carefully instead.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits
 

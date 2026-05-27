@@ -161,7 +161,7 @@ theorem finSuccEquiv'_ne_last_apply {i j : Fin (n + 1)} (hi : i ≠ Fin.last n) 
   rcases Fin.exists_castSucc_eq.2 hi with ⟨i, rfl⟩
   simp
 
-/-- `Fin.succAbove` as an order isomorphism between `Fin n` and `{x : Fin (n + 1) // x ≠ p}`. -/
+/-- `Fin.succAbove` as a bijection between `Fin n` and `{x : Fin (n + 1) // x ≠ p}`. -/
 def finSuccAboveEquiv (p : Fin (n + 1)) : Fin n ≃ { x : Fin (n + 1) // x ≠ p } :=
   .optionSubtype p ⟨(finSuccEquiv' p).symm, rfl⟩
 
@@ -316,12 +316,12 @@ theorem finAddFlip_apply_natAdd (k : Fin n) (m : ℕ) :
 theorem finAddFlip_apply_mk_left {k : ℕ} (h : k < m) (hk : k < m + n := Nat.lt_add_right n h)
     (hnk : n + k < n + m := Nat.add_lt_add_left h n) :
     finAddFlip (⟨k, hk⟩ : Fin (m + n)) = ⟨n + k, hnk⟩ := by
-  convert finAddFlip_apply_castAdd ⟨k, h⟩ n
+  convert! finAddFlip_apply_castAdd ⟨k, h⟩ n
 
 @[simp]
 theorem finAddFlip_apply_mk_right {k : ℕ} (h₁ : m ≤ k) (h₂ : k < m + n) :
     finAddFlip (⟨k, h₂⟩ : Fin (m + n)) = ⟨k - m, by lia⟩ := by
-  convert @finAddFlip_apply_natAdd n ⟨k - m, by lia⟩ m
+  convert! @finAddFlip_apply_natAdd n ⟨k - m, by lia⟩ m
   simp [Nat.add_sub_cancel' h₁]
 
 /-- Equivalence between `Fin m × Fin n` and `Fin (m * n)` -/

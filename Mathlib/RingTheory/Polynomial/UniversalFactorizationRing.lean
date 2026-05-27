@@ -50,7 +50,7 @@ def freeMonic : (MvPolynomial (Fin n) R)[X] :=
 
 lemma coeff_freeMonic :
     (freeMonic R n).coeff k = if h : k < n then .X ⟨k, h⟩ else if k = n then 1 else 0 := by
-  simp only [freeMonic, Polynomial.coeff_add, Polynomial.coeff_X_pow, Polynomial.finset_sum_coeff,
+  simp only [freeMonic, Polynomial.coeff_add, Polynomial.coeff_X_pow, Polynomial.finsetSum_coeff,
     Polynomial.coeff_C_mul, mul_ite, mul_one, mul_zero]
   by_cases h : k < n
   · simp +contextual [Finset.sum_eq_single (ι := Fin n) (a := ⟨k, h⟩),
@@ -587,7 +587,7 @@ def UniversalCoprimeFactorizationRing.homEquiv :
   toFun f :=
     letI q := UniversalFactorizationRing.homEquiv S m k hn p (f.comp (IsScalarTower.toAlgHom _ _ _))
     ⟨q.1, q.2, by
-      convert (isCoprime_factor₁_factor₂ m k hn p).map (Polynomial.mapRingHom f.toRingHom) <;>
+      convert! (isCoprime_factor₁_factor₂ m k hn p).map (Polynomial.mapRingHom f.toRingHom) <;>
         simp [q, UniversalFactorizationRing.homEquiv,
           AlgHom.comp_toRingHom, ← Polynomial.map_map] <;> rfl⟩
   invFun q := by
@@ -614,7 +614,7 @@ def UniversalCoprimeFactorizationRing.homEquiv :
     ext; simp
   right_inv q := by
     apply Subtype.ext
-    convert congr($((UniversalFactorizationRing.homEquiv S m k hn p).apply_symm_apply
+    convert! congr($((UniversalFactorizationRing.homEquiv S m k hn p).apply_symm_apply
       ⟨_, q.2.1⟩).1) using 1
     dsimp
     congr 2

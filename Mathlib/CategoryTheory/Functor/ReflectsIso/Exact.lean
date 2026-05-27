@@ -28,7 +28,7 @@ between short complexes or homological complexes in `C`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

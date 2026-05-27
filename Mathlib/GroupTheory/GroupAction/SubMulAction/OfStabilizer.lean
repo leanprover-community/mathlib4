@@ -232,7 +232,7 @@ variable (G : Type*) [Group G] (α : Type*) [MulAction G α]
 instance _root_.SMul.ofStabilizer (s : Set α) :
     SMul (stabilizer G s) s where
   smul g x := ⟨g • ↑x, by
-    convert Set.smul_mem_smul_set x.prop
+    convert! Set.smul_mem_smul_set x.prop
     exact (mem_stabilizer_iff.mp g.prop).symm⟩
 
 @[simp]
@@ -246,8 +246,7 @@ instance (s : Set α) : MulAction (stabilizer G s) s where
   one_smul x := by
     simp only [← Subtype.coe_inj, SMul.smul_stabilizer_def, OneMemClass.coe_one, one_smul]
   mul_smul g k x := by
-    simp only [← Subtype.coe_inj, SMul.smul_stabilizer_def, Subgroup.coe_mul,
-      SemigroupAction.mul_smul]
+    simp only [← Subtype.coe_inj, SMul.smul_stabilizer_def, Subgroup.coe_mul, mul_smul]
 
 theorem stabilizer_empty_eq_top :
     stabilizer G (∅ : Set α) = ⊤ := by
