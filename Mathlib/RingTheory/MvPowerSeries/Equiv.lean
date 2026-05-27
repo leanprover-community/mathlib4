@@ -167,24 +167,24 @@ variable {R S σ τ : Type*} [CommSemiring R] [CommSemiring S] {f : PowerSeries 
 open Function PowerSeries Filter Finsupp
 namespace PowerSeries
 
-/-- Given a power series p(X) ∈ R⟦X⟧ and an index i, we may view it as a
-multivariate power series p(X_i) ∈ R⟦X_1, ..., X_n⟧.
--/
+/-- Given a power series `p : R⟦X⟧` and an index `i`, we may view it as a
+multivariate power series `toMvPowerSeries i p : MvPowerSeries σ R`. -/
 noncomputable
 def toMvPowerSeries : PowerSeries R →ₐ[R] MvPowerSeries σ R :=
-  MvPowerSeries.rename (fun _ => i)
+  MvPowerSeries.rename (fun _ ↦ i)
 
-theorem toMvPowerSeries_apply : f.toMvPowerSeries i = f.rename (fun _ => i) := rfl
+theorem toMvPowerSeries_apply : f.toMvPowerSeries i = f.rename (fun _ ↦ i) := rfl
 
 @[simp]
 theorem toMvPowerSeries_C : (C r).toMvPowerSeries i = MvPowerSeries.C r := by
-  rw [toMvPowerSeries_apply, C, MvPowerSeries.rename_C]
+  rw [toMvPowerSeries_apply, C_apply, MvPowerSeries.rename_C]
 
 @[simp]
 theorem toMvPowerSeries_X : X.toMvPowerSeries i = MvPowerSeries.X i (R := R) := by
-  rw [toMvPowerSeries_apply, X, MvPowerSeries.rename_X]
+  rw [toMvPowerSeries_apply, X_apply, MvPowerSeries.rename_X]
 
-theorem toMvPowerSeries_injective (i : σ) : Function.Injective (toMvPowerSeries (R := R) i) :=
+@[grind inj]
+theorem toMvPowerSeries_inj (i : σ) : Function.Injective (toMvPowerSeries (R := R) i) :=
   MvPowerSeries.rename_injective (Embedding.punit i)
 
 section CommRing
