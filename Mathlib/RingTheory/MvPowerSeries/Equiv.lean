@@ -203,7 +203,7 @@ theorem subst_toMvPowerSeries {a : σ → MvPowerSeries τ R} (ha : MvPowerSerie
     (HasSubst.const (HasSubst.X _)) ha, MvPowerSeries.subst_X ha, subst]
 
 lemma toMvPowerSeries_coeff_eq_zero {d : σ →₀ ℕ} (hd : d i = 0) (hf : f.constantCoeff = 0) :
-    ((PowerSeries.toMvPowerSeries i) f).coeff d = 0 := by classical
+    (f.toMvPowerSeries i).coeff d = 0 := by classical
   rw [toMvPowerSeries_apply, MvPowerSeries.rename_eq_subst, subst_X_comp_const,
     coeff_subst (HasSubst.X _), finsum_eq_zero_of_forall_eq_zero]
   simp only [MvPowerSeries.X_pow_eq, MvPowerSeries.coeff_monomial, smul_eq_mul, mul_ite, mul_one,
