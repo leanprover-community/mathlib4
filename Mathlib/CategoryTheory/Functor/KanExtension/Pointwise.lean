@@ -160,7 +160,6 @@ lemma hasPointwiseRightKanExtensionAt_iff_of_equivalence
         isoWhiskerLeft L E.unitIso.symm ≪≫ L.rightUnitor) Y' Y
       (E.inverse.mapIso e.symm ≪≫ E.unitIso.symm.app Y)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma HasPointwiseLeftKanExtensionAt.of_natIso {L L' : C ⥤ D} {F F' : C ⥤ H} (Y : D)
     [L.HasPointwiseLeftKanExtensionAt F Y] (e₁ : L ≅ L') (e₂ : F ≅ F') :
     L'.HasPointwiseLeftKanExtensionAt F' Y := by
