@@ -284,10 +284,12 @@ theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
     exact isClosed_iInter fun n =>
       Finite.isClosed_biUnion (finite_Iic _) (fun _ _ ↦ isClosed_closure)
 
+/-- A different version of the (C) → (T) implication of the portmanteau theorem:
+When the set of measures is tight, a `limsup` inequality for compact sets suffices to conclude
+weak convergence. -/
 theorem tendsto_of_forall_isCompact_of_isTightMeasureSet
     {Ω ι : Type*} {mΩ : MeasurableSpace Ω} [TopologicalSpace Ω]
-    [OpensMeasurableSpace Ω] [T2Space Ω]
-    {L : Filter ι} [NeBot L] [L.IsCountablyGenerated]
+    [OpensMeasurableSpace Ω] {L : Filter ι} [NeBot L] [L.IsCountablyGenerated]
     {μs : ι → ProbabilityMeasure Ω} {μ : ProbabilityMeasure Ω}
     (h₁ : IsTightMeasureSet (range (toMeasure ∘ μs)))
     (h₂ : ∀ F, IsCompact F → limsup (fun i ↦ (μs i) F) L ≤ μ F) :
@@ -308,8 +310,8 @@ theorem tendsto_of_forall_isCompact_of_isTightMeasureSet
     simpa using measure_mono <| by simp
   · refine .of_forall (fun i ↦ ?_)
     simp_rw [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
-    rw [← measure_inter_add_diff _ hKc.measurableSet]
-    apply add_le_add (by rfl)
-    apply le_trans (measure_mono (by simp)) <| hK_le (μs i) <| by simp
+    grw [measure_mono (t := (F ∩ K) ∪ F \ K) (by simp), measure_union_le]
+    gcongr
+    exact le_trans (measure_mono (by simp)) <| hK_le (μs i) <| by simp
 
 end MeasureTheory
