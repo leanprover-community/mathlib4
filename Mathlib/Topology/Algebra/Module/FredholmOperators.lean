@@ -394,7 +394,7 @@ variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [IsTopologicalAddGrou
   [Module 𝕜 G] [ContinuousConstSMul 𝕜 G] [ContinuousAdd G]
 
 variable (𝕜 E F) in
-def ContinuouisLinearMap.FiniteRank : Submodule 𝕜 (E →L[𝕜] F) :=
+def ContinuousLinearMap.FiniteRank : Submodule 𝕜 (E →L[𝕜] F) :=
   Submodule.comap (coeLM 𝕜) (LinearMap.FiniteRank 𝕜 E F)
 
 namespace ContinuousLinearMap.FiniteRankSetoid
@@ -802,6 +802,12 @@ section IsCompl
 variable {R : Type u_1} [Ring R] {M : Type u_2} [AddCommGroup M] [Module R M] {N : Type u_3}
   [AddCommGroup N] [Module R N]
 
+-- lemma _root_.Submodule.isCompl_eq_add {p q : Submodule R M} (h : IsCompl p q) (x : M) :
+--     ∃ (a : p), ∃ (b : q), (a : M) + b = x := by
+--   obtain ⟨⟨a, b⟩, ⟨h_exists, h_unique⟩⟩ := Submodule.existsUnique_add_of_isCompl_prod h x
+--   refine ⟨a, b, h_exists⟩
+
+
 lemma Submodule.isCompl_projection_sub_mem {p q : Submodule R M} (h : IsCompl p q) (x : M) :
     (p.projection q h) x - x ∈ q := by
   simp [Submodule.projection_eq_self_sub_projection h.symm x]
@@ -1074,7 +1080,16 @@ theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
     rintro ⟨FD⟩
     have hcompl_left := FD.1.topCompl
     have hcompl_right := FD.2.topCompl
-    set φ := FD.5.choose.symm
+    set φ := FD.5.choose.symm with hφ_def
+    set ψ := (u.restrict FD.mapsto).inverse with hψ_def
+    have hφ (x : FD.dec_right.X₁) : u.restrict FD.mapsto (φ x) = x := by
+      -- have := FD.5.choose_spec
+      rw [hφ_def]
+      have := FD.5.self_apply_inverse x
+      convert this
+      sorry
+
+      -- show u.restrict FD.mapsto (_) = x
     /- **FAE** Now I see two options:
     `1.` either use `ContinuousLinearMap.ofIsTopCompl` but at the price of composing it
       with the embedding `FD.dec_left.X₁ ↪ E`; or
@@ -1082,19 +1097,45 @@ theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
       identifies with the whole space.
     -/
     -- Let's try `1`.
-    -- set v := subtypeL _ ∘L ContinuousLinearMap.ofIsTopCompl hcompl_right φ.toContinuousLinearMap 0
-    -- refine ⟨v, ?_, ?_⟩
-    -- · sorry
-    -- · sorry
+    set v := subtypeL _ ∘L ContinuousLinearMap.ofIsTopCompl hcompl_right φ.toContinuousLinearMap 0
+      with hv_def
+    set v' := subtypeL _ ∘L ContinuousLinearMap.ofIsTopCompl hcompl_right ψ 0
+      with hv'_def
+    refine ⟨v', ?_, ?_⟩
+    · rw [FiniteRankSetoid.equiv_iff, LinearMap.FiniteRankSetoid.equiv_iff]
+      have := FD.dec_right.fin_dim
+      suffices ((u.toLinearMap ∘ₗ v'.toLinearMap - LinearMap.id).range : Submodule 𝕜 F)
+        ≤ FD.dec_right.X₂ by apply finiteDimensional_of_le this
+      rintro x ⟨y, rfl⟩
+      obtain ⟨⟨a, _⟩, ⟨rfl, -⟩⟩ := Submodule.existsUnique_add_of_isCompl_prod hcompl_right.isCompl y
+      have h_uva : u (v' a) = a := by
+        rw [hv'_def, hψ_def, coe_comp', coe_subtypeL, coe_subtype, Function.comp_apply,
+          ofIsTopCompl_apply, ContinuousLinearMap.coe_zero, LinearMap.ofIsCompl_apply_left, coe_coe,
+          /- ContinuousLinearEquiv.coe_coe -/]
+        -- simp
+        sorry
+        -- rw [← ContinuousLinearMap.coe_restrict_apply (p := FD.dec_left.X₁) (q := FD.dec_right.X₁)]
+        -- have := @ContinuousLinearMap.IsInvertible.inverse_apply_self
+        --   (hf := FD.5) (y := ψ a)
+        -- simp_all
+
+        -- rw [← this]
+        -- simp
+        -- congr 1
+      simp_all
+    · sorry
+
+
     --
     -- and now `2`:
-    let w₀ := prodMap φ.toContinuousLinearMap (0 : FD.dec_right.X₂ →L[𝕜] FD.dec_left.X₂)
-    let e := (Submodule.prodEquivOfIsTopCompl _ _ hcompl_left)
-    let e' := (Submodule.prodEquivOfIsTopCompl _ _ hcompl_right).symm
-    let w := e.toContinuousLinearMap ∘L w₀ ∘L e'.toContinuousLinearMap
-    refine ⟨w, ?_, ?_⟩
-    sorry
-    sorry
+  -- #exit
+    -- let w₀ := prodMap φ.toContinuousLinearMap (0 : FD.dec_right.X₂ →L[𝕜] FD.dec_left.X₂)
+    -- let e := (Submodule.prodEquivOfIsTopCompl _ _ hcompl_left)
+    -- let e' := (Submodule.prodEquivOfIsTopCompl _ _ hcompl_right).symm
+    -- let w := e.toContinuousLinearMap ∘L w₀ ∘L e'.toContinuousLinearMap
+    -- refine ⟨w, ?_, ?_⟩
+    -- sorry
+    -- sorry
 
     -- let v := ContinuousLinearMap.ofIsTopCompl
     -- intro H
