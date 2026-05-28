@@ -140,8 +140,10 @@ example (f g : Nat → Nat) : (f + g) 2 = f 2 + g 2 := by
 -- When the motive is not type correct, suggest `rw!`
 example (a b : Nat) (l : List Nat) (hl : a + b < l.length) (h : l[a + b] = 5) :
     l[b + a] = 5 := by
-  click_test "/0/1/0/1" => "rw! [Nat.add_comm]" "rw! [add_comm]"
-  rw! [Nat.add_comm]
+  click_test "/0/1/0/1" =>
+    "rw! (occs := .pos [1]) [Nat.add_comm b a]"
+    "rw! (occs := .pos [1]) [add_comm b a]"
+  rw! (occs := .pos [1]) [Nat.add_comm b a]
   exact h
 
 example (a b : Nat) (l : List Nat) (hl : a + b < l.length) (h : l[a + b] = 5) :
@@ -163,3 +165,9 @@ example (n m : Nat) (h : n.succ = m.succ) : True := by
   fail_if_success
     click_test h "" => "apply Nat.succ.inj at h  "
   trivial
+
+-- `nth_rw` is used if `rw` would include more other rewrites:
+example (a b c : Nat) : a + b + c = a + b := by
+  click_test "/1" => "nth_rw 2 [Nat.add_comm a b]"
+  click_test "/0/1/0/1" => "nth_rw 1 [Nat.add_comm a b]"
+  exact test_sorry

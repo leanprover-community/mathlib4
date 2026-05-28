@@ -393,17 +393,14 @@ def addSolvedSuggestion (tac : TSyntax `tactic) : ClickSuggestionsM Unit := do
 
 end Widget
 
+/-- Return whether `kabstract` uniquely finds pattern `p` in `e` at position `targetPos`. -/
 def kabstractFindsPositions (e p : Expr) (targetPos : SubExpr.Pos) : MetaM Bool := do
   let e ← instantiateMVars e
   let pHeadIdx := p.toHeadIndex
   let pNumArgs := p.headNumArgs
-  let rec
-  /-- The main loop that loops through all subexpressions -/
-  visit (e : Expr) (pos : SubExpr.Pos) :
-      ExceptT Bool MetaM Unit := do
-    let visitChildren (found := false) : ExceptT Bool MetaM Unit := do
-      if pos == targetPos then
-        throwThe _ found
+  let foundRef ← IO.mkRef false
+  let rec visit (e : Expr) (pos : SubExpr.Pos) : MetaM Unit := do
+    let visitChildren : MetaM Unit := do
       match e with
       | .app f a         => visit f pos.pushAppFn; visit a pos.pushAppArg
       | .mdata _ e       => visit e pos
@@ -419,11 +416,19 @@ def kabstractFindsPositions (e p : Expr) (targetPos : SubExpr.Pos) : MetaM Bool 
       visitChildren
     else
       if ← isDefEq e p then
-        visitChildren true
+        if pos == targetPos then
+          foundRef.set true
+        else
+          throwError "{p} unified with {e}"
       else
-        visitChildren
-  match ← ExceptT.run <| visit e .root with
-  | .ok () => throwError "invalid position {targetPos} in {e}"
-  | .error found => return found
+        if pos == targetPos then
+          throwError "{p} did not unify with {e}"
+        else
+          visitChildren
+  try
+    visit e .root
+    foundRef.get
+  catch _ =>
+    return false
 
 end Mathlib.Tactic.ClickSuggestions
