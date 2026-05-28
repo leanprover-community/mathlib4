@@ -5,7 +5,6 @@ Authors: Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 module
 
-public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Pi.Basic
 
 /-!
