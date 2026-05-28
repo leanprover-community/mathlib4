@@ -333,7 +333,7 @@ end LinearOrderedRing
 
 section Rat
 
-variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α]
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 
 -- Normalize to True
 example : (1 : ℚ) ≤ 1 := by norm_num1

@@ -404,10 +404,10 @@ protected theorem postcomp_uniformContinuous [UniformSpace γ] {f : γ → β}
     (hf : UniformContinuous f) :
     UniformContinuous (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) := by
   -- This is a direct consequence of `UniformFun.comap_eq`
-    refine uniformContinuous_iff.mpr ?_
+    refine uniformContinuous_iff_le_comap.mpr ?_
     calc
       𝒰(α, γ, _) ≤ 𝒰(α, γ, ‹UniformSpace β›.comap f) :=
-        UniformFun.mono (uniformContinuous_iff.mp hf)
+        UniformFun.mono (uniformContinuous_iff_le_comap.mp hf)
       _ = 𝒰(α, β, _).comap (f ∘ ·) := by exact UniformFun.comap_eq
 
 /-- Turn a uniform isomorphism `γ ≃ᵤ β` into a uniform isomorphism `(α →ᵤ γ) ≃ᵤ (α →ᵤ β)` by
@@ -892,8 +892,9 @@ More precisely, if `f : γ → β` is uniformly continuous, then
 protected theorem postcomp_uniformContinuous [UniformSpace γ] {f : γ → β}
     (hf : UniformContinuous f) : UniformContinuous (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) := by
   -- This is a direct consequence of `UniformOnFun.comap_eq`
-  rw [uniformContinuous_iff]
-  exact (UniformOnFun.mono (uniformContinuous_iff.mp hf) subset_rfl).trans_eq UniformOnFun.comap_eq
+  rw [uniformContinuous_iff_le_comap]
+  exact (UniformOnFun.mono (uniformContinuous_iff_le_comap.mp hf)
+    subset_rfl).trans_eq UniformOnFun.comap_eq
 
 /-- Post-composition by a uniform inducing is a uniform inducing for the
 uniform structures of `𝔖`-convergence.
@@ -1120,9 +1121,9 @@ theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} (φ₁ : δ�
     simpa only [← univ_subset_iff, ψ₁, ψ₂, range_restrictPreimage, ← preimage_union,
       ← image_subset_iff, image_univ, Subtype.range_val] using h_cover S hS
   refine le_antisymm (le_inf ?_ ?_) (le_iInf₂ fun S hS ↦ ?_)
-  · rw [← uniformContinuous_iff]
+  · rw [← uniformContinuous_iff_le_comap]
     exact UniformOnFun.precomp_uniformContinuous h_image₁
-  · rw [← uniformContinuous_iff]
+  · rw [← uniformContinuous_iff_le_comap]
     exact UniformOnFun.precomp_uniformContinuous h_image₂
   · simp_rw [this S hS, uniformSpace, UniformSpace.comap_iInf, UniformSpace.comap_inf,
       ← UniformSpace.comap_comap]
@@ -1145,7 +1146,7 @@ theorem uniformSpace_eq_iInf_precomp_of_cover {δ : ι → Type*} (φ : Π i, δ
   -- With a better theory of ideals we may be able to simplify the following by replacing `𝔗 i`
   -- by `(φ i ⁻¹' ·) '' 𝔖`.
   refine le_antisymm (le_iInf fun i ↦ ?_) (le_iInf₂ fun S hS ↦ ?_)
-  · rw [← uniformContinuous_iff]
+  · rw [← uniformContinuous_iff_le_comap]
     exact UniformOnFun.precomp_uniformContinuous (h_image i)
   · simp_rw [this S hS, uniformSpace, UniformSpace.comap_iInf, ← UniformSpace.comap_comap]
     exact iInf_mono fun i ↦ iInf₂_le_of_le _ (h_preimage i hS) le_rfl
