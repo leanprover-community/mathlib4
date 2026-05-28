@@ -646,10 +646,8 @@ theorem isStableUnderBaseChange (hP' : Q.IsStableUnderBaseChange) :
 lemma isZariskiLocalAtSource
     (H : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffine Y] (𝒰 : Scheme.OpenCover.{u} X),
         Q f ↔ ∀ i, Q (𝒰.f i ≫ f)) : IsZariskiLocalAtSource P := by
-  refine .mk_of_small ?_ ?_
-  all_goals
-    intro X Y f 𝒰 hf
-    simp_rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top _ (iSup_affineOpens_eq_top Y),
+  refine .mk_of_small (fun {X Y f} 𝒰 hf ↦ ?_) (fun {X Y f} 𝒰 hf ↦ ?_) <;>
+  simp_rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top _ (iSup_affineOpens_eq_top Y),
       HasAffineProperty.iff_of_isAffine, morphismRestrict_comp] at hf ⊢
   · intro i U
     let 𝒰' : X.OpenCover := (Scheme.Cover.ulift 𝒰).add (𝒰.f i)
