@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
 public import Mathlib.RingTheory.Extension.Generators
 public import Mathlib.Algebra.Module.SnakeLemma
+public import Mathlib.RingTheory.Flat.Basic
 
 /-!
 
@@ -440,6 +441,67 @@ lemma exact_map_δ' (f : Hom W Q) :
   rw [← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq _ (Q.ofComp P).toExtensionHom]
   exact exact_map_δ Q P
 
+open Submodule LinearMap in
+lemma range_liftBaseChange_map_le :
+    (liftBaseChange T (Extension.H1Cotangent.map (Q.toComp P).toExtensionHom)).range ≤
+      (Extension.H1Cotangent.map (Q.ofComp P).toExtensionHom).ker := by
+  rw [range_liftBaseChange, coe_range, span_le, Set.range_subset_iff]
+  rintro ⟨x, _⟩
+  obtain ⟨⟨(x : P.Ring), x_in⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
+  ext; suffices (Q.ofComp P).toAlgHom ((Q.toComp P).toAlgHom x) ∈ Q.toExtension.ker ^ 2 by
+    simpa [-toExtension_Ring, Ideal.toCotangent_eq_zero]
+  rw [← Generators.ker, Generators.ker_eq_ker_aeval_val] at x_in
+  change aeval P.val x = 0 at x_in
+  rw [toComp_toAlgHom, toAlgHom_ofComp_rename, Generators.algebraMap_eq, RingHom.coe_coe,
+    x_in, RingHom.map_zero]
+  exact Ideal.zero_mem _
+
+private lemma auxMemKer (z : T ⊗[S] P.toExtension.H1Cotangent) :
+    LinearMap.liftBaseChange T (Extension.Cotangent.map (Q.toComp P).toExtensionHom)
+      ((LinearMap.lTensor T Extension.h1Cotangentι) z) ∈
+        (Q.comp P).toExtension.cotangentComplex.ker := by
+  induction z with
+  | zero => simp
+  | tmul x y => simp [← Extension.CotangentSpace.map_cotangentComplex]
+  | add x y hx hy => simpa using Submodule.add_mem _ hx hy
+
+open Submodule LinearMap in
+theorem exact_liftBaseChange_map_map_of_flat [Module.Flat S T] :
+    Function.Exact ((Extension.H1Cotangent.map (toComp Q P).toExtensionHom).liftBaseChange T)
+      (Extension.H1Cotangent.map (ofComp Q P).toExtensionHom) := by
+  rw [exact_iff]
+  refine le_antisymm ?_ (range_liftBaseChange_map_le Q P)
+  rintro ⟨x, x_in⟩ hx
+  simp only [mem_ker, ← Extension.h1Cotangentι_injective.eq_iff,
+    Extension.h1Cotangentι_apply, Extension.H1Cotangent.map_apply_coe,
+    Extension.H1Cotangent.val_zero] at hx
+  rw [← mem_ker, (Cotangent.exact Q P).linearMap_ker_eq] at hx
+  rcases hx with ⟨x, rfl⟩
+  rw [mem_ker, ← comp_apply, ← map_comp_cotangentComplex_baseChange, comp_apply,
+    ← mem_ker, ker_eq_bot.mpr (CotangentSpace.map_toComp_injective Q P), Submodule.mem_bot,
+    baseChange_eq_ltensor, ← mem_ker, (Module.Flat.lTensor_exact T
+      P.toExtension.exact_hCotangentι_cotangentComplex).linearMap_ker_eq] at x_in
+  rcases x_in with ⟨x, rfl⟩
+  use x; induction x with
+  | zero => ext; simp
+  | tmul x y => ext; simp
+  | add x y hx hy => ext; simp [hx (auxMemKer Q P x), hy (auxMemKer Q P y)]
+
+open Submodule LinearMap in
+/-- A variant of `exact_liftBaseChange_map_map_of_flat` that takes in
+arbitrary maps between generators. -/
+theorem exact_liftBaseChange_map_map_of_flat' [Module.Flat S T] (f : Hom W Q) (g : Hom P W) :
+    Function.Exact ((Extension.H1Cotangent.map g.toExtensionHom).liftBaseChange T)
+      (Extension.H1Cotangent.map f.toExtensionHom) := by
+  apply (LinearEquiv.conj_exact_iff_exact _ _ (H1Cotangent.equiv W (Q.comp P))).mp
+  convert! exact_liftBaseChange_map_map_of_flat Q P
+  · change Extension.H1Cotangent.map (W.defaultHom (Q.comp P)).toExtensionHom ∘ₗ _ = _
+    rw [LinearMap.liftBaseChange_comp, ← Extension.H1Cotangent.map_comp,
+      Extension.H1Cotangent.map_eq]
+  · change (Extension.H1Cotangent.map f.toExtensionHom).restrictScalars T ∘ₗ
+      (Extension.H1Cotangent.map _) = _
+    rw [← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq]
+
 end H1Cotangent
 
 end instanceProblem
@@ -463,5 +525,14 @@ lemma H1Cotangent.exact_map_δ : Function.Exact (map R S T T) (δ R S T) :=
 /-- Given algebras `R → S → T`, `H¹(L_{T/S}) → T ⊗[S] Ω[S/R] → Ω[T/R]` is exact. -/
 lemma H1Cotangent.exact_δ_mapBaseChange : Function.Exact (δ R S T) (mapBaseChange R S T) :=
   Generators.H1Cotangent.exact_δ_map (Generators.self S T) (Generators.self R S)
+
+/-- Given algebras `R → S → T` and `T` flat over `S`,
+`T ⊗[S] H₁(L_{S/R}) → H₁(L_{T/R}) → H₁(L_{T/S})` is exact. -/
+-- #TODO : Generalize the flatness assumption to vanishings of `Tor` modules
+lemma H1Cotangent.exact_liftBaseChange_map_map_of_flat [Module.Flat S T] :
+    Function.Exact ((map R R S T).liftBaseChange T) (map R S T T) :=
+  Generators.H1Cotangent.exact_liftBaseChange_map_map_of_flat'
+  (Generators.self S T) (Generators.self R S) (Generators.self R T)
+  (Generators.defaultHom _ _) (Generators.defaultHom _ _)
 
 end Algebra
