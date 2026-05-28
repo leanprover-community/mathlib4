@@ -99,6 +99,7 @@ def unres : RestrictScalarsMap f M → M := unres'
 
 @[simp] lemma unres_res (m : M) : unres (res f m) = m := rfl
 
+@[simps]
 def equiv : RestrictScalarsMap f M ≃ M :=
   ⟨unres, res f, res_unres f, unres_res f⟩
 
@@ -129,8 +130,13 @@ lemma unres_mul [Mul M] (x y : RestrictScalarsMap f M) :
 /-- The additive equivalence between `RestrictScalarsMap f M` and the original module `M`. -/
 @[to_additive]
 def mulEquiv [Mul M] : RestrictScalarsMap f M ≃* M where
-  map_mul' := unres_mul f
   __ := equiv f
+  map_mul' := unres_mul f
+
+/-- Tautological ring isomorphism `RestrictScalarsMap f A ≃+* A`. -/
+def ringEquiv [Semiring A] : RestrictScalarsMap f A ≃+* A where
+  __ := mulEquiv f
+  __ := addEquiv f
 
 @[to_additive]
 instance [Semigroup M] : Semigroup (RestrictScalarsMap f M) where
@@ -167,22 +173,29 @@ instance [Neg M] : Neg (RestrictScalarsMap f M) where
     (-x).unres = -x.unres := rfl
 
 instance [SubNegMonoid M] : SubNegMonoid (RestrictScalarsMap f M) where
+  sub x y := res f (x.unres - y.unres)
   sub_eq_add_neg _ _ := congr(res f $(sub_eq_add_neg _ _))
+  zsmul n x := res f (SubNegMonoid.zsmul n x.unres)
+  zsmul_zero' _ := congr(res f $(SubNegMonoid.zsmul_zero' _))
+  zsmul_succ' _ _ := congr(res f $(SubNegMonoid.zsmul_succ' _ _))
+  zsmul_neg' _ _ := congr(res f $(SubNegMonoid.zsmul_neg' _ _))
 
 instance [AddGroup M] : AddGroup (RestrictScalarsMap f M) where
   neg_add_cancel _ := congr(res f $(neg_add_cancel _))
-  sub_eq_add_neg _ _ := congr(res f $(sub_eq_add_neg _ _))
-  zsmul := zsmulRec
 
 instance [AddCommGroup M] : AddCommGroup (RestrictScalarsMap f M) where
 
-instance [I : Semiring A] : Semiring (RestrictScalarsMap f A) := sorry
+instance [Semiring A] : Semiring (RestrictScalarsMap f A) where
+  zero_mul _ := congr(res f $(zero_mul _))
+  mul_zero _ := congr(res f $(mul_zero _))
+  left_distrib _ _ _ := congr(res f $(left_distrib _ _ _))
+  right_distrib _ _ _ := congr(res f $(right_distrib _ _ _))
 
-instance [I : Ring A] : Ring (RestrictScalarsMap f A) := sorry
+instance [Ring A] : Ring (RestrictScalarsMap f A) where
 
-instance [I : CommSemiring A] : CommSemiring (RestrictScalarsMap f A) := sorry
+instance [CommSemiring A] : CommSemiring (RestrictScalarsMap f A) where
 
-instance [I : CommRing A] : CommRing (RestrictScalarsMap f A) := sorry
+instance [CommRing A] : CommRing (RestrictScalarsMap f A) where
 
 section Action
 
@@ -209,43 +222,38 @@ instance distribMulAction [Monoid R] [Monoid S] (f : R →* S) [AddMonoid M] [Di
   smul_zero _ := by simp [smul_def]
   smul_add _ _ _ := by simp [smul_def]
 
+/-- When `M` is a module over a semiring `S` and `f : R →+* S` is a ring homomorphism, then `M`
+inherits an `R`-module structure via `r • m := f r • m`.
+
+In the commutative case, the preferred way of setting this up is
+`[Module R M] [Module S M] [IsScalarTower R S M]`.
+-/
 instance module [Semiring R] [Semiring S] (f : R →+* S) [AddCommMonoid M] [Module S M] :
     Module R (RestrictScalarsMap f M) where
   add_smul a b m := by simp [smul_def, add_smul]
   zero_smul m := by simp [smul_def]
   __ := distribMulAction f.toMonoidHom
 
--- todo
 /-- We temporarily install the action of the original ring `S` on `RestrictScalarsMap f M`. -/
 @[implicit_reducible]
 def moduleOrig [Semiring S] [AddCommMonoid M] [Module S M] :
     Module S (RestrictScalarsMap f M) where
   smul s m := res f (s • m.unres)
-  mul_smul := sorry
-  one_smul := sorry
-  smul_zero := sorry
-  smul_add := sorry
-  add_smul := sorry
-  zero_smul := sorry
-
+  mul_smul x y m := congr(res f $(mul_smul x y m.unres))
+  one_smul m := congr(res f $(one_smul S m.unres))
+  smul_zero s := congr(res f $(smul_zero s))
+  smul_add s m n := congr(res f $(smul_add s m.unres n.unres))
+  add_smul r s m := congr(res f $(add_smul r s m.unres))
+  zero_smul m := congr(res f $(zero_smul S m.unres))
 
 end Action
 
 section Map
 
-
 variable {R S : Type*} (f : R → S)
 
 variable (M : Type*) [AddCommMonoid M]
 variable (A : Type*) [Semiring A]
-
-/-- We temporarily install the action of the original ring `S` on `RestrictScalarsMap f M`. -/
-/- @[instance_reducible] -/
-/- def moduleOrig [Semiring S] [I : Module S M] : Module S (RestrictScalarsMap f M) := I -/
-
-/-- Tautological ring isomorphism `RestrictScalarsMap f A ≃+* A`. -/
-def ringEquiv : RestrictScalarsMap f A ≃+* A :=
-  RingEquiv.refl _
 
 end Map
 
@@ -254,15 +262,6 @@ section RingHom
 variable {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S)
 
 variable (M : Type*) [AddCommMonoid M]
-
-/-- When `M` is a module over a semiring `S` and `f : R →+* S` is a ring homomorphism, then `M`
-inherits an `R`-module structure via `r • m := f r • m`.
-
-In the commutative case, the preferred way of setting this up is
-`[Module R M] [Module S M] [IsScalarTower R S M]`.
--/
-instance module [Module S M] : Module R (RestrictScalarsMap f M) :=
-  Module.compHom M f
 
 /-- When `M` is a right-module over a semiring `S` and `f : R →+* S` is a ring homomorphism,
 then `M` inherits a right `R`-module structure. In the commutative case, the preferred way of
@@ -277,11 +276,6 @@ variable [Module S M]
 instance isCentralScalar [Module Sᵐᵒᵖ M] [IsCentralScalar S M] :
     IsCentralScalar R (RestrictScalarsMap f M) where
   op_smul_eq_smul r _x := op_smul_eq_smul (f r) (_ : M)
-
-theorem smul_def (c : R) (x : RestrictScalarsMap f M) :
-    c • x = (RestrictScalarsMap.addEquiv f M).symm
-      (f c • RestrictScalarsMap.addEquiv f M x) :=
-  rfl
 
 @[deprecated (since := "2026-04-30")] alias _root_.RestrictScalars.smul_def := smul_def
 
