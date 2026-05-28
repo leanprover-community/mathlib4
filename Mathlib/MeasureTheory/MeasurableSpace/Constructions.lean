@@ -820,6 +820,7 @@ theorem Measurable.sumElim {_ : MeasurableSpace γ} {f : α → γ} {g : β → 
     (hg : Measurable g) : Measurable (Sum.elim f g) :=
   measurable_fun_sum hf hg
 
+@[fun_prop]
 theorem Measurable.sumMap {_ : MeasurableSpace γ} {_ : MeasurableSpace δ} {f : α → β} {g : γ → δ}
     (hf : Measurable f) (hg : Measurable g) : Measurable (Sum.map f g) :=
   (measurable_inl.comp hf).sumElim (measurable_inr.comp hg)
