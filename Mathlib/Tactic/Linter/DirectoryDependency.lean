@@ -289,7 +289,7 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`MathlibTest.Header, `Mathlib.Deprecated),
 
   -- TODO:
-  -- (`Mathlib.Data, `Mathlib.Dynamics),
+  (`Mathlib.Data, `Mathlib.Dynamics),
   -- (`Mathlib.Topology, `Mathlib.Algebra),
 
   -- The following are a list of existing non-dependent top-level directory pairs.
