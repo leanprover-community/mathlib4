@@ -1052,8 +1052,8 @@ instance {α : Type*} [Subsingleton α] : PartialOrder α where
 abbrev LinearOrder.ofSubsingleton {α : Type*} [Subsingleton α] : LinearOrder α where
   le_total _ _ := .inl trivial
   toDecidableLE _ _ := instDecidableTrue
-  toDecidableEq := @decidableEqOfDecidableLE _ _ fun _ _ ↦ instDecidableTrue
-  toDecidableLT := @decidableLTOfDecidableLE _ _ fun _ _ ↦ instDecidableTrue
+  toDecidableEq := decidableEq_of_subsingleton
+  toDecidableLT _ _ := instDecidableFalse
 
 instance : LinearOrder Empty := .ofSubsingleton
 instance : LinearOrder PEmpty := .ofSubsingleton
