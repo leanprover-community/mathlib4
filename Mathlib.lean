@@ -1787,6 +1787,7 @@ public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ContDiff
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FiniteDimensional
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Analytic
 public import Mathlib.Analysis.Calculus.IteratedDeriv.ConvergenceOnBall
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Calculus.IteratedDeriv.FaaDiBruno
