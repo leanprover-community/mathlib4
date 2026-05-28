@@ -234,7 +234,7 @@ lemma homEquiv_comp {x₀ x₁ x₂ : ComposableArrows C 0}
   obtain ⟨f₀₁, rfl⟩ := edgeMk_surjective e₀₁
   obtain ⟨f₁₂, rfl⟩ := edgeMk_surjective e₁₂
   obtain ⟨f₀₂, rfl⟩ := edgeMk_surjective e₀₂
-  convert (nerve.nonempty_compStruct_iff _ _ _).1 ⟨h⟩ <;> apply homEquiv_edgeMk
+  convert! (nerve.nonempty_compStruct_iff _ _ _).1 ⟨h⟩ <;> apply homEquiv_edgeMk
 
 set_option backward.isDefEq.respectTransparency false in
 lemma σ_zero_nerveEquiv_symm (x : C) :
