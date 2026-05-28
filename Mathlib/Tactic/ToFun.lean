@@ -49,9 +49,7 @@ def toFunImpl (src : Name) (stx : Syntax) (kind : AttributeKind) : AttrM Name :=
   let name := match id with
     | some name =>
       -- A provided name starting with `_root_` disables the namespace length heuristic.
-      if (`_root_).isPrefixOf name.getId then
-        name.getId.replacePrefix `_root_ .anonymous
-      else
+      if rootNamespace.isPrefixOf name.getId then removeRoot name.getId else
         (src.splitAt name.getId.getNumParts).1 ++ name.getId
     | none => src.appendBefore "fun_"
   if let some id := id then
