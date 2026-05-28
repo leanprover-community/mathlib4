@@ -107,7 +107,7 @@ theorem theta_eq_sum_primesLE_log (n : ℕ) : θ n = ∑ p ∈ primesLE n, log p
 theorem psi_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : ψ x = 0 := by
   apply sum_eq_zero fun n hn ↦ ?_
   simp only [mem_Ioc] at hn
-  convert vonMangoldt_apply_one
+  convert! vonMangoldt_apply_one
   have := lt_of_le_of_lt (le_floor_iff' hn.1.ne' |>.mp hn.2) hx
   norm_cast at this
   linarith
@@ -120,7 +120,7 @@ theorem psi_one : ψ 1 = 0 := psi_eq_zero_of_lt_two one_lt_two
 
 theorem theta_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : θ x = 0 := by
   apply sum_eq_zero fun n hn ↦ ?_
-  convert log_one
+  convert! log_one
   simp only [mem_filter, mem_Ioc] at hn
   have := lt_of_le_of_lt (le_floor_iff' hn.1.1.ne' |>.mp hn.1.2) hx
   norm_cast at ⊢ this
@@ -477,7 +477,7 @@ theorem integrableOn_theta_div_id_mul_log_sq (x : ℝ) :
     ContinuousAt.continuousWithinAt ?_
   have : x ≠ 0 := by linarith [hx.1]
   have : x * log x ^ 2 ≠ 0 := mul_ne_zero this <| by simp; grind
-  fun_prop (disch := assumption)
+  fun_prop
 
 /-- Expresses the prime counting function `π` in terms of `θ` by using Abel summation. -/
 theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
@@ -506,14 +506,14 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     intro z ⟨_, _⟩
     have : z ≠ 0 := by linarith
     have : log z ≠ 0 := by apply log_ne_zero_of_pos_of_ne_one <;> linarith
-    fun_prop (disch := assumption)
+    fun_prop
   · -- Integrability of the derivative
     refine ContinuousOn.integrableOn_Icc fun z ⟨_, _⟩ ↦ ContinuousWithinAt.congr ?_
       (fun _ _ ↦ deriv_inv_log) deriv_inv_log
     have : z ≠ 0 := by linarith
     have : log z ^ 2 ≠ 0 := by
       refine pow_ne_zero 2 <| log_ne_zero_of_pos_of_ne_one ?_ ?_ <;> linarith
-    exact ContinuousAt.continuousWithinAt <| by fun_prop (disch := assumption)
+    exact ContinuousAt.continuousWithinAt <| by fun_prop
 
 /-- Expresses the Chebyshev theta function `ϑ` in terms of `π` by using Abel summation. -/
 theorem theta_eq_primeCounting_mul_log_sub_integral {x : ℝ} (hx : 2 ≤ x) :
@@ -546,7 +546,7 @@ theorem intervalIntegrable_one_div_log_sq {a b : ℝ} (one_lt_a : 1 < a) (one_lt
   rw [Set.mem_uIcc] at hx
   have : x ≠ 0 := by grind
   have : log x ^ 2 ≠ 0 := pow_ne_zero _ (log_ne_zero.mpr (by grind))
-  fun_prop (disch := assumption)
+  fun_prop
 
 /- Simple bound on the integral from monotonicity.
 We will bound the integral on 2..x by splitting into two intervals and using this result on both. -/
