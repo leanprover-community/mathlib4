@@ -43,9 +43,11 @@ instance [DecidableEq V] (r : V) : DecidableRel (starGraph r).Adj :=
 lemma starGraph_adj {r x y : V} : (starGraph r).Adj x y ↔ x ≠ y ∧ (x = r ∨ y = r) := by
   simp [starGraph, fromRel]
 
-/-- If r ≠ v, then v is adjacent to r. -/
+/-- On (starGraph r), r is adjacent to v iff v ≠ r. -/
+lemma starGraph_adj_center_iff {r v : V} : (starGraph r).Adj r v ↔ r ≠ v := by simp
+
 lemma starGraph_center_adj {r v : V} (h : r ≠ v) : (starGraph r).Adj r v :=
-  starGraph_adj.mpr ⟨h, Or.inl rfl⟩
+  starGraph_adj_center_iff.mpr h
 
 lemma starGraph_center_adj' {r v : V} (h : r ≠ v) : (starGraph r).Adj v r :=
   (starGraph_center_adj h).symm
