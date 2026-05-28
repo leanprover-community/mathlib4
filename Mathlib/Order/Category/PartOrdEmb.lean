@@ -359,7 +359,7 @@ variable {α : PartOrdEmb.{u}} (P : Set α → Prop)
 /-- Given a predicate `P : Set α → Prop` on the underlying type of `α : PartOrdEmb.{u}`,
 this is the functor `Subtype P ⥤ PartOrdEmb.{u}` which sends a subset `J` of `α`
 satisfying `P` to the induced partially ordered type `J`. -/
-@[simps]
+@[simps obj map]
 def functorOfPredicateSet : Subtype P ⥤ PartOrdEmb.{u} where
   obj J := .of J.val
   map f :=
