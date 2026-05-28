@@ -108,7 +108,7 @@ lemma lift_ι_apply (a : M) : lift f (ι R M a) = f a := by
 @[simp]
 lemma lift_comp_ι : lift f ∘ₗ ι R M = f := LinearMap.ext <| lift_ι_apply f
 
-@[ext high]
+@[ext 1100]
 theorem algHom_ext {F G : SymmetricAlgebra R M →ₐ[R] A}
     (h : F ∘ₗ ι R M = (G ∘ₗ ι R M : M →ₗ[R] A)) : F = G := by
   ext x
@@ -125,7 +125,6 @@ lemma lift_ι : lift (ι R M) = .id R (SymmetricAlgebra R M) := by
 def algebraMapInv : SymmetricAlgebra R M →ₐ[R] R :=
   lift (0 : M →ₗ[R] R)
 
-@[simp]
 theorem algebraMapInv_ι (x : M) : algebraMapInv (ι R M x) = 0 := lift_ι_apply 0 x
 
 variable (M)

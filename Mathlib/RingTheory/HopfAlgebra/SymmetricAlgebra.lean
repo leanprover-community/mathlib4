@@ -27,9 +27,8 @@ open TensorAlgebra (SymRel)
 
 variable (R : Type*) [CommRing R] (M : Type*) [AddCommMonoid M] [Module R M]
 
-/-- The tensor-algebra antipode descends along the quotient by `SymRel`: for `ι a * ι b ~ ι b * ι a`,
-the antipode (an anti-homomorphism) sends the two sides to `ι b * ι a` and `ι a * ι b`, whose
-images agree in the commutative quotient. -/
+/-- The tensor-algebra antipode descends along the quotient by `SymRel`. As an
+anti-homomorphism it swaps the two factors, whose images agree in the commutative quotient. -/
 instance : IsHopfRel R (SymRel R M) where
   antipode_map_eq := by
     rintro _ _ ⟨a, b⟩
