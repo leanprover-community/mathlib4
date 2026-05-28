@@ -149,7 +149,7 @@ lemma map_ncard_setBernoulli_apply (u : Set ι) (p : I) (s : Set ℕ) :
   rw [map_apply (by fun_prop) .of_discrete, setBernoulli_apply_eq_apply_subsets]
   simp
 
-variable (u p) in
+variable (p) in
 @[simp] lemma setBernoulli_singleton (hsu : s ⊆ u) (hu : u.Finite) :
     setBer(u, p) {s} = toNNReal p ^ s.ncard * toNNReal (σ p) ^ (u \ s).ncard := by
   classical

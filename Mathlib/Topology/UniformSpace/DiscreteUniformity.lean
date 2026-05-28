@@ -18,7 +18,7 @@ It is complete.
 
 -/
 
-@[expose] public section
+public section
 
 open Filter UniformSpace
 
@@ -43,17 +43,10 @@ theorem _root_.discreteUniformity_iff_eq_principal_setRelId {X : Type*} [Uniform
 alias _root_.discreteUniformity_iff_eq_principal_relId :=
   _root_.discreteUniformity_iff_eq_principal_setRelId
 
-@[deprecated (since := "2025-10-17")]
-alias _root_.discreteUniformity_iff_eq_principal_idRel :=
-  discreteUniformity_iff_eq_principal_setRelId
-
 theorem eq_principal_setRelId : uniformity X = 𝓟 SetRel.id :=
   discreteUniformity_iff_eq_principal_setRelId.mp inferInstance
 
 @[deprecated (since := "2025-12-19")] alias eq_principal_relId := eq_principal_setRelId
-
-@[deprecated (since := "2025-10-17")]
-alias eq_principal_idRel := eq_principal_setRelId
 
 /-- The discrete uniformity induces the discrete topology. -/
 instance : DiscreteTopology X where
@@ -68,15 +61,17 @@ theorem _root_.discreteUniformity_iff_setRelId_mem_uniformity {X : Type*} [Unifo
 alias _root_.discreteUniformity_iff_relId_mem_uniformity :=
   _root_.discreteUniformity_iff_setRelId_mem_uniformity
 
-@[deprecated (since := "2025-10-17")]
-alias _root_.discreteUniformity_iff_idRel_mem_uniformity :=
-  discreteUniformity_iff_setRelId_mem_uniformity
-
 theorem relId_mem_uniformity : SetRel.id ∈ uniformity X :=
   discreteUniformity_iff_setRelId_mem_uniformity.mp inferInstance
 
-@[deprecated (since := "2025-10-17")]
-alias idRel_mem_uniformity := relId_mem_uniformity
+instance {Y : Type*} [Finite Y] [UniformSpace Y] [DiscreteTopology Y] :
+    DiscreteUniformity Y := by
+  have h : SetRel.id = ⋂ y : Y, {p | p.2 = y → p.1 ∈ ({y} : Set Y)} := by
+    ext x
+    simp [SetRel.id]
+  simp_rw [discreteUniformity_iff_setRelId_mem_uniformity, h, Filter.iInter_mem,
+    ← mem_nhds_uniformity_iff_left, nhds_discrete, Filter.mem_pure, Set.mem_singleton_iff,
+    implies_true]
 
 variable {X} in
 /-- A product of spaces with discrete uniformity has a discrete uniformity. -/
@@ -89,6 +84,6 @@ variable {x} in
 /-- On a space with a discrete uniformity, any function is uniformly continuous. -/
 theorem uniformContinuous {Y : Type*} [UniformSpace Y] (f : X → Y) :
     UniformContinuous f := by
-  simp only [uniformContinuous_iff, DiscreteUniformity.eq_bot, bot_le]
+  simp only [uniformContinuous_iff_le_comap, DiscreteUniformity.eq_bot, bot_le]
 
 end DiscreteUniformity

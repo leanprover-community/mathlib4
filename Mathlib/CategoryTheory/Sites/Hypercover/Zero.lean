@@ -389,6 +389,9 @@ def map (F : C ⥤ D) (E : PreZeroHypercover.{w} S) : PreZeroHypercover.{w} (F.o
 lemma presieve₀_map : (E.map F).presieve₀ = E.presieve₀.map F :=
   (Presieve.map_ofArrows _).symm
 
+lemma sieve₀_map : (E.map F).sieve₀ = E.sieve₀.functorPushforward F := by
+  simp [← Sieve.generate_map_eq_functorPushforward, Presieve.map_ofArrows, map]
+
 end Functoriality
 
 set_option backward.isDefEq.respectTransparency false in
@@ -804,7 +807,7 @@ instance (E : ZeroHypercover.{w} J S) : ZeroHypercover.Small.{max u v} E where
       simp
     choose j h₁ h₂ using this
     refine ⟨ι, fun i ↦ j _ _ (.mk i), ?_⟩
-    convert E.mem₀
+    convert! E.mem₀
     exact le_antisymm (fun Z g ⟨i⟩ ↦ ⟨_⟩) (h ▸ fun Z g ⟨i⟩ ↦ .mk' i (h₁ _ _ _) (h₂ _ _ _))
 
 /-- Restrict a `w'`-small `0`-hypercover to a `w'`-`0`-hypercover. -/
@@ -868,7 +871,7 @@ lemma Small.inf {J K : Precoverage C} [Small.{w} J]
 instance [IsStableUnderBaseChange J] : RespectsIso J where
   of_iso {S E F} e h := by
     refine J.mem_coverings_of_isPullback (fun i ↦ E.f (e.inv.s₀ i)) ?_ (𝟙 S) _ (fun i ↦ ?_) ?_
-    · convert h
+    · convert! h
       exact Presieve.ofArrows_comp_eq_of_surjective _ (fun i ↦ ⟨e.hom.s₀ i, by simp⟩)
     · exact e.inv.h₀ i
     · intro i

@@ -31,7 +31,7 @@ open Filter
 
 open scoped Manifold ContDiff MatrixGroups Topology
 
-variable {n : WithTop ℕ∞}
+variable {n : ℕ∞ω}
 
 namespace UpperHalfPlane
 
@@ -83,10 +83,10 @@ lemma mdifferentiable_iff {f : ℍ → ℂ} :
      <| isOpen_upperHalfPlaneSet.mem_nhds hz⟩
 
 lemma contMDiff_num (g : GL (Fin 2) ℝ) : CMDiff n (fun τ : ℍ ↦ num g τ) :=
-  (contMDiff_const.smul contMDiff_coe).add contMDiff_const
+  (contMDiff_const.mul contMDiff_coe).add contMDiff_const
 
 lemma contMDiff_denom (g : GL (Fin 2) ℝ) : CMDiff n (fun τ : ℍ ↦ denom g τ) :=
-  (contMDiff_const.smul contMDiff_coe).add contMDiff_const
+  (contMDiff_const.mul contMDiff_coe).add contMDiff_const
 
 lemma contMDiff_denom_zpow (g : GL (Fin 2) ℝ) (k : ℤ) : CMDiff n (denom g · ^ k : ℍ → ℂ) := by
   intro τ
@@ -124,7 +124,7 @@ lemma eq_zero_of_frequently {f : ℍ → ℂ} (hf : MDiff f) {τ : ℍ} (hτ : �
   rw [mdifferentiable_iff] at hf
   have := hf.analyticOnNhd isOpen_upperHalfPlaneSet
   ext w
-  convert this.eqOn_zero_of_preconnected_of_frequently_eq_zero (z₀ := ↑τ) ?_ τ.2 ?_ w.im_pos
+  convert! this.eqOn_zero_of_preconnected_of_frequently_eq_zero (z₀ := ↑τ) ?_ τ.2 ?_ w.im_pos
   · rw [Function.comp_apply, ofComplex_apply]
   · exact (Complex.isConnected_of_upperHalfPlane subset_rfl (by grind)).isPreconnected
   · contrapose! hτ
@@ -162,8 +162,9 @@ lemma hasStrictDerivAt_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ)
     refine this.congr_of_eventuallyEq ?_
     rw [← isOpenEmbedding_coe.map_nhds_eq, eventuallyEq_map]
     simp [Function.comp_def, coe_smul_of_det_pos hg]
-  convert ((hasStrictDerivAt_id (τ : ℂ)).const_mul _ |>.add_const _).div
-    ((hasStrictDerivAt_id (τ : ℂ)).const_mul _ |>.add_const _) _ using 2
+  convert!
+    ((hasStrictDerivAt_id (τ : ℂ)).const_mul _ |>.add_const _).div
+      ((hasStrictDerivAt_id (τ : ℂ)).const_mul _ |>.add_const _) _ using 2
   · simp [Matrix.det_fin_two]; ring
   · apply denom_ne_zero
 
@@ -201,11 +202,6 @@ end Complex
 
 section Real
 
--- set flag locally in this section; every decl fails without it
--- the underlying problem seems to be elsewhere, something to do with unifying different
--- `ℝ`-module structures on `ℂ`
-set_option backward.isDefEq.respectTransparency false
-
 /-- `ℝ`-linear map from `ℂ` to itself, which we shall show is the real derivative of the
 `GL(2, ℝ)`-action on `ℍ`. -/
 noncomputable def smulFDeriv (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ →L[ℝ] ℂ :=
@@ -236,7 +232,7 @@ lemma hasStrictFDerivAt_smul (g : GL (Fin 2) ℝ) (τ : ℍ) :
     HasStrictFDerivAt (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) (smulFDeriv g τ) τ := by
   wlog hg : 0 < g.det.val generalizing g
   · replace hg := g.det.ne_zero.lt_or_gt.resolve_right hg
-    convert Complex.conjCLE.hasStrictFDerivAt.neg.comp _ (this (J * g) (by simpa))
+    convert! Complex.conjCLE.hasStrictFDerivAt.neg.comp _ (this (J * g) (by simpa))
     · simp [mul_smul, coe_J_smul]
     · ext
       simp

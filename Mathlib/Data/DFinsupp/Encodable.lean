@@ -13,7 +13,7 @@ public import Mathlib.Logic.Encodable.Pi
 In this file we provide instances for `Encodable (Π₀ i, α i)` and `Countable (Π₀ i, α i)`.
 -/
 
-@[expose] public section
+public section
 
 variable {ι : Type*} {α : ι → Type*} [∀ i, Zero (α i)]
 

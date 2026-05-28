@@ -30,7 +30,7 @@ Noncommutative algebra, Azumaya algebra, Brauer Group
 
 -/
 
-@[expose] public section
+public section
 
 open scoped TensorProduct
 
