@@ -262,7 +262,7 @@ lemma erase_biUnion (f : α → Finset β) (s : Finset α) (b : β) :
 @[simp]
 lemma biUnion_nonempty : (s.biUnion t).Nonempty ↔ ∃ x ∈ s, (t x).Nonempty := by
   simp only [Finset.Nonempty, mem_biUnion]
-  rw [exists_swap]
+  rw [exists_comm]
   simp [exists_and_left]
 
 lemma Nonempty.biUnion (hs : s.Nonempty) (ht : ∀ x ∈ s, (t x).Nonempty) :
@@ -272,7 +272,7 @@ lemma disjoint_biUnion_left (s : Finset α) (f : α → Finset β) (t : Finset �
     Disjoint (s.biUnion f) t ↔ ∀ i ∈ s, Disjoint (f i) t := by
   classical
   refine s.induction ?_ ?_
-  · simp only [forall_mem_empty_iff, biUnion_empty, disjoint_empty_left]
+  · simp
   · intro i s his ih
     simp only [disjoint_union_left, biUnion_insert, forall_mem_insert, ih]
 
@@ -300,6 +300,17 @@ lemma union_biUnion [DecidableEq α] : (s₁ ∪ s₂).biUnion t = s₁.biUnion 
 lemma biUnion_union : s.biUnion (fun x ↦ t₁ x ∪ t₂ x) = s.biUnion t₁ ∪ s.biUnion t₂ := by grind
 
 theorem biUnion_singleton {f : α → β} : (s.biUnion fun a => {f a}) = s.image f := by grind
+
+/-- Rewrite a `biUnion` over `s.attach` as a `biUnion` over `s`, in the case where the indexing
+function on `s.attach` happens to factor through `α`. See `Finset.attach_biUnion'` for the version
+without that hypothesis. -/
+lemma attach_biUnion {f : α → Finset β} : s.attach.biUnion (f ·) = s.biUnion f := by aesop
+
+/-- Rewrite a `biUnion` over `s.attach` as a `biUnion` over `s` by extending the function to all of
+`α` with `∅` outside `s`. See `Finset.attach_biUnion` for the version when the indexing function is
+already defined on all of `α`. -/
+lemma attach_biUnion' [DecidableEq α] {f : s → Finset β} :
+    s.attach.biUnion f = s.biUnion fun a ↦ if h : a ∈ s then f ⟨a, h⟩ else ∅ := by aesop
 
 end BUnion
 end Finset

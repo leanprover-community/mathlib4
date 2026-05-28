@@ -35,7 +35,6 @@ namespace IsPrimitiveRoot
 variable {n : ℕ} [NeZero n] {K : Type u} [Field K] [CharZero K] {ζ : K}
 variable [ce : IsCyclotomicExtension {n} ℚ K]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The discriminant of the power basis given by a primitive root of unity `ζ` is the same as the
 discriminant of the power basis given by `ζ - 1`. -/
 theorem discr_zeta_eq_discr_zeta_sub_one (hζ : IsPrimitiveRoot ζ n) :
@@ -158,7 +157,10 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact p
           minpoly.eq_X_sub_C_of_algebraMap_inj _ (FaithfulSMul.algebraMap_injective K L)]
         exact natDegree_X_sub_C (-1)
       rcases Fin.equiv_iff_eq.2 this with ⟨e⟩
-      rw [← Algebra.discr_reindex K (hζ.powerBasis K).basis e, coe_basis, powerBasis_gen]; norm_num
+      rw [← Algebra.discr_reindex K (hζ.powerBasis K).basis e, coe_basis, powerBasis_gen]
+      simp only [powerBasis_dim,
+        zero_add, pow_one, totient_two, reduceDiv, pow_zero, cast_ofNat, tsub_self,
+        Nat.add_one_sub_one, mul_one, mul_zero]
       simp_rw [hζ.eq_neg_one_of_two_right, show (-1 : L) = algebraMap K L (-1) by simp]
       convert_to (discr K fun i : Fin 1 ↦ (algebraMap K L) (-1) ^ ↑i) = _
       · congr 1
@@ -166,7 +168,7 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact p
         simp only [map_neg, map_one, Function.comp_apply, Fin.val_eq_zero, _root_.pow_zero]
         suffices (e.symm i : ℕ) = 0 by simp [this]
         rw [← Nat.lt_one_iff]
-        convert (e.symm i).2
+        convert! (e.symm i).2
         rw [this]
       · simp only [discr, traceMatrix_apply, Matrix.det_unique, Fin.default_eq_zero, Fin.val_zero,
           _root_.pow_zero, traceForm_apply, mul_one]
@@ -196,7 +198,7 @@ theorem discr_odd_prime [IsCyclotomicExtension {p} K L] [hp : Fact p.Prime]
     rw [zero_add, pow_one]
     infer_instance
   have hζ' : IsPrimitiveRoot ζ (p ^ (0 + 1)) := by simpa using hζ
-  convert discr_prime_pow_ne_two hζ' (by simpa [hirr]) (by simp [hodd]) using 2
+  convert! discr_prime_pow_ne_two hζ' (by simpa [hirr]) (by simp [hodd]) using 2
   · rw [zero_add, pow_one, totient_prime hp.out]
   · rw [_root_.pow_zero, one_mul, zero_add, mul_one, Nat.sub_sub]
 

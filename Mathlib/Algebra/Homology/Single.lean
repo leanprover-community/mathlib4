@@ -52,7 +52,7 @@ noncomputable def single (j : ι) : V ⥤ HomologicalComplex V c where
       previously was `rw [if_neg h]; simp`, but that fails with "motive not type correct"
       This is because dsimp does not simplify numerals;
       this note should be removable once https://github.com/leanprover/lean4/pull/8433 lands. -/
-      convert (id_zero (C := V)).symm
+      convert! (id_zero (C := V)).symm
       all_goals simp [if_neg h]
   map_comp f g := by
     ext
@@ -248,7 +248,7 @@ noncomputable def fromSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
 @[simp]
 lemma fromSingle₀Equiv_symm_apply_f_zero
     {C : ChainComplex V ℕ} {X : V} (f : X ⟶ C.X 0) :
-    ((fromSingle₀Equiv C X).symm f).f 0 = f := by
+    dsimp% ((fromSingle₀Equiv C X).symm f).f 0 = f := by
   simp [fromSingle₀Equiv]
 
 @[simp]

@@ -25,7 +25,7 @@ We define the normed group structure on `AddCircle p`, for `p : ℝ`. For exampl
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -82,7 +82,7 @@ theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * 
     · simpa [abs_of_nonneg] using hr (fract x)
     · simpa [abs_sub_comm (fract x)] using hr (fract x - 1) (by simp)
   · simpa [zmultiples, QuotientAddGroup.eq, zsmul_eq_mul, mul_one, mem_mk, mem_range, and_imp,
-      forall_exists_index, eq_neg_add_iff_add_eq, ← eq_sub_iff_add_eq, forall_swap (α := ℕ)]
+      forall_exists_index, eq_neg_add_iff_add_eq, ← eq_sub_iff_add_eq, forall_comm (α := ℕ)]
       using round_le _
 
 theorem norm_eq' (hp : 0 < p) {x : ℝ} : ‖(x : AddCircle p)‖ = p * |p⁻¹ * x - round (p⁻¹ * x)| := by
@@ -211,7 +211,7 @@ theorem le_add_order_smul_norm_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFi
   conv_lhs => rw [← mul_one p]
   rw [hn, nsmul_eq_mul, ← mul_assoc, mul_comm _ p, mul_assoc, mul_div_cancel₀ _ hu,
     mul_le_mul_iff_right₀ hp.out, Nat.one_le_cast, Nat.one_le_iff_ne_zero]
-  contrapose! hu'
+  contrapose hu'
   simpa only [hu', Nat.cast_zero, zero_div, mul_zero, norm_eq_zero] using hn
 
 end FiniteOrderPoints

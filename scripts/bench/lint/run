@@ -4,6 +4,5 @@ set -euxo pipefail
 BENCH="scripts/bench"
 
 lake build runLinter
-LEAN_ABORT_ON_PANIC=1 "$BENCH/measure.py" -t lint \
-  -m instructions -m maxrss -m task-clock -m wall-clock -- \
+LEAN_ABORT_ON_PANIC=1 "$BENCH/measure.py" --append -t lint -d -- \
   lake exe runLinter Mathlib

@@ -53,7 +53,7 @@ lemma KaehlerDifferential.tensorKaehlerEquivOfFormallyEtale_symm_D_algebraMap
 lemma KaehlerDifferential.isBaseChange_of_formallyEtale [Algebra.FormallyEtale S T] :
     IsBaseChange T (map R R S T) := by
   change Function.Bijective _
-  convert (tensorKaehlerEquivOfFormallyEtale R S T).bijective using 1
+  convert! (tensorKaehlerEquivOfFormallyEtale R S T).bijective using 1
   change _ = ((tensorKaehlerEquivOfFormallyEtale
     R S T).toLinearMap.restrictScalars S : T ⊗[S] Ω[S⁄R] → _)
   congr!
@@ -68,8 +68,9 @@ instance KaehlerDifferential.isLocalizedModule_map (M : Submonoid S) [IsLocaliza
 lemma KaehlerDifferential.span_range_map_derivation_of_isLocalization
     (M : Submonoid S) [IsLocalization M T] :
     Submodule.span T (Set.range <| map R R S T ∘ D R S) = ⊤ := by
-  convert span_eq_top_of_isLocalizedModule T M (map R R S T) (v := Set.range <| D R S)
-    (span_range_derivation R S)
+  convert!
+    span_eq_top_of_isLocalizedModule T M (map R R S T) (v := Set.range <| D R S)
+      (span_range_derivation R S)
   rw [← Set.range_comp, Function.comp_def]
 
 namespace Algebra.Extension
@@ -298,7 +299,7 @@ def tensorH1CotangentOfIsLocalization (M : Submonoid S) [IsLocalization M T] :
   haveI : FormallySmooth P.Ring (Localization M') := .of_isLocalization M'
   haveI : FormallySmooth R Q.Ring := .comp R P.Ring (Localization M')
   haveI : Module.Flat S T := IsLocalization.flat T M
-  letI : Algebra P.Ring Q.Ring := inferInstanceAs (Algebra P.Ring (Localization M'))
+  letI : Algebra P.Ring Q.Ring := (inferInstance : Algebra P.Ring (Localization M'))
   letI := ((algebraMap S T).comp (algebraMap P.Ring S)).toAlgebra
   letI := fQ.toRingHom.toAlgebra
   haveI : IsScalarTower P.Ring S T := .of_algebraMap_eq' rfl
@@ -306,7 +307,7 @@ def tensorH1CotangentOfIsLocalization (M : Submonoid S) [IsLocalization M T] :
     .of_algebraMap_eq fun r ↦ (f.algebraMap_toRingHom r).symm
   haveI : IsLocalizedModule M' (IsScalarTower.toAlgHom P.Ring S T).toLinearMap := by
     rw [isLocalizedModule_iff_isLocalization]
-    convert ‹IsLocalization M T› using 1
+    convert! ‹IsLocalization M T› using 1
     exact Submonoid.map_comap_eq_of_surjective P.algebraMap_surjective _
   refine Extension.tensorH1CotangentOfFormallyEtale f rfl ?_ ?_ ≪≫ₗ
       Extension.equivH1CotangentOfFormallySmooth _

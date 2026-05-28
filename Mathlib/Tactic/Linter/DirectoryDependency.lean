@@ -198,7 +198,6 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean.CoreM, `Mathlib.Tactic.ToExpr),
   (`Mathlib.Lean.CoreM, `Mathlib.Util.WhatsNew),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic.Lemma),
-  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic.TypeStar),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic.ToAdditive),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic), -- split this up further?
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Data), -- split this up further?
@@ -225,6 +224,8 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   -- For more fine-grained exceptions of the next two imports, one needs to rename that file.
   (`Mathlib.Tactic.Linter, `ImportGraph),
   (`Mathlib.Tactic.Linter, `Mathlib.Tactic.MinImports),
+  (`Mathlib.Tactic.Linter.OverlappingInstances, `Mathlib.Lean.ContextInfo),
+  (`Mathlib.Tactic.Linter.OverlappingInstances, `Mathlib.Lean.Elab.Tactic.Meta),
   (`Mathlib.Tactic.Linter.TextBased, `Mathlib.Data.Nat.Notation),
   (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Expr.Basic),
   (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Environment),
@@ -239,6 +240,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Logic.Fin.Rotate, `Mathlib.Algebra.Group.Fin.Basic),
   (`Mathlib.Logic, `Mathlib.Algebra.Notation),
   (`Mathlib.Logic, `Mathlib.Algebra.NeZero),
+  (`Mathlib.Logic, `Mathlib.Algebra.Order),
   (`Mathlib.Logic, `Mathlib.Data),
   -- TODO: this next dependency should be made more fine-grained.
   (`Mathlib.Logic, `Mathlib.Order),
@@ -319,13 +321,13 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.AlgebraicTopology, `Mathlib.RepresentationTheory),
   (`Mathlib.AlgebraicTopology, `Mathlib.Testing),
   (`Mathlib.Analysis, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.Analysis, `Mathlib.AlgebraicTopology),
   (`Mathlib.Analysis, `Mathlib.Computability),
   (`Mathlib.Analysis, `Mathlib.Condensed),
   (`Mathlib.Analysis, `Mathlib.InformationTheory),
   (`Mathlib.Analysis, `Mathlib.ModelTheory),
   (`Mathlib.Analysis, `Mathlib.RepresentationTheory),
   (`Mathlib.Analysis, `Mathlib.Testing),
+  (`Mathlib.Analysis.Calculus, `Mathlib.AlgebraicTopology),
   (`Mathlib.CategoryTheory, `Mathlib.AlgebraicGeometry),
   (`Mathlib.CategoryTheory, `Mathlib.Analysis),
   (`Mathlib.CategoryTheory, `Mathlib.Computability),
@@ -498,7 +500,6 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.ModelTheory, `Mathlib.RepresentationTheory),
   (`Mathlib.ModelTheory, `Mathlib.Testing),
   (`Mathlib.ModelTheory, `Mathlib.Topology),
-  (`Mathlib.NumberTheory, `Mathlib.AlgebraicGeometry),
   (`Mathlib.NumberTheory, `Mathlib.AlgebraicTopology),
   (`Mathlib.NumberTheory, `Mathlib.Computability),
   (`Mathlib.NumberTheory, `Mathlib.Condensed),
@@ -594,6 +595,7 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Algebra.Lie, `Mathlib.RepresentationTheory),
   (`Mathlib.Algebra.Module.ZLattice, `Mathlib.Analysis),
   (`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation),
+  (`Mathlib.AlgebraicGeometry.EllipticCurve, `Mathlib.Probability), -- For L-functions
   (`Mathlib.AlgebraicGeometry.Sites, `Mathlib.AlgebraicTopology), -- Homotopical methods for sheaf cohomology
   (`Mathlib.AlgebraicGeometry.Sites, `Mathlib.NumberTheory), -- For arithmetic applications
   (`Mathlib.Deprecated, `Mathlib.Deprecated),
@@ -609,6 +611,8 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Computability.AkraBazzi, `Mathlib.MeasureTheory), -- Akra-Bazzi uses calculus
   (`Mathlib.Analysis.Convex.SimplicialComplex.Basic, `Mathlib.AlgebraicTopology),
   (`Mathlib.Analysis.Convex.SimplicialComplex.AffineIndependentUnion, `Mathlib.AlgebraicTopology),
+  (`Mathlib.Probability.Kernel.Category, `Mathlib.CategoryTheory), -- For the category of s-finite/Markov kernels
+  (`Mathlib.RepresentationTheory.Continuous, `Mathlib.Topology) -- For continuous representations
 ]
 
 end DirectoryDependency

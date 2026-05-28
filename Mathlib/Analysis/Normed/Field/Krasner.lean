@@ -40,7 +40,7 @@ For the classical statement of Krasner's lemma, please see the
 Krasner's lemma, normed field
 -/
 
-@[expose] public section
+public section
 
 open IntermediateField
 
@@ -55,7 +55,7 @@ of the conclusion of Krasner's lemma. That is, `IsKrasner K L` means that given 
 -/
 class IsKrasner [Field K] [Algebra K L] : Prop where
   krasner' {x y : L} : IsSeparable K x → ((minpoly K x).map (algebraMap K L)).Splits →
-    IsIntegral K y → (∀ x' : L, IsConjRoot K x x' →  x ≠ x' → ‖x - y‖ < ‖x - x'‖) → x ∈ K⟮y⟯
+    IsIntegral K y → (∀ x' : L, IsConjRoot K x x' → x ≠ x' → ‖x - y‖ < ‖x - x'‖) → x ∈ K⟮y⟯
 
 namespace IsKrasner
 
@@ -67,9 +67,8 @@ theorem krasner [Field K] [Algebra K L]
   IsKrasner.krasner' hx sp hy h
 
 variable [NontriviallyNormedField K] [CompleteSpace K] [IsUltrametricDist K]
-    [NormedAlgebra K L] [Algebra.IsAlgebraic K L]
+    [NormedAlgebra K L]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Krasner's lemma assuming `Normal K L`. -/
 theorem of_completeSpace_of_normal [Normal K L] : IsKrasner K L where
   krasner' {x} {y} xsep sp yint kr := by
@@ -110,13 +109,12 @@ theorem of_completeSpace_of_normal [Normal K L] : IsKrasner K L where
         _ = ‖z - z'‖ := by congr 1; ring
     simp [lt_self_iff_false] at this
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `K` is a complete nontrivially normed field and `L` is an algebraic extension of `K`
 such that the norm of `L` extends the norm on `K`, then `IsKrasner K L` holds.
 This corresponds to the classical Krasner's lemma.
 -/
-instance of_completeSpace : IsKrasner K L where
+instance of_completeSpace [Algebra.IsAlgebraic K L] : IsKrasner K L where
   krasner' {x} {y} xsep sp yint kr := by
     -- Reduce to the case `L = algebraic closure of K` to apply the previous lemma.
     let C := AlgebraicClosure K

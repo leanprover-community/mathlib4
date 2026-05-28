@@ -450,23 +450,6 @@ theorem ae_eq_set_pi {I : Set ι} {s t : ∀ i, Set (α i)} (h : ∀ i ∈ I, s 
     Set.pi I s =ᵐ[Measure.pi μ] Set.pi I t :=
   (ae_le_set_pi fun i hi => (h i hi).le).antisymm (ae_le_set_pi fun i hi => (h i hi).symm.le)
 
-lemma pi_map_piCongrLeft [hι' : Fintype ι'] (e : ι ≃ ι') {β : ι' → Type*}
-    [∀ i, MeasurableSpace (β i)] (μ : (i : ι') → Measure (β i)) [∀ i, SigmaFinite (μ i)] :
-    (Measure.pi fun i ↦ μ (e i)).map (MeasurableEquiv.piCongrLeft (fun i ↦ β i) e)
-      = Measure.pi μ := by
-  let e_meas : ((b : ι) → β (e b)) ≃ᵐ ((a : ι') → β a) :=
-    MeasurableEquiv.piCongrLeft (fun i ↦ β i) e
-  refine Measure.pi_eq (fun s _ ↦ ?_) |>.symm
-  rw [e_meas.measurableEmbedding.map_apply]
-  let s' : (i : ι) → Set (β (e i)) := fun i ↦ s (e i)
-  have : e_meas ⁻¹' pi univ s = pi univ s' := by
-    ext x
-    simp only [mem_preimage, Set.mem_pi, mem_univ, forall_true_left, s']
-    refine (e.forall_congr ?_).symm
-    intro i
-    rw [MeasurableEquiv.piCongrLeft_apply_apply e x i]
-  simpa [this] using Fintype.prod_equiv _ (fun _ ↦ (μ _) (s' _)) _ (congrFun rfl)
-
 lemma pi_map_piOptionEquivProd {β : Option ι → Type*} [∀ i, MeasurableSpace (β i)]
     (μ : (i : Option ι) → Measure (β i)) [∀ (i : Option ι), SigmaFinite (μ i)] :
     ((Measure.pi fun i ↦ μ (some i)).prod (μ none)).map
@@ -755,6 +738,12 @@ theorem volume_measurePreserving_piCongrLeft (α : ι → Type*) (f : ι' ≃ ι
     MeasurePreserving (MeasurableEquiv.piCongrLeft α f) volume volume :=
   measurePreserving_piCongrLeft (fun _ ↦ volume) f
 
+lemma Measure.pi_map_piCongrLeft (e : ι ≃ ι') {β : ι' → Type*} [∀ i, MeasurableSpace (β i)]
+    (μ : (i : ι') → Measure (β i)) [∀ i, SigmaFinite (μ i)] :
+    (Measure.pi fun i ↦ μ (e i)).map (MeasurableEquiv.piCongrLeft (fun i ↦ β i) e) =
+      Measure.pi μ :=
+  (measurePreserving_piCongrLeft (α := fun i ↦ β i) μ e).map_eq
+
 theorem measurePreserving_arrowProdEquivProdArrow (α β γ : Type*) [MeasurableSpace α]
     [MeasurableSpace β] [Fintype γ] (μ : γ → Measure α) (ν : γ → Measure β) [∀ i, SigmaFinite (μ i)]
     [∀ i, SigmaFinite (ν i)] :
@@ -939,8 +928,9 @@ theorem measurePreserving_arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [Fintype
     MeasurePreserving (MeasurableEquiv.arrowCongr' eα eβ) (Measure.pi fun i ↦ μ i)
       (Measure.pi fun i ↦ ν i) := by
   classical
-  convert (measurePreserving_piCongrLeft (fun i : α₂ ↦ ν i) eα).comp
-    (measurePreserving_pi μ (fun i : α₁ ↦ ν (eα i)) hm)
+  convert!
+    (measurePreserving_piCongrLeft (fun i : α₂ ↦ ν i) eα).comp
+      (measurePreserving_pi μ (fun i : α₁ ↦ ν (eα i)) hm)
   simp only [MeasurableEquiv.arrowCongr', Equiv.arrowCongr', Equiv.arrowCongr, EquivLike.coe_coe,
     comp_def, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, MeasurableEquiv.piCongrLeft,
     Equiv.piCongrLeft, Equiv.symm_symm, Equiv.piCongrLeft', eq_rec_constant, Equiv.coe_fn_symm_mk]

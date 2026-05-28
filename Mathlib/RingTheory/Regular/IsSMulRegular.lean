@@ -80,7 +80,6 @@ lemma isSMulRegular_submodule_iff_right_eq_zero_of_smul :
     Subtype.forall.trans <| by
       simp only [SetLike.mk_smul_mk, Submodule.mk_eq_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isSMulRegular_quotient_iff_mem_of_smul_mem :
     IsSMulRegular (M ⧸ N) r ↔ ∀ x : M, r • x ∈ N → x ∈ N :=
   isSMulRegular_iff_right_eq_zero_of_smul.trans <|
@@ -165,7 +164,7 @@ lemma isSMulRegular_of_ker_lsmul_eq_bot
 variable {N} in
 lemma smul_top_inf_eq_smul_of_isSMulRegular_on_quot :
     IsSMulRegular (M ⧸ N) r → r • ⊤ ⊓ N ≤ r • N := by
-  convert map_mono ∘ (isSMulRegular_on_quot_iff_lsmul_comap_le N r).mp using 2
+  convert! map_mono ∘ (isSMulRegular_on_quot_iff_lsmul_comap_le N r).mp using 2
   exact Eq.trans (congrArg (· ⊓ N) (map_top _)) (map_comap_eq _ _).symm
 
 -- Who knew this didn't rely on exactness at the right!?

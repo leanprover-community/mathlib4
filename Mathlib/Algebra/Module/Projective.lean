@@ -48,13 +48,6 @@ and it's unclear if projective modules are even a useful notion.
 
 https://en.wikipedia.org/wiki/Projective_module
 
-## TODO
-
-- Direct sum of two projective modules is projective.
-- Arbitrary sum of projective modules is projective.
-
-All of these should be relatively straightforward.
-
 ## Tags
 
 projective module
@@ -66,6 +59,7 @@ projective module
 universe w v u
 
 open LinearMap hiding id
+open DirectSum hiding id_apply
 open Finsupp
 
 /- The actual implementation we choose: `P` is projective if the natural surjection
@@ -196,6 +190,18 @@ theorem Projective.of_equiv' [Module.Projective R M]
 
 @[deprecated (since := "2026-02-14")] alias Projective.of_ringEquiv := Projective.of_equiv
 
+instance [Projective R M] : Projective R (ULift.{w} M) :=
+  Projective.of_equiv' ULift.moduleEquiv.symm
+
+theorem Projective.of_ulift [Projective R (ULift.{w} M)] : Projective R M :=
+  Projective.of_equiv' ULift.moduleEquiv
+
+instance [Small.{w} M] [Projective R M] : Projective R (Shrink.{w} M) :=
+  Projective.of_equiv' (Shrink.linearEquiv R M).symm
+
+theorem Projective.of_shrink [Small.{w} M] [Projective R (Shrink.{w} M)] : Projective R M :=
+  Projective.of_equiv' (Shrink.linearEquiv R M)
+
 /-- A quotient of a projective module is projective iff it is a direct summand. -/
 theorem Projective.iff_split_of_projective [Module.Projective R M] (s : M →ₗ[R] P)
     (hs : Function.Surjective s) :
@@ -281,5 +287,22 @@ theorem Projective.of_lifting_property {R : Type u} [Ring R] {P : Type v} [AddCo
   exact ⟨e.toLinearMap ∘ₗ g, hg⟩
 
 end OfLiftingProperty
+
+section DirectSum
+
+variable {R : Type u} [Semiring R]
+variable {ι : Type v} {M : ι → Type w} [(i : ι) → AddCommMonoid (M i)] [(i : ι) → Module R (M i)]
+
+theorem Projective.directSum_iff : Projective R (⨁ i, M i) ↔ ∀ (i : ι), Projective R (M i) := by
+  classical
+  refine ⟨fun H i ↦ ?_, fun H ↦ ?_⟩
+  · exact .of_split (DirectSum.lof ..) (DirectSum.component ..) (by simp)
+  · let e : (⨁ i, M i) ≃ₗ[R] Π₀ i, M i := .refl ..
+    exact Projective.of_equiv' e.symm
+
+instance Projective.directSum [∀ (i : ι), Projective R (M i)] : Projective R (⨁ i, M i) :=
+  directSum_iff.mpr ‹_›
+
+end DirectSum
 
 end Module

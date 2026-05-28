@@ -10,14 +10,14 @@ public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Finiteness.Basic
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 
 /-!
 # Finiteness of (sub)modules and finitely supported functions
 
 -/
 
-@[expose] public section
+public section
 
 open Function (Surjective)
 open Finsupp

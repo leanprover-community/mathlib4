@@ -5,9 +5,9 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkDecomp
-public import Mathlib.Combinatorics.SimpleGraph.Walks.Maps
-public import Mathlib.Combinatorics.SimpleGraph.Walks.Subwalks
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Decomp
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Maps
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Subwalks
 public import Mathlib.Order.Preorder.Finite
 
 /-!
@@ -84,10 +84,6 @@ is `u` (which appears exactly twice). -/
 structure IsCycle {u : V} (p : G.Walk u u) : Prop extends isCircuit : IsCircuit p where
   support_nodup : p.support.tail.Nodup
 
-@[deprecated (since := "2025-08-26")] protected alias IsPath.toIsTrail := IsPath.isTrail
-@[deprecated (since := "2025-08-26")] protected alias IsCircuit.toIsTrail := IsCircuit.isTrail
-@[deprecated (since := "2025-08-26")] protected alias IsCycle.toIsCircuit := IsCycle.isCircuit
-
 @[simp]
 theorem isTrail_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
     (p.copy hu hv).IsTrail ↔ p.IsTrail := by
@@ -141,8 +137,6 @@ theorem IsTrail.of_cons {u v w : V} {h : G.Adj u v} {p : G.Walk v w} :
 theorem isTrail_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
     (cons h p).IsTrail ↔ p.IsTrail ∧ s(u, v) ∉ p.edges := by simp [isTrail_def, and_comm]
 
-@[deprecated (since := "2025-11-03")] alias cons_isTrail_iff := isTrail_cons
-
 protected lemma IsTrail.cons {w : G.Walk u' v} (hw : w.IsTrail) (hu : G.Adj u u')
     (hu' : s(u, u') ∉ w.edges) : (w.cons hu).IsTrail := by simp [*]
 
@@ -153,7 +147,7 @@ theorem IsTrail.reverse {u v : V} (p : G.Walk u v) (h : p.IsTrail) : p.reverse.I
 theorem reverse_isTrail_iff {u v : V} (p : G.Walk u v) : p.reverse.IsTrail ↔ p.IsTrail := by
   constructor <;>
     · intro h
-      convert h.reverse _
+      convert! h.reverse _
       try rw [reverse_reverse]
 
 theorem IsTrail.of_append_left {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
@@ -210,7 +204,7 @@ theorem IsPath.reverse {u v : V} {p : G.Walk u v} (h : p.IsPath) : p.reverse.IsP
 
 @[simp]
 theorem isPath_reverse_iff {u v : V} (p : G.Walk u v) : p.reverse.IsPath ↔ p.IsPath := by
-  constructor <;> intro h <;> convert h.reverse; simp
+  constructor <;> intro h <;> convert! h.reverse; simp
 
 theorem IsPath.of_append_left {u v w : V} {p : G.Walk u v} {q : G.Walk v w} :
     (p.append q).IsPath → p.IsPath := by
@@ -332,7 +326,7 @@ lemma IsCycle.isPath_of_append_right {p : G.Walk u v} {q : G.Walk v u} (h : ¬ p
     (hcyc : (p.append q).IsCycle) : q.IsPath := by
   have := hcyc.2
   rw [tail_support_append, List.nodup_append'] at this
-  rw [isPath_def, support_eq_cons, List.nodup_cons]
+  rw [isPath_def, ← cons_tail_support, List.nodup_cons]
   exact ⟨this.2.2 (p.end_mem_tail_support h), this.2.1⟩
 
 lemma IsCycle.isPath_of_append_left {p : G.Walk u v} {q : G.Walk v u} (h : ¬ q.Nil)
@@ -409,14 +403,21 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
         (by lia : (m - 1) ≤ p.length) hnm
       lia
 
-lemma IsPath.getVert_eq_start_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
+lemma IsPath.getVert_eq_start_iff_of_not_nil {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (h : ¬p.Nil) :
     p.getVert i = u ↔ i = 0 := by
-  refine ⟨?_, by simp_all⟩
-  intro h
-  by_cases hi : i = 0
-  · exact hi
+  refine ⟨fun h ↦ ?_, by simp_all⟩
+  by_cases h' : i ≤ p.length
   · apply hp.getVert_injOn (by rw [Set.mem_setOf]; lia) (by rw [Set.mem_setOf]; lia)
     simp [h]
+  · rw [p.getVert_of_length_le (le_of_not_ge h')] at h
+    subst h
+    simp_all
+
+lemma IsPath.getVert_eq_start_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
+    p.getVert i = u ↔ i = 0 := by
+  cases p
+  · simpa using hi
+  · exact hp.getVert_eq_start_iff_of_not_nil not_nil_cons
 
 lemma IsPath.getVert_eq_end_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
     p.getVert i = w ↔ i = p.length := by
@@ -563,26 +564,19 @@ lemma IsTrail.disjoint_edges_takeUntil_dropUntil {x : V} {w : G.Walk u v} (hw : 
     (hx : x ∈ w.support) : (w.takeUntil x hx).edges.Disjoint (w.dropUntil x hx).edges :=
   List.disjoint_of_nodup_append <| by simpa [← edges_append] using hw.edges_nodup
 
-protected theorem IsTrail.rotate {u v : V} {c : G.Walk v v} (hc : c.IsTrail) (h : u ∈ c.support) :
-    (c.rotate h).IsTrail := by
-  rw [isTrail_def, (c.rotate_edges h).perm.nodup_iff]
-  exact hc.edges_nodup
+@[simp] lemma isTrail_rotate {c : G.Walk v v} (hu : u ∈ c.support) :
+    (c.rotate u hu).IsTrail ↔ c.IsTrail := by
+  rw [isTrail_def, isTrail_def, (c.rotate_edges u hu).perm.nodup_iff]
 
-protected theorem IsCircuit.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCircuit)
-    (h : u ∈ c.support) : (c.rotate h).IsCircuit := by
-  refine ⟨hc.isTrail.rotate _, ?_⟩
-  cases c
-  · exact (hc.ne_nil rfl).elim
-  · intro hn
-    have hn' := congr_arg length hn
-    rw [rotate, length_append, add_comm, ← length_append, take_spec] at hn'
-    simp at hn'
+@[simp] lemma isCircuit_rotate {c : G.Walk v v} (hu : u ∈ c.support) :
+    (c.rotate u hu).IsCircuit ↔ c.IsCircuit := by simp [isCircuit_def]
 
-protected theorem IsCycle.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCycle) (h : u ∈ c.support) :
-    (c.rotate h).IsCycle := by
-  refine ⟨hc.isCircuit.rotate _, ?_⟩
-  rw [List.IsRotated.nodup_iff (support_rotate _ _)]
-  exact hc.support_nodup
+@[simp] lemma isCycle_rotate {c : G.Walk v v} (hu : u ∈ c.support) :
+    (c.rotate u hu).IsCycle ↔ c.IsCycle := by simp [isCycle_def, (support_rotate ..).perm.nodup_iff]
+
+protected alias ⟨IsTrail.of_rotate, IsTrail.rotate⟩ := isTrail_rotate
+protected alias ⟨IsCircuit.of_rotate, IsCircuit.rotate⟩ := isCircuit_rotate
+protected alias ⟨IsCycle.of_rotate, IsCycle.rotate⟩ := isCycle_rotate
 
 lemma IsCycle.isPath_takeUntil {c : G.Walk v v} (hc : c.IsCycle) (h : w ∈ c.support) :
     (c.takeUntil w h).IsPath := by
@@ -617,6 +611,30 @@ lemma endpoint_notMem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w
   lia
 
 end WalkDecomp
+
+theorem isPath_iff_isSubwalk_imp_nil {u v} {p : G.Walk u v} :
+    p.IsPath ↔ ∀ (v : V) (w : G.Walk v v), w.IsSubwalk p → w.Nil := by
+  refine ⟨fun hp v w hwp ↦ ?_, fun h ↦ .mk' ?_⟩
+  · simp [w.isPath_iff_eq_nil.mp <| isPath_of_isSubwalk hwp hp]
+  · refine List.pairwise_iff_getElem.mpr fun i j _ _ _ _ ↦ ?_
+    let p' := p.take j |>.drop i
+    have : ¬p'.Nil := by grind [nil_drop_iff, take_length]
+    have : p'.IsSubwalk p := isSubwalk_drop _ i |>.trans <| p.isSubwalk_take j
+    grind [take_getVert, getVert_eq_support_getElem]
+
+theorem IsTrail.isPath_iff_isSubwalk_imp_not_isCycle {u v} {p : G.Walk u v} (ht : p.IsTrail) :
+    p.IsPath ↔ ∀ (v : V) (w : G.Walk v v), w.IsSubwalk p → ¬w.IsCycle := by
+  refine ⟨by grind [isPath_iff_isSubwalk_imp_nil, IsCycle.not_nil], fun h ↦ ?_⟩
+  classical
+  match p with
+  | .nil => simp
+  | .cons hadj p =>
+    have hp := isPath_iff_isSubwalk_imp_not_isCycle ht.of_cons |>.mpr (h · · <| ·.cons hadj)
+    refine cons_isPath_iff .. |>.mpr ⟨hp, fun hup ↦ h u (p.takeUntil u hup |>.cons hadj) ?_ ?_⟩
+    · rw [isSubwalk_iff_support_isInfix, support_cons, support_cons]
+      exact (List.prefix_cons_inj u |>.mpr <| p.support_takeUntil_prefix_support hup).isInfix
+    · refine cons_isCycle_iff .. |>.mpr ⟨hp.takeUntil hup, fun he ↦ ?_⟩
+      exact ht.edges_nodup.notMem <| p.edges_takeUntil_subset hup he
 
 end Walk
 
@@ -804,13 +822,18 @@ lemma edges_cycleBypass_subset : ∀ {w : G.Walk v v}, w.cycleBypass.edges ⊆ w
     gcongr
     exact edges_bypass_subset _
 
-lemma IsTrail.isCycle_cycleBypass : ∀ {w : G.Walk v v}, w ≠ .nil → w.IsTrail → w.cycleBypass.IsCycle
-  | .cons (v := v') hvv' w, _, hw => by
+lemma IsCircuit.isCycle_cycleBypass : ∀ {w : G.Walk v v}, w.IsCircuit → w.cycleBypass.IsCycle
+  | .cons (v := v') hvv' w, hw => by
     dsimp [cycleBypass]
     refine ⟨⟨(bypass_isPath _).isTrail.cons _ fun hvv' ↦ ?_, by simp⟩, ?_⟩
-    · simp only [isTrail_cons] at hw
+    · simp only [isCircuit_def, isTrail_cons, ne_eq, reduceCtorEq, not_false_eq_true,
+        and_true] at hw
       exact hw.2 <| edges_bypass_subset _ hvv'
     · simpa using (bypass_isPath _).support_nodup
+
+lemma IsTrail.isCycle_cycleBypass {w : G.Walk v v} (hw : w ≠ .nil) (hw' : w.IsTrail) :
+    w.cycleBypass.IsCycle :=
+  (w.isCircuit_def.mpr ⟨hw', hw⟩).isCycle_cycleBypass
 
 end Walk
 
@@ -855,8 +878,8 @@ alias ⟨_, map_isTrail_of_injective⟩ := map_isTrail_iff_of_injective
 
 theorem map_isCycle_iff_of_injective {p : G.Walk u u} (hinj : Function.Injective f) :
     (p.map f).IsCycle ↔ p.IsCycle := by
-  rw [isCycle_def, isCycle_def, map_isTrail_iff_of_injective hinj, Ne, map_eq_nil_iff,
-    support_map, ← List.map_tail, List.nodup_map_iff hinj]
+  rw [isCycle_def, isCycle_def, map_isTrail_iff_of_injective hinj, ne_eq, ne_eq, eq_nil_iff_nil,
+    eq_nil_iff_nil, nil_map_iff, support_map, ← List.map_tail, List.nodup_map_iff hinj]
 
 alias ⟨_, IsCycle.map⟩ := map_isCycle_iff_of_injective
 

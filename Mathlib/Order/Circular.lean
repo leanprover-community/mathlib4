@@ -20,10 +20,13 @@ This file defines circular preorders, circular partial orders and circular order
   - cyclic: `btw a b c → btw b c a`
   - antisymmetric: `btw a b c → btw c b a → a = b ∨ b = c ∨ c = a`
   - total: `btw a b c ∨ btw c b a`
+
   along with a strict betweenness relation `sbtw : α → α → α → Prop` which respects
   `sbtw a b c ↔ btw a b c ∧ ¬ btw c b a`, analogously to how `<` and `≤` are related, and is
   - transitive: `sbtw a b c → sbtw b d c → sbtw a d c`.
+
 * A `CircularPartialOrder` drops totality.
+
 * A `CircularPreorder` further drops antisymmetry.
 
 The intuition is that a circular order is a circle and `btw a b c` means that going around
@@ -57,6 +60,7 @@ There's an unsolved diamond on `OrderDual α` here. The instances `LE α → Btw
   `LE α` → `LE αᵒᵈ` → `Btw αᵒᵈ`
 * `LT α` → `SBtw α` → `SBtw αᵒᵈ` vs
   `LT α` → `LT αᵒᵈ` → `SBtw αᵒᵈ`
+
 The fields are propeq, but not defeq. It is temporarily fixed by turning the circularizing instances
 into definitions.
 
@@ -416,26 +420,22 @@ abbrev LinearOrder.toCircularOrder (α : Type*) [LinearOrder α] : CircularOrder
 
 namespace OrderDual
 
-instance btw (α : Type*) [Btw α] : Btw αᵒᵈ :=
-  ⟨fun a b c : α => Btw.btw c b a⟩
+instance btw (α : Type*) [h : Btw α] : Btw αᵒᵈ :=
+  ⟨fun a b c => h.btw c b a⟩
 
-instance sbtw (α : Type*) [SBtw α] : SBtw αᵒᵈ :=
-  ⟨fun a b c : α => SBtw.sbtw c b a⟩
+instance sbtw (α : Type*) [h : SBtw α] : SBtw αᵒᵈ :=
+  ⟨fun a b c => h.sbtw c b a⟩
 
-instance circularPreorder (α : Type*) [CircularPreorder α] : CircularPreorder αᵒᵈ :=
-  { OrderDual.btw α,
-    OrderDual.sbtw α with
-    btw_refl := fun _ => @btw_refl α _ _
-    btw_cyclic_left := fun {_ _ _} => @btw_cyclic_right α _ _ _ _
-    sbtw_trans_left := fun {_ _ _ _} habc hbdc => hbdc.trans_right habc
-    sbtw_iff_btw_not_btw := fun {a b c} => @sbtw_iff_btw_not_btw α _ c b a }
+instance circularPreorder (α : Type*) [CircularPreorder α] : CircularPreorder αᵒᵈ where
+  btw_refl _ := btw_refl _
+  btw_cyclic_left {_ _ _} := @btw_cyclic_right α _ _ _ _
+  sbtw_trans_left {_ _ _ _} habc hbdc := hbdc.trans_right habc
+  sbtw_iff_btw_not_btw {a b c} := @sbtw_iff_btw_not_btw α _ c b a
 
-instance circularPartialOrder (α : Type*) [CircularPartialOrder α] : CircularPartialOrder αᵒᵈ :=
-  { OrderDual.circularPreorder α with
-    btw_antisymm := fun {_ _ _} habc hcba => @btw_antisymm α _ _ _ _ hcba habc }
+instance circularPartialOrder (α : Type*) [CircularPartialOrder α] : CircularPartialOrder αᵒᵈ where
+  btw_antisymm := fun {_ _ _} habc hcba => @btw_antisymm α _ _ _ _ hcba habc
 
-instance (α : Type*) [CircularOrder α] : CircularOrder αᵒᵈ :=
-  { OrderDual.circularPartialOrder α with
-    btw_total := fun {a b c} => @btw_total α _ c b a }
+instance (α : Type*) [CircularOrder α] : CircularOrder αᵒᵈ where
+  btw_total := fun {a b c} => @btw_total α _ c b a
 
 end OrderDual

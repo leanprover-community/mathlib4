@@ -19,7 +19,7 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
   (the image of) `A`.
 -/
 
-@[expose] public section
+public section
 
 /-- `IsIntegralClosure A R B` is the characteristic predicate stating `A` is
 the integral closure of `R` in `B`,
@@ -29,9 +29,3 @@ class IsIntegralClosure (A R B : Type*) [CommRing R] [CommSemiring A] [CommRing 
   [Algebra A B] : Prop where
   algebraMap_injective (A R B) : Function.Injective (algebraMap A B)
   isIntegral_iff : ∀ {x : B}, IsIntegral R x ↔ ∃ y, algebraMap A B y = x
-
-namespace IsIntegralClosure
-
-@[deprecated (since := "2025-08-29")] alias algebraMap_injective' := algebraMap_injective
-
-end IsIntegralClosure
