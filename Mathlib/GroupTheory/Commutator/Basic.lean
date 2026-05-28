@@ -32,13 +32,9 @@ open scoped commutatorElement
 variable {G G' F : Type*} [Group G] [Group G'] [FunLike F G G'] [MonoidHomClass F G G']
 variable (f : F) {g₁ g₂ g₃ g : G}
 
+@[to_additive]
 theorem conj_eq_commutatorElement_mul : MulAut.conj g₁ g₂ = ⁅g₁, g₂⁆ * g₂ := by
   simp [commutatorElement_def]
-
-open scoped addCommutatorElement in
-theorem addConj_eq_addCommutatorElement_add {G : Type*} [AddGroup G] {g₁ g₂ : G} :
-    AddAut.conj g₁ g₂ = ⁅g₁, g₂⁆ + g₂ := by
-  simp [addCommutatorElement_def]
 
 @[to_additive]
 theorem commutatorElement_eq_one_iff_mul_comm : ⁅g₁, g₂⁆ = 1 ↔ g₁ * g₂ = g₂ * g₁ := by
