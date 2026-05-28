@@ -46,23 +46,15 @@ end CategoryTheory.Functor
 
 namespace CategoryTheory.Over
 
+instance post_preservesTerminal {T : Type u₁} [Category.{v₁} T] {D : Type u₂} [Category.{v₂} D]
+    {X : T} (F : T ⥤ D) : PreservesLimit (Functor.empty.{0} _) (Over.post (X := X) F) :=
+  preservesTerminal_of_iso _ <|
+    (Over.post F).mapIso (terminalIsTerminal.uniqueUpToIso (Over.mkIdTerminal (X := X))) ≪≫
+      Over.isoMk (g := Over.mk (𝟙 (F.obj X))) (Iso.refl _) (by simp) ≪≫
+      Over.mkIdTerminal.uniqueUpToIso terminalIsTerminal
+
 instance post_final {T : Type u₁} [Category.{v₁} T] {D : Type u₂} [Category.{v₂} D]
-    {X : T} (F : T ⥤ D) : (Over.post (X := X) F).Final where
-  out A := by
-    let t : StructuredArrow A (Over.post (X := X) F) :=
-      StructuredArrow.mk (Y := Over.mk (𝟙 X)) (Over.homMk A.hom (by simp))
-    let toT (B : StructuredArrow A (Over.post (X := X) F)) : B ⟶ t :=
-      StructuredArrow.homMk
-        (Over.homMk B.right.hom (by
-          change B.right.hom ≫ 𝟙 X = B.right.hom
-          simp) : B.right ⟶ t.right)
-        (by
-          ext
-          simpa using Over.w B.hom)
-    haveI : Nonempty (StructuredArrow A (Over.post (X := X) F)) := ⟨t⟩
-    apply zigzag_isConnected
-    intro B C
-    exact Zigzag.of_zag_trans (Zag.of_hom (toT B)) (Zag.of_inv (toT C))
+    {X : T} (F : T ⥤ D) : (Over.post (X := X) F).Final := inferInstance
 
 end CategoryTheory.Over
 
@@ -127,8 +119,16 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
 #check QuasicoherentData.{u} M
 
 set_option backward.isDefEq.respectTransparency false in
-variable (J K) in
-theorem coversTop_image {I : Type w} {X : I → C} (h : J.CoversTop X) :
+omit [HasBinaryProducts C] [HasBinaryProducts D]
+  [PreservesLimitsOfShape (Discrete WalkingPair) F]
+  [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]
+  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
+  [∀ X, (K.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [∀ X, HasSheafify (K.over X) AddCommGrpCat.{u}]
+  [∀ X, (K.over X).WEqualsLocallyBijective AddCommGrpCat.{u}] in
+variable (J K F) in
+theorem coversTop_map {I : Type w} {X : I → C} (h : J.CoversTop X) :
     K.CoversTop (fun i => F.obj (X i)) := by
   intro Y
   let X₀ := Functor.Final.lift F Y
@@ -151,7 +151,7 @@ def QuasicoherentData.pullback (q : M.QuasicoherentData) :
     ((pullback φ).obj M).QuasicoherentData where
   I := q.I
   X i := F.obj (q.X i)
-  coversTop := coversTop_image J K q.coversTop
+  coversTop := coversTop_map J K _ q.coversTop
   presentation i := ((q.presentation i).map _ (asIso (pullbackObjUnitToUnit _)).symm).ofIsIso
     (M.overPullbackIso φ (q.X i)).hom
 
@@ -207,6 +207,8 @@ instance {X Y : TopCat} (f : X ⟶ Y) : (TopologicalSpace.Opens.map f).Preserves
       ⟨hxV, hx⟩⟩
 
 variable {X Y : Scheme} (f : X ⟶ Y) (M : Y.Modules) (U : Y.Opens)
+
+#synth HasLimits X.Opens
 
 instance [M.IsQuasicoherent] : ((pullback f).obj M).IsQuasicoherent :=
   SheafOfModules.IsQuasicoherent.pullback _
