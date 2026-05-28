@@ -174,7 +174,6 @@ We assume that `Subtype P` is directed and nonempty, and that any `a : J.obj`
 belongs to some `S : Set J.obj` satisfying `P`. Then, `J` is the colimit in the
 category `CardinalFilteredPoset κ` of these subsets. -/
 noncomputable def isColimitCoconeOfPredicateSet
-    [IsDirectedOrder (Subtype P)] [Nonempty (Subtype P)]
     (hP : ∀ (a : J.obj), ∃ (S : Set J.obj), P S ∧ a ∈ S) :
     IsColimit (coconeOfPredicateSet P) :=
   isColimitOfReflects (CardinalFilteredPoset.ι)
