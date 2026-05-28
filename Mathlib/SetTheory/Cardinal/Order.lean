@@ -177,6 +177,14 @@ theorem lift_min {a b : Cardinal} : lift.{u, v} (min a b) = min (lift.{u, v} a) 
 theorem lift_max {a b : Cardinal} : lift.{u, v} (max a b) = max (lift.{u, v} a) (lift.{u, v} b) :=
   lift_monotone.map_max
 
+theorem min_liftEq_min {a₁ b₁ : Cardinal.{u}} {a₂ b₂ : Cardinal.{v}}
+    (ha : a₁ =ₗ a₂) (hb : b₁ =ₗ b₂) : min a₁ b₁ =ₗ min a₂ b₂ := by
+  rw [LiftEq, lift_min, lift_min, ha, hb]
+
+theorem max_liftEq_max {a₁ b₁ : Cardinal.{u}} {a₂ b₂ : Cardinal.{v}}
+    (ha : a₁ =ₗ a₂) (hb : b₁ =ₗ b₂) : max a₁ b₁ =ₗ max a₂ b₂ := by
+  rw [LiftEq, lift_max, lift_max, ha, hb]
+
 @[deprecated "use `liftEq` to state both sides" (since := "2026-05-24")]
 theorem lift_umax_eq {a : Cardinal.{u}} {b : Cardinal.{v}} :
     lift.{max v w} a = lift.{max u w} b ↔ lift.{v} a = lift.{u} b := by

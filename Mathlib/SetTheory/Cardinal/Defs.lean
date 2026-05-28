@@ -223,14 +223,6 @@ theorem lift_eq_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} : lift.{v} a = b
 theorem eq_lift_iff {a : Cardinal.{max u v}} {b : Cardinal.{v}} : a = lift.{u} b ↔ a =ₗ b := by
   simp [← liftEq_iff_eq]
 
-theorem LiftEq.lift_eq {a : Cardinal.{u}} {b : Cardinal.{v}} (h : a =ₗ b) :
-    lift.{v} a = lift.{u} b := by
-  simpa
-
-theorem LiftEq.lift_eq' {a : Cardinal.{u}} {b : Cardinal.{v}} (h : a =ₗ b) :
-    lift.{max v w} a = lift.{max u w} b := by
-  simpa
-
 theorem lift_injective : Injective lift.{u, v} :=
   fun _ ↦ by simp
 
