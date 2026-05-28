@@ -164,7 +164,7 @@ def proj {P : ProfiniteGrp.{u}} (U : OpenNormalSubgroup P) : P ⟶ (diagram P).o
   }
 
 /-- The canonical cone over `diagram P` with point `P`. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps) /-- The canonical cone over `diagram P` with point `P`. -/]
 def cone (P : ProfiniteGrp.{u}) : Limits.Cone (diagram P) where
   pt := P
   π := { app := proj }
