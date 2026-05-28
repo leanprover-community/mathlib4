@@ -108,7 +108,7 @@ theorem HasDerivWithinAt.pow (h : HasDerivWithinAt f f' s x) (n : ℕ) :
 @[to_fun]
 theorem HasDerivAt.pow (h : HasDerivAt f f' x) (n : ℕ) :
     HasDerivAt (f ^ n) (n * f x ^ (n - 1) * f') x := by
-  simpa using h.hasFDerivAt.pow n |>.hasDerivAt
+  simpa using! h.hasFDerivAt.pow n |>.hasDerivAt
 
 @[to_fun (attr := simp) derivWithin_fun_pow]
 theorem derivWithin_pow (h : DifferentiableWithinAt 𝕜 f s x) (n : ℕ) :

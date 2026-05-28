@@ -154,14 +154,27 @@ variable (𝕜 E)
 
 /-- If `M` is a normed space over `𝕜`, then the space of maps `𝕜 →L[𝕜] M` is linearly isometrically
 equivalent to `M`. -/
-def ring_lmap_equiv_self : (𝕜 →L[𝕜] E) ≃ₗᵢ[𝕜] E where
-  toLinearEquiv := ring_lmap_equiv_selfₗ 𝕜 E
-  norm_map' := by
-    refine fun f ↦ le_antisymm ?_ ?_
-    · simpa only [norm_one, mul_one] using! le_opNorm f 1
-    · refine opNorm_le_bound' f (norm_nonneg <| f 1) (fun x _ ↦ ?_)
-      rw [(by rw [smul_eq_mul, mul_one] : f x = f (x • 1)), map_smul,
-        norm_smul, mul_comm, (by rfl : ring_lmap_equiv_selfₗ 𝕜 E f = f 1)]
+def toSpanSingletonLIE : E ≃ₗᵢ[𝕜] (𝕜 →L[𝕜] E) where
+  toLinearEquiv := toSpanSingletonLE 𝕜 𝕜 E
+  norm_map' _ := by simp
+
+@[simp]
+lemma toSpanSingletonLIE_apply (x : E) : toSpanSingletonLIE 𝕜 E x = toSpanSingleton 𝕜 x := rfl
+
+@[simp] lemma toSpanSingletonLIE_symm_apply (f : 𝕜 →L[𝕜] E) :
+    (toSpanSingletonLIE 𝕜 E).symm f = f 1 := rfl
+
+@[simp] lemma toLinearEquiv_toSpanSingletonLIE :
+    (toSpanSingletonLIE 𝕜 E).toLinearEquiv = toSpanSingletonLE 𝕜 𝕜 E := rfl
+
+@[simp] lemma toContinuousLinearEquiv_toSpanSingletonLIE :
+    (toSpanSingletonLIE 𝕜 E).toContinuousLinearEquiv = toSpanSingletonCLE := rfl
+
+@[deprecated "Use the reverse of `toSpanSingletonLE`." (since := "2026-05-21")]
+alias ring_lmap_equiv_selfₗ := toSpanSingletonLE
+
+@[deprecated "Use the reverse of `toSpanSingletonLIE`." (since := "2026-05-21")]
+alias ring_lmap_equiv_self := toSpanSingletonLIE
 
 end RingEquiv
 

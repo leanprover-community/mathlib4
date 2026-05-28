@@ -705,33 +705,7 @@ theorem indepFun_iff_map_prod_eq_prod_map_map {mβ : MeasurableSpace β} {mβ' :
     f ⟂ᵢ[μ] g ↔ μ.map (fun ω ↦ (f ω, g ω)) = (μ.map f).prod (μ.map g) := by
   apply indepFun_iff_map_prod_eq_prod_map_map' hf hg <;> apply IsFiniteMeasure.toSigmaFinite
 
-theorem iIndepFun_iff_map_fun_eq_pi_map [Fintype ι] {β : ι → Type*}
-    {m : ∀ i, MeasurableSpace (β i)} {f : Π i, Ω → β i} [IsProbabilityMeasure μ]
-    (hf : ∀ i, AEMeasurable (f i) μ) :
-    iIndepFun f μ ↔ μ.map (fun ω i ↦ f i ω) = Measure.pi (fun i ↦ μ.map (f i)) := by
-  classical
-  rw [iIndepFun_iff_measure_inter_preimage_eq_mul]
-  have h₀ {s : ∀ i, Set (β i)} (hm : ∀ (i : ι), MeasurableSet (s i)) :
-      ∏ i : ι, μ (f i ⁻¹' s i) = ∏ i : ι, μ.map (f i) (s i) ∧
-      μ (⋂ i : ι, (f i ⁻¹' s i)) = μ.map (fun ω i ↦ f i ω) (univ.pi s) := by
-    constructor
-    · congr with x
-      rw [Measure.map_apply_of_aemeasurable (hf x) (hm x)]
-    · rw [Measure.map_apply_of_aemeasurable (aemeasurable_pi_lambda _ fun x ↦ hf x)
-        (.univ_pi hm)]
-      congr with x
-      simp
-  constructor
-  · refine fun hS ↦ (Measure.pi_eq fun h hm ↦ ?_).symm
-    rw [← (h₀ hm).1, ← (h₀ hm).2]
-    simpa [hm] using hS Finset.univ (sets := h)
-  · intro h S s hs
-    specialize h₀ (s := fun i ↦ if i ∈ S then s i else univ)
-      fun i ↦ by split_ifs with hiS <;> simp [hiS, hs]
-    simp only [apply_ite, preimage_univ, measure_univ, Finset.prod_ite_mem, Finset.univ_inter,
-      Finset.prod_ite, Finset.filter_univ_mem, iInter_ite, iInter_univ, inter_univ, h,
-      Measure.pi_pi] at h₀
-    rw [h₀.2, ← h₀.1]
+alias ⟨IndepFun.map_prod_eq_prod_map_map, _⟩ := indepFun_iff_map_prod_eq_prod_map_map
 
 @[symm]
 nonrec theorem IndepFun.symm {_ : MeasurableSpace β} {_ : MeasurableSpace β'}
