@@ -87,7 +87,6 @@ private lemma transGen_cutExpand_of_isDershowitzMannaLT :
     exact cutExpand_singleton <| by simpa using hYZ
   let Y' : Multiset α := Y.filter (· < z)
   refine .tail (b := X + Y' + Z) (ih (X + Y') (Y - Y') hZ ?_ rfl fun y hy ↦ ?_) ?_
-    -- ⟨X + Z, Y', z, add_right_comm .., by simp [hN, add_comm (_ + _)], by simp [Y']⟩
   · rw [add_add_tsub_cancel (filter_le ..), hM]
   · simp only [sub_filter_eq_filter_not, mem_filter, Y'] at hy
     simpa [hy.2] using hYZ y (by simp_all)
