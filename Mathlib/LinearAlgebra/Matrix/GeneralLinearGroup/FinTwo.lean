@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.AddChar
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Disc
-public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 
 /-!
 # Classification of elements of `GL (Fin 2) R`
@@ -154,6 +154,24 @@ def IsElliptic : Prop := m.discr < 0
 
 variable {m}
 
+lemma IsParabolic.not_isHyperbolic (hm : IsParabolic m) : ¬IsHyperbolic m :=
+  hm.2.not_gt
+
+lemma IsParabolic.not_isElliptic (hm : IsParabolic m) : ¬IsElliptic m :=
+  hm.2.not_lt
+
+lemma IsHyperbolic.not_isParabolic (hm : IsHyperbolic m) : ¬IsParabolic m :=
+  not_and_of_not_right _ hm.ne'
+
+lemma IsHyperbolic.not_isElliptic (hm : IsHyperbolic m) : ¬IsElliptic m :=
+  hm.not_gt
+
+lemma IsElliptic.not_isParabolic (hm : IsElliptic m) : ¬IsParabolic m :=
+  not_and_of_not_right _ hm.ne
+
+lemma IsElliptic.not_isHyperbolic (hm : IsElliptic m) : ¬IsHyperbolic m :=
+  hm.not_gt
+
 lemma isHyperbolic_conj_iff : (g.val * m * g.val⁻¹).IsHyperbolic ↔ m.IsHyperbolic := by
   simp [IsHyperbolic]
 
@@ -236,11 +254,27 @@ lemma IsParabolic.map {g : GL (Fin 2) R} (hgp : g.IsParabolic)
     (g.map f).IsParabolic :=
   Matrix.IsParabolic.map hgp f hf
 
+lemma IsParabolic.not_mem_center {g : GL (Fin 2) R} (hgp : g.IsParabolic) :
+    g ∉ Subgroup.center _ :=
+  mem_center_iff_val_mem_range_scalar.not.mpr hgp.1
+
 /-- Synonym of `Matrix.IsElliptic`, for dot-notation. -/
 abbrev IsElliptic [Preorder R] (g : GL (Fin 2) R) : Prop := g.val.IsElliptic
 
+lemma IsElliptic.not_mem_center [Preorder R] {g : GL (Fin 2) R} (hgp : g.IsElliptic) :
+    g ∉ Subgroup.center _ := by
+  refine mem_center_iff_val_mem_range_scalar.not.mpr (fun ⟨x, hx⟩ ↦ Eq.not_lt ?_ hgp)
+  simp [← hx, discr_fin_two]
+  grind
+
 /-- Synonym of `Matrix.IsHyperbolic`, for dot-notation. -/
 abbrev IsHyperbolic [Preorder R] (g : GL (Fin 2) R) : Prop := g.val.IsHyperbolic
+
+lemma IsHyperbolic.not_mem_center [Preorder R] {g : GL (Fin 2) R} (hgp : g.IsHyperbolic) :
+    g ∉ Subgroup.center _ := by
+  refine mem_center_iff_val_mem_range_scalar.not.mpr (fun ⟨x, hx⟩ ↦ Eq.not_gt ?_ hgp)
+  simp [← hx, discr_fin_two]
+  grind
 
 /-- Polynomial whose roots are the fixed points of `g` considered as a Möbius transformation.
 
