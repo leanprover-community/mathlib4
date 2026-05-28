@@ -124,13 +124,7 @@ variable (G A B C : Type*) [Group G]
 theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finite ℤ S]
     [IsDomain S] [FaithfulSMul ℤ S] [Group G] [MulSemiringAction G S] [IsGaloisGroup G ℤ S] :
     ⨆ m : PrimeSpectrum S, m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
-  have : Finite G := by -- PRed
-    let : Algebra (FractionRing ℤ) (FractionRing S) := FractionRing.liftAlgebra ℤ (FractionRing S)
-    let : MulSemiringAction G (FractionRing S) :=
-        IsFractionRing.mulSemiringAction G ℤ S (FractionRing ℤ) (FractionRing S)
-    have : IsGaloisGroup G (FractionRing ℤ) (FractionRing S) :=
-      IsGaloisGroup.to_isFractionRing_of_isIntegral G ℤ S (FractionRing ℤ) (FractionRing S)
-    exact IsGaloisGroup.finite G (FractionRing ℤ) (FractionRing S)
+  have := IsGaloisGroup.finite G ℤ S
   let H : Subgroup G := ⨆ m : PrimeSpectrum S, m.asIdeal.toAddSubgroup.inertia G
   let R : Subalgebra ℤ S := FixedPoints.subalgebra ℤ S H
   have hH : IsGaloisGroup H R S := inferInstance -- temp
