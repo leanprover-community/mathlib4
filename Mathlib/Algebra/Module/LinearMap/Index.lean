@@ -47,7 +47,7 @@ public lemma index_eq_finrank_sub :
 
 @[nontriviality] public lemma index_of_subsingleton [Subsingleton R] :
     f.index = 0 := by
-  simp [index]
+  simp [index_eq_finrank_sub]
 
 @[simp] public lemma index_zero :
     (0 : M →ₗ[R] N).index = finrank R M - finrank R N := by
@@ -56,13 +56,13 @@ public lemma index_eq_finrank_sub :
 
 public lemma index_of_injective [Nontrivial R] (hf : Injective f) :
     f.index = - finrank R (N ⧸ f.range) := by
-  simpa [LinearMap.index] using LinearMap.ker_eq_bot.2 hf ▸ finrank_bot _ _
+  simpa [index] using ker_eq_bot.2 hf ▸ finrank_bot _ _
 
 variable [StrongRankCondition R]
 
 public lemma index_of_surjective (hf : Surjective f) :
     f.index = finrank R f.ker := by
-  rw [LinearMap.index, LinearMap.range_eq_top.mpr hf]
+  rw [index, range_eq_top.mpr hf]
   simp [finrank_eq_zero_of_subsingleton]
 
 @[simp] public lemma index_id :
@@ -76,7 +76,7 @@ public lemma index_of_surjective (hf : Surjective f) :
   nontriviality R
   have := index_of_injective e.injective
   have := index_of_surjective e.surjective
-  grind
+  lia
 
 end Ring
 
@@ -95,7 +95,7 @@ public lemma index_eq_of_finiteDimensional [FiniteDimensional k M] [FiniteDimens
   have h₁ := f.range.finrank_quotient_add_finrank
   have h₂ := f.quotKerEquivRange.finrank_eq
   have h₃ := f.ker.finrank_quotient_add_finrank
-  grind
+  lia
 
 open Submodule in
 @[simp] public lemma index_comp {P : Type*} [AddCommGroup P] [Module k P] (g : N →ₗ[k] P)
@@ -110,8 +110,8 @@ open Submodule in
   let f₃ : (N ⧸ f.range) →ₗ[k] P ⧸ (g ∘ₗ f).range := f.range.mapQ (g ∘ₗ f).range g aux
   let f₄ : (P ⧸ (g ∘ₗ f).range) →ₗ[k] P ⧸ g.range := factor <| range_comp_le_range f g
   have h₀ : Injective f₀ := inclusion_injective _
-  have h₁ : Exact f₀ f₁ := fun ⟨x, hx⟩ ↦ by simp [f₀, f₁, restrict_apply, inclusion_apply]
-  have h₂ : Exact f₁ f₂ := fun ⟨x, hx⟩ ↦ by aesop (add simp restrict_apply)
+  have h₁ : Exact f₀ f₁ := by rw [exact_iff]; simp [f₀, f₁, ker_restrict, range_inclusion]
+  have h₂ : Exact f₁ f₂ := by rw [exact_iff]; simp [f₁, f₂, ker_comp, map_comap_eq]
   have h₃ : Exact f₂ f₃ := by rw [exact_iff]; simp [f₂, f₃, range_comp, ker_mapQ, comap_map_eq]
   have h₄ : Exact f₃ f₄ := by rw [exact_iff]; simp [f₃, f₄, factor, ker_mapQ, range_mapQ]
   have h₅ : Surjective f₄ := factor_surjective _
