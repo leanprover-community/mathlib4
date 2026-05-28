@@ -3846,7 +3846,6 @@ public import Mathlib.Data.Fin.Tuple.Take
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.FinEnum
 public import Mathlib.Data.FinEnum.Option
-public import Mathlib.Data.Finite.Card
 public import Mathlib.Data.Finite.Defs
 public import Mathlib.Data.Finite.Perm
 public import Mathlib.Data.Finite.Prod
@@ -4083,7 +4082,6 @@ public import Mathlib.Data.Matrix.Basic
 public import Mathlib.Data.Matrix.Basis
 public import Mathlib.Data.Matrix.Bilinear
 public import Mathlib.Data.Matrix.Block
-public import Mathlib.Data.Matrix.Cartan
 public import Mathlib.Data.Matrix.ColumnRowPartitioned
 public import Mathlib.Data.Matrix.Composition
 public import Mathlib.Data.Matrix.DMatrix
@@ -5032,6 +5030,7 @@ public import Mathlib.LinearAlgebra.Matrix.BaseChange
 public import Mathlib.LinearAlgebra.Matrix.Basis
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Cartan
 public import Mathlib.LinearAlgebra.Matrix.CharP
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
@@ -7041,6 +7040,7 @@ public import Mathlib.SetTheory.Cardinal.Finite
 public import Mathlib.SetTheory.Cardinal.Finsupp
 public import Mathlib.SetTheory.Cardinal.Free
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
+public import Mathlib.SetTheory.Cardinal.NatCard
 public import Mathlib.SetTheory.Cardinal.NatCount
 public import Mathlib.SetTheory.Cardinal.Order
 public import Mathlib.SetTheory.Cardinal.Ordinal
