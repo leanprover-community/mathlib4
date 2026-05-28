@@ -51,24 +51,24 @@ public lemma index_eq_finrank_sub :
 
 @[simp] public lemma index_zero :
     (0 : M →ₗ[R] N).index = finrank R M - finrank R N := by
-  rw [index, ker_zero, range_zero]
+  rw [index_eq_finrank_sub, ker_zero, range_zero]
   simpa using (Submodule.quotEquivOfEqBot _ rfl).finrank_eq
 
 public lemma index_of_injective [Nontrivial R] (hf : Injective f) :
     f.index = - finrank R (N ⧸ f.range) := by
-  simpa [index] using ker_eq_bot.2 hf ▸ finrank_bot _ _
+  simpa [index_eq_finrank_sub] using ker_eq_bot.2 hf ▸ finrank_bot _ _
 
 variable [StrongRankCondition R]
 
 public lemma index_of_surjective (hf : Surjective f) :
     f.index = finrank R f.ker := by
-  rw [index, range_eq_top.mpr hf]
+  rw [index_eq_finrank_sub, range_eq_top.mpr hf]
   simp [finrank_eq_zero_of_subsingleton]
 
 @[simp] public lemma index_id :
     (id : M →ₗ[R] M).index = 0 := by
   nontriviality R
-  rw [index, range_id]
+  rw [index_eq_finrank_sub, range_id]
   simp [finrank_eq_zero_of_subsingleton]
 
 @[simp] public lemma _root_.LinearEquiv.index_eq_zero {e : M ≃ₗ[R] N} :
@@ -86,12 +86,12 @@ variable {k : Type*} [DivisionRing k] [Module k M] [Module k N] {f : M →ₗ[k]
 
 @[simp] public lemma index_neg :
     (-f).index = f.index := by
-  rw [index, index, ker_neg, range_neg]
+  rw [index_eq_finrank_sub, index_eq_finrank_sub, ker_neg, range_neg]
 
 public lemma index_eq_of_finiteDimensional [FiniteDimensional k M] [FiniteDimensional k N] :
     f.index = finrank k M - finrank k N := by
   -- `0 → f.ker → M → N → f.coker → 0`
-  rw [index]
+  rw [index_eq_finrank_sub]
   have h₁ := f.range.finrank_quotient_add_finrank
   have h₂ := f.quotKerEquivRange.finrank_eq
   have h₃ := f.ker.finrank_quotient_add_finrank
@@ -127,7 +127,7 @@ variable {k : Type*} [Field k] [Module k M] [Module k N] {f : M →ₗ[k] N}
 
 public lemma index_smul (t : k) (ht : t ≠ 0) :
     (t • f).index = f.index := by
-  rw [index, index, ker_smul _ _ ht, range_smul _ _ ht]
+  rw [index_eq_finrank_sub, index_eq_finrank_sub, ker_smul _ _ ht, range_smul _ _ ht]
 
 end Field
 
