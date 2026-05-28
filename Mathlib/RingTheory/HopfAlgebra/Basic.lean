@@ -243,11 +243,11 @@ open Coalgebra WithConv LinearMap
 noncomputable abbrev ofConvInverse [CommSemiring R] [Semiring A] [Bialgebra R A]
     (antipode : A →ₗ[R] A)
     (mul_antipode_rTensor_comul : toConv antipode * toConv LinearMap.id = 1)
-    (mul_antipode_lTensor_comul : toConv LinearMap.id * toConv antipode = 1) :
+    (mul_lTensor_antipode_comul : toConv LinearMap.id * toConv antipode = 1) :
     HopfAlgebra R A where
   antipode := antipode
   mul_antipode_rTensor_comul := by simpa using congr(($mul_antipode_rTensor_comul).ofConv)
-  mul_antipode_lTensor_comul := by simpa using congr(($mul_antipode_lTensor_comul).ofConv)
+  mul_antipode_lTensor_comul := by simpa using congr(($mul_lTensor_antipode_comul).ofConv)
 
 /-- Upgrade a commutative bialgebra to a Hopf algebra by specifying the antipode `A →ₐ[R] A`
 with appropriate conditions. -/
@@ -256,7 +256,7 @@ noncomputable abbrev ofAlgHom [CommSemiring R] [CommSemiring A] [Bialgebra R A]
     (mul_antipode_rTensor_comul :
       ((Algebra.TensorProduct.lift antipode (.id R A) fun _ ↦ .all _).comp
         (Bialgebra.comulAlgHom R A)) = (Algebra.ofId R A).comp (Bialgebra.counitAlgHom R A))
-    (mul_antipode_lTensor_comul :
+    (mul_lTensor_antipode_comul :
       (Algebra.TensorProduct.lift (.id R A) antipode fun _ _ ↦ .all _ _).comp
         (Bialgebra.comulAlgHom R A) = (Algebra.ofId R A).comp (Bialgebra.counitAlgHom R A)) :
     HopfAlgebra R A :=
@@ -266,6 +266,6 @@ noncomputable abbrev ofAlgHom [CommSemiring R] [CommSemiring A] [Bialgebra R A]
         using congr(($mul_antipode_rTensor_comul).toLinearMap))
     (WithConv.ext <| by
       simpa [← Algebra.TensorProduct.lmul'_comp_map]
-        using congr(($mul_antipode_lTensor_comul).toLinearMap))
+        using congr(($mul_lTensor_antipode_comul).toLinearMap))
 
 end HopfAlgebra
