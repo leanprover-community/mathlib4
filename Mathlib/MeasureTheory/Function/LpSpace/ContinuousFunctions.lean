@@ -53,7 +53,7 @@ variable [IsFiniteMeasure μ]
 theorem mem_Lp (f : α →ᵇ E) : f.toContinuousMap.toAEEqFun μ ∈ Lp E p μ := by
   refine Lp.mem_Lp_of_ae_bound ‖f‖ ?_
   filter_upwards [f.toContinuousMap.coeFn_toAEEqFun μ] with x _
-  convert f.norm_coe_le_norm x using 2
+  convert! f.norm_coe_le_norm x using 2
 
 /-- The `Lp`-norm of a bounded continuous function is at most a constant (depending on the measure
 of the whole space) times its sup-norm. -/
@@ -64,7 +64,7 @@ theorem Lp_nnnorm_le (f : α →ᵇ E) :
   refine (f.toContinuousMap.coeFn_toAEEqFun μ).mono ?_
   intro x hx
   rw [← NNReal.coe_le_coe, coe_nnnorm, coe_nnnorm]
-  convert f.norm_coe_le_norm x using 2
+  convert! f.norm_coe_le_norm x using 2
 
 /-- The `Lp`-norm of a bounded continuous function is at most a constant (depending on the measure
 of the whole space) times its sup-norm. -/
@@ -151,7 +151,7 @@ theorem range_toLp :
       MeasureTheory.Lp.boundedContinuousFunction E p μ := by
   refine SetLike.ext' ?_
   have := (linearIsometryBoundedOfCompact α E 𝕜).surjective
-  convert Function.Surjective.range_comp this (BoundedContinuousFunction.toLp (E := E) p μ 𝕜)
+  convert! Function.Surjective.range_comp this (BoundedContinuousFunction.toLp (E := E) p μ 𝕜)
   rw [← BoundedContinuousFunction.range_toLp p μ (𝕜 := 𝕜), Submodule.coe_toAddSubgroup,
     LinearMap.coe_range, ContinuousLinearMap.coe_coe]
 
@@ -191,7 +191,7 @@ then in fact `g n` converges uniformly to `h`. -/
 theorem hasSum_of_hasSum_Lp {β : Type*} [μ.IsOpenPosMeasure]
     {g : β → C(α, E)} {f : C(α, E)} (hg : Summable g)
     (hg2 : HasSum (toLp (E := E) p μ 𝕜 ∘ g) (toLp (E := E) p μ 𝕜 f)) : HasSum g f := by
-  convert Summable.hasSum hg
+  convert! Summable.hasSum hg
   exact toLp_injective μ (hg2.unique ((toLp p μ 𝕜).hasSum <| Summable.hasSum hg))
 
 variable (μ) {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]

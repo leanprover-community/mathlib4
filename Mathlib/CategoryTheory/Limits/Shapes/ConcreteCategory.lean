@@ -296,11 +296,11 @@ def multiequalizerEquivAux {J : MulticospanShape.{w, w'}} (I : MulticospanIndex 
         | WalkingMulticospan.right b => I.fst b (x.1 _)
       property := by
         rintro (a | b) (a' | b') (f | f | f)
-        · simp
+        · simp only [WalkingMulticospan.Hom.id_eq_id, Functor.map_id]; rfl
         · rfl
         · dsimp
           exact (x.2 b').symm
-        · simp }
+        · simp only [WalkingMulticospan.Hom.id_eq_id, Functor.map_id]; rfl }
   left_inv := by
     intro x; ext (a | b)
     · rfl

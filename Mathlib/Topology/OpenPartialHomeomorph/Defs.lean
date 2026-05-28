@@ -105,9 +105,6 @@ theorem coe_mk (e : PartialEquiv X Y) (h₁ h₂ h₃ h₄) :
 theorem coe_mk_symm (e : PartialEquiv X Y) (h₁ h₂ h₃ h₄) :
     ((OpenPartialHomeomorph.mk (.mk e h₁ h₂) h₃ h₄).symm : Y → X) = e.symm :=
   rfl
-
-@[deprecated (since := "2026-05-20")] alias mk_coe_symm := coe_mk_symm
-
 theorem toPartialHomeomorph_injective :
     Injective (toPartialHomeomorph : OpenPartialHomeomorph X Y → PartialHomeomorph X Y)
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl

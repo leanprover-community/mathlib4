@@ -569,7 +569,7 @@ theorem isOpen_extChartAt_target [I.Boundaryless] (x : M) : IsOpen (extChartAt I
 /-- If we're boundaryless, `(extChartAt I x).target` is a neighborhood of the key point -/
 theorem extChartAt_target_mem_nhds [I.Boundaryless] (x : M) :
     (extChartAt I x).target ∈ 𝓝 (extChartAt I x x) := by
-  convert extChartAt_target_mem_nhdsWithin x
+  convert! extChartAt_target_mem_nhdsWithin x
   simp only [I.range_eq_univ, nhdsWithin_univ]
 
 /-- If we're boundaryless, `(extChartAt I x).target` is a neighborhood of any of its points -/

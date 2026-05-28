@@ -141,11 +141,11 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
           @if_pos _ _ h.choose_spec R (_ * _) 0, ← sum_pi_single', ← sum_add_distrib] at hμ
         rw [← hμ, sum_congr rfl]
         intro x hx
-        convert add_mul (R := R) _ _ _ using 2
+        convert! add_mul (R := R) _ _ _ using 2
         · by_cases hx : x = h.choose
           · rw [hx, Pi.single_eq_same, Pi.single_eq_same]
           · rw [Pi.single_eq_of_ne hx, Pi.single_eq_of_ne hx, zero_mul]
-        · convert (mul_assoc _ _ _).symm
+        · convert! (mul_assoc _ _ _).symm
           rw [prod_eq_prod_diff_singleton_mul (mem x hx), mul_comm, sdiff_sdiff_comm,
             sdiff_singleton_eq_erase a, erase_insert hat]
       · have : IsCoprime (s b) (s a) :=
@@ -177,7 +177,7 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
 
 theorem exists_sum_eq_one_iff_pairwise_coprime' [Fintype I] [Nonempty I] [DecidableEq I] :
     (∃ μ : I → R, (∑ i : I, μ i * ∏ j ∈ {i}ᶜ, s j) = 1) ↔ Pairwise (IsCoprime on s) := by
-  convert exists_sum_eq_one_iff_pairwise_coprime Finset.univ_nonempty (s := s) using 1
+  convert! exists_sum_eq_one_iff_pairwise_coprime Finset.univ_nonempty (s := s) using 1
   simp only [pairwise_subtype_iff_pairwise_finset', coe_univ, Set.pairwise_univ]
 
 theorem pairwise_coprime_iff_coprime_prod [DecidableEq I] :
