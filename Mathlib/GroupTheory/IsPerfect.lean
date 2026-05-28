@@ -106,6 +106,22 @@ instance instQuotientSubgroup [H.Normal] [IsPerfect G] : IsPerfect (G ⧸ H) :=
 
 variable (G) in
 @[simp]
+theorem derivedSeries_eq_top [IsPerfect G] (n : ℕ) : derivedSeries G n = ⊤ := by
+  match n with
+  | 0 => simp
+  | n + 1 =>
+    rw [← commutator_eq_top, commutator_def, derivedSeries_succ, derivedSeries_eq_top]
+
+variable (G) in
+@[simp]
+theorem lowerCentralSeries_eq_top [IsPerfect G] (n : ℕ) : Subgroup.lowerCentralSeries G n = ⊤ := by
+  match n with
+  | 0 => simp
+  | n + 1 =>
+    rw [← commutator_eq_top, commutator_def, lowerCentralSeries_succ', lowerCentralSeries_eq_top]
+
+variable (G) in
+@[simp]
 theorem upperCentralSeries_eq_center [IsPerfect G] {n : ℕ} (hn : n ≠ 0) :
     .upperCentralSeries G n = center G := by
   rw [← Subgroup.upperCentralSeries_one, eq_comm]
@@ -113,7 +129,7 @@ theorem upperCentralSeries_eq_center [IsPerfect G] {n : ℕ} (hn : n ≠ 0) :
   rw [Subgroup.upperCentralSeries_one, one_add_one_eq_two]
   apply le_antisymm
   · grw [← Subgroup.upperCentralSeries_one, Subgroup.upperCentralSeries_mono G one_le_two]
-  rw [← commutator_top_eq_bot_iff_le_center, ← IsPerfect.commutator_eq_top, commutator_comm]
+  rw [← commutator_top_eq_bot_iff_le_center, ← commutator_eq_top, commutator_comm]
   suffices ⁅⁅Subgroup.upperCentralSeries G 2, ⊤⁆, ⊤⁆ = ⊥ from
     commutator_commutator_eq_bot_of_rotate (by simpa [commutator_comm]) this
   apply bot_unique

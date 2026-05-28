@@ -421,6 +421,11 @@ theorem mem_lowerCentralSeries_succ_iff (n : ℕ) (q : G) :
                         ∃ q ∈ (⊤ : Subgroup G), ⁅p, q⁆ = x } := Iff.rfl
 
 @[to_additive]
+theorem lowerCentralSeries_succ' (n : ℕ) :
+    lowerCentralSeries G (n + 1) = ⁅lowerCentralSeries G n, ⊤⁆ :=
+  rfl
+
+@[to_additive]
 theorem lowerCentralSeries_succ (n : ℕ) :
     lowerCentralSeries G (n + 1) =
       closure { x | ∃ p ∈ lowerCentralSeries G n, ∃ q ∈ (⊤ : Subgroup G), ⁅p, q⁆ = x } :=
