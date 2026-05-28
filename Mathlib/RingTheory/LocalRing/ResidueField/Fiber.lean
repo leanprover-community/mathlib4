@@ -94,30 +94,31 @@ noncomputable def Fiber.algEquivQuotient :
         simp [Localization.tensorLeftAlgEquiv_apply_one_tmul p.primeCompl])
       commutes' := by simp }
 
+/-- `p.Fiber S` is isomorphic to the quotient `Sₚ ⧸ pSₚ`. -/
+noncomputable def Ideal.Fiber.algEquivAux₁ :
+    letI Sp := Localization (algebraMapSubmonoid S p.primeCompl)
+    letI pS := p.map (algebraMap R S)
+    letI : Algebra S (p.Fiber S) := rightAlgebra
+    p.Fiber S ≃ₐ[S] Sp ⧸ pS.map (algebraMap S Sp) :=
+  letI : Algebra S (p.Fiber S) := rightAlgebra
+  (Fiber.algEquivQuotient p).trans <| quotientEquivAlgOfEq S <| by
+    rw [← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← IsScalarTower.algebraMap_eq,
+      IsScalarTower.algebraMap_eq R S, ← map_map]
+
 /-- The localization of the fiber `p.Fiber S` is isomorphic to a quotient of a localization. -/
-noncomputable def Ideal.Fiber.localizationAlgEquivQuotient (q : Ideal (p.Fiber S)) [q.IsPrime]
-    [Algebra (Localization.AtPrime p) (Localization.AtPrime (q.comap includeRight))]
-    [Localization.AtPrime.IsLiesOverAlgebra p (q.comap includeRight)] :
+noncomputable def Ideal.Fiber.algEquivAux₂ (q : Ideal (p.Fiber S)) [q.IsPrime] :
     letI r := q.comap includeRight
     letI Sr := Localization.AtPrime r
-    Localization.AtPrime q ≃ₐ[Localization.AtPrime p] Sr ⧸ p.map (algebraMap R Sr) :=
+    letI pS := p.map (algebraMap R S)
+    Localization.AtPrime q ≃ₐ[R] Sr ⧸ pS.map (algebraMap S Sr) :=
   letI : Algebra S (p.Fiber S) := rightAlgebra
-  letI Rp := Localization.AtPrime p
   letI Sp := Localization (algebraMapSubmonoid S p.primeCompl)
   letI pS := p.map (algebraMap R S)
   letI SpS := S ⧸ pS
   letI r := q.comap includeRight
   letI Sr := Localization.AtPrime r
-  -- `p.Fiber S` is isomorphic to the quotient `Sₚ ⧸ pSₚ`.
-  letI e₁ : p.Fiber S ≃ₐ[S] Sp ⧸ pS.map (algebraMap S Sp) :=
-    (Fiber.algEquivQuotient p).trans <| quotientEquivAlgOfEq S <| by
-      rw [← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← IsScalarTower.algebraMap_eq,
-        IsScalarTower.algebraMap_eq R S Sp, ← map_map]
-  -- `q'` is the prime ideal of `Sₚ ⧸ pSₚ` corresponding to `q`.
+  letI e₁ : p.Fiber S ≃ₐ[S] Sp ⧸ pS.map (algebraMap S Sp) := algEquivAux₁ p
   letI q' : Ideal (Sp ⧸ pS.map (algebraMap S Sp)) := q.comap e₁.symm
-  -- `q` and `q'` have isomorphic localizations.
-  letI e₂ : Localization.AtPrime q ≃ₐ[R] Localization.AtPrime q' :=
-    (Localization.localAlgEquiv q' q e₁.symm rfl).symm.restrictScalars R
   haveI : (q'.under SpS).LiesOver r := under_liesOver_of_liesOver SpS q' (q.under S)
   haveI : algebraMapSubmonoid SpS r.primeCompl = (q'.under SpS).primeCompl :=
     algebraMapSubmonoid_primeCompl_of_liesOver_surjective (q'.under SpS) r Quotient.mk_surjective
@@ -126,21 +127,32 @@ noncomputable def Ideal.Fiber.localizationAlgEquivQuotient (q : Ideal (p.Fiber S
       (algebraMapSubmonoid SpS (algebraMapSubmonoid S p.primeCompl)) (Localization.AtPrime q') q'
   haveI := IsScalarTower.to₁₃₄ R S SpS (Localization.AtPrime q')
   haveI := IsScalarTower.to₁₃₄ R S SpS (Sr ⧸ pS.map (algebraMap S Sr))
-  -- Localization commutes with quotients, so the localization at `q'` is isomorphic to a quotient.
-  letI e₃ : Localization.AtPrime q' ≃ₐ[R] Sr ⧸ pS.map (algebraMap S Sr) :=
-    (IsLocalization.algEquiv (algebraMapSubmonoid SpS r.primeCompl) (Localization.AtPrime q')
-      (Sr ⧸ pS.map (algebraMap S Sr))).restrictScalars R
-  -- These isomorphisms over `R` lift to `Rp` by the universal property of localization.
-  letI e₄ : Localization.AtPrime q ≃ₐ[Rp] Sr ⧸ pS.map (algebraMap S Sr) :=
-  { __ := e₂.trans e₃
+  ((Localization.localAlgEquiv q' q e₁.symm rfl).symm.restrictScalars R).trans
+    ((IsLocalization.algEquiv (algebraMapSubmonoid SpS r.primeCompl) (Localization.AtPrime q')
+      (Sr ⧸ pS.map (algebraMap S Sr))).restrictScalars R)
+
+/-- The localization of the fiber `p.Fiber S` is isomorphic to a quotient of a localization. -/
+noncomputable def Ideal.Fiber.localizationAlgEquivQuotient (q : Ideal (p.Fiber S)) [q.IsPrime]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime (q.comap includeRight))]
+    [Localization.AtPrime.IsLiesOverAlgebra p (q.comap includeRight)] :
+    letI r := q.comap includeRight
+    letI Sr := Localization.AtPrime r
+    Localization.AtPrime q ≃ₐ[Localization.AtPrime p] Sr ⧸ p.map (algebraMap R Sr) :=
+  letI Rp := Localization.AtPrime p
+  letI pS := p.map (algebraMap R S)
+  letI r := q.comap includeRight
+  letI Sr := Localization.AtPrime r
+  letI e₂ : Localization.AtPrime q ≃ₐ[R] Sr ⧸ pS.map (algebraMap S Sr) := algEquivAux₂ p q
+  letI e₃ : Localization.AtPrime q ≃ₐ[Rp] Sr ⧸ pS.map (algebraMap S Sr) :=
+  { __ := e₂
     commutes' := by
-      let f := (e₂.trans e₃).toAlgHom.comp (IsScalarTower.toAlgHom R Rp (Localization.AtPrime q))
+      let f := e₂.toAlgHom.comp (IsScalarTower.toAlgHom R Rp (Localization.AtPrime q))
       let g := IsScalarTower.toAlgHom R Rp (Sr ⧸ pS.map (algebraMap S Sr))
       have : f.toRingHom.comp (algebraMap R Rp) = g.toRingHom.comp (algebraMap R Rp) := by simp
       suffices f = g by rwa [DFunLike.ext_iff] at this
       apply Localization.algHom_ext
       rwa [DFunLike.ext_iff] at this ⊢ }
-  e₄.trans <| quotientEquivAlgOfEq Rp (map_map _ _)
+  e₃.trans <| quotientEquivAlgOfEq Rp (map_map _ _)
 
 set_option backward.isDefEq.respectTransparency false in
 variable (R S) in
