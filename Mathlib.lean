@@ -4186,7 +4186,6 @@ public import Mathlib.Data.Nat.GCD.BigOperators
 public import Mathlib.Data.Nat.GCD.Prime
 public import Mathlib.Data.Nat.Hyperoperation
 public import Mathlib.Data.Nat.Init
-public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.Nat.Log
 public import Mathlib.Data.Nat.MaxPowDiv
 public import Mathlib.Data.Nat.ModEq
@@ -6088,6 +6087,7 @@ public import Mathlib.Order.Monotone.MonovaryOrder
 public import Mathlib.Order.Monotone.Odd
 public import Mathlib.Order.Monotone.Union
 public import Mathlib.Order.Nat
+public import Mathlib.Order.Nat.Lattice
 public import Mathlib.Order.NonemptyFiniteChains
 public import Mathlib.Order.Northcott
 public import Mathlib.Order.Notation

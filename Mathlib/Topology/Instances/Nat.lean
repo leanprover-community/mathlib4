@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Order.Nat.Lattice
 public import Mathlib.Topology.Instances.Int
 
 /-!

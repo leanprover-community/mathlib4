@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.GroupWithZero.Hom
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Order.Nat.Lattice
 
 /-!
 # Definition of nilpotent elements

@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Order.Nonneg.Floor
 public import Mathlib.Data.Real.Pointwise
 public import Mathlib.Data.NNReal.Defs
 public import Mathlib.Order.ConditionallyCompleteLattice.Group
-public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Order.Nat.Lattice
 
 /-!
 # Basic results on nonnegative real numbers
