@@ -97,7 +97,7 @@ noncomputable def Fiber.algEquivQuotient :
       commutes' := by simp }
 
 /-- `p.Fiber S` is isomorphic to the quotient `Sₚ ⧸ pSₚ`. -/
-noncomputable def Ideal.Fiber.algEquivAux₁ :
+noncomputable def Fiber.algEquivAux₁ :
     letI Sp := Localization (algebraMapSubmonoid S p.primeCompl)
     letI pS := p.map (algebraMap R S)
     letI : Algebra S (p.Fiber S) := rightAlgebra
@@ -108,7 +108,7 @@ noncomputable def Ideal.Fiber.algEquivAux₁ :
       IsScalarTower.algebraMap_eq R S, ← map_map]
 
 /-- The localization of the fiber `p.Fiber S` is isomorphic to a quotient of a localization. -/
-noncomputable def Ideal.Fiber.algEquivAux₂ (q : Ideal (p.Fiber S)) [q.IsPrime] :
+noncomputable def Fiber.algEquivAux₂ (q : Ideal (p.Fiber S)) [q.IsPrime] :
     letI r := q.comap includeRight
     letI Sr := Localization.AtPrime r
     letI pS := p.map (algebraMap R S)
@@ -134,7 +134,7 @@ noncomputable def Ideal.Fiber.algEquivAux₂ (q : Ideal (p.Fiber S)) [q.IsPrime]
       (Sr ⧸ pS.map (algebraMap S Sr))).restrictScalars R)
 
 /-- The localization of the fiber `p.Fiber S` is isomorphic to a quotient of a localization. -/
-noncomputable def Ideal.Fiber.localizationAlgEquivQuotient (q : Ideal (p.Fiber S)) [q.IsPrime]
+noncomputable def Fiber.localizationAlgEquivQuotient (q : Ideal (p.Fiber S)) [q.IsPrime]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime (q.comap includeRight))]
     [Localization.AtPrime.IsLiesOverAlgebra p (q.comap includeRight)] :
     letI r := q.comap includeRight

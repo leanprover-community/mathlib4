@@ -691,6 +691,8 @@ variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B]
   [Algebra R A] [Algebra S A] [IsScalarTower R S A]
   [Algebra R B] [Algebra S B] [IsScalarTower R S B]
 
+/-- For an algebra homomorphism `f : A →ₐ[R] B`, if `A` and `B` are algebras over a localization
+`S` of `R`, then `f` is automatically an `S`-algebra homomorphism. -/
 def AlgHom.extendScalarsOfIsLocalization (f : A →ₐ[R] B) : A →ₐ[S] B where
   __ := f
   commutes' := by
@@ -706,6 +708,8 @@ theorem AlgHom.extendScalarsOfIsLocalization_apply (f : A →ₐ[R] B) (a : A) :
     f.extendScalarsOfIsLocalization S M a = f a :=
   rfl
 
+/-- For an algebra isomorphism `f : A ≃ₐ[R] B`, if `A` and `B` are algebras over a localization
+`S` of `R`, then `f` is automatically an `S`-algebra isomorphism. -/
 @[simps]
 def AlgEquiv.extendScalarsOfIsLocalization (f : A ≃ₐ[R] B) : A ≃ₐ[S] B where
   __ := f.toAlgHom.extendScalarsOfIsLocalization S M
