@@ -620,9 +620,11 @@ omit [IsOrderedCancelAddMonoid Γ] in
 /-- delete this? -/
 theorem cosupp_subset_iunion_cosupp_left {V} [AddCommMonoid V] (s : SummableFamily Γ R α)
     (t : SummableFamily Γ' V β) (g : Γ') {gh : Γ × Γ'}
-    (hgh : gh ∈ VAddAntidiagonal s.isPWO_iUnion_support t.isPWO_iUnion_support g) :
+    (hgh : gh ∈ VAddAntidiagonal g (Set.VAddAntidiagonal.finite_of_isPWO s.isPWO_iUnion_support
+      t.isPWO_iUnion_support g)) :
     Set.Finite.toFinset (s.finite_co_support (gh.1)) ⊆
-    (VAddAntidiagonal s.isPWO_iUnion_support t.isPWO_iUnion_support g).biUnion
+    (VAddAntidiagonal g (Set.VAddAntidiagonal.finite_of_isPWO s.isPWO_iUnion_support
+      t.isPWO_iUnion_support g)).biUnion
       fun (g' : Γ × Γ') => Set.Finite.toFinset (s.finite_co_support (g'.1)) := by
   intro a ha
   simp_all only [mem_vaddAntidiagonal, Set.mem_iUnion, mem_support, ne_eq, Set.Finite.mem_toFinset,

@@ -608,7 +608,7 @@ theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
     · refine Finset.sum_of_injOn (fun k ↦ k) (Function.Injective.injOn fun ⦃x y⦄ a ↦ a) ?_ ?_ ?_
       · rw [Set.mapsTo_iff_image_subset, Set.image_id', Finset.coe_subset]
         intro ij hij
-        obtain ⟨h₁, h₂, h₃⟩ := (Finset.mem_vaddAntidiagonal _ _ _).mp hij
+        obtain ⟨h₁, h₂, h₃⟩ := (Finset.mem_vaddAntidiagonal _ _).mp hij
         rw [HahnSeries.mem_support] at h₁
         have hij1 : ∃ k : ℕ, (n • g + k • (g' - g)) = ij.1 := by
           contrapose! h₁

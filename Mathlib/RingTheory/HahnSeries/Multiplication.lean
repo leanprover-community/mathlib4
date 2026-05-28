@@ -140,7 +140,7 @@ def of (R : Type*) [SMul R V] : V⟦Γ⟧ ≃ HahnModule Γ R V :=
 
 /-- Recursion principle to reduce a result about the synonym to the original type. -/
 @[elab_as_elim]
-def rec [PartialOrder Γ] [Zero V] [SMul R V] {motive : HahnModule Γ R V → Sort*}
+def rec {motive : HahnModule Γ R V → Sort*}
     (h : ∀ x : V⟦Γ⟧, motive (of R x)) : ∀ x, motive x :=
   fun x => h <| (of R).symm x
 
@@ -152,7 +152,11 @@ end
 
 section BaseStructure
 
-variable [PartialOrder Γ] [SMul R V]
+variable [PartialOrder Γ]
+
+section SMul
+
+variable [SMul R V]
 
 instance instZero [Zero V] : Zero (HahnModule Γ R V) :=
   inferInstanceAs <| Zero V⟦Γ⟧
@@ -181,10 +185,14 @@ instance instBaseSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
     (of R) (n • x) = n • (of R) x := rfl
 @[simp] theorem of_symm_nsmul [AddCommMonoid V] (n : ℕ) (x : HahnModule Γ R V) :
     (of R).symm (n • x) = n • (of R).symm x := rfl
-@[simp] theorem of_zsmul {V} [AddCommGroup V] [SMul R V] (n : ℤ) (x : HahnSeries Γ V) :
+@[simp] theorem of_zsmul [AddCommGroup V] (n : ℤ) (x : HahnSeries Γ V) :
     (of R) (n • x) = n • (of R) x := rfl
-@[simp] theorem of_symm_zsmul {V} [AddCommGroup V] [SMul R V] (n : ℤ) (x : HahnModule Γ R V) :
+@[simp] theorem of_symm_zsmul [AddCommGroup V] (n : ℤ) (x : HahnModule Γ R V) :
     (of R).symm (n • x) = n • (of R).symm x := rfl
+
+end SMul
+
+section SMulZeroClass
 
 instance instBaseSMulZeroClass [Zero V] [SMulZeroClass R V] :
     SMulZeroClass R (HahnModule Γ R V) :=
@@ -192,7 +200,7 @@ instance instBaseSMulZeroClass [Zero V] [SMulZeroClass R V] :
 
 @[simp] theorem of_smul [Zero V] [SMulZeroClass R V] (r : R) (x : HahnSeries Γ V) :
   (of R) (r • x) = r • (of R) x := rfl
-@[simp] theorem of_symm_smul [Zero V] [SMulZeroClass R V] (r : R) (x : HahnModule Γ R V) :
+@[simp] theorem of_symm_smul {V} [Zero V] [SMulZeroClass R V] (r : R) (x : HahnModule Γ R V) :
   (of R).symm (r • x) = r • (of R).symm x := rfl
 
 instance instBaseModule [Semiring R] [AddCommMonoid V] [Module R V] : Module R (HahnModule Γ R V) :=
@@ -209,6 +217,7 @@ def lof (R : Type*) [Semiring R] [AddCommMonoid V] [Module R V] :
   left_inv := congrFun rfl
   right_inv := congrFun rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- HahnModule coefficient-wise map as a HahnSeries-linear map. -/
 def map [Semiring R] [AddCommMonoid V] [Module R V] [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) :
     HahnModule Γ R U →ₗ[R] HahnModule Γ R V where
@@ -222,6 +231,7 @@ protected lemma map_coeff [Semiring R] [AddCommMonoid V] [Module R V] [AddCommMo
     ((of R).symm (map f x)).coeff g = f (((of R).symm x).coeff g) := by
   simp [map]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The linear equivalence between Hahn modules induced by an order equivalence. -/
 def equivDomain [Semiring R] [AddCommMonoid V] [Module R V] [PartialOrder Γ'] (f : Γ ≃o Γ') :
     HahnModule Γ R V ≃ₗ[R] HahnModule Γ' R V where
@@ -231,6 +241,8 @@ def equivDomain [Semiring R] [AddCommMonoid V] [Module R V] [PartialOrder Γ'] (
   invFun x := (of R) (HahnSeries.equivDomain f.symm ((of R).symm x))
   left_inv _ := by ext; simp
   right_inv _ := by ext; simp
+
+end SMulZeroClass
 
 end BaseStructure
 
@@ -311,9 +323,7 @@ theorem ofFinsupp_smul_coeff {R} [Semiring R] [Module R V] (f : AddMonoidAlgebra
   · intro gh h
     simpa [mem_coe, mem_vaddAntidiagonal_iff] using h
   · intro gh h hn
-    simp only [mem_vaddAntidiagonal] at h
-    simp only [id_eq, Set.image_id', mem_coe, mem_vaddAntidiagonal_iff, h.2.2, and_true] at hn
-    aesop
+    simp_all
   · intro gh h
     simp
 
@@ -913,6 +923,7 @@ theorem smul_comm [CommSemiring R] [Module R V] (r : R) (x : HahnSeries Γ R)
   rw [SMulCommClass.smul_comm]
 
 open TensorProduct in
+set_option backward.isDefEq.respectTransparency false in
 /-- The map that tensors a Hahn series with a module on the right. -/
 def rightTensorMap [CommSemiring R] [AddCommMonoid U] [Module R V] [Module R U] :
     HahnModule Γ' R U ⊗[R] V →ₗ[R] HahnModule Γ' R (U ⊗[R] V) :=
@@ -939,6 +950,7 @@ def rightTensorMap [CommSemiring R] [AddCommMonoid U] [Module R V] [Module R U] 
       intro r y
       ext; simp [smul_tmul'] }
 
+set_option backward.isDefEq.respectTransparency false in
 open TensorProduct in
 /-- The map that tensors a Hahn series with a module on the right. -/
 def leftTensorMap [CommSemiring R] [AddCommMonoid U] [Module R V] [Module R U] :
@@ -1104,8 +1116,8 @@ theorem embDomain_smul (φ : Γ ↪o Γ') (f : Γ₁ ↪o Γ₂) (hf : ∀ (g : 
   · obtain ⟨g, rfl⟩ := hg
     simp only [coeff_smul, HahnSeries.embDomain_coeff]
     trans
-      ∑ ij ∈ (VAddAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support g).map
-          (φ.toEmbedding.prodMap f.toEmbedding),
+      ∑ ij ∈ (VAddAntidiagonal g (Set.VAddAntidiagonal.finite_of_isPWO x.isPWO_support
+          ((of R).symm y).isPWO_support g)).map (φ.toEmbedding.prodMap f.toEmbedding),
           (HahnSeries.embDomain φ x).coeff ij.1 •
           (HahnSeries.embDomain f ((of R).symm y)).coeff ij.2
     · simp
@@ -1290,6 +1302,7 @@ namespace HahnModule
 
 variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Hahn-semilinear equivalence between Hahn modules induced by an order equivalence. -/
 def equivDomainModuleHom_base {Γ₁ Γ₂ : Type*} [PartialOrder Γ₁] [PartialOrder Γ₂] [Semiring R]
     [AddCommMonoid V] [Module R V] (f : Γ₁ ≃o Γ₂) :

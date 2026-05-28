@@ -101,7 +101,7 @@ theorem mem_smulAntidiagonal_iff [SMul G P] [IsLeftCancelSMul G P] [Semiring R] 
   simp [smulAntidiagonal]
 
 @[to_additive]
-theorem mem_smulAntidiagonal_of_group [Group G] [MulAction G P] [Semiring R] [Zero V]
+theorem mem_smulAntidiagonal_of_group' [Group G] [MulAction G P] [Semiring R] [Zero V]
     (f : MonoidAlgebra R G) (x : P → V) (p : P) (gh : G × P) :
     gh ∈ smulAntidiagonal f x p ↔ f gh.1 ≠ 0 ∧ x gh.2 ≠ 0 ∧ gh.2 = gh.1⁻¹ • p := by
   rw [mem_smulAntidiagonal_iff, eq_inv_smul_iff]
@@ -117,18 +117,18 @@ theorem smul_eq_MonoidAlgebra_mul [Semiring R] [CancelMonoid G] (a b : MonoidAlg
   · exact fun (x, y) ↦ ⟨x, y⟩
   · simp
   · intro gh h
-    rw [Finset.mem_coe, mem_smulAntidiagonal_iff] at h
+    rw [Finset.mem_coe, Finset.mem_smulAntidiagonal] at h
     have : b gh.2 ≠ 0 := h.2.1
     simp [h.1, this]
   · intro gh _ h
     simp only [Set.mem_image, Finset.mem_coe, Prod.exists, not_exists, not_and] at h
     contrapose! h
     use gh.fst, gh.snd
-    rw [mem_smulAntidiagonal_iff]
+    rw [Finset.mem_smulAntidiagonal]
     simp only [ne_eq, ite_eq_right_iff, Classical.not_imp] at h
     exact ⟨⟨(by simp [left_ne_zero_of_mul h.2]), right_ne_zero_of_mul h.2, h.1⟩, rfl⟩
   · intro _ h
-    rw [mem_smulAntidiagonal_iff, smul_eq_mul] at h
+    rw [Finset.mem_smulAntidiagonal, smul_eq_mul] at h
     simp [h.2.2]
 
 end MonoidAlgebra
