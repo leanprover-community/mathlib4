@@ -114,7 +114,7 @@ lemma mem_restrictedTopology_iff {X : C} {S : Sieve X} :
     G.mem_restrictedTopology_of_functorPushforward_mem⟩
 
 @[deprecated (since := "2026-05-28")]
-alias mem_restrictedTopology_sieves_iff := mem_restrictedTopology_iff
+alias mem_inducedTopology_sieves_iff := mem_restrictedTopology_iff
 
 /-- `G` is cover-lifting w.r.t. the induced topology. -/
 instance : G.IsCocontinuous (G.restrictedTopology K) K where
