@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
-public import Mathlib.CategoryTheory.Monoidal.Discrete
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 import Mathlib.Tactic.Attr.Register
@@ -103,10 +102,7 @@ variable {M X Y : C} [MonObj M]
 @[inherit_doc] scoped notation "η" => MonObj.one
 @[inherit_doc] scoped notation "η[" M "]" => MonObj.one (X := M)
 
-attribute [reassoc (attr := simp)] one_mul mul_one mul_assoc
-attribute [reassoc (attr := simp)] AddMonObj.zero_add AddMonObj.add_zero AddMonObj.add_assoc
-set_option linter.existingAttributeWarning false in
-attribute [to_additive existing] one_mul_assoc mul_one_assoc mul_assoc_assoc
+attribute [to_additive existing (attr := reassoc (attr := simp))] one_mul mul_one mul_assoc
 
 /-- Transfer `MonObj` along an isomorphism. -/
 -- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
