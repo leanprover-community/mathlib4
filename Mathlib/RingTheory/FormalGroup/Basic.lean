@@ -411,10 +411,10 @@ lemma FormalGroupHom.map_add (f : FormalGroupHom F G) {x y : F.Point σ} :
       rfl
     _ = _ := by
       rw [f.hom, subst_comp_subst_apply
-        (PowerSeries.HasSubst.toMvPowerSeries f.zero_constantCoeff) this]
+        (MvPowerSeries.HasSubst.toMvPowerSeries f.zero_constantCoeff) this]
       congr
       ext s : 1
-      fin_cases s <;> simp [PowerSeries.toMvPowerSeries_val _ this]
+      fin_cases s <;> simp [PowerSeries.subst_toMvPowerSeries this]
 
 /-- A formal group homomorphism $f : F → G$ is a add monoid homomorphism from `F.Point σ` to
 `G.Point σ`. -/
