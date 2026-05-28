@@ -408,7 +408,7 @@ theorem freeRank_eq_zero (hG : IsTorsion G) [Group.FG G] : freeRank G = 0 :=
   freeRank_eq_zero_iff.mpr hG
 
 @[to_additive]
-theorem freeRank_eq_zero_of_finite [Finite G] [Group.FG G] : freeRank G = 0 :=
+theorem freeRank_eq_zero_of_finite [Finite G] : freeRank G = 0 :=
   freeRank_eq_zero isTorsion_of_finite
 
 @[to_additive]
