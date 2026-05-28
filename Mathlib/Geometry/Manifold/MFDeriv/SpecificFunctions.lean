@@ -435,7 +435,7 @@ theorem mdifferentiableOn_prod_module_iff (f : M → F₁ × F₂) :
 
 theorem mdifferentiable_prod_iff (f : M → M' × N') :
     MDiff f ↔ MDiff (Prod.fst ∘ f) ∧ MDiff (Prod.snd ∘ f) :=
-  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ by convert h.1.prodMk h.2⟩
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ by convert! h.1.prodMk h.2⟩
 
 theorem mdifferentiable_prod_module_iff (f : M → F₁ × F₂) :
     MDifferentiable I 𝓘(𝕜, F₁ × F₂) f ↔ MDiff (Prod.fst ∘ f) ∧ MDiff (Prod.snd ∘ f) := by
@@ -462,7 +462,7 @@ theorem MDifferentiableWithinAt.prodMap (hf : MDiffAt[s] f x) (hg : MDiffAt[r] g
 theorem MDifferentiableAt.prodMap (hf : MDiffAt f x) (hg : MDiffAt g y) :
     MDiffAt (Prod.map f g) (x, y) := by
   rw [← mdifferentiableWithinAt_univ] at *
-  convert hf.prodMap hg
+  convert! hf.prodMap hg
   exact univ_prod_univ.symm
 
 /-- Variant of `MDifferentiableAt.prod_map` in which the point in the product is given as `p`
@@ -506,7 +506,7 @@ lemma HasMFDerivAt.prodMap {p : M × M'} {f : M → N} {g : M' → N'}
     HasMFDerivAt% (Prod.map f g) p
       ((mfderiv% f p.1).prodMap (mfderiv% g p.2)) := by
   simp_rw [← hasMFDerivWithinAt_univ, ← mfderivWithin_univ, ← univ_prod_univ]
-  convert hf.hasMFDerivWithinAt.prodMap hg.hasMFDerivWithinAt
+  convert! hf.hasMFDerivWithinAt.prodMap hg.hasMFDerivWithinAt
   · rw [mfderivWithin_univ]; exact hf.mfderiv
   · rw [mfderivWithin_univ]; exact hg.mfderiv
 
@@ -587,7 +587,7 @@ theorem mfderiv_prod_eq_add {f : M × M' → M''} {p : M × M'}
     mdifferentiableAt_const.mfderiv_prod mdifferentiableAt_snd, mfderiv_fst,
     mfderiv_snd, mfderiv_const, mfderiv_const]
   symm
-  convert ContinuousLinearMap.comp_id <| mfderiv% f (p.1, p.2)
+  convert! ContinuousLinearMap.comp_id <| mfderiv% f (p.1, p.2)
   exact ContinuousLinearMap.coprod_inl_inr
 
 /-- The total derivative of a function in two variables is the sum of the partial derivatives.
@@ -716,7 +716,7 @@ theorem hasMFDerivWithinAt_inl :
 
 theorem hasMFDerivAt_inl :
     HasMFDerivAt% (@Sum.inl M M') q (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
-  simpa [HasMFDerivAt, hasMFDerivWithinAt_univ] using hasMFDerivWithinAt_inl (s := Set.univ)
+  simpa [HasMFDerivAt, hasMFDerivWithinAt_univ] using! hasMFDerivWithinAt_inl (s := Set.univ)
 
 theorem hasMFDerivWithinAt_inr {t : Set M'} :
     HasMFDerivAt[t] (@Sum.inr M M') q' (ContinuousLinearMap.id 𝕜 (TangentSpace I q')) := by
@@ -729,7 +729,7 @@ theorem hasMFDerivWithinAt_inr {t : Set M'} :
 
 theorem hasMFDerivAt_inr :
     HasMFDerivAt% (@Sum.inr M M') q' (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
-  simpa [HasMFDerivAt, hasMFDerivWithinAt_univ] using hasMFDerivWithinAt_inr (t := Set.univ)
+  simpa [HasMFDerivAt, hasMFDerivWithinAt_univ] using! hasMFDerivWithinAt_inr (t := Set.univ)
 
 theorem mfderivWithin_sumInl (hU : UniqueMDiffWithinAt I s q) :
     mfderiv[s] (@Sum.inl M M') q = ContinuousLinearMap.id 𝕜 (TangentSpace I p) :=
@@ -803,7 +803,7 @@ lemma HasMFDerivWithinAt.sum (hf : ∀ i ∈ t, HasMFDerivAt[s] (f i) z (f' i)) 
     HasMFDerivAt[s] (∑ i ∈ t, f i) z (∑ i ∈ t, f' i) := by
   classical
   induction t using Finset.induction_on with
-  | empty => simpa using hasMFDerivWithinAt_const ..
+  | empty => simpa using! hasMFDerivWithinAt_const ..
   | insert i s hi IH => grind [HasMFDerivWithinAt.add]
 
 lemma HasMFDerivAt.sum (hf : ∀ i ∈ t, HasMFDerivAt% (f i) z (f' i)) :
@@ -858,7 +858,7 @@ theorem HasMFDerivAt.neg (hf : HasMFDerivAt% f z f') : HasMFDerivAt% (-f) z (-f'
   ⟨hf.1.neg, hf.2.neg⟩
 
 theorem hasMFDerivAt_neg : HasMFDerivAt% (-f) z (-f') ↔ HasMFDerivAt% f z f' :=
-  ⟨fun hf ↦ by convert hf.neg <;> rw [neg_neg], fun hf ↦ hf.neg⟩
+  ⟨fun hf ↦ by convert! hf.neg <;> rw [neg_neg], fun hf ↦ hf.neg⟩
 
 theorem MDifferentiableWithinAt.neg {s : Set M} (hf : MDiffAt[s] f z) : MDiffAt[s] (-f) z :=
   (hf.hasMFDerivWithinAt.neg).mdifferentiableWithinAt
@@ -873,7 +873,7 @@ theorem mdifferentiableWithinAt_neg : MDiffAt[s] (-f) z ↔ MDiffAt[s] f z :=
   ⟨fun hf ↦ by convert hf.neg; rw [neg_neg], fun hf ↦ hf.neg⟩
 
 theorem mdifferentiableAt_neg : MDiffAt (-f) z ↔ MDiffAt f z :=
-  ⟨fun hf ↦ by convert hf.neg; rw [neg_neg], fun hf ↦ hf.neg⟩
+  ⟨fun hf ↦ by convert! hf.neg; rw [neg_neg], fun hf ↦ hf.neg⟩
 
 theorem MDifferentiable.neg (hf : MDiff f) : MDiff (-f) := fun x ↦ (hf x).neg
 
@@ -932,7 +932,7 @@ variable {z : M} {F' : Type*} [NormedRing F'] [NormedAlgebra 𝕜 F'] {p q : M �
 theorem HasMFDerivWithinAt.mul' (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p')
     (hq : HasMFDerivWithinAt I 𝓘(𝕜, F') q s z q') :
     HasMFDerivWithinAt I 𝓘(𝕜, F') (p * q) s z (p z • q' + p' <• q z : E →L[𝕜] F') :=
-  ⟨hp.1.mul hq.1, by simpa only [mfld_simps] using hp.2.mul' hq.2⟩
+  ⟨hp.1.mul hq.1, by simpa only [mfld_simps] using! hp.2.mul' hq.2⟩
 
 theorem HasMFDerivAt.mul' (hp : HasMFDerivAt I 𝓘(𝕜, F') p z p')
     (hq : HasMFDerivAt I 𝓘(𝕜, F') q z q') :
@@ -959,8 +959,8 @@ theorem MDifferentiable.mul (hp : MDifferentiable I 𝓘(𝕜, F') p)
 theorem MDifferentiableWithinAt.pow (hp : MDifferentiableWithinAt I 𝓘(𝕜, F') p s z)
     (n : ℕ) : MDifferentiableWithinAt I 𝓘(𝕜, F') (p ^ n) s z := by
   induction n with
-  | zero => simpa [pow_zero] using mdifferentiableWithinAt_const
-  | succ n hn => simpa [pow_succ] using hn.mul hp
+  | zero => simpa [pow_zero] using! mdifferentiableWithinAt_const
+  | succ n hn => simpa [pow_succ] using! hn.mul hp
 
 theorem MDifferentiableAt.pow (hp : MDifferentiableAt I 𝓘(𝕜, F') p z) (n : ℕ) :
     MDifferentiableAt I 𝓘(𝕜, F') (p ^ n) z :=
@@ -983,7 +983,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem HasMFDerivWithinAt.mul (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p')
     (hq : HasMFDerivWithinAt I 𝓘(𝕜, F') q s z q') :
     HasMFDerivWithinAt I 𝓘(𝕜, F') (p * q) s z (p z • q' + q z • p' : E →L[𝕜] F') := by
-  convert hp.mul' hq; ext _; apply mul_comm
+  convert! hp.mul' hq; ext _; apply mul_comm
 
 theorem HasMFDerivAt.mul (hp : HasMFDerivAt I 𝓘(𝕜, F') p z p')
     (hq : HasMFDerivAt I 𝓘(𝕜, F') q z q') :
@@ -1000,11 +1000,11 @@ lemma HasMFDerivWithinAt.prod [DecidableEq ι]
       (∑ i ∈ t, (∏ j ∈ t.erase i, f j z) • (f' i)) := by
   classical
   induction t using Finset.induction_on with
-  | empty => simpa using hasMFDerivWithinAt_const ..
+  | empty => simpa using! hasMFDerivWithinAt_const ..
   | insert i t hi IH =>
     rw [t.sum_insert hi, t.erase_insert hi, t.prod_insert hi, add_comm]
     rw [t.forall_mem_insert] at hf
-    convert hf.1.mul (IH hf.2) using 2
+    convert! hf.1.mul (IH hf.2) using 2
     · simp only [t.smul_sum, ← mul_smul]
       refine t.sum_congr rfl (fun j hj ↦ ?_)
       rw [t.erase_insert_of_ne (by grind), Finset.prod_insert (by grind)]
@@ -1099,7 +1099,7 @@ variable {z : M} {F' : Type*} [NormedField F'] [NormedAlgebra 𝕜 F'] {p q : M 
 
 lemma HasMFDerivWithinAt.inv (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p') (hp_ne : p z ≠ 0) :
     HasMFDerivWithinAt I 𝓘(𝕜, F') (p⁻¹) s z (-(p z ^ 2)⁻¹ • p' : E →L[𝕜] F') := by
-  convert hp.inv' hp_ne
+  convert! hp.inv' hp_ne
   ext
   simp
   ring_nf
@@ -1112,7 +1112,7 @@ lemma HasMFDerivWithinAt.div (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p')
     (hq : HasMFDerivWithinAt I 𝓘(𝕜, F') q s z q') (hq_ne : q z ≠ 0) :
     HasMFDerivWithinAt I 𝓘(𝕜, F') (p / q) s z
       ((1 / q z) • p' - (p z / q z ^ 2) • q' : E →L[𝕜] F') := by
-  convert hp.mul (hq.inv hq_ne) using 1
+  convert! hp.mul (hq.inv hq_ne) using 1
   · simp [div_eq_mul_inv]
   · ext
     simp [div_eq_mul_inv]

@@ -57,11 +57,11 @@ lemma of_mvPolynomial_int_ext {R} {f g : ℤ[n] ⟶ R} (h : ∀ i, f (.X i) = g 
       g.hom.comp (MvPolynomial.mapEquiv _ ULift.ringEquiv.symm).toRingHom by
     ext x
     · obtain ⟨x⟩ := x
-      simpa [-map_intCast, -eq_intCast] using DFunLike.congr_fun this (C x)
-    · simpa [-map_intCast, -eq_intCast] using DFunLike.congr_fun this (X x)
+      simpa [-map_intCast, -eq_intCast] using! DFunLike.congr_fun this (C x)
+    · simpa [-map_intCast, -eq_intCast] using! DFunLike.congr_fun this (X x)
   ext1
   · exact RingHom.ext_int _ _
-  · simpa using h _
+  · simpa using! h _
 
 
 @[simps -isSimp]
@@ -320,7 +320,7 @@ lemma isPullback_map {S T : Scheme.{max u v}} (f : S ⟶ T) :
     IsPullback (map n f) (𝔸(n; S) ↘ S) (𝔸(n; T) ↘ T) f := by
   refine (IsPullback.paste_horiz_iff (.flip <| .of_hasPullback _ _) (map_over f)).mp ?_
   simp only [terminal.comp_from, ]
-  convert (IsPullback.of_hasPullback _ _).flip
+  convert! (IsPullback.of_hasPullback _ _).flip
   rw [← toSpecMvPoly, ← toSpecMvPoly, map_toSpecMvPoly]
 
 /-- `𝔸(n; S)` is functorial w.r.t. `n`. -/
@@ -376,7 +376,7 @@ instance [Finite n] : LocallyOfFinitePresentation (𝔸(n; S) ↘ S) :=
   rw [← terminal.comp_from (Spec.map (CommRingCat.ofHom C)),
     MorphismProperty.cancel_right_of_respectsIso (P := @LocallyOfFinitePresentation),
     HasRingHomProperty.Spec_iff (P := @LocallyOfFinitePresentation), RingHom.FinitePresentation]
-  convert (inferInstance : Algebra.FinitePresentation (ULift ℤ) ℤ[n])
+  convert! (inferInstance : Algebra.FinitePresentation (ULift ℤ) ℤ[n])
   exact Algebra.algebra_ext _ _ fun _ ↦ rfl
 
 lemma isOpenMap_over : IsOpenMap (𝔸(n; S) ↘ S) := by

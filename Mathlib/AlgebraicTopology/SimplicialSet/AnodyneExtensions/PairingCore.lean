@@ -116,7 +116,7 @@ lemma injective_type₂ : Function.Injective h.type₂ :=
   fun s t hst ↦ h.injective_type₂' (by rwa [Subcomplex.N.ext_iff, SSet.N.ext_iff] at hst)
 
 lemma type₁_ne_type₂ (s t : h.ι) : h.type₁ s ≠ h.type₂ t := by
-  simpa only [ne_eq, N.ext_iff, SSet.N.ext_iff] using h.type₁_ne_type₂' s t
+  simpa only [ne_eq, N.ext_iff, SSet.N.ext_iff] using! h.type₁_ne_type₂' s t
 
 lemma surjective (x : A.N) :
     ∃ (s : h.ι), x = h.type₁ s ∨ x = h.type₂ s := by
@@ -166,6 +166,11 @@ lemma pairing_p_symm_equivI (x : h.ι) :
     DFunLike.coe (F := h.I ≃ h.II) h.pairing.p.symm (h.equivI x) = h.equivII x := by
   simp [pairing]
 
+set_option backward.defeqAttrib.useBackward true in
+lemma type₁_pairing (x : h.ι) :
+    h.type₁ x = h.pairing.p (h.equivII x) := by
+  simp +instances
+
 /-- The condition that `h : A.PairingCore` is proper, i.e. for each `s : h.ι`,
 the type (II) simplex `h.type₂ s` is uniquely a `1`-codimensional
 face of the type (I) simplex `h.type₁ s`. -/
@@ -183,6 +188,11 @@ instance [h.IsProper] : h.pairing.IsProper where
   isUniquelyCodimOneFace x := by
     obtain ⟨s, rfl⟩ := h.equivII.surjective x
     simpa using h.isUniquelyCodimOneFace s
+
+lemma isProper_pairing_iff :
+    h.pairing.IsProper ↔ h.IsProper := by
+  refine ⟨fun _ ↦ ⟨fun s ↦ ?_⟩, fun _ ↦ inferInstance⟩
+  simpa [type₁_pairing] using h.pairing.isUniquelyCodimOneFace (h.equivII s)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -236,6 +246,18 @@ instance [h.IsRegular] : h.pairing.IsRegular where
     rw [wellFounded_iff_isEmpty_descending_chain] at this ⊢
     exact ⟨fun ⟨f, hf⟩ ↦ this.false
       ⟨fun n ↦ h.equivII.symm (f n), fun n ↦ by simpa [ancestralRel_iff] using hf n⟩⟩
+
+lemma isRegular_pairing_iff (h : A.PairingCore) :
+    h.pairing.IsRegular ↔ h.IsRegular := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ inferInstance⟩
+  have : h.IsProper := by
+    rw [← isProper_pairing_iff]
+    infer_instance
+  constructor
+  have := h.pairing.wf
+  rw [wellFounded_iff_isEmpty_descending_chain] at this ⊢
+  exact ⟨fun ⟨f, hf⟩ ↦ this.false
+    ⟨fun n ↦ h.equivII (f n), fun n ↦ by simpa [ancestralRel_iff] using hf n⟩⟩
 
 end PairingCore
 

@@ -48,7 +48,7 @@ theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : StrongDual ℝ p) :
       (fun c hc x => by simp only [norm_smul c x, Real.norm_eq_abs, abs_of_pos hc, mul_left_comm])
       (fun x y => by
         rw [← left_distrib]
-        dsimp; gcongr
+        gcongr
         exact norm_add_le x y)
       fun x => le_trans (le_abs_self _) (f.le_opNorm _) with ⟨g, g_eq, g_le⟩
   set g' :=

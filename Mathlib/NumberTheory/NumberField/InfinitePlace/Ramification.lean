@@ -334,7 +334,8 @@ lemma isUnramified_mk_iff_forall_isConj [IsGalois k K] {φ : K →+* ℂ} :
   letI := (φ.comp (algebraMap k K)).toAlgebra
   letI := φ.toAlgebra
   have : IsScalarTower k K ℂ := IsScalarTower.of_algebraMap_eq' rfl
-  let φ' : K →ₐ[k] ℂ := { star φ with commutes' := fun r ↦ by simpa using RingHom.congr_fun hφ.2 r }
+  let φ' : K →ₐ[k] ℂ := { star φ with
+    commutes' := fun r ↦ by simpa using! RingHom.congr_fun hφ.2 r }
   have : ComplexEmbedding.IsConj φ (AlgHom.restrictNormal' φ' K) :=
     (RingHom.ext <| AlgHom.restrictNormal_commutes φ' K).symm
   exact hφ.1 (H _ this ▸ this)
@@ -418,7 +419,7 @@ lemma even_nat_card_aut_of_not_isUnramified [IsGalois k K] (hw : ¬ IsUnramified
   · cases nonempty_fintype Gal(K/k)
     rw [even_iff_two_dvd, ← not_isUnramified_iff_card_stabilizer_eq_two.mp hw]
     exact Subgroup.card_subgroup_dvd_card (Stab w)
-  · convert Even.zero
+  · convert! Even.zero
     by_contra e
     exact H (Nat.finite_of_card_ne_zero e)
 
@@ -602,7 +603,7 @@ instance {φ : K →+* ℂ} {ψ : L →+* ℂ} [ComplexEmbedding.LiesOver ψ φ]
 
 theorem comap_eq : w.comap (algebraMap K L) = v := by
   ext
-  simpa only [coe_apply] using AbsoluteValue.ext_iff.1 (LiesOver.comp_eq w.1 v.1) _
+  simpa only [coe_apply] using! AbsoluteValue.ext_iff.1 (LiesOver.comp_eq w.1 v.1) _
 
 theorem mk_embedding_comp : InfinitePlace.mk (w.embedding.comp (algebraMap K L)) = v := by
   rw [← comap_mk, w.mk_embedding, comap_eq w v]

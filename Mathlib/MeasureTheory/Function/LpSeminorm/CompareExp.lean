@@ -198,7 +198,7 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_top (p : ℝ≥0∞) {f : α → E} (hf :
   calc
     eLpNorm (fun x ↦ b (f x) (g x)) p μ ≤ c * eLpNorm g ∞ μ * eLpNorm f p μ :=
       eLpNorm_le_eLpNorm_top_mul_eLpNorm p g hf (flip b) c <| by
-        convert h using 3 with x
+        convert! h using 3 with x
         simp only [mul_assoc, mul_comm ‖f x‖₊]
     _ = c * eLpNorm f p μ * eLpNorm g ∞ μ := by
       simp only [mul_assoc]; rw [mul_comm (eLpNorm _ _ _)]
@@ -216,12 +216,12 @@ theorem eLpNorm'_le_eLpNorm'_mul_eLpNorm' {p q r : ℝ} (hf : AEStronglyMeasurab
       refine lintegral_mono_ae <| h.mono fun a ha ↦ ?_
       gcongr
       simp only [enorm_eq_nnnorm, ENNReal.coe_le_coe]
-      simpa using ha
+      simpa using! ha
     _ ≤ c * eLpNorm' f p μ * eLpNorm' g q μ := by
       simp only [smul_mul_assoc, ← Pi.smul_def, eLpNorm'_const_smul _ hro_lt]
       rw [Real.enorm_eq_ofReal c.coe_nonneg, ENNReal.ofReal_coe_nnreal, mul_assoc]
       gcongr
-      simpa only [eLpNorm', enorm_mul, enorm_norm] using
+      simpa only [eLpNorm', enorm_mul, enorm_norm] using!
         ENNReal.lintegral_Lp_mul_le_Lq_mul_Lr hro_lt hrp hpqr μ hf.enorm hg.enorm
 
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of an elementwise operation
@@ -282,27 +282,27 @@ variable {𝕜 α E F : Type*} {m : MeasurableSpace α} {μ : Measure α} [Norme
 
 theorem eLpNorm_smul_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (hf : AEStronglyMeasurable f μ)
     (φ : α → 𝕜) : eLpNorm (φ • f) p μ ≤ eLpNorm φ ∞ μ * eLpNorm f p μ := by
-  simpa using (eLpNorm_le_eLpNorm_top_mul_eLpNorm p φ hf (· • ·) 1
-    (.of_forall fun _ => by simpa using nnnorm_smul_le _ _) :)
+  simpa using! (eLpNorm_le_eLpNorm_top_mul_eLpNorm p φ hf (· • ·) 1
+    (.of_forall fun _ => by simpa using! nnnorm_smul_le _ _) :)
 
 theorem eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top (p : ℝ≥0∞) (f : α → E) {φ : α → 𝕜}
     (hφ : AEStronglyMeasurable φ μ) : eLpNorm (φ • f) p μ ≤ eLpNorm φ p μ * eLpNorm f ∞ μ := by
-  simpa using (eLpNorm_le_eLpNorm_mul_eLpNorm_top p hφ f (· • ·) 1
-    (.of_forall fun _ => by simpa using nnnorm_smul_le _ _) :)
+  simpa using! (eLpNorm_le_eLpNorm_mul_eLpNorm_top p hφ f (· • ·) 1
+    (.of_forall fun _ => by simpa using! nnnorm_smul_le _ _) :)
 
 theorem eLpNorm'_smul_le_mul_eLpNorm' {p q r : ℝ} {f : α → E} (hf : AEStronglyMeasurable f μ)
     {φ : α → 𝕜} (hφ : AEStronglyMeasurable φ μ) (hp0_lt : 0 < p) (hpq : p < q)
     (hpqr : 1 / p = 1 / q + 1 / r) : eLpNorm' (φ • f) p μ ≤ eLpNorm' φ q μ * eLpNorm' f r μ := by
-  simpa using eLpNorm'_le_eLpNorm'_mul_eLpNorm' hφ hf (· • ·) 1
-    (.of_forall fun _ => by simpa using nnnorm_smul_le _ _)
+  simpa using! eLpNorm'_le_eLpNorm'_mul_eLpNorm' hφ hf (· • ·) 1
+    (.of_forall fun _ => by simpa using! nnnorm_smul_le _ _)
     hp0_lt hpq hpqr
 
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of a scalar product `φ • f`. -/
 theorem eLpNorm_smul_le_mul_eLpNorm {p q r : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeasurable f μ)
     {φ : α → 𝕜} (hφ : AEStronglyMeasurable φ μ) [hpqr : HolderTriple p q r] :
     eLpNorm (φ • f) r μ ≤ eLpNorm φ p μ * eLpNorm f q μ := by
-  simpa using (eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hφ hf (· • ·) 1
-      (.of_forall fun _ => by simpa using nnnorm_smul_le _ _) : _)
+  simpa using! (eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hφ hf (· • ·) 1
+      (.of_forall fun _ => by simpa using! nnnorm_smul_le _ _) : _)
 
 theorem MemLp.smul {p q r : ℝ≥0∞} {f : α → E} {φ : α → 𝕜} (hf : MemLp f q μ) (hφ : MemLp φ p μ)
     [hpqr : HolderTriple p q r] : MemLp (φ • f) r μ :=

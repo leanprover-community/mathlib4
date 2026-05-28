@@ -257,7 +257,7 @@ theorem IsVonNBounded.extend_scalars [NontriviallyNormedField 𝕜]
     [Module 𝕝 E] [TopologicalSpace E] [ContinuousSMul 𝕝 E] [IsScalarTower 𝕜 𝕝 E]
     {s : Set E} (h : IsVonNBounded 𝕜 s) : IsVonNBounded 𝕝 s := by
   obtain ⟨ε, hε, hε₀⟩ : ∃ ε : ℕ → 𝕜, Tendsto ε atTop (𝓝 0) ∧ ∀ᶠ n in atTop, ε n ≠ 0 := by
-    simpa only [tendsto_nhdsWithin_iff] using exists_seq_tendsto (𝓝[≠] (0 : 𝕜))
+    simpa only [tendsto_nhdsWithin_iff] using! exists_seq_tendsto (𝓝[≠] (0 : 𝕜))
   refine isVonNBounded_of_smul_tendsto_zero (ε := (ε · • 1)) (by simpa) fun x hx ↦ ?_
   have := h.smul_tendsto_zero (.of_forall hx) hε
   simpa only [Pi.smul_def', smul_one_smul]
@@ -359,9 +359,6 @@ end IsTopologicalAddGroup
 theorem sUnion_isVonNBounded_eq_univ : ⋃₀ setOf (IsVonNBounded 𝕜) = (Set.univ : Set E) :=
   Set.eq_univ_iff_forall.mpr fun x =>
     Set.mem_sUnion.mpr ⟨{x}, isVonNBounded_singleton _, Set.mem_singleton _⟩
-
-@[deprecated (since := "2025-11-14")]
-alias isVonNBounded_covers := sUnion_isVonNBounded_eq_univ
 
 variable (𝕜 E)
 

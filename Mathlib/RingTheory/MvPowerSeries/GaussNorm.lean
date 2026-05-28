@@ -61,7 +61,7 @@ lemma gaussNorm_nonneg (vNonneg : ∀ a, v a ≥ 0) : 0 ≤ gaussNorm v c f := b
   by_cases h : HasGaussNorm v c f
   · trans v (constantCoeff f)
     · simp [vNonneg]
-    · convert (le_gaussNorm v c f h 0)
+    · convert! (le_gaussNorm v c f h 0)
       simp
   · simp [h]
 
@@ -113,9 +113,9 @@ lemma gaussNorm_add_le_max (f g : MvPowerSeries σ R) (hc : 0 ≤ c)
       rcases max_choice (v ((coeff t) f) * ∏ i ∈ t.support, c i ^ t i)
         (v ((coeff t) g) * ∏ i ∈ t.support, c i ^ t i) with h | h
       · left
-        simpa [h] using le_gaussNorm v c f hbfd t
+        simpa [h] using! le_gaussNorm v c f hbfd t
       · right
-        simpa [h] using le_gaussNorm v c g hbgd t
+        simpa [h] using! le_gaussNorm v c g hbgd t
   · simp only [le_sup_iff]
     left
     exact gaussNorm_nonneg v c f vNonneg

@@ -157,7 +157,7 @@ set_option backward.isDefEq.respectTransparency false in -- Needed in DayConvolu
 lemma unit_app_map_app :
     (unit F G).app (x, y) ≫ (map f g).app (x ⊗ y : C) =
     (f.app x ⊗ₘ g.app y) ≫ (unit F' G').app (x, y) := by
-  simpa [tensorHom_def] using
+  simpa [tensorHom_def] using!
     (Functor.descOfIsLeftKanExtension_fac_app (F ⊛ G) (unit F G) (F' ⊛ G') <|
       (externalProductBifunctor C C V).map (f ×ₘ g) ≫ unit F' G') (x, y)
 

@@ -96,7 +96,7 @@ noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     apply congr_arg
     ext k : 2
     · simpa [stdSimplex.δ_objEquiv_symm_apply,
-        SSet.yonedaEquiv_symm_app_objEquiv_symm.{u}] using
+        SSet.yonedaEquiv_symm_app_objEquiv_symm.{u}] using!
           ConcreteCategory.congr_hom (X.δ_comp_σ_of_le hij) x
     · rw [stdSimplex.δ_objMk₁_of_lt, Fin.pred_succ]
       rw [Fin.castSucc_lt_succ_iff, ← Fin.castSucc_succ]
@@ -122,7 +122,7 @@ noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     ext k : 2
     · simp [SimplexCategory.δ_comp_σ_of_gt hij, SSet.yonedaEquiv_symm_app_objEquiv_symm.{u}]
       rfl
-    · rw [stdSimplex.δ_objMk₁_of_le _ _ (by simpa using Fin.le_of_lt hij)]
+    · rw [stdSimplex.δ_objMk₁_of_le _ _ (by simpa using! Fin.le_of_lt hij)]
       rfl
   h_comp_σ_castSucc_of_le {n} i j hij := by
     ext x

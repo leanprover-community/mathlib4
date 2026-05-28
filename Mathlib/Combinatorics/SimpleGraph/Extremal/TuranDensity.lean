@@ -71,7 +71,7 @@ lemma antitoneOn_extremalNumber_div_choose_two (H : SimpleGraph W) :
   -- counting `v`
   · intro v hv
     simpa [edgeFinset_deleteIncidenceSet_eq_filter]
-      using card_edgeFinset_deleteIncidenceSet_le_extremalNumber h v
+      using! card_edgeFinset_deleteIncidenceSet_le_extremalNumber h v
 
 /-- The **Turán density** of a simple graph `H` is the limit of `extremalNumber n H / n.choose 2`
 as `n` approaches `∞`.
@@ -115,7 +115,7 @@ theorem isEquivalent_extremalNumber {H : SimpleGraph W} (h : turanDensity H ≠ 
     rw [eventually_atTop]
     refine ⟨2, fun n hn ↦ ?_⟩
     simpa [h, Nat.choose_eq_zero_iff]
-  simpa [isEquivalent_iff_tendsto_one hz] using hπ
+  simpa [isEquivalent_iff_tendsto_one hz] using! hπ
 
 /-- Simple graphs on `n` vertices having at least `(turanDensity H + o(1)) * n ^ 2` edges contain
 `H`, for sufficiently large `n`. -/

@@ -360,7 +360,7 @@ noncomputable def lift_openEmbedding (e : OpenPartialHomeomorph X Z) (hf : IsOpe
     rw [← hxx₀, hf.injective.extend_apply e, comp_apply]
     congr
     exact e.left_inv' hx₀
-  right_inv' z hz := by simpa only [comp_apply, hf.injective.extend_apply e] using e.right_inv' hz
+  right_inv' z hz := by simpa only [comp_apply, hf.injective.extend_apply e] using! e.right_inv' hz
   open_source := hf.isOpenMap _ e.open_source
   open_target := e.open_target
   continuousOn_toFun := by

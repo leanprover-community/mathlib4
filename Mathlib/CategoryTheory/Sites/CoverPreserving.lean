@@ -60,7 +60,7 @@ structure CoverPreserving (G : C ⥤ D) : Prop where
 
 /-- The identity functor on a site is cover-preserving. -/
 theorem idCoverPreserving : CoverPreserving J J (𝟭 _) :=
-  ⟨fun hS => by simpa using hS⟩
+  ⟨fun hS => by simpa using! hS⟩
 
 /-- The composition of two cover-preserving functors is cover-preserving. -/
 theorem CoverPreserving.comp {F} (hF : CoverPreserving J K F) {G} (hG : CoverPreserving K L G) :
@@ -149,9 +149,9 @@ theorem compatiblePreservingOfDownwardsClosed (F : C ⥤ D) [F.Full] [F.Faithful
   obtain ⟨X', e⟩ := hF f₁
   apply (ℱ.1.mapIso e.op).toEquiv.injective
   simp only [Iso.op_hom, Iso.toEquiv_fun, ℱ.1.mapIso_hom, ← Functor.map_comp_apply]
-  simpa using
+  simpa using!
     hx (F.preimage <| e.hom ≫ f₁) (F.preimage <| e.hom ≫ f₂) hg₁ hg₂
-      (F.map_injective <| by simpa using he)
+      (F.map_injective <| by simpa using! he)
 
 variable {F J K}
 
@@ -168,6 +168,24 @@ lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{max
     · intro y₁ y₂ hy₁ hy₂
       apply (((isSheaf_iff_isSheaf_of_type _ _).1 G.2).isSeparated _ (hF₂.cover_preserve hS)).ext
       rintro Y _ ⟨Z, g, h, hg, rfl⟩
-      simpa using congrArg _ ((hy₁ g hg).trans (hy₂ g hg).symm)
+      simpa using! congrArg _ ((hy₁ g hg).trans (hy₂ g hg).symm)
+
+set_option backward.defeqAttrib.useBackward true in
+/-- If `C` has pullbacks and `F : C ⥤ D` preserves pullbacks, any cover preserving
+functor preserves all `1`-hypercovers. -/
+lemma Functor.PreservesOneHypercovers.of_coverPreserving [HasPullbacks C]
+    [PreservesLimitsOfShape WalkingCospan F] (H : CoverPreserving J K F) :
+    Functor.PreservesOneHypercovers.{w} F J K := by
+  refine fun {U} E ↦ ⟨?_, fun i₁ i₂ W p₁ p₂ h ↦ ?_⟩
+  · simp [PreZeroHypercover.sieve₀_map, H.cover_preserve E.mem₀]
+  · let P : C := pullback (E.f i₁) (E.f i₂)
+    have : HasPullback ((E.toPreOneHypercover.map F).f i₁) ((E.toPreOneHypercover.map F).f i₂) :=
+      hasPullback_of_preservesPullback F (E.f i₁) (E.f i₂)
+    have := H.cover_preserve (E.mem₁ i₁ i₂ (pullback.fst (E.f i₁) (E.f i₂)) _ pullback.condition)
+    rw [PreOneHypercover.functorPushforward_sieve₁_of_preservesPullbacks _ _ _
+      pullback.condition] at this
+    refine K.superset_covering ?_
+      (K.pullback_stable (IsPullback.lift (.map _ (.of_hasPullback _ _)) p₁ p₂ h) this)
+    simp [PreOneHypercover.pullback_sieve₁]
 
 end CategoryTheory

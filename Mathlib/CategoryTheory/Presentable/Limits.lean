@@ -74,7 +74,7 @@ lemma surjective (x : c.pt.obj cX.pt) :
       (Types.FilteredColimit.isColimit_eq_iff' (ht := hF k')
         (x := (F.map φ).app _ (z k)) (y := z k')).1 (by
           dsimp at hz ⊢
-          simpa only [← NatTrans.naturality_apply, ← hz] using y.2 φ)
+          simpa only [← NatTrans.naturality_apply, ← hz] using! y.2 φ)
     let j {k k' : K} (φ : k ⟶ k') : J := (H φ).choose
     let g {k k' : K} (φ : k ⟶ k') : j₀ ⟶ j φ := (H φ).choose_spec.choose
     have hg {k k' : K} (φ : k ⟶ k') :
@@ -89,7 +89,7 @@ lemma surjective (x : c.pt.obj cX.pt) :
       refine ⟨IsCardinalFiltered.coeq ψ hK, IsCardinalFiltered.toCoeq ψ hK,
         fun k k' φ ↦ IsCardinalFiltered.toMax j'' hK φ ≫ IsCardinalFiltered.coeqHom ψ hK,
         fun k k' φ ↦ ?_⟩
-      simpa [ψ] using (IsCardinalFiltered.coeq_condition ψ hK (Arrow.mk φ)).symm
+      simpa [ψ] using! (IsCardinalFiltered.coeq_condition ψ hK (Arrow.mk φ)).symm
     exact ⟨j₁, α, fun k k' φ ↦ by simp [hα φ, hg]⟩
   let s : (F ⋙ (evaluation C (Type w')).obj (X.obj j₁)).sections :=
     { val k := (F.obj k).map (X.map α) (z k)

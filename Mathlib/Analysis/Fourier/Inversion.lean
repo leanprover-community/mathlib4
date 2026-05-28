@@ -81,9 +81,9 @@ lemma tendsto_integral_gaussian_smul (hf : Integrable f) (h'f : Integrable (𝓕
        • (𝓕 f) w)) atTop (𝓝 (𝓕⁻ (𝓕 f) v)) := by
     have : Integrable (fun w ↦ 𝐞 ⟪w, v⟫ • (𝓕 f) w) := by
       have B : Continuous fun p : V × V => (- innerₗ V) p.1 p.2 := continuous_inner.neg
-      simpa using
+      simpa using!
         (VectorFourier.fourierIntegral_convergent_iff Real.continuous_fourierChar B v).2 h'f
-    convert tendsto_integral_cexp_sq_smul this using 4 with c w
+    convert! tendsto_integral_cexp_sq_smul this using 4 with c w
     · rw [Submonoid.smul_def, Real.fourierChar_apply, smul_smul, ← Complex.exp_add, real_inner_comm]
       congr 3
       simp only [ofReal_mul, ofReal_ofNat]
@@ -96,7 +96,7 @@ lemma tendsto_integral_gaussian_smul (hf : Integrable f) (h'f : Integrable (𝓕
     filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
     have J : Integrable (fun w ↦ cexp (- c⁻¹ * ‖w‖ ^ 2 + 2 * π * I * ⟪v, w⟫)) :=
       GaussianFourier.integrable_cexp_neg_mul_sq_norm_add (by simpa) _ _
-    simpa using (VectorFourier.integral_fourierIntegral_smul_eq_flip (L := innerₗ V)
+    simpa using! (VectorFourier.integral_fourierIntegral_smul_eq_flip (L := innerₗ V)
       Real.continuous_fourierChar continuous_inner J hf).symm
   apply B.congr'
   filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
@@ -127,7 +127,7 @@ lemma tendsto_integral_gaussian_smul' (hf : Integrable f) {v : V} (h'f : Continu
       have B := tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero (finrank ℝ V / 2) 1
         zero_lt_one |>.comp A |>.const_mul (π ^ (-finrank ℝ V / 2 : ℝ))
       rw [mul_zero] at B
-      convert B using 2 with x
+      convert! B using 2 with x
       simp only [neg_mul, one_mul, Function.comp_apply, ← mul_assoc, ← rpow_natCast, φ]
       congr 1
       rw [mul_rpow (by positivity) (by positivity), ← rpow_mul pi_nonneg,

@@ -551,7 +551,7 @@ lemma map_posFittingComp_eq (e : M ≃ₗ⁅R,L⁆ M₂) :
     rw [this]
     exact LieSubmodule.map_mono (map_posFittingComp_le _)
   rw [← LieSubmodule.map_comp]
-  convert LieSubmodule.map_id
+  convert! LieSubmodule.map_id
   ext
   simp
 
@@ -584,7 +584,7 @@ lemma isCompl_genWeightSpaceOf_zero_posFittingCompOf (x : L) :
     IsCompl (genWeightSpaceOf M 0 x) (posFittingCompOf R M x) := by
   simpa only [isCompl_iff, codisjoint_iff, disjoint_iff, ← LieSubmodule.toSubmodule_inj,
     LieSubmodule.sup_toSubmodule, LieSubmodule.inf_toSubmodule,
-    LieSubmodule.top_toSubmodule, LieSubmodule.bot_toSubmodule, coe_genWeightSpaceOf_zero] using
+    LieSubmodule.top_toSubmodule, LieSubmodule.bot_toSubmodule, coe_genWeightSpaceOf_zero] using!
     (toEnd R L M x).isCompl_iSup_ker_pow_iInf_range_pow
 
 /-- This lemma exists only to simplify the proof of

@@ -372,7 +372,7 @@ lemma isPushout_aux {n : ℕ} (y : (sigmaStdSimplex i d) _⦋n⦌)
   have hs : s ∉ ∂Δ[d].obj _ :=
     fun hs ↦ hy (⟨c.ιSigmaBoundary.app _ ⟨s, hs⟩, congr($(c.ι_l).app _ ⟨s, _⟩)⟩)
   refine ⟨c, stdSimplex.objEquiv s, ?_, by simp⟩
-  simpa [SimplexCategory.epi_iff_surjective, boundary] using hs
+  simpa [SimplexCategory.epi_iff_surjective, boundary] using! hs
 
 set_option backward.defeqAttrib.useBackward true in
 lemma isPushout : IsPushout (t i d) (l i d) (r i d) (b i d) where

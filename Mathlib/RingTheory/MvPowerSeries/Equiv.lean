@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Bingyu Xia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bingyu Xia
+Authors: Bingyu Xia, Wenrong Zou
 -/
 module
 
@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.RingTheory.AdicCompletion.Algebra
 public import Mathlib.RingTheory.MvPolynomial.Ideal
 public import Mathlib.RingTheory.MvPowerSeries.Trunc
+public import Mathlib.RingTheory.MvPowerSeries.Rename
+public import Mathlib.RingTheory.PowerSeries.Substitution
 
 /-!
 # Equivalences related to power series rings
@@ -129,7 +131,7 @@ theorem mk_truncTotal_toAdicCompletionInv {n : ℕ}
       ← smul_eq_mul, ← Ideal.Quotient.eq]
     simp only [Submodule.mapQ_eq_factor, Submodule.factor_eq_factor, Ideal.Quotient.mk_out]
     rw [← AdicCompletion.transitionMap_ideal_mk _ (Nat.lt_iff_add_one_le.mp h), eq_comm]
-    convert f.prop h; simp
+    convert! f.prop h; simp
   simp
 
 /-- The isomorphism from multivariate power series to the adic completion of
@@ -142,7 +144,7 @@ def toAdicCompletionAlgEquiv (σ R : Type*) [Finite σ] [CommRing R] :
   invFun := toAdicCompletionInv σ R
   left_inv _ := by
     ext; simp [coeff_toAdicCompletionInv, coeff_toAdicCompletion_val_apply_out]
-  right_inv _ := by ext; simpa using mk_truncTotal_toAdicCompletionInv
+  right_inv _ := by ext; simpa using! mk_truncTotal_toAdicCompletionInv
 
 @[simp]
 lemma toAdicCompletionAlgEquiv_apply (p : MvPowerSeries σ R) :
@@ -157,3 +159,82 @@ lemma toAdicCompletionAlgEquiv_symm_apply
 end toAdicCompletion
 
 end MvPowerSeries
+
+section toMvPowerSeries
+
+variable {R σ τ : Type*} [CommSemiring R] {f : PowerSeries R} (i : σ) (r : R)
+
+open Function PowerSeries Filter Finsupp
+namespace PowerSeries
+
+/-- Given a power series `p : R⟦X⟧` and an index `i`, we may view it as a
+multivariate power series `toMvPowerSeries i p : MvPowerSeries σ R`. -/
+noncomputable
+def toMvPowerSeries : PowerSeries R →ₐ[R] MvPowerSeries σ R :=
+  MvPowerSeries.rename (fun _ ↦ i)
+
+theorem toMvPowerSeries_apply : f.toMvPowerSeries i = f.rename (fun _ ↦ i) := rfl
+
+@[simp]
+theorem toMvPowerSeries_C : (C r).toMvPowerSeries i = MvPowerSeries.C r := by
+  rw [toMvPowerSeries_apply, C_apply, MvPowerSeries.rename_C]
+
+@[simp]
+theorem toMvPowerSeries_X : X.toMvPowerSeries i = MvPowerSeries.X i (R := R) := by
+  rw [toMvPowerSeries_apply, X_apply, MvPowerSeries.rename_X]
+
+theorem toMvPowerSeries_injective (i : σ) : Function.Injective (toMvPowerSeries (R := R) i) :=
+  MvPowerSeries.rename_injective (Embedding.punit i)
+
+theorem toMvPowerSeries_inj (i : σ) {p q : R⟦X⟧} :
+    p.toMvPowerSeries i = q.toMvPowerSeries i ↔ p = q :=
+  (toMvPowerSeries_injective i).eq_iff
+
+section CommRing
+
+variable {R : Type*} [CommRing R] {f : R⟦X⟧} {i : σ}
+
+theorem toMvPowerSeries_eq_subst : f.toMvPowerSeries i = f.subst (MvPowerSeries.X i) := by
+  rw [toMvPowerSeries_apply, MvPowerSeries.rename_eq_subst, comp_def, subst]
+
+theorem subst_toMvPowerSeries {a : σ → MvPowerSeries τ R} (ha : MvPowerSeries.HasSubst a) :
+    (f.toMvPowerSeries i).subst a = f.subst (a i) := by
+  rw [toMvPowerSeries_eq_subst, subst, MvPowerSeries.subst_comp_subst_apply
+    (HasSubst.const (HasSubst.X _)) ha, MvPowerSeries.subst_X ha, subst]
+
+lemma toMvPowerSeries_coeff_eq_zero {d : σ →₀ ℕ} (hd : d i = 0) (hf : f.constantCoeff = 0) :
+    (f.toMvPowerSeries i).coeff d = 0 := by classical
+  rw [toMvPowerSeries_apply, MvPowerSeries.rename_eq_subst, subst_X_comp_const,
+    coeff_subst (HasSubst.X _), finsum_eq_zero_of_forall_eq_zero]
+  simp only [MvPowerSeries.X_pow_eq, MvPowerSeries.coeff_monomial, smul_eq_mul, mul_ite, mul_one,
+    mul_zero, ite_eq_right_iff]
+  intro _ a
+  subst a
+  simp_all
+
+theorem _root_.MvPowerSeries.HasSubst.toMvPowerSeries (hf : f.constantCoeff = 0) :
+    MvPowerSeries.HasSubst (f.toMvPowerSeries · (σ := σ)) (S := R) where
+  const_coeff := by simp_all [constantCoeff, toMvPowerSeries_apply]
+  coeff_zero d := Set.Finite.subset (Finite.of_fintype d.support) fun s => by
+    contrapose
+    simpa using fun hd ↦ toMvPowerSeries_coeff_eq_zero hd hf
+
+end CommRing
+
+end PowerSeries
+
+variable (f : σ → τ) [TendstoCofinite f] (a : σ) (p : R⟦X⟧)
+
+@[simp]
+lemma MvPowerSeries.rename_comp_toMvPowerSeries :
+    (rename (R := R) f).comp (PowerSeries.toMvPowerSeries a) =
+      PowerSeries.toMvPowerSeries (f a) := by
+  ext
+  simp [toMvPowerSeries_apply, comp_def]
+
+@[simp]
+lemma MvPowerSeries.rename_toMvPowerSeries :
+    (p.toMvPowerSeries a).rename f = p.toMvPowerSeries (f a) :=
+  DFunLike.congr_fun (rename_comp_toMvPowerSeries ..) p
+
+end toMvPowerSeries

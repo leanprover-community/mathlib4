@@ -164,7 +164,7 @@ lemma subcomplex_le_iff {A B : X.Subcomplex} :
       intro hx
       simp only [Subfunctor.ofSection_le_iff, mk_simplex] at hx ⊢
       exact h _ _ hx
-  · simpa using h (N.mk _ x.prop) (by simpa)
+  · simpa using! h (N.mk _ x.prop) (by simpa)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

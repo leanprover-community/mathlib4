@@ -41,8 +41,8 @@ lemma p_comm_f {P Q : Karoubi (Karoubi C)} (f : P ⟶ Q) : P.p.f ≫ f.f.f = f.f
 /-- The canonical functor `Karoubi (Karoubi C) ⥤ Karoubi C` -/
 @[simps]
 def inverse : Karoubi (Karoubi C) ⥤ Karoubi C where
-  obj P := ⟨P.X.X, P.p.f, by simpa only [hom_ext_iff] using P.idem⟩
-  map f := ⟨f.f.f, by simpa only [hom_ext_iff] using f.comm⟩
+  obj P := ⟨P.X.X, P.p.f, by simpa only [hom_ext_iff] using! P.idem⟩
+  map f := ⟨f.f.f, by simpa only [hom_ext_iff] using! f.comm⟩
 
 instance [Preadditive C] : Functor.Additive (inverse C) where
 

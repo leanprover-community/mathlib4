@@ -697,7 +697,7 @@ variable (S)
 lemma leftRightHomologyComparison_fac [S.HasHomology] :
     S.leftRightHomologyComparison = S.leftHomologyIso.hom ≫ S.rightHomologyIso.inv := by
   simpa only [LeftHomologyData.homologyIso_leftHomologyData, Iso.symm_inv,
-    RightHomologyData.homologyIso_rightHomologyData, Iso.symm_hom] using
+    RightHomologyData.homologyIso_rightHomologyData, Iso.symm_hom] using!
       leftRightHomologyComparison'_fac S.leftHomologyData S.rightHomologyData
 
 variable {S}
@@ -758,14 +758,14 @@ lemma LeftHomologyData.leftHomologyIso_inv_naturality
 lemma leftHomologyIso_hom_naturality :
     S₁.leftHomologyIso.hom ≫ homologyMap φ =
       leftHomologyMap φ ≫ S₂.leftHomologyIso.hom := by
-  simpa only [LeftHomologyData.homologyIso_leftHomologyData, Iso.symm_inv] using
+  simpa only [LeftHomologyData.homologyIso_leftHomologyData, Iso.symm_inv] using!
     LeftHomologyData.leftHomologyIso_inv_naturality φ S₁.leftHomologyData S₂.leftHomologyData
 
 @[reassoc]
 lemma leftHomologyIso_inv_naturality :
     S₁.leftHomologyIso.inv ≫ leftHomologyMap φ =
       homologyMap φ ≫ S₂.leftHomologyIso.inv := by
-  simpa only [LeftHomologyData.homologyIso_leftHomologyData, Iso.symm_inv] using
+  simpa only [LeftHomologyData.homologyIso_leftHomologyData, Iso.symm_inv] using!
     LeftHomologyData.leftHomologyIso_hom_naturality φ S₁.leftHomologyData S₂.leftHomologyData
 
 @[reassoc]
@@ -793,14 +793,14 @@ lemma RightHomologyData.rightHomologyIso_inv_naturality
 lemma rightHomologyIso_hom_naturality :
     S₁.rightHomologyIso.hom ≫ homologyMap φ =
       rightHomologyMap φ ≫ S₂.rightHomologyIso.hom := by
-  simpa only [RightHomologyData.homologyIso_rightHomologyData, Iso.symm_inv] using
+  simpa only [RightHomologyData.homologyIso_rightHomologyData, Iso.symm_inv] using!
     RightHomologyData.rightHomologyIso_inv_naturality φ S₁.rightHomologyData S₂.rightHomologyData
 
 @[reassoc]
 lemma rightHomologyIso_inv_naturality :
     S₁.rightHomologyIso.inv ≫ rightHomologyMap φ =
       homologyMap φ ≫ S₂.rightHomologyIso.inv := by
-  simpa only [RightHomologyData.homologyIso_rightHomologyData, Iso.symm_inv] using
+  simpa only [RightHomologyData.homologyIso_rightHomologyData, Iso.symm_inv] using!
     RightHomologyData.rightHomologyIso_hom_naturality φ S₁.rightHomologyData S₂.rightHomologyData
 
 end

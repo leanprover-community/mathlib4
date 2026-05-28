@@ -236,7 +236,7 @@ theorem mass_toFiniteMeasure (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure.m
   ext μ
   simp only [mem_range, mem_setOf_eq]
   refine ⟨fun ⟨ν, hν⟩ ↦ by simp [← hν], fun h ↦ ?_⟩
-  refine ⟨⟨μ, isProbabilityMeasure_iff_real.2 (by simpa using h)⟩, ?_⟩
+  refine ⟨⟨μ, isProbabilityMeasure_iff_real.2 (by simpa using! h)⟩, ?_⟩
   ext s hs
   simp
 
@@ -642,7 +642,7 @@ lemma tendsto_map_of_tendsto_of_continuous {ι : Type*} {L : Filter ι}
       (𝓝 (ν.map f_cont.measurable.aemeasurable)) := by
   rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto] at lim ⊢
   intro g
-  convert lim (g.compContinuous ⟨f, f_cont⟩) <;>
+  convert! lim (g.compContinuous ⟨f, f_cont⟩) <;>
   · simp only [map, compContinuous_apply, ContinuousMap.coe_mk]
     refine lintegral_map ?_ f_cont.measurable
     exact (ENNReal.continuous_coe.comp g.continuous).measurable

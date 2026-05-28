@@ -227,7 +227,7 @@ theorem norm_mul_invInterpStrip_le_one_of_mem_verticalClosedStrip (f : ℂ → E
   rw [eventually_inf_principal]
   apply Eventually.of_forall
   intro x hx
-  simpa using (hBF x ((preimage_mono Ioo_subset_Icc_self) hx)).trans
+  simpa using! (hBF x ((preimage_mono Ioo_subset_Icc_self) hx)).trans
     ((le_of_lt (lt_add_one BF)).trans (Real.add_one_le_exp BF))
 
 end invInterpStrip
@@ -426,7 +426,7 @@ lemma norm_le_interpStrip_of_mem_verticalStrip_zero (z : ℂ)
   · simp only [tendsto_const_nhds_iff]
   -- Proof that we can let epsilon tend to zero.
   · rw [interpStrip_eq_of_mem_verticalStrip _ _ hz]
-    convert ContinuousWithinAt.tendsto _ using 2
+    convert! ContinuousWithinAt.tendsto _ using 2
     · simp only [ofReal_zero, zero_add]
     · simp_rw [← ofReal_add]
       have : ∀ x ∈ Ioi 0, (x + sSupNormIm f 0) ^ (1 - z.re) * (x + sSupNormIm f 1) ^ z.re

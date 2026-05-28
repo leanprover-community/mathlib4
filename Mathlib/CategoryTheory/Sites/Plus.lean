@@ -65,7 +65,6 @@ between diagrams whose colimits define the values of `plus`. -/
 def diagramNatTrans {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (X : C) : J.diagram P X ⟶ J.diagram Q X where
   app W :=
     Multiequalizer.lift _ _ (fun _ => Multiequalizer.ι _ _ ≫ η.app _) (fun i => by
-      dsimp only
       erw [Category.assoc, Category.assoc, ← η.naturality, ← η.naturality,
         Multiequalizer.condition_assoc]
       rfl)
@@ -119,7 +118,7 @@ def plusObj : Cᵒᵖ ⥤ D where
     let e := S.unop.pullbackId
     dsimp only [Functor.op, pullback_obj]
     rw [← colimit.w _ e.inv.op, ← Category.assoc]
-    convert Category.id_comp (colimit.ι (diagram J P (unop X)) S)
+    convert! Category.id_comp (colimit.ι (diagram J P (unop X)) S)
     refine Multiequalizer.hom_ext _ _ _ (fun I => ?_)
     dsimp
     simp only [Multiequalizer.lift_ι, Category.id_comp, Category.assoc]
@@ -249,8 +248,9 @@ theorem plusMap_toPlus : J.plusMap (J.toPlus P) = J.toPlus (J.plusObj P) := by
     ← Category.assoc, ← Category.assoc]
   congr 1
   refine Multiequalizer.hom_ext _ _ _ (fun II => ?_)
-  convert Multiequalizer.condition (S.unop.index P)
-    { fst := I, snd := II.base, r.Z := II.Y, r.g₁ := II.f, r.g₂ := 𝟙 II.Y } using 1
+  convert!
+    Multiequalizer.condition (S.unop.index P)
+      { fst := I, snd := II.base, r.Z := II.Y, r.g₁ := II.f, r.g₂ := 𝟙 II.Y } using 1
   all_goals simp
 
 set_option backward.isDefEq.respectTransparency false in

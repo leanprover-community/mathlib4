@@ -84,7 +84,7 @@ lemma ihomPoints_symm_comp (B P : LightCondMod.{u} R) (S S' : LightProfinite) (�
     (f : P ⊗ (free R).obj S'.toCondensed ⟶ B) :
     (ihomPoints R P B S).symm (P ◁ (free R).map (lightProfiniteToLightCondSet.map π) ≫ f) =
       ((P ⟶[LightCondMod R] B).obj.map π.op) ((ihomPoints R P B S').symm f) := by
-  simpa [ihomPoints_symm_apply, MonoidalClosed.curry_natural_left, Adjunction.homEquiv_apply] using
+  simpa [ihomPoints_symm_apply, MonoidalClosed.curry_natural_left, Adjunction.homEquiv_apply] using!
     (GrothendieckTopology.yonedaEquiv_naturality _ _ _).symm
 
 set_option backward.defeqAttrib.useBackward true in

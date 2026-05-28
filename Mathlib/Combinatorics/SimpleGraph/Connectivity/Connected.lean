@@ -619,7 +619,7 @@ lemma top_supp_eq_univ (c : ConnectedComponent (⊤ : SimpleGraph V)) :
     c.supp = (Set.univ : Set V) := by
   obtain ⟨w, rfl⟩ := c.exists_rep
   ext v
-  simpa [-ConnectedComponent.eq] using ConnectedComponent.sound (G := ⊤)
+  simpa [-ConnectedComponent.eq] using! ConnectedComponent.sound (G := ⊤)
 
 lemma reachable_of_mem_supp {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
     (hu : u ∈ C.supp) (hv : v ∈ C.supp) : G.Reachable u v := by
@@ -708,7 +708,7 @@ def homOfConnectedComponents (G : SimpleGraph V) {H : SimpleGraph V'}
   toFun := fun x ↦ (C (G.connectedComponentMk x)) ⟨x, ConnectedComponent.connectedComponentMk_mem⟩
   map_rel' := fun hab ↦ by
     have h : (G.connectedComponentMk _).toSimpleGraph.Adj ⟨_, rfl⟩
-        ⟨_, ((G.connectedComponentMk _).mem_supp_congr_adj hab).1 rfl⟩ := by simpa using hab
+        ⟨_, ((G.connectedComponentMk _).mem_supp_congr_adj hab).1 rfl⟩ := by simpa using! hab
     convert (C (G.connectedComponentMk _)).map_rel h using 3 <;>
       rw [ConnectedComponent.connectedComponentMk_eq_of_adj hab]
 
@@ -952,7 +952,7 @@ lemma Preconnected.induce_of_degree_eq_one (hG : G.Preconnected) {s : Set V}
   rintro ⟨u, hu⟩ ⟨v, hv⟩
   obtain ⟨p, hp⟩ := hG.exists_isPath u v
   constructor
-  convert p.induce s _
+  convert! p.induce s _
   rintro w hwp
   by_contra hws
   exact hp.not_mem_support_of_subsingleton_neighborSet (by grind) (by grind) (hs _ hws) hwp

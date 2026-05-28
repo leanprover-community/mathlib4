@@ -100,7 +100,7 @@ noncomputable def toDualContinuousMultilinearMap : (⨂[𝕜] i, E i) →ₗ[�
   toFun x := LinearMap.mkContinuous
     (lift.toLinearMap.flip x ∘ₗ ContinuousMultilinearMap.toMultilinearMapLinear)
     (projectiveSeminorm x)
-    (fun _ ↦ by simpa [mul_comm] using norm_eval_le_projectiveSeminorm ..)
+    (fun _ ↦ by simpa [mul_comm] using! norm_eval_le_projectiveSeminorm ..)
   map_add' x y := by
     ext; simp
   map_smul' a x := by

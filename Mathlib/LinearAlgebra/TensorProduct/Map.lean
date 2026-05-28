@@ -676,16 +676,16 @@ variable {N}
 variable {M}
 
 @[simp] theorem rTensor_pow (f : M ≃ₗ[R] M) (n : ℕ) : f.rTensor N ^ n = (f ^ n).rTensor N := by
-  simpa only [one_pow] using TensorProduct.congr_pow f (1 : N ≃ₗ[R] N) n
+  simpa only [one_pow] using! TensorProduct.congr_pow f (1 : N ≃ₗ[R] N) n
 
 @[simp] theorem rTensor_zpow (f : M ≃ₗ[R] M) (n : ℤ) : f.rTensor N ^ n = (f ^ n).rTensor N := by
-  simpa only [one_zpow] using TensorProduct.congr_zpow f (1 : N ≃ₗ[R] N) n
+  simpa only [one_zpow] using! TensorProduct.congr_zpow f (1 : N ≃ₗ[R] N) n
 
 @[simp] theorem lTensor_pow (f : N ≃ₗ[R] N) (n : ℕ) : f.lTensor M ^ n = (f ^ n).lTensor M := by
-  simpa only [one_pow] using TensorProduct.congr_pow (1 : M ≃ₗ[R] M) f n
+  simpa only [one_pow] using! TensorProduct.congr_pow (1 : M ≃ₗ[R] M) f n
 
 @[simp] theorem lTensor_zpow (f : N ≃ₗ[R] N) (n : ℤ) : f.lTensor M ^ n = (f ^ n).lTensor M := by
-  simpa only [one_zpow] using TensorProduct.congr_zpow (1 : M ≃ₗ[R] M) f n
+  simpa only [one_zpow] using! TensorProduct.congr_zpow (1 : M ≃ₗ[R] M) f n
 
 end LinearEquiv
 

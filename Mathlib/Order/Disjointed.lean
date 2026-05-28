@@ -285,8 +285,8 @@ lemma Fintype.exists_disjointed_le {ι : Type*} [Fintype ι] (f : ι → α) :
   have hf' : f = f' ∘ R := by ext; simp only [Function.comp_apply, Equiv.symm_apply_apply, f']
   refine ⟨disjointed f' ∘ R, ?_, ?_, ?_⟩
   · intro n
-    simpa only [hf'] using disjointed_le f' (R n)
-  · simpa only [← sup_image, image_univ_equiv, hf'] using sup_disjointed f'
+    simpa only [hf'] using! disjointed_le f' (R n)
+  · simpa only [← sup_image, image_univ_equiv, hf'] using! sup_disjointed f'
   · exact fun i j hij ↦ disjoint_disjointed f' (R.injective.ne hij)
 
 end GeneralizedBooleanAlgebra

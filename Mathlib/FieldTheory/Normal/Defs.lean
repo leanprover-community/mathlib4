@@ -90,9 +90,10 @@ theorem AlgEquiv.transfer_normal (f : E ≃ₐ[F] E') : Normal F E ↔ Normal F 
   ⟨fun _ ↦ Normal.of_algEquiv f, fun _ ↦ Normal.of_algEquiv f.symm⟩
 
 theorem Normal.of_equiv_equiv {M N : Type*} [Field N] [Field M] [Algebra M N]
-    [Algebra.IsAlgebraic F E] [h : Normal F E] {f : F ≃+* M} {g : E ≃+* N}
+    [h : Normal F E] {f : F ≃+* M} {g : E ≃+* N}
     (hcomp : (algebraMap M N).comp f = (g : E →+* N).comp (algebraMap F E)) :
     Normal M N := by
+  have := h
   rw [normal_iff] at h ⊢
   intro x
   rw [← g.apply_symm_apply x]

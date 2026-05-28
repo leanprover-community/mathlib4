@@ -309,7 +309,7 @@ noncomputable def toKer (E : Extension R M L) :
   left_inv _ := by
     simp [IsExtension.kerEquivRange, Equiv.symm_apply_eq]
     rfl
-  right_inv x := by simpa [Subtype.ext_iff] using Equiv.apply_ofInjective_symm E.incl_injective _
+  right_inv x := by simpa [Subtype.ext_iff] using! Equiv.apply_ofInjective_symm E.incl_injective _
 
 @[simp] lemma lie_toKer_apply (E : Extension R M L) (x : M) (y : E.L) :
     ⁅y, (E.toKer x : E.L)⁆ = ⁅y, E.incl x⁆ := by

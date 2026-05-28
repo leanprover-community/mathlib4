@@ -48,7 +48,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `c₁` and `c₂` are limit fans and `bc` is a limit binary fan on their cone
 points, then the fan constructed from `combPairHoms` is a limit cone. -/
 def combPairIsLimit : IsLimit (Fan.mk bc.pt (combPairHoms c₁ c₂ bc)) :=
-  mkFanLimit _
+  Fan.IsLimit.mk _
     (fun s ↦ Fan.IsLimit.lift h <| fun i ↦ by
       cases i
       · exact Fan.IsLimit.lift h₁ (fun a ↦ s.proj (.inl a))
@@ -84,7 +84,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `c₁` and `c₂` are colimit cofans and `bc` is a colimit binary cofan on their cocone
 points, then the cofan constructed from `combPairHoms` is a colimit cocone. -/
 def combPairIsColimit : IsColimit (Cofan.mk bc.pt (combPairHoms c₁ c₂ bc)) :=
-  mkCofanColimit _
+  Cofan.IsColimit.mk _
     (fun s ↦ Cofan.IsColimit.desc h <| fun i ↦ by
       cases i
       · exact Cofan.IsColimit.desc h₁ (fun a ↦ s.inj (.inl a))

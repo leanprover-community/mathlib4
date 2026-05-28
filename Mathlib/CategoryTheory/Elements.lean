@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
@@ -250,7 +249,7 @@ def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
         exact Quiver.Hom.unop_inj (by ext; simp))
   counitIso := NatIso.ofComponents (fun X ↦ CostructuredArrow.isoMk (Iso.refl _) (by
     dsimp
-    simpa only [Functor.map_id, Category.id_comp] using
+    simpa only [Functor.map_id, Category.id_comp] using!
       (yonedaEquiv.symm_apply_apply X.hom).symm))
 
 set_option backward.defeqAttrib.useBackward true in

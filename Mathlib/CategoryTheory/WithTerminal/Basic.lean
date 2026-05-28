@@ -224,7 +224,7 @@ def pseudofunctor : Pseudofunctor Cat Cat where
     intros
     ext X
     cases X
-    · simpa using (refl _)
+    · simpa using! (refl _)
     · rfl
 
 instance {X : WithTerminal C} : Unique (X ⟶ star) where
@@ -636,7 +636,7 @@ def pseudofunctor : Pseudofunctor Cat Cat where
     intros
     ext X
     cases X
-    · simpa using (refl _)
+    · simpa using! (refl _)
     · rfl
 
 instance {X : WithInitial C} : Unique (star ⟶ X) where

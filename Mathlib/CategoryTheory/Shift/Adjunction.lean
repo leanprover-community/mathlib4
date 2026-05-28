@@ -418,7 +418,7 @@ lemma commShift_of_leftAdjoint [F.CommShift A] :
   ext X
   dsimp
   simpa only [Functor.commShiftIso_id_hom_app, Functor.comp_obj, Functor.id_obj, id_comp,
-    Functor.commShiftIso_comp_hom_app] using RightAdjointCommShift.compatibilityUnit_iso adj a X
+    Functor.commShiftIso_comp_hom_app] using! RightAdjointCommShift.compatibilityUnit_iso adj a X
 
 namespace LeftAdjointCommShift
 
@@ -507,7 +507,7 @@ lemma commShift_of_rightAdjoint [G.CommShift A] :
   ext X
   dsimp
   simpa only [Functor.commShiftIso_id_hom_app, Functor.comp_obj, Functor.id_obj, id_comp,
-    Functor.commShiftIso_comp_hom_app] using LeftAdjointCommShift.compatibilityUnit_iso adj a X
+    Functor.commShiftIso_comp_hom_app] using! LeftAdjointCommShift.compatibilityUnit_iso adj a X
 
 end Adjunction
 

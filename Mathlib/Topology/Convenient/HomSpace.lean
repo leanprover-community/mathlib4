@@ -100,12 +100,12 @@ def curryEquiv :
     { toFun z := g.comp ⟨fun y ↦ (y, z), (Continuous.prodMk_left z).continuousGeneratedBy⟩
       prop := by
         simpa only [continuousGeneratedBy_iff_uncurry,
-          continuousGeneratedBy_dom_prod_iff] using g.prop }
+          continuousGeneratedBy_dom_prod_iff] using! g.prop }
   invFun g :=
     { toFun x := g x.2 x.1
       prop := by
         simpa only [continuousGeneratedBy_iff_uncurry,
-          continuousGeneratedBy_dom_prod_iff] using g.prop }
+          continuousGeneratedBy_dom_prod_iff] using! g.prop }
 
 @[simp]
 lemma curryEquiv_apply_apply (g : ContinuousMapGeneratedBy X (Y × Z) T) (y : Y) (z : Z) :

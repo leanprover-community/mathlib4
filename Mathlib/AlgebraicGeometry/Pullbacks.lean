@@ -250,7 +250,7 @@ def gluedLiftPullbackMap (i j : 𝒰.I₀) :
   refine pullback.map _ _ _ _ ?_ (𝟙 _) (𝟙 _) ?_ ?_
   · exact (pullbackSymmetry _ _).hom ≫
       pullback.map _ _ _ _ (𝟙 _) s.snd f (Category.id_comp _).symm s.condition
-  · simpa using pullback.condition
+  · simpa using! pullback.condition
   · simp only [Category.comp_id, Category.id_comp]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -619,7 +619,7 @@ lemma _root_.AlgebraicGeometry.Scheme.isPullback_of_openCover
         (lift fWX fWY h) f := by
       rw [← IsPullback.paste_vert_iff this.flip (by ext <;> simp [f])]
       simpa using .of_hasPullback _ _
-    convert (inferInstance : IsIso (H'.isoPullback.inv ≫ (H i).isoPullback.hom))
+    convert! (inferInstance : IsIso (H'.isoPullback.inv ≫ (H i).isoPullback.hom))
     aesop (add simp [Iso.eq_inv_comp, Scheme.Cover.pullbackHom])
   exact MorphismProperty.of_zeroHypercover_target (P := .isomorphisms Scheme)
     (Scheme.Pullback.openCoverOfLeft 𝒰 fXZ fYZ) H₁

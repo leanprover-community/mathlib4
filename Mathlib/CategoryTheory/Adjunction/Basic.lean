@@ -5,7 +5,6 @@ Authors: Reid Barton, Johan Commelin, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.Yoneda
 
 /-!

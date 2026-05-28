@@ -1061,7 +1061,6 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A
         Set.iUnionLift (fun i => ↑(K i)) (fun i x => f i x)
           (fun i j x hxi hxj => by
             let ⟨k, hik, hjk⟩ := dir i j
-            simp only
             rw [hf i k hik, hf j k hjk]
             rfl)
           _ (by rw [coe_iSup_of_directed dir])
@@ -1224,7 +1223,7 @@ lemma adjoin_le_centralizer_centralizer (s : Set A) :
     adjoin R s ≤ centralizer R (centralizer R s) := by
   rw [← toNonUnitalSubalgebra_le_iff, centralizer_toNonUnitalSubalgebra,
     adjoin_toNonUnitalSubalgebra]
-  convert NonUnitalAlgebra.adjoin_le_centralizer_centralizer R (s ∪ star s)
+  convert! NonUnitalAlgebra.adjoin_le_centralizer_centralizer R (s ∪ star s)
   rw [StarMemClass.star_coe_eq]
   simp
 

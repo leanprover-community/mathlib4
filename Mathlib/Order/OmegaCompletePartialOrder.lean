@@ -286,7 +286,7 @@ lemma ωScottContinuous_iff_monotone_map_ωSup :
     ωScottContinuous f ↔ ∃ hf : Monotone f, ∀ c : Chain α, f (ωSup c) = ωSup (c.map ⟨f, hf⟩) := by
   refine ⟨fun hf ↦ ⟨hf.monotone, hf.map_ωSup⟩, ?_⟩
   intro hf _ ⟨c, hc⟩ _ _ _ hda
-  convert isLUB_range_ωSup (c.map { toFun := f, monotone' := hf.1 })
+  convert! isLUB_range_ωSup (c.map { toFun := f, monotone' := hf.1 })
   · simp [← hc, ← (Set.range_comp f ⇑c)]
   · rw [← hc] at hda
     rw [← hf.2 c, ωSup_eq_of_isLUB hda]
@@ -578,7 +578,7 @@ lemma ωScottContinuous.bind {β γ} {f : α → Part β} {g : α → β → Par
 
 lemma ωScottContinuous.map {β γ} {f : β → γ} {g : α → Part β} (hg : ωScottContinuous g) :
     ωScottContinuous fun x ↦ f <$> g x := by
-  simpa only [map_eq_bind_pure_comp] using ωScottContinuous.bind hg ωScottContinuous.const
+  simpa only [map_eq_bind_pure_comp] using! ωScottContinuous.bind hg ωScottContinuous.const
 
 lemma ωScottContinuous.seq {β γ} {f : α → Part (β → γ)} {g : α → Part β} (hf : ωScottContinuous f)
     (hg : ωScottContinuous g) : ωScottContinuous fun x ↦ f x <*> g x := by

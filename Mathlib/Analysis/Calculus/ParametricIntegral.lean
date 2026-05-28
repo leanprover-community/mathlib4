@@ -111,7 +111,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
   by_cases hE : CompleteSpace E; swap
   · rcases subsingleton_or_nontrivial H with hH | hH
     · have : Subsingleton (H →L[𝕜] E) := inferInstance
-      convert hasFDerivAt_of_subsingleton _ x₀
+      convert! hasFDerivAt_of_subsingleton _ x₀
     · have : ¬(CompleteSpace (H →L[𝕜] E)) := by
         simpa [SeparatingDual.completeSpace_continuousLinearMap_iff] using hE
       simp only [integral, hE, ↓reduceDIte, this]
@@ -274,12 +274,12 @@ theorem hasDerivAt_integral_of_dominated_loc_of_lip {F' : α → E} (hs : s ∈ 
     hs hF_meas hF_int hm h_lipsch bound_integrable h_diff
   replace hF'_int : Integrable F' μ := by
     rw [← integrable_norm_iff hm] at hF'_int
-    simpa [L, (· ∘ ·), integrable_norm_iff hF'_meas] using hF'_int
+    simpa [L, (· ∘ ·), integrable_norm_iff hF'_meas] using! hF'_int
   refine ⟨hF'_int, ?_⟩
   by_cases hE : CompleteSpace E; swap
-  · simpa [integral, hE] using hasDerivAt_const x₀ 0
+  · simpa [integral, hE] using! hasDerivAt_const x₀ 0
   simp_rw [hasDerivAt_iff_hasFDerivAt] at h_diff ⊢
-  simpa only [(· ∘ ·), ContinuousLinearMap.integral_comp_comm _ hF'_int] using key
+  simpa only [(· ∘ ·), ContinuousLinearMap.integral_comp_comm _ hF'_int] using! key
 
 /-- Derivative under integral of `x ↦ ∫ F x a` at a given point `x₀ : ℝ`, assuming
 `F x₀` is integrable, `x ↦ F x a` is differentiable on an interval around `x₀` for ae `a`

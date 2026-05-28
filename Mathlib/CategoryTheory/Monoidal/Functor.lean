@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Category
 public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-public import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 # (Lax) monoidal functors

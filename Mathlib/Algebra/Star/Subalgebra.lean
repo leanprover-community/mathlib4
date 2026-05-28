@@ -579,7 +579,7 @@ variable (R)
 lemma adjoin_le_centralizer_centralizer (s : Set A) :
     adjoin R s ≤ centralizer R (centralizer R s) := by
   rw [← toSubalgebra_le_iff, centralizer_toSubalgebra, adjoin_toSubalgebra]
-  convert Algebra.adjoin_le_centralizer_centralizer R (s ∪ star s)
+  convert! Algebra.adjoin_le_centralizer_centralizer R (s ∪ star s)
   rw [StarMemClass.star_coe_eq]
   simp
 
@@ -798,8 +798,8 @@ variable [FunLike F A B] [AlgHomClass F R A B] [StarHomClass F A B] (f g : F)
 
 /-- The equalizer of two star `R`-algebra homomorphisms. -/
 def equalizer : StarSubalgebra R A where
-  toSubalgebra := AlgHom.equalizer (AlgHomClass.toAlgHom f) (AlgHomClass.toAlgHom g)
-  star_mem' {a} (ha : f a = g a) := by simpa only [← map_star] using congrArg star ha
+  toSubalgebra := AlgHom.equalizer (f : A →ₐ[R] B) g
+  star_mem' {a} (ha : f a = g a) := by simpa only [← map_star] using! congrArg star ha
 
 @[simp]
 theorem mem_equalizer (x : A) : x ∈ StarAlgHom.equalizer f g ↔ f x = g x :=

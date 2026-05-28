@@ -289,7 +289,7 @@ theorem to_iso [h' : Epi f.base] : IsIso f := by
       dsimp only [Functor.op, Opens.map]
       congr
       exact (Set.image_preimage_eq _ ((TopCat.epi_iff_surjective _).mp h')).symm
-    convert H.c_iso (Opens.map f.base |>.obj <| unop U)
+    convert! H.c_iso (Opens.map f.base |>.obj <| unop U)
   have : IsIso f.c := NatIso.isIso_of_isIso_app _
   apply +allowSynthFailures isIso_of_components
   let t : X ≃ₜ Y := H.base_open.isEmbedding.toHomeomorph.trans
@@ -348,7 +348,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem pullback_cone_of_left_condition : pullbackConeOfLeftFst f g ≫ f = Y.ofRestrict _ ≫ g := by
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `NatTrans.ext`
   refine PresheafedSpace.Hom.ext _ _ ?_ <| NatTrans.ext <| funext fun U => ?_
-  · simpa using pullback.condition
+  · simpa using! pullback.condition
   · induction U
     simp only [(NatTrans.comp_app), comp_c_app, unop_op, Functor.whiskerRight_app,
       pullbackConeOfLeftFst, app_invApp_assoc, eqToHom_app, Category.assoc,
@@ -628,7 +628,7 @@ theorem isIso_of_subset {X Y : PresheafedSpace C} (f : X ⟶ Y)
   have : U = H.base_open.functor.obj ((Opens.map f.base).obj U) := by
     ext1
     exact (Set.inter_eq_left.mpr hU).symm.trans Set.image_preimage_eq_inter_range.symm
-  convert H.c_iso ((Opens.map f.base).obj U)
+  convert! H.c_iso ((Opens.map f.base).obj U)
 
 end PresheafedSpace.IsOpenImmersion
 
@@ -920,7 +920,7 @@ theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.ob
   rw [ι_preservesColimitIso_hom_assoc, ι_preservesColimitIso_hom_assoc,
     HasColimit.isoOfNatIso_ι_hom_assoc, HasColimit.isoOfNatIso_ι_hom_assoc,
     TopCat.sigmaIsoSigma_hom_ι, TopCat.sigmaIsoSigma_hom_ι] at eq
-  convert h (congr_arg Discrete.mk (congr_arg Sigma.fst eq))
+  convert! h (congr_arg Discrete.mk (congr_arg Sigma.fst eq))
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -938,11 +938,11 @@ instance sigma_ι_isOpenImmersion_aux [HasStrictTerminalObjects C] :
         (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) i ≫
             (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv).base := by
       have := h₁.symm
-      convert sigma_ι_isOpenEmbedding F i
+      convert! sigma_ι_isOpenEmbedding F i
     suffices IsIso <| (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) i ≫
         (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv).c.app <|
       op (H.functor.obj U) by
-      convert this
+      convert! this
     rw [PresheafedSpace.comp_c_app,
       ← PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π]
     -- Porting note: this instance created manually to make the `inferInstance` below work
@@ -954,8 +954,8 @@ instance sigma_ι_isOpenImmersion_aux [HasStrictTerminalObjects C] :
     apply limit_π_isIso_of_is_strict_terminal
     rintro ⟨j⟩ hj
     dsimp
-    convert (F.obj j).sheaf.isTerminalOfEmpty using 3
-    convert image_preimage_is_empty F i j (fun h => hj (congr_arg op h.symm)) U using 6
+    convert! (F.obj j).sheaf.isTerminalOfEmpty using 3
+    convert! image_preimage_is_empty F i j (fun h => hj (congr_arg op h.symm)) U using 6
     exact congr_arg PresheafedSpace.Hom.base h₁
 
 set_option backward.defeqAttrib.useBackward true in
@@ -969,7 +969,7 @@ instance sigma_ι_isOpenImmersion {ι : Type w} [Small.{v} ι]
   have : colimit.ι F i = (colimit.ι F i ≫ (HasColimit.isoOfEquivalence f (Iso.refl _)).inv) ≫
       (HasColimit.isoOfEquivalence f (Iso.refl _)).hom := by
     simp
-  rw [this, HasColimit.isoOfEquivalence_inv_π]
+  rw [this, HasColimit.ι_isoOfEquivalence_inv]
   infer_instance
 
 end Prod

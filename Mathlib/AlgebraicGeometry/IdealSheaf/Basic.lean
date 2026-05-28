@@ -571,7 +571,7 @@ noncomputable nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
       · rw [Ideal.map_le_iff_le_comap]
         intro x hx
         suffices ∀ p, (X.affineBasicOpen f).2.fromSpec p ∈ Z → F.hom x ∈ p.asIdeal by
-          simpa [PrimeSpectrum.mem_vanishingIdeal] using this
+          simpa [PrimeSpectrum.mem_vanishingIdeal] using! this
         intro x hxZ
         refine (PrimeSpectrum.mem_vanishingIdeal _ _).mp hx
           (Spec.map (X.presheaf.map (homOfLE _).op) x) ?_
@@ -787,7 +787,7 @@ lemma Hom.iInf_ker_openCover_map_comp_apply
     Scheme.Hom.appIso_hom']
   simp only [homOfLE_leOfHom, Scheme.Hom.app_eq_appLE, ← RingHom.comp_apply,
     ← CommRingCat.hom_comp, Scheme.Hom.appLE_map, Scheme.Hom.appLE_comp_appLE]
-  simpa [Scheme.Hom.appLE] using ideal_ker_le _ _ (Ideal.mem_iInf.mp hs i)
+  simpa [Scheme.Hom.appLE] using! ideal_ker_le _ _ (Ideal.mem_iInf.mp hs i)
 
 lemma Hom.iInf_ker_openCover_map_comp (f : X ⟶ Y) [QuasiCompact f] (𝒰 : X.OpenCover) :
     ⨅ i, (𝒰.f i ≫ f).ker = f.ker := by
@@ -816,7 +816,7 @@ lemma ker_morphismRestrict_ideal (f : X.Hom Y) [QuasiCompact f]
     (U : Y.Opens) (V : U.toScheme.affineOpens) :
     (f ∣_ U).ker.ideal V = f.ker.ideal ⟨U.ι ''ᵁ V, V.2.image_of_isOpenImmersion _⟩ := by
   ext x
-  simpa [Scheme.Hom.appLE] using map_eq_zero_iff _
+  simpa [Scheme.Hom.appLE] using! map_eq_zero_iff _
     (ConcreteCategory.bijective_of_isIso
       (X.presheaf.map (eqToHom (image_morphismRestrict_preimage f U V)).op)).1
 
@@ -894,7 +894,7 @@ variable (X) in
 @[simp]
 lemma ker_toSpecΓ [CompactSpace X] : X.toSpecΓ.ker = ⊥ := by
   apply IdealSheafData.ext_of_isAffine
-  simpa using RingHom.ker_coe_equiv (ΓSpecIso Γ(X, ⊤)).commRingCatIsoToRingEquiv
+  simpa using! RingHom.ker_coe_equiv (ΓSpecIso Γ(X, ⊤)).commRingCatIsoToRingEquiv
 
 end ker
 

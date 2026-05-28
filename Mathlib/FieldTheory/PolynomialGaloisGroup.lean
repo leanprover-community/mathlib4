@@ -232,7 +232,7 @@ theorem restrictDvd_surjective (hpq : p ∣ q) (hq : q ≠ 0) :
   classical
   haveI := Fact.mk <|
     (SplittingField.splits q).of_dvd (map_ne_zero hq) ((map_dvd_map' _).mpr hpq)
-  simpa only [restrictDvd_def, dif_neg hq] using restrict_surjective _ _
+  simpa only [restrictDvd_def, dif_neg hq] using! restrict_surjective _ _
 
 variable (p q)
 
@@ -337,7 +337,7 @@ theorem restrictComp_surjective (hq : q.natDegree ≠ 0) :
     Function.Surjective (restrictComp p q hq) := by
   haveI : Fact (Splits (p.map (algebraMap F (SplittingField (comp p q))))) :=
     ⟨splits_in_splittingField_of_comp p q hq⟩
-  simpa only [restrictComp] using restrict_surjective _ _
+  simpa only [restrictComp] using! restrict_surjective _ _
 
 variable {p q}
 

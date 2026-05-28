@@ -212,7 +212,6 @@ def isColimitOfEffectiveEpiFamilyStruct {B : C} {α : Type*}
   letI F : D ⥤ _ := (Sieve.generateFamily X π).arrows.diagram
   { desc := fun S => H.desc (fun a => S.ι.app ⟨Over.mk (π a), ⟨a,𝟙 _, by simp⟩⟩) <| by
       intro Z a₁ a₂ g₁ g₂ h
-      dsimp
       let A₁ : D := ⟨Over.mk (π a₁), a₁, 𝟙 _, by simp⟩
       let A₂ : D := ⟨Over.mk (π a₂), a₂, 𝟙 _, by simp⟩
       let Z' : D := ⟨Over.mk (g₁ ≫ π a₁), a₁, g₁, rfl⟩
