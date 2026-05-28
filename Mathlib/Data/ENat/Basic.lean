@@ -165,6 +165,10 @@ theorem toNat_top : toNat ⊤ = 0 :=
 
 @[simp] theorem toNat_eq_zero : toNat n = 0 ↔ n = 0 ∨ n = ⊤ := WithTop.untopD_eq_self_iff
 
+theorem toNat_pos (hn0 : n ≠ 0) (hxt : n ≠ ⊤) : 0 < n.toNat := by
+  rw [pos_iff_ne_zero, ne_eq, ENat.toNat_eq_zero, not_or]
+  exact ⟨hn0, hxt⟩
+
 theorem lift_eq_toNat_of_lt_top {x : ℕ∞} (hx : x < ⊤) : x.lift hx = x.toNat := by
   rcases x with ⟨⟩ | x
   · contradiction
