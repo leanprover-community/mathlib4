@@ -56,8 +56,11 @@ This is useful for inspecting `Html` from within Lean. -/
 def trimWhitespace (string : String) : String :=
   "\n".intercalate <| ((string.trimAscii.split '\n').map (·.trimAscii.toString)).toList
 
-elab "click_test" hyp?:(ident)? pos?:(str)? "=>" expecteds:str+ : tactic =>
-  Elab.Tactic.withMainContext do
+elab "click_test" onGoal?:(num)? hyp?:(ident)? pos?:(str)? "=>" expecteds:str+ : tactic => do
+  let goals ← Elab.Tactic.getGoals
+  let onGoal := onGoal?.map (·.getNat - 1)
+  let some goal := goals[onGoal.getD 0]? | throwError "there is no goal number {onGoal}"
+  goal.withContext do
   let hyp? ← hyp?.mapM fun hyp ↦ return (← getLocalDeclFromUserName hyp.getId).fvarId
   let pos? ← pos?.mapM fun pos ↦ do
     match Pos.fromString? pos.getString with
@@ -69,7 +72,6 @@ elab "click_test" hyp?:(ident)? pos?:(str)? "=>" expecteds:str+ : tactic =>
     | none  , some pos => pure <| .target pos
     | some h, none     => pure <| .hyp h
     | none  , none     => pure <| .target .root
-  let mvarId ← Elab.Tactic.getMainGoal
   let text ← getFileMap
   let some cursorPos := (← getRef).getPos? | throwError "found no valid cursor position"
   let cursorPos := text.utf8PosToLspPos cursorPos
@@ -78,14 +80,14 @@ elab "click_test" hyp?:(ident)? pos?:(str)? "=>" expecteds:str+ : tactic =>
   let ctx := {
     cursorPos, masterToken, statusToken
     «meta» := { (default : DocumentMeta) with text }
-    onGoal := none
+    onGoal
     stx := default
     progress? := ← IO.mkRef false
-    goal := mvarId
+    goal
     hyp?
     pos := pos?.getD .root
   }
-  (generateSuggestions { loc, mvarId } none masterToken).run ctx |>.run' {}
+  (generateSuggestions { loc, mvarId := goal } none masterToken).run ctx |>.run' {}
   let props ← getHtmlComponentProps html MakeEditLink #[]
   let suggested := props.flatMap (·.edit.edits.map (trimWhitespace ·.newText))
   for expected in expecteds do

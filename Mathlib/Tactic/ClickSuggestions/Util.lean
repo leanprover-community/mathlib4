@@ -264,9 +264,13 @@ def mkRewrite (kind : RwKind) (symm : Bool) (e : Term) (loc : Option Ident)
 
 /-- Try to combine the suggested tactic with the preceding tactic in the tactic sequence.
 In particular, we merge sequences of `rw`, `simp_rw` and `grw`. -/
-def mergeTactics? {m} [Monad m] [MonadRef m] [MonadQuotation m] (stx₁ stx₂ : TSyntax `tactic) :
-    m (Option (TSyntax `tactic)) := do
+partial def mergeTactics? {m} [Monad m] [MonadRef m] [MonadQuotation m]
+    (stx₁ stx₂ : TSyntax `tactic) : m (Option (TSyntax `tactic)) := do
   match stx₁, stx₂ with
+  | `(tactic| on_goal $n₁ => $tac₁:tactic), `(tactic| on_goal $n₂ => $tac₂:tactic) =>
+    if n₁.getNat == n₂.getNat then
+      if let some tac ← mergeTactics? tac₁ tac₂ then
+        return ← `(tactic| on_goal $n₁ => $tac:tactic)
   | `(tactic| rw [$[$rules₁],*] $[at $h₁:ident]?),
     `(tactic| rw [$[$rules₂],*] $[at $h₂:ident]?) =>
     if h₁.map (·.getId) == h₂.map (·.getId) then
@@ -285,10 +289,6 @@ def mergeTactics? {m} [Monad m] [MonadRef m] [MonadQuotation m] (stx₁ stx₂ :
 /-- Given tactic syntax `tac` that we want to paste into the editor, return it as a string.
 This function respects the 100 character limit for long lines. -/
 def tacticPasteString (tac : TSyntax `tactic) : clickSuggestionsM String := do
-  let tac ← if let some n := (← read).onGoal then
-      `(tactic| on_goal $(mkNatLit (n + 1)) => $(tac):tactic)
-    else
-      pure tac
   let column := (← read).cursorPos.character
   let indent := column
   return (← PrettyPrinter.ppTactic tac).pretty 100 indent column
@@ -301,10 +301,10 @@ def mkInsertion (tac : TSyntax `tactic) : clickSuggestionsM (Lsp.Range × String
       let text := (← read).meta.text
       let endPos := max (text.lspPosToUtf8Pos (← read).cursorPos) range.stop
       let extraWhitespace := range.stop.extract text.source endPos
-      let tactic ← tacticPasteString tac (← read)
+      let tactic ← tacticPasteString tac
       return (text.utf8RangeToLspRange ⟨range.start, endPos⟩, tactic ++ extraWhitespace)
   return (⟨(← read).cursorPos, (← read).cursorPos⟩,
-    s!"{← tacticPasteString tac (← read)}\n{String.replicate (← read).cursorPos.character ' '}")
+    s!"{← tacticPasteString tac}\n{String.replicate (← read).cursorPos.character ' '}")
 
 end Syntax
 
@@ -314,6 +314,9 @@ open Widget
 
 def mkSuggestion (tac : TSyntax `tactic) (html : Html) (isText := false) :
     clickSuggestionsM Html := do
+  let tac ← match (← read).onGoal with
+    | some n => `(tactic| on_goal $(Syntax.mkNatLit (n + 1)) => $tac:tactic)
+    | none => pure tac
   let (range, newText) ← mkInsertion tac (← read)
   let button :=
     -- TODO: The hover on this button should be a `CodeWithInfos`, instead of a string.
@@ -331,22 +334,6 @@ def mkSuggestion (tac : TSyntax `tactic) (html : Html) (isText := false) :
     style={json% { "display" : "flex", "align-items" : "flex-start", "margin-bottom" : "1em" }}>
     {button} {html}
     </div>
-
-/-- Create a suggestion for inserting `stx` and tactic name `tac`. -/
-def mkTacticSuggestion (stx tac : TSyntax `tactic) (html : Html) (isText := false) :
-    clickSuggestionsM Html := do
-  mkSuggestion stx (isText := isText)
-    <div> <div>{html}</div> <div>{← tacticToHtml tac}</div> </div>
-
-@[inline]
-def mkIncrementalSuggestions (name : String)
-    (k : (Html → clickSuggestionsM Unit) → clickSuggestionsM Unit) : clickSuggestionsM Html :=
-  mkRefreshComponentM (.text "") fun token ↦ trackingComputation name do
-    let htmls ← IO.mkRef #[]
-    k fun html ↦ do
-      markProgress
-      htmls.modify (·.push html)
-      token.update (.element "div" #[] (← htmls.get))
 
 end Widget
 
