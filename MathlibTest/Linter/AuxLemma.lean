@@ -1,5 +1,8 @@
-import Mathlib.Tactic.Linter.AuxLemma
-import Mathlib.Init
+module
+
+public import Mathlib.Tactic.Linter.AuxLemma
+public import Mathlib.Init
+public import Init.Data.Iterators.Combinators.Monadic.FilterMap
 
 /-!
 # Tests for the `auxLemma` linter
@@ -65,3 +68,39 @@ example := @Nat.rec
 set_option linter.auxLemma false in
 #guard_msgs in
 example := @foo.match_1
+
+-- copied from `Std.Iterators.Types.FilterMap.instIterator` at the time of writing this test
+-- `_aux_1` refers to the first field of the instance `fooAux`
+open Std Iterators in
+universe w w' w'' in
+instance fooAux {α β γ : Type w} {m : Type w → Type w'} {n : Type w → Type w''} [Monad n]
+    [Iterator α m β] {lift : ⦃α : Type w⦄ → m α → n α} {f : β → PostconditionT n γ} :
+    Iterator (Types.Map α m n lift f) n γ :=
+  inferInstanceAs <| Iterator (Types.FilterMap α m n lift _) n γ
+
+/--
+warning: `fooAux._aux_1` refers to an auto-generated auxiliary declaration. These are not stable across refactors; consider using a different approach.
+
+Note: This linter can be disabled with `set_option linter.auxLemma false`
+-/
+#guard_msgs(drop info,warning) in
+#check fooAux._aux_1
+
+-- minimised from `BitVec.lt_of_msb_false_of_msb_true` at the time of writing this test
+structure Foo where
+  data : Nat
+
+def Foo.bar (_x : Foo) : Bool := false
+
+instance : LT (Foo) := ⟨fun x y ↦ x.data < y.data⟩
+
+axiom silentSorry {α} : α
+@[simp]
+theorem fooBar {x y : Foo} (_hx : x.bar = false) (_hy : y.bar = true) : x < y := silentSorry
+/--
+warning: `fooBar._simp_1` refers to an auto-generated auxiliary declaration. These are not stable across refactors; consider using a different approach.
+
+Note: This linter can be disabled with `set_option linter.auxLemma false`
+-/
+#guard_msgs in
+example {x y : Foo} := fooBar._simp_1 (x := x) (y := y)
