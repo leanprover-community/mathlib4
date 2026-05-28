@@ -551,6 +551,7 @@ public import Mathlib.Algebra.GroupWithZero.TransferInstance
 public import Mathlib.Algebra.GroupWithZero.ULift
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Algebra.GroupWithZero.Units.Equiv
+public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Algebra.GroupWithZero.WithZero
 public import Mathlib.Algebra.HierarchyDesign
@@ -3964,7 +3965,6 @@ public import Mathlib.Data.Fintype.Shrink
 public import Mathlib.Data.Fintype.Sigma
 public import Mathlib.Data.Fintype.Sort
 public import Mathlib.Data.Fintype.Sum
-public import Mathlib.Data.Fintype.Units
 public import Mathlib.Data.Fintype.Vector
 public import Mathlib.Data.Fintype.WithTopBot
 public import Mathlib.Data.FunLike.Basic

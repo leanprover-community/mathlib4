@@ -12,7 +12,7 @@ public import Mathlib.SetTheory.Cardinal.Finite
 public import Mathlib.Algebra.GroupWithZero.Units.Equiv
 
 /-!
-# fintype instances relating to units
+# Fintype instances relating to units
 -/
 
 public section
