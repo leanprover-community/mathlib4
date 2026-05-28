@@ -433,7 +433,7 @@ elab (name := abel1) "abel1" tk:"!"? : tactic => withMainContext do
     | throwError "`abel1` requires an equality goal"
   trace[abel] "running on an equality `{e₁} = {e₂}`."
   let c ← mkContext e₁
-  closeMainGoal `abel1 <| ← AtomM.run tm <| ReaderT.run (r := c) do
+  let proof ← AtomM.run tm <| ReaderT.run (r := c) do
     let (e₁', p₁) ← eval e₁
     trace[abel] "found `{p₁}`, a proof that `{e₁} = {e₁'.e}`"
     let (e₂', p₂) ← eval e₂
@@ -442,6 +442,9 @@ elab (name := abel1) "abel1" tk:"!"? : tactic => withMainContext do
       throwError "`abel1` found that the two sides were not equal"
     trace[abel] "verified that the simplified forms are identical"
     mkEqTrans p₁ (← mkEqSymm p₂)
+  let type ← getMainTarget
+  let proof ← Lean.Meta.mkAuxTheorem type proof (zetaDelta := true) (kind? := `_abel)
+  closeMainGoal `abel1 proof
 
 @[tactic_alt abel]
 macro (name := abel1!) "abel1!" : tactic => `(tactic| abel1 !)

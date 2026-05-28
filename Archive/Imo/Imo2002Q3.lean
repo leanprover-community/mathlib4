@@ -12,7 +12,7 @@ import Mathlib.RingTheory.Polynomial.Content
 Find all pairs of positive integers $m,n ≥ 3$ for which there exist infinitely many
 positive integers $a$ such that $(a^m+a-1) / (a^n+a^2-1)$ is itself an integer.
 
-# Solution
+## Solution
 
 It suffices to find $(m,n)$ pairs for which $a^n+a^2-1 ∣ a^m+a-1$, where both sides are viewed as
 polynomials in $a$. This automatically gives $n ≤ m$, so we have

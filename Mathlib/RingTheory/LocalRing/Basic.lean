@@ -16,7 +16,7 @@ We prove basic properties of local rings.
 
 -/
 
-@[expose] public section
+public section
 
 variable {R S : Type*}
 

@@ -249,6 +249,7 @@ open scoped Classical in
 /-- Given a filtration `𝓕`, its **right continuation** is the filtration `𝓕₊` defined as follows:
 - If `i` is isolated on the right, then `𝓕₊ i := 𝓕 i`;
 - Otherwise, `𝓕₊ i := ⨅ j > i, 𝓕 j`.
+
 It is sometimes simply defined as `𝓕₊ i := ⨅ j > i, 𝓕 j` when the index type is `ℝ`. In the
 general case this is not ideal however. If `i` is maximal for instance, then `𝓕₊ i = ⊤`, which
 is inconvenient because `𝓕₊` is not a `Filtration ι m` anymore. If the index type
@@ -397,6 +398,11 @@ def natural (u : (i : ι) → Ω → β i) (hum : ∀ i, StronglyMeasurable (u i
     refine iSup₂_le ?_
     rintro j _ s ⟨t, ht, rfl⟩
     exact (hum j).measurable ht
+
+lemma natural_eq_comap (u : (i : ι) → Ω → β i) (hum : ∀ (i : ι), StronglyMeasurable (u i)) (i : ι) :
+    natural u hum i = .comap (fun ω (j : Set.Iic i) ↦ u j ω) inferInstance := by
+  simp_rw [natural, MeasurableSpace.comap_process_pi, iSup_subtype']
+  rfl
 
 section
 
