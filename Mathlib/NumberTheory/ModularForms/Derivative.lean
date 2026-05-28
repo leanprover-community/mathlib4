@@ -174,7 +174,7 @@ If `F : ℍ → ℂ` is MDifferentiable, then `ramanujanSerreDerivative k F` is 
 theorem ramanujanSerreDerivative_mdifferentiable {F : ℍ → ℂ} (k : ℂ) (hF : MDiff F) :
     MDiff (ramanujanSerreDerivative k F) := by
   refine (normalizedDerivOfComplex_mdifferentiable hF).sub ?_
-  convert
+  convert!
     (MDifferentiable.mul mdifferentiable_const (E2_mdifferentiable.mul hF) :
       MDiff (fun z ↦ (k * 12⁻¹) * (EisensteinSeries.E2 z * F z)))
   simp [Pi.mul_apply, mul_assoc, mul_left_comm, mul_comm]
@@ -191,39 +191,36 @@ lemma normalizedDerivOfComplex_slash (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) 
   have hz := denom_ne_zero γ z
   have hdet_pos : 0 < ((γ : GL (Fin 2) ℝ).det).val := by simp
   have hcomp : deriv (((F ∣[k] γ)) ∘ ofComplex) z =
-      deriv (fun w ↦ (F ∘ ofComplex) (num γ w / denom γ w) * (denom γ w) ^ (-k)) z := by
+      deriv (fun w ↦ (F ∘ ofComplex) ↑(γ • ofComplex w) * (denom γ w) ^ (-k)) z := by
     apply Filter.EventuallyEq.deriv_eq
     filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds z.im_pos] with w hw
-    simp only [Function.comp_apply, ofComplex_apply_of_im_pos hw]
+    simp only [Function.comp_apply, ofComplex_apply_of_im_pos hw, ofComplex_apply]
     rw [ModularForm.SL_slash_apply (f := F) (k := k) γ ⟨w, hw⟩]
-    congr 1
-    · let τ : ℍ := ⟨w, hw⟩
-      have hsmul : ((γ • τ : ℍ) : ℂ) = num γ w / denom γ w := by
-        simpa [τ] using (coe_smul_of_det_pos hdet_pos τ)
-      have hmoebius_im : 0 < (num γ w / denom γ w).im := hsmul ▸ (γ • τ).im_pos
-      change F (γ • τ) = F (ofComplex (num γ w / denom γ w))
-      exact congrArg F (UpperHalfPlane.ext (by
-        simpa [τ, ofComplex_apply_of_im_pos hmoebius_im] using hsmul))
   rw [hcomp]
-  have hdiff_moebius := (hasStrictDerivAt_moebius ↑γ z).hasDerivAt.differentiableAt
-  have hmob_eq : ↑(γ • z) = num γ z / denom γ z := coe_smul_of_det_pos hdet_pos z
-  have hdiff_F_comp : DifferentiableAt ℂ (F ∘ ofComplex) (num γ z / denom γ z) :=
-    mdifferentiableAt_iff.mp (hF ⟨_, hmob_eq ▸ (γ • z).im_pos⟩)
-  have hcomp_eq : (fun w ↦ (F ∘ ofComplex) (num γ w / denom γ w)) =
-    (F ∘ ofComplex) ∘ (fun w ↦ num γ w / denom γ w) := rfl
-  have hmoeb_deriv : deriv (fun w ↦ num γ w / denom γ w) (z : ℂ) = 1 / (denom γ z) ^ 2 := by
-    simp only [deriv_moebius, show (((↑γ : GL (Fin 2) ℝ)).val.det : ℂ) = 1 from by
+  have hdiff_smul : DifferentiableAt ℂ (fun w ↦ ↑(γ • ofComplex w) : ℂ → ℂ) (z : ℂ) :=
+    (hasStrictDerivAt_smul hdet_pos z).hasDerivAt.differentiableAt
+  have hdiff_F_comp : DifferentiableAt ℂ (F ∘ ofComplex) ↑(γ • ofComplex (z : ℂ)) := by
+    rw [ofComplex_apply]
+    exact mdifferentiableAt_iff.mp (hF (γ • z))
+  have hcomp_eq : (fun w ↦ (F ∘ ofComplex) ↑(γ • ofComplex w)) =
+    (F ∘ ofComplex) ∘ (fun w ↦ ↑(γ • ofComplex w) : ℂ → ℂ) := rfl
+  have hsmul_deriv : deriv (fun w ↦ ↑(γ • ofComplex w) : ℂ → ℂ) (z : ℂ) =
+      1 / (denom γ z) ^ 2 := by
+    have h : deriv (fun w ↦ ↑(γ • ofComplex w) : ℂ → ℂ) (z : ℂ) =
+        (↑γ : GL (Fin 2) ℝ).val.det / denom γ z ^ 2 :=
+      (hasStrictDerivAt_smul hdet_pos z).hasDerivAt.deriv
+    rw [h, show (((↑γ : GL (Fin 2) ℝ)).val.det : ℂ) = 1 from by
       rw [← Matrix.GeneralLinearGroup.val_det_apply]; simp]
   have hdenom_zpow_deriv : deriv (fun w ↦ (denom γ w) ^ (-k)) (z : ℂ) =
       (-k) * ((γ : Matrix (Fin 2) (Fin 2) ℤ) 1 0 : ℂ) * (denom γ z) ^ (-k - 1) := by
     rw [deriv_denom_zpow]; simp
-  rw [show (fun w ↦ (F ∘ ofComplex) (num γ w / denom γ w) * (denom γ w) ^ (-k)) =
-      (fun w ↦ (F ∘ ofComplex) (num γ w / denom γ w)) * (fun w ↦ (denom γ w) ^ (-k)) from rfl,
-    deriv_mul (hcomp_eq ▸ hdiff_F_comp.comp (z : ℂ) hdiff_moebius)
+  rw [show (fun w ↦ (F ∘ ofComplex) ↑(γ • ofComplex w) * (denom γ w) ^ (-k)) =
+      (fun w ↦ (F ∘ ofComplex) ↑(γ • ofComplex w)) * (fun w ↦ (denom γ w) ^ (-k)) from rfl,
+    deriv_mul (hcomp_eq ▸ hdiff_F_comp.comp (z : ℂ) hdiff_smul)
       (hasStrictDerivAt_denom_zpow ↑γ (-k) z).hasDerivAt.differentiableAt,
-    hcomp_eq, (hdiff_F_comp.hasDerivAt.comp (z : ℂ) hdiff_moebius.hasDerivAt).deriv,
-    hmoeb_deriv, hdenom_zpow_deriv]
-  simp only [ModularForm.SL_slash_apply, Function.comp_apply, ← hmob_eq, ofComplex_apply]
+    hcomp_eq, (hdiff_F_comp.hasDerivAt.comp (z : ℂ) hdiff_smul.hasDerivAt).deriv,
+    hsmul_deriv, hdenom_zpow_deriv]
+  simp only [ModularForm.SL_slash_apply, Function.comp_apply, ofComplex_apply]
   have hpow1 : 1 / (denom γ z) ^ 2 * (denom γ z) ^ (-k) = (denom γ z) ^ (-(k + 2)) := by
     rw [one_div, ← zpow_natCast _ 2, ← zpow_neg, ← zpow_add₀ hz]; congr 1; ring
   have hpow2 : (denom γ z) ^ (-k - 1) = (denom γ z) ^ (-1 : ℤ) * (denom γ z) ^ (-k) := by

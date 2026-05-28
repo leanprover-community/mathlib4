@@ -124,7 +124,7 @@ lemma eq_zero_of_frequently {f : ℍ → ℂ} (hf : MDiff f) {τ : ℍ} (hτ : �
   rw [mdifferentiable_iff] at hf
   have := hf.analyticOnNhd isOpen_upperHalfPlaneSet
   ext w
-  convert this.eqOn_zero_of_preconnected_of_frequently_eq_zero (z₀ := ↑τ) ?_ τ.2 ?_ w.im_pos
+  convert! this.eqOn_zero_of_preconnected_of_frequently_eq_zero (z₀ := ↑τ) ?_ τ.2 ?_ w.im_pos
   · rw [Function.comp_apply, ofComplex_apply]
   · exact (Complex.isConnected_of_upperHalfPlane subset_rfl (by grind)).isPreconnected
   · contrapose! hτ
@@ -156,21 +156,6 @@ more pain than gain?
 
 section Complex
 
-/-- The Möbius transformation `z ↦ num g z / denom g z` has strict derivative
-`det g / (denom g τ)^2` at `τ ∈ ℍ`. -/
-lemma hasStrictDerivAt_moebius (g : GL (Fin 2) ℝ) (τ : ℍ) :
-    HasStrictDerivAt (fun z ↦ num g z / denom g z) (g.val.det / denom g τ ^ 2) τ := by
-  convert ((hasStrictDerivAt_id (τ : ℂ)).const_mul _ |>.add_const _).div
-    ((hasStrictDerivAt_id (τ : ℂ)).const_mul _ |>.add_const _) _ using 2
-  · simp [Matrix.det_fin_two]; ring
-  · apply denom_ne_zero
-
-/-- Derivative of the Möbius transformation:
-$\frac{d}{dz}\left(\frac{az+b}{cz+d}\right) = \frac{\det g}{(cz+d)^2}$. -/
-lemma deriv_moebius (g : GL (Fin 2) ℝ) (τ : ℍ) :
-    deriv (fun z ↦ num g z / denom g z) τ = g.val.det / denom g τ ^ 2 :=
-  (hasStrictDerivAt_moebius g τ).hasDerivAt.deriv
-
 /-- Strict derivative of `z ↦ (denom g z) ^ k`:
 $\frac{d}{dz}[(cz+d)^k] = k \cdot c \cdot (cz+d)^{k-1}$. -/
 lemma hasStrictDerivAt_denom_zpow (g : GL (Fin 2) ℝ) (k : ℤ) (τ : ℍ) :
@@ -191,8 +176,15 @@ lemma deriv_denom_zpow (g : GL (Fin 2) ℝ) (k : ℤ) (τ : ℍ) :
 
 lemma hasStrictDerivAt_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ) :
     HasStrictDerivAt (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) (g.val.det / denom g τ ^ 2) τ := by
-  refine (hasStrictDerivAt_moebius g τ).congr_of_eventuallyEq ?_
-  simp [← isOpenEmbedding_coe.map_nhds_eq, Function.comp_def, coe_smul_of_det_pos hg]
+  suffices HasStrictDerivAt (num g / denom g) (g.val.det / denom g τ ^ 2) τ by
+    refine this.congr_of_eventuallyEq ?_
+    rw [← isOpenEmbedding_coe.map_nhds_eq, eventuallyEq_map]
+    simp [Function.comp_def, coe_smul_of_det_pos hg]
+  convert!
+    ((hasStrictDerivAt_id (τ : ℂ)).const_mul _ |>.add_const _).div
+      ((hasStrictDerivAt_id (τ : ℂ)).const_mul _ |>.add_const _) _ using 2
+  · simp [Matrix.det_fin_two]; ring
+  · apply denom_ne_zero
 
 lemma deriv_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ) :
     deriv (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) τ = g.val.det / denom g τ ^ 2 :=
@@ -258,7 +250,7 @@ lemma hasStrictFDerivAt_smul (g : GL (Fin 2) ℝ) (τ : ℍ) :
     HasStrictFDerivAt (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) (smulFDeriv g τ) τ := by
   wlog hg : 0 < g.det.val generalizing g
   · replace hg := g.det.ne_zero.lt_or_gt.resolve_right hg
-    convert Complex.conjCLE.hasStrictFDerivAt.neg.comp _ (this (J * g) (by simpa))
+    convert! Complex.conjCLE.hasStrictFDerivAt.neg.comp _ (this (J * g) (by simpa))
     · simp [mul_smul, coe_J_smul]
     · ext
       simp
