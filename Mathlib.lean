@@ -1684,7 +1684,6 @@ public import Mathlib.Analysis.CStarAlgebra.Module.Constructions
 public import Mathlib.Analysis.CStarAlgebra.Module.Defs
 public import Mathlib.Analysis.CStarAlgebra.Module.Synonym
 public import Mathlib.Analysis.CStarAlgebra.Multiplier
-public import Mathlib.Analysis.CStarAlgebra.PerronFrobenius
 public import Mathlib.Analysis.CStarAlgebra.PositiveLinearMap
 public import Mathlib.Analysis.CStarAlgebra.Projection
 public import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
@@ -1857,6 +1856,7 @@ public import Mathlib.Analysis.Complex.OpenMapping
 public import Mathlib.Analysis.Complex.OperatorNorm
 public import Mathlib.Analysis.Complex.Order
 public import Mathlib.Analysis.Complex.Periodic
+public import Mathlib.Analysis.Complex.TriangleEquality
 public import Mathlib.Analysis.Complex.PhragmenLindelof
 public import Mathlib.Analysis.Complex.Poisson
 public import Mathlib.Analysis.Complex.Polynomial.Basic

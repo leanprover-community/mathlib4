@@ -599,6 +599,19 @@ theorem sum_le_one_iff {s : Finset α} {f : α → ℕ} :
       simp [← sum_sdiff (singleton_subset_iff.2 hsx), sum_congr rfl hs, (h x x hsx hsx hfx hfx).2]
     · simp [sum_congr rfl hx]
 
+/-- If `f i ≤ g i` on `s` and the sums agree, then `f i = g i` on `s`. -/
+lemma eq_of_sum_eq_of_le {M : Type*} [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
+    {s : Finset ι} {f g : ι → M}
+    (h_le : ∀ i ∈ s, f i ≤ g i) (h_sum_eq : ∑ i ∈ s, f i = ∑ i ∈ s, g i) :
+    ∀ i ∈ s, f i = g i := by
+  intro i hi
+  have h_sum_diff_eq_zero : ∑ j ∈ s, (g j - f j) = 0 := by
+    rw [Finset.sum_sub_distrib, h_sum_eq, sub_self]
+  have h_nonneg : ∀ j ∈ s, 0 ≤ g j - f j := fun j hj => sub_nonneg.mpr (h_le j hj)
+  have h_all_zero : ∀ j ∈ s, g j - f j = 0 :=
+    sum_eq_zero_iff_of_nonneg h_nonneg |>.mp h_sum_diff_eq_zero
+  exact (sub_eq_zero.mp (h_all_zero i hi)).symm
+
 end Finset
 
 namespace Fintype
