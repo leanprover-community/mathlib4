@@ -52,12 +52,10 @@ scoped notation "Ber(" x ", " y ", " p ")" => bernoulliMeasure x y p
 lemma bernoulliMeasure_def (x y : X) (p : I) :
     Ber(x, y, p) = toNNReal p • dirac x + toNNReal (σ p) • dirac y := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma bernoulliMeasure_zero (x y : X) : bernoulliMeasure x y 0 = dirac y := by
   simp [bernoulliMeasure_def]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma bernoulliMeasure_one (x y : X) : bernoulliMeasure x y 1 = dirac x := by
   simp [bernoulliMeasure_def]
@@ -74,35 +72,6 @@ lemma bernoulliMeasure_apply (p : I) {s : Set X}
           else 0 := by
   split_ifs <;> simp_all [bernoulliMeasure_def, ← ENNReal.coe_add]
 
-set_option backward.isDefEq.respectTransparency false in
-@[simp]
-lemma bernoulliMeasure_apply_of_mem_of_mem (p : I) {s : Set X}
-    (hs : MeasurableSet s) (hx : x ∈ s) (hy : y ∈ s) :
-    Ber(x, y, p) s = 1 := by
-  classical
-  simp_all [bernoulliMeasure_apply]
-
-@[simp]
-lemma bernoulliMeasure_apply_of_mem_of_notMem (p : I) {s : Set X}
-    (hs : MeasurableSet s) (hx : x ∈ s) (hy : y ∉ s) :
-    Ber(x, y, p) s = toNNReal p := by
-  classical
-  simp_all [bernoulliMeasure_apply]
-
-@[simp]
-lemma bernoulliMeasure_apply_of_notMem_of_mem (p : I) {s : Set X}
-    (hs : MeasurableSet s) (hx : x ∉ s) (hy : y ∈ s) :
-    Ber(x, y, p) s = toNNReal (σ p) := by
-  classical
-  simp_all [bernoulliMeasure_apply]
-
-@[simp]
-lemma bernoulliMeasure_apply_of_notMem_of_notMem (p : I) {s : Set X}
-    (hs : MeasurableSet s) (hx : x ∉ s) (hy : y ∉ s) :
-    Ber(x, y, p) s = 0 := by
-  classical
-  simp_all [bernoulliMeasure_apply]
-
 lemma bernoulliMeasure_real_apply (p : I) {s : Set X}
     (hs : MeasurableSet s) [DecidablePred (· ∈ s)] :
     Ber(x, y, p).real s =
@@ -116,11 +85,25 @@ lemma bernoulliMeasure_real_apply (p : I) {s : Set X}
   simp [measureReal_def, bernoulliMeasure_apply p hs, apply_ite ENNReal.toReal]
 
 @[simp]
+lemma bernoulliMeasure_apply_of_mem_of_mem (p : I) {s : Set X}
+    (hs : MeasurableSet s) (hx : x ∈ s) (hy : y ∈ s) :
+    Ber(x, y, p) s = 1 := by
+  classical
+  simp_all [bernoulliMeasure_apply]
+
+@[simp]
 lemma bernoulliMeasure_real_apply_of_mem_of_mem (p : I) {s : Set X}
     (hs : MeasurableSet s) (hx : x ∈ s) (hy : y ∈ s) :
     Ber(x, y, p).real s = 1 := by
   classical
   simp_all [bernoulliMeasure_real_apply]
+
+@[simp]
+lemma bernoulliMeasure_apply_of_mem_of_notMem (p : I) {s : Set X}
+    (hs : MeasurableSet s) (hx : x ∈ s) (hy : y ∉ s) :
+    Ber(x, y, p) s = toNNReal p := by
+  classical
+  simp_all [bernoulliMeasure_apply]
 
 @[simp]
 lemma bernoulliMeasure_real_apply_of_mem_of_notMem (p : I) {s : Set X}
@@ -130,11 +113,25 @@ lemma bernoulliMeasure_real_apply_of_mem_of_notMem (p : I) {s : Set X}
   simp_all [bernoulliMeasure_real_apply]
 
 @[simp]
+lemma bernoulliMeasure_apply_of_notMem_of_mem (p : I) {s : Set X}
+    (hs : MeasurableSet s) (hx : x ∉ s) (hy : y ∈ s) :
+    Ber(x, y, p) s = toNNReal (σ p) := by
+  classical
+  simp_all [bernoulliMeasure_apply]
+
+@[simp]
 lemma bernoulliMeasure_real_apply_of_notMem_of_mem (p : I) {s : Set X}
     (hs : MeasurableSet s) (hx : x ∉ s) (hy : y ∈ s) :
     Ber(x, y, p).real s = 1 - p := by
   classical
   simp_all [bernoulliMeasure_real_apply]
+
+@[simp]
+lemma bernoulliMeasure_apply_of_notMem_of_notMem (p : I) {s : Set X}
+    (hs : MeasurableSet s) (hx : x ∉ s) (hy : y ∉ s) :
+    Ber(x, y, p) s = 0 := by
+  classical
+  simp_all [bernoulliMeasure_apply]
 
 @[simp]
 lemma bernoulliMeasure_real_apply_of_notMem_of_notMem (p : I) {s : Set X}
@@ -146,7 +143,6 @@ lemma bernoulliMeasure_real_apply_of_notMem_of_notMem (p : I) {s : Set X}
 instance : IsProbabilityMeasure Ber(x, y, p) where
   measure_univ := by simp [bernoulliMeasure_def]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem bernoulliMeasure_self_eq_dirac (x : X) (p : I) :
     bernoulliMeasure x x p = dirac x := by
