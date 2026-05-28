@@ -231,7 +231,7 @@ lemma _root_.DifferentiableAt.mem_interior_convex_of_surjective_fderiv
   -- It suffices to show that `fderiv ℝ f x` sends everything to the kernel of `F`.
   suffices h : ∀ y, F (fderiv ℝ f x y) = 0 by
     have ⟨y, hy⟩ := hs''
-    unfold Function.Surjective; push_neg
+    unfold Function.Surjective; push Not
     refine ⟨f x - y, fun z ↦ ne_of_apply_ne F ?_⟩
     rw [h z, F.map_sub]
     exact (sub_pos.2 <| hF _ hy).ne
@@ -437,7 +437,7 @@ lemma Diffeomorph.image_boundary (hn : n ≠ 0) (Φ : M ≃ₘ^n⟮I, I'⟯ N) :
 
 lemma Diffeomorph.boundarylessManifold (hn : n ≠ 0) (Φ : M ≃ₘ^n⟮I, I'⟯ N)
     [BoundarylessManifold I M] : BoundarylessManifold I' N :=
-    Φ.symm.isLocalDiffeomorph.boundarylessManifold hn
+  Φ.symm.isLocalDiffeomorph.boundarylessManifold hn
 
 lemma Diffeomorph.boundarylessManifold_iff (hn : n ≠ 0) (Φ : M ≃ₘ^n⟮I, I'⟯ N) :
     BoundarylessManifold I M ↔ BoundarylessManifold I' N :=

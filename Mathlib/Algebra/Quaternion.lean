@@ -710,9 +710,9 @@ theorem Quaternion.equivTuple_apply (R : Type*) [Zero R] [One R] [Neg R] (x : �
   rfl
 
 instance {R : Type*} [Zero R] [One R] [Neg R] [Subsingleton R] : Subsingleton ℍ[R] :=
-  (inferInstance : Subsingleton <| ℍ[R,-1,0,-1])
+  inferInstanceAs <| Subsingleton <| ℍ[R,-1,0,-1]
 instance {R : Type*} [Zero R] [One R] [Neg R] [Nontrivial R] : Nontrivial ℍ[R] :=
-  (inferInstance : Nontrivial <| ℍ[R,-1,0,-1])
+  inferInstanceAs <| Nontrivial <| ℍ[R,-1,0,-1]
 
 namespace Quaternion
 
@@ -747,8 +747,8 @@ instance [Semiring S] [Module S R] : Module S ℍ[R] :=
 protected instance algebra [CommSemiring S] [Algebra S R] : Algebra S ℍ[R] :=
   inferInstanceAs <| Algebra S ℍ[R,-1,0,-1]
 
-instance : Star ℍ[R] := QuaternionAlgebra.instStarQuaternionAlgebra
-instance : StarRing ℍ[R] := QuaternionAlgebra.instStarRing
+instance : Star ℍ[R] := inferInstanceAs <| Star ℍ[R,-1,0,-1]
+instance : StarRing ℍ[R] := inferInstanceAs <| StarRing ℍ[R,-1,0,-1]
 instance : IsStarNormal a := inferInstanceAs <| IsStarNormal (R := ℍ[R,-1,0,-1]) a
 
 @[ext]
@@ -1046,7 +1046,6 @@ def starAe : ℍ[R] ≃ₐ[R] ℍ[R]ᵐᵒᵖ :=
 theorem coe_starAe : ⇑(starAe : ℍ[R] ≃ₐ[R] ℍ[R]ᵐᵒᵖ) = op ∘ star :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Square of the norm. -/
 def normSq : ℍ[R] →*₀ R where
   toFun a := (a * star a).re
@@ -1174,6 +1173,18 @@ instance instRatCast : RatCast ℍ[R] where ratCast q := (q : R)
 
 @[norm_cast] lemma coe_ratCast (q : ℚ) : ↑(q : R) = (q : ℍ[R]) := rfl
 
+section ofScientific
+open OfScientific (ofScientific)
+variable (m : ℕ) (s : Bool) (e : ℕ)
+
+@[norm_cast] lemma coe_ofScientific : ((ofScientific m s e : R) : ℍ[R]) = ofScientific m s e := rfl
+@[simp] lemma re_ofScientific : (ofScientific m s e : ℍ[R]).re = ofScientific m s e := rfl
+@[simp] lemma imI_ofScientific : (ofScientific m s e : ℍ[R]).imI = 0 := rfl
+@[simp] lemma imJ_ofScientific : (ofScientific m s e : ℍ[R]).imJ = 0 := rfl
+@[simp] lemma imK_ofScientific : (ofScientific m s e : ℍ[R]).imK = 0 := rfl
+
+end ofScientific
+
 variable [LinearOrder R] [IsStrictOrderedRing R] (a b : ℍ[R])
 
 @[simps -isSimp]
@@ -1254,7 +1265,7 @@ theorem mk_univ_quaternionAlgebra : #(Set.univ : Set ℍ[R,c₁,c₂,c₃]) = #R
 theorem mk_univ_quaternionAlgebra_of_infinite [Infinite R] :
     #(Set.univ : Set ℍ[R,c₁,c₂,c₃]) = #R := by rw [mk_univ_quaternionAlgebra, pow_four]
 
-/-- Show the quaternion ⟨w, x, y, z⟩ as a string "{ re := w, imI := x, imJ := y, imK := z }".
+/-- Show the quaternion `⟨w, x, y, z⟩` as a string `"{ re := w, imI := x, imJ := y, imK := z }"`.
 
 For the typical case of quaternions over ℝ, each component will show as a Cauchy sequence due to
 the way Real numbers are represented.

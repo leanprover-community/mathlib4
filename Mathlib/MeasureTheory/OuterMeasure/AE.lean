@@ -47,6 +47,7 @@ variable {α β F : Type*} [FunLike F (Set α) ℝ≥0∞] [OuterMeasureClass F 
 def ae (μ : F) : Filter α :=
   .ofCountableUnion (μ · = 0) (fun _S hSc ↦ (measure_sUnion_null_iff hSc).2) fun _t ht _s hs ↦
     measure_mono_null hs ht
+deriving CountableInterFilter
 
 /-- `∀ᵐ a ∂μ, p a` means that `p a` for a.e. `a`, i.e. `p` holds true away from a null set.
 
@@ -90,9 +91,6 @@ theorem measure_eq_zero_iff_ae_notMem {s : Set α} : μ s = 0 ↔ ∀ᵐ a ∂μ
 
 theorem ae_of_all {p : α → Prop} (μ : F) : (∀ a, p a) → ∀ᵐ a ∂μ, p a :=
   Eventually.of_forall
-
-instance instCountableInterFilter : CountableInterFilter (ae μ) := by
-  unfold ae; infer_instance
 
 theorem ae_all_iff {ι : Sort*} [Countable ι] {p : α → ι → Prop} :
     (∀ᵐ a ∂μ, ∀ i, p a i) ↔ ∀ i, ∀ᵐ a ∂μ, p a i :=
@@ -207,33 +205,33 @@ theorem union_ae_eq_univ_of_ae_eq_univ_left (h : s =ᵐ[μ] univ) : (s ∪ t : S
   (ae_eq_set_union h (ae_eq_refl t)).trans <| by rw [univ_union]
 
 theorem union_ae_eq_univ_of_ae_eq_univ_right (h : t =ᵐ[μ] univ) : (s ∪ t : Set α) =ᵐ[μ] univ := by
-  convert ae_eq_set_union (ae_eq_refl s) h
+  convert! ae_eq_set_union (ae_eq_refl s) h
   rw [union_univ]
 
 theorem union_ae_eq_right_of_ae_eq_empty (h : s =ᵐ[μ] (∅ : Set α)) : (s ∪ t : Set α) =ᵐ[μ] t := by
-  convert ae_eq_set_union h (ae_eq_refl t)
+  convert! ae_eq_set_union h (ae_eq_refl t)
   rw [empty_union]
 
 theorem union_ae_eq_left_of_ae_eq_empty (h : t =ᵐ[μ] (∅ : Set α)) : (s ∪ t : Set α) =ᵐ[μ] s := by
-  convert ae_eq_set_union (ae_eq_refl s) h
+  convert! ae_eq_set_union (ae_eq_refl s) h
   rw [union_empty]
 
 theorem inter_ae_eq_right_of_ae_eq_univ (h : s =ᵐ[μ] univ) : (s ∩ t : Set α) =ᵐ[μ] t := by
-  convert ae_eq_set_inter h (ae_eq_refl t)
+  convert! ae_eq_set_inter h (ae_eq_refl t)
   rw [univ_inter]
 
 theorem inter_ae_eq_left_of_ae_eq_univ (h : t =ᵐ[μ] univ) : (s ∩ t : Set α) =ᵐ[μ] s := by
-  convert ae_eq_set_inter (ae_eq_refl s) h
+  convert! ae_eq_set_inter (ae_eq_refl s) h
   rw [inter_univ]
 
 theorem inter_ae_eq_empty_of_ae_eq_empty_left (h : s =ᵐ[μ] (∅ : Set α)) :
     (s ∩ t : Set α) =ᵐ[μ] (∅ : Set α) := by
-  convert ae_eq_set_inter h (ae_eq_refl t)
+  convert! ae_eq_set_inter h (ae_eq_refl t)
   rw [empty_inter]
 
 theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t =ᵐ[μ] (∅ : Set α)) :
     (s ∩ t : Set α) =ᵐ[μ] (∅ : Set α) := by
-  convert ae_eq_set_inter (ae_eq_refl s) h
+  convert! ae_eq_set_inter (ae_eq_refl s) h
   rw [inter_empty]
 
 theorem ae_eq_set_biInter {s : Set β} (hs : s.Countable) {t t' : β → Set α}

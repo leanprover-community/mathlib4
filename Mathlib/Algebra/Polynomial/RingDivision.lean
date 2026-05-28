@@ -89,7 +89,6 @@ section NoZeroDivisors
 
 variable [Semiring R] [NoZeroDivisors R] {p q : R[X]}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem trailingDegree_mul : (p * q).trailingDegree = p.trailingDegree + q.trailingDegree := by
   by_cases hp : p = 0
   · rw [hp, zero_mul, trailingDegree_zero, top_add]
@@ -112,7 +111,7 @@ theorem rootMultiplicity_eq_rootMultiplicity {p : R[X]} {t : R} :
   simp_rw [rootMultiplicity_eq_multiplicity, comp_X_add_C_eq_zero_iff]
   congr 1
   rw [C_0, sub_zero]
-  convert (multiplicity_map_eq <| algEquivAevalXAddC t).symm using 2
+  convert! (multiplicity_map_eq <| algEquivAevalXAddC t).symm using 2
   simp [C_eq_algebraMap]
 
 /-- See `Polynomial.rootMultiplicity_eq_natTrailingDegree'` for the special case of `t = 0`. -/
@@ -206,7 +205,7 @@ theorem prime_X_sub_C (r : R) : Prime (X - C r) :=
     exact id⟩
 
 theorem prime_X : Prime (X : R[X]) := by
-  convert prime_X_sub_C (0 : R)
+  convert! prime_X_sub_C (0 : R)
   simp
 
 theorem Monic.prime_of_degree_eq_one (hp1 : degree p = 1) (hm : Monic p) : Prime p :=
@@ -232,9 +231,8 @@ theorem irreducible_of_degree_eq_one_of_isRelPrime_coeff
     apply not_le.mpr (zero_lt_one' (WithBot ℕ))
     simp [← hp, ← h, degree_C_le]
   isUnit_or_isUnit f g h := by
-    wlog H : f.degree ≤ g.degree generalizing f g
-    · push_neg at H
-      rw [mul_comm] at h
+    wlog! H : f.degree ≤ g.degree generalizing f g
+    · rw [mul_comm] at h
       exact (this g f h H.le).symm
     left
     rw [h, degree_mul, Nat.WithBot.add_eq_one_iff] at hp

@@ -86,10 +86,11 @@ theorem lcm_dvd {m n k : ℕ+} (hm : m ∣ k) (hn : n ∣ k) : lcm m n ∣ k :=
 theorem gcd_mul_lcm (n m : ℕ+) : gcd n m * lcm n m = n * m :=
   Subtype.ext (Nat.gcd_mul_lcm (n : ℕ) (m : ℕ))
 
+-- TODO: this is an iff, and should be moved to an earlier file.
 theorem eq_one_of_lt_two {n : ℕ+} : n < 2 → n = 1 := by
-  intro h; apply le_antisymm; swap
-  · apply PNat.one_le
-  · exact PNat.lt_add_one_iff.1 h
+  change n < 1 + 1 → _
+  rw [lt_add_one_iff, le_one_iff_eq_one]
+  exact id
 
 section Prime
 
@@ -191,7 +192,6 @@ theorem Coprime.gcd_mul_left_cancel (m : ℕ+) {n k : ℕ+} :
   intro h; apply eq; simp only [gcd_coe, mul_coe]
   apply Nat.Coprime.gcd_mul_left_cancel; simpa
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Coprime.gcd_mul_right_cancel (m : ℕ+) {n k : ℕ+} :
     k.Coprime n → (m * k).gcd n = m.gcd n := by rw [mul_comm]; apply Coprime.gcd_mul_left_cancel
 
@@ -200,7 +200,6 @@ theorem Coprime.gcd_mul_left_cancel_right (m : ℕ+) {n k : ℕ+} :
   intro h; iterate 2 rw [gcd_comm]; symm
   apply Coprime.gcd_mul_left_cancel _ h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Coprime.gcd_mul_right_cancel_right (m : ℕ+) {n k : ℕ+} :
     k.Coprime m → m.gcd (n * k) = m.gcd n := by
   rw [mul_comm]
@@ -243,7 +242,6 @@ theorem Coprime.factor_eq_gcd_left {a b m n : ℕ+} (cop : m.Coprime n) (am : a 
   apply Coprime.gcd_mul_right_cancel a
   apply Coprime.coprime_dvd_left bn cop.symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Coprime.factor_eq_gcd_right {a b m n : ℕ+} (cop : m.Coprime n) (am : a ∣ m) (bn : b ∣ n) :
     a = (b * a).gcd m := by rw [mul_comm]; apply Coprime.factor_eq_gcd_left cop am bn
 
@@ -259,8 +257,6 @@ theorem Coprime.gcd_mul (k : ℕ+) {m n : ℕ+} (h : m.Coprime n) :
     k.gcd (m * n) = k.gcd m * k.gcd n := by
   rw [← coprime_coe] at h; apply eq
   simp only [gcd_coe, mul_coe]; apply Nat.Coprime.gcd_mul k h
-
-@[deprecated (since := "2025-11-14")] alias ⟨_, gcd_eq_left⟩ := gcd_eq_left_iff_dvd
 
 theorem Coprime.pow {m n : ℕ+} (k l : ℕ) (h : m.Coprime n) : (m ^ k : ℕ).Coprime (n ^ l) := by
   rw [← coprime_coe] at *; apply Nat.Coprime.pow; apply h

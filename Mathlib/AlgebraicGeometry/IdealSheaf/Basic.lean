@@ -447,7 +447,6 @@ instance : IdemCommSemiring X.IdealSheafData where
   npow n I := I ^ n
   npow_zero _ := by ext; simp [show (1 : X.IdealSheafData) = ⊤ from rfl]
   npow_succ _ _ := by ext; rfl
-  bot_le _ := bot_le
 
 instance : IsOrderedRing X.IdealSheafData where
 
@@ -460,7 +459,6 @@ end Semiring
 
 section IsAffine
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The ideal sheaf induced by an ideal of the global sections. -/
 @[simps! ideal coe_support]
 def ofIdealTop (I : Ideal Γ(X, ⊤)) : IdealSheafData X :=
@@ -472,7 +470,6 @@ def ofIdealTop (I : Ideal Γ(X, ⊤)) : IdealSheafData X :=
       simp only [Ideal.map, zeroLocus_span, zeroLocus_map, Set.mem_union, Set.mem_compl_iff,
         SetLike.mem_coe, hxU, not_true_eq_false, iff_self_or, IsEmpty.forall_iff])
 
-set_option backward.isDefEq.respectTransparency false in
 lemma le_of_isAffine [IsAffine X] {I J : IdealSheafData X}
     (H : I.ideal ⟨⊤, isAffineOpen_top X⟩ ≤ J.ideal ⟨⊤, isAffineOpen_top X⟩) : I ≤ J := by
   intro U
@@ -641,7 +638,6 @@ lemma vanishingIdeal_support {I : IdealSheafData X} :
   rw [Set.image_preimage_eq_inter_range, IsAffineOpen.range_fromSpec,
     IsAffineOpen.fromSpec_image_zeroLocus, coe_support_inter]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma vanishingIdeal_bot : vanishingIdeal (X := X) ⊥ = ⊤ := gc.u_top
 
 @[simp] lemma vanishingIdeal_top : vanishingIdeal (X := X) ⊤ = X.nilradical := by
@@ -674,7 +670,6 @@ section IsReduced
 lemma nilradical_eq_bot [IsReduced X] : X.nilradical = ⊥ := by
   ext; simp [nilradical, Ideal.radical_eq_iff.mpr (Ideal.isRadical_bot)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IdealSheafData.support_eq_top_iff [IsReduced X] {I : X.IdealSheafData} :
     I.support = ⊤ ↔ I = ⊥ := by
   rw [← top_le_iff, le_support_iff_le_vanishingIdeal,

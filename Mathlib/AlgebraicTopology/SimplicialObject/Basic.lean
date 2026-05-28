@@ -121,7 +121,7 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
 theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j) :
     X.δ j ≫ X.δ i =
       X.δ (Fin.castSucc i) ≫
-        X.δ (j.pred fun (hj : j = 0) => by simp [hj, Fin.not_lt_zero] at H) := by
+        X.δ (j.pred H.ne_zero) := by
   dsimp [δ]
   simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_δ' H]
 @[reassoc]
@@ -185,7 +185,7 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSu
 @[reassoc]
 theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i) :
     X.σ j ≫ X.δ i =
-      X.δ (i.pred fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) ≫
+      X.δ (i.pred H.ne_zero) ≫
         X.σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) := by
   dsimp [δ, σ]
   simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_σ_of_gt' H]
@@ -395,9 +395,8 @@ def Augmented :=
   Comma (𝟭 (SimplicialObject C)) (const C)
 
 @[simps!]
-instance : Category (Augmented C) := by
-  dsimp only [Augmented]
-  infer_instance
+instance : Category (Augmented C) :=
+  inferInstanceAs <| Category (Comma _ _)
 
 variable {C}
 
@@ -418,7 +417,11 @@ def drop : Augmented C ⥤ SimplicialObject C :=
 def point : Augmented C ⥤ C :=
   Comma.snd _ _
 
-set_option backward.isDefEq.respectTransparency false in
+@[reassoc]
+lemma w_app {X Y : Augmented C} (f : X ⟶ Y) (n : SimplexCategoryᵒᵖ) :
+    dsimp% f.left.app n ≫ Y.hom.app n = X.hom.app n ≫ f.right :=
+  congr_app f.w n
+
 /-- The functor from augmented objects to arrows. -/
 @[simps]
 def toArrow : Augmented C ⥤ Arrow C where
@@ -429,11 +432,7 @@ def toArrow : Augmented C ⥤ Arrow C where
   map η :=
     { left := (drop.map η).app _
       right := point.map η
-      w := by
-        dsimp
-        rw [← NatTrans.comp_app]
-        erw [η.w]
-        rfl }
+      w := by simp [w_app] }
 
 /-- The compatibility of a morphism with the augmentation, on 0-simplices -/
 @[reassoc]
@@ -444,7 +443,6 @@ theorem w₀ {X Y : Augmented C} (f : X ⟶ Y) :
 
 variable (C)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Functor composition induces a functor on augmented simplicial objects. -/
 @[simp]
 def whiskeringObj (D : Type*) [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augmented D where
@@ -455,12 +453,7 @@ def whiskeringObj (D : Type*) [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augm
   map η :=
     { left := whiskerRight η.left _
       right := F.map η.right
-      w := by
-        ext
-        dsimp [whiskerRight]
-        simp only [Category.comp_id, ← F.map_comp, ← NatTrans.comp_app]
-        erw [η.w]
-        rfl }
+      w := by ext; simp [← Functor.map_comp, w_app] }
 
 /-- Functor composition induces a functor on augmented simplicial objects. -/
 @[simps]
@@ -593,7 +586,7 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
 @[reassoc]
 theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j) :
     X.δ i ≫ X.δ j =
-      X.δ (j.pred fun (hj : j = 0) => by simp only [hj, Fin.not_lt_zero] at H) ≫
+      X.δ (j.pred H.ne_zero) ≫
         X.δ (Fin.castSucc i) := by
   dsimp [δ]
   simp only [← X.map_comp, SimplexCategory.δ_comp_δ' H]
@@ -660,8 +653,7 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSu
 theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i) :
     X.δ i ≫ X.σ j =
       X.σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) ≫
-        X.δ (i.pred <|
-          fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) := by
+        X.δ (i.pred H.ne_zero) := by
   dsimp [δ, σ]
   simp only [← X.map_comp, SimplexCategory.δ_comp_σ_of_gt' H]
 
@@ -692,10 +684,7 @@ def whiskering (D : Type*) [Category* D] : (C ⥤ D) ⥤ CosimplicialObject C �
 /-- Truncated cosimplicial objects. -/
 def Truncated (n : ℕ) :=
   SimplexCategory.Truncated n ⥤ C
-
-instance {n : ℕ} : Category (Truncated C n) := by
-  dsimp [Truncated]
-  infer_instance
+deriving Category
 
 variable {C}
 
@@ -772,9 +761,8 @@ def Augmented :=
   Comma (const C) (𝟭 (CosimplicialObject C))
 
 @[simps!]
-instance : Category (Augmented C) := by
-  dsimp only [Augmented]
-  infer_instance
+instance : Category (Augmented C) :=
+  inferInstanceAs <| Category (Comma _ _)
 
 variable {C}
 
@@ -795,7 +783,11 @@ def drop : Augmented C ⥤ CosimplicialObject C :=
 def point : Augmented C ⥤ C :=
   Comma.fst _ _
 
-set_option backward.isDefEq.respectTransparency false in
+@[reassoc]
+lemma w_app {X Y : Augmented C} {η : X ⟶ Y} {n : SimplexCategory} :
+    dsimp% η.left ≫ Y.hom.app n = X.hom.app n ≫ η.right.app n :=
+  NatTrans.congr_app η.w n
+
 /-- The functor from augmented objects to arrows. -/
 @[simps!]
 def toArrow : Augmented C ⥤ Arrow C where
@@ -806,15 +798,10 @@ def toArrow : Augmented C ⥤ Arrow C where
   map η :=
     { left := point.map η
       right := (drop.map η).app _
-      w := by
-        dsimp
-        rw [← NatTrans.comp_app]
-        erw [← η.w]
-        rfl }
+      w := by simp [w_app]}
 
 variable (C)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Functor composition induces a functor on augmented cosimplicial objects. -/
 @[simp]
 def whiskeringObj (D : Type*) [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augmented D where
@@ -828,9 +815,8 @@ def whiskeringObj (D : Type*) [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augm
       w := by
         ext
         dsimp
-        rw [Category.id_comp, Category.id_comp, ← F.map_comp, ← F.map_comp, ← NatTrans.comp_app]
-        erw [← η.w]
-        rfl }
+        rw [Category.id_comp, Category.id_comp, ← F.map_comp, ← F.map_comp]
+        simp [w_app, map_comp] }
 
 /-- Functor composition induces a functor on augmented cosimplicial objects. -/
 @[simps]

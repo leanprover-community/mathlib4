@@ -56,7 +56,8 @@ variable {k K : Type*} [Field k] [Field K] [Algebra k K]
 
 namespace InfiniteGalois
 
-open Pointwise FiniteGaloisIntermediateField AlgEquiv
+open scoped Pointwise
+open FiniteGaloisIntermediateField AlgEquiv
 --Note: The `adjoin`s below are `FiniteGaloisIntermediateField.adjoin`
 
 lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
@@ -70,7 +71,7 @@ lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
       rcases (Set.mem_smul_set.mp hf) with ⟨g, hg, eq⟩
       simp only [Set.mem_compl_iff, SetLike.mem_coe, ← eq]
       apply (mem_fixingSubgroup_iff Gal(K/k)).not.mpr
-      push_neg
+      push Not
       use y
       simp only [yL, smul_eq_mul, AlgEquiv.smul_def, AlgEquiv.mul_apply, ne_eq, true_and]
       have : g y = y := (mem_fixingSubgroup_iff Gal(K/k)).mp hg y <|

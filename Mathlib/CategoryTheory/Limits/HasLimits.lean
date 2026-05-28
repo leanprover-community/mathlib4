@@ -6,10 +6,8 @@ Authors: Reid Barton, Mario Carneiro, Kim Morrison, Floris van Doorn
 module
 
 public import Mathlib.CategoryTheory.Limits.IsLimit
-public import Mathlib.CategoryTheory.Category.ULift
 public import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.Functor.EpiMono
-public import Mathlib.Logic.Equiv.Basic
 
 /-!
 # Existence of limits and colimits
@@ -271,9 +269,9 @@ def limit.homIso (F : J ⥤ C) [HasLimit F] (W : C) :
   (limit.isLimit F).homIso W
 
 @[simp]
-theorem limit.homIso_hom (F : J ⥤ C) [HasLimit F] {W : C} (f : ULift (W ⟶ limit F)) :
-    (limit.homIso F W).hom f = (const J).map f.down ≫ (limit.cone F).π :=
-  (limit.isLimit F).homIso_hom f
+theorem limit.homIso_hom (F : J ⥤ C) [HasLimit F] {W : C} :
+    (limit.homIso F W).hom = ↾fun f ↦ (const J).map f.down ≫ (limit.cone F).π :=
+  (limit.isLimit F).homIso_hom
 
 /-- The isomorphism (in `Type`) between
 morphisms from a specified object `W` to the limit object,
@@ -344,7 +342,7 @@ def HasLimit.isoOfEquivalence {F : J ⥤ C} [HasLimit F] {G : K ⥤ C} [HasLimit
   IsLimit.conePointsIsoOfEquivalence (limit.isLimit F) (limit.isLimit G) e w
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp]
+@[reassoc (attr := simp)]
 theorem HasLimit.isoOfEquivalence_hom_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C} [HasLimit G]
     (e : J ≌ K) (w : e.functor ⋙ G ≅ F) (k : K) :
     (HasLimit.isoOfEquivalence e w).hom ≫ limit.π G k =
@@ -353,7 +351,7 @@ theorem HasLimit.isoOfEquivalence_hom_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C
   simp
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp]
+@[reassoc (attr := simp)]
 theorem HasLimit.isoOfEquivalence_inv_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C} [HasLimit G]
     (e : J ≌ K) (w : e.functor ⋙ G ≅ F) (j : J) :
     (HasLimit.isoOfEquivalence e w).inv ≫ limit.π F j =
@@ -393,7 +391,7 @@ theorem limit.pre_pre [h : HasLimit (D ⋙ E ⋙ F)] : haveI : HasLimit ((D ⋙ 
 variable {E F}
 
 set_option backward.isDefEq.respectTransparency false in
-/-- -
+/--
 If we have particular limit cones available for `E ⋙ F` and for `F`,
 we obtain a formula for `limit.pre F E`.
 -/
@@ -486,6 +484,11 @@ def lim : (J ⥤ C) ⥤ C where
   map_comp α β := by
     apply Limits.limit.hom_ext; intro j
     simp [assoc]
+
+/-- The natural transformation induced by `limit.π`. -/
+@[simps]
+def lim.π (j : J) : lim ⟶ (evaluation J C).obj j where
+  app F := limit.π F j
 
 end
 
@@ -831,9 +834,10 @@ def colimit.homIso (F : J ⥤ C) [HasColimit F] (W : C) :
   (colimit.isColimit F).homIso W
 
 @[simp]
-theorem colimit.homIso_hom (F : J ⥤ C) [HasColimit F] {W : C} (f : ULift (colimit F ⟶ W)) :
-    (colimit.homIso F W).hom f = (colimit.cocone F).ι ≫ (const J).map f.down :=
-  (colimit.isColimit F).homIso_hom f
+theorem colimit.homIso_hom (F : J ⥤ C) [HasColimit F] {W : C} :
+    (colimit.homIso F W).hom =
+      ↾fun f ↦ (colimit.cocone F).ι ≫ (const J).map f.down :=
+  (colimit.isColimit F).homIso_hom
 
 /-- The isomorphism (in `Type`) between
 morphisms from the colimit object to a specified object `W`,
@@ -905,20 +909,26 @@ def HasColimit.isoOfEquivalence {F : J ⥤ C} [HasColimit F] {G : K ⥤ C} [HasC
   IsColimit.coconePointsIsoOfEquivalence (colimit.isColimit F) (colimit.isColimit G) e w
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp]
-theorem HasColimit.isoOfEquivalence_hom_π {F : J ⥤ C} [HasColimit F] {G : K ⥤ C} [HasColimit G]
+@[reassoc (attr := simp)]
+theorem HasColimit.ι_isoOfEquivalence_hom {F : J ⥤ C} [HasColimit F] {G : K ⥤ C} [HasColimit G]
     (e : J ≌ K) (w : e.functor ⋙ G ≅ F) (j : J) :
     colimit.ι F j ≫ (HasColimit.isoOfEquivalence e w).hom =
       F.map (e.unit.app j) ≫ w.inv.app _ ≫ colimit.ι G _ := by
   simp [HasColimit.isoOfEquivalence]
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp]
-theorem HasColimit.isoOfEquivalence_inv_π {F : J ⥤ C} [HasColimit F] {G : K ⥤ C} [HasColimit G]
+@[reassoc (attr := simp)]
+theorem HasColimit.ι_isoOfEquivalence_inv {F : J ⥤ C} [HasColimit F] {G : K ⥤ C} [HasColimit G]
     (e : J ≌ K) (w : e.functor ⋙ G ≅ F) (k : K) :
     colimit.ι G k ≫ (HasColimit.isoOfEquivalence e w).inv =
       G.map (e.counitInv.app k) ≫ w.hom.app (e.inverse.obj k) ≫ colimit.ι F (e.inverse.obj k) := by
   simp [HasColimit.isoOfEquivalence, IsColimit.coconePointsIsoOfEquivalence_inv]
+
+@[deprecated (since := "2026-05-25")]
+alias HasColimit.isoOfEquivalence_hom_π := HasColimit.ι_isoOfEquivalence_hom
+
+@[deprecated (since := "2026-05-25")]
+alias HasColimit.isoOfEquivalence_inv_π := HasColimit.ι_isoOfEquivalence_inv
 
 section Pre
 
@@ -964,7 +974,7 @@ theorem colimit.pre_pre [h : HasColimit (D ⋙ E ⋙ F)] :
 variable {E F}
 
 set_option backward.isDefEq.respectTransparency false in
-/-- -
+/--
 If we have particular colimit cocones available for `E ⋙ F` and for `F`,
 we obtain a formula for `colimit.pre F E`.
 -/
@@ -1060,6 +1070,11 @@ section
 def colim : (J ⥤ C) ⥤ C where
   obj F := colimit F
   map α := colimMap α
+
+/-- The natural transformation induced by `colimit.ι`. -/
+@[simps]
+def colim.ι (j : J) : (evaluation J C).obj j ⟶ colim where
+  app F := colimit.ι F j
 
 end
 
