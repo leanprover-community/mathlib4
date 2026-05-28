@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Combinatorics.Quiver.Path
+public import Mathlib.Data.Finset.Basic
 public import Mathlib.Data.Set.Insert
 public import Mathlib.Data.List.Basic
 
@@ -243,5 +244,38 @@ theorem exists_eq_comp_and_notMem_tail_of_mem_vertices {v : V} (hv : v ∈ p.ver
     | inr h_eq_end => exact h_case₁ h_eq_end
 
 end
+
+/-! ### Vertex sets and finsets -/
+
+/-- The set of vertices visited by a path (including the endpoint). -/
+def activeVertices {a b : V} (p : Path a b) : Set V :=
+  {v | v ∈ p.vertices}
+
+@[simp] lemma activeVertices_nil {a : V} : activeVertices (nil : Path a a) = {a} := by
+  ext v; simp [activeVertices, vertices_nil]
+
+@[simp] lemma activeVertices_cons {a b c : V} (p : Path a b) (e : b ⟶ c) :
+    activeVertices (p.cons e) = activeVertices p ∪ {c} := by
+  ext v; simp [activeVertices, mem_vertices_cons, Set.setOf_or, Set.mem_union]
+
+@[simp] lemma mem_activeVertices_iff {a b : V} (p : Path a b) {v : V} :
+    v ∈ p.activeVertices ↔ v ∈ p.vertices := by
+  simp [activeVertices]
+
+lemma mem_vertices_dropLast_or_eq_end {a b c : V} (p : Path a b) (h : c ∈ p.vertices) :
+    c = p.end ∨ c ∈ p.vertices.dropLast := by
+  have h_dec := List.dropLast_append_getLast (vertices_ne_nil p)
+  rw [← h_dec, List.mem_append, List.mem_singleton] at h
+  aesop
+
+lemma mem_vertices_mem_activeVertices {a b : V} (p : Path a b) {x : V} (hx : x ∈ p.vertices) :
+    x ∈ p.activeVertices :=
+  (mem_activeVertices_iff p).mpr hx
+
+/-- From a path composition, the prefix path's `dropLast` is a prefix of the full vertex list. -/
+lemma isPrefix_dropLast_of_comp_eq {a b c : V} {p : Path a b} {p₁ : Path a c} {p₂ : Path c b}
+    (h : p.vertices = p₁.vertices.dropLast ++ p₂.vertices) :
+    p₁.vertices.dropLast.IsPrefix p.vertices := by
+  rw [h]; exact List.prefix_append _ _
 
 end Quiver.Path

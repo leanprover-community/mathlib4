@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.Quiver.Subquiver
 public import Mathlib.Combinatorics.Quiver.Path
+public import Mathlib.Combinatorics.Quiver.Path.Cycle
 public import Mathlib.Combinatorics.Quiver.Symmetric
 
 /-!
@@ -202,5 +203,31 @@ lemma IsStronglyConnected.isSStronglyConnected_of_hom (h_sc : IsStronglyConnecte
   exact ⟨p, hp_pos⟩
 
 end StronglyConnected
+
+/-! ### Acyclic quivers -/
+
+section Acyclic
+
+variable (V : Type*) [Quiver V]
+
+/-- A quiver is acyclic: the only closed path is trivial.
+
+This matches directed acyclicity (no positive-length closed walk). It implies `¬IsCycle` but is
+stronger than `∀ p, ¬p.IsCycle` (a positive loop may repeat vertices without being `IsCycle`). -/
+def IsAcyclic : Prop :=
+  ∀ {a : V} (p : Path a a), p.length = 0
+
+@[simp] lemma isAcyclic_iff :
+    IsAcyclic V ↔ ∀ {a : V} (p : Path a a), p.length = 0 :=
+  Iff.rfl
+
+lemma IsAcyclic.eq_nil {a : V} (p : Path a a) (h : IsAcyclic V) : p = Path.nil :=
+  Path.eq_nil_of_length_zero p (h p)
+
+lemma IsAcyclic.not_isCycle {a : V} (p : Path a a) (h : IsAcyclic V) : ¬p.IsCycle := by
+  rintro ⟨hp_pos, _⟩
+  exact Nat.not_lt.mpr (le_of_eq (h p)) hp_pos
+
+end Acyclic
 
 end Quiver
