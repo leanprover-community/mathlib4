@@ -542,6 +542,7 @@ theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v 
     ← hy, ← toVal_mul, ← h'.orderRingIso_apply, ← h'.orderRingIso.lt_symm_apply, lt_def]
   simpa [lt_div_iff₀ hs0', ← map_mul] using hx
 
+-- TODO: Can remove the `attribute [-instance] ValuativeRel.isUniformAddGroup` after #36769
 attribute [-instance] ValuativeRel.isUniformAddGroup in
 set_option backward.isDefEq.respectTransparency false in
 theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valued.v = w)
