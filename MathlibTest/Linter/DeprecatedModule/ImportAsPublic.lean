@@ -12,7 +12,7 @@ This file imports a deprecated module with `public import`.
 /--
 info: Deprecated modules
 
-'MathlibTest.DeprecatedModuleNew' deprecates to
+'MathlibTest.Linter.DeprecatedModule.ImportBase' deprecates to
 #[Mathlib.Tactic.Linter.DocPrime, Mathlib.Tactic.Linter.DocString]
 with message 'Testing public import deprecation'
 -/

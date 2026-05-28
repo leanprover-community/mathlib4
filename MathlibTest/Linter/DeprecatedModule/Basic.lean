@@ -23,7 +23,7 @@ deprecated_module "We can also give more details about the deprecation" (since :
 /--
 info: Deprecated modules
 
-'MathlibTest.DeprecatedModule' deprecates to
+'MathlibTest.Linter.DeprecatedModule.Basic' deprecates to
 #[Mathlib.Tactic.Linter.DocPrime, Mathlib.Tactic.Linter.DocString]
 with message 'We can also give more details about the deprecation'
 -/
