@@ -170,7 +170,7 @@ lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{max
 
 variable (F J K) in
 /-- Continuous functors send covering sieves to covering sieves.
-The converse is false, see [SGA4, III, Exemple 1.9.3][sga4]. -/
+The converse is false, see [SGA4, III, Exemple 1.9.3][sga-4-tome-1]. -/
 lemma CoverPreserving.of_isContinuous [F.IsContinuous J K] : CoverPreserving J K F where
   cover_preserve {X S} hS := by
     rw [K.mem_iff_isSheafFor_closedSieves]
