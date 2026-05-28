@@ -53,9 +53,6 @@ instance post_preservesTerminal {T : Type u₁} [Category.{v₁} T] {D : Type u�
       Over.isoMk (g := Over.mk (𝟙 (F.obj X))) (Iso.refl _) (by simp) ≪≫
       Over.mkIdTerminal.uniqueUpToIso terminalIsTerminal
 
-instance post_final {T : Type u₁} [Category.{v₁} T] {D : Type u₂} [Category.{v₂} D]
-    {X : T} (F : T ⥤ D) : (Over.post (X := X) F).Final := inferInstance
-
 end CategoryTheory.Over
 
 namespace SheafOfModules
