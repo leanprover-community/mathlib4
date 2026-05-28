@@ -31,34 +31,24 @@ lemma iteratedDeriv_mul_pow_sub_of_analytic {k t : ℕ} {z₀ : 𝕜} {R R₁ : 
     ∃ R₂, (∀ z, AnalyticAt 𝕜 R₂ z) ∧ ∀ z, iteratedDeriv k R z =
       (z - z₀) ^ t * ((k + t)! / t ! * R₁ z + (z - z₀) * R₂ z) := by
   induction k generalizing t with
-  | zero =>
-    exact ⟨0, fun _ ↦ analyticAt_const, fun _ ↦ by simp [hR₁, Nat.factorial_ne_zero]⟩
+  | zero => exact ⟨0, fun _ ↦ analyticAt_const, by simp [hR₁, Nat.factorial_ne_zero]⟩
   | succ k IH =>
     obtain ⟨R₂, hR₂, hR₂_eq⟩ := IH (t := t + 1) (by grind)
     set R₂' : 𝕜 → 𝕜 := fun z ↦ (t + 1) * R₂ z + ((k + (t + 1))! / (t + 1)! * deriv R₁ z +
       (R₂ z + (z - z₀) * deriv R₂ z))
-    refine ⟨R₂', by fun_prop, ?_⟩
-    intro z
-    have hDeriv : deriv^[k + 1] R z =
-        (t + 1) * (z - z₀) ^ t *
-          ((k + (t + 1))! / (t + 1)! * R₁ z + (z - z₀) * R₂ z) +
+    refine ⟨R₂', by fun_prop, fun z ↦ ?_⟩
+    calc iteratedDeriv (k + 1) R z
+      _ = deriv (fun w ↦ (w - z₀) ^ (t + 1) 
+          * (↑(k + (t + 1))! / ↑(t + 1)! * R₁ w + (w - z₀) * R₂ w)) z := by
+        rw [iteratedDeriv_succ, funext hR₂_eq]
+      _ = (t + 1) * (z - z₀) ^ t * ((k + (t + 1))! / (t + 1)! * R₁ z + (z - z₀) * R₂ z) +
         (z - z₀) ^ (t + 1) * ((k + (t + 1))! / (t + 1)! * deriv R₁ z +
           (R₂ z + (z - z₀) * deriv R₂ z)) := by
-      have hsub : HasDerivAt (· - z₀) 1 z := (hasDerivAt_id z).sub_const z₀
-      have hR₁_eq : deriv^[k] R = fun w ↦
-          (w - z₀) ^ (t + 1) * ((k + (t + 1))! / (t + 1)! * R₁ w + (w - z₀) * R₂ w) :=
-        funext fun w ↦ by rw [← iteratedDeriv_eq_iterate, hR₂_eq w]
-      rw [Function.iterate_succ_apply' deriv k R, hR₁_eq]
-      simpa using ((hsub.fun_pow (t + 1)).mul
-        (((hf1 z).differentiableAt.hasDerivAt.const_mul ((k + (t + 1))! / (t + 1)! : 𝕜)).add
-          (hsub.mul (hR₂ z).differentiableAt.hasDerivAt))).deriv
-    calc iteratedDeriv (k + 1) R z
-        = deriv^[k + 1] R z := by rw [iteratedDeriv_eq_iterate]
-        _ = (t + 1) * (z - z₀) ^ t *
-            ((k + (t + 1))! / (t + 1)! * R₁ z + (z - z₀) * R₂ z) +
-          (z - z₀) ^ (t + 1) * ((k + (t + 1))! / (t + 1)! * deriv R₁ z +
-            (R₂ z + (z - z₀) * deriv R₂ z)) := hDeriv
-        _ = (z - z₀) ^ t * ((k + 1 + t)! / t ! * R₁ z + (z - z₀) * R₂' z) := by
-          have : (t : 𝕜) + 1 ≠ 0 := mod_cast t.succ_ne_zero
-          have : ((t + 1)! : 𝕜) = (t + 1) * t ! := by simp [Nat.factorial_succ]
-          grind
+        have hsub : HasDerivAt (· - z₀) 1 z := (hasDerivAt_id z).sub_const z₀
+        simpa using ((hsub.fun_pow (t + 1)).mul
+          (((hf1 z).differentiableAt.hasDerivAt.const_mul ((k + (t + 1))! / (t + 1)! : 𝕜)).add
+            (hsub.mul (hR₂ z).differentiableAt.hasDerivAt))).deriv
+      _ = (z - z₀) ^ t * ((k + 1 + t)! / t ! * R₁ z + (z - z₀) * R₂' z) := by
+        have : (t : 𝕜) + 1 ≠ 0 := mod_cast t.succ_ne_zero
+        have : ((t + 1)! : 𝕜) = (t + 1) * t ! := by simp [Nat.factorial_succ]
+        grind
