@@ -135,13 +135,12 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
             (p.leftInv i x c.length) (p.applyComposition c v) := by
       simp only [leftInv, ContinuousMultilinearMap.neg_apply, neg_inj,
         ContinuousMultilinearMap.sum_apply]
-      convert
-        (sum_toFinset_eq_subtype
-          (fun c : Composition (n + 2) => c.length < n + 2)
-          (fun c : Composition (n + 2) =>
-          (ContinuousMultilinearMap.compAlongComposition
-            (p.compContinuousLinearMap (i.symm : F →L[𝕜] E)) c (p.leftInv i x c.length))
-            fun j : Fin (n + 2) => p 1 fun _ : Fin 1 => v j)).symm.trans
+      convert!
+        (sum_toFinset_eq_subtype (fun c : Composition (n + 2) => c.length < n + 2)
+              (fun c : Composition (n + 2) =>
+                (ContinuousMultilinearMap.compAlongComposition
+                    (p.compContinuousLinearMap (i.symm : F →L[𝕜] E)) c (p.leftInv i x c.length))
+                  fun j : Fin (n + 2) => p 1 fun _ : Fin 1 => v j)).symm.trans
           _
       simp only [compContinuousLinearMap_applyComposition,
         ContinuousMultilinearMap.compAlongComposition_apply]
@@ -390,7 +389,7 @@ theorem radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp 
       rw [sum_sigma']
       gcongr
       · intro x _ _
-        exact prod_nonneg fun j _ => mul_nonneg hr (mul_nonneg (pow_nonneg ha _) (hp _))
+        exact prod_nonneg fun j _ ↦ (by positivity [ha, hp (x.snd.blocksFun j)])
       rintro ⟨k, c⟩ hd
       simp only [Set.mem_toFinset (s := {c | 1 < Composition.length c}), mem_Ico, mem_sigma,
         Set.mem_setOf_eq] at hd
@@ -513,7 +512,7 @@ theorem radius_rightInv_pos_of_radius_pos
     apply Nat.le_induction
     · simp only [S]
       rw [Ico_eq_empty_of_le (le_refl 1), sum_empty]
-      exact mul_nonneg (add_nonneg (norm_nonneg _) zero_le_one) apos.le
+      positivity
     · intro n one_le_n hn
       have In : 2 ≤ n + 1 := by lia
       have rSn : r * S n ≤ 1 / 2 :=
@@ -642,7 +641,7 @@ lemma HasFPowerSeriesAt.eventually_hasSum_of_comp {f : E → F} {g : F → G}
         (partialSum_continuous q a).continuousAt
       apply this.tendsto.comp
       apply Tendsto.sub h'y
-      convert tendsto_const_nhds
+      convert! tendsto_const_nhds
       exact (HasFPowerSeriesAt.coeff_zero hf fun _ ↦ 0).symm
     apply u_closed.mem_of_tendsto this
     filter_upwards [Ici_mem_atTop b₀] with b hb using vu (hab _ _ ha hb)

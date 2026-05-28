@@ -20,7 +20,7 @@ This file develops theory about the `List.Perm` relation.
 The notation `~` is used for permutation equivalence.
 -/
 
-@[expose] public section
+public section
 
 -- Make sure we don't import algebra
 assert_not_exists Monoid Preorder
@@ -164,7 +164,7 @@ end Rel
 lemma count_eq_count_filter_add [DecidableEq α] (P : α → Prop) [DecidablePred P]
     (l : List α) (a : α) :
     count a l = count a (l.filter P) + count a (l.filter (¬ P ·)) := by
-  convert countP_eq_countP_filter_add l _ P
+  convert! countP_eq_countP_filter_add l _ P
   simp only [decide_not]
 
 theorem Perm.foldl_eq {f : β → α → β} {l₁ l₂ : List α} [rcomm : RightCommutative f] (p : l₁ ~ l₂) :

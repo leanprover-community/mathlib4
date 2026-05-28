@@ -381,7 +381,7 @@ theorem sqLe_mul {d x y z w : ℕ} :
         Int.mul_nonneg (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le xy))
           (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le zw))
       refine Int.le_of_ofNat_le_ofNat (le_of_sub_nonneg ?_)
-      convert this using 1
+      convert! this using 1
       simp only [one_mul, Int.natCast_add, Int.natCast_mul]
       ring
 
@@ -873,7 +873,7 @@ theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ
     rw [ha, mul_assoc]
     exact mul_nonpos_of_nonpos_of_nonneg h.le (mul_self_nonneg _)
 
-variable {R : Type}
+variable {R : Type*}
 
 @[ext]
 theorem hom_ext [NonAssocRing R] {d : ℤ} (f g : ℤ√d →+* R) (h : f sqrtd = g sqrtd) : f = g := by

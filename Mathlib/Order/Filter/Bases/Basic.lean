@@ -298,7 +298,7 @@ theorem HasBasis.eventually_iff (hl : l.HasBasis p s) {q : α → Prop} :
 
 theorem HasBasis.frequently_iff (hl : l.HasBasis p s) {q : α → Prop} :
     (∃ᶠ x in l, q x) ↔ ∀ i, p i → ∃ x ∈ s i, q x := by
-  simp only [Filter.Frequently, hl.eventually_iff]; push_neg; rfl
+  simp only [Filter.Frequently, hl.eventually_iff]; push Not; rfl
 
 theorem HasBasis.exists_iff (hl : l.HasBasis p s) {P : Set α → Prop}
     (mono : ∀ ⦃s t⦄, s ⊆ t → P t → P s) : (∃ s ∈ l, P s) ↔ ∃ i, p i ∧ P (s i) :=
@@ -768,7 +768,7 @@ theorem map_sigma_mk_comap {π : α → Type*} {π' : β → Type*} {f : α → 
     (hf : Function.Injective f) (g : ∀ a, π a → π' (f a)) (a : α) (l : Filter (π' (f a))) :
     map (Sigma.mk a) (comap (g a) l) = comap (Sigma.map f g) (map (Sigma.mk (f a)) l) := by
   refine (((basis_sets _).comap _).map _).eq_of_same_basis ?_
-  convert ((basis_sets l).map (Sigma.mk (f a))).comap (Sigma.map f g)
+  convert! ((basis_sets l).map (Sigma.mk (f a))).comap (Sigma.map f g)
   apply image_sigmaMk_preimage_sigmaMap hf
 
 end Filter

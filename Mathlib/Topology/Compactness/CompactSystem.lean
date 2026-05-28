@@ -73,12 +73,11 @@ theorem mono {T : Set (Set α)} (hT : IsCompactSystem T) (hST : S ⊆ T) :
 /-- Inserting `∅` into a compact system gives a compact system. -/
 lemma insert_empty (h : IsCompactSystem S) : IsCompactSystem (insert ∅ S) := by
   intro s h' hd
-  by_cases g : ∃ n, s n = ∅
+  by_cases! g : ∃ n, s n = ∅
   · use g.choose
     rw [← subset_empty_iff] at hd ⊢
     exact (dissipate_subset le_rfl).trans g.choose_spec.le
-  · push_neg at g
-    exact h s (fun i ↦ (mem_of_mem_insert_of_ne (h' i) (g i).ne_empty)) hd
+  · exact h s (fun i ↦ (mem_of_mem_insert_of_ne (h' i) (g i).ne_empty)) hd
 
 /-- Inserting `univ` into a compact system gives a compact system. -/
 lemma insert_univ (h : IsCompactSystem S) : IsCompactSystem (insert univ S) := by
@@ -154,7 +153,7 @@ theorem isCompactSystem_iff_nonempty_iInter_of_directed (hpi : IsPiSystem S) :
     ∀ (C : ℕ → Set α), (Directed (· ⊇ ·) C) → (∀ i, C i ∈ S) → (∀ n, (C n).Nonempty) →
       (⋂ i, C i).Nonempty := by
   rw [isCompactSystem_iff_of_directed hpi]
-  refine ⟨fun h1 C h3 h4 ↦ ?_, fun h1 C h3 s ↦ ?_⟩ <;> rw [← not_imp_not] <;> push_neg
+  refine ⟨fun h1 C h3 h4 ↦ ?_, fun h1 C h3 s ↦ ?_⟩ <;> contrapose!
   · exact h1 C h3 h4
   · exact h1 C h3 s
 
@@ -173,7 +172,7 @@ theorem isCompactSystem_isCompact_isClosed (α : Type*) [TopologicalSpace α] :
 /-- In a `T2Space` the set of compact sets is a compact system. -/
 theorem isCompactSystem_isCompact (α : Type*) [TopologicalSpace α] [T2Space α] :
     IsCompactSystem {s : Set α | IsCompact s} := by
-  convert isCompactSystem_isCompact_isClosed α with s
+  convert! isCompactSystem_isCompact_isClosed α with s
   simpa using IsCompact.isClosed
 
 /-- The set of sets which are either compact and closed, or `univ`, is a compact system. -/

@@ -22,10 +22,10 @@ We define rank one valuations.
 
 ## Main Definitions
 * `RankOne` : A valuation has rank one if it is nontrivial and its image (defined as
-`MonoidWithZeroHom.valueGroup₀ v`) is contained in `ℝ≥0`. Note that this class includes the data
-of an inclusion morphism `MonoidWithZeroHom.valueGroup₀ v → ℝ≥0`.
+  `MonoidWithZeroHom.valueGroup₀ v`) is contained in `ℝ≥0`. Note that this class includes the data
+  of an inclusion morphism `MonoidWithZeroHom.valueGroup₀ v → ℝ≥0`.
 * `RankOne.restrict_RankOne` is the `RankOne` instance for the restriction of a valuation to its
-image, as defined in
+  image, as defined in
 
 ## Tags
 
@@ -66,15 +66,16 @@ lemma nonempty_rankOne_iff_mulArchimedean {v : Valuation R Γ₀} [v.IsNontrivia
     exact MulArchimedean.comap hv.hom'.toMonoidHom hv.strictMono'
   · intro _
     obtain ⟨f, hf⟩ :=
-      Archimedean.exists_orderAddMonoidHom_real_injective (Additive  (ValueGroup₀ v)ˣ)
-    let e := AddMonoidHom.toMultiplicativeRight (α :=  (ValueGroup₀ v)ˣ) (β := ℝ) f
+      Archimedean.exists_orderAddMonoidHom_real_injective (Additive (ValueGroup₀ v)ˣ)
+    let e := AddMonoidHom.toMultiplicativeRight (α := (ValueGroup₀ v)ˣ) (β := ℝ) f
     have he : StrictMono e := by
       simp only [AddMonoidHom.coe_toMultiplicativeRight, AddMonoidHom.coe_coe, e]
       -- toAdd_strictMono is already in an applied form, do defeq abuse instead
       exact StrictMono.comp strictMono_id (f.monotone'.strictMono_of_injective hf)
     let rf : Multiplicative ℝ →* ℝ≥0ˣ := {
-      toFun x := Units.mk0 ⟨(2 : ℝ) ^ (log (M := ℝ) x), by positivity⟩ <| by
+      toFun x := Units.mk0 (.mk ((2 : ℝ) ^ (log (M := ℝ) x)) (by positivity)) <| by
         rw [ne_eq, Subtype.ext_iff]
+        simp only [NNReal.val_eq_coe, NNReal.coe_mk, NNReal.coe_zero]
         positivity
       map_one' := by simp
       map_mul' _ _ := by
@@ -106,7 +107,7 @@ lemma nontrivial : ∃ r : R, v r ≠ 0 ∧ v r ≠ 1 := IsNontrivial.exists_val
 /-- If `v` is a rank one valuation and `x : Γ₀` has image `0` under `RankOne.hom v`, then
   `x = 0`. -/
 theorem zero_of_hom_zero {x : ValueGroup₀ v} (hx : hom v x = 0) : x = 0 := by
-  refine (eq_of_le_of_not_lt (zero_le' (a := x)) fun h_lt ↦ ?_).symm
+  refine (eq_of_le_of_not_lt (zero_le (a := x)) fun h_lt ↦ ?_).symm
   have hs := strictMono v h_lt
   rw [map_zero, hx] at hs
   exact hs.false
@@ -130,10 +131,10 @@ instance : IsNontrivial v where
 
 section Restrict
 
-instance isNontrivial_restrict [v.IsNontrivial] : (v.restrict).IsNontrivial where
+instance isNontrivial_restrict : (v.restrict).IsNontrivial where
   exists_val_nontrivial := by
     obtain ⟨x, ⟨hx0, hx1⟩⟩ := IsNontrivial.exists_val_nontrivial (v := v)
-    exact ⟨x, by simp [hx0], by grind [restrict_def, restrict₀_eq_one_iff]⟩
+    exact ⟨x, by simp [hx0], by grind [restrict_eq_one_iff]⟩
 
 variable (K : Type*) [Field K] (v : Valuation K Γ₀) [RankOne v]
 
@@ -155,9 +156,9 @@ theorem exists_val_lt {γ : ℝ≥0} (hγ : γ ≠ 0) : ∃ x ≠ 0, RankOne.hom
   · simp only [restrict₀_apply, restrict_def, map_eq_zero, dite_eq_left_iff, coe_ne_zero,
       imp_false, not_not] at hk
     by_contra h0
-    rw [dif_pos (by  rw [dif_pos ((zero_iff v).mpr h0)]), eq_comm] at hk
+    rw [dif_pos (by rw [dif_pos ((zero_iff v).mpr h0)]), eq_comm] at hk
     simp at hk
-  · convert h
+  · convert! h
     simp only [restrict_RankOne_hom_eq, coe_comp, Function.comp_apply, ← hk]
     congr 1
     exact (embedding_restrict₀ k).symm
@@ -175,8 +176,7 @@ then it has rank one -/
 @[implicit_reducible]
 def rankOne_of_exists (H : ∃ x ≠ 0, v x ≠ 1) : RankOne v where
   exists_val_nontrivial := by
-    by_contra H'
-    push_neg at H'
+    by_contra! H'
     obtain ⟨x, hx, hx'⟩ := H
     exact hx' (H' x ((ne_zero_iff v).mpr hx))
 
@@ -185,8 +185,7 @@ then it has rank one -/
 @[implicit_reducible]
 def rankOne_of_nontrivial (H : Nontrivial (ValueGroup₀ v)ˣ) : RankOne v where
   exists_val_nontrivial := by
-    by_contra H'
-    push_neg at H'
+    by_contra! H'
     rw [nontrivial_iff_exists_ne 1] at H
     obtain ⟨x, hx⟩ := H
     obtain ⟨k, hk⟩ := ValueGroup₀.restrict₀_surjective _ x.val

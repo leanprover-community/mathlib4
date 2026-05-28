@@ -50,7 +50,7 @@ def freeMonic : (MvPolynomial (Fin n) R)[X] :=
 
 lemma coeff_freeMonic :
     (freeMonic R n).coeff k = if h : k < n then .X ⟨k, h⟩ else if k = n then 1 else 0 := by
-  simp only [freeMonic, Polynomial.coeff_add, Polynomial.coeff_X_pow, Polynomial.finset_sum_coeff,
+  simp only [freeMonic, Polynomial.coeff_add, Polynomial.coeff_X_pow, Polynomial.finsetSum_coeff,
     Polynomial.coeff_C_mul, mul_ite, mul_one, mul_zero]
   by_cases h : k < n
   · simp +contextual [Finset.sum_eq_single (ι := Fin n) (a := ⟨k, h⟩),
@@ -161,8 +161,6 @@ lemma universalFactorizationMap_comp_map :
     simp only [map_X, aeval_X, ← AlgHom.coe_toRingHom, ← Polynomial.coeff_map, Polynomial.map_mul,
       Polynomial.map_map, ← map_map_freeMonic (f := algebraMap R S)]
     congr 2 <;> ext <;> simp
-    · congr
-    congr
 
 /-- Lifts along `universalFactorizationMap` corresponds to factorization of `p` into
 monic polynomials with fixed degrees. -/
@@ -589,7 +587,7 @@ def UniversalCoprimeFactorizationRing.homEquiv :
   toFun f :=
     letI q := UniversalFactorizationRing.homEquiv S m k hn p (f.comp (IsScalarTower.toAlgHom _ _ _))
     ⟨q.1, q.2, by
-      convert (isCoprime_factor₁_factor₂ m k hn p).map (Polynomial.mapRingHom f.toRingHom) <;>
+      convert! (isCoprime_factor₁_factor₂ m k hn p).map (Polynomial.mapRingHom f.toRingHom) <;>
         simp [q, UniversalFactorizationRing.homEquiv,
           AlgHom.comp_toRingHom, ← Polynomial.map_map] <;> rfl⟩
   invFun q := by
@@ -616,7 +614,7 @@ def UniversalCoprimeFactorizationRing.homEquiv :
     ext; simp
   right_inv q := by
     apply Subtype.ext
-    convert congr($((UniversalFactorizationRing.homEquiv S m k hn p).apply_symm_apply
+    convert! congr($((UniversalFactorizationRing.homEquiv S m k hn p).apply_symm_apply
       ⟨_, q.2.1⟩).1) using 1
     dsimp
     congr 2
@@ -637,7 +635,6 @@ lemma UniversalCoprimeFactorizationRing.homEquiv_comp_snd {T : Type*} [CommRing 
   simp [homEquiv, UniversalFactorizationRing.homEquiv, Polynomial.map_map]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a monic polynomial `p : R[X]` factors into a product of coprime monic polynomials `p = f * g`
 in the residue field `κ(P)` of some `P : Spec R`,
 then there exists `Q : Spec R_univ` in the universal coprime factorization ring lying over `P`,
@@ -681,7 +678,7 @@ lemma UniversalCoprimeFactorizationRing.exists_liesOver_residueFieldMap_bijectiv
         MonicDegreeEq.map, Polynomial.map_map]
       rfl
 
-set_option maxHeartbeats 400000 in -- Needed after v4.29.0-rc4
+set_option maxHeartbeats 400000 in -- Needed after nightly-2026-03-04
 open UniversalCoprimeFactorizationRing in
 /-- If a monic polynomial `p : R[X]` factors into a product of coprime monic polynomials `p = f * g`
 in the residue field `κ(P)` of some `P : Spec R`,

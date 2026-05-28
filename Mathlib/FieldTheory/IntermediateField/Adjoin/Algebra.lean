@@ -226,7 +226,7 @@ theorem sup_toSubalgebra_of_isAlgebraic_right [Algebra.IsAlgebraic K E2] :
     IsAlgebraic.tower_top _ (isAlgebraic_iff.mp (Algebra.IsAlgebraic.isAlgebraic (⟨x, h⟩ : E2)))
   apply_fun Subalgebra.restrictScalars K at this
   rw [← restrictScalars_toSubalgebra, restrictScalars_adjoin] at this
-  -- TODO: rather than using `← coe_type_toSubalgera` here, perhaps we should restate another
+  -- TODO: rather than using `← coe_type_toSubalgebra` here, perhaps we should restate another
   -- version of `Algebra.restrictScalars_adjoin` for intermediate fields?
   simp only [← coe_type_toSubalgebra] at this
   rw [Algebra.restrictScalars_adjoin] at this
@@ -334,7 +334,7 @@ theorem algHom_fieldRange_eq_of_comp_eq (h : RingHom.comp f (algebraMap A K) = (
     f.fieldRange = IntermediateField.adjoin F g.range := by
   apply IntermediateField.toSubfield_injective
   simp_rw [AlgHom.fieldRange_toSubfield, IntermediateField.adjoin_toSubfield]
-  convert ringHom_fieldRange_eq_of_comp_eq h using 2
+  convert! ringHom_fieldRange_eq_of_comp_eq h using 2
   exact Set.union_eq_self_of_subset_left fun _ ⟨x, hx⟩ ↦ ⟨algebraMap F A x, by simp [← hx]⟩
 
 /-- If `F` is a field, `A` is an `F`-algebra with fraction field `K`, `L` is a field,

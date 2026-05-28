@@ -187,11 +187,11 @@ noncomputable instance linearOrderedCommGroupWithZero :
     LinearOrderedCommGroupWithZero (ValueGroup A K) where
   bot := 0
   bot_le := by rintro ⟨a⟩; exact ⟨0, zero_smul ..⟩
-  zero_le := by rintro ⟨a⟩; exact ⟨0, zero_smul ..⟩
+  isBot_zero := by rintro ⟨a⟩; exact ⟨0, zero_smul ..⟩
   mul_lt_mul_of_pos_left := by
     simp_rw [← not_le]
     rintro ⟨a⟩ ha ⟨b⟩ ⟨c⟩ hbc
-    contrapose! hbc
+    contrapose hbc
     obtain ⟨d, hd⟩ := hbc
     simp only [Algebra.smul_def, mul_left_comm, mul_eq_mul_left_iff] at hd
     obtain rfl | rfl := hd
@@ -398,7 +398,7 @@ instance (priority := 100) [IsLocalRing R] [IsBezout R] : ValuationRing R := by
   rcases eq_or_ne g 0 with h | h
   · simp [h]
   have : x * a + y * b = 1 := by
-    apply mul_left_injective₀ h; convert e' using 1 <;> ring
+    apply mul_left_injective₀ h; convert! e' using 1 <;> ring
   rcases IsLocalRing.isUnit_or_isUnit_of_add_one this with h' | h' <;> [left; right]
   all_goals exact mul_dvd_mul_right (isUnit_iff_forall_dvd.mp (isUnit_of_mul_isUnit_right h') _) _
 

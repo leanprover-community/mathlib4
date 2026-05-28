@@ -23,7 +23,7 @@ For this reason, we use `eqToIso`, which gives isomorphisms from equalities, ins
 identities.
 -/
 
-@[expose] public section
+public section
 
 
 namespace CategoryTheory
