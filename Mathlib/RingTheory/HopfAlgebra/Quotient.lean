@@ -38,12 +38,6 @@ class IsHopfRel (r : A → A → Prop) : Prop extends IsBialgebraRel R r where
   antipode_map_eq : ∀ ⦃x y : A⦄, r x y →
     mkAlgHom R r (HopfAlgebra.antipode R x) = mkAlgHom R r (HopfAlgebra.antipode R y)
 
-@[simp]
-private lemma mul'_map_mkAlgHom (r : A → A → Prop) (z : A ⊗[R] A) :
-    mul' R (RingQuot r) (map (mkAlgHom R r).toLinearMap (mkAlgHom R r).toLinearMap z) =
-      mkAlgHom R r (mul' R A z) :=
-  (LinearMap.congr_fun (AlgHom.comp_mul' (mkAlgHom R r)) z).symm
-
 namespace HopfAlgebra.Quotient
 
 variable (r : A → A → Prop) [IsHopfRel R r]
@@ -81,14 +75,14 @@ noncomputable instance : HopfAlgebra R (RingQuot r) where
     obtain ⟨a, rfl⟩ := mkAlgHom_surjective R r x
     convert! congr(mkAlgHom R r $(mul_antipode_rTensor_comul_apply (R := R) a)) using 1
     · simp only [coe_comp, Function.comp_apply, Bialgebra.Quotient.comul_mkAlgHom,
-        rTensor_map, antipode_comp_mkAlgHom, ← map_rTensor, mul'_map_mkAlgHom]
+        rTensor_map, antipode_comp_mkAlgHom, ← map_rTensor, AlgHom.mul'_map]
     · simp [Bialgebra.Quotient.counit_mkAlgHom]
   mul_antipode_lTensor_comul := by
     refine LinearMap.ext fun x ↦ ?_
     obtain ⟨a, rfl⟩ := mkAlgHom_surjective R r x
     convert! congr(mkAlgHom R r $(mul_antipode_lTensor_comul_apply (R := R) a)) using 1
     · simp only [coe_comp, Function.comp_apply, Bialgebra.Quotient.comul_mkAlgHom,
-        lTensor_map, antipode_comp_mkAlgHom, ← map_lTensor, mul'_map_mkAlgHom]
+        lTensor_map, antipode_comp_mkAlgHom, ← map_lTensor, AlgHom.mul'_map]
     · simp [Bialgebra.Quotient.counit_mkAlgHom]
 
 end HopfAlgebra.Quotient

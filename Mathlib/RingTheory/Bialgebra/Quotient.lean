@@ -14,9 +14,7 @@ public import Mathlib.RingTheory.TensorProduct.Maps
 # Bialgebra structure on `RingQuot`
 
 When a relation `r : A → A → Prop` on an `R`-bialgebra `A` is compatible with the counit and
-comultiplication — the counit identifies related elements and the comultiplication agrees on
-related elements after projection to `RingQuot r ⊗[R] RingQuot r` — the quotient `RingQuot r`
-inherits a bialgebra structure.
+comultiplication (`IsBialgebraRel`), the quotient `RingQuot r` inherits a bialgebra structure.
 
 ## Main definitions
 
