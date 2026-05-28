@@ -623,7 +623,8 @@ theorem coeff_X [DecidableEq σ] (i : σ) (m) :
 @[deprecated (since := "2026-05-25")]
 alias coeff_X' := coeff_X
 
-/-- Warning: `coeff_index_single_self_X` used to be `coeff_X`. -/
+/-- Warning: `coeff_index_single_self_X` used to be `coeff_X`, deprecated (since := "2026-05-25")
+-/
 @[simp]
 theorem coeff_index_single_self_X (i : σ) :
     coeff (Finsupp.single i 1) (X i : MvPolynomial σ R) = 1 := by
