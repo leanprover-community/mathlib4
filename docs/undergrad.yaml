@@ -563,7 +563,7 @@ Probability Theory:
     variance of a real-valued random variable: 'ProbabilityTheory.variance'
     transfer theorem: ''
     moments: 'ProbabilityTheory.moment'
-    Bernoulli law: 'PMF.bernoulli'
+    Bernoulli law: 'ProbabilityTheory.bernoulliMeasure'
     binomial law: 'ProbabilityTheory.binomial'
     geometric law: 'ProbabilityTheory.geometricMeasure'
     Poisson law: 'ProbabilityTheory.poissonMeasure'
