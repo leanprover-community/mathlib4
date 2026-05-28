@@ -66,12 +66,10 @@ noncomputable instance : Bialgebra R (RingQuot r) := by
   refine Bialgebra.ofAlgHom (comulAlgHom r) (counitAlgHom r) ?_ ?_ ?_ <;>
     refine ringQuot_ext' _ _ _ (AlgHom.toLinearMap_injective ?_)
   · simp [coassoc_simps, comul_comp_mkAlgHom]
-  · simp only [coassoc_simps, AlgHom.comp_toLinearMap, Algebra.TensorProduct.toLinearMap_map,
-      comul_comp_mkAlgHom, counit_comp_mkAlgHom]
-    rw [CoassocSimps.map_counit_comp_comul_left]; rfl
-  · simp only [coassoc_simps, AlgHom.comp_toLinearMap, Algebra.TensorProduct.toLinearMap_map,
-      comul_comp_mkAlgHom, counit_comp_mkAlgHom]
-    rw [CoassocSimps.map_counit_comp_comul_right]; rfl
+  all_goals simp only [coassoc_simps, AlgHom.comp_toLinearMap,
+    Algebra.TensorProduct.toLinearMap_map, comul_comp_mkAlgHom, counit_comp_mkAlgHom]
+  · rw [CoassocSimps.map_counit_comp_comul_left]; rfl
+  · rw [CoassocSimps.map_counit_comp_comul_right]; rfl
 
 @[simp] lemma counit_mkAlgHom (a : A) :
     (counit : RingQuot r →ₗ[R] R) (mkAlgHom R r a) = counit a :=
