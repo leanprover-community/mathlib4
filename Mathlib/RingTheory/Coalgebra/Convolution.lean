@@ -79,20 +79,14 @@ instance [Monoid β] [DistribMulAction β A] [SMulCommClass R β A] [IsScalarTow
   smul_assoc b f g := by
     ext c
     simp only [smul_eq_mul, convMul_apply, ofConv_smul, LinearMap.smul_apply]
-    induction (δ : C →ₗ[R] _) c with
-    | zero => simp
-    | tmul x y => simp [smul_mul_assoc]
-    | add x y hx hy => simp [hx, hy]
+    induction (δ : C →ₗ[R] _) c <;> simp [smul_mul_assoc, *]
 
 instance [Monoid β] [DistribMulAction β A] [SMulCommClass R β A] [SMulCommClass β A A] :
     SMulCommClass β (WithConv (C →ₗ[R] A)) (WithConv (C →ₗ[R] A)) where
   smul_comm b f g := by
     ext c
     simp only [smul_eq_mul, convMul_apply, ofConv_smul, LinearMap.smul_apply]
-    induction (δ : C →ₗ[R] _) c with
-    | zero => simp
-    | tmul x y => simp [mul_smul_comm]
-    | add x y hx hy => simp [hx, hy]
+    induction (δ : C →ₗ[R] _) c <;> simp [mul_smul_comm, *]
 
 @[simp] lemma toSpanSingleton_convMul_toSpanSingleton (x y : A) :
     toConv (toSpanSingleton R A x) * toConv (toSpanSingleton R A y) =
@@ -199,7 +193,7 @@ instance [CommSemiring β] [Algebra β A] [SMulCommClass R β A] :
   .ofModule smul_mul_assoc mul_smul_comm
 
 @[simp]
-lemma algebraMap_apply [CommSemiring β] [Algebra β A] [SMulCommClass R β A] (b : β) (c : C) :
+lemma convAlgebraMap_apply [CommSemiring β] [Algebra β A] [SMulCommClass R β A] (b : β) (c : C) :
     algebraMap β (WithConv (C →ₗ[R] A)) b c = b • algebraMap R A (counit c) := by
   simp [Algebra.algebraMap_eq_smul_one, convOne_def, Algebra.linearMap]
 
