@@ -42,6 +42,11 @@ instance instBialgebra : Bialgebra R (TensorAlgebra R M) := Bialgebra.ofAlgHom c
 @[simp]
 lemma comul_ι (x : M) :
     Coalgebra.comul (R := R) (ι R x) = ι R x ⊗ₜ[R] 1 + 1 ⊗ₜ[R] ι R x := by
-  simp [CoalgebraStruct.comul, instBialgebra, Bialgebra.ofAlgHom, comul]
+  change comul (ι R x) = _
+  simp [comul]
+
+@[simp]
+lemma counit_ι (x : M) : Coalgebra.counit (R := R) (ι R x) = (0 : R) :=
+  algebraMapInv_ι_apply x
 
 end TensorAlgebra
