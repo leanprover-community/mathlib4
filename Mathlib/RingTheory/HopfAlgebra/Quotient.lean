@@ -65,59 +65,39 @@ noncomputable instance : HopfAlgebraStruct R (RingQuot r) where
 
 @[simp]
 lemma antipode_mkAlgHom (a : A) :
-    HopfAlgebraStruct.antipode (A := RingQuot r) R (mkAlgHom R r a) =
+    HopfAlgebra.antipode R (mkAlgHom R r a) =
       mkAlgHom R r (HopfAlgebra.antipode R a) := by
-  simp [HopfAlgebraStruct.antipode]
+  simp [HopfAlgebra.antipode]
 
 @[simp]
 lemma antipode_comp_mkAlgHom :
-    (HopfAlgebraStruct.antipode (A := RingQuot r) R).comp (mkAlgHom R r).toLinearMap =
-      (mkAlgHom R r).toLinearMap ∘ₗ HopfAlgebra.antipode R := by
-  ext a; simp
+    (HopfAlgebra.antipode R).comp (mkAlgHom R r).toLinearMap =
+      (mkAlgHom R r).toLinearMap ∘ₗ HopfAlgebra.antipode R := by ext; simp
 
 omit [IsHopfRel R r] in
-private lemma mul'_comp_map_mkAlgHom :
-    mul' R (RingQuot r) ∘ₗ TensorProduct.map (mkAlgHom R r).toLinearMap
-        (mkAlgHom R r).toLinearMap =
-      (mkAlgHom R r).toLinearMap ∘ₗ mul' R A :=
-  TensorProduct.ext (by ext; simp [mul'_apply])
-
-private lemma antipode_rTensor_comp_map_mkAlgHom :
-    (HopfAlgebraStruct.antipode (A := RingQuot r) R).rTensor (RingQuot r) ∘ₗ
-      TensorProduct.map (mkAlgHom R r).toLinearMap (mkAlgHom R r).toLinearMap =
-    TensorProduct.map (mkAlgHom R r).toLinearMap (mkAlgHom R r).toLinearMap ∘ₗ
-        (HopfAlgebra.antipode R).rTensor A := by
-  rw [rTensor, rTensor, ← TensorProduct.map_comp, ← TensorProduct.map_comp,
-    antipode_comp_mkAlgHom, id_comp, comp_id]
-
-private lemma antipode_lTensor_comp_map_mkAlgHom :
-    (HopfAlgebraStruct.antipode (A := RingQuot r) R).lTensor (RingQuot r) ∘ₗ
-      TensorProduct.map (mkAlgHom R r).toLinearMap (mkAlgHom R r).toLinearMap =
-    TensorProduct.map (mkAlgHom R r).toLinearMap (mkAlgHom R r).toLinearMap ∘ₗ
-        (HopfAlgebra.antipode R).lTensor A := by
-  rw [lTensor, lTensor, ← TensorProduct.map_comp, ← TensorProduct.map_comp,
-    antipode_comp_mkAlgHom, id_comp, comp_id]
+@[simp]
+private lemma mul'_map_mkAlgHom (z : A ⊗[R] A) :
+    mul' R (RingQuot r) (map (mkAlgHom R r).toLinearMap (mkAlgHom R r).toLinearMap z) =
+      mkAlgHom R r (mul' R A z) := by
+  induction z using TensorProduct.induction_on with
+  | zero => simp
+  | tmul x y => simp [mul'_apply]
+  | add x y hx hy => simp [map_add, hx, hy]
 
 noncomputable instance : HopfAlgebra R (RingQuot r) where
   mul_antipode_rTensor_comul := by
     refine LinearMap.ext fun x ↦ ?_
     obtain ⟨a, rfl⟩ := mkAlgHom_surjective R r x
-    have hpush := LinearMap.congr_fun (antipode_rTensor_comp_map_mkAlgHom (R := R) r) (comul a)
-    have hmul := LinearMap.congr_fun (mul'_comp_map_mkAlgHom (R := R) r)
-      ((HopfAlgebra.antipode R).rTensor A (comul a))
     simp only [coe_comp, Function.comp_apply, Bialgebra.Quotient.comul_mkAlgHom,
-      Bialgebra.Quotient.counit_mkAlgHom] at *
-    rw [hpush, hmul, HopfAlgebra.mul_antipode_rTensor_comul_apply]
+      Bialgebra.Quotient.counit_mkAlgHom, rTensor_map, antipode_comp_mkAlgHom, ← map_rTensor,
+      mul'_map_mkAlgHom, HopfAlgebra.mul_antipode_rTensor_comul_apply]
     simp
   mul_antipode_lTensor_comul := by
     refine LinearMap.ext fun x ↦ ?_
     obtain ⟨a, rfl⟩ := mkAlgHom_surjective R r x
-    have hpush := LinearMap.congr_fun (antipode_lTensor_comp_map_mkAlgHom (R := R) r) (comul a)
-    have hmul := LinearMap.congr_fun (mul'_comp_map_mkAlgHom (R := R) r)
-      ((HopfAlgebra.antipode R).lTensor A (comul a))
     simp only [coe_comp, Function.comp_apply, Bialgebra.Quotient.comul_mkAlgHom,
-      Bialgebra.Quotient.counit_mkAlgHom] at *
-    rw [hpush, hmul, HopfAlgebra.mul_antipode_lTensor_comul_apply]
+      Bialgebra.Quotient.counit_mkAlgHom, lTensor_map, antipode_comp_mkAlgHom, ← map_lTensor,
+      mul'_map_mkAlgHom, HopfAlgebra.mul_antipode_lTensor_comul_apply]
     simp
 
 end HopfAlgebra.Quotient

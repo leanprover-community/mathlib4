@@ -31,10 +31,6 @@ a bialgebra structure.
 
 open Bialgebra Coalgebra LinearMap RingQuot TensorProduct
 
-/-! ### Bialgebra structure on `RingQuot r` -/
-
-section RingQuot
-
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
 
 variable (R) in
@@ -48,8 +44,7 @@ class IsBialgebraRel (r : A → A → Prop) : Prop where
     Algebra.TensorProduct.map (mkAlgHom R r) (mkAlgHom R r) (comul x) =
       Algebra.TensorProduct.map (mkAlgHom R r) (mkAlgHom R r) (comul y)
 
-namespace Bialgebra
-namespace Quotient
+namespace Bialgebra.Quotient
 
 variable (r : A → A → Prop) [IsBialgebraRel R r]
 
@@ -99,7 +94,4 @@ noncomputable instance : Bialgebra R (RingQuot r) :=
       map (mkAlgHom R r).toLinearMap (mkAlgHom R r).toLinearMap (comul a) :=
   LinearMap.congr_fun (comul_comp_mkAlgHom r) a
 
-end Quotient
-end Bialgebra
-
-end RingQuot
+end Bialgebra.Quotient
