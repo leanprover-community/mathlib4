@@ -4086,7 +4086,6 @@ public import Mathlib.Data.Matrix.ColumnRowPartitioned
 public import Mathlib.Data.Matrix.Composition
 public import Mathlib.Data.Matrix.DMatrix
 public import Mathlib.Data.Matrix.Diagonal
-public import Mathlib.Data.Matrix.DualNumber
 public import Mathlib.Data.Matrix.Invertible
 public import Mathlib.Data.Matrix.Mul
 public import Mathlib.Data.Matrix.PEquiv
@@ -5049,6 +5048,7 @@ public import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Dual
+public import Mathlib.LinearAlgebra.Matrix.DualNumber
 public import Mathlib.LinearAlgebra.Matrix.FiniteDimensional
 public import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
