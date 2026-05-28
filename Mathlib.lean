@@ -4423,6 +4423,7 @@ public import Mathlib.Dynamics.Ergodic.RadonNikodym
 public import Mathlib.Dynamics.FixedPoints.Basic
 public import Mathlib.Dynamics.FixedPoints.Defs
 public import Mathlib.Dynamics.FixedPoints.Prufer
+public import Mathlib.Dynamics.FixedPoints.Support
 public import Mathlib.Dynamics.FixedPoints.Topology
 public import Mathlib.Dynamics.Flow
 public import Mathlib.Dynamics.Minimal
@@ -6166,6 +6167,7 @@ public import Mathlib.Probability.ConditionalProbability
 public import Mathlib.Probability.Decision.Risk.Basic
 public import Mathlib.Probability.Decision.Risk.Defs
 public import Mathlib.Probability.Density
+public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.Distributions.Beta
 public import Mathlib.Probability.Distributions.Binomial
 public import Mathlib.Probability.Distributions.Cauchy
