@@ -301,5 +301,16 @@ lemma biUnion_union : s.biUnion (fun x ↦ t₁ x ∪ t₂ x) = s.biUnion t₁ �
 
 theorem biUnion_singleton {f : α → β} : (s.biUnion fun a => {f a}) = s.image f := by grind
 
+/-- Rewrite a `biUnion` over `s.attach` as a `biUnion` over `s`, in the case where the indexing
+function on `s.attach` happens to factor through `α`. See `Finset.attach_biUnion'` for the version
+without that hypothesis. -/
+lemma attach_biUnion {f : α → Finset β} : s.attach.biUnion (f ·) = s.biUnion f := by aesop
+
+/-- Rewrite a `biUnion` over `s.attach` as a `biUnion` over `s` by extending the function to all of
+`α` with `∅` outside `s`. See `Finset.attach_biUnion` for the version when the indexing function is
+already defined on all of `α`. -/
+lemma attach_biUnion' [DecidableEq α] {f : s → Finset β} :
+    s.attach.biUnion f = s.biUnion fun a ↦ if h : a ∈ s then f ⟨a, h⟩ else ∅ := by aesop
+
 end BUnion
 end Finset

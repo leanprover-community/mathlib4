@@ -73,7 +73,7 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_isSeparable [IsPurelyIns
   have := (expChar_pow_pos F q n).ne'
   replace hf (i : ι) : l i ^ q ^ n ∈ (algebraMap F E).range := by
     by_cases hs : i ∈ l.support
-    · convert pow_mem (hf i) (q ^ (n - f i)) using 1
+    · convert! pow_mem (hf i) (q ^ (n - f i)) using 1
       rw [← pow_mul, ← pow_add, Nat.add_sub_of_le (Finset.le_sup hs)]
     exact ⟨0, by rw [map_zero, Finsupp.notMem_support_iff.1 hs, zero_pow this]⟩
   choose lF hlF using hf
@@ -89,7 +89,7 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_isSeparable [IsPurelyIns
     refine Finset.sum_congr rfl fun i _ ↦ ?_
     simp_rw [Algebra.smul_def, mul_pow, IsScalarTower.algebraMap_apply F E K, hlF, map_pow]
   refine eq_zero_of_pow_eq_zero ((hlF _).symm.trans ?_)
-  convert map_zero (algebraMap F E)
+  convert! map_zero (algebraMap F E)
   exact congr($h i)
 
 variable {F K} in
@@ -148,7 +148,7 @@ It is a special case of `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`
 intermediate result used to prove it. -/
 lemma sepDegree_eq_of_isPurelyInseparable [IsPurelyInseparable F E] :
     sepDegree F K = sepDegree E K := by
-  convert sepDegree_eq_of_isPurelyInseparable_of_isSeparable F E (separableClosure E K)
+  convert! sepDegree_eq_of_isPurelyInseparable_of_isSeparable F E (separableClosure E K)
   haveI : IsScalarTower F (separableClosure E K) K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   rw [sepDegree, ← separableClosure.map_eq_of_separableClosure_eq_bot F
     (separableClosure.separableClosure_eq_bot E K)]
