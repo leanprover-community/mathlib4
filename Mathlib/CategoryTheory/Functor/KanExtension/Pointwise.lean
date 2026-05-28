@@ -171,7 +171,7 @@ lemma HasPointwiseLeftKanExtensionAt.of_natIso {L L' : C ⥤ D} {F F' : C ⥤ H}
 
 /-- `HasPointwiseLeftKanExtensionAt` is invariant when we replace `L` and `F` by isomorphic
 functors. -/
-lemma hasPointwiseLeftKanExtension_iff_of_natIso {L L' : C ⥤ D} {F F' : C ⥤ H} {Y : D}
+lemma hasPointwiseLeftKanExtensionAt_iff_of_natIso {L L' : C ⥤ D} {F F' : C ⥤ H} {Y : D}
     (e₁ : L ≅ L') (e₂ : F ≅ F') :
     L.HasPointwiseLeftKanExtensionAt F Y ↔ L'.HasPointwiseLeftKanExtensionAt F' Y :=
   ⟨fun _ ↦ .of_natIso Y e₁ e₂, fun _ ↦ .of_natIso Y e₁.symm e₂.symm⟩
@@ -187,7 +187,7 @@ lemma HasPointwiseRightKanExtensionAt.of_natIso {L L' : C ⥤ D} {F F' : C ⥤ H
 
 /-- `HasPointwiseRightKanExtensionAt` is invariant when we replace `L` and `F` by isomorphic
 functors. -/
-lemma hasPointwiseRightKanExtension_iff_of_natIso {L L' : C ⥤ D} {F F' : C ⥤ H} {Y : D}
+lemma hasPointwiseRightKanExtensionAt_iff_of_natIso {L L' : C ⥤ D} {F F' : C ⥤ H} {Y : D}
     (e₁ : L ≅ L') (e₂ : F ≅ F') :
     L.HasPointwiseRightKanExtensionAt F Y ↔ L'.HasPointwiseRightKanExtensionAt F' Y :=
   ⟨fun _ ↦ .of_natIso Y e₁ e₂, fun _ ↦ .of_natIso Y e₁.symm e₂.symm⟩
