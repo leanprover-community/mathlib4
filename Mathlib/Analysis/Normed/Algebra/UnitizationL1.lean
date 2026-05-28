@@ -51,7 +51,7 @@ noncomputable def uniformEquiv_unitization_addEquiv_prod :
     WithLp 1 (Unitization 𝕜 A) ≃ᵤ WithLp 1 (𝕜 × A) :=
   { unitization_addEquiv_prod 𝕜 A with
     uniformContinuous_invFun := uniformContinuous_comap' uniformContinuous_id
-    uniformContinuous_toFun := uniformContinuous_iff.mpr le_rfl }
+    uniformContinuous_toFun := uniformContinuous_iff_le_comap.mpr le_rfl }
 
 instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
     CompleteSpace (WithLp 1 (Unitization 𝕜 A)) :=
