@@ -459,9 +459,10 @@ open Mathlib.Linter.Style.nameCheck
 #guard isBadNameWithUnderscore `_fooFoo == true
 #guard isBadNameWithUnderscore `Foo._bar == true
 -- A namespace `Mathlib` in the middle does not silence the linter: we only test for a *prefix*
--- `Mathlib`, `Mathlib.Parser` or `Mathlib.Tactic`.
+-- `Mathlib`, `Parser` or `Mathlib.Tactic`.
 #guard isBadNameWithUnderscore `Nat.Mathlib.foo_bar == true
-#guard isBadNameWithUnderscore `Mathlib.Parser.foo_bar == false
+#guard isBadNameWithUnderscore `Parser.foo_bar == false
+#guard isBadNameWithUnderscore `Parser.Attr.coassoc_simps == false
 #guard isBadNameWithUnderscore `Mathlib.Tactic.foo_bar == false
 #guard isBadNameWithUnderscore `AlgebraicGeometry.Scheme.IdealSheafData.Simps.coe_support == false
 
@@ -665,14 +666,21 @@ open Mathlib.Linter.TextBased.UnicodeLinter
 /- A character either does or doesn't have an abbreviation in the VSCode extension. -/
 #guard withVSCodeAbbrev.toList ∩ othersInMathlib.toList = ∅
 
-/- A character either is or isn't an emoji. -/
+/- No character is both an emoji and not an emoji. -/
 #guard emojis.toList ∩ nonEmojis.toList = ∅
+
+/- No character is both an emoji and unrestricted. -/
+#guard emojis.toList ∩ unrestricted.toList = ∅
+
+/- No character is both a non-emoji and unrestricted. -/
+#guard nonEmojis.toList ∩ unrestricted.toList = ∅
 
 def allLinterDefinedCharacterLists : List (List Char) := [
   withVSCodeAbbrev,
   othersInMathlib,
   emojis,
-  nonEmojis
+  nonEmojis,
+  unrestricted
 ].map Array.toList
 
 /- Ensure none of the lists contain duplicates -/
