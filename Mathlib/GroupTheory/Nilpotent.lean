@@ -944,9 +944,7 @@ variable (G) in
 @[to_additive]
 theorem Group.IsNilpotent.center_ne_bot [Nontrivial G] [IsNilpotent G] : center G ≠ ⊥ := by
   rw [← upperCentralSeries_zero, ← upperCentralSeries_one]
-  intro h
-  rw [upperCentralSeries.eq_top one_ne_zero h, upperCentralSeries_zero] at h
-  exact top_ne_bot h
+  grind [upperCentralSeries.eq_top, upperCentralSeries_zero, top_ne_bot]
 
 section Prod
 
