@@ -34,11 +34,13 @@ Mathlib sets up `fun_prop` for many different properties like `Continuous`, `Mea
 `fun_prop` is that it decomposes the function into a composition of elementary functions and then
 checks if every single elementary function is, e.g., `Continuous`.
 
-For `ContinuousAt/On/Within` variants, one has to specify a tactic to solve potential side goals
-with `disch := <tactic>`. For example:
+For `ContinuousAt/On/Within` variants, one may have to specify a tactic to solve potential side
+goals with `disch := <tactic>`. For example:
 ```lean
-example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x : ℝ ↦ 1/x) y := by fun_prop (disch := assumption)
+example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) y := by
+  fun_prop (disch := aesop)
 ```
+Note that `fun_prop` discharges hypotheses from the local context automatically.
 
 **Basic debugging:**
 The most common issue is that a function is missing the appropriate theorem. For example:

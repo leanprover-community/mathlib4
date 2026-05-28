@@ -397,6 +397,17 @@ theorem image_subset_image_iff {t : Finset α} (hf : Injective f) :
     s.image f ⊆ t.image f ↔ s ⊆ t :=
   mod_cast Set.image_subset_image_iff hf (s := s) (t := t)
 
+/-- Variant of `Finset.image_subset_image_iff` under an `InjOn` rather than `Injective`
+hypothesis. -/
+theorem image_subset_image_iff_of_injOn {s₁ s₂ : Finset α} (ht : (s : Set α).InjOn f)
+    (h₁ : s₁ ⊆ s) (h₂ : s₂ ⊆ s) : s₁.image f ⊆ s₂.image f ↔ s₁ ⊆ s₂ := by
+  exact_mod_cast ht.image_subset_image_iff (mod_cast h₁) (mod_cast h₂)
+
+/-- Variant of `Finset.image_inj` under an `InjOn` rather than `Injective` hypothesis. -/
+theorem image_eq_image_iff_of_injOn {s₁ s₂ : Finset α} (ht : (s : Set α).InjOn f)
+    (h₁ : s₁ ⊆ s) (h₂ : s₂ ⊆ s) : s₁.image f = s₂.image f ↔ s₁ = s₂ := by
+  exact_mod_cast ht.image_eq_image_iff (mod_cast h₁) (mod_cast h₂)
+
 lemma image_ssubset_image {t : Finset α} (hf : Injective f) : s.image f ⊂ t.image f ↔ s ⊂ t := by
   simp_rw [← lt_iff_ssubset]
   exact lt_iff_lt_of_le_iff_le' (image_subset_image_iff hf) (image_subset_image_iff hf)
@@ -594,7 +605,7 @@ theorem mem_subtype {p : α → Prop} [DecidablePred p] {s : Finset α} :
 theorem subtype_eq_empty {p : α → Prop} [DecidablePred p] {s : Finset α} :
     s.subtype p = ∅ ↔ ∀ x, p x → x ∉ s := by simp [Finset.ext_iff, Subtype.forall]
 
-@[mono]
+@[gcongr, mono]
 theorem subtype_mono {p : α → Prop} [DecidablePred p] : Monotone (Finset.subtype p) :=
   fun _ _ h _ hx => mem_subtype.2 <| h <| mem_subtype.1 hx
 
@@ -637,7 +648,7 @@ subtype. -/
 theorem map_subtype_subset {t : Set α} (s : Finset t) : ↑(s.map (Embedding.subtype _)) ⊆ t := by
   intro a ha
   rw [mem_coe] at ha
-  convert property_of_mem_map_subtype s ha
+  convert! property_of_mem_map_subtype s ha
 
 end Subtype
 

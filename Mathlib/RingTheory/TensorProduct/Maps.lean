@@ -209,6 +209,14 @@ def liftEquiv : {fg : (A →ₐ[S] C) × (B →ₐ[R] C) // ∀ x y, Commute (fg
   left_inv fg := by ext <;> simp
   right_inv f' := by ext <;> simp
 
+theorem restrictScalars_lift [CommSemiring R'] [Algebra R R'] [Algebra R' S]
+    [Algebra R' A] [IsScalarTower R R' A] [IsScalarTower R' S A]
+    [Algebra R' C] [IsScalarTower R R' C] [IsScalarTower R' S C]
+    (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : ∀ (x : A) (y : B), Commute (f x) (g y)) :
+    (Algebra.TensorProduct.lift f g hfg).restrictScalars R' =
+      Algebra.TensorProduct.lift (f.restrictScalars R') g hfg :=
+  rfl
+
 end lift
 
 end
@@ -402,8 +410,11 @@ lemma commRight_tmul (s : S) (a : A) : commRight R S A (s ⊗ₜ a) = a ⊗ₜ s
 variable {S A} in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 @[simp]
-lemma Algebra.TensorProduct.commRight_symm_tmul (s : S) (a : A) :
+lemma commRight_symm_tmul (s : S) (a : A) :
     (commRight R S A).symm (a ⊗ₜ[R] s) = s ⊗ₜ a := rfl
+
+@[deprecated (since := "2026-05-24")]
+alias Algebra.TensorProduct.commRight_symm_tmul := commRight_symm_tmul
 
 end
 
