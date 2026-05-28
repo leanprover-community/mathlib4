@@ -424,7 +424,7 @@ noncomputable def H1CoresCoinfOfTrivial :
 
 instance map₁_quotientGroupMk'_epi :
     Epi (map (QuotientGroup.mk' S) (resOfQuotientIso A S).inv 1) := by
-  convert epi_of_epi (H1π A) _
+  convert! epi_of_epi (H1π A) _
   rw [H1π_comp_map]
   exact @epi_comp _ _ _ _ _ _ (mapCycles₁_quotientGroupMk'_epi A S) (H1π _) inferInstance
 

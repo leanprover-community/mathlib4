@@ -102,6 +102,7 @@ def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ 
   { app := fun X b => 𝟙 (X (g (f b)))
     naturality := fun X Y f' => by simp only [comap, Function.comp]; funext; simp }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism between pulling back then evaluating, and just evaluating. -/
 @[simps!]
 def comapEvalIsoEval (h : J → I) (j : J) : comap C h ⋙ eval (C ∘ h) j ≅ eval C (h j) :=
@@ -117,6 +118,7 @@ instance sumElimCategory : ∀ s : I ⊕ J, Category.{v₁} (Sum.elim C D s)
   | Sum.inl i => inferInstanceAs <| Category (C i)
   | Sum.inr j => inferInstanceAs <| Category (D j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bifunctor combining an `I`-indexed family of objects with a `J`-indexed family of objects
 to obtain an `I ⊕ J`-indexed family of objects.
 -/
