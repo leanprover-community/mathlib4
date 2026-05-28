@@ -28,19 +28,14 @@ noncomputable section
 
 namespace CategoryTheory.Functor
 
-theorem final_of_isTerminal_obj_isTerminal {C : Type u₁} [Category.{v₁} C] [HasTerminal C]
-    {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D) {T : C} (hT : IsTerminal T)
-    (hF : IsTerminal (F.obj T)) : F.Final :=
-  have : (fromPUnit.{0} T).Final := final_fromPUnit_of_isTerminal hT
-  have : (fromPUnit.{0} (F.obj T)).Final := final_fromPUnit_of_isTerminal hF
-  have : ((fromPUnit.{0} T) ⋙ F).Final := final_of_natIso (F := fromPUnit.{0} (F.obj T))
-    (NatIso.ofComponents (fun _ => Iso.refl _))
-  final_of_final_comp (fromPUnit.{0} T) F
-
 instance {C : Type u₁} [Category.{v₁} C] [HasTerminal C] {D : Type u₂}
     [Category.{v₂} D] (F : C ⥤ D) [PreservesLimit (Functor.empty.{0} C) F] : F.Final :=
-  final_of_isTerminal_obj_isTerminal F terminalIsTerminal
+  have : (fromPUnit.{0} (⊤_ C)).Final := final_fromPUnit_of_isTerminal terminalIsTerminal
+  have : (fromPUnit.{0} (F.obj (⊤_ C))).Final := final_fromPUnit_of_isTerminal
     (terminalIsTerminal.isTerminalObj F (⊤_ C))
+  have : ((fromPUnit.{0} (⊤_ C)) ⋙ F).Final := final_of_natIso (F := fromPUnit.{0} (F.obj (⊤_ C)))
+    (NatIso.ofComponents (fun _ => Iso.refl _))
+  final_of_final_comp (fromPUnit.{0} (⊤_ C)) F
 
 end CategoryTheory.Functor
 
@@ -71,8 +66,7 @@ abbrev StructureHomOver :
 
 attribute [local simp] prodComparison_natural in
 set_option backward.isDefEq.respectTransparency false in
-@[simps!]
-def Over.starCompPostNatIso : Over.star X ⋙ Over.post F ≅ F ⋙ Over.star (F.obj X) :=
+abbrev Over.starCompPostNatIso : Over.star X ⋙ Over.post F ≅ F ⋙ Over.star (F.obj X) :=
   NatIso.ofComponents (fun Y => Over.isoMk (asIso (prodComparison F X Y)))
 
 set_option backward.isDefEq.respectTransparency false in
@@ -160,34 +154,6 @@ end SheafOfModules
 
 namespace AlgebraicGeometry.Scheme.Modules
 
-set_option backward.isDefEq.respectTransparency false
-
-instance {X Y : TopCat} (f : X ⟶ Y) : PreservesFiniteProducts (TopologicalSpace.Opens.map f) := by
-  haveI : PreservesLimit (Functor.empty.{0} (TopologicalSpace.Opens Y))
-      (TopologicalSpace.Opens.map f) := by
-    apply preservesTerminal_of_iso
-    apply eqToIso
-    ext x
-    constructor
-    · intro _
-      exact leOfHom (terminalIsTerminal.from (⊤ : TopologicalSpace.Opens X)) trivial
-    · intro _
-      exact leOfHom (terminalIsTerminal.from (⊤ : TopologicalSpace.Opens Y)) trivial
-  haveI : PreservesLimitsOfShape (Discrete PEmpty.{1}) (TopologicalSpace.Opens.map f) :=
-    preservesLimitsOfShape_pempty_of_preservesTerminal _
-  haveI : ∀ U V : TopologicalSpace.Opens Y,
-      IsIso (prodComparison (TopologicalSpace.Opens.map f) U V) := by
-    intro U V
-    let h : (TopologicalSpace.Opens.map f).obj (U ⨯ V) =
-        ((TopologicalSpace.Opens.map f).obj U ⨯ (TopologicalSpace.Opens.map f).obj V) := by
-      ext x
-      simp
-    rw [Subsingleton.elim (prodComparison (TopologicalSpace.Opens.map f) U V) (eqToHom h)]
-    infer_instance
-  haveI : PreservesLimitsOfShape (Discrete WalkingPair) (TopologicalSpace.Opens.map f) :=
-    preservesBinaryProducts_of_isIso_prodComparison (TopologicalSpace.Opens.map f)
-  exact Limits.PreservesFiniteProducts.of_preserves_binary_and_terminal (TopologicalSpace.Opens.map f)
-
 instance {X Y : TopCat} (f : X ⟶ Y) : (TopologicalSpace.Opens.map f).PreservesOneHypercovers
     (Opens.grothendieckTopology Y) (Opens.grothendieckTopology X) := by
   intro U E
@@ -205,15 +171,7 @@ instance {X Y : TopCat} (f : X ⟶ Y) : (TopologicalSpace.Opens.map f).Preserves
 
 variable {X Y : Scheme} (f : X ⟶ Y) (M : Y.Modules) (U : Y.Opens)
 
-#synth HasLimits X.Opens
-
 instance [M.IsQuasicoherent] : ((pullback f).obj M).IsQuasicoherent :=
   SheafOfModules.IsQuasicoherent.pullback _
-
-#check M.overPullbackIso f.toRingCatSheafHom U
-
-variable (q : M.QuasicoherentData)
-
-#check q.pullback f.toRingCatSheafHom
 
 end AlgebraicGeometry.Scheme.Modules
