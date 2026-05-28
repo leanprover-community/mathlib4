@@ -126,7 +126,7 @@ def Adj (H : Hypergraph α) (x : α) (y : α) : Prop :=
 
 lemma Adj.symm (h : H.Adj x y) : H.Adj y x := by grind [Adj]
 
-lemma Adj.comm (x y : α) : H.Adj x y ↔ H.Adj y x := ⟨.symm, .symm⟩
+lemma adj_comm (x y : α) : H.Adj x y ↔ H.Adj y x := ⟨.symm, .symm⟩
 
 /--
 Predicate for edge adjacency. Analogous to `Hypergraph.Adj`, edges `e` and `f` are
@@ -145,7 +145,7 @@ lemma EAdj.symm (h : H.EAdj e f) : H.EAdj f e := by grind [EAdj]
 lemma EAdj.inter_nonempty (hef : H.EAdj e f) : (e ∩ f).Nonempty :=
   Set.inter_nonempty.mpr hef.2.2
 
-lemma EAdj.comm (e f) : H.EAdj e f ↔ H.EAdj f e := ⟨.symm, .symm⟩
+lemma eAdj_comm (e f) : H.EAdj e f ↔ H.EAdj f e := ⟨.symm, .symm⟩
 
 /-! ## Basic Hypergraph Definitions & Predicates-/
 
@@ -210,27 +210,8 @@ lemma IsNonempty.of_nonempty_edgeSet (hE : E(H).Nonempty) : H.IsNonempty :=
 
 @[simp]
 theorem ne_bot_iff : H ≠ ⊥ ↔ H.IsNonempty := by
-  constructor
-  · contrapose
-    intro h
-    unfold IsNonempty at h
-    apply not_or.mp at h
-    apply Hypergraph.ext
-    · simp only [bot_vertexSet]
-      grind [Set.Nonempty]
-    · simp only [bot_edgeSet]
-      grind [Set.Nonempty]
-  · contrapose
-    intro h
-    apply Hypergraph.ext_iff.mp at h
-    unfold IsNonempty
-    apply not_or.mpr
-    constructor
-    · rw [h.1]
-      apply Set.not_nonempty_empty
-    · rw [h.2]
-      apply Set.not_nonempty_empty
-
+  simp [IsNonempty, Set.nonempty_iff_ne_empty, Hypergraph.ext_iff]
+  grind [bot_vertexSet, bot_edgeSet]
 
 alias ⟨_, IsNonempty.ne_bot⟩ := ne_bot_iff
 
