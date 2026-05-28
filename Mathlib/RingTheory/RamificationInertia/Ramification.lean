@@ -150,6 +150,7 @@ theorem ramificationIdx'_tower [r.LiesOver q] [Module.Flat S T] :
 
 variable (R) in
 open Pointwise in
+@[simp]
 theorem ramificationIdx'_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
     (g : G) : (g • q).ramificationIdx' R = q.ramificationIdx' R := by
   by_cases hq : q.IsPrime; swap
