@@ -226,11 +226,16 @@ jobs:
         echo "Compute technical debt changes"
         techDebtVar="$("${CI_SCRIPTS_DIR}/reporting/technical-debt-metrics.sh" pr_summary)"
 
-        # If technical debt did NOT increase, remove the label; otherwise add it.
-        # We test for the *safe* patterns rather than the *unsafe* one so that if
-        # mathlib-ci changes the script's output wording we fail closed (label added)
-        # rather than open (label silently not added).
-        if printf '%s' "${techDebtVar}" | grep -qE 'Decrease in tech debt:|No changes to technical debt\.'; then
+        # mathlib-ci classifies tech debt into `strong` (e.g. porting notes,
+        # adaptation notes, erw, maxHeartbeats modifications — should rarely
+        # increase) and `weak` (large files, exposed public sections, simp
+        # +instances, deprecated files — fine to increase in a normal PR).
+        # We only gate merging on STRONG tech debt increases.
+        #
+        # We test for the *safe* patterns rather than the *unsafe* one so that
+        # if mathlib-ci changes the script's output wording we fail closed
+        # (label added) rather than open (label silently not added).
+        if printf '%s' "${techDebtVar}" | grep -qE 'Decrease in strong tech debt:|No changes to strong technical debt\.'; then
           gh pr edit "${PR}" --remove-label increases-technical-debt
         else
           gh pr edit "${PR}" --add-label increases-technical-debt
@@ -348,10 +353,12 @@ jobs:
 
         if [ "$has_increases" = true ] && [ "$has_allow" = false ]; then
           gh pr edit "$PR_NUMBER" --repo "$REPO" --add-label blocked-by-increases-technical-debt
-          echo "::error::This PR increases technical debt. Add the 'allow-increases-technical-debt' label after review to unblock."
+          echo "::error::This PR increases strong technical debt. Add the 'allow-increases-technical-debt' label after review to unblock."
           echo ""
           echo "This PR has the 'increases-technical-debt' label, indicating that it"
-          echo "increases one or more technical debt metrics."
+          echo "increases one or more strong technical debt metrics. (Weak tech debt"
+          echo "increases — e.g. large files, exposed public sections, deprecated"
+          echo "files — do not block merging.)"
           echo ""
           echo "To unblock this PR, a reviewer should:"
           echo "  1. Check the PR summary comment for the technical debt changes."
