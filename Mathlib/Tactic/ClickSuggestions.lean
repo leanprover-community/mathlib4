@@ -119,7 +119,7 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
   let onGoal := if onGoal.val != 0 then some onGoal.val else none
   let some goalsAt := (FileWorker.findGoalsAt? doc (doc.meta.text.lspPosToUtf8Pos props.pos)).get |
     return .text "Internal click_suggestions error: could not find any goal at the cursor position"
-  let some { ctxInfo := { parentDecl?, .. }, tacticInfo := { stx, .. }, .. } :=
+  let some { ctxInfo := { parentDecl?, .. }, useAfter, tacticInfo := { stx, .. }, .. } :=
     goalsAt.find? fun { useAfter, tacticInfo, .. } ↦
       let goals := if useAfter then tacticInfo.goalsAfter else tacticInfo.goalsBefore
       goals.contains loc.mvarId
@@ -135,7 +135,8 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
     let html ← mkRefreshComponentM
       (.text "click_suggestions has started searching.") fun masterToken ↦ do
       (generateSuggestions loc parentDecl? masterToken).run {
-        onGoal, stx := ⟨stx⟩, masterToken, statusToken, solvedToken
+        onGoal, masterToken, statusToken, solvedToken
+        stx := if useAfter then some ⟨stx⟩ else none
         «meta» := doc.meta
         cursorPos := props.pos
         goal := loc.mvarId
