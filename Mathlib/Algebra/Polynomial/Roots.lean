@@ -230,7 +230,6 @@ theorem map_roots_comp_C_mul_X_add_C (p : R[X]) (a b : R) (ha : IsUnit a) :
     rootMultiplicity_comp_C_mul_X_add_C p a b x ha]
 
 open scoped Ring in
-@[simp]
 theorem roots_comp_C_mul_X_add_C (p : R[X]) (a b : R) (ha : IsUnit a) :
     (p.comp (C a * X + C b)).roots = p.roots.map (fun x ↦ a⁻¹ʳ * (x - b)) := by
   conv_rhs => rw [← p.map_roots_comp_C_mul_X_add_C a b ha]
