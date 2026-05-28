@@ -441,7 +441,7 @@ theorem reindexRange_repr' (x : M) {bi : M} {i : ι} (h : b i = bi) :
     simp only [Pi.add_apply, map_add, Finsupp.coe_add]
   · intro c x
     ext i
-    simp only [Pi.smul_apply, map_smul, Finsupp.coe_smul]
+    simp
   · intro i
     ext j
     simp only [reindexRange_repr_self]

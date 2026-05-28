@@ -46,7 +46,7 @@ but they are not left multiplication by some element.
 
 -/
 
-@[expose] public section
+public section
 
 open Module LinearMap LinearEquiv Set Finsupp
 
@@ -54,7 +54,6 @@ namespace LinearMap
 
 variable {R V : Type*}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A linear endomorphism of a free module of rank at least 2
 that commutes with transvections consists of homotheties with central ratio. -/
 theorem commute_transvections_iff_of_basis
@@ -90,7 +89,6 @@ theorem commute_transvections_iff_of_basis
   intro j _
   simp [Subring.smul_def, h_allEq i j, hcomm j]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Over a domain, an endomorphism `f` of a free module `V`
 of rank ≠ 1 such that `f v` and `v` are collinear, for all `v : V`,
 consists of homotheties with central ratio.
@@ -179,7 +177,6 @@ theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent_of_basis
   apply b.ext
   simpa only [smul_apply, End.one_apply, Subring.smul_def] using feq i
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Over a domain `R`, an endomorphism `f` of a free module `V`
 of rank ≠ 1 such that `f v` and `v` are collinear, for all `v : V`,
 consists of homotheties with central ratio.

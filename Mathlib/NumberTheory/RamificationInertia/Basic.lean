@@ -260,7 +260,8 @@ theorem finrank_quotient_map [IsDomain S] [IsDedekindDomain R] [Algebra K L]
         Submodule.Quotient.eq] at y_eq
       exact add_mem (Submodule.mem_sup_left y_mem) (neg_mem <| Submodule.mem_sup_right y_eq)
   · have := b.linearIndependent; rw [b_eq_b'] at this
-    convert FinrankQuotientMap.linearIndependent_of_nontrivial K _
+    convert!
+      FinrankQuotientMap.linearIndependent_of_nontrivial K _
         ((Algebra.linearMap S L).restrictScalars R) _ ((Submodule.mkQ _).restrictScalars R) this
     · rw [Quotient.algebraMap_eq, Ideal.mk_ker]
       exact hp.ne_top
@@ -599,7 +600,7 @@ for `P` ranging over the primes lying over `p`, `∑ P, e P * f P = [Frac(S) : F
 here `S` is a finite `R`-module (and thus `Frac(S) : Frac(R)` is a finite extension) and `p`
 is maximal. -/
 theorem sum_ramification_inertia {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
-    ∑ P ∈ primesOverFinset p S,
+    ∑ P ∈ IsDedekindDomain.primesOverFinset p S,
         ramificationIdx p P * inertiaDeg p P = finrank K L := by
   set e := ramificationIdx p (S := S)
   calc
@@ -623,7 +624,8 @@ theorem inertiaDeg_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaxima
     (P : Ideal S) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver p] (hp0 : p ≠ ⊥) :
     p.inertiaDeg P ≤ Module.finrank K L := by
   classical
-  have hP : P ∈ primesOverFinset p S := (mem_primesOverFinset_iff hp0 _).mpr ⟨hP₁, hP₂⟩
+  have hP : P ∈ IsDedekindDomain.primesOverFinset p S :=
+    (IsDedekindDomain.mem_primesOverFinset_iff hp0 _).mpr ⟨hP₁, hP₂⟩
   rw [← sum_ramification_inertia S K L hp0, ← Finset.add_sum_erase _ _ hP]
   refine le_trans (Nat.le_mul_of_pos_left _ ?_) (Nat.le_add_right _ _)
   exact Nat.pos_iff_ne_zero.mpr <| IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver _ hp0
@@ -634,17 +636,18 @@ theorem ramificationIdx_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsM
   classical
   by_cases hp0 : p = ⊥
   · simp [hp0]
-  have hP : P ∈ primesOverFinset p S := (mem_primesOverFinset_iff hp0 _).mpr ⟨hP₁, hP₂⟩
+  have hP : P ∈ IsDedekindDomain.primesOverFinset p S :=
+    (IsDedekindDomain.mem_primesOverFinset_iff hp0 _).mpr ⟨hP₁, hP₂⟩
   rw [← sum_ramification_inertia S K L hp0, ← Finset.add_sum_erase _ _ hP]
   refine le_trans (Nat.le_mul_of_pos_right _ ?_) (Nat.le_add_right _ _)
   exact Nat.pos_iff_ne_zero.mpr <| inertiaDeg_ne_zero p P
 
 theorem card_primesOverFinset_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaximal]
-    (hp0 : p ≠ ⊥) : Finset.card (primesOverFinset p S) ≤ Module.finrank K L := by
+    (hp0 : p ≠ ⊥) : Finset.card (IsDedekindDomain.primesOverFinset p S) ≤ Module.finrank K L := by
   rw [← sum_ramification_inertia S K L hp0, Finset.card_eq_sum_ones]
   refine Finset.sum_le_sum fun P hP ↦ ?_
-  have : P.IsPrime := ((mem_primesOverFinset_iff hp0 _).mp hP).1
-  have : P.LiesOver p := ((mem_primesOverFinset_iff hp0 _).mp hP).2
+  have : P.IsPrime := ((IsDedekindDomain.mem_primesOverFinset_iff hp0 _).mp hP).1
+  have : P.LiesOver p := ((IsDedekindDomain.mem_primesOverFinset_iff hp0 _).mp hP).2
   refine Right.one_le_mul ?_ ?_
   · exact Nat.pos_iff_ne_zero.mpr <| IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver _ hp0
   · exact Nat.pos_iff_ne_zero.mpr <| inertiaDeg_ne_zero p P

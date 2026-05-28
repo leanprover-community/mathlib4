@@ -123,7 +123,7 @@ lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ)
     -- The criterion we want to use is `Nat.sSup_mem`. We rewrite `netMaxcard` with an `sSup`,
     -- then check its `BddAbove` and `Nonempty` hypotheses.
     have : netMaxcard T F U n
-      = sSup (WithTop.some '' (Finset.card '' {s : Finset X | IsDynNetIn T F U n s})) := by
+      = sSup (WithTop.some '' Finset.card '' {s : Finset X | IsDynNetIn T F U n s}) := by
       rw [netMaxcard, ← image_comp, sSup_image]
       simp only [mem_setOf_eq, ENat.some_eq_coe, Function.comp_apply]
     rw [this] at k_max
@@ -169,7 +169,7 @@ lemma netMaxcard_eq_zero_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ
 
 lemma one_le_netMaxcard_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     1 ≤ netMaxcard T F U n ↔ F.Nonempty := by
-  rw [ENat.one_le_iff_ne_zero, nonempty_iff_ne_empty]
+  rw [Order.one_le_iff_ne_zero, nonempty_iff_ne_empty]
   exact not_iff_not.2 (netMaxcard_eq_zero_iff T F U n)
 
 lemma netMaxcard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) : netMaxcard T F U 0 = 1 := by

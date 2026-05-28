@@ -167,7 +167,7 @@ lemma ext {α β : FunSpace t₀ x₀ r L} (h : ∀ t, α t = β t) : α = β :=
 
 /-- `FunSpace t₀ x₀ r L` contains the constant map at `x₀`. -/
 instance : Inhabited (FunSpace t₀ x₀ r L) :=
-  ⟨fun _ ↦ x₀, (LipschitzWith.const _).weaken (zero_le _), mem_closedBall_self r.2⟩
+  ⟨fun _ ↦ x₀, (LipschitzWith.const _).weaken zero_le, mem_closedBall_self r.2⟩
 
 protected lemma continuous (α : FunSpace t₀ x₀ L r) : Continuous α := α.lipschitzWith.continuous
 
@@ -468,7 +468,7 @@ lemma exists_forall_closedBall_funSpace_dist_le_mul [CompleteSpace E]
   · nth_rw 1 [← hα, dist_next_next]
     apply Filter.Tendsto.mul_const
     apply Filter.Tendsto.const_mul
-    convert hasSum_geometric_of_lt_one C.2 (h y hy).1 |>.tendsto_sum_nat
+    convert! hasSum_geometric_of_lt_one C.2 (h y hy).1 |>.tendsto_sum_nat
     simp [NNReal.coe_sub <| le_of_lt (h y hy).1, NNReal.coe_one]
 
 end
