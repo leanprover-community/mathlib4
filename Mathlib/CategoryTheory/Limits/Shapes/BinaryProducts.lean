@@ -1548,10 +1548,10 @@ protected def IsLimit.assoc (P : IsLimit sXY) (Q : IsLimit sYZ) {s : BinaryFan s
       rintro ⟨⟨⟩⟩
       · simpa using w ⟨.left⟩
       · replace w : m ≫ BinaryFan.IsLimit.lift Q (s.fst ≫ sXY.snd) s.snd = t.π.app ⟨.right⟩ := by
-          simpa using w ⟨.right⟩
+          simpa using! w ⟨.right⟩
         simp [← w]
     · replace w : m ≫ BinaryFan.IsLimit.lift Q (s.fst ≫ sXY.snd) s.snd = t.π.app ⟨.right⟩ := by
-        simpa using w ⟨.right⟩
+        simpa using! w ⟨.right⟩
       simp [← w]
 
 /-- Given two pairs of limit cones corresponding to the parenthesisations of `X × Y × Z`,

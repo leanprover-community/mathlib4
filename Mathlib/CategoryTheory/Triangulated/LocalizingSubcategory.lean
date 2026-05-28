@@ -292,7 +292,7 @@ instance [A.IsVerdierLeftLocalizing B] :
       simp only [MorphismProperty.inverseImage_iff, Equivalence.symm_functor] at hf ⊢
       exact MorphismProperty.le_isoClosure _ _ hf
     · refine fun _ _ _ hf ↦ Localization.inverts L₁.op (B.inverseImage A.ι).trW.op _ ?_
-      simpa [trW_inverseImage_ι_iff, ← op_inf, trW_op] using hf
+      simpa [trW_inverseImage_ι_iff, ← op_inf, trW_op] using! hf
   exact LocalizerMorphism.IsLocalizedFullyFaithful.mk' (A.triangulatedLocalizerMorphism B)
     L₁ L₂ F (((A.op.triangulatedLocalizerMorphism B.op).fullyFaithful
     (A.opEquivalence.functor ⋙ L₁.op) L₂.op F.op).unop)

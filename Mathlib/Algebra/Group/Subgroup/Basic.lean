@@ -384,7 +384,7 @@ theorem le_normalizer_closure_iff {s : Set G} :
     H ≤ normalizer (closure s) ↔ ∀ h ∈ H, ∀ g ∈ s, h * g * h⁻¹ ∈ closure s := by
   refine ⟨fun hH h hh g hg ↦ hH hh g |>.mp <| mem_closure_of_mem hg, fun hH h hh ↦ ?_⟩
   rw [mem_normalizer_iff_map_conj_eq, MonoidHom.map_closure]
-  apply le_antisymm <| by simpa using hH h hh
+  apply le_antisymm <| by simpa using! hH h hh
   rw [closure_le, ← MonoidHom.map_closure]
   exact fun g hg ↦ ⟨_, hH _ (inv_mem hh) g hg, by simp [mul_assoc]⟩
 
