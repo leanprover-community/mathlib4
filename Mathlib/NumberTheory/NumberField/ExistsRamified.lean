@@ -102,14 +102,6 @@ instance {K : Type*} [Field K] [NumberField K]
   sorry
 
 -- PRed
-instance (G R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
-    [Group G] [MulSemiringAction G S] [h : IsGaloisGroup G R S] (H : Subgroup G) :
-    IsGaloisGroup H (FixedPoints.subalgebra R S H) S where
-  faithful := have := h.faithful; inferInstance
-  commutes := ⟨fun g x y ↦ by simp_rw [Subalgebra.smul_def, smul_eq_mul, smul_mul', x.2 g]⟩
-  isInvariant := ⟨fun x hx ↦ ⟨⟨x, hx⟩, rfl⟩⟩
-
--- PRed
 /-- Existing construction with `Finite G` replaced by `IsIntegral A B` -/
 theorem IsGaloisGroup.to_isFractionRing'
     (G A B K L : Type*) [Group G] [CommRing A]
