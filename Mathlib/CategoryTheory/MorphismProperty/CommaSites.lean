@@ -105,7 +105,7 @@ lemma toGrothendieck_comap_forget_eq_inducedTopology (H : K ≤ P.precoverage) :
     (K.comap (MorphismProperty.Over.forget P ⊤ _ ⋙ CategoryTheory.Over.forget S)).toGrothendieck =
       (MorphismProperty.Over.forget P ⊤ _).inducedTopology (K.toGrothendieck.over S) := by
   have := isContinuous_comap_forget (S := S) _ H
-  refine (Functor.restrictedTopology_eq_inducedTopology_of_isContinuous _ ?_).symm
+  refine (Functor.restrictedTopology_eq_inducedTopology_of_isContinuous ?_).symm
   rw [toGrothendieck_comap_forget_eq_restrictedTopology _ H]
 
 end CategoryTheory.MorphismProperty
