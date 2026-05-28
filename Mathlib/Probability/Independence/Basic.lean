@@ -1035,6 +1035,12 @@ theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β
     iIndepFun (fun n => (s n).indicator fun _ω => (1 : β)) μ :=
   Kernel.iIndepSet.iIndepFun_indicator hs
 
+lemma Indep.indicator_indepFun {m : MeasurableSpace Ω} {M 𝓧 : Type*}
+    [Zero M] [MeasurableSpace M] (c : M) [NeZero c] {m𝓧 : MeasurableSpace 𝓧} {A : Set Ω}
+    {X : Ω → 𝓧} (hA : MeasurableSet[m] A) (h : Indep m (m𝓧.comap X) μ) :
+    (A.indicator (fun _ ↦ c)) ⟂ᵢ[μ] X :=
+  Kernel.Indep.indicator_const_indepFun c hA h
+
 end IndepFun
 
 variable {ι Ω α β : Type*} {mΩ : MeasurableSpace Ω} {mα : MeasurableSpace α}
