@@ -127,7 +127,6 @@ theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finit
   have := IsGaloisGroup.finite G ℤ S
   let H : Subgroup G := ⨆ m : PrimeSpectrum S, m.asIdeal.toAddSubgroup.inertia G
   let R : Subalgebra ℤ S := FixedPoints.subalgebra ℤ S H
-  have hH : IsGaloisGroup H R S := inferInstance -- temp
   have : Module.Finite ℤ R := Module.IsNoetherian.finite ℤ R.toSubmodule
   suffices h5 : Algebra.Unramified ℤ R by
     have h4 : Function.Bijective (algebraMap ℤ R) :=
@@ -136,42 +135,27 @@ theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finit
       IsScalarTower.algebraMap_eq ℤ R S, RingHom.coe_comp, h4.surjective.range_comp,
       IsGaloisGroup.fixingSubgroup_range_algebraMap G ℤ R S H]
   rw [Algebra.unramified_iff_forall]
-  rintro ⟨mF, hmF⟩ -- todo: rename this m's
+  rintro ⟨mR, hmR⟩
   simp only
-  have : Algebra.IsUnramifiedAt ℤ mF := by
-    rw [← Ideal.ramificationIdx'_eq_one_iff]
-    have : H.Normal := sorry
-    have : IsGaloisGroup (G ⧸ H) ℤ R := sorry
-    have : mF.ramificationIdx' ℤ = Nat.card (Ideal.inertia (G ⧸ H) mF) := sorry -- Flat over ℤ
-    rw [this, Subgroup.card_eq_one, Subgroup.eq_bot_iff_forall, QuotientGroup.forall_mk]
-    intro g hg
-    rw [QuotientGroup.eq_one_iff]
-    rw [Ideal.inertia, AddSubgroup.inertia] at hg
-    simp at hg
-    -- Can we go more directly? The quotient `G ⧸ H` is the Galois group of `R/ℤ`,
-    -- and the ramification index equals the cardinality of the inertia subgroup (hopefully?),
-    -- but the inertia subgroup is trivial (argue directly?)
-    have : Module.Finite R S := Module.Finite.of_restrictScalars_finite ℤ R S
-    obtain ⟨mK, -, hmK, h⟩ := mF.exists_ideal_over_prime_of_isIntegral (S := S) ⊥ (by simp) -- add liesOver version like the one that exists for maximal
-    replace h : mK.LiesOver mF := ⟨h.symm⟩
-    have h : mK.inertia G ≤ H :=
-      le_iSup (fun m : PrimeSpectrum S ↦ m.asIdeal.inertia G) ⟨mK, hmK⟩
-    apply h
-    intro x
-    specialize hg x
-    have : Module.Flat R S := sorry
-    have := Ideal.ramificationIdx'_tower (R := ℤ) mF mK -- would be enough to have inequality (is that true in general?)
-    have h1 : mK.ramificationIdx' ℤ = Nat.card (Ideal.inertia G mK) := sorry -- doable?
-    have h2 : mK.ramificationIdx' R = Nat.card (Ideal.inertia H mK) := sorry -- doable?
-    rw [h1, h2] at this
-    have h : mK.inertia G ≤ H :=
-      le_iSup (fun m : PrimeSpectrum S ↦ m.asIdeal.inertia G) ⟨mK, hmK⟩
-    replace h : Nat.card (mK.inertia H) = Nat.card (mK.inertia G) := by
-      rw [← Subgroup.map_subgroupOf_eq_of_le h, Subgroup.card_subtype,
-        AddSubgroup.subgroupOf_inertia]
-    rwa [h, eq_comm, Nat.mul_eq_right] at this
-    exact Nat.card_pos.ne'
-  exact this
+  rw [← Ideal.ramificationIdx'_eq_one_iff]
+  have : H.Normal := sorry
+  let := mulSemiringActionQuotient G R S H
+  have : IsGaloisGroup (G ⧸ H) ℤ R := by
+    let := mulSemiringActionOfNormal G R S H
+    exact IsGaloisGroup.quotient G ℤ R S H
+
+  have : mR.ramificationIdx' ℤ = Nat.card (Ideal.inertia (G ⧸ H) mR) := sorry -- Flat over ℤ
+  rw [this, Subgroup.card_eq_one, Subgroup.eq_bot_iff_forall, QuotientGroup.forall_mk]
+  intro g hg
+  rw [QuotientGroup.eq_one_iff]
+  rw [Ideal.inertia, AddSubgroup.inertia] at hg
+  simp at hg
+  -- Can we go more directly? The quotient `G ⧸ H` is the Galois group of `R/ℤ`,
+  -- and the ramification index equals the cardinality of the inertia subgroup (hopefully?),
+  -- but the inertia subgroup is trivial (argue directly?)
+
+  -- problem is lack of flatness of S/R?
+  -- in theory could do two applications of ramification-inertia, to R/ℤ and S/ℤ?
 
 theorem NumberField.supr_inertia_eq_top' (K : Type*) [Field K] [NumberField K]
     (G : Type*) [Group G] [MulSemiringAction G K] [IsGaloisGroup G ℚ K] :
