@@ -32,17 +32,13 @@ open Bialgebra Coalgebra LinearMap RingQuot TensorProduct
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
 
 variable (R) in
-/-- The counit and comultiplication of an `R`-bialgebra `A` descend along
-`RingQuot.mkAlgHom R r`: the counit identifies `r`-related elements, and the comultiplication
-agrees on them after projection to `RingQuot r ⊗[R] RingQuot r`. This is the condition under
-which `RingQuot r` inherits a bialgebra structure. -/
+/-- The counit and comultiplication of `A` descend along `RingQuot.mkAlgHom R r`. -/
 @[mk_iff]
 class IsBialgebraRel (r : A → A → Prop) : Prop where
   counit_rel : ∀ ⦃x y : A⦄, r x y → (counit x : R) = counit y
   comul_rel : ∀ ⦃x y : A⦄, r x y →
     Algebra.TensorProduct.map (mkAlgHom R r) (mkAlgHom R r) (comul x) =
-      (Algebra.TensorProduct.map (mkAlgHom R r) (mkAlgHom R r) (comul y) :
-        RingQuot r ⊗[R] RingQuot r)
+      Algebra.TensorProduct.map (mkAlgHom R r) (mkAlgHom R r) (comul y)
 
 namespace Bialgebra.Quotient
 

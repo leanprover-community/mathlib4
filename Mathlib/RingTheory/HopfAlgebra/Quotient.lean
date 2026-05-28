@@ -31,9 +31,7 @@ open Bialgebra Coalgebra LinearMap RingQuot TensorProduct
 variable {R A : Type*} [CommSemiring R] [Semiring A] [HopfAlgebra R A]
 
 variable (R) in
-/-- `IsBialgebraRel R r` together with descent of the antipode along `RingQuot.mkAlgHom R r`:
-the antipode identifies `r`-related elements after projection to `RingQuot r`. This is the
-condition under which `RingQuot r` inherits a Hopf algebra structure. -/
+/-- `IsBialgebraRel R r` together with descent of the antipode along `RingQuot.mkAlgHom R r`. -/
 class IsHopfRel (r : A → A → Prop) : Prop extends IsBialgebraRel R r where
   antipode_map_eq : ∀ ⦃x y : A⦄, r x y →
     mkAlgHom R r (HopfAlgebra.antipode R x) = mkAlgHom R r (HopfAlgebra.antipode R y)
@@ -75,14 +73,16 @@ noncomputable instance : HopfAlgebra R (RingQuot r) where
     obtain ⟨a, rfl⟩ := mkAlgHom_surjective R r x
     convert! congr(mkAlgHom R r $(mul_antipode_rTensor_comul_apply (R := R) a)) using 1
     · simp only [coe_comp, Function.comp_apply, Bialgebra.Quotient.comul_mkAlgHom,
-        rTensor_map, antipode_comp_mkAlgHom, ← map_rTensor, AlgHom.mul'_map]
+        rTensor_map, antipode_comp_mkAlgHom, ← map_rTensor]
+      exact (LinearMap.congr_fun (AlgHom.comp_mul' (mkAlgHom R r)) _).symm
     · simp [Bialgebra.Quotient.counit_mkAlgHom]
   mul_antipode_lTensor_comul := by
     refine LinearMap.ext fun x ↦ ?_
     obtain ⟨a, rfl⟩ := mkAlgHom_surjective R r x
     convert! congr(mkAlgHom R r $(mul_antipode_lTensor_comul_apply (R := R) a)) using 1
     · simp only [coe_comp, Function.comp_apply, Bialgebra.Quotient.comul_mkAlgHom,
-        lTensor_map, antipode_comp_mkAlgHom, ← map_lTensor, AlgHom.mul'_map]
+        lTensor_map, antipode_comp_mkAlgHom, ← map_lTensor]
+      exact (LinearMap.congr_fun (AlgHom.comp_mul' (mkAlgHom R r)) _).symm
     · simp [Bialgebra.Quotient.counit_mkAlgHom]
 
 end HopfAlgebra.Quotient
