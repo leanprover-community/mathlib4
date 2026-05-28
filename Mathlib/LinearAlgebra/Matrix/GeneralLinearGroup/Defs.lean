@@ -258,6 +258,10 @@ def toGL : Matrix.SpecialLinearGroup n R →* Matrix.GeneralLinearGroup n R wher
   map_one' := Units.ext rfl
   map_mul' _ _ := Units.ext rfl
 
+@[simp]
+theorem coe_toGL (g : SpecialLinearGroup n R) : (toGL g : Matrix n n R) = g :=
+  rfl
+
 instance hasCoeToGeneralLinearGroup : Coe (SpecialLinearGroup n R) (GL n R) :=
   ⟨toGL⟩
 

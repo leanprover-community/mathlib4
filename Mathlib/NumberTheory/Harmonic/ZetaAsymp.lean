@@ -610,7 +610,7 @@ lemma log_riemannZeta_add_log_sub_isBigO_ofReal :
   suffices DifferentiableAt ℝ (fun (s : ℝ) ↦ (riemannZeta₁ s).re.log) 1 by
     simpa using this.isBigO_sub
   have : Differentiable ℝ riemannZeta₀ := by fun_prop
-  fun_prop (disch := simp)
+  fun_prop (maxTransitionDepth := 2) (disch := simp)
 
 lemma log_riemannZeta_add_log_sub_isLittleO_ofReal :
     (fun (s : ℝ) ↦ (riemannZeta s).re.log + (s - 1).log) =o[𝓝[>] (1 : ℝ)] (fun _ ↦ (1 : ℝ)) :=

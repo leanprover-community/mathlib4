@@ -125,18 +125,12 @@ def getFunctionData? (f : Expr)
     (unfoldPred : Meta.Config → ConstantInfo → CoreM Bool) :
     MetaM MaybeFunctionData := do
   withConfig (fun cfg => { cfg with zeta := false, zetaDelta := false }) do
-
-  let unfold := fun e : Expr => do
-    if let some n := e.getAppFn'.constName? then
-      unfoldPred (← withReducible getConfig) (← getConstInfo n)
-    else
-      pure false
-
   let .forallE xName xType _ _ ← instantiateMVars (← inferType f)
     | throwError m!"fun_prop bug: function expected, got `{f} : {← inferType f}, \
                     type ctor {(← inferType f).ctorName}"
   withLocalDeclD xName xType fun x => do
-    let fx' := (← Mor.whnfPred (f.beta #[x]).eta unfold) |> headBetaThroughLet
+    let fx' := (← withReducible <| withCanUnfoldPred unfoldPred <| Mor.whnf (f.beta #[x]).eta) |>
+      headBetaThroughLet
     let f' ← mkLambdaFVars #[x] fx'
     match fx' with
     | .letE .. => return .letE f'

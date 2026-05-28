@@ -105,7 +105,7 @@ def Homeomorph.constSDiv (p : P) : P ≃ₜ V where
   toEquiv := Equiv.constSDiv p
   continuous_invFun := by
     have := IsTopologicalTorsor.to_isTopologicalGroup V P
-    fun_prop
+    fun_prop_simp
 
 /-- `Equiv.pointReflection` as a homeomorphism -/
 def Homeomorph.pointReflection {V P : Type*} [AddGroup V] [TopologicalSpace V] [AddTorsor V P]

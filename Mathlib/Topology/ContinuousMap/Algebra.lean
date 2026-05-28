@@ -596,6 +596,7 @@ protected def _root_.ContinuousLinearMap.compLeftContinuous (α : Type*) [Topolo
     (g : M →L[R] M₂) : C(α, M) →L[R] C(α, M₂) where
   __ := g.toLinearMap.toAddMonoidHom.compLeftContinuous α g.continuous
   map_smul' := fun c _ => ext fun _ => g.map_smul' c _
+  cont := continuous_postcomp _
 
 /-- The constant map `x ↦ y ↦ x` as a `ContinuousLinearMap`. -/
 @[simps!]
