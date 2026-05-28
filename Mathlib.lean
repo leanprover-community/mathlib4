@@ -303,7 +303,8 @@ public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.EuclideanDomain.Defs
 public import Mathlib.Algebra.EuclideanDomain.Field
 public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
+public import Mathlib.Algebra.Exact.Sequence
 public import Mathlib.Algebra.Expr
 public import Mathlib.Algebra.Field.Action.ConjAct
 public import Mathlib.Algebra.Field.Basic
@@ -781,6 +782,7 @@ public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Module.LinearMap.DivisionRing
 public import Mathlib.Algebra.Module.LinearMap.End
 public import Mathlib.Algebra.Module.LinearMap.FiniteRange
+public import Mathlib.Algebra.Module.LinearMap.Index
 public import Mathlib.Algebra.Module.LinearMap.Polynomial
 public import Mathlib.Algebra.Module.LinearMap.Prod
 public import Mathlib.Algebra.Module.LinearMap.Rat
