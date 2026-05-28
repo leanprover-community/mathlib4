@@ -107,10 +107,10 @@ open Manifold
 lemma IsMIntegralCurveOn.comp_mul (hγ : IsMIntegralCurveOn γ v s) (a : ℝ) :
     IsMIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
   intro t ht
-  have : (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) ((a • v) ((γ ∘ fun x ↦ x * a) t))) =
-      (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) ((1 : ℝ →L[ℝ] ℝ) a • v (γ (t * a)))) := by
-    simp
-  rw [this, ← ContinuousLinearMap.smulRight_comp_smulRight 1 1 (y := a) (x := v (γ (t * a)))]
+  have : (1 : ℝ →L[ℝ] ℝ).smulRight (a • v (γ (t * a))) =
+      (1 : ℝ →L[ℝ] ℝ).smulRight (v (γ (t * a))) ∘SL (1 : ℝ →L[ℝ] ℝ).smulRight a := by
+    simp [ContinuousLinearMap.smulRight_comp_smulRight]
+  rw [comp_apply, Pi.smul_apply, this]
   refine HasMFDerivWithinAt.comp t (hγ (t * a) ht)
     ⟨(continuous_mul_const _).continuousWithinAt, ?_⟩ subset_rfl
   simp only [mfld_simps]
