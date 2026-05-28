@@ -168,7 +168,7 @@ theorem prod_centralizer_subset_centralizer_prod {N : Type*} [Mul N] (S : Set M)
 @[to_additive addCenter_prod]
 theorem center_prod {N : Type*} [Mul N] :
     center (M × N) = center M ×ˢ center N := by
-  aesop (add simp [Prod.forall, forall_and, commute_iff_eq, isMulCentral_iff, mem_center_iff])
+  aesop (add simp [forall_and, commute_iff_eq, isMulCentral_iff, mem_center_iff])
 
 open Function in
 @[to_additive addCenter_pi]
