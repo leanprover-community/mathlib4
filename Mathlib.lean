@@ -4265,7 +4265,6 @@ public import Mathlib.Data.QPF.Multivariate.Constructions.Sigma
 public import Mathlib.Data.QPF.Univariate.Basic
 public import Mathlib.Data.Quot
 public import Mathlib.Data.Rat.BigOperators
-public import Mathlib.Data.Rat.Cardinal
 public import Mathlib.Data.Rat.Cast.CharZero
 public import Mathlib.Data.Rat.Cast.Defs
 public import Mathlib.Data.Rat.Cast.Lemmas
@@ -7046,6 +7045,7 @@ public import Mathlib.SetTheory.Cardinal.NatCount
 public import Mathlib.SetTheory.Cardinal.Order
 public import Mathlib.SetTheory.Cardinal.Ordinal
 public import Mathlib.SetTheory.Cardinal.Pigeonhole
+public import Mathlib.SetTheory.Cardinal.Rat
 public import Mathlib.SetTheory.Cardinal.Regular
 public import Mathlib.SetTheory.Cardinal.SchroederBernstein
 public import Mathlib.SetTheory.Cardinal.Subfield
