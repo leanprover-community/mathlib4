@@ -95,7 +95,7 @@ theorem bottom_row_surj {R : Type*} [CommRing R] :
   rintro cd ⟨b₀, a, gcd_eqn⟩
   let A := of ![![a, -b₀], cd]
   have det_A_1 : det A = 1 := by
-    convert gcd_eqn
+    convert! gcd_eqn
     rw [det_fin_two]
     simp [A, (by ring : a * cd 1 + b₀ * cd 0 = b₀ * cd 0 + a * cd 1)]
   refine ⟨⟨A, det_A_1⟩, Set.mem_univ _, ?_⟩
@@ -152,7 +152,7 @@ theorem tendsto_normSq_coprime_pair :
       simp only [ofReal_im, ofReal_re, mul_im, zero_add, mul_zero]
   have hf' : IsClosedEmbedding f := f.isClosedEmbedding_of_injective hf
   have h₂ : Tendsto (fun p : Fin 2 → ℤ => ((↑) : ℤ → ℝ) ∘ p) cofinite (cocompact _) := by
-    convert Tendsto.pi_map_coprodᵢ fun _ => Int.tendsto_coe_cofinite
+    convert! Tendsto.pi_map_coprodᵢ fun _ => Int.tendsto_coe_cofinite
     · rw [coprodᵢ_cofinite]
     · rw [coprodᵢ_cocompact]
   exact tendsto_normSq_cocompact_atTop.comp (hf'.tendsto_cocompact.comp h₂)
@@ -207,7 +207,7 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
     cocompact_ℝ_to_cofinite_ℤ_matrix.comp Subtype.coe_injective.tendsto_cofinite
   have hf₂ : IsClosedEmbedding (lcRow0Extend hcd) :=
     (lcRow0Extend hcd).toContinuousLinearEquiv.toHomeomorph.isClosedEmbedding
-  convert hf₂.tendsto_cocompact.comp (hf₁.comp Subtype.coe_injective.tendsto_cofinite) using 1
+  convert! hf₂.tendsto_cocompact.comp (hf₁.comp Subtype.coe_injective.tendsto_cofinite) using 1
   ext ⟨g, rfl⟩ i j : 3
   fin_cases i <;> [fin_cases j; skip]
   -- the following are proved by `simp`, but it is replaced by `simp only` to avoid timeouts.
@@ -217,7 +217,7 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
       LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLin,
       val_planeConformalMatrix, neg_neg, mulVecLin_apply, mulVec, dotProduct, Fin.sum_univ_two,
       cons_val_one, mB, f₁]
-  · convert congr_arg (fun n : ℤ => (-n : ℝ)) g.det_coe.symm using 1
+  · convert! congr_arg (fun n : ℤ => (-n : ℝ)) g.det_coe.symm using 1
     simp only [Fin.zero_eta, Function.comp_apply, lcRow0Extend_apply, cons_val_zero,
       LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLin,
       mulVecLin_apply, mulVec, dotProduct, det_fin_two, f₁]
@@ -239,7 +239,7 @@ theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg 
   have nonZ2 : (p 0 : ℂ) * z + p 1 ≠ 0 := by simpa using linear_ne_zero z this
   subst hg
   rw [coe_specialLinearGroup_apply]
-  replace nonZ2 : z * (g 1 0 : ℂ) + g 1 1 ≠ 0 := by convert nonZ2 using 1; ring
+  replace nonZ2 : z * (g 1 0 : ℂ) + g 1 1 ≠ 0 := by convert! nonZ2 using 1; ring
   have H := congr(Int.cast (R := ℂ) $(det_fin_two g))
   simp at H
   simp [field]
@@ -259,7 +259,7 @@ theorem tendsto_abs_re_smul {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) :
   let f := Homeomorph.mulRight₀ _ this
   let ff := Homeomorph.addRight
     (((p 1 : ℂ) * z - p 0) / (((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) * (p 0 * z + p 1))).re
-  convert (f.trans ff).isClosedEmbedding.tendsto_cocompact.comp (tendsto_lcRow0 hp) with _ _ g
+  convert! (f.trans ff).isClosedEmbedding.tendsto_cocompact.comp (tendsto_lcRow0 hp) with _ _ g
   change
     ((g : SL(2, ℤ)) • z).re =
       lcRow0 p ↑(↑g : SL(2, ℝ)) / ((p 0 : ℝ) ^ 2 + (p 1 : ℝ) ^ 2) +
@@ -487,7 +487,7 @@ private lemma cases_c_zero (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) (hc : g 1 0
   wlog hd : 0 ≤ g 1 1
   · specialize this hz (g := -g) (SL_neg_smul g z ▸ hg) (by simpa using hc) ?_
     · simpa using (not_le.mp hd).le
-    convert this using 2 <;> simp [neg_eq_iff_eq_neg, or_comm]
+    convert! this using 2 <;> simp [neg_eq_iff_eq_neg, or_comm]
   have hd' : g 1 1 = 1 ∨ g 1 1 = -1 := by
     simpa [hc, isCoprime_zero_left, Int.isUnit_iff] using bottom_row_coprime g
   replace hd : g 1 1 = 1 := by grind
@@ -523,7 +523,7 @@ private lemma cases_d_of_c_eq_one (hz : z ∈ 𝒟) (hg' : ‖denom g z‖ ≤ 1
   rw [add_re, intCast_re, add_comm, coe_re] at this
   have := (abs_sub_abs_le_abs_add ..).trans this
   grw [sub_le_iff_le_add, hz.2, ← Int.cast_abs, ← Int.le_floor] at this
-  convert this
+  convert! this
   rw [eq_comm, Int.floor_eq_iff]
   norm_num
 
@@ -616,7 +616,7 @@ private lemma case_c_one_d_neg_one (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) (hg
     simp [this]
     ring_nf
   have hnorm : ‖(z : ℂ) - 1‖ ≤ 1 := by
-    convert hg' using 2
+    convert! hg' using 2
     simp [denom, hc, hd, sub_eq_add_neg]
   rw [norm_def, Real.sqrt_le_one] at hnorm
   have : normSq (z - 1) = normSq z + (-2 * z.re + 1) := by
@@ -842,7 +842,7 @@ lemma isClosed_coe_fd : IsClosed ((↑) '' 𝒟 : Set ℂ) := by
     · exact isClosed_le continuous_const Complex.continuous_im
     · exact isClosed_le continuous_const continuous_norm
     · exact isClosed_le (continuous_abs.comp Complex.continuous_re) continuous_const
-  convert this using 1
+  convert! this using 1
   ext x
   refine ⟨fun ⟨him, hre, hnorm⟩ ↦ ⟨him.le, hre, hnorm⟩, fun ⟨him, hre, hnorm⟩ ↦ ⟨?_, hre, hnorm⟩⟩
   exact him.lt_of_ne' <| by grind [abs_re_eq_norm]
@@ -896,7 +896,7 @@ private lemma mem_closure_of_arc {x : ℍ} (hxnorm : ‖(x : ℂ)‖ = 1) (hxre 
     refine mem_closure_of_one_lt_norm ?_ (by simpa using hxre)
     suffices 1 < ‖(x : ℂ)‖ ^ 2 + a ^ 2 + 2 * a * x.im by
       rw [← one_lt_normSq_iff]
-      convert this
+      convert! this
       simp [← normSq_eq_norm_sq, normSq_apply]
       ring
     rw [hxnorm, one_pow, add_assoc, lt_add_iff_pos_right]

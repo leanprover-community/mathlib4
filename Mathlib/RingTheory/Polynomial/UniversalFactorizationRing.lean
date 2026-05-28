@@ -587,7 +587,7 @@ def UniversalCoprimeFactorizationRing.homEquiv :
   toFun f :=
     letI q := UniversalFactorizationRing.homEquiv S m k hn p (f.comp (IsScalarTower.toAlgHom _ _ _))
     ⟨q.1, q.2, by
-      convert (isCoprime_factor₁_factor₂ m k hn p).map (Polynomial.mapRingHom f.toRingHom) <;>
+      convert! (isCoprime_factor₁_factor₂ m k hn p).map (Polynomial.mapRingHom f.toRingHom) <;>
         simp [q, UniversalFactorizationRing.homEquiv,
           AlgHom.comp_toRingHom, ← Polynomial.map_map] <;> rfl⟩
   invFun q := by
@@ -614,7 +614,7 @@ def UniversalCoprimeFactorizationRing.homEquiv :
     ext; simp
   right_inv q := by
     apply Subtype.ext
-    convert congr($((UniversalFactorizationRing.homEquiv S m k hn p).apply_symm_apply
+    convert! congr($((UniversalFactorizationRing.homEquiv S m k hn p).apply_symm_apply
       ⟨_, q.2.1⟩).1) using 1
     dsimp
     congr 2

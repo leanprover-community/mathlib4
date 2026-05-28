@@ -90,7 +90,7 @@ theorem succ_n_eq (p q : Q n.succ) : p = q ↔ p 0 = q 0 ∧ π p = π q := by
     by_cases hx : x = 0
     · rwa [hx]
     · rw [← Fin.succ_pred x hx]
-      convert congr_fun h (Fin.pred x hx)
+      convert! congr_fun h (Fin.pred x hx)
 
 /-- The adjacency relation defining the graph structure on `Q n`:
 `p.adjacent q` if there is an edge from `p` to `q` in `Q n`. -/
@@ -383,21 +383,21 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
   suffices 0 < dim (W ⊓ img) by
     exact mod_cast exists_mem_ne_zero_of_rank_pos this
   have dim_le : dim (W ⊔ img) ≤ 2 ^ (m + 1 : Cardinal) := by
-    convert ← Submodule.rank_le (W ⊔ img)
+    convert! ← Submodule.rank_le (W ⊔ img)
     rw [← Nat.cast_succ]
     apply dim_V
   have dim_add : dim (W ⊔ img) + dim (W ⊓ img) = dim W + 2 ^ m := by
-    convert ← Submodule.rank_sup_add_rank_inf_eq W img
+    convert! ← Submodule.rank_sup_add_rank_inf_eq W img
     rw [rank_range_of_injective (g m) g_injective]
     apply dim_V
   have dimW : dim W = card H := by
     have li : LinearIndependent ℝ (H.restrict e) := by
-      convert (dualBases_e_ε m.succ).basis.linearIndependent.comp _ Subtype.val_injective
+      convert! (dualBases_e_ε m.succ).basis.linearIndependent.comp _ Subtype.val_injective
       rw [(dualBases_e_ε _).coe_basis]
       rfl
     have hdW := rank_span li
     rw [Set.range_restrict] at hdW
-    convert hdW
+    convert! hdW
     rw [← (dualBases_e_ε _).coe_basis, Cardinal.mk_image_eq (dualBases_e_ε _).basis.injective,
       Cardinal.mk_fintype]
   rw [← finrank_eq_rank ℝ] at dim_le dim_add dimW ⊢
@@ -452,7 +452,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
       norm_cast
       apply card_le_card
       rw [Set.toFinset_inter]
-      convert inter_subset_inter_right coeffs_support
+      convert! inter_subset_inter_right coeffs_support
 
 end
 
