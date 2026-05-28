@@ -162,7 +162,8 @@ lemma coe_injective : Function.Injective (coe : α → WithOne α) :=
   Option.some_injective _
 
 @[to_additive (attr := elab_as_elim)]
-protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 → (∀ a : α, P a) → P x :=
+protected theorem cases_on {motive : WithOne α → Prop} :
+    ∀ x : WithOne α, (one : motive 1) → (coe : ∀ a : α, motive a) → motive x :=
   Option.casesOn
 
 @[to_additive]
