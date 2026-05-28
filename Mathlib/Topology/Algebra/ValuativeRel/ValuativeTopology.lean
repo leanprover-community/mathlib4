@@ -80,7 +80,8 @@ valuative and nonarchimedean, and the addition is uniformly continuous,
 can be automatically inferred. -/
 local instance uniformSpace : UniformSpace R := IsTopologicalAddGroup.rightUniformSpace R
 
-instance isUniformAddGroup : IsUniformAddGroup R := isUniformAddGroup_of_addCommGroup
+/-- This is not made into a global instance to avoid diamonds. -/
+local instance isUniformAddGroup : IsUniformAddGroup R := isUniformAddGroup_of_addCommGroup
 
 end ValuativeRel
 
@@ -306,7 +307,7 @@ theorem isClosed_closedBall (r : ValueGroup₀ v) : IsClosed (X := R) {x | v.res
   intro x hx
   simp only [mem_compl_iff, mem_setOf_eq, not_le] at hx
   rw [v.mem_nhds_iff]
-  have hx' : v.restrict x ≠ 0 := ne_of_gt <| lt_of_le_of_lt zero_le' <| hx
+  have hx' : v.restrict x ≠ 0 := hx.ne_zero
   exact ⟨Units.mk0 _ hx', fun y hy hy' ↦ ne_of_lt hy <| map_sub_swap v.restrict x y ▸
       (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' hx)⟩
 
