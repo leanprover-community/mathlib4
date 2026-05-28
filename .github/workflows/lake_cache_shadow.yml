@@ -7,10 +7,17 @@ name: Lake cache shadow (master)
 #
 # Required repository configuration (Settings → Secrets and variables → Actions):
 #   Secrets:
-#     LAKE_CACHE_KEY                  — SigV4 secret for the cache bucket
+#     LAKE_CACHE_KEY                         — SigV4 credential for the cache
+#                                              bucket, as `<ACCESS_KEY_ID>:<SECRET_ACCESS_KEY>`
+#                                              (curl `--user`; region is `auto`).
 #   Variables:
-#     LAKE_CACHE_ARTIFACT_ENDPOINT    — e.g. https://<bucket>/<prefix>/artifacts
-#     LAKE_CACHE_REVISION_ENDPOINT    — e.g. https://<bucket>/<prefix>/revisions
+#     # Authenticated S3 endpoint, used by `upload` for PUTs.
+#     LAKE_CACHE_ARTIFACT_ENDPOINT           — e.g. https://<acct>.r2.cloudflarestorage.com/<bucket>/<prefix>/artifacts
+#     LAKE_CACHE_REVISION_ENDPOINT           — e.g. https://<acct>.r2.cloudflarestorage.com/<bucket>/<prefix>/revisions
+#     # Public read endpoint, used by `consume` for anonymous GETs (different
+#     # host than the S3 API endpoint; e.g. an R2 public r2.dev/custom domain).
+#     LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC    — e.g. https://pub-<hash>.r2.dev/<prefix>/artifacts
+#     LAKE_CACHE_REVISION_ENDPOINT_PUBLIC    — e.g. https://pub-<hash>.r2.dev/<prefix>/revisions
 #
 # Jobs:
 #   build_and_stage  Build mathlib + deps with Lake's artifact cache
@@ -33,6 +40,21 @@ on:
         required: false
         type: string
         default: master
+      targets:
+        description: >-
+          space-separated Lake targets to build, stage, and consume. Pass the
+          whole `Mathlib` library for a full run, or a smaller set for cheaper
+          experiments.
+        required: false
+        type: string
+        # Bring-up default: a small cross-area set (~1.3k-module closure, ~16%
+        # of Mathlib, sub-GB) instead of the full library, to keep experiment
+        # uploads small. Every real target drags in a shared ~1.3k-module
+        # tactic+foundation base, so this is near the practical floor while
+        # still touching several actively-edited areas (churn).
+        # For a full run, override the dispatch input with:
+        #   Mathlib Archive Counterexamples
+        default: Mathlib.Topology.Basic Mathlib.Combinatorics.SimpleGraph.Basic Mathlib.RingTheory.Ideal.Basic
 
 permissions:
   contents: read
@@ -45,7 +67,8 @@ env:
   # Scope prefix for all puts and gets in this workflow. Namespaces the
   # workflow's artifacts within the cache bucket.
   SHADOW_SCOPE: mathlib4-master-shadow
-  STAGE_TARGETS: "Mathlib Archive Counterexamples"
+  # NOTE: STAGE_TARGETS is set per-job (not here) from the `targets` input, so
+  # it can be overridden per dispatch — see the `build_and_stage`/`consume` env.
 
 jobs:
   build_and_stage:
@@ -59,6 +82,7 @@ jobs:
     env:
       LAKE_CACHE_DIR: .lake/cache
       LAKE_NO_CACHE: true
+      STAGE_TARGETS: ${{ inputs.targets || 'Mathlib.Topology.Basic Mathlib.Combinatorics.SimpleGraph.Basic Mathlib.RingTheory.Ideal.Basic' }}
     defaults:
       run:
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_NO_CACHE --env STAGE_TARGETS --env SHADOW_SCOPE -- bash -euxo pipefail {0}
@@ -188,8 +212,10 @@ jobs:
           cd pr-branch
           lake build $STAGE_TARGETS 2>&1 | tee .lake/lake-build.log
           echo "::group::build summary"
+          # Replays aren't counted: a non-verbose `lake build` restores cached
+          # outputs silently (no "Replayed" lines to grep). 0 built is the
+          # healthy case here — legacy hydration already populated .lake/build.
           echo "Built (pipeline ran):    $(grep -cE '^✔.*Built '    .lake/lake-build.log || true)"
-          echo "Replayed (from cache):   $(grep -cE '^✔.*Replayed ' .lake/lake-build.log || true)"
           echo "::endgroup::"
 
       - name: Emit root-package mappings
@@ -214,6 +240,21 @@ jobs:
           lake cache stage .lake/outputs.jsonl ../lake-cache-staging
           du -sh ../lake-cache-staging | awk '{print "staging total:", $1}'
           echo "ltar count: $(find ../lake-cache-staging -name '*.ltar' | wc -l)"
+
+      # Safety valve: the staged bytes are what gets uploaded (GH artifact → R2).
+      # Bail before any upload if it would exceed the cap, to protect the R2
+      # free-tier / lifecycle budget. Logs the size first, so a trip still tells
+      # us how big the build got.
+      - name: Guard upload size (bail if staging > 1 GB)
+        shell: bash
+        run: |
+          MAX=$((1 * 1000 * 1000 * 1000))   # 1 GB — ~2.5x the measured ~389 MB full build (runaway guard)
+          BYTES=$(du -sb lake-cache-staging | cut -f1)
+          echo "staging size: $(du -sh lake-cache-staging | cut -f1) (${BYTES} bytes); cap: 1 GB (${MAX} bytes)"
+          if [ "$BYTES" -gt "$MAX" ]; then
+            echo "::error::staging is over 1 GB — bailing before upload to protect the R2 free-tier / lifecycle budget"
+            exit 1
+          fi
 
       - name: Upload staging artifact for the next job
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -282,8 +323,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
-      LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
-      LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT }}
+      # Must match the targets staged/uploaded by build_and_stage.
+      STAGE_TARGETS: ${{ inputs.targets || 'Mathlib.Topology.Basic Mathlib.Combinatorics.SimpleGraph.Basic Mathlib.RingTheory.Ideal.Basic' }}
+      # `lake cache get` issues unauthenticated GETs, so this job must read
+      # from a publicly-readable host. On R2 that is the bucket's public
+      # r2.dev (or custom-domain) URL, which is a different host than the
+      # authenticated S3 API endpoint used by the `upload` job's PUTs.
+      LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC }}
+      LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT_PUBLIC }}
     steps:
       - name: Checkout mathlib
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -338,9 +385,31 @@ jobs:
           cd pr-branch
           read -ra TARGETS <<< "$STAGE_TARGETS"
           lake build "${TARGETS[@]}" 2>&1 | tee .lake/consume-build.log
-          echo "Built (pipeline ran):    $(grep -cE '^✔.*Built '    .lake/consume-build.log || true)"
-          echo "Replayed (from cache):   $(grep -cE '^✔.*Replayed ' .lake/consume-build.log || true)"
+          # A non-verbose `lake build` restores cache hits silently (no per-module
+          # "Replayed" lines), so a replay count can't be grepped here. The
+          # cache-hit evidence is the artifacts fetched by `lake cache get` above,
+          # the BUILT_ROOT assertion below (0 root-package rebuilds), and the
+          # `--rehash` "all targets up-to-date" check. The Built count is the
+          # dependencies, which Lake never caches and always rebuilds.
+          echo "Built from source (deps, expected): $(grep -cE '^✔.*Built ' .lake/consume-build.log || true)"
+          # Lake only caches the *root package's* artifacts: `-o` records
+          # outputs under `pkg.isRoot` only, and just the root `mathlib`
+          # package sets `enableArtifactCache`. Dependencies (Batteries, Aesop,
+          # …) are never staged/uploaded, so they are *expected* to build from
+          # source here. The real cache invariant is therefore narrower than
+          # "nothing built": assert no root-package module was rebuilt — those
+          # must all be served from the Lake cache.
+          BUILT_ROOT=$(grep -cE '^✔.*Built (Mathlib|Archive|Counterexamples)([. ]|$)' .lake/consume-build.log || true)
+          if [ "$BUILT_ROOT" -ne 0 ]; then
+            echo "::error::$BUILT_ROOT root-package module(s) were rebuilt instead of replayed from the Lake cache"
+            grep -E '^✔.*Built (Mathlib|Archive|Counterexamples)([. ]|$)' .lake/consume-build.log || true
+            exit 1
+          fi
 
+      # Integrity check (not a cache-provenance check): re-derives artifact
+      # hashes from disk for the targets and confirms nothing is stale. Runs
+      # after the build, so dependency artifacts are already present; the
+      # cache-provenance assertion lives in the `lake build` step above.
       - name: Verify with --rehash
         run: |
           cd pr-branch
