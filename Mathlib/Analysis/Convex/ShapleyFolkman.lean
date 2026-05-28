@@ -1,8 +1,26 @@
+/-
+Copyright (c) 2026 Andrey Marennikov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrey Marennikov
+-/
+
 import Mathlib.Analysis.Convex.Caratheodory
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Data.Real.Basic
 import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+
+/-!
+# Shapley-Folkman lemma
+
+This file proves the Shapley-Folkman lemma for finite sums of sets in finite-dimensional
+real vector spaces.
+
+The main result is `shapley_folkman`, which states that if a point belongs to a finite
+sum of convex hulls, then it can be represented as a sum where all but at most
+`finrank ℝ E` terms belong to the original sets.
+-/
+
 open scoped Pointwise BigOperators
 open Set Finset
 variable {ι : Type*}
