@@ -68,13 +68,17 @@ private def gcongrBackward (relName : Name) (relation : Expr) (symm : Bool) :
 
 /-- This function is passed to `MVarId.gcongr` as the main discharger.
 It doesn't try to prove the goal, but instead observes what the goal is,
-to help determine which lemmas could work with `grw`. -/
+to help determine which lemmas could work with `grw`.
+
+If the selected grewrite position is valid, then `ref` is set, and a dummy error is thrown.
+Note that this function will be called at most once,
+so we don't lose information by throwing an error. -/
 private def dummyDischarger (ref : IO.Ref (Array GrwPos)) (hyp? : Bool) (fvar : Expr)
     (goal : MVarId) : MetaM Bool := do
-  let relation ← instantiateMVars (← goal.getType)
-  let e@(mkApp2 relation lhs rhs) := relation | throw <| .error default "dummyError"
-  let .const relName _ := relation.getAppFn | throw <| .error default "dummyError"
-  if relName matches ``Eq | ``Iff then throw <| .error default "dummyError"
+  let e ← instantiateMVars (← goal.getType)
+  let mkApp2 relation lhs rhs := e | throwError "`{e}` is not a relation"
+  let .const relName _ := relation.getAppFn | throwError "{e} is not a relation"
+  if relName matches ``Eq | ``Iff then throwError "{e} is not a generalized relation"
   let symm ←
     if lhs.cleanupAnnotations == fvar then
       pure hyp?
@@ -95,11 +99,12 @@ def getGrwPos? (rootExpr subExpr : Expr) (pos : SubExpr.Pos) (hyp? : Bool) :
   let ref ← IO.mkRef #[]
   try
     _ ← dummyGoal.mvarId!.gcongr false |>.run (mainGoalDischarger := dummyDischarger ref hyp? fvar)
+    return #[]
   catch ex =>
     if (← ex.toMessageData.toString) != "dummyError" then
       return #[]
   let result ← ref.get
-  /- I am not entirely sure if this can come up in practice, but we check that the relation
+  /- I doubt that this can come up in practice, but we check anyways that the relation
   that was found doesn't contain any free variables that are now out of scope. -/
   for { relation, .. } in result do
     unless (collectFVars {} relation).fvarIds.all (← getLCtx).contains do
