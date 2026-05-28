@@ -168,5 +168,13 @@ def defaultContainersForRepo (repo : String) : List Container :=
     -- least-trusted container.
     [.nightlyTesting, .legacy]
   else
-    -- Fork repos (PRs) and anything else default to the `forks` container.
-    [.forks, .legacy]
+    -- Fork repos (PRs) and anything else: master first (it holds the bulk
+    -- of any fork build's deps, and is the highest-trust source), then the
+    -- fork's own container for PR-specific files, then legacy as the
+    -- migration tail. `legacy` is transitional and will be dropped once
+    -- master CI's dual-write to it is retired, leaving `[master, forks]`.
+    --
+    -- Note: master is NOT in the nightly-testing chain above — that repo
+    -- runs under a non-release toolchain, so the root hash differs from
+    -- master's and master probes would always 404.
+    [.master, .forks, .legacy]
