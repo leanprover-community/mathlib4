@@ -644,6 +644,13 @@ theorem lowerCentralSeries_map_subtype_le (H : Subgroup G) (n : ℕ) :
   rw [top_subtype_lowerCentralSeries]
   exact lowerCentralSeries_mono n le_top
 
+@[to_additive (attr := deprecated "Use `map_lowerCentralSeries` and \
+  `lowerCentralSeries_mono` instead." (since := "2026-05-28"))]
+theorem lowerCentralSeries.map {K : Type*} [Group K] (f : G →* K) (n : ℕ) :
+    ((⊤ : Subgroup G).lowerCentralSeries n).map f ≤ (⊤ : Subgroup K).lowerCentralSeries n := by
+  rw [map_lowerCentralSeries]
+  exact lowerCentralSeries_mono n le_top
+
 @[to_additive]
 instance lowerCentralSeries_normal (S : Subgroup G) [S.Normal] (n : ℕ) :
     (S.lowerCentralSeries n).Normal := by
@@ -997,14 +1004,7 @@ theorem Subgroup.lowerCentralSeries_prod (S₁ : Subgroup G₁) (S₂ : Subgroup
       (S₁.lowerCentralSeries n).prod (S₂.lowerCentralSeries n) := by
   induction n with
   | zero => simp
-  | succ n ih =>
-    calc
-      (S₁.prod S₂).lowerCentralSeries n.succ
-          = ⁅(S₁.prod S₂).lowerCentralSeries n, S₁.prod S₂⁆ := rfl
-      _ = ⁅(S₁.lowerCentralSeries n).prod (S₂.lowerCentralSeries n), S₁.prod S₂⁆ := by rw [ih]
-      _ = ⁅S₁.lowerCentralSeries n, S₁⁆.prod ⁅S₂.lowerCentralSeries n, S₂⁆ :=
-        commutator_prod_prod _ _ _ _
-      _ = (S₁.lowerCentralSeries n.succ).prod (S₂.lowerCentralSeries n.succ) := rfl
+  | succ n ih => simp_rw [lowerCentralSeries_succ, ih, commutator_prod_prod]
 
 /-- The ⊤-specialization of `lowerCentralSeries_prod`. -/
 @[to_additive]
@@ -1043,18 +1043,11 @@ variable {η : Type*} {Gs : η → Type*} [∀ i, Group (Gs i)]
 theorem Subgroup.lowerCentralSeries_pi_le (Ss : ∀ i, Subgroup (Gs i)) (n : ℕ) :
     (Subgroup.pi Set.univ Ss).lowerCentralSeries n ≤ Subgroup.pi Set.univ
       fun i => (Ss i).lowerCentralSeries n := by
-  let pi := fun f : ∀ i, Subgroup (Gs i) => Subgroup.pi Set.univ f
   induction n with
   | zero => simp
   | succ n ih =>
-    calc
-      (Subgroup.pi Set.univ Ss).lowerCentralSeries n.succ
-          = ⁅(Subgroup.pi Set.univ Ss).lowerCentralSeries n, pi Ss⁆ := rfl
-      _ ≤ ⁅pi fun i => (Ss i).lowerCentralSeries n, pi Ss⁆ :=
-        commutator_mono ih (le_refl _)
-      _ ≤ pi fun i => ⁅(Ss i).lowerCentralSeries n, Ss i⁆ :=
-        commutator_pi_pi_le _ _
-      _ = pi fun i => (Ss i).lowerCentralSeries n.succ := rfl
+    simp_rw [lowerCentralSeries_succ]
+    grw [commutator_mono ih le_rfl, commutator_pi_pi_le]
 
 /-- The ⊤-specialization of `lowerCentralSeries_pi_le`. -/
 @[to_additive]
@@ -1085,17 +1078,9 @@ variable {η : Type*} {Gs : η → Type*} [∀ i, Group (Gs i)]
 theorem Subgroup.lowerCentralSeries_pi_of_finite [Finite η] (Ss : ∀ i, Subgroup (Gs i)) (n : ℕ) :
     (Subgroup.pi Set.univ Ss).lowerCentralSeries n = Subgroup.pi Set.univ
       fun i => (Ss i).lowerCentralSeries n := by
-  let pi := fun f : ∀ i, Subgroup (Gs i) => Subgroup.pi Set.univ f
   induction n with
   | zero => simp
-  | succ n ih =>
-    calc
-      (Subgroup.pi Set.univ Ss).lowerCentralSeries n.succ
-          = ⁅(Subgroup.pi Set.univ Ss).lowerCentralSeries n, pi Ss⁆ := rfl
-      _ = ⁅pi fun i => (Ss i).lowerCentralSeries n, pi Ss⁆ := by rw [ih]
-      _ = pi fun i => ⁅(Ss i).lowerCentralSeries n, Ss i⁆ :=
-        commutator_pi_pi_of_finite _ _
-      _ = pi fun i => (Ss i).lowerCentralSeries n.succ := rfl
+  | succ n ih => simp_rw [lowerCentralSeries_succ, ih, commutator_pi_pi_of_finite]
 
 /-- The ⊤-specialization of `lowerCentralSeries_pi_of_finite`. -/
 @[to_additive]
@@ -1290,7 +1275,6 @@ alias least_descending_central_series_length_eq_nilpotencyClass :=
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries_eq_bot_iff_nilpotencyClass_le :=
   lowerCentralSeries_eq_bot_iff_nilpotencyClass_le
 @[deprecated (since := "2026-03-25")] alias upperCentralSeries.map := upperCentralSeries.map
-@[deprecated (since := "2026-05-25")] alias lowerCentralSeries.map := map_lowerCentralSeries
 @[deprecated (since := "2026-03-25")] alias isNilpotent_of_ker_le_center :=
   isNilpotent_of_ker_le_center
 @[deprecated (since := "2026-03-25")] alias nilpotencyClass_le_of_ker_le_center :=
@@ -1328,10 +1312,8 @@ alias least_descending_central_series_length_eq_nilpotencyClass :=
 @[deprecated (since := "2026-03-25")]
 alias upperCentralSeries.card_image_eq_of_le_nilpotencyClass :=
   upperCentralSeries.card_image_eq_of_le_nilpotencyClass
--- `Subgroup.lowerCentralSeries_prod` is now generalized; no deprecation needed.
 @[deprecated (since := "2026-03-25")] alias isNilpotent_prod := isNilpotent_prod
 @[deprecated (since := "2026-03-25")] alias nilpotencyClass_prod := nilpotencyClass_prod
--- `Subgroup.lowerCentralSeries_pi_le` and `_pi_of_finite` are now generalized.
 @[deprecated (since := "2026-03-25")] alias isNilpotent_pi_of_bounded_class :=
   isNilpotent_pi_of_bounded_class
 @[deprecated (since := "2026-03-25")] alias isNilpotent_pi := isNilpotent_pi
