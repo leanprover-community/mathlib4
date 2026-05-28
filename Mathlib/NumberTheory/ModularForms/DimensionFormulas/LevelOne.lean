@@ -6,5 +6,7 @@ Authors: Chris Birkbeck
 module -- shake: keep-all
 
 public import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
-deprecated_module (since := "2026-05-06")
+deprecated_module "Use `Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula` instead."
+  (since := "2026-05-06")
