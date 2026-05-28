@@ -197,9 +197,9 @@ attribute [local simp] Types.chosenCoend_def in
 lemma id_whiskerLeft {P Q : Profunctor.{u} C D} (f : P ⟶ Q) :
     (Profunctor.id (C := C)).whiskerLeft f =
       (P.leftUnitor).hom ≫ f ≫ (Q.leftUnitor).inv := by
-  rw [← cancel_mono (Q.leftUnitor).hom]
-  ext _ _ ⟨_, g, _⟩
-  simp [-types_comp_apply]
+  rw [← cancel_epi (P.leftUnitor).inv]
+  ext
+  simp [chosenCoend.map_apply]
 
 end LeftUnitor
 
