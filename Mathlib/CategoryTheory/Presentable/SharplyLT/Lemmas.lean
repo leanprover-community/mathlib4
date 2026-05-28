@@ -19,14 +19,9 @@ universe u
 
 open CategoryTheory Limits
 
-def Cardinal.setIioOrderEmbeddingToTypeOrd (κ : Cardinal.{u}) :
-    Set.Iio κ ↪o κ.ord.ToType := by
+lemma Cardinal.mk_iio_le (κ : Cardinal.{u}) :
+    Cardinal.mk (Set.Iio κ) ≤ Cardinal.lift.{u + 1} κ := by
   sorry
-
-@[no_expose]
-noncomputable def Cardinal.toTypeOrdMkEquiv (X : Type u) :
-    (Cardinal.mk X).ord.ToType ≃ X :=
-  Nonempty.some (by simp [← Cardinal.lift_mk_eq'])
 
 namespace CategoryTheory.CardinalFilteredPoset.SetCardinalLT
 
@@ -42,7 +37,9 @@ def fromSigma (x : Σ (κ' : Set.Iio κ), κ'.val.ord.ToType → X) : SetCardina
 lemma fromSigma_surjective : Function.Surjective (fromSigma κ X) := by
   rintro ⟨A, hA⟩
   rw [hasCardinalLT_iff_cardinal_mk_lt] at hA
-  refine ⟨⟨⟨_, hA⟩, Subtype.val ∘ Cardinal.toTypeOrdMkEquiv A⟩, ?_⟩
+  let e : (Cardinal.mk A).ord.ToType ≃ A :=
+    Nonempty.some (by simp [← Cardinal.lift_mk_eq'])
+  refine ⟨⟨⟨_, hA⟩, Subtype.val ∘ e⟩, ?_⟩
   rw [Subtype.mk_eq_mk]
   simp [fromSigma]
 
@@ -60,9 +57,8 @@ lemma of_pow_lt {κ₁ κ₂ : Cardinal.{u}} [Fact κ₁.IsRegular] [Fact κ₂.
     rw [hasCardinalLT_iff_of_equiv (Equiv.Set.univ _)]
     refine HasCardinalLT.of_surjective ?_ _ (SetCardinalLT.fromSigma_surjective _ _)
     refine hasCardinalLT_sigma _ _ ?_ (fun ⟨α, hα⟩ ↦ ?_)
-    · refine HasCardinalLT.of_injective ?_ _
-        ((Cardinal.setIioOrderEmbeddingToTypeOrd κ₁).injective)
-      simpa [hasCardinalLT_iff_cardinal_mk_lt]
+    · refine lt_of_le_of_lt (le_trans ?_ (Cardinal.mk_iio_le κ₁)) (by simpa)
+      rw [lift_id'.{u, u + 1}]
     · simpa [hasCardinalLT_iff_cardinal_mk_lt] using
         h _ _ hα (by rwa [hasCardinalLT_iff_cardinal_mk_lt] at hX))
 
