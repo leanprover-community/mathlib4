@@ -80,8 +80,7 @@ lemma IsVertexReachable.reachable (hk : k ≠ 0) (h : G.IsVertexReachable k u v)
   -- Instantiate with s = ∅ (removing no vertices)
   have key := h (s := ∅) (by rw [Set.encard_empty]; exact pos_of_ne_zero hk)
     (Set.notMem_empty u) (Set.notMem_empty v)
-  -- Embed the walk in G.induce ∅ᶜ back into G
-  -- via `Embedding.induce ∅ᶜ : G.induce ∅ᶜ ↪g G`
+  -- Embed the walk in G.induce ∅ᶜ back into G via Embedding.induce ∅ᶜ : G.induce ∅ᶜ ↪g G
   exact key.map (Embedding.induce ∅ᶜ).toHom
 
 /-- Reachability under 1-vertex-connectivity is equivalent to standard reachability. -/
@@ -93,9 +92,8 @@ lemma isVertexReachable_one_iff : G.IsVertexReachable 1 u v ↔ G.Reachable u v 
     -- From hs : s.encard < 1, deduce s = ∅
     have hs0 : s = ∅ := Set.encard_eq_zero.mp (ENat.lt_one_iff_eq_zero.mp hs)
     subst hs0
-    -- Now hu : u ∉ ∅, hv : v ∉ ∅;
-    -- goal is `(G.induce ∅ᶜ).Reachable ⟨u, hu⟩ ⟨v, hv⟩`
-    -- Lift the walk in G to G.induce ∅ᶜ (all vertices lie in ∅ᶜ = Set.univ)
+    -- Now hu : u ∉ ∅, hv : v ∉ ∅; goal is (G.induce ∅ᶜ).Reachable ⟨u, hu⟩ ⟨v, hv⟩
+    -- Lift the walk in G to a walk in G.induce ∅ᶜ (all vertices lie in ∅ᶜ = Set.univ)
     obtain ⟨w⟩ := h
     exact ⟨w.induce ∅ᶜ fun x _ => Set.notMem_empty x⟩
 
@@ -164,7 +162,7 @@ lemma Preconnected.isVertexConnected_one [Nontrivial V] (h : G.Preconnected) :
 lemma IsVertexConnected.anti (hkl : l ≤ k) (hc : G.IsVertexConnected k) :
     G.IsVertexConnected l := by
   refine ⟨?_, hc.right.anti hkl⟩
-  exact le_trans (by gcongr) hc.left
+  grw [hkl, hc.left]
 
 /-- Vertex connectivity is monotonic in the graph. -/
 @[gcongr]
