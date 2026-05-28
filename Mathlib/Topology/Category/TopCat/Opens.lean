@@ -322,7 +322,8 @@ instance (f : X ⟶ Y) {J : Type w} [Category.{w'} J] (K : J ⥤ (Opens Y)) :
     Limits.PreservesColimit K (map f) :=
   inferInstanceAs <| Limits.PreservesColimit K (OrderHomClass.toOrderHom f.frameHom).toFunctor
 
-instance (f : X ⟶ Y) {J : Type w} [Category.{w'} J] : Limits.PreservesColimitsOfShape J (map f) where
+instance (f : X ⟶ Y) {J : Type w} [Category.{w'} J] : 
+    Limits.PreservesColimitsOfShape J (map f) where
 
 instance (f : X ⟶ Y) : Limits.PreservesColimitsOfSize.{w', w} (map f) where
 
