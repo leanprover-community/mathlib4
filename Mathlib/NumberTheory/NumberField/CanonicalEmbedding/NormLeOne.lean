@@ -248,12 +248,13 @@ variable (K)
 
 theorem expMap_source :
     expMap.source = (Set.univ : Set (realSpace K)) := by
-  simp_rw [expMap, OpenPartialHomeomorph.pi_toPartialEquiv, PartialEquiv.pi_source, expMap_single,
-    Set.pi_univ Set.univ]
+  simp_rw [expMap, OpenPartialHomeomorph.pi_toPartialHomeomorph_toPartialEquiv,
+    PartialEquiv.pi_source, expMap_single, Set.pi_univ Set.univ]
 
 theorem expMap_target :
     expMap.target = Set.univ.pi fun (_ : InfinitePlace K) ↦ Set.Ioi 0 := by
-  simp_rw [expMap, OpenPartialHomeomorph.pi_toPartialEquiv, PartialEquiv.pi_target, expMap_single]
+  simp_rw [expMap, OpenPartialHomeomorph.pi_toPartialHomeomorph_toPartialEquiv,
+    PartialEquiv.pi_target, expMap_single]
 
 theorem injective_expMap :
     Function.Injective (expMap : realSpace K → realSpace K) :=

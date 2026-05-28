@@ -455,7 +455,8 @@ lemma contMDiff_equivTangentBundleProd_symm :
     filter_upwards [chart_source_mem_nhds (ModelProd (ModelProd H E) (ModelProd H' E')) (a, b)]
       with p hp
     -- now we have to check that the original map coincides locally with `pM` read in target chart.
-    simp only [prodChartedSpace_chartAt, OpenPartialHomeomorph.prod_toPartialEquiv,
+    simp only [prodChartedSpace_chartAt,
+      OpenPartialHomeomorph.prod_toPartialHomeomorph_toPartialEquiv,
       PartialEquiv.prod_source, Set.mem_prod, TangentBundle.mem_chart_source_iff] at hp
     let φ (x : E) := I ((chartAt H a.proj) ((chartAt H p.1.proj).symm (I.symm x)))
     have D0 : DifferentiableWithinAt 𝕜 φ (Set.range I) (I ((chartAt H p.1.proj) p.1.proj)) := by
@@ -494,7 +495,8 @@ lemma contMDiff_equivTangentBundleProd_symm :
     filter_upwards [chart_source_mem_nhds (ModelProd (ModelProd H E) (ModelProd H' E')) (a, b)]
       with p hp
     -- now we have to check that the original map coincides locally with `pM'` read in target chart.
-    simp only [prodChartedSpace_chartAt, OpenPartialHomeomorph.prod_toPartialEquiv,
+    simp only [prodChartedSpace_chartAt,
+      OpenPartialHomeomorph.prod_toPartialHomeomorph_toPartialEquiv,
       PartialEquiv.prod_source, Set.mem_prod, TangentBundle.mem_chart_source_iff] at hp
     let φ (x : E') := I' ((chartAt H' b.proj) ((chartAt H' p.2.proj).symm (I'.symm x)))
     have D0 : DifferentiableWithinAt 𝕜 φ (Set.range I') (I' ((chartAt H' p.2.proj) p.2.proj)) := by

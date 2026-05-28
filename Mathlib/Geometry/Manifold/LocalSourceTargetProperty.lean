@@ -228,8 +228,8 @@ lemma prodMap [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsMani
       (domChart_mem_maximalAtlas hf) (domChart_mem_maximalAtlas hg)
   · apply IsManifold.mem_maximalAtlas_prod
       (codChart_mem_maximalAtlas hf) (codChart_mem_maximalAtlas hg)
-  · simp only [OpenPartialHomeomorph.prod_toPartialEquiv, PartialEquiv.prod_source,
-      preimage_prod_map_prod]
+  · simp only [OpenPartialHomeomorph.prod_toPartialHomeomorph_toPartialEquiv,
+      PartialEquiv.prod_source, preimage_prod_map_prod]
     exact prod_mono hf.source_subset_preimage_source hg.source_subset_preimage_source
   · exact h hf.property hg.property
 

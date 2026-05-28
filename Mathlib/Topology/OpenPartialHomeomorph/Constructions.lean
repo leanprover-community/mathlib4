@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.OpenPartialHomeomorph.Composition
+public import Mathlib.Topology.PartialHomeomorph.Constructions
 /-!
 # Constructions of new partial homeomorphisms from old
 
@@ -50,11 +51,9 @@ This is `PartialEquiv.single` as an open partial homeomorphism: a constant map,
 whose source and target are necessarily singleton sets.
 -/
 def const (ha : IsOpen {a}) (hb : IsOpen {b}) : OpenPartialHomeomorph X Y where
-  toPartialEquiv := PartialEquiv.single a b
+  toPartialHomeomorph := PartialHomeomorph.const a b
   open_source := ha
   open_target := hb
-  continuousOn_toFun := by simp
-  continuousOn_invFun := by simp
 
 @[simp, mfld_simps]
 lemma const_apply (ha : IsOpen {a}) (hb : IsOpen {b}) (x : X) : (const ha hb) x = b := rfl
@@ -76,15 +75,13 @@ section Prod
 
 /-- The product of two open partial homeomorphisms, as an open partial homeomorphism on the product
 space. -/
-@[simps! (attr := mfld_simps) -fullyApplied toPartialEquiv apply,
+@[simps! (attr := mfld_simps) -fullyApplied toPartialHomeomorph_toPartialEquiv apply,
   simps! -isSimp source target symm_apply]
 def prod (eX : OpenPartialHomeomorph X X') (eY : OpenPartialHomeomorph Y Y') :
     OpenPartialHomeomorph (X × Y) (X' × Y') where
+  toPartialHomeomorph := eX.toPartialHomeomorph.prod eY.toPartialHomeomorph
   open_source := eX.open_source.prod eY.open_source
   open_target := eX.open_target.prod eY.open_target
-  continuousOn_toFun := eX.continuousOn.prodMap eY.continuousOn
-  continuousOn_invFun := eX.continuousOn_symm.prodMap eY.continuousOn_symm
-  toPartialEquiv := eX.toPartialEquiv.prod eY.toPartialEquiv
 
 @[simp, mfld_simps]
 theorem prod_symm (eX : OpenPartialHomeomorph X X') (eY : OpenPartialHomeomorph Y Y') :
@@ -100,7 +97,7 @@ theorem refl_prod_refl : (OpenPartialHomeomorph.refl X).prod (OpenPartialHomeomo
 theorem prod_trans (e : OpenPartialHomeomorph X Y) (f : OpenPartialHomeomorph Y Z)
     (e' : OpenPartialHomeomorph X' Y') (f' : OpenPartialHomeomorph Y' Z') :
     (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') :=
-  toPartialEquiv_injective <| e.1.prod_trans ..
+  toPartialHomeomorph_injective <| e.1.prod_trans ..
 
 theorem prod_eq_prod_of_nonempty {eX eX' : OpenPartialHomeomorph X X'}
     {eY eY' : OpenPartialHomeomorph Y Y'} (h : (eX.prod eY).source.Nonempty) :
@@ -137,15 +134,11 @@ variable {ι : Type*} [Finite ι] {X Y : ι → Type*} [∀ i, TopologicalSpace 
   [∀ i, TopologicalSpace (Y i)] (ei : ∀ i, OpenPartialHomeomorph (X i) (Y i))
 
 /-- The product of a finite family of `OpenPartialHomeomorph`s. -/
-@[simps! toPartialEquiv apply symm_apply source target]
+@[simps! toPartialHomeomorph_toPartialEquiv apply symm_apply source target]
 def pi : OpenPartialHomeomorph (∀ i, X i) (∀ i, Y i) where
-  toPartialEquiv := PartialEquiv.pi fun i => (ei i).toPartialEquiv
+  toPartialHomeomorph := PartialHomeomorph.pi fun i => (ei i).toPartialHomeomorph
   open_source := isOpen_set_pi finite_univ fun i _ => (ei i).open_source
   open_target := isOpen_set_pi finite_univ fun i _ => (ei i).open_target
-  continuousOn_toFun := continuousOn_pi.2 fun i =>
-    (ei i).continuousOn.comp (continuous_apply _).continuousOn fun _f hf => hf i trivial
-  continuousOn_invFun := continuousOn_pi.2 fun i =>
-    (ei i).continuousOn_symm.comp (continuous_apply _).continuousOn fun _f hf => hf i trivial
 
 end Pi
 
@@ -164,7 +157,7 @@ To ensure the maps `toFun` and `invFun` are inverse of each other on the new `so
 the definition assumes that the sets `s` and `t` are related both by `e.is_image` and `e'.is_image`.
 To ensure that the new maps are continuous on `source`/`target`, it also assumes that `e.source` and
 `e'.source` meet `frontier s` on the same set and `e x = e' x` on this intersection. -/
-@[simps! -fullyApplied toPartialEquiv apply]
+@[simps! -fullyApplied toPartialHomeomorph_toPartialEquiv apply]
 def piecewise (e e' : OpenPartialHomeomorph X Y) (s : Set X) (t : Set Y) [∀ x, Decidable (x ∈ s)]
     [∀ y, Decidable (y ∈ t)] (H : e.IsImage s t) (H' : e'.IsImage s t)
     (Hs : e.source ∩ frontier s = e'.source ∩ frontier s)
@@ -218,15 +211,13 @@ section transHomeomorph
 We modify the source and target to have better definitional behavior. -/
 @[simps! -fullyApplied]
 def transHomeomorph (e : OpenPartialHomeomorph X Y) (f' : Y ≃ₜ Z) : OpenPartialHomeomorph X Z where
-  toPartialEquiv := e.toPartialEquiv.transEquiv f'.toEquiv
+  toPartialHomeomorph := e.toPartialHomeomorph.transHomeomorph f'
   open_source := e.open_source
   open_target := e.open_target.preimage f'.symm.continuous
-  continuousOn_toFun := f'.continuous.comp_continuousOn e.continuousOn
-  continuousOn_invFun := e.symm.continuousOn.comp f'.symm.continuous.continuousOn fun _ => id
 
 theorem transHomeomorph_eq_trans (e : OpenPartialHomeomorph X Y) (f' : Y ≃ₜ Z) :
     e.transHomeomorph f' = e.trans f'.toOpenPartialHomeomorph :=
-  toPartialEquiv_injective <| PartialEquiv.transEquiv_eq_trans _ _
+  toPartialHomeomorph_injective <| PartialHomeomorph.transHomeomorph_eq_trans _ _
 
 @[simp, mfld_simps]
 theorem transHomeomorph_transHomeomorph (e : OpenPartialHomeomorph X Y) (f' : Y ≃ₜ Z)
@@ -346,40 +337,9 @@ variable {X X' Z : Type*} [TopologicalSpace X] [TopologicalSpace X'] [Topologica
 (and uninteresting). -/
 noncomputable def lift_openEmbedding (e : OpenPartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     OpenPartialHomeomorph X' Z where
-  toFun := extend f e (fun _ ↦ (Classical.arbitrary Z))
-  invFun := f ∘ e.invFun
-  source := f '' e.source
-  target := e.target
-  map_source' := by
-    rintro x ⟨x₀, hx₀, hxx₀⟩
-    rw [← hxx₀, hf.injective.extend_apply e]
-    exact e.map_source' hx₀
-  map_target' z hz := mem_image_of_mem f (e.map_target' hz)
-  left_inv' := by
-    intro x ⟨x₀, hx₀, hxx₀⟩
-    rw [← hxx₀, hf.injective.extend_apply e, comp_apply]
-    congr
-    exact e.left_inv' hx₀
-  right_inv' z hz := by simpa only [comp_apply, hf.injective.extend_apply e] using e.right_inv' hz
+  toPartialHomeomorph := e.toPartialHomeomorph.lift_embedding hf.toIsEmbedding
   open_source := hf.isOpenMap _ e.open_source
   open_target := e.open_target
-  continuousOn_toFun := by
-    by_cases Nonempty X; swap
-    · intro x hx; simp_all
-    set F := (extend f e (fun _ ↦ (Classical.arbitrary Z))) with F_eq
-    have heq : EqOn F (e ∘ (hf.toOpenPartialHomeomorph).symm) (f '' e.source) := by
-      intro x ⟨x₀, hx₀, hxx₀⟩
-      rw [← hxx₀, F_eq, hf.injective.extend_apply e, comp_apply,
-        hf.toOpenPartialHomeomorph_left_inv]
-    have : ContinuousOn (e ∘ (hf.toOpenPartialHomeomorph).symm) (f '' e.source) := by
-      apply e.continuousOn_toFun.comp; swap
-      · intro x' ⟨x, hx, hx'x⟩
-        rw [← hx'x, hf.toOpenPartialHomeomorph_left_inv]; exact hx
-      have : ContinuousOn (hf.toOpenPartialHomeomorph).symm (f '' univ) :=
-        (hf.toOpenPartialHomeomorph).continuousOn_invFun
-      exact this.mono <| image_mono <| subset_univ _
-    exact ContinuousOn.congr this heq
-  continuousOn_invFun := hf.continuous.comp_continuousOn e.continuousOn_invFun
 
 @[simp, mfld_simps]
 lemma lift_openEmbedding_toFun (e : OpenPartialHomeomorph X Z) (hf : IsOpenEmbedding f) :

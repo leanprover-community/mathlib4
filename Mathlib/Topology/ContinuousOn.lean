@@ -918,6 +918,21 @@ lemma continuous_of_continuousOn_iUnion_of_isOpen {ι : Type*} {s : ι → Set �
   rw [← continuousOn_univ, ← hs']
   exact ContinuousOn.iUnion_of_isOpen hf hs
 
+lemma ContinuousOn.union_of_disjoint_closure {f : α → β} {s t : Set α}
+   (hs : ContinuousOn f s) (ht : ContinuousOn f t) (h : Disjoint (closure s) (closure t)) :
+    ContinuousOn f (s ∪ t) := by
+  rintro x (hx | hx) <;> apply ContinuousWithinAt.union ?_ ?_
+  · exact hs x hx
+  · exact continuousWithinAt_of_notMem_closure (h.notMem_of_mem_left (subset_closure hx))
+  · exact continuousWithinAt_of_notMem_closure (h.notMem_of_mem_right (subset_closure hx))
+  · exact ht x hx
+
+lemma continuousOn_union_iff_of_disjoint_closure {f : α → β} {s t : Set α}
+    (h : Disjoint (closure s) (closure t)) :
+    ContinuousOn f (s ∪ t) ↔ ContinuousOn f s ∧ ContinuousOn f t :=
+  ⟨fun h' ↦ ⟨h'.mono s.subset_union_left, h'.mono s.subset_union_right⟩,
+   fun h' ↦ h'.left.union_of_disjoint_closure h'.right h⟩
+
 /-- If `f` is continuous on some neighbourhood `s'` of `s` and `f` maps `s` to `t`,
 the preimage of a set neighbourhood of `t` is a set neighbourhood of `s`. -/
 -- See `Continuous.tendsto_nhdsSet` for a special case.
