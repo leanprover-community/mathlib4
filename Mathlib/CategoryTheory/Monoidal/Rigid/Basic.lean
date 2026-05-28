@@ -222,6 +222,16 @@ instance ExactPairing.tensor {X₁ X₂ Y₁ Y₂ : C} [ExactPairing X₁ Y₁] 
           X₁ ◁ (η_ X₂ Y₂ ▷ X₂ ⊗≫ X₂ ◁ ε_ X₂ Y₂) ⊗≫ 𝟙 _ := by monoidal
       _ = _ := by rw [evaluation_coevaluation'', evaluation_coevaluation'']; monoidal
 
+lemma ExactPairing.tensor_coevaluation {X₁ X₂ Y₁ Y₂ : C}
+    [ExactPairing X₁ Y₁] [ExactPairing X₂ Y₂] :
+    η_ (X₁ ⊗ X₂) (Y₂ ⊗ Y₁) = η_ X₁ Y₁ ⊗≫ (X₁ ◁ η_ X₂ Y₂) ▷ Y₁ ⊗≫ 𝟙 _ :=
+  rfl
+
+lemma ExactPairing.tensor_evaluation {X₁ X₂ Y₁ Y₂ : C}
+    [ExactPairing X₁ Y₁] [ExactPairing X₂ Y₂] :
+    ε_ (X₁ ⊗ X₂) (Y₂ ⊗ Y₁) = 𝟙 _ ⊗≫ Y₂ ◁ (ε_ X₁ Y₁ ▷ X₂) ⊗≫ ε_ X₂ Y₂ :=
+  rfl
+
 /-- A class of objects which have a right dual. -/
 class HasRightDual (X : C) where
   /-- The right dual of the object `X`. -/
