@@ -4102,6 +4102,7 @@ public import Mathlib.Data.Matrix.DualNumber
 public import Mathlib.Data.Matrix.Invertible
 public import Mathlib.Data.Matrix.Mul
 public import Mathlib.Data.Matrix.PEquiv
+public import Mathlib.Data.Matrix.Reflection
 public import Mathlib.Data.Multiset.AddSub
 public import Mathlib.Data.Multiset.Antidiagonal
 public import Mathlib.Data.Multiset.Basic
@@ -5105,7 +5106,6 @@ public import Mathlib.LinearAlgebra.Matrix.Polynomial
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 public import Mathlib.LinearAlgebra.Matrix.ProjectiveSpecialLinearGroup
 public import Mathlib.LinearAlgebra.Matrix.Rank
-public import Mathlib.LinearAlgebra.Matrix.Reflection
 public import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.LinearAlgebra.Matrix.RowCol
 public import Mathlib.LinearAlgebra.Matrix.SchurComplement
