@@ -319,6 +319,7 @@ lemma injectiveDimension_ne_top_iff (X : C) :
       simp only [ne_eq, WithBot.coe_eq_top, ENat.coe_ne_top, not_false_eq_true, true_iff]
       exact ⟨d, by simpa only [← injectiveDimension_le_iff] using hd.le⟩
 
+/-- An injective object has injective dimension at most zero. -/
 lemma Injective.injectiveDimension_le_zero (X : C) [Injective X] : injectiveDimension X ≤ 0 :=
   (injectiveDimension_le_iff X 0).mpr (injective_iff_hasInjectiveDimensionLT_one.mp ‹_›)
 
@@ -329,6 +330,8 @@ namespace ShortExact
 variable {S : ShortComplex C} (hS : S.ShortExact)
 include hS
 
+/-- In a short exact complex, the injective dimension of the middle object is bounded by
+the supremum of the injective dimensions of the outer objects. -/
 lemma injectiveDimension_X₂_le_sup :
     injectiveDimension S.X₂ ≤ injectiveDimension S.X₁ ⊔ injectiveDimension S.X₃ := by
   refine le_of_forall_ge (fun N ↦ ?_)
@@ -341,8 +344,11 @@ lemma injectiveDimension_X₂_le_sup :
     | coe n =>
       simpa [injectiveDimension_le_iff] using hS.hasInjectiveDimensionLT_X₂ (n + 1)
 
+/-- In a short exact complex, the injective dimension of the left object is bounded by
+`max (injectiveDimension S.X₂) (injectiveDimension S.X₃ + 1)`. -/
 lemma injectiveDimension_X₁_le_sup :
-    injectiveDimension S.X₁ ≤ injectiveDimension S.X₂ ⊔ (injectiveDimension S.X₃ + 1) := by
+    injectiveDimension S.X₁ ≤
+      injectiveDimension S.X₂ ⊔ (injectiveDimension S.X₃ + 1) := by
   refine le_of_forall_ge (fun N ↦ ?_)
   induction N with
   | bot =>
@@ -355,8 +361,11 @@ lemma injectiveDimension_X₁_le_sup :
       simpa [injectiveDimension_le_iff, ENat.WithBot.add_one_le_natCast_iff,
         injectiveDimension_lt_iff] using fun h2 h3 ↦ hS.hasInjectiveDimensionLT_X₁ n h3 h2
 
-lemma hasinjectiveDimension_X₃_succ_le_sup :
-    injectiveDimension S.X₃ + 1 ≤ (injectiveDimension S.X₂ + 1) ⊔ injectiveDimension S.X₁ := by
+/-- In a short exact complex, the successor of the injective dimension of the right object
+is bounded by `max (injectiveDimension S.X₂ + 1) (injectiveDimension S.X₁)`. -/
+lemma injectiveDimension_X₃_succ_le_sup :
+    injectiveDimension S.X₃ + 1 ≤
+      (injectiveDimension S.X₂ + 1) ⊔ injectiveDimension S.X₁ := by
   refine le_of_forall_ge (fun N ↦ ?_)
   induction N with
   | bot =>
@@ -369,10 +378,12 @@ lemma hasinjectiveDimension_X₃_succ_le_sup :
       simpa [injectiveDimension_le_iff, ENat.WithBot.add_one_le_natCast_iff,
         injectiveDimension_lt_iff] using fun h2 h1 ↦ hS.hasInjectiveDimensionLT_X₃ n h2 h1
 
-lemma injectiveDimension_X₃_eq_succ_of_not_projective (i : Injective S.X₂)
+/-- If the middle object of a short exact complex is injective and the left object is not,
+then the injective dimension of the left object is one more than that of the right object. -/
+lemma injectiveDimension_X₁_eq_succ_of_not_injective (i : Injective S.X₂)
     (ni : ¬ Injective S.X₁) : injectiveDimension S.X₁ = injectiveDimension S.X₃ + 1 := by
   refine le_antisymm (hS.injectiveDimension_X₁_le_sup.trans ?_)
-    (hS.hasinjectiveDimension_X₃_succ_le_sup.trans ?_)
+    (hS.injectiveDimension_X₃_succ_le_sup.trans ?_)
   · simp only [sup_le_iff, le_refl, and_true]
     trans (0 : ℕ) + 1
     · grw [i.injectiveDimension_le_zero, Nat.cast_zero, zero_add, zero_le_one]
