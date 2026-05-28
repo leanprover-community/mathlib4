@@ -43,7 +43,9 @@ When a rewrite lemma introduces new goals, these are shown after a `⊢`.
 - Improve user extensibility:
   - Modifying which tactics are suggested.
   - Modifying which lemmas are suggested.
-- Improve the logic around `nth_rw` and occurrences.
+- The `n` in `nth_rw` can be incorrect when the lemma has too many implicit arguments, such as
+  `add_pos_of_left` or `and_comm`.
+- When selecting multiple expressions, consider doing a rewrite at all these expressions.
 - It may be possible to have integrated support for creating sequences of `calc` blocks,
   using the suggested rewrites.
 - Detect whether we are in `conv` mode, by detecting the relevant mdata.
@@ -162,11 +164,11 @@ public def clickSuggestionsComponent : Component PanelWidgetProps :=
   mk_rpc_widget% rpc
 
 /--
-The `#click_suggestions` command enables a tool that gives tactic suggestions when an expression
-in the tactic state is selected with shift-click. Each suggestion has an insert button for pasting
-it into the editor, at the position of the cursor.
+`#click_suggestions` enables a widget in the infoview that gives tactic suggestions for
+the expression in the tactic state that was (most recently) selected with shift-click.
+Each suggestion has an insert button for pasting it into the editor, at the position of the cursor.
 
-All theorems are searched for use in `apply`, `apply at`, `rw` and `grw`.
+Theorems are searched for use in `apply`, `apply at`, `rw` and `grw`.
 These suggestions are grouped and sorted by the pattern that the lemmas match with.
 Rewrites that don't change the goal and rewrites that create the same goal as another rewrite
 are filtered out, as well as suggestions that create new goal(s) with metavariables in them.

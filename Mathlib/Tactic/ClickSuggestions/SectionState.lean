@@ -108,7 +108,7 @@ def renderSection {α} (tactic : String) (kind : SectionKind) (s : SectionState 
     | .hyp => " (local hypotheses)"
     | .currFile => " (current file)"
     | .imported => ""
-  let header := <span> {.text s!"{tactic}: "} {head} {.text suffix} </span>
+  let header := <span> {.text s!"{tactic} ("} {head} {.text ")"} {.text suffix} </span>
   -- Don't apply any filter to local results.
   unless kind matches .imported do
     return <details «open»={true}> <summary> {header} </summary> {all} </details>
