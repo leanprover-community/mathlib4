@@ -132,13 +132,20 @@ variable (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [MulSemiringAct
   [MulSemiringAction G L] [SMulDistribClass G B L]
 
 /-- `IsGaloisGroup` for rings implies `IsGaloisGroup` for their fraction fields. -/
-theorem IsGaloisGroup.to_isFractionRing [Finite G] [hGAB : IsGaloisGroup G A B] :
+theorem IsGaloisGroup.to_isFractionRing_of_isIntegral
+    [Algebra.IsIntegral A B] [hGAB : IsGaloisGroup G A B] :
     IsGaloisGroup G K L where
   faithful :=
     have := hGAB.faithful
     IsFractionRing.faithfulSMul G B L
   commutes := IsFractionRing.smulCommClass G A B K L
-  isInvariant := IsFractionRing.isInvariant G A B K L
+  isInvariant := IsFractionRing.isInvariant_of_isIntegral G A B K L
+
+/-- `IsGaloisGroup` for rings implies `IsGaloisGroup` for their fraction fields. -/
+theorem IsGaloisGroup.to_isFractionRing [Finite G] [hGAB : IsGaloisGroup G A B] :
+    IsGaloisGroup G K L :=
+  have := hGAB.isInvariant.isIntegral
+  IsGaloisGroup.to_isFractionRing_of_isIntegral G A B K L
 
 /-- If `B` is an integral extension of an integrally closed domain `A`, then `IsGaloisGroup` for
 their fraction fields implies `IsGaloisGroup` for these rings. -/
