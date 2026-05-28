@@ -26,19 +26,6 @@ open CategoryTheory Limits
 
 noncomputable section
 
-namespace CategoryTheory.Functor
-
-instance {C : Type u₁} [Category.{v₁} C] [HasTerminal C] {D : Type u₂}
-    [Category.{v₂} D] (F : C ⥤ D) [PreservesLimit (Functor.empty.{0} C) F] : F.Final :=
-  have : (fromPUnit.{0} (⊤_ C)).Final := final_fromPUnit_of_isTerminal terminalIsTerminal
-  have : (fromPUnit.{0} (F.obj (⊤_ C))).Final := final_fromPUnit_of_isTerminal
-    (terminalIsTerminal.isTerminalObj F (⊤_ C))
-  have : ((fromPUnit.{0} (⊤_ C)) ⋙ F).Final := final_of_natIso (F := fromPUnit.{0} (F.obj (⊤_ C)))
-    (NatIso.ofComponents (fun _ => Iso.refl _))
-  final_of_final_comp (fromPUnit.{0} (⊤_ C)) F
-
-end CategoryTheory.Functor
-
 namespace CategoryTheory.Over
 
 instance post_preservesTerminal {T : Type u₁} [Category.{v₁} T] {D : Type u₂} [Category.{v₂} D]
@@ -50,6 +37,22 @@ instance post_preservesTerminal {T : Type u₁} [Category.{v₁} T] {D : Type u�
 
 end CategoryTheory.Over
 
+namespace CategoryTheory.GrothendieckTopology.CoversTop
+
+protected lemma map
+    {C D : Type*} [Category* C] [Category* D] {J : GrothendieckTopology C}
+    {I : Type*} {X : I → C} (h : J.CoversTop X)
+    (F : C ⥤ D) (K : GrothendieckTopology D) [F.Final]
+    (hF : CoverPreserving J K F) :
+    K.CoversTop (fun i ↦ F.obj (X i)) := by
+  intro Y
+  obtain ⟨Z, f, _⟩ := StructuredArrow.mk_surjective (Classical.arbitrary (StructuredArrow Y F))
+  refine K.superset_covering ?_ (K.pullback_stable f ((hF.cover_preserve (h Z))))
+  rintro Y' g ⟨T, k, l, ⟨i, ⟨m⟩⟩, hk⟩
+  exact ⟨i, ⟨l ≫ F.map m⟩⟩
+
+end CategoryTheory.GrothendieckTopology.CoversTop
+
 namespace SheafOfModules
 
 variable {C : Type u₁} [Category.{v₁} C] [HasBinaryProducts C] {D : Type u₂} [Category.{v₂} D]
@@ -59,6 +62,31 @@ variable {C : Type u₁} [Category.{v₁} C] [HasBinaryProducts C] {D : Type u�
   {S : Sheaf J RingCat.{u}} {R : Sheaf K RingCat.{u}}
   (M : SheafOfModules.{u} S)
   (φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R) (X : C)
+
+section
+
+variable (J K F) in
+omit [HasBinaryProducts C] [HasBinaryProducts D]
+  [PreservesLimitsOfShape (Discrete WalkingPair) F] in
+theorem coversTop_map [F.Final] {I : Type w} {X : I → C} (h : J.CoversTop X) :
+    K.CoversTop (fun i => F.obj (X i)) := by
+  intro Y
+  let X₀ := Functor.Final.lift F Y
+  let f : Y ⟶ F.obj X₀ := Functor.Final.homToLift F Y
+  let S : J.Cover X₀ := h.cover X₀
+  let E : J.OneHypercover X₀ := S.oneHypercover
+  have hE : (E.toPreOneHypercover.map F).sieve₀ ∈ K (F.obj X₀) :=
+    GrothendieckTopology.OneHypercover.IsPreservedBy.mem₀ (E := E) (F := F) (K := K)
+  have hFX₀ : Sieve.ofObjects (fun i => F.obj (X i)) (F.obj X₀) ∈ K (F.obj X₀) := by
+    refine K.superset_covering ?_ hE
+    change (E.toPreOneHypercover.toPreZeroHypercover.map F).sieve₀ ≤
+      Sieve.ofObjects (fun i => F.obj (X i)) (F.obj X₀)
+    rw [PreZeroHypercover.sieve₀_map]
+    simpa [S, E, Function.comp_def] using
+      (Sieve.functorPushforward_ofObjects_le (F := F) X X₀)
+  simpa [f] using K.pullback_stable f hFX₀
+
+end
 
 abbrev StructureHomOver :
     S.over X ⟶ ((Over.post F).sheafPushforwardContinuous _ _ _).obj (R.over (F.obj X)) :=
@@ -96,8 +124,6 @@ abbrev overPullbackIso :
     (pullback (StructureHomOver φ X)).obj (M.over X) ≅
     ((pullback φ).obj M).over (F.obj X) := (pullbackRestrict φ X).app M
 
-#check M.overPullbackIso φ X
-
 variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
   [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
@@ -106,36 +132,6 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
   [∀ X, (K.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
   [∀ X, (pushforward.{u} (StructureHomOver φ X)).IsRightAdjoint]
   [F.Final]
-
-#check QuasicoherentData.{u} M
-
-set_option backward.isDefEq.respectTransparency false in
-omit [HasBinaryProducts C] [HasBinaryProducts D]
-  [PreservesLimitsOfShape (Discrete WalkingPair) F]
-  [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-  [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]
-  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
-  [∀ X, (K.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-  [∀ X, HasSheafify (K.over X) AddCommGrpCat.{u}]
-  [∀ X, (K.over X).WEqualsLocallyBijective AddCommGrpCat.{u}] in
-variable (J K F) in
-theorem coversTop_map {I : Type w} {X : I → C} (h : J.CoversTop X) :
-    K.CoversTop (fun i => F.obj (X i)) := by
-  intro Y
-  let X₀ := Functor.Final.lift F Y
-  let f : Y ⟶ F.obj X₀ := Functor.Final.homToLift F Y
-  let S : J.Cover X₀ := h.cover X₀
-  let E : J.OneHypercover X₀ := S.oneHypercover
-  have hE : (E.toPreOneHypercover.map F).sieve₀ ∈ K (F.obj X₀) :=
-    GrothendieckTopology.OneHypercover.IsPreservedBy.mem₀ (E := E) (F := F) (K := K)
-  have hFX₀ : Sieve.ofObjects (fun i => F.obj (X i)) (F.obj X₀) ∈ K (F.obj X₀) := by
-    refine K.superset_covering ?_ hE
-    change (E.toPreOneHypercover.toPreZeroHypercover.map F).sieve₀ ≤
-      Sieve.ofObjects (fun i => F.obj (X i)) (F.obj X₀)
-    rw [PreZeroHypercover.sieve₀_map]
-    simpa [S, E, Function.comp_def] using
-      (Sieve.functorPushforward_ofObjects_le (F := F) X X₀)
-  simpa [f] using K.pullback_stable f hFX₀
 
 variable {M} in
 def QuasicoherentData.pullback (q : M.QuasicoherentData) :
