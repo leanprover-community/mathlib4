@@ -17,11 +17,6 @@ public import Mathlib.LinearAlgebra.Matrix.Rank
 This file proves the spectral theorem for matrices. The proof of the spectral theorem is based on
 the spectral theorem for linear maps (`LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply`).
 
-## Main results
-
-* `Matrix.spectralRadius_transpose`: the spectral radius is invariant under transpose
-  (via `Matrix.spectrum_transpose`).
-
 ## Tags
 
 spectral theorem, diagonalization theorem -/
