@@ -11,7 +11,7 @@ public import Mathlib.SetTheory.Cardinal.Aleph
 /-!
 # Eventually constant monotone functions
 
-This file proves variations of the following theorem: if `α` is a partial order and `β` is a linear
+This file proves variations of the following theorem: if `α` is a linear order and `β` is a partial
 order with `#β < cof α`, then any monotone function `f : α → β` must be eventually constant. In
 particular, this applies for functions from `Cardinal.{u}` or `Ordinal.{u}` into a `Small.{u}` type.
 -/
