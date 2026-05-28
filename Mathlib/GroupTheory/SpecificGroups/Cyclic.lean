@@ -573,7 +573,8 @@ variable (G) in
 noncomputable def IsCyclic.mulAutMulEquiv [Group G] [h : IsCyclic G] :
     MulAut G ≃* (ZMod (Nat.card G))ˣ :=
   ((MulAut.congr (zmodCyclicMulEquiv h)).symm.trans
-    (MulAutMultiplicative (ZMod (Nat.card G)))).trans (ZMod.AddAutEquivUnits (Nat.card G))
+    (MulAutMultiplicative (ZMod (Nat.card G)))).trans
+      (ZMod.AddAutEquivUnits (Nat.card G)).toMultiplicative
 
 variable (G) in
 theorem IsCyclic.card_mulAut [Group G] [Finite G] [h : IsCyclic G] :

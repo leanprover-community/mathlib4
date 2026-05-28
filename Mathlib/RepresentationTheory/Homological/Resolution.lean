@@ -252,8 +252,8 @@ def forget₂ToModuleCatHomotopyEquiv :
           (extraDegeneracyCompForgetAugmentedToModule k G)).trans
       (HomotopyEquiv.ofIso <|
         (ChainComplex.single₀ (ModuleCat.{u} k)).mapIso
-          (@Finsupp.LinearEquiv.finsuppUnique k k _ _ _ (⊤_ Type u)
-              Types.terminalIso.toEquiv.unique).toModuleIso)
+          (@Finsupp.uniqueLinearEquiv k (⊤_ Type u) k _ _ _ _
+            Types.terminalIso.toEquiv.unique.default).toModuleIso)
 
 /-- The hom of `k`-linear `G`-representations `k[G¹] → k` sending `∑ nᵢgᵢ ↦ ∑ nᵢ`. -/
 def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k := ofHom

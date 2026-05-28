@@ -723,7 +723,7 @@ theorem Nondegenerate.congr (h : B.Nondegenerate) :
 theorem separatingLeft_congr_iff :
     (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingLeft ↔ B.SeparatingLeft :=
   ⟨fun h ↦ by
-    convert h.congr e₁.symm e₂.symm
+    convert! h.congr e₁.symm e₂.symm
     ext x y
     simp,
    SeparatingLeft.congr e₁ e₂⟩
@@ -1007,7 +1007,7 @@ lemma nondegenerate_restrict_iff_disjoint_ker (hs : ∀ x, 0 ≤ B x x) (hB : B.
   have key : x ∈ W ⊓ LinearMap.ker B := ⟨hx, h⟩
   simpa [hW.eq_bot] using key
 
-variable [IsDomain R] [IsTorsionFree R M]
+variable [IsTorsionFree R M]
 
 /-- Strict **Cauchy-Schwarz** is equivalent to linear independence for positive definite forms. -/
 lemma apply_mul_apply_lt_iff_linearIndependent (hp : ∀ x, x ≠ 0 → 0 < B x x) (x y : M) :
