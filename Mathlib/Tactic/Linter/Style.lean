@@ -540,11 +540,25 @@ private def moduleToSuffix : Name → String
   | .num n _ => moduleToSuffix n
   | .str n s => moduleToSuffix n ++ "_" ++ s.decapitalize
 
+private def stripTheoremPrefixAux (env : Environment) (numComponents : Nat) : Name → Option Nat
+  | .num _ _ => none
+  | .str pre _ =>
+    if wasOriginallyTheorem env pre then
+      some (numComponents + 1)
+    else
+      stripTheoremPrefixAux env (numComponents + 1) pre
+  | .anonymous => none
+
+private def _root_.Lean.Name.dropRevAux (acc : List String) : Nat → Name → Name
+  | n+1, .str pre s => pre.dropRevAux (s :: acc) n
+  | _,   _ => acc.foldl Name.str .anonymous
+
 /-- Exempt definitions in the namespace of a theorem. -/
-private def hasTheoremPrefix (env : Environment) : Name → Bool
-  | .num pre _
-  | .str pre _ => wasOriginallyTheorem env pre || hasTheoremPrefix env pre
-  | .anonymous => false
+private def stripTheoremPrefix (env : Environment) (name : Name) : Name :=
+  if let some n := stripTheoremPrefixAux env 0 name then
+    name.dropRevAux [] n
+  else
+    name
 
 /--
 Check `name` is a `Name` containing an underscore that should be linted against
@@ -581,8 +595,7 @@ such names violate the naming convention. -/
     -- `Prop`-typed `defs` should be caught by other linter, may be made by `unif_hint`
     if ← isProp type then return none
     let project := ((← getEnv).getModuleFor? declName).elim `NoProjectFound (·.getRoot)
-    let declName := privateToUserName declName
-    if hasTheoremPrefix (← getEnv) declName then return none
+    let declName := privateToUserName (stripTheoremPrefix (← getEnv) declName)
     if isBadNameWithUnderscore project declName then
       return m!"The definition `{declName}` contains an underscore. \
         This almost surely violates the definition naming convention; \
