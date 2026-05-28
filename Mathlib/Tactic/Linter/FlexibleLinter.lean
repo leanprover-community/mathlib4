@@ -520,7 +520,7 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
     let msg := match stainStx.getKind with
       | ``Lean.Parser.Tactic.simp => match d with
         | .wildcard => m!"`{stainStr}` is a flexible tactic that potentially modifies all \
-          hypotheses and the goal. \
+          hypotheses and the current goal. \
           Try `simp?` and use the suggested `simp only [...]`. \
           Alternatively, use `suffices` to explicitly state the simplified form."
         | _ => m!"`{stainStr}` is a flexible tactic modifying `{d}`. \

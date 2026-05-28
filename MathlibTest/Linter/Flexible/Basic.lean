@@ -14,7 +14,7 @@ set_option linter.unusedVariables false
 
 This file contains basic tests for the flexible linter, which do not require any advanced imports.
 Anything which requires groups, rings or algebraic structures is considered advanced, and
-tests for these can be found in `MathlibTest/ImportHeavyFlexibleLinter.lean`
+tests for these can be found in `MathlibTest/Linter/Flexible/ImportHeavy.lean`
 
 -/
 
@@ -55,7 +55,7 @@ example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
   exact Nat.le_succ_of_le h
 
 /--
-warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
+warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
@@ -66,7 +66,7 @@ info: `exact
   Nat.le_succ_of_le
     h` uses a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
 ---
-warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
+warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
@@ -83,34 +83,14 @@ example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
   exact Nat.le_succ_of_le h
 
 /--
-warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
+warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: `exact
   h2` uses a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
 ---
-warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
-
-Note: This linter can be disabled with `set_option linter.flexible false`
----
-info: `exact
-  h2` uses a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
--/
-#guard_msgs in
-example {a b : Nat} (h1 : 0 + 0 = 0) (h2 : a ≤ b) : a ≤ b := by
-  simp at *
-  exact h2
-
-/--
-warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
-
-Note: This linter can be disabled with `set_option linter.flexible false`
----
-info: `exact
-  h2` uses a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
----
-warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
+warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
@@ -123,7 +103,27 @@ example {a b : Nat} (h1 : 0 + 0 = 0) (h2 : a ≤ b) : a ≤ b := by
   exact h2
 
 /--
-warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
+warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
+
+Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: `exact
+  h2` uses a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
+---
+warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
+
+Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: `exact
+  h2` uses a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
+-/
+#guard_msgs in
+example {a b : Nat} (h1 : 0 + 0 = 0) (h2 : a ≤ b) : a ≤ b := by
+  simp at *
+  exact h2
+
+/--
+warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
@@ -133,7 +133,7 @@ info: Try this:
 info: `exact
   h` uses a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
 ---
-warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
+warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
