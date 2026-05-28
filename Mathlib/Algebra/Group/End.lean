@@ -636,10 +636,13 @@ namespace MulAut
 
 variable (M) [Mul M]
 
-<<<<<<< HEAD
+@[to_additive]
 instance : One (MulAut M) where one := .refl _
+@[to_additive]
 instance : Mul (MulAut M) where mul g h := .trans h g
+@[to_additive]
 instance : Inv (MulAut M) where inv := .symm
+@[to_additive]
 instance : Pow (MulAut M) Nat where
   pow f n :=
     { toEquiv := f.toEquiv ^ n,
@@ -649,7 +652,6 @@ instance : Pow (MulAut M) Nat where
 /-- The group operation on additive automorphisms is defined by `g h => AddEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
-=======
 /-- If `M` is a type with multiplicative, then multiplicative automorphisms of `M` have the
 structure of a group. -/
 @[to_additive /-- If `M` is a type with addition, then additive automorphisms of `M` have the
@@ -660,7 +662,6 @@ with `to_additive` translation. Without this, any proof in group theory making u
 conjugation action `G →* MulAut G` would be impossible to `to_additive`-ize because a correct
 additivization would require inserting `Additive` around `AddAut G` and dealing with these extra
 `Additive`s in the proof, but `to_additive` is unable to do this automatically. -/]
->>>>>>> master
 instance : Group (MulAut M) where
   mul_assoc _ _ _ := rfl
   one_mul _ := rfl
@@ -772,73 +773,6 @@ namespace AddAut
 
 variable (A) [Add A]
 
-<<<<<<< HEAD
-instance : One (AddAut A) where one := .refl _
-instance : Mul (AddAut A) where mul g h := .trans h g
-instance : Inv (AddAut A) where inv := .symm
-instance : Pow (AddAut A) Nat where
-  pow f n :=
-    { toEquiv := f.toEquiv ^ n,
-      map_add' := Nat.rec (fun _ _ => rfl)
-        (fun n ih x y => (congrArg f^[n] (map_add f x y)).trans (ih (f x) (f y))) n }
-
-/-- The group operation on additive automorphisms is defined by `g h => AddEquiv.trans h g`.
-This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
--/
-instance : Group (AddAut A) where
-  mul_assoc _ _ _ := rfl
-  one_mul _ := rfl
-  mul_one _ := rfl
-  inv_mul_cancel := AddEquiv.self_trans_symm
-  npow n f := f ^ n
-  zpow := zpowRec fun n f => f ^ n
-
-instance : Inhabited (AddAut A) :=
-  ⟨1⟩
-
-@[simp]
-theorem coe_mul (e₁ e₂ : AddAut A) : ⇑(e₁ * e₂) = e₁ ∘ e₂ :=
-  rfl
-
-@[simp]
-theorem coe_one : ⇑(1 : AddAut A) = id :=
-  rfl
-
-@[simp]
-theorem coe_inv (e : AddAut A) : ⇑e⁻¹ = e.symm := rfl
-
-theorem mul_def (e₁ e₂ : AddAut A) : e₁ * e₂ = e₂.trans e₁ :=
-  rfl
-
-theorem one_def : (1 : AddAut A) = AddEquiv.refl _ :=
-  rfl
-
-theorem inv_def (e₁ : AddAut A) : e₁⁻¹ = e₁.symm :=
-  rfl
-
-@[simp]
-theorem mul_apply (e₁ e₂ : AddAut A) (a : A) : (e₁ * e₂) a = e₁ (e₂ a) :=
-  rfl
-
-@[simp]
-theorem one_apply (a : A) : (1 : AddAut A) a = a :=
-  rfl
-
-@[simp]
-theorem inv_symm (e : AddAut A) : e⁻¹.symm = e := rfl
-
-@[simp]
-theorem symm_inv (e : AddAut A) : e.symm⁻¹ = e := rfl
-
-@[simp]
-theorem inv_apply (e : AddAut A) (a : A) : e⁻¹ a = e.symm a := rfl
-
-theorem inv_apply_self (e : AddAut A) (a : A) : e⁻¹ (e a) = a :=
-  AddEquiv.apply_symm_apply _ _
-
-theorem apply_inv_self (e : AddAut A) (a : A) : e (e⁻¹ a) = a :=
-  AddEquiv.apply_symm_apply _ _
-=======
 @[deprecated (since := "2026-05-26")] alias coe_mul := coe_add
 @[deprecated (since := "2026-05-26")] alias coe_one := coe_zero
 @[deprecated (since := "2026-05-26")] alias coe_inv := coe_neg
@@ -852,7 +786,6 @@ theorem apply_inv_self (e : AddAut A) (a : A) : e (e⁻¹ a) = a :=
 @[deprecated (since := "2026-05-26")] alias inv_apply := neg_apply
 @[deprecated (since := "2026-05-26")] alias inv_apply_self := neg_apply_self
 @[deprecated (since := "2026-05-26")] alias apply_inv_self := apply_neg_self
->>>>>>> master
 
 /-- Monoid hom from the group of multiplicative automorphisms to the group of permutations. -/
 def toPerm : AddAut A →+ Additive (Equiv.Perm A) where
