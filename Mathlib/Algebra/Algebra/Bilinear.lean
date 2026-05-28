@@ -201,6 +201,10 @@ variable [CommSemiring R]
 lemma comp_mul' (f : A →ₙₐ[R] B) : (f : A →ₗ[R] B) ∘ₗ μ = μ[R] ∘ₗ (f ⊗ₘ f) :=
   TensorProduct.ext' <| by simp
 
+lemma mul'_map (f : A →ₙₐ[R] B) (x : A ⊗[R] A) :
+    μ (((f : A →ₗ[R] B) ⊗ₘ (f : A →ₗ[R] B)) x) = f (μ x) :=
+  (LinearMap.congr_fun (comp_mul' f) x).symm
+
 end NonUnitalAlgHom
 
 namespace AlgHom
@@ -208,5 +212,8 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 lemma comp_mul' (f : A →ₐ B) : f.toLinearMap ∘ₗ μ = μ[R] ∘ₗ (f.toLinearMap ⊗ₘ f.toLinearMap) :=
   TensorProduct.ext' <| by simp
+
+lemma mul'_map (f : A →ₐ B) (x : A ⊗[R] A) : μ ((f.toLinearMap ⊗ₘ f.toLinearMap) x) = f (μ x) :=
+  (LinearMap.congr_fun (comp_mul' f) x).symm
 
 end AlgHom
