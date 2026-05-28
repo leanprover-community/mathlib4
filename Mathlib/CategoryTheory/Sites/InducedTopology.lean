@@ -38,7 +38,7 @@ namespace CategoryTheory
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
   {E : Type u₃} [Category.{v₃} E]
 
-variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
+variable {F : C ⥤ D} {J : GrothendieckTopology C} {K : GrothendieckTopology D}
 
 namespace Functor
 
@@ -50,8 +50,6 @@ topology on `C` making `F` continuous.
 def inducedTopology (F : C ⥤ D) (K : GrothendieckTopology D) :
     GrothendieckTopology C :=
   Sheaf.finestTopology <| Set.range fun G : Sheaf K (Type max u₁ v₁ u₂ v₂) ↦ F.op ⋙ G.obj
-
-variable {F : C ⥤ D} {K : GrothendieckTopology D}
 
 instance : F.IsContinuous (F.inducedTopology K) K where
   op_comp_isSheaf_of_types G := by
@@ -110,7 +108,7 @@ lemma mem_restrictedTopology_of_functorPushforward_mem {X : C} {S : Sieve X}
   apply Precoverage.generate_mem_toGrothendieck
   simpa [GrothendieckTopology.mem_toPrecoverage_iff, Sieve.generate_map_eq_functorPushforward]
 
-lemma inducedTopology_le : F.inducedTopology K ≤ F.restrictedTopology K :=
+lemma inducedTopology_le_restrictedTopology : F.inducedTopology K ≤ F.restrictedTopology K :=
   fun _ _ hS ↦ mem_restrictedTopology_of_functorPushforward_mem <|
     (CoverPreserving.of_isContinuous F _ _).cover_preserve hS
 
@@ -120,7 +118,7 @@ induced topology. This holds for example if `G` is locally faithful, locally ful
 -/
 lemma restrictedTopology_eq_inducedTopology [F.IsContinuous (F.restrictedTopology K) K] :
     F.restrictedTopology K = F.inducedTopology K := by
-  refine le_antisymm ?_ inducedTopology_le
+  refine le_antisymm ?_ inducedTopology_le_restrictedTopology
   rw [le_inducedTopology_iff]
   infer_instance
 
@@ -131,5 +129,10 @@ lemma restrictedTopology_eq_inducedTopology_of_isContinuous [F.IsContinuous J K]
   rw [restrictedTopology_eq_inducedTopology]
 
 end Functor
+
+lemma Precoverage.toGrothendieck_comap_le_restrictedTopology (K : Precoverage D) :
+    (K.comap F).toGrothendieck ≤ F.restrictedTopology K.toGrothendieck := by
+  rw [Functor.restrictedTopology]
+  grw [← K.le_toPrecoverage_toGrothendieck]
 
 end CategoryTheory

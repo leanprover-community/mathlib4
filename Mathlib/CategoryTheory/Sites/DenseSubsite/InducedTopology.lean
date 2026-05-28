@@ -105,7 +105,8 @@ theorem coverPreserving_restrictedTopology : CoverPreserving (G.restrictedTopolo
 alias inducedTopology_coverPreserving := coverPreserving_restrictedTopology
 
 variable {G K} in
-/-- If a functor `G : C ⥤ (D, K)` is locally fully faithful and locally dense, . -/
+/-- If a functor `G : C ⥤ (D, K)` is locally fully faithful and locally dense, `S` is
+a covering in the restricted topology on `C` if its image generates a `K`-cover. -/
 @[simp]
 lemma mem_restrictedTopology_iff {X : C} {S : Sieve X} :
     S ∈ G.restrictedTopology K X ↔ S.functorPushforward G ∈ K (G.obj X) :=
@@ -166,16 +167,6 @@ namespace Precoverage
 
 variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) (K : Precoverage D)
 
-lemma toGrothendieck_comap_le_restrictedTopology [F.IsLocallyFull K.toGrothendieck]
-    [F.IsLocallyFaithful K.toGrothendieck] [F.LocallyCoverDense K.toGrothendieck] :
-    (K.comap F).toGrothendieck ≤ F.restrictedTopology K.toGrothendieck := by
-  rw [Precoverage.toGrothendieck_le_iff_le_toPrecoverage]
-  intro X R hR
-  rw [Precoverage.mem_comap_iff] at hR
-  rw [GrothendieckTopology.mem_toPrecoverage_iff, Functor.mem_restrictedTopology_iff,
-    ← Sieve.generate_map_eq_functorPushforward]
-  exact Precoverage.generate_mem_toGrothendieck hR
-
 variable [K.HasIsos] [K.IsStableUnderBaseChange] [K.IsStableUnderComposition]
   [K.HasPullbacks]
 
@@ -212,6 +203,9 @@ lemma toGrothendieck_comap_eq_restrictedTopology [F.Faithful] [F.Full]
 
 @[deprecated (since := "2026-05-28")]
 alias toGrothendieck_comap_eq_inducedTopology := toGrothendieck_comap_eq_restrictedTopology
+
+@[deprecated (since := "2026-05-28")]
+alias toGrothendieck_comap_le_inducedTopology := toGrothendieck_comap_le_restrictedTopology
 
 end Precoverage
 
