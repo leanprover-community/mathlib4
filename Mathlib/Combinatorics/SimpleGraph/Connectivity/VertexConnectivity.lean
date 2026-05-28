@@ -6,6 +6,7 @@ Authors: Youheng Luo
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.IsolateVerts
 public import Mathlib.Data.Set.Card
 
 /-!
@@ -16,8 +17,7 @@ This file defines `k`-vertex connectivity for simple graphs.
 ## Main definitions
 
 * `SimpleGraph.IsVertexReachable`: Two vertices are `k`-vertex-reachable if they remain reachable
-  after removing strictly fewer than `k` other vertices. Formally, removing a set `s` of
-  fewer than `k` vertices amounts to considering the induced subgraph on `sᶜ`.
+  after removing strictly fewer than `k` other vertices.
 * `SimpleGraph.IsVertexPreconnected`: A graph is `k`-vertex-preconnected if any two vertices
   are `k`-vertex-reachable, meaning the removal of any set of strictly fewer than `k` vertices
   leaves any pair of vertices outside that set reachable.
@@ -33,17 +33,14 @@ variable {V : Type*} {G H : SimpleGraph V} {k l : ℕ∞} {u v : V}
 
 variable (G k u v) in
 /-- Two vertices are `k`-vertex-reachable if they remain reachable after removing
-strictly fewer than `k` other vertices. Formally, after removing `s` (with `s.encard < k`),
-reachability is checked in the induced subgraph on the complement `sᶜ`. -/
+strictly fewer than `k` other vertices. -/
 def IsVertexReachable : Prop :=
-  ∀ ⦃s : Set V⦄, s.encard < k → (hu : u ∉ s) → (hv : v ∉ s) →
-    (G.induce sᶜ).Reachable ⟨u, hu⟩ ⟨v, hv⟩
+  ∀ ⦃s : Set V⦄, s.encard < k → u ∉ s → v ∉ s → (G.isolateVerts s).Reachable u v
 
 variable (u) in
 @[simp]
 lemma IsVertexReachable.refl : G.IsVertexReachable k u u :=
-  -- Both endpoints reduce to ⟨u, _⟩; proof irrelevance makes them equal
-  fun _ _ _ _ ↦ .rfl
+  fun _ _ _ _ ↦ .refl _
 
 @[symm]
 lemma IsVertexReachable.symm (h : G.IsVertexReachable k u v) : G.IsVertexReachable k v u :=
@@ -55,47 +52,34 @@ lemma isVertexReachable_comm : G.IsVertexReachable k u v ↔ G.IsVertexReachable
 @[gcongr]
 lemma IsVertexReachable.mono (hGH : G ≤ H) (h : G.IsVertexReachable k u v) :
     H.IsVertexReachable k u v :=
-  -- G.induce sᶜ ≤ H.induce sᶜ because adjacency in the induced subgraph is adjacency in G/H
-  fun _ hs hu hv ↦ (h hs hu hv).mono (fun ⟨_, _⟩ ⟨_, _⟩ hadj ↦ hGH hadj)
+  fun _ hs hu hv ↦ (h hs hu hv).mono (by intro _ _ ⟨h1, h2, h3⟩; exact ⟨h1, h2, hGH h3⟩)
 
 @[gcongr]
 lemma IsVertexReachable.anti (hkl : k ≤ l) (h : G.IsVertexReachable l u v) :
     G.IsVertexReachable k u v :=
-  fun _ hs hu hv ↦ h (hs.trans_le hkl) hu hv
+  fun _ hs ↦ h (hs.trans_le hkl)
 
 @[simp]
 lemma IsVertexReachable.zero : G.IsVertexReachable 0 u v :=
-  fun _ hs _ _ ↦ absurd hs not_lt_zero
+  fun _ hs ↦ absurd hs not_lt_zero
 
 variable (k) in
 lemma IsVertexReachable.of_adj (h : G.Adj u v) : G.IsVertexReachable k u v :=
-  -- G.Adj u v implies (G.induce sᶜ).Adj ⟨u, hu⟩ ⟨v, hv⟩ definitionally
-  fun _ _ hu hv ↦ Adj.reachable (show (G.induce _).Adj ⟨u, hu⟩ ⟨v, hv⟩ from h)
+  fun _ _ hu hv ↦ Adj.reachable ⟨hu, hv, h⟩
 
 alias Adj.isVertexReachable := IsVertexReachable.of_adj
 
 /-- A vertex pair is reachable if it is `k`-vertex-reachable for `k ≠ 0`. -/
 lemma IsVertexReachable.reachable (hk : k ≠ 0) (h : G.IsVertexReachable k u v) :
     G.Reachable u v := by
-  -- Instantiate with s = ∅ (removing no vertices)
-  have key := h (s := ∅) (by rw [Set.encard_empty]; exact pos_of_ne_zero hk)
-    (Set.notMem_empty u) (Set.notMem_empty v)
-  -- Embed the walk in G.induce ∅ᶜ back into G via Embedding.induce ∅ᶜ : G.induce ∅ᶜ ↪g G
-  exact key.map (Embedding.induce ∅ᶜ).toHom
+  rw [← G.isolateVerts_empty]
+  apply h <;> simp [pos_of_ne_zero hk]
 
 /-- Reachability under 1-vertex-connectivity is equivalent to standard reachability. -/
 @[simp]
 lemma isVertexReachable_one_iff : G.IsVertexReachable 1 u v ↔ G.Reachable u v := by
-  constructor
-  · exact (·.reachable one_ne_zero)
-  · intro h s hs hu hv
-    -- From hs : s.encard < 1, deduce s = ∅
-    have hs0 : s = ∅ := Set.encard_eq_zero.mp (ENat.lt_one_iff_eq_zero.mp hs)
-    subst hs0
-    -- Now hu : u ∉ ∅, hv : v ∉ ∅; goal is (G.induce ∅ᶜ).Reachable ⟨u, hu⟩ ⟨v, hv⟩
-    -- Lift the walk in G to a walk in G.induce ∅ᶜ (all vertices lie in ∅ᶜ = Set.univ)
-    obtain ⟨w⟩ := h
-    exact ⟨w.induce ∅ᶜ fun x _ => Set.notMem_empty x⟩
+  refine ⟨(·.reachable one_ne_zero), fun h s hs hu hv ↦ ?_⟩
+  rwa [Set.encard_eq_zero.mp <| ENat.lt_one_iff_eq_zero.mp hs, isolateVerts_empty]
 
 variable (G k) in
 /-- A graph is `k`-vertex-preconnected if any two vertices are `k`-vertex-reachable. -/
