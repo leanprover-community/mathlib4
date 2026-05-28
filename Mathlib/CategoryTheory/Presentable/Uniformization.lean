@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Presentable.SharplyLT
+public import Mathlib.CategoryTheory.Presentable.SharplyLT.Basic
 
 /-!
 # The uniformization theorem
