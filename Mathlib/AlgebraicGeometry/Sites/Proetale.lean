@@ -144,15 +144,21 @@ def precoverage : Precoverage S.ProEt :=
 abbrev topology : GrothendieckTopology S.ProEt :=
   (precoverage S).toGrothendieck
 
-lemma topology_eq_inducedTopology :
-    topology S = (ProEt.forget S).inducedTopology (proetaleTopology.over S) := by
-  apply MorphismProperty.toGrothendieck_comap_forget_eq_inducedTopology
-  exact proetalePrecoverage_le_precoverage_weaklyEtale
-
 instance : (ProEt.forget S).IsContinuous (topology S) (proetaleTopology.over S) := by
-  rw [topology_eq_inducedTopology]
-  refine Functor.isContinuous_of_coverPreserving (compatiblePreservingOfFlat _ _) ?_
-  exact Functor.inducedTopology_coverPreserving _ _
+  rw [Functor.isContinuous_iff_coverPreserving]
+  exact coverPreserving_comap_forget _ proetalePrecoverage_le_precoverage_weaklyEtale
+
+set_option backward.isDefEq.respectTransparency false in
+lemma topology_eq_restrictedTopology :
+    topology S = (ProEt.forget S).restrictedTopology (proetaleTopology.over S) := by
+  simp only [topology, precoverage, ProEt.forget, Scheme.ProEt]
+  rw [MorphismProperty.toGrothendieck_comap_forget_eq_restrictedTopology _
+    proetalePrecoverage_le_precoverage_weaklyEtale]
+
+lemma topology_eq_inducedTopology :
+    topology S = (ProEt.forget S).inducedTopology (proetaleTopology.over S) :=
+  MorphismProperty.toGrothendieck_comap_forget_eq_inducedTopology
+    _ proetalePrecoverage_le_precoverage_weaklyEtale
 
 instance : (ProEt.forget S ⋙ Over.forget S).IsContinuous (ProEt.topology S) proetaleTopology :=
   Functor.isContinuous_comp _ _ _ (proetaleTopology.over S) _
@@ -167,7 +173,8 @@ noncomputable def equivOfIsEmpty [IsEmpty S] : S.ProEt ≌ Discrete PUnit :=
 variable {S} in
 set_option backward.isDefEq.respectTransparency false in
 lemma bot_mem_topology (X : S.ProEt) [IsEmpty X.left] : ⊥ ∈ topology S X := by
-  simp [topology_eq_inducedTopology, GrothendieckTopology.mem_over_iff,
+  simp [topology_eq_restrictedTopology]
+  simp [GrothendieckTopology.mem_over_iff,
     proetaleTopology_eq_propQCTopology, bot_mem_propQCTopology]
 
 lemma topology_eq_top_of_isEmpty [IsEmpty S] : topology S = ⊤ := by

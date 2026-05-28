@@ -158,10 +158,8 @@ instance : (MorphismProperty.Over.forget P ⊤ S).LocallyCoverDense (overGrothen
 variable (S) {P Q} in
 /-- If `P` and `Q` are morphism properties with `P ≤ Q`, this is the Grothendieck topology
 induced via the forgetful functor `Q.Over ⊤ S ⥤ Over S` by the topology defined by `P`. -/
-abbrev smallGrothendieckTopologyOfLE (hPQ : P ≤ Q) : GrothendieckTopology (Q.Over ⊤ S) :=
-  letI : (MorphismProperty.Over.forget Q ⊤ S).LocallyCoverDense (overGrothendieckTopology P S) :=
-    locallyCoverDense_of_le S hPQ
-  (MorphismProperty.Over.forget Q ⊤ S).inducedTopology (S.overGrothendieckTopology P)
+abbrev smallGrothendieckTopologyOfLE (_hPQ : P ≤ Q) : GrothendieckTopology (Q.Over ⊤ S) :=
+  (MorphismProperty.Over.forget Q ⊤ S).restrictedTopology (S.overGrothendieckTopology P)
 
 /-- The Grothendieck topology on the category of schemes over `S` with `P` induced by `P`, i.e.
 coverings are simply surjective families. This is the induced topology by the topology on `S`
@@ -169,7 +167,7 @@ defined by `P` via the inclusion `P.Over ⊤ S ⥤ Over S`.
 
 This is a special case of `smallGrothendieckTopologyOfLE` for the case `P = Q`. -/
 abbrev smallGrothendieckTopology : GrothendieckTopology (P.Over ⊤ S) :=
-  (MorphismProperty.Over.forget P ⊤ S).inducedTopology (S.overGrothendieckTopology P)
+  (MorphismProperty.Over.forget P ⊤ S).restrictedTopology (S.overGrothendieckTopology P)
 
 variable [Q.IsStableUnderBaseChange] [Q.HasOfPostcompProperty Q]
 
@@ -208,8 +206,10 @@ variable (S) {P Q} in
 lemma smallGrothendieckTopologyOfLE_eq_toGrothendieck_smallPretopology (hPQ : P ≤ Q) :
     S.smallGrothendieckTopologyOfLE hPQ = (S.smallPretopology P Q).toGrothendieck := by
   ext X R
-  simp only [Pretopology.mem_toGrothendieck, Functor.mem_inducedTopology_sieves_iff,
-    MorphismProperty.Comma.forget_obj, mem_overGrothendieckTopology]
+  have : (MorphismProperty.Over.forget Q ⊤ S).LocallyCoverDense (overGrothendieckTopology P S) :=
+    locallyCoverDense_of_le S hPQ
+  simp only [smallGrothendieckTopologyOfLE, Functor.mem_restrictedTopology_iff,
+    MorphismProperty.Comma.forget_obj, mem_overGrothendieckTopology, Pretopology.mem_toGrothendieck]
   constructor
   · intro ⟨𝒰, h, le⟩
     have hj (j : 𝒰.I₀) : Q (𝒰.X j ↘ S) := by
