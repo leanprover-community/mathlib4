@@ -127,8 +127,8 @@ partial def isUserFriendly (e : Expr) : MetaM Bool := do
   | _ => return true
 
 /-- Return the consecutive unfoldings of `e` that are user friendly. -/
-def filteredUnfolds (e : Expr) : MetaM (Array Expr) := do
-  (← unfolds e).filterM isUserFriendly
+def filteredUnfolds (e : Expr) : MetaM (Array Expr) :=
+  withDefault do (← unfolds e).filterM isUserFriendly
 
 /-- Return the tactic string that does the unfolding. -/
 def tacticSyntax (e eNew : Expr) (rwKind : RwKind) :
@@ -157,10 +157,10 @@ open Elab in
 /-- `#unfold? e` gives all unfolds of `e`.
 In tactic mode, use `unfold?` instead. -/
 elab "#unfold? " e:term : command => do
-  withoutModifyingEnv <| Command.runTermElabM fun _ => Term.withDeclName `_unfold do
+  Command.runTermElabM fun _ => do
     let e ← Term.elabTerm e none
     Term.synthesizeSyntheticMVarsNoPostponing
-    let e ← Term.levelMVarToParam (← instantiateMVars e)  let e ← instantiateMVars e
+    let e ← instantiateMVars e
     let unfolds ← filteredUnfolds e
     if unfolds.isEmpty then
       logInfo m! "No unfolds found for {e}"

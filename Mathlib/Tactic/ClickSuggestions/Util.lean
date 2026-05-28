@@ -305,8 +305,8 @@ def mkRewrite (kind : RwKind) (symm : Bool) (e : Term) (loc : Option Ident)
 
 /-- Try to combine the suggested tactic with the preceding tactic in the tactic sequence.
 In particular, we merge sequences of `rw`, `simp_rw` and `grw`. -/
-partial def mergeTactics? {m} [Monad m] [MonadRef m] [MonadQuotation m]
-    (stx₁ stx₂ : TSyntax `tactic) : m (Option (TSyntax `tactic)) := do
+partial def mergeTactics? {m} [Monad m] [MonadQuotation m] (stx₁ stx₂ : TSyntax `tactic) :
+    m (Option (TSyntax `tactic)) := do
   match stx₁, stx₂ with
   | `(tactic| on_goal $n₁ => $tac₁:tactic), `(tactic| on_goal $n₂ => $tac₂:tactic) =>
     if n₁.getNat == n₂.getNat then

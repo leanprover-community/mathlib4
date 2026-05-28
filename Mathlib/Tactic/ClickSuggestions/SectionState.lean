@@ -33,8 +33,8 @@ structure Result (α : Type) where
   pattern : Html
 deriving Inhabited
 
-instance [Ord α] : Ord (Result α) := ⟨(compare ·.key ·.key)⟩
-instance [Ord α] : LT (Result α) := ltOfOrd
+instance : Ord (Result α) := ⟨(compare ·.key ·.key)⟩
+instance : LT (Result α) := ltOfOrd
 
 /-! ### Maintaining the state of the widget -/
 

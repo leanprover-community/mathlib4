@@ -30,6 +30,8 @@ structure RwInfo where
   rootExpr : Expr
   /-- The expression that is being rewritten. -/
   subExpr : Expr
+  /-- If we rewrite into this expression, then the goal will be solved. -/
+  rflTarget? : Option Expr
   /-- The expression that is being rewritten. This may not be the same as the selected expression,
   because we also suggest rewriting partial applications. -/
   pos : SubExpr.Pos
@@ -79,7 +81,7 @@ private def tacticSyntax (lem : RwLemma) (rwKind : RwKind) (hyp? : Option Ident)
 
 /-- Generate the suggestion for rewriting with `lem`. -/
 def RwLemma.try (i : RwInfo) (lem : RwLemma) : ClickSuggestionsM (Result RwKey) :=
-  withReducible do withNewMCtxDepth do
+  withNewMCtxDepth do
   let e := i.subExpr
   let (proof, mvars, binderInfos, eqn) ← lem.name.forallMetaTelescopeReducing
   let mkApp2 _ lhs rhs ← whnf eqn | throwError "Exected an equality or iff, not {eqn}"
@@ -124,6 +126,16 @@ def RwLemma.try (i : RwInfo) (lem : RwLemma) : ClickSuggestionsM (Result RwKey) 
     replacement := ← abstractMVars replacement
   }
   let tactic ← tacticSyntax lem rwKind (← getHypIdent?) proof justLemmaName
+  if extraGoals.isEmpty then
+    if let some rflTarget := i.rflTarget? then
+      if ← withoutModifyingMCtx <| isDefEq replacement rflTarget then
+        addSolvedSuggestion tactic
+    else if (← read).pos == .root && (← read).hyp?.isNone then
+      try
+        (← mkFreshExprMVar replacement).mvarId!.applyRfl
+        addSolvedSuggestion tactic
+      catch _ =>
+        pure ()
   let mut htmls := #[← exprToHtml replacement]
   for goal in extraGoals do
     htmls := htmls.push <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml goal} </div>

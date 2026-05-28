@@ -271,7 +271,7 @@ public def computeModuleDiscrTrees (choice : Choice) (parentDecl? : Option Name)
 /-- Compute the discrimination trees for the local variables in `lctx`.
 We restrict to the varaibles in `lctx` to avoid using introduced bound variables. -/
 public def computeLCtxDiscrTrees (choice : Choice) (lctx : LocalContext) (fvarId? : Option FVarId) :
-    MetaM PreDiscrTrees := withReducible do
+    MetaM PreDiscrTrees := do
   let mut entries : Entries := {}
   for decl in lctx do
     if !decl.isImplementationDetail && fvarId?.all (· != decl.fvarId) then

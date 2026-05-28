@@ -58,7 +58,7 @@ private def tacticSyntax (lem : ApplyAtLemma) : ClickSuggestionsM (TSyntax `tact
 
 /-- Generate the suggestion for applying `lem`. -/
 def ApplyAtLemma.try (lem : ApplyAtLemma) : ClickSuggestionsM (Result ApplyAtKey) :=
-  withReducible do withNewMCtxDepth do
+  withNewMCtxDepth do
   let (_proof, mvars, binderInfos, replacement) ← lem.name.forallMetaTelescopeReducing
   let mvar := mvars.back!
   let mvars := mvars.pop

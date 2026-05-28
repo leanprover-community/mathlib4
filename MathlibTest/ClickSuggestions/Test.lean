@@ -39,6 +39,18 @@ example (h : 0 + n = n) : n = n + 0 := by
   click_test h "/0/1" => "rw [Nat.add_comm] at h"
   rfl
 
+abbrev myZero := 0
+
+example (h : 0 + n = n) : n = n + myZero := by
+  -- fail_if_success click_test "/1" => "rw [Nat.add_zero]"
+  click_test "/1" => "rw [show n + myZero = n from rfl]"
+  click_test =>
+    "rw [Nat.left_eq_add]"
+    "apply Nat.dvd_antisymm"
+  click_test h "" => "apply Nat.le.intro at h" "rw [← Nat.beq_eq] at h"
+  click_test h "/0/1" => "rw [Nat.add_comm] at h"
+  rfl
+
 example : n - 3 ≤ m - 3 := by
   click_test => "apply Nat.sub_le_sub_right"
   exact test_sorry
@@ -140,6 +152,7 @@ example (f g : Nat → Nat) : (f + g) 2 = f 2 + g 2 := by
 -- When the motive is not type correct, suggest `rw!`
 example (a b : Nat) (l : List Nat) (hl : a + b < l.length) (h : l[a + b] = 5) :
     l[b + a] = 5 := by
+  -- `b + a` also appears in the proof, which is why `(occs := .pos [1])` is suggested.
   click_test "/0/1/0/1" =>
     "rw! (occs := .pos [1]) [Nat.add_comm b a]"
     "rw! (occs := .pos [1]) [add_comm b a]"

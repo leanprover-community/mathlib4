@@ -9,6 +9,7 @@ public import Mathlib.Tactic.ClickSuggestions.TryPremises
 public import Mathlib.Tactic.ClickSuggestions.Unfold
 public import Mathlib.Tactic.Widget.Conv
 public meta import Mathlib.Lean.Meta.KAbstractPositions
+public import Lean.Server.FileWorker.RequestHandling
 
 /-!
 # Point & click suggestions
@@ -39,8 +40,6 @@ When a rewrite lemma introduces new goals, these are shown after a `⊢`.
 ## TODO
 
 - When selecting the whole goal, or a whole hypothesis, try running `symm` before library search.
-- For each `rw`/`grw` suggestion, check whether `with_reducible rfl` closes the goal,
-  and communicate this to the user.
 - Improve user extensibility:
   - Modifying which tactics are suggested.
   - Modifying which lemmas are suggested.
@@ -62,15 +61,15 @@ If the subexpression contains bound variables, then they are introduced as free 
 def viewKAbstractSubExpr' {m α}
     [Monad m] [MonadLiftT MetaM m] [MonadControlT MetaM m] [MonadError m]
     (e : Expr) (pos : SubExpr.Pos) (k : Expr → RwKind → m α) : m α := do
-  if let some (subExpr, occ) ← withReducible <| viewKAbstractSubExpr e pos then
+  if let some (subExpr, occ) ← viewKAbstractSubExpr e pos then
     let tpCorrect ← kabstractIsTypeCorrect e subExpr pos
     k subExpr (.valid tpCorrect occ)
   else
     Meta.viewSubexpr (fun _ e ↦ k e .hasBVars) pos e
 
 /-- Compute the suggestions. Use `token` for the output. -/
-public def generateSuggestions (loc : SubExpr.GoalsLocation)
-    (parentDecl? : Option Name) (token : RefreshToken) : ClickSuggestionsM Unit := do
+public def generateSuggestions (loc : SubExpr.GoalsLocation) (parentDecl? : Option Name)
+    (token : RefreshToken) : ClickSuggestionsM Unit := withReducible do
   -- TODO: instead of just putting `✝` after inaccessible names,
   -- we should figure out how to use `rename_i` to actually refer to shadowed local variables.
   let lctx := (← getLCtx).sanitizeNames.run' { options := (← getOptions) }

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Tactic.ClickSuggestions.SectionState
 public import Mathlib.Order.Antisymmetrization
+public import Lean.Meta.ExprLens
 
 /-!
 # Support for `grw` suggestions in `#click_suggestions`
@@ -127,6 +128,8 @@ structure GrwInfo where
   rootExpr : Expr
   /-- The expression that is being rewritten. -/
   subExpr : Expr
+  /-- If we rewrite into this expression, then the goal will be solved. -/
+  rflTarget? : Option Expr
   /-- The relations that can be used for rewriting. -/
   gpos : Array GrwPos
   /-- Some information about the rewrite position. -/
@@ -172,7 +175,7 @@ private def tacticSyntax (lem : GrwLemma) (i : GrwInfo) (proof : Expr) (justLemm
 
 /-- Generate the suggestion for rewriting with `lem`. -/
 def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) : ClickSuggestionsM (Result GrwKey) := do
-  withReducible do withNewMCtxDepth do
+  withNewMCtxDepth do
   let mctx ← getMCtx
   (·.getDM do throwError "no suitable `grw` relation was found") =<< i.gpos.findSomeM? fun pos ↦ do
   unless lem.relName == pos.relName && pos.symm?.all (· == lem.symm) do return none
@@ -212,6 +215,10 @@ def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) : ClickSuggestionsM (Result GrwK
     replacement := ← abstractMVars replacement
   }
   let tactic ← tacticSyntax lem i proof justLemmaName
+  if extraGoals.isEmpty then
+    if let some rflTarget := i.rflTarget? then
+      if ← withoutModifyingMCtx <| isDefEq replacement rflTarget then
+        addSolvedSuggestion tactic
   let mut htmls := #[← exprToHtml replacement]
   for goal in extraGoals do
     htmls := htmls.push
