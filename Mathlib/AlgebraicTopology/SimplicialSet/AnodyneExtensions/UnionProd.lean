@@ -210,7 +210,7 @@ variable {x} {hd : x.dim = d + 1} {l : Fin (d + 1)} (hl : IsIndex x hd l.succ)
 include hl
 
 /-- The type (II) simplex obtained as a face of a type (I) simplex. -/
-@[simps]
+@[simps -isSimp]
 noncomputable abbrev δ :
     (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).N where
   dim := d
@@ -229,7 +229,6 @@ noncomputable abbrev δ :
       obtain rfl | ⟨i, rfl⟩ := Fin.eq_self_or_eq_succAbove l.castSucc i
       · refine ⟨l, ?_⟩
         rw [Fin.succAbove_castSucc_self, ← hi, ← hl.simplex_snd_succ]
-        try rfl
       · exact ⟨_, hi⟩
     · obtain ⟨i, hi⟩ := mem_range_left x hd j hj
       dsimp at hi
@@ -395,7 +394,6 @@ lemma δ_simplex :
   ext i : 2
   dsimp only [simplex]
   rw [objEquiv_δ_apply, Equiv.apply_symm_apply, OrderHom.coe_mk, φ_succAbove]
-  try rfl
 
 lemma notMem_simplex :
     hx.simplex hd ∉ (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).obj _ := by
@@ -635,16 +633,10 @@ instance {m : ℕ} (k : Fin m) (n : ℕ) :
     have : s.index = 0 := by rwa [← Fin.castSucc_eq_zero_iff]
     have hs : IsIndex s.x s.hd (Fin.succ 0) := by simpa [this] using s.isIndex
     obtain ⟨i, hi⟩ := mem_range_left s.x s.hd 0 (fun h ↦ by simp [Fin.ext_iff] at h)
-    have hle := stdSimplex.monotone_apply (s.x.cast s.hd).simplex.1 i.zero_le
-    have hle' : (s.x.cast s.hd).simplex.1 0 ≤ 0 := by
-      simpa only [hi] using hle
-    have hzero : (s.x.cast s.hd).simplex.1 0 = 0 := le_antisymm hle' (Fin.zero_le _)
-    have hzero' : (s.x.cast s.hd).simplex.1 (Fin.castSucc (0 : Fin (s.d + 1))) = 0 := by
-      simpa using hzero
-    have hs0 := hs.simplex_fst_castSucc
-    have hcontr : (0 : Fin (m + 2)) = k.succ.castSucc := hzero'.symm.trans hs0
-    rw [Fin.castSucc_succ] at hcontr
-    exact Fin.succ_ne_zero _ hcontr.symm
+    have := stdSimplex.monotone_apply (s.x.cast s.hd).simplex.1 i.zero_le
+    have h₁ := hs.simplex_fst_castSucc
+    dsimp only [Fin.castSucc_zero] at h₁
+    simp [h₁, hi] at this
   ne_last := by simp
 
 /-- A regular pairing for `Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]`
@@ -667,18 +659,14 @@ lemma pairing_castSucc {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
     pairing.{u} k.castSucc n = (pairingCore.{u} k n).pairing :=
   dif_neg (by grind)
 
+unif_hint where ⊢ Fin.castSucc (n := m + 1) 0 ≟ 0 in
 instance {m : ℕ} (k : Fin (m + 2)) (n : ℕ) :
     (pairing.{u} k n).IsRegular := by
   by_cases! hk : k = Fin.last (m + 1)
   · subst hk
     dsimp [pairing]
     rw [dif_pos rfl]
-    letI : (pairingCore.{u} (0 : Fin (m + 1)) n).pairing.op.IsRegular :=
-      Subcomplex.Pairing.instIsRegularOp _
-    exact Subcomplex.Pairing.instIsRegularOfIso
-      ((pairingCore.{u} (0 : Fin (m + 1)) n).pairing.op)
-      (((stdSimplex.opIso _).symm ⊗ᵢ (stdSimplex.opIso _).symm) ≪≫
-        Functor.Monoidal.μIso opFunctor _ _) _
+    infer_instance
   · obtain ⟨k, rfl⟩ := Fin.eq_castSucc_of_ne_last hk
     rw [pairing_castSucc]
     infer_instance
