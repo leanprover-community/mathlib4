@@ -53,7 +53,6 @@ jobs:
     if: ${{ github.repository == 'leanprover-community/mathlib4' }}
     runs-on: pr
     timeout-minutes: 90
-    continue-on-error: true
     outputs:
       sha: ${{ steps.resolve.outputs.sha }}
       toolchain: ${{ steps.resolve.outputs.toolchain }}
@@ -224,15 +223,10 @@ jobs:
           retention-days: 3
           if-no-files-found: error
 
-      - name: Surface failure in workflow notices
-        if: failure()
-        shell: bash
-        run: echo "::warning::Lake cache shadow build_and_stage failed on ${{ steps.resolve.outputs.sha }} — workflow stays green (continue-on-error) but this run needs attention."
-
   upload:
     name: Upload to cache bucket
     needs: build_and_stage
-    if: ${{ github.repository == 'leanprover-community/mathlib4' && needs.build_and_stage.outputs.sha != '' }}
+    if: ${{ github.repository == 'leanprover-community/mathlib4' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -284,10 +278,9 @@ jobs:
   consume:
     name: Build from Lake cache (no legacy hydration)
     needs: [build_and_stage, upload]
-    if: ${{ github.repository == 'leanprover-community/mathlib4' && needs.upload.result == 'success' }}
+    if: ${{ github.repository == 'leanprover-community/mathlib4' }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    continue-on-error: true
     env:
       LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
       LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT }}
@@ -353,11 +346,6 @@ jobs:
           cd pr-branch
           read -ra TARGETS <<< "$STAGE_TARGETS"
           lake build --no-build --rehash -v "${TARGETS[@]}"
-
-      - name: Surface failure in workflow notices
-        if: failure()
-        shell: bash
-        run: echo "::warning::Lake cache shadow consume job failed for ${{ needs.build_and_stage.outputs.sha }} — workflow stays green (continue-on-error) but this run needs attention."
 
   report:
     name: Post run summary to Zulip
