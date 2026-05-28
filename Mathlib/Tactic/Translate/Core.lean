@@ -922,7 +922,7 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
   let (pre1, pre2) := pre.splitAt (depth - 1)
   let res := if cfg.tgt == .anonymous then pre.str tgt_auto else
     -- A provided name starting with `_root_` disables the namespace length heuristic.
-    if (`_root_).isPrefixOf cfg.tgt then cfg.tgt.replacePrefix `_root_ .anonymous
+    if rootNamespace.isPrefixOf cfg.tgt then removeRoot cfg.tgt
     else pre1 ++ cfg.tgt
   if res == src then
     throwError "{t.attrName}: the generated translated name equals the original name '{src}'.\n\
