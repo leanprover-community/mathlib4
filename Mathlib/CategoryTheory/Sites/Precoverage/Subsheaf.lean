@@ -57,7 +57,7 @@ inductive SubsheafClosure (K : Precoverage C) {F : Cᵒᵖ ⥤ Type w}
       {t : F.obj (.op Z)} (ht : y.IsAmalgamation t) : K.SubsheafClosure 𝒮 Z t
 
 variable (K) in
-/-- The `K`-sheafification of family of sets `𝒮` in `F`: If `F` is
+/-- The `K`-sheafification of a family of sets `𝒮` in `F`: If `F` is
 a sheaf for `K`, this is the smallest subsheaf of `F` containing `𝒮`. -/
 @[simps]
 def subsheafify (𝒮 : ∀ Z : C, Set (F.obj (.op Z))) : Subfunctor F where
