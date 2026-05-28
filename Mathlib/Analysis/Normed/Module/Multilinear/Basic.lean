@@ -1136,7 +1136,7 @@ The derivative with respect to `f` is given by `compContinuousLinearMapL`. -/
 noncomputable def fderivCompContinuousLinearMap [DecidableEq ι]
     (f : ContinuousMultilinearMap 𝕜 E₁ G) (g : ∀ i, E i →L[𝕜] E₁ i) :
     (∀ i, E i →L[𝕜] E₁ i) →L[𝕜] ContinuousMultilinearMap 𝕜 E G :=
-  ContinuousLinearMap.apply 𝕜 (ContinuousMultilinearMap 𝕜 E G) f
+  ContinuousLinearMap.apply _ _ f
     |>.compContinuousMultilinearMap (compContinuousLinearMapContinuousMultilinear 𝕜 _ _ _)
     |>.linearDeriv g
 

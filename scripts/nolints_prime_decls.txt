@@ -788,7 +788,7 @@ ContinuousLinearMap.coe_restrictScalars'
 ContinuousLinearMap.coe_restrict_scalarsL'
 ContinuousLinearMap.coe_smul'
 ContinuousLinearMap.coe_snd'
-ContinuousLinearMap.coe_sub
+ContinuousLinearMap.coe_sub'
 ContinuousLinearMap.coe_sum'
 ContinuousLinearMap.coe_zero'
 ContinuousLinearMap.compFormalMultilinearSeries_apply'
