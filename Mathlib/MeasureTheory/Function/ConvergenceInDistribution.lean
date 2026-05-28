@@ -145,7 +145,7 @@ theorem tendstoInDistribution_of_ae_tendsto [l.IsCountablyGenerated]
     apply tendsto_lintegral_filter_of_dominated_convergence' (bound := fun _ ↦ edist 0 f)
     · exact .of_forall (fun _ ↦ by fun_prop)
     · simp [f.apply_le_edist_zero]
-    · simpa using by finiteness
+    · simp
     filter_upwards [hX₂] with ω hω
     simpa using f.continuous.tendsto (Z ω) |>.comp hω
 
