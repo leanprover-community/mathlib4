@@ -221,17 +221,17 @@ variable {ΓR ΓA : Type*}
 
 theorem exists_monoidWithZeroHom_valueGroup₀_restrict_eq :
     ∃ (f : (MonoidWithZeroHom.ValueGroup₀ (vR : R →*₀ ΓR)) →*₀
-      (MonoidWithZeroHom.ValueGroup₀ (vA : A →*₀ ΓA))) (hf : Monotone f),
-      vR.restrict.map f hf = vA.restrict.comap (algebraMap R A) := by
+      (MonoidWithZeroHom.ValueGroup₀ (vA : A →*₀ ΓA))) (hf : StrictMono f),
+      vR.restrict.map f hf.monotone = vA.restrict.comap (algebraMap R A) := by
   have h : vR.IsEquiv (vA.comap (algebraMap R A)) := HasExtension.val_isEquiv_comap
   refine ⟨(WithZero.map' (Subgroup.inclusion ?_)).comp h.orderMonoidIso.toMonoidWithZeroHom, ?_, ?_⟩
   · intro r hr
     rw [MonoidWithZeroHom.mem_valueGroup_iff_of_comm] at hr ⊢
     obtain ⟨a, ha0, x, hr⟩ := hr
     exact ⟨algebraMap R A a, ha0, algebraMap R A x, hr⟩
-  · refine (WithZero.map'_mono ?_).comp h.orderMonoidIso.toOrderIso.monotone
+  · refine (WithZero.map'_strictMono ?_).comp h.orderMonoidIso.toOrderIso.strictMono
     intro a b hab
-    simpa [← Subtype.coe_le_coe] using hab
+    simpa [← Subtype.coe_lt_coe] using hab
   · ext x
     simp only [OrderMonoidIso.toMulEquiv_eq_coe, map_apply,
       MonoidWithZeroHom.comp_apply, comap_apply]
