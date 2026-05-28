@@ -134,42 +134,6 @@ theorem IsGaloisGroup.to_isFractionRing'
     use algebraMap A K b / algebraMap A K a
     simp [hc, div_eq_div_iff ha hy', ← map_mul, ← map_mul, hb]
 
-namespace Ideal
-
-variable {S : Type*} [CommRing S] (q : Ideal S) (R : Type*) [CommRing R] [Algebra R S]
-
--- PRed
-theorem ramificationIdx'_eq_one [q.IsPrime] [Algebra.EssFiniteType R S]
-    [Algebra.IsUnramifiedAt R q] : q.ramificationIdx' R = 1 := by
-  let p := q.under R
-  let Rp := Localization.AtPrime p
-  let Sq := Localization.AtPrime q
-  let : Algebra Rp Sq := Localization.AtPrime.algebraOfLiesOver p q
-  have : Algebra.EssFiniteType Rp Sq := Algebra.EssFiniteType.of_comp R Rp Sq
-  rw [ramificationIdx'_def, ENat.toNat_eq_iff_eq_coe, Nat.cast_one, Module.length_eq_one_iff,
-    isSimpleModule_iff_isCoatom, ← Ideal.isMaximal_def, IsLocalRing.isMaximal_iff,
-    IsScalarTower.algebraMap_eq R Rp Sq, ← map_map, Localization.AtPrime.map_eq_maximalIdeal]
-  exact Algebra.FormallyUnramified.map_maximalIdeal
-
--- PRed
-theorem ramificationIdx'_eq_one_iff [q.IsPrime] [Algebra.EssFiniteType R S]
-    [Algebra.IsIntegral R S] [PerfectField (q.under R).ResidueField] :
-    q.ramificationIdx' R = 1 ↔ Algebra.IsUnramifiedAt R q := by
-  refine ⟨fun h ↦ ?_, fun _ ↦ ramificationIdx'_eq_one q R⟩
-  rw [ramificationIdx'_def, ENat.toNat_eq_iff_eq_coe, Nat.cast_one, Module.length_eq_one_iff,
-    isSimpleModule_iff_isCoatom, ← Ideal.isMaximal_def, IsLocalRing.isMaximal_iff] at h
-  let p := q.under R
-  let Rp := Localization.AtPrime p
-  let Sq := Localization.AtPrime q
-  let := Localization.AtPrime.algebraOfLiesOver p q
-  have := Algebra.EssFiniteType.of_comp R Rp Sq
-  suffices Algebra.FormallyUnramified Rp Sq from Algebra.FormallyUnramified.comp R Rp Sq
-  rw [Algebra.FormallyUnramified.iff_map_maximalIdeal_eq,
-    ← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← IsScalarTower.algebraMap_eq]
-  exact ⟨Algebra.IsAlgebraic.isSeparable_of_perfectField, h⟩
-
-end Ideal
-
 instance {R : Type*} [CommRing R] [IsDomain R] [Ring.HasFiniteQuotients R] {I : Ideal R} [I.IsPrime]
     [PerfectField (FractionRing R)] :
     PerfectField I.ResidueField := by
