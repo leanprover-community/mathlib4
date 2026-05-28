@@ -125,7 +125,7 @@ theorem _root_.MulActionHom.toQuotient_apply (H : Subgroup α) (g : α) :
     MulActionHom.toQuotient H g = g :=
   rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem coe_quotient_smul {H : Subgroup α} [H.Normal] [SMul α β]
     [MulAction (α ⧸ H) β] [IsScalarTower α (α ⧸ H) β] (g : α) (x : β) :
     (g : α ⧸ H) • x = g • x := by
