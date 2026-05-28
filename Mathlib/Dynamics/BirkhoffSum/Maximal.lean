@@ -13,8 +13,8 @@ import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.Data.Real.StarOrdered
 public import Mathlib.Dynamics.BirkhoffSum.Average
-import Mathlib.Dynamics.BirkhoffSum.Measurable
-import Mathlib.Dynamics.BirkhoffSum.Integrable
+public import Mathlib.Dynamics.BirkhoffSum.Measurable
+public import Mathlib.Dynamics.BirkhoffSum.Integrable
 
 /-!
 # Maximal ergodic theorem.
@@ -93,14 +93,14 @@ variable [MeasurableSpace α] (μ : Measure α := by volume_tac) (hf : MeasurePr
 include hf
 
 @[fun_prop]
-lemma birkhoffMax_aestronglyMeasurable (hg : AEStronglyMeasurable g μ) :
+public lemma birkhoffMax_aestronglyMeasurable (hg : AEStronglyMeasurable g μ) :
     AEStronglyMeasurable (birkhoffMax f g n) μ := by
   unfold birkhoffMax
   induction n <;> measurability
 
 include hg
 
-lemma birkhoffMax_integrable : Integrable (birkhoffMax f g n) μ := by
+public lemma birkhoffMax_integrable : Integrable (birkhoffMax f g n) μ := by
   unfold birkhoffMax
   induction n with
   | zero => exact integrable_zero ..
@@ -192,8 +192,7 @@ theorem lt_birkhoffAverageSup_iff_lt_birkhoffSumSup {a : ℝ} (ha : 0 < a) :
 
 section MeasurePreserving
 
-variable {f : α → α} [MeasurableSpace α] (μ : Measure α := by volume_tac)
-  (hf : MeasurePreserving f μ μ)
+variable [MeasurableSpace α] (μ : Measure α) (hf : MeasurePreserving f μ μ)
 
 include hf
 
@@ -243,14 +242,13 @@ end Real
 
 section NormedAddCommGroup
 
-variable {E : Type*} [NormedAddCommGroup E] {g : α → E} (hg : Integrable g μ) [IsFiniteMeasure μ]
+variable [NormedAddCommGroup M] {g : α → M} (hg : Integrable g μ) [IsFiniteMeasure μ]
 
 include hg
 
 /-- Maximal ergodic theorem: the operator `birkhoffAverageSup` satisfies a weak-type inequality. -/
-public theorem iSup_distribution_birkhoffAverageSup_le_norm :
-    ⨆ a : ℝ, a * μ.real {x | a < birkhoffAverageSup f (‖g ·‖) x} ≤ ∫ x, ‖g x‖ ∂μ := by
-  refine ciSup_le fun a ↦ ?_
+public theorem const_mul_distribution_birkhoffAverageSup_le_norm (a : ℝ) :
+    a * μ.real {x | a < birkhoffAverageSup f (‖g ·‖) x} ≤ ∫ x, ‖g x‖ ∂μ := by
   by_cases! ha : 0 < a; swap
   · apply mul_nonpos_of_nonpos_of_nonneg ha measureReal_nonneg |>.trans
     exact integral_nonneg (fun _ ↦ norm_nonneg _)
