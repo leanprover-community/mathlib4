@@ -254,10 +254,10 @@ with appropriate conditions. -/
 noncomputable abbrev ofAlgHom [CommSemiring R] [CommSemiring A] [Bialgebra R A]
     (antipode : A →ₐ[R] A)
     (mul_antipode_rTensor_comul :
-      ((Algebra.TensorProduct.lift antipode (.id R A) fun _ ↦ .all _).comp
+      ((Algebra.TensorProduct.lift antipode (.id R A) fun _ ↦ Commute.all _).comp
         (Bialgebra.comulAlgHom R A)) = (Algebra.ofId R A).comp (Bialgebra.counitAlgHom R A))
     (mul_lTensor_antipode_comul :
-      (Algebra.TensorProduct.lift (.id R A) antipode fun _ _ ↦ .all _ _).comp
+      (Algebra.TensorProduct.lift (.id R A) antipode fun _ _ ↦ Commute.all _ _).comp
         (Bialgebra.comulAlgHom R A) = (Algebra.ofId R A).comp (Bialgebra.counitAlgHom R A)) :
     HopfAlgebra R A :=
   ofConvInverse antipode.toLinearMap
