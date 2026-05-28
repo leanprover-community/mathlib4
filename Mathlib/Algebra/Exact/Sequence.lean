@@ -78,7 +78,7 @@ private lemma sum_neg_one_pow_finrank_eq_zero_of_exact_six_aux {V₀ V₁ V₂ V
   | 0 => ‹_› | 1 => ‹_› | 2 => ‹_› | 3 => ‹_› | 4 => ‹_› | 5 => ‹_›
   letI fs (i : Fin 5) : Vs i.castSucc →ₗ[k] Vs i.succ := match i with
   | 0 => f₀ | 1 => f₁ | 2 => f₂ | 3 => f₃ | 4 => f₄
-  simpa [Fin.sum_univ_six] using Module.sum_neg_one_pow_finrank_eq_zero_of_exact Vs fs inj
+  simpa [Fin.sum_univ_six] using! Module.sum_neg_one_pow_finrank_eq_zero_of_exact Vs fs inj
     (fun i ↦ by fin_cases i; exacts [exact₁, exact₂, exact₃, exact₄]) surj
 
 /-- This is an unrolled, universe-polymorphic version of
