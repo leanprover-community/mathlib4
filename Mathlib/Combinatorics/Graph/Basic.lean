@@ -70,7 +70,7 @@ refer to the `vertexSet` and `edgeSet` of `G : Graph α β`.
 If `G.IsLink e x y` then we refer to `e` as `edge` and `x` and `y` as `left` and `right` in names.
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*} {x y z u v w : α} {e f : β}
 
@@ -186,7 +186,7 @@ lemma IsLink.isLink_iff_sym2_eq (h : G.IsLink e x y) {x' y' : α} :
 /-- The unary incidence predicate of `G`. `G.Inc e x` means that the vertex `x`
 is one or both of the ends of the edge `e`.
 In the `Inc` namespace, we use `edge` and `vertex` to refer to `e` and `x`. -/
-def Inc (G : Graph α β) (e : β) (x : α) : Prop := ∃ y, G.IsLink e x y
+@[expose] def Inc (G : Graph α β) (e : β) (x : α) : Prop := ∃ y, G.IsLink e x y
 
 -- Cannot be @[simp] because `x` cannot be inferred by `simp`.
 lemma Inc.edge_mem (h : G.Inc e x) : e ∈ E(G) :=
@@ -259,6 +259,7 @@ def IsLoopAt (G : Graph α β) (e : β) (x : α) : Prop := G.IsLink e x x
 
 @[simp]
 lemma isLink_self_iff : G.IsLink e x x ↔ G.IsLoopAt e x := Iff.rfl
+alias ⟨_, IsLoopAt.isLink⟩ := isLink_self_iff
 
 lemma IsLoopAt.inc (h : G.IsLoopAt e x) : G.Inc e x :=
   IsLink.inc_left h
@@ -277,7 +278,7 @@ lemma IsLoopAt.vertex_mem (h : G.IsLoopAt e x) : x ∈ V(G) :=
 /-- `G.IsNonloopAt e x` means that the vertex `x` is one but not both of the ends of the edge =`e`,
 or equivalently that `e` is incident with `x` but not a loop at `x` -
 see `Graph.isNonloopAt_iff_inc_not_isLoopAt`. -/
-def IsNonloopAt (G : Graph α β) (e : β) (x : α) : Prop := ∃ y ≠ x, G.IsLink e x y
+@[expose] def IsNonloopAt (G : Graph α β) (e : β) (x : α) : Prop := ∃ y ≠ x, G.IsLink e x y
 
 lemma IsNonloopAt.inc (h : G.IsNonloopAt e x) : G.Inc e x :=
   h.choose_spec.2.inc_left
@@ -304,13 +305,17 @@ lemma isNonloopAt_iff_inc_not_isLoopAt : G.IsNonloopAt e x ↔ G.Inc e x ∧ ¬ 
 lemma isLoopAt_iff_inc_not_isNonloopAt : G.IsLoopAt e x ↔ G.Inc e x ∧ ¬ G.IsNonloopAt e x := by
   simp +contextual [isNonloopAt_iff_inc_not_isLoopAt, iff_def, IsLoopAt.inc]
 
-lemma Inc.isLoopAt_or_isNonloopAt (h : G.Inc e x) : G.IsLoopAt e x ∨ G.IsNonloopAt e x := by
-  simp [isNonloopAt_iff_inc_not_isLoopAt, h, em]
+lemma inc_iff_isLoopAt_or_isNonloopAt : G.Inc e x ↔ G.IsLoopAt e x ∨ G.IsNonloopAt e x :=
+  ⟨by grind [isNonloopAt_iff_inc_not_isLoopAt], (·.elim IsLoopAt.inc IsNonloopAt.inc)⟩
+alias ⟨Inc.isLoopAt_or_isNonloopAt, _⟩ := inc_iff_isLoopAt_or_isNonloopAt
 
 /-! ### Adjacency -/
 
 /-- `G.Adj x y` means that `G` has an edge whose ends are the vertices `x` and `y`. -/
 def Adj (G : Graph α β) (x y : α) : Prop := ∃ e, G.IsLink e x y
+
+lemma adj_iff : G.Adj x y ↔ ∃ e, G.IsLink e x y := Iff.rfl
+alias ⟨Adj.exists, _⟩ := adj_iff
 
 @[symm]
 protected lemma Adj.symm (h : G.Adj x y) : G.Adj y x :=
@@ -367,7 +372,7 @@ lemma ext_inc {G₁ G₂ : Graph α β} (hV : V(G₁) = V(G₂)) (h : ∀ e x, G
 /-- `Graph.copy` produces a graph equal to `G` but with provided definitional choices
 for `vertexSet`, `edgeSet`, and `IsLink`. This is mainly useful for improving
 definitional equalities while keeping the same underlying graph. -/
-@[simps]
+@[expose, simps]
 def copy (G : Graph α β) {vertexSet : Set α} {edgeSet : Set β} {IsLink : β → α → α → Prop}
     (hvertexSet : V(G) = vertexSet) (hedgeSet : E(G) = edgeSet)
     (hIsLink : ∀ e x y, G.IsLink e x y ↔ IsLink e x y) : Graph α β where
@@ -415,6 +420,27 @@ theorem mem_loopSet (x : α) (e : β) : e ∈ G.loopSet x ↔ G.IsLoopAt e x :=
 /-- The loopSet is included in the incidenceSet. -/
 theorem loopSet_subset_incidenceSet (x : α) : G.loopSet x ⊆ G.incidenceSet x := fun _ he ↦ ⟨x, he⟩
 
+/-! ### Set of vertices incident to an edge -/
+
+/-- `G.endPoint e` is the set of vertices incident to the edge `e`. -/
+def endPoint (G : Graph α β) (e : β) : Set α := {x | G.Inc e x}
+
+@[simp, grind =]
+lemma mem_endPoint (G : Graph α β) (e : β) (x : α) : x ∈ G.endPoint e ↔ G.Inc e x := Iff.rfl
+
+lemma IsLink.endPoint_eq (h : G.IsLink e x y) : G.endPoint e = {x, y} := by
+  ext a
+  grind [IsLink.inc_left, IsLink.inc_right, Inc.eq_or_eq_of_isLink]
+
+@[grind →]
+lemma IsLoopAt.endPoint_eq (h : G.IsLoopAt e x) : G.endPoint e = {x} := by
+  rw [IsLink.endPoint_eq h, pair_eq_singleton]
+
+@[simp, grind →]
+lemma endPoint_eq_of_notMem (he : e ∉ E(G)) : G.endPoint e = ∅ := by
+  simp only [endPoint, eq_empty_iff_forall_notMem, mem_setOf_eq]
+  exact fun _ hx ↦ he hx.edge_mem
+
 /-!
 ### Compatibility of Graphs
 
@@ -423,7 +449,7 @@ the incidence relation (i.e., which pairs of vertices it links) is the same in b
 -/
 
 /-- Two graphs are compatible if their shared edges have the same ends in both graphs. -/
-def Compatible (G H : Graph α β) : Prop :=
+@[expose] def Compatible (G H : Graph α β) : Prop :=
   ∀ ⦃e⦄, e ∈ E(G) → e ∈ E(H) → ∀ x y, G.IsLink e x y ↔ H.IsLink e x y
 
 lemma Compatible.isLink_congr (heG : e ∈ E(G)) (heH : e ∈ E(H)) (h : G.Compatible H) {x y : α} :
@@ -469,7 +495,7 @@ lemma IsNonloopAt.of_compatible (hGH : G.Compatible H) (heH : e ∈ E(H)) (h : G
 /-! ### Graphs with no edges -/
 
 /-- The graph with vertex set `vertexSet` and no edges -/
-@[simps (attr := grind =)]
+@[expose, simps (attr := grind =)]
 def noEdge (vertexSet : Set α) (β : Type*) : Graph α β where
   vertexSet := vertexSet
   edgeSet := ∅
@@ -490,7 +516,7 @@ lemma edgeSet_eq_empty : E(G) = ∅ ↔ G = noEdge V(G) β := by
 /-! ### Graphs with two vertices -/
 
 /-- A graph with exactly two vertices and no loops. -/
-@[simps (attr := grind =)]
+@[expose, simps (attr := grind =)]
 def banana (u v : α) (edgeSet : Set β) : Graph α β where
   vertexSet := {u, v}
   edgeSet := edgeSet
