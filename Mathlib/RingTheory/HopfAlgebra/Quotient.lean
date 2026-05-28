@@ -41,8 +41,7 @@ variable (R) in
 relation and the antipode identifies related elements after projection to `RingQuot r`. -/
 class IsHopfRel (r : A → A → Prop) : Prop extends IsBialgebraRel R r where
   antipode_map_eq : ∀ ⦃x y : A⦄, r x y →
-    (mkAlgHom R r).toLinearMap (HopfAlgebra.antipode R x) =
-      (mkAlgHom R r).toLinearMap (HopfAlgebra.antipode R y)
+    mkAlgHom R r (HopfAlgebra.antipode R x) = mkAlgHom R r (HopfAlgebra.antipode R y)
 
 namespace HopfAlgebra.Quotient
 

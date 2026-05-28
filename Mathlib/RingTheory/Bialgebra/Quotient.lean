@@ -30,7 +30,6 @@ a bialgebra structure.
 @[expose] public section
 
 open Bialgebra Coalgebra LinearMap RingQuot TensorProduct
-open scoped RingTheory.LinearMap
 
 /-! ### Bialgebra structure on `RingQuot r` -/
 
@@ -46,8 +45,8 @@ related elements and the comultiplication agrees on related elements after proje
 class IsBialgebraRel (r : A → A → Prop) : Prop where
   counit_rel : ∀ ⦃x y : A⦄, r x y → (counit x : R) = counit y
   comul_rel : ∀ ⦃x y : A⦄, r x y →
-    (((mkAlgHom R r).toLinearMap ⊗ₘ (mkAlgHom R r).toLinearMap) ∘ₗ comul) x =
-      (((mkAlgHom R r).toLinearMap ⊗ₘ (mkAlgHom R r).toLinearMap) ∘ₗ comul) y
+    Algebra.TensorProduct.map (mkAlgHom R r) (mkAlgHom R r) (comul x) =
+      Algebra.TensorProduct.map (mkAlgHom R r) (mkAlgHom R r) (comul y)
 
 namespace Bialgebra
 namespace Quotient
@@ -64,25 +63,15 @@ noncomputable def comulAlgHom : RingQuot r →ₐ[R] RingQuot r ⊗[R] RingQuot 
     (Algebra.TensorProduct.map (mkAlgHom R r) (mkAlgHom R r)).comp (Bialgebra.comulAlgHom R A),
     IsBialgebraRel.comul_rel⟩
 
-lemma counitAlgHom_mkAlgHom (a : A) :
-    counitAlgHom r (mkAlgHom R r a) = Bialgebra.counitAlgHom R A a := by simp [counitAlgHom]
-
-lemma comulAlgHom_mkAlgHom (a : A) :
-    comulAlgHom r (mkAlgHom R r a) =
-      Algebra.TensorProduct.map (mkAlgHom R r) (mkAlgHom R r) (Bialgebra.comulAlgHom R A a) := by
-  simp [comulAlgHom]
-
 lemma counit_comp_mkAlgHom : (counitAlgHom r).toLinearMap.comp (mkAlgHom R r).toLinearMap =
-    (counit : A →ₗ[R] R) := by ext a; simp [counitAlgHom_mkAlgHom]
+    (counit : A →ₗ[R] R) := by ext a; simp [counitAlgHom]
 
 lemma comul_comp_mkAlgHom : (comulAlgHom r).toLinearMap.comp (mkAlgHom R r).toLinearMap =
     (map (mkAlgHom R r).toLinearMap (mkAlgHom R r).toLinearMap).comp comul := by
   ext a
-  simp only [coe_comp, AlgHom.toLinearMap_apply, Function.comp_apply, comulAlgHom_mkAlgHom]
-  change (Algebra.TensorProduct.map (mkAlgHom R r) (mkAlgHom R r)).toLinearMap
-      ((Bialgebra.comulAlgHom R A).toLinearMap a) = _
-  simp [toLinearMap_comulAlgHom, Algebra.TensorProduct.toLinearMap_map,
-    AlgebraTensorModule.map_eq]
+  simp only [comulAlgHom, coe_comp, AlgHom.toLinearMap_apply, Function.comp_apply,
+    liftAlgHom_mkAlgHom_apply, AlgHom.coe_comp]
+  rfl
 
 /-- The bialgebra structure on `RingQuot r` when `r` is a bialgebra relation. -/
 noncomputable instance : Bialgebra R (RingQuot r) :=
