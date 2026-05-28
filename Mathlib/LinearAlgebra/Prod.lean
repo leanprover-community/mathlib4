@@ -765,6 +765,7 @@ protected def prodCongr : (M × M₃) ≃ₗ[R] M₂ × M₄ :=
   { e₁.toAddEquiv.prodCongr e₂.toAddEquiv with
     map_smul' := fun c _x => Prod.ext (e₁.map_smulₛₗ c _) (e₂.map_smulₛₗ c _) }
 
+@[simp]
 theorem prodCongr_symm : (e₁.prodCongr e₂).symm = e₁.symm.prodCongr e₂.symm :=
   rfl
 
