@@ -145,12 +145,12 @@ example (x y z : Nat) (h : x + y = z) : y + x = z := by
 /-- An identity function at default transparency, to test that we don't unfold too much. -/
 def semireducibleId {α : Type*} (a : α) := a
 
-example (P : ℕ → Prop) {a b : ℕ} (h : P a) : P (semireducibleId a) := by
+example (P : ℕ → Prop) {a : ℕ} (h : P a) : P (semireducibleId a) := by
   convert h
   guard_target =ₛ semireducibleId a = a
   rfl
 
-example (P : ℕ → Prop) {a b : ℕ} (h : P a) : P (semireducibleId a) := by
+example (P : ℕ → Prop) {a : ℕ} (h : P a) : P (semireducibleId a) := by
   convert! h
 
 example (P : ℕ → Prop) {a b : ℕ} (hab : b = a) (h : P a) : P (semireducibleId b) := by
