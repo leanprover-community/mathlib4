@@ -83,7 +83,7 @@ lemma hasPointwiseRightKanExtensionAt_iff_of_iso {Y₁ Y₂ : D} (e : Y₁ ≅ Y
   infer_instance
 
 variable {L} in
-private lemma hasPointwiseLeftKanExtensionAt_iff_of_natIso {L' : C ⥤ D} (e : L ≅ L') (Y : D) :
+private lemma hasPointwiseLeftKanExtensionAt_iff_of_natIso_left {L' : C ⥤ D} (e : L ≅ L') (Y : D) :
     HasPointwiseLeftKanExtensionAt L F Y ↔
       HasPointwiseLeftKanExtensionAt L' F Y := by
   revert L L' e
@@ -97,7 +97,7 @@ private lemma hasPointwiseLeftKanExtensionAt_iff_of_natIso {L' : C ⥤ D} (e : L
   exact hasColimit_of_iso e'
 
 variable {L} in
-private lemma hasPointwiseRightKanExtensionAt_iff_of_natIso {L' : C ⥤ D} (e : L ≅ L') (Y : D) :
+private lemma hasPointwiseRightKanExtensionAt_iff_of_natIso_left {L' : C ⥤ D} (e : L ≅ L') (Y : D) :
     HasPointwiseRightKanExtensionAt L F Y ↔
       HasPointwiseRightKanExtensionAt L' F Y := by
   revert L L' e
@@ -114,7 +114,7 @@ lemma hasPointwiseLeftKanExtensionAt_of_equivalence
     (E : D ≌ D') (eL : L ⋙ E.functor ≅ L') (Y : D) (Y' : D') (e : E.functor.obj Y ≅ Y')
     [HasPointwiseLeftKanExtensionAt L F Y] :
     HasPointwiseLeftKanExtensionAt L' F Y' := by
-  rw [← hasPointwiseLeftKanExtensionAt_iff_of_natIso F eL,
+  rw [← hasPointwiseLeftKanExtensionAt_iff_of_natIso_left F eL,
     hasPointwiseLeftKanExtensionAt_iff_of_iso _ F e.symm]
   let Φ := CostructuredArrow.post L E.functor Y
   have : HasColimit ((asEquivalence Φ).functor ⋙
@@ -139,7 +139,7 @@ lemma hasPointwiseRightKanExtensionAt_of_equivalence
     (E : D ≌ D') (eL : L ⋙ E.functor ≅ L') (Y : D) (Y' : D') (e : E.functor.obj Y ≅ Y')
     [HasPointwiseRightKanExtensionAt L F Y] :
     HasPointwiseRightKanExtensionAt L' F Y' := by
-  rw [← hasPointwiseRightKanExtensionAt_iff_of_natIso F eL,
+  rw [← hasPointwiseRightKanExtensionAt_iff_of_natIso_left F eL,
     hasPointwiseRightKanExtensionAt_iff_of_iso _ F e.symm]
   let Φ := StructuredArrow.post Y L E.functor
   have : HasLimit ((asEquivalence Φ).functor ⋙
@@ -163,7 +163,7 @@ lemma hasPointwiseRightKanExtensionAt_iff_of_equivalence
 lemma HasPointwiseLeftKanExtensionAt.of_natIso {L L' : C ⥤ D} {F F' : C ⥤ H} (Y : D)
     [L.HasPointwiseLeftKanExtensionAt F Y] (e₁ : L ≅ L') (e₂ : F ≅ F') :
     L'.HasPointwiseLeftKanExtensionAt F' Y := by
-  rw [hasPointwiseLeftKanExtensionAt_iff_of_natIso _ e₁.symm]
+  rw [hasPointwiseLeftKanExtensionAt_iff_of_natIso_left _ e₁.symm]
   let e : CostructuredArrow.proj L Y ⋙ F' ≅ CostructuredArrow.proj L Y ⋙ F :=
     NatIso.ofComponents fun X ↦ (e₂.app _).symm
   rw [HasPointwiseLeftKanExtensionAt, hasColimit_iff_of_iso e]
@@ -179,7 +179,7 @@ lemma hasPointwiseLeftKanExtensionAt_iff_of_natIso {L L' : C ⥤ D} {F F' : C �
 lemma HasPointwiseRightKanExtensionAt.of_natIso {L L' : C ⥤ D} {F F' : C ⥤ H} (Y : D)
     [L.HasPointwiseRightKanExtensionAt F Y] (e₁ : L ≅ L') (e₂ : F ≅ F') :
     L'.HasPointwiseRightKanExtensionAt F' Y := by
-  rw [hasPointwiseRightKanExtensionAt_iff_of_natIso _ e₁.symm]
+  rw [hasPointwiseRightKanExtensionAt_iff_of_natIso_left _ e₁.symm]
   let e : StructuredArrow.proj Y L ⋙ F' ≅ StructuredArrow.proj Y L ⋙ F :=
     NatIso.ofComponents fun X ↦ (e₂.app _).symm
   rw [HasPointwiseRightKanExtensionAt, hasLimit_iff_of_iso e]
