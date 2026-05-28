@@ -360,9 +360,6 @@ theorem sUnion_isVonNBounded_eq_univ : ⋃₀ setOf (IsVonNBounded 𝕜) = (Set.
   Set.eq_univ_iff_forall.mpr fun x =>
     Set.mem_sUnion.mpr ⟨{x}, isVonNBounded_singleton _, Set.mem_singleton _⟩
 
-@[deprecated (since := "2025-11-14")]
-alias isVonNBounded_covers := sUnion_isVonNBounded_eq_univ
-
 variable (𝕜 E)
 
 -- See note [reducible non-instances]

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.Algebra.Category.Grp.Kernels
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.GroupTheory.QuotientGroup.Finite
 
@@ -169,9 +169,6 @@ lemma ShortExact.ab_finite_iff {S : ShortComplex Ab.{u}} (hS : S.ShortExact) :
     Finite S.X₂ ↔ Finite S.X₁ ∧ Finite S.X₃ where
   mp _ := ⟨.of_injective _ hS.ab_injective_f, .of_surjective _ hS.ab_surjective_g⟩
   mpr | ⟨_, _⟩ => hS.exact.ab_finite
-
-@[deprecated (since := "2025-11-03")]
-protected alias ShortExact.ab_exact_iff_function_exact := ab_exact_iff_function_exact
 
 end ShortComplex
 
