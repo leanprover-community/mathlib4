@@ -34,11 +34,13 @@ namespace Scheme
 
 namespace PartialMap
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Restricting a dominant partial map to a dense open yields a dominant partial map. -/
 lemma isDominant_restrict_hom (f : X.PartialMap Y) [IsDominant f.hom] (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) : IsDominant (f.restrict U hU hU').hom := by
-  haveI : IsDominant (X.homOfLE hU') := Opens.isDominant_homOfLE hU hU'
-  exact (inferInstance : IsDominant (X.homOfLE hU' ≫ f.hom))
+  dsimp only [restrict_domain, restrict_hom]
+  have : IsDominant (X.homOfLE hU') := Opens.isDominant_homOfLE hU hU'
+  rwa [IsDominant.comp_iff]
 
 /-- If a restriction of `f` is dominant, then `f` is dominant. -/
 lemma isDominant_hom_of_isDominant_restrict_hom (f : X.PartialMap Y) (U : X.Opens)
@@ -53,13 +55,15 @@ lemma isDominant_hom_iff_isDominant_restrict_hom (f : X.PartialMap Y) (U : X.Ope
   ⟨fun _ ↦ f.isDominant_restrict_hom U hU hU',
     fun _ ↦ f.isDominant_hom_of_isDominant_restrict_hom U hU hU'⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Dominance of the underlying morphism is invariant under equivalence of partial maps. -/
 lemma isDominant_hom_iff_of_equiv (f g : X.PartialMap Y) (h : f.equiv g) :
     IsDominant f.hom ↔ IsDominant g.hom := by
   obtain ⟨W, hW, hWl, hWr, h⟩ := h
-  rw [isDominant_hom_iff_isDominant_restrict_hom f W hW hWl,
-    isDominant_hom_iff_isDominant_restrict_hom g W hW hWr]
-  exact iff_of_eq (congrArg (IsDominant ·) h)
+  have e₁ := isDominant_hom_iff_isDominant_restrict_hom f W hW hWl
+  have e₂ := isDominant_hom_iff_isDominant_restrict_hom g W hW hWr
+  dsimp only [restrict_domain, restrict_hom] at ⊢ e₁ e₂ h
+  rw [e₁, h, ← e₂]
 
 end PartialMap
 
