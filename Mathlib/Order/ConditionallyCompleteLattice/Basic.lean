@@ -81,6 +81,17 @@ theorem WithTop.sInf_singleton_top [InfSet α] : sInf ({⊤} : Set (WithTop α))
   if_pos <| .inl subset_rfl
 
 @[to_dual (attr := simp)]
+theorem WithTop.sSup_of_top_mem [SupSet α] {s : Set (WithTop α)} (h : ⊤ ∈ s) : sSup s = ⊤ :=
+  if_pos h
+
+@[to_dual]
+theorem WithTop.sSup_of_not_bddAbove [SupSet α] {s : Set (WithTop α)}
+    (h : ¬BddAbove ((↑) ⁻¹' s : Set α)) : sSup s = ⊤ := by
+  by_cases hmem : ⊤ ∈ s
+  · exact sSup_of_top_mem hmem
+  · exact if_neg hmem |>.trans <| if_neg h
+
+@[to_dual (attr := simp)]
 theorem WithTop.sInf_of_not_bddBelow [InfSet α] {s : Set (WithTop α)} (h : ¬BddBelow s) :
     sInf s = ⊤ :=
   if_pos <| .inr h
