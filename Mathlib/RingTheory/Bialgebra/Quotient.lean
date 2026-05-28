@@ -59,27 +59,19 @@ lemma counit_comp_mkAlgHom : (counitAlgHom r).toLinearMap.comp (mkAlgHom R r).to
 
 lemma comul_comp_mkAlgHom : (comulAlgHom r).toLinearMap.comp (mkAlgHom R r).toLinearMap =
     (map (mkAlgHom R r).toLinearMap (mkAlgHom R r).toLinearMap).comp comul := by
-  ext a
-  simp only [comulAlgHom, coe_comp, AlgHom.toLinearMap_apply, Function.comp_apply,
-    liftAlgHom_mkAlgHom_apply, AlgHom.coe_comp]
-  rfl
+  ext a; simp [comulAlgHom]; rfl
 
 /-- The bialgebra structure on `RingQuot r` when `r` is a bialgebra relation. -/
-noncomputable instance : Bialgebra R (RingQuot r) :=
-  Bialgebra.ofAlgHom (comulAlgHom r) (counitAlgHom r)
-    (by
-      refine ringQuot_ext' _ _ _ (AlgHom.toLinearMap_injective ?_)
-      simp [coassoc_simps, comul_comp_mkAlgHom])
-    (by
-      refine ringQuot_ext' _ _ _ (AlgHom.toLinearMap_injective ?_)
-      simp only [coassoc_simps, AlgHom.comp_toLinearMap, Algebra.TensorProduct.toLinearMap_map,
-        AlgebraTensorModule.map_eq, comul_comp_mkAlgHom, counit_comp_mkAlgHom]
-      rw [CoassocSimps.map_counit_comp_comul_left]; rfl)
-    (by
-      refine ringQuot_ext' _ _ _ (AlgHom.toLinearMap_injective ?_)
-      simp only [coassoc_simps, AlgHom.comp_toLinearMap, Algebra.TensorProduct.toLinearMap_map,
-        AlgebraTensorModule.map_eq, comul_comp_mkAlgHom, counit_comp_mkAlgHom]
-      rw [CoassocSimps.map_counit_comp_comul_right]; rfl)
+noncomputable instance : Bialgebra R (RingQuot r) := by
+  refine Bialgebra.ofAlgHom (comulAlgHom r) (counitAlgHom r) ?_ ?_ ?_ <;>
+    refine ringQuot_ext' _ _ _ (AlgHom.toLinearMap_injective ?_)
+  · simp [coassoc_simps, comul_comp_mkAlgHom]
+  · simp only [coassoc_simps, AlgHom.comp_toLinearMap, Algebra.TensorProduct.toLinearMap_map,
+      comul_comp_mkAlgHom, counit_comp_mkAlgHom]
+    rw [CoassocSimps.map_counit_comp_comul_left]; rfl
+  · simp only [coassoc_simps, AlgHom.comp_toLinearMap, Algebra.TensorProduct.toLinearMap_map,
+      comul_comp_mkAlgHom, counit_comp_mkAlgHom]
+    rw [CoassocSimps.map_counit_comp_comul_right]; rfl
 
 @[simp] lemma counit_mkAlgHom (a : A) :
     (counit : RingQuot r →ₗ[R] R) (mkAlgHom R r a) = counit a :=
