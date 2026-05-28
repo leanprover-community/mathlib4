@@ -518,7 +518,7 @@ theorem IsEquiv.orderRingIso_symm_apply (h : v.IsEquiv w) (x : WithVal w) :
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
 -- TODO: Can remove the `attribute [-instance] ValuativeRel.isUniformAddGroup` after #36769
-attribute [-instance] ValuativeRel.isUniformAddGroup in
+-- attribute [-instance] ValuativeRel.isUniformAddGroup in
 set_option backward.isDefEq.respectTransparency false in
 theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v = w)
     (h : v.IsEquiv w) : UniformContinuous (WithVal.equiv v) := by
@@ -543,7 +543,7 @@ theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v 
   simpa [lt_div_iff₀ hs0', ← map_mul] using hx
 
 -- TODO: Can remove the `attribute [-instance] ValuativeRel.isUniformAddGroup` after #36769
-attribute [-instance] ValuativeRel.isUniformAddGroup in
+-- attribute [-instance] ValuativeRel.isUniformAddGroup in
 set_option backward.isDefEq.respectTransparency false in
 theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valued.v = w)
     (h : w.IsEquiv v) : UniformContinuous (WithVal.equiv v).symm := by
@@ -641,7 +641,7 @@ theorem restrict_exists_div_eq {K : Type*} [Field K] {Γ₀ : Type*}
       embedding_strictMono.lt_iff_lt, map_zero]
     refine WithZero.pos_iff_ne_zero.mpr (Units.ne_zero γ)⟩
 
-attribute [-instance] ValuativeRel.isUniformAddGroup in
+-- attribute [-instance] ValuativeRel.isUniformAddGroup in
 set_option backward.isDefEq.respectTransparency false in
 open UniformSpace.Completion in
 theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation K Γ₀}

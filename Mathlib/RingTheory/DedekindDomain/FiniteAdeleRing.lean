@@ -152,7 +152,7 @@ section Units
 variable {R K}
 
 -- TODO: Can remove the `attribute [-instance] ValuativeRel.isUniformAddGroup` after #36769
-attribute [-instance] ValuativeRel.isUniformAddGroup in
+-- attribute [-instance] ValuativeRel.isUniformAddGroup in
 set_option backward.isDefEq.respectTransparency false in
 theorem isUnit_iff {a : FiniteAdeleRing R K} :
     IsUnit a ↔ (∀ v, a v ≠ 0) ∧ ∀ᶠ v in Filter.cofinite, Valued.v (a v) = 1 := by
