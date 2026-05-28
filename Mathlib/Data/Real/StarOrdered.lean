@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Data.NNReal.Star
-public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Analysis.Real.Sqrt
 
 /-! # `ℝ` and `ℝ≥0` are \*-ordered rings. -/
 

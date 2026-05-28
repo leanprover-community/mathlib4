@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Data.Complex.Basic
-public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Analysis.Real.Sqrt
 
 /-!
   # Norm on the complex numbers
