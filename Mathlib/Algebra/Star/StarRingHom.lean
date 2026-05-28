@@ -260,27 +260,26 @@ namespace StarRingEquivClass
 -- See note [lower instance priority]
 instance (priority := 50) {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
     [EquivLike F A B] [hF : StarRingEquivClass F A B] :
-    StarHomClass F A B :=
-  { hF with }
+    StarHomClass F A B where
+  __ := hF
 
 -- See note [lower instance priority]
 instance (priority := 100) {F A B : Type*} [NonUnitalNonAssocSemiring A] [Star A]
-    [NonUnitalNonAssocSemiring B] [Star B] [EquivLike F A B] [RingEquivClass F A B]
-    [StarRingEquivClass F A B] : NonUnitalStarRingHomClass F A B :=
-  { }
+    [NonUnitalNonAssocSemiring B] [Star B] [EquivLike F A B] [StarRingEquivClass F A B] :
+    NonUnitalStarRingHomClass F A B where
 
 /-- Turn an element of a type `F` satisfying `StarRingEquivClass F A B` into an actual
 `StarRingEquiv`. This is declared as the default coercion from `F` to `A ≃⋆+* B`. -/
 @[coe]
 def toStarRingEquiv {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
-    [EquivLike F A B] [RingEquivClass F A B] [StarRingEquivClass F A B] (f : F) : A ≃⋆+* B :=
+    [EquivLike F A B] [StarRingEquivClass F A B] (f : F) : A ≃⋆+* B :=
   { (RingEquivClass.toRingEquiv f : A ≃+* B) with
     map_star' := map_star f }
 
 /-- Any type satisfying `StarRingEquivClass` can be cast into `StarRingEquiv` via
 `StarRingEquivClass.toStarRingEquiv`. -/
 instance instCoeHead {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
-    [EquivLike F A B] [RingEquivClass F A B] [StarRingEquivClass F A B] : CoeHead F (A ≃⋆+* B) :=
+    [EquivLike F A B] [StarRingEquivClass F A B] : CoeHead F (A ≃⋆+* B) :=
   ⟨toStarRingEquiv⟩
 
 end StarRingEquivClass
