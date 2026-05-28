@@ -4080,7 +4080,6 @@ public import Mathlib.Data.Matrix.Action
 public import Mathlib.Data.Matrix.Auto
 public import Mathlib.Data.Matrix.Basic
 public import Mathlib.Data.Matrix.Basis
-public import Mathlib.Data.Matrix.Bilinear
 public import Mathlib.Data.Matrix.Block
 public import Mathlib.Data.Matrix.ColumnRowPartitioned
 public import Mathlib.Data.Matrix.Composition
@@ -5027,6 +5026,7 @@ public import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
 public import Mathlib.LinearAlgebra.Matrix.BaseChange
 public import Mathlib.LinearAlgebra.Matrix.Basis
+public import Mathlib.LinearAlgebra.Matrix.Bilinear
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Cartan
