@@ -6,32 +6,58 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Order.Filter.EventuallyConst
-public import Mathlib.SetTheory.Ordinal.Family
+public import Mathlib.SetTheory.Cardinal.Aleph
 
 /-!
-# Monotone functions from cardinals to small type are eventually constant
+# Eventually constant monotone functions
 
-We prove variations of the following theorem: if `α` is a `Small.{u}` partially ordered type, and
-`f : Cardinal.{u} → α` is a monotone function, then `f` is eventually constant.
+This file proves variations of the following theorem: if `α` is a partial order and `β` is a linear
+order with `#β < cof α`, then any monotone function `f : α → β` must be eventually constant. In
+particular, this applies for functions from `Cardinal.{u}` or `Ordinal.{u}` into a `Small.{u}` type.
 -/
 
 public section
 
-universe u
+universe u v
 
-variable {α : Type*} [PartialOrder α] [Small.{u} α]
+variable {α γ : Type u} {β : Type v} [LinearOrder α] [LinearOrder γ] [PartialOrder β]
 
-open Filter Set
+open Cardinal Filter Order Set
+
+theorem eventuallyConst_of_rangeSplitting [Nonempty α] {f : α → β} (hf : Monotone f)
+    (hf' : ¬ IsCofinal (range (rangeSplitting f))) : atTop.EventuallyConst f := by
+  rw [eventuallyConst_atTop]
+  obtain ⟨i, hi⟩ := not_isCofinal_iff.1 hf'
+  refine ⟨i, fun j hij ↦ (hf hij).antisymm' <| (hf (hi _ ⟨⟨f j, j, rfl⟩, rfl⟩).le).trans' ?_⟩
+  rw [apply_rangeSplitting f]
+
+theorem Monotone.eventuallyConst_of_lift_cof_lt {f : α → β} (hf : Monotone f)
+    (hα : lift.{u} #β < lift.{v} (cof α)) : atTop.EventuallyConst f := by
+  have : Nonempty α := by by_contra!; simp at hα
+  apply eventuallyConst_of_rangeSplitting hf
+  contrapose! hα
+  classical let := hf.linearOrder_range
+  rw [← lift_cof_congr_of_strictMono (rangeSplitting_strictMono hf) hα, lift_le]
+  exact (cof_le_cardinalMk _).trans (mk_set_le _)
+
+theorem Monotone.eventuallyConst_of_cof_lt {f : α → γ} (hf : Monotone f)
+    (hα : #γ < cof α) : atTop.EventuallyConst f :=
+  hf.eventuallyConst_of_lift_cof_lt (by simpa)
+
+theorem Antitone.eventuallyConst_of_lift_cof_lt {f : α → β} (hf : Antitone f)
+    (hα : lift.{u} #β < lift.{v} (cof α)) : atTop.EventuallyConst f :=
+  hf.dual_right.eventuallyConst_of_lift_cof_lt hα
+
+theorem Antitone.eventuallyConst_of_cof_lt {f : α → γ} (hf : Antitone f)
+    (hα : #γ < cof α) : atTop.EventuallyConst f :=
+  hf.dual_right.eventuallyConst_of_cof_lt hα
 
 namespace Cardinal
-variable {f : Cardinal.{u} → α}
+variable {f : Cardinal.{v} → α} [Small.{v} α]
 
 theorem eventuallyConst_of_monotone (hf : Monotone f) : atTop.EventuallyConst f := by
-  rw [eventuallyConst_atTop]
-  obtain ⟨a, ha⟩ := bddAbove_of_small (range (rangeSplitting f))
-  refine ⟨a, fun b hb ↦ (hf hb).antisymm' ?_⟩
-  have := hf <| ha (mem_range_self ⟨f b, b, rfl⟩)
-  rwa [apply_rangeSplitting f] at this
+  apply hf.eventuallyConst_of_lift_cof_lt
+  simpa [← small_iff_lift_mk_lt_univ]
 
 theorem eventuallyConst_of_antitone (hf : Antitone f) : atTop.EventuallyConst f :=
   eventuallyConst_of_monotone (α := αᵒᵈ) hf
@@ -39,14 +65,11 @@ theorem eventuallyConst_of_antitone (hf : Antitone f) : atTop.EventuallyConst f 
 end Cardinal
 
 namespace Ordinal
-variable {f : Ordinal.{u} → α}
+variable {f : Ordinal.{v} → α} [Small.{v} α]
 
 theorem eventuallyConst_of_monotone (hf : Monotone f) : atTop.EventuallyConst f := by
-  rw [eventuallyConst_atTop]
-  obtain ⟨a, ha⟩ := bddAbove_of_small (range (rangeSplitting f))
-  refine ⟨a, fun b hb ↦ (hf hb).antisymm' ?_⟩
-  have := hf <| ha (mem_range_self ⟨f b, b, rfl⟩)
-  rwa [apply_rangeSplitting f] at this
+  apply hf.eventuallyConst_of_lift_cof_lt
+  simpa [← small_iff_lift_mk_lt_univ]
 
 theorem eventuallyConst_of_antitone (hf : Antitone f) : atTop.EventuallyConst f :=
   eventuallyConst_of_monotone (α := αᵒᵈ) hf
