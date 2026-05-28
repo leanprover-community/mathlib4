@@ -94,7 +94,7 @@ instance : CommGroupWithZero SignType where
   exists_pair_ne := ⟨0, 1, by rintro ⟨_⟩⟩
   inv_zero := rfl
 
-local instance : PartialOrder SignType where
+instance : PartialOrder SignType where
   le_refl a := by cases a <;> constructor
   le_antisymm := by decide
   le_trans := by decide

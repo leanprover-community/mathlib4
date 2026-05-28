@@ -76,7 +76,7 @@ theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrd
 def LinearExtension (α : Type u) : Type u :=
   α
 
-noncomputable local instance {α : Type u} [PartialOrder α] : PartialOrder (LinearExtension α) where
+noncomputable instance {α : Type u} [PartialOrder α] : PartialOrder (LinearExtension α) where
   le := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose
   le_refl := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.1.1.1.1
   le_trans := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.1.1.2.1

@@ -107,7 +107,7 @@ theorem mk_le_mk {x y : α} : Quotient.mk s x ≤ Quotient.mk s y ↔ x ≤ y �
 instance [DecidableRel (· ≈ · : α → α → Prop)] : DecidableLE (Quotient s) :=
   (Quotient.recOnSubsingleton₂ · · fun _ _ ↦ decidable_of_iff' _ mk_le_mk)
 
-local instance : PartialOrder (Quotient s) where
+instance : PartialOrder (Quotient s) where
   le_antisymm x y h₁ h₂ := by
     induction x using Quotient.inductionOn with | h x
     induction y using Quotient.inductionOn with | h y

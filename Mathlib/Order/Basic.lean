@@ -1040,7 +1040,7 @@ lemma eq_or_eq_or_eq_of_forall_not_lt_lt [LinearOrder α]
   rcases hne.2.2.lt_or_gt with h₃ | h₃
   exacts [h h₁ h₂, h h₂ h₃, h h₃ h₂, h h₃ h₁, h h₁ h₃, h h₂ h₃, h h₁ h₃, h h₂ h₁]
 
-local instance {α : Type*} [Subsingleton α] : PartialOrder α where
+instance {α : Type*} [Subsingleton α] : PartialOrder α where
   le _ _ := True
   lt _ _ := False
   le_refl _ := trivial

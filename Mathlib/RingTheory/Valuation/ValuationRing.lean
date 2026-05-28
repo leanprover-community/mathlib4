@@ -145,7 +145,7 @@ protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
     field_simp
     simp only [← map_mul]; congr 1; linear_combination h
 
-noncomputable local instance : PartialOrder (ValueGroup A K) where
+noncomputable instance : PartialOrder (ValueGroup A K) where
   le_refl := by rintro ⟨⟩; use 1; rw [one_smul]
   le_trans := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨e, rfl⟩ ⟨f, rfl⟩; use e * f; rw [mul_smul]
   le_antisymm := by

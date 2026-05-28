@@ -272,7 +272,7 @@ instance : DecidableLE (DivisibleHull M) := by
   unfold DecidableLE LE.le instLE liftOn₂ LocalizedModule.liftOn₂
   infer_instance
 
-local instance : PartialOrder (DivisibleHull M) where
+instance : PartialOrder (DivisibleHull M) where
   le_refl a := by
     induction a with | mk m s
     simp
