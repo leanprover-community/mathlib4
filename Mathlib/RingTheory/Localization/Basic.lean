@@ -684,4 +684,33 @@ theorem IsLocalization.algHom_ext {R A L B : Type*}
     f = g :=
   IsLocalization.algHom_ext W h
 
+section extend
+
+variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B]
+  (S : Type*) [CommRing S] [Algebra R S] (M : Submonoid R) [IsLocalization M S]
+  [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+  [Algebra R B] [Algebra S B] [IsScalarTower R S B]
+
+def AlgHom.extendScalarsOfIsLocalization (f : A →ₐ[R] B) : A →ₐ[S] B where
+  __ := f
+  commutes' := by
+    let f := f.comp (IsScalarTower.toAlgHom R S A)
+    let g := IsScalarTower.toAlgHom R S B
+    have : f.toRingHom.comp (algebraMap R S) = g.toRingHom.comp (algebraMap R S) := by simp
+    suffices f = g by rwa [DFunLike.ext_iff] at this
+    apply IsLocalization.algHom_ext M
+    rwa [DFunLike.ext_iff] at this ⊢
+
+@[simp]
+theorem AlgHom.extendScalarsOfIsLocalization_apply (f : A →ₐ[R] B) (a : A) :
+    f.extendScalarsOfIsLocalization S M a = f a :=
+  rfl
+
+@[simps]
+def AlgEquiv.extendScalarsOfIsLocalization (f : A ≃ₐ[R] B) : A ≃ₐ[S] B where
+  __ := f.toAlgHom.extendScalarsOfIsLocalization S M
+  __ := f
+
+end extend
+
 end Algebra

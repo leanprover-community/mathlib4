@@ -138,21 +138,8 @@ noncomputable def Ideal.Fiber.localizationAlgEquivQuotient (q : Ideal (p.Fiber S
     letI r := q.comap includeRight
     letI Sr := Localization.AtPrime r
     Localization.AtPrime q ≃ₐ[Localization.AtPrime p] Sr ⧸ p.map (algebraMap R Sr) :=
-  letI Rp := Localization.AtPrime p
-  letI pS := p.map (algebraMap R S)
-  letI r := q.comap includeRight
-  letI Sr := Localization.AtPrime r
-  letI e₂ : Localization.AtPrime q ≃ₐ[R] Sr ⧸ pS.map (algebraMap S Sr) := algEquivAux₂ p q
-  letI e₃ : Localization.AtPrime q ≃ₐ[Rp] Sr ⧸ pS.map (algebraMap S Sr) :=
-  { __ := e₂
-    commutes' := by
-      let f := e₂.toAlgHom.comp (IsScalarTower.toAlgHom R Rp (Localization.AtPrime q))
-      let g := IsScalarTower.toAlgHom R Rp (Sr ⧸ pS.map (algebraMap S Sr))
-      have : f.toRingHom.comp (algebraMap R Rp) = g.toRingHom.comp (algebraMap R Rp) := by simp
-      suffices f = g by rwa [DFunLike.ext_iff] at this
-      apply Localization.algHom_ext
-      rwa [DFunLike.ext_iff] at this ⊢ }
-  e₃.trans <| quotientEquivAlgOfEq Rp (map_map _ _)
+  ((algEquivAux₂ p q).extendScalarsOfIsLocalization (Localization.AtPrime p) p.primeCompl).trans
+    (quotientEquivAlgOfEq (Localization.AtPrime p) (map_map _ _))
 
 set_option backward.isDefEq.respectTransparency false in
 variable (R S) in
