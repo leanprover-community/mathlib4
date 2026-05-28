@@ -38,7 +38,7 @@ lemma iteratedDeriv_mul_pow_sub_of_analytic {k t : ℕ} {z₀ : 𝕜} {R R₁ : 
       (R₂ z + (z - z₀) * deriv R₂ z))
     refine ⟨R₂', by fun_prop, fun z ↦ ?_⟩
     calc iteratedDeriv (k + 1) R z
-      _ = deriv (fun w ↦ (w - z₀) ^ (t + 1) 
+      _ = deriv (fun w ↦ (w - z₀) ^ (t + 1)
           * (↑(k + (t + 1))! / ↑(t + 1)! * R₁ w + (w - z₀) * R₂ w)) z := by
         rw [iteratedDeriv_succ, funext hR₂_eq]
       _ = (t + 1) * (z - z₀) ^ t * ((k + (t + 1))! / (t + 1)! * R₁ z + (z - z₀) * R₂ z) +
