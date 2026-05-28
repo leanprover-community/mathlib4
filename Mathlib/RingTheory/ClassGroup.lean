@@ -140,7 +140,7 @@ theorem ClassGroup.mk_eq_mk_of_coe_ideal {I J : (FractionalIdeal R⁰ <| Fractio
       simpa only [isUnit_iff_ne_zero, ne_eq, mk'_eq_zero_iff_eq_zero] using hx
     refine ⟨this.unit, ?_⟩
     rw [mul_comm, ← Units.val_inj, Units.val_mul, coe_toPrincipalIdeal]
-    convert!
+    convert
       (mk'_mul_coeIdeal_eq_coeIdeal (FractionRing R) <| mem_nonZeroDivisors_of_ne_zero hy).2 h
 
 theorem ClassGroup.mk_eq_one_of_coe_ideal {I : (FractionalIdeal R⁰ <| FractionRing R)ˣ}
@@ -221,8 +221,6 @@ theorem ClassGroup.mk_canonicalEquiv (K' : Type*) [Field K'] [Algebra R K'] [IsF
   rw [ClassGroup.mk_def, ClassGroup.mk_def, ← MonoidHom.comp_apply (Units.map _),
       ← Units.map_comp, ← RingEquiv.coe_monoidHom_trans,
       FractionalIdeal.canonicalEquiv_trans_canonicalEquiv]
-
-set_option linter.overlappingInstances false
 
 /-- Send a nonzero integral ideal to an invertible fractional ideal. -/
 def FractionalIdeal.mk0 [IsDedekindDomain R] :
@@ -356,6 +354,21 @@ theorem ClassGroup.mk_eq_one_iff {I : (FractionalIdeal R⁰ K)ˣ} :
   · intro x_eq; apply Units.ne_zero I; simp [hx', x_eq]
   · simp [hx']
 
+/-- A fractional ideal is principal if a power coprime to the class number is principal. -/
+theorem FractionalIdeal.isPrincipal.of_isPrincipal_pow_of_coprime [IsDedekindDomain R]
+    [Fintype (ClassGroup R)] {n : ℕ} (hn : n.Coprime (Fintype.card (ClassGroup R)))
+    (I : FractionalIdeal R⁰ K) (hI : ((I ^ n : FractionalIdeal R⁰ K) : Submodule R K).IsPrincipal) :
+    (I : Submodule R K).IsPrincipal := by
+  by_cases hI0 : I = 0
+  · rw [hI0, FractionalIdeal.coe_zero]
+    exact bot_isPrincipal
+  rw [← Ne, ← isUnit_iff_ne_zero] at hI0
+  change Submodule.IsPrincipal ((hI0.unit' : FractionalIdeal R⁰ K) : Submodule R K)
+  rw [← ClassGroup.mk_eq_one_iff, ← orderOf_eq_one_iff, ← Nat.dvd_one, ← hn, Nat.dvd_gcd_iff]
+  refine ⟨?_, orderOf_dvd_card⟩
+  rw [orderOf_dvd_iff_pow_eq_one, ← map_pow, ClassGroup.mk_eq_one_iff]
+  simp only [Units.val_pow_eq_pow_val, IsUnit.val_unit', hI]
+
 /-- If the class group is trivial, any unit fractional ideal is principal. -/
 theorem ClassGroup.isPrincipal_coeSubmodule_of_isUnit [Subsingleton (ClassGroup R)]
     (I : FractionalIdeal R⁰ K) (hI : IsUnit I) :
@@ -377,6 +390,22 @@ theorem ClassGroup.isPrincipal_of_isUnit_coeIdeal [Subsingleton (ClassGroup R)]
 theorem ClassGroup.mk0_eq_one_iff [IsDedekindDomain R] {I : Ideal R} (hI : I ∈ (Ideal R)⁰) :
     ClassGroup.mk0 ⟨I, hI⟩ = 1 ↔ I.IsPrincipal :=
   ClassGroup.mk_eq_one_iff.trans (coeSubmodule_isPrincipal R _)
+
+/-- An ideal is principal if a power coprime to the class number is principal. -/
+theorem Ideal.IsPrincipal.of_isPrincipal_pow_of_coprime [IsDedekindDomain R]
+    [Fintype (ClassGroup R)] {n : ℕ} (hn : n.Coprime (Fintype.card (ClassGroup R)))
+    {I : Ideal R} (hI : (I ^ n).IsPrincipal) : I.IsPrincipal := by
+  by_cases hI0 : I = 0
+  · rw [hI0]
+    exact bot_isPrincipal
+  rw [← ClassGroup.mk0_eq_one_iff (mem_nonZeroDivisors_of_ne_zero _)] at hI ⊢
+  swap
+  · exact hI0
+  swap
+  · exact pow_ne_zero n hI0
+  · rw [← orderOf_eq_one_iff, ← Nat.dvd_one, ← hn, Nat.dvd_gcd_iff]
+    refine ⟨?_, orderOf_dvd_card⟩
+    rwa [orderOf_dvd_iff_pow_eq_one, ← map_pow, SubmonoidClass.mk_pow]
 
 theorem ClassGroup.mk0_eq_mk0_inv_iff [IsDedekindDomain R] {I J : (Ideal R)⁰} :
     ClassGroup.mk0 I = (ClassGroup.mk0 J)⁻¹ ↔
@@ -410,7 +439,7 @@ theorem card_classGroup_eq_one [IsPrincipalIdealRing R] : Fintype.card (ClassGro
 /-- The class number is `1` iff the ring of integers is a principal ideal domain. -/
 theorem card_classGroup_eq_one_iff [IsDedekindDomain R] [Fintype (ClassGroup R)] :
     Fintype.card (ClassGroup R) = 1 ↔ IsPrincipalIdealRing R := by
-  constructor; swap; · intros; convert! card_classGroup_eq_one (R := R)
+  constructor; swap; · intros; convert card_classGroup_eq_one (R := R)
   rw [Fintype.card_eq_one_iff]
   rintro ⟨I, hI⟩
   have eq_one : ∀ J : ClassGroup R, J = 1 := fun J => (hI J).trans (hI 1).symm
