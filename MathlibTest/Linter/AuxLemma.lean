@@ -53,7 +53,7 @@ warning: `S._sizeOf_1` refers to an auto-generated auxiliary declaration. These 
 
 Note: This linter can be disabled with `set_option linter.auxLemma false`
 -/
-#guard_msgs(warning) in
+#guard_msgs(drop info, warning) in
 #check @S._sizeOf_1
 
 -- No warning on ordinary references, including names that merely resemble the auxiliary
