@@ -26,6 +26,13 @@ where it characterises asymptotic stability.
 * `Polynomial.isHurwitzStable_quadratic`: `X ^ 2 + C b * X + C c` is Hurwitz stable
   iff `0 < b ∧ 0 < c`.
 
+## Scope
+
+This file treats only monic polynomials of degree 1 and 2. The general Routh–Hurwitz criterion
+for degree `n` — stated in terms of the `n × n` Hurwitz matrix and its leading principal minors —
+requires infrastructure (Cauchy index or Bezoutian theory) not yet present in Mathlib and is left
+for future work.
+
 ## References
 
 * <https://en.wikipedia.org/wiki/Routh%E2%80%93Hurwitz_stability_criterion>
