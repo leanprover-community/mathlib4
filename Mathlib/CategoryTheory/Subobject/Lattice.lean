@@ -214,7 +214,7 @@ theorem top_eq_id (B : C) : (⊤ : Subobject B) = Subobject.mk (𝟙 B) :=
   rfl
 
 theorem underlyingIso_top_hom {B : C} : (underlyingIso (𝟙 B)).hom = (⊤ : Subobject B).arrow := by
-  convert underlyingIso_hom_comp_eq_mk (𝟙 B)
+  convert! underlyingIso_hom_comp_eq_mk (𝟙 B)
   simp only [comp_id]
 
 instance top_arrow_isIso {B : C} : IsIso (⊤ : Subobject B).arrow := by
@@ -443,7 +443,7 @@ theorem inf_eq_map_pullback' {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
 
 theorem inf_eq_map_pullback {A : C} (f₁ : Subobject A) (f₂ : Subobject A) :
     (f₁ ⊓ f₂ : Subobject A) = (map f₁.arrow).obj ((pullback f₁.arrow).obj f₂) := by
-  convert inf_eq_map_pullback' (representative.obj f₁) f₂
+  convert! inf_eq_map_pullback' (representative.obj f₁) f₂
   ext1
   nth_rw 1 [← thinSkeleton_mk_representative_eq_self f₁]
   congr
@@ -611,7 +611,7 @@ theorem sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ 
   · dsimp [sInf]
     simp only [Category.assoc, ← underlyingIso_hom_comp_eq_mk,
       Iso.cancel_iso_hom_left]
-    convert limit.w (wideCospan s) (WidePullbackShape.Hom.term _)
+    convert! limit.w (wideCospan s) (WidePullbackShape.Hom.term _)
     simp
 
 set_option backward.isDefEq.respectTransparency false in

@@ -175,11 +175,11 @@ theorem invFun_algebraMap (M : Matrix n n R) : invFun n R A (M.map (algebraMap R
   simp only [Algebra.algebraMap_eq_smul_one, smul_tmul, ← tmul_sum]
   congr
   conv_rhs => rw [matrix_eq_sum_single M]
-  convert Finset.sum_product (β := Matrix n n R) ..; simp
+  convert! Finset.sum_product (β := Matrix n n R) ..; simp
 
 theorem right_inv (M : Matrix n n A) : (toFunAlgHom n R A) (invFun n R A M) = M := by
   simp only [invFun, map_sum, toFunAlgHom_apply]
-  convert Finset.sum_product (β := Matrix n n A) ..
+  convert! Finset.sum_product (β := Matrix n n A) ..
   conv_lhs => rw [matrix_eq_sum_single M]
   simp
 
