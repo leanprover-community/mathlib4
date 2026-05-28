@@ -12,7 +12,7 @@ public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 # The `auxLemma` linter
 
 The `auxLemma` linter flags explicit references to auto-generated "auxiliary" declarations
-such as `_proof_1`, `_match_1`, or `_sizeOf_1`.
+such as `_proof_1`, `match_1`, or `_sizeOf_1`.
 
 ## Why is this bad?
 
@@ -36,11 +36,8 @@ such as `_proof_1`, `match_2`, or `_sizeOf_3`. -/
 private def isAuxName (s : String) : Bool :=
   matchesAuxPattern "_proof_" s ||
   matchesAuxPattern "match_" s ||
-  matchesAuxPattern "_match_" s ||
   matchesAuxPattern "_sizeOf_" s ||
-  matchesAuxPattern "grind_" s ||
   matchesAuxPattern "_simp_" s ||
-  matchesAuxPattern "_gcongr_" s ||
   matchesAuxPattern "_aux_" s
 
 /-- Returns `true` if any component of the name is an auto-generated auxiliary name. -/
@@ -50,7 +47,7 @@ private def nameRefersToAuxLemma : Name → Bool
   | .anonymous => false
 
 /-- The `auxLemma` linter emits a warning on any explicit reference to an auto-generated
-auxiliary declaration (such as `_proof_1`, `_match_1`, or `_sizeOf_1`).
+auxiliary declaration (such as `_proof_1`, `match_1`, or `_sizeOf_1`).
 
 These names are internal to the Lean elaborator and are not stable across refactors. -/
 public register_option linter.auxLemma : Bool := {
