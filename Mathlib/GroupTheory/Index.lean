@@ -516,9 +516,18 @@ theorem relIindex_dvd_two_iff' : H.relIndex K ∣ 2 ↔ ∃ a ∈ K, ∀ b ∈ K
   simp [Subgroup.relIndex, Subgroup.index_dvd_two_iff', mem_subgroupOf]
 
 @[to_additive]
-lemma inf_eq_bot_of_coprime (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ K = ⊥ :=
-  card_eq_one.1 <| Nat.eq_one_of_dvd_coprimes h
+lemma disjoint_of_coprime_natCard (h : Nat.card H |>.Coprime <| Nat.card K) : Disjoint H K :=
+  disjoint_iff.mpr <| card_eq_one.mp <| Nat.eq_one_of_dvd_coprimes h
     (card_dvd_of_le inf_le_left) (card_dvd_of_le inf_le_right)
+
+@[deprecated AddSubgroup.disjoint_of_coprime_natCard (since := "2026-05-28")]
+lemma _root_.AddSubgroup.inf_eq_bot_of_coprime {G : Type*} [AddGroup G] {H K : AddSubgroup G}
+    (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ K = ⊥ :=
+  disjoint_iff.mp <| AddSubgroup.disjoint_of_coprime_natCard h
+
+@[to_additive existing (attr := deprecated disjoint_of_coprime_natCard (since := "2026-05-28"))]
+lemma inf_eq_bot_of_coprime (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ K = ⊥ :=
+  disjoint_iff.mp <| disjoint_of_coprime_natCard h
 
 @[to_additive]
 theorem index_ne_zero_of_finite [hH : Finite (G ⧸ H)] : H.index ≠ 0 := by
