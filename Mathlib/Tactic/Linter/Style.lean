@@ -572,15 +572,16 @@ such names violate the naming convention. -/
     if type.isConstOf `Lean.Meta.Simp.Simproc ||
         type.isConstOf ``ParserDescr || type.isConstOf ``TrailingParserDescr ||
         type.isConstOf `Batteries.Util.LibraryNote
-    then
-      return none
+    then return none
+    -- `Prop`-typed `defs` should be caught by other linter, may be made by `unif_hint`
+    if ← isProp type then return none
     let project := ((← getEnv).getModuleFor? declName).elim `NoProjectFound (·.getRoot)
     let declName := privateToUserName declName
     if isBadNameWithUnderscore project declName then
       return m!"The definition `{declName}` contains an underscore. \
         This almost surely violates the definition naming convention; \
         use lowerCamelCase (or UpperCamelCase for `Sort`-valued definitions) instead."
-    else return none
+    return none
 
 end Style.nameCheck
 
