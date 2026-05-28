@@ -14,11 +14,10 @@ namespace Cache.Requests
 open System (FilePath)
 
 /--
-Structure to hold repository information with priority ordering
+Resolved repository identity for cache lookups.
 -/
 structure RepoInfo where
   repo : String
-  useFirst : Bool
   deriving Repr
 
 /--
@@ -177,7 +176,7 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO (Option RepoInfo) := do
     if shouldUseNightlyTesting then
       let repo := "leanprover-community/mathlib4-nightly-testing"
       IO.println s!"Using cache from nightly-testing remote: {repo}"
-      return some {repo := repo, useFirst := true}
+      return some {repo := repo}
 
     -- Only search for PR refs if we're not on a regular branch like master, bump/*, or nightly-testing*
     -- let isSpecialBranch := branchName == "master" || branchName.startsWith "bump/" ||
@@ -240,7 +239,7 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO (Option RepoInfo) := do
   match repo? with
   | some repo =>
     IO.println s!"Using cache from {remoteName}: {repo?}"
-    return some {repo := repo, useFirst := false}
+    return some {repo := repo}
   | none =>
     IO.println s!"Using cache from {MATHLIBREPO}."
     return none
@@ -792,38 +791,26 @@ def getFiles
     else pure none
   else pure none
 
-  if let some repo := repo? then
-    let failed ← downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)
-      (decompress := decompress) (forceUnpack := forceUnpack)
-      isMathlibRoot mathlibDepPath
-    if failed > 0 then IO.Process.exit 1
-  else
-    let repoInfo? ← getRemoteRepo (← read).mathlibDepPath
+  -- Resolve the repo once: --repo= override > git remote > MATHLIBREPO.
+  -- The trust-ordered container list for this repo (from
+  -- `defaultContainersForRepo`) is the single source of truth for what gets
+  -- tried — there's no separate outer-loop iteration. Master's cache reaches
+  -- fork builds via `master` being in the fork chain (highest-trust source
+  -- holding the bulk of any fork's deps).
+  let repo ← match repo? with
+    | some r => pure r
+    | none =>
+      match ← getRemoteRepo (← read).mathlibDepPath with
+      | some info => pure info.repo
+      | none => pure MATHLIBREPO
 
-    -- Build list of repositories to download from in order
-    let repos : List String :=
-      if let some repoInfo := repoInfo? then
-        if repoInfo.repo == MATHLIBREPO then
-          [MATHLIBREPO]
-        else if repoInfo.useFirst then
-          [repoInfo.repo, MATHLIBREPO]
-        else
-          [MATHLIBREPO, repoInfo.repo]
-      else
-        [MATHLIBREPO]
-
-    let mut failed : Nat := 0
-    for h : i in [0:repos.length] do
-      failed := ← downloadFiles repos[i] hashMap forceDownload parallel
-        (warnOnMissing := i = repos.length - 1)
-        (decompress := decompress) (forceUnpack := forceUnpack)
-        isMathlibRoot mathlibDepPath
-      if failed > 10 then
-        IO.println s!"Too many downloads failed; stopping the downloading"
-        IO.Process.exit 1
-    if failed > 0 then
-      IO.println s!"Downloading {failed} files failed"
-      IO.Process.exit 1
+  let failed ← downloadFiles repo hashMap forceDownload parallel
+    (warnOnMissing := true)
+    (decompress := decompress) (forceUnpack := forceUnpack)
+    isMathlibRoot mathlibDepPath
+  if failed > 0 then
+    IO.println s!"Downloading {failed} files failed"
+    IO.Process.exit 1
 
   -- Wait for decompression of already-cached files to complete
   if let some (task, size) := bgDecomp then

@@ -165,14 +165,14 @@ def test_defaultContainersForRepo : IO Unit := do
   -- `MATHLIB_CACHE_FROM` rather than from any branch detection in Lean.
   assert "nightly-testing repo → [nightly-testing, legacy] (strict default)"
     (defaultContainersForRepo NIGHTLY_TESTING_REPO == [.nightlyTesting, .legacy])
-  -- A PR from a fork: its own container first, legacy as the tail.
-  -- Master-built deps are reached via the *outer* repo loop iteration with
-  -- repo = MATHLIBREPO, not by adding `master` here (which would 404 anyway).
-  assert "fork repo → [forks, legacy]"
-    (defaultContainersForRepo "alice/mathlib4" == [.forks, .legacy])
+  -- A PR from a fork: master first (highest-trust, holds the bulk of any
+  -- fork build's deps), then the fork's own container for PR-specific
+  -- files, then legacy as the migration tail.
+  assert "fork repo → [master, forks, legacy]"
+    (defaultContainersForRepo "alice/mathlib4" == [.master, .forks, .legacy])
   -- Anything unrecognized falls through to the fork-default; conservative.
-  assert "unknown repo → [forks, legacy] (fork-default)"
-    (defaultContainersForRepo "some/other-repo" == [.forks, .legacy])
+  assert "unknown repo → [master, forks, legacy] (fork-default)"
+    (defaultContainersForRepo "some/other-repo" == [.master, .forks, .legacy])
   -- Defensive: every default allowlist must end with `.legacy` so historical
   -- artifacts remain reachable during the migration. Future edits that drop
   -- this guarantee would silently shrink cache-hit rates.

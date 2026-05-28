@@ -41,7 +41,7 @@ Read-side fallback chains, mapped by repo (see `Cache/Infra.lean:defaultContaine
 |-------------------------------------------------|-------------------------|
 | `leanprover-community/mathlib4`                 | `master`                |
 | `leanprover-community/mathlib4-nightly-testing` | `nightly-testing`       |
-| any fork (PRs)                                  | `forks`                 |
+| any fork (PRs)                                  | `master`, `forks`       |
 
 The trusted-nightly default excludes `pr-toolchain-tests` so that a
 poisoned upload from `lean-pr-testing-*` cannot silently reach a
