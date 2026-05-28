@@ -229,6 +229,13 @@ theorem map_roots_comp_C_mul_X_add_C (p : R[X]) (a b : R) (ha : IsUnit a) :
   rw [count_roots, count_map_eq_count' f _ hf.injective, count_roots,
     rootMultiplicity_comp_C_mul_X_add_C p a b x ha]
 
+open scoped Ring in
+@[simp]
+theorem roots_comp_C_mul_X_add_C (p : R[X]) (a b : R) (ha : IsUnit a) :
+    (p.comp (C a * X + C b)).roots = p.roots.map (fun x ↦ a⁻¹ʳ * (x - b)) := by
+  conv_rhs => rw [← p.map_roots_comp_C_mul_X_add_C a b ha]
+  simp [← mul_assoc, Ring.inverse_mul_cancel a ha]
+
 @[simp]
 theorem roots_comp_neg_X (p : R[X]) : (p.comp (-X)).roots = p.roots.map fun x ↦ -x := by
   simp [← map_roots_comp_C_mul_X_add_C p (-1) 0 isUnit_neg_one]

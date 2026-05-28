@@ -178,8 +178,7 @@ theorem rootMultiplicity_X_sub_C [Nontrivial R] [DecidableEq R] {x y : R} :
 private theorem rootMultiplicity_comp_C_mul_X_add_C_le (p : R[X]) (a b c : R) (ha : IsUnit a) :
     (p.comp (C a * X + C b)).rootMultiplicity c ≤ p.rootMultiplicity (a * c + b) := by
   let : Invertible a := ha.invertible
-  by_cases hp : p = 0
-  · simp [hp]
+  rcases eq_or_ne p 0 with rfl | hp; · simp
   rw [le_rootMultiplicity_iff hp]
   have h := pow_rootMultiplicity_dvd (p.comp (C a * X + C b)) c
   rw [dvd_comp_C_mul_X_add_C_iff, pow_comp] at h
