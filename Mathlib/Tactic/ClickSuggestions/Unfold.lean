@@ -132,7 +132,7 @@ def filteredUnfolds (e : Expr) : MetaM (Array Expr) := do
 
 /-- Return the tactic string that does the unfolding. -/
 def tacticSyntax (e eNew : Expr) (rwKind : RwKind) :
-    clickSuggestionsM (TSyntax `tactic) := do
+    ClickSuggestionsM (TSyntax `tactic) := do
   let e ← PrettyPrinter.delab e
   let eNew ← PrettyPrinter.delab eNew
   let fromRfl ← `(show $e = $eNew from $(mkIdent `rfl))
@@ -141,7 +141,7 @@ def tacticSyntax (e eNew : Expr) (rwKind : RwKind) :
 /-- Render the unfolds of `e` as given by `filteredUnfolds`, with buttons at each suggestion
 for pasting the rewrite tactic. Return `none` when there are no unfolds. -/
 public def suggestUnfold (e : Expr) (rwKind : RwKind) :
-    clickSuggestionsM (Option Html) := do
+    ClickSuggestionsM (Option Html) := do
   let results ← filteredUnfolds e
   if results.isEmpty then
     return none

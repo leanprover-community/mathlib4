@@ -76,18 +76,18 @@ elab "click_test" onGoal?:(num)? hyp?:(ident)? pos?:(str)? "=>" expecteds:str+ :
   let some cursorPos := (← getRef).getPos? | throwError "found no valid cursor position"
   let cursorPos := text.utf8PosToLspPos cursorPos
   let (_, statusToken) ← mkRefreshComponent
+  let (_, solvedToken) ← mkRefreshComponent
   let (html, masterToken) ← mkRefreshComponent
   let ctx := {
-    cursorPos, masterToken, statusToken
+    cursorPos, masterToken, statusToken, solvedToken
     «meta» := { (default : DocumentMeta) with text }
     onGoal
     stx := default
-    progress? := ← IO.mkRef false
     goal
     hyp?
     pos := pos?.getD .root
   }
-  (generateSuggestions { loc, mvarId := goal } none masterToken).run ctx |>.run' {}
+  (generateSuggestions { loc, mvarId := goal } none masterToken).run ctx |>.run (← IO.mkRef {})
   let props ← getHtmlComponentProps html MakeEditLink #[]
   let suggested := props.flatMap (·.edit.edits.map (trimWhitespace ·.newText))
   for expected in expecteds do

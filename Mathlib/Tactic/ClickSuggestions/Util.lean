@@ -131,12 +131,17 @@ def toHtml : Premise → MetaM Html
 
 end Premise
 
-/-- The information required for pasting a suggestion into the editor -/
+/-- The global state that is shared between all threads. -/
 structure State where
   /-- The ongoing computations. -/
   status : Std.HashMap String Nat := {}
+  /-- Whether any progress has been made at all. If all computations have been finished
+  and no progress has been made, then inform the user. -/
+  progress : Bool := false
+  /-- The suggestions that close the goal. -/
+  solvedSuggestions : Array Html := #[]
 
-/-- The information required for pasting a suggestion into the editor -/
+/-- The information required for pasting a suggestion into the editor. -/
 structure Context where
   /-- The current document -/
   «meta» : DocumentMeta
@@ -148,14 +153,13 @@ structure Context where
   onGoal : Option Nat
   /-- The preceding piece of syntax. This is used for merging consecutive `rw` tactics. -/
   stx : TSyntax `tactic
-  /-- Whether any progress has been made at all. If all computations have been finished
-  and no progress has been made, then inform the user. -/
-  progress? : IO.Ref Bool
   /-- The token for updating the main HTML body of suggestions.
   This is used for displaying a message that no progress has happened. -/
   masterToken : RefreshToken
-  /-- The token for the HTML that represents the state of the ongoing computations. -/
+  /-- The token for the `⏳`️ HTML that represents the state of the ongoing computations. -/
   statusToken : RefreshToken
+  /-- The token for the solved goals. -/
+  solvedToken : RefreshToken
   /-- The main goal. -/
   goal : MVarId
   /-- The selected hypothesis, if any. -/
@@ -163,35 +167,60 @@ structure Context where
   /-- The position of the selected subexpression. -/
   pos : SubExpr.Pos
 
-abbrev clickSuggestionsM := ReaderT Context StateRefT State MetaM
+abbrev ClickSuggestionsM := ReaderT Context <| ReaderT (IO.Ref State) MetaM
 
-def markProgress : clickSuggestionsM Unit := do
-  if !(← (← read).progress?.get) then
-    (← read).progress?.set true
+instance : MonadStateOf State ClickSuggestionsM where
+  get := do (← readThe (IO.Ref State)).get
+  modifyGet s := do (← readThe (IO.Ref State)).modifyGet s
+  set s := do (← readThe (IO.Ref State)).set s
 
-def checkProgress : clickSuggestionsM Unit := do
-  if !(← (← read).progress?.get) then
+/-- Signify that at least one suggestion has been made. -/
+def markProgress : ClickSuggestionsM Unit := do
+  if !(← get).progress then
+    modify ({ · with progress := true })
+
+/-- Check whether any suggestion has been made. -/
+private def checkProgress : ClickSuggestionsM Unit := do
+  if !(← get).progress then
     if ((← get).status).isEmpty then
       (← read).masterToken.update <| .text "No suggestions were found."
 
-def getHypIdent? : clickSuggestionsM (Option Ident) := do
+/-- Get the syntax of the variable whose type the user selected. -/
+def getHypIdent? : ClickSuggestionsM (Option Ident) := do
   let some fvarId := (← read).hyp? | return none
   return mkIdent (← fvarId.getUserName)
 
-def getHypIdent! : clickSuggestionsM Ident := do
+/-- Get the variable whose type the user selected. -/
+def getHypIdent! : ClickSuggestionsM Ident := do
   let some fvarId := (← read).hyp? | throwError "no hypothesis was selected"
   return mkIdent (← fvarId.getUserName)
 
-def trackingComputation {α} (name : String) (k : clickSuggestionsM α) : clickSuggestionsM α := do
+/-- Run a computation in such a way that we can keep track of it. -/
+def trackingComputation {α} (name : String) (k : ClickSuggestionsM α) : ClickSuggestionsM α := do
   modify (fun s ↦ { s with status := s.status.alter name fun
     | none => some 0
     | some n => some (n + 1) })
+  renderStatus
   try k
   finally
     modify (fun s ↦ { s with status := s.status.alter name fun
       | some (n + 1) => some n
       | _ => none })
+    renderStatus
     checkProgress
+where
+  /-- If the set of computations is non-empty, display a `⏳️` symbol with hover information that
+  shows all of the ongoing computations. -/
+  renderStatus : ClickSuggestionsM Unit := do
+    let { status, .. } ← get
+    let { statusToken, .. } ← read
+    statusToken.update <|
+      if status.isEmpty then
+        .text ""
+      else
+        -- TODO: use a fancier throbber instead of `⏳️`?
+        let title := "ongoing computations: " ++ String.intercalate ", " status.keys;
+        <span title={title}> {.text "⏳️"} </span>
 
 section Meta
 
@@ -288,14 +317,14 @@ partial def mergeTactics? {m} [Monad m] [MonadRef m] [MonadQuotation m]
 
 /-- Given tactic syntax `tac` that we want to paste into the editor, return it as a string.
 This function respects the 100 character limit for long lines. -/
-def tacticPasteString (tac : TSyntax `tactic) : clickSuggestionsM String := do
+def tacticPasteString (tac : TSyntax `tactic) : ClickSuggestionsM String := do
   let column := (← read).cursorPos.character
   let indent := column
   return (← PrettyPrinter.ppTactic tac).pretty 100 indent column
 
 /-- Given tactic syntax `tac`, compute the text edit that will paste it into the editor.
 We return the range that should be replaced, and the new text that will replace it. -/
-def mkInsertion (tac : TSyntax `tactic) : clickSuggestionsM (Lsp.Range × String) := do
+def mkInsertion (tac : TSyntax `tactic) : ClickSuggestionsM (Lsp.Range × String) := do
   if let some tac ← mergeTactics? (← read).stx tac then
     if let some range := (← read).stx.raw.getRange? then
       let text := (← read).meta.text
@@ -313,7 +342,7 @@ section Widget
 open Widget
 
 def mkSuggestion (tac : TSyntax `tactic) (html : Html) (isText := false) :
-    clickSuggestionsM Html := do
+    ClickSuggestionsM Html := do
   let tac ← match (← read).onGoal with
     | some n => `(tactic| on_goal $(Syntax.mkNatLit (n + 1)) => $tac:tactic)
     | none => pure tac
@@ -334,6 +363,17 @@ def mkSuggestion (tac : TSyntax `tactic) (html : Html) (isText := false) :
     style={json% { "display" : "flex", "align-items" : "flex-start", "margin-bottom" : "1em" }}>
     {button} {html}
     </div>
+
+/-- Add suggestion `tac` to the list of tactics that solve the goal. -/
+def addSolvedSuggestion (tac : TSyntax `tactic) : ClickSuggestionsM Unit := do
+  let html ← mkSuggestion tac (.text (← PrettyPrinter.ppTactic tac).pretty) (isText := true)
+  modify fun s ↦ { s with solvedSuggestions := s.solvedSuggestions.push html }
+  (← read).solvedToken.update <details «open»={true}>
+    <summary className="mv2 pointer">
+    These tactics solve the goal: 🎉️
+    </summary>
+    {.element "div" #[] (← get).solvedSuggestions}
+    </details>
 
 end Widget
 

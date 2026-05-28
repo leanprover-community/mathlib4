@@ -47,12 +47,12 @@ def ApplyAtKey.isDuplicate (a b : ApplyAtKey) : MetaM Bool :=
       <&&> isExplicitEq a.newGoals[i]!.expr b.newGoals[i]!.expr
 
 /-- Return the `apply` tactic that performs the application. -/
-private def tacticSyntax (lem : ApplyAtLemma) : clickSuggestionsM (TSyntax `tactic) := do
+private def tacticSyntax (lem : ApplyAtLemma) : ClickSuggestionsM (TSyntax `tactic) := do
   -- let proof ← withOptions (pp.mvars.set · false) (PrettyPrinter.delab app.proof)
   `(tactic| apply $(mkIdent (← lem.name.unresolveName)) at $(← getHypIdent!))
 
 /-- Generate the suggestion for applying `lem`. -/
-def ApplyAtLemma.try (lem : ApplyAtLemma) : clickSuggestionsM (Result ApplyAtKey) :=
+def ApplyAtLemma.try (lem : ApplyAtLemma) : ClickSuggestionsM (Result ApplyAtKey) :=
   withReducible do withNewMCtxDepth do
   let (_proof, mvars, binderInfos, replacement) ← lem.name.forallMetaTelescopeReducing
   let mvar := mvars.back!

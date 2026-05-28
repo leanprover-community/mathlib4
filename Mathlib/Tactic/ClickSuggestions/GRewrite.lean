@@ -148,7 +148,7 @@ def GrwKey.isDuplicate (a b : GrwKey) : MetaM Bool :=
 
 /-- Return the rewrite tactic that performs the rewrite. -/
 private def tacticSyntax (lem : GrwLemma) (i : GrwInfo) (proof : Expr) (justLemmaName : Bool) :
-    clickSuggestionsM (TSyntax `tactic) := do
+    ClickSuggestionsM (TSyntax `tactic) := do
   let proof ← if justLemmaName then
       `(term| $(mkIdent <| ← lem.name.unresolveName))
     else
@@ -156,7 +156,7 @@ private def tacticSyntax (lem : GrwLemma) (i : GrwInfo) (proof : Expr) (justLemm
   mkRewrite i.rwKind lem.symm proof (← getHypIdent?) (grw := true)
 
 /-- Generate the suggestion for rewriting with `lem`. -/
-def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) : clickSuggestionsM (Result GrwKey) := do
+def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) : ClickSuggestionsM (Result GrwKey) := do
   withReducible do withNewMCtxDepth do
   let mctx ← getMCtx
   (·.getDM do throwError "no suitable `grw` relation was found") =<< i.gpos.findSomeM? fun pos ↦ do

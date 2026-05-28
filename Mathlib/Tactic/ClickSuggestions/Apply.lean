@@ -67,7 +67,7 @@ where
     return !info.paramInfo.any (·.binderInfo.isExplicit)
 
 /-- Generate the suggestion for applying `lem`. -/
-def ApplyLemma.try (lem : ApplyLemma) : clickSuggestionsM (Result ApplyKey) :=
+def ApplyLemma.try (lem : ApplyLemma) : ClickSuggestionsM (Result ApplyKey) :=
   withReducible do withNewMCtxDepth do
   let (proof, mvars, binderInfos, e) ← lem.name.forallMetaTelescopeReducing
   let target ← (← read).goal.getType
@@ -100,6 +100,7 @@ def ApplyLemma.try (lem : ApplyLemma) : clickSuggestionsM (Result ApplyKey) :=
     htmls := htmls.push <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml goal} </div>
   if htmls.isEmpty then
     htmls := #[.text "Goal accomplished! 🎉️"]
+    addSolvedSuggestion tactic
   let filtered ←
     if !makesNewMVars then
       some <$> mkSuggestion tactic (.element "div" #[] htmls) htmls.isEmpty

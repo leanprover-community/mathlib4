@@ -66,10 +66,10 @@ def viewKAbstractSubExpr' {m α}
     Meta.viewSubexpr (fun _ e ↦ k e .hasBVars) pos e
 
 public def generateSuggestions (loc : SubExpr.GoalsLocation)
-    (parentDecl? : Option Name) (token : RefreshToken) : clickSuggestionsM Unit := do
+    (parentDecl? : Option Name) (token : RefreshToken) : ClickSuggestionsM Unit := do
   -- TODO: instead of just putting `✝` after inaccessible names,
   -- we should figure out how to use `rename_i` to actually refer to shadowed local variables.
-  let lctx := (← getLCtx) |>.sanitizeNames.run' {options := (← getOptions)}
+  let lctx := (← getLCtx).sanitizeNames.run' { options := (← getOptions) }
   Meta.withLCtx' lctx do
   -- Instantiate all metavariables, so that we will not need to do this later on.
   instantiateMVarDeclMVars loc.mvarId
@@ -106,16 +106,6 @@ public def generateSuggestions (loc : SubExpr.GoalsLocation)
 
   librarySearchSuggestions rootExpr subExpr lctx rwKind parentDecl? token'
 
-/-- If the set of computations is non-empty, display a `⏳️` symbol with hover information that
-shows all of the ongoing computations. -/
-private def rerenderStatus (computations : Std.HashMap String Nat) : Html :=
-  if computations.isEmpty then
-    .text ""
-  else
-    -- TODO: use a fancier throbber instead of `⏳️`?
-    let title := String.intercalate ", " computations.keys;
-    <span title={title}> {.text "⏳️"} </span>
-
 @[server_rpc_method]
 public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
   RequestM.asTask do
@@ -136,6 +126,7 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
     | return .text "click_suggestions: Please reload the tactic state"
   goal.ctx.val.runMetaM {} do loc.mvarId.withContext do
     let (statusHtml, statusToken) ← mkRefreshComponent
+    let (solvedHtml, solvedToken) ← mkRefreshComponent
     let targetHtml ←
       if let .hyp h := loc.loc then
         pure <span> hypothesis {← exprToHtml (.fvar h)} </span>
@@ -144,17 +135,18 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
     let html ← mkRefreshComponentM
       (.text "click_suggestions has started searching.") fun masterToken ↦ do
       (generateSuggestions loc parentDecl? masterToken).run {
-        onGoal, stx := ⟨stx⟩, masterToken, statusToken
+        onGoal, stx := ⟨stx⟩, masterToken, statusToken, solvedToken
         «meta» := doc.meta
         cursorPos := props.pos
-        progress? := ← IO.mkRef false
         goal := loc.mvarId
         hyp? := loc.fvarId?
         pos := loc.pos
-      } |>.run' {}
+      } |>.run (← IO.mkRef {})
     return <details «open»={true}>
       <summary className="mv2 pointer">
-        suggestions for {targetHtml}: {statusHtml}
+        suggestions for {targetHtml}:
+        {solvedHtml}
+        {statusHtml}
       </summary>
       {html}
     </details>

@@ -121,8 +121,8 @@ def renderSection {α} (tactic : String) (kind : SectionKind) (s : SectionState 
 
 /-- Spawn a task that computes a piece of `Html` to be displayed when finished. -/
 @[specialize]
-def spawnTask {α} (premise : Premise) (k : clickSuggestionsM α) :
-    clickSuggestionsM <| Task (Except Html (Option α)) := do
+def spawnTask {α} (premise : Premise) (k : ClickSuggestionsM α) :
+    ClickSuggestionsM <| Task (Except Html (Option α)) := do
   let premiseHtml ← premise.toHtml
   let act ← saveCtxM do
     /- Since this task may have been on the queue for a while,

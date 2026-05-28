@@ -40,7 +40,7 @@ def getCandidatesAux (rootExpr subExpr : Expr) (gpos : Array GrwPos) (rwKind : R
     (reportProgress : String → BaseIO Unit)
     (rw : Expr → MetaM (MatchResult RwLemma)) (grw : Expr → MetaM (MatchResult GrwLemma))
     (app : Expr → MetaM (MatchResult ApplyLemma)) (appAt : Expr → MetaM (MatchResult ApplyAtLemma))
-    : clickSuggestionsM (Array Candidates) := do
+    : ClickSuggestionsM (Array Candidates) := do
   let mut cands : Std.TreeMap Nat (Array Candidates) := {}
   /- The order in which we show the suggestions for the same pattern for different tactics
   depends on the following insertion order.
@@ -75,7 +75,7 @@ def getCandidatesAux (rootExpr subExpr : Expr) (gpos : Array GrwPos) (rwKind : R
 /-- Get the candidate theorems from imported files. -/
 @[specialize]
 def getImportCandidates (rootExpr subExpr : Expr) (gpos : Array GrwPos) (rwKind : RwKind)
-    (reportProgress : String → BaseIO Unit) : clickSuggestionsM (Array Candidates) :=
+    (reportProgress : String → BaseIO Unit) : ClickSuggestionsM (Array Candidates) :=
   getCandidatesAux rootExpr subExpr gpos rwKind reportProgress
     (getImportMatches rwRef) (getImportMatches grwRef)
     (getImportMatches appRef) (getImportMatches appAtRef)
@@ -83,7 +83,7 @@ def getImportCandidates (rootExpr subExpr : Expr) (gpos : Array GrwPos) (rwKind 
 /-- Get the candidate theorems from `pres`.
 Used for current file declarations and local hypotheses -/
 def getCandidates (rootExpr subExpr : Expr) (gpos : Array GrwPos)
-    (rwKind : RwKind) (pres : PreDiscrTrees) : clickSuggestionsM (Array Candidates) :=
+    (rwKind : RwKind) (pres : PreDiscrTrees) : ClickSuggestionsM (Array Candidates) :=
   getCandidatesAux rootExpr subExpr gpos rwKind (fun _ ↦ pure ())
     (getMatches pres.rw.toRefinedDiscrTree) (getMatches pres.grw.toRefinedDiscrTree)
     (getMatches pres.app.toRefinedDiscrTree) (getMatches pres.appAt.toRefinedDiscrTree)
@@ -109,7 +109,7 @@ private partial def foldTasksM {α β} (tasks : Array (Task β)) (init : α) (f 
 
 /-- Spawn tasks for the given candidate premises and
 return an HTML that shows the incoming results -/
-def runSuggestions (kind : SectionKind) : Candidates → clickSuggestionsM Html
+def runSuggestions (kind : SectionKind) : Candidates → ClickSuggestionsM Html
   | .rw info arr => go "rw" (·.isDuplicate ·) arr (·.name) (·.try info)
   | .grw info arr => go "grw" (·.isDuplicate ·) arr (·.name) (·.try info)
   | .app arr => go "apply" (·.isDuplicate ·) arr (·.name) (·.try)
@@ -118,7 +118,7 @@ where
   @[specialize]
   go {α β} [Ord α] [Inhabited α] (tactic : String) (isDup : α → α → MetaM Bool)
       (candidates : Array β) (premise : β → Premise)
-      (mkSuggestion : β → clickSuggestionsM (Result α)) : clickSuggestionsM Html := do
+      (mkSuggestion : β → ClickSuggestionsM (Result α)) : ClickSuggestionsM Html := do
     let (html, token) ← mkRefreshComponent
     let tasks ← candidates.mapM fun lem ↦ spawnTask (premise lem) (mkSuggestion lem)
     discard <| BaseIO.asTask (prio := .dedicated) <| (← saveCtxM <| trackingComputation tactic do
@@ -142,7 +142,7 @@ where
 /-- Compute the library rearch suggestions. This uses `token` to incrementally udpate the output. -/
 public def librarySearchSuggestions (rootExpr subExpr : Expr) (lctx : LocalContext)
     (rwKind : RwKind) (parentDecl? : Option Name)
-    (token : RefreshToken) : clickSuggestionsM Unit := do
+    (token : RefreshToken) : ClickSuggestionsM Unit := do
   Core.checkInterrupted
   let mut sections := #[]
 
