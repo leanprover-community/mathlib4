@@ -502,12 +502,14 @@ instance smulDistribClass_smulOfNormal [N.Normal] [IsGaloisGroup N B C] :
 
 variable [FaithfulSMul B C]
 
+/-- If `N` is a normal subgroup of `G` and `IsGaloisGroup N B C`, then `G` acts on `B` as a
+`MulSemiringAction`, via the action defined in `smulOfNormal`. -/
 @[implicit_reducible]
 noncomputable def mulSemiringActionOfNormal [IsGaloisGroup N B C] [N.Normal] :
     MulSemiringAction G B := by
   let : SMul G B := smulOfNormal G B C N
   have : SMulDistribClass G B C := smulDistribClass_smulOfNormal G B C N
-  exact mulSemiringAction_of_smulDistribClass B C G
+  exact mulSemiringActionOfSmulDistribClass B C G
 
 /-- If `N` is a normal subgroup of `G` and `IsGaloisGroup N B C`, then the quotient group `G ⧸ N`
 acts on `B` by `(g : G ⧸ N) • x = g • x`. -/
@@ -543,15 +545,7 @@ theorem isScalarTower_mulSemiringActionQuotient [MulSemiringAction G B] [SMulDis
   ⟨fun g q b ↦ Quotient.inductionOn' q fun h ↦ by
     simp [mul_smul, mulSemiringActionQuotient_smul_def]⟩
 
-@[simp]
-theorem coe_quotient_smul [N.Normal] [MulSemiringAction G B] [MulAction (G ⧸ N) B]
-    [IsScalarTower G (G ⧸ N) B] (g : G) (x : B) :
-    (g : G ⧸ N) • x = g • x := by
-  rw [← smul_one_smul (G ⧸ N) g x, ← QuotientGroup.mk_one, MulAction.Quotient.smul_coe, smul_eq_mul,
-    mul_one]
-
-/-- Given `MulSemiringAction G B`, a compatible `MulAction (G ⧸ N) B`, `IsScalarTower G (G ⧸ N) B`,
-and `SMulCommClass G A C`, the actions of `A` and `G ⧸ N` on `B` commute. -/
+/-- If `G` acts on `C` commuting with `A`, then the action of `G ⧸ N` on `B` commutes with `A`. -/
 @[implicit_reducible]
 def smulCommClassQuotient [N.Normal] [Algebra A B] [IsScalarTower A B C] [SMulCommClass G A C]
     [MulSemiringAction G B] [MulAction (G ⧸ N) B] [SMulDistribClass G B C]
@@ -582,7 +576,7 @@ theorem quotient [Finite G] (N : Subgroup G) [N.Normal] [MulSemiringAction G C]
         (FaithfulSMul.algebraMap_injective B C).eq_iff, imp_self, implies_true]
     have {g : G} : Quotient.mk'' g = QuotientGroup.mk' N g := rfl
     simp_rw [← inv_smul_eq_iff, this, ← map_inv, smul_smul, ← map_mul,
-      QuotientGroup.mk'_apply, coe_quotient_smul] at h
+      QuotientGroup.mk'_apply, MulAction.coe_quotient_smul] at h
     have := h' _ h
     rwa [QuotientGroup.eq, ← Subgroup.inv_mem_iff, mul_inv_rev, inv_inv]
   commutes := inferInstance
@@ -591,7 +585,7 @@ theorem quotient [Finite G] (N : Subgroup G) [N.Normal] [MulSemiringAction G C]
     apply hG.isInvariant.isInvariant (algebraMap B C x)
     intro g
     have := (FaithfulSMul.algebraMap_injective B C).eq_iff.mpr <| h g
-    rwa [coe_quotient_smul, algebraMap.smul'] at this
+    rwa [MulAction.coe_quotient_smul, algebraMap.smul'] at this
 
 end Domain
 
@@ -602,7 +596,7 @@ variable (N : Subgroup G) [N.Normal] [IsGaloisGroup N F L]
 instance : MulSemiringAction (G ⧸ N) F :=
   let := smulOfNormal G F L N
   have := smulDistribClass_smulOfNormal G F L N
-  let := mulSemiringAction_of_smulDistribClass F L G
+  let := mulSemiringActionOfSmulDistribClass F L G
   mulSemiringActionQuotient G F L N
 
 instance [SMulCommClass G K L] [MulSemiringAction G F] [SMulDistribClass G F L]
@@ -614,7 +608,7 @@ Galois group for `L/F`, then the quotient group `G ⧸ N` is a Galois group for 
 instance [Finite G] [IsGaloisGroup G K L] : IsGaloisGroup (G ⧸ N) K F :=
   let := smulOfNormal G F L N
   have := smulDistribClass_smulOfNormal G F L N
-  let := mulSemiringAction_of_smulDistribClass F L G
+  let := mulSemiringActionOfSmulDistribClass F L G
   have := isScalarTower_mulSemiringActionQuotient G F L N
   quotient G K F L N
 
@@ -629,7 +623,7 @@ theorem map_quotientMk' [Finite G] [IsGaloisGroup G K L] (h : E ≤ F) :
   let : Algebra E F := (IntermediateField.inclusion h).toAlgebra
   let : SMul G F := smulOfNormal G F L N
   have : SMulDistribClass G F L := smulDistribClass_smulOfNormal G F L N
-  let := mulSemiringAction_of_smulDistribClass F L G
+  let := mulSemiringActionOfSmulDistribClass F L G
   have : IsScalarTower E F L := IsScalarTower.of_algebraMap_eq' rfl
   have := isScalarTower_mulSemiringActionQuotient G F L N
   { faithful := by have := (inferInstance : IsGaloisGroup (G ⧸ N) K F).faithful; infer_instance
