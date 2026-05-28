@@ -24,7 +24,7 @@ function of the set. Note that if `α = ℕ`, then this definition matches `Nat.
 ## Main results
 
 - `Order.enum_eq_iff`: `Order.enum s _` is the unique strictly monotonic function with range `s`.
-- `Order.isNormal_enum_iff`: club sets correspond one to one with normal functions.
+- `Order.isNormal_enum_iff_dirSupClosed`: club sets correspond one to one with normal functions.
 
 ## TODO
 
