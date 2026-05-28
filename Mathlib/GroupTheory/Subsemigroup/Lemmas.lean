@@ -9,17 +9,17 @@ public import Mathlib.Algebra.Group.Subsemigroup.Operations
 public import Mathlib.GroupTheory.Subsemigroup.Center
 
 /-!
-# Centers of semigroups, as subsemigroups.
+# Lemmas about subsemigroups
 -/
 
-@[expose] public section
+public section
 
-variable {M : Type*} [Mul M]
+variable {M N : Type*} [Mul M] [Mul N]
 
 namespace Subsemigroup
 
 @[to_additive]
-theorem center_prod {N : Type*} [Mul N] : center (M × N) = prod (center M) (center N) :=
+theorem center_prod : center (M × N) = prod (center M) (center N) :=
   SetLike.coe_injective Set.center_prod
 
 end Subsemigroup
