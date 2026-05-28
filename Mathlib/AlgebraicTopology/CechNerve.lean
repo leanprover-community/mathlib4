@@ -306,7 +306,7 @@ def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
       rw [WidePushout.ι_desc]
       nth_rw 2 [← Category.comp_id A.right]
       congr 1
-      convert X.right.map_id _
+      convert! X.right.map_id _
       ext ⟨a, ha⟩
       simp
 
