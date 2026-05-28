@@ -337,7 +337,7 @@ lemma eq_of_powersetCard_eq {a b : Finset α} {r : ℕ}
 
 /-- For `1 ≤ r ≤ q`, the map `powersetCard r` is injective on the finsets of cardinality `q`. -/
 lemma powersetCard_injOn {q r : ℕ} (hr₀ : r ≠ 0) (hrq : r ≤ q) :
-    Set.InjOn (·.powersetCard r) {a : Finset α | #a = q}
+    Set.InjOn (fun a ↦ a.powersetCard r) {a : Finset α | #a = q}
   | _, rfl, _, hbq, h => eq_of_powersetCard_eq hbq.symm hr₀ hrq h
 
 theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) :
