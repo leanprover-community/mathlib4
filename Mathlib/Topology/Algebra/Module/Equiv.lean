@@ -1360,6 +1360,7 @@ This is the continuous version of `Submodule.topEquiv`. -/
 abbrev _root_.Submodule.topContEquiv {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     [TopologicalSpace M] : (⊤ : Submodule R M) ≃L[R] M where
   __ := Submodule.topEquiv
+  continuous_invFun := continuous_id.subtype_mk _
 
 end map
 

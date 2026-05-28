@@ -44,8 +44,10 @@ structure ContinuousAffineEquiv (k P₁ P₂ : Type*) {V₁ V₂ : Type*} [Ring 
     [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁] [TopologicalSpace P₁]
     [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] [TopologicalSpace P₂]
     extends P₁ ≃ᵃ[k] P₂ where
-  continuous_toFun : Continuous toFun := by fun_prop
-  continuous_invFun : Continuous invFun := by fun_prop
+  continuous_toFun : Continuous toFun := by
+    first | fun_prop | eta_expand; dsimp -failIfUnchanged; fun_prop
+  continuous_invFun : Continuous invFun := by
+    first | fun_prop | eta_expand; dsimp -failIfUnchanged; fun_prop
 
 @[inherit_doc]
 notation:25 P₁ " ≃ᴬ[" k:25 "] " P₂:0 => ContinuousAffineEquiv k P₁ P₂

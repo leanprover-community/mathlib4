@@ -45,10 +45,10 @@ variable [TopologicalSpace V] [IsTopologicalAddTorsor P]
 
 instance {s : AffineSubspace R P} [Nonempty s] : IsTopologicalAddTorsor s where
   continuous_vadd := by
-    rw [Topology.IsEmbedding.subtypeVal.continuous_iff]
+    simp_rw [Topology.IsEmbedding.subtypeVal.continuous_iff, Function.comp_def, coe_vadd]
     fun_prop
   continuous_vsub := by
-    rw [Topology.IsEmbedding.subtypeVal.continuous_iff]
+    simp_rw [Topology.IsEmbedding.subtypeVal.continuous_iff, Function.comp_def, coe_vsub]
     fun_prop
 
 theorem isClosed_direction_iff [T1Space V] (s : AffineSubspace R P) :
