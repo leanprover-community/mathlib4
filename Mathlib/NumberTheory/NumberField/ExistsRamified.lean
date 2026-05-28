@@ -101,39 +101,6 @@ instance {K : Type*} [Field K] [NumberField K]
     Algebra.IsSeparable (ℤ ⧸ p) ((𝓞 K) ⧸ q) := by
   sorry
 
--- PRed
-/-- Existing construction with `Finite G` replaced by `IsIntegral A B` -/
-theorem IsGaloisGroup.to_isFractionRing'
-    (G A B K L : Type*) [Group G] [CommRing A]
-    [CommRing B] [MulSemiringAction G B] [Algebra A B] [Field K] [Field L]
-    [Algebra K L] [Algebra A K] [Algebra B L] [Algebra A L] [IsFractionRing A K]
-    [IsFractionRing B L] [IsScalarTower A K L] [IsScalarTower A B L] [MulSemiringAction G L]
-    [SMulDistribClass G B L]
-    [Algebra.IsIntegral A B] [hGAB : IsGaloisGroup G A B] :
-    IsGaloisGroup G K L := by
-  have hc (a : A) : (algebraMap K L) (algebraMap A K a) = (algebraMap B L) (algebraMap A B a) := by
-    simp_rw [← IsScalarTower.algebraMap_apply]
-  refine ⟨⟨fun h ↦ ?_⟩, ⟨fun g x y ↦ ?_⟩, ⟨fun x h ↦ ?_⟩⟩
-  · have := hGAB.faithful
-    exact eq_of_smul_eq_smul fun y ↦ by simpa [← algebraMap.coe_smul'] using h (algebraMap B L y)
-  · obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective A x
-    obtain ⟨c, d, hd, rfl⟩ := IsFractionRing.div_surjective B y
-    simp [Algebra.smul_def, smul_mul', smul_div₀', hc, ← algebraMap.coe_smul']
-  · have : Nontrivial A := (IsFractionRing.nontrivial_iff_nontrivial A K).mpr inferInstance
-    have : Nontrivial B := (IsFractionRing.nontrivial_iff_nontrivial B L).mpr inferInstance
-    obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective B x
-    have hy' : algebraMap B L y ≠ 0 := by simpa using nonZeroDivisors.ne_zero hy
-    obtain ⟨b, a, ha, hb⟩ := (Algebra.IsAlgebraic.isAlgebraic (R := A) y).exists_smul_eq_mul x hy
-    rw [mul_comm, Algebra.smul_def, mul_comm] at hb
-    replace ha : (algebraMap B L) (algebraMap A B a) ≠ 0 := by simpa [← hc]
-    have hxy : algebraMap B L x / algebraMap B L y =
-      algebraMap B L b / algebraMap B L (algebraMap A B a) := by
-      rw [div_eq_div_iff hy' ha, ← map_mul, hb, map_mul]
-    obtain ⟨b, rfl⟩ := hGAB.isInvariant.isInvariant b
-      (by simpa [ha, hxy, smul_div₀', ← algebraMap.coe_smul'] using h)
-    use algebraMap A K b / algebraMap A K a
-    simp [hc, div_eq_div_iff ha hy', ← map_mul, ← map_mul, hb]
-
 instance {R : Type*} [CommRing R] [IsDomain R] [Ring.HasFiniteQuotients R] {I : Ideal R} [I.IsPrime]
     [PerfectField (FractionRing R)] :
     PerfectField I.ResidueField := by
@@ -162,7 +129,7 @@ theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finit
     let : MulSemiringAction G (FractionRing S) :=
         IsFractionRing.mulSemiringAction G ℤ S (FractionRing ℤ) (FractionRing S)
     have : IsGaloisGroup G (FractionRing ℤ) (FractionRing S) :=
-      IsGaloisGroup.to_isFractionRing' G ℤ S (FractionRing ℤ) (FractionRing S)
+      IsGaloisGroup.to_isFractionRing_of_isIntegral G ℤ S (FractionRing ℤ) (FractionRing S)
     exact IsGaloisGroup.finite G (FractionRing ℤ) (FractionRing S)
   let H : Subgroup G := ⨆ m : PrimeSpectrum S, m.asIdeal.toAddSubgroup.inertia G
   let R : Subalgebra ℤ S := FixedPoints.subalgebra ℤ S H
