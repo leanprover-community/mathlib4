@@ -2,8 +2,9 @@ module
 
 public import Mathlib.Tactic.CategoryTheory.Map
 public import Mathlib.Tactic.CategoryTheory.Reassoc
+public import Mathlib.CategoryTheory.Opposites
 
-open CategoryTheory
+open CategoryTheory Opposite
 
 namespace Tests.Map
 
@@ -48,6 +49,13 @@ lemma comp_eq_id {x y : C} (f : x ⟶ y) (g : y ⟶ x) (w : f ≫ g = 𝟙 _) :
 @[to_dual (attr := map) comp_map_dual]
 lemma comp_map_to_dual {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) :
     f ≫ g = h := w
+
+@[map]
+lemma op_hom_eq {x y : Cᵒᵖ} (f g : x ⟶ y) (h : f = g) : f = g := h
+
+example {x y : Cᵒᵖ} (f g : x ⟶ y) (h : f = g)
+    {D : Type*} [Category D] (F : Cᵒᵖ ⥤ D) : F.map f = F.map g := by
+  exact op_hom_eq_map f g h F
 
 /-- info: Tests.Map.comp_map_dual_map.{u_2, v✝, u_1, u✝} {C : Type u_1} [Category.{u_2, u_1} C] {x y z : C} (f : y ⟶ x)
   (g : z ⟶ y) (h : z ⟶ x) (w : g ≫ f = h) {D : Type u✝} [instD : Category.{v✝, u✝} D] (F : C ⥤ D) :

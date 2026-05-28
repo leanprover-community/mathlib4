@@ -34,11 +34,14 @@ def mapCompSimp (e : Expr) : MetaM Simp.Result :=
 
 private def extractCatInstanceFromEq (eqTy : Expr) : MetaM (Expr × Expr) := do
   let some (α, _, _) := eqTy.cleanupAnnotations.eq? | throwError "`@[map]` expects an equality"
-  let (``Quiver.Hom, #[_, instQuiv, _, _]) := α.getAppFnArgs |
+  let (``Quiver.Hom, #[C, _, _, _]) := α.getAppFnArgs |
     throwError "`@[map]` expects an equality of morphisms"
-  let (``CategoryTheory.CategoryStruct.toQuiver, #[_, instCS]) := instQuiv.getAppFnArgs |
+  let u ← mkFreshLevelMVar
+  unless ← isDefEq (.sort (.succ u)) (← inferType C) do
     throwError "`@[map]` expects an equality of morphisms"
-  let (``CategoryTheory.Category.toCategoryStruct, #[C, instC]) := instCS.getAppFnArgs |
+  let v ← mkFreshLevelMVar
+  let catC := mkApp (.const ``CategoryTheory.Category [v, u]) C
+  let instC ← try synthInstance catC catch _ =>
     throwError "`@[map]` expects an equality of morphisms"
   return (C, instC)
 
