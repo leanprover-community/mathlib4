@@ -41,14 +41,6 @@ def IsParabolic : Prop := m ∉ Set.range (scalar _) ∧ m.discr = 0
 
 variable {m}
 
--- /-- Parabolic matrices can only exist if the base ring is not the zero ring. (This is not a
--- mathematically interesting statement, it is just in order to avoid cluttering statements of lemmas
--- with non-triviality assumptions.) -/
--- lemma IsParabolic.nontrivial (hmp : IsParabolic m) : Nontrivial R := by
---   contrapose! hmp
---   simpa only [Fin.isValue, hmp.eq_zero, ne_eq, not_true_eq_false, and_false, iff_false,
---       IsParabolic, not_and_or, not_not] using .inl ⟨0, by simp [Subsingleton.eq_zero]⟩
-
 section conjugation
 
 @[simp] lemma isParabolic_conj_iff : (g.val * m * g.val⁻¹).IsParabolic ↔ IsParabolic m := by
