@@ -13,14 +13,14 @@ public import Mathlib.RingTheory.TensorProduct.Maps
 /-!
 # Bialgebra structure on `RingQuot`
 
-A relation `r : A → A → Prop` on an `R`-bialgebra `A` is a *bialgebra relation* when
-the counit identifies related elements and the comultiplication agrees on related elements
-after projection to `RingQuot r ⊗[R] RingQuot r`. The quotient `RingQuot r` then inherits
-a bialgebra structure.
+When a relation `r : A → A → Prop` on an `R`-bialgebra `A` is compatible with the counit and
+comultiplication — the counit identifies related elements and the comultiplication agrees on
+related elements after projection to `RingQuot r ⊗[R] RingQuot r` — the quotient `RingQuot r`
+inherits a bialgebra structure.
 
 ## Main definitions
 
-* `IsBialgebraRel R r` — descent condition on a generating relation.
+* `IsBialgebraRel R r` — the counit and comultiplication descend along `RingQuot.mkAlgHom R r`.
 
 ## Main results
 
@@ -34,9 +34,10 @@ open Bialgebra Coalgebra LinearMap RingQuot TensorProduct
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
 
 variable (R) in
-/-- A relation `r` on an `R`-bialgebra `A` is a *bialgebra relation* if the counit identifies
-related elements and the comultiplication agrees on related elements after projection to
-`RingQuot r ⊗[R] RingQuot r`. -/
+/-- The counit and comultiplication of an `R`-bialgebra `A` descend along
+`RingQuot.mkAlgHom R r`: the counit identifies `r`-related elements, and the comultiplication
+agrees on them after projection to `RingQuot r ⊗[R] RingQuot r`. This is the condition under
+which `RingQuot r` inherits a bialgebra structure. -/
 @[mk_iff]
 class IsBialgebraRel (r : A → A → Prop) : Prop where
   counit_rel : ∀ ⦃x y : A⦄, r x y → (counit x : R) = counit y
