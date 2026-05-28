@@ -368,6 +368,10 @@ def headerTestFiles : NameSet := .ofList
 @[inherit_doc Mathlib.Linter.linter.style.header]
 def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let mainModule ← getMainModule
+  unless getLinterValue linter.style.header (← getLinterOptions) do
+    return
+  if (← get).messages.hasErrors then
+    return
   let inLibraryRoot? ← inLibraryRootMutex.atomically do
     match ← get with
     | some d => return d
@@ -381,10 +385,6 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- The linter skips files not imported in their library root (e.g. `Mathlib.lean`), to avoid
   -- linting "scratch files". It is however active in the test files for the linter itself.
   unless inLibraryRoot? || headerTestFiles.contains mainModule do return
-  unless getLinterValue linter.style.header (← getLinterOptions) do
-    return
-  if (← get).messages.hasErrors then
-    return
   -- Skip linting the library root file itself.
   -- In practice, the `inLibraryRoot?` check above already covers this (a well-formed `<root>.lean`
   -- does not import itself), but a root module could appear in `headerTestFiles`.
