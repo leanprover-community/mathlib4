@@ -17,6 +17,11 @@ public import Mathlib.LinearAlgebra.Matrix.Rank
 This file proves the spectral theorem for matrices. The proof of the spectral theorem is based on
 the spectral theorem for linear maps (`LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply`).
 
+## Main results
+
+* `Matrix.spectralRadius_transpose`: the spectral radius is invariant under transpose
+  (via `Matrix.spectrum_transpose`).
+
 ## Tags
 
 spectral theorem, diagonalization theorem -/
@@ -45,6 +50,14 @@ theorem spectrum_toLpLin [DecidableEq n] (p : ENNReal) :
 @[deprecated spectrum_toLpLin (since := "2026-01-21")]
 theorem spectrum_toEuclideanLin [DecidableEq n] : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A :=
   spectrum_toLpLin 2
+
+variable {K : Type*} [NormedField K]
+
+/-- The spectral radii of a matrix and its transpose are equal. See `Matrix.spectrum_transpose`. -/
+theorem spectralRadius_transpose [DecidableEq n] (A : Matrix n n K) :
+    spectralRadius K Aᵀ = spectralRadius K A := by
+  unfold spectralRadius
+  rw [spectrum_transpose A]
 
 namespace IsHermitian
 
