@@ -31,22 +31,14 @@ namespace SheafOfModules
 variable {C : Type u₁} [Category.{v₁} C] [HasBinaryProducts C] {D : Type u₂} [Category.{v₂} D]
   [HasBinaryProducts D]
   {J : GrothendieckTopology C} {K : GrothendieckTopology D} {F : C ⥤ D}
+  [Functor.PreservesOneHypercovers F J K] [Limits.PreservesLimitsOfShape (Discrete WalkingPair) F]
   {S : Sheaf J RingCat.{u}} {R : Sheaf K RingCat.{u}}
-  [Functor.IsContinuous F J K]
   (M : SheafOfModules.{u} S)
-  (φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R)
+  (φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R) (X : C)
 
-variable [(pushforward.{u} φ).IsRightAdjoint] [Functor.PreservesOneHypercovers F J K]
-  [Limits.PreservesFiniteProducts F]
-
-variable (X : C)
-
-set_option backward.isDefEq.respectTransparency false in
 abbrev StructureHomOver :
     S.over X ⟶ ((Over.post F).sheafPushforwardContinuous _ _ _).obj (R.over (F.obj X)) :=
   (J.overPullback RingCat X).map φ
-
-variable [(pushforward (StructureHomOver φ X)).IsRightAdjoint]
 
 attribute [local simp] prodComparison_natural in
 set_option backward.isDefEq.respectTransparency false in
@@ -60,13 +52,15 @@ def pushforwardPushforwardOverNatIso : pushforward (pushforwardOver (F.obj X)) �
     pushforward (StructureHomOver φ X) ⋙ pushforward (pushforwardOver X) := by
   haveI := F.isContinuous_comp (Over.star (F.obj X)) J K (K.over _)
   haveI := (Over.star X).isContinuous_comp (Over.post F) J (J.over X) (K.over _)
-  refine (pushforwardComp (pushforwardOver X) (StructureHomOver φ X) ≪≫
-    pushforwardNatIso _ (Over.starCompPostNatIso X).symm ≪≫ pushforwardCongr ?_ ≪≫
-    (pushforwardComp φ (pushforwardOver (F.obj X))).symm).symm
+  refine pushforwardComp φ (pushforwardOver (F.obj X)) ≪≫ pushforwardCongr ?_ ≪≫
+    (pushforwardNatIso _ (Over.starCompPostNatIso X).symm).symm ≪≫
+    (pushforwardComp (pushforwardOver X) (StructureHomOver φ X)).symm
   ext : 3
   simp [pushforwardOver]
   congr
-  simp [IsIso.comp_inv_eq, ← Functor.map_comp, ← op_comp, prodComparison_snd]
+  simp [← Functor.map_comp, ← op_comp, prodComparison_snd]
+
+variable [(pushforward.{u} φ).IsRightAdjoint] [(pushforward (StructureHomOver φ X)).IsRightAdjoint]
 
 @[simps!]
 def pullbackRestrict : pushforward.{u} (𝟙 (S.over X)) ⋙ pullback (StructureHomOver φ X) ≅
@@ -75,11 +69,11 @@ def pullbackRestrict : pushforward.{u} (𝟙 (S.over X)) ⋙ pullback (Structure
     (((pullbackPushforwardAdjunction φ).comp (overPushforwardOverAdj (F.obj X))).ofNatIsoRight
       (pushforwardPushforwardOverNatIso φ X))
 
-abbrev overPullback :
+abbrev overPullbackIso :
     (pullback (StructureHomOver φ X)).obj (M.over X) ≅
     ((pullback φ).obj M).over (F.obj X) := (pullbackRestrict φ X).app M
 
-#check M.overPullback φ X
+#check M.overPullbackIso φ X
 
 end SheafOfModules
 
@@ -130,6 +124,6 @@ instance {X Y : TopCat} (f : X ⟶ Y) : (TopologicalSpace.Opens.map f).Preserves
 
 variable {X Y : Scheme} (f : X ⟶ Y) (M : Y.Modules) (U : Y.Opens)
 
-#check M.overPullback f.toRingCatSheafHom U
+#check M.overPullbackIso f.toRingCatSheafHom U
 
 end AlgebraicGeometry.Scheme.Modules
