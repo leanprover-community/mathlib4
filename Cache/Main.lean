@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Jon Eugster
 -/
 
+import Cache.Cli
 import Cache.Requests
 
 def help : String := "Mathlib4 caching CLI
@@ -105,30 +106,7 @@ def curlArgs : List String :=
 def leanTarArgs : List String :=
   ["get", "get!", "put", "put!", "put-unpacked", "pack", "pack!", "unpack", "lookup", "stage", "stage!"]
 
-/-- The named options supported by the CLI. -/
-def knownNamedOpts : List String := ["repo", "staging-dir", "cache-from", "container", "scope"]
-
-/-- The flag options supported by the CLI. -/
-def knownFlagOpts : List String := ["help"]
-
-/-- Parses an optional `--foo=bar` option. -/
-def parseNamedOpt (opt : String) (args : List String) : IO (Option String) := do
-  let pref := s!"--{opt}="
-  if let some a := args.findRev? (fun a => a.startsWith pref) then
-    let val := a.drop pref.length
-    return some val.toString
-  return none
-
-/-- Parses a boolean `--foo` flag. -/
-def parseFlagOpt (opt : String) (args : List String) : Bool :=
-  args.elem s!"--{opt}"
-
-/-- Check whether `opt` (e.g. `"--repo=foo"` or `"--help"`) is a recognized option. -/
-def isKnownOpt (opt : String) : Bool :=
-  knownNamedOpts.any (opt.startsWith s!"--{·}=") ||
-  knownFlagOpts.any (opt == s!"--{·}")
-
-open Cache IO Hashing Requests System in
+open Cache Cli IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
   if args.isEmpty || parseFlagOpt "help" args then
     println help
