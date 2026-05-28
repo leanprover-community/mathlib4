@@ -188,15 +188,15 @@ lemma CB_eq_affineSpan_faceOpposite : line[ℝ, cfg.C, cfg.B] =
 lemma sOppSide_CB_A_A' : line[ℝ, cfg.C, cfg.B].SOppSide cfg.A cfg.A' := by
   have hA :
     Finset.univ.affineCombination ℝ cfg.triangleABC.points
-      (Finset.affineCombinationSingleWeights ℝ 0) = cfg.A :=
-    Finset.affineCombination_affineCombinationSingleWeights _ _ _ (Finset.mem_univ 0)
+      (Pi.single 0 1) = cfg.A :=
+    Finset.affineCombination_piSingle _ _ _ (Finset.mem_univ 0)
   rw [A', ← hA, ← incenter_eq_I, Simplex.incenter_eq_affineCombination,
     AffineEquiv.pointReflection_apply, ← triangleABC, Finset.affineCombination_vsub,
     Finset.weightedVSub_vadd_affineCombination, cfg.CB_eq_affineSpan_faceOpposite]
   refine cfg.triangleABC.sOppSide_affineSpan_faceOpposite_of_pos_of_neg
-    (Finset.sum_affineCombinationSingleWeights _ _ (Finset.mem_univ 0)) ?_ (by simp) ?_
+    (by simp) ?_ (by simp) ?_
   · simp [Finset.sum_add_distrib, cfg.triangleABC.excenterExists_empty.sum_excenterWeights_eq_one]
-  · simp only [Pi.add_apply, Pi.sub_apply, Finset.affineCombinationSingleWeights_apply_self]
+  · simp only [Pi.add_apply, Pi.sub_apply, Pi.single_eq_same]
     linarith [cfg.triangleABC.excenterWeights_empty_lt_inv_two 0]
 
 lemma P_eq_secondInter :
