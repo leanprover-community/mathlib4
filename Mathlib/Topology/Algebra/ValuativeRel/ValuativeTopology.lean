@@ -80,7 +80,8 @@ valuative and nonarchimedean, and the addition is uniformly continuous,
 can be automatically inferred. -/
 local instance uniformSpace : UniformSpace R := IsTopologicalAddGroup.rightUniformSpace R
 
-instance isUniformAddGroup : IsUniformAddGroup R := isUniformAddGroup_of_addCommGroup
+/-- This is not made into a global instance to avoid diamonds. -/
+local instance isUniformAddGroup : IsUniformAddGroup R := isUniformAddGroup_of_addCommGroup
 
 end ValuativeRel
 
