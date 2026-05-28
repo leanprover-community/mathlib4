@@ -213,6 +213,43 @@ lemma algebraMap_residue_eq_residue_algebraMap (x : K₀) :
 
 end AlgebraInstances
 
+section ValueGroup₀
+
+variable {ΓR ΓA : Type*}
+    [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
+    (vR : Valuation R ΓR) (vA : Valuation A ΓA) [vR.HasExtension vA]
+
+theorem exists_monoidWithZeroHom_valueGroup₀_restrict_eq :
+    ∃ (f : (MonoidWithZeroHom.ValueGroup₀ (vR : R →*₀ ΓR)) →*₀
+      (MonoidWithZeroHom.ValueGroup₀ (vA : A →*₀ ΓA))) (hf : Monotone f),
+      vR.restrict.map f hf = vA.restrict.comap (algebraMap R A) := by
+  have h : vR.IsEquiv (vA.comap (algebraMap R A)) := HasExtension.val_isEquiv_comap
+  refine ⟨(WithZero.map' (Subgroup.inclusion ?_)).comp h.orderMonoidIso.toMonoidWithZeroHom, ?_, ?_⟩
+  · intro r hr
+    rw [MonoidWithZeroHom.mem_valueGroup_iff_of_comm] at hr ⊢
+    obtain ⟨a, ha0, x, hr⟩ := hr
+    exact ⟨algebraMap R A a, ha0, algebraMap R A x, hr⟩
+  · refine (WithZero.map'_mono ?_).comp h.orderMonoidIso.toOrderIso.monotone
+    intro a b hab
+    simpa [← Subtype.coe_le_coe] using hab
+  · ext x
+    simp only [OrderMonoidIso.toMulEquiv_eq_coe, map_apply,
+      MonoidWithZeroHom.comp_apply, comap_apply]
+    erw [MulEquiv.toMonoidWithZeroHom_apply, OrderMonoidIso.coe_mulEquiv, h.orderMonoidIso_spec x]
+    generalize hc : (vA.comap (algebraMap R A)).restrict x = c
+    cases c using WithZero.cases_on with
+    | zero =>
+      rw [restrict_eq_zero_iff, comap_apply, ← restrict_eq_zero_iff] at hc
+      rw [hc]
+      apply WithZero.map'_zero
+    | coe c =>
+      rw [← MonoidWithZeroHom.ValueGroup₀.embedding_strictMono.injective.eq_iff,
+        Valuation.embedding_restrict] at hc ⊢
+      rw [← comap_apply, hc]
+      rfl
+
+end ValueGroup₀
+
 end HasExtension
 
 end Valuation
