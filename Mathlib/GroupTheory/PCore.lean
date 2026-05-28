@@ -28,15 +28,16 @@ and Sylow alignment then specialise to give the textbook statements.
 
 ## Main results
 
-* `Subgroup.pCore_normal` (instance), `Subgroup.isPGroup_pCore`:
-  `pCore p H` is a normal `p`-subgroup of `H`, with no finiteness hypothesis.
-* `Subgroup.normal_le_pCore`: for `N` normal in `H`, `N ≤ pCore p H ↔ IsPGroup p N`
-  — the universal property.
+* `Subgroup.pCore_normal` (instance), `Subgroup.pCore_characteristic` (instance),
+  `Subgroup.isPGroup_pCore`: `pCore p H` is a characteristic `p`-subgroup of `H`,
+  with no finiteness hypothesis.
+* `Subgroup.normal_le_pCore`: for `N` normal in `H`, `N ≤ pCore p H ↔ IsPGroup p N`,
+  the universal property.
 * `Subgroup.pCore_eq_iInf_sylow`: `pCore p H = ⨅ P : Sylow p H, (P : Subgroup H)`.
-* `Subgroup.map_pCore_le_pCore`, `Subgroup.comap_pCore_eq_pCore`, and
-  `MulEquiv.map_pCore` describe the behaviour of `pCore` under group
-  homomorphisms, using `MonoidHom.subgroupMap` and `MonoidHom.subgroupComap`
-  as the natural restrictions.
+* `Subgroup.map_pCore_le_pCore`, `Subgroup.map_pCore_eq_pCore`,
+  `Subgroup.comap_pCore_eq_pCore`, and `MulEquiv.map_pCore` describe the behaviour
+  of `pCore` under group homomorphisms, using `MonoidHom.subgroupMap` and
+  `MonoidHom.subgroupComap` as the natural restrictions.
 
 ## TODO
 
@@ -97,6 +98,12 @@ theorem isPGroup_pCore : IsPGroup p (pCore p H) := by
   apply Subtype.ext
   simpa using Subtype.ext_iff.mp hk
 
+/-- The `p`-core is characteristic in `H`: any automorphism of `H` permutes
+the family of normal `p`-subgroups, so it fixes their supremum. -/
+instance pCore_characteristic : (pCore p H).Characteristic :=
+  characteristic_iff_comap_le.mpr fun ϕ => le_pCore (pCore_normal.comap ϕ.toMonoidHom)
+    (isPGroup_pCore.comap_of_injective ϕ.toMonoidHom ϕ.injective)
+
 /-- For a normal subgroup `N` of `H`, containment in the `p`-core is
 characterised by being a `p`-group. -/
 theorem normal_le_pCore {N : Subgroup H} [hN : N.Normal] :
@@ -120,12 +127,13 @@ theorem pCore_eq_bot_iff :
   obtain ⟨N, hN, hP, hxN⟩ := mem_pCore_iff.mp hx
   simpa [h N hN hP] using hxN
 
-/-- `pCore p H = ⊤` iff every element of `H` is a `p`-element. -/
-theorem pCore_eq_top_iff : pCore p H = ⊤ ↔ IsPGroup p (⊤ : Subgroup H) :=
-  ⟨fun h => isPGroup_pCore.to_le h.ge, fun h => eq_top_iff.2 (le_pCore inferInstance h)⟩
+/-- `pCore p H = ⊤` iff `H` is a `p`-group. -/
+theorem pCore_eq_top_iff : pCore p H = ⊤ ↔ IsPGroup p H :=
+  ⟨fun h => (isPGroup_pCore.to_le h.ge).of_equiv topEquiv,
+   fun h => eq_top_iff.2 (le_pCore inferInstance (h.of_equiv topEquiv.symm))⟩
 
-/-- If every element of `H` is a `p`-element, then `pCore p H = ⊤`. -/
-theorem pCore_eq_top (h : IsPGroup p (⊤ : Subgroup H)) : pCore p H = ⊤ :=
+/-- If `H` is a `p`-group, then `pCore p H = ⊤`. -/
+theorem pCore_eq_top (h : IsPGroup p H) : pCore p H = ⊤ :=
   pCore_eq_top_iff.2 h
 
 /-- The `0`-core is the whole subgroup: every group is a `0`-group, since
@@ -176,6 +184,19 @@ normal `p`-subgroup hence contained in `pCore p H`. -/
 theorem pCore_eq_iInf_sylow : pCore p H = ⨅ P : Sylow p H, (P : Subgroup H) :=
   le_antisymm (le_iInf pCore_le_sylow) (le_pCore normal_iInf_sylow isPGroup_iInf_sylow)
 
+/-- A normal Sylow `p`-subgroup of `H` coincides with the `p`-core: it is a normal
+`p`-subgroup hence below `pCore p H`, and `pCore p H` is below every Sylow. -/
+theorem sylow_eq_pCore_of_normal (P : Sylow p H) [(P : Subgroup H).Normal] :
+    (P : Subgroup H) = pCore p H :=
+  le_antisymm (le_pCore inferInstance P.2) (pCore_le_sylow P)
+
+/-- A Sylow `p`-subgroup of `H` equals the `p`-core iff it is normal. -/
+theorem pCore_eq_sylow_iff_normal (P : Sylow p H) :
+    pCore p H = (P : Subgroup H) ↔ (P : Subgroup H).Normal := by
+  refine ⟨fun h => h ▸ pCore_normal, fun h => ?_⟩
+  haveI := h
+  exact (sylow_eq_pCore_of_normal P).symm
+
 section Hom
 
 variable {G' : Type*} [Group G']
@@ -191,37 +212,43 @@ theorem pCore_le_comap_pCore (f : G →* G') (H : Subgroup G) :
     pCore p H ≤ (pCore p (H.map f)).comap (f.subgroupMap H) :=
   map_le_iff_le_comap.mp (map_pCore_le_pCore f H)
 
-/-- If the kernel of `f : G →* G'` is a `p`-group, then the preimage of the
-`p`-core of `H'` (under the restriction `f.subgroupComap H'`) is contained
-in the `p`-core of `H'.comap f`. -/
-theorem comap_pCore_le_pCore (f : G →* G') (hker : IsPGroup p f.ker) (H' : Subgroup G') :
-    (pCore p H').comap (f.subgroupComap H') ≤ pCore p (H'.comap f) := by
-  refine le_pCore (pCore_normal.comap _) (isPGroup_pCore.comap_of_ker_isPGroup _ ?_)
-  rw [ker_subgroupComap]
-  exact hker.comap_subtype
+/-- If the restriction `f.subgroupMap H : H →* H.map f` has `p`-group kernel, then
+its image of `pCore p H` is exactly `pCore p (H.map f)`. The hypothesis is implied
+by `IsPGroup p f.ker` (via `ker_subgroupMap`), but only the restricted kernel matters. -/
+theorem map_pCore_eq_pCore (f : G →* G') (H : Subgroup G)
+    (hker : IsPGroup p (f.subgroupMap H).ker) :
+    (pCore p H).map (f.subgroupMap H) = pCore p (H.map f) := by
+  refine le_antisymm (map_pCore_le_pCore f H) ?_
+  conv_lhs => rw [← Subgroup.map_comap_eq_self_of_surjective (f.subgroupMap_surjective H)
+    (pCore p (H.map f))]
+  exact Subgroup.map_mono <| le_pCore (pCore_normal.comap _)
+    (isPGroup_pCore.comap_of_ker_isPGroup _ hker)
 
-/-- If `f : G →* G'` is surjective with `p`-group kernel, then the `p`-core
-of `H'.comap f` is the preimage of the `p`-core of `H'`. -/
-theorem comap_pCore_eq_pCore (f : G →* G') (hf : Function.Surjective f)
-    (hker : IsPGroup p f.ker) (H' : Subgroup G') :
+/-- If the restriction `f.subgroupComap H' : H'.comap f →* H'` has `p`-group kernel,
+then the preimage of `pCore p H'` is contained in `pCore p (H'.comap f)`. The hypothesis
+is implied by `IsPGroup p f.ker` (via `ker_subgroupComap`). -/
+theorem comap_pCore_le_pCore (f : G →* G') (H' : Subgroup G')
+    (hker : IsPGroup p (f.subgroupComap H').ker) :
+    (pCore p H').comap (f.subgroupComap H') ≤ pCore p (H'.comap f) :=
+  le_pCore (pCore_normal.comap _) (isPGroup_pCore.comap_of_ker_isPGroup _ hker)
+
+/-- If the restriction `f.subgroupComap H' : H'.comap f →* H'` is surjective with
+`p`-group kernel, then the `p`-core of `H'.comap f` is the preimage of `pCore p H'`.
+Surjectivity of the restriction is equivalent to `H' ≤ f.range`. -/
+theorem comap_pCore_eq_pCore (f : G →* G') (H' : Subgroup G')
+    (hf : Function.Surjective (f.subgroupComap H'))
+    (hker : IsPGroup p (f.subgroupComap H').ker) :
     (pCore p H').comap (f.subgroupComap H') = pCore p (H'.comap f) := by
-  refine le_antisymm (comap_pCore_le_pCore f hker H') ?_
+  refine le_antisymm (comap_pCore_le_pCore f H' hker) ?_
   rw [← map_le_iff_le_comap]
-  exact le_pCore (pCore_normal.map _ (f.subgroupComap_surjective_of_surjective H' hf))
-    (isPGroup_pCore.map _)
+  exact le_pCore (pCore_normal.map _ hf) (isPGroup_pCore.map _)
 
 /-- A group isomorphism `e : G ≃* G'` preserves the `p`-core of a subgroup `H`,
 via the restricted isomorphism `e.subgroupMap H : H ≃* H.map (e : G →* G')`. -/
 theorem _root_.MulEquiv.map_pCore (e : G ≃* G') (H : Subgroup G) :
-    (pCore p H).map (e.subgroupMap H).toMonoidHom = pCore p (H.map (e : G →* G')) := by
-  refine le_antisymm (map_pCore_le_pCore (e : G →* G') H) ?_
-  -- Rewrite the RHS as `map φ (comap φ (pCore p (H.map e)))` using surjectivity of
-  -- `φ := (e.subgroupMap H).toMonoidHom`, then bound the inner `comap` by `pCore p H`.
-  have hsurj : Function.Surjective (e.subgroupMap H).toMonoidHom := (e.subgroupMap H).surjective
-  conv_lhs => rw [← Subgroup.map_comap_eq_self_of_surjective hsurj
-    (pCore p (H.map (e : G →* G')))]
-  exact Subgroup.map_mono <| le_pCore (pCore_normal.comap _)
-    (isPGroup_pCore.comap_of_injective _ (e.subgroupMap H).injective)
+    (pCore p H).map (e.subgroupMap H).toMonoidHom = pCore p (H.map (e : G →* G')) :=
+  map_pCore_eq_pCore (e : G →* G') H
+    (IsPGroup.ker_isPGroup_of_injective (e.subgroupMap H).injective)
 
 end Hom
 
