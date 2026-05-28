@@ -44,13 +44,12 @@ are defined by an action of `R` on `S` (formally, we have two scalar towers), th
 equivalence from `M` to `M₂` is also an `R`-linear equivalence.
 
 See also `LinearMap.restrictScalars`. -/
-@[simps]
-def restrictScalars (f : M ≃ₗ[S] M₂) : M ≃ₗ[R] M₂ :=
-  { f.toLinearMap.restrictScalars R with
-    toFun := f
-    invFun := f.symm
-    left_inv := f.left_inv
-    right_inv := f.right_inv }
+@[simps!, simps toLinearMap]
+def restrictScalars (f : M ≃ₗ[S] M₂) : M ≃ₗ[R] M₂ where
+  toLinearMap := f.toLinearMap.restrictScalars R
+  invFun := f.symm
+  left_inv := f.left_inv
+  right_inv := f.right_inv
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (M ≃ₗ[S] M₂) → M ≃ₗ[R] M₂) := fun _ _ h ↦
@@ -279,7 +278,7 @@ variable {modM : Module ℤ M} {modM₂ : Module ℤ M₂} {modM₃ : Module ℤ
 equivalence between ℤ-modules -/
 def toIntLinearEquiv : M ≃ₗ[ℤ] M₂ := by
   refine e.toLinearEquiv fun c a ↦ ?_
-  convert e.toAddMonoidHom.map_zsmul a c using 1
+  convert! e.toAddMonoidHom.map_zsmul c a using 1
   · exact congr(e $(int_smul_eq_zsmul ..))
   · exact int_smul_eq_zsmul ..
 

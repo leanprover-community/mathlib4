@@ -13,7 +13,7 @@ import all Init.Data.Fin.Fold  -- for exposing `Fin.foldr`
 # The cardinality of `Fin 2` is even.
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*}
