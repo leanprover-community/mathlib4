@@ -350,10 +350,8 @@ alias _root_.AddSubgroup.mem_normalizer_iff_conj_image_eq :=
 @[to_additive]
 theorem normalizer_le_normalizer_closure (s : Set G) : normalizer s ≤ normalizer (closure s) := by
   intro g hg
-  have : MulAut.conj g '' (closure s) = closure (MulAut.conj g '' s) :=
-    congr($(MulAut.conj g |>.toMonoidHom.map_closure s))
-  rw [mem_normalizer_iff_conj_image_eq.mp hg] at this
-  rwa [mem_normalizer_iff_conj_image_eq]
+  rw [mem_normalizer_iff_conj_image_eq] at hg
+  rw [mem_normalizer_iff_map_conj_eq, MonoidHom.map_closure, MonoidHom.coe_coe, hg]
 
 variable {H}
 
@@ -367,6 +365,15 @@ variable (H) in
 @[to_additive]
 theorem normalizer_eq_top [h : H.Normal] : normalizer (H : Set G) = ⊤ :=
   normalizer_eq_top_iff.mpr h
+
+@[to_additive]
+theorem normal_iff_map_conj_eq : H.Normal ↔ ∀ g : G, H.map (MulAut.conj g) = H := by
+  simp_rw [← normalizer_eq_top_iff, Subgroup.eq_top_iff', mem_normalizer_iff_map_conj_eq]
+
+variable (H) in
+@[to_additive]
+theorem Normal.map_conj_eq [H.Normal] (g : G) : H.map (MulAut.conj g) = H :=
+  normal_iff_map_conj_eq.mp ‹_› g
 
 @[to_additive]
 theorem le_set_normalizer_iff {s : Set G} :
@@ -652,6 +659,26 @@ theorem normalCore_eq_self (H : Subgroup G) [H.Normal] : H.normalCore = H :=
 @[to_additive]
 theorem normalCore_idempotent (H : Subgroup G) : H.normalCore.normalCore = H.normalCore :=
   H.normalCore.normalCore_eq_self
+
+@[to_additive]
+theorem normalCore_eq_iInf_map_conj (H : Subgroup G) :
+    H.normalCore = ⨅ g : G, H.map (MulAut.conj g) := by
+  have : (⨅ g : G, H.map (MulAut.conj g) : Subgroup G).Normal := by
+    refine normal_iff_map_conj_eq.mpr fun g ↦ ?_
+    conv_rhs => rw [← Equiv.iInf_comp (Equiv.mulLeft g)]
+    rw [map_iInf _ (MulAut.conj g).injective]
+    simp [map_map, MulAut.mul_def]
+  refine le_antisymm (le_iInf fun g ↦ ?_) ?_
+  · grw [← Normal.map_conj_eq H.normalCore g, normalCore_le]
+  · rw [normal_le_normalCore]
+    apply iInf_le_of_le 1
+    simp [MulAut.one_def]
+
+@[to_additive]
+theorem normalCore_eq_iInf_comap_conj (H : Subgroup G) :
+    H.normalCore = ⨅ g : G, H.comap (MulAut.conj g) := by
+  rw [← (Equiv.inv G).iInf_comp, normalCore_eq_iInf_map_conj]
+  simp [MulAut.inv_def, map_equiv_eq_comap_symm]
 
 end Subgroup
 
