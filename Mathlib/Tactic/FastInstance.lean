@@ -33,12 +33,14 @@ def error {α : Type _} (trace : Array Name) (m : MessageData) : MetaM α :=
     Trace of fields visited: {trace}"
 
 /-- Run `x` in a modified environment where `instName` no longer has the `instance` attribute.
+Throws if `instName` is not currently registered as an instance; `x` itself is run in `MetaM`
+and so cannot make environment modifications outside the temporary `withoutModifyingEnv` scope.
 
 We don't put this in a more generic location (e.g. `Mathlib.Lean.Meta.Basic`) because it will be
 moved to Lean 4 core. -/
 def withDisabledInstance {α : Type} (instName : Name) (x : MetaM α) : MetaM α := do
   if !(instanceExtension.getState (← getEnv)).instanceNames.contains instName then
-    return ← x
+    throwError "'{instName}' is not currently registered as an instance"
   withoutModifyingEnv do
     Attribute.erase instName `instance
     x
@@ -64,11 +66,7 @@ partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #
     return inst
 
   -- Try to synthesize a total replacement for this term:
-  let synth? : Option Expr ← do
-    match ← trySynthInstance expectedType with
-    | .some e => pure (some e)
-    | _ => pure none
-  if let .some new := synth? then
+  if let .some new ← trySynthInstance expectedType then
     if ← withDefault <| isDefEq inst new then
       trace[Elab.fast_instance] "replaced with synthesized instance"
       return new
@@ -167,21 +165,22 @@ macro "inferInstanceAs% " source:term : term =>
 `(fieldName, some (actualBinderType, expectedBinderType))` for the first field where both forms
 are lambdas with different binder types at instances transparency, or `(fieldName, none)` if a
 mismatch is found but cannot be characterized as a binder type difference.
-`className` is used to look up field names via `getStructureFields`; recursion uses the
-constructor prefix as the nested class name. -/
-private partial def findFirstBinderMismatch (className : Name) (inst canonical : Expr) :
+The class is identified from `canonical`'s constructor; field names come from
+`getStructureFields`. -/
+private partial def findFirstBinderMismatch (inst canonical : Expr) :
     MetaM (Option (Name × Option (Expr × Expr))) := do
   let env ← getEnv
   let instWhnf ← withTransparency .instances <| whnf inst
   let canWhnf ← withTransparency .instances <| whnf canonical
   let instArgs := instWhnf.getAppArgs
   let canArgs := canWhnf.getAppArgs
+  -- Identify the class from canonical's constructor.
+  let (className, numParams) : Name × Nat :=
+    match ← Lean.Meta.isConstructorApp? canWhnf with
+    | some ci => (ci.induct, ci.numParams)
+    | _ => (.anonymous, 0)
   -- Field names for this class (empty if not a structure or unavailable).
   let fields := if isStructure env className then getStructureFields env className else #[]
-  let numParams : Nat :=
-    match env.find? (className ++ `mk) with
-    | some (.ctorInfo ci) => ci.numParams
-    | _ => 0
   -- Start from `numParams` to skip constructor parameters: they are shared between `inst`
   -- and `canonical` (both were built for the same `expectedType`), so any mismatch will be
   -- in a field position. Starting here also makes `i - numParams` safe (no underflow).
@@ -189,28 +188,24 @@ private partial def findFirstBinderMismatch (className : Name) (inst canonical :
     let instArg := instArgs[i]!
     let canArg := canArgs[i]!
     let same ← withNewMCtxDepth <| withTransparency .instances <| isDefEq instArg canArg
-    unless same do
-      let fieldIdx := i - numParams  -- safe: i ≥ numParams
-      let fieldName : Name :=
-        if h : fieldIdx < fields.size then fields[fieldIdx] else `_
-      -- If both are lambdas, check for a binder type mismatch at this level.
-      if let .lam _ instT _ _ := instArg then
-        if let .lam _ canT _ _ := canArg then
-          let sameT ← withNewMCtxDepth <| withTransparency .instances <| isDefEq instT canT
-          unless sameT do
-            return some (fieldName, some (instT, canT))
-      -- Recurse into nested constructor sub-expressions (other instance fields).
-      -- Identify the nested class from the argument's own constructor, not the outer one.
-      let argWhnf ← withTransparency .instances <| whnf instArg
-      let nestedClass : Name :=
-        match argWhnf.getAppFn with
-        | .const ctorName _ => ctorName.getPrefix
-        | _ => .anonymous
-      if let some result ← findFirstBinderMismatch nestedClass instArg canArg then
-        return some result
-      -- Fallback: we found a mismatch at this field but couldn't characterize it as a binder
-      -- type difference (e.g., not a lambda, or binder types agree but bodies differ).
-      return some (fieldName, none)
+    if same then
+      continue
+    let fieldIdx := i - numParams  -- safe: i ≥ numParams
+    let fieldName : Name :=
+      if h : fieldIdx < fields.size then fields[fieldIdx] else `_
+    -- If both are lambdas, check for a binder type mismatch at this level.
+    if let .lam _ instT _ _ := instArg then
+      if let .lam _ canT _ _ := canArg then
+        let sameT ← withNewMCtxDepth <| withTransparency .instances <| isDefEq instT canT
+        unless sameT do
+          return some (fieldName, some (instT, canT))
+    -- Recurse into nested constructor sub-expressions (other instance fields).
+    -- The nested class is derived from `canArg`'s constructor inside the recursive call.
+    if let some result ← findFirstBinderMismatch instArg canArg then
+      return some result
+    -- Fallback: we found a mismatch at this field but couldn't characterize it as a binder
+    -- type difference (e.g., not a lambda, or binder types agree but bodies differ).
+    return some (fieldName, none)
   return none
 
 /-- Structured result of checking whether an instance has leaky data-field binder types. -/
@@ -280,33 +275,27 @@ public def checkInstance (name : Name) : MetaM CheckInstanceResult := do
     let isCanonical ← withTransparency .instances <| isDefEq instVal normalized
     if isCanonical then
       return .canonical
-    else
-      -- Try to find the first specific binder type mismatch to help diagnose the leak.
-      let className ← isClass? expectedType
-      let mismatch ← try
-        match className with
-        | some c => findFirstBinderMismatch c instVal normalized
-        | none => pure none
-        catch _ => pure none
-      -- Eagerly pretty-print binder types while still in MetaM context so that any
-      -- pp failure produces a graceful fallback instead of a raw "failed to pretty print" string.
-      let detail : MessageData ← match mismatch with
-        | some (field, some (actual, expected)) => do
-          let actualStr : String ← try
-              let fmt ← ppExpr actual
-              pure fmt.pretty
-            catch _ => pure "<unprintable>"
-          let expectedStr : String ← try
-              let fmt ← ppExpr expected
-              pure fmt.pretty
-            catch _ => pure "<unprintable>"
-          pure m!"\n  The data field `{field}` has binder type {actualStr} \
-            where {expectedStr} is expected.\n  Other data fields may also be leaky."
-        | some (field, none) =>
-          pure m!"\n  The data field `{field}` differs from the re-inferred canonical form \
-            at instances transparency.\n  Other data fields may also be leaky."
-        | none => pure "\n  The body differs from the re-inferred form at instances transparency."
-      return .leaky detail
+    -- Try to find the first specific binder type mismatch to help diagnose the leak.
+    let mismatch ← try findFirstBinderMismatch instVal normalized catch _ => pure none
+    -- Eagerly pretty-print binder types while still in MetaM context so that any
+    -- pp failure produces a graceful fallback instead of a raw "failed to pretty print" string.
+    let detail : MessageData ← match mismatch with
+      | some (field, some (actual, expected)) => do
+        let actualStr : String ← try
+            let fmt ← ppExpr actual
+            pure fmt.pretty
+          catch _ => pure "<unprintable>"
+        let expectedStr : String ← try
+            let fmt ← ppExpr expected
+            pure fmt.pretty
+          catch _ => pure "<unprintable>"
+        pure m!"\n  The data field `{field}` has binder type {actualStr} \
+          where {expectedStr} is expected.\n  Other data fields may also be leaky."
+      | some (field, none) =>
+        pure m!"\n  The data field `{field}` differs from the re-inferred canonical form \
+          at instances transparency.\n  Other data fields may also be leaky."
+      | none => pure "\n  The body differs from the re-inferred form at instances transparency."
+    return .leaky detail
 
 open Elab Command in
 /--

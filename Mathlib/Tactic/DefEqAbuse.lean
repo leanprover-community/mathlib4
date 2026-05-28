@@ -328,9 +328,9 @@ def findLeakyInstances (instNames : Array Name) : MetaM (Array (Name × MessageD
     -- Skip prop-valued instances (proofs don't need normalization and generate spurious warnings)
     let isPropInst ← forallTelescopeReducing info.type fun _ t => isProp t
     if isPropInst then continue
-    -- Run checkInstance. Re-throw internal exceptions (panics, OOM, etc.); skip all others.
+    -- Run checkInstance. Skip if anything goes wrong.
     let result ← try Mathlib.Elab.FastInstance.checkInstance name
-      catch | .internal id ref => throw (.internal id ref) | _ => continue
+      catch | _ => continue
     -- Only report instances confirmed to have leaky binder types, not "cannot be verified" ones.
     if let .leaky _ := result then
       leaky := leaky.push (name, result.toMessageData name)
@@ -472,7 +472,7 @@ elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainC
         reportDefEqAbuse "tactic" disambiguated #[]
         -- Check instances used in the goal type for leakiness.
         -- The tactic fails due to an isDefEq mismatch caused by instances that were
-        -- synthesized during GOAL TYPE ELABORATION (before the tactic runs), so synthesis
+        -- synthesized during *goal type elaboration* (before the tactic runs), so synthesis
         -- traces won't contain them. Instead, inspect the elaborated goal type directly.
         let leaky ← try
           let goalType ← getMainTarget
