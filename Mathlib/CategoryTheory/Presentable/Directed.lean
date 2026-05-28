@@ -36,8 +36,6 @@ have to be multiplicative.)
 
 -/
 
-@[expose] public section
-
 universe u v w
 
 namespace CategoryTheory
@@ -94,12 +92,12 @@ attribute [reassoc] IsTerminal.comm
 
 variable {D : Diagram J κ} {e : J}
 
-private lemma prop (h : D.IsTerminal e) : D.P e := D.src (h.prop_id)
+lemma prop (h : D.IsTerminal e) : D.P e := D.src (h.prop_id)
 
 @[simp]
-private lemma lift_self (h : D.IsTerminal e) : h.lift h.prop = 𝟙 e := h.uniq _ h.prop_id
+lemma lift_self (h : D.IsTerminal e) : h.lift h.prop = 𝟙 e := h.uniq _ h.prop_id
 
-private instance : Subsingleton (D.IsTerminal e) where
+instance : Subsingleton (D.IsTerminal e) where
   allEq h₁ h₂ := by
     have : @h₁.lift = @h₂.lift := by
       ext j hj
@@ -110,7 +108,7 @@ private instance : Subsingleton (D.IsTerminal e) where
 
 /-- Constructor for `Diagram.IsTerminal` for which no data is provided,
 but only its existence. -/
-private noncomputable def ofExistsUnique (prop_id : D.W (𝟙 e))
+noncomputable def ofExistsUnique (prop_id : D.W (𝟙 e))
     (h₁ : ∀ ⦃j : J⦄ (_ : D.P j), ∃ (lift : j ⟶ e), D.W lift)
     (h₂ : ∀ ⦃j : J⦄ (_ : D.P j) (l₁ l₂ : j ⟶ e), D.W l₁ → D.W l₂ → l₁ = l₂)
     (h₃ : ∀ ⦃i j : J⦄ (f : i ⟶ j) (_ : D.W f), ∃ (li : i ⟶ e) (lj : j ⟶ e),
@@ -139,7 +137,7 @@ structure DiagramWithUniqueTerminal extends Diagram J κ where
   uniq_terminal (j : J) (hj : toDiagram.IsTerminal j) : j = top
 
 @[ext]
-private lemma DiagramWithUniqueTerminal.ext {D₁ D₂ : DiagramWithUniqueTerminal J κ}
+lemma DiagramWithUniqueTerminal.ext {D₁ D₂ : DiagramWithUniqueTerminal J κ}
     (hW : D₁.W = D₂.W) (hP : D₁.P = D₂.P) : D₁ = D₂ := by
   obtain ⟨D₁, top, h₁, h₁'⟩ := D₁
   obtain ⟨D₂, top', h₂, h₂'⟩ := D₂
@@ -148,7 +146,7 @@ private lemma DiagramWithUniqueTerminal.ext {D₁ D₂ : DiagramWithUniqueTermin
   obtain rfl : h₁ = h₂ := by subsingleton
   rfl
 
-private instance : PartialOrder (DiagramWithUniqueTerminal J κ) where
+instance : PartialOrder (DiagramWithUniqueTerminal J κ) where
   le D₁ D₂ := D₁.W ≤ D₂.W ∧ D₁.P ≤ D₂.P
   le_refl _ := ⟨by rfl, by rfl⟩
   le_trans _ _ _ h₁ h₂ := ⟨h₁.1.trans h₂.1, h₁.2.trans h₂.2⟩
@@ -162,17 +160,16 @@ section
 variable {J κ}
 
 /-- Auxiliary definition for `functor`. -/
-private def functorMap {D₁ D₂ : DiagramWithUniqueTerminal J κ} (h : D₁ ≤ D₂) : D₁.top ⟶ D₂.top :=
+def functorMap {D₁ D₂ : DiagramWithUniqueTerminal J κ} (h : D₁ ≤ D₂) : D₁.top ⟶ D₂.top :=
   D₂.isTerminal.lift (h.2 _ D₁.isTerminal.prop)
 
 @[simp]
-private lemma functorMap_id (D : DiagramWithUniqueTerminal J κ) :
-    functorMap (le_refl D) = 𝟙 D.top := by
+lemma functorMap_id (D : DiagramWithUniqueTerminal J κ) : functorMap (le_refl D) = 𝟙 D.top := by
   simp [functorMap]
 
 @[reassoc (attr := simp)]
-private lemma functorMap_comp {D₁ D₂ D₃ : DiagramWithUniqueTerminal J κ} (h₁₂ : D₁ ≤ D₂)
-    (h₂₃ : D₂ ≤ D₃) : functorMap h₁₂ ≫ functorMap h₂₃ = functorMap (h₁₂.trans h₂₃) :=
+lemma functorMap_comp {D₁ D₂ D₃ : DiagramWithUniqueTerminal J κ} (h₁₂ : D₁ ≤ D₂) (h₂₃ : D₂ ≤ D₃) :
+    functorMap h₁₂ ≫ functorMap h₂₃ = functorMap (h₁₂.trans h₂₃) :=
   D₃.isTerminal.comm _ (h₂₃.1 _ (D₂.isTerminal.hlift _))
 
 end
@@ -180,7 +177,7 @@ end
 /-- The functor which sends a `κ`-bounded diagram with a unique terminal object to
 its terminal object. -/
 @[simps]
-private def functor : DiagramWithUniqueTerminal J κ ⥤ J where
+def functor : DiagramWithUniqueTerminal J κ ⥤ J where
   obj D := D.top
   map h := functorMap (leOfHom h)
 
@@ -189,7 +186,7 @@ variable [Fact κ.IsRegular]
 variable {J κ} in
 /-- The diagram containing a single object (and its identity morphism). -/
 @[simps]
-private def Diagram.single (j : J) : Diagram J κ where
+def Diagram.single (j : J) : Diagram J κ where
   W := .ofHoms (fun (_ : Unit) ↦ 𝟙 j)
   P := .ofObj (fun (_ : Unit) ↦ j)
   src := by rintro _ _ _ ⟨⟩; exact ⟨⟨⟩⟩
@@ -206,14 +203,14 @@ private def Diagram.single (j : J) : Diagram J κ where
     (hasCardinalLT_of_finite _ κ (Cardinal.IsRegular.aleph0_le Fact.out)).of_surjective
       (fun (_ : Unit) ↦ ⟨j, by simp⟩) (fun ⟨k, hk⟩ ↦ ⟨⟨⟩, by aesop⟩)
 
-private instance (j : J) : Finite (Subtype (Diagram.single (κ := κ) j).P) :=
+instance (j : J) : Finite (Subtype (Diagram.single (κ := κ) j).P) :=
   Finite.of_surjective (fun (_ : Unit) ↦ ⟨j, by simp⟩)
     (by rintro ⟨_, ⟨⟩⟩; exact ⟨⟨⟩, rfl⟩)
 
 variable {J κ} in
 /-- The diagram with a unique terminal object containing a single object
 (and its identity morphism). -/
-private noncomputable def DiagramWithUniqueTerminal.single (j : J) :
+noncomputable def DiagramWithUniqueTerminal.single (j : J) :
     DiagramWithUniqueTerminal J κ where
   toDiagram := .single j
   top := j
@@ -234,7 +231,7 @@ private noncomputable def DiagramWithUniqueTerminal.single (j : J) :
 variable {J κ} in
 /-- The union of a `κ`-bounded family of `κ`-bounded diagrams. -/
 @[simps]
-private def Diagram.iSup {ι : Type*} (D : ι → Diagram J κ) (hι : HasCardinalLT ι κ) :
+def Diagram.iSup {ι : Type*} (D : ι → Diagram J κ) (hι : HasCardinalLT ι κ) :
     Diagram J κ where
   W := ⨆ (i : ι), (D i).W
   P := ⨆ (i : ι), (D i).P
@@ -252,7 +249,7 @@ private def Diagram.iSup {ι : Type*} (D : ι → Diagram J κ) (hι : HasCardin
 variable {J κ} in
 /-- The union of two `κ`-bounded diagrams. -/
 @[simps]
-private def Diagram.sup (D₁ D₂ : Diagram J κ) :
+def Diagram.sup (D₁ D₂ : Diagram J κ) :
     Diagram J κ where
   W := D₁.W ⊔ D₂.W
   P := D₁.P ⊔ D₂.P
@@ -271,7 +268,7 @@ variable [IsCardinalFiltered J κ]
   (hJ : ∀ (e : J), ∃ (m : J) (_ : e ⟶ m), IsEmpty (m ⟶ e))
 
 include hJ in
-private lemma isCardinalFiltered_aux
+lemma isCardinalFiltered_aux
     {ι : Type w} (D : ι → DiagramWithUniqueTerminal J κ) (hι : HasCardinalLT ι κ) :
     ∃ (m : J) (u : ∀ i, (D i).top ⟶ m), (∀ (i : ι), IsEmpty (m ⟶ (D i).top)) ∧
       ∀ (i₁ i₂ : ι) (j : J) (hj₁ : (D i₁).P j) (hj₂ : (D i₂).P j),
@@ -323,12 +320,12 @@ variable {J κ} {ι : Type w} (D : ι → DiagramWithUniqueTerminal J κ) (hι :
 variable (m) in
 /-- Auxiliary definition for `isCardinalFiltered`. -/
 @[simps!]
-private def D₁ : Diagram J κ :=
+def D₁ : Diagram J κ :=
   (Diagram.iSup (fun i ↦ (D i).toDiagram) hι).sup (.single m)
 
 /-- Auxiliary definition for `isCardinalFiltered`. -/
 @[simps!]
-private def D₂ : Diagram J κ where
+def D₂ : Diagram J κ where
   W := (D₁ D hι m).W ⊔ MorphismProperty.ofHoms
     fun (x : (Σ (i : ι), (Subtype (D i).P))) ↦ (D x.1).isTerminal.lift x.2.2 ≫ u x.1
   P := (D₁ D hι m).P
@@ -353,7 +350,7 @@ private def D₂ : Diagram J κ where
   hP := (D₁ _ _ _).hP
 
 omit [IsCardinalFiltered J κ] in
-private lemma eq_id_of_D₂_W (hD : ∀ {i : ι}, ¬ (D i).P m) {f : m ⟶ m} (hf : (D₂ D hι u).W f) :
+lemma eq_id_of_D₂_W (hD : ∀ {i : ι}, ¬ (D i).P m) {f : m ⟶ m} (hf : (D₂ D hι u).W f) :
     f = 𝟙 _ := by
   simp only [D₂_W] at hf
   obtain ((hf | ⟨⟨⟩⟩) | hf) := hf
@@ -370,7 +367,7 @@ end
 
 include hJ
 
-private lemma isCardinalFiltered : IsCardinalFiltered (DiagramWithUniqueTerminal J κ) κ :=
+lemma isCardinalFiltered : IsCardinalFiltered (DiagramWithUniqueTerminal J κ) κ :=
   isCardinalFiltered_preorder _ _ (fun ι D hι ↦ by
     rw [← hasCardinalLT_iff_cardinal_mk_lt] at hι
     obtain ⟨m, u, hm₀, hm⟩ := isCardinalFiltered_aux J κ hJ D hι
@@ -430,12 +427,12 @@ variable {κ J} (D : DiagramWithUniqueTerminal J κ) {m₁ : J}
 variable (m₁) in
 /-- Auxiliary definition for `final_functor`. -/
 @[simps!]
-private def D₃ : Diagram J κ :=
+def D₃ : Diagram J κ :=
   D.toDiagram.sup (.single m₁)
 
 /-- Auxiliary definition for `final_functor`. -/
 @[simps!]
-private def D₄ : Diagram J κ where
+def D₄ : Diagram J κ where
   W := (D₃ D m₁).W ⊔ .ofHoms φ
   P := (D₃ D m₁).P
   src := by
@@ -452,7 +449,7 @@ private def D₄ : Diagram J κ where
 
 end
 
-private lemma final_functor : (functor J κ).Final := by
+lemma final_functor : (functor J κ).Final := by
   have := isCardinalFiltered J κ hJ
   have := isFiltered_of_isCardinalFiltered J κ
   have := isFiltered_of_isCardinalFiltered (DiagramWithUniqueTerminal J κ) κ
@@ -506,73 +503,13 @@ private lemma final_functor : (functor J κ).Final := by
   exact ⟨D₄', homOfLE ⟨le_sup_left.trans le_sup_left, le_sup_left⟩,
     by simpa [functorMap, D₄', lift_eq _ D.isTerminal.prop, φ]⟩
 
-private lemma aux :
+lemma aux :
     ∃ (α : Type w) (_ : PartialOrder α) (_ : IsCardinalFiltered α κ)
       (F : α ⥤ J), F.Final :=
   ⟨DiagramWithUniqueTerminal J κ, _, isCardinalFiltered J κ hJ,
     functor J κ, final_functor J κ hJ⟩
 
 end ExistsCardinalDirected
-
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.Diagram := ExistsCardinalDirected.Diagram
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.Diagram.ext := ExistsCardinalDirected.Diagram.ext
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.Diagram.ext_iff := ExistsCardinalDirected.Diagram.ext_iff
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.Diagram.mk := ExistsCardinalDirected.Diagram.mk
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.Diagram.W := ExistsCardinalDirected.Diagram.W
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.Diagram.P := ExistsCardinalDirected.Diagram.P
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.Diagram.src := ExistsCardinalDirected.Diagram.src
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.Diagram.tgt := ExistsCardinalDirected.Diagram.tgt
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.Diagram.hW := ExistsCardinalDirected.Diagram.hW
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.Diagram.hP := ExistsCardinalDirected.Diagram.hP
-
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.Diagram.IsTerminal := ExistsCardinalDirected.Diagram.IsTerminal
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.Diagram.IsTerminal.mk := ExistsCardinalDirected.Diagram.IsTerminal.mk
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.Diagram.IsTerminal.prop_id :=
-  ExistsCardinalDirected.Diagram.IsTerminal.prop_id
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.Diagram.IsTerminal.lift :=
-  ExistsCardinalDirected.Diagram.IsTerminal.lift
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.Diagram.IsTerminal.hlift :=
-  ExistsCardinalDirected.Diagram.IsTerminal.hlift
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.Diagram.IsTerminal.uniq :=
-  ExistsCardinalDirected.Diagram.IsTerminal.uniq
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.Diagram.IsTerminal.comm :=
-  ExistsCardinalDirected.Diagram.IsTerminal.comm
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.Diagram.IsTerminal.comm_assoc :=
-  ExistsCardinalDirected.Diagram.IsTerminal.comm_assoc
-
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.DiagramWithUniqueTerminal :=
-  ExistsCardinalDirected.DiagramWithUniqueTerminal
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.DiagramWithUniqueTerminal.mk :=
-  ExistsCardinalDirected.DiagramWithUniqueTerminal.mk
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.DiagramWithUniqueTerminal.top :=
-  ExistsCardinalDirected.DiagramWithUniqueTerminal.top
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.DiagramWithUniqueTerminal.isTerminal :=
-  ExistsCardinalDirected.DiagramWithUniqueTerminal.isTerminal
-@[deprecated (since := "2026-05-26")]
-alias exists_cardinal_directed.DiagramWithUniqueTerminal.uniq_terminal :=
-  ExistsCardinalDirected.DiagramWithUniqueTerminal.uniq_terminal
 
 /-!
 The previous lemma `IsCardinalFiltered.ExistsCardinalDirected.aux`
@@ -586,7 +523,7 @@ the cartesian product `J × κ.ord.toType`.
 -/
 
 @[stacks 0032]
-lemma exists_cardinal_directed (J : Type w) [SmallCategory J] (κ : Cardinal.{w})
+public lemma exists_cardinal_directed (J : Type w) [SmallCategory J] (κ : Cardinal.{w})
     [Fact κ.IsRegular] [IsCardinalFiltered J κ] :
     ∃ (α : Type w) (_ : PartialOrder α) (_ : IsCardinalFiltered α κ)
       (F : α ⥤ J), F.Final := by
@@ -603,7 +540,7 @@ end IsCardinalFiltered
 
 attribute [local instance] Cardinal.fact_isRegular_aleph0 in
 @[stacks 0032]
-lemma IsFiltered.exists_directed
+public lemma IsFiltered.exists_directed
     (J : Type w) [SmallCategory J] [IsFiltered J] :
     ∃ (α : Type w) (_ : PartialOrder α) (_ : IsDirected α (· ≤ ·)) (_ : Nonempty α)
       (F : α ⥤ J), F.Final := by
