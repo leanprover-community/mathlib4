@@ -62,12 +62,22 @@ theorem commutatorElement_self : ⁅g, g⁆ = 1 :=
 theorem commutatorElement_inv : ⁅g₁, g₂⁆⁻¹ = ⁅g₂, g₁⁆ := by
   simp_rw [commutatorElement_def, mul_inv_rev, inv_inv, mul_assoc]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_commutatorElement : (f ⁅g₁, g₂⁆ : G') = ⁅f g₁, f g₂⁆ := by
   simp_rw [commutatorElement_def, map_mul f, map_inv f]
 
 @[to_additive]
 theorem conjugate_commutatorElement : g₃ * ⁅g₁, g₂⁆ * g₃⁻¹ = ⁅g₃ * g₁ * g₃⁻¹, g₃ * g₂ * g₃⁻¹⁆ := by
+  simp [mul_assoc, commutatorElement_def]
+
+@[to_additive]
+theorem commutatorElement_mul_left_eq_conj_mul (a b c : G) :
+    ⁅a * b, c⁆ = a * ⁅b, c⁆ * a⁻¹ * ⁅a, c⁆ := by
+  simp [mul_assoc, commutatorElement_def]
+
+@[to_additive]
+theorem commutatorElement_mul_right_eq_mul_conj (a b c : G) :
+    ⁅a, b * c⁆ = ⁅a, b⁆ * b * ⁅a, c⁆ * b⁻¹ := by
   simp [mul_assoc, commutatorElement_def]
 
 namespace Subgroup
@@ -82,7 +92,7 @@ theorem commutator_def (H₁ H₂ : Subgroup G) :
     ⁅H₁, H₂⁆ = closure { g | ∃ g₁ ∈ H₁, ∃ g₂ ∈ H₂, ⁅g₁, g₂⁆ = g } :=
   rfl
 
-variable {g₁ g₂ g₃} {H H₁ H₂ H₃ K₁ K₂ : Subgroup G}
+variable {g₁ g₂ g₃} {H H₁ H₂ H₃ K K₁ K₂ : Subgroup G}
 
 @[to_additive]
 theorem commutator_mem_commutator (h₁ : g₁ ∈ H₁) (h₂ : g₂ ∈ H₂) : ⁅g₁, g₂⁆ ∈ ⁅H₁, H₂⁆ :=
@@ -109,7 +119,7 @@ theorem commutator_eq_bot_iff_le_centralizer : ⁅H₁, H₂⁆ = ⊥ ↔ H₁ �
 theorem commutator_commutator_eq_bot_of_rotate (h1 : ⁅⁅H₂, H₃⁆, H₁⁆ = ⊥) (h2 : ⁅⁅H₃, H₁⁆, H₂⁆ = ⊥) :
     ⁅⁅H₁, H₂⁆, H₃⁆ = ⊥ := by
   simp_rw [commutator_eq_bot_iff_le_centralizer, commutator_le,
-    mem_centralizer_iff_commutator_eq_one, ← commutatorElement_def] at h1 h2 ⊢
+    mem_centralizer_iff_commutator_eq_one] at h1 h2 ⊢
   intro x hx y hy z hz
   trans x * z * ⁅y, ⁅z⁻¹, x⁻¹⁆⁆⁻¹ * z⁻¹ * y * ⁅x⁻¹, ⁅y⁻¹, z⁆⁆⁻¹ * y⁻¹ * x⁻¹
   -- We avoid `group` here to minimize imports while low in the hierarchy;
@@ -165,6 +175,16 @@ theorem commutator_top_left_le_iff : ⁅(⊤ : Subgroup G), H⁆ ≤ H ↔ H.Nor
 theorem commutator_top_right_le_iff : ⁅H, ⊤⁆ ≤ H ↔ H.Normal :=
   commutator_comm H ⊤ ▸ commutator_top_left_le_iff
 
+@[to_additive]
+theorem le_normalizer_iff_commutator_le_right : H ≤ normalizer K ↔ ⁅H, K⁆ ≤ K := by
+  refine le_normalizer_iff.trans ⟨fun hH ↦ ?_, fun hH h hh k hk ↦ ?_⟩
+  · exact commutator_le.mpr fun h hh k hk ↦ mul_mem (hH h hh k hk) (inv_mem hk)
+  · exact (mul_mem_cancel_right <| inv_mem hk).mp <| hH <| commutator_mem_commutator hh hk
+
+@[to_additive]
+theorem le_normalizer_iff_commutator_le_left : H ≤ normalizer K ↔ ⁅K, H⁆ ≤ K :=
+  commutator_comm H K ▸ le_normalizer_iff_commutator_le_right
+
 @[to_additive (attr := simp)]
 theorem commutator_bot_left : ⁅(⊥ : Subgroup G), H₁⁆ = ⊥ :=
   le_bot_iff.mp (commutator_le_left ⊥ H₁)
@@ -178,6 +198,28 @@ theorem commutator_le_inf [Normal H₁] [Normal H₂] : ⁅H₁, H₂⁆ ≤ H�
   le_inf (commutator_le_left H₁ H₂) (commutator_le_right H₁ H₂)
 
 end Normal
+
+@[to_additive]
+theorem commutator_le_sup : ⁅H₁, H₂⁆ ≤ H₁ ⊔ H₂ :=
+  commutator_le.mpr <| by grind [mul_assoc, mul_mem, mul_mem_sup, inv_mem]
+
+@[to_additive]
+theorem normalizer_commutator_ge_left : H₁ ≤ normalizer (⁅H₁, H₂⁆ : Subgroup G) := by
+  apply le_normalizer_closure_iff.mpr
+  rintro g hg _ ⟨g₁, hg₁, g₂, hg₂, rfl⟩
+  apply (mul_mem_cancel_right <| commutator_mem_commutator hg hg₂).mp
+  rw [← commutatorElement_mul_left_eq_conj_mul g g₁ g₂]
+  exact commutator_mem_commutator (mul_mem hg hg₁) hg₂
+
+@[to_additive]
+theorem normalizer_commutator_ge_right : H₂ ≤ normalizer (⁅H₁, H₂⁆ : Subgroup G) := by
+  rw [commutator_comm]
+  apply normalizer_commutator_ge_left
+
+@[to_additive]
+instance normal_subgroupOf_commutator_sup : (⁅H₁, H₂⁆.subgroupOf <| H₁ ⊔ H₂).Normal :=
+  normal_subgroupOf_of_le_normalizer <| sup_le
+    (normalizer_commutator_ge_left H₁ H₂) (normalizer_commutator_ge_right H₁ H₂)
 
 @[to_additive]
 theorem map_commutator (f : G →* G') : map f ⁅H₁, H₂⁆ = ⁅map f H₁, map f H₂⁆ := by
@@ -308,6 +350,14 @@ theorem commutator_eq_bot_iff_center_eq_top : commutator G = ⊥ ↔ Subgroup.ce
   simp [commutator, Subgroup.commutator_eq_bot_iff_le_centralizer]
 
 @[to_additive]
+theorem commutator_eq_bot_iff : commutator G = ⊥ ↔ IsMulCommutative G := by
+  rw [commutator_eq_bot_iff_center_eq_top, center_eq_top_iff]
+
+@[to_additive]
+theorem commutator_eq_bot [hG : IsMulCommutative G] : commutator G = ⊥ :=
+  (commutator_eq_bot_iff G).mpr hG
+
+@[to_additive]
 lemma commutator_centralizer_commutator_le_center :
     ⁅centralizer (commutator G : Set G), centralizer (commutator G)⁆ ≤ Subgroup.center G := by
   rw [← Subgroup.centralizer_univ, ← Subgroup.coe_top, ←
@@ -368,22 +418,17 @@ variable {G}
 
 @[to_additive]
 theorem Subgroup.Normal.quotient_commutative_iff_commutator_le {N : Subgroup G} [N.Normal] :
-    Std.Commutative (· * · : G ⧸ N → _ → _) ↔ _root_.commutator G ≤ N := by
-  constructor
-  · intro hcomm
-    rw [commutator_eq_normalClosure]
-    rw [← Subgroup.normalClosure_subset_iff]
+    IsMulCommutative (G ⧸ N) ↔ _root_.commutator G ≤ N := by
+  refine ⟨fun hcomm ↦ ?_, fun hGN ↦ ⟨⟨fun x' y' ↦ ?_⟩⟩⟩
+  · rw [commutator_eq_normalClosure, ← Subgroup.normalClosure_subset_iff]
     rintro x ⟨p, q, rfl⟩
     rw [SetLike.mem_coe, ← QuotientGroup.eq_one_iff, commutatorElement_def]
     simp only [QuotientGroup.mk_mul, QuotientGroup.mk_inv]
-    simp only [← commutatorElement_def, commutatorElement_eq_one_iff_mul_comm]
-    apply hcomm.comm
-  · intro hGN
-    apply Std.Commutative.mk
-    rintro x'; obtain ⟨x, rfl⟩ := QuotientGroup.mk'_surjective N x'
-    intro y'; obtain ⟨y, rfl⟩ := QuotientGroup.mk'_surjective N y'
-    rw [← commutatorElement_eq_one_iff_mul_comm, ← map_commutatorElement,
-      QuotientGroup.mk'_apply, QuotientGroup.eq_one_iff]
+    rw [← commutatorElement_def, commutatorElement_eq_one_iff_mul_comm, mul_comm']
+  · obtain ⟨x, rfl⟩ := QuotientGroup.mk'_surjective N x'
+    obtain ⟨y, rfl⟩ := QuotientGroup.mk'_surjective N y'
+    rw [← commutatorElement_eq_one_iff_mul_comm, ← map_commutatorElement, QuotientGroup.mk'_apply,
+      QuotientGroup.eq_one_iff]
     apply hGN
     rw [commutator_eq_closure]
     exact Subgroup.subset_closure (commutator_mem_commutatorSet x y)
@@ -393,19 +438,17 @@ theorem Subgroup.Normal.quotient_commutative_iff_commutator_le {N : Subgroup G} 
 @[to_additive /-- If `N` is a normal additive subgroup of `G` and `H` a commutative additive
 subgroup such that `H ⊔ N = ⊤`, then `N` contains `addCommutator G`. -/]
 theorem Subgroup.Normal.commutator_le_of_self_sup_commutative_eq_top {N : Subgroup G} [N.Normal]
-    {H : Subgroup G} (hHN : N ⊔ H = ⊤) (hH : IsMulCommutative H) :
-    _root_.commutator G ≤ N := by
+    {H : Subgroup G} (hHN : N ⊔ H = ⊤) (hH : IsMulCommutative H) : _root_.commutator G ≤ N := by
   -- It is enough to prove that Q = G ⧸ N is commutative
-  rw [← quotient_commutative_iff_commutator_le]
+  apply quotient_commutative_iff_commutator_le.mp
   -- Q is a quotient of H
   let φ : H →ₙ* G ⧸ N := MonoidHom.comp (QuotientGroup.mk' N) (Subgroup.subtype H)
   -- It is enough to prove that φ is surjective
-  apply Function.Surjective.mul_comm (f := φ) _ hH.is_comm
-  rw [MulHom.coe_coe, ← MonoidHom.range_eq_top]
+  apply Function.Surjective.mul_comm (f := φ) _ hH
   -- We have to prove that `MonoidHom.range φ = ⊤`
-  simp only [MonoidHom.range_eq_map, ← Subgroup.map_map]
   have : Subgroup.map (QuotientGroup.mk' N) ⊤ = ⊤ := by
     rw [← MonoidHom.range_eq_map, MonoidHom.range_eq_top]
     exact QuotientGroup.mk'_surjective N
-  simp only [← this, Subgroup.map_eq_map_iff, QuotientGroup.ker_mk', sup_comm, ← hHN]
-  simp [← MonoidHom.range_eq_map]
+  rw [MulHom.coe_coe, ← MonoidHom.range_eq_top, MonoidHom.range_eq_map, ← Subgroup.map_map, ← this,
+    Subgroup.map_eq_map_iff, QuotientGroup.ker_mk', sup_comm, ← hHN, ← MonoidHom.range_eq_map]
+  simp

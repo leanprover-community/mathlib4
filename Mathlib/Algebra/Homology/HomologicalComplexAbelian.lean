@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.Algebra.Homology.HomologicalComplexLimits
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 /-! # THe category of homological complexes is abelian
@@ -100,3 +101,32 @@ instance (i j : ι) (P : C) [Projective P] :
 end
 
 end HomologicalComplex
+
+namespace CategoryTheory
+
+open Limits
+
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
+variable {D : Type*} [Category* D] [HasZeroMorphisms D]
+
+variable (F : C ⥤ D) {ι : Type*} (c : ComplexShape ι)
+
+instance [F.PreservesZeroMorphisms] {J : Type*} [Category* J] [HasLimitsOfShape J C]
+    [PreservesLimitsOfShape J F] : PreservesLimitsOfShape J (F.mapHomologicalComplex c) :=
+  HomologicalComplex.preservesLimitsOfShape_of_eval _ (fun i ↦
+    inferInstanceAs <| PreservesLimitsOfShape J <| HomologicalComplex.eval C c i ⋙ F)
+
+instance [F.PreservesZeroMorphisms] {J : Type*} [Category* J] [HasColimitsOfShape J C]
+    [PreservesColimitsOfShape J F] : PreservesColimitsOfShape J (F.mapHomologicalComplex c) :=
+  HomologicalComplex.preservesColimitsOfShape_of_eval _ (fun i ↦
+    inferInstanceAs <| PreservesColimitsOfShape J <| HomologicalComplex.eval C c i ⋙ F)
+
+instance [HasFiniteLimits C] [F.PreservesZeroMorphisms] [PreservesFiniteLimits F] :
+    PreservesFiniteLimits (F.mapHomologicalComplex c) :=
+  ⟨by intros; infer_instance⟩
+
+instance [HasFiniteColimits C] [F.PreservesZeroMorphisms] [PreservesFiniteColimits F] :
+    PreservesFiniteColimits (F.mapHomologicalComplex c) :=
+  ⟨by intros; infer_instance⟩
+
+end CategoryTheory

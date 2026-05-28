@@ -93,6 +93,13 @@ theorem naturality_app_app {F G : C ⥤ D ⥤ E ⥤ E'}
       ((α.app X₁).app X₂).app X₃ ≫ ((G.map f).app X₂).app X₃ :=
   congr_app (NatTrans.naturality_app α X₂ f) X₃
 
+@[reassoc]
+lemma naturality_inv {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (f : X ⟶ Y) [IsIso (α.app X)]
+    [IsIso (α.app Y)] :
+    inv (α.app X) ≫ F.map f = G.map f ≫ inv (α.app Y) := by
+  rw [IsIso.inv_comp_eq, ← Category.assoc, IsIso.eq_comp_inv]
+  exact α.naturality f
+
 /-- A natural transformation is an epimorphism if each component is. -/
 @[to_dual /-- A natural transformation is a monomorphism if each component is. -/]
 theorem epi_of_epi_app (α : F ⟶ G) [∀ X : C, Epi (α.app X)] : Epi α :=
@@ -113,7 +120,7 @@ def hcomp {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) : F ⋙ H ⟶ G ⋙ I wh
 
 -- Horizontal composition has two possible definitions that are dual to each other,
 -- and we need to prove to `to_dual` that these are equivalent.
-attribute [to_dual none] hcomp._proof_2
+attribute [to_dual none] hcomp._proof_2 hcomp._proof_3
 to_dual_insert_cast hcomp := by ext x; exact β.naturality' (α.app x)
 
 /-- Notation for horizontal composition of natural transformations. -/

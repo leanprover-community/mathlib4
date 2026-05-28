@@ -79,7 +79,7 @@ theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
   let f (k : ℕ) := (1 : ℝ) / (2 * k + 1) * ((1 / (2 * ↑(m + 1) + 1)) ^ 2) ^ k
   change HasSum (fun k => f (k + 1)) _
   rw [hasSum_nat_add_iff]
-  convert (hasSum_log_one_add_inv m.cast_add_one_pos).mul_left ((↑(m + 1) : ℝ) + 1 / 2) using 1
+  convert! (hasSum_log_one_add_inv m.cast_add_one_pos).mul_left ((↑(m + 1) : ℝ) + 1 / 2) using 1
   · ext k
     dsimp only [f]
     rw [← pow_mul, pow_add]
@@ -240,7 +240,7 @@ lemma factorial_isEquivalent_stirling :
   apply Asymptotics.isEquivalent_of_tendsto_one
   have : sqrt π ≠ 0 := by positivity
   nth_rewrite 2 [← div_self this]
-  convert tendsto_stirlingSeq_sqrt_pi.div tendsto_const_nhds this using 1
+  convert! tendsto_stirlingSeq_sqrt_pi.div tendsto_const_nhds this using 1
   ext n
   simp [field, stirlingSeq, mul_right_comm]
 
