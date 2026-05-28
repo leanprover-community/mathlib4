@@ -364,6 +364,92 @@ lemma angle_excenter_singleton_eq_pi_sub_angle_div_two {i₁ i₂ i₃ : Fin 3} 
   exact t'.oangle_excenter_singleton_eq_add_pi h₁₂ h₁₃ h₂₃
 
 /-- Auxiliary lemma for dist_secondInter_point_eq_dist_secondInter_excenter in an oriented
+two-dimensional space: affine independence sub-proof. -/
+private lemma dist_secondInter_point_eq_dist_secondInter_excenter_aux_indep [Fact (finrank ℝ V = 2)]
+    [Module.Oriented ℝ V (Fin 2)] (signs : Finset (Fin 3)) {i₁ i₂ i₃ : Fin 3}
+    (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    AffineIndependent ℝ ![t.excenter signs,
+      t.circumsphere.secondInter (t.points i₁) (t.excenter signs -ᵥ t.points i₁), t.points i₂] := by
+  let A := t.points i₁
+  let B := t.points i₂
+  let C := t.points i₃
+  let I := t.excenter signs
+  let X := t.circumsphere.secondInter A (I -ᵥ A)
+  change AffineIndependent ℝ ![I, X, B]
+  have I_ne_B : I ≠ B := (t.excenterExists signs).excenter_ne_point i₂
+  have I_ne_C : I ≠ C := (t.excenterExists signs).excenter_ne_point i₃
+  have A_ne_B : A ≠ B := t.independent.injective.ne h₁₂
+  have A_ne_C : A ≠ C := t.independent.injective.ne h₁₃
+  have B_ne_C : B ≠ C := t.independent.injective.ne h₂₃
+  have A_mem : A ∈ t.circumsphere := t.mem_circumsphere i₁
+  have B_mem : B ∈ t.circumsphere := t.mem_circumsphere i₂
+  have C_mem : C ∈ t.circumsphere := t.mem_circumsphere i₃
+  have X_mem : X ∈ t.circumsphere := (t.circumsphere.secondInter_mem _).2 A_mem
+  have two_zsmul_CBI_eq_two_zsmul_IBA : (2 : ℤ) • ∡ C B I = (2 : ℤ) • ∡ I B A :=
+    t.two_zsmul_oangle_excenter_eq h₂₃ h₁₂.symm h₁₃.symm signs
+  have two_zsmul_ICB_eq_two_zsmul_ACI : (2 : ℤ) • ∡ I C B = (2 : ℤ) • ∡ A C I :=
+    (t.two_zsmul_oangle_excenter_eq h₁₃.symm h₂₃.symm h₁₂ signs).symm
+  rw [affineIndependent_iff_not_collinear_set]
+  intro h
+  have ha : AffineIndependent ℝ ![A, B, I] := by
+    refine affineIndependent_of_ne_of_mem_of_mem_of_notMem (s := line[ℝ, A, B]) A_ne_B
+      (left_mem_affineSpan_pair _ _ _) (right_mem_affineSpan_pair _ _ _) ?_
+    convert (t.excenterExists signs).excenter_notMem_affineSpan_faceOpposite i₃
+    have hc : ({i₃}ᶜ : Set (Fin 3)) = {i₁, i₂} := by grind
+    simp [A, B, hc, Set.image_insert_eq]
+  have hA : X ∈ line[ℝ, A, I] := t.circumsphere.secondInter_vsub_mem_affineSpan _ _
+  have hB : X ∈ line[ℝ, B, I] :=
+    h.mem_affineSpan_of_mem_of_ne (by grind) (by grind) (by grind) I_ne_B.symm
+  have hAB : affineSpan ℝ {A, I} ⊓ affineSpan ℝ {B, I} = affineSpan ℝ {I} := by
+    have h0 : ({0, 2} ∩ {1, 2} : Set (Fin 3)) = {2} := by grind
+    convert ha.inf_affineSpan_eq_affineSpan_inter {0, 2} {1, 2} <;>
+      simp [Set.image_insert_eq, h0]
+  have hX : X ∈ affineSpan ℝ {I} := by
+    rw [← hAB]
+    exact ⟨hA, hB⟩
+  rw [AffineSubspace.mem_affineSpan_singleton] at hX
+  have hBIC : (2 : ℤ) • ∡ B I C = (2 : ℤ) • ∡ B A C :=
+    t.circumsphere.two_zsmul_oangle_eq B_mem (hX ▸ X_mem) A_mem C_mem I_ne_B I_ne_C A_ne_B A_ne_C
+  have hBICπ := oangle_add_oangle_add_oangle_eq_pi I_ne_C.symm B_ne_C I_ne_B
+  have hBACπ := oangle_add_oangle_add_oangle_eq_pi A_ne_C.symm B_ne_C A_ne_B
+  have hBIC' : (2 : ℤ) • ∡ I C B + (2 : ℤ) • ∡ C B I = (2 : ℤ) • ∡ A C B + (2 : ℤ) • ∡ C B A := by
+    rw [← hBACπ] at hBICπ
+    apply_fun ((2 : ℤ) • ·) at hBICπ
+    simpa [smul_add, hBIC] using hBICπ
+  have hBIC'' : (2 : ℤ) • ∡ A C I + (2 : ℤ) • ∡ I B A =
+      (2 : ℤ) • ∡ A C B + (2 : ℤ) • ∡ C B A := by
+    rwa [two_zsmul_CBI_eq_two_zsmul_IBA, two_zsmul_ICB_eq_two_zsmul_ACI] at hBIC'
+  have h0 : ((2 : ℤ) • ∡ A C B + (2 : ℤ) • ∡ C B A) + ((2 : ℤ) • ∡ A C B + (2 : ℤ) • ∡ C B A) =
+      (2 : ℤ) • ∡ A C B + (2 : ℤ) • ∡ C B A := by
+    nth_rw 1 [← hBIC']
+    nth_rw 1 [← hBIC'']
+    suffices (2 : ℤ) • (∡ A C I + ∡ I C B) + (2 : ℤ) • (∡ C B I + ∡ I B A) =
+        (2 : ℤ) • ∡ A C B + (2 : ℤ) • ∡ C B A by
+      rw [← this]
+      abel
+    rw [oangle_add A_ne_C I_ne_C B_ne_C, oangle_add B_ne_C.symm I_ne_B A_ne_B]
+  rw [add_eq_left, ← smul_add] at h0
+  apply_fun ((2 : ℤ) • ·) at hBACπ
+  rw [smul_add, h0, zero_add, Real.Angle.two_zsmul_coe_pi, Real.Angle.two_zsmul_eq_zero_iff,
+    oangle_eq_zero_or_eq_pi_iff_collinear] at hBACπ
+  have hABC := affineIndependent_iff_not_collinear.1 t.independent
+  apply hABC
+  convert hBACπ
+  calc Set.range t.points = t.points '' {0, 1, 2} := by
+        rw [← Set.image_univ]
+        congr
+        ext i
+        fin_cases i <;> simp
+    _ = t.points '' {i₂, i₁, i₃} := by
+        congr 1
+        ext i
+        suffices i ∈ ({0, 1, 2} : Finset (Fin 3)) ↔ i ∈ ({i₂, i₁, i₃} : Finset (Fin 3)) by
+          simpa using this
+        clear! A B C
+        decide +revert
+    _ = {B, A, C} := by simp [Set.image_insert_eq, B, A, C]
+
+/-- Auxiliary lemma for dist_secondInter_point_eq_dist_secondInter_excenter in an oriented
 two-dimensional space. -/
 private lemma dist_secondInter_point_eq_dist_secondInter_excenter_aux [Fact (finrank ℝ V = 2)]
     [Module.Oriented ℝ V (Fin 2)] (signs : Finset (Fin 3)) {i₁ i₂ i₃ : Fin 3}
@@ -380,7 +466,6 @@ private lemma dist_secondInter_point_eq_dist_secondInter_excenter_aux [Fact (fin
   change dist X B = dist X I
   have I_ne_A : I ≠ A := (t.excenterExists signs).excenter_ne_point i₁
   have I_ne_B : I ≠ B := (t.excenterExists signs).excenter_ne_point i₂
-  have I_ne_C : I ≠ C := (t.excenterExists signs).excenter_ne_point i₃
   have A_ne_B : A ≠ B := t.independent.injective.ne h₁₂
   have A_ne_C : A ≠ C := t.independent.injective.ne h₁₃
   have B_ne_C : B ≠ C := t.independent.injective.ne h₂₃
@@ -392,69 +477,9 @@ private lemma dist_secondInter_point_eq_dist_secondInter_excenter_aux [Fact (fin
     (t.two_zsmul_oangle_excenter_eq h₁₂ h₁₃ h₂₃ signs).symm
   have two_zsmul_CBI_eq_two_zsmul_IBA : (2 : ℤ) • ∡ C B I = (2 : ℤ) • ∡ I B A :=
     t.two_zsmul_oangle_excenter_eq h₂₃ h₁₂.symm h₁₃.symm signs
-  have two_zsmul_ICB_eq_two_zsmul_ACI : (2 : ℤ) • ∡ I C B = (2 : ℤ) • ∡ A C I :=
-    (t.two_zsmul_oangle_excenter_eq h₁₃.symm h₂₃.symm h₁₂ signs).symm
   have collinear_AIX : Collinear ℝ {A, I, X} := t.circumsphere.secondInter_collinear _ _
-  have ha : AffineIndependent ℝ ![I, X, B] := by
-    rw [affineIndependent_iff_not_collinear_set]
-    intro h
-    have ha : AffineIndependent ℝ ![A, B, I] := by
-      refine affineIndependent_of_ne_of_mem_of_mem_of_notMem (s := line[ℝ, A, B]) A_ne_B
-        (left_mem_affineSpan_pair _ _ _) (right_mem_affineSpan_pair _ _ _) ?_
-      convert (t.excenterExists signs).excenter_notMem_affineSpan_faceOpposite i₃
-      have hc : ({i₃}ᶜ : Set (Fin 3)) = {i₁, i₂} := by grind
-      simp [A, B, hc, Set.image_insert_eq]
-    have hA : X ∈ line[ℝ, A, I] := t.circumsphere.secondInter_vsub_mem_affineSpan _ _
-    have hB : X ∈ line[ℝ, B, I] :=
-      h.mem_affineSpan_of_mem_of_ne (by grind) (by grind) (by grind) I_ne_B.symm
-    have hAB : affineSpan ℝ {A, I} ⊓ affineSpan ℝ {B, I} = affineSpan ℝ {I} := by
-      have h0 : ({0, 2} ∩ {1, 2} : Set (Fin 3)) = {2} := by grind
-      convert ha.inf_affineSpan_eq_affineSpan_inter {0, 2} {1, 2} <;>
-        simp [Set.image_insert_eq, h0]
-    have hX : X ∈ affineSpan ℝ {I} := by
-      rw [← hAB]
-      exact ⟨hA, hB⟩
-    rw [AffineSubspace.mem_affineSpan_singleton] at hX
-    have hBIC : (2 : ℤ) • ∡ B I C = (2 : ℤ) • ∡ B A C :=
-      t.circumsphere.two_zsmul_oangle_eq B_mem (hX ▸ X_mem) A_mem C_mem I_ne_B I_ne_C A_ne_B A_ne_C
-    have hBICπ := oangle_add_oangle_add_oangle_eq_pi I_ne_C.symm B_ne_C I_ne_B
-    have hBACπ := oangle_add_oangle_add_oangle_eq_pi A_ne_C.symm B_ne_C A_ne_B
-    have hBIC' : (2 : ℤ) • ∡ I C B + (2 : ℤ) • ∡ C B I = (2 : ℤ) • ∡ A C B + (2 : ℤ) • ∡ C B A := by
-      rw [← hBACπ] at hBICπ
-      apply_fun ((2 : ℤ) • ·) at hBICπ
-      simpa [smul_add, hBIC] using hBICπ
-    have hBIC'' : (2 : ℤ) • ∡ A C I + (2 : ℤ) • ∡ I B A =
-        (2 : ℤ) • ∡ A C B + (2 : ℤ) • ∡ C B A := by
-      rwa [two_zsmul_CBI_eq_two_zsmul_IBA, two_zsmul_ICB_eq_two_zsmul_ACI] at hBIC'
-    have h0 : ((2 : ℤ) • ∡ A C B + (2 : ℤ) • ∡ C B A) + ((2 : ℤ) • ∡ A C B + (2 : ℤ) • ∡ C B A) =
-        (2 : ℤ) • ∡ A C B + (2 : ℤ) • ∡ C B A := by
-      nth_rw 1 [← hBIC']
-      nth_rw 1 [← hBIC'']
-      suffices (2 : ℤ) • (∡ A C I + ∡ I C B) + (2 : ℤ) • (∡ C B I + ∡ I B A) =
-          (2 : ℤ) • ∡ A C B + (2 : ℤ) • ∡ C B A by
-        rw [← this]
-        abel
-      rw [oangle_add A_ne_C I_ne_C B_ne_C, oangle_add B_ne_C.symm I_ne_B A_ne_B]
-    rw [add_eq_left, ← smul_add] at h0
-    apply_fun ((2 : ℤ) • ·) at hBACπ
-    rw [smul_add, h0, zero_add, Real.Angle.two_zsmul_coe_pi, Real.Angle.two_zsmul_eq_zero_iff,
-      oangle_eq_zero_or_eq_pi_iff_collinear] at hBACπ
-    have hABC := affineIndependent_iff_not_collinear.1 t.independent
-    apply hABC
-    convert hBACπ
-    calc Set.range t.points = t.points '' {0, 1, 2} := by
-          rw [← Set.image_univ]
-          congr
-          ext i
-          fin_cases i <;> simp
-      _ = t.points '' {i₂, i₁, i₃} := by
-          congr 1
-          ext i
-          suffices i ∈ ({0, 1, 2} : Finset (Fin 3)) ↔ i ∈ ({i₂, i₁, i₃} : Finset (Fin 3)) by
-            simpa using this
-          clear! A B C
-          decide +revert
-      _ = {B, A, C} := by simp [Set.image_insert_eq, B, A, C]
+  have ha : AffineIndependent ℝ ![I, X, B] :=
+    t.dist_secondInter_point_eq_dist_secondInter_excenter_aux_indep signs h₁₂ h₁₃ h₂₃
   have X_ne_B : X ≠ B := ha.injective.ne (show 1 ≠ 2 by decide)
   have X_ne_I : X ≠ I := ha.injective.ne (show 1 ≠ 0 by decide)
   suffices (2 : ℤ) • ∡ X B I = (2 : ℤ) • ∡ B I X by
