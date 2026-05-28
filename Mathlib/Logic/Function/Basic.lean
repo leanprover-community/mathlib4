@@ -791,12 +791,6 @@ theorem _root_.Pi.map_injective
     rw [Pi.map_update, Pi.map_update, hxy]
   mpr := .piMap
 
-theorem _root_.Pi.forall_forall {ι : Sort*} {α : ι → Sort*} [Nonempty <| ∀ i, α i]
-    {P : ∀ i, α i → Prop} : (∀ (f : ∀ i, α i), ∀ i, P i (f i)) ↔ ∀ i, ∀ (a : α i), P i a := by
-  refine ⟨fun h i a ↦ ?_, fun h f i ↦ h i (f i)⟩
-  classical
-  simpa using h (Function.update (Classical.choice inferInstance) i a) i
-
 end Update
 
 noncomputable section Extend
