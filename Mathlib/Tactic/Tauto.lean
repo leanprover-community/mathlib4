@@ -6,6 +6,7 @@ Authors: Simon Hudon, David Renshaw
 module
 
 public meta import Lean.Elab.Tactic.Classical
+public meta import Lean.Elab.Tactic.Config
 public import Mathlib.Logic.Basic  -- shake: keep (dependency of tactic output)
 public meta import Qq
 public meta import Mathlib.Lean.Meta
