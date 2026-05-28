@@ -146,7 +146,7 @@ partially ordered type `J`, as an object in `CardinalFilteredPoset κ`. -/
 @[simps!]
 def functorOfPredicateSet : Subtype P ⥤ CardinalFilteredPoset κ :=
   ObjectProperty.lift _ (PartOrdEmb.functorOfPredicateSet P)
-    (fun S ↦ inferInstanceAs (IsCardinalFiltered S.val κ))
+    (fun S ↦ by dsimp; infer_instance)
 
 /-- Given a predicate `P : Set J.obj → Prop` on the underlying type
 of `J : CardinalFilteredPoset κ` such that all the subsets satisfying `P`
