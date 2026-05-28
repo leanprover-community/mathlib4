@@ -908,7 +908,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem Sigma.ι_reindex_hom (b : β) :
     Sigma.ι (f ∘ ε) b ≫ (Sigma.reindex ε f).hom = Sigma.ι f (ε b) := by
   dsimp [Sigma.reindex]
-  simp only [HasColimit.isoOfEquivalence_hom_π, Functor.id_obj, Discrete.functor_obj,
+  simp only [HasColimit.ι_isoOfEquivalence_hom, Functor.id_obj, Discrete.functor_obj,
     Function.comp_apply, Discrete.equivalence_functor, Discrete.equivalence_inverse,
     Functor.comp_obj, Discrete.natIso_inv_app, Iso.refl_inv, Category.id_comp]
   have h := colimit.w (Discrete.functor f) (Discrete.eqToHom' (ε.apply_symm_apply (ε b)))
