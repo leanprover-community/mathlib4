@@ -68,7 +68,7 @@ protected lemma IsEdgeReachable.zero : G.IsEdgeReachable 0 u v := by simp [IsEdg
 
 @[simp]
 lemma isEdgeReachable_one : G.IsEdgeReachable 1 u v ↔ G.Reachable u v := by
-  simp [IsEdgeReachable, ENat.lt_one_iff_eq_zero]
+  simp [IsEdgeReachable, Order.lt_one_iff]
 
 @[simp]
 lemma isEdgeConnected_one : G.IsEdgeConnected 1 ↔ G.Preconnected := by
