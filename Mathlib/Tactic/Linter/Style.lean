@@ -529,7 +529,7 @@ by the `defsWithUnderscore` linter. Namely, we do not lint
 * names containing guillemets `«»` (these tend to be `term<something>` declarations,
   i.e. internal names for notation, not user-facing commands),
 * names with a component starting with `term` (e.g. `Nat.term_!`)
-* names starting with `Mathlib.Tactic`, `Mathlib.Parser` or containing a `Simps` component
+* names starting with `Mathlib.Tactic`, `Parser` or containing a `Simps` component
   (these are probably custom simps projections, i.e. affect how `simps` names its auto-generated
   lemmas: we usually prefer a generated name `coe_support` over `coeSupport`, which requires a
   projection named `coe_support`)
@@ -543,7 +543,7 @@ public def isBadNameWithUnderscore (name : Name) : Bool := Id.run do
   if last.endsWith '_' ||
       s.contains '«' || declName.components.any (·.toString.startsWith "term") ||
       (`LibraryNote).isPrefixOf declName ||
-      (`Mathlib.Tactic).isPrefixOf declName || (`Mathlib.Parser).isPrefixOf declName ||
+      (`Mathlib.Tactic).isPrefixOf declName || (`Parser).isPrefixOf declName ||
       declName.components.any (· == `Simps) ||
       last.endsWith "_1" || last.endsWith "_2" || last.endsWith "_mathlib" ||
       declName.components.any (·.toString.endsWith '_') then
