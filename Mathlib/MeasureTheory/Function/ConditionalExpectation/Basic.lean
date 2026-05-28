@@ -12,7 +12,7 @@ public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
 We build the conditional expectation of an integrable function `f` with value in a Banach space
 with respect to a measure `μ` (defined on a measurable space structure `m₀`) and a measurable space
 structure `m` with `hm : m ≤ m₀` (a sub-sigma-algebra). This is an `m`-strongly measurable
-function `μ[f|hm]` which is integrable and verifies `∫ x in s, μ[f|hm] x ∂μ = ∫ x in s, f x ∂μ`
+function `μ[f | m]` which is integrable and verifies `∫ x in s, μ[f | m] x ∂μ = ∫ x in s, f x ∂μ`
 for all `m`-measurable sets `s`. It is unique as an element of `L¹`.
 
 The construction is done in four steps:
@@ -171,7 +171,7 @@ theorem condExp_of_not_integrable (hf : ¬Integrable f μ) : μ[f | m] = 0 := by
   swap; · rw [condExp_of_not_sigmaFinite hm hμm]
   rw [condExp_of_sigmaFinite, if_neg hf]
 
-@[simp]
+@[to_fun (attr := simp) condExp_fun_zero]
 theorem condExp_zero : μ[(0 : α → E) | m] = 0 := by
   by_cases hm : m ≤ m₀
   swap; · rw [condExp_of_not_le hm]

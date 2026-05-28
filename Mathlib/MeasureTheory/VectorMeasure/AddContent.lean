@@ -5,11 +5,12 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.MeasureTheory.Measure.AddContent
 public import Mathlib.MeasureTheory.Measure.MeasuredSets
 public import Mathlib.MeasureTheory.Measure.Trim
-public import Mathlib.MeasureTheory.VectorMeasure.Basic
+public import Mathlib.MeasureTheory.VectorMeasure.Integral
 
 /-!
 # Constructing a vector measure from an additive content
@@ -17,7 +18,7 @@ public import Mathlib.MeasureTheory.VectorMeasure.Basic
 Consider a content defined on a semiring of sets. We investigate in this file
 whether it is possible to extend it to a (countably additive) vector measure on the whole
 sigma-algebra. We show that this is possible when the content is dominated by a finite
-measure, see `exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom`.
+measure, see `exists_extension_of_isSetSemiring_of_le_measure`.
 -/
 
 @[expose] public section
@@ -319,13 +320,35 @@ theorem exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
 
 #check Measure.trim_le
 
-theorem exists_extension_of_isSetSemiring_of_le_measure
+#check MeasureTheory.condExp
+
+#check MeasureTheory.condExp_zero
+
+#check MeasureTheory.integral_tsum_of_summable_integral_norm
+
+theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
     [IsFiniteMeasure μ] {C : Set (Set α)} {m : AddContent E C} (hC : IsSetSemiring C)
     (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s) (h'C : ∀ s ∈ C, MeasurableSet s) :
     ∃ m' : VectorMeasure α E, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ s := by
+  classical
   let M : MeasurableSpace α := generateFrom C
-  have : M ≤ hα := generateFrom_le h'C
-  let μ' := μ.trim this
+  have Mle : M ≤ hα := generateFrom_le h'C
+  let μ' := μ.trim Mle
+  obtain ⟨m', m'C, hm'⟩ :
+      ∃ m' : VectorMeasure α E, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ' s := by
+    apply exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom hC (fun s hs ↦ ?_) rfl
+    apply (hm s hs).trans_eq
+    exact (MeasureTheory.trim_measurableSet_eq Mle (measurableSet_generateFrom hs)).symm
+  let m'' : VectorMeasure α E :=
+  { measureOf' s := if MeasurableSet s then ∫ᵛ x, μ[s.indicator 1 | M] x ∂• m' else 0
+    empty' := by simp
+    not_measurable' s hs := by simp [hs]
+    m_iUnion' f f_meas hf := by
+      simp only [f_meas, ↓reduceIte, implies_true, MeasurableSet.iUnion,
+        indicator_iUnion_of_pairwise_disjoint _ hf]
+    }
+
+
 
 
 end MeasureTheory.VectorMeasure
