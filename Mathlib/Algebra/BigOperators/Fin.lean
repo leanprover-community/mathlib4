@@ -776,8 +776,8 @@ alias alternatingProd_eq_finset_prod := alternatingProd_eq_finsetProd
 
 end List
 
-/-- This is a classic "telescoping sum" lemma. Simplifying very slightly it says:
-`(r₀ - 0) + (r₁ - r₀) + (r₂ - r₁) + ⋯ + (rₙ - rₙ₋₁) + (0 - rₙ) = 0`.
+/-- This is a classic "telescoping sum" lemma. It says:
+`r₀ - (r₀ + r₁) + (r₁ + r₂) - (r₂+ r₃) + ⋯ ± (rₙ₋₁ + rₙ) ∓ rₙ = 0`.
 
 The chosen spelling, which gives definitional power over `d`, is influenced by downstream
 applications such as `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`. -/
