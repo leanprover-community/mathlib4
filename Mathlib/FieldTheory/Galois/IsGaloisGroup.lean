@@ -132,13 +132,20 @@ variable (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [MulSemiringAct
   [MulSemiringAction G L] [SMulDistribClass G B L]
 
 /-- `IsGaloisGroup` for rings implies `IsGaloisGroup` for their fraction fields. -/
-theorem IsGaloisGroup.to_isFractionRing [Finite G] [hGAB : IsGaloisGroup G A B] :
+theorem IsGaloisGroup.to_isFractionRing_of_isIntegral
+    [Algebra.IsIntegral A B] [hGAB : IsGaloisGroup G A B] :
     IsGaloisGroup G K L where
   faithful :=
     have := hGAB.faithful
     IsFractionRing.faithfulSMul G B L
   commutes := IsFractionRing.smulCommClass G A B K L
-  isInvariant := IsFractionRing.isInvariant G A B K L
+  isInvariant := IsFractionRing.isInvariant_of_isIntegral G A B K L
+
+/-- `IsGaloisGroup` for rings implies `IsGaloisGroup` for their fraction fields. -/
+theorem IsGaloisGroup.to_isFractionRing [Finite G] [hGAB : IsGaloisGroup G A B] :
+    IsGaloisGroup G K L :=
+  have := hGAB.isInvariant.isIntegral
+  IsGaloisGroup.to_isFractionRing_of_isIntegral G A B K L
 
 /-- If `B` is an integral extension of an integrally closed domain `A`, then `IsGaloisGroup` for
 their fraction fields implies `IsGaloisGroup` for these rings. -/
@@ -238,8 +245,15 @@ theorem card_eq_finrank [IsGaloisGroup G K L] : Nat.card G = Module.finrank K L 
 theorem finiteDimensional [Finite G] [IsGaloisGroup G K L] : FiniteDimensional K L :=
   FiniteDimensional.of_finrank_pos (card_eq_finrank G K L ▸ Nat.card_pos)
 
-protected theorem finite [FiniteDimensional K L] [IsGaloisGroup G K L] : Finite G :=
-  Nat.finite_of_card_ne_zero (card_eq_finrank G K L ▸ Module.finrank_pos.ne')
+protected theorem finite (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Module.Finite A B]
+    [IsDomain A] [IsDomain B] [FaithfulSMul A B] [MulSemiringAction G B] [IsGaloisGroup G A B] :
+    Finite G := by
+  let := FractionRing.liftAlgebra A (FractionRing B)
+  let := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
+  have := IsGaloisGroup.to_isFractionRing_of_isIntegral G A B (FractionRing A) (FractionRing B)
+  apply Nat.finite_of_card_ne_zero
+  rw [card_eq_finrank G (FractionRing A) (FractionRing B)]
+  exact Module.finrank_pos.ne'
 
 /-- If `G` is a finite Galois group for `L/K`, then `G` is isomorphic to `Gal(L/K)`. -/
 @[simps!] noncomputable def mulEquivAlgEquiv [IsGaloisGroup G K L] [Finite G] : G ≃* Gal(L/K) :=
@@ -270,11 +284,16 @@ theorem map_mulEquivAlgEquiv_fixingSubgroup
 
 variable (H H' : Subgroup G) (F F' : IntermediateField K L)
 
-instance subgroup [hGKL : IsGaloisGroup G K L] :
-    IsGaloisGroup H (FixedPoints.intermediateField H : IntermediateField K L) L where
+instance (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+    [MulSemiringAction G S] [hGKL : IsGaloisGroup G R S] :
+    IsGaloisGroup H (FixedPoints.subalgebra R S H) S where
   faithful := have := hGKL.faithful; inferInstance
-  commutes := inferInstanceAs <| SMulCommClass H (FixedPoints.subfield H L) L
+  commutes := inferInstance
   isInvariant := ⟨fun x h ↦ ⟨⟨x, h⟩, rfl⟩⟩
+
+instance subgroup [hGKL : IsGaloisGroup G K L] :
+    IsGaloisGroup H (FixedPoints.intermediateField H : IntermediateField K L) L :=
+  inferInstanceAs (IsGaloisGroup H (FixedPoints.subalgebra K L H) L)
 
 open IntermediateField in
 theorem fixedPoints_of_isGaloisGroup [hGKL : IsGaloisGroup G K L] [hHFL : IsGaloisGroup H F L] :
@@ -289,7 +308,7 @@ theorem fixedPoints_of_isGaloisGroup [hGKL : IsGaloisGroup G K L] [hHFL : IsGalo
 theorem of_fixedPoints_eq [hGKL : IsGaloisGroup G K L] (hF : FixedPoints.intermediateField H = F) :
     IsGaloisGroup H F L := by
   rw [eq_comm] at hF
-  convert IsGaloisGroup.subgroup G K L H
+  convert! IsGaloisGroup.subgroup G K L H
 
 variable {G K L H F} in
 theorem subgroup_iff [hGKL : IsGaloisGroup G K L] :
@@ -379,7 +398,7 @@ theorem fixingSubgroup_top : fixingSubgroup G ((⊤ : IntermediateField K L) : S
 @[simp]
 theorem fixedPoints_top :
     (FixedPoints.intermediateField (⊤ : Subgroup G) : IntermediateField K L) = ⊥ := by
-  convert IsGaloisGroup.fixedPoints_eq_bot G K L
+  convert! IsGaloisGroup.fixedPoints_eq_bot G K L
   ext; simp
 
 /-- The Galois correspondence from intermediate fields to subgroups. -/
