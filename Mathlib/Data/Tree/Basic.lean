@@ -42,8 +42,8 @@ set_option linter.deprecated false in
 /-- Tree.nil -/
 @[deprecated BinaryTree.nil (since := "2026-05-22")]
 abbrev Tree.nil.{u} {α : Type u} : Tree α := BinaryTree.nil
-set_option linter.deprecated false in
 
+set_option linter.deprecated false in
 /-- Tree.node -/
 @[deprecated BinaryTree.node (since := "2026-05-22")]
 abbrev Tree.node.{u} {α : Type u} (value : α) (left : Tree α) (right : Tree α)
