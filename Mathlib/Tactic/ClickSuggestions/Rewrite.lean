@@ -24,24 +24,34 @@ structure RwLemma where
   /-- `symm` is `true` when rewriting from right to left -/
   symm : Bool
 
+/-- The information needed for doing a rewrite. -/
 structure RwInfo where
+  /-- The outer expression in which the rewrite takes place. -/
   rootExpr : Expr
+  /-- The expression that is being rewritten. -/
   subExpr : Expr
-  /-- Recall that we also suggest rewrites for subexpressions of the selected expression,
-  in order to be able to rewrite with partially applied lemmas. -/
+  /-- The expression that is being rewritten. This may not be the same as the selected expression,
+  because we also suggest rewriting partial applications. -/
   pos : SubExpr.Pos
+  /-- Some information about the rewrite position. -/
   rwKind : RwKind
 
 /-- The key that is used for sorting and deduplicating `rw` lemmas. -/
 structure RwKey where
+  /-- The number of side goals created. -/
   numGoals : Nat
+  /-- If `symm := true`, then the rewrite is right-to-left. -/
   symm : Bool
+  /-- The name length of the used lemma. -/
   nameLength : Nat
+  /-- The length of the new subexpression. -/
   replacementSize : Nat
+  /-- The nae of the used lemma. -/
   name : String
   -- TODO: in this implementation, we conclude that two rewrites are the same if they
   -- rewrite into the same expression. But there can be two rewrites that have
   -- different side conditions!
+  /-- The new subexpression. -/
   replacement : AbstractMVarsResult
 deriving Inhabited
 

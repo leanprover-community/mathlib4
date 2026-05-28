@@ -24,10 +24,15 @@ structure ApplyLemma where
 
 /-- The key that is used for sorting and deduplicating `apply` lemmas. -/
 structure ApplyKey where
+  /-- How many new goals are generated. -/
   numGoals : Nat
+  /-- The name length of the used lemma. -/
   nameLength : Nat
+  /-- The total length of the new goals when printed. -/
   replacementSize : Nat
+  /-- The name of the used lemma. -/
   name : String
+  /-- The new goals. -/
   newGoals : Array AbstractMVarsResult
 deriving Inhabited
 

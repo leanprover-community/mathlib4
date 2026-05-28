@@ -38,12 +38,14 @@ instance [Ord α] : LT (Result α) := ltOfOrd
 
 /-! ### Maintaining the state of the widget -/
 
+/-- The state of one section of library search suggestions.
+We use this for 4 kinds of suggestions: `rw`, `grw`, `apply` and `apply at`. -/
 structure SectionState (α : Type) where
   /-- The results of the theorems that successfully applied. -/
   results : Array (Result α) := #[]
-  /-- The results of the theorems that threw an error when trying to apply them. -/
+  /-- The results of the theorems that threw an error when trying to apply them.
+  Usually, errors will be caught, except for when using `click_suggestions.debug`. -/
   errors : Array Html := #[]
-  -- TODO: add a field for ongoing computations.
   deriving Nonempty
 
 /-- Insert the new result `res` into the array `arr` of already existing results.
@@ -72,6 +74,7 @@ where
       catch _ =>
         pure false
 
+/-- Insert `res` into the section state `s`. -/
 def SectionState.insertResult (s : SectionState α) (res : Result α)
     (isDup : α → α → MetaM Bool) : MetaM (SectionState α) := do
   let { results, errors } := s
@@ -82,14 +85,6 @@ def SectionState.insertResult (s : SectionState α) (res : Result α)
         return default
     panic! s!"an error occurred when checking for duplicate entries:\n{← ex.toMessageData.toString}"
   return { results, errors }
-
-def renderErrors (errors : Array Html) : Html :=
-  <details «open»={true}>
-    <summary className="mv2 pointer">
-      <span «class»="error"> Failures: </span>
-    </summary>
-    {Html.element "ul" #[("style", json% { "padding-left" : "30px"})] errors}
-  </details>
 
 /-- Whether the section corresponds to local hypotheses, declarations from the current file,
 or imported declarations. -/
@@ -118,6 +113,14 @@ def renderSection {α} (tactic : String) (kind : SectionKind) (s : SectionState 
   unless kind matches .imported do
     return <details «open»={true}> <summary> {header} </summary> {all} </details>
   return <FilterDetails summary={header} all={all} filtered={filtered} initiallyFiltered={true} />
+where
+  renderErrors (errors : Array Html) : Html :=
+    <details «open»={true}>
+      <summary className="mv2 pointer">
+        <span «class»="error"> Failures: </span>
+      </summary>
+      {Html.element "ul" #[("style", json% { "padding-left" : "30px"})] errors}
+    </details>
 
 /-- Spawn a task that computes a piece of `Html` to be displayed when finished. -/
 @[specialize]

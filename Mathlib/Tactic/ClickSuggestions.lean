@@ -38,6 +38,9 @@ When a rewrite lemma introduces new goals, these are shown after a `⊢`.
 
 ## TODO
 
+- When selecting the whole goal, or a whole hypothesis, try running `symm` before library search.
+- For each `rw`/`grw` suggestion, check whether `with_reducible rfl` closes the goal,
+  and communicate this to the user.
 - Improve user extensibility:
   - Modifying which tactics are suggested.
   - Modifying which lemmas are suggested.
@@ -65,6 +68,7 @@ def viewKAbstractSubExpr' {m α}
   else
     Meta.viewSubexpr (fun _ e ↦ k e .hasBVars) pos e
 
+/-- Compute the suggestions. Use `token` for the output. -/
 public def generateSuggestions (loc : SubExpr.GoalsLocation)
     (parentDecl? : Option Name) (token : RefreshToken) : ClickSuggestionsM Unit := do
   -- TODO: instead of just putting `✝` after inaccessible names,
@@ -106,6 +110,7 @@ public def generateSuggestions (loc : SubExpr.GoalsLocation)
 
   librarySearchSuggestions rootExpr subExpr lctx rwKind parentDecl? token'
 
+/-- Rpc function for the `#click_suggestions` widget. -/
 @[server_rpc_method]
 public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
   RequestM.asTask do

@@ -121,21 +121,31 @@ structure GrwLemma where
   /-- `relName` is the relation of the lemma. -/
   relName : Name
 
+/-- The information needed for doing a grewrite. -/
 structure GrwInfo where
+  /-- The outer expression in which the rewrite takes place. -/
   rootExpr : Expr
+  /-- The expression that is being rewritten. -/
   subExpr : Expr
-  rwKind : RwKind
+  /-- The relations that can be used for rewriting. -/
   gpos : Array GrwPos
+  /-- Some information about the rewrite position. -/
+  rwKind : RwKind
 
 /-- The key that is used for sorting and deduplicating `grw` lemmas. -/
 structure GrwKey where
+  /-- The number of side goals created. -/
   numGoals : Nat
+  /-- The name length of the used lemma. -/
   nameLength : Nat
+  /-- The length of the new subexpression. -/
   replacementSize : Nat
+  /-- The nae of the used lemma. -/
   name : String
   -- TODO: in this implementation, we conclude that two rewrites are the same if they
   -- rewrite into the same expression. But there can be two rewrites that have
   -- different side conditions!
+  /-- The new subexpression. -/
   replacement : AbstractMVarsResult
 deriving Inhabited
 

@@ -89,23 +89,30 @@ register_option click_suggestions.debug : Bool := {
   descr := "let `#click_suggestions` show the candidate lemmas that failed to apply"
 }
 
+/-- A global constant or a free variable. Library search can return either. -/
 inductive Premise where
+  /-- A global constant. -/
   | const (declName : Name)
+  /-- A free variable. -/
   | fvar (fvarId : FVarId)
   deriving Inhabited
 
 namespace Premise
 
+/-- Print a premise as a string. -/
 def toString : Premise → String
   | .const name | .fvar ⟨name⟩ => name.toString
 
+/-- The name length of a premise. -/
 def length (premise : Premise) : Nat :=
   premise.toString.length
 
+/-- Get the type of a premise. -/
 def getType : Premise → MetaM Expr
   | .const name => (·.type) <$> getConstInfo name
   | .fvar fvarId => fvarId.getType
 
+/-- Fill the premise in with fresh universe and expression metavariables. -/
 def forallMetaTelescopeReducing : Premise → MetaM (Expr × Array Expr × Array BinderInfo × Expr)
   | .const name => do
     let thm ← mkConstWithFreshMVarLevels name
@@ -116,15 +123,18 @@ def forallMetaTelescopeReducing : Premise → MetaM (Expr × Array Expr × Array
     let result ← Meta.forallMetaTelescopeReducing (← instantiateMVars decl.type)
     return (mkAppN decl.toExpr result.1, result)
 
+/-- Return the user-facing name of the premise, relative to the current namespace. -/
 def unresolveName : Premise → MetaM Name
   | .const name => do
     unresolveNameGlobalAvoidingLocals name (fullNames := getPPFullNames (← getOptions))
   | .fvar fvarId => fvarId.getUserName
 
+/-- Print a premise using message data. -/
 def toMessageData : Premise → MessageData
   | .const name => .ofConstName name
   | .fvar fvarId => .ofExpr (.fvar fvarId)
 
+/-- Print a premise using HTML. -/
 def toHtml : Premise → MetaM Html
   | .const name => constToHtml name
   | .fvar fvarId => exprToHtml (.fvar fvarId)
@@ -168,6 +178,7 @@ structure Context where
   /-- The position of the selected subexpression. -/
   pos : SubExpr.Pos
 
+/-- The monad used in `#click_suggestions`. -/
 abbrev ClickSuggestionsM := ReaderT Context <| ReaderT (IO.Ref State) MetaM
 
 instance : MonadStateOf State ClickSuggestionsM where
@@ -343,6 +354,9 @@ section Widget
 
 open Widget
 
+/-- Generate a suggestion for inserting `tac`, with message `html`.
+The `isText` flag is used to make sure the button is aligned correctly with `html`.
+`isText` should be false if `html` includes an expression. -/
 def mkSuggestion (tac : TSyntax `tactic) (html : Html) (isText := false) :
     ClickSuggestionsM Html := do
   let tac ← match (← read).onGoal with
