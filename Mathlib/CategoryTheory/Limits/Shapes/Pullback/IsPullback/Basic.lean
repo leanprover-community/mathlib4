@@ -356,15 +356,8 @@ lemma of_isLimit_binaryFan_of_isTerminal
     {T : C} (hT : IsTerminal T) :
     IsPullback c.fst c.snd (hT.from _) (hT.from _) where
   isLimit' := ⟨PullbackCone.IsLimit.mk _
-    (fun s ↦ hc.lift (BinaryFan.mk s.fst s.snd))
-    (fun s ↦ hc.fac (BinaryFan.mk s.fst s.snd) ⟨.left⟩)
-    (fun s ↦ hc.fac (BinaryFan.mk s.fst s.snd) ⟨.right⟩)
-    (fun s m h₁ h₂ ↦ by
-      apply BinaryFan.IsLimit.hom_ext hc
-      · rw [h₁, hc.fac (BinaryFan.mk s.fst s.snd) ⟨.left⟩]
-        rfl
-      · rw [h₂, hc.fac (BinaryFan.mk s.fst s.snd) ⟨.right⟩]
-        rfl)⟩
+    (fun s ↦ BinaryFan.IsLimit.lift hc s.fst s.snd) (by simp) (by simp)
+    (fun s m h₁ h₂ ↦ by apply BinaryFan.IsLimit.hom_ext hc <;> cat_disch)⟩
 end
 
 lemma mk' {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z}
@@ -744,15 +737,8 @@ lemma of_isColimit_binaryCofan_of_isInitial
     IsPushout (hI.to _) (hI.to _) c.inr c.inl where
   w := hI.hom_ext _ _
   isColimit' := ⟨PushoutCocone.IsColimit.mk _
-    (fun s ↦ hc.desc (BinaryCofan.mk s.inr s.inl))
-    (fun s ↦ hc.fac (BinaryCofan.mk s.inr s.inl) ⟨.right⟩)
-    (fun s ↦ hc.fac (BinaryCofan.mk s.inr s.inl) ⟨.left⟩)
-    (fun s m h₁ h₂ ↦ by
-      apply BinaryCofan.IsColimit.hom_ext hc
-      · rw [h₂, hc.fac (BinaryCofan.mk s.inr s.inl) ⟨.left⟩]
-        rfl
-      · rw [h₁, hc.fac (BinaryCofan.mk s.inr s.inl) ⟨.right⟩]
-        rfl)⟩
+    (fun s ↦ BinaryCofan.IsColimit.desc hc s.inr s.inl) (by simp) (by simp)
+    (fun s m h₁ h₂ ↦ by apply BinaryCofan.IsColimit.hom_ext hc <;> cat_disch)⟩
 
 lemma mk' {Z X Y P : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ P}
     (w : f ≫ inl = g ≫ inr)
