@@ -145,6 +145,7 @@ def inclusionTopIso (X : TopCat.{u}) : (toTopCat X).obj ⊤ ≅ X where
   inv := TopCat.ofHom ⟨fun x => ⟨x, trivial⟩, continuous_def.2 fun _ ⟨_, hS, hSU⟩ => hSU ▸ hS⟩
 
 /-- The FrameHom sending an open in `Y` to its preimage in `X` -/
+@[simps]
 def _root_.TopCat.Hom.frameHom (f : X ⟶ Y) : FrameHom (Opens Y) (Opens X) where
   toFun U := ⟨f ⁻¹' (U : Set Y), U.isOpen.preimage f.hom.continuous⟩
   map_inf' _ _ := rfl
@@ -155,6 +156,10 @@ def _root_.TopCat.Hom.frameHom (f : X ⟶ Y) : FrameHom (Opens Y) (Opens X) wher
 given by taking preimages under f. -/
 def map (f : X ⟶ Y) : Opens Y ⥤ Opens X :=
   (OrderHomClass.toOrderHom f.frameHom).toFunctor
+
+lemma map_def (f : X ⟶ Y) : map f =
+  { obj U := ⟨f ⁻¹' (U : Set Y), U.isOpen.preimage f.hom.continuous⟩
+    map i := ⟨⟨fun _ h => i.le h⟩⟩ } := rfl
 
 @[simp]
 theorem map_coe (f : X ⟶ Y) (U : Opens Y) : ((map f).obj U : Set X) = f ⁻¹' (U : Set Y) :=
