@@ -19,7 +19,7 @@ variable {M N : Type*} [Mul M] [Mul N]
 namespace Subsemigroup
 
 @[to_additive]
-theorem center_prod : center (M × N) = prod (center M) (center N) :=
+protected theorem center_prod : center (M × N) = prod (center M) (center N) :=
   SetLike.coe_injective Set.center_prod
 
 end Subsemigroup

@@ -1111,8 +1111,9 @@ theorem center_toNonUnitalSubsemiring :
     (center R A).toNonUnitalSubring = NonUnitalSubring.center A :=
   rfl
 
-theorem center_prod {B : Type*} [NonUnitalNonAssocSemiring B] [Module R B] [IsScalarTower R B B]
-    [SMulCommClass R B B] : center R (A × B) = prod (center R A) (center R B) :=
+protected theorem center_prod {B : Type*} [NonUnitalNonAssocSemiring B] [Module R B]
+    [IsScalarTower R B B] [SMulCommClass R B B] :
+    center R (A × B) = prod (center R A) (center R B) :=
   SetLike.coe_injective Set.center_prod
 
 end NonUnitalNonAssocSemiring

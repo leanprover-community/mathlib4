@@ -747,7 +747,7 @@ theorem top_prod (s : Subring S) : (⊤ : Subring R).prod s = s.comap (RingHom.s
 theorem top_prod_top : (⊤ : Subring R).prod (⊤ : Subring S) = ⊤ :=
   (top_prod _).trans <| comap_top _
 
-theorem center_prod : center (R × S) = prod (center R) (center S) :=
+protected theorem center_prod : center (R × S) = prod (center R) (center S) :=
   SetLike.coe_injective Set.center_prod
 
 /-- Product of subrings is isomorphic to their product as rings. -/
