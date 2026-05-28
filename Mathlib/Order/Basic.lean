@@ -14,6 +14,7 @@ public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.SimpRw
 public import Mathlib.Tactic.GCongr.Core
 public import Mathlib.Tactic.Attr.Register
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Basic definitions about `≤` and `<`
