@@ -36,7 +36,7 @@ theorem Monotone.eventuallyConst_of_lt_cof {f : α → β} (hf : Monotone f)
   have : Nonempty α := by by_contra!; simp at hα
   apply eventuallyConst_of_rangeSplitting hf
   contrapose! hα
-  classical let := hf.linearOrder_range
+  classical let := hf.linearOrderRange
   rw [← lift_cof_congr_of_strictMono (rangeSplitting_strictMono hf) hα, lift_le]
   exact (cof_le_cardinalMk _).trans (mk_set_le _)
 

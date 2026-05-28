@@ -105,7 +105,7 @@ end Set
 
 /-- The range of a monotone function from a linear order is a linear order. -/
 @[expose, implicit_reducible]
-def Monotone.linearOrder_range [LinearOrder α] [PartialOrder β] [DecidableLE β]
+def Monotone.linearOrderRange [LinearOrder α] [PartialOrder β] [DecidableLE β]
     {f : α → β} (hf : Monotone f) : LinearOrder (Set.range f) where
   le_total := by
     rintro ⟨_, a, rfl⟩ ⟨_, b, rfl⟩
@@ -114,7 +114,7 @@ def Monotone.linearOrder_range [LinearOrder α] [PartialOrder β] [DecidableLE �
 
 /-- The range of an antitone function from a linear order is a linear order. -/
 @[expose, implicit_reducible]
-def Antitone.linearOrder_range [LinearOrder α] [PartialOrder β] [DecidableLE β]
+def Antitone.linearOrderRange [LinearOrder α] [PartialOrder β] [DecidableLE β]
     {f : α → β} (hf : Antitone f) : LinearOrder (Set.range f) where
   le_total := by
     rintro ⟨_, a, rfl⟩ ⟨_, b, rfl⟩
