@@ -1158,6 +1158,9 @@ theorem Group.isNilpotent_of_finite_tfae :
   | ⟨e⟩ => isNilpotent_of_product_of_sylow_group e
   tfae_finish
 
+instance [IsNilpotent G] {p : ℕ} [Fact p.Prime] {P : Sylow p G} : P.Normal :=
+  isNilpotent_of_finite_tfae.out 0 3 rfl rfl |>.mp ‹_› p ‹_› P
+
 end WithFiniteGroup
 
 open Group

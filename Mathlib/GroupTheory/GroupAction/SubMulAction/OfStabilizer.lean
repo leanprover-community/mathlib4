@@ -138,7 +138,7 @@ theorem _root_.AddAction.stabilizerEquivStabilizer_compTriple
       (AddAction.stabilizerEquivStabilizer hh) (AddAction.stabilizerEquivStabilizer hk) where
   comp_eq := by
     ext
-    simp [AddAction.stabilizerEquivStabilizer, H, AddAut.conj, ← add_assoc]
+    simp [AddAction.stabilizerEquivStabilizer, H, AddAut.addConj, ← add_assoc]
 
 set_option backward.isDefEq.respectTransparency false in
 variable {hg hh hk} in
