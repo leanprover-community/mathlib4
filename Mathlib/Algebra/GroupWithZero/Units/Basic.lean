@@ -152,7 +152,7 @@ theorem IsUnit.ringInverse {a : M₀} : IsUnit a → IsUnit a⁻¹ʳ
 theorem isUnit_ringInverse {a : M₀} : IsUnit a⁻¹ʳ ↔ IsUnit a :=
   ⟨fun h => by
     cases subsingleton_or_nontrivial M₀
-    · convert h
+    · convert! h
     · contrapose h
       rw [Ring.inverse_non_unit _ h]
       exact not_isUnit_zero,
