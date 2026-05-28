@@ -534,6 +534,11 @@ theorem ker_subgroupMap : (f.subgroupMap H).ker = f.ker.subgroupOf H :=
   ext fun _ ↦ Subtype.ext_iff
 
 @[to_additive]
+theorem ker_subgroupComap (H' : Subgroup N) :
+    (f.subgroupComap H').ker = f.ker.subgroupOf (H'.comap f) :=
+  ext fun _ ↦ Subtype.ext_iff
+
+@[to_additive]
 theorem closure_preimage_eq_top (s : Set G) : closure ((closure s).subtype ⁻¹' s) = ⊤ := by
   simp
 
