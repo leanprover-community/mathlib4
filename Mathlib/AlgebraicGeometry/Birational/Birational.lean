@@ -253,7 +253,7 @@ variable {X S : Scheme.{u}} (U : Opens X) (sX : X ⟶ S)
 
 /-- A dense open set `U : Opens X` induces a partial isomorphism between `U` and `X`. -/
 @[simps]
-def Opens.partialIso_of_dense (hU : Dense (U : Set X)) : PartialIso U X where
+def Opens.partialIsoOfDense (hU : Dense (U : Set X)) : PartialIso U X where
   source := ⊤
   dense_source := dense_univ
   target := U
@@ -262,11 +262,11 @@ def Opens.partialIso_of_dense (hU : Dense (U : Set X)) : PartialIso U X where
 
 /-- A dense open set `U : Opens X` is birational to `X`. -/
 lemma Opens.birational_of_dense (hU : Dense (U : Set X)) : Birational U X :=
-  ⟨U.partialIso_of_dense hU⟩
+  ⟨U.partialIsoOfDense hU⟩
 
 /-- A dense open set `U : Opens X` of a scheme `X` over `S` is `S`-birational to `X`. -/
 lemma Opens.birationalOver_of_dense (hU : Dense (U : Set X)) : BirationalOver (U.ι ≫ sX) sX :=
-  ⟨U.partialIso_of_dense hU, by simp⟩
+  ⟨U.partialIsoOfDense hU, by simp⟩
 
 /-- A dense open set `U : Opens X` of a `S`-rational scheme `X` is `S`-rational. -/
 lemma Opens.isRationalOver_of_dense (hU : Dense (U : Set X)) [IsRationalOver sX] :
@@ -283,7 +283,7 @@ variable {X U S : Scheme.{u}}
 /-- A dominant open immersion `f : U ⟶ X` induced a partial isomorphism between `U` and `X`. -/
 @[simps! source target iso]
 noncomputable def Hom.partialIso (f : U ⟶ X) [IsOpenImmersion f] [IsDominant f] :=
-  f.isoOpensRange.toPartialIso.trans' (f.opensRange.partialIso_of_dense f.denseRange) rfl
+  f.isoOpensRange.toPartialIso.trans' (f.opensRange.partialIsoOfDense f.denseRange) rfl
 
 lemma Hom.birational (f : U ⟶ X) [IsOpenImmersion f] [IsDominant f] : Birational U X :=
   ⟨f.partialIso⟩
