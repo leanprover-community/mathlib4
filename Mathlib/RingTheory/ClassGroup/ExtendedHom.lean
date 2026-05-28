@@ -33,10 +33,14 @@ public section
 
 open scoped nonZeroDivisors
 
-variable (A B : Type*) [CommRing A] [IsDomain A] [CommRing B] [IsDomain B] [Algebra A B]
+variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
   [Module.IsTorsionFree A B]
 
 namespace ClassGroup
+
+section
+
+variable [IsDomain A] [IsDomain B]
 
 /-- The monoid homomorphism `ClassGroup A → ClassGroup B` induced by an
 injective extension of domains `A → B`. -/
@@ -77,37 +81,39 @@ theorem extendedIdeal_extendedIdeal (C : Type*) [CommRing C] [IsDomain C] [Algeb
     extendedIdeal B C (extendedIdeal A B I) = extendedIdeal A C I := by
   simp [Ideal.map_map, IsScalarTower.algebraMap_eq A B C]
 
-variable [IsDedekindDomain A]
+end
 
-lemma extendedHom_mk0 [IsDedekindDomain B] (I : (Ideal A)⁰) :
-    extendedHom A B (ClassGroup.mk0 I) = ClassGroup.mk0 (extendedIdeal A B I) := by
-  rw [mk0_eq_quotientMk, mk0_eq_quotientMk, extendedHom_quotientMk]
-  congr; ext : 1
-  exact FractionalIdeal.extendedHom_coeIdeal_eq_map (L := FractionRing B) (B := B) _
+variable [IsDedekindDomain A] (C : Type*) [CommRing C] [Algebra B C] [Algebra A C]
+  [IsScalarTower A B C] [Module.IsTorsionFree B C] [Module.IsTorsionFree A C]
+  [IsDedekindDomain C]
 
-theorem extendedHom_mk0' (I : (Ideal A)⁰) :
+theorem extendedHom_mk0' [IsDomain B] (I : (Ideal A)⁰) :
     extendedHom A B (ClassGroup.mk0 I) =
       ClassGroup.mk _ (Units.map (FractionalIdeal.extendedHom (FractionRing B) B).toMonoidHom
       (FractionalIdeal.mk0 (FractionRing A) I)) := by
   rw [← ClassGroup.mk_mk0 (FractionRing A), extendedHom_mk]
 
+variable [IsDedekindDomain B]
+
+lemma extendedHom_mk0 (I : (Ideal A)⁰) :
+    extendedHom A B (ClassGroup.mk0 I) = ClassGroup.mk0 (extendedIdeal A B I) := by
+  rw [mk0_eq_quotientMk, mk0_eq_quotientMk, extendedHom_quotientMk]
+  congr; ext : 1
+  exact FractionalIdeal.extendedHom_coeIdeal_eq_map (L := FractionRing B) (B := B) _
+
+
 @[simp]
-theorem extendedHom_comp_apply (C : Type*) [CommRing C] [IsDomain C] [Algebra B C]
-    [Algebra A C] [IsScalarTower A B C] [Module.IsTorsionFree B C]
-    [Module.IsTorsionFree A C] [IsDedekindDomain B] [IsDedekindDomain C] (x : ClassGroup A) :
-    extendedHom B C (extendedHom A B x) = extendedHom A C x := by
+theorem extendedHom_comp_apply (x : ClassGroup A) :
+      extendedHom B C (extendedHom A B x) = extendedHom A C x := by
   obtain ⟨I, rfl⟩ := ClassGroup.mk0_surjective x
   rw [extendedHom_mk0 A B I, extendedHom_mk0 B C (extendedIdeal A B I),
     extendedHom_mk0 A C I, extendedIdeal_extendedIdeal]
 
-theorem extendedHom_comp (C : Type*) [CommRing C] [IsDomain C] [Algebra B C] [Algebra A C]
-    [IsScalarTower A B C] [Module.IsTorsionFree B C] [Module.IsTorsionFree A C]
-    [IsDedekindDomain B] [IsDedekindDomain C] :
-    (extendedHom B C).comp (extendedHom A B) = extendedHom A C := by
+theorem extendedHom_comp : (extendedHom B C).comp (extendedHom A B) = extendedHom A C := by
   ext x
   exact extendedHom_comp_apply A B C x
 
-theorem extendedHom_eq_one_of_forall_isPrincipal [IsDedekindDomain B]
+theorem extendedHom_eq_one_of_forall_isPrincipal
     (h : ∀ I : (Ideal A), (I.map (algebraMap A B)).IsPrincipal) : extendedHom A B = 1 := by
   ext x
   obtain ⟨I, rfl⟩ := ClassGroup.mk0_surjective x
