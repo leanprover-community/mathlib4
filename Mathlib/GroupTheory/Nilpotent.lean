@@ -585,6 +585,18 @@ theorem lowerCentralSeries_eq_bot_iff_nilpotencyClass_le {n : ℕ} :
     rw [eq_bot_iff, ← lowerCentralSeries_nilpotencyClass]
     exact lowerCentralSeries_antitone h
 
+omit [IsNilpotent G] in
+@[to_additive]
+theorem lowerCentralSeries_eq_bot_iff_upperCentralSeries_eq_top {n : ℕ} :
+    lowerCentralSeries G n = ⊥ ↔ upperCentralSeries G n = ⊤ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · have : IsNilpotent G := nilpotent_iff_lowerCentralSeries.mpr ⟨n, h⟩
+    rwa [upperCentralSeries_eq_top_iff_nilpotencyClass_le,
+      ← lowerCentralSeries_eq_bot_iff_nilpotencyClass_le]
+  · have : IsNilpotent G := ⟨n, h⟩
+    rwa [lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,
+      ← upperCentralSeries_eq_top_iff_nilpotencyClass_le]
+
 end Subgroup
 
 end Classical
@@ -851,6 +863,24 @@ theorem Subgroup.derived_le_lower_central (n : ℕ) : derivedSeries G n ≤ lowe
   induction n with
   | zero => simp
   | succ i ih => apply commutator_mono ih; simp
+
+@[to_additive]
+theorem Subgroup.upperCentralSeries_one_eq_top_iff :
+    upperCentralSeries G 1 = ⊤ ↔ IsMulCommutative G := by
+  rw [upperCentralSeries_one]
+  exact Subgroup.center_eq_top_iff
+
+@[to_additive]
+theorem Subgroup.lowerCentralSeries_one_eq_bot_iff :
+    lowerCentralSeries G 1 = ⊥ ↔ IsMulCommutative G := by
+  rw [lowerCentralSeries_eq_bot_iff_upperCentralSeries_eq_top]
+  exact upperCentralSeries_one_eq_top_iff
+
+@[to_additive]
+theorem Group.IsNilpotent.nilpotencyClass_le_one_iff [IsNilpotent G] :
+    Group.nilpotencyClass G ≤ 1 ↔ IsMulCommutative G := by
+  rw [← upperCentralSeries_eq_top_iff_nilpotencyClass_le]
+  exact upperCentralSeries_one_eq_top_iff
 
 /-- Abelian groups are nilpotent. -/
 @[to_additive /-- Abelian groups are nilpotent. -/]
