@@ -104,4 +104,28 @@ lemma ofSurjective [IsPerfect G] (hf : Function.Surjective f) : IsPerfect G' := 
 instance instQuotientSubgroup [H.Normal] [IsPerfect G] : IsPerfect (G ⧸ H) :=
   ofSurjective (QuotientGroup.mk'_surjective H)
 
+variable (G) in
+@[simp]
+theorem upperCentralSeries_eq_center [IsPerfect G] {n : ℕ} (hn : n ≠ 0) :
+    .upperCentralSeries G n = center G := by
+  rw [← Subgroup.upperCentralSeries_one, eq_comm]
+  apply Subgroup.upperCentralSeries.eq_ge_of_eq_succ <| by lia
+  rw [Subgroup.upperCentralSeries_one, one_add_one_eq_two]
+  apply le_antisymm
+  · grw [← Subgroup.upperCentralSeries_one, Subgroup.upperCentralSeries_mono G one_le_two]
+  rw [← commutator_top_eq_bot_iff_le_center, ← IsPerfect.commutator_eq_top, commutator_comm]
+  suffices ⁅⁅Subgroup.upperCentralSeries G 2, ⊤⁆, ⊤⁆ = ⊥ from
+    commutator_commutator_eq_bot_of_rotate (by simpa [commutator_comm]) this
+  apply bot_unique
+  grw [commutator_mono (commutator_upperCentralSeries_top_le G 1) le_rfl]
+  rw [Subgroup.upperCentralSeries_one, commutator_center_top]
+
+variable (G) in
+/-- **Grün's lemma** -/
+theorem center_quotient_center_eq_bot [IsPerfect G] : center (G ⧸ center G) = ⊥ := by
+  rw [← comap_eq_ker_of_surjective <| QuotientGroup.mk'_surjective _, QuotientGroup.ker_mk']
+  nth_rw 4 [← Subgroup.upperCentralSeries_one]
+  rw [Subgroup.comap_upperCentralSeries_quotient_center, upperCentralSeries_eq_center]
+  lia
+
 end Group.IsPerfect

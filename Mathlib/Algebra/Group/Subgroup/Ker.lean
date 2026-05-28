@@ -280,6 +280,10 @@ lemma ker_mulEquiv_comp {P : Type*} [MulOneClass P] (f : G →* N) (iso : N ≃*
 theorem comap_bot (f : G →* N) : (⊥ : Subgroup N).comap f = f.ker :=
   rfl
 
+@[to_additive]
+theorem ker_le_comap (f : G →* N) (H : Subgroup N) : f.ker ≤ H.comap f :=
+  comap_mono bot_le
+
 @[to_additive (attr := simp)]
 theorem ker_restrict (f : G →* M) : (f.restrict K).ker = f.ker.subgroupOf K :=
   rfl
@@ -444,6 +448,12 @@ theorem comap_lt_comap_of_surjective {f : G →* N} {K L : Subgroup N} (hf : Fun
 @[to_additive]
 theorem comap_injective {f : G →* N} (h : Function.Surjective f) : Function.Injective (comap f) :=
   fun K L => by simp only [le_antisymm_iff, comap_le_comap_of_surjective h, imp_self]
+
+@[to_additive (attr := simp)]
+theorem comap_eq_ker_of_surjective {f : G →* N} (hf : Surjective f) {H : Subgroup N} :
+    H.comap f = f.ker ↔ H = ⊥ := by
+  rw [← comap_bot]
+  exact comap_injective hf |>.eq_iff
 
 @[to_additive]
 theorem comap_map_eq_self {f : G →* N} {H : Subgroup G} (h : f.ker ≤ H) :
