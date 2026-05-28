@@ -37,7 +37,7 @@ what the cache binary requests.
 
 Read-side fallback chains, mapped by repo (see `Cache/Infra.lean:defaultContainersForRepo`):
 
-| GitHub repo                                     | Default container chain |
+| GitHub repo                                     | Default container lookup chain |
 |-------------------------------------------------|-------------------------|
 | `leanprover-community/mathlib4`                 | `master`                |
 | `leanprover-community/mathlib4-nightly-testing` | `nightly-testing`       |
@@ -45,7 +45,7 @@ Read-side fallback chains, mapped by repo (see `Cache/Infra.lean:defaultContaine
 
 The trusted-nightly default excludes `pr-toolchain-tests` so that a
 poisoned upload from `lean-pr-testing-*` cannot silently reach a
-`nightly-testing-green` consumer. Branches that need a wider chain
+`nightly-testing-green` consumer. Branches that need a wider lookup chain
 (toolchain-test branches reading their own previous uploads) opt in via
 `MATHLIB_CACHE_FROM`, set by `cache-trust-dispatch` (see *CI dispatch*
 below).
@@ -137,7 +137,7 @@ the partitioning ever fails.
 ## CI dispatch: how (repo, branch) gets routed
 
 The composite action at `.github/actions/cache-trust-dispatch/action.yml`
-maps each job context to its container, OIDC writer, and read chain. It is
+maps each job context to its container, OIDC writer, and lookup chain. It is
 invoked by all three trust-aware jobs:
 
 - **build** — needs `MATHLIB_CACHE_FROM` so pre-build cache gets find what a
