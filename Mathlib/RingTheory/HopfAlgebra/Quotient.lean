@@ -22,12 +22,6 @@ The quotient `RingQuot r` then inherits a Hopf algebra structure.
 ## Main results
 
 * `HopfAlgebra R (RingQuot r)` instance from `[IsHopfRel R r]`.
-
-## Implementation notes
-
-The antipode is an antihomomorphism, so lifting it through `RingQuot.liftAlgHom` routes through
-`(RingQuot r)ᵐᵒᵖ`. Specifically, `a ↦ op (mkAlgHom R r (antipode a))` is an algebra hom
-`A →ₐ[R] (RingQuot r)ᵐᵒᵖ` because the two antihomomorphisms compose to a homomorphism.
 -/
 
 @[expose] public section

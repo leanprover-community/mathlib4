@@ -42,7 +42,8 @@ class IsBialgebraRel (r : A → A → Prop) : Prop where
   counit_rel : ∀ ⦃x y : A⦄, r x y → (counit x : R) = counit y
   comul_rel : ∀ ⦃x y : A⦄, r x y →
     Algebra.TensorProduct.map (mkAlgHom R r) (mkAlgHom R r) (comul x) =
-      Algebra.TensorProduct.map (mkAlgHom R r) (mkAlgHom R r) (comul y)
+      (Algebra.TensorProduct.map (mkAlgHom R r) (mkAlgHom R r) (comul y) :
+        RingQuot r ⊗[R] RingQuot r)
 
 namespace Bialgebra.Quotient
 
