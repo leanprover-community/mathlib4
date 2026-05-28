@@ -781,6 +781,8 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
   for n in ← findAuxDecls srcDecl rootSrc do
     transformDeclRec t cfg rootSrc rootTgt n
   -- expose target body when source body is exposed
+  -- Once https://github.com/leanprover/lean4/pull/13868 lands in a toolchain mathlib uses, the
+  -- line below can be refactored to `withExporting (isExporting := (← getEnv).hasExposedBody src) do`.
   withExporting (isExporting := (← getEnv).setExporting true |>.find? src |>.any (·.hasValue)) do
   -- We still lack a heuristic that automatically infers the `dontTranslate`,
   -- so for now we do a best guess based on argument names.

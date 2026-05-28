@@ -1217,6 +1217,8 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
   -- Whether the source definition body is exposed; when false we skip `@[defeq]` inference to
   -- avoid validation errors. This is not a user-facing `Config` option, so it is threaded
   -- through `addProjection`(`s`) as a separate argument.
+  -- Once https://github.com/leanprover/lean4/pull/13868 lands in a toolchain mathlib uses, the
+  -- line below can be refactored to `let bodyExposed := (← getEnv).hasExposedBody d.name`.
   let bodyExposed := (← getEnv).setExporting true |>.find? d.name |>.any (·.hasValue)
   let nm : NameStruct :=
     { parent := nm.getPrefix
