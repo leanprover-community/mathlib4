@@ -188,7 +188,7 @@ lemma indepFun_iff_hasLaw_prodMk_prod [IsFiniteMeasure P] {𝓨 : Type*} {m𝓨 
     X ⟂ᵢ[P] Y ↔ HasLaw (fun ω ↦ (X ω, Y ω)) (μ.prod ν) P where
   mp h :=
     { map_eq := by
-        rw [(indepFun_iff_map_prod_eq_prod_map_map (by fun_prop) (by fun_prop)).1 h, hX.map_eq,
+        rw [h.map_prod_eq_prod_map_map (by fun_prop) (by fun_prop), hX.map_eq,
           hY.map_eq] }
   mpr h := by
     rw [indepFun_iff_map_prod_eq_prod_map_map (by fun_prop) (by fun_prop),
@@ -201,8 +201,7 @@ lemma iIndepFun.hasLaw_pi {ι : Type*} [Fintype ι] {𝓧 : ι → Type*} {m𝓧
     (h : iIndepFun X P) :
     HasLaw (fun ω i ↦ X i ω) (Measure.pi μ) P where
   map_eq := by
-    have := h.isProbabilityMeasure
-    rw [(iIndepFun_iff_map_fun_eq_pi_map (by fun_prop)).1 h]
+    rw [h.map_fun_eq_pi_map (by fun_prop)]
     simp_rw [fun i ↦ (hX i).map_eq]
 
 lemma iIndepFun_iff_hasLaw_pi_pi [IsProbabilityMeasure P] {ι : Type*} [Fintype ι] {𝓧 : ι → Type*}
