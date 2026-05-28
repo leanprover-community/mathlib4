@@ -391,7 +391,8 @@ theorem primaryComponent.isPGroup : IsPGroup p (primaryComponent G p) := fun g �
 variable (G H)
 
 /-- The free rank of a finitely generated abelian group is the rank of its free part. -/
-@[to_additive]
+@[to_additive
+/-- The free rank of a finitely generated abelian group is the rank of its free part. -/]
 noncomputable def freeRank [Group.FG G] : ℕ := Group.rank (G ⧸ torsion G)
 
 @[to_additive]
