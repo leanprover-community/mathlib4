@@ -104,8 +104,9 @@ theorem comp_map {β γ : Type*} (f : α → β) (g : β → γ) (t : BinaryTree
   | nil => rw [map, map, map]
   | node v l r hl hr => rw [map, map, map, hl, hr, Function.comp_apply]
 
-theorem traverse_pure (t : BinaryTree α) {m : Type u → Type*} [Applicative m] [LawfulApplicative m]
-: t.traverse (pure : α → m α) = pure t := by
+theorem traverse_pure (t : BinaryTree α) {m : Type u → Type*}
+    [Applicative m] [LawfulApplicative m] :
+    t.traverse (pure : α → m α) = pure t := by
   induction t with
   | nil => rw [traverse]
   | node v l r hl hr =>
