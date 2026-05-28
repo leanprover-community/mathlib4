@@ -203,8 +203,10 @@ jobs:
           cd pr-branch
           lake build $STAGE_TARGETS 2>&1 | tee .lake/lake-build.log
           echo "::group::build summary"
+          # Replays aren't counted: a non-verbose `lake build` restores cached
+          # outputs silently (no "Replayed" lines to grep). 0 built is the
+          # healthy case here — legacy hydration already populated .lake/build.
           echo "Built (pipeline ran):    $(grep -cE '^✔.*Built '    .lake/lake-build.log || true)"
-          echo "Replayed (from cache):   $(grep -cE '^[✔ℹ].*Replayed ' .lake/lake-build.log || true)"
           echo "::endgroup::"
 
       - name: Emit root-package mappings
@@ -372,11 +374,13 @@ jobs:
           cd pr-branch
           read -ra TARGETS <<< "$STAGE_TARGETS"
           lake build "${TARGETS[@]}" 2>&1 | tee .lake/consume-build.log
-          BUILT=$(grep -cE '^✔.*Built '    .lake/consume-build.log || true)
-          # Lake logs replays with either ✔ or ℹ, so match both glyphs.
-          REPLAYED=$(grep -cE '^[✔ℹ].*Replayed ' .lake/consume-build.log || true)
-          echo "Built (pipeline ran):    $BUILT"
-          echo "Replayed (from cache):   $REPLAYED"
+          # A non-verbose `lake build` restores cache hits silently (no per-module
+          # "Replayed" lines), so a replay count can't be grepped here. The
+          # cache-hit evidence is the artifacts fetched by `lake cache get` above,
+          # the BUILT_ROOT assertion below (0 root-package rebuilds), and the
+          # `--rehash` "all targets up-to-date" check. The Built count is the
+          # dependencies, which Lake never caches and always rebuilds.
+          echo "Built from source (deps, expected): $(grep -cE '^✔.*Built ' .lake/consume-build.log || true)"
           # Lake only caches the root package's artifacts (`-o` records outputs
           # under pkg.isRoot, and only the root `mathlib` package enables the
           # artifact cache). Dependencies are never staged/uploaded, so they are
