@@ -454,13 +454,16 @@ theorem UniformSpace.comap_mono {α γ} {f : α → γ} :
     Monotone fun u : UniformSpace γ => u.comap f := fun _ _ hu =>
   Filter.comap_mono hu
 
-theorem uniformContinuous_iff {α β} {uα : UniformSpace α} {uβ : UniformSpace β} {f : α → β} :
-    UniformContinuous f ↔ uα ≤ uβ.comap f :=
+theorem uniformContinuous_iff_le_comap {α β} {uα : UniformSpace α} {uβ : UniformSpace β}
+    {f : α → β} : UniformContinuous f ↔ uα ≤ uβ.comap f :=
   Filter.map_le_iff_le_comap
+
+@[deprecated (since := "2026-05-23")]
+alias uniformContinuous_iff := uniformContinuous_iff_le_comap
 
 theorem le_iff_uniformContinuous_id {u v : UniformSpace α} :
     u ≤ v ↔ @UniformContinuous _ _ u v id := by
-  rw [uniformContinuous_iff, uniformSpace_comap_id, id]
+  rw [uniformContinuous_iff_le_comap, uniformSpace_comap_id, id]
 
 theorem uniformContinuous_comap {f : α → β} [u : UniformSpace β] :
     @UniformContinuous α β (UniformSpace.comap f u) u f :=
@@ -520,7 +523,7 @@ variable [UniformSpace α] [UniformSpace β] [UniformSpace γ] {f : α → β} {
 
 theorem UniformContinuous.continuous (hf : UniformContinuous f) : Continuous f :=
   continuous_iff_le_induced.mpr <| UniformSpace.toTopologicalSpace_mono <|
-    uniformContinuous_iff.1 hf
+    uniformContinuous_iff_le_comap.1 hf
 
 lemma UniformContinuous.uniformContinuousOn (hf : UniformContinuous f) :
     UniformContinuousOn f s :=
