@@ -37,7 +37,7 @@ open Function OrderDual Set
 
 variable {α β γ : Type*} {ι : Sort*}
 
-section
+section LE
 
 /-!
 Extension of `sSup` and `sInf` from a preorder `α` to `WithTop α` and `WithBot α`
@@ -86,19 +86,6 @@ theorem WithTop.sInf_of_not_bddBelow [InfSet α] {s : Set (WithTop α)} (h : ¬B
   if_pos <| .inr h
 
 @[to_dual (attr := norm_cast)]
-theorem WithTop.coe_sInf' {α} [Preorder α] [InfSet α] {s : Set α} (hs : s.Nonempty)
-    (h's : BddBelow s) : ↑(sInf s) = (sInf ((fun (a : α) ↦ ↑a) '' s) : WithTop α) := by
-  classical
-  obtain ⟨x, hx⟩ := hs
-  change _ = ite _ _ _
-  split_ifs with h
-  · rcases h with h1 | h2
-    · cases h1 (mem_image_of_mem _ hx)
-    · exact (h2 (Monotone.map_bddBelow coe_mono h's)).elim
-  · rw [preimage_image_eq]
-    exact Option.some_injective _
-
-@[to_dual (attr := norm_cast)]
 theorem WithTop.coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
     ↑(sSup s) = (sSup ((fun (a : α) ↦ ↑a) '' s) : WithTop α) := by
   classical
@@ -115,7 +102,26 @@ theorem WithBot.sSup_empty [SupSet α] : sSup (∅ : Set (WithBot α)) = ⊥ :=
 theorem WithTop.sSup_empty (α : Type*) [CompleteLattice α] : (sSup ∅ : WithTop α) = ⊥ := by
   rw [sSup_eq (by simp) (OrderTop.bddAbove _), Set.preimage_empty, _root_.sSup_empty, coe_bot]
 
-end
+end LE
+
+section Preorder
+
+variable [Preorder α]
+
+@[to_dual (attr := norm_cast)]
+theorem WithTop.coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty)
+    (h's : BddBelow s) : ↑(sInf s) = (sInf ((fun (a : α) ↦ ↑a) '' s) : WithTop α) := by
+  classical
+  obtain ⟨x, hx⟩ := hs
+  change _ = ite _ _ _
+  split_ifs with h
+  · rcases h with h1 | h2
+    · cases h1 (mem_image_of_mem _ hx)
+    · exact (h2 (Monotone.map_bddBelow coe_mono h's)).elim
+  · rw [preimage_image_eq]
+    exact Option.some_injective _
+
+end Preorder
 
 instance ConditionallyCompleteLinearOrder.toLinearOrder [h : ConditionallyCompleteLinearOrder α] :
     LinearOrder α where
