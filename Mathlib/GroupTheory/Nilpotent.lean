@@ -942,9 +942,8 @@ end Subgroup
 
 variable (G) in
 @[to_additive]
-theorem Group.IsNilpotent.center_ne_bot [Nontrivial G] [IsNilpotent G] : center G ≠ ⊥ := by
-  rw [← upperCentralSeries_zero, ← upperCentralSeries_one]
-  grind [upperCentralSeries.eq_top, upperCentralSeries_zero, top_ne_bot]
+theorem Group.IsNilpotent.center_ne_bot [Nontrivial G] [IsNilpotent G] : center G ≠ ⊥ :=
+  .symm <| by simpa using mt (upperCentralSeries.eq_top zero_ne_one) <| by simp
 
 section Prod
 
