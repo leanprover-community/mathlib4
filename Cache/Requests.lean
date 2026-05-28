@@ -267,7 +267,7 @@ Precedence (most specific wins):
 2. `--cache-from` CLI override (set via `cacheFromOverride`). The most
    deliberate signal — a user explicitly typing it at the call site.
 3. `MATHLIB_CACHE_FROM` env var (comma-separated container list, same
-   shape as `--cache-from`). This is how CI workflows widen the read
+   shape as `--cache-from`). This is how CI workflows widen the lookup
    chain to match their trust-dispatched write target without editing
    every `cache get` call. Branch-class-aware trust dispatch lives in
    YAML, not here — see `build_template.yml`.
@@ -1263,21 +1263,18 @@ def cacheQuery (repo : String) (cap : Nat := 50) (cwd : FilePath := ".") : IO Un
   let found? ← findMostRecentSHAWithCache shas repo
   match found? with
   | some sha =>
-    IO.println s!"Most recent cached commit on branch: {sha}"
-    IO.println s!"Repository: {repo}"
-    IO.println s!"Container: {Container.forks.name}"
+    IO.println s!"Most recent cached commit on this branch for fork {repo}: {sha}"
     IO.println s!""
     IO.println s!"To use this cache, run:"
     IO.println s!"  lake exe cache get --scope={sha}"
     IO.println s!""
-    IO.println s!"Or specify the containers explicitly:"
-    IO.println s!"  lake exe cache get --scope={sha} --cache-from=forks,legacy"
+    IO.println s!"Note: this means trusting the artifacts built at that commit;"
+    IO.println s!"`cache get` will print a security notice when --scope is set."
   | none =>
-    IO.println s!"No scoped cache entries found within the last {cap} commits on this branch."
+    IO.println s!"No cached CI build found for fork {repo} within the last {cap} commits on this branch."
     IO.println s!"This typically means:"
-    IO.println s!"  - The commits are too old (before the forks container SHA scoping was deployed)"
-    IO.println s!"  - The branch is disconnected from the main Mathlib CI (forked, isolated branch)"
-    IO.println s!"  - CI hasn't built the commits yet"
+    IO.println s!"  - CI hasn't built any of these commits yet."
+    IO.println s!"  - The commits pre-date the new per-commit cache (rare on recent branches)."
 
 end Query
 
@@ -1288,10 +1285,10 @@ Condition to determine if a non-default scope warning should be printed.
 
 Returns `true` if any of these hold:
 1. `MATHLIB_CACHE_REPO_SCOPE` is set in the environment (any non-empty value)
-2. `--cache-from` was passed and widens the read chain beyond `defaultContainersForRepo` for the resolved repo
+2. `--cache-from` was passed and widens the lookup chain beyond `defaultContainersForRepo` for the resolved repo
 3. `--repo` was passed and does not match the cwd's `git remote origin` (or active remote)
 
-Otherwise returns `false` (default read chain, no warning needed).
+Otherwise returns `false` (default lookup chain, no warning needed).
 -/
 def shouldWarnNonDefaultScope (repoExplicit? : Option String)
     (cliCacheFromOverride? : Option (List Container)) (resolvedRepo : String) :
@@ -1299,7 +1296,7 @@ def shouldWarnNonDefaultScope (repoExplicit? : Option String)
   -- Condition 1: `--scope=` flag or `MATHLIB_CACHE_REPO_SCOPE` env var supplied
   if (← getRepoScope).isSome then return true
 
-  -- Condition 2: --cache-from CLI override widens the chain
+  -- Condition 2: --cache-from CLI override widens the lookup chain
   match cliCacheFromOverride? with
   | some cliOverride =>
     let defaultContainers := defaultContainersForRepo resolvedRepo
@@ -1403,16 +1400,16 @@ def warnIfNonDefaultScope (repoExplicit? : Option String)
     printNonDefaultScopeWarning resolvedRepo reason
 
 /--
-If the user is on a commit that hasn't been cached at the fork-trust level
-(no marker present at `forks/m/{repo}/{HEAD-sha}`), print an informational
-note explaining the new SHA-scoped behavior and pointing at `cache query`.
+If the user is on a commit that hasn't been cached for this fork (no marker
+present at `forks/m/{repo}/{HEAD-sha}`), print an informational note
+explaining the new SHA-scoped behavior and pointing at `cache query`.
 
 Fires only on naive `cache get` invocations:
 - no `--scope=` / `MATHLIB_CACHE_REPO_SCOPE` set (else the user has already
   picked a scope and the non-default-scope warning is doing the talking)
 - no `--cache-from` override (else they've already taken explicit
-  responsibility for the read chain)
-- the resolved repo's default chain reads from `forks` (otherwise SHA
+  responsibility for the lookup chain)
+- the resolved repo's default lookup chain reads from `forks` (otherwise SHA
   scoping is not relevant)
 
 One HEAD probe per invocation; the message is stderr-only so it doesn't
@@ -1436,11 +1433,12 @@ def informIfHeadNotBuilt (repoExplicit? : Option String) : IO Unit := do
   if hasMarker then return
   let lines : List String := [
     "",
-    s!"NOTE: HEAD ({sha}) was not built and cached at fork-trust level.",
-    "Reads will fall back to master/legacy; you may see cache misses for",
-    "files unique to this PR.",
+    s!"NOTE: no cache found for HEAD ({sha}) on fork {repo}.",
+    "This commit hasn't been built by CI for this fork yet. You'll still",
+    "get cache hits for files that match mathlib's master cache; only",
+    "files unique to this PR will need to be rebuilt.",
     "",
-    "To pick up a prior CI run on this branch, find a built commit:",
+    "To use a prior CI run from this fork, find a cached commit:",
     "    lake exe cache query",
     "",
     "then re-run with:",

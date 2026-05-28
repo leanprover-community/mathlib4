@@ -193,7 +193,7 @@ def main (args : List String) : IO Unit := do
     let cliOverride? ← cacheFromOverride.get
     let resolvedRepo := repo?.getD MATHLIBREPO
     warnIfNonDefaultScope repo? cliOverride? resolvedRepo
-    -- Otherwise, if HEAD has no fork-trust marker, hint at the new SHA-scoped UX
+    -- Otherwise, if HEAD has no cache for this fork, hint at the SHA-scoped UX
     informIfHeadNotBuilt repo?
     getFiles repo? hashMap force force goodCurl decompress
   let pack (overwrite verbose unpackedOnly := false) := do
