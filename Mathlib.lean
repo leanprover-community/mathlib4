@@ -3344,6 +3344,7 @@ public import Mathlib.CategoryTheory.Sites.Hypercover.SheafOfTypes
 public import Mathlib.CategoryTheory.Sites.Hypercover.Subcanonical
 public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 public import Mathlib.CategoryTheory.Sites.Hypercover.ZeroFamily
+public import Mathlib.CategoryTheory.Sites.InducedTopology
 public import Mathlib.CategoryTheory.Sites.IsSheafFor
 public import Mathlib.CategoryTheory.Sites.JointlySurjective
 public import Mathlib.CategoryTheory.Sites.LeftExact

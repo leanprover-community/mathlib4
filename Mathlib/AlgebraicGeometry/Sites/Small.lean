@@ -155,19 +155,14 @@ lemma locallyCoverDense_of_le (hPQ : P ≤ Q) :
 instance : (MorphismProperty.Over.forget P ⊤ S).LocallyCoverDense (overGrothendieckTopology P S) :=
   locallyCoverDense_of_le S le_rfl
 
-variable (S) {P Q} in
+variable (S) {Q} in
 /-- If `P` and `Q` are morphism properties with `P ≤ Q`, this is the Grothendieck topology
 induced via the forgetful functor `Q.Over ⊤ S ⥤ Over S` by the topology defined by `P`. -/
-abbrev smallGrothendieckTopologyOfLE (_hPQ : P ≤ Q) : GrothendieckTopology (Q.Over ⊤ S) :=
+abbrev smallGrothendieckTopology : GrothendieckTopology (Q.Over ⊤ S) :=
   (MorphismProperty.Over.forget Q ⊤ S).restrictedTopology (S.overGrothendieckTopology P)
 
-/-- The Grothendieck topology on the category of schemes over `S` with `P` induced by `P`, i.e.
-coverings are simply surjective families. This is the induced topology by the topology on `S`
-defined by `P` via the inclusion `P.Over ⊤ S ⥤ Over S`.
-
-This is a special case of `smallGrothendieckTopologyOfLE` for the case `P = Q`. -/
-abbrev smallGrothendieckTopology : GrothendieckTopology (P.Over ⊤ S) :=
-  (MorphismProperty.Over.forget P ⊤ S).restrictedTopology (S.overGrothendieckTopology P)
+@[deprecated (since := "2026-05-28")]
+alias smallGrothendieckTopologyOfLE := smallGrothendieckTopology
 
 variable [Q.IsStableUnderBaseChange] [Q.HasOfPostcompProperty Q]
 
@@ -203,12 +198,12 @@ def smallPretopology : Pretopology (Q.Over ⊤ S) where
 
 set_option backward.isDefEq.respectTransparency false in
 variable (S) {P Q} in
-lemma smallGrothendieckTopologyOfLE_eq_toGrothendieck_smallPretopology (hPQ : P ≤ Q) :
-    S.smallGrothendieckTopologyOfLE hPQ = (S.smallPretopology P Q).toGrothendieck := by
+lemma smallGrothendieckTopology_eq_toGrothendieck_smallPretopology (hPQ : P ≤ Q) :
+    S.smallGrothendieckTopology P = (S.smallPretopology P Q).toGrothendieck := by
   ext X R
   have : (MorphismProperty.Over.forget Q ⊤ S).LocallyCoverDense (overGrothendieckTopology P S) :=
     locallyCoverDense_of_le S hPQ
-  simp only [smallGrothendieckTopologyOfLE, Functor.mem_restrictedTopology_iff,
+  simp only [smallGrothendieckTopology, Functor.mem_restrictedTopology_iff,
     MorphismProperty.Comma.forget_obj, mem_overGrothendieckTopology, Pretopology.mem_toGrothendieck]
   constructor
   · intro ⟨𝒰, h, le⟩
@@ -227,9 +222,9 @@ lemma smallGrothendieckTopologyOfLE_eq_toGrothendieck_smallPretopology (hPQ : P 
     rintro - - ⟨i⟩
     exact ⟨(𝒰.X i).asOverProp S (p i), (𝒰.f i).asOverProp S, 𝟙 _, le _ _ ⟨i⟩, rfl⟩
 
-lemma smallGrothendieckTopology_eq_toGrothendieck_smallPretopology [P.HasOfPostcompProperty P] :
-    S.smallGrothendieckTopology P = (S.smallPretopology P P).toGrothendieck :=
-  S.smallGrothendieckTopologyOfLE_eq_toGrothendieck_smallPretopology le_rfl
+@[deprecated (since := "2026-05-28")]
+alias smallGrothendieckTopologyOfLE_eq_toGrothendieck_smallPretopology :=
+  smallGrothendieckTopology_eq_toGrothendieck_smallPretopology
 
 variable {P Q}
 
@@ -265,7 +260,7 @@ lemma mem_smallGrothendieckTopology [P.HasOfPostcompProperty P] (X : P.Over ⊤ 
     R ∈ S.smallGrothendieckTopology P X ↔
       ∃ (𝒰 : Cover.{u} (precoverage P) X.left) (_ : 𝒰.Over S) (h : ∀ j, P (𝒰.X j ↘ S)),
           𝒰.toPresieveOverProp h ≤ R.arrows := by
-  rw [smallGrothendieckTopology_eq_toGrothendieck_smallPretopology]
+  rw [smallGrothendieckTopology_eq_toGrothendieck_smallPretopology _ le_rfl]
   constructor
   · rintro ⟨T, ⟨𝒰, h, p, rfl⟩, hle⟩
     use 𝒰, h, p
