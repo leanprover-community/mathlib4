@@ -232,6 +232,22 @@ jobs:
           du -sh ../lake-cache-staging | awk '{print "staging total:", $1}'
           echo "ltar count: $(find ../lake-cache-staging -name '*.ltar' | wc -l)"
 
+      # Safety valve: only relevant when we're actually going to upload (R2
+      # configured). Bail if the staged bytes (= what gets uploaded) exceed the
+      # cap, to protect the R2 free-tier / lifecycle budget. Logs the size
+      # first, so a trip still tells us how big the build got.
+      - name: Guard upload size (bail if staging > 9 GB)
+        if: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT != '' }}
+        shell: bash
+        run: |
+          MAX=$((9 * 1000 * 1000 * 1000))   # 9 GB, margin under R2's 10 GB free tier
+          BYTES=$(du -sb lake-cache-staging | cut -f1)
+          echo "staging size: $(du -sh lake-cache-staging | cut -f1) (${BYTES} bytes); cap: 9 GB (${MAX} bytes)"
+          if [ "$BYTES" -gt "$MAX" ]; then
+            echo "::error::staging is over 9 GB — bailing before upload to protect the R2 free-tier / lifecycle budget"
+            exit 1
+          fi
+
       - name: Upload staging artifact for the next job
         if: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT != '' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
