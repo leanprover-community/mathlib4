@@ -415,14 +415,6 @@ theorem freeRank_eq_zero_of_finite [Finite G] [Group.FG G] : freeRank G = 0 :=
 theorem freeRank_congr (e : G ≃* H) [Group.FG G] [Group.FG H] : freeRank G = freeRank H :=
   Group.rank_congr (QuotientGroup.congr (torsion G) (torsion H) e e.map_torsion)
 
-variable (G H)
-
-@[to_additive]
-theorem freeRank_prod [Group.FG G] [Group.FG H] : freeRank (G × H) = freeRank G + freeRank H := by
-  rw [freeRank_def, torsion_prod, Group.rank_congr
-    (QuotientGroup.prodMulEquiv (torsion G) (torsion H))]
-  sorry
-
 end CommGroup
 
 open CommGroup (torsion)
