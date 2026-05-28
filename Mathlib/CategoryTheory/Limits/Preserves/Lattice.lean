@@ -17,7 +17,7 @@ public import Mathlib.Order.Hom.CompleteLattice
 
 public section
 
-open CategoryTheory Limits OrderHomClass
+open OrderHomClass
 
 namespace CategoryTheory.Limits.CompleteLattice
 
@@ -45,8 +45,7 @@ end
 
 section
 
-variable {α : Type u} {β : Type v} [SemilatticeSup α] [OrderBot α] [SemilatticeSup β] [OrderBot β]
-  {F : Type*} [FunLike F α β] [SupBotHomClass F α β] (f : F)
+variable [SemilatticeSup α] [OrderBot α] [SemilatticeSup β] [OrderBot β] [SupBotHomClass F α β]
 
 instance preservesColimit_finite_toFunctor {J : Type w} [SmallCategory J]
     [FinCategory J] (K : J ⥤ α) : PreservesColimit K (toOrderHom f).toFunctor :=
@@ -64,8 +63,7 @@ end
 
 section
 
-variable {α : Type u} {β : Type v} [CompleteLattice α] [CompleteLattice β]
-  {F : Type*} [FunLike F α β] (f : F)
+variable [CompleteLattice α] [CompleteLattice β]
 
 instance preservesLimit_toFunctor [sInfHomClass F α β] {J : Type w} [Category.{w'} J]
     (K : J ⥤ α) : PreservesLimit K (toOrderHom f).toFunctor :=
