@@ -39,7 +39,7 @@ instance : Ord ApplyAtKey where
     (compare a.3 b.3).then <|
     (compare a.4 b.4)
 
-/-- Whether the two suggestions are duplicates of eachother. -/
+/-- Whether the two suggestions are duplicates of each other. -/
 def ApplyAtKey.isDuplicate (a b : ApplyAtKey) : MetaM Bool :=
   pure (a.newGoals.size == b.newGoals.size) <&&>
   a.newGoals.size.allM fun i _ =>

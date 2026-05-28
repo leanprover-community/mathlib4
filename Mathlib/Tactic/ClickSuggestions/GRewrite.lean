@@ -29,7 +29,7 @@ structure GrwPos where
   `symm` is `true` when you can only rewrite from right to left. -/
   symm? : Option Bool
 
-/-- Given the relation for grewriting at the give position, figure out all of the
+/-- Given the relation for grewriting at the given position, figure out all of the
 subrelations that could also be used. -/
 private def gcongrBackward (relName : Name) (relation : Expr) (symm : Bool) :
     MetaM (Array GrwPos) := do
@@ -141,7 +141,7 @@ instance : Ord GrwKey where
     (compare a.3 b.3).then <|
     (compare a.4 b.4)
 
-/-- Whether the two suggestions are duplicates of eachother. -/
+/-- Whether the two suggestions are duplicates of each other. -/
 def GrwKey.isDuplicate (a b : GrwKey) : MetaM Bool :=
   pure (a.replacement.mvars.size == b.replacement.mvars.size)
     <&&> isExplicitEq a.replacement.expr b.replacement.expr

@@ -53,7 +53,7 @@ instance : Ord RwKey where
     (compare a.4 b.4).then <|
     (compare a.5 b.5)
 
-/-- Whether the two suggestions are duplicates of eachother. -/
+/-- Whether the two suggestions are duplicates of each other. -/
 def RwKey.isDuplicate (a b : RwKey) : MetaM Bool :=
   pure (a.replacement.mvars.size == b.replacement.mvars.size)
     <&&> isExplicitEq a.replacement.expr b.replacement.expr
