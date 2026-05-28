@@ -11,7 +11,7 @@ public import Mathlib.Topology.Separation.Basic
 /-!
 # Support of a self-map
 
-In this file we define the fixed support of a self-map `f : α → α` to be the closure of the set of
+In this file we define the fixed support of a self-map `f : X → X` to be the closure of the set of
 non-fixed points of `f`.
 -/
 
@@ -19,34 +19,34 @@ non-fixed points of `f`.
 
 namespace Function
 
-variable {α : Type*} [TopologicalSpace α] {x : α} {f g : α → α}
+variable {X : Type*} [TopologicalSpace X] {x : X} {f g : X → X}
 
-/-- The fixed support of a self-map `f : α → α` is the closure of the set of non-fixed points. -/
-def fixedSupport (f : α → α) : Set α :=
+/-- The fixed support of a self-map `f : X → X` is the closure of the set of non-fixed points. -/
+def fixedSupport (f : X → X) : Set X :=
   closure (fixedPoints f)ᶜ
 
-/-- A self-map `f : α → α` has compact fixed support if its fixed support is compact. -/
-def HasCompactFixedSupport (f : α → α) : Prop :=
+/-- A self-map `f : X → X` has compact fixed support if its fixed support is compact. -/
+def HasCompactFixedSupport (f : X → X) : Prop :=
   IsCompact (fixedSupport f)
 
-/-- A self-map `f : α → α` has compact fixed support if and only if `f` fixes the complement of a
-closed compact set. If `α` is preregular, then use `compactSupport_iff` instead. -/
+/-- A self-map `f : X → X` has compact fixed support if and only if `f` fixes the complement of a
+closed compact set. If `X` is preregular, then use `compactSupport_iff` instead. -/
 theorem HasCompactFixedSupport_iff' :
     HasCompactFixedSupport f ↔ ∃ K, IsClosed K ∧ IsCompact K ∧ (fixedPoints f)ᶜ ⊆ K := by
   refine ⟨fun hf ↦ ?_, fun ⟨K, hK₁, hK₂, hf⟩ ↦ ?_⟩
   · exact ⟨closure (fixedPoints f)ᶜ, isClosed_closure, hf, subset_closure⟩
   · exact hK₂.of_isClosed_subset isClosed_closure (hK₁.closure_subset_iff.mpr hf)
 
-/-- A self-map `f : α → α` of a preregular space `α` has compact fixed support if and only if `f`
+/-- A self-map `f : X → X` of a preregular space `X` has compact fixed support if and only if `f`
 fixes the complement of a compact set. -/
-theorem HasCompactFixedSupport_iff [R1Space α] :
+theorem HasCompactFixedSupport_iff [R1Space X] :
     HasCompactFixedSupport f ↔ ∃ K, IsCompact K ∧ (fixedPoints f)ᶜ ⊆ K := by
   rw [HasCompactFixedSupport_iff']
   refine ⟨fun ⟨K, hK₁, hK₂, hf⟩ ↦ ⟨K, hK₂, hf⟩, fun ⟨K, hK, hf⟩ ↦ ?_⟩
   exact ⟨closure K, isClosed_closure, hK.closure, hf.trans subset_closure⟩
 
-variable (α) in
-theorem hasCompactFixedSupport_id : HasCompactFixedSupport (id : α → α) := by
+variable (X) in
+theorem hasCompactFixedSupport_id : HasCompactFixedSupport (id : X → X) := by
   simp [HasCompactFixedSupport, fixedSupport]
 
 /-- If `f` and `g` have compact fixed support, then so does their composition `f ∘ g`. -/
@@ -58,7 +58,7 @@ theorem HasCompactFixedSupport.comp (hf : HasCompactFixedSupport f)
   refine ⟨K ∪ L, hK₁.union hL₁, hK₂.union hL₂, ?_⟩
   grw [← inter_subset_fixedPoints_comp, Set.compl_inter, hf, hg]
 
-theorem HasCompactFixedSupport.symm {f : α ≃ α} (hf : HasCompactFixedSupport f) :
+theorem HasCompactFixedSupport.symm {f : X ≃ X} (hf : HasCompactFixedSupport f) :
     HasCompactFixedSupport f.symm := by
   rwa [HasCompactFixedSupport, fixedSupport, fixedPoints_symm]
 
