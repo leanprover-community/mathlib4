@@ -185,10 +185,17 @@ theorem dropUntil_copy {u v w v' w'} (p : G.Walk v w) (hv : v = v') (hw : w = w'
   subst_vars
   rfl
 
-theorem support_takeUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
+theorem support_takeUntil_prefix_support (p : G.Walk v w) (h : u ∈ p.support) :
+    (p.takeUntil u h).support <+: p.support := by
+  grw [takeUntil_eq_take, support_copy, take_support_eq_support_take_succ, List.take_prefix]
+
+theorem support_takeUntil_subset_support {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.takeUntil u h).support ⊆ p.support := fun x hx => by
   rw [← take_spec p h, mem_support_append_iff]
   exact Or.inl hx
+
+@[deprecated (since := "2026-05-25")]
+alias support_takeUntil_subset := support_takeUntil_subset_support
 
 theorem support_dropUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.dropUntil u h).support ⊆ p.support := fun x hx => by
@@ -270,12 +277,13 @@ lemma length_takeUntil_lt {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (hu
 
 lemma takeUntil_takeUntil {w x : V} (p : G.Walk u v) (hw : w ∈ p.support)
     (hx : x ∈ (p.takeUntil w hw).support) :
-    (p.takeUntil w hw).takeUntil x hx = p.takeUntil x (p.support_takeUntil_subset hw hx) := by
+    (p.takeUntil w hw).takeUntil x hx =
+      p.takeUntil x (p.support_takeUntil_subset_support hw hx) := by
   simp_rw [← takeUntil_append_of_mem_left _ (p.dropUntil w hw) hx, take_spec]
 
 lemma notMem_support_takeUntil_support_takeUntil_subset {p : G.Walk u v} {w x : V} (h : x ≠ w)
     (hw : w ∈ p.support) (hx : x ∈ (p.takeUntil w hw).support) :
-    w ∉ (p.takeUntil x (p.support_takeUntil_subset hw hx)).support := by
+    w ∉ (p.takeUntil x (p.support_takeUntil_subset_support hw hx)).support := by
   rw [← takeUntil_takeUntil p hw hx]
   intro hw'
   have h1 : (((p.takeUntil w hw).takeUntil x hx).takeUntil w hw').length

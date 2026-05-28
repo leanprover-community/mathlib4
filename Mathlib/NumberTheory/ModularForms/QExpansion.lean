@@ -251,10 +251,6 @@ private lemma hasFPowerSeriesOnBall_update {f : ℍ → ℂ} (hh : 0 < h) {c : �
           (mod_cast hr')).summable.norm
   · simp
   · intro y hy
-    rw [zero_add]
-    -- note the `simp`s below do not automatically apply this lemma to the argument of
-    -- `Function.update`, because of limitations in `simp`'s support for dependent function types,
-    -- see lean4 issue #12478.
     rw [← ENNReal.coe_one, Metric.eball_coe, NNReal.coe_one, mem_ball_zero_iff] at hy
     rcases eq_or_ne y 0 with rfl | hy'
     · simpa +contextual [zero_pow_eq] using hasSum_ite_eq 0 (c 0)
