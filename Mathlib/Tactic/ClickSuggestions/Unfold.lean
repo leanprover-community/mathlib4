@@ -160,7 +160,7 @@ elab "#unfold? " e:term : command => do
   Command.runTermElabM fun _ => do
     let e ← Term.elabTerm e none
     Term.synthesizeSyntheticMVarsNoPostponing
-    let e ← instantiateMVars e
+    let e ← Term.levelMVarToParam (← instantiateMVars e)
     let unfolds ← filteredUnfolds e
     if unfolds.isEmpty then
       logInfo m! "No unfolds found for {e}"

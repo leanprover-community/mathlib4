@@ -1,6 +1,7 @@
 module
 
-import Mathlib
+public import Mathlib
+import all Mathlib.Tactic.ClickSuggestions.FindPremises
 
 /-!
 # Benchmarking `#click_suggestions`
@@ -18,7 +19,8 @@ There is a trade-off between two design decisions:
 (1) takes less time overall, but more time upfront. Currently, we use (2).
 -/
 
-namespace InfoviewSearch
+meta section
+namespace Mathlib.Tactic.ClickSuggestions
 open Lean Meta
 
 def measureImport (choice : Choice) : MetaM (Nat × PreDiscrTrees) := do
