@@ -58,7 +58,7 @@ def derivationToSquareZeroOfLift [IsScalarTower R A B] (hI : I ^ 2 = ⊥) (f : A
     let F := diffToIdealOfQuotientCompEq I f (IsScalarTower.toAlgHom R A B) (by rw [e]; ext; rfl)
     have : (f x - algebraMap A B x) * (f y - algebraMap A B y) = 0 := by
       rw [← Ideal.mem_bot, ← hI, pow_two]
-      convert Ideal.mul_mem_mul (F x).2 (F y).2 using 1
+      convert! Ideal.mul_mem_mul (F x).2 (F y).2 using 1
     ext
     dsimp only [Submodule.coe_add, Submodule.coe_mk, LinearMap.coe_mk,
       diffToIdealOfQuotientCompEq_apply, Submodule.coe_smul_of_tower, IsScalarTower.coe_toAlgHom',
@@ -88,7 +88,7 @@ def liftOfDerivationToSquareZero [IsScalarTower R A B] (hI : I ^ 2 = ⊥) (f : D
     map_mul' := fun x y => by
       have : (f x : B) * f y = 0 := by
         rw [← Ideal.mem_bot, ← hI, pow_two]
-        convert Ideal.mul_mem_mul (f x).2 (f y).2 using 1
+        convert! Ideal.mul_mem_mul (f x).2 (f y).2 using 1
       simp only [map_mul, f.leibniz, add_mul, mul_add, Submodule.coe_add,
         Submodule.coe_smul_of_tower, Algebra.smul_def, this]
       ring
@@ -98,14 +98,12 @@ def liftOfDerivationToSquareZero [IsScalarTower R A B] (hI : I ^ 2 = ⊥) (f : D
     map_zero' := ((I.restrictScalars R).subtype.comp f.toLinearMap +
       (IsScalarTower.toAlgHom R A B).toLinearMap).map_zero }
 
-set_option backward.isDefEq.respectTransparency false in
 -- simp normal form is `liftOfDerivationToSquareZero_mk_apply'`
 theorem liftOfDerivationToSquareZero_mk_apply [IsScalarTower R A B] (d : Derivation R A I) (x : A) :
     Ideal.Quotient.mk I (liftOfDerivationToSquareZero I hI d x) = algebraMap A (B ⧸ I) x := by
   rw [liftOfDerivationToSquareZero_apply, map_add, Ideal.Quotient.eq_zero_iff_mem.mpr (d x).prop,
     zero_add, Ideal.Quotient.mk_algebraMap]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem liftOfDerivationToSquareZero_mk_apply' (d : Derivation R A I) (x : A) :
     (Ideal.Quotient.mk I) (d x) + (algebraMap A (B ⧸ I)) x = algebraMap A (B ⧸ I) x := by

@@ -5,7 +5,7 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.LinearAlgebra.BilinearMap
 
 /-!

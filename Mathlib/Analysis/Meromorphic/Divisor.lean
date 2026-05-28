@@ -6,6 +6,7 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Algebra.Order.WithTop.Untop0
+public import Mathlib.Analysis.Meromorphic.IsolatedZeros
 public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.Topology.LocallyFinsupp
 
@@ -67,6 +68,10 @@ Simplifier lemma: on `U`, the divisor of a function `f` that is meromorphic on `
 lemma divisor_apply {f : 𝕜 → E} (hf : MeromorphicOn f U) (hz : z ∈ U) :
     divisor f U z = (meromorphicOrderAt f z).untop₀ := by simp_all [MeromorphicOn.divisor_def]
 
+lemma AnalyticOnNhd.divisor_apply {f : 𝕜 → E} (hf : AnalyticOnNhd 𝕜 f U) (hz : z ∈ U) :
+    divisor f U z = ((analyticOrderAt f z).map (↑)).untop₀ := by
+  rw [hf.meromorphicOn.divisor_apply hz, (hf z hz).meromorphicOrderAt_eq]
+
 /-!
 ## Congruence Lemmas
 -/
@@ -88,6 +93,24 @@ theorem divisor_congr_codiscreteWithin_of_eqOn_compl {f₁ f₂ : 𝕜 → E} (h
     simp at ha
     tauto
   · simp [hx]
+
+/-
+If two meromorphic functions agree outside a set codiscrete within a perfect set, then they define
+the same divisors there.
+-/
+theorem divisor_of_eventuallyEq_codiscreteWithin_preperfect {f₁ f₂ : 𝕜 → E}
+    (hf₁ : MeromorphicOn f₁ U) (hf₂ : MeromorphicOn f₂ U) (hU : Preperfect U)
+    (h : f₁ =ᶠ[codiscreteWithin U] f₂) :
+    divisor f₁ U = divisor f₂ U := by
+  ext z
+  by_cases hz : z ∉ U
+  · simp_all
+  rw [not_not] at hz
+  rw [divisor_apply hf₁ hz, divisor_apply hf₂ hz]
+  congr 1
+  apply meromorphicOrderAt_congr
+  apply (hf₁ z hz).eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin_preperfect
+    (hf₂ z hz) hz hU h
 
 /--
 If two functions differ only on a discrete set of an open, then they induce the same divisors.
@@ -157,7 +180,7 @@ The divisor of a constant function is `0`.
 -/
 @[simp] theorem divisor_ofNat (n : ℕ) :
     divisor (ofNat(n) : 𝕜 → 𝕜) U = 0 := by
-  convert divisor_const (n : 𝕜)
+  convert! divisor_const (n : 𝕜)
   simp [Semiring.toGrindSemiring_ofNat 𝕜 n]
 
 /-!
@@ -295,7 +318,7 @@ theorem divisor_fun_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
     (h₁f : ∀ i ∈ s, MeromorphicOn (f i) U)
     (h₂f : ∀ i ∈ s, ∀ z ∈ U, meromorphicOrderAt (f i) z ≠ ⊤) :
     divisor (fun x ↦ ∏ i ∈ s, f i x) U = ∑ i ∈ s, divisor (f i) U := by
-  convert divisor_prod h₁f h₂f
+  convert! divisor_prod h₁f h₂f
   exact (Finset.prod_apply _ s f).symm
 
 /-- The divisor of the inverse is the negative of the divisor. -/

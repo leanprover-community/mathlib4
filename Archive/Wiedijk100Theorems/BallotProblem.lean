@@ -216,7 +216,7 @@ theorem first_vote_pos :
       · norm_cast
         rw [mul_comm _ (p + 1), add_right_comm, Nat.add_one_mul_choose_eq,
           mul_comm]
-      all_goals simp [(Nat.choose_pos <| le_add_of_nonneg_right zero_le').ne']
+      all_goals simp [(Nat.choose_pos <| le_add_of_nonneg_right zero_le).ne']
     · simp
 
 theorem headI_mem_of_nonempty {α : Type*} [Inhabited α] : ∀ {l : List α} (_ : l ≠ []), l.headI ∈ l
@@ -358,7 +358,7 @@ theorem ballot_problem :
   simp only [Ne, ENNReal.div_eq_top, tsub_eq_zero_iff_le, Nat.cast_le, not_le,
     add_eq_zero, Nat.cast_eq_zero, ENNReal.add_eq_top, ENNReal.natCast_ne_top, or_self_iff,
     not_false_iff, and_true]
-  push_neg
+  push Not
   exact ⟨fun _ _ => by linarith, (tsub_le_self.trans_lt (ENNReal.natCast_ne_top p).lt_top).ne⟩
 
 end Ballot

@@ -61,7 +61,6 @@ lemma coeff_genFun (f : ℕ → ℕ → R) (n : ℕ) :
     (genFun f).coeff n = ∑ p : n.Partition, p.parts.toFinsupp.prod f :=
   PowerSeries.coeff_mk _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The summands in the formula `Nat.Partition.hasProd_genFun` tends to infinity in their order. -/
 theorem tendsto_order_genFun_term_atTop_nhds_top (f : ℕ → ℕ → R) (i : ℕ) :
     Filter.Tendsto (fun j ↦ (f (i + 1) (j + 1) • (X : R⟦X⟧) ^ ((i + 1) * (j + 1))).order)
@@ -97,18 +96,18 @@ private theorem aux_dvd_of_coeff_ne_zero {f : ℕ → ℕ → R} {d : ℕ} {s : 
     x ∣ g x := by
   by_cases hx : x ∈ s
   · specialize hprod x hx
-    contrapose! hprod
+    contrapose hprod
     have hx0 : x ≠ 0 := fun h ↦ hs0 (h ▸ hx)
     rw [map_add, (summable_genFun_term' f hx0).map_tsum _ (WithPiTopology.continuous_coeff _ _)]
     rw [show (0 : R) = 0 + ∑' (i : ℕ), 0 by simp]
     congrm (?_ + ∑' (i : ℕ), ?_)
     · suffices g x ≠ 0 by simp [this]
-      contrapose! hprod
+      contrapose hprod
       simp [hprod]
     · rw [map_smul, coeff_X_pow]
       apply smul_eq_zero_of_right
       suffices g x ≠ x * (i + 1) by simp [this]
-      contrapose! hprod
+      contrapose hprod
       simp [hprod]
   · suffices g x = 0 by simp [this]
     contrapose! hx
@@ -125,7 +124,7 @@ private theorem aux_prod_coeff_eq_zero_of_notMem_range (f : ℕ → ℕ → R) {
   rw [Set.mem_range]
   have hgne0 (i : ℕ) : g i ≠ 0 ↔ i ≠ 0 ∧ i ≤ g i := by
     refine ⟨fun h ↦ ⟨?_, ?_⟩, by grind⟩
-    · contrapose! hs0 with rfl
+    · contrapose hs0 with rfl
       exact mem_of_subset (mem_finsuppAntidiag.mp hg).2 (by simpa using h)
     · exact Nat.le_of_dvd (Nat.pos_of_ne_zero h) <| aux_dvd_of_coeff_ne_zero hs0 hg hprod _
   refine ⟨Nat.Partition.mk (Finsupp.mk g.support (fun i ↦ g i / i) ?_).toMultiset ?_ ?_, ?_⟩
@@ -140,7 +139,6 @@ private theorem aux_prod_coeff_eq_zero_of_notMem_range (f : ℕ → ℕ → R) {
   · ext x
     simpa [toFinsuppAntidiag] using Nat.div_mul_cancel <| aux_dvd_of_coeff_ne_zero hs0 hg hprod x
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem aux_prod_f_eq_prod_coeff (f : ℕ → ℕ → R) {n : ℕ} (p : Partition n) {s : Finset ℕ}
     (hs : Icc 1 n ⊆ s) (hs0 : 0 ∉ s) :
     p.parts.toFinsupp.prod f =

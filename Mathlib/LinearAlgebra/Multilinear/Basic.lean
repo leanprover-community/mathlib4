@@ -121,8 +121,8 @@ def mk' [DecidableEq ι] (f : (∀ i, M₁ i) → M₂)
       f (update m i (c • x)) = c • f (update m i x) := by aesop) :
     MultilinearMap R M₁ M₂ where
   toFun := f
-  map_update_add' m i x y := by convert h₁ m i x y
-  map_update_smul' m i c x := by convert h₂ m i c x
+  map_update_add' m i x y := by convert! h₁ m i x y
+  map_update_smul' m i c x := by convert! h₂ m i c x
 
 @[simp]
 theorem toFun_eq_coe : f.toFun = ⇑f :=
@@ -213,6 +213,10 @@ theorem smul_apply (f : MultilinearMap R M₁ M₂) (c : S) (m : ∀ i, M₁ i) 
 theorem coe_smul (c : S) (f : MultilinearMap R M₁ M₂) : ⇑(c • f) = c • (⇑f) := rfl
 
 end SMul
+
+-- The `AddMonoid` instance exists to help speedup unification
+instance : AddMonoid (MultilinearMap R M₁ M₂) := fast_instance%
+  coe_injective.addMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 instance addCommMonoid : AddCommMonoid (MultilinearMap R M₁ M₂) := fast_instance%
   coe_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
@@ -1104,7 +1108,7 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
     change (g fun j ↦ update f i (f₁ + f₂) j <| x j) =
         (g fun j ↦ update f i f₁ j <| x j) + g fun j ↦ update f i f₂ j (x j)
     let c : Π (i : ι), (M₁ i →ₗ[R] M₁' i) → M₁' i := fun i f ↦ f (x i)
-    convert g.map_update_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) with j j j
+    convert! g.map_update_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) with j j j
     · exact Function.apply_update c f i (f₁ + f₂) j
     · exact Function.apply_update c f i f₁ j
     · exact Function.apply_update c f i f₂ j
@@ -1113,7 +1117,7 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
     ext g x
     change (g fun j ↦ update f i (a • f₀) j <| x j) = a • g fun j ↦ update f i f₀ j (x j)
     let c : Π (i : ι), (M₁ i →ₗ[R] M₁' i) → M₁' i := fun i f ↦ f (x i)
-    convert g.map_update_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) with j j j
+    convert! g.map_update_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) with j j j
     · exact Function.apply_update c f i (a • f₀) j
     · exact Function.apply_update c f i f₀ j
 
@@ -1341,7 +1345,7 @@ lemma map_sub_map_piecewise [LinearOrder ι] (a b : (i : ι) → M₁ i) (s : Fi
       · exact fun h ↦ (h₁ <| .inl h).ne h
     · cases h₂
       rw [update_self, s.piecewise_eq_of_notMem _ _ (lt_irrefl _ <| hk k ·)]
-    · push_neg at h₁
+    · push Not at h₁
       rw [update_of_ne (Ne.symm h₂), s.piecewise_eq_of_mem _ _ (h₁.1.resolve_left <| Ne.symm h₂)]
   · apply sum_congr rfl
     grind

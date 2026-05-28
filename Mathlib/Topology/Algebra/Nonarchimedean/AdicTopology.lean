@@ -6,10 +6,12 @@ Authors: Patrick Massot
 module
 
 public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.Topology.Algebra.Nonarchimedean.Bases
-import Mathlib.Topology.Algebra.UniformRing  -- shake: keep (used in `example` only)
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+public import Mathlib.Topology.Algebra.Nonarchimedean.Bases
+public import Mathlib.Topology.Algebra.TopologicallyNilpotent
+public import Mathlib.Topology.UniformSpace.Equiv
 
+import Mathlib.Topology.Algebra.UniformRing  -- shake: keep (used in `example` only)
 
 /-!
 # Adic topology
@@ -111,6 +113,10 @@ theorem hasBasis_nhds_adic (I : Ideal R) (x : R) :
   have := I.hasBasis_nhds_zero_adic.map fun y => x + y
   rwa [map_add_left_nhds_zero x] at this
 
+theorem isLinearTopology (I : Ideal R) : @IsLinearTopology R R _ _ _ I.adicTopology :=
+  letI := I.adicTopology
+  IsLinearTopology.mk_of_hasBasis _ I.hasBasis_nhds_zero_adic
+
 variable (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
 
 theorem adic_module_basis :
@@ -137,7 +143,7 @@ on an `R`-module `M`, seen as open additive subgroups of `M`. -/
 def openAddSubgroup (n : ℕ) : @OpenAddSubgroup R _ I.adicTopology := by
   letI := I.adicTopology
   refine ⟨(I ^ n).toAddSubgroup, ?_⟩
-  convert (I.adic_basis.toRing_subgroups_basis.openAddSubgroup n).isOpen
+  convert! (I.adic_basis.toRing_subgroups_basis.openAddSubgroup n).isOpen
   change (↑(I ^ n) : Set R) = ↑(I ^ n • (⊤ : Ideal R))
   simp
 
@@ -245,6 +251,30 @@ instance (priority := 100) : UniformSpace R :=
 
 instance (priority := 100) : IsUniformAddGroup R :=
   isUniformAddGroup_of_addCommGroup
+
+instance (priority := 100) : IsLinearTopology R R := i.isLinearTopology
+
+variable {R} in
+theorem uniformContinuous_of_map_le {S : Type*} [CommRing S] [WithIdeal S] {f : R →+* S}
+    (hf : i.map f ≤ i) : UniformContinuous f := uniformContinuous_of_continuousAt_zero f (by
+  rw [ContinuousAt, map_zero, i.hasBasis_nhds_zero_adic.tendsto_iff i.hasBasis_nhds_zero_adic]
+  refine fun n _ ↦ ⟨n, trivial, Ideal.map_le_iff_le_comap.mp ?_⟩
+  simpa [Ideal.map_pow] using Ideal.pow_right_mono hf n)
+
+variable {R} in
+/-- A ring equivalence induces a uniform equivalence with respect to the adic topologies,
+provided it preserves the defining ideals. -/
+def uniformEquiv {S : Type*} [CommRing S] [WithIdeal S] (e : R ≃+* S)
+    (h : i.map e.toRingHom = i) : UniformEquiv R S where
+  __ := e
+  uniformContinuous_toFun := uniformContinuous_of_map_le (f := e.toRingHom) (by rw [h])
+  uniformContinuous_invFun := uniformContinuous_of_map_le (f := e.symm.toRingHom) (by simp [← h])
+
+variable {R} in
+lemma isTopologicallyNilpotent_of_mem {a : R} (ha : a ∈ i) : IsTopologicallyNilpotent a := by
+  suffices ∀ m : ℕ, ∃ n₀, ∀ n, n₀ ≤ n → a ^ n ∈ i ^ m by
+    simpa [IsTopologicallyNilpotent, i.hasBasis_nhds_zero_adic.tendsto_right_iff]
+  exact fun m ↦ ⟨m, fun n hn ↦ Ideal.pow_le_pow_right hn (Ideal.pow_mem_pow ha _)⟩
 
 /-- The adic topology on an `R` module coming from the ideal `WithIdeal.I`.
 This cannot be an instance because `R` cannot be inferred from `M`. -/

@@ -253,7 +253,7 @@ lemma isGE_eTruncGE_obj_obj (n : ℤ) (i : EInt) (h : n ≤ i) (X : C) :
   | bot => simp at h
   | coe i =>
     dsimp
-    exact t.isGE_of_ge  _ _ _ (by simpa using h)
+    exact t.isGE_of_ge _ _ _ (by simpa using h)
   | top => exact t.isGE_of_isZero (Functor.zero_obj _) _
 
 lemma isLE_eTruncLT_obj_obj (n : ℤ) (i : EInt) (h : i ≤ (n + 1 :)) (X : C) :
@@ -509,7 +509,7 @@ lemma eTruncLTGEIsoGELT_hom_naturality (a b : EInt) {X Y : C} (f : X ⟶ Y) :
 lemma eTruncLTGEIsoGELT_hom_app_fac (a b : EInt) (X : C) :
     (t.eTruncLT.obj b).map ((t.eTruncGE.obj a).map ((t.eTruncLTι b).app X)) ≫
       (t.eTruncLTGEIsoGELT a b).hom.app X =
-    (t.eTruncLTι b).app ((t.eTruncGE.obj a).obj ((t.eTruncLT.obj b).obj X)):= by
+    (t.eTruncLTι b).app ((t.eTruncGE.obj a).obj ((t.eTruncLT.obj b).obj X)) := by
   simp [eTruncLTGEIsoGELT]
 
 set_option backward.isDefEq.respectTransparency false in

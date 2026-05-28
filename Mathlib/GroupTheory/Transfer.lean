@@ -181,6 +181,7 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
           simp only [if_neg hk, inv_mul_cancel]
           exact map_one ϕ
 
+open scoped IsMulCommutative in
 /-- Auxiliary lemma in order to state `transfer_eq_pow`. -/
 theorem transfer_eq_pow_aux (g : G)
     (key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g₀⁻¹ * g ^ k * g₀ = g ^ k) :
@@ -202,6 +203,7 @@ theorem transfer_eq_pow_aux (g : G)
       Subgroup.prod_mem (H.subgroupOf (zpowers g)) fun q (_ : q ∈ Finset.univ) => hf q
     simpa only [f, Finset.prod_pow_eq_pow_sum, index_eq_sum_minimalPeriod H g] using key
 
+open scoped IsMulCommutative in
 theorem transfer_eq_pow [FiniteIndex H] (g : G)
     (key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g₀⁻¹ * g ^ k * g₀ = g ^ k) :
     transfer ϕ g = ϕ ⟨g ^ H.index, transfer_eq_pow_aux g key⟩ := by
@@ -219,6 +221,7 @@ theorem transfer_eq_pow [FiniteIndex H] (g : G)
     funext
     apply key
 
+open scoped IsMulCommutative in
 theorem transfer_center_eq_pow [FiniteIndex (center G)] (g : G) :
     transfer (MonoidHom.id (center G)) g = ⟨g ^ (center G).index, (center G).pow_index_mem g⟩ :=
   transfer_eq_pow (id (center G)) g fun k _ hk => by rw [← mul_right_inj, ← hk.comm,
@@ -238,36 +241,36 @@ theorem transferCenterPow_apply [FiniteIndex (center G)] (g : G) :
 
 section BurnsideTransfer
 
-variable {p : ℕ} (P : Sylow p G) (hP : normalizer (P : Subgroup G) ≤ centralizer (P : Set G))
+variable {p : ℕ} (P : Sylow p G) (hP : normalizer P ≤ centralizer (P : Set G))
 include hP
 
+open scoped IsMulCommutative in
 /-- The homomorphism `G →* P` in Burnside's transfer theorem. -/
-noncomputable def transferSylow [FiniteIndex (P : Subgroup G)] : G →* (P : Subgroup G) :=
-  @transfer G _ P P
-    (@CommGroup.ofIsMulCommutative P _ ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩)
-      (MonoidHom.id P) _
+noncomputable def transferSylow [P.FiniteIndex] : G →* P :=
+  haveI : IsMulCommutative P := ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
+  transfer (MonoidHom.id P)
 
 variable [Fact p.Prime] [Finite (Sylow p G)]
 
 /-- Auxiliary lemma in order to state `transferSylow_eq_pow`. -/
 theorem transferSylow_eq_pow_aux (g : G) (hg : g ∈ P) (k : ℕ) (g₀ : G)
     (h : g₀⁻¹ * g ^ k * g₀ ∈ P) : g₀⁻¹ * g ^ k * g₀ = g ^ k := by
-  haveI : IsMulCommutative (P : Subgroup G) :=
+  haveI : IsMulCommutative P :=
     ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
-  replace hg := (P : Subgroup G).pow_mem hg k
+  replace hg := P.pow_mem hg k
   obtain ⟨n, hn, h⟩ := P.conj_eq_normalizer_conj_of_mem (g ^ k) g₀ hg h
   exact h.trans (Commute.inv_mul_cancel (hP hn (g ^ k) hg).symm)
 
-variable [FiniteIndex (P : Subgroup G)]
+variable [P.FiniteIndex]
 
+open scoped IsMulCommutative in
 theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
     transferSylow P hP g =
-      ⟨g ^ (P : Subgroup G).index, transfer_eq_pow_aux g (transferSylow_eq_pow_aux P hP g hg)⟩ :=
+      ⟨g ^ P.index, transfer_eq_pow_aux g (transferSylow_eq_pow_aux P hP g hg)⟩ :=
   haveI : IsMulCommutative P := ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
   transfer_eq_pow _ _ <| transferSylow_eq_pow_aux P hP g hg
 
-theorem transferSylow_restrict_eq_pow : ⇑((transferSylow P hP).restrict (P : Subgroup G)) =
-    (fun x : P => x ^ (P : Subgroup G).index) :=
+theorem transferSylow_restrict_eq_pow : (transferSylow P hP).restrict P = fun x : P ↦ x ^ P.index :=
   funext fun g => transferSylow_eq_pow P hP g g.2
 
 /-- **Burnside's normal p-complement theorem**: If `N(P) ≤ C(P)`, then `P` has a normal
@@ -306,7 +309,7 @@ variable {G : Type*} [Group G] [Finite G] {p : ℕ} (hp : (Nat.card G).minFac = 
 
 include hp in
 theorem normalizer_le_centralizer (hP : IsCyclic P) :
-    normalizer (P : Subgroup G) ≤ centralizer (P : Set G) := by
+    normalizer P ≤ centralizer (P : Set G) := by
   subst hp
   by_cases hn : Nat.card G = 1
   · have := (Nat.card_eq_one_iff_unique.mp hn).1

@@ -18,6 +18,9 @@ It proves the existence of `ψ : E₁ → E₂` such that for `v` in a neighbour
 `f v = f u ↔ ψ v.1 = v.2`. This is `HasStrictFDerivAt.implicitFunctionOfProdDomain`. A formula for
 its first derivative follows.
 
+A similar specialization is made to a curried bivariate function by `implicitFunctionOfBivariate` in
+a sister file .
+
 ## Tags
 
 implicit function

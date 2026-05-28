@@ -33,7 +33,7 @@ namespace Types
 /-- The jointly surjective precoverage in the category of types has the jointly surjective
 families as coverings. -/
 def jointlySurjectivePrecoverage : Precoverage (Type u) where
-  coverings X := {R | ∀ x : X, ∃ (Y : Type u) (g : Y ⟶ X), R g ∧ x ∈ Set.range g}
+  coverings X R := ∀ x : X, ∃ (Y : Type u) (g : Y ⟶ X), R g ∧ x ∈ Set.range g
 
 lemma mem_jointlySurjectivePrecoverage_iff {X : Type u} {R : Presieve X} :
     R ∈ jointlySurjectivePrecoverage X ↔
@@ -48,8 +48,8 @@ lemma singleton_mem_jointlySurjectivePrecoverage_iff {X Y : Type u} {f : X ⟶ Y
   exact hx
 
 @[simp]
-lemma ofArrows_mem_jointlySurjectivePrecoverage_iff {X : Type u} {ι : Type*} {Y : ι → Type u}
-    {f : ∀ i, Y i ⟶ X} :
+lemma ofArrows_mem_jointlySurjectivePrecoverage_iff {X : Type u} {ι : Type*}
+    {Y : ι → Type u} {f : ∀ i, Y i ⟶ X} :
     Presieve.ofArrows Y f ∈ jointlySurjectivePrecoverage X ↔
       ∀ x, ∃ (i : ι), x ∈ Set.range (f i) := by
   refine ⟨fun h x ↦ ?_, fun h x ↦ ?_⟩

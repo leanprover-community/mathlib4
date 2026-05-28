@@ -561,9 +561,11 @@ theorem isBigO_of_le (hfg : ∀ x, ‖f x‖ ≤ ‖g x‖) : f =O[l] g :=
 
 end
 
+@[refl]
 theorem isBigOWith_refl (f : α → E) (l : Filter α) : IsBigOWith 1 l f f :=
   isBigOWith_of_le l fun _ => le_rfl
 
+@[refl]
 theorem isBigO_refl (f : α → E) (l : Filter α) : f =O[l] f :=
   (isBigOWith_refl f l).isBigO
 
@@ -660,7 +662,7 @@ theorem isLittleO_insert [TopologicalSpace α] {x : α} {s : Set α} {g : α →
   refine forall_congr' fun c => forall_congr' fun hc => ?_
   rw [isBigOWith_insert]
   rw [h, norm_zero]
-  exact mul_nonneg hc.le (norm_nonneg _)
+  positivity
 
 protected theorem IsLittleO.insert [TopologicalSpace α] {x : α} {s : Set α} {g : α → E'}
     {g' : α → F'} (h1 : g =o[𝓝[s] x] g') (h2 : g x = 0) : g =o[𝓝[insert x s] x] g' :=
@@ -1310,7 +1312,7 @@ theorem IsBigOWith.mul {f₁ f₂ : α → R} {g₁ g₂ : α → S} {c₁ c₂ 
   simp only [IsBigOWith_def] at *
   filter_upwards [h₁, h₂] with _ hx₁ hx₂
   apply le_trans (norm_mul_le _ _)
-  convert mul_le_mul hx₁ hx₂ (norm_nonneg _) (le_trans (norm_nonneg _) hx₁) using 1
+  convert! mul_le_mul hx₁ hx₂ (norm_nonneg _) (le_trans (norm_nonneg _) hx₁) using 1
   rw [norm_mul, mul_mul_mul_comm]
 
 theorem IsBigO.mul {f₁ f₂ : α → R} {g₁ g₂ : α → S} (h₁ : f₁ =O[l] g₁) (h₂ : f₂ =O[l] g₂) :
@@ -1373,7 +1375,7 @@ theorem IsLittleO.pow {f : α → R} {g : α → S} (h : f =o[l] g) {n : ℕ} (h
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn.ne'; clear hn
   induction n with
   | zero => simpa only [pow_one]
-  | succ n ihn => convert ihn.mul h <;> simp [pow_succ]
+  | succ n ihn => convert! ihn.mul h <;> simp [pow_succ]
 
 theorem IsLittleO.of_pow [NormOneClass S] {f : α → S} {g : α → R} {n : ℕ}
     (h : (f ^ n) =o[l] (g ^ n)) (hn : n ≠ 0) : f =o[l] g :=
@@ -1461,7 +1463,7 @@ theorem IsLittleO.sum_congr (hAB : ∀ i ∈ s, A i =o[l] B i) :
       =o[l] fun H => ‖B i H‖ + ‖∑ j ∈ s, ‖B j H‖‖ :=
           (hAB i (by simp)).add_add (h (fun j hj => hAB j (by simp [hj])))
     _ =ᶠ[l] fun H => ‖B i H‖ + ∑ j ∈ s, ‖B j H‖ := by
-        refine Eventually.of_forall fun H ↦ congr_arg (‖B i H‖ + · ) ?_
+        refine Eventually.of_forall fun H ↦ congr_arg (‖B i H‖ + ·) ?_
         exact Real.norm_of_nonneg (Finset.sum_nonneg fun _ _ => norm_nonneg _)
 
 /-- Similar to `IsBigOWith.sum_congr` except the index set can change in the sum. This requires the

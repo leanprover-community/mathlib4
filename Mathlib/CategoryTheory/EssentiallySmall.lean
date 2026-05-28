@@ -6,9 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Category.ULift
-public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Skeletal
-public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.Logic.UnivLE
 public import Mathlib.Logic.Small.Basic
 
@@ -290,7 +288,7 @@ instance [Small.{w} C] [LocallySmall.{w} C] :
   refine small_of_injective (f := φ) ?_
   rintro ⟨s, t, f⟩ ⟨s', t', f'⟩ h
   obtain rfl : s = s' := congr_arg Sigma.fst h
-  simp only [Functor.id_obj, Sigma.mk.injEq, heq_eq_eq, true_and, φ] at h
+  simp only [Sigma.mk.injEq, heq_eq_eq, true_and, φ] at h
   obtain rfl : t = t' := h.1
   obtain rfl : f = f' := by simpa using h
   rfl
