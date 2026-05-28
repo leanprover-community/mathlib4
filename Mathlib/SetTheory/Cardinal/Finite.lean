@@ -63,7 +63,7 @@ theorem subtype_card {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s 
     Nat.card { x // p x } = Finset.card s := by
   rw [← Fintype.subtype_card s H, Fintype.card_eq_nat_card]
 
-@[simp] theorem card_of_isEmpty [IsEmpty α] : Nat.card α = 0 := by simp [Nat.card]
+theorem card_of_isEmpty [IsEmpty α] : Nat.card α = 0 := by simp [Nat.card]
 
 @[simp] lemma card_eq_zero_of_infinite [Infinite α] : Nat.card α = 0 := mk_toNat_of_infinite
 
@@ -195,7 +195,6 @@ theorem card_of_subsingleton (a : α) [Subsingleton α] : Nat.card α = 1 := by
 theorem card_eq_one_iff_unique : Nat.card α = 1 ↔ Subsingleton α ∧ Nonempty α :=
   Cardinal.toNat_eq_one_iff_unique
 
-@[simp]
 theorem card_unique [Nonempty α] [Subsingleton α] : Nat.card α = 1 := by
   simp [card_eq_one_iff_unique, *]
 
@@ -363,7 +362,7 @@ theorem card_le_one_iff_subsingleton (α : Type*) : card α ≤ 1 ↔ Subsinglet
   rw [← le_one_iff_subsingleton]
   simp [card]
 
-@[simp] lemma card_le_one [Subsingleton α] : card α ≤ 1 := by simpa [card_le_one_iff_subsingleton]
+lemma card_le_one [Subsingleton α] : card α ≤ 1 := by simpa [card_le_one_iff_subsingleton]
 
 lemma card_eq_one_iff_unique {α : Type*} : card α = 1 ↔ Nonempty (Unique α) := by
   rw [unique_iff_subsingleton_and_nonempty α, le_antisymm_iff]
