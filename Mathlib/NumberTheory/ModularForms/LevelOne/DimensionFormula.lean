@@ -157,7 +157,7 @@ lemma CuspForm.rank_eq_zero_of_weight_lt_twelve (hk : k < 12) :
 
 /-- The space of weight 12 cusp forms for `𝒮ℒ` has rank 1. -/
 lemma CuspForm.rank_eq_one_of_weight_eq_twelve : Module.rank ℂ (CuspForm 𝒮ℒ 12) = 1 := by
-  simpa [CuspForm.discriminantEquiv.rank_eq] using levelOne_weight_zero_rank_one
+  simpa [CuspForm.discriminantEquiv.rank_eq] using! levelOne_weight_zero_rank_one
 
 /-- Every weight 12 cusp form for `𝒮ℒ` is a scalar multiple of the discriminant. -/
 lemma CuspForm.exists_smul_discriminant_of_weight_eq_twelve (f : CuspForm 𝒮ℒ 12) :
@@ -254,7 +254,7 @@ theorem dimension_level_one (k : ℕ) (hk2 : Even k) :
   rcases this with hk | hk | hk
   · -- `k < 3`: direct case-by-case check
     interval_cases k
-    · simpa using levelOne_weight_zero_rank_one
+    · simpa using! levelOne_weight_zero_rank_one
     · grind
     · simpa [Nat.ModEq] using levelOne_weight_two_rank_zero
   · -- `3 ≤ k < 12`: rank decomposition + the weight `k - 12` space is zero
