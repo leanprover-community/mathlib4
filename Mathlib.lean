@@ -2285,6 +2285,7 @@ public import Mathlib.Analysis.Real.Pi.Irrational
 public import Mathlib.Analysis.Real.Pi.Leibniz
 public import Mathlib.Analysis.Real.Pi.Wallis
 public import Mathlib.Analysis.Real.Spectrum
+public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Analysis.Seminorm
 public import Mathlib.Analysis.SpecialFunctions.Arcosh
 public import Mathlib.Analysis.SpecialFunctions.ArithmeticGeometricMean
@@ -4277,7 +4278,6 @@ public import Mathlib.Data.Real.Embedding
 public import Mathlib.Data.Real.Hom
 public import Mathlib.Data.Real.Pointwise
 public import Mathlib.Data.Real.Sign
-public import Mathlib.Data.Real.Sqrt
 public import Mathlib.Data.Real.Star
 public import Mathlib.Data.Real.StarOrdered
 public import Mathlib.Data.Rel
