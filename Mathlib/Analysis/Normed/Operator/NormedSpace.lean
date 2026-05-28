@@ -193,29 +193,72 @@ variable {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₂'] {F' : Type*} [Nor
   [RingHomCompTriple σ₂'' σ₂₃' σ₂₃] [RingHomIsometric σ₂₃] [RingHomIsometric σ₂']
   [RingHomIsometric σ₂''] [RingHomIsometric σ₂₃']
 
-/-- Precomposition with a linear isometry preserves the operator norm. -/
-theorem opNorm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛₗᵢ[σ₂'] F) :
-    ‖f.comp g.toLinearIsometry.toContinuousLinearMap‖ = ‖f‖ := by
-  cases subsingleton_or_nontrivial F'
-  · haveI := g.symm.toLinearEquiv.toEquiv.subsingleton
-    simp
-  refine le_antisymm ?_ ?_
-  · convert! f.opNorm_comp_le g.toLinearIsometry.toContinuousLinearMap
-    simp [g.toLinearIsometry.norm_toContinuousLinearMap]
-  · convert!
-    (f.comp g.toLinearIsometry.toContinuousLinearMap).opNorm_comp_le
-      g.symm.toLinearIsometry.toContinuousLinearMap
-    · ext
-      simp
-    haveI := g.symm.surjective.nontrivial
-    simp [g.symm.toLinearIsometry.norm_toContinuousLinearMap]
-
 @[simp]
 theorem norm_smulRightL (c : StrongDual 𝕜 E) [Nontrivial Fₗ] : ‖smulRightL 𝕜 E Fₗ c‖ = ‖c‖ :=
   ContinuousLinearMap.homothety_norm _ c.norm_smulRight_apply
 
 lemma norm_smulRightL_le : ‖smulRightL 𝕜 E Fₗ‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
+
+end ContinuousLinearMap
+
+/-! ### Composition with isometries -/
+
+namespace ContinuousLinearMap
+variable {𝕜₁ 𝕜₂ 𝕜₃ E F G : Type*}
+  [NontriviallyNormedField 𝕜₁] [NormedAddCommGroup E] [NormedSpace 𝕜₁ E]
+  [NontriviallyNormedField 𝕜₂] [NormedAddCommGroup F] [NormedSpace 𝕜₂ F]
+  [NontriviallyNormedField 𝕜₃] [NormedAddCommGroup G] [NormedSpace 𝕜₃ G]
+  {σ₁₂ : 𝕜₁ →+* 𝕜₂} {σ₂₁ : 𝕜₂ →+* 𝕜₁} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
+  {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₃₂ : 𝕜₃ →+* 𝕜₂} [RingHomInvPair σ₂₃ σ₃₂] [RingHomInvPair σ₃₂ σ₂₃]
+  {σ₁₃ : 𝕜₁ →+* 𝕜₃} [RingHomIsometric σ₁₃]
+  [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
+
+/-- Precomposition with a linear isometry preserves the operator norm. -/
+@[simp]
+lemma opNNNorm_comp_linearIsometryEquiv [RingHomIsometric σ₂₃] (f : F →SL[σ₂₃] G)
+    (e : E ≃ₛₗᵢ[σ₁₂] F) : ‖f.comp (e : E →SL[σ₁₂] F)‖₊ = ‖f‖₊ :=
+  eq_of_forall_ge_iff fun r ↦ by simp [opNNNorm_le_iff, ← e.forall_congr_right]
+
+/-- Postcomposition with a linear isometry preserves the operator norm. -/
+@[simp]
+lemma opNNNorm_linearIsometryEquiv_comp [RingHomIsometric σ₁₂] (e : F ≃ₛₗᵢ[σ₂₃] G)
+    (f : E →SL[σ₁₂] F) : ‖(e : F →SL[σ₂₃] G).comp f‖₊ = ‖f‖₊ :=
+  eq_of_forall_ge_iff fun r ↦ by simp [opNNNorm_le_iff]
+
+/-- Precomposition with a linear isometry preserves the operator norm. -/
+@[simp]
+lemma opNorm_comp_linearIsometryEquiv [RingHomIsometric σ₂₃] (f : F →SL[σ₂₃] G)
+    (e : E ≃ₛₗᵢ[σ₁₂] F) : ‖f.comp (e : E →SL[σ₁₂] F)‖ = ‖f‖ :=
+  congr($(opNNNorm_comp_linearIsometryEquiv f e))
+
+/-- Postcomposition with a linear isometry preserves the operator norm. -/
+@[simp]
+lemma opNorm_linearIsometryEquiv_comp [RingHomIsometric σ₁₂] (e : F ≃ₛₗᵢ[σ₂₃] G)
+    (f : E →SL[σ₁₂] F) : ‖(e : F →SL[σ₂₃] G).comp f‖ = ‖f‖ :=
+  congr($(opNNNorm_linearIsometryEquiv_comp e f))
+
+variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+
+/-- Precomposition with a linear isometry preserves the operator norm. -/
+@[simp]
+lemma opNNNorm_mul_linearIsometryEquiv (f : E →L[𝕜] E) (e : E ≃ₗᵢ[𝕜] E) : ‖f * e‖₊ = ‖f‖₊ :=
+  opNNNorm_comp_linearIsometryEquiv ..
+
+/-- Postcomposition with a linear isometry preserves the operator norm. -/
+@[simp]
+lemma opNNNorm_linearIsometryEquiv_mul (e : E ≃ₗᵢ[𝕜] E) (f : E →L[𝕜] E) : ‖e * f‖₊ = ‖f‖₊ :=
+  opNNNorm_linearIsometryEquiv_comp ..
+
+/-- Precomposition with a linear isometry preserves the operator norm. -/
+@[simp]
+lemma opNorm_mul_linearIsometryEquiv (f : E →L[𝕜] E) (e : E ≃ₗᵢ[𝕜] E) : ‖f * e‖ = ‖f‖ :=
+  opNorm_comp_linearIsometryEquiv ..
+
+/-- Postcomposition with a linear isometry preserves the operator norm. -/
+@[simp]
+lemma opNorm_linearIsometryEquiv_mul (e : E ≃ₗᵢ[𝕜] E) (f : E →L[𝕜] E) : ‖e * f‖ = ‖f‖ :=
+  opNorm_linearIsometryEquiv_comp ..
 
 end ContinuousLinearMap
 
