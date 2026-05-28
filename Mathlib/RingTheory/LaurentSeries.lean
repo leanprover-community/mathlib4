@@ -1004,7 +1004,6 @@ instance : Field (ratfuncAdicComplPkg (K := K).space) :=
 instance : Valued (ratfuncAdicComplPkg (K := K).space) (WithZero (Multiplicative ℤ)) :=
   inferInstanceAs <| Valued (RatFuncAdicCompl K) (WithZero (Multiplicative ℤ))
 
-
 /- The two instances below make `comparePkg` and `comparePkg_eq_extension` slightly faster. -/
 instance : UniformSpace (RatFuncAdicCompl K) := inferInstance
 instance : UniformSpace K⸨X⸩ := inferInstance
