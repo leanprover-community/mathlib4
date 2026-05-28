@@ -8,6 +8,7 @@ module
 public meta import Std.Time.Format
 public import Mathlib.Init
 public import Std.Time.Date
+public meta import Std.Sync.Mutex
 
 /-!
 # The `deprecated.module` linter
@@ -116,18 +117,14 @@ elab "#show_deprecated_modules" : command => do
 namespace DeprecatedModule
 
 /--
-`IsLaterCommand` is an `IO.Ref` that starts out being `false`.
+`IsLaterCommand` is a `Std.Mutex` that starts out being `false`.
 As soon as a (non-import) command in a file is processed, the `deprecated.module` linter
 sets it to `true`.
 If it is `false`, then the `deprecated.module` linter will check for deprecated modules.
 
 This is used to ensure that the linter performs the deprecation checks only once per file.
-There are possible concurrency issues, but they should not be particularly worrying:
-* the linter check should be relatively quick;
-* the only way in which the linter could change what it reports is if the imports are changed
-  and a change in imports triggers a rebuild of the whole file anyway, resetting the `IO.Ref`.
 -/
-initialize IsLaterCommand : IO.Ref Bool ← IO.mkRef false
+initialize IsLaterCommand : Std.Mutex Bool ← Std.Mutex.new false
 
 @[inherit_doc Mathlib.Linter.linter.deprecated.module]
 def deprecated.moduleLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -139,13 +136,17 @@ def deprecated.moduleLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- for backwards compatibility
   if (← getFileName).endsWith "Mathlib.lean" then
     return
-  let laterCommand ← IsLaterCommand.get
-  -- If `laterCommand` is `true`, then the linter already did what it was supposed to do.
-  -- If `laterCommand` is `false` at the end of file, the file is an import-only file and
-  -- the linter should not do anything.
-  if laterCommand || (Parser.isTerminalCommand stx && !laterCommand) then
-    return
-  IsLaterCommand.set true
+  let shouldAbort ← IsLaterCommand.atomically do
+    let laterCommand ← get
+    -- If `laterCommand` is `true`, then the linter already did what it was supposed to do.
+    -- If `laterCommand` is `false` at the end of file, the file is an import-only file and
+    -- the linter should not do anything.
+    if laterCommand || (Parser.isTerminalCommand stx && !laterCommand) then
+      return true
+    else
+      set true
+      return false
+  if shouldAbort then return
   let deprecations := deprecatedModuleExt.getState (← getEnv)
   if deprecations.isEmpty then
     return
