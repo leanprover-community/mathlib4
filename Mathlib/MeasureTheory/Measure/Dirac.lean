@@ -161,9 +161,9 @@ lemma exists_sum_smul_dirac [Countable α] (μ : Measure α) :
     · simp only [Pi.one_apply, mul_one]
       congr 1
       refine (measurableAtom_eq_of_mem ?_).symm
-      convert h_points_mem _
+      convert! h_points_mem _
       simp
-    · convert h_points_mem _
+    · convert! h_points_mem _
       simp
   · simp only [ne_eq, mul_eq_zero, indicator_apply_eq_zero, Pi.one_apply, one_ne_zero, imp_false,
       Subtype.forall, Set.mem_range, Subtype.exists, Subtype.mk.injEq, forall_exists_index]
@@ -177,7 +177,7 @@ lemma exists_sum_smul_dirac [Countable α] (μ : Measure α) :
       simp only at h_points_mem
       rw [← hz, ← hsy]
       refine measurableAtom_eq_of_mem ?_
-      convert h_points_mem
+      convert! h_points_mem
     rw [← h2, h1]
 
 /-- Given that `α` is a countable, measurable space with all singleton sets measurable,
@@ -313,7 +313,7 @@ lemma dirac_ne_dirac_iff_exists_measurableSet {x y : α} :
   refine ⟨fun h A A_mble ↦ by simp only [h A A_mble, imp_self], fun h A A_mble ↦ ?_⟩
   by_cases x_in_A : x ∈ A
   · simp only [x_in_A, h A A_mble x_in_A]
-  · simpa only [x_in_A, false_iff] using h Aᶜ (MeasurableSet.compl_iff.mpr A_mble) x_in_A
+  · simpa only [x_in_A, false_iff] using! h Aᶜ (MeasurableSet.compl_iff.mpr A_mble) x_in_A
 
 open MeasurableSpace
 /-- Dirac delta measures at two different points are different, assuming the measurable space
@@ -365,7 +365,7 @@ lemma ae_mem_finset_iff : (∀ᵐ a ∂μ, a ∈ s) ↔ μ = ∑ a ∈ s, μ {a}
 lemma ae_eq_or_eq_iff_eq_dirac_add_dirac (ha : a₁ ≠ a₂) :
     (∀ᵐ a ∂μ, a = a₁ ∨ a = a₂) ↔ μ = μ {a₁} • .dirac a₁ + μ {a₂} • .dirac a₂ := by
   -- FIXME: Why does `simpa using ...` not work?
-  convert ae_mem_finset_iff (s := .cons a₁ {a₂} <| by simpa) <;> simp
+  convert! ae_mem_finset_iff (s := .cons a₁ { a₂ } <| by simpa) <;> simp
 
 lemma ae_mem_finset_iff_map_eq_sum_dirac {μ : Measure β} (hf : AEMeasurable f μ) :
     (∀ᵐ b ∂μ, f b ∈ s) ↔ μ.map f = ∑ a ∈ s, μ (f ⁻¹' {a}) • .dirac a := by
@@ -377,6 +377,6 @@ lemma ae_eq_or_eq_iff_map_eq_dirac_add_dirac {μ : Measure β} (hf : AEMeasurabl
     (∀ᵐ b ∂μ, f b = a₁ ∨ f b = a₂) ↔
       μ.map f = μ (f ⁻¹' {a₁}) • .dirac a₁ + μ (f ⁻¹' {a₂}) • .dirac a₂ := by
   -- FIXME: Why does `simpa using ...` not work?
-  convert ae_mem_finset_iff_map_eq_sum_dirac (s := .cons a₁ {a₂} <| by simpa) hf <;> simp
+  convert! ae_mem_finset_iff_map_eq_sum_dirac (s := .cons a₁ { a₂ } <| by simpa) hf <;> simp
 
 end MeasureTheory.Measure

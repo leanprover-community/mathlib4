@@ -201,7 +201,7 @@ def disjointUnion (e e' : OpenPartialHomeomorph X Y) [∀ x, Decidable (x ∈ e.
         (by rw [e.open_source.inter_frontier_eq, (Hs.symm.frontier_right e'.open_source).inter_eq])
         (by
           rw [e.open_source.inter_frontier_eq]
-          exact eqOn_empty _ _)).replaceEquiv
+          exact eqOn_empty _ _)).replacePartialEquiv
     (e.toPartialEquiv.disjointUnion e'.toPartialEquiv Hs Ht)
     (PartialEquiv.disjointUnion_eq_piecewise _ _ _ _).symm
 
@@ -360,7 +360,7 @@ noncomputable def lift_openEmbedding (e : OpenPartialHomeomorph X Z) (hf : IsOpe
     rw [← hxx₀, hf.injective.extend_apply e, comp_apply]
     congr
     exact e.left_inv' hx₀
-  right_inv' z hz := by simpa only [comp_apply, hf.injective.extend_apply e] using e.right_inv' hz
+  right_inv' z hz := by simpa only [comp_apply, hf.injective.extend_apply e] using! e.right_inv' hz
   open_source := hf.isOpenMap _ e.open_source
   open_target := e.open_target
   continuousOn_toFun := by

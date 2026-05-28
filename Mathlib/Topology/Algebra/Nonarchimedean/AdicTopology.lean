@@ -60,19 +60,19 @@ namespace Ideal
 theorem adic_basis (I : Ideal R) : SubmodulesRingBasis fun n : ℕ => (I ^ n • ⊤ : Ideal R) :=
   { inter := by
       suffices ∀ i j : ℕ, ∃ k, I ^ k ≤ I ^ i ∧ I ^ k ≤ I ^ j by
-        simpa only [smul_eq_mul, mul_top, Algebra.algebraMap_self, map_id, le_inf_iff] using this
+        simpa only [smul_eq_mul, mul_top, Algebra.algebraMap_self, map_id, le_inf_iff] using! this
       intro i j
       exact ⟨max i j, pow_le_pow_right (le_max_left i j), pow_le_pow_right (le_max_right i j)⟩
     leftMul := by
       suffices ∀ (a : R) (i : ℕ), ∃ j : ℕ, a • I ^ j ≤ I ^ i by
-        simpa only [smul_top_eq_map, Algebra.algebraMap_self, map_id] using this
+        simpa only [smul_top_eq_map, Algebra.algebraMap_self, map_id] using! this
       intro r n
       use n
       rintro a ⟨x, hx, rfl⟩
       exact (I ^ n).smul_mem r hx
     mul := by
       suffices ∀ i : ℕ, ∃ j : ℕ, (↑(I ^ j) * ↑(I ^ j) : Set R) ⊆ (↑(I ^ i) : Set R) by
-        simpa only [smul_top_eq_map, Algebra.algebraMap_self, map_id] using this
+        simpa only [smul_top_eq_map, Algebra.algebraMap_self, map_id] using! this
       intro n
       use n
       rintro a ⟨x, _hx, b, hb, rfl⟩
@@ -143,7 +143,7 @@ on an `R`-module `M`, seen as open additive subgroups of `M`. -/
 def openAddSubgroup (n : ℕ) : @OpenAddSubgroup R _ I.adicTopology := by
   letI := I.adicTopology
   refine ⟨(I ^ n).toAddSubgroup, ?_⟩
-  convert (I.adic_basis.toRing_subgroups_basis.openAddSubgroup n).isOpen
+  convert! (I.adic_basis.toRing_subgroups_basis.openAddSubgroup n).isOpen
   change (↑(I ^ n) : Set R) = ↑(I ^ n • (⊤ : Ideal R))
   simp
 

@@ -844,10 +844,10 @@ theorem isBigO_snd_prod : g' =O[l] fun x => (f' x, g' x) :=
   isBigOWith_snd_prod.isBigO
 
 theorem isBigO_fst_prod' {f' : α → E' × F'} : (fun x => (f' x).1) =O[l] f' := by
-  simpa [IsBigO_def, IsBigOWith_def] using isBigO_fst_prod (E' := E') (F' := F')
+  simpa [IsBigO_def, IsBigOWith_def] using! isBigO_fst_prod (E' := E') (F' := F')
 
 theorem isBigO_snd_prod' {f' : α → E' × F'} : (fun x => (f' x).2) =O[l] f' := by
-  simpa [IsBigO_def, IsBigOWith_def] using isBigO_snd_prod (E' := E') (F' := F')
+  simpa [IsBigO_def, IsBigOWith_def] using! isBigO_snd_prod (E' := E') (F' := F')
 
 section
 
@@ -1312,7 +1312,7 @@ theorem IsBigOWith.mul {f₁ f₂ : α → R} {g₁ g₂ : α → S} {c₁ c₂ 
   simp only [IsBigOWith_def] at *
   filter_upwards [h₁, h₂] with _ hx₁ hx₂
   apply le_trans (norm_mul_le _ _)
-  convert mul_le_mul hx₁ hx₂ (norm_nonneg _) (le_trans (norm_nonneg _) hx₁) using 1
+  convert! mul_le_mul hx₁ hx₂ (norm_nonneg _) (le_trans (norm_nonneg _) hx₁) using 1
   rw [norm_mul, mul_mul_mul_comm]
 
 theorem IsBigO.mul {f₁ f₂ : α → R} {g₁ g₂ : α → S} (h₁ : f₁ =O[l] g₁) (h₂ : f₂ =O[l] g₂) :
@@ -1375,7 +1375,7 @@ theorem IsLittleO.pow {f : α → R} {g : α → S} (h : f =o[l] g) {n : ℕ} (h
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn.ne'; clear hn
   induction n with
   | zero => simpa only [pow_one]
-  | succ n ihn => convert ihn.mul h <;> simp [pow_succ]
+  | succ n ihn => convert! ihn.mul h <;> simp [pow_succ]
 
 theorem IsLittleO.of_pow [NormOneClass S] {f : α → S} {g : α → R} {n : ℕ}
     (h : (f ^ n) =o[l] (g ^ n)) (hn : n ≠ 0) : f =o[l] g :=
@@ -1390,7 +1390,7 @@ theorem IsBigOWith.inv_rev {f : α → 𝕜} {g : α → 𝕜'} (h : IsBigOWith 
   · simp only [hx, h₀ hx, inv_zero, norm_zero, mul_zero, le_rfl]
   · have hc : 0 < c := pos_of_mul_pos_left ((norm_pos_iff.2 hx).trans_le hle) (norm_nonneg _)
     replace hle := inv_anti₀ (norm_pos_iff.2 hx) hle
-    simpa only [norm_inv, mul_inv, ← div_eq_inv_mul, div_le_iff₀ hc] using hle
+    simpa only [norm_inv, mul_inv, ← div_eq_inv_mul, div_le_iff₀ hc] using! hle
 
 theorem IsBigO.inv_rev {f : α → 𝕜} {g : α → 𝕜'} (h : f =O[l] g)
     (h₀ : ∀ᶠ x in l, f x = 0 → g x = 0) : (fun x => (g x)⁻¹) =O[l] fun x => (f x)⁻¹ :=

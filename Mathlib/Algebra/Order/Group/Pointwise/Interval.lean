@@ -535,19 +535,19 @@ variable {G₀ : Type*} [GroupWithZero G₀] [PartialOrder G₀] [MulPosReflectL
 
 @[simp]
 theorem preimage_mul_const_Iic₀ (a : G₀) (h : 0 < c) : (· * c) ⁻¹' Iic a = Iic (a / c) := by
-  simpa only [division_def] using (OrderIso.mulRight₀ c h).preimage_Iic a
+  simpa only [division_def] using! (OrderIso.mulRight₀ c h).preimage_Iic a
 
 @[simp]
 theorem preimage_mul_const_Ici₀ (a : G₀) (h : 0 < c) : (· * c) ⁻¹' Ici a = Ici (a / c) := by
-  simpa only [division_def] using (OrderIso.mulRight₀ c h).preimage_Ici a
+  simpa only [division_def] using! (OrderIso.mulRight₀ c h).preimage_Ici a
 
 @[simp]
 theorem preimage_mul_const_Ioi₀ (a : G₀) (h : 0 < c) : (· * c) ⁻¹' Ioi a = Ioi (a / c) := by
-  simpa only [division_def] using (OrderIso.mulRight₀ c h).preimage_Ioi a
+  simpa only [division_def] using! (OrderIso.mulRight₀ c h).preimage_Ioi a
 
 @[simp]
 theorem preimage_mul_const_Iio₀ (a : G₀) (h : 0 < c) : (· * c) ⁻¹' Iio a = Iio (a / c) := by
-  simpa only [division_def] using (OrderIso.mulRight₀ c h).preimage_Iio a
+  simpa only [division_def] using! (OrderIso.mulRight₀ c h).preimage_Iio a
 
 @[simp]
 theorem preimage_mul_const_Icc₀ (a b : G₀) (h : 0 < c) :

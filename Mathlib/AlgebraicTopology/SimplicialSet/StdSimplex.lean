@@ -317,7 +317,7 @@ namespace stdSimplex
 lemma obj₀Equiv_symm_mem_face_iff
     {n : ℕ} (S : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
     (obj₀Equiv.symm i) ∈ (face.{u} S).obj (op (.mk 0)) ↔ i ∈ S :=
-  ⟨fun h ↦ by simpa using h, by aesop⟩
+  ⟨fun h ↦ by simpa using! h, by aesop⟩
 
 lemma face_le_face_iff {n : ℕ} (S₁ S₂ : Finset (Fin (n + 1))) :
     face.{u} S₁ ≤ face S₂ ↔ S₁ ≤ S₂ := by
@@ -340,7 +340,7 @@ lemma face_eq_ofSimplex {n : ℕ} (S : Finset (Fin (n + 1))) (m : ℕ) (e : Fin 
     refine ⟨Quiver.Hom.op
       (SimplexCategory.Hom.mk ((e.symm.toOrderEmbedding.toOrderHom.comp φ))), ?_⟩
     ext j : 1
-    simpa only [Subtype.ext_iff] using e.apply_symm_apply ⟨_, hx j⟩
+    simpa only [Subtype.ext_iff] using! e.apply_symm_apply ⟨_, hx j⟩
   · simp
 
 set_option backward.defeqAttrib.useBackward true in
@@ -436,7 +436,7 @@ def nonDegenerateEquiv {n d : ℕ} :
     (Δ[n] : SSet.{u}).nonDegenerate d ≃ (Fin (d + 1) ↪o Fin (n + 1)) where
   toFun s := OrderEmbedding.ofStrictMono _ ((mem_nonDegenerate_iff_strictMono _).1 s.2)
   invFun s := ⟨objEquiv.symm (.mk s.toOrderHom), by
-    simpa [mem_nonDegenerate_iff_strictMono] using s.strictMono⟩
+    simpa [mem_nonDegenerate_iff_strictMono] using! s.strictMono⟩
   left_inv _ := by aesop
 
 instance (n : ℕ) : (Δ[n] : SSet.{u}).HasDimensionLE n where

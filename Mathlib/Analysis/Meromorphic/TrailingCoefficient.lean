@@ -432,7 +432,7 @@ theorem meromorphicTrailingCoeffAt_fun_prod {ι : Type*} {s : Finset ι} {f : ι
     {x : 𝕜} (h : ∀ σ ∈ s, MeromorphicAt (f σ) x) :
     meromorphicTrailingCoeffAt (fun z ↦ ∏ n ∈ s, f n z) x
       = ∏ n ∈ s, meromorphicTrailingCoeffAt (f n) x := by
-  convert meromorphicTrailingCoeffAt_prod h
+  convert! meromorphicTrailingCoeffAt_prod h
   simp
 
 /--
@@ -495,7 +495,7 @@ The trailing coefficient of the power of a function is the power of the trailing
 lemma MeromorphicAt.meromorphicTrailingCoeffAt_pow {n : ℕ} {f : 𝕜 → 𝕜}
     (h₁ : MeromorphicAt f x) :
     meromorphicTrailingCoeffAt (f ^ n) x = (meromorphicTrailingCoeffAt f x) ^ n := by
-  convert h₁.meromorphicTrailingCoeffAt_zpow (n := n) <;> simp
+  convert! h₁.meromorphicTrailingCoeffAt_zpow (n := n) <;> simp
 
 /--
 The trailing coefficient of the power of a function is the power of the trailing coefficient.

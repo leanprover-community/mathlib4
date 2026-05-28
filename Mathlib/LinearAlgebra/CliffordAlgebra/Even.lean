@@ -224,7 +224,7 @@ theorem aux_mul (x y : even Q) : aux f (x * y) = aux f x * aux f y := by
   induction x, x_property using even_induction Q with
   | algebraMap r =>
     generalize_proofs at ⊢
-    simpa using Algebra.smul_def r _
+    simpa using! Algebra.smul_def r _
   | add x y hx hy ihx ihy =>
     rw [map_add, Prod.fst_add]
     simp [ihx, ihy, ← add_mul, ← map_add]

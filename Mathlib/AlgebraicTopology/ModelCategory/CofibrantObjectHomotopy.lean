@@ -265,7 +265,7 @@ noncomputable def HoCat.resolutionCompToLocalizationNatTrans :
     HoCat.resolution ⋙ HoCat.toLocalization L ⟶ L where
   app X := L.map (pResolutionObj X)
   naturality _ _ f := by
-    simpa only [Functor.map_comp] using L.congr_map (HoCat.resolutionMap_fac f)
+    simpa only [Functor.map_comp] using! L.congr_map (HoCat.resolutionMap_fac f)
 
 set_option backward.isDefEq.respectTransparency false in
 instance : IsIso (HoCat.resolutionCompToLocalizationNatTrans L) := by

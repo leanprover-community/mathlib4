@@ -238,8 +238,10 @@ def parallelPairHom (f g : X ⟶ Y) {x y : WalkingParallelPair} (h : x ⟶ y) :
 
 @[simp] theorem parallelPairHom_id {f g : X ⟶ Y} {x : WalkingParallelPair} :
   parallelPairHom f g (𝟙 x) = 𝟙 (parallelPairObj X Y x) := (rfl)
+
 @[simp] theorem parallelPairHom_left {f g : X ⟶ Y} :
   parallelPairHom f g .left = f := (rfl)
+
 @[simp] theorem parallelPairHom_right {f g : X ⟶ Y} :
   parallelPairHom f g .right = g := (rfl)
 
@@ -934,7 +936,7 @@ def idFork (h : f = g) : Fork f g :=
 /-- The identity on `X` is an equalizer of `(f, g)`, if `f = g`. -/
 def isLimitIdFork (h : f = g) : IsLimit (idFork h) :=
   Fork.IsLimit.mk _ (fun s => Fork.ι s) (fun _ => Category.comp_id _) fun s m h => by
-    convert h
+    convert! h
     exact (Category.comp_id _).symm
 
 /-- Every equalizer of `(f, g)`, where `f = g`, is an isomorphism. -/
@@ -1031,7 +1033,7 @@ def isLimitPrecompFork {s : Fork f g} (hs : IsLimit s) {c : PullbackCone s.ι h}
         apply Fork.equalizer_ext
         simp only [Fork.ι_ofι, precompFork] at h
         simp [c.condition, reassoc_of% h]
-      · simpa [liftPrecomp] using h)
+      · simpa [liftPrecomp] using! h)
 
 lemma hasEqualizer_precomp_of_equalizer {s : Fork f g} (hs : IsLimit s)
     {c : PullbackCone s.ι h} (hc : IsLimit c) :
@@ -1153,7 +1155,7 @@ def idCofork (h : f = g) : Cofork f g :=
 /-- The identity on `Y` is a coequalizer of `(f, g)`, where `f = g`. -/
 def isColimitIdCofork (h : f = g) : IsColimit (idCofork h) :=
   Cofork.IsColimit.mk _ (fun s => Cofork.π s) (fun _ => Category.id_comp _) fun s m h => by
-    convert h
+    convert! h
     exact (Category.id_comp _).symm
 
 /-- Every coequalizer of `(f, g)`, where `f = g`, is an isomorphism. -/

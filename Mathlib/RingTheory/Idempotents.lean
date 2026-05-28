@@ -62,7 +62,7 @@ lemma OrthogonalIdempotents.mul_eq [DecidableEq I] (he : OrthogonalIdempotents e
 
 lemma OrthogonalIdempotents.iff_mul_eq [DecidableEq I] :
     OrthogonalIdempotents e ↔ ∀ i j, e i * e j = if i = j then e i else 0 :=
-  ⟨mul_eq, fun H ↦ ⟨fun i ↦ by simpa using H i i, fun i j e ↦ by simpa [e] using H i j⟩⟩
+  ⟨mul_eq, fun H ↦ ⟨fun i ↦ by simpa using! H i i, fun i j e ↦ by simpa [e] using! H i j⟩⟩
 
 lemma OrthogonalIdempotents.isIdempotentElem_sum (he : OrthogonalIdempotents e) {s : Finset I} :
     IsIdempotentElem (∑ i ∈ s, e i) := by
@@ -112,9 +112,9 @@ lemma OrthogonalIdempotents.option (he : OrthogonalIdempotents e) [Fintype I] (x
     rcases i with - | i <;> rcases j with - | j
     · cases ne rfl
     · simpa only [mul_assoc, Finset.sum_mul, he.mul_eq, Finset.sum_ite_eq', Finset.mem_univ,
-        ↓reduceIte, zero_mul] using congr_arg (· * e j) hx₁
+        ↓reduceIte, zero_mul] using! congr_arg (· * e j) hx₁
     · simpa only [Option.elim_some, Option.elim_none, ← mul_assoc, Finset.mul_sum, he.mul_eq,
-        Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, mul_zero] using congr_arg (e i * ·) hx₂
+        Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, mul_zero] using! congr_arg (e i * ·) hx₂
     · exact he.ortho (Option.some_inj.ne.mp ne)
 
 variable [Fintype I]
@@ -581,7 +581,7 @@ def CompleteOrthogonalIdempotents.ringEquivOfIsMulCentral [Semiring R]
      _ = e i * r₁ * e i * (e i * r₂ * e i) := by
       conv in (r₁ * _ * r₂) => rw [← (he.idem i).eq]
       simp_rw [mul_assoc]
-  map_add' r₁ r₂ := funext fun i ↦ Subtype.ext <| by simpa [mul_add] using add_mul ..
+  map_add' r₁ r₂ := funext fun i ↦ Subtype.ext <| by simpa [mul_add] using! add_mul ..
 
 /-- A complete orthogonal family of idempotents in a commutative semiring
 give rise to a direct product decomposition. -/

@@ -77,7 +77,7 @@ def generatorsOfIsCokernelFree {M : SheafOfModules.{u} R}
     (H' : IsColimit (CokernelCofork.ofπ g H)) : M.GeneratingSections where
   I := σ
   s := M.freeHomEquiv g
-  epi := by simpa using epi_of_isColimit_cofork H'
+  epi := by simpa using! epi_of_isColimit_cofork H'
 
 @[simp]
 theorem generatorsOfIsCokernelFree_π {M : SheafOfModules.{u} R}
@@ -282,13 +282,6 @@ instance (M : SheafOfModules.{u} R) [M.IsFinitePresentation] :
   exists_localGeneratorsData := by
     obtain ⟨σ, _⟩ := IsFinitePresentation.exists_quasicoherentData M
     exact ⟨σ.localGeneratorsData, inferInstance⟩
-
-/-- A choice of local presentations when `M` is a sheaf of modules of finite presentation. -/
-@[deprecated "Use the lemma `IsFinitePresentation.exists_quasicoherentData` instead."
-  (since := "2025-10-28")]
-noncomputable def quasicoherentDataOfIsFinitePresentation
-    (M : SheafOfModules.{u} R) [M.IsFinitePresentation] : M.QuasicoherentData :=
-  (IsFinitePresentation.exists_quasicoherentData M).choose
 
 end
 

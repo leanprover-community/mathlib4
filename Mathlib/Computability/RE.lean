@@ -87,7 +87,7 @@ theorem merge' {f g : α →. σ} (hf : Partrec f) (hg : Partrec g) :
   intro h
   rw [bind_dom]
   have hk : (k (encode a)).Dom :=
-    (H _).2.2 (by simpa only [encodek₂, bind_some, coe_some] using h)
+    (H _).2.2 (by simpa only [encodek₂, bind_some, coe_some] using! h)
   exists hk
   simp only [mem_map_iff, mem_coe, mem_bind_iff, Option.mem_def] at H
   obtain ⟨a', _, y, _, e⟩ | ⟨a', _, y, _, e⟩ := (H _).1 _ ⟨hk, rfl⟩ <;>
@@ -135,7 +135,7 @@ variable {α} [Primcodable α]
 
 protected lemma ComputablePred.decide {p : α → Prop} [DecidablePred p] (hp : ComputablePred p) :
     Computable (fun a => decide (p a)) := by
-  convert hp.choose_spec
+  convert! hp.choose_spec
 
 lemma Computable.computablePred {p : α → Prop} [DecidablePred p]
     (hp : Computable (fun a => decide (p a))) : ComputablePred p :=

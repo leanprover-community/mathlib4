@@ -12,8 +12,6 @@ public import Mathlib.GroupTheory.GroupAction.Transitive
 public import Mathlib.GroupTheory.GroupAction.Primitive
 public import Mathlib.Tactic.Group
 
-import all Mathlib.Algebra.Group.End -- TODO: needed for `to_additive`
-
 /-!
 # SubMulActions on complements of invariant subsets
 
@@ -125,7 +123,7 @@ def ofFixingSubgroup_equivariantMap :
 theorem ofFixingSubgroup_equivariantMap_injective :
     Injective (ofFixingSubgroup_equivariantMap M s) := by
   rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
-  simpa [Subtype.mk.injEq] using hxy
+  simpa [Subtype.mk.injEq] using! hxy
 
 section Comparisons
 
@@ -212,13 +210,6 @@ end FixingSubgroupInsert
 section FixingSubgroupConj
 
 variable {s t : Set α} {g : M}
-
-/-
-FIXME: The use of `to_additive` in this section is a horrible mess.
-It requires translating `MulAut.instGroup` to `AddAut.instAddGroup` instead of `AddAut.instGroup`,
-and `MulAut.conj` shouldn't be able to translate to `AddAut.conj`, but somehow it works out.
--/
-attribute [to_additive] MulAut.instGroup
 
 @[to_additive]
 theorem _root_.Set.conj_mem_fixingSubgroup (hg : g • t = s) {k : M} (hk : k ∈ fixingSubgroup M t) :
@@ -365,7 +356,7 @@ theorem map_ofFixingSubgroupUnion_bijective :
     Bijective (map_ofFixingSubgroupUnion M s t) := by
   constructor
   · intro a b h
-    simpa only [← SetLike.coe_eq_coe] using h
+    simpa only [← SetLike.coe_eq_coe] using! h
   · rintro ⟨⟨a, ha⟩, ha'⟩
     suffices a ∈ ofFixingSubgroup M (s ∪ t) by
       exact ⟨⟨a, this⟩,  rfl⟩

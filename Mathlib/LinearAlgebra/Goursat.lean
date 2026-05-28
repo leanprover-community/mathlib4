@@ -61,7 +61,7 @@ lemma goursatSnd_toAddSubgroup :
 variable (L) in
 lemma goursatFst_prod_goursatSnd_le : L.goursatFst.prod L.goursatSnd ≤ L := by
   simpa only [← toAddSubgroup_le, goursatFst_toAddSubgroup, goursatSnd_toAddSubgroup]
-    using L.toAddSubgroup.goursatFst_prod_goursatSnd_le
+    using! L.toAddSubgroup.goursatFst_prod_goursatSnd_le
 
 set_option backward.isDefEq.respectTransparency false in
 include hL₁ hL₂ in
@@ -90,7 +90,7 @@ lemma goursat_surjective : ∃ e : (M ⧸ L.goursatFst) ≃ₗ[R] N ⧸ L.goursa
   -- define the map as an R-linear equiv
   use { e with map_smul' := this }
   rw [← toAddSubgroup_injective.eq_iff]
-  convert he using 1
+  convert! he using 1
   ext v
   rw [mem_toAddSubgroup, mem_graph_iff, Eq.comm]
   rfl
@@ -131,7 +131,7 @@ lemma goursat : ∃ (M' : Submodule R M) (N' : Submodule R N) (M'' : Submodule R
       Subtype.exists, Prod.exists, LinearMap.prodMap_apply, subtype_apply, Prod.mk.injEq,
       snd_apply, fst_apply, Subtype.ext_iff, submoduleMap_coe_apply]
       grind
-  · convert goursatFst_prod_goursatSnd_le (range <| P.prod Q)
+  · convert! goursatFst_prod_goursatSnd_le (range <| P.prod Q)
     simp only [ker_prodMap, ker_mkQ, Submodule.ext_iff]
     grind
 

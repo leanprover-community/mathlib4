@@ -272,7 +272,7 @@ theorem ofDigits_cantorToTernary_sum_le {x : ℝ} (hx : x ∈ cantorSet) {n : �
   rw [cantorSequence_eq_self_sub_sum_cantorToTernary x n] at h_mem
   apply cantorSet_subset_unitInterval at h_mem
   simp only [Set.mem_Icc] at h_mem
-  simpa using h_mem.left
+  simpa using! h_mem.left
 
 theorem le_ofDigits_cantorToTernary_sum {x : ℝ} (hx : x ∈ cantorSet) {n : ℕ} :
     x - (3⁻¹ : ℝ) ^ n ≤ ∑ i ∈ Finset.range n, ofDigitsTerm (cantorToTernary x) i := by

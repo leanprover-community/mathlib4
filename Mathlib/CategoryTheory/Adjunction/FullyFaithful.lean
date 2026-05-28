@@ -79,7 +79,7 @@ instance unit_isIso_of_L_fully_faithful [L.Full] [L.Faithful] : IsIso (Adjunctio
 /-- If the right adjoint is faithful, then each component of the counit is an epimorphism. -/
 instance counit_epi_of_R_faithful [R.Faithful] (X : D) : Epi (h.counit.app X) where
   left_cancellation {Y} f g hfg :=
-    R.map_injective <| (h.homEquiv (R.obj X) Y).symm.injective <| by simpa using hfg
+    R.map_injective <| (h.homEquiv (R.obj X) Y).symm.injective <| by simpa using! hfg
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -285,8 +285,10 @@ theorem isIso_map_unit_of_isLeftAdjoint_comp {E : Type*} [Category* E]
   let FF := FullyFaithful.ofFullyFaithful R
   apply isIso_of_coyoneda_map_bijective
   intro Y
-  convert ((adj2.homEquiv (R.obj (L.obj X)) Y).trans <| FF.homEquiv.symm.trans <|
-    (h.homEquiv X (S.obj Y)).trans (adj2.homEquiv X Y).symm).bijective using 1
+  convert!
+    ((adj2.homEquiv (R.obj (L.obj X)) Y).trans <|
+        FF.homEquiv.symm.trans <|
+          (h.homEquiv X (S.obj Y)).trans (adj2.homEquiv X Y).symm).bijective using 1
   ext x
   have := adj2.counit_naturality x
   simp_all [Adjunction.homEquiv]

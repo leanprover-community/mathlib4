@@ -292,7 +292,7 @@ instance [A.IsVerdierLeftLocalizing B] :
       simp only [MorphismProperty.inverseImage_iff, Equivalence.symm_functor] at hf ⊢
       exact MorphismProperty.le_isoClosure _ _ hf
     · refine fun _ _ _ hf ↦ Localization.inverts L₁.op (B.inverseImage A.ι).trW.op _ ?_
-      simpa [trW_inverseImage_ι_iff, ← op_inf, trW_op] using hf
+      simpa [trW_inverseImage_ι_iff, ← op_inf, trW_op] using! hf
   exact LocalizerMorphism.IsLocalizedFullyFaithful.mk' (A.triangulatedLocalizerMorphism B)
     L₁ L₂ F (((A.op.triangulatedLocalizerMorphism B.op).fullyFaithful
     (A.opEquivalence.functor ⋙ L₁.op) L₂.op F.op).unop)
@@ -309,8 +309,7 @@ example : ((A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂).Full 
 example : ((A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂).Faithful := by
   infer_instance
 
-instance [A.IsVerdierLeftLocalizing B] [Preadditive D₁] [Preadditive D₂]
-    [L₁.Additive] [L₂.Additive] :
+instance [Preadditive D₁] [Preadditive D₂] [L₁.Additive] [L₂.Additive] :
     ((A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂).Additive := by
   let F := (A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂
   rw [Localization.functor_additive_iff L₁ (B.inverseImage A.ι).trW]
@@ -322,7 +321,7 @@ instance [A.IsVerdierLeftLocalizing B] [Preadditive D₁] [Preadditive D₂]
 then the induced functor between the localizations with respect to `(B.inverseImage A.ι).trW`
 and `B.trW` is fully faithful. -/
 @[no_expose]
-noncomputable def IsVerdierLeftLocalizing.fullyFaithful [A.IsVerdierLeftLocalizing B]
+noncomputable def IsVerdierLeftLocalizing.fullyFaithful
     {L₁ : A.FullSubcategory ⥤ D₁} {L₂ : C ⥤ D₂} {F : D₁ ⥤ D₂}
     [L₁.IsLocalization (B.inverseImage A.ι).trW] [L₂.IsLocalization B.trW]
     (e : L₁ ⋙ F ≅ A.ι ⋙ L₂) :

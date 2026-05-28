@@ -6,7 +6,6 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Free.Basic
-public import Mathlib.CategoryTheory.Discrete.Basic
 
 /-!
 # The monoidal coherence theorem
@@ -201,10 +200,10 @@ def normalizeIsoApp' :
     normalizeIsoApp' C (X ⊗ Y) n =
       (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIsoApp' C X n) Y ≪≫
         normalizeIsoApp' C Y _ := rfl
+
 @[simp] theorem normalizeIsoApp'_unit (n : NormalMonoidalObject C) :
     normalizeIsoApp' C (𝟙_ (F C)) n = ρ_ _ := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 theorem normalizeIsoApp_eq :
     ∀ (X : F C) (n : N C), normalizeIsoApp C X n = normalizeIsoApp' C X n.as
   | of _, _ => rfl
@@ -280,8 +279,6 @@ theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between `n ⊗ X` and `normalize X n` is natural (in both `X` and `n`, but
 naturality in `n` is trivial and was "proved" in `normalizeIsoAux`). This is the real heart
 of our proof of the coherence theorem. -/
@@ -289,7 +286,7 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
   NatIso.ofComponents (normalizeIsoAux C) <| by
     intro X Y f
     ext ⟨n⟩
-    convert normalize_naturality n f using 1
+    convert! normalize_naturality n f using 1
     any_goals dsimp; rw [normalizeIsoApp_eq]
 
 set_option backward.defeqAttrib.useBackward true in

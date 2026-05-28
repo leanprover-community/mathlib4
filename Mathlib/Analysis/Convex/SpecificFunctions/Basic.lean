@@ -110,13 +110,13 @@ theorem one_add_mul_self_lt_rpow_one_add {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
   apply exp_strictMono
   rcases lt_or_gt_of_ne hs' with hs' | hs'
   · rw [← div_lt_iff₀ hp', ← div_lt_div_right_of_neg hs']
-    convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs2 hs1 hs4 hs3 _ using 1
+    convert! strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs2 hs1 hs4 hs3 _ using 1
     · rw [add_sub_cancel_left, log_one, sub_zero]
     · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
     · gcongr
       exact mul_lt_of_one_lt_left hs' hp
   · rw [← div_lt_iff₀ hp', ← div_lt_div_iff_of_pos_right hs']
-    convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs1 hs2 hs3 hs4 _ using 1
+    convert! strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs1 hs2 hs3 hs4 _ using 1
     · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
     · rw [add_sub_cancel_left, log_one, sub_zero]
     · gcongr
@@ -151,13 +151,13 @@ theorem rpow_one_add_lt_one_add_mul_self {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
   apply exp_strictMono
   rcases lt_or_gt_of_ne hs' with hs' | hs'
   · rw [← lt_div_iff₀ hp1, ← div_lt_div_right_of_neg hs']
-    convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs1 hs2 hs3 hs4 _ using 1
+    convert! strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs1 hs2 hs3 hs4 _ using 1
     · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
     · rw [add_sub_cancel_left, log_one, sub_zero]
     · gcongr
       exact lt_mul_of_lt_one_left hs' hp2
   · rw [← lt_div_iff₀ hp1, ← div_lt_div_iff_of_pos_right hs']
-    convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs2 hs1 hs4 hs3 _ using 1
+    convert! strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs2 hs1 hs4 hs3 _ using 1
     · rw [add_sub_cancel_left, log_one, sub_zero]
     · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
     · gcongr
@@ -206,11 +206,11 @@ theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) 
 
 theorem convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : ℝ ↦ x ^ p := by
   rcases eq_or_lt_of_le hp with (rfl | hp)
-  · simpa using convexOn_id (convex_Ici _)
+  · simpa using! convexOn_id (convex_Ici _)
   exact (strictConvexOn_rpow hp).convexOn
 
 theorem convexOn_rpow_left {b : ℝ} (hb : 0 < b) : ConvexOn ℝ Set.univ (fun (x : ℝ) => b ^ x) := by
-  convert convexOn_exp.comp_linearMap (LinearMap.mul ℝ ℝ (Real.log b)) using 1
+  convert! convexOn_exp.comp_linearMap (LinearMap.mul ℝ ℝ (Real.log b)) using 1
   ext x
   simp [Real.rpow_def_of_pos hb]
 

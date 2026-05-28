@@ -144,10 +144,10 @@ def functoriality : BinaryBicone P Q ⥤ BinaryBicone (F.obj P) (F.obj Q) where
 instance functoriality_full [F.Full] [F.Faithful] : (functoriality P Q F).Full where
   map_surjective t :=
    ⟨{ hom := F.preimage t.hom
-      winl := F.map_injective (by simpa using t.winl)
-      winr := F.map_injective (by simpa using t.winr)
-      wfst := F.map_injective (by simpa using t.wfst)
-      wsnd := F.map_injective (by simpa using t.wsnd) }, by cat_disch⟩
+      winl := F.map_injective (by simpa using! t.winl)
+      winr := F.map_injective (by simpa using! t.winr)
+      wfst := F.map_injective (by simpa using! t.wfst)
+      wsnd := F.map_injective (by simpa using! t.wsnd) }, by cat_disch⟩
 
 instance functoriality_faithful [F.Faithful] : (functoriality P Q F).Faithful where
   map_injective {_X} {_Y} f g h :=
@@ -539,12 +539,12 @@ theorem biprod.inr_snd {X Y : C} [HasBinaryBiproduct X Y] :
 /-- Given a pair of maps into the summands of a binary biproduct,
 we obtain a map into the binary biproduct. -/
 abbrev biprod.lift {W X Y : C} [HasBinaryBiproduct X Y] (f : W ⟶ X) (g : W ⟶ Y) : W ⟶ X ⊞ Y :=
-  (BinaryBiproduct.isLimit X Y).lift (BinaryFan.mk f g)
+  BinaryFan.IsLimit.lift (BinaryBiproduct.isLimit X Y) f g
 
 /-- Given a pair of maps out of the summands of a binary biproduct,
 we obtain a map out of the binary biproduct. -/
 abbrev biprod.desc {W X Y : C} [HasBinaryBiproduct X Y] (f : X ⟶ W) (g : Y ⟶ W) : X ⊞ Y ⟶ W :=
-  (BinaryBiproduct.isColimit X Y).desc (BinaryCofan.mk f g)
+  BinaryCofan.IsColimit.desc (BinaryBiproduct.isColimit X Y) f g
 
 @[reassoc (attr := simp)]
 theorem biprod.lift_fst {W X Y : C} [HasBinaryBiproduct X Y] (f : W ⟶ X) (g : W ⟶ Y) :

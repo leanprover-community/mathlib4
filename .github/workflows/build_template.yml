@@ -733,17 +733,36 @@ jobs:
         run: |
           lake exe graph
 
+      - name: Checkout local actions
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+
+      - name: Get mathlib-ci
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+
+      - name: dump declarations and transitive-import counts
+        run: |
+          lake env lean --run "${CI_SCRIPTS_DIR}/pr_summary/dumpReasonableDecls.lean" \
+            --out decls.txt --imports-out imports.json Mathlib
+
       - name: upload the import graph
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: import-graph
-          path: import_graph.dot
-          ## the default is 90, but we build often, so unless there's a reason
-          ## to care about old copies in the future, just say 7 days for now
-          retention-days: 7
+          path: |
+            import_graph.dot
+            decls.txt
+            imports.json
+          ## Master pushes: 90 days, so later PRs forked from these commits
+          ## can consume the dumps from the artifact. Other branches: 7 days.
+          retention-days: ${{ github.ref == 'refs/heads/master' && '90' || '7' }}
 
       - name: clean up the import graph file
-        run: rm import_graph.dot
+        run: rm -f import_graph.dot decls.txt imports.json
 
       - name: check all scripts build successfully
         run: |

@@ -212,8 +212,8 @@ lemma hom_induction {motive : ∀ {x y : FreeRefl V} (_ : x ⟶ y), Prop}
     induction y using induction with | _ y
     obtain ⟨f, rfl⟩ := (quotientFunctor _).map_surjective f
     induction f with
-    | nil => simpa using id x
-    | cons _ f h => simpa using comp_homMk _ f h
+    | nil => simpa using! id x
+    | cons _ f h => simpa using! comp_homMk _ f h
 
 open MorphismProperty in
 lemma multiplicativeClosure_morphismPropertyHomMk :

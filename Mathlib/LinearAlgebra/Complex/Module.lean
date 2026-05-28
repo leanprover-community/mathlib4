@@ -260,7 +260,7 @@ theorem conjAe_coe : ⇑conjAe = conj :=
 /-- The matrix representation of `conjAe`. -/
 @[simp]
 theorem toMatrix_conjAe :
-    LinearMap.toMatrix basisOneI basisOneI conjAe.toLinearMap = !![1, 0; 0, -1] := by
+    conjAe.toLinearEquiv.toLinearMap.toMatrix basisOneI basisOneI = !![1, 0; 0, -1] := by
   ext i j
   fin_cases i <;> fin_cases j <;> simp [LinearMap.toMatrix_apply]
 
@@ -503,7 +503,7 @@ theorem ker_imaginaryPart : imaginaryPart.ker = selfAdjoint.submodule ℝ A := b
 
 @[simp]
 lemma imaginaryPart_eq_zero_iff {x : A} : ℑ x = 0 ↔ IsSelfAdjoint x := by
-  simpa [-ker_imaginaryPart] using SetLike.ext_iff.mp ker_imaginaryPart x
+  simpa [-ker_imaginaryPart] using! SetLike.ext_iff.mp ker_imaginaryPart x
 
 open Submodule
 

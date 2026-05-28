@@ -85,7 +85,7 @@ instance isReduced_stalk_of_isReduced [IsReduced X] (x : X) :
     _root_.IsReduced (X.presheaf.stalk x) := by
   constructor
   rintro g ⟨n, e⟩
-  obtain ⟨U, hxU, s, (rfl : (X.presheaf.germ U x hxU) s = g)⟩ := X.presheaf.germ_exist x g
+  obtain ⟨U, hxU, s, (rfl : (X.presheaf.germ U x hxU) s = g)⟩ := X.presheaf.exists_germ_eq g
   rw [← map_pow, ← map_zero (X.presheaf.germ _ x hxU).hom] at e
   obtain ⟨V, hxV, iU, iV, (e' : (X.presheaf.map iU.op) (s ^ n) = (X.presheaf.map iV.op) 0)⟩ :=
     X.presheaf.germ_eq x hxU hxU _ 0 e
@@ -161,7 +161,7 @@ theorem reduce_to_affine_nbhd (P : ∀ (X : Scheme) (_ : X), Prop)
     ∀ (X : Scheme) (x : X), P X x := by
   intro X x
   obtain ⟨y, e⟩ := X.affineCover.covers x
-  convert h₂ (X.affineCover.f (X.affineCover.idx x)) y _
+  convert! h₂ (X.affineCover.f (X.affineCover.idx x)) y _
   · rw [e]
   apply h₁
 
@@ -289,7 +289,7 @@ theorem isIntegral_of_irreducibleSpace_of_isReduced [IsReduced X] [H : Irreducib
     replace e := congr_arg (X.presheaf.germ U x hxU) e
     rw [map_mul, map_zero] at e
     refine zero_ne_one' (X.presheaf.stalk x) (isUnit_zero_iff.1 ?_)
-    convert hx₁.mul hx₂
+    convert! hx₁.mul hx₂
     exact e.symm
   exact NoZeroDivisors.to_isDomain _
 
@@ -315,7 +315,7 @@ lemma IsIntegral.of_isIso {X Y : Scheme.{u}} [h : IsIntegral X] (f : X ⟶ Y) [I
   exact Nonempty.map f inferInstance
 
 instance {R : CommRingCat} [IsDomain R] : IrreducibleSpace (Spec R) := by
-  convert PrimeSpectrum.irreducibleSpace (R := R)
+  convert! PrimeSpectrum.irreducibleSpace (R := R)
 
 instance {R : CommRingCat} [IsDomain R] : IsIntegral (Spec R) :=
   isIntegral_of_irreducibleSpace_of_isReduced _
@@ -354,10 +354,9 @@ lemma coheight_eq_of_isOpenImmersion {U X : Scheme} {x : U} (f : U ⟶ X) [IsOpe
 open Order in
 lemma idealHeight_eq_coheight (R : CommRingCat) (x : Spec R) :
     x.asIdeal.height = coheight x := by
-  rw [Ideal.height_eq_primeHeight x.asIdeal, Ideal.primeHeight,
+  rw [PrimeSpectrum.height_eq_orderHeight,
     ← Order.coheight_orderIso (specOrderIsoPrimeSpectrum R), ← height_ofDual,
     specOrderIsoPrimeSpectrum_apply, OrderDual.ofDual_toDual]
-  rfl
 
 open Order in
 @[stacks 02IZ]

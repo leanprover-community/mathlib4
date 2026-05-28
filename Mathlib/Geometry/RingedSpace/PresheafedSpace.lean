@@ -232,7 +232,7 @@ def sheafIsoOfIso (H : X ≅ Y) : Y.2 ≅ H.hom.base _* X.2 where
   hom_inv_id := by
     ext U
     rw [NatTrans.comp_app]
-    simpa using congr_arg (fun f => f ≫ eqToHom _) (congr_app H.inv_hom_id (op U))
+    simpa using! congr_arg (fun f => f ≫ eqToHom _) (congr_app H.inv_hom_id (op U))
   inv_hom_id := by
     ext U
     dsimp

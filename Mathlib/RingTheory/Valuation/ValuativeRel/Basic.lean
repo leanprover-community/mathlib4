@@ -267,8 +267,6 @@ lemma mul_vle_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x'
 
 @[deprecated (since := "2025-12-20")] alias mul_srel_mul_iff_right := mul_vlt_mul_iff_right
 
-@[deprecated (since := "2025-11-04")] alias rel_mul := mul_vle_mul
-
 @[gcongr]
 lemma mul_veq_mul {x x' y y' : R} (h1 : x =ᵥ y) (h2 : x' =ᵥ y') : x * x' =ᵥ y * y' :=
   ⟨mul_vle_mul h1.vle h2.vle, mul_vle_mul h1.vge h2.vge⟩
@@ -679,9 +677,9 @@ def ofValuation
   vle_add hab hbc := (map_add_le_max v _ _).trans (sup_le hab hbc)
   mul_vle_mul_left _ h := by simp only [map_mul]; gcongr
   vle_mul_cancel h0 h := by
-    rw [map_zero, le_zero_iff] at h0
     simp only [map_mul] at h
-    exact le_of_mul_le_mul_right h (lt_of_le_of_ne' zero_le' h0)
+    apply le_of_mul_le_mul_right h
+    simpa [pos_iff_ne_zero] using h0
   not_vle_one_zero := by simp
 
 lemma _root_.Valuation.Compatible.ofValuation
@@ -1149,7 +1147,7 @@ where the first row is the map `v` factored through its image group (with zero) 
 @[simp]
 lemma embed_valuation_eq_restrict₀ [v.Compatible] (x : R) :
     embed v (valuation R x) = ValueGroup₀.restrict₀ v x := by
-  convert embed_mk v x 1
+  convert! embed_mk v x 1
   simp
 
 /--

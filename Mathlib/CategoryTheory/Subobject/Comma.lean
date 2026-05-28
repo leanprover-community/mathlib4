@@ -137,7 +137,7 @@ def projectQuotient [HasFiniteColimits C] [PreservesFiniteColimits S] {A : Costr
   intro P Q f g hf hg i hi
   refine Subobject.mk_eq_mk_of_comm _ _ ((proj S T).mapIso i.unop).op (Quiver.Hom.unop_inj ?_)
   have := congr_arg Quiver.Hom.unop hi
-  simpa using congr_arg CommaMorphism.left this
+  simpa using! congr_arg CommaMorphism.left this
 
 @[simp]
 theorem projectQuotient_mk [HasFiniteColimits C] [PreservesFiniteColimits S]

@@ -181,7 +181,7 @@ lemma ι_fromNormalization (U : Y.affineOpens) :
 
 lemma fromNormalization_preimage (U : Y.affineOpens) :
     f.fromNormalization ⁻¹ᵁ U = (f.normalizationOpenCover.f U).opensRange := by
-  simpa using f.normalizationGlueData.toBase_preimage_eq_opensRange_ι U
+  simpa using! f.normalizationGlueData.toBase_preimage_eq_opensRange_ι U
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
@@ -207,7 +207,7 @@ instance : IsIntegralHom f.fromNormalization := by
     letI := (f.app U).hom.toAlgebra
     change (algebraMap Γ(Y, U) (integralClosure Γ(Y, U) Γ(X, f ⁻¹ᵁ U))).IsIntegral
     exact algebraMap_isIntegral_iff.mpr inferInstance
-  convert IsIntegralHom.SpecMap_iff.mpr this
+  convert! IsIntegralHom.SpecMap_iff.mpr this
   rw [← cancel_mono U.2.fromSpec]
   simp [IsAffineOpen.isoSpec_hom, e, ι_fromNormalization]
 
@@ -219,7 +219,7 @@ def normalizationObjIso {U : Y.Opens} (hU : IsAffineOpen U) :
     Γ(f.normalization, f.fromNormalization ⁻¹ᵁ U) ≅
       .of (integralClosure Γ(Y, U) Γ(X, f ⁻¹ᵁ U)) :=
   f.normalization.presheaf.mapIso (eqToIso
-    (by simpa using (f.fromNormalization_preimage ⟨U, hU⟩).symm)).op ≪≫
+    (by simpa using! (f.fromNormalization_preimage ⟨U, hU⟩).symm)).op ≪≫
   (f.normalizationOpenCover.f ⟨U, hU⟩).appIso ⊤ ≪≫ Scheme.ΓSpecIso _
 
 set_option backward.isDefEq.respectTransparency false in
@@ -239,7 +239,7 @@ lemma toNormalization_app_preimage (U : Y.affineOpens) :
   have H : f.toNormalization ⁻¹ᵁ f.fromNormalization ⁻¹ᵁ U =
       (f ⁻¹ᵁ U).ι ''ᵁ (((f ⁻¹ᵁ U).ι ≫ f.toNormalization) ⁻¹ᵁ f.fromNormalization ⁻¹ᵁ U) := by
     simp [← Scheme.Hom.comp_preimage]
-  convert congr($(Scheme.Hom.congr_app (f.ι_toNormalization U) (f.fromNormalization ⁻¹ᵁ U)) ≫
+  convert! congr($(Scheme.Hom.congr_app (f.ι_toNormalization U) (f.fromNormalization ⁻¹ᵁ U)) ≫
     X.presheaf.map (eqToHom H).op) using 1
   · simp [Hom.app_eq_appLE]
   dsimp
@@ -354,8 +354,9 @@ instance [IsReduced X] : IsReduced f.normalization :=
 instance [IsIntegral X] : IsIntegral f.normalization :=
   have : IrreducibleSpace f.normalization := by
     rw [irreducibleSpace_def]
-    convert ((IrreducibleSpace.isIrreducible_univ X).image _
-      f.toNormalization.continuous.continuousOn).closure
+    convert!
+      ((IrreducibleSpace.isIrreducible_univ X).image _
+          f.toNormalization.continuous.continuousOn).closure
     simpa using f.toNormalization.denseRange.closure_range.symm
   isIntegral_of_irreducibleSpace_of_isReduced _
 
@@ -649,7 +650,7 @@ instance [Smooth g] : IsIso (f.normalizationPullback g) := by
     ((pullback.snd f g).normalizationObjIso hV).inv ≫
     (pullback.snd f g).normalization.presheaf.map (eqToHom
       (by simp only [W, ← Scheme.Hom.comp_preimage, Scheme.Hom.normalizationPullback_snd])).op
-  convert show IsIso φ by dsimp only [φ]; infer_instance using 1
+  convert! show IsIso φ by dsimp only [φ]; infer_instance using 1
   ext1
   · dsimp [φ]
     simp only [Scheme.Hom.app_eq_appLE, colimit.ι_desc_assoc, span_left, PushoutCocone.mk_pt,

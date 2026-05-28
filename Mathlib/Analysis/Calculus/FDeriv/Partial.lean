@@ -84,8 +84,8 @@ public theorem hasStrictFDerivAt_uncurry_coprod
             apply isLittleO_sub_sub_fderiv (α := (E₁ × E₂) × (E₁ × E₂))
               (f := fun (v, w) x => f x w.2) (f' := fun (v, w) x => f₁ x w.2)
               (tendsto_fst.comp tendsto_fst) (tendsto_fst.comp tendsto_snd)
-            · simpa using h.eventually df₁
-            · simpa using cf₁.comp h
+            · simpa using! h.eventually df₁
+            · simpa using! cf₁.comp h
           _ =O[(𝓝 u.1 ×ˢ 𝓝 u.2) ×ˢ (𝓝 u.1 ×ˢ 𝓝 u.2)] (fun (v, w) => v - w : _ → E₁ × E₂) := by
             simp [isBigO_of_le]
       · calc
@@ -96,7 +96,7 @@ public theorem hasStrictFDerivAt_uncurry_coprod
             let : NormedSpace ℝ E₂ := RestrictScalars.normedSpace ℝ 𝕜 E₂
             apply isLittleO_sub_sub_fderiv (f' := fun (v, w) y => f₂ v.1 y)
               (tendsto_snd.comp tendsto_fst) (tendsto_snd.comp tendsto_snd)
-            · simpa using h.eventually df₂
-            · simpa using cf₂.comp h
+            · simpa using! h.eventually df₂
+            · simpa using! cf₂.comp h
           _ =O[(𝓝 u.1 ×ˢ 𝓝 u.2) ×ˢ (𝓝 u.1 ×ˢ 𝓝 u.2)] (fun (v, w) => v - w : _ → E₁ × E₂) := by
             simp [isBigO_of_le]

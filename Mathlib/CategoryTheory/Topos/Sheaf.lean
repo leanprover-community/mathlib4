@@ -86,12 +86,12 @@ lemma Presheaf.isPullback_χ_truth (m : F ⟶ G) [Mono m] :
   refine IsPullback.of_forall_isPullback_app fun X => ?_
   rw [Types.isPullback_iff]
   refine ⟨congr(($(comp_χ_eq m)).app X), ?_, ?_⟩
-  · simpa using (mono_iff_injective (m.app X)).mp (inferInstance)
+  · simpa using! (mono_iff_injective (m.app X)).mp (inferInstance)
   · simp only [Functor.const_obj_obj, Functor.sieves_obj, χ_app, Opposite.op_unop,
       TypeCat.hom_ofHom, TypeCat.Fun.coe_mk, truth_app, Functor.isTerminalConst_from_app,
       Types.isTerminalPUnit_from_apply, and_true, forall_const]
     intro p hp
-    simpa [eq_comm] using congr($(hp).arrows (𝟙 _))
+    simpa [eq_comm] using! congr($(hp).arrows (𝟙 _))
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

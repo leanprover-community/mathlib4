@@ -45,8 +45,8 @@ def aestabilizer (s : Set α) : Subgroup G where
   carrier := {g | g • s =ᵐ[μ] s}
   one_mem' := by simp
   -- TODO: `calc` would be more readable but fails because of defeq abuse
-  mul_mem' {g₁ g₂} h₁ h₂ := by simpa only [smul_smul] using ((smul_set_ae_eq g₁).2 h₂).trans h₁
-  inv_mem' {g} h := by simpa using (smul_set_ae_eq g⁻¹).2 h.out.symm
+  mul_mem' {g₁ g₂} h₁ h₂ := by simpa only [smul_smul] using! ((smul_set_ae_eq g₁).2 h₂).trans h₁
+  inv_mem' {g} h := by simpa using! (smul_set_ae_eq g⁻¹).2 h.out.symm
 
 variable {G μ}
 variable {g : G} {s t : Set α}

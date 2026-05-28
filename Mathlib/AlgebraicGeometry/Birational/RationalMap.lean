@@ -267,7 +267,7 @@ lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
       ((Set.image_subset_range _ _).trans_eq (Subtype.range_val)).trans inf_le_right, ?_⟩
     rw [← cancel_epi (Scheme.Hom.isoImage _ _).hom]
     simp only [restrict_hom, ← Category.assoc] at e ⊢
-    convert e using 2 <;> rw [← cancel_mono (Scheme.Opens.ι _)] <;> simp
+    convert! e using 2 <;> rw [← cancel_mono (Scheme.Opens.ι _)] <;> simp
   · rw [← f.fromSpecStalkOfMem_restrict hdense inf_le_left ⟨hxf, hxg⟩,
       ← g.fromSpecStalkOfMem_restrict hdense inf_le_right ⟨hxf, hxg⟩] at H
     simpa only [fromSpecStalkOfMem, restrict_domain, Opens.fromSpecStalkOfMem, Spec.map_inv,
@@ -349,6 +349,20 @@ lemma PartialMap.toRationalMap_eq_iff {f g : X.PartialMap Y} :
     f.toRationalMap = g.toRationalMap ↔ f.equiv g :=
   Quotient.eq
 
+/-- An arbitrarily chosen partial map representing `f`. Use `RationalMap.toPartialMap` instead
+if `X` is reduced and `Y` is separated. -/
+noncomputable def RationalMap.representative (f : X ⤏ Y) : X.PartialMap Y :=
+  f.exists_rep.choose
+
+@[simp]
+lemma RationalMap.toRationalMap_representative (f : X ⤏ Y) :
+    f.representative.toRationalMap = f :=
+  f.exists_rep.choose_spec
+
+lemma PartialMap.representative_toRationalMap_equiv (f : X.PartialMap Y) :
+    f.toRationalMap.representative.equiv f := by
+  rw [← PartialMap.toRationalMap_eq_iff, f.toRationalMap.toRationalMap_representative]
+
 @[simp]
 lemma PartialMap.restrict_toRationalMap (f : X.PartialMap Y) (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) :
@@ -402,7 +416,7 @@ lemma RationalMap.isOver_iff [X.Over S] [Y.Over S] {f : X ⤏ Y} :
   · intro e
     obtain ⟨f, rfl⟩ := PartialMap.toRationalMap_surjective f
     obtain ⟨U, hU, hUl, hUr, e⟩ := PartialMap.toRationalMap_eq_iff.mp e
-    exact ⟨⟨f.restrict U hU hUl, by simpa using e, by simp⟩⟩
+    exact ⟨⟨f.restrict U hU hUl, by simpa using! e, by simp⟩⟩
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -469,7 +483,7 @@ def RationalMap.equivFunctionField [IsIntegral X] [LocallyOfFiniteType sY] :
   invFun f := ⟨f.1.fromFunctionField, by
     obtain ⟨f, hf⟩ := f
     obtain ⟨f, rfl⟩ := f.exists_rep
-    simpa [fromFunctionField_toRationalMap] using congr(RationalMap.fromFunctionField $hf)⟩
+    simpa [fromFunctionField_toRationalMap] using! congr(RationalMap.fromFunctionField $hf)⟩
   left_inv f := Subtype.ext (RationalMap.fromFunctionField_ofFunctionField _ _ _ _)
   right_inv f := Subtype.ext (RationalMap.eq_of_fromFunctionField_eq
       (ofFunctionField sX sY f.1.fromFunctionField _) f
@@ -536,7 +550,7 @@ def RationalMap.toPartialMap [IsReduced X] [Y.IsSeparated] (f : X ⤏ Y) : X.Par
     IsPullback.isoPullback_hom_snd_assoc]
   change _ ≫ _ ≫ (g x).hom = _ ≫ _ ≫ (g y).hom
   simp_rw [← cancel_epi (X.isoOfEq congr($(hg₂ x) ⊓ $(hg₂ y))).hom, ← Category.assoc]
-  convert (PartialMap.equiv_iff_of_isSeparated (S := ⊤_ _) (f := g x) (g := g y)).mp ?_ using 1
+  convert! (PartialMap.equiv_iff_of_isSeparated (S := ⊤_ _) (f := g x) (g := g y)).mp ?_ using 1
   · dsimp; congr 1; simp [g, ← cancel_mono (Opens.ι _)]
   · dsimp; congr 1; simp [g, ← cancel_mono (Opens.ι _)]
   · rw [← PartialMap.toRationalMap_eq_iff, hg₁, hg₁]

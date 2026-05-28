@@ -114,14 +114,14 @@ theorem exists_norm_eq_restrict_eq (f : s →ᵇ E) :
     ∃ g : X →ᵇ E, ‖g‖ = ‖f‖ ∧ g.restrict s = f := by
   by_cases hf : ‖f‖ = 0; · exact ⟨0, by aesop⟩
   have := Metric.instTietzeExtensionClosedBall.{u, v} 𝕜 (0 : E) (by simp_all : 0 < ‖f‖)
-  have hf' x : f x ∈ Metric.closedBall 0 ‖f‖ := by simpa using f.norm_coe_le_norm x
+  have hf' x : f x ∈ Metric.closedBall 0 ‖f‖ := by simpa using! f.norm_coe_le_norm x
   obtain ⟨g, hg_mem, hg⟩ := (f : C(s, E)).exists_forall_mem_restrict_eq hs hf'
   simp only [Metric.mem_closedBall, dist_zero_right] at hg_mem
   let g' : X →ᵇ E := .ofNormedAddCommGroup g (map_continuous g) ‖f‖ hg_mem
   refine ⟨g', ?_, by ext x; congrm($(hg) x)⟩
   apply le_antisymm ((g'.norm_le <| by positivity).mpr hg_mem)
   refine (f.norm_le <| by positivity).mpr fun x ↦ ?_
-  have hx : f x = g' x := by simpa using congr($(hg) x).symm
+  have hx : f x = g' x := by simpa using! congr($(hg) x).symm
   rw [hx]
   exact g'.norm_le (norm_nonneg g') |>.mp le_rfl x
 

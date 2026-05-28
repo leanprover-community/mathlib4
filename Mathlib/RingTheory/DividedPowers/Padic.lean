@@ -163,7 +163,7 @@ private lemma dividedPowers_eq (n : ℕ) (x : ℤ_[p]) :
         inverse (n ! : ℚ_[p]) * Coe.ringHom x ^ n := by
       simp [dpow', inverse_eq_inv', Coe.ringHom_apply]
     simpa only [← hinj.eq_iff, (Exists.choose_spec (_ : ∃ a, ∃ _, Coe.ringHom a = _)).2,
-      RatAlgebra.dpow_apply, Submodule.mem_top] using heq.symm
+      RatAlgebra.dpow_apply, Submodule.mem_top] using! heq.symm
   · rfl
 
 lemma coe_dpow_eq (n : ℕ) (x : ℤ_[p]) :

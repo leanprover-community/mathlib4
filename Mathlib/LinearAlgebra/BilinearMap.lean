@@ -262,7 +262,6 @@ def restrictScalars₁₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N �
     (B · ·)
     B.map_add₂
     (fun r' m _ ↦ by
-      dsimp only
       rw [← smul_one_smul R r' m, map_smul₂, smul_one_smul])
     (fun _ ↦ map_add _)
     (fun _ x ↦ (B x).map_smul_of_tower _)
@@ -365,7 +364,7 @@ theorem compl₁₂_inj [SMulCommClass R₂ R₁ Pₗ]
     ext x y
     obtain ⟨x', rfl⟩ := hₗ x
     obtain ⟨y', rfl⟩ := hᵣ y
-    convert LinearMap.congr_fun₂ h x' y' using 0
+    convert! LinearMap.congr_fun₂ h x' y' using 0
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
     subst h; rfl
 

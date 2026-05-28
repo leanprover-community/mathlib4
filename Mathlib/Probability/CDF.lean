@@ -75,7 +75,7 @@ lemma tendsto_cdf_atTop : Tendsto (cdf μ) atTop (𝓝 1) := tendsto_condCDF_atT
 
 lemma ofReal_cdf [IsProbabilityMeasure μ] (x : ℝ) : ENNReal.ofReal (cdf μ x) = μ (Iic x) := by
   have h := lintegral_condCDF ((dirac Unit.unit).prod μ) x
-  simpa only [fst_prod, prod_prod, measure_univ, one_mul, lintegral_dirac] using h
+  simpa only [fst_prod, prod_prod, measure_univ, one_mul, lintegral_dirac] using! h
 
 lemma cdf_eq_real [IsProbabilityMeasure μ] (x : ℝ) : cdf μ x = μ.real (Iic x) := by
   rw [measureReal_def, ← ofReal_cdf μ x, ENNReal.toReal_ofReal (cdf_nonneg μ x)]

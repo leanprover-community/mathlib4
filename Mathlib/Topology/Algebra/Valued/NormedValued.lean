@@ -85,7 +85,7 @@ def toValued : Valued K ℝ≥0 :=
             apply le_of_eq
             rw [eq_comm]
             simpa only [Units.ext_iff, hx0.unit_spec, Units.val_one,
-              Submonoid.mk_eq_one] using H.elim hx0.unit 1
+              Submonoid.mk_eq_one] using! H.elim hx0.unit 1
         · obtain ⟨x, hx, hxy⟩ := H (γ := ⟨ε, le_of_lt hε⟩) (pos_iff_ne_zero.mp hε)
           use Units.mk0 (valuation.restrict x) (by simp [Valuation.restrict_def, hx])
           intro y hy
@@ -93,11 +93,11 @@ def toValued : Valued K ℝ≥0 :=
           simp only [Metric.mem_ball, dist_zero_right]
           simp only [Units.val_mk0, mem_setOf_eq, restrict_lt_iff, ← NNReal.coe_lt_coe] at hy
           apply lt_trans hy
-          simpa [RankLeOne.hom', valuation.restrict_def] using hxy
+          simpa [RankLeOne.hom', valuation.restrict_def] using! hxy
       · rintro ⟨ε, hε⟩
         refine ⟨(embedding ε.1 : ℝ≥0), ?_, fun x hx ↦ hε ?_⟩
         · exact NNReal.coe_pos.mpr <| embedding_strictMono.lt_iff_lt.mpr ε.zero_lt
-        · simpa [restrict_lt_iff_lt_embedding] using (mem_ball_zero_iff.mp hx) }
+        · simpa [restrict_lt_iff_lt_embedding] using! (mem_ball_zero_iff.mp hx) }
 
 instance {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
     Valuation.RankOne (valuation (K := K)) where
@@ -244,22 +244,22 @@ theorem norm_lt_iff : ‖x‖ < ‖x'‖ ↔ val.v x < val.v x' := by
 @[simp]
 theorem norm_le_one_iff : ‖x‖ ≤ 1 ↔ val.v x ≤ 1 := by
   rw [← map_one val.v, ← v.restrict_le_iff]
-  simpa only [map_one] using (Valuation.RankOne.strictMono val.v).le_iff_le (b := 1)
+  simpa only [map_one] using! (Valuation.RankOne.strictMono val.v).le_iff_le (b := 1)
 
 @[simp]
 theorem norm_lt_one_iff : ‖x‖ < 1 ↔ val.v x < 1 := by
   rw [← map_one val.v, ← v.restrict_lt_iff]
-  simpa only [map_one] using (Valuation.RankOne.strictMono val.v).lt_iff_lt (b := 1)
+  simpa only [map_one] using! (Valuation.RankOne.strictMono val.v).lt_iff_lt (b := 1)
 
 @[simp]
 theorem one_le_norm_iff : 1 ≤ ‖x‖ ↔ 1 ≤ val.v x := by
   rw [← map_one val.v, ← v.restrict_le_iff]
-  simpa only [map_one] using (Valuation.RankOne.strictMono val.v).le_iff_le (a := 1)
+  simpa only [map_one] using! (Valuation.RankOne.strictMono val.v).le_iff_le (a := 1)
 
 @[simp]
 theorem one_lt_norm_iff : 1 < ‖x‖ ↔ 1 < val.v x := by
   rw [← map_one val.v, ← v.restrict_lt_iff]
-  simpa only [map_one] using (Valuation.RankOne.strictMono val.v).lt_iff_lt (a := 1)
+  simpa only [map_one] using! (Valuation.RankOne.strictMono val.v).lt_iff_lt (a := 1)
 
 lemma setOf_mem_integer_eq_closedBall :
     { x : L | x ∈ Valued.v.integer } = Metric.closedBall 0 1 := by

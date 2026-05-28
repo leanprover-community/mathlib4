@@ -83,7 +83,7 @@ theorem spanFinrank_le_spanFinrank_map_constantCoeff_add_one_of_X_mem (hI : X �
     exact map_eq_submodule_map constantCoeff I ▸ Submodule.FG.map _ hfg
   nth_rw 1 [eq_span_insert_X_of_X_mem_of_span_eq hI (I.map constantCoeff).span_generators]
   refine le_trans (spanFinrank_span_le_ncard_of_finite ?_) (le_trans (Set.ncard_insert_le _ _) ?_)
-  · simpa using Set.Finite.map _ (FG.finite_generators hfg)
+  · simpa using! Set.Finite.map _ (FG.finite_generators hfg)
   · simp only [add_le_add_iff_right]
     refine le_trans (Set.ncard_image_le (FG.finite_generators hfg)) ?_
     rw [FG.generators_ncard hfg]

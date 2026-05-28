@@ -188,7 +188,7 @@ theorem restrict_zero {_m0 : MeasurableSpace α} (s : Set α) : (0 : Measure α)
 theorem restrict_smul {_m0 : MeasurableSpace α} {R : Type*} [SMul R ℝ≥0∞]
     [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R) (μ : Measure α) (s : Set α) :
     (c • μ).restrict s = c • μ.restrict s := by
-  simpa only [smul_one_smul] using (restrictₗ s).map_smul (c • 1) μ
+  simpa only [smul_one_smul] using! (restrictₗ s).map_smul (c • 1) μ
 
 theorem restrict_restrict₀ (hs : NullMeasurableSet s (μ.restrict t)) :
     (μ.restrict t).restrict s = μ.restrict (s ∩ t) :=
@@ -781,7 +781,7 @@ lemma nullMeasurableSet_restrict_of_subset {t : Set α} (ht : t ⊆ s) :
     h.exists_measurable_subset_ae_eq
   have : ∀ᵐ x ∂μ, x ∈ s → (x ∈ t' ↔ x ∈ t) := by
     apply ae_imp_of_ae_restrict
-    filter_upwards [t't] with x hx using by simpa using hx
+    filter_upwards [t't] with x hx using by simpa using! hx
   have : t' =ᵐ[μ] t := by
     filter_upwards [this] with x hx
     change (x ∈ t') = (x ∈ t)

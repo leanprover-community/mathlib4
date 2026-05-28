@@ -97,7 +97,7 @@ lemma shape (n m : ℤ) (hnm : n + 1 ≠ m) : h.d n m = 0 :=
   match n, m with
   | .ofNat n, .ofNat m => L.shape _ _ (by simp at hnm ⊢; lia)
   | .negSucc n, .negSucc m => by
-    simpa only [d_negSucc] using K.shape n m (by simp at hnm ⊢; lia)
+    simpa only [d_negSucc] using! K.shape n m (by simp at hnm ⊢; lia)
   | .negSucc 0, .ofNat 0 => by simp at hnm
   | .ofNat _, .negSucc m => rfl
   | .negSucc n, .ofNat m => by
@@ -148,7 +148,6 @@ def restrictionGEIso :
     (fun n ↦ h.cochainComplex.restrictionXIso (ComplexShape.embeddingUpIntGE 0)
       (i := n) (i' := n) (by simp)) (by
     rintro n _ rfl
-    dsimp only
     rw [restriction_d_eq (e := (ComplexShape.embeddingUpIntGE 0)) _ (i' := n)
       (j' := (n + 1 : ℕ)) (by simp) (by simp), cochainComplex_d, h.d_ofNat]
     simp)
@@ -162,7 +161,6 @@ def restrictionLEIso :
     (fun n ↦ h.cochainComplex.restrictionXIso (ComplexShape.embeddingUpIntLE (-1))
         (i := n) (i' := .negSucc n) (by dsimp; lia)) (by
     rintro _ n rfl
-    dsimp only
     rw [restriction_d_eq (e := (ComplexShape.embeddingUpIntLE (-1))) _
       (i' := Int.negSucc (n + 1)) (j' := Int.negSucc n) (by dsimp; lia) (by dsimp; lia),
       cochainComplex_d, d_negSucc]

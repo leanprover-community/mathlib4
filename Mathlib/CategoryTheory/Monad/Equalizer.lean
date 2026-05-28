@@ -103,7 +103,7 @@ def beckCoalgebraEqualizer : IsLimit (beckCoalgebraFork X) :=
         reassoc_of% h₁, Comonad.left_counit]
       simp
     · ext
-      simpa [← T.ε.naturality_assoc, T.left_counit_assoc] using h₁ =≫ T.ε.app ((T : C ⥤ C).obj X.A)
+      simpa [← T.ε.naturality_assoc, T.left_counit_assoc] using! h₁ =≫ T.ε.app ((T : C ⥤ C).obj X.A)
     · intro m hm
       ext
       dsimp only

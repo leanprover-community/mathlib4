@@ -75,7 +75,7 @@ lemma bijective_toSmallShiftedHom_of_isKProjective [K.IsKProjective] :
       (SmallShiftedHom.equiv _ DerivedCategory.Q).bijective,
     ← Function.Bijective.of_comp_iff' (Iso.homCongr ((quotientCompQhIso C).symm.app K)
       ((Q.commShiftIso n).symm.app L ≪≫ (quotientCompQhIso C).symm.app (L⟦n⟧))).bijective]
-  convert (CochainComplex.IsKProjective.Qh_map_bijective _ _).comp (toHom_bijective K L n)
+  convert! (CochainComplex.IsKProjective.Qh_map_bijective _ _).comp (toHom_bijective K L n)
   ext x
   obtain ⟨x, rfl⟩ := x.mk_surjective
   simp [toHom_mk, ShiftedHom.map]

@@ -203,7 +203,7 @@ def fintypeCatAsCofan (X : Profinite) :
 /-- A finite set is the coproduct of its points in `Profinite`. -/
 def fintypeCatAsCofanIsColimit (X : Profinite) [Finite X] :
     IsColimit (fintypeCatAsCofan X) :=
-  mkCofanColimit _ (fun t ↦ ConcreteCategory.ofHom ⟨fun x ↦ t.inj x PUnit.unit,
+  Cofan.IsColimit.mk _ (fun t ↦ ConcreteCategory.ofHom ⟨fun x ↦ t.inj x PUnit.unit,
     continuous_of_discreteTopology (α := X)⟩) (by aesop)
     (fun _ _ h ↦ by ext x; exact CategoryTheory.congr_fun (h x) _)
 
@@ -309,7 +309,7 @@ lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u + 1
     IsTerminal.from _ (fiber.{u, u + 1} f x) = 𝟙 _ from rfl]
   simp only [op_comp, Functor.map_comp_apply, op_id, Functor.map_id_apply]
   simpa [← dsimp% isoFinYonedaComponents_inv_comp X _ (sigmaIncl.{u, u + 1} f x),
-    ← isoFinYonedaComponents_hom_apply, -isoFinYonedaComponents_hom] using x.map_eq_image f y
+    ← isoFinYonedaComponents_hom_apply, -isoFinYonedaComponents_hom] using! x.map_eq_image f y
 
 end Condensed
 
@@ -495,7 +495,7 @@ def fintypeCatAsCofan (X : LightProfinite) :
 /-- A finite set is the coproduct of its points in `LightProfinite`. -/
 def fintypeCatAsCofanIsColimit (X : LightProfinite) [Finite X] :
     IsColimit (fintypeCatAsCofan X) :=
-  mkCofanColimit _ (fun t ↦ ConcreteCategory.ofHom ⟨fun x ↦ t.inj x PUnit.unit,
+  Cofan.IsColimit.mk _ (fun t ↦ ConcreteCategory.ofHom ⟨fun x ↦ t.inj x PUnit.unit,
     continuous_of_discreteTopology (α := X)⟩) (by aesop)
     (fun _ _ h ↦ by ext x; exact CategoryTheory.congr_fun (h x) _)
 
@@ -597,6 +597,6 @@ lemma isoLocallyConstantOfIsColimit_inv (X : LightProfinite.{u}ᵒᵖ ⥤ Type u
   rw [show (LightProfinite.of PUnit.{u + 1}).const y ≫
     IsTerminal.from _ (fiber.{u, u} f x) = 𝟙 _ from rfl]
   simpa [← dsimp% isoFinYonedaComponents_inv_comp X _ (sigmaIncl.{u, u} f x),
-    ← isoFinYonedaComponents_hom_apply, -isoFinYonedaComponents_hom] using x.map_eq_image f y
+    ← isoFinYonedaComponents_hom_apply, -isoFinYonedaComponents_hom] using! x.map_eq_image f y
 
 end LightCondensed

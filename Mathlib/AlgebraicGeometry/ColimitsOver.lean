@@ -144,7 +144,7 @@ lemma isPullback {i j : 𝒰.I₀} (hij : i ⟶ j) :
     (MorphismProperty.Over.forget _ _ _ ⋙ Over.forget _).mapIso iso1
   refine .of_iso (IsPullback.of_hasPullback _ _) iso2.symm (.refl _) (.refl _) (.refl _) ?_ ?_
       (by simp) (by simp)
-  · simpa [← cancel_epi iso2.hom] using congr($(heq).left)
+  · simpa [← cancel_epi iso2.hom] using! congr($(heq).left)
   · exact (Over.w iso1.inv).symm
 
 set_option backward.isDefEq.respectTransparency false in

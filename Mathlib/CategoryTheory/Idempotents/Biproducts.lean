@@ -77,7 +77,7 @@ theorem karoubi_hasFiniteBiproducts [HasFiniteBiproducts C] : HasFiniteBiproduct
   { out := fun n =>
       { has_biproduct := fun F => by
           apply hasBiproduct_of_total (Biproducts.bicone F)
-          simpa using biproduct.map_eq.symm } }
+          simpa using! biproduct.map_eq.symm } }
 
 attribute [instance] karoubi_hasFiniteBiproducts
 
