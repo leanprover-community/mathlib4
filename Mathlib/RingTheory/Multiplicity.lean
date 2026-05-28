@@ -489,7 +489,6 @@ theorem FiniteMultiplicity.ne_zero {a b : α} (h : FiniteMultiplicity a b) : b �
 theorem emultiplicity_zero (a : α) : emultiplicity a 0 = ⊤ :=
   emultiplicity_eq_top.2 (fun v ↦ v.ne_zero rfl)
 
-@[simp]
 theorem multiplicity_zero (a : α) : multiplicity a 0 = 1 :=
   multiplicity_eq_one_of_not_finiteMultiplicity fun h ↦ h.ne_zero rfl
 
