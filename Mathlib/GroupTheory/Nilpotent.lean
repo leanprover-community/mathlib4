@@ -887,16 +887,18 @@ lemma upperCentralSeries.eq_ge_of_eq_succ {a b : ℕ} (ab : a ≤ b)
 they are all equal, starting from the smaller index. -/
 @[to_additive /-- If two different elements of the `upperCentralSeries` of an additive group `G`
 are equal, then they are all equal, starting from the smaller index. -/]
-lemma upperCentralSeries.eq_ge_of_eq_gt {a b c : ℕ} (ab : a < b) (ac : a ≤ c)
+lemma upperCentralSeries.eq_ge_of_eq_gt {a b c : ℕ} (ab : a ≠ b) (ac : a ≤ c)
     (hn : upperCentralSeries G a = upperCentralSeries G b) :
     upperCentralSeries G a = upperCentralSeries G c := by
+  wlog ab : a < b
+  · grind
   refine eq_ge_of_eq_succ ac (le_antisymm ?_ ?_)
   · exact upperCentralSeries_mono _ <| Nat.le_succ ..
   · rw [hn]
     exact upperCentralSeries_mono _ (by grind)
 
 @[to_additive]
-lemma upperCentralSeries.eq_top [IsNilpotent G] {a b : ℕ} (ab : a < b)
+lemma upperCentralSeries.eq_top [IsNilpotent G] {a b : ℕ} (ab : a ≠ b)
     (hn : upperCentralSeries G a = upperCentralSeries G b) :
     upperCentralSeries G a = ⊤ := by
   grind only [IsNilpotent.nilpotent', IsNilpotent.nilpotent,
@@ -942,8 +944,9 @@ variable (G) in
 @[to_additive]
 theorem Group.IsNilpotent.center_ne_bot [Nontrivial G] [IsNilpotent G] : center G ≠ ⊥ := by
   rw [← upperCentralSeries_zero, ← upperCentralSeries_one]
-  have ⟨n, hn⟩ := IsNilpotent.nilpotent G
-  grind [bot_ne_top, upperCentralSeries_zero, upperCentralSeries.eq_ge_of_eq_succ]
+  intro h
+  rw [upperCentralSeries.eq_top one_ne_zero h, upperCentralSeries_zero] at h
+  exact top_ne_bot h
 
 section Prod
 
