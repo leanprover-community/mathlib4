@@ -26,6 +26,46 @@ open CategoryTheory Limits
 
 noncomputable section
 
+namespace CategoryTheory.Functor
+
+theorem final_of_isTerminal_obj_isTerminal {C : Type u₁} [Category.{v₁} C] [HasTerminal C]
+    {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D) {T : C} (hT : IsTerminal T)
+    (hF : IsTerminal (F.obj T)) : F.Final :=
+  have : (fromPUnit.{0} T).Final := final_fromPUnit_of_isTerminal hT
+  have : (fromPUnit.{0} (F.obj T)).Final := final_fromPUnit_of_isTerminal hF
+  have : ((fromPUnit.{0} T) ⋙ F).Final := final_of_natIso (F := fromPUnit.{0} (F.obj T))
+    (NatIso.ofComponents (fun _ => Iso.refl _))
+  final_of_final_comp (fromPUnit.{0} T) F
+
+instance {C : Type u₁} [Category.{v₁} C] [HasTerminal C] {D : Type u₂}
+    [Category.{v₂} D] (F : C ⥤ D) [PreservesLimit (Functor.empty.{0} C) F] : F.Final :=
+  final_of_isTerminal_obj_isTerminal F terminalIsTerminal
+    (terminalIsTerminal.isTerminalObj F (⊤_ C))
+
+end CategoryTheory.Functor
+
+namespace CategoryTheory.Over
+
+instance post_final {T : Type u₁} [Category.{v₁} T] {D : Type u₂} [Category.{v₂} D]
+    {X : T} (F : T ⥤ D) : (Over.post (X := X) F).Final where
+  out A := by
+    let t : StructuredArrow A (Over.post (X := X) F) :=
+      StructuredArrow.mk (Y := Over.mk (𝟙 X)) (Over.homMk A.hom (by simp))
+    let toT (B : StructuredArrow A (Over.post (X := X) F)) : B ⟶ t :=
+      StructuredArrow.homMk
+        (Over.homMk B.right.hom (by
+          change B.right.hom ≫ 𝟙 X = B.right.hom
+          simp) : B.right ⟶ t.right)
+        (by
+          ext
+          simpa using Over.w B.hom)
+    haveI : Nonempty (StructuredArrow A (Over.post (X := X) F)) := ⟨t⟩
+    apply zigzag_isConnected
+    intro B C
+    exact Zigzag.of_zag_trans (Zag.of_hom (toT B)) (Zag.of_inv (toT C))
+
+end CategoryTheory.Over
+
 namespace SheafOfModules
 
 variable {C : Type u₁} [Category.{v₁} C] [HasBinaryProducts C] {D : Type u₂} [Category.{v₂} D]
@@ -74,6 +114,50 @@ abbrev overPullbackIso :
     ((pullback φ).obj M).over (F.obj X) := (pullbackRestrict φ X).app M
 
 #check M.overPullbackIso φ X
+
+variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]
+  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
+  [∀ X, (K.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [∀ X, HasSheafify (K.over X) AddCommGrpCat.{u}]
+  [∀ X, (K.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
+  [∀ X, (pushforward.{u} (StructureHomOver φ X)).IsRightAdjoint]
+  [F.Final]
+
+#check QuasicoherentData.{u} M
+
+set_option backward.isDefEq.respectTransparency false in
+variable (J K) in
+theorem coversTop_image {I : Type w} {X : I → C} (h : J.CoversTop X) :
+    K.CoversTop (fun i => F.obj (X i)) := by
+  intro Y
+  let X₀ := Functor.Final.lift F Y
+  let f : Y ⟶ F.obj X₀ := Functor.Final.homToLift F Y
+  let S : J.Cover X₀ := h.cover X₀
+  let E : J.OneHypercover X₀ := S.oneHypercover
+  have hE : (E.toPreOneHypercover.map F).sieve₀ ∈ K (F.obj X₀) :=
+    GrothendieckTopology.OneHypercover.IsPreservedBy.mem₀ (E := E) (F := F) (K := K)
+  have hFX₀ : Sieve.ofObjects (fun i => F.obj (X i)) (F.obj X₀) ∈ K (F.obj X₀) := by
+    refine K.superset_covering ?_ hE
+    change (E.toPreOneHypercover.toPreZeroHypercover.map F).sieve₀ ≤
+      Sieve.ofObjects (fun i => F.obj (X i)) (F.obj X₀)
+    rw [PreZeroHypercover.sieve₀_map]
+    simpa [S, E, Function.comp_def] using
+      (Sieve.functorPushforward_ofObjects_le (F := F) X X₀)
+  simpa [f] using K.pullback_stable f hFX₀
+
+variable {M} in
+def QuasicoherentData.pullback (q : M.QuasicoherentData) :
+    ((pullback φ).obj M).QuasicoherentData where
+  I := q.I
+  X i := F.obj (q.X i)
+  coversTop := coversTop_image J K q.coversTop
+  presentation i := ((q.presentation i).map _ (asIso (pullbackObjUnitToUnit _)).symm).ofIsIso
+    (M.overPullbackIso φ (q.X i)).hom
+
+variable {M} in
+theorem IsQuasicoherent.pullback [q : M.IsQuasicoherent] : ((pullback φ).obj M).IsQuasicoherent :=
+  (q.nonempty_quasicoherentData.some.pullback φ).isQuasicoherent
 
 end SheafOfModules
 
@@ -124,6 +208,13 @@ instance {X Y : TopCat} (f : X ⟶ Y) : (TopologicalSpace.Opens.map f).Preserves
 
 variable {X Y : Scheme} (f : X ⟶ Y) (M : Y.Modules) (U : Y.Opens)
 
+instance [M.IsQuasicoherent] : ((pullback f).obj M).IsQuasicoherent :=
+  SheafOfModules.IsQuasicoherent.pullback _
+
 #check M.overPullbackIso f.toRingCatSheafHom U
+
+variable (q : M.QuasicoherentData)
+
+#check q.pullback f.toRingCatSheafHom
 
 end AlgebraicGeometry.Scheme.Modules
