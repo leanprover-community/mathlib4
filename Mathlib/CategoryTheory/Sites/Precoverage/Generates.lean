@@ -96,7 +96,7 @@ lemma Generates.isSheaf_of_forall (h : K.Generates J) (F : Cᵒᵖ ⥤ Type w)
     have hQ : Presieve.IsSheaf J Q.toFunctor :=
       h.isSheaf_of_forall_aux _ fun X R hR ↦ isSheafFor_subsheafify _ hR (H _ hR)
     obtain ⟨t, ht, _⟩ := hQ _ hS (fun Z g hg ↦ ⟨x g hg, .base ⟨⟨g, hg⟩, rfl⟩⟩) (.of_mono Q.ι hx)
-    refine ⟨t.val, ht.map Q.ι⟩
+    exact ⟨t.val, ht.map Q.ι⟩
 
 /-- If `K` generates `J`, then any presheaf is a sheaf if and only if it is a sheaf
 for all `K`-covers. -/
