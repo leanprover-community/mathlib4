@@ -17,7 +17,7 @@ In this file we
 * prove a few lemmas about `iSup`/`iInf`/`Set.iUnion`/`Set.iInter` and natural numbers.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

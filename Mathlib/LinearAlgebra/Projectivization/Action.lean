@@ -25,7 +25,7 @@ Generalize to the special linear group over a division ring.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped LinearAlgebra.Projectivization Matrix
 

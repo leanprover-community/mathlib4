@@ -28,7 +28,7 @@ while `csInf_le` is the same statement in conditionally complete lattices
 with an additional assumption that `s` is bounded below.
 -/
 
-@[expose] public section
+public section
 
 -- Guard against import creep
 assert_not_exists Multiset

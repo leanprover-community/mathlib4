@@ -39,7 +39,7 @@ complexes to homotopy categories).
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

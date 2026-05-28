@@ -15,7 +15,7 @@ We define the Hopf algebra instance on the tensor product of two Hopf algebras.
 
 -/
 
-@[expose] public section
+public section
 
 open Coalgebra TensorProduct HopfAlgebra
 

@@ -131,7 +131,7 @@ does **not** have a `FunLike` instance by checking the discrimination tree once 
 the entire `extends` hierarchy.
 -/
 
-@[expose] public section
+public section
 
 /-- The class `DFunLike F α β` expresses that terms of type `F` have an
 injective coercion to (dependent) functions from `α` to `β`.
