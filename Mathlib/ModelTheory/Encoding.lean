@@ -115,13 +115,13 @@ theorem card_sigma : #(Σ n, L.Term (α ⊕ (Fin n))) = max ℵ₀ #(α ⊕ (Σ 
   · rw [mk_sigma]
     refine (sum_le_lift_mk_mul_iSup _).trans ?_
     rw [mk_nat, lift_aleph0, mul_eq_max_of_aleph0_le_left le_rfl, max_le_iff,
-      ciSup_le_iff' (bddAbove_range _)]
+      ciSup_le_iff' bddAbove_of_small]
     · refine ⟨le_max_left _ _, fun i => card_le.trans ?_⟩
       refine max_le (le_max_left _ _) ?_
       grw [← add_eq_max le_rfl, mk_sum, mk_sum, mk_sum, add_comm (Cardinal.lift #α), lift_add,
         add_assoc, lift_lift, lift_lift, mk_fin, lift_natCast, natCast_lt_aleph0]
     · rw [← Cardinal.one_le_iff_ne_zero]
-      refine _root_.trans ?_ (le_ciSup (bddAbove_range _) 1)
+      refine _root_.trans ?_ (le_ciSup bddAbove_of_small 1)
       rw [Cardinal.one_le_iff_ne_zero, mk_ne_zero_iff]
       exact ⟨var (Sum.inr 0)⟩
   · rw [max_le_iff, ← infinite_iff]

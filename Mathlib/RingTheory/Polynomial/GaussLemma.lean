@@ -322,7 +322,7 @@ theorem IsPrimitive.dvd_of_fraction_map_dvd_fraction_map {p q : R[X]} (hp : p.Is
   iterate 2
     apply mul_ne_zero hq.ne_zero
     rw [Ne, C_eq_zero]
-    contrapose! s0
+    contrapose s0
     simp [s0, mem_nonZeroDivisors_iff_ne_zero]
 
 variable (K)
