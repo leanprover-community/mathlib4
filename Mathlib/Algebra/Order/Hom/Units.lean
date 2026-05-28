@@ -22,4 +22,4 @@ def OrderMonoidIso.unitsCongr : αˣ ≃*o βˣ where
   __ := Units.mapEquiv e.toMulEquiv
   map_le_map_iff' {x y} := by simp [← Units.val_le_val]
 
-@[simp] lemma OrderMonoidIso.unitsCongr_symm_apply (x : βˣ) : e.unitsCongr.symm x = e.symm x := rfl
+lemma OrderMonoidIso.unitsCongr_symm_apply (x : βˣ) : e.unitsCongr.symm x = e.symm x := rfl

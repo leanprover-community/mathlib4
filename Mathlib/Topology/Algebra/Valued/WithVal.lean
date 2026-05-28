@@ -229,8 +229,8 @@ instance : IsValuativeTopology (WithVal v) where
     simp only [Set.image_add_left, Set.preimage_setOf_eq, Valued.mem_nhds]
     let e := ValuativeRel.ValueGroupWithZero.orderMonoidIso (valuation v)
     apply e.unitsCongr.symm.exists_congr fun a ↦ ?_
-    simp [-OrderMonoidIso.val_unitsCongr_symm_apply, e.lt_symm_apply, e, ← Valuation.restrict_def,
-      sub_eq_neg_add]
+    simp [-OrderMonoidIso.val_unitsCongr_symm_apply, OrderMonoidIso.unitsCongr_symm_apply,
+      e.lt_symm_apply, e, ← Valuation.restrict_def, sub_eq_neg_add]
     rfl
 
 end CommRing
