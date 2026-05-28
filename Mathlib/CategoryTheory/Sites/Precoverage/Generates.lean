@@ -86,8 +86,9 @@ lemma Generates.isSheaf_of_forall (h : K.Generates J) (F : Cᵒᵖ ⥤ Type w)
       fun Z g hg ↦ ⟨x g hg, .base <| .inl <| .inl ⟨⟨g, hg⟩, rfl⟩⟩
     have ht₁' : t₁ ∈ Q.obj (.op X) := .base (.inl <| .inr ⟨𝟙 _, by simp⟩)
     have ht₂' : t₂ ∈ Q.obj (.op X) := .base (.inr ⟨𝟙 _, by simp⟩)
-    exact congr($((hQ _ hS).isSeparatedFor x' ⟨_, ht₁'⟩ ⟨_, ht₂'⟩
-      (.of_mono Q.ι ht₁) (.of_mono Q.ι ht₂)).val)
+    have : (⟨t₁, ht₁'⟩ : Q.obj _) = ⟨t₂, ht₂'⟩ :=
+      (hQ _ hS).isSeparatedFor x' ⟨_, ht₁'⟩ ⟨_, ht₂'⟩ (.of_mono Q.ι ht₁) (.of_mono Q.ι ht₂)
+    simp_all
   · let 𝒮 (Z : C) := Set.range (fun (g : { g : Z ⟶ X | S.arrows g }) ↦ x _ g.2)
     let Q : Subfunctor F := K.subsheafify 𝒮
     have (Z : C) : _root_.Small.{max u v} (Q.toFunctor.obj (Opposite.op Z)) :=
