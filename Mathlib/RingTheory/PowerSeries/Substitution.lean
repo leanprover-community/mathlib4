@@ -162,6 +162,9 @@ noncomputable def subst (a : MvPowerSeries τ S) (f : PowerSeries R) :
 lemma subst_def (a : MvPowerSeries τ S) (f : PowerSeries R) :
     subst a f = MvPowerSeries.subst (fun _ ↦ a) f := rfl
 
+lemma subst_X_comp_const {f : R⟦X⟧} {i : τ} :
+    .subst (.X (R := R) ∘ fun _ ↦ i) f = f.subst (.X i) := rfl
+
 variable {a : MvPowerSeries τ S} {b : S⟦X⟧}
 
 /-- Substitution of power series into a power series, as an `AlgHom`. -/
