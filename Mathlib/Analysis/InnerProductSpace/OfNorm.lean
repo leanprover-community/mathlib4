@@ -118,7 +118,7 @@ theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
   simp only [inner_, normSq_apply, ofNat_re, ofNat_im, map_sub, map_add,
     ofReal_re, ofReal_im, mul_re, inv_re, mul_im, I_re, inv_im]
   have h₁ : ‖x - x‖ = 0 := by simp
-  have h₂ : ‖x + x‖ = 2 • ‖x‖ := by convert norm_nsmul 𝕜 2 x using 2; module
+  have h₂ : ‖x + x‖ = 2 • ‖x‖ := by convert! norm_nsmul 𝕜 2 x using 2; module
   rw [h₁, h₂]
   ring
 
@@ -132,10 +132,10 @@ theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y :=
   have hI' := I_mul_I_of_nonzero hI
   have I_smul (v : E) : ‖(I : 𝕜) • v‖ = ‖v‖ := by rw [norm_smul, norm_I_of_ne_zero hI, one_mul]
   have h₁ : ‖(I : 𝕜) • y - x‖ = ‖(I : 𝕜) • x + y‖ := by
-    convert I_smul ((I : 𝕜) • x + y) using 2
+    convert! I_smul ((I : 𝕜) • x + y) using 2
     linear_combination (norm := module) -hI' • x
   have h₂ : ‖(I : 𝕜) • y + x‖ = ‖(I : 𝕜) • x - y‖ := by
-    convert (I_smul ((I : 𝕜) • y + x)).symm using 2
+    convert! (I_smul ((I : 𝕜) • y + x)).symm using 2
     linear_combination (norm := module) -hI' • y
   rw [h₁, h₂]
   ring
