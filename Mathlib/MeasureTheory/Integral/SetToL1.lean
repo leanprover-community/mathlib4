@@ -1372,11 +1372,11 @@ theorem setToFun_tsum [CompleteSpace E] (hT : DominatedFinMeasAdditive μ T C)
 (eventually) uniformly bounded by a constant and converges (eventually) pointwise to a
 function `f`, then the integrals of `F n` with respect to a finite measure `μ` converge
 to the integral of `f`. -/
-theorem tendsto_integral_filter_of_norm_le_const (hT : DominatedFinMeasAdditive μ T C)
+theorem tendsto_setToFun_filter_of_norm_le_const (hT : DominatedFinMeasAdditive μ T C)
     {ι} {l : Filter ι} [l.IsCountablyGenerated]
     {F : ι → α → E} [IsFiniteMeasure μ] {f : α → E}
     (h_meas : ∀ᶠ n in l, AEStronglyMeasurable (F n) μ)
-    (h_bound : ∃ C, ∀ᶠ n in l, (∀ᵐ ω ∂μ, ‖F n ω‖ ≤ C))
+    (h_bound : ∃ C, ∀ᶠ n in l, ∀ᵐ ω ∂μ, ‖F n ω‖ ≤ C)
     (h_lim : ∀ᵐ ω ∂μ, Tendsto (fun n => F n ω) l (𝓝 (f ω))) :
     Tendsto (fun n => setToFun μ T hT (F n)) l (𝓝 (setToFun μ T hT f)) := by
   obtain ⟨c, h_boundc⟩ := h_bound
