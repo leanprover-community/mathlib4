@@ -29,7 +29,7 @@ define sheaves of modules of finite type.
 
 @[expose] public section
 
-universe u v' u' u₁ v₁
+universe w u v' u' u₁ v₁
 
 open CategoryTheory Limits
 
