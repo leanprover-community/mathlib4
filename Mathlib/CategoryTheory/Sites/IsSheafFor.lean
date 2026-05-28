@@ -420,7 +420,7 @@ lemma FamilyOfElements.IsAmalgamation.of_mono (f : P ⟶ Q) [Mono f] {x : R.Fami
     x.IsAmalgamation t := by
   intro Y u hu
   refine injective_of_mono (f.app _) ?_
-  simpa [NatTrans.naturality_apply] using ht _ hu
+  simpa using ht _ hu
 
 /-- A presheaf is separated for a presieve if there is at most one amalgamation. -/
 def IsSeparatedFor (P : Cᵒᵖ ⥤ Type w) (R : Presieve X) : Prop :=
