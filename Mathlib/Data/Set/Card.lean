@@ -1300,7 +1300,7 @@ theorem Function.Surjective.card_le_card_add_one_iff
     Nat.card α ≤ Nat.card β + 1 ↔ ∀ a b c d,
       f a = f b → f c = f d → a ≠ b → c ≠ d → {a, b} = ({c, d} : Set α) := by
   rcases isEmpty_or_nonempty α
-  · simp
+  · simp [Nat.card]
   -- pick an inverse `g` to `f`
   let g := Function.surjInv hf
   -- the "decreases cardinality by at most one condition" becomes "`g` misses at most one element"
