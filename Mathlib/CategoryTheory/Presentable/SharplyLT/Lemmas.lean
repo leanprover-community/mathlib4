@@ -19,9 +19,11 @@ universe u
 
 open CategoryTheory Limits
 
-lemma Cardinal.mk_iio_le (κ : Cardinal.{u}) :
+lemma Cardinal.mk_iio_le_lift (κ : Cardinal.{u}) :
     Cardinal.mk (Set.Iio κ) ≤ Cardinal.lift.{u + 1} κ := by
-  sorry
+  conv_rhs => rw [← card_ord κ, ← mk_Iio_ordinal]
+  rw [Cardinal.le_def]
+  exact ⟨⟨fun ⟨a, ha⟩ ↦ ⟨a.ord, by simpa⟩, fun _ _ h ↦ by aesop⟩⟩
 
 namespace CategoryTheory.CardinalFilteredPoset.SetCardinalLT
 
@@ -57,7 +59,7 @@ lemma of_pow_lt {κ₁ κ₂ : Cardinal.{u}} [Fact κ₁.IsRegular] [Fact κ₂.
     rw [hasCardinalLT_iff_of_equiv (Equiv.Set.univ _)]
     refine HasCardinalLT.of_surjective ?_ _ (SetCardinalLT.fromSigma_surjective _ _)
     refine hasCardinalLT_sigma _ _ ?_ (fun ⟨α, hα⟩ ↦ ?_)
-    · refine lt_of_le_of_lt (le_trans ?_ (Cardinal.mk_iio_le κ₁)) (by simpa)
+    · refine lt_of_le_of_lt (le_trans ?_ (Cardinal.mk_iio_le_lift κ₁)) (by simpa)
       rw [lift_id'.{u, u + 1}]
     · simpa [hasCardinalLT_iff_cardinal_mk_lt] using
         h _ _ hα (by rwa [hasCardinalLT_iff_cardinal_mk_lt] at hX))
