@@ -517,6 +517,7 @@ theorem IsEquiv.orderRingIso_symm_apply (h : v.IsEquiv w) (x : WithVal w) :
 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
+-- TODO: Can remove the `attribute [-instance] ValuativeRel.isUniformAddGroup` after #36769
 attribute [-instance] ValuativeRel.isUniformAddGroup in
 set_option backward.isDefEq.respectTransparency false in
 theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v = w)
