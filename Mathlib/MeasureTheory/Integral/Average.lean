@@ -136,7 +136,7 @@ variable {μ}
 theorem laverage_congr {f g : α → ℝ≥0∞} (h : f =ᵐ[μ] g) : ⨍⁻ x, f x ∂μ = ⨍⁻ x, g x ∂μ := by
   simp only [laverage_eq, lintegral_congr_ae h]
 
-theorem setLAverage_congr (h : s =ᵐ[μ] t) : ⨍⁻ x in s, f x ∂μ = ⨍⁻ x in t, f x ∂μ := by
+theorem setLAverage_congr (h : s =ᵐˢ[μ] t) : ⨍⁻ x in s, f x ∂μ = ⨍⁻ x in t, f x ∂μ := by
   simp only [setLAverage_eq, setLIntegral_congr h, measure_congr h]
 
 theorem setLAverage_congr_fun_ae (hs : MeasurableSet s) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :
@@ -357,7 +357,7 @@ variable {μ}
 theorem average_congr {f g : α → E} (h : f =ᵐ[μ] g) : ⨍ x, f x ∂μ = ⨍ x, g x ∂μ := by
   simp only [average_eq, integral_congr_ae h]
 
-theorem setAverage_congr (h : s =ᵐ[μ] t) : ⨍ x in s, f x ∂μ = ⨍ x in t, f x ∂μ := by
+theorem setAverage_congr (h : s =ᵐˢ[μ] t) : ⨍ x in s, f x ∂μ = ⨍ x in t, f x ∂μ := by
   simp only [setAverage_eq, setIntegral_congr_set h, measureReal_congr h]
 
 theorem setAverage_congr_fun (hs : MeasurableSet s) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :

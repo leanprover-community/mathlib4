@@ -507,21 +507,16 @@ lemma isCompact_closure_of_isTightMeasureSet {S : Set (ProbabilityMeasure E)}
     have : (μ : Measure E) Kᶜ ≤ u n := hK _ ⟨μ, hμ, rfl⟩
     exact ENNReal.coe_le_coe.1 (by simpa using this)
   choose K K_comp hK using A
-  let K' n := ⋃ i ∈ Iic n, K i
+  let K' := accumulate K
   have h'K : IsCompact {μ : ProbabilityMeasure E | ∀ n, μ (K' n)ᶜ ≤ u n} := by
     apply isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le u_lim
     · exact fun n ↦ (finite_Iic n).isCompact_biUnion (fun i hi ↦ K_comp i)
     · right
-      simp only [Monotone, mem_Iic, le_eq_subset, iUnion_subset_iff, K']
-      intro a b hab i hi
-      apply subset_biUnion_of_mem
-      exact hi.trans hab
+      apply monotone_accumulate
   apply IsCompact.closure_of_subset h'K
   intro μ hμ n
   calc μ (K' n)ᶜ
   _ ≤ μ (K n)ᶜ := by
     gcongr
-    simp only [mem_Iic, K']
-    apply subset_biUnion_of_mem
-    exact le_rfl (a := n)
+    apply subset_accumulate
   _ ≤ u n := by grind

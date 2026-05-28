@@ -80,9 +80,10 @@ theorem volume_iUnion_setOf_liouvilleWith :
   simp only [← setOf_exists, exists_prop]
   refine measure_mono_null setOf_liouvilleWith_subset_aux ?_
   rw [measure_iUnion_null_iff]; intro m; rw [measure_preimage_add_right]; clear m
-  refine (measure_biUnion_null_iff <| to_countable _).2 fun n (hn : 1 ≤ n) => ?_
+  simp only [measure_iUnion_null_iff]
+  intro n hn
   generalize hr : (2 + 1 / n : ℝ) = r
-  replace hr : 2 < r := by simp [← hr, zero_lt_one.trans_le hn]
+  replace hr : 2 < r := by simpa [← hr]
   clear hn n
   refine measure_setOf_frequently_eq_zero ?_
   simp only [setOf_exists, ← exists_prop, ← Real.dist_eq, ← mem_ball, setOf_mem_eq]

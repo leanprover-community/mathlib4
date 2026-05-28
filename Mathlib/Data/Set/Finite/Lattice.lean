@@ -151,6 +151,10 @@ theorem Finite.biUnion {ι} {s : Set ι} (hs : s.Finite) {t : ι → Set α}
     (ht : ∀ i ∈ s, (t i).Finite) : (⋃ i ∈ s, t i).Finite :=
   hs.biUnion' ht
 
+theorem Finite.iUnion_pred {ι} {p : ι → Prop} (hp : {x | p x}.Finite) {t : ι → Set α}
+    (ht : ∀ i, p i → (t i).Finite) : (⋃ (i) (_ : p i), t i).Finite :=
+  hp.biUnion ht
+
 theorem Finite.sUnion {s : Set (Set α)} (hs : s.Finite) (H : ∀ t ∈ s, Set.Finite t) :
     (⋃₀ s).Finite := by
   simpa only [sUnion_eq_biUnion] using hs.biUnion H

@@ -105,7 +105,7 @@ theorem SigmaFinite.out (h : SigmaFinite μ) : Nonempty (μ.FiniteSpanningSetsIn
   h.1
 
 /-- If `μ` is σ-finite it has finite spanning sets in the collection of all measurable sets. -/
-def Measure.toFiniteSpanningSetsIn (μ : Measure α) [h : SigmaFinite μ] :
+noncomputable def Measure.toFiniteSpanningSetsIn (μ : Measure α) [h : SigmaFinite μ] :
     μ.FiniteSpanningSetsIn { s | MeasurableSet s } where
   set n := toMeasurable μ (h.out.some.set n)
   set_mem _ := measurableSet_toMeasurable _ _
@@ -117,7 +117,7 @@ def Measure.toFiniteSpanningSetsIn (μ : Measure α) [h : SigmaFinite μ] :
 /-- A noncomputable way to get a monotone collection of sets that span `univ` and have finite
   measure using `Classical.choose`. This definition satisfies monotonicity in addition to all other
   properties in `SigmaFinite`. -/
-def spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) : Set α :=
+noncomputable def spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) : Set α :=
   accumulate μ.toFiniteSpanningSetsIn.set i
 
 theorem monotone_spanningSets (μ : Measure α) [SigmaFinite μ] : Monotone (spanningSets μ) :=
@@ -321,7 +321,7 @@ theorem countable_meas_level_set_pos {α β : Type*} {_ : MeasurableSpace α} {�
 
 private lemma exists_ae_subset_biUnion_countable_of_isFiniteMeasure [IsFiniteMeasure μ]
     {C : Set (Set α)} (hC : ∀ s ∈ C, MeasurableSet s) :
-    ∃ D ⊆ C, D.Countable ∧ ∀ s ∈ C, s ≤ᵐ[μ] (⋃₀ D) := by
+    ∃ D ⊆ C, D.Countable ∧ ∀ s ∈ C, s ⊆ᵐ[μ] (⋃₀ D) := by
   let m := ⨆ D ∈ {D : Set (Set α) | D ⊆ C ∧ D.Countable}, μ (⋃₀ D)
   obtain ⟨D, D_mem, hD⟩ : ∃ D ∈ {D : Set (Set α) | D ⊆ C ∧ D.Countable}, μ (⋃₀ D) = m := by
     rcases eq_bot_or_bot_lt m with hm | hm
@@ -339,7 +339,7 @@ private lemma exists_ae_subset_biUnion_countable_of_isFiniteMeasure [IsFiniteMea
     exact measure_mono (fun x hx ↦ by simp at hx ⊢; grind)
   refine ⟨D, by grind, by grind, fun s hs ↦ union_ae_eq_right_iff_ae_subset.mp ?_⟩
   symm
-  apply ae_eq_of_ae_subset_of_measure_ge subset_union_right.eventuallyLE
+  apply ae_eq_of_ae_subset_of_measure_ge subset_union_right.eventually
   · rw [hD, show s ∪ ⋃₀ D = ⋃₀ (D ∪ {s}) by simp]
     apply le_biSup (f := fun D ↦ μ (⋃₀ D))
     simp [D_mem.2, insert_subset_iff, hs, D_mem.1]
@@ -354,14 +354,14 @@ This lemma shows the existence of a measurable union, writing it as the union of
 subfamily. -/
 lemma exists_ae_subset_biUnion_countable [SFinite μ]
     {C : Set (Set α)} (hC : ∀ s ∈ C, MeasurableSet s) :
-    ∃ D ⊆ C, D.Countable ∧ ∀ s ∈ C, s ≤ᵐ[μ] (⋃₀ D) := by
-  have A n : ∃ D ⊆ C, D.Countable ∧ ∀ s ∈ C, s ≤ᵐ[sfiniteSeq μ n] (⋃₀ D) :=
+    ∃ D ⊆ C, D.Countable ∧ ∀ s ∈ C, s ⊆ᵐ[μ] (⋃₀ D) := by
+  have A n : ∃ D ⊆ C, D.Countable ∧ ∀ s ∈ C, s ⊆ᵐ[sfiniteSeq μ n] (⋃₀ D) :=
     exists_ae_subset_biUnion_countable_of_isFiniteMeasure hC
   choose D DC D_count hD using A
   refine ⟨⋃ n, D n, by simp [DC], by simp [D_count], fun s hs ↦ ?_⟩
   rw [← sum_sfiniteSeq μ]
   apply ae_sum_iff.2 (fun n ↦ (hD n s hs).trans ?_)
-  exact HasSubset.Subset.eventuallyLE (fun x hx ↦ by simp at hx ⊢; grind)
+  exact HasSubset.Subset.eventually (fun x hx ↦ by simp at hx ⊢; grind)
 
 /-- If a measure `μ` is the sum of a countable family `mₙ`, and a set `t` has finite measure for
 each `mₙ`, then its measurable superset `toMeasurable μ t` (which has the same measure as `t`)

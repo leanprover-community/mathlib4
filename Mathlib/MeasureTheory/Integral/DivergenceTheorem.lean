@@ -282,7 +282,7 @@ theorem integral_divergence_of_hasFDerivAt_off_countable (hle : a ≤ b)
     rcases eq_or_ne i j with (rfl | hne)
     · simp [hi]
     · rcases Fin.exists_succAbove_eq hne with ⟨i, rfl⟩
-      have : Icc (a ∘ j.succAbove) (b ∘ j.succAbove) =ᵐ[volume] (∅ : Set ℝⁿ) := by
+      have : Icc (a ∘ j.succAbove) (b ∘ j.succAbove) =ᵐˢ[volume] ∅ := by
         rw [ae_eq_empty, Real.volume_Icc_pi, prod_eq_zero (Finset.mem_univ i)]
         simp [hi]
       rw [setIntegral_congr_set this, setIntegral_congr_set this, setIntegral_empty,

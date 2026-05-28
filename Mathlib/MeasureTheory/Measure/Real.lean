@@ -179,7 +179,7 @@ theorem measureReal_union_null_iff
   fun h ↦ measureReal_union_null h.1 h.2⟩
 
 /-- If two sets are equal modulo a set of measure zero, then `μ.real s = μ.real t`. -/
-theorem measureReal_congr (H : s =ᵐ[μ] t) : μ.real s = μ.real t := by
+theorem measureReal_congr (H : s =ᵐˢ[μ] t) : μ.real s = μ.real t := by
   simp [Measure.real, measure_congr H]
 
 theorem measureReal_inter_add_diff₀ (ht : NullMeasurableSet t μ)

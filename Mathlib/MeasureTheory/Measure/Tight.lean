@@ -167,7 +167,7 @@ lemma exists_measure_iUnion_gt_of_isCompact_closure
   have Measurebound n : (μlim (⋃ (i ≤ n), U i) : ℝ) ≤ 1 - ε := calc
     (μlim (⋃ (i ≤ n), U i) : ℝ)
     _ ≤ liminf (fun k ↦ (μ (sub k) (⋃ (i ≤ n), U i) : ℝ)) atTop := by
-      have hopen : IsOpen (⋃ i ≤ n, U i) := isOpen_biUnion fun i a ↦ O i
+      have hopen : IsOpen (⋃ i ≤ n, U i) := isOpen_iUnion fun i ↦ isOpen_iUnion fun a ↦ O i
       have := ProbabilityMeasure.le_liminf_measure_open_of_tendsto hμconverges hopen
       simp_rw [Function.comp_apply, ← ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure] at this
       rw [← ofNNReal_liminf] at this
@@ -180,9 +180,8 @@ lemma exists_measure_iUnion_gt_of_isCompact_closure
       · simp only [NNReal.coe_le_coe, eventually_atTop, ge_iff_le]
         use n + 1
         intro b hypo
-        refine (μ (sub b)).apply_mono
-            <| Set.biUnion_mono (fun i (hi : i ≤ n) ↦ hi.trans ?_) fun _ _ ↦ le_rfl
-        exact le_trans (Nat.le_add_right n 1) (le_trans hypo (StrictMono.le_apply hsubmono))
+        refine (μ (sub b)).apply_mono <|
+          Set.iUnion₂_mono' fun i hi ↦ ⟨i, by have := hsubmono.le_apply (x := b); grind, subset_rfl⟩
       · use 0; simp
       · use 1
         simpa [ge_iff_le, eventually_map, eventually_atTop, ge_iff_le, forall_exists_index] using

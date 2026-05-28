@@ -99,16 +99,16 @@ theorem measure_liminf_atTop_eq_zero {s : ℕ → Set α} (h : (∑' i, μ (s i)
 -- TODO: the next 2 lemmas are true for any filter with countable intersections, not only `ae`.
 -- Need to specify `α := Set α` below because of diamond; see https://github.com/leanprover-community/mathlib4/pull/19041
 theorem limsup_ae_eq_of_forall_ae_eq (s : ℕ → Set α) {t : Set α}
-    (h : ∀ n, s n =ᵐ[μ] t) : limsup (α := Set α) s atTop =ᵐ[μ] t := by
-  simp only [eventuallyEq_set, ← eventually_countable_forall] at h
-  refine eventuallyEq_set.2 <| h.mono fun x hx ↦ ?_
+    (h : ∀ n, s n =ᵐˢ[μ] t) : limsup s atTop =ᵐˢ[μ] t := by
+  simp only [eventuallyEqSet_iff, ← eventually_countable_forall] at h
+  refine eventuallyEqSet_iff.2 <| h.mono fun x hx ↦ ?_
   simp [mem_limsup_iff_frequently_mem, hx]
 
 -- Need to specify `α := Set α` above because of diamond; see https://github.com/leanprover-community/mathlib4/pull/19041
 theorem liminf_ae_eq_of_forall_ae_eq (s : ℕ → Set α) {t : Set α}
-    (h : ∀ n, s n =ᵐ[μ] t) : liminf (α := Set α) s atTop =ᵐ[μ] t := by
-  simp only [eventuallyEq_set, ← eventually_countable_forall] at h
-  refine eventuallyEq_set.2 <| h.mono fun x hx ↦ ?_
+    (h : ∀ n, s n =ᵐˢ[μ] t) : liminf (α := Set α) s atTop =ᵐˢ[μ] t := by
+  simp only [eventuallyEqSet_iff, ← eventually_countable_forall] at h
+  refine eventuallyEqSet_iff.2 <| h.mono fun x hx ↦ ?_
   simp only [mem_liminf_iff_eventually_mem, hx, eventually_const]
 
 end MeasureTheory

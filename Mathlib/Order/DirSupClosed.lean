@@ -188,8 +188,8 @@ theorem DirSupClosedOn.union (hDL : IsLowerSet D)
       contrapose! hb'
       apply ha.2
       aesop
-    refine Or.inr <| ht (hDL inter_subset_left hD) (key.trans inter_subset_right)
-      ⟨w, hw⟩ (fun x hx y hy ↦ ?_) ?_
+    refine Or.inr <| ht (hDL (sep_subset _ _) hD) (key.trans (sep_subset_setOf _ _)) ⟨w, hw⟩
+      (fun x hx y hy ↦ ?_) ?_
     · obtain ⟨z, hz, hz'⟩ := hd₁ _ (.inr (key hx)) _ (.inr (key hy))
       exact ⟨z, ⟨⟨hdst ▸ hz, mt hz'.1.trans hx.2⟩, hz'⟩⟩
     · refine ⟨fun x hx ↦ ha.1 hx.1, fun x hx ↦ ha.2 fun y hy ↦ ?_⟩

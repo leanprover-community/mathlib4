@@ -33,7 +33,7 @@ variable {ι : Sort*} {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace �
 /-- If we have the additional hypothesis `∀ᵐ x ∂μ, p x (fun n ↦ f n x)`, this is a measurable set
 whose complement has measure 0 such that for all `x ∈ aeSeqSet`, `f i x` is equal to
 `(hf i).mk (f i) x` for all `i` and we have the pointwise property `p x (fun n ↦ f n x)`. -/
-def aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) (p : α → (ι → β) → Prop) : Set α :=
+noncomputable def aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) (p : α → (ι → β) → Prop) : Set α :=
   (toMeasurable μ { x | (∀ i, f i x = (hf i).mk (f i) x) ∧ p x fun n => f n x }ᶜ)ᶜ
 
 open Classical in

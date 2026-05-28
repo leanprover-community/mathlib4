@@ -360,7 +360,7 @@ theorem nhdsGE_basis_of_exists_gt [TopologicalSpace α] [LinearOrder α] [OrderT
     (ha : ∃ u, a < u) : (𝓝[≥] a).HasBasis (fun u => a < u) fun u => Ico a u :=
   nhdsGE_eq_iInf_principal ha ▸ hasBasis_biInf_principal
     (fun b hb c hc => ⟨min b c, lt_min hb hc, Ico_subset_Ico_right (min_le_left _ _),
-      Ico_subset_Ico_right (min_le_right _ _)⟩) ha
+      Ico_subset_Ico_right (min_le_right _ _)⟩) (nonempty_setOf.mpr ha)
 
 @[to_dual]
 theorem nhdsGE_basis [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [NoMaxOrder α] (a : α) :

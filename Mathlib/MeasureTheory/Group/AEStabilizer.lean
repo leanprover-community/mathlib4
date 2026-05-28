@@ -42,7 +42,7 @@ namespace MulAction
 /-- A.e. stabilizer of a set under a group action. -/
 @[to_additive (attr := simps) /-- A.e. stabilizer of a set under an additive group action. -/]
 def aestabilizer (s : Set α) : Subgroup G where
-  carrier := {g | g • s =ᵐ[μ] s}
+  carrier := {g | g • s =ᵐˢ[μ] s}
   one_mem' := by simp
   -- TODO: `calc` would be more readable but fails because of defeq abuse
   mul_mem' {g₁ g₂} h₁ h₂ := by simpa only [smul_smul] using ((smul_set_ae_eq g₁).2 h₂).trans h₁
@@ -52,7 +52,7 @@ variable {G μ}
 variable {g : G} {s t : Set α}
 
 @[to_additive (attr := simp)]
-lemma mem_aestabilizer : g ∈ aestabilizer G μ s ↔ g • s =ᵐ[μ] s := .rfl
+lemma mem_aestabilizer : g ∈ aestabilizer G μ s ↔ g • s =ᵐˢ[μ] s := .rfl
 
 @[to_additive]
 lemma stabilizer_le_aestabilizer (s : Set α) : stabilizer G s ≤ aestabilizer G μ s := by
@@ -66,11 +66,11 @@ lemma aestabilizer_empty : aestabilizer G μ ∅ = ⊤ := top_unique fun _ _ ↦
 lemma aestabilizer_univ : aestabilizer G μ univ = ⊤ := top_unique fun _ _ ↦ by simp
 
 @[to_additive]
-lemma aestabilizer_congr (h : s =ᵐ[μ] t) : aestabilizer G μ s = aestabilizer G μ t := by
+lemma aestabilizer_congr (h : s =ᵐˢ[μ] t) : aestabilizer G μ s = aestabilizer G μ t := by
   ext g
   rw [mem_aestabilizer, mem_aestabilizer, h.congr_right, ((smul_set_ae_eq g).2 h).congr_left]
 
-lemma aestabilizer_of_aeconst (hs : EventuallyConst s (ae μ)) : aestabilizer G μ s = ⊤ := by
+lemma aestabilizer_of_aeconst (hs : EventuallyConst (· ∈ s) (ae μ)) : aestabilizer G μ s = ⊤ := by
   refine top_unique fun g _ ↦ ?_
   cases eventuallyConst_set'.mp hs with
   | inl h => simp [aestabilizer_congr h]
@@ -84,13 +84,13 @@ variable {x y : G} {s : Set α}
 namespace MeasureTheory
 
 @[to_additive]
-theorem smul_ae_eq_self_of_mem_zpowers (hs : (x • s : Set α) =ᵐ[μ] s)
-    (hy : y ∈ Subgroup.zpowers x) : (y • s : Set α) =ᵐ[μ] s := by
+theorem smul_ae_eq_self_of_mem_zpowers (hs : (x • s : Set α) =ᵐˢ[μ] s)
+    (hy : y ∈ Subgroup.zpowers x) : (y • s : Set α) =ᵐˢ[μ] s := by
   rw [← MulAction.mem_aestabilizer, ← Subgroup.zpowers_le] at hs
   exact hs hy
 
 @[to_additive]
-theorem inv_smul_ae_eq_self (hs : (x • s : Set α) =ᵐ[μ] s) : (x⁻¹ • s : Set α) =ᵐ[μ] s :=
+theorem inv_smul_ae_eq_self (hs : (x • s : Set α) =ᵐˢ[μ] s) : (x⁻¹ • s : Set α) =ᵐˢ[μ] s :=
   inv_mem (s := MulAction.aestabilizer G μ s) hs
 
 end MeasureTheory

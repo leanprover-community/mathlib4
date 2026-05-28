@@ -463,7 +463,7 @@ theorem le_weightedOrder_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
   by_cases hfx : f.coeff x = 0
   · simp [hfx]
   rw [coeff_eq_zero_of_lt_weightedOrder w, smul_zero]
-  refine hd.trans_le (((biInf_le _ hfx).trans ?_).trans (le_weightedOrder_prod ..))
+  refine hd.trans_le <| iInf₂_le_of_le x hfx <| le_trans ?_ (le_weightedOrder_prod ..)
   simp only [Finsupp.weight_apply, Finsupp.sum, Function.comp_apply]
   exact Finset.sum_le_sum fun i hi ↦ .trans (by simp) (le_weightedOrder_pow ..)
 

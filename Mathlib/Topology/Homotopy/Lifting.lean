@@ -104,10 +104,12 @@ theorem exists_lift_nhds {f : C(I × A, X)} {g : I × A → E} (g_lifts : p ∘ 
     rw [(q e).right_inv this, ← hpq e]; exact congr_fun g'_lifts ta
   · rw [closure_le_eq continuous_fst continuous_const] at ht
     exact ⟨⟨hta.1.1, ht⟩, hta.2.2.1⟩
-  · simp_rw [not_le]; exact (ContinuousOn.congr ((q e).continuousOn_invFun.comp f.2.continuousOn
-      fun _ h ↦ huv ⟨hu ⟨h.2, h.1.1.2⟩, h.1.2.1⟩)
-      fun _ h ↦ if_pos <| huv ⟨hu ⟨h.2, h.1.1.2⟩, h.1.2.1⟩).mono
+  · simp_rw [not_le]
+    exact (ContinuousOn.congr ((q e).continuousOn_invFun.comp f.2.continuousOn
+      fun _ h ↦ huv ⟨hu ⟨h.out.2, h.out.1.1.2⟩, h.out.1.2.1⟩)
+      fun _ h ↦ if_pos <| huv ⟨hu ⟨h.out.2, h.out.1.1.2⟩, h.out.1.2.1⟩).mono
         (Set.inter_subset_inter_right _ <| closure_lt_subset_le continuous_const continuous_fst)
+    -- ⟨hu ⟨h.2, h.1.1.2⟩, h.1.2.1⟩
   · ext ta; rw [Function.comp_apply]; split_ifs with _ hv
     · exact congr_fun g'_lifts ta
     · rw [hpq e, (q e).right_inv hv]
@@ -410,7 +412,7 @@ lemma injective_path_homotopic_map (e₀ e₁ : E) :
   simp only [Path.Homotopic.Quotient.mk''_eq_mk]
   simp_rw [← Path.Homotopic.Quotient.mk_map]
   iterate 2 rw [Path.Homotopic.Quotient.eq]
-  exact (cov.homotopicRel_iff_comp ⟨0, .inl rfl, γ₀.source.trans γ₁.source.symm⟩).mpr
+  exact (cov.homotopicRel_iff_comp ⟨0, Or.inl rfl, γ₀.source.trans γ₁.source.symm⟩).mpr
 
 @[deprecated (since := "2025-11-20")]
 alias injective_path_homotopic_mapFn := injective_path_homotopic_map

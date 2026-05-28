@@ -78,7 +78,8 @@ provided `R` satisfies the Orzech property. -/
 @[simps! repr_apply]
 noncomputable def setBasisOfTopLeSpanOfCardEqFinrank {s : Set M} [Fintype s]
     (le_span : ⊤ ≤ span R s) (card_eq : s.toFinset.card = finrank R M) : Basis s R M :=
-  basisOfTopLeSpanOfCardEqFinrank ((↑) : s → M) ((@Subtype.range_coe_subtype _ s).symm ▸ le_span)
+  basisOfTopLeSpanOfCardEqFinrank ((↑) : s → M)
+    (by rwa [Subtype.range_coe])
     (_root_.trans s.toFinset_card.symm card_eq)
 
 end Basis

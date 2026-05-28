@@ -44,6 +44,10 @@ def ManyOneReducible {α β} [Primcodable α] [Primcodable β] (p : α → Prop)
 @[inherit_doc ManyOneReducible]
 infixl:1000 " ≤₀ " => ManyOneReducible
 
+theorem ManyOneReducible.exists_computable_eq {α β} [Primcodable α] [Primcodable β]
+    {p : α → Prop} {q : β → Prop} (h : p ≤₀ q) : ∃ f, Computable f ∧ p = q ∘ f :=
+  h.imp fun _f hf ↦ hf.imp_right fun hpq ↦ funext fun _ ↦ propext (hpq _)
+
 theorem ManyOneReducible.mk {α β} [Primcodable α] [Primcodable β] {f : α → β} (q : β → Prop)
     (h : Computable f) : (fun a => q (f a)) ≤₀ q :=
   ⟨f, h, fun _ => Iff.rfl⟩
@@ -124,8 +128,7 @@ open Computable
 
 theorem computable_of_manyOneReducible {p : α → Prop} {q : β → Prop} (h₁ : p ≤₀ q)
     (h₂ : ComputablePred q) : ComputablePred p := by
-  rcases h₁ with ⟨f, c, hf⟩
-  rw [show p = fun a => q (f a) from Set.ext hf]
+  rcases h₁.exists_computable_eq with ⟨f, c, rfl⟩
   rcases computable_iff.1 h₂ with ⟨g, hg, rfl⟩
   exact ⟨by infer_instance, by simpa using hg.comp c⟩
 
@@ -282,46 +285,48 @@ variable {α : Type u} [Primcodable α] [Inhabited α] {β : Type v} [Primcodabl
 /-- Computable and injective mapping of predicates to sets of natural numbers.
 -/
 def toNat (p : Set α) : Set ℕ :=
-  { n | p ((Encodable.decode (α := α) n).getD default) }
+  { n | (Encodable.decode (α := α) n).getD default ∈ p }
 
 @[simp]
-theorem toNat_manyOneReducible {p : Set α} : toNat p ≤₀ p :=
+theorem toNat_manyOneReducible {p : Set α} : (· ∈ toNat p) ≤₀ (· ∈ p) :=
   ⟨fun n => (Encodable.decode (α := α) n).getD default,
     Computable.option_getD Computable.decode (Computable.const _), fun _ => Iff.rfl⟩
 
 @[simp]
-theorem manyOneReducible_toNat {p : Set α} : p ≤₀ toNat p :=
-  ⟨Encodable.encode, Computable.encode, by simp [toNat, setOf]⟩
+theorem manyOneReducible_toNat {p : Set α} : (· ∈ p) ≤₀ (· ∈ toNat p) :=
+  ⟨Encodable.encode, Computable.encode, by simp [toNat]⟩
 
 @[simp]
-theorem manyOneReducible_toNat_toNat {p : Set α} {q : Set β} : toNat p ≤₀ toNat q ↔ p ≤₀ q :=
+theorem manyOneReducible_toNat_toNat {p : Set α} {q : Set β} :
+    (· ∈ toNat p) ≤₀ (· ∈ toNat q) ↔ (· ∈ p) ≤₀ (· ∈ q) :=
   ⟨fun h => manyOneReducible_toNat.trans (h.trans toNat_manyOneReducible), fun h =>
     toNat_manyOneReducible.trans (h.trans manyOneReducible_toNat)⟩
 
 @[simp]
-theorem toNat_manyOneEquiv {p : Set α} : ManyOneEquiv (toNat p) p := by simp [ManyOneEquiv]
+theorem toNat_manyOneEquiv {p : Set α} : ManyOneEquiv (· ∈ toNat p) (· ∈ p) := by
+  simp [ManyOneEquiv]
 
 @[simp]
 theorem manyOneEquiv_toNat (p : Set α) (q : Set β) :
-    ManyOneEquiv (toNat p) (toNat q) ↔ ManyOneEquiv p q := by simp [ManyOneEquiv]
+    ManyOneEquiv (· ∈ toNat p) (· ∈ toNat q) ↔ ManyOneEquiv p q := by simp [ManyOneEquiv]
 
 /-- A many-one degree is an equivalence class of sets up to many-one equivalence. -/
 def ManyOneDegree : Type :=
-  Quotient (⟨ManyOneEquiv, equivalence_of_manyOneEquiv⟩ : Setoid (Set ℕ))
+  Quotient (⟨ManyOneEquiv, equivalence_of_manyOneEquiv⟩ : Setoid (ℕ → Prop))
 
 namespace ManyOneDegree
 
 /-- The many-one degree of a set on a primcodable type. -/
 def of (p : α → Prop) : ManyOneDegree :=
-  Quotient.mk'' (toNat p)
+  Quotient.mk'' (toNat {x | p x})
 
 @[elab_as_elim]
 protected theorem ind_on {C : ManyOneDegree → Prop} (d : ManyOneDegree)
-    (h : ∀ p : Set ℕ, C (of p)) : C d :=
+    (h : ∀ p : ℕ → Prop, C (of p)) : C d :=
   Quotient.inductionOn' d h
 
 /-- Lifts a function on sets of natural numbers to many-one degrees. -/
-protected abbrev liftOn {φ} (d : ManyOneDegree) (f : Set ℕ → φ)
+protected abbrev liftOn {φ} (d : ManyOneDegree) (f : (ℕ → Prop) → φ)
     (h : ∀ p q, ManyOneEquiv p q → f p = f q) : φ :=
   Quotient.liftOn' d f h
 

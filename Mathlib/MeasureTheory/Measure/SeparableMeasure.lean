@@ -280,8 +280,7 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_sigmaFinite (h𝒜 : I
     have T_spanning : ⋃ n, T n = univ := S.spanning ▸ iUnion_accumulate
     -- We use the fact that we already know this is true for finite measures. As `⋃ n, T n = X`,
     -- we have that `μ ((T n) ∩ s) ⟶ μ s`.
-    have mono : Monotone (fun n ↦ (T n) ∩ s) := fun m n hmn ↦ inter_subset_inter_left s
-        (biUnion_subset_biUnion_left fun k hkm ↦ Nat.le_trans hkm hmn)
+    have mono : Monotone (fun n ↦ (T n) ∩ s) := monotone_accumulate.inter monotone_const
     have := tendsto_measure_iUnion_atTop (μ := μ) mono
     rw [← tendsto_toReal_iff] at this
     · -- We can therefore choose `N` such that `μ s - μ ((S N) ∩ s) < ε/2`.

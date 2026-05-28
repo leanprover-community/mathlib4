@@ -116,7 +116,7 @@ theorem ordConnectedProj_eq {x y : s} :
 
 /-- A set that intersects each order connected component of a set by a single point. Defined as the
 range of `Set.ordConnectedProj s`. -/
-def ordConnectedSection (s : Set α) : Set α :=
+noncomputable def ordConnectedSection (s : Set α) : Set α :=
   range <| ordConnectedProj s
 
 theorem dual_ordConnectedSection (s : Set α) :
@@ -165,7 +165,7 @@ theorem dual_ordSeparatingSet :
 
 /-- An auxiliary neighborhood that will be used in the proof of
 `OrderTopology.CompletelyNormalSpace`. -/
-def ordT5Nhd (s t : Set α) : Set α :=
+noncomputable def ordT5Nhd (s t : Set α) : Set α :=
   ⋃ x ∈ s, ordConnectedComponent (tᶜ ∩ (ordConnectedSection <| ordSeparatingSet s t)ᶜ) x
 
 theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by

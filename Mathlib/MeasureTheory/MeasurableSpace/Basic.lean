@@ -150,6 +150,8 @@ theorem comap_map_le : (m.map f).comap f ≤ m :=
 theorem le_map_comap : m ≤ (m.comap g).map g :=
   (gc_comap_map g).le_u_l _
 
+
+
 end Functors
 
 @[simp] theorem map_const {m} (b : β) : MeasurableSpace.map (fun _a : α ↦ b) m = ⊤ :=

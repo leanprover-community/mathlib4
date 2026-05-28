@@ -107,22 +107,18 @@ theorem measure_image_eq_zero_of_comap_eq_zero (f : α → β) (μ : Measure β)
   rw [← nonpos_iff_eq_zero]
   exact (le_comap_apply f μ hfi hf s).trans hs.le
 
+theorem ae_le_image_of_ae_le_comap (f : α → β) (μ : Measure β) (hfi : Injective f)
+    (hf : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ)
+    {s t : Set α} (hst : s ⊆ᵐ[comap f μ] t) : f '' s ⊆ᵐ[μ] f '' t := by
+  rw [ae_le_set] at *
+  rw [← image_diff hfi]
+  exact measure_image_eq_zero_of_comap_eq_zero f μ hfi hf hst
+
 theorem ae_eq_image_of_ae_eq_comap (f : α → β) (μ : Measure β) (hfi : Injective f)
     (hf : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ)
-    {s t : Set α} (hst : s =ᵐ[comap f μ] t) : f '' s =ᵐ[μ] f '' t := by
-  rw [EventuallyEq, ae_iff] at hst ⊢
-  have h_eq_α : { a : α | ¬s a = t a } = s \ t ∪ t \ s := by
-    ext1 x
-    simp only [eq_iff_iff, mem_setOf_eq, mem_union, mem_diff]
-    tauto
-  have h_eq_β : { a : β | ¬(f '' s) a = (f '' t) a } = f '' s \ f '' t ∪ f '' t \ f '' s := by
-    ext1 x
-    simp only [eq_iff_iff, mem_setOf_eq, mem_union, mem_diff]
-    tauto
-  rw [← Set.image_diff hfi, ← Set.image_diff hfi, ← Set.image_union] at h_eq_β
-  rw [h_eq_β]
-  rw [h_eq_α] at hst
-  exact measure_image_eq_zero_of_comap_eq_zero f μ hfi hf hst
+    {s t : Set α} (hst : s =ᵐˢ[comap f μ] t) : f '' s =ᵐˢ[μ] f '' t :=
+  (ae_le_image_of_ae_le_comap f μ hfi hf hst.subset).antisymm
+    (ae_le_image_of_ae_le_comap f μ hfi hf hst.superset)
 
 theorem NullMeasurableSet.image (f : α → β) (μ : Measure β) (hfi : Injective f)
     (hf : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ)
@@ -131,7 +127,7 @@ theorem NullMeasurableSet.image (f : α → β) (μ : Measure β) (hfi : Injecti
   refine EventuallyEq.trans ?_ (NullMeasurableSet.toMeasurable_ae_eq ?_).symm
   swap
   · exact hf _ (measurableSet_toMeasurable _ _)
-  have h : toMeasurable (comap f μ) s =ᵐ[comap f μ] s :=
+  have h : toMeasurable (comap f μ) s =ᵐˢ[comap f μ] s :=
     NullMeasurableSet.toMeasurable_ae_eq hs
   exact ae_eq_image_of_ae_eq_comap f μ hfi hf h.symm
 

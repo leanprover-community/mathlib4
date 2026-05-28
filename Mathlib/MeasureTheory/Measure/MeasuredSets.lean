@@ -44,10 +44,12 @@ instance : SetLike (MeasuredSets μ) α where
   coe s := s.1
   coe_injective' := Subtype.coe_injective
 
+#adaptation_note /-- the proof of `edist_comm` below used to be `by grind`, but it stopped working
+after `Set _` becase a structure. -/
 noncomputable instance : PseudoEMetricSpace (MeasuredSets μ) where
   edist s t := μ ((s : Set α) ∆ t)
   edist_self := by simp
-  edist_comm := by grind
+  edist_comm := by simp [symmDiff_comm]
   edist_triangle s t u := measure_symmDiff_le _ _ _
 
 lemma MeasuredSets.edist_def (s t : MeasuredSets μ) : edist s t = μ ((s : Set α) ∆ t) := rfl

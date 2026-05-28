@@ -349,10 +349,10 @@ theorem insert_inter_of_notMem (h : a ∉ t) : insert a s ∩ t = s ∩ t := by 
 /-! ### Lemmas about pairs -/
 
 theorem pair_eq_singleton (a : α) : ({a, a} : Set α) = {a} :=
-  union_self _
+  union_self {a}
 
 theorem pair_comm (a b : α) : ({a, b} : Set α) = {b, a} :=
-  union_comm _ _
+  union_comm {a} {b}
 
 theorem pair_eq_pair_iff {x y z w : α} :
     ({x, y} : Set α) = {z, w} ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by

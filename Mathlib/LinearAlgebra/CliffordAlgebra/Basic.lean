@@ -187,7 +187,7 @@ theorem induction {C : CliffordAlgebra Q → Prop}
     (a : CliffordAlgebra Q) : C a := by
   -- the arguments are enough to construct a subalgebra, and a mapping into it from M
   let s : Subalgebra R (CliffordAlgebra Q) :=
-    { carrier := C
+    { carrier := {a | C a}
       mul_mem' := @mul
       add_mem' := @add
       algebraMap_mem' := algebraMap }

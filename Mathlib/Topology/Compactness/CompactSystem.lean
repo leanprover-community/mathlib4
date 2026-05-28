@@ -165,7 +165,7 @@ theorem isCompactSystem_isCompact_isClosed (α : Type*) [TopologicalSpace α] :
   refine IsCompactSystem.of_nonempty_iInter fun C hC_cc h_nonempty ↦ ?_
   rw [← iInter_dissipate]
   refine IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed (Set.dissipate C)
-    (fun n ↦ ?_) h_nonempty ?_ (fun n ↦ isClosed_biInter (fun i _ ↦ (hC_cc i).2))
+    (fun n ↦ ?_) h_nonempty ?_ fun n ↦ isClosed_iInter fun i ↦ isClosed_iInter fun _ ↦ (hC_cc i).2
   · exact Set.antitone_dissipate (by lia)
   · simpa using (hC_cc 0).1
 

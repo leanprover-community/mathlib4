@@ -399,7 +399,7 @@ theorem volume_real_fundamentalDomain [Fintype ι] [DecidableEq ι] (b : Basis �
 
 theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ : Measure E)
     [BorelSpace E] [Measure.IsAddHaarMeasure μ] :
-    fundamentalDomain b =ᵐ[μ] parallelepiped b := by
+    fundamentalDomain b =ᵐˢ[μ] parallelepiped b := by
   classical
   have : FiniteDimensional ℝ E := b.finiteDimensional_of_finite
   rw [← measure_symmDiff_eq_zero_iff, symmDiff_of_le (fundamentalDomain_subset_parallelepiped b)]

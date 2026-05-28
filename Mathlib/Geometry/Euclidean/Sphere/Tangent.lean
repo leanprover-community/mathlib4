@@ -259,7 +259,7 @@ lemma IsTangentAt.eq_orthogonalProjection {s : Sphere P} {p : P} {as : AffineSub
   rwa [isTangent_iff_isTangentAt_orthogonalProjection] at h'
 
 /-- The set of all maximal tangent spaces to the sphere `s`. -/
-def tangentSet (s : Sphere P) : Set (AffineSubspace ℝ P) :=
+noncomputable def tangentSet (s : Sphere P) : Set (AffineSubspace ℝ P) :=
   s.orthRadius '' s
 
 lemma mem_tangentSet_iff {as : AffineSubspace ℝ P} {s : Sphere P} :
@@ -292,7 +292,7 @@ lemma isTangent_of_mem_tangentsFrom {as : AffineSubspace ℝ P} {s : Sphere P} {
   isTangent_of_mem_tangentSet h.1
 
 /-- The set of all maximal common tangent spaces to the spheres `s₁` and `s₂`. -/
-def commonTangents (s₁ s₂ : Sphere P) : Set (AffineSubspace ℝ P) :=
+noncomputable def commonTangents (s₁ s₂ : Sphere P) : Set (AffineSubspace ℝ P) :=
   s₁.tangentSet ∩ s₂.tangentSet
 
 lemma mem_commonTangents_iff {as : AffineSubspace ℝ P} {s₁ s₂ : Sphere P} :

@@ -322,21 +322,21 @@ theorem lieBracketWithin_eq_lieBracket (hs : UniqueDiffWithinAt 𝕜 s x)
 
 /-- Variant of `lieBracketWithin_congr_set` where one requires the sets to coincide only in
 the complement of a point. -/
-theorem lieBracketWithin_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+theorem lieBracketWithin_congr_set' (y : E) (h : s =ᶠˢ[𝓝[{y}ᶜ] x] t) :
     lieBracketWithin 𝕜 V W s x = lieBracketWithin 𝕜 V W t x := by
   simp [lieBracketWithin, fderivWithin_congr_set' _ h]
 
-theorem lieBracketWithin_congr_set (h : s =ᶠ[𝓝 x] t) :
+theorem lieBracketWithin_congr_set (h : s =ᶠˢ[𝓝 x] t) :
     lieBracketWithin 𝕜 V W s x = lieBracketWithin 𝕜 V W t x :=
   lieBracketWithin_congr_set' x <| h.filter_mono inf_le_left
 
 /-- Variant of `lieBracketWithin_eventually_congr_set` where one requires the sets to coincide only
 in the complement of a point. -/
-theorem lieBracketWithin_eventually_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+theorem lieBracketWithin_eventually_congr_set' (y : E) (h : s =ᶠˢ[𝓝[{y}ᶜ] x] t) :
     lieBracketWithin 𝕜 V W s =ᶠ[𝓝 x] lieBracketWithin 𝕜 V W t :=
   (eventually_nhds_nhdsWithin.2 h).mono fun _ => lieBracketWithin_congr_set' y
 
-theorem lieBracketWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) :
+theorem lieBracketWithin_eventually_congr_set (h : s =ᶠˢ[𝓝 x] t) :
     lieBracketWithin 𝕜 V W s =ᶠ[𝓝 x] lieBracketWithin 𝕜 V W t :=
   lieBracketWithin_eventually_congr_set' x <| h.filter_mono inf_le_left
 
@@ -653,7 +653,7 @@ lemma pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt_of_eventuallyEq
     {f : E → F} {V W : F → F} {x : E} {t : Set F} {u : Set E}
     (hf : IsSymmSndFDerivWithinAt 𝕜 f s x) (h'f : ContDiffWithinAt 𝕜 2 f s x)
     (hV : DifferentiableWithinAt 𝕜 V t (f x)) (hW : DifferentiableWithinAt 𝕜 W t (f x))
-    (hu : UniqueDiffOn 𝕜 u) (hx : x ∈ u) (hst : MapsTo f u t) (hus : u =ᶠ[𝓝 x] s) :
+    (hu : UniqueDiffOn 𝕜 u) (hx : x ∈ u) (hst : MapsTo f u t) (hus : u =ᶠˢ[𝓝 x] s) :
     pullbackWithin 𝕜 f (lieBracketWithin 𝕜 V W t) s x
       = lieBracketWithin 𝕜 (pullbackWithin 𝕜 f V s) (pullbackWithin 𝕜 f W s) s x := calc
   pullbackWithin 𝕜 f (lieBracketWithin 𝕜 V W t) s x

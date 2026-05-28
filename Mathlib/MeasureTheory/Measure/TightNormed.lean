@@ -220,7 +220,7 @@ lemma isTightMeasureSet_range_of_tendsto_limsup_inner
   have h_map r : (μ n).map (fun x ↦ ⟪z, x⟫_𝕜) {x | r < ‖x‖} = μ n {x | r < ‖⟪z, x⟫_𝕜‖} := by
     rw [Measure.map_apply (by fun_prop)]
     · simp
-    · exact MeasurableSet.preimage measurableSet_Ioi (by fun_prop)
+    · exact measurableSet_lt (by fun_prop) (by fun_prop)
   simpa [h_map] using h_tight
 
 /-- In a finite-dimensional inner product space, the range of a sequence of measures

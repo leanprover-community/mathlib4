@@ -130,7 +130,7 @@ def colStochastic (R n : Type*) [Fintype n] [DecidableEq n] [Semiring R] [Partia
     [IsOrderedRing R] : Submonoid (Matrix n n R) where
   carrier := {M | (∀ i j, 0 ≤ M i j) ∧ 1 ᵥ* M = 1  }
   mul_mem' {M N} hM hN := by
-    refine Set.mem_sep ?_ ?_
+    constructor
     · intro i j
       apply Finset.sum_nonneg
       grind [mul_nonneg]

@@ -560,7 +560,8 @@ theorem le_iff_forall_inf_principal_compl {f g : Filter α} : f ≤ g ↔ ∀ V 
 
 theorem inf_neBot_iff_frequently_left {f g : Filter α} :
     NeBot (f ⊓ g) ↔ ∀ {p : α → Prop}, (∀ᶠ x in f, p x) → ∃ᶠ x in g, p x := by
-  simp only [inf_neBot_iff, frequently_iff, and_comm]; rfl
+  simp only [inf_neBot_iff, frequently_iff, and_comm, Set.mem_surjective.forall,
+    eventually_mem_set, inter_nonempty]
 
 theorem inf_neBot_iff_frequently_right {f g : Filter α} :
     NeBot (f ⊓ g) ↔ ∀ {p : α → Prop}, (∀ᶠ x in g, p x) → ∃ᶠ x in f, p x := by

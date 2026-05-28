@@ -227,7 +227,7 @@ section rify
 end rify
 
 @[simp]
-theorem range_coe : range toReal = Ici 0 := Subtype.range_coe
+theorem range_coe : range toReal = Ici 0 := Subtype.range_coe (s := Ici 0)
 
 @[simp]
 theorem image_coe_Ici (x : ℝ≥0) : toReal '' Ici x = Ici ↑x := image_subtype_val_Ici_Ici ..

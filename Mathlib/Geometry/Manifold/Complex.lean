@@ -92,7 +92,7 @@ theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : M → F} {U : Set M} {c : M}
   set V := {z ∈ U | ‖f z‖ = ‖f c‖}
   suffices U ⊆ V from fun x hx ↦ (this hx).2
   have hVo : IsOpen V := by
-    refine isOpen_iff_mem_nhds.2 fun x hx ↦ inter_mem (ho.mem_nhds hx.1) ?_
+    refine isOpen_iff_mem_nhds.2 fun x hx ↦ sep_mem (ho.mem_nhds hx.1) ?_
     replace hm : IsLocalMax (‖f ·‖) x :=
       mem_of_superset (ho.mem_nhds hx.1) fun z hz ↦ (hm hz).out.trans_eq hx.2.symm
     replace hd : ∀ᶠ y in 𝓝 x, MDiffAt f y :=
@@ -102,7 +102,7 @@ theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : M → F} {U : Set M} {c : M}
   have hVne : (U ∩ V).Nonempty := ⟨c, hcU, hcU, rfl⟩
   set W := U ∩ {z | ‖f z‖ = ‖f c‖}ᶜ
   have hWo : IsOpen W := hd.continuousOn.norm.isOpen_inter_preimage ho isOpen_ne
-  have hdVW : Disjoint V W := disjoint_compl_right.mono inf_le_right inf_le_right
+  have hdVW : Disjoint V W := disjoint_compl_right.mono (sep_subset_setOf _ _) inter_subset_right
   have hUVW : U ⊆ V ∪ W := fun x hx => (eq_or_ne ‖f x‖ ‖f c‖).imp (.intro hx) (.intro hx)
   exact hc.subset_left_of_subset_union hVo hWo hdVW hUVW hVne
 

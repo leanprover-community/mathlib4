@@ -123,7 +123,7 @@ variable {P : Set X → Set X → Prop}
 /-- By assumption, for each `c : CU P` there exists an open set `u`
 such that `c.C ⊆ u` and `closure u ⊆ c.U`. `c.left` is the pair `(c.C, u)`. -/
 @[simps C]
-def left (c : CU P) : CU P where
+noncomputable def left (c : CU P) : CU P where
   C := c.C
   U := (c.hP c.closed_C c.P_C_U c.open_U c.subset).choose
   closed_C := c.closed_C
@@ -135,7 +135,7 @@ def left (c : CU P) : CU P where
 /-- By assumption, for each `c : CU P` there exists an open set `u`
 such that `c.C ⊆ u` and `closure u ⊆ c.U`. `c.right` is the pair `(closure u, c.U)`. -/
 @[simps U]
-def right (c : CU P) : CU P where
+noncomputable def right (c : CU P) : CU P where
   C := closure (c.hP c.closed_C c.P_C_U c.open_U c.subset).choose
   U := c.U
   closed_C := isClosed_closure

@@ -31,7 +31,7 @@ then it is either null or conull.
 class ErgodicVAdd (G α : Type*) [VAdd G α] {_ : MeasurableSpace α} (μ : Measure α) : Prop
     extends VAddInvariantMeasure G α μ where
   aeconst_of_forall_preimage_vadd_ae_eq {s : Set α} : MeasurableSet s →
-    (∀ g : G, (g +ᵥ ·) ⁻¹' s =ᵐ[μ] s) → EventuallyConst s (ae μ)
+    (∀ g : G, (g +ᵥ ·) ⁻¹' s =ᵐˢ[μ] s) → EventuallyConst (· ∈ s) (ae μ)
 
 /--
 A group action of `G` on a space `α` with measure `μ` is called *ergodic*,
@@ -43,7 +43,7 @@ then it is either null or conull.
 class ErgodicSMul (G α : Type*) [SMul G α] {_ : MeasurableSpace α} (μ : Measure α) : Prop
     extends SMulInvariantMeasure G α μ where
   aeconst_of_forall_preimage_smul_ae_eq {s : Set α} : MeasurableSet s →
-    (∀ g : G, (g • ·) ⁻¹' s =ᵐ[μ] s) → EventuallyConst s (ae μ)
+    (∀ g : G, (g • ·) ⁻¹' s =ᵐˢ[μ] s) → EventuallyConst (· ∈ s) (ae μ)
 
 attribute [to_additive] ergodicSMul_iff
 
@@ -53,8 +53,8 @@ variable (G : Type*) {α : Type*} {m : MeasurableSpace α} {μ : Measure α}
 
 @[to_additive]
 theorem aeconst_of_forall_preimage_smul_ae_eq [SMul G α] [ErgodicSMul G α μ] {s : Set α}
-    (hm : NullMeasurableSet s μ) (h : ∀ g : G, (g • ·) ⁻¹' s =ᵐ[μ] s) :
-    EventuallyConst s (ae μ) := by
+    (hm : NullMeasurableSet s μ) (h : ∀ g : G, (g • ·) ⁻¹' s =ᵐˢ[μ] s) :
+    EventuallyConst (· ∈ s) (ae μ) := by
   rcases hm with ⟨t, htm, hst⟩
   refine .congr ?_ hst.symm
   refine ErgodicSMul.aeconst_of_forall_preimage_smul_ae_eq htm fun g : G ↦ ?_
@@ -66,20 +66,20 @@ section Group
 variable [Group G] [MulAction G α] [ErgodicSMul G α μ] {s : Set α}
 
 @[to_additive]
-theorem aeconst_of_forall_smul_ae_eq (hm : NullMeasurableSet s μ) (h : ∀ g : G, g • s =ᵐ[μ] s) :
-    EventuallyConst s (ae μ) :=
+theorem aeconst_of_forall_smul_ae_eq (hm : NullMeasurableSet s μ) (h : ∀ g : G, g • s =ᵐˢ[μ] s) :
+    EventuallyConst (· ∈ s) (ae μ) :=
   aeconst_of_forall_preimage_smul_ae_eq G hm fun g ↦ by
     simpa only [preimage_smul] using h g⁻¹
 
 @[to_additive]
 theorem _root_.MulAction.aeconst_of_aestabilizer_eq_top
-    (hm : NullMeasurableSet s μ) (h : aestabilizer G μ s = ⊤) : EventuallyConst s (ae μ) :=
+    (hm : NullMeasurableSet s μ) (h : aestabilizer G μ s = ⊤) : EventuallyConst (· ∈ s) (ae μ) :=
   aeconst_of_forall_smul_ae_eq G hm <| (Subgroup.eq_top_iff' _).1 h
 
 end Group
 
 theorem _root_.ErgodicSMul.of_aestabilizer [Group G] [MulAction G α] [SMulInvariantMeasure G α μ]
-    (h : ∀ s, MeasurableSet s → aestabilizer G μ s = ⊤ → EventuallyConst s (ae μ)) :
+    (h : ∀ s, MeasurableSet s → aestabilizer G μ s = ⊤ → EventuallyConst (· ∈ s) (ae μ)) :
     ErgodicSMul G α μ :=
   ⟨fun hm hs ↦ h _ hm <| (Subgroup.eq_top_iff' _).2 fun g ↦ by
     simpa only [preimage_smul_inv] using hs g⁻¹⟩

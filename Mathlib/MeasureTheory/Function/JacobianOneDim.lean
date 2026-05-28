@@ -195,10 +195,10 @@ theorem lintegral_image_eq_lintegral_deriv_mul_of_monotoneOn (hs : MeasurableSet
   have J : ∫⁻ x in f '' s, u x = ∫⁻ x in f '' c, u x := by
     apply setLIntegral_congr
     rw [← h_union, image_union, image_union]
-    have A : (f '' a ∪ (f '' b ∪ f '' c) : Set ℝ) =ᵐ[volume] (f '' b ∪ f '' c : Set ℝ) := by
+    have A : (f '' a ∪ (f '' b ∪ f '' c) : Set ℝ) =ᵐˢ[volume] (f '' b ∪ f '' c : Set ℝ) := by
       refine union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr ?_)
       exact (a_count.image _).measure_zero _
-    have B : (f '' b ∪ f '' c : Set ℝ) =ᵐ[volume] f '' c :=
+    have B : (f '' b ∪ f '' c : Set ℝ) =ᵐˢ[volume] f '' c :=
       union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr (fb_count.measure_zero _))
     exact A.trans B
   rw [I, J]
@@ -243,10 +243,10 @@ theorem integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn (hs : Measu
   have J : IntegrableOn g (f '' s) ↔ IntegrableOn g (f '' c) := by
     apply integrableOn_congr_set_ae
     rw [← h_union, image_union, image_union]
-    have A : (f '' a ∪ (f '' b ∪ f '' c) : Set ℝ) =ᵐ[volume] (f '' b ∪ f '' c : Set ℝ) := by
+    have A : (f '' a ∪ (f '' b ∪ f '' c) : Set ℝ) =ᵐˢ[volume] (f '' b ∪ f '' c : Set ℝ) := by
       refine union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr ?_)
       exact (a_count.image _).measure_zero _
-    have B : (f '' b ∪ f '' c : Set ℝ) =ᵐ[volume] f '' c :=
+    have B : (f '' b ∪ f '' c : Set ℝ) =ᵐˢ[volume] f '' c :=
       union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr (fb_count.measure_zero _))
     exact A.trans B
   rw [I, J]
@@ -288,10 +288,10 @@ theorem integral_image_eq_integral_deriv_smul_of_monotoneOn (hs : MeasurableSet 
   have J : ∫ x in f '' s, g x = ∫ x in f '' c, g x := by
     apply setIntegral_congr_set
     rw [← h_union, image_union, image_union]
-    have A : (f '' a ∪ (f '' b ∪ f '' c) : Set ℝ) =ᵐ[volume] (f '' b ∪ f '' c : Set ℝ) := by
+    have A : (f '' a ∪ (f '' b ∪ f '' c) : Set ℝ) =ᵐˢ[volume] (f '' b ∪ f '' c : Set ℝ) := by
       refine union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr ?_)
       exact (a_count.image _).measure_zero _
-    have B : (f '' b ∪ f '' c : Set ℝ) =ᵐ[volume] f '' c :=
+    have B : (f '' b ∪ f '' c : Set ℝ) =ᵐˢ[volume] f '' c :=
       union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr (fb_count.measure_zero _))
     exact A.trans B
   rw [I, J]

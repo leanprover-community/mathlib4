@@ -65,10 +65,9 @@ theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [IsTopolo
     have hφ₄ : ∀ x ∈ s, φ x < 1 := fun x hx =>
       (hφ₂ x).trans_lt (gauge_lt_one_of_mem_of_isOpen hs₂ hx)
     refine ⟨⟨φ, ?_⟩, hφ₃, hφ₄⟩
-    refine
-      φ.continuous_of_nonzero_on_open _ (hs₂.vadd (-x₀)) (Nonempty.vadd_set ⟨0, hs₀⟩)
-        (vadd_set_subset_iff.mpr fun x hx => ?_)
-    change φ (-x₀ + x) ≠ 0
+    refine φ.continuous_of_nonzero_on_open _ (hs₂.vadd (-x₀)) (Nonempty.vadd_set ⟨0, hs₀⟩) ?_
+    rintro _ ⟨x, hx, rfl⟩
+    simp only [vadd_eq_add]
     rw [map_add, map_neg]
     specialize hφ₄ x hx
     linarith

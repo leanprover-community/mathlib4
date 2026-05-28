@@ -743,10 +743,13 @@ theorem cofinite.blimsup_set_eq :
     blimsup s cofinite p = { x | { n | p n ∧ x ∈ s n }.Infinite } := by
   simp only [blimsup_eq, le_eq_subset, eventually_cofinite, not_forall, sInf_eq_sInter, exists_prop]
   ext x
-  refine ⟨fun h => ?_, fun hx t h => ?_⟩ <;> contrapose h
-  · simp only [mem_sInter, mem_setOf_eq, not_forall, exists_prop]
-    exact ⟨{x}ᶜ, by simpa using h, by simp⟩
-  · exact hx.mono fun i hi => ⟨hi.1, fun hit => h (hit hi.2)⟩
+  simp only [mem_sInter, mem_setOf_eq]
+  constructor
+  · exact fun hx hx_fin ↦ hx {x}ᶜ (by simpa using hx_fin) (mem_singleton x)
+  · intro hinf t h
+    contrapose! h
+    refine hinf.mono fun i hi ↦ ?_
+    exact ⟨hi.1, not_subset_iff_exists_mem_notMem.mpr ⟨x, hi.2, h⟩⟩
 
 theorem cofinite.bliminf_set_eq : bliminf s cofinite p = { x | { n | p n ∧ x ∉ s n }.Finite } := by
   rw [← compl_inj_iff]
@@ -963,7 +966,7 @@ variable [ConditionallyCompleteLinearOrder α] {f : Filter α} {b : α}
 set_option linter.unusedVariables false in
 theorem lt_mem_sets_of_limsSup_lt (h : f.IsBounded (· ≤ ·)) (l : f.limsSup < b) :
     ∀ᶠ a in f, a < b :=
-  let ⟨c, (h : ∀ᶠ a in f, a ≤ c), hcb⟩ := exists_lt_of_csInf_lt h l
+  let ⟨c, (h : ∀ᶠ a in f, a ≤ c), hcb⟩ := exists_lt_of_csInf_lt (nonempty_setOf.mpr h) l
   mem_of_superset h fun _a => hcb.trans_le'
 
 theorem gt_mem_sets_of_limsInf_gt : f.IsBounded (· ≥ ·) → b < f.limsInf → ∀ᶠ a in f, b < a :=

@@ -377,10 +377,8 @@ lemma IsClosed.Icc_subset_of_forall_mem_nhdsGT_of_Icc_subset {a b : α} {s : Set
   obtain ⟨⟨t₁a, t₁b⟩, ht₁⟩ : t₁ ∈ A := by
     refine ⟨t₁_mem, fun t ht ↦ ?_⟩
     rcases ht.2.eq_or_lt with rfl | h
-    · have : closure A ⊆ s ∩ Icc a b := by
-        apply (closure_subset_iff hs).2 (fun t ht ↦ ⟨?_, ht.1⟩)
-        have : t ∈ Icc a t := ⟨ht.1.1, le_rfl⟩
-        exact ht.2 this
+    · have : closure A ⊆ s ∩ Icc a b :=
+        closure_minimal (fun t ht ↦ ⟨ht.2 ⟨ht.1.1, le_rfl⟩, ht.1⟩) hs
       apply this.trans inter_subset_left
       exact csSup_mem_closure ⟨a, a_mem⟩ bdd_A
     · obtain ⟨c, cA, tc⟩ : ∃ c ∈ A, t < c := (lt_csSup_iff bdd_A ⟨a, a_mem⟩).1 h

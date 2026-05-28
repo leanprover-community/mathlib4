@@ -236,11 +236,11 @@ theorem ContinuousWithinAt.mono_of_mem_nhdsWithin (h : ContinuousWithinAt f t x)
 /-- If two sets coincide around `x`, then being continuous within one or the other at `x` is
 equivalent. See also `continuousWithinAt_congr_set'` which requires that the sets coincide
 locally away from a point `y`, in a T1 space. -/
-theorem continuousWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
+theorem continuousWithinAt_congr_set (h : s =ᶠˢ[𝓝 x] t) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt f t x := by
-  simp only [ContinuousWithinAt, nhdsWithin_eq_iff_eventuallyEq.mpr h]
+  simp only [ContinuousWithinAt, nhdsWithin_eq_iff_eventuallyEqSet.mpr h]
 
-theorem ContinuousWithinAt.congr_set (hf : ContinuousWithinAt f s x) (h : s =ᶠ[𝓝 x] t) :
+theorem ContinuousWithinAt.congr_set (hf : ContinuousWithinAt f s x) (h : s =ᶠˢ[𝓝 x] t) :
     ContinuousWithinAt f t x :=
   (continuousWithinAt_congr_set h).1 hf
 

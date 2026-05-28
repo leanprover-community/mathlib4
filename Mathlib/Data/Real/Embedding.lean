@@ -77,7 +77,7 @@ theorem mkRat_mem_ratLt {num : ℤ} {den : ℕ} (hden : den ≠ 0) {x : M} :
   exact (smul_lt_smul_iff_of_pos_left (Nat.zero_lt_of_ne_zero hm0)).symm
 
 /-- `ratLt` as a set of real numbers. -/
-abbrev ratLt' (x : M) : Set ℝ := (Rat.castHom ℝ) '' (ratLt x)
+noncomputable abbrev ratLt' (x : M) : Set ℝ := (Rat.castHom ℝ) '' (ratLt x)
 
 /-- Mapping `M` to `ℝ`, defined as the supremum of `ratLt' x`. -/
 noncomputable

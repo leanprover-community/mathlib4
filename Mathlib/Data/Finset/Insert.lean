@@ -114,10 +114,13 @@ theorem empty_ssubset_singleton : (∅ : Finset α) ⊂ {a} :=
 theorem coe_singleton (a : α) : (({a} : Finset α) : Set α) = {a} := by grind
 
 @[simp, norm_cast]
-theorem coe_eq_singleton {s : Finset α} {a : α} : (s : Set α) = {a} ↔ s = {a} := by grind
+theorem coe_eq_singleton {s : Finset α} {a : α} : (s : Set α) = {a} ↔ s = {a} :=
+  coe_injective.eq_iff' <| coe_singleton a
+#adaptation_note /-- Was `by grind` -/
 
 @[norm_cast]
-lemma coe_subset_singleton : (s : Set α) ⊆ {a} ↔ s ⊆ {a} := by grind
+lemma coe_subset_singleton : (s : Set α) ⊆ {a} ↔ s ⊆ {a} := by simp [← coe_subset]
+#adaptation_note /-- Was `by grind` -/
 
 @[norm_cast]
 lemma singleton_subset_coe : {a} ⊆ (s : Set α) ↔ {a} ⊆ s := by grind

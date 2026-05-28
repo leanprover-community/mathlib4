@@ -62,9 +62,11 @@ open FiniteGaloisIntermediateField AlgEquiv
 
 lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
     IsClosed (L.fixingSubgroup : Set Gal(K/k)) where
-  isOpen_compl := isOpen_iff_mem_nhds.mpr fun σ h => by
-    apply mem_nhds_iff.mpr
-    rcases Set.not_subset.mp ((mem_fixingSubgroup_iff Gal(K/k)).not.mp h) with ⟨y, yL, ne⟩
+  isOpen_compl := isOpen_iff_forall_mem_open.mpr fun σ h => by
+    rw [Set.mem_compl_iff, SetLike.mem_coe, IntermediateField.fixingSubgroup,
+      mem_fixingSubgroup_iff] at h
+    push Not at h
+    rcases h with ⟨y, yL, ne⟩
     use σ • ((adjoin k {y}).1.fixingSubgroup : Set Gal(K/k))
     constructor
     · intro f hf

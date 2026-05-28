@@ -353,7 +353,7 @@ protected theorem isSeparatedMap : IsSeparatedMap f :=
     have := hf.discreteTopology_fiber
     have he₁ := hf.mem_toTrivialization_baseSet
     have he₂ := he₁; simp_rw [he] at he₂; rw [← t.mem_source] at he₁ he₂
-    refine ⟨t.source ∩ (Prod.snd ∘ t) ⁻¹' {(t e₁).2}, t.source ∩ (Prod.snd ∘ t) ⁻¹' {(t e₂).2},
+    refine ⟨t.source ∩ t ⁻¹' (Prod.snd ⁻¹' {(t e₁).2}), t.source ∩ t ⁻¹' (Prod.snd ⁻¹' {(t e₂).2}),
       ?_, ?_, ⟨he₁, rfl⟩, ⟨he₂, rfl⟩, Set.disjoint_left.mpr fun x h₁ h₂ ↦ hne (t.injOn he₁ he₂ ?_)⟩
     iterate 2
       exact t.continuousOn_toFun.isOpen_inter_preimage t.open_source

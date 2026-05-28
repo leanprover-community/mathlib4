@@ -300,6 +300,13 @@ def EventuallyEq (l : Filter α) (f g : α → β) : Prop :=
 @[inherit_doc]
 notation:50 f " =ᶠ[" l:50 "] " g:50 => EventuallyEq l f g
 
+/-- Two sets are eventually equal along a filter. TODO: more -/
+def EventuallyEqSet (l : Filter α) (s t : Set α) : Prop :=
+  (· ∈ s) =ᶠ[l] (· ∈ t)
+
+@[inherit_doc]
+notation:50 s " =ᶠˢ[" l:50 "] " t:50 => EventuallyEqSet l s t
+
 /-- A function `f` is eventually less than or equal to a function `g` at a filter `l`. -/
 @[to_dual self (reorder := f g)]
 def EventuallyLE [LE β] (l : Filter α) (f g : α → β) : Prop :=
@@ -307,6 +314,16 @@ def EventuallyLE [LE β] (l : Filter α) (f g : α → β) : Prop :=
 
 @[inherit_doc]
 notation:50 f " ≤ᶠ[" l:50 "] " g:50 => EventuallyLE l f g
+
+/-- A set `s` is a subset of `t` eventually along a filter `l`. TODO: more -/
+def EventuallySubset (l : Filter α) (s t : Set α) : Prop :=
+  (· ∈ s) ≤ᶠ[l] (· ∈ t)
+
+@[inherit_doc]
+notation:50 s " ⊆ᶠ[" l:50 "] " t:50 => EventuallySubset l s t
+
+theorem sep_mem {p : α → Prop} (hs : s ∈ f) (hp : ∀ᶠ a in f, p a) : {x ∈ s | p x} ∈ f :=
+  inter_mem hs hp
 
 /-- The forward map of a filter -/
 def map (m : α → β) (f : Filter α) : Filter β where

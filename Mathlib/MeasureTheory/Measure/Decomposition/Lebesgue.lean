@@ -833,7 +833,7 @@ theorem iSup_le_le {α : Type*} (f : ℕ → α → ℝ≥0∞) (n k : ℕ) (hk 
 end SuprLemmas
 
 /-- `measurableLEEval μ ν` is the set of `∫⁻ x, f x ∂μ` for all `f ∈ measurableLE μ ν`. -/
-def measurableLEEval (μ ν : Measure α) : Set ℝ≥0∞ :=
+noncomputable def measurableLEEval (μ ν : Measure α) : Set ℝ≥0∞ :=
   (fun f : α → ℝ≥0∞ ↦ ∫⁻ x, f x ∂μ) '' measurableLE μ ν
 
 end LebesgueDecomposition

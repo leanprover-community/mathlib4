@@ -957,7 +957,7 @@ protected theorem _root_.MeasureTheory.NullMeasurableSet.exists_isOpen_symmDiff_
   rcases hs with ⟨t, htm, hst⟩
   rcases htm.exists_isOpen_symmDiff_lt (by rwa [← measure_congr hst]) hε with ⟨U, hUo, hμU, hUs⟩
   refine ⟨U, hUo, hμU, ?_⟩
-  rwa [measure_congr <| (ae_eq_refl _).symmDiff hst]
+  rwa [measure_congr <| .symmDiff .rfl hst]
 
 instance smul [h : InnerRegularCompactLTTop μ] (c : ℝ≥0∞) : InnerRegularCompactLTTop (c • μ) := by
   by_cases hc : c = 0

@@ -30,7 +30,7 @@ so that in particular any compact subset of `ℂ` contains only finitely many ze
 @[expose] public section
 
 /-- The zeros of Riemann's ζ-function. -/
-def riemannZetaZeros : Set ℂ := riemannZeta ⁻¹' {0}
+noncomputable def riemannZetaZeros : Set ℂ := riemannZeta ⁻¹' {0}
 
 lemma mem_riemannZetaZeros {z : ℂ} :
     z ∈ riemannZetaZeros ↔ riemannZeta z = 0 := .rfl

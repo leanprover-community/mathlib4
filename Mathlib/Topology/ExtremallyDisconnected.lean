@@ -157,22 +157,23 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {X : D 
   -- suffices to prove intersection of chain is minimal
   intro C C_sub C_chain
   -- prove intersection of chain is closed
-  refine ⟨iInter (fun c : C => c), ⟨isClosed_iInter fun ⟨_, h⟩ => (C_sub h).left, ?_⟩,
-    fun c hc _ h => mem_iInter.mp h ⟨c, hc⟩⟩
+  refine ⟨⋂₀ C, ⟨isClosed_sInter fun _ h => (C_sub h).left, ?_⟩,
+    fun c hc _ h => sInter_subset_of_mem hc h⟩
   -- prove intersection of chain is mapped onto $A$
-  by_cases hC : Nonempty C
-  · refine eq_univ_of_forall fun a => inter_nonempty_iff_exists_left.mp ?_
+  rcases C.eq_empty_or_nonempty with rfl | hC
+  · simp [X_surj.range_eq]
+  · refine eq_univ_of_forall fun a => ?_
+    suffices (⋂ c ∈ C, X ⁻¹' {a} ∩ c).Nonempty by
+      rw [inter_biInter hC] at this
+      simpa [Set.Nonempty, and_comm] using this
     -- apply Cantor's intersection theorem
-    refine iInter_inter (ι := C) (X ⁻¹' {a}) _ ▸
-      IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _
-      ?_ (fun c => ?_) (fun c => IsClosed.isCompact ?_) (fun c => ?_)
+    refine IsCompact.nonempty_biInter_of_directedOn_nonempty_isCompact_isClosed hC _ ?_
+      (fun c hc => ?_) (fun c hc => IsClosed.isCompact ?_) (fun c hc => ?_)
     · replace C_chain : IsChain (· ⊇ ·) C := C_chain.symm
-      have : ∀ s t : Set D, s ⊇ t → _ ⊇ _ := fun _ _ => inter_subset_inter_left <| X ⁻¹' {a}
-      exact (directedOn_iff_directed.mp C_chain.directedOn).mono_comp (· ⊇ ·) this
-    · rw [← image_inter_nonempty_iff, (C_sub c.mem).right, univ_inter]
+      exact C_chain.directedOn.mono fun _ _ h ↦ by gcongr
+    · rw [inter_comm, ← image_inter_nonempty_iff, (C_sub hc).right, univ_inter]
       exact singleton_nonempty a
-    all_goals exact (C_sub c.mem).left.inter <| (T1Space.t1 a).preimage X_cont
-  · rw [@iInter_of_empty _ _ <| not_nonempty_iff.mp hC, image_univ_of_surjective X_surj]
+    all_goals exact isClosed_singleton.preimage X_cont |>.inter (C_sub hc).left
 
 /-- Lemma 2.1 in [Gleason, *Projective topological spaces*][gleason1958]:
 if $\rho$ is a continuous surjection from a topological space $E$ to a topological space $A$

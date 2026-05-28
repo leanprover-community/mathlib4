@@ -38,6 +38,8 @@ the filter of residual sets.
 In lemma names, this is called `residualEq`. -/
 scoped[Topology] notation:50 f " =ᵇ " g:50 => Filter.EventuallyEq (residual _) f g
 
+scoped[Topology] notation:50 s " =ᵇ " t:50 => Filter.EventuallyEqSet (residual _) s t
+
 /-- Notation to say that a property of points in a topological space holds
 almost everywhere in the sense of Baire category. That is, on a residual set. -/
 scoped[Topology] notation3 "∀ᵇ " (...) ", " r:(scoped p => Filter.Eventually p <| residual _) => r
@@ -51,7 +53,7 @@ theorem coborder_mem_residual {s : Set α} (hs : IsLocallyClosed s) : coborder s
   residual_of_dense_open hs.isOpen_coborder dense_coborder
 
 theorem closure_residualEq {s : Set α} (hs : IsLocallyClosed s) : closure s =ᵇ s := by
-  rw [Filter.eventuallyEq_set]
+  rw [Filter.eventuallyEqSet_iff]
   filter_upwards [coborder_mem_residual hs] with x hx
   nth_rewrite 2 [← closure_inter_coborder (s := s)]
   simp [hx]

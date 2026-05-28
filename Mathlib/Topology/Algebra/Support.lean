@@ -254,7 +254,7 @@ theorem isCompact (hf : HasCompactMulSupport f) : IsCompact (mulTSupport f) := h
 @[to_additive]
 theorem _root_.hasCompactMulSupport_iff_eventuallyEq :
     HasCompactMulSupport f ↔ f =ᶠ[coclosedCompact α] 1 :=
-  mem_coclosedCompact_iff.symm
+  .symm mem_coclosedCompact_iff
 
 @[to_additive]
 theorem _root_.isCompact_range_of_mulSupport_subset_isCompact [TopologicalSpace β]
