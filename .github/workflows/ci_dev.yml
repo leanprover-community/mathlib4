@@ -34,16 +34,12 @@ on:
         description: "mathlib-ci ref (branch/tag/SHA) carrying the check-downstream actions to test."
         required: false
         type: string
-        default: marcelo/2026/05/DownstreamPrValidation
+        default: master
       downstream_reports_ref:
-        description: >-
-          downstream-reports ref to dispatch `mathlib-pr-validation.yml`
-          on.  Defaults to the open feature branch so the dispatch picks
-          up the matching workflow shape (e.g. the `triggered_by` input
-          that's not yet on master).
+        description: "downstream-reports ref to dispatch `mathlib-pr-validation.yml` on."
         required: false
         type: string
-        default: PullRequestOnDemandValidation
+        default: main
       post_results:
         description: "Forward `post_results` to the dispatched downstream-reports workflow."
         required: false
