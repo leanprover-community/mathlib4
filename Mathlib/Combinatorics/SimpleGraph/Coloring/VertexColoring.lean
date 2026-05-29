@@ -11,7 +11,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.Setoid.Partition
 public import Mathlib.Order.Antichain
-public import Mathlib.Order.Nat.Lattice
+public import Mathlib.Order.Lattice.Nat
 public import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!

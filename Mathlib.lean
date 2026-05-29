@@ -6072,6 +6072,7 @@ public import Mathlib.Order.KonigLemma
 public import Mathlib.Order.KrullDimension
 public import Mathlib.Order.Lattice
 public import Mathlib.Order.Lattice.Congruence
+public import Mathlib.Order.Lattice.Nat
 public import Mathlib.Order.LatticeIntervals
 public import Mathlib.Order.Lex
 public import Mathlib.Order.LiminfLimsup
@@ -6087,7 +6088,6 @@ public import Mathlib.Order.Monotone.MonovaryOrder
 public import Mathlib.Order.Monotone.Odd
 public import Mathlib.Order.Monotone.Union
 public import Mathlib.Order.Nat
-public import Mathlib.Order.Nat.Lattice
 public import Mathlib.Order.NonemptyFiniteChains
 public import Mathlib.Order.Northcott
 public import Mathlib.Order.Notation

@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Data.NNReal.Basic
-public import Mathlib.Order.Nat.Lattice
+public import Mathlib.Order.Lattice.Nat
 public import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.Metrizable.Basic
 

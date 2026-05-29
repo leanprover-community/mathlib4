@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.Set.Accumulate
 public import Mathlib.Data.Set.Pairwise.Lattice
 public import Mathlib.MeasureTheory.PiSystem
-public import Mathlib.Order.Nat.Lattice
+public import Mathlib.Order.Lattice.Nat
 public import Mathlib.Order.Partition.Finpartition
 public import Mathlib.Order.SupClosed
 

@@ -13,7 +13,7 @@ public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Data.PNat.Basic
 public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Dynamics.PeriodicPts.Defs
-public import Mathlib.Order.Nat.Lattice
+public import Mathlib.Order.Lattice.Nat
 
 /-!
 # Extra lemmas about periodic points

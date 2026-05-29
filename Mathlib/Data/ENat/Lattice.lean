@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Data.ENat.Basic
-public import Mathlib.Order.Nat.Lattice
+public import Mathlib.Order.Lattice.Nat
 
 /-!
 # Extended natural numbers form a complete linear order
