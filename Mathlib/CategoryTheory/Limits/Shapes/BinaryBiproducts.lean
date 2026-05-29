@@ -144,10 +144,10 @@ def functoriality : BinaryBicone P Q ⥤ BinaryBicone (F.obj P) (F.obj Q) where
 instance functoriality_full [F.Full] [F.Faithful] : (functoriality P Q F).Full where
   map_surjective t :=
    ⟨{ hom := F.preimage t.hom
-      winl := F.map_injective (by simpa using t.winl)
-      winr := F.map_injective (by simpa using t.winr)
-      wfst := F.map_injective (by simpa using t.wfst)
-      wsnd := F.map_injective (by simpa using t.wsnd) }, by cat_disch⟩
+      winl := F.map_injective (by simpa using! t.winl)
+      winr := F.map_injective (by simpa using! t.winr)
+      wfst := F.map_injective (by simpa using! t.wfst)
+      wsnd := F.map_injective (by simpa using! t.wsnd) }, by cat_disch⟩
 
 instance functoriality_faithful [F.Faithful] : (functoriality P Q F).Faithful where
   map_injective {_X} {_Y} f g h :=
@@ -239,11 +239,13 @@ def toBiconeFunctor {X Y : C} : BinaryBicone X Y ⥤ Bicone (pairFunction X Y) w
 abbrev toBicone {X Y : C} (b : BinaryBicone X Y) : Bicone (pairFunction X Y) :=
   toBiconeFunctor.obj b
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A binary bicone is a limit cone if and only if the corresponding bicone is a limit cone. -/
 def toBiconeIsLimit {X Y : C} (b : BinaryBicone X Y) :
     IsLimit b.toBicone.toCone ≃ IsLimit b.toCone :=
   IsLimit.equivIsoLimit <| Cone.ext (Iso.refl _) fun ⟨as⟩ => by cases as <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A binary bicone is a colimit cocone if and only if the corresponding bicone is a colimit
 cocone. -/
 def toBiconeIsColimit {X Y : C} (b : BinaryBicone X Y) :
@@ -296,12 +298,14 @@ def toBinaryBiconeFunctor {X Y : C} : Bicone (pairFunction X Y) ⥤ BinaryBicone
 abbrev toBinaryBicone {X Y : C} (b : Bicone (pairFunction X Y)) : BinaryBicone X Y :=
   toBinaryBiconeFunctor.obj b
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A bicone over a pair is a limit cone if and only if the corresponding binary bicone is a limit
 cone. -/
 def toBinaryBiconeIsLimit {X Y : C} (b : Bicone (pairFunction X Y)) :
     IsLimit b.toBinaryBicone.toCone ≃ IsLimit b.toCone :=
   IsLimit.equivIsoLimit <| Cone.ext (Iso.refl _) fun j => by rcases j with ⟨⟨⟩⟩ <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A bicone over a pair is a colimit cocone if and only if the corresponding binary bicone is a
 colimit cocone. -/
 def toBinaryBiconeIsColimit {X Y : C} (b : Bicone (pairFunction X Y)) :
@@ -318,6 +322,8 @@ structure BinaryBicone.IsBilimit {P Q : C} (b : BinaryBicone P Q) where
 attribute [inherit_doc BinaryBicone.IsBilimit] BinaryBicone.IsBilimit.isLimit
   BinaryBicone.IsBilimit.isColimit
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- If a binary bicone for `P` and `Q` is bilimit, then the binary bicone for `P'` and `Q'`
 obtained using isomorphisms `P ≅ P'` and `Q ≅ Q'` is also bilimit. -/
 def BinaryBicone.IsBilimit.ofIso {P Q P' Q' : C} {b : BinaryBicone P Q} (hb : b.IsBilimit)
