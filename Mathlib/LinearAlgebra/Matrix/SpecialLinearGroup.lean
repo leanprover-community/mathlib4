@@ -484,6 +484,114 @@ protected lemma SpecialLinearGroup.smul_def
 
 end Action
 
+section transvection
+
+variable {ι F : Type*} [DecidableEq ι] [Fintype ι] [CommRing F]
+
+/-- The transvection `1 + b · E_{i,j}` (the identity plus `b` in position `(i, j)`)
+as an element of `SL ι F`, when `i ≠ j`. -/
+noncomputable def SpecialLinearGroup.transvection (i j : ι) (hij : i ≠ j) (b : F) :
+    Matrix.SpecialLinearGroup ι F :=
+  ⟨(1 : Matrix ι ι F) + single i j b, Matrix.det_transvection_of_ne i j hij b⟩
+
+namespace SpecialLinearGroup
+
+lemma transvection_coe (i j : ι) (hij : i ≠ j) (b : F) :
+    (transvection i j hij b).1 = (1 : Matrix ι ι F) + single i j b := rfl
+
+/-- The transvection `transvection i j hij b` acts on `e_i = Pi.single i 1` as the identity. -/
+lemma transvection_mulVec_single_self (i j : ι) (hij : i ≠ j) (b : F) :
+    (transvection i j hij b).1 *ᵥ (Pi.single i (1 : F)) = Pi.single i 1 := by
+  rw [transvection_coe]
+  simp [-mulVec_single, add_mulVec, single_mulVec_eq, hij]
+
+/-- The transvection `transvection i j hij b` acts on `e_j = Pi.single j 1` by adding `b·e_i`. -/
+lemma transvection_mulVec_single_other (i j : ι) (hij : i ≠ j) (b : F) :
+    (transvection i j hij b).1 *ᵥ (Pi.single j (1 : F)) = Pi.single j 1 + b • Pi.single i 1 := by
+  rw [transvection_coe]
+  simp [-mulVec_single, add_mulVec, single_mulVec_eq]
+
+/-- Inverse of a transvection: `transvection i j hij b * transvection i j hij (-b) = 1`. -/
+lemma transvection_mul_neg (i j : ι) (hij : i ≠ j) (b : F) :
+    transvection i j hij b * transvection i j hij (-b) = 1 := by
+  apply Subtype.ext
+  simp [transvection_coe, mul_add, add_mul,
+    single_mul_single_of_ne _ _ _ _ hij.symm, ← single_neg]
+
+lemma transvection_inv (i j : ι) (hij : i ≠ j) (b : F) :
+    (transvection i j hij b)⁻¹ = transvection i j hij (-b) :=
+  inv_eq_of_mul_eq_one_left (by rw [← transvection_mul_neg i j hij (-b), neg_neg])
+
+lemma transvection_mem_center_iff (i j : ι) (hij : i ≠ j) (b : F) :
+    transvection i j hij b ∈ Subgroup.center (SpecialLinearGroup ι F) ↔ b = 0 := by
+  refine ⟨fun h ↦ ?_, fun hb ↦ ?_⟩
+  · obtain ⟨r, _, hr⟩ := mem_center_iff.1 h
+    simpa [transvection_coe, hij] using congr($hr i j).symm
+  · simp only [hb, mem_center_iff, scalar_apply, transvection_coe, single_zero,
+      add_zero, diagonal_eq_one]
+    exact ⟨1, one_pow _, rfl⟩
+
+end SpecialLinearGroup
+
+end transvection
+
+section SL2
+
+variable {F : Type*} [Field F]
+
+open MatrixGroups
+
+/-- Diagonal element `D(a)` in `SL ι F` when `card ι = 2`: the matrix
+`diagonal (k ↦ if k = i₁ then a else a⁻¹)`. -/
+noncomputable def diag2 (a : F) (ha : a ≠ 0) : SL(2, F) :=
+  ⟨diagonal (fun i ↦ match i with | 0 => a|1 => a⁻¹), by simp [mul_inv_cancel₀ ha]⟩
+
+lemma diag2_coe (a : F) (ha : a ≠ 0) :
+    (diag2 a ha).1 = diagonal (fun i ↦ match i with | 0 => a|1 => a⁻¹) := rfl
+
+lemma diag2_mulVec_single_i₁ (a : F) (ha : a ≠ 0) :
+    (diag2 a ha).1 *ᵥ (Pi.single 0 (1 : F)) = a • Pi.single 0 (1 : F) := by
+  ext k; fin_cases k <;> simp [diag2_coe]
+
+lemma diag2_mulVec_single_i₂
+    (a : F) (ha : a ≠ 0) :
+    (diag2 a ha).1 *ᵥ (Pi.single 1 (1 : F)) =
+      a⁻¹ • Pi.single 1 (1 : F) := by
+  ext k; fin_cases k <;> simp [diag2_coe]
+
+/-- `diag2 a * diag2 a⁻¹ = 1`. -/
+lemma diag2_mul_inv (a : F) (ha : a ≠ 0) :
+    diag2 a ha * diag2 a⁻¹ (inv_ne_zero ha) = 1 := Subtype.ext <| by
+  simp [diag2_coe, funext_iff, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha]
+
+/-- Therefore `(diag2 a)⁻¹ = diag2 a⁻¹`. -/
+lemma diag2_inv (a : F) (ha : a ≠ 0) :
+    (diag2 a ha)⁻¹ = diag2 a⁻¹ (inv_ne_zero ha) := by
+  apply inv_eq_of_mul_eq_one_right
+  exact diag2_mul_inv a ha
+
+open scoped commutatorElement
+
+lemma commutator_diag2_transvection (a : F) (ha : a ≠ 0) (b c : F)
+    (hc : c = b * (a ^ 2 - 1)) : ⁅diag2 a ha, SpecialLinearGroup.transvection 0 1 zero_ne_one b⁆ =
+    (SpecialLinearGroup.transvection 0 1 zero_ne_one c : SL(2, F)) := by
+  rw [commutatorElement_def, diag2_inv a ha, SpecialLinearGroup.transvection_inv 0 1 zero_ne_one b]
+  refine Subtype.ext <| Matrix.ext fun i j ↦ ?_
+  fin_cases i <;> fin_cases j
+  <;> simp [hc, SpecialLinearGroup.transvection_coe, diag2_coe, mul_add, add_mul,
+    mul_inv_cancel₀ ha, inv_mul_cancel₀ ha, mul_comm a b, mul_assoc b a a, ← pow_two,
+    mul_sub_one, ← sub_eq_add_neg]
+
+/-- For any `c : F`, given `a ≠ 0` and `a² ≠ 1`, the transvection `transvection i₁ i₂ hij c` is
+a commutator in `SL ι F`, hence lies in `commutator (SL ι F)`. -/
+lemma transvection_mem_commutator (a : F) (ha : a ≠ 0) (hasq : a ^ 2 ≠ 1) (c : F) :
+    SpecialLinearGroup.transvection 0 1 zero_ne_one c ∈ commutator SL(2, F) := by
+  rw [← commutator_diag2_transvection a ha (c / (a ^ 2 - 1)) c
+    (div_mul_cancel₀ c (sub_ne_zero_of_ne hasq)).symm]
+  exact Subgroup.commutator_mem_commutator (Subgroup.mem_top _) (Subgroup.mem_top _)
+
+end SL2
+
 end Matrix
 
 namespace ModularGroup
