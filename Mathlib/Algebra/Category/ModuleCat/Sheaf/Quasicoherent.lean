@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackRestrict
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackFree
 public import Mathlib.CategoryTheory.Sites.CoversTop.Over
 
 /-!
@@ -372,5 +374,37 @@ lemma IsQuasicoherent.of_coversTop {R : Sheaf J RingCat.{u}}
     IsQuasicoherent.nonempty_quasicoherentData.some).isQuasicoherent
 
 end bind
+
+section pullback
+
+variable {D : Type u₂} [Category.{v₂} D] [HasBinaryProducts C] [HasBinaryProducts D]
+  {K : GrothendieckTopology D} {F : C ⥤ D}
+  [F.PreservesOneHypercovers J K] [PreservesLimitsOfShape (Discrete WalkingPair) F]
+  {S : Sheaf J RingCat.{u}} {R : Sheaf K RingCat.{u}}
+  (φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R)
+
+variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]
+  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
+  [∀ X, (K.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [∀ X, HasSheafify (K.over X) AddCommGrpCat.{u}]
+  [∀ X, (K.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
+  [∀ X, (pushforward.{u} (StructureHomOver φ X)).IsRightAdjoint]
+  [F.Final] [(pushforward.{u} φ).IsRightAdjoint]
+
+/-- The pullback of quasi coherent data. -/
+protected noncomputable def QuasicoherentData.pullback {M : SheafOfModules.{u} S}
+    (q : M.QuasicoherentData) : ((pullback φ).obj M).QuasicoherentData where
+  I := q.I
+  X i := F.obj (q.X i)
+  coversTop := q.coversTop.map _ K coverPreserving_of_preservesOneHypercovers
+  presentation i := ((q.presentation i).map _ (asIso (pullbackObjUnitToUnit _)).symm).ofIsIso
+    (M.overPullbackIso φ (q.X i)).hom
+
+protected instance (priority := 100) IsQuasicoherent.pullback {M : SheafOfModules.{u} S}
+    [q : M.IsQuasicoherent] : ((pullback φ).obj M).IsQuasicoherent :=
+  (q.nonempty_quasicoherentData.some.pullback φ).isQuasicoherent
+
+end pullback
 
 end SheafOfModules

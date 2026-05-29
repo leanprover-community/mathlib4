@@ -5,9 +5,8 @@ Authors: Brian Nugent
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackFree
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
-public import Mathlib.Topology.Sheaves.SheafCondition.Sites
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
+public import Mathlib.CategoryTheory.Sites.CoversTop.Basic
 
 /-!
 # Over
@@ -119,43 +118,4 @@ def PullbackRestrict : pushforward.{u} (𝟙 (S.over X)) ⋙ pullback (Structure
 abbrev overPullbackIso : (pullback (StructureHomOver φ X)).obj (M.over X) ≅
     ((pullback φ).obj M).over (F.obj X) := (PullbackRestrict φ X).app M
 
-variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-  [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]
-  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
-  [∀ X, (K.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-  [∀ X, HasSheafify (K.over X) AddCommGrpCat.{u}]
-  [∀ X, (K.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
-  [∀ X, (pushforward.{u} (StructureHomOver φ X)).IsRightAdjoint]
-  [F.Final]
-
-variable {M} in
-/-- The pullback of quasi coherent data. -/
-protected def QuasicoherentData.pullback (q : M.QuasicoherentData) :
-    ((pullback φ).obj M).QuasicoherentData where
-  I := q.I
-  X i := F.obj (q.X i)
-  coversTop := q.coversTop.map _ K coverPreserving_of_preservesOneHypercovers
-  presentation i := ((q.presentation i).map _ (asIso (pullbackObjUnitToUnit _)).symm).ofIsIso
-    (M.overPullbackIso φ (q.X i)).hom
-
-variable {M} in
-protected theorem IsQuasicoherent.pullback [q : M.IsQuasicoherent] :
-    ((pullback φ).obj M).IsQuasicoherent :=
-  (q.nonempty_quasicoherentData.some.pullback φ).isQuasicoherent
-
 end SheafOfModules
-
-instance {X Y : TopCat} (f : X ⟶ Y) : (TopologicalSpace.Opens.map f).PreservesOneHypercovers
-    (Opens.grothendieckTopology Y) (Opens.grothendieckTopology X) := by
-  intro U E
-  constructor
-  · simpa [PreOneHypercover.map, PreZeroHypercover.sieve₀_map] using
-      (coverPreserving_opens_map f).cover_preserve E.mem₀
-  · intro i₁ i₂ W p₁ p₂ _ x hx
-    obtain ⟨V, _, hq, hxV⟩ := E.mem₁ i₁ i₂ (W := E.X i₁ ⊓ E.X i₂)
-      (homOfLE inf_le_left) (homOfLE inf_le_right) (Subsingleton.elim _ _) (f x)
-      ⟨p₁.le hx, p₂.le hx⟩
-    obtain ⟨j, h, -, -⟩ := hq
-    exact ⟨(TopologicalSpace.Opens.map f).obj V ⊓ W, homOfLE inf_le_right,
-      ⟨j, homOfLE fun y hy ↦ h.le hy.1, Subsingleton.elim _ _, Subsingleton.elim _ _⟩,
-      ⟨hxV, hx⟩⟩

@@ -6,7 +6,7 @@ Authors: Brian Nugent
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackPreserves
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackRestrict
 
 /-!
 # Locally Free Sheaves
