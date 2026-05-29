@@ -874,6 +874,10 @@ lemma Polynomial.toMvPolynomial_injective (i : σ) :
     EquivLike.injective_comp]
   exact MvPolynomial.rename_injective (fun x ↦ i) fun _ _ _ ↦ rfl
 
+lemma Polynomial.toMvPolynomial_inj {i : σ} {p q : R[X]} :
+    toMvPolynomial (R := R) i p = toMvPolynomial i q ↔ p = q :=
+  ⟨fun h ↦ Polynomial.toMvPolynomial_injective i h, fun h ↦ by rw [h]⟩
+
 @[simp]
 lemma MvPolynomial.eval_comp_toMvPolynomial (f : σ → R) (i : σ) :
     (eval f).comp (toMvPolynomial (R := R) i) = Polynomial.evalRingHom (f i) := by

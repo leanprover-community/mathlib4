@@ -462,7 +462,7 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
     simpa only [this, ite_eq_right_iff] using H r le_rfl
   intro k hk
   induction k with
-  | zero => simp only [if_true, Matrix.mul_one, List.take_zero, zero_le', List.prod_nil]
+  | zero => simp
   | succ n IH =>
     have hnr : n < r := hk
     let n' : Fin r := ⟨n, hnr⟩

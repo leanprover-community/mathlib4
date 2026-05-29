@@ -22,13 +22,14 @@ variable (n : ℕ)
 
 /-- The automorphism group of `ZMod n` is isomorphic to the group of units of `ZMod n`. -/
 @[simps]
-def AddAutEquivUnits : AddAut (ZMod n) ≃* (ZMod n)ˣ :=
+def AddAutEquivUnits : AddAut (ZMod n) ≃+ Additive (ZMod n)ˣ :=
   have h (f : AddAut (ZMod n)) (x : ZMod n) : f 1 * x = f x := by
     rw [mul_comm, ← x.intCast_zmod_cast, ← zsmul_eq_mul, ← map_zsmul, zsmul_one]
-  { toFun := fun f ↦ Units.mkOfMulEqOne (f 1) (f⁻¹ 1) ((h f _).trans (f.apply_inv_self _ _))
-    invFun := AddAut.mulLeft
-    left_inv := fun f ↦ by simp [DFunLike.ext_iff, Units.smul_def, h]
-    right_inv := fun x ↦ by simp [Units.ext_iff, Units.smul_def]
-    map_mul' := fun f g ↦ by simp [Units.ext_iff, h] }
+  { toFun f := .ofMul <| Units.mkOfMulEqOne (f 1) ((-f) 1) ((h f _).trans (f.apply_neg_self _ _))
+    invFun x := AddAut.mulLeft x.toMul
+    left_inv g := by simp [DFunLike.ext_iff, Units.smul_def, h]
+    right_inv x := by simp [← Additive.toMul_symm_eq, Equiv.symm_apply_eq,
+      Units.ext_iff, Units.smul_def, -toMul_smul]
+    map_add' f g := by simp [← Additive.toMul_symm_eq, Equiv.symm_apply_eq, Units.ext_iff, h] }
 
 end ZMod

@@ -144,11 +144,15 @@ theorem constantCoeff_eq (f : R⟦X⟧) :
 def C : R →+* R⟦X⟧ :=
   MvPowerSeries.C
 
+lemma C_apply {r : R} : C r = MvPowerSeries.C r := rfl
+
 @[simp] lemma algebraMap_eq {R : Type*} [CommSemiring R] : algebraMap R R⟦X⟧ = C := rfl
 
 /-- The variable of the formal power series ring. -/
 def X : R⟦X⟧ :=
   MvPowerSeries.X ()
+
+lemma X_apply : X (R := R) = MvPowerSeries.X () := rfl
 
 theorem commute_X (φ : R⟦X⟧) : Commute φ X :=
   MvPowerSeries.commute_X _ _

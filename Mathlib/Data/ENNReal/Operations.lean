@@ -239,7 +239,7 @@ lemma pow_lt_top (ha : a < ∞) : a ^ n < ∞ := WithTop.pow_lt_top ha
 
 end OperationsAndInfty
 
-protected theorem add_lt_add (ac : a < c) (bd : b < d) : a + b < c + d :=
+@[gcongr] protected theorem add_lt_add (ac : a < c) (bd : b < d) : a + b < c + d :=
   WithTop.add_lt_add ac bd
 
 section Cancel

@@ -173,10 +173,12 @@ abbrev inr' (x y : SimplexCategory) : y ⟶ tensorObjOf x y := WithInitial.down 
 set_option backward.isDefEq.respectTransparency false in
 lemma inl'_eval (x y : SimplexCategory) (i : Fin (x.len + 1)) :
     (inl' x y).toOrderHom i = (i.castAdd _).cast (Nat.succ_add x.len (y.len + 1)) := by
-  dsimp [inl', inl, MonoidalCategoryStruct.rightUnitor, MonoidalCategoryStruct.whiskerLeft,
-    tensorHom, WithInitial.down, rightUnitor, tensorObj]
   ext
-  simp [OrderEmbedding.toOrderHom]
+  simp [inl', inl, MonoidalCategoryStruct.rightUnitor, MonoidalCategoryStruct.whiskerLeft,
+    MonoidalCategoryStruct.tensorUnit, MonoidalCategoryStruct.tensorObj,
+    tensorUnit, tensorHom, WithInitial.down, rightUnitor, tensorObj, CategoryStruct.id,
+    CategoryStruct.comp, WithInitial.comp, WithInitial.id,
+    OrderEmbedding.toOrderHom]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma inr'_eval (x y : SimplexCategory) (i : Fin (y.len + 1)) :

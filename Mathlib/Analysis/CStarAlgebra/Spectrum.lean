@@ -169,8 +169,6 @@ theorem sqrt_toReal_spectralRadius_self_mul_star_eq_norm (a : A) :
 
 end CStarAlgebra
 
-variable [StarModule ℂ A]
-
 /-- Any element of the spectrum of a selfadjoint is real. -/
 theorem IsSelfAdjoint.mem_spectrum_eq_re {a : A} (ha : IsSelfAdjoint a) {z : ℂ}
     (hz : z ∈ spectrum ℂ a) : z = z.re := by
@@ -272,7 +270,7 @@ lemma nnnorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
   have h (ψ : Unitization ℂ A →⋆ₐ[ℂ] Unitization ℂ B) (x : Unitization ℂ A) :
       ‖ψ x‖₊ ≤ ‖x‖₊ := by
     suffices ∀ {s}, IsSelfAdjoint s → ‖ψ s‖₊ ≤ ‖s‖₊ by
-      refine nonneg_le_nonneg_of_sq_le_sq zero_le' ?_
+      refine nonneg_le_nonneg_of_sq_le_sq zero_le ?_
       simp_rw [← nnnorm_star_mul_self, ← map_star, ← map_mul]
       exact this <| .star_mul_self x
     intro s hs

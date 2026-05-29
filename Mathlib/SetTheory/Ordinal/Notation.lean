@@ -633,7 +633,7 @@ theorem opow_def (o₁ o₂ : ONote) : o₁ ^ o₂ = opowAux2 o₂ (split o₁) 
   rfl
 
 theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → split o = (scale 1 o', m)
-  | 0, o', m, _, p => by injection p; substs o' m; rfl
+  | 0, o', m, _, p => by injection p; subst o' m; rfl
   | oadd e n a, o', m, h, p => by
     by_cases e0 : e = 0 <;> simp only [split', e0, ↓reduceIte, Prod.mk.injEq, split] at p ⊢
     · rcases p with ⟨rfl, rfl⟩
@@ -649,11 +649,11 @@ theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → spli
         have := mt repr_inj.1 e0
         exact Ordinal.add_sub_cancel_of_le <| one_le_iff_ne_zero.2 this
       intros
-      substs o' m
+      subst o' m
       simp [scale, this]
 
 theorem nf_repr_split' : ∀ {o o' m} [NF o], split' o = (o', m) → NF o' ∧ repr o = ω * repr o' + m
-  | 0, o', m, _, p => by injection p; substs o' m; simp [NF.zero]
+  | 0, o', m, _, p => by injection p; subst o' m; simp [NF.zero]
   | oadd e n a, o', m, h, p => by
     by_cases e0 : e = 0 <;>
       simp only [split', e0, ↓reduceIte, Prod.mk.injEq, repr, repr_zero, opow_zero, one_mul] at p ⊢
@@ -666,7 +666,7 @@ theorem nf_repr_split' : ∀ {o o' m} [NF o], split' o = (o', m) → NF o' ∧ r
       obtain ⟨IH₁, IH₂⟩ := nf_repr_split' h'
       simp only [IH₂, and_imp]
       intros
-      substs o' m
+      subst o' m
       have : (ω : Ordinal.{0}) ^ repr e = ω ^ (1 : Ordinal.{0}) * ω ^ (repr e - 1) := by
         have := mt repr_inj.1 e0
         rw [← opow_add, Ordinal.add_sub_cancel_of_le (one_le_iff_ne_zero.2 this)]
@@ -702,7 +702,7 @@ theorem nf_repr_split {o o' m} [NF o] (h : split o = (o', m)) : NF o' ∧ repr o
   rcases e : split' o with ⟨a, n⟩
   obtain ⟨s₁, s₂⟩ := nf_repr_split' e
   rw [split_eq_scale_split' e] at h
-  injection h; substs o' n
+  injection h; subst o' n
   simp only [repr_scale, repr_one, Nat.cast_one, opow_one, ← s₂, and_true]
   infer_instance
 

@@ -86,7 +86,8 @@ theorem toENat_cardinalMk_subtype (P : α → Prop) :
     (Cardinal.mk {x // P x}).toENat = {x | P x}.encard :=
   rfl
 
-@[simp] theorem coe_fintypeCard (s : Set α) [Fintype s] : Fintype.card s = s.encard := by
+variable (s) in
+theorem coe_fintypeCard [Fintype s] : Fintype.card s = s.encard := by
   simp [encard_eq_coe_toFinset_card]
 
 @[simp, norm_cast] theorem encard_coe_eq_coe_finsetCard (s : Finset α) :
@@ -203,9 +204,9 @@ theorem encard_diff (h : s ⊆ t) (hs : s.Finite) :
   exact (ENat.addLECancellable_of_ne_top <| encard_ne_top_iff.mpr hs).eq_tsub_of_add_eq rfl
 
 @[simp] theorem one_le_encard_iff_nonempty : 1 ≤ s.encard ↔ s.Nonempty := by
-  rw [nonempty_iff_ne_empty, Ne, ← encard_eq_zero, ENat.one_le_iff_ne_zero]
+  rw [nonempty_iff_ne_empty, Ne, ← encard_eq_zero, Order.one_le_iff_ne_zero]
 
-@[simp] lemma encard_lt_one : s.encard < 1 ↔ s = ∅ := by simp [← not_le, not_nonempty_iff_eq_empty]
+lemma encard_lt_one : s.encard < 1 ↔ s = ∅ := by simp
 
 theorem encard_diff_add_encard_inter (s t : Set α) :
     (s \ t).encard + (s ∩ t).encard = s.encard := by
@@ -293,7 +294,7 @@ theorem encard_insert_le (s : Set α) (x : α) : (insert x s).encard ≤ s.encar
   rw [← union_singleton, ← encard_singleton x]; apply encard_union_le
 
 theorem one_le_encard_insert (s : Set α) : 1 ≤ (insert a s).encard :=
-  ENat.one_le_iff_ne_zero.mpr <| encard_ne_zero_of_mem (mem_insert a s)
+  Order.one_le_iff_ne_zero.mpr <| encard_ne_zero_of_mem (mem_insert a s)
 
 theorem encard_singleton_inter (s : Set α) (x : α) : ({x} ∩ s).encard ≤ 1 := by
   grw [← encard_singleton x, inter_subset_left]
@@ -355,7 +356,7 @@ theorem encard_eq_one : s.encard = 1 ↔ ∃ x, s = {x} := by
   exact ⟨x, ((finite_singleton x).eq_of_subset_of_encard_le (by simpa) (by simp [h])).symm⟩
 
 theorem encard_le_one_iff_eq : s.encard ≤ 1 ↔ s = ∅ ∨ ∃ x, s = {x} := by
-  rw [le_iff_lt_or_eq, lt_iff_not_ge, ENat.one_le_iff_ne_zero, not_not, encard_eq_zero,
+  rw [le_iff_lt_or_eq, lt_iff_not_ge, Order.one_le_iff_ne_zero, not_not, encard_eq_zero,
     encard_eq_one]
 
 theorem encard_le_one_iff : s.encard ≤ 1 ↔ ∀ a b, a ∈ s → b ∈ s → a = b := by
@@ -590,6 +591,7 @@ theorem Finite.cast_ncard_eq (hs : s.Finite) : s.ncard = s.encard := by
   rwa [ncard, ENat.coe_toNat_eq_self, ne_eq, encard_eq_top_iff, Set.Infinite, not_not]
 
 variable (s) in
+@[simp]
 theorem coe_ncard_eq_encard [Finite s] : s.ncard = s.encard :=
   s.toFinite.cast_ncard_eq
 
@@ -607,6 +609,7 @@ theorem ncard_eq_toFinset_card' (s : Set α) [Fintype s] :
   simp [← _root_.Nat.card_coe_set_eq, Nat.card_eq_fintype_card]
 
 variable (s) in
+@[simp]
 theorem fintypeCard_eq_ncard [Fintype s] : Fintype.card s = s.ncard := by
   rw [ncard_eq_toFinset_card', toFinset_card]
 

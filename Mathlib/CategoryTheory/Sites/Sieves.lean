@@ -429,11 +429,17 @@ lemma functorPullback_map_functorPullback {X : C} (R : Presieve (F.obj X)) :
 lemma map_id {X : C} (R : Presieve X) : R.map (𝟭 C) = R :=
   le_antisymm (fun _ _ ⟨hg⟩ ↦ hg) fun _ _ hg ↦ ⟨hg⟩
 
+@[gcongr]
 lemma map_monotone : Monotone (map (X := X) F) :=
   (galoisConnection_map_functorPullback _ _).monotone_l
 
+@[gcongr]
 lemma functorPullback_monotone {X : C} : Monotone (Presieve.functorPullback (X := X) F) :=
-  (Presieve.galoisConnection_map_functorPullback F X).monotone_u
+  (galoisConnection_map_functorPullback F X).monotone_u
+
+@[simp]
+lemma map_bot : map F (⊥ : Presieve X) = ⊥ :=
+  (galoisConnection_map_functorPullback _ _).l_bot
 
 end
 

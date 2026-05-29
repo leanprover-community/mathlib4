@@ -906,7 +906,7 @@ theorem NumberField.Units.dvd_torsionOrder_of_isPrimitiveRoot [NeZero n] [Number
   convert! orderOf_dvd_natCard (⟨(hζ.isUnit (NeZero.ne n)).unit, ?_⟩ : torsion K)
   · rw [Subgroup.orderOf_mk]
     exact hζ.eq_orderOf
-  · refine (CommGroup.mem_torsion _ _).mpr ⟨n, NeZero.pos n, ?_⟩
+  · refine (CommGroup.mem_torsion _).mpr ⟨n, NeZero.pos n, ?_⟩
     rw [isPeriodicPt_mul_iff_pow_eq_one]
     exact hζ.pow_eq_one
 

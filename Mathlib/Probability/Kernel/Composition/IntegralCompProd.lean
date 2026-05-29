@@ -108,7 +108,7 @@ theorem hasFiniteIntegral_compProd_iff ⦃f : β × γ → E⦄ (h1f : StronglyM
   have : ∀ x, ∀ᵐ y ∂η (a, x), 0 ≤ ‖f (x, y)‖ := fun x => Eventually.of_forall fun y => norm_nonneg _
   simp_rw [integral_eq_lintegral_of_nonneg_ae (this _)
       (h1f.norm.comp_measurable measurable_prodMk_left).aestronglyMeasurable,
-    enorm_eq_ofReal toReal_nonneg, ofReal_norm_eq_enorm]
+    enorm_eq_ofReal toReal_nonneg, ofReal_norm]
   have : ∀ {p q r : Prop} (_ : r → p), (r ↔ p ∧ q) ↔ p → (r ↔ q) := fun {p q r} h1 => by
     rw [← and_congr_right_iff, and_iff_right_of_imp h1]
   rw [this]
@@ -303,7 +303,7 @@ theorem hasFiniteIntegral_comp_iff ⦃f : γ → E⦄ (hf : StronglyMeasurable f
     (∀ᵐ x ∂κ a, HasFiniteIntegral f (η x)) ∧ HasFiniteIntegral (fun x ↦ ∫ y, ‖f y‖ ∂η x) (κ a) := by
   simp_rw [hasFiniteIntegral_iff_enorm, lintegral_comp _ _ _ hf.enorm]
   simp_rw [integral_eq_lintegral_of_nonneg_ae (ae_of_all _ fun y ↦ norm_nonneg _)
-      hf.norm.aestronglyMeasurable, enorm_eq_ofReal toReal_nonneg, ofReal_norm_eq_enorm]
+      hf.norm.aestronglyMeasurable, enorm_eq_ofReal toReal_nonneg, ofReal_norm]
   have : ∀ {p q r : Prop} (_ : r → p), (r ↔ p ∧ q) ↔ p → (r ↔ q) := fun h ↦ by
     rw [← and_congr_right_iff, and_iff_right_of_imp h]
   rw [this]

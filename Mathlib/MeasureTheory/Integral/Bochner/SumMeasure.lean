@@ -59,7 +59,7 @@ lemma integrable_sum_measure
   · rw [HasFiniteIntegral, lintegral_sum_measure]
     convert! h.tsum_ofReal_lt_top with i
     rw [ofReal_integral_eq_lintegral_ofReal (hf i).norm]
-    · simp_rw [ofReal_norm_eq_enorm]
+    · simp_rw [ofReal_norm]
     · exact ae_of_all _ fun _ ↦ by positivity
 
 omit [Countable ι] in

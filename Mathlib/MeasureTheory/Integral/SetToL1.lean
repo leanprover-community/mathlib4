@@ -92,7 +92,7 @@ theorem norm_eq_sum_mul (f : α →₁ₛ[μ] G) :
   rw [SimpleFunc.lintegral_eq_lintegral, SimpleFunc.map_lintegral, ENNReal.toReal_sum]
   · congr
     ext1 x
-    rw [ENNReal.toReal_mul, mul_comm, ← ofReal_norm_eq_enorm,
+    rw [ENNReal.toReal_mul, mul_comm, ← ofReal_norm,
       ENNReal.toReal_ofReal (norm_nonneg _)]
   · intro x _
     by_cases hx0 : x = 0
@@ -776,6 +776,10 @@ theorem setToFun_neg (hT : DominatedFinMeasAdditive μ T C) (f : α → E) :
   · rw [setToFun_undef hT hf, setToFun_undef hT, neg_zero]
     rwa [← integrable_neg_iff] at hf
 
+theorem setToFun_neg' (hT : DominatedFinMeasAdditive μ T C) (f : α → E) :
+    setToFun μ (-T) hT.neg f = -setToFun μ T hT f := by
+  simpa using setToFun_smul_left' hT hT.neg (-1) (by simp) f
+
 theorem setToFun_sub (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f μ)
     (hg : Integrable g μ) : setToFun μ T hT (f - g) = setToFun μ T hT f - setToFun μ T hT g := by
   rw [sub_eq_add_neg, sub_eq_add_neg, setToFun_add hT hf hg.neg, setToFun_neg hT g]
@@ -1090,6 +1094,43 @@ theorem setToFun_congr_measure_of_add_left {μ' : Measure α}
   rw [one_smul]
   exact Measure.le_add_left le_rfl
 
+theorem setToFun_add_measure {ν : Measure α} (hTμ : DominatedFinMeasAdditive μ T C)
+    (hTν : DominatedFinMeasAdditive ν T' C') (hμ : Integrable f μ) (hν : Integrable f ν) :
+    setToFun (μ + ν) (T + T') (hTμ.add_measure μ ν hTν) f =
+      setToFun μ T hTμ f + setToFun ν T' hTν f :=
+  have hTμ_add : DominatedFinMeasAdditive (μ + ν) T (max C 0) :=
+    (hTμ.of_le (le_max_left C 0)).add_measure_right μ ν (le_max_right C 0)
+  have hTν_add : DominatedFinMeasAdditive (μ + ν) T' (max C' 0) :=
+    (hTν.of_le (le_max_left C' 0)).add_measure_left μ ν (le_max_right C' 0)
+  calc
+    setToFun (μ + ν) (T + T') (hTμ.add_measure μ ν hTν) f =
+      setToFun (μ + ν) T hTμ_add f + setToFun (μ + ν) T' hTν_add f :=
+        setToFun_add_left hTμ_add hTν_add f
+    _ = setToFun μ T hTμ f + setToFun ν T' hTν f := by
+      rw [setToFun_congr_measure_of_add_right hTμ_add hTμ f (hμ.add_measure hν),
+        setToFun_congr_measure_of_add_left hTν_add hTν f (hμ.add_measure hν)]
+
+theorem setToFun_sub_measure {ν : Measure α} (hTμ : DominatedFinMeasAdditive μ T C)
+    (hTν : DominatedFinMeasAdditive ν T' C') (hμ : Integrable f μ) (hν : Integrable f ν) :
+    setToFun (μ + ν) (T - T') (hTμ.sub_measure μ ν hTν) f =
+      setToFun μ T hTμ f - setToFun ν T' hTν f := by
+  simp [sub_eq_add_neg, setToFun_add_measure hTμ hTν.neg hμ hν, setToFun_neg' hTν]
+
+theorem setToFun_finsetSum_measure {ι} {s : Finset ι} (hs : s.Nonempty)
+    {μ : ι → Measure α} {T : ι → Set α → E →L[ℝ] F} {C : ι → ℝ}
+    (hTs : ∀ i, DominatedFinMeasAdditive (μ i) (T i) (C i))
+    (hf : ∀ i ∈ s, Integrable f (μ i)) :
+    setToFun (∑ i ∈ s, μ i) (∑ i ∈ s, T i)
+      (DominatedFinMeasAdditive.finsetSum_measure hs μ T C hTs) f =
+      ∑ i ∈ s, setToFun (μ i) (T i) (hTs i) f := by
+  induction hs using Finset.Nonempty.cons_induction with
+  | singleton i => simp
+  | @cons i s his hs' ih =>
+    simpa [his, ih fun j hj => hf j (Finset.mem_cons_of_mem hj)] using
+      setToFun_add_measure (hTs i) (DominatedFinMeasAdditive.finsetSum_measure hs' μ T C hTs)
+      (hf i (Finset.mem_cons_self i s))
+      (integrable_finsetSum_measure.2 fun j hj => hf j (Finset.mem_cons_of_mem hj))
+
 theorem setToFun_top_smul_measure (hT : DominatedFinMeasAdditive (∞ • μ) T C) (f : α → E) :
     setToFun (∞ • μ) T hT f = 0 := by
   refine setToFun_measure_zero' hT fun s _ hμs => ?_
@@ -1244,7 +1285,7 @@ theorem tendsto_setToFun_of_dominated_convergence (hT : DominatedFinMeasAdditive
   rw [← Integrable.toL1_sub]
   refine ((fs_int n).sub f_int).coeFn_toL1.mono fun x hx => ?_
   dsimp only
-  rw [hx, ofReal_norm_eq_enorm, Pi.sub_apply]
+  rw [hx, ofReal_norm, Pi.sub_apply]
 
 /-- Lebesgue dominated convergence theorem for filters with a countable basis -/
 theorem tendsto_setToFun_filter_of_dominated_convergence (hT : DominatedFinMeasAdditive μ T C) {ι}

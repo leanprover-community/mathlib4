@@ -207,6 +207,7 @@ theorem mlieBracketWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) :
     mlieBracketWithin I V W s =ᶠ[𝓝 x] mlieBracketWithin I V W t :=
   mlieBracketWithin_eventually_congr_set' x <| h.filter_mono inf_le_left
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Filter.EventuallyEq.mlieBracketWithin_vectorField_eq
     (hV : V₁ =ᶠ[𝓝[s] x] V) (hxV : V₁ x = V x) (hW : W₁ =ᶠ[𝓝[s] x] W) (hxW : W₁ x = W x) :
     mlieBracketWithin I V₁ W₁ s x = mlieBracketWithin I V W s x := by

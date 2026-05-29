@@ -22,13 +22,11 @@ public section
 
 universe u v
 
-variable {R : Type u} [CommRing R] [IsDomain R] {M : Type v} [AddCommGroup M] [Module R M]
+variable {R : Type u} [CommRing R] [IsDedekindDomain R] {M : Type v} [AddCommGroup M] [Module R M]
 
 open scoped DirectSum
 
 namespace Submodule
-
-variable [IsDedekindDomain R]
 
 open UniqueFactorizationMonoid
 
