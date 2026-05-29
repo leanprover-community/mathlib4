@@ -80,7 +80,8 @@ private lemma quad_degree_pos (b c : ℝ) :
   have hne : X ^ 2 + C (b : ℂ) * X + C (c : ℂ) ≠ (0 : ℂ[X]) := by
     intro h; have := congr_arg (Polynomial.coeff · 2) h; simp at this
   have hnd : (X ^ 2 + C (b : ℂ) * X + C (c : ℂ) : ℂ[X]).natDegree = 2 := by
-    rw [show (X ^ 2 + C (b : ℂ) * X + C (c : ℂ) : ℂ[X]) = C 1 * X ^ 2 + C (b : ℂ) * X + C (c : ℂ) by simp]
+    rw [show (X ^ 2 + C (b : ℂ) * X + C (c : ℂ) : ℂ[X]) =
+        C 1 * X ^ 2 + C (b : ℂ) * X + C (c : ℂ) by simp]
     exact natDegree_quadratic (by norm_num : (1 : ℂ) ≠ 0)
   rw [degree_eq_natDegree hne, hnd]; norm_num
 
