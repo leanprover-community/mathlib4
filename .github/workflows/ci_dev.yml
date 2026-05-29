@@ -322,7 +322,40 @@ jobs:
           lake cache put-staged ../lake-cache-staging \
             --scope="${{ env.SHADOW_SCOPE }}" \
             --rev="${{ needs.build_and_stage.outputs.sha }}" \
-            --toolchain="${{ needs.build_and_stage.outputs.toolchain }}"
+            --toolchain="${{ needs.build_and_stage.outputs.toolchain }}" 2>&1 | tee /tmp/put.log
+
+      # Cache carryover analysis: diff this run's uploaded artifact set against
+      # the previous run's, using a tiny per-run manifest kept in the bucket at
+      # cache/analysis/. carryover = artifacts also present last run; new =
+      # this run's churn (≈ how much Mathlib changed since the last build, modulo
+      # toolchain bumps which turn the whole set over). Non-critical: never fails.
+      - name: Cache carryover analysis
+        id: carryover
+        continue-on-error: true
+        env:
+          AUTH: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
+        run: |
+          base="${AUTH%/artifacts}/analysis"
+          sha="${{ needs.build_and_stage.outputs.sha }}"
+          sig=(--aws-sigv4 aws:amz:auto:s3 --user "$LAKE_CACHE_KEY")
+          grep -oE 'uploaded artifact [0-9a-f]+' /tmp/put.log | awk '{print $3}' | sort -u > /tmp/today.txt
+          total=$(wc -l < /tmp/today.txt)
+          summary="carryover: n/a (baseline — no prior manifest)"
+          prev="$(curl -fsS "${sig[@]}" "$base/_latest.txt" 2>/dev/null || true)"
+          if [ -n "$prev" ] && curl -fsS "${sig[@]}" "$base/$prev.txt" 2>/dev/null | sort -u > /tmp/prev.txt && [ -s /tmp/prev.txt ]; then
+            carry=$(comm -12 /tmp/today.txt /tmp/prev.txt | wc -l)
+            new=$(comm -23 /tmp/today.txt /tmp/prev.txt | wc -l)
+            pct=$(awk "BEGIN{printf \"%.1f\", ($total>0)?100*$carry/$total:0}")
+            note=""
+            [ "$total" -gt 0 ] && [ "$new" -eq "$total" ] && note=" — full turnover, likely a toolchain/generation change, not source churn"
+            summary="carryover ${carry}/${total} (${pct}%), ${new} new vs rev ${prev:0:12}${note}"
+          fi
+          echo "::notice::cache ${summary}"
+          echo "summary=${summary}" >> "$GITHUB_OUTPUT"
+          # Persist this run's manifest + advance the pointer (best-effort).
+          printf %s "$sha" > /tmp/latest.txt
+          curl -fsS "${sig[@]}" -X PUT -T /tmp/today.txt  "$base/${sha}.txt"   >/dev/null || echo "::warning::failed to store analysis manifest"
+          curl -fsS "${sig[@]}" -X PUT -T /tmp/latest.txt "$base/_latest.txt"  >/dev/null || echo "::warning::failed to advance analysis pointer"
 
   consume:
     name: Build from Lake cache (no legacy hydration)
