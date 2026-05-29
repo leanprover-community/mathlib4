@@ -64,6 +64,12 @@ class IsLocallyFree (M : SheafOfModules.{u} R) : Prop where
 theorem LocalGeneratorsData.isLocallyFree {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData)
     [q.IsLocallyFreeData] : M.IsLocallyFree := ⟨q.shrink, inferInstance⟩
 
+def locallyFreeData (M : SheafOfModules.{u} R) [M.IsLocallyFree] : M.LocalGeneratorsData :=
+    IsLocallyFree.exists_locallyFreeData.choose
+
+instance (M : SheafOfModules.{u} R) [M.IsLocallyFree] : M.locallyFreeData.IsLocallyFreeData :=
+    IsLocallyFree.exists_locallyFreeData.choose_spec
+
 end
 
 section
@@ -182,7 +188,23 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
   [∀ X, (pushforward.{u} (StructureHomOver φ X)).IsRightAdjoint]
   [F.Final] [(pushforward.{u} φ).IsRightAdjoint]
 
-#check QuasicoherentData.pullback φ
+@[expose, simps]
+protected def LocalGeneratorsData.pullback {M : SheafOfModules.{u} S} (q : M.LocalGeneratorsData) :
+    ((pullback φ).obj M).LocalGeneratorsData where
+  I := q.I
+  X i := F.obj (q.X i)
+  coversTop := q.coversTop.map _ K coverPreserving_of_preservesOneHypercovers
+  generators i := ((q.generators i).map _ (asIso (pullbackObjUnitToUnit _)).symm).ofEpi
+    (M.overPullbackIso φ (q.X i)).hom
+
+set_option backward.isDefEq.respectTransparency false in
+protected instance (priority := 100) LocalGeneratorsData.IsLocallyFreeData.pullback
+    {M : SheafOfModules.{u} S} (q : M.LocalGeneratorsData) [q.IsLocallyFreeData] :
+    (q.pullback φ).IsLocallyFreeData where
+  iso i := by simpa [GeneratingSections.map_π_eq] using (by infer_instance)
+
+protected instance IsLocallyFree.pullback {M : SheafOfModules.{u} S} [M.IsLocallyFree] :
+    ((pullback φ).obj M).IsLocallyFree := (M.locallyFreeData.pullback φ).isLocallyFree
 
 end Pullback
 

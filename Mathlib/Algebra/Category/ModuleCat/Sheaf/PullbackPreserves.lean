@@ -5,12 +5,9 @@ Authors: Brian Nugent
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackFree
-public import Mathlib.AlgebraicGeometry.Modules.Tilde
-public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
+public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
 /-!
 # Over
