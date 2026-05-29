@@ -145,10 +145,10 @@ theorem IsEquivalent.tendsto_nhds_iff {c : β} (huv : u ~[l] v) :
   ⟨huv.tendsto_nhds, huv.symm.tendsto_nhds⟩
 
 theorem IsEquivalent.add_isLittleO (huv : u ~[l] v) (hwv : w =o[l] v) : u + w ~[l] v := by
-  simpa only [IsEquivalent, add_sub_right_comm] using huv.add hwv
+  simpa only [IsEquivalent, add_sub_right_comm] using! huv.add hwv
 
 theorem IsEquivalent.sub_isLittleO (huv : u ~[l] v) (hwv : w =o[l] v) : u - w ~[l] v := by
-  simpa only [sub_eq_add_neg] using huv.add_isLittleO hwv.neg_left
+  simpa only [sub_eq_add_neg] using! huv.add_isLittleO hwv.neg_left
 
 theorem IsLittleO.add_isEquivalent (hu : u =o[l] w) (hv : v ~[l] w) : u + v ~[l] w :=
   add_comm v u ▸ hv.add_isLittleO hu

@@ -519,7 +519,7 @@ lemma _root_.Set.Definable.preimage_map
   have h_graph : A.Definable L { w : α ⊕ β → M | ∀ i, F (w ∘ Sum.inl) i = w (Sum.inr i) } := by
     rw [setOf_forall]
     refine definable_iInter_of_finite fun i => ?_
-    simpa [tupleGraph] using
+    simpa [tupleGraph] using!
       (hF i).preimage_comp (fun | none => Sum.inr i | some j => Sum.inl j)
   have h_cyl : A.Definable L { w : α ⊕ β → M | w ∘ Sum.inr ∈ S } :=
     hS.preimage_comp Sum.inr
@@ -540,9 +540,9 @@ theorem DefinableFun.comp [Finite α] {g : (β → M) → α → M}
     cases i with
     | none => fun_prop
     | some j =>
-      simpa [tupleGraph] using
+      simpa [tupleGraph] using!
         ((hg j).preimage_comp fun | none => none | some i => some (some i))
-  simpa [DefinableFun, G, tupleGraph] using hf.preimage_map hG
+  simpa [DefinableFun, G, tupleGraph] using! hf.preimage_map hG
 
 @[fun_prop]
 theorem DefinableFun.ite {p : (α → M) → Prop} {g} [DecidablePred p]

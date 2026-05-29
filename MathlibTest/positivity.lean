@@ -1,6 +1,6 @@
 import Mathlib.Tactic.Positivity
 import Mathlib.Analysis.Complex.Trigonometric
-import Mathlib.Data.Real.Sqrt
+import Mathlib.Analysis.Real.Sqrt
 import Mathlib.Data.ENNReal.Basic
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
