@@ -537,18 +537,19 @@ theorem nat_casesOn_right {f : α → ℕ} {g : α → σ} {h : α → ℕ →. 
     fun a => by
       rcases e : f a with - | n
       · simp [e]
-      · refine ext fun b => ⟨fun H => ?_, fun H => ?_⟩
-        · simp [e] at H
-          simpa [e] using H.2
-        · simp only [e, PFun.lift_apply, Nat.pred_eq_sub_one, Nat.add_one_sub_one,
-            PFun.mk_apply] at H ⊢
-          have : ∀ m, (Nat.rec (motive := fun _ => Part σ)
-              (Part.some (g a)) (fun _ IH => IH.bind fun _ => h a n) m).Dom := by
-            intro m
-            induction m with
-            | zero => simp
-            | succ m ih => simp [ih, H.fst]
-          exact ⟨⟨this n, H.fst⟩, H.snd⟩
+      · ext b
+        simp only [e, PFun.lift_apply, Nat.pred_eq_sub_one, Nat.add_one_sub_one, PFun.mk_apply]
+        generalize hq : h a n = q
+        change b ∈ Nat.rec (motive := fun _ => Part σ)
+          (Part.some (g a)) (fun _ IH => IH.bind fun _ => q) n.succ ↔ b ∈ q
+        clear e hq
+        constructor
+        · intro H
+          exact (Part.mem_bind_iff.1 H).choose_spec.2
+        · intro H
+          induction n with
+          | zero => exact Part.mem_bind_iff.2 ⟨g a, Part.mem_some_iff.2 rfl, H⟩
+          | succ _ ih => exact Part.mem_bind_iff.2 ⟨b, ih, H⟩
 
 theorem bind_decode₂_iff {f : α →. σ} :
     Partrec f ↔ Nat.Partrec (PFun.mk fun n => Part.bind (decode₂ α n) fun a => (f a).map encode) :=
@@ -778,19 +779,19 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
       induction m generalizing a' with
       | zero => rwa [← Sum.inr.inj (Part.mem_some_iff.1 am)]
       | succ m IH =>
-        rcases Part.mem_bind_iff.1 am with ⟨s, hm, hs⟩
-        cases s with
-        | inl c => exact absurd (Part.mem_some_iff.1 hs) (by simp)
-        | inr a₂ => exact IH _ hm (PFun.mem_fix_iff.2 (Or.inr ⟨_, hs, ba⟩))
+        simp only [Part.mem_bind_iff, Sum.exists, Part.mem_some_iff, reduceCtorEq,
+          and_false, exists_false, false_or, F] at am
+        rcases am with ⟨a₂, am₂, fa₂⟩
+        exact IH _ am₂ (PFun.mem_fix_iff.2 (Or.inr ⟨_, fa₂, ba⟩))
     cases n with
     | zero => exact absurd (Part.mem_some_iff.1 h₂) (by simp)
     | succ n =>
-      rcases Part.mem_bind_iff.1 h₂ with ⟨s, hm, hs⟩
-      cases s with
-      | inl c =>
-        obtain ⟨_, hc'⟩ := h₁ (Nat.lt_succ_self n)
-        exact absurd (Part.mem_unique hm hc') (by simp)
-      | inr a₂ => exact H_ind _ _ hm (PFun.mem_fix_iff.2 (Or.inl hs))
+      simp only [Part.mem_bind_iff, Sum.exists, Part.mem_some_iff, Sum.inl.injEq,
+        exists_eq_right', F] at h₂
+      rcases h₂ with (⟨c, hc⟩ | ⟨a₂, hm, hs⟩)
+      · obtain ⟨_, hc'⟩ := h₁ (Nat.lt_succ_self n)
+        exact absurd (Part.mem_unique ⟨c, hc⟩ hc') (by simp)
+      · exact H_ind _ _ hm (PFun.mem_fix_iff.2 (Or.inl hs))
   · suffices ∀ a', b ∈ PFun.fix f a' → ∀ k, Sum.inr a' ∈ F a k →
         ∃ n, Sum.inl b ∈ F a n ∧ ∀ m < n, k ≤ m → ∃ a₂, Sum.inr a₂ ∈ F a m by
       rcases this _ h 0 (Part.mem_some_iff.2 rfl) with ⟨n, hn₁, hn₂⟩
@@ -799,9 +800,9 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
     apply @PFun.fixInduction _ _ _ _ _ _ h₁
     intro a₂ h₂ IH k hk
     rcases PFun.mem_fix_iff.1 h₂ with (h₂ | ⟨a₃, am₃, _⟩)
-    · refine ⟨k + 1, Part.mem_bind_iff.2 ⟨_, hk, h₂⟩, fun m mk km => ⟨a₂, ?_⟩⟩
+    · refine ⟨k.succ, Part.mem_bind_iff.2 ⟨_, hk, h₂⟩, fun m mk km => ⟨a₂, ?_⟩⟩
       rwa [le_antisymm (Nat.le_of_lt_succ mk) km]
-    · rcases IH _ am₃ (k + 1) (Part.mem_bind_iff.2 ⟨_, hk, am₃⟩) with ⟨n, hn₁, hn₂⟩
+    · rcases IH _ am₃ k.succ (Part.mem_bind_iff.2 ⟨_, hk, am₃⟩) with ⟨n, hn₁, hn₂⟩
       refine ⟨n, hn₁, fun m mn km => ?_⟩
       rcases eq_or_lt_of_le km with rfl | km'
       · exact ⟨a₂, hk⟩
@@ -814,45 +815,24 @@ theorem fix {f : α →. σ ⊕ α} (hf : Partrec f) : Partrec (PFun.fix f) := b
       (fun _ IH => IH.bind fun s => Sum.casesOn (motive := fun _ => Part (σ ⊕ α)) s
       (fun _ => Part.some s) f) n : Part (σ ⊕ α)))
   have hF : Partrec₂ F :=
-    Partrec.of_eq
-      (Partrec.nat_rec Computable.snd (Computable.sumInr.comp Computable.fst).partrec
-        (Partrec.to₂
-          (sumCasesOn_right (Computable.comp Computable.snd Computable.snd)
-            (Computable.comp (Computable.comp Computable.snd Computable.snd) Computable.fst).to₂
-            (Partrec.comp hf Computable.snd).to₂)))
-      (fun _ => rfl)
+    Partrec.nat_rec Computable.snd (Computable.sumInr.comp Computable.fst).partrec
+      (Partrec.to₂
+        (sumCasesOn_right (Computable.comp Computable.snd Computable.snd)
+          (Computable.comp (Computable.comp Computable.snd Computable.snd) Computable.fst).to₂
+          (Partrec.comp hf Computable.snd).to₂))
   let p : α → ℕ →. Bool := fun a => PFun.mk (fun n =>
     (((F a n).map fun s => Sum.casesOn (motive := fun _ => Bool) s
      (fun _ => true) fun _ => false) : Part Bool))
   have hp : Partrec₂ p :=
-    Partrec.of_eq
-      (Partrec.map hF
-        (Computable.comp
-          (sumCasesOn Computable.id (Computable.const true).to₂ (Computable.const false).to₂)
-          Computable.snd).to₂)
-      (fun _ => rfl)
+    Partrec.map hF
+      (Computable.comp
+        (sumCasesOn Computable.id (Computable.const true).to₂ (Computable.const false).to₂)
+        Computable.snd).to₂
   refine Partrec.of_eq
     (Partrec.bind (Partrec.rfind hp)
       (Partrec.bind hF
         (Partrec.to₂ (sumCasesOn_right Computable.snd Computable.snd.to₂ Partrec.none.to₂))).to₂)
     fun a => Part.ext fun b => by
-      simp only [PFun.mk_apply, Part.mem_bind_iff, Nat.mem_rfind, Part.mem_map_iff, p]
-      refine Iff.trans ?_ (fix_aux f a b)
-      constructor
-      · rintro ⟨n, ⟨⟨s, hs, _⟩, hm⟩, s', hs', hb⟩
-        cases s with
-        | inl c =>
-          refine ⟨n, ⟨⟨c, hs⟩, fun mn => ?_⟩, ?_⟩
-          · obtain ⟨s_m, hm_m, _⟩ := hm mn
-            cases s_m with
-            | inl _ => contradiction
-            | inr a_inr => exact ⟨a_inr, hm_m⟩
-          · cases s' with
-            | inl b' => exact (Part.mem_some_iff.1 hb).symm ▸ hs'
-            | inr _ => exact False.elim hb.fst
-        | inr _ => contradiction
-      · rintro ⟨n, ⟨⟨b', hb'⟩, hm⟩, hb⟩
-        refine ⟨n, ⟨⟨Sum.inl b', hb', rfl⟩, fun mn => ?_⟩, Sum.inl b, hb, Part.mem_some_iff.2 rfl⟩
-        let ⟨a_inr, h_inr⟩ := hm mn
-        exact ⟨Sum.inr a_inr, h_inr, rfl⟩
+      simpa [F, PFun.mk_apply, Part.mem_bind_iff, Nat.mem_rfind, Part.mem_map_iff, p] using
+        fix_aux f a b
 end Partrec
