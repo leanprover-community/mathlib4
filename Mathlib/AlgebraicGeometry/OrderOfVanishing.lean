@@ -61,7 +61,7 @@ Because of this definition, `Scheme.ord` is valued in `ℤᵐ⁰`.
 -/
 noncomputable
 def ord (Z : X) (hZ : coheight Z = 1) : X.functionField →*₀ ℤᵐ⁰ :=
-  have : Ring.KrullDimLE 1 _ := krullDimLE_of_coheight hZ
+  have : Ring.KrullDimLE 1 (X.presheaf.stalk Z) := krullDimLE_of_coheight hZ
   Ring.ordFrac (X.presheaf.stalk Z)
 
 /--
