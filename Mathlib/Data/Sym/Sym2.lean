@@ -380,7 +380,7 @@ theorem other_spec {a : α} {z : Sym2 α} (h : a ∈ z) : s(a, Mem.other h) = z 
   (Classical.choose_spec h).symm
 
 theorem other_mem {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.other h ∈ z := by
-  convert mem_mk_right a <| Mem.other h
+  convert! mem_mk_right a <| Mem.other h
   rw [other_spec h]
 
 theorem mem_and_mem_iff {x y : α} {z : Sym2 α} (hne : x ≠ y) : x ∈ z ∧ y ∈ z ↔ z = s(x, y) := by
@@ -687,7 +687,7 @@ def fromRelOrderIso : { r : α → α → Prop // Symmetric r } ≃o Set (Sym2 �
   invFun s := ⟨ToRel s, toRel_symmetric s⟩
   left_inv r := by simp [toRel_fromRel]
   right_inv s := by simp [fromRel_toRel]
-  map_rel_iff' {r₁ r₂} := by simpa using fromRel_mono_iff ..
+  map_rel_iff' {r₁ r₂} := by simpa using! fromRel_mono_iff ..
 
 /-- `fromRel` induces an order embedding from symmetric relations to `Sym2` sets. -/
 @[deprecated fromRelOrderIso (since := "2026-03-11")]
@@ -900,7 +900,7 @@ theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈
     Mem.other hb = a := by
   classical
     rw [other_eq_other'] at hb ⊢
-    convert other_invol' ha hb using 2
+    convert! other_invol' ha hb using 2
     apply other_eq_other'
 
 theorem filter_image_mk_isDiag [DecidableEq α] (s : Finset α) :

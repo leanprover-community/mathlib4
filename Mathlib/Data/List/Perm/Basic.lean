@@ -164,7 +164,7 @@ end Rel
 lemma count_eq_count_filter_add [DecidableEq α] (P : α → Prop) [DecidablePred P]
     (l : List α) (a : α) :
     count a l = count a (l.filter P) + count a (l.filter (¬ P ·)) := by
-  convert countP_eq_countP_filter_add l _ P
+  convert! countP_eq_countP_filter_add l _ P
   simp only [decide_not]
 
 theorem Perm.foldl_eq {f : β → α → β} {l₁ l₂ : List α} [rcomm : RightCommutative f] (p : l₁ ~ l₂) :

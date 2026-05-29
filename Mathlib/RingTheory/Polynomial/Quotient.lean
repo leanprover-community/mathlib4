@@ -233,7 +233,6 @@ lemma quotientEquivQuotientMvPolynomial_rightInverse (I : Ideal R) :
       at hp hq ⊢
     rw [hp, hq]
   · intro p i hp
-    simp only at hp
     simp only [hp, coe_eval₂Hom, Ideal.Quotient.lift_mk, eval₂_mul, map_mul, eval₂_X]
 
 /-- Split off from `quotientEquivQuotientMvPolynomial` for speed. -/

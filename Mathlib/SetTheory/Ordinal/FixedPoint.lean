@@ -141,7 +141,7 @@ theorem derivFamily_zero (f : ι → Ordinal → Ordinal) :
 @[simp]
 theorem derivFamily_add_one (f : ι → Ordinal → Ordinal) (o) :
     derivFamily f (o + 1) = nfpFamily f (derivFamily f o + 1) :=
-  limitRecOn_succ ..
+  limitRecOn_add_one ..
 
 -- TODO: deprecate
 theorem derivFamily_succ (f : ι → Ordinal → Ordinal) (o) :
@@ -171,8 +171,8 @@ theorem derivFamily_fp [Small.{u} ι] {i} (H : IsNormal (f i)) (o : Ordinal) :
   | zero =>
     rw [derivFamily_zero]
     exact nfpFamily_fp H 0
-  | succ =>
-    rw [derivFamily_succ]
+  | add_one =>
+    rw [derivFamily_add_one]
     exact nfpFamily_fp H _
   | limit o l IH =>
     have := l.nonempty_Iio.to_subtype
@@ -194,12 +194,12 @@ theorem le_iff_derivFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a} :
       refine ⟨0, le_antisymm ?_ h₁⟩
       rw [derivFamily_zero]
       exact nfpFamily_le_fp (fun i => (H i).monotone) zero_le ha
-    | succ o IH =>
+    | add_one o IH =>
       intro h₁
       rcases le_or_gt a (derivFamily f o) with h | h
       · exact IH h
-      refine ⟨succ o, le_antisymm ?_ h₁⟩
-      rw [derivFamily_succ]
+      refine ⟨o + 1, le_antisymm ?_ h₁⟩
+      rw [derivFamily_add_one]
       exact nfpFamily_le_fp (fun i => (H i).monotone) (succ_le_of_lt h) ha
     | limit o l IH =>
       intro h₁
@@ -328,7 +328,7 @@ theorem nfp_eq_self {a} (h : f a = a) : nfp f a = a :=
 /-- The fixed point lemma for normal functions: any normal function has an unbounded set of
 fixed points. -/
 theorem not_bddAbove_fp (H : IsNormal f) : ¬ BddAbove (Function.fixedPoints f) := by
-  convert not_bddAbove_fp_family fun _ : Unit => H
+  convert! not_bddAbove_fp_family fun _ : Unit => H
   exact (Set.iInter_const _).symm
 
 /-- The derivative of a normal function `f` is the sequence of fixed points of `f`.
@@ -379,7 +379,7 @@ theorem mem_range_deriv (H : IsNormal f) {a} : a ∈ Set.range (deriv f) ↔ f a
 
 /-- `Ordinal.deriv` enumerates the fixed points of a normal function. -/
 theorem deriv_eq_enumOrd (H : IsNormal f) : deriv f = enumOrd (Function.fixedPoints f) := by
-  convert derivFamily_eq_enumOrd fun _ : Unit => H
+  convert! derivFamily_eq_enumOrd fun _ : Unit => H
   exact (Set.iInter_const _).symm
 
 @[deprecated "do not depend on the junk values of `nfp`" (since := "2026-05-13")]
@@ -420,7 +420,7 @@ theorem nfp_add_eq_mul_omega0 {a b} (hba : b ≤ a * ω) : nfp (a + ·) b = a * 
   apply le_antisymm (nfp_le_fp (isNormal_add_right a).monotone hba _)
   · rw [← nfp_add_zero]
     exact nfp_monotone (isNormal_add_right a).monotone zero_le
-  · dsimp; rw [← mul_one_add, one_add_omega0]
+  · rw [← mul_one_add, one_add_omega0]
 
 theorem add_eq_right_iff_mul_omega0_le {a b : Ordinal} : a + b = b ↔ a * ω ≤ b := by
   refine ⟨fun h => ?_, fun h => ?_⟩
@@ -505,7 +505,7 @@ theorem nfp_mul_opow_omega0_add {a c : Ordinal} (b) (ha : 0 < a) (hc : 0 < c)
   · apply nfp_le_fp (isNormal_mul_right ha).monotone
     · rw [mul_succ]
       gcongr
-    · dsimp only; rw [← mul_assoc, ← opow_one_add, one_add_omega0]
+    · rw [← mul_assoc, ← opow_one_add, one_add_omega0]
   · obtain ⟨d, hd⟩ :=
       mul_eq_right_iff_opow_omega0_dvd.1 (nfp_fp (isNormal_mul_right ha) (a ^ ω * b + c))
     rw [hd]
