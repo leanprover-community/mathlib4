@@ -173,10 +173,12 @@ abbrev inr' (x y : SimplexCategory) : y ⟶ tensorObjOf x y := WithInitial.down 
 set_option backward.isDefEq.respectTransparency false in
 lemma inl'_eval (x y : SimplexCategory) (i : Fin (x.len + 1)) :
     (inl' x y).toOrderHom i = (i.castAdd _).cast (Nat.succ_add x.len (y.len + 1)) := by
-  dsimp [inl', inl, MonoidalCategoryStruct.rightUnitor, MonoidalCategoryStruct.whiskerLeft,
-    tensorHom, WithInitial.down, rightUnitor, tensorObj]
   ext
-  simp [OrderEmbedding.toOrderHom]
+  simp [inl', inl, MonoidalCategoryStruct.rightUnitor, MonoidalCategoryStruct.whiskerLeft,
+    MonoidalCategoryStruct.tensorUnit, MonoidalCategoryStruct.tensorObj,
+    tensorUnit, tensorHom, WithInitial.down, rightUnitor, tensorObj, CategoryStruct.id,
+    CategoryStruct.comp, WithInitial.comp, WithInitial.id,
+    OrderEmbedding.toOrderHom]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma inr'_eval (x y : SimplexCategory) (i : Fin (y.len + 1)) :
@@ -219,7 +221,6 @@ theorem tensorObj_hom_ext {x y z : AugmentedSimplexCategory} (f g : x ⊗ y ⟶ 
   | .star, .star, .of z, f, g => rfl
   | .star, .star, .star, f, g => rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
     (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) : inl x₁ x₂ ≫ (f₁ ⊗ₘ f₂) = f₁ ≫ inl y₁ y₂ :=
@@ -245,7 +246,6 @@ lemma inl_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
   | _, _, .star, _, f₁, f₂ => by cat_disch
   | .star, _, _, _, _, _ => rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
     (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) : inr x₁ x₂ ≫ (f₁ ⊗ₘ f₂) = f₂ ≫ inr y₁ y₂ :=

@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Jens Wagemaker
 -/
 module
 
+public import Mathlib.Algebra.Order.IsBotOne
 public import Mathlib.Algebra.Prime.Lemmas
 public import Mathlib.Order.BoundedOrder.Basic
 
@@ -173,7 +174,7 @@ theorem Associated.mul_mul [CommMonoid M] {a₁ a₂ b₁ b₂ : M}
 theorem Associated.pow_pow [CommMonoid M] {a b : M} {n : ℕ} (h : a ~ᵤ b) : a ^ n ~ᵤ b ^ n := by
   induction n with
   | zero => simp [Associated.refl]
-  | succ n ih => convert h.mul_mul ih <;> rw [pow_succ']
+  | succ n ih => convert! h.mul_mul ih <;> rw [pow_succ']
 
 protected theorem Associated.dvd [Monoid M] {a b : M} : a ~ᵤ b → a ∣ b := fun ⟨u, hu⟩ =>
   ⟨u, hu.symm⟩
@@ -338,7 +339,7 @@ theorem Associated.of_pow_associated_of_prime' [CommMonoidWithZero M] [IsCancelM
 lemma Irreducible.isRelPrime_iff_not_dvd [Monoid M] {p n : M} (hp : Irreducible p) :
     IsRelPrime p n ↔ ¬ p ∣ n := by
   refine ⟨fun h contra ↦ hp.not_isUnit (h dvd_rfl contra), fun hpn d hdp hdn ↦ ?_⟩
-  contrapose! hpn
+  contrapose hpn
   suffices Associated p d from this.dvd.trans hdn
   exact (hp.dvd_iff.mp hdp).resolve_left hpn
 
@@ -523,17 +524,20 @@ theorem mul_mono {a b c d : Associates M} (h₁ : a ≤ b) (h₂ : c ≤ d) : a 
   let ⟨y, hy⟩ := h₂
   ⟨x * y, by simp [hx, hy, mul_comm, mul_left_comm]⟩
 
-theorem one_le {a : Associates M} : 1 ≤ a :=
-  Dvd.intro _ (one_mul a)
+instance : IsBotOneClass (Associates M) where
+  isBot_one a := Dvd.intro _ (one_mul a)
+
+instance instOrderBot : OrderBot (Associates M) where
+  bot_le _ := one_le
+
+@[deprecated _root_.one_le (since := "2026-05-07")]
+protected theorem one_le {a : Associates M} : 1 ≤ a :=
+  one_le
 
 theorem le_mul_right {a b : Associates M} : a ≤ a * b :=
   ⟨b, rfl⟩
 
 theorem le_mul_left {a b : Associates M} : a ≤ b * a := by rw [mul_comm]; exact le_mul_right
-
-instance instOrderBot : OrderBot (Associates M) where
-  bot := 1
-  bot_le _ := one_le
 
 end Order
 
@@ -555,7 +559,6 @@ theorem mk_le_mk_of_dvd {a b : M} : a ∣ b → Associates.mk a ≤ Associates.m
 
 theorem mk_le_mk_iff_dvd {a b : M} : Associates.mk a ≤ Associates.mk b ↔ a ∣ b := mk_dvd_mk
 
-
 @[simp]
 theorem isPrimal_mk {a : M} : IsPrimal (Associates.mk a) ↔ IsPrimal a := by
   simp_rw [IsPrimal, forall_associated, mk_surjective.exists, mk_mul_mk, mk_dvd_mk]
@@ -563,7 +566,6 @@ theorem isPrimal_mk {a : M} : IsPrimal (Associates.mk a) ↔ IsPrimal a := by
   · obtain ⟨u, rfl⟩ := mk_eq_mk_iff_associated.mp eq.symm
     exact ⟨a₁, a₂ * u, h₁, Units.mul_right_dvd.mpr h₂, mul_assoc _ _ _⟩
   · exact ⟨a₁, a₂, h₁, h₂, congr_arg _ eq⟩
-
 
 @[simp]
 theorem decompositionMonoid_iff : DecompositionMonoid (Associates M) ↔ DecompositionMonoid M := by
@@ -669,7 +671,7 @@ theorem dvdNotUnit_of_lt {a b : Associates M} (hlt : a < b) : DvdNotUnit a b := 
     apply dvd_zero
   rcases hlt with ⟨⟨x, rfl⟩, ndvd⟩
   refine ⟨x, ?_, rfl⟩
-  contrapose! ndvd
+  contrapose ndvd
   rcases ndvd with ⟨u, rfl⟩
   simp
 

@@ -27,7 +27,7 @@ morphism of finite presentation is étale.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

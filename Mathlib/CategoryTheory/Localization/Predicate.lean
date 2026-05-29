@@ -232,6 +232,7 @@ the composition with a localization functor `L : C ⥤ D` with respect to
 def functorEquivalence : D ⥤ E ≌ W.FunctorsInverting E :=
   (whiskeringLeftFunctor L W E).asEquivalence
 
+set_option linter.overlappingInstances false in
 /-- The functor `(D ⥤ E) ⥤ (C ⥤ E)` given by the composition with a localization
 functor `L : C ⥤ D` with respect to `W : MorphismProperty C`. -/
 @[nolint unusedArguments]
@@ -290,8 +291,6 @@ is commutative up to an isomorphism. -/
 class Lifting (L : C ⥤ D) (W : MorphismProperty C) (F : C ⥤ E) (F' : D ⥤ E) where
   /-- the isomorphism relating the localization functor and the two other given functors -/
   iso (L W F F') : L ⋙ F' ≅ F
-
-@[deprecated (since := "2025-08-22")] alias Lifting.iso' := Lifting.iso
 
 variable {W}
 

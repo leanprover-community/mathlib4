@@ -24,7 +24,7 @@ results about the `R`-Hopf algebra instance on `A[G]`, building upon results in
   is a group scheme.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -46,7 +46,6 @@ lemma antipode_single (g : G) (a : A) :
     antipode R (single g a) = single g⁻¹ (antipode R a) := by
   simp [MonoidAlgebra, antipode]
 
-set_option backward.isDefEq.respectTransparency false in
 open Coalgebra in
 @[to_additive (dont_translate := R A)]
 instance instHopfAlgebra : HopfAlgebra R A[G] where

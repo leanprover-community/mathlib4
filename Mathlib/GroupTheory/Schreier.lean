@@ -167,6 +167,7 @@ theorem rank_le_index_mul_rank [hG : Group.FG G] [FiniteIndex H] :
 
 variable (G)
 
+open scoped IsMulCommutative in
 /-- If `G` has `n` commutators `[g₁, g₂]`, then `|G'| ∣ [G : Z(G)] ^ ([G : Z(G)] * n + 1)`,
 where `G'` denotes the commutator of `G`. -/
 theorem card_commutator_dvd_index_center_pow [Finite (commutatorSet G)] :

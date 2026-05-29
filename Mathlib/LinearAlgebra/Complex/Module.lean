@@ -109,6 +109,15 @@ instance : StarModule ℝ ℂ :=
 theorem coe_algebraMap : (algebraMap ℝ ℂ : ℝ → ℂ) = ((↑) : ℝ → ℂ) :=
   rfl
 
+example : (Semiring.toNatAlgebra : Algebra ℕ ℂ) = Complex.instAlgebraOfReal := by
+  with_reducible_and_instances rfl
+
+example : (Ring.toIntAlgebra ℂ : Algebra ℤ ℂ) = Complex.instAlgebraOfReal := by
+  with_reducible_and_instances rfl
+
+example : Module.restrictScalars ℝ ℂ ℂ = Complex.instModule := by
+  with_reducible_and_instances rfl
+
 section
 
 variable {A : Type*} [Semiring A] [Algebra ℝ A]
@@ -158,13 +167,13 @@ end Complex
 vector space. -/
 instance (priority := 900) Module.complexToReal (E : Type*) [AddCommGroup E] [Module ℂ E] :
     Module ℝ E :=
-  RestrictScalars.module ℝ ℂ E
+  .restrictScalars ℝ ℂ E
 
 /-- Register as an instance (with low priority) the fact that a complex algebra is also a real
 algebra. -/
 instance (priority := 900) Algebra.complexToReal {A : Type*} [Semiring A] [Algebra ℂ A] :
     Algebra ℝ A :=
-  RestrictScalars.algebra ℝ ℂ A
+  .restrictScalars ℝ ℂ A
 
 -- try to make sure we're not introducing diamonds but we will need
 -- `reducible_and_instances` which currently fails https://github.com/leanprover-community/mathlib4/issues/10906
@@ -200,7 +209,6 @@ instance IsScalarTower.complexToReal {M E : Type*} [AddCommGroup M] [Module ℂ 
 -- check that the following instance is implied by the one above.
 example (E : Type*) [AddCommGroup E] [Module ℂ E] : IsScalarTower ℝ ℂ E := inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := 900) StarModule.complexToReal {E : Type*} [AddCommGroup E] [Star E]
     [Module ℂ E] [StarModule ℂ E] : StarModule ℝ E :=
   ⟨fun r a => by rw [← smul_one_smul ℂ r a, star_smul, star_smul, star_one, smul_one_smul]⟩
@@ -209,7 +217,6 @@ namespace Complex
 
 open ComplexConjugate
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Linear map version of the real part function, from `ℂ` to `ℝ`. -/
 def reLm : ℂ →ₗ[ℝ] ℝ where
   toFun x := x.re
@@ -220,7 +227,6 @@ def reLm : ℂ →ₗ[ℝ] ℝ where
 theorem reLm_coe : ⇑reLm = re :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Linear map version of the imaginary part function, from `ℂ` to `ℝ`. -/
 def imLm : ℂ →ₗ[ℝ] ℝ where
   toFun x := x.im
@@ -251,11 +257,10 @@ def conjAe : ℂ ≃ₐ[ℝ] ℂ :=
 theorem conjAe_coe : ⇑conjAe = conj :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The matrix representation of `conjAe`. -/
 @[simp]
 theorem toMatrix_conjAe :
-    LinearMap.toMatrix basisOneI basisOneI conjAe.toLinearMap = !![1, 0; 0, -1] := by
+    conjAe.toLinearEquiv.toLinearMap.toMatrix basisOneI basisOneI = !![1, 0; 0, -1] := by
   ext i j
   fin_cases i <;> fin_cases j <;> simp [LinearMap.toMatrix_apply]
 
@@ -266,7 +271,6 @@ theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ 
     refine fun h => algHom_ext ?_
   exacts [h, conj_I.symm ▸ h]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural `LinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
 @[simps! +simpRhs apply symm_apply_re symm_apply_im]
 def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
@@ -275,9 +279,12 @@ def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
 
 theorem equivRealProdLm_symm_apply (p : ℝ × ℝ) :
     Complex.equivRealProdLm.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
+
 section lift
 
 variable {A : Type*} [Ring A] [Algebra ℝ A]
+
+open Algebra
 
 /-- There is an `AlgHom` from `ℂ` to any `ℝ`-algebra with an element that squares to `-1`.
 
@@ -285,18 +292,20 @@ See `Complex.lift` for this as an equiv. -/
 def liftAux (I' : A) (hf : I' * I' = -1) : ℂ →ₐ[ℝ] A :=
   AlgHom.ofLinearMap
     ((Algebra.linearMap ℝ A).comp reLm + (LinearMap.toSpanSingleton _ _ I').comp imLm)
-    (show algebraMap ℝ A 1 + (0 : ℝ) • I' = 1 by rw [map_one, zero_smul, add_zero])
-    fun ⟨x₁, y₁⟩ ⟨x₂, y₂⟩ =>
-    show
-      algebraMap ℝ A (x₁ * x₂ - y₁ * y₂) + (x₁ * y₂ + y₁ * x₂) • I' =
-        (algebraMap ℝ A x₁ + y₁ • I') * (algebraMap ℝ A x₂ + y₂ • I') by
-      rw [add_mul, mul_add, mul_add, add_comm _ (y₁ • I' * y₂ • I'), add_add_add_comm]
-      congr 1
-      -- equate "real" and "imaginary" parts
-      · rw [smul_mul_smul_comm, hf, smul_neg, ← Algebra.algebraMap_eq_smul_one, ← sub_eq_add_neg,
-          ← map_mul, ← map_sub]
-      · rw [Algebra.smul_def, Algebra.smul_def, Algebra.smul_def, ← Algebra.right_comm _ x₂,
-          ← mul_assoc, ← add_mul, ← map_mul, ← map_mul, ← map_add]
+    (show algebraMap ℝ A 1 + (0 : ℝ) • I' = 1 by rw [map_one, zero_smul, add_zero]) ?_
+where finally
+  rintro ⟨x₁, y₁⟩ ⟨x₂, y₂⟩
+  rw [mk_mul_mk]
+  change
+    algebraMap ℝ A (x₁ * x₂ - y₁ * y₂) + (x₁ * y₂ + y₁ * x₂) • I' =
+      (algebraMap ℝ A x₁ + y₁ • I') * (algebraMap ℝ A x₂ + y₂ • I')
+  rw [add_mul, mul_add, mul_add, add_comm _ (y₁ • I' * y₂ • I'), add_add_add_comm]
+  congr 1
+  -- equate "real" and "imaginary" parts
+  · rw [smul_mul_smul_comm, hf, smul_neg, ← algebraMap_eq_smul_one, ← sub_eq_add_neg,
+      ← map_mul, ← map_sub]
+  · rw [smul_def, smul_def, smul_def, ← right_comm _ x₂,
+      ← mul_assoc, ← add_mul, ← map_mul, ← map_mul, ← map_add]
 
 @[simp]
 theorem liftAux_apply (I' : A) (hI') (z : ℂ) : liftAux I' hI' z = algebraMap ℝ A z.re + z.im • I' :=
@@ -305,13 +314,13 @@ theorem liftAux_apply (I' : A) (hI') (z : ℂ) : liftAux I' hI' z = algebraMap �
 theorem liftAux_apply_I (I' : A) (hI') : liftAux I' hI' I = I' := by simp
 
 @[simp]
-theorem adjoin_I : Algebra.adjoin ℝ {I} = ⊤ := by
+theorem adjoin_I : ℝ[I] = ⊤ := by
   refine top_unique fun x hx => ?_; clear hx
   rw [← x.re_add_im, ← smul_eq_mul, ← Complex.coe_algebraMap]
-  exact add_mem (algebraMap_mem _ _) (Subalgebra.smul_mem _ (Algebra.subset_adjoin <| by simp) _)
+  exact add_mem (algebraMap_mem _ _) (Subalgebra.smul_mem _ (subset_adjoin <| by simp) _)
 
 @[simp]
-theorem range_liftAux (I' : A) (hI') : (liftAux I' hI').range = Algebra.adjoin ℝ {I'} := by
+theorem range_liftAux (I' : A) (hI') : (liftAux I' hI').range = ℝ[I'] := by
   simp_rw [← Algebra.map_top, ← adjoin_I, AlgHom.map_adjoin, Set.image_singleton, liftAux_apply_I]
 
 /-- A universal property of the complex numbers, providing a unique `ℂ →ₐ[ℝ] A` for every element
@@ -508,7 +517,6 @@ end AddCommGroup
 
 open scoped ComplexStarModule
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural `ℝ`-linear equivalence between `selfAdjoint ℂ` and `ℝ`. -/
 @[simps apply symm_apply]
 def Complex.selfAdjointEquiv : selfAdjoint ℂ ≃ₗ[ℝ] ℝ where

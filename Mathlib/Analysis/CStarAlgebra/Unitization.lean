@@ -18,7 +18,7 @@ involution is isometric, that multiplication on the right is also an isometry (i
 `Isometry (ContinuousLinearMap.mul 𝕜 E).flip`).
 -/
 
-@[expose] public section
+public section
 
 open ContinuousLinearMap
 
@@ -56,7 +56,6 @@ variable [DenselyNormedField 𝕜] [NonUnitalNormedRing E] [StarRing E] [CStarRi
 variable [NormedSpace 𝕜 E] [IsScalarTower 𝕜 E E] [SMulCommClass 𝕜 E E]
 variable (E)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A C⋆-algebra over a densely normed field is a regular normed algebra. -/
 instance CStarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
   isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 E) fun a => NNReal.eq_iff.mp <|
@@ -68,7 +67,7 @@ instance CStarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
       exact
         ((mul 𝕜 E a).unit_le_opNorm x <| mem_closedBall_zero_iff.mp hx).trans
           (opNorm_mul_apply_le 𝕜 E a)
-    · have ha : 0 < ‖a‖₊ := zero_le'.trans_lt hr
+    · have ha : 0 < ‖a‖₊ := hr.pos
       rw [← inv_inv ‖a‖₊, NNReal.lt_inv_iff_mul_lt (inv_ne_zero ha.ne')] at hr
       obtain ⟨k, hk₁, hk₂⟩ :=
         NormedField.exists_lt_nnnorm_lt 𝕜 (mul_lt_mul_of_pos_right hr <| inv_pos.2 ha)
@@ -128,7 +127,6 @@ theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
 variable {𝕜}
 variable [CStarRing 𝕜]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The norm on `Unitization 𝕜 E` satisfies the C⋆-property -/
 instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
   norm_mul_self_le x := by
@@ -180,7 +178,6 @@ instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
 unital, `A⁺¹ ≃⋆ₐ[ℂ] (ℂ × A)`. -/
 scoped[CStarAlgebra] postfix:max "⁺¹" => Unitization ℂ
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance Unitization.instCStarAlgebra {A : Type*} [NonUnitalCStarAlgebra A] :
     CStarAlgebra (Unitization ℂ A) where
 

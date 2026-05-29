@@ -22,8 +22,7 @@ This file contains results in number theory relating to multiplicity.
 
 ## References
 
-* [Wikipedia, *Lifting-the-exponent lemma*]
-  (https://en.wikipedia.org/wiki/Lifting-the-exponent_lemma)
+* [Wikipedia, *Lifting-the-exponent lemma*](https://en.wikipedia.org/wiki/Lifting-the-exponent_lemma)
 -/
 
 public section
@@ -59,7 +58,7 @@ theorem sq_dvd_add_pow_sub_sub (p x : R) (n : ℕ) :
       Nat.cast_succ, tsub_self, pow_zero, mul_one, Nat.choose_self, Nat.cast_zero, zero_add,
       Nat.succ_sub_succ_eq_sub, Nat.sub_zero]
     suffices p ^ 2 ∣ ∑ i ∈ range n, x ^ i * p ^ (n + 1 - i) * ↑((n + 1).choose i) by
-      convert this; abel
+      convert! this; abel
     apply Finset.dvd_sum
     intro y hy
     calc
@@ -137,7 +136,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
       rw [mul_assoc, mul_assoc]
       refine mul_eq_zero_of_left ?_ _
       refine Ideal.Quotient.eq_zero_iff_mem.mpr ?_
-      simp [s, mem_span_singleton]
+      simp [s]
 
 section IntegralDomain
 
@@ -187,7 +186,6 @@ section LiftingTheExponent
 variable (hp : Nat.Prime p) (hp1 : Odd p)
 include hp hp1
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Lifting the exponent lemma** for odd primes. -/
 theorem Int.emultiplicity_pow_sub_pow {x y : ℤ} (hxy : ↑p ∣ x - y) (hx : ¬↑p ∣ x) (n : ℕ) :
     emultiplicity (↑p) (x ^ n - y ^ n) = emultiplicity (↑p) (x - y) + emultiplicity p n := by
@@ -215,7 +213,6 @@ theorem Int.emultiplicity_pow_add_pow {x y : ℤ} (hxy : ↑p ∣ x + y) (hx : �
   rw [← sub_neg_eq_add, ← sub_neg_eq_add, ← Odd.neg_pow hn]
   exact Int.emultiplicity_pow_sub_pow hp hp1 hxy hx n
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Nat.emultiplicity_pow_sub_pow {x y : ℕ} (hxy : p ∣ x - y) (hx : ¬p ∣ x) (n : ℕ) :
     emultiplicity p (x ^ n - y ^ n) = emultiplicity p (x - y) + emultiplicity p n := by
   obtain hyx | hyx := le_total y x
@@ -291,7 +288,6 @@ theorem Int.two_pow_two_pow_sub_pow_two_pow {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x
     Finset.emultiplicity_prod Int.prime_two, add_comm, Nat.cast_one, Finset.sum_const,
     Finset.card_range, nsmul_one, Int.two_pow_two_pow_add_two_pow_two_pow hx hxy]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2 ∣ x) :
     emultiplicity 2 (x ^ n - y ^ n) = emultiplicity 2 (x - y) + emultiplicity (2 : ℤ) n := by
   have hx_odd : Odd x := by rwa [← Int.not_even_iff_odd, even_iff_two_dvd]
@@ -310,7 +306,7 @@ theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2
   · simpa only [even_iff_two_dvd] using hx_odd.pow.sub_odd hy_odd.pow
   · simpa only [even_iff_two_dvd, ← Int.not_even_iff_odd] using hx_odd.pow
   norm_cast
-  contrapose! hpn
+  contrapose hpn
   rw [pow_succ]
   conv_rhs => rw [hk]
   exact mul_dvd_mul_left _ hpn
@@ -322,10 +318,9 @@ theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 
   have hy : Odd y := by
     rw [← even_iff_two_dvd, Int.not_even_iff_odd] at hx
     replace hxy := (@even_neg _ _ (x - y)).mpr (even_iff_two_dvd.mpr hxy)
-    convert Even.add_odd hxy hx
+    convert! Even.add_odd hxy hx
     abel
-  obtain ⟨d, hd⟩ := hn
-  subst hd
+  obtain ⟨d, rfl⟩ := hn
   simp only [← two_mul, pow_mul]
   have hxy4 : 4 ∣ x ^ 2 - y ^ 2 := by
     rw [Int.dvd_iff_emod_eq_zero, Int.sub_emod, Int.sq_mod_four_eq_one_of_odd _,
@@ -343,7 +338,6 @@ theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 
     apply Odd.pow
     simp only [← Int.not_even_iff_odd, even_iff_two_dvd, hx, not_false_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Nat.two_pow_sub_pow {x y : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : ℕ} (hn : Even n) :
     emultiplicity 2 (x ^ n - y ^ n) + 1 =
       emultiplicity 2 (x + y) + emultiplicity 2 (x - y) + emultiplicity 2 n := by
@@ -353,7 +347,7 @@ theorem Nat.two_pow_sub_pow {x y : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n 
       Int.natCast_pow]
     rw [← Int.natCast_dvd_natCast] at hx
     rw [← Int.natCast_dvd_natCast, Int.ofNat_sub hyx] at hxy
-    convert Int.two_pow_sub_pow hxy hx hn using 2
+    convert! Int.two_pow_sub_pow hxy hx hn using 2
     rw [← Int.natCast_emultiplicity]
     rfl
   · simp only [Nat.sub_eq_zero_iff_le.mpr hyx,
@@ -364,7 +358,6 @@ namespace padicValNat
 
 variable {x y : ℕ}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : ℕ} (hn : n ≠ 0)
     (hneven : Even n) :
     padicValNat 2 (x ^ n - y ^ n) + 1 =
@@ -394,7 +387,6 @@ lemma pow_two_sub_one_ge (h1x : 1 < x) (hx : ¬2 ∣ x) (hn : n ≠ 0) (hneven :
 variable {p : ℕ} [hp : Fact p.Prime] (hp1 : Odd p)
 include hp hp1
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ} (hn : n ≠ 0) :
     padicValNat p (x ^ n - y ^ n) = padicValNat p (x - y) + padicValNat p n := by
   rw [← Nat.cast_inj (R := ℕ∞), Nat.cast_add]
@@ -404,7 +396,6 @@ theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ}
   · exact Nat.sub_ne_zero_of_lt hyx
   · exact Nat.sub_ne_zero_of_lt (Nat.pow_lt_pow_left hyx hn)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) :
     padicValNat p (x ^ n + y ^ n) = padicValNat p (x + y) + padicValNat p n := by
   rcases y with - | y
@@ -413,7 +404,7 @@ theorem pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) 
   iterate 3 rw [padicValNat_eq_emultiplicity]
   · exact Nat.emultiplicity_pow_add_pow hp.out hp1 hxy hx hn
   · exact (Odd.pos hn).ne'
-  · simp only [← Nat.pos_iff_ne_zero, add_pos_iff, Nat.succ_pos', or_true]
+  · simp
   · exact (Nat.lt_add_left _ (pow_pos y.succ_pos _)).ne'
 
 end padicValNat

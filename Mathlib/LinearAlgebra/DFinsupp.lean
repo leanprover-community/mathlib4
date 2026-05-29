@@ -575,7 +575,7 @@ theorem iSupIndep_iff_dfinsupp_lsum_injective (p : ι → Submodule R N) :
   ⟨iSupIndep.dfinsupp_lsum_injective, iSupIndep_of_dfinsupp_lsum_injective p⟩
 
 omit [DecidableEq ι] in
-theorem iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero (p : ι → Submodule R N) :
+theorem iSupIndep_iff_finsetSum_eq_zero_imp_eq_zero (p : ι → Submodule R N) :
     iSupIndep p ↔ ∀ (s : Finset ι) (v : ι → N),
     (∀ i ∈ s, v i ∈ p i) → (∑ i ∈ s, v i = 0) → ∀ i ∈ s, v i = 0 := by
   classical
@@ -599,17 +599,23 @@ theorem iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero (p : ι → Submodule R N) 
       simp at hf
       grind [Finsupp.sum, Finset.sum_congr]
 
+@[deprecated (since := "2026-04-08")]
+alias iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero := iSupIndep_iff_finsetSum_eq_zero_imp_eq_zero
+
 omit [DecidableEq ι] in
-theorem iSupIndep_iff_finset_sum_eq_imp_eq (p : ι → Submodule R N) :
+theorem iSupIndep_iff_finsetSum_eq_imp_eq (p : ι → Submodule R N) :
     iSupIndep p ↔ ∀ (s : Finset ι) (v w : ι → N),
     (∀ i ∈ s, v i ∈ p i ∧ w i ∈ p i) → (∑ i ∈ s, v i = ∑ i ∈ s, w i) → ∀ i ∈ s, v i = w i := by
-  rw [iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero]
+  rw [iSupIndep_iff_finsetSum_eq_zero_imp_eq_zero]
   constructor
   · intro h s v w hvw
     simpa [sub_eq_zero] using h s (v - w) fun i hi => (p i).sub_mem (hvw i hi).1 (hvw i hi).2
   · intro h s v hv hv0
     specialize h s v 0
     simp_all
+
+@[deprecated (since := "2026-04-08")]
+alias iSupIndep_iff_finset_sum_eq_imp_eq := iSupIndep_iff_finsetSum_eq_imp_eq
 
 /-- A family of additive subgroups over an additive group are independent if and only if
 `DFinsupp.sumAddHom` applied with `AddSubgroup.subtype` is injective. -/

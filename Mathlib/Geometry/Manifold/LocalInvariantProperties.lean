@@ -184,6 +184,15 @@ theorem liftProp_iff {P : (H → H') → Set H → H → Prop} {f : M → M'} :
       Continuous f ∧ ∀ x, P (chartAt H' (f x) ∘ f ∘ (chartAt H x).symm) univ (chartAt H x x) := by
   simp_rw [LiftProp, liftPropAt_iff, forall_and, continuous_iff_continuousAt]
 
+@[simp]
+lemma liftPropWithinAt_subtypeVal_comp_iff {P : (H → H') → Set H → H → Prop}
+    {U : Opens M'} (f : M → U) (s : Set M) (x : M) :
+    LiftPropWithinAt P (Subtype.val ∘ f) s x ↔ LiftPropWithinAt P f s x := by
+  simp only [ChartedSpace.liftPropWithinAt_iff']
+  congrm ?_ ∧ ?_
+  · exact Topology.IsEmbedding.subtypeVal.isInducing.continuousWithinAt_iff.symm
+  · rfl
+
 end ChartedSpace
 
 open ChartedSpace
@@ -328,7 +337,7 @@ theorem liftPropOn_indep_chart [HasGroupoid M G] [HasGroupoid M' G'] (he : e ∈
     (hf : f ∈ G'.maximalAtlas M') (h : LiftPropOn P g s) {y : H}
     (hy : y ∈ e.target ∩ e.symm ⁻¹' (s ∩ g ⁻¹' f.source)) :
     P (f ∘ g ∘ e.symm) (e.symm ⁻¹' s) y := by
-  convert ((hG.liftPropWithinAt_indep_chart he (e.symm_mapsTo hy.1) hf hy.2.2).1 (h _ hy.2.1)).2
+  convert! ((hG.liftPropWithinAt_indep_chart he (e.mapsTo_symm hy.1) hf hy.2.2).1 (h _ hy.2.1)).2
   rw [e.right_inv hy.1]
 
 theorem liftPropWithinAt_inter' (ht : t ∈ 𝓝[s] x) :

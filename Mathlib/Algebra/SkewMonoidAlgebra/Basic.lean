@@ -1078,7 +1078,7 @@ theorem mapDomain_mul [MulSemiringAction α β] [MulSemiringAction α₂ β]
     ext a b c
     rw [sum_mapDomain_index (by simp) (by simp [smul_add, mul_add, single_add])]
     simp_rw [hf]
-  convert this using 4
+  convert! this using 4
   rw [map_sum]
 
 /-- If f : G → H is a multiplicative homomorphism between two monoids and

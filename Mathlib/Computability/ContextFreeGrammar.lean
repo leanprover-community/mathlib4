@@ -224,7 +224,7 @@ lemma derives_nonterminal {t : g.NT} (hgt : ∀ r ∈ g.rules, r.input ≠ t)
     (s : List (Symbol T g.NT)) (hs : s ≠ [.nonterminal t]) :
     ¬g.Derives [.nonterminal t] s := by
   rw [derives_iff_eq_or_head]
-  push_neg
+  push Not
   refine ⟨hs.symm, fun _ hx ↦ ?_⟩
   have hxr := hx.exists_nonterminal_input_mem
   simp_rw [List.mem_singleton, Symbol.nonterminal.injEq] at hxr
@@ -316,7 +316,7 @@ protected lemma Derives.reverse (hg : g.Derives u v) : g.reverse.Derives u.rever
   | tail _ orig ih => exact ih.trans_produces orig.reverse
 
 lemma derives_reverse : g.reverse.Derives u.reverse v.reverse ↔ g.Derives u v :=
-  ⟨fun h ↦ by convert h.reverse <;> simp, .reverse⟩
+  ⟨fun h ↦ by convert! h.reverse <;> simp, .reverse⟩
 
 @[simp] lemma derives_reverse_comm : g.reverse.Derives u v ↔ g.Derives u.reverse v.reverse := by
   rw [iff_comm, ← derives_reverse, List.reverse_reverse, List.reverse_reverse]
@@ -333,7 +333,18 @@ alias ⟨_, Generates.reverse⟩ := generates_reverse
 end ContextFreeGrammar
 
 /-- The class of context-free languages is closed under reversal. -/
-theorem Language.IsContextFree.reverse (L : Language T) :
-    L.IsContextFree → L.reverse.IsContextFree := by rintro ⟨g, rfl⟩; exact ⟨g.reverse, by simp⟩
+protected theorem Language.IsContextFree.reverse {L : Language T} (h : L.IsContextFree) :
+    L.reverse.IsContextFree := by
+  rcases h with ⟨g, rfl⟩
+  exact ⟨g.reverse, by simp⟩
+
+protected theorem Language.IsContextFree.of_reverse {L : Language T} (h : L.reverse.IsContextFree) :
+    L.IsContextFree := by
+  simpa using h.reverse
+
+@[simp]
+theorem Language.isContextFree_reverse {L : Language T} :
+    L.reverse.IsContextFree ↔ L.IsContextFree :=
+  ⟨.of_reverse, .reverse⟩
 
 end closure_reversal
