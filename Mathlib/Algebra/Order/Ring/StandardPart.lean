@@ -182,6 +182,7 @@ theorem mk_lt_mk {x y : FiniteElement K} : mk x < mk y ↔ x < y ∧ mk x ≠ mk
 theorem lt_of_mk_lt_mk {x y : FiniteElement K} (h : mk x < mk y) : x < y :=
   (mk_lt_mk.1 h).1
 
+-- CGH_TODO
 private theorem mul_le_mul_of_nonneg_left' {x y z : FiniteResidueField K} (h : x ≤ y) (hz : 0 ≤ z) :
     z * x ≤ z * y := by
   induction x with | mk x
