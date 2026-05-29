@@ -73,7 +73,6 @@ example (a b c : G) (h : a * (b * a * c) * c = a * (b⁻¹ * (c * a)) * c) :  b 
   guard_hyp h : b * a * c = b⁻¹ * c * a
   exact h
 
-
 -- The next example can be expanded to require an arbitrarily high number of alternations
 -- between simp and ring
 example (n m : ℤ) (a b : G) : a^(m-n)*b^(m-n)*b^(n-m)*a^(n-m) = 1 := by group
