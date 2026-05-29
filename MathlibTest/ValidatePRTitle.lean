@@ -60,25 +60,11 @@ Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, tes
 
 end kind
 
--- TODO: can this error message be more informative?
-/--
-info: Message: 'error: the PR title should be of the form
-  kind: subject
-or
-  kind(scope): subject
-Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, test, ci]'
--/
+/-- info: Message: 'error: the PR title should not be empty' -/
 #guard_msgs in
 #check_title "feat:"
 
--- TODO: can this error message be more informative?
-/--
-info: Message: 'error: the PR title should be of the form
-  kind: subject
-or
-  kind(scope): subject
-Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, test, ci]'
--/
+/-- info: Message: 'error: the PR title should not be empty' -/
 #guard_msgs in
 #check_title "feat: "
 

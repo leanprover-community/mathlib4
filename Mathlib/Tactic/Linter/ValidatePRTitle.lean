@@ -30,15 +30,15 @@ def prTitle : Parser (String × Option String × String) := do
         <* skipString "):" <* ws)
       <|> (skipString ":" *> ws *> pure none)
     )
-  let mainTitle ← many1Chars any
+  let mainTitle ← manyChars any
   return (kind, scope, mainTitle)
 
 -- Some self-tests for the parser.
 
-/-- info: Except.error "offset 8: unexpected end of input" -/
+/-- info: Except.ok ("feat", some "x", "") -/
 #guard_msgs in
 #eval Parser.run prTitle "feat(x):"
-/-- info: Except.error "offset 9: unexpected end of input" -/
+/-- info: Except.ok ("feat", some "x", "") -/
 #guard_msgs in
 #eval Parser.run prTitle "feat(x): "
 
@@ -95,6 +95,8 @@ public def validateTitle (title : String) : Array String := Id.run do
     return errors.push s!"error: the PR title should be of the form\n  kind: subject\n\
       or\n  kind(scope): subject\nAllowed values for `kind` are {knownKinds}"
   | Except.ok (_kind, scope?, subject) =>
+    if subject.isEmpty then
+      errors := errors.push s!"error: the PR title should not be empty"
     if let some scope := scope? then
       if scope.startsWith "Mathlib/" then
         errors := errors.push s!"error: a PR's scope must not start with 'Mathlib/'"
