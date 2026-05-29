@@ -321,8 +321,8 @@ This default behavior is customisable as such:
   name `coe_foo_snd_fst`.
 
 Here are a few extra pieces of information:
-  * Run `initialize_simps_projections?` (or `set_option trace.simps.verbose true`)
-    to see the generated projections.
+* Run `initialize_simps_projections?` (or `set_option trace.simps.verbose true`)
+  to see the generated projections.
 * Running `initialize_simps_projections MyStruct` without arguments is not necessary, it has the
   same effect if you just add `@[simps]` to a declaration.
 * It is recommended to call `@[simps]` or `initialize_simps_projections` in the same file as the
@@ -787,10 +787,10 @@ are three cases
   `oldStructureCmd` (does this exist?)).
 * Otherwise, the projection of the structure is chosen.
   For example: ``getRawProjections env `Prod`` gives the default projections.
-```
+  ```
   ([u, v], [(`fst, `(Prod.fst.{u v}), [0], true, false),
      (`snd, `(@Prod.snd.{u v}), [1], true, false)])
-```
+  ```
 
 Optionally, this command accepts three optional arguments:
 * If `traceIfExists` the command will always generate a trace message when the structure already
