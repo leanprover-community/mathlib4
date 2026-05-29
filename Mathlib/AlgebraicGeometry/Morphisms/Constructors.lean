@@ -230,7 +230,7 @@ theorem universally_isZariskiLocalAtTarget (P : MorphismProperty Scheme)
 set_option backward.defeqAttrib.useBackward true in
 lemma universally_isZariskiLocalAtSource (P : MorphismProperty Scheme)
     [IsZariskiLocalAtSource P] : IsZariskiLocalAtSource P.universally := by
-  refine .mk_of_iff ?_
+  refine .mk_of_iff_of_zeroHypercover ?_
   intro X Y f 𝒰
   refine ⟨fun hf i ↦ ?_, fun hf ↦ ?_⟩
   · apply MorphismProperty.universally_mk'
