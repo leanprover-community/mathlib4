@@ -59,7 +59,7 @@ private lemma isBigO_one_aux :
     IsBigO atTop (fun t : ℝ ↦ (1 - rexp (-π * t))⁻¹) (fun _ ↦ (1 : ℝ)) := by
   refine ((Tendsto.const_sub _ ?_).inv₀ (by simp)).isBigO_one ℝ (c := ((1 - 0)⁻¹ : ℝ))
   simpa only [neg_mul, tendsto_exp_comp_nhds_zero, tendsto_neg_atBot_iff]
-    using tendsto_id.const_mul_atTop pi_pos
+    using! tendsto_id.const_mul_atTop pi_pos
 
 end lemmas
 
@@ -138,14 +138,14 @@ lemma isBigO_atTop_F_nat_zero_sub {a : ℝ} (ha : 0 ≤ a) : ∃ p, 0 < p ∧
       filter_upwards [eventually_gt_atTop 0] with t ht
       exact F_nat_zero_zero_sub_le ht
     refine ⟨_, pi_pos, this.trans ?_⟩
-    simpa using (isBigO_refl (fun t ↦ rexp (-π * t)) _).mul isBigO_one_aux
+    simpa using! (isBigO_refl (fun t ↦ rexp (-π * t)) _).mul isBigO_one_aux
   · simp_rw [sub_zero]
     have : (fun t ↦ F_nat 0 a t) =O[atTop] fun t ↦ rexp (-π * a ^ 2 * t) / (1 - rexp (-π * t)) := by
       apply Eventually.isBigO
       filter_upwards [eventually_gt_atTop 0] with t ht
       exact F_nat_zero_le ha ht
     refine ⟨π * a ^ 2, mul_pos pi_pos (sq_pos_of_ne_zero h), this.trans ?_⟩
-    simpa only [neg_mul π (a ^ 2), mul_one] using (isBigO_refl _ _).mul isBigO_one_aux
+    simpa only [neg_mul π (a ^ 2), mul_one] using! (isBigO_refl _ _).mul isBigO_one_aux
 
 end k_eq_zero
 
@@ -185,10 +185,10 @@ lemma isBigO_atTop_F_nat_one {a : ℝ} (ha : 0 ≤ a) : ∃ p, 0 < p ∧
     filter_upwards [eventually_gt_atTop 0] with t ht
     exact F_nat_one_le ha ht
   have aux' : IsBigO atTop (fun t : ℝ ↦ ((1 - rexp (-π * t)) ^ 2)⁻¹) (fun _ ↦ (1 : ℝ)) := by
-    simpa only [inv_pow, one_pow] using isBigO_one_aux.pow 2
+    simpa only [inv_pow, one_pow] using! isBigO_one_aux.pow 2
   rcases eq_or_lt_of_le ha with rfl | ha'
   · exact ⟨_, pi_pos, by simpa only [zero_pow two_ne_zero, zero_add, mul_one, zero_mul, zero_div,
-      add_zero] using (isBigO_refl _ _).mul aux'⟩
+      add_zero] using! (isBigO_refl _ _).mul aux'⟩
   · refine ⟨π * a ^ 2, mul_pos pi_pos <| pow_pos ha' _, IsBigO.add ?_ ?_⟩
     · conv_rhs => enter [t]; rw [← mul_one (rexp _)]
       refine (Eventually.isBigO ?_).mul aux'
@@ -197,7 +197,7 @@ lemma isBigO_atTop_F_nat_one {a : ℝ} (ha : 0 ≤ a) : ∃ p, 0 < p ∧
       nlinarith [pi_pos]
     · simp_rw [mul_div_assoc, ← neg_mul]
       apply IsBigO.const_mul_left
-      simpa only [mul_one] using (isBigO_refl _ _).mul isBigO_one_aux
+      simpa only [mul_one] using! (isBigO_refl _ _).mul isBigO_one_aux
 
 end k_eq_one
 

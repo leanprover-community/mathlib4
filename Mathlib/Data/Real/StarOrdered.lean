@@ -6,8 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Data.NNReal.Star
-public import Mathlib.Data.Real.Sqrt
 
 /-! # `ℝ` and `ℝ≥0` are \*-ordered rings. -/
 

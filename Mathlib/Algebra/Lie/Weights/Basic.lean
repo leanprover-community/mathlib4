@@ -110,7 +110,6 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
     abel
   rsuffices ⟨k, hk⟩ : ∃ k : ℕ, ((f₁ + f₂) ^ k) (m₁ ⊗ₜ m₂) = 0
   · use k
-    change (F ^ k) (g.toLinearMap (m₁ ⊗ₜ[R] m₂)) = 0
     rw [← LinearMap.comp_apply, Module.End.commute_pow_left_of_commute h_comm_square,
       LinearMap.comp_apply, hk, map_zero]
   -- Unpack the information we have about `m₁`, `m₂`.
@@ -585,7 +584,7 @@ lemma isCompl_genWeightSpaceOf_zero_posFittingCompOf (x : L) :
     IsCompl (genWeightSpaceOf M 0 x) (posFittingCompOf R M x) := by
   simpa only [isCompl_iff, codisjoint_iff, disjoint_iff, ← LieSubmodule.toSubmodule_inj,
     LieSubmodule.sup_toSubmodule, LieSubmodule.inf_toSubmodule,
-    LieSubmodule.top_toSubmodule, LieSubmodule.bot_toSubmodule, coe_genWeightSpaceOf_zero] using
+    LieSubmodule.top_toSubmodule, LieSubmodule.bot_toSubmodule, coe_genWeightSpaceOf_zero] using!
     (toEnd R L M x).isCompl_iSup_ker_pow_iInf_range_pow
 
 /-- This lemma exists only to simplify the proof of
