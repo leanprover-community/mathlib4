@@ -659,12 +659,11 @@ lemma pairing_castSucc {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
     pairing.{u} k.castSucc n = (pairingCore.{u} k n).pairing :=
   dif_neg (by grind)
 
-unif_hint where ⊢ Fin.castSucc (n := m + 1) 0 ≟ 0 in
 instance {m : ℕ} (k : Fin (m + 2)) (n : ℕ) :
     (pairing.{u} k n).IsRegular := by
   by_cases! hk : k = Fin.last (m + 1)
   · subst hk
-    dsimp [pairing]
+    dsimp only [pairing]
     rw [dif_pos rfl]
     infer_instance
   · obtain ⟨k, rfl⟩ := Fin.eq_castSucc_of_ne_last hk
