@@ -249,7 +249,7 @@ mutual
           have := IsEquivalent.inv coef_ih
           apply IsEquivalent.trans_isLittleO this
           apply EventuallyEq.trans_isLittleO (Monomial.inv_toFun h_basis.tail).symm
-          apply Monomial.tail_toFun_IsLittleO_head
+          apply Monomial.tail_toFun_isLittleO_head
           · rw [Monomial.inv_length, leadingMonomial_length]
           · exact h_basis
           · simp only [exp']
@@ -356,7 +356,7 @@ theorem IsLittleO_of_lt_leadingMonomial_left {left right : Basis}
     (IsEquivalent_leadingMonomial h_sorted1 h_approx1 h_trimmed1 h_basis)
   apply Asymptotics.IsLittleO.trans_isEquivalent _
     (IsEquivalent_leadingMonomial h_sorted2 h_approx2 h_trimmed2 h_basis.of_append_right).symm
-  apply Monomial.IsLittleO_of_lt_exps_left h_basis _ _ _ h_lt
+  apply Monomial.isLittleO_of_lt_exps_left h_basis _ _ _ h_lt
   · simp [leadingMonomial_length]
   · simp [leadingMonomial_length]
   · contrapose! h2
@@ -375,7 +375,7 @@ theorem IsLittleO_of_lt_leadingMonomial_right {left right : Basis}
     (IsEquivalent_leadingMonomial h_sorted2 h_approx2 h_trimmed2 h_basis.of_append_right)
   apply Asymptotics.IsLittleO.trans_isEquivalent _
     (IsEquivalent_leadingMonomial h_sorted1 h_approx1 h_trimmed1 h_basis).symm
-  apply Monomial.IsLittleO_of_lt_exps_right h_basis _ _ _ h_lt
+  apply Monomial.isLittleO_of_lt_exps_right h_basis _ _ _ h_lt
   · simp [leadingMonomial_length]
   · simp [leadingMonomial_length]
   · contrapose! h1
@@ -666,7 +666,7 @@ theorem tendsto_const_of_AllZero {basis : Basis} {ms : MultiseriesExpansion basi
   apply (IsEquivalent.tendsto_nhds_iff
     (IsEquivalent_leadingMonomial h_sorted h_approx h_trimmed h_basis)).mpr
   rw [h_eq]
-  apply Monomial.toFun_tendsto_const_of_AllZero h_exps
+  apply Monomial.toFun_tendsto_const_of_allZero h_exps
 
 theorem tendsto_zero_of_FirstNonzeroIsNeg_aux {basis : Basis} {ms : MultiseriesExpansion basis}
     (h_sorted : ms.Sorted)
@@ -734,7 +734,7 @@ theorem tendsto_top_of_FirstNonzeroIsPos {basis : Basis} {ms : MultiseriesExpans
   apply (IsEquivalent.tendsto_atTop_iff
     (IsEquivalent_leadingMonomial h_sorted h_approx h_trimmed h_basis)).mpr
   simp [leadingMonomial] at h_eq
-  apply Monomial.toFun_tendsto_top_of_FirstNonzeroIsPos h_basis leadingMonomial_length
+  apply Monomial.toFun_tendsto_top_of_firstNonzeroIsPos h_basis leadingMonomial_length
   all_goals simpa [leadingMonomial, h_eq]
 
 theorem tendsto_bot_of_FirstNonzeroIsPos {basis : Basis} {ms : MultiseriesExpansion basis}
@@ -753,7 +753,7 @@ theorem tendsto_bot_of_FirstNonzeroIsPos {basis : Basis} {ms : MultiseriesExpans
   apply (IsEquivalent.tendsto_atBot_iff
     (IsEquivalent_leadingMonomial h_sorted h_approx h_trimmed h_basis)).mpr
   simp [leadingMonomial] at h_eq
-  apply Monomial.toFun_tendsto_bot_of_FirstNonzeroIsPos h_basis leadingMonomial_length
+  apply Monomial.toFun_tendsto_bot_of_firstNonzeroIsPos h_basis leadingMonomial_length
   all_goals simpa [leadingMonomial, h_eq]
 
 end MultiseriesExpansion
