@@ -204,10 +204,7 @@ instance : (TopologicalSpace.Opens.map f).PreservesOneHypercovers
   Functor.PreservesOneHypercovers.of_coverPreserving (coverPreserving_opens_map f)
 
 instance : (Opens.map f).IsContinuous (Opens.grothendieckTopology Y)
-    (Opens.grothendieckTopology X) := by
-  apply Functor.isContinuous_of_coverPreserving
-  · exact compatiblePreserving_opens_map f
-  · exact coverPreserving_opens_map f
+    (Opens.grothendieckTopology X) := inferInstance
 
 end IsOpenEmbedding
 
