@@ -211,7 +211,7 @@ lemma toRightFDRepComp_in_rightRegular [IsDomain k] (η : Aut (forget k G)) :
       congrFun congr(($nat.symm).hom (single u 1)) 1
     _ = evalAlgHom _ _ s (leftRegular t⁻¹ (single u 1)) :=
       congr($hs (leftRegular t⁻¹ (single u 1)))
-    _ = _ := by by_cases u = t * s <;> simp_all [single_apply]
+    _ = _ := by by_cases u = t * s <;> simp_all
 
 lemma equivHom_surjective [IsDomain k] : Function.Surjective (equivHom k G) := by
   intro η

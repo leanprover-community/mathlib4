@@ -244,6 +244,10 @@ lemma comap_comp {E : Type*} [Category* E] (F : C ⥤ D) (G : D ⥤ E) (J : Prec
   obtain ⟨ι, Y, f, rfl⟩ := R.exists_eq_ofArrows
   simp
 
+@[mono, gcongr]
+lemma comap_monotone : Monotone (comap F) :=
+  fun _ _ hJK _ _ hR ↦ hJK _ hR
+
 instance [HasIsos J] : HasIsos (J.comap F) where
   mem_coverings_of_isIso {S T} f hf := by simpa using mem_coverings_of_isIso (F.map f)
 

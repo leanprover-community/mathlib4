@@ -281,14 +281,14 @@ attribute [simp] upperPolar_extent lowerPolar_intent
 theorem ext (h : c.extent = d.extent) : c = d := by
   obtain ⟨s₁, t₁, rfl, _⟩ := c
   obtain ⟨s₂, t₂, rfl, _⟩ := d
-  substs h
+  subst h
   rfl
 
 /-- See `Concept.ext` for a version using the extent. -/
 theorem ext' (h : c.intent = d.intent) : c = d := by
   obtain ⟨s₁, t₁, _, rfl⟩ := c
   obtain ⟨s₂, t₂, _, rfl⟩ := d
-  substs h
+  subst h
   rfl
 
 theorem extent_injective : Injective (@extent α β r) := fun _ _ => ext
