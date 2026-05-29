@@ -283,9 +283,6 @@ theorem isHermitian_conjTranspose_mul_self [Fintype m] (A : Matrix m n α) :
     (Aᴴ * A).IsHermitian := by
   rw [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose]
 
-@[deprecated (since := "2025-11-10")] alias isHermitian_transpose_mul_self :=
-  isHermitian_conjTranspose_mul_self
-
 /-- Note this is more general than `IsSelfAdjoint.conjugate'` as `B` can be rectangular. -/
 theorem isHermitian_conjTranspose_mul_mul [Fintype m] {A : Matrix m m α} (B : Matrix m n α)
     (hA : A.IsHermitian) : (Bᴴ * A * B).IsHermitian := by
@@ -399,7 +396,7 @@ theorem fromBlocks₂₂ [Fintype n] [DecidableEq n] (A : Matrix m m α) (B : Ma
     (Matrix.fromBlocks A B Bᴴ D).IsHermitian ↔ (A - B * D⁻¹ * Bᴴ).IsHermitian := by
   rw [← isHermitian_submatrix_equiv (Equiv.sumComm n m), Equiv.sumComm_apply,
     fromBlocks_submatrix_sum_swap_sum_swap]
-  convert IsHermitian.fromBlocks₁₁ _ _ hD <;> simp
+  convert! IsHermitian.fromBlocks₁₁ _ _ hD <;> simp
 
 end IsHermitian
 

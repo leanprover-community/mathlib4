@@ -45,7 +45,7 @@ lemma sum_le_sum_Ioc {s : Finset ℤ} {c : ℤ} (hs : ∀ x ∈ s, x ≤ c) :
 /-- Sharp upper bound for the sum of a finset of integers that is bounded above, `range` version. -/
 lemma sum_le_sum_range {s : Finset ℤ} {c : ℤ} (hs : ∀ x ∈ s, x ≤ c) :
     ∑ x ∈ s, x ≤ ∑ n ∈ range #s, (c - n) := by
-  convert sum_le_sum_Ioc hs
+  convert! sum_le_sum_Ioc hs
   refine sum_nbij (c - ·) ?_ ?_ ?_ (fun _ _ ↦ rfl)
   · intro x mx; rw [mem_Ioc]; dsimp only; rw [mem_range] at mx; lia
   · intro x mx y my (h : c - x = c - y); lia
@@ -71,7 +71,7 @@ lemma sum_Ico_le_sum {s : Finset ℤ} {c : ℤ} (hs : ∀ x ∈ s, c ≤ x) :
 /-- Sharp lower bound for the sum of a finset of integers that is bounded below, `range` version. -/
 lemma sum_range_le_sum {s : Finset ℤ} {c : ℤ} (hs : ∀ x ∈ s, c ≤ x) :
     ∑ n ∈ range #s, (c + n) ≤ ∑ x ∈ s, x := by
-  convert sum_Ico_le_sum hs
+  convert! sum_Ico_le_sum hs
   refine sum_nbij (c + ·) ?_ ?_ ?_ (fun _ _ ↦ rfl)
   · intro x mx; rw [mem_Ico]; dsimp only; rw [mem_range] at mx; lia
   · intro x mx y my (h : c + x = c + y); lia

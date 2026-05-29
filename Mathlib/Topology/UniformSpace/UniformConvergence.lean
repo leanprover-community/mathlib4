@@ -327,17 +327,23 @@ theorem tendstoUniformlyOn_singleton_iff_tendsto :
   exact forall₂_congr fun u _ => by simp [preimage]
 
 /-- If a sequence `g` converges to some `b`, then the sequence of constant functions
-`fun n ↦ fun a ↦ g n` converges to the constant function `fun a ↦ b` on any set `s` -/
+`fun n ↦ fun a ↦ g n` converges to the constant function `fun a ↦ b` on any set `s`. -/
 theorem Filter.Tendsto.tendstoUniformlyOnFilter_const {g : ι → β} {b : β} (hg : Tendsto g p (𝓝 b))
     (p' : Filter α) :
     TendstoUniformlyOnFilter (fun n : ι => fun _ : α => g n) (fun _ : α => b) p p' := by
   simpa only [nhds_eq_comap_uniformity, tendsto_comap_iff] using hg.comp (tendsto_fst (g := p'))
 
 /-- If a sequence `g` converges to some `b`, then the sequence of constant functions
-`fun n ↦ fun a ↦ g n` converges to the constant function `fun a ↦ b` on any set `s` -/
+`fun n ↦ fun a ↦ g n` converges to the constant function `fun a ↦ b` on any set `s`. -/
 theorem Filter.Tendsto.tendstoUniformlyOn_const {g : ι → β} {b : β} (hg : Tendsto g p (𝓝 b))
     (s : Set α) : TendstoUniformlyOn (fun n : ι => fun _ : α => g n) (fun _ : α => b) p s :=
   tendstoUniformlyOn_iff_tendstoUniformlyOnFilter.mpr (hg.tendstoUniformlyOnFilter_const (𝓟 s))
+
+/-- If a sequence `g` converges to some `b`, then the sequence of constant functions
+`fun n ↦ fun a ↦ g n` converges to the constant function `fun a ↦ b`. -/
+theorem Filter.Tendsto.tendstoUniformly_const {g : ι → β} {b : β} (hg : Tendsto g p (𝓝 b)) :
+    TendstoUniformly (fun n : ι => fun _ : α => g n) (fun _ : α => b) p :=
+  tendstoUniformly_iff_tendstoUniformlyOnFilter.mpr (hg.tendstoUniformlyOnFilter_const _)
 
 theorem UniformContinuousOn.tendstoUniformlyOn [UniformSpace α] [UniformSpace γ] {U : Set α}
     {V : Set β} {F : α → β → γ} (hF : UniformContinuousOn ↿F (U ×ˢ V)) (hU : x ∈ U) :

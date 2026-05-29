@@ -72,9 +72,8 @@ lemma eLpNormEssSup_indicator_le (s : Set α) (f : α → ε) :
 
 lemma eLpNormEssSup_indicator_const_le (s : Set α) (c : ε) :
     eLpNormEssSup (s.indicator fun _ : α => c) μ ≤ ‖c‖ₑ := by
-  by_cases hμ0 : μ = 0
-  · rw [hμ0, eLpNormEssSup_measure_zero]
-    exact zero_le _
+  obtain rfl | hμ0 := eq_or_ne μ 0
+  · simp
   · exact (eLpNormEssSup_indicator_le s fun _ => c).trans (eLpNormEssSup_const c hμ0).le
 
 lemma eLpNormEssSup_indicator_const_eq (s : Set α) (c : ε) (hμs : μ s ≠ 0) :
@@ -193,7 +192,7 @@ theorem eLpNorm_indicator_sub_le_of_dist_bdd {β : Type*} [NormedAddCommGroup β
         Real.norm_eq_abs, abs_of_nonneg hc]
       exact hf x hx
     · simp [Set.indicator_of_notMem hx]
-  grw [eLpNorm_mono this, eLpNorm_indicator_const hs hp hp', ← ofReal_norm_eq_enorm,
+  grw [eLpNorm_mono this, eLpNorm_indicator_const hs hp hp', ← ofReal_norm,
     Real.norm_eq_abs, abs_of_nonneg hc]
 
 theorem eLpNorm_sub_le_of_dist_bdd {β : Type*} [NormedAddCommGroup β]

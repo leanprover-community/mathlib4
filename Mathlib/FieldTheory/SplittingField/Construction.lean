@@ -196,16 +196,13 @@ theorem adjoin_rootSet (n : ℕ) :
     rw [rootSet_def, aroots_def]
     rw [algebraMap_succ, ← map_map, ← X_sub_C_mul_removeFactor _ hndf, Polynomial.map_mul] at hmf0 ⊢
     rw [roots_mul hmf0, Polynomial.map_sub, map_X, map_C, roots_X_sub_C, Multiset.toFinset_add,
-      Finset.coe_union, Multiset.toFinset_singleton, Finset.coe_singleton,
-      Algebra.adjoin_union_eq_adjoin_adjoin, ← Set.image_singleton]
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [Algebra.adjoin_algebraMap K (SplittingFieldAux n f.removeFactor)]
-    rw [AdjoinRoot.adjoinRoot_eq_top, Algebra.map_top]
-    -- Porting note: was `rw`
-    erw [IsScalarTower.adjoin_range_toAlgHom K (AdjoinRoot f.factor)
-        (SplittingFieldAux n f.removeFactor)
-        (f.removeFactor.rootSet (SplittingFieldAux n f.removeFactor))]
-    rw [ih _ (natDegree_removeFactor' hfn), Subalgebra.restrictScalars_top]
+      Finset.coe_union, Multiset.toFinset_singleton, Finset.coe_singleton, ← Set.image_singleton]
+    simp only [SplittingFieldAux.succ]
+    rw [← Algebra.adjoin_eq_adjoin_union K {AdjoinRoot.root f.factor}
+      ((map (algebraMap (AdjoinRoot f.factor) (SplittingFieldAux n f.removeFactor))
+        f.removeFactor).roots.toFinset : Set (SplittingFieldAux n f.removeFactor))
+      AdjoinRoot.adjoinRoot_eq_top, ← rootSet_def, ih _ (natDegree_removeFactor' hfn),
+      Subalgebra.restrictScalars_top]
 
 instance (f : K[X]) : IsSplittingField K (SplittingFieldAux f.natDegree f) f :=
   ⟨SplittingFieldAux.splits _ _ rfl, SplittingFieldAux.adjoin_rootSet _ _ rfl⟩

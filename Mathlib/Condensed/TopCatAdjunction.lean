@@ -111,10 +111,10 @@ lemma topCatAdjunctionCounit_bijective (X : TopCat.{u + 1}) :
   (topCatAdjunctionCounitEquiv X).bijective
 
 /-- The unit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` -/
-@[simps hom_app hom_app_apply]
+@[simps hom_app]
 noncomputable def topCatAdjunctionUnit (X : CondensedSet.{u}) : X ⟶ X.toTopCat.toCondensedSet where
   hom := {
-    app := fun S x ↦ {
+    app S := ↾fun x ↦ {
       toFun := fun s ↦ X.obj.map ((of PUnit.{u + 1}).const s).op x
       continuous_toFun := by
         suffices ∀ (i : (T : CompHaus.{u}) × X.obj.obj ⟨T⟩),
@@ -123,9 +123,9 @@ noncomputable def topCatAdjunctionUnit (X : CondensedSet.{u}) : X ⟶ X.toTopCat
         apply continuous_coinduced_rng }
     naturality := fun _ _ _ ↦ by
       ext
-      simp only [TopCat.toSheafCompHausLike_obj_obj,
-        Opposite.op_unop, types_comp_apply, TopCat.toSheafCompHausLike_obj_map,
-        ← FunctorToTypes.map_comp_apply]
+      simp only [TopCat.toSheafCompHausLike_obj_obj, TypeCat.Fun.toFun_apply,
+        comp_apply, TopCat.toSheafCompHausLike_obj_map, ConcreteCategory.hom_ofHom,
+        TypeCat.Fun.coe_mk, ← Functor.map_comp_apply]
       rfl }
 
 set_option backward.isDefEq.respectTransparency false in

@@ -117,6 +117,16 @@ lemma isoInv_hom_id_hom {X Y : P.FullSubcategory} (e : X ≅ Y) :
     e.inv.hom ≫ e.hom.hom = 𝟙 _ :=
   P.ι.congr_map e.inv_hom_id
 
+instance {X Y : P.FullSubcategory} (f : X ⟶ Y) [IsIso f] : IsIso f.hom :=
+  P.ι.map_isIso f
+
+@[simp, push ←]
+lemma hom_inv {X Y : P.FullSubcategory} (f : X ⟶ Y) [IsIso f] : (inv f).hom = inv f.hom :=
+  IsIso.eq_inv_of_hom_inv_id (P.ι.congr_map (asIso f).hom_inv_id)
+
+lemma isIso_hom_iff {X Y : P.FullSubcategory} (f : X ⟶ Y) : IsIso f.hom ↔ IsIso f :=
+  ⟨fun _ ↦ (P.isoMk (asIso f.hom)).isIso_hom, fun _ ↦ inferInstance⟩
+
 variable {P' : ObjectProperty C}
 
 /-- If `P` and `P'` are properties of objects such that `P ≤ P'`, there is

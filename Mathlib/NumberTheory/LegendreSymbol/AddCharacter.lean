@@ -9,7 +9,6 @@ public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 public import Mathlib.FieldTheory.Finite.Trace
 public import Mathlib.Algebra.Group.AddChar
 public import Mathlib.Data.ZMod.Units
-public import Mathlib.Analysis.Complex.Polynomial.Basic
 
 /-!
 # Additive characters of finite rings and fields
@@ -40,6 +39,7 @@ additive character
 
 @[expose] public section
 
+assert_not_exists MeasureTheory.integral
 
 universe u v
 
@@ -188,7 +188,6 @@ theorem zmodChar_primitive_of_primitive_root (n : ℕ) [NeZero n] {ζ : C} (h : 
   rw [zmodChar_apply, ← pow_zero ζ] at ha
   exact (ZMod.val_eq_zero a).mp (IsPrimitiveRoot.pow_inj h (ZMod.val_lt a) (NeZero.pos _) ha)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- There is a primitive additive character on `ZMod n` if the characteristic of the target
 does not divide `n` -/
 noncomputable def primitiveZModChar (n : ℕ+) (F' : Type v) [Field F'] (h : (n : F') ≠ 0) :
@@ -291,28 +290,5 @@ lemma starComp_apply (hR : 0 < ringChar R) {φ : AddChar R ℂ} (a : R) :
   rfl
 
 end Ring
-
-section Field
-
-variable (F : Type*) [Field F] [Finite F]
-
-private lemma ringChar_ne : ringChar ℂ ≠ ringChar F := by
-  simpa only [ringChar.eq_zero] using (CharP.ringChar_ne_zero_of_finite F).symm
-
-set_option backward.isDefEq.respectTransparency false in
-/-- A primitive additive character on the finite field `F` with values in `ℂ`. -/
-noncomputable def FiniteField.primitiveChar_to_Complex : AddChar F ℂ := by
-  letI ch := primitiveChar F ℂ <| by exact ringChar_ne F
-  refine MonoidHom.compAddChar ?_ ch.char
-  exact (IsCyclotomicExtension.algEquiv {(ch.n : ℕ)} ℂ (CyclotomicField ch.n ℂ) ℂ).toMonoidHom
-
-set_option backward.isDefEq.respectTransparency false in
-lemma FiniteField.primitiveChar_to_Complex_isPrimitive :
-    (primitiveChar_to_Complex F).IsPrimitive := by
-  refine IsPrimitive.compMulHom_of_isPrimitive (PrimitiveAddChar.prim _) ?_
-  let nn := (primitiveChar F ℂ <| ringChar_ne F).n
-  exact (IsCyclotomicExtension.algEquiv {(nn : ℕ)} ℂ (CyclotomicField nn ℂ) ℂ).injective
-
-end Field
 
 end AddChar

@@ -17,7 +17,7 @@ This file proves lipschitzness of normed group operations and shows that normed 
 groups.
 -/
 
-@[expose] public section
+public section
 
 variable {𝓕 E F : Type*}
 
@@ -44,6 +44,10 @@ theorem norm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 
 theorem nnnorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 E F] (f : 𝓕) (x : E) :
     ‖f x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_map' f x
+
+@[to_additive (attr := simp) enorm_map]
+lemma enorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 E F] (f : 𝓕) (x : E) :
+    ‖f x‖ₑ = ‖x‖ₑ := by simp [enorm]
 
 @[to_additive (attr := simp)]
 theorem dist_self_mul_right (a b : E) : dist b (b * a) = ‖a‖ := by
@@ -468,3 +472,20 @@ theorem LipschitzWith.norm_div_le_of_le {f : E → F} {C : ℝ≥0} {a b : E} {r
   (h.norm_div_le _ _).trans <| by gcongr
 
 end SeminormedCommGroup
+
+namespace Real
+open Topology
+
+theorem isometry_intCast : Isometry ((↑) : ℤ → ℝ) :=
+  Isometry.of_dist_eq <| by tauto
+
+theorem isClosedEmbedding_intCast : IsClosedEmbedding ((↑) : ℤ → ℝ) :=
+  isometry_intCast.isClosedEmbedding
+
+lemma isClosed_range_intCast : IsClosed (Set.range ((↑) : ℤ → ℝ)) :=
+  isClosedEmbedding_intCast.isClosed_range
+
+lemma isOpen_compl_range_intCast : IsOpen (Set.range ((↑) : ℤ → ℝ))ᶜ :=
+  Real.isClosed_range_intCast.isOpen_compl
+
+end Real

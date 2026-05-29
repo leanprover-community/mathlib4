@@ -15,7 +15,7 @@ In this file we show that a T₀ topological space with second countable
 topology has a countable family of open (or closed) sets separating the points.
 -/
 
-@[expose] public section
+public section
 
 variable {X : Type*}
 

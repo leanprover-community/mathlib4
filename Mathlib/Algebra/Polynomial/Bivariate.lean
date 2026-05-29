@@ -81,9 +81,11 @@ lemma evalEval_sum (x y : R) (p : R[X]) (f : ℕ → R → R[X][Y]) :
     (p.sum f).evalEval x y = p.sum fun n a => (f n a).evalEval x y := by
   simp only [evalEval, eval, eval₂_sum]
 
-lemma evalEval_finset_sum {ι : Type*} (s : Finset ι) (x y : R) (f : ι → R[X][Y]) :
+lemma evalEval_finsetSum {ι : Type*} (s : Finset ι) (x y : R) (f : ι → R[X][Y]) :
     (∑ i ∈ s, f i).evalEval x y = ∑ i ∈ s, (f i).evalEval x y := by
-  simp only [evalEval, eval_finset_sum]
+  simp only [evalEval, eval_finsetSum]
+
+@[deprecated (since := "2026-04-08")] alias evalEval_finset_sum := evalEval_finsetSum
 
 @[simp]
 lemma evalEval_smul [DistribSMul S R] [IsScalarTower S R R] (x y : R) (s : S)

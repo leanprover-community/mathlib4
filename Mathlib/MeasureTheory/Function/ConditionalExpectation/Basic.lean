@@ -82,7 +82,7 @@ variable {α β E 𝕜 : Type*} [RCLike 𝕜] {m m₀ : MeasurableSpace α} {μ 
   {s : Set α}
 
 section NormedAddCommGroup
-variable [NormedAddCommGroup E] [CompleteSpace E]
+variable [NormedAddCommGroup E]
 
 section NormedSpace
 variable [NormedSpace ℝ E]
@@ -144,7 +144,8 @@ theorem condExp_const (hm : m ≤ m₀) (c : E) [IsFiniteMeasure μ] :
     μ[fun _ : α ↦ c | m] = fun _ ↦ c :=
   condExp_of_stronglyMeasurable hm stronglyMeasurable_const (integrable_const c)
 
-theorem condExp_ae_eq_condExpL1 (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] (f : α → E) :
+theorem condExp_ae_eq_condExpL1 [CompleteSpace E]
+    (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] (f : α → E) :
     μ[f | m] =ᵐ[μ] condExpL1 hm μ f := by
   rw [condExp_of_sigmaFinite hm]
   by_cases hfi : Integrable f μ
@@ -157,7 +158,8 @@ theorem condExp_ae_eq_condExpL1 (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim h
   rw [if_neg hfi, condExpL1_undef hfi]
   exact (coeFn_zero _ _ _).symm
 
-theorem condExp_ae_eq_condExpL1CLM (hm : m ≤ m₀) [SigmaFinite (μ.trim hm)] (hf : Integrable f μ) :
+theorem condExp_ae_eq_condExpL1CLM [CompleteSpace E]
+    (hm : m ≤ m₀) [SigmaFinite (μ.trim hm)] (hf : Integrable f μ) :
     μ[f | m] =ᵐ[μ] condExpL1CLM E hm μ (hf.toL1 f) := by
   refine (condExp_ae_eq_condExpL1 hm f).trans (Eventually.of_forall fun x => ?_)
   rw [condExpL1_eq hf]
@@ -188,6 +190,8 @@ theorem stronglyMeasurable_condExp : StronglyMeasurable[m] (μ[f | m]) := by
   · exact hfm
   · exact aestronglyMeasurable_condExpL1.stronglyMeasurable_mk
   · exact stronglyMeasurable_zero
+
+variable [CompleteSpace E]
 
 @[gcongr]
 theorem condExp_congr_ae (h : f =ᵐ[μ] g) : μ[f | m] =ᵐ[μ] μ[g | m] := by
@@ -292,7 +296,7 @@ theorem condExp_add (hf : Integrable f μ) (hg : Integrable g μ) (m : Measurabl
   exact (coeFn_add _ _).trans
     ((condExp_ae_eq_condExpL1 hm _).symm.add (condExp_ae_eq_condExpL1 hm _).symm)
 
-theorem condExp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → E}
+theorem condExp_finsetSum {ι : Type*} {s : Finset ι} {f : ι → α → E}
     (hf : ∀ i ∈ s, Integrable (f i) μ) (m : MeasurableSpace α) :
     μ[∑ i ∈ s, f i | m] =ᵐ[μ] ∑ i ∈ s, μ[f i | m] := by
   classical
@@ -301,8 +305,10 @@ theorem condExp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → E}
   | insert i s his heq =>
     rw [Finset.sum_insert his, Finset.sum_insert his]
     exact (condExp_add (hf i <| Finset.mem_insert_self i s)
-      (integrable_finset_sum' _ <| Finset.forall_of_forall_insert hf) _).trans
+      (integrable_finsetSum' _ <| Finset.forall_of_forall_insert hf) _).trans
         ((EventuallyEq.refl _ _).add <| heq <| Finset.forall_of_forall_insert hf)
+
+@[deprecated (since := "2026-04-08")] alias condExp_finset_sum := condExp_finsetSum
 
 theorem condExp_smul [NormedSpace 𝕜 E] (c : 𝕜) (f : α → E) (m : MeasurableSpace α) :
     μ[c • f | m] =ᵐ[μ] c • μ[f | m] := by
@@ -395,7 +401,7 @@ end RCLike
 end NormedSpace
 
 section Real
-variable [InnerProductSpace ℝ E]
+variable [InnerProductSpace ℝ E] [CompleteSpace E]
 
 -- TODO: Generalize via the conditional Jensen inequality
 lemma eLpNorm_condExp_le : eLpNorm (μ[f | m]) 2 μ ≤ eLpNorm f 2 μ := by
@@ -434,7 +440,7 @@ lemma condExp_ofNat (n : ℕ) [n.AtLeastTwo] (f : α → R) :
 end NormedRing
 
 section NormedLatticeAddCommGroup
-variable [NormedAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
+variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- **Lebesgue dominated convergence theorem**: sufficient conditions under which almost
   everywhere convergence of a sequence of functions implies the convergence of their image by
@@ -446,6 +452,8 @@ theorem tendsto_condExpL1_of_dominated_convergence (hm : m ≤ m₀) [SigmaFinit
     (hfs : ∀ᵐ x ∂μ, Tendsto (fun n => fs n x) atTop (𝓝 (f x))) :
     Tendsto (fun n => condExpL1 hm μ (fs n)) atTop (𝓝 (condExpL1 hm μ f)) :=
   tendsto_setToFun_of_dominated_convergence _ bound_fs hfs_meas h_int_bound_fs hfs_bound hfs
+
+variable [CompleteSpace E]
 
 /-- If two sequences of functions have a.e. equal conditional expectations at each step, converge
 and verify dominated convergence hypotheses, then the conditional expectations of their limits are

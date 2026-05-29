@@ -36,7 +36,7 @@ Let `G` be a group acting on a type `α`.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise Cardinal
 

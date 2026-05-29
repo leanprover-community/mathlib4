@@ -408,6 +408,14 @@ theorem det_pi [Module.Free R M] [Module.Finite R M] (f : ι → M →ₗ[R] M) 
 
 end LinearMap
 
+namespace Algebra
+
+variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S] [Free R S]
+
+lemma det_lsmul (x : R) : LinearMap.det (lsmul R R S x) = x ^ finrank R S := by
+  rw [lsmul_eq_smul_one, LinearMap.det_smul, map_one, mul_one]
+
+end Algebra
 
 namespace LinearEquiv
 
@@ -564,7 +572,7 @@ abbrev LinearMap.equivOfDetNeZero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCo
 theorem LinearMap.associated_det_of_eq_comp (e : M ≃ₗ[R] M) (f f' : M →ₗ[R] M)
     (h : ∀ x, f x = f' (e x)) : Associated (LinearMap.det f) (LinearMap.det f') := by
   suffices Associated (LinearMap.det (f' ∘ₗ ↑e)) (LinearMap.det f') by
-    convert this using 2
+    convert! this using 2
     ext x
     exact h x
   rw [← mul_one (LinearMap.det f'), LinearMap.det_comp]
@@ -622,7 +630,7 @@ theorem is_basis_iff_det {v : ι → M} :
   · rintro ⟨hli, hspan⟩
     set v' := Basis.mk hli hspan.ge
     rw [e.det_apply]
-    convert LinearEquiv.isUnit_det (LinearEquiv.refl R M) v' e using 2
+    convert! LinearEquiv.isUnit_det (LinearEquiv.refl R M) v' e using 2
     ext i j
     simp [v']
   · intro h
@@ -755,7 +763,7 @@ theorem det_unitsSMul (e : Basis ι R M) (w : ι → Rˣ) :
     (Matrix.det fun i j => (e.unitsSMul w).repr (f j) i) =
       (↑(∏ i, w i)⁻¹ : R) • Matrix.det fun i j => e.repr (f j) i
   simp only [e.repr_unitsSMul]
-  convert Matrix.det_mul_column (fun i => (↑(w i)⁻¹ : R)) fun i j => e.repr (f j) i
+  convert! Matrix.det_mul_column (fun i => (↑(w i)⁻¹ : R)) fun i j => e.repr (f j) i
   simp [← Finset.prod_inv_distrib]
 
 /-- The determinant of a basis constructed by `unitsSMul` is the product of the given units. -/

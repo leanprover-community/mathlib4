@@ -5,10 +5,10 @@ Authors: Yaël Dillies, Bhavik Mehta, Doga Can Sertbas
 -/
 module
 
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Nat.Prime.Defs
-public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
@@ -50,7 +50,7 @@ which reduces the proof obligations later that would arise with `Nat.card`.
 
 open Finset
 
-/-- The Schnirelmann density is defined as the infimum of |A ∩ {1, ..., n}| / n as n ranges over
+/-- The Schnirelmann density is defined as the infimum of $|A ∩ {1, ..., n}| / n$ as n ranges over
 the positive naturals. -/
 noncomputable def schnirelmannDensity (A : Set ℕ) [DecidablePred (· ∈ A)] : ℝ :=
   ⨅ n : {n : ℕ // 0 < n}, #{a ∈ Ioc 0 n | a ∈ A} / n
@@ -269,7 +269,7 @@ lemma schnirelmannDensity_setOf_Odd : schnirelmannDensity (setOf Odd) = 2⁻¹ :
   simp only [h]
   rw [schnirelmannDensity_setOf_mod_eq_one (by norm_num1), Nat.cast_two]
 
-open Pointwise
+open scoped Pointwise
 
 /-- If two sets `A` and `B` have Schnirelmann densities with sum at least 1, and both sets
 contain zero, then every natural number is sum of an element of `A` and an element of `B`.

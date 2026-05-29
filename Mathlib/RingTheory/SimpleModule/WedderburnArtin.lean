@@ -41,7 +41,7 @@ public import Mathlib.RingTheory.SimpleRing.Matrix
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 variable (R₀ : Type*) {R : Type u} [CommSemiring R₀] [Ring R] [Algebra R₀ R]
@@ -234,7 +234,7 @@ instance (n) [Fintype n] [DecidableEq n] : IsSemisimpleRing (Matrix n n R) :=
     have ⟨_, _, _, _, _, ⟨e⟩⟩ := exists_ringEquiv_pi_matrix_divisionRing R
     (e.mapMatrix (m := n).trans Matrix.piRingEquiv).symm.isSemisimpleRing
 
-instance [IsSemisimpleRing R] : IsSemisimpleRing Rᵐᵒᵖ :=
+instance : IsSemisimpleRing Rᵐᵒᵖ :=
   have ⟨_, _, _, _, _, ⟨e⟩⟩ := exists_ringEquiv_pi_matrix_divisionRing R
   ((e.op.trans (.piMulOpposite _)).trans (.piCongrRight fun _ ↦ .symm .mopMatrix)).symm
     |>.isSemisimpleRing

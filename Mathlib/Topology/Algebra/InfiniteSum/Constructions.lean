@@ -36,7 +36,7 @@ variable [CommMonoid α] [TopologicalSpace α]
 
 @[to_additive]
 theorem hasProd_pi_single [DecidableEq β] (b : β) (a : α) : HasProd (Pi.mulSingle b a) a := by
-  convert hasProd_ite_eq (L := .unconditional β) b a
+  convert! hasProd_ite_eq (L := .unconditional β) b a
   simp [Pi.mulSingle_apply]
 
 @[to_additive (attr := simp)]
@@ -85,7 +85,7 @@ lemma HasProd.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [Continu
     (h₁ : HasProd (f ∘ Sum.inl) a) (h₂ : HasProd (f ∘ Sum.inr) b) : HasProd f (a * b) := by
   have : Tendsto ((∏ b ∈ ·, f b) ∘ sumEquiv.symm) (atTop.map sumEquiv) (nhds (a * b)) := by
     rw [Finset.sumEquiv.map_atTop, ← prod_atTop_atTop_eq]
-    convert (tendsto_mul.comp (nhds_prod_eq (x := a) (y := b) ▸ Tendsto.prodMap h₁ h₂))
+    convert! (tendsto_mul.comp (nhds_prod_eq (x := a) (y := b) ▸ Tendsto.prodMap h₁ h₂))
     ext s
     simp
   simpa [Tendsto, ← Filter.map_map] using this
@@ -122,7 +122,7 @@ theorem HasProd.sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g : β
   have : Tendsto (fun t : Finset (Σ b, γ b) ↦ ∏ p ∈ t with p.1 ∈ bs, f p) atTop
       (𝓝 <| ∏ b ∈ bs, g b) := by
     simp only [← sigma_preimage_mk, prod_sigma]
-    refine tendsto_finset_prod _ fun b _ ↦ ?_
+    refine tendsto_finsetProd _ fun b _ ↦ ?_
     change
       Tendsto (fun t ↦ (fun t ↦ ∏ s ∈ t, f ⟨b, s⟩) (preimage t (Sigma.mk b) _)) atTop (𝓝 (g b))
     exact (hf b).comp (tendsto_finset_preimage_atTop_atTop (sigma_mk_injective))
@@ -204,7 +204,7 @@ theorem HasProd.of_sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g :
   have L : Tendsto (fun t : Finset (Σ b, γ b) ↦ ∏ p ∈ t with p.1 ∈ t0, f p) atTop
       (𝓝 <| ∏ b ∈ t0, g b) := by
     simp only [← sigma_preimage_mk, prod_sigma]
-    refine tendsto_finset_prod _ fun b _ ↦ ?_
+    refine tendsto_finsetProd _ fun b _ ↦ ?_
     change
       Tendsto (fun t ↦ (fun t ↦ ∏ s ∈ t, f ⟨b, s⟩) (preimage t (Sigma.mk b) _)) atTop (𝓝 (g b))
     exact (hf b).comp (tendsto_finset_preimage_atTop_atTop (sigma_mk_injective))
@@ -274,7 +274,7 @@ variable {ι : Type*} {X : α → Type*} [∀ x, CommMonoid (X x)] [∀ x, Topol
 @[to_additive]
 theorem Pi.hasProd {f : ι → ∀ x, X x} {g : ∀ x, X x} :
     HasProd f g L ↔ ∀ x, HasProd (fun i ↦ f i x) (g x) L := by
-  simp only [HasProd, tendsto_pi_nhds, prod_apply]
+  simp only [HasProd, tendsto_pi_nhds, Finset.prod_apply]
 
 @[to_additive]
 theorem Pi.multipliable {f : ι → ∀ x, X x} :

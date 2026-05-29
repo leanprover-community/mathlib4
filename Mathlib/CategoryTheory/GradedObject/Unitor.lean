@@ -75,7 +75,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The cofan `mapBifunctorLeftUnitorCofan F X e p hp Y j` is a colimit. -/
 noncomputable def mapBifunctorLeftUnitorCofanIsColimit (j : J) :
     IsColimit (mapBifunctorLeftUnitorCofan F X e p hp Y j) :=
-  mkCofanColimit _
+  Cofan.IsColimit.mk _
     (fun s => e.inv.app (Y j) ≫
       (F.map (singleObjApplyIso (0 : I) X).inv).app (Y j) ≫ s.inj ⟨⟨0, j⟩, hp j⟩)
     (fun s => by
@@ -190,7 +190,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The cofan `mapBifunctorRightUnitorCofan F Y e p hp X j` is a colimit. -/
 noncomputable def mapBifunctorRightUnitorCofanIsColimit (j : J) :
     IsColimit (mapBifunctorRightUnitorCofan F Y e p hp X j) :=
-  mkCofanColimit _
+  Cofan.IsColimit.mk _
     (fun s => e.inv.app (X j) ≫
       (F.obj (X j)).map (singleObjApplyIso (0 : I) Y).inv ≫ s.inj ⟨⟨j, 0⟩, hp j⟩)
     (fun s => by

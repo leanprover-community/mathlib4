@@ -26,7 +26,7 @@ locally `κ'`-presentable for any regular cardinal `κ'` such that `κ ≤ κ'`.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v' v u' u
 

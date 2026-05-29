@@ -172,7 +172,7 @@ This is due to definition of `Real.log` for negative numbers. -/
   rw [ne_comm, ← sub_ne_zero] at hp₁
   unfold binEntropy
   simp only [log_inv, mul_neg]
-  fun_prop (disch := assumption)
+  fun_prop
 
 lemma differentiableAt_binEntropy_iff_ne_zero_one :
     DifferentiableAt ℝ binEntropy p ↔ p ≠ 0 ∧ p ≠ 1 := by
@@ -194,7 +194,7 @@ lemma deriv_binEntropy (p : ℝ) : deriv binEntropy p = log (1 - p) - log p := b
     rw [binEntropy_eq_negMulLog_add_negMulLog_one_sub', deriv_fun_add, deriv_comp_const_sub,
       deriv_negMulLog hp₀, deriv_negMulLog hp₁]
     · ring
-    all_goals fun_prop (disch := assumption)
+    all_goals fun_prop
   -- pathological case where `deriv = 0` since `binEntropy` is not differentiable there
   · rw [deriv_zero_of_not_differentiableAt (differentiableAt_binEntropy_iff_ne_zero_one.not.2 hp)]
     push +distrib Not at hp
@@ -204,10 +204,10 @@ lemma deriv_binEntropy (p : ℝ) : deriv binEntropy p = log (1 - p) - log p := b
 
 /-- Shannon q-ary Entropy function (measured in Nats, i.e., using natural logs).
 
-It's the Shannon entropy of a random variable with possible outcomes {1, ..., q}
+It's the Shannon entropy of a random variable with possible outcomes `{1, ..., q}`
 where outcome `1` has probability `1 - p` and all other outcomes are equally likely.
 
-The usual domain of definition is p ∈ [0,1], i.e., input is a probability.
+The usual domain of definition is `p ∈ [0,1]`, i.e., input is a probability.
 
 This is a generalization of the binary entropy function `binEntropy`. -/
 @[pp_nodot] noncomputable def qaryEntropy (q : ℕ) (p : ℝ) : ℝ := p * log (q - 1 : ℤ) + binEntropy p
@@ -243,7 +243,7 @@ This is due to definition of `Real.log` for negative numbers. -/
   unfold qaryEntropy; fun_prop
 
 @[fun_prop] lemma differentiableAt_qaryEntropy (hp₀ : p ≠ 0) (hp₁ : p ≠ 1) :
-    DifferentiableAt ℝ (qaryEntropy q) p := by unfold qaryEntropy; fun_prop (disch := assumption)
+    DifferentiableAt ℝ (qaryEntropy q) p := by unfold qaryEntropy; fun_prop
 
 lemma deriv_qaryEntropy (hp₀ : p ≠ 0) (hp₁ : p ≠ 1) :
     deriv (qaryEntropy q) p = log (q - 1) + log (1 - p) - log p := by
@@ -251,7 +251,7 @@ lemma deriv_qaryEntropy (hp₀ : p ≠ 0) (hp₁ : p ≠ 1) :
   rw [deriv_fun_add]
   · simp only [Int.cast_sub, Int.cast_natCast, Int.cast_one, differentiableAt_fun_id,
       deriv_mul_const, deriv_id'', one_mul, deriv_binEntropy, add_sub_assoc]
-  all_goals fun_prop (disch := assumption)
+  all_goals fun_prop
 
 /-- Binary entropy has derivative `log (1 - p) - log p`. -/
 lemma hasDerivAt_binEntropy (hp₀ : p ≠ 0) (hp₁ : p ≠ 1) :
@@ -282,7 +282,7 @@ private lemma tendsto_log_one_sub_sub_log_nhdsLT_one_atBot :
     have : MapsTo ((1 : ℝ) - ·) (Iio 1) (Ioi 0) := by
       intro p hx
       simp_all only [mem_Iio, mem_Ioi, sub_pos]
-    convert ContinuousWithinAt.tendsto_nhdsWithin (x := (1 : ℝ)) contF.continuousWithinAt this
+    convert! ContinuousWithinAt.tendsto_nhdsWithin (x := (1 : ℝ)) contF.continuousWithinAt this
     exact Eq.symm (sub_eq_zero_of_eq rfl)
   · have h₁ : (1 : ℝ) - (2 : ℝ)⁻¹ < 1 := by norm_num
     filter_upwards [Ico_mem_nhdsLT h₁] with p hx
@@ -339,9 +339,7 @@ lemma deriv2_qaryEntropy :
       · rw [deriv.log differentiableAt_fun_id xne0]
         simp only [deriv_id'', one_div]
         · have {q : ℝ} (p : ℝ) : DifferentiableAt ℝ (fun p => q - p) p := by fun_prop
-          have d_oneminus (p : ℝ) : deriv (fun (y : ℝ) ↦ 1 - y) p = -1 := by
-            rw [deriv_const_sub 1, deriv_id'']
-          simp [field, sub_ne_zero_of_ne xne1.symm, this, d_oneminus]
+          simp [field, sub_ne_zero_of_ne xne1.symm, this]
           ring
       · apply DifferentiableAt.add
         · simp only [differentiableAt_const]
@@ -386,7 +384,7 @@ lemma qaryEntropy_strictMonoOn (qLe2 : 2 ≤ q) :
       · simp_all only [mem_Ioi, mul_pos_iff_of_pos_left, show 0 < (q : ℝ) - 1 by linarith]
       · have qpos : 0 < (q : ℝ) := by positivity
         have : q * p < q - 1 := by
-          convert mul_lt_mul_of_pos_left hp.2 qpos using 1
+          convert! mul_lt_mul_of_pos_left hp.2 qpos using 1
           simp only [mul_sub, mul_one, isUnit_iff_ne_zero, ne_eq, ne_of_gt qpos, not_false_eq_true,
             IsUnit.mul_inv_cancel]
         linarith
@@ -428,7 +426,7 @@ lemma binEntropy_strictMonoOn : StrictMonoOn binEntropy (Icc 0 2⁻¹) := by
 /-- Binary entropy is strictly decreasing in interval [1/2, 1]. -/
 lemma binEntropy_strictAntiOn : StrictAntiOn binEntropy (Icc 2⁻¹ 1) := by
   rw [show (Icc (2⁻¹ : ℝ) 1) = Icc (1 / 2) 1 by norm_num, ← qaryEntropy_two]
-  convert qaryEntropy_strictAntiOn (by rfl) using 1
+  convert! qaryEntropy_strictAntiOn (by rfl) using 1
   norm_num
 
 /-! ### Strict concavity of entropy -/

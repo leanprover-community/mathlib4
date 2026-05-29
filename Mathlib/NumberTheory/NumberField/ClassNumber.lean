@@ -119,7 +119,7 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_norm_le_of_isPrime
     IsPrincipalIdealRing (𝓞 K) := by
   refine isPrincipalIdealRing_of_isPrincipal_of_norm_le (fun I hI ↦ ?_)
   rw [← mem_isPrincipalSubmonoid_iff,
-    ← prod_normalizedFactors_eq_self (nonZeroDivisors.coe_ne_zero I)]
+    ← Ideal.prod_normalizedFactors_eq_self (nonZeroDivisors.coe_ne_zero I)]
   refine Submonoid.multiset_prod_mem _ _ (fun J hJ ↦ mem_isPrincipalSubmonoid_iff.mp ?_)
   by_cases hJ0 : J = 0
   · simpa [hJ0] using bot_isPrincipal

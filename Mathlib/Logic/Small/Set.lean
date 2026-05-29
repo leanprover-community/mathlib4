@@ -12,7 +12,7 @@ public import Mathlib.Logic.Small.Basic
 # Results about `Small` on coerced sets
 -/
 
-@[expose] public section
+public section
 
 universe u u1 u2 u3 u4
 

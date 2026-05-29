@@ -112,7 +112,7 @@ theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) =
 
 theorem variance {n : ℕ} (hn : n ≠ 0) (x : I) :
     (∑ k : Fin (n + 1), (x - k/ₙ : ℝ) ^ 2 * bernstein n k x) = (x : ℝ) * (1 - x) / n := by
-  convert congr(Polynomial.aeval (x : ℝ) $(bernsteinPolynomial.variance ℝ n) / n ^ 2) using 1
+  convert! congr(Polynomial.aeval (x : ℝ) $(bernsteinPolynomial.variance ℝ n) / n ^ 2) using 1
   · simp only [z, bernstein_apply, nsmul_eq_mul, bernsteinPolynomial, Finset.sum_range, map_sum,
       Polynomial.coe_aeval_eq_eval, Polynomial.eval_mul, Polynomial.eval_pow, Polynomial.eval_sub,
       Polynomial.eval_natCast, Polynomial.eval_X, Polynomial.eval_one]
@@ -197,7 +197,7 @@ theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) 
   /- Choose a constant `C` such that `‖f x - f y‖_U ≤ C` for all `x`, `y`.
   For a normed space, this would be twice the norm of `f`. -/
   obtain ⟨C, hC⟩ : ∃ C, ∀ x y, gauge U (f x - f y) ≤ C := by
-    have : Continuous fun (x, y) ↦ gauge U (f x - f y) := by fun_prop (disch := assumption)
+    have : Continuous fun (x, y) ↦ gauge U (f x - f y) := by fun_prop
     simpa only [BddAbove, Set.Nonempty, mem_upperBounds, Set.forall_mem_range, Prod.forall]
       using isCompact_range this |>.bddAbove
   have hC₀ : 0 ≤ C := le_trans (gauge_nonneg _) (hC 0 0)

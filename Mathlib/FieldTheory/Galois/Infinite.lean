@@ -56,7 +56,8 @@ variable {k K : Type*} [Field k] [Field K] [Algebra k K]
 
 namespace InfiniteGalois
 
-open Pointwise FiniteGaloisIntermediateField AlgEquiv
+open scoped Pointwise
+open FiniteGaloisIntermediateField AlgEquiv
 --Note: The `adjoin`s below are `FiniteGaloisIntermediateField.adjoin`
 
 lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :

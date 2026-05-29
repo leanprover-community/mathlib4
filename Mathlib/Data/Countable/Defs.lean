@@ -23,7 +23,7 @@ This file also provides a few instances of these typeclasses.
 More instances can be found in other files.
 -/
 
-@[expose] public section
+public section
 
 open Function
 

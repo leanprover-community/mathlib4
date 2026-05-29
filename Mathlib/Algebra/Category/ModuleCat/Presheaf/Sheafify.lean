@@ -169,6 +169,7 @@ def SMulCandidate.mk' (S : Sieve X.unop) (hS : S ∈ J X.unop)
     · rw [← RingCat.comp_apply, NatTrans.naturality, RingCat.comp_apply, ha₀]
       apply (hr₀ _ hg).symm.trans
       simp
+      rfl
     · erw [NatTrans.naturality_apply φ, hb₀]
       apply (hm₀ _ hg).symm.trans
       dsimp

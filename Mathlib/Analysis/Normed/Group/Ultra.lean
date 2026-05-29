@@ -61,7 +61,7 @@ lemma isUltrametricDist_of_isNonarchimedean_norm {S' : Type*} [SeminormedAddGrou
 lemma isNonarchimedean_norm {R} [SeminormedAddCommGroup R] [IsUltrametricDist R] :
     IsNonarchimedean (‖·‖ : R → ℝ) := by
   intro x y
-  convert dist_triangle_max 0 x (x + y) using 1
+  convert! dist_triangle_max 0 x (x + y) using 1
   · simp
   · congr <;> simp [SeminormedAddGroup.dist_eq]
 
@@ -264,10 +264,16 @@ Given a function `f : ι → M` and a nonempty finite set `t ⊆ ι`, we can alw
 -/
 @[to_additive /-- Given a function `f : ι → M` and a nonempty finite set `t ⊆ ι`, we can always find
 `i ∈ t` such that `‖∑ j ∈ t, f j‖ ≤ ‖f i‖`. -/]
-theorem exists_norm_finset_prod_le_of_nonempty {t : Finset ι} (ht : t.Nonempty) (f : ι → M) :
+theorem exists_norm_finsetProd_le_of_nonempty {t : Finset ι} (ht : t.Nonempty) (f : ι → M) :
     ∃ i ∈ t, ‖∏ j ∈ t, f j‖ ≤ ‖f i‖ :=
   match t.exists_mem_eq_sup' ht (‖f ·‖) with
   | ⟨j, hj, hj'⟩ => ⟨j, hj, (ht.norm_prod_le_sup'_norm f).trans (le_of_eq hj')⟩
+
+@[deprecated (since := "2026-04-08")]
+alias exists_norm_finset_sum_le_of_nonempty := exists_norm_finsetSum_le_of_nonempty
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias exists_norm_finset_prod_le_of_nonempty := exists_norm_finsetProd_le_of_nonempty
 
 /--
 Given a function `f : ι → M` and a finite set `t ⊆ ι`, we can always find `i : ι`, belonging to `t`
@@ -275,11 +281,16 @@ if `t` is nonempty, such that `‖∏ j ∈ t, f j‖ ≤ ‖f i‖`.
 -/
 @[to_additive /-- Given a function `f : ι → M` and a finite set `t ⊆ ι`, we can always find `i : ι`,
 belonging to `t` if `t` is nonempty, such that `‖∑ j ∈ t, f j‖ ≤ ‖f i‖`. -/]
-theorem exists_norm_finset_prod_le (t : Finset ι) [Nonempty ι] (f : ι → M) :
+theorem exists_norm_finsetProd_le (t : Finset ι) [Nonempty ι] (f : ι → M) :
     ∃ i : ι, (t.Nonempty → i ∈ t) ∧ ‖∏ j ∈ t, f j‖ ≤ ‖f i‖ := by
   rcases t.eq_empty_or_nonempty with rfl | ht
   · simp
-  exact (fun ⟨i, h, h'⟩ => ⟨i, fun _ ↦ h, h'⟩) <| exists_norm_finset_prod_le_of_nonempty ht f
+  exact (fun ⟨i, h, h'⟩ => ⟨i, fun _ ↦ h, h'⟩) <| exists_norm_finsetProd_le_of_nonempty ht f
+
+@[deprecated (since := "2026-04-08")] alias exists_norm_finset_sum_le := exists_norm_finsetSum_le
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias exists_norm_finset_prod_le := exists_norm_finsetProd_le
 
 /--
 Given a function `f : ι → M` and a multiset `t : Multiset ι`, we can always find `i : ι`, belonging
@@ -364,7 +375,7 @@ lemma norm_prod_eq_sup'_of_pairwise_ne {s : Finset ι} {f : ι → M} (hs' : s.N
     (hs : Set.Pairwise s (fun i j ↦ ‖f i‖ ≠ ‖f j‖)) :
     ‖∏ i ∈ s, f i‖ = s.sup' hs' (fun i ↦ ‖f i‖) := by
   rw [← coe_nnnorm', nnnorm_prod_eq_sup_of_pairwise_ne, ← Finset.sup'_eq_sup hs']
-  · exact s.comp_sup'_eq_sup'_comp hs' _ (by tauto)
+  · exact s.apply_sup'_eq_sup'_comp hs' _ (by tauto)
   · simpa [← NNReal.coe_inj] using hs
 
 end CommGroup

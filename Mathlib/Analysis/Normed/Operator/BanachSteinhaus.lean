@@ -20,7 +20,7 @@ Note that we prove the more general version about barrelled spaces in
 more general setup.
 -/
 
-@[expose] public section
+public section
 
 open Set
 

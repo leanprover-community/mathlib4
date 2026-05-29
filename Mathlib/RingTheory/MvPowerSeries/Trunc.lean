@@ -289,30 +289,30 @@ variable {n : ℕ} [Finite σ] [CommSemiring R]
 
 /-- The truncation of a multivariate formal power series at a total degree `n`
 when the index `σ` is finite. -/
-def truncTotal (R : Type*) [CommSemiring R] (n : ℕ) : MvPowerSeries σ R →ₗ[R] MvPolynomial σ R :=
+def truncTotal {R : Type*} [CommSemiring R] (n : ℕ) : MvPowerSeries σ R →ₗ[R] MvPolynomial σ R :=
   truncFinset R (finite_of_degree_lt n).toFinset
 
 theorem coeff_truncTotal (p : MvPowerSeries σ R) {x : σ →₀ ℕ} (h : degree x < n) :
-    (truncTotal R n p).coeff x = p.coeff x := coeff_truncFinset_of_mem p (by simpa)
+    (truncTotal n p).coeff x = p.coeff x := coeff_truncFinset_of_mem p (by simpa)
 
 theorem coeff_truncTotal_eq_zero (p : MvPowerSeries σ R) {x : σ →₀ ℕ}
-    (h : n ≤ degree x) : (truncTotal R n p).coeff x = 0 := coeff_truncFinset_eq_zero p (by simpa)
+    (h : n ≤ degree x) : (truncTotal n p).coeff x = 0 := coeff_truncFinset_eq_zero p (by simpa)
 
-lemma truncTotal_one (h : n ≠ 0) : truncTotal R n (1 : MvPowerSeries σ R) = 1 :=
+lemma truncTotal_one (h : n ≠ 0) : truncTotal n (1 : MvPowerSeries σ R) = 1 :=
   truncFinset_one (by revert h; contrapose; simp)
 
 lemma coeff_truncTotal_mul_truncTotal_eq_coeff_mul {x : σ →₀ ℕ} (p q : MvPowerSeries σ R)
-    (hx : degree x < n) : MvPolynomial.coeff x ((truncTotal R n) p * (truncTotal R n) q) =
+    (hx : degree x < n) : MvPolynomial.coeff x (p.truncTotal n * q.truncTotal n) =
       (coeff x) (p * q) := coeff_truncFinset_mul_truncFinset_eq_coeff_mul
   (fun _ _ h ↦ by simp; grind [degree_mono h]) p q (by simpa)
 
 theorem totalDegree_truncTotal_lt (p : MvPowerSeries σ R) (h : n ≠ 0) :
-    (truncTotal R n p).totalDegree < n := by
+    (truncTotal n p).totalDegree < n := by
   apply (totalDegree_truncFinset p).trans_lt
   simp [Finset.sup_lt_iff (Nat.lt_of_sub_ne_zero h)]
 
 theorem truncTotal_coe_eq_self_iff (p : MvPolynomial σ R) (h : n ≠ 0) :
-    truncTotal R n p = p ↔ p.totalDegree < n := by
+    truncTotal n p = p ↔ p.totalDegree < n := by
   rw [truncTotal, truncFinset_coe_eq_self_iff, Set.Finite.subset_toFinset,
     MvPolynomial.totalDegree, Finset.sup_lt_iff (bot_lt_iff_ne_bot.mpr h), Set.subset_def]
   simp [degree, sum]

@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Triangulated.Adjunction
-public import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
 
 /-!
 # The triangulated equivalence `Cᵒᵖᵒᵖ ≌ C`.

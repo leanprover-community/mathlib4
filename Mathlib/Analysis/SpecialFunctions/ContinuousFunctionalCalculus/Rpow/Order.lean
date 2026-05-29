@@ -20,10 +20,11 @@ C⋆-algebra. The proof makes use of the integral representation of `rpow` in
 
 + `CFC.monotone_nnrpow`, `CFC.monotone_rpow`: `a ↦ a ^ p` is operator monotone for `p ∈ [0,1]`
 + `CFC.monotone_sqrt`: `CFC.sqrt` is operator monotone
++ `CFC.concaveOn_nnrpow`, `CFC.concaveOn_rpow`: `a ↦ a ^ p` is operator concave for `p ∈ [0,1]`
++ `CFC.concaveOn_sqrt`: `CFC.sqrt` is operator concave
 
 ## TODO
 
-+ Show operator concavity of `rpow` over `Icc 0 1`
 + Show that `rpow` over `Icc (-1) 0` is operator antitone and operator convex
 + Show operator convexity of `rpow` over `Icc 1 2`
 
@@ -88,6 +89,38 @@ lemma nnrpow_le_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) {a b : A} (hab : a ≤
 lemma sqrt_le_sqrt (a b : A) (hab : a ≤ b) : sqrt a ≤ sqrt b :=
   monotone_sqrt hab
 
+/-- This is an intermediate result; use the more general `CFC.concaveOn_nnrpow` instead. -/
+private lemma concaveOn_nnrpow_Ioo {p : ℝ≥0} (hp : p ∈ Ioo 0 1) :
+    ConcaveOn ℝ (Ici (0 : A)) (fun a : A => a ^ p) := by
+  obtain ⟨μ, hμ⟩ := CFC.exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁ A hp
+  have h₃' : (Ici 0).EqOn (fun a : A => a ^ p)
+      (fun a : A => ∫ t in Ioi 0, cfcₙ (rpowIntegrand₀₁ p t) a ∂μ) :=
+    fun a ha => (hμ a ha).2
+  refine ConcaveOn.congr ?_ h₃'.symm
+  refine integral_concaveOn_of_integrand_ae (convex_Ici _) ?_ fun a ha => (hμ a ha).1
+  filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
+  exact concaveOn_cfcₙ_rpowIntegrand₀₁ hp ht
+
+/-- `a ↦ a ^ p` is operator concave for `p ∈ [0,1]`. -/
+lemma concaveOn_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) :
+    ConcaveOn ℝ (Ici (0 : A)) (fun a : A => a ^ p) := by
+  have hIcc : Icc (0 : ℝ≥0) 1 = Ioo 0 1 ∪ {0} ∪ {1} := by ext; simp
+  rw [hIcc] at hp
+  obtain (hp | hp) | hp := hp
+  · exact concaveOn_nnrpow_Ioo hp
+  · simp only [mem_singleton_iff] at hp
+    simp only [hp, nnrpow_zero]
+    exact concaveOn_const _ (convex_Ici _)
+  · simp only [mem_singleton_iff] at hp
+    simp only [hp]
+    exact ConcaveOn.congr (concaveOn_id (convex_Ici _)) nnrpow_one_eqOn.symm
+
+/-- The square root is operator concave. -/
+lemma concaveOn_sqrt : ConcaveOn ℝ (Ici (0 : A)) (sqrt : A → A) := by
+  eta_expand
+  simp_rw [sqrt_eq_nnrpow]
+  exact concaveOn_nnrpow ⟨by norm_num, by norm_num⟩
+
 end NonUnitalCStarAlgebra
 
 section UnitalCStarAlgebra
@@ -98,22 +131,31 @@ variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 lemma monotone_rpow {p : ℝ} (hp : p ∈ Icc 0 1) : Monotone (fun a : A => a ^ p) := by
   let q : ℝ≥0 := ⟨p, hp.1⟩
   change Monotone (fun a : A => a ^ (q : ℝ))
-  cases (zero_le q).lt_or_eq' with
-  | inl hq =>
-    simp_rw [← CFC.nnrpow_eq_rpow hq]
-    exact monotone_nnrpow hp
-  | inr hq =>
-    simp only [hq, NNReal.coe_zero]
+  obtain hq | hq := eq_zero_or_pos q
+  · rw [hq]
     intro a b hab
     by_cases ha : 0 ≤ a
     · have hb : 0 ≤ b := ha.trans hab
       simp [CFC.rpow_zero a, CFC.rpow_zero b]
     · have : a ^ (0 : ℝ) = 0 := cfc_apply_of_not_predicate a ha
       simp [this]
+  · simp_rw [← CFC.nnrpow_eq_rpow hq]
+    exact monotone_nnrpow hp
 
 @[gcongr]
 lemma rpow_le_rpow {p : ℝ} (hp : p ∈ Icc 0 1) {a b : A} (hab : a ≤ b) :
     a ^ p ≤ b ^ p := monotone_rpow hp hab
+
+/-- `a ↦ a ^ p` is operator concave for `p ∈ [0,1]`. -/
+lemma concaveOn_rpow {p : ℝ} (hp : p ∈ Icc 0 1) :
+    ConcaveOn ℝ (Ici (0 : A)) (fun a : A => a ^ p) := by
+  let q : ℝ≥0 := ⟨p, hp.1⟩
+  change ConcaveOn ℝ (Ici (0 : A)) (fun a : A => a ^ (q : ℝ))
+  obtain hq | hq := eq_zero_or_pos q
+  · simp only [hq, NNReal.coe_zero]
+    exact ConcaveOn.congr (concaveOn_const _ (convex_Ici _)) rpow_zero_eqOn.symm
+  · simp_rw [← CFC.nnrpow_eq_rpow hq]
+    exact concaveOn_nnrpow hp
 
 end UnitalCStarAlgebra
 

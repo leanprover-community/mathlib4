@@ -278,6 +278,7 @@ theorem parallelogram_law {x y : E} : ⟪x + y, x + y⟫ + ⟪x - y, x - y⟫ = 
   ring
 
 /-- **Cauchy–Schwarz inequality**. -/
+@[wikidata Q190546]
 theorem inner_mul_inner_self_le (x y : E) : ‖⟪x, y⟫‖ * ‖⟪y, x⟫‖ ≤ re ⟪x, x⟫ * re ⟪y, y⟫ :=
   letI : PreInnerProductSpace.Core 𝕜 E := PreInnerProductSpace.toCore
   InnerProductSpace.Core.inner_mul_inner_self_le x y
@@ -356,7 +357,7 @@ theorem linearIndependent_of_ne_zero_of_inner_eq_zero {ι : Type*} {v : ι → E
   have h' : g i * ⟪v i, v i⟫ = ⟪v i, ∑ j ∈ s, g j • v j⟫ := by
     rw [inner_sum]
     symm
-    convert Finset.sum_eq_single (M := 𝕜) i ?_ ?_
+    convert! Finset.sum_eq_single (M := 𝕜) i ?_ ?_
     · rw [inner_smul_right]
     · intro j _hj hji
       rw [inner_smul_right, ho hji.symm, mul_zero]
@@ -668,8 +669,7 @@ theorem dist_div_norm_sq_smul {x y : F} (hx : x ≠ 0) (hy : y ≠ 0) (R : ℝ) 
       rw [sqrt_mul, sqrt_sq, sqrt_sq, dist_eq_norm] <;> positivity
 
 /-- The inner product of a nonzero vector with a nonzero multiple of
-itself, divided by the product of their norms, has absolute value
-1. -/
+itself, divided by the product of their norms, has absolute value 1. -/
 theorem norm_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_ne_zero_mul {x : E} {r : 𝕜} (hx : x ≠ 0)
     (hr : r ≠ 0) : ‖⟪x, r • x⟫‖ / (‖x‖ * ‖r • x‖) = 1 := by
   have hx' : ‖x‖ ≠ 0 := by simp [hx]
@@ -679,8 +679,7 @@ theorem norm_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_ne_zero_mul {x : E} {r
     mul_div_cancel_right₀ _ hr', div_self hx']
 
 /-- The inner product of a nonzero vector with a nonzero multiple of
-itself, divided by the product of their norms, has absolute value
-1. -/
+itself, divided by the product of their norms, has absolute value 1. -/
 theorem abs_real_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_ne_zero_mul {x : F} {r : ℝ}
     (hx : x ≠ 0) (hr : r ≠ 0) : |⟪x, r • x⟫_ℝ| / (‖x‖ * ‖r • x‖) = 1 :=
   norm_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_ne_zero_mul hx hr
@@ -819,7 +818,7 @@ theorem real_inner_div_norm_mul_norm_eq_neg_one_iff (x y : F) :
 the equality case for Cauchy-Schwarz. -/
 theorem inner_eq_one_iff_of_norm_eq_one {x y : E} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ⟪x, y⟫ = 1 ↔ x = y := by
-  convert inner_eq_norm_mul_iff (𝕜 := 𝕜) (E := E) using 2 <;> simp [hx, hy]
+  convert! inner_eq_norm_mul_iff (𝕜 := 𝕜) (E := E) using 2 <;> simp [hx, hy]
 
 /-- If the inner product of two unit vectors is `-1`, then the two vectors are negations of each
 other. -/
@@ -854,14 +853,7 @@ theorem inner_lt_norm_mul_iff_real {x y : F} : ⟪x, y⟫_ℝ < ‖x‖ * ‖y�
 /-- If the inner product of two unit vectors is strictly less than `1`, then the two vectors are
 distinct. One form of the equality case for Cauchy-Schwarz. -/
 theorem inner_lt_one_iff_real_of_norm_eq_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
-    ⟪x, y⟫_ℝ < 1 ↔ x ≠ y := by convert inner_lt_norm_mul_iff_real (F := F) <;> simp [hx, hy]
-
-@[deprecated (since := "2025-11-15")] alias inner_eq_one_iff_of_norm_one :=
-  inner_eq_one_iff_of_norm_eq_one
-@[deprecated (since := "2025-11-15")] alias inner_self_eq_one_of_norm_one :=
-  inner_self_eq_one_of_norm_eq_one
-@[deprecated (since := "2025-11-15")] alias inner_lt_one_iff_real_of_norm_one :=
-  inner_lt_one_iff_real_of_norm_eq_one
+    ⟪x, y⟫_ℝ < 1 ↔ x ≠ y := by convert! inner_lt_norm_mul_iff_real (F := F) <;> simp [hx, hy]
 
 /-- The sphere of radius `r = ‖y‖` is tangent to the plane `⟪x, y⟫ = ‖y‖ ^ 2` at `x = y`. -/
 theorem eq_of_norm_le_re_inner_eq_norm_sq {x y : E} (hle : ‖x‖ ≤ ‖y‖) (h : re ⟪x, y⟫ = ‖y‖ ^ 2) :
@@ -879,6 +871,32 @@ theorem norm_add_eq_iff_real {x y : F} : ‖x + y‖ = ‖x‖ + ‖y‖ ↔ ‖
     mul_right_inj' two_ne_zero, ← inner_eq_norm_mul_iff_real]
 
 end Norm
+
+section Induced
+
+variable {G : Type*} [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E] [AddCommGroup G]
+    [Module 𝕜 G]
+
+/-- A linear map from a `Module` to an `InnerProductSpace` induces an `InnerProductSpace`
+structure on the domain using the `SeminormedAddCommGroup.induced` norm.
+
+See note [reducible non-instances]. -/
+abbrev InnerProductSpace.induced {F : Type*} [FunLike F G E] [LinearMapClass F 𝕜 G E] (f : F) :
+    letI := SeminormedAddCommGroup.induced G E f
+    InnerProductSpace 𝕜 G :=
+  letI := SeminormedAddCommGroup.induced G E f
+  letI := NormedSpace.induced 𝕜 G E f
+  { inner x y := inner 𝕜 (f x) (f y)
+    add_left x y z := by rw [map_add, inner_add_left]
+    smul_left x y r := by rw [map_smul, inner_smul_left]
+    norm_sq_eq_re_inner x := norm_sq_eq_re_inner (f x)
+    conj_inner_symm x y := inner_conj_symm (f x) (f y) }
+
+theorem inner_induced_eq (g₁ g₂ : G) (f : G →ₗ[𝕜] E) :
+    letI := InnerProductSpace.induced f
+    inner 𝕜 g₁ g₂ = inner 𝕜 (f g₁) (f g₂) := rfl
+
+end Induced
 
 section RCLike
 
@@ -983,6 +1001,8 @@ example :
     (instInnerProductSpaceRealComplex : InnerProductSpace ℝ ℂ) = RCLike.toInnerProductSpaceReal :=
   rfl
 
+theorem Real.inner_apply (x y : ℝ) : inner ℝ x y = x * y := by rw [mul_comm]; rfl
+
 section IsPosSemidef
 
 variable [NormedAddCommGroup E] [InnerProductSpace ℝ E]
@@ -998,3 +1018,7 @@ lemma isPosSemidef_inner : LinearMap.IsPosSemidef (innerₗ E) where
   isNonneg := isNonneg_inner
 
 end IsPosSemidef
+
+example : (instInnerProductSpaceRealComplex.toSMul : SMul ℝ ℂ) =
+    Complex.instRCLike.toSMul := by
+  with_reducible_and_instances rfl

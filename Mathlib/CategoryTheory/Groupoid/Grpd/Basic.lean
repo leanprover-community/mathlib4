@@ -70,8 +70,8 @@ instance category : LargeCategory.{max v u} Grpd.{v, u} where
 /-- Functor that gets the set of objects of a groupoid. It is not
 called `forget`, because it is not a faithful functor. -/
 def objects : Grpd.{v, u} ⥤ Type u where
-  obj := Bundled.α
-  map F := F.obj
+  obj C := Bundled.α C
+  map F := ↾F.obj
 
 /-- Forgetting functor to `Cat` -/
 def forgetToCat : Grpd.{v, u} ⥤ Cat.{v, u} where
@@ -103,7 +103,7 @@ def piLimitFan ⦃J : Type u⦄ (F : J → Grpd.{u, u}) : Limits.Fan F :=
 set_option backward.isDefEq.respectTransparency false in
 /-- The product fan over an indexed family of groupoids, is a limit cone. -/
 def piLimitFanIsLimit ⦃J : Type u⦄ (F : J → Grpd.{u, u}) : Limits.IsLimit (piLimitFan F) :=
-  Limits.mkFanLimit (piLimitFan F) (fun s => Functor.pi' fun j => s.proj j)
+  Limits.Fan.IsLimit.mk (piLimitFan F) (fun s => Functor.pi' fun j => s.proj j)
     (by
       intros
       dsimp only [piLimitFan]
