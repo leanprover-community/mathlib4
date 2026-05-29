@@ -573,6 +573,15 @@ def toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
 
 @[simp] lemma coe_toNNReal (x : I) : ((toNNReal x) : ℝ) = x := rfl
 
+@[simp] lemma toNNReal_coe (x : ℝ≥0) (hx : x.1 ∈ I) : toNNReal ⟨x, hx⟩ = x := rfl
+
+@[simp]
+lemma toNNReal_coe_symm (x : ℝ≥0) (hx : x.1 ∈ I) : toNNReal (σ ⟨x, hx⟩) = 1 - x := by
+  ext
+  simp only [coe_toNNReal, coe_symm_eq]
+  rw [NNReal.coe_sub hx.2]
+  simp
+
 @[simp] lemma toNNReal_add_toNNReal_symm (x : I) : toNNReal x + toNNReal (σ x) = 1 := by ext; simp
 @[simp] lemma toNNReal_symm_add_toNNReal (x : I) : toNNReal (σ x) + toNNReal x = 1 := by ext; simp
 

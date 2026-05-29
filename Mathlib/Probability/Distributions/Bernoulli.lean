@@ -161,6 +161,15 @@ theorem map_bernoulliMeasure' (x y : X) {f : X → Y} (hf : Measurable f) (p : I
     Ber(x, y, p).map f = bernoulliMeasure (f x) (f y) p := by
   simp [bernoulliMeasure_def, Measure.map_add _ _ hf, Measure.map_smul, map_dirac' hf]
 
+lemma eq_bernoulliMeasure {μ : Measure X}
+    (h1 : ∀ s, MeasurableSet s → x ∈ s → y ∈ s → μ s = 1)
+    (h2 : ∀ s, MeasurableSet s → x ∈ s → y ∉ s → μ s = toNNReal p)
+    (h3 : ∀ s, MeasurableSet s → x ∉ s → y ∈ s → μ s = toNNReal (σ p))
+    (h4 : ∀ s, MeasurableSet s → x ∉ s → y ∉ s → μ s = 0) :
+    μ = Ber(x, y, p) := by
+  ext s hs
+  by_cases hx : x ∈ s <;> by_cases hy : y ∈ s <;> simp_all
+
 section Integral
 
 variable {E : Type*} [NormedAddCommGroup E]
