@@ -5,7 +5,7 @@ Authors: Kalle Kytölä, Moritz Doll
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
