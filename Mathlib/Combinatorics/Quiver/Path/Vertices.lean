@@ -257,7 +257,7 @@ def activeVertices {a b : V} (p : Path a b) : Set V :=
 
 @[simp] lemma activeVertices_cons {a b c : V} (p : Path a b) (e : b ⟶ c) :
     activeVertices (p.cons e) = activeVertices p ∪ {c} := by
-  ext v; simp [activeVertices, mem_vertices_cons, Set.setOf_or, Set.mem_union]
+  ext v; simp [activeVertices, Set.setOf_or]
 
 @[simp] lemma mem_activeVertices_iff {a b : V} (p : Path a b) {v : V} :
     v ∈ p.activeVertices ↔ v ∈ p.vertices := by
@@ -291,6 +291,6 @@ variable {V W : Type*} [Quiver V] [Quiver W] (F : V ⥤q W)
 lemma end_map {a b : V} (p : Path a b) : F.obj p.end = (F.mapPath p).end := by
   induction p with
   | nil => rfl
-  | cons p' e ih => simp [ih]
+  | cons p' e ih => simp
 
 end Prefunctor

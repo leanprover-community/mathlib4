@@ -3574,14 +3574,14 @@ public import Mathlib.Combinatorics.Pigeonhole
 public import Mathlib.Combinatorics.Quiver.Arborescence
 public import Mathlib.Combinatorics.Quiver.Basic
 public import Mathlib.Combinatorics.Quiver.Cast
+public import Mathlib.Combinatorics.Quiver.ConnectedComponent
 public import Mathlib.Combinatorics.Quiver.Covering
+public import Mathlib.Combinatorics.Quiver.Induced
 public import Mathlib.Combinatorics.Quiver.Path
+public import Mathlib.Combinatorics.Quiver.Path.Cycle
 public import Mathlib.Combinatorics.Quiver.Path.Decomposition
 public import Mathlib.Combinatorics.Quiver.Path.Replicate
 public import Mathlib.Combinatorics.Quiver.Path.Vertices
-public import Mathlib.Combinatorics.Quiver.Path.Cycle
-public import Mathlib.Combinatorics.Quiver.Induced
-public import Mathlib.Combinatorics.Quiver.ConnectedComponent
 public import Mathlib.Combinatorics.Quiver.Path.Weight
 public import Mathlib.Combinatorics.Quiver.Prefunctor
 public import Mathlib.Combinatorics.Quiver.Push

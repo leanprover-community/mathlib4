@@ -50,7 +50,8 @@ def IsCycle {a : V} (p : Path a a) : Prop :=
 @[simp] lemma isCycle_def {a : V} (p : Path a a) : p.IsCycle ↔ 0 < p.length ∧ p.IsSimple :=
   Iff.rfl
 
-@[simp] lemma isPath_nil {a : V} : IsPath (nil : Path a a) := by simp [IsPath]
+theorem IsPath.nil (a : V) : IsPath (nil : Path a a) := by
+  simp [IsPath, vertices_nil]
 
 @[simp] lemma isPath_cons {a b c : V} (p : Path a b) (e : b ⟶ c) :
     IsPath (p.cons e) ↔ IsPath p ∧ c ∉ p.vertices := by
