@@ -115,7 +115,7 @@ public def validateTitle (title : String) : Array String := Id.run do
     -- Titles should be lower-cased (but we allow abbreviations).
     if subject.front.toLower != subject.front then
       let firstWord := subject.takeWhile (!·.isWhitespace)
-      if !(firstWord.all (fun c ↦ c.isUpper)) then
+      if !(firstWord.all (·.isUpper)) then
         errors := errors.push "error: the PR subject should be lowercased"
     if subject.endsWith "." then
       errors := errors.push "error: the PR title should not end with a full stop"
@@ -129,10 +129,10 @@ public def validateTitle (title : String) : Array String := Id.run do
         "error: the PR title contains a tab; please use single spaces instead"
     -- Check for unicode characters which are not allowed: we don't want direction-changing
     -- characters, invisible spaces or so (for example). We re-use the code in the Unicode linter.
-    if !(title.all (fun c ↦ UnicodeLinter.isAllowedCharacter c || c == '\t')) then
-      let chars := title.chars.filter (fun c ↦ !UnicodeLinter.isAllowedCharacter c)
-      let err := ", ".intercalate <| chars.map
+    let badChars := title.chars.filter (fun c ↦ !UnicodeLinter.isAllowedCharacter c && c != '\t')
+    if !badChars.isEmpty then
+      let err := ", ".intercalate <| badChars.map
         (fun c ↦ s!"'{c}' ({UnicodeLinter.Char.printCodepointHex c}).")|>.toList
-      errors := errors.push s!"error: the PR contains {chars.length} Unicode characters \
+      errors := errors.push s!"error: the PR contains {badChars.length} Unicode characters \
         which are not allowed: {err}"
     return errors
