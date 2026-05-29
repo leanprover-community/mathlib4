@@ -192,7 +192,7 @@ theorem exists_isIntegral (W : WeierstrassCurve K) :
         inv_pow, zero_mul, sub_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow]
       apply (Valuation.mem_integer_iff _ _).mpr
       simp only [map_mul, map_inv₀, map_pow, ha]
-      refine inv_mul_le_one_of_le₀ ?_ zero_le'
+      refine inv_mul_le_one_of_le₀ ?_ zero_le
       refine (hlmax _ (by simp [l₀, l])).trans ?_
     any_goals
       apply le_self_pow hlmax_ge_1.le
