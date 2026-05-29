@@ -623,10 +623,8 @@ theorem coeff_X [DecidableEq σ] (i : σ) (m) :
 @[deprecated (since := "2026-05-25")]
 alias coeff_X' := coeff_X
 
-/-- Warning: `coeff_index_single_self_X` used to be `coeff_X`, deprecated (since := "2026-05-25")
--/
 @[simp]
-theorem coeff_index_single_self_X (i : σ) :
+theorem coeff_X_same (i : σ) :
     coeff (Finsupp.single i 1) (X i : MvPolynomial σ R) = 1 := by
   classical rw [coeff_X, if_pos rfl]
 
@@ -752,7 +750,7 @@ theorem X_ne_zero [Nontrivial R] (s : σ) :
     X (R := R) s ≠ 0 := by
   rw [ne_zero_iff]
   use Finsupp.single s 1
-  simp only [coeff_index_single_self_X, ne_eq, one_ne_zero, not_false_eq_true]
+  simp only [coeff_X_same, ne_eq, one_ne_zero, not_false_eq_true]
 
 @[simp]
 theorem support_eq_empty {p : MvPolynomial σ R} : p.support = ∅ ↔ p = 0 :=
