@@ -37,10 +37,6 @@ jobs:
       #   - mathlib4-nightly-testing/trying        → PR_TOOLCHAIN_TESTS writer
       #                                              (least-trust on the nightly repo)
       #   - any other ref on either repo           → NON_MASTER (FORKS) writer
-      # The two new vars below must be populated in repo settings after
-      # `scripts/setup_cache_entra.sh` creates the corresponding Entra apps:
-      #   - vars.CACHE_NIGHTLY_TESTING_WRITER_AZURE_APP_ID
-      #   - vars.CACHE_PR_TOOLCHAIN_TESTS_WRITER_AZURE_APP_ID
       cache_application_id: >-
         ${{
           (github.repository == 'leanprover-community/mathlib4' && github.ref_name == 'staging') && vars.CACHE_MASTER_WRITER_AZURE_APP_ID
