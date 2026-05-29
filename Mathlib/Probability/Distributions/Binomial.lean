@@ -34,8 +34,8 @@ of `Set.Iic n` such that each `k ∈ Set.Iic n` belongs to `U` independently wit
 
 ## Implementation details
 
-We provide the definition `binomial` with notation `Bin(n, P)` as the corresponding measure
-over `ℕ`. We also introduce a notation `Bin(R, n p)` for the same measure but over a general
+We provide the definition `binomial` with notation `Bin(n, p)` as the corresponding measure
+over `ℕ`. We also introduce a notation `Bin(R, n, p)` for the same measure but over a general
 `AddMonoidWithOne R`, that stands for `Bin(n, p).map (Nat.cast : ℕ → R)`. This is in particular
 useful if one is interested in the binomial distribution as a measure over `ℝ` or `ℤ`.
 Results should be proven for both `Bin(n, p)` and `Bin(R, n, p)` when possible, using the first
