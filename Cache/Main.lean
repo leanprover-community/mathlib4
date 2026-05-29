@@ -54,15 +54,9 @@ Options:
                      `cache get` prints a security notice when this is set.
   --container=NAME   Target container for upload commands (put/put!/put-unpacked/
                      put-staged/commit/commit!). Known containers: master, forks,
-                     nightly-testing, pr-toolchain-tests, legacy. If neither this
-                     flag nor MATHLIB_CACHE_PUT_URL is set, the upload defaults
-                     to `legacy` with a deprecation warning — a transitional
-                     fallback for workflow files that pre-date the per-trust
-                     container split; you should pass --container=NAME explicitly.
-                     (During the migration, master CI runs `put` twice — once
-                     with --container=master, once with --container=legacy —
-                     so consumers on older cache tools still find master-built
-                     artifacts. Forks/nightly CI do not write to legacy.)
+                     nightly-testing, pr-toolchain-tests, legacy. Pass this
+                     explicitly; with neither it nor MATHLIB_CACHE_PUT_URL set,
+                     the upload falls back to `legacy` and warns.
 
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' should be used manually, when hot-fixes are needed
@@ -87,13 +81,11 @@ Valid arguments are:
 # Environment variables
 
 * MATHLIB_CACHE_DIR       Local cache directory (default: ~/.cache/mathlib)
-* MATHLIB_CACHE_GET_URL   Override the download URL (single-URL escape hatch;
-                          bypasses multi-container logic when set)
-* MATHLIB_CACHE_PUT_URL   Override the upload URL (single-URL escape hatch)
-* MATHLIB_CACHE_FROM      Comma-separated container list for the read fallback,
-                          same shape as --cache-from. Intended for CI workflows
-                          to widen reads per job; --cache-from (CLI) takes
-                          precedence when both are set.
+* MATHLIB_CACHE_GET_URL   Download from this single URL, bypassing the containers
+* MATHLIB_CACHE_PUT_URL   Upload to this single URL, bypassing the containers
+* MATHLIB_CACHE_FROM      Comma-separated container list for reads, same shape as
+                          --cache-from. Used by CI to widen reads per job;
+                          --cache-from takes precedence when both are set.
 
 See Cache/README.md for more details.
 "
@@ -193,9 +185,9 @@ def main (args : List String) : IO Unit := do
     -- read path, the non-default-scope warning, and the HEAD hint below.
     let cliOverride? ← cacheFromOverride.get
     let (detectedRepo?, resolvedRepo) ← resolveRepo repo? (← read).mathlibDepPath
-    -- Warn if reading at a non-default scope (before performing reads)
+    -- Warn before reading if the scope is non-default; otherwise point an
+    -- uncached fork HEAD at the per-commit workflow.
     warnIfNonDefaultScope repo? detectedRepo? cliOverride? resolvedRepo
-    -- Otherwise, if HEAD has no cache for this fork, hint at the SHA-scoped UX
     informIfHeadNotBuilt resolvedRepo
     getFiles resolvedRepo hashMap force force goodCurl decompress
   let pack (overwrite verbose unpackedOnly := false) := do

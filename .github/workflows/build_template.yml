@@ -709,14 +709,10 @@ jobs:
           echo "Uploading cache to Azure (container: $MATHLIB_CACHE_PRIMARY)..."
           lake env "$CACHE_BIN" put-staged --container="$MATHLIB_CACHE_PRIMARY" --staging-dir="cache-staging" --repo="$REPO"
 
-          # Dual-write to the legacy `mathlib4` container, but ONLY from master
-          # CI. Old cache tools (forks that haven't synced past the per-container
-          # split) read from `legacy`, so we keep it fresh with master-built
-          # artifacts for backward compatibility. We deliberately do NOT
-          # dual-write from forks/nightly: allowing low-trust writers into
-          # `legacy` would re-introduce the cross-trust poisoning vector this
-          # migration is designed to eliminate. Once all readers have moved
-          # to the dedicated containers, this second call can be removed.
+          # Dual-write to the legacy `mathlib4` container, but only from master
+          # CI: older cache tools read from `legacy`, so master keeps it fresh
+          # for them. Forks and nightly never write to `legacy`, which keeps
+          # low-trust artifacts out of the container those older readers trust.
           if [ "$MATHLIB_CACHE_PRIMARY" = "master" ]; then
             echo "Dual-writing to legacy container for backward compatibility (master only)..."
             lake env "$CACHE_BIN" put-staged --container=legacy --staging-dir="cache-staging" --repo="$REPO"

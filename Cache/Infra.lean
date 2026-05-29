@@ -7,11 +7,11 @@ Authors: Arthur Paulino
 /-!
 # Cache backend infrastructure
 
-The multi-container model (trust-classified Azure containers + per-repo
-allowlist) and the canonical GitHub repo names the cache tool dispatches on.
+The multi-container model — trust-classified Azure containers and the per-repo
+lookup chain — together with the GitHub repo names the cache tool dispatches on.
 
-Kept separate from `Cache.Requests` so changes to the container model or
-trust ordering don't drag the HTTP/curl machinery into review.
+This lives apart from `Cache.Requests` so the container model and trust ordering
+stand on their own, independent of the HTTP/curl machinery that consumes them.
 -/
 
 namespace Cache.Requests
@@ -28,13 +28,11 @@ def NIGHTLY_TESTING_REPO := "leanprover-community/mathlib4-nightly-testing"
 Trust-classified Azure storage containers for the Mathlib cache.
 
 Each variant maps to one Azure Blob Storage container on the `lakecache` storage
-account. The intent is that a CI job at a given trust level may only write to
-its corresponding container, and that `cache get` always tries the most trusted
-container first.
+account. A CI job at a given trust level may write only to its corresponding
+container, and `cache get` always tries the most trusted container first.
 -/
 inductive Container where
-  /-- The new most-trusted container (`mathlib4-master`) — only master CI is
-  permitted to write here. -/
+  /-- Most-trusted container (`mathlib4-master`); only master CI writes here. -/
   | master
   /-- Container for PR builds on forks of mathlib4. -/
   | forks
@@ -42,18 +40,10 @@ inductive Container where
   | nightlyTesting
   /-- Container for toolchain-PR test runs. -/
   | prToolchainTests
-  /-- The legacy bare `mathlib4` container, kept as a last-resort read
-  fallback during the migration to per-trust-level containers. Historically
-  every CI wrote here, so it still holds the bulk of in-flight artifacts.
-
-  During the migration, **only master CI** dual-writes to `legacy` alongside
-  its `mathlib4-master` upload — so consumers running older cache tools
-  (which only know how to read from `mathlib4`) keep finding master-built
-  artifacts. Forks and nightly-testing deliberately do *not* dual-write
-  here: allowing low-trust writers into the bucket that old readers depend
-  on would re-introduce the cross-trust poisoning vector this split exists
-  to eliminate. Writes can be cut entirely once all consumers read from
-  the dedicated containers. -/
+  /-- The bare `mathlib4` container that older cache clients read from. Only
+  master CI writes here (mirroring its `mathlib4-master` upload), so those
+  clients keep finding master-built artifacts; forks and nightly-testing stay
+  out to keep low-trust writes from reaching readers that predate the split. -/
   | legacy
   deriving DecidableEq, Repr, BEq, Inhabited
 
@@ -83,8 +73,8 @@ def parse? : String → Option Container
 /--
 Azure storage container name on the `lakecache` storage account.
 
-Per-trust-level containers follow the `mathlib4-{name}` convention. The
-`legacy` case is the bare `mathlib4` container kept as a migration fallback.
+Trust-level containers follow the `mathlib4-{name}` convention; `legacy` is the
+bare `mathlib4` container.
 -/
 def azureContainerName : Container → String
   | .legacy => "mathlib4"
@@ -95,28 +85,23 @@ def azureURL (c : Container) : String :=
   s!"https://lakecache.blob.core.windows.net/{c.azureContainerName}"
 
 /--
-Whether file lookups in this container use the flat `/f/<hash>` layout for
-the given `repo`, or namespace under `/f/<repo>/<hash>`.
+Whether file lookups in this container use the flat `/f/<hash>` layout, or
+namespace under `/f/<repo>/<hash>`.
 
-The decision is *per container*, not per repo: a single container can be fed
-by several writers whose `repo` argument doesn't always match the trust
-implied by the container, and a stable layout per container is what keeps
-readers and writers in sync.
+The layout is fixed per container, not per repo, because one container holds
+artifacts from several writers whose `repo` need not match the container's
+trust level, and a stable per-container layout is what keeps readers and
+writers in sync.
 
-- `master` is canonical-only — only trusted master CI is admitted by RBAC,
-  and those writes always carry `repo == MATHLIBREPO`. The layout is flat.
-- `legacy` is the historical monolithic `mathlib4` container. It encoded the
-  writer's trust in the path: canonical-repo writers landed at `/f/<hash>`
-  (where older mathlib4 readers still expect to find them), fork writers
-  landed at `/f/<repo>/<hash>`. We preserve that mixed behavior for
-  back-compat with consumers that still read from the bare container.
-- Every other per-trust-level container (`forks`, `nightly-testing`,
-  `pr-toolchain-tests`) always namespaces by repo. These hold artifacts
-  from multiple writers — different forks, different toolchain refs, plus
-  canonical-repo builds whose trust level is fork-equivalent (e.g.
-  `ci-dev/*` and `bors trying` on the canonical repo, both of which dispatch
-  to the `forks` container). A flat layout there would collide on identical
-  hashes from different writers, and the container alone doesn't disambiguate.
+- `master` is flat: RBAC admits only master CI, whose writes all carry
+  `repo == MATHLIBREPO`, so a single hash never collides.
+- `legacy` keys the layout on the writer: `MATHLIBREPO` writes are flat (where
+  older `mathlib4` readers look for them), fork writes are repo-namespaced.
+- `forks`, `nightly-testing`, and `pr-toolchain-tests` always namespace by
+  repo. They collect artifacts from many writers — different forks, different
+  toolchain refs, and canonical-repo builds whose trust is fork-equivalent
+  (`ci-dev/*`, `bors trying`) — so identical hashes from different writers must
+  stay on distinct paths.
 -/
 def flatPath (c : Container) (repo : String) : Bool :=
   match c with
@@ -136,52 +121,30 @@ def parseCacheFromList (s : String) : Option (List Container) := do
   parts.mapM (fun p => Container.parse? p.trimAscii.toString)
 
 /--
-Default trust-ordered list of containers to try when downloading for a given
-GitHub repo. Each repo maps to its own dedicated, trust-classified container,
-with the `legacy` bare-`mathlib4` container appended as a universal
-last-resort fallback during the migration.
+Trust-ordered containers to try when downloading for a given GitHub repo, most
+trusted first. Each repo reads from its own trust-level container, with `legacy`
+appended so older clients' artifacts stay reachable.
 
-For fork repos the chain leads with `master`. This works because the URL
-layout is decided per *container*, not per repo (see `Container.flatPath`):
-the `master` container is always read with the flat `/f/{hash}` scheme
-regardless of the `repo` argument, so a fork build finds the master-built
-deps that make up the bulk of its files there. The fork's own container
-(read with the `/f/{repo}/...` scheme) then supplies the PR-specific files.
-This is the single source of truth for the lookup chain — there is no
-separate "outer repo loop"; `master` reaching fork builds is exactly this
-first entry.
+Fork chains lead with `master`. The layout is fixed per container
+(`Container.flatPath`), so the `master` container is read flat at `/f/{hash}`
+whatever the `repo` is, and a fork build finds the master-built deps that make
+up the bulk of its files there; the fork's own container then supplies the
+PR-specific files at `/f/{repo}/...`.
 
-The nightly-testing chain deliberately omits `master`: that repo runs under
-a non-release toolchain, so its root hash differs from master's and master
-probes would always 404.
+Nightly-testing chains omit `master`: that repo builds under a non-release
+toolchain, so its root hash differs and a master probe never matches.
 -/
 def defaultContainersForRepo (repo : String) : List Container :=
   if repo == MATHLIBREPO then
     [.master, .legacy]
   else if repo == NIGHTLY_TESTING_REPO then
-    -- Strict default for the nightly-testing repo: `nightly-testing` + `legacy`.
-    -- **`pr-toolchain-tests` is deliberately NOT in this default** — trusted-
-    -- nightly consumers (`nightly-testing`, `nightly-testing-green`, `bump/*`)
-    -- must not silently fall back to artifacts uploaded by low-trust
-    -- toolchain-PR test branches.
-    --
-    -- Toolchain-PR test branches (`lean-pr-testing-*`, `batteries-pr-testing-*`)
-    -- need to read their own previously-uploaded artifacts from
-    -- `pr-toolchain-tests`. That widening is CI-only and lives in the workflow
-    -- (`build_template.yml` exports `MATHLIB_CACHE_FROM=pr-toolchain-tests,
-    -- nightly-testing,legacy` for those refs). On a user machine, a maintainer
-    -- working locally on `lean-pr-testing-*` can opt in with `--cache-from=...`
-    -- — auto-widening locally would silently subject every consumer to the
-    -- least-trusted container.
+    -- Trusted-nightly consumers (`nightly-testing`, `nightly-testing-green`,
+    -- `bump/*`) read only `nightly-testing` + `legacy`; `pr-toolchain-tests` is
+    -- excluded so low-trust toolchain-PR uploads can't reach them. Toolchain-PR
+    -- branches opt into reading their own uploads with `--cache-from=...` (or,
+    -- in CI, via `MATHLIB_CACHE_FROM` set by `build_template.yml`).
     [.nightlyTesting, .legacy]
   else
-    -- Fork repos (PRs) and anything else: master first (it holds the bulk
-    -- of any fork build's deps, and is the highest-trust source), then the
-    -- fork's own container for PR-specific files, then legacy as the
-    -- migration tail. `legacy` is transitional and will be dropped once
-    -- master CI's dual-write to it is retired, leaving `[master, forks]`.
-    --
-    -- Note: master is NOT in the nightly-testing chain above — that repo
-    -- runs under a non-release toolchain, so the root hash differs from
-    -- master's and master probes would always 404.
+    -- Forks and everything else: `master` for shared upstream deps, the fork's
+    -- own container for PR-specific files, then `legacy`.
     [.master, .forks, .legacy]
