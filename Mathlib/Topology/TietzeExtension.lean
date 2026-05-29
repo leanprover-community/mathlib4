@@ -485,7 +485,7 @@ theorem exists_extension_forall_mem_of_isClosedEmbedding (f : C(X, ℝ)) {t : Se
     h.toEquiv.symm_apply_eq.trans Subtype.ext_iff
   refine ⟨g, fun y => ?_, ?_⟩
   · rcases hG y with ⟨a, ha, hay⟩
-    convert ha
+    convert! ha
     exact hgG.2 hay.symm
   · ext x
     exact hgG.2 (congr_fun hGF _)
@@ -516,5 +516,5 @@ open NNReal in
 /-- **Tietze extension theorem** for nonnegative real-valued continuous maps.
 `ℝ≥0` is a `TietzeExtension` space. -/
 instance NNReal.instTietzeExtension : TietzeExtension ℝ≥0 :=
-  .of_retract ⟨((↑) : ℝ≥0 → ℝ), by continuity⟩ ⟨Real.toNNReal, continuous_real_toNNReal⟩ <| by
+  .of_retract ⟨((↑) : ℝ≥0 → ℝ), by fun_prop⟩ ⟨Real.toNNReal, continuous_real_toNNReal⟩ <| by
     ext; simp
