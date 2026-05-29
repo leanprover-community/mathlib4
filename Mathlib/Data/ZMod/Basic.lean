@@ -1126,7 +1126,7 @@ theorem sq_eq_self_iff_eq_zero_or_one {p d : ℕ} (hp : p.Prime) (hd : 0 < d)
           right
           rw [Nat.coprime_pow_left_iff hd, hp.coprime_iff_not_dvd]
           intro h_p_xm1
-          have : p ∣ x.val - (x.val - 1) := Nat.dvd_sub' h_p_x h_p_xm1
+          have : p ∣ x.val - (x.val - 1) := Nat.dvd_sub h_p_x h_p_xm1
           rw [Nat.sub_sub_self hx_pos] at this
           exact hp.one_lt.ne' (Nat.dvd_one.mp this)
         · left
