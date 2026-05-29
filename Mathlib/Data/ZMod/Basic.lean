@@ -848,8 +848,8 @@ lemma isUnit_iff_not_prime_dvd_val {p n : ℕ} (hp : p.Prime) (hn : 0 < n)
 /-- In `ZMod (p ^ n)` for a prime `p` and `n > 0`, an element fails to be a unit
 iff its canonical lift to `ℕ` is divisible by `p`. -/
 lemma not_isUnit_iff_prime_dvd_val {p n : ℕ} (hp : p.Prime) (hn : 0 < n)
-    (x : ZMod (p ^ n)) : ¬ IsUnit x ↔ p ∣ x.val := by
-  rw [isUnit_iff_not_prime_dvd_val hp hn, Classical.not_not]
+    (x : ZMod (p ^ n)) : ¬ IsUnit x ↔ p ∣ x.val :=
+  (isUnit_iff_not_prime_dvd_val hp hn x).not_left
 
 @[simp]
 theorem inv_coe_unit {n : ℕ} (u : (ZMod n)ˣ) : (u : ZMod n)⁻¹ = (u⁻¹ : (ZMod n)ˣ) := by
