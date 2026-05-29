@@ -147,7 +147,7 @@ instance ExactPairing.tensor {X₁ X₂ Y₁ Y₂ : C} [ExactPairing X₁ Y₁] 
           (Y₂ ⊗ Y₁) ◁ (X₁ ◁ η_ X₂ Y₂) ▷ Y₁ ⊗≫
           (Y₂ ◁ (ε_ X₁ Y₁ ▷ X₂)) ▷ (Y₂ ⊗ Y₁) ⊗≫
           ε_ X₂ Y₂ ▷ (Y₂ ⊗ Y₁) := by monoidal
-      -- Group η₂ and ε₁ so they compose with ≫ (both act on the Y₁⊗X₁ factor):
+      -- Group η₂ and ε₁ so they compose with ≫ (both act on the Y₁ ⊗ X₁ factor):
       --
       --   Y₂  Y₁      ╭── X₁ ────────────╮
       --   │    │      │    ╭── X₂ ───╮   │
