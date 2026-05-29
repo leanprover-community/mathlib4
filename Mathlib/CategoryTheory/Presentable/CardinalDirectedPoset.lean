@@ -158,12 +158,12 @@ partially ordered type `J`, as an object in `CardinalFilteredPoset κ`. -/
 @[simps!]
 def functorOfPredicateSet : Subtype P ⥤ CardinalFilteredPoset κ :=
   ObjectProperty.lift _ (PartOrdEmb.functorOfPredicateSet P)
-    (fun S ↦ inferInstanceAs (IsCardinalFiltered S.val κ))
+    (fun S ↦ by dsimp; infer_instance)
 
 /-- Given a predicate `P : Set J.obj → Prop` on the underlying type
 of `J : CardinalFilteredPoset κ` such that all the subsets satisfying `P`
 are `κ`-filtered, this is the cocone with point `J` given
-by all the inclusions of the substs satisfying `P`. -/
+by all the inclusions of the subsets satisfying `P`. -/
 @[simps]
 def coconeOfPredicateSet : Cocone (functorOfPredicateSet P) where
   pt := J
@@ -176,7 +176,7 @@ category `CardinalFilteredPoset κ` of these subsets. -/
 noncomputable def isColimitCoconeOfPredicateSet
     (hP : ∀ (a : J.obj), ∃ (S : Set J.obj), P S ∧ a ∈ S) :
     IsColimit (coconeOfPredicateSet P) :=
-  isColimitOfReflects (CardinalFilteredPoset.ι)
+  isColimitOfReflects CardinalFilteredPoset.ι
     (PartOrdEmb.isColimitOfPredicateSet P hP)
 
 end
@@ -257,6 +257,10 @@ variable (J : CardinalFilteredPoset κ)
 
 -- `@[nolint unusedArguments]` allows to setup some instances which uses
 -- the fact that `κ'` is regular.
+/-- Given `J : CardinalFilteredPoset κ` and a regular cardinal `κ'`,
+this is the predicate on `Set J.withTop.obj` that is satisfied by
+subsets that are of cardinality `< κ'` and contain `⊤`. -/
+@[nolint unusedArguments]
 def PropSetWithTop (κ' : Cardinal.{u}) [Fact κ'.IsRegular]
     (S : Set J.withTop.obj) : Prop :=
   HasCardinalLT S κ' ∧ ⊤ ∈ S
@@ -302,11 +306,15 @@ lemma exists_mem_propSetWithTop (a : J.withTop.obj) :
   | some a => exact ⟨_, propSetWithTop_pair _ a, by aesop⟩
   | none => exact ⟨_, propSetWithTop_pair _ (Classical.arbitrary _), by aesop⟩
 
+/-- If `J : CardinalFilteredPoset κ` and `κ'` is any regular cardinal,
+this is a colimit cocone which exhibits `J.withTop` as the `κ'`-filtered
+colimit of its subsets that are of cardinality `< κ'` and contain `⊤`. -/
 abbrev coconeWithTop : Cocone (functorOfPredicateSet (J.PropSetWithTop κ')) :=
   coconeOfPredicateSet (PropSetWithTop J κ')
 
 /-- If `J : CardinalFilteredPoset κ` and `κ'` is any regular cardinal,
-then `J.withTop` is the colimit of its subsets that are of cardinality `< κ'` and contain `⊤`. -/
+then `J.withTop` is the `κ'`-filtered colimit of its subsets that are of
+cardinality `< κ'` and contain `⊤`. -/
 noncomputable def isColimitCoconeWithTop : IsColimit (coconeWithTop J κ') :=
   isColimitCoconeOfPredicateSet _ (fun a ↦ by
     induction a with
