@@ -200,7 +200,7 @@ instance : ObjectProperty.EssentiallySmall.{u} (hasCardinalLTWithTerminal κ) wh
     obtain ⟨f⟩ : Cardinal.mk J.obj ≤ Cardinal.mk X := by
       simpa [hX] using ((hasCardinalLT_iff_cardinal_mk_lt _ _).1 hJ).le
     let e := Equiv.ofInjective _ f.injective
-    letI : PartialOrder (Set.range f) := PartialOrder.lift e.symm e.symm.injective
+    letI : PartialOrder (Set.range f) := PartialOrder.lift _ e.symm.injective
     let e' : Set.range f ≃o J.obj := { toEquiv := e.symm, map_rel_iff' := by rfl }
     exact ⟨_, ⟨⟨Set.range f, inferInstance,
       ⟨⟨IsCardinalFiltered.of_equivalence κ e'.symm.equivalence⟩⟩⟩⟩,
@@ -347,6 +347,9 @@ section
 
 variable (J : CardinalFilteredPoset κ)
 
+/-- Given `J : CardinalFilteredPoset κ`, this is the predicate
+on `Set J.obj` that is satisfied by subsets that are of
+cardinality `< κ` and have a terminal object. -/
 def PropSet (S : Set J.obj) : Prop :=
   HasCardinalLT S κ ∧ HasTerminal S
 
@@ -356,7 +359,7 @@ instance (S : Subtype J.PropSet) : IsCardinalFiltered S κ :=
   isCardinalFiltered_of_hasTerminal _ _
 
 variable {J} in
-lemma propSetWithTop_singleton (j : J.obj) : J.PropSet {j} :=
+lemma propSet_singleton (j : J.obj) : J.PropSet {j} :=
   ⟨hasCardinalLT_of_finite _ _ (Cardinal.IsRegular.aleph0_le Fact.out), by
     let : OrderTop ({j} : Set J.obj) := { top := ⟨j, rfl⟩, le_top := by simp }
     exact isTerminalTop.hasTerminal⟩
@@ -392,6 +395,9 @@ instance : IsDirectedOrder (Subtype J.PropSet) :=
 instance : Nonempty (Subtype J.PropSet) :=
   IsFiltered.nonempty
 
+/-- For any object `J : CardinalFilteredPoset κ`, this is a colimit
+cocone exhibiting `J` as the colimit of its subsets
+that are of cardinality `< κ` and have a terminal object. -/
 abbrev cocone : Cocone (functorOfPredicateSet J.PropSet) :=
   coconeOfPredicateSet J.PropSet
 
@@ -399,7 +405,7 @@ abbrev cocone : Cocone (functorOfPredicateSet J.PropSet) :=
 of its subsets that are of cardinality `< κ` and have a terminal object. -/
 noncomputable def isColimitCocone (J : CardinalFilteredPoset κ) :
     IsColimit (cocone J) :=
-  isColimitCoconeOfPredicateSet _ (fun a ↦ ⟨_, propSetWithTop_singleton a, by simp⟩)
+  isColimitCoconeOfPredicateSet _ (fun a ↦ ⟨_, propSet_singleton a, by simp⟩)
 
 end
 
@@ -423,6 +429,8 @@ instance : IsCardinalAccessibleCategory (CardinalFilteredPoset κ) κ where
 
 variable (κ) (X : Type u)
 
+/-- Given a cardinal `κ` and a type `X`, this is the subtype of `Set X`
+consisting of subsets of `X` of cardinality `< κ`. -/
 abbrev SetCardinalLT := Subtype (fun (S : Set X) ↦ HasCardinalLT S κ)
 
 variable {X} in
@@ -436,6 +444,9 @@ instance : IsCardinalFiltered (SetCardinalLT κ X) κ :=
         (by rwa [hasCardinalLT_iff_cardinal_mk_lt]) (fun k ↦ (f k).prop)⟩,
       Set.subset_iUnion (fun k ↦ (f k).val)⟩)
 
+/-- Given a regular cardinal `κ` and a type `X`, this is the `κ`-filtered
+partially ordered type of subsets of `X` of cardinality `< κ`,
+as an object of the category `CardinalFilteredPoset κ`. -/
 abbrev setCardinalLT : CardinalFilteredPoset κ :=
   .of (PartOrdEmb.of (SetCardinalLT κ X))
 
