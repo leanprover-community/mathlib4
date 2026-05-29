@@ -202,17 +202,12 @@ theorem IsIntegral.smul {R} [CommSemiring R] [Algebra R B] [Algebra S B] [Algebr
   .of_mem_of_fg _ hx.fg_adjoin_singleton _ <| by
     rw [← algebraMap_smul S]; apply Subalgebra.smul_mem; exact Algebra.subset_adjoin rfl
 
-section
-variable {B : Type*} [Ring B] [Algebra ℤ B]
-
-theorem isIntegral_intCast (a : ℤ) : IsIntegral ℤ (a : B) := by
-  simpa using isIntegral_algebraMap (R := ℤ) (A := B) (x := a)
+theorem isIntegral_intCast (a : ℤ) : IsIntegral ℤ (a : B) :=
+  isIntegral_algebraMap (R := ℤ) (A := B) (x := a)
 
 theorem isIntegral_natCast (a : ℕ) : IsIntegral ℤ (a : B) := by
   rw [← Int.cast_natCast]
   exact isIntegral_intCast a
-
-end
 
 variable (R A)
 
