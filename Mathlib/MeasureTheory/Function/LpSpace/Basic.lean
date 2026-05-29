@@ -200,8 +200,8 @@ theorem coeFn_sub (f g : Lp E p μ) : ⇑(f - g) =ᵐ[μ] f - g :=
   AEEqFun.coeFn_sub _ _
 
 theorem coeFn_finsetSum {ι : Type*} (s : Finset ι) (f : ι → Lp E p μ) :
-    ⇑(∑ i ∈ s, f i) =ᵐ[μ] ∑ i ∈ s, ⇑(f i) :=
-  AEEqFun.coeFn_finsetSum _ _
+    ⇑(∑ i ∈ s, f i) =ᵐ[μ] ∑ i ∈ s, ⇑(f i) := by
+  simp [AEEqFun.coeFn_finsetSum]
 
 theorem const_mem_Lp (α) {_ : MeasurableSpace α} (μ : Measure α) (c : E) [IsFiniteMeasure μ] :
     @AEEqFun.const α _ _ μ _ c ∈ Lp E p μ :=
