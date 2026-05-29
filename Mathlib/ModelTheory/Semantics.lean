@@ -638,7 +638,7 @@ theorem realize_bot : M ⊨ (⊥ : L.Sentence) ↔ False :=
   Iff.rfl
 
 @[simp]
-theorem realize_top : M ⊨ (⊤ : L.Sentence) ↔ True :=
+theorem realize_top : M ⊨ (⊤ : L.Sentence) :=
   Formula.realize_top
 
 @[simp]
