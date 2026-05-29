@@ -121,7 +121,8 @@ lemma hasInjectiveDimensionLE_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (
     have : Injective M := injective_of_subsingleton_ext_quotient_one M h
     infer_instance
   | succ n ih =>
-    -- Dimension shifting reduces the statement for `M` to the kernel of an injective presentation.
+    -- Dimension shifting reduces the statement for `M` to
+    -- the cokernel of an injective presentation.
     let ip : InjectivePresentation M := Classical.arbitrary _
     refine ip.shortExact_shortComplex.hasInjectiveDimensionLT_X₁ _
       (ih _ (fun I ↦ subsingleton_of_forall_eq 0 (fun x₃ ↦ ?_))) inferInstance
