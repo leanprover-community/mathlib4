@@ -155,12 +155,14 @@ theorem isUnit_inv {m : ℕ} {n : ℤ} (h : IsUnit (n : ZMod m)) :
 
 theorem coe_int_isUnit_iff_isCoprime (n : ℤ) (m : ℕ) :
     IsUnit (n : ZMod m) ↔ IsCoprime (m : ℤ) n := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ⟨unitOfIsCoprime n (isCoprime_comm.mp h), rfl⟩⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ⟨unitOfIsCoprime n (isCoprime_comm.mp h), by simp⟩⟩
   obtain rfl | hm := eq_or_ne m 0
   · simpa [isCoprime_zero_left] using h
-  have : NeZero m := ⟨hm⟩
-  obtain ⟨u, hu⟩ := h
-  simpa only [hu, Nat.coprime_iff_gcd_eq_one, ← Int.gcd_natCast_natCast, val_intCast, Int.gcd_emod,
-    ← Int.isCoprime_iff_gcd_eq_one, isCoprime_comm] using val_coe_unit_coprime u
+  · have : NeZero m := ⟨hm⟩
+    obtain ⟨u, hu⟩ := h
+    have h_coprime := val_coe_unit_coprime u
+    rw [hu, Nat.coprime_iff_gcd_eq_one, ← Int.gcd_natCast_natCast,
+      val_intCast, Int.gcd_emod] at h_coprime
+    rwa [isCoprime_comm, Int.isCoprime_iff_gcd_eq_one]
 
 end ZMod
