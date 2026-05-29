@@ -458,29 +458,93 @@ open Finset
 
 #check hasSum_of_subseq_of_summable
 
-theorem hasSum_coeFn_tsum_Lp_one [CompleteSpace E] (f : ℕ → Lp E 1 μ) (hf : ∑' n, ‖f n‖ₑ ≠ ∞) :
-    ∀ᵐ a ∂μ, HasSum (fun n ↦ f n a) ((∑' n, f n : Lp E 1 μ) a) := by
+#where
+
+theorem test {f : ℕ → Lp E 1 μ} (hf : ∑' n, ‖f n‖ₑ ≠ ∞) :
+    ∀ᵐ a ∂μ, Summable (fun n ↦ ‖f n a‖) := by
+  suffices H : ∀ᵐ a ∂μ, ∑' n, ‖f n a‖ₑ < ∞ by
+    filter_upwards [H] with x hx using tsum_enorm_ne_top_iff_summable_norm.1 hx.ne
+  apply ae_lt_top (Measurable.tsum (fun i ↦ (Lp.stronglyMeasurable (f i)).enorm))
+  rw [lintegral_tsum (fun i ↦ (Lp.aestronglyMeasurable (f i)).enorm)]
+  convert hf with n
+  simp [← eLpNorm_one_eq_lintegral_enorm]
+
+#check MeasureTheory.instSigmaFiniteRestrictUnionSet
+
+theorem Lp.summable_norm_coeFn_of_tsum_enorm_ne_top {p : ℝ≥0∞} (hp : 1 ≤ p)
+    {f : ℕ → Lp E p μ} (hf : ∑' n, ‖f n‖ₑ ≠ ∞) :
+    ∀ᵐ a ∂μ, Summable (fun n ↦ ‖f n a‖) := by
+  suffices H : ∀ᵐ a ∂μ, ∑' n, ‖f n a‖ₑ < ∞ by
+    filter_upwards [H] with x hx using tsum_enorm_ne_top_iff_summable_norm.1 hx.ne
+  rcases eq_top_or_lt_top p with rfl | h'p
+  · sorry
+  have : ∃ s, MeasurableSet s ∧ SigmaFinite (μ.restrict s) ∧ ∀ x ∈ sᶜ, ∀ n, f n x = 0 := by
+    have A n :  ∃ s, MeasurableSet s ∧ (∀ x ∈ sᶜ, f n x = 0) ∧ SigmaFinite (μ.restrict s) := by
+      apply (finStronglyMeasurable_iff_stronglyMeasurable_and_exists_set_sigmaFinite.1 _).2
+      exact Lp.finStronglyMeasurable _ (zero_lt_one.trans_le hp).ne' h'p.ne
+    choose! s s_meas hs h's using A
+    refine ⟨⋃ n, s n, MeasurableSet.iUnion s_meas, ?_, ?_⟩
+    have : SigmaFinite (Measure.sum (fun n ↦ (μ.restrict (s n)))) := inferInstance
+
+
+  apply ae_lt_top (Measurable.tsum (fun i ↦ (Lp.stronglyMeasurable (f i)).enorm))
+  rw [lintegral_tsum (fun i ↦ (Lp.aestronglyMeasurable (f i)).enorm)]
+  convert hf with n
+  simp [← eLpNorm_one_eq_lintegral_enorm]
+
+
+/-
   have A : ∀ᵐ x ∂μ, (∑' n, ‖f n x‖ₑ) < ∞ := by
     apply ae_lt_top (Measurable.tsum (fun i ↦ (Lp.stronglyMeasurable (f i)).enorm))
     rw [lintegral_tsum (fun i ↦ (Lp.aestronglyMeasurable (f i)).enorm)]
     convert hf with n
     simp [← eLpNorm_one_eq_lintegral_enorm]
-  have B : ∀ᵐ x ∂μ, ∀ n, ⇑((∑ i ∈ range n, f i)) x = ∑ i ∈ range n, (f i x) := by
+
+-/
+
+private theorem Lp.hasSum_coeFn_tsum_nat {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
+    [CompleteSpace E] {f : ℕ → Lp E p μ} (hf : ∑' n, ‖f n‖ₑ ≠ ∞) :
+    ∀ᵐ a ∂μ, HasSum (fun n ↦ f n a) (⇑(∑' n, f n) a) := by
+  have A : ∀ᵐ a ∂μ, Summable (fun n ↦ ‖f n a‖) :=
+    summable_norm_coeFn_of_tsum_enorm_ne_top hp.out hf
+  have B : ∀ᵐ x ∂μ, ∀ n, ⇑((∑ i ∈ range n, f i)) x = ∑ i ∈ range n, f i x := by
     rw [ae_all_iff]
     exact fun i ↦ coeFn_finsetSum_fun _ _
-  obtain ⟨ns, hns, nslim⟩ : ∃ ns : ℕ → ℕ, StrictMono ns ∧
-      ∀ᵐ x ∂μ, Tendsto (fun i ↦ (∑ j ∈ range (ns i), f j : Lp E 1 μ) x) atTop (𝓝 ((∑' n, f n) x)) := by
+  obtain ⟨ns, hns, nslim⟩ : ∃ ns : ℕ → ℕ, StrictMono ns ∧ ∀ᵐ x ∂μ,
+      Tendsto (fun i ↦ (∑ j ∈ range (ns i), f j : Lp E p μ) x) atTop (𝓝 ((∑' n, f n) x)) := by
     have : Tendsto (fun i ↦ (∑ j ∈ range i, f j)) atTop (𝓝 (∑' n, f n)) :=
       Summable.tendsto_sum_tsum_nat (Summable.of_enorm hf)
     exact (tendstoInMeasure_of_tendsto_Lp this).exists_seq_tendsto_ae
-  filter_upwards [A, B, nslim] with x hx h'x h''x
-  have S : Summable (fun i ↦ ‖f i x‖) := by
-    rw [← tsum_enorm_ne_top_iff_summable_norm]
-    exact hx.ne
+  filter_upwards [A, B, nslim] with x S h'x h''x
   apply (hasSum_iff_tendsto_nat_of_summable_norm S).2
   simp only [h'x] at h''x
   refine tendsto_nhds_of_cauchySeq_of_subseq ?_ hns.tendsto_atTop h''x
   exact (cauchySeq_finset_of_summable_norm S).comp_tendsto tendsto_finset_range
+
+theorem Lp.hasSum_coeFn_tsum {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] {ι : Type*} [Countable ι]
+    [CompleteSpace E] {f : ι → Lp E p μ} (hf : ∑' n, ‖f n‖ₑ ≠ ∞) :
+    ∀ᵐ a ∂μ, HasSum (fun n ↦ f n a) (⇑(∑' n, f n) a) := by
+  classical
+  rcases finite_or_infinite ι with hι | hι
+  · let : Fintype ι := Fintype.ofFinite ι
+    simp only [tsum_fintype]
+    filter_upwards [coeFn_finsetSum_fun univ f] with x hx
+    rw [hx]
+    exact hasSum_fintype _
+  · obtain ⟨e⟩ := nonempty_equiv_of_countable (α := ℕ) (β := ι)
+    have : ∀ᵐ a ∂μ, HasSum (fun n ↦ f (e n) a) (⇑(∑' n, f (e n)) a) := by
+      apply Lp.hasSum_coeFn_tsum_nat
+      convert hf
+      exact e.tsum_eq (fun i ↦ ‖f i‖ₑ)
+    filter_upwards [this] with x hx
+    rw [e.tsum_eq] at hx
+    exact e.hasSum_iff.1 hx
+
+theorem Lp.coeFn_tsum {ι : Type*} [Countable ι] {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
+    [CompleteSpace E] (f : ι → Lp E p μ) (hf : ∑' n, ‖f n‖ₑ ≠ ∞) :
+    ⇑(∑' n, f n) =ᵐ[μ] fun x ↦ ∑' n, f n x := by
+  filter_upwards [Lp.hasSum_coeFn_tsum hf] with x hx
+  exact hx.tsum_eq.symm
 
 
 
