@@ -463,6 +463,11 @@ theorem inf_normalizer_le_normalizer_inf :
     normalizer H ⊓ normalizer K ≤ normalizer ((H ⊓ K :) : Set G) :=
   fun _ h g ↦ and_congr (h.1 g) (h.2 g)
 
+@[to_additive]
+theorem iInf_normalizer_le_normalizer_iInf {ι : Sort*} (H : ι → Subgroup G) :
+    ⨅ i, normalizer (H i) ≤ normalizer ((⨅ i, H i : Subgroup G) : Set G) := by
+  grind [le_normalizer_iff, mem_iInf, mem_normalizer_iff]
+
 variable (G) in
 /-- Every proper subgroup `H` of `G` is a proper normal subgroup of the normalizer of `H` in `G`. -/
 def _root_.NormalizerCondition :=
