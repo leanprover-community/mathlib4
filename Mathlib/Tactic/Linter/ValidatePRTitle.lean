@@ -27,8 +27,8 @@ def prTitle : Parser (String × Option String × String) := do
     ["feat", "chore", "perf", "refactor", "style", "fix", "doc", "test", "ci"].firstM pstring
   let scope ← (
       (skipString "(" *> some <$> manyChars (notFollowedBy (skipString "):") *> any)
-        <* skipString "): ")
-      <|> (skipString ": " *> pure none)
+        <* skipString "):" <* ws)
+      <|> (skipString ":" *> ws *> pure none)
     )
   let mainTitle ← many1Chars any
   return (kind, scope, mainTitle)
