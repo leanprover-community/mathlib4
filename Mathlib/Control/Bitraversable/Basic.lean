@@ -39,7 +39,7 @@ The concepts and laws are taken from
 traversable bitraversable iterator functor bifunctor applicative
 -/
 
-@[expose] public section
+public section
 
 
 universe u

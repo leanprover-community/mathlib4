@@ -18,7 +18,7 @@ We give the definition of the Frattini subgroup of a group, and three elementary
 * The Frattini subgroup of a finite group is nilpotent.
 -/
 
-@[expose] public section
+public section
 
 /-- The Frattini subgroup of a group is the intersection of the maximal subgroups. -/
 def frattini (G : Type*) [Group G] : Subgroup G :=

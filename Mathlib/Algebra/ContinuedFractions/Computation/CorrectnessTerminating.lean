@@ -43,7 +43,7 @@ information about the computation process, refer to `Algebra.ContinuedFractions.
   `v = (GenContFract.of v).convs n` if `GenContFract.of v` terminated at position `n`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 
@@ -62,6 +62,7 @@ variable {K : Type*} [Field K] [LinearOrder K] {v : K} {n : ℕ}
 This function can be used to compute the exact value approximated by a continued fraction
 `GenContFract.of v` as described in lemma `compExactValue_correctness_of_stream_eq_some`.
 -/
+@[expose]
 protected def compExactValue (pconts conts : Pair K) (fr : K) : K :=
   -- if the fractional part is zero, we exactly approximated the value by the last continuants
   if fr = 0 then

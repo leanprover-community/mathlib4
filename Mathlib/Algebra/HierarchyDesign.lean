@@ -19,7 +19,7 @@ TODO: Add sections about interactions with topological typeclasses, and order ty
 
 -/
 
-@[expose] public section
+public section
 
 
 library_note «the algebraic hierarchy» /-- # The algebraic hierarchy

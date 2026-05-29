@@ -18,7 +18,7 @@ class `G.IsFinite`.
 
 -/
 
-@[expose] public section
+public section
 
 universe w'' w' w v u
 

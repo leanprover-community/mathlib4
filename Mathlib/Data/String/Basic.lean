@@ -17,7 +17,7 @@ import all Init.Data.String.Iterator  -- for unfolding `Iterator.curr`
 Supplementary theorems about the `String` type.
 -/
 
-@[expose] public section
+public section
 
 namespace String
 

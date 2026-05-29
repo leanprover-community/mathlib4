@@ -18,7 +18,7 @@ Further results for torsors, that are not in `Mathlib/Algebra/AddTorsor/Defs.lea
 increasing imports there.
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 

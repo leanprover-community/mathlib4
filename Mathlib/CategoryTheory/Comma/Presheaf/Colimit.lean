@@ -17,7 +17,7 @@ In this file we turn the statement `yonedaYonedaColimit` from
 about families of presheaves over `A`, i.e., functors `F : J ⥤ Over A`.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

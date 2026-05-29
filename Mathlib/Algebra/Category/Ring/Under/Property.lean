@@ -24,7 +24,7 @@ In this file we translate ring theoretic properties of a property of ring homomo
   base change along arbitrary morphisms preserve finite limits.
 -/
 
-@[expose] public section
+public section
 
 universe u
 

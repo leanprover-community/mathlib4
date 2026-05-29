@@ -26,7 +26,7 @@ public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 
 -/
 
-@[expose] public section
+public section
 
 section IsLasker
 

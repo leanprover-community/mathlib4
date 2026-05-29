@@ -15,7 +15,7 @@ These definitions, as well as those in `Mathlib/Data/WSeq/Productive.lean`, are 
 development of `Mathlib/Data/Seq/Parallel.lean`.
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 

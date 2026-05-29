@@ -25,7 +25,7 @@ every monomorphism or epimorphism is normal, and deduce that these categories ar
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

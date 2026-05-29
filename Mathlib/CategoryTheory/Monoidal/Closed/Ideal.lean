@@ -29,7 +29,7 @@ following are equivalent.
 * `i` is an exponential ideal.
 -/
 
-@[expose] public section
+public section
 
 
 universe v₁ v₂ u₁ u₂

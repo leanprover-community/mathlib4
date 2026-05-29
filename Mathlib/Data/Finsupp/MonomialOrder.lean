@@ -55,7 +55,7 @@ it is customary to order them using the opposite order : `MvPolynomial.X 0 > MvP
 
 -/
 
-@[expose] public section
+public section
 
 /-- Monomial orders : equivalence of `σ →₀ ℕ` with a well-ordered type -/
 structure MonomialOrder (σ : Type*) where

@@ -18,7 +18,7 @@ we provide some order properties of the `MonoidWithZeroHom.ValueGroup₀` as def
 
 -/
 
-@[expose] public section
+public section
 
 namespace MonoidWithZeroHom
 

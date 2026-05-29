@@ -20,7 +20,7 @@ category `V`.
 * Define the bicategory of enriched ordinary categories.
 -/
 
-@[expose] public section
+public section
 
 
 universe w v u u₁ u₂ u₃
@@ -32,6 +32,7 @@ open MonoidalCategory
 variable (V : Type v) [Category.{w} V] [MonoidalCategory V]
 
 /-- Category of `V`-enriched categories for a monoidal category `V`. -/
+@[expose]
 def EnrichedCat := Bundled (EnrichedCategory.{w, v, u} V)
 
 namespace EnrichedCat

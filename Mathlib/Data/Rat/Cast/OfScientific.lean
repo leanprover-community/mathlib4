@@ -16,7 +16,7 @@ It's probably possible, by adjusting the `OfScientific` instances,
 to make this more general, but it's not needed at present.
 -/
 
-@[expose] public section
+public section
 
 open Lean.Grind in
 instance {K : Type*} [_root_.Field K] [CharZero K] : LawfulOfScientific K where

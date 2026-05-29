@@ -20,7 +20,7 @@ structure on `GradedObject I C` and show that it is symmetric if `C` is symmetri
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

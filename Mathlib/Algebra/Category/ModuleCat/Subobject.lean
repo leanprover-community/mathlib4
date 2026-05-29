@@ -18,7 +18,7 @@ and its submodules. This immediately implies that the category of `R`-modules is
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Subobject Limits
 

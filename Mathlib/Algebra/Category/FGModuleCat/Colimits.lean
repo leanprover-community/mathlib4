@@ -19,7 +19,7 @@ And hence `FGModuleCat K` has all finite colimits.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

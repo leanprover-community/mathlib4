@@ -22,7 +22,7 @@ This file provides embedding of any archimedean groups into reals.
   for any archimedean group `M` without specifying the `1` element in `M`.
 -/
 
-@[expose] public section
+public section
 
 
 variable {M : Type*}

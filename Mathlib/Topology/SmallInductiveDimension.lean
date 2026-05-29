@@ -31,7 +31,7 @@ In this file we formalize this notion, and characterize the cases `n = 0` and `n
 * https://en.wikipedia.org/wiki/Inductive_dimension
 -/
 
-@[expose] public section
+public section
 
 open Set TopologicalSpace
 

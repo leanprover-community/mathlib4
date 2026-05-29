@@ -14,7 +14,7 @@ public import Mathlib.Tactic.CategoryTheory.Elementwise
 # The concrete products in the category of modules are products in the categorical sense.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits
 

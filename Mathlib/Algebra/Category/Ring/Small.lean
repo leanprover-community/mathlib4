@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.Small
 
 /-! # Smallness results on the category of `CommRing` -/
 
-@[expose] public section
+public section
 
 universe u
 

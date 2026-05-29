@@ -12,7 +12,7 @@ public import Mathlib.Data.QPF.Multivariate.Basic
 # Dependent product and sum of QPFs are QPFs
 -/
 
-@[expose] public section
+public section
 
 
 universe u
@@ -26,11 +26,13 @@ variable (F : A → TypeVec.{u} n → Type u)
 
 /-- Dependent sum of an `n`-ary functor. The sum can range over
 data types like `ℕ` or over `Type.{u-1}` -/
+@[expose]
 def Sigma (v : TypeVec.{u} n) : Type u :=
   Σ α : A, F α v
 
 /-- Dependent product of an `n`-ary functor. The sum can range over
 data types like `ℕ` or over `Type.{u-1}` -/
+@[expose]
 def Pi (v : TypeVec.{u} n) : Type u :=
   ∀ α : A, F α v
 
@@ -49,6 +51,7 @@ instance [∀ α, MvFunctor <| F α] : MvFunctor (Sigma F) where
 variable [∀ α, MvQPF <| F α]
 
 /-- polynomial functor representation of a dependent sum -/
+@[expose]
 protected def P : MvPFunctor n :=
   ⟨Σ a, (P (F a)).A, fun x => (P (F x.1)).B x.2⟩
 
@@ -80,6 +83,7 @@ instance [∀ α, MvFunctor <| F α] : MvFunctor (Pi F) where map f x a := f <$$
 variable [∀ α, MvQPF <| F α]
 
 /-- polynomial functor representation of a dependent product -/
+@[expose]
 protected def P : MvPFunctor n :=
   ⟨∀ a, (P (F a)).A, fun x i => Σ a, (P (F a)).B (x a) i⟩
 

@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Functor.Basic
 # Unbundled functors, as a typeclass decorating the object-level function.
 -/
 
-@[expose] public section
+public section
 
 
 namespace CategoryTheory

@@ -46,7 +46,7 @@ which reduces the proof obligations later that would arise with `Nat.card`.
 * [Ruzsa, Imre, *Sumsets and structure*][ruzsa2009]
 -/
 
-@[expose] public section
+public section
 
 open Finset
 

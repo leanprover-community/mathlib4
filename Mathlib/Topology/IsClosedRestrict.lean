@@ -22,7 +22,7 @@ with `X = Sᶜ.restrict '' s` and `Y = Π i : S, α i`.
 
 -/
 
-@[expose] public section
+public section
 
 open Set
 

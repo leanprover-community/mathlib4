@@ -21,7 +21,7 @@ Note that, under `CommRingCat.pushoutCoconeIsColimit`, the two maps `inl` and `i
 described as `s ↦ s ⊗ₜ[R] 1` and `s ↦ 1 ⊗ₜ[R] s`, respectively.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits
 

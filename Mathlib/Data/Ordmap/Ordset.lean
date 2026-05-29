@@ -34,7 +34,7 @@ because there is a decent amount of slop in the actual data structure invariants
 theorem will go through with multiple choices of assumption.
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*}
@@ -651,6 +651,7 @@ end Ordnode
 maintain that the tree is balanced and correctly stores subtree sizes at each level. The
 correctness property of the tree is baked into the type, so all operations on this type are correct
 by construction. -/
+@[expose]
 def Ordset (α : Type*) [Preorder α] :=
   { t : Ordnode α // t.Valid }
 
@@ -682,6 +683,7 @@ instance instSingleton : Singleton α (Ordset α) :=
   ⟨Ordset.singleton⟩
 
 /-- O(1). Is the set empty? -/
+@[expose]
 def Empty (s : Ordset α) : Prop :=
   s = ∅
 

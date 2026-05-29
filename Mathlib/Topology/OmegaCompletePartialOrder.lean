@@ -20,7 +20,7 @@ of continuity is equivalent to continuity in ωCPOs.
 
 -/
 
-@[expose] public section
+public section
 
 open Set OmegaCompletePartialOrder Topology
 

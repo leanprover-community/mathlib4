@@ -15,7 +15,7 @@ output always comes after a finite time. Given a productive weak sequence, a reg
 (`Seq`) can be derived from it using `toSeq`.
 -/
 
-@[expose] public section
+public section
 
 universe u
 

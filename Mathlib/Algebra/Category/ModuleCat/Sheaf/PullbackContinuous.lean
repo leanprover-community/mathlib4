@@ -28,7 +28,7 @@ similar pseudofunctor-like properties of the `pullback` functors.
 
 -/
 
-@[expose] public section
+public section
 
 universe v v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄ u
 

@@ -15,7 +15,7 @@ Implemented via calling out to `Nat.find`.
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace PNat

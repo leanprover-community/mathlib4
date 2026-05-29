@@ -30,7 +30,7 @@ This file defines quantifier complexity of first-order formulas, and constructs 
 
 -/
 
-@[expose] public section
+public section
 
 universe u v w u' v'
 

@@ -34,7 +34,7 @@ another function that takes a `L : ℕ` and use `L - n`. Under a proof condition
 
 -/
 
-@[expose] public section
+public section
 
 -- Make sure we don't import algebra
 assert_not_exists Monoid

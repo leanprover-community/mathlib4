@@ -17,7 +17,7 @@ which return something in a range of values (represented by the
 predicate `S`) but are not completely determined.
 -/
 
-@[expose] public section
+public section
 
 
 /-- A member of `Semiquot α` is classically a nonempty `Set α`,
@@ -40,6 +40,7 @@ instance : Membership α (Semiquot α) :=
   ⟨fun q a => a ∈ q.s⟩
 
 /-- Construct a `Semiquot α` from `h : a ∈ s` where `s : Set α`. -/
+@[expose]
 def mk {a : α} {s : Set α} (h : a ∈ s) : Semiquot α :=
   ⟨s, Trunc.mk ⟨a, h⟩⟩
 
@@ -70,10 +71,12 @@ theorem mem_pure' {a b : α} : a ∈ Semiquot.pure b ↔ a = b :=
   Set.mem_singleton_iff
 
 /-- Replace `s` in a `Semiquot` with a superset. -/
+@[expose]
 def blur' (q : Semiquot α) {s : Set α} (h : q.s ⊆ s) : Semiquot α :=
   ⟨s, Trunc.lift (fun a : q.s => Trunc.mk ⟨a.1, h a.2⟩) (fun _ _ => Trunc.eq _ _) q.2⟩
 
 /-- Replace `s` in a `q : Semiquot α` with a union `s ∪ q.s` -/
+@[expose]
 def blur (s : Set α) (q : Semiquot α) : Semiquot α :=
   blur' q (s.subset_union_right (t := q.s))
 
@@ -207,6 +210,7 @@ theorem isPure_of_subsingleton [Subsingleton α] (q : Semiquot α) : IsPure q
   | _, _, _, _ => Subsingleton.elim _ _
 
 /-- `univ : Semiquot α` represents an unspecified element of `univ : Set α`. -/
+@[expose]
 def univ [Inhabited α] : Semiquot α :=
   mk <| Set.mem_univ default
 

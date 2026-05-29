@@ -20,7 +20,7 @@ public import Mathlib.ModelTheory.Satisfiability
 
 -/
 
-@[expose] public section
+public section
 
 universe u v w w'
 
@@ -108,6 +108,7 @@ end Imp
 /-- Two (bounded) formulas are semantically equivalent over a theory `T` when they have the same
 interpretation in every model of `T`. (This is also known as logical equivalence, which also has a
 proof-theoretic definition.) -/
+@[expose]
 protected def Iff (T : L.Theory) (φ ψ : L.BoundedFormula α n) : Prop :=
   T ⊨ᵇ φ.iff ψ
 

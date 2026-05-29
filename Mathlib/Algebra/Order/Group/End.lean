@@ -12,7 +12,7 @@ public import Mathlib.Order.RelIso.Basic
 # Relation isomorphisms form a group
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MulAction MonoidWithZero
 

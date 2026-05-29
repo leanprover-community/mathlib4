@@ -17,7 +17,7 @@ is a limit if it is so after applying the functors `Fᵢ`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.JointlyReflectIsomorphisms
 open Category Limits

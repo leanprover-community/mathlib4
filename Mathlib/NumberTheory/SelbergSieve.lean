@@ -30,7 +30,7 @@ minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

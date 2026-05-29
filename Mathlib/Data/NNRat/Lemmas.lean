@@ -18,7 +18,7 @@ This file provides additional results about `NNRat` that cannot live in earlier 
 cycles.
 -/
 
-@[expose] public section
+public section
 
 open Function
 open scoped NNRat

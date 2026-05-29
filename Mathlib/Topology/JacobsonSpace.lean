@@ -26,7 +26,7 @@ public import Mathlib.Tactic.CrossRefAttribute
 
 -/
 
-@[expose] public section
+public section
 
 open Topology TopologicalSpace
 
@@ -35,6 +35,7 @@ variable (X) {Y} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
 section closedPoints
 
 /-- The set of closed points. -/
+@[expose]
 def closedPoints : Set X := setOf (IsClosed {·})
 
 variable {X}

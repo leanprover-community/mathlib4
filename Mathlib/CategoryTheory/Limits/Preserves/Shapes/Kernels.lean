@@ -18,7 +18,7 @@ In particular, we show that `kernel_comparison f g G` is an isomorphism iff `G` 
 the limit of the parallel pair `f,0`, as well as the dual result.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -43,6 +43,7 @@ lemma map_condition : G.map c.ι ≫ G.map f = 0 := by
 
 /-- A kernel fork for `f` is mapped to a kernel fork for `G.map f` if `G` is a functor
 which preserves zero morphisms. -/
+@[expose]
 def map : KernelFork (G.map f) :=
   KernelFork.ofι (G.map c.ι) (c.map_condition G)
 
@@ -172,6 +173,7 @@ lemma map_condition : G.map f ≫ G.map c.π = 0 := by
 
 /-- A cokernel cofork for `f` is mapped to a cokernel cofork for `G.map f` if `G` is a functor
 which preserves zero morphisms. -/
+@[expose]
 def map : CokernelCofork (G.map f) :=
   CokernelCofork.ofπ (G.map c.π) (c.map_condition G)
 

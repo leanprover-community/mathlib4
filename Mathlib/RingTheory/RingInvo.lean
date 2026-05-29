@@ -27,7 +27,7 @@ We provide a coercion to a function `R → Rᵐᵒᵖ`.
 Ring involution
 -/
 
-@[expose] public section
+public section
 
 variable {F : Type*} (R : Type*)
 

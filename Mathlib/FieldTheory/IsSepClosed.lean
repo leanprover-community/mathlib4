@@ -49,7 +49,7 @@ separable closure, separably closed
 
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 

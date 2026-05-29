@@ -21,7 +21,7 @@ is preserved by `F.obj c₁.pt` and the cokernel of `f₂` is preserved by
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Limits
 

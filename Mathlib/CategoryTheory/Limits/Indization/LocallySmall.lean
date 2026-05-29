@@ -21,7 +21,7 @@ The equivalence established here serves as the basis for a well-known calculatio
 ind-objects as a limit of a colimit.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits Opposite
 

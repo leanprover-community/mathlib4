@@ -16,7 +16,7 @@ the endomorphisms of the additive forgetful functor `Module R ⥤ AddCommGroup`.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

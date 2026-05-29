@@ -17,7 +17,7 @@ Given an action of a group `G` on a type `α`, we say that a set `s : Set α` su
 This is crucial in Fourier-Motzkin constructions.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

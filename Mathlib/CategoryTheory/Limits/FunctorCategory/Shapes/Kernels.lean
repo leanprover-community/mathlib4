@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 # (Co)kernels in functor categories
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Limits
 universe u

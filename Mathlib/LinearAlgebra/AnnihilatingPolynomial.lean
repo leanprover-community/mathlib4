@@ -34,7 +34,7 @@ there are some common specializations which may be more familiar.
 * Example 2: `A = n × n` matrices with entries in `R`.
 -/
 
-@[expose] public section
+public section
 
 
 open Polynomial

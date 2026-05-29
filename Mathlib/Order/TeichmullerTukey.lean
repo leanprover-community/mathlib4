@@ -30,7 +30,7 @@ Teichmuller-Tukey lemma.
 - <https://en.wikipedia.org/wiki/Teichm%C3%BCller%E2%80%93Tukey_lemma>
 -/
 
-@[expose] public section
+public section
 
 open Set Finite
 

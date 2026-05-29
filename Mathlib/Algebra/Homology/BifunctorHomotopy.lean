@@ -19,7 +19,7 @@ the morphism `f₂` in `HomologicalComplex C c₂`.
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists TwoSidedIdeal
 

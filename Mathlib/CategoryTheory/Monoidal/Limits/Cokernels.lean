@@ -19,7 +19,7 @@ cokernels of `f₁` and `f₂` are preserved by suitable tensor products.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Limits.CokernelCofork
 

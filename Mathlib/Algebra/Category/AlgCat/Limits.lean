@@ -19,7 +19,7 @@ Further, these limits are preserved by the forgetful functor --- that is,
 the underlying types are just the limits in the category of types.
 -/
 
-@[expose] public section
+public section
 
 
 open CategoryTheory Limits

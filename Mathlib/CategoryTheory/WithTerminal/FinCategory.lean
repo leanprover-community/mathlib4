@@ -18,7 +18,7 @@ and likewise if `C` has finitely many morphisms as well.
 
 -/
 
-@[expose] public section
+public section
 
 
 universe v u

@@ -22,7 +22,7 @@ In this file we prove the Schur-Zassenhaus theorem.
   then there exists a subgroup `K` which is a (left) complement of `H`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Subgroup
@@ -36,6 +36,7 @@ variable {G : Type*} [Group G] (H : Subgroup G) [IsMulCommutative H] [FiniteInde
   (α β : H.LeftTransversal)
 
 /-- The quotient of the transversals of an abelian normal `N` by the `diff` relation. -/
+@[expose]
 def QuotientDiff :=
   Quotient
     (Setoid.mk (fun α β => diff (MonoidHom.id H) α β = 1)

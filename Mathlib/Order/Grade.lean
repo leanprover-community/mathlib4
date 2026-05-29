@@ -56,7 +56,7 @@ Instead, we define graded orders by their grade function, without talking about 
 * [Richard Stanley, *Enumerative Combinatorics*][stanley2012]
 -/
 
-@[expose] public section
+public section
 
 open Nat OrderDual
 
@@ -99,6 +99,7 @@ variable [GradeOrder 𝕆 α] {a b : α}
 
 /-- The grade of an element in a graded order. Morally, this is the number of elements you need to
 go down by to get to `⊥`. -/
+@[expose]
 def grade : α → 𝕆 :=
   GradeOrder.grade
 

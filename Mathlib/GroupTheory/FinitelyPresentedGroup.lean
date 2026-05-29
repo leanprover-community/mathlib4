@@ -29,7 +29,7 @@ This file defines finitely presented groups.
 finitely presented group, finitely generated normal closure
 -/
 
-@[expose] public section
+public section
 
 variable {G H α β : Type*} [Group G] [Group H]
 

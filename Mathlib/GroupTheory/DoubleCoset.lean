@@ -22,7 +22,7 @@ this is the usual left or right quotient of a group by a subgroup.
 * `DoubleCoset.quotient`: The quotient of `G` by the double coset relation, i.e, `H \ G / K`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 
@@ -76,6 +76,7 @@ def setoid (H K : Set G) : Setoid G :=
   Setoid.ker fun x => doubleCoset x H K
 
 /-- Quotient of `G` by the double coset relation, i.e. `H \ G / K` -/
+@[expose]
 def Quotient (H K : Set G) : Type _ :=
   _root_.Quotient (setoid H K)
 

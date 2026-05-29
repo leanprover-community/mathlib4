@@ -14,7 +14,7 @@ This file constructs a linear order which is an extension of the given partial o
 lemma.
 -/
 
-@[expose] public section
+public section
 
 
 universe u
@@ -73,6 +73,7 @@ theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrd
     · exact (h.2 (_root_.trans yb bx)).elim
 
 /-- A type alias for `α`, intended to extend a partial order on `α` to a linear order. -/
+@[expose]
 def LinearExtension (α : Type u) : Type u :=
   α
 

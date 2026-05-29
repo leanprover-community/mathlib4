@@ -18,7 +18,7 @@ This is occasionally useful, for example in the proof of the recognition theorem
 (Proposition 6.1.5 in [Kashiwara2006]).
 -/
 
-@[expose] public section
+public section
 
 universe w v v₁ u u₁
 

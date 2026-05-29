@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Monoidal.Transport
 # Transport a symmetric monoidal structure along an equivalence of categories
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ u₁ u₂
 

@@ -10,7 +10,7 @@ public import Mathlib.Data.Nat.BinaryRec
 
 /-! # A recursion principle based on even and odd numbers. -/
 
-@[expose] public section
+public section
 
 namespace Nat
 

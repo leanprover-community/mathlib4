@@ -33,7 +33,7 @@ In this file, we show that an `AddMonoidAlgebra` has an internal direct sum stru
   is the identity.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

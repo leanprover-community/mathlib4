@@ -27,7 +27,7 @@ objects such that from every object there is a morphism to a member of `s`. We a
 converse holds if `J` is filtered.
 -/
 
-@[expose] public section
+public section
 
 universe w w' v v₁ u u₁
 
@@ -50,6 +50,7 @@ theorem FinallySmall.mk' {J : Type u} [Category.{v} J] {S : Type w} [SmallCatego
   ⟨S, _, F, inferInstance⟩
 
 /-- An arbitrarily chosen small model for a finally small category. -/
+@[expose]
 def FinalModel [FinallySmall.{w} J] : Type w :=
   Classical.choose (@FinallySmall.final_smallCategory J _ _)
 
@@ -108,6 +109,7 @@ theorem InitiallySmall.mk' {J : Type u} [Category.{v} J] {S : Type w} [SmallCate
   ⟨S, _, F, inferInstance⟩
 
 /-- An arbitrarily chosen small model for an initially small category. -/
+@[expose]
 def InitialModel [InitiallySmall.{w} J] : Type w :=
   Classical.choose (@InitiallySmall.initial_smallCategory J _ _)
 
