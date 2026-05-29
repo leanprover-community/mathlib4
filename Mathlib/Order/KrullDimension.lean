@@ -1079,9 +1079,8 @@ lemma coheight_zero_of_coheight_one_of_strictMono
       rw [← ha] at this ⊢
       norm_cast at *
       lia
-  refine le_antisymm ?_ (by simp)
-  have := coheight_le_coheight_apply_of_strictMono f hf ↑x
-  rwa [h] at this
+  have := coheight_le_coheight_apply_of_strictMono f hf x
+  exact le_antisymm (by simp_all) (by simp)
 
 @[simp] lemma coheight_coe_withBot (x : α) : coheight (x : WithBot α) = coheight x :=
   height_coe_withTop (α := αᵒᵈ) x
