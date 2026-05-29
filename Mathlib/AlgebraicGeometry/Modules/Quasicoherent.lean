@@ -17,12 +17,6 @@ A module `M : X.Modules` is quasicoherent if it locally admits a presentation.
 
 public section
 
-open CategoryTheory
-
-instance {X Y : TopCat} (f : X ⟶ Y) : (TopologicalSpace.Opens.map f).PreservesOneHypercovers
-    (Opens.grothendieckTopology Y) (Opens.grothendieckTopology X) :=
-  Functor.PreservesOneHypercovers.of_coverPreserving (coverPreserving_opens_map f)
-
 namespace AlgebraicGeometry.Scheme.Modules
 
 /-- The pullback of a quasicoherent sheaf is quasicoherent -/
