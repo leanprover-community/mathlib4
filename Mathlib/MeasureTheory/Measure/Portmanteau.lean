@@ -9,6 +9,7 @@ public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Mathlib.MeasureTheory.Integral.Layercake
 public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+public import Mathlib.MeasureTheory.Measure.Tight
 
 /-!
 # Characterizations of weak convergence of finite measures and probability measures
@@ -832,5 +833,35 @@ lemma _root_.IsPiSystem.tendsto_probabilityMeasure_of_tendsto_of_mem
   exact hi.trans_le <| ProbabilityMeasure.apply_mono _ TG
 
 end convergenceCriterion
+
+/-- A different version of the (C) → (T) implication of the portmanteau theorem:
+When the set of measures is tight, a `limsup` inequality for compact sets suffices to conclude
+weak convergence. -/
+theorem ProbabilityMeasure.tendsto_of_forall_isCompact_of_isTightMeasureSet
+    {Ω ι : Type*} {mΩ : MeasurableSpace Ω} [TopologicalSpace Ω]
+    [OpensMeasurableSpace Ω] {L : Filter ι} [NeBot L] [L.IsCountablyGenerated]
+    {μs : ι → ProbabilityMeasure Ω} {μ : ProbabilityMeasure Ω}
+    (h₁ : IsTightMeasureSet (range (ProbabilityMeasure.toMeasure ∘ μs)))
+    (h₂ : ∀ F, IsCompact F → limsup (fun i ↦ (μs i) F) L ≤ μ F) :
+    Tendsto (fun i ↦ μs i) L (nhds μ) := by
+  refine tendsto_of_forall_isClosed_limsup_le <| fun F hF_closed ↦ ?_
+  rw [← ENNReal.coe_le_coe, ENNReal.ofNNReal_limsup <|
+      isBoundedUnder_of_eventually_le (a := 1) (by simp)]
+  refine ENNReal.le_of_forall_pos_le_add <| fun ε hε _ ↦ ?_
+  obtain ⟨K, hKc, hK_le⟩ := isTightMeasureSet_iff_exists_isCompact_measure_compl_le.mp
+    h₁ ε (by positivity)
+  grw [limsup_le_limsup (v := fun i ↦ μs i (F ∩ K) + (ε : ENNReal))]
+  · rw [limsup_add_const _ _ _ (by isBoundedDefault) (by isBoundedDefault)]
+    apply add_le_add _ (by simp)
+    specialize h₂ (F ∩ K) <| hKc.inter_left hF_closed
+    rw [← ENNReal.coe_le_coe, ENNReal.ofNNReal_limsup <|
+      isBoundedUnder_of_eventually_le (a := 1) (by simp)] at h₂
+    grw [h₂]
+    simp [measure_mono]
+  · refine .of_forall (fun i ↦ ?_)
+    simp_rw [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
+    grw [measure_mono (t := (F ∩ K) ∪ F \ K) (by simp), measure_union_le]
+    gcongr
+    exact le_trans (measure_mono (by simp)) <| hK_le (μs i) <| by simp
 
 end MeasureTheory --namespace
