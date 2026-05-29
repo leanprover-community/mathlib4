@@ -36,23 +36,6 @@ flat extension of an integral domain.
 
 section
 
-@[simp]
-theorem PrimeSpectrum.coe_primesOverOrderIsoFiber_symm_apply {R S : Type*} [CommRing R] [CommRing S]
-    [Algebra R S] (p : Ideal R) [p.IsPrime] (q : PrimeSpectrum (p.Fiber S)) :
-    (primesOverOrderIsoFiber R S p).symm q = q.1.comap Algebra.TensorProduct.includeRight :=
-  rfl
-
--- can we remove any assumptions here? (esp finiteness, to make this a strict generalization...)
-theorem IsGaloisGroup.card_eq_finrank' (G R S : Type*) [Group G] [CommRing R] [CommRing S]
-    [IsDomain R] [IsDomain S] [Algebra R S] [MulSemiringAction G S] [IsGaloisGroup G R S]
-    [Module.IsTorsionFree R S] [Module.Finite R S] :
-    Nat.card G = Module.finrank R S := by
-  have : Finite G := IsGaloisGroup.finite G R S
-  let := FractionRing.liftAlgebra R (FractionRing S)
-  let := IsFractionRing.mulSemiringAction G R S (FractionRing R) (FractionRing S)
-  rw [(IsGaloisGroup.toFractionRing G R S).card_eq_finrank,
-    Algebra.IsAlgebraic.finrank_of_isFractionRing R (FractionRing R) S (FractionRing S)]
-
 namespace Ideal
 
 variable {R : Type*} [CommRing R] (p : Ideal R) [p.IsPrime] (S : Type*) [CommRing S] [Algebra R S]
