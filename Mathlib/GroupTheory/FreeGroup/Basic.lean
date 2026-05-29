@@ -331,6 +331,7 @@ protected theorem sublist : Red L₁ L₂ → L₂ <+ L₁ :=
 theorem length_le (h : Red L₁ L₂) : L₂.length ≤ L₁.length :=
   h.sublist.length_le
 
+set_option linter.auxLemma false in
 @[to_additive (attr := deprecated "Should not be needed." (since := "2026-04-10"))]
 theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
     Step L₁ L₂ → sizeOf L₂ < sizeOf L₁

@@ -31,6 +31,7 @@ section
 
 variable {c : Cocone (F ⋙ forget₂ _ RingCat)} [IsFilteredOrEmpty J]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation): The algebra instance on the cocone point of the underlying diagram of rings
 is induced from the `j`-th inclusion map. Any choice of `j` gives a propositionally equal algebra
@@ -41,6 +42,7 @@ private abbrev AlgCat.algebraOfIsFiltered (hc : IsColimit c) (j : J) : Algebra R
     obtain ⟨k, hjk, y, rfl⟩ := Concrete.exists_hom_ι_eq_of_isColimit _ hc x j
     simp [← dsimp% c.w hjk, ← dsimp% (c.ι.app k).hom.map_mul, Algebra.commutes']
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The cocone of the underlying diagram of rings lifted to `AlgCat R`. The algebra instance
 on the cocone point is induced from the `j`-th inclusion map. -/
@@ -57,6 +59,7 @@ private def AlgCat.coconeOfIsFiltered (hc : IsColimit c) (j : J) : Cocone F wher
     ext
     exact c.ι.naturality_apply _ _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The lifted cocone is colimiting. -/
 private def AlgCat.isColimitCoconeOfIsFiltered (hc : IsColimit c) (j : J) :

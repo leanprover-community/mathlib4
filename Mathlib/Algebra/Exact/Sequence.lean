@@ -48,8 +48,23 @@ public lemma sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} (V : Fin (n + 2)
   simp_rw [← smul_eq_mul]
   refine Fin.sum_neg_one_pow_eq_zero _ (fun i ↦ finrank k (f i).range) ?_ (fun i ↦ ?_) ?_
   · aesop
-  · grind [(h_exact i).linearMap_ker_eq, (f i.succ).finrank_range_add_finrank_ker]
-  · grind [finrank_top]
+  · #adaptation_note /-- Prior to v4.31.0-rc1, this proof was
+      ```
+      grind [(h_exact i).linearMap_ker_eq, (f i.succ).finrank_range_add_finrank_ker]
+      ```
+      -/
+    have hrn := (f i.succ).finrank_range_add_finrank_ker
+    have hker : finrank k ↥(LinearMap.ker (f i.succ)) =
+        finrank k ↥(LinearMap.range (f i.castSucc)) :=
+      congrArg (fun S : Submodule k (V i.succ.castSucc) => finrank k ↥S)
+        (h_exact i).linearMap_ker_eq
+    omega
+  · #adaptation_note /-- Prior to v4.31.0-rc1, this proof was
+      ```
+      grind [finrank_top]
+      ```
+      -/
+    rw [surj, finrank_top, Fin.succ_last]
 
 /- An unrolled version of `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`. This is an auxiliary
 lemma en route to `Module.sum_neg_one_pow_finrank_eq_zero_of_exact_six`. -/
