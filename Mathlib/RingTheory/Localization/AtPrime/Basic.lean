@@ -431,26 +431,18 @@ the induced algebra homomorphism from the localization of `S` at `J` to the loca
 `K` over the localization of `R` at `I`.
 
 See `localAlgHom` for a variant where the base ring `R` is not localized. -/
+@[simps!]
 noncomputable def localAlgHom' (f : S →ₐ[R] P) (h : J = K.comap f) :
-    Localization.AtPrime J →ₐ[Localization.AtPrime I] Localization.AtPrime K where
-  __ := localAlgHom J K f h
-  commutes' := by
-    let RI := Localization.AtPrime I
-    let f := (localAlgHom J K f h).comp (IsScalarTower.toAlgHom R RI _)
-    let g := IsScalarTower.toAlgHom R RI (Localization.AtPrime K)
-    have : f.toRingHom.comp (algebraMap R RI) = g.toRingHom.comp (algebraMap R RI) := by simp
-    suffices f = g by rwa [DFunLike.ext_iff] at this
-    apply Localization.algHom_ext
-    rwa [DFunLike.ext_iff] at this ⊢
+    Localization.AtPrime J →ₐ[Localization.AtPrime I] Localization.AtPrime K :=
+  (localAlgHom J K f h).extendScalarsOfIsLocalization (Localization.AtPrime I) I.primeCompl
 
 /-- Isomorphic algebras have isomorphic localizations.
 
 See `localAlgEquiv` for a variant where the base ring is not localized. -/
-@[simps]
+@[simps!]
 noncomputable def localAlgEquiv' (f : S ≃ₐ[R] P) (h : J = K.comap f) :
-    Localization.AtPrime J ≃ₐ[Localization.AtPrime I] Localization.AtPrime K where
-  __ := localAlgHom' I J K f.toAlgHom h
-  __ := localAlgEquiv J K f h
+    Localization.AtPrime J ≃ₐ[Localization.AtPrime I] Localization.AtPrime K :=
+  (localAlgEquiv J K f h).extendScalarsOfIsLocalization (Localization.AtPrime I) I.primeCompl
 
 end localAlg
 
