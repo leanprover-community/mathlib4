@@ -347,6 +347,8 @@ instance instRatCast : RatCast ℂ where ratCast q := ofReal q
 @[simp, norm_cast] lemma ofReal_intCast (n : ℤ) : ofReal n = n := rfl
 @[simp, norm_cast] lemma ofReal_nnratCast (q : ℚ≥0) : ofReal q = q := rfl
 @[simp, norm_cast] lemma ofReal_ratCast (q : ℚ) : ofReal q = q := rfl
+@[simp, norm_cast] lemma ofReal_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
+    ofReal (OfScientific.ofScientific m s e : ℝ) = OfScientific.ofScientific m s e := rfl
 
 @[simp] lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).re = ofNat(n) := rfl
 @[simp] lemma im_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).im = 0 := rfl
@@ -358,6 +360,10 @@ instance instRatCast : RatCast ℂ where ratCast q := ofReal q
 @[simp, norm_cast] lemma im_nnratCast (q : ℚ≥0) : (q : ℂ).im = 0 := rfl
 @[simp, norm_cast] lemma ratCast_re (q : ℚ) : (q : ℂ).re = q := rfl
 @[simp, norm_cast] lemma ratCast_im (q : ℚ) : (q : ℂ).im = 0 := rfl
+@[simp] lemma re_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
+    (OfScientific.ofScientific m s e : ℂ).re = OfScientific.ofScientific m s e := rfl
+@[simp] lemma im_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
+    (OfScientific.ofScientific m s e : ℂ).im = 0 := rfl
 
 
 /-! ### Ring structure -/
