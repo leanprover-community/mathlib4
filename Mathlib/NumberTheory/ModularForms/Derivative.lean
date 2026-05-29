@@ -29,7 +29,7 @@ TODO:
 
 open UpperHalfPlane hiding I
 open Real Complex
-open scoped Manifold MatrixGroups ModularForm
+open scoped Manifold MatrixGroups ModularForm Topology
 
 namespace Derivative
 
@@ -189,44 +189,26 @@ lemma normalizedDerivOfComplex_slash (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) 
   unfold normalizedDerivOfComplex
   simp only [Pi.sub_apply]
   have hz := denom_ne_zero γ z
-  have hdet_pos : 0 < ((γ : GL (Fin 2) ℝ).det).val := by simp
-  have hcomp : deriv (((F ∣[k] γ)) ∘ ofComplex) z =
-      deriv (fun w ↦ (F ∘ ofComplex) ↑(γ • ofComplex w) * (denom γ w) ^ (-k)) z := by
-    apply Filter.EventuallyEq.deriv_eq
+  have hdet : ((↑γ : GL (Fin 2) ℝ)).val.det = 1 := by
+    rw [← Matrix.GeneralLinearGroup.val_det_apply]; simp
+  have h_smul : HasDerivAt (fun w ↦ ↑(γ • ofComplex w) : ℂ → ℂ) (1 / (denom γ z) ^ 2) ↑z := by
+    have h := (hasStrictDerivAt_smul (hdet ▸ one_pos) z).hasDerivAt
+    rwa [hdet, Complex.ofReal_one] at h
+  have h_F : HasDerivAt (F ∘ ofComplex) (deriv (F ∘ ofComplex) ↑(γ • ofComplex (z : ℂ)))
+      ↑(γ • ofComplex (z : ℂ)) :=
+    (ofComplex_apply z).symm ▸ (mdifferentiableAt_iff.mp (hF (γ • z))).hasDerivAt
+  have h_denom : HasDerivAt (fun w ↦ (denom γ w) ^ (-k))
+      (-k * ((γ : Matrix (Fin 2) (Fin 2) ℤ) 1 0 : ℂ) * (denom γ z) ^ (-k - 1)) ↑z := by
+    simpa using (hasStrictDerivAt_denom_zpow ↑γ (-k) z).hasDerivAt
+  have hcomp : ((F ∣[k] γ) ∘ ofComplex) =ᶠ[𝓝 ↑z]
+      fun w ↦ (F ∘ ofComplex) ↑(γ • ofComplex w) * (denom γ w) ^ (-k) := by
     filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds z.im_pos] with w hw
     simp only [Function.comp_apply, ofComplex_apply_of_im_pos hw, ofComplex_apply]
     rw [ModularForm.SL_slash_apply (f := F) (k := k) γ ⟨w, hw⟩]
-  rw [hcomp]
-  have hdiff_smul : DifferentiableAt ℂ (fun w ↦ ↑(γ • ofComplex w) : ℂ → ℂ) (z : ℂ) :=
-    (hasStrictDerivAt_smul hdet_pos z).hasDerivAt.differentiableAt
-  have hdiff_F_comp : DifferentiableAt ℂ (F ∘ ofComplex) ↑(γ • ofComplex (z : ℂ)) := by
-    rw [ofComplex_apply]
-    exact mdifferentiableAt_iff.mp (hF (γ • z))
-  have hcomp_eq : (fun w ↦ (F ∘ ofComplex) ↑(γ • ofComplex w)) =
-    (F ∘ ofComplex) ∘ (fun w ↦ ↑(γ • ofComplex w) : ℂ → ℂ) := rfl
-  have hsmul_deriv : deriv (fun w ↦ ↑(γ • ofComplex w) : ℂ → ℂ) (z : ℂ) =
-      1 / (denom γ z) ^ 2 := by
-    have h : deriv (fun w ↦ ↑(γ • ofComplex w) : ℂ → ℂ) (z : ℂ) =
-        (↑γ : GL (Fin 2) ℝ).val.det / denom γ z ^ 2 :=
-      (hasStrictDerivAt_smul hdet_pos z).hasDerivAt.deriv
-    rw [h, show (((↑γ : GL (Fin 2) ℝ)).val.det : ℂ) = 1 from by
-      rw [← Matrix.GeneralLinearGroup.val_det_apply]; simp]
-  have hdenom_zpow_deriv : deriv (fun w ↦ (denom γ w) ^ (-k)) (z : ℂ) =
-      (-k) * ((γ : Matrix (Fin 2) (Fin 2) ℤ) 1 0 : ℂ) * (denom γ z) ^ (-k - 1) := by
-    rw [deriv_denom_zpow]; simp
-  rw [show (fun w ↦ (F ∘ ofComplex) ↑(γ • ofComplex w) * (denom γ w) ^ (-k)) =
-      (fun w ↦ (F ∘ ofComplex) ↑(γ • ofComplex w)) * (fun w ↦ (denom γ w) ^ (-k)) from rfl,
-    deriv_mul (hcomp_eq ▸ hdiff_F_comp.comp (z : ℂ) hdiff_smul)
-      (hasStrictDerivAt_denom_zpow ↑γ (-k) z).hasDerivAt.differentiableAt,
-    hcomp_eq, (hdiff_F_comp.hasDerivAt.comp (z : ℂ) hdiff_smul.hasDerivAt).deriv,
-    hsmul_deriv, hdenom_zpow_deriv]
+  rw [(((h_F.comp (z : ℂ) h_smul).mul h_denom).congr_of_eventuallyEq hcomp).deriv]
   simp only [ModularForm.SL_slash_apply, Function.comp_apply, ofComplex_apply]
-  have hpow1 : 1 / (denom γ z) ^ 2 * (denom γ z) ^ (-k) = (denom γ z) ^ (-(k + 2)) := by
-    rw [one_div, ← zpow_natCast _ 2, ← zpow_neg, ← zpow_add₀ hz]; congr 1; ring
-  have hpow2 : (denom γ z) ^ (-k - 1) = (denom γ z) ^ (-1 : ℤ) * (denom γ z) ^ (-k) := by
-    rw [← zpow_add₀ hz]; congr 1; ring
-  conv_lhs => rw [mul_assoc _ (1 / denom γ z ^ 2) _, hpow1, hpow2]
-  simp only [zpow_neg_one]
+  rw [Int.neg_add, sub_eq_add_neg, zpow_add₀ hz, zpow_add₀ hz]
+  field_simp
   ring
 
 /--
@@ -238,15 +220,12 @@ theorem ramanujanSerreDerivative_slash_equivariant (k : ℤ) (F : ℍ → ℂ) (
     ramanujanSerreDerivative k F ∣[k + 2] γ = ramanujanSerreDerivative k (F ∣[k] γ) := by
   ext z
   simp only [ramanujanSerreDerivative_apply]
-  -- Rewrite LHS using mul_slash and ramanujanSerreDerivative definition
   have hLHS : (ramanujanSerreDerivative (k : ℂ) F ∣[k + 2] γ) z =
       (D F ∣[k + 2] γ) z - ↑k * 12⁻¹ * ((EisensteinSeries.E2 ∣[(2 : ℤ)] γ) z * (F ∣[k] γ) z) := by
     have h := congrFun (ModularForm.mul_slash_SL2 (2 : ℤ) k γ EisensteinSeries.E2 F) z
     simp only [ModularForm.SL_slash_apply, ramanujanSerreDerivative_apply, Pi.mul_apply] at h ⊢
     rw [← h]
     ring_nf
-  rw [hLHS]
-  -- Substitute D slash and E2 slash action formulas pointwise
   have hDz : (D (F ∣[k] γ)) z = (D F ∣[k + 2] γ) z -
       ((k : ℂ) * (2 * π * I)⁻¹ * (γ 1 0 / denom γ z) * (F ∣[k] γ) z) := by
     simpa [Pi.sub_apply] using congrFun (normalizedDerivOfComplex_slash k F hF γ) z
@@ -254,7 +233,7 @@ theorem ramanujanSerreDerivative_slash_equivariant (k : ℤ) (F : ℍ → ℂ) (
       EisensteinSeries.E2 z - 1 / (2 * riemannZeta 2) * EisensteinSeries.D2 γ z := by
     simpa [Pi.sub_apply, Pi.smul_apply, smul_eq_mul] using
       congrFun (EisensteinSeries.E2_slash_action γ) z
-  rw [hDz, hE2z]
+  rw [hLHS, hDz, hE2z]
   simp only [EisensteinSeries.D2, riemannZeta_two]
   field_simp [denom_ne_zero γ z, Complex.ofReal_ne_zero.mpr Real.pi_ne_zero]
   ring_nf
