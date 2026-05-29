@@ -39,7 +39,7 @@ noncomputable section
 
 namespace AlgebraicGeometry
 
-variable {X : Scheme.{u}}
+variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 /--
 `X.AffineZariskiSite` is the small affine Zariski site of `X`, whose elements are affine open
@@ -93,6 +93,12 @@ def restrictIsoSpec : toOpensFunctor X ⋙ X.restrictFunctor ⋙ Over.forget _ �
     toOpensFunctor X ⋙ X.presheaf.rightOp ⋙ Scheme.Spec :=
   NatIso.ofComponents (fun U ↦ U.2.isoSpec)
     fun _ ↦ (Scheme.Opens.toSpecΓ_SpecMap_presheaf_map ..).symm
+
+/-- An open immersion covariantly induces a functor between `AffineZariskiSite`. -/
+@[simps] def image [IsOpenImmersion f] : X.AffineZariskiSite ⥤ Y.AffineZariskiSite where
+  obj U := ⟨f ''ᵁ U.1, U.2.image_of_isOpenImmersion f⟩
+  map {U V} f := homOfLE <| by obtain ⟨r, hr⟩ := f; exact ⟨(f.appIso V.1).inv r,
+    by simp_all [toOpens, ← hr, image_basicOpen]⟩
 
 section GrothendieckTopology
 
@@ -326,12 +332,14 @@ lemma opensRange_relativeGluingData_map (F : X.AffineZariskiSiteᵒᵖ ⥤ CommR
 @[deprecated (since := "2026-02-01")]
 alias PreservesLocalization.opensRange_map := opensRange_relativeGluingData_map
 
-@[deprecated Cover.RelativeGluingData.toBase_preimage_eq_opensRange_ι (since := "2026-02-01")]
-lemma PreservesLocalization.colimitDesc_preimage (F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat)
+lemma toBase_relativeGluingData_preimage (F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat)
     (α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F)
-    (H : α.Coequifibered) (U : X.AffineZariskiSite) :
-    (relativeGluingData H).toBase ⁻¹ᵁ U.1 = ((relativeGluingData H).cover.f U).opensRange := by
-  simpa using (relativeGluingData H).toBase_preimage_eq_opensRange_ι U
+    (H : α.Coequifibered) (U : X.Opens) (hU : IsAffineOpen U) :
+    (relativeGluingData H).toBase ⁻¹ᵁ U = ((relativeGluingData H).cover.f ⟨U, hU⟩).opensRange := by
+  simpa using (relativeGluingData H).toBase_preimage_eq_opensRange_ι ⟨U, hU⟩
+
+@[deprecated (since := "2026-02-06")]
+alias PreservesLocalization.colimitDesc_preimage := toBase_relativeGluingData_preimage
 
 @[deprecated (since := "2026-02-01")]
 alias _root_.AlgebraicGeometry.Scheme.preservesLocalization_toOpensFunctor :=
@@ -343,10 +351,6 @@ variable (X) in
 noncomputable def isColimitCocone : IsColimit (cocone X) :=
   letI D := relativeGluingData (X := X) (.of_isIso (𝟙 _))
   letI F := D.functor
-  -- Why doesn't typeclass synthesis work here?
-  -- It does fire if one adds `(C := no_index(_))` to the composition in the instance.
-  haveI : (D.functor ⋙ forget).IsLocallyDirected :=
-    Cover.RelativeGluingData.instIsLocallyDirectedI₀CompFunctorForgetOfIsThin ..
   haveI : IsIso ((colimit.isColimit F).desc (cocone X:)) := by
     refine (IsZariskiLocalAtTarget.iff_of_openCover (P := .isomorphisms _)
       (X.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top X))).mpr fun U ↦ ?_
