@@ -6,6 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Sites.CoverPreserving
 
 /-! # Objects which cover the terminal object
 
@@ -165,5 +167,15 @@ end IsCompatible
 end FamilyOfElementsOnObjects
 
 end Presheaf
+
+protected lemma GrothendieckTopology.CoversTop.map {D : Type*} [Category* D]
+    {I : Type*} {X : I → C} (h : J.CoversTop X)
+    (F : C ⥤ D) (K : GrothendieckTopology D) [F.Final] (hF : CoverPreserving J K F) :
+    K.CoversTop (fun i ↦ F.obj (X i)) := by
+  intro Y
+  obtain ⟨Z, f, _⟩ := StructuredArrow.mk_surjective (Classical.arbitrary (StructuredArrow Y F))
+  refine K.superset_covering ?_ (K.pullback_stable f ((hF.cover_preserve (h Z))))
+  rintro Y' g ⟨T, k, l, ⟨i, ⟨m⟩⟩, hk⟩
+  exact ⟨i, ⟨l ≫ F.map m⟩⟩
 
 end CategoryTheory

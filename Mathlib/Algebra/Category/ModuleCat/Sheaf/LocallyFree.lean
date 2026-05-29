@@ -195,7 +195,7 @@ protected def LocalGeneratorsData.pullback {M : SheafOfModules.{u} S} (q : M.Loc
     ((pullback φ).obj M).LocalGeneratorsData where
   I := q.I
   X i := F.obj (q.X i)
-  coversTop := q.coversTop.map _ K coverPreserving_of_preservesOneHypercovers
+  coversTop := q.coversTop.map J _ K CoverPreserving.of_preservesOneHypercovers
   generators i := ((q.generators i).map _ (asIso (pullbackObjUnitToUnit _)).symm).ofEpi
     (M.overPullbackIso φ (q.X i)).hom
 

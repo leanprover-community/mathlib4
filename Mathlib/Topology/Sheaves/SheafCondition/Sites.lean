@@ -199,6 +199,10 @@ theorem coverPreserving_opens_map : CoverPreserving (Opens.grothendieckTopology 
   obtain ⟨V, i, hi, hxV⟩ := hS (f x) hx
   exact ⟨_, (Opens.map f).map i, ⟨_, _, 𝟙 _, hi, Subsingleton.elim _ _⟩, hxV⟩
 
+instance : (TopologicalSpace.Opens.map f).PreservesOneHypercovers
+    (Opens.grothendieckTopology Y) (Opens.grothendieckTopology X) :=
+  Functor.PreservesOneHypercovers.of_coverPreserving (coverPreserving_opens_map f)
+
 instance : (Opens.map f).IsContinuous (Opens.grothendieckTopology Y)
     (Opens.grothendieckTopology X) := by
   apply Functor.isContinuous_of_coverPreserving

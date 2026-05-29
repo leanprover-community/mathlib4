@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
 public import Mathlib.CategoryTheory.Sites.CoversTop.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Over
 
 /-!
 # Over
@@ -24,58 +25,11 @@ noncomputable section
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
-namespace CategoryTheory
-
-variable (X : C)
-
-#synth HasTerminal (Over X)
-
-instance Over.post_preservesTerminal {X : C} (F : C ⥤ D) :
-    PreservesLimit (Functor.empty.{0} _) (Over.post (X := X) F) :=
-  preservesTerminal_of_iso _ <|
-    (Over.post F).mapIso (terminalIsTerminal.uniqueUpToIso Over.mkIdTerminal) ≪≫
-      Over.isoMk (g := Over.mk (𝟙 (F.obj X))) (Iso.refl _) (by simp) ≪≫
-      Over.mkIdTerminal.uniqueUpToIso terminalIsTerminal
-
-end CategoryTheory
-
-namespace CategoryTheory.GrothendieckTopology.CoversTop
-
-protected lemma map
-    {J : GrothendieckTopology C}
-    {I : Type*} {X : I → C} (h : J.CoversTop X)
-    (F : C ⥤ D) (K : GrothendieckTopology D) [F.Final]
-    (hF : CoverPreserving J K F) :
-    K.CoversTop (fun i ↦ F.obj (X i)) := by
-  intro Y
-  obtain ⟨Z, f, _⟩ := StructuredArrow.mk_surjective (Classical.arbitrary (StructuredArrow Y F))
-  refine K.superset_covering ?_ (K.pullback_stable f ((hF.cover_preserve (h Z))))
-  rintro Y' g ⟨T, k, l, ⟨i, ⟨m⟩⟩, hk⟩
-  exact ⟨i, ⟨l ≫ F.map m⟩⟩
-
-end CategoryTheory.GrothendieckTopology.CoversTop
-
-namespace CategoryTheory
-
-open GrothendieckTopology
-
-lemma coverPreserving_of_preservesOneHypercovers
-    {J : GrothendieckTopology C} {K : GrothendieckTopology D} {F : C ⥤ D}
-    [Functor.PreservesOneHypercovers.{w} F J K] [IsGeneratedByOneHypercovers.{w} J] :
-    CoverPreserving J K F where
-  cover_preserve {U S} hS := by
-    obtain ⟨E, _, hES⟩ := (⊤ : OneHypercoverFamily.{w} J).exists_oneHypercover S hS
-    refine K.superset_covering ?_ (OneHypercover.IsPreservedBy.mem₀ (E := E))
-    simpa [PreOneHypercover.map, PreZeroHypercover.sieve₀_map] using
-      (Sieve.functorPushforward_monotone F U hES)
-
-end CategoryTheory
-
 namespace SheafOfModules
 
 variable [HasBinaryProducts C] [HasBinaryProducts D]
   {J : GrothendieckTopology C} {K : GrothendieckTopology D} {F : C ⥤ D}
-  [Functor.PreservesOneHypercovers F J K] [Limits.PreservesLimitsOfShape (Discrete WalkingPair) F]
+  [F.PreservesOneHypercovers J K] [Limits.PreservesLimitsOfShape (Discrete WalkingPair) F]
   {S : Sheaf J RingCat.{u}} {R : Sheaf K RingCat.{u}}
   (M : SheafOfModules.{u} S)
   (φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R) (X : C)

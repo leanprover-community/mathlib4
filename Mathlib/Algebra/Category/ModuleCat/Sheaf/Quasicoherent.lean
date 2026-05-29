@@ -397,7 +397,7 @@ protected noncomputable def QuasicoherentData.pullback {M : SheafOfModules.{u} S
     (q : M.QuasicoherentData) : ((pullback φ).obj M).QuasicoherentData where
   I := q.I
   X i := F.obj (q.X i)
-  coversTop := q.coversTop.map _ K coverPreserving_of_preservesOneHypercovers
+  coversTop := q.coversTop.map J _ K CoverPreserving.of_preservesOneHypercovers
   presentation i := ((q.presentation i).map _ (asIso (pullbackObjUnitToUnit _)).symm).ofIsIso
     (M.overPullbackIso φ (q.X i)).hom
 
