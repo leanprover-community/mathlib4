@@ -5,11 +5,11 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 module
 
-public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Lean.Meta.Simp
 public import Batteries.Logic
 public import Batteries.Util.LibraryNote
 
-import Mathlib.Tactic.Attr.Register
+public import Mathlib.Tactic.Attr.Register
 
 /-!
 # Basic logic properties
@@ -27,6 +27,75 @@ Classical versions are in the namespace `Classical`.
 open Function
 
 section Miscellany
+
+section CommSimproc
+
+open Lean Meta Simp
+
+theorem eq_comm_eq {α : Sort*} (a b : α) : (a = b) = (b = a) := by rw [@eq_comm _ a b]
+theorem iff_comm_eq (a b : Prop) : (a ↔ b) = (b ↔ a) := by rw [@iff_comm a b]
+
+/-- On a goal of the form of `x = y`, also try to simplify `y = x`.
+
+If simplifying `y = x` gives `y' = x'` then this simproc returns `x' = y'` (so that the use of
+commutativity is transparent), otherwise it returns the result of simplifying `y = x` unmodified.
+-/
+simproc_decl eqComm (_ = _) := fun e => do
+  let_expr Eq _ x y := e | return .continue
+  let symmExpr ← mkEq y x
+  let r ← withoutTheorems #[`eqComm,
+    -- These theorems would cause an infinite loop:
+    ``eq_comm, ``Bool.not_eq_eq_eq_not, `inv_eq_iff_eq_inv, `eq_inv_mul_iff_mul_eq,
+    `eq_mul_inv_iff_mul_eq, `neg_eq_iff_eq_neg, `Function.Involutive.eq_iff,
+    `vadd_eq_iff_eq_neg_vadd, `Equiv.apply_eq_iff_eq_symm_apply,
+    -- These theorems aren't commute-resistant (they turn an equality into a non-equality in a
+    -- non-commutative way.)
+    ``beq_iff_eq, ``funext_iff, ``eq_iff_iff, `Prod.swap_eq_iff_eq_swap, ``left_eq_dite_iff,
+    ``right_eq_dite_iff] do
+    withTraceNode `Meta.Tactic.simp (fun _ => return m!"commuting equality: {e}") <| simp symmExpr
+  -- If no actual progress happened (modulo commutativity), return early.
+  match_expr r.expr with
+  | Eq _ y' x' =>
+    if (y' == y && x' == x) || (y' == x && x' == y) then do
+      return .continue none
+  | _ => pure ()
+  let symmR ← Result.mkEqTrans { expr := symmExpr, proof? := ← mkAppM ``eq_comm_eq #[x, y] } r
+  -- If we started with `x = y`, and the result of simplifying `y = x` was `y' = x'`, then we want
+  -- to end up with `x' = y'`.
+  match_expr r.expr with
+  | Eq _ y' x' =>
+    return .visit (← symmR.mkEqTrans
+      { expr := ← mkEq x' y', proof? := ← mkAppM ``eq_comm_eq #[y', x'] })
+  | _ => return .done symmR
+
+/-- On a goal of the form of `x ↔ y`, also try to simplify `y ↔ x`.
+
+If simplifying `y ↔ x` gives `y' ↔ x'` then this simproc returns `x' ↔ y'` (so that the use of
+commutativity is transparent), otherwise it returns the result of simplifying `y ↔ x` unmodified.
+-/
+simproc_decl iffComm (_ ↔ _) := fun e => do
+  let_expr Iff x y := e | return .continue
+  let symmExpr := .app (.app (.const ``Iff []) y) x
+  let r ← withoutTheorems #[`iffComm,
+      -- These theorems would cause an infinite loop:
+      ``Iff.comm,
+      -- These theorems aren't commute-resistant (they turn an iff into a non-iff in a
+      -- non-commutative way).
+      ``and_congr_left_iff, ``and_congr_right_iff,  ``iff_def, ``iff_def',
+      ``iff_iff_implies_and_implies, ``Bool.coe_iff_coe] do
+    withTraceNode `Meta.Tactic.simp (fun _ => return m!"commuting iff: {e}") <| simp symmExpr
+  -- If no actual progress happened (modulo commutativity), return early.
+  if r.expr == symmExpr || r.expr == e then return .continue
+  let symmR ← Result.mkEqTrans { expr := symmExpr, proof? := ← mkAppM ``iff_comm_eq #[x, y] } r
+  -- If we started with `x ↔ y`, and the result of simplifying `y ↔ x` was `y' ↔ x'`, then we want
+  -- to end up with `x' ↔ y'`.
+  match_expr r.expr with
+  | Iff y' x' =>
+    return .visit (← symmR.mkEqTrans
+      { expr := .app (.app (.const ``Iff []) x') y', proof? := ← mkAppM ``iff_comm_eq #[y', x'] })
+  | _ => return .done symmR
+
+end CommSimproc
 
 -- attribute [refl] HEq.refl -- FIXME This is still rejected after https://github.com/leanprover-community/mathlib4/pull/857
 
@@ -83,11 +152,11 @@ in specific circumstances.
 
 For example, `ZMod p` is a field if and only if `p` is a prime number.
 In order to be able to find this field instance automatically by type class search,
-we have to turn `p.prime` into an instance implicit assumption.
+we have to turn `p.Prime` into an instance implicit assumption.
 
-On the other hand, making `Nat.prime` a class would require a major refactoring of the library,
-and it is questionable whether making `Nat.prime` a class is desirable at all.
-The compromise is to add the assumption `[Fact p.prime]` to `ZMod.field`.
+On the other hand, making `Nat.Prime` a class would require a major refactoring of the library,
+and it is questionable whether making `Nat.Prime` a class is desirable at all.
+The compromise is to add the assumption `[Fact p.Prime]` to `ZMod.instField`.
 
 In particular, this class is not intended for turning the type class system
 into an automated theorem prover for first-order logic. -/
@@ -221,38 +290,37 @@ lemma Iff.ne_left {α β : Sort*} {a b : α} {c d : β} : (a = b ↔ c ≠ d) �
 lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) → (a = b ↔ c ≠ d) :=
   Iff.not_right
 
-/-! ### Declarations about `Xor'` -/
+/-! ### Declarations about `Xor` -/
 
-#adaptation_note
-/--
-2025-07-31. Upstream `Xor` has been renamed to `XorOp`.
-2025-09-16. The deprecation for `Xor` has been removed.
-Anytime after v4.25.0-rc1 lands we rename this back to `Xor`.
--/
-/-- `Xor' a b` is the exclusive-or of propositions. -/
-def Xor' (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
+/-- `Xor a b` is the exclusive-or of propositions. -/
+def Xor (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
 
-@[grind =] theorem xor_def {a b : Prop} : Xor' a b ↔ (a ∧ ¬b) ∨ (b ∧ ¬a) := Iff.rfl
+@[deprecated (since := "2026-04-27")] alias Xor' := Xor
 
-instance [Decidable a] [Decidable b] : Decidable (Xor' a b) := inferInstanceAs (Decidable (Or ..))
+@[grind =] theorem xor_def {a b : Prop} : Xor a b ↔ (a ∧ ¬b) ∨ (b ∧ ¬a) := Iff.rfl
 
-@[simp] theorem xor_true : Xor' True = Not := by grind
+instance [Decidable a] [Decidable b] : Decidable (Xor a b) := inferInstanceAs (Decidable (Or ..))
 
-@[simp] theorem xor_false : Xor' False = id := by grind
+@[simp] theorem xor_true : Xor True = Not := by grind
 
-theorem xor_comm (a b : Prop) : Xor' a b = Xor' b a := by grind
+@[simp] theorem xor_false : Xor False = id := by grind
 
-instance : Std.Commutative Xor' := ⟨xor_comm⟩
+theorem xor_comm (a b : Prop) : Xor a b = Xor b a := by grind
 
-@[simp] theorem xor_self (a : Prop) : Xor' a a = False := by grind
+instance : Std.Commutative Xor := ⟨xor_comm⟩
 
-@[simp] theorem xor_not_left : Xor' (¬a) b ↔ (a ↔ b) := by grind
+@[simp] theorem xor_self (a : Prop) : Xor a a = False := by grind
 
-@[simp] theorem xor_not_right : Xor' a (¬b) ↔ (a ↔ b) := by grind
+@[simp] theorem xor_not_left : Xor (¬a) b ↔ (a ↔ b) := by grind
 
-theorem xor_not_not : Xor' (¬a) (¬b) ↔ Xor' a b := by grind
+@[simp] theorem xor_not_right : Xor a (¬b) ↔ (a ↔ b) := by grind
 
-protected theorem Xor'.or (h : Xor' a b) : a ∨ b := by grind
+theorem xor_not_not : Xor (¬a) (¬b) ↔ Xor a b := by grind
+
+protected theorem Xor.or (h : Xor a b) : a ∨ b := by grind
+
+@[deprecated (since := "2026-04-27")]
+protected alias Xor'.or := Xor.or
 
 /-! ### Declarations about `and` -/
 
@@ -352,17 +420,17 @@ theorem or_iff_not_and_not : a ∨ b ↔ ¬(¬a ∧ ¬b) :=
 theorem and_iff_not_or_not : a ∧ b ↔ ¬(¬a ∨ ¬b) :=
   open scoped Classical in Decidable.and_iff_not_not_or_not
 
-@[simp] theorem not_xor (P Q : Prop) : ¬Xor' P Q ↔ (P ↔ Q) := by
-  simp only [not_and, Xor', not_or, not_not, ← iff_iff_implies_and_implies]
+@[simp] theorem not_xor (P Q : Prop) : ¬Xor P Q ↔ (P ↔ Q) := by
+  simp only [not_and, Xor, not_or, not_not, ← iff_iff_implies_and_implies]
 
-theorem xor_iff_not_iff (P Q : Prop) : Xor' P Q ↔ ¬(P ↔ Q) := (not_xor P Q).not_right
+theorem xor_iff_not_iff (P Q : Prop) : Xor P Q ↔ ¬(P ↔ Q) := (not_xor P Q).not_right
 
-theorem xor_iff_iff_not : Xor' a b ↔ (a ↔ ¬b) := by simp only [← @xor_not_right a, not_not]
+theorem xor_iff_iff_not : Xor a b ↔ (a ↔ ¬b) := by simp only [← @xor_not_right a, not_not]
 
-theorem xor_iff_not_iff' : Xor' a b ↔ (¬a ↔ b) := by simp only [← @xor_not_left _ b, not_not]
+theorem xor_iff_not_iff' : Xor a b ↔ (¬a ↔ b) := by simp only [← @xor_not_left _ b, not_not]
 
-theorem xor_iff_or_and_not_and (a b : Prop) : Xor' a b ↔ (a ∨ b) ∧ (¬(a ∧ b)) := by
-  rw [Xor', or_and_right, not_and_or, and_or_left, and_not_self_iff, false_or,
+theorem xor_iff_or_and_not_and (a b : Prop) : Xor a b ↔ (a ∨ b) ∧ (¬(a ∧ b)) := by
+  rw [Xor, or_and_right, not_and_or, and_or_left, and_not_self_iff, false_or,
     and_or_left, and_not_self_iff, or_false]
 
 end Propositional
@@ -1011,6 +1079,7 @@ theorem beq_ext {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
   funext x y
   exact h x y
 
+set_option linter.overlappingInstances false in
 theorem lawful_beq_subsingleton {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
     [@LawfulBEq α inst1] [@LawfulBEq α inst2] :
     inst1 = inst2 := by

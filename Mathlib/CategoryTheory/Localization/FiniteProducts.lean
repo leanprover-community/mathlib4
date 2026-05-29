@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Localization.HasLocalization
 public import Mathlib.CategoryTheory.Localization.Pi
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
-/-! The localized category has finite products
+/-! # The localized category has finite products
 
 In this file, it is shown that if `L : C ⥤ D` is
 a localization functor for `W : MorphismProperty C` and that
@@ -80,6 +80,7 @@ lemma adj_counit_app (F : Discrete J ⥤ C) :
         whiskerRight (constLimAdj.counit.app F) L := by
   apply constLimAdj.localization_counit_app
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `Localization.preservesProductsOfShape`. -/
 noncomputable def isLimitMapCone (F : Discrete J ⥤ C) :
     IsLimit (L.mapCone (limit.cone F)) :=

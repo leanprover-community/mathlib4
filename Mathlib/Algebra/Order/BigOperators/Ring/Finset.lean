@@ -120,13 +120,13 @@ end CanonicallyOrderedAdd
 
 /-- **Cauchy-Schwarz inequality** for finsets.
 
-This is written in terms of sequences `f`, `g`, and `r`, where `r` is a stand-in for
+This is written in terms of sequences `f`, `g`, and `r`, where `r` is usually a stand-in for
 `√(f i * g i)`. See `sum_mul_sq_le_sq_mul_sq` for the more usual form in terms of squared
 sequences. -/
-lemma sum_sq_le_sum_mul_sum_of_sq_eq_mul [CommSemiring R] [LinearOrder R] [IsStrictOrderedRing R]
+lemma sum_sq_le_sum_mul_sum_of_sq_le_mul [CommSemiring R] [LinearOrder R] [IsStrictOrderedRing R]
     [ExistsAddOfLE R]
     (s : Finset ι) {r f g : ι → R} (hf : ∀ i ∈ s, 0 ≤ f i) (hg : ∀ i ∈ s, 0 ≤ g i)
-    (ht : ∀ i ∈ s, r i ^ 2 = f i * g i) : (∑ i ∈ s, r i) ^ 2 ≤ (∑ i ∈ s, f i) * ∑ i ∈ s, g i := by
+    (ht : ∀ i ∈ s, r i ^ 2 ≤ f i * g i) : (∑ i ∈ s, r i) ^ 2 ≤ (∑ i ∈ s, f i) * ∑ i ∈ s, g i := by
   obtain h | h := (sum_nonneg hg).eq_or_lt'
   · have ht' : ∑ i ∈ s, r i = 0 := sum_eq_zero fun i hi ↦ by
       simpa [(sum_eq_zero_iff_of_nonneg hg).1 h i hi] using ht i hi
@@ -139,19 +139,28 @@ lemma sum_sq_le_sum_mul_sum_of_sq_eq_mul [CommSemiring R] [LinearOrder R] [IsStr
           simp_rw [mul_assoc, ← mul_sum, ← sum_mul]; ring
       _ ≤ ∑ i ∈ s, (f i * (∑ j ∈ s, g j) ^ 2 + g i * (∑ j ∈ s, r j) ^ 2) := by
           gcongr with i hi
-          have ht : (r i * (∑ j ∈ s, g j) * (∑ j ∈ s, r j)) ^ 2 =
-              (f i * (∑ j ∈ s, g j) ^ 2) * (g i * (∑ j ∈ s, r j) ^ 2) := by grind
-          refine le_of_eq_of_le ?_ (two_mul_le_add_of_sq_eq_mul
+          have ht : (r i * (∑ j ∈ s, g j) * (∑ j ∈ s, r j)) ^ 2 ≤
+              (f i * (∑ j ∈ s, g j) ^ 2) * (g i * (∑ j ∈ s, r j) ^ 2) := by
+            grw [mul_mul_mul_comm, ← mul_pow, mul_assoc, mul_pow, ht i hi]
+            exact sq_nonneg _
+          refine le_of_eq_of_le ?_ (two_mul_le_add_of_sq_le_mul
             (mul_nonneg (hf i hi) (sq_nonneg _)) (mul_nonneg (hg i hi) (sq_nonneg _)) ht)
           repeat rw [mul_assoc]
       _ = _ := by simp_rw [sum_add_distrib, ← sum_mul]; ring
+
+@[deprecated sum_sq_le_sum_mul_sum_of_sq_le_mul (since := "2026-05-12")]
+lemma sum_sq_le_sum_mul_sum_of_sq_eq_mul [CommSemiring R] [LinearOrder R] [IsStrictOrderedRing R]
+    [ExistsAddOfLE R]
+    (s : Finset ι) {r f g : ι → R} (hf : ∀ i ∈ s, 0 ≤ f i) (hg : ∀ i ∈ s, 0 ≤ g i)
+    (ht : ∀ i ∈ s, r i ^ 2 = f i * g i) : (∑ i ∈ s, r i) ^ 2 ≤ (∑ i ∈ s, f i) * ∑ i ∈ s, g i :=
+  sum_sq_le_sum_mul_sum_of_sq_le_mul s hf hg (fun i hi => (ht i hi).le)
 
 /-- **Cauchy-Schwarz inequality** for finsets, squared version. -/
 lemma sum_mul_sq_le_sq_mul_sq [CommSemiring R] [LinearOrder R] [IsStrictOrderedRing R]
     [ExistsAddOfLE R] (s : Finset ι)
     (f g : ι → R) : (∑ i ∈ s, f i * g i) ^ 2 ≤ (∑ i ∈ s, f i ^ 2) * ∑ i ∈ s, g i ^ 2 :=
-  sum_sq_le_sum_mul_sum_of_sq_eq_mul s
-    (fun _ _ ↦ sq_nonneg _) (fun _ _ ↦ sq_nonneg _) (fun _ _ ↦ mul_pow ..)
+  sum_sq_le_sum_mul_sum_of_sq_le_mul s
+    (fun _ _ ↦ sq_nonneg _) (fun _ _ ↦ sq_nonneg _) (fun _ _ ↦ (mul_pow ..).le)
 
 /-- **Sedrakyan's lemma**, aka **Titu's lemma** or **Engel's form**.
 
@@ -164,7 +173,7 @@ theorem sq_sum_div_le_sum_sq_div [Semifield R] [LinearOrder R] [IsStrictOrderedR
   have hg' : ∀ i ∈ s, 0 ≤ g i := fun i hi ↦ (hg i hi).le
   have H : ∀ i ∈ s, 0 ≤ f i ^ 2 / g i := fun i hi ↦ div_nonneg (sq_nonneg _) (hg' i hi)
   refine div_le_of_le_mul₀ (sum_nonneg hg') (sum_nonneg H)
-    (sum_sq_le_sum_mul_sum_of_sq_eq_mul _ H hg' fun i hi ↦ ?_)
+    (sum_sq_le_sum_mul_sum_of_sq_le_mul _ H hg' fun i hi ↦ ?_)
   rw [div_mul_cancel₀]
   exact (hg i hi).ne'
 

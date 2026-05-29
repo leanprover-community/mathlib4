@@ -44,7 +44,7 @@ assert_not_exists ContinuousLinearMap.hasOpNorm
 
 open Set
 
-open Pointwise
+open scoped Pointwise
 
 variable {𝕜 E : Type*}
 
