@@ -128,6 +128,9 @@ lemma nnrpow_one (a : A) (ha : 0 ≤ a := by cfc_tac) : a ^ (1 : ℝ≥0) = a :=
   change cfcₙ (id : ℝ≥0 → ℝ≥0) a = a
   rw [cfcₙ_id ℝ≥0 a]
 
+lemma nnrpow_one_eqOn : (Set.Ici (0 : A)).EqOn (fun a : A => a ^ (1 : ℝ≥0)) id :=
+  fun _ ha => CFC.nnrpow_one _ ha
+
 lemma nnrpow_two (a : A) (ha : 0 ≤ a := by cfc_tac) : a ^ (2 : ℝ≥0) = a * a := by
   simp only [nnrpow_def, NNReal.nnrpow_def, NNReal.coe_ofNat, NNReal.rpow_ofNat, pow_two]
   change cfcₙ (fun z : ℝ≥0 => id z * id z) a = a * a
@@ -436,6 +439,10 @@ lemma one_rpow {x : ℝ} : (1 : A) ^ x = (1 : A) := by simp [rpow_def]
 
 lemma rpow_zero (a : A) (ha : 0 ≤ a := by cfc_tac) : a ^ (0 : ℝ) = 1 := by
   simp [rpow_def, cfc_const_one ℝ≥0 a]
+
+lemma rpow_zero_eqOn : (Set.Ici (0 : A)).EqOn (fun a => a ^ (0 : ℝ)) (fun _ => 1) := by
+  intro a ha
+  simp [rpow_zero a ha]
 
 lemma zero_rpow {x : ℝ} (hx : x ≠ 0) : rpow (0 : A) x = 0 := by simp [rpow, NNReal.zero_rpow hx]
 

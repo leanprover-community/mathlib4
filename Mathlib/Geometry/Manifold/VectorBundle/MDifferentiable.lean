@@ -54,7 +54,7 @@ theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M
     ((FiberBundle.continuous_proj F E).continuousWithinAt.comp hf (mapsTo_image f s))
       ((Trivialization.open_baseSet _).mem_nhds (mem_baseSet_trivializationAt F E _))
   refine EventuallyEq.mdifferentiableWithinAt_iff (eventually_of_mem h1 fun x hx => ?_) ?_
-  · simp_rw [Function.comp, OpenPartialHomeomorph.coe_coe, Trivialization.coe_coe]
+  · simp_rw [Function.comp, OpenPartialHomeomorph.coe_toPartialEquiv, Trivialization.coe_coe]
     rw [Trivialization.coe_fst']
     exact hx
   · simp only [mfld_simps]
@@ -212,10 +212,9 @@ lemma MDifferentiableWithinAt.change_section_trivialization
     (he : f x₀ ∈ e.source) (he' : f x₀ ∈ e'.source) :
     MDiffAt[s] (fun x ↦ (e' (f x)).2) x₀ := by
   rw [Trivialization.mem_source] at he he'
-  refine (hf.coordChange he'f he he').congr_of_eventuallyEq ?_ ?_
-  · filter_upwards [hf.continuousWithinAt (e.open_baseSet.mem_nhds he)] with y hy
-    rw [Function.comp_apply, e.coordChange_apply_snd e' hy]
-  · rw [Function.comp_apply, e.coordChange_apply_snd _ he]
+  refine (hf.coordChange he'f he he').congr_of_eventuallyEq ?_ (by simp [he])
+  filter_upwards [hf.continuousWithinAt (e.open_baseSet.mem_nhds he)] with y hy
+  simp_all
 
 namespace Bundle.Trivialization
 
@@ -318,10 +317,12 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   (Z : M → Type*) [TopologicalSpace (TotalSpace F Z)] [∀ b, TopologicalSpace (Z b)]
   [FiberBundle F Z] [∀ b, AddCommMonoid (Z b)] [∀ b, Module 𝕜 (Z b)] [VectorBundle 𝕜 F Z]
 
-theorem Bundle.Trivialization.mdifferentiable [ContMDiffVectorBundle 1 F Z I]
+theorem mdifferentiable [ContMDiffVectorBundle 1 F Z I]
     (e : Trivialization F (π F Z)) [MemTrivializationAtlas e] :
     e.MDifferentiable (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) :=
   ⟨e.contMDiffOn.mdifferentiableOn one_ne_zero, e.contMDiffOn_symm.mdifferentiableOn one_ne_zero⟩
+
+@[deprecated (since := "2026-05-24")] alias Bundle.Trivialization.mdifferentiable := mdifferentiable
 
 end
 

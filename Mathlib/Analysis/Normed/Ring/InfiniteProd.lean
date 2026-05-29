@@ -40,13 +40,13 @@ public theorem tendsto_tprod_one_add_of_dominated_convergence {𝓕 : Filter α}
     le_of_tendsto ((hab k).norm) (h_bound.mono fun n hn ↦ hn k)
   have hsum_g : Summable (‖g ·‖) := h_sum.of_nonneg_of_le (fun _ ↦ norm_nonneg _) h_bound_g
   rw [show ∏' k, (1 + g k) = ∑' s, ∏ i ∈ s, g i from
-    tprod_one_add (summable_finset_prod_of_summable_norm hsum_g)]
+    tprod_one_add (summable_finsetProd_of_summable_norm hsum_g)]
   have : Tendsto (∑' k, ∏ c ∈ k, f · c) 𝓕 (𝓝 (∑' k, ∏ c ∈ k, g c)) :=
-    tendsto_tsum_of_dominated_convergence (summable_finset_prod_of_summable_nonneg
+    tendsto_tsum_of_dominated_convergence (summable_finsetProd_of_summable_nonneg
       (fun i ↦ (norm_nonneg (g i)).trans (h_bound_g i)) h_sum)
-      (tendsto_finset_prod · fun i _ ↦ hab i)
+      (tendsto_finsetProd · fun i _ ↦ hab i)
       (h_bound.mono fun n hn s ↦ (Finset.norm_prod_le s (f n)).trans
       (Finset.prod_le_prod (by grind) (by grind)))
   apply this.congr' (h_bound.mono fun n hn ↦ ?_)
   rw [tprod_one_add]
-  exact summable_finset_prod_of_summable_norm <| h_sum.of_nonneg_of_le (by grind) hn
+  exact summable_finsetProd_of_summable_norm <| h_sum.of_nonneg_of_le (by grind) hn

@@ -322,7 +322,7 @@ theorem sub {f g : ℝ → E} (hf : IntervalIntegrable f μ a b) (hg : IntervalI
 theorem sum {ε} [TopologicalSpace ε] [ENormedAddCommMonoid ε] [ContinuousAdd ε]
     (s : Finset ι) {f : ι → ℝ → ε} (h : ∀ i ∈ s, IntervalIntegrable (f i) μ a b) :
     IntervalIntegrable (∑ i ∈ s, f i) μ a b :=
-  ⟨integrable_finset_sum' s fun i hi => (h i hi).1, integrable_finset_sum' s fun i hi => (h i hi).2⟩
+  ⟨integrable_finsetSum' s fun i hi => (h i hi).1, integrable_finsetSum' s fun i hi => (h i hi).2⟩
 
 /-- Finite sums of interval integrable functions are interval integrable. -/
 @[simp]
@@ -395,7 +395,7 @@ theorem comp_mul_left (hf : IntervalIntegrable f volume a b) {c : ℝ}
   rw [← Real.smul_map_volume_mul_right (inv_ne_zero hc), IntegrableOn, Measure.restrict_smul,
     integrable_smul_measure (by simpa : ENNReal.ofReal |c⁻¹| ≠ 0) ENNReal.ofReal_ne_top,
     ← IntegrableOn, MeasurableEmbedding.integrableOn_map_iff A]
-  convert hf using 1
+  convert! hf using 1
   · ext; simp only [comp_apply]; congr 1; field
   · rw [preimage_mul_const_uIcc (inv_ne_zero hc)]; field_simp
 
@@ -429,7 +429,7 @@ theorem comp_add_right (hf : IntervalIntegrable f volume a b) (c : ℝ)
   have A : MeasurableEmbedding fun x => x + c :=
     (Homeomorph.addRight c).isClosedEmbedding.measurableEmbedding
   rw [← map_add_right_eq_self volume c] at hf
-  convert (MeasurableEmbedding.integrableOn_map_iff A).mp hf using 1
+  convert! (MeasurableEmbedding.integrableOn_map_iff A).mp hf using 1
   rw [preimage_add_const_uIcc]
 
 theorem comp_add_right_iff {c : ℝ} (h : ‖f (min a b + c)‖ₑ ≠ ⊤ := by finiteness) :
@@ -752,7 +752,7 @@ theorem norm_integral_le_of_norm_le {g : ℝ → ℝ} (hab : a ≤ b)
 theorem norm_integral_le_of_norm_le_const_ae {a b C : ℝ} {f : ℝ → E}
     (h : ∀ᵐ x, x ∈ Ι a b → ‖f x‖ ≤ C) : ‖∫ x in a..b, f x‖ ≤ C * |b - a| := by
   rw [norm_integral_eq_norm_integral_uIoc]
-  convert norm_setIntegral_le_of_norm_le_const_ae' _ h using 1
+  convert! norm_setIntegral_le_of_norm_le_const_ae' _ h using 1
   · rw [uIoc, Real.volume_real_Ioc_of_le inf_le_sup, max_sub_min_eq_abs]
   · simp [uIoc, Real.volume_Ioc]
 
@@ -765,11 +765,13 @@ nonrec theorem integral_add (hf : IntervalIntegrable f μ a b) (hg : IntervalInt
     ∫ x in a..b, f x + g x ∂μ = (∫ x in a..b, f x ∂μ) + ∫ x in a..b, g x ∂μ := by
   simp only [intervalIntegral_eq_integral_uIoc, integral_add hf.def' hg.def', smul_add]
 
-nonrec theorem integral_finset_sum {ι} {s : Finset ι} {f : ι → ℝ → E}
+nonrec theorem integral_finsetSum {ι} {s : Finset ι} {f : ι → ℝ → E}
     (h : ∀ i ∈ s, IntervalIntegrable (f i) μ a b) :
     ∫ x in a..b, ∑ i ∈ s, f i x ∂μ = ∑ i ∈ s, ∫ x in a..b, f i x ∂μ := by
-  simp only [intervalIntegral_eq_integral_uIoc, integral_finset_sum s fun i hi => (h i hi).def',
+  simp only [intervalIntegral_eq_integral_uIoc, integral_finsetSum s fun i hi => (h i hi).def',
     Finset.smul_sum]
+
+@[deprecated (since := "2026-04-08")] alias integral_finset_sum := integral_finsetSum
 
 @[simp]
 nonrec theorem integral_neg : ∫ x in a..b, -f x ∂μ = -∫ x in a..b, f x ∂μ := by
@@ -1087,7 +1089,7 @@ theorem sum_integral_adjacent_intervals {a : ℕ → ℝ} {n : ℕ}
     (hint : ∀ k < n, IntervalIntegrable f μ (a k) (a <| k + 1)) :
     ∑ k ∈ Finset.range n, ∫ x in a k..a <| k + 1, f x ∂μ = ∫ x in (a 0)..(a n), f x ∂μ := by
   rw [← Nat.Ico_zero_eq_range]
-  exact sum_integral_adjacent_intervals_Ico (zero_le n) fun k hk => hint k hk.2
+  exact sum_integral_adjacent_intervals_Ico zero_le fun k hk => hint k hk.2
 
 theorem integral_interval_sub_left (hab : IntervalIntegrable f μ a b)
     (hac : IntervalIntegrable f μ a c) :
@@ -1183,13 +1185,13 @@ theorem integral_Ici_sub_Ici' [NoAtoms μ] (hf : IntegrableOn f (Ici a) μ)
 theorem integral_Iic_add_Ioi (h_left : IntegrableOn f (Iic b) μ)
     (h_right : IntegrableOn f (Ioi b) μ) :
     (∫ x in Iic b, f x ∂μ) + (∫ x in Ioi b, f x ∂μ) = ∫ (x : ℝ), f x ∂μ := by
-  convert (setIntegral_union (Iic_disjoint_Ioi <| Eq.le rfl) measurableSet_Ioi h_left h_right).symm
+  convert! (setIntegral_union (Iic_disjoint_Ioi <| Eq.le rfl) measurableSet_Ioi h_left h_right).symm
   rw [Iic_union_Ioi, Measure.restrict_univ]
 
 theorem integral_Iio_add_Ici (h_left : IntegrableOn f (Iio b) μ)
     (h_right : IntegrableOn f (Ici b) μ) :
     (∫ x in Iio b, f x ∂μ) + (∫ x in Ici b, f x ∂μ) = ∫ (x : ℝ), f x ∂μ := by
-  convert (setIntegral_union (Iio_disjoint_Ici <| Eq.le rfl) measurableSet_Ici h_left h_right).symm
+  convert! (setIntegral_union (Iio_disjoint_Ici <| Eq.le rfl) measurableSet_Ici h_left h_right).symm
   rw [Iio_union_Ici, Measure.restrict_univ]
 
 /-- If `μ` is a finite measure then `∫ x in a..b, c ∂μ = (μ (Iic b) - μ (Iic a)) • c`. -/

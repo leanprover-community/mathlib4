@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Convex.Cone.Extension
 public import Mathlib.Analysis.Normed.Module.RCLike.Extend
 public import Mathlib.Analysis.RCLike.Lemmas
+public import Mathlib.Topology.Algebra.Module.Complement
 
 /-!
 # Extension Hahn-Banach theorem
@@ -71,6 +72,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜
 
 /-- **Hahn-Banach theorem** for continuous linear functions over `𝕜`
 satisfying `IsRCLikeNormedField 𝕜`. -/
+@[wikidata Q866116]
 theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
     ∃ g : StrongDual 𝕜 E, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜

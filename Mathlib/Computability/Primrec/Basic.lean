@@ -408,7 +408,7 @@ theorem Primrec₂.comp₂ {f : γ → δ → σ} {g : α → β → γ} {h : α
 
 protected lemma PrimrecPred.decide {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) :
     Primrec (fun a => decide (p a)) := by
-  convert hp.choose_spec
+  convert! hp.choose_spec
 
 lemma Primrec.primrecPred {p : α → Prop} [DecidablePred p]
     (hp : Primrec (fun a => decide (p a))) : PrimrecPred p :=
@@ -763,7 +763,7 @@ instance sum : Primcodable (α ⊕ β) :=
                 to₂ <| nat_double.comp (Primrec.encode.comp snd)))).of_eq
         fun n =>
         show _ = encode (decodeSum n) by
-          simp only [decodeSum, Nat.boddDiv2_eq]
+          simp only [decodeSum]
           cases Nat.bodd n <;> simp
           · cases @decode α _ n.div2 <;> rfl
           · cases @decode β _ n.div2 <;> rfl⟩

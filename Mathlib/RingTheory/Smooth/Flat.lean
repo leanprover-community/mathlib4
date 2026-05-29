@@ -32,7 +32,7 @@ The proof proceeds in two steps:
 - [Conde-Lago, A short proof of smooth implies flat][condelago2016shortproofsmoothimplies]
 -/
 
-@[expose] public section
+public section
 
 namespace Algebra
 
