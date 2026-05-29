@@ -52,7 +52,7 @@ variable (α) [Preorder α] [Preorder β] [Preorder γ] {g : β → γ} {f : α 
 
 @[to_dual]
 protected theorem id : LeftOrdContinuous (id : α → α) := fun s x h => by
-  simpa only [image_id] using h
+  simpa only [image_id] using! h
 
 variable {α}
 
@@ -78,7 +78,7 @@ theorem mono (hf : LeftOrdContinuous f) : Monotone f := fun a₁ a₂ h =>
 
 @[to_dual]
 theorem comp (hg : LeftOrdContinuous g) (hf : LeftOrdContinuous f) : LeftOrdContinuous (g ∘ f) :=
-  fun s x h => by simpa only [image_image] using hg (hf h)
+  fun s x h => by simpa only [image_image] using! hg (hf h)
 
 @[to_dual]
 protected theorem iterate {f : α → α} (hf : LeftOrdContinuous f) (n : ℕ) :

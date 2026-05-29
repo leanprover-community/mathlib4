@@ -65,12 +65,20 @@ instance [InvolutiveInv M] [InvolutiveInv N] : InvolutiveInv (M × N) :=
   { inv_inv := fun _ => Prod.ext (inv_inv _) (inv_inv _) }
 
 @[to_additive]
+instance isMulCommutative [Mul M] [Mul N] [IsMulCommutative M] [IsMulCommutative N] :
+    IsMulCommutative (M × N) where
+  is_comm.comm _ _ := by ext <;> apply mul_comm'
+
+@[to_additive]
+instance commMagma [CommMagma M] [CommMagma N] : CommMagma (M × N) where
+  mul_comm _ _ := by ext <;> apply mul_comm
+
+@[to_additive]
 instance instSemigroup [Semigroup M] [Semigroup N] : Semigroup (M × N) where
   mul_assoc _ _ _ := by ext <;> exact mul_assoc ..
 
 @[to_additive]
 instance instCommSemigroup [CommSemigroup G] [CommSemigroup H] : CommSemigroup (G × H) where
-  mul_comm _ _ := by ext <;> exact mul_comm ..
 
 @[to_additive]
 instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) where

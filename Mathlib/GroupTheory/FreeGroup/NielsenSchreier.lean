@@ -255,7 +255,7 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
         ext x
         suffices (functorOfMonoidHom T E).map x = F'.map x by
           simpa only [loopOfHom, functorOfMonoidHom, IsIso.inv_id, treeHom_root,
-            Category.id_comp, Category.comp_id] using this
+            Category.id_comp, Category.comp_id] using! this
         congr
         apply uF'
         intro a b e

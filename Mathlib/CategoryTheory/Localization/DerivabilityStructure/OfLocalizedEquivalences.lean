@@ -83,6 +83,7 @@ lemma isLeftDerivabilityStructure_of_isLocalizedEquivalence
   rw [B.isLeftDerivabilityStructure_iff W₁'.Q W₂'.Q F e']
   apply TwoSquare.GuitartExact.of_hComp iso.inv
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isLeftDerivabilityStructure_iff_of_isLocalizedEquivalence
     [L.functor.EssSurj] [R.functor.Full] [R.IsInduced]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor)
