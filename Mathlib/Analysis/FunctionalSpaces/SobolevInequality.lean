@@ -209,7 +209,6 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
                   rw [Finset.union_comm]
                   rfl
                 · rw [Finset.disjoint_singleton]
-                  simp only at hj
                   exact fun h ↦ hi (h ▸ hj)
 
 /-- Auxiliary result for the grid-lines lemma.  Given a nonnegative function on a finitary product
@@ -459,6 +458,7 @@ def eLpNormLESNormFDerivOfEqInnerConst (p : ℝ) : ℝ≥0 :=
 
 variable {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
 with Haar measure, let `1 ≤ p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
@@ -671,8 +671,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
     have H : (p' : ℝ)⁻¹ ≤ (↑q)⁻¹ := trans hp' hpq
     norm_cast at H ⊢
     rwa [inv_le_inv₀] at H
-    · dsimp
-      have : 0 < p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹ := by
+    · have : 0 < p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹ := by
         simp only [tsub_pos_iff_lt]
         gcongr
       positivity
