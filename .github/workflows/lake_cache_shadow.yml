@@ -5,7 +5,7 @@ name: Lake cache shadow (master)
 # regular master CI. Uploads to an isolated `mathlib4-master-shadow`
 # scope so no other consumer reads from it.
 #
-# Required repository configuration (Settings → Secrets and variables → Actions):
+# Required repository configuration:
 #   Secrets:
 #     LAKE_CACHE_KEY                         — SigV4 credential for the cache
 #                                              bucket, as `<ACCESS_KEY_ID>:<SECRET_ACCESS_KEY>`
@@ -318,11 +318,10 @@ jobs:
             --toolchain="${{ needs.build_and_stage.outputs.toolchain }}" 2>&1 | tee /tmp/put.log
 
       # Cache carryover analysis: diff this run's uploaded artifact set against
-      # the previous run's, using a tiny per-run manifest kept in the bucket at
-      # cache/analysis/. carryover = artifacts also present last run; new =
-      # this run's churn (≈ how much Mathlib changed since the last build, modulo
-      # toolchain bumps which turn the whole set over). Non-critical; surfaced in
-      # the Zulip report via the `carryover` job output.
+      # the previous run's, using a tiny per-run manifest kept in the bucket.
+      # Here:
+      #   carryover = artifacts also present last run;
+      #   new = this run's churn (≈ how much Mathlib changed since the last build).
       - name: Cache carryover analysis
         id: carryover
         continue-on-error: true
@@ -357,7 +356,7 @@ jobs:
           curl -fsS "${sig[@]}" -X PUT -T /tmp/latest.txt "$base/_latest.txt"  >/dev/null || echo "::warning::failed to advance analysis pointer"
 
   consume:
-    name: Build from Lake cache (no legacy hydration)
+    name: Build from Lake cache (no hydration)
     needs: [build_and_stage, upload]
     if: ${{ github.repository == 'leanprover-community/mathlib4' }}
     runs-on: ubuntu-latest
@@ -517,5 +516,5 @@ jobs:
           organization-url: 'https://leanprover.zulipchat.com'
           to: 'nightly-testing'
           type: 'stream'
-          topic: 'Lake cache shadow'
+          topic: 'mathlib + lake cache shadow workflow'
           content: ${{ steps.compose.outputs.msg }}
