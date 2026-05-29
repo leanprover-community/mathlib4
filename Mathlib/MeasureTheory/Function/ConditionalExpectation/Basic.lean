@@ -455,8 +455,8 @@ theorem tendsto_condExpL1_of_dominated_convergence (hm : m ≤ m₀) [SigmaFinit
 
 open Finset
 
-theorem hasSum_coeFn_tsum_Lp_one (f : ℕ → Lp E 1 μ) (hf : ∑' n, ‖f n‖ₑ ≠ ∞) :
-    ∀ᵐ a ∂μ, HasSum (fun n ↦ f n a) (((∑' n, f n) : α → E) a) := by
+theorem hasSum_coeFn_tsum_Lp_one [CompleteSpace E] (f : ℕ → Lp E 1 μ) (hf : ∑' n, ‖f n‖ₑ ≠ ∞) :
+    ∀ᵐ a ∂μ, HasSum (fun n ↦ f n a) ((∑' n, f n : Lp E 1 μ) a) := by
   have A : ∀ᵐ x ∂μ, (∑' n, ‖f n x‖ₑ) < ∞ := by
     apply ae_lt_top (Measurable.tsum (fun i ↦ (Lp.stronglyMeasurable (f i)).enorm))
     rw [lintegral_tsum (fun i ↦ (Lp.aestronglyMeasurable (f i)).enorm)]
@@ -464,8 +464,23 @@ theorem hasSum_coeFn_tsum_Lp_one (f : ℕ → Lp E 1 μ) (hf : ∑' n, ‖f n‖
     simp [← eLpNorm_one_eq_lintegral_enorm]
   have B : ∀ᵐ x ∂μ, ∀ n, ⇑((∑ i ∈ range n, f i)) x = ∑ i ∈ range n, (f i x) := by
     rw [ae_all_iff]
-    intro i
-    apply coeFn_finsetSum_fun
+    exact fun i ↦ coeFn_finsetSum_fun _ _
+  obtain ⟨ns, hns, nslim⟩ : ∃ ns : ℕ → ℕ, StrictMono ns ∧
+      ∀ᵐ x ∂μ, Tendsto (fun i ↦ (∑ j ∈ range (ns i), f j : Lp E 1 μ) x) atTop (𝓝 ((∑' n, f n) x)) := by
+    have : Tendsto (fun i ↦ (∑ j ∈ range i, f j)) atTop (𝓝 (∑' n, f n)) :=
+      Summable.tendsto_sum_tsum_nat (Summable.of_enorm hf)
+    exact (tendstoInMeasure_of_tendsto_Lp this).exists_seq_tendsto_ae
+  filter_upwards [A, B, nslim] with x hx h'x h''x
+  have S : Summable (fun i ↦ ‖f i x‖) := by
+
+    rw [← ENNReal.tsum_coe_ne_top_iff_summable]
+  apply (hasSum_iff_tendsto_nat_of_summable_norm S).2
+  simp only [h'x] at h''x
+  refine tendsto_nhds_of_cauchySeq_of_subseq ?_ hns.tendsto_atTop h''x
+  exact (cauchySeq_finset_of_summable_norm S).comp_tendsto tendsto_finset_range
+
+
+
 
 
 #exit
