@@ -468,17 +468,6 @@ def Cont.eval : Cont → List ℕ →. List ℕ
 namespace Cont
 
 @[simp]
-theorem halt_eval (v) : halt.eval v = pure v := rfl
-
-@[simp]
-theorem cons₁_eval (fs as k v) :
-    (cons₁ fs as k).eval v = (Code.eval fs as >>= fun ns => k.eval (v.headI :: ns)) := rfl
-
-@[simp]
-theorem cons₂_eval (ns k v) :
-    (cons₂ ns k).eval v = k.eval (ns.headI :: v) := rfl
-
-@[simp]
 theorem comp_eval (f k v) : (comp f k).eval v = (Code.eval f v >>= k.eval) := rfl
 
 @[simp]
@@ -575,9 +564,9 @@ def Cont.then : Cont → Cont → Cont
 
 theorem Cont.then_eval {k k' : Cont} {v} : (k.then k').eval v = k.eval v >>= k'.eval := by
   induction k generalizing v with
-  | halt => simp only [Cont.halt_eval, Cont.then, pure_bind]
-  | cons₁ fs as k k_ih => simp only [Cont.cons₁_eval, Cont.then, bind_assoc, k_ih]
-  | cons₂ ns k k_ih => simp only [Cont.cons₂_eval, Cont.then, k_ih]
+  | halt => simp only [Cont.eval, Cont.then, PFun.id_apply, Part.bind_eq_bind, Part.bind_some]
+  | cons₁ fs as k k_ih => simp only [Cont.eval, PFun.mk_apply, Cont.then, bind_assoc, k_ih]
+  | cons₂ ns k k_ih => simp only [Cont.eval, PFun.mk_apply, Cont.then, k_ih]
   | comp f k k_ih =>
     simp only [Cont.comp_eval, Cont.then, bind_assoc]
     congr 1
@@ -768,16 +757,16 @@ theorem stepNormal_eval (c v) : eval step (stepNormal c Cont.halt v) = Cfg.halt 
 theorem stepRet_eval {k v} : eval step (stepRet k v) = Cfg.halt <$> k.eval v := by
   induction k generalizing v with
   | halt =>
-    rw [Cont.halt_eval, map_pure]
+    rw [Cont.eval, PFun.id_apply, Part.map_eq_map, Part.map_some]
     exact Part.eq_some_iff.2 (mem_eval.2 ⟨ReflTransGen.refl, rfl⟩)
   | cons₁ fs as k IH =>
-    rw [Cont.cons₁_eval, stepRet, code_is_ok]
+    rw [Cont.eval, PFun.mk_apply, stepRet, code_is_ok]
     simp only [← bind_pure_comp, bind_assoc]; congr; funext v'
     rw [reaches_eval]; swap
     · exact ReflTransGen.single rfl
     rw [stepRet, IH, bind_pure_comp]
   | cons₂ ns k IH =>
-    rw [Cont.cons₂_eval, stepRet]
+    rw [Cont.eval, PFun.mk_apply, stepRet]
     exact IH
   | comp f k IH =>
     rw [Cont.comp_eval, stepRet, code_is_ok]

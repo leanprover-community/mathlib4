@@ -526,25 +526,6 @@ theorem rfindOpt {f : α → ℕ → Option σ} (hf : Computable₂ f) :
     (Partrec.rfind (Computable.comp₂ Primrec.option_isSome.to_comp hf).partrec₂)
     (Partrec.to₂ (Computable.ofOption hf))).of_eq fun _ => rfl
 
-private theorem bind_rec_const {α : Type*} (x : α) (c : Part α) (n : ℕ) :
-    (Nat.rec (motive := fun _ => Part α) (Part.some x) (fun _ IH => IH.bind fun _ => c) n).bind
-    (fun _ => c) = c := by
-  induction n with
-  | zero =>
-    ext b
-    simp
-  | succ n ih =>
-    ext b
-    change b ∈ ((Nat.rec (motive := fun _ => Part α) (Part.some x)
-    (fun _ IH => IH.bind fun _ => c) n).bind (fun _ => c)).bind (fun _ => c) ↔ b ∈ c
-    rw [ih]
-    simp only [Part.mem_bind_iff]
-    constructor
-    · rintro ⟨_, _, h⟩
-      exact h
-    · intro h
-      exact ⟨b, h, h⟩
-
 theorem nat_casesOn_right {f : α → ℕ} {g : α → σ} {h : α → ℕ →. σ} (hf : Computable f)
     (hg : Computable g) (hh : Partrec₂ h) :
     Partrec (PFun.mk fun a => Nat.casesOn
@@ -553,7 +534,21 @@ theorem nat_casesOn_right {f : α → ℕ} {g : α → σ} {h : α → ℕ →. 
       (Partrec.to₂
         (Partrec₂.comp hh Computable.fst
           (Computable.comp Computable.pred (Computable.comp hf Computable.fst))))).of_eq
-    fun a => by cases e : f a <;> simp [e, bind_rec_const]
+    fun a => by
+      rcases e : f a with - | n
+      · simp [e]
+      · refine ext fun b => ⟨fun H => ?_, fun H => ?_⟩
+        · simp [e] at H
+          simpa [e] using H.2
+        · simp only [e, PFun.lift_apply, Nat.pred_eq_sub_one, Nat.add_one_sub_one,
+            PFun.mk_apply] at H ⊢
+          have : ∀ m, (Nat.rec (motive := fun _ => Part σ)
+              (Part.some (g a)) (fun _ IH => IH.bind fun _ => h a n) m).Dom := by
+            intro m
+            induction m with
+            | zero => simp
+            | succ m ih => simp [ih, H.fst]
+          exact ⟨⟨this n, H.fst⟩, H.snd⟩
 
 theorem bind_decode₂_iff {f : α →. σ} :
     Partrec f ↔ Nat.Partrec (PFun.mk fun n => Part.bind (decode₂ α n) fun a => (f a).map encode) :=
