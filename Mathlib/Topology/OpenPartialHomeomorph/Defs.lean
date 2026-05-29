@@ -167,6 +167,8 @@ protected theorem mapsTo : MapsTo e e.source e.target := fun _ => e.map_source
 protected theorem mapsTo_symm : MapsTo e.symm e.target e.source :=
   e.symm.mapsTo
 
+@[deprecated (since := "2026-05-28")] alias symm_mapsTo := OpenPartialHomeomorph.mapsTo_symm
+
 protected theorem leftInvOn : LeftInvOn e.symm e e.source := fun _ => e.left_inv
 
 protected theorem rightInvOn : RightInvOn e.symm e e.target := fun _ => e.right_inv
