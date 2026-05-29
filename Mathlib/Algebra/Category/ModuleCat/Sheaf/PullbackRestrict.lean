@@ -10,7 +10,11 @@ public import Mathlib.CategoryTheory.Sites.CoversTop.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Over
 
 /-!
-# Over
+# Pullback commutes with restriction
+
+In this file, we provide a natural isomorphism `PullbackRestrictIso` that shows that pullback
+for sheaves of modules commutes with restriction, where restriction is the functor
+`SheavesOfModules S ⥤ SheavesOfModules (Over X)` defined by pushforward along `(Over X).forget`.
 
 -/
 
@@ -66,7 +70,7 @@ variable [(pushforward.{u} φ).IsRightAdjoint] [(pushforward (StructureHomOver �
 /-- Restricting from `C` to `Over X` composed with pullback from `Over X` to `Over F(X)` is
 naturally isomorphic to pullback from `C` to `D` composed with restriction to `Over F(X)`. -/
 @[simps!]
-def PullbackRestrict : pushforward.{u} (𝟙 (S.over X)) ⋙ pullback (StructureHomOver φ X) ≅
+def PullbackRestrictIso : pushforward.{u} (𝟙 (S.over X)) ⋙ pullback (StructureHomOver φ X) ≅
     pullback φ ⋙ pushforward.{u} (𝟙 (R.over (F.obj X))) :=
   ((overPushforwardOverAdj X).comp (pullbackPushforwardAdjunction _)).leftAdjointUniq
     (((pullbackPushforwardAdjunction φ).comp (overPushforwardOverAdj (F.obj X))).ofNatIsoRight
@@ -74,6 +78,6 @@ def PullbackRestrict : pushforward.{u} (𝟙 (S.over X)) ⋙ pullback (Structure
 
 /-- PullbackRestrict applied to `M`. -/
 abbrev overPullbackIso : (pullback (StructureHomOver φ X)).obj (M.over X) ≅
-    ((pullback φ).obj M).over (F.obj X) := (PullbackRestrict φ X).app M
+    ((pullback φ).obj M).over (F.obj X) := (PullbackRestrictIso φ X).app M
 
 end SheafOfModules
