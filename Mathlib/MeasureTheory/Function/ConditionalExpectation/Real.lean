@@ -64,11 +64,11 @@ lemma condExp_le_nonneg_const [PartialOrder E] [ClosedIciTopology E] [IsOrderedA
     [IsOrderedModule ℝ E] {f : α → E} {c : E} (hc : 0 ≤ c) (hfc : ∀ᵐ x ∂μ, f x ≤ c) :
     ∀ᵐ x ∂μ, μ[f | m] x ≤ c := by
   by_cases! hm : ¬ m ≤ m0
-  · filter_upwards with a using by simp_all [condExp_of_not_le hm]
+  · filter_upwards with a using by simpa [condExp_of_not_le hm]
   by_cases! hfint : ¬ Integrable f μ
-  · filter_upwards with a using by simp_all [condExp_of_not_integrable hfint]
+  · filter_upwards with a using by simpa [condExp_of_not_integrable hfint]
   by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
-  · filter_upwards with a using by simp_all [condExp_of_not_sigmaFinite hm hsig]
+  · filter_upwards with a using by simpa [condExp_of_not_sigmaFinite hm hsig]
   refine (isCountablySpanning_spanningSets (μ.trim hm)).null_of_forall_restrict_null ?_ ?_
   <;> rintro - ⟨n, rfl⟩
   · exact hm _ (measurableSet_spanningSets (μ.trim hm) n)
