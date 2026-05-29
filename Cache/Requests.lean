@@ -287,8 +287,8 @@ Precedence (most specific wins):
 2. `--cache-from` CLI override (via `cacheFromOverride`).
 3. `MATHLIB_CACHE_FROM` env var (same comma-separated shape as `--cache-from`):
    how CI widens the lookup chain to match its write target without touching
-   each `cache get` call. The (repo, branch) → chain mapping lives in
-   `build_template.yml`.
+   each `cache get` call. The (repo, branch) → chain mapping lives in CI config,
+   not here.
 4. `defaultContainersForRepo repo`: the repo-level fallback when nothing
    overrides it.
 -/

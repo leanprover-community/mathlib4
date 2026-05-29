@@ -142,7 +142,7 @@ def defaultContainersForRepo (repo : String) : List Container :=
     -- `bump/*`) read only `nightly-testing` + `legacy`; `pr-toolchain-tests` is
     -- excluded so low-trust toolchain-PR uploads can't reach them. Toolchain-PR
     -- branches opt into reading their own uploads with `--cache-from=...` (or,
-    -- in CI, via `MATHLIB_CACHE_FROM` set by `build_template.yml`).
+    -- in CI, via the `MATHLIB_CACHE_FROM` env var).
     [.nightlyTesting, .legacy]
   else
     -- Forks and everything else: `master` for shared upstream deps, the fork's
