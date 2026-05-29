@@ -6,6 +6,7 @@ Authors: Vasilii Nesterov
 module
 public import Mathlib.Analysis.Complex.Exponential
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Defs
 
 /-!
 # Well-formed bases
@@ -23,9 +24,6 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 namespace Tactic.ComputeAsymptotics
 
 open Asymptotics Filter
-
-/-- List of functions used to construct monomials in multiseries. -/
-abbrev Basis := List (ℝ → ℝ)
 
 /-- `WellFormedBasis basis` means that all functions from `basis` tend to `atTop`, and
 `basis` is sorted such that if
