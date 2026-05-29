@@ -9,9 +9,6 @@ public import Mathlib.Analysis.Analytic.IsolatedZeros
 public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Analytic
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
-public import Mathlib.Analysis.Calculus.MeanValue
-public import Mathlib.Analysis.InnerProductSpace.Basic
-public import Mathlib.Analysis.Normed.Module.Connected
 
 /-!
 # Vanishing Order of Analytic Functions
@@ -420,65 +417,66 @@ lemma AnalyticAt.exists_eq_sum_add_pow_mul [CharZero 𝕜] [CompleteSpace E]
       · contrapose hz
         exact (pow_eq_zero_iff'.mp hz).1 ▸ mem_of_mem_nhds hU0
 
-variable [CharZero 𝕜] [CompleteSpace E]
+variable [CharZero 𝕜] [CompleteSpace E] {z₀ : 𝕜} {f : 𝕜 → E}
+  (hf : AnalyticAt 𝕜 f z₀) (hzero : f z₀ = 0)
+
+include hf hzero
+
+/-- If an analytic function `f` vanishes at `z₀`, then the analytic order of its derivative
+at `z₀` is at least `n` if and only if the analytic order of `f` at `z₀` is at least `n + 1`. -/
+lemma analyticOrderAt_deriv_ge_iff {n : ℕ} :
+    n ≤ analyticOrderAt (deriv f) z₀ ↔ n + 1 ≤ analyticOrderAt f z₀ := by
+  rw [natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero hf.deriv,
+    ← Nat.cast_add_one, natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero hf]
+  simp only [← iteratedDeriv_succ']
+  refine ⟨fun h k hk ↦ ?_, fun h k hk ↦ h (k + 1) <| by lia⟩
+  cases k with
+  | zero => simpa
+  | succ k => exact h k <| by lia
 
 /-- The derivative of an analytic function `f` has infinite analytic order at a zero `z₀` if and
 only if `f` has infinite analytic order at `z₀`. -/
-lemma analyticOrderAt_deriv_eq_top_iff_of_eq_zero {z₀ : 𝕜} {f : 𝕜 → E} (hf : AnalyticAt 𝕜 f z₀)
-    (hzero : f z₀ = 0) : analyticOrderAt (deriv f) z₀ = ⊤ ↔ analyticOrderAt f z₀ = ⊤ := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · by_contra h'
-    lift analyticOrderAt f z₀ to ℕ using h' with n hn
-    rcases n with _ | n
-    · exact hf.analyticOrderAt_eq_zero.mp hn.symm hzero
-    · rw [analyticOrderAt_deriv_of_pos hf hn.symm] at h
-      exact ENat.coe_ne_top _ h
-  · rw [analyticOrderAt_eq_top] at h ⊢
-    filter_upwards [h.eventually_nhds] with z hz
-    have heq : f =ᶠ[𝓝 z] 0 := hz
-    simpa using heq.deriv.eq_of_nhds
+lemma analyticOrderAt_deriv_eq_top_iff_of_eq_zero :
+    analyticOrderAt (deriv f) z₀ = ⊤ ↔ analyticOrderAt f z₀ = ⊤ := by
+  simp_rw [ENat.eq_top_iff_forall_ge, analyticOrderAt_deriv_ge_iff hf hzero]
+  exact ⟨fun h m ↦ le_self_add.trans (h m), fun h m ↦ h (m + 1)⟩
 
+/-- If an analytic function `f` vanishes at `z₀`, then its derivative has finite analytic order `n`
+at `z₀` if and only if `f` has analytic order `n + 1` at `z₀`. -/
+lemma analyticOrderAt_deriv_eq_iff {n : ℕ} :
+    analyticOrderAt f z₀ = n + 1 ↔ analyticOrderAt (deriv f) z₀ = n := by
+  have H {m : ℕ} {n : ℕ∞} : n = m ↔ m ≤ n ∧ ¬ m + 1 ≤ n := by
+    cases n with | top => simp | coe _ => norm_cast; lia
+  rw [← Nat.cast_add_one n, H, H, analyticOrderAt_deriv_ge_iff hf hzero, ← Nat.cast_add_one n,
+    analyticOrderAt_deriv_ge_iff hf hzero]
+
+omit hzero in include hf hzero in
 /-- If an analytic function `f` vanishes at `z₀` and its derivative has finite analytic order `n` at
 `z₀`, then `f` has analytic order `n + 1` at `z₀`. -/
-lemma analyticOrderAt_deriv_order_eq_succ {z₀ : 𝕜} {f : 𝕜 → E}
-    (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} (hzero : f z₀ = 0)
-    (horder : analyticOrderAt (deriv f) z₀ = n) : analyticOrderAt f z₀ = n + 1 := by
-  match Hn' : analyticOrderAt f z₀ with
-  | none =>
-    have Hn_top : analyticOrderAt f z₀ = ⊤ := Hn'
-    have h_deriv_top := (analyticOrderAt_deriv_eq_top_iff_of_eq_zero hf hzero).mpr Hn_top
-    grind [ENat.coe_ne_top]
-  | some 0 =>
-    have Hn_zero : analyticOrderAt f z₀ = 0 := Hn'
-    exact hf.analyticOrderAt_eq_zero.mp Hn_zero hzero |>.elim
-  | some (n + 1) =>
-    have Hn_coe : analyticOrderAt f z₀ = ↑(n + 1) := Hn'
-    have := horder ▸ analyticOrderAt_deriv_of_pos hf Hn_coe
-    norm_cast at this ⊢
-    have hchar : ringChar 𝕜 = 0 := ringChar.eq 𝕜 0
-    aesop
+lemma analyticOrderAt_deriv_order_eq_succ {n : ℕ}
+    (horder : analyticOrderAt (deriv f) z₀ = n) : analyticOrderAt f z₀ = n + 1 :=
+  (analyticOrderAt_deriv_eq_iff hf hzero (n := n)).mpr horder
 
+omit hzero in include hf in
 /-- An analytic function `f` has finite analytic order `n` at `z₀` if and only if its first
 `n` iterated derivatives (including `f` itself) vanish at `z₀` and the `n`-th iterated derivative is
 non-zero. -/
-lemma analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero
-    {f : 𝕜 → E} {z₀ : 𝕜} {n : ℕ} (hf : AnalyticAt 𝕜 f z₀) :
+lemma analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero {n : ℕ} :
     analyticOrderAt f z₀ = n ↔ (∀ k < n, iteratedDeriv k f z₀ = 0) ∧ iteratedDeriv n f z₀ ≠ 0 := by
   induction n generalizing f with
-  | zero => simp [iteratedDeriv_zero, AnalyticAt.analyticOrderAt_eq_zero hf]
+  | zero => simp [hf.analyticOrderAt_eq_zero]
   | succ n IH =>
-    have IH_deriv := IH hf.deriv
+    specialize IH hf.deriv
+    simp_rw [← iteratedDeriv_succ'] at IH
     refine ⟨fun ho ↦ ?_, fun ⟨hz, hnz⟩ ↦ ?_⟩
-    · have ⟨h_zero, h_nz⟩ := IH_deriv.mp (analyticOrderAt_deriv_of_pos hf ho)
-      refine ⟨fun k hk ↦ ?_, by simpa [iteratedDeriv_succ'] using h_nz⟩
+    · have ⟨h_zero, h_nz⟩ := IH.mp (analyticOrderAt_deriv_of_pos hf ho)
+      refine ⟨fun k hk ↦ ?_, h_nz⟩
       match k with
-      | 0 => simpa [iteratedDeriv_zero] using apply_eq_zero_of_analyticOrderAt_ne_zero
-              (by intro c; rw [ho] at c; norm_cast at c)
-      | k + 1 => simpa [iteratedDeriv_succ'] using h_zero k (by omega)
-    · exact analyticOrderAt_deriv_order_eq_succ hf
-        (by simpa [iteratedDeriv_zero] using hz 0 (by omega)) <|
-        IH_deriv.mpr ⟨fun j _ ↦ by simpa [iteratedDeriv_succ'] using hz (j + 1) (by omega),
-          by simpa [iteratedDeriv_succ'] using hnz⟩
+      | 0 => rw [iteratedDeriv_zero, ← hf.analyticOrderAt_ne_zero, ho, Nat.cast_add_one]
+             exact Nat.cast_add_one_ne_zero _
+      | k + 1 => exact h_zero k (by lia)
+    · exact (analyticOrderAt_deriv_eq_iff hf <| by simpa using hz 0 (by lia)).mpr <|
+        IH.mpr ⟨fun j _ ↦ hz (j + 1) (by lia), hnz⟩
 
 end NormedSpace
 
