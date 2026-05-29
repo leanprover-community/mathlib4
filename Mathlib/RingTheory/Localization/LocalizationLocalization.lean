@@ -201,7 +201,7 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
   surj y := by
     obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj N y
     refine ⟨⟨algebraMap R S x, _, _, s.prop, rfl⟩, ?_⟩
-    simpa [← IsScalarTower.algebraMap_apply] using e
+    simpa [← IsScalarTower.algebraMap_apply] using! e
   exists_of_eq {x₁ x₂} := by
     obtain ⟨⟨y₁, s₁⟩, e₁⟩ := IsLocalization.surj M x₁
     obtain ⟨⟨y₂, s₂⟩, e₂⟩ := IsLocalization.surj M x₂
@@ -220,7 +220,7 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
         (IsLocalization.map_units S s₁).mul_left_inj,
         (IsLocalization.map_units S s₂).mul_left_inj] at this
       rw [h₂, h₁] at this
-      simpa only [mul_comm] using this
+      simpa only [mul_comm] using! this
     simp_rw [IsLocalization.eq_iff_exists N T, IsLocalization.eq_iff_exists M S]
     intro ⟨a, e⟩
     exact ⟨a, 1, by convert! e using 1 <;> simp⟩

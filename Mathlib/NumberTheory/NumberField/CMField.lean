@@ -496,7 +496,7 @@ theorem equivMaximalRealSubfield_apply (x : F) :
 theorem algebraMap_equivMaximalRealSubfield_symm_apply (x : maximalRealSubfield K) :
     algebraMap F K ((CMExtension.equivMaximalRealSubfield F K).symm x) =
       algebraMap (maximalRealSubfield K) K x := by
-  simpa using (equivMaximalRealSubfield_apply F K ((equivMaximalRealSubfield F K).symm x)).symm
+  simpa using! (equivMaximalRealSubfield_apply F K ((equivMaximalRealSubfield F K).symm x)).symm
 
 end CMExtension
 
@@ -553,9 +553,6 @@ instance of_isAbelianGalois [IsAbelianGalois ℚ K] :
     rw [show σ = ν.symm⁻¹ * σ * ν.symm by simp]
     exact hσ₁.comp _
   exact IsCMField.of_forall_isConj K hσ₂
-
-@[deprecated (since := "2025-11-19")] alias NumberField.CMExtension.of_isMulCommutative :=
-  NumberField.IsCMField.of_isAbelianGalois
 
 end NumberField.IsCMField
 namespace IsCyclotomicExtension.Rat
