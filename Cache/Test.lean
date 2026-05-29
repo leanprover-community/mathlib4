@@ -19,7 +19,7 @@ These tests cover the pure logic of the cache system, including:
 - Utility functions (URL extraction, filename hashing, etc.)
 
 Anything that touches `curl` or the network lives in the integration tests
-(run by the CI workflow in `build_template.yml`).
+(run by CI).
 
 ## Invariants these tests defend
 
