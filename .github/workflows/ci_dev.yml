@@ -340,6 +340,11 @@ jobs:
           sig=(--aws-sigv4 aws:amz:auto:s3 --user "$LAKE_CACHE_KEY")
           grep -oE 'uploaded artifact [0-9a-f]+' /tmp/put.log | awk '{print $3}' | sort -u > /tmp/today.txt
           total=$(wc -l < /tmp/today.txt)
+          if [ "$total" -eq 0 ]; then
+            echo "::warning::no uploaded artifacts parsed from put.log — skipping carryover (manifest/pointer left unchanged)"
+            echo "summary=n/a (no artifacts uploaded)" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           summary="carryover: n/a (baseline — no prior manifest)"
           prev="$(curl -fsS "${sig[@]}" "$base/_latest.txt" 2>/dev/null || true)"
           if [ -n "$prev" ] && curl -fsS "${sig[@]}" "$base/$prev.txt" 2>/dev/null | sort -u > /tmp/prev.txt && [ -s /tmp/prev.txt ]; then
