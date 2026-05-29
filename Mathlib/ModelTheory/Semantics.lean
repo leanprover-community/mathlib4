@@ -634,7 +634,7 @@ theorem realize_not : M ⊨ φ.not ↔ ¬M ⊨ φ :=
   Iff.rfl
 
 @[simp]
-theorem realize_bot : ¬(M ⊨ (⊥ : L.Sentence)) :=
+theorem not_realize_bot : ¬(M ⊨ (⊥ : L.Sentence)) :=
   False.elim
 
 @[simp]
