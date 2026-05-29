@@ -35,7 +35,7 @@ def prTitle : Parser (String × Option String × String) := do
 
 -- Some self-tests for the parser.
 
-/-- info: Except.error "offset 6: expected: ): " -/
+/-- info: Except.error "offset 8: unexpected end of input" -/
 #guard_msgs in
 #eval Parser.run prTitle "feat(x):"
 /-- info: Except.error "offset 9: unexpected end of input" -/
@@ -48,22 +48,22 @@ def prTitle : Parser (String × Option String × String) := do
 /-- info: Except.ok ("feat", none, "foo") -/
 #guard_msgs in
 #eval Parser.run prTitle "feat: foo"
-/-- info: Except.error "offset 10: expected: ): " -/
+/-- info: Except.error "offset 10: expected: ):" -/
 #guard_msgs in
 #eval Parser.run prTitle "feat(: foo"
-/-- info: Except.error "offset 4: expected: : " -/
+/-- info: Except.error "offset 4: expected: :" -/
 #guard_msgs in
 #eval Parser.run prTitle "feat): foo"
-/-- info: Except.error "offset 4: expected: : " -/
+/-- info: Except.error "offset 4: expected: :" -/
 #guard_msgs in
 #eval Parser.run prTitle "feat)(: foo"
-/-- info: Except.error "offset 4: expected: : " -/
+/-- info: Except.error "offset 4: expected: :" -/
 #guard_msgs in
 #eval Parser.run prTitle "feat)(sdf): foo"
 /-- info: Except.ok ("feat", some "sdf", "foo:") -/
 #guard_msgs in
 #eval Parser.run prTitle "feat(sdf): foo:"
-/-- info: Except.error "offset 4: expected: : " -/
+/-- info: Except.error "offset 4: expected: :" -/
 #guard_msgs in
 #eval Parser.run prTitle "feat foo"
 /-- info: Except.ok ("chore", none, "test") -/
