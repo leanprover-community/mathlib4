@@ -14,6 +14,7 @@ public import Mathlib.LinearAlgebra.Matrix.ProjectiveSpecialLinearGroup
 /-!
 -/
 
+@[expose] public section
 
 variable {ι F : Type*} [Field F] [DecidableEq ι] [Fintype ι]
 
