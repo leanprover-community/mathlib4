@@ -38,7 +38,7 @@ theorem isBot_one : IsBot (1 : α) :=
 theorem one_le {a : α} : 1 ≤ a :=
   isBot_one a
 
--- TODO: deprecate
+@[deprecated (since := "2026-05-27")]
 alias zero_le' := zero_le
 
 variable (α) in
@@ -63,7 +63,7 @@ theorem not_lt_one : ¬ a < 1 := one_le.not_gt
 
 @[deprecated (since := "2025-12-03")] alias not_neg := not_lt_zero
 
--- TODO: deprecate
+@[deprecated (since := "2026-05-07")]
 alias not_lt_zero' := not_lt_zero
 
 @[to_additive] -- `(attr := simp)` cannot be used here because `a` cannot be inferred by `simp`.
@@ -87,7 +87,7 @@ variable [PartialOrder α] [One α] [IsBotOneClass α]
 @[to_additive]
 theorem bot_eq_one [OrderBot α] : (⊥ : α) = 1 := isBot_one.eq_bot.symm
 
--- TODO: deprecate
+@[deprecated (since := "2026-05-07")]
 alias bot_eq_zero'' := bot_eq_zero
 
 @[to_additive (attr := simp)]

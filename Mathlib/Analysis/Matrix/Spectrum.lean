@@ -73,7 +73,7 @@ noncomputable def eigenvectorBasis : OrthonormalBasis n 𝕜 (EuclideanSpace �
 lemma mulVec_eigenvectorBasis (j : n) :
     A *ᵥ ⇑(hA.eigenvectorBasis j) = (hA.eigenvalues j) • ⇑(hA.eigenvectorBasis j) := by
   simpa only [eigenvectorBasis, OrthonormalBasis.reindex_apply, toLpLin_apply,
-    RCLike.real_smul_eq_coe_smul (K := 𝕜)] using
+    RCLike.real_smul_eq_coe_smul (K := 𝕜)] using!
       congr(⇑$((isSymmetric_toEuclideanLin_iff.mpr hA).apply_eigenvectorBasis
         finrank_euclideanSpace ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)))
 
@@ -134,9 +134,6 @@ theorem conjStarAlgAut_star_eigenvectorUnitary :
     Function.comp_apply, mul_one]
   apply PiLp.ext fun j ↦ ?_
   simp only [PiLp.smul_apply, PiLp.single_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
-
-@[deprecated (since := "2025-11-06")] alias star_mul_self_mul_eq_diagonal :=
-  conjStarAlgAut_star_eigenvectorUnitary
 
 /-- **Diagonalization theorem**, **spectral theorem** for matrices; A Hermitian matrix can be
 diagonalized by a change of basis. For the spectral theorem on linear maps, see
