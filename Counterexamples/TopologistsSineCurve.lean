@@ -82,7 +82,7 @@ lemma closure_S : closure S = T := by
       have : ContinuousAt (fun x ↦ sin x⁻¹) x :=
         continuous_sin.continuousAt.comp <| continuousAt_inv₀ h.ne'
       refine tendsto_nhds_unique ?_ hf_lim.2
-      convert this.tendsto.comp hf_lim.1 with n
+      convert! this.tendsto.comp hf_lim.1 with n
       obtain ⟨y, hy⟩ := hf_mem n
       simp [← hy.2]
   · -- Show that every `p ∈ T` is the limit of a sequence in `S`.
