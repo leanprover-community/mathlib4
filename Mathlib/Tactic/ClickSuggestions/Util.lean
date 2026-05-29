@@ -167,7 +167,7 @@ structure Context where
   /-- The token for updating the main HTML body of suggestions.
   This is used for displaying a message that no progress has happened. -/
   masterToken : RefreshToken
-  /-- The token for the `⏳`️ HTML that represents the state of the ongoing computations. -/
+  /-- The token for the `⏳️` HTML that represents the state of the ongoing computations. -/
   statusToken : RefreshToken
   /-- The token for the solved goals. -/
   solvedToken : RefreshToken
