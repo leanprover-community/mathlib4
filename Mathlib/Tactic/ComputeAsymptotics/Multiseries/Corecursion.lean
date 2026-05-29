@@ -427,27 +427,27 @@ theorem FriendlyOperation.coind (motive : (Seq α → Seq α) → Prop)
   induction n generalizing op s t with
   | zero => simp
   | succ n ih =>
-  obtain ⟨T, hT⟩ := h_step _ h_base
-  have h_head : s.head = t.head := by
-    replace hn : dist s t ≤ 2⁻¹ := by
-      apply hn.trans
-      simp only [pow_succ, inv_pos, Nat.ofNat_pos, mul_le_iff_le_one_left]
-      apply pow_le_one₀ <;> norm_num
-    rw [dist_le_half_iff] at hn
-    obtain ⟨rfl, rfl⟩ | ⟨hd, s_tl, t_tl, rfl, rfl⟩ := hn <;> rfl
-  have hs := hT s
-  have ht := hT t
-  cases hT_head : T s.head with
-  | none =>
-    simp only [hT_head, Option.map_none, ← h_head] at hs ht
-    simp [hs, ht, destruct_eq_none]
-  | some v =>
-    obtain ⟨hd, op', h_next⟩ := v
-    simp only [hT_head, Option.map_some, ← h_head] at hs ht
-    simp only [destruct_eq_cons hs, destruct_eq_cons ht, dist_cons_cons, pow_succ', inv_pos,
-      Nat.ofNat_pos, mul_le_mul_iff_right₀, ge_iff_le]
-    apply ih h_next
-    simpa [dist_eq_half_of_head h_head, pow_succ'] using hn
+    obtain ⟨T, hT⟩ := h_step _ h_base
+    have h_head : s.head = t.head := by
+      replace hn : dist s t ≤ 2⁻¹ := by
+        apply hn.trans
+        simp only [pow_succ, inv_pos, Nat.ofNat_pos, mul_le_iff_le_one_left]
+        apply pow_le_one₀ <;> norm_num
+      rw [dist_le_half_iff] at hn
+      obtain ⟨rfl, rfl⟩ | ⟨hd, s_tl, t_tl, rfl, rfl⟩ := hn <;> rfl
+    have hs := hT s
+    have ht := hT t
+    cases hT_head : T s.head with
+    | none =>
+      simp only [hT_head, Option.map_none, ← h_head] at hs ht
+      simp [hs, ht, destruct_eq_none]
+    | some v =>
+      obtain ⟨hd, op', h_next⟩ := v
+      simp only [hT_head, Option.map_some, ← h_head] at hs ht
+      simp only [destruct_eq_cons hs, destruct_eq_cons ht, dist_cons_cons, pow_succ', inv_pos,
+        Nat.ofNat_pos, mul_le_mul_iff_right₀, ge_iff_le]
+      apply ih h_next
+      simpa [dist_eq_half_of_head h_head, pow_succ'] using hn
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A generalisation of `FriendlyOperation.coind` which allows using `opf ∘ op'` in the tail
@@ -511,7 +511,6 @@ theorem FriendlyOperation.coind_comp_friend_right {op : Seq α → Seq α}
   clear h_base op
   rintro _ ⟨opf, op, rfl, h_opf, h_op⟩
   obtain ⟨T, hT⟩ := h_step _ h_op
-  -- obtain ⟨F, hF⟩ := FriendlyOperation.destruct h_opf
   use fun hd? ↦
     match (h_opf.unfold hd?) with
     | none => (T none).map fun (hd, opf', op') =>
