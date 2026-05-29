@@ -68,7 +68,7 @@ open scoped ENNReal Topology Function
 namespace MeasureTheory
 
 variable {α : Type*} {C : Set (Set α)} {s t : Set α} {I : Finset (Set α)}
-{G : Type*} [AddCommMonoid G]
+  {G : Type*} [AddCommMonoid G]
 
 variable (G) in
 /-- An additive content is a set function with value 0 at the empty set which is finitely additive
@@ -112,7 +112,7 @@ lemma addContent_biUnion {ι : Type*} {a : Finset ι} {f : ι → Set α} (hf : 
   have A : ⋃ i ∈ a, f i = ⋃₀ (a.image f) := by simp
   rw [A, addContent_sUnion]; rotate_left
   · grind
-  · simpa using h_dis.image
+  · simpa using! h_dis.image
   · rwa [← A]
   rw [sum_image_of_pairwise_eq_zero]
   refine h_dis.imp ?_

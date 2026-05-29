@@ -559,7 +559,7 @@ lemma exists_ne_map_eq_of_encard_lt_of_maps_to (hc : t.encard < s.encard) (hf : 
   suffices Function.Injective (hf.restrict f) by
     let f' : s ↪ t := ⟨hf.restrict, this⟩
     exact f'.encard_le
-  simpa only [hf.restrict_inj, not_imp_not] using hc
+  simpa only [hf.restrict_inj, not_imp_not] using! hc
 
 end Function
 

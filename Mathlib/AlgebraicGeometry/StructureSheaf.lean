@@ -237,6 +237,7 @@ instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
   .of_algebraMap_smul fun r m ↦ Subtype.ext <| funext fun x ↦
     IsScalarTower.algebraMap_smul (Localizations R x.1) r (m.1 x)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (R M) in
 /-- The structure sheaf of a module as a presheaf of modules on `Spec R`.
@@ -430,7 +431,7 @@ theorem toBasicOpenₗ_injective (f : R) : Function.Injective (toBasicOpenₗ R 
   suffices f ∈ ((⊥ : Submodule R M).colon {d • a - b • c}).radical by
     rw [LocalizedModule.mk_eq]
     obtain ⟨n, hn⟩ := this
-    exact ⟨⟨f ^ n, n, rfl⟩, by simpa [sub_eq_zero, smul_sub] using Submodule.mem_colon.mp hn _ rfl⟩
+    exact ⟨⟨f ^ n, n, rfl⟩, by simpa [sub_eq_zero, smul_sub] using! Submodule.mem_colon.mp hn _ rfl⟩
   simp only [toBasicOpenₗ_mk] at h_eq
   rw [← PrimeSpectrum.vanishingIdeal_zeroLocus_eq_radical, PrimeSpectrum.mem_vanishingIdeal]
   intro p hfp
@@ -562,11 +563,11 @@ public lemma algebraMap_germ
 
 @[deprecated (since := "2026-02-10")] public alias toOpen_germ := algebraMap_germ
 
-@[expose] public
+public
 instance (x : PrimeSpectrum.Top R) : Algebra R ((structurePresheafInCommRingCat R).stalk x) :=
   (toStalk R x).hom.toAlgebra
 
-@[expose] public
+public
 instance (x : PrimeSpectrum.Top R) :
     Module R ↑(TopCat.Presheaf.stalk (moduleStructurePresheaf R M).presheaf x) :=
   .compHom _ (toStalk R x).hom
@@ -721,6 +722,7 @@ theorem toStalkₗ'_stalkToFiberRingHom (x : PrimeSpectrum.Top R) :
 
 open TopCat.Presheaf
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (R M) in
 /-- The ring isomorphism between the stalk of the structure sheaf of `R` at a point `p`
@@ -976,8 +978,9 @@ def Localizations.comapFun (y : PrimeSpectrum.Top S) :
       convert! this using 2 with a
       exact (IsScalarTower.algebraMap_smul ..).symm)
   { __ := g,
-    map_smul' r x := by simpa [Localizations] using (IsScalarTower.algebraMap_smul ..).symm }
+    map_smul' r x := by simpa [Localizations] using! (IsScalarTower.algebraMap_smul ..).symm }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Localizations.comapFun_mk (y : PrimeSpectrum.Top S)
@@ -1181,7 +1184,7 @@ lemma comap_basicOpen (f : R →+* S) (x : R) :
       IsLocalization.map (M := .powers x) (T := .powers (f x)) _ f
         (Submonoid.powers_le.mpr (Submonoid.mem_powers _)) :=
   IsLocalization.ringHom_ext (.powers x) <| by
-    simpa [CommRingCat.hom_ext_iff] using toOpen_comp_comap f _
+    simpa [CommRingCat.hom_ext_iff] using! toOpen_comp_comap f _
 
 end Ring
 

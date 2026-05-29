@@ -424,13 +424,13 @@ instance : DistribLattice ℝ where
     intro a b
     induction a using Real.ind_mk
     induction b using Real.ind_mk
-    dsimp only; rw [← mk_sup, mk_le]
+    rw [← mk_sup, mk_le]
     exact CauSeq.le_sup_left
   le_sup_right := by
     intro a b
     induction a using Real.ind_mk
     induction b using Real.ind_mk
-    dsimp only; rw [← mk_sup, mk_le]
+    rw [← mk_sup, mk_le]
     exact CauSeq.le_sup_right
   sup_le := by
     intro a b c
@@ -444,13 +444,13 @@ instance : DistribLattice ℝ where
     intro a b
     induction a using Real.ind_mk
     induction b using Real.ind_mk
-    dsimp only; rw [← mk_inf, mk_le]
+    rw [← mk_inf, mk_le]
     exact CauSeq.inf_le_left
   inf_le_right := by
     intro a b
     induction a using Real.ind_mk
     induction b using Real.ind_mk
-    dsimp only; rw [← mk_inf, mk_le]
+    rw [← mk_inf, mk_le]
     exact CauSeq.inf_le_right
   le_inf := by
     intro a b c
