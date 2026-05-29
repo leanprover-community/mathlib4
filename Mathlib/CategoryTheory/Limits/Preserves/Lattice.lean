@@ -14,9 +14,9 @@ public import Mathlib.Order.Hom.CompleteLattice
 # Lattice Homs that Preserve Limits and Colimits
 
 This file provides instances for when OrderHom.toFunctor preserves limits/colimits.
-In particular, if `f` preserves finite infs/sups (is from a InfTopHomClass/SupBotHomClass)
+In particular, if `f` preserves finite infs/sups (i.e. is from a InfTopHomClass/SupBotHomClass)
 then `(toOrderHom f).toFunctor` preserves finite limits/colimits. If `f` preserves
-arbitrary infs/sups (is from a sInfHomClass/sSupHomClass) then `(toOrderHom f).toFunctor`
+arbitrary infs/sups (i.e. is from a sInfHomClass/sSupHomClass) then `(toOrderHom f).toFunctor`
 preserves all limits/colimits.
 
 -/
