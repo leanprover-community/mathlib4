@@ -5,13 +5,13 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Algebra.Order.Ring.Archimedean
 public import Mathlib.Algebra.Ring.Subring.Order
-public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Order.Quotient
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 
-import Mathlib.Data.Real.Hom
+import Mathlib.Algebra.Order.Archimedean.Real.Hom
 
 /-!
 # Standard part function

@@ -138,7 +138,7 @@ theorem congr {X Y : PresheafedSpace.{_, _, v} C} (α β : X ⟶ Y)
       eqToHom (show Y.presheaf.stalk (α.base x) = Y.presheaf.stalk (β.base x') by rw [h₁, h₂]) ≫
         β.stalkMap x' := by
   ext
-  substs h₁ h₂
+  subst h₁ h₂
   simp
 
 theorem congr_hom {X Y : PresheafedSpace.{_, _, v} C} (α β : X ⟶ Y) (h : α = β) (x : X) :
