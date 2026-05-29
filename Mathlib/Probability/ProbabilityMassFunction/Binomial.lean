@@ -6,7 +6,6 @@ Authors: Joachim Breitner
 module
 
 public import Mathlib.Data.Nat.Choose.Sum
-public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.ProbabilityMassFunction.Constructions
 public import Mathlib.Tactic.FinCases
 
@@ -56,15 +55,11 @@ theorem binomial_apply_last (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) :
 theorem binomial_apply_self (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) :
     binomial p h n (.last n) = p ^ n := by simp
 
-open ProbabilityTheory in
+set_option linter.deprecated false in
 /-- The binomial distribution on one coin is the Bernoulli distribution. -/
 theorem binomial_one_eq_bernoulli (p : ℝ≥0) (h : p ≤ 1) :
-    (binomial p h 1).toMeasure = Ber(1, 0, ⟨p, by simpa⟩) := by
-  apply eq_bernoulliMeasure <;> intros
-  · simp_all [binomial, tsub_add_cancel_of_le]
-  · simp_all [binomial]
-  · simp_all
-  · simp_all
+    binomial p h 1 = (bernoulli p h).map (cond · 1 0) := by
+  ext i; fin_cases i <;> simp [binomial_apply, bernoulli_apply]
 
 theorem binomial_apply_of_le {k b : ℕ} (hb : k ≤ b) {x : ℝ≥0} (h : x ≤ 1) :
     ENNReal.ofReal ((b.choose k) * x ^ k * (1 - x) ^ (b - k))
