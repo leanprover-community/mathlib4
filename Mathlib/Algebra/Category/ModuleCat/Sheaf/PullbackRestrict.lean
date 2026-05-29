@@ -45,6 +45,7 @@ abbrev StructureHomOver :
 
 attribute [local simp] prodComparison_natural in
 set_option backward.isDefEq.respectTransparency false in
+/-- Natural isomorphism between `Over.star X ⋙ Over.post F` and `F ⋙ Over.star (F.obj X)` -/
 abbrev Over.starCompPostNatIso : Over.star X ⋙ Over.post F ≅ F ⋙ Over.star (F.obj X) :=
   NatIso.ofComponents (fun Y => Over.isoMk (asIso (prodComparison F X Y)))
 
@@ -52,7 +53,6 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Pushforward from `Over F(X)` to `D` composed with pushforward from `D` to `C`
 is naturally isomorphic to pushforward from `Over F(X)` to `Over X` composed with
 pushforward from `Over X` to `C`. -/
-@[simps!]
 def pushforwardPushforwardOverNatIso : pushforward (pushforwardOver (F.obj X)) ⋙ pushforward φ ≅
     pushforward (StructureHomOver φ X) ⋙ pushforward (pushforwardOver X) := by
   haveI := F.isContinuous_comp (Over.star (F.obj X)) J K (K.over _)
@@ -69,7 +69,6 @@ variable [(pushforward.{u} φ).IsRightAdjoint] [(pushforward (StructureHomOver �
 
 /-- Restricting from `C` to `Over X` composed with pullback from `Over X` to `Over F(X)` is
 naturally isomorphic to pullback from `C` to `D` composed with restriction to `Over F(X)`. -/
-@[simps!]
 def PullbackRestrictIso : pushforward.{u} (𝟙 (S.over X)) ⋙ pullback (StructureHomOver φ X) ≅
     pullback φ ⋙ pushforward.{u} (𝟙 (R.over (F.obj X))) :=
   ((overPushforwardOverAdj X).comp (pullbackPushforwardAdjunction _)).leftAdjointUniq
