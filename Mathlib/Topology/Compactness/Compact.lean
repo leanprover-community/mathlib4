@@ -113,7 +113,7 @@ theorem IsCompact.image_of_continuousOn {f : X → Y} (hs : IsCompact s) (hf : C
   haveI := hx.neBot
   use f x, mem_image_of_mem f hxs
   have : Tendsto f (𝓝 x ⊓ (comap f l ⊓ 𝓟 s)) (𝓝 (f x) ⊓ l) := by
-    convert (hf x hxs).inf (@tendsto_comap _ _ f l) using 1
+    convert! (hf x hxs).inf (@tendsto_comap _ _ f l) using 1
     rw [nhdsWithin]
     ac_rfl
   exact this.neBot
@@ -1155,7 +1155,7 @@ theorem isCompact_pi_infinite {s : ∀ i, Set (X i)} :
 /-- **Tychonoff's theorem** formulated using `Set.pi`: product of compact sets is compact. -/
 theorem isCompact_univ_pi {s : ∀ i, Set (X i)} (h : ∀ i, IsCompact (s i)) :
     IsCompact (pi univ s) := by
-  convert isCompact_pi_infinite h
+  convert! isCompact_pi_infinite h
   simp only [← mem_univ_pi, setOf_mem_eq]
 
 instance Pi.compactSpace [∀ i, CompactSpace (X i)] : CompactSpace (∀ i, X i) :=

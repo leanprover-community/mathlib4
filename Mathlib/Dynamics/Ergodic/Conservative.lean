@@ -111,7 +111,7 @@ theorem frequently_measure_inter_ne_zero (hf : Conservative f μ) (hs : NullMeas
   -- Let `N` be the maximal `n` such that `μ (t n) ≠ 0`.
   obtain ⟨N, hN, hmax⟩ : ∃ N, μ (t N) ≠ 0 ∧ ∀ n > N, μ (t n) = 0 := by
     rw [Nat.frequently_atTop_iff_infinite, not_infinite] at H
-    convert exists_max_image _ (·) H ⟨0, by simpa⟩ using 4
+    convert! exists_max_image _ (·) H ⟨0, by simpa⟩ using 4
     rw [gt_iff_lt, ← not_le, not_imp_comm, mem_setOf]
   have htm {n : ℕ} : NullMeasurableSet (t n) μ :=
     hs.inter <| hs.preimage <| hf.toQuasiMeasurePreserving.iterate n

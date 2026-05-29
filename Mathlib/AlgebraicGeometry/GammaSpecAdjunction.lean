@@ -119,7 +119,7 @@ abbrev toToΓSpecMapBasicOpen :
 set_option backward.isDefEq.respectTransparency false in
 /-- `r` is a unit as a section on the basic open defined by `r`. -/
 theorem isUnit_res_toΓSpecMapBasicOpen : IsUnit (X.toToΓSpecMapBasicOpen r r) := by
-  convert
+  convert!
     (X.presheaf.map <| (eqToHom <| X.toΓSpecMapBasicOpen_eq r).op).hom.isUnit_map
       (X.toRingedSpace.isUnit_res_basicOpen r)
   rw [← CommRingCat.comp_apply, ← Functor.map_comp]
@@ -174,7 +174,7 @@ def toΓSpecCBasicOpens :
     rw [show algebraMap (Γ.obj (op X)) ((structureSheaf (Γ.obj (op X))).obj.obj _) = algebraMap _
       ((structureSheafInType (Γ.obj (op X)) (Γ.obj (op X))).obj.obj _) from rfl,
       X.toΓSpecCApp_spec r.unop]
-    convert X.toΓSpecCApp_spec s.unop
+    convert! X.toΓSpecCApp_spec s.unop
     symm
     apply X.presheaf.map_comp
 
@@ -275,7 +275,7 @@ theorem Γ_Spec_left_triangle : toSpecΓ (Γ.obj (op X)) ≫ X.toΓSpec.c.app (o
   have := X.toΓSpecSheafedSpace_app_spec 1
   unfold toToΓSpecMapBasicOpen toΓSpecMapBasicOpen at this
   rw! [basicOpen_one] at this
-  convert this
+  convert! this
   exact (X.presheaf.map_id ..).symm
 
 end LocallyRingedSpace

@@ -224,7 +224,7 @@ theorem exists_measurable_superset_iff_measure_eq_zero :
 
 theorem measure_biUnion_lt_top {s : Set β} {f : β → Set α} (hs : s.Finite)
     (hfin : ∀ i ∈ s, μ (f i) < ∞) : μ (⋃ i ∈ s, f i) < ∞ := by
-  convert (measure_biUnion_finset_le (μ := μ) hs.toFinset f).trans_lt _ using 3
+  convert! (measure_biUnion_finset_le (μ := μ) hs.toFinset f).trans_lt _ using 3
   · ext
     rw [Finite.mem_toFinset]
   · simpa only [ENNReal.sum_lt_top, Finite.mem_toFinset]

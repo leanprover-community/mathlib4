@@ -196,7 +196,7 @@ instance instLinearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : Lin
     have : Std.LawfulLTOrd (α ×ₗ β) := ⟨by
       simp [compare_def, compareLex, compareOn, Ordering.then_eq_lt, toLex_lt_toLex,
         compare_lt_iff_lt]⟩
-    convert Std.LawfulLTCmp.eq_compareOfLessAndEq (cmp := compare) a b
+    convert! Std.LawfulLTCmp.eq_compareOfLessAndEq (cmp := compare) a b
 
 @[to_dual]
 instance orderBot [PartialOrder α] [Preorder β] [OrderBot α] [OrderBot β] : OrderBot (α ×ₗ β) where

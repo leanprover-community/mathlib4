@@ -131,7 +131,7 @@ theorem isColimit_eq_iff {t : Cocone F} (ht : IsColimit t) {i j : J} {xi : F.obj
   have : HasColimit F := ⟨_, ht⟩
   refine Iff.trans ?_ (colimit_eq_iff_aux F)
   rw [← (IsColimit.coconePointUniqueUpToIso ht (colimitCoconeIsColimit F)).toEquiv.injective.eq_iff]
-  convert Iff.rfl
+  convert! Iff.rfl
   · exact (congr_hom
       (IsColimit.comp_coconePointUniqueUpToIso_hom ht (colimitCoconeIsColimit F) _) xi).symm
   · exact (congr_hom

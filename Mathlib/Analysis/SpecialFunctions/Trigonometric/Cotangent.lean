@@ -404,7 +404,7 @@ theorem iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_div_pow {k : ℕ} (hk : 1 ≤
     (hz : z ∈ ℍₒ) :
     iteratedDerivWithin k (fun x : ℂ ↦ π * cot (π * x)) ℍₒ z =
       (-1) ^ k * k ! * ∑' n : ℤ, 1 / (z + n) ^ (k + 1) := by
-  convert iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_zpow hk hz with n
+  convert! iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_zpow hk hz with n
   rw [show (-1 - k : ℤ) = -(k + 1 :) by norm_cast; lia, zpow_neg_coe_of_pos _ (by lia),
     one_div]
 

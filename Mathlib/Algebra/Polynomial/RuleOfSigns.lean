@@ -209,7 +209,7 @@ lemma signVariations_eraseLead_mul_X_sub_C (hη : 0 < η) (hP₀ : 0 < leadingCo
 lemma succ_signVariations_X_sub_C_mul_monomial {d c} (hc : c ≠ 0) (hη : 0 < η) :
     (monomial d c).signVariations + 1 ≤ ((X - C η) * monomial d c).signVariations := by
   have h₁ : nextCoeff ((X - C η) * monomial d c) = -(η * c) := by
-    convert coeff_mul_monomial (X - C η) d 0 c using 1
+    convert! coeff_mul_monomial (X - C η) d 0 c using 1
     · simp [hc, nextCoeff, natDegree_mul (X_sub_C_ne_zero η)]
     · simp
   have h₂ : eraseLead ((X - C η) * monomial d c) ≠ 0 := by

@@ -8,20 +8,6 @@ module
 public import Mathlib.Init
 public meta import Lean.Elab.Tactic.Basic
 public meta import Lean.Elab.SyntheticMVars
+import Mathlib.Tactic.Linter.DeprecatedModule
 
-/-!
-# The `type_check` tactic
-Define the `type_check` tactic: it type checks a given expression, and traces its type.
--/
-
-public meta section
-
-open Lean Elab Meta
-
-/-- `type_check e` type checks the term `e` and prints its type to the infoview. -/
-elab tk:"type_check " e:term : tactic => do
-  Tactic.withMainContext do
-    let e ← Term.elabTermAndSynthesize e none
-    check e
-    let type ← inferType e
-    Lean.logInfoAt tk m!"{← Lean.instantiateMVars type}"
+deprecated_module (since := "2026-05-21")

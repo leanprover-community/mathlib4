@@ -162,7 +162,7 @@ lemma Sigma.isOpenEmbedding_ι (a : α) :
     IsOpenEmbedding (Sigma.ι X a) := by
   refine IsOpenEmbedding.of_comp _ (homeoOfIso ((colimit.isColimit _).coconePointUniqueUpToIso
     (finiteCoproduct.isColimit X))).isOpenEmbedding ?_
-  convert finiteCoproduct.isOpenEmbedding_ι X a
+  convert! finiteCoproduct.isOpenEmbedding_ι X a
   ext x
   change (Sigma.ι X a ≫ _) x = _
   simp

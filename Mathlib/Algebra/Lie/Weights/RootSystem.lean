@@ -274,7 +274,7 @@ lemma chainTopCoeff_zero_right [Nontrivial L] (hα : α.IsNonZero) :
   obtain ⟨k, hk⟩ : ∃ k : K, k • f =
       (toEnd K L L f ^ (chainTopCoeff α (0 : Weight K H L) + 1)) x := by
     have : (toEnd K L L f ^ (chainTopCoeff α (0 : Weight K H L) + 1)) x ∈ rootSpace H (-α) := by
-      convert toEnd_pow_apply_mem hf hx (chainTopCoeff α (0 : Weight K H L) + 1) using 2
+      convert! toEnd_pow_apply_mem hf hx (chainTopCoeff α (0 : Weight K H L) + 1) using 2
       rw [coe_chainTop', Weight.coe_zero, add_zero, succ_nsmul',
         add_assoc, smul_neg, neg_add_cancel, add_zero]
     simpa using (finrank_eq_one_iff_of_nonzero' ⟨f, hf⟩ (by simpa using isSl2.f_ne_zero)).mp
@@ -398,7 +398,7 @@ def rootSystem :
       rintro ⟨α, hα⟩ - ⟨⟨β, hβ⟩, rfl⟩
       simpa using
         ⟨reflectRoot α β, by simpa using reflectRoot_isNonZero α β <| by simpa using hβ, rfl⟩)
-    (by convert span_weight_isNonZero_eq_top K L H; ext; simp)
+    (by convert! span_weight_isNonZero_eq_top K L H; ext; simp)
 
 instance : (rootSystem H).IsRootSystem :=
   RootPairing.isRootSystem_mk'' fun α β ↦

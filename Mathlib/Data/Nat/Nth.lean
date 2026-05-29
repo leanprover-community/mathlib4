@@ -236,7 +236,7 @@ theorem nth_zero : nth p 0 = sInf (setOf p) := by rw [nth_eq_sInf]; simp
 theorem nth_zero_of_zero (h : p 0) : nth p 0 = 0 := by simp [nth_zero, h]
 
 theorem nth_zero_of_exists [DecidablePred p] (h : ∃ n, p n) : nth p 0 = Nat.find h := by
-  rw [nth_zero]; convert Nat.sInf_def h
+  rw [nth_zero]; convert! Nat.sInf_def h
 
 theorem nth_eq_zero {n} :
     nth p n = 0 ↔ p 0 ∧ n = 0 ∨ ∃ hf : (setOf p).Finite, #hf.toFinset ≤ n := by
@@ -351,9 +351,9 @@ lemma nth_comp_of_strictMono {n : ℕ} {f : ℕ → ℕ} (hf : StrictMono f)
     repeat nth_rw 1 [nth_eq_sInf]
     have h0' : ∀ k', (p k' ∧ ∀ k < n + 1, nth p k < k') → k' ∈ Set.range f := fun _ h ↦ h0 _ h.1
     rw [← hs h0', ← hf.monotone.map_csInf]
-    · convert rfl using 8 with k m' hm
+    · convert! rfl using 8 with k m' hm
       nth_rw 2 [← hf.lt_iff_lt]
-      convert Iff.rfl using 2
+      convert! Iff.rfl using 2
       exact ih m' (Nat.lt_add_one_iff.mp hm) fun hfi ↦ hm.trans (h hfi)
     · rcases h0 _ (nth_mem _ h) with ⟨t, ht⟩
       exact ⟨t, ht ▸ (nth_mem _ h), fun _ hk ↦ ht ▸ nth_lt_nth' hk h⟩

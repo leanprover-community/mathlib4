@@ -279,28 +279,28 @@ def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
 
 Examples:
 - lam
-```
+  ```
   theorem Continuous_id : Continuous fun x ↦ x
   theorem Continuous_comp (hf : Continuous f) (hg : Continuous g) : Continuous fun x ↦ f (g x)
-```
+  ```
 - function
-```
+  ```
   theorem Continuous_add : Continuous (fun x ↦ x.1 + x.2)
   theorem Continuous_add (hf : Continuous f) (hg : Continuous g) :
       Continuous (fun x ↦ (f x) + (g x))
-```
+  ```
 - mor - the head of function body has to be `DFunLike.coe`
-```
+  ```
   theorem ContDiff.clm_apply {f : E → F →L[𝕜] G} {g : E → F}
       (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
       ContDiff 𝕜 n fun x ↦ (f x) (g x)
   theorem clm_linear {f : E →L[𝕜] F} : IsLinearMap 𝕜 f
-```
+  ```
 - transition - the conclusion has to be in the form `P f` where `f` is a free variable
-```
+  ```
   theorem linear_is_continuous [FiniteDimensional ℝ E] {f : E → F} (hf : IsLinearMap 𝕜 f) :
       Continuous f
-```
+  ```
 -/
 inductive Theorem where
   | lam        (thm : LambdaTheorem)

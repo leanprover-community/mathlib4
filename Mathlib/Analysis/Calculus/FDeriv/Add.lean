@@ -402,23 +402,23 @@ variable {ι : Type*} {u : Finset ι} {A : ι → E → F} {A' : ι → E →L[�
 theorem HasStrictFDerivAt.fun_sum (h : ∀ i ∈ u, HasStrictFDerivAt (A i) (A' i) x) :
     HasStrictFDerivAt (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) x := by
   simp only [hasStrictFDerivAt_iff_isLittleO] at *
-  convert IsLittleO.sum h
+  convert! IsLittleO.sum h
   simp [Finset.sum_sub_distrib, ContinuousLinearMap.sum_apply]
 
 @[fun_prop]
 theorem HasStrictFDerivAt.sum (h : ∀ i ∈ u, HasStrictFDerivAt (A i) (A' i) x) :
     HasStrictFDerivAt (∑ i ∈ u, A i) (∑ i ∈ u, A' i) x := by
-  convert HasStrictFDerivAt.fun_sum h; simp
+  convert! HasStrictFDerivAt.fun_sum h; simp
 
 theorem HasFDerivAtFilter.fun_sum (h : ∀ i ∈ u, HasFDerivAtFilter (A i) (A' i) L) :
     HasFDerivAtFilter (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) L := by
   simp only [hasFDerivAtFilter_iff_isLittleO] at *
-  convert IsLittleO.sum h
+  convert! IsLittleO.sum h
   simp [ContinuousLinearMap.sum_apply]
 
 theorem HasFDerivAtFilter.sum (h : ∀ i ∈ u, HasFDerivAtFilter (A i) (A' i) L) :
     HasFDerivAtFilter (∑ i ∈ u, A i) (∑ i ∈ u, A' i) L := by
-  convert HasFDerivAtFilter.fun_sum h; simp
+  convert! HasFDerivAtFilter.fun_sum h; simp
 
 @[fun_prop]
 theorem HasFDerivWithinAt.fun_sum (h : ∀ i ∈ u, HasFDerivWithinAt (A i) (A' i) s x) :

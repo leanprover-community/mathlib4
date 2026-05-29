@@ -66,7 +66,7 @@ variable {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ 
 
 theorem of_hasBinaryProduct [HasBinaryProduct X Y] :
     IsPullback Limits.prod.fst Limits.prod.snd (0 : X ⟶ 0) (0 : Y ⟶ 0) := by
-  convert @of_is_product _ _ X Y 0 _ (limit.isLimit _) HasZeroObject.zeroIsTerminal
+  convert! @of_is_product _ _ X Y 0 _ (limit.isLimit _) HasZeroObject.zeroIsTerminal
     <;> subsingleton
 
 set_option backward.isDefEq.respectTransparency false in
@@ -99,7 +99,7 @@ theorem zero_bot (X : C) : IsPullback (𝟙 X) (0 : X ⟶ 0) (0 : X ⟶ 0) (0 : 
 
 theorem of_isBilimit {b : BinaryBicone X Y} (h : b.IsBilimit) :
     IsPullback b.fst b.snd (0 : X ⟶ 0) (0 : Y ⟶ 0) := by
-  convert IsPullback.of_is_product' h.isLimit HasZeroObject.zeroIsTerminal
+  convert! IsPullback.of_is_product' h.isLimit HasZeroObject.zeroIsTerminal
     <;> subsingleton
 
 @[simp]
@@ -176,7 +176,7 @@ variable {Z X Y P : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ 
 
 theorem of_hasBinaryCoproduct [HasBinaryCoproduct X Y] :
     IsPushout (0 : 0 ⟶ X) (0 : 0 ⟶ Y) coprod.inl coprod.inr := by
-  convert @of_is_coproduct _ _ 0 X Y _ (colimit.isColimit _) HasZeroObject.zeroIsInitial
+  convert! @of_is_coproduct _ _ 0 X Y _ (colimit.isColimit _) HasZeroObject.zeroIsInitial
     <;> subsingleton
 
 set_option backward.isDefEq.respectTransparency false in
@@ -212,7 +212,7 @@ theorem zero_top (X : C) : IsPushout (0 : (0 : C) ⟶ 0) (0 : 0 ⟶ X) (0 : 0 �
 
 theorem of_isBilimit {b : BinaryBicone X Y} (h : b.IsBilimit) :
     IsPushout (0 : 0 ⟶ X) (0 : 0 ⟶ Y) b.inl b.inr := by
-  convert IsPushout.of_is_coproduct' h.isColimit HasZeroObject.zeroIsInitial
+  convert! IsPushout.of_is_coproduct' h.isColimit HasZeroObject.zeroIsInitial
     <;> subsingleton
 
 @[simp]
@@ -339,7 +339,7 @@ is a bi-Cartesian square.
 @[simp]
 theorem of_has_biproduct₁ [HasBinaryBiproduct X Y] :
     BicartesianSq biprod.fst biprod.snd (0 : X ⟶ 0) (0 : Y ⟶ 0) := by
-  convert of_is_biproduct₁ (BinaryBiproduct.isBilimit X Y)
+  convert! of_is_biproduct₁ (BinaryBiproduct.isBilimit X Y)
 
 /-- ```
    0 -----0---> X
@@ -354,7 +354,7 @@ is a bi-Cartesian square.
 @[simp]
 theorem of_has_biproduct₂ [HasBinaryBiproduct X Y] :
     BicartesianSq (0 : 0 ⟶ X) (0 : 0 ⟶ Y) biprod.inl biprod.inr := by
-  convert of_is_biproduct₂ (BinaryBiproduct.isBilimit X Y)
+  convert! of_is_biproduct₂ (BinaryBiproduct.isBilimit X Y)
 
 end BicartesianSq
 end CategoryTheory

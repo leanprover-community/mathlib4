@@ -198,7 +198,7 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_top (p : ℝ≥0∞) {f : α → E} (hf :
   calc
     eLpNorm (fun x ↦ b (f x) (g x)) p μ ≤ c * eLpNorm g ∞ μ * eLpNorm f p μ :=
       eLpNorm_le_eLpNorm_top_mul_eLpNorm p g hf (flip b) c <| by
-        convert h using 3 with x
+        convert! h using 3 with x
         simp only [mul_assoc, mul_comm ‖f x‖₊]
     _ = c * eLpNorm f p μ * eLpNorm g ∞ μ := by
       simp only [mul_assoc]; rw [mul_comm (eLpNorm _ _ _)]

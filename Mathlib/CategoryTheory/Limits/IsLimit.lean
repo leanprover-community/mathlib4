@@ -403,7 +403,7 @@ def homIso' (h : IsLimit t) (W : C) :
       { p : ∀ j, W ⟶ F.obj j // ∀ {j j'} (f : j ⟶ j'), p j ≫ F.map f = p j' } :=
   h.homIso W ≪≫
     { hom := ↾fun π =>
-        ⟨fun j => π.app j, fun f => by convert ← (π.naturality f).symm; apply id_comp⟩
+        ⟨fun j => π.app j, fun f => by convert! ← (π.naturality f).symm; apply id_comp⟩
       inv := ↾fun p =>
         { app := fun j => p.1 j
           naturality := fun j j' f => by dsimp; rw [id_comp]; exact (p.2 f).symm } }
@@ -419,7 +419,7 @@ def ofFaithful {t : Cone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) [G
     uniq := fun s m w => by
       apply G.map_injective; rw [h]
       refine ht.uniq (mapCone G s) _ fun j => ?_
-      convert ← congrArg (fun f => G.map f) (w j)
+      convert! ← congrArg (fun f => G.map f) (w j)
       apply G.map_comp }
 
 /-- If `F` and `G` are naturally isomorphic, then `F.mapCone c` being a limit implies
@@ -901,7 +901,7 @@ def homIso' (h : IsColimit t) (W : C) :
       { p : ∀ j, F.obj j ⟶ W // ∀ {j j' : J} (f : j ⟶ j'), F.map f ≫ p j' = p j } :=
   h.homIso W ≪≫
     { hom := ↾fun ι =>
-        ⟨fun j => ι.app j, fun {j} {j'} f => by convert ← ι.naturality f; apply comp_id⟩
+        ⟨fun j => ι.app j, fun {j} {j'} f => by convert! ← ι.naturality f; apply comp_id⟩
       inv := ↾fun p =>
         { app := fun j => p.1 j
           naturality := fun j j' f => by dsimp; rw [comp_id]; exact p.2 f } }
@@ -918,7 +918,7 @@ def ofFaithful {t : Cocone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) 
     uniq := fun s m w => by
       apply G.map_injective; rw [h]
       refine ht.uniq (mapCocone G s) _ fun j => ?_
-      convert ← congrArg (fun f => G.map f) (w j)
+      convert! ← congrArg (fun f => G.map f) (w j)
       apply G.map_comp }
 
 /-- If `F` and `G` are naturally isomorphic, then `F.mapCocone c` being a colimit implies

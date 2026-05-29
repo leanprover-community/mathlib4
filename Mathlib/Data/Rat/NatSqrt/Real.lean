@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
+public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Data.Rat.NatSqrt.Defs
-public import Mathlib.Data.Real.Sqrt
 
 /-!
 Comparisons between rational approximations to the square root of a natural number

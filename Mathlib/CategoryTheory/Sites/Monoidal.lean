@@ -136,7 +136,7 @@ lemma whiskerLeft {G₁ G₂ : Cᵒᵖ ⥤ A} {g : G₁ ⟶ G₂} (hg : J.W g) (
     ((ihom.adjunction _).homEquiv _ _).bijective]
   rw [← Function.Bijective.of_comp_iff (g := MonoidalClosed.curry) _
     ((ihom.adjunction _).homEquiv _ _).bijective] at this
-  convert this using 1
+  convert! this using 1
   ext α : 1
   dsimp
   rw [curry_natural_left]

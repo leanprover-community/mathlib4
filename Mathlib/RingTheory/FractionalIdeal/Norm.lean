@@ -88,7 +88,7 @@ theorem absNorm_nonneg (I : FractionalIdeal R⁰ K) : 0 ≤ absNorm I := by dsim
 
 theorem absNorm_bot : absNorm (⊥ : FractionalIdeal R⁰ K) = 0 := absNorm.map_zero'
 
-theorem absNorm_one : absNorm (1 : FractionalIdeal R⁰ K) = 1 := by convert absNorm.map_one'
+theorem absNorm_one : absNorm (1 : FractionalIdeal R⁰ K) = 1 := by convert! absNorm.map_one'
 
 theorem absNorm_eq_zero_iff [IsDomain K] {I : FractionalIdeal R⁰ K} :
     absNorm I = 0 ↔ I = 0 := by

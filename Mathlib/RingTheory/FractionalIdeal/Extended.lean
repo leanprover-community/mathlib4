@@ -244,6 +244,8 @@ theorem extendedHom_le_one_iff [IsIntegrallyClosed A] [IsIntegrallyClosed B] :
 
 section IsDedekindDomain
 
+set_option linter.overlappingInstances false
+
 variable [IsDedekindDomain A] [IsDedekindDomain B]
 
 theorem one_le_extendedHom_iff (hI : I ≠ 0) : 1 ≤ extendedHom L B I ↔ 1 ≤ I := by

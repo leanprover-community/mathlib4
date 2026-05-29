@@ -118,7 +118,7 @@ lemma cfcₙAux_mem_range_inr (f : C(σₙ 𝕜 a, 𝕜)₀) :
     rw [SetLike.mem_coe, NonUnitalStarSubalgebra.mem_comap, cfcₙAux_id hp₁ a ha]
     exact ⟨a, rfl⟩
   · simp only [NonUnitalStarAlgHom.coe_range]
-    convert IsClosed.preimage (Unitization.continuous_fst (𝕜 := 𝕜)) isClosed_singleton
+    convert! IsClosed.preimage (Unitization.continuous_fst (𝕜 := 𝕜)) isClosed_singleton
     aesop
 
 variable [CStarRing A]
@@ -170,7 +170,7 @@ theorem RCLike.nonUnitalContinuousFunctionalCalculusIsClosedEmbedding :
   toNonUnitalContinuousFunctionalCalculus := RCLike.nonUnitalContinuousFunctionalCalculus hp₁
   isClosedEmbedding a ha := by
     apply isometry_inr (𝕜 := 𝕜) (A := A) |>.isClosedEmbedding |>.of_comp_iff.mp
-    convert isClosedEmbedding_cfcₙAux hp₁ a ha
+    convert! isClosedEmbedding_cfcₙAux hp₁ a ha
     congrm (⇑$(inrNonUnitalStarAlgHom_comp_cfcₙHom_eq_cfcₙAux hp₁ a ha))
 
 end RCLike

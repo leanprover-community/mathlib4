@@ -381,14 +381,14 @@ noncomputable def fderivLM :
     else 0
   map_add' f g := by
     split_ifs with hk
-    · have hk' : 0 < (n : ℕ∞ω) := mod_cast (ENat.add_one_pos.trans_le hk)
+    · have hk' : 0 < (n : ℕ∞ω) := mod_cast (add_pos_of_right zero_lt_one k).trans_le hk
       ext
       simp [fderiv_add (f.contDiff.differentiable hk'.ne').differentiableAt
                        (g.contDiff.differentiable hk'.ne').differentiableAt]
     · simp
   map_smul' c f := by
     split_ifs with hk
-    · have hk' : 0 < (n : ℕ∞ω) := mod_cast (ENat.add_one_pos.trans_le hk)
+    · have hk' : 0 < (n : ℕ∞ω) := mod_cast (add_pos_of_right zero_lt_one k).trans_le hk
       ext
       simp [fderiv_const_smul (f.contDiff.differentiable hk'.ne').differentiableAt]
     · simp

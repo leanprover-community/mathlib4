@@ -293,8 +293,9 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toSheafify_plusPlusIsoSheafify_hom (P : Cᵒᵖ ⥤ D) :
     J.toSheafify P ≫ (plusPlusIsoSheafify J D P).hom = toSheafify J P := by
-  convert Adjunction.unit_leftAdjointUniq_hom_app
-    (plusPlusAdjunction J D) (sheafificationAdjunction J D) P
+  convert!
+    Adjunction.unit_leftAdjointUniq_hom_app (plusPlusAdjunction J D) (sheafificationAdjunction J D)
+      P
   ext1 P
   dsimp [GrothendieckTopology.toSheafify, plusPlusAdjunction]
   rw [Category.comp_id]

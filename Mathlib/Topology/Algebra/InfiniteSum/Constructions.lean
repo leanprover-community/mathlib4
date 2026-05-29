@@ -36,7 +36,7 @@ variable [CommMonoid α] [TopologicalSpace α]
 
 @[to_additive]
 theorem hasProd_pi_single [DecidableEq β] (b : β) (a : α) : HasProd (Pi.mulSingle b a) a := by
-  convert hasProd_ite_eq (L := .unconditional β) b a
+  convert! hasProd_ite_eq (L := .unconditional β) b a
   simp [Pi.mulSingle_apply]
 
 @[to_additive (attr := simp)]
@@ -85,7 +85,7 @@ lemma HasProd.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [Continu
     (h₁ : HasProd (f ∘ Sum.inl) a) (h₂ : HasProd (f ∘ Sum.inr) b) : HasProd f (a * b) := by
   have : Tendsto ((∏ b ∈ ·, f b) ∘ sumEquiv.symm) (atTop.map sumEquiv) (nhds (a * b)) := by
     rw [Finset.sumEquiv.map_atTop, ← prod_atTop_atTop_eq]
-    convert (tendsto_mul.comp (nhds_prod_eq (x := a) (y := b) ▸ Tendsto.prodMap h₁ h₂))
+    convert! (tendsto_mul.comp (nhds_prod_eq (x := a) (y := b) ▸ Tendsto.prodMap h₁ h₂))
     ext s
     simp
   simpa [Tendsto, ← Filter.map_map] using this

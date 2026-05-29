@@ -559,11 +559,11 @@ def induction {d : D} (Z : ∀ (X : C) (_ : F.obj X ⟶ d), Sort*)
       (CostructuredArrow.mk k₀) z
   · intro j₁ j₂ f a
     fapply h₁ _ _ _ _ f.left _ a
-    convert f.w
+    convert! f.w
     simp
   · intro j₁ j₂ f a
     fapply h₂ _ _ _ _ f.left _ a
-    convert f.w
+    convert! f.w
     simp
 
 variable {F G}
@@ -1118,7 +1118,7 @@ private lemma Grothendieck.final_map_small {C : Type u₁} [SmallCategory C] {F 
   intro H
   let i := (colimitFiberwiseColimitIso _).symm ≪≫
     HasColimit.isoOfNatIso (fiberwiseColimitMapCompEquivalence α H) ≪≫ colimitFiberwiseColimitIso _
-  convert Iso.isIso_hom i
+  convert! Iso.isIso_hom i
   apply colimit.hom_ext
   intro X
   simp [i, fiberwiseColimitMapCompEquivalence]

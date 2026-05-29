@@ -180,7 +180,7 @@ theorem index_pos (K : PositiveCompacts G) {V : Set G} (hV : (interior V).Nonemp
   · rintro ⟨t, h1t, h2t⟩; rw [Finset.card_eq_zero] at h2t; subst h2t
     obtain ⟨g, hg⟩ := K.interior_nonempty
     change g ∈ (∅ : Set G)
-    convert h1t (interior_subset hg); symm
+    convert! h1t (interior_subset hg); symm
     simp only [Finset.notMem_empty, iUnion_of_empty, iUnion_empty]
   · exact index_defined K.isCompact hV
 
@@ -252,7 +252,7 @@ theorem mul_left_index_le {K : Set G} (hK : IsCompact K) {V : Set G} (hV : (inte
 theorem is_left_invariant_index {K : Set G} (hK : IsCompact K) (g : G) {V : Set G}
     (hV : (interior V).Nonempty) : index ((fun h => g * h) '' K) V = index K V := by
   refine le_antisymm (mul_left_index_le hK hV g) ?_
-  convert mul_left_index_le (hK.image <| continuous_const_mul g) hV g⁻¹
+  convert! mul_left_index_le (hK.image <| continuous_const_mul g) hV g⁻¹
   rw [image_image]
   simp
 

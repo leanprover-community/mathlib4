@@ -164,7 +164,7 @@ lemma tendsto_atImInfty_tprod_one_sub_eta_q_pow :
     exact pow_le_pow_left₀ (norm_nonneg _) (mem_ball_zero_iff.mp hq).le _
   have := (htprod.comp (UpperHalfPlane.qParam_tendsto_atImInfty zero_lt_one)).pow 24
   simp only [Periodic.qParam, ofReal_one, div_one, comp_apply, one_pow, eta_q] at *
-  convert this using 2 with τ
+  convert! this using 2 with τ
   rw [Multipliable.tprod_pow]
   apply (multipliableLocallyUniformlyOn_eta.multipliable τ.2).congr
   simp [eta_q, Periodic.qParam, ← exp_nat_mul]

@@ -8,7 +8,6 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
 public import Mathlib.Data.Int.Cast.Lemmas
-public import Mathlib.GroupTheory.Congruence.Hom
 public import Mathlib.GroupTheory.Coset.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs

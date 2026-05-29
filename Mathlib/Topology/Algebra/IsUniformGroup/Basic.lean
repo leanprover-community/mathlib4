@@ -138,7 +138,7 @@ theorem totallyBounded_iff_subset_finite_iUnion_nhds_one {s : Set α} :
 
 @[to_additive]
 theorem totallyBounded_inv {s : Set α} (hs : TotallyBounded s) : TotallyBounded (s⁻¹) := by
-  convert TotallyBounded.image hs uniformContinuous_inv
+  convert! TotallyBounded.image hs uniformContinuous_inv
   aesop
 
 section UniformConvergence
@@ -338,8 +338,8 @@ def opUniformEquivRight
   letI : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
   letI : UniformSpace Gᵐᵒᵖ := IsTopologicalGroup.leftUniformSpace Gᵐᵒᵖ
   refine ⟨MulOpposite.opEquiv, ?_, ?_⟩
-  · simp [uniformContinuous_iff, ← comap_op_leftUniformSpace]
-  · simp [uniformContinuous_iff, ← comap_op_leftUniformSpace, ← UniformSpace.comap_comap]
+  · simp [uniformContinuous_iff_le_comap, ← comap_op_leftUniformSpace]
+  · simp [uniformContinuous_iff_le_comap, ← comap_op_leftUniformSpace, ← UniformSpace.comap_comap]
 
 /-- The equivalence between a topological group `G` and `Gᵐᵒᵖ` as a uniform equivalence when `G`
 is equipped with the left uniformity and `Gᵐᵒᵖ` with the right uniformity. -/
@@ -352,8 +352,8 @@ def opUniformEquivLeft
   letI : UniformSpace G := IsTopologicalGroup.leftUniformSpace G
   letI : UniformSpace Gᵐᵒᵖ := IsTopologicalGroup.rightUniformSpace Gᵐᵒᵖ
   refine ⟨MulOpposite.opEquiv, ?_, ?_⟩
-  · simp [uniformContinuous_iff, ← comap_op_rightUniformSpace]
-  · simp [uniformContinuous_iff, ← comap_op_rightUniformSpace, ← UniformSpace.comap_comap]
+  · simp [uniformContinuous_iff_le_comap, ← comap_op_rightUniformSpace]
+  · simp [uniformContinuous_iff_le_comap, ← comap_op_rightUniformSpace, ← UniformSpace.comap_comap]
 
 end MulOpposite
 
@@ -381,11 +381,11 @@ def UniformEquiv.inv : @UniformEquiv G G (IsTopologicalGroup.rightUniformSpace G
     (IsTopologicalGroup.leftUniformSpace G) := by
   have A : @UniformContinuous G G (IsTopologicalGroup.rightUniformSpace G)
       (IsTopologicalGroup.leftUniformSpace G) (Equiv.inv G) := by
-    apply uniformContinuous_iff.2
+    apply uniformContinuous_iff_le_comap.2
     rw [← comap_inv_leftUniformSpace]
   have B : @UniformContinuous G G (IsTopologicalGroup.leftUniformSpace G)
       (IsTopologicalGroup.rightUniformSpace G) (Equiv.inv G) := by
-    apply uniformContinuous_iff.2
+    apply uniformContinuous_iff_le_comap.2
     rw [← comap_inv_leftUniformSpace, ← UniformSpace.comap_comap]
     simp
   exact @UniformEquiv.mk G G (IsTopologicalGroup.rightUniformSpace G)
@@ -697,7 +697,7 @@ instance QuotientGroup.completeSpace_right' (G : Type u) [Group G] [TopologicalS
     ⟨↑x₀,
       tendsto_nhds_of_cauchySeq_of_subseq hx
         (strictMono_nat_of_lt_succ fun n => (hφ (n + 1)).1).tendsto_atTop ?_⟩
-  convert ((continuous_coinduced_rng : Continuous ((↑) : G → G ⧸ N)).tendsto x₀).comp hx₀
+  convert! ((continuous_coinduced_rng : Continuous ((↑) : G → G ⧸ N)).tendsto x₀).comp hx₀
   exact funext fun n => (x' n).snd
 
 /-- The quotient `G ⧸ N` of a complete first countable uniform group `G` by a normal subgroup

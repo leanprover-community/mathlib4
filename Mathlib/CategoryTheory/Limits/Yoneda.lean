@@ -204,6 +204,12 @@ instance uliftYonedaFunctor_preservesLimits :
   change PreservesLimitsOfSize.{t, w} (coyoneda.obj K ⋙ uliftFunctor.{w'})
   infer_instance
 
+instance : PreservesLimitsOfSize.{t, w} (uliftCoyoneda.{w'} : Cᵒᵖ ⥤ _) := by
+  apply preservesLimits_of_evaluation
+  intro K
+  change PreservesLimitsOfSize.{t, w} (yoneda.obj _ ⋙ uliftFunctor.{w'})
+  infer_instance
+
 instance [LocallySmall.{w'} C] :
     PreservesLimitsOfSize.{t, w} (shrinkYoneda.{w'} (C := C)) :=
   preservesLimits_of_evaluation _ (fun K ↦ ⟨fun {J _} ↦ by
@@ -215,35 +221,25 @@ namespace Functor
 
 section Representable
 
-variable (F : Cᵒᵖ ⥤ Type v) [F.IsRepresentable] {J : Type*} [Category* J]
+variable (F : Cᵒᵖ ⥤ Type w') [F.IsRepresentable]
 
-instance representable_preservesLimit (G : J ⥤ Cᵒᵖ) :
-    PreservesLimit G F :=
-  preservesLimit_of_natIso _ F.reprW
-
-variable (J) in
-instance representable_preservesLimitsOfShape :
-    PreservesLimitsOfShape J F where
-
-instance representable_preservesLimits :
-    PreservesLimitsOfSize.{t, w} F where
+instance : PreservesLimitsOfSize.{t, w} F := by
+  suffices PreservesLimitsOfSize (F ⋙ uliftFunctor.{v}) from
+    preservesLimits_of_reflects_of_preserves _ (uliftFunctor.{v})
+  rw [preservesLimitsOfSize_iff_of_natIso (F ⋙ uliftFunctor.{v}).uliftYonedaReprXIso.symm]
+  exact inferInstanceAs <| PreservesLimitsOfSize (yoneda.obj _ ⋙ uliftFunctor)
 
 end Representable
 
 section Corepresentable
 
-variable (F : C ⥤ Type v) [F.IsCorepresentable] {J : Type*} [Category* J]
+variable (F : C ⥤ Type*) [F.IsCorepresentable]
 
-instance corepresentable_preservesLimit (G : J ⥤ C) :
-    PreservesLimit G F :=
-  preservesLimit_of_natIso _ F.coreprW
-
-variable (J) in
-instance corepresentable_preservesLimitsOfShape :
-    PreservesLimitsOfShape J F where
-
-instance corepresentable_preservesLimits :
-    PreservesLimitsOfSize.{t, w} F where
+instance : PreservesLimitsOfSize.{t, w} F := by
+  suffices PreservesLimitsOfSize (F ⋙ uliftFunctor.{v}) from
+    preservesLimits_of_reflects_of_preserves _ (uliftFunctor.{v})
+  rw [preservesLimitsOfSize_iff_of_natIso (F ⋙ uliftFunctor.{v}).uliftCoyonedaCoreprXIso.symm]
+  exact inferInstanceAs <| PreservesLimitsOfSize (coyoneda.obj _ ⋙ uliftFunctor)
 
 end Corepresentable
 

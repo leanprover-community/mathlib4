@@ -522,7 +522,7 @@ theorem mem_fixedPoints_mul_left_cosets_iff_mem_normalizer {H : Subgroup G} [Fin
         have : (n⁻¹ * x)⁻¹ * x ∈ H := QuotientGroup.eq.1 (ha ⟨⟨n⁻¹, inv_mem hn⟩, rfl⟩)
         show _ ∈ H by
           rw [mul_inv_rev, inv_inv] at this
-          convert this
+          convert! this
           rw [inv_inv]),
     fun hx : ∀ n : G, n ∈ H ↔ x * n * x⁻¹ ∈ H =>
     mem_fixedPoints'.2 fun y =>
@@ -614,7 +614,7 @@ theorem exists_subgroup_card_pow_succ [Finite G] {p : ℕ} {n : ℕ} [hp : Fact 
       (comap (mk' (H.subgroupOf (normalizer H))) (Subgroup.zpowers x))) = p ^ (n + 1)
     suffices Nat.card (Subtype.val ''
       ((zpowers x).comap (mk' (H.subgroupOf (normalizer H))) : Set (normalizer H))) = p ^ (n + 1)
-      by convert this using 2
+      by convert! this using 2
     rw [Nat.card_image_of_injective Subtype.val_injective
         ((zpowers x).comap (mk' (H.subgroupOf (normalizer H))) : Set (normalizer (H : Set G))),
       pow_succ, ← hH, Nat.card_congr hequiv, ← hx, ← Nat.card_zpowers, ← Nat.card_prod]

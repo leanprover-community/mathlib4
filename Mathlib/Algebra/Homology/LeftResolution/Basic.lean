@@ -103,7 +103,7 @@ lemma exactAt_map_chainComplex_succ (n : ℕ) :
   rw [HomologicalComplex.exactAt_iff' _ (n + 2) (n + 1) n
     (ComplexShape.prev_eq' _ (by dsimp; lia)) (by simp),
     ShortComplex.exact_iff_epi_kernel_lift]
-  convert epi_comp (ι.map (Λ.chainComplexXIso X n).hom) (Λ.π.app _)
+  convert! epi_comp (ι.map (Λ.chainComplexXIso X n).hom) (Λ.π.app _)
   rw [← cancel_mono (kernel.ι _), kernel.lift_ι]
   simp [map_chainComplex_d]
 

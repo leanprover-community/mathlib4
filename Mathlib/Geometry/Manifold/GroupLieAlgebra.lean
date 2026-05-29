@@ -176,7 +176,7 @@ theorem contMDiff_mulInvariantVectorField (v : GroupLieAlgebra I G) :
     rw [A]
     exact contMDiff_mul I (minSmoothness 𝕜 3)
   let S := (S₃.comp S₂).comp S₁
-  convert S with g
+  convert! S with g
   · simp [F₁, F₂, F₃, fg, fv]
   · simp only [comp_apply, tangentMap, F₃, F₂, F₁, fg, fv]
     rw [mfderiv_prod_eq_add_apply ((contMDiff_mul I (minSmoothness 𝕜 3)).mdifferentiableAt M)]

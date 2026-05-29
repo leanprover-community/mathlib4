@@ -218,7 +218,7 @@ theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq 
     use W.unop, h1.unop, h2.unop
     ext I
     apply_fun Multiequalizer.ι (W.unop.index P) I at hh
-    convert hh
+    convert! hh
     all_goals
       dsimp [diagram]
       rw [← ConcreteCategory.comp_apply, Multiequalizer.lift_ι]
@@ -230,7 +230,7 @@ theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq 
     apply Concrete.multiequalizer_ext
     intro i
     apply_fun fun ee => ee i at e
-    convert e using 1
+    convert! e using 1
     all_goals
       dsimp [diagram]
       rw [← ConcreteCategory.comp_apply, Multiequalizer.lift_ι]
@@ -279,7 +279,7 @@ theorem sep {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) (x y : ToType ((J.plusOb
   specialize hh IS
   let IW : (W IS).Arrow := I.toMiddle
   apply_fun fun e => e IW at hh
-  convert hh using 1
+  convert! hh using 1
   · exact x.congr_apply I.middle_spec.symm _
   · exact y.congr_apply I.middle_spec.symm _
 

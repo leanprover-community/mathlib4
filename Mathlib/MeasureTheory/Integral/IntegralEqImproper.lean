@@ -484,7 +484,7 @@ theorem AECover.integral_tendsto_of_countably_generated [l.IsCountablyGenerated]
     (hφ : AECover μ l φ) {f : α → E} (hfi : Integrable f μ) :
     Tendsto (fun i => ∫ x in φ i, f x ∂μ) l (𝓝 <| ∫ x, f x ∂μ) :=
   suffices h : Tendsto (fun i => ∫ x : α, (φ i).indicator f x ∂μ) l (𝓝 (∫ x : α, f x ∂μ)) from by
-    convert h using 2; rw [integral_indicator (hφ.measurableSet _)]
+    convert! h using 2; rw [integral_indicator (hφ.measurableSet _)]
   tendsto_integral_filter_of_dominated_convergence (fun x => ‖f x‖)
     (Eventually.of_forall fun i => hfi.aestronglyMeasurable.indicator <| hφ.measurableSet i)
     (Eventually.of_forall fun _ => ae_of_all _ fun _ => norm_indicator_le_norm_self _ _) hfi.norm
@@ -1036,7 +1036,7 @@ lemma _root_.HasCompactSupport.enorm_le_lintegral_Ici_deriv
   have : ‖f' x‖ₑ ≤ ∫⁻ y in Iic x, ‖deriv f' y‖ₑ := by
     rw [← HasCompactSupport.integral_Iic_deriv_eq hf' h'f' x]
     exact enorm_integral_le_lintegral_enorm _
-  convert this with y
+  convert! this with y
   · simp [f', I, Completion.enorm_coe]
   · rw [fderiv_comp_deriv _ I.differentiableAt (hf.differentiable one_ne_zero _)]
     simp only [ContinuousLinearMap.fderiv]
@@ -1156,7 +1156,7 @@ theorem integral_comp_rpow_Ioi (g : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
 
 theorem integral_comp_rpow_Ioi_of_pos {g : ℝ → E} {p : ℝ} (hp : 0 < p) :
     (∫ x in Ioi 0, (p * x ^ (p - 1)) • g (x ^ p)) = ∫ y in Ioi 0, g y := by
-  convert integral_comp_rpow_Ioi g hp.ne'
+  convert! integral_comp_rpow_Ioi g hp.ne'
   rw [abs_of_nonneg hp.le]
 
 theorem integral_comp_mul_left_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
@@ -1219,7 +1219,7 @@ theorem integrableOn_Ioi_comp_mul_left_iff (f : ℝ → E) (c : ℝ) {a : ℝ} (
     IntegrableOn (fun x => f (a * x)) (Ioi c) ↔ IntegrableOn f (Ioi <| a * c) := by
   rw [← integrable_indicator_iff (measurableSet_Ioi : MeasurableSet <| Ioi c)]
   rw [← integrable_indicator_iff (measurableSet_Ioi : MeasurableSet <| Ioi <| a * c)]
-  convert integrable_comp_mul_left_iff ((Ioi (a * c)).indicator f) ha.ne' using 2
+  convert! integrable_comp_mul_left_iff ((Ioi (a * c)).indicator f) ha.ne' using 2
   ext1 x
   rw [← indicator_comp_right, preimage_const_mul_Ioi₀ _ ha, mul_comm a c,
     mul_div_cancel_right₀ _ ha.ne', Function.comp_def]

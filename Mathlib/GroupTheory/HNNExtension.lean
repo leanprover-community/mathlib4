@@ -160,7 +160,7 @@ and `toSubgroupEquiv` is the group isomorphism from `toSubgroup A B u` to `toSub
 It is defined to be `φ` when `u = 1` and `φ⁻¹` when `u = -1`. -/
 def toSubgroupEquiv (u : ℤˣ) : toSubgroup A B u ≃* toSubgroup A B (-u) :=
   if hu : u = 1 then hu ▸ φ else by
-    convert φ.symm <;>
+    convert! φ.symm <;>
     cases Int.units_eq_one_or u <;> simp_all
 
 @[simp]
@@ -449,7 +449,7 @@ noncomputable def unitsSMulEquiv : NormalWord d ≃ NormalWord d :=
   { toFun := unitsSMul φ 1
     invFun := unitsSMul φ (-1),
     left_inv := fun _ => by rw [unitsSMul_neg]
-    right_inv := fun w => by convert unitsSMul_neg _ _ w; simp }
+    right_inv := fun w => by convert! unitsSMul_neg _ _ w; simp }
 
 set_option backward.isDefEq.respectTransparency false in
 theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :

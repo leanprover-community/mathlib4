@@ -196,8 +196,12 @@ abbrev rTensor (f : B →ₐc[R] C) : B ⊗[R] A →ₐc[R] C ⊗[R] A :=
 end BialgHom
 
 namespace Bialgebra
-variable (R A : Type*) [CommSemiring R] [Semiring A] [Bialgebra R A]
+variable {R A : Type*} [CommSemiring R]
 
+section Semiring
+variable [Semiring A] [Bialgebra R A]
+
+variable (R A) in
 /-- Comultiplication as a bialgebra hom. -/
 @[expose] def comulBialgHom [IsCocomm R A] : A →ₐc[R] A ⊗[R] A where
   __ := comulAlgHom R A
@@ -207,4 +211,39 @@ lemma comm_comp_comulBialgHom [IsCocomm R A] :
     (TensorProduct.comm R A A).toBialgHom.comp (comulBialgHom R A) = comulBialgHom R A := by
   ext; exact comm_comul _ _
 
+variable (R A) in
+/-- Multiplication on a bialgebra as a coalgebra hom. -/
+@[expose]
+def mulCoalgHom : A ⊗[R] A →ₗc[R] A where
+  toLinearMap := .mul' R A
+  counit_comp := by ext; simp [mul_comm]
+  map_comp_comul := by
+    ext a b
+    simp [← (ℛ R a).eq, ← (ℛ R b).eq, TensorProduct.sum_tmul]
+    simp [TensorProduct.tmul_sum, Finset.sum_mul_sum]
+
+-- TODO: Generate this using `simps` once the coercion from `LinearMapClass` is gone.
+@[simp]
+lemma toLinearMap_mulCoalgHom : mulCoalgHom R A = LinearMap.mul' R A := rfl
+
+@[simp] lemma coe_mulCoalgHom : ⇑(mulCoalgHom R A) = LinearMap.mul' R A := rfl
+
+end Semiring
+
+section CommSemiring
+variable [CommSemiring A] [Bialgebra R A]
+
+variable (R A) in
+/-- Multiplication on a commutative bialgebra as a bialgebra hom. -/
+@[expose, simps toCoalgHom]
+def mulBialgHom : A ⊗[R] A →ₐc[R] A where
+  toCoalgHom := mulCoalgHom R A
+  __ := Algebra.TensorProduct.lmul' R
+
+@[simp]
+lemma mulBialgHom_toAlgHom : (mulBialgHom R A).toAlgHom = Algebra.TensorProduct.lmul' R := rfl
+
+@[simp] lemma coe_mulBialgHom : ⇑(mulBialgHom R A) = LinearMap.mul' R A := rfl
+
+end CommSemiring
 end Bialgebra

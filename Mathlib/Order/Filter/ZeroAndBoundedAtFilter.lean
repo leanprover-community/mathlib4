@@ -101,7 +101,7 @@ theorem BoundedAtFilter.smul
 nonrec theorem BoundedAtFilter.mul [SeminormedRing β] {l : Filter α} {f g : α → β}
     (hf : BoundedAtFilter l f) (hg : BoundedAtFilter l g) : BoundedAtFilter l (f * g) := by
   refine (hf.mul hg).trans ?_
-  convert Asymptotics.isBigO_refl (E := ℝ) _ l
+  convert! Asymptotics.isBigO_refl (E := ℝ) _ l
   simp
 
 theorem ZeroAtFilter.mul_boundedAtFilter [SeminormedRing β] {l : Filter α}

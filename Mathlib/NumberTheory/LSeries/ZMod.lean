@@ -478,7 +478,7 @@ theorem completedLFunction_one_sub_even (hΦ : Φ.Even) (s : ℂ)
       apply Countable.union <;>
       split_ifs <;>
       simp only [countable_singleton, countable_empty]
-    convert (this.isConnected_compl_of_one_lt_rank ?_).isPreconnected using 1
+    convert! (this.isConnected_compl_of_one_lt_rank ?_).isPreconnected using 1
     · ext x
       by_cases h : Φ 0 = 0 <;>
       by_cases h' : ∑ j, Φ j = 0 <;>

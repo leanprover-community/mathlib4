@@ -173,7 +173,7 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
     rw [← H.out hJ.left.isRadical, jacobson, Submodule.mem_toAddSubmonoid, Ideal.mem_sInf] at this
     push Not at this
     rcases this with ⟨I, ⟨hJI, hIm⟩, hI'⟩
-    convert hIm
+    convert! hIm
     by_cases hJ : J = I.map (algebraMap R S)
     · rw [hJ, under_map_of_isPrime_disjoint (powers y) S hIm.isPrime]
       rwa [disjoint_powers_iff_notMem_of_isPrime]
@@ -657,7 +657,7 @@ theorem comp_C_integral_of_surjective_of_isJacobsonRing {R : Type*} [CommRing R]
     rw [← hfg, coe_comp] at hf'
     exact Function.Surjective.of_comp hf'
   rw [RingHom.comp_assoc] at this
-  convert this
+  convert! this
   refine RingHom.ext fun x => ?_
   exact ((renameEquiv R e).commutes' x).symm
 

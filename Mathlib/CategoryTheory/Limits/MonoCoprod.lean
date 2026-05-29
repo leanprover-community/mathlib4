@@ -55,7 +55,7 @@ variable {C}
 instance (priority := 100) monoCoprodOfHasZeroMorphisms [HasZeroMorphisms C] : MonoCoprod C :=
   ⟨fun A B c hc => by
     haveI : IsSplitMono c.inl :=
-      IsSplitMono.mk' (SplitMono.mk (hc.desc (BinaryCofan.mk (𝟙 A) 0)) (IsColimit.fac _ _ _))
+      IsSplitMono.mk' (SplitMono.mk (BinaryCofan.IsColimit.desc hc (𝟙 A) 0) (IsColimit.fac _ _ _))
     infer_instance⟩
 
 namespace MonoCoprod
@@ -64,7 +64,8 @@ set_option backward.isDefEq.respectTransparency false in
 theorem binaryCofan_inr {A B : C} [MonoCoprod C] (c : BinaryCofan A B) (hc : IsColimit c) :
     Mono c.inr := by
   haveI hc' : IsColimit (BinaryCofan.mk c.inr c.inl) :=
-    BinaryCofan.IsColimit.mk _ (fun f₁ f₂ => hc.desc (BinaryCofan.mk f₂ f₁))
+    BinaryCofan.IsColimit.mk _
+      (fun f₁ f₂ => BinaryCofan.IsColimit.desc (s := c) hc f₂ f₁)
       (by simp) (by simp)
       (fun f₁ f₂ m h₁ h₂ => BinaryCofan.IsColimit.hom_ext hc (by cat_disch) (by cat_disch))
   exact binaryCofan_inl _ hc'
@@ -199,7 +200,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma mono_map'_of_injective [HasCoproduct (X ∘ ι)] [HasCoproduct X]
     [HasCoproduct (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.1)] :
     Mono (Sigma.map' ι (fun j => 𝟙 ((X ∘ ι) j))) := by
-  convert mono_of_injective' X ι hι
+  convert! mono_of_injective' X ι hι
   apply Sigma.hom_ext
   intro j
   rw [Sigma.ι_comp_map', id_comp, colimit.ι_desc]

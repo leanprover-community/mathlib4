@@ -398,7 +398,7 @@ instance (D : GlueData' C) (i j k : D.J) :
     infer_instance
   else
     have {X Y Z : C} (f : X ⟶ Y) (e : Z = X) : eqToHom e ≫ f ≍ f := by subst e; simp
-    convert D.f_hasPullback i j k hij hik <;> simp [GlueData'.f', hij, hik, this]
+    convert! D.f_hasPullback i j k hij hik <;> simp [GlueData'.f', hij, hik, this]
 
 open scoped Classical in
 /-- (Implementation detail) the constructed `GlueData.t'` from a `GlueData'`. -/

@@ -61,7 +61,7 @@ lemma gaussNorm_nonneg (vNonneg : ∀ a, v a ≥ 0) : 0 ≤ gaussNorm v c f := b
   by_cases h : HasGaussNorm v c f
   · trans v (constantCoeff f)
     · simp [vNonneg]
-    · convert (le_gaussNorm v c f h 0)
+    · convert! (le_gaussNorm v c f h 0)
       simp
   · simp [h]
 

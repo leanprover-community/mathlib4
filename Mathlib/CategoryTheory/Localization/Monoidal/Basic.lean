@@ -432,7 +432,7 @@ lemma triangle (X Y : LocalizedMonoidal L W ε) :
     triangle_aux₁ _ _ _ e₁.symm ε.symm e₂.symm
   simp only [← this, Iso.symm_hom, Iso.symm_inv, assoc,
     ← id_tensorHom, ← tensor_comp, comp_id]
-  convert h₃
+  convert! h₃
   · exact triangle_aux₂ _ _ _ e₁ e₂
   · exact triangle_aux₃ _ _ _ e₁ e₂
 

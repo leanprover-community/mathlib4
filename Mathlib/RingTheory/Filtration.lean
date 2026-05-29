@@ -202,7 +202,7 @@ theorem Stable.exists_pow_smul_eq_of_ge (h : F.Stable) :
   obtain ⟨n₀, hn₀⟩ := h.exists_pow_smul_eq
   use n₀
   intro n hn
-  convert hn₀ (n - n₀)
+  convert! hn₀ (n - n₀)
   rw [add_comm, tsub_add_cancel_of_le hn]
 
 theorem stable_iff_exists_pow_smul_eq_of_ge :
@@ -430,7 +430,7 @@ theorem Ideal.iInf_pow_smul_eq_bot_of_isLocalRing [IsNoetherianRing R] [IsLocalR
 /-- **Krull's intersection theorem** for Noetherian local rings. -/
 theorem Ideal.iInf_pow_eq_bot_of_isLocalRing [IsNoetherianRing R] [IsLocalRing R] (h : I ≠ ⊤) :
     ⨅ i : ℕ, I ^ i = ⊥ := by
-  convert I.iInf_pow_smul_eq_bot_of_isLocalRing (M := R) h
+  convert! I.iInf_pow_smul_eq_bot_of_isLocalRing (M := R) h
   ext i
   rw [smul_eq_mul, ← Ideal.one_eq_top, mul_one]
 
@@ -466,5 +466,5 @@ alias Ideal.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors :=
 /-- **Krull's intersection theorem** for Noetherian domains. -/
 theorem Ideal.iInf_pow_eq_bot_of_isDomain [IsNoetherianRing R] [IsDomain R] (h : I ≠ ⊤) :
     ⨅ i : ℕ, I ^ i = ⊥ := by
-  convert I.iInf_pow_smul_eq_bot_of_isTorsionFree (M := R) h
+  convert! I.iInf_pow_smul_eq_bot_of_isTorsionFree (M := R) h
   simp

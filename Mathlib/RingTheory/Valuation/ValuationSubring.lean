@@ -554,7 +554,7 @@ section nonunits
 def nonunits : NonUnitalSubring K where
   carrier := {x | A.valuation x < 1}
   mul_mem' ha hb := (mul_lt_mul'' (Set.mem_setOf.mp ha) (Set.mem_setOf.mp hb)
-    zero_le' zero_le').trans_eq <| mul_one _
+    zero_le zero_le).trans_eq <| mul_one _
   add_mem' ha hb := (A.valuation.map_add ..).trans_lt (max_lt ha hb)
   zero_mem' := by simp
   neg_mem' h := (A.valuation.map_neg _).trans_lt h

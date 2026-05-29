@@ -394,7 +394,7 @@ lemma exists_isMonicOfDegree_two_and_aeval_eq_zero (x : F) :
   have h' (r : ℝ) : √M ≤ ‖x - algebraMap ℝ F r‖ := by
     rw [← sq_le_sq₀ M.sqrt_nonneg (norm_nonneg _), Real.sq_sqrt (norm_nonneg _), ← norm_pow,
       Commute.sub_sq <| algebraMap_eq_smul_one (A := F) r ▸ commute_algebraMap_right r x]
-    convert isMinOn_univ_iff.mp h (2 * r, r ^ 2) using 4 <;>
+    convert! isMinOn_univ_iff.mp h (2 * r, r ^ 2) using 4 <;>
       simp [two_mul, add_mul, ← commutes, smul_def, mul_add]
   have := tendsto_norm_atTop_iff_cobounded.mpr <| tendsto_φ_cobounded (by positivity) h'
   simp only [norm_φ_eq_norm_φ_of_isMinOn h (norm_ne_zero_iff.mpr H)] at this

@@ -106,14 +106,14 @@ theorem isCompact_setOf_finiteMeasure_le_of_compactSpace [CompactSpace E] (C : �
   { toFun := Λ
     map_add' g g' := by
       have : Tendsto (fun (μ : FiniteMeasure E) ↦ ∫ x, g x + g' x ∂μ) f (𝓝 (Λ g + Λ g')) := by
-        convert (hΛ g).add (hΛ g')
+        convert! (hΛ g).add (hΛ g')
         rw [integral_add]
         · exact g.continuous.integrable_of_hasCompactSupport g.hasCompactSupport
         · exact g'.continuous.integrable_of_hasCompactSupport g'.hasCompactSupport
       exact tendsto_nhds_unique (hΛ (g + g')) this
     map_smul' c g := by
       have : Tendsto (fun (μ : FiniteMeasure E) ↦ ∫ x, c • g x ∂μ) f (𝓝 (c • Λ g)) := by
-        convert (hΛ g).const_smul c
+        convert! (hΛ g).const_smul c
         rw [integral_smul]
       exact tendsto_nhds_unique (hΛ (c • g)) this
     monotone' g g' hgg' := by
@@ -142,7 +142,7 @@ theorem isCompact_setOf_finiteMeasure_le_of_compactSpace [CompactSpace E] (C : �
   let g' : C_c(E, ℝ) :=
   { toFun := g
     hasCompactSupport' := HasCompactSupport.of_compactSpace _ }
-  convert hΛ g'
+  convert! hΛ g'
   change ∫ (x : E), g' x ∂μlim' = Λ g'
   simp only [FiniteMeasure.toMeasure_mk, RealRMK.integral_rieszMeasure, μlim', μlim]
   rfl
@@ -249,7 +249,7 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
       simp only [restrict_mass, restrict_measure_eq,
         Measure.restrict_apply (A n).measurableSet.compl]
       refine ⟨(apply_le_mass ρ _).trans hρ.1, ?_⟩
-      convert measure_empty (μ := (ρ : Measure E))
+      convert! measure_empty (μ := (ρ : Measure E))
       apply disjoint_iff.1
       apply disjoint_compl_left.mono_right
       exact le_trans sdiff_le (le_partialSups _ _)
@@ -264,7 +264,7 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
     let μ : FiniteMeasure E := ⟨ν', ν'_fin⟩
     refine ⟨μ, ν'_reg, by simp [μ, ν'K], ?_⟩
     apply tendsto_of_forall_integral_tendsto (fun g ↦ ?_)
-    convert tendsto_iff_forall_integral_tendsto.1 ν_lim g using 2
+    convert! tendsto_iff_forall_integral_tendsto.1 ν_lim g using 2
     exact (hν' g).symm
   -- let `νₙ` be such nice limits on `disjointed K n`.
   choose! ν ν_reg νK hν using M
@@ -281,7 +281,7 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
         = (∑ i ∈ Finset.range (n + 1), ν i).toMeasure univ := by simp
     rw [this]
     suffices (∑ i ∈ Finset.range (n + 1), ν i).mass ≤ C by
-      convert ENNReal.coe_le_coe.2 this
+      convert! ENNReal.coe_le_coe.2 this
       simp
     have : Tendsto (fun (μ : FiniteMeasure E) ↦
         (∑ i ∈ Finset.range (n + 1), μ.restrict (disjointed K i)).mass) f
@@ -417,7 +417,7 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
     -- `ρ.restricted (K m \ K n)` is bounded by `ρ (Kₙᶜ) ≤ uₙ`.
     suffices (μ : Measure E) (K n)ᶜ ≤ u n by
       apply ENNReal.coe_le_coe.1
-      convert this
+      convert! this
       simp
     simp only [toMeasure_mk, (hK n).measurableSet.compl, Measure.sum_apply, μ]
     have : Tendsto (fun m ↦ ∑ i ∈ Finset.range (m + 1), (ν i : Measure E) (K n)ᶜ) atTop
@@ -441,7 +441,7 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
       gcongr
       simp
     suffices (∑ i ∈ Finset.Ioc n m, ν i).mass ≤ u n by
-      convert ENNReal.coe_le_coe.2 this
+      convert! ENNReal.coe_le_coe.2 this
       simp
     have : Tendsto (fun (μ : FiniteMeasure E) ↦
         (∑ i ∈ Finset.Ioc n m, μ.restrict (disjointed K i)).mass) f

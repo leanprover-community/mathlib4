@@ -173,7 +173,7 @@ theorem hasEigenvalue_or_mem_resolventSet (hT : IsCompactOperator T) (hμ : μ �
   replace h₂ : ¬ (S : X → X).Bijective := by
     rw [spectrum.mem_resolventSet_iff, ← IsUnit.neg_iff,
       ContinuousLinearMap.isUnit_iff_bijective] at h₂
-    convert h₂
+    convert! h₂
     ext x
     simp [S]
   replace h₂ : ¬ (S : X → X).Surjective := by grind [Function.Bijective, hK.injective]

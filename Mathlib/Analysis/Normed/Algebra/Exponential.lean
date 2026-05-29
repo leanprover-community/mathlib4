@@ -377,7 +377,7 @@ theorem isUnit_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
 theorem invOf_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
     (hx : x ∈ Metric.eball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) [Invertible (exp x)] :
     ⅟(exp x) = exp (-x) := by
-  letI := invertibleExpOfMemBall hx; convert (rfl : ⅟(exp x) = _)
+  letI := invertibleExpOfMemBall hx; convert! (rfl : ⅟(exp x) = _)
 
 /-- Any continuous ring homomorphism commutes with `NormedSpace.exp`. -/
 theorem map_exp_of_mem_ball [Algebra 𝕂 𝔹] [CharZero 𝕂] {F} [FunLike F 𝔸 𝔹] [RingHomClass F 𝔸 𝔹]
