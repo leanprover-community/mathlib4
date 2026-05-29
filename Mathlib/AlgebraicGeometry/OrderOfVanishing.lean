@@ -27,32 +27,7 @@ variable {X : Scheme.{u}}
 namespace AlgebraicGeometry
 namespace Scheme
 
-lemma krullDimLE_of_coheight
-    {Z : X} {n : ℕ} (hZ : coheight Z = n) : Ring.KrullDimLE n (X.presheaf.stalk Z) := by
-  rw [Ring.krullDimLE_iff, ringKrullDim_stalk_eq_coheight Z]
-  exact_mod_cast hZ.le
-
-variable [IsIntegral X]
-
-/--
-For `f` an element of the function field of `X`, there exists some open set `U ⊆ X` such that
-`f` is a unit in `Γ(X, U)`.
--/
-lemma exists_isUnit_germ_eq (f : X.functionField) (hf : f ≠ 0) :
-    ∃ U : X.Opens, ∃ f' : Γ(X, U), ∃ _ : Nonempty U,
-    X.germToFunctionField U f' = f ∧ IsUnit f' := by
-  obtain ⟨U, hU, g, hg⟩ := TopCat.Presheaf.germ_exist _ _ f
-  have : Nonempty U := ⟨_, hU⟩
-  have : Nonempty (X.basicOpen g) := by
-    rw [Scheme.Opens.nonempty_iff]
-    apply (Opens.ne_bot_iff_nonempty (X.basicOpen g)).mp
-    intro a
-    simp_all
-  refine ⟨X.basicOpen g, X.presheaf.map (X.basicOpen_le g).hom.op g, ‹_›, ?_,
-    X.toRingedSpace.isUnit_res_basicOpen g⟩
-  rw [germToFunctionField_map, hg]
-
-variable [IsLocallyNoetherian X]
+variable [IsIntegral X] [IsLocallyNoetherian X]
 
 /--
 On a locally Noetherian integral scheme, we define the order of vanishing of an element of the
@@ -69,8 +44,7 @@ The order of vanishing of a non-zero element of the function field at any point 
 `Scheme.ord` is valued in `ℤᵐ⁰`, `0` does not denote a value of `ℤ` but an added `⊥` element.
 -/
 lemma ord_ne_zero {Z : X} (hZ : coheight Z = 1) {f : X.functionField} (hf : f ≠ 0) :
-    Scheme.ord Z hZ f ≠ 0 := by
-  rwa [map_ne_zero]
+    Scheme.ord Z hZ f ≠ 0 := (map_ne_zero _).mpr hf
 
 /--
 The order of vanishing of a unit is `1` everywhere.

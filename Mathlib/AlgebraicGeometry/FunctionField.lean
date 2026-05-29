@@ -181,4 +181,20 @@ instance [IsIntegral X] (x : X) :
 instance [IsIntegral X] {x : X} : IsDomain (X.presheaf.stalk x) :=
   Function.Injective.isDomain _ (IsFractionRing.injective (X.presheaf.stalk x) (X.functionField))
 
+/--
+For `f` an element of the function field of `X`, there exists some open set `U ⊆ X` such that
+`f` is a unit in `Γ(X, U)`.
+-/
+lemma exists_isUnit_germ_eq [IsIntegral X] (f : X.functionField) (hf : f ≠ 0) :
+    ∃ U : X.Opens, ∃ f' : Γ(X, U), ∃ _ : Nonempty U,
+    X.germToFunctionField U f' = f ∧ IsUnit f' := by
+  obtain ⟨U, hU, g, hg⟩ := TopCat.Presheaf.germ_exist _ _ f
+  have : Nonempty U := ⟨_, hU⟩
+  have : Nonempty (X.basicOpen g) := by
+    rw [Scheme.Opens.nonempty_iff, ← Opens.ne_bot_iff_nonempty (X.basicOpen g)]
+    aesop
+  refine ⟨X.basicOpen g, X.presheaf.map (X.basicOpen_le g).hom.op g, ‹_›, ?_,
+    X.toRingedSpace.isUnit_res_basicOpen g⟩
+  rw [Scheme.germToFunctionField_map, hg]
+
 end AlgebraicGeometry
