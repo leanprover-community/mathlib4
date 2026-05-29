@@ -99,7 +99,7 @@ lemma smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : M
 lemma const_smul {x : 𝕜} {f : 𝕜 → E} (hf : MeromorphicAt f x) {c : R} :
     MeromorphicAt (c • f) x := by
   rcases hf with ⟨m, hf⟩
-  exact ⟨m, by simpa [smul_comm _ c _] using hf.const_smul⟩
+  exact ⟨m, by simpa [smul_comm _ c _] using hf.fun_const_smul⟩
 
 @[to_fun (attr := fun_prop)]
 lemma mul {f g : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
