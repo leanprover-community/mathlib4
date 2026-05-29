@@ -7,13 +7,10 @@ module
 
 public import Mathlib.Topology.Maps.Basic
 public import Mathlib.Topology.Homeomorph.Quotient
-public import Mathlib.Topology.Constructions.SumProd
-public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Constructions
 public import Mathlib.Data.Setoid.Basic
-public import Mathlib.GroupTheory.QuotientGroup.Basic
-public import Mathlib.Topology.Algebra.Group.Basic
 public import Mathlib.Topology.Algebra.Group.Quotient
+
 /-!
 # Bourbaki Strict Maps
 
@@ -44,7 +41,7 @@ We provide several equivalent ways to characterize a strict map `f`:
 In general, the product (in the sense of `Prod.map`) of two strict maps need not be strict.
 But thanks to `MonoidHom.isOpenQuotientMap_of_isQuotientMap`, we can replace `IsQuotientMap`
 by `IsOpenQuotientMap` in the setting of group homomorphisms. Therefore we provide several
-impotant properties of a strict group homomorphisms `f` :
+important properties of a strict group homomorphisms `f` :
 
 * `isStrictMap_iff_isOpenQuotientMap_rangeRestrict`: `f` is a strict group homomorphism if
   and only if the `rangeRestrict` of `f` is an open quotient map.
@@ -172,34 +169,14 @@ lemma isEmbedding_iff_isStrictMap_injective :
 /-- Strict maps stay strict when we compose them with homeomorphisms -/
 lemma Homeomorph.comp_isStrictMap (e : X ≃ₜ Y) {f : Y → Z} (hf : IsStrictMap f) :
     IsStrictMap (f ∘ e) :=
-  by
-    rw [IsStrictMap] at hf ⊢
-    let erange : Set.range (f ∘ e) ≃ₜ Set.range f :=
-      Homeomorph.setCongr (by simp [Set.range_comp])
-    convert erange.symm.isQuotientMap.comp (hf.comp e.isQuotientMap) using 1
+  e.isQuotientMap.isStrictMap_iff.mp hf
 
 end Topology
 
 namespace MonoidHom
-open Topology
 
-variable {G H G' H' : Type*} [Group G'] [Group H'] [Group G] [Group H]
-variable (f : G →* H) (g : G' →* H')
-
-/-- The range of a product of group homomorphisms is the product of their ranges. -/
-lemma range_prodMap :
-    (f.prodMap g).range = f.range.prod g.range := by
-  ext ⟨h, h'⟩
-  simp only [Subgroup.mem_prod, MonoidHom.mem_range, MonoidHom.coe_prodMap,
-             Prod.map_apply, Prod.exists, Prod.mk.injEq]
-  tauto
-
-variable [TopologicalSpace G] [IsTopologicalGroup G] [TopologicalSpace H]
-
-/-- A quotient group homomorphism from a topological group is automatically an open quotient map. -/
-lemma isQuotientMap_iff_isOpenQuotientMap :
-    IsOpenQuotientMap f ↔ IsQuotientMap f := by
-  exact ⟨fun hf => hf.isQuotientMap, MonoidHom.isOpenQuotientMap_of_isQuotientMap⟩
+variable {G H G' H' : Type*} [Group G'] [Group H'] [Group G] [Group H] (f : G →* H) (g : G' →* H')
+  [TopologicalSpace G] [IsTopologicalGroup G] [TopologicalSpace H]
 
 /-- A group homomorphism is strict if and only if its rangeRestrict is an open quotient map. -/
 lemma isStrictMap_iff_isOpenQuotientMap_rangeRestrict :
@@ -209,19 +186,12 @@ lemma isStrictMap_iff_isOpenQuotientMap_rangeRestrict :
 
 variable [TopologicalSpace G'] [IsTopologicalGroup G'] [TopologicalSpace H']
 
-/-- The range of a product of two group homomorphisms is homeomorphic to the product of ranges. -/
-noncomputable def rangeProdMapHomeomorph :
-    (f.prodMap g).range ≃ₜ f.range × g.range :=
-  (Homeomorph.setCongr (by simp [range_prodMap, Subgroup.coe_prod])).trans
-    (Homeomorph.Set.prod _ _)
-
-/-- The product (in the sense of Prod.map) of group homomorphisms is strict -/
+/-- The product (in the sense of `Prod.map`) of group homomorphisms is strict -/
 lemma isStrictMap_prodMap (hf : IsStrictMap f) (hg : IsStrictMap g) :
     IsStrictMap (f.prodMap g) := by
-  rw [isStrictMap_iff_isOpenQuotientMap_rangeRestrict]
-  have hf' := (isStrictMap_iff_isOpenQuotientMap_rangeRestrict (f := f)).mp hf
-  have hg' := (isStrictMap_iff_isOpenQuotientMap_rangeRestrict (f := g)).mp hg
-  convert (rangeProdMapHomeomorph (f := f) (g := g)).symm.isOpenQuotientMap.comp
-    (hf'.prodMap hg') using 1
+  rw [isStrictMap_iff_isOpenQuotientMap_rangeRestrict] at hf hg ⊢
+  let aux : (f.prodMap g).range ≃ₜ f.range × g.range :=
+    (Homeomorph.setCongr (by simp)).trans (Homeomorph.Set.prod _ _)
+  exact aux.symm.isOpenQuotientMap.comp (hf.prodMap hg)
 
 end MonoidHom
