@@ -121,7 +121,7 @@ lemma mulHeight_eq {ι : Type*} {x : ι → K} (hx : x ≠ 0) :
 variable (K) in
 lemma totalWeight_eq_sum_mult : totalWeight K = ∑ v : InfinitePlace K, v.mult := by
   simp only [totalWeight]
-  convert sum_archAbsVal_eq (fun _ ↦ (1 : ℕ))
+  convert! sum_archAbsVal_eq (fun _ ↦ (1 : ℕ))
   · rw [← Multiset.sum_map_toList, ← Fin.sum_univ_fun_getElem, ← Multiset.length_toList,
       Fin.sum_const, Multiset.length_toList, smul_eq_mul, mul_one]
   · simp
@@ -139,6 +139,29 @@ lemma totalWeight_pos : 0 < totalWeight K := by
       (Function.ne_iff.mpr ⟨default, (default : InfinitePlace K).mult_ne_zero⟩).pos
 
 end NumberField
+
+/-!
+### Positivity extension for totalWeight on number fields
+-/
+
+namespace Mathlib.Meta.Positivity
+
+open Lean.Meta Qq
+
+/-- Extension for the `positivity` tactic: `Height.totalWeight` is positive for number fields. -/
+@[positivity Height.totalWeight _]
+meta def evalHeightTotalWeight : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(@Height.totalWeight $K $KF $KA) =>
+    -- Check whether there is a `NumberField` instance for `$K` around.
+    match ← trySynthInstanceQ q(NumberField $K) with
+    | .some _instFinite =>
+      assertInstancesCommute
+      return .positive q(NumberField.totalWeight_pos $K)
+    | _ => throwError "field in Height.totalWeight not known to be a number field"
+  | _, _, _ => throwError "not Height.totalWeight"
+
+end Mathlib.Meta.Positivity
 
 /-!
 ### Heights over the rational numbers
@@ -210,7 +233,7 @@ lemma mulHeight₁_eq_max (q : ℚ) : mulHeight₁ q = max q.num.natAbs q.den :=
   have : (.univ : Finset (Fin 2)).gcd ![q.num, q.den] = 1 := by
     simpa [Finset.univ_fin2, Int.normalize_coe_nat, ← Int.coe_gcd q.num q.den] using
       Int.isCoprime_iff_gcd_eq_one.mp <| isCoprime_num_den q
-  convert mulHeight_eq_max_abs_of_gcd_eq_one this
+  convert! mulHeight_eq_max_abs_of_gcd_eq_one this
   · ext i; fin_cases i <;> simp
   · rw [← Int.cast_natCast, Int.cast_inj]
     push_cast
@@ -238,28 +261,5 @@ theorem logHeight₁_natCast (n : ℕ) [NeZero n] :
 end mulHeight₁
 
 end Rat
-
-/-!
-### Positivity extension for totalWeight on number fields
--/
-
-namespace Mathlib.Meta.Positivity
-
-open Lean.Meta Qq
-
-/-- Extension for the `positivity` tactic: `Height.totalWeight` is positive for number fields. -/
-@[positivity Height.totalWeight _]
-meta def evalHeightTotalWeight : PositivityExt where eval {u α} _ _ e := do
-  match u, α, e with
-  | 0, ~q(ℕ), ~q(@Height.totalWeight $K $KF $KA) =>
-    -- Check whether there is a `NumberField` instance for `$K` around.
-    match ← trySynthInstanceQ q(NumberField $K) with
-    | .some _instFinite =>
-      assertInstancesCommute
-      return .positive q(NumberField.totalWeight_pos $K)
-    | _ => throwError "field in Height.totalWeight not known to be a number field"
-  | _, _, _ => throwError "not Height.totalWeight"
-
-end Mathlib.Meta.Positivity
 
 end

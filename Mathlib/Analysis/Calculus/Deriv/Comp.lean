@@ -161,7 +161,7 @@ theorem HasDerivAtFilter.comp_hasFDerivAtFilter {f : E → 𝕜'} {f' : E →L[�
     {L'' : Filter (E × E)} (hh₂ : HasDerivAtFilter h₂ h₂' L') (hf : HasFDerivAtFilter f f' L'')
     (hL : Tendsto (Prod.map f f) L'' L') :
     HasFDerivAtFilter (h₂ ∘ f) (h₂' • f') L'' := by
-  convert (hh₂.restrictScalars 𝕜).comp hf hL
+  convert! (hh₂.restrictScalars 𝕜).comp hf hL
   ext x
   simp [mul_comm]
 

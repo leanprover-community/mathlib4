@@ -59,6 +59,7 @@ structure SemimoduleCat where
   [isAddCommMonoid : AddCommMonoid carrier]
   [isModule : Module R carrier]
 
+initialize_simps_projections SemimoduleCat (-isModule, -isAddCommMonoid)
 attribute [instance] SemimoduleCat.isAddCommMonoid SemimoduleCat.isModule
 
 namespace SemimoduleCat

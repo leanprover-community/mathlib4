@@ -100,7 +100,7 @@ end AEEqFun
 
 namespace L1
 
-
+@[fun_prop]
 theorem integrable_coeFn (f : α →₁[μ] β) : Integrable f μ := by
   rw [← memLp_one_iff_integrable]
   exact Lp.memLp f
@@ -212,6 +212,10 @@ theorem enorm_toL1 {f : α → β} (hf : Integrable f μ) : ‖hf.toL1 f‖ₑ =
 theorem norm_toL1_eq_lintegral_norm (f : α → β) (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) := by
   rw [norm_toL1, lintegral_norm_eq_lintegral_edist]
+
+theorem norm_toL1_eq_lintegral_enorm (f : α → β) (hf : Integrable f μ) :
+    ‖hf.toL1 f‖ = (∫⁻ a, ‖f a‖ₑ ∂μ).toReal := by
+  simp_rw [norm_toL1, edist_zero_right]
 
 @[simp]
 theorem edist_toL1_toL1 (f g : α → β) (hf : Integrable f μ) (hg : Integrable g μ) :

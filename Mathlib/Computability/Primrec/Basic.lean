@@ -408,7 +408,7 @@ theorem Primrec₂.comp₂ {f : γ → δ → σ} {g : α → β → γ} {h : α
 
 protected lemma PrimrecPred.decide {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) :
     Primrec (fun a => decide (p a)) := by
-  convert hp.choose_spec
+  convert! hp.choose_spec
 
 lemma Primrec.primrecPred {p : α → Prop} [DecidablePred p]
     (hp : Primrec (fun a => decide (p a))) : PrimrecPred p :=

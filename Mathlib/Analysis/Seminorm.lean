@@ -93,7 +93,7 @@ def Seminorm.ofSMulLE [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E
     rw [inv_mul_cancel_left₀ (norm_ne_zero_iff.mpr h)]
     specialize smul_le r⁻¹ (r • x)
     rw [norm_inv] at smul_le
-    convert smul_le
+    convert! smul_le
     simp [h]
 
 end Of
@@ -1015,7 +1015,7 @@ variable [Module ℝ E] [IsScalarTower ℝ 𝕜 E] (p : Seminorm 𝕜 E) (x : E)
 
 /-- Seminorm-balls are convex. -/
 theorem convex_ball : Convex ℝ (ball p x r) := by
-  convert (p.convexOn.translate_left (-x)).convex_lt r
+  convert! (p.convexOn.translate_left (-x)).convex_lt r
   ext y
   rw [preimage_univ, sep_univ, p.mem_ball, sub_eq_add_neg]
   rfl

@@ -192,6 +192,32 @@ theorem iff_exists_smul_integral [IsReduced R] :
   ⟨(exists_integral_multiple ·), fun ⟨_, hy, int⟩ ↦
     of_smul_isIntegral (by rwa [isNilpotent_iff_eq_zero]) int⟩
 
+section integralClosure
+
+variable {K : Type*} [CommRing K] [Algebra S K] [Algebra R K] [IsIntegralClosure S R K]
+
+variable (S)
+
+omit [Algebra R S] in
+/-- If `x : K` is algebraic over some ring `R`, then a nonzero `R`-multiple of it is contained
+in the integral closure of `R` in `K`. -/
+lemma exists_smul_eq {x : K} (hx : IsAlgebraic R x) :
+    ∃ (r : R) (s : S), r ≠ 0 ∧ r • x = algebraMap S K s := by
+  obtain ⟨r, hr, h⟩ := hx.exists_integral_multiple
+  obtain ⟨s, hs⟩ := IsIntegralClosure.isIntegral_iff (A := S) |>.mp h
+  exact ⟨r, s, hr, hs.symm⟩
+
+/-- If `x : K` is algebraic over `ℤ`, then a nonzero `ℕ`-multiple of it is contained in the
+integral closure of `ℤ` in `K`. -/
+lemma exists_nsmul_eq [IsIntegralClosure S ℤ K] {x : K} (hx : IsAlgebraic ℤ x) :
+    ∃ (m : ℕ) (s : S), m ≠ 0 ∧ m • x = algebraMap S K s := by
+  obtain ⟨a, s, ha, h⟩ := hx.exists_smul_eq S
+  obtain ⟨n, rfl | rfl⟩ := a.eq_nat_or_neg
+  · exact ⟨n, s, mod_cast ha, mod_cast h⟩
+  · exact ⟨n, -s, by simpa using ha, by simp [← h]⟩
+
+end integralClosure
+
 section restrictScalars
 
 variable (R) [NoZeroDivisors S]

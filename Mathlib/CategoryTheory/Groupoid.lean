@@ -5,9 +5,6 @@ Authors: Reid Barton, Kim Morrison, David Wärn
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
-public import Mathlib.CategoryTheory.Products.Basic
-public import Mathlib.CategoryTheory.Pi.Basic
 public import Mathlib.Combinatorics.Quiver.Symmetric
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Basic

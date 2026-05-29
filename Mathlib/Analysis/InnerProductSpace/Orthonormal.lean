@@ -193,7 +193,7 @@ theorem Orthonormal.comp {ι' : Type*} {v : ι → E} (hv : Orthonormal 𝕜 v) 
   classical
   rw [orthonormal_iff_ite] at hv ⊢
   intro i j
-  convert hv (f i) (f j) using 1
+  convert! hv (f i) (f j) using 1
   simp [hf.eq_iff]
 
 /-- An injective family `v : ι → E` is orthonormal if and only if `Subtype.val : (range v) → E` is

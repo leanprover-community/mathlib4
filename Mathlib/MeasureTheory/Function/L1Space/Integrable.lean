@@ -676,7 +676,7 @@ theorem Integrable.measure_enorm_ge_lt_top {E : Type*} [TopologicalSpace E] [Con
 where `‖f x‖ ≥ ε` is finite for all positive `ε`. -/
 theorem Integrable.measure_norm_ge_lt_top {f : α → β} (hf : Integrable f μ) {ε : ℝ} (hε : 0 < ε) :
     μ { x | ε ≤ ‖f x‖ } < ∞ := by
-  convert Integrable.measure_enorm_ge_lt_top hf (ofReal_pos.mpr hε) ofReal_ne_top with x
+  convert! Integrable.measure_enorm_ge_lt_top hf (ofReal_pos.mpr hε) ofReal_ne_top with x
   rw [← Real.enorm_of_nonneg hε.le, enorm_le_iff_norm_le, Real.norm_of_nonneg hε.le]
 
 /-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
@@ -1038,6 +1038,7 @@ theorem Integrable.const_mul {f : α → 𝕜} (h : Integrable f μ) (c : 𝕜) 
     Integrable (fun x => c * f x) μ :=
   h.smul c
 
+@[fun_prop]
 theorem Integrable.const_mul' {f : α → 𝕜} (h : Integrable f μ) (c : 𝕜) :
     Integrable ((fun _ : α => c) * f) μ :=
   Integrable.const_mul h c
@@ -1047,6 +1048,7 @@ theorem Integrable.mul_const {f : α → 𝕜} (h : Integrable f μ) (c : 𝕜) 
     Integrable (fun x => f x * c) μ :=
   h.smul (MulOpposite.op c)
 
+@[fun_prop]
 theorem Integrable.mul_const' {f : α → 𝕜} (h : Integrable f μ) (c : 𝕜) :
     Integrable (f * fun _ : α => c) μ :=
   Integrable.mul_const h c

@@ -186,7 +186,7 @@ theorem Equiv.iSup_comp {g : ι' → α} (e : ι ≃ ι') : ⨆ x, g (e x) = ⨆
 @[to_dual]
 protected theorem Function.Surjective.iSup_congr {g : ι' → α} (h : ι → ι') (h1 : Surjective h)
     (h2 : ∀ x, g (h x) = f x) : ⨆ x, f x = ⨆ y, g y := by
-  convert h1.iSup_comp g
+  convert! h1.iSup_comp g
   exact (h2 _).symm
 
 @[to_dual]
@@ -437,17 +437,6 @@ theorem iSup₂_comm {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι
     ⨆ (i₁) (j₁) (i₂) (j₂), f i₁ j₁ i₂ j₂ = ⨆ (i₂) (j₂) (i₁) (j₁), f i₁ j₁ i₂ j₂ := by
   simp only [@iSup_comm _ (κ₁ _), @iSup_comm _ ι₁]
 
-/- TODO: this is strange. In the proof below, we get exactly the desired among the equalities,
-but close does not get it.
-begin
-  apply @le_antisymm,
-    simp, intros,
-    begin [smt]
-      ematch, ematch, ematch, trace_state, have := le_refl (f i_1 i),
-      trace_state, close
-    end
-end
--/
 @[to_dual (attr := simp)]
 theorem iSup_iSup_eq_left {b : β} {f : ∀ x : β, x = b → α} : ⨆ x, ⨆ h : x = b, f x h = f b rfl :=
   le_antisymm (iSup₂_le fun _ h ↦ h ▸ le_rfl) (le_iSup₂ (f := f) b rfl)
@@ -493,13 +482,6 @@ lemma biInf_le_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty) {f : ι → α}
     ⨅ i ∈ s, f i ≤ ⨆ i ∈ s, f i :=
   (biInf_le _ hs.choose_spec).trans <| le_biSup _ hs.choose_spec
 
-/- TODO: here is another example where more flexible pattern matching might help.
-
-begin
-  apply @le_antisymm,
-  safe, pose h := f a ⊓ g a, begin [smt] ematch, ematch end
-end
--/
 @[to_dual]
 theorem iSup_sup [Nonempty ι] {f : ι → α} {a : α} : (⨆ x, f x) ⊔ a = ⨆ x, f x ⊔ a := by
   rw [iSup_sup_eq, iSup_const]
@@ -654,7 +636,7 @@ theorem iSup_split (f : β → α) (p : β → Prop) :
 
 @[to_dual]
 theorem iSup_split_single (f : β → α) (i₀ : β) : ⨆ i, f i = f i₀ ⊔ ⨆ (i) (_ : i ≠ i₀), f i := by
-  convert iSup_split f (fun i => i = i₀)
+  convert! iSup_split f (fun i => i = i₀)
   simp
 
 @[to_dual]

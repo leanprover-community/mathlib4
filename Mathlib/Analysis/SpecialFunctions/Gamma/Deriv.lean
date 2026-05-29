@@ -50,7 +50,7 @@ transform of `log t * exp (-t)`. -/
 theorem hasDerivAt_GammaIntegral {s : ℂ} (hs : 0 < s.re) :
     HasDerivAt GammaIntegral (∫ t : ℝ in Ioi 0, t ^ (s - 1) * (Real.log t * Real.exp (-t))) s := by
   rw [GammaIntegral_eq_mellin]
-  convert (mellin_hasDerivAt_of_isBigO_rpow (E := ℂ) _ _ (lt_add_one _) _ hs).2
+  convert! (mellin_hasDerivAt_of_isBigO_rpow (E := ℂ) _ _ (lt_add_one _) _ hs).2
   · refine (Continuous.continuousOn ?_).locallyIntegrableOn measurableSet_Ioi
     exact continuous_ofReal.comp (Real.continuous_exp.comp continuous_neg)
   · rw [← isBigO_norm_left]

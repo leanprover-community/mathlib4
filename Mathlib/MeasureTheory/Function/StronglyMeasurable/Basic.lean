@@ -115,7 +115,7 @@ This version works for functions between empty types. -/
 theorem stronglyMeasurable_const' (hf : ∀ x y, f x = f y) : StronglyMeasurable f := by
   nontriviality α
   inhabit α
-  convert stronglyMeasurable_const (β := β) using 1
+  convert! stronglyMeasurable_const (β := β) using 1
   exact funext fun x => hf x default
 
 variable [MeasurableSingletonClass α]
@@ -183,7 +183,7 @@ theorem tendsto_approxBounded_of_norm_le {β} {f : α → β} [NormedAddCommGrou
   · rw [norm_eq_zero] at hfx0
     rw [hfx0] at h_tendsto ⊢
     have h_tendsto_norm : Tendsto (fun n => ‖hf.approx n x‖) atTop (𝓝 0) := by
-      convert h_tendsto.norm
+      convert! h_tendsto.norm
       rw [norm_zero]
     refine squeeze_zero_norm (fun n => ?_) h_tendsto_norm
     calc
@@ -574,7 +574,8 @@ section Monoid
 
 variable {M : Type*} [Monoid M] [TopologicalSpace M] [ContinuousMul M] {m : MeasurableSpace α}
 
-@[to_additive (attr := fun_prop, measurability)]
+-- TODO: `fun_prop` cannot use lemmas with a condition quantifying over the function
+@[to_additive (attr := fun_prop)]
 theorem _root_.List.stronglyMeasurable_prod (l : List (α → M))
     (hl : ∀ f ∈ l, StronglyMeasurable f) : StronglyMeasurable l.prod := by
   induction l with
@@ -584,7 +585,7 @@ theorem _root_.List.stronglyMeasurable_prod (l : List (α → M))
     rw [List.prod_cons]
     exact hl.1.mul (ihl hl.2)
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 theorem _root_.List.stronglyMeasurable_fun_prod (l : List (α → M))
     (hl : ∀ f ∈ l, StronglyMeasurable f) :
     StronglyMeasurable fun x => (l.map fun f : α → M => f x).prod := by
@@ -597,36 +598,36 @@ section CommMonoid
 variable {M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M] {m : MeasurableSpace α}
 
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 theorem _root_.Multiset.stronglyMeasurable_prod (l : Multiset (α → M))
     (hl : ∀ f ∈ l, StronglyMeasurable f) : StronglyMeasurable l.prod := by
   rcases l with ⟨l⟩
   simpa using l.stronglyMeasurable_prod (by simpa using hl)
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 theorem _root_.Multiset.stronglyMeasurable_fun_prod (s : Multiset (α → M))
     (hs : ∀ f ∈ s, StronglyMeasurable f) :
     StronglyMeasurable fun x => (s.map fun f : α → M => f x).prod := by
   simpa only [← Pi.multiset_prod_apply] using s.stronglyMeasurable_prod hs
 
-@[to_additive (attr := measurability, fun_prop)]
+@[to_additive (attr := fun_prop)]
 theorem _root_.Finset.stronglyMeasurable_prod {ι : Type*} {f : ι → α → M} (s : Finset ι)
     (hf : ∀ i ∈ s, StronglyMeasurable (f i)) : StronglyMeasurable (∏ i ∈ s, f i) :=
   Finset.prod_induction _ _ (fun _a _b ha hb => ha.mul hb) (@stronglyMeasurable_one α M _ _ _) hf
 
-@[to_additive (attr := measurability, fun_prop)]
+@[to_additive (attr := fun_prop)]
 theorem _root_.Finset.stronglyMeasurable_fun_prod {ι : Type*} {f : ι → α → M} (s : Finset ι)
     (hf : ∀ i ∈ s, StronglyMeasurable (f i)) : StronglyMeasurable fun a => ∏ i ∈ s, f i a := by
   simpa only [← Finset.prod_apply] using s.stronglyMeasurable_prod hf
 
 variable {n : MeasurableSpace β} in
 /-- Compositional version of `Finset.stronglyMeasurable_prod` for use by `fun_prop`. -/
-@[to_additive (attr := measurability, fun_prop)
+@[to_additive (attr := fun_prop)
 /-- Compositional version of `Finset.stronglyMeasurable_sum` for use by `fun_prop`. -/]
 lemma Finset.stronglyMeasurable_prod_apply {ι : Type*} {f : ι → α → β → M} {g : α → β}
     {s : Finset ι} (hf : ∀ i ∈ s, StronglyMeasurable ↿(f i)) (hg : Measurable g) :
     StronglyMeasurable fun a ↦ (∏ i ∈ s, f i a) (g a) := by
-  simp only [Finset.prod_apply]; fun_prop (discharger := assumption)
+  simp only [Finset.prod_apply]; fun_prop
 
 end CommMonoid
 
@@ -1138,7 +1139,7 @@ protected theorem add [AddZeroClass β] [ContinuousAdd β] (hf : FinStronglyMeas
 protected theorem neg [SubtractionMonoid β] [ContinuousNeg β] (hf : FinStronglyMeasurable f μ) :
     FinStronglyMeasurable (-f) μ := by
   refine ⟨fun n ↦ -hf.approx n, fun n ↦ ?_, fun x ↦ (hf.tendsto_approx x).neg⟩
-  suffices μ (Function.support fun x ↦ -(hf.approx n) x) < ∞ by convert this
+  suffices μ (Function.support fun x ↦ -(hf.approx n) x) < ∞ by convert! this
   rw [Function.support_fun_neg (hf.approx n)]
   exact hf.fin_support_approx n
 

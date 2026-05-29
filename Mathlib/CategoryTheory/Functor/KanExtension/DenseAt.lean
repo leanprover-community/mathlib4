@@ -97,6 +97,10 @@ noncomputable def DenseAt.postcompEquivalence
   IsColimit.ofWhiskerEquivalence (CostructuredArrow.post F G Y).asEquivalence
     (IsColimit.ofIsoColimit ((isColimitOfPreserves G hY)) (Cocone.ext (Iso.refl _)))
 
+lemma DenseAt.hasPointwiseLeftKanExtensionAt (hf : F.DenseAt Y) :
+    F.HasPointwiseLeftKanExtensionAt F Y :=
+  ⟨_, hf⟩
+
 variable (F) in
 /-- Given a functor `F : C ⥤ D`, this is the property of objects `Y : D` such
 that `F` is dense at `Y`. -/

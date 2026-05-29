@@ -173,7 +173,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
         simp [Classical.em]
       rw [hr, ← affineSpan_insert_affineSpan]
       refine existsUnique_dist_eq_of_insert (Set.range_nonempty _) (subset_affineSpan ℝ _) ?_ hm
-      convert ha.notMem_affineSpan_diff i Set.univ
+      convert! ha.notMem_affineSpan_diff i Set.univ
       change (Set.range fun i2 : { x | x ≠ i } => p i2) = _
       rw [← Set.image_eq_range]
       congr 1 with j
@@ -489,7 +489,7 @@ def pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) : PointsWithCircumc
 theorem sum_pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) :
     ∑ j, pointWeightsWithCircumcenter i j = 1 := by
   classical
-  convert sum_ite_eq' univ (pointIndex i) (Function.const _ (1 : ℝ)) with j
+  convert! sum_ite_eq' univ (pointIndex i) (Function.const _ (1 : ℝ)) with j
   · cases j <;> simp [pointWeightsWithCircumcenter]
   · simp
 
@@ -550,7 +550,7 @@ def circumcenterWeightsWithCircumcenter (n : ℕ) : PointsWithCircumcenterIndex 
 theorem sum_circumcenterWeightsWithCircumcenter (n : ℕ) :
     ∑ i, circumcenterWeightsWithCircumcenter n i = 1 := by
   classical
-  convert sum_ite_eq' univ circumcenterIndex (Function.const _ (1 : ℝ)) with j
+  convert! sum_ite_eq' univ circumcenterIndex (Function.const _ (1 : ℝ)) with j
   · cases j <;> simp [circumcenterWeightsWithCircumcenter]
   · simp
 
@@ -606,7 +606,7 @@ theorem reflection_circumcenter_eq_affineCombination_of_pointsWithCircumcenter {
     centroidWeightsWithCircumcenter, circumcenterWeightsWithCircumcenter,
     reflectionCircumcenterWeightsWithCircumcenter, ite_smul, zero_smul, sub_zero,
     apply_ite₂ (· + ·), add_zero, ← add_smul, hc, zero_sub, neg_smul, sub_self, add_zero]
-  convert sum_const_zero
+  convert! sum_const_zero
   norm_num
 
 end Simplex

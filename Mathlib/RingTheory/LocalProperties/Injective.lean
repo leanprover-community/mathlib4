@@ -44,7 +44,7 @@ theorem Module.injective_of_isLocalizedModule [Small.{v} R] [IsNoetherianRing R]
   simp only [← Baer.iff_injective, Module.Baer.iff_surjective] at MB ⊢
   intro Iₛ g
   obtain ⟨I, rfl⟩ : ∃ I, .localized' Rₛ S (Algebra.linearMap R Rₛ) I = Iₛ :=
-    ⟨Iₛ.comap (algebraMap R Rₛ), by simp [Ideal.localized'_eq_map, IsLocalization.map_comap S]⟩
+    ⟨Iₛ.comap (algebraMap R Rₛ), by simp [Ideal.localized'_eq_map, IsLocalization.map_under S]⟩
   have : FinitePresentation R I := finitePresentation_of_finite R I
   obtain ⟨⟨g', a⟩, e : a.1 • g = _⟩ := surj S (mapExtendScalars S (I.toLocalized' _ _ _) f Rₛ) g
   obtain ⟨g', rfl⟩ := MB I g'

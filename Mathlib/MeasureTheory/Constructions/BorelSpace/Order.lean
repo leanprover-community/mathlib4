@@ -405,8 +405,8 @@ theorem Dense.borel_eq_generateFrom_Ioc_mem_aux {α : Type*} [TopologicalSpace �
     [OrderTopology α] [SecondCountableTopology α] {s : Set α} (hd : Dense s)
     (hbot : ∀ x, IsTop x → x ∈ s) (hIoo : ∀ x y : α, x < y → Ioo x y = ∅ → x ∈ s) :
     borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ioc l u = S } := by
-  convert hd.orderDual.borel_eq_generateFrom_Ico_mem_aux hbot fun x y hlt he => hIoo y x hlt _
-    using 2
+  convert!
+    hd.orderDual.borel_eq_generateFrom_Ico_mem_aux hbot fun x y hlt he => hIoo y x hlt _ using 2
   · ext s
     constructor <;> rintro ⟨l, hl, u, hu, hlt, rfl⟩
     exacts [⟨u, hu, l, hl, hlt, Ico_toDual⟩, ⟨u, hu, l, hl, hlt, Ioc_toDual⟩]
@@ -642,7 +642,7 @@ section LinearOrder
 variable [LinearOrder α] [OrderTopology α] [SecondCountableTopology α]
 
 theorem measurable_of_Iio {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' Iio x)) : Measurable f := by
-  convert measurable_generateFrom (α := δ) _
+  convert! measurable_generateFrom (α := δ) _
   · exact BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Iio _)
   · rintro _ ⟨x, rfl⟩; exact hf x
 
@@ -651,7 +651,7 @@ theorem UpperSemicontinuous.measurable [TopologicalSpace δ] [OpensMeasurableSpa
   measurable_of_Iio fun y => (hf.isOpen_preimage y).measurableSet
 
 theorem measurable_of_Ioi {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' Ioi x)) : Measurable f := by
-  convert measurable_generateFrom (α := δ) _
+  convert! measurable_generateFrom (α := δ) _
   · exact BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Ioi _)
   · rintro _ ⟨x, rfl⟩; exact hf x
 
@@ -717,7 +717,7 @@ theorem Measurable.isLUB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g'
   classical
   rcases isEmpty_or_nonempty ι with hι | ⟨⟨i⟩⟩
   · rcases eq_empty_or_nonempty s with rfl | ⟨x, hx⟩
-    · convert g'_meas
+    · convert! g'_meas
       rwa [compl_empty, eqOn_univ] at hg'
     · have A : ∀ b ∈ s, IsBot (g b) := by simpa using hg
       have B : ∀ b ∈ s, g b = g x := by

@@ -5,11 +5,15 @@ Authors: Anatole Dedecker, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Topology.Algebra.Algebra.Equiv
-public import Mathlib.Topology.Algebra.Module.Equiv
-public import Mathlib.Topology.Algebra.Module.UniformConvergence
-public import Mathlib.Topology.Algebra.SeparationQuotient.Section
 public import Mathlib.Topology.Hom.ContinuousEvalConst
+public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+
+import Mathlib.Topology.Algebra.Module.Equiv
+import Mathlib.Topology.Algebra.SeparationQuotient.Section
+import Mathlib.Topology.Algebra.Module.UniformConvergence
 
 /-!
 # Topologies of uniform convergence on the space of continuous linear maps
@@ -374,8 +378,10 @@ theorem completeSpace [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul �
   apply IsClosed.isComplete
   have H₁ : IsClosed {f : E →ᵤ[𝔖] F | Continuous ((UniformOnFun.toFun 𝔖) f)} :=
     UniformOnFun.isClosed_setOf_continuous h𝔖
-  convert H₁.inter <| (LinearMap.isClosed_range_coe E F σ).preimage
-    (UniformOnFun.uniformContinuous_toFun h𝔖U).continuous
+  convert!
+    H₁.inter <|
+      (LinearMap.isClosed_range_coe E F σ).preimage
+        (UniformOnFun.uniformContinuous_toFun h𝔖U).continuous
   exact ContinuousLinearMap.range_coeFn_eq
 
 variable {𝔖₁ 𝔖₂ : Set (Set E)}

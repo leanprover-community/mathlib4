@@ -49,7 +49,7 @@ theorem isLocalizedModule_iff_isBaseChange : IsLocalizedModule S f ↔ IsBaseCha
   letI : Module A (LocalizedModule S M) := LocalizedModule.moduleOfIsLocalization ..
   have : IsBaseChange A (LocalizedModule.mkLinearMap S M) := IsLocalizedModule.isBaseChange S A _
   let e := (this.equiv.symm.trans h.equiv).restrictScalars R
-  convert IsLocalizedModule.of_linearEquiv S (LocalizedModule.mkLinearMap S M) e
+  convert! IsLocalizedModule.of_linearEquiv S (LocalizedModule.mkLinearMap S M) e
   ext
   rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
     LinearEquiv.restrictScalars_apply, LinearEquiv.trans_apply, IsBaseChange.equiv_symm_apply,
@@ -117,9 +117,10 @@ instance (N N') [AddCommMonoid N] [Module R N] [AddCommMonoid N'] [Module R N'] 
     IsLocalizedModule S (TensorProduct.map f g) := by
   let eM := IsLocalizedModule.linearEquiv S f (TensorProduct.mk R (Localization S) M 1)
   let eN := IsLocalizedModule.linearEquiv S g (TensorProduct.mk R (Localization S) N 1)
-  convert IsLocalizedModule.of_linearEquiv S (TensorProduct.mk R (Localization S) (M ⊗[R] N) 1) <|
-    (AlgebraTensorModule.distribBaseChange R (Localization S) ..).restrictScalars R ≪≫ₗ
-    (congr eM eN ≪≫ₗ TensorProduct.equivOfCompatibleSMul ..).symm
+  convert!
+    IsLocalizedModule.of_linearEquiv S (TensorProduct.mk R (Localization S) (M ⊗[R] N) 1) <|
+      (AlgebraTensorModule.distribBaseChange R (Localization S) ..).restrictScalars R ≪≫ₗ
+        (congr eM eN ≪≫ₗ TensorProduct.equivOfCompatibleSMul ..).symm
   ext; congrm (?_ ⊗ₜ ?_) <;> simp [LinearEquiv.eq_symm_apply, eM, eN]
 
 /-- If `A` is a localization of `R`, tensoring two `A`-modules over `A` is the same as
@@ -165,6 +166,37 @@ lemma Algebra.isPushout_of_isLocalization [IsLocalization (Algebra.algebraMapSub
     Algebra.IsPushout R T A B :=
   (Algebra.isLocalization_iff_isPushout S _).mp inferInstance
 
+lemma Submonoid.map_isUnit_le_isUnit {M N : Type*} [Monoid M] [Monoid N]
+    {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F) :
+    Submonoid.map f (IsUnit.submonoid M) ≤ IsUnit.submonoid N := by
+  rintro x ⟨y, hy, rfl⟩
+  exact hy.map _
+
+lemma Algebra.algebraMapSubmonoid_isUnit_le_isUnit {R S : Type*} [CommSemiring R] [Semiring S]
+    [Algebra R S] :
+    Algebra.algebraMapSubmonoid S (IsUnit.submonoid R) ≤ IsUnit.submonoid S := by
+  rintro x ⟨y, hy, rfl⟩
+  exact hy.map _
+
+instance {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] :
+    IsLocalization (Algebra.algebraMapSubmonoid S (IsUnit.submonoid R)) S :=
+  IsLocalization.of_le_isUnit Algebra.algebraMapSubmonoid_isUnit_le_isUnit
+
+lemma Algebra.IsPushout.of_bijective_left [Algebra A T] [IsScalarTower R A T]
+    (H : Function.Bijective (algebraMap R A)) :
+    IsPushout R T A T := by
+  have : IsLocalization (IsUnit.submonoid R) A :=
+    IsLocalization.of_le_isUnit_of_bijective Algebra.algebraMapSubmonoid_isUnit_le_isUnit H
+  apply isPushout_of_isLocalization (IsUnit.submonoid R)
+
+lemma Algebra.IsPushout.of_bijective_right [Algebra A T] [IsScalarTower R A T]
+    (H : Function.Bijective (algebraMap A T)) :
+    IsPushout R A R T := by
+  have : IsLocalization (algebraMapSubmonoid A (IsUnit.submonoid R)) T := by
+    apply IsLocalization.of_le_isUnit_of_bijective _ H
+    simpa using Algebra.algebraMapSubmonoid_isUnit_le
+  apply Algebra.isPushout_of_isLocalization (IsUnit.submonoid R)
+
 variable (R M) in
 open TensorProduct in
 instance {α} [IsLocalizedModule S f] :
@@ -175,11 +207,11 @@ instance {α} [IsLocalizedModule S f] :
   let e' : Localization S ⊗[R] (α →₀ M) ≃ₗ[R] (α →₀ M') :=
     finsuppRight R R (Localization S) M α ≪≫ₗ Finsupp.mapRange.linearEquiv e
   suffices IsLocalizedModule S (e'.symm.toLinearMap ∘ₗ Finsupp.mapRange.linearMap f) by
-    convert this.of_linearEquiv (e := e')
+    convert! this.of_linearEquiv (e := e')
     ext
     simp
   rw [isLocalizedModule_iff_isBaseChange S (Localization S)]
-  convert TensorProduct.isBaseChange R (α →₀ M) (Localization S) using 1
+  convert! TensorProduct.isBaseChange R (α →₀ M) (Localization S) using 1
   ext a m
   apply (finsuppRight R R (Localization S) M α).injective
   ext b

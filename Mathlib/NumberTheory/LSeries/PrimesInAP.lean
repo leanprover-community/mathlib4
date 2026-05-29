@@ -148,7 +148,7 @@ lemma abscissaOfAbsConv_residueClass_le_one :
   refine abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable fun y hy ↦ ?_
   unfold LSeriesSummable
   have := LSeriesSummable_vonMangoldt <| show 1 < (y : ℂ).re by simp only [ofReal_re, hy]
-  convert this.indicator {n : ℕ | (n : ZMod q) = a}
+  convert! this.indicator {n : ℕ | (n : ZMod q) = a}
   ext1 n
   by_cases hn : (n : ZMod q) = a
   · simp +contextual only [term, Set.indicator, Set.mem_setOf_eq, hn, ↓reduceIte, apply_ite,
@@ -424,7 +424,7 @@ lemma not_summable_residueClass_prime_div (ha : IsUnit a) :
     ¬ Summable fun n : ℕ ↦ (if n.Prime then residueClass a n else 0) / n := by
   intro H
   have key : Summable fun n : ℕ ↦ residueClass a n / n := by
-    convert (summable_residueClass_non_primes_div a).add H using 2 with n
+    convert! (summable_residueClass_non_primes_div a).add H using 2 with n
     simp only [← add_div, ite_add_ite, zero_add, add_zero, ite_self]
   let C := ∑' n, residueClass a n / n
   have H₁ {x : ℝ} (hx : 1 < x) : ∑' n, residueClass a n / (n : ℝ) ^ x ≤ C := by
@@ -477,9 +477,6 @@ theorem infinite_setOf_prime_and_eq_mod (ha : IsUnit a) :
   by_contra! H
   exact not_summable_residueClass_prime_div ha <|
     summable_of_hasFiniteSupport <| show Set.Finite _ from support_residueClass_prime_div a ▸ H
-
-@[deprecated (since := "2025-11-01")]
-alias setOf_prime_and_eq_mod_infinite := infinite_setOf_prime_and_eq_mod
 
 /-- **Dirichlet's Theorem** on primes in arithmetic progression: if `q` is a positive
 integer and `a : ZMod q` is a unit, then there are infinitely many prime numbers `p`

@@ -191,6 +191,12 @@ theorem add_algebraMap_isNat_zero {r s : R} (h : r + s = 0) :
   exact ⟨by simp⟩
 
 /- RingCompute.cast -/
+theorem cast_zero_smul_eq_zero_mul {R' : Type*} [HSMul R' A A] {r' : R'} {r : R}
+    (hr : r = 0) (h_smul : ∀ (a : A), r • a = r' • a) (a : A) :
+    r' • a = (0 : A) * a := by
+  simp [← h_smul, hr]
+
+/- RingCompute.cast -/
 theorem cast_smul_eq_mul {R' : Type*} [HSMul R' A A] {r' : R'} {r r'' : R}
     (hr : r = r'') (h_smul : ∀ (a : A), r • a = r' • a) (a : A) :
     r' • a = (algebraMap R A r'' + 0) * a := by

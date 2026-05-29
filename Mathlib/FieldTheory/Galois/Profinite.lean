@@ -169,7 +169,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma algEquivToLimit_continuous : Continuous (algEquivToLimit k K) := by
   rw [continuous_induced_rng]
   refine continuous_pi (fun L ↦ ?_)
-  convert restrictNormalHom_continuous L.unop.1
+  convert! restrictNormalHom_continuous L.unop.1
   exact (DiscreteTopology.eq_bot (α := L.unop ≃ₐ[k] L.unop)).symm
 
 /-- The projection map from `lim Gal(L/k)` to a specific `Gal(L/k)`. -/

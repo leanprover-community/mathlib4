@@ -337,7 +337,7 @@ private theorem LinearIndependent.map_pow_expChar_pow_of_fd_isSeparable
     (Field.span_map_pow_expChar_pow_eq_top_of_isSeparable q n b.span_eq).ge
     (Module.finrank_eq_card_basis b).symm
   let f (i : ι) : ι' := ⟨v i, h'.subset_extend _ ⟨i, rfl⟩⟩
-  convert H.comp f fun _ _ heq ↦ h.injective (by simpa only [f, Subtype.mk.injEq] using heq)
+  convert! H.comp f fun _ _ heq ↦ h.injective (by simpa only [f, Subtype.mk.injEq] using heq)
   simp_rw [Function.comp_apply, b]
   rw [Basis.extend_apply_self]
 

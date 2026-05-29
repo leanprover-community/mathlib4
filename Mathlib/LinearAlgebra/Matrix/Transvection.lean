@@ -230,7 +230,7 @@ theorem _root_.Matrix.mem_range_scalar_iff_commute_transvectionStruct {M : Matri
   refine ⟨fun h t => ?_, mem_range_scalar_of_commute_transvectionStruct⟩
   rw [mem_range_scalar_iff_commute_single] at h
   refine (Commute.one_left M).add_left ?_
-  convert (h _ _ t.hij).smul_left t.c using 1
+  convert! (h _ _ t.hij).smul_left t.c using 1
   rw [smul_single, smul_eq_mul, mul_one]
 
 end
@@ -462,7 +462,7 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
     simpa only [this, ite_eq_right_iff] using H r le_rfl
   intro k hk
   induction k with
-  | zero => simp only [if_true, Matrix.mul_one, List.take_zero, zero_le', List.prod_nil]
+  | zero => simp
   | succ n IH =>
     have hnr : n < r := hk
     let n' : Fin r := ⟨n, hnr⟩

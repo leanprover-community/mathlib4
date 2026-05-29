@@ -329,6 +329,7 @@ lemma Precoverage.toGrothendieck_mono {J K : Precoverage C} (h : J ≤ K) :
     J.toGrothendieck ≤ K.toGrothendieck :=
   toGrothendieck_monotone h
 
+@[mono, gcongr]
 lemma GrothendieckTopology.toPrecoverage_monotone : Monotone (toPrecoverage (C := C)) :=
   (Precoverage.galoisConnection_toGrothendieck_toPrecoverage C).monotone_u
 

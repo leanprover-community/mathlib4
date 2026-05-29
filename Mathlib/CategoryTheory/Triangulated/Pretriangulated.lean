@@ -714,7 +714,7 @@ def isoTriangleOfIso₁₃ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang
   have h₄ := (shiftFunctorCompIsoId C (-1 : ℤ) 1 (by simp)).inv.naturality e₃.hom
   dsimp at h₁ h₂ h₃ h₄
   refine Triangle.isoMk _ _ e₁ (Triangle.π₃.mapIso e) e₃ ?_ ?_ comm
-  · convert e.hom.comm₂ using 2
+  · convert! e.hom.comm₂ using 2
   · simp [← cancel_mono ((shiftFunctorCompIsoId C (-1) 1 (neg_add_cancel 1)).inv.app T₂.obj₃),
       ← h₃, assoc, h₁, h₄]
 

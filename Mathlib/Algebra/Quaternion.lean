@@ -1173,6 +1173,18 @@ instance instRatCast : RatCast ℍ[R] where ratCast q := (q : R)
 
 @[norm_cast] lemma coe_ratCast (q : ℚ) : ↑(q : R) = (q : ℍ[R]) := rfl
 
+section ofScientific
+open OfScientific (ofScientific)
+variable (m : ℕ) (s : Bool) (e : ℕ)
+
+@[norm_cast] lemma coe_ofScientific : ((ofScientific m s e : R) : ℍ[R]) = ofScientific m s e := rfl
+@[simp] lemma re_ofScientific : (ofScientific m s e : ℍ[R]).re = ofScientific m s e := rfl
+@[simp] lemma imI_ofScientific : (ofScientific m s e : ℍ[R]).imI = 0 := rfl
+@[simp] lemma imJ_ofScientific : (ofScientific m s e : ℍ[R]).imJ = 0 := rfl
+@[simp] lemma imK_ofScientific : (ofScientific m s e : ℍ[R]).imK = 0 := rfl
+
+end ofScientific
+
 variable [LinearOrder R] [IsStrictOrderedRing R] (a b : ℍ[R])
 
 @[simps -isSimp]

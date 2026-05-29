@@ -447,7 +447,7 @@ This means you may not be able to `simp` using this lemma unless you `open scope
 @[reassoc]
 theorem biproduct.ι_π [DecidableEq J] (f : J → C) [HasBiproduct f] (j j' : J) :
     biproduct.ι f j ≫ biproduct.π f j' = if h : j = j' then eqToHom (congr_arg f h) else 0 := by
-  convert (biproduct.bicone f).ι_π j j'
+  convert! (biproduct.bicone f).ι_π j j'
 
 @[reassoc] -- Not `simp` because `simp` can prove this
 theorem biproduct.ι_π_self (f : J → C) [HasBiproduct f] (j : J) :
@@ -706,9 +706,9 @@ instance {ι} (f : ι → Type*) (g : (i : ι) → (f i) → C)
               simp [biproduct.ι_π_ne _ h]
             · simp [biproduct.ι_π_ne_assoc _ w] }
       isBilimit :=
-      { isLimit := mkFanLimit _
+      { isLimit := Fan.IsLimit.mk _
           (fun s => biproduct.lift fun b => biproduct.lift fun c => s.proj ⟨b, c⟩)
-        isColimit := mkCofanColimit _
+        isColimit := Cofan.IsColimit.mk _
           (fun s => biproduct.desc fun b => biproduct.desc fun c => s.inj ⟨b, c⟩) } }
 
 /-- An iterated biproduct is a biproduct over a sigma type. -/

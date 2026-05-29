@@ -162,14 +162,14 @@ lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet 
     simp_rw [pow_succ, mul_assoc]
     refine HasDerivAt.const_mul _ ?_
     simp_rw [← smul_eq_mul, Complex.exp_eq_exp_ℂ]
-    convert hasDerivAt_exp_smul_const (X ω : ℂ) ε using 1
+    convert! hasDerivAt_exp_smul_const (X ω : ℂ) ε using 1
     rw [smul_eq_mul, mul_comm]
 
 /-- For all `z : ℂ` with `z.re ∈ interior (integrableExpSet X μ)`,
 `complexMGF X μ` is differentiable at `z` with derivative `μ[X * exp (z * X)]`. -/
 theorem hasDerivAt_complexMGF (hz : z.re ∈ interior (integrableExpSet X μ)) :
     HasDerivAt (complexMGF X μ) μ[fun ω ↦ X ω * cexp (z * X ω)] z := by
-  convert hasDerivAt_integral_pow_mul_exp hz 0
+  convert! hasDerivAt_integral_pow_mul_exp hz 0
   · simp [complexMGF]
   · simp
 

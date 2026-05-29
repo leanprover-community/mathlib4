@@ -244,7 +244,7 @@ lemma semilength_eq_count_D : p.semilength = p.toList.count D := by
 @[simp]
 lemma two_mul_semilength_eq_length : 2 * p.semilength = p.toList.length := by
   nth_rw 1 [two_mul, semilength, p.count_U_eq_count_D, semilength]
-  convert (p.toList.length_eq_countP_add_countP (· == D)).symm
+  convert! (p.toList.length_eq_countP_add_countP (· == D)).symm
   rw [count]; congr!; rename_i s; cases s <;> tauto
 
 end Semilength
@@ -262,8 +262,7 @@ def firstReturn : ℕ :=
 include h in
 lemma firstReturn_pos : 0 < p.firstReturn := by
   rw [← not_le, Nat.le_zero, firstReturn, findIdx_eq, getElem_range]
-  · simp only [not_lt_zero', IsEmpty.forall_iff]
-    rw [← p.cons_tail_dropLast_concat h]
+  · rw! [← p.cons_tail_dropLast_concat h]
     simp
   · rw [length_range, length_pos_iff]
     exact toList_ne_nil.mpr h
@@ -366,7 +365,7 @@ lemma outsidePart_add : (p + q).outsidePart = p.outsidePart + q := by
 @[simp]
 lemma insidePart_nest : p.nest.insidePart = p := by
   simp_rw [insidePart, nest_ne_zero, dite_false, firstReturn_nest]
-  convert p.denest_nest; rw [DyckWord.ext_iff]; apply take_of_length_le
+  convert! p.denest_nest; rw [DyckWord.ext_iff]; apply take_of_length_le
   simp_rw [nest, length_append, length_singleton]; lia
 
 @[simp]
@@ -546,7 +545,7 @@ instance {n : ℕ} : Fintype { p : DyckWord // p.semilength = n } :=
 theorem card_dyckWord_semilength_eq_catalan (n : ℕ) :
     Fintype.card { p : DyckWord // p.semilength = n } = catalan n := by
   rw [← Fintype.ofEquiv_card (equivTreesOfNumNodesEq n), ← treesOfNumNodesEq_card_eq_catalan]
-  convert Fintype.card_coe _
+  convert! Fintype.card_coe _
 
 end Tree
 

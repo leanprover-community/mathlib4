@@ -56,7 +56,7 @@ noncomputable abbrev powerFan :
 set_option backward.isDefEq.respectTransparency false in
 /-- `U.power α` identifies to the product of copies of `U` indexed by `α`. -/
 noncomputable def isLimitPowerFan : IsLimit (U.powerFan α) :=
-  mkFanLimit _
+  Fan.IsLimit.mk _
     (fun s ↦
       { f i a := (s.proj a).f i
         φ i := Pi.lift (fun a ↦ (s.proj a).φ i) })

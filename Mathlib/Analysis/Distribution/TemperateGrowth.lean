@@ -5,10 +5,17 @@ Authors: Moritz Doll, Anatole Dedecker, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Bounds
-public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
-public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
+public import Mathlib.Analysis.InnerProductSpace.Defs
+public import Mathlib.MeasureTheory.Function.L1Space.Integrable
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Tactic.MoveAdd
+
+import Mathlib.Analysis.Calculus.ContDiff.Bounds
+import Mathlib.Analysis.InnerProductSpace.Calculus
+import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
+import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-! # Functions and measures of temperate growth -/
 
@@ -87,10 +94,6 @@ theorem HasTemperateGrowth.norm_iteratedFDeriv_le_uniform {f : E → F}
   simp (discharger := positivity) only [isBigOWith_top, Real.norm_of_nonneg,
     pi_norm_le_iff_of_nonneg, Fin.forall_iff, Nat.lt_succ_iff] at hC
   exact ⟨k, C, C_nonneg, fun N hN x ↦ hC x N hN⟩
-
-@[deprecated (since := "2025-10-30")]
-alias HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux :=
-  HasTemperateGrowth.norm_iteratedFDeriv_le_uniform
 
 lemma HasTemperateGrowth.of_fderiv {f : E → F}
     (h'f : Function.HasTemperateGrowth (fderiv ℝ f)) (hf : Differentiable ℝ f) {k : ℕ} {C : ℝ}
@@ -205,7 +208,7 @@ theorem HasTemperateGrowth.add (hf : f.HasTemperateGrowth) (hg : g.HasTemperateG
 @[to_fun (attr := fun_prop)]
 theorem HasTemperateGrowth.sub (hf : f.HasTemperateGrowth) (hg : g.HasTemperateGrowth) :
     (f - g).HasTemperateGrowth := by
-  convert hf.add hg.neg using 1
+  convert! hf.add hg.neg using 1
   grind
 
 @[fun_prop]
@@ -253,7 +256,7 @@ theorem _root_.ContinuousLinearMap.bilinear_hasTemperateGrowth [NormedSpace 𝕜
 lemma HasTemperateGrowth.id : Function.HasTemperateGrowth (id : E → E) := by
   apply Function.HasTemperateGrowth.of_fderiv (k := 1) (C := 1)
   · convert Function.HasTemperateGrowth.const (ContinuousLinearMap.id ℝ E)
-    exact fderiv_id'
+    exact fderiv_fun_id
   · apply differentiable_id
   · simp
 
@@ -323,7 +326,7 @@ variable (H) in
 theorem hasTemperateGrowth_norm_sq : (fun (x : H) ↦ ‖x‖ ^ 2).HasTemperateGrowth := by
   apply _root_.Function.HasTemperateGrowth.of_fderiv (C := 1) (k := 2)
   · rw [fderiv_norm_sq]
-    convert (2 • innerSL ℝ).hasTemperateGrowth
+    convert! (2 • innerSL ℝ).hasTemperateGrowth
   · exact .norm_sq ℝ differentiable_id
   · intro x
     rw [norm_pow, norm_norm, one_mul, add_pow_two]

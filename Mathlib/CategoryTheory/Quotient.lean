@@ -5,8 +5,6 @@ Authors: David Wärn
 -/
 module
 
-public import Mathlib.CategoryTheory.NatIso
-public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Groupoid
 
 /-!
@@ -239,7 +237,7 @@ theorem functor_homRel_eq_compClosure_eqvGen {X Y : C} (f g : X ⟶ Y) :
 
 theorem compClosure.congruence :
     Congruence fun X Y => Relation.EqvGen (@HomRel.CompClosure C _ r X Y) := by
-  convert (inferInstance : Congruence (functor r).homRel)
+  convert! (inferInstance : Congruence (functor r).homRel)
   ext
   rw [functor_homRel_eq_compClosure_eqvGen]
 

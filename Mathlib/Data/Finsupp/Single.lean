@@ -240,6 +240,26 @@ theorem card_support_le_one' [Nonempty α] {f : α →₀ M} :
     #f.support ≤ 1 ↔ ∃ a b, f = single a b := by
   simp only [card_le_one_iff_subset_singleton, support_subset_singleton']
 
+/-- If `α` has a unique term, then finitely supported functions `α →₀ M` are in bijection with `M`.
+-/
+@[simps]
+noncomputable def uniqueEquiv (a : α) [Subsingleton α] : (α →₀ M) ≃ M where
+  toFun f := f a
+  invFun := single a
+  left_inv f := by ext b; simp [Subsingleton.elim b a]
+  right_inv x := by simp
+
+-- We want this lemma to fire before `uniqueEquiv_symm_apply`.
+@[simp↓ high] lemma uniqueEquiv_symm_apply_apply (a : α) [Subsingleton α] (m : M) (b : α) :
+    (uniqueEquiv a).symm m b = m := by simp [Subsingleton.elim b a]
+
+/--
+If `α` has a unique term, the type of finitely supported functions `α →₀ β` is equivalent to `β`.
+-/
+@[simps!, deprecated uniqueEquiv (since := "2026-05-06")]
+noncomputable def _root_.Equiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃ M :=
+  Finsupp.equivFunOnFinite.trans (Equiv.funUnique ι M)
+
 @[simp]
 theorem equivFunOnFinite_single [DecidableEq α] [Finite α] (x : α) (m : M) :
     Finsupp.equivFunOnFinite (Finsupp.single x m) = Pi.single x m := by

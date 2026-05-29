@@ -158,7 +158,7 @@ private theorem Gamma_integrand_intervalIntegrable (s : ℂ) {X : ℝ} (hs : 0 <
 
 private theorem Gamma_integrand_deriv_integrable_A {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) :
     IntervalIntegrable (fun x => -((-x).exp * x ^ s) : ℝ → ℂ) volume 0 X := by
-  convert (Gamma_integrand_intervalIntegrable (s + 1) _ hX).neg
+  convert! (Gamma_integrand_intervalIntegrable (s + 1) _ hX).neg
   · simp only [ofReal_exp, ofReal_neg, add_sub_cancel_right]; rfl
   · simp only [add_re, one_re]; linarith
 
@@ -300,7 +300,7 @@ private theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamm
       simp only [sub_sub_cancel_left] at i0
       refine lt_add_of_lt_of_nonneg i0 ?_
       rw [← Nat.cast_zero, Nat.cast_le]; exact Nat.zero_le k
-  convert (u <| n - ⌊1 - s.re⌋₊).symm; rw [Nat.add_sub_of_le]
+  convert! (u <| n - ⌊1 - s.re⌋₊).symm; rw [Nat.add_sub_of_le]
   by_cases h : 0 ≤ 1 - s.re
   · apply Nat.le_of_lt_succ
     exact_mod_cast lt_of_le_of_lt (Nat.floor_le h) (by linarith : 1 - s.re < n + 1)
@@ -465,7 +465,7 @@ in terms of the Gamma function. -/
 lemma integral_rpow_mul_exp_neg_mul_Ioi {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
     ∫ t : ℝ in Ioi 0, t ^ (a - 1) * exp (-(r * t)) = (1 / r) ^ a * Gamma a := by
   rw [← ofReal_inj, ofReal_mul, ← Gamma_ofReal, ofReal_cpow (by positivity), ofReal_div]
-  convert integral_cpow_mul_exp_neg_mul_Ioi (by rwa [ofReal_re] : 0 < (a : ℂ).re) hr
+  convert! integral_cpow_mul_exp_neg_mul_Ioi (by rwa [ofReal_re] : 0 < (a : ℂ).re) hr
   refine integral_ofReal.symm.trans <| setIntegral_congr_fun measurableSet_Ioi (fun t ht ↦ ?_)
   norm_cast
   simp_rw [← ofReal_cpow ht.le, RCLike.ofReal_mul, coe_algebraMap]

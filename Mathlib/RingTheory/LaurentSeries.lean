@@ -42,6 +42,7 @@ type with a zero. They are denoted `R⸨X⸩`.
 ## Main Results
 
 * Basic properties of Hasse derivatives
+
 ### About the `X`-Adic valuation:
 * The (integral) valuation of a power series is the order of the first non-zero coefficient, see
   `LaurentSeries.intValuation_le_iff_coeff_lt_eq_zero`.
@@ -245,7 +246,7 @@ theorem single_order_mul_powerSeriesPart (x : R⸨X⸩) :
     · contrapose! h
       exact order_le_of_coeff_ne_zero h.symm
     · contrapose h
-      simp only [Set.mem_range, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk] at h
+      simp only [Nat.castOrderEmbedding_apply, Set.mem_range] at h
       lia
 
 theorem ofPowerSeries_powerSeriesPart (x : R⸨X⸩) :
@@ -338,9 +339,7 @@ theorem coeff_coe (i : ℤ) :
   · rw [Int.ofNat_eq_natCast, coeff_coe_powerSeries, if_neg (Int.natCast_nonneg _).not_gt,
       Int.natAbs_natCast]
   · rw [ofPowerSeries_apply, embDomain_notin_image_support, if_pos (Int.negSucc_lt_zero _)]
-    simp only [not_exists, RelEmbedding.coe_mk, Set.mem_image, not_and, Function.Embedding.coeFn_mk,
-      Ne, toPowerSeries_symm_apply_coeff, mem_support, imp_true_iff,
-      not_false_iff, reduceCtorEq]
+    simp
 
 theorem coe_C (r : R) : ((C r : R⟦X⟧) : R⸨X⸩) = HahnSeries.C r :=
   ofPowerSeries_C _
@@ -385,12 +384,6 @@ theorem coe_X : ((X : RatFunc F) : F⸨X⸩) = single 1 1 := by
 theorem single_one_eq_pow {R : Type*} [Semiring R] (n : ℕ) :
     single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
   simp
-
-@[deprecated HahnSeries.inv_single (since := "2025-11-07")]
-theorem single_inv (d : ℤ) {α : F} (hα : α ≠ 0) :
-    single (-d) (α⁻¹ : F) = (single (d : ℤ) (α : F))⁻¹ := by
-  apply eq_inv_of_mul_eq_one_right
-  simp [hα]
 
 theorem single_zpow (n : ℤ) :
     single (n : ℤ) (1 : F) = single (1 : ℤ) 1 ^ n := by
@@ -446,7 +439,7 @@ theorem intValuation_eq_of_coe (P : K[X]) :
   rw [Ideal.count_associates_factors_eq span_ne_zero.1
     (Ideal.span_singleton_prime Polynomial.X_ne_zero |>.mpr prime_X) span_ne_zero.2,
     Ideal.count_associates_factors_eq]
-  on_goal 1 => convert (normalized_count_X_eq_of_coe hP).symm
+  on_goal 1 => convert! (normalized_count_X_eq_of_coe hP).symm
   exacts [Ideal.count_span_normalizedFactors_eq_of_normUnit hP Polynomial.normUnit_X prime_X,
     Ideal.count_span_normalizedFactors_eq_of_normUnit (by simp [hP]) normUnit_X X_prime,
     span_ne_zero'.1, (idealX K).isPrime, span_ne_zero'.2]
@@ -474,8 +467,9 @@ theorem valuation_eq_LaurentSeries_valuation (P : K⟮X⟯) :
   refine RatFunc.induction_on' P ?_
   intro f g h
   rw [Polynomial.valuation_of_mk K f h, RatFunc.mk_eq_mk' f h, Eq.comm]
-  convert @valuation_of_mk' K⟦X⟧ _ _ K⸨X⸩ _ _ _ (PowerSeries.idealX K) f
-        ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 <| (by simp [h])⟩
+  convert!
+    @valuation_of_mk' K⟦X⟧ _ _ K⸨X⸩ _ _ _ (PowerSeries.idealX K) f
+      ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 <| (by simp [h])⟩
   · simp [← IsScalarTower.algebraMap_apply K[X] K⟮X⟯ K⸨X⸩]
   exacts [intValuation_eq_of_coe _, intValuation_eq_of_coe _]
 
@@ -774,7 +768,7 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
     constructor
     · have := (exists_lb_coeff_ne hℱ).choose_spec
       rw [Filter.eventually_iff] at this
-      convert this
+      convert! this
       ext
       simp only [Set.mem_iInter, Set.mem_setOf_eq]; rfl
     · rw [biInter_mem (Set.finite_Icc ℓ N)]
@@ -996,6 +990,14 @@ abbrev extensionAsRingHom :=
 /-- An abbreviation for the `X`-adic completion of `K⟮X⟯` -/
 abbrev RatFuncAdicCompl := adicCompletion K⟮X⟯ (idealX K)
 
+-- help typeclass inference along
+instance : Field (ratfuncAdicComplPkg (K := K).space) :=
+  inferInstanceAs <| Field (RatFuncAdicCompl K)
+
+-- help typeclass inference along
+instance : Valued (ratfuncAdicComplPkg (K := K).space) (WithZero (Multiplicative ℤ)) :=
+  inferInstanceAs <| Valued (RatFuncAdicCompl K) (WithZero (Multiplicative ℤ))
+
 /- The two instances below make `comparePkg` and `comparePkg_eq_extension` slightly faster. -/
 instance : UniformSpace (RatFuncAdicCompl K) := inferInstance
 instance : UniformSpace K⸨X⸩ := inferInstance
@@ -1027,7 +1029,6 @@ equivalence: it goes from `K⸨X⸩` to `RatFuncAdicCompl K` -/
 abbrev LaurentSeriesRingEquiv : K⸨X⸩ ≃+* RatFuncAdicCompl K :=
   (ratfuncAdicComplRingEquiv K).symm
 
-@[simp]
 lemma LaurentSeriesRingEquiv_def (f : K⟦X⟧) :
     (LaurentSeriesRingEquiv K) f = (LaurentSeriesPkg K).compare ratfuncAdicComplPkg (f : K⸨X⸩) :=
   rfl

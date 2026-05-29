@@ -744,7 +744,7 @@ theorem seq_of_forall_finite_exists {γ : Type*} {P : γ → Set γ → Prop}
   set f : (n : ℕ) → (g : (m : ℕ) → m < n → γ) → γ := fun n g => c (range fun k : Iio n => g k.1 k.2)
   set u : ℕ → γ := fun n => Nat.strongRecOn' n f
   refine ⟨u, fun n => ?_⟩
-  convert hc (u '' Iio n) ((finite_lt_nat _).image _)
+  convert! hc (u '' Iio n) ((finite_lt_nat _).image _)
   rw [image_eq_range]
   exact Nat.strongRecOn'_beta
 
@@ -759,7 +759,6 @@ theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ 
     @Fintype.card _ (fintypeInsertOfNotMem s h) = Fintype.card s + 1 := by
   simp [Fintype.card_ofFinset]
 
-@[simp]
 theorem card_insert {a : α} (s : Set α) [Fintype s] (h : a ∉ s)
     {d : Fintype (insert a s : Set α)} : @Fintype.card _ d = Fintype.card s + 1 := by
   rw [← card_fintypeInsertOfNotMem s h]; congr!

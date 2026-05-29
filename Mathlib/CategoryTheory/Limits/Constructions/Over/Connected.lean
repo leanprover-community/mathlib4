@@ -58,7 +58,7 @@ def raiseCone [IsConnected J] {B : D} {F : J ⥤ CostructuredArrow K B}
     let z : (Functor.const J).obj (K.obj c.pt) ⟶ _ :=
       (CategoryTheory.Functor.constComp J c.pt K).inv ≫ Functor.whiskerRight c.π K ≫
         natTransInCostructuredArrow F
-    convert (nat_trans_from_is_connected z j (Classical.arbitrary J)) <;> simp [z]
+    convert! (nat_trans_from_is_connected z j (Classical.arbitrary J)) <;> simp [z]
   π.naturality X Y f := by
     apply CommaMorphism.ext
     · simpa using (c.w f).symm

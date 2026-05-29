@@ -81,7 +81,7 @@ variable (k G) in
 @[simps toLinearMap]
 def ε : (trivial k G k).IntertwiningMap (linearize k G (MonoidalCategoryStruct.tensorUnit
     (Action (Type w) G))) where
-  __ := Finsupp.LinearEquiv.finsuppUnique k k PUnit |>.symm.toLinearMap
+  __ := Finsupp.uniqueLinearEquiv k k PUnit.unit |>.symm.toLinearMap
   isIntertwining' g := by ext1; simp [linearize_single _]
 
 lemma ε_one : ε k G 1 = Finsupp.single PUnit.unit 1 := by
@@ -93,7 +93,7 @@ variable (k G) in
 /-- The unit of the linearize functor. -/
 @[simps toLinearMap]
 def η : (linearize k G (𝟙_ (Action (Type u) G))).IntertwiningMap (trivial k G k) where
-  __ := (Finsupp.LinearEquiv.finsuppUnique k k PUnit).toLinearMap
+  __ := (Finsupp.uniqueLinearEquiv k k PUnit.unit).toLinearMap
   isIntertwining' g := by ext; simp [linearize_single _]
 
 lemma η_single (x : PUnit) : η k G (Finsupp.single x 1) = 1 := by
@@ -154,7 +154,7 @@ lemma μ_comp_assoc : ((linearizeMap (α_ X Y Z).hom).comp
     TensorProduct.assoc_tmul, LinearMap.lTensor_tmul, toLinearMap_apply]
   -- after fixing the defeq problems in `Action` and in the monoidal category structure of `types`
   -- this line should close the goal so this is left as an indicator.
-  with_reducible convert dsimp% linearizeMap_single (α_ X Y Z).hom ((x, y), z) (1 : k)
+  with_reducible convert! dsimp% linearizeMap_single (α_ X Y Z).hom ((x, y), z) (1 : k)
   all_goals with_reducible simp
 
 variable (X) in

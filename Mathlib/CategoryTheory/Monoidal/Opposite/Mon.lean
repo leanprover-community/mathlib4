@@ -5,7 +5,6 @@ Authors: Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Opposite
 public import Mathlib.CategoryTheory.Monoidal.Mon
 
 /-!

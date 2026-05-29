@@ -5,7 +5,6 @@ Authors: Reid Barton, Johan Commelin
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.Limits.Creates
 
 /-!
