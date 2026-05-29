@@ -54,6 +54,7 @@ section Roots
 
 /-- `roots p` noncomputably gives a multiset containing all the roots of `p`,
 including their multiplicities. -/
+@[wikidata Q214604]
 noncomputable def roots (p : R[X]) : Multiset R :=
   haveI := Classical.decEq R
   haveI := Classical.dec (p = 0)

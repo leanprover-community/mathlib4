@@ -70,6 +70,7 @@ variable (α : Type*) [Fintype α] [DecidableEq α]
 
 /-- The alternating group on a finite type, realized as a subgroup of `Equiv.Perm`.
   For $A_n$, use `alternatingGroup (Fin n)`. -/
+@[wikidata Q438814]
 def alternatingGroup : Subgroup (Perm α) :=
   sign.ker
 

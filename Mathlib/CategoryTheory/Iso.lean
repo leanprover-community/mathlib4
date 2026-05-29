@@ -49,7 +49,7 @@ The inverse morphism is bundled.
 
 See also `CategoryTheory.Core` for the category with the same objects and isomorphisms playing
 the role of morphisms. -/
-@[stacks 0017]
+@[stacks 0017, wikidata Q189112]
 structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
   /-- The forward direction of an isomorphism. -/
   hom : X ⟶ Y
