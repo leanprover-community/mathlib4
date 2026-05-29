@@ -2284,6 +2284,7 @@ public import Mathlib.Analysis.RCLike.Inner
 public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.Analysis.RCLike.Sqrt
 public import Mathlib.Analysis.RCLike.TangentCone
+public import Mathlib.Analysis.Rat.NatSqrt.Real
 public import Mathlib.Analysis.Real.Cardinality
 public import Mathlib.Analysis.Real.Hyperreal
 public import Mathlib.Analysis.Real.OfDigits
@@ -4277,7 +4278,6 @@ public import Mathlib.Data.Rat.Floor
 public import Mathlib.Data.Rat.Init
 public import Mathlib.Data.Rat.Lemmas
 public import Mathlib.Data.Rat.NatSqrt.Defs
-public import Mathlib.Data.Rat.NatSqrt.Real
 public import Mathlib.Data.Rat.Sqrt
 public import Mathlib.Data.Rat.Star
 public import Mathlib.Data.Real.Basic
