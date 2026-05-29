@@ -69,7 +69,8 @@ The order of vanishing of a non-zero element of the function field at any point 
 `Scheme.ord` is valued in `ℤᵐ⁰`, `0` does not denote a value of `ℤ` but an added `⊥` element.
 -/
 lemma ord_ne_zero {Z : X} (hZ : coheight Z = 1) {f : X.functionField} (hf : f ≠ 0) :
-    Scheme.ord Z hZ f ≠ 0 := (map_ne_zero (Scheme.ord Z hZ)).mpr hf
+    Scheme.ord Z hZ f ≠ 0 := by
+  rwa [map_ne_zero]
 
 /--
 The order of vanishing of a unit is `1` everywhere.
