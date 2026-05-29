@@ -120,7 +120,7 @@ theorem neg_one_lt_goldenConj : -1 < ψ := by
 theorem goldenRatio_irrational : Irrational φ := by
   have := Nat.Prime.irrational_sqrt (show Nat.Prime 5 by norm_num)
   have := this.ratCast_add 1
-  convert this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
+  convert! this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
   simp
   ring
 
@@ -128,7 +128,7 @@ theorem goldenRatio_irrational : Irrational φ := by
 theorem goldenConj_irrational : Irrational ψ := by
   have := Nat.Prime.irrational_sqrt (show Nat.Prime 5 by norm_num)
   have := this.ratCast_sub 1
-  convert this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
+  convert! this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
   simp
   ring
 
@@ -187,7 +187,7 @@ theorem coe_fib_eq' :
   · exact fib_isSol_fibRec
   · suffices LinearRecurrence.IsSolution fibRec
         ((fun n ↦ (√5)⁻¹ * φ ^ n) - (fun n ↦ (√5)⁻¹ * ψ ^ n)) by
-      convert this
+      convert! this
       rw [Pi.sub_apply]
       ring
     apply (@fibRec ℝ _).solSpace.sub_mem
