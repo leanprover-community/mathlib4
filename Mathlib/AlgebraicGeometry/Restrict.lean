@@ -854,7 +854,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The restriction of an open cover to an open subset. -/
 @[simps! I₀ X f]
 noncomputable
-def Scheme.OpenCover.restrict {X : Scheme.{u}} (𝒰 : X.OpenCover) (U : Opens X) :
+def Scheme.OpenCover.restrict {X : Scheme.{u}} (𝒰 : Scheme.OpenCover.{v} X) (U : Opens X) :
     U.toScheme.OpenCover := by
   refine Cover.copy (𝒰.pullback₁ U.ι) 𝒰.I₀ _ (𝒰.f · ∣_ U) (Equiv.refl _)
     (fun i ↦ IsOpenImmersion.isoOfRangeEq (Opens.ι _) (pullback.snd _ _) ?_) ?_

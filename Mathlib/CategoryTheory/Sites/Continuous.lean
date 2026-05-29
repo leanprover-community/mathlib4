@@ -253,6 +253,13 @@ lemma op_comp_isSheaf_of_isSheaf [IsContinuous F J K] (P : Dᵒᵖ ⥤ A) (h : P
     Presheaf.IsSheaf J (F.op ⋙ P) :=
   F.op_comp_isSheaf J K ⟨P, h⟩
 
+variable {K} in
+lemma op_comp_isSheaf_of_isSheaf_type [F.IsContinuous J K] {G : Dᵒᵖ ⥤ Type*}
+    (h : Presieve.IsSheaf K G) :
+    Presieve.IsSheaf J (F.op ⋙ G) := by
+  rw [← isSheaf_iff_isSheaf_of_type] at h ⊢
+  exact F.op_comp_isSheaf_of_isSheaf _ _ _ h
+
 /-- SGA 4 III 1.2 (i) => (iii) -/
 lemma W_map_of_adjunction_of_isContinuous (F : C ⥤ D) (H : (Cᵒᵖ ⥤ A) ⥤ (Dᵒᵖ ⥤ A))
     (adj : H ⊣ (Functor.whiskeringLeft _ _ _).obj F.op)
