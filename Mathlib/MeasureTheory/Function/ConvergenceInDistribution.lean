@@ -143,7 +143,7 @@ theorem tendstoInDistribution_of_ae_tendsto [l.IsCountablyGenerated]
     rw [lintegral_map' (by fun_prop) hZ]
     conv in ∫⁻ _, _ ∂_ => rw [lintegral_map' (by fun_prop) (hX₁ i)]
     apply tendsto_lintegral_filter_of_dominated_convergence' (bound := fun _ ↦ edist 0 f)
-    · exact .of_forall (fun _ ↦ by fun_prop)
+    · exact .of_forall (by fun_prop)
     · simp [f.apply_le_edist_zero]
     · simp
     filter_upwards [hX₂] with ω hω
