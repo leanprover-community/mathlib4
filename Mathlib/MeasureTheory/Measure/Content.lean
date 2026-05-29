@@ -173,7 +173,7 @@ theorem innerContent_iSup_nat [R1Space G] (U : ℕ → Opens G) :
   rcases K.isCompact.finite_compact_cover t (SetLike.coe ∘ U) (fun i _ => (U i).isOpen) ht with
     ⟨K', h1K', h2K', h3K'⟩
   let L : ℕ → Compacts G := fun n => ⟨K' n, h1K' n⟩
-  convert le_trans (h3 t L) _
+  convert! le_trans (h3 t L) _
   · ext1
     rw [Compacts.coe_finset_sup, Finset.sup_eq_iSup]
     exact h3K'
@@ -204,7 +204,7 @@ theorem is_mul_left_invariant_innerContent [Group G] [SeparatelyContinuousMul G]
     (h : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_const_mul g) = μ K) (g : G)
     (U : Opens G) :
     μ.innerContent (Opens.comap (Homeomorph.mulLeft g) U) = μ.innerContent U := by
-  convert μ.innerContent_comap (Homeomorph.mulLeft g) (fun K => h g) U
+  convert! μ.innerContent_comap (Homeomorph.mulLeft g) (fun K => h g) U
 
 @[to_additive]
 theorem innerContent_pos_of_is_mul_left_invariant [Group G] [IsTopologicalGroup G]
@@ -276,7 +276,7 @@ theorem outerMeasure_preimage (f : G ≃ₜ G) (h : ∀ ⦃K : Compacts G⦄, μ
   refine inducedOuterMeasure_preimage _ μ.innerContent_iUnion_nat μ.innerContent_mono _
     (fun _ => f.isOpen_preimage) ?_
   intro s hs
-  convert μ.innerContent_comap f h ⟨s, hs⟩
+  convert! μ.innerContent_comap f h ⟨s, hs⟩
 
 theorem outerMeasure_lt_top_of_isCompact [WeaklyLocallyCompactSpace G]
     {K : Set G} (hK : IsCompact K) :
@@ -292,7 +292,7 @@ theorem outerMeasure_lt_top_of_isCompact [WeaklyLocallyCompactSpace G]
 theorem is_mul_left_invariant_outerMeasure [Group G] [SeparatelyContinuousMul G]
     (h : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_const_mul g) = μ K) (g : G)
     (A : Set G) : μ.outerMeasure ((g * ·) ⁻¹' A) = μ.outerMeasure A := by
-  convert μ.outerMeasure_preimage (Homeomorph.mulLeft g) (fun K => h g) A
+  convert! μ.outerMeasure_preimage (Homeomorph.mulLeft g) (fun K => h g) A
 
 theorem outerMeasure_caratheodory (A : Set G) :
     MeasurableSet[μ.outerMeasure.caratheodory] A ↔
@@ -306,7 +306,7 @@ theorem outerMeasure_caratheodory (A : Set G) :
 theorem outerMeasure_pos_of_is_mul_left_invariant [Group G] [IsTopologicalGroup G]
     (h3 : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_const_mul g) = μ K) (K : Compacts G)
     (hK : μ K ≠ 0) {U : Set G} (h1U : IsOpen U) (h2U : U.Nonempty) : 0 < μ.outerMeasure U := by
-  convert μ.innerContent_pos_of_is_mul_left_invariant h3 K hK ⟨U, h1U⟩ h2U
+  convert! μ.innerContent_pos_of_is_mul_left_invariant h3 K hK ⟨U, h1U⟩ h2U
   exact μ.outerMeasure_opens ⟨U, h1U⟩
 
 variable [S : MeasurableSpace G] [BorelSpace G]

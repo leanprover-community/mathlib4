@@ -44,7 +44,7 @@ instance preservesLimit_finite_toFunctor {J : Type w} [SmallCategory J]
 instance preservesLimitsOfShape_finite_toFunctor {J : Type w} [SmallCategory J] [FinCategory J] :
     PreservesLimitsOfShape J (toOrderHom f).toFunctor where
 
-instance [InfTopHomClass F α β] : PreservesFiniteLimits (toOrderHom f).toFunctor where
+instance : PreservesFiniteLimits (toOrderHom f).toFunctor where
   preservesFiniteLimits _ _ _ := inferInstance
 
 end
@@ -62,7 +62,7 @@ instance preservesColimit_finite_toFunctor {J : Type w} [SmallCategory J]
 instance preservesColimitsOfShape_finite_toFunctor {J : Type w} [SmallCategory J]
     [FinCategory J] : PreservesColimitsOfShape J (toOrderHom f).toFunctor where
 
-instance [SupBotHomClass F α β] : PreservesFiniteColimits (toOrderHom f).toFunctor where
+instance : PreservesFiniteColimits (toOrderHom f).toFunctor where
   preservesFiniteColimits _ _ _ := inferInstance
 
 end
