@@ -47,14 +47,11 @@ on:
           experiments.
         required: false
         type: string
-        # Bring-up default: a small cross-area set (~1.3k-module closure, ~16%
-        # of Mathlib, sub-GB) instead of the full library, to keep experiment
-        # uploads small. Every real target drags in a shared ~1.3k-module
-        # tactic+foundation base, so this is near the practical floor while
-        # still touching several actively-edited areas (churn).
-        # For a full run, override the dispatch input with:
-        #   Mathlib Archive Counterexamples
-        default: Mathlib.Topology.Basic Mathlib.Combinatorics.SimpleGraph.Basic Mathlib.RingTheory.Ideal.Basic
+        # Default: the full `Mathlib` library — the representative master shadow.
+        # For a cheaper experiment, pass a smaller set, e.g.
+        #   Mathlib.Topology.Basic Mathlib.Combinatorics.SimpleGraph.Basic Mathlib.RingTheory.Ideal.Basic
+        # or add `Archive Counterexamples` to also shadow those libraries.
+        default: Mathlib
 
 permissions:
   contents: read
@@ -82,7 +79,7 @@ jobs:
     env:
       LAKE_CACHE_DIR: .lake/cache
       LAKE_NO_CACHE: true
-      STAGE_TARGETS: ${{ inputs.targets || 'Mathlib.Topology.Basic Mathlib.Combinatorics.SimpleGraph.Basic Mathlib.RingTheory.Ideal.Basic' }}
+      STAGE_TARGETS: ${{ inputs.targets || 'Mathlib' }}
     defaults:
       run:
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_NO_CACHE --env STAGE_TARGETS --env SHADOW_SCOPE -- bash -euxo pipefail {0}
@@ -324,7 +321,7 @@ jobs:
     timeout-minutes: 60
     env:
       # Must match the targets staged/uploaded by build_and_stage.
-      STAGE_TARGETS: ${{ inputs.targets || 'Mathlib.Topology.Basic Mathlib.Combinatorics.SimpleGraph.Basic Mathlib.RingTheory.Ideal.Basic' }}
+      STAGE_TARGETS: ${{ inputs.targets || 'Mathlib' }}
       # `lake cache get` issues unauthenticated GETs, so this job must read
       # from a publicly-readable host. On R2 that is the bucket's public
       # r2.dev (or custom-domain) URL, which is a different host than the
