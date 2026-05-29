@@ -1072,15 +1072,13 @@ lemma coheight_zero_of_coheight_one_of_strictMono
   suffices coheight (x : WithTop α) = 1 by
     simp only [coheight_coe_withTop] at this
     by_cases m : coheight x = ⊤
-    · rw [m] at this
-      contradiction
+    · simp_all
     · push Not at m
       rw [ENat.ne_top_iff_exists] at m
       obtain ⟨a, ha⟩ := m
       rw [← ha] at this ⊢
-      rw [← Nat.cast_one, ← ENat.coe_add, ENat.coe_inj] at this
-      simp only [Nat.add_eq_right] at this
-      rw [this, ENat.coe_zero]
+      norm_cast at *
+      lia
   refine le_antisymm ?_ (by simp)
   have := coheight_le_coheight_apply_of_strictMono f hf ↑x
   rwa [h] at this
