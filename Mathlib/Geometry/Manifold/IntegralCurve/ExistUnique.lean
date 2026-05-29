@@ -93,13 +93,12 @@ lemma hasMFDerivAt_extChartAt_comp_of_hasDerivAt {v : (x : M) → TangentSpace I
     {f : ℝ → E} {t : ℝ} (hmem : f t ∈ interior (extChartAt I x₀).target)
     (hf : HasDerivAt f (((extChartAt I.tangent (⟨x₀, v x₀⟩ : TangentBundle I M)) ∘
       (fun x ↦ ⟨x, v x⟩) ∘ (extChartAt I x₀).symm) (f t)).2 t) :
-    HasMFDerivAt 𝓘(ℝ, ℝ) I ((extChartAt I x₀).symm ∘ f) t
+    HasMFDerivAt% ((extChartAt I x₀).symm ∘ f) t
       ((1 : ℝ →L[ℝ] ℝ).smulRight (v ((extChartAt I x₀).symm (f t)))) := by
   let xₜ : M := (extChartAt I x₀).symm (f t)
   change HasDerivAt f (x := t) <| tangentCoordChange I xₜ x₀ xₜ (v xₜ) at hf
   -- express the derivative of the integral curve in the local chart
-  have hmem' := interior_subset hmem
-  refine ⟨continuousAt_extChartAt_symm'' hmem' |>.comp (x := t) hf.continuousAt,
+  refine ⟨continuousAt_extChartAt_symm'' (interior_subset hmem) |>.comp (x := t) hf.continuousAt,
     HasDerivWithinAt.hasFDerivWithinAt ?_⟩
   simp only [mfld_simps, hasDerivWithinAt_univ]
   exact hasDerivAt_extChartAt_comp_extChartAt_comp_of_hasDerivAt_tangentCoordChange hmem hf
