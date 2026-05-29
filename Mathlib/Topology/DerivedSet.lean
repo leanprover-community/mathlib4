@@ -29,7 +29,7 @@ theorem AccPt.map {β : Type*} [TopologicalSpace β] {F : Filter X} {x : X}
   rw [Filter.map_inf hf2]
   gcongr
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hf1.continuousWithinAt
-  simpa [hf2.eq_iff] using eventually_mem_nhdsWithin
+  simpa [hf2.eq_iff] using! eventually_mem_nhdsWithin
 
 /--
 The derived set of a set is the set of all accumulation points of it.

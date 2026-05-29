@@ -177,7 +177,6 @@ instance : NatCast (RingQuot r) :=
   ⟨fun ⟨a⟩ n ↦ ⟨Quot.lift (fun a ↦ Quot.mk (RingQuot.Rel r) (a ^ n))
     (fun a b (h : Rel r a b) ↦ by
       -- note we can't define a `Rel.pow` as `Rel` isn't reflexive so `Rel r 1 1` isn't true
-      dsimp only
       induction n with
       | zero => rw [pow_zero, pow_zero]
       | succ n ih =>

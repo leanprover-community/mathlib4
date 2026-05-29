@@ -119,7 +119,7 @@ lemma uniformizingPolynomial_ne_zero : πᵥ ≠ 0 := by
   simp_all [uniformizingPolynomial]
 
 lemma valuation_uniformizingPolynomial_lt_one : v πᵥ < 1 := by
-  simpa using (degree_lt_wf.min_mem _
+  simpa using! (degree_lt_wf.min_mem _
     (setOf_polynomial_valuation_lt_one_and_ne_zero_nonempty hle)).1
 
 open Ideal in
