@@ -85,27 +85,35 @@ lemma setBernoulli_real_mem_of_notMem (p : I) (hi : i ∉ u) :
     setBer(u, p).real {s | i ∈ s} = 0 := by
   rw [setBernoulli_eq_map]
   have h1 : {s : Set ι | i ∈ s} = (i ∈ ·) ⁻¹' {True} := by grind
-  have h2 : (fun x ↦ i ∈ x) ∘ (fun (p : ι → Prop) ↦ {i | p i}) = Function.eval i := by ext; simp
+  have h2 : (fun x ↦ i ∈ x) ∘ (fun (p : ι → Prop) ↦ {i | p i}) = Function.eval i := by grind
   rw [h1, ← map_measureReal_apply, map_map, h2, infinitePi_map_eval, measureReal_def]
   · simp [hi]
   any_goals fun_prop
   simp
 
-lemma HasLaw.hasLaw_indicator_bernoulliMeasure_of_setBernoulli_of_mem (hi : i ∈ u) {S : Ω → Set ι}
+lemma HasLaw.indicator_of_setBernoulli_of_mem (hi : i ∈ u) {S : Ω → Set ι} {M : Type*} [Zero M]
+    [MeasurableSpace M] [MeasurableSingletonClass M] (c : M) [NeZero c]
     (hS : HasLaw S setBer(u, p) P) :
-    HasLaw ({ω | i ∈ S ω}.indicator 1) Ber(1, 0, p) P := by
+    HasLaw ({ω | i ∈ S ω}.indicator (fun _ ↦ c)) Ber(c, 0, p) P := by
   have := hS.isProbabilityMeasure
   have : p = ⟨P.real {ω | i ∈ S ω}, by simp⟩ := by
     ext
     simp only
     rw [hS.measureReal_eq (p := (i ∈ ·)) (by measurability), ← setBernoulli_real_mem_of_mem _ hi]
   rw [this]
-  exact hasLaw_indicator_one_bernoulliMeasure
+  exact hasLaw_indicator_bernoulliMeasure c
     (hS.aemeasurable.nullMeasurableSet_preimage (s := {t | i ∈ t}) (by measurability))
 
-lemma HasLaw.hasLaw_indicator_dirac_of_setBernoulli_of_notMem (hi : i ∉ u) {S : Ω → Set ι}
+lemma HasLaw.indicator_one_of_setBernoulli_of_mem (hi : i ∈ u) {S : Ω → Set ι} {M : Type*} [Zero M]
+    [One M] [MeasurableSpace M] [MeasurableSingletonClass M] [NeZero (1 : M)]
     (hS : HasLaw S setBer(u, p) P) :
-    HasLaw ({ω | i ∈ S ω}.indicator 1) (dirac 0) P := by
+    HasLaw ({ω | i ∈ S ω}.indicator (1 : Ω → M)) Ber(1, 0, p) P :=
+  hS.indicator_of_setBernoulli_of_mem hi 1
+
+lemma HasLaw.indicator_of_setBernoulli_of_notMem (hi : i ∉ u) {S : Ω → Set ι} {M : Type*} [Zero M]
+    [MeasurableSpace M] [MeasurableSingletonClass M]
+    (hS : HasLaw S setBer(u, p) P) (f : Ω → M) :
+    HasLaw ({ω | i ∈ S ω}.indicator f) (dirac 0) P := by
   have := hS.isProbabilityMeasure
   have : (0 : I) = ⟨P.real {ω | i ∈ S ω}, by simp⟩ := by
     ext
