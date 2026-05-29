@@ -147,7 +147,7 @@ theorem tendstoInDistribution_of_ae_tendsto [l.IsCountablyGenerated]
     · simp [f.apply_le_edist_zero]
     · simp
     filter_upwards [hX₂] with ω hω
-    simpa using f.continuous.tendsto (Z ω) |>.comp hω
+    simpa [Function.comp_def] using f.continuous.tendsto (Z ω) |>.comp hω
 
 end TendstoInDistribution
 
