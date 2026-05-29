@@ -194,4 +194,6 @@ lemma isStrictMap_prodMap (hf : IsStrictMap f) (hg : IsStrictMap g) :
     (Homeomorph.setCongr (by simp)).trans (Homeomorph.Set.prod _ _)
   exact aux.symm.isOpenQuotientMap.comp (hf.prodMap hg)
 
+-- TODO Add the lemma `isStrictMap_piMap` once `MonoidHom.piMap` has been defined.
+
 end MonoidHom
