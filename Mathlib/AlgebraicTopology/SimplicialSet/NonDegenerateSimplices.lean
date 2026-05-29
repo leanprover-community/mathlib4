@@ -67,9 +67,10 @@ lemma induction_mk {motive : X.N → Sort*}
     (mk : ∀ (n : ℕ) (x : X.nonDegenerate n), motive (mk x.1 x.2)) {n : ℕ} (s : X.nonDegenerate n) :
   induction (motive := motive) mk (N.mk s.val s.property) = mk n s := rfl
 
+set_option linter.tacticAnalysis.verifyGrindOnly false in
 lemma ext_iff (x y : X.N) :
     x = y ↔ x.toS = y.toS := by
-  grind [cases SSet.N]
+  grind only [cases SSet.N]
 
 instance : Preorder X.N := Preorder.lift toS
 
