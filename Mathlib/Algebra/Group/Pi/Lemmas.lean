@@ -27,7 +27,7 @@ universe u v w
 
 variable {ι α : Type*}
 variable {I : Type u}
-variable {f : I → Type v} {M : ι → Type*}
+variable {f : I → Type v} {M N : ι → Type*}
 
 variable (i : I)
 
@@ -64,40 +64,24 @@ end MulHom
 
 section MulHom
 
+variable [(i : I) → Mul (f i)]
+
 /-- A family of MulHom's `f a : γ →ₙ* β a` defines a MulHom `Pi.mulHom f : γ →ₙ* Π a, β a`
 given by `Pi.mulHom f x b = f b x`. -/
 @[to_additive (attr := simps)
   /-- A family of AddHom's `f a : γ → β a` defines an AddHom `Pi.addHom f : γ → Π a, β a` given by
   `Pi.addHom f x b = f b x`. -/]
-def Pi.mulHom {γ : Type w} [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i) : γ →ₙ* ∀ i, f i where
+def Pi.mulHom {γ : Type w} [Mul γ] (g : ∀ i, γ →ₙ* f i) : γ →ₙ* ∀ i, f i where
   toFun x i := g i x
   map_mul' x y := funext fun i => (g i).map_mul x y
 
 @[to_additive]
-theorem Pi.mulHom_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i)
+theorem Pi.mulHom_injective {γ : Type w} [Nonempty I] [Mul γ] (g : ∀ i, γ →ₙ* f i)
     (hg : ∀ i, Function.Injective (g i)) : Function.Injective (Pi.mulHom g) := fun _ _ h =>
   let ⟨i⟩ := ‹Nonempty I›
   hg i ((funext_iff.mp h :) i)
 
-/-- A family of monoid homomorphisms `f a : γ →* β a` defines a monoid homomorphism
-`Pi.monoidHom f : γ →* Π a, β a` given by `Pi.monoidHom f x b = f b x`. -/
-@[to_additive (attr := simps)
-  /-- A family of additive monoid homomorphisms `f a : γ →+ β a` defines a monoid homomorphism
-  `Pi.addMonoidHom f : γ →+ Π a, β a` given by `Pi.addMonoidHom f x b = f b x`. -/]
-def Pi.monoidHom {γ : Type w} [∀ i, MulOneClass (f i)] [MulOneClass γ] (g : ∀ i, γ →* f i) :
-    γ →* ∀ i, f i :=
-  { Pi.mulHom fun i => (g i).toMulHom with
-    toFun := fun x i => g i x
-    map_one' := funext fun i => (g i).map_one }
-
-@[to_additive]
-theorem Pi.monoidHom_injective {γ : Type w} [Nonempty I] [∀ i, MulOneClass (f i)] [MulOneClass γ]
-    (g : ∀ i, γ →* f i) (hg : ∀ i, Function.Injective (g i)) :
-    Function.Injective (Pi.monoidHom g) :=
-  Pi.mulHom_injective (fun i => (g i).toMulHom) hg
-
 variable (f)
-variable [(i : I) → Mul (f i)]
 
 /-- Evaluation of functions into an indexed collection of semigroups at a point is a semigroup
 homomorphism.
@@ -108,6 +92,17 @@ This is `Function.eval i` as a `MulHom`. -/
 def Pi.evalMulHom (i : I) : (∀ i, f i) →ₙ* f i where
   toFun g := g i
   map_mul' _ _ := Pi.mul_apply _ _ i
+
+/-- A family of MulHom's `f i : M i →ₙ* N i` defines a MulHom
+`MulHom.piMap f : (Π i, M i) →ₙ* (Π i, N i)`
+given by `MulHom.piMap f x i = f i x`. This is `Pi.map` for `MulHom`s. -/
+@[to_additive (attr := simps!)
+  /-- A family of AddHom's `f i : M i →ₙ+ N i` defines an AddHom
+  `AddHom.piMap f : (Π i, M i) →ₙ+ (Π i, N i)`
+  given by `AddHom.piMap f x i = f i x`. This is `Pi.map` for `AddHom`s. -/]
+def MulHom.piMap [∀ i, Mul (M i)] [∀ i, Mul (N i)] (g : ∀ i, M i →ₙ* N i) :
+    (∀ i, M i) →ₙ* (∀ i, N i) :=
+  Pi.mulHom fun i ↦ (g i).comp (Pi.evalMulHom M i)
 
 /-- `Function.const` as a `MulHom`. -/
 @[to_additive (attr := simps) /-- `Function.const` as an `AddHom`. -/]
@@ -140,8 +135,26 @@ end MulHom
 
 section MonoidHom
 
-variable (f)
 variable [(i : I) → MulOneClass (f i)]
+
+/-- A family of monoid homomorphisms `f a : γ →* β a` defines a monoid homomorphism
+`Pi.monoidHom f : γ →* Π a, β a` given by `Pi.monoidHom f x b = f b x`. -/
+@[to_additive (attr := simps)
+  /-- A family of additive monoid homomorphisms `f a : γ →+ β a` defines a monoid homomorphism
+  `Pi.addMonoidHom f : γ →+ Π a, β a` given by `Pi.addMonoidHom f x b = f b x`. -/]
+def Pi.monoidHom {γ : Type*} [MulOneClass γ] (g : ∀ i, γ →* f i) :
+    γ →* ∀ i, f i :=
+  { Pi.mulHom fun i => (g i).toMulHom with
+    toFun := fun x i => g i x
+    map_one' := funext fun i => (g i).map_one }
+
+@[to_additive]
+theorem Pi.monoidHom_injective {γ : Type w} [Nonempty I] [MulOneClass γ]
+    (g : ∀ i, γ →* f i) (hg : ∀ i, Function.Injective (g i)) :
+    Function.Injective (Pi.monoidHom g) :=
+  Pi.mulHom_injective (fun i => (g i).toMulHom) hg
+
+variable (f)
 
 /-- Evaluation of functions into an indexed collection of monoids at a point is a monoid
 homomorphism.
@@ -156,6 +169,17 @@ def Pi.evalMonoidHom (i : I) : (∀ i, f i) →* f i where
 
 @[simp, norm_cast]
 lemma Pi.coe_evalMonoidHom (i : I) : ⇑(evalMonoidHom f i) = Function.eval i := rfl
+
+/-- A family of monoid homomorphisms `f i : M i →* N i` defines a monoid homomorphism
+`MonoidHom.piMap f : (Π i, M i) →* (Π i, N i)`
+given by `MonoidHom.piMap f x i = f i x`. This is `Pi.map` for `MonoidHom`s. -/
+@[to_additive (attr := simps!)
+  /-- A family of additive monoid homomorphisms `f i : M i →+ N i` defines an additive monoid
+  homomorphism  `AddMonoidHom.piMap f : (Π i, M i) →+ (Π i, N i)`
+  given by `AddMonoidHom.piMap f x i = f i x`. This is `Pi.map` for `AddMonoidHom`s. -/]
+def MonoidHom.piMap [∀ i, MulOneClass (M i)] [∀ i, MulOneClass (N i)] (g : ∀ i, M i →* N i) :
+    (∀ i, M i) →* (∀ i, N i) :=
+  Pi.monoidHom fun i ↦ (g i).comp (Pi.evalMonoidHom M i)
 
 /-- `Function.const` as a `MonoidHom`. -/
 @[to_additive (attr := simps) /-- `Function.const` as an `AddMonoidHom`. -/]
