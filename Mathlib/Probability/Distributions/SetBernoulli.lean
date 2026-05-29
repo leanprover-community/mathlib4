@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.ProductMeasure
-public import Mathlib.Probability.HasLaw
 
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
 import Mathlib.Probability.Independence.InfinitePi
@@ -99,7 +98,7 @@ lemma HasLaw.hasLaw_indicator_bernoulliMeasure_of_setBernoulli_of_mem (hi : i �
   have : p = ⟨P.real {ω | i ∈ S ω}, by simp⟩ := by
     ext
     simp only
-    rw [hS.measure_real_eq (p := (i ∈ ·)) (by measurability), ← setBernoulli_real_mem_of_mem _ hi]
+    rw [hS.measureReal_eq (p := (i ∈ ·)) (by measurability), ← setBernoulli_real_mem_of_mem _ hi]
   rw [this]
   exact hasLaw_indicator_one_bernoulliMeasure
     (hS.aemeasurable.nullMeasurableSet_preimage (s := {t | i ∈ t}) (by measurability))
@@ -111,7 +110,7 @@ lemma HasLaw.hasLaw_indicator_dirac_of_setBernoulli_of_notMem (hi : i ∉ u) {S 
   have : (0 : I) = ⟨P.real {ω | i ∈ S ω}, by simp⟩ := by
     ext
     simp only [Set.Icc.coe_zero]
-    rw [hS.measure_real_eq (p := (i ∈ ·)) (by measurability), setBernoulli_real_mem_of_notMem _ hi]
+    rw [hS.measureReal_eq (p := (i ∈ ·)) (by measurability), setBernoulli_real_mem_of_notMem _ hi]
   rw [← bernoulliMeasure_zero (x := 1), this]
   exact hasLaw_indicator_one_bernoulliMeasure
     (hS.aemeasurable.nullMeasurableSet_preimage (s := {t | i ∈ t}) (by measurability))
@@ -169,7 +168,7 @@ variable (p) in
 @[simp]
 lemma setBernoulli_real_singleton (p : I) (hsu : s ⊆ u) (hu : u.Finite) :
     setBer(u, p).real {s} = p ^ s.ncard * (1 - p : ℝ) ^ (u \ s).ncard := by
-  rw [measureReal_def, setBernoulli_singleton u p hsu hu]
+  rw [measureReal_def, setBernoulli_singleton p hsu hu]
   norm_cast
 
 lemma map_ncard_setBernoulli_real_singleton {u : Set ι} (hu : u.Finite) (p : I) (k : ℕ) :
