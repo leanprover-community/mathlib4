@@ -33,7 +33,7 @@ if `E : C ≌ D` is an equivalence of pretriangulated categories, then
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -201,6 +201,7 @@ instance [h : E.inverse.IsTriangulated] : E.symm.functor.IsTriangulated := h
 lemma mk' (h : E.functor.IsTriangulated) : E.IsTriangulated where
   rightAdjoint_isTriangulated := E.toAdjunction.isTriangulated_rightAdjoint
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for `Equivalence.IsTriangulated`. -/
 lemma mk'' (h : E.inverse.IsTriangulated) : E.IsTriangulated where
   leftAdjoint_isTriangulated := (mk' E.symm h).rightAdjoint_isTriangulated

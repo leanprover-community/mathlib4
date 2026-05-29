@@ -108,7 +108,6 @@ noncomputable def limit.toUnder (F : J ⥤ C) [HasLimit F] :
 def Cone.mapConeToUnder {F : J ⥤ C} (c : Cone F) : (Under.forget c.pt).mapCone c.toUnder ≅ c :=
   Iso.refl _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a diagram of `StructuredArrow X F`s, we may obtain a cone with cone point `X`. -/
 @[simps!]
 def Cone.fromStructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ StructuredArrow X F) :
@@ -140,7 +139,7 @@ def Cone.fromCostructuredArrow (F : J ⥤ C) : CostructuredArrow (const J) F ⥤
   map f :=
     { hom := f.left
       w := fun j => by
-        convert congr_fun (congr_arg NatTrans.app f.w) j
+        convert! congr_fun (congr_arg NatTrans.app f.w) j
         simp }
 
 /-- The category of cones on `F` is just the comma category `(Δ ↓ F)`, where `Δ` is the constant
@@ -268,7 +267,6 @@ noncomputable def colimit.toOver (F : J ⥤ C) [HasColimit F] :
 def Cocone.mapCoconeToOver {F : J ⥤ C} (c : Cocone F) : (Over.forget c.pt).mapCocone c.toOver ≅ c :=
   Iso.refl _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a diagram `CostructuredArrow F X`s, we may obtain a cocone with cone point `X`. -/
 @[simps!]
 def Cocone.fromCostructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ CostructuredArrow F X) :

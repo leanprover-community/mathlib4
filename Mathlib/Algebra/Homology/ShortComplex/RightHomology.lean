@@ -163,6 +163,14 @@ set_option backward.isDefEq.respectTransparency false in
   rw [← cancel_epi (ofIsLimitKernelFork S hf c hc).p, p_g',
     ofIsLimitKernelFork_p, id_comp]
 
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma ofIsLimitKernelFork_descQ (hf : S.f = 0) (c : KernelFork S.g) (hc : IsLimit c)
+    {T : C} (φ : S.X₂ ⟶ T) :
+    dsimp% (ofIsLimitKernelFork S hf c hc).descQ φ (by simp [hf]) = φ := by
+  rw [← cancel_epi (ofIsLimitKernelFork S hf c hc).p, p_descQ]
+  simp
+
 /-- When the first map `S.f` is zero, this is the right homology data on `S` given by
 the chosen `kernel S.g` -/
 @[simps!]

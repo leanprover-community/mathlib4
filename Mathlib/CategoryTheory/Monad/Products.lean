@@ -49,7 +49,6 @@ def prodComonad : Comonad C where
   ε := { app := fun _ => Limits.prod.snd }
   δ := { app := fun _ => prod.lift Limits.prod.fst (𝟙 _) }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The forward direction of the equivalence from coalgebras for the product comonad to the over
 category.
 -/
@@ -95,7 +94,6 @@ def coprodMonad : Monad C where
   η := { app := fun _ => coprod.inr }
   μ := { app := fun _ => coprod.desc coprod.inl (𝟙 _) }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The forward direction of the equivalence from algebras for the coproduct monad to the under
 category.
 -/

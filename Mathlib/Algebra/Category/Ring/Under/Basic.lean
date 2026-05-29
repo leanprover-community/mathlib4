@@ -34,7 +34,6 @@ instance : CoeSort (Under R) (Type u) where
 
 instance (A : Under R) : Algebra R A := RingHom.toAlgebra A.hom.hom
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Turn a morphism in `Under R` into an algebra homomorphism. -/
 def toAlgHom {A B : Under R} (f : A ⟶ B) : A →ₐ[R] B where
   __ := f.right.hom
@@ -81,7 +80,7 @@ def toUnder {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 @[simp]
 lemma toUnder_right {A B : Type u} [CommRing A] [CommRing B] [Algebra R A]
     [Algebra R B] (f : A →ₐ[R] B) (a : A) :
-    f.toUnder.right a = f a :=
+    Under.Hom.right f.toUnder a = f a :=
   rfl
 
 @[simp]
@@ -131,7 +130,7 @@ variable [Algebra R S]
 
 variable (R S) in
 /-- The base change functor `A ↦ S ⊗[R] A`. -/
-@[simps! map_right]
+@[simps! obj_right map_right]
 def tensorProd : Under R ⥤ Under S where
   obj A := mkUnder S (S ⊗[R] A)
   map f := Algebra.TensorProduct.map (AlgHom.id S S) (toAlgHom f) |>.toUnder

@@ -50,11 +50,11 @@ syntax (name := byContra!)
 
 local elab "try_push_neg_at" cfg:optConfig h:ident : tactic => do
   Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[h] false)
-    (failIfUnchanged := false)
+    (ifUnchanged := .silent)
 
 local elab "try_push_neg" cfg:optConfig : tactic => do
   Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[] true)
-    (failIfUnchanged := false)
+    (ifUnchanged := .silent)
 
 macro_rules
 | `(tactic| by_contra! $cfg $[$pat?]? $[: $ty?]?) => do

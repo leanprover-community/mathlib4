@@ -146,7 +146,7 @@ theorem d_eq [DecidableEq G] :
       (coinvariantsTensorFreeLEquiv A (Fin n → G)).toModuleIso.hom := by
   ext : 3
   simp [d_single (k := k), TensorProduct.tmul_add, TensorProduct.tmul_sum,
-    barComplex.d_single (k := k), Representation.IntertwiningMap.toLinearMap_apply]
+    barComplex.d_single (k := k)]
 
 end inhomogeneousChains
 
@@ -179,7 +179,7 @@ theorem inhomogeneousChains.d_def (n : ℕ) :
 
 theorem inhomogeneousChains.d_comp_d :
     d A (n + 1) ≫ d A n = 0 := by
-  simpa [ChainComplex.of] using ((inhomogeneousChains A).d_comp_d (n + 2) (n + 1) n)
+  simpa [ChainComplex.of.d] using ((inhomogeneousChains A).d_comp_d (n + 2) (n + 1) n)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous chains is isomorphic

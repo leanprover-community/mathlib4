@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.Geometry.Convex.Cone.Pointed
 
 /-!
@@ -45,7 +44,6 @@ variable {p : M →ₗ[R] N →ₗ[R] R} {s t : Set M} {y : N}
 
 local notation3 "R≥0" => {c : R // 0 ≤ c}
 
-set_option backward.isDefEq.respectTransparency false in
 variable (p) in
 /-- The dual cone of a set `s` with respect to a bilinear pairing `p` is the cone consisting of all
 points `y` such that for all points `x ∈ s` we have `0 ≤ p x y`. -/
@@ -101,7 +99,6 @@ variable (s) in
 @[simp] lemma dual_flip_dual_dual_flip (s : Set N) :
     dual p.flip (dual p (dual p.flip s)) = dual p.flip s := dual_dual_flip_dual _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma dual_hull (s : Set M) : dual p (hull R s) = dual p s := by
   refine le_antisymm (dual_anti Submodule.subset_span) (fun x hx y hy => ?_)

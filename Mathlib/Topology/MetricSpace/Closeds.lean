@@ -24,7 +24,7 @@ inherits a metric space structure from the Hausdorff distance, as the Hausdorff 
 always finite in this context.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

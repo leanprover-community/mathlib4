@@ -40,7 +40,6 @@ def overEquivOfIsInitial [HasStrictInitialObjects C] (X : C) (h : IsInitial X) :
     Over.isoMk (asIso A.hom)
   counitIso := Iso.refl _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has strict terminal objects and `X` is a terminal object, the category
 `Under X` is equivalent to a point. -/
 @[simps, pp_with_univ]

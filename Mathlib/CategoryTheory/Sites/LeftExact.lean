@@ -293,8 +293,9 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toSheafify_plusPlusIsoSheafify_hom (P : Cᵒᵖ ⥤ D) :
     J.toSheafify P ≫ (plusPlusIsoSheafify J D P).hom = toSheafify J P := by
-  convert Adjunction.unit_leftAdjointUniq_hom_app
-    (plusPlusAdjunction J D) (sheafificationAdjunction J D) P
+  convert!
+    Adjunction.unit_leftAdjointUniq_hom_app (plusPlusAdjunction J D) (sheafificationAdjunction J D)
+      P
   ext1 P
   dsimp [GrothendieckTopology.toSheafify, plusPlusAdjunction]
   rw [Category.comp_id]
@@ -304,7 +305,7 @@ instance [PreservesLimits (forget D)] [HasFiniteLimits D]
     HasSheafify J D :=
   HasSheafify.mk' J D (plusPlusAdjunction J D)
 
-instance : HasSheafify J (Type max u v) := by
+instance : HasSheafify J (Type (max u v)) := by
   infer_instance
 
 end

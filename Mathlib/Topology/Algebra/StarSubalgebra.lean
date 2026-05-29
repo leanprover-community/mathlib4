@@ -52,7 +52,7 @@ theorem isClosedEmbedding_inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ �
   { IsEmbedding.inclusion h with
     isClosed_range := isClosed_induced_iff.2
       ⟨S₁, hS₁, by
-          convert (Set.range_subtype_map id _).symm
+          convert! (Set.range_subtype_map id _).symm
           · rw [Set.image_id]; rfl
           · intro _ h'
             apply h h' ⟩ }
@@ -237,7 +237,7 @@ lemma le_centralizer_centralizer [T2Space A] (x : A) :
 theorem induction_on {x y : A}
     (hy : y ∈ elemental R x) {P : (u : A) → u ∈ elemental R x → Prop}
     (self : P x (self_mem R x)) (star_self : P (star x) (star_self_mem R x))
-    (algebraMap : ∀ r, P (algebraMap R A r) (_root_.algebraMap_mem _ r))
+    (algebraMap : ∀ r, P (algebraMap R A r) (algebraMap_mem _ r))
     (add : ∀ u hu v hv, P u hu → P v hv → P (u + v) (add_mem hu hv))
     (mul : ∀ u hu v hv, P u hu → P v hv → P (u * v) (mul_mem hu hv))
     (closure : ∀ s : Set A, (hs : s ⊆ elemental R x) → (∀ u, (hu : u ∈ s) →

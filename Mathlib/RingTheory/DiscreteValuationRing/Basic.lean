@@ -6,6 +6,7 @@ Authors: Kevin Buzzard
 module
 
 public import Mathlib.RingTheory.AdicCompletion.Basic
+public import Mathlib.RingTheory.Length
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
@@ -358,6 +359,8 @@ lemma exists_units_eq_smul_zpow_of_irreducible
 
 open Submodule.IsPrincipal
 
+/-- Every nonzero ideal in a DVR is a power of the maximal ideal.
+See `idealOrderIsoENat` for a precise classification of ideals in a DVR. -/
 theorem ideal_eq_span_pow_irreducible {s : Ideal R} (hs : s ≠ ⊥) {ϖ : R} (hirr : Irreducible ϖ) :
     ∃ n : ℕ, s = Ideal.span {ϖ ^ n} := by
   have gen_ne_zero : generator s ≠ 0 := by
@@ -505,6 +508,54 @@ lemma addVal_eq_iff_associated (x y : R) :
     exact Associates.mk_eq_mk_iff_associated.mp rfl
   · rintro ⟨u, rfl⟩
     simp_all
+
+variable (R)
+
+/-- The ideals of a discrete valuation ring are exactly the powers of the maximal ideal. -/
+@[simps apply]
+noncomputable def idealOrderIsoENat : Ideal R ≃o ENatᵒᵈ where
+  toFun I := .toDual (addVal R (generator I))
+  invFun n := n.ofDual.recTopCoe ⊥ (fun n ↦ maximalIdeal R ^ n)
+  left_inv I := by
+    let x := generator I
+    suffices (addVal R x).recTopCoe ⊥ (fun n ↦ maximalIdeal R ^ n) = span {x} by
+      rwa [Ideal.span_singleton_generator] at this
+    by_cases hx0 : x = 0
+    · simp [hx0]
+    · obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
+      obtain ⟨n, u, hu⟩ := eq_unit_mul_pow_irreducible hx0 hϖ
+      rw [hu, addVal_def' u hϖ, span_singleton_mul_left_unit u.isUnit,
+        ENat.recTopCoe_coe, hϖ.maximalIdeal_eq, span_singleton_pow]
+  right_inv n := by
+    obtain ⟨k, rfl⟩ := OrderDual.toDual.surjective n
+    dsimp
+    induction k with
+    | top => simp
+    | coe k =>
+      obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
+      rw [OrderDual.toDual_inj, ENat.recTopCoe_coe, hϖ.maximalIdeal_eq,
+        span_singleton_pow, ← hϖ.addVal_pow k, addVal_eq_iff_associated]
+      exact associated_generator_span_self (ϖ ^ k)
+  map_rel_iff' {I J} := by
+    simp [addVal_le_iff_dvd, ← span_singleton_le_span_singleton]
+
+@[simp]
+theorem idealOrderIsoENat_symm_apply_coe (n : ℕ) :
+    (idealOrderIsoENat R).symm n = maximalIdeal R ^ n :=
+  rfl
+
+variable {R} in
+theorem idealOrderIsoENat_symm_apply_coe_of_irreducible (n : ℕ) {ϖ : R} (hϖ : Irreducible ϖ) :
+    (idealOrderIsoENat R).symm n = Ideal.span {ϖ ^ n} := by
+  rw [idealOrderIsoENat_symm_apply_coe, hϖ.maximalIdeal_eq, span_singleton_pow]
+
+theorem coheight_pow_maximalIdeal (n : ℕ) : Order.coheight (maximalIdeal R ^ n) = n := by
+  simpa only [Order.coheight_toDual, Order.height_enat] using
+    Order.coheight_orderIso (idealOrderIsoENat R).symm (.toDual n)
+
+theorem length_quotient_pow_maximalIdeal (n : ℕ) :
+    Module.length R (R ⧸ maximalIdeal R ^ n) = n := by
+  rw [Module.length_quotient, coheight_pow_maximalIdeal]
 
 end
 

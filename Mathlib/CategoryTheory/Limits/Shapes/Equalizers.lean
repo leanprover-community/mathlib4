@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 This file defines (co)equalizers as special cases of (co)limits.
 
-An equalizer is the categorical generalization of the subobject {a ∈ A | f(a) = g(a)} known
+An equalizer is the categorical generalization of the subobject ${a ∈ A | f(a) = g(a)}$ known
 from abelian groups or modules. It is a limit cone over the diagram formed by `f` and `g`.
 
 A coequalizer is the dual concept.
@@ -210,24 +210,51 @@ theorem walkingParallelPairOpEquiv_counitIso_inv_app_op_one :
     walkingParallelPairOpEquiv.counitIso.inv.app (op one) = 𝟙 (op one) :=
   rfl
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u}
 variable {X Y : C}
 
+namespace parallelPair
+
+/-- Implementation of `parallelPair`, do not use directly. -/
+@[instance_reducible]
+def parallelPairObj (X Y : C) (x : WalkingParallelPair) : C :=
+  match x with
+  | zero => X
+  | one => Y
+
+@[simp] theorem parallelPairObj_zero : parallelPairObj X Y zero = X := rfl
+@[simp] theorem parallelPairObj_one : parallelPairObj X Y one = Y := rfl
+
+variable [Category.{v} C]
+
+/-- Implementation of `parallelPair`, do not use directly. -/
+def parallelPairHom (f g : X ⟶ Y) {x y : WalkingParallelPair} (h : x ⟶ y) :
+    parallelPairObj X Y x ⟶ parallelPairObj X Y y :=
+  match h with
+  | .id _ => 𝟙 _
+  | .left => f
+  | .right => g
+
+@[simp] theorem parallelPairHom_id {f g : X ⟶ Y} {x : WalkingParallelPair} :
+  parallelPairHom f g (𝟙 x) = 𝟙 (parallelPairObj X Y x) := (rfl)
+
+@[simp] theorem parallelPairHom_left {f g : X ⟶ Y} :
+  parallelPairHom f g .left = f := (rfl)
+
+@[simp] theorem parallelPairHom_right {f g : X ⟶ Y} :
+  parallelPairHom f g .right = g := (rfl)
+
+end parallelPair
+
+variable [Category.{v} C]
+
+open parallelPair in
 /-- `parallelPair f g` is the diagram in `C` consisting of the two morphisms `f` and `g` with
 common domain and codomain. -/
 def parallelPair (f g : X ⟶ Y) : WalkingParallelPair ⥤ C where
-  obj x :=
-    match x with
-    | zero => X
-    | one => Y
-  map h :=
-    match h with
-    | WalkingParallelPairHom.id _ => 𝟙 _
-    | left => f
-    | right => g
-  -- `sorry` can cope with this, but it's too slow:
-  map_comp := by
-    rintro _ _ _ ⟨⟩ g <;> cases g <;> simp
+  obj x := parallelPairObj X Y x
+  map h := parallelPairHom f g h
+  map_comp := by rintro _ _ _ ⟨⟩ ⟨⟩ <;> simp
 
 @[simp]
 theorem parallelPair_obj_zero (f g : X ⟶ Y) : (parallelPair f g).obj zero = X := rfl
@@ -896,7 +923,7 @@ def idFork (h : f = g) : Fork f g :=
 /-- The identity on `X` is an equalizer of `(f, g)`, if `f = g`. -/
 def isLimitIdFork (h : f = g) : IsLimit (idFork h) :=
   Fork.IsLimit.mk _ (fun s => Fork.ι s) (fun _ => Category.comp_id _) fun s m h => by
-    convert h
+    convert! h
     exact (Category.comp_id _).symm
 
 /-- Every equalizer of `(f, g)`, where `f = g`, is an isomorphism. -/
@@ -1114,7 +1141,7 @@ def idCofork (h : f = g) : Cofork f g :=
 /-- The identity on `Y` is a coequalizer of `(f, g)`, where `f = g`. -/
 def isColimitIdCofork (h : f = g) : IsColimit (idCofork h) :=
   Cofork.IsColimit.mk _ (fun s => Cofork.π s) (fun _ => Category.id_comp _) fun s m h => by
-    convert h
+    convert! h
     exact (Category.id_comp _).symm
 
 /-- Every coequalizer of `(f, g)`, where `f = g`, is an isomorphism. -/

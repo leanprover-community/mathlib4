@@ -6,7 +6,6 @@ Authors: Bhavik Mehta, Jakob von Raumer
 module
 
 public import Mathlib.CategoryTheory.Limits.HasLimits
-public import Mathlib.CategoryTheory.Thin
 
 /-!
 # Wide pullbacks

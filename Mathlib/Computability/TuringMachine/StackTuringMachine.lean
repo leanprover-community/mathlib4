@@ -366,7 +366,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem addBottom_map (L : ListBlank (∀ k, Option (Γ k))) :
     (addBottom L).map ⟨Prod.snd, by rfl⟩ = L := by
   simp only [addBottom, ListBlank.map_cons]
-  convert ListBlank.cons_head_tail L
+  convert! ListBlank.cons_head_tail L
   generalize ListBlank.tail L = L'
   refine L'.induction_on fun l ↦ ?_; simp
 

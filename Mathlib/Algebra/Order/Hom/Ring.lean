@@ -463,7 +463,7 @@ theorem coe_toOrderRingHom_refl : (OrderRingIso.refl α : α →+*o α) = OrderR
   rfl
 
 theorem toOrderRingHom_injective : Injective (toOrderRingHom : α ≃+*o β → α →+*o β) :=
-  fun f g h => DFunLike.coe_injective <| by convert DFunLike.ext'_iff.1 h using 0
+  fun f g h => DFunLike.coe_injective <| by convert! DFunLike.ext'_iff.1 h using 0
 
 end NonAssocSemiring
 

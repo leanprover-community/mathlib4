@@ -57,7 +57,7 @@ see their statements.
   `min`/`max` tend to `min a b` and `max a b`, respectively.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter TopologicalSpace
 open OrderDual (toDual)
@@ -621,7 +621,7 @@ theorem frontier_le_subset_eq (hf : Continuous f) (hg : Continuous g) :
   rw [frontier_eq_closure_inter_closure, closure_le_eq hf hg]
   rintro b ⟨hb₁, hb₂⟩
   refine le_antisymm hb₁ (closure_lt_subset_le hg hf ?_)
-  convert hb₂ using 2; simp only [not_le.symm]; rfl
+  convert! hb₂ using 2; simp only [not_le.symm]; rfl
 
 @[to_dual]
 theorem frontier_Iic_subset (a : α) : frontier (Iic a) ⊆ {a} :=

@@ -305,6 +305,11 @@ instance {F : C ⥤ D} [Faithful F] : Faithful F.op where
 protected def FullyFaithful.op {F : C ⥤ D} (hF : F.FullyFaithful) : F.op.FullyFaithful where
   preimage {X Y} f := .op <| hF.preimage f.unop
 
+/-- A functor is fully faithful when its opposite is fully faithful. -/
+protected def FullyFaithful.unop {F : Cᵒᵖ ⥤ Dᵒᵖ} (hF : F.FullyFaithful) :
+    F.unop.FullyFaithful where
+  preimage {X Y} f := (hF.preimage f.op).unop
+
 /-- If F is faithful then the `rightOp` of F is also faithful. -/
 instance rightOp_faithful {F : Cᵒᵖ ⥤ D} [Faithful F] : Faithful F.rightOp where
   map_injective h := Quiver.Hom.op_inj (map_injective F (Quiver.Hom.op_inj h))
@@ -735,6 +740,21 @@ lemma unop_associator {E E' : Type*} [Category* E] [Category* E']
   cat_disch
 
 end NatIso
+
+section
+
+variable {D : Type*} [Category* D] {F G : C ⥤ D}
+
+instance (α : F ⟶ G) [IsIso α] :
+    IsIso (NatTrans.op α) :=
+  (NatIso.op (asIso α)).isIso_hom
+
+@[push]
+lemma inv_op (α : F ⟶ G) [IsIso α] :
+    inv (NatTrans.op α) = NatTrans.op (inv α) :=
+  IsIso.inv_eq_of_hom_inv_id (by simp [← NatTrans.op_comp])
+
+end
 
 namespace Equivalence
 

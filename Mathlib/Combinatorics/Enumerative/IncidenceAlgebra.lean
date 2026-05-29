@@ -344,8 +344,6 @@ lemma zeta_mul_zeta [NonAssocSemiring 𝕜] [Preorder α] [LocallyFiniteOrder α
   rw [mem_Icc] at hx
   rw [zeta_of_le hx.1, zeta_of_le hx.2, one_mul]
 
-@[deprecated (since := "2025-09-28")] alias zeta_mul_kappa := zeta_mul_zeta
-
 section Mu
 variable (𝕜) [AddCommGroup 𝕜] [One 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableEq α]
 
@@ -577,7 +575,7 @@ set_option backward.isDefEq.respectTransparency false in
 O'Donnell. -/
 lemma moebius_inversion_bot (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Iic x, f y) (x : α) :
     f x = ∑ y ∈ Iic x, mu 𝕜 y x * g y := by
-  convert moebius_inversion_top (α := αᵒᵈ) f g h x using 3
+  convert! moebius_inversion_top (α := αᵒᵈ) f g h x using 3
   rw [← mu_toDual]; rfl
 
 end InversionBot

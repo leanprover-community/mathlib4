@@ -18,7 +18,7 @@ modules on `F.op ⋙ R` is monoidal.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

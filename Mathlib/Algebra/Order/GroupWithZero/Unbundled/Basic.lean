@@ -23,7 +23,7 @@ This file builds on `Mathlib/Algebra/Order/GroupWithZero/Unbundled/Defs.lean` by
 lemmas that do not immediately follow from the typeclass specifications.
 -/
 
-@[expose] public section
+public section
 
 open Function
 

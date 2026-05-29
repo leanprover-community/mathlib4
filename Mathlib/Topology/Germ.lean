@@ -49,6 +49,12 @@ shared by all representatives at the given point. -/
 def value {X α : Type*} [TopologicalSpace X] {x : X} (φ : Germ (𝓝 x) α) : α :=
   Quotient.liftOn' φ (fun f ↦ f x) fun f g h ↦ by dsimp only; rw [Eventually.self_of_nhds h]
 
+@[simp]
+theorem value_ofFun (f : X → Y) (x : X) : value (f : Germ (𝓝 x) Y) = f x := rfl
+
+@[simp]
+theorem value_const (c : Y) (x : X) : value (c : Germ (𝓝 x) Y) = c := rfl
+
 theorem value_smul {α β : Type*} [SMul α β] (φ : Germ (𝓝 x) α)
     (ψ : Germ (𝓝 x) β) : (φ • ψ).value = φ.value • ψ.value :=
   Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ ↦ rfl
@@ -101,7 +107,7 @@ theorem Filter.Eventually.germ_congr_set
   intro x hx
   apply ((hf x hx).and (h x hx).eventually_nhds).mono
   intro y hy
-  convert hy.1 using 1
+  convert! hy.1 using 1
   exact Germ.coe_eq.mpr hy.2
 
 theorem restrictGermPredicate_congr {P : ∀ x : X, Germ (𝓝 x) Y → Prop}

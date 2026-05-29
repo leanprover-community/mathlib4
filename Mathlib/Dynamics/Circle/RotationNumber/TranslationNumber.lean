@@ -147,7 +147,7 @@ variable (f g : CircleDeg1Lift)
 
 protected theorem monotone : Monotone f := f.monotone'
 
-@[mono] theorem mono {x y} (h : x ≤ y) : f x ≤ f y := f.monotone h
+@[gcongr, mono] theorem mono {x y} (h : x ≤ y) : f x ≤ f y := f.monotone h
 
 theorem strictMono_iff_injective : StrictMono f ↔ Injective f :=
   f.monotone.strictMono_iff_injective
@@ -601,7 +601,7 @@ theorem tendsto_translationNumber_of_dist_bounded_aux (x : ℕ → ℝ) (C : ℝ
   · exact fun n => C / 2 ^ n
   · intro n
     have : 0 < (2 ^ n : ℝ) := pow_pos zero_lt_two _
-    convert (div_le_div_iff_of_pos_right this).2 (H (2 ^ n)) using 1
+    convert! (div_le_div_iff_of_pos_right this).2 (H (2 ^ n)) using 1
     rw [transnumAuxSeq, Real.dist_eq, ← sub_div, abs_div, abs_of_pos this, Real.dist_eq]
   · exact mul_zero C ▸ tendsto_const_nhds.mul <| tendsto_inv_atTop_zero.comp <|
       tendsto_pow_atTop_atTop_of_one_lt one_lt_two

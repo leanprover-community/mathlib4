@@ -26,7 +26,7 @@ The same lemmas are true in `ℝ`, `ℝ × ℝ`, `ι → ℝ`, `EuclideanSpace �
 duplication, we provide an ad hoc axiomatisation of the properties we need.
 -/
 
-@[expose] public section
+public section
 
 open Filter TopologicalSpace
 open scoped Topology
@@ -366,21 +366,8 @@ variable [CountableInterFilter f] {u : β → α}
 
 theorem eventually_le_limsup (hf : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
     ∀ᶠ b in f, u b ≤ f.limsup u := by
-  obtain ha | ha := isTop_or_exists_gt (f.limsup u)
-  · exact Eventually.of_forall fun _ => ha _
-  by_cases H : IsGLB (Set.Ioi (f.limsup u)) (f.limsup u)
-  · obtain ⟨u, -, -, hua, hu⟩ := H.exists_seq_antitone_tendsto ha
-    have := fun n => eventually_lt_of_limsup_lt (hu n) hf
-    exact
-      (eventually_countable_forall.2 this).mono fun b hb =>
-        ge_of_tendsto hua <| Eventually.of_forall fun n => (hb _).le
-  · obtain ⟨x, hx, xa⟩ : ∃ x, (∀ ⦃b⦄, f.limsup u < b → x ≤ b) ∧ f.limsup u < x := by
-      simp only [IsGLB, IsGreatest, lowerBounds, upperBounds, Set.mem_Ioi, Set.mem_setOf_eq,
-        not_and, not_forall, not_le, exists_prop] at H
-      exact H fun x => le_of_lt
-    filter_upwards [eventually_lt_of_limsup_lt xa hf] with y hy
-    contrapose! hy
-    exact hx hy
+  rw [eventually_le_const_iff_forall_gt_eventually_lt_const]
+  exact fun _ hc ↦ eventually_lt_of_limsup_lt hc
 
 theorem eventually_liminf_le (hf : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
     ∀ᶠ b in f, f.liminf u ≤ u b :=

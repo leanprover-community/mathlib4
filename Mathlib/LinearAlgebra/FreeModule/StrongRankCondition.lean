@@ -37,7 +37,7 @@ is injective.
 
 -/
 
-@[expose] public section
+public section
 
 
 variable (R : Type*) [CommRing R] [Nontrivial R]

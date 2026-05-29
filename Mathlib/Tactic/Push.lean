@@ -197,7 +197,7 @@ def elabHead (stx : Term) : TermElabM Head := withRef stx do
   | _ =>
     match ← resolvePushId? stx with
     | some (.const c _) => return .const c
-    | _ => throwError "Could not resolve `push` argument {stx}. \
+    | _ => throwError "Could not resolve `push` argument `{stx}`. \
       Expected either a constant, e.g. `push Not`, \
       or notation with underscores, e.g. `push ¬ _`"
 
@@ -209,9 +209,9 @@ def elabDischarger (stx : TSyntax ``discharger) : TacticM Simp.Discharge :=
 
 /-- Run the `push` tactic. -/
 def push (cfg : Config) (disch? : Option Simp.Discharge) (head : Head) (loc : Location)
-    (failIfUnchanged : Bool := true) : TacticM Unit := do
+    (ifUnchanged : BehaviorIfUnchanged := .error) : TacticM Unit := do
   let cfg := { distrib := cfg.distrib || (← getBoolOption `push_neg.use_distrib) }
-  transformAtLocation (pushCore head cfg disch? ·) "push" loc failIfUnchanged
+  transformAtLocation (pushCore head cfg disch? ·) s!"push {head}" loc ifUnchanged
 
 /--
 `push c` rewrites the goal by pushing the constant `c` deeper into an expression.
@@ -318,7 +318,7 @@ elab (name := pull) "pull" disch?:(discharger)? head:(ppSpace colGt term) loc:(l
   let disch? ← disch?.mapM elabDischarger
   let head ← elabHead head
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  transformAtLocation (pullCore head · disch?) "pull" loc (failIfUnchanged := true) false
+  transformAtLocation (pullCore head · disch?) "pull" loc (ifUnchanged := .error) false
 
 /-- A simproc variant of `push fun _ ↦ _`, to be used as `simp [↓pushFun]`. -/
 simproc_decl _root_.pushFun (fun _ ↦ ?_) := pushStep .lambda {}

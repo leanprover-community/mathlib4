@@ -230,7 +230,7 @@ theorem _root_.Matrix.mem_range_scalar_iff_commute_transvectionStruct {M : Matri
   refine ⟨fun h t => ?_, mem_range_scalar_of_commute_transvectionStruct⟩
   rw [mem_range_scalar_iff_commute_single] at h
   refine (Commute.one_left M).add_left ?_
-  convert (h _ _ t.hij).smul_left t.c using 1
+  convert! (h _ _ t.hij).smul_left t.c using 1
   rw [smul_single, smul_eq_mul, mul_one]
 
 end
@@ -374,7 +374,7 @@ theorem listTransvecCol_mul_last_row_drop (i : Fin r ⊕ Unit) {k : ℕ} (hk : k
 /-- Multiplying by all the matrices in `listTransvecCol M` does not change the last row. -/
 theorem listTransvecCol_mul_last_row (i : Fin r ⊕ Unit) :
     ((listTransvecCol M).prod * M) (inr unit) i = M (inr unit) i := by
-  simpa using listTransvecCol_mul_last_row_drop M i (zero_le _)
+  simpa using listTransvecCol_mul_last_row_drop M i zero_le
 
 /-- Multiplying by all the matrices in `listTransvecCol M` kills all the coefficients in the
 last column but the last one. -/
@@ -385,7 +385,7 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
       k ≤ r →
         (((listTransvecCol M).drop k).prod * M) (inl i) (inr unit) =
           if k ≤ i then 0 else M (inl i) (inr unit) by
-    simpa only [List.drop, _root_.zero_le, ite_true] using H 0 (zero_le _)
+    simpa [List.drop] using H 0
   intro k hk
   induction hk using Nat.decreasingInduction with
   | of_succ n hn IH =>
@@ -462,7 +462,7 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
     simpa only [this, ite_eq_right_iff] using H r le_rfl
   intro k hk
   induction k with
-  | zero => simp only [if_true, Matrix.mul_one, List.take_zero, zero_le', List.prod_nil]
+  | zero => simp
   | succ n IH =>
     have hnr : n < r := hk
     let n' : Fin r := ⟨n, hnr⟩

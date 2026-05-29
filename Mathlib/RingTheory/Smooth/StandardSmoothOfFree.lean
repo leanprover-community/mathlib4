@@ -107,7 +107,7 @@ theorem IsSmoothAt.exists_notMem_isStandardSmooth [FinitePresentation R S] (p : 
   · obtain ⟨g, hg, hsm⟩ := IsSmoothAt.exists_notMem_smooth R p
     have _ : (Ideal.map (algebraMap S (Localization.Away g)) p).IsPrime := by
       apply IsLocalization.isPrime_of_isPrime_disjoint (.powers g) _ _ ‹_›
-      rwa [Ideal.disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical ‹_›)]
+      rwa [Ideal.disjoint_powers_iff_notMem_of_isPrime]
     obtain ⟨g', hg', hstd⟩ := this (R := R) (p.map (algebraMap S (Localization.Away g))) hsm
     have : IsLocalization.Away (g * (IsLocalization.Away.sec g g').1) (Localization.Away g') :=
       .mul_of_associated _ _ g' <| IsLocalization.Away.associated_sec_fst g g'

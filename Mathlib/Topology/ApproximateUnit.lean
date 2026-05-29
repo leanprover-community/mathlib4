@@ -20,7 +20,7 @@ Examples of approximate units include:
   where `a` ranges over the positive elements of norm strictly less than 1.
 -/
 
-@[expose] public section
+public section
 
 open Filter Topology
 

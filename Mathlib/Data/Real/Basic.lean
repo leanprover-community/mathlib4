@@ -21,7 +21,7 @@ and a conditionally complete linear order,
 have been deferred to the file `Mathlib/Data/Real/Archimedean.lean`,
 in order to keep the imports here simple.
 
-The fact that the real numbers are a (trivial) *-ring has similarly been deferred to
+The fact that the real numbers are a (trivial) \*-ring has similarly been deferred to
 `Mathlib/Data/Real/Star.lean`.
 -/
 
@@ -349,7 +349,7 @@ theorem ratCast_lt {x y : ℚ} : (x : ℝ) < (y : ℝ) ↔ x < y := by
   exact const_lt
 
 protected theorem zero_lt_one : (0 : ℝ) < 1 := by
-  convert ratCast_lt.2 zero_lt_one <;> simp [← ofCauchy_ratCast, ofCauchy_one, ofCauchy_zero]
+  convert! ratCast_lt.2 zero_lt_one <;> simp [← ofCauchy_ratCast, ofCauchy_one, ofCauchy_zero]
 
 instance instNontrivial : Nontrivial ℝ where
   exists_pair_ne := ⟨0, 1, Real.zero_lt_one.ne⟩

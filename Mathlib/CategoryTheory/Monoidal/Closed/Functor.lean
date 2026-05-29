@@ -86,7 +86,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem expComparison_ev (A B : C) :
     F.obj A ◁ ((expComparison F A).natTrans.app B) ≫ (ihom.ev (F.obj A)).app (F.obj B) =
       inv (prodComparison F _ _) ≫ F.map ((ihom.ev _).app _) := by
-  convert mateEquiv_counit _ _ (prodComparisonNatIso F A).inv B using 2
+  convert! mateEquiv_counit _ _ (prodComparisonNatIso F A).inv B using 2
   apply IsIso.inv_eq_of_hom_inv_id -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): was `ext`
   simp only [prodComparisonNatTrans_app, prodComparisonNatIso_inv, NatIso.isIso_inv_app,
     IsIso.hom_inv_id]
@@ -95,7 +95,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem coev_expComparison (A B : C) :
     F.map ((ihom.coev A).app B) ≫ (expComparison F A).natTrans.app (A ⊗ B) =
       (ihom.coev _).app (F.obj B) ≫ (ihom (F.obj A)).map (inv (prodComparison F A B)) := by
-  convert unit_mateEquiv _ _ (prodComparisonNatIso F A).inv B using 3
+  convert! unit_mateEquiv _ _ (prodComparisonNatIso F A).inv B using 3
   apply IsIso.inv_eq_of_hom_inv_id -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): was `ext`
   simp
 

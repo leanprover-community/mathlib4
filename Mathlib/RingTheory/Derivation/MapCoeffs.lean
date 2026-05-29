@@ -99,7 +99,7 @@ theorem apply_aeval_eq [IsScalarTower R A B] [IsScalarTower A B M'] (d : Derivat
     (x : B) (p : A[X]) :
     d (aeval x p) = PolynomialModule.eval x ((d.compAlgebraMap A).mapCoeffs p) +
       aeval x (derivative p) • d x := by
-  convert apply_aeval_eq' (d.compAlgebraMap A) d LinearMap.id _ x p
+  convert! apply_aeval_eq' (d.compAlgebraMap A) d LinearMap.id _ x p
   · apply Finsupp.ext
     intro x
     rfl
@@ -144,7 +144,7 @@ variable {R : Type*} [CommRing R] [Differential R] [Algebra A R] [DifferentialAl
 
 theorem deriv_aeval_eq (x : R) (p : A[X]) :
     (aeval x p)′ = aeval x (mapCoeffs p) + aeval x (derivative p) * x′ := by
-  convert Derivation.apply_aeval_eq' Differential.deriv _ (Algebra.linearMap A R) ..
+  convert! Derivation.apply_aeval_eq' Differential.deriv _ (Algebra.linearMap A R) ..
   · simp [mapCoeffs]
   · simp [deriv_algebraMap]
 

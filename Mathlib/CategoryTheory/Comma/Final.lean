@@ -31,7 +31,7 @@ and `A` and `B` are filtered.
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Lemma 3.4.3 -- 3.4.5
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
@@ -57,7 +57,7 @@ private lemma final_fst_small [R.Final] : (fst L R).Final := by
     (Final.colimitIso (Grothendieck.pre (functor L) R) (grothendieckProj L ⋙ G)).symm ≪≫
     HasColimit.isoOfNatIso (Iso.refl _) ≪≫
     Final.colimitIso (grothendieckPrecompFunctorEquivalence L R).functor (fst L R ⋙ G)
-  convert i.isIso_inv
+  convert! i.isIso_inv
   apply colimit.hom_ext
   intro ⟨a, b, f⟩
   simp only [colimit.ι_pre, comp_obj, fst_obj, grothendieckPrecompFunctorEquivalence_functor,

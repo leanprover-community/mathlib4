@@ -18,7 +18,7 @@ The main result is `RingHom.finitePresentation_isLocal`.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise TensorProduct
 
@@ -60,7 +60,7 @@ theorem finitePresentation_ofLocalizationSpanTarget :
   introv R hs H
   algebraize [f]
   replace H : ∀ r ∈ s, Algebra.FinitePresentation R (Localization.Away (r : S)) := by
-    intro r hr; simp_rw [RingHom.FinitePresentation] at H; convert H ⟨r, hr⟩; ext
+    intro r hr; simp_rw [RingHom.FinitePresentation] at H; convert! H ⟨r, hr⟩; ext
     simp_rw [Algebra.smul_def]; rfl
   exact Algebra.FinitePresentation.of_span_eq_top_target s hs H
 
