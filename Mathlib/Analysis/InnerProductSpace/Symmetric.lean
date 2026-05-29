@@ -9,6 +9,7 @@ public import Mathlib.Analysis.InnerProductSpace.Subspace
 public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.Analysis.InnerProductSpace.Orthogonal
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
 
 /-!
 # Symmetric linear maps in an inner product space
@@ -80,8 +81,8 @@ theorem IsSymmetric.apply_clm {T : E →L[𝕜] E} (hT : IsSymmetric (T : E →�
 protected theorem IsSymmetric.zero : (0 : E →ₗ[𝕜] E).IsSymmetric := fun x y =>
   (inner_zero_right x : ⟪x, 0⟫ = 0).symm ▸ (inner_zero_left y : ⟪0, y⟫ = 0)
 
-@[simp]
-protected theorem IsSymmetric.id : (LinearMap.id : E →ₗ[𝕜] E).IsSymmetric := fun _ _ => rfl
+@[simp] protected lemma IsSymmetric.id : (.id : E →ₗ[𝕜] E).IsSymmetric := fun _ _ ↦ rfl
+@[simp] protected lemma IsSymmetric.one : (1 : E →ₗ[𝕜] E).IsSymmetric := fun _ _ ↦ rfl
 
 @[aesop safe apply]
 theorem IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
@@ -369,7 +370,7 @@ theorem IsSymmetric.isSymmetric_smul_iff {f : E →ₗ[𝕜] E} (hf : f.IsSymmet
   simp only [ne_eq, LinearMap.ext_iff, zero_apply, ext_iff_inner_left 𝕜 (E := E),
     inner_zero_right] at hf'
   simpa [IsSymmetric, inner_smul_left, inner_smul_right, hf _ _, forall_or_left,
-    (forall_comm.eq ▸ hf')] using h
+    (forall_comm.eq ▸ hf')] using! h
 
 end LinearMap
 

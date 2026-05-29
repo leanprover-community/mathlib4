@@ -117,6 +117,7 @@ def equalizer.fork : Limits.Fork f g :=
 lemma equalizer.fork_ι :
     (equalizer.fork f g).ι = equalizer.ι f g := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `(Subfunctor.equalizer f g).toFunctor` is the equalizer of `f` and `g`. -/
 def equalizer.forkIsLimit : Limits.IsLimit (equalizer.fork f g) :=
   Limits.Fork.IsLimit.mk _

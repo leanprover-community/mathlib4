@@ -76,7 +76,7 @@ open scoped ComplexConjugate
 lemma HasDerivAt.star_conj {f : 𝕜 → F} {f' : F} (hf : HasDerivAt f f' x) :
     HasDerivAt (star ∘ f ∘ conj) (star f') (conj x) := by
   rw [hasDerivAt_iff_hasFDerivAt]
-  convert hf.hasFDerivAt.star_star
+  convert! hf.hasFDerivAt.star_star
   ext
   simp
 
@@ -85,8 +85,8 @@ lemma HasDerivAt.star_conj {f : 𝕜 → F} {f' : F} (hf : HasDerivAt f f' x) :
 @[simp]
 lemma hasDerivAt_star_conj_iff {f : 𝕜 → F} {x : 𝕜} {f' : F} :
     HasDerivAt (star ∘ f ∘ conj) f' x ↔ HasDerivAt f (star f') (conj x) :=
-  ⟨fun hf ↦ by convert hf.star_conj; simp [Function.comp_def],
-    fun hf ↦ by convert hf.star_conj <;> simp⟩
+  ⟨fun hf ↦ by convert! hf.star_conj; simp [Function.comp_def],
+    fun hf ↦ by convert! hf.star_conj <;> simp⟩
 
 /-- If `f` has derivative `f'` at `z`, then `conj ∘ f ∘ conj` has derivative `conj f'` at
 `conj z`. -/
@@ -110,8 +110,8 @@ lemma DifferentiableAt.star_conj {f : 𝕜 → F} (hf : DifferentiableAt 𝕜 f 
 @[simp]
 lemma differentiableAt_star_conj_iff {f : 𝕜 → F} :
     DifferentiableAt 𝕜 (star ∘ f ∘ conj) x ↔ DifferentiableAt 𝕜 f (conj x) :=
-  ⟨fun hf ↦ by convert hf.star_conj; simp [Function.comp_def],
-    fun hf ↦ by convert hf.star_conj; simp⟩
+  ⟨fun hf ↦ by convert! hf.star_conj; simp [Function.comp_def],
+    fun hf ↦ by convert! hf.star_conj; simp⟩
 
 /-- If `f` is differentiable at `conj z`, then `conj ∘ f ∘ conj` is differentiable at `z`. -/
 lemma DifferentiableAt.conj_conj {f : 𝕜 → 𝕜} (hf : DifferentiableAt 𝕜 f x) :
@@ -130,7 +130,7 @@ lemma deriv_star_conj {f : 𝕜 → F} :
     deriv (star ∘ f ∘ conj) = star ∘ deriv f ∘ conj := by
   ext z
   by_cases hf : DifferentiableAt 𝕜 f (conj z)
-  · convert hf.hasDerivAt.star_conj.deriv; simp
+  · convert! hf.hasDerivAt.star_conj.deriv; simp
   · have := differentiableAt_star_conj_iff.not.2 hf
     simp_all [deriv_zero_of_not_differentiableAt]
 
