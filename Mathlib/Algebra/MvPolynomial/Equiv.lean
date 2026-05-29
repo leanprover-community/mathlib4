@@ -123,14 +123,12 @@ polynomials over the ground ring. -/
 @[deprecated uniqueAlgEquiv (since := "2026-04-15")]
 abbrev pUnitAlgEquiv := uniqueAlgEquiv (R := R) PUnit
 
-set_option linter.deprecated false in
 @[deprecated uniqueAlgEquiv_monomial (since := "2026-04-15")]
 theorem pUnitAlgEquiv_monomial {d : PUnit →₀ ℕ} {r : R} :
     MvPolynomial.pUnitAlgEquiv R (MvPolynomial.monomial d r)
       = Polynomial.monomial (d ()) r :=
   uniqueAlgEquiv_monomial _
 
-set_option linter.deprecated false in
 @[deprecated uniqueAlgEquiv_symm_monomial (since := "2026-04-15")]
 theorem pUnitAlgEquiv_symm_monomial {d : PUnit →₀ ℕ} {r : R} :
     (MvPolynomial.pUnitAlgEquiv R).symm (Polynomial.monomial (d ()) r)
@@ -230,27 +228,23 @@ theorem eval₂_const_uniqueAlgEquiv [Unique σ] {f : MvPolynomial σ R}
       f.eval₂ φ (fun _ ↦ a) := by
   rw [← eval₂_uniqueAlgEquiv]
 
-set_option linter.deprecated false in
 @[deprecated eval₂_uniqueAlgEquiv_symm (since := "2026-04-15")]
 theorem eval₂_pUnitAlgEquiv_symm {f : Polynomial R} {φ : R →+* S} {a : Unit → S} :
     ((MvPolynomial.pUnitAlgEquiv R).symm f : MvPolynomial Unit R).eval₂ φ a =
       f.eval₂ φ (a ()) :=
   eval₂_uniqueAlgEquiv_symm
 
-set_option linter.deprecated false in
 @[deprecated eval₂_const_uniqueAlgEquiv_symm (since := "2026-04-15")]
 theorem eval₂_const_pUnitAlgEquiv_symm {f : Polynomial R} {φ : R →+* S} {a : S} :
     ((MvPolynomial.pUnitAlgEquiv R).symm f : MvPolynomial Unit R).eval₂ φ (fun _ ↦ a) =
       f.eval₂ φ a :=
   eval₂_const_uniqueAlgEquiv_symm
 
-set_option linter.deprecated false in
 @[deprecated eval₂_uniqueAlgEquiv (since := "2026-04-15")]
 theorem eval₂_pUnitAlgEquiv {f : MvPolynomial PUnit R} {φ : R →+* S} {a : PUnit → S} :
     ((MvPolynomial.pUnitAlgEquiv R) f : Polynomial R).eval₂ φ (a default) = f.eval₂ φ a :=
   eval₂_uniqueAlgEquiv
 
-set_option linter.deprecated false in
 @[deprecated eval₂_const_uniqueAlgEquiv (since := "2026-04-15")]
 theorem eval₂_const_pUnitAlgEquiv {f : MvPolynomial PUnit R} {φ : R →+* S} {a : S} :
     ((MvPolynomial.pUnitAlgEquiv R) f : Polynomial R).eval₂ φ a = f.eval₂ φ (fun _ ↦ a) :=

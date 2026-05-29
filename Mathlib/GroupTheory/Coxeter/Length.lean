@@ -136,7 +136,6 @@ theorem length_mul_ge_length_sub_length (w₁ w₂ : W) : ℓ w₁ - ℓ w₂ �
 theorem length_mul_ge_length_sub_length' (w₁ w₂ : W) : ℓ w₂ - ℓ w₁ ≤ ℓ (w₁ * w₂) := by
   rw [Nat.sub_le_iff_le_add]; exact length_le_length_mul_add_left ..
 
-set_option linter.deprecated false in
 @[deprecated "use `length_le_length_mul_add_left` and `length_le_length_mul_add_right"
 (since := "2026-03-25")]
 theorem length_mul_ge_max (w₁ w₂ : W) : max (ℓ w₁ - ℓ w₂) (ℓ w₂ - ℓ w₁) ≤ ℓ (w₁ * w₂) :=
