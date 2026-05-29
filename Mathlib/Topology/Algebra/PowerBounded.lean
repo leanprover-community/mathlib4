@@ -125,8 +125,8 @@ theorem isPowerBounded_add (S : Type*) [Ring S] [Module S R] [ContinuousAdd R]
 
 variable (R) in
 /-- The set of power bounded elements is a subring. -/
-def subring {S : Type*} [Ring S] [CommRing R] [Module S R] [TopologicalSpace R]
-    [IsTopologicalRing R] [IsLinearTopology S R] : Subring R where
+def subring {S : Type*} [Ring S] [Module S R] [IsTopologicalRing R] [IsLinearTopology S R] :
+    Subring R where
   carrier := {a : R | IsPowerBounded a}
   mul_mem' := isPowerBounded_mul
   one_mem' := isPowerBounded_one
