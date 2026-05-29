@@ -981,16 +981,17 @@ theorem ncard_diff_add_ncard_of_subset (h : s ⊆ t) (ht : t.Finite := by toFini
   rw [ht.cast_ncard_eq, (ht.subset h).cast_ncard_eq, ht.diff.cast_ncard_eq,
     encard_diff_add_encard_of_subset h]
 
+/-- This is the same as `ncard_diff` but we require `t` to be finite instead. -/
+theorem ncard_diff' (hst : s ⊆ t) (ht : t.Finite := by toFinite_tac) :
+    (t \ s).ncard = t.ncard - s.ncard := by
+  rw [← ncard_diff_add_ncard_of_subset hst ht, add_tsub_cancel_right]
+
+/-- This is the same as `ncard_diff'` but we require `s` to be finite instead. -/
 theorem ncard_diff (hst : s ⊆ t) (hs : s.Finite := by toFinite_tac) :
     (t \ s).ncard = t.ncard - s.ncard := by
   obtain ht | ht := t.finite_or_infinite
-  · rw [← ncard_diff_add_ncard_of_subset hst ht, add_tsub_cancel_right]
+  · exact ncard_diff' hst ht
   · rw [ht.ncard, Nat.zero_sub, (ht.diff hs).ncard]
-
-/-- This is the same as `ncard_diff` but we require `t` to be finite instead. -/
-theorem ncard_diff' (hst : s ⊆ t) (ht : t.Finite := by toFinite_tac) :
-    (t \ s).ncard = t.ncard - s.ncard :=
-  ncard_diff hst (ht.subset hst)
 
 lemma cast_ncard_sdiff {R : Type*} [AddGroupWithOne R] (hst : s ⊆ t) (ht : t.Finite) :
     ((t \ s).ncard : R) = t.ncard - s.ncard := by
