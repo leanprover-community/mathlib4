@@ -356,7 +356,7 @@ instance (S : Subtype J.PropSet) : IsCardinalFiltered S κ :=
   isCardinalFiltered_of_hasTerminal _ _
 
 variable {J} in
-lemma propSetWithTop_singleton (j : J.obj) : J.PropSet {j} :=
+lemma propSet_singleton (j : J.obj) : J.PropSet {j} :=
   ⟨hasCardinalLT_of_finite _ _ (Cardinal.IsRegular.aleph0_le Fact.out), by
     let : OrderTop ({j} : Set J.obj) := { top := ⟨j, rfl⟩, le_top := by simp }
     exact isTerminalTop.hasTerminal⟩
@@ -399,7 +399,7 @@ abbrev cocone : Cocone (functorOfPredicateSet J.PropSet) :=
 of its subsets that are of cardinality `< κ` and have a terminal object. -/
 noncomputable def isColimitCocone (J : CardinalFilteredPoset κ) :
     IsColimit (cocone J) :=
-  isColimitCoconeOfPredicateSet _ (fun a ↦ ⟨_, propSetWithTop_singleton a, by simp⟩)
+  isColimitCoconeOfPredicateSet _ (fun a ↦ ⟨_, propSet_singleton a, by simp⟩)
 
 end
 
