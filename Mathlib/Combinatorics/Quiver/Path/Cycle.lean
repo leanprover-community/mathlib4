@@ -15,12 +15,6 @@ public import Mathlib.Data.List.NodupEquivFin
 
 Parallel to `SimpleGraph.Walk` in `Mathlib/Combinatorics/SimpleGraph/Paths.lean`:
 
-| `SimpleGraph.Walk` | `Quiver.Path` |
-|--------------------|---------------|
-| `support.Nodup` | `IsPath` (`vertices.Nodup`) |
-| `support.tail.Nodup` on a loop | `IsSimple` (`vertices.dropLast.Nodup`) |
-| `IsCycle` | `IsCycle` (`0 < length ∧ IsSimple`) |
-
 `IsSimple` allows the endpoint to repeat the start (simple directed cycle). `IsPath` forbids
 any repeated vertex and is strictly stronger.
 
