@@ -311,7 +311,7 @@ structure Config : Type where
   Equivalent to `set_option trace.translate true`. -/
   trace : Bool := false
   /-- The given name of the target: an anonymous name means no explicit name was provided,
-  and the translate tactic auto-generates a name instead . -/
+  and the translate tactic auto-generates a name instead -/
   target : Name := Name.anonymous
   /-- An optional doc string. -/
   doc : Option String := .none
