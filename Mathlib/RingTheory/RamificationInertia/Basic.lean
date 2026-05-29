@@ -23,12 +23,12 @@ flat extension of an integral domain.
 
 * `Ideal.sum_ramification_inerta_eq_finrank`: Let `R` be an integral domain, let `S` be a finite
   flat `R`-algebra, and let `p` be a prime ideal of `R`. Then the sum over all prime ideals `q` of
-  `S` lying over `p` of ramification index of `q` times the inertia degree of `q` equals the rank
-  of `S` as an `R`-module.
+  `S` lying over `p` of the ramification index of `q` times the inertia degree of `q` equals the
+  rank of `S` as an `R`-module.
 * `Ideal.sum_ramification_inerta_eq_card`: Let `S/R` be a finite flat extension of integral domains,
   and let `p` be prime ideal of `R`. Assume that `R` is the invariant subring of a finite group `G`
-  acting on `S`. Then the sum over all prime ideals `q` of `S` lying over `p` of ramification index
-  of `q` times the inertia degree of `q` equals the cardinality of `G`.
+  acting on `S`. Then the sum over all prime ideals `q` of `S` lying over `p` of the ramification
+  index of `q` times the inertia degree of `q` equals the cardinality of `G`.
 
 -/
 
@@ -36,34 +36,55 @@ flat extension of an integral domain.
 
 section
 
+@[simp]
+theorem PrimeSpectrum.coe_primesOverOrderIsoFiber_symm_apply {R S : Type*} [CommRing R] [CommRing S]
+    [Algebra R S] (p : Ideal R) [p.IsPrime] (q : PrimeSpectrum (p.Fiber S)) :
+    (primesOverOrderIsoFiber R S p).symm q = q.1.comap Algebra.TensorProduct.includeRight :=
+  rfl
+
+-- can we remove any assumptions here? (esp finiteness, to make this a strict generalization...)
+theorem IsGaloisGroup.card_eq_finrank' (G R S : Type*) [Group G] [CommRing R] [CommRing S]
+    [IsDomain R] [IsDomain S] [Algebra R S] [MulSemiringAction G S] [IsGaloisGroup G R S]
+    [Module.IsTorsionFree R S] [Module.Finite R S] :
+    Nat.card G = Module.finrank R S := by
+  have : Finite G := IsGaloisGroup.finite G R S
+  let := FractionRing.liftAlgebra R (FractionRing S)
+  let := IsFractionRing.mulSemiringAction G R S (FractionRing R) (FractionRing S)
+  rw [(IsGaloisGroup.toFractionRing G R S).card_eq_finrank,
+    Algebra.IsAlgebraic.finrank_of_isFractionRing R (FractionRing R) S (FractionRing S)]
+
 namespace Ideal
 
 variable {R : Type*} [CommRing R] (p : Ideal R) [p.IsPrime] (S : Type*) [CommRing S] [Algebra R S]
 
-open Algebra.TensorProduct
-
+open IsLocalRing Module OrderIso PrimeSpectrum in
 theorem sum_ramification_inertia_eq_finrank_fiber
-    [Algebra.QuasiFinite R S] [Module.Flat R S] [Fintype (p.primesOver S)] :
+    [Algebra.QuasiFinite R S] [Flat R S] [Fintype (p.primesOver S)] :
     ∑ q : p.primesOver S, q.1.ramificationIdx' R * q.1.inertiaDeg' R =
-      Module.finrank p.ResidueField (p.Fiber S) := by
-  rw [IsArtinianRing.finrank_eq_sum_primeSpectrum,
-    ← (PrimeSpectrum.primesOverOrderIsoFiber R S p).symm.sum_comp]
-  refine Finset.sum_congr rfl fun q _ ↦ ?_
-  let r := q.1.comap Algebra.TensorProduct.includeRight
-  let Sr := Localization.AtPrime r
-  let A := Sr ⧸ p.map (algebraMap R Sr)
+      finrank p.ResidueField (p.Fiber S) := by
+  rw [IsArtinianRing.finrank_eq_sum_primeSpectrum, ← (primesOverOrderIsoFiber R S p).symm.sum_comp]
+  apply Finset.sum_congr rfl
+  intro q _
+  simp_rw [toEquiv_symm, coe_symm_toEquiv, coe_primesOverOrderIsoFiber_symm_apply]
+  set r := q.1.comap Algebra.TensorProduct.includeRight
   let := Localization.AtPrime.algebraOfLiesOver p r
-  transitivity (Module.length (Localization.AtPrime p) A).toNat
-  · rw [IsLocalRing.length_restrictScalars (Localization.AtPrime p) (Localization.AtPrime r) A,
-      ENat.toNat_mul, Module.length_eq_finrank, ramificationIdx'_eq p, ← inertiaDeg'_eq p r]
-    rfl
-  · rw [← (Ideal.Fiber.localizationAlgEquivQuotient p q.1).toLinearEquiv.length_eq,
-      Module.length_eq_of_surjective (IsLocalRing.residue_surjective (R := Localization.AtPrime p)),
-      Module.length_eq_finrank, ENat.toNat_coe]
+  rw [ramificationIdx'_eq p r, inertiaDeg'_eq p r]
+  let Rp := Localization.AtPrime p
+  let Sq := Localization.AtPrime q.1
+  let Sr := Localization.AtPrime r
+  let κp := p.ResidueField
+  let κr := r.ResidueField
+  let A := Sr ⧸ p.map (algebraMap R Sr)
+  suffices length Sr A * finrank κp κr = finrank κp Sq by simpa using congr_arg ENat.toNat this
+  calc length Sr A * finrank κp κr = length Sr A * length κp κr := by rw [length_eq_finrank]
+    _ = length Rp A := (length_restrictScalars Rp Sr A).symm
+    _ = length Rp Sq := (Fiber.localizationAlgEquivQuotient p q.1).toLinearEquiv.length_eq.symm
+    _ = length κp Sq := length_eq_of_surjective residue_surjective
+    _ = finrank κp Sq := length_eq_finrank κp Sq
 
 /-- Let `R` be an integral domain, let `S` be a finite flat `R`-algebra, and let `p` be a prime
-ideal of `R`. Then the sum over all prime ideals `q` of `S` lying over `p` of ramification index
-of `q` times the inertia degree of `q` equals the rank of `S` as an `R`-module. -/
+ideal of `R`. Then the sum over all prime ideals `q` of `S` lying over `p` of the ramification
+index of `q` times the inertia degree of `q` equals the rank of `S` as an `R`-module. -/
 theorem sum_ramification_inerta_eq_finrank
     [IsDomain R] [Module.Finite R S] [Module.Flat R S] [Fintype (p.primesOver S)] :
     ∑ q : p.primesOver S, q.1.ramificationIdx' R * q.1.inertiaDeg' R = Module.finrank R S := by
@@ -71,16 +92,12 @@ theorem sum_ramification_inerta_eq_finrank
 
 /-- Let `S/R` be a finite flat extension of integral domains, and let `p` be prime ideal of `R`.
 Assume that `R` is the invariant subring of a finite group `G` acting on `S`. Then the sum over
-all prime ideals `q` of `S` lying over `p` of ramification index of `q` times the inertia degree
-of `q` equals the cardinality of `G`. -/
+all prime ideals `q` of `S` lying over `p` of the ramification index of `q` times the inertia
+degree of `q` equals the cardinality of `G`. -/
 theorem sum_ramification_inertia_eq_card
-    [IsDomain R] [IsDomain S] [Module.Flat R S] [Module.Finite R S] [Fintype (p.primesOver S)]
+    [IsDomain R] [IsDomain S] [Module.Finite R S] [Module.Flat R S] [Fintype (p.primesOver S)]
     {G : Type*} [Group G] [MulSemiringAction G S] [IsGaloisGroup G R S] :
     ∑ q : p.primesOver S, q.1.ramificationIdx' R * q.1.inertiaDeg' R = Nat.card G := by
-  have : Finite G := IsGaloisGroup.finite G R S
-  let := FractionRing.liftAlgebra R (FractionRing S)
-  let := IsFractionRing.mulSemiringAction G R S (FractionRing R) (FractionRing S)
-  rw [sum_ramification_inerta_eq_finrank, (IsGaloisGroup.toFractionRing G R S).card_eq_finrank,
-    Algebra.IsAlgebraic.finrank_of_isFractionRing R (FractionRing R) S (FractionRing S)]
+  rw [sum_ramification_inerta_eq_finrank, IsGaloisGroup.card_eq_finrank' G R S]
 
 end Ideal
