@@ -248,15 +248,14 @@ Resolve the GitHub repo for cache reads from a single `getRemoteRepo` probe.
 
 Returns `(detectedRepo?, resolvedRepo)`:
 * `detectedRepo?` is what the git remote reports (`none` if it can't be
-  determined), used to decide whether an explicit `--repo=` diverges from the
-  checkout (the non-default-scope warning's condition 3);
+  determined); the warning path compares it against an explicit `--repo=` to
+  tell whether the user is overriding the checkout's repo.
 * `resolvedRepo` applies the override precedence `--repo=` > git remote >
-  `MATHLIBREPO`, and is what the read path actually uses.
+  `MATHLIBREPO`, and is what the read path uses.
 
-Centralizing the probe here means `getRemoteRepo` — which shells out to git
-and prints branch/remote diagnostics — runs exactly once per command, rather
-than once each in `getFiles`, `informIfHeadNotBuilt`, and the warning path
-(which previously also disagreed on the working directory to probe).
+`getRemoteRepo` shells out to git and prints branch/remote diagnostics;
+resolving here lets the read path, the warning, and the HEAD hint share a
+single probe keyed on `mathlibDepPath`.
 -/
 def resolveRepo (repo? : Option String) (mathlibDepPath : FilePath) :
     IO (Option String × String) := do
@@ -273,8 +272,8 @@ all repos use `cs` instead.
 initialize cacheFromOverride : IO.Ref (Option (List Container)) ← IO.mkRef none
 
 /--
-URL to use for read-only Azure operations that aren't yet multi-container-aware
-(e.g. `getFilesInfo`). Always points at the master container.
+Base URL for read-only Azure operations that target a single container
+(e.g. `getFilesInfo`): the master container.
 -/
 def masterContainerURL : String := Container.master.azureURL
 
@@ -283,17 +282,15 @@ Compute the trust-ordered list of container base URLs to try when downloading
 files for a given GitHub repo.
 
 Precedence (most specific wins):
-1. `MATHLIB_CACHE_GET_URL` env var, if set, returns a single anonymous URL
-   (single-URL escape hatch — bypasses multi-container logic entirely).
-2. `--cache-from` CLI override (set via `cacheFromOverride`). The most
-   deliberate signal — a user explicitly typing it at the call site.
-3. `MATHLIB_CACHE_FROM` env var (comma-separated container list, same
-   shape as `--cache-from`). This is how CI workflows widen the lookup
-   chain to match their trust-dispatched write target without editing
-   every `cache get` call. Branch-class-aware trust dispatch lives in
-   YAML, not here — see `build_template.yml`.
-4. `defaultContainersForRepo repo` — the repo-level fallback that runs on
-   any machine (CI or user) when no override is set.
+1. `MATHLIB_CACHE_GET_URL` env var: a single anonymous URL that bypasses the
+   container logic entirely.
+2. `--cache-from` CLI override (via `cacheFromOverride`).
+3. `MATHLIB_CACHE_FROM` env var (same comma-separated shape as `--cache-from`):
+   how CI widens the lookup chain to match its write target without touching
+   each `cache get` call. The (repo, branch) → chain mapping lives in
+   `build_template.yml`.
+4. `defaultContainersForRepo repo`: the repo-level fallback when nothing
+   overrides it.
 -/
 def effectiveGetURLs (repo : String) : IO (List (Option Container × String)) := do
   if let some url ← IO.getEnv "MATHLIB_CACHE_GET_URL" then
@@ -336,19 +333,14 @@ def getUploadAuth : IO UploadAuth := do
 Construct the URL for the cache file `fileName` in repo `repo`, against the
 container reachable at `containerURL`.
 
-The `f/` prefix marks files (vs commits, which use `c/`). Whether the rest of
-the path is flat (`/f/<fileName>`) or namespaced by repo (`/f/<repo>/<fileName>`)
-is decided by the *container*, not the repo (see `Container.flatPath`):
-the same hash uploaded under `repo = MATHLIBREPO` lands flat in `master` and
-prefixed in `forks`, because the trust-classified containers have to be
-unambiguous across all their writers — including canonical-repo writers
-whose trust level is fork-equivalent (e.g. `ci-dev/*`, `bors trying`).
+The `f/` prefix marks files (commits use `c/`). Whether the rest of the path is
+flat (`/f/<fileName>`) or repo-namespaced (`/f/<repo>/<fileName>`) follows the
+container (see `Container.flatPath`), not the repo: the same hash under
+`repo = MATHLIBREPO` lands flat in `master` and prefixed in `forks`.
 
-`container` is `none` only in the `MATHLIB_CACHE_GET_URL` /
-`MATHLIB_CACHE_PUT_URL` escape-hatch path, where the URL is user-supplied and
-we don't know which container's policy to apply; we fall back to the legacy
-"flat for canonical, prefixed otherwise" rule there so dev/local overrides
-behave exactly as they did before the per-container split.
+`container` is `none` for the user-supplied `MATHLIB_CACHE_GET_URL` /
+`MATHLIB_CACHE_PUT_URL` URLs, where no container policy applies; the path then
+follows the repo directly — flat for `MATHLIBREPO`, prefixed otherwise.
 -/
 def mkFileURL (container : Option Container) (repo containerURL fileName : String)
     (repoScope : Option String := none) : String :=
@@ -363,8 +355,7 @@ def mkFileURL (container : Option Container) (repo containerURL fileName : Strin
 
 /--
 Process-wide override for the per-SHA scope, set by the `--scope=` CLI flag.
-When set, it wins over `MATHLIB_CACHE_REPO_SCOPE`. Mirrors the
-`cacheFromOverride` pattern.
+When set, it wins over `MATHLIB_CACHE_REPO_SCOPE`.
 -/
 initialize scopeOverride : IO.Ref (Option String) ← IO.mkRef none
 
@@ -855,33 +846,23 @@ Resolve the upload base URL.
 Precedence:
 1. `MATHLIB_CACHE_PUT_URL` env var, if set.
 2. The Azure URL for the explicitly chosen `container`.
-3. **Migration fallback**: if no `--container` is passed and no env var is
-   set, default to `Container.legacy` (the bare `mathlib4` container) with
-   a deprecation warning to stderr. This exists so workflow files from
-   *before* this PR — which don't pass `--container=NAME` — keep working
-   while mathlib4's various branches (bors temp branches, maintainer dev
-   branches, the entire nightly-testing repo and its `bump/*`,
-   `lean-pr-testing-*`, etc. branches) are absorbing the new workflows.
-   Trust model is preserved: legacy is the explicit low-trust catch-all,
-   and the RBAC scoping on each identity still prevents low-trust jobs
-   from reaching the per-trust-level containers. Once all branches have
-   absorbed this PR's workflow files, tighten this back to a hard error.
+3. With neither set, fall back to `Container.legacy` (the bare `mathlib4`
+   container) and warn. RBAC still scopes each identity to its own container,
+   so the fallback cannot reach a trust-level container it isn't entitled to;
+   the warning steers workflows toward passing `--container=NAME`.
 -/
 def effectiveUploadURL (container : Option Container) :
     IO (Option Container × String) := do
   if let some url ← IO.getEnv "MATHLIB_CACHE_PUT_URL" then
-    -- Env-var override: we don't know which container's URL-shape policy
-    -- applies, so signal that with `none` and let `mkFileURL` fall back to
-    -- legacy semantics.
+    -- A user-supplied URL carries no container policy, so signal `none` and let
+    -- `mkFileURL` choose the path from the repo alone.
     return (none, url)
   match container with
   | none =>
     IO.eprintln <|
       "Warning: cache upload without --container=NAME; defaulting to the\n" ++
-      "         `legacy` (bare `mathlib4`) container. This default is a\n" ++
-      "         transitional fallback for workflow files that pre-date the\n" ++
-      "         per-trust-level container split. Pass --container=NAME\n" ++
-      "         explicitly when you next update this workflow."
+      "         `legacy` (bare `mathlib4`) container. Pass --container=NAME\n" ++
+      "         explicitly to choose a trust-level container."
     return (some Container.legacy, Container.legacy.azureURL)
   | some c => return (some c, c.azureURL)
 
@@ -1194,9 +1175,8 @@ accepts, or none if none are found.
 -/
 def findMostRecentSHAWithCache (shas : List String) (repo : String) :
     IO (Option String) := do
-  -- For now, always probe the forks container since that's where SHA scoping applies.
-  -- Other containers (master, nightly-testing, pr-toolchain-tests) do not use SHA scoping
-  -- in the current implementation.
+  -- `forks` is the SHA-scoped container; master/nightly-testing/pr-toolchain-tests
+  -- are not scoped, so probing them here would be meaningless.
   let container := Container.forks
   for sha in shas do
     let found ← probeContainerForSHA container repo sha
@@ -1235,9 +1215,7 @@ def resolveQueryRepo (repoExplicit? : Option String) : IO String := do
 Boolean probe for a single commit: prints `cached` or `not cached` and exits
 with status 0 / 1 respectively. Intended for scripting.
 
-Probes the `forks` container's per-SHA marker, the only SHA-scoped container
-today; extend `findMostRecentSHAWithCache` alongside this if SHA scoping is
-extended to other containers (Follow-up §6).
+Probes the `forks` container's per-SHA marker, the only SHA-scoped container.
 -/
 def cacheQuerySingle (repo sha : String) : IO Unit := do
   let cached ← probeContainerForSHA Container.forks repo sha
@@ -1282,9 +1260,7 @@ def cacheQuery (repo : String) (cap : Nat := 50) (cwd : FilePath := ".") : IO Un
     IO.println s!"`cache get` will print a security notice when --scope is set."
   | none =>
     IO.println s!"No cached CI build found for fork {repo} within the last {cap} commits on this branch."
-    IO.println s!"This typically means:"
-    IO.println s!"  - CI hasn't built any of these commits yet."
-    IO.println s!"  - The commits pre-date the new per-commit cache (rare on recent branches)."
+    IO.println s!"This usually means CI hasn't built any of these commits yet."
 
 end Query
 
@@ -1390,11 +1366,10 @@ def getNonDefaultScopeReason (repoExplicit? detectedRepo? : Option String)
   return "unknown reason"
 
 /--
-Check if a non-default scope warning should be printed and issue it if so.
+Print the non-default-scope warning if any of the three conditions hold.
 
-This is called before performing read operations (cache get). It checks
-the three conditions and prints the warning if any hold, but does not
-prompt for confirmation (so as not to break CI).
+Called before a read (`cache get`). The warning is informational only — it
+never prompts, so it stays safe to run in CI.
 -/
 def warnIfNonDefaultScope (repoExplicit? detectedRepo? : Option String)
     (cliCacheFromOverride? : Option (List Container)) (resolvedRepo : String) :

@@ -89,10 +89,10 @@ runs:
           "leanprover-community/mathlib4-nightly-testing")
             case "$BRANCH" in
               "nightly-testing"|"nightly-testing-green"|"staging"|bump/*)
-                # Trusted nightly refs. Default [nightly-testing, legacy]
-                # is correct — `pr-toolchain-tests` is deliberately excluded
-                # so a poisoned upload from a `lean-pr-testing-*` branch
-                # never reaches a trusted-nightly consumer.
+                # Trusted nightly refs use the default [nightly-testing, legacy].
+                # It excludes `pr-toolchain-tests` so an upload from a
+                # `lean-pr-testing-*` branch never reaches a trusted-nightly
+                # consumer.
                 PRIMARY="nightly-testing"
                 ;;
               *)

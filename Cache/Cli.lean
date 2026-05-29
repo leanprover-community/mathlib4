@@ -7,13 +7,13 @@ Authors: Marcelo Lynch
 /-!
 # Cache CLI option parsing
 
-Pure helpers for the cache binary's option parsing — extracted from `Cache.Main`
-so they can be unit-tested without importing `Cache.Main` (which defines a
-top-level `main` that would collide with the test binary's entrypoint).
+Pure helpers for the cache binary's option parsing. They live here rather than
+in `Cache.Main` so the test binary can import them directly — `Cache.Main`'s
+top-level `main` would otherwise collide with the test entrypoint.
 
-The cache binary partitions its arguments into named options (`--name=value`)
-and positional arguments before dispatch. Boolean flags (`--name`) are listed
-separately. These helpers implement the partitioning and validation rules.
+The cache binary partitions its arguments into named options (`--name=value`),
+boolean flags (`--name`), and positional arguments before dispatch. These
+helpers implement that partitioning and the validation of known option names.
 -/
 
 namespace Cache.Cli
