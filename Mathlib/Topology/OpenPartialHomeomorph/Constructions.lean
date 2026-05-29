@@ -201,7 +201,7 @@ def disjointUnion (e e' : OpenPartialHomeomorph X Y) [∀ x, Decidable (x ∈ e.
         (by rw [e.open_source.inter_frontier_eq, (Hs.symm.frontier_right e'.open_source).inter_eq])
         (by
           rw [e.open_source.inter_frontier_eq]
-          exact eqOn_empty _ _)).replaceEquiv
+          exact eqOn_empty _ _)).replacePartialEquiv
     (e.toPartialEquiv.disjointUnion e'.toPartialEquiv Hs Ht)
     (PartialEquiv.disjointUnion_eq_piecewise _ _ _ _).symm
 

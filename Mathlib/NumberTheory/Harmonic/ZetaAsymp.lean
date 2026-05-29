@@ -48,10 +48,13 @@ namespace ZetaAsymptotics
 noncomputable def term (n : ℕ) (s : ℝ) : ℝ := ∫ x : ℝ in n..(n + 1), (x - n) / x ^ (s + 1)
 
 /-- Sum of finitely many `term`s. -/
-noncomputable def term_sum (s : ℝ) (N : ℕ) : ℝ := ∑ n ∈ Finset.range N, term (n + 1) s
+noncomputable def termSum (s : ℝ) (N : ℕ) : ℝ := ∑ n ∈ Finset.range N, term (n + 1) s
 
 /-- Topological sum of `term`s. -/
-noncomputable def term_tsum (s : ℝ) : ℝ := ∑' n, term (n + 1) s
+noncomputable def termTSum (s : ℝ) : ℝ := ∑' n, term (n + 1) s
+
+@[deprecated (since := "2026-05-27")] alias term_sum := termSum
+@[deprecated (since := "2026-05-27")] alias term_tsum := termTSum
 
 lemma term_nonneg (n : ℕ) (s : ℝ) : 0 ≤ term n s := by
   rw [term, intervalIntegral.integral_of_le (by simp)]
@@ -110,25 +113,27 @@ lemma term_one {n : ℕ} (hn : 0 < n) :
       congr 1
       simp [field]
 
-lemma term_sum_one (N : ℕ) : term_sum 1 N = log (N + 1) - harmonic (N + 1) + 1 := by
+lemma termSum_one (N : ℕ) : termSum 1 N = log (N + 1) - harmonic (N + 1) + 1 := by
   induction N with
   | zero =>
-    simp_rw [term_sum, Finset.sum_range_zero, harmonic_succ, harmonic_zero,
+    simp_rw [termSum, Finset.sum_range_zero, harmonic_succ, harmonic_zero,
       Nat.cast_zero, zero_add, Nat.cast_one, inv_one, Rat.cast_one, log_one, sub_add_cancel]
   | succ N hN =>
-    unfold term_sum at hN ⊢
+    unfold termSum at hN ⊢
     rw [Finset.sum_range_succ, hN, harmonic_succ (N + 1),
       term_one (by positivity : 0 < N + 1)]
     push_cast
     ring_nf
+
+@[deprecated (since := "2026-05-27")] alias term_sum_one := termSum_one
 
 /-- The topological sum of `ZetaAsymptotics.term (n + 1) 1` over all `n : ℕ` is `1 - γ`. This is
 proved by directly evaluating the sum of the first `N` terms and using the limit definition of `γ`.
 -/
 lemma term_tsum_one : HasSum (fun n ↦ term (n + 1) 1) (1 - γ) := by
   rw [hasSum_iff_tendsto_nat_of_nonneg (fun n ↦ term_nonneg (n + 1) 1)]
-  change Tendsto (fun N ↦ term_sum 1 N) atTop _
-  simp_rw [term_sum_one, sub_eq_neg_add]
+  change Tendsto (fun N ↦ termSum 1 N) atTop _
+  simp_rw [termSum_one, sub_eq_neg_add]
   refine Tendsto.add ?_ tendsto_const_nhds
   have := (tendsto_eulerMascheroniSeq'.comp (tendsto_add_atTop_nat 1)).neg
   refine this.congr' (Eventually.of_forall (fun n ↦ ?_))
@@ -174,10 +179,10 @@ lemma term_of_lt {n : ℕ} (hn : 0 < n) {s : ℝ} (hs : 1 < s) :
       · rw [show -(s + 1) + 1 = -s by ring, div_neg, ← neg_div, neg_sub, div_mul_eq_mul_div,
           mul_div_assoc, rpow_neg (Nat.cast_nonneg _), one_div, rpow_neg (by linarith), one_div]
 
-lemma term_sum_of_lt (N : ℕ) {s : ℝ} (hs : 1 < s) :
-    term_sum s N = 1 / (s - 1) * (1 - 1 / (N + 1) ^ (s - 1))
+lemma termSum_of_lt (N : ℕ) {s : ℝ} (hs : 1 < s) :
+    termSum s N = 1 / (s - 1) * (1 - 1 / (N + 1) ^ (s - 1))
     - 1 / s * ((∑ n ∈ Finset.range N, 1 / (n + 1 : ℝ) ^ s) - N / (N + 1) ^ s) := by
-  simp only [term_sum]
+  simp only [termSum]
   conv => enter [1, 2, n]; rw [term_of_lt (by simp) hs]
   rw [Finset.sum_sub_distrib]
   congr 1
@@ -195,15 +200,17 @@ lemma term_sum_of_lt (N : ℕ) {s : ℝ} (hs : 1 < s) :
       congr 1
       ring_nf
 
+@[deprecated (since := "2026-05-27")] alias term_sum_of_lt := termSum_of_lt
+
 /-- For `1 < s`, the topological sum of `ZetaAsymptotics.term (n + 1) s` over all `n : ℕ` is
 `1 / (s - 1) - ζ s / s`.
 -/
-lemma term_tsum_of_lt {s : ℝ} (hs : 1 < s) :
-    term_tsum s = (1 / (s - 1) - 1 / s * ∑' n : ℕ, 1 / (n + 1 : ℝ) ^ s) := by
+lemma termTSum_of_lt {s : ℝ} (hs : 1 < s) :
+    termTSum s = (1 / (s - 1) - 1 / s * ∑' n : ℕ, 1 / (n + 1 : ℝ) ^ s) := by
   apply HasSum.tsum_eq
   rw [hasSum_iff_tendsto_nat_of_nonneg (fun n ↦ term_nonneg (n + 1) s)]
-  change Tendsto (fun N ↦ term_sum s N) atTop _
-  simp_rw [term_sum_of_lt _ hs]
+  change Tendsto (fun N ↦ termSum s N) atTop _
+  simp_rw [termSum_of_lt _ hs]
   apply Tendsto.sub
   · rw [show 𝓝 (1 / (s - 1)) = 𝓝 (1 / (s - 1) - 1 / (s - 1) * 0) by simp]
     simp_rw [mul_sub, mul_one]
@@ -229,11 +236,13 @@ lemma term_tsum_of_lt {s : ℝ} (hs : 1 < s) :
           · norm_cast
           all_goals positivity
 
-/-- Reformulation of `ZetaAsymptotics.term_tsum_of_lt` which is useful for some computations
+@[deprecated (since := "2026-05-27")] alias term_tsum_of_lt := termTSum_of_lt
+
+/-- Reformulation of `ZetaAsymptotics.termTSum_of_lt` which is useful for some computations
 below. -/
 lemma zeta_limit_aux1 {s : ℝ} (hs : 1 < s) :
-    (∑' n : ℕ, 1 / (n + 1 : ℝ) ^ s) - 1 / (s - 1) = 1 - s * term_tsum s := by
-  rw [term_tsum_of_lt hs]
+    (∑' n : ℕ, 1 / (n + 1 : ℝ) ^ s) - 1 / (s - 1) = 1 - s * termTSum s := by
+  rw [termTSum_of_lt hs]
   generalize (∑' n : ℕ, 1 / (n + 1 : ℝ) ^ s) = Z
   field [(show s - 1 ≠ 0 by linarith)]
 
@@ -269,7 +278,7 @@ lemma continuousOn_term (n : ℕ) :
     · exact continuousAt_const.rpow (continuousAt_id.add continuousAt_const) (Or.inr (by linarith))
     · exact (rpow_pos_of_pos ((Nat.cast_pos.mpr (by simp)).trans hx.1) _).ne'
 
-lemma continuousOn_term_tsum : ContinuousOn term_tsum (Ici 1) := by
+lemma continuousOn_termTSum : ContinuousOn termTSum (Ici 1) := by
   -- We use dominated convergence, using `fun n ↦ term n 1` as our uniform bound (since `term` is
   -- monotone decreasing in `s`.)
   refine continuousOn_tsum (fun i ↦ continuousOn_term _) term_tsum_one.summable (fun n s hs ↦ ?_)
@@ -286,6 +295,8 @@ lemma continuousOn_term_tsum : ContinuousOn term_tsum (Ici 1) := by
     refine setIntegral_nonneg measurableSet_Ioc (fun x hx ↦ div_nonneg ?_ (rpow_nonneg ?_ _))
     all_goals linarith [hx.1]
 
+@[deprecated (since := "2026-05-27")] alias continuousOn_term_tsum := continuousOn_termTSum
+
 /-- First version of the limit formula, with a limit over real numbers tending to 1 from above. -/
 lemma tendsto_riemannZeta_sub_one_div_nhds_right :
     Tendsto (fun s : ℝ ↦ riemannZeta s - 1 / (s - 1)) (𝓝[>] 1) (𝓝 γ) := by
@@ -300,16 +311,16 @@ lemma tendsto_riemannZeta_sub_one_div_nhds_right :
     rw [Complex.ofReal_cpow (by positivity)]
     norm_cast
   suffices aux2 : Tendsto (fun s : ℝ ↦ (∑' n : ℕ, 1 / (n + 1 : ℝ) ^ s) - 1 / (s - 1))
-    (𝓝[>] 1) (𝓝 (1 - term_tsum 1)) by
+    (𝓝[>] 1) (𝓝 (1 - termTSum 1)) by
     have := term_tsum_one.tsum_eq
-    rw [← term_tsum, eq_sub_iff_add_eq, ← eq_sub_iff_add_eq'] at this
+    rw [← termTSum, eq_sub_iff_add_eq, ← eq_sub_iff_add_eq'] at this
     simpa only [this] using aux2
   apply Tendsto.congr'
   · filter_upwards [self_mem_nhdsWithin] with s hs using (zeta_limit_aux1 hs).symm
   · apply tendsto_const_nhds.sub
-    rw [← one_mul (term_tsum 1)]
+    rw [← one_mul (termTSum 1)]
     apply (tendsto_id.mono_left nhdsWithin_le_nhds).mul
-    have := continuousOn_term_tsum.continuousWithinAt self_mem_Ici
+    have := continuousOn_termTSum.continuousWithinAt self_mem_Ici
     exact Tendsto.mono_left this (nhdsWithin_mono _ Ioi_subset_Ici_self)
 
 /-- The function `ζ s - 1 / (s - 1)` tends to `γ` as `s → 1`. -/
