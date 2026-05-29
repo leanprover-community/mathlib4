@@ -843,12 +843,14 @@ lemma codRestrict_range_subtype {f : M →ₗ[R] N} {p : Submodule R N}
     LinearMap.subtype_codRestrict_range]
 
 end IsCompl
-section domRestrict
+
+-- section domRestrict
 --
 -- variable {R R₂ M M₂ : Type*} [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₂]
 --   [Module R M] [Module R₂ M₂] {σ₁₂ : R →+* R₂} (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M)
 --
--- lemma subtype_domRestrict_ker : map p.subtype (f.domRestrict p).ker ≤ f.ker := fun _ ↦ by simp_all
+-- lemma subtype_domRestrict_ker : map p.subtype (f.domRestrict p).ker ≤ f.ker :=
+--    fun _ ↦ by simp_all
 --
 -- lemma domRestrict_ker_subtype : (f.domRestrict p).ker ≤ comap p.subtype f.ker := by
 --   rw [← comap_map_eq_of_injective (injective_subtype p) (f.domRestrict p).ker]
@@ -856,8 +858,8 @@ section domRestrict
 --
 -- lemma domRestrict_ker_eq_zero {x : f.ker} : f.domRestrict f.ker = 0 := by
 --   sorry
+-- end domRestrict
 
-end domRestrict
 end LinearMap
 
 theorem FredholmDecomposition_SurjectiveOn₁ :
@@ -1080,14 +1082,15 @@ theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
     rintro ⟨FD⟩
     have hcompl_left := FD.1.topCompl
     have hcompl_right := FD.2.topCompl
-    set φ := FD.5.choose.symm with hφ_def
-    set ψ := (u.restrict FD.mapsto).inverse with hψ_def
-    have hφ (x : FD.dec_right.X₁) : u.restrict FD.mapsto (φ x) = x := by
-      -- have := FD.5.choose_spec
-      rw [hφ_def]
-      have := FD.5.self_apply_inverse x
-      convert this
-      sorry
+    obtain ⟨φ, hφ⟩ := FD.5
+    -- set ψ := φ.symm.toContinuousLinearMap with hψ_def
+    -- set ψ := (u.restrict FD.mapsto).inverse with hψ_def
+    -- set φ := FD.5.choose.symm with hφ_def
+    -- have hφ (x : FD.dec_right.X₁) : u.restrict FD.mapsto (φ x) = x := by
+    --   rw [hφ_def]
+    --   have := FD.5.self_apply_inverse x
+    --   convert this
+    --   sorry
 
       -- show u.restrict FD.mapsto (_) = x
     /- **FAE** Now I see two options:
@@ -1097,10 +1100,11 @@ theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
       identifies with the whole space.
     -/
     -- Let's try `1`.
-    set v := subtypeL _ ∘L ContinuousLinearMap.ofIsTopCompl hcompl_right φ.toContinuousLinearMap 0
-      with hv_def
-    set v' := subtypeL _ ∘L ContinuousLinearMap.ofIsTopCompl hcompl_right ψ 0
-      with hv'_def
+
+    -- set v := subtypeL _ ∘L ContinuousLinearMap.ofIsTopCompl hcompl_right φ.toContinuousLinearMap 0
+    --   with hv_def
+    set v' := subtypeL _ ∘L ContinuousLinearMap.ofIsTopCompl hcompl_right
+      φ.symm.toContinuousLinearMap 0 with hv'_def
     refine ⟨v', ?_, ?_⟩
     · rw [FiniteRankSetoid.equiv_iff, LinearMap.FiniteRankSetoid.equiv_iff]
       have := FD.dec_right.fin_dim
@@ -1109,19 +1113,10 @@ theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
       rintro x ⟨y, rfl⟩
       obtain ⟨⟨a, _⟩, ⟨rfl, -⟩⟩ := Submodule.existsUnique_add_of_isCompl_prod hcompl_right.isCompl y
       have h_uva : u (v' a) = a := by
-        rw [hv'_def, hψ_def, coe_comp', coe_subtypeL, coe_subtype, Function.comp_apply,
+        rw [hv'_def, coe_comp', coe_subtypeL, coe_subtype, Function.comp_apply,
           ofIsTopCompl_apply, ContinuousLinearMap.coe_zero, LinearMap.ofIsCompl_apply_left, coe_coe,
-          /- ContinuousLinearEquiv.coe_coe -/]
-        -- simp
-        sorry
-        -- rw [← ContinuousLinearMap.coe_restrict_apply (p := FD.dec_left.X₁) (q := FD.dec_right.X₁)]
-        -- have := @ContinuousLinearMap.IsInvertible.inverse_apply_self
-        --   (hf := FD.5) (y := ψ a)
-        -- simp_all
-
-        -- rw [← this]
-        -- simp
-        -- congr 1
+          ContinuousLinearEquiv.coe_coe]
+        simp [show u (φ.symm a) = u.restrict FD.4 (φ.symm a) from coe_restrict_apply FD.4 _, ← hφ]
       simp_all
     · sorry
 
