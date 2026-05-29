@@ -635,26 +635,26 @@ theorem realize_not : M ⊨ φ.not ↔ ¬M ⊨ φ :=
 
 @[simp]
 theorem realize_bot : ¬(M ⊨ (⊥ : L.Sentence)) :=
-  Iff.rfl
+  False.elim
 
 @[simp]
 theorem realize_top : M ⊨ (⊤ : L.Sentence) :=
-  Formula.realize_top
+  False.elim
 
 @[simp]
 theorem realize_inf : M ⊨ φ ⊓ ψ ↔ M ⊨ φ ∧ M ⊨ ψ :=
   Formula.realize_inf
 
 @[simp]
-theorem realize_sup : M ⊨ (φ ⊔ ψ) ↔ M ⊨ φ ∨ M ⊨ ψ :=
+theorem realize_sup : M ⊨ φ ⊔ ψ ↔ M ⊨ φ ∨ M ⊨ ψ :=
   Formula.realize_sup
 
 @[simp]
-theorem realize_imp : M ⊨ (φ.imp ψ) ↔ M ⊨ φ → M ⊨ ψ :=
+theorem realize_imp : M ⊨ φ.imp ψ ↔ M ⊨ φ → M ⊨ ψ :=
   Formula.realize_imp
 
 @[simp]
-theorem realize_iff : M ⊨ (φ.iff ψ) ↔ (M ⊨ φ ↔ M ⊨ ψ) :=
+theorem realize_iff : M ⊨ φ.iff ψ ↔ (M ⊨ φ ↔ M ⊨ ψ) :=
   Formula.realize_iff
 
 end Sentence
