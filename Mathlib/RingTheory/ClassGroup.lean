@@ -140,7 +140,7 @@ theorem ClassGroup.mk_eq_mk_of_coe_ideal {I J : (FractionalIdeal R⁰ <| Fractio
       simpa only [isUnit_iff_ne_zero, ne_eq, mk'_eq_zero_iff_eq_zero] using hx
     refine ⟨this.unit, ?_⟩
     rw [mul_comm, ← Units.val_inj, Units.val_mul, coe_toPrincipalIdeal]
-    convert
+    convert!
       (mk'_mul_coeIdeal_eq_coeIdeal (FractionRing R) <| mem_nonZeroDivisors_of_ne_zero hy).2 h
 
 theorem ClassGroup.mk_eq_one_of_coe_ideal {I : (FractionalIdeal R⁰ <| FractionRing R)ˣ}
@@ -221,6 +221,8 @@ theorem ClassGroup.mk_canonicalEquiv (K' : Type*) [Field K'] [Algebra R K'] [IsF
   rw [ClassGroup.mk_def, ClassGroup.mk_def, ← MonoidHom.comp_apply (Units.map _),
       ← Units.map_comp, ← RingEquiv.coe_monoidHom_trans,
       FractionalIdeal.canonicalEquiv_trans_canonicalEquiv]
+
+set_option linter.overlappingInstances false
 
 /-- Send a nonzero integral ideal to an invertible fractional ideal. -/
 def FractionalIdeal.mk0 [IsDedekindDomain R] :
@@ -408,7 +410,7 @@ theorem card_classGroup_eq_one [IsPrincipalIdealRing R] : Fintype.card (ClassGro
 /-- The class number is `1` iff the ring of integers is a principal ideal domain. -/
 theorem card_classGroup_eq_one_iff [IsDedekindDomain R] [Fintype (ClassGroup R)] :
     Fintype.card (ClassGroup R) = 1 ↔ IsPrincipalIdealRing R := by
-  constructor; swap; · intros; convert card_classGroup_eq_one (R := R)
+  constructor; swap; · intros; convert! card_classGroup_eq_one (R := R)
   rw [Fintype.card_eq_one_iff]
   rintro ⟨I, hI⟩
   have eq_one : ∀ J : ClassGroup R, J = 1 := fun J => (hI J).trans (hI 1).symm

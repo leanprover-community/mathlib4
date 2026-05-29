@@ -725,7 +725,7 @@ theorem colimitCurrySwapCompColimIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
             _ ⟶ colimit (curry.obj (Prod.swap K J ⋙ G) ⋙ colim)) := by
   dsimp [colimitCurrySwapCompColimIsoColimitCurryCompColim]
   slice_lhs 1 3 => simp only []
-  rw [colimitIsoColimitCurryCompColim_ι_ι_inv, HasColimit.isoOfEquivalence_inv_π]
+  rw [colimitIsoColimitCurryCompColim_ι_ι_inv, HasColimit.ι_isoOfEquivalence_inv]
   dsimp [Equivalence.counitInv]
   rw [CategoryTheory.Bifunctor.map_id]
   simp

@@ -7,6 +7,7 @@ module
 
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
+public meta import Std.Sync.Mutex
 public meta import Init
 public import Lean.Parser.Module
 public import Mathlib.Tactic.Linter.DirectoryDependency
@@ -261,14 +262,15 @@ def isInLibraryRoot (modName : Name) : IO Bool := do
     return res.imports.any (·.module == modName)
   else return false
 
-/-- `inLibraryRootRef` is
+/-- `inLibraryRootMutex` caches whether the current file is imported in the library root file
+(e.g. `Mathlib.lean`), as computed by `isInLibraryRoot`. It is
 * `none` at initialization time;
 * `some true` if the `header` linter has already discovered that the current file
-  is imported in the library root file (e.g. `Mathlib.lean`);
+  is imported in the library root file;
 * `some false` if the `header` linter has already discovered that the current file
   is *not* imported in the library root file.
 -/
-initialize inLibraryRootRef : IO.Ref (Option Bool) ← IO.mkRef none
+initialize inLibraryRootMutex : Std.Mutex (Option Bool) ← Std.Mutex.new none
 
 /--
 The "header" style linter checks that a file starts with
@@ -366,21 +368,23 @@ def headerTestFiles : NameSet := .ofList
 @[inherit_doc Mathlib.Linter.linter.style.header]
 def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let mainModule ← getMainModule
-  let inLibraryRoot? := ← match ← inLibraryRootRef.get with
-    | some d => return d
-    | none => do
-      let val ← isInLibraryRoot mainModule
-      -- We cache the answer to avoid recomputing it on every command. This is a performance
-      -- optimisation; `mainModule` is fixed for the duration of the elaboration.
-      inLibraryRootRef.set (some val)
-      return val
-  -- The linter skips files not imported in their library root (e.g. `Mathlib.lean`), to avoid
-  -- linting "scratch files". It is however active in the test files for the linter itself.
-  unless inLibraryRoot? || headerTestFiles.contains mainModule do return
   unless getLinterValue linter.style.header (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
+  let inLibraryRoot? ← inLibraryRootMutex.atomically do
+    match ← get with
+    | some d => return d
+    | none =>
+      let val ← isInLibraryRoot mainModule
+      -- We cache the answer to avoid recomputing it on every command. The fill runs under the mutex
+      -- so that concurrent (async) linter runs don't all miss the cache and each redundantly parse
+      -- the library root file; `mainModule` is fixed for the duration of the elaboration.
+      set (some val)
+      return val
+  -- The linter skips files not imported in their library root (e.g. `Mathlib.lean`), to avoid
+  -- linting "scratch files". It is however active in the test files for the linter itself.
+  unless inLibraryRoot? || headerTestFiles.contains mainModule do return
   -- Skip linting the library root file itself.
   -- In practice, the `inLibraryRoot?` check above already covers this (a well-formed `<root>.lean`
   -- does not import itself), but a root module could appear in `headerTestFiles`.
