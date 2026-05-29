@@ -163,7 +163,6 @@ lemma simplicialInsert_length (a : ℕ) (L : List ℕ) :
     (simplicialInsert a L).length = L.length + 1 := by
   induction L generalizing a <;> grind
 
-set_option linter.tacticAnalysis.verifyGrindOnly true in
 /-- `simplicialInsert` preserves admissibility -/
 theorem simplicialInsert_isAdmissible (L : List ℕ) (hL : IsAdmissible (m + 1) L) (j : ℕ)
     (hj : j ≤ m) :
