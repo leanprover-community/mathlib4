@@ -215,6 +215,19 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Subgroup G) {C : ∀ x, (x ∈ 
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
     exact ⟨_, hmul _ _ _ _ Cx Cy⟩
 
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Subgroup G) :
+    ((⨆ i, S i : Subgroup G) : Set G) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Subgroup G) := by
+  refine le_antisymm (fun g hg ↦ ?_) ?_
+  · refine Subgroup.iSup_induction' S ?_ (by simp) ?_ hg
+    · exact fun i g hg ↦ ⟨_, ⟨{i}, rfl⟩, by simpa⟩
+    · rintro a b ha hb ⟨_, ⟨s, rfl⟩, has⟩ ⟨_, ⟨t, rfl⟩, hbt⟩
+      classical
+      refine ⟨_, ⟨s ∪ t, rfl⟩, mul_mem ?_ ?_⟩ <;> rw [Finset.iSup_union]
+      · exact Subgroup.mem_sup_left has
+      · exact Subgroup.mem_sup_right hbt
+  · rintro g ⟨_, ⟨⟨s, rfl⟩, hg⟩⟩
+    exact iSup₂_le_iSup _ S hg
+
 @[to_additive (attr := simp)]
 theorem mul_subset {t : Set G} {H : Subgroup G} (hs : s ⊆ H) (ht : t ⊆ H) : s * t ⊆ H :=
   Submonoid.mul_subset hs ht

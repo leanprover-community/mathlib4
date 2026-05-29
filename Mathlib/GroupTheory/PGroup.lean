@@ -291,6 +291,34 @@ theorem to_sup_of_normal_left' {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsPG
     (hHK : K ≤ Subgroup.normalizer H) : IsPGroup p (H ⊔ K : Subgroup G) :=
   sup_comm H K ▸ to_sup_of_normal_right' hK hH hHK
 
+theorem iSup_of_normal {ι : Type*} (H : ι → Subgroup G) [∀ i, (H i).Normal]
+    (h : ∀ i, IsPGroup p (H i)) : IsPGroup p (⨆ i, H i : Subgroup G) := by
+  intro ⟨g, hg⟩
+  rw [← SetLike.mem_coe, Subgroup.coe_iSup_eq_iUnion_finset_coe_biSup] at hg
+  obtain ⟨_, ⟨s, rfl⟩, hgs⟩ := hg
+  rw [SetLike.mem_coe] at hgs
+  suffices IsPGroup p (⨆ i ∈ s, H i : Subgroup G) by simpa using this ⟨g, hgs⟩
+  clear g hg hgs
+  classical
+  induction s using Finset.induction with
+  | empty =>
+    rw [show ⨆ i ∈ ∅, H i = ⊥ by simp]
+    exact of_bot
+  | insert i s _ ih =>
+    rw [Finset.iSup_insert]
+    exact to_sup_of_normal_left (h i) ih
+
+theorem biSup_of_normal {ι : Type*} (s : Set ι) (H : ι → Subgroup G) (h : ∀ i ∈ s, IsPGroup p (H i))
+    (hn : ∀ i ∈ s, (H i).Normal) : IsPGroup p (⨆ i ∈ s, H i : Subgroup G) := by
+  rw [← iSup_subtype'']
+  have : ∀ i : s, (H i).Normal := fun i ↦ hn i i.property
+  exact iSup_of_normal _ fun i ↦ h i i.property
+
+theorem sSup_of_normal (Hs : Set (Subgroup G)) (h : ∀ H ∈ Hs, IsPGroup p H)
+    (hn : ∀ H ∈ Hs, H.Normal) : IsPGroup p (sSup Hs : Subgroup G) := by
+  rw [sSup_eq_iSup]
+  exact biSup_of_normal Hs id h hn
+
 /-- finite p-groups with different p have coprime orders -/
 theorem coprime_card_of_ne {G₂ : Type*} [Group G₂] (p₁ p₂ : ℕ) [hp₁ : Fact p₁.Prime]
     [hp₂ : Fact p₂.Prime] (hne : p₁ ≠ p₂) (H₁ : Subgroup G) (H₂ : Subgroup G₂) [Finite H₁]
