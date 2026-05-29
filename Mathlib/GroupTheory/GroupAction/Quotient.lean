@@ -125,6 +125,13 @@ theorem _root_.MulActionHom.toQuotient_apply (H : Subgroup α) (g : α) :
     MulActionHom.toQuotient H g = g :=
   rfl
 
+@[to_additive (attr := simp)]
+theorem coe_quotient_smul {H : Subgroup α} [H.Normal] [SMul α β]
+    [MulAction (α ⧸ H) β] [IsScalarTower α (α ⧸ H) β] (g : α) (x : β) :
+    (g : α ⧸ H) • x = g • x := by
+  rw [← smul_one_smul (α ⧸ H) g x, ← QuotientGroup.mk_one, Quotient.smul_coe,
+    smul_eq_mul, mul_one]
+
 @[to_additive]
 instance mulLeftCosetsCompSubtypeVal (H I : Subgroup α) : MulAction I (α ⧸ H) :=
   MulAction.compHom (α ⧸ H) (Subgroup.subtype I)

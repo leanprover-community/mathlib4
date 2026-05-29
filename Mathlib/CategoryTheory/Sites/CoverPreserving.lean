@@ -168,6 +168,28 @@ lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{max
       rintro Y _ ⟨Z, g, h, hg, rfl⟩
       simpa using congrArg _ ((hy₁ g hg).trans (hy₂ g hg).symm)
 
+variable (F J K) in
+/-- Continuous functors send covering sieves to covering sieves.
+The converse is false, see [SGA4, III, Exemple 1.9.3][sga-4-tome-1]. -/
+lemma CoverPreserving.of_isContinuous [F.IsContinuous J K] : CoverPreserving J K F where
+  cover_preserve {X S} hS := by
+    rw [K.mem_iff_isSheafFor_closedSieves]
+    obtain ⟨ι, Y, f, rfl⟩ := S.exists_eq_ofArrows
+    rw [Sieve.ofArrows, ← Sieve.generate_map_eq_functorPushforward,
+      ← Presieve.isSheafFor_iff_generate, Presieve.map_ofArrows]
+    have := Functor.op_comp_isSheaf_of_isSheaf_type F J (classifier_isSheaf K) _ hS
+    rw [Sieve.ofArrows, ← Presieve.isSheafFor_iff_generate] at this
+    rw [Presieve.isSheafFor_arrows_iff] at this ⊢
+    intro x hx
+    refine this x fun i j Z gi gj hgij ↦ hx _ _ _ _ _ ?_
+    simp [← Functor.map_comp, hgij]
+
+/-- If `F` is flat, it is continuous if and only if it preserves covers. -/
+lemma Functor.isContinuous_iff_coverPreserving [RepresentablyFlat F] :
+    F.IsContinuous J K ↔ CoverPreserving J K F := by
+  refine ⟨fun h ↦ .of_isContinuous _ _ _, fun h ↦ ?_⟩
+  apply Functor.isContinuous_of_coverPreserving (compatiblePreservingOfFlat _ _) h
+
 /-- If `C` has pullbacks and `F : C ⥤ D` preserves pullbacks, any cover preserving
 functor preserves all `1`-hypercovers. -/
 lemma Functor.PreservesOneHypercovers.of_coverPreserving [HasPullbacks C]
