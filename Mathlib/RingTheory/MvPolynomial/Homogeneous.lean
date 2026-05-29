@@ -80,8 +80,7 @@ theorem weightedTotalDegree_rename_of_injective {σ τ : Type*} {e : σ → τ}
     {w : τ → ℕ} {P : MvPolynomial σ R} (he : Function.Injective e) :
     weightedTotalDegree w (rename e P) = weightedTotalDegree (w ∘ e) P := by
   classical
-  unfold weightedTotalDegree
-  rw [support_rename_of_injective he, Finset.sup_image]
+  rw [weightedTotalDegree, supDegree, support_rename_of_injective he, Finset.sup_image]
   congr; ext; unfold weight; simp
 
 variable (σ R)

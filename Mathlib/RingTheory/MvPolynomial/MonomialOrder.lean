@@ -106,7 +106,7 @@ variable {R : Type*} [CommSemiring R]
 variable (m) in
 /-- the degree of a multivariate polynomial with respect to a monomial ordering -/
 noncomputable def degree (f : MvPolynomial σ R) : σ →₀ ℕ :=
-  m.toSyn.symm (f.support.sup m.toSyn)
+  m.toSyn.symm (f.supDegree m.toSyn)
 
 variable (m) in
 /-- the leading coefficient of a multivariate polynomial with respect to a monomial ordering -/
@@ -175,7 +175,7 @@ theorem degree_monomial_le {d : σ →₀ ℕ} (c : R) :
 
 theorem degree_monomial {d : σ →₀ ℕ} (c : R) [Decidable (c = 0)] :
     m.degree (monomial d c) = if c = 0 then 0 else d := by
-  simp only [degree, support_monomial]
+  simp only [degree, supDegree_monomial]
   split_ifs with hc <;> simp
 
 theorem degree_X_le_single {s : σ} : m.degree (X s : MvPolynomial σ R) ≼[m] Finsupp.single s 1 :=
@@ -258,7 +258,7 @@ theorem leadingCoeff_ne_zero_iff {f : MvPolynomial σ R} :
     rw [leadingCoeff, ← mem_support_iff, degree]
     suffices f.support.sup m.toSyn ∈ m.toSyn '' f.support by
       obtain ⟨d, hd, hd'⟩ := this
-      rw [← hd', AddEquiv.symm_apply_apply]
+      rw [supDegree, ← hd', AddEquiv.symm_apply_apply]
       exact hd
     exact Finset.sup_mem_of_nonempty hf
 
@@ -890,9 +890,8 @@ lemma degree_ne_zero_of_sub_leadingTerm_ne_zero {f : MvPolynomial σ R}
 
 @[simp]
 theorem degree_neg {f : MvPolynomial σ R} :
-    m.degree (-f) = m.degree f := by
-  unfold degree
-  rw [support_neg]
+    m.degree (-f) = m.degree f :=
+  congrArg m.toSyn.symm supDegree_neg
 
 @[simp]
 theorem leadingCoeff_neg {f : MvPolynomial σ R} :

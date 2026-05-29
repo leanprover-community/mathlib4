@@ -124,7 +124,7 @@ private lemma leadingCoeff_finSuccEquiv_t :
     (finSuccEquiv k n ((T f) ((monomial v) (coeff v f)))).leadingCoeff =
     algebraMap k _ (coeff v f) := by
   rw [monomial_eq, Finsupp.prod_fintype]
-  · simp only [map_mul, map_prod, leadingCoeff_mul, leadingCoeff_prod]
+  · simp only [map_mul, map_prod, Polynomial.leadingCoeff_mul, leadingCoeff_prod]
     rw [AlgEquiv.ofAlgHom_apply, algHom_C, algebraMap_eq, finSuccEquiv_apply,
       eval₂Hom_C, coe_comp]
     simp only [AlgEquiv.ofAlgHom_apply, Function.comp_apply, leadingCoeff_C, map_pow,
