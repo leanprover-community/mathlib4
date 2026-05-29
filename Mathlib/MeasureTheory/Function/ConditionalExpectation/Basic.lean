@@ -462,12 +462,16 @@ open Finset
 
 #check MeasureTheory.memLp_top_of_bound_enorm
 
-theorem test {f : ℕ → Lp E 1 μ} (hf : ∑' n, ‖f n‖ₑ ≠ ∞) :
+#where
+
+theorem summable_norm_coeFn_of_tsum_eLpNorm_one_ne_top
+    {f : ℕ → α → E} (hf : ∀ n, AEStronglyMeasurable (f n) μ)
+    (h'f : ∑' n, eLpNorm (f n) 1 μ ≠ ∞) :
     ∀ᵐ a ∂μ, Summable (fun n ↦ ‖f n a‖) := by
   suffices H : ∀ᵐ a ∂μ, ∑' n, ‖f n a‖ₑ < ∞ by
     filter_upwards [H] with x hx using tsum_enorm_ne_top_iff_summable_norm.1 hx.ne
-  apply ae_lt_top (Measurable.tsum (fun i ↦ (Lp.stronglyMeasurable (f i)).enorm))
-  rw [lintegral_tsum (fun i ↦ (Lp.aestronglyMeasurable (f i)).enorm)]
+  apply ae_lt_top' (AEMeasurable.tsum (fun i ↦ (hf i).enorm))
+  rw [lintegral_tsum (fun i ↦ (hf i).enorm)]
   convert hf with n
   simp [← eLpNorm_one_eq_lintegral_enorm]
 
@@ -475,29 +479,47 @@ theorem test {f : ℕ → Lp E 1 μ} (hf : ∑' n, ‖f n‖ₑ ≠ ∞) :
 
 #check MeasureTheory.eLpNorm_le_eLpNorm_mul_rpow_measure_univ
 
-theorem Lp.summable_norm_coeFn_of_tsum_enorm_ne_top {p : ℝ≥0∞} (hp : 1 ≤ p)
-    {f : ℕ → Lp E p μ} (hf : ∑' n, ‖f n‖ₑ ≠ ∞) :
+
+attribute [gcongr] ENNReal.tsum_le_tsum
+
+theorem summable_norm_coeFn_of_tsum_eLpNorm_ne_top {p : ℝ≥0∞} (hp : 1 ≤ p)
+    {f : ℕ → α → E} (hf : ∀ n, AEStronglyMeasurable (f n) μ)
+   (h'f : ∑' n, eLpNorm (f n) p μ ≠ ∞) :
     ∀ᵐ a ∂μ, Summable (fun n ↦ ‖f n a‖) := by
   suffices H : ∀ᵐ a ∂μ, ∑' n, ‖f n a‖ₑ < ∞ by
     filter_upwards [H] with x hx using tsum_enorm_ne_top_iff_summable_norm.1 hx.ne
   rcases eq_top_or_lt_top p with rfl | h'p
-  · have : ∀ᵐ x ∂μ, ∀ n, ‖f n x‖ₑ ≤ ‖f n‖ₑ := by
+  · have : ∀ᵐ x ∂μ, ∀ n, ‖f n x‖ₑ ≤ eLpNorm (f n) ∞ μ := by
       rw [ae_all_iff]
       intro n
       filter_upwards [ae_le_eLpNormEssSup (f := f n)] with x hx
       simpa using hx
     filter_upwards [this] with x hx
-    apply lt_of_le_of_lt ?_ hf.lt_top
+    apply lt_of_le_of_lt ?_ h'f.lt_top
     gcongr with i
     exact hx i
   have B (s : Set α) (hs : MeasurableSet s) (h's : μ s ≠ ∞) :
-      ∀ᵐ x ∂μ, x ∈ s → ∑' n, ‖f n x‖ₑ < ∞ := by
-    have I n : eLpNorm (f n) 1 (μ.restrict s) ≤ eLpNorm (f n) p (μ.restrict s) *
-          (μ.restrict s) Set.univ ^ (1 / (1 : ℝ≥0∞).toReal - 1 / p.toReal) := by
-        apply eLpNorm_le_eLpNorm_mul_rpow_measure_univ
-    let g n := s.indicator (f n)
-    have I n : eLpNorm (g n) p μ ≤ eLpNorm (f n) p μ := eLpNorm_indicator_le _
-    have J n : eLpNorm (g n) 1 (μ.restrict s) ≤
+      ∀ᵐ x ∂μ, x ∈ s → Summable (fun n ↦ ‖f n x‖) := by
+    rw [← ae_restrict_iff' hs]
+    apply summable_norm_coeFn_of_tsum_eLpNorm_one_ne_top (fun n ↦ (hf n).restrict)
+    apply ne_of_lt
+    have : ∑' n, eLpNorm (f n) p (μ.restrict s) *
+        (μ.restrict s) Set.univ ^ (1 / ENNReal.toReal 1 - 1 / p.toReal) < ∞ := by
+      rw [ENNReal.tsum_mul_right]
+      apply ENNReal.mul_lt_top ?_ ?_
+      sorry
+      simp
+      apply ENNReal.rpow_lt_top_of_nonneg _ h's
+      simp
+      apply inv_le_one_of_one_le₀
+      rw [← ENNReal.ofReal_le_iff_le_toReal h'p.ne]
+      simpa using hp
+    apply lt_of_le_of_lt ?_ this
+    gcongr with i
+    apply eLpNorm_le_eLpNorm_mul_rpow_measure_univ hp (hf i).restrict
+
+
+#exit
 
   have A n :  ∃ s, MeasurableSet s ∧ (∀ x ∈ sᶜ, f n x = 0) ∧ SigmaFinite (μ.restrict s) := by
     apply (finStronglyMeasurable_iff_stronglyMeasurable_and_exists_set_sigmaFinite.1 _).2
