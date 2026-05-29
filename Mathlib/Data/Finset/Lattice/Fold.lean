@@ -183,10 +183,10 @@ theorem apply_sup_eq_sup_comp [SemilatticeSup γ] [OrderBot γ] {s : Finset β} 
   Finset.cons_induction_on s bot fun c t hc ih => by
     rw [sup_cons, sup_cons, g_sup, ih, Function.comp_apply]
 
-@[deprecated (since := "2026-03-25")]
+@[deprecated (since := "2026-05-29")]
 alias comp_sup_eq_sup_comp := apply_sup_eq_sup_comp
 
-@[deprecated (since := "2026-03-25")]
+@[deprecated (since := "2026-05-29")]
 alias comp_inf_eq_inf_comp := apply_inf_eq_inf_comp
 
 /-- Computing `sup` in a subtype (closed under `sup`) is the same as computing it in `α`. -/
@@ -426,10 +426,10 @@ theorem apply_sup_eq_sup_comp_of_linearOrder [SemilatticeSup β] [OrderBot β] (
     (mono_g : Monotone g) (bot : g ⊥ = ⊥) : g (s.sup f) = s.sup (g ∘ f) :=
   apply_sup_eq_sup_comp g mono_g.map_sup bot
 
-@[deprecated (since := "2026-03-25")]
+@[deprecated (since := "2026-05-29")]
 alias comp_sup_eq_sup_comp_of_is_total := apply_sup_eq_sup_comp_of_linearOrder
 
-@[deprecated (since := "2026-03-25")]
+@[deprecated (since := "2026-05-29")]
 alias comp_inf_eq_inf_comp_of_is_total := apply_inf_eq_inf_comp_of_linearOrder
 
 @[to_dual (attr := simp) inf_le_iff]
@@ -607,10 +607,10 @@ theorem apply_sup'_eq_sup'_comp [SemilatticeSup γ] {s : Finset β} (H : s.Nonem
     (g : α → γ) (g_sup : ∀ x y, g (x ⊔ y) = g x ⊔ g y) : g (s.sup' H f) = s.sup' H (g ∘ f) := by
   refine H.cons_induction ?_ ?_ <;> intros <;> simp [*]
 
-@[deprecated (since := "2026-03-25")]
+@[deprecated (since := "2026-05-29")]
 alias comp_sup'_eq_sup'_comp := apply_sup'_eq_sup'_comp
 
-@[deprecated (since := "2026-03-25")]
+@[deprecated (since := "2026-05-29")]
 alias comp_inf'_eq_inf'_comp := apply_sup'_eq_sup'_comp
 
 @[to_dual (attr := simp)]
