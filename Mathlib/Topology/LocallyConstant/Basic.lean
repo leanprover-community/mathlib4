@@ -289,13 +289,13 @@ def ofIsClopen {X : Type*} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x
   toFun x := if x ∈ U then 0 else 1
   isLocallyConstant := by
     refine IsLocallyConstant.iff_isOpen_fiber.2 <| Fin.forall_fin_two.2 ⟨?_, ?_⟩
-    · convert hU.2 using 1
+    · convert! hU.2 using 1
       ext
       simp only [mem_singleton_iff, Fin.one_eq_zero_iff, mem_preimage, ite_eq_left_iff,
         Nat.succ_succ_ne_one]
       tauto
     · rw [← isClosed_compl_iff]
-      convert hU.1
+      convert! hU.1
       ext
       simp
 
@@ -534,7 +534,7 @@ def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) 
     refine (locallyFinite_of_finite _).continuous h (fun i ↦ ?_) (fun i ↦ ?_)
     · cases i <;> [exact h₂; exact h₁]
     · cases i <;> rw [continuousOn_iff_continuous_restrict]
-      · convert hg
+      · convert! hg
         ext x
         simp only [cond_false, restrict_apply, Subtype.coe_eta, dite_eq_right_iff]
         exact fun hx ↦ hfg x ⟨hx, x.prop⟩

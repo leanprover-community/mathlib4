@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Topology.GDelta.Basic
 public import Mathlib.Topology.Constructions
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Baire spaces
@@ -127,6 +128,7 @@ theorem dense_biInter_of_isOpen {S : Set α} {f : α → Set X} (ho : ∀ s ∈ 
 
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with
 an index set which is a countable type. -/
+@[wikidata Q1052678]
 theorem dense_iInter_of_isOpen [Countable ι] {f : ι → Set X} (ho : ∀ i, IsOpen (f i))
     (hd : ∀ i, Dense (f i)) : Dense (⋂ s, f s) :=
   dense_sInter_of_isOpen (forall_mem_range.2 ho) (countable_range _) (forall_mem_range.2 hd)

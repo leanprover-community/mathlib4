@@ -22,7 +22,7 @@ We provide instances for categories of sheaves over Abelian categories.
 
 -/
 
-@[expose] public section
+public section
 
 universe u v v₁ v₂
 

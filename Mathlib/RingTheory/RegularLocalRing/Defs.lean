@@ -41,7 +41,7 @@ This follows from localizations of regular local rings being regular (@Thmoas-Gu
 
 -/
 
-@[expose] public section
+public section
 
 open IsLocalRing
 

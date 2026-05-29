@@ -5,6 +5,7 @@ Authors: Janos Wolosz
 -/
 module
 
+public import Mathlib.Algebra.Lie.CartanCriterion
 public import Mathlib.Algebra.Lie.Weights.RootSystem
 public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
@@ -224,12 +225,11 @@ end LieIdeal
 
 namespace LieAlgebra.IsKilling
 
-variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L] [FiniteDimensional K L]
 open LieAlgebra LieModule Module
-variable {H : LieSubalgebra K L} [H.IsCartanSubalgebra]
 
--- Note that after https://github.com/leanprover-community/mathlib4/issues/10068 (Cartan's criterion) is complete we can omit `[IsKilling K L]`
-variable [IsKilling K L] [IsTriangularizable K H L]
+variable {K L : Type*} [Field K] [CharZero K]
+  [LieRing L] [LieAlgebra K L] [FiniteDimensional K L] [IsKilling K L]
+  {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H L]
 
 section aux
 
@@ -259,7 +259,7 @@ private theorem chi_in_q_aux (h_chi_in_q : ↑χ ∈ q) :
     have h_zero_weight : H.toLieSubmodule.incl y ∈ genWeightSpace L (0 : H → K) := by
       apply toLieSubmodule_le_rootSpace_zero
       exact y.property
-    convert lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ h_zero_weight
+    convert! lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ h_zero_weight
     ext h; simp
   have h_bracket_decomp : ⁅x_χ, m_α⁆ ∈
       genWeightSpace L (χ.toLinear + α.toLinear) ⊔
@@ -324,7 +324,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
     rw [hi] at h_equiv
     exact h_chi_not_in_q (h_equiv.mpr (by
       rw [hj, Weight.toLinear_neg]
-      convert q.smul_mem (-1) hαq using 1
+      convert! q.smul_mem (-1) hαq using 1
       rw [neg_smul, one_smul]))
   obtain ⟨i, hi⟩ := exists_root_index χ (Weight.coe_toLinear_ne_zero_iff.mp w_chi)
   obtain ⟨j, hj⟩ := exists_root_index α hα₀
@@ -413,7 +413,7 @@ private theorem invtSubmoduleToLieIdeal_aux (hm_α : m_α ∈ sl2SubmoduleOfRoot
   by_cases w_chi : χ.toLinear = 0
   · have hx_χ_in_H : x_χ ∈ H.toLieSubmodule := by
       rw [← rootSpace_zero_eq K L H]
-      convert hx_χ; ext h; simp only [Pi.zero_apply]
+      convert! hx_χ; ext h; simp only [Pi.zero_apply]
       have h_apply : (χ.toLinear : H → K) h = 0 := by rw [w_chi, LinearMap.zero_apply]
       exact h_apply.symm
     apply LieSubmodule.mem_iSup_of_mem ⟨α, hαq, hα₀⟩
@@ -557,7 +557,18 @@ theorem isSimple_iff_isIrreducible : (rootSystem H).IsIrreducible ↔ IsSimple K
   rw [RootPairing.isIrreducible_iff_invtRootSubmodule, ← isSimple_iff_of_not_isLieAbelian K L hL,
     (lieIdealOrderIso H).isSimpleOrder_iff]
 
-instance [IsSimple K L] : (rootSystem H).IsIrreducible :=
-  isSimple_iff_isIrreducible.mpr ‹_›
-
 end LieAlgebra.IsKilling
+
+namespace LieAlgebra
+
+open LieModule
+
+variable {K L : Type*} [Field K] [CharZero K]
+  [LieRing L] [LieAlgebra K L] [FiniteDimensional K L]
+  {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H L]
+
+instance instIsIrreducibleRootSystem_of_isSimple [IsSimple K L] :
+    (IsKilling.rootSystem H).IsIrreducible :=
+  LieAlgebra.IsKilling.isSimple_iff_isIrreducible.mpr ‹_›
+
+end LieAlgebra
