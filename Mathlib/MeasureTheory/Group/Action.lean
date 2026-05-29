@@ -22,7 +22,7 @@ typeclass for measures invariant under action of an (additive or multiplicative)
 some basic properties of such measures.
 -/
 
-@[expose] public section
+public section
 
 
 open scoped ENNReal NNReal Pointwise Topology symmDiff
@@ -219,10 +219,10 @@ theorem smulInvariantMeasure_map [SMul M α] [SMul M β]
     SMulInvariantMeasure M β (map f μ) where
   measure_preimage_smul m S hS := calc
     map f μ ((m • ·) ⁻¹' S)
-    _ = μ (f ⁻¹' ((m • ·) ⁻¹' S)) := map_apply hf <| hS.preimage (measurable_const_smul _)
+    _ = μ (f ⁻¹' (m • ·) ⁻¹' S) := map_apply hf <| hS.preimage (measurable_const_smul _)
     _ = μ ((m • f ·) ⁻¹' S) := by rw [preimage_preimage]
     _ = μ ((f <| m • ·) ⁻¹' S) := by simp_rw [hsmul]
-    _ = μ ((m • ·) ⁻¹' (f ⁻¹' S)) := by rw [← preimage_preimage]
+    _ = μ ((m • ·) ⁻¹' f ⁻¹' S) := by rw [← preimage_preimage]
     _ = μ (f ⁻¹' S) := by rw [SMulInvariantMeasure.measure_preimage_smul m (hS.preimage hf)]
     _ = map f μ S := (map_apply hf hS).symm
 
@@ -240,19 +240,20 @@ variable (G) {m : MeasurableSpace α} [Group G] [MulAction G α] (μ : Measure �
 variable [MeasurableConstSMul G α] in
 /-- Equivalent definitions of a measure invariant under a multiplicative action of a group.
 
-- 0: `SMulInvariantMeasure G α μ`;
+0. `SMulInvariantMeasure G α μ`;
 
-- 1: for every `c : G` and a measurable set `s`, the measure of the preimage of `s` under scalar
-     multiplication by `c` is equal to the measure of `s`;
+1. for every `c : G` and a measurable set `s`, the measure of the preimage of `s` under scalar
+  multiplication by `c` is equal to the measure of `s`;
 
-- 2: for every `c : G` and a measurable set `s`, the measure of the image `c • s` of `s` under
-     scalar multiplication by `c` is equal to the measure of `s`;
+2. for every `c : G` and a measurable set `s`, the measure of the image `c • s` of `s` under
+  scalar multiplication by `c` is equal to the measure of `s`;
 
-- 3, 4: properties 2, 3 for any set, including non-measurable ones;
+3. property 1 for any set, including non-measurable ones;
+4. property 2 for any set, including non-measurable ones;
 
-- 5: for any `c : G`, scalar multiplication by `c` maps `μ` to `μ`;
+5. for any `c : G`, scalar multiplication by `c` maps `μ` to `μ`;
 
-- 6: for any `c : G`, scalar multiplication by `c` is a measure-preserving map. -/
+6. for any `c : G`, scalar multiplication by `c` is a measure-preserving map. -/
 @[to_additive]
 theorem smulInvariantMeasure_tfae :
     List.TFAE

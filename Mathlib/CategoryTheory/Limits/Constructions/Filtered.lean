@@ -71,7 +71,7 @@ def liftToFinsetColimitCocone [HasColimitsOfShape (Finset (Discrete α)) C]
         dsimp [liftToFinsetObj]
         apply colimit.hom_ext
         rintro ⟨⟨j, hj⟩⟩
-        convert h j using 1
+        convert! h j using 1
         · simp [← colimit.w (liftToFinsetObj F) ⟨⟨Finset.singleton_subset_iff.2 hj⟩⟩]
           rfl
         · simp }
@@ -106,8 +106,9 @@ def isColimitFiniteSubproductsCocone (f : α → C) [HasColimitsOfShape (Finset 
       colimit.cocone_x, colimit.cocone_ι, finiteSubcoproductsCocone_ι_app]
     ext j
     rw [← Category.assoc]
-    convert IsColimit.comp_coconePointUniqueUpToIso_hom
-      (liftToFinsetColimitCocone (Discrete.functor f)).isColimit (colimit.isColimit _) j
+    convert!
+      IsColimit.comp_coconePointUniqueUpToIso_hom
+        (liftToFinsetColimitCocone (Discrete.functor f)).isColimit (colimit.isColimit _) j
     · simp [← colimit.w (liftToFinsetObj _) (homOfLE (x := {j.1}) (y := S) (by simp))]
     · simp))
 
@@ -161,9 +162,7 @@ def liftToFinsetColimIso : liftToFinset C α ⋙ colim ≅ colim :=
       ext J
       simp only [liftToFinset_obj_obj]
       ext j
-      simp only [liftToFinset, ι_colimMap_assoc, liftToFinsetObj_obj, Discrete.functor_obj_eq_as,
-        Discrete.natTrans_app, liftToFinsetColimIso_aux, liftToFinsetColimIso_aux_assoc,
-        ι_colimMap])
+      simp [liftToFinset, liftToFinsetColimIso_aux, liftToFinsetColimIso_aux_assoc])
 
 end
 
@@ -213,7 +212,7 @@ def liftToFinsetLimitCone [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
         dsimp [liftToFinsetObj]
         apply limit.hom_ext
         rintro ⟨⟨j, hj⟩⟩
-        convert h j using 1
+        convert! h j using 1
         · simp [← limit.w (liftToFinsetObj F) ⟨⟨⟨Finset.singleton_subset_iff.2 hj⟩⟩⟩]
           rfl
         · simp }
@@ -273,7 +272,7 @@ def liftToFinsetEvaluationIso (I : Finset (Discrete α)) :
     liftToFinset C α ⋙ (evaluation _ _).obj ⟨I⟩ ≅
     (Functor.whiskeringLeft _ _ _).obj (Discrete.functor (·.val)) ⋙ lim (J := Discrete I) :=
   NatIso.ofComponents (fun _ => HasLimit.isoOfNatIso (Discrete.natIso fun _ => Iso.refl _))
-    fun _ => by dsimp; ext; simp
+    fun _ => by dsimp; ext; simp [Pi.map]
 
 end ProductsFromFiniteCofiltered
 

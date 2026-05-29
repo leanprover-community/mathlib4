@@ -270,6 +270,14 @@ theorem sup_sup_sup_comm (a b c d : α) : a ⊔ b ⊔ (c ⊔ d) = a ⊔ c ⊔ (b
   rw [sup_assoc, sup_left_comm b, ← sup_assoc]
 
 @[to_dual]
+theorem sup_rotate (a b c : α) : a ⊔ b ⊔ c = b ⊔ c ⊔ a := by
+  rw [sup_assoc, sup_comm]
+
+@[to_dual]
+theorem sup_rotate' (a b c : α) : a ⊔ (b ⊔ c) = b ⊔ (c ⊔ a) := by
+  rw [sup_comm, sup_assoc]
+
+@[to_dual]
 theorem sup_sup_distrib_left (a b c : α) : a ⊔ (b ⊔ c) = a ⊔ b ⊔ (a ⊔ c) := by
   rw [sup_sup_sup_comm, sup_idem]
 
@@ -991,6 +999,54 @@ protected abbrev Subtype.distribLattice [DistribLattice α] {P : α → Prop}
     DistribLattice (Subtype P) :=
   letI := Subtype.lattice Psup Pinf
   Subtype.coe_injective.distribLattice _ coe_le_coe coe_lt_coe (coe_sup Psup) (coe_inf Pinf)
+
+namespace Equiv
+
+variable (e : α ≃ β)
+
+/-- Transfer `Preorder` across an `Equiv`. -/
+protected abbrev preorder [Preorder β] : Preorder α := by
+  let le := e.le
+  let lt := e.lt
+  apply Function.Injective.preorder e <;> intros <;> rfl
+
+/-- Transfer `PartialOrder` across an `Equiv`. -/
+protected abbrev partialOrder [PartialOrder β] : PartialOrder α := by
+  let preorder := e.preorder
+  apply e.injective.partialOrder <;> intros <;> rfl
+
+/-- Transfer `LinearOrder` across an `Equiv`. -/
+protected abbrev linearOrder [LinearOrder β] [DecidableEq α] : LinearOrder α := by
+  let max := e.max
+  let min := e.min
+  let preorder := e.preorder
+  let compare := e.ord
+  apply e.injective.linearOrder <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+/-- Transfer `SemilatticeSup` across an `Equiv`. -/
+protected abbrev semilatticeSup [SemilatticeSup β] : SemilatticeSup α := by
+  let max := e.max
+  let partialOrder := e.partialOrder
+  apply e.injective.semilatticeSup <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+/-- Transfer `SemilatticeInf` across an `Equiv`. -/
+protected abbrev semilatticeInf [SemilatticeInf β] : SemilatticeInf α := by
+  let min := e.min
+  let partialOrder := e.partialOrder
+  apply e.injective.semilatticeInf <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+/-- Transfer `Lattice` across an `Equiv`. -/
+protected abbrev lattice [Lattice β] : Lattice α := by
+  let semilatticeSup := e.semilatticeSup
+  let semilatticeInf := e.semilatticeInf
+  apply e.injective.lattice <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+/-- Transfer `DistribLattice` across an `Equiv`. -/
+protected abbrev distribLattice [DistribLattice β] : DistribLattice α := by
+  let lattice := e.lattice
+  apply e.injective.distribLattice <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+end Equiv
 
 end lift
 

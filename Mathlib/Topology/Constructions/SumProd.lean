@@ -593,6 +593,12 @@ protected lemma Topology.IsOpenEmbedding.prodMap {f : X → Y} {g : Z → W} (hf
     (hg : IsOpenEmbedding g) : IsOpenEmbedding (Prod.map f g) :=
   .of_isEmbedding_isOpenMap (hf.1.prodMap hg.1) (hf.isOpenMap.prodMap hg.isOpenMap)
 
+protected lemma Topology.IsClosedEmbedding.prodMap {f : X → Y} {g : Z → W}
+    (hf : IsClosedEmbedding f) (hg : IsClosedEmbedding g) :
+    IsClosedEmbedding (Prod.map f g) :=
+  { hf.isEmbedding.prodMap hg.isEmbedding with
+    isClosed_range := range_prodMap ▸ hf.isClosed_range.prod hg.isClosed_range }
+
 lemma isEmbedding_graph {f : X → Y} (hf : Continuous f) : IsEmbedding fun x => (x, f x) :=
   .of_comp (continuous_id.prodMk hf) continuous_fst .id
 
@@ -806,7 +812,7 @@ theorem isClosedMap_sum {f : X ⊕ Y → Z} :
     exact ⟨h.comp IsClosedEmbedding.inl.isClosedMap, h.comp IsClosedEmbedding.inr.isClosedMap⟩
   · rintro h Z hZ
     rw [isClosed_sum_iff] at hZ
-    convert (h.1 _ hZ.1).union (h.2 _ hZ.2)
+    convert! (h.1 _ hZ.1).union (h.2 _ hZ.2)
     ext
     simp only [mem_image, Sum.exists, mem_union, mem_preimage]
 
@@ -945,7 +951,7 @@ theorem Topology.IsInducing.sumElim (hf : IsInducing f) (hg : IsInducing g)
   obtain x | x := x <;>
   simp only [comap_sumElim_eq, nhds_inl, nhds_inr, elim_inl, elim_inr, ← hf.nhds_eq_comap,
     ← hg.nhds_eq_comap, sup_le_iff, le_rfl, true_and, and_true] <;>
-  convert bot_le (α := Filter (X ⊕ Y)) <;>
+  convert! bot_le (α := Filter (X ⊕ Y)) <;>
   rw [map_eq_bot_iff, comap_eq_bot_iff_compl_range]
   · rw [← disjoint_principal_right]
     exact hfG.mono_left (nhds_le_nhdsSet (mem_range_self x))

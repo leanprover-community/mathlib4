@@ -36,7 +36,7 @@ In lemma names,
 * `⨅ i, f i` : `iInf f`, the infimum of the range of `f`.
 -/
 
-@[expose] public section
+public section
 
 open Function OrderDual Set
 
@@ -166,7 +166,11 @@ theorem biSup_congr {p : ι → Prop} (h : ∀ i, p i → f i = g i) :
 theorem biSup_congr' {p : ι → Prop} {f g : (i : ι) → p i → α}
     (h : ∀ i (hi : p i), f i hi = g i hi) :
     ⨆ i, ⨆ (hi : p i), f i hi = ⨆ i, ⨆ (hi : p i), g i hi := by
-  grind
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was: `grind` -/
+  simp_all
 
 @[to_dual]
 theorem Function.Surjective.iSup_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
@@ -182,7 +186,7 @@ theorem Equiv.iSup_comp {g : ι' → α} (e : ι ≃ ι') : ⨆ x, g (e x) = ⨆
 @[to_dual]
 protected theorem Function.Surjective.iSup_congr {g : ι' → α} (h : ι → ι') (h1 : Surjective h)
     (h2 : ∀ x, g (h x) = f x) : ⨆ x, f x = ⨆ y, g y := by
-  convert h1.iSup_comp g
+  convert! h1.iSup_comp g
   exact (h2 _).symm
 
 @[to_dual]
@@ -299,10 +303,6 @@ theorem iSup_le_iff : iSup f ≤ a ↔ ∀ i, f i ≤ a :=
 @[to_dual le_iInf₂_iff]
 theorem iSup₂_le_iff {f : ∀ i, κ i → α} : ⨆ (i) (j), f i j ≤ a ↔ ∀ i j, f i j ≤ a := by
   simp_rw [iSup_le_iff]
-
-@[to_dual lt_iInf_iff]
-theorem iSup_lt_iff : iSup f < a ↔ ∃ b, b < a ∧ ∀ i, f i ≤ b :=
-  ⟨fun h => ⟨iSup f, h, le_iSup f⟩, fun ⟨_, h, hb⟩ => (iSup_le hb).trans_lt h⟩
 
 @[to_dual]
 theorem sSup_eq_iSup {s : Set α} : sSup s = ⨆ a ∈ s, a :=
@@ -437,20 +437,9 @@ theorem iSup₂_comm {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι
     ⨆ (i₁) (j₁) (i₂) (j₂), f i₁ j₁ i₂ j₂ = ⨆ (i₂) (j₂) (i₁) (j₁), f i₁ j₁ i₂ j₂ := by
   simp only [@iSup_comm _ (κ₁ _), @iSup_comm _ ι₁]
 
-/- TODO: this is strange. In the proof below, we get exactly the desired among the equalities,
-but close does not get it.
-begin
-  apply @le_antisymm,
-    simp, intros,
-    begin [smt]
-      ematch, ematch, ematch, trace_state, have := le_refl (f i_1 i),
-      trace_state, close
-    end
-end
--/
 @[to_dual (attr := simp)]
 theorem iSup_iSup_eq_left {b : β} {f : ∀ x : β, x = b → α} : ⨆ x, ⨆ h : x = b, f x h = f b rfl :=
-  (@le_iSup₂ _ _ _ _ f b rfl).antisymm'
+  (le_iSup₂ (f := f) b rfl).antisymm'
     (iSup_le fun c =>
       iSup_le <| by
         rintro rfl
@@ -500,13 +489,6 @@ lemma biInf_le_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty) {f : ι → α}
     ⨅ i ∈ s, f i ≤ ⨆ i ∈ s, f i :=
   (biInf_le _ hs.choose_spec).trans <| le_biSup _ hs.choose_spec
 
-/- TODO: here is another example where more flexible pattern matching might help.
-
-begin
-  apply @le_antisymm,
-  safe, pose h := f a ⊓ g a, begin [smt] ematch, ematch end
-end
--/
 @[to_dual]
 theorem iSup_sup [Nonempty ι] {f : ι → α} {a : α} : (⨆ x, f x) ⊔ a = ⨆ x, f x ⊔ a := by
   rw [iSup_sup_eq, iSup_const]
@@ -661,7 +643,7 @@ theorem iSup_split (f : β → α) (p : β → Prop) :
 
 @[to_dual]
 theorem iSup_split_single (f : β → α) (i₀ : β) : ⨆ i, f i = f i₀ ⊔ ⨆ (i) (_ : i ≠ i₀), f i := by
-  convert iSup_split f (fun i => i = i₀)
+  convert! iSup_split f (fun i => i = i₀)
   simp
 
 @[to_dual]
@@ -814,10 +796,6 @@ end
 section CompleteLinearOrder
 
 variable [CompleteLinearOrder α]
-
-@[to_dual]
-theorem iSup_eq_top (f : ι → α) : iSup f = ⊤ ↔ ∀ b < ⊤, ∃ i, b < f i := by
-  simp only [← sSup_range, sSup_eq_top, Set.exists_range_iff]
 
 @[to_dual]
 lemma iSup₂_eq_top (f : ∀ i, κ i → α) : ⨆ i, ⨆ j, f i j = ⊤ ↔ ∀ b < ⊤, ∃ i j, b < f i j := by
@@ -990,3 +968,18 @@ protected abbrev Function.Injective.completeLattice [Max α] [Min α] [LE α] [L
   __ := BoundedOrder.lift f (fun _ _ ↦ le.1) map_top map_bot
   isLUB_sSup _ := .of_image le (by rw [map_sSup]; exact isLUB_biSup)
   isGLB_sInf _ := .of_image le (by rw [map_sInf]; exact isGLB_biInf)
+
+namespace Equiv
+
+variable (e : α ≃ β)
+
+/-- Transfer `CompleteLattice` across an `Equiv`. -/
+protected abbrev completeLattice [CompleteLattice β] : CompleteLattice α := by
+  let top := e.top
+  let bot := e.bot
+  let supSet := e.supSet
+  let infSet := e.infSet
+  let lattice := e.lattice
+  apply e.injective.completeLattice <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+end Equiv

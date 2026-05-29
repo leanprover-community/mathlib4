@@ -27,7 +27,7 @@ Cauchy-Schwarz inequality, and induces a norm that makes `E` a normed vector spa
   space. This can be used with `NormedAddCommGroup.ofCore` and `NormedSpace.ofCore` to create
   the relevant instances on a type of interest.
 + `CStarModule.inner_mul_inner_swap_le`: The statement that
-  `⟪y, x⟫ * ⟪x, y⟫ ≤ ‖x‖ ^ 2 • ⟪y, y⟫`, which can be viewed as a version of the Cauchy-Schwarz
+  `⟪x, y⟫ * ⟪y, x⟫ ≤ ‖x‖ ^ 2 • ⟪y, y⟫`, which can be viewed as a version of the Cauchy-Schwarz
   inequality for Hilbert C⋆-modules.
 + `CStarModule.norm_inner_le`, which states that `‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖`, i.e. the
   Cauchy-Schwarz inequality.

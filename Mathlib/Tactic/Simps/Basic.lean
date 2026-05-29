@@ -321,8 +321,8 @@ This default behavior is customisable as such:
   name `coe_foo_snd_fst`.
 
 Here are a few extra pieces of information:
-  * Run `initialize_simps_projections?` (or `set_option trace.simps.verbose true`)
-    to see the generated projections.
+* Run `initialize_simps_projections?` (or `set_option trace.simps.verbose true`)
+  to see the generated projections.
 * Running `initialize_simps_projections MyStruct` without arguments is not necessary, it has the
   same effect if you just add `@[simps]` to a declaration.
 * It is recommended to call `@[simps]` or `initialize_simps_projections` in the same file as the
@@ -787,10 +787,10 @@ are three cases
   `oldStructureCmd` (does this exist?)).
 * Otherwise, the projection of the structure is chosen.
   For example: ``getRawProjections env `Prod`` gives the default projections.
-```
+  ```
   ([u, v], [(`fst, `(Prod.fst.{u v}), [0], true, false),
      (`snd, `(@Prod.snd.{u v}), [1], true, false)])
-```
+  ```
 
 Optionally, this command accepts three optional arguments:
 * If `traceIfExists` the command will always generate a trace message when the structure already
@@ -881,6 +881,8 @@ structure Config where
   attrs : Array Attribute := #[]
   /-- simplify the right-hand side of generated simp-lemmas using `dsimp, simp`. -/
   simpRhs := false
+  /-- simplify the left-hand side of the generated lemmas using `dsimp`. -/
+  dsimpLhs := false
   /-- TransparencyMode used to reduce the type in order to detect whether it is a structure. -/
   typeMd := TransparencyMode.instances
   /-- TransparencyMode used to reduce the right-hand side in order to detect whether it is a
@@ -984,6 +986,11 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
       trace[simps.debug] "`simp` failed to simplify rhs"
     rhs := result.expr
     prf := result.proof?.getD prf
+  -- dsimplify `lhs` if `cfg.dsimpLhs` is true
+  let mut lhs := lhs
+  if cfg.dsimpLhs then
+    let ctx ← mkSimpContext
+    (lhs, _) ← dsimp lhs ctx
   let eqAp := mkApp3 (mkConst `Eq [lvl]) type lhs rhs
   let declType ← mkForallFVars args eqAp
   let declValue ← mkLambdaFVars args prf
@@ -1212,7 +1219,7 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
           let s := nm.lastComponentAsString
           if (← isInstance nm) ∧ s.startsWith "inst" then [] else [s]}
   MetaM.run' <| addProjections ref d.levelParams
-    nm d.type lhs (d.value?.getD default) #[] (mustBeStr := true) cfg todo []
+    nm d.type lhs (d.value! (allowOpaque := true)) #[] (mustBeStr := true) cfg todo []
 
 /-- elaborate the syntax and run `simpsTac`. -/
 def simpsTacFromSyntax (nm : Name) (stx : Syntax) : AttrM (Array Name) :=

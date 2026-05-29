@@ -99,7 +99,7 @@ theorem map_spanIntNorm (I : Ideal S) {T : Type*} [Semiring T] (f : R →+* T) :
   nth_rw 2 [map]
   simp [map_span, Set.image_image]
 
-@[mono]
+@[gcongr, mono]
 theorem spanNorm_mono {I J : Ideal S} (h : I ≤ J) : spanNorm R I ≤ spanNorm R J :=
   Ideal.span_mono (Set.monotone_image h)
 
@@ -191,6 +191,8 @@ theorem spanNorm_le_comap (I : Ideal S) : spanNorm R I ≤ comap (algebraMap R S
   | zero => simp
   | add _ _ _ _ hx hy => exact Submodule.add_mem _ hx hy
   | smul _ _ _ hx => exact Submodule.smul_mem _ _ hx
+
+set_option linter.overlappingInstances false
 
 /-- Multiplicativity of `Ideal.spanNorm`. simp-normal form is `map_mul (Ideal.relNorm R)`. -/
 theorem spanNorm_mul [IsDedekindDomain R] [IsDedekindDomain S] (I J : Ideal S) :
@@ -302,7 +304,7 @@ theorem map_relNorm (I : Ideal S) {T : Type*} [Semiring T] (f : R →+* T) :
     map f (relNorm R I) = span (f ∘ Algebra.intNorm R S '' (I : Set S)) :=
   map_spanIntNorm R I f
 
-@[mono]
+@[gcongr, mono]
 theorem relNorm_mono {I J : Ideal S} (h : I ≤ J) : relNorm R I ≤ relNorm R J :=
   spanNorm_mono R h
 
@@ -320,7 +322,7 @@ theorem relNorm_map_algEquiv {T : Type*} [CommRing T] [IsDedekindDomain T] [IsIn
     [Algebra R T] [Module.Finite R T] [IsTorsionFree R T] (σ : S ≃ₐ[R] T) (I : Ideal S) :
     relNorm R (I.map σ) = relNorm R I := by
   refine le_antisymm (relNorm_map_algEquiv_aux σ I) ?_
-  convert relNorm_map_algEquiv_aux σ.symm (I.map σ)
+  convert! relNorm_map_algEquiv_aux σ.symm (I.map σ)
   change I = map σ.symm.toAlgHom (map σ.toAlgHom I)
   simp [map_mapₐ]
 
@@ -419,13 +421,13 @@ theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
     obtain ⟨σ, rfl⟩ := Ideal.exists_smul_eq_of_isGaloisGroup p P Q G
     rw [relNorm_smul, hs, ← pow_mul, mul_comm]
   have h := (congr_arg (relNorm R ·) <|
-    map_algebraMap_eq_finset_prod_pow hp).symm.trans <| relNorm_algebraMap S p
+    map_algebraMap_eq_finsetProd_pow hp).symm.trans <| relNorm_algebraMap S p
   simp +contextual only [map_prod, map_pow, h₀, Finset.prod_const, ← pow_mul] at h
   rwa [← IsGaloisGroup.card_eq_finrank G (FractionRing R) (FractionRing S),
     ← Ideal.ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp S G, mul_comm,
     ← Set.ncard_eq_toFinset_card',
     ((IsLeftCancelMulZero.mul_left_cancel_of_ne_zero hp).pow_injective _).eq_iff,
-    mul_right_inj' (primesOver_ncard_ne_zero p S),
+    mul_right_inj' (IsDedekindDomain.primesOver_ncard_ne_zero p S),
     mul_right_inj' (ramificationIdxIn_ne_zero G hp),
     inertiaDegIn_eq_inertiaDeg p P G] at h
   rw [one_eq_top]
