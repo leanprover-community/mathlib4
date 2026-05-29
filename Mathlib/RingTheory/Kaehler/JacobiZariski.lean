@@ -532,7 +532,7 @@ lemma H1Cotangent.exact_δ_mapBaseChange : Function.Exact (δ R S T) (mapBaseCha
 lemma H1Cotangent.exact_liftBaseChange_map_map_of_flat [Module.Flat S T] :
     Function.Exact ((map R R S T).liftBaseChange T) (map R S T T) :=
   Generators.H1Cotangent.exact_liftBaseChange_map_map_of_flat'
-  (Generators.self S T) (Generators.self R S) (Generators.self R T)
-  (Generators.defaultHom _ _) (Generators.defaultHom _ _)
+    (Generators.self S T) (Generators.self R S) (Generators.self R T)
+    (Generators.defaultHom _ _) (Generators.defaultHom _ _)
 
 end Algebra
