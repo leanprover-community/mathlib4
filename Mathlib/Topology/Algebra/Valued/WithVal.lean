@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Algebra.Field.TransferInstance
-public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
-public import Mathlib.Topology.UniformSpace.Completion
-public import Mathlib.Topology.Algebra.Valued.ValuedField
+public import Mathlib.Algebra.Order.Hom.Units
 public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
+public import Mathlib.Topology.Algebra.Valued.ValuedField
 
 /-!
 # Ring topologised by a valuation
@@ -194,7 +194,9 @@ theorem congr_trans {T : Type*} [Ring T] (u : Valuation T Γ₀) (f : R ≃+* S)
 /-- Canonical valuation on the `WithVal v` type synonym. -/
 def valuation : Valuation (WithVal v) Γ₀ := v.comap (equiv v)
 
-@[simp] lemma valuation_equiv_symm (x : R) : valuation v (toVal v x) = v x := rfl
+@[simp] lemma valuation_toVal (x : R) : valuation v (toVal v x) = v x := rfl
+
+@[simp] lemma valuation_apply_eq_ofVal (x : WithVal v) : valuation v x = v x.ofVal := rfl
 
 instance : Valued (WithVal v) Γ₀ := Valued.mk' (valuation v)
 
@@ -221,6 +223,15 @@ instance : CommRing (WithVal v) := fast_instance% (equiv v).commRing
 instance : ValuativeRel (WithVal v) := fast_instance% .ofValuation (valuation v)
 
 instance : (valuation v).Compatible := .ofValuation (valuation v)
+
+instance : IsValuativeTopology (WithVal v) where
+  mem_nhds_iff {s x} := by
+    simp only [Set.image_add_left, Set.preimage_setOf_eq, Valued.mem_nhds]
+    let e := ValuativeRel.ValueGroupWithZero.orderMonoidIso (valuation v)
+    apply e.unitsCongr.symm.exists_congr fun a ↦ ?_
+    simp [-OrderMonoidIso.val_unitsCongr_symm_apply, OrderMonoidIso.unitsCongr_symm_apply,
+      e.lt_symm_apply, e, ← Valuation.restrict_def, sub_eq_neg_add]
+    rfl
 
 end CommRing
 
@@ -404,14 +415,14 @@ variable {R : Type*} [Ring R] (v : Valuation R Γ₀)
 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
-theorem valueGroup_eq : valueGroup (instValued v).v = valueGroup v := by
+theorem valueGroup_eq : valueGroup (valuation v) = valueGroup v := by
   simp [valueGroup, valueMonoid, ← (WithVal.ofVal_surjective v).range_comp]
   rfl
 
 /-- The multiplicative equivalence between the `valueGroup` of the valuation on `WithVal v`
 and the valuation `v`. -/
 @[simps! apply symm_apply]
-def valueGroupEquiv : valueGroup (instValued v).v ≃* valueGroup v where
+def valueGroupEquiv : valueGroup (valuation v) ≃* valueGroup v where
   __ := Equiv.setCongr (by simp [valueGroup_eq v])
   map_mul' := by simp [Equiv.setCongr, Equiv.subtypeEquivProp]
 
@@ -424,7 +435,7 @@ theorem strictMono_valueGroupEquiv_symm : StrictMono (valueGroupEquiv v).symm :=
 /-- The order-preserving, multiplicative equivalence between the `ValueGroup₀` of the valuation
 on `WithVal v` and the valuation `v`. -/
 @[simps!]
-def valueGroupOrderIso₀ : ValueGroup₀ (instValued v).v ≃*o ValueGroup₀ v where
+def valueGroupOrderIso₀ : ValueGroup₀ (valuation v) ≃*o ValueGroup₀ v where
   toFun := WithZero.map' (valueGroupEquiv v)
   invFun := WithZero.map' (valueGroupEquiv v).symm
   left_inv x := by
@@ -444,8 +455,9 @@ def valueGroupOrderIso₀ : ValueGroup₀ (instValued v).v ≃*o ValueGroup₀ v
     | .coe a, .coe b => simp
 
 lemma valueGroupOrderIso₀_restrict (b : WithVal v) :
-    valueGroupOrderIso₀ v (Valued.v.restrict b) = v.restrict b.ofVal := by
-  simp [Valued.v.restrict_def, restrict₀_apply, ← apply_ofVal, v.restrict_def]
+    valueGroupOrderIso₀ v ((WithVal.valuation v).restrict b) = v.restrict b.ofVal := by
+  simp [(WithVal.valuation v).restrict_def, restrict₀_apply, ← valuation_apply_eq_ofVal,
+    v.restrict_def]
   by_cases hb : v b.ofVal = 0 <;> simp [hb]
 
 lemma valueGroupOrderIso₀_symm_restrict (b : R) :
