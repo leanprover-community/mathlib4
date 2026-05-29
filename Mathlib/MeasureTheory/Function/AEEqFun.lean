@@ -788,6 +788,17 @@ end Monoid
 instance instCommMonoid [CommMonoid γ] [ContinuousMul γ] : CommMonoid (α →ₘ[μ] γ) :=
   toGerm_injective.commMonoid toGerm one_toGerm mul_toGerm pow_toGerm
 
+@[to_additive]
+theorem coeFn_finsetProd [CommMonoid γ] [ContinuousMul γ]
+    {ι : Type*} (s : Finset ι) (f : ι → α →ₘ[μ] γ) :
+    ⇑(∏ i ∈ s, f i) =ᵐ[μ] ∏ i ∈ s, ⇑(f i) := by
+  classical
+  induction s using Finset.induction with
+  | empty => simp [coeFn_one]
+  | insert a s ha ih =>
+    simp only [ha, not_false_eq_true, Finset.prod_insert]
+    grw [coeFn_mul, ih]
+
 section Group
 
 variable [Group γ] [IsTopologicalGroup γ]
