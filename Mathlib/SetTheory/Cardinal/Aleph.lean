@@ -346,8 +346,16 @@ theorem preAleph_natCast (n : ℕ) : preAleph n = n := by
   rw [← card_preOmega, preOmega_natCast, card_nat]
 
 @[simp]
+theorem preAleph_ofNat (n : ℕ) [n.AtLeastTwo] : preAleph ofNat(n) = ofNat(n) :=
+  preAleph_natCast n
+
+@[simp]
 theorem preAleph_symm_natCast (n : ℕ) : preAleph.symm n = n := by
   simp [OrderIso.symm_apply_eq]
+
+@[simp]
+theorem preAleph_symm_ofNat (n : ℕ) [n.AtLeastTwo] : preAleph.symm ofNat(n) = ofNat(n) :=
+  preAleph_symm_natCast n
 
 @[deprecated (since := "2026-05-22")] alias preAleph_nat := preAleph_natCast
 
