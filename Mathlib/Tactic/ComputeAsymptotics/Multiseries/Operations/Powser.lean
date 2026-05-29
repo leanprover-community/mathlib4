@@ -108,7 +108,7 @@ theorem tail_radius_eq {s_hd : ℝ} {s_tl : LazySeries} :
     by_cases hr_pos : r = 0
     · rw [hr_pos]
       simp
-    replace hr_pos : 0 < r := lt_of_le_of_ne' (zero_le _) hr_pos
+    replace hr_pos : 0 < r := lt_of_le_of_ne' zero_le hr_pos
     apply FormalMultilinearSeries.le_radius_of_bound (C := C / r)
     intro n
     specialize h_bound (n + 1)
@@ -121,7 +121,7 @@ theorem tail_radius_eq {s_hd : ℝ} {s_tl : LazySeries} :
     by_cases hr_pos : r = 0
     · rw [hr_pos]
       simp
-    replace hr_pos : 0 < r := lt_of_le_of_ne' (zero_le _) hr_pos
+    replace hr_pos : 0 < r := lt_of_le_of_ne' zero_le hr_pos
     apply FormalMultilinearSeries.le_radius_of_bound (C := (C * r) ⊔ |s_hd|)
     intro n
     cases n with
