@@ -107,10 +107,10 @@ runs:
             esac
             ;;
           *)
-            # Foreign fork. Default [forks, legacy] is correct for the
-            # fork-iteration of `cache.exe`'s outer repo loop; the
-            # MATHLIBREPO iteration uses default [master, legacy] for
-            # unchanged upstream artifacts. No widening needed.
+            # Foreign fork. The cache tool's default chain for a fork repo
+            # is [master, forks, legacy] (master-first): master supplies the
+            # bulk of unchanged upstream deps, forks supplies PR-specific
+            # files. No widening needed, so MATHLIB_CACHE_FROM stays unset.
             PRIMARY="forks"
             ;;
         esac

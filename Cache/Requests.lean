@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
 
-import Batteries.Data.String.Matcher
 import Cache.Hashing
 import Cache.Infra
 import Lake.Load.Manifest
@@ -243,6 +242,28 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO (Option RepoInfo) := do
   | none =>
     IO.println s!"Using cache from {MATHLIBREPO}."
     return none
+
+/--
+Resolve the GitHub repo for cache reads from a single `getRemoteRepo` probe.
+
+Returns `(detectedRepo?, resolvedRepo)`:
+* `detectedRepo?` is what the git remote reports (`none` if it can't be
+  determined), used to decide whether an explicit `--repo=` diverges from the
+  checkout (the non-default-scope warning's condition 3);
+* `resolvedRepo` applies the override precedence `--repo=` > git remote >
+  `MATHLIBREPO`, and is what the read path actually uses.
+
+Centralizing the probe here means `getRemoteRepo` — which shells out to git
+and prints branch/remote diagnostics — runs exactly once per command, rather
+than once each in `getFiles`, `informIfHeadNotBuilt`, and the warning path
+(which previously also disagreed on the working directory to probe).
+-/
+def resolveRepo (repo? : Option String) (mathlibDepPath : FilePath) :
+    IO (Option String × String) := do
+  let detected? ← match ← getRemoteRepo mathlibDepPath with
+    | some info => pure (some info.repo)
+    | none => pure none
+  return (detected?, repo?.getD (detected?.getD MATHLIBREPO))
 
 /--
 Process-wide override for the container fallback list, set by the `--cache-from`
@@ -613,7 +634,6 @@ def downloadFiles
     (isMathlibRoot : Bool := false) (mathlibDepPath : FilePath := ".") : IO Nat := do
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
   if hashMap.isEmpty then IO.println "No files to download"; return 0
-  let initialSize := hashMap.size
   IO.FS.createDirAll IO.CACHEDIR
 
   let containerURLs ← effectiveGetURLs repo
@@ -635,7 +655,6 @@ def downloadFiles
   let mut remaining := hashMap
   let mut finalState : TransferState := ⟨0, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
   let mut downloadFailed := 0
-  let mut roundIdx := 0
   for (container?, url) in containerURLs do
     if remaining.isEmpty then break
     IO.println s!"Attempting to download {remaining.size} file(s) from {repo} cache at {url}"
@@ -646,7 +665,6 @@ def downloadFiles
     finalState := s
     downloadFailed := failed
     remaining ← remaining.filterExists false
-    roundIdx := roundIdx + 1
 
   if warnOnMissing && downloadFailed > 0 && parallel then
     IO.eprintln "Warning: some files were not found in the cache."
@@ -657,7 +675,6 @@ def downloadFiles
     IO.eprintln "    then CI will build the oleans and they will be available later."
     IO.eprintln "  * If you have already opened a PR, this may mean"
     IO.eprintln "    the CI build has failed part-way through building."
-  let _ := initialSize
 
   -- Finalize decompression: wait for current task and process any remaining files
   if let some config := decompConfig then
@@ -763,9 +780,15 @@ def checkForManifestMismatch : IO.CacheM Unit := do
         precedence, then run `lake update`."
     IO.Process.exit 1
 
-/-- Downloads missing files, and unpacks files. -/
+/-- Downloads missing files, and unpacks files.
+
+`repo` is the already-resolved GitHub repo (see `resolveRepo`); its
+trust-ordered container list from `defaultContainersForRepo` is the single
+source of truth for what gets tried — there's no separate outer-loop
+iteration. Master's cache reaches fork builds via `master` being in the fork
+chain (the highest-trust source, holding the bulk of any fork's deps). -/
 def getFiles
-    (repo? : Option String) (hashMap : IO.ModuleHashMap)
+    (repo : String) (hashMap : IO.ModuleHashMap)
     (forceDownload forceUnpack parallel decompress : Bool)
     : IO.CacheM Unit := do
   let isMathlibRoot ← IO.isMathlibRoot
@@ -790,19 +813,6 @@ def getFiles
       pure (some (task, plan.needsDecomp))
     else pure none
   else pure none
-
-  -- Resolve the repo once: --repo= override > git remote > MATHLIBREPO.
-  -- The trust-ordered container list for this repo (from
-  -- `defaultContainersForRepo`) is the single source of truth for what gets
-  -- tried — there's no separate outer-loop iteration. Master's cache reaches
-  -- fork builds via `master` being in the fork chain (highest-trust source
-  -- holding the bulk of any fork's deps).
-  let repo ← match repo? with
-    | some r => pure r
-    | none =>
-      match ← getRemoteRepo (← read).mathlibDepPath with
-      | some info => pure info.repo
-      | none => pure MATHLIBREPO
 
   let failed ← downloadFiles repo hashMap forceDownload parallel
     (warnOnMissing := true)
@@ -1286,11 +1296,14 @@ Condition to determine if a non-default scope warning should be printed.
 Returns `true` if any of these hold:
 1. `MATHLIB_CACHE_REPO_SCOPE` is set in the environment (any non-empty value)
 2. `--cache-from` was passed and widens the lookup chain beyond `defaultContainersForRepo` for the resolved repo
-3. `--repo` was passed and does not match the cwd's `git remote origin` (or active remote)
+3. `--repo` was passed and does not match the git remote (`detectedRepo?`)
+
+`detectedRepo?` is the repo reported by the git remote (from `resolveRepo`,
+probed once per command); it is `none` if it could not be determined.
 
 Otherwise returns `false` (default lookup chain, no warning needed).
 -/
-def shouldWarnNonDefaultScope (repoExplicit? : Option String)
+def shouldWarnNonDefaultScope (repoExplicit? detectedRepo? : Option String)
     (cliCacheFromOverride? : Option (List Container)) (resolvedRepo : String) :
     IO Bool := do
   -- Condition 1: `--scope=` flag or `MATHLIB_CACHE_REPO_SCOPE` env var supplied
@@ -1304,20 +1317,15 @@ def shouldWarnNonDefaultScope (repoExplicit? : Option String)
       return true
   | none => pure ()
 
-  -- Condition 3: --repo was explicitly passed AND does not match cwd's git remote.
+  -- Condition 3: --repo was explicitly passed AND does not match the git remote.
   -- Only fires when the user explicitly overrode --repo; defaulting to MATHLIBREPO
   -- from a fork checkout is normal and does not warn.
-  match repoExplicit? with
-  | some explicitRepo =>
-    let curRemoteRepo? ← getRemoteRepo "."
-    match curRemoteRepo? with
-    | some repoInfo =>
-      unless explicitRepo == repoInfo.repo do
-        return true
-    | none =>
-      -- Can't determine current repo; don't warn
-      pure ()
-  | none => pure ()
+  match repoExplicit?, detectedRepo? with
+  | some explicitRepo, some detected =>
+    unless explicitRepo == detected do
+      return true
+  -- No --repo override, or the remote couldn't be determined: don't warn.
+  | _, _ => pure ()
 
   return false
 
@@ -1350,7 +1358,7 @@ Determine the reason why a non-default scope warning is being issued.
 
 Returns a human-readable string describing which condition triggered the warning.
 -/
-def getNonDefaultScopeReason (repoExplicit? : Option String)
+def getNonDefaultScopeReason (repoExplicit? detectedRepo? : Option String)
     (cliCacheFromOverride? : Option (List Container)) (resolvedRepo : String) :
     IO String := do
   -- Check conditions in order; return the first that matches.
@@ -1372,16 +1380,12 @@ def getNonDefaultScopeReason (repoExplicit? : Option String)
       let overrideStr := ", ".intercalate (cliOverride.map Container.name)
       return s!"--cache-from={overrideStr} (explicit container override)"
 
-  -- Condition 3: --repo was explicitly passed AND doesn't match cwd's git remote
-  match repoExplicit? with
-  | some explicitRepo =>
-    let curRemoteRepo? ← getRemoteRepo "."
-    match curRemoteRepo? with
-    | some repoInfo =>
-      if explicitRepo ≠ repoInfo.repo then
-        return s!"--repo={explicitRepo} (overrides detected git remote: {repoInfo.repo})"
-    | none => pure ()
-  | none => pure ()
+  -- Condition 3: --repo was explicitly passed AND doesn't match the git remote
+  match repoExplicit?, detectedRepo? with
+  | some explicitRepo, some detected =>
+    if explicitRepo ≠ detected then
+      return s!"--repo={explicitRepo} (overrides detected git remote: {detected})"
+  | _, _ => pure ()
 
   return "unknown reason"
 
@@ -1392,11 +1396,13 @@ This is called before performing read operations (cache get). It checks
 the three conditions and prints the warning if any hold, but does not
 prompt for confirmation (so as not to break CI).
 -/
-def warnIfNonDefaultScope (repoExplicit? : Option String)
+def warnIfNonDefaultScope (repoExplicit? detectedRepo? : Option String)
     (cliCacheFromOverride? : Option (List Container)) (resolvedRepo : String) :
     IO Unit := do
-  if (← shouldWarnNonDefaultScope repoExplicit? cliCacheFromOverride? resolvedRepo) then
-    let reason ← getNonDefaultScopeReason repoExplicit? cliCacheFromOverride? resolvedRepo
+  if (← shouldWarnNonDefaultScope repoExplicit? detectedRepo? cliCacheFromOverride? resolvedRepo)
+    then
+    let reason ← getNonDefaultScopeReason repoExplicit? detectedRepo? cliCacheFromOverride?
+      resolvedRepo
     printNonDefaultScopeWarning resolvedRepo reason
 
 /--
@@ -1414,19 +1420,12 @@ Fires only on naive `cache get` invocations:
 
 One HEAD probe per invocation; the message is stderr-only so it doesn't
 mix with `cache get`'s stdout output.
+
+`repo` is the already-resolved repo (see `resolveRepo`).
 -/
-def informIfHeadNotBuilt (repoExplicit? : Option String) : IO Unit := do
+def informIfHeadNotBuilt (repo : String) : IO Unit := do
   if (← getRepoScope).isSome then return
   if (← cacheFromOverride.get).isSome then return
-  -- Resolve repo: --repo= flag wins; otherwise use the git remote (same as
-  -- `getFiles` does when no --repo is passed). Skip silently if neither
-  -- yields, since we have nowhere to probe.
-  let repo ← match repoExplicit? with
-    | some r => pure r
-    | none =>
-      match ← getRemoteRepo "." with
-      | some info => pure info.repo
-      | none => return
   unless (defaultContainersForRepo repo).contains Container.forks do return
   let sha ← try getGitCommitHash catch _ => return
   let hasMarker ← probeContainerForSHA Container.forks repo sha

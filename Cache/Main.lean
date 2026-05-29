@@ -189,13 +189,15 @@ def main (args : List String) : IO Unit := do
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   let get (args : List String) (force := false) (decompress := true) := do
     let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
-    -- Warn if reading at a non-default scope (before performing reads)
+    -- Resolve the repo once (single git-remote probe) and thread it through the
+    -- read path, the non-default-scope warning, and the HEAD hint below.
     let cliOverride? ← cacheFromOverride.get
-    let resolvedRepo := repo?.getD MATHLIBREPO
-    warnIfNonDefaultScope repo? cliOverride? resolvedRepo
+    let (detectedRepo?, resolvedRepo) ← resolveRepo repo? (← read).mathlibDepPath
+    -- Warn if reading at a non-default scope (before performing reads)
+    warnIfNonDefaultScope repo? detectedRepo? cliOverride? resolvedRepo
     -- Otherwise, if HEAD has no cache for this fork, hint at the SHA-scoped UX
-    informIfHeadNotBuilt repo?
-    getFiles repo? hashMap force force goodCurl decompress
+    informIfHeadNotBuilt resolvedRepo
+    getFiles resolvedRepo hashMap force force goodCurl decompress
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do

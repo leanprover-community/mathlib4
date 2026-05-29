@@ -141,12 +141,19 @@ GitHub repo. Each repo maps to its own dedicated, trust-classified container,
 with the `legacy` bare-`mathlib4` container appended as a universal
 last-resort fallback during the migration.
 
-We deliberately do NOT include the new `master` container in the fallback
-list for non-master repos: `master` only stores canonical mathlib4 paths
-(`/f/{hash}.ltar`) and never fork-prefixed paths, so a lookup there from a
-fork iteration would always 404. (Fork PRs still get to read master-built
-artifacts via the *outer* repo loop, where the iteration with
-`repo = MATHLIBREPO` uses the canonical path scheme.)
+For fork repos the chain leads with `master`. This works because the URL
+layout is decided per *container*, not per repo (see `Container.flatPath`):
+the `master` container is always read with the flat `/f/{hash}` scheme
+regardless of the `repo` argument, so a fork build finds the master-built
+deps that make up the bulk of its files there. The fork's own container
+(read with the `/f/{repo}/...` scheme) then supplies the PR-specific files.
+This is the single source of truth for the lookup chain — there is no
+separate "outer repo loop"; `master` reaching fork builds is exactly this
+first entry.
+
+The nightly-testing chain deliberately omits `master`: that repo runs under
+a non-release toolchain, so its root hash differs from master's and master
+probes would always 404.
 -/
 def defaultContainersForRepo (repo : String) : List Container :=
   if repo == MATHLIBREPO then

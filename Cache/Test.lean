@@ -754,17 +754,16 @@ def test_shouldWarnNonDefaultScope : IO Unit := do
     scopeOverride.set none
 
     -- Baseline: no overrides, no scope, repo defaulted. No warning fires.
-    -- Note: Condition 3 reads `getRemoteRepo "."`, which may return some
-    -- repo (the cache binary lives inside a git checkout when these tests
-    -- run). Even so, when `repoExplicit?` is `none`, Condition 3 is
-    -- gated off — this is exactly the regression-guard described above.
-    let shouldWarn ← shouldWarnNonDefaultScope none none MATHLIBREPO
+    -- `detectedRepo?` is now an explicit parameter (resolved once by
+    -- `resolveRepo`), so these tests are deterministic and no longer depend
+    -- on running inside a git checkout.
+    let shouldWarn ← shouldWarnNonDefaultScope none none none MATHLIBREPO
     assert "no overrides + repo? = none → no warning (Condition 3 gated on explicit)"
       (shouldWarn == false)
 
     -- Condition 1: --scope= set via IORef. Fires regardless of repo or cache-from.
     scopeOverride.set (some "abc123")
-    let shouldWarn ← shouldWarnNonDefaultScope none none MATHLIBREPO
+    let shouldWarn ← shouldWarnNonDefaultScope none none none MATHLIBREPO
     assert "scope set → warns (Condition 1)" (shouldWarn == true)
     scopeOverride.set none
 
@@ -772,7 +771,7 @@ def test_shouldWarnNonDefaultScope : IO Unit := do
     -- Passing `[master, legacy]` explicitly to a MATHLIBREPO build matches
     -- the default, so this isn't widening anything — no warning.
     let mathlibDefault := defaultContainersForRepo MATHLIBREPO
-    let shouldWarn ← shouldWarnNonDefaultScope none (some mathlibDefault) MATHLIBREPO
+    let shouldWarn ← shouldWarnNonDefaultScope none none (some mathlibDefault) MATHLIBREPO
     assert "--cache-from matching default → no warning (Condition 2 doesn't fire)"
       (shouldWarn == false)
 
@@ -780,16 +779,35 @@ def test_shouldWarnNonDefaultScope : IO Unit := do
     -- `forks` to a MATHLIBREPO read lookup chain is real widening (master CI's
     -- consumers wouldn't normally see fork-trust artifacts), so warn.
     let widened := [.master, .forks, .legacy]
-    let shouldWarn ← shouldWarnNonDefaultScope none (some widened) MATHLIBREPO
+    let shouldWarn ← shouldWarnNonDefaultScope none none (some widened) MATHLIBREPO
     assert "--cache-from widening → warns (Condition 2)" (shouldWarn == true)
 
-    -- Condition 3 gate: even with a `repo` value that disagrees with
-    -- `MATHLIBREPO`, no warning if `repoExplicit?` is `none` (the value
-    -- was defaulted, not user-supplied). This is the regression-guard:
-    -- a fork checkout's git remote is alice/mathlib4, but the user didn't
-    -- pass --repo=, so Condition 3 must remain silent.
-    let shouldWarn ← shouldWarnNonDefaultScope none none "alice/mathlib4"
+    -- Condition 3 gate: even when the detected remote disagrees with the
+    -- resolved repo, no warning if `repoExplicit?` is `none` (the value was
+    -- defaulted, not user-supplied). Regression-guard: a fork checkout whose
+    -- remote is alice/mathlib4 must stay silent when the user didn't pass --repo.
+    let shouldWarn ←
+      shouldWarnNonDefaultScope none (some "alice/mathlib4") none "alice/mathlib4"
     assert "repo? = none doesn't fire Condition 3 even on a fork checkout"
+      (shouldWarn == false)
+
+    -- Condition 3 positive: --repo explicitly passed AND differs from the
+    -- detected remote → warn (the user is overriding where the cache is read).
+    let shouldWarn ←
+      shouldWarnNonDefaultScope (some "bob/mathlib4") (some "alice/mathlib4") none "bob/mathlib4"
+    assert "--repo overriding a different detected remote → warns (Condition 3)"
+      (shouldWarn == true)
+
+    -- Condition 3 negative: --repo matches the detected remote → no warning.
+    let shouldWarn ←
+      shouldWarnNonDefaultScope (some "alice/mathlib4") (some "alice/mathlib4") none "alice/mathlib4"
+    assert "--repo matching the detected remote → no warning (Condition 3)"
+      (shouldWarn == false)
+
+    -- Condition 3 with unknown remote: --repo passed but the remote couldn't
+    -- be determined (`detectedRepo? = none`) → no warning (nothing to compare).
+    let shouldWarn ← shouldWarnNonDefaultScope (some "bob/mathlib4") none none "bob/mathlib4"
+    assert "--repo with undeterminable remote → no warning (Condition 3)"
       (shouldWarn == false)
   finally
     scopeOverride.set saved
@@ -817,34 +835,41 @@ def test_getNonDefaultScopeReason : IO Unit := do
     -- Defensive fallback: if `shouldWarn` returned true but none of the
     -- conditions can be re-identified, we return a placeholder rather than
     -- a crash or empty string.
-    let reason ← getNonDefaultScopeReason none none MATHLIBREPO
+    let reason ← getNonDefaultScopeReason none none none MATHLIBREPO
     assert "unknown reason when no conditions trigger" (reason == "unknown reason")
 
     -- Condition 1, --scope= form (IORef): the reason explicitly names the
     -- flag the user passed and the SHA they supplied. This lets a reviewer
     -- match the warning to their own command line.
     scopeOverride.set (some "abc123")
-    let reason ← getNonDefaultScopeReason none none MATHLIBREPO
+    let reason ← getNonDefaultScopeReason none none none MATHLIBREPO
     assert "scope set → reason names --scope and the SHA"
       (reason == "--scope=abc123 (explicit per-commit scope)")
 
     -- Priority: scope outranks cache-from. With both set, the scope reason
     -- is reported first (the more specific signal).
-    let reason ← getNonDefaultScopeReason none (some [.forks]) MATHLIBREPO
+    let reason ← getNonDefaultScopeReason none none (some [.forks]) MATHLIBREPO
     assert "scope outranks cache-from (priority order)"
       (reason == "--scope=abc123 (explicit per-commit scope)")
     scopeOverride.set none
 
     -- Condition 2: --cache-from override mentions the container list. The
     -- format lets the user see exactly what they widened to.
-    let reason ← getNonDefaultScopeReason none (some [.forks, .legacy]) MATHLIBREPO
+    let reason ← getNonDefaultScopeReason none none (some [.forks, .legacy]) MATHLIBREPO
     assert "cache-from override → reason names --cache-from and the list"
       (reason == "--cache-from=forks, legacy (explicit container override)")
+
+    -- Condition 3: --repo overriding a different detected remote names both
+    -- the override and the remote it diverges from.
+    let reason ←
+      getNonDefaultScopeReason (some "bob/mathlib4") (some "alice/mathlib4") none "bob/mathlib4"
+    assert "repo override → reason names --repo and the detected remote"
+      (reason == "--repo=bob/mathlib4 (overrides detected git remote: alice/mathlib4)")
 
     -- Condition 2 silent: cache-from equal to default is not a trigger,
     -- so the reason falls through to "unknown reason" (since shouldWarn
     -- would have returned false anyway).
-    let reason ← getNonDefaultScopeReason none (some [.master, .legacy]) MATHLIBREPO
+    let reason ← getNonDefaultScopeReason none none (some [.master, .legacy]) MATHLIBREPO
     assert "cache-from = default → falls through (no trigger)"
       (reason == "unknown reason")
   finally
