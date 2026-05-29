@@ -868,6 +868,7 @@ public import Mathlib.Algebra.MvPolynomial.Coeff
 public import Mathlib.Algebra.MvPolynomial.Comap
 public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Algebra.MvPolynomial.Counit
+public import Mathlib.Algebra.MvPolynomial.SupDegree
 public import Mathlib.Algebra.MvPolynomial.Degrees
 public import Mathlib.Algebra.MvPolynomial.Derivation
 public import Mathlib.Algebra.MvPolynomial.Division

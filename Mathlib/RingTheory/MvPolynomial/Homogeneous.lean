@@ -455,7 +455,7 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
       refine lt_of_le_of_lt natDegree_map_le ?_
       suffices (finSuccEquiv _ _ F).natDegree ≠ n by lia
       rintro rfl
-      refine leadingCoeff_ne_zero.mpr ?_ hFn
+      refine Polynomial.leadingCoeff_ne_zero.mpr ?_ hFn
       simpa using (finSuccEquiv R N).injective.ne hF₀
     obtain ⟨r₀, hr₀⟩ : ∃ r₀, Polynomial.eval r₀ φ ≠ 0 :=
       φ.exists_eval_ne_zero_of_natDegree_lt_card hφ₀ hφR

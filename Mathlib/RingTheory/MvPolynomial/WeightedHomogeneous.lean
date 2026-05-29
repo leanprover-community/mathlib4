@@ -9,6 +9,7 @@ public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.Algebra.GradedMonoid
 public import Mathlib.Algebra.MvPolynomial.Basic
+public import Mathlib.Algebra.MvPolynomial.SupDegree
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Data.Finsupp.Weight
 public import Mathlib.RingTheory.GradedAlgebra.Basic
@@ -72,7 +73,7 @@ variable [SemilatticeSup M]
 
 /-- The weighted total degree of a multivariate polynomial, taking values in `WithBot M`. -/
 def weightedTotalDegree' (w : σ → M) (p : MvPolynomial σ R) : WithBot M :=
-  p.support.sup fun s => weight w s
+  p.supDegree fun s => weight w s
 
 /-- The `weightedTotalDegree'` of a polynomial `p` is `⊥` if and only if `p = 0`. -/
 theorem weightedTotalDegree'_eq_bot_iff (w : σ → M) (p : MvPolynomial σ R) :
@@ -83,8 +84,7 @@ theorem weightedTotalDegree'_eq_bot_iff (w : σ → M) (p : MvPolynomial σ R) :
 
 /-- The `weightedTotalDegree'` of the zero polynomial is `⊥`. -/
 theorem weightedTotalDegree'_zero (w : σ → M) :
-    weightedTotalDegree' w (0 : MvPolynomial σ R) = ⊥ := by
-  simp only [weightedTotalDegree', support_zero, Finset.sup_empty]
+    weightedTotalDegree' w (0 : MvPolynomial σ R) = ⊥ := supDegree_zero
 
 section OrderBot
 
@@ -93,7 +93,7 @@ variable [OrderBot M]
 /-- When `M` has a `⊥` element, we can define the weighted total degree of a multivariate
   polynomial as a function taking values in `M`. -/
 def weightedTotalDegree (w : σ → M) (p : MvPolynomial σ R) : M :=
-  p.support.sup fun s => weight w s
+  p.supDegree fun s => weight w s
 
 /-- This lemma relates `weightedTotalDegree` and `weightedTotalDegree'`. -/
 theorem weightedTotalDegree_coe (w : σ → M) (p : MvPolynomial σ R) (hp : p ≠ 0) :
@@ -111,8 +111,7 @@ theorem weightedTotalDegree_coe (w : σ → M) (p : MvPolynomial σ R) (hp : p �
 
 /-- The `weightedTotalDegree` of the zero polynomial is `⊥`. -/
 theorem weightedTotalDegree_zero (w : σ → M) :
-    weightedTotalDegree w (0 : MvPolynomial σ R) = ⊥ := by
-  simp only [weightedTotalDegree, support_zero, Finset.sup_empty]
+    weightedTotalDegree w (0 : MvPolynomial σ R) = ⊥ := supDegree_zero
 
 theorem le_weightedTotalDegree (w : σ → M) {φ : MvPolynomial σ R} {d : σ →₀ ℕ}
     (hd : d ∈ φ.support) : weight w d ≤ φ.weightedTotalDegree w :=

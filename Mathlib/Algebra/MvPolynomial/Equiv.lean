@@ -726,7 +726,7 @@ lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (
   -- Then cons i σ is a monomial index of p with total degree equal to the desired bound
   let σ' : Fin (n + 1) →₀ ℕ := cons i σ
   convert! le_totalDegree (s := σ') _
-  · rw [totalDegree, hσ2, sum_cons, add_comm]
+  · rw [totalDegree, supDegree, hσ2, sum_cons, add_comm]
   · rw [← mem_support_coeff_finSuccEquiv]
     exact hσ1
 
