@@ -23,7 +23,7 @@ In this file we show how to find a limit of `Monomial` and how to asymptotically
 
 * `Monomial`: type to represent monomials.
 * `UnitMonomial.toFun`/`Monomial.toFun`: converts structures to real functions.
-* `UnitMonomial.logToFun_isEquivalent_of_nonzero_head`: `log m.toFun` is asymptotically equivalent
+* `UnitMonomial.toLogFun_isEquivalent_of_nonzero_head`: `log m.toFun` is asymptotically equivalent
   to its first summand - `m[0] • log basis[0]` if `m[0] ≠ 0`. Using this theorem we can prove that
   the asymptotic behaviour of the monomials is determined by its first non-zero exponent.
 * `toFun_tendsto_top_of_FirstNonzeroIsPos` and its variants are used to infer the limit of
@@ -146,7 +146,7 @@ theorem inv_toFun {m : UnitMonomial} {basis : Basis} (h_basis : WellFormedBasis 
       simp only [List.map_cons, List.zipWith_cons_cons, List.prod_cons, mul_inv_rev]
       grind [Real.rpow_neg h_pos.le]
 
-theorem tail_toFun_isLittleO_head {m : UnitMonomial} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem majorized_tail_toFun_head {m : UnitMonomial} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (h_length : m.length = basis_tl.length)
     (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
     Majorized (m.toFun basis_tl) basis_hd 0 := by
@@ -157,7 +157,7 @@ theorem tail_toFun_isLittleO_head {m : UnitMonomial} {basis_hd : ℝ → ℝ} {b
     | nil => simp at h_length
     | cons basis_tl_hd basis_tl_tl =>
       simp only [List.length_cons, Nat.add_right_cancel_iff, toFun_cons] at h_length ⊢
-      rw [show (0 : ℝ) = 0 + 0 by simp]
+      rw [← add_zero 0]
       apply Majorized.mul (h_basis.tail_pow_majorized_head (by simp) _) _
         h_basis.head_eventually_pos
       exact fun exp h_exp ↦
@@ -169,31 +169,29 @@ theorem toFun_pos {m : UnitMonomial} {basis : Basis}
     ∀ᶠ x in atTop, 0 < m.toFun basis x := by
   apply h_basis.eventually_pos.mono
   intro x hx
-  simp only [toFun]
   induction m generalizing basis with
   | nil => simp
   | cons exp exps ih =>
     cases basis with
     | nil => simp
     | cons basis_hd basis_tl =>
-      simp only [List.zipWith_cons_cons, List.prod_cons]
+      simp only [toFun, List.zipWith_cons_cons, List.prod_cons]
       apply mul_pos (Real.rpow_pos_of_pos (hx basis_hd (by simp)) _)
-      exact ih h_basis.tail (fun f hf => hx f (by simp [hf]))
+      exact ih h_basis.tail (hx · <| by simp [·])
 
 theorem toFun_ne_zero {m : UnitMonomial} {basis : Basis} (h_basis : WellFormedBasis basis) :
     ∀ᶠ x in atTop, m.toFun basis x ≠ 0 :=
   (toFun_pos h_basis).mono fun _ hx => hx.ne'
 
 theorem zeros_append_toFun {m : UnitMonomial} {left right : Basis} :
-    let m' : UnitMonomial := List.replicate left.length 0 ++ m
-    m'.toFun (left ++ right) = m.toFun right := by
+    (List.replicate left.length 0 ++ m : UnitMonomial).toFun (left ++ right) = m.toFun right := by
   induction left with
   | nil => rfl
   | cons left_hd left_tl ih =>
     simp at ih
     simp [List.replicate_succ, ih]
 
-theorem logToFun_eq_toLogFun {m : UnitMonomial} {basis : Basis} (h_basis : WellFormedBasis basis) :
+theorem log_toFun_eq_toLogFun {m : UnitMonomial} {basis : Basis} (h_basis : WellFormedBasis basis) :
     Real.log ∘ m.toFun basis =ᶠ[atTop] m.toLogFun basis := by
   apply h_basis.eventually_pos.mono
   intro x hx
@@ -206,13 +204,13 @@ theorem logToFun_eq_toLogFun {m : UnitMonomial} {basis : Basis} (h_basis : WellF
     | cons b bs =>
       simp only [toFun_cons, Pi.mul_apply, Pi.pow_apply, Function.comp_apply, toLogFun_cons,
         Pi.add_apply, Pi.smul_apply, smul_eq_mul]
-      obtain ⟨hpos, heq⟩ := ih h_basis.tail (fun f hf => hx f (by simp [hf]))
+      obtain ⟨hpos, heq⟩ := ih h_basis.tail (hx · <| by simp [·])
       refine ⟨mul_pos (Real.rpow_pos_of_pos (hx b (by simp)) _) hpos, ?_⟩
       rw [Real.log_mul (Real.rpow_pos_of_pos (hx b (by simp)) _).ne' hpos.ne',
             Real.log_rpow (hx b (by simp)), ← heq]
       rfl
 
-theorem logToFun_isEquivalent_of_nonzero_head {exps_hd : ℝ} {exps_tl : UnitMonomial}
+theorem toLogFun_isEquivalent_of_nonzero_head {exps_hd : ℝ} {exps_tl : UnitMonomial}
     {basis_hd : ℝ → ℝ} {basis_tl : Basis} (h_basis : WellFormedBasis (basis_hd :: basis_tl))
     (h_nonzero : exps_hd ≠ 0) :
     UnitMonomial.toLogFun (exps_hd :: exps_tl) (basis_hd :: basis_tl) ~[atTop]
@@ -238,8 +236,8 @@ theorem toFun_tendsto_top_of_head_pos {exps_hd : ℝ} {exps_tl : UnitMonomial} {
     Tendsto (UnitMonomial.toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl)) atTop atTop := by
   have h_equiv : Real.log ∘ toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl) ~[atTop]
       exps_hd • Real.log ∘ basis_hd :=
-    (logToFun_isEquivalent_of_nonzero_head h_basis h_nonzero.ne').congr_left
-      (logToFun_eq_toLogFun h_basis).symm
+    (toLogFun_isEquivalent_of_nonzero_head h_basis h_nonzero.ne').congr_left
+      (log_toFun_eq_toLogFun h_basis).symm
   suffices h_log : Tendsto (Real.log ∘ toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl))
       atTop atTop by
     apply Filter.Tendsto.congr' _ (Real.tendsto_exp_atTop.comp h_log)
@@ -259,8 +257,8 @@ theorem toFun_tendsto_zero_of_head_neg {exps_hd : ℝ} {exps_tl : UnitMonomial} 
     Tendsto (UnitMonomial.toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl)) atTop (𝓝 0) := by
   have h_equiv : Real.log ∘ toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl) ~[atTop]
       exps_hd • Real.log ∘ basis_hd :=
-    (logToFun_isEquivalent_of_nonzero_head h_basis h_nonzero.ne).congr_left
-      (logToFun_eq_toLogFun h_basis).symm
+    (toLogFun_isEquivalent_of_nonzero_head h_basis h_nonzero.ne).congr_left
+      (log_toFun_eq_toLogFun h_basis).symm
   suffices h_log : Tendsto (Real.log ∘ toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl))
       atTop atBot by
     have hmono := Real.tendsto_exp_atBot.comp h_log
@@ -270,7 +268,7 @@ theorem toFun_tendsto_zero_of_head_neg {exps_hd : ℝ} {exps_tl : UnitMonomial} 
     simp only [Function.comp_apply]
     exact Real.exp_log hx
   apply IsEquivalent.tendsto_atBot h_equiv.symm
-  have h_log_atTop : Tendsto (fun x => Real.log (basis_hd x)) atTop atTop :=
+  have h_log_atTop : Tendsto (Real.log ∘ basis_hd) atTop atTop :=
     Tendsto.comp Real.tendsto_log_atTop (h_basis.tendsto_atTop (by simp))
   exact Filter.Tendsto.const_mul_atTop_of_neg h_nonzero h_log_atTop
 
@@ -523,11 +521,11 @@ theorem toFun_tendsto_const_of_allZero {coef : ℝ} {exps : UnitMonomial} {basis
   convert Filter.Tendsto.const_mul _ (UnitMonomial.toFun_tendsto_one_of_allZero h_exps)
   simp [t]
 
-theorem tail_toFun_isLittleO_head {t : Monomial} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem majorized_tail_toFun_head {t : Monomial} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (h_length : t.unit.length = basis_tl.length)
     (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
     Majorized (t.toFun basis_tl) basis_hd 0 := by
-  exact Majorized.smul (UnitMonomial.tail_toFun_isLittleO_head h_length h_basis)
+  exact Majorized.smul (UnitMonomial.majorized_tail_toFun_head h_length h_basis)
 
 lemma isLittleO_of_lt_exps {basis : Basis} {t1 t2 : Monomial}
     (h_basis : WellFormedBasis basis)

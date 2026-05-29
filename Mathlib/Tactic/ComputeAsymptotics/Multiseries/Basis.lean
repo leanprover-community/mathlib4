@@ -183,7 +183,7 @@ theorem tail_pow_majorized_head {hd f : ℝ → ℝ} {tl : Basis}
     Majorized (f ^ r) hd 0 := by
   intro exp h_exp
   apply pow_isLittleO_pow_of_log
-  · exact h_basis.tail.eventually_pos.mono fun x h ↦ h _ hf
+  · exact h_basis.tail.eventually_pos.mono fun _ h ↦ h _ hf
   · exact h_basis.tendsto_atTop (by simp)
   · grind [WellFormedBasis, List.pairwise_cons]
   · exact h_exp
