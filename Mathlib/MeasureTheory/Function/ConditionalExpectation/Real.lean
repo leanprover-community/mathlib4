@@ -84,7 +84,7 @@ theorem ae_condExp_abs_le_abs_condExp (f : α → E) : |(μ[f | m])| ≤ᵐ[μ] 
   by_cases! hfint : ¬Integrable f μ
   · simp only [condExp_of_not_integrable hfint, abs_zero]
     apply condExp_nonneg
-    filter_upwards with a using (abs_nonneg f a)
+    filter_upwards with a using abs_nonneg (f a)
   have h1 := condExp_mono (m := m) hfint hfint.abs (.of_forall (fun x => le_abs_self f x))
   have (x : α) := abs_neg (f x) ▸ le_abs_self (- f x)
   have h2 := condExp_mono (m := m) hfint.neg hfint.abs (.of_forall this)
