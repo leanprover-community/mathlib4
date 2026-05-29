@@ -69,11 +69,12 @@ jobs:
         run: |
           pr_json=$(gh pr view "${{ github.event.issue.number }}" \
             --repo "${{ github.repository }}" \
-            --json headRefOid,baseRefOid,baseRefName)
+            --json headRefOid,baseRefOid,baseRefName,headRepository)
           {
             echo "head_sha=$(echo "$pr_json" | jq -r '.headRefOid')"
             echo "base_sha=$(echo "$pr_json" | jq -r '.baseRefOid')"
             echo "base_ref=$(echo "$pr_json" | jq -r '.baseRefName')"
+            echo "head_repo=$(echo "$pr_json" | jq -r '.headRepository.nameWithOwner')"
           } >> "$GITHUB_OUTPUT"
 
       # Using refs/pull/N/head works for both same-repo and fork PRs, since
@@ -174,7 +175,10 @@ jobs:
         continue-on-error: true
         run: |
           cd pr-branch
-          "$CACHE_BIN" get
+          lake env "$CACHE_BIN" get
+          # Run again with --repo in case this is a fork PR: fork PRs upload
+          # their oleans to the fork's Azure container, not the upstream one.
+          lake env "$CACHE_BIN" --repo="${{ steps.pr_info.outputs.head_repo }}" get
 
       - name: Check PR head oleans
         id: pr_oleans_check
@@ -195,7 +199,7 @@ jobs:
         continue-on-error: true
         run: |
           cd base
-          "$CACHE_BIN" get
+          lake env "$CACHE_BIN" get
 
       - name: Generate olean report
         if: steps.check_trigger.outputs.triggered == 'true'
@@ -264,7 +268,7 @@ jobs:
 
       - name: Upload full olean diff
         if: steps.check_trigger.outputs.triggered == 'true'
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: olean-diff-full
           path: olean_diff_full.txt

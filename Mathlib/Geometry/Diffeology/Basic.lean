@@ -336,7 +336,7 @@ def ofCorePlotsOn {X : Type*} (d : DiffeologicalSpace.CorePlotsOn X) :
     refine ⟨_, Metric.isOpen_ball, Metric.mem_ball_self hε, (d.isPlotOn_congr _ ?_).mp h'⟩
     rw [Function.comp_assoc, ← OpenPartialHomeomorph.coe_trans]
     apply Set.EqOn.comp_left
-    convert (OpenPartialHomeomorph.symm_trans_self (OpenPartialHomeomorph.univBall x ε)).2
+    convert! (OpenPartialHomeomorph.symm_trans_self (OpenPartialHomeomorph.univBall x ε)).2
     simp [OpenPartialHomeomorph.univBall_target x hε]
   dTopology := d.dTopology
   isOpen_iff_preimages_plots := d.isOpen_iff_preimages_plots
@@ -356,7 +356,7 @@ protected theorem DSmooth.continuous' {X Y : Type*}
     [TopologicalSpace X] [DiffeologicalSpace X] [IsDTopologyCompatible X]
     [TopologicalSpace Y] [DiffeologicalSpace Y] [IsDTopologyCompatible Y]
     {f : X → Y} (hf : DSmooth f) : Continuous f := by
-  convert hf.continuous
+  convert! hf.continuous
   · rw [IsDTopologyCompatible.dTop_eq X]
   · rw [IsDTopologyCompatible.dTop_eq Y]
 
@@ -545,7 +545,7 @@ def giGenerateFrom (X : Type*) : GaloisInsertion generateFrom (@toPlots X) where
 
 instance : CompleteLattice (DiffeologicalSpace X) := (giGenerateFrom X).liftCompleteLattice
 
-@[mono]
+@[gcongr, mono]
 theorem generateFrom_mono {g₁ g₂ : Set ((n : ℕ) × (𝔼ⁿ → X))} (h : g₁ ⊆ g₂) :
     generateFrom g₁ ≤ generateFrom g₂ :=
   (gc_generateFrom _).monotone_l h

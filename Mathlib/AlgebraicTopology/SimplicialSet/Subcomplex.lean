@@ -128,7 +128,7 @@ instance : Subsingleton (((⊥ : X.Subcomplex) : SSet.{u}) ⟶ Y) where
 
 instance : Unique (((⊥ : X.Subcomplex) : SSet.{u}) ⟶ Y) where
   default :=
-    { app _ := TypeCat.ofHom fun ⟨_, h⟩ ↦ by tauto
+    { app _ := ↾fun ⟨_, h⟩ ↦ by tauto
       naturality _ _ _ := by ext ⟨_, h⟩; tauto }
   uniq := by subsingleton
 
@@ -287,6 +287,7 @@ lemma image_comp {Z : SSet.{u}} (g : Y ⟶ Z) :
 lemma range_comp {Z : SSet.{u}} (g : Y ⟶ Z) :
     Subcomplex.range (f ≫ g) = (Subcomplex.range f).image g := by aesop
 
+set_option backward.defeqAttrib.useBackward true in
 lemma image_eq_range : A.image f = range (A.ι ≫ f) := by aesop
 
 lemma image_iSup {ι : Type*} (S : ι → X.Subcomplex) (f : X ⟶ Y) :

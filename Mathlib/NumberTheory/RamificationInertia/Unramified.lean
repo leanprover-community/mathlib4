@@ -37,6 +37,7 @@ lemma Ideal.ramificationIdx_eq_one_of_isUnramifiedAt
     {p : Ideal S} [p.IsPrime] [IsNoetherianRing S] [IsUnramifiedAt R p]
     (hp : p ≠ ⊥) [IsDomain S] [EssFiniteType R S] :
     e(p|R) = 1 :=
+  let := Localization.AtPrime.algebraOfLiesOver (p.under R) p
   (Ideal.ramificationIdx_eq_one_of_map_localization Ideal.map_comap_le hp
     p.primeCompl_le_nonZeroDivisors
     ((isUnramifiedAt_iff_map_eq R (p.under R) p).mp ‹_›).2)
@@ -49,6 +50,9 @@ lemma IsUnramifiedAt.of_liesOver_of_ne_bot
     IsUnramifiedAt R p := by
   let p₀ : Ideal R := p.under R
   have : P.LiesOver p₀ := .trans P p p₀
+  let := Localization.AtPrime.algebraOfLiesOver p₀ p
+  let := Localization.AtPrime.algebraOfLiesOver p P
+  let := Localization.AtPrime.algebraOfLiesOver p₀ P
   have hp₀ : p₀ = P.under R := Ideal.LiesOver.over
   have : EssFiniteType S T := .of_comp R S T
   have := Algebra.EssFiniteType.isNoetherianRing S T
@@ -91,6 +95,7 @@ lemma Algebra.isUnramifiedAt_iff_of_isDedekindDomain
     [Module.Finite ℤ R] [CharZero R] [Algebra.IsIntegral R S]
     (hp : p ≠ ⊥) :
     Algebra.IsUnramifiedAt R p ↔ e(p|R) = 1 := by
+  let := Localization.AtPrime.algebraOfLiesOver (p.under R) p
   rw [isUnramifiedAt_iff_map_eq R (p.under R) p, and_iff_right,
     Ideal.IsDedekindDomain.ramificationIdx_eq_one_iff hp Ideal.map_comap_le]
   have : Finite (R ⧸ p.under R) :=
