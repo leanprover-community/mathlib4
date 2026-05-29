@@ -620,11 +620,13 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.RepresentationTheory.Continuous, `Mathlib.Topology), -- For continuous representations
 
   -- TODO: reduce these with further moving files out of `Data`
-  (`Mathlib.Data.Real.StarOrdered, `Mathlib.Analysis),
   (`Mathlib.Data.Rat.NatSqrt.Real, `Mathlib.Analysis),
   -- TODO: think about the role of Analysis and Algebra, and perhaps further separation
   (`Mathlib.Algebra.Order.Archimedean.Real, `Mathlib.Analysis),
   (`Mathlib.Algebra.Star.CHSH, `Mathlib.Analysis),
+  (`Mathlib.Algebra.Order.Star.Real, `Mathlib.Analysis),
+  (`Mathlib.Topology.ContinuousMap.ContinuousSqrt, `Mathlib.Algebra.Order),
+  (`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus, `Mathlib.Algebra.Order),
   (`Mathlib.Algebra.Order.Ring.StandardPart, `Mathlib.Analysis),
 ]
 
