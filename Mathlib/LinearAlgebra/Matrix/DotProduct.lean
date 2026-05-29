@@ -3,8 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Data.Matrix.RowCol
+module
+
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Algebra.Star.Pi
+public import Mathlib.LinearAlgebra.Matrix.RowCol
 
 /-!
 # Dot product of two vectors
@@ -25,6 +28,8 @@ matrix
 
 -/
 
+public section
+
 
 variable {m n p R : Type*}
 
@@ -36,24 +41,14 @@ theorem dotProduct_eq (v w : n → R) (h : ∀ u, v ⬝ᵥ u = w ⬝ᵥ u) : v =
   funext x
   classical rw [← dotProduct_single_one v x, ← dotProduct_single_one w x, h]
 
-@[deprecated (since := "2024-12-12")] protected alias Matrix.dotProduct_eq := dotProduct_eq
-
 theorem dotProduct_eq_iff {v w : n → R} : (∀ u, v ⬝ᵥ u = w ⬝ᵥ u) ↔ v = w :=
   ⟨fun h => dotProduct_eq v w h, fun h _ => h ▸ rfl⟩
-
-@[deprecated (since := "2024-12-12")] protected alias Matrix.dotProduct_eq_iff := dotProduct_eq_iff
 
 theorem dotProduct_eq_zero (v : n → R) (h : ∀ w, v ⬝ᵥ w = 0) : v = 0 :=
   dotProduct_eq _ _ fun u => (h u).symm ▸ (zero_dotProduct u).symm
 
-@[deprecated (since := "2024-12-12")]
-protected alias Matrix.dotProduct_eq_zero := dotProduct_eq_zero
-
 theorem dotProduct_eq_zero_iff {v : n → R} : (∀ w, v ⬝ᵥ w = 0) ↔ v = 0 :=
   ⟨fun h => dotProduct_eq_zero v h, fun h w => h.symm ▸ zero_dotProduct w⟩
-
-@[deprecated (since := "2024-12-12")]
-protected alias Matrix.dotProduct_eq_zero_iff := dotProduct_eq_zero_iff
 
 end Semiring
 
@@ -64,24 +59,13 @@ variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [Fintype n]
 lemma dotProduct_nonneg_of_nonneg {v w : n → R} (hv : 0 ≤ v) (hw : 0 ≤ w) : 0 ≤ v ⬝ᵥ w :=
   Finset.sum_nonneg (fun i _ => mul_nonneg (hv i) (hw i))
 
-@[deprecated (since := "2024-12-12")]
-protected alias Matrix.dotProduct_nonneg_of_nonneg := dotProduct_nonneg_of_nonneg
-
 lemma dotProduct_le_dotProduct_of_nonneg_right {u v w : n → R} (huv : u ≤ v) (hw : 0 ≤ w) :
-    u ⬝ᵥ w ≤ v ⬝ᵥ w :=
-  Finset.sum_le_sum fun i _ => mul_le_mul_of_nonneg_right (huv i) (hw i)
-
-@[deprecated (since := "2024-12-12")]
-protected alias Matrix.dotProduct_le_dotProduct_of_nonneg_right :=
-  dotProduct_le_dotProduct_of_nonneg_right
+    u ⬝ᵥ w ≤ v ⬝ᵥ w := by
+  unfold dotProduct; gcongr <;> apply_rules
 
 lemma dotProduct_le_dotProduct_of_nonneg_left {u v w : n → R} (huv : u ≤ v) (hw : 0 ≤ w) :
-    w ⬝ᵥ u ≤ w ⬝ᵥ v :=
-  Finset.sum_le_sum (fun i _ => mul_le_mul_of_nonneg_left (huv i) (hw i))
-
-@[deprecated (since := "2024-12-12")]
-protected alias Matrix.dotProduct_le_dotProduct_of_nonneg_left :=
-  dotProduct_le_dotProduct_of_nonneg_left
+    w ⬝ᵥ u ≤ w ⬝ᵥ v := by
+  unfold dotProduct; gcongr <;> apply_rules
 
 end OrderedSemiring
 
@@ -95,9 +79,6 @@ theorem dotProduct_self_eq_zero [Ring R] [LinearOrder R] [IsStrictOrderedRing R]
   (Finset.sum_eq_zero_iff_of_nonneg fun i _ => mul_self_nonneg (v i)).trans <| by
     simp [funext_iff]
 
-@[deprecated (since := "2024-12-12")]
-protected alias Matrix.dotProduct_self_eq_zero := dotProduct_self_eq_zero
-
 section StarOrderedRing
 
 variable [PartialOrder R] [NonUnitalRing R] [StarRing R] [StarOrderedRing R]
@@ -107,16 +88,10 @@ variable [PartialOrder R] [NonUnitalRing R] [StarRing R] [StarOrderedRing R]
 theorem dotProduct_star_self_nonneg (v : n → R) : 0 ≤ star v ⬝ᵥ v :=
   Fintype.sum_nonneg fun _ => star_mul_self_nonneg _
 
-@[deprecated (since := "2024-12-12")]
-protected alias Matrix.dotProduct_star_self_nonneg := dotProduct_star_self_nonneg
-
 /-- Note that this applies to `ℂ` via `RCLike.toStarOrderedRing`. -/
 @[simp]
 theorem dotProduct_self_star_nonneg (v : n → R) : 0 ≤ v ⬝ᵥ star v :=
   Fintype.sum_nonneg fun _ => mul_star_self_nonneg _
-
-@[deprecated (since := "2024-12-12")]
-protected alias Matrix.dotProduct_self_star_nonneg := dotProduct_self_star_nonneg
 
 variable [NoZeroDivisors R]
 
@@ -126,17 +101,11 @@ theorem dotProduct_star_self_eq_zero {v : n → R} : star v ⬝ᵥ v = 0 ↔ v =
   (Fintype.sum_eq_zero_iff_of_nonneg fun _ => star_mul_self_nonneg _).trans <|
     by simp [funext_iff, mul_eq_zero]
 
-@[deprecated (since := "2024-12-12")]
-protected alias Matrix.dotProduct_star_self_eq_zero := dotProduct_star_self_eq_zero
-
 /-- Note that this applies to `ℂ` via `RCLike.toStarOrderedRing`. -/
 @[simp]
 theorem dotProduct_self_star_eq_zero {v : n → R} : v ⬝ᵥ star v = 0 ↔ v = 0 :=
   (Fintype.sum_eq_zero_iff_of_nonneg fun _ => mul_star_self_nonneg _).trans <|
     by simp [funext_iff, mul_eq_zero]
-
-@[deprecated (since := "2024-12-12")]
-protected alias Matrix.dotProduct_self_star_eq_zero := dotProduct_self_star_eq_zero
 
 namespace Matrix
 
@@ -201,7 +170,7 @@ theorem dotProduct_star_self_pos_iff {v : n → R} :
   constructor
   · rintro h hv
     simp [hv] at h
-  · exact (star_mul_self_pos <| isRegular_of_ne_zero ·)
+  · exact (star_mul_self_pos <| .of_ne_zero ·)
 
 /-- Note that this applies to `ℂ` via `RCLike.toStarOrderedRing`. -/
 @[simp]

@@ -3,8 +3,9 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
-import Mathlib.LinearAlgebra.RootSystem.WeylGroup
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
 /-!
 # Invariant and root-positive bilinear forms on root pairings
@@ -32,6 +33,8 @@ positive semi-definite on weight space and positive-definite on the span of root
   orthogonal.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -63,7 +66,7 @@ lemma two_mul_apply_root_root :
   rw [two_mul, ← eq_sub_iff_add_eq]
   nth_rw 1 [← B.isOrthogonal_reflection j]
   rw [reflection_apply, reflection_apply_self, root_coroot'_eq_pairing, LinearMap.map_sub₂,
-    LinearMap.map_smul₂, smul_eq_mul, LinearMap.map_neg, LinearMap.map_neg, mul_neg, neg_sub_neg]
+    LinearMap.map_smul₂, smul_eq_mul, map_neg, map_neg, mul_neg, neg_sub_neg]
 
 lemma pairing_mul_eq_pairing_mul_swap :
     P.pairing j i * B.form (P.root i) (P.root i) =
@@ -77,19 +80,7 @@ lemma apply_reflection_reflection (x y : M) :
   B.isOrthogonal_reflection i x y
 
 @[simp]
-lemma apply_weylGroup_smul (g : P.weylGroup) (x y : M) :
-    B.form (g • x) (g • y) = B.form x y := by
-  revert x y
-  obtain ⟨g, hg⟩ := g
-  induction hg using weylGroup.induction with
-  | mem i => simp
-  | one => simp
-  | mul g₁ g₂ hg₁ hg₂ hg₁' hg₂' =>
-    intro x y
-    rw [← Submonoid.mk_mul_mk _ _ _ hg₁ hg₂, mul_smul, mul_smul, hg₁', hg₂']
-
-@[simp]
-lemma apply_root_root_zero_iff [IsDomain R] [NeZero (2 : R)]:
+lemma apply_root_root_zero_iff [IsDomain R] [NeZero (2 : R)] :
     B.form (P.root i) (P.root j) = 0 ↔ P.pairing i j = 0 := by
   calc B.form (P.root i) (P.root j) = 0
       ↔ 2 * B.form (P.root i) (P.root j) = 0 := by simp [two_ne_zero]
@@ -169,12 +160,12 @@ lemma zero_lt_posForm_apply_root (i : ι)
   simpa only [zero_lt_posForm_iff] using B.exists_pos_eq i
 
 lemma isSymm_posForm :
-    B.posForm.IsSymm := by
-  intro x y
-  apply FaithfulSMul.algebraMap_injective S R
-  simpa using B.symm.eq x y
+    B.posForm.IsSymm where
+  eq x y := by
+    apply FaithfulSMul.algebraMap_injective S R
+    simpa using B.symm.eq x y
 
-/-- The length of the `i`-th root wrt a root-positive form taking values in `S`. -/
+/-- The length of the `i`-th root w.r.t. a root-positive form taking values in `S`. -/
 def rootLength (i : ι) : S :=
   B.posForm (P.rootSpanMem S i) (P.rootSpanMem S i)
 
@@ -186,9 +177,6 @@ lemma rootLength_reflectionPerm_self (i : ι) :
     B.rootLength (P.reflectionPerm i i) = B.rootLength i := by
   simp [rootLength, rootSpanMem_reflectionPerm_self]
 
-@[deprecated (since := "2025-05-28")]
-alias rootLength_reflection_perm_self := rootLength_reflectionPerm_self
-
 @[simp] lemma algebraMap_rootLength (i : ι) :
     algebraMap S R (B.rootLength i) = B.form (P.root i) (P.root i) := by
   simp [rootLength]
@@ -198,6 +186,7 @@ lemma pairingIn_mul_eq_pairingIn_mul_swap :
   simpa only [← (algebraMap_injective S R).eq_iff, algebraMap_pairingIn, map_mul,
     B.algebraMap_rootLength] using B.toInvariantForm.pairing_mul_eq_pairing_mul_swap i j
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 @[simp]
 lemma zero_lt_apply_root_root_iff [IsStrictOrderedRing S]
     (hi : P.root i ∈ span S (range P.root) := subset_span (mem_range_self i))
@@ -213,6 +202,13 @@ lemma zero_lt_apply_root_root_iff [IsStrictOrderedRing S]
     _ ↔ 0 < P.pairingIn S i j * B.posForm rj rj := by rw [this]
     _ ↔ 0 < P.pairingIn S i j := by rw [mul_pos_iff_of_pos_right (B.zero_lt_posForm_apply_root j)]
 
+@[simp]
+lemma posForm_apply_root_root_le_zero_iff [IsStrictOrderedRing S]
+    (hi : P.root i ∈ span S (range P.root) := subset_span (mem_range_self i))
+    (hj : P.root j ∈ span S (range P.root) := subset_span (mem_range_self j)) :
+    B.posForm ⟨P.root i, hi⟩ ⟨P.root j, hj⟩ ≤ 0 ↔ P.pairingIn S i j ≤ 0 := by
+  rw [← not_iff_not, not_le, not_le, zero_lt_apply_root_root_iff]
+
 end RootPositiveForm
 
 include B
@@ -224,7 +220,7 @@ lemma zero_lt_pairingIn_iff [IsStrictOrderedRing S] :
 
 lemma coxeterWeight_nonneg [IsStrictOrderedRing S] : 0 ≤ P.coxeterWeightIn S i j := by
   dsimp [coxeterWeightIn]
-  rcases lt_or_le 0 (P.pairingIn S i j) with h | h
+  rcases lt_or_ge 0 (P.pairingIn S i j) with h | h
   · exact le_of_lt <| mul_pos h ((zero_lt_pairingIn_iff B i j).mp h)
   · have hn : P.pairingIn S j i ≤ 0 := by rwa [← not_lt, ← zero_lt_pairingIn_iff B i j, not_lt]
     exact mul_nonneg_of_nonpos_of_nonpos h hn

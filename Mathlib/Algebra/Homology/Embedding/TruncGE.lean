@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.HomEquiv
-import Mathlib.Algebra.Homology.Embedding.IsSupported
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.Embedding.HomEquiv
+public import Mathlib.Algebra.Homology.Embedding.IsSupported
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-!
 # The canonical truncation
@@ -39,10 +41,12 @@ We also construct the canonical epimorphism `K.πTruncGE e : K ⟶ K.truncGE e`.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Limits ZeroObject Category
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
-  {C : Type*} [Category C] [HasZeroMorphisms C]
+  {C : Type*} [Category* C] [HasZeroMorphisms C]
 
 namespace HomologicalComplex
 
@@ -245,6 +249,7 @@ lemma f_eq_iso_hom_iso_inv {i : ι} {i' : ι'} (hi' : e.f i = i') (hi : ¬ e.Bou
   subst hi'
   simp [restrictionXIso]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma comm (i j : ι) :
     f K e i ≫ (K.truncGE' e).d i j = (K.restriction e).d i j ≫ f K e j := by
@@ -262,6 +267,7 @@ lemma comm (i j : ι) :
 
 end restrictionToTruncGE'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical morphism `K.restriction e ⟶ K.truncGE' e`. -/
 noncomputable def restrictionToTruncGE' : K.restriction e ⟶ K.truncGE' e where
   f := restrictionToTruncGE'.f K e
@@ -331,6 +337,7 @@ shapes which satisfy `e.IsTruncGE`. -/
 noncomputable def πTruncGE : K ⟶ K.truncGE e :=
   e.liftExtend (K.restrictionToTruncGE' e) (K.restrictionToTruncGE'_hasLift e)
 
+set_option backward.isDefEq.respectTransparency false in
 instance (i' : ι') : Epi ((K.πTruncGE e).f i') := by
   by_cases hi' : ∃ i, e.f i = i'
   · obtain ⟨i, hi⟩ := hi'
@@ -345,6 +352,7 @@ instance : (K.truncGE e).IsStrictlySupported e := by
   dsimp [truncGE]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 variable {K L} in
 @[reassoc (attr := simp)]
 lemma πTruncGE_naturality :
@@ -355,6 +363,7 @@ lemma πTruncGE_naturality :
   rw [e.homRestrict_comp_extendMap, e.homRestrict_liftExtend, e.homRestrict_precomp,
     e.homRestrict_liftExtend, restrictionToTruncGE'_naturality]
 
+set_option backward.isDefEq.respectTransparency false in
 instance {ι'' : Type*} {c'' : ComplexShape ι''} (e' : c''.Embedding c')
     [K.IsStrictlySupported e'] : (K.truncGE e).IsStrictlySupported e' where
   isZero := by
@@ -370,17 +379,17 @@ instance {ι'' : Type*} {c'' : ComplexShape ι''} (e' : c''.Embedding c')
           ((K.truncGE' e).extendXIso e hi ≪≫ K.truncGE'XIso e hi hi''')
     · exact (K.truncGE e).isZero_X_of_isStrictlySupported e _ (by simpa using hi'')
 
+set_option backward.isDefEq.respectTransparency false in
 instance [K.IsStrictlySupported e] : IsIso (K.πTruncGE e) := by
   suffices ∀ (i' : ι'), IsIso ((K.πTruncGE e).f i') by
     apply Hom.isIso_of_components
   intro i'
-  by_cases hn : ∃ i, e.f i = i'
+  by_cases! hn : ∃ i, e.f i = i'
   · obtain ⟨i, hi⟩ := hn
     dsimp [πTruncGE]
     rw [e.isIso_liftExtend_f_iff _ _ hi]
     infer_instance
-  · simp only [not_exists] at hn
-    refine ⟨0, ?_, ?_⟩
+  · refine ⟨0, ?_, ?_⟩
     all_goals
       apply (isZero_X_of_isStrictlySupported _ e i' hn).eq_of_src
 
@@ -395,7 +404,7 @@ end HomologicalComplex
 namespace ComplexShape.Embedding
 
 variable (e : Embedding c c') [e.IsTruncGE]
-    (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C] [CategoryWithHomology C]
+    (C : Type*) [Category* C] [HasZeroMorphisms C] [HasZeroObject C] [CategoryWithHomology C]
 
 /-- Given an embedding `e : Embedding c c'` of complex shapes which satisfy `e.IsTruncGE`,
 this is the (canonical) truncation functor

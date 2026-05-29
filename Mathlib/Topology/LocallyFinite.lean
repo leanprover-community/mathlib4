@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Filter.SmallSets
-import Mathlib.Topology.ContinuousOn
+module
+
+public import Mathlib.Order.Filter.SmallSets
+public import Mathlib.Topology.ContinuousOn
 
 /-!
 ### Locally finite families of sets
@@ -14,6 +16,8 @@ there is a neighborhood of `x` which meets only finitely many sets in the family
 
 In this file we give the definition and prove basic properties of locally finite families of sets.
 -/
+
+@[expose] public section
 
 -- locally finite family [General Topology (Bourbaki, 1995)]
 open Set Function Filter Topology
@@ -47,6 +51,13 @@ theorem comp_injOn {g : ι' → ι} (hf : LocallyFinite f) (hg : InjOn g { i | (
 theorem comp_injective {g : ι' → ι} (hf : LocallyFinite f) (hg : Injective g) :
     LocallyFinite (f ∘ g) :=
   hf.comp_injOn hg.injOn
+
+theorem of_comp_surjective {g : ι' → ι} (hg : Surjective g) (hfg : LocallyFinite (f ∘ g)) :
+    LocallyFinite f := by
+  simpa only [comp_def, surjInv_eq hg] using hfg.comp_injective (injective_surjInv hg)
+
+theorem on_range (hf : LocallyFinite f) : LocallyFinite ((↑) : range f → Set X) :=
+  of_comp_surjective rangeFactorization_surjective hf
 
 theorem _root_.locallyFinite_iff_smallSets :
     LocallyFinite f ↔ ∀ x, ∀ᶠ s in (𝓝 x).smallSets, { i | (f i ∩ s).Nonempty }.Finite :=
@@ -95,12 +106,12 @@ theorem continuousOn_iUnion {g : X → Y} (hf : LocallyFinite f) (h_cl : ∀ i, 
 protected theorem continuous' {g : X → Y} (hf : LocallyFinite f) (h_cov : ⋃ i, f i = univ)
     (hc : ∀ i x, x ∈ closure (f i) → ContinuousWithinAt g (f i) x) :
     Continuous g :=
-  continuous_iff_continuousOn_univ.2 <| h_cov ▸ hf.continuousOn_iUnion' hc
+  continuousOn_univ.1 <| h_cov ▸ hf.continuousOn_iUnion' hc
 
 protected theorem continuous {g : X → Y} (hf : LocallyFinite f) (h_cov : ⋃ i, f i = univ)
     (h_cl : ∀ i, IsClosed (f i)) (h_cont : ∀ i, ContinuousOn g (f i)) :
     Continuous g :=
-  continuous_iff_continuousOn_univ.2 <| h_cov ▸ hf.continuousOn_iUnion h_cl h_cont
+  continuousOn_univ.1 <| h_cov ▸ hf.continuousOn_iUnion h_cl h_cont
 
 protected theorem closure (hf : LocallyFinite f) : LocallyFinite fun i => closure (f i) := by
   intro x
@@ -138,7 +149,7 @@ theorem exists_forall_eventually_eq_prod {π : X → Sort*} {f : ℕ → ∀ x :
   choose U hUx hU using hf
   choose N hN using fun x => (hU x).bddAbove
   replace hN : ∀ (x), ∀ n > N x, ∀ y ∈ U x, f (n + 1) y = f n y :=
-    fun x n hn y hy => by_contra fun hne => hn.lt.not_le <| hN x ⟨y, hne, hy⟩
+    fun x n hn y hy => by_contra fun hne => hn.lt.not_ge <| hN x ⟨y, hne, hy⟩
   replace hN : ∀ (x), ∀ n ≥ N x + 1, ∀ y ∈ U x, f n y = f (N x + 1) y :=
     fun x n hn y hy => Nat.le_induction rfl (fun k hle => (hN x _ hle _ hy).trans) n hn
   refine ⟨fun x => f (N x + 1) x, fun x => ?_⟩
@@ -195,8 +206,6 @@ theorem LocallyFinite.sumElim {g : ι' → Set X} (hf : LocallyFinite f) (hg : L
     LocallyFinite (Sum.elim f g) :=
   locallyFinite_sum.mpr ⟨hf, hg⟩
 
-@[deprecated (since := "2025-02-20")] alias LocallyFinite.sum_elim := LocallyFinite.sumElim
-
 theorem locallyFinite_option {f : Option ι → Set X} :
     LocallyFinite f ↔ LocallyFinite (f ∘ some) := by
   rw [← (Equiv.optionEquivSumPUnit.{0, _} ι).symm.locallyFinite_comp_iff, locallyFinite_sum]
@@ -211,5 +220,5 @@ theorem LocallyFinite.eventually_subset {s : ι → Set X}
     (hs : LocallyFinite s) (hs' : ∀ i, IsClosed (s i)) (x : X) :
     ∀ᶠ y in 𝓝 x, {i | y ∈ s i} ⊆ {i | x ∈ s i} := by
   filter_upwards [hs.iInter_compl_mem_nhds hs' x] with y hy i hi
-  simp only [mem_iInter, mem_compl_iff] at hy
+  push _ ∈ _ at hy
   exact not_imp_not.mp (hy i) hi

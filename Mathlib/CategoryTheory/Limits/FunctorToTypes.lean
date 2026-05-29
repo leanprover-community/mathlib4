@@ -3,8 +3,10 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Types.Colimits
+module
+
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
 
 /-!
 # Concrete description of (co)limits in functor categories
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.Limits.Types.Colimits
 Some of the concrete descriptions of (co)limits in `Type v` extend to (co)limits in the functor
 category `K ⥤ Type v`.
 -/
+
+public section
 
 namespace CategoryTheory.FunctorToTypes
 
@@ -22,6 +26,7 @@ universe w v₁ v₂ u₁ u₂
 variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
 variable (F : J ⥤ K ⥤ Type w)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem jointly_surjective (k : K) {t : Cocone F} (h : IsColimit t) (x : t.pt.obj k)
     [∀ k, HasColimit (F.flip.obj k)] : ∃ j y, x = (t.ι.app j).app k y := by
   let hev := isColimitOfPreserves ((evaluation _ _).obj k) h
@@ -34,6 +39,6 @@ theorem jointly_surjective' [∀ k, HasColimit (F.flip.obj k)] (k : K) (x : (col
 
 theorem colimit.map_ι_apply [HasColimit F] (j : J) {k k' : K} {f : k ⟶ k'} {x} :
     (colimit F).map f ((colimit.ι F j).app _ x) = (colimit.ι F j).app _ ((F.obj j).map f x) :=
-  congrFun ((colimit.ι F j).naturality _).symm _
+  ConcreteCategory.congr_hom ((colimit.ι F j).naturality _).symm _
 
 end CategoryTheory.FunctorToTypes

@@ -3,16 +3,18 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
-import Mathlib.CategoryTheory.Limits.Yoneda
-import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
+public import Mathlib.CategoryTheory.Limits.Yoneda
+public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
-# Preservations of pullback/pushout squares
+# Preservation of pullback/pushout squares
 
 If a functor `F : C ⥤ D` preserves suitable cospans (resp. spans),
 and `sq : Square C` is a pullback square (resp. a pushout square)
-then so is the square`sq.map F`.
+then so is the square `sq.map F`.
 
 The lemma `Square.isPullback_iff_map_coyoneda_isPullback` also
 shows that a square is a pullback square iff it is so after the
@@ -22,6 +24,8 @@ square becomes a pullback square after the application of the
 functor `yoneda.obj X` for all `X : C`.
 
 -/
+
+public section
 
 universe v v' u u'
 

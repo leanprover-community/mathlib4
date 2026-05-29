@@ -3,11 +3,11 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+module
 
-import Mathlib.Init
-import Lean.Elab.Exception
-import Batteries.Lean.NameMapAttribute
-import Batteries.Tactic.Lint
+public import Mathlib.Init
+public meta import Lean.Elab.Exception
+public meta import Batteries.Lean.NameMapAttribute
 
 /-!
 # `@[notation_class]` attribute for `@[simps]`
@@ -19,13 +19,15 @@ We put this in a separate file so that we can already tag some declarations with
 in the file where we declare `@[simps]`. For further documentation, see `Tactic.Simps.Basic`.
 -/
 
+public meta section
+
 /-- The `@[notation_class]` attribute specifies that this is a notation class,
 and this notation should be used instead of projections by `@[simps]`.
   * This is only important if the projection is written differently using notation, e.g.
     `+` uses `HAdd.hAdd`, not `Add.add` and `0` uses `OfNat.ofNat` not `Zero.zero`.
-    We also add it to non-heterogenous notation classes, like `Neg`, but it doesn't do much for any
+    We also add it to non-heterogeneous notation classes, like `Neg`, but it doesn't do much for any
     class that extends `Neg`.
-  * `@[notation_class * <projName> Simps.findCoercionArgs]` is used to configure the
+  * `@[notation_class* <projName> Simps.findCoercionArgs]` is used to configure the
     `SetLike` and `DFunLike` coercions.
   * The first name argument is the projection name we use as the key to search for this class
     (default: name of first projection of the class).
@@ -42,7 +44,7 @@ namespace Simps
 /-- The type of methods to find arguments for automatic projections for `simps`.
 We partly define this as a separate definition so that the unused arguments linter doesn't complain.
 -/
-def findArgType : Type := Name → Name → Array Expr → MetaM (Array (Option Expr))
+@[expose] def findArgType : Type := Name → Name → Array Expr → MetaM (Array (Option Expr))
 
 /-- Find arguments for a notation class -/
 def defaultfindArgs : findArgType := fun _ className args ↦ do
@@ -91,9 +93,9 @@ in a structure that must be used to trigger the search. -/
 structure AutomaticProjectionData where
   /-- `className` is the name of the class we are looking for. -/
   className : Name
-  /-- `isNotation` is a boolean that specifies whether this is notation
-    (false for the coercions `DFunLike` and `SetLike`). If this is set to true, we add the current
-    class as hypothesis during type-class synthesis. -/
+  /-- `isNotation` is a Boolean that specifies whether this is notation
+  (false for the coercions `DFunLike` and `SetLike`). If this is set to true, we add the current
+  class as hypothesis during type-class synthesis. -/
   isNotation := true
   /-- The method to find the arguments of the class. -/
   findArgs : Name := `Simps.defaultfindArgs

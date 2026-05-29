@@ -3,13 +3,15 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Jireh Loreaux, Yunzhou Xie
 -/
-import Mathlib.Algebra.Group.Subgroup.Map
-import Mathlib.Algebra.Module.Opposite
-import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.RingTheory.Congruence.Opposite
-import Mathlib.RingTheory.Ideal.Defs
-import Mathlib.RingTheory.TwoSidedIdeal.Lattice
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Map
+public import Mathlib.Algebra.Module.Opposite
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.RingTheory.Congruence.Opposite
+public import Mathlib.RingTheory.Ideal.Defs
+public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Operations on two-sided ideals
@@ -38,6 +40,8 @@ This file defines operations on two-sided ideals of a ring `R`.
   `fromIdeal : Ideal R → TwoSidedIdeal R` is defined as the smallest two-sided ideal containing an
   ideal and `asIdeal : TwoSidedIdeal R → Ideal R` the inclusion map.
 -/
+
+@[expose] public section
 
 namespace TwoSidedIdeal
 
@@ -196,18 +200,19 @@ lemma mem_span_iff_mem_addSubgroup_closure_absorbing {s : Set R}
     simp only [I, SetLike.mem_coe, mem_mk'] at hz
     induction hz using closure_induction with
     | mem x hx => exact hJ hx
-    | one => exact zero_mem _
-    | mul x y _ _ hx hy => exact J.add_mem hx hy
-    | inv x _ hx => exact J.neg_mem hx
+    | zero => exact zero_mem _
+    | add x y _ _ hx hy => exact J.add_mem hx hy
+    | neg x _ hx => exact J.neg_mem hx
 
-open Pointwise Set
+open scoped Pointwise
+open Set
 
-lemma set_mul_subset {s : Set R} {I : TwoSidedIdeal R} (h : s ⊆ I) (t : Set R):
+lemma set_mul_subset {s : Set R} {I : TwoSidedIdeal R} (h : s ⊆ I) (t : Set R) :
     t * s ⊆ I := by
   rintro - ⟨r, -, x, hx, rfl⟩
   exact mul_mem_left _ _ _ (h hx)
 
-lemma subset_mul_set {s : Set R} {I : TwoSidedIdeal R} (h : s ⊆ I) (t : Set R):
+lemma subset_mul_set {s : Set R} {I : TwoSidedIdeal R} (h : s ⊆ I) (t : Set R) :
     s * t ⊆ I := by
   rintro - ⟨x, hx, r, -, rfl⟩
   exact mul_mem_right _ _ _ (h hx)
@@ -242,7 +247,8 @@ section Ring
 
 variable {R : Type*} [Ring R]
 
-open Pointwise Set in
+open scoped Pointwise in
+open Set in
 lemma mem_span_iff_mem_addSubgroup_closure {s : Set R} {z : R} :
     z ∈ span s ↔ z ∈ AddSubgroup.closure (univ * s * univ) := by
   trans z ∈ span (univ * s * univ)
@@ -396,8 +402,7 @@ lemma coe_toTwoSided (I : Ideal R) [I.IsTwoSided] : (I.toTwoSided : Set R) = I :
   simp [toTwoSided]
 
 @[simp]
-lemma toTwoSided_asIdeal (I : TwoSidedIdeal R) : I.asIdeal.toTwoSided = I :=
-  by ext; simp
+lemma toTwoSided_asIdeal (I : TwoSidedIdeal R) : I.asIdeal.toTwoSided = I := by ext; simp
 
 @[simp]
 lemma asIdeal_toTwoSided (I : Ideal R) [I.IsTwoSided] : I.toTwoSided.asIdeal = I := by

@@ -3,12 +3,18 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Indicator
-import Mathlib.Algebra.GroupWithZero.Basic
+module
+
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Support
+public import Mathlib.Algebra.GroupWithZero.Basic
+public import Mathlib.Algebra.Notation.Indicator
 
 /-!
 # Indicator functions and support of a function in groups with zero
 -/
+
+public section
 
 assert_not_exists Ring
 
@@ -72,9 +78,6 @@ variable (M₀) [Nontrivial M₀]
 lemma indicator_eq_zero_iff_notMem : indicator s 1 i = (0 : M₀) ↔ i ∉ s := by
   classical simp [indicator_apply, imp_false]
 
-@[deprecated (since := "2025-05-23")]
-alias indicator_eq_zero_iff_not_mem := indicator_eq_zero_iff_notMem
-
 lemma indicator_eq_one_iff_mem : indicator s 1 i = (1 : M₀) ↔ i ∈ s := by
   classical simp [indicator_apply, imp_false]
 
@@ -97,11 +100,9 @@ end ZeroOne
 section MulZeroClass
 variable [MulZeroClass M₀]
 
---@[simp] Porting note: removing simp, bad lemma LHS not in normal form
 lemma support_mul_subset_left (f g : ι → M₀) : support (fun x ↦ f x * g x) ⊆ support f :=
   fun x hfg hf ↦ hfg <| by simp only [hf, zero_mul]
 
---@[simp] Porting note: removing simp, bad lemma LHS not in normal form
 lemma support_mul_subset_right (f g : ι → M₀) : support (fun x ↦ f x * g x) ⊆ support g :=
   fun x hfg hg => hfg <| by simp only [hg, mul_zero]
 
@@ -112,6 +113,14 @@ variable [NoZeroDivisors M₀]
 
 @[simp] lemma support_mul' (f g : ι → M₀) : support (f * g) = support f ∩ support g :=
   support_mul _ _
+
+/-- If `f` is everywhere nonzero, then `support (f * g) = support g`. -/
+lemma support_mul_of_ne_zero_left {f : ι → M₀} (hf : ∀ x, f x ≠ 0) (g : ι → M₀) :
+    support (fun x => f x * g x) = support g := by simp [support_eq_univ hf]
+
+/-- If `g` is everywhere nonzero, then `support (f * g) = support f`. -/
+lemma support_mul_of_ne_zero_right (f : ι → M₀) {g : ι → M₀} (hg : ∀ x, g x ≠ 0) :
+    support (fun x => f x * g x) = support f := by simp [support_eq_univ hg]
 
 end MulZeroClass
 
@@ -158,7 +167,7 @@ lemma mulSupport_add_one' [AddRightCancelMonoid R] (f : ι → R) : mulSupport (
   mulSupport_add_one f
 
 lemma mulSupport_one_sub' [AddGroup R] (f : ι → R) : mulSupport (1 - f) = support f := by
-  rw [sub_eq_add_neg, mulSupport_one_add', support_neg']
+  rw [sub_eq_add_neg, mulSupport_one_add', support_neg]
 
 lemma mulSupport_one_sub [AddGroup R] (f : ι → R) :
     mulSupport (fun x ↦ 1 - f x) = support f := mulSupport_one_sub' f

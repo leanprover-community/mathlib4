@@ -3,8 +3,10 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.Topology.Perfect
-import Mathlib.Tactic.Peel
+module
+
+public import Mathlib.Topology.Perfect
+public import Mathlib.Tactic.Peel
 
 /-!
 # Derived set
@@ -13,6 +15,8 @@ This file defines the derived set of a set, the set of all `AccPt`s of its princ
 and proves some properties of it.
 
 -/
+
+@[expose] public section
 
 open Filter Topology
 
@@ -48,7 +52,7 @@ theorem Continuous.image_derivedSet {β : Type*} [TopologicalSpace β] {A : Set 
   intro x hx
   simp only [Set.mem_image, mem_derivedSet] at hx
   obtain ⟨y, hy1, rfl⟩ := hx
-  convert hy1.map hf1.continuousAt hf2
+  convert! hy1.map hf1.continuousAt hf2
   simp
 
 lemma derivedSet_subset_closure (A : Set X) : derivedSet A ⊆ closure A :=

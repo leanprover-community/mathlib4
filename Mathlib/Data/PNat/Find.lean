@@ -3,8 +3,10 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, Floris van Doorn
 -/
-import Mathlib.Data.Nat.Find
-import Mathlib.Data.PNat.Basic
+module
+
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Data.PNat.Basic
 
 /-!
 # Explicit least witnesses to existentials on positive natural numbers
@@ -12,6 +14,8 @@ import Mathlib.Data.PNat.Basic
 Implemented via calling out to `Nat.find`.
 
 -/
+
+@[expose] public section
 
 
 namespace PNat
@@ -57,7 +61,7 @@ protected theorem find_min : ∀ {m : ℕ+}, m < PNat.find h → ¬p m :=
   @(PNat.findX h).prop.right
 
 protected theorem find_min' {m : ℕ+} (hm : p m) : PNat.find h ≤ m :=
-  le_of_not_lt fun l => PNat.find_min h l hm
+  le_of_not_gt fun l => PNat.find_min h l hm
 
 variable {n m : ℕ+}
 
@@ -75,7 +79,7 @@ theorem find_lt_iff (n : ℕ+) : PNat.find h < n ↔ ∃ m < n, p m :=
 
 @[simp]
 theorem find_le_iff (n : ℕ+) : PNat.find h ≤ n ↔ ∃ m ≤ n, p m := by
-  simp only [exists_prop, ← lt_add_one_iff, find_lt_iff]
+  simp only [← lt_add_one_iff, find_lt_iff]
 
 @[simp]
 theorem le_find_iff (n : ℕ+) : n ≤ PNat.find h ↔ ∀ m < n, ¬p m := by

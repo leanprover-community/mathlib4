@@ -8,7 +8,10 @@ on:
 
 jobs:
   handle_failure:
-    if: ${{ github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.head_branch == 'nightly-testing' }}
+
+    if: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' &&
+            github.event.workflow_run.conclusion == 'failure' &&
+            github.event.workflow_run.head_branch == 'nightly-testing' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -18,25 +21,52 @@ jobs:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'
         organization-url: 'https://leanprover.zulipchat.com'
-        to: 'nightly-testing'
+        to: 'nightly-testing-mathlib'
         type: 'stream'
         topic: 'Mathlib status updates'
         content: |
-          ❌ The latest CI for Mathlib's branch#nightly-testing has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}) ([${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})).
+          ❌ The latest CI for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}) ([${{ github.event.workflow_run.head_sha }}](https://github.com/${{ github.repository }}/commit/${{ github.event.workflow_run.head_sha }})).
           You can `git fetch; git checkout nightly-testing` and push a fix.
 
   handle_success:
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'nightly-testing' }}
+    if: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' &&
+            github.event.workflow_run.conclusion == 'success' &&
+            github.event.workflow_run.head_branch == 'nightly-testing' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+    - name: Generate app token
+      id: app-token
+      uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
       with:
-        ref: nightly-testing # checkout nightly-testing branch
+        app-id: ${{ secrets.MATHLIB_NIGHTLY_TESTING_APP_ID }}
+        key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+        key-name: mathlib-nightly-testing-app-pk
+        azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_NIGHTLY_TESTING }}
+        azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+
+    # This token is masked by the token minting action and will not be logged accidentally.
+    - name: Checkout code
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        # Pin to the SHA whose CI just succeeded, not the current tip of `nightly-testing`,
+        # which may have advanced while CI was running. Without this, the tag and
+        # `nightly-testing-{green,daily}` updates below can point to an untested commit.
+        ref: ${{ github.event.workflow_run.head_sha }}
         fetch-depth: 0 # checkout all branches so that we can push from `nightly-testing` to `nightly-testing-YYYY-MM-DD`
-        token: ${{ secrets.NIGHTLY_TESTING }}
-    - name: Update the nightly-testing-YYYY-MM-DD branch
+        token: ${{ steps.app-token.outputs.token }}
+    - name: Update the nightly-testing-green branch
+      continue-on-error: true
+      run: |
+        # The `nightly-testing-green` branch keeps a record of the successfully built commits on `nightly-testing`.
+        # This is allowed to fail, because it might happen that an earlier commit finishes CI later,
+        # we don't want to force push and revert the history.
+        # In case `nightly-testing` does have its history rewritten, we do a force push once a day.
+        git push origin HEAD:nightly-testing-green
+    - name: Create a nightly-testing-YYYY-MM-DD tag
       run: |
         toolchain="$(<lean-toolchain)"
         if [[ $toolchain =~ leanprover/lean4:nightly-([a-zA-Z0-9_-]+) ]]; then
@@ -46,10 +76,26 @@ jobs:
           if git ls-remote --tags --exit-code origin "nightly-testing-$version" >/dev/null; then
               printf 'Tag nightly-testing-%s already exists on the remote.' "${version}"
           else
-              # If the tag does not exist, create and push the tag to remote
+              # If the tag does not exist, create and push the tag to remote.
+              # The `ls-remote` check above is racy: a concurrent run can push the
+              # tag between our check and our push. Tolerate that case.
               printf 'Creating tag %s from the current state of the nightly-testing branch.' "nightly-testing-${version}"
               git tag "nightly-testing-${version}"
-              git push origin "nightly-testing-${version}"
+              if ! git push origin "nightly-testing-${version}"; then
+                if git ls-remote --tags --exit-code origin "nightly-testing-${version}" >/dev/null; then
+                  printf 'Tag nightly-testing-%s was created concurrently; continuing.' "${version}"
+                else
+                  exit 1
+                fi
+              fi
+              # Fast-forward `nightly-testing-daily` and `nightly-testing-green` to the tested SHA.
+              # Since we now pin to the SHA whose CI succeeded (which may be older than the current
+              # tip of `nightly-testing` if a CI run for an older commit finishes after a newer one),
+              # we must NOT force-push here, or we'd roll the tracking branches backwards.
+              # If the push isn't a fast-forward, leave the branch alone; the daily force-push
+              # job handles the rare case where `nightly-testing` history has been rewritten.
+              git push origin HEAD:nightly-testing-daily || echo "Skipping nightly-testing-daily update: not a fast-forward."
+              git push origin HEAD:nightly-testing-green || echo "Skipping nightly-testing-green update: not a fast-forward."
               hash="$(git rev-parse "nightly-testing-${version}")"
               curl -X POST "https://speed.lean-lang.org/mathlib4/api/queue/commit/e7b27246-a3e6-496a-b552-ff4b45c7236e/$hash" -u "admin:${{ secrets.SPEED }}"
           fi
@@ -64,12 +110,21 @@ jobs:
     - name: Cleanup workspace
       run: |
         sudo rm -rf -- *
+    - name: Generate lean-pr-testing app token
+      id: lean-pr-testing-token
+      uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+      with:
+        app-id: ${{ secrets.MATHLIB_LEAN_PR_TESTING_APP_ID }}
+        private-key: ${{ secrets.MATHLIB_LEAN_PR_TESTING_PRIVATE_KEY }}
+        owner: leanprover
+        repositories: lean4
     # Checkout the Lean repository on 'nightly-with-mathlib'
+    # The create-github-app-token README states that this token is masked and will not be logged accidentally.
     - name: Checkout Lean repository
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         repository: leanprover/lean4
-        token: ${{ secrets.LEAN_PR_TESTING }}
+        token: ${{ steps.lean-pr-testing-token.outputs.token }}
         ref: nightly-with-mathlib
     # Merge the relevant nightly.
     - name: Fetch tags from 'lean4-nightly', and merge relevant nightly into 'nightly-with-mathlib'
@@ -96,23 +151,29 @@ jobs:
         import zulip
         client = zulip.Client(email=os.getenv('ZULIP_EMAIL'), api_key=os.getenv('ZULIP_API_KEY'), site=os.getenv('ZULIP_SITE'))
 
-        # Get the last message in the 'status updates' topic
+        # Get the last message from the bot in the 'status updates' topic.
+        # We narrow by sender to ignore human replies in between.
+        bot_email = 'github-mathlib4-bot@leanprover.zulipchat.com'
         request = {
           'anchor': 'newest',
           'num_before': 1,
           'num_after': 0,
-          'narrow': [{'operator': 'stream', 'operand': 'nightly-testing'}, {'operator': 'topic', 'operand': 'Mathlib status updates'}],
+          'narrow': [
+            {'operator': 'stream', 'operand': 'nightly-testing-mathlib'},
+            {'operator': 'topic', 'operand': 'Mathlib status updates'},
+            {'operator': 'sender', 'operand': bot_email}
+          ],
           'apply_markdown': False    # Otherwise the content test below fails.
         }
         response = client.get_messages(request)
         messages = response['messages']
-        if not messages or messages[0]['content'] != f"✅ The latest CI for Mathlib's branch#nightly-testing has succeeded! ([{os.getenv('SHA')}](https://github.com/${{ github.repository }}/commit/{os.getenv('SHA')}))":
+        if not messages or messages[0]['content'] != f"✅ The latest CI for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has succeeded! ([{os.getenv('SHA')}](https://github.com/${{ github.repository }}/commit/{os.getenv('SHA')}))":
             # Post the success message
             request = {
                 'type': 'stream',
-                'to': 'nightly-testing',
+                'to': 'nightly-testing-mathlib',
                 'topic': 'Mathlib status updates',
-                'content': f"✅ The latest CI for Mathlib's branch#nightly-testing has succeeded! ([{os.getenv('SHA')}](https://github.com/${{ github.repository }}/commit/{os.getenv('SHA')}))"
+                'content': f"✅ The latest CI for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has succeeded! ([{os.getenv('SHA')}](https://github.com/${{ github.repository }}/commit/{os.getenv('SHA')}))"
             }
             result = client.send_message(request)
             print(result)
@@ -122,16 +183,16 @@ jobs:
 
     - name: Check for matching bump/nightly-YYYY-MM-DD branch
       id: check_branch
-      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
       with:
         script: |
           const branchName = `bump/nightly-${process.env.NIGHTLY}`;
           console.log(`Looking for branch: ${branchName}`);
 
-          // Use paginate to get all branches
+          // Use paginate to get all branches from nightly-testing repository
           const branches = await github.paginate(github.rest.repos.listBranches, {
-            owner: context.repo.owner,
-            repo: context.repo.repo
+            owner: 'leanprover-community',
+            repo: 'mathlib4-nightly-testing'
           });
 
           const exists = branches.some(branch => branch.name === branchName);
@@ -151,14 +212,15 @@ jobs:
         exit 0
 
     - name: Fetch latest bump branch name
+      if: steps.check_branch.outputs.result == 'false'
       id: latest_bump_branch
-      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
       with:
         result-encoding: string
         script: |
           const branches = await github.paginate(github.rest.repos.listBranches, {
-            owner: context.repo.owner,
-            repo: context.repo.repo
+            owner: 'leanprover-community',
+            repo: 'mathlib4-nightly-testing'
           });
           const bumpBranches = branches
             .map(branch => branch.name)
@@ -171,43 +233,93 @@ jobs:
           return latestBranch;
 
     - name: Fetch lean-toolchain from latest bump branch
+      if: steps.check_branch.outputs.result == 'false'
       id: bump_version
-      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
       with:
         script: |
+          const branchName = '${{ steps.latest_bump_branch.outputs.result }}';
+          let content = '';
+          let sha = '';
+
+          // Get branch SHA first for durable URL
           try {
-            const response = await github.rest.repos.getContent({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              path: 'lean-toolchain',
-              ref: '${{ steps.latest_bump_branch.outputs.result }}'
+            const branchResponse = await github.rest.repos.getBranch({
+              owner: 'leanprover-community',
+              repo: 'mathlib4-nightly-testing',
+              branch: branchName
             });
-            const content = Buffer.from(response.data.content, 'base64').toString();
-            const match = content.match(/leanprover\/lean4:nightly-(\d{4}-\d{2}-\d{2})/);
-            if (!match) {
-              core.setFailed('Toolchain pattern did not match');
-              core.setOutput('toolchain_content', content);
-              return null;
-            }
-            return match[1];
+            sha = branchResponse.data.commit.sha;
+            core.setOutput('branch_sha', sha);
           } catch (error) {
-            core.setFailed(error.message);
+            core.setFailed(`Failed to get branch SHA for ${branchName}: ${error.message}`);
+            core.setOutput('branch_name', branchName);
             return null;
           }
 
+          // Retry logic for fetching content (in case of network errors)
+          const maxRetries = 3;
+          for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+              const response = await github.rest.repos.getContent({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                path: 'lean-toolchain',
+                ref: branchName
+              });
+              content = Buffer.from(response.data.content, 'base64').toString().trim();
+
+              if (content) {
+                break; // Success, exit retry loop
+              } else if (attempt < maxRetries) {
+                console.log(`Attempt ${attempt}: lean-toolchain content is empty, retrying...`);
+                await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+              }
+            } catch (error) {
+              if (attempt === maxRetries) {
+                core.setFailed(`Failed to fetch lean-toolchain from ${branchName} after ${maxRetries} attempts: ${error.message}`);
+                core.setOutput('branch_name', branchName);
+                return null;
+              }
+              console.log(`Attempt ${attempt}: Error fetching lean-toolchain from ${branchName}, retrying... ${error.message}`);
+              await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+            }
+          }
+
+          if (!content) {
+            core.setFailed(`lean-toolchain content is empty after ${maxRetries} attempts from branch ${branchName}`);
+            core.setOutput('toolchain_content', '(empty)');
+            core.setOutput('branch_name', branchName);
+            return null;
+          }
+
+          core.setOutput('toolchain_content', content);
+          core.setOutput('branch_name', branchName);
+
+          const match = content.match(/leanprover\/lean4:nightly-(\d{4}-\d{2}-\d{2}(?:-rev\d+)?)/);
+          if (!match) {
+            core.setFailed('Toolchain pattern did not match');
+            return null;
+          }
+          return match[1];
+
     - name: Send warning message on Zulip if pattern doesn't match
-      if: failure()
+      if: failure() && steps.bump_version.outcome == 'failure'
       uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'
         organization-url: 'https://leanprover.zulipchat.com'
-        to: 'nightly-testing'
+        to: 'nightly-testing-mathlib'
         type: 'stream'
         topic: 'Mathlib status updates'
         content: |
-          ⚠️ Warning: The lean-toolchain file in the latest bump branch does not match the expected pattern 'leanprover/lean4:nightly-YYYY-MM-DD'.
-          Current content: ${{ steps.bump_version.outputs.toolchain_content }}
+          ⚠️ Warning: The lean-toolchain file in bump branch `${{ steps.bump_version.outputs.branch_name }}` does not match the expected pattern 'leanprover/lean4:nightly-YYYY-MM-DD(-revK)'.
+
+          **Branch:** `${{ steps.bump_version.outputs.branch_name }}`
+          **File URL:** https://github.com/${{ github.repository }}/blob/${{ steps.bump_version.outputs.branch_sha }}/lean-toolchain
+          **Current content:** `${{ steps.bump_version.outputs.toolchain_content }}`
+
           This needs to be fixed for the nightly testing process to work correctly.
 
     - name: Setup for automatic PR creation
@@ -236,13 +348,38 @@ jobs:
       if: steps.check_branch.outputs.result == 'false'
       run: |
         sudo rm -rf -- *
+    # Regenerate the app token just before use.
+    # GitHub App tokens expire after 1 hour, and the preceding steps can take longer than that.
+    - name: Regenerate app token for Mathlib4 checkout
+      if: steps.check_branch.outputs.result == 'false'
+      id: app-token-2
+      uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+      with:
+        app-id: ${{ secrets.MATHLIB_NIGHTLY_TESTING_APP_ID }}
+        key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+        key-name: mathlib-nightly-testing-app-pk
+        azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_NIGHTLY_TESTING }}
+        azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
     - name: Checkout Mathlib4 repository
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       if: steps.check_branch.outputs.result == 'false'
       with:
         ref: nightly-testing # checkout nightly-testing branch (shouldn't matter which)
         fetch-depth: 0 # checkout all branches
-        token: ${{ secrets.NIGHTLY_TESTING }}
+        token: ${{ steps.app-token-2.outputs.token }}
+
+    - name: Checkout local actions
+      if: steps.check_branch.outputs.result == 'false'
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        ref: ${{ github.workflow_sha }}
+        fetch-depth: 1
+        sparse-checkout: .github/actions
+        path: workflow-actions
+    - name: Get mathlib-ci
+      id: get_mathlib_ci
+      if: steps.check_branch.outputs.result == 'false'
+      uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
     - name: Attempt automatic PR creation
       id: auto_pr
@@ -252,7 +389,7 @@ jobs:
         BUMP_VERSION: ${{ steps.bump_version.outputs.result }}
         BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
         SHA: ${{ env.SHA }}
-        GH_TOKEN: ${{ secrets.NIGHTLY_TESTING }}
+        GH_TOKEN: ${{ steps.app-token-2.outputs.token }}
         ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
       run: |
         echo "Current version: ${NIGHTLY}"
@@ -264,7 +401,7 @@ jobs:
         echo "  bumpversion: ${bump_branch_suffix}"
         echo "  nightlydate: ${current_version}"
         echo "  nightlysha: ${SHA}"
-        ./scripts/create-adaptation-pr.sh --bumpversion="${bump_branch_suffix}" --nightlydate="${current_version}" --nightlysha="${SHA}" --auto=yes
+        "${CI_SCRIPTS_DIR}/nightly/create-adaptation-pr.sh" --bumpversion="${bump_branch_suffix}" --nightlydate="${current_version}" --nightlysha="${SHA}" --auto=yes
 
     - name: Fallback to manual instructions
       if: steps.auto_pr.outcome == 'failure' && steps.check_branch.outputs.result == 'false'
@@ -278,6 +415,7 @@ jobs:
       shell: python
       run: |
         import os
+        import re
         import zulip
         client = zulip.Client(config_file="~/.zuliprc")
         current_version = os.getenv('NIGHTLY')
@@ -289,36 +427,53 @@ jobs:
         print(f'Current version: {current_version}, Bump version: {bump_version}, SHA: {sha}')
         if current_version > bump_version:
             print('Lean toolchain in `nightly-testing` is ahead of the bump branch.')
-            # Get the last message in the 'Mathlib bump branch reminders' topic
+            # Get the last message from the bot in the 'Mathlib bump branch reminders' topic.
+            # We narrow by sender to ignore human replies in between.
+            bot_email = 'github-mathlib4-bot@leanprover.zulipchat.com'
             request = {
               'anchor': 'newest',
               'num_before': 1,
               'num_after': 0,
-              'narrow': [{'operator': 'stream', 'operand': 'nightly-testing'}, {'operator': 'topic', 'operand': 'Mathlib bump branch reminders'}],
+              'narrow': [
+                {'operator': 'stream', 'operand': 'nightly-testing-mathlib'},
+                {'operator': 'topic', 'operand': 'Mathlib bump branch reminders'},
+                {'operator': 'sender', 'operand': bot_email}
+              ],
               'apply_markdown': False    # Otherwise the content test below fails.
             }
             response = client.get_messages(request)
             messages = response['messages']
+            last_bot_message = messages[0] if messages else None
             bump_branch_suffix = bump_branch.replace('bump/', '')
             failed_link = f"https://github.com/{repository}/actions/runs/{current_run_id}"
             payload = f"🛠️: Automatic PR creation [failed]({failed_link}). Please create a new bump/nightly-{current_version} branch from nightly-testing (specifically {sha}), and then PR that to {bump_branch}. "
-            payload += "To do so semi-automatically, run the following script from mathlib root:\n\n"
-            payload += f"```bash\n./scripts/create-adaptation-pr.sh --bumpversion={bump_branch_suffix} --nightlydate={current_version} --nightlysha={sha}\n```\n"
-            # Only post if the message is different
-            # We compare the first 160 characters, since that includes the date and bump version
-            if not messages or messages[0]['content'][:160] != payload[:160]:
-                # Log messages, because the bot seems to repeat itself...
-                if messages:
-                    print("###### Last message:")
-                    print(messages[0]['content'])
+            payload += "To do so semi-automatically, run:\n\n"
+            payload += f"```bash\ntmpscript=$(mktemp)\nwget -qO \"$tmpscript\" https://raw.githubusercontent.com/leanprover-community/mathlib-ci/${{ steps.get_mathlib_ci.outputs.ref }}/scripts/nightly/create-adaptation-pr.sh\nchmod +x \"$tmpscript\"\ntmpdir=$(mktemp -d)\ngit clone --filter=blob:none https://github.com/leanprover-community/mathlib4 \"$tmpdir\"\ncd \"$tmpdir\"\n\"$tmpscript\" --bumpversion={bump_branch_suffix} --nightlydate={current_version} --nightlysha={sha}\n```\n"
+            # Check if we already posted a message for this nightly date and bump branch.
+            # We extract these fields from the last bot message rather than comparing substrings,
+            # since the message also contains a run ID that differs between workflow runs.
+            should_post = True
+            if last_bot_message:
+                last_content = last_bot_message['content']
+                # Extract nightly date and bump branch from last bot message
+                date_match = re.search(r'bump/nightly-(\d{4}-\d{2}-\d{2}(?:-rev\d+)?)', last_content)
+                branch_match = re.search(r'PR that to (bump/v[\d.]+)', last_content)
+                if date_match and branch_match:
+                    last_date = date_match.group(1)
+                    last_branch = branch_match.group(1)
+                    if last_date == current_version and last_branch == bump_branch:
+                        should_post = False
+                        print(f'Already posted for nightly {current_version} and {bump_branch}')
+            if should_post:
+                if last_bot_message:
+                    print("###### Last bot message:")
+                    print(last_bot_message['content'])
                     print("###### Current message:")
                     print(payload)
-                else:
-                    print('The strings match!')
                 # Post the reminder message
                 request = {
                     'type': 'stream',
-                    'to': 'nightly-testing',
+                    'to': 'nightly-testing-mathlib',
                     'topic': 'Mathlib bump branch reminders',
                     'content': payload
                 }

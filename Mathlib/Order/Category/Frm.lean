@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.Lat
-import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+module
+
+public import Mathlib.Order.Category.Lat
+public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 
 /-!
 # The category of frames
@@ -17,6 +19,8 @@ This file defines `Frm`, the category of frames.
 * [nLab, *Frm*](https://ncatlab.org/nlab/show/Frm)
 -/
 
+@[expose] public section
+
 
 universe u
 
@@ -24,6 +28,8 @@ open CategoryTheory Order
 
 /-- The category of frames. -/
 structure Frm where
+  /-- Construct a bundled `Frm` from the underlying type and typeclass. -/
+  of ::
   /-- The underlying frame. -/
   (carrier : Type*)
   [str : Frame carrier]
@@ -39,9 +45,7 @@ instance : CoeSort Frm (Type _) :=
 
 attribute [coe] Frm.carrier
 
-/-- Construct a bundled `Frm` from the underlying type and typeclass. -/
-abbrev of (X : Type*) [Frame X] : Frm := ⟨X⟩
-
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `Frm R`. -/
 @[ext]
 structure Hom (X Y : Frm.{u}) where
@@ -49,11 +53,15 @@ structure Hom (X Y : Frm.{u}) where
   /-- The underlying `FrameHom`. -/
   hom' : FrameHom X Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category Frm.{u} where
   Hom X Y := Hom X Y
   id X := ⟨FrameHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory Frm (FrameHom · ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
@@ -85,7 +93,7 @@ lemma coe_comp {X Y Z : Frm} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) =
 
 @[simp]
 lemma forget_map {X Y : Frm} (f : X ⟶ Y) :
-    (forget Frm).map f = f := rfl
+    (forget Frm).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : Frm} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -114,8 +122,7 @@ lemma hom_ext {X Y : Frm} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {X Y : Type u} [Frame X] [Frame Y] (f : FrameHom X Y) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {X Y : Type u} [Frame X] [Frame Y] (f : FrameHom X Y) : (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {X Y : Frm} (f : X ⟶ Y) :

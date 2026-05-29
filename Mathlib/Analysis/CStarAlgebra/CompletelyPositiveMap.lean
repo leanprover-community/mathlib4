@@ -3,9 +3,10 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.PositiveLinearMap
-import Mathlib.Analysis.CStarAlgebra.CStarMatrix
+public import Mathlib.Analysis.CStarAlgebra.PositiveLinearMap
+public import Mathlib.Analysis.CStarAlgebra.CStarMatrix
 
 /-! # Completely positive maps
 
@@ -32,6 +33,8 @@ and only includes the order property; linearity is not mentioned at all. It is t
 to be used in conjunction with `LinearMapClass`. This is meant to avoid mixing order and algebra
 as much as possible.
 -/
+
+@[expose] public section
 
 open scoped CStarAlgebra
 
@@ -87,18 +90,15 @@ instance instCoeToCompletelyPositiveMap [CompletelyPositiveMapClass F A₁ A₂]
     CoeHead F (A₁ →CP A₂) where
   coe f := toCompletelyPositiveLinearMap f
 
+set_option backward.isDefEq.respectTransparency false in
 open CStarMatrix in
 /-- Linear maps which are completely positive are order homomorphisms (i.e., positive maps). -/
 lemma _root_.OrderHomClass.of_map_cstarMatrix_nonneg
     (h : ∀ (φ : F) (k : ℕ) (M : CStarMatrix (Fin k) (Fin k) A₁), 0 ≤ M → 0 ≤ M.map φ) :
-    OrderHomClass F A₁ A₂ := .ofLinear <| by
+    OrderHomClass F A₁ A₂ := .of_addMonoidHom <| by
   intro φ a ha
-  let Ma := toOneByOne (Fin 1) ℂ A₁ a
-  have h₁ : 0 ≤ Ma := map_nonneg (toOneByOne (Fin 1) ℂ A₁) ha
-  have h₂ : 0 ≤ Ma.map φ := h φ 1 Ma h₁
-  have h₃ : φ a = (toOneByOne (Fin 1) ℂ A₂).symm (toOneByOne (Fin 1) ℂ A₂ (φ a)) := rfl
-  rw [h₃]
-  exact map_nonneg (toOneByOne (Fin 1) ℂ A₂).symm h₂
+  simpa using map_nonneg (toOneByOne (Fin 1) ℂ A₂).symm <|
+    h φ 1 _ <| map_nonneg (toOneByOne (Fin 1) ℂ A₁) ha
 
 instance [CompletelyPositiveMapClass F A₁ A₂] : OrderHomClass F A₁ A₂ :=
   .of_map_cstarMatrix_nonneg CompletelyPositiveMapClass.map_cstarMatrix_nonneg'
@@ -136,11 +136,7 @@ lemma map_cstarMatrix_nonneg {n : Type*} [Fintype n] (φ : A₁ →CP A₂) (M :
     simp only [mapₗ, LinearMap.coe_coe, LinearMap.coe_mk, AddHom.coe_mk]
     exact CompletelyPositiveMapClass.map_cstarMatrix_nonneg' _ k _ (map_nonneg _ hM)
   rw [← mapₗ_reindexₐ] at hmain
-  have hrw :
-      reindexₐ ℂ A₂ e.symm ((reindexₐ ℂ A₂ e) (M.map (φ : A₁ → A₂))) = M.map (φ : A₁ → A₂) := by
-    simp
-  rw [← hrw]
-  exact map_nonneg _ hmain
+  simpa [reindexₐ_symm] using map_nonneg (reindexₐ ℂ A₂ e).symm hmain
 
 end CompletelyPositiveMap
 

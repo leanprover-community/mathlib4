@@ -3,8 +3,10 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Group.Support
-import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+public import Mathlib.Algebra.Notation.Support
 
 /-!
 # Support of a function composed with a scalar action
@@ -12,8 +14,10 @@ import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 We show that the support of `x ↦ f (c⁻¹ • x)` is equal to `c • support f`.
 -/
 
+public section
 
-open Pointwise
+
+open scoped Pointwise
 
 open Function Set
 

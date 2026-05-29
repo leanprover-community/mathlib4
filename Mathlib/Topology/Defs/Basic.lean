@@ -3,10 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.SetNotation
-import Mathlib.Tactic.Continuity
-import Mathlib.Tactic.FunProp
-import Mathlib.Tactic.MkIffOfInductiveProp
+module
+
+public import Mathlib.Order.SetNotation
+public import Mathlib.Tactic.Continuity
+public import Mathlib.Tactic.FunProp
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Data.Nat.Notation
+
+public meta import Mathlib.Util.DelabNonCanonical
+
 /-!
 # Basic definitions about topological spaces
 
@@ -54,13 +60,14 @@ We introduce notation `IsOpen[t]`, `IsClosed[t]`, `closure[t]`, `Continuous[t₁
 that allow passing custom topologies to these predicates and functions without using `@`.
 -/
 
+@[expose] public section
+
 assert_not_exists Monoid
 
 universe u v
 open Set
 
 /-- A topology on `X`. -/
-@[to_additive existing TopologicalSpace]
 class TopologicalSpace (X : Type u) where
   /-- A predicate saying that a set is an open set. Use `IsOpen` in the root namespace instead. -/
   protected IsOpen : Set X → Prop
@@ -162,7 +169,7 @@ Many important quotient maps are open quotient maps, including
 
 - the quotient map from a topological space to its quotient by the action of a group;
 - the quotient map from a topological group to its quotient by a normal subgroup;
-- the quotient map from a topological spaace to its separation quotient.
+- the quotient map from a topological space to its separation quotient.
 
 Contrary to general quotient maps,
 the category of open quotient maps is closed under `Prod.map`.
@@ -180,18 +187,39 @@ end Defs
 
 /-! ### Notation for non-standard topologies -/
 
+namespace Topology
+
 /-- Notation for `IsOpen` with respect to a non-standard topology. -/
-scoped[Topology] notation (name := IsOpen_of) "IsOpen[" t "]" => @IsOpen _ t
+scoped notation (name := IsOpen_of) "IsOpen[" t "]" => @IsOpen _ t
 
 /-- Notation for `IsClosed` with respect to a non-standard topology. -/
-scoped[Topology] notation (name := IsClosed_of) "IsClosed[" t "]" => @IsClosed _ t
+scoped notation (name := IsClosed_of) "IsClosed[" t "]" => @IsClosed _ t
 
 /-- Notation for `closure` with respect to a non-standard topology. -/
-scoped[Topology] notation (name := closure_of) "closure[" t "]" => @closure _ t
+scoped notation (name := closure_of) "closure[" t "]" => @closure _ t
 
-/-- Notation for `Continuous` with respect to a non-standard topologies. -/
-scoped[Topology] notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "]" =>
+/-- Notation for `Continuous` with respect to non-standard topologies. -/
+scoped notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "]" =>
   @Continuous _ _ t₁ t₂
+
+open Topology Lean.PrettyPrinter.Delaborator Delab.Noncanonical
+
+/-- Delaborator for `IsOpen[_]`. -/
+@[scoped app_delab IsOpen] meta def delabIsOpen : Delab := delabUnary 2 1 fun x ↦ `(IsOpen[$x])
+
+/-- Delaborator for `IsClosed[_]`. -/
+@[scoped app_delab IsClosed]
+meta def delabIsClosed : Delab := delabUnary 2 1 fun x ↦ `(IsClosed[$x])
+
+/-- Delaborator for `closure[_]`. -/
+@[scoped app_delab closure] meta def delabClosure : Delab := delabUnary 2 1 fun x ↦ `(closure[$x])
+
+/-- Delaborator for `Continuous[_, _]`. -/
+@[scoped app_delab Continuous]
+meta def delabContinuous : Delab :=
+  delabBinary 4 2 3 (fun x y ↦ `(Continuous[$x, $y]))
+
+end Topology
 
 /-- The property `BaireSpace α` means that the topological space `α` has the Baire property:
 any countable intersection of open dense subsets is dense.
@@ -199,3 +227,22 @@ Formulated here when the source space is ℕ.
 Use `dense_iInter_of_isOpen` which works for any countable index type instead. -/
 class BaireSpace (X : Type*) [TopologicalSpace X] : Prop where
   baire_property : ∀ f : ℕ → Set X, (∀ n, IsOpen (f n)) → (∀ n, Dense (f n)) → Dense (⋂ n, f n)
+
+/-- A one-field structure wrapper for `X` with the topology coinduced from `t`. -/
+@[ext]
+structure WithTopology (X : Type*) (t : TopologicalSpace X) where
+  /-- Converts an element of `X` to an element of `WithTopology X t`. -/
+  toTopology (t) ::
+  /-- Converts an element of `WithTopology X t` to an element of `X`. -/
+  ofTopology : X
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prevents `toTopology t x` being printed as `{ ofTopology := x }`
+by `delabStructureInstance`. -/
+@[app_delab WithTopology.toTopology]
+meta def WithTopology.delabToTopology : Delab := delabApp
+
+end Notation

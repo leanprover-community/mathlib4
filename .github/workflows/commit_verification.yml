@@ -1,0 +1,121 @@
+# Commit Verification CI
+# Verifies transient and automated commits in PRs
+#
+# - Transient commits (prefix: "transient: ") must have zero net effect
+# - Automated commits (prefix: "x: <command>") must match command output
+# - Uploads a workflow artifact with verification status and a comment to be posted on the PR
+
+name: Commit Verification
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# Cancel in-progress runs for the same PR
+concurrency:
+  group: commit-verification-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  TRANSIENT_PREFIX: "transient: "
+  # Support both "x " and "x: " (legacy) prefixes
+  AUTO_PREFIX_COLON: "x: "
+  AUTO_PREFIX_SPACE: "x "
+
+jobs:
+  verify:
+    name: Verify Transient and Automated Commits
+    runs-on: ubuntu-latest
+    # Only run if there are commits with special prefixes
+    # This is a quick check to avoid unnecessary runs
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          # Checkout the actual PR head, not the merge commit GitHub creates
+          ref: ${{ github.event.pull_request.head.sha }}
+          # Fetch full history to access all PR commits
+          fetch-depth: 0
+      - name: Checkout local actions
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+      - name: Get mathlib-ci
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+      - name: Check for special commits
+        id: check
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+
+          # Check if any commits have transient or auto prefix
+          # Auto prefix can be "x " or "x: " (legacy)
+          HAS_SPECIAL=$(git log --format="%s" "$BASE_SHA..$HEAD_SHA" | \
+            grep -E "^(${TRANSIENT_PREFIX}|${AUTO_PREFIX_COLON}|${AUTO_PREFIX_SPACE})" || true)
+
+          if [[ -n "$HAS_SPECIAL" ]]; then
+            echo "has_special=true" >> "$GITHUB_OUTPUT"
+            echo "Found commits requiring verification:"
+            echo "$HAS_SPECIAL"
+          else
+            echo "has_special=false" >> "$GITHUB_OUTPUT"
+            echo "No transient or automated commits found"
+            echo "No transient or automated commits found; this comment should never be posted" > comment_body.md
+          fi
+
+      - name: Verify commits
+        id: verify
+        if: steps.check.outputs.has_special == 'true'
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+
+          # Run verification (human-readable to stdout, JSON to file)
+          set +e
+          "${CI_SCRIPTS_DIR}/verification/verify_commits.sh" "$BASE_SHA" --json-file verification_result.json
+          EXIT_CODE=$?
+          set -e
+
+          # Set outputs
+          if [[ $EXIT_CODE -eq 0 ]]; then
+            echo "success=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "success=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Generate PR comment
+        if: steps.check.outputs.has_special == 'true'
+        id: comment
+        run: |
+          REPO="${{ github.repository }}"
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+
+          COMMENT=$(cat verification_result.json | "${CI_SCRIPTS_DIR}/verification/verify_commits_summary.sh" "$REPO" "$PR_NUMBER")
+
+          # Save to file (GitHub Actions has issues with multiline outputs)
+          echo "$COMMENT" > comment_body.md
+
+      - name: Prepare bridge outputs
+        run: |
+          jq -n \
+            --arg has_special "${{ steps.check.outputs.has_special }}" \
+            --arg success "${{ steps.verify.outputs.success }}" \
+            '{
+              has_special: $has_special,
+              success: $success,
+            }' > bridge-outputs.json
+
+      - name: Emit bridge artifact
+        uses: leanprover-community/privilege-escalation-bridge/emit@f5dfe313a79647c07315b451b2dc2a81a161a50d # v1.2.0
+        with:
+          artifact: workflow-data
+          outputs_file: bridge-outputs.json
+          include_event: minimal
+          files: |
+            comment_body.md
+          retention_days: 5

@@ -3,9 +3,11 @@ Copyright (c) 2020 Aaron Anderson, Jalex Stark. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.RingTheory.PowerBasis
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.RingTheory.PowerBasis
 
 /-!
 # The minimal polynomial divides the characteristic polynomial of a matrix.
@@ -13,18 +15,18 @@ import Mathlib.RingTheory.PowerBasis
 This also includes some miscellaneous results about `minpoly` on matrices.
 -/
 
+public section
+
 
 noncomputable section
 
-universe u v w
+open Matrix Module Polynomial
 
-open Polynomial Matrix
+universe u v w
 
 variable {R : Type u} [CommRing R]
 variable {n : Type v} [DecidableEq n] [Fintype n]
 variable {N : Type w} [AddCommGroup N] [Module R N]
-
-open Finset
 
 namespace Matrix
 

@@ -3,11 +3,15 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Functor.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.Basic
 
 /-!
 # Unbundled functors, as a typeclass decorating the object-level function.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -25,12 +29,12 @@ class Functorial (F : C → D) : Type max v₁ v₂ u₁ u₂ where
   we can write `map F f : F X ⟶ F Y` for the action of `F` on a morphism `f : X ⟶ Y`. -/
   map (F) : ∀ {X Y : C}, (X ⟶ Y) → (F X ⟶ F Y)
   /-- A functorial map preserves identities. -/
-  map_id : ∀ {X : C}, map (𝟙 X) = 𝟙 (F X) := by aesop_cat
+  map_id : ∀ {X : C}, map (𝟙 X) = 𝟙 (F X) := by cat_disch
   /-- A functorial map preserves composition of morphisms. -/
   map_comp : ∀ {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z}, map (f ≫ g) = map f ≫ map g := by
-    aesop_cat
+    cat_disch
 
-attribute [simp] Functorial.map_id Functorial.map_comp
+attribute [simp, grind =] Functorial.map_id Functorial.map_comp
 export Functorial (map)
 
 namespace Functor
@@ -39,14 +43,14 @@ namespace Functor
 -/
 def of (F : C → D) [I : Functorial.{v₁, v₂} F] : C ⥤ D :=
   { I with obj := F
-           map := map F }
+           map := Functorial.map F }
 
 end Functor
 
 instance (F : C ⥤ D) : Functorial.{v₁, v₂} F.obj :=
   { F with map := F.map }
 
-@[simp]
+@[simp, grind =]
 theorem map_functorial_obj (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) : map F.obj f = F.map f :=
   rfl
 
@@ -61,6 +65,7 @@ variable {E : Type u₃} [Category.{v₃} E]
 -- Will this be a problem?
 /-- `G ∘ F` is a functorial if both `F` and `G` are.
 -/
+@[implicit_reducible]
 def functorial_comp (F : C → D) [Functorial.{v₁, v₂} F] (G : D → E) [Functorial.{v₂, v₃} G] :
     Functorial.{v₁, v₃} (G ∘ F) :=
   { Functor.of F ⋙ Functor.of G with map := fun f => map G (map F f) }

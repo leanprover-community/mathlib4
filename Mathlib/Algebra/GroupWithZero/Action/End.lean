@@ -3,13 +3,17 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Hom
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.GroupWithZero.Action.Units
+module
+
+public import Mathlib.Algebra.Group.Action.Hom
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.GroupWithZero.Action.Units
 
 /-!
 # Group actions and (endo)morphisms
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso Equiv.Perm.equivUnitsEnd Prod.fst_mul Ring
 
@@ -56,8 +60,8 @@ This generalizes `Function.End.applyMulAction`. -/
 instance AddMonoid.End.applyDistribMulAction [AddMonoid α] :
     DistribMulAction (AddMonoid.End α) α where
   smul := (· <| ·)
-  smul_zero := AddMonoidHom.map_zero
-  smul_add := AddMonoidHom.map_add
+  smul_zero := map_zero
+  smul_add := map_add
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
@@ -72,10 +76,10 @@ instance AddMonoid.End.applyFaithfulSMul [AddMonoid α] :
 
 /-- Each non-zero element of a `GroupWithZero` defines an additive monoid isomorphism of an
 `AddMonoid` on which it acts distributively.
-This is a stronger version of `DistribMulAction.toAddMonoidHom`. -/
+This is a stronger version of `DistribSMul.toAddMonoidHom`. -/
 def DistribMulAction.toAddEquiv₀ {α : Type*} (β : Type*) [GroupWithZero α] [AddMonoid β]
     [DistribMulAction α β] (x : α) (hx : x ≠ 0) : β ≃+ β :=
-  { DistribMulAction.toAddMonoidHom β x with
+  { DistribSMul.toAddMonoidHom β x with
     invFun := fun b ↦ x⁻¹ • b
     left_inv := fun b ↦ inv_smul_smul₀ hx b
     right_inv := fun b ↦ smul_inv_smul₀ hx b }

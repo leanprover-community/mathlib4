@@ -3,9 +3,11 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.LinearAlgebra.Matrix.Reindex
-import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
+module
+
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.LinearAlgebra.Matrix.Reindex
+public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 
 /-!
 # Lie algebras of matrices
@@ -24,6 +26,8 @@ primary value stems from their utility when constructing the classical Lie algeb
 
 lie algebra, matrix
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂
@@ -101,7 +105,7 @@ instance : LieRingModule (Matrix n n R) (n → R) where
   leibniz_lie x y v := by simp only [Ring.lie_def, mulVec_mulVec, sub_mulVec, sub_add_cancel]
 
 instance : LieModule R (Matrix n n R) (n → R) where
-  smul_lie := smul_mulVec_assoc
+  smul_lie := smul_mulVec
   lie_smul t A := mulVec_smul A t
 
 @[simp] lemma lie_apply (A : Matrix n n R) (v : n → R) : ⁅A, v⁆ = A *ᵥ v := rfl

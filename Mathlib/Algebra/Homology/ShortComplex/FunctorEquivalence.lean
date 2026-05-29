@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Basic
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Basic
 
 /-!
 # Short complexes in functor categories
@@ -14,11 +16,13 @@ that `C` has zero morphisms), then there is an equivalence of categories
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
-open Limits
+open Limits Functor
 
-variable (J C : Type*) [Category J] [Category C] [HasZeroMorphisms C]
+variable (J C : Type*) [Category* J] [Category* C] [HasZeroMorphisms C]
 
 namespace ShortComplex
 
@@ -41,9 +45,9 @@ def inverse : (J ⥤ ShortComplex C) ⥤ ShortComplex (J ⥤ C) where
   obj F :=
     { f := whiskerLeft F π₁Toπ₂
       g := whiskerLeft F π₂Toπ₃
-      zero := by aesop_cat }
+      zero := by cat_disch }
   map φ := Hom.mk (whiskerRight φ π₁) (whiskerRight φ π₂) (whiskerRight φ π₃)
-    (by aesop_cat) (by aesop_cat)
+    (by cat_disch) (by cat_disch)
 
 /-- The unit isomorphism of the equivalence
 `ShortComplex.functorEquivalence : ShortComplex (J ⥤ C) ≌ J ⥤ ShortComplex C`. -/
@@ -53,7 +57,7 @@ def unitIso : 𝟭 _ ≅ functor J C ⋙ inverse J C :=
     (NatIso.ofComponents (fun _ => Iso.refl _) (by simp))
     (NatIso.ofComponents (fun _ => Iso.refl _) (by simp))
     (NatIso.ofComponents (fun _ => Iso.refl _) (by simp))
-    (by aesop_cat) (by aesop_cat)) (by aesop_cat)
+    (by cat_disch) (by cat_disch)) (by cat_disch)
 
 /-- The counit isomorphism of the equivalence
 `ShortComplex.functorEquivalence : ShortComplex (J ⥤ C) ≌ J ⥤ ShortComplex C`. -/
@@ -61,7 +65,7 @@ def unitIso : 𝟭 _ ≅ functor J C ⋙ inverse J C :=
 def counitIso : inverse J C ⋙ functor J C ≅ 𝟭 _ :=
   NatIso.ofComponents (fun _ => NatIso.ofComponents
     (fun _ => isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
-      (by simp) (by simp)) (by aesop_cat)) (by aesop_cat)
+      (by simp) (by simp)) (by cat_disch)) (by cat_disch)
 
 end FunctorEquivalence
 

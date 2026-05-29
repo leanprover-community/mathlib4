@@ -3,7 +3,9 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+module
+
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 
 /-!
 # Lp seminorm with respect to trimmed measure
@@ -11,6 +13,8 @@ import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 In this file we prove basic properties of the Lp-seminorm of a function
 with respect to the restriction of a measure to a sub-σ-algebra.
 -/
+
+public section
 
 namespace MeasureTheory
 
@@ -62,8 +66,5 @@ theorem eLpNorm_trim_ae (hm : m ≤ m0) {f : α → ε} (hf : AEStronglyMeasurab
 theorem memLp_of_memLp_trim (hm : m ≤ m0) {f : α → ε} (hf : MemLp f p (μ.trim hm)) : MemLp f p μ :=
   ⟨aestronglyMeasurable_of_aestronglyMeasurable_trim hm hf.1,
     (le_of_eq (eLpNorm_trim_ae hm hf.1).symm).trans_lt hf.2⟩
-
-@[deprecated (since := "2025-02-21")]
-alias memℒp_of_memℒp_trim := memLp_of_memLp_trim
 
 end MeasureTheory

@@ -3,20 +3,26 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Util.AssertExists
-import Mathlib.Algebra.Notation.Defs
-import Mathlib.Data.Prod.Basic
+module
+
+public import Mathlib.Algebra.Notation.Defs
+public import Mathlib.Data.Prod.Basic
 
 /-!
-# `Zero` and `One` instances on `M × N`
+# Arithmetic operators on (pairwise) product types
 
-In this file we define `0` and `1` on `M × N` as the pair `(0, 0)` and `(1, 1)` respectively.
-We also prove trivial `simp` lemmas:
+This file provides only the notation for (componentwise) `0`, `1`, `+`, `*`, `•`, `^`, `⁻¹` on
+(pairwise) product types. See `Mathlib/Algebra/Group/Prod.lean` for the `Monoid` and `Group`
+instances. There is also an instance of the `Star` notation typeclass, but no default notation is
+included.
+
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid DenselyOrdered
 
-variable {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
+variable {G H M N P R S : Type*}
 
 namespace Prod
 
@@ -123,49 +129,45 @@ theorem swap_div (a b : G × H) : (a / b).swap = a.swap / b.swap := rfl
 
 end Div
 
-section SMul
-
-variable {M α β : Type*} [SMul M α] [SMul M β]
-
-@[to_additive]
-instance instSMul : SMul M (α × β) where smul a p := (a • p.1, a • p.2)
-
-@[to_additive (attr := simp)] lemma smul_fst (a : M) (x : α × β) : (a • x).1 = a • x.1 := rfl
-
-@[to_additive (attr := simp)] lemma smul_snd (a : M) (x : α × β) : (a • x).2 = a • x.2 := rfl
-
-@[to_additive (attr := simp)]
-lemma smul_mk (a : M) (b : α) (c : β) : a • (b, c) = (a • b, a • c) := rfl
-
-@[to_additive]
-lemma smul_def (a : M) (x : α × β) : a • x = (a • x.1, a • x.2) := rfl
-
-@[to_additive (attr := simp)] lemma smul_swap (a : M) (x : α × β) : (a • x).swap = a • x.swap := rfl
-
-end SMul
-
 section Pow
 
 variable {E α β : Type*} [Pow α E] [Pow β E]
 
-@[to_additive existing instSMul]
+@[to_additive (attr := to_additive) instSMul]
 instance instPow : Pow (α × β) E where pow p c := (p.1 ^ c, p.2 ^ c)
 
-@[to_additive existing (attr := simp) (reorder := 6 7) smul_fst]
+@[to_additive (attr := to_additive, simp) (reorder := p c) smul_fst]
 lemma pow_fst (p : α × β) (c : E) : (p ^ c).fst = p.fst ^ c := rfl
 
-@[to_additive existing (attr := simp) (reorder := 6 7) smul_snd]
+@[to_additive (attr := to_additive, simp) (reorder := p c) smul_snd]
 lemma pow_snd (p : α × β) (c : E) : (p ^ c).snd = p.snd ^ c := rfl
 
-@[to_additive existing (attr := simp) (reorder := 6 7 8) smul_mk]
+@[to_additive (attr := to_additive, simp) (reorder := a b c) smul_mk]
 lemma pow_mk (a : α) (b : β) (c : E) : Prod.mk a b ^ c = Prod.mk (a ^ c) (b ^ c) := rfl
 
-@[to_additive existing (reorder := 6 7) smul_def]
+@[to_additive (attr := to_additive) (reorder := p c) smul_def]
 lemma pow_def (p : α × β) (c : E) : p ^ c = (p.1 ^ c, p.2 ^ c) := rfl
 
-@[to_additive existing (attr := simp) (reorder := 6 7) smul_swap]
+@[to_additive (attr := to_additive, simp) (reorder := p c) smul_swap]
 lemma pow_swap (p : α × β) (c : E) : (p ^ c).swap = p.swap ^ c := rfl
 
 end Pow
+
+section Star
+
+variable [Star R] [Star S]
+
+instance : Star (R × S) where star x := (star x.1, star x.2)
+
+@[simp]
+theorem fst_star (x : R × S) : (star x).1 = star x.1 := rfl
+
+@[simp]
+theorem snd_star (x : R × S) : (star x).2 = star x.2 := rfl
+
+theorem star_def (x : R × S) : star x = (star x.1, star x.2) := rfl
+
+end Star
+
 
 end Prod

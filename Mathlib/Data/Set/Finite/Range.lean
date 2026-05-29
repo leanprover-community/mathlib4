@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.ULift
+module
+
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.ULift
 
 /-!
 # Finiteness of `Set.range`
@@ -19,7 +21,9 @@ and a `Set.Finite` constructor.
 finite sets
 -/
 
-assert_not_exists OrderedRing MonoidWithZero
+public section
+
+assert_not_exists IsOrderedRing MonoidWithZero
 
 open Set Function
 
@@ -91,5 +95,13 @@ theorem Finite.dependent_image {s : Set α} (hs : s.Finite) (F : ∀ i ∈ s, β
   simpa [range] using finite_range fun x : s => F x x.2
 
 end SetFiniteConstructors
+
+lemma Finite.exists_subset_finite_image_eq {f : α → β} {s : Set α} {u : Set β}
+    (hu : u.Finite) (hsu : u ⊆ f '' s) :
+    ∃ᵉ (t ⊆ s) (_ : t.Finite), f '' t = u := by
+  have : Finite u := Finite.to_subtype hu
+  choose g hg hg' using hsu
+  let g' (x : u) : α := g x.property
+  exact ⟨range g', fun a ha ↦ by aesop, finite_range _, by aesop⟩
 
 end Set

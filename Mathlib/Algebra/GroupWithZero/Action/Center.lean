@@ -3,12 +3,16 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.GroupTheory.Subgroup.Center
+module
+
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.GroupTheory.Subgroup.Center
 
 /-!
 # The center of a group with zero
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 
@@ -25,6 +29,4 @@ def Subgroup.centerUnitsEquivUnitsCenter (G₀ : Type*) [GroupWithZero G₀] :
       map_one' := rfl
       map_mul' _ _ := rfl }
   invFun u := unitsCenterToCenterUnits G₀ u
-  left_inv _ := by ext; rfl
-  right_inv _ := by ext; rfl
   map_mul' := map_mul _

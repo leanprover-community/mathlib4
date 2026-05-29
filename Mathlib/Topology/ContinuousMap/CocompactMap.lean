@@ -3,7 +3,9 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Topology.ContinuousMap.Basic
+module
+
+public import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Cocompact continuous maps
@@ -11,6 +13,8 @@ import Mathlib.Topology.ContinuousMap.Basic
 The type of *cocompact continuous maps* are those which tend to the cocompact filter on the
 codomain along the cocompact filter on the domain. When the domain and codomain are Hausdorff, this
 is equivalent to many other conditions, including that preimages of compact sets are compact. -/
+
+@[expose] public section
 
 
 universe u v w
@@ -194,7 +198,7 @@ def Homeomorph.toCocompactMap {α β : Type*} [TopologicalSpace α] [Topological
   continuous_toFun := f.continuous
   cocompact_tendsto' := by
     refine CocompactMap.tendsto_of_forall_preimage fun K hK => ?_
-    have := K.preimage_equiv_eq_image_symm f.toEquiv
+    have := f.toEquiv.image_symm_eq_preimage K
     simp only [coe_toEquiv] at this
-    rw [this]
+    rw [← this]
     exact hK.image f.symm.continuous

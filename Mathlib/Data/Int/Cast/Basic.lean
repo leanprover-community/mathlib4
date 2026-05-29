@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
 -/
-import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Data.Nat.Basic
+module
+
+public import Mathlib.Data.Int.Cast.Defs
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Data.Nat.Basic
 
 /-!
 # Cast of integers (additional theorems)
@@ -20,6 +22,8 @@ and results involving the order structure of `ℤ`.
 By contrast, this file's only import beyond `Mathlib.Data.Int.Cast.Defs` is
 `Mathlib.Algebra.Group.Basic`.
 -/
+
+public section
 
 
 universe u
@@ -43,7 +47,14 @@ open Nat
 
 namespace Int
 
-variable {R : Type u} [AddGroupWithOne R]
+variable {R : Type u}
+
+@[simp, norm_cast]
+theorem cast_ite [IntCast R] (P : Prop) [Decidable P] (m n : ℤ) :
+    ((ite P m n : ℤ) : R) = ite P (m : R) (n : R) :=
+  apply_ite _ _ _ _
+
+variable [AddGroupWithOne R]
 
 -- TODO: I don't like that `norm_cast` is used here, because it results in `norm_cast`
 -- introducing the "implementation detail" `Int.negSucc`.
@@ -56,7 +67,7 @@ theorem cast_zero : ((0 : ℤ) : R) = 0 :=
   (AddGroupWithOne.intCast_ofNat 0).trans Nat.cast_zero
 
 -- This lemma competes with `Int.ofNat_eq_natCast` to come later
-@[simp high, nolint simpNF, norm_cast]
+@[simp high, norm_cast]
 theorem cast_natCast (n : ℕ) : ((n : ℤ) : R) = n :=
   AddGroupWithOne.intCast_ofNat _
 
@@ -79,8 +90,7 @@ theorem cast_neg : ∀ n, ((-n : ℤ) : R) = -n
 theorem cast_subNatNat (m n) : ((Int.subNatNat m n : ℤ) : R) = m - n := by
   unfold subNatNat
   cases e : n - m
-  · simp only [ofNat_eq_coe]
-    simp [e, Nat.le_of_sub_eq_zero e]
+  · simp [Nat.le_of_sub_eq_zero e]
   · rw [cast_negSucc, ← e, Nat.cast_sub <| _root_.le_of_lt <| Nat.lt_of_sub_eq_succ e, neg_sub]
 
 @[simp]

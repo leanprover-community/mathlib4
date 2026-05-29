@@ -3,8 +3,10 @@ Copyright (c) 2020 Kim Morrison, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preserving products
@@ -15,6 +17,8 @@ to concrete fans.
 In particular, we show that `piComparison G f` is an isomorphism iff `G` preserves
 the limit of `f`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -38,9 +42,8 @@ def isLimitMapConeFanMkEquiv {P : C} (g : ∀ j, P ⟶ f j) :
     IsLimit (Functor.mapCone G (Fan.mk P g)) ≃
       IsLimit (Fan.mk _ fun j => G.map (g j) : Fan fun j => G.obj (f j)) := by
   refine (IsLimit.postcomposeHomEquiv ?_ _).symm.trans (IsLimit.equivIsoLimit ?_)
-  · refine Discrete.natIso fun j => Iso.refl (G.obj (f j.as))
-  refine Cones.ext (Iso.refl _) fun j =>
-      by dsimp; cases j; simp
+  · exact Discrete.natIso fun j => Iso.refl (G.obj (f j.as))
+  exact Cone.ext (Iso.refl _) fun j ↦ by dsimp; cases j; simp
 
 /-- The property of preserving products expressed in terms of fans. -/
 def isLimitFanMkObjOfIsLimit [PreservesLimit (Discrete.functor f) G] {P : C} (g : ∀ j, P ⟶ f j)
@@ -76,6 +79,12 @@ lemma PreservesProduct.of_iso_comparison [i : IsIso (piComparison G f)] :
   exact @IsLimit.ofPointIso _ _ _ _ _ _ _
     (limit.isLimit (Discrete.functor fun j : J => G.obj (f j))) i
 
+@[reassoc (attr := simp)]
+lemma inv_piComparison_comp_map_π [IsIso (piComparison G f)] (j : J) :
+     inv (piComparison G f) ≫ G.map (Pi.π _ j) =
+      Pi.π (fun x ↦ (G.obj (f x))) j := by
+  simp only [IsIso.inv_comp_eq, piComparison_comp_π]
+
 variable [PreservesLimit (Discrete.functor f) G]
 
 /--
@@ -93,6 +102,11 @@ instance : IsIso (piComparison G f) := by
   rw [← PreservesProduct.iso_hom]
   infer_instance
 
+instance {I : Type*} [Category* I] [IsGroupoid I] (F : C ⥤ D) [PreservesLimitsOfShape I F] :
+    PreservesLimitsOfShape Iᵒᵖ F :=
+  letI : Groupoid I := Groupoid.ofIsGroupoid
+  preservesLimitsOfShape_of_equiv (Groupoid.invEquivalence I) F
+
 end
 
 /-- The map of a cofan is a colimit iff the cofan consisting of the mapped morphisms is a colimit.
@@ -103,7 +117,7 @@ def isColimitMapCoconeCofanMkEquiv {P : C} (g : ∀ j, f j ⟶ P) :
       IsColimit (Cofan.mk _ fun j => G.map (g j) : Cofan fun j => G.obj (f j)) := by
   refine (IsColimit.precomposeHomEquiv ?_ _).symm.trans (IsColimit.equivIsoColimit ?_)
   · refine Discrete.natIso fun j => Iso.refl (G.obj (f j.as))
-  refine Cocones.ext (Iso.refl _) fun j => by dsimp; cases j; simp
+  refine Cocone.ext (Iso.refl _) fun j => by dsimp; cases j; simp
 
 /-- The property of preserving coproducts expressed in terms of cofans. -/
 def isColimitCofanMkObjOfIsColimit [PreservesColimit (Discrete.functor f) G] {P : C}
@@ -139,6 +153,12 @@ lemma PreservesCoproduct.of_iso_comparison [i : IsIso (sigmaComparison G f)] :
   exact @IsColimit.ofPointIso _ _ _ _ _ _ _
     (colimit.isColimit (Discrete.functor fun j : J => G.obj (f j))) i
 
+@[reassoc (attr := simp)]
+lemma map_ι_comp_inv_sigmaComparison [IsIso (sigmaComparison G f)] (j : J) :
+    G.map (Sigma.ι _ j) ≫ inv (sigmaComparison G f) =
+      Sigma.ι (fun x ↦ (G.obj (f x))) j := by
+  simp
+
 variable [PreservesColimit (Discrete.functor f) G]
 
 /-- If `G` preserves colimits,
@@ -170,5 +190,9 @@ lemma preservesColimitsOfShape_of_discrete (F : C ⥤ D)
     [∀ (f : J → C), PreservesColimit (Discrete.functor f) F] :
     PreservesColimitsOfShape (Discrete J) F where
   preservesColimit := preservesColimit_of_iso_diagram F (Discrete.natIsoFunctor).symm
+
+instance {I : Type w} (F : C ⥤ D) [PreservesColimitsOfShape (Discrete I) F] :
+    PreservesColimitsOfShape (Discrete I)ᵒᵖ F :=
+  preservesColimitsOfShape_of_equiv (Discrete.opposite I).symm F
 
 end CategoryTheory.Limits

@@ -3,8 +3,10 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.RingTheory.Derivation.MapCoeffs
-import Mathlib.FieldTheory.PrimitiveElement
+module
+
+public import Mathlib.RingTheory.Derivation.MapCoeffs
+public import Mathlib.FieldTheory.PrimitiveElement
 
 /-!
 # Differential Fields
@@ -12,6 +14,8 @@ import Mathlib.FieldTheory.PrimitiveElement
 This file defines the logarithmic derivative `Differential.logDeriv` and proves properties of it.
 This is defined algebraically, compared to `logDeriv` which is analytical.
 -/
+
+@[expose] public section
 
 namespace Differential
 
@@ -34,13 +38,12 @@ lemma logDeriv_one : logDeriv (1 : R) = 0 := by
 
 lemma logDeriv_mul (ha : a ≠ 0) (hb : b ≠ 0) : logDeriv (a * b) = logDeriv a + logDeriv b := by
   unfold logDeriv
-  field_simp
+  simp [field]
   ring
 
 lemma logDeriv_div (ha : a ≠ 0) (hb : b ≠ 0) : logDeriv (a / b) = logDeriv a - logDeriv b := by
   unfold logDeriv
-  field_simp [Derivation.leibniz_div, smul_sub]
-  ring
+  simp [field, Derivation.leibniz_div]
 
 @[simp]
 lemma logDeriv_pow (n : ℕ) (a : R) : logDeriv (a ^ n) = n * logDeriv a := by
@@ -61,7 +64,7 @@ lemma logDeriv_multisetProd {ι : Type*} (s : Multiset ι) {f : ι → R} (h : �
   induction s using Multiset.induction_on
   · simp
   · rename_i h₂
-    simp only [Function.comp_apply, Multiset.map_cons, Multiset.sum_cons, Multiset.prod_cons]
+    simp only [Multiset.map_cons, Multiset.sum_cons, Multiset.prod_cons]
     rw [← h₂]
     · apply logDeriv_mul
       · simp [h]
@@ -89,6 +92,7 @@ lemma _root_.algebraMap.coe_logDeriv {F K : Type*} [Field F] [Field K] [Differen
 
 variable {F : Type*} [Field F] [Differential F] [CharZero F]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
     Differential (AdjoinRoot p) where
   deriv := Derivation.liftOfSurjective (f := (AdjoinRoot.mk p).toIntAlgHom) AdjoinRoot.mk_surjective
@@ -102,9 +106,7 @@ noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
       apply dvd_mul_of_dvd_right
       rw [← AdjoinRoot.mk_eq_zero]
       unfold implicitDeriv
-      simp only [ne_eq, show p ≠ 0 from Irreducible.ne_zero Fact.out, not_false_eq_true,
-        AdjoinRoot.minpoly_root, show p.Monic from Fact.out, Monic.leadingCoeff, inv_one, map_one,
-        mul_one, AdjoinRoot.aeval_eq, Derivation.coe_add, Derivation.coe_smul, Pi.add_apply,
+      simp only [AdjoinRoot.aeval_eq, Derivation.coe_add, Derivation.coe_smul, Pi.add_apply,
         Pi.smul_apply, Derivation.restrictScalars_apply, derivative'_apply, smul_eq_mul, map_add,
         map_mul, AdjoinRoot.mk_leftInverse Fact.out _]
       rw [div_mul_cancel₀, add_neg_cancel]
@@ -116,6 +118,7 @@ noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
       apply natDegree_derivative_lt
       exact Nat.ne_zero_of_lt this)
 
+set_option backward.isDefEq.respectTransparency false in
 instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
     DifferentialAlgebra F (AdjoinRoot p) where
   deriv_algebraMap a := by
@@ -155,6 +158,7 @@ lemma differentialAlgebraFiniteDimensional [FiniteDimensional F K] :
 A finite extension of a differential field has a unique derivation which agrees with the one on the
 base field.
 -/
+@[implicit_reducible]
 noncomputable def uniqueDifferentialAlgebraFiniteDimensional [FiniteDimensional F K] :
     Unique {_a : Differential K // DifferentialAlgebra F K} := by
   let default : {_a : Differential K // DifferentialAlgebra F K} :=

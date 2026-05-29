@@ -3,8 +3,10 @@ Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Fabrizio Barroero, Christopher Hoskin
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Log
-import Mathlib.Order.Interval.Set.Defs
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Log
+public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # circleMap
@@ -18,9 +20,11 @@ This file defines the circle map $θ ↦ c + R e^{θi}$, a parametrization of a 
 ## Tags
 
 -/
+
+@[expose] public section
 noncomputable section circleMap
 
-open Complex Function Metric Real
+open Complex ComplexConjugate Function Metric Real
 
 /-- The exponential map $θ ↦ c + R e^{θi}$. The range of this map is the circle in `ℂ` with center
 `c` and radius `|R|`. -/
@@ -35,12 +39,8 @@ theorem circleMap_zero (R θ : ℝ) : circleMap 0 R θ = R * exp (θ * I) := zer
 @[simp]
 theorem norm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖ = |R| := by simp [circleMap]
 
-@[deprecated (since := "2025-02-17")] alias abs_circleMap_zero := norm_circleMap_zero
-
 theorem circleMap_notMem_ball (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∉ ball c R := by
   simp [Complex.dist_eq, le_abs_self]
-
-@[deprecated (since := "2025-05-23")] alias circleMap_not_mem_ball := circleMap_notMem_ball
 
 theorem circleMap_ne_mem_ball {c : ℂ} {R : ℝ} {w : ℂ} (hw : w ∈ ball c R) (θ : ℝ) :
     circleMap c R θ ≠ w :=
@@ -88,7 +88,19 @@ lemma circleMap_zero_zpow (n : ℤ) (R θ : ℝ) :
     (circleMap 0 R θ) ^ n = circleMap 0 (R ^ n) (n * θ) := by
   simp [circleMap_zero, mul_zpow, ← exp_int_mul, ← mul_assoc]
 
-@[deprecated (since := "2025-04-02")] alias circleMap_zero_int_mul := circleMap_zero_zpow
+lemma conj_circleMap_zero (r θ : ℝ) :
+    conj (circleMap 0 r θ) = circleMap 0 r (-θ) := by
+  simp [circleMap_zero, ← exp_conj]
+
+lemma conj_circleMap (c : ℂ) (r θ : ℝ) :
+    conj (circleMap c r θ) = circleMap (conj c) r (-θ) :=
+  sub_left_injective (b := conj c) <| by simp [← map_sub, conj_circleMap_zero]
+
+lemma circleMap_zero_re (r θ : ℝ) : (circleMap 0 r θ).re = r * Real.cos θ := by
+  simp [circleMap_zero]
+
+lemma circleMap_zero_im (r θ : ℝ) : (circleMap 0 r θ).im = r * Real.sin θ := by
+  simp [circleMap_zero]
 
 lemma circleMap_pi_div_two (c : ℂ) (R : ℝ) : circleMap c R (π / 2) = c + R * I := by
   simp only [circleMap, ofReal_div, ofReal_ofNat, exp_pi_div_two_mul_I]
@@ -124,7 +136,7 @@ lemma eq_of_circleMap_eq {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (h_dist : |a - 
   norm_cast at hn
   simp only [hn, Int.cast_mul, Int.cast_ofNat, mul_assoc, add_sub_cancel_left, abs_mul,
     Nat.abs_ofNat, abs_of_pos Real.pi_pos] at h_dist
-  field_simp at h_dist
+  simp (disch := positivity) at h_dist
   norm_cast at h_dist
   simp [hn, Int.abs_lt_one_iff.mp h_dist]
 

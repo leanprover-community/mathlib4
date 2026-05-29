@@ -3,16 +3,18 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Adjunction.Comma
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Comma
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 
 /-!
 # Limits and the category of (co)cones
 
-This files contains results that stem from the limit API. For the definition and the category
-instance of `Cone`, please refer to `CategoryTheory/Limits/Cones.lean`.
+This file contains results that stem from the limit API. For the definition and the category
+instance of `Cone`, please refer to `Mathlib/CategoryTheory/Limits/Cones.lean`.
 
 ## Main results
 * The category of cones on `F : J ⥤ C` is equivalent to the category
@@ -21,6 +23,8 @@ instance of `Cone`, please refer to `CategoryTheory/Limits/Cones.lean`.
   categories of cones preserves limiting properties.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory.Limits
@@ -135,7 +139,7 @@ def Cone.fromCostructuredArrow (F : J ⥤ C) : CostructuredArrow (const J) F ⥤
   map f :=
     { hom := f.left
       w := fun j => by
-        convert congr_fun (congr_arg NatTrans.app f.w) j
+        convert! congr_fun (congr_arg NatTrans.app f.w) j
         simp }
 
 /-- The category of cones on `F` is just the comma category `(Δ ↓ F)`, where `Δ` is the constant
@@ -144,7 +148,7 @@ def Cone.fromCostructuredArrow (F : J ⥤ C) : CostructuredArrow (const J) F ⥤
 def Cone.equivCostructuredArrow (F : J ⥤ C) : Cone F ≌ CostructuredArrow (const J) F where
   functor := Cone.toCostructuredArrow F
   inverse := Cone.fromCostructuredArrow F
-  unitIso := NatIso.ofComponents Cones.eta
+  unitIso := NatIso.ofComponents Cone.eta
   counitIso := NatIso.ofComponents fun _ => (CostructuredArrow.eta _).symm
 
 /-- A cone is a limit cone iff it is terminal. -/
@@ -152,8 +156,8 @@ def Cone.isLimitEquivIsTerminal {F : J ⥤ C} (c : Cone F) : IsLimit c ≃ IsTer
   IsLimit.isoUniqueConeMorphism.toEquiv.trans
     { toFun := fun _ => IsTerminal.ofUnique _
       invFun := fun h s => ⟨⟨IsTerminal.from h s⟩, fun a => IsTerminal.hom_ext h a _⟩
-      left_inv := by aesop_cat
-      right_inv := by aesop_cat }
+      left_inv := by cat_disch
+      right_inv := by cat_disch }
 
 theorem hasLimit_iff_hasTerminal_cone (F : J ⥤ C) : HasLimit F ↔ HasTerminal (Cone F) :=
   ⟨fun _ => (Cone.isLimitEquivIsTerminal _ (limit.isLimit F)).hasTerminal, fun h =>
@@ -293,9 +297,7 @@ def Cocone.fromStructuredArrow (F : J ⥤ C) : StructuredArrow F (const J) ⥤ C
   obj c := ⟨c.right, c.hom⟩
   map f :=
     { hom := f.right
-      w := fun j => by
-        convert (congr_fun (congr_arg NatTrans.app f.w) j).symm
-        simp }
+      w j := by simp [dsimp% congr_app f.w j] }
 
 /-- The category of cocones on `F` is just the comma category `(F ↓ Δ)`, where `Δ` is the constant
     functor. -/
@@ -303,7 +305,7 @@ def Cocone.fromStructuredArrow (F : J ⥤ C) : StructuredArrow F (const J) ⥤ C
 def Cocone.equivStructuredArrow (F : J ⥤ C) : Cocone F ≌ StructuredArrow F (const J) where
   functor := Cocone.toStructuredArrow F
   inverse := Cocone.fromStructuredArrow F
-  unitIso := NatIso.ofComponents Cocones.eta
+  unitIso := NatIso.ofComponents Cocone.eta
   counitIso := NatIso.ofComponents fun _ => (StructuredArrow.eta _).symm
 
 /-- A cocone is a colimit cocone iff it is initial. -/
@@ -311,8 +313,8 @@ def Cocone.isColimitEquivIsInitial {F : J ⥤ C} (c : Cocone F) : IsColimit c �
   IsColimit.isoUniqueCoconeMorphism.toEquiv.trans
     { toFun := fun _ => IsInitial.ofUnique _
       invFun := fun h s => ⟨⟨IsInitial.to h s⟩, fun a => IsInitial.hom_ext h a _⟩
-      left_inv := by aesop_cat
-      right_inv := by aesop_cat }
+      left_inv := by cat_disch
+      right_inv := by cat_disch }
 
 theorem hasColimit_iff_hasInitial_cocone (F : J ⥤ C) : HasColimit F ↔ HasInitial (Cocone F) :=
   ⟨fun _ => (Cocone.isColimitEquivIsInitial _ (colimit.isColimit F)).hasInitial, fun h =>

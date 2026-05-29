@@ -3,8 +3,10 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Order.SuccPred.Basic
+module
+
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.SuccPred.Basic
 
 /-!
 # Set intervals in a successor-predecessor order
@@ -22,6 +24,8 @@ Please keep in sync with:
 
 Copy over `insert` lemmas from `Mathlib/Order/Interval/Finset/Nat.lean`.
 -/
+
+public section
 
 assert_not_exists MonoidWithZero
 
@@ -67,17 +71,11 @@ lemma insert_Icc_succ_left_eq_Icc (h : a ≤ b) : insert a (Icc (succ a) b) = Ic
 
 lemma insert_Icc_right_eq_Icc_succ (h : a ≤ succ b) :
     insert (succ b) (Icc a b) = Icc a (succ b) := by
-  ext x; simp [or_and_left, le_succ_iff_eq_or_le]; aesop
-
-@[deprecated (since := "2025-04-19")]
-alias insert_Icc_eq_Icc_succ_right := insert_Icc_right_eq_Icc_succ
+  ext x; simp [or_and_left, le_succ_iff_eq_or_le]; simp_all
 
 lemma insert_Ico_right_eq_Ico_succ_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) :
     insert b (Ico a b) = Ico a (succ b) := by
   rw [Ico_succ_right_of_not_isMax hb, ← Ico_insert_right h]
-
-@[deprecated (since := "2025-04-14")]
-alias insert_Ico_right_eq_Ico_succ_right_of_not_isMax := insert_Ico_right_eq_Ico_succ_of_not_isMax
 
 lemma insert_Ico_succ_left_eq_Ico (h : a < b) : insert a (Ico (succ a) b) = Ico a b := by
   rw [Ico_succ_left_of_not_isMax h.not_isMax, ← Ioo_insert_left h]
@@ -113,9 +111,6 @@ lemma Ico_succ_succ_eq_Ioc (a b : α) : Ico (succ a) (succ b) = Ioc a b :=
 
 lemma insert_Ico_right_eq_Ico_succ (h : a ≤ b) : insert b (Ico a b) = Ico a (succ b) :=
   insert_Ico_right_eq_Ico_succ_of_not_isMax h (not_isMax _)
-
-@[deprecated (since := "2025-04-14")]
-alias insert_Ico_right_eq_Ico_succ_right := insert_Ico_right_eq_Ico_succ
 
 lemma insert_Ioc_right_eq_Ioc_succ (h : a ≤ b) : insert (succ b) (Ioc a b) = Ioc a (succ b) :=
   insert_Ioc_right_eq_Ioc_succ_of_not_isMax h (not_isMax _)
@@ -153,28 +148,22 @@ lemma Ioc_pred_pred_eq_Ico_of_not_isMin (ha : ¬ IsMin a) (b : α) :
 /-! ##### Inserting into intervals -/
 
 lemma insert_Icc_pred_right_eq_Icc (h : a ≤ b) : insert b (Icc a (pred b)) = Icc a b := by
-  ext x; simp [or_and_left, eq_comm (a := b), ← le_iff_eq_or_le_pred]; aesop
+  ext x; simp [or_and_left, ← le_iff_eq_or_le_pred]; simp_all
 
 lemma insert_Icc_left_eq_Icc_pred (h : pred a ≤ b) :
     insert (pred a) (Icc a b) = Icc (pred a) b := by
-  ext x; simp [or_and_left, pred_le_iff_eq_or_le]; aesop
-
-@[deprecated (since := "2025-04-19")]
-alias insert_Icc_eq_Icc_pred_left := insert_Icc_left_eq_Icc_pred
+  ext x; simp [or_and_left, pred_le_iff_eq_or_le]; simp_all
 
 lemma insert_Ioc_left_eq_Ioc_pred_of_not_isMin (h : a ≤ b) (ha : ¬ IsMin a) :
     insert a (Ioc a b) = Ioc (pred a) b := by
   rw [Ioc_pred_left_of_not_isMin ha, Ioc_insert_left h]
-
-@[deprecated (since := "2025-04-14")]
-alias insert_Ioc_left_eq_Ioc_pred_left_of_not_isMin := insert_Ioc_left_eq_Ioc_pred_of_not_isMin
 
 lemma insert_Ioc_pred_right_eq_Ioc (h : a < b) : insert b (Ioc a (pred b)) = Ioc a b := by
   rw [Ioc_pred_right_of_not_isMin h.not_isMin, Ioo_insert_right h]
 
 lemma insert_Ico_left_eq_Ico_pred_of_not_isMin (h : a ≤ b) (ha : ¬ IsMin a) :
     insert (pred a) (Ico a b) = Ico (pred a) b := by
-  ext x; simp +contextual [or_and_left, pred_le_iff_eq_or_le, pred_lt_of_not_isMin_of_le ha h]
+  ext x; simp +contextual [or_and_left, pred_le_iff_eq_or_le, pred_lt_of_le_of_not_isMin h ha]
 
 lemma insert_Ico_pred_right_eq_Ico (h : a < b) : insert (pred b) (Ico a (pred b)) = Ico a b := by
   rw [Ico_insert_right (le_pred_of_lt h), Icc_pred_right_of_not_isMin h.not_isMin]
@@ -203,9 +192,6 @@ lemma Ioc_pred_pred_eq_Ico (a b : α) : Ioc (pred a) (pred b) = Ico a b :=
 
 lemma insert_Ioc_left_eq_Ioc_pred (h : a ≤ b) : insert a (Ioc a b) = Ioc (pred a) b :=
   insert_Ioc_left_eq_Ioc_pred_of_not_isMin h (not_isMin _)
-
-@[deprecated (since := "2025-04-14")]
-alias insert_Ioc_left_eq_Ioc_pred_left := insert_Ioc_left_eq_Ioc_pred
 
 lemma insert_Ico_left_eq_Ico_pred (h : a ≤ b) : insert (pred a) (Ico a b) = Ico (pred a) b :=
   insert_Ico_left_eq_Ico_pred_of_not_isMin h (not_isMin _)

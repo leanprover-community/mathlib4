@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.CatCommSq
-import Mathlib.CategoryTheory.GuitartExact.Basic
+module
+
+public import Mathlib.CategoryTheory.CatCommSq
+public import Mathlib.CategoryTheory.GuitartExact.Basic
 
 /-!
 # Vertical composition of Guitart exact squares
@@ -14,12 +16,14 @@ is Guitart exact.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category
 
-variable {C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
-  [Category D₁] [Category D₂] [Category D₃]
+variable {C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category* C₁] [Category* C₂] [Category* C₃]
+  [Category* D₁] [Category* D₂] [Category* D₃]
 
 namespace TwoSquare
 
@@ -44,10 +48,10 @@ lemma whiskerVertical [w.GuitartExact] (α : L ≅ L') (β : R ≅ R') :
   rw [guitartExact_iff_initial]
   intro X₂
   let e : structuredArrowDownwards (w.whiskerVertical α.hom β.inv) X₂ ≅
-      w.structuredArrowDownwards X₂ ⋙ (StructuredArrow.mapIso (β.app X₂) ).functor :=
+      w.structuredArrowDownwards X₂ ⋙ (StructuredArrow.mapIso (β.app X₂)).functor :=
     NatIso.ofComponents (fun f => StructuredArrow.isoMk (α.symm.app f.right) (by
       dsimp
-      simp only [NatTrans.naturality_assoc, assoc, NatIso.cancel_natIso_inv_left, ← B.map_comp,
+      simp only [NatTrans.naturality_assoc, assoc, ← B.map_comp,
         Iso.hom_inv_id_app, B.map_id, comp_id]))
   rw [Functor.initial_natIso_iff e]
   infer_instance
@@ -100,6 +104,7 @@ def vComp' {L₁₂ : C₁ ⥤ C₃} {R₁₂ : D₁ ⥤ D₃} (eL : L₁ ⋙ L�
 
 namespace GuitartExact
 
+set_option backward.isDefEq.respectTransparency false in
 instance vComp [hw : w.GuitartExact] [hw' : w'.GuitartExact] :
     (w ≫ᵥ w').GuitartExact := by
   simp only [TwoSquare.guitartExact_iff_initial]
@@ -113,6 +118,33 @@ instance vComp' [GuitartExact w] [GuitartExact w'] {L₁₂ : C₁ ⥤ C₃}
   dsimp only [TwoSquare.vComp']
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
+lemma of_vComp [R₁.EssSurj] [w.GuitartExact] [(w ≫ᵥ w').GuitartExact] :
+    w'.GuitartExact := by
+  rw [guitartExact_iff_initial]
+  intro Y₂
+  rw [structuredArrowDownwards_initial_iff_of_iso _ (R₁.objObjPreimageIso Y₂).symm]
+  have := Functor.initial_of_natIso (structuredArrowDownwardsComp w w' (R₁.objPreimage Y₂)).symm
+  exact Functor.initial_of_initial_comp (w.structuredArrowDownwards (R₁.objPreimage Y₂)) _
+
+lemma of_vComp' {L₁₂ : C₁ ⥤ C₃} {R₁₂ : D₁ ⥤ D₃} (eL : L₁ ⋙ L₂ ≅ L₁₂) (eR : R₁ ⋙ R₂ ≅ R₁₂)
+    [R₁.EssSurj] [w.GuitartExact] [h : (w.vComp' w' eL eR).GuitartExact] :
+    w'.GuitartExact := by
+  dsimp [TwoSquare.vComp'] at h
+  rw [whiskerVertical_iff] at h
+  exact of_vComp w w'
+
+lemma vComp_iff_of_essSurj [R₁.EssSurj] [w.GuitartExact] :
+    (w ≫ᵥ w').GuitartExact ↔ w'.GuitartExact :=
+  ⟨fun _ ↦ of_vComp w w', fun _ ↦ inferInstance⟩
+
+lemma vComp'_iff_of_essSurj
+    {L₁₂ : C₁ ⥤ C₃} {R₁₂ : D₁ ⥤ D₃} (eL : L₁ ⋙ L₂ ≅ L₁₂) (eR : R₁ ⋙ R₂ ≅ R₁₂)
+    [R₁.EssSurj] [w.GuitartExact] :
+    (w.vComp' w' eL eR).GuitartExact ↔ w'.GuitartExact :=
+  ⟨fun _ ↦ of_vComp' w w' eL eR, fun _ ↦ inferInstance⟩
+
+set_option backward.isDefEq.respectTransparency false in
 lemma vComp_iff_of_equivalences (eL : C₂ ≌ C₃) (eR : D₂ ≌ D₃)
     (w' : H₂ ⋙ eR.functor ≅ eL.functor ⋙ H₃) :
     (w ≫ᵥ w'.hom).GuitartExact ↔ w.GuitartExact := by
@@ -123,19 +155,19 @@ lemma vComp_iff_of_equivalences (eL : C₂ ≌ C₃) (eR : D₂ ≌ D₃)
     letI : CatCommSq H₃ eL.inverse eR.inverse H₂ := CatCommSq.vInvEquiv _ _ _ _ inferInstance
     let w'' := CatCommSq.iso H₃ eL.inverse eR.inverse H₂
     let α : (L₁ ⋙ eL.functor) ⋙ eL.inverse ≅ L₁ :=
-      Functor.associator _ _ _ ≪≫ isoWhiskerLeft L₁ eL.unitIso.symm ≪≫ L₁.rightUnitor
+      Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft L₁ eL.unitIso.symm ≪≫ L₁.rightUnitor
     let β : (R₁ ⋙ eR.functor) ⋙ eR.inverse ≅ R₁ :=
-      Functor.associator _ _ _ ≪≫ isoWhiskerLeft R₁ eR.unitIso.symm ≪≫ R₁.rightUnitor
+      Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft R₁ eR.unitIso.symm ≪≫ R₁.rightUnitor
     have : w = (w ≫ᵥ w'.hom).vComp' w''.hom α β := by
       ext X₁
       simp? [w'', α, β] says
-        simp only [Functor.comp_obj, vComp'_app, Iso.trans_inv, isoWhiskerLeft_inv, Iso.symm_inv,
-          assoc, NatTrans.comp_app, Functor.id_obj, Functor.rightUnitor_inv_app,
-          CategoryTheory.whiskerLeft_app, Functor.associator_inv_app, comp_id, id_comp, vComp_app,
-          Functor.map_comp, Equivalence.inv_fun_map, CatCommSq.vInv_iso'_hom_app, Iso.trans_hom,
-          isoWhiskerLeft_hom, Iso.symm_hom, Functor.associator_hom_app, Functor.rightUnitor_hom_app,
-          Iso.hom_inv_id_app_assoc, w'', α, β, this]
-      simp only [hw', ← eR.inverse.map_comp_assoc, w'', this, β, α]
+        simp only [Functor.comp_obj, vComp'_app, Iso.trans_inv, Functor.isoWhiskerLeft_inv,
+          Iso.symm_inv, assoc, NatTrans.comp_app, Functor.id_obj, Functor.rightUnitor_inv_app,
+          Functor.whiskerLeft_app, Functor.associator_inv_app, comp_id, id_comp, vComp_app,
+          Functor.map_comp, Equivalence.inv_fun_map, CatCommSq.vInv_iso_hom_app, Iso.trans_hom,
+          Functor.isoWhiskerLeft_hom, Iso.symm_hom, Functor.associator_hom_app,
+          Functor.rightUnitor_hom_app, Iso.hom_inv_id_app_assoc, w'', α, β]
+      simp only [hw', ← eR.inverse.map_comp_assoc]
       rw [Equivalence.counitInv_app_functor, ← Functor.comp_map, ← NatTrans.naturality_assoc]
       simp [← H₂.map_comp]
     rw [this]

@@ -3,8 +3,10 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Constructions.Polish.StronglyMeasurable
-import Mathlib.Probability.Process.Filtration
+module
+
+public import Mathlib.MeasureTheory.Constructions.Polish.StronglyMeasurable
+public import Mathlib.Probability.Process.Filtration
 
 /-!
 # Factorization of a map from measurability
@@ -17,6 +19,8 @@ If `Z` is completely metrizable, the factorization map `h` can be taken to be me
 This is the content of the [Doob-Dynkin lemma](https://en.wikipedia.org/wiki/Doob–Dynkin_lemma):
 see `exists_eq_measurable_comp`.
 -/
+
+public section
 
 namespace MeasureTheory
 
@@ -48,6 +52,7 @@ theorem StronglyMeasurable.factorsThrough [TopologicalSpace Z]
   borelize Z
   exact hg.measurable.factorsThrough
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a function `g` is strongly measurable with respect to the pullback along some function `f`,
 then there exists some strongly measurable function `h : Y → Z` such that `g = h ∘ f`. -/
 theorem StronglyMeasurable.exists_eq_measurable_comp [Nonempty Z] [TopologicalSpace Z]
@@ -64,7 +69,7 @@ theorem StronglyMeasurable.exists_eq_measurable_comp [Nonempty Z] [TopologicalSp
     exact ⟨t.piecewise h₁ h₂, mh₁.piecewise ht mh₂, by rw [piecewise_comp]⟩
   | @lim g i hg hi h₁ h₂ =>
     choose h mh hh using h₁
-    refine ⟨fun y ↦ _root_.limUnder atTop (h · y), StronglyMeasurable.limUnder mh, ?_⟩
+    refine ⟨fun y ↦ limUnder atTop (h · y), StronglyMeasurable.limUnder mh, ?_⟩
     ext x
     rw [Function.comp_apply, Tendsto.limUnder_eq]
     simp_all

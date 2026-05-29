@@ -3,10 +3,12 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.LinearAlgebra.Eigenspace.Basic
-import Mathlib.LinearAlgebra.Trace
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.LinearAlgebra.Trace
 
 /-!
 # Linear maps between direct sums
@@ -16,7 +18,9 @@ domain and codomain.
 
 -/
 
-open Set DirectSum
+public section
+
+open DirectSum Module Set
 
 namespace LinearMap
 
@@ -75,7 +79,7 @@ lemma trace_eq_sum_trace_restrict' (h : IsInternal N) (hN : {i | N i ≠ ⊥}.Fi
     trace R M f = ∑ i ∈ hN.toFinset, trace R (N i) (f.restrict (hf i)) := by
   let _ : Fintype {i // N i ≠ ⊥} := hN.fintype
   let _ : Fintype {i | N i ≠ ⊥} := hN.fintype
-  rw [← Finset.sum_coe_sort, trace_eq_sum_trace_restrict (isInternal_ne_bot_iff.mpr h) _]
+  rw [← Finset.sum_coe_sort, trace_eq_sum_trace_restrict (isInternal_ne_bot_iff.mpr h) (hf ·)]
   exact Fintype.sum_equiv hN.subtypeEquivToFinset _ _ (fun i ↦ rfl)
 
 lemma trace_eq_zero_of_mapsTo_ne (h : IsInternal N) [IsNoetherian R M]
@@ -88,7 +92,7 @@ lemma trace_eq_zero_of_mapsTo_ne (h : IsInternal N) [IsNoetherian R M]
   let κ := fun i ↦ Module.Free.ChooseBasisIndex R (N i)
   let b : (i : s) → Basis (κ i) R (N i) := fun i ↦ Module.Free.chooseBasis R (N i)
   replace h : IsInternal fun i : s ↦ N i := by
-    convert DirectSum.isInternal_ne_bot_iff.mpr h <;> simp [s]
+    convert! DirectSum.isInternal_ne_bot_iff.mpr h <;> simp [s]
   simp_rw [trace_eq_matrix_trace R (h.collectedBasis b), Matrix.trace,
     diag_toMatrix_directSum_collectedBasis_eq_zero_of_mapsTo_ne h b σ hσ hf (by simp [s]),
     Pi.zero_apply, Finset.sum_const_zero]
@@ -115,11 +119,14 @@ lemma trace_comp_eq_zero_of_commute_of_trace_restrict_eq_zero
       WellFoundedGT.finite_ne_bot_of_iSupIndep f.independent_maxGenEigenspace
     simp [trace_eq_sum_trace_restrict' hds h_fin hfg, this]
   intro μ
+  have hf' := f.mapsTo_maxGenEigenspace_of_comm (Commute.refl _) μ
+  have hg' := f.mapsTo_maxGenEigenspace_of_comm h_comm μ
   replace h_comm : Commute (g.restrict (f.mapsTo_maxGenEigenspace_of_comm h_comm μ))
       (f.restrict (f.mapsTo_maxGenEigenspace_of_comm rfl μ)) :=
     restrict_commute h_comm.symm _ _
-  rw [restrict_comp, trace_comp_eq_mul_of_commute_of_isNilpotent μ h_comm
-    (f.isNilpotent_restrict_maxGenEigenspace_sub_algebraMap μ), hg, mul_zero]
+  have := f.isNilpotent_restrict_maxGenEigenspace_sub_algebraMap μ
+  rw [restrict_comp hf' hg', trace_comp_eq_mul_of_commute_of_isNilpotent μ h_comm this,
+    hg, mul_zero]
 
 lemma mapsTo_biSup_of_mapsTo {ι : Type*} {N : ι → Submodule R M}
     (s : Set ι) {f : Module.End R M} (hf : ∀ i, MapsTo f (N i) (N i)) :

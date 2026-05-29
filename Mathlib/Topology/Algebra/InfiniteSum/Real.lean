@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Topology.Algebra.InfiniteSum.Order
-import Mathlib.Topology.Instances.ENNReal.Lemmas
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Topology.Algebra.InfiniteSum.Order
+public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!
 # Infinite sum in the reals
@@ -13,6 +15,8 @@ import Mathlib.Topology.Instances.ENNReal.Lemmas
 This file provides lemmas about Cauchy sequences in terms of infinite sums and infinite sums valued
 in the reals.
 -/
+
+public section
 
 open Filter Finset NNReal Topology
 
@@ -65,10 +69,10 @@ theorem summable_iff_not_tendsto_nat_atTop_of_nonneg {f : ℕ → ℝ} (hf : ∀
 
 theorem summable_sigma_of_nonneg {α} {β : α → Type*} {f : (Σ x, β x) → ℝ} (hf : ∀ x, 0 ≤ f x) :
     Summable f ↔ (∀ x, Summable fun y => f ⟨x, y⟩) ∧ Summable fun x => ∑' y, f ⟨x, y⟩ := by
-  lift f to (Σx, β x) → ℝ≥0 using hf
+  lift f to (Σ x, β x) → ℝ≥0 using hf
   simpa using mod_cast NNReal.summable_sigma
 
-lemma summable_partition {α β : Type*} {f : β → ℝ} (hf : 0 ≤ f) {s : α  → Set β}
+lemma summable_partition {α β : Type*} {f : β → ℝ} (hf : 0 ≤ f) {s : α → Set β}
     (hs : ∀ i, ∃! j, i ∈ s j) : Summable f ↔
       (∀ j, Summable fun i : s j ↦ f i) ∧ Summable fun j ↦ ∑' i : s j, f i := by
   simpa only [← (Set.sigmaEquiv s hs).summable_iff] using summable_sigma_of_nonneg (fun _ ↦ hf _)
@@ -88,6 +92,10 @@ theorem summable_of_sum_range_le {f : ℕ → ℝ} {c : ℝ} (hf : ∀ n, 0 ≤ 
   rcases exists_lt_of_tendsto_atTop H 0 c with ⟨n, -, hn⟩
   exact lt_irrefl _ (hn.trans_le (h n))
 
+theorem Real.tsum_le_of_sum_le {ι : Type*} {f : ι → ℝ} {c : ℝ} (hf : 0 ≤ f)
+    (h : ∀ u : Finset ι, ∑ x ∈ u, f x ≤ c) : ∑' x, f x ≤ c :=
+  (summable_of_sum_le hf h).tsum_le_of_sum_le h
+
 theorem Real.tsum_le_of_sum_range_le {f : ℕ → ℝ} {c : ℝ} (hf : ∀ n, 0 ≤ f n)
     (h : ∀ n, ∑ i ∈ Finset.range n, f i ≤ c) : ∑' n, f n ≤ c :=
   (summable_of_sum_range_le hf h).tsum_le_of_sum_range_le h
@@ -98,8 +106,5 @@ then the series of `f` is strictly smaller than the series of `g`. -/
 protected theorem Summable.tsum_lt_tsum_of_nonneg {i : ℕ} {f g : ℕ → ℝ} (h0 : ∀ b : ℕ, 0 ≤ f b)
     (h : ∀ b : ℕ, f b ≤ g b) (hi : f i < g i) (hg : Summable g) : ∑' n, f n < ∑' n, g n :=
   Summable.tsum_lt_tsum h hi (.of_nonneg_of_le h0 h hg) hg
-
-@[deprecated (since := "2025-04-12")] alias tsum_lt_tsum_of_nonneg :=
-  Summable.tsum_lt_tsum_of_nonneg
 
 end summable

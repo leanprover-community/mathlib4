@@ -3,8 +3,10 @@ Copyright (c) 2022 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
-import Mathlib.Topology.MetricSpace.ThickenedIndicator
+module
+
+public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+public import Mathlib.Topology.MetricSpace.ThickenedIndicator
 
 /-!
 # Spaces where indicators of closed sets have decreasing approximations by continuous functions
@@ -33,6 +35,8 @@ convergence in distribution for random variables behave somewhat well in spaces 
   of all bounded continuous functions with respect to both agree.
 
 -/
+
+@[expose] public section
 
 open BoundedContinuousFunction MeasureTheory Topology Metric Filter Set ENNReal NNReal
 open scoped Topology ENNReal NNReal BoundedContinuousFunction
@@ -77,7 +81,7 @@ theorem measure_of_cont_bdd_of_tendsto_filter_indicator {ι : Type*} {L : Filter
     (fs_bdd : ∀ᶠ i in L, ∀ᵐ ω : Ω ∂μ, fs i ω ≤ c)
     (fs_lim : ∀ᵐ ω ∂μ, Tendsto (fun i ↦ fs i ω) L (𝓝 (indicator E (fun _ ↦ (1 : ℝ≥0)) ω))) :
     Tendsto (fun n ↦ lintegral μ fun ω ↦ fs n ω) L (𝓝 (μ E)) := by
-  convert tendsto_lintegral_nn_filter_of_le_const μ fs_bdd fs_lim
+  convert! tendsto_lintegral_nn_filter_of_le_const μ fs_bdd fs_lim
   have aux : ∀ ω, indicator E (fun _ ↦ (1 : ℝ≥0∞)) ω = ↑(indicator E (fun _ ↦ (1 : ℝ≥0)) ω) :=
     fun ω ↦ by simp only [ENNReal.coe_indicator, ENNReal.coe_one]
   simp_rw [← aux, lintegral_indicator E_mble]
@@ -104,7 +108,7 @@ theorem measure_of_cont_bdd_of_tendsto_indicator
 
 /-- The integrals of thickened indicators of a closed set against a finite measure tend to the
 measure of the closed set if the thickening radii tend to zero. -/
-theorem tendsto_lintegral_thickenedIndicator_of_isClosed {Ω : Type*} [MeasurableSpace Ω]
+theorem tendsto_lintegral_thickenedIndicator_of_isClosed {Ω : Type*} {mΩ : MeasurableSpace Ω}
     [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] (μ : Measure Ω) [IsFiniteMeasure μ] {F : Set Ω}
     (F_closed : IsClosed F) {δs : ℕ → ℝ} (δs_pos : ∀ n, 0 < δs n)
     (δs_lim : Tendsto δs atTop (𝓝 0)) :
@@ -114,6 +118,36 @@ theorem tendsto_lintegral_thickenedIndicator_of_isClosed {Ω : Type*} [Measurabl
     (fun n ↦ thickenedIndicator (δs_pos n) F) fun n ω ↦ thickenedIndicator_le_one (δs_pos n) F ω
   have key := thickenedIndicator_tendsto_indicator_closure δs_pos δs_lim F
   rwa [F_closed.closure_eq] at key
+
+/-- A thickened indicator is integrable. -/
+lemma integrable_thickenedIndicator {Ω : Type*} {mΩ : MeasurableSpace Ω}
+    [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ] (F : Set Ω)
+    {δ : ℝ} (δ_pos : 0 < δ) :
+    Integrable (fun ω ↦ (thickenedIndicator δ_pos F ω : ℝ)) μ := by
+  refine .of_bound (by fun_prop) 1 (ae_of_all _ fun x ↦ ?_)
+  simpa using thickenedIndicator_le_one δ_pos F x
+
+/-- The integrals of thickened indicators of a closed set against a finite measure tend to the
+measure of the closed set if the thickening radii tend to zero. -/
+lemma tendsto_integral_thickenedIndicator_of_isClosed {Ω : Type*} {mΩ : MeasurableSpace Ω}
+    [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] (μ : Measure Ω) [IsFiniteMeasure μ] {F : Set Ω}
+    (F_closed : IsClosed F) {δs : ℕ → ℝ} (δs_pos : ∀ (n : ℕ), 0 < δs n)
+    (δs_lim : Tendsto δs atTop (𝓝 0)) :
+    Tendsto (fun n : ℕ ↦ ∫ ω, (thickenedIndicator (δs_pos n) F ω : ℝ) ∂μ) atTop (𝓝 (μ.real F)) := by
+  -- we switch to the `lintegral` formulation and apply the corresponding lemma there
+  let fs : ℕ → Ω → ℝ := fun n ω ↦ thickenedIndicator (δs_pos n) F ω
+  have h := tendsto_lintegral_thickenedIndicator_of_isClosed μ F_closed δs_pos δs_lim
+  have h_eq (n : ℕ) : ∫⁻ ω, thickenedIndicator (δs_pos n) F ω ∂μ
+      = ENNReal.ofReal (∫ ω, fs n ω ∂μ) := by
+    rw [lintegral_coe_eq_integral]
+    exact integrable_thickenedIndicator F (δs_pos _)
+  simp_rw [h_eq] at h
+  rw [Measure.real_def]
+  have h_eq' : (fun n ↦ ∫ ω, fs n ω ∂μ) = fun n ↦ (ENNReal.ofReal (∫ ω, fs n ω ∂μ)).toReal := by
+    ext n
+    rw [ENNReal.toReal_ofReal]
+    exact integral_nonneg fun x ↦ by simp [fs]
+  rwa [h_eq', ENNReal.tendsto_toReal_iff (by simp) (by finiteness)]
 
 end MeasureTheory -- namespace
 

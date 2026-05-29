@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.TruncGE
+module
+
+public import Mathlib.Algebra.Homology.Embedding.TruncGE
 
 /-!
 # The canonical truncation
@@ -19,10 +21,12 @@ In order to achieve this, we dualize the constructions from the file
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Limits ZeroObject Category
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
-  {C : Type*} [Category C] [HasZeroMorphisms C]
+  {C : Type*} [Category* C] [HasZeroMorphisms C]
 
 namespace HomologicalComplex
 
@@ -96,6 +100,7 @@ variable {K L M}
 noncomputable def truncLE'Map : K.truncLE' e ⟶ L.truncLE' e :=
   (unopFunctor C c.symm).map (truncGE'Map ((opFunctor C c').map φ.op) e.op).op
 
+set_option backward.isDefEq.respectTransparency false in
 lemma truncLE'Map_f_eq_cyclesMap {i : ι} (hi : e.BoundaryLE i) {i' : ι'} (h : e.f i = i') :
     (truncLE'Map φ e).f i =
       (K.truncLE'XIsoCycles e h hi).hom ≫ cyclesMap φ i' ≫
@@ -209,7 +214,7 @@ end HomologicalComplex
 namespace ComplexShape.Embedding
 
 variable (e : Embedding c c') [e.IsTruncLE]
-    (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C] [CategoryWithHomology C]
+    (C : Type*) [Category* C] [HasZeroMorphisms C] [HasZeroObject C] [CategoryWithHomology C]
 
 /-- Given an embedding `e : Embedding c c'` of complex shapes which satisfy `e.IsTruncLE`,
 this is the (canonical) truncation functor

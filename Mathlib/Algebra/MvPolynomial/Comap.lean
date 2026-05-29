@@ -3,7 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.MvPolynomial.Rename
+module
+
+public import Mathlib.Algebra.MvPolynomial.Rename
 
 /-!
 # `comap` operation on `MvPolynomial`
@@ -22,6 +24,8 @@ As in other polynomial files, we typically use the notation:
 + `R : Type*` `[CommSemiring R]` (the coefficients)
 
 -/
+
+@[expose] public section
 
 
 namespace MvPolynomial
@@ -43,7 +47,7 @@ theorem comap_apply (f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R) (x : τ 
 @[simp]
 theorem comap_id_apply (x : σ → R) : comap (AlgHom.id R (MvPolynomial σ R)) x = x := by
   funext i
-  simp only [comap, AlgHom.id_apply, id, aeval_X]
+  simp only [comap, AlgHom.id_apply, aeval_X]
 
 variable (σ R)
 
@@ -62,7 +66,7 @@ theorem comap_comp_apply (f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R)
     rw [AlgHom.comp_apply]
     suffices g = aeval fun i => g (X i) by rw [← this]
     exact aeval_unique g
-  · simp only [comap, aeval_eq_eval₂Hom, map_eval₂Hom, AlgHom.comp_apply]
+  · simp only [comap, aeval_eq_eval₂Hom, map_eval₂Hom]
     refine eval₂Hom_congr ?_ rfl rfl
     ext r
     apply aeval_C
@@ -74,7 +78,7 @@ theorem comap_comp (f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R)
 
 theorem comap_eq_id_of_eq_id (f : MvPolynomial σ R →ₐ[R] MvPolynomial σ R) (hf : ∀ φ, f φ = φ)
     (x : σ → R) : comap f x = x := by
-  convert comap_id_apply x
+  convert! comap_id_apply x
   ext1 φ
   simp [hf, AlgHom.id_apply]
 

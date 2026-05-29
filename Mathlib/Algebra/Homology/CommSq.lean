@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Preadditive.Biproducts
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Basic
+public import Mathlib.CategoryTheory.Preadditive.Biproducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Relation between pullback/pushout squares and kernel/cokernel sequences
@@ -29,11 +31,13 @@ via the obvious map `X₁ ⟶ X₂ ⊞ X₃`.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
   {X₁ X₂ X₃ X₄ : C} [HasBinaryBiproduct X₂ X₃]
 
 section Pushout
@@ -60,7 +64,7 @@ noncomputable def CommSq.isColimitEquivIsColimitCokernelCofork (sq : CommSq f g 
       (fun s ↦ PushoutCocone.IsColimit.desc h
         (biprod.inl ≫ s.π) (biprod.inr ≫ s.π) (by
           rw [← sub_eq_zero, ← assoc, ← assoc, ← Preadditive.sub_comp]
-          convert s.condition <;> aesop_cat))
+          convert! s.condition <;> cat_disch))
       (fun s ↦ by
         dsimp
         ext
@@ -94,9 +98,9 @@ noncomputable def CommSq.isColimitEquivIsColimitCokernelCofork (sq : CommSq f g 
                   (by simp [s.condition])) .one)
       (fun s m hm₁ hm₂ ↦ by
         apply Cofork.IsColimit.hom_ext h
-        convert (h.fac (CokernelCofork.ofπ (biprod.desc s.inl s.inr)
-          (by simp [s.condition])) .one).symm
-        aesop_cat)
+        convert!
+          (h.fac (CokernelCofork.ofπ (biprod.desc s.inl s.inr) (by simp [s.condition])) .one).symm
+        cat_disch)
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 
@@ -105,6 +109,7 @@ noncomputable def IsPushout.isColimitCokernelCofork (h : IsPushout f g inl inr) 
     IsColimit h.cokernelCofork :=
   h.isColimitEquivIsColimitCokernelCofork h.isColimit
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsPushout.epi_shortComplex_g (h : IsPushout f g inl inr) :
     Epi h.shortComplex.g := by
   rw [Preadditive.epi_iff_cancel_zero]
@@ -139,7 +144,7 @@ noncomputable def CommSq.isLimitEquivIsLimitKernelFork (sq : CommSq fst snd f g)
       (fun s ↦ PullbackCone.IsLimit.lift h
         (s.ι ≫ biprod.fst) (s.ι ≫ biprod.snd) (by
           rw [← sub_eq_zero, assoc, assoc, ← Preadditive.comp_sub]
-          convert s.condition <;> aesop_cat))
+          convert! s.condition <;> cat_disch))
       (fun s ↦ by
         dsimp
         ext
@@ -171,9 +176,9 @@ noncomputable def CommSq.isLimitEquivIsLimitKernelFork (sq : CommSq fst snd f g)
         (by simp [s.condition])) .zero =≫ biprod.snd)
       (fun s m hm₁ hm₂ ↦ by
         apply Fork.IsLimit.hom_ext h
-        convert (h.fac (KernelFork.ofι (biprod.lift s.fst s.snd)
-          (by simp [s.condition])) .zero).symm
-        aesop_cat)
+        convert!
+          (h.fac (KernelFork.ofι (biprod.lift s.fst s.snd) (by simp [s.condition])) .zero).symm
+        cat_disch)
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 
@@ -182,6 +187,7 @@ noncomputable def IsPullback.isLimitKernelFork (h : IsPullback fst snd f g) :
     IsLimit h.kernelFork :=
   h.isLimitEquivIsLimitKernelFork h.isLimit
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsPullback.mono_shortComplex'_f (h : IsPullback fst snd f g) :
     Mono h.shortComplex'.f := by
   rw [Preadditive.mono_iff_cancel_zero]

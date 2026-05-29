@@ -3,13 +3,13 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Batteries.Tactic.Lint.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Data.Nat.Cast.Order.Ring
-import Mathlib.Data.Int.Order.Basic
-import Mathlib.Data.Ineq
+module
+
+public meta import Batteries.Tactic.Lint.Basic
+public meta import Mathlib.Data.Ineq
+public import Mathlib.Data.Ineq
+public import Mathlib.Data.Nat.Cast.Order.Ring
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # Lemmas for `linarith`.
@@ -19,7 +19,9 @@ Those in the `Linarith` namespace should stay here.
 Those outside the `Linarith` namespace may be deleted as they are ported to mathlib4.
 -/
 
-namespace Linarith
+public meta section
+
+namespace Mathlib.Tactic.Linarith
 
 universe u
 theorem lt_irrefl {α : Type u} [Preorder α] {a : α} : ¬a < a := _root_.lt_irrefl a
@@ -90,7 +92,6 @@ theorem sub_neg_of_lt [IsOrderedRing α] {a b : α} : a < b → a - b < 0 :=
 
 end Ring
 
-open Mathlib in
 /-- Finds the name of a multiplicative lemma corresponding to an inequality strength. -/
 def _root_.Mathlib.Ineq.toConstMulName : Ineq → Lean.Name
   | .lt => ``mul_neg
@@ -112,14 +113,4 @@ lemma zero_mul_eq {α} {R : α → α → Prop} [Semiring α] {a b : α} (h : a 
     a * b = 0 := by
   simp [h]
 
-end Linarith
-
-section
-open Function
--- These lemmas can be removed when their originals are ported.
-
-theorem lt_zero_of_zero_gt {α : Type*} [Zero α] [LT α] {a : α} (h : 0 > a) : a < 0 := h
-
-theorem le_zero_of_zero_ge {α : Type*} [Zero α] [LE α] {a : α} (h : 0 ≥ a) : a ≤ 0 := h
-
-end
+end Mathlib.Tactic.Linarith

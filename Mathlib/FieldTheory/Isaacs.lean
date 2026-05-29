@@ -3,21 +3,23 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.FieldTheory.Normal.Basic
-import Mathlib.FieldTheory.PrimitiveElement
-import Mathlib.GroupTheory.CosetCover
+module
+
+public import Mathlib.FieldTheory.Normal.Basic
+public import Mathlib.FieldTheory.PrimitiveElement
+public import Mathlib.GroupTheory.CosetCover
 
 /-!
 # Algebraic extensions are determined by their sets of minimal polynomials up to isomorphism
 
 ## Main results
 
-`Field.nonempty_algHom_of_exist_roots` says if `E/F` and `K/F` are field extensions
+`Field.nonempty_algHom_of_exists_root` says if `E/F` and `K/F` are field extensions
 with `E/F` algebraic, and if the minimal polynomial of every element of `E` over `F` has a root
 in `K`, then there exists an `F`-embedding of `E` into `K`. If `E/F` and `K/F` have the same
 set of minimal polynomials, then `E` and `K` are isomorphic as `F`-algebras. As a corollary:
 
-`IsAlgClosure.of_exist_roots`: if `E/F` is algebraic and every monic irreducible polynomial
+`IsAlgClosure.of_exists_root`: if `E/F` is algebraic and every monic irreducible polynomial
 in `F[X]` has a root in `E`, then `E` is an algebraic closure of `F`.
 
 ## Reference
@@ -27,6 +29,8 @@ The American Mathematical Monthly
 
 -/
 
+public section
+
 namespace Field
 
 open Polynomial IntermediateField
@@ -34,15 +38,16 @@ open Polynomial IntermediateField
 variable {F E K : Type*} [Field F] [Field E] [Field K] [Algebra F E] [Algebra F K]
 variable [alg : Algebra.IsAlgebraic F E]
 
-theorem nonempty_algHom_of_exist_roots (h : ∀ x : E, ∃ y : K, aeval y (minpoly F x) = 0) :
+theorem nonempty_algHom_of_exists_root (h : ∀ x : E, ∃ y : K, aeval y (minpoly F x) = 0) :
     Nonempty (E →ₐ[F] K) := by
   refine Lifts.nonempty_algHom_of_exist_lifts_finset fun S ↦ ⟨⟨adjoin F S, ?_⟩, subset_adjoin _ _⟩
-  let p := (S.prod <| minpoly F).map (algebraMap F K)
+  let p := (S.prod <| fun x ↦ (minpoly F x).map (algebraMap F K))
   let K' := SplittingField p
-  have splits s (hs : s ∈ S) : (minpoly F s).Splits (algebraMap F K') := by
-    apply splits_of_splits_of_dvd _
-      (Finset.prod_ne_zero_iff.mpr fun _ _ ↦ minpoly.ne_zero <| (alg.isIntegral).1 _)
-      ((splits_map_iff _ _).mp <| SplittingField.splits p) (Finset.dvd_prod_of_mem _ hs)
+  have splits s (hs : s ∈ S) : ((minpoly F s).map (algebraMap F K')).Splits := by
+    apply (SplittingField.splits p).of_dvd (map_ne_zero (Finset.prod_ne_zero_iff.mpr
+      fun _ _ ↦ Polynomial.map_ne_zero (minpoly.ne_zero <| alg.isIntegral.1 _))) ?_
+    rw [IsScalarTower.algebraMap_eq F K K', ← Polynomial.map_map, map_dvd_map']
+    exact Finset.dvd_prod_of_mem _ hs
   let K₀ := (⊥ : IntermediateField K K').restrictScalars F
   let FS := adjoin F (S : Set E)
   let Ω := FS →ₐ[F] K'
@@ -51,13 +56,14 @@ theorem nonempty_algHom_of_exist_roots (h : ∀ x : E, ∃ y : K, aeval y (minpo
   have : ⋃ ω : Ω, (M ω : Set FS) = Set.univ :=
     Set.eq_univ_of_forall fun ⟨α, hα⟩ ↦ Set.mem_iUnion.mpr <| by
       have ⟨β, hβ⟩ := h α
-      let ϕ : F⟮α⟯ →ₐ[F] K' := (IsScalarTower.toAlgHom _ _ _).comp ((AdjoinRoot.liftHom _ _ hβ).comp
+      let ϕ : F⟮α⟯ →ₐ[F] K' := (IsScalarTower.toAlgHom _ _ _).comp
+        ((AdjoinRoot.liftAlgHom _ _ _ hβ).comp
         (adjoinRootEquivAdjoin F <| (alg.isIntegral).1 _).symm.toAlgHom)
       have ⟨ω, hω⟩ := exists_algHom_adjoin_of_splits
         (fun s hs ↦ ⟨(alg.isIntegral).1 _, splits s hs⟩) ϕ (adjoin_simple_le_iff.mpr hα)
       refine ⟨ω, β, ((DFunLike.congr_fun hω <| AdjoinSimple.gen F α).trans ?_).symm⟩
       rw [AlgHom.comp_apply, AlgHom.comp_apply, AlgEquiv.coe_algHom,
-        adjoinRootEquivAdjoin_symm_apply_gen, AdjoinRoot.liftHom_root]
+        adjoinRootEquivAdjoin_symm_apply_gen, AdjoinRoot.liftAlgHom_root]
       rfl
   have ω : ∃ ω : Ω, ⊤ ≤ M ω := by
     cases finite_or_infinite F
@@ -68,10 +74,13 @@ theorem nonempty_algHom_of_exist_roots (h : ∀ x : E, ∃ y : K, aeval y (minpo
   exact ((botEquiv K K').toAlgHom.restrictScalars F).comp
     (ω.choose.codRestrict K₀.toSubalgebra fun x ↦ ω.choose_spec trivial)
 
+@[deprecated (since := "2026-01-31")]
+alias nonempty_algHom_of_exist_roots := nonempty_algHom_of_exists_root
+
 theorem nonempty_algHom_of_minpoly_eq
     (h : ∀ x : E, ∃ y : K, minpoly F x = minpoly F y) :
     Nonempty (E →ₐ[F] K) :=
-  nonempty_algHom_of_exist_roots fun x ↦ have ⟨y, hy⟩ := h x; ⟨y, by rw [hy, minpoly.aeval]⟩
+  nonempty_algHom_of_exists_root fun x ↦ have ⟨y, hy⟩ := h x; ⟨y, by rw [hy, minpoly.aeval]⟩
 
 theorem nonempty_algHom_of_range_minpoly_subset
     (h : Set.range (@minpoly F E _ _ _) ⊆ Set.range (@minpoly F K _ _ _)) :
@@ -104,13 +113,16 @@ theorem nonempty_algEquiv_of_aeval_eq_zero_eq [Algebra.IsAlgebraic F K]
   have ⟨τ⟩ := nonempty_algHom_of_aeval_eq_zero_subset h.ge
   ⟨.ofBijective _ (Algebra.IsAlgebraic.algHom_bijective₂ σ τ).1⟩
 
-theorem _root_.IsAlgClosure.of_exist_roots
+theorem _root_.IsAlgClosure.of_exists_root
     (h : ∀ p : F[X], p.Monic → Irreducible p → ∃ x : E, aeval x p = 0) :
     IsAlgClosure F E :=
   .of_splits fun p _ _ ↦
-    have ⟨σ⟩ := nonempty_algHom_of_exist_roots fun x : p.SplittingField ↦
+    have ⟨σ⟩ := nonempty_algHom_of_exists_root fun x : p.SplittingField ↦
       have := Algebra.IsAlgebraic.isIntegral (K := F).1 x
       h _ (minpoly.monic this) (minpoly.irreducible this)
-    splits_of_algHom (SplittingField.splits _) σ
+    Splits.of_algHom (SplittingField.splits _) σ
+
+@[deprecated (since := "2026-01-31")]
+alias _root_.IsAlgClosure.of_exist_roots := IsAlgClosure.of_exists_root
 
 end Field

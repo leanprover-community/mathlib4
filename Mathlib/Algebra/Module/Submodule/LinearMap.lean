@@ -3,10 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+module
 
-import Mathlib.Algebra.Module.LinearMap.End
-import Mathlib.Algebra.Module.Submodule.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Module.LinearMap.End
+public import Mathlib.Algebra.Module.Submodule.Defs
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 
@@ -27,6 +28,8 @@ In this file we define a number of linear maps involving submodules of a module.
 
 submodule, subspace, linear map
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -60,9 +63,6 @@ lemma subtype_injective :
 protected theorem coe_subtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
 
-@[deprecated (since := "2025-02-18")]
-protected alias coeSubtype := SMulMemClass.coe_subtype
-
 end SMulMemClass
 
 namespace Submodule
@@ -81,8 +81,8 @@ variable (p)
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
 protected def subtype : p →ₗ[R] M where
   toFun := Subtype.val
-  map_add' := by simp [coe_smul]
-  map_smul' := by simp [coe_smul]
+  map_add' := by simp
+  map_smul' := by simp
 
 variable {p} in
 @[simp]
@@ -100,7 +100,7 @@ theorem coe_subtype : (Submodule.subtype p : p → M) = Subtype.val :=
 theorem injective_subtype : Injective p.subtype :=
   Subtype.coe_injective
 
-/-- Note the `AddSubmonoid` version of this lemma is called `AddSubmonoid.coe_finset_sum`. -/
+/-- Note the `AddSubmonoid` version of this lemma is called `AddSubmonoid.coe_finsetSum`. -/
 theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i ∈ s, x i) = ∑ i ∈ s, (x i : M) :=
   map_sum p.subtype _ _
 
@@ -110,7 +110,7 @@ variable {α β : Type*}
 
 /-- The action by a submodule is the action by the underlying module. -/
 instance [AddAction M α] : AddAction p α :=
-  AddAction.compHom _ p.subtype.toAddMonoidHom
+  AddSubmonoid.instAddActionSubtypeMem p
 
 end AddAction
 
@@ -147,6 +147,9 @@ theorem domRestrict_apply (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) (
     f.domRestrict p x = f x :=
   rfl
 
+lemma coe_domRestrict (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
+    ⇑(f.domRestrict p) = Set.restrict p f := rfl
+
 /-- A linear map `f : M₂ → M` whose values lie in a submodule `p ⊆ M` can be restricted to a
 linear map M₂ → p.
 
@@ -171,6 +174,12 @@ theorem subtype_comp_codRestrict (p : Submodule R₂ M₂) (h : ∀ b, f b ∈ p
     p.subtype.comp (codRestrict p f h) = f :=
   ext fun _ => rfl
 
+@[simp]
+theorem domRestrict_comp_codRestrict (g : M₂ →ₛₗ[σ₂₃] M₃) (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R₂ M₂)
+    (h : ∀ c, f c ∈ p) :
+    g.domRestrict p ∘ₛₗ f.codRestrict p h = g ∘ₛₗ f :=
+  rfl
+
 section
 
 variable {M₂' : Type*} [AddCommMonoid M₂'] [Module R₂ M₂']
@@ -182,7 +191,7 @@ noncomputable def codLift :
     M →ₛₗ[σ₁₂] M₂' where
   toFun c := (h c).choose
   map_add' b c := by apply hp; simp_rw [map_add, (h _).choose_spec, ← map_add, (h _).choose_spec]
-  map_smul' r c := by apply hp; simp_rw [map_smul, (h _).choose_spec, LinearMap.map_smulₛₗ]
+  map_smul' r c := by apply hp; simp_rw [map_smul, (h _).choose_spec, map_smulₛₗ]
 
 @[simp] theorem codLift_apply (x : M) :
     (f.codLift p hp h x) = (h x).choose :=
@@ -197,33 +206,36 @@ theorem comp_codLift :
 end
 
 /-- Restrict domain and codomain of a linear map. -/
-def restrict (f : M →ₗ[R] M₁) {p : Submodule R M} {q : Submodule R M₁} (hf : ∀ x ∈ p, f x ∈ q) :
-    p →ₗ[R] q :=
+def restrict (f : M →ₛₗ[σ₁₂] M₂) {p : Submodule R M} {q : Submodule R₂ M₂} (hf : ∀ x ∈ p, f x ∈ q) :
+    p →ₛₗ[σ₁₂] q :=
   (f.domRestrict p).codRestrict q <| SetLike.forall.2 hf
 
 @[simp]
-theorem restrict_coe_apply (f : M →ₗ[R] M₁) {p : Submodule R M} {q : Submodule R M₁}
+theorem coe_restrict_apply {f : M →ₛₗ[σ₁₂] M₂} {p : Submodule R M} {q : Submodule R₂ M₂}
     (hf : ∀ x ∈ p, f x ∈ q) (x : p) : ↑(f.restrict hf x) = f x :=
   rfl
 
-theorem restrict_apply {f : M →ₗ[R] M₁} {p : Submodule R M} {q : Submodule R M₁}
+@[deprecated coe_restrict_apply (since := "2026-05-13")]
+theorem restrict_coe_apply (f : M →ₛₗ[σ₁₂] M₂) {p : Submodule R M} {q : Submodule R₂ M₂}
+    (hf : ∀ x ∈ p, f x ∈ q) (x : p) : ↑(f.restrict hf x) = f x :=
+  rfl
+
+theorem restrict_apply {f : M →ₛₗ[σ₁₂] M₂} {p : Submodule R M} {q : Submodule R₂ M₂}
     (hf : ∀ x ∈ p, f x ∈ q) (x : p) : f.restrict hf x = ⟨f x, hf x.1 x.2⟩ :=
   rfl
 
-lemma restrict_sub {R M M₁ : Type*}
-    [Ring R] [AddCommGroup M] [AddCommGroup M₁] [Module R M] [Module R M₁]
-    {p : Submodule R M} {q : Submodule R M₁} {f g : M →ₗ[R] M₁}
+lemma restrict_sub {R R₂ M M₂ : Type*}
+    [Ring R] [Ring R₂] {σ₁₂ : R →+* R₂} [AddCommGroup M] [AddCommGroup M₂]
+    [Module R M] [Module R₂ M₂] {p : Submodule R M} {q : Submodule R₂ M₂} {f g : M →ₛₗ[σ₁₂] M₂}
     (hf : MapsTo f p q) (hg : MapsTo g p q)
     (hfg : MapsTo (f - g) p q := fun _ hx ↦ q.sub_mem (hf hx) (hg hx)) :
     f.restrict hf - g.restrict hg = (f - g).restrict hfg := by
   ext; simp
 
-lemma restrict_comp
-    {M₂ M₃ : Type*} [AddCommMonoid M₂] [AddCommMonoid M₃] [Module R M₂] [Module R M₃]
-    {p : Submodule R M} {p₂ : Submodule R M₂} {p₃ : Submodule R M₃}
-    {f : M →ₗ[R] M₂} {g : M₂ →ₗ[R] M₃}
-    (hf : MapsTo f p p₂) (hg : MapsTo g p₂ p₃) (hfg : MapsTo (g ∘ₗ f) p p₃ := hg.comp hf) :
-    (g ∘ₗ f).restrict hfg = (g.restrict hg) ∘ₗ (f.restrict hf) :=
+lemma restrict_comp {p : Submodule R M} {p₂ : Submodule R₂ M₂} {p₃ : Submodule R₃ M₃}
+    {f : M →ₛₗ[σ₁₂] M₂} {g : M₂ →ₛₗ[σ₂₃] M₃}
+    (hf : MapsTo f p p₂) (hg : MapsTo g p₂ p₃) (hfg : MapsTo (g ∘ₛₗ f) p p₃ := hg.comp hf) :
+    (g ∘ₛₗ f).restrict hfg = (g.restrict hg) ∘ₛₗ (f.restrict hf) :=
   rfl
 
 -- TODO Consider defining `Algebra R (p.compatibleMaps p)`, `AlgHom` version of `LinearMap.restrict`
@@ -239,17 +251,17 @@ lemma restrict_commute {f g : M →ₗ[R] M} (h : Commute f g) {p : Submodule R 
   change (f ∘ₗ g).restrict (hf.comp hg) = (g ∘ₗ f).restrict (hg.comp hf)
   congr 1
 
-theorem subtype_comp_restrict {f : M →ₗ[R] M₁} {p : Submodule R M} {q : Submodule R M₁}
+theorem subtype_comp_restrict {f : M →ₛₗ[σ₁₂] M₂} {p : Submodule R M} {q : Submodule R₂ M₂}
     (hf : ∀ x ∈ p, f x ∈ q) : q.subtype.comp (f.restrict hf) = f.domRestrict p :=
   rfl
 
-theorem restrict_eq_codRestrict_domRestrict {f : M →ₗ[R] M₁} {p : Submodule R M}
-    {q : Submodule R M₁} (hf : ∀ x ∈ p, f x ∈ q) :
+theorem restrict_eq_codRestrict_domRestrict {f : M →ₛₗ[σ₁₂] M₂} {p : Submodule R M}
+    {q : Submodule R₂ M₂} (hf : ∀ x ∈ p, f x ∈ q) :
     f.restrict hf = (f.domRestrict p).codRestrict q fun x => hf x.1 x.2 :=
   rfl
 
-theorem restrict_eq_domRestrict_codRestrict {f : M →ₗ[R] M₁} {p : Submodule R M}
-    {q : Submodule R M₁} (hf : ∀ x, f x ∈ q) :
+theorem restrict_eq_domRestrict_codRestrict {f : M →ₛₗ[σ₁₂] M₂} {p : Submodule R M}
+    {q : Submodule R₂ M₂} (hf : ∀ x, f x ∈ q) :
     (f.restrict fun x _ => hf x) = (f.codRestrict q hf).domRestrict p :=
   rfl
 
@@ -258,13 +270,16 @@ theorem sum_apply (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) (b : M
   _root_.map_sum ((AddMonoidHom.eval b).comp toAddMonoidHom') f _
 
 @[simp, norm_cast]
-theorem coeFn_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) :
+theorem coe_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) :
     ⇑(∑ i ∈ t, f i) = ∑ i ∈ t, (f i : M → M₂) :=
   _root_.map_sum
     (show AddMonoidHom (M →ₛₗ[σ₁₂] M₂) (M → M₂)
       from { toFun := DFunLike.coe,
              map_zero' := rfl
              map_add' := fun _ _ => rfl }) _ _
+
+@[deprecated (since := "2025-11-24")]
+alias coeFn_sum := coe_sum
 
 theorem _root_.Module.End.submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M}
     {g : Module.End R N} {G : Module.End R M} (h : G.comp N.subtype = N.subtype.comp g) {k : ℕ}
@@ -289,7 +304,7 @@ theorem _root_.Module.End.pow_restrict {p : Submodule R M} (n : ℕ) (h : ∀ x 
     (h' := Module.End.pow_apply_mem_of_forall_mem n h) :
     (f'.restrict h) ^ n = (f' ^ n).restrict h' := by
   ext x
-  have : Semiconj (↑) (f'.restrict h) f' := fun _ ↦ restrict_coe_apply _ _ _
+  have : Semiconj (↑) (f'.restrict h) f' := fun _ ↦ coe_restrict_apply _ _
   simp [Module.End.coe_pow, this.iterate_right _ _]
 
 end
@@ -343,9 +358,7 @@ theorem inclusion_injective (h : p ≤ p') : Function.Injective (inclusion h) :=
 variable (p p')
 
 theorem subtype_comp_inclusion (p q : Submodule R M) (h : p ≤ q) :
-    q.subtype.comp (inclusion h) = p.subtype := by
-  ext ⟨b, hb⟩
-  rfl
+    q.subtype.comp (inclusion h) = p.subtype := rfl
 
 end AddCommMonoid
 

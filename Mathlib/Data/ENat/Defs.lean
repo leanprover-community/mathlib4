@@ -3,11 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Yury Kudryashov
 -/
+module
 
-import Mathlib.Data.Nat.Notation
-import Mathlib.Order.TypeTags
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Order.TypeTags
 
 /-! # Definition and notation for extended natural numbers -/
+
+@[expose] public section
 
 /-- Extended natural numbers `ℕ∞ = WithTop ℕ`. -/
 def ENat : Type := WithTop ℕ deriving Top, Inhabited

@@ -3,14 +3,22 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Expect
-import Mathlib.Algebra.Module.Rat
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Module.Rat
+module
+
+public import Mathlib.Algebra.BigOperators.Expect
+public import Mathlib.Algebra.Module.Rat
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.Module.Field
+public import Mathlib.Algebra.Order.Module.Rat
+public import Mathlib.Tactic.GCongr
+
+import Mathlib.Algebra.Module.Torsion.Field
 
 /-!
 # Order properties of the average over a finset
 -/
+
+public section
 
 open Function
 open Fintype (card)
@@ -25,25 +33,20 @@ section OrderedAddCommMonoid
 variable [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α]
   {s : Finset ι} {f g : ι → α}
 
-lemma expect_eq_zero_iff_of_nonneg (hs : s.Nonempty) (hf : ∀ i ∈ s, 0 ≤ f i) :
+lemma expect_eq_zero_iff_of_nonneg (hf : ∀ i ∈ s, 0 ≤ f i) :
     𝔼 i ∈ s, f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
-  simp [expect, sum_eq_zero_iff_of_nonneg hf, hs.ne_empty]
+  simp +contextual [expect, sum_eq_zero_iff_of_nonneg hf]
 
-lemma expect_eq_zero_iff_of_nonpos (hs : s.Nonempty) (hf : ∀ i ∈ s, f i ≤ 0) :
+lemma expect_eq_zero_iff_of_nonpos (hf : ∀ i ∈ s, f i ≤ 0) :
     𝔼 i ∈ s, f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
-  simp [expect, sum_eq_zero_iff_of_nonpos hf, hs.ne_empty]
+  simp +contextual [expect, sum_eq_zero_iff_of_nonpos hf]
 
 section PosSMulMono
 variable [PosSMulMono ℚ≥0 α] {a : α}
 
+@[gcongr]
 lemma expect_le_expect (hfg : ∀ i ∈ s, f i ≤ g i) : 𝔼 i ∈ s, f i ≤ 𝔼 i ∈ s, g i :=
   smul_le_smul_of_nonneg_left (sum_le_sum hfg) <| by positivity
-
-/-- This is a (beta-reduced) version of the standard lemma `Finset.expect_le_expect`,
-convenient for the `gcongr` tactic. -/
-@[gcongr]
-lemma _root_.GCongr.expect_le_expect (h : ∀ i ∈ s, f i ≤ g i) : s.expect f ≤ s.expect g :=
-  Finset.expect_le_expect h
 
 lemma expect_le (hs : s.Nonempty) (h : ∀ x ∈ s, f x ≤ a) : 𝔼 i ∈ s, f i ≤ a :=
   (inv_smul_le_iff_of_pos <| mod_cast hs.card_pos).2 <| by
@@ -107,20 +110,39 @@ end OrderedAddCommMonoid
 
 section OrderedCancelAddCommMonoid
 variable [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] [Module ℚ≥0 α]
-  {s : Finset ι} {f : ι → α}
-section PosSMulStrictMono
-variable [PosSMulStrictMono ℚ≥0 α]
+  [PosSMulStrictMono ℚ≥0 α] {s : Finset ι} {f g : ι → α} {a : α}
+
+lemma expect_lt_expect (hfg : ∀ i ∈ s, f i ≤ g i) (hfg' : ∃ i ∈ s, f i < g i) :
+    𝔼 i ∈ s, f i < 𝔼 i ∈ s, g i :=
+  smul_lt_smul_of_pos_left (sum_lt_sum hfg hfg')
+    (by obtain ⟨i, hi, -⟩ := hfg'; have : s.Nonempty := ⟨i, hi⟩; simpa)
+
+lemma expect_lt (hle : ∀ x ∈ s, f x ≤ a) (hlt : ∃ x ∈ s, f x < a) :
+    𝔼 i ∈ s, f i < a := by
+  rw [← expect_const (hlt.imp (fun _ => And.left)) a]
+  exact expect_lt_expect hle hlt
+
+lemma lt_expect (hle : ∀ x ∈ s, a ≤ f x) (hlt : ∃ x ∈ s, a < f x) :
+    a < 𝔼 i ∈ s, f i := by
+  rw [← expect_const (hlt.imp (fun _ => And.left)) a]
+  exact expect_lt_expect hle hlt
+
+lemma expect_pos' (h : ∀ i ∈ s, 0 ≤ f i) (hs : ∃ i ∈ s, 0 < f i) : 0 < 𝔼 i ∈ s, f i :=
+  (expect_const_zero _).symm.trans_lt <| expect_lt_expect h hs
 
 lemma expect_pos (hf : ∀ i ∈ s, 0 < f i) (hs : s.Nonempty) : 0 < 𝔼 i ∈ s, f i :=
   smul_pos (inv_pos.2 <| mod_cast hs.card_pos) <| sum_pos hf hs
 
-end PosSMulStrictMono
 end OrderedCancelAddCommMonoid
 
 section LinearOrderedAddCommMonoid
 variable [AddCommMonoid α] [LinearOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α]
   [PosSMulMono ℚ≥0 α] {s : Finset ι}
-  {f : ι → α} {a : α}
+  {f g : ι → α} {a : α}
+
+lemma exists_lt_of_expect_lt_expect (h : 𝔼 i ∈ s, g i < 𝔼 i ∈ s, f i) :
+    ∃ x ∈ s, g x < f x := by
+  contrapose! h; exact expect_le_expect h
 
 lemma exists_lt_of_lt_expect (hs : s.Nonempty) (h : a < 𝔼 i ∈ s, f i) : ∃ x ∈ s, a < f x := by
   contrapose! h; exact expect_le hs h
@@ -130,11 +152,29 @@ lemma exists_lt_of_expect_lt (hs : s.Nonempty) (h : 𝔼 i ∈ s, f i < a) : ∃
 
 end LinearOrderedAddCommMonoid
 
+section LinearOrderedCancelAddMonoid
+variable [AddCommMonoid α] [LinearOrder α] [IsOrderedCancelAddMonoid α] [Module ℚ≥0 α]
+  [PosSMulStrictMono ℚ≥0 α] {a : α} {s : Finset ι} {f g : ι → α}
+
+lemma exists_le_of_expect_le_expect (hs : s.Nonempty) (h : 𝔼 i ∈ s, g i ≤ 𝔼 i ∈ s, f i) :
+    ∃ x ∈ s, g x ≤ f x := by
+  obtain ⟨_, hx⟩ := hs
+  contrapose! h
+  exact expect_lt_expect (fun _ hx ↦ le_of_lt (h _ hx)) ⟨_, ⟨hx, h _ hx⟩⟩
+
+lemma exists_le_of_le_expect (hs : s.Nonempty) (h : a ≤ 𝔼 i ∈ s, f i) : ∃ x ∈ s, a ≤ f x :=
+  exists_le_of_expect_le_expect hs (by rwa [expect_const hs _])
+
+lemma exists_le_of_expect_le (hs : s.Nonempty) (h : 𝔼 i ∈ s, f i ≤ a) : ∃ x ∈ s, f x ≤ a :=
+  exists_le_of_expect_le_expect hs (by rwa [expect_const hs _])
+
+end LinearOrderedCancelAddMonoid
+
 section LinearOrderedAddCommGroup
 variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α] [PosSMulMono ℚ≥0 α]
 
 lemma abs_expect_le (s : Finset ι) (f : ι → α) : |𝔼 i ∈ s, f i| ≤ 𝔼 i ∈ s, |f i| :=
-  le_expect_of_subadditive abs_zero abs_add (fun _ ↦ abs_nnqsmul _)
+  le_expect_of_subadditive abs_zero abs_add_le (fun _ ↦ abs_nnqsmul _)
 
 end LinearOrderedAddCommGroup
 
@@ -160,11 +200,13 @@ variable [Fintype ι]
 section OrderedAddCommMonoid
 variable [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α] {f : ι → α}
 
-lemma expect_eq_zero_iff_of_nonneg [Nonempty ι] (hf : 0 ≤ f) : 𝔼 i, f i = 0 ↔ f = 0 := by
-  simp [expect, sum_eq_zero_iff_of_nonneg hf, univ_nonempty.ne_empty]
+lemma expect_eq_zero_iff_of_nonneg (hf : 0 ≤ f) : 𝔼 i, f i = 0 ↔ f = 0 := by
+  rw [Finset.expect_eq_zero_iff_of_nonneg (by aesop)]
+  aesop
 
-lemma expect_eq_zero_iff_of_nonpos [Nonempty ι] (hf : f ≤ 0) : 𝔼 i, f i = 0 ↔ f = 0 := by
-  simp [expect, sum_eq_zero_iff_of_nonpos hf, univ_nonempty.ne_empty]
+lemma expect_eq_zero_iff_of_nonpos (hf : f ≤ 0) : 𝔼 i, f i = 0 ↔ f = 0 := by
+  rw [Finset.expect_eq_zero_iff_of_nonpos (by aesop)]
+  aesop
 
 end OrderedAddCommMonoid
 end Fintype
@@ -178,7 +220,7 @@ open scoped BigOperators
 attribute [local instance] monadLiftOptionMetaM in
 /-- Positivity extension for `Finset.expect`. -/
 @[positivity Finset.expect _ _]
-def evalFinsetExpect : PositivityExt where eval {u α} zα pα e := do
+meta def evalFinsetExpect : PositivityExt where eval {u α} zα pα e := do
   match e with
   | ~q(@Finset.expect $ι _ $instα $instmod $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
@@ -186,13 +228,13 @@ def evalFinsetExpect : PositivityExt where eval {u α} zα pα e := do
     let rbody ← core zα pα body
     let p_pos : Option Q(0 < $e) := ← (do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
-      let .some ps ← proveFinsetNonempty s | pure none
+      let some ps ← proveFinsetNonempty s | pure none
       let .some pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
       let .some instαordsmul ← trySynthInstanceQ q(PosSMulStrictMono ℚ≥0 $α) | pure none
       assumeInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
       return some
-        q(@expect_pos $ι $α $instα $pα $pα' $instmod $s $f $instαordsmul (fun i _ ↦ $pr i) $ps))
+        q(@expect_pos $ι $α $instα $pα $pα' $instmod $instαordsmul $s $f (fun i _ ↦ $pr i) $ps))
     -- Try to show that the sum is positive
     if let some p_pos := p_pos then
       return .positive p_pos
@@ -207,10 +249,10 @@ def evalFinsetExpect : PositivityExt where eval {u α} zα pα e := do
         q(@expect_nonneg $ι $α $instα $pα $instαordmon $instmod $s $f $instαordsmul fun i _ ↦ $pr i)
   | _ => throwError "not Finset.expect"
 
-example (n : ℕ) (a : ℕ → ℚ) : 0 ≤ 𝔼 j ∈ range n, a j^2 := by positivity
-example (a : ULift.{2} ℕ → ℚ) (s : Finset (ULift.{2} ℕ)) : 0 ≤ 𝔼 j ∈ s, a j^2 := by positivity
-example (n : ℕ) (a : ℕ → ℚ) : 0 ≤ 𝔼 j : Fin 8, 𝔼 i ∈ range n, (a j^2 + i ^ 2) := by positivity
-example (n : ℕ) (a : ℕ → ℚ) : 0 < 𝔼 j : Fin (n + 1), (a j^2 + 1) := by positivity
-example (a : ℕ → ℚ) : 0 < 𝔼 j ∈ ({1} : Finset ℕ), (a j^2 + 1) := by positivity
+example (n : ℕ) (a : ℕ → ℚ) : 0 ≤ 𝔼 j ∈ range n, a j ^ 2 := by positivity
+example (a : ULift.{2} ℕ → ℚ) (s : Finset (ULift.{2} ℕ)) : 0 ≤ 𝔼 j ∈ s, a j ^ 2 := by positivity
+example (n : ℕ) (a : ℕ → ℚ) : 0 ≤ 𝔼 j : Fin 8, 𝔼 i ∈ range n, (a j ^ 2 + i ^ 2) := by positivity
+example (n : ℕ) (a : ℕ → ℚ) : 0 < 𝔼 j : Fin (n + 1), (a j ^ 2 + 1) := by positivity
+example (a : ℕ → ℚ) : 0 < 𝔼 j ∈ ({1} : Finset ℕ), (a j ^ 2 + 1) := by positivity
 
 end Mathlib.Meta.Positivity

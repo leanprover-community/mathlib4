@@ -3,7 +3,6 @@
 
 -- The linter for the string "adaptation note" fires in the implementation of the linter,
 -- and in the implementation of the #adaptation_note tactic: this is as expected.
-Mathlib/Tactic/AdaptationNote.lean : line 9 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
 Mathlib/Tactic/AdaptationNote.lean : line 12 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
 Mathlib/Tactic/AdaptationNote.lean : line 21 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
 Mathlib/Tactic/AdaptationNote.lean : line 27 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
