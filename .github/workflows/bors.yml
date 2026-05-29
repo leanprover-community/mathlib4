@@ -39,10 +39,18 @@ jobs:
       #   - any other ref on either repo           → NON_MASTER (FORKS) writer
       cache_application_id: >-
         ${{
-          (github.repository == 'leanprover-community/mathlib4' && github.ref_name == 'staging') && vars.CACHE_MASTER_WRITER_AZURE_APP_ID
-          || (github.repository == 'leanprover-community/mathlib4' && github.ref_name == 'trying') && vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID
-          || (github.repository == 'leanprover-community/mathlib4-nightly-testing' && github.ref_name == 'staging') && vars.CACHE_NIGHTLY_TESTING_WRITER_AZURE_APP_ID
-          || (github.repository == 'leanprover-community/mathlib4-nightly-testing' && github.ref_name == 'trying') && vars.CACHE_PR_TOOLCHAIN_TESTS_WRITER_AZURE_APP_ID
+             (github.repository == 'leanprover-community/mathlib4'
+               && github.ref_name == 'staging')
+               && vars.CACHE_MASTER_WRITER_AZURE_APP_ID
+          || (github.repository == 'leanprover-community/mathlib4'
+               && github.ref_name == 'trying')
+               && vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID
+          || (github.repository == 'leanprover-community/mathlib4-nightly-testing'
+               && github.ref_name == 'staging')
+               && vars.CACHE_NIGHTLY_TESTING_WRITER_AZURE_APP_ID
+          || (github.repository == 'leanprover-community/mathlib4-nightly-testing'
+               && github.ref_name == 'trying')
+               && vars.CACHE_PR_TOOLCHAIN_TESTS_WRITER_AZURE_APP_ID
           || vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID
         }}
       # bors runs should build the tools from their commit-under-test: after all, we are trying to

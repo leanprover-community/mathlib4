@@ -43,9 +43,16 @@ jobs:
       #   - everything else (dev branches on mathlib4, etc.)                → NON_MASTER (forks) writer
       cache_application_id: >-
         ${{
-          (github.repository == 'leanprover-community/mathlib4' && github.ref_name == 'master') && vars.CACHE_MASTER_WRITER_AZURE_APP_ID
-          || (github.repository == 'leanprover-community/mathlib4-nightly-testing' && (github.ref_name == 'nightly-testing' || github.ref_name == 'nightly-testing-green' || startsWith(github.ref_name, 'bump/'))) && vars.CACHE_NIGHTLY_TESTING_WRITER_AZURE_APP_ID
-          || (github.repository == 'leanprover-community/mathlib4-nightly-testing') && vars.CACHE_PR_TOOLCHAIN_TESTS_WRITER_AZURE_APP_ID
+             (github.repository == 'leanprover-community/mathlib4'
+               && github.ref_name == 'master')
+               && vars.CACHE_MASTER_WRITER_AZURE_APP_ID
+          || (github.repository == 'leanprover-community/mathlib4-nightly-testing'
+               && (github.ref_name == 'nightly-testing'
+                   || github.ref_name == 'nightly-testing-green'
+                   || startsWith(github.ref_name, 'bump/')))
+               && vars.CACHE_NIGHTLY_TESTING_WRITER_AZURE_APP_ID
+          || (github.repository == 'leanprover-community/mathlib4-nightly-testing')
+               && vars.CACHE_PR_TOOLCHAIN_TESTS_WRITER_AZURE_APP_ID
           || vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID
         }}
       runs_on: pr
