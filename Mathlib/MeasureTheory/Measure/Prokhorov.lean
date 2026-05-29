@@ -53,11 +53,13 @@ check the condition.
 
 public section
 
-open scoped ENNReal NNReal CompactlySupported
-open Filter Function Set Topology TopologicalSpace MeasureTheory BoundedContinuousFunction
-  MeasureTheory.FiniteMeasure
+open scoped CompactlySupported
+open Metric ENNReal NNReal Filter Function Set Topology TopologicalSpace MeasureTheory
+  BoundedContinuousFunction
 
 section Forward
+
+open FiniteMeasure
 
 variable {E : Type*} [MeasurableSpace E] [TopologicalSpace E] [T2Space E] [BorelSpace E]
 
@@ -534,14 +536,11 @@ end Forward
 
 section Backward
 
-open Filter Set Metric ENNReal NNReal MeasureTheory ProbabilityMeasure TopologicalSpace
-
-open scoped ENNReal NNReal Topology FiniteMeasure ProbabilityMeasure
+open ProbabilityMeasure
 
 namespace MeasureTheory
 
-variable {𝓧 𝓨 : Type*} {m𝓧 : MeasurableSpace 𝓧}
-  {μ ν : Measure 𝓧} {S T : Set (Measure 𝓧)}
+variable {𝓧 : Type*} {m𝓧 : MeasurableSpace 𝓧} {μ : Measure 𝓧}
 
 variable [PseudoMetricSpace 𝓧] [OpensMeasurableSpace 𝓧] [SecondCountableTopology 𝓧]
   {S : Set (ProbabilityMeasure 𝓧)}
@@ -564,7 +563,7 @@ lemma exists_measure_iUnion_gt_of_isCompact_closure
     _ ≤ liminf (fun k ↦ (μ (sub k) (⋃ (i ≤ n), U i) : ℝ)) atTop := by
       have hopen : IsOpen (⋃ i ≤ n, U i) := isOpen_biUnion fun i a ↦ O i
       have := ProbabilityMeasure.le_liminf_measure_open_of_tendsto hμconverges hopen
-      simp_rw [Function.comp_apply, ← ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure] at this
+      simp_rw [Function.comp_apply, ← ennreal_coeFn_eq_coeFn_toMeasure] at this
       rw [← ofNNReal_liminf] at this
       · exact mod_cast this
       use 1
