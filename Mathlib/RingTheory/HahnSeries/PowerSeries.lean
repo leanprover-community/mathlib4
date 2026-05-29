@@ -98,17 +98,16 @@ theorem ofPowerSeries_injective : Function.Injective (ofPowerSeries Γ R) :=
 
 -- Not `@[simp]` since the RHS is more complicated and it makes linter failures elsewhere
 theorem ofPowerSeries_apply (x : PowerSeries R) :
-    ofPowerSeries Γ R x =
-      HahnSeries.embDomain
-        ⟨⟨((↑) : ℕ → Γ), Nat.strictMono_cast.injective⟩, by
-          simp only [Function.Embedding.coeFn_mk]
-          exact Nat.cast_le⟩
-        (toPowerSeries.symm x) :=
+    ofPowerSeries Γ R x = embDomain Nat.castOrderEmbedding (toPowerSeries.symm x) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ofPowerSeries_apply_coeff (x : PowerSeries R) (n : ℕ) :
-    (ofPowerSeries Γ R x).coeff n = PowerSeries.coeff n x := by simp [ofPowerSeries_apply]
+    (ofPowerSeries Γ R x).coeff n = PowerSeries.coeff n x := by
+  trans (embDomain (Nat.castOrderEmbedding (α := Γ)) (toPowerSeries.symm x)).coeff
+    (Nat.castOrderEmbedding n)
+  · simp [ofPowerSeries_apply]
+  rw [embDomain_coeff]
+  simp
 
 @[simp]
 theorem ofPowerSeries_C (r : R) : ofPowerSeries Γ R (PowerSeries.C r) = HahnSeries.C r := by

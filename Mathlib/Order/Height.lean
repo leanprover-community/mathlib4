@@ -120,7 +120,7 @@ theorem one_le_chainHeight_iff : 1 ≤ s.chainHeight r ↔ s.Nonempty := by
   all_goals
   · intros
     by_contra! hh
-    simp_all [lt_one_iff_eq_zero]
+    simp_all
 
 @[simp]
 theorem chainHeight_of_isEmpty [IsEmpty α] : s.chainHeight r = 0 :=
