@@ -89,7 +89,7 @@ protected theorem nil {n} : @Vec n 0 fun _ => nil := fun i => Fin.elim0 i
 
 protected theorem cons {n m} {f : List.Vector ℕ n → ℕ} {g} (hf : @Partrec' n (PFun.lift f))
     (hg : @Vec n m g) : Vec fun v => f v ::ᵥ g v := fun i =>
-  Fin.cases (by simpa using hf) (fun i => by simp only [hg i, get_cons_succ]) i
+  Fin.cases (by simpa using! hf) (fun i => by simp only [hg i, get_cons_succ]) i
 
 theorem idv {n} : @Vec n n id :=
   Vec.prim Nat.Primrec'.idv

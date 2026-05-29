@@ -105,6 +105,8 @@ def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
     · intro h
       exact ⟨⟨f.toFun a, fun h_eq => hc (h ▸ h_eq ▸ g.map_point)⟩, rfl, h⟩).symm
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /-- The functor which maps undefined values to a new point. This makes the maps total and creates
 pointed types. This is the noncomputable part of the equivalence `PartialFunEquivPointed`. It can't
@@ -124,6 +126,9 @@ noncomputable def partialFunToPointed : PartialFun ⥤ Pointed where
     dsimp [CategoryStruct.comp]
     rw [Option.elim'_eq_elim]
     convert! Part.bind_toOption (g : PFun Y Z).toFun ((f : PFun X Y).toFun a)
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence induced by `PartialFunToPointed` and `PointedToPartialFun`.
 `Part.equivOption` made functorial. -/
 @[simps! functor inverse]
@@ -135,33 +140,28 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
         invFun := fun a => Option.get _ (Option.ne_none_iff_isSome.1 a.property)
         left_inv := fun _ => Option.get_some _ _
         right_inv := fun ⟨a, ha⟩ => Subtype.ext (Option.some_get _) })
-      fun {X Y} f => PFun.ext fun a ⟨b_val, hb⟩ => by
+      fun {X Y} f => PFun.ext fun a b => by
         classical
-        cases b_val with
-        | none => exact (hb rfl).elim
-        | some b =>
-          dsimp [PartialFun.Iso.mk, CategoryStruct.comp, pointedToPartialFun,
-            partialFunToPointed, PFun.lift, PartialFun.of, PFun.comp]
-          constructor
-          · intro h
-            change _ ∈ ((f : PFun X Y).toFun a).bind _ at h
-            obtain ⟨c, hc_mem, hc_eq⟩ := Part.mem_bind_iff.mp h
-            have h_eq : b = c :=
-              Option.some_inj.mp (Subtype.ext_iff.mp (Part.mem_some_iff.mp hc_eq))
-            subst h_eq
-            change _ ∈ (Part.some _).bind _
-            rw [Part.bind_some]
-            change _ ∈ PFun.toSubtype _ _ _
-            rw [PFun.mem_toSubtype_iff]
-            exact (Part.mem_toOption.mpr hc_mem).symm
-          · intro h
-            change _ ∈ (Part.some _).bind _ at h
-            rw [Part.bind_some] at h
-            change _ ∈ PFun.toSubtype _ _ _ at h
-            rw [PFun.mem_toSubtype_iff] at h
-            change _ ∈ ((f : PFun X Y).toFun a).bind _
-            exact Part.mem_bind_iff.mpr ⟨b, Part.mem_toOption.mp h.symm,
-              Part.mem_some_iff.mpr (Subtype.ext rfl)⟩
+        dsimp [PartialFun.Iso.mk, CategoryStruct.comp, pointedToPartialFun,
+          partialFunToPointed, PFun.lift, PartialFun.of, PFun.comp]
+        simp only [Part.bind_some]
+        change b ∈ (((f : PFun X Y).toFun a).bind fun c =>
+            Part.some (⟨some c, Option.some_ne_none c⟩ : {x : Option Y // x ≠ none})) ↔
+          b ∈
+            PFun.toSubtype (fun x : Option Y => x ≠ none)
+              (fun o : Option X => Option.elim' (none : Option Y)
+                (fun y : X => ((f : PFun X Y).toFun y).toOption) o)
+              (some a)
+        refine (Part.mem_bind_iff.trans ?_).trans PFun.mem_toSubtype_iff.symm
+        obtain ⟨b | b, hb⟩ := b
+        · exact (hb rfl).elim
+        · simp only [ne_eq]
+          refine ⟨fun ⟨w, hw, h⟩ ↦ ?_,
+            fun h ↦ ⟨b, Part.mem_toOption.mp h.symm, Part.mem_some_iff.mpr rfl⟩⟩
+          have h_eq : b = w :=
+            Option.some_inj.mp (Subtype.ext_iff.mp (Part.mem_some_iff.mp h))
+          rw [h_eq]
+          exact (Part.mem_toOption.mpr hw).symm
   counitIso :=
     NatIso.ofComponents
       (fun X ↦ by
@@ -177,12 +177,20 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
         dsimp only [PFun.toSubtype, Part.toOption]
         split_ifs with h <;> aesop
   functor_unitIso_comp X := by
-    ext (_ | x)
-    · rfl
-    · classical
-      simp [partialFunToPointed_map, PartialFun.Iso.mk, PFun.lift]
-      rfl
+    apply Pointed.Hom.ext
+    funext o
+    cases o with
+    | none => rfl
+    | some x =>
+      classical
+      dsimp [NatIso.ofComponents, Pointed.Hom.comp, partialFunToPointed, PartialFun.Iso.mk,
+        PFun.lift]
+      rw [Part.some_toOption]
+      exact Equiv.optionSubtypeNe_some (none : Option X)
+        (⟨some x, Option.some_ne_none x⟩ : {x : Option X // x ≠ none})
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Forgetting that maps are total and making them total again by adding a point is the same as just
 adding a point. -/
 @[simps!]

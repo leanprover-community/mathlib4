@@ -76,7 +76,8 @@ theorem rfind' {f : ℕ →. ℕ} (hf : Nat.Partrec f) :
         (fun x => decide (x = 0)) <$> f (Nat.pair a (n + b)))
     have h1 : Partrec₂ H :=
       (@Partrec₂.unpaired' H).mp <| by
-        simpa [PFun.coe_mk, Nat.unpaired] using h_inner
+        exact h_inner.of_eq fun p => by
+          simp [H, G, Nat.unpaired]
     have hMap := Partrec.map h1
       (_root_.Primrec.to_comp (Primrec.nat_add.comp _root_.Primrec.snd
         (_root_.Primrec.comp _root_.Primrec.snd _root_.Primrec.fst))).to₂
@@ -1044,7 +1045,7 @@ end
 /-- There are only countably many partial recursive partial functions `ℕ →. ℕ`. -/
 instance : Countable {f : ℕ →. ℕ // Partrec f} := by
   apply Function.Surjective.countable (f := fun c => ⟨eval c, eval_part.comp (.const c) .id⟩)
-  intro ⟨f, hf⟩; simpa using exists_code.1 hf
+  intro ⟨f, hf⟩; simpa using! exists_code.1 hf
 
 /-- There are only countably many computable functions `ℕ → ℕ`. -/
 instance : Countable {f : ℕ → ℕ // Computable f} :=
