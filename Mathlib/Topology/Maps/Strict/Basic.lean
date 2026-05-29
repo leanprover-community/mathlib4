@@ -166,10 +166,15 @@ lemma isEmbedding_iff_isStrictMap_injective :
     (Homeomorph.Quotient.congrRight <| by simp [f_inj.eq_iff]).trans Homeomorph.quotientBot
   exact f_strict.comp Φ.symm.isEmbedding
 
-/-- Strict maps stay strict when we compose them with homeomorphisms -/
-lemma Homeomorph.comp_isStrictMap (e : X ≃ₜ Y) {f : Y → Z} (hf : IsStrictMap f) :
-    IsStrictMap (f ∘ e) :=
-  e.isQuotientMap.isStrictMap_iff.mp hf
+/-- Strict maps are preserved and reflected when precomposing with a homeomorphism. -/
+lemma Homeomorph.isStrictMap_comp_iff (e : X ≃ₜ Y) {f : Y → Z} :
+    IsStrictMap (f ∘ e) ↔ IsStrictMap f :=
+  e.isQuotientMap.isStrictMap_iff.symm
+
+/-- Strict maps are preserved and reflected when postcomposing with a homeomorphism. -/
+lemma Homeomorph.comp_isStrictMap_iff (e : Y ≃ₜ Z) {f : X → Y} :
+    IsStrictMap (e ∘ f) ↔ IsStrictMap f :=
+  e.isEmbedding.isStrictMap_iff.symm
 
 end Topology
 
