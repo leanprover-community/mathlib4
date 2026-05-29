@@ -1269,10 +1269,18 @@ end Group
 /-- An additive commutative group is an additive group with commutative `(+)`. -/
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 
+-- in practice, the reason something is an AddCommMonoid is because it's
+-- an AddCommGroup
+attribute [instance 2000] AddCommGroup.toAddCommMonoid
+
 /-- A commutative group is a group with commutative `(*)`. -/
 -- There is intentionally no `IsMulCommutative` for `CommGroup` instance for performance reasons.
 @[to_additive]
 class CommGroup (G : Type u) extends Group G, CommMonoid G
+
+-- in practice, the reason something is a CommMonoid is because it's
+-- a CommGroup
+attribute [instance 2000] CommGroup.toCommMonoid
 
 section CommGroup
 
