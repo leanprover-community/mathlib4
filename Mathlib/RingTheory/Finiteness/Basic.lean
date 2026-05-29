@@ -321,8 +321,10 @@ instance [Module.Finite R M] : Module.Finite R Mᵐᵒᵖ := equiv (MulOpposite.
 instance ulift [Module.Finite R M] : Module.Finite R (ULift M) := equiv ULift.moduleEquiv.symm
 
 universe u in
-instance Module.finite_shrink [Module.Finite R M] [Small.{u} M] : Module.Finite R (Shrink.{u} M) :=
+instance shrink [Module.Finite R M] [Small.{u} M] : Module.Finite R (Shrink.{u} M) :=
   Module.Finite.equiv (Shrink.linearEquiv R M).symm
+
+@[deprecated (since := "2026-04-18")] alias Module.finite_shrink := shrink
 
 /-- A submodule is finite as a module iff it is finitely generated. -/
 theorem iff_fg {N : Submodule R M} : Module.Finite R N ↔ N.FG := finite_def.trans N.fg_top
@@ -510,7 +512,6 @@ variable {R E : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommMonoid
 
 local notation3 "R≥0" => {c : R // 0 ≤ c}
 
-set_option backward.isDefEq.respectTransparency false in
 private instance instModuleFiniteAux : Module.Finite R≥0 R := by
   simp_rw [Module.finite_def, Submodule.fg_def, Submodule.eq_top_iff']
   refine ⟨{1, -1}, by simp, fun x ↦ ?_⟩
@@ -520,7 +521,6 @@ private instance instModuleFiniteAux : Module.Finite R≥0 R := by
   · simpa using Submodule.smul_mem (M := R) (.span R≥0 {1, -1}) ⟨-x, neg_nonneg.mpr hx⟩ (x := -1)
       (Submodule.subset_span <| by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a module is finite over a linearly ordered ring, then it is also finite over the non-negative
 scalars. -/
 instance instModuleFinite [Module.Finite R E] : Module.Finite R≥0 E := .trans R E

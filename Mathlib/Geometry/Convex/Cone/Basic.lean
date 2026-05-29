@@ -101,7 +101,7 @@ equalities. -/
 @[simps] protected def copy (C : ConvexCone R M) (s : Set M) (hs : s = C) : ConvexCone R M where
   carrier := s
   add_mem' := hs.symm ▸ C.add_mem'
-  smul_mem' := by simpa [hs] using C.smul_mem'
+  smul_mem' := by simpa [hs] using! C.smul_mem'
 
 lemma copy_eq (C : ConvexCone R M) (s : Set M) (hs) : C.copy s hs = C := SetLike.coe_injective hs
 
@@ -740,7 +740,7 @@ set_option linter.deprecated false in
 @[deprecated "no replacement" (since := "2026-03-30")]
 theorem convexHull_toCone_isLeast (s : Set M) :
     IsLeast { t : ConvexCone 𝕜 M | s ⊆ t } ((convex_convexHull 𝕜 s).toCone _) := by
-  convert (convex_convexHull 𝕜 s).toCone_isLeast using 1
+  convert! (convex_convexHull 𝕜 s).toCone_isLeast using 1
   ext t
   exact ⟨fun h => convexHull_min h t.convex, (subset_convexHull 𝕜 s).trans⟩
 

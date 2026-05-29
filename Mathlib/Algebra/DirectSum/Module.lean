@@ -213,6 +213,14 @@ theorem component.of [DecidableEq ι] (i j : ι) (b : M j) :
     component R ι M i ((lof R ι M j) b) = if h : j = i then Eq.recOn h b else 0 :=
   DFinsupp.single_apply
 
+lemma component_comp_lof [DecidableEq ι] (i j : ι) :
+    component R ι M i ∘ₗ lof R ι M j = if h : j = i then h ▸ .id else 0 := by
+  aesop (add simp component.of)
+
+@[simp]
+lemma component_comp_lof_same [DecidableEq ι] (i : ι) : component R ι M i ∘ₗ lof R ι M i = .id := by
+  simp [component_comp_lof]
+
 section map
 
 variable {R} {N : ι → Type*}
@@ -348,7 +356,7 @@ variable [DecidableEq ι] [∀ i j, AddCommMonoid (δ i j)] [∀ i j, Module R (
 
 /-- `curry` as a linear map. -/
 def sigmaLcurry : (⨁ i : Σ _, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
-  { sigmaCurry with map_smul' := fun r ↦ by convert DFinsupp.sigmaCurry_smul (δ := δ) r }
+  { sigmaCurry with map_smul' := fun r ↦ by convert! DFinsupp.sigmaCurry_smul (δ := δ) r }
 
 @[simp]
 theorem sigmaLcurry_apply (f : ⨁ i : Σ _, _, δ i.1 i.2) (i : ι) (j : α i) :

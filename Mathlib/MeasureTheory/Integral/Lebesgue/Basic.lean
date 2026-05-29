@@ -201,7 +201,7 @@ theorem iSup_lintegral_le {ι : Sort*} (f : ι → α → ℝ≥0∞) :
 
 theorem iSup₂_lintegral_le {ι : Sort*} {ι' : ι → Sort*} (f : ∀ i, ι' i → α → ℝ≥0∞) :
     ⨆ (i) (j), ∫⁻ a, f i j a ∂μ ≤ ∫⁻ a, ⨆ (i) (j), f i j a ∂μ := by
-  convert (monotone_lintegral μ).le_map_iSup₂ f with a
+  convert! (monotone_lintegral μ).le_map_iSup₂ f with a
   simp only [iSup_apply]
 
 theorem le_iInf_lintegral {ι : Sort*} (f : ι → α → ℝ≥0∞) :
@@ -211,7 +211,7 @@ theorem le_iInf_lintegral {ι : Sort*} (f : ι → α → ℝ≥0∞) :
 
 theorem le_iInf₂_lintegral {ι : Sort*} {ι' : ι → Sort*} (f : ∀ i, ι' i → α → ℝ≥0∞) :
     ∫⁻ a, ⨅ (i) (h : ι' i), f i h a ∂μ ≤ ⨅ (i) (h : ι' i), ∫⁻ a, f i h a ∂μ := by
-  convert (monotone_lintegral μ).map_iInf₂_le f with a
+  convert! (monotone_lintegral μ).map_iInf₂_le f with a
   simp only [iInf_apply]
 
 theorem lintegral_mono_ae {f g : α → ℝ≥0∞} (h : ∀ᵐ a ∂μ, f a ≤ g a) :
@@ -453,7 +453,7 @@ theorem hasSum_lintegral_measure {ι} {_ : MeasurableSpace α} (f : α → ℝ�
 theorem lintegral_of_isEmpty {α} [MeasurableSpace α] [IsEmpty α] (μ : Measure α) (f : α → ℝ≥0∞) :
     ∫⁻ x, f x ∂μ = 0 := by
   have : Subsingleton (Measure α) := inferInstance
-  convert lintegral_zero_measure f
+  convert! lintegral_zero_measure f
 
 theorem setLIntegral_empty (f : α → ℝ≥0∞) : ∫⁻ x in ∅, f x ∂μ = 0 := by
   rw [Measure.restrict_empty, lintegral_zero_measure]
@@ -463,7 +463,7 @@ theorem setLIntegral_univ (f : α → ℝ≥0∞) : ∫⁻ x in univ, f x ∂μ 
 
 theorem setLIntegral_measure_zero (s : Set α) (f : α → ℝ≥0∞) (hs' : μ s = 0) :
     ∫⁻ x in s, f x ∂μ = 0 := by
-  convert lintegral_zero_measure _
+  convert! lintegral_zero_measure _
   exact Measure.restrict_eq_zero.2 hs'
 
 -- TODO: Need a better way of rewriting inside of an integral

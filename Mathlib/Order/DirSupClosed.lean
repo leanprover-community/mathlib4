@@ -63,14 +63,14 @@ def DirSupInacc (s : Set α) : Prop :=
 @[simp] lemma DirSupClosed.dirSupClosedOn : DirSupClosed s → DirSupClosedOn D s := @fun h _ _ ↦ @h _
 @[simp] lemma DirSupInacc.dirSupInaccOn : DirSupInacc s → DirSupInaccOn D s := @fun h _ _ ↦ @h _
 
-@[simp] theorem DirSupClosed.of_isEmpty [IsEmpty α] (s : Set α) : DirSupClosed s :=
+@[simp] theorem DirSupClosed.of_isEmpty [IsEmpty α] {s : Set α} : DirSupClosed s :=
   fun _ _ ⟨a, _⟩ ↦ isEmptyElim a
 
-@[simp] theorem DirSupInacc.of_isEmpty [IsEmpty α] (s : Set α) : DirSupInacc s :=
+@[simp] theorem DirSupInacc.of_isEmpty [IsEmpty α] {s : Set α} : DirSupInacc s :=
   fun _ ⟨a, _⟩ ↦ isEmptyElim a
 
-theorem DirSupClosedOn.of_isEmpty [IsEmpty α] (s : Set α) : DirSupClosedOn D s := by simp
-theorem DirSupInaccOn.of_isEmpty [IsEmpty α] (s : Set α) : DirSupInaccOn D s := by simp
+theorem DirSupClosedOn.of_isEmpty [IsEmpty α] {s : Set α} : DirSupClosedOn D s := by simp
+theorem DirSupInaccOn.of_isEmpty [IsEmpty α] {s : Set α} : DirSupInaccOn D s := by simp
 
 @[gcongr]
 lemma DirSupClosedOn.mono (hD : D₁ ⊆ D₂) (hf : DirSupClosedOn D₂ s) : DirSupClosedOn D₁ s :=
@@ -97,10 +97,10 @@ lemma dirSupInaccOn_compl : DirSupInaccOn D sᶜ ↔ DirSupClosedOn D s := by
 lemma dirSupInacc_compl : DirSupInacc sᶜ ↔ DirSupClosed s := by
   rw [← dirSupClosed_compl, compl_compl]
 
-alias ⟨DirSupClosedOn.of_compl, DirSupInaccOn.compl⟩ := dirSupClosedOn_compl
-alias ⟨DirSupInaccOn.of_compl, DirSupClosedOn.compl⟩ := dirSupInaccOn_compl
-alias ⟨DirSupClosed.of_compl, DirSupInacc.compl⟩ := dirSupClosed_compl
-alias ⟨DirSupInacc.of_compl, DirSupClosed.compl⟩ := dirSupInacc_compl
+alias ⟨DirSupInaccOn.of_compl, DirSupInaccOn.compl⟩ := dirSupClosedOn_compl
+alias ⟨DirSupClosedOn.of_compl, DirSupClosedOn.compl⟩ := dirSupInaccOn_compl
+alias ⟨DirSupInacc.of_compl, DirSupInacc.compl⟩ := dirSupClosed_compl
+alias ⟨DirSupClosed.of_compl, DirSupClosed.compl⟩ := dirSupInacc_compl
 
 @[simp] theorem DirSupClosed.empty : DirSupClosed (∅ : Set α) := by simp [DirSupClosed]
 @[simp] theorem DirSupInacc.empty : DirSupInacc (∅ : Set α) := by simp [DirSupInacc]
@@ -255,10 +255,10 @@ lemma IsUpperSet.dirSupClosedOn (hs : IsUpperSet s) : DirSupClosedOn D s :=
   hs.dirSupClosed.dirSupClosedOn
 
 lemma IsLowerSet.dirSupInacc (hs : IsLowerSet s) : DirSupInacc s :=
-  hs.compl.dirSupClosed.of_compl
+  .of_compl hs.compl.dirSupClosed
 
 lemma IsLowerSet.dirSupInaccOn (hs : IsLowerSet s) : DirSupInaccOn D s :=
-  hs.compl.dirSupClosedOn.of_compl
+  .of_compl hs.compl.dirSupClosedOn
 
 theorem DirSupClosed.mem_imp_of_antisymmRel (hs : DirSupClosed s) {a b : α}
     (h : AntisymmRel (· ≤ ·) a b) (ha : a ∈ s) : b ∈ s := by
