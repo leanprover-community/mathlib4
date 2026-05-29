@@ -86,7 +86,7 @@ theorem ae_condExp_abs_le_abs_condExp (f : α → E) : |(μ[f | m])| ≤ᵐ[μ] 
     apply condExp_nonneg
     filter_upwards with a using abs_nonneg (f a)
   have h1 := condExp_mono (m := m) hfint hfint.abs (.of_forall (fun x => le_abs_self f x))
-  have (x : α) := abs_neg (f x) ▸ le_abs_self (- f x)
+  have (x : α) := neg_le_abs (f x)
   have h2 := condExp_mono (m := m) hfint.neg hfint.abs (.of_forall this)
   filter_upwards [h1, h2, condExp_neg f m] with a ha hb hc
   exact abs_le'.2 ⟨ha, hc.symm.le.trans hb⟩
