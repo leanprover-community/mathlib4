@@ -104,7 +104,7 @@ protected theorem center_prod {H : Type*} [Group H] : center (G × H) = prod (ce
 
 @[to_additive]
 protected theorem center_pi {η : Type*} {G : η → Type*} [Π i, Group (G i)] :
-    center (∀ i, G i) = pi .univ fun i ↦ center (G i) :=
+    center (Π i, G i) = pi .univ fun i ↦ center (G i) :=
   SetLike.coe_injective Set.center_pi
 
 variable {H : Subgroup G}

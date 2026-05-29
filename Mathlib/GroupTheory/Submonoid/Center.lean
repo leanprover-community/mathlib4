@@ -76,7 +76,7 @@ protected theorem center_prod {N : Type*} [MulOneClass N] :
 
 @[to_additive]
 protected theorem center_pi {ι : Type*} {M : ι → Type*} [Π i, MulOneClass (M i)] :
-    center (∀ i, M i) = pi .univ fun i ↦ center (M i) :=
+    center (Π i, M i) = pi .univ fun i ↦ center (M i) :=
   SetLike.coe_injective Set.center_pi
 
 end MulOneClass
