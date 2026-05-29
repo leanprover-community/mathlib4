@@ -255,7 +255,7 @@ theorem coe_id : ⇑(SupBotHom.id α) = id :=
 
 variable {α}
 
-@[to_dual (attr := simp)]
+@[to_dual]
 theorem id_apply (a : α) : SupBotHom.id α a = a :=
   rfl
 

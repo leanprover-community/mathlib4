@@ -110,7 +110,7 @@ theorem map_toFinset [DecidableEq α] [DecidableEq β] {s : Multiset α} :
 
 @[simp]
 theorem map_refl : s.map (Embedding.refl _) = s :=
-  ext fun _ => by simpa only [mem_map, exists_prop] using exists_eq_right
+  ext fun _ => by simpa only [mem_map, exists_prop] using! exists_eq_right
 
 @[simp]
 theorem map_cast_heq {α β} (h : α = β) (s : Finset α) :
@@ -176,7 +176,7 @@ theorem filter_map {p : β → Prop} [DecidablePred p] :
 lemma map_filter' (p : α → Prop) [DecidablePred p] (f : α ↪ β) (s : Finset α)
     [DecidablePred (∃ a, p a ∧ f a = ·)] :
     (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
-  simp [Function.comp_def, filter_map, f.injective.eq_iff]
+  simp [filter_map]
 
 lemma filter_attach' [DecidableEq α] (s : Finset α) (p : s → Prop) [DecidablePred p] :
     s.attach.filter p =
@@ -369,10 +369,26 @@ theorem image_subset_iff : s.image f ⊆ t ↔ ∀ x ∈ s, f x ∈ t :=
     s.image f ⊆ t ↔ f '' ↑s ⊆ ↑t := by norm_cast
     _ ↔ _ := Set.image_subset_iff
 
+lemma mapsTo_iff_image_subset : Set.MapsTo f s t ↔ s.image f ⊆ t := by
+  simp [Set.MapsTo, image_subset_iff]
+
+alias ⟨_root_.Set.MapsTo.finsetImage_subset, _⟩ := mapsTo_iff_image_subset
+
+lemma surjOn_iff_subset_image : Set.SurjOn f s t ↔ t ⊆ s.image f := by
+  simp only [Set.SurjOn]
+  norm_cast
+
+alias ⟨_root_.Set.SurjOn.subset_finsetImage, _⟩ := surjOn_iff_subset_image
+
+lemma image_eq_iff_surjOn_mapsTo : s.image f = t ↔ Set.SurjOn f s t ∧ Set.MapsTo f s t := by
+  grind [mapsTo_iff_image_subset, surjOn_iff_subset_image]
+
+alias ⟨_root_.Set.SurjOn.finsetImage_eq_of_mapsTo, _⟩ := image_eq_iff_surjOn_mapsTo
+
 theorem image_mono (f : α → β) : Monotone (Finset.image f) := fun _ _ => image_subset_image
 
 lemma image_injective (hf : Injective f) : Injective (image f) := by
-  simpa only [funext (map_eq_image _)] using map_injective ⟨f, hf⟩
+  simpa only [funext (map_eq_image _)] using! map_injective ⟨f, hf⟩
 
 lemma image_inj {t : Finset α} (hf : Injective f) : s.image f = t.image f ↔ s = t :=
   (image_injective hf).eq_iff
@@ -380,6 +396,17 @@ lemma image_inj {t : Finset α} (hf : Injective f) : s.image f = t.image f ↔ s
 theorem image_subset_image_iff {t : Finset α} (hf : Injective f) :
     s.image f ⊆ t.image f ↔ s ⊆ t :=
   mod_cast Set.image_subset_image_iff hf (s := s) (t := t)
+
+/-- Variant of `Finset.image_subset_image_iff` under an `InjOn` rather than `Injective`
+hypothesis. -/
+theorem image_subset_image_iff_of_injOn {s₁ s₂ : Finset α} (ht : (s : Set α).InjOn f)
+    (h₁ : s₁ ⊆ s) (h₂ : s₂ ⊆ s) : s₁.image f ⊆ s₂.image f ↔ s₁ ⊆ s₂ := by
+  exact_mod_cast ht.image_subset_image_iff (mod_cast h₁) (mod_cast h₂)
+
+/-- Variant of `Finset.image_inj` under an `InjOn` rather than `Injective` hypothesis. -/
+theorem image_eq_image_iff_of_injOn {s₁ s₂ : Finset α} (ht : (s : Set α).InjOn f)
+    (h₁ : s₁ ⊆ s) (h₂ : s₂ ⊆ s) : s₁.image f = s₂.image f ↔ s₁ = s₂ := by
+  exact_mod_cast ht.image_eq_image_iff (mod_cast h₁) (mod_cast h₂)
 
 lemma image_ssubset_image {t : Finset α} (hf : Injective f) : s.image f ⊂ t.image f ↔ s ⊂ t := by
   simp_rw [← lt_iff_ssubset]
@@ -504,6 +531,12 @@ theorem map_erase [DecidableEq α] (f : α ↪ β) (s : Finset α) (a : α) :
   simp_rw [map_eq_image]
   exact s.image_erase f.2 a
 
+theorem iterate_image [DecidableEq α] (f : α → α) (n : ℕ) :
+    (Finset.image f)^[n] s = s.image f^[n] := by
+  induction n with
+  | zero => simp
+  | succ n ih => rw [iterate_succ_apply', iterate_succ', ih, image_image]
+
 end Image
 
 /-! ### filterMap -/
@@ -572,7 +605,7 @@ theorem mem_subtype {p : α → Prop} [DecidablePred p] {s : Finset α} :
 theorem subtype_eq_empty {p : α → Prop} [DecidablePred p] {s : Finset α} :
     s.subtype p = ∅ ↔ ∀ x, p x → x ∉ s := by simp [Finset.ext_iff, Subtype.forall]
 
-@[mono]
+@[gcongr, mono]
 theorem subtype_mono {p : α → Prop} [DecidablePred p] : Monotone (Finset.subtype p) :=
   fun _ _ h _ hx => mem_subtype.2 <| h <| mem_subtype.1 hx
 
@@ -615,7 +648,7 @@ subtype. -/
 theorem map_subtype_subset {t : Set α} (s : Finset t) : ↑(s.map (Embedding.subtype _)) ⊆ t := by
   intro a ha
   rw [mem_coe] at ha
-  convert property_of_mem_map_subtype s ha
+  convert! property_of_mem_map_subtype s ha
 
 end Subtype
 

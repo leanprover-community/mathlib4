@@ -121,7 +121,7 @@ variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [Module R M] [AddCommMon
 /-- Applying a continuous linear map commutes with taking an (infinite) sum. -/
 protected theorem ContinuousLinearMap.hasSum {f : ι → M} (φ : M →SL[σ] M₂) {x : M}
     (hf : HasSum f x L) : HasSum (fun b : ι ↦ φ (f b)) (φ x) L := by
-  simpa only using hf.map φ.toLinearMap.toAddMonoidHom φ.continuous
+  simpa only using! hf.map φ.toLinearMap.toAddMonoidHom φ.continuous
 
 alias HasSum.mapL := ContinuousLinearMap.hasSum
 
@@ -190,9 +190,8 @@ noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β �
     Quotient (MulAction.orbitRel α β) → M := by
   refine @Quotient.lift _ _ (_) (fun b ↦ ∑' (a : α), f (a • b)) ?_
   intro b₁ b₂ ⟨a, (ha : a • b₂ = b₁)⟩
-  simp only
   rw [← ha]
-  convert (Equiv.mulRight a).tsum_eq (fun a' ↦ f (a' • b₂)) using 1
+  convert! (Equiv.mulRight a).tsum_eq (fun a' ↦ f (a' • b₂)) using 1
   simp only [Equiv.coe_mulRight]
   congr
   ext

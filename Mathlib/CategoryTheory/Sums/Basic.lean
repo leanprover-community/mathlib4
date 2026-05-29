@@ -214,8 +214,8 @@ def sumIsoExt : F ≅ G :=
     | inr x => e₂.app x)
     (fun {x y} f ↦ by
       cases f
-      · simpa using e₁.hom.naturality _
-      · simpa using e₂.hom.naturality _)
+      · simpa using! e₁.hom.naturality _
+      · simpa using! e₂.hom.naturality _)
 
 @[simp]
 lemma sumIsoExt_hom_app_inl (a : A) : (sumIsoExt e₁ e₂).hom.app (inl a) = e₁.hom.app a := rfl
@@ -262,6 +262,7 @@ namespace NatTrans
 variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B] {C : Type u₃}
   [Category.{v₃} C] {D : Type u₄} [Category.{v₄} D]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The sum of two natural transformations, where all functors have the same target category. -/
 def sum' {F G : A ⥤ C} {H I : B ⥤ C} (α : F ⟶ G) (β : H ⟶ I) : F.sum' H ⟶ G.sum' I where
@@ -282,6 +283,7 @@ theorem sum'_app_inr {F G : A ⥤ C} {H I : B ⥤ C} (α : F ⟶ G) (β : H ⟶ 
     (sum' α β).app (inr b) = β.app b :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The sum of two natural transformations. -/
 def sum {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.sum H ⟶ G.sum I where
@@ -339,6 +341,7 @@ def swapCompInr : inr_ C D ⋙ swap C D ≅ inl_ D C :=
 
 namespace Swap
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `swap` gives an equivalence between `C ⊕ D` and `D ⊕ C`. -/
 @[simps functor inverse]
 def equivalence : C ⊕ D ≌ D ⊕ C where

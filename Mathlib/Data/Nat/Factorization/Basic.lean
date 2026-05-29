@@ -38,7 +38,7 @@ theorem factorization_eq_zero_iff_remainder {p r : ℕ} (i : ℕ) (pp : p.Prime)
   contrapose! h
   refine ⟨pp, ?_, ?_⟩
   · rwa [← Nat.dvd_add_iff_right (dvd_mul_right p i)]
-  · contrapose! hr0
+  · contrapose hr0
     exact (add_eq_zero.1 hr0).2
 
 /-- The only numbers with empty prime factorization are `0` and `1` -/
@@ -52,7 +52,7 @@ theorem factorization_eq_zero_iff' (n : ℕ) : n.factorization = 0 ↔ n = 0 ∨
 theorem factorization_prod_apply {α : Type*} {p : ℕ}
     {S : Finset α} {g : α → ℕ} (hS : ∀ x ∈ S, g x ≠ 0) :
     (S.prod g).factorization p = S.sum fun x => (g x).factorization p := by
-  rw [factorization_prod hS, finset_sum_apply]
+  rw [factorization_prod hS, finsetSum_apply]
 
 /-- A product over `n.factorization` can be written as a product over `n.primeFactors`; -/
 lemma prod_factorization_eq_prod_primeFactors {β : Type*} [CommMonoid β] (f : ℕ → ℕ → β) :
@@ -132,7 +132,7 @@ theorem factorization_lt {n : ℕ} (p : ℕ) (hn : n ≠ 0) : n.factorization p 
   by_cases pp : p.Prime
   · exact (Nat.pow_lt_pow_iff_right pp.one_lt).1 <| (ordProj_le p hn).trans_lt <|
       Nat.lt_pow_self pp.one_lt
-  · simpa only [factorization_eq_zero_of_not_prime n pp] using hn.bot_lt
+  · simpa only [factorization_eq_zero_of_not_prime n pp] using! hn.bot_lt
 
 /-- An upper bound on `n.factorization p` -/
 theorem factorization_le_of_le_pow {n p b : ℕ} (hb : n ≤ p ^ b) : n.factorization p ≤ b := by

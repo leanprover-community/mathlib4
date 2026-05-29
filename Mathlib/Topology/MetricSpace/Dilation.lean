@@ -243,7 +243,7 @@ variable (f : F)
 @[simps]
 def _root_.Isometry.toDilation (f : α → β) (hf : Isometry f) : α →ᵈ β where
   toFun := f
-  edist_eq' := ⟨1, one_ne_zero, by simpa using hf⟩
+  edist_eq' := ⟨1, one_ne_zero, by simpa using! hf⟩
 
 @[simp]
 lemma _root_.Isometry.toDilation_ratio {f : α → β} {hf : Isometry f} : ratio hf.toDilation = 1 := by

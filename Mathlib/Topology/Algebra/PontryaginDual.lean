@@ -24,7 +24,7 @@ isomorphic to its double dual.
 
 @[expose] public section
 
-open Pointwise Function
+open scoped Pointwise
 
 variable (A B C G H : Type*) [Monoid A] [Monoid B] [Monoid C] [CommGroup G] [Group H]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]

@@ -160,7 +160,7 @@ def ofIterate [PartialOrder Γ'] (x : R⟦Γ'⟧⟦Γ⟧) : R⟦Γ ×ₗ Γ'⟧ 
     · refine Set.IsPWO.mono x.isPWO_support' ?_
       simp_rw [Set.image_subset_iff, support_subset_iff, Set.mem_preimage, Function.mem_support]
       exact fun _ ↦ ne_zero_of_coeff_ne_zero
-    · exact fun a => by simpa [Function.mem_support, ne_eq] using (x.coeff a).isPWO_support'
+    · exact fun a => by simpa [Function.mem_support, ne_eq] using! (x.coeff a).isPWO_support'
 
 @[simp]
 lemma mk_eq_zero (f : Γ → R) (h) : HahnSeries.mk f h = 0 ↔ f = 0 := by
@@ -454,7 +454,7 @@ theorem embDomain_coeff {f : Γ ↪o Γ'} {x : R⟦Γ⟧} {a : Γ} :
   · rw [dif_pos (Set.mem_image_of_mem f ha)]
     exact congr rfl (f.injective (Classical.choose_spec (Set.mem_image_of_mem f ha)).2)
   · rw [dif_neg, Classical.not_not.1 fun c => ha ((mem_support _ _).2 c)]
-    contrapose! ha
+    contrapose ha
     obtain ⟨b, hb1, hb2⟩ := (Set.mem_image _ _ _).1 ha
     rwa [f.injective hb2] at hb1
 

@@ -234,6 +234,7 @@ noncomputable def f (i : ι) : (K.restriction e).X i ⟶ (K.truncGE' e).X i :=
   else
     (K.truncGE'XIso e rfl hi).inv
 
+set_option backward.defeqAttrib.useBackward true in
 lemma f_eq_iso_hom_pOpcycles_iso_inv {i : ι} {i' : ι'} (hi' : e.f i = i') (hi : e.BoundaryGE i) :
     f K e i = (K.restrictionXIso e hi').hom ≫ K.pOpcycles i' ≫
       (K.truncGE'XIsoOpcycles e hi' hi).inv := by
@@ -242,6 +243,7 @@ lemma f_eq_iso_hom_pOpcycles_iso_inv {i : ι} {i' : ι'} (hi' : e.f i = i') (hi 
   subst hi'
   simp [restrictionXIso]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma f_eq_iso_hom_iso_inv {i : ι} {i' : ι'} (hi' : e.f i = i') (hi : ¬ e.BoundaryGE i) :
     f K e i = (K.restrictionXIso e hi').hom ≫ (K.truncGE'XIso e hi' hi).inv := by
   dsimp [f]
@@ -272,6 +274,7 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def restrictionToTruncGE' : K.restriction e ⟶ K.truncGE' e where
   f := restrictionToTruncGE'.f K e
 
+set_option backward.defeqAttrib.useBackward true in
 lemma restrictionToTruncGE'_hasLift : e.HasLift (K.restrictionToTruncGE' e) := by
   intro j hj i' _
   dsimp [restrictionToTruncGE']
@@ -296,6 +299,7 @@ lemma isIso_restrictionToTruncGE' (i : ι) (hi : ¬ e.BoundaryGE i) :
   rw [K.restrictionToTruncGE'_f_eq_iso_hom_iso_inv e rfl hi]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 variable {K L} in
 @[reassoc (attr := simp)]
 lemma restrictionToTruncGE'_naturality :
@@ -352,6 +356,7 @@ instance : (K.truncGE e).IsStrictlySupported e := by
   dsimp [truncGE]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {K L} in
 @[reassoc (attr := simp)]
@@ -415,6 +420,7 @@ noncomputable def truncGE'Functor :
   obj K := K.truncGE' e
   map φ := HomologicalComplex.truncGE'Map φ e
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `K.restriction e ⟶ K.truncGE' e` for all `K`. -/
 @[simps]
 noncomputable def restrictionToTruncGE'NatTrans :
@@ -430,6 +436,7 @@ noncomputable def truncGEFunctor :
   obj K := K.truncGE e
   map φ := HomologicalComplex.truncGEMap φ e
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `K.πTruncGE e : K ⟶ K.truncGE e` for all `K`. -/
 @[simps]
 noncomputable def πTruncGENatTrans : 𝟭 _ ⟶ e.truncGEFunctor C where

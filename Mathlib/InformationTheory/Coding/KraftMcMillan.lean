@@ -91,6 +91,7 @@ private lemma concatFn_length_mem_Icc {S : Finset (List α)}
   · -- upper bound
     exact (Finset.sum_le_sum (fun i _ => Finset.le_sup (w i).prop)).trans_eq (by simp)
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 /-- Auxiliary bound for Kraft–McMillan.
 
 If `S` is a finite uniquely decodable code and `1 ≤ r`, then the `r`-th power of its Kraft sum
@@ -136,7 +137,8 @@ private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [Fintype α] 
   apply le_trans (Finset.sum_le_sum (fun _ _ => sum_pow_length_filter_eq_le_card_mul))
   -- Summing these bounds over the interval s ∈ [r, r * maxLen] multiplies the term
   -- by the number of lengths. Since r ≥ 1, this count is at most r * maxLen.
-  rcases r with (_ | _ | r) <;> rcases maxLen with (_ | _ | maxLen) <;> norm_num at *
+  rcases r with (_ | _ | r) <;> rcases maxLen with (_ | _ | maxLen)
+  all_goals try simp at *
   · positivity
   · rw [Nat.cast_sub] <;> push_cast <;> nlinarith only
 
@@ -154,7 +156,7 @@ public theorem kraft_mcmillan_inequality {S : Finset (List α)} [Fintype α] [No
   have hAbs : |1 / K| < 1 := by
     grw [abs_of_pos (by positivity), div_lt_one] <;> grind
   have : Tendsto (fun r : ℕ => r * maxLen / K ^ r) atTop (nhds 0) := by
-    simpa [mul_left_comm, mul_div_assoc] using
+    simpa [mul_left_comm, mul_div_assoc] using!
       (tendsto_self_mul_const_pow_of_abs_lt_one hAbs).const_mul (maxLen : ℝ)
   obtain ⟨r, hr⟩ := eventually_atTop.mp <| this.eventually <| gt_mem_nhds zero_lt_one
   refine ⟨r + 1, by linarith, ?_⟩

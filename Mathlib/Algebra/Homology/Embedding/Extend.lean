@@ -74,6 +74,7 @@ lemma d_eq {i j : Option ι} {a b : ι} (hi : i = some a) (hj : j = some b) :
   subst hi hj
   simp [XIso, X, d]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma XOpIso_hom_d_op (i j : Option ι) :
@@ -96,6 +97,7 @@ noncomputable def mapX : ∀ (i : Option ι), X K i ⟶ X L i
   | some i => φ.f i
   | none => 0
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mapX_some {i : Option ι} {a : ι} (hi : i = some a) :
     mapX φ i = (XIso K hi).hom ≫ φ.f a ≫ (XIso L hi).inv := by
   subst hi
@@ -247,6 +249,7 @@ noncomputable def extendOpIso : K.op.extend e.op ≅ (K.extend e).op :=
   Hom.isoOfComponents (fun _ ↦ extend.XOpIso _ _) (fun _ _ _ ↦
     extend.XOpIso_hom_d_op _ _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma extend_op_d (i' j' : ι') :
@@ -322,6 +325,20 @@ lemma extendSingleIso_inv_f (h : e.f i = i') :
 
 end
 
+instance [HasZeroMorphisms C] (e : c.Embedding c') (K : HomologicalComplex C c)
+    [∀ i, Projective (K.X i)] (i' : ι') : Projective ((K.extend e).X i') := by
+  by_cases! hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, hi⟩ := hi'
+    exact Projective.of_iso (K.extendXIso e hi).symm inferInstance
+  · exact (isZero_extend_X K e i' hi').projective
+
+instance [HasZeroMorphisms C] (e : c.Embedding c') (K : HomologicalComplex C c)
+    [∀ i, Injective (K.X i)] (i' : ι') : Injective ((K.extend e).X i') := by
+  by_cases! hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, hi⟩ := hi'
+    exact Injective.of_iso (K.extendXIso e hi).symm inferInstance
+  · exact (isZero_extend_X K e i' hi').injective
+
 end HomologicalComplex
 
 namespace ComplexShape.Embedding
@@ -342,6 +359,7 @@ instance [HasZeroMorphisms C] : (e.extendFunctor C).PreservesZeroMorphisms where
 
 instance [Preadditive C] : (e.extendFunctor C).Additive where
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The extension functor attached to an embedding of complex shapes is fully faithful. -/
 noncomputable def fullyFaithfulExtendFunctor [HasZeroMorphisms C] :
     (e.extendFunctor C).FullyFaithful where

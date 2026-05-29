@@ -107,7 +107,7 @@ lemma range_enumerateCountable_of_mem {s : Set α} (h : s.Countable) {default : 
 lemma enumerateCountable_mem {s : Set α} (h : s.Countable) {default : α} (h_mem : default ∈ s)
     (n : ℕ) :
     enumerateCountable h default n ∈ s := by
-  convert mem_range_self n
+  convert! mem_range_self n
   exact (range_enumerateCountable_of_mem h h_mem).symm
 
 end Enumerate
@@ -294,7 +294,7 @@ theorem countable_univ_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)
 
 theorem countable_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)} (hs : ∀ a, (s a).Countable) :
     { f : ∀ a, π a | ∀ a, f a ∈ s a }.Countable := by
-  simpa only [← mem_univ_pi] using countable_univ_pi hs
+  simpa only [← mem_univ_pi] using! countable_univ_pi hs
 
 protected theorem Countable.prod {s : Set α} {t : Set β} (hs : s.Countable) (ht : t.Countable) :
     Set.Countable (s ×ˢ t) :=

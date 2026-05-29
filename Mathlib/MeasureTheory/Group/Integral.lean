@@ -48,7 +48,7 @@ theorem IntegrableOn.comp_inv [IsInvInvariant μ] {f : G → F} {s : Set G} (hf 
   apply (integrable_map_equiv (MeasurableEquiv.inv G) f).mp
   have : s⁻¹ = MeasurableEquiv.inv G ⁻¹' s := by simp
   rw [this, ← MeasurableEquiv.restrict_map]
-  simpa using hf
+  simpa using! hf
 
 end MeasurableInv
 
@@ -156,7 +156,7 @@ theorem Integrable.comp_div_left {f : G → F} [IsInvInvariant μ] [IsMulLeftInv
 theorem integrable_comp_div_left (f : G → F) [IsInvInvariant μ] [IsMulLeftInvariant μ] (g : G) :
     Integrable (fun t => f (g / t)) μ ↔ Integrable f μ := by
   refine ⟨fun h => ?_, fun h => h.comp_div_left g⟩
-  convert h.comp_inv.comp_mul_left g⁻¹
+  convert! h.comp_inv.comp_mul_left g⁻¹
   simp_rw [div_inv_eq_mul, mul_inv_cancel_left]
 
 @[to_additive]

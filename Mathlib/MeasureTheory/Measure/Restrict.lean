@@ -188,7 +188,7 @@ theorem restrict_zero {_m0 : MeasurableSpace α} (s : Set α) : (0 : Measure α)
 theorem restrict_smul {_m0 : MeasurableSpace α} {R : Type*} [SMul R ℝ≥0∞]
     [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R) (μ : Measure α) (s : Set α) :
     (c • μ).restrict s = c • μ.restrict s := by
-  simpa only [smul_one_smul] using (restrictₗ s).map_smul (c • 1) μ
+  simpa only [smul_one_smul] using! (restrictₗ s).map_smul (c • 1) μ
 
 theorem restrict_restrict₀ (hs : NullMeasurableSet s (μ.restrict t)) :
     (μ.restrict t).restrict s = μ.restrict (s ∩ t) :=
@@ -744,14 +744,10 @@ lemma NullMeasurable.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_e
   · apply le_antisymm _ (measure_mono inter_subset_left)
     apply (measure_mono (Eq.symm (inter_union_compl (f ⁻¹' t) s)).le).trans
     apply (measure_union_le _ _).trans
-    have obs : μ ((f ⁻¹' t) ∩ sᶜ) = 0 := by
-      apply le_antisymm _ (zero_le _)
-      rw [← hs]
-      apply measure_mono (inter_subset_inter_left _ _)
-      intro x hx hfx
-      simp only [mem_preimage] at hx hfx
-      exact ht (hfx ▸ hx)
-    simp only [obs, add_zero, le_refl]
+    suffices μ ((f ⁻¹' t) ∩ sᶜ) = 0 by simp [this]
+    rw [← nonpos_iff_eq_zero, ← hs]
+    gcongr
+    exact fun x hx hfx ↦ ht (hfx ▸ hx)
   · exact NullMeasurableSet.of_null hs
 
 lemma nullMeasurableSet_restrict (hs : NullMeasurableSet s μ) {t : Set α} :
@@ -785,7 +781,7 @@ lemma nullMeasurableSet_restrict_of_subset {t : Set α} (ht : t ⊆ s) :
     h.exists_measurable_subset_ae_eq
   have : ∀ᵐ x ∂μ, x ∈ s → (x ∈ t' ↔ x ∈ t) := by
     apply ae_imp_of_ae_restrict
-    filter_upwards [t't] with x hx using by simpa using hx
+    filter_upwards [t't] with x hx using by simpa using! hx
   have : t' =ᵐ[μ] t := by
     filter_upwards [this] with x hx
     change (x ∈ t') = (x ∈ t)
@@ -814,7 +810,6 @@ theorem MeasurableSet.nullMeasurableSet_subtype_coe {t : Set s} (hs : NullMeasur
     simp only [← range_diff_image Subtype.coe_injective, Subtype.range_coe_subtype, setOf_mem_eq]
     exact hs.diff ht'
   | iUnion f _ hf =>
-    dsimp only []
     rw [image_iUnion]
     exact .iUnion hf
 
@@ -890,7 +885,7 @@ theorem map_comap (μ : Measure β) : (comap f μ).map f = μ.restrict (range f)
 
 theorem comap_apply (μ : Measure β) (s : Set α) : comap f μ s = μ (f '' s) :=
   calc
-    comap f μ s = comap f μ (f ⁻¹' (f '' s)) := by rw [hf.injective.preimage_image]
+    comap f μ s = comap f μ (f ⁻¹' f '' s) := by rw [hf.injective.preimage_image]
     _ = (comap f μ).map f (f '' s) := (hf.map_apply _ _).symm
     _ = μ (f '' s) := by
       rw [hf.map_comap, restrict_apply' hf.measurableSet_range,
@@ -1109,7 +1104,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
     · simp_rw [P, mem_inter_iff, mem_iInter, Finset.mem_sdiff, mem_filter]; tauto
   have iUnion_P : ⋃ C ∈ Cs, P C ⊆ ⋃ i, s i := by
     intro x hx
-    simp_rw [Cs, toFinset_diff, Finset.mem_sdiff, mem_iUnion] at hx
+    simp_rw [Cs, Finset.mem_sdiff, mem_iUnion] at hx
     have ⟨C, ⟨_, C_nonempty⟩, hxC⟩ := hx
     have ⟨i, hi⟩ := Finset.nonempty_iff_ne_empty.mpr <| Finset.notMem_singleton.mp C_nonempty
     exact ⟨s i, ⟨i, rfl⟩, hxC.1 (s i) ⟨i, by simp [hi]⟩⟩
@@ -1144,7 +1139,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       have hCM : (C : Set ι).encard ≤ M :=
         have ⟨x, hx⟩ := Set.nonempty_iff_ne_empty.mpr hPC
         (encard_mono (mem_iInter₂.mp hx.1)).trans (hs x)
-      exact nsmul_le_nsmul_left (zero_le _) <| calc {a ∈ F | a ∈ C}.card
+      exact nsmul_le_nsmul_left zero_le <| calc {a ∈ F | a ∈ C}.card
         _ ≤ C.card := card_mono <| fun i hi ↦ (F.mem_filter.mp hi).2
         _ = (C : Set ι).ncard := (ncard_coe_finset C).symm
         _ ≤ M := ENat.toNat_le_of_le_coe hCM

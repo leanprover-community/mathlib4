@@ -129,7 +129,7 @@ private lemma norm_eq_of_isMinOn_of_forall_le {X E : Type*} [TopologicalSpace X]
     (hx : ‖f x‖ = M) (h : IsMinOn (‖f ·‖) univ x) (hf : Continuous f)
     (H : ∀ {y} z, ‖f y‖ = M → ∀ n > 0, ‖f z‖ ≤ M * (1 + (‖f z - f y‖ / M) ^ n)) (y : X) :
     ‖f y‖ = M := by
-  suffices {y | ‖f y‖ = M} = univ by simpa only [← this, hx] using mem_univ y
+  suffices {y | ‖f y‖ = M} = univ by simpa only [← this, hx] using! mem_univ y
   refine IsClopen.eq_univ ⟨isClosed_eq (by fun_prop) (by fun_prop), ?_⟩ <| nonempty_of_mem hx
   rw [isOpen_iff_eventually]
   intro w hw
@@ -191,7 +191,6 @@ private lemma norm_sub_eq_norm_sub_of_isMinOn {x : F} {z : ℂ}
   have hM₀ : 0 < M := by have := H z; positivity
   refine norm_eq_of_isMinOn_of_forall_le (f := (x - algebraMap ℂ F ·)) hM₀ hMdef.symm hz
     (by fun_prop) (fun {y} w hy n hn ↦ ?_) c
-  dsimp only at hy ⊢
   -- show
   --  `‖x - algebraMap ℂ F w‖ ≤ M * (1 + (‖x - algebraMap ℂ F w - (x - algebraMap ℂ F y)‖ / M) ^ n)`
   rw [sub_sub_sub_cancel_left, ← map_sub, norm_algebraMap, norm_sub_rev y w, norm_one, mul_one,
@@ -262,7 +261,7 @@ variable {F : Type*} [NormedRing F] [NormedAlgebra ℝ F]
 
 /- A (private) abbreviation introduced for conciseness below.
 We will show that for every `x : F`, `φ x` takes the value zero. -/
-private abbrev φ (x : F) (u : ℝ × ℝ) : F := x ^ 2 - u.1 • x + algebraMap ℝ F u.2
+private noncomputable abbrev φ (x : F) (u : ℝ × ℝ) : F := x ^ 2 - u.1 • x + algebraMap ℝ F u.2
 
 private lemma continuous_φ (x : F) : Continuous (φ x) := by fun_prop
 
@@ -394,7 +393,7 @@ lemma exists_isMonicOfDegree_two_and_aeval_eq_zero (x : F) :
   have h' (r : ℝ) : √M ≤ ‖x - algebraMap ℝ F r‖ := by
     rw [← sq_le_sq₀ M.sqrt_nonneg (norm_nonneg _), Real.sq_sqrt (norm_nonneg _), ← norm_pow,
       Commute.sub_sq <| algebraMap_eq_smul_one (A := F) r ▸ commute_algebraMap_right r x]
-    convert isMinOn_univ_iff.mp h (2 * r, r ^ 2) using 4 <;>
+    convert! isMinOn_univ_iff.mp h (2 * r, r ^ 2) using 4 <;>
       simp [two_mul, add_mul, ← commutes, smul_def, mul_add]
   have := tendsto_norm_atTop_iff_cobounded.mpr <| tendsto_φ_cobounded (by positivity) h'
   simp only [norm_φ_eq_norm_φ_of_isMinOn h (norm_ne_zero_iff.mpr H)] at this

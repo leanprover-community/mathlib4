@@ -14,7 +14,6 @@ public import Mathlib.Data.Fintype.EquivFin
 
 @[expose] public section
 
-
 universe w v u
 
 noncomputable section
@@ -63,6 +62,7 @@ noncomputable def objAsTypeToAsType : ObjAsType α ⥤ AsType α where
   obj := id
   map {_ _} := Fintype.equivFin _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The constructed category (`AsType α`) is equivalent to `ObjAsType α`. -/
 noncomputable def asTypeEquivObjAsType : AsType α ≌ ObjAsType α where
@@ -74,7 +74,7 @@ noncomputable def asTypeEquivObjAsType : AsType α ≌ ObjAsType α where
 noncomputable instance asTypeFinCategory : FinCategory (AsType α) where
   fintypeHom := fun _ _ => show Fintype (Fin _) from inferInstance
 
-/-- The constructed category (`ObjAsType α`) is indeed equivalent to `α`. -/
+/-- The constructed category (`AsType α`) is indeed equivalent to `α`. -/
 noncomputable def equivAsType : AsType α ≌ α :=
   (asTypeEquivObjAsType α).trans (objAsTypeEquiv α)
 

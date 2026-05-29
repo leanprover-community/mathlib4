@@ -75,7 +75,6 @@ instance (o : OrderType) : LinearOrder o.ToType :=
 /-! ### Basic properties of the order type -/
 
 /-- The order type of the linear order on `α`. -/
-@[no_expose]
 def type (α : Type u) [LinearOrder α] : OrderType :=
   ⟦⟨α⟩⟧
 

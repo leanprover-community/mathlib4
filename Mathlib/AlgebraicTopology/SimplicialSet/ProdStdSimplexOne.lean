@@ -29,6 +29,7 @@ namespace prodStdSimplex
 
 variable {p : ℕ}
 
+set_option backward.defeqAttrib.useBackward true in
 open stdSimplex in
 /-- This is an enumeration of the `p + 1` nondegenerate dimension-`(p + 1)`
 simplices of `Δ[p] ⊗ Δ[1]`. It sends `i : Fin (p + 1)` to the nondegenerate

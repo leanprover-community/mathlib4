@@ -149,6 +149,7 @@ structure SMulCandidate where
   h ⦃Y : Cᵒᵖ⦄ (f : X ⟶ Y) (r₀ : R₀.obj Y) (hr₀ : α.app Y r₀ = R.obj.map f r)
     (m₀ : M₀.obj Y) (hm₀ : φ.app Y m₀ = A.obj.map f m) : A.obj.map f x = φ.app Y (r₀ • m₀)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Constructor for `SMulCandidate`. -/
 def SMulCandidate.mk' (S : Sieve X.unop) (hS : S ∈ J X.unop)
     (r₀ : Presieve.FamilyOfElements (R₀ ⋙ forget _) S.arrows)
@@ -169,6 +170,7 @@ def SMulCandidate.mk' (S : Sieve X.unop) (hS : S ∈ J X.unop)
     · rw [← RingCat.comp_apply, NatTrans.naturality, RingCat.comp_apply, ha₀]
       apply (hr₀ _ hg).symm.trans
       simp
+      rfl
     · erw [NatTrans.naturality_apply φ, hb₀]
       apply (hm₀ _ hg).symm.trans
       dsimp
@@ -327,7 +329,7 @@ noncomputable def sheafify : SheafOfModules.{v} R where
 /-- The canonical morphism from a presheaf of modules to its associated sheaf. -/
 noncomputable def toSheafify : M₀ ⟶ (restrictScalars α).obj (sheafify α φ).val :=
   homMk φ (fun X r₀ m₀ ↦ by
-    simpa using (Sheafify.map_smul_eq α φ (α.app _ r₀) (φ.app _ m₀) (𝟙 _)
+    simpa using! (Sheafify.map_smul_eq α φ (α.app _ r₀) (φ.app _ m₀) (𝟙 _)
       r₀ (by simp) m₀ (by simp)).symm)
 
 lemma toSheafify_app_apply (X : Cᵒᵖ) (x : M₀.obj X) :
@@ -384,6 +386,7 @@ variable {M₀' : PresheafOfModules.{v} R₀} {A' : Sheaf J AddCommGrpCat.{v}}
   [Presheaf.IsLocallyInjective J φ'] [Presheaf.IsLocallySurjective J φ']
   (τ₀ : M₀ ⟶ M₀') (τ : A ⟶ A')
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The morphism of sheaves of modules `sheafify α φ ⟶ sheafify α φ'`
 induced by morphisms `τ₀ : M₀ ⟶ M₀'` and `τ : A ⟶ A'`
@@ -393,7 +396,7 @@ noncomputable def sheafifyMap (fac : (toPresheaf R₀).map τ₀ ≫ φ' = φ �
     sheafify α φ ⟶ sheafify α φ' where
   val := homMk τ.hom (fun X r m ↦ by
     let f := (sheafifyHomEquiv' α φ (by exact A'.property)).symm (τ₀ ≫ toSheafify α φ')
-    suffices τ.hom = (toPresheaf _).map f by simpa only [this] using (f.app X).hom.map_smul r m
+    suffices τ.hom = (toPresheaf _).map f by simpa only [this] using! (f.app X).hom.map_smul r m
     apply ((J.W_of_isLocallyBijective φ).homEquiv _ A'.property).injective
     dsimp [f]
     erw [comp_toPresheaf_map_sheafifyHomEquiv'_symm_hom]

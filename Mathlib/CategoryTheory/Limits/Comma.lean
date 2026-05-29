@@ -47,6 +47,7 @@ in the comma category. -/
 def limitAuxiliaryCone (c₁ : Cone (F ⋙ fst L R)) : Cone ((F ⋙ snd L R) ⋙ R) :=
   (Cone.postcompose (whiskerLeft F (Comma.natTrans L R) :)).obj (L.mapCone c₁)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `R` preserves the appropriate limit, then given a cone for `F ⋙ fst L R : J ⥤ L` and a
 limit cone for `F ⋙ snd L R : J ⥤ R` we can build a cone for `F` which will turn out to be a limit
 cone.
@@ -94,6 +95,7 @@ in the comma category. -/
 def colimitAuxiliaryCocone (c₂ : Cocone (F ⋙ snd L R)) : Cocone ((F ⋙ fst L R) ⋙ L) :=
   (Cocone.precompose (whiskerLeft F (Comma.natTrans L R) :)).obj (R.mapCocone c₂)
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 If `L` preserves the appropriate colimit, then given a colimit cocone for `F ⋙ fst L R : J ⥤ L` and
 a cocone for `F ⋙ snd L R : J ⥤ R` we can build a cocone for `F` which will turn out to be a
@@ -215,6 +217,9 @@ namespace StructuredArrow
 
 variable {X : T} {G : A ⥤ T} (F : J ⥤ StructuredArrow X G)
 
+instance [G.Faithful] [G.Full] {Y : A} : HasInitial (StructuredArrow (G.obj Y) G) :=
+  StructuredArrow.mkIdInitial.hasInitial
+
 set_option backward.isDefEq.respectTransparency false in
 instance hasLimit [i₁ : HasLimit (F ⋙ proj X G)] [i₂ : PreservesLimit (F ⋙ proj X G) G] :
     HasLimit F := by
@@ -306,5 +311,11 @@ namespace Over
 instance {X : T} : HasTerminal (Over X) := CostructuredArrow.hasTerminal
 
 end Over
+
+namespace Under
+
+instance {X : T} : HasInitial (Under X) := Under.mkIdInitial.hasInitial
+
+end Under
 
 end CategoryTheory

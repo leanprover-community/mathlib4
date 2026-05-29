@@ -134,6 +134,7 @@ variable {F : C ⥤ D}
 
 attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a left adjoint to `G`, we can construct an initial object in each structured arrow
 category on `G`. -/
@@ -144,6 +145,7 @@ def mkInitialOfLeftAdjoint (h : F ⊣ G) (A : C) :
     apply StructuredArrow.ext
     simp [← StructuredArrow.w m]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a right adjoint to `F`, we can construct a terminal object in each costructured arrow
 category on `F`. -/

@@ -112,7 +112,7 @@ lemma addContent_biUnion {ι : Type*} {a : Finset ι} {f : ι → Set α} (hf : 
   have A : ⋃ i ∈ a, f i = ⋃₀ (a.image f) := by simp
   rw [A, addContent_sUnion]; rotate_left
   · grind
-  · simpa using h_dis.image
+  · simpa using! h_dis.image
   · rwa [← A]
   rw [sum_image_of_pairwise_eq_zero]
   refine h_dis.imp ?_
@@ -121,7 +121,7 @@ lemma addContent_biUnion {ι : Type*} {a : Finset ι} {f : ι → Set α} (hf : 
 lemma addContent_iUnion {ι : Type*} [Fintype ι] {f : ι → Set α} (hf : ∀ i, f i ∈ C)
     (h_dis : Pairwise (Disjoint on f)) (h_mem : ⋃ i, f i ∈ C) :
     m (⋃ i, f i) = ∑ i, m (f i) := by
-  convert addContent_biUnion (a := Finset.univ) (f := f) (m := m) ?_ ?_ ?_ using 1
+  convert! addContent_biUnion (a := Finset.univ) (f := f) (m := m) ?_ ?_ ?_ using 1
   · simp
   · simpa
   · simpa [Set.PairwiseDisjoint, Set.pairwise_univ] using h_dis
@@ -130,7 +130,7 @@ lemma addContent_iUnion {ι : Type*} [Fintype ι] {f : ι → Set α} (hf : ∀ 
 lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_dis : Disjoint s t) :
     m (s ∪ t) = m s + m t := by
   have A : s ∪ t = ⋃ i, ![s, t] i := by ext; simp
-  convert addContent_iUnion (f := ![s, t]) (m := m) (fun i ↦ ?_) (fun i j hij ↦ ?_) ?_ using 2
+  convert! addContent_iUnion (f := ![s, t]) (m := m) (fun i ↦ ?_) (fun i j hij ↦ ?_) ?_ using 2
   · simp [Fin.univ_castSuccEmb, add_comm]
   · fin_cases i <;> simpa
   · #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
@@ -257,7 +257,7 @@ private lemma AddContent.supClosureFun_apply_of_mem (hC : IsSetSemiring C)
         have := hI hs
         rwa [hC.mem_supClosure_iff] at this
       refine ⟨P.parts, PC, P.disjoint, ?_⟩
-      convert P.sup_parts.symm
+      convert! P.sup_parts.symm
       simp [sUnion_eq_biUnion]
     choose! J hJC hJdisj hJs using A
     have H {a i} (hi : i ∈ I) (ha : a ∈ J i) : a ⊆ i := by
@@ -364,7 +364,7 @@ lemma addContent_le_sum_of_subset_sUnion {m : AddContent G C} (hC : IsSetSemirin
     rintro u hu rfl
     exact hC.inter_mem _ ht _ (h_ss hu)
   · rwa [← ht_eq]
-  · refine (Finset.sum_image_le_of_nonneg fun _ _ ↦ zero_le _).trans (sum_le_sum fun u hu ↦ ?_)
+  · refine (Finset.sum_image_le_of_nonneg fun _ _ ↦ zero_le).trans (sum_le_sum fun u hu ↦ ?_)
     exact addContent_mono hC (hC.inter_mem _ ht _ (h_ss hu)) (h_ss hu) inter_subset_right
 
 /-- If an `AddContent` is σ-subadditive on a semi-ring of sets, then it is σ-additive. -/

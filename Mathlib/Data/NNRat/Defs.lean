@@ -80,7 +80,7 @@ instance instOrderBot : OrderBot ℚ≥0 where
 @[simp] lemma val_eq_cast (q : ℚ≥0) : q.1 = q := rfl
 
 instance instCharZero : CharZero ℚ≥0 where
-  cast_injective a b hab := by simpa using congr_arg num hab
+  cast_injective a b hab := by simpa using! congr_arg num hab
 
 instance canLift : CanLift ℚ ℚ≥0 (↑) fun q ↦ 0 ≤ q where
   prf q hq := ⟨⟨q, hq⟩, rfl⟩
@@ -307,11 +307,10 @@ theorem toNNRat_mul (hp : 0 ≤ p) : toNNRat (p * q) = toNNRat p * toNNRat q := 
 
 end Rat
 
-#adaptation_note /-- We can remove `_root_.` after https://github.com/leanprover/lean4/pull/12504 -/
 /-- The absolute value on `ℚ` as a map to `ℚ≥0`. -/
 @[pp_nodot]
 def Rat.nnabs (x : ℚ) : ℚ≥0 :=
-  ⟨abs x, _root_.abs_nonneg x⟩
+  ⟨abs x, abs_nonneg x⟩
 
 @[norm_cast, simp]
 theorem Rat.coe_nnabs (x : ℚ) : (Rat.nnabs x : ℚ) = abs x := rfl

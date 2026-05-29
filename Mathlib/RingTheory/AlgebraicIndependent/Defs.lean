@@ -116,7 +116,7 @@ theorem algebraicIndependent_image {ι} {s : Set ι} {f : ι → A} (hf : Set.In
 
 lemma AlgebraicIndepOn.mono {s t : Set ι} (H : AlgebraicIndepOn R x t) (hst : s ⊆ t) :
     AlgebraicIndepOn R x s := by
-  simpa [Function.comp] using H.comp (Set.inclusion hst) (Set.inclusion_injective hst)
+  simpa [Function.comp] using! H.comp (Set.inclusion hst) (Set.inclusion_injective hst)
 
 @[simp]
 lemma AlgebraicIndepOn.univ : AlgebraicIndepOn R x .univ ↔ AlgebraicIndependent R x :=
@@ -140,7 +140,6 @@ def aevalEquiv : MvPolynomial ι R ≃ₐ[R] Algebra.adjoin R (range x) :=
   (AlgEquiv.ofInjective (aeval x) (algebraicIndependent_iff_injective_aeval.1 hx)).trans
     (Subalgebra.equivOfEq _ _ (Algebra.adjoin_range_eq_range_aeval R x).symm)
 
-@[simp]
 theorem algebraMap_aevalEquiv (p : MvPolynomial ι R) :
     algebraMap (Algebra.adjoin R (range x)) A (hx.aevalEquiv p) = aeval x p :=
   rfl

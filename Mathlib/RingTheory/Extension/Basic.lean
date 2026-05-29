@@ -79,7 +79,6 @@ instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower
   rw [IsScalarTower.algebraMap_eq R₀ R, IsScalarTower.algebraMap_eq R₁ R,
     RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq R₀ R₁ R]
 
-set_option backward.isDefEq.respectTransparency false in
 instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     IsScalarTower R₀ P.Ring S := IsScalarTower.of_algebraMap_eq' <| by
   rw [IsScalarTower.algebraMap_eq R₀ R P.Ring, ← RingHom.comp_assoc,
@@ -175,7 +174,7 @@ not an instance.
 -/
 @[instance_reducible]
 noncomputable def algebraBaseChange : Algebra P.Ring (P.baseChange (T := T)).Ring :=
-  TensorProduct.rightAlgebra
+  fast_instance% TensorProduct.rightAlgebra
 
 set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] algebraBaseChange in
@@ -374,7 +373,7 @@ instance Cotangent.module : Module S P.Cotangent where
     simpa [sub_eq_zero, sub_smul]
   mul_smul := fun r s x ↦ by
     have := smul_eq_zero_of_mem (P.σ (r * s) - (P.σ r * P.σ s) : P.Ring) (by simp) x
-    simpa only [sub_smul, mul_smul, sub_eq_zero] using this
+    simpa only [sub_smul, mul_smul, sub_eq_zero] using! this
 
 noncomputable
 instance {R₀} [CommRing R₀] [Algebra R₀ S] : Module R₀ P.Cotangent :=
@@ -518,7 +517,7 @@ noncomputable def cotangentEquiv : S ⊗[P.Ring] P.ker ≃ₗ[S] P.Cotangent := 
       · rw [smul_tmul]; rfl
       · simp_all [Algebra.smul_def]
     · intro a ha b hb ha' hb'
-      convert congr($ha' + $hb')
+      convert! congr($ha' + $hb')
       rw [← tmul_add]
       rfl
   · intro x

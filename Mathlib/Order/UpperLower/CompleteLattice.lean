@@ -356,7 +356,7 @@ theorem map_map (g : β ≃o γ) (f : α ≃o β) : map g (map f s) = map (f.tra
 
 variable (f s t)
 
-@[to_dual (attr := simp, norm_cast)]
+@[to_dual (attr := norm_cast)]
 theorem coe_map : (map f s : Set β) = f '' s :=
   rfl
 

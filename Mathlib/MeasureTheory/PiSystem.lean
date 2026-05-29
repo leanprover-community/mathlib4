@@ -386,7 +386,7 @@ theorem piiUnionInter_singleton (π : ι → Set (Set α)) (i : ι) :
     · refine ⟨∅, ?_⟩
       simpa only [Finset.coe_empty, subset_singleton_iff, mem_empty_iff_false, IsEmpty.forall_iff,
         imp_true_iff, Finset.notMem_empty, iInter_false, iInter_univ, true_and,
-        exists_const] using hs
+        exists_const] using! hs
 
 theorem piiUnionInter_singleton_left (s : ι → Set α) (S : Set ι) :
     piiUnionInter (fun i => ({s i} : Set (Set α))) S =
@@ -591,7 +591,7 @@ inductive GenerateHas (s : Set (Set α)) : Set α → Prop
 theorem generateHas_compl {C : Set (Set α)} {s : Set α} : GenerateHas C sᶜ ↔ GenerateHas C s := by
   refine ⟨?_, GenerateHas.compl⟩
   intro h
-  convert GenerateHas.compl h
+  convert! GenerateHas.compl h
   simp
 
 /-- The least Dynkin system containing a collection of basic sets. -/

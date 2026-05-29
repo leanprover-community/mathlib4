@@ -71,6 +71,7 @@ instance _root_.GradedMonoid.isScalarTower_right :
 
 variable [DecidableEq ι]
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Algebra R (⨁ i, A i) where
   algebraMap :=
   { toFun := (DirectSum.of A 0).comp GAlgebra.toFun

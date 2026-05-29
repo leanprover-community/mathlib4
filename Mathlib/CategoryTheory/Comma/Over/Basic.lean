@@ -39,7 +39,12 @@ triangles. -/
 def Over (X : T) :=
   CostructuredArrow (𝟭 T) X
 
-instance (X : T) : Category (Over X) := commaCategory
+/-- The type of morphisms in the category `Over`. -/
+protected def Over.Hom {X : T} (f g : Over X) := CommaMorphism f g
+
+instance {X : T} : Category (Over X) where
+  Hom := Over.Hom
+  __ := (inferInstance : Category (Comma _ _))
 
 -- Satisfying the inhabited linter
 instance Over.inhabited [Inhabited T] : Inhabited (Over (default : T)) where
@@ -52,6 +57,25 @@ namespace Over
 
 variable {X : T}
 
+/-- The underlying object of an object in `Over X`. -/
+abbrev left (f : Over X) : T := Comma.left f
+
+/-- The morphism that is part of an object in `Over X`. -/
+abbrev hom (f : Over X) : f.left ⟶ X := Comma.hom f
+
+variable {f g : Over X} (φ : f ⟶ g)
+
+/-- The morphism that is part of a morphism in `Over X`. -/
+abbrev Hom.left : f.left ⟶ g.left := CommaMorphism.left φ
+
+set_option backward.defeqAttrib.useBackward true in
+@[reassoc (attr := simp)]
+theorem w : φ.left ≫ g.hom = f.hom := by
+  simpa using (CommaMorphism.w φ)
+
+@[reassoc]
+lemma Hom.w : φ.left ≫ g.hom = f.hom := Over.w φ
+
 @[ext]
 theorem OverMorphism.ext {X : T} {U V : Over X} {f g : U ⟶ V} (h : f.left = g.left) : f = g := by
   let ⟨_,b,_⟩ := f
@@ -63,15 +87,12 @@ theorem OverMorphism.ext {X : T} {U V : Over X} {f g : U ⟶ V} (h : f.left = g.
 theorem over_right (U : Over X) : U.right = ⟨⟨⟩⟩ := by simp only
 
 @[simp]
-theorem id_left (U : Over X) : CommaMorphism.left (𝟙 U) = 𝟙 U.left :=
+theorem id_left (U : Over X) : Hom.left (𝟙 U) = 𝟙 U.left :=
   rfl
 
 @[simp, reassoc]
 theorem comp_left (a b c : Over X) (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).left = f.left ≫ g.left :=
   rfl
-
-@[reassoc (attr := simp)]
-theorem w {A B : Over X} (f : A ⟶ B) : f.left ≫ B.hom = A.hom := by have := f.w; cat_disch
 
 /-- To give an object in the over category, it suffices to give a morphism with codomain `X`. -/
 @[simps! left hom]
@@ -118,6 +139,12 @@ def isoMk {f g : Over X} (hl : f.left ≅ g.left) (hw : hl.hom ≫ g.hom = f.hom
     f ≅ g :=
   CostructuredArrow.isoMk hl hw
 
+@[simp]
+lemma eqToHom_left {f g : Over X} (h : f = g) :
+    (eqToHom h).left = eqToHom (by rw [h]) := by
+  subst h
+  rfl
+
 @[reassoc (attr := simp)]
 lemma hom_left_inv_left {f g : Over X} (e : f ≅ g) :
     e.hom.left ≫ e.inv.left = 𝟙 f.left := by
@@ -136,7 +163,6 @@ lemma mk_surjective {S : T} (X : Over S) :
     ∃ (Y : T) (f : Y ⟶ S), Over.mk f = X :=
   ⟨_, X.hom, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma homMk_surjective
     {S : T} {X Y : Over S} (f : X ⟶ Y) :
     ∃ (g : X.left ⟶ Y.left) (hg : g ≫ Y.hom = X.hom), f = Over.homMk g :=
@@ -161,7 +187,7 @@ theorem forget_obj {U : Over X} : (forget X).obj U = U.left :=
 theorem forget_map {U V : Over X} {f : U ⟶ V} : (forget X).map f = f.left :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural cocone over the forgetful functor `Over X ⥤ T` with cocone point `X`. -/
 @[simps]
 def forgetCocone (X : T) : Limits.Cocone (forget X) :=
@@ -213,21 +239,16 @@ better computational properties, when used, for instance, in
 developing the theory of Beck-Chevalley transformations.
 -/
 
-/-- Mapping by the identity morphism is just the identity functor. -/
-theorem mapId_eq (Y : T) : map (𝟙 Y) = 𝟭 _ := by
-  fapply Functor.ext
-  · intro x
-    dsimp [Over, Over.map, Comma.mapRight]
-    simp only [Category.comp_id]
-    exact rfl
-  · intro x y u
-    dsimp [Over, Over.map, Comma.mapRight]
-    simp
-
 /-- The natural isomorphism arising from `mapForget_eq`. -/
 @[simps!]
 def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ :=
   NatIso.ofComponents (fun _ ↦ isoMk (Iso.refl _))
+
+set_option backward.defeqAttrib.useBackward true in
+/-- Mapping by the identity morphism is just the identity functor. -/
+theorem mapId_eq (Y : T) : map (𝟙 Y) = 𝟭 _ :=
+  Functor.ext_of_iso (mapId Y) (fun _ ↦ by simp [map, Comma.mapRight]; rfl)
+    (fun _ ↦ by ext; simp [eqToHom_left])
 
 /-- Mapping by `f` and then forgetting is the same as forgetting. -/
 theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
@@ -237,25 +258,20 @@ theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
 def mapForget {X Y : T} (f : X ⟶ Y) :
     (map f) ⋙ (forget Y) ≅ (forget X) := eqToIso (mapForget_eq f)
 
-@[simp]
-theorem eqToHom_left {X : T} {U V : Over X} (e : U = V) :
-    (eqToHom e).left = eqToHom (e ▸ rfl : U.left = V.left) := by
-  subst e; rfl
-
-/-- Mapping by the composite morphism `f ≫ g` is the same as mapping by `f` then by `g`. -/
-theorem mapComp_eq {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    map (f ≫ g) = (map f) ⋙ (map g) := by
-  fapply Functor.ext
-  · simp [Over.map, Comma.mapRight]
-  · intro U V k
-    ext
-    simp
-
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism arising from `mapComp_eq`. -/
 @[simps!]
 def mapComp {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
     map (f ≫ g) ≅ map f ⋙ map g :=
   NatIso.ofComponents (fun _ ↦ isoMk (Iso.refl _))
+
+set_option backward.defeqAttrib.useBackward true in
+/-- Mapping by the composite morphism `f ≫ g` is the same as mapping by `f` then by `g`. -/
+theorem mapComp_eq {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    map (f ≫ g) = (map f) ⋙ (map g) :=
+  Functor.ext_of_iso (mapComp f g)
+    (fun _ ↦ by simp [map, Comma.mapRight])
+    (fun _ ↦ by ext; simp [eqToHom_left])
 
 /-- If `f = g`, then `map f` is naturally isomorphic to `map g`. -/
 @[simps!]
@@ -277,19 +293,14 @@ variable (T) in
 
 end coherences
 
-set_option backward.isDefEq.respectTransparency false in
 instance forget_reflects_iso : (forget X).ReflectsIsomorphisms where
-  reflects {Y Z} f t := by
-    let g : Z ⟶ Y := Over.homMk (inv ((forget X).map f))
-      ((asIso ((forget X).map f)).inv_comp_eq.2 (Over.w f).symm)
-    dsimp [forget] at t
-    refine ⟨⟨g, ⟨?_,?_⟩⟩⟩
-    repeat (ext; simp [g])
+  reflects f _ := ⟨Over.homMk (inv ((forget X).map f) :), by cat_disch⟩
 
 /-- The identity over `X` is terminal. -/
 noncomputable def mkIdTerminal : Limits.IsTerminal (mk (𝟙 X)) :=
   CostructuredArrow.mkIdTerminal
 
+set_option backward.defeqAttrib.useBackward true in
 -- We could make this defeq if we care.
 @[simp] lemma mkIdTerminal_from_left (Y : Over X) : (mkIdTerminal.from Y).left = Y.hom := by
   rw [mkIdTerminal.hom_ext (mkIdTerminal.from Y) (homMk Y.hom)]
@@ -323,7 +334,7 @@ theorem mono_of_mono_left {f g : Over X} (k : f ⟶ g) [hk : Mono k.left] : Mono
 instance mono_homMk {U V : Over X} {f : U.left ⟶ V.left} [Mono f] (w) : Mono (homMk f w) :=
   (forget X).mono_of_mono_map ‹_›
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /--
 If `k` is a monomorphism, then `k.left` is a monomorphism. In other words, `Over.forget X` preserves
 monomorphisms.
@@ -358,7 +369,7 @@ theorem iteratedSliceBackward_forget (f : Over X) :
     iteratedSliceBackward f ⋙ Over.forget f = Over.map f.hom :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Given f : Y ⟶ X, we have an equivalence between (T/X)/f and T/Y -/
 @[simps]
 def iteratedSliceEquiv : Over f ≌ Over f.left where
@@ -383,7 +394,7 @@ def iteratedSliceForwardNaturalityIso {g : Over X} (p : f ⟶ g) :
     iteratedSliceForward f ⋙ Over.map p.left ≅ Over.map p ⋙ iteratedSliceForward g :=
   Iso.refl _
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism relating the functor `Over.map p` to the functor `Over.map p.left`,
 mediated by the underlying functor of the iterated slice equivalence.
 Note that `iteratedSliceForward` can in fact be considered as a natural transformation from the
@@ -398,31 +409,39 @@ def iteratedSliceEquivOverMapIso {f g : Over X} (p : f ⟶ g) :
 
 end IteratedSlice
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor `F : T ⥤ D` induces a functor `Over X ⥤ Over (F.obj X)` in the obvious way. -/
 @[simps]
 def post (F : T ⥤ D) : Over X ⥤ Over (F.obj X) where
   obj Y := mk <| F.map Y.hom
-  map f := Over.homMk (F.map f.left)
-    (by simp only [Functor.id_obj, mk_left, Functor.const_obj_obj, mk_hom, ← F.map_comp, w])
+  map f := Over.homMk (F.map f.left) (by simp [← F.map_comp])
 
 lemma post_comp {E : Type*} [Category* E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) = post (X := X) F ⋙ post G :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
+lemma post_forget_eq_forget_comp (F : T ⥤ D) (X : T) :
+    post F ⋙ forget (F.obj X) = forget X ⋙ F :=
+  rfl
+
+set_option backward.defeqAttrib.useBackward true in
 /-- `post (F ⋙ G)` is isomorphic (actually equal) to `post F ⋙ post G`. -/
 @[simps!]
 def postComp {E : Type*} [Category* E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) ≅ post F ⋙ post G :=
-  NatIso.ofComponents (fun X ↦ Iso.refl _)
+  NatIso.ofComponents (fun X ↦ Iso.refl _) (fun f ↦ by
+    ext
+    dsimp only [Iso.refl_hom, Over.comp_left, Over.id_left]
+    simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A natural transformation `F ⟶ G` induces a natural transformation on
 `Over X` up to `Over.map`. -/
 @[simps]
 def postMap {F G : T ⥤ D} (e : F ⟶ G) : post F ⋙ map (e.app X) ⟶ post G where
   app Y := Over.homMk (e.app Y.left)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `F` and `G` are naturally isomorphic, then `Over.post F` and `Over.post G` are also naturally
 isomorphic up to `Over.map` -/
 @[simps!]
@@ -436,13 +455,13 @@ instance [F.Faithful] : (Over.post (X := X) F).Faithful where
     ext
     exact F.map_injective (congrArg CommaMorphism.left h)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 instance [F.Faithful] [F.Full] : (Over.post (X := X) F).Full where
   map_surjective {A B} f := by
     obtain ⟨a, ha⟩ := F.map_surjective f.left
-    have w : a ≫ B.hom = A.hom := F.map_injective <| by simpa [ha] using Over.w _
-    exact ⟨Over.homMk a, by ext; simpa⟩
+    exact ⟨Over.homMk a (F.map_injective (by simp [ha, dsimp% f.w])), by cat_disch⟩
 
+set_option backward.defeqAttrib.useBackward true in
 instance [F.Full] [F.EssSurj] : (Over.post (X := X) F).EssSurj where
   mem_essImage B := by
     obtain ⟨A', ⟨e⟩⟩ := Functor.EssSurj.mem_essImage (F := F) B.left
@@ -451,12 +470,13 @@ instance [F.Full] [F.EssSurj] : (Over.post (X := X) F).EssSurj where
 
 instance [F.IsEquivalence] : (Over.post (X := X) F).IsEquivalence where
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is fully faithful, then so is `Over.post F`. -/
 def _root_.CategoryTheory.Functor.FullyFaithful.over (h : F.FullyFaithful) :
     (post (X := X) F).FullyFaithful where
   preimage {A B} f := Over.homMk (h.preimage f.left) <| h.map_injective (by simpa using Over.w f)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- If `G` is a right adjoint, then so is `post G : Over Y ⥤ Over (G Y)`.
 
 If the left adjoint of `G` is `F`, then the left adjoint of `post G` is given by
@@ -466,11 +486,18 @@ def postAdjunctionRight {Y : D} {F : T ⥤ D} {G : D ⥤ T} (a : F ⊣ G) :
     post F ⋙ map (a.counit.app Y) ⊣ post G where
   unit.app A := homMk <| a.unit.app A.left
   counit.app A := homMk <| a.counit.app A.left
+  counit.naturality _ _ f := by
+    ext
+    exact a.counit_naturality f.left
+  left_triangle_components A := by
+    ext
+    simp [-Functor.id_obj]
 
 instance isRightAdjoint_post {Y : D} {G : D ⥤ T} [G.IsRightAdjoint] :
     (post (X := Y) G).IsRightAdjoint :=
   let ⟨F, ⟨a⟩⟩ := ‹G.IsRightAdjoint›; ⟨_, ⟨postAdjunctionRight a⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories induces an equivalence on over categories. -/
 @[simps]
 def postEquiv (F : T ≌ D) : Over X ≌ Over (F.functor.obj X) where
@@ -488,6 +515,7 @@ def iteratedSliceForwardIsoPost (f : Over X) :
 
 open Limits
 
+set_option backward.defeqAttrib.useBackward true in
 variable {X} in
 /-- If `X : T` is terminal, then the over category of `X` is equivalent to `T`. -/
 @[simps]
@@ -497,15 +525,16 @@ def equivalenceOfIsTerminal (hX : IsTerminal X) : Over X ≌ T where
   unitIso := NatIso.ofComponents fun Y ↦ isoMk (.refl _) (hX.hom_ext _ _)
   counitIso := NatIso.ofComponents fun _ ↦ .refl _
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The induced functor to `Over X` from a functor `J ⥤ C` and natural maps `sᵢ : X ⟶ Dᵢ`.
 For the converse direction see `CategoryTheory.WithTerminal.commaFromOver`. -/
 @[simps]
 protected def lift {J : Type*} [Category* J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X) :
     J ⥤ Over X where
   obj j := mk (s.app j)
-  map f := homMk (D.map f)
+  map f := homMk (D.map f) (by simpa using s.naturality f)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The induced cone on `Over X` on the lifted functor. -/
 @[simps]
 def liftCone {J : Type*} [Category* J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X)
@@ -514,7 +543,7 @@ def liftCone {J : Type*} [Category* J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor
   pt := mk p
   π.app j := homMk (c.π.app j)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The lifted cone on `Over X` is a limit cone if the original cone was limiting
 and `J` is nonempty. -/
 def isLimitLiftCone {J : Type*} [Category* J] [Nonempty J]
@@ -522,15 +551,20 @@ def isLimitLiftCone {J : Type*} [Category* J] [Nonempty J]
     (c : Cone D) (p : c.pt ⟶ X) (hp : ∀ j, c.π.app j ≫ s.app j = p)
     (hc : IsLimit c) :
     IsLimit (Over.liftCone D s c p hp) where
-  lift s := homMk (hc.lift ((forget _).mapCone s))
-    (by simpa [← hp (Classical.arbitrary J)] using Over.w (s.π.app _))
-  fac _ _ := by ext; simp [hc.fac]
-  uniq _ _ hm := by
+  lift t := homMk (hc.lift ((forget _).mapCone t)) (by
+    let j : J := Classical.arbitrary _
+    simp [← hp j, dsimp% (t.π.app j).w, dsimp% hc.fac_assoc ((forget X).mapCone t) j])
+  fac t j := by
     ext
-    exact hc.hom_ext fun j ↦ by simpa [hc.fac] using congr($(hm j).left)
+    simp [dsimp% hc.fac ((forget X).mapCone t) j]
+  uniq t _ hm := by
+    ext
+    refine hc.hom_ext (fun j ↦ ?_)
+    simp [dsimp% hc.fac ((forget X).mapCone t) j, ← hm]
 
 end Over
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 Restrict a cone to the diagram over `j`. This preserves being limiting if the forgetful functor
 `Over j ⥤ J` is initial (see `CategoryTheory.Limits.IsLimit.overPost`).
@@ -546,7 +580,7 @@ namespace CostructuredArrow
 
 /-- Reinterpreting an `F`-costructured arrow `F.obj d ⟶ X` as an arrow over `X` induces a functor
     `CostructuredArrow F X ⥤ Over X`. -/
-@[simps!]
+@[simps! obj_left obj_hom map_left]
 def toOver (F : D ⥤ T) (X : T) : CostructuredArrow F X ⥤ Over X :=
   CostructuredArrow.pre F (𝟭 T) X
 
@@ -568,6 +602,7 @@ namespace costructuredArrowToOverEquivalence
 
 variable (F : D ⥤ T) {X : T} (Y : Over X)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `costructuredArrowToOverEquivalence`. -/
 @[simps]
 def functor : CostructuredArrow (toOver F X) Y ⥤ CostructuredArrow F Y.left where
@@ -575,7 +610,6 @@ def functor : CostructuredArrow (toOver F X) Y ⥤ CostructuredArrow F Y.left wh
   map f :=
     CostructuredArrow.homMk f.left.left (by rw [← CostructuredArrow.w f]; dsimp)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `costructuredArrowToOverEquivalence`. -/
 @[simps]
 def inverse : CostructuredArrow F Y.left ⥤ CostructuredArrow (toOver F X) Y where
@@ -589,7 +623,7 @@ def inverse : CostructuredArrow F Y.left ⥤ CostructuredArrow (toOver F X) Y wh
 
 end costructuredArrowToOverEquivalence
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A category of costructured arrows for a functor `toOver F X` identifies
 to a category of costructured arrows for `F`. -/
 def costructuredArrowToOverEquivalence (F : D ⥤ T) {X : T} (Y : Over X) :
@@ -597,8 +631,9 @@ def costructuredArrowToOverEquivalence (F : D ⥤ T) {X : T} (Y : Over X) :
   functor := costructuredArrowToOverEquivalence.functor F Y
   inverse := costructuredArrowToOverEquivalence.inverse F Y
   unitIso :=
-    NatIso.ofComponents (fun _ ↦
-      CostructuredArrow.isoMk (CostructuredArrow.isoMk (Iso.refl _)))
+    NatIso.ofComponents (fun f ↦
+      CostructuredArrow.isoMk (CostructuredArrow.isoMk (Iso.refl _)
+        (by simpa using f.hom.w)))
   counitIso := Iso.refl _
 
 end CostructuredArrow
@@ -608,7 +643,12 @@ end CostructuredArrow
 def Under (X : T) :=
   StructuredArrow X (𝟭 T)
 
-instance (X : T) : Category (Under X) := commaCategory
+/-- The type of morphisms in the category `Under`. -/
+protected def Under.Hom {X : T} (f g : Under X) := CommaMorphism f g
+
+instance {X : T} : Category (Under X) where
+  Hom := Under.Hom
+  __ := (inferInstance : Category (Comma _ _))
 
 -- Satisfying the inhabited linter
 instance Under.inhabited [Inhabited T] : Inhabited (Under (default : T)) where
@@ -621,6 +661,25 @@ namespace Under
 
 variable {X : T}
 
+/-- The underlying object of an object in `Under X`. -/
+abbrev right (f : Under X) : T := Comma.right f
+
+/-- The morphism that is part of an object in `Under X`. -/
+abbrev hom (f : Under X) : X ⟶ f.right := Comma.hom f
+
+variable {f g : Under X} (φ : f ⟶ g)
+
+/-- The morphism that is part of a morphism in `Under X`. -/
+abbrev Hom.right : f.right ⟶ g.right := CommaMorphism.right φ
+
+set_option backward.defeqAttrib.useBackward true in
+@[reassoc (attr := simp)]
+theorem w : f.hom ≫ φ.right = g.hom := by
+  simpa using (CommaMorphism.w φ).symm
+
+@[reassoc]
+lemma Hom.w : f.hom ≫ φ.right = g.hom := Under.w φ
+
 @[ext]
 theorem UnderMorphism.ext {X : T} {U V : Under X} {f g : U ⟶ V} (h : f.right = g.right) :
     f = g := by
@@ -631,15 +690,12 @@ theorem UnderMorphism.ext {X : T} {U V : Under X} {f g : U ⟶ V} (h : f.right =
 theorem under_left (U : Under X) : U.left = ⟨⟨⟩⟩ := by simp only
 
 @[simp]
-theorem id_right (U : Under X) : CommaMorphism.right (𝟙 U) = 𝟙 U.right :=
+theorem id_right (U : Under X) : Hom.right (𝟙 U) = 𝟙 U.right :=
   rfl
 
 @[simp]
 theorem comp_right (a b c : Under X) (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).right = f.right ≫ g.right :=
   rfl
-
-@[reassoc (attr := simp)]
-theorem w {A B : Under X} (f : A ⟶ B) : A.hom ≫ f.right = B.hom := by have := f.w; cat_disch
 
 /-- To give an object in the under category, it suffices to give an arrow with domain `X`. -/
 @[simps! right hom]
@@ -657,28 +713,23 @@ lemma homMk_eta {U V : Under X} (f : U ⟶ V) (h) :
     homMk f.right h = f :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is useful when `homMk (· ≫ ·)` appears under `Functor.map` or a natural equivalence. -/
 lemma homMk_comp {U V W : Under X} (f : U.right ⟶ V.right) (g : V.right ⟶ W.right) (w_f w_g) :
-    homMk (f ≫ g) (by simp only [reassoc_of% w_f, w_g]) = homMk f w_f ≫ homMk g w_g := by
-  ext
-  simp
+    homMk (f ≫ g) (by simp only [reassoc_of% w_f, w_g]) = homMk f w_f ≫ homMk g w_g :=
+  rfl
 
 /-- Construct an isomorphism in the over category given isomorphisms of the objects whose forward
 direction gives a commutative triangle.
 -/
+@[simps! hom_right inv_right]
 def isoMk {f g : Under X} (hr : f.right ≅ g.right)
     (hw : f.hom ≫ hr.hom = g.hom := by cat_disch) : f ≅ g :=
   StructuredArrow.isoMk hr hw
 
 @[simp]
-theorem isoMk_hom_right {f g : Under X} (hr : f.right ≅ g.right) (hw : f.hom ≫ hr.hom = g.hom) :
-    (isoMk hr hw).hom.right = hr.hom :=
-  rfl
-
-@[simp]
-theorem isoMk_inv_right {f g : Under X} (hr : f.right ≅ g.right) (hw : f.hom ≫ hr.hom = g.hom) :
-    (isoMk hr hw).inv.right = hr.inv :=
+lemma eqToHom_right {f g : Under X} (h : f = g) :
+    (eqToHom h).right = eqToHom (by rw [h]) := by
+  subst h
   rfl
 
 @[reassoc (attr := simp)]
@@ -699,7 +750,6 @@ lemma mk_surjective {S : T} (X : Under S) :
     ∃ (Y : T) (f : S ⟶ Y), Under.mk f = X :=
   ⟨_, X.hom, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma homMk_surjective
     {S : T} {X Y : Under S} (f : X ⟶ Y) :
     ∃ (g : X.right ⟶ Y.right) (hg : X.hom ≫ g = Y.hom), Under.homMk g = f :=
@@ -723,7 +773,7 @@ theorem forget_obj {U : Under X} : (forget X).obj U = U.right :=
 theorem forget_map {U V : Under X} {f : U ⟶ V} : (forget X).map f = f.right :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural cone over the forgetful functor `Under X ⥤ T` with cone point `X`. -/
 @[simps]
 def forgetCone (X : T) : Limits.Cone (forget X) :=
@@ -768,21 +818,16 @@ demonstrate, for instance, that under categories assemble into a
 functor `mapFunctor : Tᵒᵖ ⥤ Cat`.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
-/-- Mapping by the identity morphism is just the identity functor. -/
-theorem mapId_eq (Y : T) : map (𝟙 Y) = 𝟭 _ := by
-  fapply Functor.ext
-  · intro x
-    dsimp [Under, Under.map, Comma.mapLeft]
-    simp only [Category.id_comp]
-    exact rfl
-  · intro x y u
-    dsimp [Under, Under.map, Comma.mapLeft]
-    simp
-
 /-- Mapping by the identity morphism is just the identity functor. -/
 @[simps!]
-def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ := eqToIso (mapId_eq Y)
+def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ :=
+  NatIso.ofComponents (fun _ ↦ isoMk (Iso.refl _))
+
+set_option backward.defeqAttrib.useBackward true in
+/-- Mapping by the identity morphism is just the identity functor. -/
+theorem mapId_eq (Y : T) : map (𝟙 Y) = 𝟭 _ :=
+  Functor.ext_of_iso (mapId Y) (fun _ ↦ by simp [map, Comma.mapLeft]; rfl)
+    (fun _ ↦ by ext; simp [eqToHom_right])
 
 /-- Mapping by `f` and then forgetting is the same as forgetting. -/
 theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
@@ -792,11 +837,7 @@ theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
 def mapForget {X Y : T} (f : X ⟶ Y) :
     (map f) ⋙ (forget X) ≅ (forget Y) := eqToIso (mapForget_eq f)
 
-@[simp]
-theorem eqToHom_right {X : T} {U V : Under X} (e : U = V) :
-    (eqToHom e).right = eqToHom (e ▸ rfl : U.right = V.right) := by
-  subst e; rfl
-
+set_option backward.defeqAttrib.useBackward true in
 /-- Mapping by the composite morphism `f ≫ g` is the same as mapping by `f` then by `g`. -/
 theorem mapComp_eq {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
     map (f ≫ g) = (map g) ⋙ (map f) := by
@@ -827,19 +868,14 @@ variable (T) in
 
 end coherences
 
-set_option backward.isDefEq.respectTransparency false in
 instance forget_reflects_iso : (forget X).ReflectsIsomorphisms where
-  reflects {Y Z} f t := by
-    let g : Z ⟶ Y := Under.homMk (inv ((Under.forget X).map f))
-      ((IsIso.comp_inv_eq _).2 (Under.w f).symm)
-    dsimp [forget] at t
-    refine ⟨⟨g, ⟨?_,?_⟩⟩⟩
-    repeat (ext; simp [g])
+  reflects {Y Z} f t := ⟨Under.homMk (inv ((forget X).map f) :), by cat_disch⟩
 
 /-- The identity under `X` is initial. -/
 noncomputable def mkIdInitial : Limits.IsInitial (mk (𝟙 X)) :=
   StructuredArrow.mkIdInitial
 
+set_option backward.defeqAttrib.useBackward true in
 -- We could make this defeq if we care.
 @[simp] lemma mkIdInitial_to_right (Y : Under X) : (mkIdInitial.to Y).right = Y.hom := by
   rw [mkIdInitial.hom_ext (mkIdInitial.to Y) (homMk Y.hom)]
@@ -872,7 +908,7 @@ theorem epi_of_epi_right {f g : Under X} (k : f ⟶ g) [hk : Epi k.right] : Epi 
 instance epi_homMk {U V : Under X} {f : U.right ⟶ V.right} [Epi f] (w) : Epi (homMk f w) :=
   (forget X).epi_of_epi_map ‹_›
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /--
 If `k` is an epimorphism, then `k.right` is an epimorphism. In other words, `Under.forget X`
 preserves epimorphisms.
@@ -885,31 +921,39 @@ instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right :=
   suffices l' = (homMk m) by apply congrArg CommaMorphism.right this
   rw [← cancel_epi k]; ext; apply a
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor `F : T ⥤ D` induces a functor `Under X ⥤ Under (F.obj X)` in the obvious way. -/
 @[simps]
 def post {X : T} (F : T ⥤ D) : Under X ⥤ Under (F.obj X) where
   obj Y := mk <| F.map Y.hom
-  map f := Under.homMk (F.map f.right)
-    (by simp only [Functor.id_obj, Functor.const_obj_obj, mk_right, mk_hom, ← F.map_comp, w])
+  map f := Under.homMk (F.map f.right) (by simp [← F.map_comp])
 
 lemma post_comp {E : Type*} [Category* E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) = post (X := X) F ⋙ post G :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
+lemma post_forget_eq_forget_comp (F : T ⥤ D) (X : T) :
+    post F ⋙ forget (F.obj X) = forget X ⋙ F :=
+  rfl
+
+set_option backward.defeqAttrib.useBackward true in
 /-- `post (F ⋙ G)` is isomorphic (actually equal) to `post F ⋙ post G`. -/
 @[simps!]
 def postComp {E : Type*} [Category* E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) ≅ post F ⋙ post G :=
-  NatIso.ofComponents (fun X ↦ Iso.refl _)
+  NatIso.ofComponents (fun X ↦ Iso.refl _) (fun f ↦ by
+    ext
+    dsimp only [Iso.refl_hom, Under.comp_right, Under.id_right]
+    simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A natural transformation `F ⟶ G` induces a natural transformation on
 `Under X` up to `Under.map`. -/
 @[simps]
 def postMap {F G : T ⥤ D} (e : F ⟶ G) : post (X := X) F ⟶ post G ⋙ map (e.app X) where
   app Y := Under.homMk (e.app Y.right)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `F` and `G` are naturally isomorphic, then `Under.post F` and `Under.post G` are also
 naturally isomorphic up to `Under.map` -/
 @[simps!]
@@ -923,14 +967,13 @@ instance [F.Faithful] : (Under.post (X := X) F).Faithful where
     ext
     exact F.map_injective (congrArg CommaMorphism.right h)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 instance [F.Faithful] [F.Full] : (Under.post (X := X) F).Full where
   map_surjective {A B} f := by
     obtain ⟨a, ha⟩ := F.map_surjective f.right
-    dsimp at a
-    have w : A.hom ≫ a = B.hom := F.map_injective <| by simpa [ha] using Under.w f
-    exact ⟨Under.homMk a, by ext; simpa⟩
+    exact ⟨Under.homMk a (F.map_injective (by simp [ha, dsimp% f.w])), by ext; simpa⟩
 
+set_option backward.defeqAttrib.useBackward true in
 instance [F.Full] [F.EssSurj] : (Under.post (X := X) F).EssSurj where
   mem_essImage B := by
     obtain ⟨B', ⟨e⟩⟩ := Functor.EssSurj.mem_essImage (F := F) B.right
@@ -939,12 +982,13 @@ instance [F.Full] [F.EssSurj] : (Under.post (X := X) F).EssSurj where
 
 instance [F.IsEquivalence] : (Under.post (X := X) F).IsEquivalence where
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is fully faithful, then so is `Under.post F`. -/
 def _root_.CategoryTheory.Functor.FullyFaithful.under (h : F.FullyFaithful) :
     (post (X := X) F).FullyFaithful where
   preimage {A B} f := Under.homMk (h.preimage f.right) <| h.map_injective (by simpa using Under.w f)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is a left adjoint, then so is `post F : Under X ⥤ Under (F X)`.
 
 If the right adjoint of `F` is `G`, then the right adjoint of `post F` is given by
@@ -954,10 +998,23 @@ def postAdjunctionLeft {X : T} {F : T ⥤ D} {G : D ⥤ T} (a : F ⊣ G) :
     post F ⊣ post G ⋙ map (a.unit.app X) where
   unit.app A := homMk <| a.unit.app A.right
   counit.app A := homMk <| a.counit.app A.right
+  unit.naturality _ _ f := by
+    ext
+    exact (a.unit_naturality f.right).symm
+  counit.naturality _ _ f := by
+    ext
+    exact (a.counit_naturality f.right)
+  left_triangle_components A := by
+    ext
+    simp [-Functor.id_obj]
+  right_triangle_components A := by
+    ext
+    simp [-Functor.id_obj]
 
 instance isLeftAdjoint_post [F.IsLeftAdjoint] : (post (X := X) F).IsLeftAdjoint :=
   let ⟨G, ⟨a⟩⟩ := ‹F.IsLeftAdjoint›; ⟨_, ⟨postAdjunctionLeft a⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories induces an equivalence on under categories. -/
 @[simps]
 def postEquiv (F : T ≌ D) : Under X ≌ Under (F.functor.obj X) where
@@ -968,6 +1025,7 @@ def postEquiv (F : T ≌ D) : Under X ≌ Under (F.functor.obj X) where
 
 open Limits
 
+set_option backward.defeqAttrib.useBackward true in
 variable {X} in
 /-- If `X : T` is initial, then the under category of `X` is equivalent to `T`. -/
 @[simps]
@@ -977,6 +1035,7 @@ def equivalenceOfIsInitial (hX : IsInitial X) : Under X ≌ T where
   unitIso := NatIso.ofComponents fun Y ↦ isoMk (.refl _) (hX.hom_ext _ _)
   counitIso := NatIso.ofComponents fun _ ↦ .refl _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The induced functor to `Under X` from a functor `J ⥤ C` and natural maps `sᵢ : X ⟶ Dᵢ`. -/
 @[simps]
 protected def lift {J : Type*} [Category* J] (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D) :
@@ -984,6 +1043,7 @@ protected def lift {J : Type*} [Category* J] (D : J ⥤ T) {X : T} (s : (Functor
   obj j := .mk (s.app j)
   map f := Under.homMk (D.map f) (by simpa using (s.naturality f).symm)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The induced cocone on `Under X` from on the lifted functor. -/
 @[simps]
 def liftCocone {J : Type*} [Category* J] (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D)
@@ -992,7 +1052,7 @@ def liftCocone {J : Type*} [Category* J] (D : J ⥤ T) {X : T} (s : (Functor.con
   pt := mk p
   ι.app j := homMk (c.ι.app j)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The lifted cocone on `Under X` is a colimit cocone if the original cocone was colimiting
 and `J` is nonempty. -/
 def isColimitLiftCocone {J : Type*} [Category* J] [Nonempty J]
@@ -1000,15 +1060,20 @@ def isColimitLiftCocone {J : Type*} [Category* J] [Nonempty J]
     (c : Cocone D) (p : X ⟶ c.pt) (hp : ∀ j, s.app j ≫ c.ι.app j = p)
     (hc : IsColimit c) :
     IsColimit (liftCocone D s c p hp) where
-  desc s := Under.homMk (hc.desc ((Under.forget _).mapCocone s))
-    (by simpa [← hp (Classical.arbitrary _)] using Under.w (s.ι.app _))
-  fac _ _ := by ext; simp [hc.fac]
-  uniq _ _ hm := by
+  desc t := Under.homMk (hc.desc ((Under.forget _).mapCocone t)) (by
+    let j : J := Classical.arbitrary _
+    simp [← dsimp% (t.ι.app j).w, ← dsimp% (hp j), dsimp% hc.fac ((forget X).mapCocone t)])
+  fac t j := by
     ext
-    exact hc.hom_ext fun j ↦ by simpa [hc.fac] using congr($(hm j).right)
+    simp [dsimp% hc.fac ((forget X).mapCocone t) j]
+  uniq t _ hm := by
+    ext
+    refine hc.hom_ext (fun j ↦ ?_)
+    simp [dsimp% hc.fac ((forget X).mapCocone t) j, ← hm]
 
 end Under
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 Restrict a cocone to the diagram under `j`. This preserves being colimiting if the forgetful functor
 `Over j ⥤ J` is final (see `CategoryTheory.Limits.IsColimit.underPost`).
@@ -1026,7 +1091,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 
 /-- Reinterpreting an `F`-structured arrow `X ⟶ F.obj d` as an arrow under `X` induces a functor
     `StructuredArrow X F ⥤ Under X`. -/
-@[simps!]
+@[simps! obj_right obj_hom map_right]
 def toUnder (X : T) (F : D ⥤ T) : StructuredArrow X F ⥤ Under X :=
   StructuredArrow.pre X F (𝟭 T)
 
@@ -1057,6 +1122,7 @@ lemma essImage.of_underPost {Y : Under (F.obj X)} :
     (Under.post F (X := X)).essImage Y → F.essImage Y.right :=
   fun ⟨Z, ⟨e⟩⟩ ↦ ⟨Z.right, ⟨(Under.forget _).mapIso e⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The essential image of `Over.post F` where `F` is full is the same as the essential image of
 `F`. -/
 @[simp] lemma essImage_overPost [F.Full] {Y : Over (F.obj X)} :
@@ -1064,6 +1130,7 @@ lemma essImage.of_underPost {Y : Under (F.obj X)} :
   mp := .of_overPost
   mpr := fun ⟨Z, ⟨e⟩⟩ ↦ let ⟨f, hf⟩ := F.map_surjective (e.hom ≫ Y.hom); ⟨.mk f, ⟨Over.isoMk e⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The essential image of `Under.post F` where `F` is full is the same as the essential image of
 `F`. -/
 @[simp] lemma essImage_underPost [F.Full] {Y : Under (F.obj X)} :
@@ -1115,7 +1182,7 @@ end Functor
 
 namespace StructuredArrow
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor from the structured arrow category on the projection functor for any structured
 arrow category. -/
 @[simps!]
@@ -1126,7 +1193,7 @@ def ofStructuredArrowProjEquivalence.functor (F : D ⥤ T) (Y : T) (X : D) :
       (fun g => by exact g.hom) (fun m => by have := m.w; cat_disch)) _ _
     (fun f => f.right.hom) (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor of `ofStructuredArrowProjEquivalence.functor`. -/
 @[simps!]
 def ofStructuredArrowProjEquivalence.inverse (F : D ⥤ T) (Y : T) (X : D) :
@@ -1136,6 +1203,7 @@ def ofStructuredArrowProjEquivalence.inverse (F : D ⥤ T) (Y : T) (X : D) :
       (fun g => by exact g.hom) (fun m => by have := m.w; cat_disch)) _ _
     (fun f => f.right.hom) (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Characterization of the structured arrow category on the projection functor of any
 structured arrow category. -/
 def ofStructuredArrowProjEquivalence (F : D ⥤ T) (Y : T) (X : D) :
@@ -1145,6 +1213,7 @@ def ofStructuredArrowProjEquivalence (F : D ⥤ T) (Y : T) (X : D) :
   unitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
   counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical functor from the structured arrow category on the diagonal functor
 `T ⥤ T × T` to the structured arrow category on `Under.forget`. -/
 @[simps!]
@@ -1152,10 +1221,10 @@ def ofDiagEquivalence.functor (X : T × T) :
     StructuredArrow X (Functor.diag _) ⥤ StructuredArrow X.2 (Under.forget X.1) :=
   Functor.toStructuredArrow
     (Functor.toUnder (StructuredArrow.proj X _) _
-      (fun f => by exact f.hom.1) (fun m => by have := m.w; cat_disch)) _ _
-    (fun f => f.hom.2) (fun m => by have := m.w; cat_disch)
+      (fun f ↦ f.hom.1) (fun g ↦ by simp [← w g])) _ _
+    (fun f ↦ f.hom.2) (fun g ↦ by simp [← w g])
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor of `ofDiagEquivalence.functor`. -/
 @[simps!]
 def ofDiagEquivalence.inverse (X : T × T) :
@@ -1163,6 +1232,7 @@ def ofDiagEquivalence.inverse (X : T × T) :
   Functor.toStructuredArrow (StructuredArrow.proj _ _ ⋙ Under.forget _) _ _
     (fun f => (f.right.hom, f.hom)) (fun m => by have := m.w; cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Characterization of the structured arrow category on the diagonal functor `T ⥤ T × T`. -/
 def ofDiagEquivalence (X : T × T) :
     StructuredArrow X (Functor.diag _) ≌ StructuredArrow X.2 (Under.forget X.1) where
@@ -1173,8 +1243,7 @@ def ofDiagEquivalence (X : T × T) :
 
 /-- A version of `StructuredArrow.ofDiagEquivalence` with the roles of the first and second
 projection swapped. -/
--- noncomputability is only for performance
-noncomputable def ofDiagEquivalence' (X : T × T) :
+def ofDiagEquivalence' (X : T × T) :
     StructuredArrow X (Functor.diag _) ≌ StructuredArrow X.1 (Under.forget X.2) :=
   (ofDiagEquivalence X).trans <|
     (ofStructuredArrowProjEquivalence (𝟭 T) X.1 X.2).trans <|
@@ -1184,14 +1253,15 @@ section CommaFst
 
 variable {C : Type u₃} [Category.{v₃} C] (F : C ⥤ T) (G : D ⥤ T)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor used to define the equivalence `ofCommaSndEquivalence`. -/
 @[simps]
 def ofCommaSndEquivalenceFunctor (c : C) :
     StructuredArrow c (Comma.fst F G) ⥤ Comma (Under.forget c ⋙ F) G where
   obj X := ⟨Under.mk X.hom, X.right.right, X.right.hom⟩
-  map f := ⟨Under.homMk f.right.left (by simpa using f.w.symm), f.right.right, by simp⟩
+  map f := ⟨Under.homMk f.right.left (by simp [dsimp% f.w]), f.right.right, by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor used to define the equivalence `ofCommaSndEquivalence`. -/
 @[simps!]
 def ofCommaSndEquivalenceInverse (c : C) :
@@ -1199,6 +1269,7 @@ def ofCommaSndEquivalenceInverse (c : C) :
   Functor.toStructuredArrow (Comma.preLeft (Under.forget c) F G) _ _
     (fun Y => Y.left.hom) (fun _ => by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- There is a canonical equivalence between the structured arrow category with domain `c` on
 the functor `Comma.fst F G : Comma F G ⥤ F` and the comma category over
 `Under.forget c ⋙ F : Under c ⥤ T` and `G`. -/
@@ -1216,7 +1287,7 @@ end StructuredArrow
 
 namespace CostructuredArrow
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor from the costructured arrow category on the projection functor for any costructured
 arrow category. -/
 @[simps!]
@@ -1227,7 +1298,7 @@ def ofCostructuredArrowProjEquivalence.functor (F : T ⥤ D) (Y : D) (X : T) :
       (fun g => by exact g.hom) (fun m => by have := m.w; cat_disch)) _ _
     (fun f => f.left.hom) (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor of `ofCostructuredArrowProjEquivalence.functor`. -/
 @[simps!]
 def ofCostructuredArrowProjEquivalence.inverse (F : T ⥤ D) (Y : D) (X : T) :
@@ -1237,6 +1308,7 @@ def ofCostructuredArrowProjEquivalence.inverse (F : T ⥤ D) (Y : D) (X : T) :
       (fun g => by exact g.hom) (fun m => by have := m.w; cat_disch)) _ _
     (fun f => f.left.hom) (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Characterization of the costructured arrow category on the projection functor of any
 costructured arrow category. -/
 def ofCostructuredArrowProjEquivalence (F : T ⥤ D) (Y : D) (X : T) :
@@ -1247,6 +1319,7 @@ def ofCostructuredArrowProjEquivalence (F : T ⥤ D) (Y : D) (X : T) :
   unitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
   counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical functor from the costructured arrow category on the diagonal functor
 `T ⥤ T × T` to the costructured arrow category on `Under.forget`. -/
 @[simps!]
@@ -1258,7 +1331,7 @@ def ofDiagEquivalence.functor (X : T × T) :
     _ _
     (fun f => f.hom.2) (fun m => by have := congrArg (·.2) m.w; cat_disch)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor of `ofDiagEquivalence.functor`. -/
 @[simps!]
 def ofDiagEquivalence.inverse (X : T × T) :
@@ -1266,6 +1339,7 @@ def ofDiagEquivalence.inverse (X : T × T) :
   Functor.toCostructuredArrow (CostructuredArrow.proj _ _ ⋙ Over.forget _) _ X
     (fun f => (f.left.hom, f.hom)) (fun m => by have := m.w; cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Characterization of the costructured arrow category on the diagonal functor `T ⥤ T × T`. -/
 def ofDiagEquivalence (X : T × T) :
     CostructuredArrow (Functor.diag _) X ≌ CostructuredArrow (Over.forget X.1) X.2 where
@@ -1287,6 +1361,7 @@ section CommaFst
 
 variable {C : Type u₃} [Category.{v₃} C] (F : C ⥤ T) (G : D ⥤ T)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor used to define the equivalence `ofCommaFstEquivalence`. -/
 @[simps]
 def ofCommaFstEquivalenceFunctor (c : C) :
@@ -1294,7 +1369,7 @@ def ofCommaFstEquivalenceFunctor (c : C) :
   obj X := ⟨Over.mk X.hom, X.left.right, X.left.hom⟩
   map f := ⟨Over.homMk f.left.left (by simpa using f.w), f.left.right, by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor used to define the equivalence `ofCommaFstEquivalence`. -/
 @[simps!]
 def ofCommaFstEquivalenceInverse (c : C) :
@@ -1302,6 +1377,7 @@ def ofCommaFstEquivalenceInverse (c : C) :
   Functor.toCostructuredArrow (Comma.preLeft (Over.forget c) F G) _ _
     (fun Y => Y.left.hom) (fun _ => by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- There is a canonical equivalence between the costructured arrow category with codomain `c` on
 the functor `Comma.fst F G : Comma F G ⥤ F` and the comma category over
 `Over.forget c ⋙ F : Over c ⥤ T` and `G`. -/
@@ -1323,7 +1399,7 @@ open Opposite
 
 variable (X : T)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical equivalence between over and under categories by reversing structure arrows. -/
 @[simps]
 def Over.opEquivOpUnder : Over (op X) ≌ (Under X)ᵒᵖ where
@@ -1334,7 +1410,7 @@ def Over.opEquivOpUnder : Over (op X) ≌ (Under X)ᵒᵖ where
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical equivalence between under and over categories by reversing structure arrows. -/
 @[simps]
 def Under.opEquivOpOver : Under (op X) ≌ (Over X)ᵒᵖ where

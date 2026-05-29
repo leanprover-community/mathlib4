@@ -261,7 +261,7 @@ alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_def
 @[deprecated (since := "2026-01-07")] alias GCongr.mem_of_le_of_mem := _root_.mem_of_le_of_mem
 
 theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
-  simpa [← coe_subset_coe] using Set.not_subset
+  simpa [← coe_subset_coe] using! Set.not_subset
 
 end LE
 
@@ -269,7 +269,7 @@ section Preorder
 
 variable [Preorder A] [IsConcreteLE A B] {p q : A}
 
-@[mono]
+@[gcongr, mono]
 theorem coe_mono : Monotone (SetLike.coe : A → Set B) := fun _ _ => coe_subset_coe.mpr
 
 end Preorder
@@ -281,11 +281,11 @@ variable [PartialOrder A] [IsConcreteLE A B] {p q : A}
 @[simp, norm_cast, gcongr] lemma coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T := by
   rw [ssubset_iff_subset_ne, lt_iff_le_and_ne, coe_subset_coe, SetLike.coe_ne_coe]
 
-@[mono]
+@[gcongr, mono]
 theorem coe_strictMono : StrictMono (SetLike.coe : A → Set B) := fun _ _ => coe_ssubset_coe.mpr
 
 theorem exists_of_lt : p < q → ∃ x ∈ q, x ∉ p := by
-  simpa [← coe_ssubset_coe] using Set.exists_of_ssubset
+  simpa [← coe_ssubset_coe] using! Set.exists_of_ssubset
 
 theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
   rw [lt_iff_le_not_ge, not_le_iff_exists]

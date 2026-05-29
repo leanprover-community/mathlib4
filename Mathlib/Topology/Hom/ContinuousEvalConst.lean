@@ -21,7 +21,7 @@ Whenever we add a type of bundled dependent functions with a topology having thi
 we may decide to generalize from `FunLike` to `DFunLike`.
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 open Filter
@@ -47,7 +47,7 @@ The word "forget" in the name is motivated by the term "forgetful functor". -/
 theorem ContinuousEvalConst.of_continuous_forget {F' : Type*} [FunLike F' α X] [TopologicalSpace F']
     {f : F' → F} (hc : Continuous f) (hf : ∀ g, ⇑(f g) = g := by intro; rfl) :
     ContinuousEvalConst F' α X where
-  continuous_eval_const x := by simpa only [← hf] using (continuous_eval_const x).comp hc
+  continuous_eval_const x := by simpa only [← hf] using! (continuous_eval_const x).comp hc
 
 @[continuity, fun_prop]
 protected theorem Continuous.eval_const (hf : Continuous f) (x : α) : Continuous (f · x) :=

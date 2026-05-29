@@ -20,7 +20,7 @@ namespace Matrix
 
 section Examples
 
-/-- The matrix [a, -b; b, a] (inspired by multiplication by a complex number); it is an element of
+/-- The matrix $[a, -b; b, a]$ (inspired by multiplication by a complex number); it is an element of
 $GL_2(R)$ if `a ^ 2 + b ^ 2` is nonzero. -/
 @[simps! -fullyApplied val]
 def planeConformalMatrix {R} [Field R] (a b : R) (hab : a ^ 2 + b ^ 2 ≠ 0) :
@@ -44,9 +44,9 @@ lemma mem_center_iff_val_mem_range_scalar {g : GL n R} :
   constructor
   · intro hg
     refine Matrix.mem_range_scalar_of_commute_transvectionStruct fun t ↦ ?_
-    simpa [Units.ext_iff] using Subgroup.mem_center_iff.mp hg (.mk _ _ t.mul_inv t.inv_mul)
+    simpa [Units.ext_iff] using! Subgroup.mem_center_iff.mp hg (.mk _ _ t.mul_inv t.inv_mul)
   · refine fun ⟨a, ha⟩ ↦ Subgroup.mem_center_iff.mpr fun h ↦ ?_
-    simpa [Units.ext_iff, ← ha] using (scalar_commute a (mul_comm a ·) h.val).symm
+    simpa [Units.ext_iff, ← ha] using! (scalar_commute a (mul_comm a ·) h.val).symm
 
 @[deprecated (since := "2026-02-08")]
 alias mem_center_iff_val_eq_scalar := mem_center_iff_val_mem_range_scalar

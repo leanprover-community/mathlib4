@@ -61,6 +61,8 @@ In particular, if `p` is not contained in `P^n`, then the ramification index is 
 
 If there is no largest such `n` (e.g. because `p = ⊥`), then `ramificationIdx` is
 defined to be 0.
+
+Note: This definition of ramification index will eventually be replaced by `Ideal.ramificationIdx'`.
 -/
 noncomputable def ramificationIdx : ℕ := sSup {n | map f p ≤ P ^ n}
 
@@ -69,7 +71,7 @@ variable {p P}
 theorem ramificationIdx_eq_find [DecidablePred fun n ↦ ∀ (k : ℕ), map f p ≤ P ^ k → k ≤ n]
     (h : ∃ n, ∀ k, map f p ≤ P ^ k → k ≤ n) :
     ramificationIdx p P = Nat.find h := by
-  convert Nat.sSup_def h
+  convert! Nat.sSup_def h
 
 theorem ramificationIdx_eq_zero (h : ∀ n : ℕ, ∃ k, map f p ≤ P ^ k ∧ n < k) :
     ramificationIdx p P = 0 :=
@@ -147,7 +149,7 @@ variable (p) in
 lemma ramificationIdx_map_eq {E : Type*} [EquivLike E S S₁] [AlgEquivClass E R S S₁]
     (P : Ideal S) (e : E) :
     ramificationIdx p (P.map e) = ramificationIdx p P := by
-  rw [show P.map e = _ from P.map_comap_of_equiv (e : S ≃+* S₁)]
+  rw [show P.map e = _ from P.map_comap_of_equiv (RingEquivClass.toRingEquiv e : S ≃+* S₁)]
   exact p.ramificationIdx_comap_eq (AlgEquivClass.toAlgEquiv e).symm P
 
 lemma ramificationIdx_ne_one_iff (hp : map f p ≤ P) :
@@ -268,7 +270,7 @@ lemma ramificationIdx_eq_one_iff
   have ha' : ¬ a ≤ P := fun h ↦ H₁ (ha.trans_le (Ideal.mul_mono_right h))
   rw [IsScalarTower.algebraMap_eq _ S, ← Ideal.map_map, ha, Ideal.map_mul,
     Localization.AtPrime.map_eq_maximalIdeal]
-  convert Ideal.mul_top _
+  convert! Ideal.mul_top _
   on_goal 2 => infer_instance
   rw [← not_ne_iff, IsLocalization.map_algebraMap_ne_top_iff_disjoint P.primeCompl]
   simpa [primeCompl, Set.disjoint_compl_left_iff_subset]
@@ -368,7 +370,7 @@ theorem ramificationIdx_algebra_tower' [IsDedekindDomain S] [IsDedekindDomain T]
       ramificationIdx p P * ramificationIdx P Q := by
   obtain rfl | hp := eq_or_ne p ⊥
   · simp
-  have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under S Q
+  have : P.IsPrime := isPrime_of_liesOver Q P
   have : Module.IsTorsionFree R T := by
     refine Module.IsTorsionFree.of_smul_eq_zero fun r m h ↦ ?_
     rwa [algebra_compatible_smul S, smul_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff] at h

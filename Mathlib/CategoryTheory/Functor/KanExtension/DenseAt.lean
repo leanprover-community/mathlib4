@@ -62,6 +62,7 @@ if `Y` and `Y'` are isomorphic. -/
 def DenseAt.ofIso {Y' : D} (e : Y ≅ Y') : F.DenseAt Y' :=
   LeftExtension.isPointwiseLeftKanExtensionAtOfIso' _ hY e
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `F : C ⥤ D` is dense at `Y : D`, and `G` is a functor that is isomorphic to `F`,
 then `G` is also dense at `Y`. -/
 def DenseAt.ofNatIso {G : C ⥤ D} (e : F ≅ G) : G.DenseAt Y :=
@@ -89,6 +90,7 @@ noncomputable def DenseAt.precompOfFinal
 @[deprecated (since := "2025-12-17")]
 alias DenseAt.precompEquivalence := DenseAt.precompOfFinal
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `F : C ⥤ D` is dense at `Y : D` and `G : D ⥤ D'` is an equivalence,
 then `F ⋙ G` is dense at `G.obj Y`. -/
 noncomputable def DenseAt.postcompEquivalence
@@ -96,6 +98,10 @@ noncomputable def DenseAt.postcompEquivalence
     (F ⋙ G).DenseAt (G.obj Y) :=
   IsColimit.ofWhiskerEquivalence (CostructuredArrow.post F G Y).asEquivalence
     (IsColimit.ofIsoColimit ((isColimitOfPreserves G hY)) (Cocone.ext (Iso.refl _)))
+
+lemma DenseAt.hasPointwiseLeftKanExtensionAt (hf : F.DenseAt Y) :
+    F.HasPointwiseLeftKanExtensionAt F Y :=
+  ⟨_, hf⟩
 
 variable (F) in
 /-- Given a functor `F : C ⥤ D`, this is the property of objects `Y : D` such

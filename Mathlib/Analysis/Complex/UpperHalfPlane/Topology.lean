@@ -74,8 +74,8 @@ instance : LocPathConnectedSpace ℍ := isOpenEmbedding_coe.locPathConnectedSpac
 instance : NoncompactSpace ℍ where
   noncompact_univ h := by
     have : IsCompact (Complex.im ⁻¹' Ioi 0) := by
-      simpa [isEmbedding_coe.isCompact_iff] using h
-    simpa [closure_preimage_im] using congr(0 ∈ $this.isClosed.closure_eq)
+      simpa [isEmbedding_coe.isCompact_iff] using! h
+    simpa [closure_preimage_im] using! congr(0 ∈ $this.isClosed.closure_eq)
 
 instance : LocallyCompactSpace ℍ :=
   isOpenEmbedding_coe.locallyCompactSpace

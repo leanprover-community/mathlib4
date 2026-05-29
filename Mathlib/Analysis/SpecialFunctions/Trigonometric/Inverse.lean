@@ -303,7 +303,7 @@ theorem strictAntiOn_arccos : StrictAntiOn arccos (Icc (-1) 1) := fun _ hx _ hy 
 @[gcongr]
 lemma arccos_lt_arccos {x y : ℝ} (hx : -1 ≤ x) (hlt : x < y) (hy : y ≤ 1) :
     arccos y < arccos x := by
-  unfold arccos; gcongr <;> assumption
+  unfold arccos; gcongr
 
 @[gcongr]
 lemma arccos_le_arccos {x y : ℝ} (hlt : x ≤ y) : arccos y ≤ arccos x := by unfold arccos; gcongr
@@ -446,7 +446,7 @@ def cosPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   continuousOn_invFun := continuous_arccos.continuousOn
 
 /-- `Real.cos` and `Real.arccos` as a (partial) equivalence from `[0, π]` to `[-1, 1]` -/
-@[simps, expose]
+@[simps]
 noncomputable def cosPartialEquiv : PartialEquiv ℝ ℝ where
   toFun θ := cos θ
   invFun x := arccos x

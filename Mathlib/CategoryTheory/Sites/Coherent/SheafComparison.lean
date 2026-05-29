@@ -79,7 +79,7 @@ theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
       simpa using this
     · obtain ⟨W, g₁, g₂, h₁, h₂⟩ := H₂ a
       rw [h₂]
-      convert S.downward_closed h₁ (F.preimage (g₀ a ≫ g₂))
+      convert! S.downward_closed h₁ (F.preimage (g₀ a ≫ g₂))
       exact F.map_injective (by simp)
 
 lemma eq_induced : haveI := F.reflects_precoherent
@@ -179,7 +179,7 @@ theorem exists_effectiveEpi_iff_mem_induced (X : C) (S : Sieve X) :
       infer_instance
     · obtain ⟨W, g₁, g₂, h₁, h₂⟩ := H₂
       rw [h₂]
-      convert S.downward_closed h₁ (F.preimage (g₀ ≫ g₂))
+      convert! S.downward_closed h₁ (F.preimage (g₀ ≫ g₂))
       exact F.map_injective (by simp)
 
 lemma eq_induced : haveI := F.reflects_preregular
@@ -258,6 +258,7 @@ theorem isSheaf_iff_extensiveSheaf_of_projective [Preregular C] [FinitaryExtensi
     IsSheaf (coherentTopology C) F ↔ IsSheaf (extensiveTopology C) F := by
   rw [isSheaf_iff_preservesFiniteProducts_of_projective, isSheaf_iff_preservesFiniteProducts]
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 The categories of coherent sheaves and extensive sheaves on `C` are equivalent if `C` is
 preregular, finitary extensive, and every object is projective.

@@ -23,7 +23,7 @@ There are two main results here:
 
 -/
 
-@[expose] public section
+public section
 
 universe u u₁ v w
 
@@ -34,7 +34,6 @@ theorem TietzeExtension.of_tvs (𝕜 : Type v) [NontriviallyNormedField 𝕜] {E
     [TietzeExtension.{u, v} 𝕜] : TietzeExtension.{u, w} E :=
   Module.Basis.ofVectorSpace 𝕜 E |>.equivFun.toContinuousLinearEquiv.toHomeomorph |> .of_homeo
 
-set_option backward.isDefEq.respectTransparency false in
 instance Complex.instTietzeExtension : TietzeExtension ℂ :=
   TietzeExtension.of_tvs ℝ
 
@@ -87,8 +86,7 @@ theorem Metric.instTietzeExtensionBall {𝕜 : Type v} [RCLike 𝕜] {E : Type w
 theorem Metric.instTietzeExtensionClosedBall (𝕜 : Type v) [RCLike 𝕜] {E : Type w}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] (y : E) {r : ℝ} (hr : 0 < r) :
     TietzeExtension.{u, w} (Metric.closedBall y r) :=
-  .of_homeo <| by
-    change (Metric.closedBall y r) ≃ₜ (Metric.closedBall (0 : E) 1)
+  .of_homeo (Z := Metric.closedBall (0 : E) 1) <| by
     symm
     apply (DilationEquiv.smulTorsor y (k := (r : 𝕜)) <| by exact_mod_cast hr.ne').toHomeomorph.sets
     ext x
@@ -116,14 +114,14 @@ theorem exists_norm_eq_restrict_eq (f : s →ᵇ E) :
     ∃ g : X →ᵇ E, ‖g‖ = ‖f‖ ∧ g.restrict s = f := by
   by_cases hf : ‖f‖ = 0; · exact ⟨0, by aesop⟩
   have := Metric.instTietzeExtensionClosedBall.{u, v} 𝕜 (0 : E) (by simp_all : 0 < ‖f‖)
-  have hf' x : f x ∈ Metric.closedBall 0 ‖f‖ := by simpa using f.norm_coe_le_norm x
+  have hf' x : f x ∈ Metric.closedBall 0 ‖f‖ := by simpa using! f.norm_coe_le_norm x
   obtain ⟨g, hg_mem, hg⟩ := (f : C(s, E)).exists_forall_mem_restrict_eq hs hf'
   simp only [Metric.mem_closedBall, dist_zero_right] at hg_mem
   let g' : X →ᵇ E := .ofNormedAddCommGroup g (map_continuous g) ‖f‖ hg_mem
   refine ⟨g', ?_, by ext x; congrm($(hg) x)⟩
   apply le_antisymm ((g'.norm_le <| by positivity).mpr hg_mem)
   refine (f.norm_le <| by positivity).mpr fun x ↦ ?_
-  have hx : f x = g' x := by simpa using congr($(hg) x).symm
+  have hx : f x = g' x := by simpa using! congr($(hg) x).symm
   rw [hx]
   exact g'.norm_le (norm_nonneg g') |>.mp le_rfl x
 

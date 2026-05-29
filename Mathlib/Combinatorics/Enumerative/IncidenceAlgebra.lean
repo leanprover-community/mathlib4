@@ -205,7 +205,7 @@ all divisions into two subintervals the product of the values of the original pa
 -/
 instance instMul : Mul (IncidenceAlgebra 𝕜 α) where
   mul f g :=
-    ⟨fun a b ↦ ∑ x ∈ Icc a b, f a x * g x b, fun a b h ↦ by dsimp; rw [Icc_eq_empty h, sum_empty]⟩
+    ⟨fun a b ↦ ∑ x ∈ Icc a b, f a x * g x b, fun a b h ↦ by rw [Icc_eq_empty h, sum_empty]⟩
 
 @[simp] lemma mul_apply (f g : IncidenceAlgebra 𝕜 α) (a b : α) :
     (f * g) a b = ∑ x ∈ Icc a b, f a x * g x b := rfl
@@ -249,7 +249,7 @@ variable [Preorder α] [LocallyFiniteOrder α] [AddCommMonoid 𝕜] [AddCommMono
 
 instance instSMul : SMul (IncidenceAlgebra 𝕜 α) (IncidenceAlgebra 𝕝 α) :=
   ⟨fun f g ↦
-    ⟨fun a b ↦ ∑ x ∈ Icc a b, f a x • g x b, fun a b h ↦ by dsimp; rw [Icc_eq_empty h, sum_empty]⟩⟩
+    ⟨fun a b ↦ ∑ x ∈ Icc a b, f a x • g x b, fun a b h ↦ by rw [Icc_eq_empty h, sum_empty]⟩⟩
 
 @[simp]
 lemma smul_apply (f : IncidenceAlgebra 𝕜 α) (g : IncidenceAlgebra 𝕝 α) (a b : α) :
@@ -344,8 +344,6 @@ lemma zeta_mul_zeta [NonAssocSemiring 𝕜] [Preorder α] [LocallyFiniteOrder α
   rw [mem_Icc] at hx
   rw [zeta_of_le hx.1, zeta_of_le hx.2, one_mul]
 
-@[deprecated (since := "2025-09-28")] alias zeta_mul_kappa := zeta_mul_zeta
-
 section Mu
 variable (𝕜) [AddCommGroup 𝕜] [One 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableEq α]
 
@@ -432,7 +430,6 @@ showing that `zeta * mu = 1` and `mu' * zeta = 1`. -/
 private def mu' : IncidenceAlgebra 𝕜 α :=
   ⟨fun a b ↦ muFun' 𝕜 b a, fun a b ↦
     not_imp_comm.1 fun h ↦ by
-      dsimp only at h
       rw [muFun'_apply] at h
       split_ifs at h with hab
       · exact hab.le
@@ -577,7 +574,7 @@ set_option backward.isDefEq.respectTransparency false in
 O'Donnell. -/
 lemma moebius_inversion_bot (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Iic x, f y) (x : α) :
     f x = ∑ y ∈ Iic x, mu 𝕜 y x * g y := by
-  convert moebius_inversion_top (α := αᵒᵈ) f g h x using 3
+  convert! moebius_inversion_top (α := αᵒᵈ) f g h x using 3
   rw [← mu_toDual]; rfl
 
 end InversionBot

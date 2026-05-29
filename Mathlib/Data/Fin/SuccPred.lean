@@ -75,7 +75,7 @@ theorem succ_one_eq_two' [NeZero n] : Fin.succ (1 : Fin (n + 1)) = 2 := by
 The `Fin.le_zero_iff` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
-@[simp]
+@[deprecated "use `nonpos_iff_eq_zero`" (since := "2026-05-11")]
 theorem le_zero_iff' {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
   ⟨fun h => Fin.ext <| by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact Nat.le_refl _⟩
 
@@ -134,12 +134,15 @@ theorem cast_le_cast (eq : n = m) {a b : Fin n} : a.cast eq ≤ b.cast eq ↔ a 
   Iff.rfl
 
 /-- The 'identity' equivalence between `Fin m` and `Fin n` when `m = n`. -/
-@[simps]
+@[simps apply]
 def _root_.finCongr (eq : n = m) : Fin n ≃ Fin m where
   toFun := Fin.cast eq
   invFun := Fin.cast eq.symm
   left_inv := leftInverse_cast eq
   right_inv := rightInverse_cast eq
+
+theorem _root_.finCongr_symm_apply (eq : n = m) (a : Fin m) :
+    (finCongr eq).symm a = a.cast eq.symm := rfl
 
 @[simp] lemma _root_.finCongr_apply_mk (h : m = n) (k : ℕ) (hk : k < m) :
     finCongr h ⟨k, hk⟩ = ⟨k, h ▸ hk⟩ := rfl

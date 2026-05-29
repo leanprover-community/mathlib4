@@ -517,12 +517,12 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
                   f.continuous f_nn h_opens
   rw [@integral_eq_lintegral_of_nonneg_ae Ω _ μ f (Eventually.of_forall f_nn)
         f.continuous.measurable.aestronglyMeasurable]
-  convert ENNReal.toReal_mono ?_ same
+  convert! ENNReal.toReal_mono ?_ same
   · simp only [fun i ↦ @integral_eq_lintegral_of_nonneg_ae Ω _ (μs i) f (Eventually.of_forall f_nn)
                         f.continuous.measurable.aestronglyMeasurable]
     let g := BoundedContinuousFunction.comp _ Real.lipschitzWith_toNNReal f
     have bound : ∀ i, ∫⁻ x, ENNReal.ofReal (f x) ∂(μs i) ≤ nndist 0 g := fun i ↦ by
-      simpa only [coe_nnreal_ennreal_nndist, measure_univ, mul_one, ge_iff_le] using
+      simpa only [coe_nnreal_ennreal_nndist, measure_univ, mul_one, ge_iff_le] using!
             BoundedContinuousFunction.lintegral_le_edist_mul (μ := μs i) g
     apply ENNReal.liminf_toReal_eq ENNReal.coe_ne_top (Eventually.of_forall bound)
   · apply ne_of_lt
@@ -530,11 +530,11 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
     simp only [measure_univ, mul_one] at obs
     apply lt_of_le_of_lt _ (show (‖f‖₊ : ℝ≥0∞) < ∞ from ENNReal.coe_lt_top)
     apply liminf_le_of_le
-    · refine ⟨0, .of_forall (by simp only [ge_iff_le, zero_le, forall_const])⟩
+    · refine ⟨0, .of_forall (by simp)⟩
     · intro x hx
       obtain ⟨i, hi⟩ := hx.exists
       apply le_trans hi
-      convert obs i with x
+      convert! obs i with x
       have aux := ENNReal.ofReal_eq_coe_nnreal (f_nn x)
       simp only [ContinuousMap.toFun_eq_coe, BoundedContinuousFunction.coe_toContinuousMap] at aux
       rw [aux]
@@ -567,7 +567,7 @@ theorem tendsto_of_forall_isOpen_le_liminf_nat {μ : ProbabilityMeasure Ω}
     · exact ⟨0, by simp⟩
   have obs := ENNReal.coe_mono h_opens
   simp only [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, aux] at obs
-  convert obs
+  convert! obs
   simp only [Function.comp_apply, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
 
 /-- One implication of the portmanteau theorem: if for all open sets `G` we have the liminf
@@ -628,7 +628,7 @@ lemma tendsto_of_forall_isClosed_limsup_le_nat {μs : ℕ → ProbabilityMeasure
       ⟨1, by simp⟩ ⟨0, by simp⟩
   have obs := ENNReal.coe_mono h
   simp only [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, aux] at obs
-  convert obs
+  convert! obs
   simp
 
 /-- One implication of the portmanteau theorem: if for all closed sets `F` we have the limsup
@@ -669,7 +669,7 @@ theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : Mea
     { toFun := f
       continuous_toFun := hf_lip.choose_spec.continuous
       map_bounded' := hf_bounded }
-    simpa using h f'
+    simpa using! h f'
   -- To prove the other direction, we prove convergence of the measure of closed sets.
   -- We approximate the indicator function of a closed set by bounded Lipschitz functions.
   rcases F.eq_or_neBot with rfl | hne
@@ -698,7 +698,7 @@ theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : Mea
     · exact (integrable_indicator_iff hs.measurableSet).mpr (integrable_const _).integrableOn
     · have h : _ ≤ fs M :=
         indicator_le_thickenedIndicator (δ := (1 : ℝ) / (M + 1)) (by positivity) s
-      simpa using h
+      simpa using! h
   apply (Filter.limsup_le_of_le ?_ ev_near).trans
   · apply (add_le_add (hM M rfl.le).le (le_refl (ε / 2))).trans_eq
     ring
@@ -731,7 +731,7 @@ lemma _root_.IsPiSystem.tendsto_measureReal_biUnion
       (fun s hs ↦ hμ _ (ht _ hs) i)
   simp_rw [A, measureReal_biUnion_eq_sum_powerset (fun s hs ↦ hmeas _ (ht _ hs))
     (fun s hs ↦ hν _ (ht _ hs))]
-  refine tendsto_finset_sum _ (fun u hu ↦ ?_)
+  refine tendsto_finsetSum _ (fun u hu ↦ ?_)
   simp only [Finset.mem_filter, Finset.mem_powerset] at hu
   apply Filter.Tendsto.const_mul
   rcases eq_empty_or_nonempty (⋂ s ∈ u, s) with h'u | h'u
@@ -790,7 +790,7 @@ lemma ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen
   rw [← G_eq] at this
   rcases ((tendsto_order.1 this).1 r hr).exists with ⟨n, hn⟩
   refine ⟨(Finset.range (n + 1)).image f, by grind, ?_, ?_⟩
-  · convert hn
+  · convert! hn
     simp [accumulate_def]
   · simpa [G_eq] using fun i _ ↦ subset_iUnion f i
 

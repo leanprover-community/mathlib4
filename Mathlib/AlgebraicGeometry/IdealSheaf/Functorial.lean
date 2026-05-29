@@ -206,7 +206,7 @@ lemma ideal_comap_of_isOpenImmersion
 /-- If `J ≤ I.map f`, then `f` restricts to a map `I ⟶ J` between the closed subschemes. -/
 def subschemeMap (I : X.IdealSheafData) (J : Y.IdealSheafData)
     (f : X ⟶ Y) (H : J ≤ I.map f) : I.subscheme ⟶ J.subscheme :=
-  IsClosedImmersion.lift J.subschemeι (I.subschemeι ≫ f) (by simpa using H)
+  IsClosedImmersion.lift J.subschemeι (I.subschemeι ≫ f) (by simpa using! H)
 
 @[reassoc (attr := simp)]
 lemma subschemeMap_subschemeι (I : X.IdealSheafData) (J : Y.IdealSheafData)

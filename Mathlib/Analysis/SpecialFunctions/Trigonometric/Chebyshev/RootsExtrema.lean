@@ -67,14 +67,14 @@ theorem one_lt_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : 1 < x) :
 theorem one_le_negOnePow_mul_eval_T_real (n : ℤ) {x : ℝ} (hx : x ≤ -1) :
     1 ≤ n.negOnePow * (T ℝ n).eval x := by
   rw [← neg_neg x, T_eval_neg]
-  convert one_le_eval_T_real n (le_neg_of_le_neg hx)
+  convert! one_le_eval_T_real n (le_neg_of_le_neg hx)
   rw [Int.cast_negOnePow, ← mul_assoc, ← mul_zpow]
   simp
 
 theorem one_lt_negOnePow_mul_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : x < -1) :
     1 < n.negOnePow * (T ℝ n).eval x := by
   rw [← neg_neg x, T_eval_neg]
-  convert one_lt_eval_T_real hn (lt_neg_of_lt_neg hx)
+  convert! one_lt_eval_T_real hn (lt_neg_of_lt_neg hx)
   rw [Int.cast_negOnePow, ← mul_assoc, ← mul_zpow]
   simp
 
@@ -110,7 +110,7 @@ theorem abs_eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
       gcongr
       exact div_le_one_of_le₀ (arccos_le_pi x) (by positivity)
     refine ⟨k, by simpa using hkn, ?_⟩
-    convert congr(cos ($hk.symm / n))
+    convert! congr(cos ($hk.symm / n))
     rw [mul_div_cancel_left₀ _ (by simpa), cos_arccos (by grind) (by grind)]
   · rintro ⟨k, hk, rfl⟩
     rw [T_real_cos, abs_cos_eq_one_iff]
@@ -119,7 +119,7 @@ theorem abs_eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
 theorem eval_T_real_cos_int_mul_pi_div {k : ℕ} {n : ℕ} (hn : n ≠ 0) :
     (T ℝ n).eval (cos (k * π / n)) = (k : ℤ).negOnePow := by
   rw [T_real_cos, Int.cast_negOnePow]
-  convert Real.cos_int_mul_pi k using 2
+  convert! Real.cos_int_mul_pi k using 2
   simp [field]
 
 theorem eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
@@ -320,7 +320,7 @@ theorem irrational_of_isRoot_T_real {n : ℕ} {x : ℝ} (hroot : (T ℝ n).IsRoo
   obtain ⟨k, hk₁, hk₂⟩ := Finset.mem_image.mp hroot
   have hn : n ≠ 0 := by grind
   suffices Irrational (cos ((Rat.divInt (2 * k + 1) (2 * n)) * π)) by
-    rw [← hk₂]; convert this using 2; push_cast; field_simp
+    rw [← hk₂]; convert! this using 2; push_cast; field_simp
   apply irrational_cos_rat_mul_pi
   contrapose! hnz
   have : (Rat.divInt (2 * k + 1) (2 * n)).den = 2 * (n / n.gcd (2 * k + 1)) := calc
@@ -329,19 +329,19 @@ theorem irrational_of_isRoot_T_real {n : ℕ} {x : ℝ} (hroot : (T ℝ n).IsRoo
       Nat.mul_div_assoc _ (Nat.gcd_dvd_left ..)]
   have hn : 2 * k + 1 = n := Nat.eq_of_dvd_of_lt_two_mul (by simp) (Nat.gcd_eq_left_iff_dvd.mp <|
     Nat.eq_of_dvd_of_div_eq_one (Nat.gcd_dvd_left ..) (by grind [Rat.den_pos])) (by grind)
-  rw_mod_cast [← hk₂, hn]; convert cos_pi_div_two using 2; push_cast; field_simp
+  rw_mod_cast [← hk₂, hn]; convert! cos_pi_div_two using 2; push_cast; field_simp
 
 theorem abs_iterate_derivative_T_real_le (n : ℤ) (k : ℕ) {x : ℝ} (hx : |x| ≤ 1) :
     |(derivative^[k] (T ℝ n)).eval x| ≤ (derivative^[k] (T ℝ n)).eval 1 := by
   wlog hn : 0 ≤ n
-  · convert this (-n) k hx (by grind) using 1 <;> rw [T_neg]
+  · convert! this (-n) k hx (by grind) using 1 <;> rw [T_neg]
   lift n to ℕ using hn
   have := T_iterate_derivative_mem_span_T (R := ℝ) n k
   obtain ⟨f, hfsupp, hfderiv⟩ := Submodule.mem_span_set.mp this
   replace hfderiv : ∑ p ∈ f.support, f p • p = derivative^[k] (T ℝ n) := by rw [← hfderiv]; rfl
   have hf (y : ℝ) :
       ∑ p ∈ f.support, f p • p.eval y = (derivative^[k] (T ℝ n)).eval y := by
-    rw [← hfderiv, Polynomial.eval_finset_sum]
+    rw [← hfderiv, Polynomial.eval_finsetSum]
     simp_rw [Polynomial.eval_smul]
   rw [← hf x, ← hf 1]
   grw [Finset.abs_sum_le_sum_abs]

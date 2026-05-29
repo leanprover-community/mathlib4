@@ -26,6 +26,7 @@ example (i j k : Nat) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k := by
 /-
 theorem extracted_1 (i j k : Nat) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k := sorry
 -/
+
 ```
 
 * TODO: Add tactic code actions?

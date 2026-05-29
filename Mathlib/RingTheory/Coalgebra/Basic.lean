@@ -570,13 +570,13 @@ abbrev coalgebra [AddCommMonoid B] [Module R B] [Coalgebra R B] (e : A ≃ B) :
       apply (TensorProduct.map_bijective (f := .id) Function.bijective_id
         (e.linearEquiv R).bijective).injective
       simpa +instances [coalgebraStruct, LinearMap.comp_assoc, TensorProduct.map_map,
-        LinearMap.rTensor] using Coalgebra.rTensor_counit_comul _
+        LinearMap.rTensor] using! Coalgebra.rTensor_counit_comul _
     lTensor_counit_comp_comul := by
       ext
       apply (TensorProduct.map_bijective (g := .id) (e.linearEquiv R).bijective
         Function.bijective_id).injective
       simpa +instances [coalgebraStruct, LinearMap.comp_assoc, TensorProduct.map_map,
-        LinearMap.lTensor] using Coalgebra.lTensor_counit_comul _
+        LinearMap.lTensor] using! Coalgebra.lTensor_counit_comul _
     coassoc := by
       ext
       apply (TensorProduct.map_bijective (e.linearEquiv R).bijective <|
@@ -584,7 +584,7 @@ abbrev coalgebra [AddCommMonoid B] [Module R B] [Coalgebra R B] (e : A ≃ B) :
         (e.linearEquiv R).bijective).injective
       simp +instances [coalgebraStruct, e.tensorProductAssoc_def R, TensorProduct.congr,
         ← LinearMap.comp_assoc, TensorProduct.map_map, ← TensorProduct.map_comp]
-      simpa [LinearMap.comp_assoc, -coassoc_apply] using coassoc_apply (R := R) (A := B) _ }
+      simpa [LinearMap.comp_assoc, -coassoc_apply] using! coassoc_apply (R := R) (A := B) _ }
 
 variable (R) in
 /-- Transfer `Coalgebra.IsCocomm` across an `Equiv`. -/

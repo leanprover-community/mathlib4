@@ -6,7 +6,6 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Category
-public import Mathlib.CategoryTheory.Functor.Trifunctor
 
 /-!
 
@@ -333,14 +332,13 @@ def curriedAction : C ⥤ D ⥤ D where
 
 variable {C} in
 /-- Bundle `d ↦ c ⊙ₗ d` as a functor. -/
-@[simps!]
 abbrev actionLeft (c : C) : D ⥤ D := curriedAction C D |>.obj c
 
 variable {D} in
 /-- Bundle `c ↦ c ⊙ₗ d` as a functor. -/
-@[simps!]
 abbrev actionRight (d : D) : C ⥤ D := curriedAction C D |>.flip.obj d
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Bundle `αₗ _ _ _` as an isomorphism of trifunctors. -/
 @[simps!]
 def actionAssocNatIso :
@@ -350,6 +348,7 @@ def actionAssocNatIso :
     NatIso.ofComponents fun _ ↦
      NatIso.ofComponents fun _ ↦ αₗ _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Bundle `λₗ _` as an isomorphism of functors. -/
 @[simps!]
 def actionUnitNatIso : actionLeft D (𝟙_ C) ≅ 𝟭 D := NatIso.ofComponents (λₗ ·)
@@ -644,14 +643,13 @@ def curriedAction : C ⥤ D ⥤ D where
 
 variable {C} in
 /-- Bundle `d ↦ d ⊙ᵣ c` as a functor. -/
-@[simps!]
 abbrev actionRight (c : C) : D ⥤ D := curriedAction C D |>.obj c
 
 variable {D} in
 /-- Bundle `c ↦ d ⊙ᵣ c` as a functor. -/
-@[simps!]
 abbrev actionLeft (d : D) : C ⥤ D := curriedAction C D |>.flip.obj d
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Bundle `αᵣ _ _ _` as an isomorphism of trifunctors. -/
 @[simps!]
 def actionAssocNatIso :
@@ -661,6 +659,7 @@ def actionAssocNatIso :
     NatIso.ofComponents fun _ ↦
      NatIso.ofComponents fun _ ↦ αᵣ _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Bundle `ρᵣ _` as an isomorphism of functors. -/
 @[simps!]
 def actionUnitNatIso : actionRight D (𝟙_ C) ≅ 𝟭 D := NatIso.ofComponents (ρᵣ ·)

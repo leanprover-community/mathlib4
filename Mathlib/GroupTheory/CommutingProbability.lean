@@ -72,7 +72,8 @@ theorem commProb_pos [h : Nonempty M] : 0 < commProb M :=
 
 theorem commProb_le_one : commProb M ≤ 1 := by
   refine div_le_one_of_le₀ ?_ (sq_nonneg (Nat.card M : ℚ))
-  rw [← Nat.cast_pow, Nat.cast_le, sq, ← Nat.card_prod]
+  norm_cast
+  rw [sq, ← Nat.card_prod]
   apply Finite.card_subtype_le
 
 variable {M}
@@ -112,8 +113,7 @@ theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commPr
       conjugacy classes as `G ⧸ H`. -/
   rw [commProb_def', commProb_def', div_le_iff₀, mul_assoc, ← Nat.cast_mul, ← Subgroup.index,
     H.card_mul_index, div_mul_cancel₀, Nat.cast_le]
-  · apply Nat.card_le_card_of_surjective
-    show Function.Surjective (ConjClasses.map (QuotientGroup.mk' H))
+  · apply Nat.card_le_card_of_surjective (f := ConjClasses.map (QuotientGroup.mk' H))
     exact ConjClasses.map_surjective Quotient.mk''_surjective
   · exact Nat.cast_ne_zero.mpr Finite.card_pos.ne'
   · exact Nat.cast_pos.mpr Finite.card_pos

@@ -29,7 +29,6 @@ theorem volume_regionBetween_eq_integral' [SigmaFinite μ] (f_int : IntegrableOn
   rw [volume_regionBetween_eq_lintegral f_int.aemeasurable g_int.aemeasurable hs,
     integral_congr_ae h, lintegral_congr_ae,
     lintegral_coe_eq_integral _ ((integrable_congr h).mp (g_int.sub f_int))]
-  dsimp only
   rfl
 
 /-- If two functions are integrable on a measurable set, and one function is less than
@@ -117,6 +116,6 @@ theorem integral_comp_abs {f : ℝ → ℝ} :
         refine setIntegral_congr_fun measurableSet_Iic (fun _ hx => ?_)
         rw [abs_eq_neg_self.mpr (by exact hx)]
   · have : ¬ Integrable (fun x => f |x|) := by
-      contrapose! hf
+      contrapose hf
       exact hf.integrableOn
     rw [← eq, integral_undef hf, integral_undef this, mul_zero]

@@ -93,7 +93,7 @@ private lemma sum_r_mul_ne (vlt : ∀ i, v i < up) (wlt : ∀ i, w i < up) (ne :
   apply ofDigits_inj_of_len_eq (Nat.lt_add_right f.totalDegree one_lt_two)
     (by simp) (lt_up vlt) (lt_up wlt)
   simpa only [ofDigits_eq_sum_mapIdx, mapIdx_eq_ofFn, get_ofFn, length_ofFn,
-    Fin.val_cast, mul_comm, sum_ofFn] using h
+    Fin.val_cast, mul_comm, sum_ofFn] using! h
 
 private lemma degreeOf_zero_t {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).degreeOf 0 =
     ∑ i : Fin (n + 1), (r i) * v i := by
@@ -278,8 +278,8 @@ theorem exists_integral_inj_algHom_of_fg : ∃ s, ∃ g : (MvPolynomial (Fin s) 
   set ϕ := quotientKerAlgEquivOfSurjective fsurj
   obtain ⟨s, _, g, injg, intg⟩ := exists_integral_inj_algHom_of_quotient (ker f) (ker_ne_top _)
   use s, ϕ.toAlgHom.comp g
-  simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
-    EmbeddingLike.comp_injective, AlgHom.toRingHom_eq_coe]
+  simp only [AlgHom.coe_comp, AlgEquiv.coe_algHom, EmbeddingLike.comp_injective,
+    AlgHom.toRingHom_eq_coe]
   exact ⟨injg, intg.trans _ _ (isIntegral_of_surjective _ ϕ.surjective)⟩
 
 /-- For a finitely generated algebra `A` over a field `k`,
