@@ -426,6 +426,7 @@ noncomputable def ringEquivOfPrime [Fintype R] {p : ℕ} (hp : p.Prime) (hR : Fi
 lemma ringEquivOfPrime_eq_ringEquiv [Fintype R] {p : ℕ} [CharP R p] (hp : p.Prime)
     (hR : Fintype.card R = p) : ringEquivOfPrime R hp hR = ringEquiv R hR := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The identity between `ZMod m` and `ZMod n` when `m = n`, as a ring isomorphism. -/
 def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
@@ -665,8 +666,8 @@ theorem val_add_of_le {n : ℕ} [NeZero n] {a b : ZMod n} (h : n ≤ a.val + b.v
 
 theorem val_add_le {n : ℕ} (a b : ZMod n) : (a + b).val ≤ a.val + b.val := by
   cases n
-  · simpa [ZMod.val] using Int.natAbs_add_le _ _
-  · simpa [ZMod.val_add] using Nat.mod_le _ _
+  · simpa [ZMod.val] using! Int.natAbs_add_le _ _
+  · simpa [ZMod.val_add] using! Nat.mod_le _ _
 
 theorem val_mul {n : ℕ} (a b : ZMod n) : (a * b).val = a.val * b.val % n := by
   cases n
@@ -1237,7 +1238,7 @@ lemma ZModModule.two_le_char [NeZero n] [Nontrivial G] : 2 ≤ n := by
 
 lemma ZModModule.periodicPts_add_left [NeZero n] (x : G) : periodicPts (x + ·) = .univ :=
   Set.eq_univ_of_forall fun y ↦ ⟨n, NeZero.pos n, by
-    simpa [char_nsmul_eq_zero, IsPeriodicPt] using isFixedPt_id _⟩
+    simpa [char_nsmul_eq_zero, IsPeriodicPt] using! isFixedPt_id _⟩
 
 end general
 

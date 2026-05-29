@@ -122,7 +122,7 @@ theorem equiv_symm_eq_apply {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} [HasMult
     -- We can hint `ConcreteCategory.hom (Y := P.obj (op I.Y))` below to put it into `simp`-normal
     -- form, but that doesn't seem to fix the `erw`s below...
     (Multiequalizer.ι (S.index P) I) ((Meq.equiv P S).symm x) = x I := by
-  simp [← GrothendieckTopology.Cover.index_left, ← equiv_apply]
+  simp [- GrothendieckTopology.Cover.index_left, ← equiv_apply]
 
 end Meq
 
@@ -144,6 +144,7 @@ noncomputable section
 def mk {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) : ToType ((J.plusObj P).obj (op X)) :=
   colimit.ι (J.diagram P X) (op S) ((Meq.equiv P S).symm x)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem res_mk_eq_mk_pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (f : Y ⟶ X) :
     (J.plusObj P).map f.op (mk x) = mk (x.pullback f) := by
@@ -176,6 +177,7 @@ theorem toPlus_mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : ToType (P.obj
     Meq.equiv_symm_eq_apply]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (I : S.Arrow) :
     (J.toPlus P).app _ (x I) = (J.plusObj P).map I.f.op (mk x) := by
@@ -194,7 +196,7 @@ theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (
   rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply,
     Multiequalizer.lift_ι, Multiequalizer.lift_ι, Multiequalizer.lift_ι]
   rw [dsimp% Meq.equiv_symm_eq_apply x i.base]
-  simpa using (x.condition (Cover.Relation.mk' (I.precompRelation i.f))).symm
+  simpa using! (x.condition (Cover.Relation.mk' (I.precompRelation i.f))).symm
 
 theorem toPlus_eq_mk {X : C} {P : Cᵒᵖ ⥤ D} (x : ToType (P.obj (op X))) :
     (J.toPlus P).app _ x = mk (Meq.mk ⊤ x) := toPlus_mk ⊤ x
@@ -401,7 +403,7 @@ theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
     apply_fun Meq.equiv (J.plusObj P) S at h
     apply_fun fun e => e I at h
     dsimp only [ConcreteCategory.forget_map_eq_ofHom] at h
-    simpa [Meq.equiv_apply, ← comp_apply] using h
+    simpa [Meq.equiv_apply, ← comp_apply] using! h
   · rintro (x : ToType (multiequalizer (S.index _)))
     obtain ⟨t, ht⟩ := exists_of_sep P hsep X S (Meq.equiv _ _ x)
     use t

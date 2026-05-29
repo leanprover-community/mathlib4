@@ -1,4 +1,4 @@
-module  -- shake: keep-all
+module  -- shake: keep-all --deprecated_module: ignore
 
 public import Std
 public import Batteries
@@ -304,6 +304,7 @@ public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.EuclideanDomain.Defs
 public import Mathlib.Algebra.EuclideanDomain.Field
 public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Algebra.Exact
 public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Algebra.Exact.Sequence
 public import Mathlib.Algebra.Expr
@@ -920,6 +921,8 @@ public import Mathlib.Algebra.Order.Archimedean.Class
 public import Mathlib.Algebra.Order.Archimedean.Defs
 public import Mathlib.Algebra.Order.Archimedean.Hom
 public import Mathlib.Algebra.Order.Archimedean.IndicatorCard
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
+public import Mathlib.Algebra.Order.Archimedean.Real.Hom
 public import Mathlib.Algebra.Order.Archimedean.Submonoid
 public import Mathlib.Algebra.Order.BigOperators.Expect
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
@@ -4276,13 +4279,11 @@ public import Mathlib.Data.Rat.NatSqrt.Defs
 public import Mathlib.Data.Rat.NatSqrt.Real
 public import Mathlib.Data.Rat.Sqrt
 public import Mathlib.Data.Rat.Star
-public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Data.Real.CompleteField
 public import Mathlib.Data.Real.ConjExponents
 public import Mathlib.Data.Real.ENatENNReal
 public import Mathlib.Data.Real.Embedding
-public import Mathlib.Data.Real.Hom
 public import Mathlib.Data.Real.Pointwise
 public import Mathlib.Data.Real.Sign
 public import Mathlib.Data.Real.Star
@@ -7239,7 +7240,6 @@ public import Mathlib.Tactic.Linter
 public import Mathlib.Tactic.Linter.AuxLemma
 public import Mathlib.Tactic.Linter.CommandRanges
 public import Mathlib.Tactic.Linter.CommandStart
-public import Mathlib.Tactic.Linter.DeprecatedModule
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
 public import Mathlib.Tactic.Linter.DocPrime

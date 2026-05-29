@@ -55,7 +55,7 @@ variable (M : Type*) (p q : ℕ) [CommMonoid M] [PerfectRing M p] [PerfectRing M
 namespace PerfectRing
 
 instance one : PerfectRing M 1 :=
-  ⟨by simpa using bijective_id⟩
+  ⟨by simpa using! bijective_id⟩
 
 instance mul : PerfectRing M (p * q) :=
   ⟨by simp_rw [pow_mul]; exact PerfectRing.bijective_frobenius.comp PerfectRing.bijective_frobenius⟩
