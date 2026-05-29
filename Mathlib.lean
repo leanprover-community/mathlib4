@@ -4331,7 +4331,6 @@ public import Mathlib.Data.Seq.Basic
 public import Mathlib.Data.Seq.Computation
 public import Mathlib.Data.Seq.Defs
 public import Mathlib.Data.Seq.Parallel
-public import Mathlib.Data.Set.Accumulate
 public import Mathlib.Data.Set.Basic
 public import Mathlib.Data.Set.BoolIndicator
 public import Mathlib.Data.Set.BooleanAlgebra
@@ -6172,6 +6171,7 @@ public import Mathlib.Order.ScottContinuity.Complete
 public import Mathlib.Order.ScottContinuity.Prod
 public import Mathlib.Order.SemiconjSup
 public import Mathlib.Order.Set
+public import Mathlib.Order.SetAccumulate
 public import Mathlib.Order.SetIsMax
 public import Mathlib.Order.SetNotation
 public import Mathlib.Order.Shrink
