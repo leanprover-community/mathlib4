@@ -406,15 +406,15 @@ theorem lowerCentralSeries_zero : S.lowerCentralSeries 0 = S := rfl
 theorem lowerCentralSeries_succ (n : ℕ) :
     S.lowerCentralSeries (n + 1) = ⁅S.lowerCentralSeries n, S⁆ := rfl
 
+@[to_additive top_lowerCentralSeries_one]
 theorem top_lowerCentralSeries_one : (⊤ : Subgroup G).lowerCentralSeries 1 = _root_.commutator G :=
   rfl
 
-theorem _root_.AddSubgroup.top_lowerCentralSeries_one {G : Type*} [AddGroup G] :
-    (⊤ : AddSubgroup G).lowerCentralSeries 1 = _root_.addCommutator G :=
-  rfl
+@[deprecated (since := "2026-05-25")]
+alias _root_.AddSubgroup.lowerCentralSeries_one := AddSubgroup.top_lowerCentralSeries_one
 
-attribute [to_additive existing AddSubgroup.top_lowerCentralSeries_one]
-  top_lowerCentralSeries_one
+@[to_additive existing lowerCentralSeries_one, deprecated (since := "2026-05-25")]
+alias lowerCentralSeries_one := top_lowerCentralSeries_one
 
 @[to_additive]
 theorem mem_lowerCentralSeries_succ_iff (n : ℕ) (q : G) :
@@ -1249,7 +1249,7 @@ open Group
   nilpotent_iff_finite_descending_central_series
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries := lowerCentralSeries
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries_zero := lowerCentralSeries_zero
-@[deprecated (since := "2026-05-25")] alias lowerCentralSeries_one := top_lowerCentralSeries_one
+@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_one := top_lowerCentralSeries_one
 @[deprecated (since := "2026-03-25")] alias mem_lowerCentralSeries_succ_iff :=
   mem_lowerCentralSeries_succ_iff
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries_succ := lowerCentralSeries_succ
@@ -1277,7 +1277,12 @@ alias least_descending_central_series_length_eq_nilpotencyClass :=
   lowerCentralSeries_nilpotencyClass
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries_eq_bot_iff_nilpotencyClass_le :=
   lowerCentralSeries_eq_bot_iff_nilpotencyClass_le
+@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_map_subtype_le :=
+  lowerCentralSeries_map_subtype_le
 @[deprecated (since := "2026-03-25")] alias upperCentralSeries.map := upperCentralSeries.map
+@[deprecated (since := "2026-03-25")] alias lowerCentralSeries.map := lowerCentralSeries.map
+@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_succ_eq_bot :=
+  lowerCentralSeries_succ_eq_bot
 @[deprecated (since := "2026-03-25")] alias isNilpotent_of_ker_le_center :=
   isNilpotent_of_ker_le_center
 @[deprecated (since := "2026-03-25")] alias nilpotencyClass_le_of_ker_le_center :=
@@ -1315,10 +1320,14 @@ alias least_descending_central_series_length_eq_nilpotencyClass :=
 @[deprecated (since := "2026-03-25")]
 alias upperCentralSeries.card_image_eq_of_le_nilpotencyClass :=
   upperCentralSeries.card_image_eq_of_le_nilpotencyClass
+@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_prod := lowerCentralSeries_prod
 @[deprecated (since := "2026-03-25")] alias isNilpotent_prod := isNilpotent_prod
 @[deprecated (since := "2026-03-25")] alias nilpotencyClass_prod := nilpotencyClass_prod
+@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_pi_le := lowerCentralSeries_pi_le
 @[deprecated (since := "2026-03-25")] alias isNilpotent_pi_of_bounded_class :=
   isNilpotent_pi_of_bounded_class
+@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_pi_of_finite :=
+  lowerCentralSeries_pi_of_finite
 @[deprecated (since := "2026-03-25")] alias isNilpotent_pi := isNilpotent_pi
 @[deprecated (since := "2026-03-25")] alias nilpotencyClass_pi := nilpotencyClass_pi
 @[deprecated (since := "2026-03-25")] alias nilpotencyClass_le_one_of_isSimple_of_isNilpotent :=
