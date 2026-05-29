@@ -236,7 +236,7 @@ lemma iIndepFun.hasLaw_finset_sum_binomial {ι : Type*} {s : Finset ι} {X : ι 
     (f := fun x ↦ ∑ i, x i) (Y := fun ω i ↦ X i.1 ω) (by fun_prop) ?_ ?_
   · simp only [Finset.sum_apply]
     rw [← Finset.sum_coe_sort, ← Finset.sum_coe_sort]
-  · exact iIndepFun.hasLaw_pi (fun i ↦ lawX i i.1.2) (hX.precomp (fun _ _ _ ↦ by grind))
+  · exact iIndepFun.hasLaw_pi (fun i ↦ lawX i i.1.2) (hX.precomp Subtype.coe_injective)
   have : HasLaw (fun ω ↦ (S ω).ncard) Bin(s.card, p) P' := by
     convert (measurePreserving_ncard_setBernoulli_binomial_ncard (by simp)).comp_hasLaw hS
     simp
