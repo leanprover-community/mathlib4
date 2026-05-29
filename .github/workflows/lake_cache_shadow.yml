@@ -356,6 +356,8 @@ jobs:
     if: ${{ github.repository == 'leanprover-community/mathlib4' }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    outputs:
+      cache_health: ${{ steps.cachehealth.outputs.health }}
     env:
       # Must match the targets staged/uploaded by build_and_stage.
       STAGE_TARGETS: ${{ inputs.targets || 'Mathlib' }}
@@ -426,6 +428,7 @@ jobs:
           lake build "${TARGETS[@]}" 2>&1 | tee .lake/consume-build.log
 
       - name: Check cache provenance
+        id: cachehealth
         run: |
           cd pr-branch
           log=.lake/consume-build.log
@@ -435,14 +438,21 @@ jobs:
           # `mathlib` package sets `enableArtifactCache`) and always rebuilds.
           echo "Served from cache (fetched): ${FETCHED_ARTIFACTS}"
           echo "Built from source (deps, expected): $(grep -cE '^✔.*Built ' "$log" || true)"
-          # The cache invariant: no root-package module may be rebuilt — those
-          # must all come from the cache (deps building is expected).
+          # The cache invariant: every root-package module must be a cache HIT
+          # (no rebuild). Deps building is expected and excluded from the grep.
+          # Emit an explicit health line (consumed by the Zulip report) and fail
+          # the run if it's not a full hit.
           BUILT_ROOT=$(grep -cE '^✔.*Built (Mathlib|Archive|Counterexamples)([. ]|$)' "$log" || true)
           if [ "$BUILT_ROOT" -ne 0 ]; then
-            echo "::error::$BUILT_ROOT root-package module(s) were rebuilt instead of served from the Lake cache"
+            health="❌ NOT full cache hits — ${BUILT_ROOT} root-package module(s) rebuilt"
+            echo "health=${health}" >> "$GITHUB_OUTPUT"
+            echo "::error::${health}"
             grep -E '^✔.*Built (Mathlib|Archive|Counterexamples)([. ]|$)' "$log" || true
             exit 1
           fi
+          health="✅ full cache hits — 0 root-package modules rebuilt (${FETCHED_ARTIFACTS} served from cache)"
+          echo "health=${health}" >> "$GITHUB_OUTPUT"
+          echo "::notice::${health}"
 
       # Integrity check (not a cache-provenance check): re-derives artifact
       # hashes from disk for the targets and confirms nothing is stale. Runs
@@ -469,6 +479,7 @@ jobs:
           UPLOAD: ${{ needs.upload.result }}
           CONSUME: ${{ needs.consume.result }}
           CARRYOVER: ${{ needs.upload.outputs.carryover }}
+          CACHE_HEALTH: ${{ needs.consume.outputs.cache_health }}
           SHA: ${{ needs.build_and_stage.outputs.sha }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
@@ -487,6 +498,7 @@ jobs:
             echo "- $(emoji "$BUILD") build_and_stage: \`$BUILD\`"
             echo "- $(emoji "$UPLOAD") upload: \`$UPLOAD\`"
             echo "- $(emoji "$CONSUME") consume: \`$CONSUME\`"
+            echo "- ${CACHE_HEALTH:-❓ cache hits: n/a (consume skipped)}"
             echo "- 🔁 cache carryover: ${CARRYOVER:-n/a}"
             echo "MSG_EOF"
           } >> "$GITHUB_OUTPUT"
