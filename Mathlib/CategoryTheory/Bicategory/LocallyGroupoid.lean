@@ -133,6 +133,7 @@ section
 
 variable {B} {B' : Type u₂} [Bicategory.{w₂, v₂} B'] [IsLocallyGroupoid B'] (F : Pseudofunctor B' B)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The hom direction of the (strong) natural isomorphism of pseudofunctors
 between `(pseudofunctorToPith F).comp (inclusion B)` and `F`. -/
@@ -141,6 +142,7 @@ noncomputable def pseudofunctorToPithCompInclusionStrongIsoHom :
   app b' := 𝟙 _
   naturality f := (ρ_ _) ≪≫ (λ_ _).symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The inv direction of the (strong) natural isomorphism of pseudofunctors
 between `(pseudofunctorToPith F).comp (inclusion B)` and `F`. -/
@@ -158,7 +160,7 @@ variable {B : Type u₁} [Bicategory.{w₁, v₁} B]
 /-- If `B` is a (2,1)-category, then every lax functor `F` from a bicategory to `B` defines a
 `CategoryTheory.LaxFunctor.PseudoCore` structure on `F` that can be used to promote `F` to a
 pseudofunctor using `CategoryTheory.Pseudofunctor.mkOfLax`. -/
-@[simps!]
+@[simps! mapIdIso_hom mapCompIso_hom]
 noncomputable def Pseudofunctor.ofLaxFunctorToLocallyGroupoid
     {B' : Type u₂} [Bicategory.{w₂, v₂} B'] [IsLocallyGroupoid B] (F : LaxFunctor B' B) :
     F.PseudoCore where
@@ -168,7 +170,7 @@ noncomputable def Pseudofunctor.ofLaxFunctorToLocallyGroupoid
 /-- If `B` is a (2,1)-category, then every oplax functor `F` from a bicategory to `B` defines
 a `CategoryTheory.OplaxFunctor.PseudoCore` structure on `F` that can be used to promote `F`
 to a pseudofunctor using `CategoryTheory.Pseudofunctor.mkOfOplax`. -/
-@[simps!]
+@[simps! mapIdIso_inv mapCompIso_inv]
 noncomputable def Pseudofunctor.ofOplaxFunctorToLocallyGroupoid
     {B' : Type u₂} [Bicategory.{w₂, v₂} B'] [IsLocallyGroupoid B] (F : OplaxFunctor B' B) :
     F.PseudoCore where

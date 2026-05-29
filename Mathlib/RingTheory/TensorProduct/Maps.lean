@@ -79,6 +79,7 @@ variable [Semiring B] [Algebra R B]
 variable [Semiring C] [Algebra S C]
 variable [Semiring D] [Algebra R D]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- To check a linear map preserves multiplication, it suffices to check it on pure tensors. See
 `algHomOfLinearMapTensorProduct` for a bundled version. -/
 lemma _root_.LinearMap.map_mul_of_map_mul_tmul {f : A ⊗[R] B →ₗ[S] C}
@@ -136,8 +137,7 @@ def algEquivOfLinearEquivTripleTensorProduct (f : A ⊗[R] B ⊗[R] C ≃ₗ[R] 
     A ⊗[R] B ⊗[R] C ≃ₐ[R] D :=
   AlgEquiv.ofLinearEquiv f h_one <| f.map_mul_iff.2 <| by
     ext
-    dsimp
-    exact h_mul _ _ _ _ _ _
+    simpa using h_mul _ _ _ _ _ _
 
 @[simp]
 theorem algEquivOfLinearEquivTripleTensorProduct_apply (f h_mul h_one x) :

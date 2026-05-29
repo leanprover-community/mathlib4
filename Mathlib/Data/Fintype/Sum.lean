@@ -121,12 +121,12 @@ theorem Set.MapsTo.exists_equiv_extend_of_card_eq [Fintype α] {t : Finset β}
     (hfs : Set.InjOn f s) : ∃ g : α ≃ t, ∀ i ∈ s, (g i : β) = f i := by
   classical
     let s' : Finset α := s.toFinset
-    have hfst' : s'.image f ⊆ t := by simpa [s', ← Finset.coe_subset] using hfst
-    have hfs' : Set.InjOn f s' := by simpa [s'] using hfs
+    have hfst' : s'.image f ⊆ t := by simpa [s', ← Finset.coe_subset] using! hfst
+    have hfs' : Set.InjOn f s' := by simpa [s'] using! hfs
     obtain ⟨g, hg⟩ := Finset.exists_equiv_extend_of_card_eq hαt hfst' hfs'
     refine ⟨g, fun i hi => ?_⟩
     apply hg
-    simpa [s'] using hi
+    simpa [s'] using! hi
 
 theorem Fintype.card_subtype_or (p q : α → Prop) [Fintype { x // p x }] [Fintype { x // q x }]
     [Fintype { x // p x ∨ q x }] :
