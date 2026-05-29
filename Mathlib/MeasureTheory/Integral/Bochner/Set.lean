@@ -380,7 +380,7 @@ theorem integral_union_eq_left_of_ae (ht_eq : ∀ᵐ x ∂μ.restrict t, f x = 0
     ∫ x in s ∪ t, f x ∂μ = ∫ x in s, f x ∂μ := by
   have ht : IntegrableOn f t μ := by apply integrableOn_zero.congr_fun_ae; symm; exact ht_eq
   by_cases H : IntegrableOn f (s ∪ t) μ; swap
-  · rw [integral_undef H, integral_undef]; simpa [integrableOn_union, ht] using H
+  · rw [integral_undef H, integral_undef]; simpa [integrableOn_union, ht] using! H
   let f' := H.1.mk f
   calc
     ∫ x : X in s ∪ t, f x ∂μ = ∫ x : X in s ∪ t, f' x ∂μ := integral_congr_ae H.1.ae_eq_mk
@@ -493,14 +493,12 @@ theorem integral_norm_eq_pos_sub_neg {f : X → ℝ} (hfi : Integrable f μ) :
     _ = ∫ x in {x | 0 ≤ f x}, f x ∂μ + ∫ x in {x | 0 ≤ f x}ᶜ, ‖f x‖ ∂μ := by
       congr 1
       refine setIntegral_congr_fun₀ h_meas fun x hx => ?_
-      dsimp only
       rw [Real.norm_eq_abs, abs_eq_self.mpr _]
       exact hx
     _ = ∫ x in {x | 0 ≤ f x}, f x ∂μ - ∫ x in {x | 0 ≤ f x}ᶜ, f x ∂μ := by
       congr 1
       rw [← integral_neg]
       refine setIntegral_congr_fun₀ h_meas.compl fun x hx => ?_
-      dsimp only
       rw [Real.norm_eq_abs, abs_eq_neg_self.mpr _]
       rw [Set.mem_compl_iff, Set.notMem_setOf_iff] at hx
       linarith
@@ -1034,6 +1032,7 @@ theorem measure_le_lintegral_thickenedIndicatorAux (μ : Measure X) {E : Set X}
   · apply lintegral_mono
     apply indicator_le_thickenedIndicatorAux
 
+set_option backward.defeqAttrib.useBackward true in
 theorem measure_le_lintegral_thickenedIndicator (μ : Measure X) {E : Set X}
     (E_mble : MeasurableSet E) {δ : ℝ} (δ_pos : 0 < δ) :
     μ E ≤ ∫⁻ x, (thickenedIndicator δ_pos E x : ℝ≥0∞) ∂μ := by
@@ -1166,8 +1165,7 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
       · exact (hg.norm.const_mul _).mul_const _
       · filter_upwards with y
         by_cases hy : y ∈ k
-        · dsimp only
-          specialize hv p hp y hy
+        · specialize hv p hp y hy
           calc
           ‖L (g y) (f p y) - L (g y) (f q y)‖
             = ‖L (g y) (f p y - f q y)‖ := by simp only [map_sub]

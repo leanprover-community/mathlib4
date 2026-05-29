@@ -288,7 +288,7 @@ lemma IsClique.even_iff_exists_isMatching {u : Set V} (hc : G.IsClique u)
   refine ⟨fun h ↦ ?_, by
     rintro ⟨M, rfl, hMr⟩
     simpa [Set.ncard_eq_toFinset_card _ hu, Set.toFinite_toFinset,
-      ← Set.toFinset_card] using @hMr.even_card _ _ _ hu.fintype⟩
+      ← Set.toFinset_card] using! @hMr.even_card _ _ _ hu.fintype⟩
   obtain ⟨t, u, rfl, hd, hcard⟩ := Set.exists_union_disjoint_ncard_eq_of_even h
   obtain ⟨f⟩ : Nonempty (t ≃ u) := by
     rw [← Cardinal.eq, ← t.cast_ncard (Set.finite_union.mp hu).1,
@@ -334,9 +334,8 @@ lemma odd_matches_node_outside [Finite V] {u : Set V}
   apply Nat.not_even_iff_odd.2 c.prop
   haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c.val)).verts := Fintype.ofFinite _
   classical
-  haveI : Fintype (c.val.supp) := Fintype.ofFinite _
-  simpa [Subgraph.induce_verts, Subgraph.verts_top, Nat.card_eq_fintype_card, Set.toFinset_card,
-    Finset.card_image_of_injective, ← Nat.card_coe_set_eq] using hMmatch.even_card
+  haveI := Fintype.ofFinite c.val.supp
+  simpa [Finset.card_image_of_injective] using hMmatch.even_card
 
 end Finite
 end ConnectedComponent
