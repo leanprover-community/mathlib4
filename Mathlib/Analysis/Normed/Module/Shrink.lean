@@ -11,7 +11,7 @@ public import Mathlib.Analysis.Normed.Module.TransferInstance
 # Transfer normed algebraic structures from `α` to `Shrink α`
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

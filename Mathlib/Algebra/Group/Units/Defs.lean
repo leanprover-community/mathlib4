@@ -393,14 +393,10 @@ theorem IsUnit.of_mul_eq_one [Monoid M] [IsDedekindFiniteMonoid M] {a : M} (b : 
     IsUnit a :=
   ⟨.mkOfMulEqOne a b h, rfl⟩
 
-@[deprecated (since := "2025-11-05")] alias isUnit_of_mul_eq_one := IsUnit.of_mul_eq_one
-
 @[to_additive]
 theorem IsUnit.of_mul_eq_one_right [Monoid M] [IsDedekindFiniteMonoid M] {b : M} (a : M)
     (h : a * b = 1) : IsUnit b :=
   .of_mul_eq_one a <| mul_eq_one_symm h
-
-@[deprecated (since := "2025-11-05")] alias isUnit_of_mul_eq_one_right := IsUnit.of_mul_eq_one_right
 
 section Monoid
 variable [Monoid M] {a b : M}
@@ -533,6 +529,18 @@ theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
 @[to_additive /-- `IsAddUnit x` is decidable if we can decide if `x` comes from `AddUnits M`. -/]
 instance (x : M) [h : Decidable (∃ u : Mˣ, ↑u = x)] : Decidable (IsUnit x) :=
   h
+
+theorem mul_left_iff {a b : M} (ha : IsUnit a) :
+    IsUnit (a * b) ↔ IsUnit b :=
+  show IsUnit (ha.unit * b) ↔ _ by simp [-IsUnit.unit_spec]
+
+grind_pattern mul_left_iff => IsUnit a, IsUnit (a * b)
+
+theorem mul_right_iff {a b : M} (hb : IsUnit b) :
+    IsUnit (a * b) ↔ IsUnit a :=
+  show IsUnit (a * hb.unit) ↔ _ by simp [-IsUnit.unit_spec]
+
+grind_pattern mul_right_iff => IsUnit b, IsUnit (a * b)
 
 end Monoid
 

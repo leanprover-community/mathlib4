@@ -115,7 +115,7 @@ export TrivialStar (star_trivial)
 
 attribute [simp] star_trivial
 
-/-- A `*`-magma is a magma `R` with an involutive operation `star`
+/-- A \*-magma is a magma `R` with an involutive operation `star`
 such that `star (r * s) = star s * star r`.
 -/
 class StarMul (R : Type u) [Mul R] extends InvolutiveStar R where
@@ -202,7 +202,7 @@ theorem star_zpow [Group R] [StarMul R] (x : R) (z : ℤ) : star (x ^ z) = star 
 theorem star_div [CommGroup R] [StarMul R] (x y : R) : star (x / y) = star x / star y :=
   map_div (starMulAut : R ≃* R) _ _
 
-/-- Any commutative monoid admits the trivial `*`-structure.
+/-- Any commutative monoid admits the trivial \*-structure.
 
 See note [reducible non-instances].
 -/
@@ -221,7 +221,7 @@ theorem star_id_of_comm {R : Type*} [CommMonoid R] {x : R} : star x = x :=
 
 end
 
-/-- A `*`-additive monoid `R` is an additive monoid with an involutive `star` operation which
+/-- A \*-additive monoid `R` is an additive monoid with an involutive `star` operation which
 preserves addition. -/
 class StarAddMonoid (R : Type u) [AddMonoid R] extends InvolutiveStar R where
   /-- `star` commutes with addition -/
@@ -269,8 +269,8 @@ theorem star_nsmul [AddMonoid R] [StarAddMonoid R] (n : ℕ) (x : R) : star (n �
 theorem star_zsmul [AddGroup R] [StarAddMonoid R] (n : ℤ) (x : R) : star (n • x) = n • star x :=
   (starAddEquiv : R ≃+ R).toAddMonoidHom.map_zsmul _ _
 
-/-- A `*`-ring `R` is a non-unital, non-associative (semi)ring with an involutive `star` operation
-which is additive which makes `R` with its multiplicative structure into a `*`-multiplication
+/-- A \*-ring `R` is a non-unital, non-associative (semi)ring with an involutive `star` operation
+which is additive which makes `R` with its multiplicative structure into a \*-multiplication
 (i.e. `star (r * s) = star s * star r`). -/
 class StarRing (R : Type u) [NonUnitalNonAssocSemiring R] extends StarMul R where
   /-- `star` commutes with addition -/
@@ -370,7 +370,7 @@ theorem star_div₀ [CommGroupWithZero R] [StarMul R] (x y : R) : star (x / y) =
   apply op_injective
   rw [division_def, op_div, mul_comm, star_mul, star_inv₀, op_mul, op_inv]
 
-/-- Any commutative semiring admits the trivial `*`-structure.
+/-- Any commutative semiring admits the trivial \*-structure.
 
 See note [reducible non-instances].
 -/
@@ -461,13 +461,15 @@ instance {A : Type*} [Star A] [SMul R A] [StarModule R A] : StarModule Rˣ A :=
 
 end Units
 
+@[aesop safe apply]
 protected theorem IsUnit.star [Monoid R] [StarMul R] {a : R} : IsUnit a → IsUnit (star a)
   | ⟨u, hu⟩ => ⟨Star.star u, hu ▸ rfl⟩
 
-@[simp]
+@[simp, grind =]
 theorem isUnit_star [Monoid R] [StarMul R] {a : R} : IsUnit (star a) ↔ IsUnit a :=
   ⟨fun h => star_star a ▸ h.star, IsUnit.star⟩
 
+@[grind _=_]
 theorem Ring.inverse_star [Semiring R] [StarRing R] (a : R) :
     (star a)⁻¹ʳ = star (a⁻¹ʳ) := by
   by_cases ha : IsUnit a
@@ -483,12 +485,8 @@ protected instance Invertible.star {R : Type*} [MulOneClass R] [StarMul R] (r : 
 
 theorem star_invOf {R : Type*} [Monoid R] [StarMul R] (r : R) [Invertible r]
     [Invertible (star r)] : star (⅟r) = ⅟(star r) := by
-  have : star (⅟r) = star (⅟r) * ((star r) * ⅟(star r)) := by
-    simp only [mul_invOf_self, mul_one]
-  rw [this, ← mul_assoc]
-  have : (star (⅟r)) * (star r) = star 1 := by rw [← star_mul, mul_invOf_self]
-  rw [this, star_one, one_mul]
-
+  rw [← mul_one (star (⅟r)), ← mul_invOf_self (star r), ← mul_assoc, ← star_mul]
+  simp
 
 section Regular
 

@@ -117,9 +117,10 @@ theorem card_le_mul_sum {x k : ℕ} : #(U x k) ≤ x * ∑ p ∈ P x k, 1 / (p :
   have h : #(P.biUnion N) ≤ ∑ p ∈ P, #(N p) := card_biUnion_le
   calc
     (#(P.biUnion N) : ℝ) ≤ ∑ p ∈ P, (#(N p) : ℝ) := by assumption_mod_cast
-    _ ≤ ∑ p ∈ P, x * (1 / (p : ℝ)) := sum_le_sum fun p _ => ?_
+    _ ≤ ∑ p ∈ P, x * (1 / (p : ℝ)) := by
+      gcongr with p _
+      simp only [N, mul_one_div, Nat.card_multiples, Nat.cast_div_le]
     _ = x * ∑ p ∈ P, 1 / (p : ℝ) := by rw [mul_sum]
-  simp only [N, mul_one_div, Nat.card_multiples, Nat.cast_div_le]
 
 /--
 The number of `e < x` for which `e + 1` is a squarefree product of primes smaller than or equal to

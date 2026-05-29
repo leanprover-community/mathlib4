@@ -265,7 +265,7 @@ lemma map_op_inv (s : Finset α) : s⁻¹.map opEquiv.toEmbedding = (s.map opEqu
 
 end Inv
 
-open Pointwise
+open scoped Pointwise
 
 section InvolutiveInv
 variable [DecidableEq α] [InvolutiveInv α] {s : Finset α} {a : α}
@@ -511,7 +511,7 @@ left-cancellative multiplication.
 @[to_additive
 /-- See `card_le_card_add_left` for a more convenient but less general version for types with a
 left-cancellative addition. -/]
-lemma card_le_card_mul_left_of_injective (has : a ∈ s) (ha : Function.Injective (a * ·)) :
+lemma card_le_card_mul_left_of_injective (has : a ∈ s) (ha : IsLeftRegular a) :
     #t ≤ #(s * t) :=
   card_le_card_image₂_left _ has ha
 
@@ -522,7 +522,7 @@ right-cancellative multiplication.
 @[to_additive
 /-- See `card_le_card_add_right` for a more convenient but less general version for types with a
 right-cancellative addition. -/]
-lemma card_le_card_mul_right_of_injective (hat : a ∈ t) (ha : Function.Injective (· * a)) :
+lemma card_le_card_mul_right_of_injective (hat : a ∈ t) (ha : IsRightRegular a) :
     #s ≤ #(s * t) :=
   card_le_card_image₂_right _ hat ha
 
@@ -1268,7 +1268,7 @@ lemma piFinset_inv [∀ i, Inv (α i)] (s : ∀ i, Finset (α i)) :
 
 end Fintype
 
-open Pointwise
+open scoped Pointwise
 
 namespace Set
 

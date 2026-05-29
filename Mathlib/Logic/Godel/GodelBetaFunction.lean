@@ -98,16 +98,15 @@ private lemma pairwise_coprime_coprimes (a : Fin m → ℕ) : Pairwise (Coprime 
 prove that it is arithmetically definable. -/
 def beta (n i : ℕ) : ℕ := n.unpair.1 % ((i + 1) * n.unpair.2 + 1)
 
-set_option backward.proofsInPublic true in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Inverse of Gödel's Beta Function. This is similar to `Encodable.encodeList`, but it is easier
 to prove that it is arithmetically definable. -/
 def unbeta (l : List ℕ) : ℕ :=
-  (chineseRemainderOfFinset (l[·]) (coprimes (l[·])) Finset.univ
+  (chineseRemainderOfFinset (ι := Fin l.length) (l[·]) (coprimes (l[·])) Finset.univ
     (by simp [coprimes])
     (by simpa using Set.pairwise_univ.mpr (pairwise_coprime_coprimes _)) : ℕ).pair
-  (supOfSeq (l[·]))!
+  (supOfSeq (m := l.length) (l[·]))!
 
 /-- **Gödel's Beta Function Lemma** -/
 lemma beta_unbeta_coe (l : List ℕ) (i : Fin l.length) : beta (unbeta l) i = l[i] := by

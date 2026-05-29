@@ -121,6 +121,7 @@ theorem coe_linearMapAt (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B
   rw [Pretrivialization.linearMapAt]
   split_ifs <;> rfl
 
+@[simp]
 theorem coe_linearMapAt_of_mem (e : Pretrivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet) : ⇑(e.linearMapAt R b) = fun y => (e ⟨b, y⟩).2 := by
   simp_rw [coe_linearMapAt, if_pos hb]
@@ -143,14 +144,10 @@ theorem linearMapAt_eq_zero (e : Pretrivialization F (π F E)) [e.IsLinear R] {b
   dif_neg hb
 
 theorem symmₗ_linearMapAt (e : Pretrivialization F (π F E)) [e.IsLinear R] {b : B}
-    (hb : b ∈ e.baseSet) (y : E b) : e.symmₗ R b (e.linearMapAt R b y) = y := by
-  rw [e.linearMapAt_def_of_mem hb]
-  exact (e.linearEquivAt R b hb).left_inv y
+    (hb : b ∈ e.baseSet) (y : E b) : e.symmₗ R b (e.linearMapAt R b y) = y := by simp [hb]
 
 theorem linearMapAt_symmₗ (e : Pretrivialization F (π F E)) [e.IsLinear R] {b : B}
-    (hb : b ∈ e.baseSet) (y : F) : e.linearMapAt R b (e.symmₗ R b y) = y := by
-  rw [e.linearMapAt_def_of_mem hb]
-  exact (e.linearEquivAt R b hb).right_inv y
+    (hb : b ∈ e.baseSet) (y : F) : e.linearMapAt R b (e.symmₗ R b y) = y := by simp [hb]
 
 end Pretrivialization
 
@@ -214,6 +211,7 @@ theorem coe_linearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) :
     ⇑(e.linearMapAt R b) = fun y => if b ∈ e.baseSet then (e ⟨b, y⟩).2 else 0 :=
   e.toPretrivialization.coe_linearMapAt b
 
+@[simp]
 theorem coe_linearMapAt_of_mem (e : Trivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet) : ⇑(e.linearMapAt R b) = fun y => (e ⟨b, y⟩).2 := by
   simp_rw [coe_linearMapAt, if_pos hb]
@@ -231,7 +229,6 @@ theorem linearMapAt_def_of_notMem (e : Trivialization F (π F E)) [e.IsLinear R]
     (hb : b ∉ e.baseSet) : e.linearMapAt R b = 0 :=
   dif_neg hb
 
-@[simp]
 theorem symm_linearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] {b : B} (hb : b ∈ e.baseSet)
     (y : E b) : e.symm b (e.linearMapAt R b y) = y :=
   e.toPretrivialization.symmₗ_linearMapAt hb y
@@ -392,6 +389,11 @@ def continuousLinearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
       exact (e.continuousOn.comp_continuous (FiberBundle.totalSpaceMk_isInducing F E b).continuous
         fun x => e.mem_source.mpr hb).snd }
 
+lemma continuousLinearMapAt_apply_of_mem (e : Trivialization F TotalSpace.proj)
+    [Trivialization.IsLinear R e] {b : B} (hb : b ∈ e.baseSet) (y : E b) :
+    (continuousLinearMapAt R e b) y = (e ⟨b, y⟩).2 := by
+  simp [coe_linearMapAt_of_mem e hb]
+
 /-- Backwards map of `Bundle.Trivialization.continuousLinearEquivAt`, defined everywhere. -/
 @[simps -fullyApplied apply]
 def symmL (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : F →L[R] E b :=
@@ -464,6 +466,27 @@ protected theorem zeroSection (e : Trivialization F (π F E)) [e.IsLinear R] {x 
     (hx : x ∈ e.baseSet) : e (zeroSection F E x) = (x, 0) := by
   simp_rw [zeroSection, e.apply_eq_prod_continuousLinearEquivAt R x hx 0, map_zero]
 
+/-- The zero section of a vector bundle is continuous. -/
+theorem continuous_zeroSection [VectorBundle R F E] :
+    Continuous (zeroSection F E) := by
+  refine continuous_iff_continuousAt.2 fun x => ?_
+  unfold zeroSection
+  rw [FiberBundle.continuousAt_section]
+  apply (continuousAt_const (y := 0)).congr_of_eventuallyEq
+  filter_upwards [(trivializationAt F E x).open_baseSet.mem_nhds
+    (mem_baseSet_trivializationAt F E x)] with y hy
+    using congr_arg Prod.snd <| (trivializationAt F E x).zeroSection R hy
+
+/-- The zero section of a vector bundle is continuous on any set. -/
+theorem continuousOn_zeroSection [VectorBundle R F E] (s : Set B) :
+    ContinuousOn (zeroSection F E) s :=
+  (continuous_zeroSection R).continuousOn
+
+/-- The zero section of a vector bundle is continuous at each point. -/
+theorem continuousAt_zeroSection [VectorBundle R F E] (x : B) :
+    ContinuousAt (zeroSection F E) x :=
+  (continuous_zeroSection R).continuousAt
+
 variable {R}
 
 theorem symm_apply_eq_mk_continuousLinearEquivAt_symm (e : Trivialization F (π F E)) [e.IsLinear R]
@@ -481,7 +504,7 @@ theorem comp_continuousLinearEquivAt_eq_coord_change (e e' : Trivialization F (�
 
 end Bundle.Trivialization
 
-variable (F E) [TopologicalSpace (TotalSpace F E)] [FiberBundle F E] [VectorBundle R F E] in
+variable (F E) [VectorBundle R F E] in
 /-- A continuous linear equivalence between the fiber at `b` and the model fiber,
 induced by the preferred trivialisation at each `b`. -/
 @[simps!]
@@ -708,8 +731,8 @@ variable {i j}
 theorem localTriv_continuousLinearMapAt {b : B} (hb : b ∈ (Z.localTriv i).baseSet) :
     (Z.localTriv i).continuousLinearMapAt R b = Z.coordChange (Z.indexAt b) i b := by
   ext1 v
-  rw [(Z.localTriv i).continuousLinearMapAt_apply R, (Z.localTriv i).coe_linearMapAt_of_mem]
-  exacts [rfl, hb]
+  simp_all
+  rfl
 
 @[simp, mfld_simps]
 theorem trivializationAt_continuousLinearMapAt {b₀ b : B}

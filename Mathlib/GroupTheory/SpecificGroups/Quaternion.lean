@@ -92,9 +92,9 @@ set_option backward.privateInPublic.warn false in
 instance : Group (QuaternionGroup n) where
   mul := mul
   mul_assoc := by
-    rintro (i | i) (j | j) (k | k) <;> simp only [(· * ·), mul] <;> ring_nf
+    unfold instHMul
+    rintro (i | i) (j | j) (k | k) <;> simp only [mul] <;> ring_nf
     have : (2 * n : ZMod (2 * n)) = 0 := by norm_cast; simp
-    simp only [Mul.mul_eq_hMul]
     grind
   one := one
   one_mul := by
@@ -249,7 +249,7 @@ theorem orderOf_a [NeZero n] (i : ZMod (2 * n)) :
 
 theorem exponent : Monoid.exponent (QuaternionGroup n) = 2 * lcm n 2 := by
   rw [← normalize_eq 2, ← lcm_mul_left, normalize_eq]
-  norm_num
+  simp only [Nat.reduceMul]
   rcases eq_zero_or_neZero n with rfl | hn
   · simp only [lcm_zero_left, mul_zero]
     exact Monoid.exponent_eq_zero_of_order_zero orderOf_a_one
@@ -262,9 +262,9 @@ theorem exponent : Monoid.exponent (QuaternionGroup n) = 2 * lcm n 2 := by
     · rw [← orderOf_dvd_iff_pow_eq_one, orderOf_xa]
       exact dvd_lcm_right (2 * n) 4
   · apply lcm_dvd
-    · convert Monoid.order_dvd_exponent (a 1)
+    · convert! Monoid.order_dvd_exponent (a 1)
       exact orderOf_a_one.symm
-    · convert Monoid.order_dvd_exponent (xa (0 : ZMod (2 * n)))
+    · convert! Monoid.order_dvd_exponent (xa (0 : ZMod (2 * n)))
       exact (orderOf_xa 0).symm
 
 end QuaternionGroup

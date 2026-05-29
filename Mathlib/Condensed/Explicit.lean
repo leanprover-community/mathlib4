@@ -158,8 +158,8 @@ end Condensed
 namespace CondensedSet
 
 /-- A `CondensedSet` version of `Condensed.ofSheafStonean`. -/
-noncomputable abbrev ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ Type (u + 1)) [PreservesFiniteProducts F] :
-    CondensedSet :=
+noncomputable abbrev ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ Type (u + 1))
+    [PreservesFiniteProducts F] : CondensedSet :=
   Condensed.ofSheafStonean F
 
 /-- A `CondensedSet` version of `Condensed.ofSheafProfinite`. -/

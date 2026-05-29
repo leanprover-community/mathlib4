@@ -68,8 +68,7 @@ lemma strictLimitsOfShape_bot [Nonempty J] :
     strictLimitsOfShape (⊥ : ObjectProperty C) J = ⊥ := by
   rw [eq_bot_iff]
   rintro _ ⟨_, h⟩
-  let ⟨j⟩ := ‹Nonempty J›
-  exact h j
+  exact h (Classical.arbitrary J)
 
 /-- A structure expressing that `X : C` is the limit of a functor
 `diag : J ⥤ C` such that `P (diag.obj j)` holds for all `j`. -/
@@ -111,6 +110,7 @@ noncomputable def reindex {X : C} (h : P.LimitOfShape J X) (G : J' ⥤ J) [G.Ini
   toLimitPresentation := h.toLimitPresentation.reindex G
   prop_diag_obj _ := h.prop_diag_obj _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given `P : ObjectProperty C`, and a presentation `P.LimitOfShape J X`
 of an object `X : C`, this is the induced functor `J ⥤ StructuredArrow P.ι X`. -/
 @[simps]
@@ -142,8 +142,7 @@ lemma strictLimitsOfShape_le_limitsOfShape :
 lemma limitsOfShape_bot [Nonempty J] : limitsOfShape (⊥ : ObjectProperty C) J = ⊥ := by
   rw [eq_bot_iff]
   rintro X ⟨⟨_, h⟩⟩
-  let ⟨j⟩ := ‹Nonempty J›
-  exact h j
+  exact h (Classical.arbitrary J)
 
 instance : (P.limitsOfShape J).IsClosedUnderIsomorphisms where
   of_iso := by rintro _ _ e ⟨h⟩; exact ⟨h.ofIso e⟩
@@ -266,8 +265,9 @@ lemma isClosedUnderLimitsOfShape_inverseImage_iff (P : ObjectProperty D)
     [P.IsClosedUnderIsomorphisms] (e : C ≌ D) :
     (P.inverseImage e.functor).IsClosedUnderLimitsOfShape J ↔ P.IsClosedUnderLimitsOfShape J := by
   refine ⟨fun H ↦ ?_, fun _ ↦ inferInstance⟩
-  convert (inferInstance :
-    ((P.inverseImage e.functor).inverseImage e.inverse).IsClosedUnderLimitsOfShape J)
+  convert!
+    (inferInstance :
+      ((P.inverseImage e.functor).inverseImage e.inverse).IsClosedUnderLimitsOfShape J)
   ext X
   simpa using P.prop_iff_of_iso (e.counitIso.app X).symm
 

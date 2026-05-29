@@ -19,7 +19,7 @@ We introduce a typeclass `Nontrivial` formalizing this property.
 Basic results about nontrivial types are in `Mathlib/Logic/Nontrivial/Basic.lean`.
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*} {β : Type*}
 
@@ -131,3 +131,6 @@ instance : Nontrivial Bool :=
   ⟨⟨true, false, nofun⟩⟩
 
 end Bool
+
+theorem NeZero.nontrivial {α : Type*} [Zero α] (a : α) [NeZero a] : Nontrivial α :=
+  ⟨⟨a, 0, NeZero.ne a⟩⟩

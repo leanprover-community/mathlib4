@@ -166,7 +166,7 @@ public def Path.ofSubExprPos (expr : Expr) (pos : SubExpr.Pos) : MetaM Path :=
 
 open Lean.Parser.Tactic.Conv in
 /--
-Given a `path : Path` and `xs : TSepArray ``enterArg ","`, generate the `conv` syntax
+Given a `path : Path` and ```xs : TSepArray ``enterArg ","```, generate the `conv` syntax
 corresponding to `enter [xs,*]` followed by traversing `path`. If `loc` is `some fvar`,
 start with `conv at fvar =>`, otherwise if `loc` is `none` start with `conv =>`.
 -/

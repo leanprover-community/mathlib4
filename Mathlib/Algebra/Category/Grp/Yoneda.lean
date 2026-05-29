@@ -27,6 +27,7 @@ def CommGrpCat.coyoneda : CommGrpCatᵒᵖ ⥤ CommGrpCat ⥤ CommGrpCat where
   obj M := { obj N := of (M.unop →* N), map f := ofHom (.compHom f.hom) }
   map f := { app N := ofHom (.compHom' f.unop.hom) }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The `CommGrpCat`-valued coyoneda embedding composed with the forgetful functor is the usual
 coyoneda embedding. -/
 @[to_additive (attr := simps!)
@@ -34,7 +35,9 @@ coyoneda embedding. -/
 coyoneda embedding. -/]
 def CommGrpCat.coyonedaForget :
     coyoneda ⋙ (Functor.whiskeringRight _ _ _).obj (forget _) ≅ CategoryTheory.coyoneda :=
-  NatIso.ofComponents fun X ↦ NatIso.ofComponents fun Y ↦ { hom f := ofHom f, inv f := f.hom }
+  dsimp% NatIso.ofComponents fun X ↦ NatIso.ofComponents fun Y ↦ {
+    hom := ↾fun f ↦ ofHom f,
+    inv := ↾fun f ↦ f.hom }
 
 /-- The Hom bifunctor sending a type `X` and a commutative group `G` to the commutative group
 `X → G` with pointwise operations.

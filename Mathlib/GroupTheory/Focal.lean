@@ -144,7 +144,7 @@ lemma commutator_le_focalSubgroup : ⁅H, H⁆ ≤ focalSubgroup H := by
 
 @[to_additive]
 instance : IsMulCommutative (H ⧸ focalSubgroupOf H) :=
-  ⟨⟨(Normal.quotient_commutative_iff_commutator_le.mpr H.commutator_le_focalSubgroupOf).comm⟩⟩
+  Normal.quotient_commutative_iff_commutator_le.mpr H.commutator_le_focalSubgroupOf
 
 open scoped IsMulCommutative
 

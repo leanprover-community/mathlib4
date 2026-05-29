@@ -9,6 +9,7 @@ public import Mathlib.Algebra.BigOperators.Associated
 public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.NumberTheory.PrimeCounting
 
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Order.Ring.Abs
@@ -40,6 +41,8 @@ def primorial (n : ℕ) : ℕ := ∏ p ∈ range (n + 1) with p.Prime, p
 
 local notation x "#" => primorial x
 
+lemma primorial_eq_prod_primesLE (n : ℕ) : n # = ∏ p ∈ primesLE n, p := rfl
+
 @[simp] theorem primorial_zero : 0 # = 1 := by decide
 
 @[simp] theorem primorial_one : 1 # = 1 := by decide
@@ -64,7 +67,8 @@ theorem primorial_succ {n : ℕ} (hn1 : n ≠ 1) (hn : Odd n) : (n + 1)# = n# :=
 
 theorem primorial_add (m n : ℕ) :
     (m + n)# = m# * ∏ p ∈ Ico (m + 1) (m + n + 1) with p.Prime, p := by
-  rw [primorial, primorial, ← Ico_zero_eq_range, ← prod_union, ← filter_union, Ico_union_Ico_eq_Ico]
+  simp_rw [primorial, ← Ico_zero_eq_range]
+  rw [← prod_union, ← filter_union, Ico_union_Ico_eq_Ico]
   exacts [Nat.zero_le _, by lia, disjoint_filter_filter <| Ico_disjoint_Ico_consecutive _ _ _]
 
 theorem primorial_add_dvd {m n : ℕ} (h : n ≤ m) : (m + n)# ∣ m# * choose (m + n) m :=
@@ -83,7 +87,7 @@ theorem primorial_add_le {m n : ℕ} (h : n ≤ m) : (m + n)# ≤ m# * choose (m
 lemma Nat.Prime.dvd_primorial_iff {p n : ℕ} (hp : Prime p) : p ∣ n# ↔ p ≤ n := by
   refine ⟨?_, fun h ↦ dvd_prod_of_mem _ (by grind)⟩
   intro h
-  simp only [primorial, hp.prime.dvd_finset_prod_iff, mem_filter, mem_range_succ_iff] at h
+  simp only [primorial, hp.prime.dvd_finsetProd_iff, mem_filter, mem_range_succ_iff] at h
   obtain ⟨q, ⟨hqn, hq⟩, hpq⟩ := h
   exact (Nat.le_of_dvd hq.pos hpq).trans hqn
 

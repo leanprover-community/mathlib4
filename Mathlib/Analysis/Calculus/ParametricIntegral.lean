@@ -97,7 +97,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
       refine h_lipsch.mono fun a ha ↦ (ha x x_in).trans ?_
       rw [mul_comm ε]
       rw [mem_ball, dist_eq_norm] at x_in
-      exact mul_le_mul_of_nonneg_left x_in.le (b_nonneg _)
+      gcongr
     exact integrable_of_norm_sub_le (hF_meas x (hε x_in)) hF_int
       (bound_integrable.norm.const_mul ε) this
   have hF'_int : Integrable F' μ :=
@@ -111,7 +111,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
   by_cases hE : CompleteSpace E; swap
   · rcases subsingleton_or_nontrivial H with hH | hH
     · have : Subsingleton (H →L[𝕜] E) := inferInstance
-      convert hasFDerivAt_of_subsingleton _ x₀
+      convert! hasFDerivAt_of_subsingleton _ x₀
     · have : ¬(CompleteSpace (H →L[𝕜] E)) := by
         simpa [SeparatingDual.completeSpace_continuousLinearMap_iff] using hE
       simp only [integral, hE, ↓reduceDIte, this]
@@ -127,15 +127,14 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
       hF'_int.apply_continuousLinearMap _]
   rw [hasFDerivAt_iff_tendsto, tendsto_congr' this, ← tendsto_zero_iff_norm_tendsto_zero, ←
     show (∫ a : α, ‖x₀ - x₀‖⁻¹ • (F x₀ a - F x₀ a - (F' a) (x₀ - x₀)) ∂μ) = 0 by simp]
-  apply tendsto_integral_filter_of_dominated_convergence
+  apply tendsto_integral_filter_of_dominated_convergence (bound := fun a => b a + ‖F' a‖)
   · filter_upwards [h_ball] with _ x_in
     apply AEStronglyMeasurable.const_smul
     exact ((hF_meas _ (hε x_in)).sub (hF_meas _ (hε x₀_in))).sub
       (hF'_meas.apply_continuousLinearMap _)
   · refine mem_of_superset h_ball fun x hx ↦ ?_
     apply (h_diff.and h_lipsch).mono
-    on_goal 1 => rintro a ⟨-, ha_bound⟩
-    show ‖‖x - x₀‖⁻¹ • (F x a - F x₀ a - F' a (x - x₀))‖ ≤ b a + ‖F' a‖
+    rintro a ⟨-, ha_bound⟩
     replace ha_bound : ‖F x a - F x₀ a‖ ≤ b a * ‖x - x₀‖ := ha_bound x hx
     calc
       ‖‖x - x₀‖⁻¹ • (F x a - F x₀ a - F' a (x - x₀))‖ =
@@ -233,8 +232,8 @@ theorem hasFDerivAt_integral_of_dominated_of_fderiv_le {F' : H → α → H →L
 open scoped Interval in
 /-- Differentiation under integral of `x ↦ ∫ x in a..b, F x a` at a given point `x₀`, assuming
 `F x₀` is integrable on `(a,b)`, `x ↦ F x a` is differentiable on a neighborhood of `x₀` for ae `a`
- with derivative norm uniformly bounded by an integrable function (the neighborhood is independent
- of `a`), and `F x` is ae-measurable for `x` in a possibly smaller neighborhood of `x₀`. -/
+with derivative norm uniformly bounded by an integrable function (the neighborhood is independent
+of `a`), and `F x` is ae-measurable for `x` in a possibly smaller neighborhood of `x₀`. -/
 theorem hasFDerivAt_integral_of_dominated_of_fderiv_le'' [NormedSpace ℝ H] {μ : Measure ℝ}
     {F : H → ℝ → E} {F' : H → ℝ → H →L[ℝ] E} {a b : ℝ} {bound : ℝ → ℝ} (hs : s ∈ 𝓝 x₀)
     (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) <| μ.restrict (Ι a b))
@@ -275,12 +274,12 @@ theorem hasDerivAt_integral_of_dominated_loc_of_lip {F' : α → E} (hs : s ∈ 
     hs hF_meas hF_int hm h_lipsch bound_integrable h_diff
   replace hF'_int : Integrable F' μ := by
     rw [← integrable_norm_iff hm] at hF'_int
-    simpa [L, (· ∘ ·), integrable_norm_iff hF'_meas] using hF'_int
+    simpa [L, (· ∘ ·), integrable_norm_iff hF'_meas] using! hF'_int
   refine ⟨hF'_int, ?_⟩
   by_cases hE : CompleteSpace E; swap
-  · simpa [integral, hE] using hasDerivAt_const x₀ 0
+  · simpa [integral, hE] using! hasDerivAt_const x₀ 0
   simp_rw [hasDerivAt_iff_hasFDerivAt] at h_diff ⊢
-  simpa only [(· ∘ ·), ContinuousLinearMap.integral_comp_comm _ hF'_int] using key
+  simpa only [(· ∘ ·), ContinuousLinearMap.integral_comp_comm _ hF'_int] using! key
 
 /-- Derivative under integral of `x ↦ ∫ F x a` at a given point `x₀ : ℝ`, assuming
 `F x₀` is integrable, `x ↦ F x a` is differentiable on an interval around `x₀` for ae `a`

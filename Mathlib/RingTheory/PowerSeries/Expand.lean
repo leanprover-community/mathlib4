@@ -18,7 +18,7 @@ This operation is called `PowerSeries.expand` and it is an algebra homomorphism.
 ### Main declaration
 
 * `PowerSeries.expand`: expand a power series by a nonzero factor of p,
-so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
+  so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
 -/
 
 @[expose] public section

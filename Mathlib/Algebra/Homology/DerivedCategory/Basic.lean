@@ -94,6 +94,7 @@ variable {C}
 /-- The localization functor `CochainComplex C ℤ ⥤ DerivedCategory C`. -/
 def Q : CochainComplex C ℤ ⥤ DerivedCategory C := HomologicalComplexUpToQuasiIso.Q
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (Q (C := C)).IsLocalization
     (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)) := by
   dsimp only [Q, DerivedCategory]
@@ -108,18 +109,32 @@ instance {K L : CochainComplex C ℤ} (f : K ⟶ L) [QuasiIso f] :
 def Qh : HomotopyCategory C (ComplexShape.up ℤ) ⥤ DerivedCategory C :=
   HomologicalComplexUpToQuasiIso.Qh
 
-variable (C)
-
+variable (C) in
 /-- The natural isomorphism `HomotopyCategory.quotient C (ComplexShape.up ℤ) ⋙ Qh ≅ Q`. -/
 def quotientCompQhIso : HomotopyCategory.quotient C (ComplexShape.up ℤ) ⋙ Qh ≅ Q :=
   HomologicalComplexUpToQuasiIso.quotientCompQhIso C (ComplexShape.up ℤ)
 
+#adaptation_note /-- Prior to nightly-2026-05-07, the LHS of these statements was guarded with
+`dsimp%`; it now reports `made no progress`, so we write the (already-reduced) form directly. -/
+@[reassoc (attr := simp)]
+lemma quotientCompQhIso_hom_naturality {K L : CochainComplex C ℤ} (f : K ⟶ L) :
+    Qh.map ((HomotopyCategory.quotient _ _).map f) ≫ (quotientCompQhIso C).hom.app L =
+      (quotientCompQhIso C).hom.app K ≫ Q.map f :=
+  (quotientCompQhIso C).hom.naturality f
+
+@[reassoc]
+lemma quotientCompQhIso_inv_naturality {K L : CochainComplex C ℤ} (f : K ⟶ L) :
+    Q.map f ≫ (quotientCompQhIso C).inv.app L =
+      (quotientCompQhIso C).inv.app K ≫ Qh.map ((HomotopyCategory.quotient _ _).map f) :=
+  (quotientCompQhIso C).inv.naturality f
+
+set_option backward.isDefEq.respectTransparency false in
 instance : Qh.IsLocalization (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)) := by
   dsimp [Qh, DerivedCategory]
   infer_instance
 
 instance : Qh.IsLocalization (HomotopyCategory.subcategoryAcyclic C).trW := by
-  rw [← HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W]
+  rw [← HomotopyCategory.quasiIso_eq_trW_subcategoryAcyclic]
   infer_instance
 
 instance : Preadditive (DerivedCategory C) :=
@@ -180,7 +195,6 @@ instance : (Qh : _ ⥤ DerivedCategory C).EssSurj :=
 instance : (Q : _ ⥤ DerivedCategory C).EssSurj :=
   Localization.essSurj _ (HomologicalComplex.quasiIso _ _)
 
-variable {C} in
 lemma mem_distTriang_iff (T : Triangle (DerivedCategory C)) :
     (T ∈ distTriang (DerivedCategory C)) ↔ ∃ (X Y : CochainComplex C ℤ) (f : X ⟶ Y),
       Nonempty (T ≅ Q.mapTriangle.obj (CochainComplex.mappingCone.triangle f)) := by
@@ -200,7 +214,7 @@ section
 
 open CochainComplex
 
-variable {C} {K L : CochainComplex C ℤ} (φ : K ⟶ L)
+variable {K L : CochainComplex C ℤ} (φ : K ⟶ L)
 
 lemma mappingCone_triangle_distinguished :
     DerivedCategory.Q.mapTriangle.obj (mappingCone.triangle φ) ∈ distTriang _ := by
@@ -216,6 +230,8 @@ lemma mappingCocone_triangle_distinguished :
 
 end
 
+variable (C)
+
 /-- The single functors `C ⥤ DerivedCategory C` for all `n : ℤ` along with
 their compatibilities with shifts. -/
 def singleFunctors : SingleFunctors C (DerivedCategory C) ℤ :=
@@ -225,13 +241,18 @@ def singleFunctors : SingleFunctors C (DerivedCategory C) ℤ :=
 single cochain complex with `X` sitting in degree `n : ℤ`. -/
 abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
 
+set_option backward.defeqAttrib.useBackward true in
 instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp [singleFunctor, singleFunctors]
   infer_instance
 
 -- The object level definitional equality underlying `singleFunctorsPostcompQhIso`.
 @[simp] theorem Qh_obj_singleFunctors_obj (n : ℤ) (X : C) :
-    Qh.obj (((HomotopyCategory.singleFunctors C).functor n).obj X) = (singleFunctor C n).obj X := by
+    Qh.obj (((HomotopyCategory.singleFunctors C).functor n).obj X) = (singleFunctor C n).obj X :=
+  rfl
+
+@[simp] theorem Q_obj_single_obj (n : ℤ) (X : C) :
+    Q.obj ((HomologicalComplex.single C _ n).obj X) = (singleFunctor C n).obj X :=
   rfl
 
 /-- The isomorphism
@@ -251,6 +272,7 @@ def singleFunctorsPostcompQIso :
       SingleFunctors.postcompIsoOfIso
         (CochainComplex.singleFunctors C) (quotientCompQhIso C)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma singleFunctorsPostcompQIso_hom_hom (n : ℤ) :
     (singleFunctorsPostcompQIso C).hom.hom n = 𝟙 _ := by
   ext X
@@ -260,7 +282,7 @@ lemma singleFunctorsPostcompQIso_hom_hom (n : ℤ) :
   erw [Category.id_comp]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 lemma singleFunctorsPostcompQIso_inv_hom (n : ℤ) :
     (singleFunctorsPostcompQIso C).inv.hom n = 𝟙 _ := by
   ext X

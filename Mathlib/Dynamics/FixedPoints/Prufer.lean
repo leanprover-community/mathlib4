@@ -15,7 +15,7 @@ public import Mathlib.Dynamics.FixedPoints.Basic
 public section
 
 
-open Pointwise
+open scoped Pointwise
 
 open Set Function
 

@@ -85,7 +85,7 @@ protected def one : One (Set α) :=
 
 scoped[Pointwise] attribute [instance] Set.one Set.zero
 
-open Pointwise
+open scoped Pointwise
 
 -- TODO: This would be a good simp lemma scoped to `Pointwise`, but it seems `@[simp]` can't be
 -- scoped
@@ -152,7 +152,7 @@ protected def inv [Inv α] : Inv (Set α) :=
 
 scoped[Pointwise] attribute [instance] Set.inv Set.neg
 
-open Pointwise
+open scoped Pointwise
 
 section Inv
 
@@ -279,7 +279,7 @@ end InvolutiveInv
 
 end Inv
 
-open Pointwise
+open scoped Pointwise
 
 /-! ### Set addition/multiplication -/
 
@@ -762,7 +762,7 @@ protected def commMonoid [CommMonoid α] : CommMonoid (Set α) :=
 
 scoped[Pointwise] attribute [instance] Set.commMonoid Set.addCommMonoid
 
-open Pointwise
+open scoped Pointwise
 
 section DivisionMonoid
 
