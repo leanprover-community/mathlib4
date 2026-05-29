@@ -77,6 +77,7 @@ variable [HasBinaryProducts C] [HasBinaryProducts D]
   (M : SheafOfModules.{u} S)
   (φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R) (X : C)
 
+/-- This is the restriction of `φ` to `Over X`. -/
 abbrev StructureHomOver :
     S.over X ⟶ ((Over.post F).sheafPushforwardContinuous _ _ _).obj (R.over (F.obj X)) :=
   (J.overPullback RingCat X).map φ
@@ -87,6 +88,9 @@ abbrev Over.starCompPostNatIso : Over.star X ⋙ Over.post F ≅ F ⋙ Over.star
   NatIso.ofComponents (fun Y => Over.isoMk (asIso (prodComparison F X Y)))
 
 set_option backward.isDefEq.respectTransparency false in
+/-- Pushforward from `Over F(X)` to `D` composed with pushforward from `D` to `C`
+is naturally isomorphic to pushforward from `Over F(X)` to `Over X` composed with
+pushforward from `Over X` to `C`. -/
 @[simps!]
 def pushforwardPushforwardOverNatIso : pushforward (pushforwardOver (F.obj X)) ⋙ pushforward φ ≅
     pushforward (StructureHomOver φ X) ⋙ pushforward (pushforwardOver X) := by
@@ -102,15 +106,18 @@ def pushforwardPushforwardOverNatIso : pushforward (pushforwardOver (F.obj X)) �
 
 variable [(pushforward.{u} φ).IsRightAdjoint] [(pushforward (StructureHomOver φ X)).IsRightAdjoint]
 
+/-- Restricting from `C` to `Over X` composed with pullback from `Over X` to `Over F(X)` is
+naturally isomorphic to pullback from `C` to `D` composed with restriction to `Over F(X)`. -/
 @[simps!]
-def pullbackRestrict : pushforward.{u} (𝟙 (S.over X)) ⋙ pullback (StructureHomOver φ X) ≅
+def PullbackRestrict : pushforward.{u} (𝟙 (S.over X)) ⋙ pullback (StructureHomOver φ X) ≅
     pullback φ ⋙ pushforward.{u} (𝟙 (R.over (F.obj X))) :=
   ((overPushforwardOverAdj X).comp (pullbackPushforwardAdjunction _)).leftAdjointUniq
     (((pullbackPushforwardAdjunction φ).comp (overPushforwardOverAdj (F.obj X))).ofNatIsoRight
       (pushforwardPushforwardOverNatIso φ X))
 
+/-- PullbackRestrict applied to `M`. -/
 abbrev overPullbackIso : (pullback (StructureHomOver φ X)).obj (M.over X) ≅
-    ((pullback φ).obj M).over (F.obj X) := (pullbackRestrict φ X).app M
+    ((pullback φ).obj M).over (F.obj X) := (PullbackRestrict φ X).app M
 
 variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
   [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]
@@ -122,6 +129,7 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
   [F.Final]
 
 variable {M} in
+/-- The pullback of quasi coherent data. -/
 protected def QuasicoherentData.pullback (q : M.QuasicoherentData) :
     ((pullback φ).obj M).QuasicoherentData where
   I := q.I

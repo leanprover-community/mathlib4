@@ -57,13 +57,14 @@ instance IsLocallyFreeData.shrink {M : SheafOfModules.{u} R} (q : M.LocalGenerat
 
 end LocalGeneratorsData
 
-/-- A sheaf of modules is locally free if there exists locally free data for it. -/
+/-- A sheaf of modules is locally free if there exists locally free data for it -/
 class IsLocallyFree (M : SheafOfModules.{u} R) : Prop where
   exists_locallyFreeData : ∃ q : LocalGeneratorsData.{u₁} M, q.IsLocallyFreeData
 
 theorem LocalGeneratorsData.isLocallyFree {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData)
     [q.IsLocallyFreeData] : M.IsLocallyFree := ⟨q.shrink, inferInstance⟩
 
+/-- Locally free data for `M` when `M` is locally free. -/
 def locallyFreeData (M : SheafOfModules.{u} R) [M.IsLocallyFree] : M.LocalGeneratorsData :=
     IsLocallyFree.exists_locallyFreeData.choose
 
@@ -117,7 +118,7 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
 
 namespace LocalGeneratorsData
 
-/-- Given locally free data, this is the quasiCoherentData where there are no relations. -/
+/-- Given locally free data, this is the `QuasiCoherentData` where there are no relations. -/
 @[expose, simps]
 def quasiCoherentData {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData) [q.IsLocallyFreeData] :
     M.QuasicoherentData where
@@ -188,6 +189,7 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
   [∀ X, (pushforward.{u} (StructureHomOver φ X)).IsRightAdjoint]
   [F.Final] [(pushforward.{u} φ).IsRightAdjoint]
 
+/-- The pullback of local generator data. -/
 @[expose, simps]
 protected def LocalGeneratorsData.pullback {M : SheafOfModules.{u} S} (q : M.LocalGeneratorsData) :
     ((pullback φ).obj M).LocalGeneratorsData where
