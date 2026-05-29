@@ -103,16 +103,16 @@ theorem integral_abs_condExp_le (f : α → E) : ∫ x, |μ[f | m] x| ∂μ ≤ 
 
 /-- Note that this is not trivial as we don't assume that `f` is integrable. -/
 lemma integral_condExp_le_of_ae_nonneg {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f) :
-    ∫ x, μ[f | m] x ∂μ ≤ ∫ x, f x ∂μ := by
-  have h1 : ∫ x, |μ[f | m] x| ∂μ = ∫ x, μ[f | m] x ∂μ := by
+    ∫ x, μ[f | m] x ∂μ ≤ ∫ x, f x ∂μ := calc
+  ∫ x, μ[f | m] x ∂μ = ∫ x, |μ[f | m] x| ∂μ := by
     apply integral_congr_ae
     filter_upwards [condExp_nonneg hf] with ω hω
     simpa
-  have h2 : ∫ x, |f x| ∂μ = ∫ x, f x ∂μ := by
+  _ ≤ ∫ x, |f x| ∂μ := integral_abs_condExp_le f
+  = ∫ x, f x ∂μ := by
     apply integral_congr_ae
     filter_upwards [hf] with ω hω
     simpa
-  simpa [← h1, ← h2] using integral_abs_condExp_le f
 
 theorem setIntegral_abs_condExp_le {s : Set α} (hs : MeasurableSet[m] s) (f : α → E) :
     ∫ x in s, |μ[f | m] x| ∂μ ≤ ∫ x in s, |f x| ∂μ := by
