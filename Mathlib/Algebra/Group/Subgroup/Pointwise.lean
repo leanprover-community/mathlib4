@@ -217,7 +217,7 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Subgroup G) {C : ∀ x, (x ∈ 
 
 theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Subgroup G) :
     ((⨆ i, S i : Subgroup G) : Set G) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Subgroup G) := by
-  rw [iSup_eq_iSup_finset, Subgroup.coe_iSup_of_directed <| Monotone.directed_le ?_]
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le ?_]
   simp_rw [← Finset.sup_eq_iSup]
   exact fun _ _ ↦ Finset.sup_mono
 
