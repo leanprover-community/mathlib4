@@ -87,6 +87,34 @@ theorem isVertexCover_image_iso (f : G ≃g H) {c : Set V} :
 
 end IsVertexCover
 
+section IsMinimalCover
+
+/-- `c` is a minimal vertex cover of `G` if it is a vertex cover and
+no proper subset of `c` is also a vertex cover. -/
+def IsMinimalCover (G : SimpleGraph V) (c : Set V) : Prop :=
+  Minimal G.IsVertexCover c
+
+/-- `c` is a minimum vertex cover of `G` if it is a vertex cover of
+smallest cardinality among all vertex covers. -/
+def IsMinimumCover (G : SimpleGraph V) (c : Set V) : Prop :=
+  MinimalFor G.IsVertexCover (·.encard) c
+
+theorem IsMinimumCover.isMinimalCover {c : Set V} (h : IsMinimumCover G c) :
+    IsMinimalCover G c := by
+  unfold IsMinimalCover Minimal
+  unfold IsMinimumCover MinimalFor at h
+  constructor
+  · exact h.1
+  · intro d hd hdc
+    have h1 : d.encard ≤ c.encard := Set.encard_mono hdc
+    have h2 : c.encard ≤ d.encard := h.2 hd h1
+    have hcard : d.encard = c.encard := le_antisymm h1 h2
+    by_contra hcd
+    have hne : d ≠ c := fun heq => hcd (heq ▸ le_refl c)
+    apply?
+
+end IsMinimalCover
+
 section vertexCoverNum
 
 /-- The vertex cover number of `G` is the minimal number of vertices in a vertex cover of `G`. -/
