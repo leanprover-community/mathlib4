@@ -39,7 +39,7 @@ instance preservesLimit_finite_toFunctor {J : Type w} [SmallCategory J]
     [FinCategory J] (K : J ⥤ α) : PreservesLimit K (toOrderHom f).toFunctor :=
   preservesLimit_of_preserves_limit_cone (finiteLimitCone K).isLimit <|
     (finiteLimitCone _).isLimit.ofIsoLimit
-      (Cone.ext (eqToIso (by aesop : Finset.univ.inf _ = f _)) (by subsingleton))
+      (Cone.ext (eqToIso (show Finset.univ.inf _ = f _ by aesop)) (by subsingleton))
 
 instance preservesLimitsOfShape_finite_toFunctor {J : Type w} [SmallCategory J] [FinCategory J] :
     PreservesLimitsOfShape J (toOrderHom f).toFunctor where
@@ -57,7 +57,7 @@ instance preservesColimit_finite_toFunctor {J : Type w} [SmallCategory J]
     [FinCategory J] (K : J ⥤ α) : PreservesColimit K (toOrderHom f).toFunctor :=
   preservesColimit_of_preserves_colimit_cocone (finiteColimitCocone K).isColimit <|
     (finiteColimitCocone _).isColimit.ofIsoColimit
-      (Cocone.ext (eqToIso (show Finset.univ.sup _ = f _ by aesop) (by subsingleton))
+      (Cocone.ext (eqToIso (show Finset.univ.sup _ = f _ by aesop) (by subsingleton)))
 
 instance preservesColimitsOfShape_finite_toFunctor {J : Type w} [SmallCategory J]
     [FinCategory J] : PreservesColimitsOfShape J (toOrderHom f).toFunctor where
