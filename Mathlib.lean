@@ -304,6 +304,7 @@ public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.EuclideanDomain.Defs
 public import Mathlib.Algebra.EuclideanDomain.Field
 public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Algebra.Exact
 public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Algebra.Exact.Sequence
 public import Mathlib.Algebra.Expr
