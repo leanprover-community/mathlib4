@@ -224,6 +224,7 @@ abbrev IsZariskiLocalAtSource (P : MorphismProperty Scheme.{u}) :=
 
 namespace IsZariskiLocalAtSource
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 `P` is local at the source if
 1. `P` respects isomorphisms.
