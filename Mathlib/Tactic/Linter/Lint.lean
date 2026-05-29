@@ -98,7 +98,9 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
       if declName.hasMacroScopes || isPrivateName declName then continue
       let nm := declName.components
       -- Collect distinct components which appear more than once.
-      let duplicated := List.pwFilter (· ≠ ·) <| nm.filter (fun comp ↦ nm.count comp > 1)
+      let (_, duplicated) : Std.HashSet Name × (Std.HashSet Name) :=
+        nm.foldl (init := (∅, ∅)) fun (unique, dup) x ↦
+          if x ∈ unique then (unique, dup.insert x) else (unique.insert x, dup)
       match duplicated with
       | [] => continue
       | [ns] =>
