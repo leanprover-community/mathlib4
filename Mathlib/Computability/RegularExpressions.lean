@@ -36,7 +36,7 @@ variable {α β γ : Type*}
 set_option genSizeOfSpec false in
 set_option genInjectivity false in
 /-- This is the definition of regular expressions. The names used here are meant to mirror the
-definition of a Kleene algebra (https://en.wikipedia.org/wiki/Kleene_algebra).
+[definition of a Kleene algebra](https://en.wikipedia.org/wiki/Kleene_algebra).
 * `0` (`zero`) matches nothing
 * `1` (`epsilon`) matches only the empty string
 * `char a` matches only the string 'a'
@@ -238,7 +238,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
           rw [List.cons_append, List.cons_eq_cons] at h
           refine ⟨t, u, h.2, ?_, hQ⟩
           rw [rmatch] at hP
-          convert hP
+          convert! hP
           exact h.1
     · rw [ih]
       constructor <;> rintro ⟨t, u, h, hP, hQ⟩
@@ -248,7 +248,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
         · rw [List.cons_append, List.cons_eq_cons] at h
           refine ⟨t, u, h.2, ?_, hQ⟩
           rw [rmatch] at hP
-          convert hP
+          convert! hP
           exact h.1
 
 theorem star_rmatch_iff (P : RegularExpression α) :
@@ -290,7 +290,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
           refine ⟨t, U.flatten, hsum.2, ?_, ?_⟩
           · specialize helem (b :: t) (by simp)
             rw [rmatch] at helem
-            convert helem.2
+            convert! helem.2
             exact hsum.1
           · grind
   termination_by t => (P, t.length)

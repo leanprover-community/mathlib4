@@ -22,7 +22,7 @@ We also prove that an `OrderIso` is continuous.
 continuous, monotone
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter

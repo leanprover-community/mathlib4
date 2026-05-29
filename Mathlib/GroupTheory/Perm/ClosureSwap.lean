@@ -49,7 +49,7 @@ theorem exists_smul_notMem_of_subset_orbit_closure (S : Set G) (T : Set α) {a :
   have key0 : ¬ closure S ≤ stabilizer G T := by
     have ⟨b, hb⟩ := nonempty
     obtain ⟨σ, rfl⟩ := subset hb
-    contrapose! notMem with h
+    contrapose notMem with h
     exact smul_mem_smul_set_iff.mp ((h σ.2).symm ▸ hb)
   contrapose! key0
   refine (closure_le _).mpr fun σ hσ ↦ ?_
@@ -107,7 +107,7 @@ theorem mem_closure_isSwap {S : Set (Perm α)} (hS : ∀ f ∈ S, f.IsSwap) {f :
   suffices h : (fixedBy α f)ᶜ ⊆ supp → f ∈ closure S from h supp_eq.symm.subset
   clear_value supp; clear supp_eq; revert f
   apply fin.induction_on ..
-  · rintro f - emp; convert (closure S).one_mem; ext; by_contra h; exact emp h
+  · rintro f - emp; convert! (closure S).one_mem; ext; by_contra h; exact emp h
   rintro a s - - ih f hf supp_subset
   refine (mul_mem_cancel_left ((swap_mem_closure_isSwap hS).2 (hf a))).1
     (ih (fun b ↦ ?_) fun b hb ↦ ?_)
