@@ -318,7 +318,7 @@ instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
       rw [add_mul, ← add_assoc, ← mul_assoc, ← mul_assoc]
       rw [unsym_mul_self]
       rw [← mul_assoc, ← mul_assoc, ← mul_assoc, ← mul_assoc, ← sub_eq_zero, ← mul_sub]
-      convert mul_zero (⅟(2 : α) * ⅟(2 : α))
+      convert! mul_zero (⅟(2 : α) * ⅟(2 : α))
       rw [add_sub_add_right_eq_sub, add_assoc, add_assoc, add_sub_add_left_eq_sub, add_comm,
         add_sub_add_right_eq_sub, sub_eq_zero]
     -- Rearrange RHS

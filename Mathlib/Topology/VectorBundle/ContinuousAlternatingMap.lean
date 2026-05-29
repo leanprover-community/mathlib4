@@ -275,7 +275,7 @@ def vectorPrebundle :
     let L₂ : E₂ b ≃L[𝕜] F₂ :=
       (trivializationAt F₂ E₂ b).continuousLinearEquivAt 𝕜 b
         (mem_baseSet_trivializationAt _ _ _)
-    convert (L₁.continuousAlternatingMapCongr L₂).toHomeomorph.isInducing
+    convert! (L₁.continuousAlternatingMapCongr L₂).toHomeomorph.isInducing
     ext f
     simp [Trivialization.linearMapAt_def_of_mem _ (mem_baseSet_trivializationAt _ _ _), L₁, L₂]
 

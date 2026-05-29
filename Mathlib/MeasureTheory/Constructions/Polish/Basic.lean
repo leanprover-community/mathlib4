@@ -319,7 +319,7 @@ theorem _root_.MeasurableSet.analyticSet {α : Type*} [t : TopologicalSpace α] 
       ∃ t' : TopologicalSpace α, t' ≤ t ∧ @PolishSpace α t' ∧ IsClosed[t'] s ∧ IsOpen[t'] s :=
     hs.isClopenable
   have A := @IsClosed.analyticSet α t' t'_polish s s_closed
-  convert @AnalyticSet.image_of_continuous α t' α t s A id (continuous_id_of_le t't)
+  convert! @AnalyticSet.image_of_continuous α t' α t s A id (continuous_id_of_le t't)
   simp only [id, image_id']
 
 /-- Given a Borel-measurable function from a Polish space to a second-countable space, there exists
@@ -364,7 +364,7 @@ protected lemma AnalyticSet.preimage {X Y : Type*} [TopologicalSpace X] [Topolog
     AnalyticSet (f ⁻¹' s) := by
   rcases analyticSet_iff_exists_polishSpace_range.1 hs with ⟨Z, _, _, g, hg, rfl⟩
   have : IsClosed {x : X × Z | f x.1 = g x.2} := isClosed_eq hf.fst' hg.snd'
-  convert this.analyticSet.image_of_continuous continuous_fst
+  convert! this.analyticSet.image_of_continuous continuous_fst
   ext x
   simp [eq_comm]
 
@@ -462,7 +462,7 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
   -- by design, the cylinders around these points have images which are not Borel-separable.
   have M : ∀ n, ¬MeasurablySeparable (f '' cylinder x n) (g '' cylinder y n) := by
     intro n
-    convert (p n).2 using 3
+    convert! (p n).2 using 3
     · rw [pn_fst, ← mem_cylinder_iff_eq, mem_cylinder_iff]
       intro i hi
       rw [hx]
@@ -716,7 +716,7 @@ theorem MeasureTheory.measurableSet_range_of_continuous_injective {β : Type*} [
       exact ball_mem_nhds _ (half_pos (u_pos n))
     have diam_s : diam s ≤ u n := by
       apply (diam_mono hs isBounded_ball).trans
-      convert diam_ball (x := y) (half_pos (u_pos n)).le
+      convert! diam_ball (x := y) (half_pos (u_pos n)).le
       ring
     refine mem_iUnion.2 ⟨⟨s, sb⟩, ?_⟩
     refine mem_iUnion.2 ⟨⟨isBounded_ball.subset hs, diam_s⟩, ?_⟩
@@ -888,7 +888,7 @@ theorem MeasureTheory.borel_eq_borel_of_le {t t' : TopologicalSpace γ}
   have e := @Continuous.measurableEmbedding
     _ _ (@borel _ t') t' _ _ (@BorelSpace.mk _ _ (borel γ) rfl)
     t _ (@borel _ t) (@BorelSpace.mk _ t (@borel _ t) rfl) (continuous_id_of_le hle) injective_id
-  convert e.measurableSet_image.2 hs
+  convert! e.measurableSet_image.2 hs
   simp only [id_eq, image_id']
 
 /-- In a Polish space, a set is clopenable if and only if it is Borel-measurable. -/
