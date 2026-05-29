@@ -658,7 +658,7 @@ theorem map_quotientMk' [Finite G] [IsGaloisGroup G K L] (h : E ≤ F) :
     isInvariant := ⟨fun x h ↦ by
       obtain ⟨a, ha⟩ := hE.isInvariant.isInvariant (algebraMap F L x) (by
         rintro ⟨g, hg⟩
-        simpa only [← algebraMap.smul'] using congr_arg (algebraMap F L) <| h ⟨g, ⟨g, hg, rfl⟩⟩)
+        simpa only [← algebraMap.smul'] using! congr_arg (algebraMap F L) <| h ⟨g, ⟨g, hg, rfl⟩⟩)
       exact ⟨a, FaithfulSMul.algebraMap_injective F L
         (by rw [← IsScalarTower.algebraMap_apply, ha])⟩⟩ }
 

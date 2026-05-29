@@ -97,7 +97,7 @@ noncomputable instance : MulAction Gal(L/K) (primesOver p B) where
   one_smul Q := by
     apply Subtype.val_inj.mp
     change map _ Q.1 = Q.1
-    simpa only [map_one] using map_id Q.1
+    simpa only [map_one] using! map_id Q.1
   mul_smul σ τ Q := by
     apply Subtype.val_inj.mp
     change map _ Q.1 = map _ (map _ Q.1)

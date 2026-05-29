@@ -10,6 +10,7 @@ public meta import Lean.Elab.ParseImportsFast
 public meta import Lean.Linter.Basic
 public meta import Lean.Elab.AssertExists
 public import Lean.Message
+
 -- This file is imported by the Header linter, hence has no mathlib imports.
 
 /-! # The `directoryDependency` linter
@@ -86,6 +87,10 @@ def NamePrefixRel := NameMap NameSet
 
 namespace NamePrefixRel
 
+-- The new behaviour of `inferInstanceAs` from leanprover/lean4#12897 needs to be updated,
+-- to ensure that if we are in a `meta` section then the auxiliary definitions are also `meta`.
+-- Fixed in https://github.com/leanprover/lean4/pull/13043
+set_option backward.inferInstanceAs.wrap false in
 instance : EmptyCollection NamePrefixRel := inferInstanceAs (EmptyCollection (NameMap _))
 
 /-- Make all names with prefix `n₁` related to names with prefix `n₂`. -/
@@ -617,8 +622,8 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   -- TODO: reduce these with further moving files out of `Data`
   (`Mathlib.Data.Real.StarOrdered, `Mathlib.Analysis),
   (`Mathlib.Data.Rat.NatSqrt.Real, `Mathlib.Analysis),
-  (`Mathlib.Data.Real.Hom, `Mathlib.Analysis),
   -- TODO: think about the role of Analysis and Algebra, and perhaps further separation
+  (`Mathlib.Algebra.Order.Archimedean.Real, `Mathlib.Analysis),
   (`Mathlib.Algebra.Star.CHSH, `Mathlib.Analysis),
   (`Mathlib.Algebra.Order.Ring.StandardPart, `Mathlib.Analysis),
 ]
@@ -629,7 +634,7 @@ open DirectoryDependency
 
 /-- Check if one of the imports `imports` to `mainModule` is forbidden by `forbiddenImportDirs`;
 if so, return an error describing how the import transitively arises. -/
-private def checkBlocklist (env : Environment) (mainModule : Name) (imports : Array Name) : Option MessageData := Id.run do
+def checkBlocklist (env : Environment) (mainModule : Name) (imports : Array Name) : Option MessageData := Id.run do
   match forbiddenImportDirs.findAny mainModule imports with
   | some (n₁, n₂) => do
     if let some imported := n₂.prefixToName imports then
@@ -665,7 +670,7 @@ public def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array Me
     -- `ImportGraph`, `ProofWidgets` or `LeanSearchClient` (as these are imported in Tactic.Common).
     -- We also allow transitive imports of Mathlib.Init, as well as Mathlib.Init itself.
     let initImports := (← findImports ("Mathlib" / "Init.lean")).append
-      #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames, `Mathlib.Tactic.Linter.DeprecatedModule]
+      #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames]
     let exclude := [
       `Init, `Std, `Lean,
       `Aesop, `Qq, `Plausible, `ImportGraph, `ProofWidgets, `LeanSearchClient

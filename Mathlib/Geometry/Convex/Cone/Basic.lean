@@ -101,7 +101,7 @@ equalities. -/
 @[simps] protected def copy (C : ConvexCone R M) (s : Set M) (hs : s = C) : ConvexCone R M where
   carrier := s
   add_mem' := hs.symm ▸ C.add_mem'
-  smul_mem' := by simpa [hs] using C.smul_mem'
+  smul_mem' := by simpa [hs] using! C.smul_mem'
 
 lemma copy_eq (C : ConvexCone R M) (s : Set M) (hs) : C.copy s hs = C := SetLike.coe_injective hs
 
