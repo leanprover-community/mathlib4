@@ -48,7 +48,7 @@ section UnitAddCircle
 abbrev UnitAddCircle :=
   AddCircle (1 : ℝ)
 
-/-- The product of finitely many copies of the unit circle, indexed by `d`. -/
+/-- The product indexed by `d` of copies of the unit circle. -/
 abbrev UnitAddTorus (d : Type*) := d → UnitAddCircle
 
 end UnitAddCircle
