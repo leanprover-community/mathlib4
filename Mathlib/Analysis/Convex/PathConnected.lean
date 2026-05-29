@@ -109,7 +109,7 @@ protected theorem IsTopologicalAddGroup.pathConnectedSpace : PathConnectedSpace 
 is path connected in `p` then the complement of `q` is path connected in `E`. -/
 theorem isPathConnected_compl_of_isPathConnected_compl_zero {p q : Submodule ℝ E}
     (hpq : IsCompl p q) (hpc : IsPathConnected ({0}ᶜ : Set p)) : IsPathConnected (qᶜ : Set E) := by
-  convert (hpc.image continuous_subtype_val).add q.isPathConnected using 1
+  convert! (hpc.image continuous_subtype_val).add q.isPathConnected using 1
   trans Submodule.prodEquivOfIsCompl p q hpq '' ({0}ᶜ ×ˢ univ)
   · rw [prod_univ, LinearEquiv.image_eq_preimage_symm]
     ext
@@ -123,12 +123,12 @@ theorem segment_image_Ico {x y : ℝ} (h : x < y) : (Path.segment x y) '' Ico 0 
   simp_rw [Path.segment_apply, ← image_image _ Subtype.val (Ico 0 1)]
   simp only [lineMap_apply, vsub_eq_sub, smul_eq_mul, vadd_eq_add, image_subtype_val_Ico,
     Icc.coe_zero, Icc.coe_one]
-  convert image_affine_Ico (sub_pos_of_lt h) x 0 1 using 2 <;> ring
+  convert! image_affine_Ico (sub_pos_of_lt h) x 0 1 using 2 <;> ring
 
 theorem segment_image_Ioc {x y : ℝ} (h : x < y) : (Path.segment x y) '' Ioc 0 1 = Ioc x y := by
   simp_rw [Path.segment_apply, ← image_image _ Subtype.val (Ioc 0 1)]
   simp only [lineMap_apply, vsub_eq_sub, smul_eq_mul, vadd_eq_add, image_subtype_val_Ioc,
     Icc.coe_zero, Icc.coe_one]
-  convert image_affine_Ioc (sub_pos_of_lt h) x 0 1 using 2 <;> ring
+  convert! image_affine_Ioc (sub_pos_of_lt h) x 0 1 using 2 <;> ring
 
 end Real
