@@ -28,12 +28,6 @@ variable {V : Type*} [Quiver V] (S : Set V)
 def induce : Quiver S :=
   ⟨fun a b => a.val ⟶ b.val⟩
 
-end Quiver
-
-namespace Quiver
-
-variable {V : Type*} [Quiver V] (S : Set V)
-
 attribute [local instance] induce
 
 /-- Inclusion of the induced quiver into the ambient quiver. -/
@@ -56,11 +50,11 @@ lemma mapPath_inducePrefunctor_mem_vertices {v : V} (p : Path i j)
     subst hv
     exact i.property
   | cons p' e ih =>
-    simp only [Prefunctor.mapPath_cons, activeVertices_cons, Set.mem_union, Set.mem_singleton_iff] at hv
+    simp only [Prefunctor.mapPath_cons, activeVertices_cons, Set.mem_union] at hv
     rcases hv with h | h
     · exact ih h
     · subst h
-      simpa [end_cons, inducePrefunctor] using j.property
+      simp [inducePrefunctor]
 
 /--
 A path in `V` whose vertices stay in `S` induces a path in the induced quiver on `S`.
@@ -73,6 +67,11 @@ noncomputable def induce {i j : V} (p : Path i j) (hp : ∀ k, k ∈ p.vertices 
   | nil => exact Path.nil
   | cons p' e ih =>
     exact Path.cons (ih fun k hk => hp k ((mem_vertices_cons p' e).mpr (Or.inl hk))) e
+
+lemma mapPath_inducePrefunctor_mem_vertices' {v : V} (p : Path i j)
+    (hv : v ∈ ((inducePrefunctor S).mapPath p).vertices) : v ∈ S := by
+  simpa [mem_activeVertices_iff] using mapPath_inducePrefunctor_mem_vertices (S := S) p
+    ((mem_activeVertices_iff _).mpr hv)
 
 end Path
 

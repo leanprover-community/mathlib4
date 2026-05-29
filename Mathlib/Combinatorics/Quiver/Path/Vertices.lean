@@ -14,7 +14,8 @@ public import Mathlib.Data.List.Basic
 /-!
 # Path Vertices
 
-This file provides lemmas for reasoning about the vertices of a path.
+This file provides lemmas for reasoning about the vertices of a path, and `Prefunctor.end_map`
+relating `Path.end` with `Prefunctor.mapPath`.
 -/
 
 @[expose] public section
@@ -279,3 +280,17 @@ lemma isPrefix_dropLast_of_comp_eq {a b c : V} {p : Path a b} {p₁ : Path a c} 
   rw [h]; exact List.prefix_append _ _
 
 end Quiver.Path
+
+namespace Prefunctor
+
+open Quiver
+
+variable {V W : Type*} [Quiver V] [Quiver W] (F : V ⥤q W)
+
+@[simp]
+lemma end_map {a b : V} (p : Path a b) : F.obj p.end = (F.mapPath p).end := by
+  induction p with
+  | nil => rfl
+  | cons p' e ih => simp [ih]
+
+end Prefunctor

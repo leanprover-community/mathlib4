@@ -24,11 +24,11 @@ Parallel to `SimpleGraph.Walk` in `Mathlib/Combinatorics/SimpleGraph/Paths.lean`
 `IsSimple` allows the endpoint to repeat the start (simple directed cycle). `IsPath` forbids
 any repeated vertex and is strictly stronger.
 
-Acyclicity is `Quiver.IsAcyclic` in `ConnectedComponent.lean` (no nontrivial closed paths),
-equivalent to forbidding `IsCycle` loops.
+`Quiver.IsAcyclic` (below) means no nontrivial closed paths. It implies `¬IsCycle` but is
+strictly stronger than forbidding simple cycles only.
 
-`Quiver.cycleLengths` ([PR #39913](https://github.com/leanprover-community/mathlib4/pull/39913))
-records lengths of positive loops without a simplicity hypothesis.
+`Quiver.cycleLengths` (in `Mathlib/Combinatorics/Quiver/Cyclic.lean`) records lengths of positive
+loops without a simplicity hypothesis.
 
 For cardinality bounds use `p.vertices.toFinset` (see `List.toFinset_card_of_nodup`).
 -/
@@ -52,6 +52,9 @@ variable {V : Type*} [Quiver V]
 /-- A nontrivial simple closed walk. -/
 def IsCycle {a : V} (p : Path a a) : Prop :=
   0 < p.length ∧ p.IsSimple
+
+@[simp] lemma isCycle_def {a : V} (p : Path a a) : p.IsCycle ↔ 0 < p.length ∧ p.IsSimple :=
+  Iff.rfl
 
 @[simp] lemma isPath_nil {a : V} : IsPath (nil : Path a a) := by simp [IsPath]
 
@@ -94,6 +97,7 @@ lemma repeated_vertex_in_prefix_dropLast [DecidableEq V] {a : V} (s : Path a a)
     (h_not_simple : ¬IsSimple s) :
     ∃ (v : V) (p₁ : Path a v) (p₂ : Path v a),
       v ∈ p₁.vertices.dropLast ∧ s = p₁.comp p₂ ∧ v ∉ p₂.vertices.tail := by
+  classical
   dsimp [IsSimple] at h_not_simple
   obtain ⟨v, hv_dup⟩ := exists_duplicate_iff_not_nodup.mpr h_not_simple
   have hv_in : v ∈ s.vertices := mem_of_mem_dropLast (Duplicate.mem hv_dup)
@@ -130,14 +134,14 @@ lemma extracted_cycle_has_positive_length {a v : V} {p₁ q : Path a v} {c : Pat
 lemma removing_cycle_gives_shorter_path {a v : V} {s : Path a a} {q : Path a v} {c : Path v v}
     {p₂ : Path v a} (hp : s = (q.comp c).comp p₂) (hc_pos : c.length > 0) :
     (q.comp p₂).length < s.length := by
-  rw [hp, comp_assoc]
-  simp only [length_comp]
-  grind
+  rw [hp, length_comp, length_comp, length_comp]
+  omega
 
 /-- When `c = c_cycle` and the outer peel is `nil.comp nil`, extract a shorter positive loop. -/
-lemma exists_shorter_pos_loop_of_nil_nil_comp [DecidableEq V] {a : V} {c c_cycle : Path a a}
+lemma exists_shorter_pos_loop_of_nil_nil_comp {a : V} {c c_cycle : Path a a}
     (hc_eq : c = c_cycle) (hc_pos : 0 < c.length)
-    (hc_min : ∀ p' : Path a a, p'.length > 0 → c.length ≤ p'.length) (h_not_simple : ¬IsSimple c_cycle) :
+    (hc_min : ∀ p' : Path a a, p'.length > 0 → c.length ≤ p'.length)
+    (h_not_simple : ¬IsSimple c_cycle) :
     ∃ p : Path a a, 0 < p.length ∧ p.length < c.length := by
   classical
   dsimp [IsSimple] at h_not_simple
@@ -172,13 +176,16 @@ lemma exists_shorter_pos_loop_of_nil_nil_comp [DecidableEq V] {a : V} {c c_cycle
     · rw [h_len]; exact hi_pos
     · rw [h_len, hc_eq]; simpa [vertices_length, length_dropLast] using hi_lt_drop
   · obtain ⟨p₁x, p₂x, hcompx, hx_not_tail⟩ :=
-      c_cycle.exists_eq_comp_and_notMem_tail_of_mem_vertices (mem_of_mem_dropLast (Duplicate.mem hx_dup))
+      c_cycle.exists_eq_comp_and_notMem_tail_of_mem_vertices <|
+        mem_of_mem_dropLast (Duplicate.mem hx_dup)
     have hx_in_p1 := mem_dropLast_of_comp_count_ge_two hcompx
       (count_vertices_ge_two_of_duplicate_dropLast hx_dup) hx_not_tail
     obtain ⟨q_x, c_x, hsplit1, hx_not⟩ := extract_cycle_from_prefix (p₁ := p₁x) hx_in_p1
     have hc_x_pos := extracted_cycle_has_positive_length hsplit1 hx_in_p1 hx_not
     have hcomp' : c_cycle = (q_x.comp c_x).comp p₂x := by rw [hcompx, hsplit1, comp_assoc]
-    have h_shorter : (q_x.comp p₂x).length < c.length := by rw [hc_eq]; exact removing_cycle_gives_shorter_path hcomp' hc_x_pos
+    have h_shorter : (q_x.comp p₂x).length < c.length := by
+      rw [hc_eq]
+      exact removing_cycle_gives_shorter_path hcomp' hc_x_pos
     refine ⟨(q_x.comp p₂x), ?_, h_shorter⟩
     by_contra hzero
     have hlen' : q_x.length + p₂x.length = 0 := by
@@ -191,7 +198,7 @@ lemma exists_shorter_pos_loop_of_nil_nil_comp [DecidableEq V] {a : V} {c c_cycle
       | cons _ _ => simp [length_cons] at hlen'
     | cons _ _ => simp [length_cons] at hlen'
 
-lemma exists_shorter_pos_loop_of_not_isSimple [DecidableEq V] {a : V} {c : Path a a}
+lemma exists_shorter_pos_loop_of_not_isSimple {a : V} {c : Path a a}
     (hc_pos : 0 < c.length) (hc_min : ∀ p' : Path a a, p'.length > 0 → c.length ≤ p'.length)
     (h_not_simple : ¬IsSimple c) :
     ∃ p : Path a a, 0 < p.length ∧ p.length < c.length := by
@@ -220,7 +227,7 @@ lemma exists_shorter_pos_loop_of_not_isSimple [DecidableEq V] {a : V} {c : Path 
     | cons _ _ => simp [length_cons] at hlen
 
 /-- A shortest positive loop is simple. -/
-theorem shortest_positive_loop_is_simple [DecidableEq V] {a : V} {c : Path a a}
+theorem shortest_positive_loop_is_simple {a : V} {c : Path a a}
     (hc_pos : 0 < c.length) (hc_min : ∀ p' : Path a a, p'.length > 0 → c.length ≤ p'.length) :
     c.IsSimple := by
   by_contra h
@@ -228,3 +235,33 @@ theorem shortest_positive_loop_is_simple [DecidableEq V] {a : V} {c : Path a a}
   exact lt_irrefl _ ((hc_min p hp_pos).trans_lt hp_lt)
 
 end Quiver.Path
+
+namespace Quiver
+
+/-! ### Acyclic quivers -/
+
+section Acyclic
+
+variable (V : Type*) [Quiver V]
+
+/-- A quiver is acyclic: the only closed path is trivial.
+
+This matches directed acyclicity (no positive-length closed walk). It implies `¬IsCycle` but is
+stronger than `∀ p, ¬p.IsCycle` (a positive loop may repeat vertices without being `IsCycle`). -/
+def IsAcyclic : Prop :=
+  ∀ {a : V} (p : Path a a), p.length = 0
+
+@[simp] lemma isAcyclic_iff :
+    IsAcyclic V ↔ ∀ {a : V} (p : Path a a), p.length = 0 :=
+  Iff.rfl
+
+lemma IsAcyclic.eq_nil {a : V} (p : Path a a) (h : IsAcyclic V) : p = Path.nil :=
+  Path.eq_nil_of_length_zero p (h p)
+
+lemma IsAcyclic.not_isCycle {a : V} (p : Path a a) (h : IsAcyclic V) : ¬p.IsCycle := by
+  rintro ⟨hp_pos, _⟩
+  exact Nat.not_lt.mpr (le_of_eq (h p)) hp_pos
+
+end Acyclic
+
+end Quiver
