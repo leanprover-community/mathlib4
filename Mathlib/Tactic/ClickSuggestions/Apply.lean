@@ -108,11 +108,11 @@ def ApplyLemma.try (lem : ApplyLemma) : ClickSuggestionsM (Result ApplyKey) :=
     addSolvedSuggestion tactic
   let filtered ←
     if !makesNewMVars then
-      some <$> mkSuggestion tactic (.element "div" #[] htmls) htmls.isEmpty
+      some <$> mkSuggestion tactic (.element "div" #[] htmls)
     else
       pure none
   htmls := htmls.push <div> {← lem.name.toHtml} </div>
-  let unfiltered ← mkSuggestion tactic (.element "div" #[] htmls) htmls.isEmpty
+  let unfiltered ← mkSuggestion tactic (.element "div" #[] htmls)
   let pattern ← forallTelescope (← lem.name.getType) fun _ e => exprToHtml e
   return { filtered, unfiltered, key, pattern }
 

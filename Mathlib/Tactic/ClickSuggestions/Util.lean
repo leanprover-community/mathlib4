@@ -357,24 +357,16 @@ open Widget
 /-- Generate a suggestion for inserting `tac`, with message `html`.
 The `isText` flag is used to make sure the button is aligned correctly with `html`.
 `isText` should be false if `html` includes an expression. -/
-def mkSuggestion (tac : TSyntax `tactic) (html : Html) (isText := false) :
-    ClickSuggestionsM Html := do
+def mkSuggestion (tac : TSyntax `tactic) (html : Html) : ClickSuggestionsM Html := do
   let tac ← match (← read).onGoal with
     | some n => `(tactic| on_goal $(Syntax.mkNatLit (n + 1)) => $tac:tactic)
     | none => pure tac
   let (range, newText) ← mkInsertion tac (← read)
   let button :=
     -- TODO: The hover on this button should be a `CodeWithInfos`, instead of a string.
-    <span className="font-code"> {
-      Html.ofComponent MakeEditLink
-        (.ofReplaceRange (← read).meta range newText)
-        #[<a
-          className={"mh2 codicon codicon-insert"}
-          style={json% { "position" : "relative", "top" : "0.15em"}}
-          title={(← PrettyPrinter.ppTactic tac).pretty} />] }
+    <span style={json% { "white-space" : "pre"}} className="font-code">
+    { .ofComponent MakeEditLink (.ofReplaceRange (← read).meta range newText) #[.text "[apply] "] }
     </span>;
-  let html := if isText then <span style={json% { "margin-top" : "0.15em" }}> {html} </span>
-    else html
   return <div display="flex"
     style={json% { "display" : "flex", "align-items" : "flex-start", "margin-bottom" : "1em" }}>
     {button} {html}
@@ -382,7 +374,7 @@ def mkSuggestion (tac : TSyntax `tactic) (html : Html) (isText := false) :
 
 /-- Add suggestion `tac` to the list of tactics that solve the goal. -/
 def addSolvedSuggestion (tac : TSyntax `tactic) : ClickSuggestionsM Unit := do
-  let html ← mkSuggestion tac (.text (← PrettyPrinter.ppTactic tac).pretty) (isText := true)
+  let html ← mkSuggestion tac (.text (← PrettyPrinter.ppTactic tac).pretty)
   modify fun s ↦ { s with solvedSuggestions := s.solvedSuggestions.push html }
   (← read).solvedToken.update <details «open»={true}>
     <summary className="mv2 pointer">

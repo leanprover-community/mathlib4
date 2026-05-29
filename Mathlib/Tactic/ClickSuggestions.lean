@@ -151,10 +151,9 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
       } |>.run (← IO.mkRef {})
     return <details «open»={true}>
       <summary className="mv2 pointer">
-        suggestions for {targetHtml}:
-        {solvedHtml}
-        {statusHtml}
+        suggestions for {targetHtml}: {statusHtml}
       </summary>
+      {solvedHtml}
       {html}
     </details>
 

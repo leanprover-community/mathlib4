@@ -207,9 +207,7 @@ public def librarySearchSuggestions (rootExpr subExpr : Expr) (lctx : LocalConte
   for cand in ← getImportCandidates rootExpr subExpr gpos rwKind rflTarget? reportProgress do
     sections := sections.push (← runSuggestions .imported cand)
 
-  token.update <div>
-    {.element "div" #[] sections}
-    </div>
+  token.update <| .element "div" #[] sections
   unless sections.isEmpty do
     markProgress
 
