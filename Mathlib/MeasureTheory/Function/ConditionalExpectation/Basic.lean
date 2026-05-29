@@ -460,6 +460,8 @@ open Finset
 
 #where
 
+#check MeasureTheory.memLp_top_of_bound_enorm
+
 theorem test {f : ℕ → Lp E 1 μ} (hf : ∑' n, ‖f n‖ₑ ≠ ∞) :
     ∀ᵐ a ∂μ, Summable (fun n ↦ ‖f n a‖) := by
   suffices H : ∀ᵐ a ∂μ, ∑' n, ‖f n a‖ₑ < ∞ by
@@ -471,20 +473,36 @@ theorem test {f : ℕ → Lp E 1 μ} (hf : ∑' n, ‖f n‖ₑ ≠ ∞) :
 
 #check MeasureTheory.instSigmaFiniteRestrictUnionSet
 
+#check MeasureTheory.eLpNorm_le_eLpNorm_mul_rpow_measure_univ
+
 theorem Lp.summable_norm_coeFn_of_tsum_enorm_ne_top {p : ℝ≥0∞} (hp : 1 ≤ p)
     {f : ℕ → Lp E p μ} (hf : ∑' n, ‖f n‖ₑ ≠ ∞) :
     ∀ᵐ a ∂μ, Summable (fun n ↦ ‖f n a‖) := by
   suffices H : ∀ᵐ a ∂μ, ∑' n, ‖f n a‖ₑ < ∞ by
     filter_upwards [H] with x hx using tsum_enorm_ne_top_iff_summable_norm.1 hx.ne
   rcases eq_top_or_lt_top p with rfl | h'p
-  · sorry
-  have : ∃ s, MeasurableSet s ∧ SigmaFinite (μ.restrict s) ∧ ∀ x ∈ sᶜ, ∀ n, f n x = 0 := by
-    have A n :  ∃ s, MeasurableSet s ∧ (∀ x ∈ sᶜ, f n x = 0) ∧ SigmaFinite (μ.restrict s) := by
-      apply (finStronglyMeasurable_iff_stronglyMeasurable_and_exists_set_sigmaFinite.1 _).2
-      exact Lp.finStronglyMeasurable _ (zero_lt_one.trans_le hp).ne' h'p.ne
-    choose! s s_meas hs h's using A
-    refine ⟨⋃ n, s n, MeasurableSet.iUnion s_meas, ?_, ?_⟩
-    have : SigmaFinite (Measure.sum (fun n ↦ (μ.restrict (s n)))) := inferInstance
+  · have : ∀ᵐ x ∂μ, ∀ n, ‖f n x‖ₑ ≤ ‖f n‖ₑ := by
+      rw [ae_all_iff]
+      intro n
+      filter_upwards [ae_le_eLpNormEssSup (f := f n)] with x hx
+      simpa using hx
+    filter_upwards [this] with x hx
+    apply lt_of_le_of_lt ?_ hf.lt_top
+    gcongr with i
+    exact hx i
+  have B (s : Set α) (hs : MeasurableSet s) (h's : μ s ≠ ∞) :
+      ∀ᵐ x ∂μ, x ∈ s → ∑' n, ‖f n x‖ₑ < ∞ := by
+    have I n : eLpNorm (f n) 1 (μ.restrict s) ≤ eLpNorm (f n) p (μ.restrict s) *
+          (μ.restrict s) Set.univ ^ (1 / (1 : ℝ≥0∞).toReal - 1 / p.toReal) := by
+        apply eLpNorm_le_eLpNorm_mul_rpow_measure_univ
+    let g n := s.indicator (f n)
+    have I n : eLpNorm (g n) p μ ≤ eLpNorm (f n) p μ := eLpNorm_indicator_le _
+    have J n : eLpNorm (g n) 1 (μ.restrict s) ≤
+
+  have A n :  ∃ s, MeasurableSet s ∧ (∀ x ∈ sᶜ, f n x = 0) ∧ SigmaFinite (μ.restrict s) := by
+    apply (finStronglyMeasurable_iff_stronglyMeasurable_and_exists_set_sigmaFinite.1 _).2
+    exact Lp.finStronglyMeasurable _ (zero_lt_one.trans_le hp).ne' h'p.ne
+  choose! s s_meas hs h's using A
 
 
   apply ae_lt_top (Measurable.tsum (fun i ↦ (Lp.stronglyMeasurable (f i)).enorm))
