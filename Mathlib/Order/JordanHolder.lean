@@ -109,11 +109,11 @@ theorem isMaximal_inf_right_of_isMaximal_sup {x y : X} (hxz : IsMaximal x (x ⊔
 theorem isMaximal_of_eq_inf (x b : X) {a y : X} (ha : x ⊓ y = a) (hxy : x ≠ y) (hxb : IsMaximal x b)
     (hyb : IsMaximal y b) : IsMaximal a y := by
   have hb : x ⊔ y = b := sup_eq_of_isMaximal hxb hyb hxy
-  substs a b
+  subst a b
   exact isMaximal_inf_right_of_isMaximal_sup hxb hyb
 
 theorem second_iso_of_eq {x y a b : X} (hm : IsMaximal x a) (ha : x ⊔ y = a) (hb : x ⊓ y = b) :
-    Iso (x, a) (b, y) := by substs a b; exact second_iso hm
+    Iso (x, a) (b, y) := by subst a b; exact second_iso hm
 
 theorem IsMaximal.iso_refl {x y : X} (h : IsMaximal x y) : Iso (x, y) (x, y) :=
   second_iso_of_eq h (sup_eq_right.2 (le_of_lt (lt_of_isMaximal h)))

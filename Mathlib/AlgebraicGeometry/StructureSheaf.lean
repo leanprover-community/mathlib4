@@ -342,7 +342,7 @@ theorem const_ext {f₁ f₂ : M} {g₁ g₂ : R} {U hu₁ hu₂} (h : g₂ • 
   Subtype.ext <| funext fun x ↦ LocalizedModule.mk_eq.mpr (by simp [h, Submonoid.smul_def])
 
 theorem const_congr {f₁ f₂ : M} {g₁ g₂ : R} {U hu} (hf : f₁ = f₂) (hg : g₁ = g₂) :
-    const f₁ g₁ U hu = const f₂ g₂ U (hg ▸ hu) := by substs hf hg; rfl
+    const f₁ g₁ U hu = const f₂ g₂ U (hg ▸ hu) := by subst hf hg; rfl
 
 theorem const_mul_rev (f g : R) (U hu₁ hu₂) : const f g U hu₁ * const g f U hu₂ = 1 := by
   rw [const_mul, const_congr rfl (mul_comm g f), const_self]

@@ -508,7 +508,7 @@ theorem dlookup_kerase_ne {a a'} {l : List (Sigma β)} (h : a ≠ a') :
   | cons hd tl ih =>
     obtain ⟨ah, bh⟩ := hd
     by_cases h₁ : a = ah <;> by_cases h₂ : a' = ah
-    · substs h₁ h₂
+    · subst h₁ h₂
       cases Ne.irrefl h
     · subst h₁
       simp [h₂]
