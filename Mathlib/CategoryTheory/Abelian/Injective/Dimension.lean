@@ -153,6 +153,10 @@ lemma injective_iff_hasInjectiveDimensionLT_one :
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ injective_iff_subsingleton_ext_one.2
     (HasInjectiveDimensionLT.subsingleton X 1 1 (by rfl))⟩
 
+variable {X} in
+lemma injective_iff_hasInjectiveDimensionLE_zero : Injective X ↔ HasInjectiveDimensionLE X 0 :=
+  injective_iff_hasInjectiveDimensionLT_one
+
 instance (priority := low) [HasInjectiveDimensionLT X 1] : Injective X :=
   injective_iff_hasInjectiveDimensionLT_one.mpr ‹_›
 
@@ -322,6 +326,13 @@ lemma injectiveDimension_ne_top_iff (X : C) :
 /-- An injective object has injective dimension at most zero. -/
 lemma Injective.injectiveDimension_le_zero (X : C) [Injective X] : injectiveDimension X ≤ 0 :=
   (injectiveDimension_le_iff X 0).mpr (injective_iff_hasInjectiveDimensionLT_one.mp ‹_›)
+
+/-- An object has injective dimension zero iff it is injective and it is not zero object. -/
+lemma injectiveDimension_eq_zero_iff (X : C) :
+    injectiveDimension X = 0 ↔ Injective X ∧ ¬ Limits.IsZero X := by
+  rw [← injectiveDimension_eq_bot_iff, injective_iff_hasInjectiveDimensionLE_zero,
+    ← injectiveDimension_le_iff, ← WithBot.lt_zero_iff_eq_bot, not_lt, Nat.cast_zero,
+    le_antisymm_iff]
 
 namespace ShortComplex
 

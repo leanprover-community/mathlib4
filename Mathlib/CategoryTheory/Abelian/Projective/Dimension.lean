@@ -328,6 +328,13 @@ lemma projectiveDimension_ne_top_iff (X : C) :
 lemma Projective.projectiveDimension_le_zero (X : C) [Projective X] : projectiveDimension X ≤ 0 :=
   (projectiveDimension_le_iff X 0).mpr (projective_iff_hasProjectiveDimensionLT_one.mp ‹_›)
 
+/-- An object has projective dimension zero iff it is projective and it is not zero object. -/
+lemma projectiveDimension_eq_zero_iff (X : C) :
+    projectiveDimension X = 0 ↔ Projective X ∧ ¬ Limits.IsZero X := by
+  rw [← projectiveDimension_eq_bot_iff, projective_iff_hasProjectiveDimensionLE_zero,
+    ← projectiveDimension_le_iff, ← WithBot.lt_zero_iff_eq_bot, not_lt, Nat.cast_zero,
+    le_antisymm_iff]
+
 namespace ShortComplex
 
 namespace ShortExact
@@ -405,12 +412,6 @@ lemma projectiveDimension_X₃_eq_succ_of_not_projective (p : Projective S.X₂)
 end ShortExact
 
 end ShortComplex
-
-lemma projectiveDimension_eq_zero_iff (X : C) :
-    projectiveDimension X = 0 ↔ Projective X ∧ ¬ Limits.IsZero X := by
-  rw [← projectiveDimension_eq_bot_iff, projective_iff_hasProjectiveDimensionLE_zero,
-    ← projectiveDimension_le_iff, ← WithBot.lt_zero_iff_eq_bot, not_lt, Nat.cast_zero,
-    le_antisymm_iff]
 
 end CategoryTheory
 
