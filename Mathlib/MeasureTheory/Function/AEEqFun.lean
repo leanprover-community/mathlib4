@@ -799,6 +799,13 @@ theorem coeFn_finsetProd [CommMonoid γ] [ContinuousMul γ]
     simp only [ha, not_false_eq_true, Finset.prod_insert]
     grw [coeFn_mul, ih]
 
+@[to_additive]
+theorem coeFn_finsetProd_fun [CommMonoid γ] [ContinuousMul γ]
+    {ι : Type*} (s : Finset ι) (f : ι → α →ₘ[μ] γ) :
+    ⇑(∏ i ∈ s, f i) =ᵐ[μ] fun x ↦ ∏ i ∈ s, f i x := by
+  grw [coeFn_finsetProd]
+  filter_upwards with x using by simp
+
 section Group
 
 variable [Group γ] [IsTopologicalGroup γ]

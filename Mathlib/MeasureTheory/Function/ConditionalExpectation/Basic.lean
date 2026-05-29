@@ -453,10 +453,6 @@ theorem tendsto_condExpL1_of_dominated_convergence (hm : m ≤ m₀) [SigmaFinit
     Tendsto (fun n => condExpL1 hm μ (fs n)) atTop (𝓝 (condExpL1 hm μ f)) :=
   tendsto_setToFun_of_dominated_convergence _ bound_fs hfs_meas h_int_bound_fs hfs_bound hfs
 
-#check coeFn_add
-
-#check lp.coeFn_sum
-
 open Finset
 
 theorem hasSum_coeFn_tsum_Lp_one (f : ℕ → Lp E 1 μ) (hf : ∑' n, ‖f n‖ₑ ≠ ∞) :
@@ -466,10 +462,10 @@ theorem hasSum_coeFn_tsum_Lp_one (f : ℕ → Lp E 1 μ) (hf : ∑' n, ‖f n‖
     rw [lintegral_tsum (fun i ↦ (Lp.aestronglyMeasurable (f i)).enorm)]
     convert hf with n
     simp [← eLpNorm_one_eq_lintegral_enorm]
-  have B : ∀ᵐ x ∂μ, ∀ n, (∑ i ∈ range n, f i : α → E) x = ∑ i ∈ range n, (f i x) := by
+  have B : ∀ᵐ x ∂μ, ∀ n, ⇑((∑ i ∈ range n, f i)) x = ∑ i ∈ range n, (f i x) := by
     rw [ae_all_iff]
     intro i
-    apply coeFn_add
+    apply coeFn_finsetSum_fun
 
 
 #exit
