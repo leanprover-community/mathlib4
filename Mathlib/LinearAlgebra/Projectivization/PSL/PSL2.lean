@@ -5,11 +5,9 @@ Authors: Edison Xie
 -/
 module
 
-public import Mathlib.LinearAlgebra.Projectivization.PSL.Stabilizer
 public import Mathlib.GroupTheory.GroupAction.Iwasawa
 public import Mathlib.GroupTheory.IsPerfect
-public import Mathlib.LinearAlgebra.Matrix.IsDiag
-public import Mathlib.LinearAlgebra.Matrix.ProjectiveSpecialLinearGroup
+public import Mathlib.LinearAlgebra.Projectivization.PSL.Stabilizer
 
 /-!
 -/
@@ -169,6 +167,7 @@ lemma PSL.iSup_iwasawaT_eq_top :
 
 open MulAction
 
+/-- The Iwasawa structure on PSL(2, F). -/
 noncomputable abbrev PSL2.Iwasawa : IwasawaStructure PSL(2, F) (ℙ F (Fin 2 → F)) where
   T := PSL.iwasawaT
   is_comm p := by
