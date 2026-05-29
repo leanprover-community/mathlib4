@@ -6,6 +6,8 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Over
 
 /-!
 
@@ -49,5 +51,12 @@ instance {X : C} : PreservesFilteredColimitsOfSize (Under.forget X) := by
   dsimp at hf
   exact congr($(hc.uniq s' (Under.homMk f (by simp [s', ← hf]))
     fun j ↦ Under.UnderMorphism.ext (hf j)).right)
+
+instance Over.post_preservesTerminal {D : Type*} [Category* D] {X : C} (F : C ⥤ D) :
+    PreservesLimit (Functor.empty.{0} _) (Over.post (X := X) F) :=
+  preservesTerminal_of_iso _ <|
+    (Over.post F).mapIso (terminalIsTerminal.uniqueUpToIso Over.mkIdTerminal) ≪≫
+      Over.isoMk (g := Over.mk (𝟙 (F.obj X))) (Iso.refl _) (by simp) ≪≫
+      Over.mkIdTerminal.uniqueUpToIso terminalIsTerminal
 
 end CategoryTheory.Limits

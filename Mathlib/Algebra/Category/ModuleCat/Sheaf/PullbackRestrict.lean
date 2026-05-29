@@ -24,16 +24,20 @@ noncomputable section
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
-namespace CategoryTheory.Over
+namespace CategoryTheory
 
-instance post_preservesTerminal {X : C} (F : C ⥤ D) :
+variable (X : C)
+
+#synth HasTerminal (Over X)
+
+instance Over.post_preservesTerminal {X : C} (F : C ⥤ D) :
     PreservesLimit (Functor.empty.{0} _) (Over.post (X := X) F) :=
   preservesTerminal_of_iso _ <|
     (Over.post F).mapIso (terminalIsTerminal.uniqueUpToIso Over.mkIdTerminal) ≪≫
       Over.isoMk (g := Over.mk (𝟙 (F.obj X))) (Iso.refl _) (by simp) ≪≫
       Over.mkIdTerminal.uniqueUpToIso terminalIsTerminal
 
-end CategoryTheory.Over
+end CategoryTheory
 
 namespace CategoryTheory.GrothendieckTopology.CoversTop
 
