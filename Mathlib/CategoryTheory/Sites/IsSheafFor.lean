@@ -5,6 +5,7 @@ Authors: Bhavik Mehta
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 public import Mathlib.CategoryTheory.Sites.Sieves
 
 /-!
@@ -227,6 +228,13 @@ theorem restrict_extend {x : FamilyOfElements P R} (t : x.Compatible) :
   funext Y f hf
   exact extend_agrees t hf
 
+lemma FamilyOfElements.Compatible.of_mono (f : P ⟶ Q) [Mono f] {x : R.FamilyOfElements P}
+    (hx : (x.map f).Compatible) :
+    x.Compatible := by
+  intro Y Z W g₁ g₂ f₁ f₂ hf₁ hf₂ heq
+  refine injective_of_mono (f.app _) ?_
+  simpa using hx _ _ hf₁ hf₂ heq
+
 /--
 If the arrow set for a family of elements is actually a sieve (i.e. it is downward closed) then the
 consistency condition can be simplified.
@@ -406,6 +414,13 @@ lemma FamilyOfElements.isAmalgamation_singleton_iff {X Y : C} (f : X ⟶ Y)
   refine ⟨fun H ↦ H _ _, ?_⟩
   rintro H Y g ⟨rfl⟩
   exact H
+
+lemma FamilyOfElements.IsAmalgamation.of_mono (f : P ⟶ Q) [Mono f] {x : R.FamilyOfElements P}
+    {t : P.obj (.op X)} (ht : (x.map f).IsAmalgamation (f.app _ t)) :
+    x.IsAmalgamation t := by
+  intro Y u hu
+  refine injective_of_mono (f.app _) ?_
+  simpa using ht _ hu
 
 /-- A presheaf is separated for a presieve if there is at most one amalgamation. -/
 def IsSeparatedFor (P : Cᵒᵖ ⥤ Type w) (R : Presieve X) : Prop :=
@@ -726,6 +741,11 @@ theorem isSeparatedFor_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (hP : IsSepa
     IsSeparatedFor P' R := by
   intro x t₁ t₂ ht₁ ht₂
   simpa using congrArg (i.hom.app _) <| hP (x.map i.inv) _ _ (ht₁.map i.inv) (ht₂.map i.inv)
+
+lemma IsSeparatedFor.of_mono (f : P ⟶ Q) [Mono f] (h : R.IsSeparatedFor Q) :
+    R.IsSeparatedFor P := by
+  intro x t₁ t₂ ht₁ ht₂
+  exact injective_of_mono _ <|  h (x.map f) _ _ (ht₁.map f) (ht₂.map f)
 
 /-- If a presieve `R` on `X` has a subsieve `S` such that:
 

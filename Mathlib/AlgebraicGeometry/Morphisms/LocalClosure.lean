@@ -73,12 +73,12 @@ instance [P.RespectsIso] : (sourceLocalClosure W P).RespectsIso where
 
 instance [P.RespectsIso] [P.RespectsLeft @IsOpenImmersion] :
     IsZariskiLocalAtSource (sourceLocalClosure IsOpenImmersion P) := by
-  refine .mk_of_iff fun f 𝒰 ↦ ?_
+  refine .mk_of_iff_of_zeroHypercover fun f 𝒰 ↦ ?_
   refine ⟨fun ⟨𝒱, h⟩ ↦ fun i ↦ ⟨𝒱.pullback₁ (𝒰.f i), fun j ↦ ?_⟩, fun h ↦ ?_⟩
   · simpa [pullback.condition_assoc] using
       RespectsLeft.precomp (Q := @IsOpenImmersion) _ inferInstance _ (h j)
   · choose 𝒱 h𝒱 using h
-    exact ⟨𝒰.bind 𝒱, fun i ↦ h𝒱 _ _⟩
+    exact ⟨(Scheme.Cover.ulift 𝒰).bind (fun i ↦ Scheme.Cover.ulift (𝒱 _)), fun i ↦ h𝒱 _ _⟩
 
 instance [P.IsStableUnderBaseChange] : (sourceLocalClosure W P).IsStableUnderBaseChange := by
   refine .mk' fun X Y S f g _ ⟨𝒰, hg⟩ ↦ ⟨𝒰.pullback₁ (pullback.snd f g), fun i ↦ ?_⟩

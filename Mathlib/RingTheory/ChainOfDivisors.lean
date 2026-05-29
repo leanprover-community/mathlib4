@@ -91,7 +91,7 @@ theorem element_of_chain_not_isUnit_of_index_ne_zero {n : ℕ} {i : Fin (n + 1)}
 
 theorem first_of_chain_isUnit {q : Associates M} {n : ℕ} {c : Fin (n + 1) → Associates M}
     (h₁ : StrictMono c) (h₂ : ∀ {r}, r ≤ q ↔ ∃ i, r = c i) : IsUnit (c 0) := by
-  obtain ⟨i, hr⟩ := h₂.mp Associates.one_le
+  obtain ⟨i, hr⟩ := h₂.mp one_le
   rw [Associates.isUnit_iff_eq_one, ← Associates.le_one_iff, hr]
   exact h₁.monotone (Fin.zero_le i)
 
@@ -244,6 +244,8 @@ variable [UniqueFactorizationMonoid N] [UniqueFactorizationMonoid M]
 
 open DivisorChain
 
+set_option linter.overlappingInstances false
+
 theorem pow_image_of_prime_by_factor_orderIso_dvd
     {m p : Associates M} {n : Associates N} (hn : n ≠ 0) (hp : p ∈ normalizedFactors m)
     (d : Set.Iic m ≃o Set.Iic n) {s : ℕ} (hs' : p ^ s ≤ m) :
@@ -375,6 +377,8 @@ def mkFactorOrderIsoOfFactorDvdEquiv [IsCancelMulZero N]
         associatesEquivOfUniqueUnits_apply, out_dvd_iff, mk_out]
 
 variable [UniqueFactorizationMonoid M] [UniqueFactorizationMonoid N]
+
+set_option linter.overlappingInstances false
 
 theorem mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors {m p : M} {n : N} (hm : m ≠ 0)
     (hn : n ≠ 0) (hp : p ∈ normalizedFactors m) {d : { l : M // l ∣ m } ≃ { l : N // l ∣ n }}
