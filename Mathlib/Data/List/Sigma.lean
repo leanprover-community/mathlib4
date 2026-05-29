@@ -508,7 +508,7 @@ theorem dlookup_kerase_ne {a a'} {l : List (Sigma β)} (h : a ≠ a') :
   | cons hd tl ih =>
     obtain ⟨ah, bh⟩ := hd
     by_cases h₁ : a = ah <;> by_cases h₂ : a' = ah
-    · substs h₁ h₂
+    · subst h₁ h₂
       cases Ne.irrefl h
     · subst h₁
       simp [h₂]
@@ -547,6 +547,7 @@ theorem kerase_comm (a₁ a₂) (l : List (Sigma β)) :
       else by simp [ha₂, mt mem_keys_of_mem_keys_kerase ha₂]
     else by simp [ha₁, mt mem_keys_of_mem_keys_kerase ha₁]
 
+set_option linter.auxLemma false in
 theorem sizeOf_kerase [SizeOf (Sigma β)] (x : α)
     (xs : List (Sigma β)) : SizeOf.sizeOf (List.kerase x xs) ≤ SizeOf.sizeOf xs := by
   simp only [SizeOf.sizeOf, _sizeOf_1]
@@ -646,6 +647,7 @@ theorem dlookup_dedupKeys (a : α) (l : List (Sigma β)) : dlookup a (dedupKeys 
     · rw [dedupKeys_cons, dlookup_kinsert_ne h, l_ih, dlookup_cons_ne]
       exact h
 
+set_option linter.auxLemma false in
 theorem sizeOf_dedupKeys [SizeOf (Sigma β)]
     (xs : List (Sigma β)) : SizeOf.sizeOf (dedupKeys xs) ≤ SizeOf.sizeOf xs := by
   simp only [SizeOf.sizeOf, _sizeOf_1]

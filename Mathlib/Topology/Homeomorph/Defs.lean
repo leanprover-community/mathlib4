@@ -44,10 +44,10 @@ structure Homeomorph (X : Type*) (Y : Type*) [TopologicalSpace X] [TopologicalSp
     extends X ≃ Y where
   /-- The forward map of a homeomorphism is a continuous function. -/
   continuous_toFun : Continuous toFun := by
-    first | fun_prop | eta_expand; dsimp -failIfUnchanged; fun_prop
+    first | fun_prop | eta_expand; dsimp; fun_prop | skip
   /-- The inverse map of a homeomorphism is a continuous function. -/
   continuous_invFun : Continuous invFun := by
-    first | fun_prop | eta_expand; dsimp -failIfUnchanged; fun_prop
+    first | fun_prop | eta_expand; dsimp; fun_prop | skip
 
 @[inherit_doc]
 infixl:25 " ≃ₜ " => Homeomorph
@@ -364,7 +364,7 @@ theorem comap_nhds_eq (h : X ≃ₜ Y) (y : Y) : comap h (𝓝 y) = 𝓝 (h.symm
 
 theorem isClosed_setOf_iff {p : X → Prop} {q : Y → Prop} (f : X ≃ₜ Y) (hs : IsClopen {x | p x})
     (ht : IsClopen {y | q y}) : IsClosed { x : X | p x ↔ q (f x) } := by
-  simpa [iff_def] using (isClosed_imp hs.2 (f.isClosed_preimage.2 ht.1)).inter
+  simpa [iff_def] using! (isClosed_imp hs.2 (f.isClosed_preimage.2 ht.1)).inter
     (isClosed_imp (f.isOpen_preimage.2 ht.2) hs.1)
 
 end Homeomorph
