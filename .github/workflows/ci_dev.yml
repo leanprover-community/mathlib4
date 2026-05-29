@@ -383,30 +383,34 @@ jobs:
           lake cache get \
             --scope="$SHADOW_SCOPE" \
             --rev="${{ needs.build_and_stage.outputs.sha }}"
-          echo "ltar count after get: $(find ~/.elan/toolchains -name '*.ltar' 2>/dev/null | wc -l)"
+          # Artifacts fetched here = the root-package outputs served from cache
+          # (a non-verbose build replays them silently). Hand the count to the
+          # provenance step.
+          FETCHED=$(find ~/.elan/toolchains -name '*.ltar' 2>/dev/null | wc -l)
+          echo "ltar count after get: $FETCHED"
+          echo "FETCHED_ARTIFACTS=$FETCHED" >> "$GITHUB_ENV"
 
       - name: lake build
         run: |
           cd pr-branch
           read -ra TARGETS <<< "$STAGE_TARGETS"
           lake build "${TARGETS[@]}" 2>&1 | tee .lake/consume-build.log
-          # A non-verbose `lake build` restores cache hits silently (no per-module
-          # "Replayed" lines), so a replay count can't be grepped here. The
-          # cache-hit evidence is the artifacts fetched by `lake cache get` above,
-          # the BUILT_ROOT assertion below (0 root-package rebuilds), and the
-          # `--rehash` "all targets up-to-date" check. The Built count is the
-          # dependencies, which Lake never caches and always rebuilds.
-          echo "Built from source (deps, expected): $(grep -cE '^✔.*Built ' .lake/consume-build.log || true)"
-          # Lake only caches the root package's artifacts (`-o` records outputs
-          # under pkg.isRoot, and only the root `mathlib` package enables the
-          # artifact cache). Dependencies are never staged/uploaded, so they are
-          # expected to build from source here. The real cache invariant is
-          # narrower than "nothing built": assert no root-package module was
-          # rebuilt — those must all be served from the Lake cache.
-          BUILT_ROOT=$(grep -cE '^✔.*Built (Mathlib|Archive|Counterexamples)([. ]|$)' .lake/consume-build.log || true)
+
+      - name: Check cache provenance
+        run: |
+          cd pr-branch
+          log=.lake/consume-build.log
+          # "Served from cache" = the artifacts `lake cache get` fetched (replayed
+          # silently). "Built" = dependencies, which Lake never caches and always
+          # rebuilds from source.
+          echo "Served from cache (fetched): ${FETCHED_ARTIFACTS}"
+          echo "Built from source (deps, expected): $(grep -cE '^✔.*Built ' "$log" || true)"
+          # The cache invariant: no root-package module may be rebuilt — those
+          # must all come from the cache (deps building is expected).
+          BUILT_ROOT=$(grep -cE '^✔.*Built (Mathlib|Archive|Counterexamples)([. ]|$)' "$log" || true)
           if [ "$BUILT_ROOT" -ne 0 ]; then
-            echo "::error::$BUILT_ROOT root-package module(s) were rebuilt instead of replayed from the Lake cache"
-            grep -E '^✔.*Built (Mathlib|Archive|Counterexamples)([. ]|$)' .lake/consume-build.log || true
+            echo "::error::$BUILT_ROOT root-package module(s) were rebuilt instead of served from the Lake cache"
+            grep -E '^✔.*Built (Mathlib|Archive|Counterexamples)([. ]|$)' "$log" || true
             exit 1
           fi
 
