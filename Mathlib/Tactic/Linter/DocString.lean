@@ -14,7 +14,7 @@ import Std.Data.Iterators
 /-!
 # The "DocString" style linter
 
-The "DocString" linter validates style conventions regarding doc-string formatting.
+The "DocString" linters validate style conventions regarding doc-string formatting.
 -/
 
 meta section
@@ -130,6 +130,105 @@ def lintVersoSyntax (docComment : String) (fileName : Option String := none) :
 
 namespace Style
 
+inductive ItemStatus
+| InUnnumbered
+| InNumbered
+| NotInItem
+deriving BEq
+
+/-- Whether a string `str` starts with a decimal number, followed by ". ". -/
+def startsNumberedItem (str : String.Slice) : Bool := Id.run do
+  let numbers := str.takeWhile (fun c ↦ c.isDigit)
+  if numbers.isEmpty then return false
+  str.dropWhile (fun c ↦ c.isDigit) |>.startsWith ". "
+
+/-- Check if a doc-string conforms to some basic style guidelines.
+TODO: flesh out which ones and why! -/
+def check (str : String) : Array MessageData := Id.run do
+  let lines := str.splitOn "\n"
+  -- If the doc-string contains a code block, we skip any analysis (for now).
+  if lines.any (·.trimAsciiStart.startsWith "```") then return #[]
+  let mut msgs := #[]
+  -- Check for correct indentation of markdown lists. The line following a list item
+  -- (starting a line with "- " or "* ", after initial spaces)
+  -- should either be blank, or another such item, or indented by two spaces more.
+  -- For numbered items, the indentation should be at least two spaces (but more are allowed).
+  let mut in_item := ItemStatus.NotInItem
+  let mut expected_indent : Nat := 0
+  let mut allow_indent_fuzz := false
+  -- TODO: right now, we check pretty rigorous indenting --- even outside of enumeration items
+  -- is this what we want, or rather too strong?
+  for line in lines do
+    let indent := line.takeWhile Char.isWhitespace
+    let indent_count := indent.positions.length
+    let lineT := line.trimAscii
+
+    -- Each line should be indented by an even number of spaces (and no tabs).
+    -- The only exception is being inside a numbered item, where this rule can be relaxed.
+    if indent.contains '\t' then
+      msgs := msgs.push m!"error: line '{lineT}' starts with a tab; use spaces instead"
+    else if in_item == ItemStatus.NotInItem && indent.positions.length.mod 2 == 1 then
+      let i := indent.positions.length
+      msgs := msgs.push m!"error: line '{lineT}' is indented by {i} \
+        space{if i == 1 then "" else "s"}, which is an odd number"
+    -- If inside a numbered item, there will be a more specific error later.
+
+    -- Update the current state of being inside an item,
+    -- and check indentation of the current line as we go along.
+    if lineT.startsWith "- " || lineT.startsWith "* " then
+      in_item := ItemStatus.InUnnumbered
+      -- De-denting can happen by any number of levels;
+      -- indentation should increase by at most one level at a time.
+      -- Parity of indentation is checked above already.
+      if indent_count > expected_indent + 2 then
+        msgs := msgs.push m!"unexpected indentation: \
+          line '{lineT}' is indented by {indent_count} spaces,\n\
+          but should have been indented by at most {expected_indent + 2}."
+      expected_indent := indent_count + 2
+    else if startsNumberedItem lineT then
+      in_item := ItemStatus.InNumbered
+      -- De-denting can happen by any number of levels;
+      -- indentation should increase by at most one level at a time.
+      -- We allow increases by two, three or four spaces (to handle e.g. `10. ` alignment);
+      -- for five spaces, this is rather unlikely in mathlib and we should silence the linter.
+      -- `expected_indent` got an increase of two already.
+      if !(indent_count <= expected_indent + 2) then
+        msgs := msgs.push m!"unexpected indentation: \
+          line '{lineT}' is indented by {indent_count} spaces,\n\
+          but should have been indented by at most {expected_indent + 2}."
+      expected_indent := indent_count + 2
+      allow_indent_fuzz := true
+    else if indent_count == 0 then
+      in_item := ItemStatus.NotInItem
+      expected_indent := 0
+    else
+      -- the item status does not change: just check indentation of the current line
+      if in_item == ItemStatus.NotInItem then
+        if indent_count != expected_indent then
+          msgs := msgs.push m!"bad indentation: line '{lineT}' is indented by {indent_count} spaces, \
+            but expected to match the indentation {expected_indent} of the previous line"
+      else if in_item == ItemStatus.InUnnumbered then
+        if indent_count != expected_indent then
+          msgs := msgs.push m!"bad indentation: line '{lineT}' is indented by {indent_count} spaces, \
+            but expected {expected_indent}.\n\
+            This line is considered inside an enumeration item.\n\
+            To start a new paragraph, insert a blank line instead."
+      else -- in_item == ItemStatus.InNumbered
+        -- Adjust fuzziness of allowed indentation.
+        if indent_count != expected_indent then
+          if !allow_indent_fuzz then
+            msgs := msgs.push m!"bad indentation: line '{lineT}' is indented by {indent_count} spaces, \
+              but expected {expected_indent}"
+          else
+            if !(expected_indent <= indent_count && indent_count <= expected_indent + 2) then
+              msgs := msgs.push m!"unexpected indentation: \
+                line '{lineT}' is indented by {indent_count} spaces,\n\
+                but should have been indented by at least {expected_indent} and at most {expected_indent + 2}."
+            else
+              expected_indent := indent_count
+        allow_indent_fuzz := false
+  return msgs
+
 @[inherit_doc Mathlib.Linter.linter.style.docString]
 def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless getLinterValue linter.style.docString (← getLinterOptions) ||
@@ -151,6 +250,9 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- `docString` contains e.g. trailing spaces before the `-/`, but does not contain
     -- any leading whitespace before the actual string starts.
     let docString ← try getDocStringText ⟨docStx⟩ catch _ => continue
+    for msg in check docString do
+      Linter.logLintIf linter.style.docString docStx msg
+
     if docString.trimAscii.isEmpty then
       Linter.logLintIf linter.style.docString.empty docStx m!"warning: this doc-string is empty"
       continue
