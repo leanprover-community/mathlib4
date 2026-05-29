@@ -441,11 +441,11 @@ lemma exact_map_δ' (f : Hom W Q) :
   rw [← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq _ (Q.ofComp P).toExtensionHom]
   exact exact_map_δ Q P
 
-open Submodule LinearMap in
+open LinearMap in
 lemma range_liftBaseChange_map_le :
     (liftBaseChange T (Extension.H1Cotangent.map (Q.toComp P).toExtensionHom)).range ≤
       (Extension.H1Cotangent.map (Q.ofComp P).toExtensionHom).ker := by
-  rw [range_liftBaseChange, coe_range, span_le, Set.range_subset_iff]
+  rw [range_liftBaseChange, coe_range, Submodule.span_le, Set.range_subset_iff]
   rintro ⟨x, _⟩
   obtain ⟨⟨(x : P.Ring), x_in⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
   ext; suffices (Q.ofComp P).toAlgHom ((Q.toComp P).toAlgHom x) ∈ Q.toExtension.ker ^ 2 by
@@ -465,7 +465,7 @@ private lemma auxMemKer (z : T ⊗[S] P.toExtension.H1Cotangent) :
   | tmul x y => simp [← Extension.CotangentSpace.map_cotangentComplex]
   | add x y hx hy => simpa using Submodule.add_mem _ hx hy
 
-open Submodule LinearMap in
+open LinearMap in
 theorem exact_liftBaseChange_map_map_of_flat [Module.Flat S T] :
     Function.Exact ((Extension.H1Cotangent.map (toComp Q P).toExtensionHom).liftBaseChange T)
       (Extension.H1Cotangent.map (ofComp Q P).toExtensionHom) := by
@@ -487,7 +487,6 @@ theorem exact_liftBaseChange_map_map_of_flat [Module.Flat S T] :
   | tmul x y => ext; simp
   | add x y hx hy => ext; simp [hx (auxMemKer Q P x), hy (auxMemKer Q P y)]
 
-open Submodule LinearMap in
 /-- A variant of `exact_liftBaseChange_map_map_of_flat` that takes in
 arbitrary maps between generators. -/
 theorem exact_liftBaseChange_map_map_of_flat' [Module.Flat S T] (f : Hom W Q) (g : Hom P W) :
