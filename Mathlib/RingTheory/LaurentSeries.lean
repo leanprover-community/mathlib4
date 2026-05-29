@@ -246,7 +246,7 @@ theorem single_order_mul_powerSeriesPart (x : R⸨X⸩) :
     · contrapose! h
       exact order_le_of_coeff_ne_zero h.symm
     · contrapose h
-      simp only [Set.mem_range, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk] at h
+      simp only [Nat.castOrderEmbedding_apply, Set.mem_range] at h
       lia
 
 theorem ofPowerSeries_powerSeriesPart (x : R⸨X⸩) :
@@ -339,9 +339,7 @@ theorem coeff_coe (i : ℤ) :
   · rw [Int.ofNat_eq_natCast, coeff_coe_powerSeries, if_neg (Int.natCast_nonneg _).not_gt,
       Int.natAbs_natCast]
   · rw [ofPowerSeries_apply, embDomain_notin_image_support, if_pos (Int.negSucc_lt_zero _)]
-    simp only [not_exists, RelEmbedding.coe_mk, Set.mem_image, not_and, Function.Embedding.coeFn_mk,
-      Ne, toPowerSeries_symm_apply_coeff, mem_support, imp_true_iff,
-      not_false_iff, reduceCtorEq]
+    simp
 
 theorem coe_C (r : R) : ((C r : R⟦X⟧) : R⸨X⸩) = HahnSeries.C r :=
   ofPowerSeries_C _
@@ -991,6 +989,14 @@ abbrev extensionAsRingHom :=
 
 /-- An abbreviation for the `X`-adic completion of `K⟮X⟯` -/
 abbrev RatFuncAdicCompl := adicCompletion K⟮X⟯ (idealX K)
+
+-- help typeclass inference along
+instance : Field (ratfuncAdicComplPkg (K := K).space) :=
+  inferInstanceAs <| Field (RatFuncAdicCompl K)
+
+-- help typeclass inference along
+instance : Valued (ratfuncAdicComplPkg (K := K).space) (WithZero (Multiplicative ℤ)) :=
+  inferInstanceAs <| Valued (RatFuncAdicCompl K) (WithZero (Multiplicative ℤ))
 
 /- The two instances below make `comparePkg` and `comparePkg_eq_extension` slightly faster. -/
 instance : UniformSpace (RatFuncAdicCompl K) := inferInstance
