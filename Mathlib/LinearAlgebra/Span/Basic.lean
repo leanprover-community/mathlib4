@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Module.Submodule.Equiv
 public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.LinearAlgebra.Span.Defs
 public import Mathlib.Order.CompactlyGenerated.Basic
-public import Mathlib.Order.OmegaCompletePartialOrder
+public import Mathlib.Order.BourbakiWitt
 
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Module.Submodule.EqLocus
@@ -102,8 +102,8 @@ variable {N : Type*} [AddCommMonoid N] [Module R N]
 
 lemma linearMap_eq_iff_of_eq_span {V : Submodule R M} (f g : V →ₗ[R] N)
     {S : Set M} (hV : V = span R S) :
-    f = g ↔ ∀ (s : S), f ⟨s, by simpa only [hV] using subset_span (by simp)⟩ =
-      g ⟨s, by simpa only [hV] using subset_span (by simp)⟩ := by
+    f = g ↔ ∀ (s : S), f ⟨s, by simpa only [hV] using! subset_span (by simp)⟩ =
+      g ⟨s, by simpa only [hV] using! subset_span (by simp)⟩ := by
   constructor
   · rintro rfl _
     rfl
@@ -126,8 +126,9 @@ lemma linearMap_eq_iff_of_eq_span {V : Submodule R M} (f g : V →ₗ[R] N)
 lemma linearMap_eq_iff_of_span_eq_top (f g : M →ₗ[R] N)
     {S : Set M} (hM : span R S = ⊤) :
     f = g ↔ ∀ (s : S), f s = g s := by
-  convert linearMap_eq_iff_of_eq_span (f.comp (Submodule.subtype _))
-    (g.comp (Submodule.subtype _)) hM.symm
+  convert!
+    linearMap_eq_iff_of_eq_span (f.comp (Submodule.subtype _)) (g.comp (Submodule.subtype _))
+      hM.symm
   constructor
   · rintro rfl
     rfl
@@ -142,7 +143,7 @@ lemma linearMap_eq_zero_iff_of_span_eq_top (f : M →ₗ[R] N)
 
 lemma linearMap_eq_zero_iff_of_eq_span {V : Submodule R M} (f : V →ₗ[R] N)
     {S : Set M} (hV : V = span R S) :
-    f = 0 ↔ ∀ (s : S), f ⟨s, by simpa only [hV] using subset_span (by simp)⟩ = 0 :=
+    f = 0 ↔ ∀ (s : S), f ⟨s, by simpa only [hV] using! subset_span (by simp)⟩ = 0 :=
   linearMap_eq_iff_of_eq_span f 0 hV
 
 end
@@ -152,7 +153,7 @@ end
 theorem span_smul_eq_of_isUnit (s : Set M) (r : R) (hr : IsUnit r) : span R (r • s) = span R s := by
   apply le_antisymm
   · apply span_smul_le
-  · convert span_smul_le (r • s) ((hr.unit⁻¹ :) : R)
+  · convert! span_smul_le (r • s) ((hr.unit⁻¹ :) : R)
     simp [smul_smul]
 
 /-- We can regard `coe_iSup_of_chain` as the statement that `(↑) : (Submodule R M) → Set M` is
@@ -184,7 +185,7 @@ lemma injective_inclusionSpan :
 lemma span_range_inclusionSpan :
     span S (range <| p.inclusionSpan S) = ⊤ := by
   have : (span S (p : Set M)).subtype '' range (inclusionSpan S p) = p := by
-    ext; simpa [Subtype.ext_iff] using fun h ↦ subset_span h
+    ext; simpa [Subtype.ext_iff] using! fun h ↦ subset_span h
   apply map_injective_of_injective (span S (p : Set M)).injective_subtype
   rw [map_subtype_top, map_span, this]
 

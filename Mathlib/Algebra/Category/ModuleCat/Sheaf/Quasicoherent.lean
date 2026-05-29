@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
-public import Mathlib.CategoryTheory.Comma.Over.Pullback
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
+public import Mathlib.CategoryTheory.Sites.CoversTop.Over
 
 /-!
 # Quasicoherent sheaves
@@ -77,7 +77,7 @@ def generatorsOfIsCokernelFree {M : SheafOfModules.{u} R}
     (H' : IsColimit (CokernelCofork.ofπ g H)) : M.GeneratingSections where
   I := σ
   s := M.freeHomEquiv g
-  epi := by simpa using epi_of_isColimit_cofork H'
+  epi := by simpa using! epi_of_isColimit_cofork H'
 
 @[simp]
 theorem generatorsOfIsCokernelFree_π {M : SheafOfModules.{u} R}
@@ -127,6 +127,7 @@ def Presentation.isColimit {M : SheafOfModules.{u} R} (P : Presentation M) :
   isCokernelEpiComp (c := CokernelCofork.ofπ _ (kernel.condition P.generators.π))
       (Abelian.epiIsCokernelOfKernel _ <| limit.isLimit _) _ rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Mapping a presentation under an isomorphism. -/
 @[simps]
 noncomputable def Presentation.ofIsIso {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
@@ -172,6 +173,7 @@ theorem Presentation.mapRelations_mapGenerators :
   simp only [mapRelations, mapGenerators, Category.assoc, Iso.inv_hom_id_assoc,
     ← Functor.map_comp, kernel.condition, Functor.map_zero, comp_zero]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will get a
 `Presentation (F.obj M)`. -/
@@ -238,6 +240,7 @@ class IsFinitePresentation {M : SheafOfModules.{u} R} (q : M.QuasicoherentData) 
 
 attribute [instance] IsFinitePresentation.isFinite_presentation
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance {M : SheafOfModules.{u} R} (q : M.QuasicoherentData) [q.IsFinitePresentation] :
     q.localGeneratorsData.IsFiniteType where
@@ -279,13 +282,6 @@ instance (M : SheafOfModules.{u} R) [M.IsFinitePresentation] :
   exists_localGeneratorsData := by
     obtain ⟨σ, _⟩ := IsFinitePresentation.exists_quasicoherentData M
     exact ⟨σ.localGeneratorsData, inferInstance⟩
-
-/-- A choice of local presentations when `M` is a sheaf of modules of finite presentation. -/
-@[deprecated "Use the lemma `IsFinitePresentation.exists_quasicoherentData` instead."
-  (since := "2025-10-28")]
-noncomputable def quasicoherentDataOfIsFinitePresentation
-    (M : SheafOfModules.{u} R) [M.IsFinitePresentation] : M.QuasicoherentData :=
-  (IsFinitePresentation.exists_quasicoherentData M).choose
 
 end
 
@@ -333,6 +329,7 @@ instance : (isQuasicoherent R).IsClosedUnderIsomorphisms where
     intro ⟨⟨q⟩⟩
     exact ⟨⟨q.ofIsIso e.hom⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
 instance {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f] (σ : M.QuasicoherentData)
     [σ.IsFinitePresentation] : (σ.ofIsIso f).IsFinitePresentation where
   isFinite_presentation i := by
@@ -361,11 +358,9 @@ noncomputable def QuasicoherentData.bind {R : Sheaf J RingCat.{u}}
     (M : SheafOfModules.{u} R) {I : Type u}
     (X : I → C) (hX : J.CoversTop X) (D : Π i, QuasicoherentData (M.over (X i))) :
     M.QuasicoherentData where
-  I := Σ i, (D i).I
+  I := (i : I) × (D i).I
   X ij := ((D ij.1).X ij.2).left
-  coversTop Y := J.transitive (hX Y) _ fun Z f ⟨i, ⟨g⟩⟩ ↦
-      J.superset_covering ((Sieve.functorPushforward_ofObjects_le _ _ _).trans
-      (Sieve.ofObjects_mono fun i' ↦ by aesop)) ((D i).coversTop (.mk g))
+  coversTop := hX.over (fun i ↦ (D i).coversTop)
   presentation i :=
     letI e := pushforwardPushforwardEquivalence (Over.iteratedSliceEquiv ((D i.1).X i.2))
       (S := (R.over _).over _) (R := R.over _) (𝟙 _) (𝟙 _)

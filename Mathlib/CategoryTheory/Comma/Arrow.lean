@@ -21,7 +21,6 @@ comma, arrow
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 universe v u
@@ -141,7 +140,7 @@ lemma mk_eq_mk_iff {X Y X' Y' : T} (f : X ⟶ Y) (f' : X' ⟶ Y') :
   constructor
   · intro h
     refine ⟨congr_arg Arrow.left h, congr_arg Arrow.right h, ?_⟩
-    simpa [eqToHom_left, eqToHom_right] using iso_w (eqToIso h.symm)
+    simpa [eqToHom_left, eqToHom_right] using! iso_w (eqToIso h.symm)
   · rintro ⟨rfl, rfl, h⟩
     simp only [eqToHom_refl, Category.comp_id, Category.id_comp] at h
     rw [h]
@@ -151,11 +150,13 @@ lemma ext {f g : Arrow T}
     (h₃ : f.hom = eqToHom h₁ ≫ g.hom ≫ eqToHom h₂.symm) : f = g :=
   (mk_eq_mk_iff _ _).2 (by simp_all)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma arrow_mk_comp_eqToHom {X Y Y' : T} (f : X ⟶ Y) (h : Y = Y') :
     Arrow.mk (f ≫ eqToHom h) = Arrow.mk f :=
   ext rfl h.symm (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma arrow_mk_eqToHom_comp {X' X Y : T} (f : X ⟶ Y) (h : X' = X) :
     Arrow.mk (eqToHom h ≫ f) = Arrow.mk f :=
@@ -179,16 +180,19 @@ def homMk' {X Y : T} {f : X ⟶ Y} {P Q : T} {g : P ⟶ Q} (u : X ⟶ P) (v : Y 
   right := v
   w := w
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 theorem w_mk_left {X Y : T} {f : X ⟶ Y} {g : Arrow T} (sq : mk f ⟶ g) :
     dsimp% sq.left ≫ g.hom = f ≫ sq.right :=
   sq.w
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 theorem w_mk_right {f : Arrow T} {X Y : T} {g : X ⟶ Y} (sq : f ⟶ mk g) :
     dsimp% sq.left ≫ g = f.hom ≫ sq.right :=
   sq.w
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 theorem w_mk {X Y X' Y' : T} {f : X ⟶ Y} {g : X' ⟶ Y'} (sq : mk f ⟶ mk g) :
     dsimp% sq.left ≫ g = f ≫ sq.right :=
@@ -258,6 +262,7 @@ theorem left_hom_inv_right [IsIso sq] : sq.left ≫ g.hom ≫ inv sq.right = f.h
 theorem inv_left_hom_right [IsIso sq] : inv sq.left ≫ f.hom ≫ sq.right = g.hom := by
   simp only [w, IsIso.inv_comp_eq]
 
+set_option backward.defeqAttrib.useBackward true in
 instance mono_left [Mono sq] : Mono sq.left where
   right_cancellation {Z} φ ψ h := by
     let aux : (Z ⟶ f.left) → (Arrow.mk (𝟙 Z) ⟶ f) := fun φ =>
@@ -271,6 +276,7 @@ instance mono_left [Mono sq] : Mono sq.left where
     · exact h
     · simp [this, ← Arrow.w_mk_right, reassoc_of% h]
 
+set_option backward.defeqAttrib.useBackward true in
 instance epi_right [Epi sq] : Epi sq.right where
   left_cancellation {Z} φ ψ h := by
     let aux : (g.right ⟶ Z) → (g ⟶ Arrow.mk (𝟙 Z)) := fun φ =>
@@ -305,7 +311,7 @@ in terms of the inverse of `p`. -/
 @[simp]
 theorem square_to_iso_invert (i : Arrow T) {X Y : T} (p : X ≅ Y) (sq : i ⟶ Arrow.mk p.hom) :
     i.hom ≫ sq.right ≫ p.inv = sq.left := by
-  simpa only [mk_right, Category.assoc] using (Iso.comp_inv_eq p).mpr (Arrow.w_mk_right sq).symm
+  simpa only [mk_right, Category.assoc] using! (Iso.comp_inv_eq p).mpr (Arrow.w_mk_right sq).symm
 
 /-- Given a square from an isomorphism `i` to an arrow `p`, express the target part of `sq`
 in terms of the inverse of `i`. -/
@@ -315,6 +321,7 @@ theorem square_from_iso_invert {X Y : T} (i : X ≅ Y) (p : Arrow T) (sq : Arrow
 
 variable {C : Type u} [Category.{v} C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A helper construction: given a square between `i` and `f ≫ g`, produce a square between
 `i` and `g`, whose top leg uses `f`:
 ```
@@ -340,6 +347,7 @@ def leftFunc : Arrow C ⥤ C :=
 def rightFunc : Arrow C ⥤ C :=
   Comma.snd _ _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation from `leftFunc` to `rightFunc`, given by the arrow itself. -/
 @[simps]
 def leftToRight : (leftFunc : Arrow C ⥤ C) ⟶ rightFunc where app f := f.hom
@@ -352,6 +360,7 @@ universe v₁ v₂ u₁ u₂
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor `C ⥤ D` induces a functor between the corresponding arrow categories. -/
 @[simps]
 def mapArrow (F : C ⥤ D) : Arrow C ⥤ Arrow D where
@@ -360,6 +369,7 @@ def mapArrow (F : C ⥤ D) : Arrow C ⥤ Arrow D where
 
 variable (C D)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor `(C ⥤ D) ⥤ (Arrow C ⥤ Arrow D)` which sends
 a functor `F : C ⥤ D` to `F.mapArrow`. -/
 @[simps]
@@ -369,6 +379,7 @@ def mapArrowFunctor : (C ⥤ D) ⥤ (Arrow C ⥤ Arrow D) where
 
 variable {C D}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories `Arrow C ≌ Arrow D` induced by an equivalence `C ≌ D`. -/
 @[simps]
 def mapArrowEquivalence (e : C ≌ D) : Arrow C ≌ Arrow D where
@@ -376,6 +387,14 @@ def mapArrowEquivalence (e : C ≌ D) : Arrow C ≌ Arrow D where
   inverse := e.inverse.mapArrow
   unitIso := Functor.mapIso (mapArrowFunctor C C) e.unitIso
   counitIso := Functor.mapIso (mapArrowFunctor D D) e.counitIso
+
+set_option backward.defeqAttrib.useBackward true in
+instance essSurj_mapArrow (F : C ⥤ D) [F.Full] [F.EssSurj] :
+    F.mapArrow.EssSurj where
+  mem_essImage f :=
+    ⟨Arrow.mk (F.preimage ((F.objObjPreimageIso _).hom ≫ f.hom ≫
+      (F.objObjPreimageIso _).inv)),
+        ⟨Arrow.isoMk (F.objObjPreimageIso _) (F.objObjPreimageIso _)⟩⟩
 
 instance isEquivalence_mapArrow (F : C ⥤ D) [IsEquivalence F] :
     IsEquivalence F.mapArrow :=
@@ -385,6 +404,7 @@ end Functor
 
 variable {C D : Type*} [Category* C] [Category* D]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The images of `f : Arrow C` by two isomorphic functors `F : C ⥤ D` are
 isomorphic arrows in `D`. -/
 def Arrow.isoOfNatIso {F G : C ⥤ D} (e : F ≅ G)

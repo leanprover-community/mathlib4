@@ -56,7 +56,7 @@ instance [IsDomain S] [FaithfulSMul R S] [Algebra.IsIntegral R S] [IsIntegrallyC
       (Ideal.comap_map_eq_self_iff_of_isPrime _).mp (this.antisymm Ideal.le_comap_map)
     refine ⟨P.under S, ?_, inferInstance, ⟨by rw [Ideal.under_under, ← e]⟩⟩
     exact (Ideal.comap_mono (IsLocalRing.le_maximalIdeal_of_isPrime P)).trans_eq
-      Localization.AtPrime.comap_maximalIdeal
+      Localization.AtPrime.under_maximalIdeal
   intro x hx
   obtain ⟨a, ha, haQ⟩ : ∃ a, x • a ∈ Ideal.map (algebraMap R S) p ∧ a ∉ Q := by
     simpa [Algebra.smul_def, IsScalarTower.algebraMap_eq R S SQ, ← Ideal.map_map,
