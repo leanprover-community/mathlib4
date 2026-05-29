@@ -1089,6 +1089,62 @@ theorem natAbs_min_of_le_div_two (n : ℕ) (x y : ℤ) (he : (x : ZMod n) = y) (
   refine le_trans ?_ (Nat.le_mul_of_pos_right _ <| Int.natAbs_pos.2 hm)
   rw [← mul_two]; apply Nat.div_mul_le_self
 
+/-- In `ZMod (p ^ d)` for prime `p` and `d > 0`, idempotents are exactly
+`0` and `1`. This generalises `eq_zero_or_one_of_sq_eq_self`, which
+requires no zero divisors, to the prime-power case where zero divisors
+are present (for `d ≥ 2`). -/
+theorem sq_eq_self_iff_eq_zero_or_one {p d : ℕ} (hp : p.Prime) (hd : 0 < d)
+    {x : ZMod (p ^ d)} : x ^ 2 = x ↔ x = 0 ∨ x = 1 := by
+  haveI : NeZero (p ^ d) := ⟨pow_ne_zero _ hp.pos.ne'⟩
+  haveI : Fact (1 < p ^ d) := ⟨Nat.one_lt_pow hd.ne' hp.one_lt⟩
+  refine ⟨fun hx ↦ ?_, ?_⟩
+  · -- Forward: x^2 = x ⇒ x*(x-1) = 0; lift to ℕ via val.
+    have h_prod : x * (x - 1) = 0 := by
+      rw [mul_sub_one, ← sq, hx, sub_self]
+    rcases eq_or_ne x.val 0 with hx_zero | hx_ne
+    · left
+      rw [← natCast_zmod_val x, hx_zero, Nat.cast_zero]
+    · right
+      have hx_pos : 0 < x.val := Nat.pos_of_ne_zero hx_ne
+      have hx_lt : x.val < p ^ d := ZMod.val_lt x
+      have h1_le : (1 : ZMod (p ^ d)).val ≤ x.val := by
+        rw [ZMod.val_one]; omega
+      have h_sub_val : (x - 1).val = x.val - 1 := by
+        rw [ZMod.val_sub h1_le, ZMod.val_one]
+      have h_prod_zero : (x.val * (x.val - 1)) % (p ^ d) = 0 := by
+        have h_prod_val : (x * (x - 1)).val = (x.val * (x - 1).val) % (p ^ d) :=
+          ZMod.val_mul x (x - 1)
+        rw [h_sub_val] at h_prod_val
+        rw [show 0 = (0 : ZMod (p ^ d)).val from ZMod.val_zero.symm,
+            ← h_prod_val, h_prod]
+      have h_dvd_prod : p ^ d ∣ x.val * (x.val - 1) :=
+        Nat.dvd_of_mod_eq_zero h_prod_zero
+      -- Either p^d is coprime to x.val or to (x.val - 1).
+      have h_coprime : Nat.Coprime (p ^ d) x.val ∨ Nat.Coprime (p ^ d) (x.val - 1) := by
+        by_cases h_p_x : p ∣ x.val
+        · -- p | x.val; consecutive ⇒ p ∤ (x.val - 1).
+          right
+          rw [Nat.coprime_pow_left_iff hd, hp.coprime_iff_not_dvd]
+          intro h_p_xm1
+          have : p ∣ x.val - (x.val - 1) := Nat.dvd_sub' h_p_x h_p_xm1
+          rw [Nat.sub_sub_self hx_pos] at this
+          exact hp.one_lt.ne' (Nat.dvd_one.mp this)
+        · left
+          rw [Nat.coprime_pow_left_iff hd, hp.coprime_iff_not_dvd]
+          exact h_p_x
+      rcases h_coprime with h_cop | h_cop
+      · -- p^d coprime to x.val ⇒ p^d | (x.val - 1).
+        have h_dvd_xm1 : p ^ d ∣ x.val - 1 := h_cop.dvd_of_dvd_mul_left h_dvd_prod
+        have hxm1 : x.val - 1 = 0 := Nat.eq_zero_of_dvd_of_lt h_dvd_xm1 (by omega)
+        rw [← natCast_zmod_val x, show x.val = 1 from by omega, Nat.cast_one]
+      · -- p^d coprime to (x.val - 1) ⇒ p^d | x.val.
+        have h_dvd_x : p ^ d ∣ x.val := h_cop.dvd_of_dvd_mul_right h_dvd_prod
+        exact absurd (Nat.eq_zero_of_dvd_of_lt h_dvd_x hx_lt) hx_ne
+  · -- Reverse: 0^2 = 0 and 1^2 = 1.
+    rintro (rfl | rfl)
+    · rw [zero_pow (Nat.succ_ne_zero 1)]
+    · rw [one_pow]
+
 end ZMod
 
 theorem RingHom.ext_zmod {n : ℕ} {R : Type*} [NonAssocSemiring R] (f g : ZMod n →+* R) : f = g := by
