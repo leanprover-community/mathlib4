@@ -324,6 +324,7 @@ lemma projectiveDimension_ne_top_iff (X : C) :
       simp only [ne_eq, WithBot.coe_eq_top, ENat.coe_ne_top, not_false_eq_true, true_iff]
       exact ⟨d, by simpa only [← projectiveDimension_le_iff] using hd.le⟩
 
+/-- A projective object has projective dimension at most zero. -/
 lemma Projective.projectiveDimension_le_zero (X : C) [Projective X] : projectiveDimension X ≤ 0 :=
   (projectiveDimension_le_iff X 0).mpr (projective_iff_hasProjectiveDimensionLT_one.mp ‹_›)
 
@@ -334,6 +335,8 @@ namespace ShortExact
 variable {S : ShortComplex C} (hS : S.ShortExact)
 include hS
 
+/-- In a short exact complex, the projective dimension of the middle object is bounded by
+the supremum of the projective dimensions of the outer objects. -/
 lemma projectiveDimension_X₂_le_sup :
     projectiveDimension S.X₂ ≤ projectiveDimension S.X₁ ⊔ projectiveDimension S.X₃ := by
   refine le_of_forall_ge (fun N ↦ ?_)
@@ -346,8 +349,11 @@ lemma projectiveDimension_X₂_le_sup :
     | coe n =>
       simpa [projectiveDimension_le_iff] using hS.hasProjectiveDimensionLT_X₂ (n + 1)
 
+/-- In a short exact complex, the projective dimension of the right object is bounded by
+`max (projectiveDimension S.X₂) (projectiveDimension S.X₁ + 1)`. -/
 lemma projectiveDimension_X₃_le_sup :
-    projectiveDimension S.X₃ ≤ projectiveDimension S.X₂ ⊔ (projectiveDimension S.X₁ + 1) := by
+    projectiveDimension S.X₃ ≤
+      projectiveDimension S.X₂ ⊔ (projectiveDimension S.X₁ + 1) := by
   refine le_of_forall_ge (fun N ↦ ?_)
   induction N with
   | bot =>
@@ -360,8 +366,11 @@ lemma projectiveDimension_X₃_le_sup :
       simpa [projectiveDimension_le_iff, ENat.WithBot.add_one_le_natCast_iff,
         projectiveDimension_lt_iff] using fun h2 h1 ↦ hS.hasProjectiveDimensionLT_X₃ n h1 h2
 
-lemma hasProjectiveDimension_X₁_succ_le_sup :
-    projectiveDimension S.X₁ + 1 ≤ (projectiveDimension S.X₂ + 1) ⊔ projectiveDimension S.X₃ := by
+/-- In a short exact complex, the successor of the projective dimension of the left object
+is bounded by `max (projectiveDimension S.X₂ + 1) (projectiveDimension S.X₃)`. -/
+lemma projectiveDimension_X₁_succ_le_sup :
+    projectiveDimension S.X₁ + 1 ≤
+      (projectiveDimension S.X₂ + 1) ⊔ projectiveDimension S.X₃ := by
   refine le_of_forall_ge (fun N ↦ ?_)
   induction N with
   | bot =>
@@ -374,10 +383,12 @@ lemma hasProjectiveDimension_X₁_succ_le_sup :
       simpa [projectiveDimension_le_iff, ENat.WithBot.add_one_le_natCast_iff,
         projectiveDimension_lt_iff] using fun h2 h3 ↦ hS.hasProjectiveDimensionLT_X₁ n h2 h3
 
+/-- If the middle object of a short exact complex is projective and the right object is not,
+then the projective dimension of the right object is one more than that of the left object. -/
 lemma projectiveDimension_X₃_eq_succ_of_not_projective (p : Projective S.X₂)
     (np : ¬ Projective S.X₃) : projectiveDimension S.X₃ = projectiveDimension S.X₁ + 1 := by
   refine le_antisymm (hS.projectiveDimension_X₃_le_sup.trans ?_)
-    (hS.hasProjectiveDimension_X₁_succ_le_sup.trans ?_)
+    (hS.projectiveDimension_X₁_succ_le_sup.trans ?_)
   · simp only [sup_le_iff, le_refl, and_true]
     trans (0 : ℕ) + 1
     · grw [p.projectiveDimension_le_zero, Nat.cast_zero, zero_add, zero_le_one]
