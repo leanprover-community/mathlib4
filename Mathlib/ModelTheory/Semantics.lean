@@ -642,7 +642,7 @@ theorem realize_top : M ⊨ (⊤ : L.Sentence) :=
   Formula.realize_top
 
 @[simp]
-theorem realize_inf : M ⊨ (φ ⊓ ψ) ↔ M ⊨ φ ∧ M ⊨ ψ :=
+theorem realize_inf : M ⊨ φ ⊓ ψ ↔ M ⊨ φ ∧ M ⊨ ψ :=
   Formula.realize_inf
 
 @[simp]
