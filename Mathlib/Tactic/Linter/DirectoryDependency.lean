@@ -618,7 +618,7 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Data.Real.StarOrdered, `Mathlib.Analysis),
   (`Mathlib.Data.Rat.NatSqrt.Real, `Mathlib.Analysis),
   -- TODO: think about the role of Analysis and Algebra, and perhaps further separation
-  (`Mathlib.Algebra.Order.Archimedean.Real.Hom, `Mathlib.Analysis),
+  (`Mathlib.Algebra.Order.Archimedean.Real, `Mathlib.Analysis),
   (`Mathlib.Algebra.Star.CHSH, `Mathlib.Analysis),
   (`Mathlib.Algebra.Order.Ring.StandardPart, `Mathlib.Analysis),
 ]
