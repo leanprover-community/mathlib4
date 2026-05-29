@@ -10,6 +10,8 @@ public import Mathlib.GroupTheory.Subsemigroup.Center
 
 /-!
 # Lemmas about subsemigroups
+
+This file collects various lemmas about subsemigroups.
 -/
 
 public section
