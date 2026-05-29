@@ -80,10 +80,18 @@ instance IsUltraUniformity.pi {ι : Type*} {X : ι → Type*} [U : Π i, Uniform
 instance IsUltraUniformity.bot [UniformSpace X] [DiscreteUniformity X] : IsUltraUniformity X := by
   have := Filter.hasBasis_principal (SetRel.id (α := X))
   rw [← DiscreteUniformity.eq_principal_setRelId] at this
-  apply mk_of_hasBasis this <;> { rw [forall_const]; infer_instance }
+  apply mk_of_hasBasis this
+  · intro _ _
+    exact inferInstance
+  · intro _ _
+    exact inferInstance
 
 lemma IsUltraUniformity.top : @IsUltraUniformity X (⊤ : UniformSpace X) := by
   letI : UniformSpace X := ⊤
   have := Filter.hasBasis_top (α := (X × X))
   rw [← top_uniformity] at this
-  apply mk_of_hasBasis this <;> { rw [forall_const]; infer_instance }
+  apply mk_of_hasBasis this
+  · intro _ _
+    exact inferInstance
+  · intro _ _
+    exact inferInstance

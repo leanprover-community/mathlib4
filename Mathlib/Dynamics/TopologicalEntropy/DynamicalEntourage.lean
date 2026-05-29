@@ -83,13 +83,19 @@ lemma ball_dynEntourage_mem_nhds [UniformSpace X] (h : Continuous T)
   simp only [map_iterate, _root_.ball_preimage]
   exact (h.iterate k).continuousAt.preimage_mem_nhds (ball_mem_nhds (T^[k] x) U_uni)
 
-set_option linter.flexible false in -- simp followed by infer_instance
 instance isRefl_dynEntourage [U.IsRefl] : (dynEntourage T U n).IsRefl := by
-  simp [dynEntourage]; infer_instance
+  constructor
+  intro z
+  rw [mem_dynEntourage]
+  intro _ _
+  exact U.rfl
 
-set_option linter.flexible false in -- simp followed by infer_instance
 instance isSymm_dynEntourage [U.IsSymm] : (dynEntourage T U n).IsSymm := by
-  simp [dynEntourage]; infer_instance
+  constructor
+  intro x y hxy
+  rw [mem_dynEntourage] at hxy ⊢
+  intro k hk
+  exact U.symm (hxy k hk)
 
 lemma dynEntourage_comp_subset (T : X → X) (U V : SetRel X X) (n : ℕ) :
     (dynEntourage T U n) ○ (dynEntourage T V n) ⊆ dynEntourage T (U ○ V) n := by
