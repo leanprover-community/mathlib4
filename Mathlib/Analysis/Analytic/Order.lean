@@ -450,14 +450,7 @@ lemma analyticOrderAt_deriv_eq_iff {n : ℕ} :
   rw [← Nat.cast_add_one n, H, H, analyticOrderAt_deriv_ge_iff hf hzero, ← Nat.cast_add_one n,
     analyticOrderAt_deriv_ge_iff hf hzero]
 
-omit hzero in include hf hzero in
-/-- If an analytic function `f` vanishes at `z₀` and its derivative has finite analytic order `n` at
-`z₀`, then `f` has analytic order `n + 1` at `z₀`. -/
-lemma analyticOrderAt_deriv_order_eq_succ {n : ℕ}
-    (horder : analyticOrderAt (deriv f) z₀ = n) : analyticOrderAt f z₀ = n + 1 :=
-  (analyticOrderAt_deriv_eq_iff hf hzero (n := n)).mpr horder
-
-omit hzero in include hf in
+omit hzero in
 /-- An analytic function `f` has finite analytic order `n` at `z₀` if and only if its first
 `n` iterated derivatives (including `f` itself) vanish at `z₀` and the `n`-th iterated derivative is
 non-zero. -/
