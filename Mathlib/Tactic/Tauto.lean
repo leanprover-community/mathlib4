@@ -6,6 +6,7 @@ Authors: Simon Hudon, David Renshaw
 module
 
 public meta import Lean.Elab.Tactic.Classical
+public meta import Lean.Elab.Tactic.Config
 public meta import Mathlib.Lean.Meta
 public meta import Qq
 

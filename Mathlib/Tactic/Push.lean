@@ -6,6 +6,7 @@ Jireh Loreaux
 -/
 module
 
+public meta import Lean.Elab.ConfigEval
 public meta import Lean.Elab.Tactic.Conv.Simp
 
 public import Mathlib.Basic.Logic.Basic

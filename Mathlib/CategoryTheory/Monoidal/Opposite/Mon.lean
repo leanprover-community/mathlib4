@@ -25,6 +25,7 @@ section mop
 
 variable (M : C) [MonObj M]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `M : C` is a monoid object, then `mop M : Cᴹᵒᵖ` too. -/
 @[simps!]
 instance mopMonObj : MonObj (mop M) where
@@ -47,10 +48,10 @@ instance mop_isMonHom {N : C} [MonObj N]
     (f : M ⟶ N) [IsMonHom f] : IsMonHom f.mop where
   mul_hom := by
     apply mopEquiv C |>.fullyFaithfulInverse.map_injective
-    simpa [-IsMonHom.mul_hom] using IsMonHom.mul_hom f
+    simpa [-IsMonHom.mul_hom] using! IsMonHom.mul_hom f
   one_hom := by
     apply mopEquiv C |>.fullyFaithfulInverse.map_injective
-    simpa [-IsMonHom.one_hom] using IsMonHom.one_hom f
+    simpa [-IsMonHom.one_hom] using! IsMonHom.one_hom f
 
 end mop
 
@@ -58,6 +59,7 @@ section unmop
 
 variable (M : Cᴹᵒᵖ) [MonObj M]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `M : Cᴹᵒᵖ` is a monoid object, then `unmop M : C` too. -/
 @[simps -isSimp] -- not making them simp because it causes a loop.
 instance unmopMonObj : MonObj (unmop M) where
@@ -80,10 +82,10 @@ instance unmop_isMonHom {N : Cᴹᵒᵖ} [MonObj N]
     (f : M ⟶ N) [IsMonHom f] : IsMonHom f.unmop where
   mul_hom := by
     apply mopEquiv C |>.fullyFaithfulFunctor.map_injective
-    simpa [-IsMonHom.mul_hom] using IsMonHom.mul_hom f
+    simpa [-IsMonHom.mul_hom] using! IsMonHom.mul_hom f
   one_hom := by
     apply mopEquiv C |>.fullyFaithfulFunctor.map_injective
-    simpa [-IsMonHom.one_hom] using IsMonHom.one_hom f
+    simpa [-IsMonHom.one_hom] using! IsMonHom.one_hom f
 
 end unmop
 
