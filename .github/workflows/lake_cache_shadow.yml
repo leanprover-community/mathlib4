@@ -23,7 +23,8 @@ name: Lake cache shadow (master)
 #   build_and_stage  Build mathlib + deps with Lake's artifact cache
 #                    enabled, then stage the resulting .ltar files.
 #   upload           Push staged artifacts to the cache bucket via
-#                    `lake cache put-staged`.
+#                    `lake cache put-staged`, then record a per-run manifest
+#                    under cache/analysis/ and report carryover vs the prior run.
 #   consume          Fresh checkout, fetch from the cache bucket via
 #                    `lake cache get`, run `lake build` against the
 #                    rehydrated cache, then verify with `--rehash`.
@@ -267,6 +268,8 @@ jobs:
     if: ${{ github.repository == 'leanprover-community/mathlib4' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    outputs:
+      carryover: ${{ steps.carryover.outputs.summary }}
     env:
       LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
       LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT }}
@@ -311,7 +314,41 @@ jobs:
           lake cache put-staged ../lake-cache-staging \
             --scope="${{ env.SHADOW_SCOPE }}" \
             --rev="${{ needs.build_and_stage.outputs.sha }}" \
-            --toolchain="${{ needs.build_and_stage.outputs.toolchain }}"
+            --toolchain="${{ needs.build_and_stage.outputs.toolchain }}" 2>&1 | tee /tmp/put.log
+
+      # Cache carryover analysis: diff this run's uploaded artifact set against
+      # the previous run's, using a tiny per-run manifest kept in the bucket at
+      # cache/analysis/. carryover = artifacts also present last run; new =
+      # this run's churn (≈ how much Mathlib changed since the last build, modulo
+      # toolchain bumps which turn the whole set over). Non-critical; surfaced in
+      # the Zulip report via the `carryover` job output.
+      - name: Cache carryover analysis
+        id: carryover
+        continue-on-error: true
+        env:
+          AUTH: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
+        run: |
+          base="${AUTH%/artifacts}/analysis"
+          sha="${{ needs.build_and_stage.outputs.sha }}"
+          sig=(--aws-sigv4 aws:amz:auto:s3 --user "$LAKE_CACHE_KEY")
+          grep -oE 'uploaded artifact [0-9a-f]+' /tmp/put.log | awk '{print $3}' | sort -u > /tmp/today.txt
+          total=$(wc -l < /tmp/today.txt)
+          summary="n/a (baseline — no prior manifest)"
+          prev="$(curl -fsS "${sig[@]}" "$base/_latest.txt" 2>/dev/null || true)"
+          if [ -n "$prev" ] && curl -fsS "${sig[@]}" "$base/$prev.txt" 2>/dev/null | sort -u > /tmp/prev.txt && [ -s /tmp/prev.txt ]; then
+            carry=$(comm -12 /tmp/today.txt /tmp/prev.txt | wc -l)
+            new=$(comm -23 /tmp/today.txt /tmp/prev.txt | wc -l)
+            pct=$(awk "BEGIN{printf \"%.1f\", ($total>0)?100*$carry/$total:0}")
+            note=""
+            [ "$total" -gt 0 ] && [ "$new" -eq "$total" ] && note=" — full turnover, likely a toolchain/generation change, not source churn"
+            summary="${carry}/${total} (${pct}%) carried over, ${new} new vs rev ${prev:0:12}${note}"
+          fi
+          echo "::notice::cache carryover: ${summary}"
+          echo "summary=${summary}" >> "$GITHUB_OUTPUT"
+          # Persist this run's manifest + advance the pointer (best-effort).
+          printf %s "$sha" > /tmp/latest.txt
+          curl -fsS "${sig[@]}" -X PUT -T /tmp/today.txt  "$base/${sha}.txt"   >/dev/null || echo "::warning::failed to store analysis manifest"
+          curl -fsS "${sig[@]}" -X PUT -T /tmp/latest.txt "$base/_latest.txt"  >/dev/null || echo "::warning::failed to advance analysis pointer"
 
   consume:
     name: Build from Lake cache (no legacy hydration)
@@ -431,6 +468,7 @@ jobs:
           BUILD: ${{ needs.build_and_stage.result }}
           UPLOAD: ${{ needs.upload.result }}
           CONSUME: ${{ needs.consume.result }}
+          CARRYOVER: ${{ needs.upload.outputs.carryover }}
           SHA: ${{ needs.build_and_stage.outputs.sha }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
@@ -449,6 +487,7 @@ jobs:
             echo "- $(emoji "$BUILD") build_and_stage: \`$BUILD\`"
             echo "- $(emoji "$UPLOAD") upload: \`$UPLOAD\`"
             echo "- $(emoji "$CONSUME") consume: \`$CONSUME\`"
+            echo "- 🔁 cache carryover: ${CARRYOVER:-n/a}"
             echo "MSG_EOF"
           } >> "$GITHUB_OUTPUT"
 
