@@ -6,6 +6,7 @@ Authors: Brian Nugent
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackPreserves
 
 /-!
 # Locally Free Sheaves
@@ -25,7 +26,7 @@ free data for it.
 
 public section
 
-universe u v₁ u₁ w
+universe u v₁ u₁ v₂ u₂ w
 
 open CategoryTheory Limits
 
@@ -163,5 +164,26 @@ theorem IsLocallyFree.of_coversTop (M : SheafOfModules.{u} R) {I : Type w} (X : 
   (LocalGeneratorsData.bind M X hX (fun i => (h i).1.choose)).isLocallyFree
 
 end
+
+section Pullback
+
+variable {D : Type u₂} [Category.{v₂} D] [HasBinaryProducts C] [HasBinaryProducts D]
+  {K : GrothendieckTopology D} {F : C ⥤ D}
+  [Functor.PreservesOneHypercovers F J K] [Limits.PreservesLimitsOfShape (Discrete WalkingPair) F]
+  {S : Sheaf J RingCat.{u}} {R : Sheaf K RingCat.{u}}
+  (φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R)
+
+variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]
+  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
+  [∀ X, (K.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [∀ X, HasSheafify (K.over X) AddCommGrpCat.{u}]
+  [∀ X, (K.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
+  [∀ X, (pushforward.{u} (StructureHomOver φ X)).IsRightAdjoint]
+  [F.Final] [(pushforward.{u} φ).IsRightAdjoint]
+
+#check QuasicoherentData.pullback φ
+
+end Pullback
 
 end SheafOfModules
