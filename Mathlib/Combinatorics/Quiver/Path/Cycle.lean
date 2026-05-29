@@ -6,6 +6,7 @@ Authors: Matteo Cipollina, Michail Karatarakis
 module
 
 public import Mathlib.Combinatorics.Quiver.Path.Vertices
+public import Mathlib.Data.List.Infix
 public import Mathlib.Data.List.Count
 public import Mathlib.Data.List.Duplicate
 public import Mathlib.Data.List.NodupEquivFin
@@ -61,9 +62,6 @@ theorem IsPath.nil (a : V) : IsPath (nil : Path a a) := by
 @[simp] lemma isSimple_of_isPath {a b : V} {p : Path a b} (h : IsPath p) : IsSimple p :=
   h.sublist (dropLast_sublist (l := p.vertices))
 
-lemma not_isPath_of_not_isSimple {a b : V} {p : Path a b} (h : ¬IsSimple p) : ¬IsPath p := by
-  intro hp; exact h (isSimple_of_isPath hp)
-
 lemma count_vertices_ge_two_of_duplicate_dropLast [DecidableEq V] {a : V} {s : Path a a}
     {v : V} (hv : Duplicate v s.vertices.dropLast) : 2 ≤ s.vertices.count v := by
   have h_drop : 2 ≤ (s.vertices.dropLast).count v := (duplicate_iff_two_le_count).1 hv
@@ -88,7 +86,7 @@ lemma mem_dropLast_of_comp_count_ge_two [DecidableEq V] {a v : V} {s : Path a a}
   rw [count_append, h_p2_count] at h2
   exact count_pos_iff.mp (by omega)
 
-lemma repeated_vertex_in_prefix_dropLast [DecidableEq V] {a : V} (s : Path a a)
+lemma repeated_vertex_in_prefix_dropLast {a : V} (s : Path a a)
     (h_not_simple : ¬IsSimple s) :
     ∃ (v : V) (p₁ : Path a v) (p₂ : Path v a),
       v ∈ p₁.vertices.dropLast ∧ s = p₁.comp p₂ ∧ v ∉ p₂.vertices.tail := by
@@ -101,10 +99,11 @@ lemma repeated_vertex_in_prefix_dropLast [DecidableEq V] {a : V} (s : Path a a)
     (count_vertices_ge_two_of_duplicate_dropLast hv_dup) hv_not_tail
   exact ⟨v, p₁, p₂, hv_in_p1, hp, hv_not_tail⟩
 
-lemma extract_cycle_from_prefix [DecidableEq V] {a vertex : V} {p₁ : Path a vertex}
+lemma extract_cycle_from_prefix {a vertex : V} {p₁ : Path a vertex}
     (h_in_drop : vertex ∈ p₁.vertices.dropLast) :
     ∃ (q : Path a vertex) (c : Path vertex vertex),
       p₁ = q.comp c ∧ vertex ∉ q.vertices.dropLast := by
+  classical
   let i := p₁.vertices.idxOf vertex
   have h_mem := mem_of_mem_dropLast h_in_drop
   obtain ⟨_v, q, c, h_comp, _h_len, h_v⟩ :=

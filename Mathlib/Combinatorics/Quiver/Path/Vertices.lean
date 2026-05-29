@@ -7,15 +7,13 @@ module
 
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Combinatorics.Quiver.Path
-public import Mathlib.Data.Finset.Basic
 public import Mathlib.Data.Set.Insert
 public import Mathlib.Data.List.Basic
 
 /-!
 # Path Vertices
 
-This file provides lemmas for reasoning about the vertices of a path, and `Prefunctor.end_map`
-relating `Path.end` with `Prefunctor.mapPath`.
+This file provides lemmas for reasoning about the vertices of a path.
 -/
 
 @[expose] public section
@@ -51,10 +49,6 @@ lemma mem_vertices_cons {a b c : V} (p : Path a b)
     x ∈ (p.cons e).vertices ↔ x ∈ p.vertices ∨ x = c := by
   simp only [vertices_cons]
   simp_all only [concat_eq_append, mem_append, mem_cons, not_mem_nil, or_false]
-
-lemma verticesSet_nil {a : V} : {v | v ∈ (nil : Path a a).vertices} = {a} := by
-  simp only [vertices_nil, mem_singleton, Set.ext_iff, Set.mem_singleton_iff]
-  exact fun x ↦ Set.mem_setOf
 
 /-- The length of vertices list equals path length plus one -/
 @[simp]
@@ -119,11 +113,6 @@ lemma vertices_comp {a b c : V} (p : Path a b) (q : Path b c) :
 @[simp] lemma length_eq_zero_iff {a : V} (p : Path a a) :
     p.length = 0 ↔ p = Path.nil := by
   cases p <;> tauto
-
-lemma vertices_comp_get_length_eq {a b c : V} (p₁ : Path a c) (p₂ : Path c b)
-    (h : p₁.length < (p₁.comp p₂).vertices.length := by simp) :
-    (p₁.comp p₂).vertices.get ⟨p₁.length, h⟩ = c := by
-  simp
 
 @[simp]
 lemma vertices_toPath {i j : V} (e : i ⟶ j) :
@@ -246,51 +235,4 @@ theorem exists_eq_comp_and_notMem_tail_of_mem_vertices {v : V} (hv : v ∈ p.ver
 
 end
 
-/-! ### Vertex sets and finsets -/
-
-/-- The set of vertices visited by a path (including the endpoint). -/
-def activeVertices {a b : V} (p : Path a b) : Set V :=
-  {v | v ∈ p.vertices}
-
-@[simp] lemma activeVertices_nil {a : V} : activeVertices (nil : Path a a) = {a} := by
-  ext v; simp [activeVertices, vertices_nil]
-
-@[simp] lemma activeVertices_cons {a b c : V} (p : Path a b) (e : b ⟶ c) :
-    activeVertices (p.cons e) = activeVertices p ∪ {c} := by
-  ext v; simp [activeVertices, Set.setOf_or]
-
-@[simp] lemma mem_activeVertices_iff {a b : V} (p : Path a b) {v : V} :
-    v ∈ p.activeVertices ↔ v ∈ p.vertices := by
-  simp [activeVertices]
-
-lemma mem_vertices_dropLast_or_eq_end {a b c : V} (p : Path a b) (h : c ∈ p.vertices) :
-    c = p.end ∨ c ∈ p.vertices.dropLast := by
-  have h_dec := List.dropLast_append_getLast (vertices_ne_nil p)
-  rw [← h_dec, List.mem_append, List.mem_singleton] at h
-  aesop
-
-lemma mem_vertices_mem_activeVertices {a b : V} (p : Path a b) {x : V} (hx : x ∈ p.vertices) :
-    x ∈ p.activeVertices :=
-  (mem_activeVertices_iff p).mpr hx
-
-/-- From a path composition, the prefix path's `dropLast` is a prefix of the full vertex list. -/
-lemma isPrefix_dropLast_of_comp_eq {a b c : V} {p : Path a b} {p₁ : Path a c} {p₂ : Path c b}
-    (h : p.vertices = p₁.vertices.dropLast ++ p₂.vertices) :
-    p₁.vertices.dropLast.IsPrefix p.vertices := by
-  rw [h]; exact List.prefix_append _ _
-
 end Quiver.Path
-
-namespace Prefunctor
-
-open Quiver
-
-variable {V W : Type*} [Quiver V] [Quiver W] (F : V ⥤q W)
-
-@[simp]
-lemma end_map {a b : V} (p : Path a b) : F.obj p.end = (F.mapPath p).end := by
-  induction p with
-  | nil => rfl
-  | cons p' e ih => simp
-
-end Prefunctor

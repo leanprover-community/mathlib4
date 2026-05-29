@@ -43,17 +43,17 @@ variable {i j : S}
 
 /-- Vertices of `mapPath` on the inclusion lie in `S`. -/
 lemma mapPath_inducePrefunctor_mem_vertices {v : V} (p : Path i j)
-    (hv : v ∈ ((inducePrefunctor S).mapPath p).activeVertices) : v ∈ S := by
+    (hv : v ∈ ((inducePrefunctor S).mapPath p).vertices) : v ∈ S := by
   induction p with
   | nil =>
-    simp only [Prefunctor.mapPath_nil, activeVertices_nil, Set.mem_singleton_iff] at hv
-    subst hv
-    exact i.property
+    rw [Prefunctor.mapPath_nil, vertices_nil, List.mem_singleton] at hv
+    exact hv ▸ i.property
   | cons p' e ih =>
-    simp only [Prefunctor.mapPath_cons, activeVertices_cons, Set.mem_union] at hv
-    rcases hv with h | h
+    simp only [Prefunctor.mapPath_cons, vertices_cons, List.concat_eq_append] at hv
+    rcases List.mem_append.mp hv with h | h
     · exact ih h
-    · subst h
+    · rw [List.mem_singleton] at h
+      subst h
       simp [inducePrefunctor]
 
 /--
@@ -67,11 +67,6 @@ noncomputable def induce {i j : V} (p : Path i j) (hp : ∀ k, k ∈ p.vertices 
   | nil => exact Path.nil
   | cons p' e ih =>
     exact Path.cons (ih fun k hk => hp k ((mem_vertices_cons p' e).mpr (Or.inl hk))) e
-
-lemma mapPath_inducePrefunctor_mem_vertices' {v : V} (p : Path i j)
-    (hv : v ∈ ((inducePrefunctor S).mapPath p).vertices) : v ∈ S := by
-  simpa [mem_activeVertices_iff] using mapPath_inducePrefunctor_mem_vertices (S := S) p
-    ((mem_activeVertices_iff _).mpr hv)
 
 end Path
 
