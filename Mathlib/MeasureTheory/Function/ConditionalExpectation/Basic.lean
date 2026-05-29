@@ -455,6 +455,9 @@ theorem tendsto_condExpL1_of_dominated_convergence (hm : m ≤ m₀) [SigmaFinit
 
 open Finset
 
+
+#check hasSum_of_subseq_of_summable
+
 theorem hasSum_coeFn_tsum_Lp_one [CompleteSpace E] (f : ℕ → Lp E 1 μ) (hf : ∑' n, ‖f n‖ₑ ≠ ∞) :
     ∀ᵐ a ∂μ, HasSum (fun n ↦ f n a) ((∑' n, f n : Lp E 1 μ) a) := by
   have A : ∀ᵐ x ∂μ, (∑' n, ‖f n x‖ₑ) < ∞ := by
@@ -472,8 +475,8 @@ theorem hasSum_coeFn_tsum_Lp_one [CompleteSpace E] (f : ℕ → Lp E 1 μ) (hf :
     exact (tendstoInMeasure_of_tendsto_Lp this).exists_seq_tendsto_ae
   filter_upwards [A, B, nslim] with x hx h'x h''x
   have S : Summable (fun i ↦ ‖f i x‖) := by
-
-    rw [← ENNReal.tsum_coe_ne_top_iff_summable]
+    rw [← tsum_enorm_ne_top_iff_summable_norm]
+    exact hx.ne
   apply (hasSum_iff_tendsto_nat_of_summable_norm S).2
   simp only [h'x] at h''x
   refine tendsto_nhds_of_cauchySeq_of_subseq ?_ hns.tendsto_atTop h''x

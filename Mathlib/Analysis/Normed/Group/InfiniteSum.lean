@@ -165,6 +165,14 @@ space. -/
 theorem nnnorm_tsum_le {f : ι → E} (hf : Summable fun i => ‖f i‖₊) : ‖∑' i, f i‖₊ ≤ ∑' i, ‖f i‖₊ :=
   tsum_of_nnnorm_bounded hf.hasSum fun _i => le_rfl
 
+theorem tsum_enorm_ne_top_iff_summable_nnnorm {ι : Type*} {f : ι → E} :
+    ∑' i, ‖f i‖ₑ ≠ ∞ ↔ Summable (fun i ↦ ‖f i‖₊) := by
+  simp only [enorm_eq_nnnorm, ENNReal.tsum_coe_ne_top_iff_summable]
+
+lemma tsum_enorm_ne_top_iff_summable_norm {ι : Type*} {f : ι → E} :
+    ∑' i, ‖f i‖ₑ ≠ ∞ ↔ Summable (fun i ↦ ‖f i‖) := by
+  simp only [tsum_enorm_ne_top_iff_summable_nnnorm, ← coe_nnnorm, NNReal.summable_coe]
+
 variable [CompleteSpace E]
 
 /-- Variant of the direct comparison test for series:  if the norm of `f` is eventually bounded by a
