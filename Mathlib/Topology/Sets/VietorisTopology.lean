@@ -503,7 +503,7 @@ theorem isClosed_inter_nonempty_of_isClosed {F : Set α} (h : IsClosed F) :
 theorem closure_finite_subsets (s : Set α) :
     closure {K : NonemptyCompacts α | (K : Set α).Finite ∧ ↑K ⊆ s} =
       {K : NonemptyCompacts α | ↑K ⊆ closure s} := by
-  simpa only [isOpenEmbedding_toCompacts.isOpenMap.preimage_closure_eq_closure_preimage
+  simpa [isOpenEmbedding_toCompacts.isOpenMap.preimage_closure_eq_closure_preimage
     continuous_toCompacts] using congr(toCompacts ⁻¹' $(Compacts.closure_finite_subsets s))
 
 theorem dense_setOf_finite : Dense {K : NonemptyCompacts α | (K : Set α).Finite} :=
