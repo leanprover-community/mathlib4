@@ -114,11 +114,13 @@ theorem derivedSeries_eq_top [IsPerfect G] (n : ℕ) : derivedSeries G n = ⊤ :
 
 variable (G) in
 @[simp]
-theorem lowerCentralSeries_eq_top [IsPerfect G] (n : ℕ) : Subgroup.lowerCentralSeries G n = ⊤ := by
+theorem lowerCentralSeries_top_eq_top [IsPerfect G] (n : ℕ) :
+    (⊤ : Subgroup G).lowerCentralSeries n = ⊤ := by
   match n with
   | 0 => simp
   | n + 1 =>
-    rw [← commutator_eq_top, commutator_def, lowerCentralSeries_succ', lowerCentralSeries_eq_top]
+    rw [Subgroup.lowerCentralSeries_succ, lowerCentralSeries_top_eq_top, ← commutator_def]
+    exact commutator_eq_top
 
 variable (G) in
 @[simp]
