@@ -765,9 +765,9 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
     have : Tendsto (fun (z : ℕ × F) ↦ q.partialSum z.1 z.2)
         (atTop ×ˢ 𝓝 (f (x + y) - f x)) (𝓝 (g (f x + (f (x + y) - f x)))) := by
       apply Hg.tendsto_partialSum_prod (y := f (x + y) - f x)
-      · simpa [edist_eq_enorm_sub] using fy_mem.2
-      · simpa using fy_mem.1
-    simpa using this.comp A
+      · simpa [edist_eq_enorm_sub] using! fy_mem.2
+      · simpa using! fy_mem.1
+    simpa using! this.comp A
   -- Third step: the sum over all compositions in `compPartialSumTarget 0 n n` converges to
   -- `g (f (x + y))`. As this sum is exactly the composition of the partial sum, this is a direct
   -- consequence of the second step
@@ -775,7 +775,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
     Tendsto
       (fun n => ∑ i ∈ compPartialSumTarget 0 n n, q.compAlongComposition p i.2 fun _j => y)
       atTop (𝓝 (g (f (x + y)))) := by
-    simpa [comp_partialSum] using B
+    simpa [comp_partialSum] using! B
   -- Fourth step: the sum over all compositions is `g (f (x + y))`. This follows from the
   -- convergence along a subsequence proved in the third step, and the fact that the sum is Cauchy
   -- thanks to the summability properties.
@@ -1252,6 +1252,8 @@ namespace FormalMultilinearSeries
 
 open Composition
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) : (r.comp q).comp p = r.comp (q.comp p) := by
   ext n v
@@ -1291,6 +1293,5 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
   refine congr_arg v (Fin.ext ?_)
   dsimp [Composition.embedding]
   rw [← add_assoc, ← sizeUpTo_sizeUpTo_add _ _ hi1 hj1]
-  rfl
 
 end FormalMultilinearSeries
