@@ -21,7 +21,7 @@ variable (R : Type*) [CommRing R]
 
 open IsLocalRing Polynomial Ideal
 
-lemma Polynomial.localization_at_comap_maximal_isRegularRing_isRegularRing
+lemma Polynomial.isRegularLocalRing_localization_atPrime_of_comap_eq_maximalIdeal
     [IsRegularLocalRing R] (p : Ideal R[X]) [p.IsPrime] (max : p.comap C = maximalIdeal R) :
     IsRegularLocalRing (Localization.AtPrime p) := by
   apply (isRegularLocalRing_iff _).mpr
@@ -111,7 +111,7 @@ theorem Polynomial.isRegularRing_of_isRegularRing [IsRegularRing R] : IsRegularR
       IsScalarTower.algebraMap_eq R R[X] (Localization.AtPrime q)[X], ← comap_comap,
       ← Ideal.under_def R[X], IsLocalization.under_map_of_isPrime_disjoint pc _ ‹_› disj]
     simp [q, IsLocalization.AtPrime.under_maximalIdeal (Localization.AtPrime q) q]
-  have := localization_at_comap_maximal_isRegularRing_isRegularRing (Localization.AtPrime q) pS eq
+  have := isRegularLocalRing_localization_atPrime_of_comap_eq_maximalIdeal _ pS eq
   exact IsRegularLocalRing.of_ringEquiv (IsLocalization.algEquiv p.primeCompl
     (Localization.AtPrime pS) (Localization.AtPrime p)).toRingEquiv
 
