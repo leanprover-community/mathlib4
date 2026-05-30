@@ -130,9 +130,9 @@ def subring {S : Type*} [Ring S] [Module S R] [IsTopologicalRing R] [IsLinearTop
   carrier := {a : R | IsPowerBounded a}
   mul_mem' := isPowerBounded_mul
   one_mem' := isPowerBounded_one
-  add_mem' := isPowerBounded_add S
+  add_mem' := IsPowerBounded.add S
   zero_mem' := isPowerBounded_zero
-  neg_mem' := isPowerBounded_neg
+  neg_mem' := IsPowerBounded.neg
 
 end CommRing
 
