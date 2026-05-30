@@ -1088,9 +1088,9 @@ instance AddCommGroup.toGrindIntModule [s : AddCommGroup α] :
     add_zsmul n m a := add_zsmul a n m
     zsmul_natCast_eq_nsmul n a := by simp }
 
--- Give the core instance deriving a module structure from a `Grind.IntModule` a high priority,
+-- Give the core instance deriving a module structure from a `Grind.IntModule` a higher priority,
 -- so that for an `AddCommGroup` it is preferred over the `AddCommMonoid`-based instance above.
-attribute [instance high] Lean.Grind.IntModule.OfNatModule.ofNatModule
+attribute [instance 1100] Lean.Grind.IntModule.OfNatModule.ofNatModule
 
 instance IsRightCancelAdd.toGrindAddRightCancel [AddSemigroup α] [IsRightCancelAdd α] :
     Grind.AddRightCancel α where
