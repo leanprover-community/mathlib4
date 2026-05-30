@@ -157,7 +157,7 @@ theorem Semicontinuous.semicontinuousOn (h : Semicontinuous r) (s : Set α) :
     SemicontinuousOn r s := fun x _hx => h.semicontinuousWithinAt s x
 
 theorem semicontinuous_iff_isOpen : Semicontinuous r ↔ ∀ b, IsOpen {x | r x b} := by
-  exact ⟨fun h b ↦ by simpa [isOpen_iff_mem_nhds] using fun x hx ↦ h x b hx,
+  exact ⟨fun h b ↦ by simpa [isOpen_iff_mem_nhds, Filter.Eventually] using fun x hx ↦ h x b hx,
     fun h x b hbx ↦ (h b).mem_nhds hbx⟩
 
 theorem Semicontinuous.isOpen (h : Semicontinuous r) (b : β) : IsOpen {x | r x b} :=
@@ -1085,6 +1085,6 @@ theorem HasOpenCGraph.hasOpenLowerSections
   intro x b hb
   have hopen : IsOpen {x' : α | b ∈ f x'} := by
     simpa using h.preimage (continuous_id.prodMk continuous_const)
-  simpa using hopen.mem_nhds hb
+  simpa [Filter.Eventually] using hopen.mem_nhds hb
 
 end Graph
