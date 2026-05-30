@@ -50,6 +50,9 @@ theorem contDiffAt_log {x : ℂ} (h : x ∈ slitPlane) {n : WithTop ℕ∞} : Co
   expOpenPartialHomeomorph.contDiffAt_symm_deriv (exp_ne_zero <| log x) h (hasDerivAt_exp _)
     contDiff_exp.contDiffAt
 
+theorem deriv_log {x : ℂ} (h : x ∈ slitPlane) : deriv log x = x⁻¹ :=
+  (hasDerivAt_log h).deriv
+
 end Complex
 
 section LogDeriv
