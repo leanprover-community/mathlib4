@@ -189,7 +189,7 @@ theorem setIntegral_congr_set
   rw [← integral_indicator hs, ← integral_indicator ht]
   apply integral_congr_ae
   filter_upwards [hst] with x hx
-  replace hx : x ∈ s ↔ x ∈ t := by simpa using hx
+  replace hx : x ∈ s ↔ x ∈ t := by simpa using! hx
   simp [indicator]
   grind
 
