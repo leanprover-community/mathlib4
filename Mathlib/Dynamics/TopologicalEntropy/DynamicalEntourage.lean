@@ -84,11 +84,8 @@ lemma ball_dynEntourage_mem_nhds [UniformSpace X] (h : Continuous T)
   exact (h.iterate k).continuousAt.preimage_mem_nhds (ball_mem_nhds (T^[k] x) U_uni)
 
 instance isRefl_dynEntourage [U.IsRefl] : (dynEntourage T U n).IsRefl := by
-  constructor
-  intro z
-  rw [mem_dynEntourage]
-  intro _ _
-  exact U.rfl
+  simp only [dynEntourage, map_iterate]
+  infer_instance
 
 instance isSymm_dynEntourage [U.IsSymm] : (dynEntourage T U n).IsSymm := by
   constructor
