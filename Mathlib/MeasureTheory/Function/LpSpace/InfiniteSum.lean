@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Rémy Degenne. All rights reserved.
+Copyright (c) 2026 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne, Sébastien Gouëzel
+Authors: Sébastien Gouëzel
 -/
 module
 
@@ -115,7 +115,7 @@ private theorem hasSum_coeFn_tsum_nat {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
     exact (tendstoInMeasure_of_tendsto_Lp this).exists_seq_tendsto_ae
   filter_upwards [A, B, nslim] with x S h'x h''x
   apply hasSum_of_subseq_of_summable S (tendsto_finset_range.comp hns.tendsto_atTop)
-  simpa only [h'x] using h''x
+  simpa only [h'x, Function.comp] using h''x
 
 /-- If a series is converging in `L^p`, then it also converges pointwise almost everywhere. -/
 theorem hasSum_coeFn_tsum {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] {ι : Type*} [Countable ι]

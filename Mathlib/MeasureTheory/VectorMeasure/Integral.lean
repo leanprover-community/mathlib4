@@ -443,8 +443,7 @@ theorem integral_smul_vectorMeasure (f : X → E) (c : ℝ) :
   simp only [this, mul_one]
   have : DominatedFinMeasAdditive (μ.transpose B).variation ((c • μ).transpose B) ‖c‖ := by
     simp only [transpose_smul, coe_smul, Real.norm_eq_abs]
-    simpa [← transpose_eq_cbmApplyMeasure] using
-      (dominatedFinMeasAdditive_cbmApplyMeasure μ B).smul c
+    simpa using! (dominatedFinMeasAdditive_cbmApplyMeasure μ B).smul c
   rw! [← setToFun_congr_smul_measure' _ this, transpose_smul]
   rfl
 
