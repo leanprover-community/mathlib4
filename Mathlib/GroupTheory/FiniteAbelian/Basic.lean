@@ -51,7 +51,7 @@ def DirectSum.congr {ι κ : Type*} {α : ι → Type*} {β : κ → Type*}
       x₂.sum (fun i a ↦ if ha : a = 0 then 0 else DFinsupp.single (f i ⟨a, 0, ha⟩) (F _ _ a))
     refine DFinsupp.sum_add_index (by simp) fun i a₁ a₂ ↦ ?_
     split_ifs
-    any_goals simp_all
+    any_goals simp_all only [zero_add, add_zero, map_add, map_zero, DFinsupp.single_add, DFinsupp.single_zero]
     rw [← DFinsupp.single_add, ← map_add, ‹a₁ + a₂ = 0›, map_zero, DFinsupp.single_zero]
   left_inv x := by
     let Φ : ∀ i, α i → ⨁ j, β j :=
@@ -64,8 +64,8 @@ def DirectSum.congr {ι κ : Type*} {α : ι → Type*} {β : κ → Type*}
       intro i a b
       by_cases hab : a + b = 0 <;> by_cases ha : a = 0 <;> by_cases hb : b = 0
       · subst ha; subst hb; simp [Φ0]
-      · subst ha; simp at hab; exact absurd hab hb
-      · subst hb; simp at hab; exact absurd hab ha
+      · subst ha; rw [zero_add] at hab; exact absurd hab hb
+      · subst hb; rw [add_zero] at hab; exact absurd hab ha
       · show (if h : a + b = 0 then 0 else DFinsupp.single (f i ⟨a+b,0,h⟩) (F _ _ (a+b))) =
              (if h : a = 0 then 0 else DFinsupp.single (f i ⟨a,0,h⟩) (F _ _ a)) +
              (if h : b = 0 then 0 else DFinsupp.single (f i ⟨b,0,h⟩) (F _ _ b))
@@ -88,8 +88,8 @@ def DirectSum.congr {ι κ : Type*} {α : ι → Type*} {β : κ → Type*}
       intro j a b
       by_cases hab : a + b = 0 <;> by_cases ha : a = 0 <;> by_cases hb : b = 0
       · subst ha; subst hb; simp [Ψ0]
-      · subst ha; simp at hab; exact absurd hab hb
-      · subst hb; simp at hab; exact absurd hab ha
+      · subst ha; rw [zero_add] at hab; exact absurd hab hb
+      · subst hb; rw [add_zero] at hab; exact absurd hab ha
       · show (if h : a + b = 0 then 0 else DFinsupp.single (g j ⟨a+b,0,h⟩) (G _ _ (a+b))) =
              (if h : a = 0 then 0 else DFinsupp.single (g j ⟨a,0,h⟩) (G _ _ a)) +
              (if h : b = 0 then 0 else DFinsupp.single (g j ⟨b,0,h⟩) (G _ _ b))
@@ -151,8 +151,8 @@ def DirectSum.congr {ι κ : Type*} {α : ι → Type*} {β : κ → Type*}
       intro j a b
       by_cases hab : a + b = 0 <;> by_cases ha : a = 0 <;> by_cases hb : b = 0
       · subst ha; subst hb; simp [Ψ0]
-      · subst ha; simp at hab; exact absurd hab hb
-      · subst hb; simp at hab; exact absurd hab ha
+      · subst ha; rw [zero_add] at hab; exact absurd hab hb
+      · subst hb; rw [add_zero] at hab; exact absurd hab ha
       · show (if h : a + b = 0 then 0 else DFinsupp.single (g j ⟨a+b,0,h⟩) (G _ _ (a+b))) =
              (if h : a = 0 then 0 else DFinsupp.single (g j ⟨a,0,h⟩) (G _ _ a)) +
              (if h : b = 0 then 0 else DFinsupp.single (g j ⟨b,0,h⟩) (G _ _ b))
@@ -175,8 +175,8 @@ def DirectSum.congr {ι κ : Type*} {α : ι → Type*} {β : κ → Type*}
       intro i a b
       by_cases hab : a + b = 0 <;> by_cases ha : a = 0 <;> by_cases hb : b = 0
       · subst ha; subst hb; simp [Φ0]
-      · subst ha; simp at hab; exact absurd hab hb
-      · subst hb; simp at hab; exact absurd hab ha
+      · subst ha; rw [zero_add] at hab; exact absurd hab hb
+      · subst hb; rw [add_zero] at hab; exact absurd hab ha
       · show (if h : a + b = 0 then 0 else DFinsupp.single (f i ⟨a+b,0,h⟩) (F _ _ (a+b))) =
              (if h : a = 0 then 0 else DFinsupp.single (f i ⟨a,0,h⟩) (F _ _ a)) +
              (if h : b = 0 then 0 else DFinsupp.single (f i ⟨b,0,h⟩) (F _ _ b))
