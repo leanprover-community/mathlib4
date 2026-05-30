@@ -122,7 +122,7 @@ theorem enum_anti {hs : IsCofinal s} {t : Set α} {x : α} (h : s ⊆ t) :
   exact enum_le_of_forall_lt (h (Subtype.prop _)) fun y hy ↦
     (IH y hy).trans_lt ((enum s hs).strictMono hy)
 
-/-- A characterization of `Order.enum s _`: it is the unique strict monotonic function
+/-- A characterization of `Order.enum s _`: it is the unique strictly monotone function
 with range `s`. -/
 theorem enum_eq_iff {f : α → α} : Subtype.val ∘ enum s hs = f ↔ StrictMono f ∧ range f = s := by
   have H := (Subtype.strictMono_coe _).comp (enum s hs).strictMono
