@@ -46,3 +46,23 @@ variable {f : TotalSpace F V → N} {x : TotalSpace F V} in #check mfderiv% f x
 /-- info: mfderiv% f x : TangentSpace (I.prod 𝓘(𝕜, F)) x →L[𝕜] TangentSpace J (f x) -/
 #guard_msgs in
 variable {f : TotalSpace F V → N} {x : TotalSpace F V} in #check mfderiv (I.prod 𝓘(𝕜, F)) J f x
+
+-- Further tests for this feature.
+
+-- For a fiber bundle over a normed space, we still infer a model with corners.
+/-- info: mfderiv% f x : TangentSpace J x →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, F)) (f x) -/
+#guard_msgs in
+variable {V' : E → Type*} [TopologicalSpace (TotalSpace F V')] [∀ x : E, TopologicalSpace (V' x)]
+  [FiberBundle F V'] {f : N → TotalSpace F V'} {x : N} in #check mfderiv% f x
+
+-- We don't do so for a fiber bundle over a product of normed spaces: there are several possible
+-- choices for its base' model with corners.
+/--
+error: Could not find a model with corners for `TotalSpace F V'`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
+#guard_msgs in
+variable {V' : (E × E')→ Type*} [TopologicalSpace (TotalSpace F V')] [∀ x, TopologicalSpace (V' x)]
+  [FiberBundle F V'] {f : N → TotalSpace F V'} {x : N} in
+#check mfderiv% f x

@@ -407,14 +407,10 @@ where
           | throwError "Couldn't find a `NormedSpace` structure on `{F}` among local instances."
         let kT : Term ← Term.exprToSyntax K
         let modelIT : Term ← Term.exprToSyntax baseI.model
-        -- Edge case, TODO add a test for this!
-        -- For a model over a normed space, we still synthesize this model.
-        -- Also test: we don't if that base is a product of normed spaces, though.
         let FT : Term ← Term.exprToSyntax F
         let iTerm : Term ← ``(ModelWithCorners.prod $modelIT 𝓘($kT, $FT))
         Term.elabTerm iTerm none
       | _ =>
-        --trace[Elab.DiffGeo.MDiff] s!"none arm, V is `{V}`"
         throwError s!"{e} is a TotalSpace {F} {V}, but {V} is not a pi type --- \
           could not infer base of the bundle"
     | _ => throwError "`{e}` is not a `Bundle.TotalSpace`."
