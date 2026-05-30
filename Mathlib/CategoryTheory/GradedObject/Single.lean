@@ -76,6 +76,7 @@ lemma single_map_singleObjApplyIso_hom (j : J) {X Y : C} (f : X ⟶ Y) :
     (single j).map f j ≫ (singleObjApplyIso j Y).hom = (singleObjApplyIso j X).hom ≫ f := by
   apply single_map_singleObjApplyIsoOfEq_hom
 
+set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The composition of the single functor `single j : C ⥤ GradedObject J C` and the
 evaluation functor `eval j` identifies to the identity functor. -/
