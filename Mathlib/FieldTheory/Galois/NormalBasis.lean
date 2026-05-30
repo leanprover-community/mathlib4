@@ -81,10 +81,10 @@ theorem exists_linearIndependent_algEquiv_apply_of_infinite [Infinite K] :
     refine ⟨g, congr(Matrix.det $(?_)).trans Matrix.det_one⟩
     ext i j
     simpa [M, Pi.single_apply, inv_mul_eq_one, mul_comm, Matrix.one_apply]
-      using congr($hg (i⁻¹ * j))
+      using! congr($hg (i⁻¹ * j))
   /- Therefore `det M` is nonzero. -/
   have hM : M.det ≠ 0 := fun h0 ↦ by
-    simpa [hc] using congr(($h0).eval c)
+    simpa [hc] using! congr(($h0).eval c)
   /- Since `K` is infinite, we may evaluate `det M` at some point with coordinates in `K`
     and get a nonzero value. The coordinates give rise to an element of `L` via the basis `e`. -/
   obtain ⟨b, hb⟩ : ∃ b : _ → K, M.det.eval (algebraMap K L ∘ b) ≠ 0 := by
@@ -92,7 +92,7 @@ theorem exists_linearIndependent_algEquiv_apply_of_infinite [Infinite K] :
     refine hM (MvPolynomial.funext_set _
       (fun _ ↦ Set.infinite_range_of_injective (algebraMap K L).injective) fun x hx ↦ ?_)
     obtain ⟨x, rfl⟩ := Set.range_piMap _ ▸ hx
-    simpa using h x
+    simpa using! h x
   /- This element of `L` is exactly what we want: we simply need to show the first row of the
     evaluated matrix is `K`-linearly independent. But since the other rows are obtained from the
     first row by applying a `K`-endomorphism, it suffices to show that the columns are linearly
