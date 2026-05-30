@@ -290,7 +290,7 @@ lemma HasMFDerivWithinAt.smul
     HasMFDerivAt[s] (f • g) x (f x • g'_ + gx ∘L f') := by
   constructor
   · exact hs.1.smul hg.1
-  · simpa using hs.2.smul hg.2
+  · simpa using! hs.2.smul hg.2
 
 /-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, if
 at some point `x`, `f` has differential `f' : TangentSpace I x →L[𝕜] 𝕜` and `g` has differential
