@@ -17,15 +17,11 @@ from the fact that `AddCommGrpCat` is an abelian category.
 
 @[expose] public section
 
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe u
 
 namespace AddCommGrpCat
-
 
 -- Note that because `injective_of_mono` is currently only proved in `Type 0`,
 -- we restrict to the lowest universe here for now.

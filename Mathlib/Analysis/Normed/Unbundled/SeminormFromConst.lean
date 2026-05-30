@@ -99,7 +99,7 @@ theorem seminormFromConst_seq_antitone (x : R) : Antitone (seminormFromConst_seq
     have hnm : n - m = 0 := by rw [heq, Nat.sub_self n]
     rw [hnm, heq, div_le_div_iff_of_pos_right (pow_pos hc_pos _), pow_zero]
     conv_rhs => rw [← mul_one (f (x * c ^ n))]
-    exact mul_le_mul_of_nonneg_left hf1 (apply_nonneg f _)
+    gcongr
   | inr hlt =>
     have h1 : 1 ≤ n - m := by
       rw [Nat.one_le_iff_ne_zero]
@@ -132,7 +132,7 @@ set_option linter.style.whitespace false in -- manual alignment is not recognise
 def seminormFromConst : RingSeminorm R where
   toFun     := seminormFromConst' c f
   map_zero' := tendsto_nhds_unique (tendsto_seminormFromConst_seq_atTop hf1 hc hpm 0)
-    (by simpa [seminormFromConst_seq_zero c (map_zero _)] using tendsto_const_nhds)
+    (by simpa [seminormFromConst_seq_zero c (map_zero _)] using! tendsto_const_nhds)
   add_le' x y := by
     apply le_of_tendsto_of_tendsto' (tendsto_seminormFromConst_seq_atTop hf1 hc hpm (x + y)) <|
       (tendsto_seminormFromConst_seq_atTop hf1 hc hpm x).add
@@ -190,7 +190,7 @@ theorem seminormFromConst_isPowMul : IsPowMul (seminormFromConst' c f) := fun x 
       (tendsto_atTop_atTop_of_monotone (fun _ _ hnk ↦ mul_le_mul_right hnk m) _)
     rintro n; use n; exact le_mul_of_one_le_left' hm
   apply tendsto_nhds_unique hlim
-  convert (tendsto_seminormFromConst_seq_atTop hf1 hc hpm x).pow m using 1
+  convert! (tendsto_seminormFromConst_seq_atTop hf1 hc hpm x).pow m using 1
   ext n
   simp only [seminormFromConst_seq, div_pow, ← hpm _ hm, ← pow_mul, mul_pow, mul_comm m n]
 

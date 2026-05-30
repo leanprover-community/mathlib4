@@ -48,9 +48,6 @@ theorem sort_val : Multiset.sort s.val r = sort s r :=
 theorem pairwise_sort : List.Pairwise r (sort s r) :=
   Multiset.pairwise_sort _ _
 
-@[deprecated (since := "2025-10-11")]
-alias sort_sorted := pairwise_sort
-
 @[simp]
 theorem sort_eq : ↑(sort s r) = s.1 :=
   Multiset.sort_eq _ _
@@ -286,7 +283,7 @@ and only if `i = j`. Since they can be defined on a priori not defeq types `Fin 
 theorem orderEmbOfFin_eq_orderEmbOfFin_iff {k l : ℕ} {s : Finset α} {i : Fin k} {j : Fin l}
     {h : s.card = k} {h' : s.card = l} :
     s.orderEmbOfFin h i = s.orderEmbOfFin h' j ↔ (i : ℕ) = (j : ℕ) := by
-  substs k l
+  subst k l
   exact (s.orderEmbOfFin rfl).eq_iff_eq.trans Fin.ext_iff
 
 /-- Given a finset `s` of size at least `k` in a linear order `α`, the map `orderEmbOfCardLe`
@@ -307,8 +304,8 @@ lemma orderEmbOfFin_compl_singleton {n : ℕ} {i : Fin (n + 1)} {k : ℕ}
         (Fin.succAboveOrderEmb i) := by
   apply DFunLike.coe_injective
   rw [eq_comm]
-  convert orderEmbOfFin_unique _ (fun x ↦ ?_)
-    ((Fin.strictMono_succAbove _).comp (Fin.cast_strictMono _))
+  convert!
+    orderEmbOfFin_unique _ (fun x ↦ ?_) ((Fin.strictMono_succAbove _).comp (Fin.cast_strictMono _))
   · simp
   · simp [← h, card_compl]
 
@@ -357,17 +354,11 @@ lemma nonempty_orderEmbedding_of_finite_infinite
   obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq β (Fintype.card α)
   exact ⟨((Fintype.orderIsoFinOfCardEq α rfl).symm.toOrderEmbedding).trans (s.orderEmbOfFin hs)⟩
 
-@[elab_as_elim]
+@[elab_as_elim, deprecated "Use `WellFoundedLT.induction _ h` instead." (since := "2026-04-10")]
 lemma LinearOrder.strong_induction_of_finite
     {α : Type*} [LinearOrder α] [Finite α] {motive : α → Prop}
     (h : ∀ (j : α) (_ : ∀ (k : α), k < j → motive k), motive j) (i : α) :
-    motive i := by
-  have := Fintype.ofFinite α
-  let e := Fintype.orderIsoFinOfCardEq α rfl
-  revert i
-  rw [e.surjective.forall]
-  refine Fin.strong_induction_on (fun j hj ↦ h _ (fun k hk ↦ ?_))
-  simpa using hj (e.symm k) (by simpa [← e.lt_iff_lt])
+    motive i := WellFoundedLT.induction _ h
 
 lemma OrderEmbedding.range_eq_iff
     {α β : Type*} [LinearOrder α] [PartialOrder β] [Finite α]
@@ -377,13 +368,13 @@ lemma OrderEmbedding.range_eq_iff
   let ef := (f.strictMono.strictMonoOn .univ).orderIso
   let eg := (g.strictMono.strictMonoOn .univ).orderIso
   let i : f '' .univ ≃o g '' .univ :=
-    { __ := Equiv.setCongr (by simpa using h)
+    { __ := Equiv.setCongr (by simpa using! h)
       map_rel_iff' := by rfl }
   have : (ef.trans i).trans eg.symm = .refl _ := by
     exact Subsingleton.elim _ _
   ext x
   simpa only [OrderIso.trans_apply, OrderIso.apply_symm_apply, OrderIso.refl_apply, Subtype.ext_iff]
-    using congr(eg ($this ⟨x, Set.mem_univ x⟩))
+    using! congr(eg ($this ⟨x, Set.mem_univ x⟩))
 
 lemma OrderHom.range_eq_iff {α β : Type*} [LinearOrder α] [PartialOrder β]
     [Finite α] {f g : α →o β}

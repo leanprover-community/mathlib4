@@ -14,7 +14,7 @@ In this file, we transfer a distance and (pseudo-)metric space structure across 
 
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*}
 

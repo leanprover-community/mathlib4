@@ -5,7 +5,6 @@ Authors: Reid Barton, Johan Commelin, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.Yoneda
 
 /-!
@@ -80,8 +79,9 @@ Conversely `Equivalence.toAdjunction` recovers the underlying adjunction from an
   isomorphism `L ⋙ R ≅ 𝟭 C`, the unit is an isomorphism, and similarly for the counit.
 -/
 
-@[expose] public section
+set_option backward.defeqAttrib.useBackward true
 
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -211,6 +211,7 @@ instance (L : C ⥤ D) [L.IsLeftAdjoint] : L.rightAdjoint.IsRightAdjoint :=
 
 variable {X' X : C} {Y Y' : D}
 
+set_option backward.defeqAttrib.useBackward true in
 theorem homEquiv_id (X : C) : adj.homEquiv X _ (𝟙 _) = adj.unit.app X := by simp
 
 theorem homEquiv_symm_id (X : D) : (adj.homEquiv _ X).symm (𝟙 _) = adj.counit.app X := by simp
@@ -229,6 +230,7 @@ theorem homEquiv_naturality_left (f : X' ⟶ X) (g : F.obj X ⟶ Y) :
   rw [← Equiv.eq_symm_apply]
   simp only [Equiv.symm_apply_apply, homEquiv_naturality_left_symm]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem homEquiv_naturality_right (f : F.obj X ⟶ Y) (g : Y ⟶ Y') :
     (adj.homEquiv X Y') (f ≫ g) = (adj.homEquiv X Y) f ≫ G.map g := by
   simp
@@ -276,22 +278,20 @@ theorem right_triangle : whiskerLeft G adj.unit ≫ whiskerRight adj.counit G = 
 
 @[reassoc (attr := simp)]
 theorem counit_naturality {X Y : D} (f : X ⟶ Y) :
-    F.map (G.map f) ≫ adj.counit.app Y = adj.counit.app X ≫ f :=
+    dsimp% F.map (G.map f) ≫ adj.counit.app Y = adj.counit.app X ≫ f :=
   adj.counit.naturality f
 
 @[reassoc (attr := simp)]
 theorem unit_naturality {X Y : C} (f : X ⟶ Y) :
-    adj.unit.app X ≫ G.map (F.map f) = f ≫ adj.unit.app Y :=
+    dsimp% adj.unit.app X ≫ G.map (F.map f) = f ≫ adj.unit.app Y :=
   (adj.unit.naturality f).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma unit_comp_map_eq_iff {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
-    adj.unit.app A ≫ G.map f = g ↔ f = F.map g ≫ adj.counit.app B :=
+    dsimp% adj.unit.app A ≫ G.map f = g ↔ f = F.map g ≫ adj.counit.app B :=
   ⟨fun h => by simp [← h], fun h => by simp [h]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eq_unit_comp_map_iff {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
-    g = adj.unit.app A ≫ G.map f ↔ F.map g ≫ adj.counit.app B = f :=
+    dsimp% g = adj.unit.app A ≫ G.map f ↔ F.map g ≫ adj.counit.app B = f :=
   ⟨fun h => by simp [h], fun h => by simp [← h]⟩
 
 theorem homEquiv_apply_eq {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
@@ -541,7 +541,6 @@ lemma homEquiv_ofNatIsoRight_symm_apply {F : C ⥤ D} {G H : D ⥤ C} (adj : F �
       (adj.homEquiv _ _).symm (f ≫ iso.inv.app _) := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism which an adjunction `F ⊣ G` induces on `G ⋙ yoneda`. This states that
 `Adjunction.homEquiv` is natural in both arguments. -/
 @[simps!]
@@ -683,7 +682,6 @@ def adjunctionOfEquivRight (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ 
 
 end ConstructRight
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If the unit and counit of a given adjunction are (pointwise) isomorphisms, then we can upgrade the
 adjunction to an equivalence.

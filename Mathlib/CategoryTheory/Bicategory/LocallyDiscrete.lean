@@ -6,7 +6,6 @@ Authors: Yuma Mizuno, Calle Sönne
 module
 
 public import Mathlib.CategoryTheory.CommSq
-public import Mathlib.CategoryTheory.Discrete.Basic
 public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
 
 /-!

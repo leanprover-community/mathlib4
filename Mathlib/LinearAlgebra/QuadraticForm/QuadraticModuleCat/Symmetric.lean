@@ -20,7 +20,7 @@ In this file we show:
 This file essentially mirrors `Mathlib/Algebra/Category/AlgCat/Symmetric.lean`.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory
 

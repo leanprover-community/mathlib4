@@ -229,8 +229,11 @@ support within `U` is also closed.
 theorem closedSupport [T1Space X] [Zero Y] (D : locallyFinsuppWithin U Y)
     (hU : IsClosed U) :
     IsClosed D.support := by
-  convert isClosed_sdiff_of_codiscreteWithin ((supportDiscreteWithin_iff_locallyFiniteWithin
-    D.supportWithinDomain).2 D.supportLocallyFiniteWithinDomain) hU
+  convert!
+    isClosed_sdiff_of_codiscreteWithin
+      ((supportDiscreteWithin_iff_locallyFiniteWithin D.supportWithinDomain).2
+        D.supportLocallyFiniteWithinDomain)
+      hU
   ext x
   constructor <;> intro hx
   · simp_all [D.supportWithinDomain hx]
@@ -268,7 +271,7 @@ protected def addSubmonoid [AddMonoid Y] : AddSubmonoid (X → Y) where
   add_mem' {f g} hf hg := by
     constructor
     · intro x hx
-      contrapose! hx
+      contrapose hx
       simp [notMem_support.1 fun a ↦ hx (hf.1 a), notMem_support.1 fun a ↦ hx (hg.1 a)]
     · intro z hz
       obtain ⟨t₁, ht₁⟩ := hf.2 z hz
@@ -547,11 +550,11 @@ Every positive function with locally finite supports dominates a singleton indic
 -/
 lemma exists_single_le_pos [DecidableEq X] {D : locallyFinsupp X ℤ} (h : 0 < D) :
     ∃ e, single e 1 ≤ D := by
-  obtain ⟨z, hz⟩ : ∃ z, D z ≠ 0 := by simpa [D.ext_iff] using (ne_of_lt h).symm
+  obtain ⟨z, hz⟩ : ∃ z, D z ≠ 0 := by simpa [D.ext_iff] using! (ne_of_lt h).symm
   refine ⟨z, fun e ↦ ?_⟩
   obtain (rfl | he) := eq_or_ne e z
-  · simpa [single_apply] using Int.lt_iff_le_and_ne.mpr ⟨h.le e, hz.symm⟩
-  · simpa [he, single_apply] using h.le e
+  · simpa [single_apply] using! Int.lt_iff_le_and_ne.mpr ⟨h.le e, hz.symm⟩
+  · simpa [he, single_apply] using! h.le e
 
 end LinearOrder
 

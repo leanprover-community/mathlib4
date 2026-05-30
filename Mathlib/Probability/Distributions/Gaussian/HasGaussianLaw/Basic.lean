@@ -15,7 +15,7 @@ import Mathlib.Probability.Distributions.Gaussian.Fernique
 
 In this file we prove basic properties of Gaussian random variables.
 
-# Implementation note
+## Implementation note
 
 Many lemmas are duplicated with an expanded form of some function. For instance there is
 `HasGaussianLaw.add` and `HasGaussianLaw.fun_add`. The reason is that if someone wants for instance
@@ -54,7 +54,7 @@ variable {mE} in
 lemma IsGaussian.hasGaussianLaw_id {μ : Measure E} [IsGaussian μ] : HasGaussianLaw id μ where
   isGaussian_map := by rwa [Measure.map_id]
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma HasGaussianLaw.aemeasurable (hX : HasGaussianLaw X P) : AEMeasurable X P :=
   AEMeasurable.of_map_ne_zero hX.isGaussian_map.toIsProbabilityMeasure.ne_zero
 
@@ -82,6 +82,12 @@ end Basic
 namespace HasGaussianLaw
 
 variable [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] {X : Ω → E}
+
+lemma of_subsingleton [NormedSpace ℝ E] [Subsingleton E] [IsProbabilityMeasure P] :
+    HasGaussianLaw X P where
+  isGaussian_map := by
+    have : IsProbabilityMeasure (P.map X) := P.isProbabilityMeasure_map (by fun_prop)
+    exact .of_subsingleton
 
 lemma charFun_map_eq [InnerProductSpace ℝ E] (t : E) (hX : HasGaussianLaw X P) :
     charFun (P.map X) t = exp ((P[fun ω ↦ ⟪t, X ω⟫] : ℝ) * I - Var[fun ω ↦ ⟪t, X ω⟫; P] / 2) := by
@@ -212,24 +218,25 @@ lemma prodMk [Finite ι] (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) (i j : �
   letI := Fintype.ofFinite ι
   hX.map (.prod (.proj i) (.proj j))
 
-variable [Fintype ι]
-
-lemma toLp_pi (p : ℝ≥0∞) [Fact (1 ≤ p)] (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
+lemma toLp_pi [Finite ι] (p : ℝ≥0∞) [Fact (1 ≤ p)] (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
     HasGaussianLaw (fun ω ↦ toLp p (X · ω)) P :=
+  have := Fintype.ofFinite ι
   hX.map_equiv (PiLp.continuousLinearEquiv p ℝ E).symm
+
+variable [Fintype ι]
 
 lemma sum {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
     [BorelSpace E] [SecondCountableTopology E]
     {X : ι → Ω → E} (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
     HasGaussianLaw (∑ i, X i) P := by
-  convert hX.map (∑ i, .proj i)
+  convert! hX.map (∑ i, .proj i)
   ext; simp
 
 lemma fun_sum {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
     [BorelSpace E] [SecondCountableTopology E]
     {X : ι → Ω → E} (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
     HasGaussianLaw (fun ω ↦ ∑ i, X i ω) P := by
-  convert hX.sum
+  convert! hX.sum
   simp
 
 end Pi

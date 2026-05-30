@@ -84,7 +84,7 @@ protected lemma zero (μ : Measure α) : 0 ≪ μ := fun _ _ ↦ by simp
 @[trans]
 protected theorem trans (h1 : μ₁ ≪ μ₂) (h2 : μ₂ ≪ μ₃) : μ₁ ≪ μ₃ := fun _s hs => h1 <| h2 hs
 
-@[mono]
+@[gcongr, mono]
 protected theorem map (h : μ ≪ ν) {f : α → β} (hf : Measurable f) : μ.map f ≪ ν.map f :=
   AbsolutelyContinuous.mk fun s hs => by simpa [hf, hs] using @h _
 

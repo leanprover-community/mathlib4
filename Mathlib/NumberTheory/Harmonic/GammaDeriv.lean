@@ -130,10 +130,8 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
   _ = √π * (-2 * γ + deriv (fun s : ℝ ↦ 2 ^ (1 - 2 * s)) (1 / 2) + γ) := by
     congr 3
     change deriv (Gamma ∘ fun s ↦ 2 * s) _ = _
-    rw [deriv_comp, deriv_const_mul, mul_one_div, div_self two_ne_zero, deriv_id''] <;>
-    dsimp only
-    · rw [mul_one, mul_comm, hasDerivAt_Gamma_one.deriv, mul_neg, neg_mul]
-    · fun_prop
+    rw [deriv_comp, deriv_const_mul_id, mul_one_div, div_self two_ne_zero]
+    · rw [mul_comm, hasDerivAt_Gamma_one.deriv, mul_neg, neg_mul]
     · apply h_diff; simp -- s = 1
     · fun_prop
   _ = √π * (-2 * γ + -(2 * log 2) + γ) := by
@@ -141,7 +139,7 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
     apply HasDerivAt.deriv
     have := HasDerivAt.rpow (hasDerivAt_const (1 / 2 : ℝ) (2 : ℝ))
       (?_ : HasDerivAt (fun s : ℝ ↦ 1 - 2 * s) (-2) (1 / 2)) two_pos
-    · norm_num at this; exact this
+    · simpa
     simp_rw [mul_comm (2 : ℝ) _]
     apply HasDerivAt.const_sub
     exact hasDerivAt_mul_const (2 : ℝ)
@@ -201,7 +199,6 @@ lemma hasDerivAt_Gammaℂ_one : HasDerivAt Gammaℂ (-(γ + log (2 * π)) / π) 
     rw [mul_neg_one, mul_neg, cpow_neg_one, ← div_eq_inv_mul, ← mul_div_assoc,
       mul_div_mul_left _ _ two_ne_zero, neg_div]
   have := this.mul hasDerivAt_Gamma_one
-  simp only at this
   rwa [Gamma_one, mul_one, cpow_neg_one, ← div_eq_mul_inv, ← div_div, div_self two_ne_zero,
     mul_comm (1 / _), mul_one_div, ← _root_.add_div, ← neg_add, add_comm] at this
 
