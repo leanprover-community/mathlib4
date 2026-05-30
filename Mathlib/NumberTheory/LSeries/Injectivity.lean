@@ -3,10 +3,11 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.Normed.Group.Tannery
-import Mathlib.NumberTheory.LSeries.Convergence
-import Mathlib.NumberTheory.LSeries.Linearity
+module
+
+public import Mathlib.Analysis.Normed.Group.Tannery
+public import Mathlib.NumberTheory.LSeries.Convergence
+public import Mathlib.NumberTheory.LSeries.Linearity
 
 /-!
 # A converging L-series determines its coefficients
@@ -15,6 +16,8 @@ We show that two functions `f` and `g : ℕ → ℂ` whose L-series agree and bo
 must agree on all nonzero arguments. See `LSeries_eq_iff_of_abscissaOfAbsConv_lt_top`
 and `LSeries_injOn`.
 -/
+
+public section
 
 open LSeries Complex
 
@@ -83,9 +86,9 @@ lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ 
   -- get the prerequisites for applying dominated convergence
   have hys : Summable (F y) := by
     refine ((hs le_rfl).indicator {m | n + 1 < m}).congr fun m ↦ ?_
-    by_cases hm : n + 1 < m
+    by_cases! hm : n + 1 < m
     · simp [hF, hm, hm.ne']
-    · simp [hm, hF₀ _ (le_of_not_gt hm)]
+    · simp [hm, hF₀ _ hm]
   have hc (k : ℕ) : Tendsto (F · k) atTop (nhds 0) := by
     rcases lt_or_ge (n + 1) k with H | H
     · have H₀ : (0 : ℝ) ≤ k / (n + 1) := by positivity
@@ -112,7 +115,6 @@ lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ 
     have hkn : 1 ≤ (k / (n + 1 :) : ℝ) :=
       (one_le_div (by positivity)).mpr <| mod_cast Nat.le_of_succ_le H
     gcongr
-    assumption
   · simp [hF₀ _ H]
 
 open Filter in
@@ -125,7 +127,7 @@ lemma LSeries.tendsto_atTop {f : ℕ → ℂ} (ha : abscissaOfAbsConv f < ⊤) :
   have hF {n : ℕ} (hn : n ≠ 0) : F n = f n := if_neg hn
   have ha' : abscissaOfAbsConv F < ⊤ := (abscissaOfAbsConv_congr hF).symm ▸ ha
   simp_rw [← LSeries_congr hF]
-  convert LSeries.tendsto_cpow_mul_atTop (n := 0) (fun _ hm ↦ Nat.le_zero.mp hm ▸ hF₀) ha' using 1
+  convert! LSeries.tendsto_cpow_mul_atTop (n := 0) (fun _ hm ↦ Nat.le_zero.mp hm ▸ hF₀) ha' using 1
   simp
 
 lemma LSeries_eq_zero_of_abscissaOfAbsConv_eq_top {f : ℕ → ℂ} (h : abscissaOfAbsConv f = ⊤) :
@@ -140,7 +142,7 @@ for all `n ≠ 0` or the L-series converges nowhere. -/
 lemma LSeries_eventually_eq_zero_iff' {f : ℕ → ℂ} :
     (fun x : ℝ ↦ LSeries f x) =ᶠ[atTop] 0 ↔ (∀ n ≠ 0, f n = 0) ∨ abscissaOfAbsConv f = ⊤ := by
   by_cases h : abscissaOfAbsConv f = ⊤
-  · simpa [h] using
+  · simpa [h] using!
       Eventually.of_forall <| by simp [LSeries_eq_zero_of_abscissaOfAbsConv_eq_top h]
   · simp only [ne_eq, h, or_false]
     refine ⟨fun H ↦ ?_, fun H ↦ Eventually.of_forall fun x ↦ ?_⟩
@@ -165,7 +167,7 @@ lemma LSeries_eventually_eq_zero_iff' {f : ℕ → ℂ} :
       cases n with
       | zero => exact Tendsto.congr' (H' 0).symm <| by simp [hF₀]
       | succ n =>
-          simpa using LSeries.tendsto_cpow_mul_atTop (fun m hm ↦ ih m <| lt_succ_of_le hm) <|
+          simpa using! LSeries.tendsto_cpow_mul_atTop (fun m hm ↦ ih m <| lt_succ_of_le hm) <|
             Ne.lt_top ha
     · simp [LSeries_congr (fun {n} ↦ H n) x, show (fun _ : ℕ ↦ (0 : ℂ)) = 0 from rfl]
 
@@ -175,15 +177,15 @@ L-series converges nowhere. -/
 lemma LSeries_eq_zero_iff {f : ℕ → ℂ} (hf : f 0 = 0) :
     LSeries f = 0 ↔ f = 0 ∨ abscissaOfAbsConv f = ⊤ := by
   by_cases h : abscissaOfAbsConv f = ⊤
-  · simpa [h] using LSeries_eq_zero_of_abscissaOfAbsConv_eq_top h
+  · simpa [h] using! LSeries_eq_zero_of_abscissaOfAbsConv_eq_top h
   · simp only [h, or_false]
     refine ⟨fun H ↦ ?_, fun H ↦ H ▸ LSeries_zero⟩
-    convert (LSeries_eventually_eq_zero_iff'.mp ?_).resolve_right h
+    convert! (LSeries_eventually_eq_zero_iff'.mp ?_).resolve_right h
     · refine ⟨fun H' _ _ ↦ by rw [H', Pi.zero_apply], fun H' ↦ ?_⟩
       ext (- | m)
       · simp [hf]
       · simp [H']
-    · simpa only [H] using Filter.EventuallyEq.rfl
+    · simpa only [H] using! Filter.EventuallyEq.rfl
 
 open Filter in
 /-- If the `LSeries` of `f` and of `g` converge somewhere and agree on large real arguments,
@@ -236,7 +238,7 @@ lemma LSeries_eq_iff_of_abscissaOfAbsConv_lt_top {f g : ℕ → ℂ} (hf : absci
 of `f` converges somewhere. -/
 lemma LSeries_injOn : Set.InjOn LSeries {f | f 0 = 0 ∧ abscissaOfAbsConv f < ⊤} := by
   intro f hf g hg h
-  simp only [Set.mem_setOf] at hf hg
+  push _ ∈ _ at hf hg
   replace h := (LSeries_eq_iff_of_abscissaOfAbsConv_lt_top hf.2 hg.2).mp h
   ext1 n
   cases n with

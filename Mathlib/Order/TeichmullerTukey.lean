@@ -3,9 +3,11 @@ Copyright (c) 2025 Ansar Azhdarov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ansar Azhdarov
 -/
-import Mathlib.Data.Set.Finite.Range
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Order.Zorn
+module
+
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Order.Zorn
 
 /-!
 # Teichmuller-Tukey
@@ -27,6 +29,8 @@ Teichmuller-Tukey lemma.
 
 - <https://en.wikipedia.org/wiki/Teichm%C3%BCller%E2%80%93Tukey_lemma>
 -/
+
+@[expose] public section
 
 open Set Finite
 

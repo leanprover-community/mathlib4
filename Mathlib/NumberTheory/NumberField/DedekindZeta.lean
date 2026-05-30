@@ -3,9 +3,11 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Algebra.BigOperators.Ring.Nat
-import Mathlib.NumberTheory.LSeries.SumCoeff
-import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Nat
+public import Mathlib.NumberTheory.LSeries.SumCoeff
+public import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
 
 /-!
 # The Dedekind zeta function of a number field
@@ -21,10 +23,12 @@ In this file, we define and prove results about the Dedekind zeta function of a 
   computation of the residue of the Dedekind zeta function at `s = 1`, see Chap. 7 of
   [D. Marcus, *Number Fields*][marcus1977number]
 
-# TODO
+## TODO
 
 Generalize the construction of the Dedekind zeta function.
 -/
+
+@[expose] public section
 
 variable (K : Type*) [Field K] [NumberField K]
 

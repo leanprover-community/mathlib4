@@ -3,9 +3,11 @@ Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
-import Mathlib.LinearAlgebra.Matrix.Permutation
-import Mathlib.Data.Matrix.PEquiv
+module
+
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+public import Mathlib.LinearAlgebra.Matrix.Permutation
+public import Mathlib.Data.Matrix.PEquiv
 
 /-!
 # Swap matrices
@@ -21,6 +23,8 @@ Swap matrices are a special case of *elementary matrices*. For transvections see
 
 This is a thin wrapper around `(Equiv.swap i j).permMatrix`.
 -/
+
+@[expose] public section
 
 namespace Matrix
 
@@ -41,6 +45,9 @@ lemma swap_comm (i j : n) :
 @[simp]
 lemma transpose_swap (i j : n) : (swap R i j).transpose = swap R i j := by
   simp [swap]
+
+theorem isSymm_swap (i j : n) : (swap R i j).IsSymm :=
+  transpose_swap i j
 
 @[simp]
 lemma conjTranspose_swap {R : Type*} [NonAssocSemiring R] [StarRing R] (i j : n) :
@@ -121,7 +128,7 @@ namespace GeneralLinearGroup
 variable (R : Type*) {n : Type*} [CommRing R] [DecidableEq n] [Fintype n]
 
 /-- `Matrix.swap` as an element of `GL n R`. -/
-@[simps]
+@[simps val]
 def swap (i j : n) : GL n R where
   val := Matrix.swap R i j
   inv := Matrix.swap R i j

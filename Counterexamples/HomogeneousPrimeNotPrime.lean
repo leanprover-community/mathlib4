@@ -141,7 +141,7 @@ theorem I_isHomogeneous : Ideal.IsHomogeneous (grading R) I := by
 theorem homogeneous_mem_or_mem : ∀ {x y : R × R},
     SetLike.IsHomogeneousElem (grading R) x → SetLike.IsHomogeneousElem (grading R) y →
     x * y ∈ I → x ∈ I ∨ y ∈ I := by
-  have h2 : Prime (2:R) := by
+  have h2 : Prime (2 : R) := by
     unfold Prime
     decide +kernel
   simp only [I, Ideal.mem_span_singleton]

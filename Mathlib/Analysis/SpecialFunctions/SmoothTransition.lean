@@ -3,10 +3,13 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-import Mathlib.Analysis.SpecialFunctions.PolynomialExp
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.Analysis.SpecialFunctions.PolynomialExp
+public import Mathlib.Analysis.Analytic.IsolatedZeros
 
 /-!
 # Infinitely smooth transition function
@@ -20,6 +23,8 @@ cannot have:
 * `Real.smoothTransition` is equal to zero for `x ≤ 0` and is equal to one for `x ≥ 1`; it is given
   by `expNegInvGlue x / (expNegInvGlue x + expNegInvGlue (1 - x))`;
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -62,6 +67,15 @@ protected theorem monotone : Monotone expNegInvGlue := by
   simp [expNegInvGlue, not_le.2 hx, not_le.2 (hx.trans_le hxy),
     inv_le_inv₀ (hx.trans_le hxy) hx, hxy]
 
+/-- The function `expNegInvGlue` is not analytic at `0`. -/
+theorem not_analyticAt_zero : ¬ AnalyticAt ℝ expNegInvGlue 0 := by
+  intro h
+  obtain ⟨r, hr, h⟩ := h.exists_ball_analyticOnNhd
+  suffices expNegInvGlue (r / 2) = 0 by simpa [hr, not_le_of_gt]
+  exact h.eqOn_zero_of_preconnected_of_mem_closure (z₀ := 0)
+    (Real.ball_eq_Ioo 0 r ▸ isPreconnected_Ioo)
+    (by simp [hr]) (by simp [Set.Iic_def]) (by simp [abs_of_pos, hr])
+
 /-!
 ### Smoothness of `expNegInvGlue`
 
@@ -95,7 +109,7 @@ theorem hasDerivAt_polynomial_eval_inv_mul (p : ℝ[X]) (x : ℝ) :
     refine ((tendsto_polynomial_inv_mul_zero (p * X)).mono_left inf_le_left).congr fun x ↦ ?_
     simp [slope_def_field, div_eq_mul_inv, mul_right_comm]
   · have := ((p.hasDerivAt x⁻¹).mul (hasDerivAt_neg _).exp).comp x (hasDerivAt_inv hx.ne')
-    convert this.congr_of_eventuallyEq _ using 1
+    convert! this.congr_of_eventuallyEq _ using 1
     · simp [expNegInvGlue, hx.not_ge]
       ring
     · filter_upwards [lt_mem_nhds hx] with y hy
@@ -117,7 +131,7 @@ theorem contDiff_polynomial_eval_inv_mul {n : ℕ∞} (p : ℝ[X]) :
   | succ m ihm =>
     rw [show ((m + 1 : ℕ) : WithTop ℕ∞) = m + 1 from rfl]
     refine contDiff_succ_iff_deriv.2 ⟨differentiable_polynomial_eval_inv_mul _, by simp, ?_⟩
-    convert ihm (X ^ 2 * (p - derivative (R := ℝ) p)) using 2
+    convert! ihm (X ^ 2 * (p - derivative (R := ℝ) p)) using 2
     exact (hasDerivAt_polynomial_eval_inv_mul p _).deriv
 
 /-- The function `expNegInvGlue` is smooth. -/

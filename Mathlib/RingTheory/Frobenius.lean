@@ -3,10 +3,12 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.RingTheory.Invariant.Basic
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import Mathlib.RingTheory.Unramified.Locus
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.RingTheory.Invariant.Basic
+public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+public import Mathlib.RingTheory.Unramified.Locus
 
 /-!
 # Frobenius elements
@@ -16,7 +18,7 @@ integers `𝓞L/𝓞K`, and if `q` is prime ideal of `𝓞L` lying over a prime 
 there exists a **Frobenius element** `Frob p` in `Gal(L/K)` with the property that
 `Frob p x ≡ x ^ #(𝓞K/p) (mod q)` for all `x ∈ 𝓞L`.
 
-Following `RingTheory/Invariant.lean`, we develop the theory in the setting that
+Following `Mathlib/RingTheory/Invariant/Basic.lean`, we develop the theory in the setting that
 there is a finite group `G` acting on a ring `S`, and `R` is the fixed subring of `S`.
 
 ## Main results
@@ -43,6 +45,8 @@ Let `G` be a finite group acting on a ring `S`, and `R` is the fixed subring of 
 - `IsArithFrobAt.exists_of_isInvariant`: Frobenius element exists.
 -/
 
+@[expose] public section
+
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
 /-- `φ : S →ₐ[R] S` is an (arithmetic) Frobenius at `Q` if
@@ -61,8 +65,7 @@ lemma mk_apply (x) : Ideal.Quotient.mk Q (φ x) = x ^ Nat.card (R ⧸ Q.under R)
   exact H x
 
 lemma finite_quotient : _root_.Finite (R ⧸ Q.under R) := by
-  rw [← not_infinite_iff_finite]
-  intro h
+  by_contra! h
   obtain rfl : Q = ⊤ := by simpa [Nat.card_eq_zero_of_infinite, ← Ideal.eq_top_iff_one] using H 0
   simp only [Ideal.comap_top] at h
   exact not_finite (R ⧸ (⊤ : Ideal R))
@@ -112,7 +115,7 @@ lemma apply_of_pow_eq_one [IsDomain S] {ζ : S} {m : ℕ} (hζ : ζ ^ m = 1) (hk
   have : NeZero k := ⟨hk.ne'⟩
   obtain ⟨i, hi, e⟩ := hζ.eq_pow_of_pow_eq_one (ξ := φ ζ) (by rw [← map_pow, hζ.1, map_one])
   have (j : _) : 1 - ζ ^ ((q + k - i) * j) ∈ Q := by
-    rw [← Ideal.mul_unit_mem_iff_mem _ ((hζ.isUnit k.pos_of_neZero).pow (i * j)),
+    rw [← Ideal.mul_unit_mem_iff_mem _ ((hζ.isUnit NeZero.out).pow (i * j)),
       sub_mul, one_mul, ← pow_add, ← add_mul, tsub_add_cancel_of_le (by linarith), add_mul,
         pow_add, pow_mul _ k, hζ.1, one_pow, mul_one, pow_mul, e, ← map_pow, mul_comm, pow_mul]
     exact H _
@@ -144,10 +147,9 @@ lemma isArithFrobAt_localize [Q.IsPrime] : H.localize.IsArithFrobAt (maximalIdea
   have h : Nat.card (R ⧸ (maximalIdeal _).comap (algebraMap R (Localization.AtPrime Q))) =
       Nat.card (R ⧸ Q.under R) := by
     congr 2
-    rw [IsScalarTower.algebraMap_eq R S (Localization.AtPrime Q), ← Ideal.comap_comap,
-      Localization.AtPrime.comap_maximalIdeal]
+    rw [← Ideal.under_def, ← Ideal.under_under (B := S), Localization.AtPrime.under_maximalIdeal]
   intro x
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective Q.primeCompl x
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq Q.primeCompl x
   simp only [localize, coe_mk, Localization.localRingHom_mk', RingHom.coe_coe, h,
     ← IsLocalization.mk'_pow]
   rw [← IsLocalization.mk'_sub,
@@ -161,8 +163,6 @@ lemma eq_of_isUnramifiedAt
     (H' : ψ.IsArithFrobAt Q) [Q.IsPrime] (hQ : Q.primeCompl ≤ S⁰)
     [Algebra.IsUnramifiedAt R Q] [IsNoetherianRing S] : φ = ψ := by
   have : H.localize = H'.localize := by
-    have : IsNoetherianRing (Localization.AtPrime Q) :=
-      IsLocalization.isNoetherianRing Q.primeCompl _ inferInstance
     apply Algebra.FormallyUnramified.ext_of_iInf _
       (Ideal.iInf_pow_eq_bot_of_isLocalRing (maximalIdeal _) Ideal.IsPrime.ne_top')
     intro x
@@ -189,8 +189,14 @@ open scoped Pointwise
 variable {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
 variable {Q : Ideal S} {σ σ' : G}
 
+theorem mem_stabilizer [Q.IsPrime] (h : IsArithFrobAt R σ Q) : σ ∈ MulAction.stabilizer G Q := by
+  rw [MulAction.mem_stabilizer_iff]
+  conv_lhs => rw [← h.comap_eq]
+  rw [Ideal.pointwise_smul_def]
+  exact Q.map_comap_eq_self_of_equiv (MulSemiringAction.toRingEquiv G S σ)
+
 lemma mul_inv_mem_inertia (H : IsArithFrobAt R σ Q) (H' : IsArithFrobAt R σ' Q) :
-    σ * σ'⁻¹ ∈ Q.toAddSubgroup.inertia G := by
+    σ * σ'⁻¹ ∈ Q.inertia G := by
   intro x
   simpa [mul_smul] using sub_mem (H (σ'⁻¹ • x)) (H' (σ'⁻¹ • x))
 
@@ -214,7 +220,6 @@ lemma exists_of_isInvariant [Q.IsPrime] [Finite (S ⧸ Q)] : ∃ σ : G, IsArith
   let P := Q.under R
   have := Algebra.IsInvariant.isIntegral R S G
   have : Q.IsMaximal := Ideal.Quotient.maximal_of_isField _ (Finite.isField_of_domain (S ⧸ Q))
-  have : P.IsMaximal := Ideal.isMaximal_comap_of_isIntegral_of_isMaximal Q
   obtain ⟨p, hc⟩ := CharP.exists (R ⧸ P)
   have : Finite (R ⧸ P) := .of_injective _ Ideal.algebraMap_quotient_injective
   cases nonempty_fintype (R ⧸ P)
@@ -258,13 +263,18 @@ protected lemma arithFrobAt [Q.IsPrime] [Finite (S ⧸ Q)] : IsArithFrobAt R (ar
   (exists_primesOver_isConj S G (Q.under R)
     ⟨⟨Q, ‹_›, ⟨rfl⟩⟩, ‹Finite (S ⧸ Q)›⟩).choose_spec.1 ⟨Q, ‹_›, ⟨rfl⟩⟩
 
+theorem arithFrobAt_mem_stabilizer [Q.IsPrime] [Finite (S ⧸ Q)] :
+    arithFrobAt R G Q ∈ MulAction.stabilizer G Q :=
+  mem_stabilizer (.arithFrobAt R G Q)
+
 lemma _root_.isConj_arithFrobAt
     [Q.IsPrime] [Finite (S ⧸ Q)] (Q' : Ideal S) [Q'.IsPrime] [Finite (S ⧸ Q')]
     (H : Q.under R = Q'.under R) : IsConj (arithFrobAt R G Q) (arithFrobAt R G Q') := by
   obtain ⟨P, hP, h₁, h₂⟩ : ∃ P : Ideal R, P.IsPrime ∧ P = Q.under R ∧ P = Q'.under R :=
     ⟨Q.under R, inferInstance, rfl, H⟩
-  convert (exists_primesOver_isConj S G P
-      ⟨⟨Q, ‹_›, ⟨h₁⟩⟩, ‹Finite (S ⧸ Q)›⟩).choose_spec.2 ⟨Q, ‹_›, ⟨h₁⟩⟩ ⟨Q', ‹_›, ⟨h₂⟩⟩
+  convert!
+    (exists_primesOver_isConj S G P ⟨⟨Q, ‹_›, ⟨h₁⟩⟩, ‹Finite (S ⧸ Q)›⟩).choose_spec.2 ⟨Q, ‹_›, ⟨h₁⟩⟩
+      ⟨Q', ‹_›, ⟨h₂⟩⟩
   · subst h₁; rfl
   · subst h₂; rfl
 

@@ -3,9 +3,11 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, François Dupuis
 -/
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.Order.Filter.Extr
-import Mathlib.Tactic.NormNum
+module
+
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Order.Filter.Extr
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Convex and concave functions
@@ -25,6 +27,8 @@ a convex set.
 * `StrictConvexOn 𝕜 s f`: The function `f` is strictly convex on `s` with scalars `𝕜`.
 * `StrictConcaveOn 𝕜 s f`: The function `f` is strictly concave on `s` with scalars `𝕜`.
 -/
+
+@[expose] public section
 
 open LinearMap Set Convex Pointwise
 
@@ -780,10 +784,7 @@ theorem neg_convexOn_iff : ConvexOn 𝕜 s (-f) ↔ ConcaveOn 𝕜 s f := by
   constructor
   · rintro ⟨hconv, h⟩
     refine ⟨hconv, fun x hx y hy a b ha hb hab => ?_⟩
-    simp? [neg_apply, neg_le, add_comm] at h says
-      simp only [Pi.neg_apply, smul_neg, le_add_neg_iff_add_le, add_comm,
-        add_neg_le_iff_le_add] at h
-    exact h hx hy ha hb hab
+    simpa [add_comm] using h hx hy ha hb hab
   · rintro ⟨hconv, h⟩
     refine ⟨hconv, fun x hx y hy a b ha hb hab => ?_⟩
     rw [← neg_le_neg_iff]
@@ -1068,7 +1069,7 @@ lemma StrictConvexOn.eq_of_isMinOn (hf : StrictConvexOn 𝕜 s f) (hfx : IsMinOn
   have hz : z ∈ s := hf.1 hx hy (by simp) (by simp) <| by norm_num
   refine lt_irrefl (f z) ?_
   calc
-    f z < _ := hf.2 hx hy hxy (by norm_num) (by norm_num) <| by norm_num
+    f z < _ := hf.2 hx hy hxy (by simp) (by simp) <| by norm_num
     _ ≤ (2 : 𝕜)⁻¹ • f z + (2 : 𝕜)⁻¹ • f z := by gcongr; exacts [hfx hz, hfy hz]
     _ = f z := by rw [← _root_.add_smul]; norm_num
 

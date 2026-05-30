@@ -3,8 +3,10 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.LSeries.HurwitzZeta
-import Mathlib.Analysis.PSeriesComplex
+module
+
+public import Mathlib.NumberTheory.LSeries.HurwitzZeta
+public import Mathlib.Analysis.PSeriesComplex
 
 /-!
 # Definition of the Riemann zeta function
@@ -41,6 +43,8 @@ see `Mathlib/NumberTheory/LSeries/HurwitzZetaValues.lean`. For computation of th
 These results are mostly special cases of more general results for even Hurwitz zeta functions
 proved in `Mathlib/NumberTheory/LSeries/HurwitzZetaEven.lean`.
 -/
+
+@[expose] public section
 
 
 open CharZero Set Filter HurwitzZeta
@@ -133,6 +137,14 @@ lemma HurwitzZeta.expZeta_zero : expZeta 0 = riemannZeta := by
 theorem differentiableAt_riemannZeta {s : ℂ} (hs' : s ≠ 1) : DifferentiableAt ℂ riemannZeta s :=
   differentiableAt_hurwitzZetaEven _ hs'
 
+lemma differentiableOn_riemannZeta :
+    DifferentiableOn ℂ riemannZeta {1}ᶜ :=
+  fun _ hs ↦ (differentiableAt_riemannZeta hs).differentiableWithinAt
+
+lemma analyticOn_riemannZeta :
+    AnalyticOnNhd ℂ riemannZeta {1}ᶜ :=
+  differentiableOn_riemannZeta.analyticOnNhd isOpen_compl_singleton
+
 /-- We have `ζ(0) = -1 / 2`. -/
 theorem riemannZeta_zero : riemannZeta 0 = -1 / 2 := by
   simp_rw [riemannZeta, hurwitzZetaEven, Function.update_self, if_true]
@@ -197,6 +209,18 @@ theorem zeta_nat_eq_tsum_of_gt_one {k : ℕ} (hk : 1 < k) :
       (by rwa [← ofReal_natCast, ofReal_re, ← Nat.cast_one, Nat.cast_lt] : 1 < re k),
     cpow_natCast]
 
+lemma two_mul_riemannZeta_eq_tsum_int_inv_pow_of_even {k : ℕ} (hk : 2 ≤ k) (hk2 : Even k) :
+    2 * riemannZeta k = ∑' (n : ℤ), ((n : ℂ) ^ k)⁻¹ := by
+  have hkk : 1 < k := by linarith
+  rw [tsum_int_eq_zero_add_two_mul_tsum_pnat]
+  · have h0 : (0 ^ k : ℂ)⁻¹ = 0 := by simp; lia
+    norm_cast
+    simp [h0, zeta_eq_tsum_one_div_nat_add_one_cpow (s := k) (by simp [hkk]),
+      tsum_pnat_eq_tsum_succ (f := fun n => ((n : ℂ) ^ k)⁻¹)]
+  · intro n
+    simp [Even.neg_pow hk2]
+  · exact (Summable.of_nat_of_neg (by simp [hkk]) (by simp [hkk])).of_norm
+
 /-- The residue of `ζ(s)` at `s = 1` is equal to 1. -/
 lemma riemannZeta_residue_one : Tendsto (fun s ↦ (s - 1) * riemannZeta s) (𝓝[≠] 1) (𝓝 1) := by
   exact hurwitzZetaEven_residue_one 0
@@ -205,7 +229,7 @@ lemma riemannZeta_residue_one : Tendsto (fun s ↦ (s - 1) * riemannZeta s) (�
 theorem tendsto_sub_mul_tsum_nat_cpow :
     Tendsto (fun s : ℂ ↦ (s - 1) * ∑' (n : ℕ), 1 / (n : ℂ) ^ s) (𝓝[{s | 1 < re s}] 1) (𝓝 1) := by
   refine (tendsto_nhdsWithin_mono_left ?_ riemannZeta_residue_one).congr' ?_
-  · simp only [subset_compl_singleton_iff, mem_setOf_eq, one_re, not_lt, le_refl]
+  · simp
   · filter_upwards [eventually_mem_nhdsWithin] with s hs using
       congr_arg _ <| zeta_eq_tsum_one_div_nat_cpow hs
 

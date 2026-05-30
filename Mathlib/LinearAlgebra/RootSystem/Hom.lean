@@ -3,8 +3,10 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.Basic
-import Mathlib.LinearAlgebra.RootSystem.Defs
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Basic
+public import Mathlib.LinearAlgebra.RootSystem.Defs
 
 /-!
 # Morphisms of root pairings
@@ -44,6 +46,8 @@ given in SGA III Exp. 21 Section 6.
 * Weyl group reimplementation?
 
 -/
+
+@[expose] public section
 
 open Set Function
 
@@ -226,7 +230,7 @@ lemma coweightHom_injective (P : RootPairing ι R M N) : Injective (coweightHom 
         ((LinearEquiv.eq_comp_toLinearMap_iff f.weightMap.dualMap g.weightMap.dualMap).mp h))
     exact congrFun (congrArg DFunLike.coe this) x
   · dsimp [coweightHom] at hfg
-    simp_all only [MulOpposite.op_inj]
+    simp_all
   · dsimp [coweightHom] at hfg
     rw [MulOpposite.op_inj] at hfg
     set y := f.indexEquiv x with hy
@@ -312,7 +316,6 @@ def id (P : RootPairing ι R M N) : RootPairing.Equiv P P :=
     bijective_coweightMap := _root_.id bijective_id }
 
 /-- Composition of equivalences -/
-@[simps!]
 def comp {ι₁ M₁ N₁ ι₂ M₂ N₂ : Type*} [AddCommGroup M₁] [Module R M₁] [AddCommGroup N₁]
     [Module R N₁] [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
     {P : RootPairing ι R M N} {P₁ : RootPairing ι₁ R M₁ N₁} {P₂ : RootPairing ι₂ R M₂ N₂}
@@ -479,14 +482,14 @@ instance (P : RootPairing ι R M N) : Group (RootPairing.Equiv P P) where
 
 /-- For finite roots systems in characteristic zero, a linear equivalence preserving roots, also
 preserves coroots, and is thus an equivalence of root systems. -/
-def mk' [CharZero R] [NoZeroSMulDivisors R M₂] [Finite ι₂]
-    (P : RootSystem ι R M N) (Q : RootSystem ι₂ R M₂ N₂)
+def mk' [IsDomain R] [CharZero R] [Module.IsTorsionFree R M₂] [Finite ι₂]
+    (P : RootPairing ι R M N) [P.IsRootSystem] (Q : RootPairing ι₂ R M₂ N₂) [Q.IsRootSystem]
     (f : M ≃ₗ[R] M₂) (e : ι ≃ ι₂) (hf : ∀ i, f (P.root i) = Q.root (e i)) :
-    P.Equiv Q.toRootPairing where
+    P.Equiv Q where
   weightMap := f
   coweightMap := Q.flip.toPerfPair.trans (f.dualMap.trans P.flip.toPerfPair.symm)
   indexEquiv := e
-  weight_coweight_transpose := by ext; simp [RootSystem.flip]
+  weight_coweight_transpose := by ext; simp
   root_weightMap := by ext; simp [hf]
   coroot_coweightMap := by
     let g : N ≃ₗ[R] N₂ := P.flip.toPerfPair.trans <| f.symm.dualMap.trans Q.flip.toPerfPair.symm
@@ -495,9 +498,9 @@ def mk' [CharZero R] [NoZeroSMulDivisors R M₂] [Finite ι₂]
       rw [LinearEquiv.coe_coe, comp_apply, ← LinearEquiv.eq_symm_apply]
       conv_lhs => rw [this]
       rfl
-    ext m n
-    · simp [RootSystem.map, RootPairing.map, RootSystem.flip, g]
-    · simp [hf, RootSystem.map, RootPairing.map]
+    apply IsRootSystem.ext <;> ext
+    · simp [RootPairing.map, RootPairing.map, g]
+    · simp [hf, RootPairing.map, RootPairing.map]
   bijective_weightMap := LinearEquiv.bijective _
   bijective_coweightMap := LinearEquiv.bijective _
 
@@ -512,7 +515,7 @@ namespace Equiv
 endomorphisms. -/
 def toEndUnit (P : RootPairing ι R M N) : Aut P ≃* (End P)ˣ where
   toFun f :=
-  { val :=  f.toHom
+  { val := f.toHom
     inv := (Equiv.symm P P f).toHom
     val_inv := by ext <;> simp
     inv_val := by ext <;> simp }
@@ -673,7 +676,7 @@ instance : DistribMulAction P.Aut M where
 
 @[simp] lemma root_indexEquiv_eq_smul (i : ι) (g : P.Aut) :
     P.root (g.indexEquiv i) = g • P.root i := by
-  simpa using (congr_fun g.root_weightMap i).symm
+  simpa using! (congr_fun g.root_weightMap i).symm
 
 open MulOpposite in
 instance : DistribMulAction P.Autᵐᵒᵖ N where

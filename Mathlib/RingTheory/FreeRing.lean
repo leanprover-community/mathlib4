@@ -3,8 +3,10 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Johan Commelin
 -/
-import Mathlib.Algebra.FreeMonoid.Basic
-import Mathlib.GroupTheory.FreeAbelianGroup
+module
+
+public import Mathlib.Algebra.FreeMonoid.Basic
+public import Mathlib.GroupTheory.FreeAbelianGroup
 
 /-!
 # Free rings
@@ -26,6 +28,8 @@ The theory of the free ring over a type.
 free ring
 
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -49,16 +53,7 @@ with coefficients in the integers and variables indexed by `α`.
 -/
 def FreeRing (α : Type u) : Type u :=
   FreeAbelianGroup <| FreeMonoid α
-
-instance (α : Type u) : Ring (FreeRing α) :=
-  FreeAbelianGroup.ring _
-
-instance (α : Type u) : Inhabited (FreeRing α) := by
-  dsimp only [FreeRing]
-  infer_instance
-
-instance (α : Type u) : Nontrivial (FreeRing α) :=
-  inferInstanceAs <| Nontrivial (FreeAbelianGroup _)
+deriving Ring, Inhabited, Nontrivial
 
 namespace FreeRing
 

@@ -3,8 +3,10 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.VectorMeasure.Basic
-import Mathlib.Analysis.Complex.Basic
+module
+
+public import Mathlib.MeasureTheory.VectorMeasure.Basic
+public import Mathlib.Analysis.Complex.Basic
 
 /-!
 # Complex measure
@@ -20,7 +22,7 @@ a complex measure is always in the form `s + it` where `s` and `t` are signed me
 * `MeasureTheory.ComplexMeasure.im`: obtains a signed measure `s` from a complex measure `c`
   such that `s i = (c i).im` for all measurable sets `i`.
 * `MeasureTheory.SignedMeasure.toComplexMeasure`: given two signed measures `s` and `t`,
-  `s.to_complex_measure t` provides a complex measure of the form `s + it`.
+  `s.toComplexMeasure t` provides a complex measure of the form `s + it`.
 * `MeasureTheory.ComplexMeasure.equivSignedMeasure`: is the equivalence between the complex
   measures and the type of the product of the signed measures with itself.
 
@@ -28,6 +30,8 @@ a complex measure is always in the form `s + it` where `s` and `t` are signed me
 
 Complex measure
 -/
+
+@[expose] public section
 
 
 noncomputable section

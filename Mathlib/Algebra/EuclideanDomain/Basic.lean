@@ -3,11 +3,12 @@ Copyright (c) 2018 Louis Carlin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
 -/
-import Mathlib.Algebra.EuclideanDomain.Defs
-import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Ring.Basic
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Defs
+public import Mathlib.Algebra.Ring.Divisibility.Basic
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # Lemmas about Euclidean domains
@@ -17,6 +18,8 @@ import Mathlib.Algebra.Ring.Basic
 * `gcd_eq_gcd_ab`: states Bézout's lemma for Euclidean domains.
 
 -/
+
+@[expose] public section
 
 
 universe u
@@ -181,9 +184,12 @@ theorem xgcdAux_fst (x y : R) : ∀ s t s' t', (xgcdAux x s t y s' t').1 = gcd x
 theorem xgcdAux_val (x y : R) : xgcdAux x 1 0 y 0 1 = (gcd x y, xgcd x y) := by
   rw [xgcd, ← xgcdAux_fst x y 1 0 0 1]
 
+set_option backward.privateInPublic true in
 private def P (a b : R) : R × R × R → Prop
   | (r, s, t) => (r : R) = a * s + b * t
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem xgcdAux_P (a b : R) {r r' : R} {s t s' t'} (p : P a b (r, s, t))
     (p' : P a b (r', s', t')) : P a b (xgcdAux r s t r' s' t') := by
   induction r, r' using GCD.induction generalizing s t s' t' with
@@ -204,14 +210,19 @@ theorem gcd_eq_gcd_ab (a b : R) : (gcd a b : R) = a * gcdA a b + b * gcdB a b :=
   rwa [xgcdAux_val, xgcd_val] at this
 
 -- see Note [lower instance priority]
-instance (priority := 70) (R : Type*) [e : EuclideanDomain R] : NoZeroDivisors R :=
-  haveI := Classical.decEq R
-  { eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} h =>
-      or_iff_not_and_not.2 fun h0 => h0.1 <| by rw [← mul_div_cancel_right₀ a h0.2, h, zero_div] }
-
--- see Note [lower instance priority]
 instance (priority := 70) (R : Type*) [e : EuclideanDomain R] : IsDomain R :=
+  haveI := Classical.decEq R
+  have : NoZeroDivisors R :=
+  { eq_zero_or_eq_zero_of_mul_eq_zero {a b} h :=
+      or_iff_not_and_not.2 fun h0 ↦ h0.1 <| by rw [← mul_div_cancel_right₀ a h0.2, h, zero_div] }
   { e, NoZeroDivisors.to_isDomain R with }
+
+theorem div_pow {R : Type*} [EuclideanDomain R] {a b : R} {n : ℕ} (hab : b ∣ a) :
+    (a / b) ^ n = a ^ n / b ^ n := by
+  obtain ⟨c, rfl⟩ := hab
+  obtain rfl | hb := eq_or_ne b 0
+  · obtain rfl | hn := eq_or_ne n 0 <;> simp [*]
+  · simp [hb, mul_pow]
 
 end GCD
 
@@ -337,14 +348,14 @@ theorem sub_mul_div_right (x y z : R) (h1 : y ≠ 0) (h2 : y ∣ x) : (x - z * y
   rw [mul_comm z y]
   exact sub_mul_div_left _ _ _ h1 h2
 
-theorem mul_add_div_left (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) : (z * x + y) / z = x + y / z  := by
+theorem mul_add_div_left (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) : (z * x + y) / z = x + y / z := by
   rw [eq_comm]
   apply eq_div_of_mul_eq_right h1
   rw [mul_add, EuclideanDomain.mul_div_cancel' h1 h2]
 
 theorem mul_add_div_right (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) : (x * z + y) / z = x + y / z := by
   rw [mul_comm x z]
-  exact mul_add_div_left _  _  _  h1 h2
+  exact mul_add_div_left _ _ _ h1 h2
 
 theorem mul_sub_div_left (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) : (z * x - y) / z = x - y / z := by
   rw [eq_comm]
@@ -370,13 +381,13 @@ theorem div_div {x y z : R} (h1 : y ∣ x) (h2 : z ∣ (x / y)) :
   exact (div_mul h1 h2).symm
 
 theorem div_add_div_of_dvd {x y z t : R} (h1 : y ≠ 0) (h2 : t ≠ 0) (h3 : y ∣ x) (h4 : t ∣ z) :
-    x / y + z / t = (t * x + y * z) / (t * y):= by
+    x / y + z / t = (t * x + y * z) / (t * y) := by
   apply eq_div_of_mul_eq_right (mul_ne_zero h2 h1)
   rw [mul_add, mul_assoc, EuclideanDomain.mul_div_cancel' h1 h3, mul_comm t y,
     mul_assoc, EuclideanDomain.mul_div_cancel' h2 h4]
 
 theorem div_sub_div_of_dvd {x y z t : R} (h1 : y ≠ 0) (h2 : t ≠ 0) (h3 : y ∣ x) (h4 : t ∣ z) :
-    x / y - z / t = (t * x - y * z) / (t * y):= by
+    x / y - z / t = (t * x - y * z) / (t * y) := by
   apply eq_div_of_mul_eq_right (mul_ne_zero h2 h1)
   rw [mul_sub, mul_assoc, EuclideanDomain.mul_div_cancel' h1 h3, mul_comm t y,
     mul_assoc, EuclideanDomain.mul_div_cancel' h2 h4]
@@ -393,7 +404,7 @@ theorem eq_div_iff_mul_eq_of_dvd (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) :
 
 theorem div_eq_div_iff_mul_eq_mul_of_dvd {x y z t : R} (h1 : y ≠ 0) (h2 : t ≠ 0)
     (h3 : y ∣ x) (h4 : t ∣ z) : x / y = z / t ↔ t * x = y * z := by
-  rw [div_eq_iff_eq_mul_of_dvd _  _ _ h1 h3, ← mul_div_assoc _ h4,
+  rw [div_eq_iff_eq_mul_of_dvd _ _ _ h1 h3, ← mul_div_assoc _ h4,
     eq_div_iff_mul_eq_of_dvd _ _ _ h2]
   obtain ⟨a, ha⟩ := h4
   use y * a
@@ -402,3 +413,28 @@ theorem div_eq_div_iff_mul_eq_mul_of_dvd {x y z t : R} (h1 : y ≠ 0) (h2 : t �
 end Div
 
 end EuclideanDomain
+
+section RingEquiv
+
+variable {R S : Type*} [EuclideanDomain R] [CommRing S]
+
+/-- If `S` is a nontrivial commutative ring isomorphic to a Euclidean domain
+ `R` then it is also a Euclidean domain. -/
+protected abbrev RingEquiv.euclideanDomain (e : S ≃+* R) : EuclideanDomain S where
+  toNontrivial := e.nontrivial
+  quotient a b := e.symm (e a / e b)
+  remainder a b := e.symm (e a % e b)
+  r a b := EuclideanDomain.r (e a) (e b)
+  r_wellFounded := InvImage.wf e EuclideanDomain.r_wellFounded
+  quotient_zero a := by simp
+  quotient_mul_add_remainder_eq a b := by
+    apply e.injective
+    simpa using! EuclideanDomain.quotient_mul_add_remainder_eq (e a) (e b)
+  remainder_lt a b hb := by
+    have hb' : e b ≠ 0 := by simpa using hb
+    simpa using! EuclideanDomain.remainder_lt (e a) hb'
+  mul_left_not_lt a b hb := by
+    have hb' : e b ≠ 0 := by simpa using hb
+    simpa using! EuclideanDomain.mul_left_not_lt (e a) hb'
+
+end RingEquiv

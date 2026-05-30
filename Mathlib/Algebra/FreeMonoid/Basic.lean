@@ -3,10 +3,16 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Algebra.BigOperators.Group.List.Basic
-import Mathlib.Algebra.Group.Equiv.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.List.Basic
+public import Mathlib.Tactic.ToDual
 
 /-!
 # Free monoid over a given alphabet
@@ -19,6 +25,8 @@ import Mathlib.Algebra.Group.Equiv.Defs
 * `FreeMonoid.lift`: natural equivalence between `α → M` and `FreeMonoid α →* M`
 * `FreeMonoid.map`: embedding of `α → β` into `FreeMonoid α →* FreeMonoid β` given by `List.map`.
 -/
+
+@[expose] public section
 
 
 variable {α : Type*} {β : Type*} {γ : Type*} {M : Type*} [Monoid M] {N : Type*} [Monoid N]
@@ -106,18 +114,14 @@ theorem toList_one : toList (1 : FreeMonoid α) = [] := rfl
 @[to_additive (attr := simp)]
 theorem ofList_nil : ofList ([] : List α) = 1 := rfl
 
--- TODO: this statement uses defeq abuse, but so does much of the downstream use of `FreeMonoid`.
--- This should be removed from the simp set and deprecated once those defeq abuses are cleaned up.
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated toList_one (since := "2026-03-26"))]
 theorem toList_nil : toList ([] : FreeMonoid α) = [] := rfl
-
--- TODO: this statement uses defeq abuse, but so does much of the downstream use of `FreeMonoid`.
--- This should be removed from the simp set and deprecated once those defeq abuses are cleaned up.
-@[to_additive (attr := simp)]
-theorem toList_cons (x : α) (xs : FreeMonoid α) : toList (x :: xs) = x :: toList xs := rfl
 
 @[to_additive (attr := simp)]
 theorem toList_mul (xs ys : FreeMonoid α) : toList (xs * ys) = toList xs ++ toList ys := rfl
+
+@[to_additive (attr := deprecated toList_mul (since := "2026-03-26"))]
+theorem toList_cons (x : α) (xs : FreeMonoid α) : toList (x :: xs) = x :: toList xs := rfl
 
 @[to_additive (attr := simp)]
 theorem ofList_append (xs ys : List α) : ofList (xs ++ ys) = ofList xs * ofList ys := rfl
@@ -212,11 +216,6 @@ instance : Membership α (FreeMonoid α) := ⟨mem⟩
 @[to_additive]
 theorem notMem_one : m ∉ (1 : FreeMonoid α) := List.not_mem_nil
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.FreeAddMonoid.not_mem_zero := FreeAddMonoid.notMem_zero
-
-@[to_additive existing, deprecated (since := "2025-05-23")] alias not_mem_one := notMem_one
-
 @[to_additive (attr := simp)]
 theorem mem_of {n : α} : m ∈ of n ↔ m = n := List.mem_singleton
 
@@ -231,7 +230,7 @@ end Mem
 /-- Recursor for `FreeMonoid` using `1` and `FreeMonoid.of x * xs` instead of `[]` and `x :: xs`. -/
 @[to_additive (attr := elab_as_elim, induction_eliminator)
   /-- Recursor for `FreeAddMonoid` using `0` and
-  FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`. -/]
+  `FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`. -/]
 -- Porting note: change from `List.recOn` to `List.rec` since only the latter is computable
 def recOn {C : FreeMonoid α → Sort*} (xs : FreeMonoid α) (h0 : C 1)
     (ih : ∀ x xs, C xs → C (of x * xs)) : C xs := List.rec h0 ih xs
@@ -286,7 +285,7 @@ theorem casesOn_of_mul {C : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid �
 @[to_additive (attr := ext)]
 theorem hom_eq ⦃f g : FreeMonoid α →* M⦄ (h : ∀ x, f (of x) = g (of x)) : f = g :=
   MonoidHom.ext fun l ↦ recOn l (f.map_one.trans g.map_one.symm)
-    (fun x xs hxs ↦ by simp only [h, hxs, MonoidHom.map_mul])
+    (fun x xs hxs ↦ by simp only [h, hxs, map_mul])
 
 /-- A variant of `List.prod` that has `[x].prod = x` true definitionally.
 The purpose is to make `FreeMonoid.lift_eval_of` true by `rfl`. -/
@@ -341,7 +340,8 @@ theorem hom_map_lift (g : M →* N) (f : α → M) (x : FreeMonoid α) : g (lift
   DFunLike.ext_iff.1 (comp_lift g f) x
 
 /-- Define a multiplicative action of `FreeMonoid α` on `β`. -/
-@[to_additive /-- Define an additive action of `FreeAddMonoid α` on `β`. -/]
+@[to_additive (attr := implicit_reducible)
+  /-- Define an additive action of `FreeAddMonoid α` on `β`. -/]
 def mkMulAction (f : α → β → β) : MulAction (FreeMonoid α) β where
   smul l b := l.toList.foldr f b
   one_smul _ := rfl
@@ -422,24 +422,26 @@ theorem map_surjective {f : α → β} : Function.Surjective (map f) ↔ Functio
   constructor
   · intro fs d
     rcases fs (FreeMonoid.of d) with ⟨b, hb⟩
-    induction' b using FreeMonoid.inductionOn' with head _ _
-    · have H := congr_arg length hb
+    induction b using FreeMonoid.inductionOn' with
+    | one =>
+      have H := congr_arg length hb
       simp only [length_one, length_of, Nat.zero_ne_one, map_one] at H
-    simp only [map_mul, map_of] at hb
-    use head
-    have H := congr_arg length hb
-    simp only [length_mul, length_of, add_eq_left, length_eq_zero] at H
-    rw [H, mul_one] at hb
-    exact FreeMonoid.of_injective hb
+    | mul_of head _ _ =>
+      simp only [map_mul, map_of] at hb
+      use head
+      have H := congr_arg length hb
+      simp only [length_mul, length_of, add_eq_left, length_eq_zero] at H
+      rw [H, mul_one] at hb
+      exact FreeMonoid.of_injective hb
   intro fs d
-  induction' d using FreeMonoid.inductionOn' with head tail ih
-  · use 1
+  induction d using FreeMonoid.inductionOn' with
+  | one => use 1; rfl
+  | mul_of head tail ih =>
+    specialize fs head
+    rcases fs with ⟨a, rfl⟩
+    rcases ih with ⟨b, rfl⟩
+    use FreeMonoid.of a * b
     rfl
-  specialize fs head
-  rcases fs with ⟨a, rfl⟩
-  rcases ih with ⟨b, rfl⟩
-  use FreeMonoid.of a * b
-  rfl
 
 end Map
 

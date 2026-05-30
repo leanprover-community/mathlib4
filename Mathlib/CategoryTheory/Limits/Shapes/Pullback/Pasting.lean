@@ -3,8 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
 # Pasting lemma
@@ -29,6 +30,8 @@ pullback.
   `(X ×[Z] Y) ×[Y] W ≅ X ×[Z] W`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -73,6 +76,7 @@ local notation "f₁" => t₁.snd
 
 variable {t₁} {t₂}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given
 ```
 X₁ - f₁ -> X₂ - f₂ -> X₃
@@ -101,6 +105,7 @@ def pasteHorizIsPullback (H : IsLimit t₂) (H' : IsLimit t₁) : IsLimit (t₂.
 
 variable (t₁)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given
 ```
 X₁ - f₁ -> X₂ - f₂ -> X₃
@@ -174,6 +179,7 @@ local notation "Y₃" => t₂.pt
 local notation "g₂" => t₂.fst
 local notation "i₃" => t₂.snd
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Pasting two pullback cones vertically is isomorphic to the pullback cone obtained by flipping
 them, pasting horizontally, and then flipping the result again. -/
 def PullbackCone.pasteVertFlip : (t₁.pasteVert t₂ hi₂).flip ≅ (t₁.flip.pasteHoriz t₂.flip hi₂) :=
@@ -261,6 +267,7 @@ local notation "i₃" => t₂.inr
 
 variable {t₁} {t₂}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given
 ```
 X₁ - f₁ -> X₂ - f₂ -> X₃
@@ -290,6 +297,7 @@ def pasteHorizIsPushout (H : IsColimit t₁) (H' : IsColimit t₂) :
 
 variable (t₂)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given
 
 X₁ - f₁ -> X₂ - f₂ -> X₃
@@ -364,6 +372,7 @@ local notation "X₁" => t₂.pt
 local notation "f₁" => t₂.inr
 local notation "i₁" => t₂.inl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Pasting two pushout cocones vertically is isomorphic to the pushout cocone obtained by flipping
 them, pasting horizontally, and then flipping the result again. -/
 def PushoutCocone.pasteVertFlip : (t₁.pasteVert t₂ hi₂).flip ≅ (t₁.flip.pasteHoriz t₂.flip hi₂) :=

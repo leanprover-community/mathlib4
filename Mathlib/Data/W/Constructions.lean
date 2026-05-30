@@ -3,7 +3,9 @@ Copyright (c) 2015 Joseph Hua. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Hua
 -/
-import Mathlib.Data.W.Basic
+module
+
+public import Mathlib.Data.W.Basic
 
 /-!
 # Examples of W-types
@@ -18,6 +20,8 @@ This file contains `Nat` and `List` as examples of W types.
 * `WType.equivNat`: the construction of the naturals as a W-type is equivalent to `Nat`
 * `WType.equivList`: the construction of lists on a type `γ` as a W-type is equivalent to `List γ`
 -/
+
+@[expose] public section
 
 
 universe u v

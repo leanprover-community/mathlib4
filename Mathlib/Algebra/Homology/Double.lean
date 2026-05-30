@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HasNoLoop
-import Mathlib.Algebra.Homology.Single
-import Mathlib.CategoryTheory.Yoneda
+module
+
+public import Mathlib.Algebra.Homology.HasNoLoop
+public import Mathlib.Algebra.Homology.Single
+public import Mathlib.CategoryTheory.Yoneda
 
 /-!
 # A homological complex lying in two degrees
@@ -17,11 +19,13 @@ with the differential `X₀ ⟶ X₁` given by `f`, and zero everywhere else.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Category Limits ZeroObject Opposite
 
 namespace HomologicalComplex
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C] [HasZeroObject C]
 
 section
 
@@ -147,6 +151,7 @@ lemma mkHomFromDouble_f₁ :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `c : ComplexShape ι`, and `i₀` and `i₁` be distinct indices such
 that `hi₀₁ : c.Rel i₀ i₁`, then for any `X : C`, the functor which sends
 `K : HomologicalComplex C c` to `X ⟶ K.X i` is corepresentable by `double (𝟙 X) hi₀₁`. -/
@@ -167,6 +172,7 @@ end
 
 variable {ι : Type*} (c : ComplexShape ι)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `i` has no successor for the complex shape `c`,
 then for any `X : C`, the functor which sends `K : HomologicalComplex C c`
 to `X ⟶ K.X i` is corepresentable by `(single C c i).obj X`. -/

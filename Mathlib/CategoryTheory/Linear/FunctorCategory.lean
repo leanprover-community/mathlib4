@@ -3,8 +3,10 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Preadditive.FunctorCategory
-import Mathlib.CategoryTheory.Linear.Basic
+module
+
+public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+public import Mathlib.CategoryTheory.Linear.Basic
 
 /-!
 # Linear structure on functor categories
@@ -14,12 +16,14 @@ then `C ⥤ D` is also `R`-linear.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open CategoryTheory.Limits Linear
 
 variable {R : Type*} [Semiring R]
-variable {C D : Type*} [Category C] [Category D] [Preadditive D] [Linear R D]
+variable {C D : Type*} [Category* C] [Category* D] [Preadditive D] [Linear R D]
 
 instance functorCategoryLinear : Linear R (C ⥤ D) where
   homModule F G :=

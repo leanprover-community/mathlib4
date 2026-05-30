@@ -3,7 +3,10 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Data.Set.Restrict
+module
+
+public import Mathlib.Data.Set.Restrict
+public import Mathlib.Util.Delaborators
 
 /-!
 # Functions depending only on some variables
@@ -45,6 +48,8 @@ with `DependsOn` because writing mathematically "independent of variables in `s`
 
 depends on
 -/
+
+@[expose] public section
 
 open Function Set
 

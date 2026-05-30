@@ -3,14 +3,17 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.List.Lemmas
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.List.Count
-import Mathlib.Data.List.Duplicate
-import Mathlib.Data.List.InsertIdx
-import Mathlib.Data.List.Induction
-import Batteries.Data.List.Perm
-import Mathlib.Data.List.Perm.Basic
+module
+
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Data.List.Count
+public import Mathlib.Data.List.Duplicate
+public import Mathlib.Data.List.InsertIdx
+public import Mathlib.Data.List.Induction
+public import Batteries.Data.List.Perm
+public import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Order.Lattice
+public import Mathlib.Tactic.Finiteness.Attr
 
 /-!
 # Permutations of a list
@@ -44,6 +47,8 @@ all positions. Hence, to build `[0, 1, 2, 3].permutations'`, it does
    `[0, 3, 1, 2], [3, 0, 1, 2], [3, 1, 0, 2], [3, 1, 2, 0],`
    `[0, 3, 2, 1], [3, 0, 2, 1], [3, 2, 0, 1], [3, 2, 1, 0]]`
 -/
+
+public section
 
 -- Make sure we don't import algebra
 assert_not_exists Monoid
@@ -79,17 +84,18 @@ theorem permutationsAux2_append (t : α) (ts : List α) (r : List β) (ys : List
 /-- The `ts` argument to `permutationsAux2` can be folded into the `f` argument. -/
 theorem permutationsAux2_comp_append {t : α} {ts ys : List α} {r : List β} (f : List α → β) :
     ((permutationsAux2 t [] r ys) fun x => f (x ++ ts)).2 = (permutationsAux2 t ts r ys f).2 := by
-  induction' ys with ys_hd _ ys_ih generalizing f
-  · simp
-  · simp [ys_ih fun xs => f (ys_hd :: xs)]
+  induction ys generalizing f with
+  | nil => simp
+  | cons ys_hd _ ys_ih => simp [ys_ih fun xs => f (ys_hd :: xs)]
 
 theorem map_permutationsAux2' {α' β'} (g : α → α') (g' : β → β') (t : α) (ts ys : List α)
     (r : List β) (f : List α → β) (f' : List α' → β') (H : ∀ a, g' (f a) = f' (map g a)) :
     map g' (permutationsAux2 t ts r ys f).2 =
       (permutationsAux2 (g t) (map g ts) (map g' r) (map g ys) f').2 := by
-  induction' ys with ys_hd _ ys_ih generalizing f f'
-  · simp
-  · simp only [map, permutationsAux2_snd_cons, cons_append, cons.injEq]
+  induction ys generalizing f f' with
+  | nil => simp
+  | cons ys_hd _ ys_ih =>
+    simp only [map, permutationsAux2_snd_cons, cons_append, cons.injEq]
     rw [ys_ih]
     · refine ⟨?_, rfl⟩
       simp only [← map_cons, ← map_append]; apply H
@@ -124,13 +130,13 @@ theorem map_map_permutationsAux2 {α'} (g : α → α') (t : α) (ts ys : List �
 
 theorem map_map_permutations'Aux (f : α → β) (t : α) (ts : List α) :
     map (map f) (permutations'Aux t ts) = permutations'Aux (f t) (map f ts) := by
-  induction' ts with a ts ih
-  · rfl
-  · simp only [permutations'Aux, map_cons, map_map, ← ih, Function.comp_def]
+  induction ts with
+  | nil => rfl
+  | cons a ts ih => simp only [permutations'Aux, map_cons, map_map, ← ih, Function.comp_def]
 
 theorem permutations'Aux_eq_permutationsAux2 (t : α) (ts : List α) :
     permutations'Aux t ts = (permutationsAux2 t [] [ts ++ [t]] ts id).2 := by
-  induction' ts with a ts ih; · rfl
+  induction ts with | nil => rfl | cons a ts ih => ?_
   simp only [permutations'Aux, ih, cons_append, permutationsAux2_snd_cons, append_nil, id_eq,
     cons.injEq, true_and]
   simp +singlePass only [← permutationsAux2_append]
@@ -139,8 +145,9 @@ theorem permutations'Aux_eq_permutationsAux2 (t : α) (ts : List α) :
 theorem mem_permutationsAux2 {t : α} {ts : List α} {ys : List α} {l l' : List α} :
     l' ∈ (permutationsAux2 t ts [] ys (l ++ ·)).2 ↔
       ∃ l₁ l₂, l₂ ≠ [] ∧ ys = l₁ ++ l₂ ∧ l' = l ++ l₁ ++ t :: l₂ ++ ts := by
-  induction' ys with y ys ih generalizing l
-  · simp +contextual
+  induction ys generalizing l with
+  | nil => simp +contextual
+  | cons y ys ih => ?_
   rw [permutationsAux2_snd_cons,
     show (fun x : List α => l ++ y :: x) = (l ++ [y] ++ ·) by simp, mem_cons, ih]
   constructor
@@ -165,9 +172,9 @@ theorem length_permutationsAux2 (t : α) (ts : List α) (ys : List α) (f : List
 theorem foldr_permutationsAux2 (t : α) (ts : List α) (r L : List (List α)) :
     foldr (fun y r => (permutationsAux2 t ts r y id).2) r L =
       (L.flatMap fun y => (permutationsAux2 t ts [] y id).2) ++ r := by
-  induction' L with l L ih
-  · rfl
-  · simp_rw [foldr_cons, ih, flatMap_cons, append_assoc, permutationsAux2_append]
+  induction L with
+  | nil => rfl
+  | cons l L ih => simp_rw [foldr_cons, ih, flatMap_cons, append_assoc, permutationsAux2_append]
 
 theorem mem_foldr_permutationsAux2 {t : α} {ts : List α} {r L : List (List α)} {l' : List α} :
     l' ∈ foldr (fun y r => (permutationsAux2 t ts r y id).2) r L ↔
@@ -191,11 +198,12 @@ theorem length_foldr_permutationsAux2' (t : α) (ts : List α) (r L : List (List
     (H : ∀ l ∈ L, length l = n) :
     length (foldr (fun y r => (permutationsAux2 t ts r y id).2) r L) = n * length L + length r := by
   rw [length_foldr_permutationsAux2, (_ : (map length L).sum = n * length L)]
-  induction' L with l L ih
-  · simp
-  have sum_map : (map length L).sum = n * length L := ih fun l m => H l (mem_cons_of_mem _ m)
-  have length_l : length l = n := H _ mem_cons_self
-  simp [sum_map, length_l, Nat.add_comm, mul_succ]
+  induction L with
+  | nil => simp
+  | cons l L ih =>
+    have sum_map : (map length L).sum = n * length L := ih fun l m => H l (mem_cons_of_mem _ m)
+    have length_l : length l = n := H _ mem_cons_self
+    simp [sum_map, length_l, Nat.add_comm, mul_succ]
 
 @[simp]
 theorem permutationsAux_nil (is : List α) : permutationsAux [] is = [] := by
@@ -226,13 +234,14 @@ theorem map_permutations (f : α → β) (ts : List α) :
 
 theorem map_permutations' (f : α → β) (ts : List α) :
     map (map f) (permutations' ts) = permutations' (map f ts) := by
-  induction' ts with t ts ih <;>
-    [rfl; simp [← ih, map_flatMap, ← map_map_permutations'Aux, flatMap_map]]
+  induction ts with
+  | nil => rfl
+  | cons t ts ih => simp [← ih, map_flatMap, ← map_map_permutations'Aux, flatMap_map]
 
 theorem permutationsAux_append (is is' ts : List α) :
     permutationsAux (is ++ ts) is' =
       (permutationsAux is is').map (· ++ ts) ++ permutationsAux ts (is.reverse ++ is') := by
-  induction' is with t is ih generalizing is'; · simp
+  induction is generalizing is' with | nil => simp | cons t is ih =>
   simp only [foldr_permutationsAux2, ih, map_flatMap, cons_append, permutationsAux_cons, map_append,
     reverse_cons, append_assoc]
   congr 2
@@ -269,7 +278,7 @@ theorem length_permutationsAux :
   refine permutationsAux.rec (by simp) ?_
   intro t ts is IH1 IH2
   have IH2 : length (permutationsAux is nil) + 1 = is.length ! := by simpa using IH2
-  simp only [length, factorial, Nat.mul_comm, add_eq] at IH1
+  simp only [List.length_cons, factorial, Nat.mul_comm, add_eq] at IH1
   rw [permutationsAux_cons,
     length_foldr_permutationsAux2' _ _ _ _ _ fun l m => (perm_of_mem_permutations m).length_eq,
     permutations, length, length, IH2, Nat.succ_add, Nat.factorial_succ, Nat.mul_comm (_ + 1),
@@ -308,8 +317,9 @@ theorem mem_permutations {s t : List α} : s ∈ permutations t ↔ s ~ t :=
 theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
     (permutations'Aux a l).flatMap (permutations'Aux b) ~
       (permutations'Aux b l).flatMap (permutations'Aux a) := by
-  induction' l with c l ih
-  · exact Perm.swap [a, b] [b, a] []
+  induction l with
+  | nil => exact Perm.swap [a, b] [b, a] []
+  | cons c l ih => ?_
   simp only [permutations'Aux, flatMap_cons, map_cons, map_map, cons_append]
   apply Perm.swap'
   have :
@@ -342,7 +352,7 @@ theorem Perm.permutations' {s t : List α} (p : s ~ t) : permutations' s ~ permu
 
 theorem permutations_perm_permutations' (ts : List α) : ts.permutations ~ ts.permutations' := by
   obtain ⟨n, h⟩ : ∃ n, length ts < n := ⟨_, Nat.lt_succ_self _⟩
-  induction' n with n IH generalizing ts; · cases h
+  induction n generalizing ts with | zero => cases h | succ n IH => ?_
   refine List.reverseRecOn ts (fun _ => ?_) (fun ts t _ h => ?_) h; · simp [permutations]
   rw [← concat_eq_append, length_concat, Nat.succ_lt_succ_iff] at h
   have IH₂ := (IH ts.reverse (by rwa [length_reverse])).trans (reverse_perm _).permutations'
@@ -379,10 +389,12 @@ theorem perm_permutations'_iff {s t : List α} : permutations' s ~ permutations'
 theorem getElem_permutations'Aux (s : List α) (x : α) (n : ℕ)
     (hn : n < length (permutations'Aux x s)) :
     (permutations'Aux x s)[n] = s.insertIdx n x := by
-  induction' s with y s IH generalizing n
-  · simp only [permutations'Aux, length, Nat.zero_add, lt_one_iff] at hn
+  induction s generalizing n with
+  | nil =>
+    simp only [permutations'Aux, length, Nat.zero_add, lt_one_iff] at hn
     simp [hn]
-  · cases n
+  | cons y s IH =>
+    cases n
     · simp
     · simpa [get] using IH _ _
 
@@ -401,9 +413,10 @@ private theorem DecEq_eq [DecidableEq α] :
 
 theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
     count (x :: l) (permutations'Aux x l) = length (takeWhile (x = ·) l) + 1 := by
-  induction' l with y l IH generalizing x
-  · simp [takeWhile, count]
-  · rw [permutations'Aux, count_cons_self]
+  induction l generalizing x with
+  | nil => simp [takeWhile, count]
+  | cons y l IH =>
+    rw [permutations'Aux, count_cons_self]
     by_cases hx : x = y
     · subst hx
       simpa [takeWhile, Nat.succ_inj, DecEq_eq] using IH _
@@ -414,9 +427,9 @@ theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
 @[simp]
 theorem length_permutations'Aux (s : List α) (x : α) :
     length (permutations'Aux x s) = length s + 1 := by
-  induction' s with y s IH
-  · simp
-  · simpa using IH
+  induction s with
+  | nil => simp
+  | cons y s IH => simpa using IH
 
 theorem injective_permutations'Aux (x : α) : Function.Injective (permutations'Aux x) := by
   intro s t h
@@ -429,17 +442,15 @@ theorem injective_permutations'Aux (x : α) : Function.Injective (permutations'A
 
 theorem nodup_permutations'Aux_of_notMem (s : List α) (x : α) (hx : x ∉ s) :
     Nodup (permutations'Aux x s) := by
-  induction' s with y s IH
-  · simp
-  · simp only [not_or, mem_cons] at hx
+  induction s with
+  | nil => simp
+  | cons y s IH =>
+    simp only [not_or, mem_cons] at hx
     simp only [permutations'Aux, nodup_cons, mem_map, cons.injEq, exists_eq_right_right, not_and]
     refine ⟨fun _ => Ne.symm hx.left, ?_⟩
     rw [nodup_map_iff]
     · exact IH hx.right
     · simp
-
-@[deprecated (since := "2025-05-23")]
-alias nodup_permutations'Aux_of_not_mem := nodup_permutations'Aux_of_notMem
 
 theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'Aux x s) ↔ x ∉ s := by
   refine ⟨fun h H ↦ ?_, nodup_permutations'Aux_of_notMem _ _⟩

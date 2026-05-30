@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.RingTheory.Kaehler.Basic
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.RingTheory.Kaehler.Basic
 
 /-!
 # The differentials of a morphism in the category of commutative rings
@@ -17,6 +19,8 @@ We also construct the module of differentials
 `CommRingCat.KaehlerDifferential f : ModuleCat B` and the corresponding derivation.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -30,10 +34,10 @@ variable {A B : CommRingCat.{u}} (M : ModuleCat.{v} B) (f : A ⟶ B)
 
 /-- The type of derivations with values in a `B`-module `M` relative
 to a morphism `f : A ⟶ B` in the category `CommRingCat`. -/
-nonrec def Derivation : Type _ :=
+def Derivation : Type _ :=
   letI := f.hom.toAlgebra
   letI := Module.compHom M f.hom
-  Derivation A B M
+  _root_.Derivation A B M
 
 namespace Derivation
 
@@ -95,6 +99,7 @@ noncomputable def KaehlerDifferential : ModuleCat.{u} B :=
 
 namespace KaehlerDifferential
 
+set_option backward.isDefEq.respectTransparency false in
 variable (f) in
 /-- The (universal) derivation in `(KaehlerDifferential f).Derivation f`
 when `f : A ⟶ B` is a morphism in the category `CommRingCat`. -/
@@ -108,6 +113,7 @@ noncomputable def D : (KaehlerDifferential f).Derivation f :=
 differential map `B → KaehlerDifferential f`. -/
 noncomputable abbrev d (b : B) : KaehlerDifferential f := (D f).d b
 
+set_option backward.isDefEq.respectTransparency false in
 @[ext]
 lemma ext {M : ModuleCat B} {α β : KaehlerDifferential f ⟶ M}
     (h : ∀ (b : B), α (d b) = β (d b)) : α = β := by
@@ -121,6 +127,7 @@ lemma ext {M : ModuleCat B} {α β : KaehlerDifferential f ⟶ M}
   ext : 1
   exact this
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `KaehlerDifferential f ⟶ (ModuleCat.restrictScalars g').obj (KaehlerDifferential f')`
 induced by a commutative square (given by an equality `g ≫ f' = f ≫ g'`)
 in the category `CommRingCat`. -/
@@ -156,6 +163,7 @@ namespace ModuleCat.Derivation
 variable {A B : CommRingCat.{u}} {f : A ⟶ B}
   {M : ModuleCat.{u} B} (D : M.Derivation f)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `f : A ⟶ B` a morphism in the category `CommRingCat`, `M : ModuleCat B`,
 and `D : M.Derivation f`, this is the induced
 morphism `CommRingCat.KaehlerDifferential f ⟶ M`. -/
@@ -164,6 +172,7 @@ noncomputable def desc : CommRingCat.KaehlerDifferential f ⟶ M :=
   letI := Module.compHom M f.hom
   ofHom D.liftKaehlerDifferential
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma desc_d (b : B) : D.desc (CommRingCat.KaehlerDifferential.d b) = D.d b := by
   letI := f.hom.toAlgebra

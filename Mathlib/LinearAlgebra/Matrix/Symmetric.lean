@@ -3,8 +3,10 @@ Copyright (c) 2021 Lu-Ming Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lu-Ming Zhang
 -/
-import Mathlib.Data.Matrix.Basic
-import Mathlib.Data.Matrix.Block
+module
+
+public import Mathlib.Data.Matrix.Basic
+public import Mathlib.Data.Matrix.Block
 
 /-!
 # Symmetric matrices
@@ -19,6 +21,8 @@ This file contains the definition and basic results about symmetric matrices.
 
 symm, symmetric, matrix
 -/
+
+@[expose] public section
 
 
 variable {α β n m R : Type*}
@@ -74,20 +78,42 @@ theorem IsSymm.pow [CommSemiring α] [Fintype n] [DecidableEq n] {A : Matrix n n
   rw [IsSymm, transpose_pow, h]
 
 @[simp]
-theorem IsSymm.map {A : Matrix n n α} (h : A.IsSymm) (f : α → β) : (A.map f).IsSymm :=
-  transpose_map.symm.trans (h.symm ▸ rfl)
+theorem IsSymm.map {A : Matrix n n α} (h : A.IsSymm) (f : α → β) : (A.map f).IsSymm := by
+  rw [IsSymm, ← transpose_map, h.eq]
 
 @[simp]
+theorem isSymm_map_iff {A : Matrix n n α} {f : α → β} (hf : f.Injective) :
+    (A.map f).IsSymm ↔ A.IsSymm := by
+  rw [IsSymm, IsSymm, ← transpose_map, map_injective hf |>.eq_iff]
+
 theorem IsSymm.transpose {A : Matrix n n α} (h : A.IsSymm) : Aᵀ.IsSymm :=
   congr_arg _ h
+
+@[simp]
+theorem isSymm_transpose_iff {A : Matrix n n α} : Aᵀ.IsSymm ↔ A.IsSymm := by
+  refine ⟨fun h ↦ ?_, (·.transpose)⟩
+  rw [← A.transpose_transpose]
+  exact h.transpose
 
 @[simp]
 theorem IsSymm.conjTranspose [Star α] {A : Matrix n n α} (h : A.IsSymm) : Aᴴ.IsSymm :=
   h.transpose.map _
 
 @[simp]
+theorem isSymm_conjTranspose_iff [InvolutiveStar α] {A : Matrix n n α} : Aᴴ.IsSymm ↔ A.IsSymm := by
+  refine ⟨fun h ↦ ?_, (·.conjTranspose)⟩
+  rw [← A.conjTranspose_conjTranspose]
+  exact h.conjTranspose
+
+@[simp]
 theorem IsSymm.neg [Neg α] {A : Matrix n n α} (h : A.IsSymm) : (-A).IsSymm :=
   (transpose_neg _).trans (congr_arg _ h)
+
+@[simp]
+theorem isSymm_neg_iff [InvolutiveNeg α] {A : Matrix n n α} : (-A).IsSymm ↔ A.IsSymm := by
+  refine ⟨fun h ↦ ?_, (·.neg)⟩
+  rw [← neg_neg A]
+  exact h.neg
 
 @[simp]
 theorem IsSymm.add {A B : Matrix n n α} [Add α] (hA : A.IsSymm) (hB : B.IsSymm) : (A + B).IsSymm :=
@@ -102,8 +128,23 @@ theorem IsSymm.smul [SMul R α] {A : Matrix n n α} (h : A.IsSymm) (k : R) : (k 
   (transpose_smul _ _).trans (congr_arg _ h)
 
 @[simp]
+theorem isSymm_smul_iff [Monoid R] [MulAction R α] {A : Matrix n n α} (k : R) [Invertible k] :
+    (k • A).IsSymm ↔ A.IsSymm := by
+  refine ⟨fun h ↦ ?_, (·.smul k)⟩
+  rw [← invOf_smul_smul k A]
+  exact h.smul ⅟k
+
+@[simp]
 theorem IsSymm.submatrix {A : Matrix n n α} (h : A.IsSymm) (f : m → n) : (A.submatrix f f).IsSymm :=
   (transpose_submatrix _ _ _).trans (h.symm ▸ rfl)
+
+theorem IsSymm.reindex {A : Matrix n n α} (h : A.IsSymm) (f : n ≃ m) : (A.reindex f f).IsSymm := by
+  rw [reindex_apply]
+  apply submatrix h
+
+theorem isSymm_reindex_iff {A : Matrix n n α} (f : n ≃ m) : (A.reindex f f).IsSymm ↔ A.IsSymm := by
+  refine ⟨fun h ↦ ?_, (·.reindex f)⟩
+  simpa using h.reindex f.symm
 
 /-- The diagonal matrix `diagonal v` is symmetric. -/
 @[simp]
@@ -128,5 +169,15 @@ theorem isSymm_fromBlocks_iff {A : Matrix m m α} {B : Matrix m n α} {C : Matri
     ⟨(congr_arg toBlocks₁₁ h :), (congr_arg toBlocks₂₁ h :), (congr_arg toBlocks₁₂ h :),
       (congr_arg toBlocks₂₂ h :)⟩,
     fun ⟨hA, hBC, _, hD⟩ => IsSymm.fromBlocks hA hBC hD⟩
+
+theorem isSymm_comp_iff {A : Matrix m m (Matrix n n α)} :
+    (A.comp m m n n α).IsSymm ↔ Aᵀ = A.map (·ᵀ) := by
+  rw [IsSymm, transpose_comp, transpose_map, comp .. |>.injective.eq_iff, eq_comm,
+    transpose_involutive _ _ |>.eq_iff]
+
+theorem isSymm_comp_iff_forall {A : Matrix m m (Matrix n n α)} :
+    (A.comp m m n n α).IsSymm ↔ ∀ i j i' j', A j i j' i' = A i j i' j' := by
+  simp [IsSymm.ext_iff]
+  grind
 
 end Matrix

@@ -3,9 +3,11 @@ Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Data.Real.Irrational
-import Mathlib.Topology.Algebra.Order.Floor
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Topology.Algebra.Order.Floor
+public import Mathlib.NumberTheory.Real.Irrational
 
 /-!
 # `Real.pi` is irrational
@@ -31,6 +33,8 @@ The proof idea is as follows.
   `n → ∞`.
 
 -/
+
+public section
 
 noncomputable section
 
@@ -78,15 +82,15 @@ private lemma recursion' (n : ℕ) :
   have hu₁_eval_neg_one : u₁ (-1) = 0 := by simp only [u₁, f]; simp
   have t : u₂ 1 * v₂ 1 - u₂ (-1) * v₂ (-1) = 2 * (0 ^ n * cos θ) := by simp [u₂, v₂, f, ← two_mul]
   have hf (x) : HasDerivAt f (- 2 * x) x := by
-    convert (hasDerivAt_pow 2 x).const_sub 1 using 1
+    convert! (hasDerivAt_pow 2 x).const_sub 1 using 1
     simp
   have hu₁ (x) : HasDerivAt u₁ (u₁' x) x := by
-    convert (hf x).pow _ using 1
+    convert! (hf x).pow _ using 1
     simp only [Nat.add_succ_sub_one, u₁', Nat.cast_add_one]
     ring
   have hv₁ (x) : HasDerivAt v₁ (v₁' x) x := (hasDerivAt_mul_const θ).sin
   have hu₂ (x) : HasDerivAt u₂ (u₂' x) x := by
-    convert (hasDerivAt_id' x).fun_mul ((hf x).fun_pow _) using 1
+    convert! (hasDerivAt_id' x).fun_mul ((hf x).fun_pow _) using 1
     simp only [u₂']
     ring
   have hv₂ (x) : HasDerivAt v₂ (v₂' x) x := (hasDerivAt_mul_const θ).cos
@@ -123,8 +127,8 @@ private lemma recursion (n : ℕ) :
     I (n + 2) θ * θ ^ 2 =
       2 * (n + 2) * (2 * n + 3) * I (n + 1) θ - 4 * (n + 2) * (n + 1) * I n θ := by
   rw [recursion' (n + 1)]
-  simp
-  ring!
+  push_cast
+  ring
 
 /--
 Auxiliary for the proof that `π` is irrational.
@@ -143,7 +147,7 @@ While not given in the informal proof, these are easy to deduce from the recursi
 private def sinPoly : ℕ → ℤ[X]
   | 0 => C 2
   | 1 => C 4
-  | (n+2) => ((2 : ℤ) * (2 * n + 3)) • sinPoly (n + 1) + monomial 2 (-4) * sinPoly n
+  | n + 2 => ((2 : ℤ) * (2 * n + 3)) • sinPoly (n + 1) + monomial 2 (-4) * sinPoly n
 
 /--
 Auxiliary for the proof that `π` is irrational.
@@ -154,7 +158,7 @@ While not given in the informal proof, these are easy to deduce from the recursi
 private def cosPoly : ℕ → ℤ[X]
   | 0 => 0
   | 1 => monomial 1 (-4)
-  | (n+2) => ((2 : ℤ) * (2 * n + 3)) • cosPoly (n + 1) + monomial 2 (-4) * cosPoly n
+  | n + 2 => ((2 : ℤ) * (2 * n + 3)) • cosPoly (n + 1) + monomial 2 (-4) * cosPoly n
 
 /--
 Auxiliary for the proof that `π` is irrational.
@@ -162,14 +166,14 @@ Prove a degree bound for `sinPoly n` by induction. Note this is where we find th
 explicit description of `sinPoly`.
 -/
 private lemma sinPoly_natDegree_le : ∀ n : ℕ, (sinPoly n).natDegree ≤ n
-  | 0 => by simp [sinPoly]
-  | 1 => by simp only [natDegree_C, zero_le', sinPoly]
+  | 0
+  | 1 => by simp [sinPoly]
   | n + 2 => by
-      rw [sinPoly]
-      refine natDegree_add_le_of_degree_le ((natDegree_smul_le _ _).trans ?_) ?_
-      · exact (sinPoly_natDegree_le (n + 1)).trans (by simp)
-      refine natDegree_mul_le.trans ?_
-      simpa [add_comm 2] using sinPoly_natDegree_le n
+    rw [sinPoly]
+    refine natDegree_add_le_of_degree_le ((natDegree_smul_le _ _).trans ?_) ?_
+    · exact (sinPoly_natDegree_le (n + 1)).trans (by simp)
+    refine natDegree_mul_le.trans ?_
+    simpa [add_comm 2] using sinPoly_natDegree_le n
 
 /--
 Auxiliary for the proof that `π` is irrational.
@@ -291,7 +295,7 @@ private lemma not_irrational_exists_rep {x : ℝ} :
   obtain ⟨n, hn⟩ := j.exists
   have hn' : 0 < a ^ (2 * n + 1) / n ! * I n (π / 2) := mul_pos (k _) I_pos
   obtain ⟨z, hz⟩ : ∃ z : ℤ, (sinPoly n).eval₂ (Int.castRingHom ℝ) (a / b) * b ^ (2 * n + 1) = z :=
-    is_integer a b ((sinPoly_natDegree_le _).trans (by omega))
+    is_integer a b ((sinPoly_natDegree_le _).trans (by lia))
   have e := sinPoly_add_cosPoly_eval (π / 2) n
   rw [cos_pi_div_two, sin_pi_div_two, mul_zero, mul_one, add_zero] at e
   have : a ^ (2 * n + 1) / n ! * I n (π / 2) =
@@ -301,6 +305,6 @@ private lemma not_irrational_exists_rep {x : ℝ} :
     linear_combination e
   have : (0 : ℝ) < z ∧ (z : ℝ) < 1 := by simp [← hz, ← h, ← this, hn', hn]
   norm_cast at this
-  omega
+  lia
 
 end

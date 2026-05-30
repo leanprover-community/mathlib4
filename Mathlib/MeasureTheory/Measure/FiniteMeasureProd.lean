@@ -3,8 +3,10 @@ Copyright (c) 2023 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
-import Mathlib.MeasureTheory.Measure.Prod
+module
+
+public import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
+public import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Products of finite measures and probability measures
@@ -26,6 +28,8 @@ the underlying space is metrizable and separable.
 continuously on the factors.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Topology Metric Filter Set ENNReal NNReal
 
@@ -63,9 +67,11 @@ lemma prod_apply_symm (s : Set (α × β)) (s_mble : MeasurableSet s) :
   rw [← ENNReal.toNNReal_mul]
   exact congr_arg ENNReal.toNNReal (Measure.prod_prod univ univ)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma zero_prod : (0 : FiniteMeasure α).prod ν = 0 := by
   rw [← mass_zero_iff, mass_prod, zero_mass, zero_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma prod_zero : μ.prod (0 : FiniteMeasure β) = 0 := by
   rw [← mass_zero_iff, mass_prod, zero_mass, mul_zero]
 

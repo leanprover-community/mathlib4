@@ -3,11 +3,12 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
+module
 
-import Mathlib.Algebra.Category.CoalgCat.Basic
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
-import Mathlib.CategoryTheory.Monoidal.Transport
-import Mathlib.RingTheory.Coalgebra.TensorProduct
+public import Mathlib.Algebra.Category.CoalgCat.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+public import Mathlib.CategoryTheory.Monoidal.Transport
+public import Mathlib.RingTheory.Coalgebra.TensorProduct
 
 /-!
 # The monoidal category structure on `R`-coalgebras
@@ -22,6 +23,8 @@ fields proved by pulling back the `MonoidalCategory` instance on the category of
 using `Monoidal.induced`.
 
 -/
+
+@[expose] public section
 
 universe v u
 

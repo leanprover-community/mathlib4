@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Group.Synonym
-import Mathlib.Algebra.Ring.Defs
+module
+
+public import Mathlib.Algebra.Order.Group.Synonym
+public import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Ring structure on the order type synonyms
@@ -12,45 +14,100 @@ import Mathlib.Algebra.Ring.Defs
 Transfer algebraic instances from `R` to `Rᵒᵈ` and `Lex R`.
 -/
 
+public section
+
 
 variable {R : Type*}
 
 /-! ### Order dual -/
 
+namespace OrderDual
 
-instance [h : Distrib R] : Distrib Rᵒᵈ := h
+instance [h : Distrib R] : Distrib Rᵒᵈ where
+  left_distrib := h.left_distrib
+  right_distrib := h.right_distrib
 
-instance [Mul R] [Add R] [h : LeftDistribClass R] : LeftDistribClass Rᵒᵈ := h
+instance [Mul R] [Add R] [h : LeftDistribClass R] : LeftDistribClass Rᵒᵈ where
+  left_distrib := h.left_distrib
 
-instance [Mul R] [Add R] [h : RightDistribClass R] : RightDistribClass Rᵒᵈ := h
+instance [Mul R] [Add R] [h : RightDistribClass R] : RightDistribClass Rᵒᵈ where
+  right_distrib := h.right_distrib
 
-instance [h : NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring Rᵒᵈ := h
+instance [h : NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring Rᵒᵈ where
+  zero_mul := h.zero_mul
+  mul_zero := h.mul_zero
 
-instance [h : NonUnitalSemiring R] : NonUnitalSemiring Rᵒᵈ := h
+instance [h : NatCast R] : NatCast Rᵒᵈ := h
 
-instance [h : NonAssocSemiring R] : NonAssocSemiring Rᵒᵈ := h
+instance [h : IntCast R] : IntCast Rᵒᵈ := h
 
-instance [h : Semiring R] : Semiring Rᵒᵈ := h
+instance [h : AddMonoidWithOne R] : AddMonoidWithOne Rᵒᵈ where
+  natCast_zero := h.natCast_zero
+  natCast_succ := h.natCast_succ
 
-instance [h : NonUnitalCommSemiring R] : NonUnitalCommSemiring Rᵒᵈ := h
+instance [h : AddCommMonoidWithOne R] : AddCommMonoidWithOne Rᵒᵈ where
 
-instance [h : CommSemiring R] : CommSemiring Rᵒᵈ := h
+instance [h : AddGroupWithOne R] : AddGroupWithOne Rᵒᵈ where
+  intCast_ofNat := h.intCast_ofNat
+  intCast_negSucc := h.intCast_negSucc
 
-instance [Mul R] [h : HasDistribNeg R] : HasDistribNeg Rᵒᵈ := h
+instance [AddCommGroupWithOne R] : AddCommGroupWithOne Rᵒᵈ where
 
-instance [h : NonUnitalNonAssocRing R] : NonUnitalNonAssocRing Rᵒᵈ := h
+instance [h : NonUnitalSemiring R] : NonUnitalSemiring Rᵒᵈ where
 
-instance [h : NonUnitalRing R] : NonUnitalRing Rᵒᵈ := h
+instance [h : NonAssocSemiring R] : NonAssocSemiring Rᵒᵈ where
 
-instance [h : NonAssocRing R] : NonAssocRing Rᵒᵈ := h
+instance [h : Semiring R] : Semiring Rᵒᵈ where
 
-instance [h : Ring R] : Ring Rᵒᵈ := h
+instance [h : NonUnitalCommSemiring R] : NonUnitalCommSemiring Rᵒᵈ where
 
-instance [h : NonUnitalCommRing R] : NonUnitalCommRing Rᵒᵈ := h
+instance [h : CommSemiring R] : CommSemiring Rᵒᵈ where
 
-instance [h : CommRing R] : CommRing Rᵒᵈ := h
+instance [Mul R] [h : HasDistribNeg R] : HasDistribNeg Rᵒᵈ where
+  neg_mul := h.neg_mul
+  mul_neg := h.mul_neg
 
-instance [Ring R] [h : IsDomain R] : IsDomain Rᵒᵈ := h
+instance [h : NonUnitalNonAssocRing R] : NonUnitalNonAssocRing Rᵒᵈ where
+
+instance [h : NonUnitalRing R] : NonUnitalRing Rᵒᵈ where
+
+instance [h : NonAssocRing R] : NonAssocRing Rᵒᵈ where
+
+instance [h : Ring R] : Ring Rᵒᵈ where
+
+instance [h : NonUnitalCommRing R] : NonUnitalCommRing Rᵒᵈ where
+
+instance [h : CommRing R] : CommRing Rᵒᵈ where
+
+instance [Ring R] [h : IsDomain R] : IsDomain Rᵒᵈ where
+  mul_left_cancel_of_ne_zero := h.mul_left_cancel_of_ne_zero
+  mul_right_cancel_of_ne_zero := h.mul_right_cancel_of_ne_zero
+
+end OrderDual
+
+open OrderDual
+
+@[simp]
+theorem toDual_natCast [NatCast R] (n : ℕ) : toDual (n : R) = n :=
+  rfl
+
+@[simp]
+theorem toDual_ofNat [NatCast R] (n : ℕ) [n.AtLeastTwo] :
+    (toDual (ofNat(n) : R)) = ofNat(n) :=
+  rfl
+
+@[simp]
+theorem ofDual_natCast [NatCast R] (n : ℕ) : (ofDual n : R) = n :=
+  rfl
+
+@[simp]
+theorem ofDual_ofNat [NatCast R] (n : ℕ) [n.AtLeastTwo] :
+    (ofDual (ofNat(n) : Rᵒᵈ)) = ofNat(n) :=
+  rfl
+
+@[simp] lemma toDual_intCast [IntCast R] (n : ℤ) : toDual (n : R) = n := rfl
+
+@[simp] lemma ofDual_intCast [IntCast R] (n : ℤ) : (ofDual n : R) = n := rfl
 
 /-! ### Lexicographical order -/
 

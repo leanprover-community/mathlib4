@@ -3,8 +3,10 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.Tilted
-import Mathlib.Probability.Moments.MGFAnalytic
+module
+
+public import Mathlib.MeasureTheory.Measure.Tilted
+public import Mathlib.Probability.Moments.MGFAnalytic
 
 /-!
 # Results relating `Measure.tilted` to `mgf` and `cgf`
@@ -23,6 +25,8 @@ of `X`.
   `Var[X; μ.tilted (t * X ·)] = iteratedDeriv 2 (cgf X μ) t`
 
 -/
+
+public section
 
 
 open MeasureTheory Real Set Finset
@@ -143,7 +147,7 @@ lemma memLp_tilted_mul (ht : t ∈ interior (integrableExpSet X μ)) (p : ℝ≥
   rotate_left
   · simp [hp]
   · simp
-  simp_rw [ENNReal.coe_toReal, ← ofReal_norm_eq_enorm, norm_eq_abs,
+  simp_rw [ENNReal.coe_toReal, ← ofReal_norm, norm_eq_abs,
     ENNReal.ofReal_rpow_of_nonneg (x := |X _|) (p := p) (abs_nonneg (X _)) p.2]
   refine Integrable.lintegral_lt_top ?_
   simp_rw [integrable_tilted_iff (interior_subset (s := integrableExpSet X μ) ht),

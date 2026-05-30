@@ -3,19 +3,23 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finite.Defs
-import Mathlib.Data.Finset.BooleanAlgebra
-import Mathlib.Data.Finset.Image
-import Mathlib.Data.Fintype.Defs
-import Mathlib.Data.Fintype.OfMap
-import Mathlib.Data.Fintype.Sets
-import Mathlib.Data.List.FinRange
+module
+
+public import Mathlib.Data.Finite.Defs
+public import Mathlib.Data.Finset.BooleanAlgebra
+public import Mathlib.Data.Finset.Image
+public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Data.Fintype.OfMap
+public import Mathlib.Data.Fintype.Sets
+public import Mathlib.Data.List.FinRange
 
 /-!
 # Instances for finite types
 
 This file is a collection of basic `Fintype` instances for types such as `Fin`, `Prod` and pi types.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -34,6 +38,8 @@ instance Fin.fintype (n : ℕ) : Fintype (Fin n) :=
 
 theorem Fin.univ_def (n : ℕ) : (univ : Finset (Fin n)) = ⟨List.finRange n, List.nodup_finRange n⟩ :=
   rfl
+
+theorem Finset.univ_fin2 : (univ : Finset (Fin 2)) = {0, 1} := rfl
 
 theorem Finset.val_univ_fin (n : ℕ) : (Finset.univ : Finset (Fin n)).val = List.finRange n := rfl
 
@@ -103,8 +109,10 @@ theorem Fin.univ_image_get' [DecidableEq β] (l : List α) (f : α → β) :
     Finset.univ.image (f <| l.get ·) = (l.map f).toFinset := by
   simp
 
-@[instance]
-def Unique.fintype {α : Type*} [Unique α] : Fintype α :=
+lemma Fin.eq_iff_eq_zero_iff (a b : Fin 2) : a = b ↔ (a = 0 ↔ b = 0) :=
+  ⟨by rintro rfl; rfl, fin_two_eq_of_eq_zero_iff⟩
+
+instance Unique.fintype {α : Type*} [Unique α] : Fintype α :=
   Fintype.ofSubsingleton default
 
 /-- Short-circuit instance to decrease search for `Unique.fintype`,
@@ -140,10 +148,12 @@ theorem Fintype.univ_bool : @univ Bool _ = {true, false} :=
   rfl
 
 /-- Given that `α × β` is a fintype, `α` is also a fintype. -/
+@[implicit_reducible]
 def Fintype.prodLeft {α β} [DecidableEq α] [Fintype (α × β)] [Nonempty β] : Fintype α :=
   ⟨(@univ (α × β) _).image Prod.fst, fun a => by simp⟩
 
 /-- Given that `α × β` is a fintype, `β` is also a fintype. -/
+@[implicit_reducible]
 def Fintype.prodRight {α β} [DecidableEq β] [Fintype (α × β)] [Nonempty α] : Fintype β :=
   ⟨(@univ (α × β) _).image Prod.snd, fun b => by simp⟩
 
@@ -257,7 +267,7 @@ theorem exists_seq_of_forall_finset_exists {α : Type*} (P : α → Prop) (r : �
     set f := seqOfForallFinsetExistsAux P r h' with hf
     have A : ∀ n : ℕ, P (f n) := by
       intro n
-      induction' n using Nat.strong_induction_on with n IH
+      induction n using Nat.strong_induction_on with | _ n IH
       have IH' : ∀ x : Fin n, P (f x) := fun n => IH n.1 n.2
       rw [hf, seqOfForallFinsetExistsAux]
       exact
@@ -280,13 +290,8 @@ some relation `r` with respect to all the points in `s`. Then one may construct 
 function `f : ℕ → α` such that `r (f m) (f n)` holds whenever `m ≠ n`.
 We also ensure that all constructed points satisfy a given predicate `P`. -/
 theorem exists_seq_of_forall_finset_exists' {α : Type*} (P : α → Prop) (r : α → α → Prop)
-    [IsSymm α r] (h : ∀ s : Finset α, (∀ x ∈ s, P x) → ∃ y, P y ∧ ∀ x ∈ s, r x y) :
+    [Std.Symm r] (h : ∀ s : Finset α, (∀ x ∈ s, P x) → ∃ y, P y ∧ ∀ x ∈ s, r x y) :
     ∃ f : ℕ → α, (∀ n, P (f n)) ∧ Pairwise (r on f) := by
   rcases exists_seq_of_forall_finset_exists P r h with ⟨f, hf, hf'⟩
   refine ⟨f, hf, fun m n hmn => ?_⟩
-  rcases lt_trichotomy m n with (h | rfl | h)
-  · exact hf' m n h
-  · exact (hmn rfl).elim
-  · unfold Function.onFun
-    apply symm
-    exact hf' n m h
+  grind +splitIndPred

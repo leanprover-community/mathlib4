@@ -3,8 +3,10 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Order.Notation
-import Mathlib.Combinatorics.Quiver.Basic
+module
+
+public import Mathlib.Order.Notation
+public import Mathlib.Combinatorics.Quiver.Basic
 
 /-!
 ## Wide subquivers
@@ -14,14 +16,15 @@ every pair of vertices `a b : V`. We include 'wide' in the name to emphasize tha
 subquivers by definition contain all vertices.
 -/
 
+@[expose] public section
+
 universe v u
 
 /--
 A wide subquiver `H` of `G` picks out a set `H a b` of arrows from `a` to `b`
 for every pair of vertices `a b`.
-
-NB: this does not work for `Prop`-valued quivers. It requires `G : Quiver.{v+1} V`. -/
-def WideSubquiver (V) [Quiver.{v + 1} V] :=
+-/
+def WideSubquiver (V) [Quiver.{v} V] :=
   ∀ a b : V, Set (a ⟶ b)
 
 /-- A type synonym for `V`, when thought of as a quiver having only the arrows from
@@ -51,7 +54,7 @@ noncomputable instance {V} [Quiver V] : Inhabited (WideSubquiver V) :=
 -- TODO Unify with `CategoryTheory.Arrow`? (The fields have been named to match.)
 /-- `Total V` is the type of _all_ arrows of `V`. -/
 @[ext]
-structure Total (V : Type u) [Quiver.{v} V] : Sort max (u + 1) v where
+structure Total (V : Type u) [Quiver.{v} V] : Type max u v where
   /-- the source vertex of an arrow -/
   left : V
   /-- the target vertex of an arrow -/

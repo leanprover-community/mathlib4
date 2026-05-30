@@ -3,8 +3,11 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.Lean.Expr.Basic
-import Mathlib.Logic.Equiv.Defs
+module
+
+public meta import Mathlib.Lean.Expr.Basic
+public import Mathlib.Logic.Equiv.Defs
+public meta import Mathlib.Tactic.Simps.Basic
 
 /-!
 # Associativity of products
@@ -16,6 +19,8 @@ For example,
 ```
 gives the "obvious" equivalence between `(α × β) × (γ × δ)` and `α × (β × γ) × δ`.
 -/
+
+public meta section
 
 namespace Lean.Expr
 

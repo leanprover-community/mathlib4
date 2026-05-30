@@ -3,9 +3,11 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Center
-import Mathlib.Algebra.Group.Subsemigroup.Basic
-import Mathlib.GroupTheory.Subsemigroup.Center
+module
+
+public import Mathlib.Algebra.Group.Center
+public import Mathlib.Algebra.Group.Subsemigroup.Basic
+public import Mathlib.GroupTheory.Subsemigroup.Center
 
 /-!
 # Centralizers in semigroups, as subsemigroups.
@@ -18,6 +20,8 @@ import Mathlib.GroupTheory.Subsemigroup.Center
 We provide `Monoid.centralizer`, `AddMonoid.centralizer`, `Subgroup.centralizer`, and
 `AddSubgroup.centralizer` in other files.
 -/
+
+@[expose] public section
 
 -- Guard against import creep
 assert_not_exists Finset
@@ -73,16 +77,29 @@ lemma closure_le_centralizer_centralizer (s : Set M) :
     closure s ≤ centralizer (centralizer s) :=
   closure_le.mpr Set.subset_centralizer_centralizer
 
-/-- If all the elements of a set `s` commute, then `closure s` is a commutative semigroup. -/
+/-- If all the elements of a set `s` commute, then `closure s` is commutative. -/
 @[to_additive
-      /-- If all the elements of a set `s` commute, then `closure s` forms an additive
-      commutative semigroup. -/]
+/-- If all the elements of a set `s` commute, then `closure s` is commutative. -/]
+theorem isMulCommutative_closure {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
+    IsMulCommutative (closure s) :=
+  have := closure_le_centralizer_centralizer s
+  .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
+    Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
+
+open scoped IsMulCommutative in
+/-- If all the elements of a set `s` commute, then `closure s` is a commutative semigroup. -/
+@[to_additive (attr := deprecated isMulCommutative_closure (since := "2026-03-09"))
+/-- If all the elements of a set `s` commute, then `closure s` forms an additive
+commutative semigroup. -/]
 abbrev closureCommSemigroupOfComm {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     CommSemigroup (closure s) :=
-  { MulMemClass.toSemigroup (closure s) with
-    mul_comm := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦
-      have := closure_le_centralizer_centralizer s
-      Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
+  haveI := isMulCommutative_closure M hcomm
+  inferInstance
+
+@[to_additive]
+instance instIsMulCommutative_closure {S : Type*} [SetLike S M] [MulMemClass S M] (s : S)
+    [IsMulCommutative s] : IsMulCommutative (closure (s : Set M)) :=
+  isMulCommutative_closure _ fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
 
 end
 

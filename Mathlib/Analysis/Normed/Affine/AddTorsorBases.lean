@@ -3,8 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+module
+
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!
 # Bases in normed affine spaces.
@@ -19,6 +21,8 @@ This file contains results about bases in normed affine spaces.
 * `IsOpen.exists_subset_affineIndependent_span_eq_top`
 * `interior_convexHull_nonempty_iff_affineSpan_eq_top`
 -/
+
+public section
 
 assert_not_exists HasFDerivAt
 

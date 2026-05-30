@@ -3,8 +3,10 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
+module
+
+public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 
 /-!
 # Finitely strongly measurable functions in `Lp`
@@ -23,6 +25,8 @@ Functions in `Lp` for `0 < p < ∞` are finitely strongly measurable.
   Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
 
 -/
+
+public section
 
 
 open MeasureTheory Filter TopologicalSpace Function
@@ -52,10 +56,6 @@ theorem MemLp.finStronglyMeasurable_of_stronglyMeasurable (hf : MemLp f p μ)
     apply subset_closure
     simp
 
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.finStronglyMeasurable_of_stronglyMeasurable :=
-  MemLp.finStronglyMeasurable_of_stronglyMeasurable
-
 theorem MemLp.aefinStronglyMeasurable (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     AEFinStronglyMeasurable f μ :=
   ⟨hf.aestronglyMeasurable.mk f,
@@ -63,9 +63,6 @@ theorem MemLp.aefinStronglyMeasurable (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0)
           hf).finStronglyMeasurable_of_stronglyMeasurable
       hf.aestronglyMeasurable.stronglyMeasurable_mk hp_ne_zero hp_ne_top,
     hf.aestronglyMeasurable.ae_eq_mk⟩
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.aefinStronglyMeasurable := MemLp.aefinStronglyMeasurable
 
 theorem Integrable.aefinStronglyMeasurable (hf : Integrable f μ) : AEFinStronglyMeasurable f μ :=
   (memLp_one_iff_integrable.mpr hf).aefinStronglyMeasurable one_ne_zero ENNReal.coe_ne_top

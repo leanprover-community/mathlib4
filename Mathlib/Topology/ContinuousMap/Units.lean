@@ -3,9 +3,11 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Algebra.Algebra.Spectrum.Basic
-import Mathlib.Topology.ContinuousMap.Algebra
+module
+
+public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
+public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
 # Units of continuous functions
@@ -13,6 +15,8 @@ import Mathlib.Topology.ContinuousMap.Algebra
 This file concerns itself with `C(X, M)ˣ` and `C(X, Mˣ)` when `X` is a topological space
 and `M` has some monoid structure compatible with its topology.
 -/
+
+@[expose] public section
 
 
 variable {X M R 𝕜 : Type*} [TopologicalSpace X]

@@ -3,8 +3,10 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
-import Mathlib.MeasureTheory.Group.Measure
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.MeasureTheory.Group.Measure
 
 /-!
 # Bochner Integration on Groups
@@ -12,6 +14,8 @@ import Mathlib.MeasureTheory.Group.Measure
 We develop properties of integrals with a group as domain.
 This file contains properties about integrability and Bochner integration.
 -/
+
+public section
 
 namespace MeasureTheory
 
@@ -44,7 +48,7 @@ theorem IntegrableOn.comp_inv [IsInvInvariant μ] {f : G → F} {s : Set G} (hf 
   apply (integrable_map_equiv (MeasurableEquiv.inv G) f).mp
   have : s⁻¹ = MeasurableEquiv.inv G ⁻¹' s := by simp
   rw [this, ← MeasurableEquiv.restrict_map]
-  simpa using hf
+  simpa using! hf
 
 end MeasurableInv
 
@@ -112,7 +116,8 @@ to a left-invariant measure is 0. -/
       respect to a left-invariant measure is 0. -/]
 theorem integral_eq_zero_of_mul_left_eq_neg [IsMulLeftInvariant μ] (hf' : ∀ x, f (g * x) = -f x) :
     ∫ x, f x ∂μ = 0 := by
-  simp_rw [← self_eq_neg ℝ E, ← integral_neg, ← hf', integral_mul_left_eq_self]
+  have : IsAddTorsionFree E := .of_isTorsionFree ℝ E
+  simp_rw [← self_eq_neg, ← integral_neg, ← hf', integral_mul_left_eq_self]
 
 /-- If some right-translate of a function negates it, then the integral of the function with respect
 to a right-invariant measure is 0. -/
@@ -121,7 +126,8 @@ to a right-invariant measure is 0. -/
       respect to a right-invariant measure is 0. -/]
 theorem integral_eq_zero_of_mul_right_eq_neg [IsMulRightInvariant μ] (hf' : ∀ x, f (x * g) = -f x) :
     ∫ x, f x ∂μ = 0 := by
-  simp_rw [← self_eq_neg ℝ E, ← integral_neg, ← hf', integral_mul_right_eq_self]
+  have : IsAddTorsionFree E := .of_isTorsionFree ℝ E
+  simp_rw [← self_eq_neg, ← integral_neg, ← hf', integral_mul_right_eq_self]
 
 @[to_additive]
 theorem Integrable.comp_mul_left {f : G → F} [IsMulLeftInvariant μ] (hf : Integrable f μ) (g : G) :
@@ -150,7 +156,7 @@ theorem Integrable.comp_div_left {f : G → F} [IsInvInvariant μ] [IsMulLeftInv
 theorem integrable_comp_div_left (f : G → F) [IsInvInvariant μ] [IsMulLeftInvariant μ] (g : G) :
     Integrable (fun t => f (g / t)) μ ↔ Integrable f μ := by
   refine ⟨fun h => ?_, fun h => h.comp_div_left g⟩
-  convert h.comp_inv.comp_mul_left g⁻¹
+  convert! h.comp_inv.comp_mul_left g⁻¹
   simp_rw [div_inv_eq_mul, mul_inv_cancel_left]
 
 @[to_additive]
@@ -163,7 +169,7 @@ end MeasurableMul
 
 section SMul
 
-variable [Group G] [MeasurableSpace α] [MulAction G α] [MeasurableSMul G α]
+variable {G : Type*} [Group G] [MeasurableSpace α] [MulAction G α] [MeasurableConstSMul G α]
 
 @[to_additive]
 theorem integral_smul_eq_self {μ : Measure α} [SMulInvariantMeasure G α μ] (f : α → E) {g : G} :

@@ -3,7 +3,9 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Data.List.Sym
+module
+
+public import Mathlib.Data.List.Sym
 
 /-! # Unordered tuples of elements of a multiset
 
@@ -29,6 +31,8 @@ unordered n-tuples from a given multiset. These are multiset versions of `Nat.mu
 * `theorem strictMono_sym2 : StrictMono (Multiset.sym2 : Multiset α → _)`
 
 -/
+
+@[expose] public section
 
 namespace Multiset
 
@@ -76,7 +80,7 @@ protected theorem Nodup.sym2 {m : Multiset α} (h : m.Nodup) : m.sym2.Nodup :=
 open scoped List in
 @[simp, mono]
 theorem sym2_mono {m m' : Multiset α} (h : m ≤ m') : m.sym2 ≤ m'.sym2 := by
-  refine Quotient.inductionOn₂ m m' (fun xs ys h => ?_) h
+  induction m, m' using Quotient.inductionOn₂ with | _ xs ys
   suffices xs <+~ ys from this.sym2
   simpa only [quot_mk_to_coe, coe_le, sym2_coe] using h
 

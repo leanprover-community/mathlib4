@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Algebra.Group.Subsemigroup.Basic
-import Mathlib.Algebra.Group.Units.Defs
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Submonoid.Defs
+public import Mathlib.Algebra.Group.Subsemigroup.Basic
+public import Mathlib.Algebra.Group.Units.Defs
 
 /-!
 # Submonoids: `CompleteLattice` structure
@@ -48,6 +50,8 @@ numbers. `Submonoid` is implemented by extending `Subsemigroup` requiring `one_m
 submonoid, submonoids
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero
 
 variable {M : Type*} {N : Type*}
@@ -75,12 +79,12 @@ instance : InfSet (Submonoid M) :=
 theorem coe_sInf (S : Set (Submonoid M)) : ((sInf S : Submonoid M) : Set M) = ⋂ s ∈ S, ↑s :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem mem_sInf {S : Set (Submonoid M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
 
-@[to_additive]
-theorem mem_iInf {ι : Sort*} {S : ι → Submonoid M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+@[to_additive (attr := simp)]
+theorem mem_iInf {ι : Sort*} {S : ι → Submonoid M} {x : M} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[to_additive (attr := simp, norm_cast)]
@@ -91,9 +95,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → Submonoid M} : (↑(⨅ i, S i) : Set 
 @[to_additive /-- The `AddSubmonoid`s of an `AddMonoid` form a complete lattice. -/]
 instance : CompleteLattice (Submonoid M) :=
   { (completeLatticeOfInf (Submonoid M)) fun _ =>
-      IsGLB.of_image (f := (SetLike.coe : Submonoid M → Set M))
-        (@fun S T => show (S : Set M) ≤ T ↔ S ≤ T from SetLike.coe_subset_coe)
-        isGLB_biInf with
+      .of_image SetLike.coe_subset_coe isGLB_biInf with
     le := (· ≤ ·)
     lt := (· < ·)
     bot := ⊥
@@ -126,12 +128,6 @@ theorem mem_closure_of_mem {s : Set M} {x : M} (hx : x ∈ s) : x ∈ closure s 
 @[to_additive]
 theorem notMem_of_notMem_closure {P : M} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.AddSubmonoid.not_mem_of_not_mem_closure := AddSubmonoid.notMem_of_notMem_closure
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 variable {S}
 
@@ -228,10 +224,9 @@ lemma closure_eq_one_union (s : Set M) :
     | mem x hx => exact Or.inr <| Subsemigroup.subset_closure hx
     | one => exact Or.inl <| by simp
     | mul x hx y hy hx hy =>
-      simp only [singleton_union, mem_insert_iff, SetLike.mem_coe] at hx hy
+      push _ ∈ _ at hx hy
       obtain ⟨(rfl | hx), (rfl | hy)⟩ := And.intro hx hy
-      all_goals simp_all
-      exact Or.inr <| mul_mem hx hy
+      all_goals simp_all [mul_mem]
   · rintro x (hx | hx)
     · exact (show x = 1 by simpa using hx) ▸ one_mem (closure s)
     · exact Subsemigroup.closure_le.mpr subset_closure hx

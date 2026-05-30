@@ -3,18 +3,23 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.SmallObject.Iteration.Nonempty
-import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
+module
+
+public import Mathlib.CategoryTheory.SmallObject.Iteration.Nonempty
+public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 
 /-!
 # The transfinite iteration of a successor structure
 
-Given a successor structure `Φ : SuccStruct C` (see the file `SmallObject.Iteration.Basic`)
+Given a successor structure `Φ : SuccStruct C`
+(see the file `Mathlib/CategoryTheory/SmallObject/Iteration/Basic.lean`)
 and a well-ordered type `J`, we define the iteration `Φ.iteration J : C`. It is
 defined as the colimit of a functor `Φ.iterationFunctor J : J ⥤ C`.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -71,6 +76,7 @@ lemma arrowMk_iterationFunctor_map (i₁ i₂ : J) (h₁₂ : i₁ ≤ i₂)
 
 variable (J)
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (Φ.iterationFunctor J).IsWellOrderContinuous where
   nonempty_isColimit i hi := ⟨by
     let e : (Set.principalSegIio i).monotone.functor ⋙
@@ -78,10 +84,10 @@ instance : (Φ.iterationFunctor J).IsWellOrderContinuous where
       NatIso.ofComponents (fun _ ↦ eqToIso (Φ.iterationFunctor_obj _ _ _)) (by
         rintro ⟨k₁, h₁⟩ ⟨k₂, h₂⟩ f
         apply Arrow.mk_injective
-        simpa using Φ.arrowMk_iterationFunctor_map k₁ k₂ (leOfHom f) (Φ.iter i) h₂.le)
+        simpa using! Φ.arrowMk_iterationFunctor_map k₁ k₂ (leOfHom f) (Φ.iter i) h₂.le)
     refine (IsColimit.precomposeInvEquiv e _).1 ?_
     refine IsColimit.ofIsoColimit ((Φ.iter i).isColimit i hi (by simp)) ?_
-    refine Cocones.ext (eqToIso (Φ.iterationFunctor_obj i (Φ.iter i) (by simp)).symm) ?_
+    refine Cocone.ext (eqToIso (Φ.iterationFunctor_obj i (Φ.iter i) (by simp)).symm) ?_
     rintro ⟨k, hk⟩
     apply Arrow.mk_injective
     simp [Φ.arrowMk_iterationFunctor_map k i hk.le (Φ.iter i) (by simp), e]⟩
@@ -90,6 +96,7 @@ instance : (Φ.iterationFunctor J).IsWellOrderContinuous where
 noncomputable def iterationFunctorObjBotIso : (Φ.iterationFunctor J).obj ⊥ ≅ Φ.X₀ :=
   eqToIso (Φ.iter ⊥).obj_bot
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural map `Φ.X₀ ⟶ (Φ.iterationFunctor J).obj j`. -/
 noncomputable def ιIterationFunctor :
     (Functor.const _).obj Φ.X₀ ⟶ Φ.iterationFunctor J where

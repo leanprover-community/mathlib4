@@ -3,7 +3,9 @@ Copyright (c) 2023 Alex Keizer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Keizer
 -/
-import Mathlib.Data.Vector.Basic
+module
+
+public import Mathlib.Data.Vector.Basic
 
 /-!
   This file establishes a `snoc : Vector α n → α → Vector α (n+1)` operation, that appends a single
@@ -15,6 +17,8 @@ import Mathlib.Data.Vector.Basic
   Also, an alternative, reverse, induction principle is added, that breaks down a vector into
   `snoc xs x` for its inductive case. Effectively doing induction from right-to-left
 -/
+
+@[expose] public section
 
 namespace List
 

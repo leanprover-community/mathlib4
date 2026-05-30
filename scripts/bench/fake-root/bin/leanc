@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-MODE=linking
-for arg in "$@"; do
-    if [[ "$arg" == "-c" ]]; then
-        MODE=compilation
-    fi
-done
-/usr/bin/time -f "\tnative $MODE %es" leanc "$@"

@@ -3,8 +3,10 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Ring.SumsOfSquares
-import Mathlib.LinearAlgebra.RootSystem.RootPositive
+module
+
+public import Mathlib.Algebra.Ring.SumsOfSquares
+public import Mathlib.LinearAlgebra.RootSystem.RootPositive
 
 /-!
 # The canonical bilinear form on a finite root pairing
@@ -37,6 +39,8 @@ Weyl group.
 * [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
 
 -/
+
+@[expose] public section
 
 open Set Function
 open Module hiding reflection
@@ -158,14 +162,16 @@ theorem range_polarization_domRestrict_le_span_coroot :
   simp
 
 theorem corootSpan_dualAnnihilator_le_ker_rootForm :
-    (P.corootSpan R).dualAnnihilator.map P.toPerfPair.symm ≤ LinearMap.ker P.RootForm := by
+    (P.corootSpan R).dualAnnihilator.map (P.toPerfPair.symm : Dual R N →ₗ[R] M) ≤
+      P.RootForm.ker := by
   rw [P.corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot']
   intro x hx
   ext y
   simp_all [coroot', rootForm_apply_apply]
 
 theorem rootSpan_dualAnnihilator_le_ker_rootForm :
-    (P.rootSpan R).dualAnnihilator.map P.flip.toPerfPair.symm ≤ LinearMap.ker P.CorootForm :=
+    (P.rootSpan R).dualAnnihilator.map (P.flip.toPerfPair.symm : Dual R M →ₗ[R] N) ≤
+      P.CorootForm.ker :=
   P.flip.corootSpan_dualAnnihilator_le_ker_rootForm
 
 end Fintype
@@ -186,7 +192,7 @@ lemma PolarizationIn_apply (x : P.rootSpan S) :
 
 lemma PolarizationIn_eq (x : P.rootSpan S) :
     P.PolarizationIn S x = P.Polarization x := by
-  simp only [PolarizationIn, LinearMap.coeFn_sum, LinearMap.coe_comp, Finset.sum_apply, comp_apply,
+  simp only [PolarizationIn, LinearMap.coe_sum, LinearMap.coe_comp, Finset.sum_apply, comp_apply,
     LinearMap.toSpanSingleton_apply, Polarization_apply]
   refine Finset.sum_congr rfl fun i hi ↦ ?_
   rw [algebra_compatible_smul R (P.coroot'In S i x) (P.coroot i), algebraMap_coroot'In_apply]
@@ -252,7 +258,7 @@ lemma rootFormIn_self_smul_coroot (i : ι) :
     pairingIn_reflectionPerm_self_left, ← reflectionPerm_coroot, neg_smul,
     smul_sub, sub_neg_eq_add]
   rw [Finset.sum_add_distrib, ← add_assoc, ← sub_eq_iff_eq_add, RootFormIn]
-  simp only [LinearMap.coeFn_sum, LinearMap.coe_smulRight, Finset.sum_apply,
+  simp only [LinearMap.coe_sum, LinearMap.coe_smulRight, Finset.sum_apply,
     coroot'In_rootSpanMem_eq_pairingIn, LinearMap.smul_apply, smul_eq_mul, Finset.sum_smul,
     root_coroot_eq_pairing, Finset.sum_neg_distrib, add_neg_cancel, sub_eq_zero]
   refine Finset.sum_congr rfl ?_
@@ -385,7 +391,7 @@ lemma pairingIn_lt_zero_iff :
     P.pairingIn S i j < 0 ↔ P.pairingIn S j i < 0 := by
   simpa using P.zero_lt_pairingIn_iff' S (i := i) (j := P.reflectionPerm j j)
 
-lemma pairingIn_le_zero_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
+lemma pairingIn_le_zero_iff [NeZero (2 : R)] [IsDomain R] [Module.IsTorsionFree R M] :
     P.pairingIn S i j ≤ 0 ↔ P.pairingIn S j i ≤ 0 := by
   rcases eq_or_ne (P.pairingIn S i j) 0 with hij | hij <;>
   rcases eq_or_ne (P.pairingIn S j i) 0 with hji | hji

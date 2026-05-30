@@ -3,8 +3,10 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.Dimension.Finite
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.LinearAlgebra.Dimension.Finite
 
 /-!
 # Finite and free modules using matrices
@@ -18,6 +20,8 @@ We provide some instances for finite and free modules involving matrices.
 * `Module.Finite.linearMap` : if `M` and `N` are finite and free, then `M →ₗ[R] N`
   is finite.
 -/
+
+@[expose] public section
 
 
 universe u u' v w
@@ -78,14 +82,14 @@ instance Finite.algHom : Finite (M →ₐ[K] L) :=
 open Cardinal
 
 theorem cardinalMk_algHom_le_rank : #(M →ₐ[K] L) ≤ lift.{v} (Module.rank K M) := by
-  convert (linearIndependent_algHom_toLinearMap K M L).cardinal_lift_le_rank
+  convert! (linearIndependent_algHom_toLinearMap K M L).cardinal_lift_le_rank
   · rw [lift_id]
   · have := Module.nontrivial K L
     rw [lift_id, Module.rank_linearMap_self]
 
 @[stacks 09HS]
 theorem card_algHom_le_finrank : Nat.card (M →ₐ[K] L) ≤ finrank K M := by
-  convert toNat_le_toNat (cardinalMk_algHom_le_rank K M L) ?_
+  convert! toNat_le_toNat (cardinalMk_algHom_le_rank K M L) ?_
   · rw [toNat_lift, finrank]
   · rw [lift_lt_aleph0]; have := Module.nontrivial K L; apply Module.rank_lt_aleph0
 

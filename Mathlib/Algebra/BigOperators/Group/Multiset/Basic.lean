@@ -3,11 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Lemmas
-import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Order.Group.Multiset
-import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.List.Lemmas
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+public import Mathlib.Algebra.Group.Prod
+public import Mathlib.Algebra.Order.Group.Multiset
+public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 
 /-!
 # Sums and products over multisets
@@ -18,9 +20,11 @@ and sums indexed by finite sets.
 ## Main declarations
 
 * `Multiset.prod`: `s.prod f` is the product of `f i` over all `i ∈ s`. Not to be mistaken with
-  the cartesian product `Multiset.product`.
+  the Cartesian product `Multiset.product`.
 * `Multiset.sum`: `s.sum f` is the sum of `f i` over all `i ∈ s`.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -44,7 +48,7 @@ theorem prod_map_erase [DecidableEq ι] {a : ι} (h : a ∈ m) :
 
 @[to_additive (attr := simp, grind =)]
 theorem prod_add (s t : Multiset M) : prod (s + t) = prod s * prod t :=
-  Quotient.inductionOn₂ s t fun l₁ l₂ => by simp
+  Quotient.inductionOn₂ s t fun l₁ l₂ => by simp [List.prod_append]
 
 @[to_additive]
 theorem prod_nsmul (m : Multiset M) : ∀ n : ℕ, (n • m).prod = m.prod ^ n
@@ -89,7 +93,7 @@ theorem prod_hom (s : Multiset M) {F : Type*} [FunLike F M N]
 theorem prod_hom' (s : Multiset ι) {F : Type*} [FunLike F M N]
     [MonoidHomClass F M N] (f : F)
     (g : ι → M) : (s.map fun i => f <| g i).prod = f (s.map g).prod := by
-  convert (s.map g).prod_hom f
+  convert! (s.map g).prod_hom f
   exact (map_map _ _ _).symm
 
 @[to_additive]
@@ -193,7 +197,7 @@ theorem prod_map_div : (m.map fun i => f i / g i).prod = (m.map f).prod / (m.map
 
 @[to_additive]
 theorem prod_map_zpow {n : ℤ} : (m.map fun i => f i ^ n).prod = (m.map f).prod ^ n := by
-  convert (m.map f).prod_hom (zpowGroupHom n : G →* G)
+  convert! (m.map f).prod_hom (zpowGroupHom n : G →* G)
   simp only [map_map, Function.comp_apply, zpowGroupHom_apply]
 
 end DivisionCommMonoid

@@ -3,16 +3,22 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.GroupWithZero.Semiconj
-import Mathlib.Algebra.Group.Commute.Units
-import Mathlib.Tactic.Nontriviality
+module
+
+public import Mathlib.Algebra.GroupWithZero.Semiconj
+public import Mathlib.Algebra.Group.Commute.Units
+public import Mathlib.Tactic.Nontriviality
 
 /-!
 # Lemmas about commuting elements in a `MonoidWithZero` or a `GroupWithZero`.
 
 -/
 
+public section
+
 assert_not_exists DenselyOrdered Ring
+
+open scoped Ring
 
 variable {M₀ G₀ : Type*}
 variable [MonoidWithZero M₀]
@@ -29,28 +35,26 @@ theorem mul_inverse_rev' {a b : M₀} (h : Commute a b) :
   · rw [inverse_non_unit _ hab, inverse_non_unit _ hb, zero_mul]
 
 theorem mul_inverse_rev {M₀} [CommMonoidWithZero M₀] (a b : M₀) :
-    Ring.inverse (a * b) = inverse b * inverse a :=
+    (a * b)⁻¹ʳ = b⁻¹ʳ * a⁻¹ʳ :=
   mul_inverse_rev' (Commute.all _ _)
 
-lemma inverse_pow (r : M₀) : ∀ n : ℕ, Ring.inverse r ^ n = Ring.inverse (r ^ n)
+lemma inverse_pow (r : M₀) : ∀ n : ℕ, r⁻¹ʳ ^ n = (r ^ n)⁻¹ʳ
   | 0 => by rw [pow_zero, pow_zero, Ring.inverse_one]
   | n + 1 => by
     rw [pow_succ', pow_succ, Ring.mul_inverse_rev' ((Commute.refl r).pow_left n),
       Ring.inverse_pow r n]
 
 lemma inverse_pow_mul_eq_iff_eq_mul {a : M₀} (b c : M₀) (ha : IsUnit a) {k : ℕ} :
-    Ring.inverse a ^ k * b = c ↔ b = a ^ k * c := by
+    a⁻¹ʳ ^ k * b = c ↔ b = a ^ k * c := by
   rw [Ring.inverse_pow, Ring.inverse_mul_eq_iff_eq_mul _ _ _ (IsUnit.pow _ ha)]
 
 end Ring
 
+@[grind ←]
 theorem Commute.ringInverse_ringInverse {a b : M₀} (h : Commute a b) :
-    Commute (Ring.inverse a) (Ring.inverse b) :=
+    Commute a⁻¹ʳ b⁻¹ʳ :=
   (Ring.mul_inverse_rev' h.symm).symm.trans <| (congr_arg _ h.symm.eq).trans <|
     Ring.mul_inverse_rev' h
-
-@[deprecated (since := "2025-04-22")]
-alias Commute.ring_inverse_ring_inverse := Commute.ringInverse_ringInverse
 
 namespace Commute
 

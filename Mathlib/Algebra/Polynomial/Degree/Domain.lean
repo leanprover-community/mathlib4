@@ -3,7 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.Degree.Operations
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.Operations
 
 /-!
 # Univariate polynomials form a domain
@@ -13,6 +15,8 @@ import Mathlib.Algebra.Polynomial.Degree.Operations
 * `Polynomial.instNoZeroDivisors`: `R[X]` has no zero divisors if `R` does not
 * `Polynomial.instDomain`: `R[X]` is a domain if `R` is
 -/
+
+public section
 
 noncomputable section
 
@@ -30,14 +34,14 @@ section Semiring
 
 variable [Semiring R] [NoZeroDivisors R] {p q : R[X]}
 
-lemma natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDegree + q.natDegree := by
+lemma natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p * q).natDegree = p.natDegree + q.natDegree := by
   rw [← Nat.cast_inj (R := WithBot ℕ), ← degree_eq_natDegree (mul_ne_zero hp hq),
     Nat.cast_add, ← degree_eq_natDegree hp, ← degree_eq_natDegree hq, degree_mul]
 
 omit [NoZeroDivisors R] in
 variable (p) in
-lemma natDegree_smul {S : Type*} [Zero S] [SMulZeroClass S R] [NoZeroSMulDivisors S R] {a : S}
-    (ha : a ≠ 0) : (a • p).natDegree = p.natDegree := by
+lemma natDegree_smul {S : Type*} [Semiring S] [IsDomain S] [Module S R] [Module.IsTorsionFree S R]
+    {a : S} (ha : a ≠ 0) : (a • p).natDegree = p.natDegree := by
   by_cases hp : p = 0
   · simp only [hp, smul_zero]
   · apply natDegree_eq_of_le_of_coeff_ne_zero
