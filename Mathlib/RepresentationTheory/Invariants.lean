@@ -106,7 +106,7 @@ variable {ρ σ} in
     simp [hf.isIntertwining]
 
 /-- The invariants of the representation `linHom ρ σ` correspond to intertwining maps
- from `ρ` to `σ`. -/
+from `ρ` to `σ`. -/
 def invariantsEquivIntertwiningMap : (linHom ρ σ).invariants ≃ₗ[k] IntertwiningMap ρ σ where
   toFun f := f.val.intertwiningMap_of_isIntertwiningMap ρ σ
     ((mem_linHom_invariants_iff_isIntertwining f.val).mp f.property).isIntertwining
@@ -211,7 +211,7 @@ end Rep
 
 section FDRep
 
-variable {k : Type u} [Field k] {G : Type u} [Group G]
+variable {k : Type u} [Field k] {G : Type v} [Group G]
 
 /-- The invariants of the representation `linHom X.ρ Y.ρ` correspond to the representation
 homomorphisms from `X` to `Y`. -/
