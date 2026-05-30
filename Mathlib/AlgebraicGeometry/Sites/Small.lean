@@ -205,7 +205,7 @@ lemma smallGrothendieckTopology_eq_toGrothendieck_smallPretopology (hPQ : P ≤ 
   have : (MorphismProperty.Over.forget Q ⊤ S).LocallyCoverDense (overGrothendieckTopology P S) :=
     locallyCoverDense_of_le S hPQ
   simp only [smallGrothendieckTopology, Functor.mem_restrictedTopology_iff,
-    MorphismProperty.Comma.forget_obj, mem_overGrothendieckTopology, Pretopology.mem_toGrothendieck]
+    mem_overGrothendieckTopology, Pretopology.mem_toGrothendieck]
   constructor
   · intro ⟨𝒰, h, le⟩
     have hj (j : 𝒰.I₀) : Q (𝒰.X j ↘ S) := by
