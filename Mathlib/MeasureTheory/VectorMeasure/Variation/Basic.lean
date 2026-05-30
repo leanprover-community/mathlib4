@@ -36,7 +36,10 @@ open scoped ENNReal
 namespace MeasureTheory.VectorMeasure
 
 variable {X V : Type*} {mX : MeasurableSpace X}
-  [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
+
+section Basic
+
+variable [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V] {μ ν : VectorMeasure X V}
 
 @[simp]
 lemma variation_apply (μ : VectorMeasure X V) (s : Set X) :
@@ -86,15 +89,64 @@ lemma variation_zero : (0 : VectorMeasure X V).variation = 0 := by
   simp only [variation, coe_zero, Pi.zero_apply, enorm_zero]
   exact preVariation_zero
 
-@[simp]
-lemma variation_neg {V : Type*} [NormedAddCommGroup V] (μ : MeasureTheory.VectorMeasure X V) :
-    (-μ).variation = μ.variation := by simp [variation]
-
 lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.ennrealVariation := by
   intro s hs
   by_cases hsm : MeasurableSet s
   · suffices ‖μ s‖ₑ ≤ 0 by simp_all
     grw [enorm_measure_le_variation, ← ennrealVariation_apply _ hsm, hs]
   · exact μ.not_measurable' hsm
+
+lemma variation_le_of_forall_enorm_le {m : Measure X} (h : ∀ E, MeasurableSet E → ‖μ E‖ₑ ≤ m E) :
+    μ.variation ≤ m := by
+  refine Measure.le_intro fun s hs _ => ?_
+  simp only [variation_apply, preVariation, ennrealToMeasure_apply hs, ennrealPreVariation_apply,
+    preVariationFun, hs, dite_true, iSup_le_iff]
+  intro i
+  calc
+    ∑ x ∈ i.parts, ‖μ x‖ₑ ≤ ∑ x ∈ i.parts, m x := Finset.sum_le_sum (fun s hs => h s s.property)
+    _ = m (i.parts.sup Subtype.val) := by
+      rw [sup_set_eq_biUnion]
+      refine (MeasureTheory.measure_biUnion_finset ?_ fun b _ => b.property).symm
+      intro a ha b hb hab
+      simpa [disjoint_iff, Subtype.ext_iff] using i.disjoint ha hb hab
+    _ ≤ m s := by
+      rw [sup_set_eq_biUnion]
+      exact measure_mono <| Set.iUnion₂_subset fun _ hp => Subtype.coe_le_coe.mpr (i.le hp)
+
+lemma variation_add_le [ContinuousAdd V] : variation (μ + ν) ≤ variation μ + variation ν := by
+  refine variation_le_of_forall_enorm_le fun E _ => ?_
+  calc
+    _ ≤ ‖μ E‖ₑ + ‖ν E‖ₑ := enorm_add_le _ _
+    _ ≤ μ.variation E + ν.variation E := by
+      gcongr <;> exact enorm_measure_le_variation _ E
+
+lemma variation_finsetSum_le [ContinuousAdd V] {ι} (s : Finset ι) (μ : ι → VectorMeasure X V) :
+    (∑ i ∈ s, μ i).variation ≤ ∑ i ∈ s, (μ i).variation := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s his ih =>
+    simpa [Finset.sum_insert his] using
+      variation_add_le.trans (add_le_add_right ih ((μ i).variation))
+
+end Basic
+
+section NormedAddCommGroup
+
+variable [NormedAddCommGroup V] {μ ν : VectorMeasure X V}
+
+theorem norm_measure_le_variation {E : Set X} (hE : μ.variation E ≠ ∞ := by finiteness) :
+    ‖μ E‖ ≤ μ.variation.real E := by
+  rw [measureReal_def, ← toReal_enorm, ENNReal.toReal_le_toReal (enorm_ne_top) hE]
+  exact enorm_measure_le_variation μ E
+
+variable (μ) in
+@[simp]
+lemma variation_neg : (-μ).variation = μ.variation := by simp [variation]
+
+lemma variation_sub_le : (μ - ν).variation ≤ μ.variation + ν.variation := by
+  grw [sub_eq_add_neg, variation_add_le, variation_neg]
+
+end NormedAddCommGroup
 
 end MeasureTheory.VectorMeasure
