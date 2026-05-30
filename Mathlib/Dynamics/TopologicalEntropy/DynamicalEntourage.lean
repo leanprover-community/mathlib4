@@ -88,11 +88,8 @@ instance isRefl_dynEntourage [U.IsRefl] : (dynEntourage T U n).IsRefl := by
   infer_instance
 
 instance isSymm_dynEntourage [U.IsSymm] : (dynEntourage T U n).IsSymm := by
-  constructor
-  intro x y hxy
-  rw [mem_dynEntourage] at hxy ⊢
-  intro k hk
-  exact U.symm (hxy k hk)
+  simp only [dynEntourage, map_iterate]
+  infer_instance
 
 lemma dynEntourage_comp_subset (T : X → X) (U V : SetRel X X) (n : ℕ) :
     (dynEntourage T U n) ○ (dynEntourage T V n) ⊆ dynEntourage T (U ○ V) n := by

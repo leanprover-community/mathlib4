@@ -86,8 +86,4 @@ lemma IsUltraUniformity.top : @IsUltraUniformity X (⊤ : UniformSpace X) := by
   letI : UniformSpace X := ⊤
   have := Filter.hasBasis_top (α := (X × X))
   rw [← top_uniformity] at this
-  apply mk_of_hasBasis this
-  · intro _ _
-    exact inferInstance
-  · intro _ _
-    exact inferInstance
+  exact mk_of_hasBasis this inferInstance inferInstance
