@@ -123,7 +123,7 @@ attribute [simp] IsRootSystem.span_root_eq_top
 attribute [simp] IsRootSystem.span_coroot_eq_top
 
 /-- If we interchange the roles of `M` and `N`, we still have a root pairing. -/
-@[simps!, simps toLinearMap]
+@[simps! root coroot reflectionPerm, simps toLinearMap]
 protected def flip : RootPairing ι R N M where
   toLinearMap := P.toLinearMap.flip
   root := P.coroot
