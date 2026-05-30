@@ -703,7 +703,7 @@ theorem upperCentralSeries.map {H : Type*} [Group H] {f : G →* H} (h : Functio
   | succ d hd =>
     rintro _ ⟨x, hx : x ∈ upperCentralSeries G d.succ, rfl⟩ y'
     rcases h y' with ⟨y, rfl⟩
-    simpa using hd (mem_map_of_mem f (hx y))
+    simpa using! hd (mem_map_of_mem f (hx y))
 
 @[to_additive]
 theorem lowerCentralSeries_succ_eq_bot (S : Subgroup G) {n : ℕ}

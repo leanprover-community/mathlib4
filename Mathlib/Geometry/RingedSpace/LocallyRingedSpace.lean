@@ -210,6 +210,7 @@ def homOfSheafedSpaceHomOfIsIso {X Y : LocallyRingedSpace.{u}}
     -- are isomorphisms and isomorphisms are local ring homomorphisms.
     inferInstance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given two locally ringed spaces `X` and `Y`, an isomorphism between `X` and `Y` as _sheafed_
 spaces can be lifted to an isomorphism `X ⟶ Y` as locally ringed spaces.

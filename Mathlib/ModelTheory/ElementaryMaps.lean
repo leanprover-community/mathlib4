@@ -203,7 +203,7 @@ def liftWithConstants (f : M ↪ₑ[L] N) (A : Set M) :
       ↑A ⊕ Fin n → f.toEmbedding.withConstants A) =
     f ∘ Sum.elim (fun a ↦ ↑(L.con a)) x :=
     (Sum.comp_elim _ _ _).symm
-  simpa only [Formula.Realize, ← BoundedFormula.realize_constantsVarsEquiv, h] using
+  simpa only [Formula.Realize, ← BoundedFormula.realize_constantsVarsEquiv, h] using!
     f.map_formula
       (BoundedFormula.constantsVarsEquiv φ)
       (Sum.elim (fun a ↦ ↑(L.con a)) x)

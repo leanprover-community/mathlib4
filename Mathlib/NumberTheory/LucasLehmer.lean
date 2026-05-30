@@ -54,7 +54,7 @@ theorem mersenne_le_mersenne {p q : ℕ} : mersenne p ≤ mersenne q ↔ p ≤ q
 @[simp] lemma mersenne_odd : ∀ {p : ℕ}, Odd (mersenne p) ↔ p ≠ 0
   | 0 => by simp
   | p + 1 => by
-    simpa using Nat.Even.sub_odd (one_le_pow₀ one_le_two)
+    simpa using! Nat.Even.sub_odd (one_le_pow₀ one_le_two)
       (even_two.pow_of_ne_zero p.succ_ne_zero) odd_one
 
 @[simp] theorem mersenne_pos {p : ℕ} : 0 < mersenne p ↔ 0 < p := mersenne_lt_mersenne (p := 0)
@@ -499,11 +499,8 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
   obtain ⟨k, h⟩ := h
   use k
   replace h := congr_arg (fun n : ℤ => (n : X (q (p' + 2)))) h
-  -- coercion from ℤ to X q
-  dsimp at h
   rw [closed_form] at h
   replace h := congr_arg (fun x => ω ^ 2 ^ p' * x) h
-  dsimp at h
   have t : 2 ^ p' + 2 ^ p' = 2 ^ (p' + 1) := by ring
   rw [mul_add, ← pow_add ω, t, ← mul_pow ω ωb (2 ^ p'), ω_mul_ωb, one_pow] at h
   rw [mul_comm, coe_mul] at h
