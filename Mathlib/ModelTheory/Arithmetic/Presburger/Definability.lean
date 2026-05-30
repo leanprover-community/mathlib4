@@ -116,17 +116,17 @@ lemma isSemilinearSet_boundedFormula_realize {n} (φ : presburger[[A]].BoundedFo
   | equal t₁ t₂ =>
     rcases term_realize_eq_add_dotProduct t₁ with ⟨k₁, u₁, ht₁⟩
     rcases term_realize_eq_add_dotProduct t₂ with ⟨k₂, u₂, ht₂⟩
-    convert Nat.isSemilinearSet_setOf_mulVec_eq ![k₁] ![k₂] (.of ![u₁]) (.of ![u₂])
+    convert! Nat.isSemilinearSet_setOf_mulVec_eq ![k₁] ![k₂] (.of ![u₁]) (.of ![u₂])
     simp [ht₁, ht₂]
   | rel f => nomatch f
   | falsum => exact .empty
   | imp _ _ ih₁ ih₂ =>
-    convert (ih₂.compl.inter ih₁).compl using 1
+    convert! (ih₂.compl.inter ih₁).compl using 1
     simp [setOf_inter_eq_sep, imp_iff_not_or, compl_setOf]
   | @all n φ ih =>
     let e := (Equiv.sumAssoc α (Fin n) (Fin 1)).trans (Equiv.sumCongr (.refl α) finSumFinEquiv)
     rw [← isSemilinearSet_image_iff (LinearEquiv.funCongrLeft ℕ ℕ e)] at ih
-    convert ih.compl.proj.compl using 1
+    convert! ih.compl.proj.compl using 1
     simp_rw [compl_setOf, not_exists, Fin.forall_fin_succ_pi, Fin.forall_fin_zero_pi,
       mem_compl_iff, mem_image, not_not, ← LinearEquiv.eq_symm_apply, LinearEquiv.funCongrLeft_symm,
       exists_eq_right, mem_setOf, LinearEquiv.funCongrLeft_apply, LinearMap.funLeft,
@@ -138,7 +138,7 @@ lemma isSemilinearSet_boundedFormula_realize {n} (φ : presburger[[A]].BoundedFo
 lemma isSemilinearSet_formula_realize_semilinear (φ : presburger[[A]].Formula α) :
     IsSemilinearSet (setOf φ.Realize : Set (α → ℕ)) := by
   let e := Equiv.sumEmpty α (Fin 0)
-  convert (isSemilinearSet_boundedFormula_realize φ).image (LinearMap.funLeft ℕ ℕ e.symm)
+  convert! (isSemilinearSet_boundedFormula_realize φ).image (LinearMap.funLeft ℕ ℕ e.symm)
   ext x
   simp only [mem_setOf_eq, mem_image]
   rw [(e.arrowCongr (.refl ℕ)).exists_congr_left]
@@ -163,7 +163,7 @@ theorem mul_not_definable : ¬ A.Definable presburger {v : Fin 3 → ℕ | v 0 =
   intro hmul
   have hsqr : A.Definable₁ presburger {x * x | x : ℕ} := by
     rw [Definable₁]
-    convert (hmul.preimage_comp (β := Fin 2) ![0, 1, 1]).image_comp ![0]
+    convert! (hmul.preimage_comp (β := Fin 2) ![0, 1, 1]).image_comp ![0]
     ext
     simpa [funext_iff, Fin.exists_fin_succ_pi] using exists_congr fun _ => Eq.comm
   rw [definable₁_iff_ultimately_periodic] at hsqr

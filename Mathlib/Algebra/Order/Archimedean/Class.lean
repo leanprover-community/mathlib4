@@ -678,7 +678,7 @@ theorem mem_closedBallSubgroup_iff {a : M} {c : MulArchimedeanClass M} :
 variable (M) in
 @[to_additive (attr := simp)]
 theorem ballSubgroup_top : ballSubgroup (M := M) ⊤ = ⊥ := by
-  convert subgroup_eq_bot M
+  convert! subgroup_eq_bot M
   simp
 
 variable (M) in
@@ -764,8 +764,7 @@ def lift {α : Type*} (f : {a : M // a ≠ 1} → α)
     FiniteMulArchimedeanClass M → α := fun ⟨A, hA⟩ ↦ by
   refine (MulArchimedeanClass.lift
     (fun b ↦ if h : b = 1 then ⊤ else WithTop.some (f ⟨b, h⟩)) (fun a b h' ↦ ?_) A).untop ?_
-  · simp only
-    split_ifs with ha hb hb
+  · split_ifs with ha hb hb
     · rfl
     · exact (hb (MulArchimedeanClass.mk_eq_top_iff.mp (ha ▸ h').symm)).elim
     · exact (ha (MulArchimedeanClass.mk_eq_top_iff.mp (by apply hb ▸ h'))).elim

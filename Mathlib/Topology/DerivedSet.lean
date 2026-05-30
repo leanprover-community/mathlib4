@@ -29,7 +29,7 @@ theorem AccPt.map {β : Type*} [TopologicalSpace β] {F : Filter X} {x : X}
   rw [Filter.map_inf hf2]
   gcongr
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hf1.continuousWithinAt
-  simpa [hf2.eq_iff] using eventually_mem_nhdsWithin
+  simpa [hf2.eq_iff] using! eventually_mem_nhdsWithin
 
 /--
 The derived set of a set is the set of all accumulation points of it.
@@ -52,7 +52,7 @@ theorem Continuous.image_derivedSet {β : Type*} [TopologicalSpace β] {A : Set 
   intro x hx
   simp only [Set.mem_image, mem_derivedSet] at hx
   obtain ⟨y, hy1, rfl⟩ := hx
-  convert hy1.map hf1.continuousAt hf2
+  convert! hy1.map hf1.continuousAt hf2
   simp
 
 lemma derivedSet_subset_closure (A : Set X) : derivedSet A ⊆ closure A :=

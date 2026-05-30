@@ -239,6 +239,11 @@ theorem Eventually.comap {p : β → Prop} (hf : ∀ᶠ b in g, p b) (f : α →
     ∀ᶠ a in comap f g, p (f a) :=
   preimage_mem_comap hf
 
+@[simp]
+lemma EventuallyEq.comp_comap {F : Filter β} {f g : β → γ} (h : α → β)
+    (hfg : f =ᶠ[F] g) : f.comp h =ᶠ[comap h F] g.comp h :=
+  hfg.comap _
+
 theorem comap_id : comap id f = f :=
   le_antisymm (fun _ => preimage_mem_comap) fun _ ⟨_, ht, hst⟩ => mem_of_superset ht hst
 
@@ -321,7 +326,7 @@ nonrec theorem _root_.Function.RightInverse.filter_comap {f : α → β} {g : β
 
 theorem _root_.Set.LeftInvOn.filter_map_Iic {f : α → β} {g : β → α} (hfg : LeftInvOn g f s) :
     LeftInvOn (map g) (map f) (Iic <| 𝓟 s) := fun F (hF : F ≤ 𝓟 s) ↦ by
-  have : (g ∘ f) =ᶠ[𝓟 s] id := by simpa only [eventuallyEq_principal] using hfg
+  have : (g ∘ f) =ᶠ[𝓟 s] id := by simpa only [eventuallyEq_principal] using! hfg
   rw [map_map, map_congr (this.filter_mono hF), map_id]
 
 nonrec theorem _root_.Set.RightInvOn.filter_map_Iic {f : α → β} {g : β → α}
