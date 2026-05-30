@@ -107,7 +107,7 @@ instance [F.Final] : IsIso (pullbackObjUnitToUnit φ) := by
   intro M
   rw [← ((pullbackPushforwardAdjunction.{u} φ).homEquiv _ _).bijective.of_comp_iff',
     ← (unitHomEquiv _).bijective.of_comp_iff']
-  convert (bijective_pushforwardSections φ M).comp (unitHomEquiv _).bijective
+  convert! (bijective_pushforwardSections φ M).comp (unitHomEquiv _).bijective
   ext f : 1
   dsimp
   rw [pushforwardSections_unitHomEquiv, EmbeddingLike.apply_eq_iff_eq,

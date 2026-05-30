@@ -126,14 +126,20 @@ theorem coeAddHom_apply (α β : Type*) [MeasurableSpace α] [MeasurableSpace β
     coeAddHom α β κ = ⇑κ := rfl
 
 @[simp]
-theorem coe_finset_sum (I : Finset ι) (κ : ι → Kernel α β) : ⇑(∑ i ∈ I, κ i) = ∑ i ∈ I, ⇑(κ i) :=
+theorem coe_finsetSum (I : Finset ι) (κ : ι → Kernel α β) : ⇑(∑ i ∈ I, κ i) = ∑ i ∈ I, ⇑(κ i) :=
   map_sum (coeAddHom α β) _ _
 
-theorem finset_sum_apply (I : Finset ι) (κ : ι → Kernel α β) (a : α) :
-    (∑ i ∈ I, κ i) a = ∑ i ∈ I, κ i a := by rw [coe_finset_sum, Finset.sum_apply]
+@[deprecated (since := "2026-04-08")] alias coe_finset_sum := coe_finsetSum
 
-theorem finset_sum_apply' (I : Finset ι) (κ : ι → Kernel α β) (a : α) (s : Set β) :
-    (∑ i ∈ I, κ i) a s = ∑ i ∈ I, κ i a s := by rw [finset_sum_apply, Measure.finset_sum_apply]
+theorem finsetSum_apply (I : Finset ι) (κ : ι → Kernel α β) (a : α) :
+    (∑ i ∈ I, κ i) a = ∑ i ∈ I, κ i a := by rw [coe_finsetSum, Finset.sum_apply]
+
+@[deprecated (since := "2026-04-08")] alias finset_sum_apply := finsetSum_apply
+
+theorem finsetSum_apply' (I : Finset ι) (κ : ι → Kernel α β) (a : α) (s : Set β) :
+    (∑ i ∈ I, κ i) a s = ∑ i ∈ I, κ i a s := by rw [finsetSum_apply, Measure.finsetSum_apply]
+
+@[deprecated (since := "2026-04-08")] alias finset_sum_apply' := finsetSum_apply'
 
 end Kernel
 
@@ -306,7 +312,7 @@ protected noncomputable def sum [Countable ι] (κ : ι → Kernel α β) : Kern
   measurable' := by
     refine Measure.measurable_of_measurable_coe _ fun s hs => ?_
     simp_rw [Measure.sum_apply _ hs]
-    exact Measurable.ennreal_tsum fun n => Kernel.measurable_coe (κ n) hs
+    exact Measurable.tsum fun n => Kernel.measurable_coe (κ n) hs
 
 theorem sum_apply [Countable ι] (κ : ι → Kernel α β) (a : α) :
     Kernel.sum κ a = Measure.sum fun n => κ n a :=
@@ -328,7 +334,7 @@ theorem sum_comm [Countable ι] (κ : ι → ι → Kernel α β) :
 @[simp]
 theorem sum_fintype [Fintype ι] (κ : ι → Kernel α β) : Kernel.sum κ = ∑ i, κ i := by
   ext a s hs
-  simp only [sum_apply' κ a hs, finset_sum_apply' _ κ a s, tsum_fintype]
+  simp only [sum_apply' κ a hs, finsetSum_apply' _ κ a s, tsum_fintype]
 
 theorem sum_add [Countable ι] (κ η : ι → Kernel α β) :
     (Kernel.sum fun n => κ n + η n) = Kernel.sum κ + Kernel.sum η := by
@@ -380,7 +386,7 @@ instance IsSFiniteKernel.add (κ η : Kernel α β) [IsSFiniteKernel κ] [IsSFin
   refine ⟨⟨fun n => seq κ n + seq η n, fun n => inferInstance, ?_⟩⟩
   rw [sum_add, kernel_sum_seq κ, kernel_sum_seq η]
 
-theorem IsSFiniteKernel.finset_sum {κs : ι → Kernel α β} (I : Finset ι)
+theorem IsSFiniteKernel.finsetSum {κs : ι → Kernel α β} (I : Finset ι)
     (h : ∀ i ∈ I, IsSFiniteKernel (κs i)) : IsSFiniteKernel (∑ i ∈ I, κs i) := by
   classical
   induction I using Finset.induction with
@@ -391,6 +397,8 @@ theorem IsSFiniteKernel.finset_sum {κs : ι → Kernel α β} (I : Finset ι)
     have : IsSFiniteKernel (∑ x ∈ I, κs x) :=
       h_ind fun i hiI => h i (Finset.mem_insert_of_mem hiI)
     exact IsSFiniteKernel.add _ _
+
+@[deprecated (since := "2026-04-08")] alias IsSFiniteKernel.finset_sum := IsSFiniteKernel.finsetSum
 
 theorem isSFiniteKernel_sum_of_denumerable [Denumerable ι] {κs : ι → Kernel α β}
     (hκs : ∀ n, IsSFiniteKernel (κs n)) : IsSFiniteKernel (Kernel.sum κs) := by
@@ -409,7 +417,7 @@ instance isSFiniteKernel_sum [Countable ι] {κs : ι → Kernel α β}
     [hκs : ∀ n, IsSFiniteKernel (κs n)] : IsSFiniteKernel (Kernel.sum κs) := by
   cases fintypeOrInfinite ι
   · rw [sum_fintype]
-    exact IsSFiniteKernel.finset_sum Finset.univ fun i _ => hκs i
+    exact IsSFiniteKernel.finsetSum Finset.univ fun i _ => hκs i
   cases nonempty_denumerable ι
   exact isSFiniteKernel_sum_of_denumerable hκs
 

@@ -9,9 +9,9 @@ public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Data.NNReal.Star
 public import Mathlib.Data.Real.Sqrt
 
-/-! # `ℝ` and `ℝ≥0` are *-ordered rings. -/
+/-! # `ℝ` and `ℝ≥0` are \*-ordered rings. -/
 
-@[expose] public section
+public section
 
 open scoped NNReal
 

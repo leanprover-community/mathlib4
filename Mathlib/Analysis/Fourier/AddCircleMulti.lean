@@ -178,17 +178,17 @@ lemma measurePreserving_equivPiIoc :
     measurable_subtype_coe (α := {x : d → ℝ // ∀ i, x i ∈ Ioc (a i) (a i + 1)})
   simp only [Function.comp_def] at this
   simp_rw [coe_symm_measurableEquivPiIoc, ← this]
-  convert (measurePreserving_pi _ _ (fun i => AddCircle.measurePreserving_mk 1 (a i))).map_eq.symm
+  convert! (measurePreserving_pi _ _ (fun i => AddCircle.measurePreserving_mk 1 (a i))).map_eq.symm
   · simp [volume, AddCircle.haarAddCircle]
-  · convert (map_comap_subtype_coe (MeasurableSet.univ_pi'
-      (fun i => measurableSet_Ioc (a := a i))) volume)
-    convert (Measure.restrict_pi_pi (fun i => volume) (fun i => Ioc (a i) (a i + 1))).symm
+  · convert!
+    (map_comap_subtype_coe (MeasurableSet.univ_pi' (fun i => measurableSet_Ioc (a := a i))) volume)
+    convert! (Measure.restrict_pi_pi (fun i => volume) (fun i => Ioc (a i) (a i + 1))).symm
     grind
 
 theorem lintegral_preimage (f : UnitAddTorus d → ℝ≥0∞) (a : d → ℝ) :
     ∫⁻ x : UnitAddTorus d, f x =
     ∫⁻ (x : d → ℝ) in {x : d → ℝ | ∀ i, x i ∈ Ioc (a i) (a i + 1)}, f (fun i => x i) := by
-  convert lintegral_map_equiv (μ := volume.comap Subtype.val) f (measurableEquivPiIoc a).symm
+  convert! lintegral_map_equiv (μ := volume.comap Subtype.val) f (measurableEquivPiIoc a).symm
   · exact (measurePreserving_equivPiIoc a).symm.map_eq.symm
   · rw [← lintegral_subtype_comap (MeasurableSet.univ_pi' (fun i => measurableSet_Ioc))]
     rfl
@@ -197,7 +197,7 @@ theorem integral_preimage {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (f : UnitAddTorus d → E) (a : d → ℝ) :
     ∫ x : UnitAddTorus d, f x =
     ∫ (x : d → ℝ) in {x : d → ℝ | ∀ i, x i ∈ Ioc (a i) (a i + 1)}, f (fun i => x i) := by
-  convert integral_map_equiv (μ := volume.comap Subtype.val) (measurableEquivPiIoc a).symm f
+  convert! integral_map_equiv (μ := volume.comap Subtype.val) (measurableEquivPiIoc a).symm f
   · exact (measurePreserving_equivPiIoc a).symm.map_eq.symm
   · rw [← integral_subtype_comap (MeasurableSet.univ_pi' (fun i => measurableSet_Ioc))]
     rfl
@@ -215,11 +215,6 @@ abbrev mFourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : d → ℤ) :
 theorem coeFn_mFourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : d → ℤ) :
     mFourierLp p n =ᵐ[volume] mFourier n :=
   ContinuousMap.coeFn_toLp volume (mFourier n)
-
--- shortcut instance: avoids `synthInstance.maxHeartbeats` issue in `span_mFourierLp_closure_eq_top`
-instance {p : ℝ≥0∞} [Fact (1 ≤ p)] :
-    ContinuousSMul ℂ (Lp ℂ p (volume : Measure (UnitAddTorus d))) :=
-  inferInstance
 
 /-- For each `1 ≤ p < ∞`, the linear span of the monomials `mFourier n` is dense in the `Lᵖ` space
 of functions on `UnitAddTorus d`. -/
@@ -278,7 +273,6 @@ monomials `mFourier n` on `UnitAddTorus d` considered as elements of `L²`. -/
 @[simp]
 theorem coe_mFourierBasis : ⇑(mFourierBasis (d := d)) = mFourierLp 2 := HilbertBasis.coe_mk _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Under the isometric isomorphism `mFourierBasis` from `L²(UnitAddTorus d)` to `ℓ²(ℤᵈ, ℂ)`,
 the `i`-th coefficient is `mFourierCoeff f i`. -/
 theorem mFourierBasis_repr (f : L²(UnitAddTorus d)) (i : d → ℤ) :
@@ -304,7 +298,6 @@ theorem hasSum_prod_mFourierCoeff (f g : L²(UnitAddTorus d)) :
   simp only [← mFourierBasis_repr, HilbertBasis.repr_apply_apply, inner_conj_symm,
     mul_comm (inner ℂ f _)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Parseval's identity** for norms: for an `L²` function `f` on `UnitAddTorus d`, the sum of the
 squared norms of the Fourier coefficients equals the `L²` norm of `f`. -/
 theorem hasSum_sq_mFourierCoeff (f : L²(UnitAddTorus d)) :
@@ -324,7 +317,6 @@ theorem mFourierCoeff_toLp (n : d → ℤ) :
 
 variable {f}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the sequence of Fourier coefficients of `f` is summable, then the Fourier series converges
 uniformly to `f`. -/
 theorem hasSum_mFourier_series_of_summable (h : Summable (mFourierCoeff f)) :

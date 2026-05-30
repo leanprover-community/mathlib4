@@ -105,7 +105,7 @@ def normalOfIsPullbackSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h :
   isLimit := by
     letI gr := regularOfIsPullbackSndOfRegular hn.regularMono comm t
     have q := (HasZeroMorphisms.comp_zero k hn.Z).symm
-    convert gr.isLimit
+    convert! gr.isLimit
 
 /-- The first leg of a pullback cone is a normal monomorphism if the left component is too.
 
@@ -224,7 +224,7 @@ def normalOfIsPushoutSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : 
   isColimit := by
     letI hn := regularOfIsPushoutSndOfRegular gn.regularEpi comm t
     have q := (@zero_comp _ _ _ gn.W _ _ f).symm
-    convert hn.isColimit
+    convert! hn.isColimit
 
 /-- The first leg of a pushout cocone is a normal epimorphism if the left component is too.
 

@@ -138,7 +138,7 @@ theorem totallyBounded_iff_subset_finite_iUnion_nhds_one {s : Set α} :
 
 @[to_additive]
 theorem totallyBounded_inv {s : Set α} (hs : TotallyBounded s) : TotallyBounded (s⁻¹) := by
-  convert TotallyBounded.image hs uniformContinuous_inv
+  convert! TotallyBounded.image hs uniformContinuous_inv
   aesop
 
 section UniformConvergence
@@ -266,10 +266,6 @@ open Filter
 variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 attribute [local instance] IsTopologicalGroup.rightUniformSpace
-
-@[to_additive (attr := deprecated IsUniformGroup.of_compactSpace (since := "2025-09-27"))]
-theorem topologicalGroup_is_uniform_of_compactSpace [CompactSpace G] : IsUniformGroup G :=
-  inferInstance
 
 variable {G}
 
@@ -407,6 +403,14 @@ end Inv
 namespace IsTopologicalGroup
 
 variable {ι α G : Type*} [Group G] [u : UniformSpace G] [IsTopologicalGroup G]
+
+@[to_additive]
+theorem uniformCauchySeqOn_iff (F : ι → α → G) (p : Filter ι) (s : Set α)
+    (hu : IsTopologicalGroup.rightUniformSpace G = u) :
+    UniformCauchySeqOn F p s ↔ ∀ u ∈ 𝓝 (1 : G), ∀ᶠ m in p ×ˢ p, ∀ a ∈ s, F m.2 a / F m.1 a ∈ u := by
+  simp only [div_eq_mul_inv]
+  exact hu ▸ ⟨fun h u hu ↦ h _ ⟨u, hu, fun _ ↦ id⟩,
+    fun h _ ⟨u, hu, hv⟩ => mem_of_superset (h u hu) fun _ hi a ha => hv (hi a ha)⟩
 
 @[to_additive]
 theorem tendstoUniformly_iff (F : ι → α → G) (f : α → G) (p : Filter ι)
@@ -693,7 +697,7 @@ instance QuotientGroup.completeSpace_right' (G : Type u) [Group G] [TopologicalS
     ⟨↑x₀,
       tendsto_nhds_of_cauchySeq_of_subseq hx
         (strictMono_nat_of_lt_succ fun n => (hφ (n + 1)).1).tendsto_atTop ?_⟩
-  convert ((continuous_coinduced_rng : Continuous ((↑) : G → G ⧸ N)).tendsto x₀).comp hx₀
+  convert! ((continuous_coinduced_rng : Continuous ((↑) : G → G ⧸ N)).tendsto x₀).comp hx₀
   exact funext fun n => (x' n).snd
 
 /-- The quotient `G ⧸ N` of a complete first countable uniform group `G` by a normal subgroup

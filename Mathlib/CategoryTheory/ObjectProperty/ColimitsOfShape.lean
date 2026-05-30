@@ -263,8 +263,9 @@ lemma isClosedUnderColimitsOfShape_inverseImage_iff (P : ObjectProperty D)
     (P.inverseImage e.functor).IsClosedUnderColimitsOfShape J ↔
       P.IsClosedUnderColimitsOfShape J := by
   refine ⟨fun H ↦ ?_, fun _ ↦ inferInstance⟩
-  convert (inferInstance :
-    ((P.inverseImage e.functor).inverseImage e.inverse).IsClosedUnderColimitsOfShape J)
+  convert!
+    (inferInstance :
+      ((P.inverseImage e.functor).inverseImage e.inverse).IsClosedUnderColimitsOfShape J)
   ext X
   simpa using P.prop_iff_of_iso (e.counitIso.app X).symm
 
@@ -400,6 +401,16 @@ instance [P.IsClosedUnderColimitsOfShape WalkingParallelPair] :
         (fun s ↦ by simpa using s.condition)
         (fun s m hm ↦ by dsimp [c] at hm; simp [← hm])
     exact P.prop_of_isColimit hc (by rintro (_ | _) <;> exact hY)
+
+lemma limitsOfShape_isEmpty_iff [IsEmpty J] (X : C) :
+    P.limitsOfShape J X ↔ Nonempty (IsTerminal X) :=
+  ⟨fun ⟨⟨f, p, q⟩, d⟩ ↦ .intro <| isLimitEquivIsTerminalOfIsEmpty _ _ q, fun ⟨h⟩ ↦
+    ⟨⟨(Functor.const _).obj X, 𝟙 _, (isLimitEquivIsTerminalOfIsEmpty _ _).symm h⟩, by simp⟩⟩
+
+lemma colimitsOfShape_isEmpty_iff [IsEmpty J] (X : C) :
+    P.colimitsOfShape J X ↔ Nonempty (IsInitial X) :=
+  ⟨fun ⟨⟨f, p, q⟩, d⟩ ↦ .intro <| isColimitEquivIsInitialOfIsEmpty _ _ q, fun ⟨h⟩ ↦
+    ⟨⟨(Functor.const _).obj X, 𝟙 _, (isColimitEquivIsInitialOfIsEmpty _ _).symm h⟩, by simp⟩⟩
 
 end ObjectProperty
 

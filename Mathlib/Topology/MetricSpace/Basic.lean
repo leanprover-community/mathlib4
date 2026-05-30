@@ -15,7 +15,7 @@ public import Mathlib.Topology.MetricSpace.Defs
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Bornology Topology
 open scoped NNReal Uniformity

@@ -135,13 +135,12 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
             (p.leftInv i x c.length) (p.applyComposition c v) := by
       simp only [leftInv, ContinuousMultilinearMap.neg_apply, neg_inj,
         ContinuousMultilinearMap.sum_apply]
-      convert
-        (sum_toFinset_eq_subtype
-          (fun c : Composition (n + 2) => c.length < n + 2)
-          (fun c : Composition (n + 2) =>
-          (ContinuousMultilinearMap.compAlongComposition
-            (p.compContinuousLinearMap (i.symm : F →L[𝕜] E)) c (p.leftInv i x c.length))
-            fun j : Fin (n + 2) => p 1 fun _ : Fin 1 => v j)).symm.trans
+      convert!
+        (sum_toFinset_eq_subtype (fun c : Composition (n + 2) => c.length < n + 2)
+              (fun c : Composition (n + 2) =>
+                (ContinuousMultilinearMap.compAlongComposition
+                    (p.compContinuousLinearMap (i.symm : F →L[𝕜] E)) c (p.leftInv i x c.length))
+                  fun j : Fin (n + 2) => p 1 fun _ : Fin 1 => v j)).symm.trans
           _
       simp only [compContinuousLinearMap_applyComposition,
         ContinuousMultilinearMap.compAlongComposition_apply]
@@ -642,7 +641,7 @@ lemma HasFPowerSeriesAt.eventually_hasSum_of_comp {f : E → F} {g : F → G}
         (partialSum_continuous q a).continuousAt
       apply this.tendsto.comp
       apply Tendsto.sub h'y
-      convert tendsto_const_nhds
+      convert! tendsto_const_nhds
       exact (HasFPowerSeriesAt.coeff_zero hf fun _ ↦ 0).symm
     apply u_closed.mem_of_tendsto this
     filter_upwards [Ici_mem_atTop b₀] with b hb using vu (hab _ _ ha hb)

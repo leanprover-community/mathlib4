@@ -126,9 +126,6 @@ def continuousMapEquiv [CompactSpace α] : C(α, β) ≃ C_c(α, β) where
       hasCompactSupport' := HasCompactSupport.of_compactSpace f }
   invFun f := f
 
-@[deprecated (since := "2025-10-21")] alias ContinuousMap.liftCompactlySupported :=
-    continuousMapEquiv
-
 variable {γ : Type*} [TopologicalSpace γ] [Zero γ]
 
 /-- Composition of a continuous function `f` with compact support with another continuous function
@@ -354,7 +351,6 @@ instance [NonUnitalCommRing β] [IsTopologicalRing β] :
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => rfl) fun _ _ => rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
     [IsTopologicalSemiring β] [Module R β] [ContinuousConstSMul R β] [IsScalarTower R β β] :
     IsScalarTower R C_c(α, β) C_c(α, β) where
@@ -363,7 +359,6 @@ instance {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
     simp only [smul_eq_mul, coe_mul, coe_smul, Pi.mul_apply, Pi.smul_apply]
     rw [← smul_eq_mul, ← smul_eq_mul, smul_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 instance {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
     [IsTopologicalSemiring β] [Module R β] [ContinuousConstSMul R β] [SMulCommClass R β β] :
     SMulCommClass R C_c(α, β) C_c(α, β) where

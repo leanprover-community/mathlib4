@@ -391,7 +391,7 @@ lemma α_pow (i : ℕ) : (α : X q) ^ (2 * i + 1) = 3 ^ i * α := by
 
 instance : CharP (X q) q where
   cast_eq_zero_iff x := by
-    convert ZMod.natCast_eq_zero_iff _ _
+    convert! ZMod.natCast_eq_zero_iff _ _
     exact ⟨congr_arg Prod.fst, fun hx ↦ ext hx (by simp)⟩
 
 instance : Coe (ZMod ↑q) (X q) where
@@ -471,7 +471,7 @@ theorem card_eq : Fintype.card (X q) = q ^ 2 := by
 /-- There are strictly fewer than `q^2` units, since `0` is not a unit. -/
 nonrec theorem card_units_lt (w : 1 < q) : Fintype.card (X q)ˣ < q ^ 2 := by
   have : Fact (1 < (q : ℕ)) := ⟨w⟩
-  convert card_units_lt (X q)
+  convert! card_units_lt (X q)
   rw [card_eq]
 
 end X

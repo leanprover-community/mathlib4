@@ -208,7 +208,7 @@ lemma isNormalMonoCategory : IsNormalMonoCategory C where
           rw [KernelFork.ι_ofι] at hg
           rw [← cancel_mono f, hg, ← aux, KernelFork.ι_ofι]
         · simp only [KernelFork.ι_ofι, Category.assoc]
-          convert limit.lift_π s WalkingParallelPair.zero using 2
+          convert! limit.lift_π s WalkingParallelPair.zero using 2
           rw [IsIso.inv_comp_eq, eq_comm]
           exact (imageMonoFactorisation f).fac }⟩
 
@@ -235,7 +235,7 @@ lemma isNormalEpiCategory : IsNormalEpiCategory C where
           rw [CokernelCofork.π_ofπ] at hg
           rw [← cancel_epi f, hg, ← aux, CokernelCofork.π_ofπ]
         · simp only [CokernelCofork.π_ofπ, ← Category.assoc]
-          convert colimit.ι_desc s WalkingParallelPair.one using 2
+          convert! colimit.ι_desc s WalkingParallelPair.one using 2
           rw [IsIso.comp_inv_eq, IsIso.comp_inv_eq, eq_comm, ← imageMonoFactorisation_e']
           exact (imageMonoFactorisation f).fac }⟩
 
@@ -380,7 +380,7 @@ set_option backward.isDefEq.respectTransparency false in
 See `CategoryTheory.Abelian.ofCoimageImageComparisonIsIso` for the converse.
 -/
 instance : IsIso (coimageImageComparison f) := by
-  convert
+  convert!
     Iso.isIso_hom
       (IsImage.isoExt (coimageStrongEpiMonoFactorisation f).toMonoIsImage
         (imageStrongEpiMonoFactorisation f).toMonoIsImage)
@@ -427,8 +427,6 @@ def im : Arrow C ⥤ C where
   obj f := Abelian.image f.hom
   map {f g} u := kernel.lift _ (Abelian.image.ι f.hom ≫ u.right) <| by simp [← Arrow.w_assoc u]
 
-@[deprecated (since := "2025-10-31")] noncomputable alias imageFunctor := im
-
 /-- `Abelian.coimage` as a functor from the arrow category. -/
 @[simps]
 def coim : Arrow C ⥤ C where
@@ -436,14 +434,10 @@ def coim : Arrow C ⥤ C where
   map {f g} u := cokernel.desc _ (u.left ≫ Abelian.coimage.π g.hom) <| by
     simp [← Category.assoc, coimage.comp_π_eq_zero]; simp
 
-@[deprecated (since := "2025-10-31")] noncomputable alias coimageFunctor := coim
-
 /-- The image and coimage of an arrow are naturally isomorphic. -/
 @[simps!]
 def coimIsoIm : coim (C := C) ≅ im :=
   NatIso.ofComponents fun _ ↦ Abelian.coimageIsoImage _
-
-@[deprecated (since := "2025-10-31")] noncomputable alias coimageFunctorIsoImageFunctor := coimIsoIm
 
 /-- There is a canonical isomorphism between the abelian image and the categorical image of a
     morphism. -/

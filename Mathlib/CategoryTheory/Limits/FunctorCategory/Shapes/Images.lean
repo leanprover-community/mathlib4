@@ -37,7 +37,7 @@ property of images -/
 noncomputable def monoFactorisationIsImage {F G : C ⥤ Type u} (f : F ⟶ G) :
     IsImage <| monoFactorisation f where
   lift H := {
-    app X := TypeCat.ofHom fun ⟨x, hx⟩ ↦ H.e.app _ hx.choose
+    app X := ↾fun ⟨x, hx⟩ ↦ H.e.app _ hx.choose
     naturality X Y g := by
       ext
       apply injective_of_mono (H.m.app Y)

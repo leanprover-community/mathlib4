@@ -32,7 +32,7 @@ also in the subset.
 @[expose] public section
 
 
-variable (K V : Type*) [Field K] [AddCommGroup V] [Module K V]
+variable (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
 
 namespace Projectivization
 
@@ -150,7 +150,7 @@ theorem span_le_subspace_iff {S : Set (ℙ K V)} {W : Subspace K V} : span S ≤
 
 /-- If a set of points is a subset of another set of points, then its span will be contained in the
 span of that set. -/
-@[mono]
+@[gcongr, mono]
 theorem monotone_span : Monotone (span : Set (ℙ K V) → Subspace K V) :=
   gi.gc.monotone_l
 
@@ -222,7 +222,7 @@ def submodule : Projectivization.Subspace K V ≃o Submodule K V where
       exact s.mem_add _ _ hx₂ hy₂ hxy (hx₁ hx₂) (hy₁ hy₂)
     zero_mem' h := h.irrefl.elim
     smul_mem' c x h₁ h₂ := by
-      convert h₁ (right_ne_zero_of_smul h₂) using 1
+      convert! h₁ (right_ne_zero_of_smul h₂) using 1
       rw [Projectivization.mk_eq_mk_iff']
       exact ⟨c, rfl⟩ }
   invFun s :=

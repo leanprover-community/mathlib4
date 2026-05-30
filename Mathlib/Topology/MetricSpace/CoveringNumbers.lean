@@ -391,7 +391,7 @@ lemma _root_.Isometry.coveringNumber_image' {f : X → Y} (hf : Isometry f) (hf_
     intro C hC_subset hC_cover
     refine (iInf_le _ (C.image f)).trans ?_
     simp only [Set.image_subset_iff]
-    have : ↑C ⊆ f ⁻¹' (f '' A) := hC_subset.trans (Set.subset_preimage_image f A)
+    have : ↑C ⊆ f ⁻¹' f '' A := hC_subset.trans (Set.subset_preimage_image f A)
     refine (iInf_le _ this).trans ?_
     rw [hf.isCover_image_iff]
     refine (iInf_le _ hC_cover).trans ?_

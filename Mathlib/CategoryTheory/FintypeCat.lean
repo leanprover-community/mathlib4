@@ -91,18 +91,18 @@ lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g 
 
 /-- Constructor for morphisms in `FintypeCat`. -/
 def homMk {X Y : FintypeCat} (f : X → Y) : X ⟶ Y where
-  hom := TypeCat.ofHom f
+  hom := ↾f
 
 @[simp]
 lemma homMk_apply {X Y : FintypeCat} (f : X → Y) (x : X) :
     homMk f x = f x := rfl
 
 @[simp]
-lemma id_hom (X : FintypeCat) : 𝟙 X.obj = TypeCat.ofHom id := rfl
+lemma id_hom (X : FintypeCat) : 𝟙 X.obj = ↾id := rfl
 
 @[simp, reassoc]
 lemma comp_hom {X Y Z : FintypeCat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    f.hom ≫ g.hom = TypeCat.ofHom (g.hom ∘ f.hom) := rfl
+    f.hom ≫ g.hom = ↾(g.hom ∘ f.hom) := rfl
 
 @[simp]
 lemma homMk_eq_id_iff {X : FintypeCat} (f : X → X) :
@@ -234,9 +234,9 @@ attribute [local instance] FintypeCat.fintype in
 @[simp]
 theorem incl_mk_nat_card (n : ℕ) :
     Fintype.card (incl.obj (mk n)) = n := by
-  convert Finset.card_fin n
+  convert! Finset.card_fin n
   dsimp [incl, mk, len]
-  convert (Fintype.ofEquiv_card Equiv.ulift).symm
+  convert! (Fintype.ofEquiv_card Equiv.ulift).symm
 
 end Skeleton
 

@@ -193,7 +193,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem comp_explicitCokernelπ {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) :
     f ≫ explicitCokernelπ f = 0 := by
-  convert (cokernelCocone f).w WalkingParallelPairHom.left
+  convert! (cokernelCocone f).w WalkingParallelPairHom.left
   simp
 
 @[simp]
@@ -216,7 +216,7 @@ theorem explicitCokernelDesc_unique {X Y Z : SemiNormedGrp.{u}} {f : X ⟶ Y} {g
     e = explicitCokernelDesc w := by
   apply (isColimitCokernelCocone f).uniq (Cofork.ofπ g (by simp [w]))
   rintro (_ | _)
-  · convert w.symm
+  · convert! w.symm
     simp
   · exact he
 

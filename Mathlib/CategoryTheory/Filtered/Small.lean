@@ -108,12 +108,10 @@ theorem small_fullSubcategory_filteredClosure :
   induction h with
   | base x =>
       refine ⟨⟨0, ?_⟩, ?_⟩
-      · #adaptation_note
-        /-- On nightly-2025-11-04 we need to add `-implicitDefEqProofs` here. -/
-        simp -implicitDefEqProofs only [FilteredClosureSmall.bundledAbstractFilteredClosure]
+      · simp only [FilteredClosureSmall.bundledAbstractFilteredClosure]
         exact ULift.up x
-      · simp only [FilteredClosureSmall.abstractFilteredClosureRealization]
-        rw! [FilteredClosureSmall.bundledAbstractFilteredClosure]
+      · simp only [FilteredClosureSmall.abstractFilteredClosureRealization,
+          FilteredClosureSmall.bundledAbstractFilteredClosure]
         rfl
   | max hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
@@ -261,12 +259,10 @@ theorem small_fullSubcategory_cofilteredClosure :
   induction h with
   | base x =>
     refine ⟨⟨0, ?_⟩,?_⟩
-    · #adaptation_note
-      /-- On nightly-2025-11-04 we need to add `-implicitDefEqProofs` here. -/
-      simp -implicitDefEqProofs only [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
+    · simp only [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
       exact ULift.up x
-    · simp only [CofilteredClosureSmall.abstractCofilteredClosureRealization]
-      rw! [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
+    · simp only [CofilteredClosureSmall.abstractCofilteredClosureRealization,
+        CofilteredClosureSmall.bundledAbstractCofilteredClosure]
       rfl
   | min hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩

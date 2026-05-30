@@ -13,8 +13,8 @@ import Mathlib.Tactic.Recall
 See `Statement.lean` for background.
 -/
 
-macro "◾" : tactic => `(tactic| aesop)
-macro "◾" : term => `(term| by aesop)
+local macro "◾" : tactic => `(tactic| aesop)
+local macro "◾" : term => `(term| by aesop)
 
 namespace IfExpr
 

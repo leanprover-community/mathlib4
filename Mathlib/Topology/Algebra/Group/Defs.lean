@@ -27,7 +27,7 @@ where subtraction is not given by `a - b = a + (-b)`.
 We also provide convenience dot notation lemmas like `ContinuousAt.neg`.
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 

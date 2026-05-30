@@ -86,7 +86,7 @@ def dgoToHomologicalComplex :
     { X := fun i => X.obj i
       d := fun i j =>
         if h : i + b = j then X.d i ≫ X.objEqToHom (show i + (1 : ℤ) • b = j by simp [h]) else 0
-      shape := fun i j w => by dsimp at w; convert dif_neg w
+      shape := fun i j w => by dsimp at w; convert! dif_neg w
       d_comp_d' := fun i j k hij hjk => by
         dsimp at hij hjk; substs hij hjk
         simp [objEqToHom_d_assoc] }

@@ -29,7 +29,7 @@ universe v u
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits ConcreteCategory
+open CategoryTheory Limits ConcreteCategory
 
 open CategoryTheory.IsFiltered renaming max → max' -- avoid name collision with `_root_.max`.
 

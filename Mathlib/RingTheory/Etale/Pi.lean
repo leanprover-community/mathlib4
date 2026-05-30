@@ -21,7 +21,7 @@ public import Mathlib.RingTheory.Finiteness.FinitePresentationLocal
 
 -/
 
-@[expose] public section
+public section
 
 namespace Algebra.FormallyEtale
 

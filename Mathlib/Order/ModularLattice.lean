@@ -46,8 +46,8 @@ We define (semi)modularity typeclasses as Prop-valued mixins.
 
 ## References
 
-* [Manfred Stern, *Semimodular lattices. {Theory} and applications*][stern2009]
-* [Wikipedia, *Modular Lattice*][https://en.wikipedia.org/wiki/Modular_lattice]
+* [Manfred Stern, *Semimodular lattices. Theory and applications*][stern2009]
+* [Wikipedia, Modular Lattice](https://en.wikipedia.org/wiki/Modular_lattice)
 
 ## TODO
 

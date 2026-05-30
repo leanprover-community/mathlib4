@@ -38,7 +38,7 @@ attribute [coe] UpperHalfPlane.coe
 instance : CoeOut ℍ ℂ := ⟨UpperHalfPlane.coe⟩
 
 /-- Define `I := √-1` as an element of the upper half plane. -/
-def I : ℍ := ⟨Complex.I, zero_lt_one⟩
+def I : ℍ := ⟨Complex.I, by simp⟩
 
 /-- Define the cube root of unity `ρ := (-1 + √-3) / 2` as an element of the upper half plane. -/
 def ρ : ℍ := ⟨⟨-1 / 2, Real.sqrt 3 / 2⟩, by positivity⟩
@@ -105,10 +105,10 @@ theorem mk_coe (z : ℍ) (h : 0 < (z : ℂ).im := z.2) : mk z h = z :=
   rfl
 
 @[simp]
-lemma I_im : I.im = 1 := rfl
+lemma I_im : I.im = 1 := Complex.I_im
 
 @[simp]
-lemma I_re : I.re = 0 := rfl
+lemma I_re : I.re = 0 := Complex.I_re
 
 @[simp, norm_cast]
 lemma coe_I : I = Complex.I := rfl

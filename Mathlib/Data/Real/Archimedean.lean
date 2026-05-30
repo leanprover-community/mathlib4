@@ -22,7 +22,8 @@ import Mathlib.Data.Int.LeastGreatest
 
 assert_not_exists Finset
 
-open Pointwise CauSeq
+open scoped Pointwise
+open CauSeq
 
 namespace Real
 variable {ι : Sort*} {f : ι → ℝ} {s : Set ℝ} {a : ℝ}
@@ -175,7 +176,7 @@ theorem sInf_univ : sInf (@Set.univ ℝ) = 0 := by
 
 @[simp] lemma iSup_of_isEmpty [IsEmpty ι] (f : ι → ℝ) : ⨆ i, f i = 0 := by
   dsimp [iSup]
-  convert Real.sSup_empty
+  convert! Real.sSup_empty
   rw [Set.range_eq_empty_iff]
   infer_instance
 

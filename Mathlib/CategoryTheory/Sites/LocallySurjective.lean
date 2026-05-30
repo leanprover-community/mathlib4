@@ -124,7 +124,6 @@ theorem isLocallySurjective_of_surjective {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G)
     rw [imageSieve_app]
     exact J.top_mem _
 
-set_option backward.isDefEq.respectTransparency false in
 instance isLocallySurjective_of_iso {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) [IsIso f] :
     IsLocallySurjective J f := by
   apply isLocallySurjective_of_surjective
@@ -427,7 +426,7 @@ lemma imageSieve_cofanIsColimitDesc_shrinkYoneda_map
     obtain ⟨a : V ⟶ X i, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective a
     refine ⟨_, a, _, ⟨i⟩, shrinkYonedaObjObjEquiv.symm.injective ?_⟩
     rw [← shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm]
-    convert hw using 1
+    convert! hw using 1
     · exact (ConcreteCategory.congr_hom (NatTrans.congr_app
         ((Cofan.IsColimit.fac hc (fun i ↦ shrinkYoneda.{w}.map (f i))) i) (op V))
           (shrinkYonedaObjObjEquiv.symm a)).symm

@@ -505,7 +505,7 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
       have T := tendsto_pi_nhds.1 (thickenedIndicator_tendsto_indicator_closure
         (fun n ↦ (u_mem n).1) u_lim ({1} : Set ℝ)) (f x)
       simp only [thickenedIndicator_apply, closure_singleton] at T
-      convert NNReal.tendsto_coe.2 T
+      convert! NNReal.tendsto_coe.2 T
       simp
   have M n : ∫ (x : G), v n (f x) ∂μ' = ∫ (x : G), v n (f x) ∂(haarScalarFactor μ' μ • μ) := by
     apply integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' μ (vf_cont n)
@@ -556,7 +556,7 @@ lemma smul_measure_isMulInvariant_le_of_isCompact_closure [LocallyCompactSpace G
   obtain ⟨-, hf, ⟨f, f_cont, f_comp, rfl⟩, νf⟩ :
       ∃ K ⊆ s, (∃ f, Continuous f ∧ HasCompactSupport f ∧ K = f ⁻¹' {1}) ∧ r < ν K :=
     innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_group ⟨hs, this⟩ r
-      (by convert hr)
+      (by convert! hr)
   calc
   r < ν (f ⁻¹' {1}) := νf
   _ = μ' (f ⁻¹' {1}) :=

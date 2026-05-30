@@ -241,7 +241,7 @@ noncomputable def D₂.multispanIndex : MultispanIndex (multispanShape W Z) C wh
 variable [HasMulticoequalizer (D₂.multispanIndex W Z)]
 
 /-- The object `succ W Z` is the multicoequalizer of all pairs of morphisms
- `g₁ g₂ : Y ⟶ step W Z` with a `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
+`g₁ g₂ : Y ⟶ step W Z` with a `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
 noncomputable abbrev succ := multicoequalizer (D₂.multispanIndex W Z)
 
 /-- The projection from `Z` to the multicoequalizer of all morphisms `g₁ g₂ : Y ⟶ step W Z` with
@@ -461,8 +461,8 @@ lemma isRightAdjoint_ι_isLocal
     (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ)
     [HasColimitsOfSize.{w, w} C] :
     W.isLocal.ι.IsRightAdjoint := by
-  let : OrderBot κ.ord.ToType :=
-    Cardinal.toTypeOrderBot (Cardinal.IsRegular.ne_zero Fact.out)
+  have : Nonempty κ.ord.ToType := by simpa using Cardinal.IsRegular.ne_zero Fact.out
+  have := WellFoundedLT.toOrderBot κ.ord.ToType
   have := D₁.hasCoproductsOfShape.{w} W
   have := D₂.hasColimitsOfShape.{w} W
   exact isRightAdjoint_ι W κ hW

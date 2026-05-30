@@ -209,11 +209,11 @@ theorem hasseDeriv_mul (f g : R[X]) :
   change
     (compHom (D k)).comp Φ f g =
       ∑ ij ∈ antidiagonal k, ((compHom.comp ((compHom Φ) (D ij.1))).flip (D ij.2) f) g
-  simp only [← finset_sum_apply]
+  simp only [← finsetSum_apply]
   congr 2
   clear f g
   ext m r n s : 4
-  simp only [Φ, D, finset_sum_apply, coe_mulLeft, coe_comp, flip_apply, Function.comp_apply,
+  simp only [Φ, D, finsetSum_apply, coe_mulLeft, coe_comp, flip_apply, Function.comp_apply,
              hasseDeriv_monomial, LinearMap.toAddMonoidHom_coe, compHom_apply_apply,
              coe_mul, monomial_mul_monomial]
   have aux :

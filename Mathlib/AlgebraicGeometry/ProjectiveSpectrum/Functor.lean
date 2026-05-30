@@ -210,7 +210,7 @@ theorem map_comp : map (g.comp f) (irrelevant_le_map_comp hf hg) = map g hg ≫ 
 set_option backward.isDefEq.respectTransparency false in
 theorem map_id : map (.id 𝒜) (by simp) = 𝟙 (Proj 𝒜) := by
   refine (affineOpenCover _).openCover.hom_ext _ _ fun s ↦ ?_
-  convert awayι_comp_map (.id 𝒜) _ _ _ s.2.2 using 1
+  convert! awayι_comp_map (.id 𝒜) _ _ _ s.2.2 using 1
   simp
 
 end Proj

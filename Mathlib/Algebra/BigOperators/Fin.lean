@@ -663,7 +663,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         simp_rw [Fin.val_zero, Fintype.prod_empty, Nat.div_one, mul_one, Fin.cons_zero,
           Fin.prod_univ_succ, Fin.castLE_zero, Fin.cons_zero, ← Nat.div_div_eq_div_mul,
           mul_left_comm (_ % _ : ℕ), ← mul_sum]
-        convert Nat.mod_add_div _ _
+        convert! Nat.mod_add_div _ _
         exact ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq (Fin.prod_univ_succ _)))
 
 theorem finPiFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (f : ∀ i : Fin m, Fin (n i)) :
@@ -752,7 +752,7 @@ theorem prod_ofFn {n : ℕ} {f : Fin n → M} : (ofFn f).prod = ∏ i, f i :=
 end CommMonoid
 
 @[to_additive]
-theorem alternatingProd_eq_finset_prod {G : Type*} [DivisionCommMonoid G] :
+theorem alternatingProd_eq_finsetProd {G : Type*} [DivisionCommMonoid G] :
     ∀ (L : List G), alternatingProd L = ∏ i : Fin L.length, L[i] ^ (-1 : ℤ) ^ (i : ℕ)
   | [] => by
     rw [alternatingProd, Finset.prod_eq_one]
@@ -763,9 +763,15 @@ theorem alternatingProd_eq_finset_prod {G : Type*} [DivisionCommMonoid G] :
   | g::h::L =>
     calc g * h⁻¹ * L.alternatingProd
       = g * h⁻¹ * ∏ i : Fin L.length, L[i] ^ (-1 : ℤ) ^ (i : ℕ) :=
-        congr_arg _ (alternatingProd_eq_finset_prod _)
+        congr_arg _ (alternatingProd_eq_finsetProd _)
     _ = ∏ i : Fin (L.length + 2), (g::h::L)[i] ^ (-1 : ℤ) ^ (i : ℕ) := by
         { rw [Fin.prod_univ_succ, Fin.prod_univ_succ, mul_assoc]
           simp [pow_add]}
+
+@[deprecated (since := "2026-04-08")]
+alias alternatingSum_eq_finset_sum := alternatingSum_eq_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias alternatingProd_eq_finset_prod := alternatingProd_eq_finsetProd
 
 end List

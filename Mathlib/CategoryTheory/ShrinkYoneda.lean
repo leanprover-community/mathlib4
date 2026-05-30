@@ -40,7 +40,7 @@ obtained by shrinking `F.obj X` for all `X : C`. -/
 noncomputable def shrink (F : C ⥤ Type w') [FunctorToTypes.Small.{w} F] :
     C ⥤ Type w where
   obj X := Shrink.{w} (F.obj X)
-  map f := TypeCat.ofHom (equivShrink.{w} _ ∘ F.map f ∘ (equivShrink.{w} _).symm)
+  map f := ↾(equivShrink.{w} _ ∘ F.map f ∘ (equivShrink.{w} _).symm)
 
 /-- The natural transformation `shrink.{w} F ⟶ shrink.{w} G` induces by a natural
 transformation `τ : F ⟶ G` between `w`-small functors to types. -/
@@ -48,7 +48,7 @@ transformation `τ : F ⟶ G` between `w`-small functors to types. -/
 noncomputable def shrinkMap {F G : C ⥤ Type w'} (τ : F ⟶ G) [FunctorToTypes.Small.{w} F]
     [FunctorToTypes.Small.{w} G] :
     shrink.{w} F ⟶ shrink.{w} G where
-  app X := TypeCat.ofHom (equivShrink.{w} _ ∘ τ.app X ∘ (equivShrink.{w} _).symm)
+  app X := ↾(equivShrink.{w} _ ∘ τ.app X ∘ (equivShrink.{w} _).symm)
 
 /-- Shrinking `F` to `Type w` followed by universe lifting is the same as shrinking to
 `Type (max w w')`. -/
@@ -67,7 +67,6 @@ variable [LocallySmall.{w} C]
 instance (X : C) : FunctorToTypes.Small.{w} (yoneda.obj X) :=
   fun _ ↦ by dsimp; infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Yoneda embedding `C ⥤ Cᵒᵖ ⥤ Type w` for a locally `w`-small category `C`. -/
 @[simps -isSimp obj map, pp_with_univ]
 noncomputable def shrinkYoneda :
@@ -122,7 +121,7 @@ noncomputable def shrinkYonedaEquiv {X : C} {P : Cᵒᵖ ⥤ Type w} :
     (shrinkYoneda.{w}.obj X ⟶ P) ≃ P.obj (op X) where
   toFun τ := τ.app _ (equivShrink.{w} _ (𝟙 X))
   invFun x :=
-    { app Y := TypeCat.ofHom (fun f ↦ P.map ((equivShrink.{w} _).symm f).op x)
+    { app Y := ↾fun f ↦ P.map ((equivShrink.{w} _).symm f).op x
       naturality Y Z g := by ext; simp [shrinkYoneda] }
   left_inv τ := by
     ext Y f
@@ -194,7 +193,6 @@ def shrinkYonedaIsoYoneda : shrinkYoneda.{v} ≅ yoneda (C := C) :=
       (by intros; ext; simp [shrinkYonedaObjObjEquiv_obj_map]))
     (by intros; ext; simp [shrinkYonedaObjObjEquiv_map_app])
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `shrinkYoneda` is compatible with `uliftFunctor`. -/
 noncomputable
 def shrinkYonedaUliftFunctorIso [LocallySmall.{max w w'} C] :

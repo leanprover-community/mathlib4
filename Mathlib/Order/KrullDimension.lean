@@ -198,13 +198,13 @@ lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
   · let p' := p.eraseLast.snoc x (by
       apply lt_of_lt_of_le
       · apply p.step ⟨p.length - 1, by lia⟩
-      · convert hlast
+      · convert! hlast
         simp only [Fin.succ_mk, RelSeries.last, Fin.last]
         congr; lia)
     suffices p'.length ≤ height x by
       simp only [RelSeries.snoc_length, RelSeries.eraseLast_length, Nat.cast_add, ENat.coe_sub,
         Nat.cast_one, p'] at this
-      convert this
+      convert! this
       norm_cast
       lia
     refine le_iSup₂_of_le p' ?_ le_rfl
@@ -326,6 +326,27 @@ lemma coheight_le_coheight_apply_of_strictMono (f : α → β) (hf : StrictMono 
   apply height_le_height_apply_of_strictMono (α := αᵒᵈ)
   exact fun _ _ h ↦ hf h
 
+lemma coheight_eq_of_strictMono (f : α → β) (hf : StrictMono f)
+    (h : ∀ a : α, ∀ b : β, f a < b → ∃ (a' : α), a < a' ∧ f a' = b) (a : α) :
+    coheight a = coheight (f a) := by
+  refine le_antisymm (Order.coheight_le_coheight_apply_of_strictMono _ hf _) ?_
+  refine coheight_le_iff'.mpr fun p hp ↦ ?_
+  induction p using RelSeries.inductionOn generalizing a with
+  | singleton x => simp
+  | cons p x hx ih =>
+    simp only [RelSeries.head_cons] at hp
+    obtain ⟨a', haa', ha'⟩ := h a p.head (by grind)
+    grw [RelSeries.cons_length, Nat.cast_add, Nat.cast_one, ih a' ha'.symm]
+    exact coheight_add_one_le haa'
+
+lemma height_eq_of_strictMono (f : α → β) (hf : StrictMono f)
+    (h : ∀ a : α, ∀ b : β, b < f a → ∃ (a' : α), a' < a ∧ f a' = b) (a : α) :
+    height a = height (f a) := by
+  have : coheight (OrderDual.toDual a) = coheight (OrderDual.toDual (f a)) :=
+    coheight_eq_of_strictMono (α := αᵒᵈ) (β := βᵒᵈ) (f := OrderDual.toDual ∘ f ∘ OrderDual.toDual)
+    (strictMono_dual_iff.mp hf) (fun a b hab ↦ h a b hab) _
+  simpa [Order.coheight_toDual] using this
+
 @[simp]
 lemma height_orderIso (f : α ≃o β) (x : α) : height (f x) = height x := by
   apply le_antisymm
@@ -435,7 +456,7 @@ element.
 -/
 lemma coheight_eq_top_iff {x : α} :
     coheight x = ⊤ ↔ ∀ n, ∃ p : LTSeries α, p.head = x ∧ p.length = n := by
-  convert height_eq_top_iff (α := αᵒᵈ) (x := x) using 2 with n
+  convert! height_eq_top_iff (α := αᵒᵈ) (x := x) using 2 with n
   constructor <;> (intro ⟨p, hp, hl⟩; use p.reverse; constructor <;> simpa)
 
 /-- The elements of height zero are the minimal elements. -/

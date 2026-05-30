@@ -116,7 +116,7 @@ variable [HasColimitsOfSize.{w, w} A]
 
 /-- Given a point of a site, the skyscraper presheaf functor is right adjoint
 to the fiber functor on presheaves. -/
-noncomputable def skyscraperPresheafAdjunction [HasColimitsOfSize.{w, w} A] :
+noncomputable def skyscraperPresheafAdjunction :
     Φ.presheafFiber (A := A) ⊣ Φ.skyscraperPresheafFunctor :=
   Adjunction.mkOfHomEquiv
     { homEquiv _ _ := Φ.skyscraperPresheafHomEquiv
@@ -252,7 +252,7 @@ lemma W_isInvertedBy_presheafFiber :
   rw [isIso_iff_coyoneda_map_bijective]
   intro M
   rw [← Function.Bijective.of_comp_iff' Φ.skyscraperPresheafHomEquiv.bijective]
-  convert (hf _ (Φ.isSheaf_skyscraperPresheaf M)).comp Φ.skyscraperPresheafHomEquiv.bijective
+  convert! (hf _ (Φ.isSheaf_skyscraperPresheaf M)).comp Φ.skyscraperPresheafHomEquiv.bijective
   ext g : 1
   simp [skyscraperPresheafHomEquiv_naturality_left]
 

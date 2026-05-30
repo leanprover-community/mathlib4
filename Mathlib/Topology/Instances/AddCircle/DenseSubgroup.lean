@@ -79,7 +79,7 @@ theorem dense_addSubgroup_iff_ne_zmultiples {p : ℝ} [Fact (0 < p)] {s : AddSub
     contrapose! h
     obtain ⟨a, rfl⟩ : ∃ a, s = .zmultiples a := by
       rw [← QuotientAddGroup.dense_preimage_mk, ← QuotientAddGroup.coe_mk',
-        ← AddSubgroup.coe_comap, xor_iff_not_iff'.1 (AddSubgroup.dense_xor'_cyclic _)] at h
+        ← AddSubgroup.coe_comap, xor_iff_not_iff'.1 (AddSubgroup.dense_xor_cyclic _)] at h
       rcases h with ⟨a, ha⟩
       use a
       rw [← QuotientAddGroup.coe_mk', ← AddMonoidHom.map_zmultiples, ← ha,

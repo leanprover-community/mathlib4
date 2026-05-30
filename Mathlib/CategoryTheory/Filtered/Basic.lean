@@ -32,6 +32,7 @@ easier to describe than general colimits (and more often preserved by functors).
 
 In this file we show that any functor from a finite category to a filtered category admits a cocone:
 * `cocone_nonempty [FinCategory J] [IsFiltered C] (F : J ⥤ C) : Nonempty (Cocone F)`
+
 More generally,
 for any finite collection of objects and morphisms between them in a filtered category
 (even if not closed under composition) there exists some object `Z` receiving maps from all of them,
@@ -684,7 +685,7 @@ theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) 
   let ⟨l, li, lk, e⟩ := cospan ij kj
   refine ⟨⟨l, lk ≫ kj⟩, e ▸ ?_, ?_⟩ <;>
     simp_rw [F.map_comp] <;>
-    convert Set.range_comp_subset_range _ _
+    convert! Set.range_comp_subset_range _ _
 
 /-- Given a "bowtie" of morphisms
 ```

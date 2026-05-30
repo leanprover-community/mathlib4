@@ -25,7 +25,7 @@ It is in a separate file for now so as to not add imports to the file `Order.Wel
 Dickson, order, partial well order
 -/
 
-@[expose] public section
+public section
 /-- A version of **Dickson's lemma**: `σ →₀ α` is well-quasi-ordered when `σ` is `Finite` and `α` is
 well-quasi-ordered.
 This version uses finsupps on a finite type as it is intended for use with `MVPowerSeries`.
@@ -33,8 +33,3 @@ This version uses finsupps on a finite type as it is intended for use with `MVPo
 instance Finsupp.wellQuasiOrderedLE {α σ : Type*} [Zero α] [Preorder α] [WellQuasiOrderedLE α]
     [Finite σ] : WellQuasiOrderedLE (σ →₀ α) :=
   orderIsoFunOnFinite.wellQuasiOrderedLE_iff.2 inferInstance
-
-@[deprecated Set.isPWO_of_wellQuasiOrderedLE (since := "2025-11-12")]
-theorem Finsupp.isPWO {α σ : Type*} [Zero α] [Preorder α] [WellQuasiOrderedLE α] [Finite σ]
-    (S : Set (σ →₀ α)) : S.IsPWO :=
-  Set.isPWO_of_wellQuasiOrderedLE S

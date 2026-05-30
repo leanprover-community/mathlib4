@@ -111,7 +111,7 @@ def isLimitConeOfForget (c : Cone (F ⋙ forget)) (hc : IsLimit c) :
   rw [le_iInf_iff]
   intro j
   rw [coinduced_le_iff_le_induced, induced_compose]
-  convert continuous_iff_le_induced.1 (s.π.app j).hom.continuous
+  convert! continuous_iff_le_induced.1 (s.π.app j).hom.continuous
   ext x
   exact ConcreteCategory.hom_ext_iff.mp (hc.fac ((forget).mapCone s) j) x
 
@@ -224,7 +224,7 @@ def isColimitCoconeOfForget (c : Cocone (F ⋙ forget)) (hc : IsColimit c) :
   rw [iSup_le_iff]
   intro j
   rw [coinduced_le_iff_le_induced, induced_compose]
-  convert continuous_iff_le_induced.1 (s.ι.app j).hom.continuous
+  convert! continuous_iff_le_induced.1 (s.ι.app j).hom.continuous
   ext x
   exact ConcreteCategory.hom_ext_iff.mp (hc.fac ((forget).mapCocone s) j) x
 
@@ -333,5 +333,9 @@ def isInitialPEmpty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
 /-- The initial object of `Top` is `PEmpty`. -/
 def initialIsoPEmpty : ⊥_ TopCat.{u} ≅ TopCat.of PEmpty :=
   initialIsInitial.uniqueUpToIso isInitialPEmpty
+
+/-- The unique map ∅ ⟶ X is inducing. -/
+lemma IsInducing.empty (X : TopCat) : Topology.IsInducing (TopCat.isInitialPEmpty.to X) where
+  eq_induced := by ext; simp
 
 end TopCat

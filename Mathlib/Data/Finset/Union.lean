@@ -272,7 +272,7 @@ lemma disjoint_biUnion_left (s : Finset α) (f : α → Finset β) (t : Finset �
     Disjoint (s.biUnion f) t ↔ ∀ i ∈ s, Disjoint (f i) t := by
   classical
   refine s.induction ?_ ?_
-  · simp only [forall_mem_empty_iff, biUnion_empty, disjoint_empty_left]
+  · simp
   · intro i s his ih
     simp only [disjoint_union_left, biUnion_insert, forall_mem_insert, ih]
 

@@ -122,7 +122,7 @@ theorem pullback_close {X Y : C} (f : Y ⟶ X) (S : Sieve X) :
     rw [← Sieve.pullback_comp]
     apply hg
 
-@[mono]
+@[gcongr, mono]
 theorem monotone_close {X : C} : Monotone (J₁.close : Sieve X → Sieve X) :=
   (J₁.closureOperator _).monotone
 
@@ -154,7 +154,7 @@ subobject classifier for the category of presheaves. -/
 @[simps]
 def Functor.sieves : Cᵒᵖ ⥤ Type max v u where
   obj X := Sieve X.unop
-  map f := TypeCat.ofHom fun S ↦ S.pullback f.unop
+  map f := ↾fun S ↦ S.pullback f.unop
 
 /--
 The presheaf sending each object to the set of `J`-closed sieves on it. This presheaf is a `J`-sheaf

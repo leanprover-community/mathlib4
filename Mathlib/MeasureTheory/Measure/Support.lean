@@ -130,7 +130,7 @@ lemma compl_support_eq_sUnion : μ.supportᶜ = ⋃₀ {t : Set X | IsOpen t ∧
     nhds_basis_opens x |>.notMem_measureSupport, fun t ↦ and_comm (b := x ∈ t)]
 
 lemma support_eq_sInter : μ.support = ⋂₀ {t : Set X | IsClosed t ∧ μ tᶜ = 0} := by
-  convert congr($(compl_support_eq_sUnion (μ := μ))ᶜ)
+  convert! congr($(compl_support_eq_sUnion (μ := μ))ᶜ)
   all_goals simp [Set.compl_sUnion, compl_involutive.image_eq_preimage_symm]
 
 section Lindelof
@@ -202,7 +202,7 @@ lemma support_restrict_subset {s : Set X} :
   refine Set.subset_inter (support_subset_of_isClosed isClosed_closure ?_)
     (support_mono restrict_le_self)
   rw [mem_ae_iff, μ.restrict_apply isClosed_closure.isOpen_compl.measurableSet]
-  convert μ.empty
+  convert! μ.empty
   exact subset_closure.disjoint_compl_left.eq_bot
 
 end Restrict

@@ -248,8 +248,6 @@ lemma mk' (_ : NatTrans.CommShift adj.unit A) :
     refine (compatibilityCounit_of_compatibilityUnit adj _ _ (fun X ↦ ?_) _).symm
     simpa [Functor.commShiftIso_comp_hom_app] using NatTrans.shift_app_comm adj.unit a X⟩
 
-variable [adj.CommShift A]
-
 /-- The identity adjunction is compatible with the trivial `CommShift` structure on the
 identity functor.
 -/

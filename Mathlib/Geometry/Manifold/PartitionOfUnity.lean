@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.Algebra.Structures
 public import Mathlib.Geometry.Manifold.BumpFunction
-public import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
+public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 public import Mathlib.Topology.MetricSpace.PartitionOfUnity
 public import Mathlib.Topology.ShrinkingLemma
 

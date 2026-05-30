@@ -26,7 +26,7 @@ open scoped nonZeroDivisors
 
 open FractionalIdeal Ideal
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommRing R] [IsDomain R] [Nonempty (NormalizedGCDMonoid R)]
 namespace NormalizedGCDMonoid
@@ -38,7 +38,7 @@ lemma isPrincipal_of_exists_mul_ne_zero_isPrincipal
     Classical.choice (inferInstance : Nonempty (NormalizedGCDMonoid R))
   obtain ⟨K, hJK0, hK⟩ := hJ
   rcases hK.principal with ⟨x, hJK⟩
-  have hxmemJK : x ∈ J * K := by simp [hJK, mem_span_singleton_self]
+  have hxmemJK : x ∈ J * K := by simp [hJK]
   -- Shrink `K` to a finitely generated subideal `K'` witnessing `x ∈ J * K'`.
   have : ∃ T : Finset R, (T : Set R) ⊆ K ∧ x ∈ J * span T := by
     obtain ⟨S, T, hSJ, hTK, hx⟩ := Submodule.mem_span_mul_finite_of_mem_mul hxmemJK

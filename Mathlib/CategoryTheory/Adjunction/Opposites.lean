@@ -73,7 +73,6 @@ lemma rightOp_eq {F : Cᵒᵖ ⥤ D} {G : Dᵒᵖ ⥤ C} (a : F.rightOp ⊣ G) :
     a.rightOp = (opOpEquivalence D).symm.toAdjunction.comp a.op := by
   ext X; simp [Equivalence.unit]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `F` and `F'` are both adjoint to `G`, there is a natural isomorphism
 `F.op ⋙ coyoneda ≅ F'.op ⋙ coyoneda`.
 We use this in combination with `fullyFaithfulCancelRight` to show left adjoints are unique.

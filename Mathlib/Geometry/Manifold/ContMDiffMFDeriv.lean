@@ -127,7 +127,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
             ∩ range J ×ˢ range I) := by
         apply inter_subset_inter_right
         exact Set.prod_mono_right (extChartAt_target_subset_range (g x₀))
-      convert hf'.2.mono this
+      convert! hf'.2.mono this
       · ext y; simp; tauto
       · simp
     · exact hg'.2
@@ -167,7 +167,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
   · exact mfderivWithin_eq_fderivWithin
   · exact mdifferentiableAt_extChartAt (by simpa using h'x)
   · apply MDifferentiableWithinAt.comp (I' := I) (u := u) _ _ _ inter_subset_right
-    · convert hx.mdifferentiableWithinAt one_ne_zero
+    · convert! hx.mdifferentiableWithinAt one_ne_zero
       exact PartialEquiv.left_inv (extChartAt I (g x₀)) h2
     · apply (mdifferentiableWithinAt_extChartAt_symm _).mono
       · exact inter_subset_left.trans (extChartAt_target_subset_range (g x₀))
@@ -308,7 +308,7 @@ theorem ContMDiffOn.continuousOn_tangentMapWithin (hf : CMDiff[s] n f) (hmn : 1 
 theorem ContMDiff.contMDiff_tangentMap (hf : CMDiff n f) (hmn : m + 1 ≤ n) :
     CMDiff m (tangentMap I I' f) := by
   rw [← contMDiffOn_univ] at hf ⊢
-  convert hf.contMDiffOn_tangentMapWithin hmn uniqueMDiffOn_univ
+  convert! hf.contMDiffOn_tangentMapWithin hmn uniqueMDiffOn_univ
   rw [tangentMapWithin_univ]
 
 /-- If a function is `C^n`, with `1 ≤ n`, then its bundled derivative is continuous. -/
@@ -316,7 +316,7 @@ theorem ContMDiff.continuous_tangentMap (hf : CMDiff n f) (hmn : 1 ≤ n) :
     Continuous (tangentMap I I' f) := by
   rw [← contMDiffOn_univ] at hf
   rw [← continuousOn_univ]
-  convert hf.continuousOn_tangentMapWithin hmn uniqueMDiffOn_univ
+  convert! hf.continuousOn_tangentMapWithin hmn uniqueMDiffOn_univ
   rw [tangentMapWithin_univ]
 
 end tangentMap

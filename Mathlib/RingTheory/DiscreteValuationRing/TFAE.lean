@@ -28,7 +28,7 @@ Noetherian local domain that is not a field `(R, m, k)`:
 Also see `tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain` for a version without `¬ IsField R`.
 -/
 
-@[expose] public section
+public section
 
 
 variable (R : Type*) [CommRing R]
@@ -219,7 +219,7 @@ theorem IsDiscreteValuationRing.TFAE [IsNoetherianRing R] [IsLocalRing R] [IsDom
     simp [Nat.le_one_iff_eq_zero_or_eq_one, finrank_cotangentSpace_eq_zero_iff, h]
   rw [this]
   have : maximalIdeal R ≠ ⊥ := isField_iff_maximalIdeal_eq.not.mp h
-  convert tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain R
+  convert! tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain R
   · exact ⟨fun _ ↦ inferInstance, fun h ↦ { h with not_a_field' := this }⟩
   · exact ⟨fun h P h₁ h₂ ↦ h.unique ⟨h₁, h₂⟩ ⟨this, inferInstance⟩,
       fun H ↦ ⟨_, ⟨this, inferInstance⟩, fun P hP ↦ H P hP.1 hP.2⟩⟩
