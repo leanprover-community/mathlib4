@@ -262,7 +262,7 @@ theorem iSup_partialSups_eq (f : ι → α) :
 
 theorem partialSups_eq_biSup (f : ι → α) (i : ι) :
     partialSups f i = ⨆ j ≤ i, f j := by
-  simpa only [iSup_subtype] using partialSups_eq_ciSup_Iic f i
+  simpa only [iSup_subtype] using! partialSups_eq_ciSup_Iic f i
 
 theorem iSup_le_iSup_of_partialSups_le_partialSups {f g : ι → α}
     (h : partialSups f ≤ partialSups g) : ⨆ i, f i ≤ ⨆ i, g i := by

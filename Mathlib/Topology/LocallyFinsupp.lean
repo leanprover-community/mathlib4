@@ -550,11 +550,11 @@ Every positive function with locally finite supports dominates a singleton indic
 -/
 lemma exists_single_le_pos [DecidableEq X] {D : locallyFinsupp X ℤ} (h : 0 < D) :
     ∃ e, single e 1 ≤ D := by
-  obtain ⟨z, hz⟩ : ∃ z, D z ≠ 0 := by simpa [D.ext_iff] using (ne_of_lt h).symm
+  obtain ⟨z, hz⟩ : ∃ z, D z ≠ 0 := by simpa [D.ext_iff] using! (ne_of_lt h).symm
   refine ⟨z, fun e ↦ ?_⟩
   obtain (rfl | he) := eq_or_ne e z
-  · simpa [single_apply] using Int.lt_iff_le_and_ne.mpr ⟨h.le e, hz.symm⟩
-  · simpa [he, single_apply] using h.le e
+  · simpa [single_apply] using! Int.lt_iff_le_and_ne.mpr ⟨h.le e, hz.symm⟩
+  · simpa [he, single_apply] using! h.le e
 
 end LinearOrder
 

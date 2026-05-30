@@ -183,6 +183,7 @@ lemma ofPoint_SpecTensorTo (T : Triplet f g) (p : Spec T.tensor) :
 
 end Triplet
 
+set_option backward.defeqAttrib.useBackward true in
 lemma residueFieldCongr_inv_residueFieldMap_ofPoint (t : ↑(pullback f g)) :
     ((S.residueFieldCongr (Triplet.ofPoint t).hx).inv ≫ f.residueFieldMap (Triplet.ofPoint t).x) ≫
       (pullback.fst f g).residueFieldMap t = ((S.residueFieldCongr (Triplet.ofPoint t).hy).inv ≫
@@ -205,11 +206,11 @@ lemma ofPointTensor_SpecTensorTo (t : ↑(pullback f g)) :
       (pullback f g).fromSpecResidueField t := by
   apply pullback.hom_ext
   · rw [← Scheme.Hom.SpecMap_residueFieldMap_fromSpecResidueField]
-    simp only [Category.assoc, Triplet.specTensorTo_fst, Triplet.ofPoint_x]
+    simp only [Category.assoc, Triplet.specTensorTo_fst]
     rw [← pushout.inl_desc _ _ (residueFieldCongr_inv_residueFieldMap_ofPoint t), Spec.map_comp]
     rfl
   · rw [← Scheme.Hom.SpecMap_residueFieldMap_fromSpecResidueField]
-    simp only [Category.assoc, Triplet.specTensorTo_snd, Triplet.ofPoint_y]
+    simp only [Category.assoc, Triplet.specTensorTo_snd]
     rw [← pushout.inr_desc _ _ (residueFieldCongr_inv_residueFieldMap_ofPoint t), Spec.map_comp]
     rfl
 
