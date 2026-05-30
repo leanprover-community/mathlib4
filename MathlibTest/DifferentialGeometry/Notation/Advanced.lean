@@ -239,8 +239,8 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `TotalSpace F (Tan
         No `baseInfo` provided
   [Elab.DiffGeo.MDiff] ✅️ TangentSpace
     [Elab.DiffGeo.MDiff] `TangentSpace I` is the total space of the `TangentBundle` of `M`
-    [Elab.DiffGeo.MDiff] Found model: `I.prod I.tangent`
-  [Elab.DiffGeo.MDiff] Found model: `I.prod I.tangent`
+    [Elab.DiffGeo.MDiff] Found model: `I.tangent`
+  [Elab.DiffGeo.MDiff] Found model: `I.tangent`
 [Elab.DiffGeo.MDiff] Finding a model with corners for: `F`
 [Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
