@@ -36,7 +36,7 @@ variable {X : Type u} [TopologicalSpace X] (x : X)
 `(Opens X, Opens.grothendieckTopology X)` corresponding to `x`. -/
 def pointGrothendieckTopology : Point.{u} (grothendieckTopology X) where
   fiber.obj U := ULift.{u} (PLift (x ∈ U))
-  fiber.map f := TypeCat.ofHom fun h ↦ ⟨⟨leOfHom f h.down.down⟩⟩
+  fiber.map f := ↾fun h ↦ ⟨⟨leOfHom f h.down.down⟩⟩
   isCofiltered :=
     { nonempty := ⟨⊤, ⟨⟨by simp⟩⟩⟩
       cone_objs := by
@@ -81,7 +81,7 @@ there is a (unique) morphism between the corresponding points of the site
 def pointGrothendieckTopologyHomEquiv {x y : X} :
     (pointGrothendieckTopology x ⟶ pointGrothendieckTopology y) ≃ x ⤳ y where
   toFun f := specializes_iff_forall_open.2 (fun U h₁ h₂ ↦ (f.hom.app ⟨U, h₁⟩ ⟨⟨h₂⟩⟩).down.down)
-  invFun s := { hom.app U := TypeCat.ofHom fun hU ↦
+  invFun s := { hom.app U := ↾fun hU ↦
     ⟨⟨specializes_iff_forall_open.1 s _ U.2 hU.down.down⟩⟩ }
   left_inv _ := by subsingleton
   right_inv _ := rfl

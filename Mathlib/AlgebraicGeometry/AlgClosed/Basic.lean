@@ -60,6 +60,7 @@ lemma pointOfClosedPoint_comp : pointOfClosedPoint f x hx ≫ f = 𝟙 _ := by
 lemma pointOfClosedPoint_apply (a : _) : pointOfClosedPoint f x hx a = x := by
   simp [pointOfClosedPoint]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `k` is algebraically closed,
 then the closed points of `X` are in bijection with the `k`-points of `X`. -/
 @[simps]

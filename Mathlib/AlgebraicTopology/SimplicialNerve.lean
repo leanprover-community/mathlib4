@@ -116,14 +116,15 @@ def compFunctor {J : Type*} [LinearOrder J]
   obj x := x.1 ≫ x.2
   map f := ⟨⟨⟨Set.union_subset_union f.1.1.1.1 f.2.1.1.1⟩⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local ext (iff := false)] Functor.ext in
 attribute [local simp] types_tensorObj_def in
 @[simps -isSimp]
 instance (J : Type*) [LinearOrder J] :
     SimplicialCategory (SimplicialThickening J) where
   Hom i j := nerve (i ⟶ j)
-  id _ := ⟨fun _ ↦ TypeCat.ofHom (fun _ ↦ (Functor.const _).obj (𝟙 _)), fun _ _ _ ↦ by simp; rfl⟩
-  comp i j k := ⟨fun _ ↦ TypeCat.ofHom (fun x ↦ x.1.prod' x.2 ⋙ compFunctor i j k),
+  id _ := ⟨fun _ ↦ ↾fun _ ↦ (Functor.const _).obj (𝟙 _), fun _ _ _ ↦ by simp; rfl⟩
+  comp i j k := ⟨fun _ ↦ ↾fun x ↦ x.1.prod' x.2 ⋙ compFunctor i j k,
     fun _ _ _ ↦ by simp; rfl⟩
   homEquiv {i j} := nerveEquiv.symm.trans (SSet.unitHomEquiv (nerve (i ⟶ j))).symm
 
@@ -188,7 +189,7 @@ the linear order `Fin (n + 1)` to `C`
 def SimplicialNerve (C : Type u) [Category.{v} C] [SimplicialCategory C] :
     SSet.{max u v} where
   obj n := EnrichedFunctor SSet (SimplicialThickening (ULift (Fin (n.unop.len + 1)))) C
-  map f := TypeCat.ofHom ((SimplicialThickening.functor f.unop.toOrderHom.uliftMap).comp
+  map f := ↾((SimplicialThickening.functor f.unop.toOrderHom.uliftMap).comp
     (E := C) SSet)
   map_id i := by
     ext
