@@ -628,7 +628,7 @@ theorem free_of_colorable (nhc : ¬H.Colorable n) (hc : G.Colorable n) : H.Free 
 
 /-- Equivalence of colorings induced by isomorphisms of graphs and equivalence of colors. -/
 def coloringCongr (f : G ≃g H) (g : α ≃ β) : G.Coloring α ≃ H.Coloring β :=
-  homCongr f (Iso.completeGraph g)
+  f.homCongr (Iso.completeGraph g)
 
 lemma colorable_congr (f : G ≃g H) : G.Colorable n ↔ H.Colorable n :=
   ⟨fun hc ↦ hc.of_hom f.symm.toHom, fun hc ↦ hc.of_hom f.toHom⟩
