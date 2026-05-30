@@ -326,6 +326,29 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM FindModelRe
     s.restore true
     return none
 
+/-- Given an `Expr`ession `e`, try to find a `NormedSpace` instance on `e` and return the
+underlying base field. Search local instances, before recursing into product and bundled
+continuous linear maps. -/
+partial def guessBaseFieldForNormedSpace (e : Expr) : TermElabM <| Option Expr := do
+  if let some k ← findFromLocalInstance e then return k
+  match_expr e with
+  | Prod E _F =>
+    guessBaseFieldForNormedSpace E
+  | _ =>
+    try
+      let (_k, E, _F) ← isCLMReduciblyDefeqCoefficients e
+      guessBaseFieldForNormedSpace E
+    catch _e =>
+      findFromLocalInstance e
+where findFromLocalInstance (e : Expr) : TermElabM <| Option Expr := do
+  findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
+    match_expr type with
+    | NormedSpace K E _ _ =>
+      if ← withReducible (pureIsDefEq E e) then
+        trace[Elab.DiffGeo.MDiff] "`{e}` is a normed field over `{K}`"; return some K
+      else return none
+    | _ => pure none
+
 set_option linter.style.emptyLine false in -- linter false positive
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance. This supports the following cases:
@@ -398,14 +421,10 @@ where
           let some baseI ← findModelInner base
             | throwError m!"found no model with corners on the base {base} of `TotalSpace {F} {V}`"
           return baseI.model
-        let some K ← findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
-            match_expr type with
-            | NormedSpace K E _ _ =>
-              if ← withReducible (pureIsDefEq E F) then
-                trace[Elab.DiffGeo.MDiff] "`{F}` is a normed field over `{K}`"; return some K
-              else return none
-            | _ => return none
-          | throwError "Couldn't find a `NormedSpace` structure on `{F}` among local instances."
+        -- Very likely, `F` is a normed space over some field: let's see if `F` is a normed space
+        -- on the nose.
+        let some K ← guessBaseFieldForNormedSpace F
+          | throwError "Couldn't find a `NormedSpace` structure on `{F}`"
         let kT : Term ← Term.exprToSyntax K
         let modelIT : Term ← Term.exprToSyntax baseModel
         let FT : Term ← Term.exprToSyntax F
