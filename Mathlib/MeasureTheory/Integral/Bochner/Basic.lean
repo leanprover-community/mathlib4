@@ -282,7 +282,7 @@ theorem Integrable.integral_smul {R : Type*} [NormedRing R] [Module R G] [IsBoun
     {f : α → G} (hf : Integrable f μ) :
     ∫ a, c • f a ∂μ = c • ∫ a, f a ∂μ := by
   by_cases hG : CompleteSpace G
-  · simpa only [integral, hG, hf, hf.fun_smul c] using L1.integral_smul c (toL1 f hf)
+  · simpa only [integral, hG, hf, hf.fun_smul c] using! L1.integral_smul c (toL1 f hf)
   · simp [integral, hG]
 
 theorem integral_const_mul {L : Type*} [RCLike L] (r : L) (f : α → L) :
@@ -670,7 +670,7 @@ lemma integral_concaveOn_of_integrand_ae {β : Type*} [AddCommMonoid β]
     (hf_conc : ∀ᵐ x ∂μ, ConcaveOn ℝ s (f x)) (hf_int : ∀ a ∈ s, Integrable (f · a) μ) :
     ConcaveOn ℝ s (fun b => ∫ x, f x b ∂μ) := by
   simp_rw [← neg_convexOn_iff] at hf_conc ⊢
-  simpa only [Pi.neg_apply, integral_neg] using
+  simpa only [Pi.neg_apply, integral_neg] using!
     integral_convexOn_of_integrand_ae hs hf_conc (hf_int · · |>.neg)
 
 end Order
