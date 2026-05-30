@@ -435,8 +435,8 @@ scoped instance (priority := 900) GradeZero.semiring : Semiring (A 0) :=
     (of A 0).map_add (of_zero_mul A) (fun _ _ ↦ (of A 0).map_nsmul _ _)
     (fun _ _ => of_zero_pow _ _ _) (of_natCast A)
 
--- The `scoped instance` declarations above attach to the `DirectSum.GradeZero` scope (Lean derives
--- the scope from the declaration name's prefix). We re-scope them to `DirectSum` with the
+-- The `scoped instance` declaration above attaches to the `DirectSum.GradeZero` scope (Lean derives
+-- the scope from the declaration name's prefix). We re-scope it to `DirectSum` with the
 -- `attribute` command below, which scopes to the enclosing namespace instead.
 -- See https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/scoped.20instance.20with.20dot.20in.20name/with/598709628
 attribute [scoped instance 900] GradeZero.semiring
