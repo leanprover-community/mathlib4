@@ -126,8 +126,9 @@ theorem upperSemicontinuousOn [Nonempty n] :
 theorem exists_maximizer [Nonempty n] :
     ∃ v ∈ stdSimplex ℝ n, IsMaxOn (collatzWielandtFn A) (stdSimplex ℝ n) v := by
   classical
+  obtain ⟨i⟩ := (inferInstance : Nonempty n)
   exact upperSemicontinuousOn.exists_isMaxOn
-    ⟨_, single_mem_stdSimplex ℝ (Classical.arbitrary n)⟩ (isCompact_stdSimplex ℝ n)
+    ⟨_, single_mem_stdSimplex ℝ i⟩ (isCompact_stdSimplex ℝ n)
 
 /-- `collatzWielandtFn A v • v ≤ A *ᵥ v`. -/
 lemma le_mulVec (hA_nonneg : ∀ i j, 0 ≤ A i j) {v : n → ℝ} (hv_nonneg : ∀ i, 0 ≤ v i)
@@ -188,8 +189,9 @@ noncomputable def perronRoot (A : Matrix n n ℝ) : ℝ :=
 
 theorem eq_eigenvalue_of_positive_eigenvector [Nonempty n] {r : ℝ} {v : n → ℝ}
     (hv_pos : ∀ i, 0 < v i) (h_eig : A *ᵥ v = r • v) : collatzWielandtFn A v = r := by
+  obtain ⟨i₀⟩ := (inferInstance : Nonempty n)
   have hsupp : ({i | 0 < v i}.toFinset).Nonempty :=
-    ⟨Classical.arbitrary n, mem_toFinset.mpr (hv_pos _)⟩
+    ⟨i₀, mem_toFinset.mpr (hv_pos i₀)⟩
   rw [collatzWielandtFn_eq_inf' A v hsupp]
   refine inf'_eq_of_forall_le_of_exists_le hsupp (fun i => (A *ᵥ v) i / v i) r ?_ ?_
   · intro i _
@@ -205,10 +207,11 @@ theorem eq_eigenvalue_of_positive_eigenvector [Nonempty n] {r : ℝ} {v : n → 
 theorem eigenvalue_le_perron_root_of_positive_eigenvector [Nonempty n] {r : ℝ} {v : n → ℝ}
     (hA_nonneg : ∀ i j, 0 ≤ A i j) (_ : 0 < r) (hv_pos : ∀ i, 0 < v i) (h_eig : A *ᵥ v = r • v) :
     r ≤ perronRoot A := by
+  obtain ⟨i⟩ := (inferInstance : Nonempty n)
   rw [← eq_eigenvalue_of_positive_eigenvector hv_pos h_eig]
   exact le_csSup (bddAbove hA_nonneg) <|
     mem_image_of_mem _ ⟨fun i => (hv_pos i).le, fun h =>
-      (hv_pos (Classical.arbitrary n)).ne' (congr_fun h (Classical.arbitrary n))⟩
+      (hv_pos i).ne' (congr_fun h i)⟩
 
 lemma le_eigenvalue_of_left_eigenvector (hA_nonneg : ∀ i j, 0 ≤ A i j) {r : ℝ} (_ : 0 < r)
     {u : n → ℝ} (hu_pos : ∀ i, 0 < u i) (hu : u ᵥ* A = r • u) {w : n → ℝ} (hw_nonneg : ∀ i, 0 ≤ w i)
@@ -230,9 +233,10 @@ lemma le_eigenvalue_of_left_eigenvector (hA_nonneg : ∀ i j, 0 ≤ A i j) {r : 
 lemma perronRoot_le_eigenvalue_of_left_eigenvector [Nonempty n]
     (hA_nonneg : ∀ i j, 0 ≤ A i j) {r : ℝ} (hr_pos : 0 < r) {u : n → ℝ} (hu_pos : ∀ i, 0 < u i)
     (hu : u ᵥ* A = r • u) : perronRoot A ≤ r := by
+  obtain ⟨i⟩ := (inferInstance : Nonempty n)
   refine csSup_le ?_ ?_
   · exact ⟨collatzWielandtFn A (fun _ => 1), mem_image_of_mem _ ⟨fun _ => zero_le_one, by
-      intro h; simpa using congr_fun h (Classical.arbitrary n)⟩⟩
+      intro h; simpa using congr_fun h i⟩⟩
   rintro _ ⟨w, ⟨hw_nonneg, hw_ne⟩, rfl⟩
   exact le_eigenvalue_of_left_eigenvector hA_nonneg hr_pos hu_pos hu hw_nonneg hw_ne
 
@@ -315,9 +319,10 @@ theorem le_eigenvalue_of_right_eigenvector [Nonempty n] (hA_nonneg : ∀ i j, 0 
 theorem eigenvalue_is_ub_of_positive_eigenvector [Nonempty n] (hA_nonneg : ∀ i j, 0 ≤ A i j)
     {r : ℝ} (hr_pos : 0 < r) {v : n → ℝ} (hv_pos : ∀ i, 0 < v i) (h_eig : A *ᵥ v = r • v) :
     perronRoot A ≤ r := by
+  obtain ⟨i⟩ := (inferInstance : Nonempty n)
   refine csSup_le ?_ ?_
   · exact ⟨collatzWielandtFn A (fun _ => 1), mem_image_of_mem _ ⟨fun _ => zero_le_one, by
-      intro h; simpa using congr_fun h (Classical.arbitrary n)⟩⟩
+      intro h; simpa using congr_fun h i⟩⟩
   rintro _ ⟨w, ⟨hw_nonneg, hw_ne⟩, rfl⟩
   exact le_eigenvalue_of_right_eigenvector hA_nonneg hr_pos hv_pos h_eig hw_nonneg hw_ne
 
