@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Category.Grp.LeftExactFunctor
 # The category of ind-objects is preadditive
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

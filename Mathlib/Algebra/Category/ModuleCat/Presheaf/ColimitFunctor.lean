@@ -41,6 +41,7 @@ variable {C : Type u} [Category.{v} C] [LocallySmall.{w} C]
   [IsCofiltered C] [InitiallySmall.{w} C]
   {R : Cᵒᵖ ⥤ RingCat.{w}} {cR : Cocone R} (hcR : IsColimit cR)
 
+set_option backward.defeqAttrib.useBackward true in
 variable (cR) in
 /-- Given a cocone `cR` for a functor `R : Cᵒᵖ ⥤ RingCat`, this is the
 functor `ModuleCat cR.pt ⥤ PresheafOfModules R` which sends a module `M`
@@ -79,7 +80,7 @@ by `cR.pt` on `ModuleColimit hcR hcM`. -/
 noncomputable def coconeSMul :
     Cocone (R ⋙ forget _ ⊗ M.presheaf ⋙ forget _) where
   pt := ModuleColimit hcR hcM
-  ι.app U := fun ⟨(r : R.obj U), (m : M.obj U)⟩ ↦ by exact cM.ι.app U (r • m)
+  ι.app U := ↾fun ⟨(r : R.obj U), (m : M.obj U)⟩ ↦ by exact cM.ι.app U (r • m)
   ι.naturality V U f := by
     ext ⟨r, m⟩
     exact (ConcreteCategory.congr_arg (cM.ι.app U)
@@ -88,7 +89,7 @@ noncomputable def coconeSMul :
 noncomputable instance : SMul cR.pt (ModuleColimit hcR hcM) where
   smul :=
     (((isColimitOfPreserves (forget _) hcR).tensor
-      (isColimitOfPreserves (forget _) hcM)).desc (coconeSMul hcR hcM)).curry
+      (isColimitOfPreserves (forget _) hcM)).desc (coconeSMul hcR hcM) : _ → _).curry
 
 variable (cR) in
 /-- The "inclusion" maps to the colimit ring. -/
@@ -102,7 +103,7 @@ noncomputable abbrev ιM {U : Cᵒᵖ} : M.obj U →+ ModuleColimit hcR hcM :=
 @[simp]
 lemma smul_eq {U : Cᵒᵖ} (r : R.obj U) (m : M.obj U) :
     ιR cR r • ιM (hcR := hcR) (hcM := hcM) m = ιM (r • m) :=
-  congr_fun (((isColimitOfPreserves (forget _) hcR).tensor
+  ConcreteCategory.congr_hom (((isColimitOfPreserves (forget _) hcR).tensor
     (isColimitOfPreserves (forget _) hcM)).fac (coconeSMul hcR hcM) U) ⟨r, m⟩
 
 variable {hcR hcM} in
@@ -282,6 +283,7 @@ section
 variable {M' : PresheafOfModules.{w} R} {cM' : Cocone M'.presheaf}
   (hcM' : IsColimit cM')
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The linear map between the colimit modules induced by a morphism of modules. -/
 noncomputable def map (f : M ⟶ M') :
     ModuleColimit hcR hcM →ₗ[cR.pt] ModuleColimit hcR hcM' where
@@ -362,6 +364,7 @@ noncomputable def colimitAdjunction :
       homEquiv_naturality_left_symm _ _ := ModuleColimit.homEquiv_naturality_left_symm _ _ _ _ _
       homEquiv_naturality_right _ _ := ModuleColimit.homEquiv_naturality_right _ _ _ _ }
 
+set_option backward.defeqAttrib.useBackward true in
 lemma colimitAdjunction_homEquiv
     (F : PresheafOfModules R) (G : ModuleCat cR.pt) :
     dsimp% (colimitAdjunction.{w} hcR).homEquiv F G =

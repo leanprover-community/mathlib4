@@ -197,7 +197,7 @@ theorem map_eval₂Hom [CommSemiring S₂] (f : R →+* S₁) (g : σ → S₁) 
 
 theorem eval₂Hom_monomial (f : R →+* S₁) (g : σ → S₁) (d : σ →₀ ℕ) (r : R) :
     eval₂Hom f g (monomial d r) = f r * d.prod fun i k => g i ^ k := by
-  simp only [monomial_eq, map_mul, eval₂Hom_C, Finsupp.prod, map_prod, map_pow, eval₂Hom_X']
+  simp only [coe_eval₂Hom, eval₂_monomial]
 
 @[simp]
 theorem eval₂Hom_smul (f : R →+* S₁) (g : σ → S₁) (r : R) (P : MvPolynomial σ R) :
@@ -455,7 +455,7 @@ theorem constantCoeff_comp_map (f : R →+* S₁) :
 theorem support_map_subset (p : MvPolynomial σ R) : (map f p).support ⊆ p.support := by
   simp only [Finset.subset_iff, mem_support_iff]
   intro x hx
-  contrapose! hx
+  contrapose hx
   rw [coeff_map, hx, map_zero]
 
 theorem support_map_of_injective (p : MvPolynomial σ R) {f : R →+* S₁} (hf : Injective f) :
@@ -464,7 +464,7 @@ theorem support_map_of_injective (p : MvPolynomial σ R) {f : R →+* S₁} (hf 
   · exact MvPolynomial.support_map_subset _ _
   simp only [Finset.subset_iff, mem_support_iff]
   intro x hx
-  contrapose! hx
+  contrapose hx
   rw [coeff_map, ← f.map_zero] at hx
   exact hf hx
 

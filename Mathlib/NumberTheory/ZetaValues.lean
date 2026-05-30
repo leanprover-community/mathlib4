@@ -85,7 +85,7 @@ section Calculus
 
 theorem hasDerivAt_bernoulliFun (k : ℕ) (x : ℝ) :
     HasDerivAt (bernoulliFun k) (k * bernoulliFun (k - 1) x) x := by
-  convert ((Polynomial.bernoulli k).map <| algebraMap ℚ ℝ).hasDerivAt x using 1
+  convert! ((Polynomial.bernoulli k).map <| algebraMap ℚ ℝ).hasDerivAt x using 1
   simp only [bernoulliFun, Polynomial.derivative_map, Polynomial.derivative_bernoulli k,
     Polynomial.map_mul, Polynomial.map_natCast, Polynomial.eval_mul, Polynomial.eval_natCast]
 
@@ -109,7 +109,7 @@ theorem deriv_bernoulliFun :
 
 theorem antideriv_bernoulliFun (k : ℕ) (x : ℝ) :
     HasDerivAt (fun x => bernoulliFun (k + 1) x / (k + 1)) (bernoulliFun k x) x := by
-  convert (hasDerivAt_bernoulliFun (k + 1) x).div_const _ using 1
+  convert! (hasDerivAt_bernoulliFun (k + 1) x).div_const _ using 1
   simp [Nat.cast_add_one_ne_zero k]
 
 theorem integral_bernoulliFun : ∫ x : ℝ in 0..1, bernoulliFun k x = if k = 0 then 1 else 0 := by
@@ -175,7 +175,7 @@ theorem bernoulliFun_mul (k : ℕ) {m : ℕ} (m0 : m ≠ 0) (x : ℝ) :
         mul_inv_cancel₀ m0', integral_bernoulliFun_eq_zero (by lia), smul_zero, sub_eq_zero,
         intervalIntegral.integral_const_mul, eq_comm (a := 0), mul_eq_zero]
       · right
-        rw [intervalIntegral.integral_finset_sum]
+        rw [intervalIntegral.integral_finsetSum]
         · simp only [intervalIntegral.integral_comp_add_right, zero_add, ← one_div, ← add_div,
             add_comm (1 : ℝ), ← Nat.cast_add_one]
           rw [intervalIntegral.sum_integral_adjacent_intervals]
@@ -283,7 +283,7 @@ theorem fourierCoeff_bernoulli_eq {k : ℕ} (hk : k ≠ 0) (n : ℤ) :
   have : ((↑) ∘ periodizedBernoulli k : 𝕌 → ℂ) = AddCircle.liftIco 1 0 ((↑) ∘ bernoulliFun k) := by
     ext1 x; rfl
   rw [this, fourierCoeff_liftIco_eq]
-  simpa only [zero_add] using bernoulliFourierCoeff_eq hk n
+  simpa only [zero_add] using! bernoulliFourierCoeff_eq hk n
 
 theorem summable_bernoulli_fourier {k : ℕ} (hk : 2 ≤ k) :
     Summable (fun n => -k ! / (2 * π * I * n) ^ k : ℤ → ℂ) := by
@@ -309,7 +309,7 @@ theorem hasSum_one_div_pow_mul_fourier_mul_bernoulliFun {k : ℕ} (hk : 2 ≤ k)
     rw [← Ico_insert_right (zero_le_one' ℝ), mem_insert_iff, or_comm] at hx
     rcases hx with (hx | rfl)
     · exact this hx
-    · convert this (left_mem_Ico.mpr zero_lt_one) using 1
+    · convert! this (left_mem_Ico.mpr zero_lt_one) using 1
       · rw [AddCircle.coe_period, QuotientAddGroup.mk_zero]
       · rw [bernoulliFun_endpoints_eq_of_ne_one (by lia : k ≠ 1)]
   intro y hy
@@ -322,7 +322,7 @@ theorem hasSum_one_div_pow_mul_fourier_mul_bernoulliFun {k : ℕ} (hk : 2 ≤ k)
     has_pointwise_sum_fourier_series_of_summable
       ((summable_bernoulli_fourier hk).congr fun n => (step1 n).symm) y
   simp_rw [step1] at step2
-  convert step2.mul_left (-(2 * ↑π * I) ^ k / (k ! : ℂ)) using 2 with n
+  convert! step2.mul_left (-(2 * ↑π * I) ^ k / (k ! : ℂ)) using 2 with n
   · rw [smul_eq_mul, ← mul_assoc, mul_div, mul_neg, div_mul_cancel₀, neg_neg, mul_pow _ (n : ℂ),
       ← div_div, div_self]
     · rw [Ne, pow_eq_zero_iff', not_and_or]
@@ -341,7 +341,7 @@ theorem hasSum_one_div_nat_pow_mul_fourier {k : ℕ} (hk : 2 ≤ k) {x : ℝ} (h
       (fun n : ℕ =>
         (1 : ℂ) / (n : ℂ) ^ k * (fourier n (x : 𝕌) + (-1 : ℂ) ^ k * fourier (-n) (x : 𝕌)))
       (-(2 * π * I) ^ k / k ! * bernoulliFun k x) := by
-  convert (hasSum_one_div_pow_mul_fourier_mul_bernoulliFun hk hx).nat_add_neg using 1
+  convert! (hasSum_one_div_pow_mul_fourier_mul_bernoulliFun hk hx).nat_add_neg using 1
   · ext1 n
     rw [Int.cast_neg, mul_add, ← mul_assoc]
     conv_rhs => rw [neg_eq_neg_one_mul, mul_pow, ← div_div]
@@ -359,9 +359,7 @@ theorem hasSum_one_div_nat_pow_mul_cos {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
   have :
     HasSum (fun n : ℕ => 1 / (n : ℂ) ^ (2 * k) * (fourier n (x : 𝕌) + fourier (-n) (x : 𝕌)))
       ((-1 : ℂ) ^ (k + 1) * (2 * (π : ℂ)) ^ (2 * k) / (2 * k)! * bernoulliFun (2 * k) x) := by
-    convert
-      hasSum_one_div_nat_pow_mul_fourier (by lia : 2 ≤ 2 * k)
-        hx using 3
+    convert! hasSum_one_div_nat_pow_mul_fourier (by lia : 2 ≤ 2 * k) hx using 3
     · rw [pow_mul (-1 : ℂ), neg_one_sq, one_pow, one_mul]
     · rw [pow_add, pow_one]
       conv_rhs =>
@@ -372,8 +370,8 @@ theorem hasSum_one_div_nat_pow_mul_cos {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
         · rw [pow_mul, I_sq]
       ring
   have ofReal_two : ((2 : ℝ) : ℂ) = 2 := by norm_cast
-  convert ((hasSum_iff _ _).mp (this.div_const 2)).1 with n
-  · convert (ofReal_re _).symm
+  convert! ((hasSum_iff _ _).mp (this.div_const 2)).1 with n
+  · convert! (ofReal_re _).symm
     rw [ofReal_mul]; rw [← mul_div]; congr
     · rw [ofReal_div, ofReal_one, ofReal_pow]; rfl
     · rw [ofReal_cos, ofReal_mul, fourier_coe_apply, fourier_coe_apply, cos, ofReal_one, div_one,
@@ -382,7 +380,7 @@ theorem hasSum_one_div_nat_pow_mul_cos {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
       congr 3
       · ring
       · ring
-  · convert (ofReal_re _).symm
+  · convert! (ofReal_re _).symm
     rw [ofReal_mul, ofReal_div, ofReal_div, ofReal_mul, ofReal_pow, ofReal_pow, ofReal_neg,
       ofReal_natCast, ofReal_mul, ofReal_two, ofReal_one]
     rw [bernoulliFun]
@@ -396,9 +394,7 @@ theorem hasSum_one_div_nat_pow_mul_sin {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
     HasSum (fun n : ℕ => 1 / (n : ℂ) ^ (2 * k + 1) * (fourier n (x : 𝕌) - fourier (-n) (x : 𝕌)))
       ((-1 : ℂ) ^ (k + 1) * I * (2 * π : ℂ) ^ (2 * k + 1) / (2 * k + 1)! *
         bernoulliFun (2 * k + 1) x) := by
-    convert
-      hasSum_one_div_nat_pow_mul_fourier
-        (by lia : 2 ≤ 2 * k + 1) hx using 1
+    convert! hasSum_one_div_nat_pow_mul_fourier (by lia : 2 ≤ 2 * k + 1) hx using 1
     · ext1 n
       rw [pow_add (-1 : ℂ), pow_mul (-1 : ℂ), neg_one_sq, one_pow, one_mul, pow_one, ←
         neg_eq_neg_one_mul, ← sub_eq_add_neg]
@@ -412,8 +408,8 @@ theorem hasSum_one_div_nat_pow_mul_sin {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
         · rw [pow_add, pow_one, pow_mul, I_sq]
       ring
   have ofReal_two : ((2 : ℝ) : ℂ) = 2 := by norm_cast
-  convert ((hasSum_iff _ _).mp (this.div_const (2 * I))).1
-  · convert (ofReal_re _).symm
+  convert! ((hasSum_iff _ _).mp (this.div_const (2 * I))).1
+  · convert! (ofReal_re _).symm
     rw [ofReal_mul]; rw [← mul_div]; congr
     · rw [ofReal_div, ofReal_one, ofReal_pow]; rfl
     · rw [ofReal_sin, ofReal_mul, fourier_coe_apply, fourier_coe_apply, sin, ofReal_one, div_one,
@@ -422,7 +418,7 @@ theorem hasSum_one_div_nat_pow_mul_sin {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
       congr 4
       · ring
       · ring
-  · convert (ofReal_re _).symm
+  · convert! (ofReal_re _).symm
     rw [ofReal_mul, ofReal_div, ofReal_div, ofReal_mul, ofReal_pow, ofReal_pow, ofReal_neg,
       ofReal_natCast, ofReal_mul, ofReal_two, ofReal_one, ← div_div, div_I,
       div_mul_eq_mul_div₀]
@@ -435,7 +431,7 @@ theorem hasSum_zeta_nat {k : ℕ} (hk : k ≠ 0) :
     HasSum (fun n : ℕ => 1 / (n : ℝ) ^ (2 * k))
       ((-1 : ℝ) ^ (k + 1) * (2 : ℝ) ^ (2 * k - 1) * π ^ (2 * k) *
         bernoulli (2 * k) / (2 * k)!) := by
-  convert hasSum_one_div_nat_pow_mul_cos hk (left_mem_Icc.mpr zero_le_one) using 1
+  convert! hasSum_one_div_nat_pow_mul_cos hk (left_mem_Icc.mpr zero_le_one) using 1
   · ext1 n; rw [mul_zero, Real.cos_zero, mul_one]
   rw [Polynomial.eval_zero_map, Polynomial.bernoulli_eval_zero, eq_ratCast]
   have : (2 : ℝ) ^ (2 * k - 1) = (2 : ℝ) ^ (2 * k) / 2 := by
@@ -454,12 +450,12 @@ end Cleanup
 section Examples
 
 theorem hasSum_zeta_two : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 2) (π ^ 2 / 6) := by
-  convert hasSum_zeta_nat one_ne_zero using 1; rw [mul_one]
+  convert! hasSum_zeta_nat one_ne_zero using 1; rw [mul_one]
   rw [bernoulli_eq_bernoulli'_of_ne_one (by decide : 2 ≠ 1), bernoulli'_two]
   simp [Nat.factorial]; ring
 
 theorem hasSum_zeta_four : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 4) (π ^ 4 / 90) := by
-  convert hasSum_zeta_nat two_ne_zero using 1
+  convert! hasSum_zeta_nat two_ne_zero using 1
   simp only [Nat.reduceAdd, Nat.reduceMul, Nat.add_one_sub_one]
   rw [bernoulli_eq_bernoulli'_of_ne_one, bernoulli'_four]
   · simp [Nat.factorial]; ring

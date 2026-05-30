@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Finiteness.Bilinear
 # Subalgebras that are finitely generated as submodules
 -/
 
-@[expose] public section
+public section
 
 open Function (Surjective)
 open Finsupp

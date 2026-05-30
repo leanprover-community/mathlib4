@@ -16,7 +16,7 @@ public import Mathlib.Order.SuccPred.Basic
   ones.
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*}
 
@@ -46,11 +46,11 @@ variable [Preorder α]
 
 -- `to_dual` cannot yet reorder arguments of arguments
 instance [SuccOrder α] [IsSuccArchimedean α] : IsPredArchimedean αᵒᵈ :=
-  ⟨fun {a b} h => by convert exists_succ_iterate_of_le h.ofDual⟩
+  ⟨fun {a b} h => by convert! exists_succ_iterate_of_le h.ofDual⟩
 
 @[to_dual existing]
 instance [PredOrder α] [IsPredArchimedean α] : IsSuccArchimedean αᵒᵈ :=
-  ⟨fun {a b} h => by convert exists_pred_iterate_of_le h.ofDual⟩
+  ⟨fun {a b} h => by convert! exists_pred_iterate_of_le h.ofDual⟩
 
 section SuccOrder
 
@@ -217,7 +217,6 @@ instance (priority := 100) WellFoundedLT.toIsPredArchimedean [h : WellFoundedLT 
     · exact ⟨0, rfl⟩
     rcases eq_or_lt_of_le (pred_le b) with hb | hb
     · cases (min_of_le_pred hb.ge).not_lt hab
-    dsimp at ih
     obtain ⟨k, hk⟩ := ih (pred b) hb (le_pred_of_lt hab)
     refine ⟨k + 1, ?_⟩
     rw [iterate_add_apply, iterate_one, hk]⟩
@@ -247,7 +246,7 @@ lemma SuccOrder.forall_ne_bot_iff
     (∀ i, i ≠ ⊥ → P i) ↔ (∀ i, P (SuccOrder.succ i)) := by
   refine ⟨fun h i ↦ h _ (Order.succ_ne_bot i), fun h i hi ↦ ?_⟩
   obtain ⟨j, rfl⟩ := exists_succ_iterate_of_le (bot_le : ⊥ ≤ i)
-  have hj : 0 < j := by apply Nat.pos_of_ne_zero; contrapose! hi; simp [hi]
+  have hj : 0 < j := by apply Nat.pos_of_ne_zero; contrapose hi; simp [hi]
   rw [← Nat.succ_pred_eq_of_pos hj]
   simp only [Function.iterate_succ', Function.comp_apply]
   apply h

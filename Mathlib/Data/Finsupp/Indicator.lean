@@ -66,10 +66,22 @@ theorem support_indicator_subset : (indicator s f).support ⊆ s := by
   by_contra h
   exact hi (indicator_of_notMem h _)
 
-lemma single_eq_indicator (b : α) : single i b = indicator {i} (fun _ _ => b) := by
+lemma indicator_singleton (a : ι) (f : ∀ j ∈ ({a} : Finset ι), α) :
+    indicator {a} f = single a (f a (mem_singleton_self a)) := by
   classical
   ext j
-  simp [single_apply, indicator_apply, @eq_comm _ j]
+  simp only [single_apply, indicator_apply, mem_singleton, @eq_comm _ a j]
+  split_ifs with h <;> simp [h]
+
+@[deprecated indicator_singleton (since := "2026-04-27")]
+lemma single_eq_indicator (b : α) : single i b = indicator {i} (fun _ _ => b) :=
+  (indicator_singleton i (fun _ _ => b)).symm
+
+theorem indicator_eq_set_indicator (s : Finset ι) (g : ι → α) :
+    ⇑(indicator s (fun i _ => g i)) = Set.indicator ↑s g := by
+  classical
+  ext i
+  simp [indicator_apply, Set.indicator_apply]
 
 theorem indicator_indicator [DecidableEq ι] :
     indicator t (fun i _ ↦ indicator s f i) =

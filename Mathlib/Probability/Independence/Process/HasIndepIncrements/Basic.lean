@@ -76,7 +76,7 @@ protected lemma HasIndepIncrements.of_nat
     HasIndepIncrements X P := by
   intro n t ht
   let t' k := t ⟨min n k, by grind⟩
-  convert (h t' ?_ ?_).precomp Fin.val_injective with i ω
+  convert! (h t' ?_ ?_).precomp Fin.val_injective with i ω
   · grind
   · grind
   · exact fun a b hab ↦ ht (by grind)
