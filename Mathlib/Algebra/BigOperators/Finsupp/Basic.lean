@@ -187,7 +187,7 @@ theorem prod_congr {f : α →₀ M} {g1 g2 : α → M → N} (h : ∀ x ∈ f.s
 
 /-- The product over two finsupps agree if the functions agree and are well-behaved within the
 shared support. -/
-@[to_additive (attr := gcongr)
+@[to_additive (attr := gcongr only)
 /-- The sum over two finsupps agree if the functions agree and are well-behaved within the
 shared support. -/]
 theorem prod_congr_of_eq_on_union [DecidableEq α] {f1 f2 : α →₀ M} {g1 g2 : α → M → N}
