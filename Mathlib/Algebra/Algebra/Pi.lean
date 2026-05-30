@@ -60,8 +60,8 @@ instance [∀ i, Algebra (S i) (A i)] : Algebra (Π i, S i) (Π i, A i) where
 example : Pi.instAlgebraForall S S = Algebra.id _ := rfl
 
 variable {A} in
-/-- A family of algebra homomorphisms `g i : B →ₐ[R] A i` defines a ring homomorphism
-`Pi.algHom g : B →ₐ[R] Π i, A i` given by `Pi.algHom g x i = g i x`. -/
+/-- A family of algebra homomorphisms `g i : B →ₐ[R] A i` defines an algebra homomorphism
+`AlgHom.pi g : B →ₐ[R] Π i, A i` given by `AlgHom.pi g x i = g i x`. -/
 @[simps!]
 def _root_.AlgHom.pi {B : Type*} [Semiring B] [Algebra R B] (g : ∀ i, B →ₐ[R] A i) :
     B →ₐ[R] Π i, A i where
