@@ -129,7 +129,7 @@ instance isFiniteMeasure_trim (hm : m ≤ m0) [IsFiniteMeasure μ] : IsFiniteMea
 theorem sigmaFiniteTrim_mono {m m₂ m0 : MeasurableSpace α} {μ : Measure α} (hm : m ≤ m0)
     (hm₂ : m₂ ≤ m) [SigmaFinite (μ.trim (hm₂.trans hm))] : SigmaFinite (μ.trim hm) := by
   have : SigmaFinite ((μ.trim hm).trim hm₂) := by simpa [trim_trim]
-  refine ⟨⟨
+  exact ⟨⟨
     { set := spanningSets ((μ.trim hm).trim hm₂)
       set_mem := fun _ => Set.mem_univ _
       finite := fun i => measure_spanningSets_trim_lt_top hm₂ (μ.trim hm) i
