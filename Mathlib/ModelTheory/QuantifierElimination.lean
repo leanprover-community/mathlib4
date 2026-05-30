@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2026. All rights reserved.
+Copyright (c) 2026 Yağız Kaan Aydoğdu, Yusuf Demir, Salih Erdem Koçak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yağız Kaan Aydoğdu, Yusuf Demir, Salih Erdem Koçak
 -/
