@@ -868,7 +868,6 @@ public import Mathlib.Algebra.MvPolynomial.Coeff
 public import Mathlib.Algebra.MvPolynomial.Comap
 public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Algebra.MvPolynomial.Counit
-public import Mathlib.Algebra.MvPolynomial.SupDegree
 public import Mathlib.Algebra.MvPolynomial.Degrees
 public import Mathlib.Algebra.MvPolynomial.Derivation
 public import Mathlib.Algebra.MvPolynomial.Division
@@ -884,6 +883,7 @@ public import Mathlib.Algebra.MvPolynomial.PDeriv
 public import Mathlib.Algebra.MvPolynomial.Polynomial
 public import Mathlib.Algebra.MvPolynomial.Rename
 public import Mathlib.Algebra.MvPolynomial.SchwartzZippel
+public import Mathlib.Algebra.MvPolynomial.SupDegree
 public import Mathlib.Algebra.MvPolynomial.Supported
 public import Mathlib.Algebra.MvPolynomial.Variables
 public import Mathlib.Algebra.NeZero
