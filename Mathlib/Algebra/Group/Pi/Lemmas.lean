@@ -74,22 +74,26 @@ def MulHom.pi {γ : Type w} [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f
   map_mul' x y := funext fun i => (g i).map_mul x y
 
 @[deprecated (since := "2026-05-29")] alias Pi.addHom := AddHom.pi
-@[to_additive existing (attr := deprecated "MulHom.pi" (since := "2026-05-29"))] alias
+@[to_additive existing (attr := deprecated MulHom.pi (since := "2026-05-29"))] alias
   Pi.mulHom := MulHom.pi
 
 @[deprecated (since := "2026-05-29")] alias Pi.addHom_apply := AddHom.pi_apply
-@[to_additive existing (attr := deprecated "MulHom.pi_apply" (since := "2026-05-29"))] alias
+@[to_additive existing (attr := deprecated MulHom.pi_apply (since := "2026-05-29"))] alias
   Pi.mulHom_apply := MulHom.pi_apply
 
 @[to_additive]
-theorem MulHom.injective_pi {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i)
+theorem MulHom.pi_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i)
     (hg : ∀ i, Function.Injective (g i)) : Function.Injective (MulHom.pi g) := fun _ _ h =>
   let ⟨i⟩ := ‹Nonempty I›
   hg i ((funext_iff.mp h :) i)
 
+@[deprecated (since := "2026-05-29")] alias AddHom.injective_pi := AddHom.pi_injective
+@[to_additive existing (attr := deprecated MulHom.pi_injective (since := "2026-05-29"))] alias
+  MulHom.injective_pi := MulHom.pi_injective
+
 @[deprecated (since := "2026-05-29")] alias Pi.addHom_injective := AddHom.injective_pi
-@[to_additive existing (attr := deprecated "MulHom.injective_pi" (since := "2026-05-29"))] alias
-  Pi.mulHom_injective := MulHom.injective_pi
+@[to_additive existing (attr := deprecated MulHom.pi_injective (since := "2026-05-29"))] alias
+  Pi.mulHom_injective := MulHom.pi_injective
 
 /-- A family of monoid homomorphisms `f a : γ →* β a` defines a monoid homomorphism
 `Pi.monoidHom f : γ →* Π a, β a` given by `Pi.monoidHom f x b = f b x`. -/
@@ -103,22 +107,26 @@ def MonoidHom.pi {γ : Type w} [∀ i, MulOneClass (f i)] [MulOneClass γ] (g : 
     map_one' := funext fun i => (g i).map_one }
 
 @[deprecated (since := "2026-05-29")] alias Pi.addMonoidHom := AddMonoidHom.pi
-@[to_additive existing (attr := deprecated "MonoidHom.pi" (since := "2026-05-29"))] alias
+@[to_additive existing (attr := deprecated MonoidHom.pi (since := "2026-05-29"))] alias
   Pi.monoidHom := MonoidHom.pi
 
 @[deprecated (since := "2026-05-29")] alias Pi.addMonoidHom_apply := AddMonoidHom.pi_apply
-@[to_additive existing (attr := deprecated "MonoidHom.pi_apply" (since := "2026-05-29"))] alias
+@[to_additive existing (attr := deprecated MonoidHom.pi_apply (since := "2026-05-29"))] alias
   Pi.monoidHom_apply := MonoidHom.pi_apply
 
 @[to_additive]
-theorem MonoidHom.injective_pi {γ : Type w} [Nonempty I] [∀ i, MulOneClass (f i)] [MulOneClass γ]
+theorem MonoidHom.pi_injective {γ : Type w} [Nonempty I] [∀ i, MulOneClass (f i)] [MulOneClass γ]
     (g : ∀ i, γ →* f i) (hg : ∀ i, Function.Injective (g i)) :
     Function.Injective (MonoidHom.pi g) :=
-  MulHom.injective_pi (fun i => (g i).toMulHom) hg
+  MulHom.pi_injective (fun i => (g i).toMulHom) hg
 
-@[deprecated (since := "2026-05-29")] alias Pi.addMonoidHom_injective := AddMonoidHom.injective_pi
-@[to_additive existing (attr := deprecated "MonoidHom.injective_pi" (since := "2026-05-29"))] alias
-  Pi.monoidHom_injective := MonoidHom.injective_pi
+@[deprecated (since := "2026-05-29")] alias AddMonoidHom.injective_pi := AddMonoidHom.pi_injective
+@[to_additive existing (attr := deprecated MonoidHom.pi_injective (since := "2026-05-29"))] alias
+  MonoidHom.injective_pi := MonoidHom.pi_injective
+
+@[deprecated (since := "2026-05-29")] alias Pi.addMonoidHom_injective := AddMonoidHom.pi_injective
+@[to_additive existing (attr := deprecated MonoidHom.pi_injective (since := "2026-05-29"))] alias
+  Pi.monoidHom_injective := MonoidHom.pi_injective
 
 variable (f)
 variable [(i : I) → Mul (f i)]
