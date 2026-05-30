@@ -389,7 +389,7 @@ theorem prodCongr_symm [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] 
 variable (R₁ M₁ M₂)
 
 set_option backward.defeqAttrib.useBackward true in
-/-- Product of modules is commutative up to continuous linear isomorphism. -/
+/-- Product of topological modules is commutative up to continuous linear isomorphism. -/
 @[simps! apply toLinearEquiv]
 def prodComm [Module R₁ M₂] : (M₁ × M₂) ≃L[R₁] M₂ × M₁ where
   __ := LinearEquiv.prodComm R₁ M₁ M₂
