@@ -157,7 +157,8 @@ theorem coe_int_isUnit_iff_isCoprime (n : ℤ) (m : ℕ) :
     IsUnit (n : ZMod m) ↔ IsCoprime (m : ℤ) n := by
   refine ⟨fun h ↦ ?_, fun h ↦ ⟨unitOfIsCoprime n (isCoprime_comm.mp h), by simp⟩⟩
   obtain rfl | hm := eq_or_ne m 0
-  · simpa [isCoprime_zero_left] using h
+  · rw [Nat.cast_zero, isCoprime_zero_left]
+    exact_mod_cast h
   · have : NeZero m := ⟨hm⟩
     obtain ⟨u, hu⟩ := h
     have h_coprime := val_coe_unit_coprime u
