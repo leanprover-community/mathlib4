@@ -93,7 +93,6 @@ theorem AlgebraicIndependent.isTranscendenceBasis_iff [Nontrivial R]
     intro w i' h
     specialize p w ((↑) : w → A) i' (fun i => ⟨x i, range_subset_iff.mp h i⟩) (by ext; simp)
     have q := congr_arg (fun s => ((↑) : w → A) '' s) p.range_eq
-    dsimp at q
     rw [← image_univ, image_image] at q
     simpa using q
 

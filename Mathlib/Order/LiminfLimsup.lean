@@ -270,7 +270,7 @@ theorem limsup_congr {α : Type*} [ConditionallyCompleteLattice β] {f : Filter 
 
 theorem blimsup_congr {f : Filter β} {u v : β → α} {p : β → Prop} (h : ∀ᶠ a in f, p a → u a = v a) :
     blimsup u f p = blimsup v f p := by
-  simpa only [blimsup_eq_limsup] using limsup_congr <| eventually_inf_principal.2 h
+  simpa only [blimsup_eq_limsup] using! limsup_congr <| eventually_inf_principal.2 h
 
 theorem bliminf_congr {f : Filter β} {u v : β → α} {p : β → Prop} (h : ∀ᶠ a in f, p a → u a = v a) :
     bliminf u f p = bliminf v f p :=
@@ -283,7 +283,7 @@ theorem liminf_congr {α : Type*} [ConditionallyCompleteLattice β] {f : Filter 
 @[simp]
 theorem limsup_const {α : Type*} [ConditionallyCompleteLattice β] {f : Filter α} [NeBot f]
     (b : β) : limsup (fun _ => b) f = b := by
-  simpa only [limsup_eq, eventually_const] using csInf_Ici
+  simpa only [limsup_eq, eventually_const] using! csInf_Ici
 
 @[simp]
 theorem liminf_const {α : Type*} [ConditionallyCompleteLattice β] {f : Filter α} [NeBot f]
@@ -421,10 +421,10 @@ theorem HasBasis.limsup_eq_iInf_iSup {p : ι → Prop} {s : ι → Set β} {f : 
   (h.map u).limsSup_eq_iInf_sSup.trans <| by simp only [sSup_image]
 
 lemma limsSup_principal_eq_sSup (s : Set α) : limsSup (𝓟 s) = sSup s := by
-  simpa only [limsSup, eventually_principal] using sInf_upperBounds_eq_sSup s
+  simpa only [limsSup, eventually_principal] using! sInf_upperBounds_eq_sSup s
 
 lemma limsInf_principal_eq_sInf (s : Set α) : limsInf (𝓟 s) = sInf s := by
-  simpa only [limsInf, eventually_principal] using sSup_lowerBounds_eq_sInf s
+  simpa only [limsInf, eventually_principal] using! sSup_lowerBounds_eq_sInf s
 
 @[simp] lemma limsup_top_eq_iSup (u : β → α) : limsup u ⊤ = ⨆ i, u i := by
   rw [limsup, map_top, limsSup_principal_eq_sSup, sSup_range]

@@ -204,8 +204,10 @@ theorem eq_symm_apply {x : α} {y : β} (hx : x ∈ e.source) (hy : y ∈ e.targ
 
 protected theorem mapsTo : MapsTo e e.source e.target := fun _ => e.map_source
 
-theorem symm_mapsTo : MapsTo e.symm e.target e.source :=
+theorem mapsTo_symm : MapsTo e.symm e.target e.source :=
   e.symm.mapsTo
+
+@[deprecated (since := "2026-05-18")] alias symm_mapsTo := mapsTo_symm
 
 protected theorem leftInvOn : LeftInvOn e.symm e e.source := fun _ => e.left_inv
 
@@ -218,7 +220,7 @@ protected theorem injOn : InjOn e e.source :=
   e.leftInvOn.injOn
 
 protected theorem bijOn : BijOn e e.source e.target :=
-  e.invOn.bijOn e.mapsTo e.symm_mapsTo
+  e.invOn.bijOn e.mapsTo e.mapsTo_symm
 
 protected theorem surjOn : SurjOn e e.source e.target :=
   e.bijOn.surjOn
@@ -265,7 +267,7 @@ def copy (e : PartialEquiv α β) (f : α → β) (hf : ⇑e = f) (g : β → α
 theorem copy_eq (e : PartialEquiv α β) (f : α → β) (hf : ⇑e = f) (g : β → α) (hg : ⇑e.symm = g)
     (s : Set α) (hs : e.source = s) (t : Set β) (ht : e.target = t) :
     e.copy f hf g hg s hs t ht = e := by
-  substs f g s t
+  subst f g s t
   cases e
   rfl
 
@@ -455,7 +457,7 @@ theorem symm_image_target_eq_source : e.symm '' e.target = e.source :=
   e.symm.image_source_eq_target
 
 theorem target_subset_preimage_source : e.target ⊆ e.symm ⁻¹' e.source :=
-  e.symm_mapsTo
+  e.mapsTo_symm
 
 /-- Two partial equivs that have the same `source`, same `toFun` and same `invFun`, coincide. -/
 @[ext]
@@ -692,8 +694,8 @@ theorem EqOnSource.target_eq {e e' : PartialEquiv α β} (h : e ≈ e') : e.targ
 /-- If two partial equivs are equivalent, so are their inverses. -/
 theorem EqOnSource.symm' {e e' : PartialEquiv α β} (h : e ≈ e') : e.symm ≈ e'.symm := by
   refine ⟨target_eq h, eqOn_of_leftInvOn_of_rightInvOn e.leftInvOn ?_ ?_⟩ <;>
-    simp only [symm_source, target_eq h, source_eq h, e'.symm_mapsTo]
-  exact e'.rightInvOn.congr_right e'.symm_mapsTo (source_eq h ▸ h.eqOn.symm)
+    simp only [symm_source, target_eq h, source_eq h, e'.mapsTo_symm]
+  exact e'.rightInvOn.congr_right e'.mapsTo_symm (source_eq h ▸ h.eqOn.symm)
 
 /-- Two equivalent partial equivs have coinciding inverses on the target. -/
 theorem EqOnSource.symm_eqOn {e e' : PartialEquiv α β} (h : e ≈ e') :
