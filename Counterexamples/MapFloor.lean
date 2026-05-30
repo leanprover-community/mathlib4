@@ -65,7 +65,7 @@ theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
     ⟨?_, fun h =>
       ⟨p.natTrailingDegree, fun m hm => (coeff_eq_zero_of_lt_natTrailingDegree hm).symm, h⟩⟩
   rintro ⟨n, hn⟩
-  convert hn.2
+  convert! hn.2
   exact (natTrailingDegree_le_of_ne_zero hn.2.ne').antisymm
     (le_natTrailingDegree (by rintro rfl; cases hn.2.false) fun m hm => (hn.1 _ hm).symm)
 

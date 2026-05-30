@@ -220,27 +220,27 @@ lemma Odd.sub_odd (ha : Odd a) (hb : Odd b) : Even (a - b) := by
 
 @[simp]
 lemma even_add_one : Even (a + 1) ↔ Odd a :=
-  ⟨(by convert ·.sub_odd odd_one; rw [eq_sub_iff_add_eq]), (·.add_one)⟩
+  ⟨(by convert! ·.sub_odd odd_one; rw [eq_sub_iff_add_eq]), (·.add_one)⟩
 
 @[simp]
 lemma even_sub_one : Even (a - 1) ↔ Odd a :=
-  ⟨(by convert ·.add_odd odd_one; rw [sub_add_cancel]), (·.sub_odd odd_one)⟩
+  ⟨(by convert! ·.add_odd odd_one; rw [sub_add_cancel]), (·.sub_odd odd_one)⟩
 
 @[simp]
 lemma even_add_two : Even (a + 2) ↔ Even a :=
-  ⟨(by convert ·.sub even_two; rw [eq_sub_iff_add_eq]), (·.add even_two)⟩
+  ⟨(by convert! ·.sub even_two; rw [eq_sub_iff_add_eq]), (·.add even_two)⟩
 
 @[simp]
 lemma even_sub_two : Even (a - 2) ↔ Even a :=
-  ⟨(by convert ·.add even_two; rw [sub_add_cancel]), (·.sub even_two)⟩
+  ⟨(by convert! ·.add even_two; rw [sub_add_cancel]), (·.sub even_two)⟩
 
 @[simp]
 lemma odd_add_one : Odd (a + 1) ↔ Even a :=
-  ⟨(by convert ·.sub_odd odd_one; rw [eq_sub_iff_add_eq]), (·.add_one)⟩
+  ⟨(by convert! ·.sub_odd odd_one; rw [eq_sub_iff_add_eq]), (·.add_one)⟩
 
 @[simp]
 lemma odd_sub_one : Odd (a - 1) ↔ Even a :=
-  ⟨(by convert ·.add_odd odd_one; rw [sub_add_cancel]), (·.sub_odd odd_one)⟩
+  ⟨(by convert! ·.add_odd odd_one; rw [sub_add_cancel]), (·.sub_odd odd_one)⟩
 
 @[simp]
 lemma odd_add_two : Odd (a + 2) ↔ Odd a := by
@@ -361,12 +361,8 @@ variable {α : Type*} {f : α → α} {n : ℕ}
 lemma iterate_two_mul (hf : Involutive f) (n : ℕ) : f^[2 * n] = id := by
   rw [iterate_mul, involutive_iff_iter_2_eq_id.1 hf, iterate_id]
 
-@[deprecated (since := "2025-10-28")] alias iterate_bit0 := iterate_two_mul
-
 lemma iterate_two_mul_add_one (hf : Involutive f) (n : ℕ) : f^[2 * n + 1] = f := by
   rw [iterate_succ, hf.iterate_two_mul, id_comp]
-
-@[deprecated (since := "2025-10-28")] alias iterate_bit1 := iterate_two_mul_add_one
 
 lemma iterate_even (hf : Involutive f) (hn : Even n) : f^[n] = id := by
   obtain ⟨m, rfl⟩ := hn
