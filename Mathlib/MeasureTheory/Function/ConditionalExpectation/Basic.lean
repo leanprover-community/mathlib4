@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
+public import Mathlib.MeasureTheory.Function.LpSpace.InfiniteSum
 
 /-! # Conditional expectation
 
@@ -454,59 +455,28 @@ theorem tendsto_condExpL1_of_dominated_convergence (hm : m ≤ m₀) [SigmaFinit
   tendsto_setToFun_of_dominated_convergence _ bound_fs hfs_meas h_int_bound_fs hfs_bound hfs
 
 theorem condExp_tsum [CompleteSpace E]
-    {ι} [Countable ι] {f : ι → α → E} (hf : ∀ i, AEStronglyMeasurable (f i) μ)
-    (hf' : ∑' i, ∫⁻ a : α, ‖f i a‖ₑ ∂μ ≠ ∞) :
+    {ι : Type*} [Countable ι] {f : ι → α → E} (hf : ∀ i, AEStronglyMeasurable (f i) μ)
+    (hf' : ∑' i, ∫⁻ a, ‖f i a‖ₑ ∂μ ≠ ∞) :
     μ[fun a ↦ ∑' i, f i a | m] =ᵐ[μ] fun a ↦ ∑' i, μ[f i | m] a := by
   by_cases hm : m ≤ m₀; swap
-  · simp [condExp_of_not_le hm]
+  · simp only [condExp_of_not_le hm, Pi.zero_apply, tsum_zero]
     exact ae_eq_rfl
   by_cases hμm : SigmaFinite (μ.trim hm); swap
-  · simp [condExp_of_not_sigmaFinite hm hμm]
+  · simp only [condExp_of_not_sigmaFinite hm hμm, Pi.zero_apply, tsum_zero]
     exact ae_eq_rfl
   grw [condExp_ae_eq_condExpL1 hm, condExpL1]
-  have : ∀ᵐ a ∂μ, ∀ i, μ[f i | m] a = condExpL1 hm μ (f i) a :=
+  have A : ∀ᵐ a ∂μ, ∀ i, μ[f i | m] a = condExpL1 hm μ (f i) a :=
     ae_all_iff.2 (fun i ↦ condExp_ae_eq_condExpL1 hm _)
-  filter_upwards [this] with a ha
-  simp [ha, condExpL1]
-  rw [setToFun_tsum]
-
-
-#exit
-
-lemma hasSum_integral_of_summable_integral_norm {ι} [Countable ι] {F : ι → α → E}
-    (hF_int : ∀ i : ι, Integrable (F i) μ) (hF_sum : Summable fun i ↦ ∫ a, ‖F i a‖ ∂μ) :
-    HasSum (∫ a, F · a ∂μ) (∫ a, (∑' i, F i a) ∂μ) := by
-  by_cases hE : CompleteSpace E; swap
-  · simp [integral, hE, hasSum_zero]
-  rw [integral_tsum (fun i ↦ (hF_int i).1)]
-  · exact (hF_sum.of_norm_bounded fun i ↦ norm_integral_le_integral_norm _).hasSum
-  have (i : ι) : ∫⁻ a, ‖F i a‖ₑ ∂μ = ‖∫ a, ‖F i a‖ ∂μ‖ₑ := by
-    dsimp [enorm]
-    rw [lintegral_coe_eq_integral _ (hF_int i).norm, coe_nnreal_eq, coe_nnnorm,
-      Real.norm_of_nonneg (integral_nonneg (fun a ↦ norm_nonneg (F i a)))]
-    simp only [coe_nnnorm]
-  rw [funext this]
-  exact ENNReal.tsum_coe_ne_top_iff_summable.2 <| NNReal.summable_coe.1 hF_sum.abs
-
-lemma integral_tsum_of_summable_integral_norm {ι} [Countable ι] {F : ι → α → E}
-    (hF_int : ∀ i : ι, Integrable (F i) μ) (hF_sum : Summable fun i ↦ ∫ a, ‖F i a‖ ∂μ) :
-    ∑' i, (∫ a, F i a ∂μ) = ∫ a, (∑' i, F i a) ∂μ :=
-  (hasSum_integral_of_summable_integral_norm hF_int hF_sum).tsum_eq
-
-/-- Corollary of the Lebesgue dominated convergence theorem: If a sequence of functions `F n` is
-(eventually) uniformly bounded by a constant and converges (eventually) pointwise to a
-function `f`, then the integrals of `F n` with respect to a finite measure `μ` converge
-to the integral of `f`. -/
-theorem tendsto_integral_filter_of_norm_le_const {ι} {l : Filter ι} [l.IsCountablyGenerated]
-    {F : ι → α → G} [IsFiniteMeasure μ] {f : α → G}
-    (h_meas : ∀ᶠ n in l, AEStronglyMeasurable (F n) μ)
-    (h_bound : ∃ C, ∀ᶠ n in l, (∀ᵐ ω ∂μ, ‖F n ω‖ ≤ C))
-    (h_lim : ∀ᵐ ω ∂μ, Tendsto (fun n => F n ω) l (𝓝 (f ω))) :
-    Tendsto (fun n => ∫ ω, F n ω ∂μ) l (nhds (∫ ω, f ω ∂μ)) := by
-  simp only [integral_eq_setToFun]
-  exact tendsto_setToFun_filter_of_norm_le_const _ h_meas h_bound h_lim
-
-
+  have B : ∑' (n : ι), ‖setToFun μ (condExpInd E hm μ)
+      (dominatedFinMeasAdditive_condExpInd E hm μ) (f n)‖ₑ ≠ ∞ := by
+    apply (lt_of_le_of_lt ?_ hf'.lt_top).ne
+    gcongr with i
+    exact (enorm_setToFun_le _ (by simp)).trans_eq (by simp)
+  have C := coeFn_tsum (f := fun i ↦ setToFun μ (condExpInd E hm μ)
+    (dominatedFinMeasAdditive_condExpInd E hm μ) (f i)) B
+  filter_upwards [A, C] with a ha h'a
+  simp only [ha, condExpL1]
+  rw [setToFun_tsum _ hf hf', h'a]
 
 variable [CompleteSpace E]
 
