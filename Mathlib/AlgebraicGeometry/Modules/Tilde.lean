@@ -872,14 +872,14 @@ lemma _root_.TopologicalSpace.Opens.coversTop_iff {X : Type*} [TopologicalSpace 
     exact ⟨U i, ⟨homOfLE le_top, ⟨i, ⟨𝟙 _⟩⟩⟩, hi⟩
 
 set_option backward.isDefEq.respectTransparency false in
-lemma aux_basicOpen_of_presentation (g : R) (h : (M.over (basicOpen g)).Presentation) :
+lemma aux_basicOpen_of_presentation (g : R)
+    (h : (M.restrict <| Spec.map (CommRingCat.ofHom <|
+      algebraMap R (Localization.Away g))).Presentation) :
     Aux M (basicOpen g) := by
   let φ : Spec (.of <| Localization.Away g) ⟶ Spec R :=
     Spec.map (CommRingCat.ofHom <| algebraMap R (Localization.Away g))
   let M' : (Spec (.of <| Localization.Away g)).Modules := M.restrict φ
-  let pres' : M'.Presentation :=
-    sorry
-  have : IsIso _ := isIso_fromTildeΓ_of_presentation M' pres'
+  have : IsIso _ := isIso_fromTildeΓ_of_presentation M' h
   rw [isIso_fromTildeΓ_iff_isLocalizing, isLocalizing_iff_aux] at this
   apply aux_basicOpen_of_aux_restrict
   exact this
@@ -896,6 +896,32 @@ lemma _root_.TopologicalSpace.Opens.IsBasis.exists_iSup_eq
   rw [hUs]
   dsimp only
   simp_rw [ha, sSup_eq_iSup' Us]
+
+-- #36142
+section
+
+universe w v
+
+variable {C : Type u} [Category.{v} C]
+variable {X Y : TopCat.{w}} {f : X ⟶ Y} {F : Y.Presheaf C}
+
+/-- The restriction functor of a sheaf to an open subspace. -/
+def _root_.TopologicalSpace.Opens.sheafRestrict (U : Opens X) :
+    Sheaf (Opens.grothendieckTopology X) C ⥤ Sheaf (Opens.grothendieckTopology U) C :=
+  haveI H : Topology.IsOpenEmbedding (TopCat.Hom.hom (X := .of U) (Y := X) _) :=
+    U.isOpenEmbedding
+  haveI := H.functor_isContinuous
+  H.isOpenMap.functor.sheafPushforwardContinuous C _ _
+
+variable {X : TopCat.{u}} (U : Opens X) (R : X.Sheaf RingCat.{v})
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Sheaves of modules over `R.over U` are equivalent to sheaves of modules over `R |_ U`. -/
+def _root_.TopologicalSpace.Opens.sheafOfModulesEquivOver :
+    SheafOfModules.{w} (R.over U) ≌ SheafOfModules.{w} (U.sheafRestrict.obj R) := by
+  sorry
+
+end
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isIso_fromTildeΓ_of_isQuasicoherent [M.IsQuasicoherent] : IsIso M.fromTildeΓ := by
@@ -919,10 +945,14 @@ lemma isIso_fromTildeΓ_of_isQuasicoherent [M.IsQuasicoherent] : IsIso M.fromTil
         SheafOfModules.{u} ((Spec R).ringCatSheaf.over <| W i.1) ⥤
           SheafOfModules.{u} ((Spec R).ringCatSheaf.over <| basicOpen (a i.1 i.2)) :=
       SheafOfModules.pushforward (F := G₀) (𝟙 _)
+    let H :
+        (Scheme.Opens.toScheme (X := Spec R) (basicOpen <| a i.1 i.2)).Modules ⥤
+          (Spec (CommRingCat.of (Localization.Away (a i.fst i.snd)))).Modules :=
+      Scheme.Modules.restrictFunctor (basicOpenIsoSpecAway _).inv
     let F :
         SheafOfModules.{u} ((Spec R).ringCatSheaf.over <| W i.1) ⥤
           ((Spec <| .of <| Localization.Away (a i.1 i.2))).Modules :=
-      G ⋙ sorry
+      G ⋙ (TopologicalSpace.Opens.sheafOfModulesEquivOver _ _).functor ⋙ H
     have : PreservesColimitsOfSize.{u, u} F :=
       sorry
     have pres' := (pres i.1).map F
