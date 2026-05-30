@@ -258,10 +258,10 @@ theorem OrthogonalFamily.independent {V : ι → Submodule 𝕜 E}
   intro v hv
   rw [LinearMap.mem_ker] at hv
   ext i
-  suffices ⟪(v i : E), v i⟫ = 0 by simpa only [inner_self_eq_zero] using this
+  suffices ⟪(v i : E), v i⟫ = 0 by simpa only [inner_self_eq_zero] using! this
   calc
     ⟪(v i : E), v i⟫ = ⟪(v i : E), DFinsupp.lsum ℕ (fun i => (V i).subtype) v⟫ := by
-      simpa only [DFinsupp.sumAddHom_apply, DFinsupp.lsum_apply_apply] using
+      simpa only [DFinsupp.sumAddHom_apply, DFinsupp.lsum_apply_apply] using!
         (hV.inner_right_dfinsupp v i (v i)).symm
     _ = 0 := by simp only [hv, inner_zero_right]
 
@@ -270,6 +270,6 @@ theorem DirectSum.IsInternal.collectedBasis_orthonormal [DecidableEq ι] {V : ι
     (hV_sum : DirectSum.IsInternal fun i => V i) {α : ι → Type*}
     {v_family : ∀ i, Basis (α i) 𝕜 (V i)} (hv_family : ∀ i, Orthonormal 𝕜 (v_family i)) :
     Orthonormal 𝕜 (hV_sum.collectedBasis v_family) := by
-  simpa only [hV_sum.collectedBasis_coe] using hV.orthonormal_sigma_orthonormal hv_family
+  simpa only [hV_sum.collectedBasis_coe] using! hV.orthonormal_sigma_orthonormal hv_family
 
 end OrthogonalFamily
