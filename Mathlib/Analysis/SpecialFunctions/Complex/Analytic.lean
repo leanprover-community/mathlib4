@@ -162,12 +162,11 @@ theorem iteratedDeriv_succ_log {n : ℕ} {x : ℂ} (hx : x ∈ slitPlane) :
     filter_upwards [isOpen_slitPlane.mem_nhds hx] with y hy
     simp [Complex.deriv_log hy]
   rw [iteratedDeriv_succ', h_eq.iteratedDeriv_eq, iteratedDeriv_eq_iterate, iter_deriv_inv]
-  congr 1
   grind
 
 theorem hasFPowerSeriesAt_clog_one : HasFPowerSeriesAt Complex.log
-    (.ofScalars ℂ (fun n ↦ -(-1 : ℂ)^n / n)) 1 := by
-  suffices ((FormalMultilinearSeries.ofScalars ℂ (fun n ↦ -(-1 : ℂ)^n / n)) =
+    (.ofScalars ℂ (fun n ↦ -(-1 : ℂ) ^ n / n)) 1 := by
+  suffices ((FormalMultilinearSeries.ofScalars ℂ (fun n ↦ -(-1 : ℂ) ^ n / n)) =
       FormalMultilinearSeries.ofScalars ℂ
         (fun n ↦ iteratedDeriv n Complex.log 1 / (n.factorial : ℂ))) by
     convert AnalyticAt.hasFPowerSeriesAt _ using 1 <;> try infer_instance
@@ -175,42 +174,35 @@ theorem hasFPowerSeriesAt_clog_one : HasFPowerSeriesAt Complex.log
   ext n
   simp only [FormalMultilinearSeries.apply_eq_prod_smul_coeff, Finset.prod_const_one,
     FormalMultilinearSeries.coeff_ofScalars, smul_eq_mul, one_mul]
-  cases n with
-  | zero => simp
-  | succ n =>
-    rw [iteratedDeriv_succ_log (by simp)]
-    simp [Nat.factorial_succ, pow_succ]
-    field_simp [show n.factorial ≠ 0 by positivity]
+  obtain _ | n := n
+  · simp
+  rw [iteratedDeriv_succ_log (by simp)]
+  simp [Nat.factorial_succ, pow_succ]
+  field_simp [show n.factorial ≠ 0 by positivity]
 
 theorem hasFPowerSeriesAt_clog_one_add : HasFPowerSeriesAt (fun x ↦ Complex.log (1 + x))
-    (.ofScalars ℂ (fun n ↦ -(-1 : ℂ)^n / n)) 0 := by
-  rw [show (0 : ℂ) = 1 + (-1) by simp]
-  conv => arg 1; ext t; rw [show 1 + t = t - (-1) by ring]
-  exact HasFPowerSeriesAt.comp_sub hasFPowerSeriesAt_clog_one _
+    (.ofScalars ℂ (fun n ↦ -(-1 : ℂ) ^ n / n)) 0 := by
+  convert HasFPowerSeriesAt.comp_sub hasFPowerSeriesAt_clog_one (-1) using 3 <;> ring
 
 theorem hasFPowerSeriesAt_log_one : HasFPowerSeriesAt Real.log
-    (.ofScalars ℝ (fun n ↦ -(-1 : ℝ)^n / n)) 1 := by
+    (.ofScalars ℝ (fun n ↦ -(-1 : ℝ) ^ n / n)) 1 := by
   obtain ⟨r, hp⟩ := hasFPowerSeriesAt_clog_one
   have : HasFPowerSeriesOnBall Complex.log
-      ((FormalMultilinearSeries.ofScalars ℂ (fun n ↦ -(-1 : ℂ)^n / n)).restrictScalars (𝕜 := ℝ))
+      ((FormalMultilinearSeries.ofScalars ℂ (fun n ↦ -(-1 : ℂ) ^ n / n)).restrictScalars (𝕜 := ℝ))
       (Complex.ofRealCLM 1) r := by
-    rw [show Complex.ofRealCLM 1 = 1 from by simp]
+    rw [show Complex.ofRealCLM 1 = 1 by simp]
     exact hp.restrictScalars
-  convert
-    ((Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap).congr
-      ?_).hasFPowerSeriesAt
-  · ext n
-    simp only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
-      ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply,
-      FormalMultilinearSeries.compContinuousLinearMap_apply]
-    simp
-    norm_cast
-  · exact fun x _ ↦ Complex.log_ofReal_re x
+  convert ((Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap).congr
+    (fun x _ ↦ Complex.log_ofReal_re x)).hasFPowerSeriesAt
+  ext n
+  simp only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
+    ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply,
+    FormalMultilinearSeries.compContinuousLinearMap_apply]
+  simp
+  norm_cast
 
 theorem hasFPowerSeriesAt_log_one_add : HasFPowerSeriesAt (fun x ↦ Real.log (1 + x))
-    (.ofScalars ℝ (fun n ↦ -(-1 : ℝ)^n / n)) 0 := by
-  rw [show (0 : ℝ) = 1 + (-1) by simp]
-  conv => arg 1; ext t; rw [show 1 + t = t - (-1) by ring]
-  exact HasFPowerSeriesAt.comp_sub hasFPowerSeriesAt_log_one _
+    (.ofScalars ℝ (fun n ↦ -(-1 : ℝ) ^ n / n)) 0 := by
+  convert HasFPowerSeriesAt.comp_sub hasFPowerSeriesAt_log_one (-1) using 3 <;> ring
 
 end Real
