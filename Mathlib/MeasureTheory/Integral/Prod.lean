@@ -153,7 +153,7 @@ theorem integrable_measure_prodMk_left {s : Set (α × β)} (hs : MeasurableSet 
     (h2s : (μ.prod ν) s ≠ ∞) : Integrable (fun x => ν.real (Prod.mk x ⁻¹' s)) μ := by
   refine ⟨(measurable_measure_prodMk_left hs).ennreal_toReal.aemeasurable.aestronglyMeasurable, ?_⟩
   simp_rw [hasFiniteIntegral_iff_enorm, measureReal_def, enorm_eq_ofReal toReal_nonneg]
-  convert h2s.lt_top using 1
+  convert! h2s.lt_top using 1
   rw [prod_apply hs]
   apply lintegral_congr_ae
   filter_upwards [ae_measure_lt_top hs h2s] with x hx
@@ -248,7 +248,7 @@ theorem hasFiniteIntegral_prod_iff ⦃f : α × β → E⦄ (h1f : StronglyMeasu
   have (x : _) : ∀ᵐ y ∂ν, 0 ≤ ‖f (x, y)‖ := by filter_upwards with y using norm_nonneg _
   simp_rw [integral_eq_lintegral_of_nonneg_ae (this _)
       (h1f.norm.comp_measurable measurable_prodMk_left).aestronglyMeasurable,
-    enorm_eq_ofReal toReal_nonneg, ofReal_norm_eq_enorm]
+    enorm_eq_ofReal toReal_nonneg, ofReal_norm]
   -- this fact is probably too specialized to be its own lemma
   have : ∀ {p q r : Prop} (_ : r → p), (r ↔ p ∧ q) ↔ p → (r ↔ q) := fun {p q r} h1 => by
     rw [← and_congr_right_iff, and_iff_right_of_imp h1]
@@ -287,7 +287,7 @@ theorem integrable_prod_iff' [SFinite μ] ⦃f : α × β → E⦄
     (h1f : AEStronglyMeasurable f (μ.prod ν)) :
     Integrable f (μ.prod ν) ↔
       (∀ᵐ y ∂ν, Integrable (fun x => f (x, y)) μ) ∧ Integrable (fun y => ∫ x, ‖f (x, y)‖ ∂μ) ν := by
-  convert integrable_prod_iff h1f.prod_swap using 1
+  convert! integrable_prod_iff h1f.prod_swap using 1
   rw [funext fun _ => Function.comp_apply.symm, integrable_swap_iff]
 
 theorem Integrable.prod_left_ae [SFinite μ] ⦃f : α × β → E⦄ (hf : Integrable f (μ.prod ν)) :
@@ -472,15 +472,12 @@ theorem continuous_integral_integral :
     Continuous fun f : α × β →₁[μ.prod ν] E => ∫ x, ∫ y, f (x, y) ∂ν ∂μ := by
   rw [continuous_iff_continuousAt]; intro g
   refine
-    tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_prod_left
+    tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_prod_left.aestronglyMeasurable
       (Eventually.of_forall fun h => (L1.integrable_coeFn h).integral_prod_left) ?_
   simp_rw [← lintegral_fn_integral_sub _ (L1.integrable_coeFn _) (L1.integrable_coeFn g)]
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le) _
   · exact fun i => ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖ₑ ∂ν ∂μ
   swap; · exact fun i => lintegral_mono fun x => enorm_integral_le_lintegral_enorm _
-  change
-    Tendsto (fun i : α × β →₁[μ.prod ν] E => ∫⁻ x, ∫⁻ y : β, ‖i (x, y) - g (x, y)‖ₑ ∂ν ∂μ) (𝓝 g)
-      (𝓝 0)
   have this (i : α × β →₁[μ.prod ν] E) : Measurable fun z => ‖i z - g z‖ₑ :=
     ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).enorm
   simp_rw [← lintegral_prod _ (this _).aemeasurable, ← L1.ofReal_norm_sub_eq_lintegral,
@@ -508,7 +505,7 @@ theorem integral_prod (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
   · rintro f g - i_f i_g hf hg
     simp_rw [integral_add' i_f i_g, integral_integral_add' i_f i_g, hf, hg]
   · exact isClosed_eq continuous_integral continuous_integral_integral
-  · rintro f g hfg - hf; convert hf using 1
+  · rintro f g hfg - hf; convert! hf using 1
     · exact integral_congr_ae hfg.symm
     · apply integral_congr_ae
       filter_upwards [ae_ae_of_ae_prod hfg] with x hfgx using integral_congr_ae (ae_eq_symm hfgx)
@@ -553,6 +550,20 @@ theorem setIntegral_prod (f : α × β → E) {s : Set α} {t : Set β}
     ∫ z in s ×ˢ t, f z ∂μ.prod ν = ∫ x in s, ∫ y in t, f (x, y) ∂ν ∂μ := by
   simp only [← Measure.prod_restrict s t, IntegrableOn] at hf ⊢
   exact integral_prod f hf
+
+theorem integral_prod_bilin {E F G 𝕜 : Type*} [RCLike 𝕜]
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
+    [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
+    [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
+    (B : E →L[𝕜] F →L[𝕜] G) {f : α → E} {g : β → F}
+    (hf : Integrable f μ) (hg : Integrable g ν) :
+    ∫ z, B (f z.1) (g z.2) ∂μ.prod ν = B (∫ x, f x ∂μ) (∫ y, g y ∂ν) := by
+  have : Integrable (fun z ↦ B (f z.1) (g z.2)) (μ.prod ν) :=
+    hf.op_fst_snd (by fun_prop) ⟨‖B‖, B.le_opNorm₂⟩ hg
+  simp_rw [integral_prod _ this, ContinuousLinearMap.integral_comp_comm _ hg]
+  change ∫ x, B.flip (∫ y, g y ∂ν) (f x) ∂μ = _
+  rw [ContinuousLinearMap.integral_comp_comm _ hf]
+  simp
 
 theorem integral_prod_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] (f : α → 𝕜) (g : β → E) :
     ∫ z, f z.1 • g z.2 ∂μ.prod ν = (∫ x, f x ∂μ) • ∫ y, g y ∂ν := by
