@@ -70,6 +70,8 @@ structure GroupLike where
 
 namespace GroupLike
 
+initialize_simps_projections GroupLike (as_prefix val)
+
 attribute [simp] isGroupLikeElem_val
 
 attribute [coe] val
@@ -82,6 +84,7 @@ lemma val_injective : Injective (val : GroupLike R A → A) := by rintro ⟨a, h
   val_injective.eq_iff
 
 /-- Identity equivalence between `GroupLike R A` and `{a : A // IsGroupLikeElem R a}`. -/
+@[simps]
 def valEquiv : GroupLike R A ≃ Subtype (IsGroupLikeElem R : A → Prop) where
   toFun a := ⟨a.1, a.2⟩
   invFun a := ⟨a.1, a.2⟩
