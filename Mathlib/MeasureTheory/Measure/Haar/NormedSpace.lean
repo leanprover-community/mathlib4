@@ -178,7 +178,7 @@ theorem integrable_comp_smul_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace
   suffices
     ∀ {g : E → F} (_ : Integrable g μ) {S : ℝ} (_ : S ≠ 0), Integrable (fun x => g (S • x)) μ by
     refine ⟨fun hf => ?_, fun hf => this hf hR⟩
-    convert this hf (inv_ne_zero hR)
+    convert! this hf (inv_ne_zero hR)
     rw [← mul_smul, mul_inv_cancel₀ hR, one_smul]
   -- now prove
   intro g hg S hS

@@ -410,8 +410,8 @@ abbrev GroupSeminorm.toSeminormedGroup [Group E] (f : GroupSeminorm E) : Seminor
   norm := f
   dist_eq _ _ := rfl
   dist_self x := by simp only [inv_mul_cancel, map_one_eq_zero]
-  dist_triangle x y z := by convert map_mul_le_add f (x⁻¹ * y) (y⁻¹ * z) using 2; group
-  dist_comm x y := by convert map_inv_eq_map f (y⁻¹ * x) using 2; group
+  dist_triangle x y z := by convert! map_mul_le_add f (x⁻¹ * y) (y⁻¹ * z) using 2; group
+  dist_comm x y := by convert! map_inv_eq_map f (y⁻¹ * x) using 2; group
 
 -- See note [reducible non-instances]
 /-- Construct a seminormed group from a seminorm, i.e., registering the pseudodistance and the
