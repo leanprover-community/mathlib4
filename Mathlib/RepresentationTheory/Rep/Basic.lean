@@ -149,6 +149,7 @@ lemma forget_map (f : A ⟶ B) : (forget (Rep.{w} k G)).map f = (f : _ → _) :=
 
 /-- An equiv between the underlying representations induce isomorphism between objects in
   `Rep k G`. -/
+@[simps]
 def mkIso (e : ρ.Equiv σ) : of ρ ≅ of σ where
   hom := ofHom e.toIntertwiningMap
   inv := ofHom e.symm.toIntertwiningMap
@@ -516,10 +517,10 @@ def repIsoAction : Rep.{w} k G ≌ Action (ModuleCat.{w} k) G where
   counitIso := NatIso.ofComponents (RepToAction_ActionToRep k G)
 
 instance : (RepToAction k G).IsEquivalence :=
-  repIsoAction k G|>.isEquivalence_functor
+  repIsoAction k G |>.isEquivalence_functor
 
 instance : (ActionToRep k G).IsEquivalence :=
-  repIsoAction k G|>.isEquivalence_inverse
+  repIsoAction k G |>.isEquivalence_inverse
 
 instance : (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)).Additive where
   map_add {X Y} f g := by ext1; simp [add_hom]
@@ -559,7 +560,9 @@ end Action
 
 end ring
 
-variable {k : Type u} {G : Type v} [CommRing k] [Monoid G]
+section CommSemiring
+
+variable {k : Type u} {G : Type v} [CommSemiring k] [Monoid G]
 
 instance {M N : Rep k G} : SMul k (M ⟶ N) where
   smul r f := ofHom (r • f.hom)
@@ -587,7 +590,10 @@ instance : Linear k (Rep k G) where
   smul_comp _ _ _ := smul_comp
   comp_smul _ _ _ := comp_smul
 
-set_option backward.isDefEq.respectTransparency false in
+end CommSemiring
+
+variable {k : Type u} {G : Type v} [CommRing k] [Monoid G]
+
 instance : Functor.Linear k (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)) where
   map_smul {X Y} f r := by
     ext
@@ -733,6 +739,7 @@ protected noncomputable def ihom : Rep k G ⥤ Rep k G where
     ((Rep.ihom A).obj B).ρ g x = B.ρ g ∘ₗ x ∘ₗ A.ρ g⁻¹ :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, this is the Hom-set bijection in the adjunction
 `A ⊗ - ⊣ ihom(A, -)`. It sends `f : A ⊗ B ⟶ C` to a `Rep k G` morphism defined by currying the
@@ -761,8 +768,9 @@ noncomputable instance : MonoidalClosed (Rep k G) where
         homEquiv := Rep.tensorHomEquiv A
         homEquiv_naturality_left_symm := fun _ _ => Rep.hom_ext <|
           Representation.IntertwiningMap.ext <| TensorProduct.ext' fun _ _ => rfl
-        homEquiv_naturality_right := fun _ _ => Rep.hom_ext <|
-          Representation.IntertwiningMap.ext <| LinearMap.ext fun _ => LinearMap.ext fun _ => rfl})}
+        homEquiv_naturality_right _ _ := Rep.hom_ext <|
+          Representation.IntertwiningMap.ext <|
+            LinearMap.ext fun _ ↦ LinearMap.ext fun _ => rfl }) }
 
 @[simp]
 theorem ihom_obj_ρ_def (A B : Rep k G) : ((ihom A).obj B).ρ = ((Rep.ihom A).obj B).ρ :=
@@ -824,7 +832,7 @@ end MonoidalClosed
 
 section
 
-variable {G : Type v} [Group G] [Fintype G] (A : Rep.{w} k G)
+variable {k : Type u} [Semiring k] {G : Type v} [Group G] [Fintype G] (A : Rep.{w} k G)
 
 /-- Given a representation `A` of a finite group `G`, `norm A` is the representation morphism
 `A ⟶ A` defined by `x ↦ ∑ A.ρ g x` for `g` in `G`. -/

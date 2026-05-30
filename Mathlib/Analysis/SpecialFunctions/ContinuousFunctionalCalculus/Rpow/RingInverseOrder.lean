@@ -23,7 +23,7 @@ This file shows that `Ring.inverse` is convex on strictly positive operators.
 
 namespace CStarAlgebra
 
-open CFC
+open CFC Set
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
@@ -48,12 +48,22 @@ public lemma convexOn_ringInverse :
     by_cases ha' : a = 0
     · have hb' : b = 1 := by grind
       simp only [ha', hb', one_mul, zero_add, gt_iff_lt]
-      grind
+      #adaptation_note /-- Before nightly-2026-06-04, this was just `grind.
+      `spectrum_pos` is not activating in `grind` despite the
+      ```
+      grind_pattern IsStrictlyPositive.spectrum_pos => x ∈ spectrum 𝕜 a, IsStrictlyPositive a
+      ```
+      rule, because `grind` will not fill in the `𝕜 := ℝ`. -/
+      exact zpos.spectrum_pos hr
     · grind [add_pos_of_pos_of_nonneg, mul_nonneg]
   have h₂ : (a • 1 + b • z ^ (-1 : ℝ)) = cfc (fun r => (a + b * r ^ (-1 : ℝ))) z := by
     rw [CFC.rpow_eq_cfc_real zpos.nonneg]
     have hcont : ContinuousOn (fun r : ℝ => (r ^ (-1 : ℝ))) (spectrum ℝ z) :=
-      ContinuousOn.rpow_const (f := id) (by fun_prop) (by grind)
+      ContinuousOn.rpow_const (f := id) (by fun_prop) (by
+        #adaptation_note /-- Before nightly-2026-06-04, this was just `grind. -/
+        intro x h
+        have := IsStrictlyPositive.spectrum_pos (𝕜 := ℝ) zpos h
+        grind)
     rw [← cfc_smul b _ z hcont, ← Algebra.algebraMap_eq_smul_one, ← cfc_const_add a _ z]
     refine cfc_congr fun r hr => ?_
     simp
@@ -72,7 +82,11 @@ public lemma convexOn_ringInverse :
           have : 0 ≤ b * r := by positivity
           cases lt_or_eq_of_le ha <;> grind
         · refine ContinuousOn.const_add (ContinuousOn.const_mul ?_ _) _
-          exact ContinuousOn.rpow_const (by fun_prop) (by grind)
+          exact ContinuousOn.rpow_const (by fun_prop) (by
+            #adaptation_note /-- Before nightly-2026-06-04, this was just `grind. -/
+            intro x h
+            have := IsStrictlyPositive.spectrum_pos (𝕜 := ℝ) zpos h
+            grind)
         · intro r hr
           suffices (a • 1 + b • r) ^ (-1 : ℤ) ≤ a • 1 ^ (-1 : ℤ) + b • r ^ (-1 : ℤ) by
             simp_rw [← Real.rpow_intCast] at this
@@ -84,5 +98,23 @@ public lemma convexOn_ringInverse :
         simp [conjSqrt_one x⁻¹ʳ (by grind)]
       _ = _ := by
         rw [← ringInverse_conjSqrt _ _ xpos, conjSqrt_conjSqrt_ringInverse _ _ xpos]
+
+public lemma convexOn_ringInverse_algebraMap_add {t : ℝ} (ht : 0 < t) :
+    ConvexOn ℝ (Ici (0 : A)) (fun x : A => Ring.inverse (algebraMap ℝ A t + x)) := by
+  have : ∀ x ∈ Ici (0 : A), IsStrictlyPositive (algebraMap ℝ A t + x) := by grind
+  let addl : A →ᵃ[ℝ] A := (AffineMap.toConstProdLinearMap ℝ).symm (algebraMap ℝ A t, .id)
+  have haddl : Function.Injective addl := by intro _ _; simp [addl]
+  have hici : Ici (0 : A) = addl ⁻¹' addl '' Ici 0 := by
+    rw [Set.preimage_image_eq _ haddl]
+  simp_rw [add_comm]
+  change ConvexOn ℝ (Ici 0) (Ring.inverse ∘ addl)
+  rw [hici]
+  apply ConvexOn.comp_affineMap
+  refine ConvexOn.subset CStarAlgebra.convexOn_ringInverse ?_ (Convex.affine_image _ (convex_Ici _))
+  simp only [AffineMap.toConstProdLinearMap_symm_apply, AffineMap.coe_add,
+    LinearMap.coe_toAffineMap, LinearMap.id_coe, AffineMap.coe_const, Pi.add_apply, id_eq,
+    Function.const_apply, image_add_right, preimage_add_const_Ici, sub_neg_eq_add, zero_add, addl]
+  exact fun x hx  => IsStrictlyPositive.of_le (by grind) hx
+
 
 end CStarAlgebra

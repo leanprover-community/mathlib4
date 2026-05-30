@@ -19,7 +19,7 @@ This file contains some supplements to the results in
 require heavier imports.
 -/
 
-@[expose] public section
+public section
 
 namespace Subgroup
 

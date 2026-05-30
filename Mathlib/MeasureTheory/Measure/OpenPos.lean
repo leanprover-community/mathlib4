@@ -19,7 +19,7 @@ about these measures.
 
 -/
 
-@[expose] public section
+public section
 
 
 open Topology ENNReal MeasureTheory

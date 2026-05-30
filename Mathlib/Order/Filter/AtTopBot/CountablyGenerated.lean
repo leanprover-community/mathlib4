@@ -21,7 +21,7 @@ In this file we prove that
   is equivalent to convergence along all sequences that converge to this filter.
 -/
 
-@[expose] public section
+public section
 
 open Set
 

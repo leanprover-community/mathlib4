@@ -16,7 +16,7 @@ This file provides an API for `List.Forall₂` (definition in `Data.List.Defs`).
 of `l₁`, and `b` is the nth element of `l₂`, then `R a b` is satisfied.
 -/
 
-@[expose] public section
+public section
 
 
 open Nat Function

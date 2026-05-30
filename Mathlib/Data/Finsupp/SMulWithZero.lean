@@ -29,7 +29,7 @@ reasonably light.
 This file is a `noncomputable theory` and uses classical logic throughout.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Module
 

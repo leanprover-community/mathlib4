@@ -19,13 +19,11 @@ addition/multiplication operator.
 * `Fintype.decidableEqMulEquivFintype`: `MulEquiv`s on finite types have decidable equality
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero MulAction
 
 open Function
-
-open Nat
 
 universe u v
 

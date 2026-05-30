@@ -195,14 +195,8 @@ lemma SortedLE.wbtw {l : List R} (h : l.SortedLE) : l.Wbtw R := by
         exact fun a ha ↦ .of_le_of_le h.1 (h.2.2.1 a ha)
       · simp
 
-@[deprecated (since := "2025-10-13")]
-alias Sorted.wbtw := SortedLE.wbtw
-
 lemma SortedLT.sbtw {l : List R} (h : l.SortedLT) : l.Sbtw R :=
   ⟨h.sortedLE.wbtw, h.nodup⟩
-
-@[deprecated (since := "2025-10-13")]
-alias Sorted.sbtw := SortedLT.sbtw
 
 lemma exists_map_eq_of_sorted_nonempty_iff_wbtw {l : List P} (hl : l ≠ []) :
     (∃ l' : List R, l'.SortedLE ∧ l'.map (lineMap (l.head hl) (l.getLast hl)) = l) ↔
@@ -247,7 +241,6 @@ lemma exists_map_eq_of_sorted_nonempty_iff_wbtw {l : List P} (hl : l ≠ []) :
                 nlinarith
               · refine hl''s.pairwise.map _ fun a b hab ↦ ?_
                 gcongr
-                linarith
             · simp only [map_cons, lineMap_apply_zero, map_map, ← hl'', cons.injEq,
                 map_inj_left, Function.comp_apply, lineMap_lineMap_left, lineMap_eq_lineMap_iff,
                 true_and]

@@ -189,14 +189,6 @@ variable (F) in
   ext v w
   exact real_inner_comm _ _
 
-@[deprecated (since := "2025-11-15")] alias innerₛₗ_apply_coe := coe_innerₛₗ_apply
-@[deprecated (since := "2025-11-15")] alias innerₛₗ_apply := innerₛₗ_apply_apply
-@[deprecated (since := "2025-11-15")] alias innerₗ_apply := innerₗ_apply_apply
-@[deprecated (since := "2025-11-15")] alias innerSL_apply_coe := coe_innerSL_apply
-@[deprecated (since := "2025-11-15")] alias innerSL_apply := innerSL_apply_apply
-@[deprecated (since := "2025-11-15")] alias innerSLFlip_apply := innerSLFlip_apply_apply
-@[deprecated (since := "2025-11-15")] alias innerSL_real_flip := flip_innerSL_real
-
 variable {𝕜}
 
 namespace ContinuousLinearMap
@@ -220,7 +212,7 @@ theorem toSesqForm_apply_norm_le {f : E →L[𝕜] E'} {v : E'} : ‖toSesqForm 
   have h₂ := @norm_inner_le_norm 𝕜 E' _ _ _ v (f x)
   calc
     ‖⟪v, f x⟫‖ ≤ ‖v‖ * ‖f x‖ := h₂
-    _ ≤ ‖v‖ * (‖f‖ * ‖x‖) := mul_le_mul_of_nonneg_left h₁ (norm_nonneg v)
+    _ ≤ ‖v‖ * (‖f‖ * ‖x‖) := by gcongr
     _ = ‖f‖ * ‖v‖ * ‖x‖ := by ring
 
 end ContinuousLinearMap

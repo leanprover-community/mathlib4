@@ -220,6 +220,6 @@ theorem IsInertiaField.rank_decompositionField [IsGalois K L] [Algebra K D] [Alg
   have := Module.finrank_mul_finrank K D E
   rwa [IsInertiaField.rank_right A K L P E hp, IsDecompositionField.rank_right A K L P D hp,
     mul_right_inj'] at this
-  exact primesOver_ncard_ne_zero p B
+  exact IsDedekindDomain.primesOver_ncard_ne_zero p B
 
 end rank

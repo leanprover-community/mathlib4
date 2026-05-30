@@ -27,7 +27,7 @@ Results for sheaves of abelian groups on topological spaces.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -50,7 +50,7 @@ theorem Presheaf.addCommGrpCat_shortExact_app_zero {S : ShortComplex (Presheaf A
   exact h
 
 lemma Presheaf.restrict_sum {V : Opens X} {F : Presheaf AddCommGrpCat X} (h : V ≤ U)
-    (s t : F.obj (op U)) : (s + t) |_ V = s |_V + t |_V := by
+    (s t : F.obj (op U)) : (s + t) |_ V = s |_ V + t |_ V := by
   delta Presheaf.restrictOpen Presheaf.restrict
   cat_disch
 

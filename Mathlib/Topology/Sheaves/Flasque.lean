@@ -37,7 +37,7 @@ We define and prove basic properties about flasque sheaves on topological spaces
 
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 
@@ -61,7 +61,8 @@ namespace IsFlasque
 instance (priority := low) [h : IsFlasque F]
     {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) : Epi (F.map i) := h.epi i
 
-theorem pushforward_isFlasque {Y : TopCat.{u}} [IsFlasque F] (f : X ⟶ Y) :
+set_option backward.defeqAttrib.useBackward true in
+instance pushforward_isFlasque {Y : TopCat.{u}} [IsFlasque F] (f : X ⟶ Y) :
     IsFlasque (f _* F) where
   epi {U V} i := by
     simp only [pushforward_obj_obj, pushforward_obj_map]
@@ -88,52 +89,34 @@ theorem pushforward_isFlasque {C : Type v} [Category.{w} C] {Y : TopCat.{u}} (F 
 variable {U : Opens X} {F G : Sheaf AddCommGrpCat X} (g : F ⟶ G) (s : G.obj.obj (op U))
 
 /-- Given a morphism of sheaves `g: F ⟶ G` and a section `s` of `G(U)`, `Under g s` is comprised of
-an open `V` and a section of `F(V)` that maps to `s |_ V` via `g`. This is not likely to be useful
-elsewhere so we leave it in the `IsFlasque` namespace. -/
-structure Under : Type u where
-  /-- the open subset that our section is on -/
-  V : Opens X
-  /-- V must be contained in U -/
-  le : V ≤ U
-  /-- the section itself -/
-  sec : F.obj.obj (op V)
-  /-- `sec` must be "under s" in the sense that `g` applied to `sec` is `s |_ V` -/
-  app_s : g.hom.app (op V) sec = s |_ V
+an open `V` and a section of `F(V)` that maps to `s |_ V` via `g`. -/
+abbrev Under := StructuredArrow ⟨op U, s⟩ (Functor.whiskerRight g.hom
+  (CategoryTheory.forget AddCommGrpCat.{u})).mapElements
 
-/-- Given `t₁` and `t₂` in `Under g s`, we say `t₁ ≤ t₂` if `t₂.sec` restricts to `t₁.sec` -/
-structure Under.R (t₁ t₂ : Under g s) : Prop where
-  /-- inclusion of the opens that the sections live on -/
-  le : t₁.V ≤ t₂.V
-  /-- the second section restricts to the first -/
-  restricts : t₂.sec |_ t₁.V = t₁.sec
-
-open Under
-
-/- The next two lemmas prove that the relation `R` satisfies the requirements for applying Zorn's
-lemma -/
-lemma Under.R.trans {a b c : Under g s} (h1 : (R g s) a b) (h2 : (R g s) b c) : (R g s) a c := by
-  apply R.mk (le_trans h1.le h2.le)
-  rw [← h1.restricts, ← h2.restricts]
-  exact Eq.symm (restrict_restrict h1.le h2.le c.sec)
-
-lemma Under.R.chains_bounded (c : Set (Under g s)) (h : IsChain (R g s) c) :
-    ∃ ub, ∀ a ∈ c, (R g s) a ub := by
-  let f : c → (Opens X) := fun x => x.val.V
-  obtain ⟨t, ht, _⟩ : ∃! s_1, IsGluing F.obj f (fun x => x.val.sec) s_1 := by
+set_option backward.isDefEq.respectTransparency false in
+/- The next lemma proves that the relation `fun x y ↦ Nonempty (y ⟶ x)` on `Under g s`
+satisfies the requirements for applying Zorn's lemma -/
+lemma structured_arrows_elements_sheaf_chains_bounded (c : Set (Under g s))
+    (h : IsChain (fun x y ↦ Nonempty (y ⟶ x)) c) : ∃ ub, ∀ a ∈ c, Nonempty (ub ⟶ a) := by
+  let f : c → (Opens X) := fun x => x.1.right.1.unop
+  obtain ⟨t, ht, _⟩ : ∃! s_1, IsGluing F.obj f (fun x => x.val.right.2) s_1 := by
     refine Sheaf.existsUnique_gluing F _ _ (fun i j ↦ ?_)
-    by_cases hij : i = j
-    · subst hij; rfl
-    obtain h1 | h1 := h i.property j.property (by grind)
-    · rw [← h1.restricts]
-      have := h1.le
-      change (j.1.sec |_ i.1.V) |_ ((f i) ⊓ (f j)) = j.1.sec |_ ((f i) ⊓ (f j))
-      rw [restrict_restrict]
-    · rw [← h1.restricts]
-      have := h1.le
-      change i.1.sec |_ ((f i) ⊓ (f j)) = (i.1.sec |_ j.1.V) |_ ((f i) ⊓ (f j))
-      rw [restrict_restrict]
-  use ⟨iSup f, iSup_le <| fun j => j.1.le, t, eq_app_of_forall_eq ht _ (fun i => i.val.app_s)⟩
-  exact fun a ha => ⟨_, ht ⟨a, ha⟩⟩
+    obtain (rfl | h₁ | h₁) : i = j ∨ Nonempty (i.val ⟶ j.val) ∨ Nonempty (j.val ⟶ i.val) := by
+      grind [Subtype.ext_iff, h i.property j.property]
+    · rfl
+    all_goals
+      rw [← CategoryOfElements.map_snd h₁.some.2]
+      dsimp
+      rw [← Functor.map_comp_apply]
+      rfl
+  have le₁ : iSup f ≤ U := iSup_le <| fun j => leOfHom j.1.hom.1.unop
+  have le₂ : ∀ i, i ∈ c → unop i.right.1 ≤ iSup f := fun i hi ↦ le_iSup f ⟨i, hi⟩
+  use StructuredArrow.mk (CategoryOfElements.homMk _ _ (homOfLE le₁).op (eq_app_of_locally_eq ht
+      (fun i ↦ leOfHom i.1.hom.1.unop) (fun i ↦ (CategoryOfElements.map_snd i.1.hom).symm)).symm :
+      ⟨op U, s⟩ ⟶ (Functor.whiskerRight g.hom
+      (CategoryTheory.forget AddCommGrpCat)).mapElements.obj ⟨op (iSup f), t⟩)
+  exact fun i hi => Nonempty.intro (StructuredArrow.homMk (CategoryOfElements.homMk _ _
+    (homOfLE (le₂ i hi)).op (ht ⟨i, hi⟩)) (by cat_disch))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a short exact sequence of sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` is flasque then
@@ -174,25 +157,30 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
     obtain ⟨t₅, ht₅, _⟩ : ∃! t₅, IsGluing S.X₂.obj f sf t₅ := by
       apply Sheaf.existsUnique_gluing
       simp only [IsCompatible, Fin.forall_fin_two]
-      exact ⟨⟨rfl, this⟩, Eq.symm (restrict_inf_flip this), rfl⟩
-    have le : iSup f ≤ U := by
-      simp only [iSup_le_iff, Fin.forall_fin_two]
-      exact ⟨t.le, Wle⟩
-    have app : S.g.hom.app (op (iSup f)) t₅ = s |_ (iSup f) := by
-      apply eq_app_of_forall_eq ht₅ (by rw [Fin.forall_fin_two]; exact ⟨t.le, Wle⟩)
-      rw [Fin.forall_fin_two]
-      refine ⟨t.app_s, ?_⟩
-      change S.g.hom.app (op W) (t₁ + (S.f.hom.app (op W)) t₄) = s |_ W
-      have : (S.f.hom.app (op W) ≫ S.g.hom.app (op W)) = 0 := by
-        change (S.f ≫ S.g).hom.app (op W) = 0; rw [S.6]; rfl
-      simp [← ConcreteCategory.comp_apply, this, ht₁]
-    let t₆ : Under S.g s := ⟨iSup f, le, t₅, app⟩
-    exact (ht t₆ ⟨_, ht₅ 0⟩).le (by cat_disch)
-  use t.sec |_ U
-  conv => rhs; equals (S.g.hom.app (op t.V)) t.sec |_ U =>
-    rw [t.app_s, restrict_restrict, restrictOpen, restrict]
-    cat_disch
-  apply map_restrict
+      refine ⟨⟨rfl, this⟩, Eq.symm ?_, rfl⟩
+      apply_fun (fun s ↦ restrictOpen s (W ⊓ t.right.1.unop) (le_of_eq (inf_comm _ _))) at this
+      rw [restrict_restrict, restrict_restrict] at this
+      exact this
+    have le : iSup f ≤ U := iSup_le_iff.mpr (Fin.forall_fin_two.mpr ⟨tle, Wle⟩)
+    -- We upgrade `t₅` to an object in `Under S.g s` that is defined on `t.right.1.unop ⊔ W`.
+    let t₆ : Under S.g s :=
+      StructuredArrow.mk (S := ⟨op U, s⟩)
+        (T := (Functor.whiskerRight S.g.hom (CategoryTheory.forget AddCommGrpCat)).mapElements)
+        (Y := ⟨op (iSup f), t₅⟩) <| CategoryOfElements.homMk _ _ (homOfLE le).op (by
+          refine (eq_app_of_locally_eq ht₅ (by rw [Fin.forall_fin_two]; exact ⟨tle, Wle⟩) ?_).symm
+          rw [Fin.forall_fin_two]
+          refine ⟨tcomp.symm, ?_⟩
+          simp only [Fin.isValue, map_add, homOfLE_leOfHom, sf, f]
+          have : (S.f.hom.app (op W) ≫ S.g.hom.app (op W)) = 0 := by
+            rw [← NatTrans.comp_app, ← ObjectProperty.FullSubcategory.comp_hom, S.zero]
+            rfl
+          simp [← CategoryTheory.comp_apply, this, ht₁]
+          rfl)
+    -- We prove that `t₆` is bigger than `t` for the preorder used on `Under S.g s`.
+    have : Nonempty (t₆ ⟶ t) := Nonempty.intro (StructuredArrow.homMk (CategoryOfElements.homMk _ _
+      (homOfLE (le_iSup f 0)).op (ht₅ 0)) (by cat_disch))
+    exact leOfHom ((ht t₆) this).some.right.1.unop ((le_iSup f 1) hW)
+  exact ⟨t.right.2 |_ U, by simp [map_restrict, ← tcomp, restrict_restrict]⟩
 
 /-- Given a short exact sequence of sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` and `𝓖` are flasque,
 then `𝓗` is flasque. -/
@@ -242,3 +230,32 @@ instance {F : Sheaf AddCommGrpCat X} [IsFlasque F] (n : ℕ) : Subsingleton (H F
   AddCommGrpCat.subsingleton_of_isZero (H_isZero F n)
 
 end TopCat.Sheaf.IsFlasque
+
+set_option backward.defeqAttrib.useBackward true in
+/--
+If the unique map from `A` to the terminal object is an epimorphism, then the skyscraper sheaf
+valued in `A` supported at an arbitrary point is a flasque sheaf.
+-/
+theorem isFlasque_skyscraperSheaf_of_epi_from {X : TopCat} (p₀ : ↑X)
+    [(U : Opens ↑X) → Decidable (p₀ ∈ U)] {C : Type*} [Category* C] (A : C) [HasTerminal C]
+    [Epi <| terminalIsTerminal.from A] :
+    (skyscraperSheaf p₀ A).IsFlasque where
+  epi {U V} r := by
+    by_cases h1 : p₀ ∈ unop U
+    · by_cases h2 : p₀ ∈ unop V
+      · simp_all only [skyscraperSheaf_obj_obj, skyscraperSheaf_obj_map, ↓reduceDIte]
+        infer_instance
+      · simp
+        grind
+    · have h2 : p₀ ∉ unop V := fun hV => h1 (r.unop.le hV)
+      have := isIso_of_isTerminal (isTerminalSkyscraperSheafObjObjOfNotMem h1)
+        (isTerminalSkyscraperSheafObjObjOfNotMem h2) ((skyscraperSheaf p₀ A).obj.map r)
+      infer_instance
+
+/--
+If the target category has a zero object, then any skyscraper sheaf valued in this category is a
+flasque sheaf.
+-/
+theorem isFlasque_skyscraperSheaf_of_hasZeroObject {X : TopCat} (p₀ : ↑X)
+    [(U : Opens ↑X) → Decidable (p₀ ∈ U)] {C : Type*} [Category* C] (A : C) [HasZeroObject C] :
+    (skyscraperSheaf p₀ A).IsFlasque := isFlasque_skyscraperSheaf_of_epi_from p₀ A

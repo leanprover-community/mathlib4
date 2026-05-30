@@ -37,8 +37,8 @@ section MonoidalClosed
 for any `X : Type v₁`. -/
 def Types.tensorProductAdjunction (X : Type v₁) :
     tensorLeft X ⊣ coyoneda.obj (Opposite.op X) where
-  unit := { app := fun Z (z : Z) x => ⟨x, z⟩ }
-  counit := { app := fun _ xf => xf.2 xf.1 }
+  unit := { app Z := ↾fun z ↦ ↾fun x => ⟨x, z⟩ }
+  counit := { app _ := ↾fun xf => xf.2.hom xf.1 }
 
 instance (X : Type v₁) : (tensorLeft X).IsLeftAdjoint :=
   ⟨_, ⟨Types.tensorProductAdjunction X⟩⟩
