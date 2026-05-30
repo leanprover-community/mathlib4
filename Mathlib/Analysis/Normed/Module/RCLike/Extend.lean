@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.RCLike.Extend
 public import Mathlib.Analysis.Normed.Operator.Basic
+public import Mathlib.Analysis.LocallyConvex.HahnBanach
 
 /-!
 # Norm properties of the extension of continuous `ℝ`-linear functionals to `𝕜`-linear functionals
@@ -28,16 +29,8 @@ variable [NormedSpace ℝ F] [IsScalarTower ℝ 𝕜 F]
 /-- The norm of the extension is bounded by `‖fr‖`. -/
 theorem norm_extendRCLike_bound (fr : StrongDual ℝ F) (x : F) :
     ‖(fr.extendRCLike x : 𝕜)‖ ≤ ‖fr‖ * ‖x‖ := by
-  set lm : StrongDual 𝕜 F := fr.extendRCLike
-  by_cases h : lm x = 0
-  · rw [h, norm_zero]
-    positivity
-  rw [← mul_le_mul_iff_right₀ (norm_pos_iff.2 h), ← sq]
-  calc
-    ‖lm x‖ ^ 2 = fr (conj (lm x : 𝕜) • x) := Module.Dual.norm_extendRCLike_apply_sq fr.toLinearMap x
-    _ ≤ ‖fr (conj (lm x : 𝕜) • x)‖ := le_abs_self _
-    _ ≤ ‖fr‖ * ‖conj (lm x : 𝕜) • x‖ := le_opNorm _ _
-    _ = ‖(lm x : 𝕜)‖ * (‖fr‖ * ‖x‖) := by rw [norm_smul, norm_conj, mul_left_comm]
+  refine norm_extendRCLike_le_seminorm (p := ‖fr‖₊ • normSeminorm 𝕜 F) fr.toLinearMap ?_ x
+  simp [← Real.norm_eq_abs, NNReal.smul_def, le_opNorm]
 
 @[simp]
 theorem norm_extendRCLike (fr : StrongDual ℝ F) : ‖(fr.extendRCLike : StrongDual 𝕜 F)‖ = ‖fr‖ :=
@@ -64,3 +57,5 @@ open StrongDual
 @[deprecated (since := "2026-02-24")] alias norm_extendTo𝕜 := norm_extendRCLike
 
 end ContinuousLinearMap
+
+#min_imports

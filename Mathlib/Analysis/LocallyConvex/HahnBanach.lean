@@ -35,8 +35,22 @@ open Module Topology RCLike
 
 open scoped ComplexConjugate
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
-variable {E : Type*} [AddCommGroup E]
+variable {𝕜 E : Type*} [AddCommGroup E]
+
+/-- If a real-linear functional is bounded by a `𝕜`-seminorm, then its `𝕜`-linear extension
+is bounded by the same seminorm. -/
+theorem norm_extendRCLike_le_seminorm [RCLike 𝕜] [Module 𝕜 E] [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
+    (fr : Dual ℝ E) {p : Seminorm 𝕜 E} (hp : ∀ x, |fr x| ≤ p x) (x : E) :
+    ‖(fr.extendRCLike x : 𝕜)‖ ≤ p x := by
+  by_cases hx : fr.extendRCLike (𝕜 := 𝕜) x = 0
+  · simp [hx]
+  have hsq : ‖fr.extendRCLike (𝕜 := 𝕜) x‖ ^ 2 ≤ ‖fr.extendRCLike (𝕜 := 𝕜) x‖ * p x := calc
+    _ = fr (conj (fr.extendRCLike x) • x) := fr.norm_extendRCLike_apply_sq x
+    _ ≤ |fr (conj (fr.extendRCLike x) • x)| := le_abs_self _
+    _ ≤ p (conj (fr.extendRCLike x) • x) := hp _
+    _ = ‖conj (fr.extendRCLike x)‖ * p x := map_smul_eq_mul _ _ _
+    _ = ‖(fr.extendRCLike x)‖ * p x := by rw [norm_conj]
+  exact (mul_le_mul_iff_left₀ (norm_pos_iff.2 hx)).1 <| by simpa [pow_two, mul_comm] using hsq
 
 theorem Module.Dual.exists_real_extension [Module ℝ E] (S : Subspace ℝ E) (f : Dual ℝ S)
     {p : Seminorm ℝ E} (hp : ∀ x, f x ≤ p x) :
@@ -46,6 +60,8 @@ theorem Module.Dual.exists_real_extension [Module ℝ E] (S : Subspace ℝ E) (f
     · simp [map_smul_eq_mul, abs_of_nonneg hc.le]
     · exact fun x y => map_add_le_add p x y
   exact ⟨g, hg, p.abs_le_seminorm_of_le_seminorm hl⟩
+
+variable [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
 
 theorem Module.Dual.exists_extension [Module 𝕜 E] (S : Submodule 𝕜 E) (f : Dual 𝕜 S)
     {p : Seminorm 𝕜 E} (hp : ∀ x, ‖f x‖ ≤ p x) :
@@ -60,16 +76,8 @@ theorem Module.Dual.exists_extension [Module 𝕜 E] (S : Submodule 𝕜 E) (f :
   refine ⟨g.extendRCLike, fun x ↦ ?_, fun x ↦ ?_⟩
   · rw [g.extendRCLike_apply, ← Submodule.coe_smul, hg, hg]
     simp [fr, mul_comm I]
-  · by_cases hx : g.extendRCLike (𝕜 := 𝕜) x = 0
-    · simp [hx]
-    have hsq : ‖g.extendRCLike (𝕜 := 𝕜) x‖ ^ 2 ≤ ‖Dual.extendRCLike g (𝕜 := 𝕜) x‖ * p x :=
-      calc
-        _ = g (conj (g.extendRCLike x) • x) := g.norm_extendRCLike_apply_sq x
-        _ ≤ |g (conj (g.extendRCLike x) • x)| := le_abs_self _
-        _ ≤ p (conj (g.extendRCLike x) • x) := hgp (conj (g.extendRCLike x) • x)
-        _ = ‖conj (g.extendRCLike x)‖ * p x := map_smul_eq_mul _ _ _
-        _ = ‖g.extendRCLike x‖ * p x := by rw [norm_conj]
-    exact (mul_le_mul_iff_left₀ (norm_pos_iff.2 hx)).1 (by simpa [pow_two, mul_comm] using hsq)
+  · apply norm_extendRCLike_le_seminorm
+    exact hgp
 
 variable [TopologicalSpace E]
 

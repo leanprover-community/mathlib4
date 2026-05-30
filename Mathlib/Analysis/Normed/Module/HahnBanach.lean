@@ -5,7 +5,6 @@ Authors: Yury Kudryashov, Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.LocallyConvex.HahnBanach
 public import Mathlib.Analysis.Normed.Module.RCLike.Extend
 public import Mathlib.Analysis.RCLike.Lemmas
 
@@ -45,7 +44,7 @@ that works both for `ℝ` and `ℂ`. -/
 theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : StrongDual ℝ p) :
     ∃ g : StrongDual ℝ E, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
   obtain ⟨g, hg, hl⟩ := by
-    refine f.toLinearMap.exists_real_extension p
+    refine Module.Dual.exists_continuous_real_extension p f
       (?_ : Continuous (‖f‖₊ • (normSeminorm ℝ E))) fun x => ?_
     · exact continuous_norm.const_smul ‖f‖₊
     · exact (le_abs_self (f x)).trans <| f.le_opNorm x
@@ -66,34 +65,12 @@ satisfying `IsRCLikeNormedField 𝕜`. -/
 @[wikidata Q866116]
 theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
     ∃ g : StrongDual 𝕜 E, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
-  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
-  letI : Module ℝ E := .restrictScalars ℝ 𝕜 E
-  haveI : IsScalarTower ℝ 𝕜 E := .restrictScalars _ _ _
-  letI : NormedSpace ℝ E := NormedSpace.restrictScalars _ 𝕜 _
-  -- Let `fr: StrongDual ℝ p` be the real part of `f`.
-  let fr := reCLM.comp (f.restrictScalars ℝ)
-  -- Use the real version to get a norm-preserving extension of `fr`, which
-  -- we'll call `g : StrongDual ℝ E`.
-  -- the type ascription on `hextends` is necessary to make sure the quantification
-  -- happens over `x : p` instead of `x : p.restrictScalars ℝ`.
-  obtain ⟨g, ⟨(hextends : ∀ x : p, g x = fr x), hnormeq⟩⟩ :=
-    Real.exists_extension_norm_eq (p.restrictScalars ℝ) fr
-  -- Now `g` can be extended to the `StrongDual 𝕜 E` we need.
-  refine ⟨g.extendRCLike, ?_⟩
-  -- It is an extension of `f`.
-  have h (x : p) : g.extendRCLike x = f x := by
-    rw [g.extendRCLike_apply, ← Submodule.coe_smul,
-      hextends, hextends]
-    simp [fr, RCLike.algebraMap_eq_ofReal, mul_comm I, RCLike.re_add_im]
-  -- And we derive the equality of the norms by bounding on both sides.
-  refine ⟨h, le_antisymm ?_ ?_⟩
-  · calc
-      ‖g.extendRCLike‖ = ‖g‖ := g.norm_extendRCLike
-      _ = ‖fr‖ := hnormeq
-      _ ≤ ‖reCLM‖ * ‖f‖ := ContinuousLinearMap.opNorm_comp_le _ _
-      _ = ‖f‖ := by rw [reCLM_norm, one_mul]
-  · exact f.opNorm_le_bound (g.extendRCLike (𝕜 := 𝕜)).opNorm_nonneg
-      fun x ↦ h x ▸ (g.extendRCLike (𝕜 := 𝕜) |>.le_opNorm x)
+  obtain ⟨g, hg, hl⟩ := by
+    refine Module.Dual.exists_continuous_extension p f
+      (?_ : Continuous (‖f‖₊ • (normSeminorm 𝕜 E))) fun x => f.le_opNorm x
+    exact continuous_norm.const_smul ‖f‖₊
+  refine ⟨g, hg, le_antisymm (g.mkContinuous_norm_le (norm_nonneg f) hl) ?_⟩
+  exact f.opNorm_le_bound (norm_nonneg _) fun x => by simpa [hg x] using g.le_opNorm x
 
 end RCLike
 
