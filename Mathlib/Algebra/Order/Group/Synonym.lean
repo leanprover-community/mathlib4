@@ -26,6 +26,8 @@ variable {α β : Type*}
 
 namespace OrderDual
 
+set_option backward.inferInstanceAs.wrap.instances false
+
 @[to_additive] instance [One α] : One αᵒᵈ := inferInstanceAs <| One α
 @[to_additive] instance [Mul α] : Mul αᵒᵈ := inferInstanceAs <| Mul α
 @[to_additive] instance [Inv α] : Inv αᵒᵈ := inferInstanceAs <| Inv α
