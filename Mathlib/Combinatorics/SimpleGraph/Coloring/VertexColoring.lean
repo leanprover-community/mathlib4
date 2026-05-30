@@ -633,7 +633,7 @@ def Iso.coloringEquiv (f : G ≃g H) (g : α ≃ β) : G.Coloring α ≃ H.Color
 lemma Iso.colorable_iff (f : G ≃g H) : G.Colorable n ↔ H.Colorable n :=
   ⟨fun hc ↦ hc.of_hom f.symm.toHom, fun hc ↦ hc.of_hom f.toHom⟩
 
-lemma Iso.chromaticNumber_eq (f : G ≃g H) : G.chromaticNumber = H.chromaticNumber :=
+lemma chromaticNumber_congr (f : G ≃g H) : G.chromaticNumber = H.chromaticNumber :=
   le_antisymm (chromaticNumber_mono_of_hom f.toHom) (chromaticNumber_mono_of_hom f.symm.toHom)
 
 
