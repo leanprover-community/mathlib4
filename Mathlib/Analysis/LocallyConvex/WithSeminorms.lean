@@ -688,8 +688,8 @@ theorem continuous_normedSpace_rng (F) [SeminormedAddCommGroup F] [NormedSpace �
   rw [← Seminorm.isBounded_const (Fin 1)] at hf
   exact continuous_of_isBounded hp (norm_withSeminorms 𝕝₂ F) f hf
 
-lemma _root_.Seminorm.abs_le_seminorm_of_le_seminorm [Module ℝ E] [TopologicalSpace E]
-    {p : Seminorm ℝ E} {f : E →ₗ[ℝ] ℝ} (hfp : ∀ x, f x ≤ p x) (x : E) :
+lemma _root_.Seminorm.abs_le_seminorm_of_le_seminorm [Module ℝ E] {p : Seminorm ℝ E}
+    {f : E →ₗ[ℝ] ℝ} (hfp : ∀ x, f x ≤ p x) (x : E) :
     |f x| ≤ p x :=
   abs_le.2 ⟨neg_le.1 (by simpa using hfp (-x)), hfp x⟩
 

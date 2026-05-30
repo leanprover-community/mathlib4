@@ -36,21 +36,28 @@ open Module Topology RCLike
 open scoped ComplexConjugate
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
-variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]
-variable {F : Type*} [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+variable {E : Type*} [AddCommGroup E]
 
-/-- **Hahn-Banach theorem** for linear functionals dominated by a continuous seminorm on locally
-convex spaces over `ℝ`. -/
-theorem LinearMap.exists_real_extension [Module ℝ E] [ContinuousSMul ℝ E]
-    [LocallyConvexSpace ℝ E] (S : Subspace ℝ E) (f : S →ₗ[ℝ] ℝ) {p : Seminorm ℝ E}
-    (hp_cont : Continuous p) (hp : ∀ x, f x ≤ p x) :
-    ∃ g : StrongDual ℝ E, (∀ x : S, g x = f x) ∧ ∀ x, |g x| ≤ p x := by
+theorem LinearMap.exists_real_extension [Module ℝ E] (S : Subspace ℝ E) (f : S →ₗ[ℝ] ℝ)
+    {p : Seminorm ℝ E} (hp : ∀ x, f x ≤ p x) :
+    ∃ g : E →ₗ[ℝ] ℝ, (∀ x : S, g x = f x) ∧ ∀ x, |g x| ≤ p x := by
   obtain ⟨g, hg, hl⟩ := by
     refine exists_extension_of_le_sublinear ⟨S, f⟩ p (fun _ hc _ => ?_) ?_ hp
     · simp [map_smul_eq_mul, abs_of_nonneg hc.le]
     · exact fun x y => map_add_le_add p x y
+  exact ⟨g, hg, p.abs_le_seminorm_of_le_seminorm hl⟩
+
+variable [TopologicalSpace E] [IsTopologicalAddGroup E]
+
+/-- **Hahn-Banach theorem** for linear functionals dominated by a continuous seminorm on locally
+convex spaces over `ℝ`. -/
+theorem LinearMap.exists_continuous_real_extension [Module ℝ E] [ContinuousSMul ℝ E]
+    [LocallyConvexSpace ℝ E] (S : Subspace ℝ E) (f : S →ₗ[ℝ] ℝ) {p : Seminorm ℝ E}
+    (hp_cont : Continuous p) (hp : ∀ x, f x ≤ p x) :
+    ∃ g : StrongDual ℝ E, (∀ x : S, g x = f x) ∧ ∀ x, |g x| ≤ p x := by
+  obtain ⟨g, hg, hl⟩ := f.exists_real_extension S hp
   exact ⟨⟨g, (PolynormableSpace.withSeminorms ℝ E).continuous_real_rng g
-    ⟨{⟨p, hp_cont⟩}, 1, fun x ↦ by simpa using hl x⟩⟩, hg, p.abs_le_seminorm_of_le_seminorm hl⟩
+    ⟨{⟨p, hp_cont⟩}, 1, fun x ↦ by simpa using (le_abs_self _).trans (hl x)⟩⟩, hg, hl⟩
 
 variable [Module 𝕜 E] [ContinuousSMul 𝕜 E] [PolynormableSpace 𝕜 E]
 
@@ -66,7 +73,7 @@ theorem LinearMap.exists_extension (S : Submodule 𝕜 E) (f : S →ₗ[𝕜] �
   letI : LocallyConvexSpace ℝ E := (PolynormableSpace.withSeminorms 𝕜 E).toLocallyConvexSpace
   let fr := reLm.comp (f.restrictScalars ℝ)
   obtain ⟨g, (hg : ∀ x : S, g x = fr x), hgp⟩ :=
-    fr.exists_real_extension (S.restrictScalars ℝ) (p := p.restrictScalars ℝ)
+    fr.exists_continuous_real_extension (S.restrictScalars ℝ) (p := p.restrictScalars ℝ)
       hp_cont fun x ↦ (re_le_norm (f x)).trans (hp x)
   refine ⟨g.extendRCLike, fun x ↦ ?_, fun x ↦ ?_⟩
   · rw [g.extendRCLike_apply, ← Submodule.coe_smul, hg, hg]
@@ -91,7 +98,8 @@ theorem StrongDual.exists_extension (S : Submodule 𝕜 E) (f : StrongDual 𝕜 
   obtain ⟨g, hg, _⟩ := f.toLinearMap.exists_extension S hq_cont hq
   exact ⟨g, hg⟩
 
-variable [Module 𝕜 F] [ContinuousSMul 𝕜 F] [T2Space F]
+variable {F : Type*} [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜 F]
+  [ContinuousSMul 𝕜 F] [T2Space F]
 
 /-- Corollary of the polynormable **Hahn-Banach theorem**: if `f : S → F` is a continuous
 linear map with finite-dimensional range, then `f` extends to a continuous linear map on the whole

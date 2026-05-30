@@ -47,8 +47,8 @@ theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : StrongDual ℝ p) :
   obtain ⟨g, hg, hl⟩ := by
     refine f.toLinearMap.exists_real_extension p
       (?_ : Continuous (‖f‖₊ • (normSeminorm ℝ E))) fun x => ?_
-    · simpa using (continuous_norm (E := E)).const_smul ‖f‖₊
-    · exact (le_abs_self (f x)).trans <| by simpa using f.le_opNorm x
+    · exact continuous_norm.const_smul ‖f‖₊
+    · exact (le_abs_self (f x)).trans <| f.le_opNorm x
   refine ⟨g, hg, le_antisymm (g.mkContinuous_norm_le (norm_nonneg f) hl) ?_⟩
   exact f.opNorm_le_bound (norm_nonneg _) fun x => by simpa [hg x] using g.le_opNorm x
 
