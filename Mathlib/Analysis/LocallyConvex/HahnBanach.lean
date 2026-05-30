@@ -62,7 +62,7 @@ theorem LinearMap.exists_continuous_real_extension [Module ℝ E] [ContinuousSMu
 variable [Module 𝕜 E] [ContinuousSMul 𝕜 E] [PolynormableSpace 𝕜 E]
 
 /-- **Hahn-Banach theorem** for linear functionals dominated by a continuous seminorm on
-polynormable spaces over fields satisfying `IsRCLikeNormedField`. -/
+polynormable spaces over fields satisfying `IsRCLikeNormedField` -/
 theorem LinearMap.exists_extension (S : Submodule 𝕜 E) (f : S →ₗ[𝕜] 𝕜) {p : Seminorm 𝕜 E}
     (hp_cont : Continuous p) (hp : ∀ x, ‖f x‖ ≤ p x) :
     ∃ g : StrongDual 𝕜 E, (∀ x : S, g x = f x) ∧ ∀ x, ‖g x‖ ≤ p x := by
