@@ -69,13 +69,6 @@ variable {A : Matrix n n ℝ}
 def nonnegNeZero : Set (n → ℝ) :=
   {x | (∀ i, 0 ≤ x i) ∧ x ≠ 0}
 
-lemma exists_pos_of_mem_stdSimplex [Nonempty n] {x : n → ℝ} (hx : x ∈ stdSimplex ℝ n) :
-    ∃ i, 0 < x i := by
-  by_contra h
-  push Not at h
-  have hsum : ∑ i, x i = 0 := Finset.sum_eq_zero fun i _ => le_antisymm (h i) (hx.1 i)
-  linarith [hx.2, hsum]
-
 lemma exists_pos_of_ne_zero {m : Type*} {v : m → ℝ} (hv_nonneg : ∀ i, 0 ≤ v i)
     (hv_ne : v ≠ 0) : ∃ i, 0 < v i := by
   by_contra h
@@ -93,8 +86,6 @@ lemma stdSimplex_posSupport_nonempty [Nonempty n] {x : n → ℝ} (hx : x ∈ st
   let ⟨i, hi⟩ := exists_pos_of_mem_stdSimplex hx
   ⟨i, mem_toFinset.mpr hi⟩
 
-set_option maxHeartbeats 800000 in
--- The proof unfolds finite-dimensional continuity and a finite infimum over a moving support.
 /-- The Collatz–Wielandt function is upper semicontinuous on the standard simplex. -/
 theorem upperSemicontinuousOn [Nonempty n] :
     UpperSemicontinuousOn (collatzWielandtFn A) (stdSimplex ℝ n) := by
