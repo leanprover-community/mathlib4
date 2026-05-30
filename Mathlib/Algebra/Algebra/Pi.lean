@@ -76,7 +76,7 @@ variable (R)
   .pi g
 
 /-- Use `AlgHom.pi_apply` instead. -/
-@[deprecated AlgHom.pi_apply (since := "2026-05-30")] def algHom_apply {B : Type*} [Semiring B]
+@[deprecated AlgHom.pi_apply (since := "2026-05-30")] theorem algHom_apply {B : Type*} [Semiring B]
     [Algebra R B] (g : ∀ i, B →ₐ[R] A i) (x : B) (i : ι) : Pi.algHom R A g x i = g i x :=
   AlgHom.pi_apply g x i
 
