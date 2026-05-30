@@ -182,7 +182,7 @@ theorem hasFPowerSeriesAt_clog_one : HasFPowerSeriesAt Complex.log
     simp [Nat.factorial_succ, pow_succ]
     field_simp [show n.factorial ≠ 0 by positivity]
 
-theorem hasFPowerSeriesAt_clog_add_one : HasFPowerSeriesAt (fun x ↦ Complex.log (1 + x))
+theorem hasFPowerSeriesAt_clog_one_add : HasFPowerSeriesAt (fun x ↦ Complex.log (1 + x))
     (.ofScalars ℂ (fun n ↦ -(-1 : ℂ)^n / n)) 0 := by
   rw [show (0 : ℂ) = 1 + (-1) by simp]
   conv => arg 1; ext t; rw [show 1 + t = t - (-1) by ring]
@@ -207,7 +207,7 @@ theorem hasFPowerSeriesAt_log_one : HasFPowerSeriesAt Real.log
     norm_cast
   · exact fun x _ ↦ Complex.log_ofReal_re x
 
-theorem hasFPowerSeriesAt_log_add_one : HasFPowerSeriesAt (fun x ↦ Real.log (1 + x))
+theorem hasFPowerSeriesAt_log_one_add : HasFPowerSeriesAt (fun x ↦ Real.log (1 + x))
     (.ofScalars ℝ (fun n ↦ -(-1 : ℝ)^n / n)) 0 := by
   rw [show (0 : ℝ) = 1 + (-1) by simp]
   conv => arg 1; ext t; rw [show 1 + t = t - (-1) by ring]
