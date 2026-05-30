@@ -191,7 +191,7 @@ theorem IsCompact.exists_isOpen_closure_subset {K U : Set X} (hK : IsCompact K) 
     ∃ V, IsOpen V ∧ K ⊆ V ∧ closure V ⊆ U := by
   have hd : Disjoint (𝓝ˢ K) (𝓝ˢ Uᶜ) := by
     simpa [hK.disjoint_nhdsSet_left, disjoint_nhds_nhdsSet,
-      ← subset_interior_iff_mem_nhdsSet] using hU
+      ← subset_interior_iff_mem_nhdsSet] using! hU
   rcases ((hasBasis_nhdsSet _).disjoint_iff (hasBasis_nhdsSet _)).1 hd
     with ⟨V, ⟨hVo, hKV⟩, W, ⟨hW, hUW⟩, hVW⟩
   refine ⟨V, hVo, hKV, Subset.trans ?_ (compl_subset_comm.1 hUW)⟩
