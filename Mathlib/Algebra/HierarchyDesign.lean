@@ -15,7 +15,7 @@ A library note giving advice on modifying the algebraic hierarchy.
 (It is not intended as a "tour".) This is ported directly from the Lean3 version, so may
 refer to files/types that currently only exist in mathlib3.
 
-TODO: Add a section about interactions with normed typeclasses.
+TODO: Add sections about algebra-order and algebra-topology mixins and interactions with normed typeclasses.
 
 -/
 
