@@ -5,7 +5,7 @@ Authors: Dominic Steinitz
 -/
 
 import Mathlib
-import MaximalFlow
+import Mathlib.Geometry.Manifold.Algebra.MaximalFlow
 
 set_option linter.unusedSectionVars false
 set_option linter.style.longLine false
@@ -466,3 +466,5 @@ public lemma expLie_add (A : GroupLieAlgebra IG G) (s t : ℝ)
   IsMIntegralCurve.mul _ A (isMIntegralCurve_expLie_smul A)
     (by simp only [zero_smul]; exact expLie_zero) s t
 
+#check exists_mem_nhds_isMIntegralCurveOn_Ioo_of_contMDiffAt
+#check @hasFDerivAt_iff_isLittleO_nhds_zero
