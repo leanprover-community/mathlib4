@@ -84,7 +84,7 @@ section Ring
 variable {R : Type*} [Ring R] [TopologicalSpace R]
 
 /-- `-a` is power-bounded if `a` is. -/
-theorem isPowerBounded_neg [ContinuousMul R] [ContinuousNeg R] {a : R} (ha : IsPowerBounded a) :
+theorem IsPowerBounded.neg [ContinuousMul R] [ContinuousNeg R] {a : R} (ha : IsPowerBounded a) :
     IsPowerBounded (-a) := by
   apply (((isBounded_singleton (-1)).union (isBounded_singleton 1)).mul ha).subset
   rintro _ ⟨n, rfl⟩; change (-a) ^ n ∈ _
