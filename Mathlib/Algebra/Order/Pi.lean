@@ -68,6 +68,14 @@ instance isOrderedRing [∀ i, Semiring (f i)] [∀ i, PartialOrder (f i)] [∀ 
 end Pi
 
 namespace Function
+
+lemma exists_pos_of_nonneg_of_ne_zero {ι α : Type*} [Zero α] [LinearOrder α] {f : ι → α}
+    (hf_nonneg : ∀ i, 0 ≤ f i) (hf_ne : f ≠ 0) :
+    ∃ i, 0 < f i := by
+  by_contra h
+  push Not at h
+  exact hf_ne (funext fun i => le_antisymm (h i) (hf_nonneg i))
+
 section const
 variable (β) [One α] [Preorder α] {a : α}
 
