@@ -5,8 +5,8 @@ Authors: Rémy Degenne, Josha Dekker, Arav Bhattacharyya
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-import Mathlib.MeasureTheory.Measure.RegularityCompacts
+public import Mathlib.MeasureTheory.Measure.RegularityCompacts
+public import Mathlib.Topology.Order.Lattice
 
 /-!
 # Tight sets of measures
@@ -33,9 +33,9 @@ measures in the set, the complement of `K` has measure at most `ε`.
 
 @[expose] public section
 
-open Filter Set Metric ENNReal NNReal MeasureTheory ProbabilityMeasure TopologicalSpace
+open Filter Set MeasureTheory TopologicalSpace
 
-open scoped ENNReal NNReal Topology FiniteMeasure ProbabilityMeasure
+open scoped Topology
 
 namespace MeasureTheory
 
