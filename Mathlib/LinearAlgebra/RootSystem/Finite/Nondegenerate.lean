@@ -310,9 +310,9 @@ lemma ker_corootForm_eq_dualAnnihilator :
 instance : P.IsBalanced where
     isPerfectCompl :=
   { isCompl_left := by
-      simpa only [ker_rootForm_eq_dualAnnihilator] using P.isCompl_rootSpan_ker_rootForm
+      simpa only [ker_rootForm_eq_dualAnnihilator] using! P.isCompl_rootSpan_ker_rootForm
     isCompl_right := by
-      simpa only [ker_corootForm_eq_dualAnnihilator] using P.isCompl_corootSpan_ker_corootForm }
+      simpa only [ker_corootForm_eq_dualAnnihilator] using! P.isCompl_corootSpan_ker_corootForm }
 
 /-- See also `RootPairing.rootForm_restrict_nondegenerate_of_ordered`.
 

@@ -245,10 +245,10 @@ def languageEquivEquivRingEquiv {R S : Type*}
     { f with
       map_add' := by
         intro x y
-        simpa using f.map_fun addFunc ![x, y]
+        simpa using! f.map_fun addFunc ![x, y]
       map_mul' := by
         intro x y
-        simpa using f.map_fun mulFunc ![x, y] }
+        simpa using! f.map_fun mulFunc ![x, y] }
     invFun f :=
     { f with
       map_fun' := fun {n} f => by
