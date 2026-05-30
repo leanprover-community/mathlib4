@@ -3,8 +3,10 @@ Copyright (c) 2024 Yaël Dillies, Kin Yau James Wong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Kin Yau James Wong, Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
-import Mathlib.Probability.Kernel.Composition.MeasureCompProd
+module
+
+public import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
+public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 
 /-!
 # Disintegration of measures and kernels
@@ -35,6 +37,8 @@ disintegrated by some kernel, then `κ` itself is disintegrated by a kernel, nam
 disintegrating kernels.
 -/
 
+@[expose] public section
+
 open MeasureTheory Set Filter MeasurableSpace ProbabilityTheory
 open scoped ENNReal MeasureTheory Topology
 
@@ -59,7 +63,7 @@ variable [ρ.IsCondKernel ρCond]
 lemma disintegrate : ρ.fst ⊗ₘ ρCond = ρ := IsCondKernel.disintegrate
 
 lemma IsCondKernel.isSFiniteKernel (hρ : ρ ≠ 0) : IsSFiniteKernel ρCond := by
-  contrapose! hρ; rwa [← ρ.disintegrate ρCond, Measure.compProd_of_not_isSFiniteKernel]
+  contrapose hρ; rwa [← ρ.disintegrate ρCond, Measure.compProd_of_not_isSFiniteKernel]
 
 variable [IsFiniteMeasure ρ]
 
@@ -77,7 +81,7 @@ private lemma IsCondKernel.apply_of_ne_zero_of_measurableSet [MeasurableSingleto
       congr with y
       simp
     · simp only [singleton_prod, mem_singleton_iff, hax, not_false_eq_true, indicator_of_notMem]
-      have : Prod.mk a ⁻¹' (Prod.mk x '' s) = ∅ := by ext y; simp [Ne.symm hax]
+      have : Prod.mk a ⁻¹' Prod.mk x '' s = ∅ := by ext y; simp [Ne.symm hax]
       simp only [this, measure_empty]
   simp_rw [this]
   rw [MeasureTheory.lintegral_indicator (measurableSet_singleton x)]
@@ -136,7 +140,7 @@ lemma IsCondKernel.isProbabilityMeasure_ae [IsFiniteKernel κ.fst] [κ.IsCondKer
   by_cases h_sfin : IsSFiniteKernel κCond
   swap; · rw [Kernel.compProd_of_not_isSFiniteKernel_right _ _ h_sfin] at h; simp [h.symm]
   suffices ∀ᵐ b ∂(κ.fst a), κCond (a, b) Set.univ = 1 by
-    convert this with b
+    convert! this with b
     exact ⟨fun _ ↦ measure_univ, fun h ↦ ⟨h⟩⟩
   suffices (∀ᵐ b ∂(κ.fst a), κCond (a, b) Set.univ ≤ 1)
       ∧ (∀ᵐ b ∂(κ.fst a), 1 ≤ κCond (a, b) Set.univ) by
@@ -162,7 +166,8 @@ lemma IsCondKernel.isProbabilityMeasure_ae [IsFiniteKernel κ.fst] [κ.IsCondKer
     rw [lintegral_indicator_const hs] at this
     contrapose! this with h_ne_zero
     conv_lhs => rw [← one_mul (κ.fst a s)]
-    exact ENNReal.mul_lt_mul_right' h_ne_zero (measure_ne_top _ _) hr
+    gcongr
+    finiteness
   · rw [ae_const_le_iff_forall_lt_measure_zero]
     intro r hr
     let s := {b | κCond (a, b) Set.univ ≤ r}
@@ -177,7 +182,8 @@ lemma IsCondKernel.isProbabilityMeasure_ae [IsFiniteKernel κ.fst] [κ.IsCondKer
     rw [lintegral_indicator_const hs] at this
     contrapose! this with h_ne_zero
     conv_rhs => rw [← one_mul (κ.fst a s)]
-    exact ENNReal.mul_lt_mul_right' h_ne_zero (measure_ne_top _ _) hr
+    gcongr
+    finiteness
 
 
 /-! #### Existence of a disintegrating kernel in a countable space -/

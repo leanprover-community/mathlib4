@@ -3,16 +3,20 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Star.Basic
-import Mathlib.Algebra.Star.Pointwise
-import Mathlib.Algebra.Group.Center
+module
+
+public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Algebra.Star.Pointwise
+public import Mathlib.Algebra.Group.Center
 
 /-! # `Set.center`, `Set.centralizer` and the `star` operation -/
+
+public section
 
 variable {R : Type*} [Mul R] [StarMul R] {a : R} {s : Set R}
 
 theorem Set.star_mem_center (ha : a ∈ Set.center R) : star a ∈ Set.center R where
-  comm := by simpa only [star_mul, star_star] using fun g =>
+  comm := by simpa only [star_mul, star_star] using! fun g =>
     congr_arg star ((mem_center_iff.1 ha).comm <| star g).symm
   left_assoc b c := calc
     star a * (b * c) = star a * (star (star b) * star (star c)) := by rw [star_star, star_star]

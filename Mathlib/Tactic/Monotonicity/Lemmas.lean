@@ -3,11 +3,13 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-import Mathlib.Data.Set.Lattice
-import Mathlib.Tactic.Monotonicity.Attr
+module
+
+public import Mathlib.Algebra.Order.Group.Defs
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+public import Mathlib.Data.Set.Lattice
 
 /-! # Lemmas for the `mono` tactic
 
@@ -15,6 +17,8 @@ The `mono` tactic works by throwing all lemmas tagged with the attribute `@[mono
 this file we tag a few foundational lemmas with the mono attribute.  Lemmas in more advanced files
 are tagged in place.
 -/
+
+public meta section
 
 open Set
 

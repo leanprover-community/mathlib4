@@ -3,12 +3,16 @@ Copyright (c) 2025 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.RingTheory.OreLocalization.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.RingTheory.OreLocalization.Basic
 
 /-!
 # Ore Localization over nonZeroDivisors in monoids with zeros.
 -/
+
+@[expose] public section
 
 open scoped nonZeroDivisors
 
@@ -68,7 +72,7 @@ protected theorem inv_def {r : R} {s : R⁰} :
   with_unfolding_all rfl
 
 protected theorem mul_inv_cancel (x : R[R⁰⁻¹]) (h : x ≠ 0) : x * x⁻¹ = 1 := by
-  induction' x with r s
+  induction x with | _ r s
   rw [OreLocalization.inv_def, OreLocalization.one_def]
   have hr : r ≠ 0 := by
     rintro rfl

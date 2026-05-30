@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.CongrExclamation
 import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.Group.Basic
@@ -71,6 +72,7 @@ theorem ex15 (p q : Nat → Prop) :
   guard_target = p ε ↔ q ε
   exact test_sorry
 
+set_option backward.isDefEq.respectTransparency false in
 /- Generating type equalities is OK if it's possible they're the same type. -/
 example (s t : Set α) : (ℕ × Subtype s) = (ℕ × Subtype t) := by
   congr! 1
@@ -79,6 +81,7 @@ example (s t : Set α) : (ℕ × Subtype s) = (ℕ × Subtype t) := by
   guard_target = s = t
   exact test_sorry
 
+set_option backward.isDefEq.respectTransparency false in
 /- `Subtype s = Subtype t` is plausible -/
 example (s t : Set α) (f : Subtype s → α) (g : Subtype t → α) :
     Set.image f Set.univ = Set.image g Set.univ := by
@@ -323,13 +326,14 @@ example {α} [AddCommMonoid α] [PartialOrder α] {a b c d e f g : α} :
 Lawful BEq instances are "subsingletons".
 -/
 
+set_option linter.overlappingInstances false in
 example (inst1 : BEq α) [LawfulBEq α] (inst2 : BEq α) [LawfulBEq α] (xs : List α) (x : α) :
     @List.erase _ inst1 xs x = @List.erase _ inst2 xs x := by
   congr!
 
+set_option linter.overlappingInstances false in
 /--
 error: unsolved goals
-case h.e'_2
 α : Type
 inst1 : BEq α
 inst✝¹ : LawfulBEq α

@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
-import Mathlib.Algebra.CharP.Defs
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
+public import Mathlib.Algebra.CharP.Defs
 
 /-!
 
@@ -91,6 +93,8 @@ The following normal forms are in [silverman2009], Appendix A, Proposition 1.1.
 elliptic curve, weierstrass equation, normal form
 
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommRing R] {F : Type*} [Field F] (W : WeierstrassCurve R)
 

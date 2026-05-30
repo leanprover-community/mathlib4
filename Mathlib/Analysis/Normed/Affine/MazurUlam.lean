@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Instances.RealVectorSpace
-import Mathlib.Analysis.Normed.Affine.Isometry
+module
+
+public import Mathlib.Topology.Instances.RealVectorSpace
+public import Mathlib.Analysis.Normed.Affine.Isometry
 
 /-!
 # Mazur-Ulam Theorem
@@ -25,6 +27,8 @@ The formalization is based on [Jussi Väisälä, *A Proof of the Mazur-Ulam Theo
 
 isometry, affine map, linear map
 -/
+
+@[expose] public section
 
 
 variable {E PE F PF : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MetricSpace PE]
@@ -118,7 +122,7 @@ theorem coe_toRealLinearIsometryEquivOfMapZero_symm (f : E ≃ᵢ F) (h0 : f 0 =
 over `ℝ`, then `x ↦ f x - f 0` is a linear isometry equivalence. -/
 def toRealLinearIsometryEquiv (f : E ≃ᵢ F) : E ≃ₗᵢ[ℝ] F :=
   (f.trans (IsometryEquiv.addRight (f 0)).symm).toRealLinearIsometryEquivOfMapZero
-    (by simpa only [sub_eq_add_neg] using sub_self (f 0))
+    (by simpa only [sub_eq_add_neg] using! sub_self (f 0))
 
 @[simp]
 theorem toRealLinearIsometryEquiv_apply (f : E ≃ᵢ F) (x : E) :

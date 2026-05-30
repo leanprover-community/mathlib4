@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Topology.Closure
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Topology.Closure
 
 /-!
 # Neighborhoods in topological spaces
@@ -15,6 +17,8 @@ Each point `x` of `X` gets a neighborhood filter `𝓝 x`.
 
 neighborhood
 -/
+
+public section
 
 open Set Filter Topology
 
@@ -100,7 +104,7 @@ theorem IsOpen.eventually_mem (hs : IsOpen s) (hx : x ∈ s) :
 for a variant using open sets around `x` instead. -/
 theorem nhds_basis_opens' (x : X) :
     (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsOpen s) fun x => x := by
-  convert nhds_basis_opens x using 2
+  convert! nhds_basis_opens x using 2
   exact and_congr_left_iff.2 IsOpen.mem_nhds_iff
 
 /-- If `U` is a neighborhood of each point of a set `s` then it is a neighborhood of `s`:

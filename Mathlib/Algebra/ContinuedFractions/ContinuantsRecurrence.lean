@@ -3,7 +3,9 @@ Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.ContinuedFractions.Translations
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Translations
 
 /-!
 # Recurrence Lemmas for the Continuants (`conts`) Function of Continued Fractions
@@ -15,6 +17,8 @@ function indeed satisfies the following recurrences:
 - `Aₙ = bₙ * Aₙ₋₁ + aₙ * Aₙ₋₂`, and
 - `Bₙ = bₙ * Bₙ₋₁ + aₙ * Bₙ₋₂`.
 -/
+
+public section
 
 
 namespace GenContFract

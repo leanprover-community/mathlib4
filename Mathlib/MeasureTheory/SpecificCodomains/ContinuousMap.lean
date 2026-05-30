@@ -3,9 +3,11 @@ Copyright (c) 2025 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.ContinuousMap.Compact
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.MeasureTheory.Integral.IntegrableOn
+module
+
+public import Mathlib.Topology.ContinuousMap.Compact
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.MeasureTheory.Integral.IntegrableOn
 
 /-!
 # Specific results about `ContinuousMap`-valued integration
@@ -14,10 +16,10 @@ In this file, we collect a few results regarding integrability, on a measure spa
 of a `C(Y, E)`-valued function, where `Y` is a compact topological space and `E` is a normed group.
 
 These are all elementary from a mathematical point of view, but they require a bit of care in order
-to be conveniently usable. In particular, to accommodate the need of families `f : X → Y → E` which
-such that `f x` is only continuous for *almost every* `x`, we give a variety of results about the
-integrability of `fun x ↦ ContinuousMap.mkD (f x) g` whose assumption only mention `f` (so that
-user don't have to convert between `f` and `fun x ↦ ContinuousMap.mkD (f x) g` by hand).
+to be conveniently usable. In particular, to accommodate the need of families `f : X → Y → E` such
+that `f x` is only continuous for *almost every* `x`, we give a variety of results about the
+integrability of `fun x ↦ ContinuousMap.mkD (f x) g` whose assumptions only mention `f` (so that
+users don't have to convert between `f` and `fun x ↦ ContinuousMap.mkD (f x) g` by hand).
 
 ## Main results
 
@@ -48,6 +50,8 @@ to approach integration valued in a functional space `ℱ`. More precisely:
 
 -/
 
+public section
+
 open MeasureTheory
 
 namespace ContinuousMap
@@ -63,7 +67,7 @@ lemma hasFiniteIntegral_of_bound [CompactSpace Y] (f : X → C(Y, E)) (bound : X
     (bound_int : HasFiniteIntegral bound μ)
     (bound_ge : ∀ᵐ x ∂μ, ∀ y : Y, ‖f x y‖ ≤ bound x) :
     HasFiniteIntegral f μ := by
-  rcases isEmpty_or_nonempty Y with (h|h)
+  rcases isEmpty_or_nonempty Y with (h | h)
   · simp
   · have bound_nonneg : 0 ≤ᵐ[μ] bound := by
       filter_upwards [bound_ge] with x bound_x using le_trans (norm_nonneg _) (bound_x h.some)

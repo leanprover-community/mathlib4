@@ -3,9 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Perm.Basic
-import Mathlib.Data.Multiset.Replicate
-import Mathlib.Data.Set.List
+module
+
+public import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Data.Multiset.Replicate
+public import Mathlib.Data.Set.List
 
 /-!
 # Mapping and folding multisets
@@ -22,6 +24,8 @@ Many lemmas about `Multiset.map` are proven in `Mathlib/Data/Multiset/Filter.lea
 should we switch the import direction?
 
 -/
+
+@[expose] public section
 
 -- No algebra should be required
 assert_not_exists Monoid
@@ -105,6 +109,10 @@ theorem card_map (f : α → β) (s) : card (map f s) = card s :=
 @[simp]
 theorem map_eq_zero {s : Multiset α} {f : α → β} : s.map f = 0 ↔ s = 0 := by
   rw [← Multiset.card_eq_zero, Multiset.card_map, Multiset.card_eq_zero]
+
+@[simp]
+theorem zero_eq_map {s : Multiset α} {f : α → β} : 0 = s.map f ↔ s = 0 := by
+  rw [eq_comm, map_eq_zero]
 
 theorem mem_map_of_mem (f : α → β) {a : α} {s : Multiset α} (h : a ∈ s) : f a ∈ map f s :=
   mem_map.2 ⟨_, h, rfl⟩
@@ -340,7 +348,7 @@ theorem attach_cons (a : α) (m : Multiset α) :
   Quotient.inductionOn m fun l =>
     congr_arg _ <|
       congr_arg (List.cons _) <| by
-        rw [List.map_pmap]; exact List.pmap_congr_left _ fun _ _ _ _ => Subtype.eq rfl
+        rw [List.map_pmap]; exact List.pmap_congr_left _ fun _ _ _ _ => Subtype.ext rfl
 
 section
 

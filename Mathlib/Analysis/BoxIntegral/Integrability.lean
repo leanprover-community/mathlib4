@@ -3,9 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Basic
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.Tactic.Generalize
+module
+
+public import Mathlib.Analysis.BoxIntegral.Basic
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 /-!
 # McShane integrability vs Bochner integrability
@@ -21,6 +22,8 @@ We deduce that the same is true for the Riemann integral for continuous function
 integral, McShane integral, Bochner integral
 -/
 
+public section
+
 open scoped NNReal ENNReal Topology
 
 universe u v
@@ -31,6 +34,7 @@ open MeasureTheory Metric Set Finset Filter BoxIntegral
 
 namespace BoxIntegral
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The indicator function of a measurable set is McShane integrable with respect to any
 locally-finite measure. -/
 theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = false)
@@ -146,9 +150,8 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
     exact ⟨hrU _ (hπ.1 _ hJ (Box.coe_subset_Icc hx)), π.le_of_mem' J hJ hx⟩
   clear_value m
   lift m to ℝ≥0 using ne_top_of_lt this
-  rw [ENNReal.coe_toReal, ← NNReal.coe_natCast, ← NNReal.coe_mul, NNReal.coe_le_coe, ←
-    ENNReal.coe_le_coe, ENNReal.coe_mul, ENNReal.coe_natCast, mul_comm]
-  exact (mul_le_mul_left' this.le _).trans ENNReal.mul_div_le
+  grw [ENNReal.coe_toReal, ← NNReal.coe_natCast, ← NNReal.coe_mul, NNReal.coe_le_coe, ←
+    ENNReal.coe_le_coe, ENNReal.coe_mul, ENNReal.coe_natCast, mul_comm, this, ENNReal.mul_div_le]
 
 /-- If `f` has integral `y` on a box `I` with respect to a locally finite measure `μ` and `g` is
 a.e. equal to `f` on `I`, then `g` has the same integral on `I`. -/
@@ -171,7 +174,7 @@ theorem hasBoxIntegral (f : SimpleFunc (ι → ℝ) E) (μ : Measure (ι → ℝ
     HasIntegral.{u, v, v} I l f μ.toBoxAdditive.toSMul (f.integral (μ.restrict I)) := by
   induction f using MeasureTheory.SimpleFunc.induction with
   | @const y s hs =>
-    simpa [hs] using BoxIntegral.hasIntegralIndicatorConst l hl hs I y μ
+    simpa [hs] using! BoxIntegral.hasIntegralIndicatorConst l hl hs I y μ
   | @add f g _ hfi hgi =>
     borelize E; haveI := Fact.mk (I.measure_coe_lt_top μ)
     rw [integral_add]
@@ -189,6 +192,7 @@ end SimpleFunc
 
 open TopologicalSpace
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `f : ℝⁿ → E` is Bochner integrable w.r.t. a locally finite measure `μ` on a rectangular box
 `I`, then it is McShane integrable on `I` with the same integral. -/
 theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {μ : Measure (ι → ℝ)}
@@ -272,7 +276,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
     have :
         l.MemBaseSet I c ((hfi' n).convergenceR (δ n) c) (π.filter fun J => Nx (π.tag J) = n) :=
       (hπ.filter _).mono' _ le_rfl le_rfl fun J hJ => (hrn J hJ).le
-    convert (hfi' n).dist_integralSum_sum_integral_le_of_memBaseSet (δ0 _) this using 2
+    convert! (hfi' n).dist_integralSum_sum_integral_le_of_memBaseSet (δ0 _) this using 2
     · refine sum_congr rfl fun J hJ => ?_
       simp [hNxn J hJ]
     · refine sum_congr rfl fun J hJ => ?_
@@ -289,8 +293,8 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
     have hfgi : ∀ (n), ∀ J ∈ π, IntegrableOn (fun x => ‖f n x - g x‖) J μ := fun n J hJ =>
       ((hfi n J hJ).sub (hgi J hJ)).norm
     rw [← hπp.iUnion_eq, Prepartition.iUnion_def',
-      integral_finset_biUnion π.boxes (fun J _ => J.measurableSet_coe) π.pairwiseDisjoint hgi,
-      integral_finset_biUnion π.boxes (fun J _ => J.measurableSet_coe) π.pairwiseDisjoint (hfgi _)]
+      integral_biUnion_finset π.boxes (fun J _ => J.measurableSet_coe) π.pairwiseDisjoint hgi,
+      integral_biUnion_finset π.boxes (fun J _ => J.measurableSet_coe) π.pairwiseDisjoint (hfgi _)]
     refine dist_sum_sum_le_of_le _ fun J hJ => ?_
     rw [dist_eq_norm, ← integral_sub (hfi _ J hJ) (hgi J hJ)]
     refine norm_integral_le_of_norm_le (hfgi _ J hJ) (Eventually.of_forall fun x => ?_)
@@ -303,7 +307,7 @@ theorem ContinuousOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (
     (l : IntegrationParams) :
     HasIntegral.{u, v, v} I l f μ.toBoxAdditive.toSMul (∫ x in I, f x ∂μ) := by
   obtain ⟨y, hy⟩ := BoxIntegral.integrable_of_continuousOn l hc μ
-  convert hy
+  convert! hy
   have : IntegrableOn f I μ :=
     IntegrableOn.mono_set (hc.integrableOn_compact I.isCompact_Icc) Box.coe_subset_Icc
   exact HasIntegral.unique (IntegrableOn.hasBoxIntegral this ⊥ rfl) (HasIntegral.mono hy bot_le)
@@ -315,7 +319,7 @@ theorem AEContinuous.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (
     (hc : ∀ᵐ x ∂μ, ContinuousAt f x) (l : IntegrationParams) :
     HasIntegral.{u, v, v} I l f μ.toBoxAdditive.toSMul (∫ x in I, f x ∂μ) := by
   obtain ⟨y, hy⟩ := integrable_of_bounded_and_ae_continuous l hb μ hc
-  convert hy
+  convert! hy
   refine HasIntegral.unique (IntegrableOn.hasBoxIntegral ?_ ⊥ rfl) (HasIntegral.mono hy bot_le)
   constructor
   · let v := {x : (ι → ℝ) | ContinuousAt f x}
@@ -326,14 +330,13 @@ theorem AEContinuous.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (
     repeat rw [μ.restrict_apply hs]
     apply le_of_le_of_eq <| μ.mono s.inter_subset_left
     refine measure_eq_measure_of_null_diff s.inter_subset_left ?_ |>.symm
-    rw [diff_self_inter, Set.diff_eq]
-    refine (le_antisymm (zero_le (μ (s ∩ vᶜ))) ?_).symm
-    exact le_trans (μ.mono s.inter_subset_right) (nonpos_iff_eq_zero.2 hc)
+    rw [diff_self_inter, Set.diff_eq, ← nonpos_iff_eq_zero]
+    grw [s.inter_subset_right]
+    exact hc.le
   · have : IsFiniteMeasure (μ.restrict (Box.Icc I)) :=
       { measure_univ_lt_top := by simp [I.isCompact_Icc.measure_lt_top (μ := μ)] }
     have : IsFiniteMeasure (μ.restrict I) :=
-      isFiniteMeasure_of_le (μ.restrict (Box.Icc I))
-                            (μ.restrict_mono Box.coe_subset_Icc (le_refl μ))
+      isFiniteMeasure_of_le _ (μ.restrict_mono Box.coe_subset_Icc le_rfl)
     obtain ⟨C, hC⟩ := hb
     refine .of_bounded (C := C) (Filter.eventually_iff_exists_mem.2 ?_)
     use I, self_mem_ae_restrict I.measurableSet_coe, fun y hy ↦ hC y (I.coe_subset_Icc hy)

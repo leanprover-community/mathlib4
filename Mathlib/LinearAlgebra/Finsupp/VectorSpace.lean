@@ -3,12 +3,16 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.FreeAbelianGroup.Finsupp
-import Mathlib.Algebra.MonoidAlgebra.Defs
-import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.FreeModule.Basic
+module
+
+public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
+public import Mathlib.Algebra.MonoidAlgebra.Defs
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.LinearAlgebra.Finsupp.Span
+public import Mathlib.LinearAlgebra.Projection
 
 /-!
 # Linear structures on function with finite support `ι →₀ M`
@@ -17,6 +21,8 @@ This file contains results on the `R`-module structure on functions of finite su
 `ι` to an `R`-module `M`, in particular in the case that `R` is a field.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -73,8 +79,9 @@ theorem linearIndependent_single {φ : ι → Type*} (f : ∀ i, φ i → M)
     (hf : ∀ i, LinearIndependent R (f i)) :
     LinearIndependent R fun ix : Σ i, φ i ↦ single ix.1 (f ix.1 ix.2) := by
   classical
-  convert (DFinsupp.linearIndependent_single _ hf).map_injOn
-    _ (finsuppLequivDFinsupp R).symm.injective.injOn
+  convert!
+    (DFinsupp.linearIndependent_single _ hf).map_injOn _
+      (finsuppLequivDFinsupp R).symm.injective.injOn
   simp
 
 lemma linearIndependent_single_iff {φ : ι → Type*} {f : ∀ i, φ i → M} :
@@ -123,18 +130,42 @@ variable (ι R) in
 lemma linearIndependent_single_one : LinearIndependent R fun i : ι ↦ single i (1 : R) :=
   Finsupp.basisSingleOne.linearIndependent
 
+lemma isCompl_range_lmapDomain_span {α β : Type*}
+    {u : α → ι} {v : β → ι} (huv : IsCompl (Set.range u) (Set.range v)) :
+    IsCompl (LinearMap.range (lmapDomain R R u)) (.span R (.range fun x ↦ single (v x) 1)) := by
+  rw [range_lmapDomain]
+  have := (Finsupp.basisSingleOne (R := R)).linearIndependent.isCompl_span_image
+     (Module.Basis.span_eq _) huv
+  rwa [← Set.range_comp, ← Set.range_comp, Function.comp_def] at this
+
 end Semiring
 
 section Ring
+variable {R M ι : Type*} [Ring R] [AddCommGroup M]
 
-variable {R : Type*} {M : Type*} {ι : Type*}
-variable [Ring R] [AddCommGroup M] [Module R M]
-
-lemma linearIndependent_single_of_ne_zero [NoZeroSMulDivisors R M] {v : ι → M} (hv : ∀ i, v i ≠ 0) :
-    LinearIndependent R fun i : ι ↦ single i (v i) := by
+lemma linearIndependent_single_of_ne_zero [IsDomain R] [Module R M] [IsTorsionFree R M] {v : ι → M}
+    (hv : ∀ i, v i ≠ 0) : LinearIndependent R fun i : ι ↦ single i (v i) := by
   rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
-  exact linearIndependent_single (f := fun i (_ : Unit) ↦ v i) <| by
-    simp +contextual [Fintype.linearIndependent_iff, hv]
+  exact linearIndependent_single (f := fun i (_ : Unit) ↦ v i) <| by simp +contextual [hv]
+
+lemma lcomapDomain_eq_linearProjOfIsCompl {α β : Type*}
+    {u : α → ι} {v : β → ι} (hu : u.Injective) (h : IsCompl (Set.range u) (Set.range v)) :
+    lcomapDomain u hu =
+      LinearMap.linearProjOfIsCompl (.span R (Set.range fun x : β ↦ single (v x) (1 : R)))
+        (lmapDomain _ _ u) (mapDomain_injective hu) (isCompl_range_lmapDomain_span h) := by
+  classical
+  refine Finsupp.basisSingleOne.ext fun i ↦ ?_
+  obtain ⟨i, rfl⟩ | ⟨i, rfl⟩ : i ∈ Set.range u ⊔ .range v := by rw [codisjoint_iff.mp h.2]; trivial
+  · have : single (u i) 1 = lmapDomain R R u (.single i 1) := by simp
+    simp only [coe_basisSingleOne, lcomapDomain_apply, comapDomain_single]
+    rw [this, LinearMap.linearProjOfIsCompl_apply_left]
+  · rw [LinearMap.linearProjOfIsCompl_apply_right']
+    · ext j
+      simp only [coe_basisSingleOne, lcomapDomain_apply, comapDomain_apply, single_apply,
+        coe_zero, Pi.zero_apply, ite_eq_right_iff]
+      intro hij
+      exact (Set.disjoint_range_iff.mp h.1 j i hij.symm).elim
+    · exact Submodule.subset_span ⟨i, rfl⟩
 
 end Ring
 
@@ -191,16 +222,16 @@ instance {σ : Type*} : Module.Free ℤ (FreeAbelianGroup σ) where
 end FreeAbelianGroup
 
 namespace AddMonoidAlgebra
-variable {ι R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
+variable {M R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
 
-instance : Module.Free R S[ι] := .finsupp ..
+instance : Module.Free R S[M] := .finsupp ..
 
 end AddMonoidAlgebra
 
 namespace MonoidAlgebra
-variable {ι R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
+variable {M R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
 
-instance : Module.Free R (MonoidAlgebra S ι) := .finsupp ..
+instance : Module.Free R S[M] := .finsupp ..
 
 end MonoidAlgebra
 

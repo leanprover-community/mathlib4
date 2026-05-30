@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.KanExtension.Basic
-import Mathlib.CategoryTheory.Localization.Predicate
+module
+
+public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
+public import Mathlib.CategoryTheory.Localization.Predicate
 
 /-!
 # Right derived functors
@@ -25,8 +27,8 @@ along the localization functor `L`.
 ## TODO
 
 - refactor `Functor.rightDerived` (and `Functor.leftDerived`) when the necessary
-material enters mathlib: derived categories, injective/projective derivability
-structures, existence of derived functors from derivability structures.
+  material enters mathlib: derived categories, injective/projective derivability
+  structures, existence of derived functors from derivability structures.
 
 ## References
 
@@ -34,12 +36,14 @@ structures, existence of derived functors from derivability structures.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 namespace Functor
 
-variable {C C' D D' H H' : Type _} [Category C] [Category C']
-  [Category D] [Category D'] [Category H] [Category H']
+variable {C C' D D' H H' : Type _} [Category* C] [Category* C']
+  [Category* D] [Category* D'] [Category* H] [Category* H']
   (RF RF' RF'' : D ⥤ H) {F F' F'' : C ⥤ H} (e : F ≅ F') {L : C ⥤ D}
   (α : F ⟶ L ⋙ RF) (α' : F' ⟶ L ⋙ RF') (α'' : F'' ⟶ L ⋙ RF'') (α'₂ : F ⟶ L ⋙ RF')
   (W : MorphismProperty C)
@@ -103,6 +107,7 @@ lemma rightDerivedNatTrans_fac (τ : F ⟶ F') :
   dsimp only [rightDerivedNatTrans]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma rightDerivedNatTrans_app (τ : F ⟶ F') (X : C) :
     α.app X ≫ (rightDerivedNatTrans RF RF' α α' W τ).app (L.obj X) =
@@ -184,7 +189,7 @@ lemma HasRightDerivedFunctor.mk' [RF.IsRightDerivedFunctor α W] :
 
 section
 
-variable [F.HasRightDerivedFunctor W] (L W)
+variable (F) [F.HasRightDerivedFunctor W] (L W)
 
 /-- Given a functor `F : C ⥤ H`, and a localization functor `L : D ⥤ H` for `W`,
 this is the right derived functor `D ⥤ H` of `F`, i.e. the left Kan extension

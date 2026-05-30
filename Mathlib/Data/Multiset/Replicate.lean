@@ -3,7 +3,9 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.AddSub
+module
+
+public import Mathlib.Data.Multiset.AddSub
 
 /-!
 # Repeating elements in multisets
@@ -13,6 +15,8 @@ import Mathlib.Data.Multiset.AddSub
 * `replicate n a` is the multiset containing only `a` with multiplicity `n`
 
 -/
+
+@[expose] public section
 
 -- No algebra should be required
 assert_not_exists Monoid
@@ -109,11 +113,11 @@ variable [DecidableEq α] {s t u : Multiset α}
 
 @[simp]
 theorem count_replicate_self (a : α) (n : ℕ) : count a (replicate n a) = n := by
-  convert List.count_replicate_self (a := a)
+  convert! List.count_replicate_self (a := a)
   rw [← coe_count, coe_replicate]
 
 theorem count_replicate (a b : α) (n : ℕ) : count a (replicate n b) = if b = a then n else 0 := by
-  convert List.count_replicate (a := a)
+  convert! List.count_replicate (a := a)
   · rw [← coe_count, coe_replicate]
   · simp
 

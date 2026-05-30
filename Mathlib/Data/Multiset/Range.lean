@@ -3,9 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.UnionInter
+module
+
+public import Mathlib.Data.Multiset.UnionInter
 
 /-! # `Multiset.range n` gives `{0, 1, ..., n-1}` as a multiset. -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -43,8 +47,6 @@ theorem mem_range {m n : ℕ} : m ∈ range n ↔ m < n :=
 
 theorem notMem_range_self {n : ℕ} : n ∉ range n :=
   List.not_mem_range_self
-
-@[deprecated (since := "2025-05-23")] alias not_mem_range_self := notMem_range_self
 
 theorem self_mem_range_succ (n : ℕ) : n ∈ range (n + 1) :=
   List.self_mem_range_succ

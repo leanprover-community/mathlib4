@@ -3,8 +3,10 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Bitraversable.Lemmas
-import Mathlib.Control.Traversable.Lemmas
+module
+
+public import Mathlib.Control.Bitraversable.Lemmas
+public import Mathlib.Control.Traversable.Lemmas
 
 /-!
 # Bitraversable instances
@@ -25,6 +27,8 @@ This file provides `Bitraversable` instances for concrete bifunctors:
 
 traversable bitraversable functor bifunctor applicative
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -112,6 +116,7 @@ nonrec def Bicompl.bitraverse {m} [Applicative m] {α β α' β'} (f : α → m 
 
 instance : Bitraversable (bicompl t F G) where bitraverse := @Bicompl.bitraverse t _ F G _ _
 
+set_option backward.isDefEq.respectTransparency false in
 instance [LawfulTraversable F] [LawfulTraversable G] [LawfulBitraversable t] :
     LawfulBitraversable (bicompl t F G) := by
   constructor <;> intros <;>
@@ -134,6 +139,7 @@ nonrec def Bicompr.bitraverse {m} [Applicative m] {α β α' β'} (f : α → m 
 
 instance : Bitraversable (bicompr F t) where bitraverse := @Bicompr.bitraverse t _ F _
 
+set_option backward.isDefEq.respectTransparency false in
 instance [LawfulTraversable F] [LawfulBitraversable t] : LawfulBitraversable (bicompr F t) := by
   constructor <;> intros <;>
     simp [bitraverse, Bicompr.bitraverse, bitraverse_id_id, functor_norm]

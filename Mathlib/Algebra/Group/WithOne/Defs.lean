@@ -3,10 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Option.Basic
-import Mathlib.Logic.Nontrivial.Basic
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Logic.Nontrivial.Basic
+public import Mathlib.Tactic.Common
 
 /-!
 # Adjoining a zero/one to semigroups and related algebraic structures
@@ -24,6 +26,8 @@ information about these structures (which are not that standard in informal math
 
 `WithOne.coe_mul` and `WithZero.coe_mul` have inconsistent use of implicit parameters
 -/
+
+@[expose] public section
 
 -- Check that we haven't needed to import all the basic lemmas about groups,
 -- by asserting a random sample don't exist here:
@@ -55,7 +59,7 @@ instance [Repr α] : Repr (WithOne α) :=
 
 @[to_additive]
 instance instMonad : Monad WithOne :=
-  instMonadOption
+  inferInstanceAs <| Monad Option
 
 @[to_additive]
 instance instOne : One (WithOne α) :=
@@ -91,10 +95,10 @@ instance instCoeTC : CoeTC α (WithOne α) :=
   ⟨coe⟩
 
 @[to_additive]
-lemma «forall» {p : WithZero α → Prop} : (∀ x, p x) ↔ p 0 ∧ ∀ a : α, p a := Option.forall
+lemma «forall» {p : WithOne α → Prop} : (∀ x, p x) ↔ p 1 ∧ ∀ a : α, p a := Option.forall
 
 @[to_additive]
-lemma «exists» {p : WithZero α → Prop} : (∃ x, p x) ↔ p 0 ∨ ∃ a : α, p a := Option.exists
+lemma «exists» {p : WithOne α → Prop} : (∃ x, p x) ↔ p 1 ∨ ∃ a : α, p a := Option.exists
 
 /-- Recursor for `WithZero` using the preferred forms `0` and `↑a`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
@@ -163,8 +167,6 @@ protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 �
 
 @[to_additive]
 instance instMulOneClass [Mul α] : MulOneClass (WithOne α) where
-  mul := (· * ·)
-  one := 1
   one_mul := (Option.lawfulIdentity_merge _).left_id
   mul_one := (Option.lawfulIdentity_merge _).right_id
 

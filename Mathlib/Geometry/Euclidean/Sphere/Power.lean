@@ -1,11 +1,16 @@
 /-
 Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Manuel Candales, Benjamin Davidson
+Authors: Manuel Candales, Benjamin Davidson, Li Jiale
 -/
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
-import Mathlib.Geometry.Euclidean.Sphere.Basic
-import Mathlib.Geometry.Euclidean.Sphere.Tangent
+module
+
+
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+public import Mathlib.Geometry.Euclidean.Sphere.Tangent
+
+import Mathlib.Geometry.Euclidean.Angle.Sphere
+import Mathlib.Geometry.Euclidean.Similarity
 
 /-!
 # Power of a point (intersecting chords and secants)
@@ -25,10 +30,10 @@ secants) in spheres in real inner product spaces and Euclidean affine spaces.
 * `Sphere.dist_sq_eq_mul_dist_of_tangent_and_secant`: Tangent-Secant Theorem.
 -/
 
+@[expose] public section
 
-open Real
 
-open EuclideanGeometry RealInnerProductSpace Real
+open Real EuclideanGeometry RealInnerProductSpace Real Module FiniteDimensional
 
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 
@@ -42,29 +47,20 @@ which are used to deduce corresponding results for Euclidean affine spaces.
 -/
 
 
-theorem mul_norm_eq_abs_sub_sq_norm {x y z : V} (h₁ : ∃ k : ℝ, k ≠ 1 ∧ x + y = k • (x - y))
-    (h₂ : ‖z - y‖ = ‖z + y‖) : ‖x - y‖ * ‖x + y‖ = |‖z + y‖ ^ 2 - ‖z - x‖ ^ 2| := by
-  obtain ⟨k, hk_ne_one, hk⟩ := h₁
-  let r := (k - 1)⁻¹ * (k + 1)
-  have hxy : x = r • y := by
-    rw [← smul_smul, eq_inv_smul_iff₀ (sub_ne_zero.mpr hk_ne_one), ← sub_eq_zero]
-    calc
-      (k - 1) • x - (k + 1) • y = k • x - x - (k • y + y) := by
-        simp_rw [sub_smul, add_smul, one_smul]
-      _ = k • x - k • y - (x + y) := by simp_rw [← sub_sub, sub_right_comm]
-      _ = k • (x - y) - (x + y) := by rw [← smul_sub k x y]
-      _ = 0 := sub_eq_zero.mpr hk.symm
+theorem mul_norm_eq_abs_sub_sq_norm {x y z : V} (h₁ : ∃ k : ℝ, x = k • y)
+    (h₃ : ‖z - y‖ = ‖z + y‖) : ‖x - y‖ * ‖x + y‖ = |‖z + y‖ ^ 2 - ‖z - x‖ ^ 2| := by
+  obtain ⟨r, hr⟩ := h₁
   have hzy : ⟪z, y⟫ = 0 := by
     rwa [inner_eq_zero_iff_angle_eq_pi_div_two, ← norm_add_eq_norm_sub_iff_angle_eq_pi_div_two,
       eq_comm]
-  have hzx : ⟪z, x⟫ = 0 := by rw [hxy, inner_smul_right, hzy, mul_zero]
+  have hzx : ⟪z, x⟫ = 0 := by rw [hr, inner_smul_right, hzy, mul_zero]
   calc
-    ‖x - y‖ * ‖x + y‖ = ‖(r - 1) • y‖ * ‖(r + 1) • y‖ := by simp [sub_smul, add_smul, hxy]
+    ‖x - y‖ * ‖x + y‖ = ‖(r - 1) • y‖ * ‖(r + 1) • y‖ := by simp [sub_smul, add_smul, hr]
     _ = ‖r - 1‖ * ‖y‖ * (‖r + 1‖ * ‖y‖) := by simp_rw [norm_smul]
     _ = ‖r - 1‖ * ‖r + 1‖ * ‖y‖ ^ 2 := by ring
     _ = |(r - 1) * (r + 1) * ‖y‖ ^ 2| := by simp [abs_mul]
     _ = |r ^ 2 * ‖y‖ ^ 2 - ‖y‖ ^ 2| := by ring_nf
-    _ = |‖x‖ ^ 2 - ‖y‖ ^ 2| := by simp [hxy, norm_smul, mul_pow, sq_abs]
+    _ = |‖x‖ ^ 2 - ‖y‖ ^ 2| := by simp [hr, norm_smul, mul_pow, sq_abs]
     _ = |‖z + y‖ ^ 2 - ‖z - x‖ ^ 2| := by
       simp [norm_add_sq_real, norm_sub_sq_real, hzy, hzx, abs_sub_comm]
 
@@ -85,25 +81,32 @@ variable {P : Type*} [MetricSpace P] [NormedAddTorsor V P]
 
 /-- If `P` is a point on the line `AB` and `Q` is equidistant from `A` and `B`, then
 `AP * BP = abs (BQ ^ 2 - PQ ^ 2)`. -/
-theorem mul_dist_eq_abs_sub_sq_dist {a b p q : P} (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+theorem mul_dist_eq_abs_sub_sq_dist {a b p q : P} (hp : p ∈ line[ℝ, a, b])
     (hq : dist a q = dist b q) : dist a p * dist b p = |dist b q ^ 2 - dist p q ^ 2| := by
   let m : P := midpoint ℝ a b
   have h1 := vsub_sub_vsub_cancel_left a p m
+  have h1' := vsub_sub_vsub_cancel_left p a m
   have h2 := vsub_sub_vsub_cancel_left p q m
   have h3 := vsub_sub_vsub_cancel_left a q m
   have h : ∀ r, b -ᵥ r = m -ᵥ r + (m -ᵥ a) := fun r => by
     rw [midpoint_vsub_left, ← right_vsub_midpoint, add_comm, vsub_add_vsub_cancel]
   iterate 4 rw [dist_eq_norm_vsub V]
   rw [← h1, ← h2, h, h]
-  rw [← h1, h] at hp
   rw [dist_eq_norm_vsub V a q, dist_eq_norm_vsub V b q, ← h3, h] at hq
-  exact mul_norm_eq_abs_sub_sq_norm hp hq
+  refine mul_norm_eq_abs_sub_sq_norm ?_ hq
+  -- TODO: factor this out as a separate lemma?
+  · rw [← vsub_vadd p a, vadd_left_mem_affineSpan_pair] at hp
+    rcases hp with ⟨r, hr⟩
+    rw [h, ← h1', eq_sub_iff_add_eq, ← eq_sub_iff_add_eq'] at hr
+    rw [hr]
+    use 1 - r * 2
+    match_scalars
+    ring
 
 /-- If `A`, `B`, `C`, `D` are cospherical and `P` is on both lines `AB` and `CD`, then
 `AP * BP = CP * DP`. -/
 theorem mul_dist_eq_mul_dist_of_cospherical {a b c d p : P} (h : Cospherical ({a, b, c, d} : Set P))
-    (hapb : ∃ k₁ : ℝ, k₁ ≠ 1 ∧ b -ᵥ p = k₁ • (a -ᵥ p))
-    (hcpd : ∃ k₂ : ℝ, k₂ ≠ 1 ∧ d -ᵥ p = k₂ • (c -ᵥ p)) :
+    (hapb : p ∈ line[ℝ, a, b]) (hcpd : p ∈ line[ℝ, c, d]) :
     dist a p * dist b p = dist c p * dist d p := by
   obtain ⟨q, r, h'⟩ := (cospherical_def {a, b, c, d}).mp h
   obtain ⟨ha, hb, hc, hd⟩ := h' a (by simp), h' b (by simp), h' c (by simp), h' d (by simp)
@@ -115,19 +118,104 @@ theorem mul_dist_eq_mul_dist_of_cospherical {a b c d p : P} (h : Cospherical ({a
 theorem mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_pi {a b c d p : P}
     (h : Cospherical ({a, b, c, d} : Set P)) (hapb : ∠ a p b = π) (hcpd : ∠ c p d = π) :
     dist a p * dist b p = dist c p * dist d p := by
-  obtain ⟨-, k₁, _, hab⟩ := angle_eq_pi_iff.mp hapb
-  obtain ⟨-, k₂, _, hcd⟩ := angle_eq_pi_iff.mp hcpd
-  exact mul_dist_eq_mul_dist_of_cospherical h ⟨k₁, by linarith, hab⟩ ⟨k₂, by linarith, hcd⟩
+  rw [EuclideanGeometry.angle_eq_pi_iff_sbtw] at hapb hcpd
+  exact mul_dist_eq_mul_dist_of_cospherical h hapb.wbtw.mem_affineSpan hcpd.wbtw.mem_affineSpan
+
+private lemma cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi_aux
+    [Fact (finrank ℝ V = 2)] [Oriented ℝ V (Fin 2)] {p₁ p₂ p₃ p₄ p : P}
+    (h : dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p)
+    (hp₁p₂ : ∠ p₁ p p₂ = π) (hp₃p₄ : ∠ p₃ p p₄ = π) (hn : ¬ Collinear ℝ ({p₁, p, p₃} : Set P)) :
+    Cospherical ({p₁, p₂, p₃, p₄} : Set P) := by
+  suffices h_equiv : Cospherical ({p₁, p₂, p₄, p₃} : Set P) by grind [Set.pair_comm p₄ p₃]
+  have h_angle_eq : ∠ p₁ p p₄ = ∠ p₃ p p₂ := by
+    grind [angle_comm, angle_eq_angle_of_angle_eq_pi_of_angle_eq_pi hp₃p₄]
+  rw [angle_eq_pi_iff_sbtw] at hp₁p₂ hp₃p₄
+  have hcol_p₁pp₂ := hp₁p₂.wbtw.collinear
+  have hcol_p₃pp₄ := hp₃p₄.wbtw.collinear
+  have h_notcol_p₁p₂p₃ : ¬ Collinear ℝ ({p₁, p₂, p₃} : Set P) := by
+    have : AffineIndependent ℝ ![p₁, p, p₃] := affineIndependent_iff_not_collinear_set.mpr hn
+    rw [← affineIndependent_iff_not_collinear_set]
+    grind [hp₁p₂.left_ne_right, affineIndependent_of_affineIndependent_collinear_ne,
+      AffineIndependent.comm_left, AffineIndependent.comm_right]
+  apply cospherical_of_two_zsmul_oangle_eq_of_not_collinear ?_ h_notcol_p₁p₂p₃
+  suffices ∡ p₁ p₂ p₃ = ∡ p₁ p₄ p₃ by grind
+  suffices ∠ p₁ p₂ p₃ = ∠ p₁ p₄ p₃ by
+    grind [oangle_eq_of_angle_eq_of_sign_eq, Sbtw.oangle_sign_eq_of_sbtw]
+  rw [angle_comm, ← angle_eq_angle_of_angle_eq_pi p₃ hp₁p₂.angle₃₂₁_eq_pi,
+    ← angle_eq_angle_of_angle_eq_pi p₁ hp₃p₄.angle₃₂₁_eq_pi]
+  suffices h_sim : Similar ![p₁, p, p₄] ![p₃, p, p₂] by
+    grind [angle_comm, h_sim.angle_eq_all.right.left]
+  have h_notcol_p₁pp₄ : ¬ Collinear ℝ ({p₁, p, p₄} : Set P) := by
+    intro hcol
+    suffices hcol : Collinear ℝ ({p₁, p, p₃} : Set P) by grind
+    suffices hcol : Collinear ℝ ({p₁, p₃, p, p₄} : Set P) by grind [Collinear.subset _ hcol]
+    have hne_pp₄ := hp₃p₄.ne_right
+    grind [collinear_insert_insert_of_mem_affineSpan_pair, Collinear.mem_affineSpan_of_mem_of_ne]
+  have h_notcol_p₃pp₂ : ¬ Collinear ℝ ({p₃, p, p₂} : Set P) := by
+    intro hcol
+    suffices hcol : Collinear ℝ ({p₁, p, p₃} : Set P) by grind
+    suffices hcol : Collinear ℝ ({p₃, p₁, p, p₂} : Set P) by grind [Collinear.subset _ hcol]
+    have hne_pp₂ := hp₁p₂.ne_right
+    grind [collinear_insert_insert_of_mem_affineSpan_pair, Collinear.mem_affineSpan_of_mem_of_ne]
+  apply similar_of_side_angle_side h_notcol_p₁pp₄ h_notcol_p₃pp₂ h_angle_eq ?_
+  grind [dist_comm]
+
+/-- If `p` lies strictly between `p₁` and `p₂` on one line and strictly between `p₃` and `p₄`
+on another line, and if `dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p`,
+then the points `p₁`, `p₂`, `p₃`, and `p₄` are cospherical. -/
+theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ p : P}
+    (h : dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p)
+    (hp₁p₂ : ∠ p₁ p p₂ = π) (hp₃p₄ : ∠ p₃ p p₄ = π) (hn : ¬ Collinear ℝ ({p₁, p, p₃} : Set P)) :
+    Cospherical ({p₁, p₂, p₃, p₄} : Set P) := by
+  have hp₁p₂_sbtw : Sbtw ℝ p₁ p p₂ := angle_eq_pi_iff_sbtw.mp hp₁p₂
+  have hp₃p₄_sbtw : Sbtw ℝ p₃ p p₄ := angle_eq_pi_iff_sbtw.mp hp₃p₄
+  have hindep : AffineIndependent ℝ ![p₁, p, p₃] := affineIndependent_iff_not_collinear_set.mpr hn
+  set t : Affine.Triangle ℝ P := ⟨_, hindep⟩ with ht
+  set S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points) with hS
+  have hp₂ : p₂ ∈ S := by
+    suffices hmem : p₂ ∈ affineSpan ℝ {p₁, p} by exact affineSpan_mono ℝ (by simp [ht]; grind) hmem
+    simp [hp₁p₂_sbtw.wbtw.collinear.mem_affineSpan_of_mem_of_ne _ _ _ hp₁p₂_sbtw.left_ne]
+  have hp₄ : p₄ ∈ S := by
+    suffices hmem : p₄ ∈ affineSpan ℝ {p₃, p} by exact affineSpan_mono ℝ (by simp [ht]; grind) hmem
+    simp [hp₃p₄_sbtw.wbtw.collinear.mem_affineSpan_of_mem_of_ne _ _ _ hp₃p₄_sbtw.left_ne]
+  let s_isom : AffineIsometry ℝ S P := S.subtypeₐᵢ
+  let p₁' : S := ⟨p₁, mem_affineSpan ℝ (s := Set.range t.points) (by aesop)⟩
+  let p' : S := ⟨p, mem_affineSpan ℝ (s := Set.range t.points) (by aesop)⟩
+  let p₃' : S := ⟨p₃, mem_affineSpan ℝ (s := Set.range t.points) (by aesop)⟩
+  let p₂' : S := ⟨p₂, hp₂⟩
+  let p₄' : S := ⟨p₄, hp₄⟩
+  have h_dist' : dist p₁' p' * dist p₂' p' = dist p₃' p' * dist p₄' p' := by
+    simpa [dist_eq_norm_vsub, ← s_isom.dist_map] using h
+  have hp₁'p₂' : ∠ p₁' p' p₂' = π := by simpa [AffineIsometry.angle_map s_isom]
+  have hp₃'p₄' : ∠ p₃' p' p₄' = π := by simpa [AffineIsometry.angle_map s_isom]
+  suffices h_cospherical' : Cospherical {p₁', p₂', p₃', p₄'} by
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+    It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+    canonicalizer; a minimization would help. The original proof was:
+    `grind [Set.image_insert_eq, Set.image_singleton]` -/
+    simpa [Set.image_insert_eq, Set.image_singleton] using Cospherical.subtype_val h_cospherical'
+  have hf2 : Fact (finrank ℝ S.direction = 2) := ⟨by
+    rw [hS, direction_affineSpan, t.independent.finrank_vectorSpan]
+    simp⟩
+  letI : Module.Oriented ℝ S.direction (Fin 2) :=
+    ⟨Basis.orientation (finBasisOfFinrankEq _ _ hf2.out)⟩
+  have hncol : ¬ Collinear ℝ {p₁', p', p₃'} := by
+    rw [← affineIndependent_iff_not_collinear_set,
+      ← s_isom.toAffineMap.affineIndependent_iff s_isom.injective]
+    convert! hindep
+    ext i; fin_cases i <;> rfl
+  exact cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi_aux h_dist' hp₁'p₂' hp₃'p₄' hncol
 
 /-- **Intersecting Secants Theorem**. -/
 theorem mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero {a b c d p : P}
     (h : Cospherical ({a, b, c, d} : Set P)) (hab : a ≠ b) (hcd : c ≠ d) (hapb : ∠ a p b = 0)
     (hcpd : ∠ c p d = 0) : dist a p * dist b p = dist c p * dist d p := by
-  obtain ⟨-, k₁, -, hab₁⟩ := angle_eq_zero_iff.mp hapb
-  obtain ⟨-, k₂, -, hcd₁⟩ := angle_eq_zero_iff.mp hcpd
-  refine mul_dist_eq_mul_dist_of_cospherical h ⟨k₁, ?_, hab₁⟩ ⟨k₂, ?_, hcd₁⟩ <;> by_contra hnot <;>
-    simp_all only [one_smul]
-  exacts [hab (vsub_left_cancel hab₁).symm, hcd (vsub_left_cancel hcd₁).symm]
+  apply collinear_of_angle_eq_zero at hapb
+  apply collinear_of_angle_eq_zero at hcpd
+  exact mul_dist_eq_mul_dist_of_cospherical h
+    (hapb.mem_affineSpan_of_mem_of_ne (by simp) (by simp) (by simp) hab)
+    (hcpd.mem_affineSpan_of_mem_of_ne (by simp) (by simp) (by simp) hcd)
 
 namespace Sphere
 
@@ -167,7 +255,7 @@ theorem power_nonpos_iff_dist_center_le_radius {s : Sphere P} {p : P} (hr : 0 �
 /-- For any point, the product of distances to two intersection
 points on a line through the point equals the absolute value of the power of the point. -/
 theorem mul_dist_eq_abs_power {s : Sphere P} {p a b : P}
-    (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+    (hp : p ∈ line[ℝ, a, b])
     (ha : a ∈ s) (hb : b ∈ s) :
     dist p a * dist p b = |s.power p| := by
   have hq : dist a s.center = dist b s.center := by
@@ -178,7 +266,7 @@ theorem mul_dist_eq_abs_power {s : Sphere P} {p a b : P}
 /-- For a point on the sphere, the product of distances to two other intersection
 points on a line through the point is zero. -/
 theorem mul_dist_eq_zero_of_mem_sphere {s : Sphere P} {p a b : P}
-    (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+    (hp : p ∈ line[ℝ, a, b])
     (ha : a ∈ s) (hb : b ∈ s)
     (hp_on : p ∈ s) :
     dist p a * dist p b = 0 := by
@@ -191,7 +279,7 @@ theorem mul_dist_eq_zero_of_mem_sphere {s : Sphere P} {p a b : P}
 points on a line through the point equals the power of the point. -/
 theorem mul_dist_eq_power_of_radius_le_dist_center {s : Sphere P} {p a b : P}
     (hr : 0 ≤ s.radius)
-    (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+    (hp : p ∈ line[ℝ, a, b])
     (ha : a ∈ s) (hb : b ∈ s)
     (hle : s.radius ≤ dist p s.center) :
     dist p a * dist p b = s.power p := by
@@ -202,7 +290,7 @@ theorem mul_dist_eq_power_of_radius_le_dist_center {s : Sphere P} {p a b : P}
 points on a line through the point equals the negative of the power of the point. -/
 theorem mul_dist_eq_neg_power_of_dist_center_le_radius {s : Sphere P} {p a b : P}
     (hr : 0 ≤ s.radius)
-    (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+    (hp : p ∈ line[ℝ, a, b])
     (ha : a ∈ s) (hb : b ∈ s)
     (hle : dist p s.center ≤ s.radius) :
     dist p a * dist p b = -s.power p := by
@@ -213,17 +301,37 @@ theorem mul_dist_eq_neg_power_of_dist_center_le_radius {s : Sphere P} {p a b : P
     the product of secant segment lengths. -/
 theorem dist_sq_eq_mul_dist_of_tangent_and_secant {a b t p : P} {s : Sphere P}
     (ha : a ∈ s) (hb : b ∈ s)
-    (h_secant : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+    (hp : p ∈ line[ℝ, a, b])
     (h_tangent : s.IsTangentAt t (line[ℝ, p, t])) :
     dist p t ^ 2 = dist p a * dist p b := by
   have hr := radius_nonneg_of_mem ha
-  have h_outside : s.radius ≤ dist p s.center := by
-    rw [dist_comm]
-    by_contra! hlt
-    exact h_tangent.isTangent.notMem_of_dist_lt hlt (left_mem_affineSpan_pair ℝ p t)
-  rw [mul_dist_eq_power_of_radius_le_dist_center hr h_secant ha hb h_outside,
+  have radius_le_dist := h_tangent.isTangent.radius_le_dist_center (left_mem_affineSpan_pair ℝ p t)
+  rw [mul_dist_eq_power_of_radius_le_dist_center hr hp ha hb radius_le_dist,
     Sphere.power, h_tangent.dist_sq_eq_of_mem (left_mem_affineSpan_pair ℝ p t)]
   ring
+
+/-- The power of a point with respect to a sphere equals the square of its tangent length. -/
+theorem IsTangentAt.power_eq_dist_sq {s : Sphere P} {t p : P}
+    (h_tangent : s.IsTangentAt t (line[ℝ, p, t])) :
+    s.power p = dist p t ^ 2 := by
+  rw [Sphere.power, h_tangent.dist_sq_eq_of_mem (left_mem_affineSpan_pair ℝ p t)]
+  ring_nf
+
+/-- A line through a point on a sphere is tangent if and only if the squared distance
+from the external point to the tangent point equals the power of the point. -/
+theorem isTangentAt_iff_dist_sq_eq_power {t p : P} {s : Sphere P} (ht : t ∈ s) :
+    s.IsTangentAt t (line[ℝ, p, t]) ↔ dist p t ^ 2 = s.power p :=
+  ⟨fun h ↦ h.power_eq_dist_sq.symm, fun h_dist_eq ↦ by
+    have h_orth : ⟪p -ᵥ t, t -ᵥ s.center⟫ = 0 := by
+      simp only [Sphere.power, ← mem_sphere.mp ht, dist_eq_norm_vsub V, sq,
+                 ← vsub_add_vsub_cancel p t s.center] at h_dist_eq
+      exact (norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero _ _).mp (by linarith)
+    refine ⟨ht, right_mem_affineSpan_pair ℝ p t, fun x hx ↦ ?_⟩
+    rw [mem_orthRadius_iff_inner_left]
+    obtain ⟨r, hr⟩ := (vadd_right_mem_affineSpan_pair (k := ℝ)).mp (vsub_vadd x t ▸ hx)
+    rw [← hr, inner_smul_left, h_orth, mul_zero]⟩
+
+alias ⟨_, isTangentAt_of_dist_sq_eq_power⟩ := isTangentAt_iff_dist_sq_eq_power
 
 end Sphere
 

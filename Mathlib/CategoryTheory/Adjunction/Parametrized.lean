@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Basic
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 # Adjunctions with a parameter
@@ -33,6 +35,8 @@ left adjoints).
 
 -/
 
+@[expose] public section
+
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
@@ -51,8 +55,8 @@ structure ParametrizedAdjunction where
   /-- a family of adjunctions -/
   adj (X₁ : C₁) : F.obj X₁ ⊣ G.obj (op X₁)
   unit_whiskerRight_map {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) :
-    (adj X₁).unit ≫ whiskerRight (F.map f) _ = (adj Y₁).unit ≫ whiskerLeft _ (G.map f.op) :=
-      by cat_disch
+    (adj X₁).unit ≫ whiskerRight (F.map f) _ = (adj Y₁).unit ≫ whiskerLeft _ (G.map f.op) := by
+      cat_disch
 
 /-- The notation `F ⊣₂ G` stands for `ParametrizedAdjunction F G`
 representing that the bifunctor `F` is the left adjoint to `G`
@@ -65,6 +69,7 @@ attribute [reassoc] unit_whiskerRight_map
 
 variable {F G}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Alternative constructor for parametrized adjunctions, for which
 the compatibility is stated in terms of `Adjunction.homEquiv`. -/
 @[simps]
@@ -88,6 +93,7 @@ def homEquiv : ((F.obj X₁).obj X₂ ⟶ X₃) ≃ (X₂ ⟶ (G.obj (op X₁)).
 
 lemma homEquiv_eq : adj₂.homEquiv = (adj₂.adj X₁).homEquiv X₂ X₃ := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma homEquiv_naturality_one (f₁ : X₁ ⟶ Y₁) (g : (F.obj Y₁).obj X₂ ⟶ X₃) :
     adj₂.homEquiv ((F.map f₁).app X₂ ≫ g) =
@@ -128,6 +134,7 @@ lemma homEquiv_symm_naturality_three
       adj₂.homEquiv.symm g ≫ f₃ :=
   adj₂.homEquiv.injective (by simp [homEquiv_naturality_three])
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma whiskerLeft_map_counit {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) :
     whiskerLeft _ (F.map f) ≫ (adj₂.adj Y₁).counit =

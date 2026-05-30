@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, Bhavik Mehta,
   Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Antidiag.Pi
-import Mathlib.Data.Finsupp.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Finsupp.Basic
+public import Mathlib.Algebra.Order.Antidiag.Pi
 
 /-!
 # Antidiagonal of finitely supported functions as finsets
@@ -25,6 +27,10 @@ We define it using `Finset.piAntidiag s n`, the corresponding antidiagonal in `�
   contained in `s` and such that the sum of its values equals `n : μ`.
 
 -/
+
+@[expose] public section
+
+assert_not_exists Field
 
 open Finsupp Function
 
@@ -50,7 +56,7 @@ lemma mem_finsuppAntidiag' :
   rw [sum_of_support_subset (N := μ) f hf (fun _ x ↦ x) fun _ _ ↦ rfl]
 
 @[simp] lemma finsuppAntidiag_empty_zero : finsuppAntidiag (∅ : Finset ι) (0 : μ) = {0} := by
-  ext f; simp [finsuppAntidiag, ← DFunLike.coe_fn_eq (g := f), eq_comm]
+  ext f; simp
 
 @[simp] lemma finsuppAntidiag_empty_of_ne_zero (hn : n ≠ 0) :
     finsuppAntidiag (∅ : Finset ι) n = ∅ :=
@@ -102,6 +108,14 @@ theorem finsuppAntidiag_insert {a : ι} {s : Finset ι}
   simp_rw [mem_map, mem_attach, true_and, Subtype.exists, Embedding.coeFn_mk, exists_prop, and_comm,
     eq_comm]
 
+@[gcongr]
+theorem finsuppAntidiag_mono {s t : Finset ι} (h : s ⊆ t) (n : μ) :
+    finsuppAntidiag s n ⊆ finsuppAntidiag t n := by
+  intro a
+  simp_rw [mem_finsuppAntidiag']
+  rintro ⟨hsum, hmem⟩
+  exact ⟨hsum, hmem.trans h⟩
+
 variable [AddCommMonoid μ'] [HasAntidiagonal μ'] [DecidableEq μ']
 
 -- This should work under the assumption that e is an embedding and an AddHom
@@ -127,9 +141,9 @@ lemma mapRange_finsuppAntidiag_eq {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
     rw [mem_map_equiv, this]
     apply mapRange_finsuppAntidiag_subset
     rw [← mem_map_equiv]
-    convert hf
+    convert! hf
     rw [map_map, hh]
-    convert map_refl
+    convert! map_refl
     apply Function.Embedding.equiv_symm_toEmbedding_trans_toEmbedding
 
 end AddCommMonoid
@@ -139,7 +153,7 @@ variable [DecidableEq ι] [DecidableEq μ] [AddCommMonoid μ] [PartialOrder μ]
   [CanonicallyOrderedAdd μ] [HasAntidiagonal μ]
 
 @[simp] lemma finsuppAntidiag_zero (s : Finset ι) : finsuppAntidiag s (0 : μ) = {0} := by
-  ext f; simp [finsuppAntidiag, ← DFunLike.coe_fn_eq (g := f), -mem_piAntidiag, eq_comm]
+  ext f; simp [finsuppAntidiag, ← DFunLike.coe_fn_eq (g := f), eq_comm]
 
 end CanonicallyOrderedAddCommMonoid
 end Finset

@@ -3,12 +3,15 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Int.Init
-import Mathlib.Data.Nat.Basic
-import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Lift
-import Mathlib.Tactic.OfNat
+module
+
+public import Mathlib.Data.Int.Init
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Tactic.Conv
+public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.Lift
+public import Mathlib.Tactic.OfNat
 
 /-!
 # Basic operations on the integers
@@ -17,36 +20,18 @@ This file builds on `Data.Int.Init` by adding basic lemmas on integers.
 depending on Mathlib definitions.
 -/
 
+public section
+
 open Nat
 
 namespace Int
 variable {a b c d m n : ℤ}
 
--- TODO: Tag in Lean
-attribute [simp] natAbs_pos
+attribute [gcongr] ofNat_le
 
 instance instNontrivial : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
 @[simp] lemma ofNat_injective : Function.Injective ofNat := @Int.ofNat.inj
-
-section inductionOn'
-
-variable {C : ℤ → Sort*} (z b : ℤ)
-  (H0 : C b) (Hs : ∀ k, b ≤ k → C k → C (k + 1)) (Hp : ∀ k ≤ b, C k → C (k - 1))
-
-variable {z b H0 Hs Hp}
-
-lemma inductionOn'_add_one (hz : b ≤ z) :
-    (z + 1).inductionOn' b H0 Hs Hp = Hs z hz (z.inductionOn' b H0 Hs Hp) := by
-  apply cast_eq_iff_heq.mpr
-  lift z - b to ℕ using Int.sub_nonneg.mpr hz with zb hzb
-  rw [show z + 1 - b = zb + 1 by omega]
-  have : b + zb = z := by omega
-  subst this
-  convert cast_heq _ _
-  rw [Int.inductionOn', cast_eq_iff_heq, ← hzb]
-
-end inductionOn'
 
 section strongRec
 
@@ -73,7 +58,7 @@ lemma natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_natCast n�
 
 lemma pow_right_injective (h : 1 < a.natAbs) : ((a ^ ·) : ℕ → ℤ).Injective := by
   refine (?_ : (natAbs ∘ (a ^ · : ℕ → ℤ)).Injective).of_comp
-  convert Nat.pow_right_injective h using 2
+  convert! Nat.pow_right_injective h using 2
   rw [Function.comp_apply, natAbs_pow]
 
 /-! ### dvd -/
@@ -102,6 +87,6 @@ lemma natAbs_le_of_dvd_ne_zero (hmn : m ∣ n) (hn : n ≠ 0) : natAbs m ≤ nat
   not_lt.mp (mt (eq_zero_of_dvd_of_natAbs_lt_natAbs hmn) hn)
 
 theorem gcd_emod (m n : ℤ) : (m % n).gcd n = m.gcd n := by
-  conv_rhs => rw [← m.emod_add_ediv n, gcd_add_mul_left_left]
+  conv_rhs => rw [← m.emod_add_mul_ediv n, gcd_add_mul_left_left]
 
 end Int

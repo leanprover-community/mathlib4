@@ -3,8 +3,10 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.RingTheory.Trace.Basic
-import Mathlib.FieldTheory.Finite.GaloisField
+module
+
+public import Mathlib.RingTheory.Trace.Basic
+public import Mathlib.FieldTheory.Finite.GaloisField
 
 /-!
 # The trace and norm maps for finite fields
@@ -24,17 +26,19 @@ We state several lemmas about the trace and norm maps for finite fields.
 finite field, trace, norm
 -/
 
+public section
+
 
 namespace FiniteField
 
 open Fintype
 
-/-- The trace map from a finite field to its prime field is nongedenerate. -/
+/-- The trace map from a finite field to its prime field is nondegenerate. -/
 theorem trace_to_zmod_nondegenerate (F : Type*) [Field F] [Finite F]
     [Algebra (ZMod (ringChar F)) F] {a : F} (ha : a ≠ 0) :
     ∃ b : F, Algebra.trace (ZMod (ringChar F)) F (a * b) ≠ 0 := by
   haveI : Fact (ringChar F).Prime := ⟨CharP.char_is_prime F _⟩
-  have htr := traceForm_nondegenerate (ZMod (ringChar F)) F a
+  have htr := (traceForm_nondegenerate (ZMod (ringChar F)) F).1 a
   simp_rw [Algebra.traceForm_apply] at htr
   by_contra! hf
   exact ha (htr hf)

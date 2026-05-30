@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Dedup
-import Mathlib.Data.List.Infix
+module
+
+public import Mathlib.Data.Multiset.Dedup
+public import Mathlib.Data.List.Infix
 
 /-!
 # Preparations for defining operations on `Finset`.
@@ -12,6 +14,8 @@ import Mathlib.Data.List.Infix
 The operations here ignore multiplicities,
 and prepare for defining the corresponding operations on `Finset`.
 -/
+
+@[expose] public section
 
 
 -- Assert that we define `Finset` without the material on the set lattice.
@@ -49,8 +53,6 @@ theorem ndinsert_of_mem {a : α} {s : Multiset α} : a ∈ s → ndinsert a s = 
 theorem ndinsert_of_notMem {a : α} {s : Multiset α} : a ∉ s → ndinsert a s = a ::ₘ s :=
   Quot.inductionOn s fun _ h => congr_arg ((↑) : List α → Multiset α) <| insert_of_not_mem h
 
-@[deprecated (since := "2025-05-23")] alias ndinsert_of_not_mem := ndinsert_of_notMem
-
 @[simp]
 theorem mem_ndinsert {a b : α} {s : Multiset α} : a ∈ ndinsert b s ↔ a = b ∨ a ∈ s :=
   Quot.inductionOn s fun _ => mem_insert_iff
@@ -69,8 +71,6 @@ theorem length_ndinsert_of_mem {a : α} {s : Multiset α} (h : a ∈ s) :
 
 theorem length_ndinsert_of_notMem {a : α} {s : Multiset α} (h : a ∉ s) :
     card (ndinsert a s) = card s + 1 := by simp [h]
-
-@[deprecated (since := "2025-05-23")] alias length_ndinsert_of_not_mem := length_ndinsert_of_notMem
 
 theorem dedup_cons {a : α} {s : Multiset α} : dedup (a ::ₘ s) = ndinsert a (dedup s) := by
   by_cases h : a ∈ s <;> simp [h]
@@ -92,7 +92,7 @@ theorem attach_ndinsert (a : α) (s : Multiset α) :
   have eq :
     ∀ h : ∀ p : { x // x ∈ s }, p.1 ∈ s,
       (fun p : { x // x ∈ s } => ⟨p.val, h p⟩ : { x // x ∈ s } → { x // x ∈ s }) = id :=
-    fun _ => funext fun _ => Subtype.eq rfl
+    fun _ => funext fun _ => Subtype.ext rfl
   have : ∀ (t) (eq : s.ndinsert a = t), t.attach = ndinsert ⟨a, eq ▸ mem_ndinsert_self a s⟩
       (s.attach.map fun p => ⟨p.1, eq ▸ mem_ndinsert_of_mem p.2⟩) := by
     intro t ht
@@ -211,8 +211,6 @@ theorem cons_ndinter_of_mem {a : α} (s : Multiset α) {t : Multiset α} (h : a 
 @[simp]
 theorem ndinter_cons_of_notMem {a : α} (s : Multiset α) {t : Multiset α} (h : a ∉ t) :
     ndinter (a ::ₘ s) t = ndinter s t := by simp [ndinter, h]
-
-@[deprecated (since := "2025-05-23")] alias ndinter_cons_of_not_mem := ndinter_cons_of_notMem
 
 @[simp]
 theorem mem_ndinter {s t : Multiset α} {a : α} : a ∈ ndinter s t ↔ a ∈ s ∧ a ∈ t := by

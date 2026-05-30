@@ -3,8 +3,10 @@ Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Order.Interval.Set.LinearOrder
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.Order.Interval.Set.LinearOrder
 
 /-!
 # Monotone surjective functions are surjective on intervals
@@ -13,6 +15,8 @@ A monotone surjective function sends any interval in the domain onto the interva
 endpoints in the range.  This is expressed in this file using `Set.surjOn`, and provided for all
 permutations of interval endpoints.
 -/
+
+public section
 
 
 variable {α : Type*} {β : Type*} [LinearOrder α] [PartialOrder β] {f : α → β}
@@ -42,7 +46,7 @@ theorem surjOn_Ico_of_monotone_surjective (h_mono : Monotone f) (h_surj : Functi
 
 theorem surjOn_Ioc_of_monotone_surjective (h_mono : Monotone f) (h_surj : Function.Surjective f)
     (a b : α) : SurjOn f (Ioc a b) (Ioc (f a) (f b)) := by
-  simpa using surjOn_Ico_of_monotone_surjective h_mono.dual h_surj (toDual b) (toDual a)
+  simpa using! surjOn_Ico_of_monotone_surjective h_mono.dual h_surj (toDual b) (toDual a)
 
 -- to see that the hypothesis `a ≤ b` is necessary, consider a constant function
 theorem surjOn_Icc_of_monotone_surjective (h_mono : Monotone f) (h_surj : Function.Surjective f)

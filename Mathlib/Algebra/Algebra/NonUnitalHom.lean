@@ -3,8 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Algebra.Hom
-import Mathlib.Algebra.GroupWithZero.Action.Prod
+module
+
+public import Mathlib.Algebra.Algebra.Hom
+public import Mathlib.Algebra.GroupWithZero.Action.Prod
 
 /-!
 # Morphisms of non-unital algebras
@@ -41,6 +43,8 @@ TODO: add `NonUnitalAlgEquiv` when needed.
 
 non-unital, algebra, morphism
 -/
+
+@[expose] public section
 
 universe u u₁ v w w₁ w₂ w₃
 
@@ -344,7 +348,7 @@ variable (R A B)
 variable [DistribMulAction R B]
 
 /-- The first projection of a product is a non-unital algebra homomorphism. -/
-@[simps]
+@[simps toFun]
 def fst : A × B →ₙₐ[R] A where
   toFun := Prod.fst
   map_zero' := rfl
@@ -353,7 +357,7 @@ def fst : A × B →ₙₐ[R] A where
   map_mul' _ _ := rfl
 
 /-- The second projection of a product is a non-unital algebra homomorphism. -/
-@[simps]
+@[simps toFun]
 def snd : A × B →ₙₐ[R] B where
   toFun := Prod.snd
   map_zero' := rfl
@@ -365,15 +369,15 @@ variable {R A B}
 variable [DistribMulAction R C]
 
 /-- The prod of two morphisms is a morphism. -/
-@[simps]
+@[simps toFun]
 def prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : A →ₙₐ[R] B × C where
-  toFun := Pi.prod f g
-  map_zero' := by simp only [Pi.prod, Prod.mk_zero_zero, map_zero]
-  map_add' x y := by simp only [Pi.prod, Prod.mk_add_mk, map_add]
-  map_mul' x y := by simp only [Pi.prod, Prod.mk_mul_mk, map_mul]
-  map_smul' c x := by simp only [Pi.prod, map_smul, MonoidHom.id_apply, Prod.smul_mk]
+  toFun := Function.prod f g
+  map_zero' := by simp only [Function.prod_apply, Prod.mk_zero_zero, map_zero]
+  map_add' x y := by simp only [Function.prod_apply, Prod.mk_add_mk, map_add]
+  map_mul' x y := by simp only [Function.prod_apply, Prod.mk_mul_mk, map_mul]
+  map_smul' c x := by simp only [Function.prod_apply, map_smul, MonoidHom.id_apply, Prod.smul_mk]
 
-theorem coe_prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
+theorem coe_prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : ⇑(f.prod g) = Function.prod f g :=
   rfl
 
 @[simp]
@@ -386,7 +390,7 @@ theorem snd_prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : (snd R B C).com
 
 @[simp]
 theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
-  coe_injective Pi.prod_fst_snd
+  coe_injective Function.prod_fst_snd
 
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of
 their codomains. -/

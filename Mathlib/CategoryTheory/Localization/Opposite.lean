@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Localization.Equivalence
 
 /-!
 
@@ -14,6 +16,8 @@ is shown in this file that `L.op : Cᵒᵖ ⥤ Dᵒᵖ` is also a localization f
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -21,19 +25,19 @@ open CategoryTheory CategoryTheory.Category
 
 namespace CategoryTheory
 
-variable {C D : Type*} [Category C] [Category D] {L : C ⥤ D} {W : MorphismProperty C}
+variable {C D : Type*} [Category* C] [Category* D] {L : C ⥤ D} {W : MorphismProperty C}
 
 namespace Localization
 
 /-- If `L : C ⥤ D` satisfies the universal property of the localisation
 for `W : MorphismProperty C`, then `L.op` also does. -/
-def StrictUniversalPropertyFixedTarget.op {E : Type*} [Category E]
+def StrictUniversalPropertyFixedTarget.op {E : Type*} [Category* E]
     (h : StrictUniversalPropertyFixedTarget L W Eᵒᵖ) :
     StrictUniversalPropertyFixedTarget L.op W.op E where
   inverts := h.inverts.op
   lift F hF := (h.lift F.rightOp hF.rightOp).leftOp
   fac F hF := by
-    convert congr_arg Functor.leftOp (h.fac F.rightOp hF.rightOp)
+    convert! congr_arg Functor.leftOp (h.fac F.rightOp hF.rightOp)
   uniq F₁ F₂ eq := by
     suffices F₁.rightOp = F₂.rightOp by
       rw [← F₁.rightOp_leftOp_eq, ← F₂.rightOp_leftOp_eq, this]
@@ -55,6 +59,7 @@ instance IsLocalization.op : L.op.IsLocalization W.op :=
   IsLocalization.of_equivalence_target W.Q.op W.op L.op (Localization.equivalenceFromModel L W).op
     (NatIso.op (Localization.qCompEquivalenceFromModelFunctorIso L W).symm)
 
+set_option backward.defeqAttrib.useBackward true in
 instance IsLocalization.unop (L : Cᵒᵖ ⥤ Dᵒᵖ) (W : MorphismProperty Cᵒᵖ)
     [L.IsLocalization W] : L.unop.IsLocalization W.unop :=
   have : CatCommSq (opOpEquivalence C).functor L.op L.unop
@@ -68,10 +73,12 @@ instance IsLocalization.unop (L : Cᵒᵖ ⥤ Dᵒᵖ) (W : MorphismProperty C�
       infer_instance)
 
 @[simp]
-lemma op_iff (L : C ⥤ D) (W : MorphismProperty C) :
+lemma IsLocalization.op_iff (L : C ⥤ D) (W : MorphismProperty C) :
     L.op.IsLocalization W.op ↔ L.IsLocalization W :=
   ⟨fun _ ↦ inferInstanceAs (L.op.unop.IsLocalization W.op.unop),
     fun _ ↦ inferInstance⟩
+
+@[deprecated (since := "2025-12-10")] alias op_iff := IsLocalization.op_iff
 
 end Functor
 

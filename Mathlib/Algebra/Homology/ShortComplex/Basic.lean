@@ -3,8 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
 # Short complexes
@@ -17,16 +18,20 @@ the Liquid Tensor Experiment.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits
 
-variable (C D : Type*) [Category C] [Category D]
+variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
+  [HasZeroMorphisms C] [HasZeroMorphisms D] [HasZeroMorphisms E]
 
+variable (C) in
 /-- A short complex in a category `C` with zero morphisms is the datum
 of two composable morphisms `f : X₁ ⟶ X₂` and `g : X₂ ⟶ X₃` such that
 `f ≫ g = 0`. -/
-structure ShortComplex [HasZeroMorphisms C] where
+structure ShortComplex where
   /-- the first (left) object of a `ShortComplex` -/
   {X₁ : C}
   /-- the second (middle) object of a `ShortComplex` -/
@@ -38,14 +43,11 @@ structure ShortComplex [HasZeroMorphisms C] where
   /-- the second morphism of a `ShortComplex` -/
   g : X₂ ⟶ X₃
   /-- the composition of the two given morphisms is zero -/
-  zero : f ≫ g = 0
+  zero : f ≫ g = 0 := by cat_disch
 
 namespace ShortComplex
 
 attribute [reassoc (attr := simp)] ShortComplex.zero
-
-variable {C}
-variable [HasZeroMorphisms C]
 
 /-- Morphisms of short complexes are the commutative diagrams of the obvious shape. -/
 @[ext]
@@ -146,19 +148,19 @@ instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₁ := (inferInstance : IsIso
 instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₂ := (inferInstance : IsIso (π₂.mapIso (asIso f)).hom)
 instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₃ := (inferInstance : IsIso (π₃.mapIso (asIso f)).hom)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `π₁ ⟶ π₂` induced by `S.f` for all `S : ShortComplex C`. -/
 @[simps] def π₁Toπ₂ : (π₁ : _ ⥤ C) ⟶ π₂ where
   app S := S.f
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `π₂ ⟶ π₃` induced by `S.g` for all `S : ShortComplex C`. -/
 @[simps] def π₂Toπ₃ : (π₂ : _ ⥤ C) ⟶ π₃ where
   app S := S.g
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma π₁Toπ₂_comp_π₂Toπ₃ : (π₁Toπ₂ : (_ : _ ⥤ C) ⟶ _) ≫ π₂Toπ₃ = 0 := by cat_disch
-
-variable {D}
-variable [HasZeroMorphisms D]
 
 /-- The short complex in `D` obtained by applying a functor `F : C ⥤ D` to a
 short complex in `C`, assuming that `F` preserves zero morphisms. -/
@@ -166,6 +168,13 @@ short complex in `C`, assuming that `F` preserves zero morphisms. -/
 def map (F : C ⥤ D) [F.PreservesZeroMorphisms] : ShortComplex D :=
   ShortComplex.mk (F.map S.f) (F.map S.g) (by rw [← F.map_comp, S.zero, F.map_zero])
 
+@[simp] lemma map_id (S : ShortComplex C) : S.map (𝟭 C) = S := rfl
+
+@[simp] lemma map_comp (S : ShortComplex C)
+    (F : C ⥤ D) [F.PreservesZeroMorphisms] (G : D ⥤ E) [G.PreservesZeroMorphisms] :
+    S.map (F ⋙ G) = (S.map F).map G := rfl
+
+set_option backward.defeqAttrib.useBackward true in
 /-- The morphism of short complexes `S.map F ⟶ S.map G` induced by
 a natural transformation `F ⟶ G`. -/
 @[simps]
@@ -175,6 +184,7 @@ def mapNatTrans {F G : C ⥤ D} [F.PreservesZeroMorphisms] [G.PreservesZeroMorph
   τ₂ := τ.app _
   τ₃ := τ.app _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism of short complexes `S.map F ≅ S.map G` induced by
 a natural isomorphism `F ≅ G`. -/
 @[simps]
@@ -183,6 +193,7 @@ def mapNatIso {F G : C ⥤ D} [F.PreservesZeroMorphisms] [G.PreservesZeroMorphis
   hom := S.mapNatTrans τ.hom
   inv := S.mapNatTrans τ.inv
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor `ShortComplex C ⥤ ShortComplex D` induced by a functor `C ⥤ D` which
 preserves zero morphisms. -/
 @[simps]
@@ -216,11 +227,28 @@ def isoMk (e₁ : S₁.X₁ ≅ S₂.X₁) (e₂ : S₁.X₂ ≅ S₂.X₂) (e�
 lemma isIso_of_isIso (f : S₁ ⟶ S₂) [IsIso f.τ₁] [IsIso f.τ₂] [IsIso f.τ₃] : IsIso f :=
   (isoMk (asIso f.τ₁) (asIso f.τ₂) (asIso f.τ₃)).isIso_hom
 
+lemma isIso_iff (f : S₁ ⟶ S₂) :
+    IsIso f ↔ IsIso f.τ₁ ∧ IsIso f.τ₂ ∧ IsIso f.τ₃ := by
+  refine ⟨fun _ ↦ ⟨inferInstance, inferInstance, inferInstance⟩, ?_⟩
+  rintro ⟨_, _, _⟩
+  apply isIso_of_isIso
+
+/-- The first map of a short complex, as a functor. -/
+@[simps] def fFunctor : ShortComplex C ⥤ Arrow C where
+  obj S := .mk S.f
+  map {S T} f := Arrow.homMk f.τ₁ f.τ₂ f.comm₁₂
+
+/-- The second map of a short complex, as a functor. -/
+@[simps] def gFunctor : ShortComplex C ⥤ Arrow C where
+  obj S := .mk S.g
+  map {S T} f := Arrow.homMk f.τ₂ f.τ₃ f.comm₂₃
+
 /-- The opposite `ShortComplex` in `Cᵒᵖ` associated to a short complex in `C`. -/
 @[simps]
 def op : ShortComplex Cᵒᵖ :=
   mk S.g.op S.f.op (by simp only [← op_comp, S.zero]; rfl)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The opposite morphism in `ShortComplex Cᵒᵖ` associated to a morphism in `ShortComplex C` -/
 @[simps]
 def opMap (φ : S₁ ⟶ S₂) : S₂.op ⟶ S₁.op where
@@ -242,6 +270,7 @@ lemma opMap_id : opMap (𝟙 S) = 𝟙 S.op := rfl
 def unop (S : ShortComplex Cᵒᵖ) : ShortComplex C :=
   mk S.g.unop S.f.unop (by simp only [← unop_comp, S.zero]; rfl)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The morphism in `ShortComplex C` associated to a morphism in `ShortComplex Cᵒᵖ` -/
 @[simps]
 def unopMap {S₁ S₂ : ShortComplex Cᵒᵖ} (φ : S₁ ⟶ S₂) : S₂.unop ⟶ S₁.unop where
@@ -272,6 +301,7 @@ def unopFunctor : ShortComplex Cᵒᵖ ⥤ (ShortComplex C)ᵒᵖ where
   obj S := Opposite.op (S.unop)
   map φ := (unopMap φ).op
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The obvious equivalence of categories `(ShortComplex C)ᵒᵖ ≌ ShortComplex Cᵒᵖ`. -/
 @[simps]
 def opEquiv : (ShortComplex C)ᵒᵖ ≌ ShortComplex Cᵒᵖ where

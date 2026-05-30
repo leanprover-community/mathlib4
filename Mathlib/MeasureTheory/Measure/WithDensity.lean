@@ -3,10 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
-import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
-import Mathlib.MeasureTheory.Group.Convolution
-import Mathlib.Analysis.LConvolution
+module
+
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
+public import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
+public import Mathlib.MeasureTheory.Group.Convolution
+public import Mathlib.Analysis.LConvolution
 
 /-!
 # Measure with a given density with respect to another measure
@@ -21,6 +23,8 @@ An important result about `withDensity` is the Radon-Nikodym theorem. It states 
 See `MeasureTheory.Measure.absolutelyContinuous_iff_withDensity_rnDeriv_eq`.
 
 -/
+
+@[expose] public section
 
 open Set hiding restrict restrict_apply
 
@@ -63,6 +67,7 @@ to `+∞` on nonempty sets. Let `s = {x₀}` and `f` the indicator of `sᶜ`. Th
 * `μ.withDensity f s = +∞`. Indeed, this is the infimum of `μ.withDensity f t` over measurable sets
   `t` containing `s`. As `s` is not measurable, such a set `t` contains a point `x ≠ x₀`. Then
   `μ.withDensity f t ≥ μ.withDensity f {x} = ∫⁻ a in {x}, f a ∂μ = μ {x} = +∞`.
+
 One checks that `μ.withDensity f = μ`, while `μ.restrict s` gives zero mass to sets not
 containing `x₀`, and infinite mass to those that contain it. -/
 
@@ -247,7 +252,7 @@ theorem withDensity_apply_eq_zero' {f : α → ℝ≥0∞} {s : Set α} (hf : AE
     swap
     · simp only [measurableSet_toMeasurable, MeasurableSet.nullMeasurableSet]
     simp only [Pi.zero_apply] at A
-    convert A using 2
+    convert! A using 2
     ext x
     simp only [and_comm, exists_prop, mem_inter_iff, mem_setOf_eq,
       not_forall]
@@ -346,6 +351,27 @@ theorem aemeasurable_withDensity_ennreal_iff {f : α → ℝ≥0} (hf : Measurab
       AEMeasurable (fun x => (f x : ℝ≥0∞) * g x) μ :=
   aemeasurable_withDensity_ennreal_iff' <| hf.aemeasurable
 
+theorem dirac_withDensity' {f : α → ℝ≥0∞} (hf : Measurable f) (a : α) :
+    (dirac a).withDensity f = f a • dirac a := by
+  ext s hs
+  classical
+  simp [withDensity_apply f hs, setLIntegral_dirac' hf hs, dirac_apply' _ hs,
+    Set.indicator]
+
+theorem dirac_withDensity [MeasurableSingletonClass α] (f : α → ℝ≥0∞) (a : α) :
+    (dirac a).withDensity f = f a • dirac a := by
+  ext s hs
+  classical
+  simp [withDensity_apply f hs, setLIntegral_dirac, Set.indicator]
+
+theorem count_withDensity' {f : α → ℝ≥0∞} (hf : Measurable f) :
+    count.withDensity f = sum (fun a ↦ f a • dirac a) := by
+  simp [count, withDensity_sum, dirac_withDensity' hf _]
+
+theorem count_withDensity [MeasurableSingletonClass α] (f : α → ℝ≥0∞) :
+    count.withDensity f = sum (fun a ↦ f a • dirac a) := by
+  simp [count, withDensity_sum, dirac_withDensity]
+
 open MeasureTheory.SimpleFunc
 
 /-- This is Exercise 1.2.1 from [tao2010]. It allows you to express integration of a measurable
@@ -366,7 +392,7 @@ theorem lintegral_withDensity_eq_lintegral_mul (μ : Measure α) {f : α → ℝ
   · intro g h _ h_mea_g _ h_ind_g h_ind_h
     simp [mul_add, *, Measurable.mul]
   · intro g h_mea_g h_mono_g h_ind
-    have : Monotone fun n a => f a * g n a := fun m n hmn x => mul_le_mul_left' (h_mono_g hmn x) _
+    have : Monotone fun n a => f a * g n a := fun m n hmn x => by dsimp; grw [h_mono_g hmn x]
     simp [lintegral_iSup, ENNReal.mul_iSup, h_mf.mul (h_mea_g _), *]
 
 theorem setLIntegral_withDensity_eq_setLIntegral_mul (μ : Measure α) {f g : α → ℝ≥0∞}
@@ -433,9 +459,8 @@ theorem lintegral_withDensity_le_lintegral_mul (μ : Measure α) {f : α → ℝ
     (f_meas : Measurable f) (g : α → ℝ≥0∞) : (∫⁻ a, g a ∂μ.withDensity f) ≤ ∫⁻ a, (f * g) a ∂μ := by
   rw [← iSup_lintegral_measurable_le_eq_lintegral, ← iSup_lintegral_measurable_le_eq_lintegral]
   refine iSup₂_le fun i i_meas => iSup_le fun hi => ?_
-  have A : f * i ≤ f * g := fun x => mul_le_mul_left' (hi x) _
-  refine le_iSup₂_of_le (f * i) (f_meas.mul i_meas) ?_
-  exact le_iSup_of_le A (le_of_eq (lintegral_withDensity_eq_lintegral_mul _ f_meas i_meas))
+  rw [lintegral_withDensity_eq_lintegral_mul _ f_meas i_meas]
+  exact le_iSup₂_of_le (f * i) (f_meas.mul i_meas) <| le_iSup_of_le (by grw [hi]) le_rfl
 
 theorem lintegral_withDensity_eq_lintegral_mul_non_measurable (μ : Measure α) {f : α → ℝ≥0∞}
     (f_meas : Measurable f) (hf : ∀ᵐ x ∂μ, f x < ∞) (g : α → ℝ≥0∞) :
@@ -549,7 +574,7 @@ lemma withDensity_absolutelyContinuous' {μ : Measure α} {f : α → ℝ≥0∞
   exact measure_mono_null hle <| nonpos_iff_eq_zero.1 <| le_trans (measure_union_le _ _)
     <| hμs.symm ▸ zero_add _ |>.symm ▸ hf_ne_zero.le
 
-theorem withDensity_ae_eq {β : Type} {f g : α → β} {d : α → ℝ≥0∞}
+theorem withDensity_ae_eq {β : Type*} {f g : α → β} {d : α → ℝ≥0∞}
     (hd : AEMeasurable d μ) (h_ae_nonneg : ∀ᵐ x ∂μ, d x ≠ 0) :
     f =ᵐ[μ.withDensity d] g ↔ f =ᵐ[μ] g :=
   Iff.intro
@@ -715,7 +740,17 @@ lemma IsLocallyFiniteMeasure.withDensity_ofReal {f : α → ℝ} (hf : Continuou
 
 section Conv
 
-variable {G : Type*} [Group G] [MeasureSpace G] [MeasurableMul₂ G] [MeasurableInv G]
+variable {M : Type*} [Monoid M] [MeasurableSpace M]
+
+-- `mconv_smul_left` is in the `Convolution` file. This lemma is here because this is the file in
+-- which we prove the instance that gives `SFinite (c • ν)`.
+@[to_additive conv_smul_right]
+theorem Measure.mconv_smul_right (μ : Measure M) (ν : Measure M) [SFinite ν] (s : ℝ≥0∞) :
+    μ ∗ₘ (s • ν) = s • (μ ∗ₘ ν) := by
+  unfold mconv
+  rw [Measure.prod_smul_right, Measure.map_smul]
+
+variable {G : Type*} [Group G] {mG : MeasurableSpace G} [MeasurableMul₂ G] [MeasurableInv G]
   {μ : Measure G} [SFinite μ] [IsMulLeftInvariant μ]
 
 @[to_additive]
@@ -729,8 +764,8 @@ theorem mconv_withDensity_eq_mlconvolution₀ {f g : G → ℝ≥0∞}
     lintegral_congr (fun x ↦ by apply (lintegral_mul_left_eq_self _ x⁻¹).symm),
     lintegral_lintegral_swap]
   · simp only [Pi.mul_apply, mul_inv_cancel_left, mlconvolution_def]
-    conv in (∫⁻ _ , _ ∂μ) * φ _ => rw [(lintegral_mul_const'' _ (by fun_prop)).symm]
-  all_goals first | fun_prop | simp; fun_prop
+    conv in (∫⁻ _, _ ∂μ) * φ _ => rw [(lintegral_mul_const'' _ (by fun_prop)).symm]
+  all_goals first | fun_prop | dsimp; fun_prop
 
 @[to_additive]
 theorem mconv_withDensity_eq_mlconvolution {f g : G → ℝ≥0∞}

@@ -3,8 +3,10 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Topology.Bases
-import Mathlib.Topology.Separation.Regular
+module
+
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # Dense embeddings
@@ -21,6 +23,8 @@ The main theorem `continuous_extend` gives a criterion for a function
 has to be `IsDenseInducing` (not necessarily injective).
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -41,7 +45,7 @@ namespace IsDenseInducing
 variable [TopologicalSpace α] [TopologicalSpace β]
 
 theorem _root_.Dense.isDenseInducing_val {s : Set α} (hs : Dense s) :
-    IsDenseInducing (@Subtype.val α s) := ⟨IsInducing.subtypeVal, hs.denseRange_val⟩
+    IsDenseInducing ((↑) : s → α) := ⟨IsInducing.subtypeVal, hs.denseRange_val⟩
 
 variable {i : α → β}
 
@@ -66,7 +70,7 @@ theorem closure_image_mem_nhds {s : Set α} {a : α} (di : IsDenseInducing i) (h
   rcases hs with ⟨U, ⟨haU, hUo⟩, sub : i ⁻¹' U ⊆ s⟩
   refine mem_of_superset (hUo.mem_nhds haU) ?_
   calc
-    U ⊆ closure (i '' (i ⁻¹' U)) := di.dense.subset_closure_image_preimage_of_isOpen hUo
+    U ⊆ closure (i '' i ⁻¹' U) := di.dense.subset_closure_image_preimage_of_isOpen hUo
     _ ⊆ closure (i '' s) := closure_mono (image_mono sub)
 
 theorem dense_image (di : IsDenseInducing i) {s : Set α} : Dense (i '' s) ↔ Dense s := by
@@ -123,6 +127,10 @@ theorem comap_nhds_neBot (di : IsDenseInducing i) (b : β) : NeBot (comap i (�
   comap_neBot fun s hs => by
     rcases mem_closure_iff_nhds.1 (di.dense b) s hs with ⟨_, ⟨ha, a, rfl⟩⟩
     exact ⟨a, ha⟩
+
+theorem _root_.Dense.comap_val_nhds_neBot {s : Set α} (hs : Dense s) (a : α) :
+    ((𝓝 a).comap ((↑) : s → α)).NeBot :=
+  hs.isDenseInducing_val.comap_nhds_neBot _
 
 variable [TopologicalSpace γ]
 
@@ -194,7 +202,7 @@ theorem continuousAt_extend [T3Space γ] {b : β} {f : α → γ} (di : IsDenseI
     rintro x ⟨c, hc⟩
     rwa [← di.extend_eq_of_tendsto hc] at hc
   obtain ⟨V₂, V₂_in, V₂_op, hV₂⟩ : ∃ V₂ ∈ 𝓝 b, IsOpen V₂ ∧ ∀ x ∈ i ⁻¹' V₂, f x ∈ V' := by
-    simpa [and_assoc] using
+    simpa [and_assoc] using!
       ((nhds_basis_opens' b).comap i).tendsto_left_iff.mp (mem_of_mem_nhds V₁_in : b ∈ V₁) V' V'_in
   suffices ∀ x ∈ V₁ ∩ V₂, φ x ∈ V' by filter_upwards [inter_mem V₁_in V₂_in] using this
   rintro x ⟨x_in₁, x_in₂⟩
@@ -210,7 +218,7 @@ theorem continuous_extend [T3Space γ] {f : α → γ} (di : IsDenseInducing i)
 theorem mk' (i : α → β) (c : Continuous i) (dense : ∀ x, x ∈ closure (range i))
     (H : ∀ (a : α), ∀ s ∈ 𝓝 a, ∃ t ∈ 𝓝 (i a), ∀ b, i b ∈ t → b ∈ s) : IsDenseInducing i where
   toIsInducing := isInducing_iff_nhds.2 fun a =>
-      le_antisymm (c.tendsto _).le_comap (by simpa [Filter.le_def] using H a)
+      le_antisymm (c.tendsto _).le_comap (by simpa [Filter.le_def] using! H a)
   dense := dense
 
 end IsDenseInducing

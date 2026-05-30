@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Order.SetIsMax
-import Mathlib.Order.SuccPred.Limit
+module
+
+public import Mathlib.Order.SetIsMax
+public import Mathlib.Order.SuccPred.Limit
 
 /-!
 # Limit elements in Set.Ici
@@ -14,6 +16,8 @@ and `m : Set.Ici j` is successor limit, then
 `↑m : J` is also successor limit.
 
 -/
+
+public section
 
 universe u
 

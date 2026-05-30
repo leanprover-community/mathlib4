@@ -3,11 +3,15 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Complex.Module
-import Mathlib.RingTheory.Norm.Defs
-import Mathlib.RingTheory.Trace.Defs
+module
+
+public import Mathlib.LinearAlgebra.Complex.Module
+public import Mathlib.RingTheory.Norm.Defs
+public import Mathlib.RingTheory.Trace.Defs
 
 /-! # Lemmas about `Algebra.trace` and `Algebra.norm` on `ℂ` -/
+
+public section
 
 
 open Complex

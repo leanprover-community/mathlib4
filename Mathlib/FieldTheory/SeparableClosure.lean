@@ -3,8 +3,11 @@ Copyright (c) 2023 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.SeparableDegree
-import Mathlib.FieldTheory.IsSepClosed
+module
+
+public import Mathlib.FieldTheory.SeparableDegree
+public import Mathlib.FieldTheory.IsSepClosed
+public import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
 
 /-!
 
@@ -59,6 +62,8 @@ separable degree, degree, separable closure
 
 -/
 
+@[expose] public section
+
 open Module Polynomial IntermediateField Field
 
 noncomputable section
@@ -78,7 +83,7 @@ def separableClosure : IntermediateField F E where
   carrier := {x | IsSeparable F x}
   mul_mem' := isSeparable_mul
   add_mem' := isSeparable_add
-  algebraMap_mem' := isSeparable_algebraMap E
+  algebraMap_mem' := isSeparable_algebraMap
   inv_mem' _ := isSeparable_inv
 
 variable {F E K}
@@ -143,12 +148,12 @@ instance separableClosure.isAlgebraic : Algebra.IsAlgebraic F (separableClosure 
 /-- The separable closure of `F` in `E` is separable over `F`. -/
 @[stacks 030K "$E_{sep}/F$ is separable"]
 instance separableClosure.isSeparable : Algebra.IsSeparable F (separableClosure F E) :=
-  ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using x.2⟩
+  ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using! x.2⟩
 
 /-- An intermediate field of `E / F` is contained in the separable closure of `F` in `E`
 if all of its elements are separable over `F`. -/
 theorem le_separableClosure' {L : IntermediateField F E} (hs : ∀ x : L, IsSeparable F x) :
-    L ≤ separableClosure F E := fun x h ↦ by simpa only [IsSeparable, minpoly_eq] using hs ⟨x, h⟩
+    L ≤ separableClosure F E := fun x h ↦ by simpa only [IsSeparable, minpoly_eq] using! hs ⟨x, h⟩
 
 /-- An intermediate field of `E / F` is contained in the separable closure of `F` in `E`
 if it is separable over `F`. -/
@@ -159,8 +164,7 @@ theorem le_separableClosure (L : IntermediateField F E) [Algebra.IsSeparable F L
 if and only if it is separable over `F`. -/
 theorem le_separableClosure_iff (L : IntermediateField F E) :
     L ≤ separableClosure F E ↔ Algebra.IsSeparable F L :=
-  ⟨fun h ↦ ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using h x.2⟩,
-    fun _ ↦ le_separableClosure _ _ _⟩
+  Subalgebra.isSeparable_iff.symm
 
 /-- The separable closure in `E` of the separable closure of `F` in `E` is equal to itself. -/
 theorem separableClosure.separableClosure_eq_bot :
@@ -208,7 +212,7 @@ or `IsSepClosure.isGalois`, and every separable extension embeds into it (`IsSep
 abbrev SeparableClosure : Type _ := separableClosure F (AlgebraicClosure F)
 
 instance SeparableClosure.isSepClosed : IsSepClosed (SeparableClosure F) :=
-  (inferInstanceAs (IsSepClosure F (SeparableClosure F))).sep_closed
+  (inferInstance : IsSepClosure F (SeparableClosure F)).sep_closed
 
 /-- `F(S) / F` is a separable extension if and only if all elements of `S` are
 separable elements. -/
@@ -254,6 +258,33 @@ instance IntermediateField.isSeparable_iSup {ι : Type*} {t : ι → Intermediat
     Algebra.IsSeparable F (⨆ i, t i : IntermediateField F E) := by
   simp_rw [← le_separableClosure_iff] at h ⊢
   exact iSup_le h
+
+variable {F E} in
+theorem le_restrictScalars_separableClosure (L : IntermediateField F E) :
+    L ≤ (separableClosure L E).restrictScalars F :=
+  fun x hx ↦ isSeparable_algebraMap (F := L) ⟨x, hx⟩
+
+/-- `separableClosure` as a `ClosureOperator`. -/
+abbrev separableClosureOperator : ClosureOperator (IntermediateField F E) := by
+  refine .mk' (fun K ↦ (separableClosure K E).restrictScalars F) (fun K L le x hx ↦ ?_)
+    le_restrictScalars_separableClosure fun K x hx ↦ ?_
+  · let _ := (inclusion le).toAlgebra
+    have : IsScalarTower K L E := .of_algebraMap_eq' rfl
+    exact hx.tower_top _
+  · obtain ⟨x, rfl⟩ := (separableClosure.separableClosure_eq_bot K E).le hx
+    exact x.2
+
+lemma isClosed_restrictScalars_separableClosure [Algebra K E] [IsScalarTower F K E] :
+    (separableClosureOperator F E).IsClosed ((separableClosure K E).restrictScalars F) :=
+  ClosureOperator.isClosed_iff_closure_le.mpr fun x hx ↦ by
+    obtain ⟨x, rfl⟩ := (separableClosure.separableClosure_eq_bot K E).le hx
+    exact x.2
+
+lemma separableClosure_le_separableClosure_iff
+    [Algebra K E] [IsScalarTower F K E] {L : IntermediateField F E} :
+    (separableClosure L E).restrictScalars F ≤ (separableClosure K E).restrictScalars F ↔
+      L ≤ (separableClosure K E).restrictScalars F :=
+   (isClosed_restrictScalars_separableClosure F E K).closure_le_iff
 
 end separableClosure
 
@@ -320,7 +351,7 @@ theorem insepDegree_eq_of_equiv (K : Type v) [Field K] [Algebra F K] (i : E ≃�
 inseparable degree over `F`. -/
 theorem finInsepDegree_eq_of_equiv (i : E ≃ₐ[F] K) :
     finInsepDegree F E = finInsepDegree F K := by
-  simpa only [Cardinal.toNat_lift] using congr_arg Cardinal.toNat
+  simpa only [Cardinal.toNat_lift] using! congr_arg Cardinal.toNat
     (lift_insepDegree_eq_of_equiv F E K i)
 
 @[simp]
@@ -338,6 +369,40 @@ theorem finInsepDegree_self : finInsepDegree F F = 1 := by
 end Field
 
 namespace IntermediateField
+
+set_option maxHeartbeats 800000 in -- This blows up after leanprover/lean4#12897
+/-- In a finitely generated field extension, there exists a maximal
+separably generated field extension. -/
+lemma exists_finset_maximalFor_isTranscendenceBasis_separableClosure
+    [Algebra.EssFiniteType F E] :
+    ∃ s : Finset E, MaximalFor (fun t : Set E ↦ IsTranscendenceBasis F ((↑) : t → E))
+      (fun t ↦ (separableClosure (adjoin F t) E).restrictScalars F) s := by
+  let d (s : Finset E) := Field.finInsepDegree (adjoin F (s : Set E)) E
+  have Hexists : {s : Finset E | IsTranscendenceBasis F ((↑) : s → E)}.Nonempty := by
+    have ⟨s, hs⟩ := IntermediateField.fg_top F E
+    have : Algebra.IsAlgebraic (Algebra.adjoin F (s : Set E)) E := by
+      rw [← isAlgebraic_adjoin_iff_top, hs, Algebra.isAlgebraic_iff_isIntegral]
+      refine Algebra.isIntegral_of_surjective topEquiv.surjective
+    have ⟨t, hts, ht⟩ := exists_isTranscendenceBasis_subset (R := F) (s : Set E)
+    lift t to Finset E using s.finite_toSet.subset hts
+    exact ⟨t, ht⟩
+  let s := d.argminOn _ Hexists
+  have hs := d.argminOn_mem _ Hexists
+  refine ⟨s, hs, fun t ht ↦ not_lt_iff_le_imp_ge.mp fun H ↦ ?_⟩
+  have : t.Finite := by
+    simp [Set.Finite, ← Cardinal.mk_lt_aleph0_iff, ht.cardinalMk_eq hs, Cardinal.natCast_lt_aleph0]
+  lift t to Finset E using this
+  have : Module.Finite (adjoin F (s : Set E)) E := by
+    apply +allowSynthFailures Algebra.finite_of_essFiniteType_of_isAlgebraic
+    · exact .of_comp F _ _
+    · convert! hs.isAlgebraic_field <;> simp [s]
+  have : Module.Finite ((separableClosure (adjoin F (s : Set E)) E).restrictScalars F) E :=
+    inferInstanceAs <| Module.Finite (separableClosure (adjoin F (s : Set E)) E) E
+  exact d.not_lt_argminOn _ ht (by apply finrank_lt_of_gt H)
+
+@[deprecated (since := "2025-12-08")]
+alias FG.exists_finset_maximalFor_isTranscendenceBasis_separableClosure :=
+  IntermediateField.exists_finset_maximalFor_isTranscendenceBasis_separableClosure
 
 @[simp]
 theorem sepDegree_bot : sepDegree F (⊥ : IntermediateField F E) = 1 := by
@@ -370,7 +435,7 @@ variable {F}
 @[simp]
 theorem finInsepDegree_bot' :
     finInsepDegree F (⊥ : IntermediateField E K) = finInsepDegree F E := by
-  simpa only [Cardinal.toNat_lift] using congr_arg Cardinal.toNat (lift_insepDegree_bot' F E K)
+  simpa only [Cardinal.toNat_lift] using! congr_arg Cardinal.toNat (lift_insepDegree_bot' F E K)
 
 @[simp]
 theorem sepDegree_top : sepDegree F (⊤ : IntermediateField E K) = sepDegree F K :=

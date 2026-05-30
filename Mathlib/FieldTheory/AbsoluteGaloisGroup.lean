@@ -3,9 +3,11 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.FieldTheory.KrullTopology
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.Topology.Algebra.Group.TopologicalAbelianization
+module
+
+public import Mathlib.FieldTheory.KrullTopology
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.Topology.Algebra.Group.TopologicalAbelianization
 
 /-!
 # The topological abelianization of the absolute Galois group.
@@ -28,6 +30,8 @@ field, algebraic closure, galois group, abelianization
 
 -/
 
+@[expose] public noncomputable section
+
 namespace Field
 
 variable (K : Type*) [Field K]
@@ -37,13 +41,12 @@ variable (K : Type*) [Field K]
 /-- The absolute Galois group of `K`, defined as the Galois group of the field extension `K^al/K`,
   where `K^al` is an algebraic closure of `K`. -/
 def absoluteGaloisGroup := AlgebraicClosure K ≃ₐ[K] AlgebraicClosure K
-
-local notation "G_K" => absoluteGaloisGroup
-
-noncomputable instance : Group (G_K K) := AlgEquiv.aut
+deriving Group, TopologicalSpace, IsTopologicalGroup
 
 /-- `absoluteGaloisGroup` is a topological space with the Krull topology. -/
-noncomputable instance : TopologicalSpace (G_K K) := krullTopology K (AlgebraicClosure K)
+add_decl_doc instTopologicalSpaceAbsoluteGaloisGroup
+
+local notation "G_K" => absoluteGaloisGroup
 
 /-! ### The topological abelianization of the absolute Galois group -/
 

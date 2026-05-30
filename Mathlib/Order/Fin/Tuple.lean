@@ -3,15 +3,19 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 -/
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.Order.Fin.Basic
-import Mathlib.Order.PiLex
-import Mathlib.Order.Interval.Set.Defs
+module
+
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Order.Fin.Basic
+public import Mathlib.Order.PiLex
+public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Order properties on tuples
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -46,9 +50,6 @@ lemma preimage_insertNth_Icc_of_notMem {i : Fin (n + 1)} {x : α i} {q₁ q₂ :
   Set.ext fun p ↦ by
     simp only [mem_preimage, insertNth_mem_Icc, hx, false_and, mem_empty_iff_false]
 
-@[deprecated (since := "2025-05-23")]
-alias preimage_insertNth_Icc_of_not_mem := preimage_insertNth_Icc_of_notMem
-
 end Fin
 
 open Fin Matrix
@@ -68,7 +69,7 @@ variable [Preorder α] {n : ℕ} {f : Fin (n + 1) → α} {a : α}
 
 @[simp]
 lemma monotone_vecCons : Monotone (vecCons a f) ↔ a ≤ f 0 ∧ Monotone f := by
-  simpa only [monotone_iff_forall_lt] using @liftFun_vecCons α n (· ≤ ·) _ f a
+  simpa only [monotone_iff_forall_lt] using! @liftFun_vecCons α n (· ≤ ·) _ f a
 
 @[simp] lemma monotone_vecEmpty : Monotone ![a]
   | ⟨0, _⟩, ⟨0, _⟩, _ => le_refl _
@@ -148,6 +149,7 @@ def insertNthOrderIso (α : Fin (n + 1) → Type*) [∀ i, LE (α i)] (p : Fin (
   toEquiv := insertNthEquiv α p
   map_rel_iff' := by simp [Pi.le_def, Prod.le_def, p.forall_iff_succAbove]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma insertNthOrderIso_zero (α : Fin (n + 1) → Type*) [∀ i, LE (α i)] :
     insertNthOrderIso α 0 = consOrderIso α := by ext; simp [insertNthOrderIso]
 

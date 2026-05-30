@@ -3,8 +3,11 @@ Copyright (c) 2025 Dexin Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dexin Zhang
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.ModelTheory.Semantics
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.ModelTheory.Semantics
 
 /-!
 # Presburger arithmetic
@@ -22,6 +25,8 @@ This file defines the first-order language of Presburger arithmetic as (0,1,+).
 - Define the theory of Presburger arithmetic and prove its properties (quantifier elimination,
   completeness, etc).
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 

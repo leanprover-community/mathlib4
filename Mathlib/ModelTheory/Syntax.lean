@@ -3,10 +3,12 @@ Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
-import Mathlib.Data.Set.Prod
-import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.ModelTheory.LanguageMap
-import Mathlib.Algebra.Order.Group.Nat
+module
+
+public import Mathlib.Data.Set.Prod
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.ModelTheory.LanguageMap
+public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Basics on First-Order Syntax
@@ -26,9 +28,9 @@ This file defines first-order terms, formulas, sentences, and theories in a styl
   `FirstOrder.Language.BoundedFormula.relabel`, and `FirstOrder.Language.Formula.relabel`.
 - Given an operation on terms and an operation on relations,
   `FirstOrder.Language.BoundedFormula.mapTermRel` gives an operation on formulas.
-- `FirstOrder.Language.BoundedFormula.castLE` adds more `Fin`-indexed variables.
-- `FirstOrder.Language.BoundedFormula.liftAt` raises the indexes of the `Fin`-indexed variables
-  above a particular index.
+- `FirstOrder.Language.BoundedFormula.castLE` adds more bound variables.
+- `FirstOrder.Language.BoundedFormula.liftAt` raises the indexes of the bound variables above a
+  particular index.
 - `FirstOrder.Language.Term.subst` and `FirstOrder.Language.BoundedFormula.subst` substitute
   variables with given terms.
 - `FirstOrder.Language.Term.substFunc` instead substitutes function definitions with given terms.
@@ -36,24 +38,27 @@ This file defines first-order terms, formulas, sentences, and theories in a styl
   `FirstOrder.Language.LHom.onFormula`.
 - `FirstOrder.Language.Term.constantsVarsEquiv` and
   `FirstOrder.Language.BoundedFormula.constantsVarsEquiv` switch terms and formulas between having
-  constants in the language and having extra variables indexed by the same type.
+  constants in the language and having extra free variables indexed by the same type.
 
 ## Implementation Notes
 
-- Formulas use a modified version of de Bruijn variables. Specifically, a `L.BoundedFormula α n`
-  is a formula with some variables indexed by a type `α`, which cannot be quantified over, and some
-  indexed by `Fin n`, which can. For any `φ : L.BoundedFormula α (n + 1)`, we define the formula
-  `∀' φ : L.BoundedFormula α n` by universally quantifying over the variable indexed by
-  `n : Fin (n + 1)`.
+- `BoundedFormula` uses a locally nameless representation with bound variables as well-scoped de
+  Bruijn levels (the variable bounded by the outermost quantifier is indexed by `0`). Specifically,
+  a `L.BoundedFormula α n` is a formula with free variables indexed by a type `α`, which cannot be
+  quantified over, and bound variables indexed by `Fin n`, which can. For any
+  `φ : L.BoundedFormula α (n + 1)`, we define the formula `∀' φ : L.BoundedFormula α n` by
+  universally quantifying over the variable indexed by `n : Fin (n + 1)`.
 
 ## References
 
 For the Flypitch project:
-- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
-  [flypitch_cpp]
+- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum
+  hypothesis*][flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
   the continuum hypothesis*][flypitch_itp]
 -/
+
+@[expose] public section
 
 
 universe u v w u' v'
@@ -69,8 +74,8 @@ open FirstOrder
 
 open Structure Fin
 
-/-- A term on `α` is either a variable indexed by an element of `α`
-  or a function symbol applied to simpler terms. -/
+/-- A term on `α` is either a variable indexed by an element of `α` or a function symbol applied to
+simpler terms. -/
 inductive Term (α : Type u') : Type max u u'
   | var : α → Term α
   | func : ∀ {l : ℕ} (_f : L.Functions l) (_ts : Fin l → Term α), Term α
@@ -256,7 +261,7 @@ theorem substFunc_term (t : L.Term α) : t.substFunc Functions.term = t := by
 
 end Term
 
-/-- `&n` is notation for the `n`-th free variable of a bounded formula. -/
+/-- `&n` is notation for the bound variable indexed by `n` in a bounded formula. -/
 scoped[FirstOrder] prefix:arg "&" => FirstOrder.Language.Term.var ∘ Sum.inr
 
 namespace LHom
@@ -296,23 +301,21 @@ def LEquiv.onTerm (φ : L ≃ᴸ L') : L.Term α ≃ L'.Term α where
   right_inv := by
     rw [Function.rightInverse_iff_comp, ← LHom.comp_onTerm, φ.right_inv, LHom.id_onTerm]
 
-/-- Maps a term's symbols along a language equivalence. Deprecated in favor of `LEquiv.onTerm`. -/
-@[deprecated LEquiv.onTerm (since := "2025-03-31")] alias Lequiv.onTerm := LEquiv.onTerm
-
 variable (L) (α)
 
-/-- `BoundedFormula α n` is the type of formulas with free variables indexed by `α` and up to `n`
-  additional free variables. -/
+/-- `BoundedFormula α n` is the type of formulas with free variables indexed by `α` and `n` in-scope
+bound variables indexed by `Fin n`. -/
 inductive BoundedFormula : ℕ → Type max u v u'
   | falsum {n} : BoundedFormula n
   | equal {n} (t₁ t₂ : L.Term (α ⊕ (Fin n))) : BoundedFormula n
   | rel {n l : ℕ} (R : L.Relations l) (ts : Fin l → L.Term (α ⊕ (Fin n))) : BoundedFormula n
-  /-- The implication between two bounded formulas -/
+  /-- The implication between two bounded formulas. -/
   | imp {n} (f₁ f₂ : BoundedFormula n) : BoundedFormula n
-  /-- The universal quantifier over bounded formulas -/
+  /-- The universal quantifier over bounded formulas. -/
   | all {n} (f : BoundedFormula (n + 1)) : BoundedFormula n
 
-/-- `Formula α` is the type of formulas with all free variables indexed by `α`. -/
+/-- `Formula α` is the type of formulas with free variables indexed by `α` and no bound variables in
+scope. -/
 abbrev Formula :=
   L.BoundedFormula α 0
 
@@ -345,7 +348,7 @@ def Relations.boundedFormula₂ (r : L.Relations 2) (t₁ t₂ : L.Term (α ⊕ 
 def Term.bdEqual (t₁ t₂ : L.Term (α ⊕ (Fin n))) : L.BoundedFormula α n :=
   BoundedFormula.equal t₁ t₂
 
-/-- Applies a relation to terms as a bounded formula. -/
+/-- Applies a relation to terms as a formula. -/
 def Relations.formula (R : L.Relations n) (ts : Fin n → L.Term α) : L.Formula α :=
   R.boundedFormula fun i => (ts i).relabel Sum.inl
 
@@ -394,7 +397,7 @@ protected def iff (φ ψ : L.BoundedFormula α n) :=
 
 open Finset
 
-/-- The `Finset` of variables used in a given formula. -/
+/-- The `Finset` of free variables used in a given formula. -/
 @[simp]
 def freeVarFinset [DecidableEq α] : ∀ {n}, L.BoundedFormula α n → Finset α
   | _n, falsum => ∅
@@ -411,7 +414,7 @@ def castLE : ∀ {m n : ℕ} (_h : m ≤ n), L.BoundedFormula α m → L.Bounded
     equal (t₁.relabel (Sum.map id (Fin.castLE h))) (t₂.relabel (Sum.map id (Fin.castLE h)))
   | _m, _n, h, rel R ts => rel R (Term.relabel (Sum.map id (Fin.castLE h)) ∘ ts)
   | _m, _n, h, imp f₁ f₂ => (f₁.castLE h).imp (f₂.castLE h)
-  | _m, _n, h, all f => (f.castLE (add_le_add_right h 1)).all
+  | _m, _n, h, all f => (f.castLE (by gcongr)).all
 
 @[simp]
 theorem castLE_rfl {n} (h : n ≤ n) (φ : L.BoundedFormula α n) : φ.castLE h = φ := by
@@ -459,12 +462,12 @@ def restrictFreeVar [DecidableEq α] :
       (φ₂.restrictFreeVar (f ∘ Set.inclusion subset_union_right))
   | _n, all φ, f => (φ.restrictFreeVar f).all
 
-/-- Places universal quantifiers on all extra variables of a bounded formula. -/
+/-- Places universal quantifiers on all in-scope bound variables of a bounded formula. -/
 def alls : ∀ {n}, L.BoundedFormula α n → L.Formula α
   | 0, φ => φ
   | _n + 1, φ => φ.all.alls
 
-/-- Places existential quantifiers on all extra variables of a bounded formula. -/
+/-- Places existential quantifiers on all in-scope bound variables of a bounded formula. -/
 def exs : ∀ {n}, L.BoundedFormula α n → L.Formula α
   | 0, φ => φ
   | _n + 1, φ => φ.ex.exs
@@ -480,7 +483,7 @@ def mapTermRel {g : ℕ → ℕ} (ft : ∀ n, L.Term (α ⊕ (Fin n)) → L'.Ter
   | _n, imp φ₁ φ₂ => (φ₁.mapTermRel ft fr h).imp (φ₂.mapTermRel ft fr h)
   | n, all φ => (h n (φ.mapTermRel ft fr h)).all
 
-/-- Raises all of the `Fin`-indexed variables of a formula greater than or equal to `m` by `n'`. -/
+/-- Raises all of the bound variables of a formula greater than or equal to `m` by `n'`. -/
 def liftAt : ∀ {n : ℕ} (n' _m : ℕ), L.BoundedFormula α n → L.BoundedFormula α (n + n') :=
   fun {_} n' m φ =>
   φ.mapTermRel (fun _ t => t.liftAt n' m) (fun _ => id) fun _ =>
@@ -534,15 +537,11 @@ theorem sumElim_comp_relabelAux {m : ℕ} {g : α → β ⊕ (Fin n)} {v : β �
     rcases g x with l | r <;> simp
   · simp [BoundedFormula.relabelAux]
 
-@[deprecated (since := "2025-02-21")] alias sum_elim_comp_relabelAux := sumElim_comp_relabelAux
-
 @[simp]
 theorem relabelAux_sumInl (k : ℕ) :
     relabelAux (Sum.inl : α → α ⊕ (Fin n)) k = Sum.map id (natAdd n) := by
   ext x
   cases x <;> · simp [relabelAux]
-
-@[deprecated (since := "2025-02-21")] alias relabelAux_sum_inl := relabelAux_sumInl
 
 /-- Relabels a bounded formula's variables along a particular function. -/
 def relabel (g : α → β ⊕ (Fin n)) {k} (φ : L.BoundedFormula α k) : L.BoundedFormula β (n + k) :=
@@ -593,18 +592,17 @@ theorem relabel_sumInl (φ : L.BoundedFormula α n) :
   | imp _ _ ih1 ih2 => simp_all [mapTermRel]
   | all _ ih3 => simp_all [mapTermRel]
 
-@[deprecated (since := "2025-02-21")] alias relabel_sum_inl := relabel_sumInl
-
-/-- Substitutes the variables in a given formula with terms. -/
+/-- Substitutes the free variables in a bounded formula with terms, leaving bound variables
+unchanged. -/
 def subst {n : ℕ} (φ : L.BoundedFormula α n) (f : α → L.Term β) : L.BoundedFormula β n :=
   φ.mapTermRel (fun _ t => t.subst (Sum.elim (Term.relabel Sum.inl ∘ f) (var ∘ Sum.inr)))
     (fun _ => id) fun _ => id
 
-/-- A bijection sending formulas with constants to formulas with extra variables. -/
+/-- A bijection sending formulas with constants to formulas with extra free variables. -/
 def constantsVarsEquiv : L[[γ]].BoundedFormula α n ≃ L.BoundedFormula (γ ⊕ α) n :=
   mapTermRelEquiv (fun _ => Term.constantsVarsEquivLeft) fun _ => Equiv.sumEmpty _ _
 
-/-- Turns the extra variables of a bounded formula into free variables. -/
+/-- Turns all the in-scope bound variables into free variables. -/
 @[simp]
 def toFormula : ∀ {n : ℕ}, L.BoundedFormula α n → L.Formula (α ⊕ (Fin n))
   | _n, falsum => falsum
@@ -735,7 +733,7 @@ end LEquiv
 @[inherit_doc] scoped[FirstOrder] infixr:62 " ⟹ " => FirstOrder.Language.BoundedFormula.imp
 -- input \==>
 
-@[inherit_doc] scoped[FirstOrder] prefix:110 "∀'" => FirstOrder.Language.BoundedFormula.all
+@[inherit_doc] scoped[FirstOrder] prefix:110 "∀' " => FirstOrder.Language.BoundedFormula.all
 
 @[inherit_doc] scoped[FirstOrder] prefix:arg "∼" => FirstOrder.Language.BoundedFormula.not
 -- input \~, the ASCII character ~ has too low precedence
@@ -743,7 +741,7 @@ end LEquiv
 @[inherit_doc] scoped[FirstOrder] infixl:61 " ⇔ " => FirstOrder.Language.BoundedFormula.iff
 -- input \<=>
 
-@[inherit_doc] scoped[FirstOrder] prefix:110 "∃'" => FirstOrder.Language.BoundedFormula.ex
+@[inherit_doc] scoped[FirstOrder] prefix:110 "∃' " => FirstOrder.Language.BoundedFormula.ex
 -- input \ex
 
 namespace Formula
@@ -823,27 +821,27 @@ variable (r : L.Relations 2)
 
 /-- The sentence indicating that a basic relation symbol is reflexive. -/
 protected def reflexive : L.Sentence :=
-  ∀'r.boundedFormula₂ (&0) &0
+  ∀' r.boundedFormula₂ (&0) &0
 
 /-- The sentence indicating that a basic relation symbol is irreflexive. -/
 protected def irreflexive : L.Sentence :=
-  ∀'∼(r.boundedFormula₂ (&0) &0)
+  ∀' ∼(r.boundedFormula₂ (&0) &0)
 
 /-- The sentence indicating that a basic relation symbol is symmetric. -/
 protected def symmetric : L.Sentence :=
-  ∀'∀'(r.boundedFormula₂ (&0) &1 ⟹ r.boundedFormula₂ (&1) &0)
+  ∀' ∀' (r.boundedFormula₂ (&0) &1 ⟹ r.boundedFormula₂ (&1) &0)
 
 /-- The sentence indicating that a basic relation symbol is antisymmetric. -/
 protected def antisymmetric : L.Sentence :=
-  ∀'∀'(r.boundedFormula₂ (&0) &1 ⟹ r.boundedFormula₂ (&1) &0 ⟹ Term.bdEqual (&0) &1)
+  ∀' ∀' (r.boundedFormula₂ (&0) &1 ⟹ r.boundedFormula₂ (&1) &0 ⟹ Term.bdEqual (&0) &1)
 
 /-- The sentence indicating that a basic relation symbol is transitive. -/
 protected def transitive : L.Sentence :=
-  ∀'∀'∀'(r.boundedFormula₂ (&0) &1 ⟹ r.boundedFormula₂ (&1) &2 ⟹ r.boundedFormula₂ (&0) &2)
+  ∀' ∀' ∀' (r.boundedFormula₂ (&0) &1 ⟹ r.boundedFormula₂ (&1) &2 ⟹ r.boundedFormula₂ (&0) &2)
 
 /-- The sentence indicating that a basic relation symbol is total. -/
 protected def total : L.Sentence :=
-  ∀'∀'(r.boundedFormula₂ (&0) &1 ⊔ r.boundedFormula₂ (&1) &0)
+  ∀' ∀' (r.boundedFormula₂ (&0) &1 ⊔ r.boundedFormula₂ (&1) &0)
 
 end Relations
 

@@ -3,7 +3,9 @@ Copyright (c) 2024 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Data.Set.Lattice.Image
+module
+
+public import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Unions and intersections of bounds
@@ -16,6 +18,8 @@ In a separate file as we need to import `Mathlib/Data/Set/Lattice.lean`.
 
 -/
 
+public section
+
 variable {α : Type*} [Preorder α] {ι : Sort*} {s : ι → Set α}
 
 open Set
@@ -24,7 +28,7 @@ theorem gc_upperBounds_lowerBounds : GaloisConnection
     (OrderDual.toDual ∘ upperBounds : Set α → (Set α)ᵒᵈ)
     (lowerBounds ∘ OrderDual.ofDual : (Set α)ᵒᵈ → Set α) := by
   simpa [GaloisConnection, subset_def, mem_upperBounds, mem_lowerBounds]
-    using fun S T ↦ forall₂_swap
+    using fun S T ↦ forall₂_comm
 
 @[simp]
 theorem upperBounds_iUnion :

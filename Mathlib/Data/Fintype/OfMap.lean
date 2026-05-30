@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.Defs
-import Mathlib.Data.Finset.Image
+module
+
+public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Data.Finset.Image
 
 /-!
 # Constructors for `Fintype`
@@ -17,6 +19,8 @@ given maps from/to finite types.
 * `Fintype.ofBijective`, `Fintype.ofInjective`, `Fintype.ofSurjective`:
   a type is finite if there is a bi/in/surjection from/to a finite type.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -33,20 +37,24 @@ open Finset
 namespace Fintype
 
 /-- Construct a proof of `Fintype α` from a universal multiset -/
+@[implicit_reducible]
 def ofMultiset [DecidableEq α] (s : Multiset α) (H : ∀ x : α, x ∈ s) : Fintype α :=
   ⟨s.toFinset, by simpa using H⟩
 
 /-- Construct a proof of `Fintype α` from a universal list -/
+@[implicit_reducible]
 def ofList [DecidableEq α] (l : List α) (H : ∀ x : α, x ∈ l) : Fintype α :=
   ⟨l.toFinset, by simpa using H⟩
 
 /-- If `f : α → β` is a bijection and `α` is a fintype, then `β` is also a fintype. -/
+@[implicit_reducible]
 def ofBijective [Fintype α] (f : α → β) (H : Function.Bijective f) : Fintype β :=
   ⟨univ.map ⟨f, H.1⟩, fun b =>
     let ⟨_, e⟩ := H.2 b
     e ▸ mem_map_of_mem _ (mem_univ _)⟩
 
 /-- If `f : α → β` is a surjection and `α` is a fintype, then `β` is also a fintype. -/
+@[implicit_reducible]
 def ofSurjective [DecidableEq β] [Fintype α] (f : α → β) (H : Function.Surjective f) : Fintype β :=
   ⟨univ.image f, fun b =>
     let ⟨_, e⟩ := H b
@@ -55,6 +63,7 @@ def ofSurjective [DecidableEq β] [Fintype α] (f : α → β) (H : Function.Sur
 /-- Given an injective function to a fintype, the domain is also a
 fintype. This is noncomputable because injectivity alone cannot be
 used to construct preimages. -/
+@[implicit_reducible]
 noncomputable def ofInjective [Fintype β] (f : α → β) (H : Function.Injective f) : Fintype α :=
   letI := Classical.dec
   if hα : Nonempty α then
@@ -63,10 +72,12 @@ noncomputable def ofInjective [Fintype β] (f : α → β) (H : Function.Injecti
   else ⟨∅, fun x => (hα ⟨x⟩).elim⟩
 
 /-- If `f : α ≃ β` and `α` is a fintype, then `β` is also a fintype. -/
+@[implicit_reducible]
 def ofEquiv (α : Type*) [Fintype α] (f : α ≃ β) : Fintype β :=
   ofBijective _ f.bijective
 
 /-- Any subsingleton type with a witness is a fintype (with one term). -/
+@[implicit_reducible]
 def ofSubsingleton (a : α) [Subsingleton α] : Fintype α :=
   ⟨{a}, fun _ => Finset.mem_singleton.2 (Subsingleton.elim _ _)⟩
 
@@ -77,6 +88,7 @@ theorem univ_ofSubsingleton (a : α) [Subsingleton α] : @univ _ (ofSubsingleton
 
 /-- An empty type is a fintype. Not registered as an instance, to make sure that there aren't two
 conflicting `Fintype ι` instances around when casing over whether a fintype `ι` is empty or not. -/
+@[implicit_reducible]
 def ofIsEmpty [IsEmpty α] : Fintype α :=
   ⟨∅, isEmptyElim⟩
 

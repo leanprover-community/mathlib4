@@ -3,8 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Devon Tuma
 -/
-import Mathlib.Probability.ProbabilityMassFunction.Monad
-import Mathlib.Control.ULiftable
+module
+
+public import Mathlib.Probability.Distributions.Bernoulli
+public import Mathlib.Probability.ProbabilityMassFunction.Monad
+public import Mathlib.Control.ULiftable
 
 /-!
 # Specific Constructions of Probability Mass Functions
@@ -23,6 +26,8 @@ and `filter` uses this to filter the support of a `PMF` and re-normalize the new
 `bernoulli` represents the Bernoulli distribution on `Bool`.
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -175,8 +180,6 @@ theorem mem_support_ofFinset_iff (a : α) : a ∈ (ofFinset f s h h').support �
 theorem ofFinset_apply_of_notMem {a : α} (ha : a ∉ s) : ofFinset f s h h' a = 0 :=
   h' a ha
 
-@[deprecated (since := "2025-05-23")] alias ofFinset_apply_of_not_mem := ofFinset_apply_of_notMem
-
 section Measure
 
 variable (t : Set α)
@@ -274,9 +277,6 @@ theorem filter_apply (a : α) :
 theorem filter_apply_eq_zero_of_notMem {a : α} (ha : a ∉ s) : (p.filter s h) a = 0 := by
   rw [filter_apply, Set.indicator_apply_eq_zero.mpr fun ha' => absurd ha' ha, zero_mul]
 
-@[deprecated (since := "2025-05-23")]
-alias filter_apply_eq_zero_of_not_mem := filter_apply_eq_zero_of_notMem
-
 theorem mem_support_filter_iff {a : α} : a ∈ (p.filter s h).support ↔ a ∈ s ∧ a ∈ p.support :=
   (mem_support_normalize_iff _ _ _).trans Set.indicator_apply_ne_zero
 
@@ -295,16 +295,18 @@ end Filter
 section bernoulli
 
 /-- A `PMF` which assigns probability `p` to `true` and `1 - p` to `false`. -/
+@[deprecated ProbabilityTheory.bernoulliMeasure (since := "2026-04-07")]
 def bernoulli (p : ℝ≥0) (h : p ≤ 1) : PMF Bool :=
   ofFintype (fun b => cond b p (1 - p)) (by simp [h])
 
 variable {p : ℝ≥0} (h : p ≤ 1) (b : Bool)
 
-@[simp]
+@[deprecated ProbabilityTheory.bernoulliMeasure_apply (since := "2026-04-07")]
 theorem bernoulli_apply : bernoulli p h b = cond b p (1 - p) := by
   simp only [bernoulli, ofFintype_apply]
   exact Eq.symm (Bool.apply_cond ofNNReal)
 
+set_option linter.deprecated false in
 @[simp]
 theorem support_bernoulli : (bernoulli p h).support = { b | cond b (p ≠ 0) (p ≠ 1) } := by
   refine Set.ext fun b => ?_
@@ -313,13 +315,14 @@ theorem support_bernoulli : (bernoulli p h).support = { b | cond b (p ≠ 0) (p 
       ENNReal.coe_one, Bool.cond_prop, Set.mem_setOf_eq, Bool.false_eq_true, ite_false, not_iff_not]
     constructor
     · intro h'
-      simp [tsub_eq_zero_iff_le] at h'
+      simp only [tsub_eq_zero_iff_le, one_le_coe_iff] at h'
       exact eq_of_le_of_ge h h'
     · intro h'
       simp only [h', ENNReal.coe_one, tsub_self]
   · simp only [mem_support_iff, bernoulli_apply, Bool.cond_true, Set.mem_setOf_eq, ne_eq,
       ENNReal.coe_eq_zero]
 
+set_option linter.deprecated false in
 theorem mem_support_bernoulli_iff : b ∈ (bernoulli p h).support ↔ cond b (p ≠ 0) (p ≠ 1) := by simp
 
 end bernoulli

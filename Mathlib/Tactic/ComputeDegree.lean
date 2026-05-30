@@ -3,8 +3,9 @@ Copyright (c) 2023 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 
 /-!
 
@@ -13,11 +14,12 @@ import Mathlib.Algebra.Polynomial.Degree.Lemmas
 This file defines two related tactics: `compute_degree` and `monicity`.
 
 Using `compute_degree` when the goal is of one of the seven forms
-*  `natDegree f ≤ d` (or `<`),
-*  `degree f ≤ d` (or `<`),
-*  `natDegree f = d`,
-*  `degree f = d`,
-*  `coeff f d = r`, if `d` is the degree of `f`,
+* `natDegree f ≤ d` (or `<`),
+* `degree f ≤ d` (or `<`),
+* `natDegree f = d`,
+* `degree f = d`,
+* `coeff f d = r`, if `d` is the degree of `f`,
+
 tries to solve the goal.
 It may leave side-goals, in case it is not entirely successful.
 
@@ -29,7 +31,7 @@ Lean to try harder to close the goal.
 
 See the doc-strings for more details.
 
-##  Future work
+## Future work
 
 * Currently, `compute_degree` does not deal correctly with some edge cases.  For instance,
   ```lean
@@ -44,7 +46,7 @@ See the doc-strings for more details.
 * Add support for proving goals of the from `natDegree f ≠ 0` and `degree f ≠ 0`.
 * Make sure that `degree`, `natDegree` and `coeff` are equally supported.
 
-##  Implementation details
+## Implementation details
 
 Assume that `f : R[X]` is a polynomial with coefficients in a semiring `R` and
 `d` is either in `ℕ` or in `WithBot ℕ`.
@@ -52,6 +54,7 @@ Assume that `f : R[X]` is a polynomial with coefficients in a semiring `R` and
 If the goal has the form `natDegree f < d`, then we convert it to two separate goals:
 * `natDegree f ≤ ?_`, on which we apply the following steps;
 * `?_ < d`;
+
 where `?_` is a metavariable that `compute_degree` computes in its process.
 We proceed similarly for `degree f < d`.
 
@@ -78,13 +81,15 @@ The leaves of the process are
 * `fvar`s `f`, to which we tautologically assign degree `natDegree f`.
 -/
 
+public meta section
+
 open Polynomial
 
 namespace Mathlib.Tactic.ComputeDegree
 
 section recursion_lemmas
 /-!
-###  Simple lemmas about `natDegree`
+### Simple lemmas about `natDegree`
 
 The lemmas in this section all have the form `natDegree <some form of cast> ≤ 0`.
 Their proofs are weakenings of the stronger lemmas `natDegree <same> = 0`.
@@ -112,7 +117,7 @@ theorem coeff_mul_add_of_le_natDegree_of_eq_ite {d df dg : ℕ} {a b : R} {f g :
     (f * g).coeff d = if d = df + dg then a * b else 0 := by
   split_ifs with h
   · subst h_mul_left h_mul_right h
-    exact coeff_mul_of_natDegree_le ‹_› ‹_›
+    exact coeff_mul_add_eq_of_natDegree_le ‹_› ‹_›
   · apply coeff_eq_zero_of_natDegree_lt
     apply lt_of_le_of_lt ?_ (lt_of_le_of_ne ddf ?_)
     · exact natDegree_mul_le_of_le ‹_› ‹_›
@@ -361,7 +366,7 @@ def dispatchLemma
           π ``natDegree_smul_le_of_le ``degree_smul_le_of_le ``coeff_smul
         | _ => π ``le_rfl ``le_rfl ``rfl
 
-/-- `try_rfl mvs` takes as input a list of `MVarId`s, scans them partitioning them into two
+/-- `tryRfl mvs` takes as input a list of `MVarId`s, scans them partitioning them into two
 lists: the goals containing some metavariables and the goals not containing any metavariable.
 
 If a goal containing a metavariable has the form `?_ = x`, `x = ?_`, where `?_` is a metavariable
@@ -373,7 +378,7 @@ If a goal does not contain metavariables, it tries `rfl` on it.
 It returns the list of `MVarId`s, beginning with the ones that initially involved (`Expr`)
 metavariables followed by the rest.
 -/
-def try_rfl (mvs : List MVarId) : MetaM (List MVarId) := do
+def tryRfl (mvs : List MVarId) : MetaM (List MVarId) := do
   let (yesMV, noMV) := ← mvs.partitionM fun mv =>
                           return hasExprMVar (← instantiateMVars (← mv.getDecl).type)
   let tried_rfl := ← noMV.mapM fun g => g.applyConst ``rfl <|> return [g]
@@ -388,6 +393,8 @@ def try_rfl (mvs : List MVarId) : MetaM (List MVarId) := do
       | none =>
         return [g]
   return (assignable.flatten ++ tried_rfl.flatten)
+
+@[deprecated (since := "2026-05-27")] alias try_rfl := tryRfl
 
 /--
 `splitApply mvs static` takes two lists of `MVarId`s.  The first list, `mvs`,
@@ -408,19 +415,19 @@ def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId
   return (progress.flatten, static ++ curr_static)
 
 /-- `miscomputedDegree? deg false_goals` takes as input
-*  an `Expr`ession `deg`, representing the degree of a polynomial
+* an `Expr`ession `deg`, representing the degree of a polynomial
   (i.e. an `Expr`ession of inferred type either `ℕ` or `WithBot ℕ`);
-*  a list of `MVarId`s `false_goals`.
+* a list of `MVarId`s `false_goals`.
 
 Although inconsequential for this function, the list of goals `false_goals` reduces to `False`
 if `norm_num`med.
 `miscomputedDegree?` extracts error information from goals of the form
-*  `a ≠ b`, assuming it comes from `⊢ coeff_of_given_degree ≠ 0`
-  --- reducing to `False` means that the coefficient that was supposed to vanish, does not;
-*  `a ≤ b`, assuming it comes from `⊢ degree_of_subterm ≤ degree_of_polynomial`
-  --- reducing to `False` means that there is a term of degree that is apparently too large;
-*  `a = b`, assuming it comes from `⊢ computed_degree ≤ given_degree`
-  --- reducing to `False` means that there is a term of degree that is apparently too large.
+* `a ≠ b`, assuming it comes from `⊢ coeff_of_given_degree ≠ 0` —
+  reducing to `False` means that the coefficient that was supposed to vanish, does not;
+* `a ≤ b`, assuming it comes from `⊢ degree_of_subterm ≤ degree_of_polynomial` —
+  reducing to `False` means that there is a term of degree that is apparently too large;
+* `a = b`, assuming it comes from `⊢ computed_degree ≤ given_degree` —
+  reducing to `False` means that there is a term of degree that is apparently too large.
 
 The cases `a ≠ b` and `a = b` are not a perfect match with the top coefficient:
 reducing to `False` is not exactly correlated with a coefficient being non-zero.
@@ -461,7 +468,7 @@ syntax (name := computeDegree) "compute_degree" "!"? : tactic
 
 initialize registerTraceClass `Tactic.compute_degree
 
-@[inherit_doc computeDegree]
+@[tactic_alt computeDegree]
 macro "compute_degree!" : tactic => `(tactic| compute_degree !)
 
 elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMainContext do
@@ -482,7 +489,7 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
         f!"'compute_degree' first applies lemma '{lem.lastComponentAsString}'"
       let mut (gls, static) := (← goal.applyConst lem, [])
       while gls != [] do (gls, static) ← splitApply gls static
-      let rfled ← try_rfl static
+      let rfled ← tryRfl static
       setGoals rfled
       --  simplify the left-hand sides, since this is where the degree computations leave
       --  expressions such as `max (0 * 1) (max (1 + 0 + 3 * 4) (7 * 0))`
@@ -514,7 +521,7 @@ The variant `monicity!` starts like `monicity`, but calls `compute_degree!` on t
 macro (name := monicityMacro) "monicity" : tactic =>
   `(tactic| (apply monic_of_natDegree_le_of_coeff_eq_one <;> compute_degree))
 
-@[inherit_doc monicityMacro]
+@[tactic_alt monicityMacro]
 macro "monicity!" : tactic =>
   `(tactic| (apply monic_of_natDegree_le_of_coeff_eq_one <;> compute_degree!))
 
@@ -525,4 +532,5 @@ end Mathlib.Tactic.ComputeDegree
 /-!
  We register `compute_degree` with the `hint` tactic.
  -/
-register_hint compute_degree
+register_hint 1000 compute_degree
+register_try?_tactic (priority := 1000) compute_degree
