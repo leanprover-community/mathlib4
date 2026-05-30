@@ -103,6 +103,7 @@ noncomputable def forgetToSheafModuleCat
       (forget₂ (ModuleCat.{w} (R.1.obj X)) AddCommGrpCat.{w}) M.isSheaf⟩
   map f := { hom := (PresheafOfModules.forgetToPresheafModuleCat X hX).map f.1 }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Isomorphism on `forgetToSheafModuleCat` when given isomorphic initial objects. -/
 noncomputable def forgetToSheafModuleCatOfIso (X Y : Cᵒᵖ) (hX : Limits.IsInitial X)
     (hY : Limits.IsInitial Y) (φ : X ≅ Y) :

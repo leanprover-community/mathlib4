@@ -330,6 +330,7 @@ lemma pushforwardPushforwardEquivalence_counit_app_val_app (M U x) :
 
 end Equivalence
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Pushforward commutes with `SheafOfModules.forgetToSheafModuleCat` -/
 noncomputable def pushforwardCompForgetToSheafModuleCat
