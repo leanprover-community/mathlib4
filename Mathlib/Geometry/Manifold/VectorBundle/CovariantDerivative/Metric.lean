@@ -14,7 +14,7 @@ public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 This file defines connections on a Riemannian vector bundle which are compatible with the ambient
 metric. A bundled connection `∇` on a Riemannian vector bundle `(V, g)` is compatible with the
 metric `g` if and only if the differentiated metric tensor `∇ g` (defined by
-`(X, σ, τ) ↦ ∇_X g(σ, τ) - g(∇_X σ, τ) - g(σ, ∇_X τ)`) vanishes on all differentiable vector fields
+`(X, σ, τ) ↦ 𝓛_X g(σ, τ) - g(∇_X σ, τ) - g(σ, ∇_X τ)`) vanishes on all differentiable vector fields
 `X` and differentiable sections `σ`, `τ`.
 
 ## Main definitions and results
@@ -60,9 +60,9 @@ variable
 
 /-! # Compatible connections
 
-A connection on `V` is compatible with the metric on `V` iff `X ⟨σ, τ⟩ = ⟨∇_X σ, τ⟩ + ⟨σ, ∇_X τ⟩`
+A connection on `V` is compatible with the metric on `V` iff `𝓛_X ⟨σ, τ⟩ = ⟨∇_X σ, τ⟩ + ⟨σ, ∇_X τ⟩`
 holds for all sufficiently nice vector fields `X` on `M` and sections `σ`, `τ` of `V`.
-The left hand side is the pushforward of the function `⟨σ, τ⟩` along the vector field `X`:
+The left hand side is the Lie derivative of the function `⟨σ, τ⟩` w.r.t. the vector field `X`:
 the left hand side at `x` is `df(X x)`, where `f := ⟨σ, τ⟩` (ie. `X` is seen a derivation on
 the algebra of function on the base manifold acting on the function `⟨σ, τ⟩`).
 In our definition, we ask for this identity to hold at each `x : M`, whenever `X`, `σ` and `τ` are
