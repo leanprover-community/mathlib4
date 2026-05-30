@@ -70,8 +70,8 @@ can be obtained as `DirectSum.toMonoid (fun i ↦ AddSubmonoid.inclusion <| le_i
 
 ## Implementation details
 
-The instances on `A 0` are scoped to the `DirectSum` namespace, because they have
-very general discrimination trees. Use `open scoped DirectSum` to bring them into scope.
+The instances on `A 0` are scoped to the `DirectSum` namespace, because they hae
+very general discriminantion trees.
 
 ## Tags
 
@@ -438,6 +438,7 @@ scoped instance (priority := 900) GradeZero.semiring : Semiring (A 0) :=
 -- The `scoped instance` declarations above attach to the `DirectSum.GradeZero` scope (Lean derives
 -- the scope from the declaration name's prefix). We re-scope them to `DirectSum` with the
 -- `attribute` command below, which scopes to the enclosing namespace instead.
+-- See https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/scoped.20instance.20with.20dot.20in.20name/with/598709628
 attribute [scoped instance 900] GradeZero.semiring
 
 /-- `of A 0` is a `RingHom`, using the `DirectSum.GradeZero.semiring` structure. -/
