@@ -274,10 +274,10 @@ lemma eq_top_of_mem_invtSubmodule_of_forall_eq_univ
     q = ⊤ := by
   obtain ⟨Φ, b, c⟩ := P.exist_set_root_not_disjoint_and_le_ker_coroot'_of_invtSubmodule q h₁
   rcases Φ.eq_empty_or_nonempty with rfl | hΦ
-  · replace c : q ≤ ⨅ i, LinearMap.ker (P.coroot' i) := by simpa using c
+  · replace c : q ≤ ⨅ i, LinearMap.ker (P.coroot' i) := by simpa using! c
     simp [h₀, ← P.corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot'] at c
   · replace b : P.root '' Φ ⊆ q := by
-      simpa [Submodule.disjoint_span_singleton' (P.ne_zero _)] using b
-    simpa [h₂ Φ hΦ b c, ← span_le] using b
+      simpa [Submodule.disjoint_span_singleton' (P.ne_zero _)] using! b
+    simpa [h₂ Φ hΦ b c, ← span_le] using! b
 
 end RootPairing

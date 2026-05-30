@@ -147,13 +147,13 @@ lemma liftBaseChange_injective_of_isLocalizationAway :
     simp only [Submonoid.smul_def]
     rw [show g = algebraMap P.Ring S (P.σ g) by simp, ← map_pow, algebraMap_smul, ← map_smul,
       Extension.Cotangent.mk_eq_zero_iff]
-    simpa using hm
+    simpa using! hm
   rw [← compLocalizationAwayAlgHom_toAlgHom_toComp (T := T)]
   apply sq_ker_comp_le_ker_compLocalizationAwayAlgHom
   simpa only [LinearEquiv.coe_coe, LinearMap.ringLmapEquivSelf_symm_apply,
     mk_apply, lift.tmul, LinearMap.coe_restrictScalars, LinearMap.coe_smulRight,
     Module.End.one_apply, LinearMap.smul_apply, one_smul, Algebra.Extension.Cotangent.map_mk,
-    Extension.Cotangent.mk_eq_zero_iff] using hx
+    Extension.Cotangent.mk_eq_zero_iff] using! hx
 
 /--
 In the notation of the module docstring: Since `T` is standard smooth
