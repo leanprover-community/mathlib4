@@ -68,7 +68,7 @@ set_option backward.isDefEq.respectTransparency false in
   | mem _ hxs => exact h hxs
   | zero => simp
   | add _ _ _ _ hy hz => simpa using add_nonneg hy hz
-  | smul c _ _ hy => simpa using mul_nonneg c.2 hy
+  | smul c _ _ hy => simpa using! mul_nonneg c.2 hy
 
 lemma mem_dual_iff_le_positive_comap {y : N} :
     y ∈ dual p C ↔ C ≤ (positive R R).comap (p.flip y) := .rfl

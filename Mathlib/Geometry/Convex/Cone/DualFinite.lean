@@ -62,7 +62,7 @@ lemma DualFG.iff_exists_fg_dual {C : PointedCone R N} :
 lemma DualFG.id {C : PointedCone R N} (hC : C.DualFG p) : C.DualFG .id := by
   obtain ⟨D, hfg, rfl⟩ := hC
   use D.map p
-  simpa using hfg.map _
+  simpa using! hfg.map _
 
 variable (p) in
 /-- The dual of a finitely generated cone is dually finitely generated. -/
