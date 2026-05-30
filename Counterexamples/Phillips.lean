@@ -283,9 +283,8 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
   have I1 : ∀ n, ε / 2 ≤ f (↑(s (n + 1)) \ ↑(s n)) := by
     intro n
     rw [div_le_iff₀' (show (0 : ℝ) < 2 by simp), hε]
-    convert! hF (s n) u using 2
-    · dsimp
-      ext x
+    convert hF (s n) u using 2
+    · ext x
       simp only [u, not_exists, mem_iUnion, mem_diff]
       tauto
     · congr 1
@@ -299,7 +298,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     | succ n IH =>
       have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
         simpa only [s, Function.iterate_succ', union_diff_self]
-          using (diff_union_of_subset subset_union_left).symm
+          using! (diff_union_of_subset subset_union_left).symm
       rw [this, f.additive]
       swap; · exact disjoint_sdiff_self_left
       calc
@@ -462,7 +461,7 @@ theorem sierpinski_pathological_family (Hcont : #ℝ = ℵ₁) :
     ∃ f : ℝ → Set ℝ, (∀ x, (univ \ f x).Countable) ∧ ∀ y, {x : ℝ | y ∈ f x}.Countable := by
   obtain ⟨r, hr₁, hr₂⟩ := Cardinal.exists_rel_mk_fibers_lt ℝ
   refine ⟨fun x ↦ setOf (r x), ?_, ?_⟩
-  · simpa [Hcont, ← Set.compl_eq_univ_diff] using hr₁
+  · simpa [Hcont, ← Set.compl_eq_univ_diff] using! hr₁
   · simpa [Hcont] using hr₂
 
 /-- A family of sets in `ℝ` which only miss countably many points, but such that any point is

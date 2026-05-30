@@ -248,11 +248,69 @@ instance module [Semiring R] [Semiring S] (f : R →+* S) [AddCommMonoid M] [Mod
   __ := distribMulAction f.toMonoidHom
 
 @[simps]
+def semilinearMapAddEquiv [Semiring R] [Semiring S] (f : R →+* S) [AddCommMonoid M] [Module S M]
+    [AddCommMonoid N] [Module R N] : (N →ₛₗ[f] M) ≃+ (N →ₗ[R] RestrictScalarsMap f M) where
+  toFun g := {
+    toFun x := res f (g x)
+    map_add' _ _ := by simp
+    map_smul' _ _ := by simp [smul_def]
+    }
+  invFun g := {
+    toFun x := (g x).unres
+    map_add' _ _ := by simp
+    map_smul' _ _ := by simp
+  }
+  map_add' _ _ := by ext; simp
+
+@[simps]
 def map [Semiring R] [Semiring S] (f : R →+* S) [AddCommMonoid M] [Module S M] [AddCommMonoid N]
     [Module S N] (g : M →ₗ[S] N) : RestrictScalarsMap f M →ₗ[R] RestrictScalarsMap f N where
   toFun x := res f (g (unres x))
   map_add' x y := by simp
   map_smul' r x := by simp [smul_def]
+
+variable (M) in
+@[simps]
+def congr [Semiring R] [Semiring S] {f g : R →+* S} (e : f = g) [AddCommMonoid M] [Module S M] :
+    RestrictScalarsMap f M ≃ₗ[R] RestrictScalarsMap g M where
+  toFun x := res g x.unres
+  invFun x := res f x.unres
+  map_add' := by simp
+  map_smul' := by simp [smul_def, RingHom.congr_fun e]
+
+lemma congr_symm [Semiring R] [Semiring S] {f g : R →+* S} (e : f = g)
+    [AddCommMonoid M] [Module S M] : (congr M e).symm = congr M e.symm := rfl
+
+variable (M) in
+@[simps]
+def congrId [Semiring R] (f : R →+* R) (e : f = RingHom.id R) [AddCommMonoid M] [Module R M] :
+    RestrictScalarsMap f M ≃ₗ[R] M where
+  toFun := unres
+  invFun := res f
+  map_add' := by simp
+  map_smul' := by simp [RingHom.congr_fun e]
+
+variable (M) in
+@[simps]
+def congrComp {R₁ R₂ R₃ : Type*} [Semiring R₁] [Semiring R₂] [Semiring R₃]
+    (f : R₁ →+* R₂) (g : R₂ →+* R₃) (h : R₁ →+* R₃) (e : h = g.comp f)
+    [AddCommMonoid M] [Module R₃ M] :
+    RestrictScalarsMap h M ≃ₗ[R₁] RestrictScalarsMap f (RestrictScalarsMap g M) where
+  toFun x := res f (res g x.unres)
+  invFun x := res h x.unres.unres
+  map_add' := by simp
+  map_smul' := by simp [smul_def, RingHom.congr_fun e]
+
+@[simps]
+def linearEquivOfRingEquiv [Semiring R] [Semiring S] (f : R ≃+* S) :
+    RestrictScalarsMap f.toRingHom S ≃ₗ[R] R where
+  toFun x := f.symm x.unres
+  invFun x := res f.toRingHom (f x)
+  map_add' := by simp [dsimp% unres_add f.toRingHom]
+  map_smul' := by simp [dsimp% smul_def' f.toRingHom]
+  left_inv _ := by simp
+  right_inv _ := by simp
+
 
 section Opposite
 
@@ -262,7 +320,7 @@ instance opSMul [SMul Sᵐᵒᵖ M] : SMul Rᵐᵒᵖ (RestrictScalarsMap f M) w
 theorem opSMul_def [SMul Sᵐᵒᵖ M] (r : Rᵐᵒᵖ) (m : RestrictScalarsMap f M) :
     r • m = res f (MulOpposite.op (f r.unop) • m.unres) := rfl
 
-@[simp] theorem opSMul_def' [SMul Sᵐᵒᵖ M] (r : Rᵐᵒᵖ) (m : RestrictScalarsMap f M) :
+theorem opSMul_def' [SMul Sᵐᵒᵖ M] (r : Rᵐᵒᵖ) (m : RestrictScalarsMap f M) :
     (r • m).unres = (MulOpposite.op (f r.unop)) • m.unres := rfl
 
 instance isCentralScalar [SMul S M] [SMul Sᵐᵒᵖ M] [IsCentralScalar S M] :
