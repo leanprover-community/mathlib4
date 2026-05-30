@@ -268,7 +268,7 @@ theorem star_mem_resolventSet_iff {r : R} {a : A} :
 
 protected theorem map_star (a : A) : σ (star a) = star (σ a) := by
   ext
-  simpa only [Set.mem_star, mem_iff, not_iff_not] using star_mem_resolventSet_iff.symm
+  simpa only [Set.mem_star, mem_iff, not_iff_not] using! star_mem_resolventSet_iff.symm
 
 end Star
 
@@ -399,7 +399,7 @@ local notation "↑ₐ" => algebraMap R A
 
 theorem mem_resolventSet_apply (φ : F) {a : A} {r : R} (h : r ∈ resolventSet R a) :
     r ∈ resolventSet R ((φ : A → B) a) := by
-  simpa only [map_sub, AlgHomClass.commutes] using h.map φ
+  simpa only [map_sub, AlgHomClass.commutes] using! h.map φ
 
 theorem spectrum_apply_subset (φ : F) (a : A) : σ ((φ : A → B) a) ⊆ σ a := fun _ =>
   mt (mem_resolventSet_apply φ)

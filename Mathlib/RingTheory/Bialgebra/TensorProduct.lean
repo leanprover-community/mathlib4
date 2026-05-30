@@ -167,6 +167,7 @@ end Heterogeneous
 section Homogeneous
 variable (R S A B) [Bialgebra R A] [Bialgebra R B]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The tensor product of `R`-bialgebras is commutative, up to bialgebra isomorphism. -/
 @[expose] def comm : A ⊗[R] B ≃ₐc[R] B ⊗[R] A :=
   .ofAlgEquiv (Algebra.TensorProduct.comm R A B) (by ext <;> simp) <| by
