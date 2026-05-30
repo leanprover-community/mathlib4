@@ -163,6 +163,50 @@ theorem semicontinuous_iff_isOpen : Semicontinuous r ↔ ∀ b, IsOpen {x | r x 
 theorem Semicontinuous.isOpen (h : Semicontinuous r) (b : β) : IsOpen {x | r x b} :=
   semicontinuous_iff_isOpen.mp h b
 
+theorem SemicontinuousWithinAt.and {r' : α → β → Prop}
+    (h : SemicontinuousWithinAt r s x) (h' : SemicontinuousWithinAt r' s x) :
+    SemicontinuousWithinAt (fun a b ↦ r a b ∧ r' a b) s x := fun b ⟨hb, hb'⟩ ↦
+  (h b hb).and (h' b hb')
+
+theorem SemicontinuousWithinAt.or {r' : α → β → Prop}
+    (h : SemicontinuousWithinAt r s x) (h' : SemicontinuousWithinAt r' s x) :
+    SemicontinuousWithinAt (fun a b ↦ r a b ∨ r' a b) s x := by
+  intro b hab
+  obtain hb | hb' := hab
+  · exact (h b hb).mono fun _ hx ↦ Or.inl hx
+  · exact (h' b hb').mono fun _ hx ↦ Or.inr hx
+
+theorem SemicontinuousAt.and {r' : α → β → Prop}
+    (h : SemicontinuousAt r x) (h' : SemicontinuousAt r' x) :
+    SemicontinuousAt (fun a b ↦ r a b ∧ r' a b) x := fun b ⟨hb, hb'⟩ ↦
+  (h b hb).and (h' b hb')
+
+theorem SemicontinuousAt.or {r' : α → β → Prop}
+    (h : SemicontinuousAt r x) (h' : SemicontinuousAt r' x) :
+    SemicontinuousAt (fun a b ↦ r a b ∨ r' a b) x := by
+  intro b hab
+  obtain hb | hb' := hab
+  · exact (h b hb).mono fun _ hx ↦ Or.inl hx
+  · exact (h' b hb').mono fun _ hx ↦ Or.inr hx
+
+theorem SemicontinuousOn.and {r' : α → β → Prop}
+    (h : SemicontinuousOn r s) (h' : SemicontinuousOn r' s) :
+    SemicontinuousOn (fun a b ↦ r a b ∧ r' a b) s := fun x hx ↦
+  (h x hx).and (h' x hx)
+
+theorem SemicontinuousOn.or {r' : α → β → Prop}
+    (h : SemicontinuousOn r s) (h' : SemicontinuousOn r' s) :
+    SemicontinuousOn (fun a b ↦ r a b ∨ r' a b) s := fun x hx ↦
+  (h x hx).or (h' x hx)
+
+theorem Semicontinuous.and {r' : α → β → Prop} (h : Semicontinuous r) (h' : Semicontinuous r') :
+    Semicontinuous (fun a b ↦ (r a b) ∧ (r' a b)) := fun a ↦
+  (h a).and (h' a)
+
+theorem Semicontinuous.or {r' : α → β → Prop} (h : Semicontinuous r) (h' : Semicontinuous r') :
+    Semicontinuous (fun a b ↦ (r a b) ∨ (r' a b)) := fun a ↦
+  (h a).or (h' a)
+
 /-! #### Constants -/
 
 theorem SemicontinuousWithinAt.const {f : β → Prop} : SemicontinuousWithinAt (fun _x => f) s x :=
@@ -957,12 +1001,19 @@ theorem HasOpenLowerSectionsOn.const : HasOpenLowerSectionsOn (fun _x => z) s :=
 theorem HasOpenLowerSections.const : HasOpenLowerSections fun _x : α => z :=
   Semicontinuous.const
 
-/-! ### Intersection -/
+/-! ### Intersection and Union -/
+
+theorem HasOpenLowerSectionsOn.inter {f g : α → Set β} {s : Set α} (hf : HasOpenLowerSectionsOn f s)
+  (hg : HasOpenLowerSectionsOn g s) : HasOpenLowerSectionsOn (fun x ↦ f x ∩ g x) s := hf.and hg
+
+theorem HasOpenLowerSectionsOn.union {f g : α → Set β} {s : Set α} (hf : HasOpenLowerSectionsOn f s)
+  (hg : HasOpenLowerSectionsOn g s) : HasOpenLowerSectionsOn (fun x ↦ f x ∪ g x) s := hf.or hg
 
 theorem HasOpenLowerSections.inter {f g : α → Set β} (hf : HasOpenLowerSections f)
-    (hg : HasOpenLowerSections g) : HasOpenLowerSections (fun x ↦ f x ∩ g x) := by
-  simp_rw [semicontinuous_iff_isOpen]
-  exact fun b ↦ by simpa using (hf.isOpen b).inter (hg.isOpen b)
+  (hg : HasOpenLowerSections g) : HasOpenLowerSections (fun x ↦ f x ∩ g x) := hf.and hg
+
+theorem HasOpenLowerSections.union {f g : α → Set β} (hf : HasOpenLowerSections f)
+  (hg : HasOpenLowerSections g) : HasOpenLowerSections (fun x ↦ f x ∪ g x) := hf.or hg
 
 /-! ### Composition -/
 
