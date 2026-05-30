@@ -350,11 +350,6 @@ Return an expression describing the found model with corners, together with info
 whether the model is the trivial model with corners on a normed space. (This is important for
 forming products of models.)
 
-`baseInfo` is only used for the first case, a model with corners on the total space of the vector
-bundle. In this case, it contains a pair of expressions `(e, i)` describing the type of the base
-and the model with corners on the base: these are required to construct the right model with
-corners.
-
 Note that the matching on `e` does not see through reducibility (e.g. we distinguish the `abbrev`
 `TangentBundle` from its definition), so `whnfR` should not be run on `e` prior to calling
 `findModel` on it.
@@ -363,7 +358,7 @@ This implementation is not maximally robust yet.
 -/
 -- TODO: better error messages when all strategies fail
 -- TODO: consider lowering monad to `MetaM`
-def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
+partial def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
     TermElabM (Option FindModelResult) := do
   if let some m ← tryStrategy "TotalSpace"          fromTotalSpace      then return some m
   if let some m ← tryStrategy "TangentBundle"       fromTangentBundle   then return some m
@@ -384,34 +379,45 @@ def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
   messages. -/
-  /-- Attempt to find a model from a `TotalSpace` first by attempting to use any provided
-  `baseInfo`, then by seeing if it is the total space of a tangent bundle. -/
+  /-- Attempt to find a model from a `TotalSpace` first by seeing if it is the total space of a
+  tangent bundle, and otherwise by finding a model with corners on its base. -/
   fromTotalSpace : TermElabM FindModelResult := do
     match_expr e with
     | Bundle.TotalSpace _ F V => do
       if let some m ← tryStrategy m!"TangentSpace" (fromTotalSpace.tangentSpace V) then return m
-      if let some m ← tryStrategy m!"From base info" (fromTotalSpace.fromBaseInfo F) then return m
-      throwError "Having a TotalSpace as source is not yet supported"
+      trace[Elab.DiffGeo.MDiff]
+        "{e} is the total space of a fiber bundle: trying to find a model on the base of `{V}`"
+      -- `V` should be of type `B → Type*`, where `B` is the base of the vector bundle.
+      -- Then, the desired model with corners is `I.prod (𝓘(𝕜, F))`, where `I` is the model on `B`
+      -- and `𝕜` is the base field for `F`.
+      let vtype ← whnf <| ← instantiateMVars <| ← inferType V
+      trace[Elab.DiffGeo.MDiff] "`{V}` has type `{vtype}`"
+      match vtype with
+      | .forallE _x base _tgt _ =>
+        -- XXX: can I have trace messages here be indented further?
+        let some baseI ← findModelInner base
+          | throwError m!"found no model with corners on the base {base} of `TotalSpace {F} {V}`"
+        let some K ← findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
+            match_expr type with
+            | NormedSpace K E _ _ =>
+              if ← withReducible (pureIsDefEq E F) then
+                trace[Elab.DiffGeo.MDiff] "`{F}` is a normed field over `{K}`"; return some K
+              else return none
+            | _ => return none
+          | throwError "Couldn't find a `NormedSpace` structure on `{F}` among local instances."
+        let kT : Term ← Term.exprToSyntax K
+        let modelIT : Term ← Term.exprToSyntax baseI.model
+        -- Edge case, TODO add a test for this!
+        -- For a model over a normed space, we still synthesize this model.
+        -- Also test: we don't if that base is a product of normed spaces, though.
+        let FT : Term ← Term.exprToSyntax F
+        let iTerm : Term ← ``(ModelWithCorners.prod $modelIT 𝓘($kT, $FT))
+        Term.elabTerm iTerm none
+      | _ =>
+        --trace[Elab.DiffGeo.MDiff] s!"none arm, V is `{V}`"
+        throwError s!"{e} is a TotalSpace {F} {V}, but {V} is not a pi type --- \
+          could not infer base of the bundle"
     | _ => throwError "`{e}` is not a `Bundle.TotalSpace`."
-  /-- Attempt to use the provided `baseInfo` to find a model. -/
-  fromTotalSpace.fromBaseInfo (F : Expr) : TermElabM Expr := do
-    if let some (src, srcI) := baseInfo then
-      trace[Elab.DiffGeo.MDiff] "Using base info `{src}`, `{srcI}`"
-      let some K ← findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
-          match_expr type with
-          | NormedSpace K E _ _ =>
-            if ← withReducible (pureIsDefEq E F) then
-              trace[Elab.DiffGeo.MDiff] "`{F}` is a normed field over `{K}`"; return some K
-            else return none
-          | _ => return none
-        | throwError "Couldn't find a `NormedSpace` structure on `{F}` among local instances."
-      let kT : Term ← Term.exprToSyntax K
-      let srcIT : Term ← Term.exprToSyntax srcI
-      let FT : Term ← Term.exprToSyntax F
-      let iTerm : Term ← ``(ModelWithCorners.prod $srcIT 𝓘($kT, $FT))
-      Term.elabTerm iTerm none
-    else
-      throwError "No `baseInfo` provided"
   /-- Attempt to find a model from the total space of a tangent bundle. -/
   fromTotalSpace.tangentSpace (V : Expr) : TermElabM Expr := do
     match_expr V with
@@ -701,6 +707,9 @@ Return an expression describing the found model with corners.
 bundle. In this case, it contains a pair of expressions `(e, i)` describing the type of the base
 and the model with corners on the base: these are required to construct the right model with
 corners.
+Motivation: sections of a vector bundle; we know the base type already... actually, do we always?
+Can we make the elaborator do the wrong thing? Let's try!
+s maps M into (TotalSpace.V, where V is a section over M'...)
 
 Note that the matching on `e` does not see through reducibility (e.g. we distinguish the `abbrev`
 `TangentBundle` from its definition), so `whnfR` should not be run on `e` prior to calling
