@@ -417,21 +417,12 @@ namespace Manifold
 open scoped Bundle Manifold ContDiff
 open Lean Meta Elab Tactic Doc
 
-@[doc_command] meta def appendDocstringOf (n : Ident) : DocM <| Block ElabInline ElabBlock := do
-  let doc ← realizeGlobalConstNoOverloadWithInfo n
-  let some docStr ← findDocString? (← getEnv) doc
-    | throwError "No doc-string for `{.ofConstName doc}`"
-  -- Future: once there is a better auto-converter between markdown and verso doc-strings,
-  -- rewrite this code accordingly!
-  -- Perhaps, it could be nice to write .verso here.
-  return .para #[.text docStr]
-
 set_option doc.verso true in
 set_option doc.verso.suggestions false in
 /-- `d% f x` (scoped to the `Manifold` namespace) elaborates to `mvfderiv I J f x`,
 trying to determine `I` and `J` from the local context.
 
-{appendDocstringOf mvfderiv} -/
+{insertDocstringOf mvfderiv} -/
 -- goal: now insert the doc-string of mvfderiv
 scoped elab:max "d%" ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none
