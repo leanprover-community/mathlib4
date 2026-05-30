@@ -680,5 +680,3 @@ theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
 end MeasureTheory -- namespace
 
 end Backward
-
-#min_imports
