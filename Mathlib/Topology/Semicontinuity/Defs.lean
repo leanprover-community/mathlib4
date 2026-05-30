@@ -156,6 +156,13 @@ theorem Semicontinuous.semicontinuousWithinAt (h : Semicontinuous r) (s : Set α
 theorem Semicontinuous.semicontinuousOn (h : Semicontinuous r) (s : Set α) :
     SemicontinuousOn r s := fun x _hx => h.semicontinuousWithinAt s x
 
+theorem semicontinuous_iff_isOpen : Semicontinuous r ↔ ∀ b, IsOpen {x | r x b} := by
+  exact ⟨fun h b ↦ by simpa [isOpen_iff_mem_nhds] using fun x hx ↦ h x b hx,
+    fun h x b hbx ↦ (h b).mem_nhds hbx⟩
+
+theorem Semicontinuous.isOpen (h : Semicontinuous r) (b : β) : IsOpen {x | r x b} :=
+  semicontinuous_iff_isOpen.mp h b
+
 /-! #### Constants -/
 
 theorem SemicontinuousWithinAt.const {f : β → Prop} : SemicontinuousWithinAt (fun _x => f) s x :=
@@ -921,17 +928,8 @@ abbrev HasOpenLowerSections (f : α → Set β) :=
 
 variable {f g : α → Set β} {x : α} {s t : Set α} {z : Set β}
 
-/-! ### Iff lemmas -/
-
-lemma HasOpenLowerSections.isOpen (hf : HasOpenLowerSections f) : ∀ b, IsOpen {x | b ∈ f x} :=
-  fun b ↦ by simpa [isOpen_iff_mem_nhds] using fun x hx ↦ hf x b hx
-
-/-- A function has open lower sections iff every section `{x | b ∈ f x}` is open. -/
-lemma hasOpenLowerSections_iff_isOpen :
-    HasOpenLowerSections f ↔ ∀ b, IsOpen {x | b ∈ f x} := by
-  refine ⟨fun hf ↦ hf.isOpen, ?_⟩
-  intro h x b hbx
-  exact (h b).mem_nhds hbx
+theorem hasOpenLowerSections_iff_isOpen : HasOpenLowerSections f ↔ ∀ b, IsOpen {x | b ∈ f x} := by
+  simp [semicontinuous_iff_isOpen]
 
 /-! ### Basic dot notation interface -/
 
@@ -963,7 +961,7 @@ theorem HasOpenLowerSections.const : HasOpenLowerSections fun _x : α => z :=
 
 theorem HasOpenLowerSections.inter {f g : α → Set β} (hf : HasOpenLowerSections f)
     (hg : HasOpenLowerSections g) : HasOpenLowerSections (fun x ↦ f x ∩ g x) := by
-  rw [hasOpenLowerSections_iff_isOpen]
+  simp_rw [semicontinuous_iff_isOpen]
   exact fun b ↦ by simpa using (hf.isOpen b).inter (hg.isOpen b)
 
 /-! ### Composition -/
