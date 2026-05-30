@@ -66,3 +66,31 @@ Hint: failures to find a model with corners can be debugged with the command `se
 variable {V' : (E × E')→ Type*} [TopologicalSpace (TotalSpace F V')] [∀ x, TopologicalSpace (V' x)]
   [FiberBundle F V'] {f : N → TotalSpace F V'} {x : N} in
 #check mfderiv% f x
+
+
+-- Fiber bundles with more complicated fibers, e.g. products of normed spaces.
+
+/-- info: mfderiv% f x : TangentSpace J x →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, F × F)) (f x) -/
+#guard_msgs in
+variable {V' : E → Type*} [TopologicalSpace (TotalSpace (F × F) V')] [∀ x : E, TopologicalSpace (V' x)]
+  [FiberBundle (F × F) V'] {f : N → TotalSpace (F × F) V'} {x : N} in #check mfderiv% f x
+
+/-- info: mfderiv% f x : TangentSpace J x →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, F →L[𝕜] F)) (f x) -/
+#guard_msgs in
+variable {V' : E → Type*} [TopologicalSpace (TotalSpace (F →L[𝕜] F) V')] [∀ x : E, TopologicalSpace (V' x)]
+  [FiberBundle (F →L[𝕜] F) V'] {f : N → TotalSpace (F →L[𝕜] F) V'} {x : N} in #check mfderiv% f x
+
+/--
+info: mfderiv% f x : TangentSpace J x →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, F × (F →L[𝕜] F))) (f x)
+-/
+#guard_msgs in
+variable {V' : E → Type*} [TopologicalSpace (TotalSpace (F × (F →L[𝕜] F)) V')] [∀ x : E, TopologicalSpace (V' x)]
+  [FiberBundle (F × (F →L[𝕜] F)) V'] {f : N → TotalSpace (F × (F →L[𝕜] F)) V'} {x : N} in
+#check mfderiv% f x
+
+/--
+info: mfderiv% f x : TangentSpace J x →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, F × (F →L[𝕜] F →L[𝕜] F))) (f x)
+-/
+#guard_msgs in
+variable {V' : E → Type*} [TopologicalSpace (TotalSpace (F × (F →L[𝕜] F →L[𝕜] F)) V')] [∀ x : E, TopologicalSpace (V' x)]
+  [FiberBundle (F × (F →L[𝕜] F →L[𝕜] F)) V'] {f : N → TotalSpace (F × (F →L[𝕜] F →L[𝕜] F)) V'} {x : N} in #check mfderiv% f x
