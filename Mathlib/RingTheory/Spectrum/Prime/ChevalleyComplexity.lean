@@ -909,4 +909,4 @@ lemma chevalley_mvPolynomial_mvPolynomial
       Submodule.restrictScalars_mem, mem_degreesLE,
         Multiset.le_iff_count] at this
     simpa only [Multiset.count_nsmul, Multiset.count_univ, mul_one, ← degreeOf_def]
-      using this j
+      using! this j
