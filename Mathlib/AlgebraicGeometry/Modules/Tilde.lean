@@ -942,19 +942,6 @@ def Scheme.Modules.overEquiv {X : Scheme.{u}} (U : X.Opens) :
     SheafOfModules (X.ringCatSheaf.over U) ≌ (U : Scheme.{u}).Modules :=
   TopologicalSpace.Opens.sheafOfModulesEquivOver _ _
 
-@[simps!]
-def _root_.CategoryTheory.pushforwardOverMapIso {D : Type*} [Category* D]
-    {K : GrothendieckTopology D}
-    (R : CategoryTheory.Sheaf K RingCat) {X Y : D} (f : X ⟶ Y) :
-    ((Over.map f).sheafPushforwardContinuous RingCat (K.over X) (K.over Y)).obj (R.over Y) ≅
-      R.over X :=
-  ObjectProperty.isoMk _ (NatIso.ofComponents (fun _ ↦ Iso.refl _))
-
-def _root_.SheafOfModules.overMap {D : Type*} [Category* D] {K : GrothendieckTopology D}
-    (R : CategoryTheory.Sheaf K RingCat) {X Y : D} (f : X ⟶ Y) :
-    SheafOfModules (R.over Y) ⥤ SheafOfModules (R.over X) :=
-  SheafOfModules.pushforward (F := Over.map f) (CategoryTheory.pushforwardOverMapIso R f).inv
-
 @[simp]
 lemma _root_.ModuleCat.smul_restrictScalars {R S : Type*} [Ring R] [Ring S]
     (f : R →+* S) (r : R) (M : ModuleCat S) :
@@ -1118,61 +1105,6 @@ def Scheme.Modules.overMapCompOverEquiv {X : Scheme.{u}} {U V : X.Opens} (f : V 
     dsimp
     rw [Scheme.Hom.appIso_homOfLE_inv]
     rfl
-
-set_option backward.isDefEq.respectTransparency false in
-def _root_.SheafOfModules.overPullback {D : Type*} [Category* D] [HasPullbacks D]
-    {K : GrothendieckTopology D} (R : CategoryTheory.Sheaf K RingCat) {X Y : D} (f : X ⟶ Y) :
-    SheafOfModules (R.over X) ⥤ SheafOfModules (R.over Y) :=
-  letI φ : R.over Y ⟶
-      ((Over.pullback f).sheafPushforwardContinuous RingCat (K.over Y) (K.over X)).obj (R.over X) :=
-    { hom.app U := R.obj.map (.op <| pullback.fst _ _)
-      hom.naturality := by simp [← Functor.map_comp, ← op_comp] }
-  SheafOfModules.pushforward (F := Over.pullback f) φ
-
-set_option backward.isDefEq.respectTransparency false in
-def _root_.SheafOfModules.overMapPushforwardAdj {D : Type*} [Category* D] [HasPullbacks D]
-    {K : GrothendieckTopology D} (R : CategoryTheory.Sheaf K RingCat) {X Y : D} (f : X ⟶ Y) :
-    SheafOfModules.overMap R f ⊣ SheafOfModules.overPullback R f := by
-  refine SheafOfModules.pushforwardPushforwardAdj (Over.mapPullbackAdj f) _ _ ?_ ?_
-  · ext
-    simp [pushforwardOverMapIso]
-  · ext
-    simp [← Functor.map_comp, ← op_comp, pushforwardOverMapIso]
-
-instance {D : Type*} [Category* D] [HasPullbacks D] {K : GrothendieckTopology D}
-    (R : CategoryTheory.Sheaf K RingCat) {X Y : D} (f : X ⟶ Y) :
-    (SheafOfModules.overMap R f).IsLeftAdjoint :=
-  (SheafOfModules.overMapPushforwardAdj R f).isLeftAdjoint
-
-def _root_.SheafOfModules.overMapUnitIso {D : Type*} [Category* D] {K : GrothendieckTopology D}
-    (R : CategoryTheory.Sheaf K RingCat) {X Y : D} (f : X ⟶ Y) :
-    (SheafOfModules.overMap R f).obj (.unit (R.over Y)) ≅ (.unit (R.over X)) :=
-  Iso.refl _
-
-def _root_.SheafOfModules.overFunctor {D : Type*} [Category* D] {K : GrothendieckTopology D}
-    (R : CategoryTheory.Sheaf K RingCat) (X : D) :
-    SheafOfModules R ⥤ SheafOfModules (R.over X) :=
-  SheafOfModules.pushforward (𝟙 _)
-
-@[simp]
-lemma _root_.SheafOfModules.overFunctor_obj {D : Type*} [Category* D] {K : GrothendieckTopology D}
-    (R : CategoryTheory.Sheaf K RingCat) (X : D) (M : SheafOfModules R) :
-    (SheafOfModules.overFunctor R X).obj M = M.over X :=
-  rfl
-
-@[simp]
-lemma _root_.SheafOfModules.overFunctor_map {D : Type*} [Category* D] {K : GrothendieckTopology D}
-    (R : CategoryTheory.Sheaf K RingCat) (X : D) {M N : SheafOfModules R} (f : M ⟶ N) :
-    (SheafOfModules.overFunctor R X).map f = f.over X :=
-  rfl
-
-def _root_.SheafOfModules.overFunctorMap {D : Type*} [Category* D] {K : GrothendieckTopology D}
-    (R : CategoryTheory.Sheaf K RingCat) {X Y : D} (f : X ⟶ Y) :
-    SheafOfModules.overFunctor R Y ⋙ SheafOfModules.overMap _ f ≅
-      SheafOfModules.overFunctor R X :=
-  NatIso.ofComponents
-    fun M ↦ (SheafOfModules.fullyFaithfulForget _).preimageIso <|
-      PresheafOfModules.isoMk (fun U ↦ Iso.refl _)
 
 def Scheme.Modules.overFunctorEquiv {X : Scheme.{u}} (U : X.Opens) :
     SheafOfModules.overFunctor X.ringCatSheaf U ⋙ (Scheme.Modules.overEquiv U).functor ≅
