@@ -722,7 +722,7 @@ abbrev comp (f' : G' ≃g G'') (f : G ≃g G') : G ≃g G'' :=
 theorem coe_comp (f' : G' ≃g G'') (f : G ≃g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
 
-section induceIso
+section induce
 
 variable {s : Set V} {t : Set W} {r : Set X}
          (φ : G ≃g G') (φst : Set.BijOn φ s t) (ψ : G' ≃g G'') (ψtr : Set.BijOn ψ t r)
@@ -737,21 +737,18 @@ protected def induce : G.induce s ≃g G'.induce t where
 
 @[simp, norm_cast]
 protected lemma coe_induce :
-    ⇑(Iso.induce φ φst) = Set.MapsTo.restrict φ s t (φst.mapsTo) := rfl
+    ⇑(φ.induce φst) = φst.mapsTo.restrict φ s t := rfl
 
 @[simp]
 protected lemma induce_refl (G : SimpleGraph V) (s : Set V) :
-    Iso.induce (.refl : G ≃g G) (Set.bijOn_id s) = .refl := by
-  ext x
-  rfl
+    (.refl : G ≃g G).induce (Set.bijOn_id s) = .refl := rfl
 
 @[simp]
 protected lemma induce_comp_induce :
-    (Iso.induce ψ ψtr).comp (Iso.induce φ φst) = Iso.induce (ψ.comp φ) (ψtr.comp φst) := by
-  ext x
+    (ψ.induce ψtr).comp (φ.induce φst) = (ψ.comp φ).induce (ψtr.comp φst) := by
   rfl
 
-end induceIso
+end induce
 
 end Iso
 
