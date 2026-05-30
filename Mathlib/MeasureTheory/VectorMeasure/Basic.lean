@@ -700,7 +700,7 @@ theorem restrict_zero {i : Set α} : (0 : VectorMeasure α M).restrict i = 0 := 
   · exact dif_neg hi
 
 theorem restrict_dirac {s : Set α} {x : α} {m : M} (hs : MeasurableSet s) [Decidable (x ∈ s)] :
-    (VectorMeasure.dirac x m).restrict s = if x ∈ s then VectorMeasure.dirac x m else 0 := by
+    (dirac x m).restrict s = if x ∈ s then dirac x m else 0 := by
   classical
   ext t ht
   simp only [hs, ht, restrict_apply]
@@ -708,20 +708,20 @@ theorem restrict_dirac {s : Set α} {x : α} {m : M} (hs : MeasurableSet s) [Dec
 
 @[simp]
 theorem restrict_dirac_of_mem {s : Set α} {x : α} {m : M} (hs : MeasurableSet s) (hx : x ∈ s) :
-    (VectorMeasure.dirac x m).restrict s = VectorMeasure.dirac x m := by
+    (dirac x m).restrict s = dirac x m := by
   classical
   simp [restrict_dirac, hs, hx]
 
 @[simp]
 theorem restrict_dirac_of_notMem {s : Set α} {x : α} {m : M} (hx : x ∉ s) :
-    (VectorMeasure.dirac x m).restrict s = 0 := by
+    (dirac x m).restrict s = 0 := by
   classical
   by_cases hs : MeasurableSet s
   · simp [restrict_dirac, hs, hx]
   · simp [restrict, hs]
 
 @[simp]
-theorem restrict_singleton {a : α} : v.restrict {a} = VectorMeasure.dirac a (v {a}) := by
+theorem restrict_singleton {a : α} : v.restrict {a} = dirac a (v {a}) := by
   by_cases h : MeasurableSet {a}
   · ext s hs
     by_cases ha : a ∈ s <;> simp [*, restrict_apply]
@@ -1104,7 +1104,7 @@ theorem trans {u : VectorMeasure α L} {v : VectorMeasure α M} {w : VectorMeasu
   fun _ hs => huv <| hvw hs
 
 theorem zero (v : VectorMeasure α N) : (0 : VectorMeasure α M) ≪ᵥ v :=
-  fun s _ => VectorMeasure.zero_apply s
+  fun s _ => zero_apply s
 
 theorem neg_left {M : Type*} [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M]
     {v : VectorMeasure α M} {w : VectorMeasure α N} (h : v ≪ᵥ w) : -v ≪ᵥ w := by
