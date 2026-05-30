@@ -99,8 +99,8 @@ universe u v
 variable {I : Type u}
 
 /-- A family of non-unital ring homomorphisms `f a : γ →ₙ+* β a` defines a non-unital ring
-homomorphism `Pi.nonUnitalRingHom f : γ →+* Π a, β a` given by
-`Pi.nonUnitalRingHom f x b = f b x`. -/
+homomorphism `NonUnitalRingHom.pi f : γ →+* Π a, β a` given by
+`NonUnitalRingHom.pi f x b = f b x`. -/
 @[simps]
 def NonUnitalRingHom.pi {f : I → Type*} {γ : Type*} [∀ i, NonUnitalNonAssocSemiring (f i)]
     [NonUnitalNonAssocSemiring γ] (g : ∀ i, γ →ₙ+* f i) : γ →ₙ+* ∀ i, f i :=
@@ -147,7 +147,7 @@ universe u v
 variable {I : Type u}
 
 /-- A family of ring homomorphisms `f a : γ →+* β a` defines a ring homomorphism
-`Pi.ringHom f : γ →+* Π a, β a` given by `Pi.ringHom f x b = f b x`. -/
+`RingHom.pi f : γ →+* Π a, β a` given by `RingHom.pi f x b = f b x`. -/
 @[simps]
 protected def RingHom.pi {f : I → Type*} {γ : Type*} [∀ i, NonAssocSemiring (f i)]
     [NonAssocSemiring γ] (g : ∀ i, γ →+* f i) : γ →+* ∀ i, f i :=
