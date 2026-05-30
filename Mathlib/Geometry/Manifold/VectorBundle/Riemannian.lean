@@ -123,7 +123,7 @@ lemma ContMDiffWithinAt.inner_bundle
     (hw : CMDiffAt[s] n (fun m ↦ (w m : TotalSpace F E)) x) :
     CMDiffAt[s] n (fun m ↦ ⟪v m, w m⟫) x := by
   rcases h.exists_contMDiff with ⟨g, g_smooth, hg⟩
-  have hb : ContMDiffWithinAt IM IB n b s x := by
+  have hb : CMDiffAt[s] n b x := by
     simp only [contMDiffWithinAt_totalSpace] at hv
     exact hv.1
   simp only [hg]
