@@ -5,8 +5,9 @@ Authors: Rémy Degenne, Josha Dekker, Arav Bhattacharyya
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.RegularityCompacts
-public import Mathlib.Topology.Order.Lattice
+public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+public import Mathlib.Topology.Metrizable.CompletelyMetrizable
+import Mathlib.MeasureTheory.Measure.RegularityCompacts
 
 /-!
 # Tight sets of measures
