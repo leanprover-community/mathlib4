@@ -48,14 +48,37 @@ theorem algebraMap_def (a : R) : algebraMap R (Π i, A i) a = fun i ↦ algebraM
 theorem algebraMap_apply (a : R) (i : ι) : algebraMap R (Π i, A i) a i = algebraMap R (A i) a :=
   rfl
 
-variable {ι} (R)
+variable {ι}
 
+variable (S : ι → Type*) [∀ i, CommSemiring (S i)]
+
+instance [∀ i, Algebra (S i) (A i)] : Algebra (Π i, S i) (Π i, A i) where
+  algebraMap := RingHom.pi fun _ ↦ (algebraMap _ _).comp (Pi.evalRingHom S _)
+  commutes' _ _ := funext fun _ ↦ Algebra.commutes _ _
+  smul_def' _ _ := funext fun _ ↦ Algebra.smul_def _ _
+
+example : Pi.instAlgebraForall S S = Algebra.id _ := rfl
+
+variable {A} in
 /-- A family of algebra homomorphisms `g i : B →ₐ[R] A i` defines a ring homomorphism
 `Pi.algHom g : B →ₐ[R] Π i, A i` given by `Pi.algHom g x i = g i x`. -/
 @[simps!]
-def algHom {B : Type*} [Semiring B] [Algebra R B] (g : ∀ i, B →ₐ[R] A i) : B →ₐ[R] Π i, A i where
+def _root_.AlgHom.pi {B : Type*} [Semiring B] [Algebra R B] (g : ∀ i, B →ₐ[R] A i) :
+    B →ₐ[R] Π i, A i where
   __ := RingHom.pi fun i ↦ (g i).toRingHom
   commutes' r := by ext; simp
+
+variable (R)
+
+/-- Use `AlgHom.pi` instead. -/
+@[deprecated AlgHom.pi (since := "2026-05-30")] def algHom {B : Type*} [Semiring B] [Algebra R B]
+    (g : ∀ i, B →ₐ[R] A i) : B →ₐ[R] Π i, A i :=
+  .pi g
+
+/-- Use `AlgHom.pi_apply` instead. -/
+@[deprecated AlgHom.pi_apply (since := "2026-05-30")] def algHom_apply {B : Type*} [Semiring B]
+    [Algebra R B] (g : ∀ i, B →ₐ[R] A i) (x : B) (i : ι) : Pi.algHom R A g x i = g i x :=
+  AlgHom.pi_apply g x i
 
 /-- `Function.eval` as an `AlgHom`. The name matches `Pi.evalRingHom`, `Pi.evalMonoidHom`,
 etc. -/
@@ -66,12 +89,12 @@ def evalAlgHom (i : ι) : (Π i, A i) →ₐ[R] A i :=
     commutes' := fun _ ↦ rfl }
 
 @[simp]
-theorem algHom_evalAlgHom : algHom R A (evalAlgHom R A) = AlgHom.id R (Π i, A i) := rfl
+theorem algHom_evalAlgHom : AlgHom.pi (evalAlgHom R A) = AlgHom.id R (Π i, A i) := rfl
 
 /-- `Pi.algHom` commutes with composition. -/
 theorem algHom_comp {B C : Type*} [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
     (g : ∀ i, C →ₐ[R] A i) (h : B →ₐ[R] C) :
-    (algHom R A g).comp h = algHom R A (fun i ↦ (g i).comp h) := rfl
+    (AlgHom.pi g).comp h = AlgHom.pi (fun i ↦ (g i).comp h) := rfl
 
 variable (S : ι → Type*) [∀ i, CommSemiring (S i)]
 
