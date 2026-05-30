@@ -113,7 +113,8 @@ variable (m) in
 noncomputable def leadingCoeff (f : MvPolynomial σ R) : R :=
   f.coeff (m.degree f)
 
-lemma leadingCoeff_def (f : MvPolynomial σ R) : m.leadingCoeff f = f.leadingCoeff m.toSyn := by
+lemma leadingCoeff_def (f : MvPolynomial σ R) :
+    m.leadingCoeff f = f.leadingCoeff m.toSyn.injective := by
   rw [MonomialOrder.leadingCoeff, MvPolynomial.leadingCoeff,
     Function.invFun_eq_of_injective_of_rightInverse m.toSyn.injective m.toSyn.rightInverse_symm]
   rfl
@@ -124,7 +125,7 @@ if its leading coefficient (for that monomial order) is 1. -/
 def Monic (f : MvPolynomial σ R) : Prop :=
   m.leadingCoeff f = 1
 
-lemma monic_def (f : MvPolynomial σ R) : m.Monic f ↔ f.Monic m.toSyn := by
+lemma monic_def (f : MvPolynomial σ R) : m.Monic f ↔ f.Monic m.toSyn.injective := by
   rw [Monic, leadingCoeff_def]
 
 variable (m) in
