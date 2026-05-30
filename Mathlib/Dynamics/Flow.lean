@@ -5,9 +5,7 @@ Authors: Jean Lo
 -/
 module
 
-public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Topology.Algebra.Monoid
-public import Mathlib.Topology.Algebra.Group.Defs
 public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 

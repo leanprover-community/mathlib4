@@ -5,9 +5,6 @@ Authors: Antoine Chambert-Loir, Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.Identities
-public import Mathlib.RingTheory.Nilpotent.Lemmas
 public import Mathlib.RingTheory.Polynomial.Nilpotent
 
 /-!

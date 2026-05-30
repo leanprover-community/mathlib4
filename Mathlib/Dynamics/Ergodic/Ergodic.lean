@@ -33,7 +33,6 @@ preserving condition is relaxed to quasi-measure-preserving.
 
 public section
 
-
 open Set Function Filter MeasureTheory MeasureTheory.Measure
 
 open ENNReal
