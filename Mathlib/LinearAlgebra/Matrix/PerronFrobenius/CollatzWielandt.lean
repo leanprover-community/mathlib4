@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Algebra.Order.Pi
 public import Mathlib.Analysis.Convex.StdSimplex
 public import Mathlib.Data.Fintype.Sets
 public import Mathlib.Data.Matrix.Mul
@@ -68,12 +69,6 @@ variable {A : Matrix n n ℝ}
 /-- Non-negative non-zero vectors. -/
 def nonnegNeZero : Set (n → ℝ) :=
   {x | (∀ i, 0 ≤ x i) ∧ x ≠ 0}
-
-lemma exists_pos_of_ne_zero {m : Type*} {v : m → ℝ} (hv_nonneg : ∀ i, 0 ≤ v i)
-    (hv_ne : v ≠ 0) : ∃ i, 0 < v i := by
-  by_contra h
-  push Not at h
-  exact hv_ne (funext fun i => le_antisymm (h i) (hv_nonneg i))
 
 lemma collatzWielandtFn_eq_inf' (A : Matrix n n ℝ) (x : n → ℝ)
     (h : ({i | 0 < (x i)}.toFinset).Nonempty) :
@@ -139,7 +134,7 @@ lemma le_mulVec (hA_nonneg : ∀ i j, 0 ≤ A i j) {v : n → ℝ} (hv_nonneg : 
     (hv_ne : v ≠ 0) : collatzWielandtFn A v • v ≤ A *ᵥ v := by
   intro i
   by_cases hi : 0 < v i
-  · obtain ⟨j, hj⟩ := exists_pos_of_ne_zero hv_nonneg hv_ne
+  · obtain ⟨j, hj⟩ := Function.exists_pos_of_nonneg_of_ne_zero hv_nonneg hv_ne
     have hle : collatzWielandtFn A v ≤ (A *ᵥ v) i / v i := by
       rw [collatzWielandtFn_eq_inf' A v ⟨j, mem_toFinset.mpr hj⟩]
       exact inf'_le (fun k => (A *ᵥ v) k / v k) (mem_toFinset.mpr hi)
@@ -155,7 +150,7 @@ lemma bddAbove [Nonempty n] (hA_nonneg : ∀ i j, 0 ≤ A i j) :
   rintro _ ⟨x, ⟨hx_nonneg, hx_ne⟩, rfl⟩
   obtain ⟨m, _, hmax⟩ := exists_mem_eq_sup' univ_nonempty x
   have hxm_pos : 0 < x m := by
-    obtain ⟨j, hj⟩ := exists_pos_of_ne_zero hx_nonneg hx_ne
+    obtain ⟨j, hj⟩ := Function.exists_pos_of_nonneg_of_ne_zero hx_nonneg hx_ne
     exact hmax ▸ lt_of_lt_of_le hj (le_sup' (f := x) (mem_univ j))
   have hsupp : ({i | 0 < (x i)}.toFinset).Nonempty := ⟨m, mem_toFinset.mpr hxm_pos⟩
   have h_ratio : collatzWielandtFn A x ≤ (A *ᵥ x) m / x m := by
@@ -177,7 +172,7 @@ lemma bddAbove [Nonempty n] (hA_nonneg : ∀ i j, 0 ≤ A i j) :
 lemma smul_invariant [Nonempty n] {c : ℝ} (hc : 0 < c) (_ : ∀ i j, 0 ≤ A i j) {x : n → ℝ}
     (hx_nonneg : ∀ i, 0 ≤ x i) (hx_ne : x ≠ 0) :
     collatzWielandtFn A (c • x) = collatzWielandtFn A x := by
-  obtain ⟨i₀, hi₀⟩ := exists_pos_of_ne_zero hx_nonneg hx_ne
+  obtain ⟨i₀, hi₀⟩ := Function.exists_pos_of_nonneg_of_ne_zero hx_nonneg hx_ne
   set S := {i | 0 < (x i)}.toFinset
   have hS : S.Nonempty := ⟨i₀, mem_toFinset.mpr hi₀⟩
   have h_supp : {i | 0 < ((c • x) i)}.toFinset = S := by
@@ -223,7 +218,7 @@ lemma le_eigenvalue_of_left_eigenvector (hA_nonneg : ∀ i j, 0 ≤ A i j) {r : 
     calc u ⬝ᵥ (A *ᵥ w) = (u ᵥ* A) ⬝ᵥ w := dotProduct_mulVec u A w
       _ = r * (u ⬝ᵥ w) := by simp [hu, smul_eq_mul]
   refine le_of_mul_le_mul_right ?_ (by
-    obtain ⟨i, hi⟩ := exists_pos_of_ne_zero hw_nonneg hw_ne
+    obtain ⟨i, hi⟩ := Function.exists_pos_of_nonneg_of_ne_zero hw_nonneg hw_ne
     refine sum_pos' (fun j _ => mul_nonneg (hu_pos j).le (hw_nonneg j)) ⟨i, mem_univ _, ?_⟩
     exact mul_pos (hu_pos i) hi)
   have h_intermediate : u ⬝ᵥ (collatzWielandtFn A w • w) ≤ u ⬝ᵥ (A *ᵥ w) := by
@@ -271,7 +266,7 @@ lemma le_of_max_le_row_sum [Nonempty n] {B : Matrix n n ℝ} {x : n → ℝ} {c 
           mul_le_mul_of_nonneg_left (le_sup' (f := x) (mem_univ j) |>.trans_eq hm) (hB_nonneg m j)
       _ = (∑ j, B m j) * x m := (sum_mul _ _ _).symm
       _ = r * x m := by rw [h_row_sum m]
-  · obtain ⟨i, hi⟩ := exists_pos_of_ne_zero hx_nonneg hx_ne
+  · obtain ⟨i, hi⟩ := Function.exists_pos_of_nonneg_of_ne_zero hx_nonneg hx_ne
     exact lt_of_lt_of_le hi (le_sup' (f := x) (mem_univ i) |>.trans_eq hm)
 
 theorem le_eigenvalue_of_right_eigenvector [Nonempty n] (hA_nonneg : ∀ i j, 0 ≤ A i j) {r : ℝ}
@@ -350,13 +345,13 @@ lemma perronRoot_nonneg [Nonempty n] (hA_nonneg : ∀ i j, 0 ≤ A i j) : 0 ≤ 
         sum_nonneg fun k _ => mul_nonneg (hA_nonneg j k) (hx_nonneg k)
     exact div_nonneg hmul_nonneg hxj.le
   · exfalso
-    obtain ⟨j, hj⟩ := exists_pos_of_ne_zero hx_nonneg hx_ne
+    obtain ⟨j, hj⟩ := Function.exists_pos_of_nonneg_of_ne_zero hx_nonneg hx_ne
     exact h ⟨j, mem_toFinset.mpr hj⟩
 
 /-- Sub-invariance forces `μ ≤ collatzWielandtFn A w`. -/
 theorem le_of_subinvariant (_ : ∀ i j, 0 ≤ A i j) {w : n → ℝ} (hw_nonneg : ∀ i, 0 ≤ w i)
     (hw_ne : w ≠ 0) {μ : ℝ} (hμ : μ • w ≤ A *ᵥ w) : μ ≤ collatzWielandtFn A w := by
-  obtain ⟨i, hi⟩ := exists_pos_of_ne_zero hw_nonneg hw_ne
+  obtain ⟨i, hi⟩ := Function.exists_pos_of_nonneg_of_ne_zero hw_nonneg hw_ne
   have hsupp : ({i | 0 < (w i)}.toFinset).Nonempty := ⟨i, mem_toFinset.mpr hi⟩
   rw [collatzWielandtFn_eq_inf' A w hsupp]
   refine (le_inf'_iff hsupp (fun j => (A *ᵥ w) j / w j)).mpr ?_
