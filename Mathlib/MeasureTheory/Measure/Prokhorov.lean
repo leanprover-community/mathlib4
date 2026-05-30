@@ -5,13 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-public import Mathlib.Topology.Metrizable.CompletelyMetrizable
-public import Mathlib.MeasureTheory.Measure.Tight
-import Mathlib.MeasureTheory.Integral.Regular
-import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
-import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
-import Mathlib.Topology.Separation.CompletelyRegular
+public import Mathlib.MeasureTheory.Integral.Regular
+public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
+public import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
+public import Mathlib.Topology.Separation.CompletelyRegular
 
 /-!
 # Prokhorov theorem
@@ -28,6 +25,8 @@ notably several versions of Prokhorov theorem on tight sets of probability measu
   to the complement of `Kₙ` form a compact set.
 * `isCompact_closure_of_isTightMeasureSet`: Given a tight set of probability measures, its closure
   is compact.
+* `isTightMeasureSet_of_isCompact_closure`: In a second countable complete metric space, a set of
+  probability measures with compact closure is tight.
 
 Versions are also given for finite measures.
 
@@ -681,3 +680,5 @@ theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
 end MeasureTheory -- namespace
 
 end Backward
+
+#min_imports
