@@ -821,4 +821,37 @@ noncomputable def directProductOfNormal [Finite G]
       _ = (Nat.card G).factorization.prod (· ^ ·) := rfl
       _ = Nat.card G := Nat.prod_factorization_pow_eq_self Nat.card_pos.ne'
 
+section pCore
+
+variable (p : ℕ) (G : Type*) [Group G]
+
+variable {p G} in
+theorem _root_.IsPGroup.le_sylow_of_normal {N : Subgroup G} [N.Normal] (h : IsPGroup p N)
+    (H : Sylow p G) : N ≤ H :=
+  le_sup_left.trans_eq <| H.is_maximal' (h.to_sup_of_normal_left H.isPGroup') le_sup_right
+
+variable {p G} in
+theorem pCore_le (H : Sylow p G) : pCore p G ≤ H :=
+  isPGroup_pCore p G |>.le_sylow_of_normal H
+
+variable {p G} in
+theorem pCore_eq_normalCore (H : Sylow p G) : pCore p G = H.normalCore := by
+  refine le_antisymm ?_ (H.isPGroup'.to_le <| normalCore_le _).le_pCore
+  grw [← normalCore_mono H.pCore_le, normalCore_eq_self]
+
+variable {p G} in
+theorem pCore_eq_of_normal (H : Sylow p G) [H.Normal] : pCore p G = H := by
+  rw [pCore_eq_normalCore H, normalCore_eq_self]
+
+theorem pCore_eq_iInf : pCore p G = ⨅ H : Sylow p G, (H : Subgroup G) := by
+  have K : Sylow p G := Sylow.nonempty.some
+  suffices (⨅ H : Sylow p G, (H : Subgroup G)).Normal from
+    le_antisymm (le_iInf (·.pCore_le)) (K.isPGroup'.to_le <| iInf_le _ K).le_pCore
+  refine .of_conjugate_fixed fun g ↦ ?_
+  rw [Subgroup.pointwise_smul_def, map_iInf _ <| MulEquiv.injective _]
+  simp_rw [← Subgroup.pointwise_smul_def, ← pointwise_smul_def]
+  exact MulAction.surjective g |>.iInf_comp _
+
+end pCore
+
 end Sylow

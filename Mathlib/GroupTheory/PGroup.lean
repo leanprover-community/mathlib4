@@ -58,6 +58,12 @@ theorem iff_card [Fact p.Prime] [Finite G] : IsPGroup p G ↔ ∃ n : ℕ, Nat.c
 
 alias ⟨exists_card_eq, _⟩ := iff_card
 
+@[gcongr]
+protected theorem mono {q : ℕ} (hpq : p ∣ q) (hp : IsPGroup p G) : IsPGroup q G := by
+  refine fun g ↦ hp g |>.imp fun k hk ↦ ?_
+  rw [← orderOf_dvd_iff_pow_eq_one] at hk ⊢
+  exact hk.trans <| pow_dvd_pow_of_dvd hpq k
+
 section GIsPGroup
 
 variable (hG : IsPGroup p G)
@@ -384,6 +390,82 @@ theorem commutative_of_card_eq_prime_sq (hG : Nat.card G = p ^ 2) : ∀ a b : G,
 end P2comm
 
 end IsPGroup
+
+section Dependencies
+
+set_option warn.sorry false
+set_option linter.style.longLine false
+
+-- #40011
+@[to_additive] theorem Subgroup.biSup_normal {ι : Type*} (s : Set ι) (H : ι → Subgroup G) (h : ∀ i ∈ s, (H i).Normal) : ⨆ i ∈ s, H i |>.Normal := sorry
+-- #40012
+theorem IsPGroup.biSup_of_normal {ι : Type*} (s : Set ι) (H : ι → Subgroup G) (h : ∀ i ∈ s, IsPGroup p (H i)) (hn : ∀ i ∈ s, (H i).Normal) : IsPGroup p (⨆ i ∈ s, H i : Subgroup G) := sorry
+
+end Dependencies
+
+namespace Subgroup
+
+variable (p G) in
+/-- The `p`-core of a group `G` is the largest normal `p`-subgroup of `G`. -/
+@[no_expose] def pCore : Subgroup G :=
+  ⨆ N : Subgroup G, ⨆ _ : N.Normal, ⨆ _ : IsPGroup p N, N
+
+variable (p G) in
+theorem pCore_eq_iSup : pCore p G = ⨆ N : Subgroup G, ⨆ _ : N.Normal, ⨆ _ : IsPGroup p N, N := by
+  rfl
+
+variable (p G) in
+instance normal_pCore : pCore p G |>.Normal := by
+  simp_rw [pCore_eq_iSup, iSup_and']
+  exact biSup_normal _ _ fun _ ↦ And.left
+
+variable (p G) in
+theorem isPGroup_pCore : IsPGroup p <| pCore p G := by
+  generalize h : pCore p G = H
+  simp_rw [pCore_eq_iSup, iSup_and'] at h
+  subst h
+  exact .biSup_of_normal _ id (fun _ ↦ And.right) (fun _ ↦ And.left)
+
+theorem _root_.IsPGroup.le_pCore {N : Subgroup G} [N.Normal] (h : IsPGroup p N) :
+    N ≤ pCore p G := by
+  rw [pCore_eq_iSup]
+  exact le_iSup_of_le N <| le_iSup₂ (f := fun _ _ ↦ N) ‹_› h
+
+theorem _root_.IsPGroup.pCore_eq_top (h : IsPGroup p G) : pCore p G = ⊤ :=
+  top_unique <| h.to_subgroup ⊤ |>.le_pCore
+
+theorem pCore_le_of_dvd {q : ℕ} (hpq : p ∣ q) : pCore p G ≤ pCore q G :=
+  iSup₂_mono fun _ _ ↦ iSup_const_mono <| .mono hpq
+
+variable (p) in
+theorem comap_pCore_le_of_injective {H : Type*} [Group H] {f : H →* G} (h : Function.Injective f) :
+    (pCore p G).comap f ≤ pCore p H :=
+  isPGroup_pCore p G |>.comap_of_injective f h |>.le_pCore
+
+variable (p) in
+theorem map_pCore_le_of_surjective {H : Type*} [Group H] {f : G →* H} (h : Function.Surjective f) :
+    (pCore p G).map f ≤ pCore p H :=
+  have := normal_pCore p G |>.map f h
+  isPGroup_pCore p G |>.map f |>.le_pCore
+
+@[simps]
+def pCoreMonoidHom {H : Type*} [Group H] (f : G →* H) (h : Function.Surjective f) :
+    pCore p G →* pCore p H where
+  toFun g := ⟨f g, map_pCore_le_of_surjective p h <| (pCore p G).mem_map_of_mem f g.property⟩
+  map_one' := by simp
+  map_mul' := by simp
+
+@[simps]
+def pCoreMulEquiv {H : Type*} [Group H] (φ : G ≃* H) : pCore p G ≃* pCore p H where
+  __ := pCoreMonoidHom φ φ.surjective
+  invFun := pCoreMonoidHom φ.symm φ.symm.surjective
+  left_inv _ := by simp [pCoreMonoidHom]
+  right_inv _ := by simp [pCoreMonoidHom]
+
+instance characteristic_pCore : pCore p G |>.Characteristic :=
+  characteristic_iff_map_le.mpr (map_pCore_le_of_surjective p ·.surjective)
+
+end Subgroup
 
 namespace ZModModule
 variable {n : ℕ} {G : Type*} [AddCommGroup G] [Module (ZMod n) G]
