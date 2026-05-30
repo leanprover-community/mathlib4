@@ -5,9 +5,8 @@ Authors: Ruben Van de Velde
 -/
 module
 
-public import Mathlib.Analysis.RCLike.Extend
-public import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.Analysis.LocallyConvex.HahnBanach
+public import Mathlib.Analysis.Normed.Operator.Basic
 
 /-!
 # Norm properties of the extension of continuous `ℝ`-linear functionals to `𝕜`-linear functionals
@@ -29,7 +28,8 @@ variable [NormedSpace ℝ F] [IsScalarTower ℝ 𝕜 F]
 /-- The norm of the extension is bounded by `‖fr‖`. -/
 theorem norm_extendRCLike_bound (fr : StrongDual ℝ F) (x : F) :
     ‖(fr.extendRCLike x : 𝕜)‖ ≤ ‖fr‖ * ‖x‖ := by
-  refine norm_extendRCLike_le_seminorm (p := ‖fr‖₊ • normSeminorm 𝕜 F) fr.toLinearMap ?_ x
+  refine Module.Dual.norm_extendRCLike_le_seminorm (p := ‖fr‖₊ • normSeminorm 𝕜 F)
+    fr.toLinearMap ?_ x
   simp [← Real.norm_eq_abs, NNReal.smul_def, le_opNorm]
 
 @[simp]
@@ -57,5 +57,3 @@ open StrongDual
 @[deprecated (since := "2026-02-24")] alias norm_extendTo𝕜 := norm_extendRCLike
 
 end ContinuousLinearMap
-
-#min_imports
