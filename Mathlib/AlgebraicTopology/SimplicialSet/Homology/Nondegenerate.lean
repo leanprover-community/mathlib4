@@ -223,6 +223,7 @@ noncomputable def normalizedChainComplexFunctorObj : SSet.{w} ⥤ ChainComplex C
   obj X := X.normalizedChainComplex R
   map f := normalizedChainComplexMap f R
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `X.toNormalizedChainComplex R` for any simplicial set `X`,
 as a natural transformation. -/
 @[simps]
