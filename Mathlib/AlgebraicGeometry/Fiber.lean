@@ -65,7 +65,7 @@ lemma isPullback_fiberToSpecResidueField_of_isPullback {P X Y Z : Scheme.{u}} {f
       (Spec.map (g.residueFieldMap y)) := by
   refine .of_right (h₁₂ := pullback.fst _ _) ?_ ?_
       (IsPullback.of_hasPullback f (Z.fromSpecResidueField (g y)))
-  · simpa using (IsPullback.of_hasPullback _ _).paste_horiz h
+  · simpa using! (IsPullback.of_hasPullback _ _).paste_horiz h
   · simp [Scheme.Hom.fiberToSpecResidueField]
 
 set_option backward.isDefEq.respectTransparency false in

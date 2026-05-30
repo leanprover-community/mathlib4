@@ -188,7 +188,7 @@ lemma dense_of_generateFrom_isSetRing [IsFiniteMeasure μ]
   rcases exists_measure_symmDiff_lt_of_generateFrom_isSetRing hC h'C h s.2 εpos with ⟨t, tC, ht⟩
   have t_meas : MeasurableSet t := by rw [h]; exact measurableSet_generateFrom tC
   refine ⟨⟨t, t_meas⟩, ?_, tC⟩
-  simpa [MeasuredSets.edist_def] using ht
+  simpa [MeasuredSets.edist_def] using! ht
 
 /-- Given a semiring of sets `C` covering the space modulo `0` and generating the measurable space
 structure, finite unions of elements of `C` are dense among measurable sets. -/
@@ -200,7 +200,7 @@ lemma dense_of_generateFrom_isSetSemiring [IsFiniteMeasure μ]
   rintro s ε εpos
   rcases exists_measure_symmDiff_lt_of_generateFrom_isSetSemiring hC h'C h s.2 εpos
     with ⟨t, tC, ht⟩
-  refine ⟨⟨t, ?_⟩, by simpa [MeasuredSets.edist_def] using ht, tC⟩
+  refine ⟨⟨t, ?_⟩, by simpa [MeasuredSets.edist_def] using! ht, tC⟩
   rw [h]
   exact measurableSet_generateFrom_of_mem_supClosure tC
 
