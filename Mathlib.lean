@@ -7974,6 +7974,7 @@ public import Mathlib.Topology.Semicontinuity.Basic
 public import Mathlib.Topology.Semicontinuity.Defs
 public import Mathlib.Topology.Semicontinuity.Hemicontinuity
 public import Mathlib.Topology.Semicontinuity.Lindelof
+public import Mathlib.Topology.Semicontinuity.Michael
 public import Mathlib.Topology.Semicontinuous
 public import Mathlib.Topology.SeparatedMap
 public import Mathlib.Topology.Separation.AlexandrovDiscrete
