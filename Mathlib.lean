@@ -5430,6 +5430,7 @@ public import Mathlib.ModelTheory.Bundled
 public import Mathlib.ModelTheory.Complexity
 public import Mathlib.ModelTheory.Definability
 public import Mathlib.ModelTheory.DirectLimit
+public import Mathlib.ModelTheory.ElementaryExtensionPair
 public import Mathlib.ModelTheory.ElementaryMaps
 public import Mathlib.ModelTheory.ElementarySubstructures
 public import Mathlib.ModelTheory.Encoding
@@ -5440,6 +5441,7 @@ public import Mathlib.ModelTheory.Graph
 public import Mathlib.ModelTheory.LanguageMap
 public import Mathlib.ModelTheory.Order
 public import Mathlib.ModelTheory.PartialEquiv
+public import Mathlib.ModelTheory.QuantifierElimination
 public import Mathlib.ModelTheory.Quotients
 public import Mathlib.ModelTheory.Satisfiability
 public import Mathlib.ModelTheory.Semantics
