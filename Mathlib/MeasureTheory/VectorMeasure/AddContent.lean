@@ -10,7 +10,7 @@ public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.MeasureTheory.Measure.AddContent
 public import Mathlib.MeasureTheory.Measure.MeasuredSets
 public import Mathlib.MeasureTheory.Measure.Trim
-public import Mathlib.MeasureTheory.VectorMeasure.Integral
+public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 
 /-!
 # Constructing a vector measure from an additive content
@@ -317,14 +317,6 @@ theorem exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
       exact ae_le_set_inter Filter.EventuallyLE.rfl (hD s hs)
   exact ⟨m', h, fun s ↦ (h' s).trans (Measure.restrict_apply_le (⋃₀ D) s)⟩
 
-#check Measure.trim_le
-
-#check MeasureTheory.condExp
-
-#check MeasureTheory.condExp_zero
-
-#check MeasureTheory.integral_tsum_of_summable_integral_norm
-
 theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
     [IsFiniteMeasure μ] {C : Set (Set α)} {m : AddContent E C} (hC : IsSetSemiring C)
     (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s) (h'C : ∀ s ∈ C, MeasurableSet s) :
@@ -343,6 +335,16 @@ theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
     empty' := by simp
     not_measurable' s hs := by simp [hs]
     m_iUnion' f f_meas hf := by
+      have : ∫ᵛ (x : α), μ[fun x ↦ ∑' (d : ℕ), (f d).indicator 1 x | M] x ∂•m'
+          = ∫ᵛ (x : α), ∑' d, μ[(f d).indicator 1 | M] x ∂•m' := by
+        apply VectorMeasure.integral_congr_ae
+        have : (m'.transpose (ContinuousLinearMap.lsmul ℝ ℝ)).variation ≤ μ' := by
+          apply (variation_transpose_le _ _).trans
+          have : ‖ContinuousLinearMap.lsmul ℝ ℝ (E := E)‖₊ ≤ 1 := by
+            apply opNNNorm_lsmul_le
+
+
+
       simp only [f_meas, ↓reduceIte, implies_true, MeasurableSet.iUnion,
         indicator_iUnion_of_pairwise_disjoint _ hf]
     }
