@@ -188,6 +188,11 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
   [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] [HasBinaryProducts C]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
 
+omit [HasBinaryProducts C] in
+@[simp]
+lemma Sieve.ofObject_id (X : C) : Sieve.ofObjects id X = ⊤ :=
+  Sieve.pullback_ofObjects_eq_top _ (𝟙 _)
+
 /-- Given `G : M.GeneratingSections`, we naturally obtain `M.LocalGeneratorsData` using the
 trivial cover of `C`. -/
 @[simps]
@@ -195,10 +200,7 @@ def GeneratingSections.localGeneratorsData {M : SheafOfModules.{u} R} (G : M.Gen
     M.LocalGeneratorsData where
   I := C
   X := id
-  coversTop x := GrothendieckTopology.covering_of_eq_top J <| by
-    rw [Sieve.ext_iff]
-    intro _ f
-    simpa [Sieve.top_apply, iff_true] using ⟨x, Nonempty.intro f⟩
+  coversTop _ := GrothendieckTopology.covering_of_eq_top J <| by simp
   generators x := G.map (pushforward (𝟙 (R.over x))) (Iso.refl _)
 
 end
