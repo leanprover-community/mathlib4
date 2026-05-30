@@ -83,7 +83,7 @@ theorem AlgHom.isIntegrallyClosedIn (f : A →ₐ[R] B) (hf : Function.Injective
     IsIntegrallyClosedIn R B → IsIntegrallyClosedIn R A := by
   rintro ⟨inj, cl⟩
   refine ⟨Function.Injective.of_comp (f := f) ?_, fun hx => ?_, ?_⟩
-  · convert inj
+  · convert! inj
     aesop
   · obtain ⟨y, fx_eq⟩ := cl.mp ((isIntegral_algHom_iff f hf).mpr hx)
     aesop
@@ -282,7 +282,7 @@ lemma of_isIntegrallyClosedIn
     (FaithfulSMul.algebraMap_injective R K)
   rw [isIntegrallyClosed_iff (K := FractionRing R)]
   intro x hx
-  convert (IsIntegralClosure.isIntegral_iff (A := R)).mp (hx.map f)
+  convert! (IsIntegralClosure.isIntegral_iff (A := R)).mp (hx.map f)
   simp [← f.toRingHom.injective.eq_iff]
 
 lemma _root_.IsIntegralClosure.of_isIntegralClosure_of_isIntegrallyClosedIn

@@ -106,6 +106,7 @@ instance CostructuredArrow.closedUnderLimitsOfShape_discrete_empty [L.Faithful] 
     simpa [MorphismProperty.costructuredArrowObj_iff,
       P.costructuredArrow_iso_iff e] using P.id_mem (L.obj Y)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma CostructuredArrow.isClosedUnderColimitsOfShape {J : Type*} [Category* J]
     {P : MorphismProperty T} [P.RespectsIso] [PreservesColimitsOfShape J L] [HasColimitsOfShape J A]
@@ -126,6 +127,7 @@ lemma CostructuredArrow.isClosedUnderColimitsOfShape {J : Type*} [Category* J]
       P.cancel_left_of_respectsIso]
     exact H _ _ d.prop_diag_obj
 
+set_option backward.defeqAttrib.useBackward true in
 lemma CostructuredArrow.closedUnderLimitsOfShape_walkingCospan [HasPullbacks A] [HasPullbacks T]
     [PreservesLimitsOfShape WalkingCospan L] (X : T)
     [P.IsStableUnderComposition] [P.IsStableUnderBaseChange]
@@ -186,6 +188,7 @@ instance StructuredArrow.closedUnderColimitsOfShape_discrete_empty [L.Faithful] 
     simpa [MorphismProperty.structuredArrowObj_iff,
       P.structuredArrow_iso_iff e] using P.id_mem (L.obj Y)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma StructuredArrow.isClosedUnderLimitsOfShape {J : Type*} [Category* J]
     {P : MorphismProperty T} [P.RespectsIso] [PreservesLimitsOfShape J L] [HasLimitsOfShape J A]
@@ -216,6 +219,8 @@ instance Over.closedUnderLimitsOfShape_discrete_empty [P.ContainsIdentities] [P.
     (P.overObj (X := X)).IsClosedUnderLimitsOfShape (Discrete PEmpty.{1}) :=
   CostructuredArrow.closedUnderLimitsOfShape_discrete_empty P
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `P` be stable under composition and base change. If `P` satisfies cancellation on the right,
 the subcategory of `Over X` defined by `P` is closed under pullbacks.
 
@@ -259,6 +264,7 @@ noncomputable instance [P.ContainsIdentities] [P.RespectsIso] :
   · exact inferInstanceAs (HasLimitsOfShape _ (Over X))
   · apply Over.closedUnderLimitsOfShape_discrete_empty _
 
+set_option backward.defeqAttrib.useBackward true in
 variable {X} in
 instance [P.ContainsIdentities] (Y : P.Over ⊤ X) :
     Unique (Y ⟶ Over.mk ⊤ (𝟙 X) (P.id_mem X)) where
@@ -324,6 +330,7 @@ noncomputable instance [P.ContainsIdentities] [P.RespectsIso] :
   · exact inferInstanceAs (HasColimitsOfShape _ (Under X))
   · apply Under.closedUnderColimitsOfShape_discrete_empty _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {X} in
 instance [P.ContainsIdentities] (Y : P.Under ⊤ X) :
