@@ -86,6 +86,7 @@ def _root_.CategoryTheory.Limits.colimit.isColimitToOver (F : J ⥤ C) [HasColim
     IsColimit (colimit.toOver F) :=
   Over.isColimitToOver (colimit.isColimit F)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given an arrow `c.pt ⟶ X`, the diagram `J ⥤ C` can be lifted to `Over X ⥤ C`, and
 the cocone `c` also lifts to the diagram on `Over`. -/
 @[simps] def liftCocone {F : J ⥤ C} (c : Cocone F) {X : C} (f : c.pt ⟶ X) :
@@ -146,6 +147,7 @@ def _root_.CategoryTheory.Limits.limit.isLimitToOver (F : J ⥤ C) [HasLimit F] 
     IsLimit (limit.toUnder F) :=
   Under.isLimitToUnder (limit.isLimit F)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given an arrow `X ⟶ c.pt`, the diagram `J ⥤ C` can be lifted to `Under X ⥤ C`, and
 the cone `c` also lifts to the diagram on `Under`. -/
 @[simps] def liftCone {F : J ⥤ C} (c : Cone F) {X : C} (f : X ⟶ c.pt) :

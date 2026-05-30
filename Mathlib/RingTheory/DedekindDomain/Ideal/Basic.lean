@@ -89,7 +89,7 @@ theorem FractionalIdeal.adjoinIntegral_eq_one_of_isUnit [Algebra A K] [IsFractio
     apply coeToSubmodule_injective
     simp only [coe_mul, adjoinIntegral_coe, I]
     rw [(Algebra.adjoin A {x}).isIdempotentElem_toSubmodule]
-  convert congr_arg (· * I⁻¹) mul_self <;>
+  convert! congr_arg (· * I⁻¹) mul_self <;>
     simp only [(mul_inv_cancel_iff_isUnit K).mpr hI, mul_assoc, mul_one]
 
 namespace IsDedekindDomainInv
@@ -218,7 +218,7 @@ theorem PrimeSpectrum.exists_multiset_prod_cons_le_and_prod_not_le [IsDedekindDo
     subst hPM'
     -- By minimality of `Z`, erasing `P` from `Z` is exactly what we need.
     refine ⟨Z.erase P, ?_, ?_⟩
-    · convert hZI
+    · convert! hZI
       rw [this, Multiset.cons_erase hPZ']
     · refine fun h => h_eraseZ (Z.erase P) ⟨h, ?_⟩ (Multiset.erase_lt.mpr hPZ)
       exact hZP0
@@ -425,7 +425,7 @@ theorem Ideal.dvdNotUnit_iff_lt {I J : Ideal A} : DvdNotUnit I J ↔ J < I :=
 instance : WfDvdMonoid (Ideal A) where
   wf := by
     have : WellFoundedGT (Ideal A) := inferInstance
-    convert this.wf using 3
+    convert! this.wf using 3
     exact Ideal.dvdNotUnit_iff_lt
 
 instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :=

@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.Order.KrullDimension
 public import Mathlib.RingTheory.FiniteLength

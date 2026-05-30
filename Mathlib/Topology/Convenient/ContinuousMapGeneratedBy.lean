@@ -20,6 +20,7 @@ the composition `g ∘ f` is continuous.
   categories of (core) compactly generated spaces*][escardo-lawson-simpson-2004]
 
 -/
+
 universe v v' t u
 
 @[expose] public section
@@ -129,7 +130,7 @@ def equivSymmAsContinuousMapGeneratedBy :
     rw [continuousGeneratedBy_def]
     intro i f
     rw [IsGeneratedBy.equiv_symm_comp_continuous_iff]
-    continuity
+    fun_prop
 
 @[simp]
 lemma equivSymmAsContinuousMapGeneratedBy_coe :

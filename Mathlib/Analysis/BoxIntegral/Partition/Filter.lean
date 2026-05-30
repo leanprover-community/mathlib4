@@ -449,7 +449,7 @@ theorem hasBasis_toFilteriUnion (l : IntegrationParams) (I : Box ι) (π₀ : Pr
     (l.toFilteriUnion I π₀).HasBasis (fun r : ℝ≥0 → (ι → ℝ) → Ioi (0 : ℝ) => ∀ c, l.RCond (r c))
       fun r => { π | ∃ c, l.MemBaseSet I c (r c) π ∧ π.iUnion = π₀.iUnion } := by
   have := fun c => l.hasBasis_toFilterDistortioniUnion I c π₀
-  simpa only [setOf_and, setOf_exists] using hasBasis_iSup this
+  simpa only [setOf_and, setOf_exists] using! hasBasis_iSup this
 
 theorem hasBasis_toFilteriUnion_top (l : IntegrationParams) (I : Box ι) :
     (l.toFilteriUnion I ⊤).HasBasis (fun r : ℝ≥0 → (ι → ℝ) → Ioi (0 : ℝ) => ∀ c, l.RCond (r c))
@@ -460,7 +460,7 @@ theorem hasBasis_toFilteriUnion_top (l : IntegrationParams) (I : Box ι) :
 theorem hasBasis_toFilter (l : IntegrationParams) (I : Box ι) :
     (l.toFilter I).HasBasis (fun r : ℝ≥0 → (ι → ℝ) → Ioi (0 : ℝ) => ∀ c, l.RCond (r c))
       fun r => { π | ∃ c, l.MemBaseSet I c (r c) π } := by
-  simpa only [setOf_exists] using hasBasis_iSup (l.hasBasis_toFilterDistortion I)
+  simpa only [setOf_exists] using! hasBasis_iSup (l.hasBasis_toFilterDistortion I)
 
 theorem tendsto_embedBox_toFilteriUnion_top (l : IntegrationParams) (h : I ≤ J) :
     Tendsto (TaggedPrepartition.embedBox I J h) (l.toFilteriUnion I ⊤)

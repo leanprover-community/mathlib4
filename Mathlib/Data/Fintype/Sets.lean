@@ -107,8 +107,6 @@ theorem toFinset_subset [Fintype s] {t : Finset α} : s.toFinset ⊆ t ↔ s ⊆
 @[gcongr]
 alias ⟨_, toFinset_mono⟩ := toFinset_subset_toFinset
 
-@[deprecated (since := "2025-10-25")] alias toFinset_subset_toFinset_of_subset := toFinset_mono
-
 alias ⟨_, toFinset_strict_mono⟩ := toFinset_ssubset_toFinset
 
 @[simp]
@@ -277,7 +275,7 @@ sets on a finite type are finite.) -/
 noncomputable def finsetEquivSet : Finset α ≃ Set α where
   toFun := (↑)
   invFun := by classical exact fun s => s.toFinset
-  left_inv s := by convert Finset.toFinset_coe s
+  left_inv s := by convert! Finset.toFinset_coe s
   right_inv s := by classical exact s.coe_toFinset
 
 @[simp, norm_cast] lemma coe_finsetEquivSet : ⇑finsetEquivSet = ((↑) : Finset α → Set α) := rfl
