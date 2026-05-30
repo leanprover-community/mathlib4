@@ -393,9 +393,11 @@ where
       trace[Elab.DiffGeo.MDiff] "`{V}` has type `{vtype}`"
       match vtype with
       | .forallE _x base _tgt _ =>
-        -- XXX: can I have trace messages here be indented further?
-        let some baseI ← findModelInner base
-          | throwError m!"found no model with corners on the base {base} of `TotalSpace {F} {V}`"
+        let baseModel ← withTraceNode `Elab.DiffGeo.MDiff
+            (fun _ ↦ pure m!"searching for a model with corners on the base `{base}`") do
+          let some baseI ← findModelInner base
+            | throwError m!"found no model with corners on the base {base} of `TotalSpace {F} {V}`"
+          return baseI.model
         let some K ← findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
             match_expr type with
             | NormedSpace K E _ _ =>
@@ -405,7 +407,7 @@ where
             | _ => return none
           | throwError "Couldn't find a `NormedSpace` structure on `{F}` among local instances."
         let kT : Term ← Term.exprToSyntax K
-        let modelIT : Term ← Term.exprToSyntax baseI.model
+        let modelIT : Term ← Term.exprToSyntax baseModel
         let FT : Term ← Term.exprToSyntax F
         let iTerm : Term ← ``(ModelWithCorners.prod $modelIT 𝓘($kT, $FT))
         Term.elabTerm iTerm none
