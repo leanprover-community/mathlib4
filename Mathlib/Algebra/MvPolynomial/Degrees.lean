@@ -212,7 +212,6 @@ section DegreeOf
 
 /-! ### `degreeOf` -/
 
-
 /-- `degreeOf n p` gives the highest power of $X_n$ that appears in `p` -/
 def degreeOf (n : σ) (p : MvPolynomial σ R) : ℕ :=
   letI := Classical.decEq σ
@@ -225,7 +224,7 @@ theorem degreeOf_eq_supDegree (n : σ) (f : MvPolynomial σ R) :
     degreeOf n f = f.supDegree fun m => m n := by
   classical
   simp [degreeOf, degrees,
-    f.comp_supDegree_eq_supDegree_comp (Multiset.count_union n) rfl, Function.comp_def]
+    f.apply_supDegree_eq_supDegree_comp (Multiset.count_union n) rfl, Function.comp_def]
 
 theorem degreeOf_eq_sup (n : σ) (f : MvPolynomial σ R) :
     degreeOf n f = f.support.sup fun m => m n := degreeOf_eq_supDegree ..

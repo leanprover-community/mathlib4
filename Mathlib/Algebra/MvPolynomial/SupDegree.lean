@@ -58,8 +58,8 @@ theorem apply_eq_zero_of_not_le_supDegree {p : MvPolynomial σ R} {a : σ →₀
   AddMonoidAlgebra.apply_eq_zero_of_not_le_supDegree hlt
 
 -- todo: port to `AddMonoidAlgebra`
-theorem comp_supDegree_eq_supDegree_comp {B' : Type*} [SemilatticeSup B'] [OrderBot B'] {g : B → B'}
-    (g_sup : ∀ x y, g (x ⊔ y) = g x ⊔ g y) (bot : g ⊥ = ⊥) :
+theorem apply_supDegree_eq_supDegree_comp {B' : Type*} [SemilatticeSup B'] [OrderBot B']
+    {g : B → B'} (g_sup : ∀ x y, g (x ⊔ y) = g x ⊔ g y) (bot : g ⊥ = ⊥) :
     g (p.supDegree D) = p.supDegree (g ∘ D) :=
   Finset.comp_sup_eq_sup_comp g g_sup bot
 
@@ -139,7 +139,7 @@ theorem monic_one (hD : D.Injective) : (1 : MvPolynomial σ R).Monic D :=
   AddMonoidAlgebra.monic_one hD
 
 -- todo: port to `AddMonoidAlgebra`
-theorem comp_supDegree_eq_supDegree_comp_of_of_linearOrder
+theorem apply_supDegree_eq_supDegree_comp_of_of_linearOrder
     {B' : Type*} [SemilatticeSup B'] [OrderBot B'] {g : B → B'}
     (mono : Monotone g) (bot : g ⊥ = ⊥) :
     g (p.supDegree D) = p.supDegree (g ∘ D) :=
@@ -164,6 +164,13 @@ lemma supDegree_add_eq_left (h : q.supDegree D < p.supDegree D) :
 
 lemma supDegree_add_eq_right (h : p.supDegree D < q.supDegree D) :
     (p + q).supDegree D = q.supDegree D := AddMonoidAlgebra.supDegree_add_eq_right h
+
+-- port to `AddMonoidAlgebra`
+lemma supDegree_add_eq_of_ne (h : p.supDegree D ≠ q.supDegree D) :
+    (p + q).supDegree D = p.supDegree D ⊔ q.supDegree D := by
+  rcases lt_or_gt_of_ne h with h | h
+  · simp [max_eq_right h.le, supDegree_add_eq_right h]
+  · simp [max_eq_left h.le, supDegree_add_eq_left h]
 
 lemma leadingCoeff_add_eq_left (h : q.supDegree D < p.supDegree D) :
     (p + q).leadingCoeff D = p.leadingCoeff D := AddMonoidAlgebra.leadingCoeff_add_eq_left h
