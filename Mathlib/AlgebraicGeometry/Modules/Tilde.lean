@@ -117,6 +117,22 @@ lemma isSMulRegular_of_le_basicOpen {f : R} (hle : U ≤ PrimeSpectrum.basicOpen
   rw [Module.End.isUnit_iff] at this
   exact this.injective hxy
 
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma Scheme.Modules.restrictAppIso_smul_Spec {S : CommRingCat.{u}} (f : R ⟶ S)
+    [IsOpenImmersion (Spec.map f)] {U : (Spec S).Opens} (r : R)
+    (x : Γ(M.restrict (Spec.map f), U)) :
+    dsimp% (M.restrictAppIso (Spec.map f) U).hom (f r • x) =
+      r • (M.restrictAppIso (Spec.map f) U).hom x := by
+  rw [Scheme.Modules.smul_Spec_def, Scheme.Modules.smul_Spec_def]
+  simp_rw [smul_restrictAppIso_hom_apply, ← ConcreteCategory.comp_apply, Category.assoc]
+  have :
+      f ≫ (ΓSpecIso S).inv ≫ (Spec S).presheaf.map U.leTop.op ≫ (Hom.appIso (Spec.map f) U).inv =
+        (ΓSpecIso R).inv ≫ (Spec R).presheaf.map (Spec.map f ''ᵁ U).leTop.op := by
+    simp [Iso.cancel_iso_inv_left, Hom.app_eq_appLE]
+    rfl
+  rw [this]
+
 end Scheme.Modules
 
 /--
