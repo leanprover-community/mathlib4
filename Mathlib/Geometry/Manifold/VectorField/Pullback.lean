@@ -373,7 +373,7 @@ protected lemma _root_.MDifferentiableAt.mpullback_vectorField
     (hV : MDiffAt (T% V) (f x₀)) (hf : CMDiffAt n f x₀)
     (hf' : (mfderiv% f x₀).IsInvertible) (hmn : 2 ≤ n) :
     MDiffAt (T% (mpullback I I' f V)) x₀ := by
-  simpa using MDifferentiableWithinAt.mpullback_vectorField_preimage hV hf hf' hmn
+  simpa using! MDifferentiableWithinAt.mpullback_vectorField_preimage hV hf hf' hmn
 
 /-- The pullback of a differentiable vector field by a `C^n` function with `2 ≤ n` is
 differentiable. -/

@@ -181,6 +181,7 @@ section FiniteMoments
 
 variable [CompleteSpace E] [SecondCountableTopology E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A Gaussian measure has moments of all orders.
 That is, the identity is in L^p for all finite `p`. -/
 lemma memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp : p ≠ ∞) : MemLp id p μ := by
