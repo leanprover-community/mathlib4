@@ -239,10 +239,7 @@ We first prove that the module topology on `R` considered as a module over itsel
 is `R`'s topology.
 -/
 
--- note: we slightly raise the priority of `IsModuleTopology R R` for the same
--- reason that the priority `Algebra.id : Algebra R R` is raised; this instance can
--- be tried early, should be quick to fail, and can more generally be helpful
--- to guide typeclass inference in the correct direction.
+-- see Note [higher instance priority]
 /-- The topology on a topological semiring `R` agrees with the module topology when considering
 `R` as an `R`-module in the obvious way (i.e., via `Semiring.toModule`). -/
 instance (priority := 1100) _root_.IsTopologicalSemiring.toIsModuleTopology :
