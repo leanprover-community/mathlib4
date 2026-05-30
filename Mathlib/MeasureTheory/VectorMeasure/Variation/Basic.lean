@@ -172,22 +172,21 @@ lemma variation_finsetSum_le [ContinuousAdd V] {ι} (s : Finset ι) (μ : ι →
 lemma variation_apply_eq_zero (hs : MeasurableSet s) :
     μ.variation s = 0 ↔ ∀ t, t ⊆ s → MeasurableSet t → μ t = 0 := by
   refine ⟨fun h t hts ht ↦ ?_, fun h ↦ ?_⟩
-  · apply enorm_eq_zero.1
-    apply le_antisymm ?_ zero_le
-    rw [← h]
+  · rw [← enorm_eq_zero, ← le_zero_iff, ← h]
     apply (enorm_measure_le_variation _ _).trans (measure_mono hts)
-  · apply le_antisymm ?_ zero_le
-    change μ.variation s ≤ (0 : Measure X) s
+  · suffices μ.variation s ≤ (0 : Measure X) s by simpa
     apply variation_apply_le_of_forall_enorm_le hs (fun t ht hts ↦ ?_)
     simp [h t hts ht]
 
-@[simp] lemma variation_eq_zero : μ.variation = 0 ↔ μ = 0 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
-  ext s hs
-  apply enorm_eq_zero.1
-  apply le_antisymm ?_ (by simp)
-  grw [enorm_measure_le_variation]
-  simp [h]
+@[simp] lemma variation_eq_zero :
+    μ.variation = 0 ↔ μ = 0 where
+  mp h := by
+    ext s hs
+    apply enorm_eq_zero.1
+    apply le_antisymm ?_ (by simp)
+    grw [enorm_measure_le_variation]
+    simp [h]
+  mpr h := by simp [h]
 
 lemma variation_restrict (hs : MeasurableSet s) :
     (μ.restrict s).variation = μ.variation.restrict s := by
@@ -200,10 +199,8 @@ lemma variation_restrict (hs : MeasurableSet s) :
     calc μ.variation (t ∩ s)
     _ ≤ (μ.restrict s).variation (t ∩ s) := by
       apply variation_apply_le_of_forall_enorm_le (ht.inter hs) (fun u u_meas hu ↦ ?_)
-      have : μ u = μ.restrict s u := by
-        rw [VectorMeasure.restrict_apply _ hs u_meas]
-        congr
-        grind
+      have : μ u = μ.restrict s u :=
+        (VectorMeasure.restrict_eq_self _ hs u_meas (hu.trans inter_subset_right)).symm
       rw [this]
       apply enorm_measure_le_variation
     _ ≤ (μ.restrict s).variation t := by
@@ -213,28 +210,21 @@ lemma variation_restrict (hs : MeasurableSet s) :
 lemma variation_restrict_le : (μ.restrict s).variation ≤ μ.variation.restrict s := by
   by_cases hs : MeasurableSet s
   · simp [variation_restrict hs]
-  · simp only [restrict_not_measurable _ hs, variation_zero, Measure.zero_le]
+  · simp [restrict_not_measurable _ hs, Measure.zero_le]
 
-instance [IsFiniteMeasure μ.variation] : IsFiniteMeasure (μ.restrict s).variation := by
-  constructor
-  grw [variation_restrict_le]
-  exact IsFiniteMeasure.measure_univ_lt_top
+instance [IsFiniteMeasure μ.variation] : IsFiniteMeasure (μ.restrict s).variation :=
+  isFiniteMeasure_of_le _ variation_restrict_le
 
 variable {Y : Type*} [MeasurableSpace Y] {φ : X → Y}
 
-lemma variation_map_le :
-    (μ.map φ).variation ≤ Measure.map φ μ.variation := by
+lemma variation_map_le : (μ.map φ).variation ≤ μ.variation.map φ := by
   by_cases hφ : Measurable φ; swap
   · simp [VectorMeasure.map, hφ, Measure.zero_le]
   apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
-  simp only [Measure.map_apply hφ hs]
-  apply le_trans ?_ (enorm_measure_le_variation _ _)
-  simp [VectorMeasure.map_apply _ hφ hs]
+  simp [VectorMeasure.map_apply _ hφ hs, Measure.map_apply hφ hs, enorm_measure_le_variation]
 
-instance [IsFiniteMeasure μ.variation] : IsFiniteMeasure (μ.map φ).variation := by
-  constructor
-  grw [variation_map_le]
-  exact IsFiniteMeasure.measure_univ_lt_top
+instance [IsFiniteMeasure μ.variation] : IsFiniteMeasure (μ.map φ).variation :=
+  isFiniteMeasure_of_le _ variation_map_le
 
 theorem _root_.MeasurableEmbedding.variation_map (hφ : MeasurableEmbedding φ) :
     (μ.map φ).variation = μ.variation.map φ := by
@@ -285,8 +275,7 @@ private lemma variation_smul_le {𝕜 : Type*} [NormedField 𝕜] [NormedSpace �
     (c • μ).variation ≤ ‖c‖₊ • μ.variation := by
   apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
   simp only [coe_smul, Pi.smul_apply, enorm_smul, Measure.smul_apply, Measure.nnreal_smul_coe_apply]
-  grw [enorm_measure_le_variation]
-  exact le_rfl
+  grw [enorm_measure_le_variation, enorm_eq_nnnorm]
 
 lemma variation_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] {c : 𝕜} :
     (c • μ).variation = ‖c‖₊ • μ.variation := by
@@ -306,13 +295,13 @@ instance {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] {c : 𝕜} [IsFi
   simp only [variation_smul]
   infer_instance
 
-instance [Finite X] : IsFiniteMeasure μ.variation := by
-  classical
-  let : Fintype X := Fintype.ofFinite X
-  constructor
-  simp only [variation_apply, preVariation_apply, MeasurableSet.univ, ennrealToMeasure_apply,
-    ennrealPreVariation_apply, preVariationFun, ↓reduceDIte, ← sup_univ_eq_ciSup]
-  exact (Finset.sup_lt_iff (by simp)).2 (fun b hb ↦ by simp [ENNReal.sum_lt_top, enorm_lt_top])
+instance [Finite X] : IsFiniteMeasure μ.variation where
+  measure_univ_lt_top := by
+    classical
+    let : Fintype X := Fintype.ofFinite X
+    simp only [variation_apply, preVariation_apply, MeasurableSet.univ, ennrealToMeasure_apply,
+      ennrealPreVariation_apply, preVariationFun, ↓reduceDIte, ← sup_univ_eq_ciSup]
+    exact (Finset.sup_lt_iff (by simp)).2 (fun b hb ↦ by simp [ENNReal.sum_lt_top, enorm_lt_top])
 
 instance {x : X} {v : V} : IsFiniteMeasure (VectorMeasure.dirac x v).variation := by
   simp only [variation_dirac, enorm_eq_nnnorm, Measure.coe_nnreal_smul]
