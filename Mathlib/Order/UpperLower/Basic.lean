@@ -47,7 +47,7 @@ theorem IsUpperSet.compl (hs : IsUpperSet s) : IsLowerSet sᶜ := fun _a _b h hb
 @[to_dual (attr := simp)]
 theorem isUpperSet_compl : IsUpperSet sᶜ ↔ IsLowerSet s :=
   ⟨fun h => by
-    convert h.compl
+    convert! h.compl
     rw [compl_compl], IsLowerSet.compl⟩
 
 @[to_dual]

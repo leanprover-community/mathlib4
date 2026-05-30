@@ -68,7 +68,7 @@ protected lemma IsEdgeReachable.zero : G.IsEdgeReachable 0 u v := by simp [IsEdg
 
 @[simp]
 lemma isEdgeReachable_one : G.IsEdgeReachable 1 u v ↔ G.Reachable u v := by
-  simp [IsEdgeReachable, ENat.lt_one_iff_eq_zero]
+  simp [IsEdgeReachable, Order.lt_one_iff]
 
 @[simp]
 lemma isEdgeConnected_one : G.IsEdgeConnected 1 ↔ G.Preconnected := by
@@ -96,9 +96,9 @@ lemma IsEdgeReachable.le_degree [Fintype (G.neighborSet u)] (h : G.IsEdgeReachab
     (huv : u ≠ v) : k ≤ G.degree u := by
   classical
   by_contra! hh
-  obtain ⟨w, _⟩ :=
-    @h (G.incidenceSet u) (by simpa [← Set.coe_fintypeCard, ENat.coe_lt_coe]) |>.exists_isPath
-  simpa using w.adj_snd <| by grind [Walk.nil_iff_length_eq, Walk.eq_of_length_eq_zero]
+  rw [← card_incidenceSet_eq_degree, ← ENat.coe_lt_coe, Set.coe_fintypeCard] at hh
+  obtain ⟨w, _⟩ := h hh |>.exists_isPath
+  simpa using w.adj_snd <| mt Walk.Nil.eq huv
 
 lemma IsEdgeConnected.le_degree [Fintype (G.neighborSet u)] [Nontrivial V]
     (h : G.IsEdgeConnected k) : k ≤ G.degree u := by

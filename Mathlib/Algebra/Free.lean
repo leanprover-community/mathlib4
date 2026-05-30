@@ -348,10 +348,10 @@ theorem quot_mk_assoc_left (x y z w : α) :
 instance : Semigroup (AssocQuotient α) where
   mul x y := by
     refine Quot.liftOn₂ x y (fun x y ↦ Quot.mk _ (x * y)) ?_ ?_
-    · rintro a b₁ b₂ (⟨c, d, e⟩ | ⟨c, d, e, f⟩) <;> simp only
+    · rintro a b₁ b₂ (⟨c, d, e⟩ | ⟨c, d, e, f⟩)
       · exact quot_mk_assoc_left _ _ _ _
       · rw [← quot_mk_assoc, quot_mk_assoc_left, quot_mk_assoc]
-    · rintro a₁ a₂ b (⟨c, d, e⟩ | ⟨c, d, e, f⟩) <;> simp only
+    · rintro a₁ a₂ b (⟨c, d, e⟩ | ⟨c, d, e, f⟩)
       · simp only [quot_mk_assoc, quot_mk_assoc_left]
       · rw [quot_mk_assoc, quot_mk_assoc, quot_mk_assoc_left, quot_mk_assoc_left,
           quot_mk_assoc_left, ← quot_mk_assoc c d, ← quot_mk_assoc c d, quot_mk_assoc_left]
@@ -490,7 +490,7 @@ def length (x : FreeSemigroup α) : ℕ := x.tail.length + 1
 
 @[to_additive (attr := simp)]
 theorem length_mul (x y : FreeSemigroup α) : (x * y).length = x.length + y.length := by
-  simp [length, Nat.add_right_comm, List.length, List.length_append]
+  simp [length, Nat.add_right_comm]
 
 @[to_additive (attr := simp)]
 theorem length_of (x : α) : (of x).length = 1 := rfl
@@ -521,7 +521,7 @@ a semigroup `β`. -/
 homomorphism `FreeAddSemigroup α → β` given an additive semigroup `β`. -/]
 def lift : (α → β) ≃ (FreeSemigroup α →ₙ* β) where
   toFun f :=
-    { toFun := fun x ↦ x.2.foldl (fun a b ↦ a * f b) (f x.1)
+    { toFun x := x.2.foldl (fun a b ↦ a * f b) (f x.1)
       map_mul' := by simp [← List.foldl_map, List.foldl_assoc] }
   invFun f := f ∘ of
 

@@ -137,8 +137,6 @@ theorem IsTrail.of_cons {u v w : V} {h : G.Adj u v} {p : G.Walk v w} :
 theorem isTrail_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
     (cons h p).IsTrail ↔ p.IsTrail ∧ s(u, v) ∉ p.edges := by simp [isTrail_def, and_comm]
 
-@[deprecated (since := "2025-11-03")] alias cons_isTrail_iff := isTrail_cons
-
 protected lemma IsTrail.cons {w : G.Walk u' v} (hw : w.IsTrail) (hu : G.Adj u u')
     (hu' : s(u, u') ∉ w.edges) : (w.cons hu).IsTrail := by simp [*]
 
@@ -149,7 +147,7 @@ theorem IsTrail.reverse {u v : V} (p : G.Walk u v) (h : p.IsTrail) : p.reverse.I
 theorem reverse_isTrail_iff {u v : V} (p : G.Walk u v) : p.reverse.IsTrail ↔ p.IsTrail := by
   constructor <;>
     · intro h
-      convert h.reverse _
+      convert! h.reverse _
       try rw [reverse_reverse]
 
 theorem IsTrail.of_append_left {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
@@ -206,7 +204,7 @@ theorem IsPath.reverse {u v : V} {p : G.Walk u v} (h : p.IsPath) : p.reverse.IsP
 
 @[simp]
 theorem isPath_reverse_iff {u v : V} (p : G.Walk u v) : p.reverse.IsPath ↔ p.IsPath := by
-  constructor <;> intro h <;> convert h.reverse; simp
+  constructor <;> intro h <;> convert! h.reverse; simp
 
 theorem IsPath.of_append_left {u v w : V} {p : G.Walk u v} {q : G.Walk v w} :
     (p.append q).IsPath → p.IsPath := by
@@ -417,9 +415,9 @@ lemma IsPath.getVert_eq_start_iff_of_not_nil {i : ℕ} {p : G.Walk u w} (hp : p.
 
 lemma IsPath.getVert_eq_start_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
     p.getVert i = u ↔ i = 0 := by
-  by_cases h' : p.Nil
-  · simp_all [nil_iff_length_eq.mp h']
-  · exact hp.getVert_eq_start_iff_of_not_nil h'
+  cases p
+  · simpa using hi
+  · exact hp.getVert_eq_start_iff_of_not_nil not_nil_cons
 
 lemma IsPath.getVert_eq_end_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
     p.getVert i = w ↔ i = p.length := by
@@ -607,12 +605,36 @@ lemma endpoint_notMem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w
   rw [Walk.mem_support_iff_exists_getVert] at hv
   obtain ⟨n, ⟨hn, hnl⟩⟩ := hv
   rw [getVert_takeUntil hw hnl] at hn
-  have := p.length_takeUntil_lt hw h.symm
+  have := p.length_takeUntil_lt_length hw h.symm
   have : n = p.length := hp.getVert_injOn (by rw [Set.mem_setOf]; lia) (by simp)
     (hn.symm ▸ p.getVert_length.symm)
   lia
 
 end WalkDecomp
+
+theorem isPath_iff_isSubwalk_imp_nil {u v} {p : G.Walk u v} :
+    p.IsPath ↔ ∀ (v : V) (w : G.Walk v v), w.IsSubwalk p → w.Nil := by
+  refine ⟨fun hp v w hwp ↦ ?_, fun h ↦ .mk' ?_⟩
+  · simp [w.isPath_iff_eq_nil.mp <| isPath_of_isSubwalk hwp hp]
+  · refine List.pairwise_iff_getElem.mpr fun i j _ _ _ _ ↦ ?_
+    let p' := p.take j |>.drop i
+    have : ¬p'.Nil := by grind [nil_drop_iff, take_length]
+    have : p'.IsSubwalk p := isSubwalk_drop _ i |>.trans <| p.isSubwalk_take j
+    grind [take_getVert, getVert_eq_support_getElem]
+
+theorem IsTrail.isPath_iff_isSubwalk_imp_not_isCycle {u v} {p : G.Walk u v} (ht : p.IsTrail) :
+    p.IsPath ↔ ∀ (v : V) (w : G.Walk v v), w.IsSubwalk p → ¬w.IsCycle := by
+  refine ⟨by grind [isPath_iff_isSubwalk_imp_nil, IsCycle.not_nil], fun h ↦ ?_⟩
+  classical
+  match p with
+  | .nil => simp
+  | .cons hadj p =>
+    have hp := isPath_iff_isSubwalk_imp_not_isCycle ht.of_cons |>.mpr (h · · <| ·.cons hadj)
+    refine cons_isPath_iff .. |>.mpr ⟨hp, fun hup ↦ h u (p.takeUntil u hup |>.cons hadj) ?_ ?_⟩
+    · rw [isSubwalk_iff_support_isInfix, support_cons, support_cons]
+      exact (List.prefix_cons_inj u |>.mpr <| p.support_takeUntil_prefix_support hup).isInfix
+    · refine cons_isCycle_iff .. |>.mpr ⟨hp.takeUntil hup, fun he ↦ ?_⟩
+      exact ht.edges_nodup.notMem <| p.edges_takeUntil_subset_edges hup he
 
 end Walk
 
@@ -715,56 +737,74 @@ def toPath (p : G.Walk u v) : G.Path u v :=
   ⟨p.bypass, p.bypass_isPath⟩
 
 open List in
-theorem support_bypass_sublist (p : G.Walk u v) : p.bypass.support <+ p.support := by
+theorem support_bypass_sublist_support (p : G.Walk u v) : p.bypass.support <+ p.support := by
   induction p with
   | nil => simp!
   | cons _ _ ih =>
     dsimp! only
     split_ifs
-    · exact support_dropUntil_suffix .. |>.sublist.trans ih |>.cons _
+    · exact support_dropUntil_suffix_support .. |>.sublist.trans ih |>.cons _
     · simpa
 
-theorem support_bypass_subset (p : G.Walk u v) : p.bypass.support ⊆ p.support :=
-  p.support_bypass_sublist.subset
+theorem support_bypass_subset_support (p : G.Walk u v) : p.bypass.support ⊆ p.support :=
+  p.support_bypass_sublist_support.subset
 
-theorem support_toPath_subset (p : G.Walk u v) : (p.toPath : G.Walk u v).support ⊆ p.support :=
-  p.support_bypass_subset
+@[deprecated (since := "2026-05-25")] alias support_bypass_subset := support_bypass_subset_support
+
+theorem support_toPath_subset_support (p : G.Walk u v) :
+    (p.toPath : G.Walk u v).support ⊆ p.support :=
+  p.support_bypass_subset_support
+
+@[deprecated (since := "2026-05-25")] alias support_toPath_subset := support_toPath_subset_support
 
 open List in
-theorem darts_bypass_sublist (p : G.Walk u v) : p.bypass.darts <+ p.darts := by
+theorem darts_bypass_sublist_darts (p : G.Walk u v) : p.bypass.darts <+ p.darts := by
   induction p with
   | nil => simp!
   | cons _ _ ih =>
     dsimp! only
     split_ifs
-    · exact darts_dropUntil_suffix .. |>.sublist.trans ih |>.cons _
+    · exact darts_dropUntil_suffix_darts .. |>.sublist.trans ih |>.cons _
     · simpa
 
-theorem darts_bypass_subset (p : G.Walk u v) : p.bypass.darts ⊆ p.darts :=
-  p.darts_bypass_sublist.subset
+theorem darts_bypass_subset_darts (p : G.Walk u v) : p.bypass.darts ⊆ p.darts :=
+  p.darts_bypass_sublist_darts.subset
+
+@[deprecated (since := "2026-05-25")] alias darts_bypass_subset := darts_bypass_subset_darts
 
 open List in
-theorem edges_bypass_sublist (p : G.Walk u v) : p.bypass.edges <+ p.edges :=
-  p.darts_bypass_sublist.map _
+theorem edges_bypass_sublist_edges (p : G.Walk u v) : p.bypass.edges <+ p.edges :=
+  p.darts_bypass_sublist_darts.map _
 
-theorem edges_bypass_subset (p : G.Walk u v) : p.bypass.edges ⊆ p.edges :=
-  p.edges_bypass_sublist.subset
+theorem edges_bypass_subset_edges (p : G.Walk u v) : p.bypass.edges ⊆ p.edges :=
+  p.edges_bypass_sublist_edges.subset
 
-theorem length_bypass_le (p : G.Walk u v) : p.bypass.length ≤ p.length := by
-  simpa using p.darts_bypass_sublist.length_le
+@[deprecated (since := "2026-05-25")] alias edges_bypass_subset := edges_bypass_subset_edges
 
-lemma bypass_eq_self_of_length_le (p : G.Walk u v) (h : p.length ≤ p.bypass.length) :
+theorem length_bypass_le_length (p : G.Walk u v) : p.bypass.length ≤ p.length := by
+  simpa using p.darts_bypass_sublist_darts.length_le
+
+@[deprecated (since := "2026-05-25")] alias length_bypass_le := length_bypass_le_length
+
+lemma bypass_eq_self_of_length_le_length_bypass (p : G.Walk u v) (h : p.length ≤ p.bypass.length) :
     p.bypass = p :=
-  ext_support <| p.support_bypass_sublist.eq_of_length_le <| by simpa using h
+  ext_support <| p.support_bypass_sublist_support.eq_of_length_le <| by simpa using h
+
+@[deprecated (since := "2026-05-25")]
+alias bypass_eq_self_of_length_le := bypass_eq_self_of_length_le_length_bypass
 
 lemma bypass_eq_self_iff_length_le (p : G.Walk u v) : p.bypass = p ↔ p.length ≤ p.bypass.length :=
-  ⟨fun hp ↦ (congrArg length hp).ge, p.bypass_eq_self_of_length_le⟩
+  ⟨fun hp ↦ (congrArg length hp).ge, p.bypass_eq_self_of_length_le_length_bypass⟩
 
-theorem darts_toPath_subset (p : G.Walk u v) : (p.toPath : G.Walk u v).darts ⊆ p.darts :=
-  p.darts_bypass_subset
+theorem darts_toPath_subset_darts (p : G.Walk u v) : (p.toPath : G.Walk u v).darts ⊆ p.darts :=
+  p.darts_bypass_subset_darts
 
-theorem edges_toPath_subset (p : G.Walk u v) : (p.toPath : G.Walk u v).edges ⊆ p.edges :=
-  p.edges_bypass_subset
+@[deprecated (since := "2026-05-25")] alias darts_toPath_subset := darts_toPath_subset_darts
+
+theorem edges_toPath_subset_edges (p : G.Walk u v) : (p.toPath : G.Walk u v).edges ⊆ p.edges :=
+  p.edges_bypass_subset_edges
+
+@[deprecated (since := "2026-05-25")] alias edges_toPath_subset := edges_toPath_subset_edges
 
 @[simp]
 lemma bypass_cons_nil (hadj : G.Adj u v) : (cons hadj nil).bypass = cons hadj nil := by
@@ -795,25 +835,28 @@ def cycleBypass : G.Walk v v → G.Walk v v
 @[simp] lemma cycleBypass_nil : (.nil : G.Walk v v).cycleBypass = .nil := rfl
 
 open List in
-theorem support_cycleBypass_sublist : ∀ (w : G.Walk v v), w.cycleBypass.support <+ w.support
+theorem support_cycleBypass_sublist_support : ∀ (w : G.Walk v v), w.cycleBypass.support <+ w.support
   | .nil => .refl _
-  | .cons _ w => w.support_bypass_sublist.cons_cons _
+  | .cons _ w => w.support_bypass_sublist_support.cons_cons _
 
 open List in
-theorem darts_cycleBypass_sublist : ∀ (w : G.Walk v v), w.cycleBypass.darts <+ w.darts
+theorem darts_cycleBypass_sublist_darts : ∀ (w : G.Walk v v), w.cycleBypass.darts <+ w.darts
   | .nil => .refl _
-  | .cons _ w => w.darts_bypass_sublist.cons_cons _
+  | .cons _ w => w.darts_bypass_sublist_darts.cons_cons _
 
 open List in
-theorem edges_cycleBypass_sublist : ∀ (w : G.Walk v v), w.cycleBypass.edges <+ w.edges
+theorem edges_cycleBypass_sublist_edges : ∀ (w : G.Walk v v), w.cycleBypass.edges <+ w.edges
   | .nil => .refl _
-  | .cons _ w => w.edges_bypass_sublist.cons_cons _
+  | .cons _ w => w.edges_bypass_sublist_edges.cons_cons _
 
-lemma edges_cycleBypass_subset (w : G.Walk v v) : w.cycleBypass.edges ⊆ w.edges :=
-  w.edges_cycleBypass_sublist.subset
+lemma edges_cycleBypass_subset_edges (w : G.Walk v v) : w.cycleBypass.edges ⊆ w.edges :=
+  w.edges_cycleBypass_sublist_edges.subset
 
-lemma length_cycleBypass_le (w : G.Walk v v) : w.cycleBypass.length ≤ w.length := by
-  simpa using w.darts_cycleBypass_sublist.length_le
+@[deprecated (since := "2026-05-25")]
+alias edges_cycleBypass_subset := edges_cycleBypass_subset_edges
+
+lemma length_cycleBypass_le_length (w : G.Walk v v) : w.cycleBypass.length ≤ w.length := by
+  simpa using w.darts_cycleBypass_sublist_darts.length_le
 
 lemma IsCircuit.isCycle_cycleBypass : ∀ {w : G.Walk v v}, w.IsCircuit → w.cycleBypass.IsCycle
   | .cons (v := v') hvv' w, hw => by
@@ -821,7 +864,7 @@ lemma IsCircuit.isCycle_cycleBypass : ∀ {w : G.Walk v v}, w.IsCircuit → w.cy
     refine ⟨⟨(bypass_isPath _).isTrail.cons _ fun hvv' ↦ ?_, by simp⟩, ?_⟩
     · simp only [isCircuit_def, isTrail_cons, ne_eq, reduceCtorEq, not_false_eq_true,
         and_true] at hw
-      exact hw.2 <| edges_bypass_subset _ hvv'
+      exact hw.2 <| edges_bypass_subset_edges _ hvv'
     · simpa using (bypass_isPath _).support_nodup
 
 lemma IsTrail.isCycle_cycleBypass {w : G.Walk v v} (hw : w ≠ .nil) (hw' : w.IsTrail) :
@@ -834,7 +877,7 @@ lemma cycleBypass_eq_self_of_length_le (w : G.Walk v v) (h : w.length ≤ w.cycl
   · simp
   · simp only [length_cons, cycleBypass, Nat.add_le_add_iff_right, cons.injEq, heq_eq_eq,
       true_and] at h ⊢
-    exact bypass_eq_self_of_length_le _ h
+    exact bypass_eq_self_of_length_le_length_bypass _ h
 
 theorem cycleBypass_eq_self_iff_length_le (w : G.Walk v v) :
     w.cycleBypass = w ↔ w.length ≤ w.cycleBypass.length := by
@@ -902,8 +945,8 @@ alias ⟨_, map_isTrail_of_injective⟩ := map_isTrail_iff_of_injective
 
 theorem map_isCycle_iff_of_injective {p : G.Walk u u} (hinj : Function.Injective f) :
     (p.map f).IsCycle ↔ p.IsCycle := by
-  rw [isCycle_def, isCycle_def, map_isTrail_iff_of_injective hinj, Ne, map_eq_nil_iff,
-    support_map, ← List.map_tail, List.nodup_map_iff hinj]
+  rw [isCycle_def, isCycle_def, map_isTrail_iff_of_injective hinj, ne_eq, ne_eq, eq_nil_iff_nil,
+    eq_nil_iff_nil, nil_map_iff, support_map, ← List.map_tail, List.nodup_map_iff hinj]
 
 alias ⟨_, IsCycle.map⟩ := map_isCycle_iff_of_injective
 

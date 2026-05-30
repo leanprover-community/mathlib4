@@ -170,6 +170,20 @@ lemma quotient_inverts_homotopyEquivalences :
   change IsIso (isoOfHomotopyEquiv e).hom
   infer_instance
 
+variable (V c) in
+lemma inverseImage_quotient_isomorphisms :
+    (MorphismProperty.isomorphisms _).inverseImage (HomotopyCategory.quotient V c) =
+      homotopyEquivalences V c := by
+  ext K L f
+  simp only [MorphismProperty.inverseImage_iff, MorphismProperty.isomorphisms.iff]
+  refine ⟨fun _ ↦ ?_, fun hf ↦ quotient_inverts_homotopyEquivalences _ _ _ hf⟩
+  obtain ⟨g, hg⟩ := (quotient V c).map_surjective (inv ((quotient _ _).map f))
+  exact ⟨{
+    hom := f
+    inv := g
+    homotopyHomInvId := homotopyOfEq _ _ (by simp [hg])
+    homotopyInvHomId := homotopyOfEq _ _ (by simp [hg]) }, rfl⟩
+
 lemma isZero_quotient_obj_iff (C : HomologicalComplex V c) :
     IsZero ((quotient _ _).obj C) ↔ Nonempty (Homotopy (𝟙 C) 0) := by
   rw [IsZero.iff_id_eq_zero]

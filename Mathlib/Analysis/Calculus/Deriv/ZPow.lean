@@ -42,7 +42,7 @@ theorem hasStrictDerivAt_zpow (m : ℤ) (x : 𝕜) (h : x ≠ 0 ∨ 0 ≤ m) :
   have : ∀ m : ℤ, 0 < m → HasStrictDerivAt (· ^ m) ((m : 𝕜) * x ^ (m - 1)) x := fun m hm ↦ by
     lift m to ℕ using hm.le
     simp only [zpow_natCast, Int.cast_natCast]
-    convert hasStrictDerivAt_pow m x using 2
+    convert! hasStrictDerivAt_pow m x using 2
     rw [← Int.ofNat_one, ← Int.ofNat_sub, zpow_natCast]
     norm_cast at hm
   rcases lt_trichotomy m 0 with (hm | hm | hm)
@@ -50,7 +50,7 @@ theorem hasStrictDerivAt_zpow (m : ℤ) (x : 𝕜) (h : x ≠ 0 ∨ 0 ≤ m) :
     have := (hasStrictDerivAt_inv ?_).scomp _ (this (-m) (neg_pos.2 hm)) <;>
       [skip; exact zpow_ne_zero _ hx]
     simp only [Function.comp_def, zpow_neg, inv_inv, smul_eq_mul] at this
-    convert this using 1
+    convert! this using 1
     rw [sq, mul_inv, inv_inv, Int.cast_neg, neg_mul, neg_mul_neg, ← zpow_add₀ hx, mul_assoc, ←
       zpow_add₀ hx]
     congr
