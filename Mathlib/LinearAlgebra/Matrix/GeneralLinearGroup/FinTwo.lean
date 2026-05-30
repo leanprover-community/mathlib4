@@ -43,9 +43,6 @@ variable {m}
 
 section conjugation
 
-@[deprecated (since := "2025-10-20")] alias disc_conj := discr_conj
-@[deprecated (since := "2025-10-20")] alias disc_conj' := discr_conj'
-
 @[simp] lemma isParabolic_conj_iff : (g.val * m * g.val⁻¹).IsParabolic ↔ IsParabolic m := by
   simp_rw [IsParabolic, discr_conj, Set.mem_range, ← Matrix.coe_units_inv,
     Units.eq_mul_inv_iff_mul_eq, scalar_apply, ← smul_eq_diagonal_mul, smul_eq_mul_diagonal,
@@ -100,8 +97,6 @@ lemma sub_scalar_sq_eq_discr [NeZero (2 : K)] :
   fin_cases j <;>
   · simp [Matrix.mul_apply]
     field
-
-@[deprecated (since := "2025-10-20")] alias sub_scalar_sq_eq_disc := sub_scalar_sq_eq_discr
 
 variable (m) in
 /-- The unique eigenvalue of a parabolic matrix (junk if `m` is not parabolic). -/

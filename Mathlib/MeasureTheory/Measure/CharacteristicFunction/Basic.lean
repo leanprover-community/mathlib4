@@ -457,12 +457,7 @@ theorem Measure.ext_of_charFunDual [CompleteSpace E]
     μ = ν := by
   refine ext_of_integral_char_eq continuous_probChar probChar_ne_one
     ?_ ?_ (fun L ↦ funext_iff.mp h L)
-  · intro v hv
-    rw [ne_eq, LinearMap.ext_iff]
-    simp only [ContinuousLinearMap.toLinearMap₁₂_apply, LinearMap.zero_apply, not_forall]
-    change ∃ L : StrongDual ℝ E, L v ≠ 0
-    by_contra! h
-    exact hv (SeparatingDual.eq_zero_of_forall_dual_eq_zero (R := ℝ) h)
+  · exact fun v hv ↦ DFunLike.ne_iff.mpr <| SeparatingDual.exists_ne_zero hv
   · exact isBoundedBilinearMap_apply.symm.continuous
 
 /-- The characteristic function of a measure is a product of

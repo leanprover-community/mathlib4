@@ -64,7 +64,7 @@ theorem char_one (V : FDRep k G) : V.character 1 = Module.finrank k V := by
 /-- The character is multiplicative under the tensor product. -/
 @[simp]
 theorem char_tensor (V W : FDRep k G) : (V ⊗ W).character = V.character * W.character := by
-  ext g; convert trace_tensorProduct' (V.ρ g) (W.ρ g)
+  ext g; convert! trace_tensorProduct' (V.ρ g) (W.ρ g)
 
 /-- The character of isomorphic representations is the same. -/
 theorem char_iso {V W : FDRep k G} (i : V ≅ W) : V.character = W.character := by
@@ -163,7 +163,7 @@ theorem char_one (ρ : Representation k G V) : ρ.character 1 = Module.finrank k
 /-- The character is multiplicative under the tensor product. -/
 @[simp]
 theorem char_tensor : (tprod ρ σ).character = ρ.character * σ.character := by
-  ext g; convert trace_tensorProduct' (ρ g) (σ g)
+  ext g; convert! trace_tensorProduct' (ρ g) (σ g)
 
 omit [FiniteDimensional k V] [FiniteDimensional k W] in
 variable {ρ σ} in

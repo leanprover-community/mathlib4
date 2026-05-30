@@ -130,13 +130,7 @@ Note that for general (neither symmetric nor antisymmetric) bilinear forms this 
 chirality; in addition to this "right" orthogonal complement one could define a "left" orthogonal
 complement for which, for all `y` in `N`, `B x y = 0`.  This variant definition is not currently
 provided in mathlib. -/
-def orthogonal (B : BilinForm R M) (N : Submodule R M) : Submodule R M where
-  carrier := { m | ∀ n ∈ N, IsOrtho B n m }
-  zero_mem' x _ := isOrtho_zero_right x
-  add_mem' {x y} hx hy n hn := by
-    rw [IsOrtho, add_right, show B n x = 0 from hx n hn, show B n y = 0 from hy n hn, zero_add]
-  smul_mem' c x hx n hn := by
-    rw [IsOrtho, smul_right, show B n x = 0 from hx n hn, mul_zero]
+def orthogonal (B : BilinForm R M) (N : Submodule R M) : Submodule R M := N.orthogonalBilin B
 
 variable {N L : Submodule R M}
 
@@ -158,7 +152,7 @@ lemma orthogonal_top_eq_ker (hB : B.IsRefl) :
 
 lemma orthogonal_top_eq_bot (hB : B.Nondegenerate) :
     B.orthogonal ⊤ = ⊥ :=
-  (Submodule.eq_bot_iff _).mpr fun x hx ↦ hB.2 x (by simpa using hx)
+  (Submodule.eq_bot_iff _).mpr fun x hx ↦ hB.2 x (by simpa using! hx)
 
 -- ↓ This lemma only applies in fields as we require `a * b = 0 → a = 0 ∨ b = 0`
 theorem span_singleton_inf_orthogonal_eq_bot {B : BilinForm K V} {x : V} (hx : ¬B.IsOrtho x x) :
@@ -200,8 +194,8 @@ theorem iIsOrtho.not_isOrtho_basis_self_of_nondegenerate {n : Type w} [Nontrivia
 
 /-- Given an orthogonal basis with respect to a bilinear form, the bilinear form is nondegenerate
 iff the basis has no elements which are self-orthogonal. -/
-theorem iIsOrtho.nondegenerate_iff_not_isOrtho_basis_self {n : Type w} [Nontrivial R]
-    [IsDomain R] (B : BilinForm R M) (v : Basis n R M) (hO : B.iIsOrtho v) :
+theorem iIsOrtho.nondegenerate_iff_not_isOrtho_basis_self {n : Type w} [IsDomain R]
+    (B : BilinForm R M) (v : Basis n R M) (hO : B.iIsOrtho v) :
     B.Nondegenerate ↔ ∀ i, ¬B.IsOrtho (v i) (v i) :=
   ⟨hO.not_isOrtho_basis_self_of_nondegenerate, hO.nondegenerate_of_not_isOrtho_basis_self _⟩
 
@@ -344,7 +338,7 @@ lemma orthogonal_eq_bot_iff
     B.orthogonal W = ⊥ ↔ W = ⊤ := by
   refine ⟨eq_top_of_restrict_nondegenerate_of_orthogonal_eq_bot b₁ b₂, fun h ↦ ?_⟩
   rw [h, eq_bot_iff]
-  exact fun x hx ↦ b₃.1 x fun y ↦ b₁ y x <| by simpa using hx y
+  exact fun x hx ↦ b₃.1 x fun y ↦ b₁ y x <| by simpa using! hx y
 
 end
 
