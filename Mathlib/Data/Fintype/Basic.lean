@@ -39,6 +39,8 @@ instance Fin.fintype (n : ℕ) : Fintype (Fin n) :=
 theorem Fin.univ_def (n : ℕ) : (univ : Finset (Fin n)) = ⟨List.finRange n, List.nodup_finRange n⟩ :=
   rfl
 
+theorem Finset.univ_fin2 : (univ : Finset (Fin 2)) = {0, 1} := rfl
+
 theorem Finset.val_univ_fin (n : ℕ) : (Finset.univ : Finset (Fin n)).val = List.finRange n := rfl
 
 /-- See also `nonempty_encodable`, `nonempty_denumerable`. -/
@@ -106,6 +108,9 @@ theorem Fin.univ_succAbove (n : ℕ) (p : Fin (n + 1)) :
 theorem Fin.univ_image_get' [DecidableEq β] (l : List α) (f : α → β) :
     Finset.univ.image (f <| l.get ·) = (l.map f).toFinset := by
   simp
+
+lemma Fin.eq_iff_eq_zero_iff (a b : Fin 2) : a = b ↔ (a = 0 ↔ b = 0) :=
+  ⟨by rintro rfl; rfl, fin_two_eq_of_eq_zero_iff⟩
 
 instance Unique.fintype {α : Type*} [Unique α] : Fintype α :=
   Fintype.ofSubsingleton default

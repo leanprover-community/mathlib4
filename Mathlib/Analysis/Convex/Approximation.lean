@@ -30,7 +30,7 @@ of continuous affine linear functions. We follow the proof in
 
 -/
 
-@[expose] public section
+public section
 
 open Function Set RCLike ContinuousLinearMap
 
@@ -87,6 +87,22 @@ lemma exists_affine_le_of_lt {x : E} {a : ℝ} (hx : x ∈ s) (hax : a < φ x) (
     simpa [smul_re, u, c, mul_add, ← mul_assoc, inv_mul_cancel₀ (ne_of_gt (inv_pos.1 hc))]
       using mul_le_mul_of_nonneg_left (hine z.2).le hc.le
   · simp [u, c, smul_re]
+
+lemma exists_affine_le_of_lt_real {s : Set ℝ} {f : ℝ → ℝ} {x : ℝ} {a : ℝ} (hx : x ∈ s)
+    (hax : a < f x) (hsc : IsClosed s) (hfc : LowerSemicontinuousOn f s) (hf : ConvexOn ℝ s f) :
+    ∃ (c c' : ℝ), (∀ y ∈ s, c * y + c' ≤ f y) ∧ c * x + c' = a := by
+  obtain ⟨l, c', hlc'_le, hlc'_eq⟩ := exists_affine_le_of_lt (𝕜 := ℝ) hx hax hsc hfc hf
+  have h1 y : l 1 * y = l y := by rw [mul_comm, ← smul_eq_mul, ← map_smul, smul_eq_mul, mul_one]
+  exact ⟨l 1, c', fun y hy ↦ by simpa [h1] using hlc'_le ⟨y, hy⟩, by simpa [h1] using hlc'_eq⟩
+
+lemma exists_affine_le_real {s : Set ℝ} {f : ℝ → ℝ}
+    (hsc : IsClosed s) (hfc : LowerSemicontinuousOn f s) (hf : ConvexOn ℝ s f) :
+    ∃ c c', ∀ x ∈ s, c * x + c' ≤ f x := by
+  rcases s.eq_empty_or_nonempty with rfl | ⟨x, hxs⟩
+  · simp
+  obtain ⟨c, c', hlc'_le, -⟩ :=
+    hf.exists_affine_le_of_lt_real (a := f x - 1) hxs (by simp) hsc hfc
+  exact ⟨c, c', hlc'_le⟩
 
 /-- A function `φ : E → ℝ` that is convex and lower-semicontinuous on a closed convex subset `s` is
 the supremum of a family of functions that are the restrictions to `s` of continuous affine linear
@@ -169,10 +185,10 @@ theorem univ_sSup_affine_eq (hφc : LowerSemicontinuous φ) (hφcv : ConvexOn �
     ext f
     refine ⟨fun ⟨hp, l, c, hlc⟩ => ⟨f ∘ Subtype.val, ⟨fun x => hp (Subtype.val x), ⟨l, c, ?_⟩⟩, ?_⟩,
       fun ⟨a, ⟨⟨h, ⟨l, c, hlc⟩⟩, hb⟩⟩ => ⟨fun x => ?_, ⟨l, c, ?_⟩⟩⟩
-    · ext x; simpa using congrFun hlc x
+    · ext x; simpa using! congrFun hlc x
     · ext; simp
-    · simpa using hb ▸ h ⟨x, trivial⟩
-    · subst hlc; simpa using hb.symm
+    · simpa using! hb ▸ h ⟨x, trivial⟩
+    · subst hlc; simpa using! hb.symm
   _ = sSup 𝓕 ∘ (Equiv.Set.univ E).symm := by ext x; rw [sSup_image', sSup_eq_iSup']; simp
   _ = φ ∘ Subtype.val ∘ (Equiv.Set.univ E).symm :=
     congrArg (fun g => g ∘ (Equiv.Set.univ E).symm) this
@@ -204,19 +220,11 @@ theorem univ_sSup_of_nat_affine_eq [HereditarilyLindelofSpace E]
     (hφc : LowerSemicontinuous φ) (hφcv : ConvexOn ℝ univ φ) :
     ∃ (l : ℕ → E →L[𝕜] 𝕜) (c : ℕ → ℝ), (∀ i, re ∘ (l i) + const E (c i) ≤ φ)
       ∧ ⨆ i, re ∘ (l i) + const E (c i) = φ := by
-  obtain ⟨𝓕', h𝓕'⟩ := hφcv.univ_sSup_of_countable_affine_eq (𝕜 := 𝕜) hφc
-  by_cases! he : 𝓕'.Nonempty
-  · obtain ⟨f, hf⟩ := h𝓕'.1.exists_eq_range he
-    have (i : ℕ) : ∃ (l : E →L[𝕜] 𝕜) (c : ℝ), f i = re ∘ l + const E c := by simp_all
-    choose l c hlc using this
-    refine ⟨l, c, fun i => (hlc i) ▸ (h𝓕'.2.2 (f i) (hf ▸ mem_range_self i)).1, ?_⟩
-    calc
-    _ = ⨆ i, f i := by congr with i x; exact congrFun (hlc i).symm x
-    _ = _ := by rw [← sSup_range, ← hf, h𝓕'.2.1]
-  · refine ⟨fun _ => 0, fun _ => 0, fun i x => ?_, ?_⟩
-    · simp_all [← congrFun h𝓕'.2.1 x]
-    · ext x
-      simp_all [← congrFun h𝓕'.2.1 x]
+  obtain ⟨l, c, hle, hsup⟩ := hφcv.sSup_of_nat_affine_eq (𝕜 := 𝕜) (s := univ) isClosed_univ
+    (lowerSemicontinuousOn_univ_iff.2 hφc)
+  refine ⟨l, c, fun i x ↦ hle i ⟨x, trivial⟩, ?_⟩
+  ext x
+  simpa using congrFun hsup ⟨x, trivial⟩
 
 end RCLike
 

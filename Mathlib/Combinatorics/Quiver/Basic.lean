@@ -40,6 +40,7 @@ class Quiver (V : Type u) where
   Hom : V → V → Type v
 
 attribute [to_dual self (reorder := 3 4)] Quiver.Hom
+attribute [to_dual self (reorder := Hom (1 2))] Quiver.mk
 
 /--
 Notation for the type of edges/arrows/morphisms between a given source and target

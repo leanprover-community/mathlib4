@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
+public import Mathlib.Logic.Equiv.Fin.Rotate
 
 /-!
 # Linear independence
@@ -160,7 +161,7 @@ theorem LinearIndepOn_iff_linearIndepOn_image_injOn [Nontrivial R] :
 theorem linearIndepOn_congr {w : ι → M} (h : EqOn v w s) :
     LinearIndepOn R v s ↔ LinearIndepOn R w s := by
   rw [LinearIndepOn, LinearIndepOn]
-  convert Iff.rfl using 2
+  convert! Iff.rfl using 2
   ext x
   exact h.symm x.2
 
@@ -176,14 +177,14 @@ theorem LinearIndependent.group_smul {G : Type*} [hG : Group G] [MulAction G R]
   refine (Group.isUnit (w i)).smul_left_cancel.mp ?_
   refine hv s (fun i ↦ w i • g₁ i) (fun i ↦ w i • g₂ i) (fun i hi ↦ ?_) ?_ i
   · simp_rw [hgs i hi]
-  · simpa only [smul_assoc, smul_comm] using hsum
+  · simpa only [smul_assoc, smul_comm] using! hsum
 
 @[simp]
 theorem LinearIndependent.group_smul_iff {G : Type*} [hG : Group G] [MulAction G R]
     [MulAction G M] [IsScalarTower G R M] [SMulCommClass G R M] (v : ι → M) (w : ι → G) :
     LinearIndependent R (w • v) ↔ LinearIndependent R v := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.group_smul w⟩
-  convert h.group_smul (fun i ↦ (w i)⁻¹)
+  convert! h.group_smul (fun i ↦ (w i)⁻¹)
   simp [funext_iff]
 
 -- This lemma cannot be proved with `LinearIndependent.group_smul` since the action of
@@ -195,13 +196,13 @@ theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v)
   rw [← (w i).mul_left_inj]
   refine hv s (fun i ↦ g₁ i • w i) (fun i ↦ g₂ i • w i) (fun i hi ↦ ?_) ?_ i
   · simp_rw [hgs i hi]
-  · simpa only [smul_eq_mul, mul_smul, Pi.smul_apply'] using hsum
+  · simpa only [smul_eq_mul, mul_smul, Pi.smul_apply'] using! hsum
 
 @[simp]
 theorem LinearIndependent.units_smul_iff (v : ι → M) (w : ι → Rˣ) :
     LinearIndependent R (w • v) ↔ LinearIndependent R v := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.units_smul w⟩
-  convert h.units_smul (fun i ↦ (w i)⁻¹)
+  convert! h.units_smul (fun i ↦ (w i)⁻¹)
   simp [funext_iff]
 
 theorem linearIndependent_span (hs : LinearIndependent R v) :
@@ -299,12 +300,12 @@ theorem eq_of_linearIndepOn_id_of_span_subtype [Nontrivial R] {s t : Set M}
     ⟨fun x => ⟨x.1, h x.2⟩, fun a b hab => Subtype.coe_injective (Subtype.mk.inj hab)⟩
   have h_surj : Surjective f := by
     apply surjective_of_linearIndependent_of_span hs f _
-    convert hst <;> simp [f, comp_def]
+    convert! hst <;> simp [f, comp_def]
   change s = t
   apply Subset.antisymm _ h
   intro x hx
   rcases h_surj ⟨x, hx⟩ with ⟨y, hy⟩
-  convert y.mem
+  convert! y.mem
   rw [← Subtype.mk.inj hy]
 
 theorem le_of_span_le_span [Nontrivial R] {s t u : Set M} (hl : LinearIndepOn R id u)
@@ -378,18 +379,28 @@ protected theorem LinearMap.linearIndependent_iff (f : M →ₗ[R] M') (hf_inj :
     LinearIndependent R (f ∘ v) ↔ LinearIndependent R v :=
   f.linearIndependent_iff_of_disjoint <| by simp_rw [hf_inj, disjoint_bot_right]
 
-/-- See `LinearIndependent.fin_cons` for a family of elements in a vector space. -/
-theorem LinearIndependent.fin_cons' {m : ℕ} (x : M) (v : Fin m → M) (hli : LinearIndependent R v)
-    (x_ortho : ∀ (c : R) (y : Submodule.span R (Set.range v)), c • x + y = (0 : M) → c = 0) :
+/-- See `LinearIndependent.finCons` for a family of elements in a vector space. -/
+theorem LinearIndependent.finCons' {m : ℕ} (x : M) (v : Fin m → M) (hli : LinearIndependent R v)
+    (x_ortho : ∀ (c : R) (y : M), y ∈ Submodule.span R (Set.range v) → c • x + y = 0 → c = 0) :
     LinearIndependent R (Fin.cons x v : Fin m.succ → M) := by
   rw [Fintype.linearIndependent_iff] at hli ⊢
   rintro g total_eq j
   simp_rw [Fin.sum_univ_succ, Fin.cons_zero, Fin.cons_succ] at total_eq
   have : g 0 = 0 := by
-    refine x_ortho (g 0) ⟨∑ i : Fin m, g i.succ • v i, ?_⟩ total_eq
+    refine x_ortho (g 0) (∑ i : Fin m, g i.succ • v i) ?_ total_eq
     exact sum_mem fun i _ => smul_mem _ _ (subset_span ⟨i, rfl⟩)
   rw [this, zero_smul, zero_add] at total_eq
   exact Fin.cases this (hli _ total_eq) j
+
+@[deprecated (since := "2026-04-07")]
+alias LinearIndependent.fin_cons' := LinearIndependent.finCons'
+
+/-- See `LinearIndependent.finSnoc` for a family of elements in a vector space. -/
+theorem LinearIndependent.finSnoc' {m : ℕ} (v : Fin m → M) (x : M) (hli : LinearIndependent R v)
+    (x_ortho : ∀ (c : R) (y : M), y ∈ Submodule.span R (Set.range v) → c • x + y = 0 → c = 0) :
+    LinearIndependent R (Fin.snoc v x : Fin m.succ → M) := by
+  rw [Fin.snoc_eq_cons_rotate v x, ← Function.comp_def]
+  exact (linearIndependent_equiv _).mpr (.finCons' x v hli x_ortho)
 
 end Module
 
@@ -451,7 +462,7 @@ theorem LinearIndepOn.union {t : Set ι} (hs : LinearIndepOn R v s) (ht : Linear
   have hli := LinearIndependent.sum_type hs ht (by rwa [← image_eq_range, ← image_eq_range])
   have hdj := (hdj.of_span₀ hs.zero_notMem_image).of_image
   rw [LinearIndepOn]
-  convert (hli.comp _ (Equiv.Set.union hdj).injective) with ⟨x, hx | hx⟩
+  convert! (hli.comp _ (Equiv.Set.union hdj).injective) with ⟨x, hx | hx⟩
   · rw [comp_apply, Equiv.Set.union_apply_left _ hx, Sum.elim_inl]
   rw [comp_apply, Equiv.Set.union_apply_right _ hx, Sum.elim_inr]
 
@@ -464,7 +475,7 @@ theorem linearIndepOn_union_iff {t : Set ι} (hdj : Disjoint s t) :
     LinearIndepOn R v s ∧ LinearIndepOn R v t ∧ Disjoint (span R (v '' s)) (span R (v '' t)) := by
   refine ⟨fun h ↦ ⟨h.mono subset_union_left, h.mono subset_union_right, ?_⟩,
     fun h ↦ h.1.union h.2.1 h.2.2⟩
-  convert h.disjoint_span_image (s := (↑) ⁻¹' s) (t := (↑) ⁻¹' t) (hdj.preimage _) <;>
+  convert! h.disjoint_span_image (s := (↑) ⁻¹' s) (t := (↑) ⁻¹' t) (hdj.preimage _) <;>
   aesop
 
 theorem linearIndepOn_id_union_iff {s t : Set M} (hdj : Disjoint s t) :
@@ -557,9 +568,6 @@ lemma linearIndependent_unique_iff [Unique ι] : LinearIndependent R v ↔ v def
   refine ⟨?_, .of_subsingleton _⟩
   simpa [linearIndependent_iff, Finsupp.linearCombination_unique, Finsupp.ext_iff,
     Unique.forall_iff, or_imp] using fun h hv ↦ by simpa using h (.single default 1) hv
-
-@[deprecated LinearIndependent.of_subsingleton (since := "2025-11-11")]
-alias ⟨_, linearIndependent_unique⟩ := linearIndependent_unique_iff
 
 variable (R) in
 @[simp]

@@ -127,7 +127,7 @@ lemma hom_ext {f g : P.Ring →ₐ[R] S} (H : f P.X = g P.X) : f = g := by
     Units.mul_eq_one_iff_inv_eq.mp P.aeval_X_g_mul_mk_X, ← Units.coe_map_inv, ← Units.coe_map_inv]
   congr 2
   ext
-  simpa [H'] using congr($H _)
+  simpa [H'] using! congr($H _)
 
 @[simp]
 lemma lift_X_left : P.lift P.X P.hasMap_X = .id _ _ :=
@@ -146,7 +146,6 @@ def homEquiv : (P.Ring →ₐ[R] S) ≃ { x : S // P.HasMap x } where
   left_inv f := P.hom_ext (by simp)
   right_inv x := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma existsUnique_hasMap_of_hasMap_quotient_of_sq_eq_bot
     (I : Ideal S) (hI : I ^ 2 = ⊥) (x : S) (hx : P.HasMap (Ideal.Quotient.mk I x)) :
     ∃! ε, ε ∈ I ∧ P.HasMap (x + ε) := by
@@ -207,11 +206,10 @@ def equivAwayAdjoinRoot :
   · rw [aeval_algebraMap_apply, AdjoinRoot.aeval_eq]
     exact IsLocalization.Away.algebraMap_isUnit ..
   · change Submonoid.powers _ ≤ (IsUnit.submonoid _).comap _
-    simpa [Submonoid.powers_le, IsUnit.mem_submonoid_iff] using P.hasMap_X.2
+    simpa [Submonoid.powers_le, IsUnit.mem_submonoid_iff] using! P.hasMap_X.2
   · ext; simp [Algebra.algHom]
   · ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `R[X][Y]/⟨f, Yg-1⟩ ≃ R[X][1/g]/f` -/
 def equivAwayQuotient :
     P.Ring ≃ₐ[R] Localization.Away P.g ⧸ Ideal.span {algebraMap _ (Localization.Away P.g) P.f} := by
@@ -287,7 +285,7 @@ lemma StandardEtalePresentation.equivRing_x : P.equivRing P.x = P.X :=
   (P.equivRing.symm_apply_eq.mp P.equivRing_symm_X).symm
 
 /-- The `Algebra.Presentation` associated to a standard etale presentation. -/
-@[simps!]
+@[simps! relation val]
 def StandardEtalePresentation.toPresentation : Algebra.Presentation R S (Fin 2) (Fin 2) where
   __ := Algebra.Generators.ofAlgHom ((P.lift _ P.hasMap).comp
       (P.equivMvPolynomialQuotient.symm.toAlgHom.comp (Ideal.Quotient.mkₐ _ _)))

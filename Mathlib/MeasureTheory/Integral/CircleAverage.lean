@@ -146,7 +146,7 @@ theorem circleAverage_congr_codiscreteWithin
   congr 1
   apply intervalIntegral.integral_congr_ae_restrict
   apply ae_restrict_le_codiscreteWithin measurableSet_uIoc
-  apply codiscreteWithin.mono (by tauto) (circleMap_preimage_codiscrete hR hf)
+  apply codiscreteWithin_mono (by tauto) (circleMap_preimage_codiscrete hR hf)
 
 /-- If two functions agree on the circle, then their circle averages agree. -/
 theorem circleAverage_congr_sphere {f₁ f₂ : ℂ → E} (hf : Set.EqOn f₁ f₂ (sphere c |R|)) :
@@ -207,6 +207,15 @@ theorem ContinuousOn.circleAverage {f : ℂ → E} {s : Set ℝ} {c : ℂ}
   have (x : s × ℝ) : circleMap c x.1 x.2 ∈ {z | ‖z - c‖ ∈ s} :=
     by simp [abs_of_nonneg (hs x.1 (Subtype.coe_prop x.1))]
   apply hf.comp (f := (fun x ↦ ⟨circleMap c x.1 x.2, this x⟩))
+  fun_prop
+
+/--
+The circle average of a continuous function is itself continuous, as a function
+of the radius.
+-/
+@[fun_prop] theorem Continuous.circleAverage {f : ℂ → E} (hf : Continuous f) :
+    Continuous (Real.circleAverage f c) := by
+  apply (intervalIntegral.continuous_parametric_intervalIntegral_of_continuous' _ _ _).const_smul
   fun_prop
 
 /--
@@ -349,13 +358,13 @@ theorem circleAverage_sum {ι : Type*} {s : Finset ι} {f : ι → ℂ → E}
     (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
     circleAverage (∑ i ∈ s, f i) c R = ∑ i ∈ s, circleAverage (f i) c R := by
   unfold circleAverage
-  simp [← Finset.smul_sum, intervalIntegral.integral_finset_sum h]
+  simp [← Finset.smul_sum, intervalIntegral.integral_finsetSum h]
 
 /-- Circle averages commute with sums. -/
 theorem circleAverage_fun_sum {ι : Type*} {s : Finset ι} {f : ι → ℂ → E}
     (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
     circleAverage (fun z ↦ ∑ i ∈ s, f i z) c R = ∑ i ∈ s, circleAverage (f i) c R := by
-  convert circleAverage_sum h
+  convert! circleAverage_sum h
   simp
 
 /-- Circle averages commute with subtraction. -/

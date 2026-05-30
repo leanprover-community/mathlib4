@@ -276,7 +276,6 @@ lemma Retract.injectiveDimension_le {X Y : C} (h : Retract X Y) :
     have := hn i hi
     exact h.hasInjectiveDimensionLT i)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma injectiveDimension_lt_iff {X : C} {n : ℕ} :
     injectiveDimension X < n ↔ HasInjectiveDimensionLT X n := by
   refine ⟨fun h ↦ ?_, fun h ↦ sInf_lt_iff.2 ?_⟩
@@ -318,7 +317,7 @@ lemma injectiveDimension_ne_top_iff (X : C) :
       exact ENat.coe_ne_top _ ((WithBot.coe_eq_coe).1 hn)
     | coe d =>
       simp only [ne_eq, WithBot.coe_eq_top, ENat.coe_ne_top, not_false_eq_true, true_iff]
-      exact ⟨d, by simpa only [← injectiveDimension_le_iff] using hd.le⟩
+      exact ⟨d, by simpa only [← injectiveDimension_le_iff] using! hd.le⟩
 
 end CategoryTheory
 

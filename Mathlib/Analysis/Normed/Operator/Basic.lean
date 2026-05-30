@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.Normed.Module.Convex
-public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Tactic.SuppressCompilation
@@ -79,7 +79,7 @@ theorem closedBall_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f :
     by simp_all⟩
 
 variable {F' 𝓕' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [Nontrivial F']
-{τ : 𝕜 →+* ℝ} [FunLike 𝓕' E F'] [SemilinearMapClass 𝓕' τ E F']
+  {τ : 𝕜 →+* ℝ} [FunLike 𝓕' E F'] [SemilinearMapClass 𝓕' τ E F']
 
 theorem sphere_subset_range_iff_surjective [RingHomSurjective τ] {f : 𝓕'} {x : F'} {r : ℝ}
     (hr : 0 < r) : sphere x r ⊆ Set.range f ↔ (⇑f).Surjective := by
@@ -95,8 +95,6 @@ theorem norm_image_of_norm_eq_zero [SemilinearMapClass 𝓕 σ₁₂ E F] (f : �
     {x : E} (hx : ‖x‖ = 0) : ‖f x‖ = 0 := by
   rw [← mem_closure_zero_iff_norm, ← specializes_iff_mem_closure, ← map_zero f] at *
   exact hx.map hf
-
-@[deprecated (since := "2025-11-15")] alias norm_image_of_norm_zero := norm_image_of_norm_eq_zero
 
 section
 
@@ -321,6 +319,7 @@ theorem opNorm_add_le : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
     (norm_add_le_of_le (f.le_opNorm x) (g.le_opNorm x)).trans_eq (add_mul _ _ _).symm
 
 /-- If a normed space is (topologically) non-trivial, then the norm of the identity equals `1`. -/
+@[simp]
 theorem norm_id [NontrivialTopology E] : ‖ContinuousLinearMap.id 𝕜 E‖ = 1 :=
   le_antisymm norm_id_le <| by
     let ⟨x, hx⟩ := exists_norm_ne_zero E
@@ -329,13 +328,6 @@ theorem norm_id [NontrivialTopology E] : ‖ContinuousLinearMap.id 𝕜 E‖ = 1
 
 instance normOneClass [NontrivialTopology E] : NormOneClass (E →L[𝕜] E) :=
   ⟨norm_id⟩
-
-/-- If there is an element with norm different from `0`, then the norm of the identity equals `1`.
-(Since we are working with seminorms supposing that the space is non-trivial is not enough.) -/
-@[deprecated norm_id (since := "2025-09-03")]
-theorem norm_id_of_nontrivial_seminorm (h : ∃ x : E, ‖x‖ ≠ 0) : ‖ContinuousLinearMap.id 𝕜 E‖ = 1 :=
-  letI : NontrivialTopology E := .of_exists_norm_ne_zero h
-  norm_id
 
 theorem opNorm_smul_le {𝕜' : Type*} [DistribSMul 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F]
     [SeminormedAddCommGroup 𝕜'] [IsBoundedSMul 𝕜' F]
@@ -371,7 +363,7 @@ private lemma uniformity_eq_seminorm :
     refine ⟨‖c‖, ContinuousLinearMap.hasBasis_nhds_zero.mem_iff.2
       ⟨(closedBall 0 1, closedBall 0 1), ?_⟩⟩
     suffices ∀ f : E →SL[σ₁₂] F, (∀ x, ‖x‖ ≤ 1 → ‖f x‖ ≤ 1) → ‖f‖ ≤ ‖c‖ by
-      simpa [NormedSpace.isVonNBounded_closedBall, closedBall_mem_nhds, subset_def] using this
+      simpa [NormedSpace.isVonNBounded_closedBall, closedBall_mem_nhds, subset_def] using! this
     intro f hf
     refine opNorm_le_of_shell (f := f) one_pos (norm_nonneg c) hc fun x hcx hx ↦ ?_
     exact (hf x hx.le).trans ((div_le_iff₀' <| one_pos.trans hc).1 hcx)
@@ -508,7 +500,6 @@ end LinearIsometry
 
 namespace Submodule
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_subtypeL_le (K : Submodule 𝕜 E) : ‖K.subtypeL‖ ≤ 1 :=
   K.subtypeₗᵢ.norm_toContinuousLinearMap_le
 

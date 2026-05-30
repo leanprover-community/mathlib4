@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
-public import Mathlib.Topology.Algebra.Module.WeakBilin
+public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
 
 /-!
 # Polar set
@@ -124,8 +124,6 @@ theorem subset_bipolar (s : Set E) : s ⊆ B.flip.polar (B.polar s) := fun x hx 
 @[simp]
 theorem tripolar_eq_polar (s : Set E) : B.polar (B.flip.polar (B.polar s)) = B.polar s :=
   (B.polar_antitone (B.subset_bipolar s)).antisymm (subset_bipolar B.flip (B.polar s))
-
-@[deprecated (since := "2025-10-06")] alias polar_weak_closed := polar_isClosed
 
 theorem sInter_polar_finite_subset_eq_polar (s : Set E) :
     ⋂₀ (B.polar '' { F | F.Finite ∧ F ⊆ s }) = B.polar s := by

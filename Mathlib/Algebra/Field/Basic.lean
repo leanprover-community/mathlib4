@@ -11,6 +11,8 @@ public import Mathlib.Algebra.Ring.Commute
 public import Mathlib.Algebra.Ring.Invertible
 public import Mathlib.Order.OrderDual
 public import Mathlib.Order.Lex
+public import Mathlib.Algebra.Order.Ring.Synonym
+public import Mathlib.Algebra.Order.GroupWithZero.Synonym
 
 import Mathlib.Tactic.Tauto
 
@@ -32,10 +34,6 @@ section DivisionSemiring
 variable [DivisionSemiring K] {a b c d : K}
 
 theorem add_div (a b c : K) : (a + b) / c = a / c + b / c := by simp_rw [div_eq_mul_inv, add_mul]
-
-@[deprecated add_div (since := "2025-08-25")]
-theorem div_add_div_same (a b c : K) : a / c + b / c = (a + b) / c :=
-  (add_div _ _ _).symm
 
 theorem same_add_div (h : b ≠ 0) : (b + a) / b = 1 + a / b := by rw [← div_self h, add_div]
 
@@ -171,7 +169,6 @@ variable [Field K]
 
 instance (priority := 100) Field.toGrindField : Lean.Grind.Field K :=
   { CommRing.toGrindCommRing K, ‹Field K› with
-    inv a := a⁻¹
     zpow := ⟨fun a n => a^n⟩
     zpow_zero a := by simp
     zpow_succ a n := by
@@ -179,7 +176,7 @@ instance (priority := 100) Field.toGrindField : Lean.Grind.Field K :=
       · rw [← Int.natCast_add_one, zpow_natCast, zpow_natCast, pow_succ]
       · rw [zpow_add_one₀ h]
     zpow_neg a n := by simp
-    zero_ne_one := zero_ne_one' K }
+    zero_ne_one := zero_ne_one }
 
 attribute [local simp] mul_assoc mul_comm mul_left_comm
 
@@ -297,11 +294,28 @@ end Function.Injective
 
 namespace OrderDual
 
-instance instRatCast [RatCast K] : RatCast Kᵒᵈ := ‹_›
-instance instDivisionSemiring [DivisionSemiring K] : DivisionSemiring Kᵒᵈ := ‹_›
-instance instDivisionRing [DivisionRing K] : DivisionRing Kᵒᵈ := ‹_›
-instance instSemifield [Semifield K] : Semifield Kᵒᵈ := ‹_›
-instance instField [Field K] : Field Kᵒᵈ := ‹_›
+instance [h : RatCast K] : RatCast Kᵒᵈ := h
+instance [h : NNRatCast K] : NNRatCast Kᵒᵈ := h
+
+instance [h : DivisionSemiring K] : DivisionSemiring Kᵒᵈ where
+  nnratCast_def := h.nnratCast_def
+  nnqsmul := h.nnqsmul
+  nnqsmul_def := h.nnqsmul_def
+
+instance [h : DivisionRing K] : DivisionRing Kᵒᵈ where
+  mul_inv_cancel := h.mul_inv_cancel
+  inv_zero := h.inv_zero
+  nnratCast_def := h.nnratCast_def
+  nnqsmul := h.nnqsmul
+  nnqsmul_def := h.nnqsmul_def
+  ratCast_def := h.ratCast_def
+  qsmul := h.qsmul
+  qsmul_def := h.qsmul_def
+
+instance [Semifield K] : Semifield Kᵒᵈ where
+
+instance [Field K] : Field Kᵒᵈ where
+
 
 end OrderDual
 

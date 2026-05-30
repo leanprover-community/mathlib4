@@ -124,7 +124,6 @@ noncomputable abbrev normedRingAux : NormedRing (Unitization 𝕜 A) :=
 
 attribute [local instance] Unitization.normedRingAux
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. This uses the wrong `NormedRing` instance (i.e.,
 `Unitization.normedRingAux`), so we only use it as a local instance to build the real one. -/
@@ -239,14 +238,10 @@ noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A) where
   norm_mul_le := normedRingAux.norm_mul_le
   norm := normedRingAux.norm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
 instance instNormedAlgebra : NormedAlgebra 𝕜 (Unitization 𝕜 A) where
-  norm_smul_le k x := by
-    rw [norm_def, map_smul]
-    -- Note: this used to be `rw [norm_smul, ← norm_def]` before https://github.com/leanprover-community/mathlib4/pull/8386
-    exact (norm_smul k (splitMul 𝕜 A x)).le
+  norm_smul_le k x := by rw [norm_def, map_smul, norm_smul, ← norm_def]
 
 instance instNormOneClass : NormOneClass (Unitization 𝕜 A) where
   norm_one := by simpa only [norm_eq_sup, fst_one, norm_one, snd_one, map_one, map_zero,
@@ -281,18 +276,18 @@ section
 
 variable {𝕜 A : Type*} [NontriviallyNormedField 𝕜] [NonUnitalNormedRing A]
 
-protected theorem uniformContinuous_fst : UniformContinuous (fst : Unitization 𝕜 A → 𝕜) :=
+protected theorem uniformContinuous_fst : UniformContinuous (fun x : Unitization 𝕜 A ↦ x.fst) :=
   uniformContinuous_fst.comp Unitization.uniformEquivProd.uniformContinuous
 
-protected theorem uniformContinuous_snd : UniformContinuous (snd : Unitization 𝕜 A → A) :=
+protected theorem uniformContinuous_snd : UniformContinuous (fun x : Unitization 𝕜 A ↦ x.snd) :=
   uniformContinuous_snd.comp Unitization.uniformEquivProd.uniformContinuous
 
 @[fun_prop]
-protected theorem continuous_fst : Continuous (fst : Unitization 𝕜 A → 𝕜) :=
+protected theorem continuous_fst : Continuous (fun x : Unitization 𝕜 A ↦ x.fst) :=
   Unitization.uniformContinuous_fst.continuous
 
 @[fun_prop]
-protected theorem continuous_snd : Continuous (snd : Unitization 𝕜 A → A) :=
+protected theorem continuous_snd : Continuous (fun x : Unitization 𝕜 A ↦ x.snd) :=
   Unitization.uniformContinuous_snd.continuous
 
 end

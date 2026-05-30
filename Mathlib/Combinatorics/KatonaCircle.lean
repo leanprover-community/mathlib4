@@ -42,7 +42,7 @@ lemma IsPrefix.subset_of_card_le_card (hs : IsPrefix f s) (ht : IsPrefix f t) (h
 
 variable [DecidableEq X]
 
-instance : Decidable (IsPrefix f s) := by unfold IsPrefix; infer_instance
+instance : Decidable (IsPrefix f s) := inferInstanceAs <| Decidable (∀ _, _)
 
 /-- The set of numberings of which `s` is a prefix. -/
 def prefixed (s : Finset X) : Finset (Numbering X) := {f | IsPrefix f s}
@@ -107,7 +107,6 @@ def prefixedEquiv (s : Finset X) : prefixed s ≃ Numbering s × Numbering ↑(s
 lemma card_prefixed (s : Finset X) : #(prefixed s) = (#s)! * (card X - #s)! := by
   simpa [-mem_prefixed] using Fintype.card_congr (prefixedEquiv s)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma dens_prefixed (s : Finset X) : (prefixed s).dens = ((card X).choose #s : ℚ≥0)⁻¹ := by
   simp [dens, card_prefixed, Nat.cast_choose _ s.card_le_univ]

@@ -7,13 +7,13 @@ open Mathlib.Tactic.FinVec
 variable {α : Type*} (a b c d : α)
 
 example : ![a, b, c] ∘ Equiv.swap 0 1 = ![b, a, c] := by
-  simp [vecPerm, Equiv.swap_apply_def]
+  simp -- this is dealt with using `Matrix.cons_cons_comp_swap_zero_one`
 
 example : ![a, b, c] ∘ Equiv.swap 0 2 = ![c, b, a] := by
   simp [vecPerm, Equiv.swap_apply_def]
 
 example : ![a, b, c] ∘ c[0, 1] = ![b, a, c] := by
-  simp [vecPerm, Equiv.swap_apply_def]
+  simp -- this is dealt with using `Matrix.cons_cons_comp_swap_zero_one`
 
 example : ![a, b, c] ∘ c[2, 0, 1] = ![b, c, a] := by
   simp [vecPerm, Equiv.swap_apply_def]

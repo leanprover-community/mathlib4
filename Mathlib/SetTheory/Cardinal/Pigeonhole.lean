@@ -35,7 +35,7 @@ theorem infinite_pigeonhole {β α : Type u} (f : β → α) (h₁ : ℵ₀ ≤ 
     rw [← preimage_univ, ← iUnion_of_singleton, preimage_iUnion]
     exact
       mk_iUnion_le_sum_mk.trans_lt <| (sum_le_mk_mul_iSup _).trans_lt <|
-        mul_lt_of_lt h₁ (h₂.trans_le <| cof_ord_le _) (iSup_lt h₂ h)
+        mul_lt_of_lt h₁ (h₂.trans_le <| cof_ord_le _) (iSup_lt_of_lt_cof_ord h₂ h)
   obtain ⟨x, h⟩ := this
   refine ⟨x, h.antisymm' ?_⟩
   rw [le_mk_iff_exists_set]
@@ -70,7 +70,8 @@ theorem infinite_pigeonhole_card_lt {β α : Type u} (f : β → α) (h : #α < 
     ∃ a : α, #α < #(f ⁻¹' {a}) := by
   simp_rw [← succ_le_iff]
   rcases lt_or_ge #α ℵ₀ with hα | hα
-  · obtain ⟨a, ha⟩ := infinite_pigeonhole_card f ℵ₀ hβ le_rfl (by rwa [isRegular_aleph0.cof_eq])
+  · obtain ⟨a, ha⟩ := infinite_pigeonhole_card f ℵ₀ hβ le_rfl
+      (by rwa [isRegular_aleph0.cof_ord])
     exact ⟨a, ha.trans' (succ_le_of_lt hα)⟩
   · exact infinite_pigeonhole_card f (succ #α) (succ_le_of_lt h) (hα.trans (le_succ _))
       ((lt_succ _).trans_le (isRegular_succ hα).2.ge)
@@ -81,7 +82,8 @@ theorem exists_infinite_fiber {β α : Type u} (f : β → α) (h : #α < #β) [
     ∃ a : α, Infinite (f ⁻¹' {a}) := by
   simp_rw [Cardinal.infinite_iff]
   rcases lt_or_ge #α ℵ₀ with hα | hα
-  · exact infinite_pigeonhole_card f ℵ₀ (aleph0_le_mk β) le_rfl (by rwa [isRegular_aleph0.cof_eq])
+  · exact infinite_pigeonhole_card f ℵ₀ (aleph0_le_mk β) le_rfl
+      (by rwa [isRegular_aleph0.cof_ord])
   · obtain ⟨a, ha⟩ := infinite_pigeonhole_card_lt f h (aleph0_le_mk β)
     exact ⟨a, hα.trans ha.le⟩
 
@@ -95,10 +97,10 @@ theorem exists_infinite_fiber' {β α : Type u} (f : β → α) (h : #α < #β) 
 has an uncountable fiber. -/
 theorem exists_uncountable_fiber {β α : Type u} (f : β → α) (h : #α < #β) [Uncountable β] :
     ∃ a : α, Uncountable (f ⁻¹' {a}) := by
-  simp_rw [← Cardinal.aleph1_le_mk_iff]
+  simp_rw [← Cardinal.aleph0_lt_mk_iff, ← aleph_one_le_iff]
   rcases lt_or_ge #α ℵ₀ with hα | hα
-  · exact infinite_pigeonhole_card f ℵ₁ (aleph1_le_mk β) aleph0_lt_aleph_one.le
-      (by rw [isRegular_aleph_one.cof_eq]; exact hα.trans aleph0_lt_aleph_one)
+  · exact infinite_pigeonhole_card f ℵ₁ (by simp) aleph0_lt_aleph_one.le
+      (by rw [isRegular_aleph_one.cof_ord]; exact hα.trans aleph0_lt_aleph_one)
   · obtain ⟨a, ha⟩ := infinite_pigeonhole_card_lt f h (aleph0_le_mk β)
     rw [← Order.succ_le_succ_iff, succ_aleph0] at hα
     exact ⟨a, hα.trans (succ_le_of_lt ha)⟩

@@ -263,6 +263,7 @@ instance {α ι κ : Type*} [Nonempty ι] [Inhabited κ] :
 - each line is only one color except possibly at its endpoint
 - the lines all have the same endpoint
 - the colors of the lines are distinct.
+
 Used in the proof `exists_mono_in_high_dimension`. -/
 structure ColorFocused {α ι κ : Type*} (C : (ι → Option α) → κ) where
   /-- The underlying multiset of almost monochromatic lines of a color-focused collection. -/
@@ -495,7 +496,7 @@ theorem exists_mono_in_high_dimension (α κ η) [Finite α] [Finite κ] [Finite
   refine ⟨ι × Shrink η, inferInstance, fun C ↦ ?_⟩
   obtain ⟨l, hl⟩ := hι fun x ↦ C fun (i, e) ↦ x i e
   refine ⟨l.toSubspace.reindex (equivShrink.{0} η).symm (Equiv.refl _) (Equiv.refl _), ?_⟩
-  convert hl.toSubspace.reindex
+  convert! hl.toSubspace.reindex
   simp
 
 /-- A variant of the **extended Hales-Jewett theorem** `exists_mono_in_high_dimension` where the

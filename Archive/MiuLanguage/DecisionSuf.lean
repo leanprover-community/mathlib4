@@ -163,7 +163,7 @@ theorem le_pow2_and_pow2_eq_mod3 (a : ℕ) (h : a % 3 = 1 ∨ a % 3 = 2) :
   obtain ⟨m, hm⟩ := le_pow2_and_pow2_eq_mod3' (a % 3) (a / 3) h
   use m
   constructor
-  · convert hm.1; exact (mod_add_div a 3).symm
+  · convert! hm.1; exact (mod_add_div a 3).symm
   · rw [hm.2, mod_mod _ 3]
 
 end Arithmetic
@@ -194,7 +194,7 @@ theorem der_replicate_I_of_mod3 (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) :
       replicate ((2 ^ m - c) / 3) U ++ replicate ((2 ^ m - c) / 3 % 2) U) := by
     apply
       der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append c ((2 ^ m - c) / 3) h
-    convert hw₂ using 4
+    convert! hw₂ using 4
     -- now we must show `c + 3 * ((2 ^ m - c) / 3) = 2 ^ m`
     rw [Nat.mul_div_cancel']
     · exact add_tsub_cancel_of_le hm.1
@@ -220,7 +220,7 @@ example (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) : Derivable (M :: replicate c I)
       replicate ((2 ^ m - c) / 3) U ++ replicate ((2 ^ m - c) / 3 % 2) U) := by
     apply
       der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append c ((2 ^ m - c) / 3) h
-    convert hw₂ using 4
+    convert! hw₂ using 4
     -- now we must show `c + 3 * ((2 ^ m - c) / 3) = 2 ^ m`
     rw [Nat.mul_div_cancel']
     · exact add_tsub_cancel_of_le hm.1
@@ -243,7 +243,6 @@ conditions under which `count I ys = length ys`.
 -/
 
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If an `Miustr` has a zero `count U` and contains no `M`, then its `count I` is its length.
 -/
 theorem count_I_eq_length_of_count_U_zero_and_neg_mem {ys : Miustr} (hu : count U ys = 0)
@@ -285,7 +284,6 @@ relate to `count U`.
 -/
 
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_of_count_U_eq_succ {xs : Miustr} {k : ℕ} (h : count U xs = succ k) : U ∈ xs := by
   induction xs with
   | nil => exfalso; rw [count] at h; contradiction
@@ -298,7 +296,6 @@ theorem eq_append_cons_U_of_count_U_pos {k : ℕ} {zs : Miustr} (h : count U zs 
     ∃ as bs : Miustr, zs = as ++ ↑(U :: bs) :=
   append_of_mem (mem_of_count_U_eq_succ h)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `ind_hyp_suf` is the inductive step of the sufficiency result.
 -/
 theorem ind_hyp_suf (k : ℕ) (ys : Miustr) (hu : count U ys = succ k) (hdec : Decstr ys) :

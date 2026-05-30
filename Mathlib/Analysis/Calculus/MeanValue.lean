@@ -50,7 +50,7 @@ In this file we prove the following facts:
   strictly differentiable. (This is a corollary of the mean value inequality.)
 -/
 
-@[expose] public section
+public section
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*} [NormedAddCommGroup F]
   [NormedSpace ℝ F]
@@ -152,7 +152,7 @@ theorem image_le_of_liminf_slope_right_le_deriv_boundary {f : ℝ → ℝ} {a b 
     exact hx
   intro x hx
   have : ContinuousWithinAt (fun r => B x + r * (x - a)) (Ioi 0) 0 := by fun_prop
-  convert continuousWithinAt_const.closure_le _ this (Hr x hx) using 1 <;> simp
+  convert! continuousWithinAt_const.closure_le _ this (Hr x hx) using 1 <;> simp
 
 /-- General fencing theorem for continuous functions with an estimate on the derivative.
 Let `f` and `B` be continuous functions on `[a, b]` such that
@@ -316,7 +316,7 @@ theorem norm_image_sub_le_of_norm_deriv_right_le_segment {f' : ℝ → E} {C : �
   let B x := C * (x - a)
   have hB : ∀ x, HasDerivAt B C x := by
     intro x
-    simpa using (hasDerivAt_const x C).mul ((hasDerivAt_id x).sub (hasDerivAt_const x a))
+    simpa using! (hasDerivAt_const x C).mul ((hasDerivAt_id x).sub (hasDerivAt_const x a))
   convert image_norm_le_of_norm_deriv_right_le_deriv_boundary hg hg' _ hB bound
   simp only [g, B]; rw [sub_self, norm_zero, sub_self, mul_zero]
 
@@ -379,7 +379,7 @@ theorem eq_of_has_deriv_right_eq (derivf : ∀ x ∈ Ico a b, HasDerivWithinAt f
     (gcont : ContinuousOn g (Icc a b)) (hi : f a = g a) : ∀ y ∈ Icc a b, f y = g y := by
   simp only [← @sub_eq_zero _ _ (f _)] at hi ⊢
   exact hi ▸ constant_of_has_deriv_right_zero (fcont.sub gcont) fun y hy => by
-    simpa only [sub_self] using (derivf y hy).sub (derivg y hy)
+    simpa only [sub_self] using! (derivf y hy).sub (derivg y hy)
 
 /-- If two differentiable functions on `[a, b]` have the same derivative within `[a, b]` everywhere
   on `[a, b)` and are equal at `a`, then they are equal everywhere on `[a, b]`. -/
@@ -424,7 +424,7 @@ theorem norm_image_sub_le_of_norm_hasFDerivWithin_le
     (hf : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (bound : ∀ x ∈ s, ‖f' x‖ ≤ C) (hs : Convex ℝ s)
     (xs : x ∈ s) (ys : y ∈ s) : ‖f y - f x‖ ≤ C * ‖y - x‖ := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
-  letI : NormedSpace ℝ G := RestrictScalars.normedSpace ℝ 𝕜 G
+  letI : NormedSpace ℝ G := .restrictScalars ℝ 𝕜 G
   /- By composition with `AffineMap.lineMap x y`, we reduce to a statement for functions defined
     on `[0,1]`, for which it is proved in `norm_image_sub_le_of_norm_deriv_le_segment`.
     We just have to check the differentiability of the composition and bounds on its derivative,
@@ -517,7 +517,7 @@ theorem _root_.lipschitzWith_of_nnnorm_fderiv_le
     {C : ℝ≥0} (hf : Differentiable 𝕜 f)
     (bound : ∀ x, ‖fderiv 𝕜 f x‖₊ ≤ C) : LipschitzWith C f := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
-  let A : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
+  let A : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
   rw [← lipschitzOnWith_univ]
   exact lipschitzOnWith_of_nnnorm_fderiv_le (fun x _ ↦ hf x) (fun x _ ↦ bound x) convex_univ
 
@@ -567,7 +567,7 @@ theorem _root_.is_const_of_fderiv_eq_zero
     (hf : Differentiable 𝕜 f) (hf' : ∀ x, fderiv 𝕜 f x = 0)
     (x y : E) : f x = f y := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
-  let A : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
+  let A : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
   exact convex_univ.is_const_of_fderivWithin_eq_zero hf.differentiableOn
     (fun x _ => by rw [fderivWithin_univ]; exact hf' x) trivial trivial
 
@@ -592,11 +592,12 @@ theorem _root_.IsOpen.isOpen_inter_preimage_of_fderiv_eq_zero
   have := (convex_ball y r).is_const_of_fderivWithin_eq_zero (hf.mono h) ?_ hx (mem_ball_self hr)
   · simpa [this]
   · intro z hz
-    simpa only [fderivWithin_of_isOpen Metric.isOpen_ball hz] using hf' (h hz)
+    simpa only [fderivWithin_of_isOpen Metric.isOpen_ball hz] using! hf' (h hz)
 
 theorem _root_.isLocallyConstant_of_fderiv_eq_zero (h₁ : Differentiable 𝕜 f)
     (h₂ : ∀ x, fderiv 𝕜 f x = 0) : IsLocallyConstant f := by
-  simpa using isOpen_univ.isOpen_inter_preimage_of_fderiv_eq_zero h₁.differentiableOn fun _ _ ↦ h₂ _
+  simpa using!
+    isOpen_univ.isOpen_inter_preimage_of_fderiv_eq_zero h₁.differentiableOn fun _ _ ↦ h₂ _
 
 /-- If `f` has zero derivative on a connected open set, then `f` is constant on `s`. -/
 theorem _root_.IsOpen.exists_is_const_of_fderiv_eq_zero
@@ -643,7 +644,7 @@ theorem _root_.eq_of_fderiv_eq
     (hf : Differentiable 𝕜 f) (hg : Differentiable 𝕜 g)
     (hf' : ∀ x, fderiv 𝕜 f x = fderiv 𝕜 g x) (x : E) (hfgx : f x = g x) : f = g := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
-  let A : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
+  let A : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
   suffices Set.univ.EqOn f g from funext fun x => this <| mem_univ x
   exact convex_univ.eqOn_of_fderivWithin_eq hf.differentiableOn hg.differentiableOn
     uniqueDiffOn_univ (fun x _ => by simpa using hf' _) (mem_univ _) hfgx
@@ -662,9 +663,11 @@ lemma isLittleO_pow_succ {x₀ : E} {n : ℕ} (hs : Convex ℝ s) (hx₀s : x₀
     gcongr
     exact norm_sub_le_of_mem_segment hy
   filter_upwards [this] with x ⟨h_segment, h⟩
-  convert (convex_segment x₀ x).norm_image_sub_le_of_norm_hasFDerivWithin_le
-    (f := fun x ↦ f x - f x₀) (y := x) (x := x₀) (s := segment ℝ x₀ x) ?_ h
-    (left_mem_segment ℝ x₀ x) (right_mem_segment ℝ x₀ x) using 1
+  convert!
+    (convex_segment x₀ x).norm_image_sub_le_of_norm_hasFDerivWithin_le (f := fun x ↦ f x - f x₀)
+      (y := x) (x := x₀) (s := segment ℝ x₀ x) ?_ h
+      (left_mem_segment ℝ x₀ x)
+      (right_mem_segment ℝ x₀ x) using 1
   · simp
   · simp only [hasFDerivWithinAt_sub_const_iff]
     exact fun x hx ↦ (hff' x (h_segment hx)).mono h_segment
@@ -677,7 +680,7 @@ theorem isLittleO_pow_succ_real {f f' : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : S
   · rw [Asymptotics.isLittleO_iff] at h ⊢
     simpa using h
   · rw [Asymptotics.isLittleO_iff] at hf' ⊢
-    convert hf' using 4 with c hc x
+    convert! hf' using 4 with c hc x
     simp
 
 end Convex
@@ -747,13 +750,13 @@ theorem _root_.lipschitzWith_of_nnnorm_deriv_le {C : ℝ≥0} (hf : Differentiab
 then it is a constant function. -/
 theorem _root_.is_const_of_deriv_eq_zero (hf : Differentiable 𝕜 f) (hf' : ∀ x, deriv f x = 0)
     (x y : 𝕜) : f x = f y :=
-  is_const_of_fderiv_eq_zero hf (fun z => by ext; simp [← toSpanSingleton_deriv, hf']) _ _
+  is_const_of_fderiv_eq_zero hf (fun z => by simp [← toSpanSingleton_deriv, hf']) _ _
 
 theorem _root_.IsOpen.isOpen_inter_preimage_of_deriv_eq_zero
     (hs : IsOpen s) (hf : DifferentiableOn 𝕜 f s)
     (hf' : s.EqOn (deriv f) 0) (t : Set G) : IsOpen (s ∩ f ⁻¹' t) :=
   hs.isOpen_inter_preimage_of_fderiv_eq_zero hf
-    (fun x hx ↦ by ext; simp [← toSpanSingleton_deriv, hf' hx]) t
+    (fun x hx ↦ by simp [← toSpanSingleton_deriv, hf' hx]) t
 
 theorem _root_.IsOpen.exists_is_const_of_deriv_eq_zero
     (hs : IsOpen s) (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s)
@@ -817,7 +820,7 @@ theorem hasStrictFDerivAt_of_hasFDerivAt_of_continuousAt
     rw [← dist_eq_norm]
     exact le_of_lt (hε H').2
   -- apply mean value theorem
-  letI : NormedSpace ℝ G := RestrictScalars.normedSpace ℝ 𝕜 G
+  letI : NormedSpace ℝ G := .restrictScalars ℝ 𝕜 G
   refine (convex_ball _ _).norm_image_sub_le_of_norm_hasFDerivWithin_le' ?_ hf' h.2 h.1
   exact fun y hy => (hε hy).1.hasFDerivWithinAt
 

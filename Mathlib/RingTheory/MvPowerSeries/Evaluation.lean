@@ -137,7 +137,7 @@ variable {φ : R →+* S}
 -- We endow MvPowerSeries σ R with the product uniform structure
 set_option backward.privateInPublic true in
 private instance : UniformSpace (MvPolynomial σ R) :=
-  comap toMvPowerSeries (Pi.uniformSpace _)
+  comap toMvPowerSeries inferInstance
 
 set_option backward.privateInPublic true in
 /-- The induced uniform structure of MvPolynomial σ R is an additive group uniform structure -/
@@ -190,7 +190,7 @@ theorem _root_.MvPolynomial.toMvPowerSeries_uniformContinuous
   · exact Ideal.mul_mem_right _ _ (hp d hd)
   · apply Ideal.mul_mem_left
     simp only [mem_Iic, D, Finsupp.le_iff] at hd
-    push_neg at hd
+    push Not at hd
     rcases hd with ⟨s, hs', hs⟩
     exact I.prod_mem hs' (I.pow_mem_of_pow_mem (Nat.sInf_mem (hn_ne s)) hs)
 
@@ -270,7 +270,7 @@ theorem hasSum_eval₂ (hφ : Continuous φ) (ha : HasEval a) (f : MvPowerSeries
     (fun (d : σ →₀ ℕ) ↦ φ (coeff d f) * (d.prod fun s e => (a s) ^ e))
     (MvPowerSeries.eval₂ φ a f) := by
   rw [← coe_eval₂Hom hφ ha, eval₂Hom_eq_extend hφ ha]
-  convert (hasSum_of_monomials_self f).map (eval₂Hom hφ ha) (?_) with d
+  convert! (hasSum_of_monomials_self f).map (eval₂Hom hφ ha) (?_) with d
   · simp only [Function.comp_apply, coe_eval₂Hom, ← MvPolynomial.coe_monomial,
       eval₂_coe, eval₂_monomial]
   · rw [coe_eval₂Hom]; exact continuous_eval₂ hφ ha

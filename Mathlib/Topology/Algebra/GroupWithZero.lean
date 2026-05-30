@@ -84,8 +84,6 @@ class ContinuousInv₀ (G₀ : Type*) [Zero G₀] [Inv G₀] [TopologicalSpace G
 
 export ContinuousInv₀ (continuousAt_inv₀)
 
-@[deprecated (since := "2025-09-01")] alias HasContinuousInv₀ := ContinuousInv₀
-
 section Inv₀
 
 variable [Zero G₀] [Inv G₀] [TopologicalSpace G₀] [ContinuousInv₀ G₀] {l : Filter α} {f : α → G₀}
@@ -169,7 +167,7 @@ variable [GroupWithZero G₀] [TopologicalSpace G₀] [ContinuousInv₀ G₀] {x
 
 lemma nhds_inv₀ (hx : x ≠ 0) : 𝓝 x⁻¹ = (𝓝 x)⁻¹ := by
   refine le_antisymm (inv_le_iff_le_inv.1 ?_) (tendsto_inv₀ hx)
-  simpa only [inv_inv] using tendsto_inv₀ (inv_ne_zero hx)
+  simpa only [inv_inv] using! tendsto_inv₀ (inv_ne_zero hx)
 
 lemma tendsto_inv_iff₀ {l : Filter α} {f : α → G₀} (hx : x ≠ 0) :
     Tendsto (fun x ↦ (f x)⁻¹) l (𝓝 x⁻¹) ↔ Tendsto f l (𝓝 x) := by
@@ -191,7 +189,7 @@ variable [GroupWithZero G₀] [TopologicalSpace G₀] [ContinuousInv₀ G₀] [C
 
 theorem Filter.Tendsto.div {l : Filter α} {a b : G₀} (hf : Tendsto f l (𝓝 a))
     (hg : Tendsto g l (𝓝 b)) (hy : b ≠ 0) : Tendsto (f / g) l (𝓝 (a / b)) := by
-  simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ hy)
+  simpa only [div_eq_mul_inv] using! hf.mul (hg.inv₀ hy)
 
 theorem Filter.tendsto_mul_iff_of_ne_zero [T1Space G₀] {f g : α → G₀} {l : Filter α} {x y : G₀}
     (hg : Tendsto g l (𝓝 y)) (hy : y ≠ 0) :
@@ -218,7 +216,7 @@ nonrec theorem ContinuousAt.div (hf : ContinuousAt f a) (hg : ContinuousAt g a) 
 
 @[continuity]
 theorem Continuous.div (hf : Continuous f) (hg : Continuous g) (h₀ : ∀ x, g x ≠ 0) :
-    Continuous (f / g) := by simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
+    Continuous (f / g) := by simpa only [div_eq_mul_inv] using! hf.mul (hg.inv₀ h₀)
 
 theorem continuousOn_div : ContinuousOn (fun p : G₀ × G₀ => p.1 / p.2) { p | p.2 ≠ 0 } :=
   continuousOn_fst.div continuousOn_snd fun _ => id
@@ -226,7 +224,7 @@ theorem continuousOn_div : ContinuousOn (fun p : G₀ × G₀ => p.1 / p.2) { p 
 @[fun_prop]
 theorem Continuous.div₀ (hf : Continuous f) (hg : Continuous g) (h₀ : ∀ x, g x ≠ 0) :
     Continuous (fun x => f x / g x) := by
-  simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
+  simpa only [div_eq_mul_inv] using! hf.mul (hg.inv₀ h₀)
 
 @[fun_prop]
 theorem ContinuousAt.div₀ (hf : ContinuousAt f a) (hg : ContinuousAt g a) (h₀ : g a ≠ 0) :
@@ -250,7 +248,7 @@ theorem ContinuousAt.comp_div_cases {f g : α → G₀} (h : α → G₀ → β)
   · rw [ContinuousAt]
     simp_rw [comp_apply, hga, div_zero]
     exact (h2h hga).comp (continuousAt_id.tendsto.prodMk tendsto_top)
-  · fun_prop (disch := assumption)
+  · fun_prop
 
 /-- `h x (f x / g x)` is continuous under certain conditions, even if the denominator is sometimes
   `0`. See docstring of `ContinuousAt.comp_div_cases`. -/
@@ -332,9 +330,6 @@ theorem ContinuousInv₀.of_nhds_one (h : Tendsto Inv.inv (𝓝 (1 : G₀)) (�
     rw [ContinuousAt, ← map_mul_left_nhds_one₀ hx, ← nhds_translation_mul_inv₀ hx',
       tendsto_map'_iff, tendsto_comap_iff]
     simpa only [Function.comp_def, mul_inv_rev, mul_inv_cancel_right₀ hx']
-
-@[deprecated (since := "2025-09-01")] alias HasContinuousInv₀.of_nhds_one :=
-  ContinuousInv₀.of_nhds_one
 
 end map_comap
 

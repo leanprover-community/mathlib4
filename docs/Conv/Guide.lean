@@ -182,7 +182,7 @@ in Lean 4 core.
   * `ring` and `ring_nf`
   * `norm_cast`
   * `norm_num1` and `norm_num`
-  * `push_neg`
+  * `push`
 
 * `apply_congr` applies a relevant `@[congr]` lemma, which can be better suited for a function
   than the congruence lemma that the `congr` tactic might generate. (Mathlib)
@@ -231,7 +231,7 @@ in Lean 4 core.
 
 * `#conv convTactic => e` is a command to apply the `convTactic` to the expression `e`, yielding
   the converted expression (and dropping the generated proof).
-  This is used to implement `#simp`, `#whnf`, `#norm_num`, and `#push_neg`. (Mathlib)
+  This is used to implement `#simp`, `#whnf`, `#norm_num`, and `#push`. (Mathlib)
 
 
 -/

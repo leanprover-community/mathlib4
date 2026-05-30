@@ -44,7 +44,7 @@ open Matrix
 universe v
 
 variable {α β m n o : Type*} {m' n' : α → Type*}
-variable {R : Type v} {M N : Matrix m m R} {b : m → α}
+variable {R : Type v} {A : Type*} {M N : Matrix m m R} {b : m → α}
 
 namespace Matrix
 
@@ -68,9 +68,9 @@ protected theorem BlockTriangular.submatrix {f : n → m} (h : M.BlockTriangular
 theorem blockTriangular_reindex_iff {b : n → α} {e : m ≃ n} :
     (reindex e e M).BlockTriangular b ↔ M.BlockTriangular (b ∘ e) := by
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · convert h.submatrix
+  · convert! h.submatrix
     simp only [reindex_apply, submatrix_submatrix, submatrix_id_id, Equiv.symm_comp_self]
-  · convert h.submatrix
+  · convert! h.submatrix
     simp only [comp_assoc b e e.symm, Equiv.self_comp_symm, comp_id]
 
 protected theorem BlockTriangular.transpose :
@@ -80,7 +80,7 @@ protected theorem BlockTriangular.transpose :
 @[simp]
 protected theorem blockTriangular_transpose_iff {b : m → αᵒᵈ} :
     Mᵀ.BlockTriangular b ↔ M.BlockTriangular (ofDual ∘ b) :=
-  forall_swap
+  forall_comm
 
 @[simp]
 theorem blockTriangular_zero : BlockTriangular (0 : Matrix m m R) b := fun _ _ _ => rfl
@@ -186,6 +186,44 @@ theorem BlockTriangular.mul [Fintype m] [NonUnitalNonAssocSemiring R]
   · simp_rw [hM hki, zero_mul]
   · simp_rw [hN (lt_of_lt_of_le hij hki), mul_zero]
 
+variable (R b) in
+/-- `BlockTriangular` matrices form a subsemiring. -/
+@[simps]
+def blockTriangularSubsemiring [DecidableEq m] [Fintype m] [Semiring R] :
+    Subsemiring (Matrix m m R) where
+  carrier := {M | BlockTriangular M b}
+  zero_mem' := blockTriangular_zero
+  one_mem' := blockTriangular_one
+  mul_mem' := .mul
+  add_mem' := .add
+
+@[simp]
+theorem mem_blockTriangularSubsemiring [DecidableEq m] [Fintype m] [Semiring R]
+    {M : Matrix m m R} :
+    M ∈ blockTriangularSubsemiring R b ↔ BlockTriangular M b :=
+  Iff.rfl
+
+theorem BlockTriangular.pow [DecidableEq m] [Fintype m] [Semiring R] (hM : BlockTriangular M b)
+    (n : ℕ) : BlockTriangular (M ^ n) b :=
+  pow_mem (S := blockTriangularSubsemiring R b) hM n
+
+theorem blockTriangular_algebraMap [CommSemiring R] [Semiring A] [Algebra R A]
+    [DecidableEq m] [Fintype m] (r : R) : (algebraMap R (Matrix m m A) r).BlockTriangular b :=
+  blockTriangular_diagonal _
+
+variable (R A b) in
+/-- `BlockTriangular` matrices form a subalgebra. -/
+def blockTriangularSubalgebra [CommSemiring R] [Semiring A] [Algebra R A]
+    [DecidableEq m] [Fintype m] : Subalgebra R (Matrix m m A) where
+  __ := blockTriangularSubsemiring A b
+  algebraMap_mem' r := blockTriangular_algebraMap r
+
+@[simp]
+theorem mem_blockTriangularSubalgebra [CommSemiring R] [Semiring A] [Algebra R A]
+    [DecidableEq m] [Fintype m] {M : Matrix m m A} :
+    M ∈ blockTriangularSubalgebra R A b ↔ BlockTriangular M b :=
+  Iff.rfl
+
 end LinearOrder
 
 theorem upper_two_blockTriangular [Zero R] [Preorder α] (A : Matrix m m R) (B : Matrix m n R)
@@ -200,7 +238,12 @@ variable [CommRing R] [DecidableEq m] [Fintype m] [DecidableEq n] [Fintype n]
 
 theorem equiv_block_det (M : Matrix m m R) {p q : m → Prop} [DecidablePred p] [DecidablePred q]
     (e : ∀ x, q x ↔ p x) : (toSquareBlockProp M p).det = (toSquareBlockProp M q).det := by
-  convert Matrix.det_reindex_self (Equiv.subtypeEquivRight e) (toSquareBlockProp M q)
+  convert!
+    Matrix.det_reindex_self (Equiv.subtypeEquivRight e)
+      (toSquareBlockProp M q)
+        -- Removed `@[simp]` attribute,
+        -- as the LHS simplifies already to `M.toSquareBlock id i ⟨i, ⋯⟩ ⟨i, ⋯⟩`
+
 
 -- Removed `@[simp]` attribute,
 -- as the LHS simplifies already to `M.toSquareBlock id i ⟨i, ⋯⟩ ⟨i, ⋯⟩`
@@ -225,7 +268,8 @@ theorem twoBlockTriangular_det (M : Matrix m m R) (p : m → Prop) [DecidablePre
     (h : ∀ i, ¬p i → ∀ j, p j → M i j = 0) :
     M.det = (toSquareBlockProp M p).det * (toSquareBlockProp M fun i => ¬p i).det := by
   rw [det_toBlock M p]
-  convert det_fromBlocks_zero₂₁ (toBlock M p p) (toBlock M p fun j => ¬p j)
+  convert!
+    det_fromBlocks_zero₂₁ (toBlock M p p) (toBlock M p fun j => ¬p j)
       (toBlock M (fun j => ¬p j) fun j => ¬p j)
   ext i j
   exact h (↑i) i.2 (↑j) j.2
@@ -257,14 +301,13 @@ protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : Bl
     let b' := fun i : { a // b a ≠ k } => b ↑i
     have h' : BlockTriangular (M.toSquareBlockProp fun i => b i ≠ k) b' := hM.submatrix
     have hb' : image b' univ = (image b univ).erase k := by
-      convert image_subtype_ne_univ_eq_image_erase k b
+      convert! image_subtype_ne_univ_eq_image_erase k b
     rw [ih _ (max'_mem _ _) h' hb']
     refine Finset.prod_congr rfl fun l hl => ?_
     let he : { a // b' a = l } ≃ { a // b a = l } :=
       haveI hc : ∀ i, b i = l → b i ≠ k := fun i hi => ne_of_eq_of_ne hi (ne_of_mem_erase hl)
       Equiv.subtypeSubtypeEquivSubtype @hc
-    simp only [toSquareBlock_def]
-    erw [← Matrix.det_reindex_self he.symm fun i j : { a // b a = l } => M ↑i ↑j]
+    rw [toSquareBlock_def, ← Matrix.det_reindex_self he.symm]
     rfl
   · intro i hi j hj
     apply hM
@@ -301,7 +344,7 @@ theorem det_matrixOfPolynomials {n : ℕ} (p : Fin n → R[X])
     (Matrix.of (fun (i j : Fin n) => (p j).coeff i)).det = 1 := by
   rw [Matrix.det_of_upperTriangular (Matrix.matrixOfPolynomials_blockTriangular p (fun i ↦
       Nat.le_of_eq (h_deg i)))]
-  convert prod_const_one with x _
+  convert! prod_const_one with x _
   rw [Matrix.of_apply, ← h_deg, coeff_natDegree, (h_monic x).leadingCoeff]
 
 /-! ### Invertible -/
@@ -378,8 +421,8 @@ theorem blockTriangular_inv_of_blockTriangular [LinearOrder α] [Invertible M]
   haveI : Invertible A := hM.invertibleToBlock _
   have hA : A.BlockTriangular b' := hM.submatrix
   have hb' : image b' univ ⊂ image b univ := by
-    convert image_subtype_univ_ssubset_image_univ k b _ (fun a => a < k) (lt_irrefl _)
-    convert max'_mem (α := α) _ _
+    convert! image_subtype_univ_ssubset_image_univ k b _ (fun a => a < k) (lt_irrefl _)
+    convert! max'_mem (α := α) _ _
   have hij' : b' ⟨j, hij.trans hi⟩ < b' ⟨i, hi⟩ := by simp_rw [b', hij]
   simp [A, hM.inv_toBlock k, (ih (image b' univ) hb' hA rfl hij').symm]
 

@@ -39,6 +39,7 @@ instance (X Y : LightCondensed.{u} C) : Small.{max u v} (X ⟶ Y) where
     ⟨(equivSmall C).functor.obj X ⟶ (equivSmall C).functor.obj Y,
       ⟨(equivSmall C).fullyFaithfulFunctor.homEquiv⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 Sheafifying is preserved under conjugating with the equivalence between light condensed objects
 and sheaves on a small site.
@@ -57,6 +58,8 @@ noncomputable def equivSmallSheafificationIso
 
 variable (R : Type u) [CommRing R]
 
+set_option backward.defeqAttrib.useBackward true in
+attribute [local simp] LightCondensed.forget in
 set_option backward.isDefEq.respectTransparency false in
 /--
 Taking the free condensed module is preserved under conjugating with the equivalence between
@@ -67,8 +70,8 @@ noncomputable def equivSmallFreeIso :
     Sheaf.composeAndSheafify _ (ModuleCat.free R) :=
   conjugateIsoEquiv (Sheaf.adjunction _ (ModuleCat.adj R))
     (((equivSmall _).symm.toAdjunction.comp
-      (freeForgetAdjunction R)).comp (equivSmall _).toAdjunction) |>.symm <|
-  NatIso.ofComponents
+      (freeForgetAdjunction R)).comp (equivSmall _).toAdjunction) |>.symm <| by
+  refine NatIso.ofComponents
     (fun X ↦ (fullyFaithfulSheafToPresheaf _ _).preimageIso
       (isoWhiskerRight ((equivSmallModel LightProfinite).op.invFunIdAssoc _).symm _ ≪≫
         (Functor.associator _ _ _)))

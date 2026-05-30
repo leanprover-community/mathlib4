@@ -160,7 +160,6 @@ open HahnSeries SummableFamily
 variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
   [CommRing R] (x : R⟦Γ⟧)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `R`-algebra homomorphism from `R⟦X⟧` to `R⟦Γ⟧` given by sending the power series
 variable `X` to a positive order element `x` and extending to infinite sums. -/
 @[simps]
@@ -193,7 +192,7 @@ theorem heval_C (r : R) : heval x (C r) = r • 1 := by
   ext g
   simp only [heval_apply, coeff_hsum, smulFamily_toFun, powers_toFun, HahnSeries.coeff_smul,
     HahnSeries.coeff_one, smul_eq_mul, mul_ite, mul_one, mul_zero]
-  rw [finsum_eq_single _ 0 (fun n hn ↦ by simp [coeff_ne_zero_C hn])]
+  rw [finsum_eq_single _ 0 (fun n hn ↦ by simp [coeff_C_of_ne_zero hn])]
   by_cases hg : g = 0 <;> simp
 
 theorem heval_X (hx : 0 < x.orderTop) : heval x X = x := by
@@ -203,7 +202,6 @@ theorem heval_X (hx : 0 < x.orderTop) : heval x X = x := by
   rw [coeff_hsum, finsum_eq_single _ 1 (fun n hn ↦ by simp [hn])]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem heval_unit (u : (PowerSeries R)ˣ) : IsUnit (heval x u) := by
   refine isUnit_iff_exists_inv.mpr ?_
   use heval x u.inv
