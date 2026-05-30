@@ -293,14 +293,14 @@ lemma two_zsmul_oangle_eq_of_dist_orthogonalProjection_line_eq {p p₁ p₂ p₃
   · suffices p = p₁ by simp [this]
     have hs := orthogonalProjection_sup_of_orthogonalProjection_eq ho
     have hinf : line[ℝ, p₁, p₂] ⊓ line[ℝ, p₁, p₃] = affineSpan ℝ {p₁} := by
-      convert (ha.inf_affineSpan_eq_affineSpan_inter {0, 1} {0, 2})
+      convert! (ha.inf_affineSpan_eq_affineSpan_inter {0, 1} {0, 2})
       · simp [Set.image_insert_eq]
       · simp [Set.image_insert_eq]
       · suffices {p₁} = ![p₁, p₂, p₃] '' {0} by grind
         simp
     have hsup : line[ℝ, p₁, p₂] ⊔ line[ℝ, p₁, p₃] = ⊤ := by
       rw [← AffineSubspace.span_union]
-      convert ha.affineSpan_eq_top_iff_card_eq_finrank_add_one.2 ?_
+      convert! ha.affineSpan_eq_top_iff_card_eq_finrank_add_one.2 ?_
       · simp
         grind
       · simpa using Fact.out

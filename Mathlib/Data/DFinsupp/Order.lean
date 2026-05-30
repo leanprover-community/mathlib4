@@ -189,16 +189,22 @@ end Module
 
 section PartialOrder
 
-variable (α) [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
+variable (α) [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
 
-instance : OrderBot (Π₀ i, α i) where
+instance [∀ i, IsBotZeroClass (α i)] : OrderBot (Π₀ i, α i) where
   bot := 0
-  bot_le := by simp only [le_def, coe_zero, Pi.zero_apply, imp_true_iff, zero_le]
+  bot_le := by simp [le_def]
+
+instance [∀ i, IsBotZeroClass (α i)] : IsBotZeroClass (Π₀ i, α i) where
+  isBot_zero := isBot_bot
 
 variable {α}
 
-protected theorem bot_eq_zero : (⊥ : Π₀ i, α i) = 0 :=
+@[deprecated _root_.bot_eq_zero (since := "2026-05-07")]
+protected theorem bot_eq_zero [∀ i, IsBotZeroClass (α i)] : (⊥ : Π₀ i, α i) = 0 :=
   rfl
+
+variable [∀ i, CanonicallyOrderedAdd (α i)]
 
 @[simp]
 theorem add_eq_zero_iff (f g : Π₀ i, α i) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
@@ -289,25 +295,21 @@ theorem subset_support_tsub : f.support \ g.support ⊆ (f - g).support := by
 end PartialOrder
 
 section LinearOrder
-variable [∀ i, AddCommMonoid (α i)] [∀ i, LinearOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
+variable [∀ i, AddCommMonoid (α i)] [∀ i, LinearOrder (α i)] [∀ i, IsBotZeroClass (α i)]
   [DecidableEq ι] {f g : Π₀ i, α i}
 
 @[simp]
 theorem support_inf : (f ⊓ g).support = f.support ∩ g.support := by
   ext
-  simp only [inf_apply, mem_support_iff, Ne, Finset.mem_inter]
-  simp only [← nonpos_iff_eq_zero, min_le_iff, not_or]
+  simp
 
 @[simp]
 theorem support_sup : (f ⊔ g).support = f.support ∪ g.support := by
   ext
-  simp only [Finset.mem_union, mem_support_iff, sup_apply, Ne, ← nonpos_iff_eq_zero, sup_le_iff,
-    Classical.not_and_iff_not_or_not]
+  simp [imp_iff_not_or]
 
 nonrec theorem disjoint_iff : Disjoint f g ↔ Disjoint f.support g.support := by
-  rw [disjoint_iff, disjoint_iff, DFinsupp.bot_eq_zero, ← DFinsupp.support_eq_empty,
-    DFinsupp.support_inf]
-  rfl
+  simp [disjoint_iff, bot_eq_zero, ← DFinsupp.support_eq_empty]
 
 end LinearOrder
 

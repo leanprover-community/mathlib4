@@ -256,12 +256,6 @@ space. -/
 instance : SProd (Compacts α) (Compacts β) (Compacts (α × β)) where
   sprod K L := { carrier := K ×ˢ L, isCompact' := IsCompact.prod K.2 L.2 }
 
-/-- The product of two `TopologicalSpace.Compacts`, as a `TopologicalSpace.Compacts` in the product
-space. -/
-@[deprecated "Use `K ×ˢ L` instead" (since := "2025-11-15")]
-protected abbrev prod (K : Compacts α) (L : Compacts β) : Compacts (α × β) :=
-  K ×ˢ L
-
 @[simp]
 theorem coe_prod (K : Compacts α) (L : Compacts β) :
     (K ×ˢ L : Compacts (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
@@ -495,13 +489,6 @@ in the product space. -/
 instance : SProd (NonemptyCompacts α) (NonemptyCompacts β) (NonemptyCompacts (α × β)) where
   sprod K L := { K.toCompacts ×ˢ L.toCompacts with nonempty' := K.nonempty.prod L.nonempty }
 
-/-- The product of two `TopologicalSpace.NonemptyCompacts`, as a `TopologicalSpace.NonemptyCompacts`
-in the product space. -/
-@[deprecated "Use `K ×ˢ L` instead" (since := "2025-11-15")]
-protected abbrev prod (K : NonemptyCompacts α) (L : NonemptyCompacts β) :
-    NonemptyCompacts (α × β) :=
-  K ×ˢ L
-
 @[simp]
 theorem coe_prod (K : NonemptyCompacts α) (L : NonemptyCompacts β) :
     (K ×ˢ L : NonemptyCompacts (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
@@ -647,13 +634,6 @@ instance : SProd (PositiveCompacts α) (PositiveCompacts β) (PositiveCompacts (
         simp only [Compacts.carrier_eq_coe, Compacts.coe_prod, interior_prod_eq]
         exact K.interior_nonempty.prod L.interior_nonempty }
 
-/-- The product of two `TopologicalSpace.PositiveCompacts`, as a `TopologicalSpace.PositiveCompacts`
-in the product space. -/
-@[deprecated "Use `K ×ˢ L` instead" (since := "2025-11-15")]
-protected abbrev prod (K : PositiveCompacts α) (L : PositiveCompacts β) :
-    PositiveCompacts (α × β) :=
-  K ×ˢ L
-
 @[simp]
 theorem coe_prod (K : PositiveCompacts α) (L : PositiveCompacts β) :
     (K ×ˢ L : PositiveCompacts (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
@@ -793,8 +773,6 @@ end Top.Compl
 def map (f : α → β) (hf : Continuous f) (hf' : IsOpenMap f) (s : CompactOpens α) : CompactOpens β :=
   ⟨s.toCompacts.map f hf, hf' _ s.isOpen⟩
 
-@[deprecated (since := "2025-11-13")] alias map_toCompacts := toCompacts_map
-
 @[simp, norm_cast]
 theorem coe_map {f : α → β} (hf : Continuous f) (hf' : IsOpenMap f) (s : CompactOpens α) :
     (s.map f hf hf' : Set β) = f '' s :=
@@ -813,13 +791,6 @@ theorem map_comp (f : β → γ) (g : α → β) (hf : Continuous f) (hg : Conti
 product space. -/
 instance : SProd (CompactOpens α) (CompactOpens β) (CompactOpens (α × β)) where
   sprod K L := { K.toCompacts ×ˢ L.toCompacts with isOpen' := K.isOpen.prod L.isOpen }
-
-/-- The product of two `TopologicalSpace.CompactOpens`, as a `TopologicalSpace.CompactOpens` in the
-product space. -/
-@[deprecated "Use `K ×ˢ L` instead" (since := "2025-11-15")]
-protected abbrev prod (K : CompactOpens α) (L : CompactOpens β) :
-    CompactOpens (α × β) :=
-  K ×ˢ L
 
 @[simp]
 theorem coe_prod (K : CompactOpens α) (L : CompactOpens β) :
