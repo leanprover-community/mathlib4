@@ -51,7 +51,7 @@ instance : Inhabited PartialFun.{u} :=
 
 -- TODO: wrap morphisms in this category into a one-field `PFun.Hom` structure
 instance largeCategory : LargeCategory.{u} PartialFun where
-  Hom X Y := X →. Y
+  Hom X Y := PFun X Y
   id X := PFun.id X
   comp f g := g.comp f
 
@@ -137,8 +137,8 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
   functor := partialFunToPointed
   inverse := pointedToPartialFun
   unitIso := NatIso.ofComponents (fun X => PartialFun.Iso.mk
-      { toFun := fun a => Subtype.mk (some a) (Option.some_ne_none a)
-        invFun := fun a => Option.get _ (Option.ne_none_iff_isSome.1 a.property)
+      { toFun := fun a => ⟨some a, some_ne_none a⟩
+        invFun := fun a => Option.get _ (Option.ne_none_iff_isSome.1 a.2)
         left_inv := fun _ => Option.get_some _ _
         right_inv := fun ⟨a, ha⟩ => Subtype.ext (Option.some_get _) })
       fun {X Y} f => PFun.ext fun a b => by
@@ -165,9 +165,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
           exact (Part.mem_toOption.mpr hw).symm
   counitIso :=
     NatIso.ofComponents
-      (fun X ↦ by
-        classical
-        exact Pointed.Iso.mk (Equiv.optionSubtypeNe X.point) rfl)
+      (fun X ↦ Pointed.Iso.mk (by classical exact Equiv.optionSubtypeNe X.point) (by rfl))
       fun {X Y} f ↦ Pointed.Hom.ext <| funext fun a ↦ by
         classical
         obtain _ | ⟨a, ha⟩ := a

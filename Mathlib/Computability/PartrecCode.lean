@@ -522,7 +522,7 @@ theorem primrec_const : Primrec Code.const :=
 
 theorem primrec₂_curry : Primrec₂ curry :=
   primrec₂_comp.comp Primrec.fst <| primrec₂_pair.comp (primrec_const.comp Primrec.snd)
-  (_root_.Primrec.const Code.id)
+    (_root_.Primrec.const Code.id)
 
 theorem curry_inj {c₁ c₂ n₁ n₂} (h : curry c₁ n₁ = curry c₂ n₂) : c₁ = c₂ ∧ n₁ = n₂ :=
   ⟨by injection h, by

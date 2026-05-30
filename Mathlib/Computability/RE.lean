@@ -115,7 +115,7 @@ theorem merge {f g : α →. σ} (hf : Partrec f) (hg : Partrec g)
       · exact mem_unique h' h⟩⟩
 
 theorem cond {c : α → Bool} {f : α →. σ} {g : α →. σ} (hc : Computable c) (hf : Partrec f)
-    (hg : Partrec g) : Partrec (PFun.mk fun a => _root_.cond (c a) (f a) (g a)) :=
+    (hg : Partrec g) : Partrec (PFun.mk fun a => cond (c a) (f a) (g a)) :=
   let ⟨cf, ef⟩ := exists_code.1 hf
   let ⟨cg, eg⟩ := exists_code.1 hg
   ((eval_part.comp (Computable.cond hc (const cf) (const cg)) Computable.encode).bind

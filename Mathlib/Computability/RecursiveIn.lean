@@ -85,15 +85,7 @@ def RecursiveIn {α σ} [Primcodable α] [Primcodable σ] (O : Set (ℕ →. ℕ
   Nat.RecursiveIn O (PFun.mk fun n => Part.bind (decode (α := α) n) fun a => (f a).map encode)
 
 lemma RecursiveIn.iff_nat {f : ℕ →. ℕ} {O} : RecursiveIn O f ↔ Nat.RecursiveIn O f := by
-  unfold RecursiveIn
-  change
-    Nat.RecursiveIn O
-        (PFun.mk fun n => Part.bind (decode (α := ℕ) n) fun a => (f a).map encode) ↔
-      Nat.RecursiveIn O f
-  rw [show
-      PFun.mk (fun n => Part.bind (decode (α := ℕ) n) fun a => (f a).map encode) = f by
-    ext n b
-    simp [Part.map_id']]
+  simp [RecursiveIn, Part.map_id']
 
 /-- A binary partial function is recursive in `O` if the curried form is. -/
 def RecursiveIn₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ]
@@ -243,8 +235,6 @@ theorem partrec_iff_forall_recursiveIn_singleton :
   ⟨fun hf _ => hf.recursiveIn, fun hf => (hf (PFun.mk fun _ => Part.none)).partrec_of_const⟩
 
 namespace ComputableIn
-
-variable {O : Set (ℕ →. ℕ)} {α β σ : Type*} [Primcodable α] [Primcodable β] [Primcodable σ]
 
 protected theorem const (s : σ) : ComputableIn O (fun _ : α => s) :=
   (Primrec.const s).computableIn

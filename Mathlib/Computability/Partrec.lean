@@ -614,8 +614,7 @@ theorem map_decode_iff {f : α → β → σ} :
 theorem nat_rec {f : α → ℕ} {g : α → σ} {h : α → ℕ × σ → σ} (hf : Computable f) (hg : Computable g)
     (hh : Computable₂ h) :
     Computable fun a => Nat.rec (motive := fun _ => σ) (g a) (fun y IH => h a (y, IH)) (f a) :=
-  (Partrec.nat_rec hf hg hh.partrec₂).of_eq fun a =>
-  by simp; induction f a <;> simp [*]
+  (Partrec.nat_rec hf hg hh.partrec₂).of_eq fun a => by simp; induction f a <;> simp [*]
 
 theorem nat_casesOn {f : α → ℕ} {g : α → σ} {h : α → ℕ → σ} (hf : Computable f) (hg : Computable g)
     (hh : Computable₂ h) :

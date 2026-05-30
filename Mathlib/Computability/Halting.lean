@@ -36,7 +36,7 @@ theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C)
   obtain ⟨c, e⟩ :=
     fixed_point₂
       (Partrec.cond (h.comp fst) ((Partrec.nat_iff.2 hg).comp snd).to₂
-        ((Partrec.nat_iff.2 hf).comp snd).to₂).to₂
+          ((Partrec.nat_iff.2 hf).comp snd).to₂).to₂
   simp only [Bool.cond_decide] at e
   by_cases H : eval c ∈ C <;> simp_all
 
