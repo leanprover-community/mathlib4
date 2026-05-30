@@ -287,7 +287,7 @@ lemma HasMFDerivAt.smul
     HasMFDerivAt% (f • g) x (f x • g'_ + gx ∘L f') := by
   constructor
   · exact hs.1.smul hg.1
-  · simpa using hs.2.smul hg.2
+  · simpa using! hs.2.smul hg.2
 
 theorem MDifferentiableWithinAt.smul
     (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x) :

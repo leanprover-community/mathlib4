@@ -83,7 +83,7 @@ theorem to_mulShift_inj_of_isPrimitive {ψ : AddChar R R'} (hψ : IsPrimitive ψ
 /-- When `R` is a field `F`, then a nontrivial additive character is primitive -/
 theorem IsPrimitive.of_ne_one {F : Type u} [Field F] {ψ : AddChar F R'} (hψ : ψ ≠ 1) :
     IsPrimitive ψ :=
-  fun a ha h ↦ hψ <| by simpa [mulShift_mulShift, ha] using congr_arg (mulShift · a⁻¹) h
+  fun a ha h ↦ hψ <| by simpa [mulShift_mulShift, ha] using! congr_arg (mulShift · a⁻¹) h
 
 /-- If `r` is not a unit, then `e.mulShift r` is not primitive. -/
 lemma not_isPrimitive_mulShift [Finite R] (e : AddChar R R') {r : R}

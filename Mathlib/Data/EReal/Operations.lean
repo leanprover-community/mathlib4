@@ -728,7 +728,7 @@ lemma mul_eq_top (a b : EReal) :
   | pos_bot _ hx => simp [hx.le, EReal.coe_mul_bot_of_pos hx]
   | coe_coe x y =>
     simpa only [EReal.coe_ne_bot, EReal.coe_neg', false_and, and_false, EReal.coe_ne_top,
-      EReal.coe_pos, or_self, iff_false, EReal.coe_mul] using EReal.coe_ne_top _
+      EReal.coe_pos, or_self, iff_false, EReal.coe_mul] using! EReal.coe_ne_top _
   | zero_bot => simp
   | neg_bot _ hx => simp [hx, EReal.coe_mul_bot_of_neg hx]
   | bot_bot => simp
