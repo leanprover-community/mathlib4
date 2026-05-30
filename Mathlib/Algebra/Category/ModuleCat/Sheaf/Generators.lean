@@ -203,7 +203,7 @@ abbrev GeneratingSections.over {M : SheafOfModules.{u} R} (G : M.GeneratingSecti
 
 /-- Given `G : M.GeneratingSections`, we naturally obtain `M.LocalGeneratorsData` using the
 trivial cover of `C`. -/
-@[expose, simps]
+@[simps]
 def GeneratingSections.localGeneratorsData {M : SheafOfModules.{u} R} (G : M.GeneratingSections) :
     M.LocalGeneratorsData where
   I := C
