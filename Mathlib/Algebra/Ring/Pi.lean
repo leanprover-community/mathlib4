@@ -111,13 +111,13 @@ def NonUnitalRingHom.pi {f : I → Type*} {γ : Type*} [∀ i, NonUnitalNonAssoc
 @[deprecated (since := "2026-05-30")] protected alias Pi.nonUnitalRingHom_apply :=
   NonUnitalRingHom.pi_apply
 
-theorem NonUnitalRingHom.injective_pi {f : I → Type*} {γ : Type*} [Nonempty I]
+theorem NonUnitalRingHom.pi_injective {f : I → Type*} {γ : Type*} [Nonempty I]
     [∀ i, NonUnitalNonAssocSemiring (f i)] [NonUnitalNonAssocSemiring γ] (g : ∀ i, γ →ₙ+* f i)
     (hg : ∀ i, Function.Injective (g i)) : Function.Injective (NonUnitalRingHom.pi g) :=
   MulHom.injective_pi (fun i => (g i).toMulHom) hg
 
 @[deprecated (since := "2026-05-30")] protected alias Pi.nonUnitalRingHom_injective :=
-  NonUnitalRingHom.injective_pi
+  NonUnitalRingHom.pi_injective
 
 /-- Evaluation of functions into an indexed collection of non-unital rings at a point is a
 non-unital ring homomorphism. This is `Function.eval` as a `NonUnitalRingHom`. -/
@@ -157,12 +157,12 @@ protected def RingHom.pi {f : I → Type*} {γ : Type*} [∀ i, NonAssocSemiring
 @[deprecated (since := "2026-05-30")] protected alias Pi.ringHom := RingHom.pi
 @[deprecated (since := "2026-05-30")] protected alias Pi.ringHom_apply := RingHom.pi_apply
 
-theorem RingHom.injective_pi {f : I → Type*} {γ : Type*} [Nonempty I] [∀ i, NonAssocSemiring (f i)]
+theorem RingHom.pi_injective {f : I → Type*} {γ : Type*} [Nonempty I] [∀ i, NonAssocSemiring (f i)]
     [NonAssocSemiring γ] (g : ∀ i, γ →+* f i) (hg : ∀ i, Function.Injective (g i)) :
     Function.Injective (RingHom.pi g) :=
   MonoidHom.injective_pi (fun i => (g i).toMonoidHom) hg
 
-@[deprecated (since := "2026-05-30")] protected alias Pi.ringHom_injective := RingHom.injective_pi
+@[deprecated (since := "2026-05-30")] protected alias Pi.ringHom_injective := RingHom.pi_injective
 
 /-- Evaluation of functions into an indexed collection of rings at a point is a ring
 homomorphism. This is `Function.eval` as a `RingHom`. -/
