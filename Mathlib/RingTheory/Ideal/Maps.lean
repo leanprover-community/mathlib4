@@ -754,7 +754,7 @@ lemma ker_eq_top_of_subsingleton [Subsingleton S] (f : F) : ker f = ⊤ :=
   eq_top_iff.mpr fun _ _ ↦ Subsingleton.elim _ _
 
 lemma _root_.Pi.ker_ringHom {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R i)]
-    (φ : ∀ i, S →+* R i) : ker (Pi.ringHom φ) = ⨅ i, ker (φ i) := by
+    (φ : ∀ i, S →+* R i) : ker (RingHom.pi φ) = ⨅ i, ker (φ i) := by
   ext x
   simp [mem_ker, funext_iff]
 

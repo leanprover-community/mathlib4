@@ -42,7 +42,7 @@ variable {ι : Type u} (P : ι → Under R)
 
 /-- The canonical fan on `P : ι → Under R` given by `∀ i, P i`. -/
 def piFan : Fan P :=
-  Fan.mk (Under.mk <| ofHom <| Pi.ringHom (fun i ↦ (P i).hom.hom))
+  Fan.mk (Under.mk <| ofHom <| RingHom.pi (fun i ↦ (P i).hom.hom))
     (fun i ↦ Under.homMk (ofHom <| Pi.evalRingHom _ i))
 
 /-- The canonical fan is limiting. -/

@@ -267,7 +267,7 @@ lemma mono_pushoutSection_of_iSup_eq {ι : Type*} [Finite ι] (VX : ι → X.Ope
   algebraize [(iX.appLE US UX hUSX).hom, (f.appLE US UT hUST).hom]
   let (i : _) := (iX.appLE US (VX i) (by aesop)).hom.toAlgebra
   -- This is the map `Γ(X ×ₛ T, U ∩ Uₜ) ⟶ ∏ᵢ Γ(X ×ₛ T, Vᵢ ∩ Uₜ)` on the bottom.
-  let ψY : Γ(Y, UY) →+* Π i, Γ(Y, g ⁻¹ᵁ VX i ⊓ iY ⁻¹ᵁ UT) := Pi.ringHom fun i ↦
+  let ψY : Γ(Y, UY) →+* Π i, Γ(Y, g ⁻¹ᵁ VX i ⊓ iY ⁻¹ᵁ UT) := RingHom.pi fun i ↦
       (Y.presheaf.map (homOfLE (by subst hUY hVU; gcongr; exact le_iSup _ _)).op).hom
   -- The map `Γ(X, U) ⟶ ∏ᵢ Γ(X, Vᵢ)`
   let ψ : Γ(X, UX) →ₐ[Γ(S, US)] Π i, Γ(X, VX i) := Pi.algHom _ _ fun i ↦
@@ -288,7 +288,7 @@ lemma mono_pushoutSection_of_iSup_eq {ι : Type*} [Finite ι] (VX : ι → X.Ope
   cases nonempty_fintype ι
   -- And the map at the right
   let φ : (Γ(T, UT) ⊗[Γ(S, US)] Π i, Γ(X, VX i)) →+* Π i, Γ(Y, g ⁻¹ᵁ VX i ⊓ iY ⁻¹ᵁ UT) :=
-    (Pi.ringHom fun i ↦ (pushoutSection H hUST (show VX i ≤ _ by aesop) rfl).hom.comp
+    (RingHom.pi fun i ↦ (pushoutSection H hUST (show VX i ≤ _ by aesop) rfl).hom.comp
       ((CommRingCat.isPushout_tensorProduct _ _ _).flip.isoPushout.hom.hom.comp
       (by exact Pi.evalRingHom _ _))).comp (Algebra.TensorProduct.piRight _ Γ(S, US) _ _).toRingHom
   -- ... is also injective by our hypotheses on `Vᵢ`.
