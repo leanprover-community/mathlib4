@@ -388,7 +388,8 @@ theorem prodCongr_symm [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] 
 
 variable (R₁ M₁ M₂)
 
-/-- Product of topological modules is commutative up to continuous linear isomorphism. -/
+set_option backward.defeqAttrib.useBackward true in
+/-- Product of modules is commutative up to continuous linear isomorphism. -/
 @[simps! apply toLinearEquiv]
 def prodComm [Module R₁ M₂] : (M₁ × M₂) ≃L[R₁] M₂ × M₁ where
   __ := LinearEquiv.prodComm R₁ M₁ M₂
@@ -1433,10 +1434,7 @@ variable {S₁ M M₁ : Type*} [Semiring S₁] {σ : S →+* S₁} {σ' : S₁ �
 def ofIsHomeomorph (f : M ≃ₛₗ[σ] M₁) (hf : IsHomeomorph f) : M ≃SL[σ] M₁ where
   __ := f
   continuous_toFun := hf.continuous
-  continuous_invFun := by
-    replace hf : IsHomeomorph f.toEquiv.toFun := hf
-    simpa only [IsHomeomorph.toEquiv_homeomorph, Equiv.ofBijective_coe] using
-      hf.homeomorph.continuous_invFun
+  continuous_invFun := (f.isHomeomorph_iff.mp hf).2
 
 theorem isHomeomorph (f : M ≃SL[σ] M₁) : IsHomeomorph f := ⟨f.continuous, isOpenMap f, f.bijective⟩
 
