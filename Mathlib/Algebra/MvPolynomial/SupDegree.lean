@@ -21,7 +21,6 @@ variable {σ : Type*} (D : (σ →₀ ℕ) → B)
 variable {p q : MvPolynomial σ R}
 variable {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
 
-@[expose]
 abbrev supDegree [SemilatticeSup B] [OrderBot B] (p : MvPolynomial σ R) : B := p.support.sup D
 
 section SupDegree
@@ -61,7 +60,7 @@ theorem apply_eq_zero_of_not_le_supDegree {p : MvPolynomial σ R} {a : σ →₀
 theorem apply_supDegree_eq_supDegree_comp {B' : Type*} [SemilatticeSup B'] [OrderBot B']
     {g : B → B'} (g_sup : ∀ x y, g (x ⊔ y) = g x ⊔ g y) (bot : g ⊥ = ⊥) :
     g (p.supDegree D) = p.supDegree (g ∘ D) :=
-  Finset.comp_sup_eq_sup_comp g g_sup bot
+  Finset.apply_sup_eq_sup_comp g g_sup bot
 
 theorem supDegree_withBot_some_comp {s : MvPolynomial σ R} (hs : s.support.Nonempty) :
     supDegree (WithBot.some ∘ D) s = supDegree D s :=
@@ -139,11 +138,11 @@ theorem monic_one (hD : D.Injective) : (1 : MvPolynomial σ R).Monic D :=
   AddMonoidAlgebra.monic_one hD
 
 -- todo: port to `AddMonoidAlgebra`
-theorem apply_supDegree_eq_supDegree_comp_of_of_linearOrder
+theorem apply_supDegree_eq_supDegree_comp_of_linearOrder
     {B' : Type*} [SemilatticeSup B'] [OrderBot B'] {g : B → B'}
     (mono : Monotone g) (bot : g ⊥ = ⊥) :
     g (p.supDegree D) = p.supDegree (g ∘ D) :=
-  Finset.comp_sup_eq_sup_comp_of_is_total g mono bot
+  Finset.apply_sup_eq_sup_comp_of_linearOrder g mono bot
 
 variable (D) in
 lemma exists_supDegree_mem_support (hp : p ≠ 0) : ∃ a ∈ p.support, p.supDegree D = D a :=
