@@ -117,8 +117,9 @@ def toOfQuot (A : LocExtCat Λ k) (I : Ideal A) [Nontrivial (A ⧸ I)] : A ⟶ A
     (Ideal.Quotient.lift_surjective_of_surjective I hI A.residue_surjective))
   haveI : Nontrivial P.Ring := ‹_›
   haveI : IsLocalRing P.Ring := .of_surjective' _ Ideal.Quotient.mk_surjective
-  ofHom <| .ofAlgHom (Ideal.Quotient.mkₐ Λ I)
-    (by ext; simpa [residue] using residue_ofQuot_mk_apply ..)
+  ofHom <| .ofAlgHom (Ideal.Quotient.mkₐ Λ I) (by
+    ext x; rw [AlgHom.coe_comp, IsScalarTower.coe_toAlgHom']
+    exact A.residue_ofQuot_mk_apply x)
 
 @[simp]
 lemma ker_toRingHom_toOfQuot [Nontrivial (A ⧸ I)] :
@@ -417,9 +418,8 @@ instance isArtinianRing_pullback [IsArtinianRing A] [IsArtinianRing B] (f : A �
   rwa [Module.length_top, Submodule.restrictScalars_top, Module.length_top] at this
 
 theorem isArtinianRing_ofPullback [IsArtinianRing A] [IsArtinianRing B] (f : A ⟶ C) (g : B ⟶ C)
-    (h : Surjective g.toAlgHom) : IsArtinianRing (ofPullback f g h) := by
-  simp_rw [ofPullback, Extension.ofSurjective_Ring]
-  exact isArtinianRing_pullback f g
+    (h : Surjective g.toAlgHom) : IsArtinianRing (ofPullback f g h) :=
+  isArtinianRing_pullback f g
 
 end ArtinianRing
 

@@ -194,7 +194,8 @@ theorem induction_on_isSmallExtension (hf : Surjective f.hom.toAlgHom)
     have hg : IsSmallExtension g := IsSmallExtension.toOfQuot_span_singleton A x hx
     let f' : C ⟶ B := ObjectProperty.homMk (LocExtCat.liftToOfQuot (Ideal.span {x}) f.hom
       (by simpa [← RingHom.mem_ker, ← SetLike.le_def]))
-    have g_comp : g ≫ f' = f := by ext1; simpa using LocExtCat.toOfQuot_comp_liftToOfQuot ..
+    have g_comp : g ≫ f' = f := by
+      ext1; exact LocExtCat.toOfQuot_comp_liftToOfQuot ..
     obtain ⟨m, hm⟩ : ∃ n : ℕ, n = Module.length C C :=
       ENat.ne_top_iff_exists.mp Module.length_ne_top
     suffices h : m < n by
@@ -260,7 +261,7 @@ abbrev pullbackSnd (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.hom.toAlgHom) 
 
 lemma pullback_comm_sq (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.hom.toAlgHom) :
     pullbackFst f g hg ≫ f = pullbackSnd f g hg ≫ g := by
-  ext1; simpa using LocExtCat.pullback_comm_sq f.hom g.hom hg
+  ext1; exact LocExtCat.pullback_comm_sq f.hom g.hom hg
 
 @[stacks 06GH "(2)"]
 instance pullbackFst_isSmallExtension (f : A ⟶ C) (g : B ⟶ C) [IsSmallExtension g] :
@@ -317,8 +318,9 @@ theorem isMinimallySurjective_iff_isMinimallySurjective_mapOfQuot (f : A ⟶ B) 
     IsMinimallySurjective f ↔ IsMinimallySurjective (mapOfQuot f hf) := by
   refine ⟨fun h ↦ ⟨?_, fun {C} g hg ↦ ?_⟩, fun h ↦ ⟨?_, fun {C} g hg ↦ ?_⟩⟩
   · apply Surjective.of_comp (g := (A.toOfQuot I).hom.toAlgHom)
-    rw [← AlgHom.coe_comp, ← LocExtCat.toAlgHom_comp, ← comp_hom, toOfQuot_comp_mapOfQuot]
-    simpa using Surjective.comp (B.obj.toalghom_toOfQuot_surjective J) h.surjective
+    rw [← AlgHom.coe_comp, ← LocExtCat.toAlgHom_comp, ← comp_hom, toOfQuot_comp_mapOfQuot,
+      comp_hom, ObjectProperty.homMk_hom, LocExtCat.toAlgHom_comp, AlgHom.coe_comp]
+    exact Surjective.comp (B.obj.toalghom_toOfQuot_surjective J) h.surjective
   · let C' := ofPullback g (A.toOfQuot I) (A.obj.toalghom_toOfQuot_surjective I)
     let p : C' ⟶ C := pullbackFst g (A.toOfQuot I) (A.obj.toalghom_toOfQuot_surjective I)
     apply Surjective.of_comp (g := p.hom.toAlgHom)
