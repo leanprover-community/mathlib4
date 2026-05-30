@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 public import Mathlib.LinearAlgebra.Multilinear.Basic
 public import Mathlib.Algebra.BigOperators.Fin
 
@@ -212,12 +212,12 @@ theorem sum_apply {α : Type*} (f : α → ContinuousMultilinearMap R M₁ M₂)
 
 end ContinuousAdd
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `f` is a continuous multilinear map, then `f.toContinuousLinearMap m i` is the continuous
 linear map obtained by fixing all coordinates but `i` equal to those of `m`, and varying the
 `i`-th coordinate. -/
 @[simps!] def toContinuousLinearMap [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) : M₁ i →L[R] M₂ :=
-  { f.toMultilinearMap.toLinearMap m i with
-    cont := f.cont.comp (continuous_const.update i continuous_id) }
+  { f.toMultilinearMap.toLinearMap m i with }
 
 /-- The Cartesian product of two continuous multilinear maps, as a continuous multilinear map. -/
 def prod (f : ContinuousMultilinearMap R M₁ M₂) (g : ContinuousMultilinearMap R M₁ M₃) :
@@ -631,7 +631,7 @@ over `𝕜`, associating to `m` the product of all the `m i`.
 
 See also `ContinuousMultilinearMap.mkPiAlgebraFin`. -/
 protected def mkPiAlgebra : ContinuousMultilinearMap R (fun _ : ι => A) A where
-  cont := continuous_finset_prod _ fun _ _ => continuous_apply _
+  cont := continuous_finsetProd _ fun _ _ => continuous_apply _
   toMultilinearMap := MultilinearMap.mkPiAlgebra R ι A
 
 @[simp]

@@ -5,10 +5,7 @@ Authors: Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.Const
-public import Mathlib.CategoryTheory.Discrete.Basic
 public import Mathlib.CategoryTheory.Yoneda
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Cones and cocones
@@ -35,8 +32,9 @@ And, of course, we dualise all this to cocones as well.
 For more results about the category of cones, see `cone_category.lean`.
 -/
 
-@[expose] public section
+set_option backward.defeqAttrib.useBackward true
 
+@[expose] public section
 
 -- morphism levels before object levels. See note [category theory universes].
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
@@ -152,6 +150,7 @@ instance inhabitedCone (F : Discrete PUnit ⥤ C) : Inhabited (Cone F) :=
            }
   }⟩
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_dual (attr := reassoc (attr := simp))]
 theorem Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
     dsimp% c.π.app j ≫ F.map f = c.π.app j' := by
@@ -168,8 +167,8 @@ namespace Cone
 /-- The isomorphism between a cone on `F` and an element of the functor `F.cones`. -/
 @[simps!]
 def equiv (F : J ⥤ C) : dsimp% Cone F ≅ Σ X, F.cones.obj X where
-  hom := TypeCat.ofHom fun c ↦ ⟨op c.pt, c.π⟩
-  inv := TypeCat.ofHom fun c ↦
+  hom := ↾fun c ↦ ⟨op c.pt, c.π⟩
+  inv := ↾fun c ↦
     { pt := c.1.unop
       π := c.2 }
   hom_inv_id := by
@@ -184,7 +183,7 @@ def equiv (F : J ⥤ C) : dsimp% Cone F ≅ Σ X, F.cones.obj X where
 /-- A map to the vertex of a cone naturally induces a cone by composition. -/
 @[simps]
 def extensions (c : Cone F) : uliftYoneda.obj c.pt ⟶ F.cones where
-  app _ := TypeCat.ofHom (fun f ↦ (const J).map f.down ≫ c.π)
+  app _ := ↾fun f ↦ (const J).map f.down ≫ c.π
 
 /-- A map to the vertex of a cone induces a cone by composition. -/
 @[to_dual (attr := simps)
@@ -208,8 +207,8 @@ namespace Cocone
 
 /-- The isomorphism between a cocone on `F` and an element of the functor `F.cocones`. -/
 def equiv (F : J ⥤ C) : Cocone F ≅ Σ X, F.cocones.obj X where
-  hom := TypeCat.ofHom fun c ↦ ⟨c.pt, c.ι⟩
-  inv := TypeCat.ofHom fun c ↦
+  hom := ↾fun c ↦ ⟨c.pt, c.ι⟩
+  inv := ↾fun c ↦
     { pt := c.1
       ι := c.2 }
   hom_inv_id := by
@@ -224,7 +223,7 @@ def equiv (F : J ⥤ C) : Cocone F ≅ Σ X, F.cocones.obj X where
 /-- A map from the vertex of a cocone naturally induces a cocone by composition. -/
 @[simps]
 def extensions (c : Cocone F) : coyoneda.obj (op c.pt) ⋙ uliftFunctor.{u₁} ⟶ F.cocones where
-  app _ := TypeCat.ofHom (fun f ↦ c.ι ≫ (const J).map f.down)
+  app _ := ↾fun f ↦ c.ι ≫ (const J).map f.down
 
 end Cocone
 

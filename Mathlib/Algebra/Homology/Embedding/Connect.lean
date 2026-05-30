@@ -97,7 +97,7 @@ lemma shape (n m : ℤ) (hnm : n + 1 ≠ m) : h.d n m = 0 :=
   match n, m with
   | .ofNat n, .ofNat m => L.shape _ _ (by simp at hnm ⊢; lia)
   | .negSucc n, .negSucc m => by
-    simpa only [d_negSucc] using K.shape n m (by simp at hnm ⊢; lia)
+    simpa only [d_negSucc] using! K.shape n m (by simp at hnm ⊢; lia)
   | .negSucc 0, .ofNat 0 => by simp at hnm
   | .ofNat _, .negSucc m => rfl
   | .negSucc n, .ofNat m => by
@@ -148,11 +148,11 @@ def restrictionGEIso :
     (fun n ↦ h.cochainComplex.restrictionXIso (ComplexShape.embeddingUpIntGE 0)
       (i := n) (i' := n) (by simp)) (by
     rintro n _ rfl
-    dsimp only
     rw [restriction_d_eq (e := (ComplexShape.embeddingUpIntGE 0)) _ (i' := n)
       (j' := (n + 1 : ℕ)) (by simp) (by simp), cochainComplex_d, h.d_ofNat]
     simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `h : ConnectData K L`, then `h.cochainComplex` identifies to `K` in degrees `≤ -1`. -/
 @[simps!]
 def restrictionLEIso :
@@ -161,7 +161,6 @@ def restrictionLEIso :
     (fun n ↦ h.cochainComplex.restrictionXIso (ComplexShape.embeddingUpIntLE (-1))
         (i := n) (i' := .negSucc n) (by dsimp; lia)) (by
     rintro _ n rfl
-    dsimp only
     rw [restriction_d_eq (e := (ComplexShape.embeddingUpIntLE (-1))) _
       (i' := Int.negSucc (n + 1)) (j' := Int.negSucc n) (by dsimp; lia) (by dsimp; lia),
       cochainComplex_d, d_negSucc]
@@ -206,13 +205,16 @@ protected def map : h.cochainComplex ⟶ h'.cochainComplex where
   | .negSucc 0, _, .refl _ => by simpa
   | .negSucc (i + 1), _, .refl _ => fK.comm _ _
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp] lemma map_id : h.map h (𝟙 K) (𝟙 L) (by simp) = 𝟙 _ := by ext (m | _ | m) <;> simp; rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma map_comp_map :
     h.map h' fK fL f_comm ≫ h'.map h'' fK' fL' f_comm'
      = h.map h'' (fK ≫ fK') (fL ≫ fL') (by simp [f_comm', reassoc_of% f_comm]) := by
   ext (m | _ | m) <;> simp; rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma homologyMap_map_of_eq_succ (n : ℕ) [NeZero n] (m : ℤ) (hmn : m = n)
     [HasHomology h.cochainComplex m] [HasHomology L n]
@@ -228,6 +230,7 @@ lemma homologyMap_map_of_eq_succ (n : ℕ) [NeZero n] (m : ℤ) (hmn : m = n)
   subst hmn
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma homologyMap_map_of_eq_neg_succ (n : ℕ) [NeZero n] (m : ℤ) (hmn : m = -↑(n + 1))
     [HasHomology h.cochainComplex m] [HasHomology K n]

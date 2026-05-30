@@ -21,7 +21,7 @@ If `C` also has pullbacks, then `Arrow C` has a monoidal closed structure given 
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
@@ -52,12 +52,14 @@ scoped instance [HasPushouts C] [HasInitial C] [CartesianMonoidalCategory C] [Mo
 variable [HasPushouts C] [HasInitial C] [CartesianMonoidalCategory C] [MonoidalClosed C]
   [BraidedCategory C]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma tensorHom_comp_tensorHom {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : Arrow C}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
     (f₁ ⊗ₘ f₂) ≫ (g₁ ⊗ₘ g₂) = (f₁ ≫ g₁) ⊗ₘ (f₂ ≫ g₂) := by
   refine Arrow.hom_ext _ _ ?_ (by simp [whisker_exchange_assoc])
   apply pushout.hom_ext <;> simp [whisker_exchange_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Arrow C}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
@@ -78,18 +80,21 @@ lemma associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Arrow C}
       simp [← whisker_exchange_assoc, reassoc_of% this]
     cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma leftUnitor_naturality {X Y : Arrow C} (f : X ⟶ Y) :
     𝟙_ _ ◁ f ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
   refine Arrow.hom_ext _ _ (pushout.hom_ext (by simp) ?_) (by simp)
   apply (initialIsInitial.ofIso (mulZero initialIsInitial).symm).hom_ext
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma rightUnitor_naturality {X Y : Arrow C} (f : X ⟶ Y) :
     f ▷ 𝟙_ _ ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f := by
   refine Arrow.hom_ext _ _ (pushout.hom_ext ?_ (by simp)) (by simp)
   apply (initialIsInitial.ofIso (zeroMul initialIsInitial).symm).hom_ext
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma pentagon (W X Y Z : Arrow C) :
     (α_ W X Y).hom ▷ Z ≫ (α_ W (X ⊗ Y) Z).hom ≫ W ◁ (α_ X Y Z).hom =
@@ -99,6 +104,7 @@ lemma pentagon (W X Y Z : Arrow C) :
   apply ((tensorRight _ ⋙ tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;>
   simp [associator_naturality_left_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma triangle (X Y : Arrow C) :
     (α_ X (𝟙_ _) Y).hom ≫ X ◁ (λ_ Y).hom = (ρ_ X).hom ▷ Y := by
@@ -117,6 +123,7 @@ scoped instance : MonoidalCategory (Arrow C) where
   pentagon := pentagon
   triangle := triangle
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma hexagon_forward (X Y Z : Arrow C) :
     (α_ X Y Z).hom ≫ (braiding X (Y ⊗ Z)).hom ≫ (α_ Y Z X).hom =
@@ -124,6 +131,7 @@ lemma hexagon_forward (X Y Z : Arrow C) :
   refine Arrow.hom_ext _ _ (pushout.hom_ext (by simp) ?_) (by simp)
   apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma hexagon_reverse (X Y Z : Arrow C) :
     (α_ X Y Z).inv ≫ (braiding (X ⊗ Y) Z).hom ≫ (α_ Z X Y).inv =
@@ -131,6 +139,7 @@ lemma hexagon_reverse (X Y Z : Arrow C) :
   refine Arrow.hom_ext _ _ (pushout.hom_ext ?_ (by simp)) (by simp)
   apply ((tensorLeft _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The braided category instance induced by the pushout-product. -/
 @[simps -isSimp]
@@ -139,6 +148,7 @@ scoped instance braidedCategory : BraidedCategory (Arrow C) where
   hexagon_forward := hexagon_forward
   hexagon_reverse := hexagon_reverse
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] braidedCategory_braiding in
 /-- The symmetric category instance induced by the pushout-product. -/

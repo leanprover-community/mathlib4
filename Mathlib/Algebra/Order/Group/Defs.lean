@@ -21,7 +21,7 @@ may differ between the multiplicative and the additive version of a lemma.
 The reason is that we did not want to change existing names in the library.
 -/
 
-@[expose] public section
+public section
 
 /-
 `NeZero` theory should not be needed at this point in the ordered algebraic hierarchy.
@@ -33,12 +33,6 @@ open Function
 universe u
 
 variable {α : Type u}
-
-@[deprecated (since := "2025-10-31")]
-alias OrderedCommGroup.mul_lt_mul_left' := mul_lt_mul_right
-
-@[deprecated (since := "2025-10-31")]
-alias OrderedAddCommGroup.add_lt_add_left' := add_lt_add_right
 
 alias OrderedCommGroup.le_of_mul_le_mul_left := le_of_mul_le_mul_left'
 

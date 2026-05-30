@@ -213,8 +213,9 @@ def mapCotangent (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁
     refine Submodule.smul_induction_on hx ?_ (fun _ _ ↦ add_mem)
     rintro a ha ⟨b, hb⟩ -
     simp only [SetLike.mk_smul_mk, smul_eq_mul, Submodule.mem_comap, Submodule.restrictScalars_mem]
-    convert (Submodule.smul_mem_smul (M := I₂) (r := f a)
-      (n := ⟨f b, h hb⟩) (h ha) (Submodule.mem_top)) using 1
+    convert!
+      (Submodule.smul_mem_smul (M := I₂) (r := f a) (n := ⟨f b, h hb⟩) (h ha)
+        (Submodule.mem_top)) using 1
     ext
     exact map_mul f a b
 
@@ -263,7 +264,6 @@ lemma lift_surjective_iff (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (x * y) = 0
 end Lift
 
 /-- A linear isomorphism between cotangent spaces induced by an equality of ideals. -/
-@[expose]
 def equivOfEq (I J : Ideal R) (hIJ : I = J) :
     I.Cotangent ≃ₗ[R] J.Cotangent where
   __ := Cotangent.lift (J.toCotangent ∘ₗ LinearEquiv.ofEq I J hIJ) <| fun x y ↦ by
@@ -332,7 +332,7 @@ lemma CotangentSpace.span_image_eq_top_iff [IsNoetherianRing R] {s : Set (maxima
       Submodule.span R s = ⊤ := by
   rw [← map_eq_top_iff, ← (Submodule.restrictScalars_injective R ..).eq_iff,
     Submodule.restrictScalars_span]
-  · simp only [Ideal.toCotangent_apply, Submodule.restrictScalars_top, Submodule.map_span]
+  · simp
   · exact Ideal.Quotient.mk_surjective
 
 open Module
@@ -389,5 +389,5 @@ lemma Ideal.mapCotangent_ker_of_surjective (surj : Function.Surjective (algebraM
   · rw [Submodule.map_le_iff_le_comap, ← LinearMap.ker_comp]
     intro x hx
     simp only [LinearMap.mem_ker, LinearMap.comp_apply, Ideal.mapCotangent_toCotangent]
-    convert map_zero I.toCotangent
+    convert! map_zero I.toCotangent
     exact (Ideal.mem_inf.mp hx).1

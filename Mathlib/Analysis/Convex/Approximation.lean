@@ -30,7 +30,7 @@ of continuous affine linear functions. We follow the proof in
 
 -/
 
-@[expose] public section
+public section
 
 open Function Set RCLike ContinuousLinearMap
 
@@ -185,10 +185,10 @@ theorem univ_sSup_affine_eq (hφc : LowerSemicontinuous φ) (hφcv : ConvexOn �
     ext f
     refine ⟨fun ⟨hp, l, c, hlc⟩ => ⟨f ∘ Subtype.val, ⟨fun x => hp (Subtype.val x), ⟨l, c, ?_⟩⟩, ?_⟩,
       fun ⟨a, ⟨⟨h, ⟨l, c, hlc⟩⟩, hb⟩⟩ => ⟨fun x => ?_, ⟨l, c, ?_⟩⟩⟩
-    · ext x; simpa using congrFun hlc x
+    · ext x; simpa using! congrFun hlc x
     · ext; simp
-    · simpa using hb ▸ h ⟨x, trivial⟩
-    · subst hlc; simpa using hb.symm
+    · simpa using! hb ▸ h ⟨x, trivial⟩
+    · subst hlc; simpa using! hb.symm
   _ = sSup 𝓕 ∘ (Equiv.Set.univ E).symm := by ext x; rw [sSup_image', sSup_eq_iSup']; simp
   _ = φ ∘ Subtype.val ∘ (Equiv.Set.univ E).symm :=
     congrArg (fun g => g ∘ (Equiv.Set.univ E).symm) this

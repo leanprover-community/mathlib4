@@ -15,7 +15,7 @@ public import Mathlib.Tactic.Conv
 # Group structures on the multiplicative and additive opposites
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero DenselyOrdered Units
 

@@ -68,19 +68,9 @@ theorem InftyValuation.map_mul' (x y : RatFunc F) :
 
 theorem InftyValuation.map_add_le_max' (x y : RatFunc F) :
     inftyValuationDef F (x + y) ≤ max (inftyValuationDef F x) (inftyValuationDef F y) := by
-  by_cases hx : x = 0
-  · rw [hx, zero_add]
-    conv_rhs => rw [inftyValuationDef, if_pos (Eq.refl _)]
-    rw [max_eq_right (WithZero.zero_le (inftyValuationDef F y))]
-  · by_cases hy : y = 0
-    · rw [hy, add_zero]
-      conv_rhs => rw [max_comm, inftyValuationDef, if_pos (Eq.refl _)]
-      rw [max_eq_right (WithZero.zero_le (inftyValuationDef F x))]
-    · by_cases hxy : x + y = 0
-      · rw [inftyValuationDef, if_pos hxy]; exact zero_le'
-      · rw [inftyValuationDef, inftyValuationDef, inftyValuationDef, if_neg hx, if_neg hy,
-          if_neg hxy]
-        simpa using RatFunc.intDegree_add_le hy hxy
+  unfold inftyValuationDef
+  have := @RatFunc.intDegree_add_le F
+  aesop
 
 @[simp]
 theorem inftyValuation_of_nonzero {x : RatFunc F} (hx : x ≠ 0) :

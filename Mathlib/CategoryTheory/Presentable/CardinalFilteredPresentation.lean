@@ -31,7 +31,7 @@ such that `P.IsCardinalFilteredGenerator κ` holds.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

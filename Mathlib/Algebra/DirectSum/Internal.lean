@@ -145,7 +145,7 @@ theorem coe_mul_apply [AddMonoid ι] [SetLike.GradedMonoid A]
     [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (r r' : ⨁ i, A i) (n : ι) :
     ((r * r') n : R) =
       ∑ ij ∈ r.support ×ˢ r'.support with ij.1 + ij.2 = n, (r ij.1 * r' ij.2 : R) := by
-  rw [mul_eq_sum_support_ghas_mul, DFinsupp.finset_sum_apply, AddSubmonoidClass.coe_finset_sum]
+  rw [mul_eq_sum_support_ghas_mul, DFinsupp.finsetSum_apply, AddSubmonoidClass.coe_finsetSum]
   simp_rw [coe_of_apply, apply_ite, ZeroMemClass.coe_zero, ← Finset.sum_filter, SetLike.coe_gMul]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -154,7 +154,7 @@ theorem coe_mul_apply_eq_dfinsuppSum [AddMonoid ι] [SetLike.GradedMonoid A]
     ((r * r') n : R) = r.sum fun i ri => r'.sum fun j rj => if i + j = n then (ri * rj : R)
       else 0 := by
   rw [mul_eq_dfinsuppSum]
-  iterate 2 rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finset_sum]; congr; ext
+  iterate 2 rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finsetSum]; congr; ext
   dsimp only
   split_ifs with h
   · subst h
@@ -455,7 +455,7 @@ theorem listProd_apply_eq_zero' {l : List ((⨁ i, A i) × ι)}
     (hl : ∀ xn ∈ l, ∀ k < xn.2, xn.1 k = 0) ⦃n : ι⦄ (hn : n < (l.map Prod.snd).sum) :
     (l.map Prod.fst).prod n = 0 := by
   induction l generalizing n with
-  | nil => simp [(zero_le n).not_gt] at hn
+  | nil => simp at hn
   | cons head tail ih =>
     simp only [List.mem_cons, forall_eq_or_imp, List.map_cons, List.sum_cons,
       List.prod_cons] at hl hn ⊢
@@ -466,7 +466,7 @@ theorem listProd_apply_eq_zero {l : List (⨁ i, A i)} {m : ι}
     l.prod n = 0 := by
   -- a proof which uses `DirectSum.listProd_apply_eq_zero'` is actually more work
   induction l generalizing n with
-  | nil => simp [(zero_le n).not_gt] at hn
+  | nil => simp at hn
   | cons head tail ih =>
     simp only [List.mem_cons, forall_eq_or_imp, List.length_cons, List.prod_cons] at hl hn ⊢
     refine mul_apply_eq_zero hl.1 (ih hl.2) ?_

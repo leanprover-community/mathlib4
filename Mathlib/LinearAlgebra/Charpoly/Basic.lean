@@ -5,10 +5,8 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.FieldTheory.Minpoly.Field
+public import Mathlib.LinearAlgebra.Determinant
 
 /-!
 
@@ -143,17 +141,5 @@ theorem Algebra.aeval_self_charpoly_lmul (α : M) :
     aeval α (Algebra.lmul R M α).charpoly = 0 :=
   Algebra.lmul_injective (R := R) <| by
     simpa [← aeval_algHom_apply] using LinearMap.aeval_self_charpoly <| Algebra.lmul _ _ α
-
-theorem minpoly.natDegree_le (α : M) :
-    (minpoly R α).natDegree ≤ Module.finrank R M := by
-  nontriviality R
-  let f := Algebra.lmul R _ α
-  have : (minpoly R α).natDegree ≤ f.charpoly.natDegree := natDegree_le_natDegree <|
-    minpoly.min _ _ f.charpoly_monic (Algebra.aeval_self_charpoly_lmul α)
-  simpa [← (Algebra.lmul _ _ α).charpoly_natDegree]
-
-theorem minpoly.degree_le (α : M) :
-    (minpoly R α).degree ≤ Module.finrank R M :=
-  degree_le_of_natDegree_le (minpoly.natDegree_le α)
 
 end Algebra
