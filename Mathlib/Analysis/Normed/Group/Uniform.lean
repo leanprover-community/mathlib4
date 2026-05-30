@@ -325,22 +325,22 @@ lemma LocallyLipschitz.mul (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) :
 @[to_additive]
 lemma LipschitzOnWith.div (hf : LipschitzOnWith Kf f s) (hg : LipschitzOnWith Kg g s) :
     LipschitzOnWith (Kf + Kg) (fun x ↦ f x / g x) s := by
-  simpa only [div_eq_mul_inv] using hf.mul hg.inv
+  simpa only [div_eq_mul_inv] using! hf.mul hg.inv
 
 @[to_additive]
 theorem LipschitzWith.div (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
     LipschitzWith (Kf + Kg) fun x => f x / g x := by
-  simpa only [div_eq_mul_inv] using hf.mul hg.inv
+  simpa only [div_eq_mul_inv] using! hf.mul hg.inv
 
 @[to_additive]
 lemma LocallyLipschitzOn.div (hf : LocallyLipschitzOn s f) (hg : LocallyLipschitzOn s g) :
     LocallyLipschitzOn s fun x ↦ f x / g x := by
-  simpa only [div_eq_mul_inv] using hf.mul hg.inv
+  simpa only [div_eq_mul_inv] using! hf.mul hg.inv
 
 @[to_additive]
 lemma LocallyLipschitz.div (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) :
     LocallyLipschitz fun x ↦ f x / g x := by
-  simpa only [div_eq_mul_inv] using hf.mul hg.inv
+  simpa only [div_eq_mul_inv] using! hf.mul hg.inv
 
 namespace AntilipschitzWith
 
