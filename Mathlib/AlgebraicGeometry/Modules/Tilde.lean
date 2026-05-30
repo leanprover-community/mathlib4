@@ -13,6 +13,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
 public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.WithAlgebraicStructures
 public import Mathlib.Data.Fintype.Order
+public import Mathlib.Topology.Sheaves.Module
 
 /-!
 
@@ -412,6 +413,7 @@ section
 
 variable (M : (Spec R).Modules)
 
+-- in 37189
 /-- A sheaf `M` of `R-modules` is localizing if for all `f` in `R`, the restriction map
 from `M(⊤)` to `M(D(f))` is localization with respect to `f`. -/
 abbrev IsLocalizing (M : TopCat.Sheaf (ModuleCat R) (Spec R)) : Prop :=
@@ -897,38 +899,303 @@ lemma _root_.TopologicalSpace.Opens.IsBasis.exists_iSup_eq
   dsimp only
   simp_rw [ha, sSup_eq_iSup' Us]
 
--- #36142
-section
+def _root_.ModuleCat.isoMk {R : Type*} [Ring R] {M N : ModuleCat R}
+    (φ : (forget₂ (ModuleCat R) Ab).obj M ≅ (forget₂ _ _).obj N)
+    (hφ : ∀ r, φ.hom ≫ N.smul r = M.smul r ≫ φ.hom) :
+    M ≅ N :=
+  LinearEquiv.toModuleIso
+    { __ := φ.addCommGroupIsoToAddEquiv
+      map_smul' r x := congr($(hφ r) x).symm }
 
-universe w v
-
-variable {C : Type u} [Category.{v} C]
-variable {X Y : TopCat.{w}} {f : X ⟶ Y} {F : Y.Presheaf C}
-
-/-- The restriction functor of a sheaf to an open subspace. -/
-def _root_.TopologicalSpace.Opens.sheafRestrict (U : Opens X) :
-    Sheaf (Opens.grothendieckTopology X) C ⥤ Sheaf (Opens.grothendieckTopology U) C :=
-  haveI H : Topology.IsOpenEmbedding (TopCat.Hom.hom (X := .of U) (Y := X) _) :=
-    U.isOpenEmbedding
-  haveI := H.functor_isContinuous
-  H.isOpenMap.functor.sheafPushforwardContinuous C _ _
-
-variable {X : TopCat.{u}} (U : Opens X) (R : X.Sheaf RingCat.{v})
+@[simp]
+lemma _root_.ModuleCat.isoMk_hom {R : Type*} [Ring R] {M N : ModuleCat R}
+    (φ : (forget₂ (ModuleCat R) Ab).obj M ≅ (forget₂ _ _).obj N)
+    (hφ : ∀ r, φ.hom ≫ N.smul r = M.smul r ≫ φ.hom) :
+    (ModuleCat.isoMk φ hφ).hom = ModuleCat.homMk φ.hom hφ :=
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Sheaves of modules over `R.over U` are equivalent to sheaves of modules over `R |_ U`. -/
-def _root_.TopologicalSpace.Opens.sheafOfModulesEquivOver :
-    SheafOfModules.{w} (R.over U) ≌ SheafOfModules.{w} (U.sheafRestrict.obj R) := by
-  sorry
+def Scheme.Modules.restrictUnitIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+    Scheme.Modules.restrict (.unit <| Y.ringCatSheaf) f ≅ (.unit <| X.ringCatSheaf) := by
+  refine (SheafOfModules.fullyFaithfulForget _).preimageIso <|
+    PresheafOfModules.isoMk (fun U ↦ ?_) ?_
+  · refine ModuleCat.isoMk
+      ((forget₂ CommRingCat RingCat ⋙ forget₂ _ Ab).mapIso (f.appIso U.unop)) ?_
+    dsimp [restrict, restrictFunctor, SheafOfModules.pushforward]
+    intro r
+    ext x
+    dsimp at x
+    simp only [AddCommGrpCat.hom_comp, AddMonoidHom.coe_comp, Function.comp_apply]
+    change r * _ = (f.appIso U.unop).hom (_ * _)
+    rw [map_mul]
+    congr 1
+    exact (CommRingCat.hom_inv_apply (Hom.appIso f (unop U)) r).symm
+  · intros U V g
+    ext
+    change (Y.presheaf.map _ ≫ (f.appIso _).hom) _ = ((f.appIso U.unop).hom ≫ X.presheaf.map g) _
+    simp [Hom.appIso_hom']
 
-end
+--instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+--    (Scheme.Modules.restrictFunctor f).IsLeftAdjoint := inferInstance
+
+def Scheme.Modules.overEquiv {X : Scheme.{u}} (U : X.Opens) :
+    SheafOfModules (X.ringCatSheaf.over U) ≌ (U : Scheme.{u}).Modules :=
+  TopologicalSpace.Opens.sheafOfModulesEquivOver _ _
+
+@[simps!]
+def _root_.CategoryTheory.pushforwardOverMapIso {D : Type*} [Category* D]
+    {K : GrothendieckTopology D}
+    (R : CategoryTheory.Sheaf K RingCat) {X Y : D} (f : X ⟶ Y) :
+    ((Over.map f).sheafPushforwardContinuous RingCat (K.over X) (K.over Y)).obj (R.over Y) ≅
+      R.over X :=
+  ObjectProperty.isoMk _ (NatIso.ofComponents (fun _ ↦ Iso.refl _))
+
+def _root_.SheafOfModules.overMap {D : Type*} [Category* D] {K : GrothendieckTopology D}
+    (R : CategoryTheory.Sheaf K RingCat) {X Y : D} (f : X ⟶ Y) :
+    SheafOfModules (R.over Y) ⥤ SheafOfModules (R.over X) :=
+  SheafOfModules.pushforward (F := Over.map f) (CategoryTheory.pushforwardOverMapIso R f).inv
+
+@[simp]
+lemma _root_.ModuleCat.smul_restrictScalars {R S : Type*} [Ring R] [Ring S]
+    (f : R →+* S) (r : R) (M : ModuleCat S) :
+    dsimp% ((ModuleCat.restrictScalars f).obj M).smul r = M.smul (f r) :=
+  rfl
+
+@[simp]
+lemma _root_.ModuleCat.forget₂_map_restrictScalars {R S : Type*} [Ring R] [Ring S]
+    (f : R →+* S) {M N : ModuleCat S} (g : M ⟶ N) :
+    (forget₂ _ Ab).map ((ModuleCat.restrictScalars f).map g) =
+      (forget₂ _ Ab).map g :=
+  rfl
+
+@[reassoc]
+lemma _root_.PresheafOfModules.smul_map {C : Type*} [Category* C]
+    {R : Cᵒᵖ ⥤ RingCat} (M : PresheafOfModules R) (U V : Cᵒᵖ)
+    (f : U ⟶ V)
+    (r : R.obj U) :
+    dsimp% ModuleCat.smul _ r ≫ M.presheaf.map f =
+      M.presheaf.map f ≫ ModuleCat.smul _ (R.map f r) := by
+  ext x
+  exact (M.map f).hom.map_smul r x
+
+attribute [-simp] ModuleCat.forget₂_map
+
+@[simp]
+lemma _root_.SheafOfModules.forget₂_map_pushforward_obj_val_map {C : Type*} [Category* C]
+    {D : Type*}
+    [Category* D] {J : GrothendieckTopology C} {K : GrothendieckTopology D}
+    {F : C ⥤ D}
+    {S : CategoryTheory.Sheaf J RingCat} {R : CategoryTheory.Sheaf K RingCat}
+    [F.IsContinuous J K]
+    {φ : S ⟶ (F.sheafPushforwardContinuous RingCat J K).obj R}
+    {U V : Cᵒᵖ} (f : U ⟶ V) (M) :
+    (forget₂ _ Ab).map (((SheafOfModules.pushforward φ).obj M).val.map f) =
+      M.val.presheaf.map (F.map f.unop).op :=
+  rfl
+
+@[simp]
+lemma _root_.PresheafOfModules.forget₂_map_pushforward_obj_map {C : Type*} [Category* C]
+    {D : Type*} [Category* D] {F : C ⥤ D} {S : Cᵒᵖ ⥤ RingCat} {R : Dᵒᵖ ⥤ RingCat}
+    {φ : S ⟶ F.op ⋙ R} {U V : Cᵒᵖ} (f : U ⟶ V) (M) :
+    (forget₂ _ Ab).map (((PresheafOfModules.pushforward φ).obj M).map f) =
+      M.presheaf.map (F.map f.unop).op :=
+  rfl
+
+@[simp]
+lemma _root_.PresheafOfModules.forget₂_map_pushforward_map_val_app {C : Type*} [Category* C]
+    {D : Type*} [Category* D] {F : C ⥤ D} {S : Cᵒᵖ ⥤ RingCat} {R : Dᵒᵖ ⥤ RingCat}
+    {φ : S ⟶ F.op ⋙ R} {U : Cᵒᵖ} {M N : PresheafOfModules _}
+    (g : M ⟶ N) :
+    (forget₂ _ Ab).map (((PresheafOfModules.pushforward φ).map g).app U) =
+      (forget₂ _ Ab).map (g.app _) :=
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
-lemma isIso_fromTildeΓ_of_isQuasicoherent [M.IsQuasicoherent] : IsIso M.fromTildeΓ := by
+def _root_.SheafOfModules.pushforwardCongr₂ {C : Type*} [Category* C] {D : Type*}
+    [Category* D] {J : GrothendieckTopology C} {K : GrothendieckTopology D}
+    {F G : C ⥤ D}
+    {S : CategoryTheory.Sheaf J RingCat} {R : CategoryTheory.Sheaf K RingCat}
+    [F.IsContinuous J K] [G.IsContinuous J K]
+    {φ : S ⟶ (F.sheafPushforwardContinuous RingCat J K).obj R}
+    {ψ : S ⟶ (G.sheafPushforwardContinuous RingCat J K).obj R}
+    (e : F ≅ G)
+    (he : φ ≫ (Functor.sheafPushforwardContinuousIso e _ _ _).hom.app _ = ψ) :
+    SheafOfModules.pushforward φ ≅ SheafOfModules.pushforward ψ := by
+  refine NatIso.ofComponents (fun X ↦ (SheafOfModules.fullyFaithfulForget _).preimageIso
+    (PresheafOfModules.isoMk (fun U ↦ ?_) ?_)) ?_
+  · dsimp
+    refine ModuleCat.isoMk (X.val.presheaf.mapIso (e.symm.app _).op) ?_
+    intro r
+    subst he
+    -- TODO: add some API for pushforward smul
+    change X.val.presheaf.map _ ≫ (X.val.obj <| .op <| G.obj _).smul
+      (R.obj.map _ (φ.hom.app U r)) =
+      (X.val.obj _).smul (φ.hom.app U r) ≫ X.val.presheaf.map _
+    dsimp
+    simp [PresheafOfModules.smul_map]
+  · dsimp
+    subst he
+    intros U V f
+    dsimp
+    apply (forget₂ _ Ab).map_injective
+    simp only [ModuleCat.forget₂_obj, Functor.map_comp]
+    simp [ModuleCat.forget₂_map_homMk, ← X.val.presheaf.map_comp, ← op_comp]
+  · dsimp
+    subst he
+    intro M N f
+    ext U : 2
+    apply (forget₂ _ Ab).map_injective
+    exact (((PresheafOfModules.toPresheaf _).map f.val).naturality (e.inv.app U.unop).op).symm
+
+-- This lemma should not exist, because it relies on def-eq abuse.
+set_option backward.isDefEq.respectTransparency false in
+lemma Scheme.Hom.appIso_homOfLE_inv {X : Scheme.{u}} {U V : X.Opens} (h : U ≤ V)
+    (W : (U : Scheme.{u}).Opens) :
+    ((X.homOfLE h).appIso W).inv =
+      X.presheaf.map (.op <| homOfLE <| by
+        change V.ι ''ᵁ _ ≤ U.ι ''ᵁ W
+        simp [← Scheme.Hom.comp_image]) := by
+  rw [eq_comm, ← Iso.hom_comp_eq_id]
+  simp only [homOfLE_leOfHom, Scheme.Hom.appIso_hom, homOfLE_app, homOfLE_leOfHom,
+    eqToHom_op, Opens.toScheme_presheaf_map, eqToHom_unop, Category.assoc]
+  rw [← X.presheaf.map_comp, ← X.presheaf.map_comp]
+  apply X.presheaf.map_id
+
+set_option backward.isDefEq.respectTransparency false in
+def Scheme.Modules.overMapCompOverEquiv {X : Scheme.{u}} {U V : X.Opens} (f : V ⟶ U) :
+    SheafOfModules.overMap X.ringCatSheaf f ⋙
+      (Scheme.Modules.overEquiv V).functor ≅
+      (Scheme.Modules.overEquiv U).functor ⋙
+      Scheme.Modules.restrictFunctor (X.homOfLE <| leOfHom f) := by
+  dsimp [overEquiv, Opens.sheafOfModulesEquivOver, SheafOfModules.pushforwardPushforwardEquivalence]
+  dsimp [SheafOfModules.overMap, restrictFunctor]
+  have : (Hom.opensFunctor (X.homOfLE <| leOfHom f)).IsContinuous
+      (Opens.grothendieckTopology ↑V.toScheme) (Opens.grothendieckTopology U.carrier) :=
+    inferInstanceAs <|
+      (Hom.opensFunctor (X.homOfLE <| leOfHom f)).IsContinuous _
+      (Opens.grothendieckTopology U.toScheme)
+  have : ((Opens.overEquivalence V).inverse ⋙ Over.map f).IsContinuous
+      (Opens.grothendieckTopology ↥V) ((Opens.grothendieckTopology ↥X).over U) :=
+    Functor.isContinuous_comp _ _ _ (.over (Opens.grothendieckTopology _) V) _
+  have :=
+    U.instIsDenseSubsiteSubtypeMemOverGrothendieckTopologyOverInverseOverEquivalence
+  have : (Opens.overEquivalence U).inverse.IsContinuous (Opens.grothendieckTopology U.toScheme)
+      ((Opens.grothendieckTopology ↥X).over U) :=
+    inferInstanceAs <|
+      U.overEquivalence.inverse.IsContinuous
+        (Opens.grothendieckTopology U.carrier)
+        ((Opens.grothendieckTopology X).over (U : TopologicalSpace.Opens X))
+  have : (Hom.opensFunctor (X.homOfLE <| leOfHom f)).IsContinuous
+      (Opens.grothendieckTopology ↥V) (Opens.grothendieckTopology U.toScheme) :=
+    inferInstanceAs <|
+      (Hom.opensFunctor (X.homOfLE <| leOfHom f)).IsContinuous
+      (Opens.grothendieckTopology V.toScheme)
+      (Opens.grothendieckTopology U.toScheme)
+  have : (Hom.opensFunctor (X.homOfLE <| leOfHom f) ⋙
+      (Opens.overEquivalence U).inverse).IsContinuous (Opens.grothendieckTopology ↑V.toScheme)
+      ((Opens.grothendieckTopology ↥X).over U) :=
+    Functor.isContinuous_comp (Hom.opensFunctor (X.homOfLE <| leOfHom f))
+      (Opens.overEquivalence U).inverse
+      (Opens.grothendieckTopology V.toScheme)
+      (Opens.grothendieckTopology U.toScheme)
+      (.over (Opens.grothendieckTopology X) U)
+  have : (Hom.opensFunctor (X.homOfLE <| leOfHom f) ⋙
+      (Opens.overEquivalence U).inverse).IsContinuous (Opens.grothendieckTopology ↥V)
+      ((Opens.grothendieckTopology ↥X).over U) :=
+    Functor.isContinuous_comp _ _ _ (Opens.grothendieckTopology _) _
+  refine (SheafOfModules.pushforwardComp _ _) ≪≫ ?_ ≪≫ (SheafOfModules.pushforwardComp _ _).symm
+  refine SheafOfModules.pushforwardCongr₂ ?_ ?_
+  · refine NatIso.ofComponents
+      (fun W ↦ Over.isoMk (eqToIso ?_) ?_) ?_
+    · change V.ι ''ᵁ W = U.ι ''ᵁ ((X.homOfLE (leOfHom f)) ''ᵁ W)
+      rw [← Scheme.Hom.comp_image]
+      simp
+    · rfl
+    · intros
+      rfl
+  · ext W x
+    change X.presheaf.map _ x = ((X.homOfLE <| leOfHom f).appIso _).inv _
+    dsimp
+    rw [Scheme.Hom.appIso_homOfLE_inv]
+    rfl
+
+set_option backward.isDefEq.respectTransparency false in
+def _root_.SheafOfModules.overPullback {D : Type*} [Category* D] [HasPullbacks D]
+    {K : GrothendieckTopology D} (R : CategoryTheory.Sheaf K RingCat) {X Y : D} (f : X ⟶ Y) :
+    SheafOfModules (R.over X) ⥤ SheafOfModules (R.over Y) :=
+  letI φ : R.over Y ⟶
+      ((Over.pullback f).sheafPushforwardContinuous RingCat (K.over Y) (K.over X)).obj (R.over X) :=
+    { hom.app U := R.obj.map (.op <| pullback.fst _ _)
+      hom.naturality := by simp [← Functor.map_comp, ← op_comp] }
+  SheafOfModules.pushforward (F := Over.pullback f) φ
+
+set_option backward.isDefEq.respectTransparency false in
+def _root_.SheafOfModules.overMapPushforwardAdj {D : Type*} [Category* D] [HasPullbacks D]
+    {K : GrothendieckTopology D} (R : CategoryTheory.Sheaf K RingCat) {X Y : D} (f : X ⟶ Y) :
+    SheafOfModules.overMap R f ⊣ SheafOfModules.overPullback R f := by
+  refine SheafOfModules.pushforwardPushforwardAdj (Over.mapPullbackAdj f) _ _ ?_ ?_
+  · ext
+    simp [pushforwardOverMapIso]
+  · ext
+    simp [← Functor.map_comp, ← op_comp, pushforwardOverMapIso]
+
+instance {D : Type*} [Category* D] [HasPullbacks D] {K : GrothendieckTopology D}
+    (R : CategoryTheory.Sheaf K RingCat) {X Y : D} (f : X ⟶ Y) :
+    (SheafOfModules.overMap R f).IsLeftAdjoint :=
+  (SheafOfModules.overMapPushforwardAdj R f).isLeftAdjoint
+
+def _root_.SheafOfModules.overMapUnitIso {D : Type*} [Category* D] {K : GrothendieckTopology D}
+    (R : CategoryTheory.Sheaf K RingCat) {X Y : D} (f : X ⟶ Y) :
+    (SheafOfModules.overMap R f).obj (.unit (R.over Y)) ≅ (.unit (R.over X)) :=
+  Iso.refl _
+
+def _root_.SheafOfModules.overFunctor {D : Type*} [Category* D] {K : GrothendieckTopology D}
+    (R : CategoryTheory.Sheaf K RingCat) (X : D) :
+    SheafOfModules R ⥤ SheafOfModules (R.over X) :=
+  SheafOfModules.pushforward (𝟙 _)
+
+@[simp]
+lemma _root_.SheafOfModules.overFunctor_obj {D : Type*} [Category* D] {K : GrothendieckTopology D}
+    (R : CategoryTheory.Sheaf K RingCat) (X : D) (M : SheafOfModules R) :
+    (SheafOfModules.overFunctor R X).obj M = M.over X :=
+  rfl
+
+@[simp]
+lemma _root_.SheafOfModules.overFunctor_map {D : Type*} [Category* D] {K : GrothendieckTopology D}
+    (R : CategoryTheory.Sheaf K RingCat) (X : D) {M N : SheafOfModules R} (f : M ⟶ N) :
+    (SheafOfModules.overFunctor R X).map f = f.over X :=
+  rfl
+
+def _root_.SheafOfModules.overFunctorMap {D : Type*} [Category* D] {K : GrothendieckTopology D}
+    (R : CategoryTheory.Sheaf K RingCat) {X Y : D} (f : X ⟶ Y) :
+    SheafOfModules.overFunctor R Y ⋙ SheafOfModules.overMap _ f ≅
+      SheafOfModules.overFunctor R X :=
+  NatIso.ofComponents
+    fun M ↦ (SheafOfModules.fullyFaithfulForget _).preimageIso <|
+      PresheafOfModules.isoMk (fun U ↦ Iso.refl _)
+
+def Scheme.Modules.overFunctorEquiv {X : Scheme.{u}} (U : X.Opens) :
+    SheafOfModules.overFunctor X.ringCatSheaf U ⋙ (Scheme.Modules.overEquiv U).functor ≅
+      Scheme.Modules.restrictFunctor U.ι := by
+  have :
+      ((Opens.overEquivalence U).symm.functor ⋙ Over.forget U).IsContinuous
+        (Opens.grothendieckTopology ↥U)
+        (Opens.grothendieckTopology ↥X) :=
+    Functor.isContinuous_comp _ _ _ (.over (Opens.grothendieckTopology _) U) _
+  refine SheafOfModules.pushforwardComp _ _ ≪≫ ?_
+  have : ((Opens.overEquivalence U).inverse ⋙ Over.forget U).IsContinuous
+      (Opens.grothendieckTopology ↥U) (Opens.grothendieckTopology ↥X) :=
+    Functor.isContinuous_comp _ _ _ (.over (Opens.grothendieckTopology _) U) _
+  refine SheafOfModules.pushforwardCongr ?_
+  simp only [CategoryTheory.Functor.map_id, op_unop, Opens.ι_appIso, Iso.refl_inv]
+  rfl
+
+set_option backward.isDefEq.respectTransparency false in
+/-- If `M` is a quasi-coherent `𝒪_{Spec R}` module, it is isomorphic to `Γ(M)^~`. -/
+instance isIso_fromTildeΓ_of_isQuasicoherent [M.IsQuasicoherent] : IsIso M.fromTildeΓ := by
   rw [isIso_fromTildeΓ_iff_isLocalizing, isLocalizing_iff_aux]
   obtain ⟨⟨I, W, cov, pres⟩⟩ := SheafOfModules.IsQuasicoherent.nonempty_quasicoherentData (M := M)
-  choose κ a ha using
-    fun i ↦ PrimeSpectrum.isBasis_basic_opens.exists_iSup_eq (W i)
+  choose κ a ha using fun i ↦ PrimeSpectrum.isBasis_basic_opens.exists_iSup_eq (W i)
   refine Aux.of_le_iSup _ isCompact_univ
       (fun (j : Sigma κ) ↦ basicOpen (a _ j.2)) ?_ ?_
   · rw [TopologicalSpace.Opens.coversTop_iff, IsOpenCover] at cov
@@ -936,29 +1203,61 @@ lemma isIso_fromTildeΓ_of_isQuasicoherent [M.IsQuasicoherent] : IsIso M.fromTil
     exact iSup_congr fun i ↦ (ha i).symm
   · intro i
     dsimp
-    let G₀ :
-        Over (basicOpen (a i.1 i.2)) ⥤ Over (W i.1) :=
-      Over.map <| homOfLE <| by
+    let ψ := Spec.map (CommRingCat.ofHom
+      (algebraMap (↑R) (Localization.Away (a i.fst i.snd))))
+    let V : (Spec R).Opens := basicOpen <| a i.1 i.2
+    let U : (Spec R).Opens := W i.1
+    let G :
+        SheafOfModules.{u} ((Spec R).ringCatSheaf.over U) ⥤
+          SheafOfModules.{u} ((Spec R).ringCatSheaf.over V) :=
+      SheafOfModules.overMap _ <| homOfLE <| by
+        dsimp [U]
         rw [ha]
         exact le_iSup_iff.mpr fun b a ↦ a i.snd
-    let G :
-        SheafOfModules.{u} ((Spec R).ringCatSheaf.over <| W i.1) ⥤
-          SheafOfModules.{u} ((Spec R).ringCatSheaf.over <| basicOpen (a i.1 i.2)) :=
-      SheafOfModules.pushforward (F := G₀) (𝟙 _)
-    let H :
-        (Scheme.Opens.toScheme (X := Spec R) (basicOpen <| a i.1 i.2)).Modules ⥤
-          (Spec (CommRingCat.of (Localization.Away (a i.fst i.snd)))).Modules :=
+    let H : V.toScheme.Modules ⥤
+        (Spec (CommRingCat.of (Localization.Away (a i.fst i.snd)))).Modules :=
       Scheme.Modules.restrictFunctor (basicOpenIsoSpecAway _).inv
     let F :
-        SheafOfModules.{u} ((Spec R).ringCatSheaf.over <| W i.1) ⥤
+        SheafOfModules.{u} ((Spec R).ringCatSheaf.over U) ⥤
           ((Spec <| .of <| Localization.Away (a i.1 i.2))).Modules :=
-      G ⋙ (TopologicalSpace.Opens.sheafOfModulesEquivOver _ _).functor ⋙ H
-    have : PreservesColimitsOfSize.{u, u} F :=
-      sorry
-    have pres' := (pres i.1).map F
-      sorry
+      G ⋙ (Scheme.Modules.overEquiv <| _).functor ⋙ H
+    have : PreservesColimitsOfSize.{u, u} H :=
+      inferInstance
+    let pres' := (pres i.1).map F (Scheme.Modules.restrictUnitIso _).symm
     apply aux_basicOpen_of_presentation
-    sorry
+    let funcIso :
+        SheafOfModules.overFunctor (Spec R).ringCatSheaf U ⋙ F ≅
+          Scheme.Modules.restrictFunctor ψ := by
+      dsimp [F]
+      refine (Functor.associator _ _ _).symm ≪≫ ?_
+      refine Functor.isoWhiskerRight (SheafOfModules.overFunctorMap _ _) _ ≪≫ ?_
+      refine (Functor.associator _ _ _).symm ≪≫ ?_
+      refine Functor.isoWhiskerRight (Scheme.Modules.overFunctorEquiv _) _ ≪≫ ?_
+      refine (Scheme.Modules.restrictFunctorComp _ _).symm ≪≫ ?_
+      -- TODO: add simp lemma for `basicOpenIsoSpecAway`
+      exact (Scheme.Modules.restrictFunctorCongr (by simp [ψ, V, basicOpenIsoSpecAway]))
+    let iso : F.obj (SheafOfModules.over M (W i.fst)) ≅ M.restrict ψ :=
+      funcIso.app M
+    exact SheafOfModules.Presentation.ofIsIso.{u, u, u} iso.hom pres'
+
+set_option backward.isDefEq.respectTransparency false in
+/-- An `𝒪_{Spec R}` module `M` is quasicoherent if and only if it is isomorphic to `Γ(M)^~`. -/
+theorem isQuasicoherent_iff_isIso_fromTildeΓ :
+    M.IsQuasicoherent ↔ IsIso M.fromTildeΓ := by
+  refine ⟨fun h ↦ inferInstance, fun h ↦ ?_⟩
+  exact (SheafOfModules.isQuasicoherent (Spec R).ringCatSheaf).prop_of_iso
+    (asIso <| M.fromTildeΓ) inferInstance
+
+set_option backward.isDefEq.respectTransparency false in
+lemma essImage_tilde : (tilde.functor R).essImage =
+    SheafOfModules.isQuasicoherent (Spec R).ringCatSheaf := by
+  refine le_antisymm ?_ ?_
+  · intro M ⟨N, ⟨e⟩⟩
+    exact (SheafOfModules.isQuasicoherent (Spec R).ringCatSheaf).prop_of_iso e
+      (by dsimp; infer_instance)
+  · intro M (h : M.IsQuasicoherent)
+    exact ⟨((modulesSpecToSheaf.obj M).presheaf.obj (.op ⊤)),
+      ⟨asIso <| M.fromTildeΓ⟩⟩
 
 end
 
