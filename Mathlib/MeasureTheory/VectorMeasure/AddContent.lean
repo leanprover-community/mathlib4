@@ -317,6 +317,17 @@ theorem exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
       exact ae_le_set_inter Filter.EventuallyLE.rfl (hD s hs)
   exact ⟨m', h, fun s ↦ (h' s).trans (Measure.restrict_apply_le (⋃₀ D) s)⟩
 
+open scoped NNReal
+
+#check IsOrderedSMul
+
+lemma foo (a b : ℝ≥0∞) (μ ν : Measure α) (ha : a ≤ b) (hμ : μ ≤ ν) :
+    a • μ ≤ b • μ := by
+  exact?
+
+
+#exit
+
 theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
     [IsFiniteMeasure μ] {C : Set (Set α)} {m : AddContent E C} (hC : IsSetSemiring C)
     (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s) (h'C : ∀ s ∈ C, MeasurableSet s) :
@@ -340,8 +351,9 @@ theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
         apply VectorMeasure.integral_congr_ae
         have : (m'.transpose (ContinuousLinearMap.lsmul ℝ ℝ)).variation ≤ μ' := by
           apply (variation_transpose_le _ _).trans
+          grw [ContinuousLinearMap.opNNNorm_lsmul_le]
           have : ‖ContinuousLinearMap.lsmul ℝ ℝ (E := E)‖₊ ≤ 1 := by
-            apply opNNNorm_lsmul_le
+            apply ContinuousLinearMap.opNNNorm_lsmul_le
 
 
 
