@@ -62,7 +62,7 @@ private lemma smul_stabilizer_of_no_doubling_aux (hA : #(A * A) ≤ #A) (ha : a 
     ext x
     rw [Set.mem_inv_smul_set_iff, smul_eq_mul]
     refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
-    · simpa [← smul_A ha, mul_smul] using smul_A hx
+    · simpa [← smul_A ha, mul_smul] using! smul_A hx
     · norm_cast
       rwa [← mul_mem_A_comm ha, ← smul_eq_mul, ← mem_inv_smul_finset_iff, inv_mem hx]
   refine ⟨?_, ?_⟩
@@ -396,7 +396,7 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
   let H := stabilizer G S
   -- `S` is finite and non-empty (because `A` is), and therefore `H` is finite too.
   have S_nonempty : S.Nonempty := by simpa [S]
-  have : Finite H := by simpa [H] using stabilizer_finite (by simpa) S.finite_toSet
+  have : Finite H := by simpa [H] using! stabilizer_finite (by simpa) S.finite_toSet
   cases nonempty_fintype H
   -- By definition, `H * S = S`.
   have H_mul_S : (H : Set G) * S = S := by simp [H, ← stabilizer_coe_finset]
@@ -405,7 +405,7 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
   have H_mul_Z : (H : Set G) * Z = S := by simp [hZ.2.1, H_mul_S]
   have H_toFinset_mul_Z : Set.toFinset H * Z = S := by simpa [← Finset.coe_inj]
   have card_H_mul_card_Z : Fintype.card H * #Z = #S := by
-    simpa [card_mul_eq_mul_card_of_injOn_opSMul hZ.2.2] using congr_arg _ H_toFinset_mul_Z
+    simpa [card_mul_eq_mul_card_of_injOn_opSMul hZ.2.2] using! congr_arg _ H_toFinset_mul_Z
   -- It remains to show that `|Z| ≤ C(K)` for some `C(K)` depending only on `K`.
   refine ⟨H, inferInstance, Z, ?_, mod_cast H_mul_Z⟩
   -- This is equivalent to showing that `|H| ≥ c(K)|S|` for some `c(K)` depending only on `K`.
@@ -483,7 +483,7 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
     rintro w hw
     -- Since `w ∈ S` and `|A⁻¹ * A| ≤ K|A|`, we know that `r(w) ≥ (2 - K)|A|`.
     have hrw : (2 - K) * #A ≤ r w := by
-      simpa [card_mul_inv_eq_convolution_inv] using le_card_mul_inv_eq hA₁ (by simpa)
+      simpa [card_mul_inv_eq_convolution_inv] using! le_card_mul_inv_eq hA₁ (by simpa)
     -- But also `r(z⁻¹) = r(z) > (K - 1)|A|`.
     rw [← r_inv] at hrz
     simp only [r, ← card_inter_smul] at hrz hrw
@@ -499,7 +499,7 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
       linarith
     -- This is exactly what we set out to prove.
     simpa [S, card_smul_inter_smul, Finset.Nonempty, mem_mul, mem_inv, -mem_inv', and_assoc]
-      using this
+      using! this
 
 /-! ### Doubling less than `2-ε` -/
 
@@ -694,7 +694,7 @@ private lemma exists_subgroup_isAtom (hK : K < 1) (hS : S.Nonempty) :
   have one_mem_carrier : 1 ∈ n⁻¹ •> N := by simpa [mem_inv_smul_finset_iff]
   have self_mem_smul_carrier (x : G) : x ∈ x • n⁻¹ • N := by
     apply smul_mem_smul_finset (a := x) at one_mem_carrier
-    simpa only [smul_eq_mul, mul_one] using one_mem_carrier
+    simpa only [smul_eq_mul, mul_one] using! one_mem_carrier
   let H : Subgroup G := {
     carrier := n⁻¹ •> N
     one_mem' := mod_cast one_mem_carrier
@@ -703,20 +703,20 @@ private lemma exists_subgroup_isAtom (hK : K < 1) (hS : S.Nonempty) :
       apply smul_mem_smul_finset (a := a) at hb
       rw [smul_eq_mul] at hb
       have : (n⁻¹ •> N ∩ a •> n⁻¹ •> N).Nonempty := ⟨a, by
-        simpa only [mem_inter] using ⟨ha, self_mem_smul_carrier a⟩⟩
+        simpa only [mem_inter] using! ⟨ha, self_mem_smul_carrier a⟩⟩
       simpa only [← (hN.smul_finset n⁻¹).eq_of_inter_nonempty hK.le hS
-        ((hN.smul_finset n⁻¹).smul_finset a) this] using hb
+        ((hN.smul_finset n⁻¹).smul_finset a) this] using! hb
     inv_mem' {a} ha := by
       rw [← coe_smul_finset, mem_coe] at *
       apply smul_mem_smul_finset (a := a⁻¹) at ha
       rw [smul_eq_mul, inv_mul_cancel] at ha
-      have : (n⁻¹ •> N ∩ a⁻¹ •> n⁻¹ •> N).Nonempty := ⟨1, by simpa using ⟨one_mem_carrier, ha⟩⟩
+      have : (n⁻¹ •> N ∩ a⁻¹ •> n⁻¹ •> N).Nonempty := ⟨1, by simpa using! ⟨one_mem_carrier, ha⟩⟩
       simpa only [← (hN.smul_finset n⁻¹).eq_of_inter_nonempty hK.le hS
-        ((hN.smul_finset n⁻¹).smul_finset a⁻¹) this] using self_mem_smul_carrier a⁻¹
+        ((hN.smul_finset n⁻¹).smul_finset a⁻¹) this] using! self_mem_smul_carrier a⁻¹
   }
   refine ⟨H, Fintype.ofFinset (n⁻¹ •> N) fun a => ?_, ?_⟩
-  · simpa only [← mem_coe, coe_smul_finset] using H.mem_carrier
-  · simpa [Set.toFinset_smul_set, toFinset_coe, H] using IsAtom.smul_finset n⁻¹ hN
+  · simpa only [← mem_coe, coe_smul_finset] using! H.mem_carrier
+  · simpa [Set.toFinset_smul_set, toFinset_coe, H] using! IsAtom.smul_finset n⁻¹ hN
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- If `S` is nonempty such that there is `A` with `|S| ≤ |A|` such that `|A * S| ≤ (2 - ε) * |S|`
