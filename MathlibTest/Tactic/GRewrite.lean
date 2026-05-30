@@ -303,12 +303,14 @@ example (h : p → q) (h' : (False ∧ p) ∧ p) : (False ∧ q) ∧ q := by
 
 -- When rewriting in `_ ∧ _`, side goals created in the RHS get access to the LHS as a hypothesis
 /--
-trace: p q r s : Prop
+trace: case a
+p q r s : Prop
 h : True → p → q
 h' : (False ∧ p) ∧ p
 a✝ : False ∧ p
 ⊢ True
 
+case a
 p q r s : Prop
 h : True → p → q
 h' : (False ∧ p) ∧ p
