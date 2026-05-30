@@ -38,10 +38,7 @@ theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C)
       (Partrec.cond (h.comp fst) ((Partrec.nat_iff.2 hg).comp snd).to₂
         ((Partrec.nat_iff.2 hf).comp snd).to₂).to₂
   simp only [Bool.cond_decide] at e
-  by_cases H : eval c ∈ C
-  · rwa [show eval c = g by ext; simp_all] at H
-  · rw [show eval c = f by ext; simp_all] at H
-    contradiction
+  by_cases H : eval c ∈ C <;> simp_all
 
 theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C ↔ cg ∈ C)) :
     (ComputablePred fun c => c ∈ C) ↔ C = ∅ ∨ C = Set.univ := by
