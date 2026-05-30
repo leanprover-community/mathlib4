@@ -74,7 +74,6 @@ variable [Fintype ι] {m : ∀ i, OuterMeasure (α i)}
   It is defined by taking the image of the set under all projections, and taking the product
   of the measures of these images.
   For measurable boxes it is equal to the correct measure. -/
-@[simp]
 def piPremeasure (m : ∀ i, OuterMeasure (α i)) (s : Set (∀ i, α i)) : ℝ≥0∞ :=
   ∏ i, m i (eval i '' s)
 

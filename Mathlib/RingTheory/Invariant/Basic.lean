@@ -97,10 +97,10 @@ variable {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 instance (H : Subgroup G) [H.Normal] :
     MulSemiringAction (G ⧸ H) (FixedPoints.subring B H) where
   smul := Quotient.lift (fun g x ↦ ⟨g • x, fun h ↦ by
-    simpa [mul_smul] using congr(g • $(x.2 ⟨_, ‹H.Normal›.conj_mem' _ h.2 g⟩))⟩) (by
+    simpa [mul_smul] using! congr(g • $(x.2 ⟨_, ‹H.Normal›.conj_mem' _ h.2 g⟩))⟩) (by
     rintro _ a ⟨⟨⟨b⟩, hb⟩, rfl⟩
     ext c
-    simpa [mul_smul] using congr(a • $(c.2 ⟨b, hb⟩)))
+    simpa [mul_smul] using! congr(a • $(c.2 ⟨b, hb⟩)))
   one_smul b := Subtype.ext (one_smul G b.1)
   mul_smul := Quotient.ind₂ fun _ _ _ ↦ Subtype.ext (mul_smul _ _ _)
   smul_zero := Quotient.ind fun _ ↦ Subtype.ext (smul_zero _)
@@ -460,7 +460,7 @@ lemma Ideal.Quotient.exists_algHom_fixedPoint_quotient_under
       map_zero, map_zero]
   rw [← Polynomial.aeval_map_algebraMap B, ← Polynomial.coe_mapRingHom, hp] at this
   obtain ⟨τ, hτ⟩ : ∃ τ : G, σ (algebraMap _ _ x) = algebraMap _ _ (τ • x) := by
-    simpa [MulSemiringAction.charpoly, sub_eq_zero, Finset.prod_eq_zero_iff] using this
+    simpa [MulSemiringAction.charpoly, sub_eq_zero, Finset.prod_eq_zero_iff] using! this
   exact ⟨Ideal.Quotient.mk _ (τ • x), hτ.symm⟩
 
 include G in
@@ -532,18 +532,17 @@ end normal
 
 namespace IsFractionRing
 
+variable (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [Algebra A B] [Field K] [Field L]
+  [Algebra K L] [Algebra A K] [Algebra B L] [Algebra A L] [IsFractionRing A K] [IsFractionRing B L]
+  [IsScalarTower A K L] [IsScalarTower A B L] [MulSemiringAction G B] [MulSemiringAction G L]
+  [SMulDistribClass G B L] [hAB : Algebra.IsInvariant A B G] [SMulCommClass G A B]
+
 /-- If `G` acts on `B/A` with `A` as the fixed subring, then `G` also acts on `L/K` with `K` as
 the fixed subfield, where `K` and `L` are the fraction fields of `A` and `B` respectively. -/
-theorem isInvariant (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [MulSemiringAction G B]
-    [Algebra A B] [Field K] [Field L] [Algebra K L] [Algebra A K] [Algebra B L] [Algebra A L]
-    [IsFractionRing A K] [IsFractionRing B L] [IsScalarTower A K L] [IsScalarTower A B L]
-    [MulSemiringAction G L] [SMulDistribClass G B L] [Finite G] [hAB : Algebra.IsInvariant A B G]
-    [SMulCommClass G A B] :
-    Algebra.IsInvariant K L G := by
+theorem isInvariant_of_isIntegral [Algebra.IsIntegral A B] : Algebra.IsInvariant K L G := by
   refine ⟨fun x h ↦ ?_⟩
   have hc (a : A) : (algebraMap K L) (algebraMap A K a) = (algebraMap B L) (algebraMap A B a) := by
     simp_rw [← IsScalarTower.algebraMap_apply]
-  have := hAB.isIntegral A B G
   have : Nontrivial A := (IsFractionRing.nontrivial_iff_nontrivial A K).mpr inferInstance
   have : Nontrivial B := (IsFractionRing.nontrivial_iff_nontrivial B L).mpr inferInstance
   obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective B x
@@ -558,5 +557,12 @@ theorem isInvariant (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [Mul
     (by simpa [ha, hxy, smul_div₀', ← algebraMap.coe_smul'] using h)
   use algebraMap A K b / algebraMap A K a
   rw [hxy, map_div₀, hc, hc]
+
+include A B in
+/-- If `G` acts on `B/A` with `A` as the fixed subring, then `G` also acts on `L/K` with `K` as
+the fixed subfield, where `K` and `L` are the fraction fields of `A` and `B` respectively. -/
+theorem isInvariant [Finite G] : Algebra.IsInvariant K L G :=
+  have := hAB.isIntegral
+  isInvariant_of_isIntegral G A B K L
 
 end IsFractionRing

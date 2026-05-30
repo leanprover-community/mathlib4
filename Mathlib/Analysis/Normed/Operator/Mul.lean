@@ -188,7 +188,7 @@ variable [NormedAlgebra 𝕜 R] [Module R E] [IsBoundedSMul R E] [IsScalarTower 
 /-- Scalar multiplication as a continuous bilinear map. -/
 def lsmul : R →L[𝕜] E →L[𝕜] E :=
   ((Algebra.lsmul 𝕜 𝕜 E).toLinearMap : R →ₗ[𝕜] E →ₗ[𝕜] E).mkContinuous₂ 1 fun c x => by
-    simpa only [one_mul] using norm_smul_le c x
+    simpa only [one_mul] using! norm_smul_le c x
 
 @[simp]
 theorem lsmul_apply (c : R) (x : E) : lsmul 𝕜 R c x = c • x :=

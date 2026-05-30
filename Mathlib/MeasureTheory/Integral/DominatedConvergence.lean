@@ -86,6 +86,7 @@ theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι →
   exact hasSum_setToFun_of_dominated_convergence _ bound hF_meas h_bound bound_summable
     bound_integrable h_lim
 
+set_option backward.defeqAttrib.useBackward true in
 theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AEStronglyMeasurable (f i) μ)
     (hf' : ∑' i, ∫⁻ a : α, ‖f i a‖ₑ ∂μ ≠ ∞) :
     ∫ a, ∑' i, f i a ∂μ = ∑' i, ∫ a, f i a ∂μ := by
@@ -629,7 +630,7 @@ theorem continuousWithinAt_Ici_primitive_Ioi {a₀ : ℝ} (hf : IntegrableOn f (
     refine ae_of_all _ fun x ↦ ?_
     rw [norm_indicator_eq_indicator_norm]
     apply indicator_le_indicator_of_subset (Ioi_subset_Ioi (by grind)) (fun a ↦ norm_nonneg (f a))
-  · simpa [integrable_indicator_iff measurableSet_Ioi] using hf.norm
+  · simpa [integrable_indicator_iff measurableSet_Ioi] using! hf.norm
   · refine ae_of_all _ fun x ↦ ?_
     simp only [indicator_apply, mem_Ioi]
     by_cases hx : a₀ < x <;> apply tendsto_const_nhds.congr'
@@ -664,7 +665,7 @@ theorem continuousWithinAt_Iic_primitive_Iio {a₀ : ℝ} (hf : IntegrableOn f (
     refine ae_of_all _ fun x ↦ ?_
     rw [norm_indicator_eq_indicator_norm]
     apply indicator_le_indicator_of_subset (Iio_subset_Iio (by grind)) (fun a ↦ norm_nonneg (f a))
-  · simpa [integrable_indicator_iff measurableSet_Iio] using hf.norm
+  · simpa [integrable_indicator_iff measurableSet_Iio] using! hf.norm
   · refine ae_of_all _ fun x ↦ ?_
     simp only [indicator_apply, mem_Iio]
     by_cases hx : x < a₀ <;> apply tendsto_const_nhds.congr'
