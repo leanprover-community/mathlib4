@@ -254,7 +254,7 @@ variable {R : Type*} [Monoid R] [Star R] [Star α] [MulAction R α] [StarModule 
 theorem IsHermitian.of_smul {A : Matrix n n α} {k : R} [Invertible k] (h : (k • A).IsHermitian)
     (hk : IsSelfAdjoint k) : A.IsHermitian := by
   rw [IsHermitian, conjTranspose_smul, hk.star_eq] at h
-  simpa using congr(⅟k • $h)
+  simpa using! congr(⅟k • $h)
 
 /-- Assumes `IsSelfAdjoint ⅟k` instead of `IsSelfAdjoint k`.
 These are equivalent given `StarMul R` -/
@@ -396,7 +396,7 @@ theorem fromBlocks₂₂ [Fintype n] [DecidableEq n] (A : Matrix m m α) (B : Ma
     (Matrix.fromBlocks A B Bᴴ D).IsHermitian ↔ (A - B * D⁻¹ * Bᴴ).IsHermitian := by
   rw [← isHermitian_submatrix_equiv (Equiv.sumComm n m), Equiv.sumComm_apply,
     fromBlocks_submatrix_sum_swap_sum_swap]
-  convert IsHermitian.fromBlocks₁₁ _ _ hD <;> simp
+  convert! IsHermitian.fromBlocks₁₁ _ _ hD <;> simp
 
 end IsHermitian
 

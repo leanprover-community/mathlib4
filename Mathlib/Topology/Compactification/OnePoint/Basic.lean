@@ -295,7 +295,7 @@ theorem comap_coe_nhds (x : X) : comap ((↑) : X → OnePoint X) (𝓝 x) = �
 /-- If `x` is not an isolated point of `X`, then `x : OnePoint X` is not an isolated point
 of `OnePoint X`. -/
 instance nhdsNE_coe_neBot (x : X) [h : NeBot (𝓝[≠] x)] : NeBot (𝓝[≠] (x : OnePoint X)) := by
-  simpa [nhdsWithin_coe, preimage, coe_eq_coe] using h.map some
+  simpa [nhdsWithin_coe, preimage, coe_eq_coe] using! h.map some
 
 theorem nhdsNE_infty_eq : 𝓝[≠] (∞ : OnePoint X) = map (↑) (coclosedCompact X) := by
   refine (nhdsWithin_basis_open ∞ _).ext (hasBasis_coclosedCompact.map _) ?_ ?_
@@ -551,8 +551,8 @@ theorem not_continuous_cofiniteTopology_of_symm [Infinite X] [DiscreteTopology X
   inhabit X
   simp only [continuous_iff_continuousAt, ContinuousAt, not_forall]
   use CofiniteTopology.of ↑(default : X)
-  simpa [nhds_coe_eq, nhds_discrete, CofiniteTopology.nhds_eq, Equiv.symm_apply_eq]
-    using (finite_singleton _).infinite_compl
+  simpa [nhds_coe_eq, nhds_discrete, CofiniteTopology.nhds_eq, Equiv.symm_apply_eq,
+    Set.compl_def, Set.mem_singleton_iff] using (finite_singleton _).infinite_compl
 
 instance (X : Type*) [TopologicalSpace X] [DiscreteTopology X] :
     TotallySeparatedSpace (OnePoint X) where

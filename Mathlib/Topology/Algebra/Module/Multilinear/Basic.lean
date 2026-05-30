@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 public import Mathlib.LinearAlgebra.Multilinear.Basic
 public import Mathlib.Algebra.BigOperators.Fin
 
@@ -212,6 +212,7 @@ theorem sum_apply {α : Type*} (f : α → ContinuousMultilinearMap R M₁ M₂)
 
 end ContinuousAdd
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `f` is a continuous multilinear map, then `f.toContinuousLinearMap m i` is the continuous
 linear map obtained by fixing all coordinates but `i` equal to those of `m`, and varying the
 `i`-th coordinate. -/

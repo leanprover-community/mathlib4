@@ -336,7 +336,7 @@ def Submodule.IsFullyInvariant (N : Submodule R M) : Prop :=
 
 theorem isFullyInvariant_iff_isTwoSided {I : Ideal R} : I.IsFullyInvariant ↔ I.IsTwoSided := by
   simpa only [Submodule.IsFullyInvariant, ← MulOpposite.opEquiv.trans (RingEquiv.moduleEndSelf R
-    |>.toEquiv) |>.forall_congr_right, SetLike.le_def, I.isTwoSided_iff] using forall_comm
+    |>.toEquiv) |>.forall_congr_right, SetLike.le_def, I.isTwoSided_iff] using! forall_comm
 
 variable (R M) in
 /-- The fully invariant submodules of a module form a complete sublattice in the lattice of
@@ -469,7 +469,7 @@ theorem isFullyInvariant_iff_sSup_isotypicComponents {m : Submodule R M} :
     m.IsFullyInvariant ↔ ∃ s ⊆ isotypicComponents R M, m = sSup s := by
   refine ⟨fun h ↦ ⟨OrderIso.setIsotypicComponents.symm ⟨m, h⟩, ⟨?_, ?_⟩⟩, ?_⟩
   · rintro _ ⟨c, _, rfl⟩; exact c.2
-  · convert Subtype.ext_iff.mp (OrderIso.setIsotypicComponents.right_inv ⟨m, h⟩).symm
+  · convert! Subtype.ext_iff.mp (OrderIso.setIsotypicComponents.right_inv ⟨m, h⟩).symm
     simp [sSup_image, OrderIso.setIsotypicComponents, OrderIso.symm]
   · rintro ⟨_, hs, rfl⟩
     exact (fullyInvariantSubmodule R M).sSupClosed fun _ h ↦ .of_mem_isotypicComponents (hs h)
