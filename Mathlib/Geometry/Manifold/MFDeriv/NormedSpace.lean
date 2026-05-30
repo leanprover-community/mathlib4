@@ -415,11 +415,9 @@ noncomputable def mvfderiv (g : M → F) :
 
 namespace Manifold
 open scoped Bundle Manifold ContDiff
+open Lean Meta Elab Tactic Doc
 
-open Lean Meta Elab Tactic
-
-open Doc
-@[doc_command] def foobar (n : Ident) : DocM <| Block ElabInline ElabBlock := do
+@[doc_command] meta def appendDocstringOf (n : Ident) : DocM <| Block ElabInline ElabBlock := do
   let doc ← realizeGlobalConstNoOverloadWithInfo n
   let some docStr ← findDocString? (← getEnv) doc
     | throwError "No doc-string for `{.ofConstName doc}`"
@@ -433,7 +431,7 @@ set_option doc.verso.suggestions false in
 /-- `d% f x` (scoped to the `Manifold` namespace) elaborates to `mvfderiv I J f x`,
 trying to determine `I` and `J` from the local context.
 
-{foobar} -/
+{appendDocstringOf mvfderiv} -/
 -- goal: now insert the doc-string of mvfderiv
 scoped elab:max "d%" ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none
