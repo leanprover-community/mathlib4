@@ -48,7 +48,7 @@ variable (K : Type*) [Field K]
 namespace NumberField.canonicalEmbedding
 
 /-- The canonical embedding of a number field `K` of degree `n` into `ℂ^n`. -/
-def _root_.NumberField.canonicalEmbedding : K →+* ((K →+* ℂ) → ℂ) := Pi.ringHom fun φ => φ
+def _root_.NumberField.canonicalEmbedding : K →+* ((K →+* ℂ) → ℂ) := RingHom.pi fun φ => φ
 
 theorem _root_.NumberField.canonicalEmbedding_injective [NumberField K] :
     Function.Injective (NumberField.canonicalEmbedding K) := RingHom.injective _
@@ -188,8 +188,8 @@ abbrev mixedSpace :=
 
 /-- The mixed embedding of a number field `K` into the mixed space of `K`. -/
 noncomputable def _root_.NumberField.mixedEmbedding : K →+* (mixedSpace K) :=
-  RingHom.prod (Pi.ringHom fun w => embedding_of_isReal w.prop)
-    (Pi.ringHom fun w => w.val.embedding)
+  RingHom.prod (RingHom.pi fun w => embedding_of_isReal w.prop)
+    (RingHom.pi fun w => w.val.embedding)
 
 @[simp]
 theorem mixedEmbedding_apply_isReal (x : K) (w : {w // IsReal w}) :

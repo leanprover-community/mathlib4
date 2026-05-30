@@ -112,7 +112,7 @@ lemma Ideal.le_ker_atPrime_of_forall_exists_eq_mul {I : Ideal R}
 
 lemma Ideal.ker_piRingHom_atPrime_eq_of_pure (I : Ideal R) [I.Pure] :
     RingHom.ker
-      (Pi.ringHom fun p : zeroLocus (I : Set R) ↦
+      (RingHom.pi fun p : zeroLocus (I : Set R) ↦
         algebraMap R (Localization.AtPrime p.val.asIdeal)) = I := by
   refine le_antisymm ?_ fun x hx ↦ ?_
   · rw [Pi.ker_ringHom]
