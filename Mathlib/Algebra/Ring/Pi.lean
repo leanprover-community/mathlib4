@@ -114,7 +114,7 @@ def NonUnitalRingHom.pi {f : I → Type*} {γ : Type*} [∀ i, NonUnitalNonAssoc
 theorem NonUnitalRingHom.pi_injective {f : I → Type*} {γ : Type*} [Nonempty I]
     [∀ i, NonUnitalNonAssocSemiring (f i)] [NonUnitalNonAssocSemiring γ] (g : ∀ i, γ →ₙ+* f i)
     (hg : ∀ i, Function.Injective (g i)) : Function.Injective (NonUnitalRingHom.pi g) :=
-  MulHom.injective_pi (fun i => (g i).toMulHom) hg
+  MulHom.pi_injective (fun i => (g i).toMulHom) hg
 
 @[deprecated (since := "2026-05-30")] protected alias Pi.nonUnitalRingHom_injective :=
   NonUnitalRingHom.pi_injective
@@ -160,7 +160,7 @@ protected def RingHom.pi {f : I → Type*} {γ : Type*} [∀ i, NonAssocSemiring
 theorem RingHom.pi_injective {f : I → Type*} {γ : Type*} [Nonempty I] [∀ i, NonAssocSemiring (f i)]
     [NonAssocSemiring γ] (g : ∀ i, γ →+* f i) (hg : ∀ i, Function.Injective (g i)) :
     Function.Injective (RingHom.pi g) :=
-  MonoidHom.injective_pi (fun i => (g i).toMonoidHom) hg
+  MonoidHom.pi_injective (fun i => (g i).toMonoidHom) hg
 
 @[deprecated (since := "2026-05-30")] protected alias Pi.ringHom_injective := RingHom.pi_injective
 
