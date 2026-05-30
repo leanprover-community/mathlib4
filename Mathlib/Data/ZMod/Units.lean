@@ -60,7 +60,7 @@ theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
   · have h := Nat.dvd_sub hp hpx
     rw [add_comm, Nat.add_sub_cancel] at h
     rcases pp.dvd_mul.mp h with h | h
-    · have ⟨q, hq, hq'⟩ := (pp.prime.dvd_finset_prod_iff id).mp h
+    · have ⟨q, hq, hq'⟩ := (pp.prime.dvd_finsetProd_iff id).mp h
       rw [Finset.mem_filter, Nat.mem_primeFactors,
         ← (Nat.prime_dvd_prime_iff_eq pp hq.1.1).mp hq'] at hq
       exact hq.2 hpx
@@ -155,12 +155,15 @@ theorem isUnit_inv {m : ℕ} {n : ℤ} (h : IsUnit (n : ZMod m)) :
 
 theorem coe_int_isUnit_iff_isCoprime (n : ℤ) (m : ℕ) :
     IsUnit (n : ZMod m) ↔ IsCoprime (m : ℤ) n := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ⟨unitOfIsCoprime n (isCoprime_comm.mp h), rfl⟩⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ⟨unitOfIsCoprime n (isCoprime_comm.mp h), by simp⟩⟩
   obtain rfl | hm := eq_or_ne m 0
-  · simpa [isCoprime_zero_left] using h
-  have : NeZero m := ⟨hm⟩
-  obtain ⟨u, hu⟩ := h
-  simpa only [hu, Nat.coprime_iff_gcd_eq_one, ← Int.gcd_natCast_natCast, val_intCast, Int.gcd_emod,
-    ← Int.isCoprime_iff_gcd_eq_one, isCoprime_comm] using val_coe_unit_coprime u
+  · rw [Nat.cast_zero, isCoprime_zero_left]
+    exact_mod_cast h
+  · have : NeZero m := ⟨hm⟩
+    obtain ⟨u, hu⟩ := h
+    have h_coprime := val_coe_unit_coprime u
+    rw [hu, Nat.coprime_iff_gcd_eq_one, ← Int.gcd_natCast_natCast,
+      val_intCast, Int.gcd_emod] at h_coprime
+    rwa [isCoprime_comm, Int.isCoprime_iff_gcd_eq_one]
 
 end ZMod

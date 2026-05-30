@@ -41,7 +41,7 @@ public import Mathlib.RingTheory.SimpleRing.Matrix
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 variable (R₀ : Type*) {R : Type u} [CommSemiring R₀] [Ring R] [Algebra R₀ R]

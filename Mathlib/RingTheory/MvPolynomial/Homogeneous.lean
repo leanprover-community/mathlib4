@@ -182,7 +182,7 @@ variable {σ}
 
 theorem isHomogeneous_X (i : σ) : IsHomogeneous (X i : MvPolynomial σ R) 1 := by
   apply isHomogeneous_monomial
-  simp only [degree_apply, Finsupp.support_single_ne_zero _ one_ne_zero, Finset.sum_singleton,
+  simp only [degree_apply, Finsupp.support_single _ one_ne_zero, Finset.sum_singleton,
     single_eq_same]
 
 variable {R} in
@@ -209,7 +209,7 @@ lemma homogeneousSubmodule_one_pow (n : ℕ) :
     | zero => simp
     | add p q _ _ hp hq => exact Submodule.add_mem _ hp hq
     | monomial d r hr =>
-      convert monomial_mem_homogeneousSubmodule_pow_degree _ _
+      convert! monomial_mem_homogeneousSubmodule_pow_degree _ _
       rw [Finsupp.degree_eq_weight_one, ← Pi.one_def, ← hr]
 
 end
@@ -277,7 +277,7 @@ lemma eval₂ (hφ : φ.IsHomogeneous m) (f : R →+* MvPolynomial τ S) (g : σ
   intro i hi
   rw [← zero_add (n * m)]
   apply IsHomogeneous.mul (hf _) _
-  convert IsHomogeneous.prod _ _ (fun k ↦ n * i k) _
+  convert! IsHomogeneous.prod _ _ (fun k ↦ n * i k) _
   · rw [Finsupp.mem_support_iff] at hi
     rw [← Finset.mul_sum, ← hφ hi, weight_apply]
     simp_rw [smul_eq_mul, Finsupp.sum, Pi.one_apply, mul_one]
@@ -339,13 +339,13 @@ theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n) :
   apply IsHomogeneous.sum _ _ _ fun d hd ↦ isHomogeneous_monomial _ _
   intro d hd
   apply (Finsupp.sum_mapDomain_index_addMonoidHom fun _ ↦ .id ℕ).trans
-  convert h (mem_support_iff.mp hd)
+  convert! h (mem_support_iff.mp hd)
   simp only [weight_apply, AddMonoidHom.id_apply, Pi.one_apply, smul_eq_mul, mul_one]
 
 theorem rename_isHomogeneous_iff {f : σ → τ} (hf : f.Injective) :
     (rename f φ).IsHomogeneous n ↔ φ.IsHomogeneous n := by
   refine ⟨fun h d hd ↦ ?_, rename_isHomogeneous⟩
-  convert ← @h (d.mapDomain f) _
+  convert! ← @h (d.mapDomain f) _
   · simp only [weight_apply, Pi.one_apply, smul_eq_mul, mul_one]
     exact Finsupp.sum_mapDomain_index_inj (h := fun _ ↦ id) hf
   · rwa [coeff_rename_mapDomain f hf]
@@ -362,6 +362,7 @@ lemma finSuccEquiv_coeff_isHomogeneous {N : ℕ} {φ : MvPolynomial (Fin (N + 1)
     add_right_inj] at h' ⊢
   exact h'
 
+set_option backward.defeqAttrib.useBackward true in
 -- TODO: develop API for `optionEquivLeft` and get rid of the `[Fintype σ]` assumption
 lemma coeff_isHomogeneous_of_optionEquivLeft_symm
     [hσ : Finite σ] {p : Polynomial (MvPolynomial σ R)}
@@ -375,7 +376,7 @@ lemma coeff_isHomogeneous_of_optionEquivLeft_symm
   have hφ : φ.IsHomogeneous n := hp.rename_isHomogeneous
   suffices IsHomogeneous (F (p.coeff i)) j by
     rwa [← (IsHomogeneous.rename_isHomogeneous_iff e.injective)]
-  convert hφ.finSuccEquiv_coeff_isHomogeneous i j h using 1
+  convert! hφ.finSuccEquiv_coeff_isHomogeneous i j h using 1
   dsimp only [φ, F', F, renameEquiv_apply]
   rw [finSuccEquiv_rename_finSuccEquiv, AlgEquiv.apply_symm_apply]
   simp
@@ -410,7 +411,7 @@ lemma exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux
     by_cases hi : i ∈ d.support
     · have := hF.finSuccEquiv_coeff_isHomogeneous n 0 (add_zero _) hd
       simp only [weight_apply, Pi.one_apply, smul_eq_mul, mul_one, Finsupp.sum] at this
-      rw [Finset.sum_eq_zero_iff_of_nonneg (fun _ _ ↦ zero_le')] at this
+      rw [Finset.sum_eq_zero_iff_of_nonneg (fun _ _ ↦ zero_le)] at this
       exact this i hi
     · simpa using hi
 
@@ -430,13 +431,13 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
     use 0
     contrapose hF₀
     ext d
-    simpa only [Subsingleton.elim d 0, eval_zero, coeff_zero] using hF₀
+    simpa only [Subsingleton.elim d 0, eval_zero, coeff_zero] using! hF₀
   | succ N IH =>
     have hdeg : natDegree (finSuccEquiv R N F) < n + 1 := by
       linarith [natDegree_finSuccEquiv F, degreeOf_le_totalDegree F 0, hF.totalDegree hF₀]
     obtain ⟨i, hi⟩ : ∃ i : ℕ, (finSuccEquiv R N F).coeff i ≠ 0 := by
       contrapose! hF₀
-      exact (finSuccEquiv _ _).injective <| Polynomial.ext <| by simpa using hF₀
+      exact (finSuccEquiv _ _).injective <| Polynomial.ext <| by simpa using! hF₀
     have hin : i ≤ n := by
       contrapose! hi
       exact coeff_eq_zero_of_natDegree_lt <| (Nat.le_of_lt_succ hdeg).trans_lt hi
@@ -456,7 +457,7 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
       suffices (finSuccEquiv _ _ F).natDegree ≠ n by lia
       rintro rfl
       refine leadingCoeff_ne_zero.mpr ?_ hFn
-      simpa using (finSuccEquiv R N).injective.ne hF₀
+      simpa using! (finSuccEquiv R N).injective.ne hF₀
     obtain ⟨r₀, hr₀⟩ : ∃ r₀, Polynomial.eval r₀ φ ≠ 0 :=
       φ.exists_eval_ne_zero_of_natDegree_lt_card hφ₀ hφR
     use Fin.cons r₀ r
@@ -534,12 +535,12 @@ theorem homogeneousComponent_mem :
 theorem coeff_homogeneousComponent (d : σ →₀ ℕ) :
     coeff d (homogeneousComponent n φ) = if d.degree = n then coeff d φ else 0 := by
   rw [degree_eq_weight_one]
-  convert coeff_weightedHomogeneousComponent n φ d
+  convert! coeff_weightedHomogeneousComponent n φ d
 
 theorem homogeneousComponent_apply :
     homogeneousComponent n φ = ∑ d ∈ φ.support with d.degree = n, monomial d (coeff d φ) := by
   simp_rw [degree_eq_weight_one]
-  convert weightedHomogeneousComponent_apply n φ
+  convert! weightedHomogeneousComponent_apply n φ
 
 theorem homogeneousComponent_isHomogeneous : (homogeneousComponent n φ).IsHomogeneous n :=
   weightedHomogeneousComponent_isWeightedHomogeneous n φ
@@ -575,6 +576,11 @@ theorem homogeneousComponent_of_mem {m n : ℕ} {p : MvPolynomial σ R}
     (h : p ∈ homogeneousSubmodule σ R n) :
     homogeneousComponent m p = if m = n then p else 0 :=
   weightedHomogeneousComponent_of_mem h
+
+lemma support_homogeneousComponent (n : ℕ) (p : MvPolynomial σ R) :
+    (homogeneousComponent n p).support = {c ∈ p.support | c.degree = n} := by
+  rw [degree_eq_weight_one]
+  exact support_weightedHomogeneousComponent n p
 
 end HomogeneousComponent
 

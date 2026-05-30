@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Order.Module.Defs
 # Monotonicity of the action by rational numbers
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

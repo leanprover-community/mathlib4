@@ -131,7 +131,7 @@ theorem mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFinset) : p.1
     lia
   exact Nat.le_of_pred_lt (han.trans_lt <| by simpa using hsm hn)
 
-@[mono]
+@[gcongr, mono]
 theorem toEnumFinset_mono {m₁ m₂ : Multiset α} (h : m₁ ≤ m₂) :
     m₁.toEnumFinset ⊆ m₂.toEnumFinset := by
   intro p
@@ -250,9 +250,9 @@ def consEquiv {v : α} : v ::ₘ m ≃ Option m where
     by_cases hv : x.1 = v
     · simp only [hv, true_and] at h ⊢
       apply lt_of_le_of_ne (Nat.le_of_lt_add_one _) h
-      convert x.2.2 using 1
+      convert! x.2.2 using 1
       simp [hv]
-    · convert x.2.2 using 1
+    · convert! x.2.2 using 1
       exact (count_cons_of_ne hv _).symm
     ⟩⟩
   invFun x := x.elim ⟨v, ⟨m.count v, by simp⟩⟩ (fun x ↦ ⟨x.1, x.2.castLE (count_le_count_cons ..)⟩)
