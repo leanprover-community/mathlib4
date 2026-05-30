@@ -112,9 +112,8 @@ be computable because `= Option.none` is decidable while the domain of a general
 @[simps obj map]
 noncomputable def partialFunToPointed : PartialFun ⥤ Pointed where
   obj X := ⟨Option X, (none : Option X)⟩
-  map {X Y} (f : X ⟶ Y) :=
-    { toFun := fun (o : Option X) => Option.elim' (none : Option Y) (fun a : X =>
-     ((f : PFun X Y).toFun a).toOption) o
+  map {X Y} f :=
+    { toFun := Option.elim' none fun a => ((f : PFun X Y).toFun a).toOption
       map_point := rfl }
   map_id X := Pointed.Hom.ext <| funext fun (o : Option X) => Option.recOn o rfl fun (a : X) => by
     dsimp [CategoryStruct.id]

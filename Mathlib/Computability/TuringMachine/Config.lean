@@ -289,9 +289,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       simp only [← Part.pure_eq_some] at hf hg ⊢
       induction v.head with
       | zero =>
-        simp [prec, Code.fix_eval, Code.cons_eval, Code.comp_eval, Code.tail_eval,
-          Code.succ_eval, Code.pred_eval, Code.id_eval, Code.case_eval, Code.zero'_eval,
-          Part.bind_assoc, ← Part.bind_some_eq_map, Bind.bind, hf, Part.bind_some]
+        simp [prec, Part.bind_assoc, ← Part.bind_some_eq_map, Bind.bind, hf, Part.bind_some]
       | succ n' _ =>
         simp only [prec, Code.case_eval, Code.cons_eval, Code.comp_eval, Code.fix_eval,
           Code.tail_eval, Code.succ_eval, Code.pred_eval, Code.id_eval, Code.zero'_eval,
