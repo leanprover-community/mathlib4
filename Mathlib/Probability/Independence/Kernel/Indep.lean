@@ -224,7 +224,7 @@ lemma iIndepSets.precomp (hg : Function.Injective g) (h : iIndepSets π κ μ) :
 lemma iIndepSets.of_precomp (hg : Function.Surjective g) (h : iIndepSets (π ∘ g) κ μ) :
     iIndepSets π κ μ := by
   obtain ⟨g', hg'⟩ := hg.hasRightInverse
-  convert h.precomp hg'.injective
+  convert! h.precomp hg'.injective
   rw [Function.comp_assoc, hg'.comp_eq_id, Function.comp_id]
 
 lemma iIndepSets_precomp_of_bijective (hg : Function.Bijective g) :
@@ -321,6 +321,12 @@ theorem indep_of_indep_of_le_right {m₁ m₂ m₃ : MeasurableSpace Ω} {_mΩ :
     {κ : Kernel α Ω} {μ : Measure α} (h_indep : Indep m₁ m₂ κ μ) (h32 : m₃ ≤ m₂) :
     Indep m₁ m₃ κ μ :=
   fun t1 t2 ht1 ht2 => h_indep t1 t2 ht1 (h32 _ ht2)
+
+theorem indep_of_indep_of_le {m₁ m₂ m₃ m₄ : MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
+    {κ : Kernel α Ω} {μ : Measure α} (h_indep : Indep m₁ m₂ κ μ)
+    (h31 : m₃ ≤ m₁) (h42 : m₄ ≤ m₂) :
+    Indep m₃ m₄ κ μ :=
+  indep_of_indep_of_le_left (indep_of_indep_of_le_right h_indep h42) h31
 
 theorem iIndep_of_iIndep_of_le {m₁ m₂ : ι → MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} (h_indep : iIndep m₂ κ μ) (h_le : ∀ i, m₁ i ≤ m₂ i) :
@@ -640,14 +646,16 @@ theorem indep_iSup_of_directed_le {Ω} {m : ι → MeasurableSpace Ω} {m' m0 : 
 theorem iIndepSet.indep_generateFrom_lt [Preorder ι] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (i : ι) :
     Indep (generateFrom {s i}) (generateFrom { t | ∃ j < i, s j = t }) κ μ := by
-  convert iIndepSet.indep_generateFrom_of_disjoint hsm hs {i} { j | j < i }
-    (Set.disjoint_singleton_left.mpr (lt_irrefl _)) using 1
+  convert!
+    iIndepSet.indep_generateFrom_of_disjoint hsm hs { i } {j | j < i}
+      (Set.disjoint_singleton_left.mpr (lt_irrefl _)) using 1
   simp only [Set.mem_singleton_iff, exists_eq_left, Set.setOf_eq_eq_singleton']
 
 theorem iIndepSet.indep_generateFrom_le [Preorder ι] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (i : ι) {k : ι} (hk : i < k) :
     Indep (generateFrom {s k}) (generateFrom { t | ∃ j ≤ i, s j = t }) κ μ := by
-  convert iIndepSet.indep_generateFrom_of_disjoint hsm hs {k} { j | j ≤ i }
+  convert!
+    iIndepSet.indep_generateFrom_of_disjoint hsm hs { k } {j | j ≤ i}
       (Set.disjoint_singleton_left.mpr hk.not_ge) using 1
   simp only [Set.mem_singleton_iff, exists_eq_left, Set.setOf_eq_eq_singleton']
 

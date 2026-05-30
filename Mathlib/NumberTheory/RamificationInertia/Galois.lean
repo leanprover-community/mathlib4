@@ -97,7 +97,7 @@ noncomputable instance : MulAction Gal(L/K) (primesOver p B) where
   one_smul Q := by
     apply Subtype.val_inj.mp
     change map _ Q.1 = Q.1
-    simpa only [map_one] using map_id Q.1
+    simpa only [map_one] using! map_id Q.1
   mul_smul σ τ Q := by
     apply Subtype.val_inj.mp
     change map _ Q.1 = map _ (map _ Q.1)
@@ -197,6 +197,8 @@ theorem inertiaDegIn_mul_inertiaDegIn [p.IsMaximal] [P.IsMaximal] :
   have : Q.LiesOver p := LiesOver.trans Q P p
   rw [inertiaDegIn_eq_inertiaDeg p P G, inertiaDegIn_eq_inertiaDeg p Q GAC,
     inertiaDegIn_eq_inertiaDeg P Q GBC, inertiaDeg_algebra_tower p P Q]
+
+set_option linter.overlappingInstances false
 
 variable {p} in
 include G GAC GBC in

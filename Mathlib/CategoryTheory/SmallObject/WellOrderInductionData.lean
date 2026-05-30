@@ -79,6 +79,7 @@ noncomputable def ofExists
 
 variable {F} (d : F.WellOrderInductionData) [OrderBot J]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given `d : F.WellOrderInductionData`, `val₀ : F.obj (op ⊥)` and `j : J`,
 this is the data of an element `val : F.obj (op j)` such that the induced
@@ -150,8 +151,7 @@ instance [WellFoundedLT J] (j : J) : Subsingleton (d.Extension val₀ j) := by
     refine Subsingleton.intro (fun e₁ e₂ ↦ val_injective ?_)
     have h₁ := e₁.map_limit i hi (by rfl)
     have h₂ := e₂.map_limit i hi (by rfl)
-    simp only [homOfLE_refl, op_id, map_id, id_apply, OrderHom.Subtype.val_coe, comp_obj, op_obj,
-      Monotone.functor_obj, homOfLE_leOfHom] at h₁ h₂
+    simp only [homOfLE_refl, op_id, map_id, id_apply, homOfLE_leOfHom] at h₁ h₂
     rw [h₁, h₂]
     congr
     ext ⟨⟨l, hl⟩⟩
@@ -221,10 +221,11 @@ def limit (j : J) (hj : Order.IsSuccLimit j)
     rw [d.map_lift _ _ _ _ (by simpa [bot_lt_iff_ne_bot] using hj.not_isMin)]
     simpa using (e ⊥ (by simpa [bot_lt_iff_ne_bot] using hj.not_isMin)).map_zero
   map_succ i hi := by
-    convert (e (Order.succ i) ((Order.IsSuccLimit.succ_lt_iff hj).mpr hi)).map_succ i
-      (by
-        simp only [Order.lt_succ_iff_not_isMax, not_isMax_iff]
-        exact ⟨_, hi⟩) using 1
+    convert!
+      (e (Order.succ i) ((Order.IsSuccLimit.succ_lt_iff hj).mpr hi)).map_succ i
+        (by
+          simp only [Order.lt_succ_iff_not_isMax, not_isMax_iff]
+          exact ⟨_, hi⟩) using 1
     · dsimp
       rw [map_id, id_apply, d.map_lift _ _ _ _ ((Order.IsSuccLimit.succ_lt_iff hj).mpr hi)]
     · congr 1
@@ -240,7 +241,6 @@ def limit (j : J) (hj : Order.IsSuccLimit j)
       dsimp
       rw [this]
       congr
-      dsimp
       ext ⟨⟨l, hl⟩⟩
       rw [map_lift _ _ _ _ _ (hl.trans hij')]
       apply compatibility
@@ -273,7 +273,7 @@ noncomputable def sectionsMk (val₀ : F.obj (op ⊥)) : F.sections where
 
 lemma sectionsMk_val_op_bot (val₀ : F.obj (op ⊥)) :
     (d.sectionsMk val₀).val (op ⊥) = val₀ := by
-  simpa using (default : d.Extension val₀ ⊥).map_zero
+  simpa using! (default : d.Extension val₀ ⊥).map_zero
 
 include d in
 lemma surjective :
