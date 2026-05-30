@@ -106,7 +106,7 @@ theorem image_pow_subset_of_coprime (hm : 0 < m) (hmn : n.Coprime m) :
   replace hb : b ^ m ∈ {u : A | orderOf u = n} := by
     rw [← hb] at hmn ⊢; exact hmn.orderOf_pow
   apply ball_subset_thickening hb ((m : ℝ) • δ)
-  convert pow_mem_ball hm hab using 1
+  convert! pow_mem_ball hm hab using 1
   simp only [nsmul_eq_mul, smul_eq_mul]
 
 @[to_additive]
@@ -117,7 +117,7 @@ theorem image_pow_subset (n : ℕ) (hm : 0 < m) :
   replace hb : b ^ m ∈ {y : A | orderOf y = n} := by
     rw [mem_setOf_eq, orderOf_pow' b hm.ne', hb, Nat.gcd_mul_left_left, n.mul_div_cancel hm]
   apply ball_subset_thickening hb (m * δ)
-  convert pow_mem_ball hm hab using 1
+  convert! pow_mem_ball hm hab using 1
   simp only [nsmul_eq_mul]
 
 @[to_additive]
@@ -285,7 +285,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     specialize this (approxAddOrderOf.image_nsmul_subset (δ n) (n / p) hp.pos)
     simp only [h_div] at this ⊢
     refine this.trans ?_
-    convert approxAddOrderOf.vadd_subset_of_coprime (p * δ n) h_cop
+    convert! approxAddOrderOf.vadd_subset_of_coprime (p * δ n) h_cop
     rw [hu₀, Subtype.coe_mk, mul_comm p, h_div]
   change (∀ᵐ x, x ∉ E) ∨ E ∈ ae volume
   rw [← eventuallyEq_empty, ← eventuallyEq_univ]

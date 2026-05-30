@@ -48,7 +48,7 @@ lemma Valuation.exists_setOf_restrict_le_iff {Γ₀ : Type*} [LinearOrderedCommG
     ∃ γ : (ValueGroupWithZero R)ˣ, {a | valuation R (a - x) < γ} ⊆ s := by
   refine ⟨fun ⟨r, hr⟩ ↦ ⟨r.mapEquiv (orderMonoidIso v).symm, ?_⟩,
     fun ⟨r, hr⟩ ↦ ⟨r.mapEquiv (orderMonoidIso v), ?_⟩⟩
-  all_goals convert hr; simp
+  all_goals convert! hr; simp
 
 /-- We say that a topology on `R` is valuative if the neighborhoods of `0` in `R`
 are determined by the valuative relation `· ≤ᵥ ·`. -/
@@ -80,7 +80,8 @@ valuative and nonarchimedean, and the addition is uniformly continuous,
 can be automatically inferred. -/
 local instance uniformSpace : UniformSpace R := IsTopologicalAddGroup.rightUniformSpace R
 
-instance isUniformAddGroup : IsUniformAddGroup R := isUniformAddGroup_of_addCommGroup
+/-- This is not made into a global instance to avoid diamonds. -/
+local instance isUniformAddGroup : IsUniformAddGroup R := isUniformAddGroup_of_addCommGroup
 
 end ValuativeRel
 
@@ -97,7 +98,7 @@ namespace IsValuativeTopology
 /-- A variant of `IsValuativeTopology.mem_nhds_iff` using subtraction. -/
 lemma mem_nhds_iff' {s : Set R} {x : R} :
     s ∈ 𝓝 x ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { z | valuation R (z - x) < γ } ⊆ s := by
-  convert mem_nhds_iff (s := s) using 4
+  convert! mem_nhds_iff (s := s) using 4
   simp [neg_add_eq_sub]
 
 lemma mem_nhds_zero_iff (s : Set R) :
@@ -119,7 +120,7 @@ variable (R) in
 theorem hasBasis_nhds_zero :
     (𝓝 0).HasBasis (fun _ ↦ True)
       fun γ : (ValueGroupWithZero R)ˣ ↦ { x | valuation R x < γ } := by
-  convert hasBasis_nhds (0 : R)
+  convert! hasBasis_nhds (0 : R)
   rw [sub_zero]
 
 variable (R) in
@@ -137,7 +138,7 @@ namespace Valuation
 
 lemma mem_nhds_iff {s : Set R} {x : R} : s ∈ 𝓝 x ↔
     ∃ γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ, { z | v.restrict (z - x) < γ.val } ⊆ s := by
-  convert IsValuativeTopology.mem_nhds_iff (s := s) using 4
+  convert! IsValuativeTopology.mem_nhds_iff (s := s) using 4
   simpa [neg_add_eq_sub] using v.exists_setOf_restrict_le_iff _ _
 
 lemma mem_nhds_zero_iff (s : Set R) : s ∈ 𝓝 0 ↔
@@ -207,7 +208,7 @@ theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ ↦ True)
 theorem toUniformSpace_eq : _u =
     @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _ := by
   refine UniformSpace.ext (v.hasBasis_uniformity.eq_of_same_basis ?_)
-  convert v.subgroups_basis.hasBasis_nhds_zero.comap _
+  convert! v.subgroups_basis.hasBasis_nhds_zero.comap _
   simp [restrict_lt_iff_lt_embedding, sub_eq_add_neg]
 
 theorem cauchy_iff {F : Filter R} : Cauchy F ↔
@@ -238,7 +239,7 @@ theorem toTopologicalSpace_eq :
   exact congrArg (fun u ↦ @UniformSpace.toTopologicalSpace R u) v.toUniformSpace_eq
 
 instance (priority := low) _root_.IsValuativeTopology.isTopologicalRing : IsTopologicalRing R := by
-  convert (ValuativeRel.nonarchimedeanRing R).toIsTopologicalRing
+  convert! (ValuativeRel.nonarchimedeanRing R).toIsTopologicalRing
   exact toTopologicalSpace_eq _
 
 section Discrete
@@ -306,7 +307,7 @@ theorem isClosed_closedBall (r : ValueGroup₀ v) : IsClosed (X := R) {x | v.res
   intro x hx
   simp only [mem_compl_iff, mem_setOf_eq, not_le] at hx
   rw [v.mem_nhds_iff]
-  have hx' : v.restrict x ≠ 0 := ne_of_gt <| lt_of_le_of_lt zero_le' <| hx
+  have hx' : v.restrict x ≠ 0 := hx.ne_zero
   exact ⟨Units.mk0 _ hx', fun y hy hy' ↦ ne_of_lt hy <| map_sub_swap v.restrict x y ▸
       (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' hx)⟩
 
@@ -336,7 +337,7 @@ theorem isOpen_sphere {r : ValueGroup₀ v} (hr : r ≠ 0) :
 around zero `{x | v.restrict x = r}` is closed in the valuative topology. -/
 theorem isClosed_sphere (r : ValueGroup₀ v) : IsClosed (X := R) {x | v.restrict x = r} := by
   rcases eq_or_ne r 0 with rfl | hr
-  · convert v.isClosed_closedBall 0 using 3
+  · convert! v.isClosed_closedBall 0 using 3
     exact (le_zero_iff (α := ValueGroup₀ v)).symm
   exact isClopen_sphere hr |>.isClosed
 

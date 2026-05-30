@@ -100,7 +100,7 @@ lemma altitude_map {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) (
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     ((s.restrict S hS).altitude i).map S.subtype = s.altitude i := by
   rw [eq_comm]
-  convert (s.restrict S hS).altitude_map S.subtypeₐᵢ i
+  convert! (s.restrict S hS).altitude_map S.subtypeₐᵢ i
 
 lemma altitude_restrict_eq_comap_subtype {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
     (hS : affineSpan ℝ (Set.range s.points) ≤ S) (i : Fin (n + 1)) :
@@ -191,7 +191,7 @@ set_option backward.isDefEq.respectTransparency false in
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).altitudeFoot i = s.altitudeFoot i := by
   rw [eq_comm]
-  convert (s.restrict S hS).altitudeFoot_map S.subtypeₐᵢ i
+  convert! (s.restrict S hS).altitudeFoot_map S.subtypeₐᵢ i
 
 @[simp] lemma ne_altitudeFoot {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) :
     s.points i ≠ s.altitudeFoot i := by
@@ -251,7 +251,7 @@ def height {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : ℝ :=
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).height i = s.height i := by
   rw [eq_comm]
-  convert (s.restrict S hS).height_map S.subtypeₐᵢ i
+  convert! (s.restrict S hS).height_map S.subtypeₐᵢ i
 
 @[simp]
 lemma height_pos {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 0 < s.height i := by
@@ -315,7 +315,7 @@ lemma abs_inner_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠ j) :
     |⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫|
       < s.height i * s.height j := by
   apply lt_of_le_of_ne
-  · convert abs_real_inner_le_norm _ _ using 1
+  · convert! abs_real_inner_le_norm _ _ using 1
     simp only [dist_eq_norm_vsub, height]
   · simp_rw [height, dist_eq_norm_vsub]
     rw [← Real.norm_eq_abs, ne_eq, norm_inner_eq_norm_iff (by simp) (by simp)]
@@ -348,7 +348,7 @@ lemma abs_inner_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠ j) :
           simp_rw [← Set.image_univ, ← Set.compl_inter]
           rw [Set.inter_singleton_eq_empty.mpr ?_, Set.compl_empty]
           simpa using hij.symm
-        convert AffineSubspace.vectorSpan_union_of_mem_of_mem ℝ hki' hkj'
+        convert! AffineSubspace.vectorSpan_union_of_mem_of_mem ℝ hki' hkj'
       rw [hs, ← Submodule.inf_orthogonal, Submodule.mem_inf]
       refine ⟨?_, ?_⟩
       · rw [h, ← direction_affineSpan]
