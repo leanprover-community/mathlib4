@@ -81,4 +81,14 @@ theorem lt_card_filter_univ_iff_apply_of_imp {j : Fin n} (p : Fin n → Prop) [D
   have : j ∈ univ.filter p := by grind
   grind
 
+lemma _root_.Finset.image_fin_univ {n : ℕ} :
+    (Finset.univ (α := Fin n)).image Fin.val = Finset.range n := by
+  ext
+  simp [Fin.exists_iff]
+
+@[simp]
+lemma _root_.Finset.sup_fin_univ [SemilatticeSup α] [OrderBot α] {n : ℕ} (f : ℕ → α) :
+    (Finset.univ (α := Fin n)).sup (fun n ↦ f n) = (Finset.range n).sup f := by
+  rw [← image_fin_univ, sup_image, Function.comp_def]
+
 end Fin

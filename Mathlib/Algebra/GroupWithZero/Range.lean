@@ -24,7 +24,7 @@ elements in `range f` and `MonoidWithZeroHom.ValueGroup₀` adds a `0` to the pr
 
 When `B` is commutative, then both `MonoidWithZeroHom.valueGroup f` and
 `MonoidWithZeroHom.ValueGroup₀ f` are also commutative and the former can be described more
-explicitly (see `MonoidWithZeroHom.mem_valueGroup_iff_of_comm`).
+explicitly (see `MonoidWithZeroHom.mem_valueGroup_iff_of_comm` and `mem_valueGroup_iff_of_comm'`).
 
 ## Main declarations
 
@@ -102,13 +102,9 @@ lemma valueGroup_def : valueGroup f = Subgroup.closure (valueMonoid f) := rfl
 codomain containing the range of `f`. -/
 abbrev ValueMonoid₀ := WithZero (valueMonoid f)
 
-@[deprecated (since := "2025-09-03")] alias valueMonoid₀ := ValueMonoid₀
-
 /-- For a morphism of monoids with zero `f`, this is a smallest subgroup with zero of the
 codomain containing the range of `f`. -/
 abbrev ValueGroup₀ := WithZero (valueGroup f)
-
-@[deprecated (since := "2025-09-03")] alias valueGroup₀ := ValueGroup₀
 
 lemma mem_valueMonoid {b : Bˣ} (hb : b.val ∈ range f) : b ∈ valueMonoid f := by
   tauto
@@ -141,8 +137,8 @@ def ValueGroup₀.restrict₀ : A →*₀ ValueGroup₀ f where
   toFun a :=
     letI : DecidablePred fun b : B ↦ b = 0 := Classical.decPred fun b ↦ b = 0
     if h : f a = 0 then 0 else (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f)
-  map_one'  := by simp [← WithZero.coe_one]
-  map_mul'  := by aesop
+  map_one' := by simp [← WithZero.coe_one]
+  map_mul' := by aesop
   map_zero' := by simp
 
 namespace ValueGroup₀
@@ -151,7 +147,14 @@ lemma restrict₀_of_ne_zero {a : A} (h : f a ≠ 0) :
     restrict₀ f a = (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) := by
   simp [h, restrict₀_apply]
 
+@[simp]
 lemma restrict₀_eq_zero_iff {a : A} : restrict₀ f a = 0 ↔ f a = 0 := by simp [restrict₀_apply]
+
+@[simp]
+lemma restrict₀_eq_one_iff {a : A} : restrict₀ f a = 1 ↔ f a = 1 := by
+  simp only [restrict₀_apply]
+  split_ifs with H <;>
+  simp [H, ← WithZero.coe_one, ← Units.mk0_one]
 
 @[simp]
 lemma embedding_restrict₀ (a : A) : ValueGroup₀.embedding (restrict₀ f a) = f a := by
@@ -176,7 +179,8 @@ lemma valueMonoid_eq_valueGroup : (valueMonoid f) = (valueGroup f).toSubmonoid :
     simp [hy]
   · simp [Submonoid.closure_union]
 
-variable (f) in
+variable (f)
+
 lemma valueMonoid_eq_valueGroup' : (valueMonoid f : Set Bˣ) = valueGroup f := by
   rw [valueMonoid_eq_valueGroup, coe_toSubmonoid]
 
@@ -191,11 +195,30 @@ lemma valueGroup_eq_range : Units.val '' (valueGroup f) = (range f \ {0}) := by
     refine ⟨Units.mk0 x hx₀, ?_, rfl⟩
     simpa [Units.val_mk0, mem_range] using ⟨y, hy⟩
 
+@[simp]
+lemma ValueGroup₀.restrict₀_range_eq_top : range (ValueGroup₀.restrict₀ f) = ⊤ := by
+  rw [top_eq_univ, range_eq_univ]
+  intro x
+  match x with
+  | 0 => use 0; simp
+  | some ⟨u, hu⟩ =>
+    change u ∈ (valueGroup f : Set Bˣ) at hu
+    rw [← valueMonoid_eq_valueGroup'] at hu
+    obtain ⟨v, hv⟩ := hu
+    use v
+    simp [restrict₀_apply, hv, Units.ne_zero, WithZero.coe]
+
+open Function
+
+lemma ValueGroup₀.restrict₀_surjective : Surjective (ValueGroup₀.restrict₀ f) :=
+  fun _ ↦ mem_range.mp (by simp [ValueGroup₀.restrict₀_range_eq_top])
+
 end GroupWithZero
 section CommGroupWithZero
 --
 variable [MonoidWithZero A] [CommGroupWithZero B] [MonoidWithZeroHomClass F A B]
 
+/- See also `mem_valueGroup_iff_of_comm'` for a version proving that `f x ≠ 0`. -/
 theorem mem_valueGroup_iff_of_comm {y : Bˣ} :
     y ∈ valueGroup f ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f a * y = f x := by
   refine ⟨fun hy ↦ ?_, fun ⟨a, ha, x, hy⟩ ↦ ?_⟩
@@ -226,6 +249,64 @@ theorem mem_valueGroup_iff_of_comm {y : Bˣ} :
       use a
     · apply mem_valueGroup
       use x
+
+theorem mem_valueGroup_iff_of_comm' {y : Bˣ} :
+    y ∈ valueGroup f ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f x ≠ 0 ∧ f a * y = f x := by
+  rw [mem_valueGroup_iff_of_comm]
+  exact ⟨fun ⟨a, ha, x, hax⟩ ↦ ⟨a, ha, x, by aesop, hax⟩, fun ⟨a, ha, x, hx, hax⟩ ↦ ⟨a, ha, x, hax⟩⟩
+
+namespace valueGroup
+
+variable {r₁ s₁ r₂ s₂ : A}
+
+/-- The map sending a pair of nonzero `r s : A` to the element `(v r)⁻¹ * (v s)`
+of `ValueGroup₀ v`. -/
+def mk (r s : A) (hr : f r ≠ 0) (hs : f s ≠ 0) : valueGroup f :=
+    (⟨(.mk0 _ hr)⁻¹ * (.mk0 _ hs), mul_mem (inv_mem (mem_valueGroup _ (by simp)))
+    (mem_valueGroup _ (by simp))⟩ : valueGroup f)
+
+@[simp] theorem mk_inj {hr₁ : f r₁ ≠ 0} {hs₁ : f s₁ ≠ 0} {hr₂ : f r₂ ≠ 0} {hs₂ : f s₂ ≠ 0} :
+    mk f r₁ s₁ hr₁ hs₁ = mk f r₂ s₂ hr₂ hs₂ ↔ f (r₁ * s₂) = f (r₂ * s₁) := by
+  simp only [mk, Subtype.mk.injEq, map_mul]
+  rw [inv_mul_eq_inv_mul_iff_mul_eq_mul, eq_comm]
+  simp [Units.ext_iff, mul_comm (f r₂), mul_comm (f s₂)]
+
+@[simp] theorem mk_mul {hr₁ : f r₁ ≠ 0} {hs₁ : f s₁ ≠ 0} {hr₂ : f r₂ ≠ 0} {hs₂ : f s₂ ≠ 0} :
+    mk f r₁ s₁ hr₁ hs₁ * mk f r₂ s₂ hr₂ hs₂ =
+      mk f (r₁ * r₂) (s₁ * s₂) (by simp_all) (by simp_all) := by
+  simp only [mk, map_mul, MulMemClass.mk_mul_mk, Units.mk0_mul, Subtype.mk.injEq]
+  rw [mul_mul_mul_comm, mul_inv]
+
+end valueGroup
+namespace ValueGroup₀
+
+/-- The map sending a pair of nonzero `r s : A` to the element `(v r)⁻¹ * (v s)`
+of `ValueGroup₀ v`. -/
+def mk [DecidablePred fun b : B ↦ b = 0] (r s : A) : ValueGroup₀ f :=
+    if h : f r = 0 ∨ f s = 0 then 0 else
+    valueGroup.mk f r s ((not_or.mp h).1) ((not_or.mp h).2)
+
+lemma mk_eq_of_ne_zero [DecidablePred fun b : B ↦ b = 0] (r s : A) (hr : f r ≠ 0) (hs : f s ≠ 0) :
+    ValueGroup₀.mk f r s = valueGroup.mk f r s hr hs := by
+  simp [ValueGroup₀.mk, hr, hs]
+
+theorem zero_or_exists_mk (x : ValueGroup₀ f) :
+    x = 0 ∨ ∃ r s hr hs, x = valueGroup.mk f r s hr hs := by
+  obtain _ | ⟨x, hx⟩ := x
+  · left; rfl
+  · rw [mem_valueGroup_iff_of_comm'] at hx
+    obtain ⟨r, hr, s, hs, hrs⟩ := hx
+    refine .inr ⟨r, s, hr, hs, Option.some_inj.mpr <| by
+      simp only [valueGroup.mk, Subtype.mk.injEq]
+      rw [eq_inv_mul_iff_mul_eq]
+      simp [← hrs, mul_comm]⟩
+
+theorem zero_or_exists_mk' (x : ValueGroup₀ f) :
+    x = 0 ∨ ∃ d : {xy : A × A // f xy.1 ≠ 0 ∧ f xy.2 ≠ 0}, x =
+      valueGroup.mk f d.1.1 d.1.2 d.2.1 d.2.2 :=
+  x.zero_or_exists_mk.imp _root_.id fun ⟨r, s, hr, hs, hx⟩ ↦ ⟨⟨(r, s), ⟨hr, hs⟩⟩, hx⟩
+
+end ValueGroup₀
 
 instance : CommGroupWithZero (ValueGroup₀ f) where
 

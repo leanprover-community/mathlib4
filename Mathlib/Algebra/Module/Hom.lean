@@ -72,12 +72,12 @@ section
 variable [Monoid R] [Monoid S] [AddCommMonoid A]
 
 instance instDistribSMul [DistribSMul M A] : DistribSMul M (AddMonoid.End A) :=
-  AddMonoidHom.instDistribSMul
+  inferInstanceAs <| DistribSMul M (A →+ A)
 
 variable [DistribMulAction R A] [DistribMulAction S A]
 
 instance instDistribMulAction : DistribMulAction R (AddMonoid.End A) :=
-  AddMonoidHom.instDistribMulAction
+  inferInstanceAs <| DistribMulAction R (A →+ A)
 
 @[simp] theorem coe_smul (r : R) (f : AddMonoid.End A) : ⇑(r • f) = r • ⇑f := rfl
 
@@ -97,7 +97,7 @@ instance isCentralScalar [DistribMulAction Rᵐᵒᵖ A] [IsCentralScalar R A] :
 end
 
 instance instModule [Semiring R] [AddCommMonoid A] [Module R A] : Module R (AddMonoid.End A) :=
-  AddMonoidHom.instModule
+  inferInstanceAs <| Module R (A →+ A)
 
 /-- The tautological action by `AddMonoid.End α` on `α`.
 

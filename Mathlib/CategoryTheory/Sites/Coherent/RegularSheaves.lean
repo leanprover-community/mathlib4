@@ -64,6 +64,7 @@ epimorphisms to equalizer diagrams.
 def EqualizerCondition (P : Cᵒᵖ ⥤ D) : Prop :=
   ∀ ⦃X B : C⦄ (π : X ⟶ B) [EffectiveEpi π], SingleEqualizerCondition P π
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equalizer condition is preserved by natural isomorphism. -/
 theorem equalizerCondition_of_natIso {P P' : Cᵒᵖ ⥤ D} (i : P ≅ P')
     (hP : EqualizerCondition P) : EqualizerCondition P' := fun X B π _ c hc ↦
@@ -86,8 +87,9 @@ theorem equalizerCondition_precomp_of_preservesPullback (P : Cᵒᵖ ⥤ D) (F :
 /-- The canonical map to the explicit equalizer. -/
 def mapToEqualizer (P : Cᵒᵖ ⥤ Type*) {W X B : C} (f : X ⟶ B)
     (g₁ g₂ : W ⟶ X) (w : g₁ ≫ f = g₂ ≫ f) :
-    P.obj (op B) → { x : P.obj (op X) | P.map g₁.op x = P.map g₂.op x } := fun t ↦
-  ⟨P.map f.op t, by simp only [Set.mem_setOf_eq, ← FunctorToTypes.map_comp_apply, ← op_comp, w]⟩
+    P.obj (op B) ⟶ { x : P.obj (op X) | P.map g₁.op x = P.map g₂.op x } :=
+  ↾fun t ↦
+    ⟨P.map f.op t, by simp only [Set.mem_setOf_eq, ← comp_apply, ← Functor.map_comp, ← op_comp, w]⟩
 
 @[deprecated (since := "2025-11-23")] alias MapToEqualizer := mapToEqualizer
 
@@ -100,7 +102,12 @@ theorem EqualizerCondition.bijective_mapToEqualizer_pullback' {P : Cᵒᵖ ⥤ T
   rw [Function.bijective_iff_existsUnique]
   intro ⟨b, hb⟩
   obtain ⟨a, ha₁, ha₂⟩ := hP b hb
-  exact ⟨a, by simpa [mapToEqualizer] using ha₁, by simpa [mapToEqualizer] using ha₂⟩
+  refine ⟨a, ?_, ?_⟩
+  · ext
+    simpa [mapToEqualizer] using! ha₁
+  · intro y h
+    apply ha₂ y
+    simpa [mapToEqualizer, Subtype.ext_iff] using! h
 
 theorem EqualizerCondition.bijective_mapToEqualizer_pullback {P : Cᵒᵖ ⥤ Type*}
     (hP : EqualizerCondition P) {X B : C} (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π] :
@@ -118,7 +125,11 @@ theorem EqualizerCondition.mk' (P : Cᵒᵖ ⥤ Type*)
   rw [Function.bijective_iff_existsUnique] at hP
   intro b hb
   obtain ⟨a, ha₁, ha₂⟩ := hP ⟨b, hb⟩
-  exact ⟨a, by simpa [mapToEqualizer] using ha₁, by simpa [mapToEqualizer] using ha₂⟩
+  refine ⟨a, ?_, ?_⟩
+  · simpa [Subtype.ext_iff, mapToEqualizer] using! ha₁
+  · intro y h
+    apply ha₂ y
+    simpa [mapToEqualizer, Subtype.ext_iff] using! h
 
 set_option backward.isDefEq.respectTransparency false in
 theorem EqualizerCondition.mk (P : Cᵒᵖ ⥤ Type*)
@@ -134,8 +145,8 @@ theorem EqualizerCondition.mk (P : Cᵒᵖ ⥤ Type*)
   have h₁ : ((pullbackIsPullback π π).conePointUniqueUpToIso hc).hom ≫ c.fst =
     pullback.fst π π := by simp
   have hb' : P.map (pullback.fst π π).op b = P.map (pullback.snd _ _).op b := by
-    rw [← h₁, op_comp, FunctorToTypes.map_comp_apply, hb]
-    simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+    rw [← h₁, op_comp, Functor.map_comp, comp_apply, hb]
+    simp [← comp_apply, ← Functor.map_comp, ← op_comp]
   obtain ⟨a, ha₁, ha₂⟩ := hP ⟨b, hb'⟩
   refine ⟨a, ?_, ?_⟩
   · simpa [mapToEqualizer] using ha₁
@@ -200,10 +211,11 @@ theorem parallelPair_pullback_initial {X B : C} (π : X ⟶ B)
     have hi := Over.w i.hom
     have hj := Over.w j.hom
     dsimp at hi hj
-    let ij := PullbackCone.IsLimit.lift hc i.hom.left j.hom.left (by lia)
+    let ij := PullbackCone.IsLimit.lift hc i.hom.left j.hom.left (by simp [hi, hj])
     refine ⟨Quiver.Hom.op (ObjectProperty.homMk (Over.homMk ij)), ?_, ?_⟩
     all_goals congr; aesop
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 Given a limiting pullback cone, the fork in `SingleEqualizerCondition` is limiting iff the diagram
 in `Presheaf.isSheaf_iff_isLimit_coverage` is limiting.
@@ -223,7 +235,7 @@ noncomputable def isLimit_forkOfι_equiv (P : Cᵒᵖ ⥤ D) {X B : C} (π : X �
   have : H.Initial := parallelPair_pullback_initial π c hc
   let i : H ⋙ F ≅ G := parallelPair.ext (Iso.refl _) (Iso.refl _) (by aesop) (by aesop)
   refine (IsLimit.equivOfNatIsoOfIso i.symm _ _ ?_).trans (Functor.Initial.isLimitWhiskerEquiv H _)
-  refine Cones.ext (Iso.refl _) ?_
+  refine Cone.ext (Iso.refl _) ?_
   rintro ⟨_ | _⟩
   all_goals aesop
 
@@ -254,8 +266,7 @@ lemma isSheafFor_regular_of_projective {X : C} (S : Presieve X) [S.regular] [Pro
   rw [isSheafFor_arrows_iff]
   refine fun x hx ↦ ⟨F.map (Projective.factorThru (𝟙 _) f).op <| x (), fun _ ↦ ?_, fun y h ↦ ?_⟩
   · simpa using (hx () () Y (𝟙 Y) (f ≫ (Projective.factorThru (𝟙 _) f)) (by simp)).symm
-  · simp only [← h (), ← FunctorToTypes.map_comp_apply, ← op_comp, Projective.factorThru_comp,
-      op_id, FunctorToTypes.map_id_apply]
+  · simp [← h (), ← comp_apply, ← Functor.map_comp, ← op_comp]
 
 /-- Every presheaf is a sheaf for the regular topology if every object of `C` is projective. -/
 theorem isSheaf_of_projective (F : Cᵒᵖ ⥤ D) [Preregular C] [∀ (X : C), Projective X] :
@@ -279,8 +290,9 @@ lemma isSheaf_yoneda_obj [Preregular C] (W : C) :
   obtain ⟨t, t_amalg, t_uniq⟩ :=
     (Sieve.forallYonedaIsSheaf_iff_colimit S).mpr ⟨h_colim⟩ W x_ext hx_ext
   refine ⟨t, ?_, ?_⟩
-  · convert Presieve.isAmalgamation_restrict (Sieve.le_generate
-      (Presieve.ofArrows (fun () ↦ Y) (fun () ↦ f))) _ _ t_amalg
+  · convert!
+    Presieve.isAmalgamation_restrict
+      (Sieve.le_generate (Presieve.ofArrows (fun () ↦ Y) (fun () ↦ f))) _ _ t_amalg
     exact (Presieve.restrict_extend hx).symm
   · exact fun y hy ↦ t_uniq y <| Presieve.isAmalgamation_sieveExtend x y hy
 

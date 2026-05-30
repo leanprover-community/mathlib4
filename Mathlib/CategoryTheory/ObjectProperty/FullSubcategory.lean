@@ -45,6 +45,9 @@ structure FullSubcategory where
 instance FullSubcategory.category : Category.{v} P.FullSubcategory :=
   inferInstanceAs (Category (InducedCategory _ FullSubcategory.obj))
 
+instance [P.Nonempty] : Nonempty P.FullSubcategory :=
+  Nonempty.intro ⟨P.arbitrary, P.prop_arbitrary⟩
+
 @[ext]
 lemma hom_ext {X Y : P.FullSubcategory} {f g : X ⟶ Y} (h : f.hom = g.hom) : f = g :=
   InducedCategory.hom_ext h
@@ -114,6 +117,16 @@ lemma isoInv_hom_id_hom {X Y : P.FullSubcategory} (e : X ≅ Y) :
     e.inv.hom ≫ e.hom.hom = 𝟙 _ :=
   P.ι.congr_map e.inv_hom_id
 
+instance {X Y : P.FullSubcategory} (f : X ⟶ Y) [IsIso f] : IsIso f.hom :=
+  P.ι.map_isIso f
+
+@[simp, push ←]
+lemma hom_inv {X Y : P.FullSubcategory} (f : X ⟶ Y) [IsIso f] : (inv f).hom = inv f.hom :=
+  IsIso.eq_inv_of_hom_inv_id (P.ι.congr_map (asIso f).hom_inv_id)
+
+lemma isIso_hom_iff {X Y : P.FullSubcategory} (f : X ⟶ Y) : IsIso f.hom ↔ IsIso f :=
+  ⟨fun _ ↦ (P.isoMk (asIso f.hom)).isIso_hom, fun _ ↦ inferInstance⟩
+
 variable {P' : ObjectProperty C}
 
 /-- If `P` and `P'` are properties of objects such that `P ≤ P'`, there is
@@ -153,11 +166,9 @@ def lift : C ⥤ FullSubcategory P where
     original functor. This is actually true definitionally. -/
 def liftCompιIso : P.lift F hF ⋙ P.ι ≅ F := Iso.refl _
 
-@[simp]
 lemma ι_obj_lift_obj (X : C) :
     P.ι.obj ((P.lift F hF).obj X) = F.obj X := rfl
 
-@[simp]
 lemma ι_obj_lift_map {X Y : C} (f : X ⟶ Y) :
     P.ι.map ((P.lift F hF).map f) = F.map f := rfl
 

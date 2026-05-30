@@ -79,12 +79,14 @@ protected def initial : Factorisation f where
   ι := 𝟙 _
   π := f
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The unique morphism out of `Factorisation.initial f`. -/
 @[simps]
 protected def initialHom (d : Factorisation f) :
     Factorisation.Hom (Factorisation.initial : Factorisation f) d where
   h := d.ι
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Unique ((Factorisation.initial : Factorisation f) ⟶ d) where
   default := Factorisation.initialHom d
   uniq f := by apply Factorisation.Hom.ext; simp [← f.ι_h]
@@ -96,12 +98,14 @@ protected def terminal : Factorisation f where
   ι := f
   π := 𝟙 _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The unique morphism into `Factorisation.terminal f`. -/
 @[simps]
 protected def terminalHom (d : Factorisation f) :
     Factorisation.Hom d (Factorisation.terminal : Factorisation f) where
   h := d.π
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Unique (d ⟶ (Factorisation.terminal : Factorisation f)) where
   default := Factorisation.terminalHom d
   uniq f := by apply Factorisation.Hom.ext; simp [← f.h_π]

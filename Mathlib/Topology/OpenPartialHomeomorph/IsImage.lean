@@ -388,15 +388,9 @@ theorem refl_toOpenPartialHomeomorph :
     (Homeomorph.refl X).toOpenPartialHomeomorph = OpenPartialHomeomorph.refl X :=
   rfl
 
-@[deprecated (since := "2025-08-29")] alias
-  refl_toPartialHomeomorph := refl_toOpenPartialHomeomorph
-
 @[simp, mfld_simps]
 theorem symm_toOpenPartialHomeomorph :
     e.symm.toOpenPartialHomeomorph = e.toOpenPartialHomeomorph.symm :=
   rfl
-
-@[deprecated (since := "2025-08-29")] alias
-  symm_toPartialHomeomorph := symm_toOpenPartialHomeomorph
 
 end Homeomorph

@@ -123,7 +123,7 @@ attribute [simp] IsRootSystem.span_root_eq_top
 attribute [simp] IsRootSystem.span_coroot_eq_top
 
 /-- If we interchange the roles of `M` and `N`, we still have a root pairing. -/
-@[simps!, simps toLinearMap]
+@[simps! root coroot reflectionPerm, simps toLinearMap]
 protected def flip : RootPairing ι R N M where
   toLinearMap := P.toLinearMap.flip
   root := P.coroot
@@ -160,7 +160,7 @@ lemma zero_notMem_range_coroot [NeZero (2 : R)] : 0 ∉ range P.coroot :=
   P.flip.zero_notMem_range_root
 
 lemma exists_ne_zero [Nonempty ι] [NeZero (2 : R)] : ∃ i, P.root i ≠ 0 := by
-  obtain ⟨i⟩ := inferInstanceAs (Nonempty ι)
+  obtain ⟨i⟩ := (inferInstance : Nonempty ι)
   exact ⟨i, P.ne_zero i⟩
 
 lemma exists_ne_zero' [Nonempty ι] [NeZero (2 : R)] : ∃ i, P.coroot i ≠ 0 :=
@@ -400,7 +400,7 @@ lemma pairing_reflectionPerm_self_right (i j : ι) :
 
 /-- The indexing set of a root pairing carries an involutive negation, corresponding to the negation
 of a root / coroot. -/
-@[simps] def indexNeg : InvolutiveNeg ι where
+@[simps, implicit_reducible] def indexNeg : InvolutiveNeg ι where
   neg i := P.reflectionPerm i i
   neg_neg i := by
     apply P.root.injective
@@ -459,7 +459,7 @@ lemma smul_coroot_eq_of_root_eq_smul [Finite ι] [IsAddTorsionFree N] (i j : ι)
   refine Module.eq_of_mapsTo_reflection_of_mem (f := P.root' i) (g := P.root' i)
     (finite_range P.coroot) (by simp [hij]) (by simp) (by simp [hij]) (by simp) ?_
     (P.mapsTo_coreflection_coroot i) (mem_range_self i)
-  convert P.mapsTo_coreflection_coroot j
+  convert! P.mapsTo_coreflection_coroot j
   ext x
   replace h : P.root' j = t • P.root' i := by ext; simp [h, root']
   simp [Module.preReflection_apply, coreflection_apply, h, smul_comm _ t, mul_smul]

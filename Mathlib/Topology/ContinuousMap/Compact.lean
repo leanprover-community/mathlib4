@@ -147,9 +147,9 @@ theorem edist_eq_iSup : edist f g = ⨆ (x : α), edist (f x) (g x) := by
 instance {R} [Zero R] [Zero β] [PseudoMetricSpace R] [SMul R β] [IsBoundedSMul R β] :
     IsBoundedSMul R C(α, β) where
   dist_smul_pair' r f g := by
-    simpa only [← dist_mkOfCompact] using dist_smul_pair r (mkOfCompact f) (mkOfCompact g)
+    simpa only [← dist_mkOfCompact] using! dist_smul_pair r (mkOfCompact f) (mkOfCompact g)
   dist_pair_smul' r₁ r₂ f := by
-    simpa only [← dist_mkOfCompact] using dist_pair_smul r₁ r₂ (mkOfCompact f)
+    simpa only [← dist_mkOfCompact] using! dist_pair_smul r₁ r₂ (mkOfCompact f)
 
 end
 
@@ -179,6 +179,10 @@ instance : SeminormedAddCommGroup C(α, E) where
 instance {E : Type*} [NormedAddCommGroup E] : NormedAddCommGroup C(α, E) where
   __ : SeminormedAddCommGroup C(α, E) := inferInstance
   __ : MetricSpace C(α, E) := inferInstance
+
+instance [Nonempty α] {E : Type*} [NormedAddCommGroup E] [Nontrivial E] :
+    NontrivialTopology C(α, E) := by
+  simpa [nontrivialTopology_iff_exists_norm_ne_zero] using exists_ne (0 : C(α, E))
 
 instance [Nonempty α] [One E] [NormOneClass E] : NormOneClass C(α, E) where
   norm_one := by simp only [← norm_mkOfCompact, mkOfCompact_one, norm_one]
@@ -344,6 +348,48 @@ end
     ‖f • const α b‖ = ‖f‖ * ‖b‖ := by
   simp only [← coe_nnnorm, NNReal.coe_mul, nnnorm_smul_const]
 
+section NormSum
+
+variable {R : Type*} [NonUnitalSeminormedRing R] [IsCancelMulZero R]
+
+open BoundedContinuousFunction
+
+/-- If the product of continuous functions on a compact space is zero, then the norm of their sum
+is the maximum of their norms. -/
+lemma norm_add_eq_max {f g : C(α, R)} (h : f * g = 0) :
+    ‖f + g‖ = max ‖f‖ ‖g‖ := by
+  replace h : mkOfCompact f * mkOfCompact g = 0 := by ext x; simpa using! congr($h x)
+  simpa using! BoundedContinuousFunction.norm_add_eq_max h
+
+/-- If the product of continuous functions on a compact space is zero, then the norm of their sum
+is the maximum of their norms. -/
+lemma nnnorm_add_eq_max {f g : C(α, R)} (h : f * g = 0) :
+    ‖f + g‖₊ = max ‖f‖₊ ‖g‖₊ :=
+  NNReal.eq <| norm_add_eq_max h
+
+lemma norm_sub_eq_max {f g : C(α, R)} (h : f * g = 0) :
+    ‖f - g‖ = max ‖f‖ ‖g‖ := by
+  simpa [sub_eq_add_neg] using norm_add_eq_max (f := f) (g := -g) (by simpa)
+
+lemma nnnorm_sub_eq_max {f g : C(α, R)} (h : f * g = 0) :
+    ‖f - g‖₊ = max ‖f‖₊ ‖g‖₊ :=
+  NNReal.eq <| norm_sub_eq_max h
+
+open scoped Function in
+/-- If the pairwise products of continuous functions on a compact space are all zero, then the norm
+of their sum is the maximum of their norms. -/
+lemma nnnorm_sum_eq_sup {ι : Type*} {f : ι → C(α, R)} (s : Finset ι)
+    (h : Pairwise ((· * · = 0) on f)) :
+    ‖∑ i ∈ s, f i‖₊ = s.sup (‖f ·‖₊) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert j s hj ih =>
+    suffices f j * ∑ i ∈ s, f i = 0 by simpa [hj, ← ih] using nnnorm_add_eq_max this
+    simpa [Finset.mul_sum] using Finset.sum_eq_zero fun i hi ↦ h (by grind)
+
+end NormSum
+
 section
 
 variable {𝕜 : Type*} {γ : Type*} [NormedField 𝕜] [SeminormedRing γ] [NormedAlgebra 𝕜 γ]
@@ -404,7 +450,6 @@ open TopologicalSpace
 variable {X : Type*} [TopologicalSpace X] [LocallyCompactSpace X]
 variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     (hF : ∀ K : Compacts X, Summable fun i => ‖(F i).restrict K‖) : Summable F := by
   classical
@@ -416,7 +461,7 @@ theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     -- TODO: there is a non-confluence problem in the lemmas here,
     -- and `SetLike.coe_sort_coe` prevents `restrict_apply` from being used.
     simp [-SetLike.coe_sort_coe]
-  simpa only [HasSum, A] using (hF K).of_norm
+  simpa only [HasSum, A] using! (hF K).of_norm
 
 end LocalNormalConvergence
 

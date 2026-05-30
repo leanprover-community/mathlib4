@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.Algebra.Category.Grp.Kernels
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.GroupTheory.QuotientGroup.Finite
 
@@ -24,9 +24,9 @@ other categories like `ModuleCat`.
 
 ## Main definitions
 - `ShortComplex.abHomologyIso` identifies the homology of a short complex of abelian
-groups to an explicit quotient.
+  groups to an explicit quotient.
 - `ShortComplex.ab_exact_iff` expresses that a short complex of abelian groups `S`
-is exact iff any element in the kernel of `S.g` belongs to the image of `S.f`.
+  is exact iff any element in the kernel of `S.g` belongs to the image of `S.f`.
 
 -/
 
@@ -50,6 +50,7 @@ lemma ab_zero_apply (x : S.X₁) : S.g (S.f x) = 0 := by
 def abToCycles : S.X₁ →+ AddMonoidHom.ker S.g.hom :=
     AddMonoidHom.mk' (fun x => ⟨S.f x, S.ab_zero_apply x⟩) (by aesop)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The explicit left homology data of a short complex of abelian group that is
 given by a kernel and a quotient given by the `AddMonoidHom` API. -/
@@ -169,9 +170,6 @@ lemma ShortExact.ab_finite_iff {S : ShortComplex Ab.{u}} (hS : S.ShortExact) :
     Finite S.X₂ ↔ Finite S.X₁ ∧ Finite S.X₃ where
   mp _ := ⟨.of_injective _ hS.ab_injective_f, .of_surjective _ hS.ab_surjective_g⟩
   mpr | ⟨_, _⟩ => hS.exact.ab_finite
-
-@[deprecated (since := "2025-11-03")]
-protected alias ShortExact.ab_exact_iff_function_exact := ab_exact_iff_function_exact
 
 end ShortComplex
 

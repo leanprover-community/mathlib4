@@ -483,10 +483,7 @@ attribute [local instance] premetricOptimalGHDist
 /-- A metric space which realizes the optimal coupling between `X` and `Y` -/
 def OptimalGHCoupling : Type _ :=
   @SeparationQuotient (X ⊕ Y) (premetricOptimalGHDist X Y).toUniformSpace.toTopologicalSpace
-
-instance : MetricSpace (OptimalGHCoupling X Y) := by
-  unfold OptimalGHCoupling
-  infer_instance
+deriving MetricSpace
 
 /-- Injection of `X` in the optimal coupling between `X` and `Y` -/
 def optimalGHInjl (x : X) : OptimalGHCoupling X Y :=

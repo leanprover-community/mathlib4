@@ -19,16 +19,15 @@ jobs:
       with:
         fetch-depth: 0 # download the full repository
 
-    - name: Checkout mathlib-ci
+    - name: Checkout local actions
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
-        repository: leanprover-community/mathlib-ci
-        ref: 7355aeb4f32cb2a181d02abd7a9d6ab4fe033286
+        ref: ${{ github.workflow_sha }}
         fetch-depth: 1
-        path: ci-tools
-
-    - name: Set up CI scripts paths
-      uses: ./ci-tools/.github/actions/setup-ci-scripts
+        sparse-checkout: .github/actions
+        path: workflow-actions
+    - name: Checkout mathlib-ci
+      uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
     - name: Set up Python
       uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -41,6 +40,7 @@ jobs:
         pip install -r "$CI_SCRIPTS_DIR/zulip/requirements.txt"
 
     - name: Update zulip emoji reactions
+      continue-on-error: true  # Emoji updates are cosmetic; never fail CI over them
       env:
         ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
         ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
@@ -54,4 +54,4 @@ jobs:
           while read -r pr_number; do
             printf $'Running the python script with pr "%s"\n' "${pr_number}"
             python "${CI_SCRIPTS_DIR}/zulip/zulip_emoji_reactions.py" "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "[Merged by Bors]" "none" "${pr_number}"
-          done < <(git log --oneline -n 10 | awk -F# '{ gsub(/)$/, ""); print $NF}')
+          done < <(git log --oneline -n 10 | grep -oP '.*\(#\K\d+(?=\))')

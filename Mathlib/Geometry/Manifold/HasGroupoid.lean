@@ -201,6 +201,7 @@ variable (e : OpenPartialHomeomorph α H)
 whole space `α`, then that open partial homeomorphism induces an `H`-charted space structure on `α`.
 (This condition is equivalent to `e` being an open embedding of `α` into `H`; see
 `IsOpenEmbedding.singletonChartedSpace`.) -/
+@[implicit_reducible]
 def singletonChartedSpace (h : e.source = Set.univ) : ChartedSpace H α where
   atlas := {e}
   chartAt _ := e
@@ -242,6 +243,7 @@ variable [Nonempty α]
 
 /-- An open embedding of `α` into `H` induces an `H`-charted space structure on `α`.
 See `OpenPartialHomeomorph.singletonChartedSpace`. -/
+@[implicit_reducible]
 def singletonChartedSpace {f : α → H} (h : IsOpenEmbedding f) : ChartedSpace H α :=
   (h.toOpenPartialHomeomorph f).singletonChartedSpace (toOpenPartialHomeomorph_source _ _)
 
@@ -280,7 +282,7 @@ of some chart on `M`. -/
 lemma chart_eq {s : Opens M} (hs : Nonempty s) {e : OpenPartialHomeomorph s H}
     (he : e ∈ atlas H s) : ∃ x : s, e = (chartAt H (x : M)).subtypeRestr hs := by
   rcases he with ⟨xset, ⟨x, hx⟩, he⟩
-  exact ⟨x, mem_singleton_iff.mp (by convert he)⟩
+  exact ⟨x, mem_singleton_iff.mp (by convert! he)⟩
 
 /-- If `t` is a non-empty open subset of `H`,
 every chart of `t` is the restriction of some chart on `H`. -/
@@ -339,9 +341,6 @@ lemma StructureGroupoid.subtypeRestr_mem_maximalAtlas {e : OpenPartialHomeomorph
   -- the transition functions of the restriction are the restriction of the transition function.
   exact ⟨G.trans_restricted he (chart_mem_atlas H (x : M)) hs,
          G.trans_restricted (chart_mem_atlas H (x : M)) he hs⟩
-
-@[deprecated (since := "2025-08-17")] alias StructureGroupoid.restriction_in_maximalAtlas :=
-  StructureGroupoid.subtypeRestr_mem_maximalAtlas
 
 /-! ### Structomorphisms -/
 
@@ -469,7 +468,7 @@ def OpenPartialHomeomorph.toStructomorph {e : OpenPartialHomeomorph M H} (he : e
         fun c c' hc hc' ↦ G.compatible_of_mem_maximalAtlas (G.subset_maximalAtlas hc)
           (G.restriction_mem_maximalAtlas_subtype he h c' hc') }
   · have : IsEmpty t := isEmpty_coe_sort.mpr
-      (by convert e.image_source_eq_target ▸ image_eq_empty.mpr (isEmpty_coe_sort.mp h))
+      (by convert! e.image_source_eq_target ▸ image_eq_empty.mpr (isEmpty_coe_sort.mp h))
     exact { Homeomorph.empty with
       -- `c'` cannot exist: it would be the restriction of `chartAt H x` at some `x ∈ t`.
       mem_groupoid := fun _ c' _ ⟨_, ⟨x, _⟩, _⟩ ↦ (this.false x).elim }

@@ -220,7 +220,6 @@ abbrev r (A : C) : A ⟶ cokernel (diag A) :=
 instance mono_Δ {A : C} : Mono (diag A) :=
   mono_of_mono_fac <| prod.lift_fst _ _
 
-set_option backward.isDefEq.respectTransparency false in
 instance mono_r {A : C} : Mono (r A) := by
   let hl : IsLimit (KernelFork.ofι (diag A) (cokernel.condition (diag A))) :=
     monoIsKernelOfCokernel _ (colimit.isColimit _)
@@ -237,6 +236,7 @@ instance mono_r {A : C} : Mono (r A) := by
   apply (cancel_mono (prod.lift (𝟙 A) (0 : A ⟶ A))).1
   rw [← hy, hyy, zero_comp, zero_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance epi_r {A : C} : Epi (r A) := by
   have hlp : prod.lift (𝟙 A) (0 : A ⟶ A) ≫ Limits.prod.snd = 0 := prod.lift_snd _ _
@@ -247,7 +247,7 @@ instance epi_r {A : C} : Epi (r A) := by
     · intro s m h
       haveI : Mono (prod.lift (𝟙 A) (0 : A ⟶ A)) := mono_of_mono_fac (prod.lift_fst _ _)
       apply (cancel_mono (prod.lift (𝟙 A) (0 : A ⟶ A))).1
-      convert h
+      convert! h
       apply Limits.prod.hom_ext <;> simp
   let hp2 : IsColimit (CokernelCofork.ofπ (Limits.prod.snd : A ⨯ A ⟶ A) hlp) :=
     epiIsCokernelOfKernel _ hp1
@@ -409,6 +409,7 @@ theorem add_comp (X Y Z : C) (f g : X ⟶ Y) (h : Y ⟶ Z) : (f + g) ≫ h = f �
   rw [add_def, sub_comp, neg_def, sub_comp, zero_comp, add_def, neg_def]
 
 /-- Every `NonPreadditiveAbelian` category is preadditive. -/
+@[implicit_reducible]
 def preadditive : Preadditive C where
   homGroup X Y :=
     { add_assoc := add_assoc

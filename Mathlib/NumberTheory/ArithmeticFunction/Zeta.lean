@@ -74,22 +74,18 @@ theorem sum_divisorsAntidiagonal_eq_sum_divisors {M} [Semiring R] [AddCommMonoid
       ∑ i ∈ divisors x, f i := by
   simp [← coe_zeta_smul_apply (R := R)]
 
+theorem coe_zeta_mul_comm [Semiring R] {f : ArithmeticFunction R} : ζ * f = f * ζ := by
+  ext n
+  simp_rw [mul_apply, natCoe_apply, (cast_commute ..).eq]
+  rw [sum_divisorsAntidiagonal fun x y ↦ f y * ζ x, sum_divisorsAntidiagonal' fun x y ↦ f x * ζ y]
+
 theorem coe_zeta_mul_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
     (ζ * f) x = ∑ i ∈ divisors x, f i :=
   coe_zeta_smul_apply
 
 theorem coe_mul_zeta_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
     (f * ζ) x = ∑ i ∈ divisors x, f i := by
-  rw [mul_apply]
-  trans ∑ i ∈ divisorsAntidiagonal x, f i.1
-  · refine sum_congr rfl fun i hi => ?_
-    rcases mem_divisorsAntidiagonal.1 hi with ⟨rfl, h⟩
-    rw [natCoe_apply, zeta_apply_ne (right_ne_zero_of_mul h), cast_one, mul_one]
-  · rw [← map_div_right_divisors, sum_map, Function.Embedding.coeFn_mk]
-
-theorem coe_zeta_mul_comm [Semiring R] {f : ArithmeticFunction R} : ζ * f = f * ζ := by
-  ext x
-  rw [coe_zeta_mul_apply, coe_mul_zeta_apply]
+  rw [← coe_zeta_mul_comm, coe_zeta_mul_apply]
 
 theorem zeta_mul_apply {f : ArithmeticFunction ℕ} {x : ℕ} : (ζ * f) x = ∑ i ∈ divisors x, f i := by
   rw [← natCoe_nat ζ, coe_zeta_mul_apply]

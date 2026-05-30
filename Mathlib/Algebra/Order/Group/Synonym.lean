@@ -6,7 +6,8 @@ Authors: Yury Kudryashov, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Order.Synonym
+public import Mathlib.Order.OrderDual
+public import Mathlib.Order.Lex
 
 /-!
 # Group structure on the order type synonyms
@@ -14,7 +15,7 @@ public import Mathlib.Order.Synonym
 Transfer algebraic instances from `α` to `αᵒᵈ`, `Lex α`, and `Colex α`.
 -/
 
-@[expose] public section
+public section
 
 
 open OrderDual
@@ -23,6 +24,7 @@ variable {α β : Type*}
 
 /-! ### `OrderDual` -/
 
+namespace OrderDual
 
 @[to_additive]
 instance [h : One α] : One αᵒᵈ := h
@@ -37,70 +39,90 @@ instance [h : Inv α] : Inv αᵒᵈ := h
 instance [h : Div α] : Div αᵒᵈ := h
 
 @[to_additive (attr := to_additive) (reorder := 1 2) OrderDual.instSMul]
-instance OrderDual.instPow [h : Pow α β] : Pow αᵒᵈ β := h
+instance [h : Pow α β] : Pow αᵒᵈ β := h
 
 @[to_additive (attr := to_additive) (reorder := 1 2) OrderDual.instSMul']
-instance OrderDual.instPow' [h : Pow α β] : Pow α βᵒᵈ := h
+instance [h : Pow α β] : Pow α βᵒᵈ := h
 
 @[to_additive]
-instance [h : Semigroup α] : Semigroup αᵒᵈ := h
+instance [h : Semigroup α] : Semigroup αᵒᵈ where
+  mul_assoc := h.mul_assoc
 
 @[to_additive]
-instance [h : CommSemigroup α] : CommSemigroup αᵒᵈ := h
+instance [h : CommSemigroup α] : CommSemigroup αᵒᵈ where
+  mul_comm := h.mul_comm
 
 @[to_additive]
-instance [Mul α] [h : IsLeftCancelMul α] : IsLeftCancelMul αᵒᵈ := h
+instance [Mul α] [h : IsLeftCancelMul α] : IsLeftCancelMul αᵒᵈ where
+  mul_left_cancel := h.mul_left_cancel
 
 @[to_additive]
-instance [Mul α] [h : IsRightCancelMul α] : IsRightCancelMul αᵒᵈ := h
+instance [Mul α] [h : IsRightCancelMul α] : IsRightCancelMul αᵒᵈ where
+  mul_right_cancel := h.mul_right_cancel
 
 @[to_additive]
-instance [Mul α] [h : IsCancelMul α] : IsCancelMul αᵒᵈ := h
+instance [Mul α] [h : IsCancelMul α] : IsCancelMul αᵒᵈ where
 
 @[to_additive]
-instance [h : LeftCancelSemigroup α] : LeftCancelSemigroup αᵒᵈ := h
+instance [h : LeftCancelSemigroup α] : LeftCancelSemigroup αᵒᵈ where
 
 @[to_additive]
-instance [h : RightCancelSemigroup α] : RightCancelSemigroup αᵒᵈ := h
+instance [h : RightCancelSemigroup α] : RightCancelSemigroup αᵒᵈ where
 
 @[to_additive]
-instance [h : MulOneClass α] : MulOneClass αᵒᵈ := h
+instance [h : MulOneClass α] : MulOneClass αᵒᵈ where
+  one_mul := h.one_mul
+  mul_one := h.mul_one
 
 @[to_additive]
-instance [h : Monoid α] : Monoid αᵒᵈ := h
+instance [h : Monoid α] : Monoid αᵒᵈ where
+  npow := h.npow
+  npow_succ := h.npow_succ
+  npow_zero := h.npow_zero
 
 @[to_additive]
-instance OrderDual.instCommMonoid [h : CommMonoid α] : CommMonoid αᵒᵈ := h
+instance [h : CommMonoid α] : CommMonoid αᵒᵈ where
 
 @[to_additive]
-instance [h : LeftCancelMonoid α] : LeftCancelMonoid αᵒᵈ := h
+instance [h : LeftCancelMonoid α] : LeftCancelMonoid αᵒᵈ where
 
 @[to_additive]
-instance [h : RightCancelMonoid α] : RightCancelMonoid αᵒᵈ := h
+instance [h : RightCancelMonoid α] : RightCancelMonoid αᵒᵈ where
 
 @[to_additive]
-instance [h : CancelMonoid α] : CancelMonoid αᵒᵈ := h
+instance [h : CancelMonoid α] : CancelMonoid αᵒᵈ where
 
 @[to_additive]
-instance OrderDual.instCancelCommMonoid [h : CancelCommMonoid α] : CancelCommMonoid αᵒᵈ := h
+instance [h : CancelCommMonoid α] : CancelCommMonoid αᵒᵈ where
 
 @[to_additive]
-instance [h : InvolutiveInv α] : InvolutiveInv αᵒᵈ := h
+instance [h : InvolutiveInv α] : InvolutiveInv αᵒᵈ where
+  inv_inv := h.inv_inv
 
 @[to_additive]
-instance [h : DivInvMonoid α] : DivInvMonoid αᵒᵈ := h
+instance [h : DivInvMonoid α] : DivInvMonoid αᵒᵈ where
+  div_eq_mul_inv := h.div_eq_mul_inv
+  zpow := h.zpow
+  zpow_zero' := h.zpow_zero'
+  zpow_succ' := h.zpow_succ'
+  zpow_neg' := h.zpow_neg'
 
 @[to_additive]
-instance [h : DivisionMonoid α] : DivisionMonoid αᵒᵈ := h
+instance [h : DivisionMonoid α] : DivisionMonoid αᵒᵈ where
+  mul_inv_rev := h.mul_inv_rev
+  inv_eq_of_mul := h.inv_eq_of_mul
 
 @[to_additive]
-instance [h : DivisionCommMonoid α] : DivisionCommMonoid αᵒᵈ := h
+instance [h : DivisionCommMonoid α] : DivisionCommMonoid αᵒᵈ where
 
 @[to_additive]
-instance OrderDual.instGroup [h : Group α] : Group αᵒᵈ := h
+instance [h : Group α] : Group αᵒᵈ where
+  inv_mul_cancel := h.inv_mul_cancel
 
 @[to_additive]
-instance [h : CommGroup α] : CommGroup αᵒᵈ := h
+instance [h : CommGroup α] : CommGroup αᵒᵈ where
+
+end OrderDual
 
 @[to_additive (attr := simp)]
 theorem toDual_one [One α] : toDual (1 : α) = 1 := rfl

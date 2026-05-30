@@ -40,7 +40,7 @@ theorem nontrivial_of_algebraMap_injective_of_isDomain
     ((IsFractionRing.injective B FB).comp hb)
   algebraize_only [fa.toRingHom, fb.toRingHom]
   letI : CompatibleSMul FR R FA FB := CompatibleSMul.isScalarTower
-  exact Algebra.TensorProduct.mapOfCompatibleSMul FR R FA FB |>.comp
+  exact Algebra.TensorProduct.mapOfCompatibleSMul FR R R FA FB |>.comp
     (Algebra.TensorProduct.map (IsScalarTower.toAlgHom R A FA) (IsScalarTower.toAlgHom R B FB))
     |>.toRingHom.domain_nontrivial
 

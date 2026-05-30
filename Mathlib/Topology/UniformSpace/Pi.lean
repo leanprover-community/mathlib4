@@ -11,7 +11,7 @@ public import Mathlib.Topology.UniformSpace.UniformEmbedding
 # Indexed product of uniform spaces
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

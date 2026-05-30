@@ -118,13 +118,15 @@ initialize_simps_projections Finsupp (toFun → apply)
 theorem ext {f g : α →₀ M} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext _ _ h
 
+instance instSubsingleton [IsEmpty α] : Subsingleton (α →₀ M) where
+  allEq f g := by ext x; exact isEmptyElim x
+
+instance instSubsingleton' [Subsingleton M] : Subsingleton (α →₀ M) where
+  allEq f g := by ext x; exact Subsingleton.elim ..
+
 variable (α) in
-theorem nontrivial_of_nontrivial [Nontrivial (α →₀ M)] :
-    Nontrivial M := by
-  obtain ⟨x, y, h⟩ := exists_pair_ne (α →₀ M)
-  rw [ne_eq, Finsupp.ext_iff, not_forall] at h
-  obtain ⟨a, h⟩ := h
-  exact nontrivial_of_ne _ _ h
+theorem nontrivial_of_nontrivial [h : Nontrivial (α →₀ M)] : Nontrivial M := by
+  contrapose! h; infer_instance
 
 lemma ne_iff {f g : α →₀ M} : f ≠ g ↔ ∃ a, f a ≠ g a := DFunLike.ne_iff
 
@@ -211,13 +213,6 @@ theorem equivFunOnFinite_symm_coe {α} [Finite α] (f : α →₀ M) : equivFunO
 @[simp]
 lemma coe_equivFunOnFinite_symm {α} [Finite α] (f : α → M) : ⇑(equivFunOnFinite.symm f) = f := rfl
 
-/--
-If `α` has a unique term, the type of finitely supported functions `α →₀ β` is equivalent to `β`.
--/
-@[simps!]
-noncomputable def _root_.Equiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃ M :=
-  Finsupp.equivFunOnFinite.trans (Equiv.funUnique ι M)
-
 @[ext]
 theorem unique_ext [Unique α] {f g : α →₀ M} (h : f default = g default) : f = g :=
   ext fun a => by rwa [Unique.eq_default a]
@@ -232,7 +227,7 @@ section OnFinset
 variable [Zero M]
 
 /-- The (not exposed) support of `Finsupp.onFinset`. -/
-@[no_expose] def onFinset_support (s : Finset α) (f : α → M) : Finset α :=
+@[no_expose] def onFinsetSupport (s : Finset α) (f : α → M) : Finset α :=
   haveI := Classical.decEq M
   {a ∈ s | f a ≠ 0}
 
@@ -240,9 +235,9 @@ variable [Zero M]
 The function must be `0` outside of `s`. Use this when the set needs to be filtered anyways,
 otherwise a better set representation is often available. -/
 def onFinset (s : Finset α) (f : α → M) (hf : ∀ a, f a ≠ 0 → a ∈ s) : α →₀ M where
-  support := onFinset_support s f
+  support := onFinsetSupport s f
   toFun := f
-  mem_support_toFun := by simpa [onFinset_support]
+  mem_support_toFun := by simpa [onFinsetSupport]
 
 @[simp, norm_cast] lemma coe_onFinset (s : Finset α) (f : α → M) (hf) : onFinset s f hf = f := rfl
 
@@ -253,7 +248,9 @@ theorem onFinset_apply {s : Finset α} {f : α → M} {hf a} : (onFinset s f hf 
 theorem support_onFinset [DecidableEq M] {s : Finset α} {f : α → M}
     (hf : ∀ a : α, f a ≠ 0 → a ∈ s) :
     (Finsupp.onFinset s f hf).support = {a ∈ s | f a ≠ 0} := by
-  dsimp [onFinset]; rw [onFinset_support]; congr
+  dsimp [onFinset]; rw [onFinsetSupport]; congr
+
+@[simp] lemma onFinset_support (f : α →₀ M) : onFinset f.support f (by simp) = f := by ext; simp
 
 @[simp]
 theorem support_onFinset_subset {s : Finset α} {f : α → M} {hf} :
@@ -470,6 +467,10 @@ theorem embDomain_eq_zero {f : α ↪ β} {l : α →₀ M} : embDomain f l = 0 
 theorem embDomain_mapRange (f : α ↪ β) (g : M → N) (p : α →₀ M) (hg : g 0 = 0) :
     embDomain f (mapRange g hg p) = mapRange g hg (embDomain f p) := by grind
 
+@[simp]
+lemma embDomain_refl : embDomain (M := M) (Function.Embedding.refl α) = id := by
+  ext; simp [embDomain_apply]
+
 end EmbDomain
 
 /-! ### Declarations about `zipWith` -/
@@ -497,7 +498,7 @@ theorem zipWith_apply {f : M → N → O} {hf : f 0 0 = 0} {g₁ : α →₀ M} 
 
 theorem support_zipWith [D : DecidableEq α] {f : M → N → O} {hf : f 0 0 = 0} {g₁ : α →₀ M}
     {g₂ : α →₀ N} : (zipWith f hf g₁ g₂).support ⊆ g₁.support ∪ g₂.support := by
-  convert support_onFinset_subset
+  convert! support_onFinset_subset
 
 end ZipWith
 

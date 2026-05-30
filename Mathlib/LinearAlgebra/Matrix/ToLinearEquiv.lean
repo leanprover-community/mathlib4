@@ -28,7 +28,7 @@ to linear equivs.
 
 ## Tags
 
-matrix, linear_equiv, determinant, inverse
+matrix, linear equivalence, linear isomorphism, determinant, inverse
 
 -/
 
@@ -170,7 +170,7 @@ theorem nondegenerate_iff_det_ne_zero {A : Type*} [DecidableEq n] [CommRing A] [
     {M : Matrix n n A} : Nondegenerate M ↔ M.det ≠ 0 := by
   refine ⟨?_, nondegenerate_of_det_ne_zero⟩
   rw [ne_eq, ← exists_vecMul_eq_zero_iff]
-  push_neg
+  push Not
   intro hM v hv hMv
   obtain ⟨w, hwMv⟩ := hM.exists_not_ortho_of_ne_zero hv
   simp [dotProduct_mulVec, hMv, zero_dotProduct, ne_eq] at hwMv

@@ -68,7 +68,7 @@ open scoped ENNReal Topology Function
 namespace MeasureTheory
 
 variable {α : Type*} {C : Set (Set α)} {s t : Set α} {I : Finset (Set α)}
-{G : Type*} [AddCommMonoid G]
+  {G : Type*} [AddCommMonoid G]
 
 variable (G) in
 /-- An additive content is a set function with value 0 at the empty set which is finitely additive
@@ -112,7 +112,7 @@ lemma addContent_biUnion {ι : Type*} {a : Finset ι} {f : ι → Set α} (hf : 
   have A : ⋃ i ∈ a, f i = ⋃₀ (a.image f) := by simp
   rw [A, addContent_sUnion]; rotate_left
   · grind
-  · simpa using h_dis.image
+  · simpa using! h_dis.image
   · rwa [← A]
   rw [sum_image_of_pairwise_eq_zero]
   refine h_dis.imp ?_
@@ -121,7 +121,7 @@ lemma addContent_biUnion {ι : Type*} {a : Finset ι} {f : ι → Set α} (hf : 
 lemma addContent_iUnion {ι : Type*} [Fintype ι] {f : ι → Set α} (hf : ∀ i, f i ∈ C)
     (h_dis : Pairwise (Disjoint on f)) (h_mem : ⋃ i, f i ∈ C) :
     m (⋃ i, f i) = ∑ i, m (f i) := by
-  convert addContent_biUnion (a := Finset.univ) (f := f) (m := m) ?_ ?_ ?_ using 1
+  convert! addContent_biUnion (a := Finset.univ) (f := f) (m := m) ?_ ?_ ?_ using 1
   · simp
   · simpa
   · simpa [Set.PairwiseDisjoint, Set.pairwise_univ] using h_dis
@@ -130,10 +130,19 @@ lemma addContent_iUnion {ι : Type*} [Fintype ι] {f : ι → Set α} (hf : ∀ 
 lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_dis : Disjoint s t) :
     m (s ∪ t) = m s + m t := by
   have A : s ∪ t = ⋃ i, ![s, t] i := by ext; simp
-  convert addContent_iUnion (f := ![s, t]) (m := m) (fun i ↦ ?_) (fun i j hij ↦ ?_) ?_ using 2
+  convert! addContent_iUnion (f := ![s, t]) (m := m) (fun i ↦ ?_) (fun i j hij ↦ ?_) ?_ using 2
   · simp [Fin.univ_castSuccEmb, add_comm]
   · fin_cases i <;> simpa
-  · fin_cases i <;> fin_cases j <;> grind
+  · #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed all four
+    cases. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
+    the new canonicalizer; a minimization would help. The original proof was:
+    `fin_cases i <;> fin_cases j <;> grind` -/
+    fin_cases i <;> fin_cases j
+    · grind
+    · assumption
+    · exact h_dis.symm
+    · grind
   · rwa [← A]
 
 /-- An additive content with values in `ℝ≥0∞` is said to be sigma-sub-additive if for any sequence
@@ -248,7 +257,7 @@ private lemma AddContent.supClosureFun_apply_of_mem (hC : IsSetSemiring C)
         have := hI hs
         rwa [hC.mem_supClosure_iff] at this
       refine ⟨P.parts, PC, P.disjoint, ?_⟩
-      convert P.sup_parts.symm
+      convert! P.sup_parts.symm
       simp [sUnion_eq_biUnion]
     choose! J hJC hJdisj hJs using A
     have H {a i} (hi : i ∈ I) (ha : a ∈ J i) : a ⊆ i := by
@@ -355,7 +364,7 @@ lemma addContent_le_sum_of_subset_sUnion {m : AddContent G C} (hC : IsSetSemirin
     rintro u hu rfl
     exact hC.inter_mem _ ht _ (h_ss hu)
   · rwa [← ht_eq]
-  · refine (Finset.sum_image_le_of_nonneg fun _ _ ↦ zero_le _).trans (sum_le_sum fun u hu ↦ ?_)
+  · refine (Finset.sum_image_le_of_nonneg fun _ _ ↦ zero_le).trans (sum_le_sum fun u hu ↦ ?_)
     exact addContent_mono hC (hC.inter_mem _ ht _ (h_ss hu)) (h_ss hu) inter_subset_right
 
 /-- If an `AddContent` is σ-subadditive on a semi-ring of sets, then it is σ-additive. -/
@@ -687,6 +696,22 @@ theorem isSigmaSubadditive_of_addContent_iUnion_eq_tsum {m : AddContent ℝ≥0�
   refine le_of_tendsto_of_tendsto' h_tendsto h_tendsto' fun _ ↦ ?_
   rw [partialSups_eq_biUnion_range]
   exact addContent_biUnion_le hC (fun _ _ ↦ hf _)
+
+/-- If an additive content is continuous from below on monotone sequences of sets,
+then it is countably additive on pairwise disjoint sequences. -/
+theorem addContent_iUnion_eq_tsum_of_addContent_iUnion_eq_iSup
+    (hC : IsSetRing C) (m : AddContent ℝ≥0∞ C)
+    {s : ℕ → Set α} (hd : Pairwise (Disjoint on s)) (hs : ∀ i, s i ∈ C)
+    (hm_iSup : ∀ ⦃s : ℕ → Set α⦄, (∀ n, s n ∈ C) → Monotone s → m (⋃ n, s n) = ⨆ n, m (s n)) :
+    m (⋃ i, s i) = ∑' i, m (s i) :=
+  calc
+    m (⋃ i, s i) = m (⋃ i, accumulate s i) := by simp
+    _ = ⨆ i, m (accumulate s i) :=
+      hm_iSup (fun n ↦ IsSetRing.accumulate_mem hC hs n) monotone_accumulate
+    _ = ⨆ i, ∑ j ∈ range (i + 1), m (s j) :=
+      iSup_congr fun i ↦ addContent_accumulate m hC hd hs i
+    _ = ∑' i, m (s i) :=
+      (ENNReal.tsum_eq_iSup_nat' (tendsto_add_atTop_nat 1)).symm
 
 end IsSetRing
 

@@ -200,7 +200,7 @@ def Proj.structureSheaf : Sheaf CommRingCat (ProjectiveSpectrum.top 𝒜) :=
     (-- We check the sheaf condition under `forget CommRing`.
           isSheaf_iff_isSheaf_comp
           _ _).mpr
-      (isSheaf_of_iso (structurePresheafCompForget 𝒜).symm (structureSheafInType 𝒜).cond)⟩
+      (isSheaf_of_iso (structurePresheafCompForget 𝒜).symm (structureSheafInType 𝒜).property)⟩
 
 end ProjectiveSpectrum
 
@@ -313,7 +313,7 @@ def homogeneousLocalizationToStalk (x : ProjectiveSpectrum.top 𝒜) (y : at x) 
 
 lemma homogeneousLocalizationToStalk_stalkToFiberRingHom (x z) :
     homogeneousLocalizationToStalk 𝒜 x (stalkToFiberRingHom 𝒜 x z) = z := by
-  obtain ⟨U, hxU, s, rfl⟩ := (Proj.structureSheaf 𝒜).presheaf.germ_exist x z
+  obtain ⟨U, hxU, s, rfl⟩ := (Proj.structureSheaf 𝒜).presheaf.exists_germ_eq z
   change homogeneousLocalizationToStalk 𝒜 x ((stalkToFiberRingHom 𝒜 x).hom
       (((Proj.structureSheaf 𝒜).presheaf.germ U x hxU) s)) =
     ((Proj.structureSheaf 𝒜).presheaf.germ U x hxU) s

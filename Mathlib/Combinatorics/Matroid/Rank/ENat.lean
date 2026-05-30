@@ -251,11 +251,11 @@ lemma Indep.encard_le_eRank (hI : M.Indep I) : I.encard ≤ M.eRank := by
   rw [← hI.eRk_eq_encard, eRank_def]
   exact M.eRk_mono hI.subset_ground
 
-/-- A version of `erk_eq_zero_iff'` with no supportedness hypothesis. -/
+/-- A version of `eRk_eq_zero_iff'` with no ground-set hypothesis. -/
 lemma eRk_eq_zero_iff' : M.eRk X = 0 ↔ X ∩ M.E ⊆ M.loops := by
   obtain ⟨I, hI⟩ := M.exists_isBasis (X ∩ M.E)
   rw [← eRk_inter_ground, ← hI.encard_eq_eRk, encard_eq_zero]
-  refine ⟨fun h ↦ by simpa [h] using hI, fun h ↦ eq_empty_iff_forall_notMem.2 fun e heI ↦ ?_⟩
+  refine ⟨fun h ↦ by simpa [h] using! hI, fun h ↦ eq_empty_iff_forall_notMem.2 fun e heI ↦ ?_⟩
   exact (hI.indep.isNonloop_of_mem heI).not_isLoop (h (hI.subset heI))
 
 @[simp]

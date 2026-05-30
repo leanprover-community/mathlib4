@@ -75,7 +75,6 @@ lemma evaluation_ne_zero_iff_mem_basicOpen (x : U) (f : X.presheaf.obj (op U)) :
     X.evaluation x f ≠ 0 ↔ x.val ∈ X.toRingedSpace.basicOpen f := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma basicOpen_eq_bot_iff_forall_evaluation_eq_zero (f : X.presheaf.obj (op U)) :
     X.toRingedSpace.basicOpen f = ⊥ ↔ ∀ (x : U), X.evaluation x f = 0 := by
   simp only [evaluation_eq_zero_iff_notMem_basicOpen, Subtype.forall]
@@ -136,7 +135,7 @@ lemma evaluation_naturality_apply {V : Opens Y} (x : (Opens.map f.base).obj V)
     (a : Y.presheaf.obj (op V)) :
     residueFieldMap f x.val (Y.evaluation ⟨f.base x, x.property⟩ a) =
       X.evaluation x (f.c.app (op V) a) := by
-  simpa using congrFun (congrArg (DFunLike.coe ∘ CommRingCat.Hom.hom) <|
+  simpa using! congrFun (congrArg (DFunLike.coe ∘ CommRingCat.Hom.hom) <|
     evaluation_naturality f x) a
 
 set_option backward.isDefEq.respectTransparency false in

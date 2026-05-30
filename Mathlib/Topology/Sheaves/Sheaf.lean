@@ -132,10 +132,10 @@ def forget : TopCat.Sheaf C X ⥤ TopCat.Presheaf C X :=
 -- https://github.com/leanprover-community/mathlib4/issues/380
 
 instance forget_full : (forget C X).Full where
-  map_surjective f := ⟨Sheaf.Hom.mk f, rfl⟩
+  map_surjective f := ⟨ObjectProperty.homMk f, rfl⟩
 
 instance forgetFaithful : (forget C X).Faithful where
-  map_injective := Sheaf.Hom.ext
+  map_injective := Sheaf.hom_ext
 
 -- Note: These can be proved by simp.
 theorem id_app (F : Sheaf C X) (t) : (𝟙 F : F ⟶ F).1.app t = 𝟙 _ :=

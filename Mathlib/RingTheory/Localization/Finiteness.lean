@@ -6,6 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Module.LocalizedModule.Int
+public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 public import Mathlib.RingTheory.Localization.Algebra
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 
@@ -25,6 +26,11 @@ In this file we establish behaviour of `Module.Finite` under localizations.
   and `{ r }` is a finite set generating the unit ideal such that
   `Mᵣ` is a finite `Rᵣ`-module for each `r`, then `M` is a finite `R`-module.
 
+## TODO
+
+* Move the results that `Module.Finite` over a semilocal ring is a local property from
+  `Mathlib/RingTheory/LocalProperties/Semilocal.lean` to this file.
+
 -/
 
 @[expose] public section
@@ -35,8 +41,8 @@ section
 
 open scoped Pointwise
 
-variable {R S : Type*} [CommRing R] [CommRing S] (M : Submonoid R) (f : R →+* S)
-variable (R' S' : Type*) [CommRing R'] [CommRing S']
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] (M : Submonoid R) (f : R →+* S)
+variable (R' S' : Type*) [CommSemiring R'] [CommSemiring S']
 variable [Algebra R R'] [Algebra S S']
 
 open scoped Classical in
@@ -74,10 +80,12 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
   obtain ⟨⟨_, a, ha₁, rfl⟩, ha₂⟩ :=
     (IsLocalization.eq_iff_exists (M.map (algebraMap R S)) S').mp hx''
   use (⟨a, ha₁⟩ : M) * (⟨y', hy'⟩ : M)
-  convert (Submodule.span R
-    (IsLocalization.finsetIntegerMultiple (Submonoid.map (algebraMap R S) M) s : Set S)).smul_mem
+  convert!
+    (Submodule.span R
+          (IsLocalization.finsetIntegerMultiple (Submonoid.map (algebraMap R S) M) s :
+            Set S)).smul_mem
       a hx' using 1
-  convert ha₂.symm using 1
+  convert! ha₂.symm using 1
   · rw [Subtype.coe_mk, Submonoid.smul_def, Submonoid.coe_mul, ← smul_smul]
     exact Algebra.smul_def _ _
   · exact Algebra.smul_def _ _
@@ -146,7 +154,7 @@ lemma of_isLocalization (R S) {Rₚ Sₚ : Type*} [CommSemiring R] [CommSemiring
   use T.image (algebraMap S Sₚ)
   simpa using span_eq_top_localization_localization Rₚ M Sₚ hT
 
-instance {R S : Type*} [CommRing R] {P : Ideal R} [CommRing S] [Algebra R S]
+instance {R S : Type*} [CommSemiring R] {P : Ideal R} [CommSemiring S] [Algebra R S]
     [Module.Finite R S] [P.IsPrime] :
     Module.Finite (Localization.AtPrime P)
       (Localization (Algebra.algebraMapSubmonoid S P.primeCompl)) :=
@@ -155,8 +163,6 @@ instance {R S : Type*} [CommRing R] {P : Ideal R} [CommRing S] [Algebra R S]
 open Algebra nonZeroDivisors in
 instance {A C : Type*} [CommRing A] [CommRing C] [Algebra A C] [Module.Finite A C] :
     Module.Finite (FractionRing A) (Localization (algebraMapSubmonoid C A⁰)) :=
-  have : IsScalarTower A (FractionRing A) (Localization (algebraMapSubmonoid C A⁰)) :=
-    instIsScalarTowerLocalizationAlgebraMapSubmonoid A⁰ C
   .of_isLocalization A C A⁰
 
 include S f in
@@ -171,11 +177,11 @@ instance [Module.Finite R M] : Module.Finite (Localization S) (LocalizedModule S
 
 end
 
-variable {R : Type u} [CommRing R] {M : Type w} [AddCommMonoid M] [Module R M]
+variable {R : Type u} [CommSemiring R] {M : Type w} [AddCommMonoid M] [Module R M]
 
 /--
-If there exists a finite set `{ r }` of `R` such that `Mᵣ` is `Rᵣ`-finite for each `r`,
-then `M` is a finite `R`-module.
+If there exists a finite set `{ r }` of `R` that generates the unit ideal and such that `Mᵣ` is
+`Rᵣ`-finite for each `r`, then `M` is a finite `R`-module.
 
 General version for any modules `Mᵣ` and rings `Rᵣ` satisfying the correct universal properties.
 See `Module.Finite.of_localizationSpan_finite` for the specialized version.
@@ -184,10 +190,10 @@ See `of_localizationSpan'` for a version without the finite set assumption.
 -/
 theorem of_localizationSpan_finite' (t : Finset R) (ht : Ideal.span (t : Set R) = ⊤)
     {Mₚ : ∀ (_ : t), Type*} [∀ (g : t), AddCommMonoid (Mₚ g)] [∀ (g : t), Module R (Mₚ g)]
-    {Rₚ : ∀ (_ : t), Type u} [∀ (g : t), CommRing (Rₚ g)] [∀ (g : t), Algebra R (Rₚ g)]
+    {Rₚ : ∀ (_ : t), Type*} [∀ (g : t), CommSemiring (Rₚ g)] [∀ (g : t), Algebra R (Rₚ g)]
     [∀ (g : t), IsLocalization.Away g.val (Rₚ g)]
     [∀ (g : t), Module (Rₚ g) (Mₚ g)] [∀ (g : t), IsScalarTower R (Rₚ g) (Mₚ g)]
-    (f : ∀ (g : t), M →ₗ[R] Mₚ g) [∀ (g : t), IsLocalizedModule (Submonoid.powers g.val) (f g)]
+    (f : ∀ (g : t), M →ₗ[R] Mₚ g) [∀ (g : t), IsLocalizedModule.Away g.val (f g)]
     (H : ∀ (g : t), Module.Finite (Rₚ g) (Mₚ g)) :
     Module.Finite R M := by
   classical
@@ -212,50 +218,50 @@ theorem of_localizationSpan_finite' (t : Finset R) (ht : Ideal.span (t : Set R) 
   exact hn₂
 
 /--
-If there exists a set `{ r }` of `R` such that `Mᵣ` is `Rᵣ`-finite for each `r`,
-then `M` is a finite `R`-module.
+If there exists a set `{ r }` of `R` that generates the unit ideal and such that `Mᵣ` is `Rᵣ`-finite
+for each `r`, then `M` is a finite `R`-module.
 
 General version for any modules `Mᵣ` and rings `Rᵣ` satisfying the correct universal properties.
 See `Module.Finite.of_localizationSpan_finite` for the specialized version.
 -/
 theorem of_localizationSpan' (t : Set R) (ht : Ideal.span t = ⊤)
     {Mₚ : ∀ (_ : t), Type*} [∀ (g : t), AddCommMonoid (Mₚ g)] [∀ (g : t), Module R (Mₚ g)]
-    {Rₚ : ∀ (_ : t), Type u} [∀ (g : t), CommRing (Rₚ g)] [∀ (g : t), Algebra R (Rₚ g)]
+    {Rₚ : ∀ (_ : t), Type*} [∀ (g : t), CommSemiring (Rₚ g)] [∀ (g : t), Algebra R (Rₚ g)]
     [h₁ : ∀ (g : t), IsLocalization.Away g.val (Rₚ g)]
     [∀ (g : t), Module (Rₚ g) (Mₚ g)] [∀ (g : t), IsScalarTower R (Rₚ g) (Mₚ g)]
-    (f : ∀ (g : t), M →ₗ[R] Mₚ g) [h₂ : ∀ (g : t), IsLocalizedModule (Submonoid.powers g.val) (f g)]
+    (f : ∀ (g : t), M →ₗ[R] Mₚ g) [h₂ : ∀ (g : t), IsLocalizedModule.Away g.val (f g)]
     (H : ∀ (g : t), Module.Finite (Rₚ g) (Mₚ g)) :
     Module.Finite R M := by
   rw [Ideal.span_eq_top_iff_finite] at ht
   obtain ⟨t', hc, ht'⟩ := ht
   have (g : t') : IsLocalization.Away g.val (Rₚ ⟨g.val, hc g.property⟩) :=
     h₁ ⟨g.val, hc g.property⟩
-  have (g : t') : IsLocalizedModule (Submonoid.powers g.val)
+  have (g : t') : IsLocalizedModule.Away g.val
     ((fun g ↦ f ⟨g.val, hc g.property⟩) g) := h₂ ⟨g.val, hc g.property⟩
   apply of_localizationSpan_finite' t' ht' (fun g ↦ f ⟨g.val, hc g.property⟩)
     (fun g ↦ H ⟨g.val, hc g.property⟩)
 
 /--
-If there exists a finite set `{ r }` of `R` such that `Mᵣ` is `Rᵣ`-finite for each `r`,
-then `M` is a finite `R`-module.
+If there exists a finite set `{ r }` of `R` that generates the unit ideal and such that `Mᵣ` is
+`Rᵣ`-finite for each `r`, then `M` is a finite `R`-module.
 
 See `of_localizationSpan` for a version without the finite set assumption.
 -/
 theorem of_localizationSpan_finite (t : Finset R) (ht : Ideal.span (t : Set R) = ⊤)
     (H : ∀ (g : t), Module.Finite (Localization.Away g.val)
-      (LocalizedModule (Submonoid.powers g.val) M)) :
+      (LocalizedModule.Away g.val M)) :
     Module.Finite R M :=
-  let f (g : t) : M →ₗ[R] LocalizedModule (Submonoid.powers g.val) M :=
+  let f (g : t) : M →ₗ[R] LocalizedModule.Away g.val M :=
     LocalizedModule.mkLinearMap (Submonoid.powers g.val) M
   of_localizationSpan_finite' t ht f H
 
-/-- If there exists a set `{ r }` of `R` such that `Mᵣ` is `Rᵣ`-finite for each `r`,
-then `M` is a finite `R`-module. -/
+/-- If there exists a set `{ r }` of `R` that generates the unit ideal and such that `Mᵣ` is
+`Rᵣ`-finite for each `r`, then `M` is a finite `R`-module. -/
 theorem of_localizationSpan (t : Set R) (ht : Ideal.span t = ⊤)
     (H : ∀ (g : t), Module.Finite (Localization.Away g.val)
-      (LocalizedModule (Submonoid.powers g.val) M)) :
+      (LocalizedModule.Away g.val M)) :
     Module.Finite R M :=
-  let f (g : t) : M →ₗ[R] LocalizedModule (Submonoid.powers g.val) M :=
+  let f (g : t) : M →ₗ[R] LocalizedModule.Away g.val M :=
     LocalizedModule.mkLinearMap (Submonoid.powers g.val) M
   of_localizationSpan' t ht f H
 
@@ -263,12 +269,46 @@ end Finite
 
 end Module
 
+namespace Submodule
+
+variable {R : Type u} [CommSemiring R] {M : Type v} [AddCommMonoid M] [Module R M]
+  {N : Submodule R M}
+
+lemma of_localizationSpan' (s : Set R) (hs : Ideal.span (s : Set R) = ⊤)
+    {Mₚ : ∀ (_ : s), Type*} [∀ (g : s), AddCommMonoid (Mₚ g)] [∀ (g : s), Module R (Mₚ g)]
+    {Rₚ : ∀ (_ : s), Type*} [∀ (g : s), CommSemiring (Rₚ g)] [∀ (g : s), Algebra R (Rₚ g)]
+    [∀ (g : s), IsLocalization.Away g.val (Rₚ g)]
+    [∀ (g : s), Module (Rₚ g) (Mₚ g)] [∀ (g : s), IsScalarTower R (Rₚ g) (Mₚ g)]
+    (ϕ : ∀ (g : s), M →ₗ[R] Mₚ g) [∀ (g : s), IsLocalizedModule (Submonoid.powers g.val) (ϕ g)]
+    (H : ∀ (g : s), (N.localized' (Rₚ g) (Submonoid.powers g.1) (ϕ g)).FG) :
+    N.FG := by
+  simp [← Module.Finite.iff_fg, Module.Finite.of_localizationSpan' s hs
+    (fun g ↦ N.toLocalized' (Rₚ g) (Submonoid.powers g.1) (ϕ g))
+    (fun g ↦ Module.Finite.iff_fg.mpr (H g))]
+
+lemma of_localizationSpan (s : Set R) (hs : Ideal.span (s : Set R) = ⊤)
+    (H : ∀ (g : s), (localized (Submonoid.powers g.1) N).FG) : N.FG :=
+  N.of_localizationSpan' s hs (fun g ↦ LocalizedModule.mkLinearMap (Submonoid.powers g.1) M) H
+
+variable (R' : Type*) [CommSemiring R'] [Algebra R R']
+  {M' : Type*} [AddCommMonoid M'] [Module R M'] [Module R' M'] [IsScalarTower R R' M']
+  (S : Submonoid R) [IsLocalization S R'] (f : M →ₗ[R] M') [IsLocalizedModule S f]
+
+lemma localized'_fg (h : N.FG) : (N.localized' R' S f).FG := by
+  rw [fg_def] at h ⊢
+  rcases h with ⟨s, hfin, hspan⟩
+  exact ⟨f '' s, hfin.image f, by rw [← hspan, localized'_span]⟩
+
+lemma localized_fg (h : N.FG) : (N.localized S).FG := localized'_fg _ S _ h
+
+end Submodule
+
 namespace Ideal
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [CommSemiring R]
 
-/-- If `I` is an ideal such that there exists a set `{ r }` of `R` such
-that the image of `I` in `Rᵣ` is finitely generated for each `r`, then `I` is finitely
+/-- If `I` is an ideal such that there exists a set `{ r }` of `R` that generates the unit ideal
+and such that the image of `I` in `Rᵣ` is finitely generated for each `r`, then `I` is finitely
 generated. -/
 lemma fg_of_localizationSpan {I : Ideal R} (t : Set R) (ht : Ideal.span t = ⊤)
     (H : ∀ (g : t), (I.map (algebraMap R (Localization.Away g.val))).FG) : I.FG := by
@@ -279,7 +319,7 @@ lemma fg_of_localizationSpan {I : Ideal R} (t : Set R) (ht : Ideal.span t = ⊤)
 
 end Ideal
 
-variable {R : Type u} [CommRing R] {S : Type v} [CommRing S] {f : R →+* S}
+variable {R : Type u} [CommSemiring R] {S : Type v} [CommSemiring S] {f : R →+* S}
 
 /--
 To check that the kernel of a ring homomorphism is finitely generated,
