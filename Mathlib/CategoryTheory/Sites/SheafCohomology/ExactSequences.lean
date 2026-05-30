@@ -80,6 +80,7 @@ open ComposableArrows
 theorem longSequence_exact : (longSequence hS n₀ n₁ h).Exact :=
   Ext.covariantSequence_exact _ hS n₀ n₁ h
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The induced homomorphism of long exact equences obtained by applying `H.map` everywhere. -/
 noncomputable abbrev longSequenceHom (h : n₀ + 1 = n₁ := by lia) :
     longSequence h₁ n₀ n₁ h ⟶ longSequence h₂ n₀ n₁ h := by
@@ -95,6 +96,7 @@ lemma longSequenceHom_id (h : n₀ + 1 = n₁ := by lia) :
     longSequenceHom n₀ n₁ h₁ h₁ (𝟙 _) h = 𝟙 _ := by
   ext1 <;> cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] H.map_comp_apply in
 @[simp]
 lemma longSequenceHom_comp {S₃ : ShortComplex (Sheaf J AddCommGrpCat)} (h₃ : S₃.ShortExact)
