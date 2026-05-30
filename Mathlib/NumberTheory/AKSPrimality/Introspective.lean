@@ -5,53 +5,33 @@ Authors: metakunt
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Log.Base
-public import Mathlib.Data.Set.Card.Arithmetic
-public import Mathlib.Data.Sym.Card
-public import Mathlib.Order.Interval.Set.Nat
-public import Mathlib.RingTheory.RootsOfUnity.AlgebraicallyClosed
+public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 /-!
-# Existence of a polynomially bounded runtime primality testing algorithm
+# Introspective relation
 
-In 2002 Agrawal, Kayal and Saxena have proven the existence of a polynomially bounded
-primality testing algorithm.
-
-The goal of this file is to show the existence of a simultaneously general, polynomial-time,
-deterministic and unconditionally correct primality test.
-
-- The primality test is general as it works for any number given, unlike specialized tests
-  that work for only a subset of numbers (e.g Mersenne numbers or Fermat numbers).
-- The algorithm runtime complexity is polynomially bounded by the number of digits.
-- The runtime is deterministic, as opposed probabilistic tests such as Miller-Rabin.
-  If the algorithm returns prime, the number is prime.
-  If the algorithm returns composite, the number is composite.
-- The algorithm is unconditionally correct as it does not depend on any unproven hypotheses.
+This defines the main relation for the proof as defined in their original paper.
 
 ## References
 
-<https://en.wikipedia.org/wiki/AKS_primality_test>
-The proof reference is <https://www3.nd.edu/~andyp/notes/AKS.pdf>.
-The paper by the original authors is
+
 <https://www.cse.iitk.ac.in/users/manindra/algebra/primality_v6.pdf>.
 
 ## Main Theorems
 
-- `is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polynomial` this is the AKS
-  Primality test. If `(X + a) ^ n = X ^ n + a` modulo `(ZMod n)[X] / X ^ r - 1` and some other
-  minor conditions hold, then `n` is a prime power. The coefficients `a` are polynomially bounded
-  in the digit size of `n`.
+- `Introspective.of_multiset`
 
 ## Tags
 
-prime number, polynomial prime number test, AKS, Agrawal-Kayal-Saxena
+prime number, polynomial prime number test, AKS, Agrawal-Kayal-Saxena, Introspective
 -/
 
-open Polynomial Finset Nat
 
 
 variable {K : Type*} [CommRing K] [IsDomain K]
 
 @[expose] public section Introspective
+
+open Polynomial Nat
 
 /-- The introspective relation, currently only useful for the proof of the AKS primality theorem. -/
 def Introspective (f : K[X]) (n : ℕ) (r : ℕ) : Prop :=
