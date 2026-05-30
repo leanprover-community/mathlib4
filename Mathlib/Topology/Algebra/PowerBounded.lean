@@ -118,7 +118,7 @@ section CommRing
 
 variable {R : Type*} [CommRing R] [TopologicalSpace R]
 
-theorem isPowerBounded_add (S : Type*) [Ring S] [Module S R] [ContinuousAdd R]
+theorem IsPowerBounded.add (S : Type*) [Ring S] [Module S R] [ContinuousAdd R]
     [IsLinearTopology S R] {a b : R} (ha : IsPowerBounded a) (hb : IsPowerBounded b) :
     IsPowerBounded (a + b) :=
   isPowerBounded_add_of_commute S (Commute.all ..) ha hb
