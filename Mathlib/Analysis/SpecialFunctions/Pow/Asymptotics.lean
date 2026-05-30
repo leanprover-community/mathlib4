@@ -310,7 +310,7 @@ theorem IsBigO.rpow_rpow_nhdsGE_zero_of_le {a b : ℝ} (h : a ≤ b) (hb : b ≠
 /-- If `a ≤ 1`, then `x = O(x ^ a)` as `x → 0`, `x ≥ 0`. -/
 theorem IsBigO.id_rpow_of_le_one {a : ℝ} (ha : a ≤ 1) :
     (id : ℝ → ℝ) =O[𝓝[≥] 0] (· ^ a) := by
-  simpa using rpow_rpow_nhdsGE_zero_of_le ha (by simp)
+  simpa using! rpow_rpow_nhdsGE_zero_of_le ha (by simp)
 
 end Asymptotics
 

@@ -955,6 +955,11 @@ theorem preimage_rangeSplitting {f : α → β} (hf : Injective f) :
   (image_eq_preimage_of_inverse (rightInverse_rangeSplitting hf)
       (leftInverse_rangeSplitting f)).symm
 
+theorem rangeSplitting_strictMono [LinearOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
+    StrictMono (rangeSplitting f) := by
+  refine fun x y h ↦ hf.reflect_lt ?_
+  simpa [apply_rangeSplitting f]
+
 theorem isCompl_range_some_none (α : Type*) : IsCompl (range (some : α → Option α)) {none} :=
   IsCompl.of_le (fun _ ⟨⟨_, ha⟩, (hn : _ = none)⟩ => Option.some_ne_none _ (ha.trans hn))
     fun x _ => Option.casesOn x (Or.inr rfl) fun _ => Or.inl <| mem_range_self _
