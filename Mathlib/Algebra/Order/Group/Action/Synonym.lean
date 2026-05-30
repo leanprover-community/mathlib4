@@ -26,14 +26,10 @@ variable {M N α : Type*}
 namespace OrderDual
 
 @[to_additive]
-instance [Monoid M] [h : MulAction M α] : MulAction Mᵒᵈ α where
-  mul_smul := h.mul_smul
-  one_smul := h.one_smul
+instance [Monoid M] [MulAction M α] : MulAction Mᵒᵈ α := inferInstanceAs <| MulAction M α
 
 @[to_additive]
-instance [Monoid M] [h : MulAction M α] : MulAction M αᵒᵈ where
-  mul_smul := h.mul_smul
-  one_smul := h.one_smul
+instance [Monoid M] [MulAction M α] : MulAction M αᵒᵈ := inferInstanceAs <| MulAction M α
 
 @[to_additive]
 instance [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass Mᵒᵈ N α :=
