@@ -810,7 +810,8 @@ end Elab
 -- TODO: is there a better location for this?
 open Doc in
 /-- Writing `{insertDocstringOf foo}` inside a verso doc-string inserts the doc-string of
-declaration `foo` (if there is one) in the current environment, as a separate paragraph.
+declaration `foo` in the current environment, as a separate paragraph.
+If `foo` does not exist or has no doc-string, it throws an error.
 -/
 @[doc_command] meta def _root_.insertDocstringOf (n : Ident) :
     DocM <| Block ElabInline ElabBlock := do
