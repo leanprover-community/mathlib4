@@ -144,7 +144,14 @@ lemma isOpenMap_iff_lowerHemicontinuous {f : α → β} :
   rw [isOpenMap_iff_kernImage, lowerHemicontinuous_iff_isClosed_preimage_Iic]
   aesop
 
-/-! ### Singleton maps -/
+/-! ### Singleton maps
+
+Functions `f : α → β` are continuous if and only if they are lower hemicontinuous if and only if
+they are upper hemicontinuous. This is in the sense that the map `g : α → Set β` given by
+`g x = {f x}` is both lower or upper hemicontinuous.
+
+This section also provides dot notation to access this fact for continuous functions.
+-/
 
 lemma upperHemicontinuous_singleton_id : UpperHemicontinuous ({·} : α → Set α) := by
   simp [upperHemicontinuous_iff, upperHemicontinuousAt_iff]
@@ -175,6 +182,48 @@ lemma upperHemicontinuous_singleton_iff {f : α → β} :
     UpperHemicontinuous ({f ·}) ↔ Continuous f := by
   simp [← upperHemicontinuousOn_univ_iff]
 
+lemma lowerHemicontinuous_singleton_id : LowerHemicontinuous ({·} : α → Set α) := by
+  intro x t ⟨ht, hne⟩
+  filter_upwards [ht.mem_nhds (Set.singleton_inter_nonempty.mp hne)] with x' hx'
+  exact ⟨ht, Set.singleton_inter_nonempty.mpr hx'⟩
+
+@[simp]
+lemma lowerHemicontinuousWithinAt_singleton_iff {f : α → β} {s : Set α} {x : α} :
+    LowerHemicontinuousWithinAt ({f ·}) s x ↔ ContinuousWithinAt f s x := by
+  refine ⟨?_, fun hf ↦ (lowerHemicontinuous_singleton_id.lowerHemicontinuousWithinAt _ _).comp
+    hf (mapsTo_image _ _)⟩
+  simp only [lowerHemicontinuousWithinAt_iff, Set.singleton_inter_nonempty,
+    ContinuousWithinAt, tendsto_iff_forall_eventually_mem]
+  intro h t ht
+  obtain ⟨u, hut, huo, hux⟩ := mem_nhds_iff.mp ht
+  exact (h u huo hux).mono fun _ hx' ↦ hut hx'
+
+@[simp]
+lemma lowerHemicontinuousAt_singleton_iff {f : α → β} {x : α} :
+    LowerHemicontinuousAt ({f ·}) x ↔ ContinuousAt f x := by
+  simp [← lowerHemicontinuousWithinAt_univ_iff, continuousWithinAt_univ]
+
+@[simp]
+lemma lowerHemicontinuousOn_singleton_iff {f : α → β} {s : Set α} :
+    LowerHemicontinuousOn ({f ·}) s ↔ ContinuousOn f s :=
+  forall₂_congr <| fun _ _ ↦ lowerHemicontinuousWithinAt_singleton_iff
+
+@[simp]
+lemma lowerHemicontinuous_singleton_iff {f : α → β} :
+    LowerHemicontinuous ({f ·}) ↔ Continuous f := by
+  simp [← lowerHemicontinuousOn_univ_iff]
+
+lemma ContinuousWithinAt.lowerHemicontinuousWithinAt {f : α → β} {s : Set α} {x : α}
+    (hf : ContinuousWithinAt f s x) : LowerHemicontinuousWithinAt ({f ·}) s x :=
+  lowerHemicontinuousWithinAt_singleton_iff.mpr hf
+
+lemma Continuous.lowerHemicontinuous {f : α → β} (hf : Continuous f) :
+    LowerHemicontinuous ({f ·}) :=
+  lowerHemicontinuous_singleton_iff.mpr hf
+
+lemma Continuous.upperHemicontinuous {f : α → β} (hf : Continuous f) :
+    UpperHemicontinuous ({f ·}) :=
+  upperHemicontinuous_singleton_iff.mpr hf
 
 /-! ### Union and intersection, and post-composition with the preimage map -/
 
@@ -355,36 +404,18 @@ lemma hasOpenLowerSections_iff_isClosed_preimage_Iic :
   simp_rw [← isOpen_compl_iff]
   exact hasOpenLowerSections_iff_isOpen_compl_preimage_Iic_compl
 
-/-! ### Continuity
-
-The correspondence associated with a continuous map is both lower and upper hemicontinuous.
--/
-
-lemma Continuous.lowerHemicontinuous {f : α → β} (hf : Continuous f) :
-    LowerHemicontinuous (fun x ↦ {f x}) := by
-  rw [lowerHemicontinuous_iff_isOpen_inter_nonempty]
-  intro u hu
-  have : {x | f x ∈ u} = f ⁻¹' u := by ext; simp
-  simpa [this] using hf.isOpen_preimage _ hu
-
-lemma Continuous.upperHemicontinuous {f : α → β} (hf : Continuous f) :
-    UpperHemicontinuous (fun x ↦ {f x}) := by
-  rw [upperHemicontinuous_iff_forall_isOpen]
-  intro x u hu hxu
-  simp [hf.continuousAt.eventually_mem <| hu.mem_nhds (singleton_subset_iff.mp hxu)]
-
 /-! ### Open Graphs -/
 
 /-- A lower hemicontinuous function intersected with a function with an open graph is lower
 hemicontinuous. -/
-lemma LowerHemicontinuous.inter_hasOpenGraph {f g : α → Set β}
+lemma LowerHemicontinuous.inter_hasOpenCGraph {f g : α → Set β}
     (hf : LowerHemicontinuous f) (hg : HasOpenCGraph g) :
     LowerHemicontinuous (fun x ↦ f x ∩ g x) := by
   simp_rw [lowerHemicontinuous_iff_isOpen_inter_nonempty] at ⊢ hf
   intro t ht
   rw [isOpen_iff_forall_mem_open]
   intro x ⟨y, ⟨hyf, hyg⟩, hyt⟩
-  obtain ⟨U, V, hU, hV, hxU, hyV, hUV⟩ := (isOpen_prod_iff.mp hg.isOpen) x y hyg
+  obtain ⟨U, V, hU, hV, hxU, hyV, hUV⟩ := (isOpen_prod_iff.mp hg) x y hyg
   refine ⟨U ∩ {x' | (f x' ∩ (t ∩ V)).Nonempty}, ?_, hU.inter (hf _ (ht.inter hV)),
       ⟨hxU, y, hyf, hyt, hyV⟩⟩
   intro x' ⟨hx'U, z, hzf, hzt, hzV⟩
