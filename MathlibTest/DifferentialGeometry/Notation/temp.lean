@@ -44,3 +44,16 @@ Hint: Additional diagnostic information may be available using the `set_option d
 -/
 #guard_msgs in
 variable {f : N → TotalSpace F V} {x : N} in #check mfderiv% f x
+
+-- Currently, projections like this are not supported yet: fixing the above bug properly will
+-- also address this (hopefully!).
+/--
+error: Could not find a model with corners for `TotalSpace F V`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
+#guard_msgs in
+variable {f : TotalSpace F V → N} {x : N} in #check mfderiv% f x
+/-- info: mfderiv% f x : TangentSpace (I.prod 𝓘(𝕜, F)) x →L[𝕜] TangentSpace J (f x) -/
+#guard_msgs in
+variable {f : TotalSpace F V → N} {x : TotalSpace F V} in #check mfderiv (I.prod 𝓘(𝕜, F)) J f x
