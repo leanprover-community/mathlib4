@@ -489,9 +489,7 @@ section Ring
 
 variable [∀ i, AddCommGroup (A i)] [AddMonoid ι] [GRing A]
 
-/-
-The `IntCast` instance on `A 0`, given `GRing A`.
--/
+/-- The `IntCast` instance on `A 0`, given `GRing A`. -/
 scoped instance (priority := 900) : IntCast (A 0) :=
   ⟨GRing.intCast⟩
 
@@ -660,4 +658,3 @@ instance CommRing.directSumGCommRing {R : Type*} [AddCommMonoid ι] [CommRing R]
     DirectSum.GCommRing fun _ : ι => R where
 
 end Uniform
-#lint
