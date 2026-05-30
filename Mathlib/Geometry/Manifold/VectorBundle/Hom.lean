@@ -54,9 +54,8 @@ theorem contMDiffOn_continuousLinearMapCoordChange
     [ContMDiffVectorBundle n F₁ E₁ IB] [ContMDiffVectorBundle n F₂ E₂ IB]
     [MemTrivializationAtlas e₁] [MemTrivializationAtlas e₁']
     [MemTrivializationAtlas e₂] [MemTrivializationAtlas e₂'] :
-    ContMDiffOn IB 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] F₁ →L[𝕜] F₂) n
-      (continuousLinearMapCoordChange (RingHom.id 𝕜) e₁ e₁' e₂ e₂')
-      (e₁.baseSet ∩ e₂.baseSet ∩ (e₁'.baseSet ∩ e₂'.baseSet)) := by
+    CMDiff[e₁.baseSet ∩ e₂.baseSet ∩ (e₁'.baseSet ∩ e₂'.baseSet)] n
+      (continuousLinearMapCoordChange (RingHom.id 𝕜) e₁ e₁' e₂ e₂') := by
   have h₁ := contMDiffOn_coordChangeL (IB := IB) e₁' e₁ (n := n)
   have h₂ := contMDiffOn_coordChangeL (IB := IB) e₂ e₂' (n := n)
   refine (h₁.mono ?_).cle_arrowCongr (h₂.mono ?_) <;> mfld_set_tac
@@ -72,14 +71,14 @@ theorem hom_chart (y₀ y : LE₁E₂) :
     hom_trivializationAt_apply]
 
 theorem contMDiffWithinAt_hom_bundle (f : M → LE₁E₂) {s : Set M} {x₀ : M} :
-    ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n f s x₀ ↔
+    CMDiffAt[s] n f x₀ ↔
       CMDiffAt[s] n (fun x ↦ (f x).1) x₀ ∧
         CMDiffAt[s] n
           (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
   contMDiffWithinAt_totalSpace
 
 theorem contMDiffAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} :
-    ContMDiffAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n f x₀ ↔
+    CMDiffAt n f x₀ ↔
       CMDiffAt n (fun x ↦ (f x).1) x₀ ∧ CMDiffAt n
         (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
   contMDiffAt_totalSpace
@@ -101,14 +100,14 @@ theorem mdifferentiableOn_continuousLinearMapCoordChange
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
 
 theorem mdifferentiableWithinAt_hom_bundle (f : M → LE₁E₂) {s : Set M} {x₀ : M} :
-    MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) f s x₀ ↔
+    MDiffAt[s] f x₀ ↔
       MDiffAt[s] (fun x ↦ (f x).1) x₀ ∧
         MDiffAt[s]
           (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
   mdifferentiableWithinAt_totalSpace IB ..
 
 theorem mdifferentiableAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} :
-    MDifferentiableAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) f x₀ ↔
+    MDiffAt f x₀ ↔
       MDiffAt (fun x ↦ (f x).1) x₀ ∧
         MDiffAt (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
   mdifferentiableAt_totalSpace ..
@@ -259,9 +258,8 @@ One can apply `ϕ m` to `v m`, and the resulting map is `C^n`.
 
 We give here a version of this statement within a set at a point. -/
 lemma ContMDiffWithinAt.clm_bundle_apply
-    (hϕ : ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n
-      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m))
-      s x)
+    (hϕ : CMDiffAt[s] n
+      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)) x)
     (hv : CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x) :
     CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) x := by
   simp only [contMDiffWithinAt_hom_bundle] at hϕ
@@ -273,7 +271,7 @@ One can apply `ϕ m` to `v m`, and the resulting map is `C^n`.
 
 We give here a version of this statement at a point. -/
 lemma ContMDiffAt.clm_bundle_apply
-    (hϕ : ContMDiffAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n
+    (hϕ : CMDiffAt n
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)) x)
     (hv : CMDiffAt n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x) :
     CMDiffAt n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) x :=
@@ -285,8 +283,8 @@ One can apply `ϕ m` to `v m`, and the resulting map is `C^n`.
 
 We give here a version of this statement on a set. -/
 lemma ContMDiffOn.clm_bundle_apply
-    (hϕ : ContMDiffOn IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n
-      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)) s)
+    (hϕ : CMDiff[s] n
+      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)))
     (hv : CMDiff[s] n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m))) :
     CMDiff[s] n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
   fun x hx ↦ (hϕ x hx).clm_bundle_apply (hv x hx)
@@ -295,7 +293,7 @@ lemma ContMDiffOn.clm_bundle_apply
 linear maps `ϕ m : E₁ (b m) → E₂ (b m)` depending smoothly on `m`.
 One can apply `ϕ m` to `v m`, and the resulting map is `C^n`. -/
 lemma ContMDiff.clm_bundle_apply
-    (hϕ : ContMDiff IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n
+    (hϕ : CMDiff n
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)))
     (hv : CMDiff n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m))) :
     CMDiff n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
@@ -314,9 +312,8 @@ One can apply `ϕ m` to `v m`, and the resulting map is differentiable.
 
 We give here a version of this statement within a set at a point. -/
 lemma MDifferentiableWithinAt.clm_bundle_apply
-    (hϕ : MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂))
-      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m))
-      s x)
+    (hϕ : MDiffAt[s]
+      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)) x)
     (hv : MDiffAt[s] (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x) :
     MDiffAt[s] (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) x := by
   simp only [mdifferentiableWithinAt_hom_bundle] at hϕ
@@ -328,7 +325,7 @@ One can apply `ϕ m` to `v m`, and the resulting map is differentiable.
 
 We give here a version of this statement at a point. -/
 lemma MDifferentiableAt.clm_bundle_apply
-    (hϕ : MDifferentiableAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂))
+    (hϕ : MDiffAt
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)) x)
     (hv : MDiffAt (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x) :
     MDiffAt (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) x :=
@@ -340,8 +337,8 @@ One can apply `ϕ m` to `v m`, and the resulting map is differentiable.
 
 We give here a version of this statement on a set. -/
 lemma MDifferentiableOn.clm_bundle_apply
-    (hϕ : MDifferentiableOn IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂))
-      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)) s)
+    (hϕ : MDiff[s]
+      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)))
     (hv : MDiff[s] (fun m ↦ TotalSpace.mk' F₁ (b m) (v m))) :
     MDiff[s] (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
   fun x hx ↦ (hϕ x hx).clm_bundle_apply (hv x hx)
@@ -350,7 +347,7 @@ lemma MDifferentiableOn.clm_bundle_apply
 linear maps `ϕ m : E₁ (b m) → E₂ (b m)` depending smoothly on `m`.
 One can apply `ϕ m` to `v m`, and the resulting map is differentiable. -/
 lemma MDifferentiable.clm_bundle_apply
-    (hϕ : MDifferentiable IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂))
+    (hϕ : MDiff
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)))
     (hv : MDiff (fun m ↦ TotalSpace.mk' F₁ (b m) (v m))) :
     MDiff (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
@@ -369,9 +366,8 @@ One can apply `ψ  m` to `v m` and `w m`, and the resulting map is `C^n`.
 
 We give here a version of this statement within a set at a point. -/
 lemma ContMDiffWithinAt.clm_bundle_apply₂
-    (hψ : ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂ →L[𝕜] F₃)) n
-      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
-      (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)) s x)
+    (hψ : CMDiffAt[s] n (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
+      (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)) x)
     (hv : CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x)
     (hw : CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₂ (b m) (w m)) x) :
     CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) x :=
@@ -383,8 +379,7 @@ One can apply `ψ  m` to `v m` and `w m`, and the resulting map is `C^n`.
 
 We give here a version of this statement at a point. -/
 lemma ContMDiffAt.clm_bundle_apply₂
-    (hψ : ContMDiffAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂ →L[𝕜] F₃)) n
-      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
+    (hψ : CMDiffAt n (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
       (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)) x)
     (hv : CMDiffAt n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x)
     (hw : CMDiffAt n (fun m ↦ TotalSpace.mk' F₂ (b m) (w m)) x) :
@@ -397,9 +392,8 @@ One can apply `ψ  m` to `v m` and `w m`, and the resulting map is `C^n`.
 
 We give here a version of this statement on a set. -/
 lemma ContMDiffOn.clm_bundle_apply₂
-    (hψ : ContMDiffOn IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂ →L[𝕜] F₃)) n
-      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
-      (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)) s)
+    (hψ : CMDiff[s] n (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
+      (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)))
     (hv : CMDiff[s] n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)))
     (hw : CMDiff[s] n (fun m ↦ TotalSpace.mk' F₂ (b m) (w m))) :
     CMDiff[s] n (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) :=
@@ -409,8 +403,7 @@ lemma ContMDiffOn.clm_bundle_apply₂
 `b : M → B`, and bilinear maps `ψ m : E₁ (b m) → E₂ (b m) → E₃ (b m)` depending smoothly on `m`.
 One can apply `ψ  m` to `v m` and `w m`, and the resulting map is `C^n`. -/
 lemma ContMDiff.clm_bundle_apply₂
-    (hψ : ContMDiff IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂ →L[𝕜] F₃)) n
-      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
+    (hψ : CMDiff n (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
       (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)))
     (hv : CMDiff n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)))
     (hw : CMDiff n (fun m ↦ TotalSpace.mk' F₂ (b m) (w m))) :
@@ -430,9 +423,8 @@ One can apply `ψ  m` to `v m` and `w m`, and the resulting map is differentiabl
 
 We give here a version of this statement within a set at a point. -/
 lemma MDifferentiableWithinAt.clm_bundle_apply₂
-    (hψ : MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂ →L[𝕜] F₃))
-      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
-      (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)) s x)
+    (hψ : MDiffAt[s] (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
+      (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)) x)
     (hv : MDiffAt[s] (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x)
     (hw : MDiffAt[s] (fun m ↦ TotalSpace.mk' F₂ (b m) (w m)) x) :
     MDiffAt[s] (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) x :=
@@ -444,8 +436,7 @@ One can apply `ψ  m` to `v m` and `w m`, and the resulting map is differentiabl
 
 We give here a version of this statement at a point. -/
 lemma MDifferentiableAt.clm_bundle_apply₂
-    (hψ : MDifferentiableAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂ →L[𝕜] F₃))
-      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
+    (hψ : MDiffAt (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
       (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)) x)
     (hv : MDiffAt (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x)
     (hw : MDiffAt (fun m ↦ TotalSpace.mk' F₂ (b m) (w m)) x) :
@@ -458,9 +449,8 @@ One can apply `ψ  m` to `v m` and `w m`, and the resulting map is differentiabl
 
 We give here a version of this statement on a set. -/
 lemma MDifferentiableOn.clm_bundle_apply₂
-    (hψ : MDifferentiableOn IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂ →L[𝕜] F₃))
-      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
-      (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)) s)
+    (hψ : MDiff[s] (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
+      (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)))
     (hv : MDiff[s] (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)))
     (hw : MDiff[s] (fun m ↦ TotalSpace.mk' F₂ (b m) (w m))) :
     MDiff[s] (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) :=
@@ -470,8 +460,7 @@ lemma MDifferentiableOn.clm_bundle_apply₂
 `b : M → B`, and bilinear maps `ψ m : E₁ (b m) → E₂ (b m) → E₃ (b m)` depending smoothly on `m`.
 One can apply `ψ  m` to `v m` and `w m`, and the resulting map is differentiable. -/
 lemma MDifferentiable.clm_bundle_apply₂
-    (hψ : MDifferentiable IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂ →L[𝕜] F₃))
-      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
+    (hψ : MDiff (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
       (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)))
     (hv : MDiff (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)))
     (hw : MDiff (fun m ↦ TotalSpace.mk' F₂ (b m) (w m))) :
