@@ -212,7 +212,7 @@ theorem continuous_restrictScalars :
   isEmbedding_restrictScalars.continuous
 
 variable (𝕜') in
-/-- `ContinuousMultilinearMap.restrictScalars` as a `ContinuousLinearMap`. -/
+/-- `ContinuousAlternatingMap.restrictScalars` as a `ContinuousLinearMap`. -/
 @[simps -fullyApplied apply]
 def restrictScalarsCLM [ContinuousConstSMul 𝕜' F] :
     E [⋀^ι]→L[𝕜] F →L[𝕜'] E [⋀^ι]→L[𝕜'] F where
@@ -271,7 +271,6 @@ def apply (m : ι → E) : E [⋀^ι]→L[𝕜] F →L[𝕜] F where
   toFun c := c m
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  cont := continuous_eval_const m
 
 variable {𝕜 E F}
 

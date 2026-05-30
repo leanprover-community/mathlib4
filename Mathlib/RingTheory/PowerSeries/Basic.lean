@@ -144,11 +144,15 @@ theorem constantCoeff_eq (f : R⟦X⟧) :
 def C : R →+* R⟦X⟧ :=
   MvPowerSeries.C
 
+lemma C_apply {r : R} : C r = MvPowerSeries.C r := rfl
+
 @[simp] lemma algebraMap_eq {R : Type*} [CommSemiring R] : algebraMap R R⟦X⟧ = C := rfl
 
 /-- The variable of the formal power series ring. -/
 def X : R⟦X⟧ :=
   MvPowerSeries.X ()
+
+lemma X_apply : X (R := R) = MvPowerSeries.X () := rfl
 
 theorem commute_X (φ : R⟦X⟧) : Commute φ X :=
   MvPowerSeries.commute_X _ _
@@ -185,12 +189,14 @@ theorem coeff_C (n : ℕ) (a : R) : coeff n (C a : R⟦X⟧) = if n = 0 then a e
 theorem coeff_zero_C (a : R) : coeff 0 (C a) = a := by
   rw [coeff_C, if_pos rfl]
 
-theorem coeff_ne_zero_C {a : R} {n : ℕ} (h : n ≠ 0) : coeff n (C a) = 0 := by
+theorem coeff_C_of_ne_zero {a : R} {n : ℕ} (h : n ≠ 0) : coeff n (C a) = 0 := by
   rw [coeff_C, if_neg h]
+
+@[deprecated (since := "2026-05-20")] alias coeff_ne_zero_C := coeff_C_of_ne_zero
 
 @[simp]
 theorem coeff_succ_C {a : R} {n : ℕ} : coeff (n + 1) (C a) = 0 :=
-  coeff_ne_zero_C n.succ_ne_zero
+  coeff_C_of_ne_zero n.succ_ne_zero
 
 @[grind inj]
 theorem C_injective : Function.Injective (C (R := R)) := MvPowerSeries.C_injective
@@ -266,13 +272,13 @@ theorem smul_eq_C_mul (f : R⟦X⟧) (a : R) : a • f = C a * f := by
 @[simp]
 theorem coeff_succ_mul_X (n : ℕ) (φ : R⟦X⟧) : coeff (n + 1) (φ * X) = coeff n φ := by
   simp only [coeff, Finsupp.single_add]
-  convert φ.coeff_add_mul_monomial (single () n) (single () 1) _
+  convert! φ.coeff_add_mul_monomial (single () n) (single () 1) _
   rw [mul_one]
 
 @[simp]
 theorem coeff_succ_X_mul (n : ℕ) (φ : R⟦X⟧) : coeff (n + 1) (X * φ) = coeff n φ := by
   simp only [coeff, Finsupp.single_add, add_comm n 1]
-  convert φ.coeff_add_monomial_mul (single () 1) (single () n) _
+  convert! φ.coeff_add_monomial_mul (single () 1) (single () n) _
   rw [one_mul]
 
 theorem mul_X_cancel {φ ψ : R⟦X⟧} (h : φ * X = ψ * X) : φ = ψ := by
@@ -483,10 +489,10 @@ theorem map_eq_zero {R S : Type*} [DivisionSemiring R] [Semiring S] [Nontrivial 
 
 theorem X_pow_dvd_iff {n : ℕ} {φ : R⟦X⟧} :
     (X : R⟦X⟧) ^ n ∣ φ ↔ ∀ m, m < n → coeff m φ = 0 := by
-  convert @MvPowerSeries.X_pow_dvd_iff Unit R _ () n φ
+  convert! @MvPowerSeries.X_pow_dvd_iff Unit R _ () n φ
   constructor <;> intro h m hm
   · rw [Finsupp.unique_single m]
-    convert h _ hm
+    convert! h _ hm
   · apply h
     simpa only [Finsupp.single_eq_same] using hm
 
@@ -542,7 +548,6 @@ noncomputable def rescale (a : R) : R⟦X⟧ →+* R⟦X⟧ where
   map_add' := by
     intros
     ext
-    dsimp only
     exact mul_add _ _ _
   map_mul' f g := by
     ext
@@ -593,7 +598,7 @@ theorem rescale_map {S : Type*} [CommSemiring S] (φ : R →+* S) (r : R) (f : R
 theorem rescale_algebraMap_map {A S : Type*} [CommSemiring A] [Algebra A R] [CommSemiring S]
     [Algebra A S] (φ : R →ₐ[A] S) (a : A) (f : R⟦X⟧) :
     rescale (algebraMap A S a) (f.map φ) = (rescale (algebraMap A R a) f).map φ := by
-  convert rescale_map (φ : R →+* S) _ _
+  convert! rescale_map (φ : R →+* S) _ _
   simp
 
 end CommSemiring
@@ -608,15 +613,9 @@ variable {R : Type*} [CommSemiring R] {ι : Type*}
 theorem coeff_prod [DecidableEq ι] (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
     coeff d (∏ j ∈ s, f j) = ∑ l ∈ finsuppAntidiag s d, ∏ i ∈ s, coeff (l i) (f i) := by
   simp only [coeff]
-  rw [MvPowerSeries.coeff_prod, ← AddEquiv.finsuppUnique_symm d, ← mapRange_finsuppAntidiag_eq,
-    sum_map, sum_congr rfl]
-  intro x _
-  apply prod_congr rfl
-  intro i _
-  congr 2
-  simp only [AddEquiv.toEquiv_eq_coe, Finsupp.mapRange.addEquiv_toEquiv, AddEquiv.toEquiv_symm,
-    Equiv.coe_toEmbedding, Finsupp.mapRange.equiv_apply, AddEquiv.coe_toEquiv_symm,
-    Finsupp.mapRange_apply, AddEquiv.finsuppUnique_symm]
+  rw [MvPowerSeries.coeff_prod, ← Finsupp.uniqueAddEquiv_symm_apply _ d,
+    ← mapRange_finsuppAntidiag_eq, sum_map]
+  rfl
 
 theorem prod_monomial (f : ι → ℕ) (g : ι → R) (s : Finset ι) :
     ∏ i ∈ s, monomial (f i) (g i) = monomial (∑ i ∈ s, f i) (∏ i ∈ s, g i) := by
