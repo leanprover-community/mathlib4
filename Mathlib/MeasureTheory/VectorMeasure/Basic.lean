@@ -425,6 +425,10 @@ def dirac (x : β) (v : M) : VectorMeasure β M where
 @[simp] lemma dirac_apply_of_notMem (hx : x ∉ s) : dirac x v s = 0 := by
   simp [dirac, hx]
 
+@[simp] lemma dirac_zero : dirac x (0 : M) = 0 := by
+  ext s hs
+  simp [dirac]
+
 end Dirac
 
 end VectorMeasure
@@ -648,17 +652,22 @@ end ContinuousAdd
 section Module
 
 variable {R : Type*} [Semiring R] [Module R M] [Module R N]
-variable [ContinuousAdd M] [ContinuousAdd N] [ContinuousConstSMul R M] [ContinuousConstSMul R N]
+
+variable [ContinuousConstSMul R M] [ContinuousConstSMul R N]
+
+@[simp]
+theorem mapRange_smul {v : VectorMeasure α M} {f : M →ₗ[R] N} (hf : Continuous f) {c : R} :
+    (c • v).mapRange f.toAddMonoidHom hf = c • (v.mapRange f.toAddMonoidHom hf) := by
+  ext; simp
+
+variable [ContinuousAdd M] [ContinuousAdd N]
 
 /-- Given a continuous linear map `f : M → N`, `mapRangeₗ` is the linear map mapping the
 vector measure `v` on `M` to the vector measure `f ∘ v` on `N`. -/
 def mapRangeₗ (f : M →ₗ[R] N) (hf : Continuous f) : VectorMeasure α M →ₗ[R] VectorMeasure α N where
   toFun v := v.mapRange f.toAddMonoidHom hf
   map_add' _ _ := mapRange_add hf
-  map_smul' := by
-    intros
-    ext
-    simp
+  map_smul' _ _ := mapRange_smul hf
 
 end Module
 
@@ -666,7 +675,7 @@ end
 
 open Classical in
 /-- The restriction of a vector measure on some set. -/
-def restrict (v : VectorMeasure α M) (i : Set α) : VectorMeasure α M :=
+@[no_expose] def restrict (v : VectorMeasure α M) (i : Set α) : VectorMeasure α M :=
   if hi : MeasurableSet i then
     { measureOf' := fun s => if MeasurableSet s then v (s ∩ i) else 0
       empty' := by simp
@@ -708,6 +717,39 @@ theorem restrict_zero {i : Set α} : (0 : VectorMeasure α M).restrict i = 0 := 
     rw [restrict_apply 0 hi hj, zero_apply, zero_apply]
   · exact dif_neg hi
 
+theorem restrict_dirac {s : Set α} {x : α} {m : M} (hs : MeasurableSet s) [Decidable (x ∈ s)] :
+    (dirac x m).restrict s = if x ∈ s then dirac x m else 0 := by
+  classical
+  ext t ht
+  simp only [hs, ht, restrict_apply]
+  split_ifs with has <;> simp [dirac, ht, ht.inter hs, has]
+
+@[simp]
+theorem restrict_dirac_of_mem {s : Set α} {x : α} {m : M} (hs : MeasurableSet s) (hx : x ∈ s) :
+    (dirac x m).restrict s = dirac x m := by
+  classical
+  simp [restrict_dirac, hs, hx]
+
+@[simp]
+theorem restrict_dirac_of_notMem {s : Set α} {x : α} {m : M} (hx : x ∉ s) :
+    (dirac x m).restrict s = 0 := by
+  classical
+  by_cases hs : MeasurableSet s
+  · simp [restrict_dirac, hs, hx]
+  · simp [restrict, hs]
+
+@[simp]
+theorem restrict_singleton {a : α} : v.restrict {a} = dirac a (v {a}) := by
+  by_cases h : MeasurableSet {a}
+  · ext s hs
+    by_cases ha : a ∈ s <;> simp [*, restrict_apply]
+  · simp [restrict, h]
+
+theorem restrict_restrict {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t) :
+    (v.restrict t).restrict s = v.restrict (s ∩ t) := by
+  ext u hu
+  simp [restrict_apply, hs, hu, ht, Set.inter_assoc]
+
 section ContinuousAdd
 
 variable [ContinuousAdd M]
@@ -745,7 +787,7 @@ end ContinuousAdd
 section Partition
 
 variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] [ContinuousAdd M]
-variable (v : VectorMeasure α M) {i : Set α}
+variable {v : VectorMeasure α M} {i s t : Set α}
 
 @[simp]
 theorem restrict_add_restrict_compl (hi : MeasurableSet i) :
@@ -755,6 +797,23 @@ theorem restrict_add_restrict_compl (hi : MeasurableSet i) :
     ← of_union _ (hA.inter hi) (hA.inter hi.compl)]
   · simp
   · exact disjoint_compl_right.inter_right' A |>.inter_left' A
+
+theorem restrict_inter_add_diff (hs : MeasurableSet s) (ht : MeasurableSet t) :
+    v.restrict (s ∩ t) + v.restrict (s \ t) = v.restrict s := by
+  ext u hu
+  simp only [add_apply, restrict_apply, hs, hu, hs.inter ht, hs.diff ht]
+  rw [← of_union (by grind) (hu.inter (hs.inter ht)) (hu.inter (hs.diff ht))]
+  congr
+  grind
+
+theorem restrict_union_add_inter (hs : MeasurableSet s) (ht : MeasurableSet t) :
+    v.restrict (s ∪ t) + v.restrict (s ∩ t) = v.restrict s + v.restrict t := by
+  rw [← v.restrict_inter_add_diff (hs.union ht) ht, union_inter_cancel_right, union_diff_right,
+    ← v.restrict_inter_add_diff hs ht, add_comm, ← add_assoc, add_right_comm]
+
+theorem restrict_union (h : Disjoint s t) (hs : MeasurableSet s) (ht : MeasurableSet t) :
+    v.restrict (s ∪ t) = v.restrict s + v.restrict t := by
+  simp [← v.restrict_union_add_inter hs ht, disjoint_iff_inter_eq_empty.mp h]
 
 end Partition
 
@@ -1063,7 +1122,7 @@ theorem trans {u : VectorMeasure α L} {v : VectorMeasure α M} {w : VectorMeasu
   fun _ hs => huv <| hvw hs
 
 theorem zero (v : VectorMeasure α N) : (0 : VectorMeasure α M) ≪ᵥ v :=
-  fun s _ => VectorMeasure.zero_apply s
+  fun s _ => zero_apply s
 
 theorem neg_left {M : Type*} [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M]
     {v : VectorMeasure α M} {w : VectorMeasure α N} (h : v ≪ᵥ w) : -v ≪ᵥ w := by
