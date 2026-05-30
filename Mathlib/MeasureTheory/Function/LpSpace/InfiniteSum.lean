@@ -33,11 +33,7 @@ theorem summable_norm_of_tsum_eLpNorm_ne_top {ι : Type*} [Countable ι]
     filter_upwards [H] with x hx using tsum_enorm_ne_top_iff_summable_norm.1 hx.ne
   -- the result is straightforward in `L^∞`.
   rcases eq_top_or_lt_top p with rfl | h'p
-  · have : ∀ᵐ x ∂μ, ∀ n, ‖f n x‖ₑ ≤ eLpNorm (f n) ∞ μ := by
-      rw [ae_all_iff]
-      intro n
-      filter_upwards [ae_le_eLpNormEssSup (f := f n)] with x hx
-      simpa using hx
+  · have : ∀ᵐ x ∂μ, ∀ n, ‖f n x‖ₑ ≤ eLpNorm (f n) ∞ μ := ae_all_iff.2 (fun n ↦ ae_le_eLpNormEssSup)
     filter_upwards [this] with x hx
     apply lt_of_le_of_lt ?_ h'f.lt_top
     gcongr with i
