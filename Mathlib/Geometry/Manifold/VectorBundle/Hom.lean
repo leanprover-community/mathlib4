@@ -178,9 +178,8 @@ For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be e
 lemma ContMDiffWithinAt.clm_apply_of_inCoordinates
     (hϕ : CMDiffAt[s] n
       (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)
-    (hv : ContMDiffWithinAt IM (IB₁.prod 𝓘(𝕜, F₁)) n (fun m ↦ (v m : TotalSpace F₁ E₁)) s m₀)
-    (hb₂ : CMDiffAt[s] n b₂ m₀) :
-    ContMDiffWithinAt IM (IB₂.prod 𝓘(𝕜, F₂)) n (fun m ↦ (ϕ m (v m) : TotalSpace F₂ E₂)) s m₀ := by
+    (hv : CMDiffAt[s] n (fun m ↦ (v m : TotalSpace F₁ E₁)) m₀) (hb₂ : CMDiffAt[s] n b₂ m₀) :
+    CMDiffAt[s] n (fun m ↦ (ϕ m (v m) : TotalSpace F₂ E₂)) m₀ := by
   rw [← contMDiffWithinAt_insert_self] at hϕ hv hb₂ ⊢
   rw [contMDiffWithinAt_totalSpace] at hv ⊢
   refine ⟨hb₂, ?_⟩
@@ -215,9 +214,8 @@ For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be e
 -/
 lemma ContMDiffAt.clm_apply_of_inCoordinates
     (hϕ : CMDiffAt n (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)
-    (hv : ContMDiffAt IM (IB₁.prod 𝓘(𝕜, F₁)) n (fun m ↦ (v m : TotalSpace F₁ E₁)) m₀)
-    (hb₂ : CMDiffAt n b₂ m₀) :
-    ContMDiffAt IM (IB₂.prod 𝓘(𝕜, F₂)) n (fun m ↦ (ϕ m (v m) : TotalSpace F₂ E₂)) m₀ := by
+    (hv : CMDiffAt n (fun m ↦ (v m : TotalSpace F₁ E₁)) m₀) (hb₂ : CMDiffAt n b₂ m₀) :
+    CMDiffAt n (fun m ↦ (ϕ m (v m) : TotalSpace F₂ E₂)) m₀ := by
   rw [← contMDiffWithinAt_univ] at hϕ hv hb₂ ⊢
   exact ContMDiffWithinAt.clm_apply_of_inCoordinates hϕ hv hb₂
 
@@ -264,9 +262,8 @@ lemma ContMDiffWithinAt.clm_bundle_apply
     (hϕ : ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m))
       s x)
-    (hv : ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₁)) n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) s x) :
-    ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₂)) n
-      (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) s x := by
+    (hv : CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x) :
+    CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) x := by
   simp only [contMDiffWithinAt_hom_bundle] at hϕ
   exact hϕ.2.clm_apply_of_inCoordinates hv hϕ.1
 
@@ -278,8 +275,8 @@ We give here a version of this statement at a point. -/
 lemma ContMDiffAt.clm_bundle_apply
     (hϕ : ContMDiffAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)) x)
-    (hv : ContMDiffAt IM (IB.prod 𝓘(𝕜, F₁)) n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x) :
-    ContMDiffAt IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) x :=
+    (hv : CMDiffAt n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x) :
+    CMDiffAt n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) x :=
   ContMDiffWithinAt.clm_bundle_apply hϕ hv
 
 /-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a base map `b : M → B`, and
@@ -290,8 +287,8 @@ We give here a version of this statement on a set. -/
 lemma ContMDiffOn.clm_bundle_apply
     (hϕ : ContMDiffOn IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)) s)
-    (hv : ContMDiffOn IM (IB.prod 𝓘(𝕜, F₁)) n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) s) :
-    ContMDiffOn IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) s :=
+    (hv : CMDiff[s] n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m))) :
+    CMDiff[s] n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
   fun x hx ↦ (hϕ x hx).clm_bundle_apply (hv x hx)
 
 /-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a base map `b : M → B`, and
@@ -300,8 +297,8 @@ One can apply `ϕ m` to `v m`, and the resulting map is `C^n`. -/
 lemma ContMDiff.clm_bundle_apply
     (hϕ : ContMDiff IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)))
-    (hv : ContMDiff IM (IB.prod 𝓘(𝕜, F₁)) n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m))) :
-    ContMDiff IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
+    (hv : CMDiff n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m))) :
+    CMDiff n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
   fun x ↦ (hϕ x).clm_bundle_apply (hv x)
 
 end OneVariable
@@ -320,10 +317,8 @@ lemma MDifferentiableWithinAt.clm_bundle_apply
     (hϕ : MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂))
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m))
       s x)
-    (hv : MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F₁))
-      (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) s x) :
-    MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F₂))
-      (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) s x := by
+    (hv : MDiffAt[s] (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x) :
+    MDiffAt[s] (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) x := by
   simp only [mdifferentiableWithinAt_hom_bundle] at hϕ
   exact hϕ.2.clm_apply_of_inCoordinates hv hϕ.1
 
@@ -335,8 +330,8 @@ We give here a version of this statement at a point. -/
 lemma MDifferentiableAt.clm_bundle_apply
     (hϕ : MDifferentiableAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂))
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)) x)
-    (hv : MDifferentiableAt IM (IB.prod 𝓘(𝕜, F₁)) (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x) :
-    MDifferentiableAt IM (IB.prod 𝓘(𝕜, F₂)) (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) x :=
+    (hv : MDiffAt (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x) :
+    MDiffAt (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) x :=
   MDifferentiableWithinAt.clm_bundle_apply hϕ hv
 
 /-- Consider a differentiable map `v : M → E₁` to a vector bundle, over a base map `b : M → B`, and
@@ -347,8 +342,8 @@ We give here a version of this statement on a set. -/
 lemma MDifferentiableOn.clm_bundle_apply
     (hϕ : MDifferentiableOn IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂))
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)) s)
-    (hv : MDifferentiableOn IM (IB.prod 𝓘(𝕜, F₁)) (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) s) :
-    MDifferentiableOn IM (IB.prod 𝓘(𝕜, F₂)) (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) s :=
+    (hv : MDiff[s] (fun m ↦ TotalSpace.mk' F₁ (b m) (v m))) :
+    MDiff[s] (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
   fun x hx ↦ (hϕ x hx).clm_bundle_apply (hv x hx)
 
 /-- Consider a differentiable map `v : M → E₁` to a vector bundle, over a base map `b : M → B`, and
@@ -357,8 +352,8 @@ One can apply `ϕ m` to `v m`, and the resulting map is differentiable. -/
 lemma MDifferentiable.clm_bundle_apply
     (hϕ : MDifferentiable IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂))
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)))
-    (hv : MDifferentiable IM (IB.prod 𝓘(𝕜, F₁)) (fun m ↦ TotalSpace.mk' F₁ (b m) (v m))) :
-    MDifferentiable IM (IB.prod 𝓘(𝕜, F₂)) (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
+    (hv : MDiff (fun m ↦ TotalSpace.mk' F₁ (b m) (v m))) :
+    MDiff (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
   fun x ↦ (hϕ x).clm_bundle_apply (hv x)
 
 end OneVariable'
@@ -377,10 +372,9 @@ lemma ContMDiffWithinAt.clm_bundle_apply₂
     (hψ : ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂ →L[𝕜] F₃)) n
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
       (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)) s x)
-    (hv : ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₁)) n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) s x)
-    (hw : ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) (w m)) s x) :
-    ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₃)) n
-      (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) s x :=
+    (hv : CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x)
+    (hw : CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₂ (b m) (w m)) x) :
+    CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) x :=
   hψ.clm_bundle_apply hv |>.clm_bundle_apply hw
 
 /-- Consider `C^n` maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a base map
@@ -392,10 +386,9 @@ lemma ContMDiffAt.clm_bundle_apply₂
     (hψ : ContMDiffAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂ →L[𝕜] F₃)) n
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
       (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)) x)
-    (hv : ContMDiffAt IM (IB.prod 𝓘(𝕜, F₁)) n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x)
-    (hw : ContMDiffAt IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) (w m)) x) :
-    ContMDiffAt IM (IB.prod 𝓘(𝕜, F₃)) n
-      (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) x :=
+    (hv : CMDiffAt n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x)
+    (hw : CMDiffAt n (fun m ↦ TotalSpace.mk' F₂ (b m) (w m)) x) :
+    CMDiffAt n (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) x :=
   ContMDiffWithinAt.clm_bundle_apply₂ hψ hv hw
 
 /-- Consider `C^n` maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a base map
@@ -407,10 +400,9 @@ lemma ContMDiffOn.clm_bundle_apply₂
     (hψ : ContMDiffOn IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂ →L[𝕜] F₃)) n
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
       (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)) s)
-    (hv : ContMDiffOn IM (IB.prod 𝓘(𝕜, F₁)) n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) s)
-    (hw : ContMDiffOn IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) (w m)) s) :
-    ContMDiffOn IM (IB.prod 𝓘(𝕜, F₃)) n
-      (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) s :=
+    (hv : CMDiff[s] n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)))
+    (hw : CMDiff[s] n (fun m ↦ TotalSpace.mk' F₂ (b m) (w m))) :
+    CMDiff[s] n (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) :=
   fun x hx ↦ (hψ x hx).clm_bundle_apply₂ (hv x hx) (hw x hx)
 
 /-- Consider `C^n` maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a base map
@@ -420,10 +412,9 @@ lemma ContMDiff.clm_bundle_apply₂
     (hψ : ContMDiff IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂ →L[𝕜] F₃)) n
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
       (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)))
-    (hv : ContMDiff IM (IB.prod 𝓘(𝕜, F₁)) n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)))
-    (hw : ContMDiff IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) (w m))) :
-    ContMDiff IM (IB.prod 𝓘(𝕜, F₃)) n
-      (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) :=
+    (hv : CMDiff n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)))
+    (hw : CMDiff n (fun m ↦ TotalSpace.mk' F₂ (b m) (w m))) :
+    CMDiff n (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) :=
   fun x ↦ (hψ x).clm_bundle_apply₂ (hv x) (hw x)
 
 end TwoVariables
@@ -442,12 +433,9 @@ lemma MDifferentiableWithinAt.clm_bundle_apply₂
     (hψ : MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂ →L[𝕜] F₃))
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
       (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)) s x)
-    (hv : MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F₁))
-      (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) s x)
-    (hw : MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F₂))
-      (fun m ↦ TotalSpace.mk' F₂ (b m) (w m)) s x) :
-    MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F₃))
-      (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) s x :=
+    (hv : MDiffAt[s] (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x)
+    (hw : MDiffAt[s] (fun m ↦ TotalSpace.mk' F₂ (b m) (w m)) x) :
+    MDiffAt[s] (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) x :=
   hψ.clm_bundle_apply hv |>.clm_bundle_apply hw
 
 /-- Consider differentiable maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a base map
@@ -459,10 +447,9 @@ lemma MDifferentiableAt.clm_bundle_apply₂
     (hψ : MDifferentiableAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂ →L[𝕜] F₃))
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
       (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)) x)
-    (hv : MDifferentiableAt IM (IB.prod 𝓘(𝕜, F₁)) (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x)
-    (hw : MDifferentiableAt IM (IB.prod 𝓘(𝕜, F₂)) (fun m ↦ TotalSpace.mk' F₂ (b m) (w m)) x) :
-    MDifferentiableAt IM (IB.prod 𝓘(𝕜, F₃))
-      (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) x :=
+    (hv : MDiffAt (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x)
+    (hw : MDiffAt (fun m ↦ TotalSpace.mk' F₂ (b m) (w m)) x) :
+    MDiffAt (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) x :=
   MDifferentiableWithinAt.clm_bundle_apply₂ hψ hv hw
 
 /-- Consider differentiable maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a base map
@@ -474,10 +461,9 @@ lemma MDifferentiableOn.clm_bundle_apply₂
     (hψ : MDifferentiableOn IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂ →L[𝕜] F₃))
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
       (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)) s)
-    (hv : MDifferentiableOn IM (IB.prod 𝓘(𝕜, F₁)) (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) s)
-    (hw : MDifferentiableOn IM (IB.prod 𝓘(𝕜, F₂)) (fun m ↦ TotalSpace.mk' F₂ (b m) (w m)) s) :
-    MDifferentiableOn IM (IB.prod 𝓘(𝕜, F₃))
-      (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) s :=
+    (hv : MDiff[s] (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)))
+    (hw : MDiff[s] (fun m ↦ TotalSpace.mk' F₂ (b m) (w m))) :
+    MDiff[s] (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) :=
   fun x hx ↦ (hψ x hx).clm_bundle_apply₂ (hv x hx) (hw x hx)
 
 /-- Consider differentiable maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a base map
@@ -487,10 +473,9 @@ lemma MDifferentiable.clm_bundle_apply₂
     (hψ : MDifferentiable IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂ →L[𝕜] F₃))
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
       (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)))
-    (hv : MDifferentiable IM (IB.prod 𝓘(𝕜, F₁)) (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)))
-    (hw : MDifferentiable IM (IB.prod 𝓘(𝕜, F₂)) (fun m ↦ TotalSpace.mk' F₂ (b m) (w m))) :
-    MDifferentiable IM (IB.prod 𝓘(𝕜, F₃))
-      (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) :=
+    (hv : MDiff (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)))
+    (hw : MDiff (fun m ↦ TotalSpace.mk' F₂ (b m) (w m))) :
+    MDiff (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) :=
   fun x ↦ (hψ x).clm_bundle_apply₂ (hv x) (hw x)
 
 end TwoVariables'
