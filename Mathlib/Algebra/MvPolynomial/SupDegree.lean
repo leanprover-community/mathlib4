@@ -34,9 +34,9 @@ namespace MvPolynomial
 variable {R : Type*} [CommSemiring R] {B : Type*}
 variable {R' : Type*} [CommRing R']
 variable {σ : Type*} (D : (σ →₀ ℕ) → B)
-variable {p q : MvPolynomial σ R}
-variable {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
+variable {p : MvPolynomial σ R}
 
+set_option linter.unusedVariables false in
 /-- Let `R` be a commsemiring, let `B` be an `OrderBot`, and let `D : (σ →₀ ℕ) → B` be a "degree"
 function.
 For an element `f : MvPolynomial σ R`, the element `supDegree f : B` is the supremum of all the
@@ -144,7 +144,7 @@ set_option linter.unusedVariables false in
   `f : MvPolynomial σ R` is the nonzero coefficient of highest degree according to `D`, or 0 if
   `f = 0`. In general, it is defined to be the coefficient at an inverse image of `supDegree f`
   (if such exists). -/
-@[expose]
+@[nolint unusedArguments, expose]
 noncomputable def leadingCoeff (hD : D.Injective) (f : MvPolynomial σ R) : R :=
     f (D.invFun <| f.supDegree D)
 
