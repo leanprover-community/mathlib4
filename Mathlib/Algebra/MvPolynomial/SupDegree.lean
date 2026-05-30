@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Johannes Hölzl, Junyu Guo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
+Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro, Junyu Guo
 -/
 module
 
@@ -9,7 +9,23 @@ public import Mathlib.Algebra.MvPolynomial.Basic
 public import Mathlib.Algebra.MonoidAlgebra.Degree
 
 /-!
-?
+# sup-degree of an `MvPolynomial`
+
+This file is directly refactored from `Mathlib.Algebra.MonoidAlgebra.Degree`, specializing
+`supDegree` and relative lemmas.
+
+## Definitions
+
+Let `R` be a comsemiring and let `B` be a `SemilatticeSup` with `OrderBot`.
+For `f : MvPolynomial σ R` and `D : (σ →₀ ℕ) → B`, this file defines
+
+* `MvPolynomial.supDegree D f`: the sup-degree of `f` w.r.t. `D`, taking values in `B`,
+  `⊥` if `f = 0`.
+
+Given `hD : D.Injective`
+
+* `MvPolynomial.leadingCoeff hD f`: the leading coefficient of `f` w.r.t. `D`, `0` if `f = 0`;
+* `MvPolynomial.Monic hD f`: `f` is monic w.r.t. `D`.
 -/
 public section
 
@@ -21,6 +37,18 @@ variable {σ : Type*} (D : (σ →₀ ℕ) → B)
 variable {p q : MvPolynomial σ R}
 variable {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
 
+/-- Let `R` be a commsemiring, let `B` be an `OrderBot`, and let `D : (σ →₀ ℕ) → B` be a "degree"
+function.
+For an element `f : MvPolynomial σ R`, the element `supDegree f : B` is the supremum of all the
+elements in the support of `f`, or `⊥` if `f` is zero.
+
+If we equip `σ` with a linear order then the induced linear order on `Lex (σ →₀ ℕ)` equips
+`MvPolynomial` ring with a [monomial order](https://en.wikipedia.org/wiki/Monomial_order) (i.e. a
+linear order on `σ →₀ ℕ`, the type of (monic) monomials in `MvPolynomial σ R`, that respects
+addition). We make use of this monomial order by using `MonomialOrder.lex.degree` instead of
+`supDegree` with `D := toLex`, and different monomial orders could be accessed via different
+`MonomialOrder`. For an abstract monomial order, `m : MonomialOrder σ` can be used as a hypothesis.
+-/
 abbrev supDegree [SemilatticeSup B] [OrderBot B] (p : MvPolynomial σ R) : B := p.support.sup D
 
 section SupDegree
