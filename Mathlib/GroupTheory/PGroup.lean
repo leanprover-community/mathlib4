@@ -448,6 +448,7 @@ theorem map_pCore_le_of_surjective {H : Type*} [Group H] {f : G →* H} (h : Fun
   have := normal_pCore p G |>.map f h
   isPGroup_pCore p G |>.map f |>.le_pCore
 
+/-- A surjective group homomorphism can be lifted to a homomorphism between the `p`-cores. -/
 @[simps]
 def pCoreMonoidHom {H : Type*} [Group H] (f : G →* H) (h : Function.Surjective f) :
     pCore p G →* pCore p H where
@@ -455,6 +456,7 @@ def pCoreMonoidHom {H : Type*} [Group H] (f : G →* H) (h : Function.Surjective
   map_one' := by simp
   map_mul' := by simp
 
+/-- A group isomorphism can be lifted to an isomorphism between the `p`-cores. -/
 @[simps]
 def pCoreMulEquiv {H : Type*} [Group H] (φ : G ≃* H) : pCore p G ≃* pCore p H where
   __ := pCoreMonoidHom φ φ.surjective
