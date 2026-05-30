@@ -622,4 +622,3 @@ theorem three_gap {α : ℝ} (hα : Irrational α) (N : ℕ) :
 
 
 end ThreeGap
-
