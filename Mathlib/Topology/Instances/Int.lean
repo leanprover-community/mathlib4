@@ -69,10 +69,8 @@ instance : ProperSpace ℤ :=
 instance : IsOrderBornology ℤ :=
   .of_isCompactIcc 0 (by simp [Int.closedBall_eq_Icc]) (by simp [Int.closedBall_eq_Icc])
 
-@[simp]
-theorem cobounded_eq : Bornology.cobounded ℤ = atBot ⊔ atTop := by
-  simp_rw [← comap_dist_right_atTop (0 : ℤ), dist_eq', sub_zero,
-    ← comap_abs_atTop, ← @Int.comap_cast_atTop ℝ, comap_comap]; rfl
+@[deprecated (since := "2026-04-07")]
+alias cobounded_eq := IsOrderBornology.cobounded_eq
 
 @[simp]
 theorem cofinite_eq : (cofinite : Filter ℤ) = atBot ⊔ atTop := by

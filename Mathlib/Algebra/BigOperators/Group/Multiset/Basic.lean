@@ -93,7 +93,7 @@ theorem prod_hom (s : Multiset M) {F : Type*} [FunLike F M N]
 theorem prod_hom' (s : Multiset ι) {F : Type*} [FunLike F M N]
     [MonoidHomClass F M N] (f : F)
     (g : ι → M) : (s.map fun i => f <| g i).prod = f (s.map g).prod := by
-  convert (s.map g).prod_hom f
+  convert! (s.map g).prod_hom f
   exact (map_map _ _ _).symm
 
 @[to_additive]
@@ -197,7 +197,7 @@ theorem prod_map_div : (m.map fun i => f i / g i).prod = (m.map f).prod / (m.map
 
 @[to_additive]
 theorem prod_map_zpow {n : ℤ} : (m.map fun i => f i ^ n).prod = (m.map f).prod ^ n := by
-  convert (m.map f).prod_hom (zpowGroupHom n : G →* G)
+  convert! (m.map f).prod_hom (zpowGroupHom n : G →* G)
   simp only [map_map, Function.comp_apply, zpowGroupHom_apply]
 
 end DivisionCommMonoid

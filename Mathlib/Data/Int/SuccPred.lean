@@ -21,16 +21,11 @@ open Function Order
 
 namespace Int
 
--- so that Lean reads `Int.succ` through `SuccOrder.succ`
 instance instSuccOrder : SuccOrder ℤ :=
   { SuccOrder.ofSuccLeIff succ fun {_ _} => Iff.rfl with succ := succ }
 
 instance instSuccAddOrder : SuccAddOrder ℤ := ⟨fun _ => rfl⟩
 
-#adaptation_note /-- Before https://github.com/leanprover/lean4/pull/12263
-this was `abbrev`, which is no longer allowed.
-The comment said "so that Lean reads `Int.pred` through `PredOrder.pred`"
--/
 instance instPredOrder : PredOrder ℤ where
   pred := pred
   pred_le _ := (sub_one_lt_of_le le_rfl).le

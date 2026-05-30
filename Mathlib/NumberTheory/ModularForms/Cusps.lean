@@ -58,7 +58,7 @@ section IsCusp
 def IsCusp (c : OnePoint ℝ) (𝒢 : Subgroup (GL (Fin 2) ℝ)) : Prop :=
   ∃ g ∈ 𝒢, g.IsParabolic ∧ g • c = c
 
-open Pointwise in
+open scoped Pointwise in
 lemma IsCusp.smul {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : IsCusp c 𝒢)
     (g : GL (Fin 2) ℝ) : IsCusp (g • c) (ConjAct.toConjAct g • 𝒢) := by
   obtain ⟨p, hp𝒢, hpp, hpc⟩ := hc
@@ -68,7 +68,7 @@ lemma IsCusp.smul {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : Is
 
 lemma IsCusp.smul_of_mem {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : IsCusp c 𝒢)
     {g : GL (Fin 2) ℝ} (hg : g ∈ 𝒢) : IsCusp (g • c) 𝒢 := by
-  convert hc.smul g
+  convert! hc.smul g
   ext x
   rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← ConjAct.toConjAct_inv,
     ConjAct.toConjAct_smul, inv_inv, Subgroup.mul_mem_cancel_right _ hg,
@@ -101,7 +101,7 @@ lemma IsCusp.of_isFiniteRelIndex {𝒢 ℋ : Subgroup (GL (Fin 2) ℝ)} {c : One
   rw [← isCusp_iff_of_relIndex_ne_zero inf_le_right hGH] at hc
   exact hc.mono inf_le_left
 
-open Pointwise in
+open scoped Pointwise in
 /-- Variant version of `IsCusp.of_isFiniteRelIndex`. -/
 lemma IsCusp.of_isFiniteRelIndex_conj {𝒢 ℋ : Subgroup (GL (Fin 2) ℝ)} {c : OnePoint ℝ}
     [𝒢.IsFiniteRelIndex ℋ] (hc : IsCusp c ℋ) {h} (hh : h ∈ ℋ) :
