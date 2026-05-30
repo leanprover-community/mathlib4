@@ -5,10 +5,8 @@ Authors: Kalle Kytölä
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Mathlib.MeasureTheory.Integral.Layercake
-public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.MeasureTheory.Measure.Tight
 
 /-!
@@ -52,6 +50,9 @@ Assume that, applied to all the elements of a π-system, a sequence of probabili
 converges to a limiting probability measure. Assume also that the π-system contains arbitrarily
 small neighborhoods of any point. Then the sequence of probability measures converges for the
 weak topology.
+
+In case the set of measures is tight, (C) implies (T) even when 'closed' is replaced by 'compact'.
+This is shown in `MeasureTheory.tendsto_of_forall_isCompact_of_isTightMeasureSet`.
 
 ## Implementation notes
 
@@ -649,8 +650,7 @@ lemma tendsto_of_forall_isClosed_limsup_real_le' {L : Filter ι} [L.IsCountablyG
     Tendsto μs L (𝓝 μ) := tendsto_of_forall_isClosed_limsup_le (by simpa using h)
 
 /-- A different version of the (C) → (T) implication of the portmanteau theorem:
-When the set of measures is tight, a `limsup` inequality for compact sets suffices to conclude
-weak convergence. -/
+If the set of measures is tight, a `limsup` inequality for compact sets implies weak convergence -/
 theorem tendsto_of_forall_isCompact_of_isTightMeasureSet [NeBot L]
     (h₁ : IsTightMeasureSet (range (ProbabilityMeasure.toMeasure ∘ μs)))
     (h₂ : ∀ F, IsCompact F → limsup (fun i ↦ (μs i) F) L ≤ μ F) :
