@@ -39,8 +39,8 @@ variable {𝕜 E : Type*} [AddCommGroup E]
 
 /-- If a real-linear functional is bounded by a `𝕜`-seminorm, then its `𝕜`-linear extension
 is bounded by the same seminorm. -/
-theorem norm_extendRCLike_le_seminorm [RCLike 𝕜] [Module 𝕜 E] [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
-    (fr : Dual ℝ E) {p : Seminorm 𝕜 E} (hp : ∀ x, |fr x| ≤ p x) (x : E) :
+theorem Module.Dual.norm_extendRCLike_le_seminorm [RCLike 𝕜] [Module 𝕜 E] [Module ℝ E]
+    [IsScalarTower ℝ 𝕜 E] (fr : Dual ℝ E) {p : Seminorm 𝕜 E} (hp : ∀ x, |fr x| ≤ p x) (x : E) :
     ‖(fr.extendRCLike x : 𝕜)‖ ≤ p x := by
   by_cases hx : fr.extendRCLike (𝕜 := 𝕜) x = 0
   · simp [hx]
