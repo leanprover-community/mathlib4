@@ -120,7 +120,7 @@ lemma MvPolynomial.ringKrullDim_of_isNoetherianRing {ι : Type*} [Finite ι] :
     ringKrullDim (MvPolynomial ι R) = ringKrullDim R + Nat.card ι := by
   induction ι using Finite.induction_empty_option with
   | of_equiv e H =>
-    convert ← H using 1
+    convert! ← H using 1
     · exact ringKrullDim_eq_of_ringEquiv (renameEquiv _ e).toRingEquiv
     · rw [Nat.card_congr e]
   | h_empty => simp

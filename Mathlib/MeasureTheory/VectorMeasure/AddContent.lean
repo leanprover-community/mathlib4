@@ -27,7 +27,7 @@ open scoped symmDiff
 namespace MeasureTheory.VectorMeasure
 
 variable {α : Type*} {hα : MeasurableSpace α} {E : Type*} [NormedAddCommGroup E]
-[CompleteSpace E] {μ : Measure α}
+  [CompleteSpace E] {μ : Measure α}
 
 /-- A finitely additive vector measure which is dominated by a finite positive measure is in
 fact countably additive. -/
@@ -83,7 +83,6 @@ def of_additive_of_le_measure
 
 open scoped ENNReal
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Consider an additive content on a dense ring of sets. Assume that it is dominated by a finite
 positive measure. Then it extends to a countably additive vector measure. -/
 lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
@@ -144,9 +143,9 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
       apply C'_dense.mono
       intro s hs
       simp only [Set.mem_setOf_eq]
-      convert hm s (C'C s hs)
+      convert! hm s (C'C s hs)
       exact C'_dense.extend_eq lip.continuous ⟨s, hs⟩
-    simpa only [Dense, IsClosed.closure_eq, Set.mem_setOf_eq] using this
+    simpa only [Dense, IsClosed.closure_eq, Set.mem_setOf_eq] using! this
   /- Most involved technical step: show that the extension `m₁` of `m₀` is still finitely
   additive. -/
   have hAddit (s t : MeasuredSets μ) (h : Disjoint (s : Set α) t) :
@@ -228,7 +227,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     apply VectorMeasure.of_additive_of_le_measure m' (μ := μ)
     · intro s
       by_cases hs : MeasurableSet s
-      · simpa [hs, m'] using hBound _
+      · simpa [hs, m'] using! hBound _
       · simp [hs, m']
     · intro s t hs ht hst
       simp only [hs, ht, MeasurableSet.union, ↓reduceDIte, m']
