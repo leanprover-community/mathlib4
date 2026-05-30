@@ -25,68 +25,222 @@ public import Mathlib.Data.ZMod.QuotientRing
 
 open scoped DirectSum
 
-/-
-TODO: Here's a more general approach to dropping trivial factors from a direct sum:
-
-def DirectSum.congr {ι κ : Type*} {α : ι → Type*} {β : κ → Type*} [DecidableEq ι] [DecidableEq κ]
-    [∀ i, DecidableEq (α i)] [∀ j, DecidableEq (β j)] [∀ i, AddCommMonoid (α i)]
-    [∀ j, AddCommMonoid (β j)] (f : ∀ i, Nontrivial (α i) → κ) (g : ∀ j, Nontrivial (β j) → ι)
+/-- Drop trivial factors from a direct sum: given families of mutually inverse morphisms
+`F : α i →+ β (f i hi)` and `G : β j →+ α (g j hj)` between the nontrivial components,
+the direct sums `⨁ i, α i` and `⨁ j, β j` are isomorphic. The hypotheses `hFne` and `hGne`
+assert that the morphisms preserve non-zeroness, which is needed to correctly identify
+which components of the result are nontrivial. -/
+def DirectSum.congr {ι κ : Type*} {α : ι → Type*} {β : κ → Type*}
+    [DecidableEq ι] [DecidableEq κ]
+    [∀ i, DecidableEq (α i)] [∀ j, DecidableEq (β j)]
+    [∀ i, AddCommMonoid (α i)] [∀ j, AddCommMonoid (β j)]
+    (f : ∀ i, Nontrivial (α i) → κ) (g : ∀ j, Nontrivial (β j) → ι)
     (F : ∀ i hi, α i →+ β (f i hi)) (G : ∀ j hj, β j →+ α (g j hj))
     (hfg : ∀ i hi hj, g (f i hi) hj = i) (hgf : ∀ j hj hi, f (g j hj) hi = j)
     (hFG : ∀ i hi hj a, hfg i hi hj ▸ G _ hj (F i hi a) = a)
-    (hGF : ∀ j hj hi b, hgf j hj hi ▸ F _ hi (G j hj b) = b) :
+    (hGF : ∀ j hj hi b, hgf j hj hi ▸ F _ hi (G j hj b) = b)
+    (hFne : ∀ i hi a, a ≠ 0 → F i hi a ≠ 0)
+    (hGne : ∀ j hj b, b ≠ 0 → G j hj b ≠ 0) :
     (⨁ i, α i) ≃+ ⨁ j, β j where
   toFun x := x.sum fun i a ↦ if ha : a = 0 then 0 else DFinsupp.single (f i ⟨a, 0, ha⟩) (F _ _ a)
   invFun y := y.sum fun j b ↦ if hb : b = 0 then 0 else DFinsupp.single (g j ⟨b, 0, hb⟩) (G _ _ b)
-  -- The two sorries here are probably doable with the existing machinery, but quite painful
-  left_inv x := DFinsupp.ext fun i ↦ sorry
-  right_inv y := DFinsupp.ext fun j ↦ sorry
   map_add' x₁ x₂ := by
-    dsimp
+    show (x₁ + x₂).sum (fun i a ↦ if ha : a = 0 then 0 else
+          DFinsupp.single (f i ⟨a, 0, ha⟩) (F _ _ a)) =
+      x₁.sum (fun i a ↦ if ha : a = 0 then 0 else DFinsupp.single (f i ⟨a, 0, ha⟩) (F _ _ a)) +
+      x₂.sum (fun i a ↦ if ha : a = 0 then 0 else DFinsupp.single (f i ⟨a, 0, ha⟩) (F _ _ a))
     refine DFinsupp.sum_add_index (by simp) fun i a₁ a₂ ↦ ?_
     split_ifs
     any_goals simp_all
     rw [← DFinsupp.single_add, ← map_add, ‹a₁ + a₂ = 0›, map_zero, DFinsupp.single_zero]
+  left_inv x := by
+    let Φ : ∀ i, α i → ⨁ j, β j :=
+      fun i a ↦ if ha : a = 0 then 0 else DFinsupp.single (f i ⟨a, 0, ha⟩) (F _ _ a)
+    let Ψ : ∀ j, β j → ⨁ i, α i :=
+      fun j b ↦ if hb : b = 0 then 0 else DFinsupp.single (g j ⟨b, 0, hb⟩) (G _ _ b)
+    have Φ0 : ∀ i, Φ i 0 = 0 := fun i ↦ dif_pos rfl
+    have Ψ0 : ∀ j, Ψ j 0 = 0 := fun j ↦ dif_pos rfl
+    have Φadd : ∀ i (a b : α i), Φ i (a + b) = Φ i a + Φ i b := by
+      intro i a b
+      by_cases hab : a + b = 0 <;> by_cases ha : a = 0 <;> by_cases hb : b = 0
+      · subst ha; subst hb; simp [Φ0]
+      · subst ha; simp at hab; exact absurd hab hb
+      · subst hb; simp at hab; exact absurd hab ha
+      · show (if h : a + b = 0 then 0 else DFinsupp.single (f i ⟨a+b,0,h⟩) (F _ _ (a+b))) =
+             (if h : a = 0 then 0 else DFinsupp.single (f i ⟨a,0,h⟩) (F _ _ a)) +
+             (if h : b = 0 then 0 else DFinsupp.single (f i ⟨b,0,h⟩) (F _ _ b))
+        rw [dif_pos hab, dif_neg ha, dif_neg hb]; symm
+        show DFinsupp.single (f i ⟨a, 0, ha⟩) (F i ⟨a, 0, ha⟩ a) +
+             DFinsupp.single (f i ⟨a, 0, ha⟩) (F i ⟨a, 0, ha⟩ b) = 0
+        rw [← DFinsupp.single_add, ← map_add, hab, map_zero, DFinsupp.single_zero]
+      · subst ha; subst hb; simp at hab
+      · subst ha; simp [Φ0, zero_add]
+      · subst hb; simp [Φ0, add_zero]
+      · show (if h : a + b = 0 then 0 else DFinsupp.single (f i ⟨a+b,0,h⟩) (F _ _ (a+b))) =
+             (if h : a = 0 then 0 else DFinsupp.single (f i ⟨a,0,h⟩) (F _ _ a)) +
+             (if h : b = 0 then 0 else DFinsupp.single (f i ⟨b,0,h⟩) (F _ _ b))
+        rw [dif_neg hab, dif_neg ha, dif_neg hb]
+        show DFinsupp.single (f i ⟨a+b, 0, hab⟩) (F i ⟨a+b, 0, hab⟩ (a+b)) =
+             DFinsupp.single (f i ⟨a+b, 0, hab⟩) (F i ⟨a+b, 0, hab⟩ a) +
+             DFinsupp.single (f i ⟨a+b, 0, hab⟩) (F i ⟨a+b, 0, hab⟩ b)
+        rw [← DFinsupp.single_add, ← map_add]
+    have Ψadd : ∀ j (a b : β j), Ψ j (a + b) = Ψ j a + Ψ j b := by
+      intro j a b
+      by_cases hab : a + b = 0 <;> by_cases ha : a = 0 <;> by_cases hb : b = 0
+      · subst ha; subst hb; simp [Ψ0]
+      · subst ha; simp at hab; exact absurd hab hb
+      · subst hb; simp at hab; exact absurd hab ha
+      · show (if h : a + b = 0 then 0 else DFinsupp.single (g j ⟨a+b,0,h⟩) (G _ _ (a+b))) =
+             (if h : a = 0 then 0 else DFinsupp.single (g j ⟨a,0,h⟩) (G _ _ a)) +
+             (if h : b = 0 then 0 else DFinsupp.single (g j ⟨b,0,h⟩) (G _ _ b))
+        rw [dif_pos hab, dif_neg ha, dif_neg hb]; symm
+        show DFinsupp.single (g j ⟨a, 0, ha⟩) (G j ⟨a, 0, ha⟩ a) +
+             DFinsupp.single (g j ⟨a, 0, ha⟩) (G j ⟨a, 0, ha⟩ b) = 0
+        rw [← DFinsupp.single_add, ← map_add, hab, map_zero, DFinsupp.single_zero]
+      · subst ha; subst hb; simp at hab
+      · subst ha; simp [Ψ0, zero_add]
+      · subst hb; simp [Ψ0, add_zero]
+      · show (if h : a + b = 0 then 0 else DFinsupp.single (g j ⟨a+b,0,h⟩) (G _ _ (a+b))) =
+             (if h : a = 0 then 0 else DFinsupp.single (g j ⟨a,0,h⟩) (G _ _ a)) +
+             (if h : b = 0 then 0 else DFinsupp.single (g j ⟨b,0,h⟩) (G _ _ b))
+        rw [dif_neg hab, dif_neg ha, dif_neg hb]
+        show DFinsupp.single (g j ⟨a+b, 0, hab⟩) (G j ⟨a+b, 0, hab⟩ (a+b)) =
+             DFinsupp.single (g j ⟨a+b, 0, hab⟩) (G j ⟨a+b, 0, hab⟩ a) +
+             DFinsupp.single (g j ⟨a+b, 0, hab⟩) (G j ⟨a+b, 0, hab⟩ b)
+        rw [← DFinsupp.single_add, ← map_add]
+    have φ_add : ∀ (x y : ⨁ i, α i), (x + y).sum Φ = x.sum Φ + y.sum Φ :=
+      fun x y ↦ DFinsupp.sum_add_index Φ0 (fun i a b ↦ Φadd i a b)
+    have ψ_add : ∀ (y₁ y₂ : ⨁ j, β j), (y₁ + y₂).sum Ψ = y₁.sum Ψ + y₂.sum Ψ :=
+      fun y₁ y₂ ↦ DFinsupp.sum_add_index Ψ0 (fun j a b ↦ Ψadd j a b)
+    show (x.sum Φ).sum Ψ = x
+    induction x using DirectSum.induction_on with
+    | zero => simp [DFinsupp.sum]
+    | of i a =>
+      by_cases ha : a = 0
+      · subst ha; simp [map_zero, DFinsupp.sum]
+      · have hi : Nontrivial (α i) := ⟨a, 0, ha⟩
+        have hφ : (DirectSum.of α i a).sum Φ = DFinsupp.single (f i hi) (F i hi a) := by
+          rw [show DirectSum.of α i a = DFinsupp.single i a from rfl,
+              DFinsupp.sum_single_index (Φ0 i)]
+          show (if ha' : a = 0 then 0 else DFinsupp.single (f i ⟨a, 0, ha'⟩) (F _ _ a)) =
+               DFinsupp.single (f i hi) (F i hi a)
+          rw [dif_neg ha]
+        have hFa := hFne i hi a ha
+        have hj : Nontrivial (β (f i hi)) := ⟨F i hi a, 0, hFa⟩
+        rw [hφ, DFinsupp.sum_single_index (Ψ0 _)]
+        have hΨ : Ψ (f i hi) (F i hi a) =
+            DFinsupp.single (g (f i hi) hj) (G (f i hi) hj (F i hi a)) := by
+          show (if hb : F i hi a = 0 then 0 else
+                  DFinsupp.single (g (f i hi) ⟨F i hi a, 0, hb⟩) (G _ _ (F i hi a))) =
+               DFinsupp.single (g (f i hi) hj) (G (f i hi) hj (F i hi a))
+          rw [dif_neg hFa]
+        rw [hΨ, show DirectSum.of α i a = DFinsupp.single i a from rfl]
+        ext k; simp only [DFinsupp.single_apply]
+        rcases Decidable.em (i = k) with rfl | hik
+        · rw [dif_pos (hfg i hi hj), dif_pos rfl]; exact hFG i hi hj a
+        · rw [dif_neg hik, dif_neg (fun h ↦ hik ((hfg i hi hj).symm.trans h))]
+    | add x y hx hy => rw [φ_add, ψ_add, hx, hy]
+  right_inv y := by
+    let Φ : ∀ i, α i → ⨁ j, β j :=
+      fun i a ↦ if ha : a = 0 then 0 else DFinsupp.single (f i ⟨a, 0, ha⟩) (F _ _ a)
+    let Ψ : ∀ j, β j → ⨁ i, α i :=
+      fun j b ↦ if hb : b = 0 then 0 else DFinsupp.single (g j ⟨b, 0, hb⟩) (G _ _ b)
+    have Φ0 : ∀ i, Φ i 0 = 0 := fun i ↦ dif_pos rfl
+    have Ψ0 : ∀ j, Ψ j 0 = 0 := fun j ↦ dif_pos rfl
+    have Ψadd : ∀ j (a b : β j), Ψ j (a + b) = Ψ j a + Ψ j b := by
+      intro j a b
+      by_cases hab : a + b = 0 <;> by_cases ha : a = 0 <;> by_cases hb : b = 0
+      · subst ha; subst hb; simp [Ψ0]
+      · subst ha; simp at hab; exact absurd hab hb
+      · subst hb; simp at hab; exact absurd hab ha
+      · show (if h : a + b = 0 then 0 else DFinsupp.single (g j ⟨a+b,0,h⟩) (G _ _ (a+b))) =
+             (if h : a = 0 then 0 else DFinsupp.single (g j ⟨a,0,h⟩) (G _ _ a)) +
+             (if h : b = 0 then 0 else DFinsupp.single (g j ⟨b,0,h⟩) (G _ _ b))
+        rw [dif_pos hab, dif_neg ha, dif_neg hb]; symm
+        show DFinsupp.single (g j ⟨a, 0, ha⟩) (G j ⟨a, 0, ha⟩ a) +
+             DFinsupp.single (g j ⟨a, 0, ha⟩) (G j ⟨a, 0, ha⟩ b) = 0
+        rw [← DFinsupp.single_add, ← map_add, hab, map_zero, DFinsupp.single_zero]
+      · subst ha; subst hb; simp at hab
+      · subst ha; simp [Ψ0, zero_add]
+      · subst hb; simp [Ψ0, add_zero]
+      · show (if h : a + b = 0 then 0 else DFinsupp.single (g j ⟨a+b,0,h⟩) (G _ _ (a+b))) =
+             (if h : a = 0 then 0 else DFinsupp.single (g j ⟨a,0,h⟩) (G _ _ a)) +
+             (if h : b = 0 then 0 else DFinsupp.single (g j ⟨b,0,h⟩) (G _ _ b))
+        rw [dif_neg hab, dif_neg ha, dif_neg hb]
+        show DFinsupp.single (g j ⟨a+b, 0, hab⟩) (G j ⟨a+b, 0, hab⟩ (a+b)) =
+             DFinsupp.single (g j ⟨a+b, 0, hab⟩) (G j ⟨a+b, 0, hab⟩ a) +
+             DFinsupp.single (g j ⟨a+b, 0, hab⟩) (G j ⟨a+b, 0, hab⟩ b)
+        rw [← DFinsupp.single_add, ← map_add]
+    have Φadd : ∀ i (a b : α i), Φ i (a + b) = Φ i a + Φ i b := by
+      intro i a b
+      by_cases hab : a + b = 0 <;> by_cases ha : a = 0 <;> by_cases hb : b = 0
+      · subst ha; subst hb; simp [Φ0]
+      · subst ha; simp at hab; exact absurd hab hb
+      · subst hb; simp at hab; exact absurd hab ha
+      · show (if h : a + b = 0 then 0 else DFinsupp.single (f i ⟨a+b,0,h⟩) (F _ _ (a+b))) =
+             (if h : a = 0 then 0 else DFinsupp.single (f i ⟨a,0,h⟩) (F _ _ a)) +
+             (if h : b = 0 then 0 else DFinsupp.single (f i ⟨b,0,h⟩) (F _ _ b))
+        rw [dif_pos hab, dif_neg ha, dif_neg hb]; symm
+        show DFinsupp.single (f i ⟨a, 0, ha⟩) (F i ⟨a, 0, ha⟩ a) +
+             DFinsupp.single (f i ⟨a, 0, ha⟩) (F i ⟨a, 0, ha⟩ b) = 0
+        rw [← DFinsupp.single_add, ← map_add, hab, map_zero, DFinsupp.single_zero]
+      · subst ha; subst hb; simp at hab
+      · subst ha; simp [Φ0, zero_add]
+      · subst hb; simp [Φ0, add_zero]
+      · show (if h : a + b = 0 then 0 else DFinsupp.single (f i ⟨a+b,0,h⟩) (F _ _ (a+b))) =
+             (if h : a = 0 then 0 else DFinsupp.single (f i ⟨a,0,h⟩) (F _ _ a)) +
+             (if h : b = 0 then 0 else DFinsupp.single (f i ⟨b,0,h⟩) (F _ _ b))
+        rw [dif_neg hab, dif_neg ha, dif_neg hb]
+        show DFinsupp.single (f i ⟨a+b, 0, hab⟩) (F i ⟨a+b, 0, hab⟩ (a+b)) =
+             DFinsupp.single (f i ⟨a+b, 0, hab⟩) (F i ⟨a+b, 0, hab⟩ a) +
+             DFinsupp.single (f i ⟨a+b, 0, hab⟩) (F i ⟨a+b, 0, hab⟩ b)
+        rw [← DFinsupp.single_add, ← map_add]
+    have ψ_add : ∀ (y₁ y₂ : ⨁ j, β j), (y₁ + y₂).sum Ψ = y₁.sum Ψ + y₂.sum Ψ :=
+      fun y₁ y₂ ↦ DFinsupp.sum_add_index Ψ0 (fun j a b ↦ Ψadd j a b)
+    have φ_add : ∀ (x₁ x₂ : ⨁ i, α i), (x₁ + x₂).sum Φ = x₁.sum Φ + x₂.sum Φ :=
+      fun x₁ x₂ ↦ DFinsupp.sum_add_index Φ0 (fun i a b ↦ Φadd i a b)
+    show (y.sum Ψ).sum Φ = y
+    induction y using DirectSum.induction_on with
+    | zero => simp [DFinsupp.sum]
+    | of j b =>
+      by_cases hb : b = 0
+      · subst hb; simp [map_zero, DFinsupp.sum]
+      · have hj : Nontrivial (β j) := ⟨b, 0, hb⟩
+        have hψ : (DirectSum.of β j b).sum Ψ = DFinsupp.single (g j hj) (G j hj b) := by
+          rw [show DirectSum.of β j b = DFinsupp.single j b from rfl,
+              DFinsupp.sum_single_index (Ψ0 j)]
+          show (if hb' : b = 0 then 0 else DFinsupp.single (g j ⟨b, 0, hb'⟩) (G _ _ b)) =
+               DFinsupp.single (g j hj) (G j hj b)
+          rw [dif_neg hb]
+        have hGb := hGne j hj b hb
+        have hi : Nontrivial (α (g j hj)) := ⟨G j hj b, 0, hGb⟩
+        rw [hψ, DFinsupp.sum_single_index (Φ0 _)]
+        have hΦ : Φ (g j hj) (G j hj b) =
+            DFinsupp.single (f (g j hj) hi) (F (g j hj) hi (G j hj b)) := by
+          show (if ha : G j hj b = 0 then 0 else
+                  DFinsupp.single (f (g j hj) ⟨G j hj b, 0, ha⟩) (F _ _ (G j hj b))) =
+               DFinsupp.single (f (g j hj) hi) (F (g j hj) hi (G j hj b))
+          rw [dif_neg hGb]
+        rw [hΦ, show DirectSum.of β j b = DFinsupp.single j b from rfl]
+        ext k; simp only [DFinsupp.single_apply]
+        rcases Decidable.em (j = k) with rfl | hjk
+        · rw [dif_pos (hgf j hj hi), dif_pos rfl]; exact hGF j hj hi b
+        · rw [dif_neg hjk, dif_neg (fun h ↦ hjk ((hgf j hj hi).symm.trans h))]
+    | add y₁ y₂ hy₁ hy₂ => rw [ψ_add, φ_add, hy₁, hy₂]
 
 private def directSumNeZeroMulEquiv (ι : Type) [DecidableEq ι] (p : ι → ℕ) (n : ι → ℕ) :
     (⨁ i : {i // n i ≠ 0}, ZMod (p i ^ n i)) ≃+ ⨁ i, ZMod (p i ^ n i) :=
   DirectSum.congr
     (fun i _ ↦ i)
-    (fun j hj ↦ ⟨j, fun h ↦ by simp [h, pow_zero, zmod_nontrivial] at hj⟩)
+    (fun j hj ↦ ⟨j, fun h ↦ by simp [h, pow_zero, ZMod.nontrivial_iff] at hj⟩)
     (fun i _ ↦ AddMonoidHom.id _)
     (fun j _ ↦ AddMonoidHom.id _)
     (fun i hi hj ↦ rfl)
     (fun j hj hi ↦ rfl)
     (fun i hi hj a ↦ rfl)
     (fun j hj hi a ↦ rfl)
--/
-
-private def directSumNeZeroMulHom {ι : Type} [DecidableEq ι] (p : ι → ℕ) (n : ι → ℕ) :
-    (⨁ i : {i // n i ≠ 0}, ZMod (p i ^ n i)) →+ ⨁ i, ZMod (p i ^ n i) :=
-  DirectSum.toAddMonoid fun i ↦ DirectSum.of (fun i ↦ ZMod (p i ^ n i)) i
-
-private def directSumNeZeroMulEquiv (ι : Type) [DecidableEq ι] (p : ι → ℕ) (n : ι → ℕ) :
-    (⨁ i : {i // n i ≠ 0}, ZMod (p i ^ n i)) ≃+ ⨁ i, ZMod (p i ^ n i) where
-  toFun := directSumNeZeroMulHom p n
-  invFun := DirectSum.toAddMonoid fun i ↦
-    if h : n i = 0 then 0 else DirectSum.of (fun j : {i // n i ≠ 0} ↦ ZMod (p j ^ n j)) ⟨i, h⟩
-  left_inv x := by
-    induction x using DirectSum.induction_on with
-    | zero => simp
-    | of i x =>
-      rw [directSumNeZeroMulHom, DirectSum.toAddMonoid_of, DirectSum.toAddMonoid_of,
-        dif_neg i.prop]
-    | add x y hx hy => rw [map_add, map_add, hx, hy]
-  right_inv x := by
-    induction x using DirectSum.induction_on with
-    | zero => rw [map_zero, map_zero]
-    | of i x =>
-      rw [DirectSum.toAddMonoid_of]
-      split_ifs with h
-      · simp [(ZMod.subsingleton_iff.2 <| by rw [h, pow_zero]).elim x 0]
-      · simp_rw [directSumNeZeroMulHom, DirectSum.toAddMonoid_of]
-    | add x y hx hy => rw [map_add, map_add, hx, hy]
-  map_add' := map_add (directSumNeZeroMulHom p n)
+    (fun i hi a ha ↦ ha)
+    (fun j hj b hb ↦ hb)
 
 universe u
 
