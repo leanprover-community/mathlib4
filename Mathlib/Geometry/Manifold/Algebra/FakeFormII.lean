@@ -5,7 +5,7 @@ Authors: Dominic Steinitz
 -/
 
 import Mathlib
--- import Mathlib.Geometry.Manifold.Algebra.ExpLie
+import Mathlib.Geometry.Manifold.Algebra.ExpLie
 import Mathlib.Geometry.Manifold.Algebra.PrincipalGBundlePrelude
 
 /-!
