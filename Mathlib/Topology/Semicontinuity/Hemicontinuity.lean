@@ -144,6 +144,8 @@ lemma isOpenMap_iff_lowerHemicontinuous {f : α → β} :
   rw [isOpenMap_iff_kernImage, lowerHemicontinuous_iff_isClosed_preimage_Iic]
   aesop
 
+section singleton_maps
+
 /-! ### Singleton maps
 
 Functions `f : α → β` are continuous if and only if they are lower hemicontinuous if and only if
@@ -153,11 +155,13 @@ they are upper hemicontinuous. This is in the sense that the map `g : α → Set
 This section also provides dot notation to access this fact for continuous functions.
 -/
 
+variable {f : α → β} {s : Set α} {x : α}
+
 lemma upperHemicontinuous_singleton_id : UpperHemicontinuous ({·} : α → Set α) := by
   simp [upperHemicontinuous_iff, upperHemicontinuousAt_iff]
 
 @[simp]
-lemma upperHemicontinuousWithinAt_singleton_iff {f : α → β} {s : Set α} {x : α} :
+lemma upperHemicontinuousWithinAt_singleton_iff :
     UpperHemicontinuousWithinAt ({f ·}) s x ↔ ContinuousWithinAt f s x := by
   refine ⟨?_, fun hf ↦ upperHemicontinuous_singleton_id.upperHemicontinuousWithinAt _ _ |>.comp hf
     (mapsTo_image _ _)⟩
@@ -168,17 +172,17 @@ lemma upperHemicontinuousWithinAt_singleton_iff {f : α → β} {s : Set α} {x 
   exact mem_of_mem_nhds
 
 @[simp]
-lemma upperHemicontinuousAt_singleton_iff {f : α → β} {x : α} :
+lemma upperHemicontinuousAt_singleton_iff :
     UpperHemicontinuousAt ({f ·}) x ↔ ContinuousAt f x := by
   simp [← upperHemicontinuousWithinAt_univ_iff, continuousWithinAt_univ]
 
 @[simp]
-lemma upperHemicontinuousOn_singleton_iff {f : α → β} {s : Set α} :
+lemma upperHemicontinuousOn_singleton_iff :
     UpperHemicontinuousOn ({f ·}) s ↔ ContinuousOn f s :=
   forall₂_congr <| fun _ _ ↦ upperHemicontinuousWithinAt_singleton_iff
 
 @[simp]
-lemma upperHemicontinuous_singleton_iff {f : α → β} :
+lemma upperHemicontinuous_singleton_iff :
     UpperHemicontinuous ({f ·}) ↔ Continuous f := by
   simp [← upperHemicontinuousOn_univ_iff]
 
@@ -188,7 +192,7 @@ lemma lowerHemicontinuous_singleton_id : LowerHemicontinuous ({·} : α → Set 
   exact ⟨ht, Set.singleton_inter_nonempty.mpr hx'⟩
 
 @[simp]
-lemma lowerHemicontinuousWithinAt_singleton_iff {f : α → β} {s : Set α} {x : α} :
+lemma lowerHemicontinuousWithinAt_singleton_iff :
     LowerHemicontinuousWithinAt ({f ·}) s x ↔ ContinuousWithinAt f s x := by
   refine ⟨?_, fun hf ↦ (lowerHemicontinuous_singleton_id.lowerHemicontinuousWithinAt _ _).comp
     hf (mapsTo_image _ _)⟩
@@ -199,31 +203,48 @@ lemma lowerHemicontinuousWithinAt_singleton_iff {f : α → β} {s : Set α} {x 
   exact (h u huo hux).mono fun _ hx' ↦ hut hx'
 
 @[simp]
-lemma lowerHemicontinuousAt_singleton_iff {f : α → β} {x : α} :
-    LowerHemicontinuousAt ({f ·}) x ↔ ContinuousAt f x := by
+lemma lowerHemicontinuousAt_singleton_iff : LowerHemicontinuousAt ({f ·}) x ↔ ContinuousAt f x := by
   simp [← lowerHemicontinuousWithinAt_univ_iff, continuousWithinAt_univ]
 
 @[simp]
-lemma lowerHemicontinuousOn_singleton_iff {f : α → β} {s : Set α} :
-    LowerHemicontinuousOn ({f ·}) s ↔ ContinuousOn f s :=
+lemma lowerHemicontinuousOn_singleton_iff : LowerHemicontinuousOn ({f ·}) s ↔ ContinuousOn f s :=
   forall₂_congr <| fun _ _ ↦ lowerHemicontinuousWithinAt_singleton_iff
 
 @[simp]
-lemma lowerHemicontinuous_singleton_iff {f : α → β} :
-    LowerHemicontinuous ({f ·}) ↔ Continuous f := by
+lemma lowerHemicontinuous_singleton_iff : LowerHemicontinuous ({f ·}) ↔ Continuous f := by
   simp [← lowerHemicontinuousOn_univ_iff]
 
-lemma ContinuousWithinAt.lowerHemicontinuousWithinAt {f : α → β} {s : Set α} {x : α}
-    (hf : ContinuousWithinAt f s x) : LowerHemicontinuousWithinAt ({f ·}) s x :=
+lemma ContinuousWithinAt.upperHemicontinuousWithinAt (hf : ContinuousWithinAt f s x) :
+    UpperHemicontinuousWithinAt ({f ·}) s x :=
+  upperHemicontinuousWithinAt_singleton_iff.mpr hf
+
+lemma ContinuousWithinAt.lowerHemicontinuousWithinAt (hf : ContinuousWithinAt f s x) :
+    LowerHemicontinuousWithinAt ({f ·}) s x :=
   lowerHemicontinuousWithinAt_singleton_iff.mpr hf
 
-lemma Continuous.lowerHemicontinuous {f : α → β} (hf : Continuous f) :
-    LowerHemicontinuous ({f ·}) :=
+lemma ContinuousAt.upperHemicontinuousAt (hf : ContinuousAt f x) :
+    UpperHemicontinuousAt ({f ·}) x :=
+  upperHemicontinuousAt_singleton_iff.mpr hf
+
+lemma ContinuousAt.lowerHemicontinuousAt (hf : ContinuousAt f x) :
+    LowerHemicontinuousAt ({f ·}) x :=
+  lowerHemicontinuousAt_singleton_iff.mpr hf
+
+lemma ContinuousOn.upperHemicontinuousOn (hf : ContinuousOn f s) :
+    UpperHemicontinuousOn ({f ·}) s :=
+  upperHemicontinuousOn_singleton_iff.mpr hf
+
+lemma ContinuousOn.lowerHemicontinuousOn (hf : ContinuousOn f s) :
+    LowerHemicontinuousOn ({f ·}) s :=
+  lowerHemicontinuousOn_singleton_iff.mpr hf
+
+lemma Continuous.upperHemicontinuous (hf : Continuous f) : UpperHemicontinuous ({f ·}) :=
+  upperHemicontinuous_singleton_iff.mpr hf
+
+lemma Continuous.lowerHemicontinuous (hf : Continuous f) : LowerHemicontinuous ({f ·}) :=
   lowerHemicontinuous_singleton_iff.mpr hf
 
-lemma Continuous.upperHemicontinuous {f : α → β} (hf : Continuous f) :
-    UpperHemicontinuous ({f ·}) :=
-  upperHemicontinuous_singleton_iff.mpr hf
+end singleton_maps
 
 /-! ### Union and intersection, and post-composition with the preimage map -/
 
