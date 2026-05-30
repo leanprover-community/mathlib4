@@ -272,10 +272,8 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       · exact ⟨head, fun ⟨List.cons a as, _⟩ => by simp [Code.head_eval]; rfl⟩
       · obtain ⟨c, h⟩ := IH
         exact ⟨c.comp tail, fun v => by
-          simp only [Code.comp_eval, Code.tail_eval, Bind.bind, Part.pure_eq_some, Part.bind_some]
-          change c.eval v.val.tail = pure <$> Part.some (v.get i.succ)
-          rw [← List.Vector.tail_val v, h v.tail]
-          simpa [PFun.lift_apply, Fin.succ] using List.Vector.get_tail v i⟩
+          simpa [Code.comp_eval, Code.tail_eval, Bind.bind, PFun.lift_apply, Fin.succ,
+            ← List.Vector.get_tail] using h v.tail⟩
     | comp g hf hg IHf IHg =>
       simpa [Part.bind_eq_bind] using exists_code.comp IHf IHg
     | @prec n' f g _ _ IHf IHg =>

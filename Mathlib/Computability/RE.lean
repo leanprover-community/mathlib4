@@ -93,10 +93,7 @@ theorem merge' {f g : α →. σ} (hf : Partrec f) (hg : Partrec g) :
   simp only [k', PFun.mk_apply, bind_dom]
   have hk_dom : (k (encode a)).Dom := by
     apply (H (encode a)).2.mpr
-    revert h
-    simp only [PFun.mk_apply, decode₂_encode, coe_some, Part.bind_some]
-    intro h
-    rcases h with h_dom | h_dom <;> simp [h_dom]
+    simpa [PFun.mk_apply, decode₂_encode, Part.bind_some] using h
   exists hk_dom
   have h_mem := (H (encode a)).1 _ ⟨hk_dom, rfl⟩
   simp only [PFun.mk_apply, decode₂_encode, coe_some, Part.bind_some, Part.mem_map_iff] at h_mem

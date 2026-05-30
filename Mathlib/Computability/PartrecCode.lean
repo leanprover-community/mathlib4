@@ -75,13 +75,11 @@ theorem rfind' {f : ℕ →. ℕ} (hf : Nat.Partrec f) :
       Nat.rfind (PFun.mk fun n =>
         (fun x => decide (x = 0)) <$> f (Nat.pair a (n + b)))
     have h1 : Partrec₂ H :=
-      (@Partrec₂.unpaired' H).mp <| by
-        exact h_inner.of_eq fun p => by
-          simp [H, G, Nat.unpaired]
-    have hMap := Partrec.map h1
+      (@Partrec₂.unpaired' H).mp <| h_inner.of_eq fun p => by
+        simp [H, G, Nat.unpaired]
+    exact (Partrec.map h1
       (_root_.Primrec.to_comp (Primrec.nat_add.comp _root_.Primrec.snd
-        (_root_.Primrec.comp _root_.Primrec.snd _root_.Primrec.fst))).to₂
-    exact Partrec.of_eq hMap (fun n => Part.ext fun x => Iff.rfl)
+        (_root_.Primrec.comp _root_.Primrec.snd _root_.Primrec.fst))).to₂).of_eq fun _ => rfl
 
 /-- Code for partial recursive functions from ℕ to ℕ.
 See `Nat.Partrec.Code.eval` for the interpretation of these constructors.

@@ -421,7 +421,7 @@ protected theorem bind {f : α →. β} {g : α → β →. σ} (hf : Partrec f)
 
 theorem map {f : α →. β} {g : α → β → σ} (hf : Partrec f) (hg : Computable₂ g) :
     Partrec (PFun.mk fun a => (f a).map (g a)) :=
-  (Partrec.bind hf hg.partrec₂).of_eq fun _ => by ext; simp [eq_comm]
+  (Partrec.bind hf hg.partrec₂).of_eq fun a => Part.bind_some_eq_map (g a) (f a)
 
 theorem to₂ {f : α × β →. σ} (hf : Partrec f) :
     Partrec₂ (fun a => PFun.mk fun b => f (a, b)) :=
@@ -429,7 +429,7 @@ theorem to₂ {f : α × β →. σ} (hf : Partrec f) :
 
 theorem nat_rec {f : α → ℕ} {g : α →. σ} {h : α → ℕ × σ →. σ} (hf : Computable f)
     (hg : Partrec g) (hh : Partrec₂ h) :
-    Partrec (PFun.mk fun a => Nat.rec  (g a)
+    Partrec (PFun.mk fun a => Nat.rec (g a)
       (fun y IH => IH.bind fun i => h a (y, i)) (f a)) :=
   (Nat.Partrec.prec' (hf : Nat.Partrec _) (hg : Nat.Partrec _)
   (hh : Nat.Partrec _)).of_eq fun n => by
@@ -564,7 +564,7 @@ theorem vector_mOfFn :
     ∀ {n} {f : Fin n → α →. σ},
       (∀ i, Partrec (f i)) → Partrec
       (PFun.mk fun a : α => List.Vector.mOfFn (fun i => f i a))
-  | 0, _, _ => Partrec.const' (Part.some Vector.nil) -- explicit form needed due to PFun structure
+  | 0, _, _ => const _
   | n + 1, f, hf => by
     simp only [List.Vector.mOfFn, pure_eq_some, bind_eq_bind]
     exact
@@ -815,23 +815,21 @@ theorem fix {f : α →. σ ⊕ α} (hf : Partrec f) : Partrec (PFun.fix f) := b
       (fun _ IH => IH.bind fun s => Sum.casesOn (motive := fun _ => Part (σ ⊕ α)) s
       (fun _ => Part.some s) f) n : Part (σ ⊕ α)))
   have hF : Partrec₂ F :=
-    Partrec.nat_rec Computable.snd (Computable.sumInr.comp Computable.fst).partrec
+    Partrec.nat_rec snd (sumInr.comp fst).partrec
       (Partrec.to₂
-        (sumCasesOn_right (Computable.comp Computable.snd Computable.snd)
-          (Computable.comp (Computable.comp Computable.snd Computable.snd) Computable.fst).to₂
-          (Partrec.comp hf Computable.snd).to₂))
+        (sumCasesOn_right (snd.comp snd)
+          ((snd.comp snd).comp fst).to₂
+          (hf.comp snd).to₂))
   let p : α → ℕ →. Bool := fun a => PFun.mk (fun n =>
     (((F a n).map fun s => Sum.casesOn (motive := fun _ => Bool) s
      (fun _ => true) fun _ => false) : Part Bool))
   have hp : Partrec₂ p :=
     Partrec.map hF
-      (Computable.comp
-        (sumCasesOn Computable.id (Computable.const true).to₂ (Computable.const false).to₂)
-        Computable.snd).to₂
+      ((sumCasesOn Computable.id (const true).to₂ (const false).to₂).comp snd).to₂
   refine Partrec.of_eq
     (Partrec.bind (Partrec.rfind hp)
       (Partrec.bind hF
-        (Partrec.to₂ (sumCasesOn_right Computable.snd Computable.snd.to₂ Partrec.none.to₂))).to₂)
+        (Partrec.to₂ (sumCasesOn_right snd snd.to₂ none.to₂))).to₂)
     fun a => Part.ext fun b => by
       simpa [F, PFun.mk_apply, Part.mem_bind_iff, Nat.mem_rfind, Part.mem_map_iff, p] using
         fix_aux f a b
