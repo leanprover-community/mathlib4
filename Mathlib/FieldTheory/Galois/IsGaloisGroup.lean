@@ -436,7 +436,7 @@ instance intermediateField [Finite G] [hGKL : IsGaloisGroup G K L] :
 
 include K in
 /-- If `G` is a Galois group on `L/K` and `L/E/K` is a tower of field extensions,
-then the fixing subgroup of the image of `E` in `L` acts is a Galois group on `L/E`. -/
+then the fixing subgroup of the image of `E` in `L` is a Galois group on `L/E`. -/
 theorem of_isScalarTower [Finite G] [hGKL : IsGaloisGroup G K L] (E : Type*) [Field E]
     [Algebra K E] [Algebra E L] [IsScalarTower K E L] :
     IsGaloisGroup (fixingSubgroup G (Set.range (algebraMap E L))) E L := by
@@ -483,9 +483,9 @@ theorem fixedPoints_le_of_le (h : H ≤ H') :
 end SMulCommClass
 
 attribute [local instance] FractionRing.liftAlgebra in
-/-- If `K` is the fraction field of `A` and `L` is the fraction field of `B` with `A ⊆ B`.
-For `G` acting on `B` and `L`, the fixing subgroup of `A` in `B` equals the fixing subgroup of
-`K` in `L`. -/
+/-- If `K` is the fraction field of `A` and `L` is the fraction field of `B` with `A ⊆ B`,
+then for `G` acting on `B` and `L`, the fixing subgroup of `A` in `B` equals the fixing subgroup
+of `K` in `L`. -/
 theorem fixingSubgroup_range_algebraMap_isFractionRing (A B : Type*) [CommRing A] [CommRing B]
     [Algebra A B] [Algebra A K] [Algebra A L] [Algebra B L] [IsScalarTower A K L]
     [IsScalarTower A B L] [MulSemiringAction G B] [SMulDistribClass G B L] [IsFractionRing A K]
