@@ -44,11 +44,13 @@ abbrev StructureHomOver :
   (J.overPullback RingCat X).map φ
 
 attribute [local simp] prodComparison_natural in
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Natural isomorphism between `Over.star X ⋙ Over.post F` and `F ⋙ Over.star (F.obj X)` -/
 abbrev Over.starCompPostNatIso : Over.star X ⋙ Over.post F ≅ F ⋙ Over.star (F.obj X) :=
   NatIso.ofComponents (fun Y => Over.isoMk (asIso (prodComparison F X Y)))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Pushforward from `Over F(X)` to `D` composed with pushforward from `D` to `C`
 is naturally isomorphic to pushforward from `Over F(X)` to `Over X` composed with
