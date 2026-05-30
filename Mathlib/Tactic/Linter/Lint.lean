@@ -101,6 +101,7 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
       let (_, duplicated) : Std.HashSet Name × (Std.HashSet Name) :=
         nm.foldl (init := (∅, ∅)) fun (unique, dup) x ↦
           if x ∈ unique then (unique, dup.insert x) else (unique.insert x, dup)
+      let duplicated := duplicated.toList
       match duplicated with
       | [] => continue
       | [ns] =>
