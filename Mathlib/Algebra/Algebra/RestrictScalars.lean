@@ -86,7 +86,7 @@ for `RestrictScalarsMap (algebraMap R S) M`. -/
 structure RestrictScalarsMap {R S : Type*} (f : R → S) (M : Type*) where res' ::
   unres' : M
 
-variable {R S M A : Type*} (f : R → S)
+variable {R S M N A : Type*} (f : R → S)
 
 namespace RestrictScalarsMap
 
@@ -247,6 +247,13 @@ instance module [Semiring R] [Semiring S] (f : R →+* S) [AddCommMonoid M] [Mod
   zero_smul m := by simp [smul_def]
   __ := distribMulAction f.toMonoidHom
 
+@[simps]
+def map [Semiring R] [Semiring S] (f : R →+* S) [AddCommMonoid M] [Module S M] [AddCommMonoid N]
+    [Module S N] (g : M →ₗ[S] N) : RestrictScalarsMap f M →ₗ[R] RestrictScalarsMap f N where
+  toFun x := res f (g (unres x))
+  map_add' x y := by simp
+  map_smul' r x := by simp [smul_def]
+
 section Opposite
 
 instance opSMul [SMul Sᵐᵒᵖ M] : SMul Rᵐᵒᵖ (RestrictScalarsMap f M) where
@@ -307,23 +314,23 @@ variable (M A : Type*)
 
 namespace RestrictScalars
 
-/-- We temporarily install the action of the original ring `S` on `RestrictScalars R S M`.
+/- We temporarily install the action of the original ring `S` on `RestrictScalars R S M`.
 Abbreviation for `RestrictScalarsMap.moduleOrig (algebraMap R S) M`. -/
-abbrev moduleOrig [Semiring S] [Algebra R S] [AddCommMonoid M] [Module S M] :
-    Module S (RestrictScalars R S M) :=
-  RestrictScalarsMap.moduleOrig (algebraMap R S) M
+/- abbrev moduleOrig [Semiring S] [Algebra R S] [AddCommMonoid M] [Module S M] : -/
+/-     Module S (RestrictScalars R S M) := -/
+/-   RestrictScalarsMap.moduleOrig (algebraMap R S) M -/
 
-/-- The additive equivalence between `RestrictScalars R S M` and the original module `M`.
+/- The additive equivalence between `RestrictScalars R S M` and the original module `M`.
 Abbreviation for `RestrictScalarsMap.addEquiv (algebraMap R S) M`. -/
-abbrev addEquiv [Semiring S] [Algebra R S] [AddCommMonoid M] :
-    RestrictScalars R S M ≃+ M :=
-  RestrictScalarsMap.addEquiv (algebraMap R S) M
+/- abbrev addEquiv [Semiring S] [Algebra R S] [AddCommMonoid M] : -/
+/-     RestrictScalars R S M ≃+ M := -/
+/-   RestrictScalarsMap.addEquiv (algebraMap R S) M -/
 
-/-- Tautological ring isomorphism `RestrictScalars R S A ≃+* A`.
+/- Tautological ring isomorphism `RestrictScalars R S A ≃+* A`.
 Abbreviation for `RestrictScalarsMap.ringEquiv (algebraMap R S) A`. -/
-abbrev ringEquiv [Semiring S] [Algebra R S] [Semiring A] :
-    RestrictScalars R S A ≃+* A :=
-  RestrictScalarsMap.ringEquiv (algebraMap R S) A
+/- abbrev ringEquiv [Semiring S] [Algebra R S] [Semiring A] : -/
+/-     RestrictScalars R S A ≃+* A := -/
+/-   RestrictScalarsMap.ringEquiv (algebraMap R S) A -/
 
 end RestrictScalars
 
@@ -349,31 +356,31 @@ theorem IsScalarTower.restrictScalars :
 
 namespace RestrictScalars
 
-theorem addEquiv_symm_map_smul_smul (r : R) (s : S) (x : M) :
-    (RestrictScalars.addEquiv R S M).symm ((r • s) • x) =
-      r • (RestrictScalars.addEquiv R S M).symm (s • x) := by
-  rw [Algebra.smul_def, mul_smul]
-  rfl
+/- theorem addEquiv_symm_map_smul_smul (r : R) (s : S) (x : M) : -/
+/-     (RestrictScalars.addEquiv R S M).symm ((r • s) • x) = -/
+/-       r • (RestrictScalars.addEquiv R S M).symm (s • x) := by -/
+/-   rw [Algebra.smul_def, mul_smul] -/
+/-   rfl -/
 
-attribute [local instance] RestrictScalars.moduleOrig in
-/-- This instance is only relevant when `RestrictScalars.moduleOrig` is available as
-an instance. -/
-instance isScalarTower :
-    IsScalarTower R S (RestrictScalars R S M) :=
-  IsScalarTower.restrictScalars R S M
+/- attribute [local instance] RestrictScalars.moduleOrig in -/
+/- /-- This instance is only relevant when `RestrictScalars.moduleOrig` is available as -/
+/- an instance. -/ -/
+/- instance isScalarTower : -/
+/-     IsScalarTower R S (RestrictScalars R S M) := -/
+/-   IsScalarTower.restrictScalars R S M -/
 
-/-- The `R`-algebra homomorphism from the original coefficient algebra `S` to endomorphisms
-of `RestrictScalars R S M`. -/
-def lsmul : S →ₐ[R] Module.End R (RestrictScalars R S M) :=
-  -- We use `RestrictScalars.moduleOrig` in the implementation,
-  -- but not in the type.
-  letI : Module S (RestrictScalars R S M) := RestrictScalars.moduleOrig R S M
-  Algebra.lsmul R R (RestrictScalars R S M)
+/- /-- The `R`-algebra homomorphism from the original coefficient algebra `S` to endomorphisms -/
+/- of `RestrictScalars R S M`. -/ -/
+/- def lsmul : S →ₐ[R] Module.End R (RestrictScalars R S M) := -/
+/-   -- We use `RestrictScalars.moduleOrig` in the implementation, -/
+/-   -- but not in the type. -/
+/-   letI : Module S (RestrictScalars R S M) := RestrictScalars.moduleOrig R S M -/
+/-   Algebra.lsmul R R (RestrictScalars R S M) -/
 
-theorem lsmul_apply_apply (s : S) (x : RestrictScalars R S M) :
-    RestrictScalars.lsmul R S M s x =
-      (RestrictScalars.addEquiv R S M).symm (s • RestrictScalars.addEquiv R S M x) :=
-  rfl
+/- theorem lsmul_apply_apply (s : S) (x : RestrictScalars R S M) : -/
+/-     RestrictScalars.lsmul R S M s x = -/
+/-       (RestrictScalars.addEquiv R S M).symm (s • RestrictScalars.addEquiv R S M x) := -/
+/-   rfl -/
 
 end RestrictScalars
 
@@ -393,21 +400,21 @@ abbrev Algebra.restrictScalars : Algebra R A :=
 
 namespace RestrictScalars
 
-@[simp]
-theorem ringEquiv_map_smul (r : R) (x : RestrictScalars R S A) :
-    RestrictScalars.ringEquiv R S A (r • x) =
-      algebraMap R S r • RestrictScalars.ringEquiv R S A x :=
-  rfl
+/- @[simp] -/
+/- theorem ringEquiv_map_smul (r : R) (x : RestrictScalars R S A) : -/
+/-     RestrictScalars.ringEquiv R S A (r • x) = -/
+/-       algebraMap R S r • RestrictScalars.ringEquiv R S A x := -/
+/-   rfl -/
 
-/-- `R ⟶ S` induces `S-Alg ⥤ R-Alg` -/
-instance algebra : Algebra R (RestrictScalars R S A) :=
-  Algebra.restrictScalars R S A
+/- /-- `R ⟶ S` induces `S-Alg ⥤ R-Alg` -/ -/
+/- instance algebra : Algebra R (RestrictScalars R S A) := -/
+/-   Algebra.restrictScalars R S A -/
 
-@[simp]
-theorem ringEquiv_algebraMap (r : R) :
-    RestrictScalars.ringEquiv R S A (algebraMap R (RestrictScalars R S A) r) =
-      algebraMap S A (algebraMap R S r) :=
-  rfl
+/- @[simp] -/
+/- theorem ringEquiv_algebraMap (r : R) : -/
+/-     RestrictScalars.ringEquiv R S A (algebraMap R (RestrictScalars R S A) r) = -/
+/-       algebraMap S A (algebraMap R S r) := -/
+/-   rfl -/
 
 end RestrictScalars
 
