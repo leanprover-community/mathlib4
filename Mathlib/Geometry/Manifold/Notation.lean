@@ -389,8 +389,8 @@ where
   fromTotalSpace : TermElabM FindModelResult := do
     match_expr e with
     | Bundle.TotalSpace _ F V => do
-      if let some m ← tryStrategy m!"From base info" (fromTotalSpace.fromBaseInfo F) then return m
       if let some m ← tryStrategy m!"TangentSpace" (fromTotalSpace.tangentSpace V) then return m
+      if let some m ← tryStrategy m!"From base info" (fromTotalSpace.fromBaseInfo F) then return m
       throwError "Having a TotalSpace as source is not yet supported"
     | _ => throwError "`{e}` is not a `Bundle.TotalSpace`."
   /-- Attempt to use the provided `baseInfo` to find a model. -/
