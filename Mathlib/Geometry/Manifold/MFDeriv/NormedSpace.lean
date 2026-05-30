@@ -287,7 +287,7 @@ lemma HasMFDerivAt.smul
     HasMFDerivAt% (f • g) x (f x • g'_ + gx ∘L f') := by
   constructor
   · exact hs.1.smul hg.1
-  · simpa using hs.2.smul hg.2
+  · simpa using! hs.2.smul hg.2
 
 theorem MDifferentiableWithinAt.smul
     (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x) :
@@ -431,7 +431,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
 -- There is no need to special-case any arguments which could use the T% s elaborator:
 -- the argument to `mvfderiv` is a vector-valued function, which a map to a total space
 -- can never be.
-@[app_delab mvfderiv] meta def delab_mvfderiv : Delab := do
+@[app_delab mvfderiv] meta def delabMVFDeriv : Delab := do
   whenPPOption getPPNotation do
   withOverApp 15 do
   let fs ← withAppArg delab

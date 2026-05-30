@@ -41,6 +41,7 @@ variable {C : Type u} [Category.{v} C] [LocallySmall.{w} C]
   [IsCofiltered C] [InitiallySmall.{w} C]
   {R : Cᵒᵖ ⥤ RingCat.{w}} {cR : Cocone R} (hcR : IsColimit cR)
 
+set_option backward.defeqAttrib.useBackward true in
 variable (cR) in
 /-- Given a cocone `cR` for a functor `R : Cᵒᵖ ⥤ RingCat`, this is the
 functor `ModuleCat cR.pt ⥤ PresheafOfModules R` which sends a module `M`
@@ -282,6 +283,7 @@ section
 variable {M' : PresheafOfModules.{w} R} {cM' : Cocone M'.presheaf}
   (hcM' : IsColimit cM')
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The linear map between the colimit modules induced by a morphism of modules. -/
 noncomputable def map (f : M ⟶ M') :
     ModuleColimit hcR hcM →ₗ[cR.pt] ModuleColimit hcR hcM' where
@@ -362,6 +364,7 @@ noncomputable def colimitAdjunction :
       homEquiv_naturality_left_symm _ _ := ModuleColimit.homEquiv_naturality_left_symm _ _ _ _ _
       homEquiv_naturality_right _ _ := ModuleColimit.homEquiv_naturality_right _ _ _ _ }
 
+set_option backward.defeqAttrib.useBackward true in
 lemma colimitAdjunction_homEquiv
     (F : PresheafOfModules R) (G : ModuleCat cR.pt) :
     dsimp% (colimitAdjunction.{w} hcR).homEquiv F G =

@@ -373,7 +373,7 @@ variable [CompleteSpace F]
 Borel-measurable. -/
 theorem measurableSet_of_differentiableAt : MeasurableSet { x | DifferentiableAt 𝕜 f x } := by
   have : IsComplete (univ : Set (E →L[𝕜] F)) := complete_univ
-  convert measurableSet_of_differentiableAt_of_isComplete 𝕜 f this
+  convert! measurableSet_of_differentiableAt_of_isComplete 𝕜 f this
   simp
 
 @[fun_prop]
@@ -657,7 +657,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
           · simp only [one_div, inv_pow, left_mem_Icc, le_add_iff_nonneg_right]
             positivity
           · simp only [pow_add, tsub_le_iff_left] at h'k
-            simpa only [hy.1, mem_Icc, true_and, one_div, pow_one] using h'k
+            simpa only [hy.1, mem_Icc, true_and, one_div, pow_one] using! h'k
         _ = 4 * (1 / 2) ^ e * (1 / 2) ^ (m + 2) := by ring
         _ ≤ 4 * (1 / 2) ^ e * (y - x) := by gcongr
         _ = 4 * (1 / 2) ^ e * ‖y - x‖ := by rw [Real.norm_of_nonneg yzero.le]
@@ -701,7 +701,7 @@ Borel-measurable. -/
 theorem measurableSet_of_differentiableWithinAt_Ici :
     MeasurableSet { x | DifferentiableWithinAt ℝ f (Ici x) x } := by
   have : IsComplete (univ : Set F) := complete_univ
-  convert measurableSet_of_differentiableWithinAt_Ici_of_isComplete f this
+  convert! measurableSet_of_differentiableWithinAt_Ici_of_isComplete f this
   simp
 
 @[fun_prop]
@@ -859,7 +859,7 @@ lemma isOpen_B_with_param {r s t : ℝ} (hf : Continuous f.uncurry) (K : Set (E 
     IsOpen {p : α × E | p.2 ∈ B (f p.1) K r s t} := by
   suffices H : IsOpen (⋃ L ∈ K,
       {p : α × E | p.2 ∈ A (f p.1) L r t ∧ p.2 ∈ A (f p.1) L s t}) by
-    convert H; ext p; simp [B]
+    convert! H; ext p; simp [B]
   refine isOpen_biUnion (fun L _ ↦ ?_)
   exact (isOpen_A_with_param hf L).inter (isOpen_A_with_param hf L)
 
@@ -894,7 +894,7 @@ values in a complete space is Borel-measurable. -/
 theorem measurableSet_of_differentiableAt_with_param (hf : Continuous f.uncurry) :
     MeasurableSet {p : α × E | DifferentiableAt 𝕜 (f p.1) p.2} := by
   have : IsComplete (univ : Set (E →L[𝕜] F)) := complete_univ
-  convert measurableSet_of_differentiableAt_of_isComplete_with_param hf this
+  convert! measurableSet_of_differentiableAt_of_isComplete_with_param hf this
   simp
 
 theorem measurable_fderiv_with_param (hf : Continuous f.uncurry) :

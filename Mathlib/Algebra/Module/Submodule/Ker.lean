@@ -115,14 +115,14 @@ theorem le_ker_iff_map [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂] M
     p ≤ ker f ↔ map f p = ⊥ := by rw [ker, eq_bot_iff, map_le_iff_le_comap]
 
 @[simp]
-theorem ker_codRestrict {τ₂₁ : R₂ →+* R} (p : Submodule R M) (f : M₂ →ₛₗ[τ₂₁] M) (hf) :
+theorem ker_codRestrict (p : Submodule R₂ M₂) (f : M →ₛₗ[τ₁₂] M₂) (hf) :
     ker (codRestrict p f hf) = ker f := by rw [ker, comap_codRestrict, Submodule.map_bot]; rfl
 
-lemma ker_domRestrict [AddCommMonoid M₁] [Module R M₁] (p : Submodule R M) (f : M →ₗ[R] M₁) :
+lemma ker_domRestrict (p : Submodule R M) (f : M →ₛₗ[τ₁₂] M₂) :
     ker (domRestrict f p) = (ker f).comap p.subtype := ker_comp ..
 
-theorem ker_restrict [AddCommMonoid M₁] [Module R M₁] {p : Submodule R M} {q : Submodule R M₁}
-    {f : M →ₗ[R] M₁} (hf : ∀ x : M, x ∈ p → f x ∈ q) :
+theorem ker_restrict {p : Submodule R M} {q : Submodule R₂ M₂} {f : M →ₛₗ[τ₁₂] M₂}
+    (hf : ∀ x : M, x ∈ p → f x ∈ q) :
     ker (f.restrict hf) = (ker f).comap p.subtype := by
   rw [restrict_eq_codRestrict_domRestrict, ker_codRestrict, ker_domRestrict]
 
@@ -133,6 +133,10 @@ theorem ker_zero : ker (0 : M →ₛₗ[τ₁₂] M₂) = ⊤ :=
 @[simp]
 theorem ker_eq_top {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊤ ↔ f = 0 :=
   ⟨fun h => ext fun _ => mem_ker.1 <| h.symm ▸ trivial, fun h => h.symm ▸ ker_zero⟩
+
+@[simp]
+lemma domRestrict_ker_self (f : M →ₛₗ[τ₁₂] M₂) : f.domRestrict f.ker = 0 := by
+  ext; simp
 
 theorem exists_ne_zero_of_sSup_eq_top {f : M →ₛₗ[τ₁₂] M₂} (h : f ≠ 0) (s : Set (Submodule R M))
     (hs : sSup s = ⊤) : ∃ m ∈ s, f ∘ₛₗ m.subtype ≠ 0 := by
@@ -212,6 +216,17 @@ alias _root_.LinearMapClass.ker_eq_bot := ker_eq_bot
     disjoint_iff]
 
 end Ring
+
+section CommSemiring
+
+variable [Semiring R] [CommSemiring R₂]
+variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
+variable {τ₁₂ : R →+* R₂}
+
+theorem ker_le_ker_smul (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) : ker f ≤ ker (c • f) := by
+  simpa only [ker] using Submodule.comap_le_comap_smul _ _ _
+
+end CommSemiring
 
 section Semifield
 

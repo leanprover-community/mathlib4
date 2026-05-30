@@ -117,7 +117,7 @@ protected lemma Commute.geom_sum₂_comm (n : ℕ) (h : Commute x y) :
   simp only [Nat.add_sub_cancel]
   rw [← Finset.sum_flip]
   refine Finset.sum_congr rfl fun i hi => ?_
-  simpa [Nat.sub_sub_self (Nat.succ_le_succ_iff.mp (Finset.mem_range.mp hi))] using h.pow_pow _ _
+  simpa [Nat.sub_sub_self (Nat.succ_le_succ_iff.mp (Finset.mem_range.mp hi))] using! h.pow_pow _ _
 
 -- TODO: for consistency, the next two lemmas should be moved to the root namespace
 lemma RingHom.map_geom_sum (x : R) (n : ℕ) (f : R →+* S) :
@@ -152,7 +152,7 @@ lemma geom_sum₂_mul_of_ge (hxy : y ≤ x) (n : ℕ) :
 lemma geom_sum₂_mul_of_le (hxy : x ≤ y) (n : ℕ) :
     (∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) * (y - x) = y ^ n - x ^ n := by
   rw [← Finset.sum_range_reflect]
-  convert geom_sum₂_mul_of_ge hxy n using 3
+  convert! geom_sum₂_mul_of_ge hxy n using 3
   simp_all only [Finset.mem_range]
   rw [mul_comm]
   congr
@@ -284,7 +284,7 @@ protected lemma Commute.geom_sum₂_Ico_mul (h : Commute x y) {m n : ℕ}
     have hp := Commute.pow_pow (Commute.op h.symm) (n - 1 - k) k
     simpa [Commute, SemiconjBy] using hp
   simp only [this]
-  convert (Commute.op h).mul_geom_sum₂_Ico hmn
+  convert! (Commute.op h).mul_geom_sum₂_Ico hmn
 
 lemma geom_sum_Ico_mul (x : R) {m n : ℕ} (hmn : m ≤ n) :
     (∑ i ∈ Finset.Ico m n, x ^ i) * (x - 1) = x ^ n - x ^ m := by

@@ -108,8 +108,9 @@ lemma stableUnderComposition : StableUnderComposition Smooth :=
   fun _ _ _ _ _ _ _ _ ↦ RingHom.Smooth.comp
 
 lemma isStableUnderBaseChange : IsStableUnderBaseChange Smooth := by
-  convert RingHom.FormallySmooth.isStableUnderBaseChange.and
-    RingHom.finitePresentation_isStableUnderBaseChange
+  convert!
+    RingHom.FormallySmooth.isStableUnderBaseChange.and
+      RingHom.finitePresentation_isStableUnderBaseChange
   rw [smooth_def]
 
 lemma holdsForLocalizationAway : HoldsForLocalizationAway Smooth := by
