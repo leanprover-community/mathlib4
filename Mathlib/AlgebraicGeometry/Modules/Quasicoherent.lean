@@ -17,14 +17,16 @@ A module `M : X.Modules` is quasicoherent if it locally admits a presentation.
 
 public section
 
+universe u
+
 namespace AlgebraicGeometry.Scheme.Modules
 
 /-- The pullback of a quasicoherent sheaf is quasicoherent -/
-instance {X Y : Scheme} (f : X ⟶ Y) (M : Y.Modules) [M.IsQuasicoherent] :
-    ((pullback f).obj M).IsQuasicoherent := SheafOfModules.IsQuasicoherent.pullback _
+instance {X Y : Scheme.{u}} (f : X ⟶ Y) (M : Y.Modules) [M.IsQuasicoherent] :
+    ((pullback f).obj M).IsQuasicoherent := SheafOfModules.IsQuasicoherent.pullback.{u} _
 
 /-- The pullback of a locally free sheaf is locally free -/
-instance {X Y : Scheme} (f : X ⟶ Y) (M : Y.Modules) [M.IsLocallyFree] :
-    ((pullback f).obj M).IsLocallyFree := SheafOfModules.IsLocallyFree.pullback _
+instance {X Y : Scheme.{u}} (f : X ⟶ Y) (M : Y.Modules) [M.IsLocallyFree] :
+    ((pullback f).obj M).IsLocallyFree := SheafOfModules.IsLocallyFree.pullback.{u} _
 
 end AlgebraicGeometry.Scheme.Modules
