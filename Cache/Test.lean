@@ -21,8 +21,8 @@ These tests cover the pure logic of the cache system, including:
 - CLI flag parsing (`--cache-from`, `--scope`, `--repo`, etc.)
 - Utility functions (URL extraction, filename hashing, etc.)
 
-Anything that touches `curl` or the network lives in the integration tests
-(run by CI).
+Anything that touches `curl` or the network is left to CI, which exercises the
+`cache get`/`put` paths end-to-end on real containers.
 
 ## Invariants these tests defend
 
@@ -580,9 +580,9 @@ def test_getNonDefaultScopeReason : IO Unit := do
 
 /-- `findMostRecentSHAWithCache` returns the first candidate SHA whose per-SHA
 marker exists in the `forks` container, used by `cache query` to find the most
-recent cached build on the branch. The non-empty cases hit the network and are
-covered by the CI integration tests; here we pin that an empty list returns
-`none` with no probe. -/
+recent cached build on the branch. The non-empty cases hit the network (a marker
+HEAD probe per SHA) and aren't unit-tested; here we pin that an empty list
+returns `none` with no probe. -/
 def test_findMostRecentSHAWithCache : IO Unit := do
   IO.println "findMostRecentSHAWithCache:"
   let result ← findMostRecentSHAWithCache [] MATHLIBREPO
