@@ -393,11 +393,15 @@ theorem of_zero_smul {i} (a : A 0) (b : A i) : of _ _ (a • b) = of _ _ a * of 
 theorem of_zero_mul (a b : A 0) : of _ 0 (a * b) = of _ 0 a * of _ 0 b :=
   of_zero_smul A a b
 
+/-- The `NonUnitalNonAssocSemiring` structure on the grade zero part
+of a `GNonUnitalNonAssocSemiring`. -/
 scoped instance (priority := 900) GradeZero.nonUnitalNonAssocSemiring :
     NonUnitalNonAssocSemiring (A 0) :=
   Function.Injective.nonUnitalNonAssocSemiring (of A 0) DFinsupp.single_injective (of A 0).map_zero
     (of A 0).map_add (of_zero_mul A) (map_nsmul _)
 
+/-- The `SMulWithZero` structure on the grade zero part
+of a `GNonUnitalNonAssocSemiring`. -/
 scoped instance GradeZero.smulWithZero (i : ι) : SMulWithZero (A 0) (A i) := by
   letI := SMulWithZero.compHom (⨁ i, A i) (of A 0).toZeroHom
   exact Function.Injective.smulWithZero (of A i).toZeroHom DFinsupp.single_injective
@@ -415,6 +419,7 @@ theorem of_zero_pow (a : A 0) : ∀ n : ℕ, of A 0 (a ^ n) = of A 0 a ^ n
   -- Porting note: Lean doesn't think this terminates if we only use `of_zero_pow` alone
   | n + 1 => by rw [pow_succ, pow_succ, of_zero_mul, of_zero_pow _ n]
 
+/-- The `NatCast` instance on `A 0`, given `GSemiring A`. -/
 scoped instance (priority := 900) : NatCast (A 0) :=
   ⟨GSemiring.natCast⟩
 
@@ -484,6 +489,9 @@ section Ring
 
 variable [∀ i, AddCommGroup (A i)] [AddMonoid ι] [GRing A]
 
+/-
+The `IntCast` instance on `A 0`, given `GRing A`.
+-/
 scoped instance (priority := 900) : IntCast (A 0) :=
   ⟨GRing.intCast⟩
 
@@ -652,3 +660,4 @@ instance CommRing.directSumGCommRing {R : Type*} [AddCommMonoid ι] [CommRing R]
     DirectSum.GCommRing fun _ : ι => R where
 
 end Uniform
+#lint
