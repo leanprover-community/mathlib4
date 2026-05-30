@@ -145,8 +145,8 @@ public theorem metricCompatibilityTensor_apply [FiniteDimensional ℝ F] (x : M)
   rw [TensorialAt.mkHom₂_apply _ _ hσ hτ, metricCompatibilityTensorAux_apply]
 
 variable {I} [ContMDiffVectorBundle 1 F V I] in
-public theorem metricCompatibilityTensor_apply_eq_extend [FiniteDimensional ℝ F] (X₀ : TangentSpace I x)
-    (σ₀ τ₀ : V x) :
+public theorem metricCompatibilityTensor_apply_eq_extend [FiniteDimensional ℝ F]
+    (X₀ : TangentSpace I x) (σ₀ τ₀ : V x) :
     cov.metricCompatibilityTensor x σ₀ τ₀ X₀ =
       d% ⟪(FiberBundle.extend F σ₀), (FiberBundle.extend F τ₀)⟫ x X₀
         - inner ℝ (cov (FiberBundle.extend F σ₀) x X₀) τ₀
