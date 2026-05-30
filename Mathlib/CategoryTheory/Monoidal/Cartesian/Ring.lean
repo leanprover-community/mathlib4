@@ -36,10 +36,12 @@ def yonedaRingObj (R : C) [RingObj R] : Cᵒᵖ ⥤ RingCat.{v} where
       map_mul' _ _ := MonObj.comp_mul _ _ _
       map_add' _ _ := AddMonObj.comp_add _ _ _ }
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma yonedaRingObj_map_apply {R : C} [RingObj R] {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : X.unop ⟶ R) :
     dsimp% (yonedaRingObj R).map f x = f.unop ≫ x := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embedding of `RingObjCat C` into presheaves of rings. -/
 def yonedaRing : RingObjCat C ⥤ Cᵒᵖ ⥤ RingCat.{v} where
@@ -58,10 +60,12 @@ def yonedaCommRingObj (R : C) [CommRingObj R] : Cᵒᵖ ⥤ CommRingCat.{v} wher
   obj X := .of (X.unop ⟶ R)
   map f := CommRingCat.ofHom ((yonedaRingObj R).map f).hom
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma yonedaCommRingObj_map_apply {R : C} [CommRingObj R] {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : X.unop ⟶ R) :
     dsimp% (yonedaCommRingObj R).map f x = f.unop ≫ x := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embedding of `CommRingObjCat C` into presheaves of commutative rings. -/
 @[simps obj]
