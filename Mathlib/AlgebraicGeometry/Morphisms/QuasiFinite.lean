@@ -19,8 +19,6 @@ We say that a morphism `f : X ⟶ Y` is locally quasi finite if `Γ(Y, U) ⟶ Γ
 quasi-finite (in the mathlib sense) for every pair of affine opens that `f` maps one into the other.
 
 This is equivalent to all the fibers `f⁻¹(x)` having an open cover of `κ(x)`-finite schemes.
-Note that this does not require `f` to be quasi-compact nor locally of finite type. We say `f`
-is quasi-finite if it is locally quasi-finite and quasi-compact.
 
 We prove that this is stable under composition and base change, and is right cancellative.
 
@@ -29,7 +27,7 @@ We prove that this is stable under composition and base change, and is right can
 - `AlgebraicGeometry.Scheme.Hom.isDiscrete_preimage_singleton`:
   Locally quasi-finite morphisms have discrete fibers.
 - `AlgebraicGeometry.Scheme.Hom.finite_preimage_singleton`:
-  Quasi-finite morphisms have finite fibers.
+  Quasi-finite, quasi-compact morphisms have finite fibers.
 - `AlgebraicGeometry.locallyQuasiFinite_iff_isFinite_fiber`: If `f` is quasi-compact,
   then `f` is locally quasi-finite iff all the fibers `f⁻¹(x)` are `κ(x)`-finite.
 - `AlgebraicGeometry.locallyQuasiFinite_iff_isDiscrete_preimage_singleton`:
