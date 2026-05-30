@@ -113,7 +113,7 @@ theorem and_elim_right : ∀ {a b : Bool}, a && b → b := by decide
 
 lemma eq_not_iff : ∀ {a b : Bool}, a = !b ↔ a ≠ b := by decide
 
-lemma not_eq_iff : ∀ {a b : Bool}, !a = b ↔ a ≠ b := by decide
+lemma not_eq_iff : ∀ {a b : Bool}, (!a) = b ↔ a ≠ b := by decide
 
 theorem ne_not {a b : Bool} : a ≠ !b ↔ a = b :=
   not_eq_not
@@ -127,9 +127,9 @@ lemma eq_or_eq_not : ∀ a b, a = b ∨ a = !b := by decide
 -- TODO naming issue: these two `not` are different.
 theorem not_iff_not : ∀ {b : Bool}, !b ↔ ¬b := by simp
 
-theorem eq_true_of_not_eq_false' {a : Bool} : !a = false → a = true := by grind
+theorem eq_true_of_not_eq_false' {a : Bool} : (!a) = false → a = true := by decide +revert
 
-theorem eq_false_of_not_eq_true' {a : Bool} : !a = true → a = false := by grind
+theorem eq_false_of_not_eq_true' {a : Bool} : (!a) = true → a = false := by decide +revert
 
 theorem bne_eq_xor : bne = xor := by constructor
 

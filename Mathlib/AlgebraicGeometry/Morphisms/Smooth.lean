@@ -86,7 +86,7 @@ lemma Smooth.iff_forall_exists_isStandardSmooth (f : X ⟶ Y) :
       ∀ (x : X), ∃ (U : Y.Opens) (_ : IsAffineOpen U) (V : X.Opens) (_ : IsAffineOpen V) (_ : x ∈ V)
         (e : V ≤ f ⁻¹ᵁ U), (f.appLE U V e).hom.IsStandardSmooth := by
   have : HasRingHomProperty @Smooth.{u} (Locally IsStandardSmooth) := by
-    convert (inferInstance : HasRingHomProperty @Smooth.{u} RingHom.Smooth)
+    convert! (inferInstance : HasRingHomProperty (@Smooth.{u}) RingHom.Smooth)
     ext f
     rw [RingHom.smooth_iff_locally_isStandardSmooth]
   rw [HasRingHomProperty.iff_exists_appLE_locally (P := @Smooth)]
@@ -258,6 +258,7 @@ lemma formallySmooth_stalkMap_iff {f : X ⟶ Y} {x : X} (U : Y.Opens)
       (IsAffineOpen.arrowStalkMapIso f U hU V hV hVU hx)
   · exact Algebra.FormallySmooth.iff_restrictScalars.symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_smooth_of_formallySmooth_stalk
     (f : X ⟶ Y) [LocallyOfFinitePresentation f]
@@ -279,8 +280,9 @@ lemma exists_smooth_of_formallySmooth_stalk
       IsAffineOpen.isoSpec_hom, IsAffineOpen.toSpecΓ_fromSpec] at hrx
   · have := hV.isLocalization_basicOpen r
     rw [← RingHom.smooth_algebraMap] at hr
-    convert RingHom.Smooth.propertyIsLocal.respectsIso.1 _
-      (IsLocalization.algEquiv (.powers r) _ Γ(X, X.basicOpen r)).toRingEquiv hr
+    convert!
+      RingHom.Smooth.propertyIsLocal.respectsIso.1 _
+        (IsLocalization.algEquiv (.powers r) _ Γ(X, X.basicOpen r)).toRingEquiv hr
     ext
     dsimp
     simp only [IsScalarTower.algebraMap_apply Γ(Y, U) Γ(X, V) (Localization _),
