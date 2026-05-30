@@ -290,6 +290,7 @@ lemma apply_eq_zero_of_isEmpty [IsEmpty α] (μ : VectorMeasure α M) (s : Set �
 instance [IsEmpty α] : Subsingleton (VectorMeasure α M) :=
   ⟨fun μ ν => by ext; rw [apply_eq_zero_of_isEmpty, apply_eq_zero_of_isEmpty]⟩
 
+set_option warning.simp.varHead false in
 @[nontriviality]
 theorem eq_zero_of_isEmpty [IsEmpty α] (μ : VectorMeasure α M) : μ = 0 :=
   Subsingleton.elim μ 0
@@ -1211,10 +1212,9 @@ def trim {m n : MeasurableSpace α} (v : VectorMeasure α M) (hle : m ≤ n) :
     @VectorMeasure α m M _ _ :=
   @VectorMeasure.mk α m M _ _
     (fun i => if MeasurableSet[m] i then v i else 0)
-    (by dsimp only; rw [if_pos (@MeasurableSet.empty _ m), v.empty])
-    (fun i hi => by dsimp only; rw [if_neg hi])
+    (by rw [if_pos (@MeasurableSet.empty _ m), v.empty])
+    (fun i hi => by rw [if_neg hi])
     (fun f hf₁ hf₂ => by
-      dsimp only
       have hf₁' : ∀ k, MeasurableSet[n] (f k) := fun k => hle _ (hf₁ k)
       convert! v.m_iUnion hf₁' hf₂ using 1
       · ext n
