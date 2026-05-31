@@ -11,9 +11,32 @@ public import Mathlib.RingTheory.AdicCompletion.Completeness
 /-!
 # Basic Properties of Complete Local Ring
 
-In this file we prove that for `I` an finitely generated ideal of `R`,
-`AdicCompletion I M` is adic complete with respect to `I`. Then we use this to deduce for
-Noetherian local ring `R`, `AdicCompletion (maximalIdeal R) R` is always a complete local ring.
+In this file we prove that for local ring `R` with finitely generated maximal ideal,
+`AdicCompletion (IsLocalRing.maximalIdeal R) R` is local ring with maximal ideal equal to
+`IsLocalRing.maximalIdeal R` mapped by algebra map. Furthermore, it is complete with respect to
+its maximal ideal.
+
+As a corollary, for Noetherian local ring `R`, `AdicCompletion (maximalIdeal R) R` is always
+a complete Noetherian local ring.
+
+Most results needing finitely generation of maximal ideal have a version for Noetherian ring without
+this side condition for convenience.
+
+# Main Results
+
+* `AdicCompletion.isLocalRing_of_fg` : for a local ring `R` with finitely generated maximal ideal,
+  its completion with respect to `IsLocalRing.maximalIdeal R` is local ring.
+
+* `AdicCompletion.maximalIdeal_eq_map_of_fg` : for a local ring `R` with finitely generated
+  maximal ideal, the maximal ideal of its completion with respect to `IsLocalRing.maximalIdeal R`
+  is equal to `IsLocalRing.maximalIdeal R` mapped by algebra map.
+
+* `AdicCompletion.isAdicComplete_of_fg` : for a local ring `R` with finitely generated
+  maximal ideal, `AdicCompletion (IsLocalRing.maximalIdeal R) R` itself is complete with respect to
+  its maximal ideal.
+
+* `AdicCompletion.spanFinrank_maximalIdeal_eq` : for Noetherian local ring `R`, minimal number of
+  generators of maximal ideal of `R` and `AdicCompletion (IsLocalRing.maximalIdeal R) R` are equal.
 
 -/
 
