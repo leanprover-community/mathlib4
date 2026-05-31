@@ -19,6 +19,7 @@ We say that a morphism `f : X ⟶ Y` is locally quasi finite if `Γ(Y, U) ⟶ Γ
 quasi-finite (in the mathlib sense) for every pair of affine opens that `f` maps one into the other.
 
 This is equivalent to all the fibers `f⁻¹(x)` having an open cover of `κ(x)`-finite schemes.
+Note that this does not require `f` to be quasi-compact nor locally of finite type.
 
 We prove that this is stable under composition and base change, and is right cancellative.
 
