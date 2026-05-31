@@ -22,13 +22,11 @@ public section
 
 universe u v
 
-variable {R : Type u} [CommRing R] [IsDomain R] {M : Type v} [AddCommGroup M] [Module R M]
+variable {R : Type u} [CommRing R] [IsDedekindDomain R] {M : Type v} [AddCommGroup M] [Module R M]
 
 open scoped DirectSum
 
 namespace Submodule
-
-variable [IsDedekindDomain R]
 
 open UniqueFactorizationMonoid
 
@@ -42,13 +40,13 @@ theorem isInternal_prime_power_torsion_of_is_torsion_by_ideal
   have prime_of_mem := fun p (hp : p ∈ P.toFinset) =>
     prime_of_factor p (Multiset.mem_toFinset.mp hp)
   apply torsionBySet_isInternal (p := fun p => p ^ P.count p) _
-  · convert hM
+  · convert! hM
     rw [← Finset.inf_eq_iInf, IsDedekindDomain.inf_pow_eq_prod_of_prime,
       ← Finset.prod_multiset_count, ← associated_iff_eq]
     · exact factors_prod hI
     · exact prime_of_mem
     · exact fun _ _ _ _ ij => ij
-  · intro p hp q hq pq; dsimp
+  · intro p hp q hq pq
     rw [Ideal.irreducible_pow_sup]
     · suffices (normalizedFactors _).count p = 0 by rw [this, zero_min, pow_zero, Ideal.one_eq_top]
       rw [Multiset.count_eq_zero,
