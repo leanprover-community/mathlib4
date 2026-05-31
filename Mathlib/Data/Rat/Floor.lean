@@ -54,16 +54,7 @@ protected theorem ceil_def' (q : ℚ) : ⌈q⌉ = -(-q.num / ↑q.den) := by
 
 @[norm_cast]
 theorem floor_intCast_div_natCast (n : ℤ) (d : ℕ) : ⌊(↑n / ↑d : ℚ)⌋ = n / (↑d : ℤ) := by
-  rw [Rat.floor_def']
-  obtain rfl | hd := eq_zero_or_pos (a := d)
-  · simp
-  set q := (n : ℚ) / d with q_eq
-  obtain ⟨c, n_eq_c_mul_num, d_eq_c_mul_denom⟩ : ∃ c, n = c * q.num ∧ (d : ℤ) = c * q.den := by
-    rw [q_eq]
-    exact mod_cast @Rat.exists_eq_mul_div_num_and_eq_mul_div_den n d (mod_cast hd.ne')
-  rw [n_eq_c_mul_num, d_eq_c_mul_denom]
-  refine (Int.mul_ediv_mul_of_pos _ _ <| pos_of_mul_pos_left ?_ <| Int.natCast_nonneg q.den).symm
-  rwa [← d_eq_c_mul_denom, Int.natCast_pos]
+  grind [floor_div_natCast, Int.floor_intCast]
 
 @[norm_cast]
 theorem ceil_intCast_div_natCast (n : ℤ) (d : ℕ) : ⌈(↑n / ↑d : ℚ)⌉ = -((-n) / (↑d : ℤ)) := by
