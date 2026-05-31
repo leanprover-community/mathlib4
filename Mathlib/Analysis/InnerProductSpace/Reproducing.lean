@@ -317,8 +317,8 @@ theorem kernel_ofKernel : kernel (OfKernel K) = K := by
 end OfKernel
 
 variable (𝕜) in
-/-- The kernel generated from a function `f : X → V` with its entries `f x ⊗ₜ[𝕜] f y` at index
-`(x, y)` interpreted as a bounded linear map on `V`. -/
+/-- The kernel generated from a function f : X → V with the rank-one operators ⟪f x, •⟫ f y as its
+entries`. -/
 def outerKernel (f : X → V) : Matrix X X (V →L[𝕜] V) :=
   Matrix.of fun x y ↦ InnerProductSpace.rankOne 𝕜 (f x) (f y)
 
