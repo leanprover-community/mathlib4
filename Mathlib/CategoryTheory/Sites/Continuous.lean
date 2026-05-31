@@ -85,6 +85,58 @@ then `(E.map F).multifork P` is a limit iff `E.multifork (F.op ⋙ P)` is a limi
 def isLimitMapMultiforkEquiv {A : Type u} [Category.{t} A] (P : Dᵒᵖ ⥤ A) :
     IsLimit ((E.map F).multifork P) ≃ IsLimit (E.multifork (F.op ⋙ P)) := by rfl
 
+section
+
+variable {E} {W : C} {i₁ i₂ : E.I₀} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ E.X i₂)
+
+lemma functorPushforward_sieve₁_map_le :
+    Sieve.functorPushforward F (E.sieve₁ p₁ p₂) ≤ (E.map F).sieve₁ (F.map p₁) (F.map p₂) := by
+  rw [Sieve.functorPushforward_le_iff_le_functorPullback]
+  intro Y f ⟨k, u, hf₁, hf₂⟩
+  exact ⟨k, F.map u, by simp [← Functor.map_comp, hf₁], by simp [← Functor.map_comp, hf₂]⟩
+
+variable (i₁ i₂) in
+set_option backward.isDefEq.respectTransparency false in
+lemma functorPushforward_sieve₁'_of_preservesLimit [HasPullback (E.f i₁) (E.f i₂)]
+    [PreservesLimit (cospan (E.f i₁) (E.f i₂)) F] :
+    Sieve.functorPushforward F (E.sieve₁' i₁ i₂) =
+      (E.map F).sieve₁ (F.map <| pullback.fst _ _) (F.map <| pullback.snd _ _) := by
+  have : HasPullback ((E.map F).f i₁) ((E.map F).f i₂) :=
+    hasPullback_of_preservesPullback F (E.f i₁) (E.f i₂)
+  refine le_antisymm ?_ ?_
+  · rw [PreOneHypercover.sieve₁'_eq_sieve₁]
+    apply PreOneHypercover.functorPushforward_sieve₁_map_le
+  · rw [PreOneHypercover.sieve₁_eq_pullback_sieve₁' _ _ _
+      (by simp [← Functor.map_comp, pullback.condition])]
+    rintro W f ⟨Z, u, v, ⟨k⟩, h⟩
+    refine ⟨E.Y k, pullback.lift (E.p₁ k) (E.p₂ k) (E.w _), u, ?_, ?_⟩
+    · use E.Y k, 𝟙 _, pullback.lift (E.p₁ k) (E.p₂ k) (E.w _), ⟨k⟩
+      simp
+    · simp only [pullback.hom_ext_iff, Category.assoc, limit.lift_π, PullbackCone.mk_π_app] at h
+      apply IsPullback.hom_ext (IsPullback.map _ (.of_hasPullback _ _)) <;>
+        simp [← h.left, ← h.right, ← Functor.map_comp]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma functorPushforward_sieve₁_of_preservesPullbacks (h : p₁ ≫ E.f _ = p₂ ≫ E.f _)
+    [HasPullbacks C] [PreservesLimitsOfShape WalkingCospan F] :
+    Sieve.functorPushforward F (E.sieve₁ p₁ p₂) = (E.map F).sieve₁ (F.map p₁) (F.map p₂) := by
+  refine le_antisymm (PreOneHypercover.functorPushforward_sieve₁_map_le _ _ _) ?_
+  have : HasPullback ((E.map F).f i₁) ((E.map F).f i₂) :=
+    hasPullback_of_preservesPullback F (E.f i₁) (E.f i₂)
+  rintro T f ⟨k, u, hf₁, hf₂⟩
+  let l : W ⟶ pullback (E.f i₁) (E.f i₂) := pullback.lift p₁ p₂ h
+  have hl₁ : l ≫ pullback.fst _ _ = p₁ := by simp [l]
+  have hl₂ : l ≫ pullback.snd _ _ = p₂ := by simp [l]
+  let r : E.Y k ⟶ pullback (E.f i₁) (E.f i₂) := pullback.lift (E.p₁ _) (E.p₂ _) (E.w _)
+  refine ⟨pullback l r, pullback.fst _ _, IsPullback.lift
+    (IsPullback.map _ (.of_hasPullback _ _)) f u ?_, ?_, ?_⟩
+  · apply (IsPullback.map _ (.of_hasPullback _ _)).hom_ext <;>
+      simp [l, r, ← Functor.map_comp, hf₁, hf₂]
+  · refine ⟨k, pullback.snd _ _, ?_, ?_⟩ <;> simp [← hl₁, ← hl₂, pullback.condition_assoc, r]
+  · simp
+
+end
+
 end PreOneHypercover
 
 namespace GrothendieckTopology

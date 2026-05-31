@@ -408,6 +408,11 @@ theorem cuspFunction_apply_zero (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
   have : Fact (IsCusp OnePoint.infty Γ) := ⟨Γ.isCusp_of_mem_strictPeriods hh hΓ⟩
   (CuspFormClass.zero_at_infty f).cuspFunction_apply_zero hh
 
+/-- The zeroth coefficient of the `q`-expansion of a cusp form vanishes. -/
+theorem qExpansion_coeff_zero (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
+    (qExpansion h f).coeff 0 = 0 := by
+  simp [qExpansion_coeff, cuspFunction_apply_zero f hh hΓ]
+
 theorem exp_decay_atImInfty (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
     f =O[atImInfty] fun τ ↦ Real.exp (-2 * π * τ.im / h) :=
   have : Fact (IsCusp OnePoint.infty Γ) := ⟨Γ.isCusp_of_mem_strictPeriods hh hΓ⟩
@@ -572,11 +577,18 @@ protected lemma qExpansion_sub {G : Type*} [FunLike G ℍ ℂ] (hh : 0 < h)
   qExpansion_sub (ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ)
     (ModularFormClass.analyticAt_cuspFunction_zero g hh hΓ)
 
+/-- The q-expansion of a pointwise product of two modular-form-class objects is the product of
+their q-expansions. Works for any `ModularFormClass` (e.g. a `CuspForm` times a `ModularForm`). -/
+protected lemma qExpansion_mul_coe {G : Type*} [FunLike G ℍ ℂ] (hh : 0 < h)
+    (hΓ : h ∈ Γ.strictPeriods) {a b : ℤ} (f : F) [ModularFormClass F Γ a] (g : G)
+    [ModularFormClass G Γ b] : qExpansion h ((⇑f * ⇑g : ℍ → ℂ)) = qExpansion h f * qExpansion h g :=
+  qExpansion_mul (ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ)
+    (ModularFormClass.analyticAt_cuspFunction_zero g hh hΓ)
+
 protected lemma qExpansion_mul [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) {a b : ℤ} (f : ModularForm Γ a) (g : ModularForm Γ b) :
     qExpansion h (f.mul g) = qExpansion h f * qExpansion h g :=
-  qExpansion_mul (ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ)
-    (ModularFormClass.analyticAt_cuspFunction_zero g hh hΓ)
+  ModularForm.qExpansion_mul_coe hh hΓ f g
 
 protected lemma qExpansion_eq_zero_iff (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {k : ℤ}
     (f : ModularForm Γ k) : qExpansion h f = 0 ↔ f = 0 := by
@@ -586,6 +598,11 @@ protected lemma qExpansion_eq_zero_iff (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriod
 protected lemma qExpansion_one [Γ.HasDetPlusMinusOne] :
     qExpansion h (1 : ModularForm Γ 0) = 1 := by
   simp [qExpansion_one]
+
+@[simp]
+protected lemma qExpansion_mcast {a b : ℤ} {Γ' : Subgroup (GL (Fin 2) ℝ)}
+    (heq : a = b) (hΓ : Γ' = Γ) (f : ModularForm Γ a) :
+    qExpansion h (ModularForm.mcast heq f hΓ) = qExpansion h f := rfl
 
 protected lemma qExpansion_pow [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (f : ModularForm Γ k) (n : ℕ) :
