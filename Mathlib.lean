@@ -1550,7 +1550,6 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.IsUnique
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.PairingCore
-public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.PushoutProduct
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RankNat
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RelativeCellComplex
