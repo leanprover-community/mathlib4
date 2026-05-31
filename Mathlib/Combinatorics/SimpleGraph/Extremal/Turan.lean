@@ -344,6 +344,7 @@ private lemma sum_ne_add_mod_eq_sub_one {c : ℕ} :
     rw [Nat.add_mod_mod, ← add_assoc, ← one_add_mul, show 1 + (r - 1) = r by lia,
       Nat.mul_add_mod_self_left]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma card_edgeFinset_turanGraph_add :
     #(turanGraph (n + r) r).edgeFinset =
     #(turanGraph n r).edgeFinset + n * (r - 1) + r.choose 2 := by
