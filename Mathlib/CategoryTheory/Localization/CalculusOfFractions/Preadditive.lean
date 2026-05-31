@@ -202,8 +202,8 @@ lemma comp_add' (f : L.obj X ⟶ L.obj Y) (g₁ g₂ : L.obj Y ⟶ L.obj Z) :
   dsimp at hγ₁ hγ₂
   rw [add'_eq W g₁ g₂ β hβ₁ hβ₂, add'_eq W (f ≫ g₁) (f ≫ g₂)
     (LeftFraction₂.mk (α.f ≫ γ.f) (α.f ≫ γ.f') (β.s ≫ γ.s) (W.comp_mem _ _ β.hs γ.hs))
-    (by simpa only [hα, hβ₁] using LeftFraction.map_comp_map_eq_map α β.fst γ.fst hγ₁ L)
-    (by simpa only [hα, hβ₂] using LeftFraction.map_comp_map_eq_map α β.snd γ.snd hγ₂ L),
+    (by simpa only [hα, hβ₁] using! LeftFraction.map_comp_map_eq_map α β.fst γ.fst hγ₁ L)
+    (by simpa only [hα, hβ₂] using! LeftFraction.map_comp_map_eq_map α β.snd γ.snd hγ₂ L),
     hα, LeftFraction.map_comp_map_eq_map α β.add γ.add
       (by simp only [add_comp, hγ₁, hγ₂, comp_add])]
   dsimp [LeftFraction₂.add]
