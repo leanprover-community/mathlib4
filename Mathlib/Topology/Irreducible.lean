@@ -517,7 +517,7 @@ def irreducibleComponentsEquivOfIsPreirreducibleFiber :
   left_inv _ := Subtype.ext <| Set.image_preimage_eq _ hf₄
   map_rel_iff' {W Z} := by
     refine ⟨fun H ↦ ?_, Set.preimage_mono⟩
-    simpa only [Equiv.coe_fn_mk, Set.image_preimage_eq _ hf₄] using Set.image_mono (f := f) H
+    simpa only [Equiv.coe_fn_mk, Set.image_preimage_eq _ hf₄] using! Set.image_mono (f := f) H
 
 end
 

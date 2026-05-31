@@ -141,14 +141,14 @@ private theorem exists_seq {S : End 𝕜 X} (hS_not_surj : ¬ (S : X → X).Surj
   -- Apply Riesz's lemma repeatedly using the closed subspace `V (n+1)` inside `V n`.
   have x (n : ℕ) : ∃ x ∈ V n, 1 ≤ ‖x‖ ∧ ‖x‖ ≤ R ∧ ∀ y ∈ V (n + 1), 1 ≤ ‖x - y‖ := by
     have h₁ : IsClosed ((V (n + 1)).comap (V n).subtype : Set (V n)) := by
-      simpa using (hV_closed (n + 1)).preimage_val
+      simpa using! (hV_closed (n + 1)).preimage_val
     have h₂ : ∃ x : V n, x ∉ (V (n + 1)).comap (V n).subtype := by
       simpa [iterate_succ, V, (iterate_injective hS_anti.injective n).eq_iff,
-        Function.Surjective] using hS_not_surj
+        Function.Surjective] using! hS_not_surj
     obtain ⟨⟨x, hx⟩, hxn, hxy⟩ := riesz_lemma_of_norm_lt hc hR h₁ h₂
     simp only [Submodule.mem_comap, Submodule.subtype_apply, AddSubgroupClass.coe_norm,
       AddSubgroupClass.coe_sub, Subtype.forall] at hxn hxy
-    exact ⟨x, hx, by simpa using hxy 0, hxn,
+    exact ⟨x, hx, by simpa using! hxy 0, hxn,
       fun y hy ↦ hxy y (S.iterateRange.monotone (by simp) hy) hy⟩
   -- Use the existential claim to construct the sequence `f n`.
   choose x hxv hxn hxn' hxy using x
