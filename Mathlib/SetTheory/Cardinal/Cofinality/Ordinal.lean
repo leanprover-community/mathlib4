@@ -537,10 +537,7 @@ theorem cof_eq' (r : α → α → Prop) [H : IsWellOrder α r] (h : IsSuccLimit
 
 @[simp]
 theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} := by
-  apply (cof_le_card _).antisymm
-  simp_rw [univ, ← lift_cof, ← lift_card, Cardinal.lift_le, cof_type, card_type, le_cof_iff,
-    ← not_bddAbove_iff_isCofinal]
-  exact fun s hs ↦ mk_le_of_injective (enumOrdOrderIso s hs).injective
+  rw [univ, ← lift_cof, cof_type, cof_ordinal, Cardinal.lift_univ, Cardinal.univ_umax.{u, v}]
 
 end Ordinal
 
