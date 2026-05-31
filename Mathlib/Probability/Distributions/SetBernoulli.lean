@@ -110,19 +110,6 @@ lemma HasLaw.indicator_one_of_setBernoulli_of_mem (hi : i ∈ u) {S : Ω → Set
     HasLaw ({ω | i ∈ S ω}.indicator (1 : Ω → M)) Ber(1, 0, p) P :=
   hS.indicator_of_setBernoulli_of_mem hi 1
 
-lemma HasLaw.indicator_of_setBernoulli_of_notMem (hi : i ∉ u) {S : Ω → Set ι} {M : Type*} [Zero M]
-    [MeasurableSpace M] [MeasurableSingletonClass M]
-    (hS : HasLaw S setBer(u, p) P) (f : Ω → M) :
-    HasLaw ({ω | i ∈ S ω}.indicator f) (dirac 0) P := by
-  have := hS.isProbabilityMeasure
-  have : (0 : I) = ⟨P.real {ω | i ∈ S ω}, by simp⟩ := by
-    ext
-    simp only [Set.Icc.coe_zero]
-    rw [hS.measureReal_eq (p := (i ∈ ·)) (by measurability), setBernoulli_real_mem_of_notMem _ hi]
-  rw [← bernoulliMeasure_zero (x := 0), this]
-  exact hasLaw_indicator_one_bernoulliMeasure
-    (hS.aemeasurable.nullMeasurableSet_preimage (s := {t | i ∈ t}) (by measurability))
-
 section Countable
 variable [Countable ι]
 
@@ -139,6 +126,15 @@ lemma setBernoulli_ae_subset : ∀ᵐ s ∂setBer(u, p), s ⊆ u := by
     _ = infinitePi (fun i ↦ Ber(i ∈ u, False, p)) (cylinder {i} {fun _ ↦ True}) := by
       rw [setBernoulli_apply']; congr!; ext; simp [funext_iff]
     _ = 0 := by simp [infinitePi_cylinder, hi]
+
+lemma HasLaw.indicator_of_setBernoulli_of_notMem (hi : i ∉ u) {S : Ω → Set ι} {M : Type*} [Zero M]
+    [MeasurableSpace M] [MeasurableSingletonClass M]
+    (hS : HasLaw S setBer(u, p) P) (f : Ω → M) :
+    HasLaw ({ω | i ∈ S ω}.indicator f) (dirac 0) P := by
+  have := hS.isProbabilityMeasure
+  rw [hasLaw_dirac_iff]
+  filter_upwards [hS.ae_iff (by fun_prop) |>.2 setBernoulli_ae_subset] with ω hω
+  grind [Set.indicator]
 
 @[simp]
 lemma setBernoulli_singleton_of_not_subset {s : Set ι} (p : I) (hs : ¬ s ⊆ u) :
