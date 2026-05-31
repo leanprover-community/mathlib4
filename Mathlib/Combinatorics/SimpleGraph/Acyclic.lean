@@ -71,7 +71,7 @@ variable {G G'}
 /-- A graph that has an injective homomorphism to an acyclic graph is acyclic. -/
 lemma IsAcyclic.comap (f : G →g G') (hinj : Function.Injective f) (h : G'.IsAcyclic) :
     G.IsAcyclic :=
-  fun _ _ ↦ map_isCycle_iff_of_injective hinj |>.not.mp <| h _
+  fun _ _ ↦ isCycle_map_iff_of_injective hinj |>.not.mp <| h _
 
 lemma IsAcyclic.embedding (f : G ↪g G') (h : G'.IsAcyclic) : G.IsAcyclic :=
   h.comap f f.injective
@@ -195,9 +195,7 @@ theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p
   obtain ⟨q, hq⟩ := q
   rw [Subtype.mk.injEq]
   induction p with
-  | nil =>
-    cases (Walk.isPath_iff_eq_nil _).mp hq
-    rfl
+  | nil => simp_all
   | cons ph p ih =>
     rw [isAcyclic_iff_forall_adj_isBridge] at h
     specialize h ph
@@ -208,14 +206,14 @@ theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p
     · cases q with
       | nil => simp at hp
       | cons _ q =>
-        rw [Walk.cons_isPath_iff] at hp hq
+        rw [Walk.isPath_cons_iff] at hp hq
         simp only [Walk.edges_cons, List.mem_cons, Sym2.eq_iff, true_and] at h
         rcases h with (⟨h, rfl⟩ | ⟨rfl, rfl⟩) | h
         · cases ih hp.1 q hq.1
           rfl
         · simp at hq
         · exact absurd (Walk.fst_mem_support_of_mem_edges _ h) hq.2
-    · rw [Walk.cons_isPath_iff] at hp
+    · rw [Walk.isPath_cons_iff] at hp
       exact absurd (Walk.fst_mem_support_of_mem_edges _ h) hp.2
 
 theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) : G.IsAcyclic := by
@@ -300,7 +298,7 @@ theorem IsAcyclic.isPath_iff_isChain (hG : G.IsAcyclic) {v w : V} (p : G.Walk v 
   | nil => simp
   | @cons u' v' _ head tail ih =>
     have hcc := List.isChain_cons.mp (edges_cons _ _ ▸ h)
-    refine cons_isPath_iff head tail |>.mpr ⟨ih hcc.2, ?_⟩
+    apply IsPath.cons (ih hcc.2)
     rcases tail.length.eq_zero_or_pos with h' | h'
     · simp [nil_iff_support_eq.mp (length_eq_zero_iff.mp h'), head.ne]
     · by_contra hh
@@ -362,7 +360,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
           ← hf' _ (.cons h .nil) (IsPath.nil.cons <| by simpa using h.ne),
           length_cons, length_nil] at h'
       simp at h'
-    rw [← hf' _ (.cons h.symm (f x)) ((cons_isPath_iff _ _).2 ⟨hf _, fun hy => ?contra⟩)]
+    rw [← hf' _ (.cons h.symm (f x)) (isPath_cons_iff.2 ⟨hf _, fun hy => ?contra⟩)]
     · simp
     case contra =>
       suffices (f x).takeUntil y hy = .cons h .nil by
