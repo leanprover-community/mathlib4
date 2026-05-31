@@ -101,7 +101,7 @@ protected def IsRestricted.addSubgroup (c : σ → ℝ) : AddSubgroup (MvPowerSe
 variable [IsUltrametricDist R]
 
 /-- Restricted power series as a subring of `MvPowerSeries σ R`. -/
-protected def IsRestricted.subring (c : σ → ℝ) :  Subring (MvPowerSeries σ R) where
+protected def IsRestricted.subring (c : σ → ℝ) : Subring (MvPowerSeries σ R) where
   __ := IsRestricted.addSubgroup c
   one_mem' := isRestricted_one c
   mul_mem' := isRestricted.mul c
