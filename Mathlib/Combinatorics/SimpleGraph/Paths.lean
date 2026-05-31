@@ -714,12 +714,21 @@ theorem IsPath.length_eq_one_of_mem_edges {p : G.Walk u v} (hp : p.IsPath) (h : 
   rw [← hp.getVert_eq_start_iff <| p.length.sub_le 1]
   exact (hp.eq_penultimate_of_mem_edges <| Sym2.eq_swap ▸ h).symm
 
+theorem IsPath.eq_adj_toWalk_of_mem_edges {p : G.Walk u v} (hp : p.IsPath) (h : s(u, v) ∈ p.edges) :
+    p = (p.adj_of_mem_edges h).toWalk := by
+  apply p.ext_getVert_le_length <| by simp [hp.length_eq_one_of_mem_edges h]
+  intro _ hl
+  cases Nat.le_one_iff_eq_zero_or_eq_one.mp (hp.length_eq_one_of_mem_edges h ▸ hl) with
+  | inl hl => simp [hl]
+  | inr hl =>
+    rw [hl, getVert_cons_succ, getVert_zero, ← hp.length_eq_one_of_mem_edges h, getVert_length]
+
 theorem IsPath.disjoint_edges_of_disjoint_support {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath)
     (hd : p.support.tail.Disjoint q.support.tail) (hl : p.length ≠ 1) :
     p.edges.Disjoint q.edges := by
   simp only [List.disjoint_left] at hd ⊢
   contrapose! hd
-  obtain ⟨⟨a, b⟩, hep, heq, _⟩ := hd
+  obtain ⟨⟨a, b⟩, hep, heq⟩ := hd
   have := p.mem_support_iff.mp <| p.fst_mem_support_of_mem_edges hep
   have := p.mem_support_iff.mp <| p.snd_mem_support_of_mem_edges hep
   have := q.mem_support_iff.mp <| q.fst_mem_support_of_mem_edges heq
