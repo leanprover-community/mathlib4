@@ -200,6 +200,7 @@ theorem coproductCocone_inl :
 theorem coproductCocone_inr :
     (coproductCocone A B).inr = ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product `A ⊗[ℤ] B` is a coproduct for `A` and `B`. -/
 @[simps]
@@ -278,6 +279,7 @@ variable (A B : CommRingCat.{u})
 def prodFan : BinaryFan A B :=
   BinaryFan.mk (CommRingCat.ofHom <| RingHom.fst A B) (CommRingCat.ofHom <| RingHom.snd A B)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The product in `CommRingCat` is the Cartesian product. -/
 def prodFanIsLimit : IsLimit (prodFan A B) where
@@ -313,7 +315,7 @@ def piFan : Fan R :=
 The categorical product of rings is the Cartesian product of rings.
 -/
 def piFanIsLimit : IsLimit (piFan R) where
-  lift s := ofHom <| Pi.ringHom fun i ↦ (s.π.1 ⟨i⟩).hom
+  lift s := ofHom <| RingHom.pi fun i ↦ (s.π.1 ⟨i⟩).hom
   fac s i := by rfl
   uniq _ _ h := hom_ext <| DFunLike.ext _ _ fun x ↦ funext fun i ↦
     DFunLike.congr_fun (congrArg Hom.hom <| h ⟨i⟩) x
@@ -383,6 +385,7 @@ open CategoryTheory.Limits.WalkingParallelPair Opposite
 
 open CategoryTheory.Limits.WalkingParallelPairHom
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance equalizer_ι_isLocalHom' (F : WalkingParallelPairᵒᵖ ⥤ CommRingCat.{u}) :
     IsLocalHom (limit.π F (Opposite.op WalkingParallelPair.one)).hom := by

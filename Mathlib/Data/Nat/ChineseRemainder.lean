@@ -156,8 +156,8 @@ theorem chineseRemainderOfMultiset_lt_prod {m : Multiset ι}
     (nod : m.Nodup) (hs : ∀ i ∈ m, s i ≠ 0) (pp : Set.Pairwise {x | x ∈ m} (Coprime on s)) :
     chineseRemainderOfMultiset a s nod hs pp < (m.map s).prod := by
   induction m using Quot.ind with | _ l
-  simpa using chineseRemainderOfList_lt_prod a s l
-    (List.Nodup.pairwise_of_forall_ne nod pp) (by simpa using hs)
+  simpa using! chineseRemainderOfList_lt_prod a s l
+    (List.Nodup.pairwise_of_forall_ne nod pp) (by simpa using! hs)
 
 /-- The natural number less than `∏ i ∈ t, s i` congruent to
 `a i` mod `s i` for all  `i ∈ t`. -/

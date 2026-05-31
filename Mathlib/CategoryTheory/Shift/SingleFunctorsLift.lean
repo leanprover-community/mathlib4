@@ -46,6 +46,7 @@ noncomputable def shiftIso (n a a' : A) (h : n + a = a') :
       isoWhiskerLeft _ (G.commShiftIso n) ≪≫ (Functor.associator _ _ _).symm ≪≫
       isoWhiskerRight (hΦ a') _ ≪≫ F.shiftIso n a a' h ≪≫ (hΦ a).symm)
 
+set_option backward.defeqAttrib.useBackward true in
 private lemma map_shiftIso_hom_app (n a a' : A) (h : n + a = a') (X : C) :
     dsimp% G.map ((lift.shiftIso hΦ n a a' h).hom.app X) =
       (G.commShiftIso n).hom.app _ ≫ (shiftFunctor E n).map ((hΦ a').hom.app X) ≫
@@ -54,6 +55,7 @@ private lemma map_shiftIso_hom_app (n a a' : A) (h : n + a = a') (X : C) :
 
 end lift
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Let `C`, `D` and `E` be categories. Let `A` be an additive monoid.
 Assume that `D` and `E` have shifts by `A` and that we have
@@ -78,6 +80,7 @@ noncomputable def lift : SingleFunctors C D A where
     rw [F.shiftIso_add n m a a' a'' ha' ha'']
     simp [commShiftIso_add, ← Functor.map_comp_assoc, -Functor.map_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma map_lift_shiftIso_hom_app (n a a' : A) (h : n + a = a') (X : C) :
     dsimp% G.map (((lift F G Φ hΦ).shiftIso n a a' h).hom.app X) =
@@ -85,6 +88,7 @@ lemma map_lift_shiftIso_hom_app (n a a' : A) (h : n + a = a') (X : C) :
         (F.shiftIso n a a' h).hom.app X ≫ (hΦ a).inv.app X :=
   lift.map_shiftIso_hom_app ..
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- After postcomposition with the fully faithful functor `G`,
 `lift F G Φ hΦ` becomes isomorphic to `F`. -/
@@ -96,6 +100,7 @@ noncomputable def liftPostcompIso : (lift F G Φ hΦ).postcomp G ≅ F :=
     dsimp at this
     simp [map_lift_shiftIso_hom_app, this])
 
+set_option backward.defeqAttrib.useBackward true in
 instance [Preadditive C] [Preadditive D] [Preadditive E] [G.Additive] (a : A)
     [(F.functor a).Additive] : ((lift F G Φ hΦ).functor a).Additive := by
   have : ((lift F G Φ hΦ).functor a ⋙ G).Additive := by
