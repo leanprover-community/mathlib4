@@ -45,7 +45,7 @@ lemma isRestricted_monomial (c : σ → ℝ) (n : σ →₀ ℕ) (a : R) :
     IsRestricted c (monomial n a) := by
   classical
   refine tendsto_nhds_of_eventually_eq (Set.Subsingleton.finite ?_)
-  aesop (add simp [Set.Subsingleton, coeff_monomial])
+  simp [Set.Subsingleton, coeff_monomial]
 
 lemma isRestricted_one (c : σ → ℝ) : IsRestricted c (1 : MvPowerSeries σ R) :=
   isRestricted_monomial c 0 1
