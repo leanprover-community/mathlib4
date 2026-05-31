@@ -193,6 +193,17 @@ theorem isAdicComplete (h : I.FG) : IsAdicComplete I (AdicCompletion I M) where
     rw [SModEq.sub_mem, pow_smul_top_eq_ker_eval h]
     simp [L]
 
+lemma ker_evalOneₐ_eq_map (fg : I.FG) :
+    RingHom.ker (evalOneₐ I).toRingHom = I.map (algebraMap R (AdicCompletion I R)) := by
+  ext x
+  trans x ∈ (AdicCompletion.eval I R 1).ker
+  · have eq : I ^ 1 * ⊤ = I := by simp
+    have : Function.Injective (Ideal.Quotient.factor ((le_of_eq eq))) := by
+      simpa [RingHom.injective_iff_ker_eq_bot, Ideal.Quotient.factor_ker]
+        using Ideal.map_mk_eq_bot_of_le (le_of_eq eq.symm)
+    simpa [← factorₐ_evalₐ_one, ← factor_eval_eq_evalₐ] using map_eq_zero_iff _ this
+  · simp [← pow_smul_top_eq_ker_eval fg]
+
 end AdicCompletion
 
 namespace MvPowerSeries
