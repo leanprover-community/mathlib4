@@ -43,12 +43,10 @@ lemma LowerHemicontinuous.hasOpenCGraph_of_add_isOpen
   unfold HasOpenCGraph
   rw [isOpen_prod_iff]
   intro a b hab
-  simp only [Set.mem_setOf_eq] at hab
   obtain ⟨y, hy, w, hw, rfl⟩ := Set.mem_add.mp hab
-  have hOpen_pre := hV.preimage (continuous_fst.neg.add continuous_snd)
-  have hmem : (y, y + w) ∈ (fun p : β × β ↦ -p.1 + p.2) ⁻¹' V := by
-    simpa [← add_assoc, neg_add_cancel, zero_add] using hw
-  obtain ⟨U_y, U_b, hU_y, hU_b, hy_Uy, hb_Ub, hU⟩ := isOpen_prod_iff.mp hOpen_pre y (y + w) hmem
+  have hOpen_pre := hV.preimage <| continuous_fst.neg.add continuous_snd
+  obtain ⟨U_y, U_b, hU_y, hU_b, hy_Uy, hb_Ub, hU⟩ := isOpen_prod_iff.mp hOpen_pre y (y + w)
+    (by simpa using hw)
   have hopen_a : IsOpen {a' | (f a' ∩ U_y).Nonempty} := by
     rw [isOpen_iff_mem_nhds]
     intro a ha
@@ -182,7 +180,7 @@ theorem LowerHemicontinuous.exists_continuous_selection (hf : LowerHemicontinuou
           rw [← (hf_isClosed x).closure_eq, mem_closure_iff_nhds]
           intro U hU
           obtain ⟨n, hn⟩ := hV.1.mem_iff.mp <|
-            (continuous_const_add y).continuousAt (x := 0) |>.preimage_mem_nhds (by simpa)
+            (continuous_const_add y).continuousAt |>.preimage_mem_nhds (by simpa)
           obtain ⟨a, ha_f, v, hv, rfl⟩ := mem_iInter.mp hy n
           exact ⟨a, by simpa using hn ((hV.2 n).2.1.1.neg_mem_iff.mpr hv), ha_f⟩
   exact key (Set.mem_iInter.mpr fun n ↦ mem_closure_of_tendsto (hH x) <|
