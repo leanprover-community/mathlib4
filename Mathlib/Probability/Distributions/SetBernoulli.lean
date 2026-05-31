@@ -119,7 +119,7 @@ lemma HasLaw.indicator_of_setBernoulli_of_notMem (hi : i ∉ u) {S : Ω → Set 
     ext
     simp only [Set.Icc.coe_zero]
     rw [hS.measureReal_eq (p := (i ∈ ·)) (by measurability), setBernoulli_real_mem_of_notMem _ hi]
-  rw [← bernoulliMeasure_zero (x := 1), this]
+  rw [← bernoulliMeasure_zero (x := 0), this]
   exact hasLaw_indicator_one_bernoulliMeasure
     (hS.aemeasurable.nullMeasurableSet_preimage (s := {t | i ∈ t}) (by measurability))
 
