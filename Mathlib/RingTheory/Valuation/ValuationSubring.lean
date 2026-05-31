@@ -26,7 +26,6 @@ The order structure on `ValuationSubring K`.
 
 @[expose] public section
 
-
 universe u
 
 noncomputable section
@@ -378,6 +377,7 @@ def primeSpectrumEquiv : PrimeSpectrum A ≃ {S // A ≤ S} where
   left_inv P := by ext1; simp
   right_inv S := by ext1; simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An ordered variant of `primeSpectrumEquiv`. -/
 @[simps!]
 def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
@@ -651,7 +651,7 @@ def principalUnitGroup : Subgroup Kˣ where
       Valuation.map_neg]
 
 theorem principal_units_le_units : A.principalUnitGroup ≤ A.unitGroup := fun a h => by
-  simpa only [add_sub_cancel] using A.valuation.map_one_add_of_lt h
+  simpa only [add_sub_cancel] using! A.valuation.map_one_add_of_lt h
 
 theorem mem_principalUnitGroup_iff (x : Kˣ) :
     x ∈ A.principalUnitGroup ↔ A.valuation ((x : K) - 1) < 1 :=

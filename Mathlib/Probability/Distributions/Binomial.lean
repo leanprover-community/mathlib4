@@ -95,15 +95,15 @@ lemma binomial_apply (s : Set ℕ) :
     Bin(n, p) s = setBer(Iio n, p) {t | t.ncard ∈ s ∧ t ⊆ Iio n} := by
   rw [binomial, map_ncard_setBernoulli_apply]
 
+lemma binomial_real_apply (s : Set ℕ) :
+    Bin(n, p).real s = setBer(Iio n, p).real {t | t.ncard ∈ s ∧ t ⊆ Iio n} := by
+  rw [measureReal_def, binomial_apply, measureReal_def]
+
 lemma map_cast_binomial_apply [MeasurableSingletonClass R] [CharZero R] (s : Set ℕ) :
     Bin(R, n, p) (Nat.cast '' s) = setBer(Iio n, p) {t | t.ncard ∈ s ∧ t ⊆ Iio n} := by
   rw [map_apply (by fun_prop) ((Countable.to_set inferInstance).image _).measurableSet,
     binomial_apply]
   simp
-
-lemma binomial_real_apply (s : Set ℕ) :
-    Bin(n, p).real s = setBer(Iio n, p).real {t | t.ncard ∈ s ∧ t ⊆ Iio n} := by
-  rw [measureReal_def, binomial_apply, measureReal_def]
 
 lemma map_cast_binomial_real_apply [MeasurableSingletonClass R] [CharZero R] (s : Set ℕ) :
     Bin(R, n, p).real (Nat.cast '' s) =
@@ -114,16 +114,25 @@ lemma binomial_real_singleton (n k : ℕ) (p : I) :
     Bin(n, p).real {k} = (n.choose k) * p ^ k * (1 - p) ^ (n - k) := by
   rw [binomial, map_ncard_setBernoulli_real_singleton (finite_Iio n), ncard_Iio_nat]
 
+lemma binomial_singleton (n k : ℕ) (p : I) :
+    Bin(n, p) {k} = ENNReal.ofReal ((n.choose k) * p ^ k * (1 - p) ^ (n - k)) := by
+  rw [← ENNReal.ofReal_toReal (a := Bin(n, p) _) (by simp), ← measureReal_def,
+    binomial_real_singleton]
+
 lemma map_cast_binomial_real_singleton [MeasurableSingletonClass R] [CharZero R] (n k : ℕ) (p : I) :
     Bin(R, n, p).real {(k : R)} = (n.choose k) * p ^ k * (1 - p) ^ (n - k) := by
   rw [map_measureReal_apply (by fun_prop) (by measurability)]
   convert binomial_real_singleton n k p
   ext; simp
 
-lemma binomial_singleton (n k : ℕ) (p : I) :
-    Bin(n, p) {k} = ENNReal.ofReal ((n.choose k) * p ^ k * (1 - p) ^ (n - k)) := by
-  rw [← ENNReal.ofReal_toReal (a := Bin(n, p) _) (by simp), ← measureReal_def,
-    binomial_real_singleton]
+@[simp]
+lemma binomial_nonneg {k : ℕ} : (0 : ℝ) ≤ (n.choose k) * p ^ k * (1 - p) ^ (n - k) :=
+    mul_nonneg (mul_nonneg (by positivity) (pow_nonneg (by grind) _)) (pow_nonneg (by grind) _)
+
+lemma map_cast_binomial_singleton [MeasurableSingletonClass R] [CharZero R] (n k : ℕ) (p : I) :
+    Bin(R, n, p) {(k : R)} = ENNReal.ofReal ((n.choose k) * p ^ k * (1 - p) ^ (n - k)) := by
+  rw [← ENNReal.ofReal_toReal (a := Bin(R, n, p) _) (by simp), ← measureReal_def,
+    map_cast_binomial_real_singleton]
 
 lemma binomial_real_zero (n : ℕ) (p : I) :
     Bin(n, p).real {0} = (1 - p) ^ n := by simp [binomial_real_singleton]
@@ -139,14 +148,13 @@ lemma binomial_real_self (n : ℕ) (p : I) :
 lemma map_cast_binomial_real_self [MeasurableSingletonClass R] [CharZero R] (n : ℕ) (p : I) :
     Bin(R, n, p).real {(n : R)} = p ^ n := by simp [map_cast_binomial_real_singleton]
 
-@[simp]
-lemma binomial_nonneg {k : ℕ} : (0 : ℝ) ≤ (n.choose k) * p ^ k * (1 - p) ^ (n - k) :=
-    mul_nonneg (mul_nonneg (by positivity) (pow_nonneg (by grind) _)) (pow_nonneg (by grind) _)
-
-lemma map_cast_binomial_singleton [MeasurableSingletonClass R] [CharZero R] (n k : ℕ) (p : I) :
-    Bin(R, n, p) {(k : R)} = ENNReal.ofReal ((n.choose k) * p ^ k * (1 - p) ^ (n - k)) := by
-  rw [← ENNReal.ofReal_toReal (a := Bin(R, n, p) _) (by simp), ← measureReal_def,
-    map_cast_binomial_real_singleton]
+lemma binomial_one_eq_bernoulliMeasure (p : I) :
+    Bin(1, p) = Ber(1, 0, p) := by
+  refine ext_of_measureReal_singleton fun k ↦ ?_
+  match k with
+  | 0 => simp [binomial_real_zero]
+  | 1 => simp [binomial_real_self]
+  | k + 2 => simp [binomial_real_singleton]
 
 lemma binomial_eq_sum_dirac (n : ℕ) (p : I) :
     Bin(n, p) =
@@ -185,9 +193,7 @@ lemma integral_binomial (f : ℕ → E) :
   · simp
   exact fun _ _ ↦ (integrable_dirac (by simp)).smul_measure (by simp)
 
-lemma integral_map_cast_binomial [MeasurableSingletonClass R]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
-    (f : R → E) :
+lemma integral_map_cast_binomial [MeasurableSingletonClass R] (f : R → E) :
     ∫ x, f x ∂Bin(R, n, p) =
       ∑ k ∈ Finset.Iic n, (n.choose k * (p : ℝ) ^ k * (1 - p) ^ (n - k)) • f k := by
   rw [integral_map .of_discrete (integrable_map_cast_binomial f).aestronglyMeasurable,

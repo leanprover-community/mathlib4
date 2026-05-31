@@ -176,8 +176,7 @@ variable (p) in
 @[simp]
 lemma setBernoulli_real_singleton (p : I) (hsu : s ⊆ u) (hu : u.Finite) :
     setBer(u, p).real {s} = p ^ s.ncard * (1 - p : ℝ) ^ (u \ s).ncard := by
-  rw [measureReal_def, setBernoulli_singleton p hsu hu]
-  norm_cast
+  simp [measureReal_def, setBernoulli_singleton p hsu hu]
 
 lemma map_ncard_setBernoulli_real_singleton {u : Set ι} (hu : u.Finite) (p : I) (k : ℕ) :
     (setBer(u, p).map Set.ncard).real {k} =
