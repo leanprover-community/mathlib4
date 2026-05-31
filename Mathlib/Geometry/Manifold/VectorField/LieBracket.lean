@@ -362,8 +362,7 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDiffAt[s] f x)
     (hW : MDiffAt[s] (fun x ↦ (W x : TangentBundle I M)) x)
     (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I V (f • W) s x =
-      (fromTangentSpace (f x) (mfderiv[s] f x (V x))) • (W x)
-      + (f x) • mlieBracketWithin I V W s x := by
+      d[s] f x (V x) • (W x) + (f x) • mlieBracketWithin I V W s x := by
   simp only [mlieBracketWithin, mpullbackWithin_smul]
   -- Simplify local notation a bit.
   set V' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm V (range I)
@@ -393,7 +392,7 @@ lemma mlieBracket_smul_right {f : M → 𝕜} (hf : MDiffAt f x)
     (hW : MDiffAt (fun x ↦ (W x : TangentBundle I M)) x) :
     mlieBracket I V (f • W) x = d% f x (V x) • (W x) + (f x) • mlieBracket I V W x := by
   rw [← mdifferentiableWithinAt_univ] at hf hW
-  rw [← mlieBracketWithin_univ, mvfderiv, ← mfderivWithin_univ]
+  rw [← mlieBracketWithin_univ, ← mvfderivWithin_univ]
   exact mlieBracketWithin_smul_right hf hW (uniqueMDiffWithinAt_univ I)
 
 /--
@@ -404,8 +403,7 @@ lemma mlieBracketWithin_smul_left {f : M → 𝕜} (hf : MDiffAt[s] f x)
     (hV : MDiffAt[s] (fun x ↦ (V x : TangentBundle I M)) x)
     (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I (f • V) W s x =
-      -(fromTangentSpace (f x) (mfderiv[s] f x (W x))) • (V x)
-      + (f x) • mlieBracketWithin I V W s x := by
+      - d[s] f x (W x) • (V x) + (f x) • mlieBracketWithin I V W s x := by
   rw [mlieBracketWithin_swap, Pi.neg_apply, mlieBracketWithin_smul_right hf hV (V := W) hs,
     mlieBracketWithin_swap]
   simp; abel
@@ -424,7 +422,7 @@ lemma mlieBracket_smul_left {f : M → 𝕜} (hf : MDiffAt f x)
 lemma mlieBracketWithin_const_smul_left
     (hV : MDiffAt[s] (T% V) x) (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I (c • V) W s x = c • mlieBracketWithin I V W s x := by
-  simpa [mfderivWithin_const] using!
+  simpa [mfderivWithin_const, mvfderivWithin] using!
     mlieBracketWithin_smul_left (mdifferentiableWithinAt_const (c := c)) (W := W) hV hs
 
 lemma mlieBracket_const_smul_left (hV : MDiffAt (T% V) x) :
@@ -435,7 +433,7 @@ lemma mlieBracket_const_smul_left (hV : MDiffAt (T% V) x) :
 lemma mlieBracketWithin_const_smul_right
     (hW : MDiffAt[s] (T% W) x) (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I V (c • W) s x = c • mlieBracketWithin I V W s x := by
-  simpa [mfderivWithin_const] using!
+  simpa [mfderivWithin_const, mvfderivWithin] using!
     mlieBracketWithin_smul_right (mdifferentiableWithinAt_const (c := c)) (V := V) hW hs
 
 lemma mlieBracket_const_smul_right (hW : MDiffAt (T% W) x) :

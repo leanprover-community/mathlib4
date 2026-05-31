@@ -784,6 +784,8 @@ theorem MDifferentiableOn.add {s : Set M} (hf : MDiff[s] f) (hg : MDiff[s] g) : 
 theorem MDifferentiable.add (hf : MDiff f) (hg : MDiff g) : MDiff (f + g) :=
   fun x ↦ (hf x).add (hg x)
 
+-- TODO: this lemma (and others below) uses the identification of tangent spaces silently
+-- Deprecate all these lemmas in favour of a version using `mvfderiv(Within)`
 -- Porting note: forcing types using `by exact`
 theorem mfderiv_add (hf : MDiffAt f z) (hg : MDiffAt g z) :
     (mfderiv% (f + g) z : TangentSpace I z →L[𝕜] E') =
@@ -878,15 +880,15 @@ theorem mdifferentiableAt_neg : MDiffAt (-f) z ↔ MDiffAt f z :=
 theorem MDifferentiable.neg (hf : MDiff f) : MDiff (-f) := fun x ↦ (hf x).neg
 
 set_option backward.isDefEq.respectTransparency false in
-theorem mfderivWithin_neg (f : M → E') (x : M) (hs : UniqueMDiffWithinAt I s x) :
+theorem mfderivWithin_neg (hs : UniqueMDiffWithinAt I s x) :
     mfderiv[s] (-f) x = -mfderiv[s] f x := by
   simp_rw [mfderivWithin]
   by_cases hf : MDiffAt[s] f x
   · exact hf.hasMFDerivWithinAt.neg.mfderivWithin hs
   · rw [if_neg hf]; rw [← mdifferentiableWithinAt_neg] at hf; rw [if_neg hf, neg_zero]
 
-theorem mfderiv_neg (f : M → E') (x : M) : mfderiv% (-f) x = -mfderiv% f x := by
-  rw [← mfderivWithin_univ, mfderivWithin_neg _ _ (uniqueMDiffWithinAt_univ I), mfderivWithin_univ]
+theorem mfderiv_neg : mfderiv% (-f) x = -mfderiv% f x := by
+  rw [← mfderivWithin_univ, mfderivWithin_neg (uniqueMDiffWithinAt_univ I), mfderivWithin_univ]
 
 theorem HasMFDerivWithinAt.sub (hf : HasMFDerivAt[s] f z f') (hg : HasMFDerivAt[s] g z g') :
     HasMFDerivAt[s] (f - g) z (f' - g') :=
