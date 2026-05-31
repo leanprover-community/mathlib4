@@ -387,7 +387,6 @@ theorem shiftLeft_add' : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <
     subNatNat_elim n k.succ (fun n k i => (↑m) <<< i = (Nat.shiftLeft' false m n) >>> k)
       (fun (i n : ℕ) => by simp [← Nat.shiftLeft_sub _])
       fun i n => by
-        dsimp only [← Int.natCast_shiftRight]
         simp_rw [negSucc_eq, shiftLeft_neg, Nat.shiftLeft'_false, Nat.shiftRight_add,
           ← Nat.shiftLeft_sub _ le_rfl, Nat.sub_self, Nat.shiftLeft_zero, ← shiftRight_natCast,
           ← shiftRight_add', Nat.cast_one]

@@ -482,7 +482,7 @@ theorem properDivisors_eq_singleton_one_iff_prime : n.properDivisors = {1} ↔ n
   rw [Nat.prime_def_lt]
   refine ⟨Nat.succ_le_iff.mpr <| one_mem_properDivisors_iff_one_lt.mp (by simp [h]), ?_⟩
   intro m hm hdvd
-  simpa [h] using mem_properDivisors.2 ⟨hdvd, hm⟩
+  simpa [h] using mem_properDivisors.mpr ⟨hdvd, hm⟩
 
 theorem sum_properDivisors_eq_one_iff_prime : ∑ x ∈ n.properDivisors, x = 1 ↔ n.Prime := by
   rcases n with - | n
@@ -503,9 +503,9 @@ theorem mem_properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) {x : ℕ
   rw [mem_properDivisors, Nat.dvd_prime_pow pp]
   constructor
   · rintro ⟨⟨j, hjk, rfl⟩, hlt⟩
-    exact ⟨j, (Nat.pow_lt_pow_iff_right pp.one_lt).1 hlt, rfl⟩
+    exact ⟨j, (Nat.pow_lt_pow_iff_right pp.one_lt).mp hlt, rfl⟩
   · rintro ⟨j, hjk, rfl⟩
-    exact ⟨⟨j, le_of_lt hjk, rfl⟩, (Nat.pow_lt_pow_iff_right pp.one_lt).2 hjk⟩
+    exact ⟨⟨j, le_of_lt hjk, rfl⟩, Nat.pow_lt_pow_of_lt pp.one_lt hjk⟩
 
 theorem properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
     properDivisors (p ^ k) = (Finset.range k).map ⟨(p ^ ·), Nat.pow_right_injective pp.two_le⟩ := by
@@ -547,11 +547,9 @@ lemma primeFactors_filter_dvd_of_dvd {m n : ℕ} (hn : n ≠ 0) (hmn : m ∣ n) 
 @[simp]
 theorem image_div_divisors_eq_divisors (n : ℕ) :
     image (fun x : ℕ => n / x) n.divisors = n.divisors := by
-  calc
-    _ = (n.divisors.map ⟨fun d ↦ (n / d, d), fun _ _ ↦ congr_arg Prod.snd⟩).image Prod.fst := by
-      rw [map_eq_image, image_image]
-      rfl
-    _ = _ := by rw [map_div_left_divisors, image_fst_divisorsAntidiagonal]
+  conv_rhs =>
+    rw [← image_fst_divisorsAntidiagonal, ← map_div_left_divisors, map_eq_image, image_image]
+  rfl
 
 @[to_additive (attr := simp) sum_div_divisors]
 theorem prod_div_divisors {α : Type*} [CommMonoid α] (n : ℕ) (f : ℕ → α) :
