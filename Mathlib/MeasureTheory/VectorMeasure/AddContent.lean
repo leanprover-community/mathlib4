@@ -324,12 +324,18 @@ theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
   classical
   let M : MeasurableSpace α := generateFrom C
   have Mle : M ≤ hα := generateFrom_le h'C
-  let μ' := μ.trim Mle
+  set μ' := μ.trim Mle with hμ'
   obtain ⟨m', m'C, hm'⟩ :
-      ∃ m' : VectorMeasure α E, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ' s := by
+      ∃ m' : @VectorMeasure α M E _ _, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ' s := by
     apply exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom hC (fun s hs ↦ ?_) rfl
     apply (hm s hs).trans_eq
     exact (MeasureTheory.trim_measurableSet_eq Mle (measurableSet_generateFrom hs)).symm
+  have m'_le : (m'.transpose (ContinuousLinearMap.lsmul ℝ ℝ)).variation ≤ μ' := by
+    apply (variation_transpose_le _ _).trans
+    grw [ContinuousLinearMap.opNNNorm_lsmul_le, one_smul]
+    exact variation_le_of_forall_enorm_le (fun s hs ↦ hm' _)
+  -- next line is to make sure that the default instance is picked when defining `m''`.
+  let : MeasurableSpace α := hα
   let m'' : VectorMeasure α E :=
   { measureOf' s := if MeasurableSet s then ∫ᵛ x, μ[s.indicator 1 | M] x ∂• m' else 0
     empty' := by simp
@@ -338,20 +344,24 @@ theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
       have : ∫ᵛ (x : α), μ[fun x ↦ ∑' (d : ℕ), (f d).indicator 1 x | M] x ∂•m'
           = ∫ᵛ (x : α), ∑' d, μ[(f d).indicator 1 | M] x ∂•m' := by
         apply VectorMeasure.integral_congr_ae
-        have : (m'.transpose (ContinuousLinearMap.lsmul ℝ ℝ)).variation ≤ μ' := by
-          apply (variation_transpose_le _ _).trans
-          grw [ContinuousLinearMap.opNNNorm_lsmul_le, one_smul]
-          exact variation_le_of_forall_enorm_le (fun s hs ↦ hm' _)
-        apply ae_mono this
+        apply ae_mono m'_le
         apply ae_eq_trim_of_measurable _ (by fun_prop) (by fun_prop)
         apply condExp_tsum (fun i ↦ ?_)
-        · sorry
-        · sorry
-
-
-
+        · simp only [enorm_indicator_eq_indicator_enorm, Pi.one_apply, enorm_one, f_meas,
+          lintegral_indicator, lintegral_const, MeasurableSet.univ, Measure.restrict_apply,
+            Set.univ_inter, one_mul, ne_eq, ← measure_iUnion hf f_meas, measure_ne_top,
+            not_false_eq_true]
+        · exact AEStronglyMeasurable.indicator (by fun_prop) (f_meas i)
       simp only [f_meas, ↓reduceIte, implies_true, MeasurableSet.iUnion,
-        indicator_iUnion_of_pairwise_disjoint _ hf]
+        indicator_iUnion_of_pairwise_disjoint _ hf, this]
+      rw [integral_tsum (by fun_prop)]; rotate_left
+      · apply ne_of_lt
+        grw [m'_le, hμ']
+        have A i : Measurable[M] (fun x ↦ ‖μ[(f i).indicator (1 : α → ℝ) | M] x‖ₑ) := by fun_prop
+        simp_rw [lintegral_trim Mle (A _)]
+        rw [lin]
+
+
     }
 
 
