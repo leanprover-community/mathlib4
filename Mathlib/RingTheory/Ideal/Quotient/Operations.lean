@@ -165,7 +165,7 @@ lemma injective_lift_iff {I : Ideal R} [I.IsTwoSided]
   · rintro rfl; rfl
 
 lemma ker_Pi_Quotient_mk {ι : Type*} (I : ι → Ideal R) [∀ i, (I i).IsTwoSided] :
-    ker (Pi.ringHom fun i : ι ↦ Quotient.mk (I i)) = ⨅ i, I i := by
+    ker (RingHom.pi fun i : ι ↦ Quotient.mk (I i)) = ⨅ i, I i := by
   simp [Pi.ker_ringHom, mk_ker]
 
 @[simp]
@@ -199,7 +199,7 @@ variable {ι : Type*}
   Remainder Theorem. It is bijective if the ideals `f i` are coprime. -/
 def quotientInfToPiQuotient (I : ι → Ideal R) [∀ i, (I i).IsTwoSided] :
     (R ⧸ ⨅ i, I i) →+* ∀ i, R ⧸ I i :=
-  Quotient.lift (⨅ i, I i) (Pi.ringHom fun i : ι ↦ Quotient.mk (I i))
+  Quotient.lift (⨅ i, I i) (RingHom.pi fun i : ι ↦ Quotient.mk (I i))
     (by simp [← RingHom.mem_ker, ker_Pi_Quotient_mk])
 
 lemma quotientInfToPiQuotient_mk (I : ι → Ideal R) [∀ i, (I i).IsTwoSided] (x : R) :
