@@ -357,7 +357,7 @@ lemma pi_nnnorm_const_le' (a : E) : ‖fun _ : ι => a‖₊ ≤ ‖a‖₊ :=
 
 @[to_additive (attr := simp) pi_norm_const]
 lemma pi_norm_const' [Nonempty ι] (a : E) : ‖fun _i : ι => a‖ = ‖a‖ := by
-  simpa only [← dist_one_right] using dist_pi_const a 1
+  simpa only [← dist_one_right] using! dist_pi_const a 1
 
 @[to_additive (attr := simp) pi_nnnorm_const]
 lemma pi_nnnorm_const' [Nonempty ι] (a : E) : ‖fun _i : ι => a‖₊ = ‖a‖₊ :=

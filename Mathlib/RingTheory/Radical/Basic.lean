@@ -245,11 +245,6 @@ lemma radical_eq_iff_primeFactors_eq :
   ⟨fun h => by rw [← primeFactors_radical, h]; exact primeFactors_radical,
     fun h => by simp [radical, h]⟩
 
-@[deprecated "This lemma is deprecated in favor of using `radical_eq_iff_primeFactors_eq.mpr`. "
-   (since := "2025-11-09")]
-lemma radical_eq_of_primeFactors_eq (h : primeFactors a = primeFactors b) :
-    radical a = radical b := radical_eq_iff_primeFactors_eq.mpr h
-
 theorem radical_eq_one_iff : radical a = 1 ↔ a = 0 ∨ IsUnit a := by
   refine ⟨?_, (Or.elim · (by simp +contextual) radical_of_isUnit)⟩
   intro h

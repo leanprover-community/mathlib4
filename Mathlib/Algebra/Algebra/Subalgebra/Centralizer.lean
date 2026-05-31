@@ -111,7 +111,7 @@ lemma centralizer_coe_image_includeRight_eq_center_tensorProduct
       (Subalgebra.centralizer R (S : Set B)).val).range := by
   have eq1 := centralizer_coe_image_includeLeft_eq_center_tensorProduct R B A S
   apply_fun Subalgebra.comap (Algebra.TensorProduct.comm R A B).toAlgHom at eq1
-  convert eq1
+  convert! eq1
   · ext x
     simpa [mem_centralizer_iff] using
       ⟨fun h b hb ↦ (Algebra.TensorProduct.comm R A B).symm.injective <| by aesop, fun h b hb ↦

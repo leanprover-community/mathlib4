@@ -29,7 +29,7 @@ def Equiv.Perm.decomposeFin {n : ℕ} : Perm (Fin n.succ) ≃ Fin n.succ × Perm
 @[simp]
 theorem Equiv.Perm.decomposeFin_symm_of_refl {n : ℕ} (p : Fin (n + 1)) :
     Equiv.Perm.decomposeFin.symm (p, Equiv.refl _) = swap 0 p := by
-  simp [Equiv.Perm.decomposeFin, Equiv.permCongr_def]
+  simp [Equiv.Perm.decomposeFin, Equiv.permCongr_def, pull_end]
 
 @[simp]
 theorem Equiv.Perm.decomposeFin_symm_of_one {n : ℕ} (p : Fin (n + 1)) :
@@ -449,6 +449,11 @@ theorem cycleIcc_zero_eq_cycleRange (i : Fin n) [NeZero n] : cycleIcc 0 i = cycl
   · simp [-cycleIcc_def_le, ch]
   · simp [-cycleIcc_def_le, cycleIcc_of_gt ch, cycleRange_of_gt ch]
 
+theorem cycleIcc_comp_succAbove {n : ℕ} (i j : Fin (n + 1)) (hij : i ≤ j) :
+    (cycleIcc i j) ∘ j.succAbove = i.succAbove := by
+  grind [cycleIcc_of_lt, succAbove_of_castSucc_lt, cycleIcc_of_ge_of_lt,
+    succAbove_of_le_castSucc, coeSucc_eq_succ, cycleIcc_of_gt]
+
 theorem cycleIcc.trans [NeZero n] (hij : i ≤ j) (hjk : j ≤ k) :
     (cycleIcc i j) ∘ (cycleIcc j k) = (cycleIcc i k) := by
   ext x
@@ -485,7 +490,7 @@ theorem Equiv.Perm.sign_eq_prod_prod_Iio (σ : Equiv.Perm (Fin n)) :
     σ.sign = ∏ j, ∏ i ∈ Finset.Iio j, (if σ i < σ j then 1 else -1) := by
   suffices h : σ.sign = σ.signAux by
     rw [h, Finset.prod_sigma', Equiv.Perm.signAux]
-    convert rfl using 2 with x hx
+    convert! rfl using 2 with x hx
     · simp [Finset.ext_iff, Equiv.Perm.mem_finPairsLT]
     simp [← ite_not (p := _ ≤ _)]
   refine σ.swap_induction_on (by simp) fun π i j hne h_eq ↦ ?_
@@ -523,9 +528,9 @@ theorem Equiv.Perm.prod_Iio_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
 theorem Equiv.Perm.prod_Ioi_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
     (σ : Equiv.Perm (Fin n)) {f : Fin n → Fin n → R} (hf : ∀ i j, f i j = -f j i) :
     ∏ i, ∏ j ∈ Finset.Ioi i, f (σ i) (σ j) = σ.sign * ∏ i, ∏ j ∈ Finset.Ioi i, f i j := by
-  convert σ.prod_Iio_comp_eq_sign_mul_prod hf using 1
+  convert! σ.prod_Iio_comp_eq_sign_mul_prod hf using 1
   · apply Finset.prod_comm' (by simp)
-  convert rfl using 2
+  convert! rfl using 2
   apply Finset.prod_comm' (by simp)
 
 end Sign

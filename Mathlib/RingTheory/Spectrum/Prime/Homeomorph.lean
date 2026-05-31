@@ -66,7 +66,7 @@ lemma PrimeSpectrum.isHomeomorph_comap_of_isPurelyInseparable [IsPurelyInseparab
     IsHomeomorph (comap <| algebraMap R (R ⊗[k] K)) := by
   let q := ringExpChar k
   refine isHomeomorph_comap _ (IsPurelyInseparable.exists_pow_mem_range_tensorProduct) ?_
-  convert bot_le
+  convert! bot_le
   rw [← RingHom.injective_iff_ker_eq_bot]
   exact Algebra.TensorProduct.includeLeft_injective (S := R) (algebraMap k K).injective
 
