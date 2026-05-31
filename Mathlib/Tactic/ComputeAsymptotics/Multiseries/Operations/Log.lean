@@ -277,7 +277,7 @@ theorem log_Approximates {basis : Basis}
           · have := log_Approximates (ms := coef) h_basis.tail
               h_logBasis_tl h_coef_sorted h_coef h_coef_trimmed h_pos h_coef_last
             rw [← log_toFun (logBasis := logBasis_tl)]
-            apply MultiseriesExpansion.Approximates_coef_Majorized_head this h_basis
+            apply this.coef_majorized_head h_basis
           · apply Majorized.smul
             rw [h_log_hd_fun]
             simp only [Majorized]

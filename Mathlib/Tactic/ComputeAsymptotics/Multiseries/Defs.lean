@@ -1037,6 +1037,12 @@ theorem replaceFun {ms : MultiseriesExpansion (basis_hd :: basis_tl)} {f : ℝ �
       h_tl, ?_⟩
     grw [mk_toFun, h_eq]
 
+theorem nil_tendsto_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
+    (h : MultiseriesExpansion.Approximates (basis := basis_hd :: basis_tl) (mk .nil f)) :
+    Tendsto f atTop (𝓝 0) := by
+  simp only [Approximates.nil_iff] at h
+  exact h.tendsto
+
 end Approximates
 
 instance (basis_hd : ℝ → ℝ) (basis_tl : Basis) :

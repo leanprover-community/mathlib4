@@ -813,7 +813,7 @@ mutual
           apply h_basis.tendsto_atTop
           simp
         · exact h_basis.head_eventually_pos
-      · exact Approximates_coef_Majorized_head hM_approx h_basis
+      · exact hM_approx.coef_majorized_head h_basis
       · exact h_basis.head_eventually_pos
     use mk B_tl (fB - basis_hd ^ B_exp * B_coef.toFun)
     simp only [mk_seq, mk_toFun, true_and, h_tl_approx, hM_approx, and_self, and_true]

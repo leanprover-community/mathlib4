@@ -154,7 +154,7 @@ def computeTendstoAtTop (f : Q(ℝ → ℝ)) :
     -- I don't know how to avoid Expr here.
     let h_tendsto : Expr ← match ms_trimmed.val with
     | ~q(MultiseriesExpansion.mk .nil $f) =>
-      pure (q(MultiseriesExpansion.nil_tendsto_zero $ms_trimmed.h_approx) : Expr)
+      pure (q(MultiseriesExpansion.Approximates.nil_tendsto_zero $ms_trimmed.h_approx) : Expr)
     | ~q(MultiseriesExpansion.mk (.cons $exp $coef $tl) $f) =>
       let ⟨leading, h_leading_eq⟩ ← getLeadingMonomialWithProof ms_trimmed.val
       let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in computeTendstoAtTop"

@@ -20,13 +20,6 @@ namespace MultiseriesExpansion
 
 open Filter Stream' Topology
 
--- TODO: move
-lemma nil_tendsto_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
-    (h : MultiseriesExpansion.Approximates (basis := basis_hd :: basis_tl) (mk .nil f)) :
-    Tendsto f atTop (𝓝 0) := by
-  simp only [Approximates.nil_iff] at h
-  exact h.tendsto
-
 mutual
 
 /-- `Multiseries`-part of `MultiseriesExpansion.const`. -/
@@ -261,7 +254,7 @@ theorem monomialRpow_Approximates {basis : Basis} {n : Fin (List.length basis)} 
       simp only [Fin.val_succ, Multiseries.monomialRpow, List.getElem_cons_succ]
       apply Approximates.cons
       · exact monomialRpow_Approximates h_basis.tail
-      · apply h_basis.tail_pow_Majorized_head
+      · apply h_basis.tail_pow_majorized_head
         simp
       · simp
 
@@ -468,7 +461,7 @@ theorem updateBasis_Approximates {basis : Basis} {ex : BasisExtension basis}
     · apply updateBasis_Approximates _ h_approx
       exact BasisExtension.insert_tail_wellFormedBasis h_basis
     · simp only [BasisExtension.getBasis] at h_basis
-      apply MultiseriesExpansion.Approximates_coef_Majorized_head h_approx
+      apply h_approx.coef_majorized_head
       apply WellFormedBasis.of_sublist _ h_basis
       simp only [List.cons_sublist_cons]
       apply BasisExtension.sublist_getBasis
@@ -505,7 +498,7 @@ theorem extendBasisMiddle_Approximates {left right : Basis} {b : ℝ → ℝ}
   | nil =>
     simp only [List.nil_append, extendBasisMiddle]
     apply Approximates.cons h_approx
-    · exact MultiseriesExpansion.Approximates_coef_Majorized_head h_approx h_basis
+    · exact h_approx.coef_majorized_head h_basis
     · apply Approximates.nil
       simp
   | cons left_hd left_tl =>

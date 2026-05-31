@@ -158,11 +158,11 @@ theorem tail_toFun_isLittleO_head {m : UnitMonomial} {basis_hd : ℝ → ℝ} {b
     | cons basis_tl_hd basis_tl_tl =>
       simp only [List.length_cons, Nat.add_right_cancel_iff, toFun_cons] at h_length ⊢
       rw [show (0 : ℝ) = 0 + 0 by simp]
-      apply Majorized.mul (h_basis.tail_pow_Majorized_head (by simp) _) _
+      apply Majorized.mul (h_basis.tail_pow_majorized_head (by simp) _) _
         h_basis.head_eventually_pos
       exact fun exp h_exp ↦
         (ih h_length h_basis.tail 1 (by simp)).trans <|
-        h_basis.tail_pow_Majorized_head (by simp) 1 exp h_exp
+        h_basis.tail_pow_majorized_head (by simp) 1 exp h_exp
 
 theorem toFun_pos {m : UnitMonomial} {basis : Basis}
     (h_basis : WellFormedBasis basis) :

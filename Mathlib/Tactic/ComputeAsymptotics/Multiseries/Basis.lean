@@ -157,8 +157,8 @@ theorem push_log_last {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
 end WellFormedBasis
 
-/-- Auxillary lemma. If function `f` is eventually positive, `g` tends to `atTop`, and
-`log f =o[atTop] log g` then for any `a` and `b > 0`, then `f^a =o[atTop] g^b`. -/
+/-- If function `f` is eventually positive, `g` tends to `atTop`, and
+`log f =o[atTop] log g` then for any `a` and `b > 0`, then `f ^ a =o[atTop] g ^ b`. -/
 theorem pow_isLittleO_pow_of_log {f g : ℝ → ℝ} (a b : ℝ) (hf : ∀ᶠ x in atTop, 0 < f x)
     (hg : Tendsto g atTop atTop) (h : (Real.log ∘ f) =o[atTop] (Real.log ∘ g)) (hb : 0 < b) :
     (f ^ a) =o[atTop] (g ^ b) := by
@@ -177,7 +177,7 @@ theorem pow_isLittleO_pow_of_log {f g : ℝ → ℝ} (a b : ℝ) (hf : ∀ᶠ x 
 
 /-- Any power of function from a well-formed basis' tail is Majorized by
 basis' head with zero exponent. -/
-theorem WellFormedBasis.tail_pow_Majorized_head {hd f : ℝ → ℝ} {tl : Basis}
+theorem WellFormedBasis.tail_pow_majorized_head {hd f : ℝ → ℝ} {tl : Basis}
     (h_basis : WellFormedBasis (hd :: tl)) (hf : f ∈ tl) (r : ℝ) :
     Majorized (f ^ r) hd 0 := by
   intro exp h_exp
@@ -190,7 +190,7 @@ theorem WellFormedBasis.tail_pow_Majorized_head {hd f : ℝ → ℝ} {tl : Basis
 /-- If `basis_hd :: basis_tl` is well-formed and function `fC` can be approximated by
 `ms : MultiseriesExpansion basis_tl`, then `fC` can be Majorized by `basis_hd` with zero
 exponent. -/
-theorem MultiseriesExpansion.Approximates_coef_Majorized_head {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem MultiseriesExpansion.Approximates.coef_majorized_head {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : MultiseriesExpansion basis_tl} (h_approx : ms.Approximates)
     (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
     Majorized ms.toFun basis_hd 0 := by
