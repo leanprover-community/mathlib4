@@ -577,9 +577,6 @@ instance : StarModule ℝ K where
 theorem ofReal_natCast (n : ℕ) : ((n : ℝ) : K) = n :=
   map_natCast (algebraMap ℝ K) n
 
-@[rclike_simps, norm_cast]
-lemma ofReal_nnratCast (q : ℚ≥0) : ((q : ℝ) : K) = q := map_nnratCast (algebraMap ℝ K) _
-
 @[simp, rclike_simps]
 theorem natCast_re (n : ℕ) : re (n : K) = n := by rw [← ofReal_natCast, ofReal_re]
 
@@ -615,6 +612,16 @@ theorem intCast_re (n : ℤ) : re (n : K) = n := by rw [← ofReal_intCast, ofRe
 theorem intCast_im (n : ℤ) : im (n : K) = 0 := by rw [← ofReal_intCast, ofReal_im]
 
 @[rclike_simps, norm_cast]
+theorem ofReal_nnratCast (n : ℚ≥0) : ((n : ℝ) : K) = n :=
+  map_nnratCast _ n
+
+@[simp, rclike_simps]
+theorem nnratCast_re (q : ℚ≥0) : re (q : K) = q := by rw [← ofReal_nnratCast, ofReal_re]
+
+@[simp, rclike_simps, norm_cast]
+theorem nnratCast_im (q : ℚ≥0) : im (q : K) = 0 := by rw [← ofReal_nnratCast, ofReal_im]
+
+@[rclike_simps, norm_cast]
 theorem ofReal_ratCast (n : ℚ) : ((n : ℝ) : K) = n :=
   map_ratCast _ n
 
@@ -623,6 +630,20 @@ theorem ratCast_re (q : ℚ) : re (q : K) = q := by rw [← ofReal_ratCast, ofRe
 
 @[simp, rclike_simps, norm_cast]
 theorem ratCast_im (q : ℚ) : im (q : K) = 0 := by rw [← ofReal_ratCast, ofReal_im]
+
+open OfScientific (ofScientific)
+
+@[rclike_simps, norm_cast]
+theorem ofReal_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
+    ((ofScientific m s e : ℝ) : K) = ofScientific m s e := ofReal_nnratCast _
+
+@[simp, rclike_simps]
+theorem ofScientific_re (m : ℕ) (s : Bool) (e : ℕ) :
+    re (ofScientific m s e : K) = ofScientific m s e := by rw [← ofReal_ofScientific, ofReal_re]
+
+@[simp, rclike_simps, norm_cast]
+theorem ofScientific_im (m : ℕ) (s : Bool) (e : ℕ) :
+    im (ofScientific m s e : K) = 0 := by rw [← ofReal_ofScientific, ofReal_im]
 
 /-! ### Norm -/
 
