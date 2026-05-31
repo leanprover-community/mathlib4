@@ -152,9 +152,7 @@ mutual
 
 theorem Multiseries.const_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} :
     (Multiseries.const basis_hd basis_tl c).Sorted := by
-  simp only [Multiseries.const]
-  apply Sorted.cons_nil
-  exact const_Sorted
+  simpa only [Multiseries.const] using const_Sorted.cons_nil
 
 /-- Constants are well-ordered. -/
 theorem const_Sorted {basis : Basis} {c : ℝ} :
@@ -162,8 +160,7 @@ theorem const_Sorted {basis : Basis} {c : ℝ} :
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
-    simp only [const, sorted_iff_seq_sorted, mk_seq]
-    apply Multiseries.const_Sorted
+    simpa only [const, sorted_iff_seq_sorted, mk_seq] using Multiseries.const_Sorted
 
 end
 
@@ -189,13 +186,8 @@ theorem const_Approximates {c : ℝ} {basis : Basis} (h_basis : WellFormedBasis 
   | nil => simp
   | cons basis_hd basis_tl =>
     simp only [const, Multiseries.const]
-    have ih : (const basis_tl c).Approximates := by
-      apply const_Approximates h_basis.tail
-    apply Approximates.cons ih
-    · apply Majorized.const
-      apply h_basis.tendsto_atTop
-      simp
-    · simp
+    apply (const_Approximates h_basis.tail).cons _ (by simp)
+    exact Majorized.const <| h_basis.tendsto_atTop (by simp)
 
 -- TODO : move it
 /-- `zero` approximates the zero function. -/
@@ -227,14 +219,8 @@ mutual
 theorem Multiseries.monomialRpow_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ} {r : ℝ} :
     (@Multiseries.monomialRpow basis_hd basis_tl n r).Sorted := by
   cases n with
-  | zero =>
-    simp only [Multiseries.monomialRpow]
-    apply Sorted.cons_nil
-    exact const_Sorted
-  | succ m =>
-    simp only [Multiseries.monomialRpow]
-    apply Sorted.cons_nil
-    exact monomialRpow_Sorted
+  | zero => simpa only [Multiseries.monomialRpow] using Sorted.cons_nil const_Sorted
+  | succ m => simpa only [Multiseries.monomialRpow] using Sorted.cons_nil monomialRpow_Sorted
 
 /-- `monomial` is well-ordered. -/
 theorem monomialRpow_Sorted {basis : Basis} {n : ℕ} {r : ℝ} :
@@ -242,8 +228,7 @@ theorem monomialRpow_Sorted {basis : Basis} {n : ℕ} {r : ℝ} :
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
-    simp only [sorted_iff_seq_sorted, monomialRpow_seq]
-    apply Multiseries.monomialRpow_Sorted
+    simpa only [sorted_iff_seq_sorted, monomialRpow_seq] using Multiseries.monomialRpow_Sorted
 
 end
 
@@ -259,19 +244,12 @@ theorem monomialRpow_Approximates {basis : Basis} {n : Fin (List.length basis)} 
     | zero =>
       simp only [Fin.coe_ofNat_eq_mod, Nat.zero_mod, Multiseries.monomialRpow,
         List.getElem_cons_zero]
-      apply Approximates.cons
-      · exact one_Approximates h_basis.tail
-      · apply Majorized.self
-        apply h_basis.tendsto_atTop
-        simp
-      · simp
+      apply (one_Approximates h_basis.tail).cons _ (by simp)
+      exact Majorized.self <| h_basis.tendsto_atTop (by simp)
     | succ m =>
       simp only [Fin.val_succ, Multiseries.monomialRpow, List.getElem_cons_succ]
-      apply Approximates.cons
-      · exact monomialRpow_Approximates h_basis.tail
-      · apply h_basis.tail_pow_majorized_head
-        simp
-      · simp
+      apply (monomialRpow_Approximates h_basis.tail).cons _ (by simp)
+      apply h_basis.tail_pow_majorized_head (by simp)
 
 @[simp]
 theorem monomial_toFun {basis : Basis} {n : ℕ} (h : n < basis.length) :
@@ -279,7 +257,6 @@ theorem monomial_toFun {basis : Basis} {n : ℕ} (h : n < basis.length) :
   let n' : Fin basis.length := ⟨n, h⟩
   conv_lhs => rw [show n = n'.val by simp [n']]
   convert monomialRpow_toFun
-  ext t
   simp
   grind
 
