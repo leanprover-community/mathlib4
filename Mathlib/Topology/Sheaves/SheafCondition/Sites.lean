@@ -222,7 +222,7 @@ def isTerminalOfEmpty (F : Sheaf C X) : Limits.IsTerminal (F.obj.obj (op ⊥)) :
 /-- A variant of `isTerminalOfEmpty` that is easier to `apply`. -/
 def isTerminalOfEqEmpty (F : X.Sheaf C) {U : Opens X} (h : U = ⊥) :
     Limits.IsTerminal (F.obj.obj (op U)) := by
-  convert F.isTerminalOfEmpty
+  convert! F.isTerminalOfEmpty
 
 /-- If a family `B` of open sets forms a basis of the topology on `X`, and if `F'`
 is a sheaf on `X`, then a homomorphism between a presheaf `F` on `X` and `F'`
@@ -245,6 +245,15 @@ theorem hom_ext (h : Opens.IsBasis (Set.range B))
   apply (restrictHomEquivHom F F' h).symm.injective
   ext i
   exact he i.unop
+
+theorem isIso_iff_isIso_basis {F G : Sheaf C X} (h : Opens.IsBasis (Set.range B))
+    {φ : F ⟶ G} (hi : ∀ i, IsIso (φ.hom.app (op (B i)))) :
+    IsIso φ := by
+  have : (inducedFunctor B).IsCoverDense (Opens.grothendieckTopology X) :=
+    Opens.coverDense_inducedFunctor h
+  refine Functor.IsCoverDense.iso_of_restrict_iso (G := inducedFunctor B) _ ?_
+  rw [NatTrans.isIso_iff_isIso_app]
+  exact fun _ ↦ hi _
 
 end TopCat.Sheaf
 

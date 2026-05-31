@@ -131,10 +131,10 @@ theorem coe_orderMonoidHom (f : α →*₀o β) : ⇑(f : α →*o β) = f :=
   rfl
 
 theorem toOrderMonoidHom_injective : Injective (toOrderMonoidHom : _ → α →*o β) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h using 0
+  ext <| by convert! DFunLike.ext_iff.1 h using 0
 
 theorem toMonoidWithZeroHom_injective : Injective (toMonoidWithZeroHom : _ → α →*₀ β) :=
-  fun f g h => ext <| by convert DFunLike.ext_iff.1 h using 0
+  fun f g h => ext <| by convert! DFunLike.ext_iff.1 h using 0
 
 /-- Copy of an `OrderMonoidWithZeroHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
@@ -265,7 +265,7 @@ end LinearOrderedCommMonoidWithZero
 end OrderMonoidWithZeroHom
 
 /-- Any ordered group is isomorphic to the units of itself adjoined with `0`. -/
-@[simps!]
+@[simps! -isSimp]
 def OrderMonoidIso.unitsWithZero {α : Type*} [Group α] [Preorder α] : (WithZero α)ˣ ≃*o α where
   toMulEquiv := WithZero.unitsWithZeroEquiv
   map_le_map_iff' {a b} := by simp [WithZero.unitsWithZeroEquiv]
