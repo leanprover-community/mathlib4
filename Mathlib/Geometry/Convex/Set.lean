@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 
-import Mathlib.Data.Fintype.Order
+public import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Convex sets

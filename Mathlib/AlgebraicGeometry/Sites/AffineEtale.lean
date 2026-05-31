@@ -5,8 +5,6 @@ Authors: Christian Merten, Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.AB
-public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
 public import Mathlib.AlgebraicGeometry.Sites.Affine
 public import Mathlib.AlgebraicGeometry.Sites.Etale
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf

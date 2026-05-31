@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.List.Defs
 public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
+public import Std.Tactic.BVDecide.Normalize
 
 /-!
 # Lists in product and sigma types

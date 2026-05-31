@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Tactic.TautoSet
 public import Mathlib.Topology.Constructions
-public import Mathlib.Data.Set.Subset
 public import Mathlib.Topology.Separation.Basic
 
 /-!

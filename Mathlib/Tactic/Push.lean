@@ -12,6 +12,7 @@ public import Mathlib.Logic.Basic
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Util.AtLocation
+public import Lean.Elab.ConfigEval
 
 /-!
 # The `push` and `pull` tactics

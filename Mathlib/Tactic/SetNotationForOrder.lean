@@ -8,6 +8,7 @@ module
 public meta import Batteries.Lean.NameMapAttribute
 public meta import Lean.Elab.App
 public meta import Mathlib.Lean.PrettyPrinter.Delaborator
+public import Mathlib.Init
 
 /-!
 # Set notation for order operations

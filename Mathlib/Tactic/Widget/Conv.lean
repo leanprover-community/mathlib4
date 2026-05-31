@@ -8,7 +8,6 @@ module
 public import Mathlib.Lean.Name
 public import Mathlib.Tactic.Widget.SelectPanelUtils
 public import ProofWidgets.Component.OfRpcMethod
-public import Lean.Server.Rpc.RequestHandling
 public import ProofWidgets.Component.Basic
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
 

@@ -13,6 +13,7 @@ public import Mathlib.Data.Set.Basic
 public import Mathlib.Tactic.Common
 
 public import Mathlib.Tactic.Attr.Register
+public import Std.Tactic.BVDecide.Normalize
 
 /-!
 # Monoids of endomorphisms, groups of automorphisms

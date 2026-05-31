@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Filtered
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Limits.Types.Products
+import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # The IPC property

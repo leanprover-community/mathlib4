@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.ULift
 public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Util.Delaborators
+public import Mathlib.Logic.IsEmpty.Basic
 
 /-!
 # Cardinal Numbers

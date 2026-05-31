@@ -6,8 +6,12 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Normed.Operator.Banach
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.Complement
+public import Mathlib.Algebra.Order.Field.Power
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # Complemented subspaces of normed vector spaces

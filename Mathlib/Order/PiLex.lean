@@ -8,6 +8,7 @@ module
 public import Mathlib.Order.Lex
 public import Mathlib.Order.WellFounded
 public import Mathlib.Tactic.Common
+public import Std.Tactic.BVDecide.Normalize
 
 /-!
 # Lexicographic order on Pi types

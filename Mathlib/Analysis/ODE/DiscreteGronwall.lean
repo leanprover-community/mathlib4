@@ -5,7 +5,14 @@ Authors: Dennj Osele
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.Algebra.Order.Algebra
+public import Mathlib.Algebra.Order.BigOperators.Expect
+public import Mathlib.Algebra.Order.Field.Power
+public import Mathlib.Analysis.Complex.Order
+public import Mathlib.Analysis.Complex.Trigonometric
+public import Mathlib.Analysis.Normed.Ring.Basic
+public import Mathlib.Data.EReal.Inv
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Discrete Grönwall inequality

@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Notation.Support
 public import Mathlib.Algebra.Ring.Units
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Logic.Embedding.Basic
+public import Std.Tactic.BVDecide.Normalize
 
 /-!
 # Characteristic zero rings

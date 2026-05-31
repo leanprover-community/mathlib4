@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Order.Hom.Basic
+public import Mathlib.Algebra.NeZero
 
 /-!
 

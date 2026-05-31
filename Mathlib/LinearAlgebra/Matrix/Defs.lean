@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Logic.Nontrivial.Basic
+public import Std.Tactic.BVDecide.Normalize
 
 /-!
 # Matrices

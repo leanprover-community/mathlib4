@@ -5,8 +5,9 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
 module
 
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Order.Filter.AtTopBot.Tendsto
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 
 /-!
 # `Filter.atTop` and `Filter.atBot` in (conditionally) complete lattices

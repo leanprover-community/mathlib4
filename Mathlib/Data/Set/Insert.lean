@@ -8,6 +8,7 @@ module
 public import Aesop
 public import Mathlib.Data.Set.Disjoint
 public import Mathlib.Tactic.Simproc.ExistsAndEq
+meta import Lean.Meta.Tactic.Grind.Attr
 
 /-!
 # Lemmas about insertion, singleton, and pairs

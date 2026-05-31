@@ -8,6 +8,7 @@ module
 
 public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Group.Units.Basic
+public import Std.Tactic.BVDecide.Normalize
 
 /-!
 # Divisibility and units

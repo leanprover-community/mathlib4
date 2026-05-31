@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
-import Mathlib.Tactic.Attr.Register
 
 /-!
 # The category of monoids in a monoidal category.

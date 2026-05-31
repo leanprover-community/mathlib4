@@ -5,7 +5,8 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.NumberTheory.RamificationInertia.Basic
+public import Mathlib.NumberTheory.RamificationInertia.Inertia
+public import Mathlib.NumberTheory.RamificationInertia.Ramification
 
 /-!
 # Primes in an extension of localization at prime

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.List.Defs
 public import Mathlib.Tactic.Common
+public import Std.Tactic.BVDecide.Normalize
 
 /-!
 # Map₂ Lemmas

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.RingTheory.Polynomial.Nilpotent
+public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
 # Nilpotents and units in multivariate polynomial rings

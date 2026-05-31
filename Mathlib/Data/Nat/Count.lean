@@ -5,8 +5,8 @@ Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Kim Morrison, Eric Rodr
 -/
 module
 
-public import Mathlib.Algebra.Group.Nat.Range
 public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # Counting on ℕ

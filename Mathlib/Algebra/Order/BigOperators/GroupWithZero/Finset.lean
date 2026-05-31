@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.NormNum.Inv
+public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # Big operators on a finset in groups with zero involving order

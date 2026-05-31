@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Finset.Order
 public import Mathlib.Data.Set.Finite.Basic  -- shake: keep (IsAtomic α), cf. lean#13417
-public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Order.Atoms
 
 import Mathlib.Data.Finite.Prod

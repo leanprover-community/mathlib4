@@ -8,7 +8,8 @@ module
 public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-public import Mathlib.Order.OmegaCompletePartialOrder
+public import Mathlib.Tactic.Attr.Core
+public import Std.Tactic.BVDecide.Normalize
 
 /-! # Saturation of a submonoid
 

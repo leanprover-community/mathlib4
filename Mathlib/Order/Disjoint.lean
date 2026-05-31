@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Order.BoundedOrder.Lattice
+meta import Lean.Meta.Tactic.Grind.Attr
 
 /-!
 # Disjointness and complements

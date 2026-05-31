@@ -5,9 +5,9 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.NumberTheory.RamificationInertia.Basic
 public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Finsupp
+public import Mathlib.NumberTheory.RamificationInertia.Ramification
 
 /-!
 # Factorization of ideals and fractional ideals of Dedekind domains

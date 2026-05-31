@@ -6,7 +6,6 @@ Authors: Salvatore Mercuri
 module
 
 public import Mathlib.Algebra.Algebra.TransferInstance
-public import Mathlib.Algebra.Field.TransferInstance
 public import Mathlib.Algebra.Order.Hom.Units
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology

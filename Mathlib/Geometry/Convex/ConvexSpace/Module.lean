@@ -6,8 +6,8 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Geometry.Convex.Set
-public import Mathlib.LinearAlgebra.AffineSpace.Combination
-public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # Modules are convex spaces

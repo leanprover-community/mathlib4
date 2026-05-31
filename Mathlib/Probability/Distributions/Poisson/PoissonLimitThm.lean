@@ -10,7 +10,6 @@ public import Mathlib.Probability.ProbabilityMassFunction.Binomial
 
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Analysis.SpecialFunctions.Choose
-import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 
 /-!
 # Poisson limit of binomial probabilities

@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Products.Bifunctor
 public import Mathlib.Data.Countable.Small
+import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # Filtered colimits commute with finite limits.

@@ -6,6 +6,7 @@ Authors: Kenny Lau, Mario Carneiro
 module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.Algebra.Module.Shrink
 
 /-!
 # Tensor products and linear maps

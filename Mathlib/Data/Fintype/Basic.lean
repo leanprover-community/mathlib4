@@ -12,6 +12,7 @@ public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Data.Fintype.OfMap
 public import Mathlib.Data.Fintype.Sets
 public import Mathlib.Data.List.FinRange
+public import Mathlib.Data.List.OfFn
 
 /-!
 # Instances for finite types

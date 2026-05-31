@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Category.Basic
 public import Mathlib.Combinatorics.Quiver.Prefunctor
 public import Mathlib.Tactic.CategoryTheory.CategoryStar
 public meta import Mathlib.Tactic.ToDual
+public import Std.Tactic.BVDecide.Normalize
 
 /-!
 # Functors

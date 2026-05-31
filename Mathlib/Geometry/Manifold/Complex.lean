@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Analysis.Complex.AbsMax
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-public import Mathlib.Geometry.Manifold.MFDeriv.Basic
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 public import Mathlib.Topology.LocallyConstant.Basic
+public import Mathlib.Geometry.Manifold.MFDeriv.Defs
 
 /-! # Holomorphic functions on complex manifolds
 

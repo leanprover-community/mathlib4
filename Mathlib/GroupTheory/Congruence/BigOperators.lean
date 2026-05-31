@@ -12,7 +12,7 @@ public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Data.DFinsupp.BigOperators
 public import Mathlib.GroupTheory.Congruence.Defs
 
-import Mathlib.GroupTheory.Congruence.Basic
+import Mathlib.GroupTheory.Congruence.Hom
 
 /-!
 # Interactions between `∑, ∏` and `(Add)Con`

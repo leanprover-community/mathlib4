@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.ZMod.Basic
-public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.RingTheory.PrincipalIdealDomain
+public import Mathlib.Algebra.EuclideanDomain.Int
 
 /-!
 # Coprimality and vanishing

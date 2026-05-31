@@ -11,6 +11,7 @@ public import Mathlib.Analysis.Normed.Lp.Matrix
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.Util.Superscript
+public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 
 /-!
 # `L²` inner product space structure on finite products of inner product spaces

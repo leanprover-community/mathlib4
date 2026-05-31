@@ -5,7 +5,6 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.GCDMonoid.Finset
 public import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.Data.Matrix.Mul

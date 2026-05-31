@@ -11,6 +11,7 @@ public import Mathlib.Order.Interval.Set.Image
 public import Mathlib.Order.Interval.Set.LinearOrder
 public import Mathlib.Tactic.Common
 public import Mathlib.Order.MinMax
+public import Std.Tactic.BVDecide.Normalize
 
 /-!
 # Intervals without endpoints ordering

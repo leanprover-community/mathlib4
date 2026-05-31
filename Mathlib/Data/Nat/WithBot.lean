@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Cast.WithTop
 public import Mathlib.Order.Nat
+public import Mathlib.Algebra.Ring.Nat
 
 /-!
 # `WithBot ℕ`

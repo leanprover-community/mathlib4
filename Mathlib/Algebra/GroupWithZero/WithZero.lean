@@ -12,6 +12,7 @@ public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Data.Nat.Cast.Defs
 public import Mathlib.Data.Option.Basic
 public import Mathlib.Data.Option.NAry
+public import Std.Tactic.BVDecide.Normalize
 
 /-!
 # Adjoining a zero to a group

@@ -6,6 +6,7 @@ Authors: Chris Wong
 module
 
 public import Mathlib.Data.List.Induction
+public import Std.Tactic.BVDecide.Normalize
 
 /-!
 # Palindromes
