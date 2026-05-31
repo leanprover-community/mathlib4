@@ -2,14 +2,14 @@
 Copyright (c) 2024 Weihong Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Amelia Livingston, Sophie Morel, Jujian Zhang, Weihong Xu,
-  Andrew Yang
+  Andrew Yang, Brian Nugent
 -/
 module
 
-public import Mathlib.Algebra.Module.LocalizedModule.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Localization
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
 public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.Modules.Sheaf
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
 public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.WithAlgebraicStructures
 public import Mathlib.Data.Fintype.Order
@@ -45,7 +45,7 @@ def modulesSpecToSheaf :
     (Spec R).Modules ⥤ TopCat.Sheaf (ModuleCat R) (Spec R) :=
   SheafOfModules.forgetToSheafModuleCat (Spec R).ringCatSheaf (.op ⊤)
     (Limits.initialOpOfTerminal Limits.isTerminalTop) ⋙
-  sheafCompose _ (ModuleCat.restrictScalars (StructureSheaf.globalSectionsIso R).hom.hom)
+  sheafCompose _ (ModuleCat.restrictScalars (Scheme.ΓSpecIso R).inv.hom)
 
 /-- The global section functor for `𝒪_{Spec R}` modules -/
 noncomputable
@@ -82,6 +82,10 @@ def SpecModulesToSheafFullyFaithful : (modulesSpecToSheaf (R := R)).FullyFaithfu
       (f.hom.app _).hom _ _⟩, fun i ↦ by ext x; exact congr($(f.1.naturality i).hom x)⟩
   map_preimage f := rfl
   preimage_map f := rfl
+
+instance : (modulesSpecToSheaf (R := R)).Faithful := SpecModulesToSheafFullyFaithful.faithful
+
+instance : (modulesSpecToSheaf (R := R)).Full := SpecModulesToSheafFullyFaithful.full
 
 /--
 `M^~` as a sheaf of `𝒪_{Spec R}`-modules
@@ -192,6 +196,7 @@ lemma isUnit_algebraMap_end_basicOpen (M : (Spec (.of R)).Modules) (f : R) :
 
 end tilde
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- This is the counit of the tilde-Gamma adjunction. -/
 noncomputable def Scheme.Modules.fromTildeΓ (M : (Spec (.of R)).Modules) :
@@ -238,13 +243,14 @@ lemma Scheme.Modules.toOpen_fromTildeΓ_app (M : (Spec (.of R)).Modules) (U) :
       NatTrans.naturality, ← Category.assoc, this, ← Functor.map_comp, ← op_comp, homOfLE_comp]
     simp
   subst hU
-  simp only [fromTildeΓ, inducedFunctor_obj,
+  simp only [fromTildeΓ,
     homOfLE_leOfHom, Functor.FullyFaithful.map_preimage, TopCat.Sheaf.extend_hom_app]
   ext x
   refine (IsLocalizedModule.lift_apply (.powers (M := R) 1)
     (tilde.toOpen _ (PrimeSpectrum.basicOpen (R := R) 1)).hom
     ((modulesSpecToSheaf.obj M).obj.map (homOfLE le_top).op).hom (by simp) x)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- This is the counit of the tilde-Gamma adjunction. -/
 noncomputable def Scheme.Modules.fromTildeΓNatTrans :
@@ -275,6 +281,7 @@ This is the unit of the tilde-Gamma adjunction. -/
 def tilde.toTildeΓNatIso : 𝟭 _ ≅ tilde.functor R ⋙ moduleSpecΓFunctor :=
   NatIso.ofComponents tilde.isoTop fun f ↦ (tilde.toOpen_map_app f _).symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open Scheme.Modules in
 /-- The tilde-Gamma adjunction. -/
@@ -409,20 +416,99 @@ lemma isIso_fromTildeΓ_of_presentation (M : (Spec R).Modules) (P : M.Presentati
   exact ⟨cokernel g, ⟨PreservesCokernel.iso (tilde.functor R) g ≪≫ iso ≪≫
     IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) P.isColimit⟩⟩
 
-section
+section IsLocalizing
 
-variable (M : (Spec R).Modules)
+variable (M : (Spec R).Modules) (f : R) {S : CommRingCat.{u}} (φ : R ⟶ S)
 
--- in 37189
+open TopologicalSpace
+
 /-- A sheaf `M` of `R-modules` is localizing if for all `f` in `R`, the restriction map
 from `M(⊤)` to `M(D(f))` is localization with respect to `f`. -/
 abbrev IsLocalizing (M : TopCat.Sheaf (ModuleCat R) (Spec R)) : Prop :=
   ∀ f : R, IsLocalizedModule (.powers f) (M.obj.map (basicOpen f).leTop.op).hom
 
--- in 37189
-lemma isIso_fromTildeΓ_iff_isLocalizing {M : (Spec R).Modules} :
+theorem isLocalizing_of_iso {M N : TopCat.Sheaf (ModuleCat R) (Spec R)} (φ : M ≅ N)
+    (hM : IsLocalizing M) :
+    IsLocalizing N := by
+  intro f
+  rw [← IsLocalizedModule.comp_iff_of_bijective_left _ _ <|
+    ConcreteCategory.bijective_of_isIso (φ.inv.hom.app (op (basicOpen f))), ← ModuleCat.hom_comp,
+    φ.inv.hom.naturality (basicOpen f).leTop.op, ModuleCat.hom_comp,
+    IsLocalizedModule.comp_iff_of_bijective_right _ _ <| ConcreteCategory.bijective_of_isIso _]
+  exact hM f
+
+theorem isLocalizing_iff_of_iso {M N : TopCat.Sheaf (ModuleCat R) (Spec R)} (φ : M ≅ N) :
+    IsLocalizing M ↔ IsLocalizing N :=
+  ⟨fun h => isLocalizing_of_iso φ h, fun h => isLocalizing_of_iso φ.symm h⟩
+
+theorem isLocalizing_of_isIso_app_top {M N : TopCat.Sheaf (ModuleCat.{u} R) (Spec R)} {φ : M ⟶ N}
+    (h : IsIso (φ.hom.app (op ⊤))) (hM : IsLocalizing M) (hN : IsLocalizing N) :
+    IsIso φ := by
+  refine TopCat.Sheaf.isIso_iff_isIso_basis (φ := φ) isBasis_basic_opens (fun f => ?_)
+  refine ModuleCat.isIso_of_isLocalizedModule_comp (hM f) ?_
+  rw [φ.hom.naturality]
+  exact IsLocalizedModule.of_linearEquiv_right _ _ (asIso (φ.hom.app (op ⊤))).toLinearEquiv
+
+theorem isLocalizing_tilde (M : ModuleCat R) :
+    IsLocalizing (modulesSpecToSheaf.obj (tilde M)) := by
+  intro f
+  -- We can't rewrite with `tilde.toOpen_res` below, because of def-eq abuse between
+  -- `Spec R` and `PrimeSpectrum R`.
+  have heq : tilde.toOpen M ⊤ ≫ (modulesSpecToSheaf.obj (tilde M)).obj.map (basicOpen f).leTop.op =
+      tilde.toOpen M (basicOpen f) :=
+    tilde.toOpen_res _ _ _ _
+  rw [← IsLocalizedModule.comp_iff_of_bijective_right _ _ <|
+    ConcreteCategory.bijective_of_isIso (tilde.toOpen M ⊤), ← ModuleCat.hom_comp, heq]
+  infer_instance
+
+/-- An `𝓞_Spec R` module `M` is isomorphic to `Γ(M)^~` if and only if it is localizing
+as a sheaf of `R` modules -/
+theorem isIso_fromTildeΓ_iff_isLocalizing (M : (Spec R).Modules) :
     IsIso M.fromTildeΓ ↔ IsLocalizing (modulesSpecToSheaf.obj M) := by
-  sorry
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [← isLocalizing_iff_of_iso (modulesSpecToSheaf.mapIso (asIso M.fromTildeΓ))]
+    exact isLocalizing_tilde _
+  · rw [← isIso_iff_of_reflects_iso _ modulesSpecToSheaf]
+    refine isLocalizing_of_isIso_app_top ?_ (isLocalizing_tilde _) h
+    rw [← isIso_comp_left_iff (tilde.toOpen ((modulesSpecToSheaf.obj M).presheaf.obj (op ⊤)) ⊤),
+      Scheme.Modules.toOpen_fromTildeΓ_app]
+    simpa using IsIso.id _
+
+/-- `Scheme.Modules.pushforward` and `modulesSpecToSheaf` commute -/
+def pushforwardCompModulesSpecToSheafIso :
+    Scheme.Modules.pushforward (Spec.map φ) ⋙ modulesSpecToSheaf ≅
+      modulesSpecToSheaf ⋙ TopCat.Sheaf.pushforward (ModuleCat S) (Spec.map φ).base ⋙
+      sheafCompose _ (ModuleCat.restrictScalars φ.hom) :=
+  (Functor.associator _ _ _).symm ≪≫
+    Functor.isoWhiskerRight (SheafOfModules.pushforwardCompForgetToSheafModuleCat _ _ _
+    (initialOpOfTerminal isTerminalTop)) _ ≪≫ Functor.associator _ _ _ ≪≫
+    (Functor.isoWhiskerLeft _ (Functor.associator _ _ _)) ≪≫
+    Functor.isoWhiskerLeft _ (Scheme.Modules.sheafComposePushforwardComp φ) ≪≫
+    (Functor.associator _ _ _).symm
+
+open scoped ModuleCat.Algebra in
+theorem isLocalizing_pushforward_of_isLocalizing {M : (Spec S).Modules}
+    (h : IsLocalizing (modulesSpecToSheaf.obj M)) :
+    IsLocalizing (modulesSpecToSheaf.obj ((Scheme.Modules.pushforward (Spec.map φ)).obj M)) := by
+  rw [← Functor.comp_obj,
+  isLocalizing_iff_of_iso ((pushforwardCompModulesSpecToSheafIso φ).app M)]
+  have : CommRing ((Spec S).ringCatSheaf.obj.obj ((Opens.map (Spec.map φ).base).op.obj (op ⊤))) :=
+    inferInstanceAs (CommRing Γ(Spec S, ⊤))
+  algebraize [φ.hom]
+  exact fun f => IsLocalizedModule.restrictScalars_powers f _ (h := h (φ f))
+
+/- TODO: Once `IsIso M.fromTildeΓ` is shown to be equivalent to `M` being quasicoherent, use
+this to show that quasicoherent sheaves pushforward to quasicoherent sheaves for affine morphisms -/
+theorem isIso_fromTildeΓ_pushforward (M : (Spec S).Modules) [h : IsIso M.fromTildeΓ] :
+    IsIso ((Scheme.Modules.pushforward (Spec.map φ)).obj M).fromTildeΓ := by
+  simp_all only [isIso_fromTildeΓ_iff_isLocalizing]
+  exact isLocalizing_pushforward_of_isLocalizing φ h
+
+end IsLocalizing
+
+section
+
+variable (M : (Spec R).Modules)
 
 lemma _root_.IsLocalizedModule.Away.mk {R : Type*} [CommRing R]
     {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
@@ -654,6 +740,7 @@ lemma Aux.of_span_eq_top {M : (Spec R).Modules} (V : (Spec R).Opens)
     rw [← M.presheaf.map_comp_apply, ← op_comp, eqToHom_comp_homOfLE]
     exact hK i j
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma Aux.of_le_iSup {M : (Spec R).Modules} (V : (Spec R).Opens) (hV : IsCompact (V : Set (Spec R)))
     {ι : Type*} (W : ι → (Spec R).Opens) (hle : V ≤ ⨆ i, W i)
@@ -683,20 +770,15 @@ lemma Aux.of_le_iSup {M : (Spec R).Modules} (V : (Spec R).Opens) (hV : IsCompact
   refine .of_span_eq_top _ (fun i : t ↦ g _ i.1.2) ?_ ?_
   · refine le_antisymm ?_ ?_
     · refine subset_trans ht ?_
-      dsimp
       simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_mk]
       simp only [Set.iUnion_subset_iff]
       intro i hi
       apply Set.subset_iUnion_of_subset ⟨i, hi⟩
       rfl
-    · rw [this]
-      rw [← SetLike.coe_subset_coe]
-      -- rw [SetLike.le_iff]
-      dsimp
-      simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_mk]
-      simp only [Set.iUnion_subset_iff]
+    · rw [this, ← SetLike.coe_subset_coe]
+      simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_mk, Set.iUnion_subset_iff]
       intro i
-      apply Set.subset_iUnion_of_subset i.1 (by rfl)
+      exact Set.subset_iUnion_of_subset i.1 (by rfl)
   · intro i
     apply hg
 
@@ -771,7 +853,7 @@ lemma Scheme.Modules.restrictIso_smul' {R S : CommRingCat.{u}} (f : R ⟶ S)
     (f ≫ (ΓSpecIso S).inv ≫ (Spec S).presheaf.map U.leTop.op ≫ ((Spec.map f).appIso U).inv) r • x =
       ((ΓSpecIso R).inv ≫ (Spec R).presheaf.map (Opens.leTop (Spec.map f ''ᵁ U)).op) r • x
   congr 3
-  simp only [Hom.appIso_inv_naturality, Functor.op_obj, Functor.op_map, Quiver.Hom.unop_op,
+  simp only [Hom.appIso_inv_naturality, Functor.op_map, Quiver.Hom.unop_op,
     ΓSpecIso_inv_naturality_assoc, Iso.cancel_iso_inv_left, Hom.appTop, Hom.app_eq_appLE,
     Opens.map_top, Hom.appLE_appIso_inv_assoc, homOfLE_leOfHom]
   rfl
@@ -914,6 +996,7 @@ lemma _root_.ModuleCat.isoMk_hom {R : Type*} [Ring R] {M N : ModuleCat R}
     (ModuleCat.isoMk φ hφ).hom = ModuleCat.homMk φ.hom hφ :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 def Scheme.Modules.restrictUnitIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
     Scheme.Modules.restrict (.unit <| Y.ringCatSheaf) f ≅ (.unit <| X.ringCatSheaf) := by
@@ -934,9 +1017,6 @@ def Scheme.Modules.restrictUnitIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmer
     ext
     change (Y.presheaf.map _ ≫ (f.appIso _).hom) _ = ((f.appIso U.unop).hom ≫ X.presheaf.map g) _
     simp [Hom.appIso_hom']
-
---instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
---    (Scheme.Modules.restrictFunctor f).IsLeftAdjoint := inferInstance
 
 def Scheme.Modules.overEquiv {X : Scheme.{u}} (U : X.Opens) :
     SheafOfModules (X.ringCatSheaf.over U) ≌ (U : Scheme.{u}).Modules :=
@@ -997,6 +1077,7 @@ lemma _root_.PresheafOfModules.forget₂_map_pushforward_map_val_app {C : Type*}
       (forget₂ _ Ab).map (g.app _) :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 def _root_.SheafOfModules.pushforwardCongr₂ {C : Type*} [Category* C] {D : Type*}
     [Category* D] {J : GrothendieckTopology C} {K : GrothendieckTopology D}
@@ -1010,8 +1091,7 @@ def _root_.SheafOfModules.pushforwardCongr₂ {C : Type*} [Category* C] {D : Typ
     SheafOfModules.pushforward φ ≅ SheafOfModules.pushforward ψ := by
   refine NatIso.ofComponents (fun X ↦ (SheafOfModules.fullyFaithfulForget _).preimageIso
     (PresheafOfModules.isoMk (fun U ↦ ?_) ?_)) ?_
-  · dsimp
-    refine ModuleCat.isoMk (X.val.presheaf.mapIso (e.symm.app _).op) ?_
+  · refine ModuleCat.isoMk (X.val.presheaf.mapIso (e.symm.app _).op) ?_
     intro r
     subst he
     -- TODO: add some API for pushforward smul
@@ -1048,6 +1128,7 @@ lemma Scheme.Hom.appIso_homOfLE_inv {X : Scheme.{u}} {U V : X.Opens} (h : U ≤ 
   rw [← X.presheaf.map_comp, ← X.presheaf.map_comp]
   apply X.presheaf.map_id
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 def Scheme.Modules.overMapCompOverEquiv {X : Scheme.{u}} {U V : X.Opens} (f : V ⟶ U) :
     SheafOfModules.overMap X.ringCatSheaf f ⋙
@@ -1122,6 +1203,7 @@ def Scheme.Modules.overFunctorEquiv {X : Scheme.{u}} (U : X.Opens) :
   simp only [CategoryTheory.Functor.map_id, op_unop, Opens.ι_appIso, Iso.refl_inv]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `M` is a quasi-coherent `𝒪_{Spec R}` module, it is isomorphic to `Γ(M)^~`. -/
 instance isIso_fromTildeΓ_of_isQuasicoherent [M.IsQuasicoherent] : IsIso M.fromTildeΓ := by
@@ -1134,7 +1216,6 @@ instance isIso_fromTildeΓ_of_isQuasicoherent [M.IsQuasicoherent] : IsIso M.from
     rw [top_le_iff, iSup_sigma, ← cov]
     exact iSup_congr fun i ↦ (ha i).symm
   · intro i
-    dsimp
     let ψ := Spec.map (CommRingCat.ofHom
       (algebraMap (↑R) (Localization.Away (a i.fst i.snd))))
     let V : (Spec R).Opens := basicOpen <| a i.1 i.2
@@ -1180,6 +1261,7 @@ theorem isQuasicoherent_iff_isIso_fromTildeΓ :
   exact (SheafOfModules.isQuasicoherent (Spec R).ringCatSheaf).prop_of_iso
     (asIso <| M.fromTildeΓ) inferInstance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma essImage_tilde : (tilde.functor R).essImage =
     SheafOfModules.isQuasicoherent (Spec R).ringCatSheaf := by

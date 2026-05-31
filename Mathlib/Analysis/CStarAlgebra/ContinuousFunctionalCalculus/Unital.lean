@@ -572,7 +572,7 @@ section Polynomial
 open Polynomial
 
 lemma cfc_eval_X (ha : p a := by cfc_tac) : cfc (X : R[X]).eval a = a := by
-  simpa using cfc_id R a
+  simpa using! cfc_id R a
 
 lemma cfc_eval_C (r : R) (a : A) (ha : p a := by cfc_tac) :
     cfc (C r).eval a = algebraMap R A r := by
@@ -827,7 +827,7 @@ lemma cfcUnits_zpow (hf' : ∀ x ∈ spectrum R a, f x ≠ 0) (n : ℤ)
       cfcUnits (f ^ n) a (forall₂_imp (fun _ _ ↦ zpow_ne_zero n) hf')
         (hf.zpow₀ n (forall₂_imp (fun _ _ ↦ Or.inl) hf')) := by
   cases n with
-  | ofNat _ => simpa using cfcUnits_pow f a hf' _
+  | ofNat _ => simpa using! cfcUnits_pow f a hf' _
   | negSucc n =>
     simp only [zpow_negSucc, ← inv_pow]
     ext

@@ -24,6 +24,7 @@ namespace TopologicalSpace.Opens
 
 variable {X : TopCat.{u}} (U : Opens X) (R : X.Sheaf RingCat.{v})
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Sheaves of modules over `R.over U` are equivalent to sheaves of modules over `R |_ U`. -/
 def sheafOfModulesEquivOver :
@@ -31,14 +32,9 @@ def sheafOfModulesEquivOver :
   refine SheafOfModules.pushforwardPushforwardEquivalence (eqv := U.overEquivalence.symm)
     (U.overPullbackSheafEquivOver.app _).inv (U.sheafRestrictSheafEquivOver.app _).inv rfl ?_
   ext : 2
-  dsimp [sheafRestrictSheafEquivOver, Iso.isoCompInverse]
-  simp only [Category.id_comp, Category.assoc]
-  -- erw [NatTrans.naturality]
-  --rw [← NatTrans.naturality]
-  simp
-  --rw [← R.obj.map_comp_assoc]
-  -- simp [← NatTrans.comp_app, ← Sheaf.comp_val]
-  sorry
+  dsimp [overPullbackSheafEquivOver, sheafRestrictSheafEquivOver]
+  simp [eqToHom_map]
+  rfl
 
 /-- `sheafOfModulesEquivOver` takes `R.over U` to `R |_ U`. -/
 def sheafOfModulesEquivOverUnit (R : X.Sheaf RingCat.{u}) :

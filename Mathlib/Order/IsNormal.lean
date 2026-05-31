@@ -114,7 +114,7 @@ theorem to_Iio (hf : IsNormal f) (a : α) :
     IsNormal (β := Iio (f a)) fun x : Iio a ↦ ⟨f x.1, hf.strictMono x.2⟩ := by
   rw [isNormal_iff]
   refine ⟨fun x y h ↦ hf.strictMono h, fun b hb c hc ↦ hf.2 (hb.subtypeVal (isLowerSet_Iio _)) ?_⟩
-  simpa [upperBounds] using fun d hd ↦ hc ⟨d, hd.trans b.2⟩ hd
+  simpa [upperBounds] using! fun d hd ↦ hc ⟨d, hd.trans b.2⟩ hd
 
 end LinearOrder
 
