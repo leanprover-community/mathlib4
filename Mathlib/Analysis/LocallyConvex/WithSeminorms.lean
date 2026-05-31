@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.Seminorm
-public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Topology.Algebra.Equicontinuity
 public import Mathlib.Topology.MetricSpace.Equicontinuity
 public import Mathlib.Topology.Algebra.FilterBasis
@@ -330,7 +330,7 @@ theorem WithSeminorms.hasBasis_ball (hp : WithSeminorms p) {x : E} :
     (fun sr : Finset ι × ℝ => 0 < sr.2) fun sr => (sr.1.sup p).ball x sr.2 := by
   have : IsTopologicalAddGroup E := hp.topologicalAddGroup
   rw [← map_add_left_nhds_zero]
-  convert hp.hasBasis_zero_ball.map (x + ·) using 1
+  convert! hp.hasBasis_zero_ball.map (x + ·) using 1
   ext sr : 1
   -- Porting note: extra type ascriptions needed on `0`
   have : (sr.fst.sup p).ball (x +ᵥ (0 : E)) sr.snd = x +ᵥ (sr.fst.sup p).ball 0 sr.snd :=
@@ -545,7 +545,7 @@ theorem WithSeminorms.isVonNBounded_iff_seminorm_bounded {s : Set E} (hp : WithS
   rw [hp.isVonNBounded_iff_finset_seminorm_bounded]
   constructor
   · intro hI i
-    convert hI {i}
+    convert! hI { i }
     rw [Finset.sup_singleton]
   intro hi I
   by_cases! hI : I.Nonempty
@@ -654,7 +654,7 @@ theorem continuous_of_continuous_comp {q : SeminormFamily 𝕝₂ F ι'} [Topolo
   simp_rw [ContinuousAt, f.map_zero, q.withSeminorms_iff_nhds_eq_iInf.mp hq, Filter.tendsto_iInf,
     Filter.tendsto_comap_iff]
   intro i
-  convert (hf i).continuousAt.tendsto
+  convert! (hf i).continuousAt.tendsto
   exact (map_zero _).symm
 
 @[deprecated (since := "2026-03-09")]
@@ -744,19 +744,19 @@ protected theorem equicontinuous_TFAE {κ : Type*}
     have : ∀ᶠ x in 𝓝 0, ∀ k, q i (f k x) ≤ 1 := by
       filter_upwards [Metric.equicontinuousAt_iff_right.mp (H.equicontinuous 0) 1 one_pos]
         with x hx k
-      simpa using (hx k).le
+      simpa using! (hx k).le
     have bdd : BddAbove (range fun k ↦ (q i).comp (f k)) :=
       Seminorm.bddAbove_of_absorbent (absorbent_nhds_zero this)
         (fun x hx ↦ ⟨1, forall_mem_range.mpr hx⟩)
     rw [← Seminorm.coe_iSup_eq bdd]
     refine ⟨bdd, Seminorm.continuous' (r := 1) ?_⟩
     filter_upwards [this] with x hx
-    simpa only [closedBall_iSup bdd _ one_pos, mem_iInter, mem_closedBall_zero] using hx
+    simpa only [closedBall_iSup bdd _ one_pos, mem_iInter, mem_closedBall_zero] using! hx
   tfae_have 5 → 4 := fun H ↦ ⟨⨆ k, (q i).comp (f k), Seminorm.coe_iSup_eq H.1 ▸ H.2, le_ciSup H.1⟩
   tfae_have 4 → 1 -- This would work over any `NormedField`
   | ⟨p, hp, hfp⟩ =>
     Metric.equicontinuousAt_of_continuity_modulus p (map_zero p ▸ hp.tendsto 0) _ <|
-      Eventually.of_forall fun x k ↦ by simpa using hfp k x
+      Eventually.of_forall fun x k ↦ by simpa using! hfp k x
   tfae_finish
 
 theorem uniformEquicontinuous_iff_exists_continuous_seminorm {κ : Type*}
@@ -854,8 +854,6 @@ lemma map_eq_zero_of_norm_eq_zero (q : Seminorm 𝕜 F)
     (hq : Continuous q) {x : F} (hx : ‖x‖ = 0) : q x = 0 :=
   (map_zero q) ▸
     ((specializes_iff_mem_closure.mpr <| mem_closure_zero_iff_norm.mpr hx).map hq).eq.symm
-
-@[deprecated (since := "2025-11-15")] alias map_eq_zero_of_norm_zero := map_eq_zero_of_norm_eq_zero
 
 /-- Let `F` be a semi-`NormedSpace` over a `NontriviallyNormedField`, and let `q` be a
 seminorm on `F`. If `q` is continuous, then it is uniformly controlled by the norm, that is there

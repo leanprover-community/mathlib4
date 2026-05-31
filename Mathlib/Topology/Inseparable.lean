@@ -93,6 +93,13 @@ theorem ker_nhds_eq_specializes : (𝓝 x).ker = {y | y ⤳ x} := by
 theorem specializes_iff_forall_open : x ⤳ y ↔ ∀ s : Set X, IsOpen s → y ∈ s → x ∈ s :=
   (specializes_TFAE x y).out 0 2
 
+omit [TopologicalSpace X] in
+theorem Tendsto.specializes {l : Filter X} {y : Y} (h : Tendsto g l (𝓝 y)) (hl : ∀ x, f x ⤳ g x) :
+    Tendsto f l (𝓝 y) := by
+  simp_all only [specializes_iff_forall_open, tendsto_nhds]
+  refine fun s ho hy => mem_of_superset (h s ho hy) fun x hx => ?_
+  exact mem_preimage.2 (hl x s ho (mem_preimage.1 hx))
+
 theorem Specializes.mem_open (h : x ⤳ y) (hs : IsOpen s) (hy : y ∈ s) : x ∈ s :=
   specializes_iff_forall_open.1 h s hs hy
 
@@ -366,7 +373,7 @@ alias StableUnderSpecialization.image := SpecializingMap.stableUnderSpecializati
 
 lemma specializingMap_iff_stableUnderSpecialization_image_singleton :
     SpecializingMap f ↔ ∀ x, StableUnderSpecialization (f '' closure {x}) := by
-  simpa only [closure_singleton_eq_Iic] using Relation.fibration_iff_isLowerSet_image_Iic
+  simpa only [closure_singleton_eq_Iic] using! Relation.fibration_iff_isLowerSet_image_Iic
 
 lemma specializingMap_iff_stableUnderSpecialization_image :
     SpecializingMap f ↔ ∀ s, StableUnderSpecialization s → StableUnderSpecialization (f '' s) :=
@@ -374,7 +381,7 @@ lemma specializingMap_iff_stableUnderSpecialization_image :
 
 lemma specializingMap_iff_closure_singleton (hf : Continuous f) :
     SpecializingMap f ↔ ∀ x, f '' closure {x} = closure {f x} := by
-  simpa only [closure_singleton_eq_Iic] using
+  simpa only [closure_singleton_eq_Iic] using!
     Relation.fibration_iff_image_Iic hf.specialization_monotone
 
 lemma specializingMap_iff_isClosed_image_closure_singleton (hf : Continuous f) :
@@ -483,7 +490,7 @@ theorem subtype_inseparable_iff {p : X → Prop} (x y : Subtype p) : (x ~ᵢ y) 
 
 @[simp] theorem inseparable_prod {x₁ x₂ : X} {y₁ y₂ : Y} :
     ((x₁, y₁) ~ᵢ (x₂, y₂)) ↔ (x₁ ~ᵢ x₂) ∧ (y₁ ~ᵢ y₂) := by
-  simp only [Inseparable, nhds_prod_eq, prod_inj]
+  simp only [Inseparable, nhds_prod_eq, Filter.prod_inj]
 
 theorem Inseparable.prod {x₁ x₂ : X} {y₁ y₂ : Y} (hx : x₁ ~ᵢ x₂) (hy : y₁ ~ᵢ y₂) :
     (x₁, y₁) ~ᵢ (x₂, y₂) :=
@@ -606,6 +613,10 @@ theorem subsingleton_iff [TopologicalSpace α] :
 instance [TopologicalSpace α] [IndiscreteTopology α] : Subsingleton (SeparationQuotient α) :=
   subsingleton_iff.2 ‹_›
 
+instance [TopologicalSpace α] [IndiscreteTopology α] {p : α → Prop} :
+    IndiscreteTopology (Subtype p) := by
+  simp [TopologicalSpace.indiscrete_iff_forall_inseparable, subtype_inseparable_iff]
+
 theorem nontrivial_iff [TopologicalSpace α] :
     Nontrivial (SeparationQuotient α) ↔ NontrivialTopology α := by
   simpa [not_subsingleton_iff_nontrivial] using subsingleton_iff.not
@@ -725,9 +736,12 @@ theorem continuousOn_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} {s : Set (Sep
   simp only [ContinuousOn, surjective_mk.forall, continuousWithinAt_lift, mem_preimage]
 
 @[simp]
-theorem continuous_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
+theorem continuous_lift_iff {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
     Continuous (lift f hf) ↔ Continuous f := by
   simp only [← continuousOn_univ, continuousOn_lift, preimage_univ]
+
+alias ⟨_, continuous_lift⟩ := continuous_lift_iff
+attribute [fun_prop] continuous_lift
 
 /-- Lift a map `f : X → Y → α` such that `Inseparable a b → Inseparable c d → f a c = f b d` to a
 map `SeparationQuotient X → SeparationQuotient Y → α`. -/

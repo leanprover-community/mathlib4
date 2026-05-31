@@ -140,7 +140,7 @@ theorem rename_C (r : R) : rename f (C r : MvPowerSeries σ R) = C r := rename_m
 
 @[simp]
 theorem rename_X (i : σ) : rename f (X i : MvPowerSeries σ R) = X (f i) := by
-  simpa using rename_monomial f (single i 1) 1
+  simpa using! rename_monomial f (single i 1) 1
 
 @[simp]
 theorem rename_rename [TendstoCofinite g] (p : MvPowerSeries σ R) :
@@ -240,11 +240,11 @@ and sends the variables in the complement of the range of `e` to `0`. -/
 @[no_expose]
 def killCompl (e : σ ↪ τ) : MvPowerSeries τ R →ₐ[R] MvPowerSeries σ R where
   toFun := killComplFun e
-  map_one' := by simpa using killComplFun_monomial_embDomain 0 1
+  map_one' := by simpa using! killComplFun_monomial_embDomain 0 1
   map_mul' := killComplFun_mul
   map_zero' := by ext; simp [coeff_killComplFun]
   map_add' _ _ := by ext; simp [coeff_killComplFun]
-  commutes' := by simpa using killComplFun_monomial_embDomain 0
+  commutes' := by simpa using! killComplFun_monomial_embDomain 0
 
 lemma coeff_killCompl (p : MvPowerSeries τ R) (x : σ →₀ ℕ) :
     coeff x (killCompl e p) = coeff (embDomain e x) p := by rfl
@@ -269,9 +269,9 @@ theorem killCompl_X (i : σ) : killCompl (R := R) e (X (e i)) = X i := by
 theorem killCompl_X_eq_zero {t : τ} (h : t ∉ Set.range e) :
     killCompl (R := R) e (X t) = 0 := by
   replace h : single t 1 ∉ Set.range (embDomain e) := by
-    rwa [mem_range_embDomain_iff, support_single_ne_zero _ (by simp), Finset.coe_singleton,
+    rwa [mem_range_embDomain_iff, support_single _ (by simp), Finset.coe_singleton,
       Set.singleton_subset_iff]
-  simpa using killCompl_monomial_eq_zero (1 : R) h
+  simpa using! killCompl_monomial_eq_zero (1 : R) h
 
 theorem killCompl_comp_rename : (killCompl e).comp (rename e) = AlgHom.id R _ := by
   ext; simp [coeff_killCompl]
