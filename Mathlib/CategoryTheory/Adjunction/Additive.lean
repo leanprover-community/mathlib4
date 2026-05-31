@@ -38,11 +38,13 @@ include adj
 lemma right_adjoint_additive [F.Additive] : G.Additive where
   map_add {X Y} f g := (adj.homEquiv _ _).symm.injective (by simp [homEquiv_counit])
 
+set_option backward.defeqAttrib.useBackward true in
 lemma left_adjoint_additive [G.Additive] : F.Additive where
   map_add {X Y} f g := (adj.homEquiv _ _).injective (by simp [homEquiv_unit])
 
 variable [F.Additive]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If we have an adjunction `adj : F ⊣ G` of functors between preadditive categories,
 and if `F` is additive, then the hom set equivalence upgrades to an `AddEquiv`.
 Note that `F` is additive if and only if `G` is, by `Adjunction.right_adjoint_additive` and

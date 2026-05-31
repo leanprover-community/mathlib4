@@ -97,10 +97,10 @@ lemma tendstoInMeasure_iff_dist [PseudoMetricSpace E] {f : ι → α → E} {l :
     TendstoInMeasure μ f l g
       ↔ ∀ ε, 0 < ε → Tendsto (fun i => μ { x | ε ≤ dist (f i x) (g x) }) l (𝓝 0) := by
   refine ⟨fun h ε hε ↦ ?_, fun h ↦ ?_⟩
-  · convert h (ENNReal.ofReal ε) (ENNReal.ofReal_pos.mpr hε) with i a
+  · convert! h (ENNReal.ofReal ε) (ENNReal.ofReal_pos.mpr hε) with i a
     rw [edist_dist, ENNReal.ofReal_le_ofReal_iff (by positivity)]
   · refine tendstoInMeasure_of_ne_top fun ε hε hε_top ↦ ?_
-    convert h ε.toReal (ENNReal.toReal_pos hε.ne' hε_top) with i a
+    convert! h ε.toReal (ENNReal.toReal_pos hε.ne' hε_top) with i a
     rw [edist_dist, ENNReal.le_ofReal_iff_toReal_le hε_top (by positivity)]
 
 /-- `TendstoInMeasure` expressed with the real-valued measure of a set defined with a distance.
@@ -335,7 +335,7 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae' {u : Filter ι} [NeBot u] [IsCou
   exact ⟨ms ∘ ns, hms1.comp hns1.tendsto_atTop, hns2⟩
 
 /-- `TendstoInMeasure` is equivalent to every subsequence having another subsequence
- which converges almost surely. -/
+which converges almost surely. -/
 theorem exists_seq_tendstoInMeasure_atTop_iff [IsFiniteMeasure μ]
     {f : ℕ → α → E} (hf : ∀ (n : ℕ), AEStronglyMeasurable (f n) μ) {g : α → E} :
     TendstoInMeasure μ f atTop g ↔
@@ -421,8 +421,9 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable [SeminormedAdd
   refine (hfg δ hδ).mono fun n hn => ?_
   refine le_trans ?_ hn
   rw [one_div, ← ENNReal.inv_mul_le_iff, inv_inv]
-  · convert mul_meas_ge_le_pow_eLpNorm' μ hp_ne_zero hp_ne_top
-      ((hf n).sub hg).aestronglyMeasurable ε using 6
+  · convert!
+      mul_meas_ge_le_pow_eLpNorm' μ hp_ne_zero hp_ne_top ((hf n).sub hg).aestronglyMeasurable ε
+      using 6
     simp [edist_eq_enorm_sub]
   · simp [hε_top]
   · simp [hε.ne']

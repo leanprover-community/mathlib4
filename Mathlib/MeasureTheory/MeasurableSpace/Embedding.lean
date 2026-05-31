@@ -107,7 +107,7 @@ theorem measurable_extend (hf : MeasurableEmbedding f) {g : α → γ} {g' : β 
     (hg' : Measurable g') : Measurable (extend f g g') := by
   refine measurable_of_restrict_of_restrict_compl hf.measurableSet_range ?_ ?_
   · rw [restrict_extend_range]
-    simpa only [rangeSplitting] using hg.comp hf.measurable_rangeSplitting
+    simpa only [rangeSplitting] using! hg.comp hf.measurable_rangeSplitting
   · rw [restrict_extend_compl_range]
     exact hg'.comp measurable_subtype_coe
 
@@ -142,15 +142,16 @@ variable {α₁ α₂ α₃ : Type*} {mα : MeasurableSpace α} {mβ : Measurabl
 lemma MeasurableSet.of_union_range_cover (hi₁ : MeasurableEmbedding i₁)
     (hi₂ : MeasurableEmbedding i₂) (h : univ ⊆ range i₁ ∪ range i₂)
     (hs₁ : MeasurableSet (i₁ ⁻¹' s)) (hs₂ : MeasurableSet (i₂ ⁻¹' s)) : MeasurableSet s := by
-  convert (hi₁.measurableSet_image' hs₁).union (hi₂.measurableSet_image' hs₂)
+  convert! (hi₁.measurableSet_image' hs₁).union (hi₂.measurableSet_image' hs₂)
   simp [image_preimage_eq_range_inter, ← union_inter_distrib_right, univ_subset_iff.1 h]
 
 lemma MeasurableSet.of_union₃_range_cover (hi₁ : MeasurableEmbedding i₁)
     (hi₂ : MeasurableEmbedding i₂) (hi₃ : MeasurableEmbedding i₃)
     (h : univ ⊆ range i₁ ∪ range i₂ ∪ range i₃) (hs₁ : MeasurableSet (i₁ ⁻¹' s))
     (hs₂ : MeasurableSet (i₂ ⁻¹' s)) (hs₃ : MeasurableSet (i₃ ⁻¹' s)) : MeasurableSet s := by
-  convert (hi₁.measurableSet_image' hs₁).union (hi₂.measurableSet_image' hs₂) |>.union
-    (hi₃.measurableSet_image' hs₃)
+  convert!
+    (hi₁.measurableSet_image' hs₁).union (hi₂.measurableSet_image' hs₂) |>.union
+      (hi₃.measurableSet_image' hs₃)
   simp [image_preimage_eq_range_inter, ← union_inter_distrib_right, univ_subset_iff.1 h]
 
 lemma Measurable.of_union_range_cover (hi₁ : MeasurableEmbedding i₁)
@@ -375,6 +376,7 @@ def prodCongr (ab : α ≃ᵐ β) (cd : γ ≃ᵐ δ) : α × γ ≃ᵐ β × δ
 def prodComm : α × β ≃ᵐ β × α where
   toEquiv := .prodComm α β
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Products of measurable spaces are associative. -/
 def prodAssoc : (α × β) × γ ≃ᵐ α × β × γ where
   toEquiv := .prodAssoc α β γ
@@ -563,7 +565,7 @@ def piFinSuccAbove {n : ℕ} (α : Fin (n + 1) → Type*) [∀ i, MeasurableSpac
   measurable_toFun := (measurable_pi_apply i).prodMk <| measurable_pi_iff.2 fun _ =>
     measurable_pi_apply _
   measurable_invFun := measurable_pi_iff.2 <| i.forall_iff_succAbove.2
-    ⟨by simp [measurable_fst], fun j => by simpa using (measurable_pi_apply _).comp measurable_snd⟩
+    ⟨by simp [measurable_fst], fun j => by simpa using! (measurable_pi_apply _).comp measurable_snd⟩
 
 variable (π)
 
@@ -574,6 +576,7 @@ def piEquivPiSubtypeProd (p : δ' → Prop) [DecidablePred p] :
     (∀ i, π i) ≃ᵐ (∀ i : Subtype p, π i) × ∀ i : { i // ¬p i }, π i where
   toEquiv := .piEquivPiSubtypeProd p π
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The measurable equivalence between the pi type over a sum type and a product of pi-types.
 This is similar to `MeasurableEquiv.piEquivPiSubtypeProd`. -/
 def sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
