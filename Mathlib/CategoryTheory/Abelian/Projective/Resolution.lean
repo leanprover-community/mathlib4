@@ -300,9 +300,8 @@ lemma ofComplex_d_1_0 :
 lemma ofComplex_exactAt_succ (n : ℕ) :
     (ofComplex Z).ExactAt (n + 1) := by
   rw [HomologicalComplex.exactAt_iff' _ (n + 1 + 1) (n + 1) n (by simp) (by simp)]
-  dsimp [ofComplex, HomologicalComplex.sc', HomologicalComplex.shortComplexFunctor',
-      ChainComplex.mk', ChainComplex.mk]
-  simp only [ChainComplex.of_d]
+  simp only [HomologicalComplex.sc', HomologicalComplex.shortComplexFunctor', ofComplex,
+    ChainComplex.mk', ChainComplex.mk, ChainComplex.of_d]
   -- TODO: this should just be apply exact_d_f so something is missing
   match n with
   | 0 => apply exact_d_f
@@ -311,6 +310,7 @@ lemma ofComplex_exactAt_succ (n : ℕ) :
 instance (n : ℕ) : Projective ((ofComplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Projective.projective_over
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- In any abelian category with enough projectives,
 `ProjectiveResolution.of Z` constructs a projective resolution of the object `Z`.

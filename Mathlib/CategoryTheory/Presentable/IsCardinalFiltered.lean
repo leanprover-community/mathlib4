@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
 public import Mathlib.CategoryTheory.Comma.CardinalArrow
-public import Mathlib.SetTheory.Cardinal.Cofinality
+public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 
@@ -196,6 +196,7 @@ instance (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] :
 
 open IsCardinalFiltered
 
+set_option backward.defeqAttrib.useBackward true in
 instance isCardinalFiltered_under
     (J : Type u) [Category.{v} J] (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalFiltered J κ] (j₀ : J) : IsCardinalFiltered (Under j₀) κ where
@@ -216,6 +217,7 @@ instance isCardinalFiltered_under
               dsimp at this ⊢
               simp only [reassoc_of% this, Category.comp_id] } }⟩
 
+set_option backward.defeqAttrib.useBackward true in
 instance isCardinalFiltered_prod (J₁ : Type u) (J₂ : Type u')
     [Category.{v} J₁] [Category.{v'} J₂] (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalFiltered J₁ κ] [IsCardinalFiltered J₂ κ] :
@@ -241,7 +243,7 @@ instance isCardinalFiltered_pi {ι : Type u'} (J : ι → Type u) [∀ i, Catego
         ι.app X i := (c i).ι.app X
         ι.naturality {X Y} f := by
           ext i
-          simpa using (c i).ι.naturality f }⟩
+          simpa using! (c i).ι.naturality f }⟩
 
 section
 
@@ -274,10 +276,11 @@ lemma isCardinalFiltered_iff_aux₂ {ι : Type w} {j : ι → J} {k : J}
   obtain ⟨l, a, b, h⟩ := isCardinalFiltered_iff_aux₁ h₁ h₂ p hι
   exact ⟨l, b, fun i ↦ by grind⟩
 
+set_option backward.defeqAttrib.useBackward true in
 variable (J κ) in
 /-- A category is `κ`-filtered iff
-1) any family of objects of cardinality `< κ` admits a map towards a common object, and
-2) any family of morphisms `j ⟶ k` of cardinality `< κ` (between *fixed* objects
+1. any family of objects of cardinality `< κ` admits a map towards a common object, and
+2. any family of morphisms `j ⟶ k` of cardinality `< κ` (between *fixed* objects
    `j` and `k`) can be coequalized by a suitable morphism `k ⟶ l`.
 -/
 lemma isCardinalFiltered_iff :
@@ -342,6 +345,7 @@ lemma IsCardinalFiltered.of_final
       exact ⟨F.obj (IsFiltered.max j' k'), b ≫ F.map (IsFiltered.rightToMax _ _),
         a ≫ F.map (IsFiltered.leftToMax _ _), by simp⟩
 
+set_option backward.defeqAttrib.useBackward true in
 lemma Limits.IsTerminal.isCardinalFiltered {J : Type u} [Category.{v} J]
     {X : J} (hX : IsTerminal X) (κ : Cardinal.{w}) [Fact κ.IsRegular] :
     IsCardinalFiltered J κ where

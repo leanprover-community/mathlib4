@@ -83,7 +83,7 @@ noncomputable def toSSetObj₀Equiv {X : TopCat.{u}} :
     toSSet.obj X _⦋0⦌ ≃ X :=
   (toSSetObjEquiv X _).trans
     { toFun f := f.1 (default : _)
-      invFun x := ⟨fun _ ↦ x, by continuity⟩
+      invFun x := ⟨fun _ ↦ x, by fun_prop⟩
       left_inv _ := by
         ext x
         obtain rfl := Subsingleton.elim x default

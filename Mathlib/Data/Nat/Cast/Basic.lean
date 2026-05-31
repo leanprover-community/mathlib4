@@ -58,6 +58,7 @@ variable [NonAssocSemiring α]
 
 variable (α) in
 /-- `Nat.cast : ℕ → α` as a `RingHom` -/
+@[implicit_reducible]
 def castRingHom : ℕ →+* α :=
   { castAddMonoidHom α with toFun := Nat.cast, map_one' := cast_one, map_mul' := cast_mul }
 

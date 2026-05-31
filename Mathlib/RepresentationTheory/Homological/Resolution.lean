@@ -128,6 +128,7 @@ def compForgetAugmented : SimplicialObject.Augmented (Type u) :=
   SimplicialObject.augment (classifyingSpaceUniversalCover G ⋙ forget _) (terminal _)
     (terminal.from _) fun _ _ _ => Subsingleton.elim _ _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The augmented Čech nerve of the map from `Fin 1 → G` to the terminal object in `Type u` has an
 extra degeneracy. -/
 def extraDegeneracyAugmentedCechNerve :
@@ -207,6 +208,7 @@ instance x_projective (G : Type u) [Group G] (n : ℕ) :
     Projective ((standardComplex k G).X n) := by
   classical exact inferInstanceAs <| Projective (Rep.diagonal k G (n + 1))
 
+set_option backward.defeqAttrib.useBackward true in
 unif_hint where ⊢ Action.V (Action.ofMulAction G (Fin (n + 1) → G)) ≟ Fin (n + 1) → G in
 set_option backward.isDefEq.respectTransparency false in
 /-- Simpler expression for the differential in the standard resolution of `k` as a
@@ -252,14 +254,15 @@ def forget₂ToModuleCatHomotopyEquiv :
           (extraDegeneracyCompForgetAugmentedToModule k G)).trans
       (HomotopyEquiv.ofIso <|
         (ChainComplex.single₀ (ModuleCat.{u} k)).mapIso
-          (@Finsupp.LinearEquiv.finsuppUnique k k _ _ _ (⊤_ Type u)
-              Types.terminalIso.toEquiv.unique).toModuleIso)
+          (@Finsupp.uniqueLinearEquiv k (⊤_ Type u) k _ _ _ _
+            Types.terminalIso.toEquiv.unique.default).toModuleIso)
 
 /-- The hom of `k`-linear `G`-representations `k[G¹] → k` sending `∑ nᵢgᵢ ↦ ∑ nᵢ`. -/
 def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k := ofHom
   ⟨Finsupp.linearCombination _ fun _ ↦ (1 : k), fun _ ↦ Finsupp.lhom_ext'
     fun _ => LinearMap.ext_ring <| by simp⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The homotopy equivalence of complexes of `k`-modules between the standard resolution of `k` as
 a trivial `G`-representation, and the complex which is `k` at 0 and 0 everywhere else, acts as
@@ -289,13 +292,14 @@ def εToSingle₀ :
     standardComplex k G ⟶ (ChainComplex.single₀ _).obj (Rep.trivial k G k) :=
   ((standardComplex k G).toSingle₀Equiv _).symm ⟨ε k G, d_comp_ε k G⟩
 
+set_option backward.defeqAttrib.useBackward true in
 theorem εToSingle₀_comp_eq :
     ((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G) ≫
         (HomologicalComplex.singleMapHomologicalComplex _ _ _).hom.app _ =
       (forget₂ToModuleCatHomotopyEquiv k G).hom := by
   dsimp
   ext1
-  simpa using (forget₂ToModuleCatHomotopyEquiv_f_0_eq k G).symm
+  simpa using! (forget₂ToModuleCatHomotopyEquiv_f_0_eq k G).symm
 
 set_option backward.isDefEq.respectTransparency false in
 theorem quasiIso_forget₂_εToSingle₀ :
@@ -371,6 +375,7 @@ private lemma _root_.Representation.linearizeMap_single_diagonal (m : ℕ) (g : 
     = single ((Action.diagonalSuccIsoTensorTrivial G m).inv.hom (g, f)) r :=
   Representation.linearizeMap_single (Action.diagonalSuccIsoTensorTrivial G m).inv (g, f) r
 
+set_option backward.defeqAttrib.useBackward true in
 unif_hint (X : Type*) where ⊢ Action.V (Action.trivial G X) ≟ X in
 unif_hint where ⊢ (HomologicalComplex.X (standardComplex k G) n).V ≟ ((Fin (n + 1) → G) →₀ k) in
 set_option backward.isDefEq.respectTransparency false in
@@ -381,7 +386,7 @@ lemma d_comp_diagonalSuccIsoFree_inv_eq :
     have eq3 : single (i 0 • Fin.partialProd fun i_1 ↦ i i_1.succ) (1 : k) =
       single (Fin.partialProd i ∘ Fin.succ) 1 := by
       congr; exact funext fun j ↦ Fin.partialProd_succ' i j |>.symm
-    simp [μ_hom, d_single (k := k), Rep.mkIso_inv_hom_apply _,
+    simp [μ_hom, d_single (k := k),
       Representation.linearizeOfMulActionIso_symm_apply,
       Representation.linearizeTrivialIso_symm_apply _, d_apply (k := k),
       Representation.μ_apply_single_single_leftRegular _,
@@ -407,8 +412,7 @@ noncomputable abbrev barComplex : ChainComplex (Rep k G) ℕ :=
 
 namespace barComplex
 
-@[simp]
-theorem d_def : (barComplex k G).d (n + 1) n = d k G n := ChainComplex.of_d _ _ _ _
+theorem d_def : (barComplex k G).d (n + 1) n = d k G n := by simp
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Isomorphism between the bar resolution and standard resolution, with `n`th map
@@ -416,7 +420,7 @@ set_option backward.isDefEq.respectTransparency false in
 def isoStandardComplex : barComplex k G ≅ standardComplex k G :=
   HomologicalComplex.Hom.isoOfComponents (fun i => (diagonalSuccIsoFree k G i).symm) fun i j => by
     rintro (rfl : j + 1 = i)
-    simp only [ChainComplex.of_X, Iso.symm_hom, d_def, d_comp_diagonalSuccIsoFree_inv_eq]
+    rw [d_def, Iso.symm_hom, Iso.symm_hom, d_comp_diagonalSuccIsoFree_inv_eq]
 
 end barComplex
 
