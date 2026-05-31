@@ -182,8 +182,7 @@ theorem isConnected_setOf_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
 
 lemma norm_sub_le_of_mem_segment {x y z : E} (hy : y ∈ segment ℝ x z) :
     ‖y - x‖ ≤ ‖z - x‖ := by
-  simpa [mem_closedBall, dist_eq_norm, dist_comm, norm_sub_rev] using
-    (segment_subset_closedBall_left x z hy)
+  simpa [dist_eq_norm, norm_sub_rev] using segment_subset_closedBall_left x z hy
 
 namespace Filter
 
