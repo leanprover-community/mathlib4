@@ -341,7 +341,7 @@ theorem sub_convs_eq {ifp : IntFractPair K}
   obtain (ifp_fr_eq_zero | ifp_fr_ne_zero) := eq_or_ne ifp.fr 0
   · suffices v - g.convs n = 0 by simpa [ifp_fr_eq_zero]
     replace g_finite_correctness : v = g.convs n := by
-      simpa [GenContFract.compExactValue, ifp_fr_eq_zero] using g_finite_correctness
+      simpa [GenContFract.compExactValue, ifp_fr_eq_zero] using! g_finite_correctness
     exact sub_eq_zero.2 g_finite_correctness
   · -- more shorthand notation
     let A := conts.a
@@ -353,7 +353,7 @@ theorem sub_convs_eq {ifp : IntFractPair K}
     -- now we can unfold `g.compExactValue` to derive the following equality for `v`
     replace g_finite_correctness : v = (pA + ifp.fr⁻¹ * A) / (pB + ifp.fr⁻¹ * B) := by
       simpa [GenContFract.compExactValue, ifp_fr_ne_zero, nextConts, nextNum, nextDen, add_comm]
-        using g_finite_correctness
+        using! g_finite_correctness
     -- let's rewrite this equality for `v` in our goal
     suffices
       (pA + ifp.fr⁻¹ * A) / (pB + ifp.fr⁻¹ * B) - A / B = (-1) ^ n / (B * (ifp.fr⁻¹ * B + pB)) by
