@@ -86,7 +86,8 @@ theorem normalizedDerivOfComplex_neg (F : ℍ → ℂ) (hF : MDiff F) : D (-F) =
 @[simp]
 theorem normalizedDerivOfComplex_sub (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
     D (F - G) = D F - D G := by
-  simpa [normalizedDerivOfComplex_neg G hG] using normalizedDerivOfComplex_add F (-G) hF hG.neg
+  have := normalizedDerivOfComplex_add F (-G) hF hG.neg
+  rwa [← SubNegMonoid.sub_eq_add_neg F G, normalizedDerivOfComplex_neg G hG] at this
 
 theorem normalizedDerivOfComplex_mul (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
     D (F * G) = D F * G + F * D G := by
