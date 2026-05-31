@@ -337,23 +337,23 @@ end SupDegree
 
 section LinearOrder
 
-variable [LinearOrder B] [OrderBot B] {p q : R[A]} (D : A → B)
+variable [LinearOrder B] [OrderBot B] {p q : R[A]} {D : A → B} (hD : D.Injective)
 
+set_option linter.unusedVariables false in
 /-- If `D` is an injection into a linear order `B`, the leading coefficient of `f : R[A]` is the
   nonzero coefficient of highest degree according to `D`, or 0 if `f = 0`. In general, it is defined
   to be the coefficient at an inverse image of `supDegree f` (if such exists). -/
-noncomputable def leadingCoeff [Nonempty A] (f : R[A]) : R :=
+@[nolint unusedArguments]
+noncomputable def leadingCoeff [Nonempty A] (hD : D.Injective) (f : R[A]) : R :=
   f (D.invFun <| f.supDegree D)
 
 /-- An element `f : R[A]` is monic if its leading coefficient is one. -/
 @[reducible] def Monic [Nonempty A] (f : R[A]) : Prop :=
-  f.leadingCoeff D = 1
-
-variable {D}
+  f.leadingCoeff hD = 1
 
 @[simp]
-theorem leadingCoeff_single [Nonempty A] (hD : D.Injective) (a : A) (r : R) :
-    (single a r).leadingCoeff D = r := by
+theorem leadingCoeff_single [Nonempty A] (a : A) (r : R) :
+    (single a r).leadingCoeff hD = r := by
   classical
   rw [leadingCoeff, supDegree_single]
   split_ifs with hr
@@ -361,13 +361,13 @@ theorem leadingCoeff_single [Nonempty A] (hD : D.Injective) (a : A) (r : R) :
   · rw [Function.leftInverse_invFun hD, single_apply, if_pos rfl]
 
 @[simp]
-theorem leadingCoeff_zero [Nonempty A] : (0 : R[A]).leadingCoeff D = 0 := rfl
+theorem leadingCoeff_zero [Nonempty A] : (0 : R[A]).leadingCoeff hD = 0 := rfl
 
-lemma Monic.ne_zero [Nonempty A] [Nontrivial R] (hp : p.Monic D) : p ≠ 0 := fun h => by
+lemma Monic.ne_zero [Nonempty A] [Nontrivial R] (hp : p.Monic hD) : p ≠ 0 := fun h => by
   simp_rw [Monic, h, leadingCoeff_zero, zero_ne_one] at hp
 
 @[simp]
-theorem monic_one [AddZeroClass A] (hD : D.Injective) : (1 : R[A]).Monic D := by
+theorem monic_one [AddZeroClass A] : (1 : R[A]).Monic hD := by
   rw [Monic, one_def, leadingCoeff_single hD]
 
 variable (D) in
@@ -404,15 +404,15 @@ lemma supDegree_add_eq_right (h : p.supDegree D < q.supDegree D) :
 
 set_option backward.isDefEq.respectTransparency false in
 lemma leadingCoeff_add_eq_left (h : q.supDegree D < p.supDegree D) :
-    (p + q).leadingCoeff D = p.leadingCoeff D := by
+    (p + q).leadingCoeff hD = p.leadingCoeff hD := by
   obtain ⟨a, he⟩ := supDegree_mem_range D (ne_zero_of_not_supDegree_le h.not_ge)
   rw [leadingCoeff, supDegree_add_eq_left h, Finsupp.add_apply, ← leadingCoeff,
     apply_eq_zero_of_not_le_supDegree (D := D), add_zero]
   rw [← he, Function.apply_invFun_apply (f := D), he]; exact h.not_ge
 
 lemma leadingCoeff_add_eq_right (h : p.supDegree D < q.supDegree D) :
-    (p + q).leadingCoeff D = q.leadingCoeff D := by
-  rw [add_comm, leadingCoeff_add_eq_left h]
+    (p + q).leadingCoeff hD = q.leadingCoeff hD := by
+  rw [add_comm, leadingCoeff_add_eq_left hD h]
 
 lemma supDegree_mem_support (hD : D.Injective) (hp : p ≠ 0) :
     D.invFun (p.supDegree D) ∈ p.support := by
@@ -420,17 +420,17 @@ lemma supDegree_mem_support (hD : D.Injective) (hp : p ≠ 0) :
   rwa [he, Function.leftInverse_invFun hD]
 
 @[simp]
-lemma leadingCoeff_eq_zero (hD : D.Injective) : p.leadingCoeff D = 0 ↔ p = 0 := by
-  refine ⟨(fun h => ?_).mtr, fun h => h ▸ leadingCoeff_zero⟩
+lemma leadingCoeff_eq_zero : p.leadingCoeff hD = 0 ↔ p = 0 := by
+  refine ⟨(fun h => ?_).mtr, fun h => h ▸ leadingCoeff_zero hD⟩
   rw [leadingCoeff, ← Ne, ← Finsupp.mem_support_iff]
   exact supDegree_mem_support hD h
 
-lemma leadingCoeff_ne_zero (hD : D.Injective) : p.leadingCoeff D ≠ 0 ↔ p ≠ 0 :=
+lemma leadingCoeff_ne_zero : p.leadingCoeff hD ≠ 0 ↔ p ≠ 0 :=
   (leadingCoeff_eq_zero hD).ne
 
 set_option backward.isDefEq.respectTransparency false in
-lemma supDegree_sub_lt_of_leadingCoeff_eq (hD : D.Injective) {R} [Ring R] {p q : R[A]}
-    (hd : p.supDegree D = q.supDegree D) (hc : p.leadingCoeff D = q.leadingCoeff D) :
+lemma supDegree_sub_lt_of_leadingCoeff_eq {R} [Ring R] {p q : R[A]}
+    (hd : p.supDegree D = q.supDegree D) (hc : p.leadingCoeff hD = q.leadingCoeff hD) :
     (p - q).supDegree D < p.supDegree D ∨ p = q := by
   rw [or_iff_not_imp_right]
   refine fun he => (supDegree_sub_le.trans ?_).lt_of_ne ?_
@@ -439,18 +439,31 @@ lemma supDegree_sub_lt_of_leadingCoeff_eq (hD : D.Injective) {R} [Ring R] {p q :
     refine fun h => he ?_
     rwa [h, Finsupp.sub_apply, ← leadingCoeff, hd, ← leadingCoeff, sub_eq_zero]
 
-lemma supDegree_leadingCoeff_sum_eq
+private lemma supDegree_leadingCoeff_sum_eq'
     (hi : i ∈ s) (hmax : ∀ j ∈ s, j ≠ i → (f j).supDegree D < (f i).supDegree D) :
     (∑ j ∈ s, f j).supDegree D = (f i).supDegree D ∧
-    (∑ j ∈ s, f j).leadingCoeff D = (f i).leadingCoeff D := by
+    ∀ hD : D.Injective, (∑ j ∈ s, f j).leadingCoeff hD = (f i).leadingCoeff hD := by
   classical
   rw [← s.add_sum_erase _ hi]
   by_cases! hs : s.erase i = ∅
-  · rw [hs, Finset.sum_empty, add_zero]; exact ⟨rfl, rfl⟩
-  suffices _ from ⟨supDegree_add_eq_left this, leadingCoeff_add_eq_left this⟩
+  · rw [hs, Finset.sum_empty, add_zero]; exact ⟨rfl, fun _ ↦ rfl⟩
+  suffices _ from ⟨supDegree_add_eq_left this, fun hD ↦ leadingCoeff_add_eq_left hD this⟩
   refine supDegree_sum_lt ?_ (fun j hj => ?_)
   · exact hs
   · rw [Finset.mem_erase] at hj; exact hmax j hj.2 hj.1
+
+lemma supDegree_sum_eq
+    (hi : i ∈ s) (hmax : ∀ j ∈ s, j ≠ i → (f j).supDegree D < (f i).supDegree D) :
+    (∑ j ∈ s, f j).supDegree D = (f i).supDegree D :=
+  (supDegree_leadingCoeff_sum_eq' hi hmax).1
+
+lemma supDegree_leadingCoeff_sum_eq (hD : D.Injective)
+    (hi : i ∈ s) (hmax : ∀ j ∈ s, j ≠ i → (f j).supDegree D < (f i).supDegree D) :
+    (∑ j ∈ s, f j).supDegree D = (f i).supDegree D ∧
+    (∑ j ∈ s, f j).leadingCoeff hD = (f i).leadingCoeff hD :=
+  have := supDegree_leadingCoeff_sum_eq' hi hmax
+  ⟨this.1, this.2 hD⟩
+
 
 open Finset in
 lemma sum_ne_zero_of_injOn_supDegree' (hs : ∃ i ∈ s, f i ≠ 0)
@@ -465,7 +478,7 @@ lemma sum_ne_zero_of_injOn_supDegree' (hs : ∃ i ∈ s, f i ≠ 0)
   apply ne_zero_of_supDegree_ne_bot (D := D)
   have (k) (hk : k ∈ s) (hne : k ≠ i) : supDegree D (f k) < supDegree D (f i) :=
     ((le_sup hk).trans_eq he).lt_of_ne (hd.ne hk hi hne)
-  rw [(supDegree_leadingCoeff_sum_eq hi this).1]
+  rw [supDegree_sum_eq hi this]
   exact (this j hj hne).ne_bot
 
 lemma sum_ne_zero_of_injOn_supDegree (hs : s.Nonempty)
@@ -478,8 +491,8 @@ variable [Add B]
 variable [AddLeftStrictMono B] [AddRightStrictMono B]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma apply_supDegree_add_supDegree (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) :
-    (p * q) (D.invFun (p.supDegree D + q.supDegree D)) = p.leadingCoeff D * q.leadingCoeff D := by
+lemma apply_supDegree_add_supDegree (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) :
+    (p * q) (D.invFun (p.supDegree D + q.supDegree D)) = p.leadingCoeff hD * q.leadingCoeff hD := by
   obtain rfl | hp := eq_or_ne p 0
   · simp
   obtain rfl | hq := eq_or_ne q 0
@@ -490,8 +503,7 @@ lemma apply_supDegree_add_supDegree (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 
   exact apply_add_of_supDegree_le hadd hD hp.le hq.le
 
 lemma supDegree_mul
-    (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
-    (hpq : leadingCoeff D p * leadingCoeff D q ≠ 0)
+    (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) (hpq : leadingCoeff hD p * leadingCoeff hD q ≠ 0)
     (hp : p ≠ 0) (hq : q ≠ 0) :
     (p * q).supDegree D = p.supDegree D + q.supDegree D := by
   apply supDegree_eq_of_max
@@ -505,32 +517,30 @@ lemma supDegree_mul
     exact fun a ha => (Finset.le_sup ha).trans (supDegree_mul_le hadd)
 
 lemma Monic.supDegree_mul_of_ne_zero_left
-    (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
-    (hq : q.Monic D) (hp : p ≠ 0) :
+    (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) (hq : q.Monic hD) (hp : p ≠ 0) :
     (p * q).supDegree D = p.supDegree D + q.supDegree D := by
   cases subsingleton_or_nontrivial R; · exact (hp (Subsingleton.elim _ _)).elim
   apply supDegree_mul hD hadd ?_ hp hq.ne_zero
   simp_rw [hq, mul_one, Ne, leadingCoeff_eq_zero hD, hp, not_false_eq_true]
 
 lemma Monic.supDegree_mul_of_ne_zero_right
-    (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
-    (hp : p.Monic D) (hq : q ≠ 0) :
+    (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) (hp : p.Monic hD) (hq : q ≠ 0) :
     (p * q).supDegree D = p.supDegree D + q.supDegree D := by
   cases subsingleton_or_nontrivial R; · exact (hq (Subsingleton.elim _ _)).elim
   apply supDegree_mul hD hadd ?_ hp.ne_zero hq
   simp_rw [hp, one_mul, Ne, leadingCoeff_eq_zero hD, hq, not_false_eq_true]
 
 lemma Monic.supDegree_mul
-    (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
-    (hbot : (⊥ : B) + ⊥ = ⊥) (hp : p.Monic D) (hq : q.Monic D) :
+    (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
+    (hbot : (⊥ : B) + ⊥ = ⊥) (hp : p.Monic hD) (hq : q.Monic hD) :
     (p * q).supDegree D = p.supDegree D + q.supDegree D := by
   cases subsingleton_or_nontrivial R
   · simp_rw [Subsingleton.eq_zero p, Subsingleton.eq_zero q, mul_zero, supDegree_zero, hbot]
   exact hq.supDegree_mul_of_ne_zero_left hD hadd hp.ne_zero
 
 lemma leadingCoeff_mul [NoZeroDivisors R]
-    (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) :
-    (p * q).leadingCoeff D = p.leadingCoeff D * q.leadingCoeff D := by
+    (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) :
+    (p * q).leadingCoeff hD = p.leadingCoeff hD * q.leadingCoeff hD := by
   obtain rfl | hp := eq_or_ne p 0
   · simp_rw [leadingCoeff_zero, zero_mul, leadingCoeff_zero]
   obtain rfl | hq := eq_or_ne q 0
@@ -539,24 +549,24 @@ lemma leadingCoeff_mul [NoZeroDivisors R]
   apply mul_ne_zero <;> rwa [Ne, leadingCoeff_eq_zero hD]
 
 lemma Monic.leadingCoeff_mul_eq_left
-    (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) (hq : q.Monic D) :
-    (p * q).leadingCoeff D = p.leadingCoeff D := by
+    (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) (hq : q.Monic hD) :
+    (p * q).leadingCoeff hD = p.leadingCoeff hD := by
   obtain rfl | hp := eq_or_ne p 0
   · rw [zero_mul]
   rw [leadingCoeff, hq.supDegree_mul_of_ne_zero_left hD hadd hp,
     apply_supDegree_add_supDegree hD hadd, hq, mul_one]
 
 lemma Monic.leadingCoeff_mul_eq_right
-    (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) (hp : p.Monic D) :
-    (p * q).leadingCoeff D = q.leadingCoeff D := by
+    (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) (hp : p.Monic hD) :
+    (p * q).leadingCoeff hD = q.leadingCoeff hD := by
   obtain rfl | hq := eq_or_ne q 0
   · rw [mul_zero]
   rw [leadingCoeff, hp.supDegree_mul_of_ne_zero_right hD hadd hq,
     apply_supDegree_add_supDegree hD hadd, hp, one_mul]
 
 lemma Monic.mul
-    (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
-    (hp : p.Monic D) (hq : q.Monic D) : (p * q).Monic D := by
+    (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
+    (hp : p.Monic hD) (hq : q.Monic hD) : (p * q).Monic hD := by
   rw [Monic, hq.leadingCoeff_mul_eq_left hD hadd]; exact hp
 
 section AddMonoid
@@ -567,14 +577,14 @@ variable {A B : Type*} [AddMonoid A] [AddMonoid B] [LinearOrder B] [OrderBot B]
 
 lemma Monic.pow
     (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) (hD : D.Injective)
-    (hp : p.Monic D) : (p ^ n).Monic D := by
+    (hp : p.Monic hD) : (p ^ n).Monic hD := by
   induction n with
   | zero => rw [pow_zero]; exact monic_one hD
   | succ n ih => rw [pow_succ']; exact hp.mul hD hadd ih
 
 lemma Monic.supDegree_pow
     (hzero : D 0 = 0) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) (hD : D.Injective)
-    [Nontrivial R] (hp : p.Monic D) :
+    [Nontrivial R] (hp : p.Monic hD) :
     (p ^ n).supDegree D = n • p.supDegree D := by
   induction n with
   | zero => rw [pow_zero, zero_nsmul, one_def, supDegree_single 0 1, if_neg one_ne_zero, hzero]
