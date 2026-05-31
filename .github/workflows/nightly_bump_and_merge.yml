@@ -13,6 +13,12 @@ on:
     # and 15 minutes after batteries `nightly-testing` branch bumps its toolchain.
   workflow_dispatch:
 
+# Serialize runs so an overlapping scheduled run can't race the toolchain commit/push.
+# Never cancel an in-flight run: it may be mid-push of the bump or a pr-testing merge.
+concurrency:
+  group: nightly-bump-and-merge
+  cancel-in-progress: false
+
 jobs:
   bump-and-merge:
     runs-on: ubuntu-latest
@@ -131,8 +137,18 @@ jobs:
         # Navigate to the cloned repository
         cd lean4-nightly || exit 1
 
-        # Fetch the $OLD tag
-        git fetch --depth=1 origin tag "$OLD" --no-tags
+        # Fetch the $OLD tag.
+        # If $OLD is not a tag in lean4-nightly (e.g. nightly-testing is currently on an
+        # rc or stable toolchain like `v4.31.0-rc1`, which only exists in leanprover/lean4),
+        # we can't compute the PR delta. Skip lean-pr-testing adaptation discovery for this
+        # bump rather than failing: the toolchain bump itself has already been committed and
+        # must still be pushed (see the `Push all changes` step), otherwise nightly-testing
+        # would be stuck on the rc/stable toolchain forever.
+        if ! git fetch --depth=1 origin tag "$OLD" --no-tags 2>/dev/null; then
+          echo "::notice::OLD toolchain '$OLD' is not a tag in lean4-nightly (rc/stable?). Skipping lean-pr-testing adaptation discovery for this bump."
+          printf 'prs<<EOF\n\nEOF\n' >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
         # Fetch the $NEW tag
         git fetch origin tag "$NEW" --no-tags
 
