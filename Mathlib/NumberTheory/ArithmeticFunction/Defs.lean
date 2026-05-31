@@ -262,11 +262,7 @@ theorem mul_smul' (f g : ArithmeticFunction R) (h : ArithmeticFunction M) :
 
 theorem one_smul' (b : ArithmeticFunction M) : (1 : ArithmeticFunction R) • b = b := by
   ext x
-  rw [smul_apply, ← Nat.map_div_right_divisors, sum_map, sum_eq_single 1]
-  · simp
-  · intro d hd hd1
-    simp [one_apply_ne hd1]
-  · simpa using fun hx : x = 0 => by simp [hx]
+  simp_all [← Nat.map_div_right_divisors, sum_eq_single 1]
 
 end Module
 
