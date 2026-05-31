@@ -274,11 +274,7 @@ instance instMonoid : Monoid (ArithmeticFunction R) where
   one_mul := one_smul'
   mul_one f := by
     ext x
-    rw [mul_apply, ← Nat.map_div_left_divisors, sum_map, sum_eq_single 1]
-    · simp
-    · intro d hd hd1
-      simp [one_apply_ne hd1]
-    · simpa using fun hx : x = 0 => by simp [hx]
+    simp_all [← Nat.map_div_left_divisors, sum_eq_single 1]
   mul_assoc := mul_smul'
 
 instance instSemiring : Semiring (ArithmeticFunction R) where
