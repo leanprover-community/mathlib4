@@ -336,12 +336,12 @@ variable {M : Type*} [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
 instance : IsStrictOrderedModule ℚ (DivisibleHull M) where
   smul_lt_smul_of_pos_left a ha b c h := by
     simp_rw [qsmul_of_nonneg ha.le]
-    apply smul_lt_smul_of_pos_left h (by simpa using ha)
+    apply smul_lt_smul_of_pos_left h (by simpa using! ha)
   smul_lt_smul_of_pos_right a ha b c h := by
     apply lt_of_sub_pos
     rw [← sub_smul]
     simp_rw [qsmul_of_nonneg (sub_pos_of_lt h).le]
-    apply smul_pos (by simpa [← NNRat.coe_pos] using h) ha
+    apply smul_pos (by simpa [← NNRat.coe_pos] using! h) ha
 
 variable (M) in
 /-- Coercion from `M` to `DivisibleHull M` as an `OrderAddMonoidHom`. -/
