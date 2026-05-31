@@ -127,7 +127,7 @@ lemma integrable_exp_sq_of_conv_neg (μ : Measure E) [IsGaussian μ] {C C' : ℝ
     simp only [ContinuousLinearEquiv.coe_neg] at hC
     filter_upwards [hC] with y hy
     rw [integrable_map_measure (by fun_prop) (by fun_prop)] at hy
-    convert hy with x
+    convert! hy with x
     simp only [Function.comp_apply, Pi.neg_apply, id_eq, Real.exp_eq_exp, mul_eq_mul_left_iff,
       norm_nonneg, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_left_inj₀]
     left
@@ -181,6 +181,7 @@ section FiniteMoments
 
 variable [CompleteSpace E] [SecondCountableTopology E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A Gaussian measure has moments of all orders.
 That is, the identity is in L^p for all finite `p`. -/
 lemma memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp0 : p ≠ 0) (hp : p ≠ ∞) :
@@ -190,7 +191,7 @@ lemma memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp0 : p ≠ 0)
     simpa using this
   lift p to ℝ≥0 using hp
   have : p / 2 ≠ 0 := by simp [ENNReal.coe_ne_zero.mp hp0]
-  convert memLp_of_mem_interior_integrableExpSet ?_ this
+  convert! memLp_of_mem_interior_integrableExpSet ?_ this
   · simp
   obtain ⟨C, hC_pos, hC⟩ := exists_integrable_exp_sq μ
   have hC_neg : Integrable (fun x ↦ rexp (-C * ‖x‖ ^ 2)) μ := by -- `-C` could be any negative

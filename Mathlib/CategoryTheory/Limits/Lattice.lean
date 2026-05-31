@@ -74,7 +74,7 @@ theorem finite_colimit_eq_finset_univ_sup [SemilatticeSup α] [OrderBot α] (F :
 A finite product in the category of a `SemilatticeInf` with `OrderTop` is the same as the infimum.
 -/
 theorem finite_product_eq_finset_inf [SemilatticeInf α] [OrderTop α] {ι : Type u} [Fintype ι]
-    (f : ι → α) : ∏ᶜ f = Fintype.elems.inf f := by
+    (f : ι → α) : ∏ᶜ f = Finset.univ.inf f := by
   trans
   · exact
       (IsLimit.conePointUniqueUpToIso (limit.isLimit _)
@@ -87,7 +87,7 @@ theorem finite_product_eq_finset_inf [SemilatticeInf α] [OrderTop α] {ι : Typ
 supremum.
 -/
 theorem finite_coproduct_eq_finset_sup [SemilatticeSup α] [OrderBot α] {ι : Type u} [Fintype ι]
-    (f : ι → α) : ∐ f = Fintype.elems.sup f := by
+    (f : ι → α) : ∐ f = Finset.univ.sup f := by
   trans
   · exact
       (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)

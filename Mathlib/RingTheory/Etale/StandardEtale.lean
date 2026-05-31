@@ -127,7 +127,7 @@ lemma hom_ext {f g : P.Ring →ₐ[R] S} (H : f P.X = g P.X) : f = g := by
     Units.mul_eq_one_iff_inv_eq.mp P.aeval_X_g_mul_mk_X, ← Units.coe_map_inv, ← Units.coe_map_inv]
   congr 2
   ext
-  simpa [H'] using congr($H _)
+  simpa [H'] using! congr($H _)
 
 @[simp]
 lemma lift_X_left : P.lift P.X P.hasMap_X = .id _ _ :=
@@ -206,7 +206,7 @@ def equivAwayAdjoinRoot :
   · rw [aeval_algebraMap_apply, AdjoinRoot.aeval_eq]
     exact IsLocalization.Away.algebraMap_isUnit ..
   · change Submonoid.powers _ ≤ (IsUnit.submonoid _).comap _
-    simpa [Submonoid.powers_le, IsUnit.mem_submonoid_iff] using P.hasMap_X.2
+    simpa [Submonoid.powers_le, IsUnit.mem_submonoid_iff] using! P.hasMap_X.2
   · ext; simp [Algebra.algHom]
   · ext; simp
 
@@ -285,7 +285,7 @@ lemma StandardEtalePresentation.equivRing_x : P.equivRing P.x = P.X :=
   (P.equivRing.symm_apply_eq.mp P.equivRing_symm_X).symm
 
 /-- The `Algebra.Presentation` associated to a standard etale presentation. -/
-@[simps!]
+@[simps! relation val]
 def StandardEtalePresentation.toPresentation : Algebra.Presentation R S (Fin 2) (Fin 2) where
   __ := Algebra.Generators.ofAlgHom ((P.lift _ P.hasMap).comp
       (P.equivMvPolynomialQuotient.symm.toAlgHom.comp (Ideal.Quotient.mkₐ _ _)))
