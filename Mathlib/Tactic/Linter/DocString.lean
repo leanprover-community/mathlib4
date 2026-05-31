@@ -52,10 +52,15 @@ public register_option linter.style.docStringVerso : Bool := {
 /--
 Extract all `declModifiers` from the input syntax. We later extract the `docstring` from it,
 but we avoid extracting directly the `docComment` node, to skip `#adaptation_note`s.
+
+We skip `declModifiers` nodes that lack a canonical (non-synthetic) position, since these arise
+from syntax quotation patterns in meta code (e.g. `` `(declModifiers| ...) ``) and do not
+represent actual declarations.
 -/
 public def getDeclModifiers : Syntax → Array Syntax
   | s@(.node _ kind args) =>
-    (if kind == ``Parser.Command.declModifiers then #[s] else #[]) ++ args.flatMap getDeclModifiers
+    (if kind == ``Parser.Command.declModifiers && (s.getPos? (canonicalOnly := true)).isSome
+      then #[s] else #[]) ++ args.flatMap getDeclModifiers
   | _ => #[]
 
 /--
@@ -148,6 +153,7 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let currIndent := fm.toPosition pos |>.column
 
     if docStx.isMissing then continue -- this is probably superfluous, thanks to `some pos` above.
+    if docStx.getKind != ``Parser.Command.docComment then continue -- ignore antiquotations from syntax patterns like `$(_)?`
     -- `docString` contains e.g. trailing spaces before the `-/`, but does not contain
     -- any leading whitespace before the actual string starts.
     let docString ← try getDocStringText ⟨docStx⟩ catch _ => continue
