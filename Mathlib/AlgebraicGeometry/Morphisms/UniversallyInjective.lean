@@ -98,7 +98,7 @@ instance universallyInjective_isZariskiLocalAtTarget :
   universallyInjective_eq_diagonal.symm ▸ inferInstance
 
 @[stacks 01S4]
-theorem universallyInjective_tfae :
+theorem tfae_universallyInjective :
     List.TFAE [
       UniversallyInjective f,
       ∀ (K : Type u) [Field K], Function.Injective (fun g : Spec (.of K) ⟶ X ↦ g ≫ f),
@@ -116,20 +116,22 @@ theorem universallyInjective_tfae :
     rw [← f.residueFieldMap_congr'_assoc e, CommRingCat.hom_ext_iff] at h
     rw [Scheme.SpecToEquivOfField_eq_iff]
     algebraize [(f.residueFieldMap (g₁ (IsLocalRing.closedPoint K))).hom]
-    exact ⟨e, CommRingCat.hom_ext <| @IsPurelyInseparable.injective_comp_algebraMap _ _ _ _ _
-      (hf (g₁ (IsLocalRing.closedPoint K))) K _ _ _ _ h⟩
+    refine ⟨e, CommRingCat.hom_ext ?_⟩
+    exact IsPurelyInseparable.injective_comp_algebraMap
+      (Y.residueField (f (g₁ (IsLocalRing.closedPoint K))))
+      (X.residueField (g₁ (IsLocalRing.closedPoint K))) _ h
   tfae_have 2 → 4 := fun h ↦ by
     rw [surjective_iff]
     intro z
     let φ := (pullback f f).fromSpecResidueField z
     have hφ₁ : φ ≫ pullback.fst f f = φ ≫ pullback.snd f f :=
       h ((pullback f f).residueField z) (by simp [pullback.condition])
-    have hφ₂ : φ = (φ ≫ pullback.fst f f) ≫ pullback.diagonal f :=
-      pullback.hom_ext (by simp) (by simp [← hφ₁])
+    have hφ₂ : φ = (φ ≫ pullback.fst f f) ≫ pullback.diagonal f := by cat_disch
     refine ⟨(φ ≫ pullback.fst f f) (IsLocalRing.closedPoint _), ?_⟩
     rw [← Scheme.Hom.comp_apply, ← hφ₂, Scheme.fromSpecResidueField_apply]
   tfae_have 4 → 3 := fun hf ↦ by
-    refine ⟨@f.injective _ _ (tfae_1_iff_4.mpr hf), ?_⟩
+    have := tfae_1_iff_4.mpr hf
+    refine ⟨f.injective, ?_⟩
     rw [surjective_iff] at hf
     intro x
     algebraize [(f.residueFieldMap x).hom]
