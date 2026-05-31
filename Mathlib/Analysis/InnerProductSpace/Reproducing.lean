@@ -210,6 +210,14 @@ theorem posSemidef_tfae : List.TFAE [K.PosSemidef, K.IsHermitian ∧ ∀ (f : X 
       h (ff.sum fun x T ↦ .single x (T v))
   tfae_finish
 
+theorem posSemidef_iff_re_sum_kernel : K.PosSemidef ↔ K.IsHermitian ∧ ∀ (f : X × V →₀ 𝕜),
+    0 ≤ RCLike.re (f.sum fun xv z ↦ f.sum fun xv' w ↦ conj z * w * ⟪K xv'.1 xv.1 xv.2, xv'.2⟫_𝕜) :=
+  (posSemidef_tfae.out 0 1)
+
+theorem posSemidef_iff_re_sum_kernel' : K.PosSemidef ↔ K.IsHermitian ∧ ∀ (vv : X →₀ V),
+    0 ≤ RCLike.re (vv.sum fun x w ↦ vv.sum fun x' w' ↦ ⟪K x' x w, w'⟫_𝕜) :=
+  (posSemidef_tfae.out 0 2)
+
 set_option linter.unusedVariables false in
 /-- Auxiliary construction for `OfKernel`. TODO: Privatize -/
 @[nolint unusedArguments]
@@ -230,7 +238,7 @@ instance instPreInnerProductSpaceCoreH₀ : PreInnerProductSpace.Core 𝕜 (H₀
   smul_left _ _ _ := by
     rw [Finsupp.sum_smul_index] <;> simp [Finsupp.mul_sum, ← mul_assoc]
   re_inner_nonneg := by
-    have := (posSemidef_tfae.out 0 1).mp (Fact.out : K.PosSemidef)
+    have := posSemidef_iff_re_sum_kernel.mp (Fact.out : K.PosSemidef)
     exact this.2
 
 instance instSeminormedAddCommGroupH₀ : SeminormedAddCommGroup (H₀ K) :=
@@ -330,7 +338,7 @@ lemma outerKernel_apply (f : X → V) (xv₁ xv₂ : X × V) :
 
 variable (𝕜) in
 lemma outerKernel_posSemidef (f : X → V) : (outerKernel 𝕜 f).PosSemidef := by
-  apply ((posSemidef_tfae (K := outerKernel 𝕜 f)).out 0 2).mpr
+  rw [posSemidef_iff_re_sum_kernel']
   refine ⟨?_, fun x ↦ ?_⟩
   · ext
     simp_rw [Matrix.conjTranspose_apply, outerKernel_def, star_eq_adjoint,
@@ -340,7 +348,7 @@ lemma outerKernel_posSemidef (f : X → V) : (outerKernel 𝕜 f).PosSemidef := 
     simp
 
 lemma posSemidef_of_mem (f : H) : ((‖f‖ : 𝕜) ^ 2 • kernel H - outerKernel 𝕜 f).PosSemidef := by
-  apply ((posSemidef_tfae (K := (‖f‖ : 𝕜) ^ 2 • kernel H - outerKernel 𝕜 f)).out 0 2).mpr
+  rw [posSemidef_iff_re_sum_kernel']
   refine ⟨((posSemidef_kernel H).1.smul
     (by rw [← RCLike.im_eq_zero_iff_isSelfAdjoint, RCLike.im_ofReal_pow])).sub
     (outerKernel_posSemidef 𝕜 f).1, fun x ↦ ?_⟩
@@ -360,7 +368,7 @@ lemma mem_of_posSemidef (f : X → V) {c : ℝ}
   let toSpan' : (X × V →₀ 𝕜) →ₗ[𝕜] ↥(span 𝕜 {kerFun H x v | (x : X) (v : V)}) :=
     Finsupp.linearCombination 𝕜 (fun xv => ⟨kerFun H xv.1 xv.2, subset_span ⟨xv.1, xv.2, rfl⟩⟩)
   have h_ineq (φ : X × V →₀ 𝕜) : ‖Laux φ‖ ^2 ≤ c ^2 * ‖toSpan φ‖^2 := by
-    apply ((posSemidef_tfae (K := (c : 𝕜) ^ 2 • kernel H - outerKernel 𝕜 f)).out 0 1).mp at hc
+    rw [posSemidef_iff_re_sum_kernel] at hc
     simp_rw [Laux, toSpan, Finsupp.linearCombination_apply, Finsupp.sum,
       ← inner_self_eq_norm_sq (𝕜:=𝕜), ←RCLike.re_ofReal_mul]
     rw [← RCLike.conj_ofReal ((c ^ 2))]
