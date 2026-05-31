@@ -32,9 +32,8 @@ There is also a term elaborator `to_app_of% t` for use within proofs.
 public meta section
 
 open Lean Meta Elab Tactic
-open Mathlib.Tactic
-
-namespace CategoryTheory
+open CategoryTheory
+namespace Mathlib.Tactic.CategoryTheory.ToApp
 
 /-- Simplify an expression in `Cat` using basic properties of `NatTrans.app`. -/
 def catAppSimp (e : Expr) : MetaM Simp.Result :=
@@ -93,9 +92,6 @@ def toCatExpr (e : Expr) : MetaM Expr := do
   let value ← apprec 0 value
   return value
 
-#adaptation_note /-- Removed `private`:
-`toNatTrans_congr` was marked `private` in #31807,
-but we have removed this when disabling `set_option backward.privateInPublic` as a global option. -/
 universe v u in
 lemma toNatTrans_congr {C D : Cat.{v, u}} {F G : C ⟶ D} {η θ : F ⟶ G} (h : η = θ) :
   η.toNatTrans = θ.toNatTrans := congr(($h).toNatTrans)
@@ -161,4 +157,4 @@ it suitably using basic lemmas about `NatTrans.app`.
 elab "to_app_of% " t:term : term => do
   toAppExpr (← elabTerm t none)
 
-end CategoryTheory
+end Mathlib.Tactic.CategoryTheory.ToApp

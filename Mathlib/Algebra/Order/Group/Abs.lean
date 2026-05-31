@@ -74,8 +74,6 @@ theorem inv_le_of_mabs_le (h : |a|ₘ ≤ b) : b⁻¹ ≤ a :=
 theorem le_of_mabs_le (h : |a|ₘ ≤ b) : a ≤ b :=
   (mabs_le.mp h).2
 
-@[deprecated (since := "2025-08-14")] alias mabs_mul := mabs_mul_le
-
 @[to_additive]
 theorem mabs_mul' (a b : G) : |a|ₘ ≤ |b|ₘ * |b * a|ₘ := by simpa using mabs_mul_le b⁻¹ (b * a)
 

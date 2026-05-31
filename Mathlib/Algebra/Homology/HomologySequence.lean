@@ -44,8 +44,7 @@ variable {C ι : Type*} [Category* C] [HasZeroMorphisms C] {c : ComplexShape ι}
   [K.HasHomology i] [K.HasHomology j] [L.HasHomology i] [L.HasHomology j]
 
 /-- The morphism `K.opcycles i ⟶ K.cycles j` that is induced by `K.d i j`. -/
-noncomputable def opcyclesToCycles [K.HasHomology i] [K.HasHomology j] :
-    K.opcycles i ⟶ K.cycles j :=
+noncomputable def opcyclesToCycles : K.opcycles i ⟶ K.cycles j :=
   K.liftCycles (K.fromOpcycles i j) _ rfl (by simp)
 
 @[reassoc (attr := simp)]
@@ -87,6 +86,7 @@ lemma opcyclesToCycles_naturality :
 
 variable (C c)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `K.opcyclesToCycles i j : K.opcycles i ⟶ K.cycles j` for all
 `K : HomologicalComplex C c`. -/
 @[simps]
@@ -109,11 +109,13 @@ noncomputable def composableArrows₃ [K.HasHomology i] [K.HasHomology j] :
     ComposableArrows C 3 :=
   ComposableArrows.mk₃ (K.homologyι i) (K.opcyclesToCycles i j) (K.homologyπ j)
 
+set_option backward.defeqAttrib.useBackward true in
 instance [K.HasHomology i] [K.HasHomology j] :
     Mono ((composableArrows₃ K i j).map' 0 1) := by
   dsimp
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance [K.HasHomology i] [K.HasHomology j] :
     Epi ((composableArrows₃ K i j).map' 2 3) := by
   -- Disable `Fin.reduceFinMk`, otherwise `Precomp.obj_succ` does not fire. (https://github.com/leanprover-community/mathlib4/issues/27382)
@@ -151,6 +153,7 @@ variable (C)
 
 attribute [local simp] homologyMap_comp cyclesMap_comp opcyclesMap_comp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor `HomologicalComplex C c ⥤ ComposableArrows C 3` that maps `K` to the
 diagram `K.homology i ⟶ K.opcycles i ⟶ K.cycles j ⟶ K.homology j`. -/
 @[simps]
@@ -169,6 +172,8 @@ section Abelian
 
 variable {C ι : Type*} [Category* C] [Abelian C] {c : ComplexShape ι}
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- If `X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` is an exact sequence of homological complexes, then
 `X₁.opcycles i ⟶ X₂.opcycles i ⟶ X₃.opcycles i ⟶ 0` is exact. This lemma states
 the exactness at `X₂.opcycles i`, while the fact that `X₂.opcycles i ⟶ X₃.opcycles i`
@@ -191,6 +196,8 @@ lemma opcycles_right_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.E
         d_pOpcycles_assoc, zero_comp]
     · rw [← cancel_epi (S.X₂.pOpcycles i), opcyclesMap_comp_descOpcycles, p_descOpcycles, H.2])
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- If `0 ⟶ X₁ ⟶ X₂ ⟶ X₃` is an exact sequence of homological complex, then
 `0 ⟶ X₁.cycles i ⟶ X₂.cycles i ⟶ X₃.cycles i` is exact. This lemma states
 the exactness at `X₂.cycles i`, while the fact that `X₁.cycles i ⟶ X₂.cycles i`
@@ -218,6 +225,7 @@ variable {S : ShortComplex (HomologicalComplex C c)}
 
 namespace HomologySequence
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a short exact short complex `S : HomologicalComplex C c`, and degrees `i` and `j`
 such that `c.Rel i j`, this is the snake diagram whose four lines are respectively
 obtained by applying the functors `homologyFunctor C c i`, `opcyclesFunctor C c i`,
@@ -292,6 +300,7 @@ lemma comp_δ : HomologicalComplex.homologyMap S.g i ≫ hS.δ i j hij = 0 :=
 lemma homology_exact₁ : (ShortComplex.mk _ _ (δ_comp hS i j hij)).Exact :=
   (snakeInput hS i j hij).L₂'_exact
 
+set_option backward.isDefEq.respectTransparency false in
 include hS in
 /-- Exactness of `S.X₁.homology i ⟶ S.X₂.homology i ⟶ S.X₃.homology i`. -/
 lemma homology_exact₂ : (ShortComplex.mk (HomologicalComplex.homologyMap S.f i)

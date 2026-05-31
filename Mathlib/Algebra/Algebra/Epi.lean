@@ -62,7 +62,7 @@ end Semiring
 instance (R A : Type*) [CommRing R] [IsDomain R] [Field A] [Algebra R A] [IsFractionRing R A] :
     Algebra.IsEpi R A := by
   refine (isEpi_iff_forall_one_tmul_eq R A).mpr fun x ↦ ?_
-  obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective (A := R) x
+  obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective R x
   set f := algebraMap R A with hf
   replace hb : f b ≠ 0 := by aesop
   calc 1 ⊗ₜ[R] (f a / f b)
@@ -143,7 +143,7 @@ lemma injective_lift_lsmul :
         map_add' m n := tmul_add _ _ _
         map_smul' r m := tmul_smul _ _ _ }
     have aux : f ∘ₗ (lift <| LinearMap.restrictScalars₁₂ R R (LinearMap.lsmul A M)) = .id := by
-      ext a m; simpa using this a m
+      ext a m; simpa using! this a m
     exact HasLeftInverse.injective ⟨f, fun x ↦ congr($aux x)⟩
   intro a m
   let f : A ⊗[R] A →ₗ[R] A ⊗[R] M := lift
@@ -153,7 +153,7 @@ lemma injective_lift_lsmul :
         map_smul' := by simp }
       map_add' := by intros; ext; simp [add_tmul]
       map_smul' := by intros; ext; simp [smul_tmul'] }
-  simpa [f] using congr_arg f (tmul_comm R 1 a)
+  simpa [f] using! congr_arg f (tmul_comm R 1 a)
 
 /-- A heterogeneous variant of `TensorProduct.lid` when `R → A` is epi. -/
 def _root_.TensorProduct.lid' : A ⊗[R] M ≃ₗ[A] M :=

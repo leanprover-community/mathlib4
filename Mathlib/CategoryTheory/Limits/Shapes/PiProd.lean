@@ -38,6 +38,7 @@ noncomputable def Pi.binaryFanOfProp : BinaryFan (∏ᶜ (fun (i : {x : I // P x
   BinaryFan.mk (P := ∏ᶜ X) (Pi.map' Subtype.val fun _ ↦ 𝟙 _)
     (Pi.map' Subtype.val fun _ ↦ 𝟙 _)
 
+set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /--
 A product indexed by `I` is a binary product of the products indexed by a subset of `I` and its
@@ -61,6 +62,7 @@ lemma hasBinaryProduct_of_products : HasBinaryProduct (∏ᶜ (fun (i : {x : I /
 
 attribute [local instance] hasBinaryProduct_of_products
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Pi.map_eq_prod_map [∀ i, Decidable (P i)] : Pi.map f =
     ((Pi.binaryFanOfPropIsLimit X P).conePointUniqueUpToIso (prodIsProd _ _)).hom ≫
       prod.map (Pi.map (fun (i : {x : I // P x}) ↦ f i.val))

@@ -43,6 +43,8 @@ See `ContinuousCohomology.MultiInd.d`.
 - Show that short exact sequences induce long exact sequences in certain scenarios.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 open CategoryTheory Functor ContinuousMap
@@ -62,8 +64,7 @@ abbrev Iobj (rep : Action (TopModuleCat R) G) : Action (TopModuleCat R) G where
   { toFun g := TopModuleCat.ofHom
       { toFun f := .comp (rep.ρ g).hom (f.comp (Homeomorph.mulLeft g⁻¹))
         map_add' _ _ := by ext; simp
-        map_smul' _ _ := by ext; simp
-        cont := (continuous_postcomp _).comp (continuous_precomp _) }
+        map_smul' _ _ := by ext; simp }
     map_one' := ConcreteCategory.ext (by ext; simp)
     map_mul' _ _ := ConcreteCategory.ext (by ext; simp [mul_assoc]) }
 
@@ -113,6 +114,7 @@ lemma d_succ (n : ℕ) :
     d R G (n + 1) = whiskerLeft (functor R G (n + 1)) (const R G) -
       (by exact whiskerRight (d R G n) (I R G)) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma d_comp_d (n : ℕ) :
     d R G n ≫ d R G (n + 1) = 0 := by
@@ -142,10 +144,8 @@ def invariants : Action (TopModuleCat R) G ⥤ TopModuleCat R where
       add_mem' hx hy g := by simp [hx g, hy g]
       zero_mem' := by simp
       smul_mem' r x hx g := by simp [hx g] : Submodule R M.V }
-  map f := TopModuleCat.ofHom
-    { toLinearMap := f.hom.hom.restrict fun x hx g ↦
-        congr($(f.comm g) x).symm.trans congr(f.hom.hom $(hx g))
-      cont := continuous_induced_rng.mpr (f.hom.hom.2.comp continuous_subtype_val) }
+  map f := TopModuleCat.ofHom <| f.hom.hom.restrict fun x hx g ↦
+    congr($(f.comm g) x).symm.trans congr(f.hom.hom $(hx g))
 
 instance : (invariants R G).Linear R where
 instance : (invariants R G).Additive where
@@ -162,6 +162,7 @@ noncomputable
 def _root_.continuousCohomology (n : ℕ) : Action (TopModuleCat R) G ⥤ TopModuleCat R :=
   homogeneousCochains R G ⋙ HomologicalComplex.homologyFunctor _ _ n
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `0`-homogeneous cochains are isomorphic to `Xᴳ`. -/
 def kerHomogeneousCochainsZeroEquiv
     (X : Action (TopModuleCat R) G) (n : ℕ) (hn : n = 1) :
@@ -197,6 +198,7 @@ def kerHomogeneousCochainsZeroEquiv
   continuous_invFun := continuous_induced_rng.mpr
     (continuous_induced_rng.mpr ((ContinuousLinearMap.const R G).cont.comp continuous_subtype_val))
 
+set_option backward.isDefEq.respectTransparency false in
 open ShortComplex HomologyData in
 /-- `H⁰_cont(G, X) ≅ Xᴳ`. -/
 noncomputable

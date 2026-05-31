@@ -17,6 +17,7 @@ of `Category.comp`.
 
 public meta section
 
+namespace Mathlib.Tactic.Slice
 open CategoryTheory
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
@@ -82,3 +83,4 @@ macro_rules
 --     declNames := [`tactic.interactive.sliceLHS, `tactic.interactive.sliceRHS]
 --     tags := ["category theory"] }
 --
+end Mathlib.Tactic.Slice

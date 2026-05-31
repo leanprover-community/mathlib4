@@ -32,40 +32,15 @@ noncomputable section
 
 /-- The type of extended real numbers `[-∞, ∞]`, constructed as `WithBot (WithTop ℝ)`. -/
 def EReal := WithBot (WithTop ℝ)
-  deriving Bot, Zero, One, Nontrivial, AddMonoid, PartialOrder, AddCommMonoid
-
-instance : ZeroLEOneClass EReal := inferInstanceAs (ZeroLEOneClass (WithBot (WithTop ℝ)))
-instance : SupSet EReal := inferInstanceAs (SupSet (WithBot (WithTop ℝ)))
-instance : InfSet EReal := inferInstanceAs (InfSet (WithBot (WithTop ℝ)))
-
-instance : CompleteLinearOrder EReal :=
-  inferInstanceAs (CompleteLinearOrder (WithBot (WithTop ℝ)))
-
-instance : LinearOrder EReal :=
-  inferInstanceAs (LinearOrder (WithBot (WithTop ℝ)))
-
-instance : IsOrderedAddMonoid EReal :=
-  inferInstanceAs (IsOrderedAddMonoid (WithBot (WithTop ℝ)))
-
-instance : AddCommMonoidWithOne EReal :=
-  inferInstanceAs (AddCommMonoidWithOne (WithBot (WithTop ℝ)))
-
-instance : DenselyOrdered EReal :=
-  inferInstanceAs (DenselyOrdered (WithBot (WithTop ℝ)))
-
-instance : CharZero EReal := inferInstanceAs (CharZero (WithBot (WithTop ℝ)))
+deriving Nontrivial,
+  Zero, One, AddMonoid, AddCommMonoid, AddCommMonoidWithOne, CharZero,
+  Top, Bot, SupSet, InfSet, PartialOrder, LinearOrder, CompleteLinearOrder, DenselyOrdered,
+  ZeroLEOneClass, IsOrderedAddMonoid
 
 /-- The canonical inclusion from reals to ereals. Registered as a coercion. -/
 @[coe] def Real.toEReal : ℝ → EReal := WithBot.some ∘ WithTop.some
 
 namespace EReal
-
--- things unify with `WithBot.decidableLT` later if we don't provide this explicitly.
-instance decidableLT : DecidableLT EReal :=
-  WithBot.decidableLT
-
--- TODO: Provide explicitly, otherwise it is inferred noncomputably from `CompleteLinearOrder`
-instance : Top EReal := ⟨WithBot.some ⊤⟩
 
 instance : Coe ℝ EReal := ⟨Real.toEReal⟩
 
@@ -97,6 +72,14 @@ protected theorem coe_ne_coe_iff {x y : ℝ} : (x : EReal) ≠ (y : EReal) ↔ x
 @[simp, norm_cast]
 protected theorem coe_natCast {n : ℕ} : ((n : ℝ) : EReal) = n := rfl
 
+/-- The order embedding of `ℝ` into `EReal`. -/
+def orderEmbedding : ℝ ↪o EReal where
+  toFun := Real.toEReal
+  inj' := EReal.coe_injective
+  map_rel_iff' {x y} := by simp
+
+theorem coe_orderEmbedding : ⇑orderEmbedding = Real.toEReal := rfl
+
 /-- The canonical map from nonnegative extended reals to extended reals. -/
 @[coe] def _root_.ENNReal.toEReal : ℝ≥0∞ → EReal
   | ⊤ => ⊤
@@ -115,13 +98,26 @@ theorem coe_one : ((1 : ℝ) : EReal) = 1 := rfl
 
 /-- A recursor for `EReal` in terms of the coercion.
 
-When working in term mode, note that pattern matching can be used directly. -/
+When working in term mode, note that pattern matching can be used directly,
+although this is prone to leaking the implementation details in terms of `Option`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
 protected def rec {motive : EReal → Sort*}
     (bot : motive ⊥) (coe : ∀ a : ℝ, motive a) (top : motive ⊤) : ∀ a : EReal, motive a
   | ⊥ => bot
   | (a : ℝ) => coe a
   | ⊤ => top
+
+@[simp] theorem rec_bot {motive : EReal → Sort*}
+    (bot : motive ⊥) (coe : ∀ a : ℝ, motive a) (top : motive ⊤) : EReal.rec bot coe top ⊥ = bot :=
+  rfl
+
+@[simp] theorem rec_top {motive : EReal → Sort*}
+    (bot : motive ⊥) (coe : ∀ a : ℝ, motive a) (top : motive ⊤) : EReal.rec bot coe top ⊤ = top :=
+  rfl
+
+@[simp] theorem rec_coe {motive : EReal → Sort*}
+    (bot : motive ⊥) (coe : ∀ a : ℝ, motive a) (top : motive ⊤) (a : ℝ) :
+    EReal.rec bot coe top a = coe a := rfl
 
 protected lemma «forall» {p : EReal → Prop} : (∀ r, p r) ↔ p ⊥ ∧ p ⊤ ∧ ∀ r : ℝ, p r where
   mp h := ⟨h _, h _, fun _ ↦ h _⟩
@@ -501,7 +497,7 @@ lemma preimage_coe_Ioi (x : ℝ) : Real.toEReal ⁻¹' Ioi x = Ioi x := by
 
 @[simp]
 lemma preimage_coe_Ioi_bot : Real.toEReal ⁻¹' Ioi ⊥ = univ := by
-  change (WithBot.some ∘ WithTop.some) ⁻¹' (Ioi ⊥) = _
+  change ((WithBot.some ∘ WithTop.some) ⁻¹' (Ioi (⊥ : WithBot (WithTop ℝ))) : Set ℝ) = _
   refine preimage_comp.trans ?_
   simp only [WithBot.preimage_coe_Ioi_bot, preimage_univ]
 
@@ -519,7 +515,7 @@ lemma preimage_coe_Iio (y : ℝ) : Real.toEReal ⁻¹' Iio y = Iio y := by
 
 @[simp]
 lemma preimage_coe_Iio_top : Real.toEReal ⁻¹' Iio ⊤ = univ := by
-  change (WithBot.some ∘ WithTop.some) ⁻¹' (Iio (WithBot.some ⊤)) = _
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Iio (WithBot.some (⊤ : WithTop ℝ))) = _
   refine preimage_comp.trans ?_
   simp only [WithBot.preimage_coe_Iio, WithTop.preimage_coe_Iio_top]
 
@@ -645,7 +641,7 @@ theorem coe_ennreal_ne_one {x : ℝ≥0∞} : (x : EReal) ≠ 1 ↔ x ≠ 1 :=
   coe_ennreal_eq_one.not
 
 theorem coe_ennreal_nonneg (x : ℝ≥0∞) : (0 : EReal) ≤ x :=
-  coe_ennreal_le_coe_ennreal_iff.2 (zero_le x)
+  coe_ennreal_le_coe_ennreal_iff.2 zero_le
 
 @[simp] theorem range_coe_ennreal : range ((↑) : ℝ≥0∞ → EReal) = Set.Ici 0 :=
   Subset.antisymm (range_subset_iff.2 coe_ennreal_nonneg) fun x => match x with
@@ -906,7 +902,7 @@ meta def evalERealToENNReal : PositivityExt where eval {u α} _zα _pα e := do
     assertInstancesCommute
     match ← core q(inferInstance) q(inferInstance) a with
     | .positive pa => pure (.positive q(EReal.toENNReal_pos_iff.2 $pa))
-    | _ => pure (.nonnegative q(zero_le $e))
+    | _ => pure (.nonnegative q(zero_le (a := $e)))
   | _, _, _ => throwError "not EReal.toENNReal"
 
 end Mathlib.Meta.Positivity

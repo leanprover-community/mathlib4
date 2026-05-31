@@ -6,9 +6,8 @@ import Mathlib.Data.Fintype.Defs -- Import `Fintype`, but not interface
 set_option linter.unusedFintypeInType true
 
 /--
-warning: `foo` has the hypothesis:
+warning: `foo` does not use the following hypothesis in its type:
   • [Fintype α] (#2)
-which is not used in the remainder of the type.
 
 Consider replacing this hypothesis with the corresponding instance of `Finite` and using `Fintype.ofFinite` in the proof, or removing it entirely.
 

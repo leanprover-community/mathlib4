@@ -6,6 +6,7 @@ Authors: Nicolò Cavalleri
 module
 
 public import Mathlib.Geometry.Manifold.Algebra.LieGroup
+public import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # `C^n` structures
@@ -15,22 +16,22 @@ term `ContMDiffRing` instead of Lie mainly because Lie ring has currently anothe
 in mathematics.
 -/
 
-@[expose] public section
+public section
 
 open scoped Manifold ContDiff
 
 section ContMDiffRing
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {n : WithTop ℕ∞}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {n : ℕ∞ω}
 
 -- See note [Design choices about smooth algebraic structures]
 /-- A `C^n` (semi)ring is a (semi)ring `R` where addition and multiplication are `C^n`.
 If `R` is a ring, then negation is automatically `C^n`, as it is multiplication with `-1`. -/
-class ContMDiffRing (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
+class ContMDiffRing (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω)
     (R : Type*) [Semiring R] [TopologicalSpace R] [ChartedSpace H R] : Prop
     extends ContMDiffAdd I n R where
-  contMDiff_mul : ContMDiff (I.prod I) I n fun p : R × R => p.1 * p.2
+  contMDiff_mul : CMDiff n fun p : R × R => p.1 * p.2
 
 -- see Note [lower instance priority]
 instance (priority := 100) ContMDiffRing.toContMDiffMul (I : ModelWithCorners 𝕜 E H) (R : Type*)
@@ -47,9 +48,10 @@ instance (priority := 100) ContMDiffRing.toLieAddGroup (I : ModelWithCorners �
 
 end ContMDiffRing
 
+set_option backward.isDefEq.respectTransparency false in
 -- see Note [lower instance priority]
 instance (priority := 100) instFieldContMDiffRing
-    {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} :
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω} :
     ContMDiffRing 𝓘(𝕜) n 𝕜 :=
   { instNormedSpaceLieAddGroup with
     contMDiff_mul := by
@@ -61,7 +63,7 @@ instance (priority := 100) instFieldContMDiffRing
 
 variable {𝕜 R E H : Type*} [TopologicalSpace R] [TopologicalSpace H] [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [ChartedSpace H R] (I : ModelWithCorners 𝕜 E H)
-  (n : WithTop ℕ∞)
+  (n : ℕ∞ω)
 
 /-- A `C^n` (semi)ring is a topological (semi)ring. This is not an instance for technical reasons,
 see note [Design choices about smooth algebraic structures]. -/

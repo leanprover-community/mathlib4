@@ -5,7 +5,7 @@ Authors: Patrick Stevens, Thomas Browning
 -/
 module
 
-public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Data.Nat.Choose.Bounds
 public import Mathlib.Data.Nat.GCD.Basic
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Linarith
@@ -61,6 +61,14 @@ theorem two_le_centralBinom (n : ℕ) (n_pos : 0 < n) : 2 ≤ centralBinom n :=
     2 ≤ 2 * n := Nat.le_mul_of_pos_right _ n_pos
     _ = (2 * n).choose 1 := (choose_one_right (2 * n)).symm
     _ ≤ centralBinom n := choose_le_centralBinom 1 n
+
+theorem centralBinom_le_four_pow (n : ℕ) : centralBinom n ≤ 4 ^ n := by
+  grw [show 4 = 2 ^ 2 by rfl, ← pow_mul, centralBinom_eq_two_mul_choose, choose_le_two_pow]
+
+theorem centralBinom_lt_four_pow {n : ℕ} (h : n ≠ 0) : centralBinom n < 4 ^ n := by
+  rw [show 4 = 2 ^ 2 by rfl, ← pow_mul]
+  apply choose_lt_two_pow
+  lia
 
 /-- An inductive property of the central binomial coefficient.
 -/

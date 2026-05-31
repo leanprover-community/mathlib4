@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.CharP.Reduced
 public import Mathlib.RingTheory.IntegralDomain
+
 -- TODO: remove Mathlib.Algebra.CharP.Reduced and move the last two lemmas to Lemmas
 
 /-!
@@ -185,11 +186,21 @@ theorem Units.val_set_image_rootsOfUnity_one : ((↑) : Rˣ → R) '' (rootsOfUn
 
 end CommMonoid
 
+section CommRing
+
+variable [CommRing R]
+
 open Set in
-theorem Units.val_set_image_rootsOfUnity_two [CommRing R] [NoZeroDivisors R] :
+theorem Units.val_set_image_rootsOfUnity_two [NoZeroDivisors R] :
     ((↑) : Rˣ → R) '' (rootsOfUnity 2 R) = {1, -1} := by
   ext x
   simp
+
+theorem mem_rootsOfUnity_iff_isRoot (k : ℕ) (ζ : Rˣ) :
+    ζ ∈ rootsOfUnity k R ↔ (X ^ k - 1 : R[X]).IsRoot ζ := by
+  simp [-mem_rootsOfUnity, mem_rootsOfUnity', sub_eq_zero]
+
+end CommRing
 
 section IsDomain
 
@@ -236,7 +247,7 @@ instance rootsOfUnity.fintype : Fintype (rootsOfUnity k R) := by
   exact Fintype.ofEquiv { x // x ∈ nthRoots k (1 : R) } (rootsOfUnityEquivNthRoots R k).symm
 
 instance rootsOfUnity.isCyclic : IsCyclic (rootsOfUnity k R) :=
-  isCyclic_of_subgroup_isDomain ((Units.coeHom R).comp (rootsOfUnity k R).subtype) coe_injective
+  isCyclic_of_injective_ringHom ((Units.coeHom R).comp (rootsOfUnity k R).subtype) coe_injective
 
 theorem card_rootsOfUnity : Fintype.card (rootsOfUnity k R) ≤ k := by
   classical
@@ -257,6 +268,15 @@ theorem map_rootsOfUnity_eq_pow_self [FunLike F R R] [MonoidHomClass F R R] (σ 
       (m.emod_nonneg (Int.natCast_ne_zero.mpr (pos_iff_ne_zero.mp (orderOf_pos ζ)))),
     zpow_natCast, rootsOfUnity.coe_pow]
   exact ⟨(m % orderOf ζ).toNat, rfl⟩
+
+instance {L : Type*} [LeftCancelMonoid L] [Finite L] :
+    Finite (L →* Rˣ) := by
+  let S := rootsOfUnity (Monoid.exponent L) R
+  have : Finite (L →* S) := .of_injective _ DFunLike.coe_injective
+  refine .of_surjective (fun f : L →* S ↦ (Subgroup.subtype _).comp f) fun f ↦ ?_
+  have H a : f a ∈ S := by
+    rw [mem_rootsOfUnity, ← map_pow, Monoid.pow_exponent_eq_one, map_one]
+  exact ⟨.codRestrict f S H, MonoidHom.ext fun _ ↦ by simp⟩
 
 end IsDomain
 
@@ -295,7 +315,7 @@ def monoidHomMulEquivRootsOfUnityOfGenerator {G : Type*} [CommGroup G] {g : G}
       ← map_pow, pow_card_eq_one', map_one, Units.val_one]⟩
   invFun ζ := monoidHomOfForallMemZpowers hg (g' := (ζ.val : G')) <| by
     simpa only [orderOf_eq_card_of_forall_mem_zpowers hg, orderOf_dvd_iff_pow_eq_one,
-      ← Units.val_pow_eq_pow_val, Units.val_eq_one] using ζ.prop
+      ← Units.val_pow_eq_pow_val, Units.val_eq_one] using! ζ.prop
   left_inv φ := (MonoidHom.eq_iff_eq_on_generator hg _ φ).mpr <| by
     simp only [IsUnit.unit_spec, monoidHomOfForallMemZpowers_apply_gen]
   right_inv φ := Subtype.ext <| by

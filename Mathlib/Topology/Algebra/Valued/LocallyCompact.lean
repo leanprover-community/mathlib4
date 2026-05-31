@@ -51,14 +51,14 @@ lemma norm_le_one (x : 𝒪[K]) : ‖x‖ ≤ 1 := mem_iff.mp x.prop
 
 @[simp]
 lemma norm_coe_unit (u : 𝒪[K]ˣ) : ‖((u : 𝒪[K]) : K)‖ = 1 := by
-  simpa [← NNReal.coe_inj] using
+  simpa [← NNReal.coe_inj] using!
     (Valuation.integer.integers (NormedField.valuation (K := K))).valuation_unit u
 
 lemma norm_unit (u : 𝒪[K]ˣ) : ‖(u : 𝒪[K])‖ = 1 := by
   simp
 
 lemma isUnit_iff_norm_eq_one {u : 𝒪[K]} : IsUnit u ↔ ‖u‖ = 1 := by
-  simpa [← NNReal.coe_inj] using
+  simpa [← NNReal.coe_inj] using!
     (Valuation.integer.integers (NormedField.valuation (K := K))).isUnit_iff_valuation_eq_one
 
 lemma norm_irreducible_lt_one {ϖ : 𝒪[K]} (h : Irreducible ϖ) : ‖ϖ‖ < 1 :=
@@ -125,6 +125,7 @@ lemma finite_quotient_maximalIdeal_pow_of_finite_residueField [IsDiscreteValuati
         (Ideal.powQuotPowSuccEquivMapMkPowSuccPow _ n))
 
 open scoped Valued
+
 lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).RankOne]
     [IsDiscreteValuationRing 𝒪[K]] :
     TotallyBounded (Set.univ (α := 𝒪[K])) ↔ Finite 𝓀[K] := by
@@ -143,12 +144,16 @@ lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).Ran
     simp only [Submodule.Quotient.quot_mk_eq_mk, Ideal.Quotient.mk_eq_mk, Set.mem_univ,
       IsLocalRing.residue, Set.mem_image, true_implies]
     refine ⟨y, hy, ?_⟩
-    convert (Ideal.Quotient.mk_eq_mk_iff_sub_mem (I := 𝓂[K]) y x).mpr _
+    convert!
+      (Ideal.Quotient.mk_eq_mk_iff_sub_mem (I := 𝓂[K]) y x).mpr
+        _
+          -- TODO: make Valued.maximalIdeal abbreviations instead of def
+
     -- TODO: make Valued.maximalIdeal abbreviations instead of def
     rw [Valued.maximalIdeal, hp.maximalIdeal_eq, ← SetLike.mem_coe,
       (Valuation.integer.integers _).coe_span_singleton_eq_setOf_le_v_algebraMap]
     rw [dist_comm] at hy'
-    simpa [dist_eq_norm] using hy'.le
+    simpa [dist_eq_norm] using! hy'.le
   · intro H
     rw [Metric.totallyBounded_iff]
     intro ε εpos
@@ -173,6 +178,7 @@ section CompactDVR
 
 open Valued
 
+set_option backward.isDefEq.respectTransparency false in
 lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :
     Nonempty (LocallyFiniteOrder (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ) := by
   -- TODO: generalize to `Valuation.Integer`, which will require showing that `IsCompact`
@@ -226,9 +232,16 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
   · intro w
     simp only [U]
     split_ifs with hw
-    · exact Valued.isOpen_closedBall _ z0.ne'
-    · refine Valued.isOpen_sphere _ ?_
-      push_neg at hw
+    · obtain ⟨b, hb⟩ := MonoidHom.mem_mrange.mp z.1.2
+      rw [← hb] at z0 ⊢
+      simp_rw [← v.restrict_le_iff]
+      refine Valued.isOpen_closedBall _ ?_
+      rw [ne_eq, ← map_zero v.restrict, v.restrict_inj, map_zero]
+      exact z0.ne'
+    · simp_rw [← v.restrict_inj]
+      refine Valued.isOpen_sphere _ ?_
+      push Not at hw
+      rw [← map_zero v.restrict, ne_eq, v.restrict_inj]
       refine (hw.trans' ?_).ne'
       simp [z0]
   · intro w
@@ -244,7 +257,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
   classical
   refine (t.finite_toSet.dependent_image ?_).subset ?_
   · refine fun i hi ↦ if hi' : v i ≤ z then z else Units.mk0 ⟨(v i), by simp⟩ ?_
-    push_neg at hi'
+    push Not at hi'
     exact Subtype.coe_injective.ne_iff.mp (hi'.trans' z0).ne'
   · intro i
     simp only [Set.mem_Icc, Finset.mem_coe, exists_prop, Set.mem_setOf_eq, and_imp]

@@ -133,6 +133,7 @@ private theorem c_nonneg : 0 ≤ c K := by
   rw [c]
   positivity
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 theorem basis_repr_norm_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
@@ -184,6 +185,7 @@ private def asiegel : Matrix (α × (K →+* ℂ)) (β × (K →+* ℂ)) ℤ := 
 
 variable (ha : a ≠ 0)
 
+set_option backward.isDefEq.respectTransparency false in
 include ha in
 private theorem asiegel_ne_0 : asiegel K a ≠ 0 := by
   simp +unfoldPartialApp only [asiegel, a']
@@ -317,7 +319,7 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
        _ ≤ h * (c₂ K) * ((q * c₁ K * A) ^ ((p : ℝ) / (q - p))) := ?_
        _ ≤ c₁ K * ((c₁ K * ↑q * A) ^ ((p : ℝ) / (q - p))) := ?_
   · simp_rw [← map_mul, map_sum]; apply house_sum_le_sum_house
-  · gcongr with r _; convert house_mul_le ..
+  · gcongr with r _; convert! house_mul_le ..
     simp only [map_intCast, house_intCast, Int.cast_abs, Int.norm_eq_abs]
   · unfold supOfBasis
     gcongr with r _
@@ -342,7 +344,7 @@ theorem exists_ne_zero_int_vec_house_le :
     ∀ l, house (ξ l).1 ≤ c₁ K * ((c₁ K * q * A) ^ ((p : ℝ) / (q - p))) := by
   classical
   let h := finrank ℚ K
-  have hphqh : p * h < q * h := mul_lt_mul_of_pos_right hpq finrank_pos
+  have hphqh : p * h < q * h := by gcongr; exact finrank_pos
   have h0ph : 0 < p * h := by rw [mul_pos_iff]; constructor; exact ⟨h0p, finrank_pos⟩
   have hfinp : Fintype.card (α × (K →+* ℂ)) = p * h := by
     rw [Fintype.card_prod, cardα, Embeddings.card]

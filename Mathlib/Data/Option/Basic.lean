@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Control.Combinators
 public import Mathlib.Data.Option.Defs
-public import Mathlib.Logic.IsEmpty
+public import Mathlib.Logic.IsEmpty.Basic
 public import Mathlib.Logic.Relator
 public import Mathlib.Util.CompileInductive
 public import Aesop
@@ -150,17 +150,14 @@ end pmap
 theorem seq_some {α β} {a : α} {f : α → β} : some f <*> some a = some (f a) :=
   rfl
 
-set_option linter.deprecated false in
 @[deprecated "Use `Option.get` with proof of `isSome`." (since := "2026-01-05")]
 theorem iget_mem [Inhabited α] : ∀ {o : Option α}, isSome o → o.iget ∈ o
   | some _, _ => rfl
 
-set_option linter.deprecated false in
 @[deprecated "Use `Option.getD`." (since := "2026-01-05")]
 theorem iget_of_mem [Inhabited α] {a : α} : ∀ {o : Option α}, a ∈ o → o.iget = a
   | _, rfl => rfl
 
-set_option linter.deprecated false in
 @[deprecated "Use `Option.getD` directly." (since := "2026-01-05")]
 theorem getD_default_eq_iget [Inhabited α] (o : Option α) :
     o.getD default = o.iget := by cases o <;> rfl
@@ -239,5 +236,14 @@ lemma elim'_update {α : Type*} {β : Type*} [DecidableEq α]
 lemma getD_comp_some (d : α) : (fun x ↦ x.getD d) ∘ some = id := by
   ext
   simp only [Function.comp_apply, getD_some, id_eq]
+
+@[simp]
+theorem none_eq_map_iff {x : Option α} {f : α → β} : none = x.map f ↔ x = none := by
+  rw [eq_comm, map_eq_none_iff]
+
+@[simp]
+theorem some_eq_map_iff {b : β} {x : Option α} {f : α → β} :
+    some b = x.map f ↔ ∃ (a : α), x = some a ∧ f a = b := by
+  rw [eq_comm, map_eq_some_iff]
 
 end Option

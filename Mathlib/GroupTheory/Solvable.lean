@@ -29,6 +29,8 @@ the derived series of a group.
 
 open Subgroup
 
+open scoped commutatorElement
+
 variable {G G' : Type*} [Group G] [Group G'] {f : G →* G'}
 
 section derivedSeries
@@ -181,7 +183,7 @@ theorem isSolvable_iff_commutator_lt [WellFoundedLT (Subgroup G)] :
   · infer_instance
   · obtain ⟨n, hn⟩ := hH ⁅H, H⁆ (h H h')
     use n + 1
-    rw [← (map_injective (subtype_injective _)).eq_iff, Subgroup.map_bot] at hn ⊢
+    rw [← map_subtype_inj, Subgroup.map_bot] at hn ⊢
     rw [← hn]
     clear hn
     induction n with

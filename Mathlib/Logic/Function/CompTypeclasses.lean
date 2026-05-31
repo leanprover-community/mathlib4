@@ -5,8 +5,7 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Tactic.TypeStar
-public import Mathlib.Tactic.Lemma
+public import Mathlib.Init
 
 /-!
 # Propositional typeclasses on several maps
@@ -23,7 +22,7 @@ TODO :
 
 -/
 
-@[expose] public section
+public section
 
 section CompTriple
 

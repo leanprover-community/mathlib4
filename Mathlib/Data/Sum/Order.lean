@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.Heyting.Basic
 public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.Lex
 public import Mathlib.Order.WithBot
 
 /-!
@@ -733,6 +734,7 @@ variable [LE α]
 
 namespace WithBot
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `WithBot α` is order-isomorphic to `PUnit ⊕ₗ α`, by sending `⊥` to `Unit` and `↑a` to
 `a`. -/
 def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
@@ -768,6 +770,7 @@ end WithBot
 
 namespace WithTop
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `WithTop α` is order-isomorphic to `α ⊕ₗ PUnit`, by sending `⊤` to `Unit` and `↑a` to
 `a`. -/
 def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=

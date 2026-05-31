@@ -56,7 +56,7 @@ theorem Module.lift_rank_of_isLocalizedModule_of_free
   have := (IsLocalizedModule.isBaseChange S Rₛ f).equiv.lift_rank_eq.symm
   simp only [rank_tensorProduct, rank_self,
     Cardinal.lift_one, one_mul, Cardinal.lift_lift] at this ⊢
-  convert this
+  convert! this
   exact Cardinal.lift_umax
 
 theorem Module.finrank_of_isLocalizedModule_of_free
@@ -65,13 +65,20 @@ theorem Module.finrank_of_isLocalizedModule_of_free
     (f : M →ₗ[R] Mₛ) [IsLocalization S Rₛ] [IsLocalizedModule S f] [Module.Free R M]
     [Nontrivial Rₛ] :
     Module.finrank Rₛ Mₛ = Module.finrank R M := by
-  simpa using congr(Cardinal.toNat $(Module.lift_rank_of_isLocalizedModule_of_free Rₛ S f))
+  simpa using! congr(Cardinal.toNat $(Module.lift_rank_of_isLocalizedModule_of_free Rₛ S f))
 
 theorem Module.projective_of_isLocalizedModule {Rₛ Mₛ} [AddCommGroup Mₛ] [Module R Mₛ]
     [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ]
     (S) (f : M →ₗ[R] Mₛ) [IsLocalization S Rₛ] [IsLocalizedModule S f] [Module.Projective R M] :
     Module.Projective Rₛ Mₛ :=
   Projective.of_equiv (IsLocalizedModule.isBaseChange S Rₛ f).equiv
+
+instance [Module.Projective R M] : Module.Projective (Localization S) (LocalizedModule S M) :=
+  Module.projective_of_isLocalizedModule S (LocalizedModule.mkLinearMap S M)
+
+instance {A : Type*} [CommRing A] [Algebra R A] [Module.Projective R A] :
+    Module.Projective (Localization S) (Localization (Algebra.algebraMapSubmonoid A S)) :=
+  Module.projective_of_isLocalizedModule S (IsScalarTower.toAlgHom R A _).toLinearMap
 
 theorem LinearMap.split_surjective_of_localization_maximal
     (f : M →ₗ[R] N) [Module.FinitePresentation R N]
@@ -85,7 +92,7 @@ theorem LinearMap.split_surjective_of_localization_maximal
   rw [LocalizedModule.map_id]
   have : LinearMap.id ∈ LinearMap.range (LinearMap.llcomp _
     (LocalizedModule I.primeCompl N) _ _ (LocalizedModule.map I.primeCompl f)) := H I hI
-  convert this
+  convert! this
   · ext f
     constructor
     · intro hf
@@ -130,7 +137,7 @@ theorem Module.projective_of_localization_maximal (H : ∀ (I : Ideal R) (_ : I.
   let f : N →ₗ[R] M := Finsupp.linearCombination R (Subtype.val : s → M)
   have hf : Function.Surjective f := by
     rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination, Subtype.range_val]
-    convert hs
+    convert! hs
   have (I : Ideal R) (hI : I.IsMaximal) :=
     letI := H I hI
     Module.projective_lifting_property (LocalizedModule.map I.primeCompl f) LinearMap.id
@@ -151,7 +158,8 @@ variable
   (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P)
   [inst : ∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
 
-attribute [local instance] RingHomInvPair.of_ringEquiv in
+set_option backward.defeqAttrib.useBackward true in
+attribute [local instance] RingHomInvPair.of_ringEquiv RingHomInvPair.of_ringEquiv_symm in
 include f in
 /--
 A variant of `Module.projective_of_localization_maximal` that accepts `IsLocalizedModule`.
@@ -161,8 +169,9 @@ theorem Module.projective_of_localization_maximal'
     [Module.FinitePresentation R M] : Module.Projective R M := by
   apply Module.projective_of_localization_maximal
   intro P hP
-  refine Module.Projective.of_ringEquiv (M := Mₚ P)
-    (IsLocalization.algEquiv P.primeCompl (Rₚ P) (Localization.AtPrime P)).toRingEquiv
+  set e := (IsLocalization.algEquiv P.primeCompl (Rₚ P) (Localization.AtPrime P)).toRingEquiv
+  refine Module.Projective.of_equiv (M := Mₚ P) (R := Rₚ P)
+    (σ := e)
     { __ := IsLocalizedModule.linearEquiv P.primeCompl (f P)
         (LocalizedModule.mkLinearMap P.primeCompl M)
       map_smul' := ?_ }
@@ -170,6 +179,6 @@ theorem Module.projective_of_localization_maximal'
     obtain ⟨r, s, rfl⟩ := IsLocalization.exists_mk'_eq P.primeCompl r
     apply ((Module.End.isUnit_iff _).mp
       (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap P.primeCompl M) s)).1
-    dsimp
+    dsimp [e]
     simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul,
       IsLocalization.map_id_mk']

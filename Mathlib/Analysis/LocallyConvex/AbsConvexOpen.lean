@@ -41,7 +41,7 @@ variable {𝕜 E : Type*}
 
 section AbsolutelyConvexSets
 
-variable [TopologicalSpace E] [AddCommMonoid E] [Zero E] [SeminormedRing 𝕜]
+variable [TopologicalSpace E] [AddCommMonoid E] [SeminormedRing 𝕜]
 variable [SMul 𝕜 E]
 variable (𝕜 E) [PartialOrder 𝕜]
 
@@ -110,7 +110,7 @@ theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) :=
   refine SeminormFamily.withSeminorms_of_hasBasis _ ?_
   refine (nhds_hasBasis_absConvex_open 𝕜 E).to_hasBasis (fun s hs => ?_) fun s hs => ?_
   · refine ⟨s, ⟨?_, rfl.subset⟩⟩
-    convert (gaugeSeminormFamily _ _).basisSets_singleton_mem ⟨s, hs⟩ one_pos
+    convert! (gaugeSeminormFamily _ _).basisSets_singleton_mem ⟨s, hs⟩ one_pos
     rw [gaugeSeminormFamily_ball, Subtype.coe_mk]
   refine ⟨s, ⟨?_, rfl.subset⟩⟩
   rw [SeminormFamily.basisSets_iff] at hs

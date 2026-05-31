@@ -123,42 +123,28 @@ namespace Sym2
 variable [DecidableEq α]
 
 /-- The `diag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `#s`. -/
-theorem card_image_diag (s : Finset α) : #(s.diag.image Sym2.mk) = #s := by
-  rw [card_image_of_injOn, diag_card]
-  rintro ⟨x₀, x₁⟩ hx _ _ h
-  cases Sym2.eq.1 h
-  · rfl
-  · simp only [mem_coe, mem_diag] at hx
-    rw [hx.2]
+theorem card_image_diag (s : Finset α) : #(s.diag.image Sym2.mk.uncurry) = #s := by
+  simp [card_image_of_injOn]
 
-lemma two_mul_card_image_offDiag (s : Finset α) : 2 * #(s.offDiag.image Sym2.mk) = #s.offDiag := by
-  rw [card_eq_sum_card_image (Sym2.mk : α × α → _), sum_const_nat (Sym2.ind _), mul_comm]
-  rintro x y hxy
-  simp_rw [mem_image, mem_offDiag] at hxy
-  obtain ⟨a, ⟨ha₁, ha₂, ha⟩, h⟩ := hxy
-  replace h := Sym2.eq.1 h
-  obtain ⟨hx, hy, hxy⟩ : x ∈ s ∧ y ∈ s ∧ x ≠ y := by
-    cases h <;> refine ⟨‹_›, ‹_›, ?_⟩ <;> [exact ha; exact ha.symm]
-  have hxy' : y ≠ x := hxy.symm
-  have : {z ∈ s.offDiag | Sym2.mk z = s(x, y)} = {(x, y), (y, x)} := by
-    ext ⟨x₁, y₁⟩
-    rw [mem_filter, mem_insert, mem_singleton, Sym2.eq_iff, Prod.mk_inj, Prod.mk_inj,
-      and_iff_right_iff_imp]
-    -- `hxy'` is used in `exact`
-    rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> rw [mem_offDiag] <;> exact ⟨‹_›, ‹_›, ‹_›⟩
-  rw [this, card_insert_of_notMem, card_singleton]
-  simp only [not_and, Prod.mk_inj, mem_singleton]
-  exact fun _ => hxy'
+lemma two_mul_card_image_offDiag (s : Finset α) :
+    2 * #(s.offDiag.image Sym2.mk.uncurry) = #s.offDiag := by
+  rw [card_eq_sum_card_image (Sym2.mk.uncurry : α × α → _), sum_const_nat (Sym2.ind _), mul_comm]
+  -- FIXME: Would be cool for the final `aesop` call not to require this `a ≠ b ∨ b ≠ a` trick.
+  have (a b : α) (ha : a ∈ s) (hb : b ∈ s) (hab : a ≠ b ∨ b ≠ a) :
+      {z ∈ s.offDiag | Sym2.mk.uncurry z = s(a, b)} = .cons (a, b) {(b, a)}
+        (by simpa [eq_comm] using hab) := by aesop
+  aesop
 
 /-- The `offDiag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `#s.offDiag / 2`.
 This is because every element `s(x, y)` of `Sym2 α` not on the diagonal comes from exactly two
 pairs: `(x, y)` and `(y, x)`. -/
-theorem card_image_offDiag (s : Finset α) : #(s.offDiag.image Sym2.mk) = (#s).choose 2 := by
+theorem card_image_offDiag (s : Finset α) :
+    #(s.offDiag.image Sym2.mk.uncurry) = (#s).choose 2 := by
   rw [Nat.choose_two_right, Nat.mul_sub_left_distrib, mul_one, ← offDiag_card,
     Nat.div_eq_of_eq_mul_right Nat.zero_lt_two (two_mul_card_image_offDiag s).symm]
 
 theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card α := by
-  convert card_image_diag (univ : Finset α)
+  convert! card_image_diag (univ : Finset α)
   rw [← filter_image_mk_isDiag, Fintype.card_of_subtype]
   rintro x
   rw [mem_filter, univ_product_univ, mem_image]
@@ -167,7 +153,7 @@ theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card
 
 theorem card_subtype_not_diag [Fintype α] :
     card { a : Sym2 α // ¬a.IsDiag } = (card α).choose 2 := by
-  convert card_image_offDiag (univ : Finset α)
+  convert! card_image_offDiag (univ : Finset α)
   rw [← filter_image_mk_not_isDiag, Fintype.card_of_subtype]
   rintro x
   rw [mem_filter, univ_product_univ, mem_image]

@@ -8,10 +8,10 @@ module
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Comma.Arrow
-public import Mathlib.CategoryTheory.EpiMono
 public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Tactic.FinCases
 public import Mathlib.Tactic.SuppressCompilation
+
 /-!
 # Composable arrows
 
@@ -39,6 +39,8 @@ TODO (@joelriou):
   up to `n = 7` in order to formalize spectral sequences following Verdier)
 
 -/
+
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -201,7 +203,6 @@ def isoMk {F G : ComposableArrows C n} (app : ∀ i, F.obj i ≅ G.obj i)
     F ≅ G where
   hom := homMk (fun i => (app i).hom) w
   inv := homMk (fun i => (app i).inv) (fun i hi => by
-    dsimp only
     rw [← cancel_epi ((app _).hom), ← reassoc_of% (w i hi), Iso.hom_inv_id, comp_id,
       Iso.hom_inv_id_assoc])
 
@@ -283,6 +284,7 @@ lemma isIso_iff₁ {F G : ComposableArrows C 1} (f : F ⟶ G) :
   rw [NatTrans.isIso_iff_isIso_app]
   exact ⟨fun h ↦ ⟨h 0, h 1⟩, fun _ i ↦ by fin_cases i <;> tauto⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ext₁ {F G : ComposableArrows C 1}
     (left : F.left = G.left) (right : F.right = G.right)
     (w : F.hom = eqToHom left ≫ G.hom ≫ eqToHom right.symm) : F = G :=
@@ -290,6 +292,7 @@ lemma ext₁ {F G : ComposableArrows C 1}
     (fun i => by fin_cases i <;> assumption)
     (fun i => by fin_cases i <;> rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mk₁_surjective (X : ComposableArrows C 1) : ∃ (X₀ X₁ : C) (f : X₀ ⟶ X₁), X = mk₁ f :=
   ⟨_, _, X.map' 0 1, ext₁ rfl rfl (by simp)⟩
 
@@ -301,10 +304,12 @@ lemma mk₁_comp_eqToHom {X₀ X₁ X₁' : C} (f : X₀ ⟶ X₁) (h : X₁ = X
     ComposableArrows.mk₁ (f ≫ eqToHom h) = ComposableArrows.mk₁ f := by
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mk₁_hom (X : ComposableArrows C 1) :
     mk₁ X.hom = X :=
   ext₁ rfl rfl (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The bijection between `ComposableArrows C 1` and `Arrow C`. -/
 @[simps]
 def arrowEquiv : ComposableArrows C 1 ≃ Arrow C where
@@ -372,6 +377,7 @@ lemma map_one_succ (j : ℕ) (hj : j + 1 < n + 1 + 1) :
 lemma map_id (i : Fin (n + 1 + 1)) : map F f i i (by simp) = 𝟙 _ := by
   obtain ⟨_ | _, hi⟩ := i <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
     map F f i k (hij.trans hjk) = map F f i j hij ≫ map F f j k hjk := by
   obtain ⟨i, hi⟩ := i
@@ -433,6 +439,7 @@ variable {X₀ X₁ X₂ X₃ X₄ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) 
 /-! These examples are meant to test the good definitional properties of `precomp`,
 and that `dsimp` can see through. -/
 
+set_option backward.defeqAttrib.useBackward true in
 example : map' (mk₂ f g) 0 1 = f := by dsimp
 example : map' (mk₂ f g) 1 2 = g := by dsimp
 example : map' (mk₂ f g) 0 2 = f ≫ g := by dsimp
@@ -470,6 +477,27 @@ def whiskerLeftFunctor (Φ : Fin (n + 1) ⥤ Fin (m + 1)) :
 def _root_.Fin.succFunctor (n : ℕ) : Fin n ⥤ Fin (n + 1) where
   obj i := i.succ
   map {_ _} hij := homOfLE (Fin.succ_le_succ_iff.2 (leOfHom hij))
+
+/-- The functor `Fin (l + 1) ⥤ Fin (n + 1)` which sends `i` to `k + i` -/
+@[simps!]
+def _root_.Fin.natAddLEFunctor {n k l : ℕ} (h : k + l ≤ n) : Fin (l + 1) ⥤ Fin (n + 1) where
+  obj := fun ⟨i, _⟩ => ⟨k + i , by lia⟩
+  map {_ _} hij := homOfLE (by rw [Fin.le_iff_val_le_val]; simpa using (leOfHom hij))
+
+/-- The functor `ComposableArrows C n ⥤ ComposableArrows C l` obtained by precomposition with
+the functor `Fin.natAddLEFunctor`. -/
+@[simps!]
+def natAddLEFunctor {n k l : ℕ} (h : k + l ≤ n) :
+    ComposableArrows C n ⥤ ComposableArrows C l :=
+  whiskerLeftFunctor (Fin.natAddLEFunctor h)
+
+lemma natAddLEFunctor_obj' {n k l i : ℕ} (h : k + l ≤ n) (R : ComposableArrows C n)
+    (_ : i ≤ l := by lia) :
+    ((natAddLEFunctor h).obj R).obj' i = R.obj' (k + i) := rfl
+
+lemma natAddLEFunctor_app' {n k l i : ℕ} (h : k + l ≤ n) {R₁ R₂ : ComposableArrows C n}
+    (φ : R₁ ⟶ R₂) (_ : i ≤ l := by lia) :
+    app' ((natAddLEFunctor h).map φ) i = app' φ (k + i) := rfl
 
 /-- The functor `ComposableArrows C (n + 1) ⥤ ComposableArrows C n` which forgets
 the first arrow. -/
@@ -536,6 +564,7 @@ lemma hom_ext_succ {F G : ComposableArrows C (n + 1)} {f g : F ⟶ G}
   · exact h₀
   · exact congr_app h₁ ⟨i, by valid⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Inductive construction of isomorphisms in `ComposableArrows C (n + 1)`: in order to
 construct an isomorphism `F ≅ G`, it suffices to provide `α : F.obj' 0 ≅ G.obj' 0` and
 `β : F.δ₀ ≅ G.δ₀` such that `F.map' 0 1 ≫ app' β.hom 0 = α.hom ≫ G.map' 0 1`. -/
@@ -558,6 +587,7 @@ def isoMkSucc {F G : ComposableArrows C (n + 1)} (α : F.obj' 0 ≅ G.obj' 0)
     · ext ⟨i, hi⟩
       simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ext_succ {F G : ComposableArrows C (n + 1)} (h₀ : F.obj' 0 = G.obj' 0)
     (h : F.δ₀ = G.δ₀) (w : F.map' 0 1 = eqToHom h₀ ≫ G.map' 0 1 ≫
       eqToHom (Functor.congr_obj h.symm 0)) : F = G := by
@@ -883,6 +913,7 @@ section mkOfObjOfMapSucc
 
 variable (obj : Fin (n + 1) → C) (mapSucc : ∀ (i : Fin n), obj i.castSucc ⟶ obj i.succ)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mkOfObjOfMapSucc_exists : ∃ (F : ComposableArrows C n) (e : ∀ i, F.obj i ≅ obj i),
     ∀ (i : ℕ) (hi : i < n), mapSucc ⟨i, hi⟩ =
       (e ⟨i, _⟩).inv ≫ F.map' i (i + 1) ≫ (e ⟨i + 1, _⟩).hom := by
@@ -912,9 +943,10 @@ lemma mkOfObjOfMapSucc_map_succ (i : ℕ) (hi : i < n := by valid) :
     (mkOfObjOfMapSucc obj mapSucc).map' i (i + 1) = mapSucc ⟨i, hi⟩ :=
   ((mkOfObjOfMapSucc_exists obj mapSucc).choose_spec.choose_spec i hi).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mkOfObjOfMapSucc_arrow (i : ℕ) (hi : i < n := by valid) :
     (mkOfObjOfMapSucc obj mapSucc).arrow i = mk₁ (mapSucc ⟨i, hi⟩) :=
-  ext₁ rfl rfl (by simpa using mkOfObjOfMapSucc_map_succ obj mapSucc i hi)
+  ext₁ rfl rfl (by simpa using! mkOfObjOfMapSucc_map_succ obj mapSucc i hi)
 
 end mkOfObjOfMapSucc
 

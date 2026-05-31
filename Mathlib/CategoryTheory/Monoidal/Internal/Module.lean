@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 public import Mathlib.Algebra.Category.AlgCat.Basic
-public import Mathlib.CategoryTheory.Monoidal.Mon_
+public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.Tactic.SuppressCompilation
 
 /-!
@@ -40,24 +40,28 @@ variable {R : Type u} [CommRing R]
 
 namespace MonModuleEquivalenceAlgebra
 
-instance MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
+/-- The ring structure on a monoid object.
+This instance is dangerous as it doesn't round trip from a ring to a monoid object and then back
+to a ring, since the `npow` field is lost in the middle. Therefore, it is scoped. -/
+@[implicit_reducible]
+def MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
   { (inferInstance : AddCommGroup A) with
     one := η[A] (1 : R)
     mul := fun x y => μ[A] (x ⊗ₜ y)
     one_mul := fun x => by
-      convert LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (one_mul A)) ((1 : R) ⊗ₜ x)
+      convert! LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (one_mul A)) ((1 : R) ⊗ₜ x)
       rw [MonoidalCategory.leftUnitor_hom_apply, one_smul]
     mul_one := fun x => by
-      convert LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (mul_one A)) (x ⊗ₜ (1 : R))
+      convert! LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (mul_one A)) (x ⊗ₜ (1 : R))
       rw [MonoidalCategory.rightUnitor_hom_apply, one_smul]
     mul_assoc := fun x y z => by
-      convert LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (mul_assoc A)) (x ⊗ₜ y ⊗ₜ z)
+      convert! LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (mul_assoc A)) (x ⊗ₜ y ⊗ₜ z)
     left_distrib := fun x y z => by
-      convert μ[A].hom.map_add (x ⊗ₜ y) (x ⊗ₜ z)
+      convert! μ[A].hom.map_add (x ⊗ₜ y) (x ⊗ₜ z)
       rw [← TensorProduct.tmul_add]
       rfl
     right_distrib := fun x y z => by
-      convert μ[A].hom.map_add (x ⊗ₜ z) (y ⊗ₜ z)
+      convert! μ[A].hom.map_add (x ⊗ₜ z) (y ⊗ₜ z)
       rw [← TensorProduct.add_tmul]
       rfl
     zero_mul := fun x => show μ[A] _ = 0 by
@@ -65,7 +69,12 @@ instance MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
     mul_zero := fun x => show μ[A] _ = 0 by
       rw [TensorProduct.tmul_zero, map_zero] }
 
-instance Algebra_of_Mon_ (A : ModuleCat.{u} R) [MonObj A] : Algebra R A where
+scoped[ModuleCat.MonModuleEquivalenceAlgebra] attribute [instance] MonObj.toRing
+
+/-- The algebra structure on a monoid object.
+This instance is dangerous as it doesn't round trip from a ring to a monoid object and then back
+to a ring, since the `npow` field is lost in the middle. Therefore, it is scoped. -/
+scoped instance Algebra_of_Mon_ (A : ModuleCat.{u} R) [MonObj A] : Algebra R A where
   algebraMap :=
   { η[A].hom with
     map_zero' := η[A].hom.map_zero
@@ -101,7 +110,7 @@ def functor : Mon (ModuleCat.{u} R) ⥤ AlgCat R where
 
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/
-@[simps]
+@[instance_reducible, simps]
 def inverseObj (A : AlgCat.{u} R) : MonObj (ModuleCat.of R A) where
   one := ofHom <| Algebra.linearMap R A
   mul := ofHom <| LinearMap.mul' R A

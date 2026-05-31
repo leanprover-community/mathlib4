@@ -1,3 +1,4 @@
+module
 import Mathlib.Algebra.Category.ModuleCat.Topology.Basic
 
 universe v u

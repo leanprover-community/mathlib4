@@ -18,7 +18,7 @@ public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
   on them preserves finite colimits.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

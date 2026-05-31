@@ -45,7 +45,6 @@ theorem absNorm_div_norm_eq_absNorm_div_norm {I : FractionalIdeal R⁰ K} (a : R
   rw [div_eq_div_iff]
   · replace h := congr_arg (I.den • ·) h
     have h' := congr_arg (a • ·) (den_mul_self_eq_num I)
-    dsimp only at h h'
     rw [smul_comm] at h
     rw [h, Submonoid.smul_def, Submonoid.smul_def, ← Submodule.ideal_span_singleton_smul,
       ← Submodule.ideal_span_singleton_smul, ← Submodule.map_smul'', ← Submodule.map_smul'',
@@ -88,7 +87,7 @@ theorem absNorm_nonneg (I : FractionalIdeal R⁰ K) : 0 ≤ absNorm I := by dsim
 
 theorem absNorm_bot : absNorm (⊥ : FractionalIdeal R⁰ K) = 0 := absNorm.map_zero'
 
-theorem absNorm_one : absNorm (1 : FractionalIdeal R⁰ K) = 1 := by convert absNorm.map_one'
+theorem absNorm_one : absNorm (1 : FractionalIdeal R⁰ K) = 1 := by convert! absNorm.map_one'
 
 theorem absNorm_eq_zero_iff [IsDomain K] {I : FractionalIdeal R⁰ K} :
     absNorm I = 0 ↔ I = 0 := by
@@ -130,6 +129,7 @@ theorem abs_det_basis_change [IsDomain K] {ι : Type*} [Fintype ι]
     rw [ne_eq, abs_eq_zero, IsFractionRing.to_map_eq_zero_iff, Algebra.norm_eq_zero_iff_of_basis b]
     exact nonZeroDivisors.coe_ne_zero _)]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 @[simp]
 theorem absNorm_span_singleton [Module.Finite ℚ K] (x : K) :

@@ -176,7 +176,7 @@ theorem condExpL2_ae_eq_zero_of_ae_eq_zero (hs : MeasurableSet[m] s) (hμs : μ 
       · rwa [ENNReal.coe_eq_zero, nnnorm_eq_zero] at hx
     · refine Measurable.coe_nnreal_ennreal (Measurable.nnnorm ?_)
       exact (Lp.stronglyMeasurable _).measurable
-  refine le_antisymm ?_ (zero_le _)
+  rw [← nonpos_iff_eq_zero]
   refine (lintegral_nnnorm_condExpL2_le hs hμs f).trans (le_of_eq ?_)
   rw [lintegral_eq_zero_iff]
   · refine hf.mono fun x hx => ?_
@@ -370,8 +370,6 @@ theorem condExpIndSMul_smul [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (hs :
     (hμs : μ s ≠ ∞) (c : 𝕜) (x : F) :
     condExpIndSMul hm hs hμs (c • x) = c • condExpIndSMul hm hs hμs x := by
   simp_rw [condExpIndSMul, toSpanSingleton_smul, smul_compLpL, smul_apply]
-
-@[deprecated (since := "2025-08-28")] alias condExpIndSMul_smul' := condExpIndSMul_smul
 
 theorem condExpIndSMul_ae_eq_smul (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
     condExpIndSMul hm hs hμs x =ᵐ[μ] fun a =>

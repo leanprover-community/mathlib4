@@ -65,6 +65,7 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (BialgCat R) :=
 /-- `forget₂ (BialgCat R) (AlgCat R)` as a monoidal functor. -/
 noncomputable instance : (forget₂ (BialgCat R) (AlgCat R)).Monoidal where
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `forget₂ (BialgCat R) (CoalgCat R)` as a monoidal functor. -/
 noncomputable instance : (forget₂ (BialgCat R) (CoalgCat R)).Monoidal :=
   Functor.CoreMonoidal.toMonoidal {

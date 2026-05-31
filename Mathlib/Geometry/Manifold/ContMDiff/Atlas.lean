@@ -6,13 +6,25 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Geometry.Manifold.ContMDiff.Basic
+import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 
 /-!
-## Smoothness of charts and local structomorphisms
+# Smoothness of charts and local structomorphisms
 
 We show that the model with corners, charts, extended charts and their inverses are `C^n`,
 and that local structomorphisms are `C^n` with `C^n` inverses.
+
+## Implementation notes
+
+This file uses the name `writtenInExtend` (in analogy to `writtenInExtChart`) to refer to a
+composition `ψ.extend J ∘ f ∘ φ.extend I` of `f : M → N` with charts `ψ` and `φ` extended by the
+appropriate models with corners. This is not a definition, so technically deviating from the naming
+convention.
+
+`isLocalStructomorphOn` is another made-up name.
 -/
+
+assert_not_exists mfderiv
 
 public section
 
@@ -23,7 +35,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare a `C^n` manifold `M` over the pair `(E, H)`.
   {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-  {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {n : WithTop ℕ∞}
+  {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {n : ℕ∞ω}
   [IsManifold I n M]
   -- declare a topological space `M'`.
   {M' : Type*} [TopologicalSpace M']
@@ -78,6 +90,10 @@ theorem contMDiffAt_extend {x : M} (he : e ∈ maximalAtlas I n M) (hx : x ∈ e
     ContMDiffAt I 𝓘(𝕜, E) n (e.extend I) x :=
   (contMDiff_model _).comp x <| contMDiffAt_of_mem_maximalAtlas he hx
 
+theorem contMDiffOn_extend (he : e ∈ maximalAtlas I n M) :
+    ContMDiffOn I 𝓘(𝕜, E) n (e.extend I) e.source :=
+  fun _x' hx' ↦ (contMDiffAt_extend he hx').contMDiffWithinAt
+
 theorem contMDiffAt_extChartAt' {x' : M} (h : x' ∈ (chartAt H x).source) :
     ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) x' :=
   contMDiffAt_extend (chart_mem_maximalAtlas x) h
@@ -101,7 +117,7 @@ theorem contMDiffOn_extend_symm (he : e ∈ maximalAtlas I n M) :
 
 theorem contMDiffOn_extChartAt_symm (x : M) :
     ContMDiffOn 𝓘(𝕜, E) I n (extChartAt I x).symm (extChartAt I x).target := by
-  convert contMDiffOn_extend_symm (chart_mem_maximalAtlas (I := I) x)
+  convert! contMDiffOn_extend_symm (chart_mem_maximalAtlas (I := I) x)
   · rw [extChartAt_target, I.image_eq]
   · infer_instance
   · infer_instance
@@ -127,7 +143,7 @@ theorem contMDiffWithinAt_extChartAt_symm_target_self (x : M) :
     apply ContinuousAt.comp _ I.continuousAt_symm
     exact (chartAt H x).symm.continuousAt (by simp)
   · apply contMDiffWithinAt_id.congr_of_mem (fun y hy ↦ ?_) (by simp)
-    convert PartialEquiv.right_inv (extChartAt I x) hy
+    convert! PartialEquiv.right_inv (extChartAt I x) hy
     simp
 
 omit [IsManifold I n M] in
@@ -266,7 +282,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : OpenPartialHomeomorph M 
       have hy'' : f ((extChartAt I x).symm y) ∈ c'.source := by
         simp only [c, hy, mfld_simps]
       rw [contMDiffWithinAt_iff_of_mem_source hy' hy''] at H
-      convert H.2.mono _
+      convert! H.2.mono _
       · simp only [c, hy, mfld_simps]
       · dsimp [c, c']; mfld_set_tac
     · -- regularity of the candidate local structomorphism in the reverse direction
@@ -281,7 +297,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : OpenPartialHomeomorph M 
       have hy'' : f.symm ((extChartAt I (f x)).symm y) ∈ c.source := by
         simp only [c', hy, mfld_simps]
       rw [contMDiffWithinAt_iff_of_mem_source hy' hy''] at H
-      convert H.2.mono _
+      convert! H.2.mono _
       · simp only [c', hy, mfld_simps]
       · dsimp [c, c']; mfld_set_tac
     -- now check the candidate local structomorphism agrees with `f` where it is supposed to
@@ -289,3 +305,35 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : OpenPartialHomeomorph M 
     · simp only [c, c', hx', mfld_simps]
 
 end IsLocalStructomorph
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
+  {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
+  {n : ℕ∞ω}
+  [IsManifold I n M] [IsManifold J n N] {f : M → N} {s : Set M}
+  {φ : OpenPartialHomeomorph M H} {ψ : OpenPartialHomeomorph N G}
+
+/-- This is a smooth analogue of `OpenPartialHomeomorph.continuousWithinAt_writtenInExtend_iff`. -/
+theorem OpenPartialHomeomorph.contMDiffWithinAt_writtenInExtend_iff {y : M}
+    (hφ : φ ∈ maximalAtlas I n M) (hψ : ψ ∈ maximalAtlas J n N)
+    (hy : y ∈ φ.source) (hgy : f y ∈ ψ.source) (hmaps : MapsTo f s ψ.source) :
+    ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, F) n (ψ.extend J ∘ f ∘ (φ.extend I).symm)
+      ((φ.extend I).symm ⁻¹' s ∩ range I) (φ.extend I y) ↔ ContMDiffWithinAt I J n f s y := by
+  rw [contMDiffWithinAt_iff_of_mem_maximalAtlas hφ hψ hy hgy]
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ ?_⟩
+  · rw [← φ.continuousWithinAt_writtenInExtend_iff (I := I) (I' := J) hy hgy hmaps]
+    exact h.continuousWithinAt
+  · rwa [← contMDiffWithinAt_iff_contDiffWithinAt]
+  · rw [contMDiffWithinAt_iff_contDiffWithinAt]
+    exact h.2
+
+theorem OpenPartialHomeomorph.contMDiffOn_writtenInExtend_iff
+    (hφ : φ ∈ maximalAtlas I n M) (hψ : ψ ∈ maximalAtlas J n N)
+    (hs : s ⊆ φ.source) (hmaps : MapsTo f s ψ.source) :
+    ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, F) n (ψ.extend J ∘ f ∘ (φ.extend I).symm) (φ.extend I '' s) ↔
+      ContMDiffOn I J n f s := by
+  refine forall_mem_image.trans <| forall₂_congr fun x hx ↦ ?_
+  refine (contMDiffWithinAt_congr_set ?_).trans
+    (contMDiffWithinAt_writtenInExtend_iff hφ hψ (hs hx) (hmaps hx) hmaps)
+  rw [← nhdsWithin_eq_iff_eventuallyEq, ← φ.map_extend_nhdsWithin_eq_image_of_subset,
+    ← φ.map_extend_nhdsWithin]
+  exacts [hs hx, hs hx, hs]

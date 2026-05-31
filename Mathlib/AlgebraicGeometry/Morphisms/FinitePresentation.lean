@@ -26,7 +26,7 @@ We show that these properties are local, and are stable under compositions.
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -67,6 +67,16 @@ instance (priority := 900) locallyOfFinitePresentation_of_isOpenImmersion [IsOpe
 instance : MorphismProperty.IsStableUnderComposition @LocallyOfFinitePresentation :=
   HasRingHomProperty.stableUnderComposition RingHom.finitePresentation_stableUnderComposition
 
+@[simp]
+lemma LocallyOfFinitePresentation.SpecMap_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
+    LocallyOfFinitePresentation (Spec.map f) ↔ f.hom.FinitePresentation :=
+  HasRingHomProperty.Spec_iff
+
+lemma Scheme.Hom.finitePresentation_appTop {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffine X] [IsAffine Y]
+    [LocallyOfFinitePresentation f] :
+    f.appTop.hom.FinitePresentation :=
+  HasRingHomProperty.appTop (P := @LocallyOfFinitePresentation) _ inferInstance
+
 instance locallyOfFinitePresentation_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
     [hf : LocallyOfFinitePresentation f] [hg : LocallyOfFinitePresentation g] :
     LocallyOfFinitePresentation (f ≫ g) :=
@@ -99,6 +109,8 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) [hf : LocallyOfFinitePresentation f] :
   refine affineLocally_le (fun hf ↦ ?_) f hf
   exact RingHom.FiniteType.of_finitePresentation hf
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- **Chevalley's Theorem**: The image of a locally constructible set under a
 morphism of finite presentation is locally constructible. -/
 @[stacks 054K]
@@ -113,9 +125,11 @@ nonrec lemma Scheme.Hom.isLocallyConstructible_image (f : X ⟶ Y)
       MorphismProperty.pullback_snd _ _ inferInstance
     have inst : QuasiCompact (Y.affineCover.pullbackHom f i) :=
       MorphismProperty.pullback_snd _ _ inferInstance
-    convert (this (Y.affineCover.pullbackHom f i) (hs.preimage_of_isOpenEmbedding
-      ((Y.affineCover.pullback₁ f).f i).isOpenEmbedding)
-      ⟨_, rfl⟩).preimage_of_isOpenEmbedding (Y.affineCover.f i).isoOpensRange.inv.isOpenEmbedding
+    convert!
+      (this (Y.affineCover.pullbackHom f i)
+            (hs.preimage_of_isOpenEmbedding ((Y.affineCover.pullback₁ f).f i).isOpenEmbedding)
+            ⟨_, rfl⟩).preimage_of_isOpenEmbedding
+        (Y.affineCover.f i).isoOpensRange.inv.isOpenEmbedding
     refine .trans ?_
       ((Scheme.homeoOfIso (Y.affineCover.f i).isoOpensRange).image_eq_preimage_symm _)
     apply Set.image_injective.mpr Subtype.val_injective
@@ -134,8 +148,7 @@ nonrec lemma Scheme.Hom.isLocallyConstructible_image (f : X ⟶ Y)
     refine .iUnion fun i ↦ ?_
     have inst : QuasiCompact (𝒰.f i ≫ f) :=
       HasAffineProperty.iff_of_isAffine.mpr (inferInstanceAs (CompactSpace (Spec _)))
-    convert this (hs.preimage_of_isOpenEmbedding (𝒰.f i).isOpenEmbedding) _
-      (𝒰.f i ≫ f) ⟨_, rfl⟩
+    convert! this (hs.preimage_of_isOpenEmbedding (𝒰.f i).isOpenEmbedding) _ (𝒰.f i ≫ f) ⟨_, rfl⟩
     rw [Scheme.Hom.comp_base, ← TopCat.Hom.hom, ← TopCat.Hom.hom, TopCat.hom_comp,
       ContinuousMap.coe_comp, Set.image_comp, Set.image_preimage_eq_inter_range, coe_opensRange]
   obtain ⟨S, rfl⟩ := hX

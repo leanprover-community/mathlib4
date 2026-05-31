@@ -184,7 +184,7 @@ variable {p α β}
 theorem prod_edist_eq_card (f g : WithLp 0 (α × β)) :
     edist f g =
       (if edist f.fst g.fst = 0 then 0 else 1) + (if edist f.snd g.snd = 0 then 0 else 1) := by
-  convert if_pos rfl
+  convert! if_pos rfl
 
 theorem prod_edist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
     edist f g = (edist f.fst g.fst ^ p.toReal + edist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal) :=
@@ -251,7 +251,7 @@ variable {p α β}
 
 theorem prod_dist_eq_card (f g : WithLp 0 (α × β)) : dist f g =
     (if dist f.fst g.fst = 0 then 0 else 1) + (if dist f.snd g.snd = 0 then 0 else 1) := by
-  convert if_pos rfl
+  convert! if_pos rfl
 
 theorem prod_dist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
     dist f g = (dist f.fst g.fst ^ p.toReal + dist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal) :=
@@ -288,7 +288,7 @@ variable {p α β}
 @[simp]
 theorem prod_norm_eq_card (f : WithLp 0 (α × β)) :
     ‖f‖ = (if ‖f.fst‖ = 0 then 0 else 1) + (if ‖f.snd‖ = 0 then 0 else 1) := by
-  convert if_pos rfl
+  convert! if_pos rfl
 
 theorem prod_norm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖ = ‖f.fst‖ ⊔ ‖f.snd‖ := rfl
 
@@ -330,6 +330,7 @@ coincide with the product one. Therefore, we do not register it as an instance. 
 temporary pseudoemetric space instance, we will show that the uniform structure is equal (but not
 defeq) to the product one, and then register an instance in which we replace the uniform structure
 by the product one using this pseudoemetric space and `PseudoEMetricSpace.replaceUniformity`. -/
+@[instance_reducible]
 def prodPseudoEMetricAux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     PseudoEMetricSpace (WithLp p (α × β)) where
   edist_self := prod_edist_self p
@@ -485,8 +486,6 @@ lemma prod_continuous_ofLp : Continuous (@ofLp p (α × β)) := continuous_induc
 /-- `WithLp.equiv` as a homeomorphism. -/
 def homeomorphProd : WithLp p (α × β) ≃ₜ α × β where
   toEquiv := WithLp.equiv p (α × β)
-  continuous_toFun := prod_continuous_ofLp p α β
-  continuous_invFun := prod_continuous_toLp p α β
 
 @[simp]
 lemma toEquiv_homeomorphProd : (homeomorphProd p α β).toEquiv = WithLp.equiv p (α × β) := rfl
@@ -566,13 +565,11 @@ lemma prodContinuousLinearEquiv_symm_apply (x : α × β) :
 @[simps! coe apply]
 def fstL : WithLp p (α × β) →L[𝕜] α where
   __ := fstₗ ..
-  cont := WithLp.continuous_fst ..
 
 /-- `WithLp.snd` as a continuous linear map. -/
 @[simps! coe apply]
 def sndL : WithLp p (α × β) →L[𝕜] β where
   __ := sndₗ ..
-  cont := WithLp.continuous_snd ..
 
 end ContinuousLinearEquiv
 
@@ -678,10 +675,10 @@ instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedA
     SeminormedAddCommGroup (WithLp p (α × β)) where
   dist_eq x y := by
     rcases p.dichotomy with (rfl | h)
-    · simp only [prod_dist_eq_sup, prod_norm_eq_sup, dist_eq_norm]
+    · simp only [prod_dist_eq_sup, prod_norm_eq_sup, dist_eq_norm, ← norm_neg_add]
       rfl
     · simp only [prod_dist_eq_add (zero_lt_one.trans_le h),
-        prod_norm_eq_add (zero_lt_one.trans_le h), dist_eq_norm]
+        prod_norm_eq_add (zero_lt_one.trans_le h), dist_eq_norm, ← norm_neg_add]
       rfl
 
 lemma isUniformInducing_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
@@ -813,7 +810,7 @@ theorem prod_nnnorm_eq_of_L2 (x : WithLp 2 (α × β)) :
 
 theorem prod_norm_sq_eq_of_L2 (x : WithLp 2 (α × β)) : ‖x‖ ^ 2 = ‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2 := by
   suffices ‖x‖₊ ^ 2 = ‖x.fst‖₊ ^ 2 + ‖x.snd‖₊ ^ 2 by
-    simpa only [NNReal.coe_sum] using congr_arg ((↑) : ℝ≥0 → ℝ) this
+    simpa only [NNReal.coe_sum] using! congr_arg ((↑) : ℝ≥0 → ℝ) this
   rw [prod_nnnorm_eq_of_L2, NNReal.sq_sqrt]
 
 theorem prod_dist_eq_of_L2 (x y : WithLp 2 (α × β)) :
@@ -907,9 +904,7 @@ instance instProdIsBoundedSMul : IsBoundedSMul 𝕜 (WithLp p (α × β)) :=
       rw [prod_nnnorm_eq_add hpt, prod_nnnorm_eq_add hpt, one_div, NNReal.rpow_inv_le_iff hp0,
         NNReal.mul_rpow, ← NNReal.rpow_mul, inv_mul_cancel₀ hp0.ne', NNReal.rpow_one, mul_add,
         ← NNReal.mul_rpow, ← NNReal.mul_rpow]
-      exact add_le_add
-        (NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le)
-        (NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le)
+      gcongr <;> exact nnnorm_smul_le _ _
 
 variable {𝕜 p α β}
 
@@ -957,6 +952,7 @@ lemma idemFst_apply (x : WithLp p (α × β)) : idemFst x = toLp p (x.fst, 0) :=
 
 lemma idemSnd_apply (x : WithLp p (α × β)) : idemSnd x = toLp p (0, x.snd) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma idemFst_add_idemSnd :
     idemFst + idemSnd = (1 : AddMonoid.End (WithLp p (α × β))) := AddMonoidHom.ext
@@ -1034,7 +1030,7 @@ abbrev seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [SeminormedAddCo
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToProd p α β
   dist_eq x y := by
-    rw [dist_pseudoMetricSpaceToProd, SeminormedAddCommGroup.dist_eq, toLp_sub]
+    rw [dist_pseudoMetricSpaceToProd, SeminormedAddCommGroup.dist_eq, toLp_add, toLp_neg]
 
 lemma norm_seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
     (x : α × β) :
@@ -1081,7 +1077,7 @@ abbrev normedAddCommGroupToProd [NormedAddCommGroup α] [NormedAddCommGroup β] 
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToProd p α β
   dist_eq x y := by
-    rw [dist_pseudoMetricSpaceToProd, SeminormedAddCommGroup.dist_eq, toLp_sub]
+    rw [dist_pseudoMetricSpaceToProd, SeminormedAddCommGroup.dist_eq, toLp_add, toLp_neg]
   eq_of_dist_eq_zero {x y} h := by
     rw [dist_pseudoMetricSpaceToProd] at h
     exact toLp_injective p (eq_of_dist_eq_zero h)
@@ -1152,7 +1148,7 @@ def withLpProdUnique [Unique β] : WithLp p (α × β) ≃ᵢ α where
   isometry_toFun x y : edist x.fst y.fst = edist x y := by
     rcases p.trichotomy with rfl | rfl | hp
     · absurd hp.elim; simp
-    · simp_rw [WithLp.prod_edist_eq_sup, Unique.eq_default, edist_self, max_zero_right]
+    · simp_rw [WithLp.prod_edist_eq_sup, Unique.eq_default, edist_self, max_zero]
     · simp_rw [WithLp.prod_edist_eq_add hp, Unique.eq_default, edist_self,
         ENNReal.zero_rpow_of_pos hp, add_zero, one_div, ENNReal.rpow_rpow_inv hp.ne']
 

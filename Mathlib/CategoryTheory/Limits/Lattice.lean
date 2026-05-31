@@ -74,7 +74,7 @@ theorem finite_colimit_eq_finset_univ_sup [SemilatticeSup α] [OrderBot α] (F :
 A finite product in the category of a `SemilatticeInf` with `OrderTop` is the same as the infimum.
 -/
 theorem finite_product_eq_finset_inf [SemilatticeInf α] [OrderTop α] {ι : Type u} [Fintype ι]
-    (f : ι → α) : ∏ᶜ f = Fintype.elems.inf f := by
+    (f : ι → α) : ∏ᶜ f = Finset.univ.inf f := by
   trans
   · exact
       (IsLimit.conePointUniqueUpToIso (limit.isLimit _)
@@ -87,7 +87,7 @@ theorem finite_product_eq_finset_inf [SemilatticeInf α] [OrderTop α] {ι : Typ
 supremum.
 -/
 theorem finite_coproduct_eq_finset_sup [SemilatticeSup α] [OrderBot α] {ι : Type u} [Fintype ι]
-    (f : ι → α) : ∐ f = Fintype.elems.sup f := by
+    (f : ι → α) : ∐ f = Finset.univ.sup f := by
   trans
   · exact
       (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
@@ -170,10 +170,10 @@ variable {α : Type u} [CompleteLattice α] {J : Type w} [Category.{w'} J]
 def limitCone (F : J ⥤ α) : LimitCone F where
   cone :=
     { pt := iInf F.obj
-      π := { app := fun _ => homOfLE (CompleteLattice.sInf_le _ _ (Set.mem_range_self _)) } }
+      π := { app := fun _ => homOfLE (sInf_le (Set.mem_range_self _)) } }
   isLimit :=
     { lift := fun s =>
-        homOfLE (CompleteLattice.le_sInf _ _ (by rintro _ ⟨j, rfl⟩; exact (s.π.app j).le)) }
+        homOfLE (le_sInf (by rintro _ ⟨j, rfl⟩; exact (s.π.app j).le)) }
 
 /-- The colimit cocone over any functor into a complete lattice.
 -/
@@ -181,10 +181,10 @@ def limitCone (F : J ⥤ α) : LimitCone F where
 def colimitCocone (F : J ⥤ α) : ColimitCocone F where
   cocone :=
     { pt := iSup F.obj
-      ι := { app := fun _ => homOfLE (CompleteLattice.le_sSup _ _ (Set.mem_range_self _)) } }
+      ι := { app := fun _ => homOfLE (le_sSup (Set.mem_range_self _)) } }
   isColimit :=
     { desc := fun s =>
-        homOfLE (CompleteLattice.sSup_le _ _ (by rintro _ ⟨j, rfl⟩; exact (s.ι.app j).le)) }
+        homOfLE (sSup_le (by rintro _ ⟨j, rfl⟩; exact (s.ι.app j).le)) }
 
 -- see Note [lower instance priority]
 instance (priority := 100) hasLimits_of_completeLattice : HasLimitsOfSize.{w, w'} α where

@@ -94,42 +94,33 @@ namespace SetLike
 submonoids. -/
 instance gnonUnitalNonAssocSemiring [Add ι] [NonUnitalNonAssocSemiring R] [SetLike σ R]
     [AddSubmonoidClass σ R] (A : ι → σ) [SetLike.GradedMul A] :
-    DirectSum.GNonUnitalNonAssocSemiring fun i => A i :=
-  { SetLike.gMul A with
-    mul_zero := fun _ => Subtype.ext (mul_zero _)
-    zero_mul := fun _ => Subtype.ext (zero_mul _)
-    mul_add := fun _ _ _ => Subtype.ext (mul_add _ _ _)
-    add_mul := fun _ _ _ => Subtype.ext (add_mul _ _ _) }
+    DirectSum.GNonUnitalNonAssocSemiring fun i => A i where
+  mul_zero _ := Subtype.ext (mul_zero _)
+  zero_mul _ := Subtype.ext (zero_mul _)
+  mul_add _ _ _ := Subtype.ext (mul_add _ _ _)
+  add_mul _ _ _ := Subtype.ext (add_mul _ _ _)
 
 /-- Build a `DirectSum.GSemiring` instance for a collection of additive submonoids. -/
 instance gsemiring [AddMonoid ι] [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
-    [SetLike.GradedMonoid A] : DirectSum.GSemiring fun i => A i :=
-  { SetLike.gMonoid A with
-    mul_zero := fun _ => Subtype.ext (mul_zero _)
-    zero_mul := fun _ => Subtype.ext (zero_mul _)
-    mul_add := fun _ _ _ => Subtype.ext (mul_add _ _ _)
-    add_mul := fun _ _ _ => Subtype.ext (add_mul _ _ _)
-    natCast := fun n => ⟨n, SetLike.natCast_mem_graded _ _⟩
-    natCast_zero := Subtype.ext Nat.cast_zero
-    natCast_succ := fun n => Subtype.ext (Nat.cast_succ n) }
+    [SetLike.GradedMonoid A] : DirectSum.GSemiring fun i => A i where
+  natCast n := ⟨n, SetLike.natCast_mem_graded _ _⟩
+  natCast_zero := Subtype.ext Nat.cast_zero
+  natCast_succ n := Subtype.ext (Nat.cast_succ n)
 
 /-- Build a `DirectSum.GCommSemiring` instance for a collection of additive submonoids. -/
 instance gcommSemiring [AddCommMonoid ι] [CommSemiring R] [SetLike σ R] [AddSubmonoidClass σ R]
-    (A : ι → σ) [SetLike.GradedMonoid A] : DirectSum.GCommSemiring fun i => A i :=
-  { SetLike.gCommMonoid A, SetLike.gsemiring A with }
+    (A : ι → σ) [SetLike.GradedMonoid A] : DirectSum.GCommSemiring fun i => A i where
 
 /-- Build a `DirectSum.GRing` instance for a collection of additive subgroups. -/
 instance gring [AddMonoid ι] [Ring R] [SetLike σ R] [AddSubgroupClass σ R] (A : ι → σ)
-    [SetLike.GradedMonoid A] : DirectSum.GRing fun i => A i :=
-  { SetLike.gsemiring A with
-    intCast := fun z => ⟨z, SetLike.intCast_mem_graded _ _⟩
-    intCast_ofNat := fun _n => Subtype.ext <| Int.cast_natCast _
-    intCast_negSucc_ofNat := fun n => Subtype.ext <| Int.cast_negSucc n }
+    [SetLike.GradedMonoid A] : DirectSum.GRing fun i => A i where
+  intCast z := ⟨z, SetLike.intCast_mem_graded _ _⟩
+  intCast_ofNat n := Subtype.ext <| Int.cast_natCast n
+  intCast_negSucc_ofNat n := Subtype.ext <| Int.cast_negSucc n
 
 /-- Build a `DirectSum.GCommRing` instance for a collection of additive submonoids. -/
 instance gcommRing [AddCommMonoid ι] [CommRing R] [SetLike σ R] [AddSubgroupClass σ R] (A : ι → σ)
-    [SetLike.GradedMonoid A] : DirectSum.GCommRing fun i => A i :=
-  { SetLike.gCommMonoid A, SetLike.gring A with }
+    [SetLike.GradedMonoid A] : DirectSum.GCommRing fun i => A i where
 
 end SetLike
 
@@ -149,19 +140,21 @@ theorem coeRingHom_of [AddMonoid ι] [SetLike.GradedMonoid A] (i : ι) (x : A i)
     (coeRingHom A : _ →+* R) (of (fun i => A i) i x) = x :=
   DirectSum.toSemiring_of _ _ _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_mul_apply [AddMonoid ι] [SetLike.GradedMonoid A]
     [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (r r' : ⨁ i, A i) (n : ι) :
     ((r * r') n : R) =
       ∑ ij ∈ r.support ×ˢ r'.support with ij.1 + ij.2 = n, (r ij.1 * r' ij.2 : R) := by
-  rw [mul_eq_sum_support_ghas_mul, DFinsupp.finset_sum_apply, AddSubmonoidClass.coe_finset_sum]
+  rw [mul_eq_sum_support_ghas_mul, DFinsupp.finsetSum_apply, AddSubmonoidClass.coe_finsetSum]
   simp_rw [coe_of_apply, apply_ite, ZeroMemClass.coe_zero, ← Finset.sum_filter, SetLike.coe_gMul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_mul_apply_eq_dfinsuppSum [AddMonoid ι] [SetLike.GradedMonoid A]
     [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (r r' : ⨁ i, A i) (n : ι) :
     ((r * r') n : R) = r.sum fun i ri => r'.sum fun j rj => if i + j = n then (ri * rj : R)
       else 0 := by
   rw [mul_eq_dfinsuppSum]
-  iterate 2 rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finset_sum]; congr; ext
+  iterate 2 rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finsetSum]; congr; ext
   dsimp only
   split_ifs with h
   · subst h
@@ -340,14 +333,13 @@ variable (A : ι → σ) [SetLike.GradedMonoid A]
 
 /-- The subsemiring `A 0` of `R`. -/
 def subsemiring : Subsemiring R where
-  carrier := A 0
   __ := submonoid A
   add_mem' := add_mem
   zero_mem' := zero_mem (A 0)
 
 -- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The semiring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
-instance instSemiring : Semiring (A 0) := (subsemiring A).toSemiring
+instance instSemiring : Semiring (A 0) := inferInstanceAs <| Semiring (subsemiring A)
 
 @[simp, norm_cast] theorem coe_natCast (n : ℕ) : (n : A 0) = (n : R) := rfl
 
@@ -363,10 +355,10 @@ variable (A : ι → σ) [SetLike.GradedMonoid A]
 -- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The commutative semiring `A 0` inherited from `R` in the presence of
 `SetLike.GradedMonoid A`. -/
-instance instCommSemiring : CommSemiring (A 0) := (subsemiring A).toCommSemiring
+instance instCommSemiring : CommSemiring (A 0) := inferInstanceAs <| CommSemiring (subsemiring A)
 
 instance : Algebra (A 0) R :=
-  Algebra.ofSubsemiring <| SetLike.GradeZero.subsemiring A
+  inferInstanceAs <| Algebra (SetLike.GradeZero.subsemiring A) R
 
 @[simp] lemma algebraMap_apply (x : A 0) : algebraMap (A 0) R x = x := rfl
 
@@ -378,13 +370,12 @@ variable (A : ι → σ) [SetLike.GradedMonoid A]
 
 /-- The subring `A 0` of `R`. -/
 def subring : Subring R where
-  carrier := A 0
   __ := subsemiring A
   neg_mem' := neg_mem
 
 -- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The ring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
-instance instRing : Ring (A 0) := (subring A).toRing
+instance instRing : Ring (A 0) := inferInstanceAs <| Ring (subring A)
 
 theorem coe_intCast (z : ℤ) : (z : A 0) = (z : R) := rfl
 
@@ -396,7 +387,7 @@ variable (A : ι → σ) [SetLike.GradedMonoid A]
 
 -- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The commutative ring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
-instance instCommRing : CommRing (A 0) := (subring A).toCommRing
+instance instCommRing : CommRing (A 0) := inferInstanceAs <| CommRing (subring A)
 
 end CommRing
 
@@ -406,7 +397,6 @@ variable (A : ι → Submodule S R) [SetLike.GradedMonoid A]
 
 /-- The subalgebra `A 0` of `R`. -/
 def subalgebra : Subalgebra S R where
-  carrier := A 0
   __ := subsemiring A
   algebraMap_mem' := algebraMap_mem_graded A
 
@@ -465,7 +455,7 @@ theorem listProd_apply_eq_zero' {l : List ((⨁ i, A i) × ι)}
     (hl : ∀ xn ∈ l, ∀ k < xn.2, xn.1 k = 0) ⦃n : ι⦄ (hn : n < (l.map Prod.snd).sum) :
     (l.map Prod.fst).prod n = 0 := by
   induction l generalizing n with
-  | nil => simp [(zero_le n).not_gt] at hn
+  | nil => simp at hn
   | cons head tail ih =>
     simp only [List.mem_cons, forall_eq_or_imp, List.map_cons, List.sum_cons,
       List.prod_cons] at hl hn ⊢
@@ -476,7 +466,7 @@ theorem listProd_apply_eq_zero {l : List (⨁ i, A i)} {m : ι}
     l.prod n = 0 := by
   -- a proof which uses `DirectSum.listProd_apply_eq_zero'` is actually more work
   induction l generalizing n with
-  | nil => simp [(zero_le n).not_gt] at hn
+  | nil => simp at hn
   | cons head tail ih =>
     simp only [List.mem_cons, forall_eq_or_imp, List.length_cons, List.prod_cons] at hl hn ⊢
     refine mul_apply_eq_zero hl.1 (ih hl.2) ?_

@@ -42,12 +42,14 @@ def tensorEquiv.invFun : (A ⊗[R] B)[M] →ₐ[A] A ⊗[R] B[M] :=
   MonoidAlgebra.liftNCAlgHom (Algebra.TensorProduct.map (.id _ _) singleOneAlgHom)
     (Algebra.TensorProduct.includeRight.toMonoidHom.comp (of B M)) fun _ _ ↦ .all ..
 
+set_option backward.isDefEq.respectTransparency false in
 omit [CommMonoid M] in
 variable (R A B) [AddCommMonoid M] in
 lemma _root_.AddMonoidAlgebra.tensorEquiv.invFun_tmul (a : A) (m : M) (b : B) :
     AddMonoidAlgebra.tensorEquiv.invFun (single m (a ⊗ₜ[R] b)) = a ⊗ₜ single m b := by
   simp [AddMonoidAlgebra.tensorEquiv.invFun]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive existing (dont_translate := R A B) (attr := simp)]
 lemma tensorEquiv.invFun_tmul (a : A) (m : M) (b : B) :
     tensorEquiv.invFun (single m (a ⊗ₜ[R] b)) = a ⊗ₜ single m b := by
@@ -63,20 +65,19 @@ noncomputable def tensorEquiv : A ⊗[R] B[M] ≃ₐ[A] (A ⊗[R] B)[M] := by
   refine .ofAlgHom
     (Algebra.TensorProduct.lift
       ((IsScalarTower.toAlgHom A (A ⊗[R] B) _).comp Algebra.TensorProduct.includeLeft)
-      (mapRangeAlgHom _ Algebra.TensorProduct.includeRight) fun p n ↦ .all ..)
+      (mapAlgHom _ Algebra.TensorProduct.includeRight) fun p n ↦ .all ..)
       tensorEquiv.invFun ?_ ?_
   · apply AlgHom.toLinearMap_injective
     ext
     simp
   · ext : 1
-    · ext
     apply AlgHom.toLinearMap_injective
     ext
     simp
 
 @[to_additive (dont_translate := A B) (attr := simp)]
 lemma tensorEquiv_tmul (a : A) (p : B[M]) :
-    tensorEquiv R A B (a ⊗ₜ p) = a • mapRangeAlgHom M Algebra.TensorProduct.includeRight p := by
+    tensorEquiv R A B (a ⊗ₜ p) = a • mapAlgHom M Algebra.TensorProduct.includeRight p := by
   simp [tensorEquiv, Algebra.smul_def]
 
 @[to_additive (dont_translate := R A B) (attr := simp)]
@@ -85,28 +86,28 @@ lemma tensorEquiv_symm_single (m : M) (a : A) (b : B) :
 
 variable (R A) in
 /-- The base change of `R[M]` to an `R`-algebra `A` is isomorphic to `A[M]` as an `A`-algebra. -/
-@[to_additive (dont_translate := R A) (relevant_arg := M)
+@[to_additive (dont_translate := R A)
 /-- The base change of `R[M]` to an `R`-algebra `A` is isomorphic to `A[M]` as an `A`-algebra. -/]
 noncomputable def scalarTensorEquiv : A ⊗[R] R[M] ≃ₐ[A] A[M] :=
-  (tensorEquiv ..).trans <| mapRangeAlgEquiv A M <| Algebra.TensorProduct.rid R A A
+  (tensorEquiv ..).trans <| mapAlgEquiv A M <| Algebra.TensorProduct.rid R A A
 
-@[to_additive (dont_translate := R A) (relevant_arg := M) (attr := simp)]
+@[to_additive (dont_translate := R A) (attr := simp)]
 lemma scalarTensorEquiv_tmul (a : A) (p : R[M]) :
-    scalarTensorEquiv R A (a ⊗ₜ p) = a • mapRangeAlgHom M (Algebra.ofId ..) p := by
+    scalarTensorEquiv R A (a ⊗ₜ p) = a • mapAlgHom M (Algebra.ofId ..) p := by
   ext; simp [scalarTensorEquiv]; simp [Algebra.smul_def, Algebra.commutes]
 
-@[to_additive (dont_translate := R A) (relevant_arg := M) (attr := simp)]
+@[to_additive (dont_translate := R A) (attr := simp)]
 lemma scalarTensorEquiv_symm_single (m : M) (a : A) :
     (scalarTensorEquiv R A).symm (single m a) = a ⊗ₜ single m 1 := by simp [scalarTensorEquiv]
 
 open scoped AlgebraMonoidAlgebra
 
-variable [Algebra S B] [Algebra A B] [Algebra R B] [IsScalarTower R A B] [IsScalarTower R S B]
+variable [Algebra S B] [Algebra A B] [IsScalarTower R A B] [IsScalarTower R S B]
 
 @[to_additive (dont_translate := R S B)]
 instance instIsPushout [IsPushout R S A B] : IsPushout R S A[M] B[M] where
   out := .of_equiv ((tensorEquiv (M := M) R S A).trans <|
-      mapRangeAlgEquiv S M <| IsPushout.equiv R S A B).toLinearEquiv fun x ↦ by
+      mapAlgEquiv S M <| IsPushout.equiv R S A B).toLinearEquiv fun x ↦ by
     induction x using induction_linear <;> simp_all [IsPushout.equiv_tmul]
 
 @[to_additive (dont_translate := R)]

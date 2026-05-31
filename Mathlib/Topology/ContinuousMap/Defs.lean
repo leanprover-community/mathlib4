@@ -9,7 +9,6 @@ public import Mathlib.Data.FunLike.Basic
 public import Mathlib.Tactic.Continuity
 public import Mathlib.Tactic.Lift
 public import Mathlib.Topology.Defs.Basic
-public import Mathlib.Tactic.ToAdditive
 
 /-!
 # Continuous bundled maps
@@ -35,7 +34,7 @@ structure ContinuousMap (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] 
   /-- The function `X → Y` -/
   protected toFun : X → Y
   /-- Proposition that `toFun` is continuous -/
-  protected continuous_toFun : Continuous toFun := by continuity
+  protected continuous_toFun : Continuous toFun := by fun_prop
 
 /-- `C(X, Y)` is the type of continuous maps from `X` to `Y`. -/
 notation "C(" X ", " Y ")" => ContinuousMap X Y

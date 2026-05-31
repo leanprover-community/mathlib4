@@ -103,6 +103,7 @@ theorem complex_d_succ_comp (n : ℕ) :
 noncomputable def cokernelCofork : CokernelCofork (P.complex.d 1 0) :=
   CokernelCofork.ofπ _ P.complex_d_comp_π_f_zero
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Z` is the cokernel of `P.complex.X 1 ⟶ P.complex.X 0` when `P : ProjectiveResolution Z`. -/
 noncomputable def isColimitCokernelCofork : IsColimit (P.cokernelCofork) := by
   refine IsColimit.ofIsoColimit (P.complex.opcyclesIsCokernel 1 0 (by simp)) ?_
@@ -115,6 +116,7 @@ noncomputable def isColimitCokernelCofork : IsColimit (P.cokernelCofork) := by
     Iso.hom_inv_id, comp_id, isoHomologyι_inv_hom_id, singleObjHomologySelfIso_inv_homologyι,
     singleObjOpcyclesSelfIso_hom, single₀ObjXSelf, Iso.refl_inv, id_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : Epi (P.π.f n) := by
   cases n
   · exact epi_of_isColimit_cofork P.isColimitCokernelCofork
@@ -136,7 +138,7 @@ noncomputable def self [Projective Z] : ProjectiveResolution Z where
 
 variable {Z} {Z' : C} (P' : ProjectiveResolution Z')
 
-/-- Given injective resolutions `P` and `P'` of two objects `Z` and `Z'`,
+/-- Given projective resolutions `P` and `P'` of two objects `Z` and `Z'`,
 and a morphism `f : Z ⟶ Z'`, this structure contains the data of a morphism
 `P.complex ⟶ P'.complex` which is compatible with `f` -/
 structure Hom (f : Z ⟶ Z') where
@@ -148,6 +150,7 @@ namespace Hom
 
 attribute [reassoc (attr := simp)] hom_f_zero_comp_π_f_zero
 
+set_option backward.isDefEq.respectTransparency false in
 variable {I I'} in
 @[reassoc (attr := simp)]
 lemma hom_comp_π {f : Z ⟶ Z'} (φ : Hom P P' f) :
@@ -164,6 +167,7 @@ open Limits
 variable {C : Type u} [Category* C] [HasZeroObject C] [Preadditive C]
   {D : Type u'} [Category.{v'} D] [HasZeroObject D] [Preadditive D] [CategoryWithHomology D]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An additive functor `F` which preserves homology and sends projective objects to projective
 objects sends a projective resolution of `Z` to a projective resolution of `F.obj Z`. -/
 @[simps complex π]

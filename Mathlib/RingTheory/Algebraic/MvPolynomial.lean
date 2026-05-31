@@ -6,7 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.MvPolynomial.Supported
-public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Algebraic.Basic
 
 /-!
@@ -43,8 +43,8 @@ theorem transcendental_supported_polynomial_aeval_X {i : σ} {s : Set σ} (h : i
     (Polynomial.aeval (X i : MvPolynomial σ R) f)).restrictScalars R).comp
       (Polynomial.mapAlgEquiv (supportedEquivMvPolynomial s).symm).toAlgHom
   replace hf : Function.Injective u := by
-    simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, Subalgebra.coe_val,
-      AlgHom.coe_coe, AlgEquiv.coe_trans, Function.comp_assoc, u]
+    simp only [AlgHom.coe_comp, Subalgebra.coe_val,
+      AlgEquiv.coe_algHom, AlgEquiv.coe_trans, Function.comp_assoc, u]
     apply Subtype.val_injective.comp
     simp only [EquivLike.comp_injective]
     apply hf.comp
@@ -59,7 +59,7 @@ theorem transcendental_supported_polynomial_aeval_X {i : σ} {s : Set σ} (h : i
     · ext1
       simp [Set.subtypeInsertEquivOption, Subalgebra.algebraMap_eq, optionEquivLeft_symm_apply]
     · simp [Set.subtypeInsertEquivOption, h1, optionEquivLeft_symm_apply]
-  simpa only [h2, v, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
+  simpa only [h2, v, AlgHom.coe_comp, AlgEquiv.coe_algHom,
     EquivLike.injective_comp, AlgHom.coe_restrictScalars'] using hf
 
 theorem transcendental_polynomial_aeval_X (i : σ) {f : R[X]} (hf : Transcendental R f) :
@@ -82,7 +82,7 @@ theorem transcendental_supported_polynomial_aeval_X_iff
     i ∉ s ∧ Transcendental R f := by
   refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨h, hf⟩ ↦ transcendental_supported_polynomial_aeval_X R h hf⟩
   · rw [Transcendental] at h
-    contrapose! h
+    contrapose h
     refine isAlgebraic_algebraMap (⟨Polynomial.aeval (X i) f, ?_⟩ : supported R s)
     exact Algebra.adjoin_mono (Set.singleton_subset_iff.2 (Set.mem_image_of_mem _ h))
       (Polynomial.aeval_mem_adjoin_singleton _ _)

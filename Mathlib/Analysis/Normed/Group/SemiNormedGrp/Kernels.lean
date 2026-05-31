@@ -94,7 +94,7 @@ noncomputable instance {V W : SemiNormedGrp.{u}} : NNNorm (V ⟶ W) where
   nnnorm f := nnnorm f.hom
 
 /-- The equalizer cone for a parallel pair of morphisms of seminormed groups. -/
-def fork {V W : SemiNormedGrp.{u}} (f g : V ⟶ W) : Fork f g :=
+noncomputable def fork {V W : SemiNormedGrp.{u}} (f g : V ⟶ W) : Fork f g :=
   @Fork.ofι _ _ _ _ _ _ (of (f - g).hom.ker)
     (ofHom (NormedAddGroupHom.incl (f - g).hom.ker)) <| by
     ext v
@@ -189,10 +189,11 @@ theorem explicitCokernelπ_surjective {X Y : SemiNormedGrp.{u}} {f : X ⟶ Y} :
     Function.Surjective (explicitCokernelπ f) :=
   Quot.mk_surjective
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem comp_explicitCokernelπ {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) :
     f ≫ explicitCokernelπ f = 0 := by
-  convert (cokernelCocone f).w WalkingParallelPairHom.left
+  convert! (cokernelCocone f).w WalkingParallelPairHom.left
   simp
 
 @[simp]
@@ -210,12 +211,13 @@ theorem explicitCokernelπ_desc_apply {X Y Z : SemiNormedGrp.{u}} {f : X ⟶ Y} 
     {cond : f ≫ g = 0} (x : Y) : explicitCokernelDesc cond (explicitCokernelπ f x) = g x :=
   show (explicitCokernelπ f ≫ explicitCokernelDesc cond) x = g x by rw [explicitCokernelπ_desc]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem explicitCokernelDesc_unique {X Y Z : SemiNormedGrp.{u}} {f : X ⟶ Y} {g : Y ⟶ Z}
     (w : f ≫ g = 0) (e : explicitCokernel f ⟶ Z) (he : explicitCokernelπ f ≫ e = g) :
     e = explicitCokernelDesc w := by
   apply (isColimitCokernelCocone f).uniq (Cofork.ofπ g (by simp [w]))
   rintro (_ | _)
-  · convert w.symm
+  · convert! w.symm
     simp
   · exact he
 
@@ -287,16 +289,19 @@ def explicitCokernelIso {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) :
     explicitCokernel f ≅ cokernel f :=
   (isColimitCokernelCocone f).coconePointUniqueUpToIso (colimit.isColimit _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem explicitCokernelIso_hom_π {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) :
     explicitCokernelπ f ≫ (explicitCokernelIso f).hom = cokernel.π _ := by
   simp [explicitCokernelπ, explicitCokernelIso, IsColimit.coconePointUniqueUpToIso]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem explicitCokernelIso_inv_π {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) :
     cokernel.π f ≫ (explicitCokernelIso f).inv = explicitCokernelπ f := by
   simp [explicitCokernelπ, explicitCokernelIso]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem explicitCokernelIso_hom_desc {X Y Z : SemiNormedGrp.{u}} {f : X ⟶ Y} {g : Y ⟶ Z}
     (w : f ≫ g = 0) :

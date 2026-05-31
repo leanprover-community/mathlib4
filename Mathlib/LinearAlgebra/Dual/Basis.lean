@@ -135,7 +135,7 @@ def dualBasis : Basis ι R (Dual R M) :=
 -- We use `j = i` to match `Basis.repr_self`
 theorem dualBasis_apply_self (i j : ι) : b.dualBasis i (b j) =
     if j = i then 1 else 0 := by
-  convert b.toDual_apply i j using 2
+  convert! b.toDual_apply i j using 2
   rw [@eq_comm _ j i]
 
 theorem linearCombination_dualBasis (f : ι →₀ R) (i : ι) :
@@ -269,7 +269,7 @@ theorem coeffs_lc (l : ι →₀ R) : h.coeffs (DualBases.lc e l) = l := by
   ext i
   rw [h.coeffs_apply, h.dual_lc]
 
-/-- For any m : M n, \sum_{p ∈ Q n} (ε p m) • e p = m -/
+/-- For any `m : M n`, $\sum_{p ∈ Q n} (ε p m) • e p = m$ -/
 @[simp]
 theorem lc_coeffs (m : M) : DualBases.lc e (h.coeffs m) = m := h.total <| by simp [h.dual_lc]
 

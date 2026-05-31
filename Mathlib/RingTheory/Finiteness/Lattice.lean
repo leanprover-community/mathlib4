@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Finiteness.Basic
 
 -/
 
-@[expose] public section
+public section
 
 namespace Submodule
 

@@ -130,6 +130,21 @@ instance whiskeringRight_preservesLimitsOfShape {C : Type*} [Category* C] {D : T
       change IsLimit (((evaluation _ _).obj k ⋙ F).mapCone c)
       exact isLimitOfPreserves _ hc⟩⟩⟩
 
+instance {C : Type*} [Category* C] {D : Type*}
+    [Category* D] {E : Type*} [Category* E] {J : Type*} [Category* J]
+    [HasLimitsOfShape J D] (F : D ⥤ E) [F.ReflectsIsomorphisms] [PreservesLimitsOfShape J F] :
+    ReflectsLimitsOfShape J ((whiskeringRight C D E).obj F) :=
+  reflectsLimitsOfShape_of_reflectsIsomorphisms
+
+instance {C : Type*} [Category* C] {D : Type*}
+    [Category* D] {E : Type*} [Category* E] {J : Type*} [Category* J]
+    [HasLimitsOfShape J E] (F : D ⥤ E) [ReflectsLimitsOfShape J F] :
+    ReflectsLimitsOfShape J ((whiskeringRight C D E).obj F) :=
+  ⟨fun {K} ↦ ⟨fun {c} hc ↦ ⟨by
+    apply evaluationJointlyReflectsLimits _ (fun k ↦ ?_)
+    apply isLimitOfReflects F
+    exact isLimitOfPreserves ((evaluation C E).obj k) hc⟩⟩⟩
+
 /-- Whiskering right and then taking a limit is the same as taking the limit and applying the
 functor. -/
 def limitCompWhiskeringRightIsoLimitComp {C : Type*} [Category* C] {D : Type*}
@@ -138,6 +153,7 @@ def limitCompWhiskeringRightIsoLimitComp {C : Type*} [Category* C] {D : Type*}
     limit (G ⋙ (whiskeringRight _ _ _).obj F) ≅ limit G ⋙ F :=
   (preservesLimitIso _ _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem limitCompWhiskeringRightIsoLimitComp_inv_π {C : Type*} [Category* C] {D : Type*}
     [Category* D] {E : Type*} [Category* E] {J : Type*} [Category* J]
@@ -146,6 +162,7 @@ theorem limitCompWhiskeringRightIsoLimitComp_inv_π {C : Type*} [Category* C] {D
       limit.π (G ⋙ (whiskeringRight _ _ _).obj F) j = whiskerRight (limit.π G j) F := by
   simp [limitCompWhiskeringRightIsoLimitComp]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem limitCompWhiskeringRightIsoLimitComp_hom_whiskerRight_π
     {C : Type*} [Category* C] {D : Type*} [Category* D]
@@ -173,6 +190,7 @@ def colimitCompWhiskeringRightIsoColimitComp {C : Type*} [Category* C] {D : Type
     colimit (G ⋙ (whiskeringRight _ _ _).obj F) ≅ colimit G ⋙ F :=
   (preservesColimitIso _ _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_colimitCompWhiskeringRightIsoColimitComp_hom {C : Type*} [Category* C] {D : Type*}
     [Category* D] {E : Type*} [Category* E] {J : Type*} [Category* J]
@@ -181,6 +199,7 @@ theorem ι_colimitCompWhiskeringRightIsoColimitComp_hom {C : Type*} [Category* C
       (colimitCompWhiskeringRightIsoColimitComp F G).hom = whiskerRight (colimit.ι G j) F := by
   simp [colimitCompWhiskeringRightIsoColimitComp]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem whiskerRight_ι_colimitCompWhiskeringRightIsoColimitComp_inv {C : Type*} [Category* C]
     {D : Type*} [Category* D] {E : Type*} [Category* E] {J : Type*} [Category* J]
@@ -235,6 +254,7 @@ section
 variable [HasLimitsOfShape J C] [HasColimitsOfShape K C]
 variable [PreservesLimitsOfShape J (colim : (K ⥤ C) ⥤ _)]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : PreservesLimitsOfShape J (colim : (K ⥤ D ⥤ C) ⥤ _) :=
   preservesLimitsOfShape_of_evaluation _ _ (fun d =>
     let i : (colim : (K ⥤ D ⥤ C) ⥤ _) ⋙ (evaluation D C).obj d ≅
@@ -252,6 +272,7 @@ section
 variable [HasColimitsOfShape J C] [HasLimitsOfShape K C]
 variable [PreservesColimitsOfShape J (lim : (K ⥤ C) ⥤ _)]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : PreservesColimitsOfShape J (lim : (K ⥤ D ⥤ C) ⥤ _) :=
   preservesColimitsOfShape_of_evaluation _ _ (fun d =>
     let i : (lim : (K ⥤ D ⥤ C) ⥤ _) ⋙ (evaluation D C).obj d ≅

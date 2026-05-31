@@ -194,7 +194,7 @@ theorem separableClosure.eq_bot_iff
     {F : Type u} {E : Type v} [Field F] [Field E] [Algebra F E] [Algebra.IsAlgebraic F E] :
     separableClosure F E = ⊥ ↔ IsPurelyInseparable F E :=
   ⟨fun h ↦ isPurelyInseparable_iff.2 fun x ↦ ⟨Algebra.IsIntegral.isIntegral x, fun hs ↦ by
-    simpa only [h] using mem_separableClosure_iff.2 hs⟩, fun _ ↦ eq_bot_of_isPurelyInseparable F E⟩
+    simpa only [h] using! mem_separableClosure_iff.2 hs⟩, fun _ ↦ eq_bot_of_isPurelyInseparable F E⟩
 
 instance isPurelyInseparable_self : IsPurelyInseparable F F :=
   ⟨inferInstance, fun x _ ↦ ⟨x, rfl⟩⟩
@@ -356,7 +356,7 @@ theorem isPurelyInseparable_of_finSepDegree_eq_one
     rw [hdeg, mul_eq_one, (finSepDegree_adjoin_simple_eq_finrank_iff F E x
         (Algebra.IsAlgebraic.isAlgebraic x)).2 hsep,
       IntermediateField.finrank_eq_one_iff] at this
-    simpa only [this.1] using mem_adjoin_simple_self F x
+    simpa only [this.1] using! mem_adjoin_simple_self F x
   · rw [← Algebra.transcendental_iff_not_isAlgebraic] at H
     simp [finSepDegree_eq_zero_of_transcendental F E] at hdeg
 
@@ -477,7 +477,7 @@ instance separableClosure.isPurelyInseparable [Algebra.IsAlgebraic F E] :
     fun h ↦ ?_⟩
   haveI := (isSeparable_adjoin_simple_iff_isSeparable L E).2 h
   haveI : Algebra.IsSeparable F (restrictScalars F L⟮x⟯) := Algebra.IsSeparable.trans F L L⟮x⟯
-  have hx : x ∈ restrictScalars F L⟮x⟯ := mem_adjoin_simple_self _ x
+  have hx : x ∈ L⟮x⟯.restrictScalars F := mem_adjoin_simple_self _ x
   exact ⟨⟨x, mem_separableClosure_iff.2 <| isSeparable_of_mem_isSeparable F E hx⟩, rfl⟩
 
 open Cardinal in

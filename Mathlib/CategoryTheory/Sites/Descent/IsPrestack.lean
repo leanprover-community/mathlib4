@@ -68,6 +68,8 @@ def pullHom ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.o
     (F.map g.op.toLoc).toFunctor.map φ ≫
       (F.mapComp' f₂.op.toLoc g.op.toLoc gf₂.op.toLoc (by aesop)).inv.toNatTrans.app _
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_eq_pullHom
     ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj (.mk (op X₂))⦄
@@ -80,6 +82,7 @@ lemma map_eq_pullHom
     (F.mapComp' f₂.op.toLoc g.op.toLoc gf₂.op.toLoc (by aesop)).hom.toNatTrans.app _ := by
   simp [Cat.Hom.comp_toFunctor, pullHom, ← reassoc_of% Cat.Hom₂.comp_app, ← Cat.Hom₂.comp_app]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma pullHom_id ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj (.mk (op X₂))⦄
     ⦃Y : C⦄ ⦃f₁ : Y ⟶ X₁⦄ ⦃f₂ : Y ⟶ X₂⦄
@@ -88,6 +91,8 @@ lemma pullHom_id ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ 
   simp [pullHom, mapComp'_comp_id_hom_app, mapComp'_comp_id_inv_app,
     ← reassoc_of% Cat.Hom₂.comp_app, Iso.inv_hom_id]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma pullHom_pullHom
     ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj (.mk (op X₂))⦄
@@ -101,9 +106,8 @@ lemma pullHom_pullHom
   dsimp [pullHom]
   rw [Functor.map_comp_assoc, Functor.map_comp_assoc,
     F.mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv_app _ _ _ _ _ _ _ rfl (by aesop),
-    F.mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight_app_assoc _ _ _ _ _ _ _ rfl (by aesop),
-    mapComp'_inv_naturality_assoc,
-      ← reassoc_of% Cat.Hom₂.comp_app, Iso.hom_inv_id, Cat.Hom₂.id_app, Category.id_comp]
+    F.mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight_app_assoc _ _ _ _ _ _ _ rfl (by aesop)]
+  simp [mapComp'_inv_naturality_assoc, ← reassoc_of% Cat.Hom₂.comp_app]
 
 end LocallyDiscreteOpToCat
 
@@ -121,7 +125,7 @@ of morphisms $p^* M ⟶ p^* N$. -/
 def presheafHom : (Over S)ᵒᵖ ⥤ Type v' where
   obj T := (F.map (.toLoc T.unop.hom.op)).toFunctor.obj M ⟶
     (F.map (.toLoc T.unop.hom.op)).toFunctor.obj N
-  map {T₁ T₂} p f := pullHom f p.unop.left T₂.unop.hom T₂.unop.hom
+  map {T₁ T₂} p := ↾fun f ↦ pullHom f p.unop.left T₂.unop.hom T₂.unop.hom
 
 /-- The bijection `(M ⟶ N) ≃ (F.presheafHom M N).obj (op (Over.mk (𝟙 S)))`. -/
 @[simps! -isSimp]
@@ -130,6 +134,8 @@ def presheafHomObjHomEquiv {M N : (F.obj (.mk (op S)))} :
   Iso.homCongr ((Cat.Hom.toNatIso (F.mapId (.mk (op S)))).symm.app M)
     ((Cat.Hom.toNatIso (F.mapId (.mk (op S)))).symm.app N)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Compatibility isomorphism of `Pseudofunctor.presheafHom` with "restrictions". -/
 def overMapCompPresheafHomIso {S' : C} (q : S' ⟶ S) :
     (Over.map q).op ⋙ F.presheafHom M N ≅
@@ -142,7 +148,8 @@ def overMapCompPresheafHomIso {S' : C} (q : S' ⟶ S) :
       rintro ⟨T₁⟩ ⟨T₂⟩ ⟨f⟩
       ext g
       dsimp [pullHom]
-      simp only [Category.assoc, Functor.map_comp]
+      simp only [Category.assoc,
+        Functor.map_comp]
       rw [F.mapComp'₀₁₃_inv_comp_mapComp'₀₂₃_hom_app_assoc _ _ _ _ _ _ rfl _ rfl,
         F.mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom_app _ _ _ _ _ _ _ _ (by
           simp only [← Quiver.Hom.comp_toLoc, ← op_comp, Over.w_assoc])])
@@ -167,8 +174,8 @@ a morphism `p : X ⟶ S` to the type of morphisms $p^* M ⟶ p^* N$. -/
 def sheafHom (J : GrothendieckTopology C) [F.IsPrestack J]
     {S : C} (M N : F.obj (.mk (op S))) :
     Sheaf (J.over S) (Type v') where
-  val := F.presheafHom M N
-  cond := IsPrestack.isSheaf _ _ _
+  obj := F.presheafHom M N
+  property := IsPrestack.isSheaf _ _ _
 
 end Pseudofunctor
 

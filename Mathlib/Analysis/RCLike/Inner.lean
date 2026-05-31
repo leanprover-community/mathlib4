@@ -23,9 +23,9 @@ from `RCLike.innerProductSpace`.
   convention, similarly to `MeasureTheory.average`?
 -/
 
-@[expose] public section
+public section
 
-open Finset Function Real WithLp
+open Finset Function WithLp
 open scoped BigOperators ComplexConjugate ComplexOrder InnerProductSpace
 
 variable {ι κ 𝕜 : Type*} {E : ι → Type*} [Fintype ι]
@@ -163,7 +163,7 @@ section Real
 variable {w f g : ι → ℝ}
 
 lemma abs_wInner_le (hw : 0 ≤ w) : |⟪f, g⟫_[ℝ, w]| ≤ ⟪|f|, |g|⟫_[ℝ, w] := by
-  simpa using norm_wInner_le (𝕜 := ℝ) hw
+  simpa using! norm_wInner_le (𝕜 := ℝ) hw
 
 end Real
 end RCLike
