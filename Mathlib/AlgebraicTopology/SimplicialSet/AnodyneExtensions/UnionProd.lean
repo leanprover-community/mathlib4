@@ -142,6 +142,7 @@ lemma simplex_fst_min : dsimp% (x.cast hd).simplex.1 (min x hd) = k.succ := by
   rw [← mem_finset_iff]
   apply Finset.min'_mem
 
+set_option backward.isDefEq.respectTransparency false in
 lemma simplex_fst_le_castSucc_iff (i : Fin (d + 1)) :
     dsimp% (x.cast hd).simplex.1 i ≤ k.castSucc ↔ i < min x hd := by
   contrapose!
@@ -229,6 +230,7 @@ noncomputable abbrev δ :
       obtain rfl | ⟨i, rfl⟩ := Fin.eq_self_or_eq_succAbove l.castSucc i
       · refine ⟨l, ?_⟩
         rw [Fin.succAbove_castSucc_self, ← hi, ← hl.simplex_snd_succ]
+        rfl
       · exact ⟨_, hi⟩
     · obtain ⟨i, hi⟩ := mem_range_left x hd j hj
       dsimp at hi
@@ -325,11 +327,13 @@ lemma φ_of_gt (i : Fin (d + 2)) (hi : (min x hd).castSucc < i) :
     φ x hd i = objEquiv (x.cast hd).simplex (i.pred (by aesop)) := by
   rw [φ_of_ne _ _ _ hi.ne', Fin.predAbove_of_castSucc_lt _ _ hi]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma φ_succ_snd : (φ x hd (min x hd).succ).2 = (φ x hd (min x hd).castSucc).2 := by
   have := φ_succAbove x hd (min x hd)
   simp_all [φ_castSucc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma φ_succ_fst : (φ x hd (min x hd).succ).1 = k.succ := by
   have := φ_succAbove x hd (min x hd)
@@ -338,6 +342,7 @@ lemma φ_succ_fst : (φ x hd (min x hd).succ).1 = k.succ := by
 variable {x}
 
 include hx in
+set_option backward.isDefEq.respectTransparency false in
 lemma strictMono_φ : StrictMono (φ x hd) := by
   have hx' := (prodStdSimplex.nonDegenerate_iff_strictMono_objEquiv _).1
     (x.cast hd).nonDegenerate
@@ -355,7 +360,8 @@ lemma strictMono_φ : StrictMono (φ x hd) := by
       · dsimp
         rw [simplex_fst_le_castSucc_iff]
         grind
-      · exact stdSimplex.monotone_apply _ (by dsimp; grind)
+      · exact stdSimplex.monotone_apply _
+          (by dsimp; rw [← hi]; exact Fin.castSucc_le_succ i)
       · intro h
         rw [Prod.ext_iff] at h
         dsimp at h
@@ -402,6 +408,7 @@ lemma notMem_simplex :
   exact (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).map
     (SimplexCategory.δ (min x hd).castSucc).op h
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The type (I) simplex reconstructed from a type (II) simplex. -/
 @[simps]
 noncomputable def type₁ : Type₁ k n where
@@ -421,18 +428,21 @@ variable {hd : x.dim = d + 1} {l : Fin (d + 1)} (hl : IsIndex x hd l.succ)
 
 include hl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma min_δ : min (d := d) hl.δ rfl = l := by
   refine le_antisymm (Finset.min'_le _ _ ?_)
     (Finset.le_min' _ _ _ (fun y hy ↦ ?_))
   · simp only [mem_finset_iff]
-    dsimp [δ, stdSimplex.δ_apply]
-    rw [Fin.succAbove_castSucc_self, hl.simplex_fst_succ]
-  · simp only [mem_finset_iff, S.cast_simplex_rfl, Monoidal.tensorObj_obj,
-      prod_δ_fst, stdSimplex.δ_apply] at hy
+    simp only [Monoidal.tensorObj_obj, S.cast_dim, S.cast_simplex_rfl, prod_δ_fst,
+      stdSimplex.δ_apply, Fin.succAbove_castSucc_self]
+    exact hl.simplex_fst_succ
+  · simp only [mem_finset_iff, Monoidal.tensorObj_obj, S.cast_dim,
+      S.cast_simplex_rfl, prod_δ_fst, stdSimplex.δ_apply] at hy
     by_contra!
     rw [Fin.succAbove_of_castSucc_lt _ _ (by grind)] at hy
     grind [(hl.succ_le_simplex_fst_iff y.castSucc).1 hy.symm.le]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isType₂_δ : IsType₂ hl.δ := by
   intro _ rfl t ht
   dsimp at t ht
@@ -444,6 +454,7 @@ lemma isType₂_δ : IsType₂ hl.δ := by
   dsimp [stdSimplex.δ_apply] at hl ht ⊢
   aesop
 
+set_option backward.defeqAttrib.useBackward true in
 variable {x} in
 lemma eq_of_isType₂_δ {u : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).N}
     (hu : IsType₂ u) (i : Fin (d + 2))
@@ -454,9 +465,10 @@ lemma eq_of_isType₂_δ {u : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] �
   obtain hi | rfl | hi := lt_trichotomy i l.castSucc
   · obtain ⟨l, rfl⟩ := Fin.eq_succ_of_ne_zero (i := l) (by grind)
     refine (hu _ rfl l.succ ?_).elim
-    simp [isIndex_succ, hu', stdSimplex.δ_apply, Fin.succAbove_of_lt_succ i l.castSucc hi,
-      Fin.succAbove_of_lt_succ i l.succ (by grind), hl.simplex_fst_succ,
-      dsimp% hl.simplex_fst_castSucc, hl.simplex_snd_succ]
+    simp [isIndex_succ, S.cast_simplex_rfl, hu', stdSimplex.δ_apply,
+      Fin.succAbove_of_lt_succ i l.castSucc hi,
+      Fin.succAbove_of_lt_succ i l.succ (by grind), dsimp% hl.simplex_fst_succ,
+      dsimp% hl.simplex_snd_succ, dsimp% hl.simplex_fst_castSucc]
   · exact Or.inl rfl
   · obtain rfl | hi := (Fin.castSucc_lt_iff_succ_le.1 hi).eq_or_lt
     · exact Or.inr rfl
@@ -465,7 +477,8 @@ lemma eq_of_isType₂_δ {u : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] �
       simp [isIndex_succ, hu', stdSimplex.δ_apply,
         Fin.succAbove_of_castSucc_lt i l.castSucc (by grind),
         Fin.succAbove_of_castSucc_lt i l.succ (by grind),
-        hl.simplex_fst_castSucc, hl.simplex_snd_succ, hl.simplex_fst_succ]
+        dsimp% hl.simplex_fst_castSucc, dsimp% hl.simplex_snd_succ,
+        dsimp% hl.simplex_fst_succ]
 
 end IsIndex
 
@@ -568,6 +581,7 @@ lemma type₁_pairingCore {m : ℕ} (k : Fin (m + 1)) {n : ℕ}
     (pairingCore k n).type₁ s = s.x :=
   Subcomplex.N.cast_eq_self _ s.hd
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A weak rank function for `pairingCore k n`. -/
 noncomputable def weakRankFunction {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
     (pairingCore.{u} k n).WeakRankFunction ℕ where
@@ -637,8 +651,11 @@ instance {m : ℕ} (k : Fin m) (n : ℕ) :
     have h₁ := hs.simplex_fst_castSucc
     dsimp only [Fin.castSucc_zero] at h₁
     simp [h₁, hi] at this
-  ne_last := by simp
+  ne_last x := by
+    dsimp [pairingCore]
+    simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A regular pairing for `Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]`
 when `k : Fin (m + 1)` and `n : ℕ`. -/
 noncomputable def pairing {m : ℕ} (k : Fin (m + 2)) (n : ℕ) :

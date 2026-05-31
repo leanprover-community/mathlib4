@@ -246,7 +246,7 @@ theorem single_order_mul_powerSeriesPart (x : R⸨X⸩) :
     · contrapose! h
       exact order_le_of_coeff_ne_zero h.symm
     · contrapose h
-      simp only [Set.mem_range, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk] at h
+      simp only [Nat.castOrderEmbedding_apply, Set.mem_range] at h
       lia
 
 theorem ofPowerSeries_powerSeriesPart (x : R⸨X⸩) :
@@ -339,9 +339,7 @@ theorem coeff_coe (i : ℤ) :
   · rw [Int.ofNat_eq_natCast, coeff_coe_powerSeries, if_neg (Int.natCast_nonneg _).not_gt,
       Int.natAbs_natCast]
   · rw [ofPowerSeries_apply, embDomain_notin_image_support, if_pos (Int.negSucc_lt_zero _)]
-    simp only [not_exists, RelEmbedding.coe_mk, Set.mem_image, not_and, Function.Embedding.coeFn_mk,
-      Ne, toPowerSeries_symm_apply_coeff, mem_support, imp_true_iff,
-      not_false_iff, reduceCtorEq]
+    simp
 
 theorem coe_C (r : R) : ((C r : R⟦X⟧) : R⸨X⸩) = HahnSeries.C r :=
   ofPowerSeries_C _
@@ -707,7 +705,7 @@ lemma Cauchy.exists_lb_eventual_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy �
   intro g hg
   have h_prod : (f, g) ∈ S ×ˢ T := by simp [hf.1, hg.2]
   refine hN g (le_of_lt ?_)
-  simpa [Valuation.restrict_def, ← Valuation.restrict_lt_one_iff] using H h_prod
+  simpa [Valuation.restrict_def, ← Valuation.restrict_lt_one_iff] using! H h_prod
 
 /- The support of `Cauchy.coeff` has a lower bound. -/
 theorem Cauchy.exists_lb_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
@@ -751,7 +749,7 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
   have intersec₁ :
     (⋂ n ∈ Set.Iio D, φ n) ⊆ {x : K⸨X⸩ | ∀ d : ℤ, d < D → coeff hℱ d = x.coeff d} := by
     intro _ hf
-    simpa only [Set.mem_iInter] using hf
+    simpa only [Set.mem_iInter] using! hf
   -- The goal is now to show that the intersection of all `φ d` (for `d < D`) is in `ℱ`.
   let ℓ := (exists_lb_coeff_ne hℱ).choose
   let N := max ℓ D

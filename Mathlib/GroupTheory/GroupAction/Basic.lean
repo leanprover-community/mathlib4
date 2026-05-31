@@ -161,7 +161,7 @@ lemma orbitRel_subgroupOf (H K : Subgroup G) :
   · rcases h with ⟨⟨gv, gp⟩, rfl⟩
     simp only
     refine mem_orbit _ (⟨gv, ?_⟩ : Subgroup.map K.subtype (H.subgroupOf K))
-    simpa using gp
+    simpa using! gp
   · rcases h with ⟨⟨gv, gp⟩, rfl⟩
     simp only
     simp only [Subgroup.subgroupOf_map_subtype, Subgroup.mem_inf] at gp

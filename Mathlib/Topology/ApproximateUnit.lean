@@ -62,7 +62,7 @@ lemma nhds_one [SeparatelyContinuousMul α] : IsApproximateUnit (𝓝 (1 : α)) 
 /-- In a topological unital magma, `𝓝 1` is the largest approximate unit. -/
 lemma iff_neBot_and_le_nhds_one [SeparatelyContinuousMul α] {l : Filter α} :
     IsApproximateUnit l ↔ l.NeBot ∧ l ≤ 𝓝 1 :=
-  ⟨fun hl ↦ ⟨hl.neBot, by simpa using hl.tendsto_mul_left 1⟩,
+  ⟨fun hl ↦ ⟨hl.neBot, by simpa using! hl.tendsto_mul_left 1⟩,
     And.elim fun _ hl ↦ nhds_one α |>.mono hl⟩
 
 /-- In a topological unital magma, `𝓝 1` is the largest approximate unit. -/

@@ -310,7 +310,7 @@ def coind (π : ContRepresentation R G V) : ContRepresentation R H (π.coindV φ
     map_add' _ _ := by simp
     map_smul' _ _ := by simp
     cont := continuous_induced_rng.2 <| by
-      simpa using (ContinuousMap.mulRight h).continuous_precomp.comp continuous_subtype_val}
+      simpa using! (ContinuousMap.mulRight h).continuous_precomp.comp continuous_subtype_val}
   map_one' := by ext; simp
   map_mul' h1 h2 := by ext; simp [ContinuousMap.mulRight_mul]
 

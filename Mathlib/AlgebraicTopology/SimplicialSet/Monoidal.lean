@@ -247,6 +247,7 @@ variable {X Y : SSet.{u}} (S : X.Subcomplex) (T : Y.Subcomplex)
 /-- Given `S ≤ X` and `T ≤ Y`, this is the subcomplex of `X ⊗ Y` given by `(X ⊗ T) ⊔ (S ⊗ Y)`. -/
 def unionProd : (X ⊗ Y).Subcomplex := ((⊤ : X.Subcomplex).prod T) ⊔ (S.prod ⊤)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mem_unionProd_iff {n : SimplexCategoryᵒᵖ} (x : (X ⊗ Y).obj n) :
     dsimp% x ∈ (unionProd S T).obj _ ↔ x.2 ∈ T.obj _ ∨ x.1 ∈ S.obj _ := by
   dsimp [unionProd, Set.prod]
@@ -306,7 +307,8 @@ lemma isPushout : IsPushout (S.ι ▷ (T : SSet)) ((S : SSet) ◁ T.ι)
 lemma preimage_β_hom : (unionProd S T).preimage (β_ _ _).hom = unionProd T S := by
   ext n ⟨x, y⟩
   dsimp
-  simp only [mem_unionProd_iff, dsimp% Set.mem_preimage (f := (β_ Y X).hom.app n)]
+  simp only [mem_unionProd_iff, preimage_obj, Monoidal.tensorObj_obj,
+    dsimp% Set.mem_preimage (f := (β_ Y X).hom.app n)]
   tauto
 
 @[simp]
