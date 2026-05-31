@@ -168,4 +168,21 @@ lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{max
       rintro Y _ ⟨Z, g, h, hg, rfl⟩
       simpa using congrArg _ ((hy₁ g hg).trans (hy₂ g hg).symm)
 
+/-- If `C` has pullbacks and `F : C ⥤ D` preserves pullbacks, any cover preserving
+functor preserves all `1`-hypercovers. -/
+lemma Functor.PreservesOneHypercovers.of_coverPreserving [HasPullbacks C]
+    [PreservesLimitsOfShape WalkingCospan F] (H : CoverPreserving J K F) :
+    Functor.PreservesOneHypercovers.{w} F J K := by
+  refine fun {U} E ↦ ⟨?_, fun i₁ i₂ W p₁ p₂ h ↦ ?_⟩
+  · simp [PreZeroHypercover.sieve₀_map, H.cover_preserve E.mem₀]
+  · let P : C := pullback (E.f i₁) (E.f i₂)
+    have : HasPullback ((E.toPreOneHypercover.map F).f i₁) ((E.toPreOneHypercover.map F).f i₂) :=
+      hasPullback_of_preservesPullback F (E.f i₁) (E.f i₂)
+    have := H.cover_preserve (E.mem₁ i₁ i₂ (pullback.fst (E.f i₁) (E.f i₂)) _ pullback.condition)
+    rw [PreOneHypercover.functorPushforward_sieve₁_of_preservesPullbacks _ _ _
+      pullback.condition] at this
+    refine K.superset_covering ?_
+      (K.pullback_stable (IsPullback.lift (.map _ (.of_hasPullback _ _)) p₁ p₂ h) this)
+    simp [PreOneHypercover.pullback_sieve₁]
+
 end CategoryTheory

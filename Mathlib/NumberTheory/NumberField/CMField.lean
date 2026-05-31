@@ -554,9 +554,6 @@ instance of_isAbelianGalois [IsAbelianGalois ℚ K] :
     exact hσ₁.comp _
   exact IsCMField.of_forall_isConj K hσ₂
 
-@[deprecated (since := "2025-11-19")] alias NumberField.CMExtension.of_isMulCommutative :=
-  NumberField.IsCMField.of_isAbelianGalois
-
 end NumberField.IsCMField
 namespace IsCyclotomicExtension.Rat
 
