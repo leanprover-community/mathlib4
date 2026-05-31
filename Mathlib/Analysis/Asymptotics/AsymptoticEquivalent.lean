@@ -118,9 +118,8 @@ theorem isEquivalent_zero_iff_isBigO_zero : u ~[l] 0 ↔ u =O[l] (0 : α → β)
 
 theorem isEquivalent_const_iff_tendsto {c : β} (h : c ≠ 0) :
     u ~[l] const _ c ↔ Tendsto u l (𝓝 c) := by
-  rw [IsEquivalent]
-  change (u - const α c) =o[l] (fun _ : α => c) ↔ Tendsto u l (𝓝 c)
-  simpa [isLittleO_const_iff h] using tendsto_sub_const_iff c (c := c)
+  rw [IsEquivalent, isLittleO_congr, isLittleO_const_iff h, tendsto_sub_nhds_zero_iff]
+  all_goals rfl
 
 theorem IsEquivalent.tendsto_const {c : β} (hu : u ~[l] const _ c) : Tendsto u l (𝓝 c) := by
   rcases em <| c = 0 with rfl | h
