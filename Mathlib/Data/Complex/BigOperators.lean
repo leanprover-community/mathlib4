@@ -46,7 +46,7 @@ theorem re_sum (f : α → ℂ) : (∑ i ∈ s, f i).re = ∑ i ∈ s, (f i).re 
 
 @[simp]
 lemma re_expect (f : α → ℂ) : (𝔼 i ∈ s, f i).re = 𝔼 i ∈ s, (f i).re :=
-  map_expect (LinearMap.mk reAddGroupHom.toAddHom (by simp)) f s
+  map_expect { reAddGroupHom with map_smul' := by simp : ℂ →ₗ[ℚ≥0] ℝ} f s
 
 @[simp]
 lemma re_balance [Fintype α] (f : α → ℂ) (a : α) : re (balance f a) = balance (re ∘ f) a := by
@@ -61,7 +61,7 @@ theorem im_sum (f : α → ℂ) : (∑ i ∈ s, f i).im = ∑ i ∈ s, (f i).im 
 
 @[simp]
 lemma im_expect (f : α → ℂ) : (𝔼 i ∈ s, f i).im = 𝔼 i ∈ s, (f i).im :=
-  map_expect (LinearMap.mk imAddGroupHom.toAddHom (by simp)) f s
+  map_expect { imAddGroupHom with map_smul' := by simp : ℂ →ₗ[ℚ≥0] ℝ } f s
 
 @[simp]
 lemma im_balance [Fintype α] (f : α → ℂ) (a : α) : im (balance f a) = balance (im ∘ f) a := by

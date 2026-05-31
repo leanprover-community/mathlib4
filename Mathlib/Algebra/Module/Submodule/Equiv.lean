@@ -282,12 +282,20 @@ noncomputable def codRestrict₂ :
     M₁ →ₗ[R] M₂ →ₗ[R] M₃ :=
   let e : LinearMap.range i ≃ₗ[R] M₃ := (LinearEquiv.ofInjective i hi).symm
   { toFun := fun x ↦ e.comp <| (f x).codRestrict (p := LinearMap.range i) (hf x)
-    map_add' := by intro x₁ x₂; ext y; simp [f.map_add, ← e.map_add, codRestrict]
-    map_smul' := by intro t x; ext y; simp [f.map_smul, ← e.map_smul, codRestrict] }
+    map_add' x₁ x₂ := by
+      ext y
+      simp only [← map_add, comp_apply, LinearEquiv.coe_coe, add_apply, e.injective.eq_iff]
+      ext
+      simp
+    map_smul' t x := by
+      ext y
+      simp only [← map_smul, comp_apply, LinearEquiv.coe_coe, smul_apply, e.injective.eq_iff]
+      ext
+      simp }
 
 @[simp]
 lemma codRestrict₂_apply (x : M₁) (y : M₂) :
-    i (codRestrict₂ f i hi hf x y) = f x y := by
-  simp [codRestrict₂]
+    i (codRestrict₂ f i hi hf x y) = f x y :=
+  LinearEquiv.ofInjective_symm_apply i (h := hi) ⟨f x y, hf x y⟩
 
 end LinearMap
