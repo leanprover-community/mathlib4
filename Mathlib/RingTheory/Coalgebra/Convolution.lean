@@ -79,14 +79,14 @@ instance [Monoid β] [DistribMulAction β A] [SMulCommClass R β A] [IsScalarTow
   smul_assoc b f g := by
     ext c
     simp only [smul_eq_mul, convMul_apply, ofConv_smul, LinearMap.smul_apply]
-    induction (δ : C →ₗ[R] _) c <;> simp [smul_mul_assoc, *]
+    induction (comul c : C ⊗[R] C) <;> simp [smul_mul_assoc, *]
 
 instance [Monoid β] [DistribMulAction β A] [SMulCommClass R β A] [SMulCommClass β A A] :
     SMulCommClass β (WithConv (C →ₗ[R] A)) (WithConv (C →ₗ[R] A)) where
   smul_comm b f g := by
     ext c
     simp only [smul_eq_mul, convMul_apply, ofConv_smul, LinearMap.smul_apply]
-    induction (δ : C →ₗ[R] _) c <;> simp [mul_smul_comm, *]
+    induction (comul c : C ⊗[R] C) <;> simp [mul_smul_comm, *]
 
 @[simp] lemma toSpanSingleton_convMul_toSpanSingleton (x y : A) :
     toConv (toSpanSingleton R A x) * toConv (toSpanSingleton R A y) =
@@ -188,7 +188,7 @@ instance convSemiring : Semiring (WithConv (C →ₗ[R] A)) where
   one_mul f := by ext; simp [convOne_def, ← map_comp_rTensor]
   mul_one f := by ext; simp [convOne_def, ← map_comp_lTensor]
 
-instance [CommSemiring β] [Algebra β A] [SMulCommClass R β A] :
+instance convAlgebra [CommSemiring β] [Algebra β A] [SMulCommClass R β A] :
     Algebra β (WithConv (C →ₗ[R] A)) :=
   .ofModule smul_mul_assoc mul_smul_comm
 
