@@ -21,7 +21,7 @@ Let `M` be a monoid with a zero, endowed with a topology.
 
 Let `R` be a ring, endowed with a topology, such that multiplication is continuous.
 
-* `isBounded_singelton`: every singelton is bounded.
+* `isBounded_singleton`: every singleton is bounded.
 
 * `isBounded_finite`: every finite set is bounded.
 
