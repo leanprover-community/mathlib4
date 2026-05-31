@@ -163,8 +163,7 @@ def binaryProductFunctor : Type u ⥤ Type u ⥤ Type u where
         (BinaryFan.mk (↾_root_.Prod.fst) (↾_root_.Prod.snd ≫ f)) }
   map {X₁ X₂} f :=
     { app := fun Y =>
-      (binaryProductLimit X₂ Y).lift (BinaryFan.mk (↾_root_.Prod.fst ≫ f)
-      (↾_root_.Prod.snd)) }
+      BinaryFan.IsLimit.lift (binaryProductLimit X₂ Y) (↾_root_.Prod.fst ≫ f) (↾_root_.Prod.snd) }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The product functor given by the instance `HasBinaryProducts (Type u)` is isomorphic to the
