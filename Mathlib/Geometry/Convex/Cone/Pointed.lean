@@ -364,9 +364,9 @@ lemma salient_iff_inter_neg_eq_singleton (C : PointedCone R E) :
 
 end Salient
 
-section DirectedOrderRing
+section Semiring
 
-variable {R : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R]
+variable {R : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
 variable {E : Type*} [AddCommGroup E] [Module R E]
 variable {C : PointedCone R E}
 
@@ -381,9 +381,20 @@ def IsSubmodule (C : PointedCone R E) : Prop := -C = C
 @[simp] lemma IsSubmodule.iff_le_neg_self : C ≤ -C ↔ C.IsSubmodule := by
   rw [Iff.comm, ← Submodule.neg_le, iff_neg_le_self]
 
+end Semiring
+
+section Ring
+
+variable {R : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R]
+variable {E : Type*} [AddCommGroup E] [Module R E]
+
 @[simp]
 lemma IsSubmodule.submodule (S : Submodule R E) : IsSubmodule (S : PointedCone R E) := by
   simp [IsSubmodule]
+
+end Ring
+
+section DirectedOrderRing
 
 variable {R : Type*} [Ring R] [PartialOrder R] [IsDirectedOrder R] [IsOrderedRing R]
 variable {E : Type*} [AddCommGroup E] [Module R E]
@@ -460,7 +471,7 @@ lemma mem_span : x ∈ span R C ↔ ∃ p ∈ C, ∃ n ∈ C, x = p - n := by
 
 end DirectedOrderRing
 
-section LinearOrderedRing
+section LinearOrderRing
 
 variable {R : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R]
 variable {E : Type*} [AddCommGroup E] [Module R E]
@@ -470,6 +481,6 @@ lemma IsSubmodule.iff_eq_lineal : C.IsSubmodule ↔ C = C.lineal where
   mp h := by lift C to Submodule R E using h; simp
   mpr h := by rw [h]; exact submodule _
 
-end LinearOrderedRing
+end LinearOrderRing
 
 end PointedCone
