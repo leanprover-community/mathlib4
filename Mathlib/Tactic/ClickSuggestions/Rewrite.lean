@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Tactic.ClickSuggestions.SectionState
+public meta import Mathlib.Control.Basic
 
 /-!
 # Support for `rw` suggestions in `#click_suggestions`
@@ -126,26 +127,25 @@ def RwLemma.try (i : RwInfo) (lem : RwLemma) : ClickSuggestionsM (Result RwKey) 
     replacement := ← abstractMVars replacement
   }
   let tactic ← tacticSyntax lem rwKind (← getHypIdent?) proof justLemmaName
-  if extraGoals.isEmpty then
-    if let some rflTarget := i.rflTarget? then
-      if ← withoutModifyingMCtx <| isDefEq replacement rflTarget then
-        addSolvedSuggestion tactic
-    else if (← read).pos == .root && (← read).hyp?.isNone then
-      try
-        (← mkFreshExprMVar replacement).mvarId!.applyRfl
-        addSolvedSuggestion tactic
-      catch _ =>
-        pure ()
+  let isClosing ← (do
+    if extraGoals.isEmpty then
+      if let some rflTarget := i.rflTarget? then
+        return ← withoutModifyingMCtx <| isDefEq replacement rflTarget
+      else if (← read).pos == .root && (← read).hyp?.isNone then
+        return ← succeeds (← mkFreshExprMVar replacement).mvarId!.applyRfl
+    return false)
+  if isClosing then
+    addSolvedSuggestion tactic
   let mut htmls := #[← exprToHtml replacement]
   for goal in extraGoals do
     htmls := htmls.push <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml goal} </div>
   let filtered ←
     if !isRefl && !makesNewMVars then
-      some <$> mkSuggestion tactic (.element "div" #[] htmls)
+      some <$> mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
     else
       pure none
   htmls := htmls.push (<div> {← lem.name.toHtml} </div>)
-  let unfiltered ← mkSuggestion tactic (.element "div" #[] htmls)
+  let unfiltered ← mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
   let pattern ← forallTelescopeReducing (← lem.name.getType) fun _ e => do
     let mkApp2 _ lhs rhs ← whnf e | throwError "Expected equation, not{indentExpr e}"
     exprToHtml <| if lem.symm then rhs else lhs

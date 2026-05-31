@@ -51,18 +51,18 @@ def ApplyKey.isDuplicate (a b : ApplyKey) : MetaM Bool :=
       <&&> isExplicitEq a.newGoals[i]!.expr b.newGoals[i]!.expr
 
 /-- Return the `apply` tactic that performs the application. -/
-private def tacticSyntax (lemmaName : Premise) (proof : Expr) (closesGoal justLemmaName : Bool) :
+private def tacticSyntax (lemmaName : Premise) (proof : Expr) (isClosing justLemmaName : Bool) :
     MetaM (TSyntax `tactic) := do
   if justLemmaName then
     let id := mkIdent (← lemmaName.unresolveName)
     -- We can only use `exact` instead of `apply` if the proof has no explicit arguments.
-    if ← pure closesGoal <&&> hasOnlyImplicitArgs proof then
+    if ← pure isClosing <&&> hasOnlyImplicitArgs proof then
       `(tactic| exact $id)
     else
       `(tactic| apply $id)
   else
     let proof ← withOptions (pp.mvars.set · false) (PrettyPrinter.delab proof)
-    if closesGoal then
+    if isClosing then
       `(tactic| exact $proof)
     else
       `(tactic| refine $proof)
@@ -86,7 +86,7 @@ def ApplyLemma.try (lem : ApplyLemma) : ClickSuggestionsM (Result ApplyKey) :=
         justLemmaName := false
       else
         newGoals := newGoals.push (← instantiateMVars (← inferType mvar))
-
+  let isClosing := newGoals.isEmpty
   let makesNewMVars := newGoals.any fun goal =>
     (goal.findMVar? (mvars.contains <| .mvar ·)).isSome
   let proof ← instantiateMVars proof
@@ -98,21 +98,20 @@ def ApplyLemma.try (lem : ApplyLemma) : ClickSuggestionsM (Result ApplyKey) :=
     name := lem.name.toString
     newGoals := ← newGoals.mapM (abstractMVars ·)
   }
-  let tactic ← tacticSyntax lem.name proof
-    (closesGoal := newGoals.isEmpty) (justLemmaName := justLemmaName)
+  let tactic ← tacticSyntax lem.name proof (isClosing := isClosing) (justLemmaName := justLemmaName)
   let mut htmls := #[]
   for goal in newGoals do
     htmls := htmls.push <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml goal} </div>
-  if htmls.isEmpty then
+  if isClosing then
     htmls := #[.text "Goal accomplished! 🎉️"]
     addSolvedSuggestion tactic
   let filtered ←
     if !makesNewMVars then
-      some <$> mkSuggestion tactic (.element "div" #[] htmls)
+      some <$> mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
     else
       pure none
   htmls := htmls.push <div> {← lem.name.toHtml} </div>
-  let unfiltered ← mkSuggestion tactic (.element "div" #[] htmls)
+  let unfiltered ← mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
   let pattern ← forallTelescope (← lem.name.getType) fun _ e => exprToHtml e
   return { filtered, unfiltered, key, pattern }
 

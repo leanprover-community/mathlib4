@@ -355,17 +355,18 @@ section Widget
 open Widget
 
 /-- Generate a suggestion for inserting `tac`, with message `html`.
-The `isText` flag is used to make sure the button is aligned correctly with `html`.
-`isText` should be false if `html` includes an expression. -/
-def mkSuggestion (tac : TSyntax `tactic) (html : Html) : ClickSuggestionsM Html := do
+The button is `[apply]` if the tactic does not close the goal, and `[done]` if it is closing. -/
+def mkSuggestion (tac : TSyntax `tactic) (html : Html) (isClosing := false) :
+    ClickSuggestionsM Html := do
   let tac ← match (← read).onGoal with
     | some n => `(tactic| on_goal $(Syntax.mkNatLit (n + 1)) => $tac:tactic)
     | none => pure tac
   let (range, newText) ← mkInsertion tac (← read)
+  let buttonText := if isClosing then "[done] " else "[apply] "
   let button :=
     -- TODO: The hover on this button should be a `CodeWithInfos`, instead of a string.
     <span style={json% { "white-space" : "pre"}} className="font-code">
-    { .ofComponent MakeEditLink (.ofReplaceRange (← read).meta range newText) #[.text "[apply] "] }
+    { .ofComponent MakeEditLink (.ofReplaceRange (← read).meta range newText) #[.text buttonText] }
     </span>;
   return <div display="flex"
     style={json% { "display" : "flex", "align-items" : "flex-start", "margin-bottom" : "1em" }}>
@@ -374,7 +375,7 @@ def mkSuggestion (tac : TSyntax `tactic) (html : Html) : ClickSuggestionsM Html 
 
 /-- Add suggestion `tac` to the list of tactics that solve the goal. -/
 def addSolvedSuggestion (tac : TSyntax `tactic) : ClickSuggestionsM Unit := do
-  let html ← mkSuggestion tac (.text (← PrettyPrinter.ppTactic tac).pretty)
+  let html ← mkSuggestion tac (.text (← PrettyPrinter.ppTactic tac).pretty) (isClosing := true)
   modify fun s ↦ { s with solvedSuggestions := s.solvedSuggestions.push html }
   (← read).solvedToken.update <details «open»={true}>
     <summary className="mv2 pointer">
