@@ -223,7 +223,7 @@ lemma exists_finset_linearIndependent_of_le_finrank {n : ℕ} (hn : n ≤ finran
     ∃ s : Finset M, s.card = n ∧ LinearIndependent R ((↑) : s → M) := by
   by_cases h : finrank R M = 0
   · rw [le_zero_iff.mp (hn.trans_eq h)]
-    exact ⟨∅, rfl, by convert linearIndependent_empty R M using 2 <;> aesop⟩
+    exact ⟨∅, rfl, by convert! linearIndependent_empty R M using 2 <;> aesop⟩
   exact exists_finset_linearIndependent_of_le_rank
     ((Nat.cast_le.mpr hn).trans_eq (cast_toNat_of_lt_aleph0 (toNat_ne_zero.mp h).2))
 
@@ -301,7 +301,7 @@ theorem Module.exists_nontrivial_relation_of_finrank_lt_card {t : Finset M}
   obtain ⟨g, sum, z, nonzero⟩ := Fintype.not_linearIndependent_iff.mp
     (mt LinearIndependent.finset_card_le_finrank h.not_ge)
   refine ⟨Subtype.val.extend g 0, ?_, z, z.2, by rwa [Subtype.val_injective.extend_apply]⟩
-  rw [← Finset.sum_finset_coe]; convert sum; apply Subtype.val_injective.extend_apply
+  rw [← Finset.sum_finset_coe]; convert! sum; apply Subtype.val_injective.extend_apply
 
 /-- If a finset has cardinality larger than `finrank + 1`,
 then there is a nontrivial linear relation amongst its elements,
@@ -476,7 +476,7 @@ theorem finrank_eq_zero_of_basis_imp_false (h : ∀ s : Finset M, Basis.{v} (s :
   finrank_eq_zero_of_basis_imp_not_finite fun s b hs =>
     h hs.toFinset
       (by
-        convert b
+        convert! b
         simp)
 
 theorem finrank_eq_zero_of_not_exists_basis

@@ -149,6 +149,7 @@ lemma forget_map (f : A ⟶ B) : (forget (Rep.{w} k G)).map f = (f : _ → _) :=
 
 /-- An equiv between the underlying representations induce isomorphism between objects in
   `Rep k G`. -/
+@[simps]
 def mkIso (e : ρ.Equiv σ) : of ρ ≅ of σ where
   hom := ofHom e.toIntertwiningMap
   inv := ofHom e.symm.toIntertwiningMap
@@ -738,6 +739,7 @@ protected noncomputable def ihom : Rep k G ⥤ Rep k G where
     ((Rep.ihom A).obj B).ρ g x = B.ρ g ∘ₗ x ∘ₗ A.ρ g⁻¹ :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, this is the Hom-set bijection in the adjunction
 `A ⊗ - ⊣ ihom(A, -)`. It sends `f : A ⊗ B ⟶ C` to a `Rep k G` morphism defined by currying the
