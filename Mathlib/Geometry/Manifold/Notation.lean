@@ -363,7 +363,7 @@ This implementation is not maximally robust yet.
 -/
 -- TODO: better error messages when all strategies fail
 -- TODO: consider lowering monad to `MetaM`
-partial def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
+def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
     TermElabM (Option FindModelResult) := do
   if let some m ← tryStrategy "TotalSpace"          fromTotalSpace      then return some m
   if let some m ← tryStrategy "TangentBundle"       fromTangentBundle   then return some m
