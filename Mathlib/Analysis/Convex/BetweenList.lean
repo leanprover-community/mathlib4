@@ -182,8 +182,6 @@ variable {R}
 lemma SortedLE.wbtw {l : List R} (h : l.SortedLE) : l.Wbtw R := by
   rw [List.Wbtw, List.triplewise_iff_getElem]
   intro i j k hij hjk hk
-  have hik : i < l.length := Nat.lt_trans hij (Nat.lt_trans hjk hk)
-  have hjl : j < l.length := Nat.lt_trans hjk hk
   exact Wbtw.of_le_of_le (h.getElem_le_getElem_of_le hij.le) (h.getElem_le_getElem_of_le hjk.le)
 
 lemma SortedLT.sbtw {l : List R} (h : l.SortedLT) : l.Sbtw R :=
