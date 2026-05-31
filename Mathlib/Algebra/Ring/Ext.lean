@@ -339,8 +339,10 @@ theorem toNonUnitalRing_injective :
 
 theorem toNonAssocRing_injective :
     Function.Injective (@toNonAssocRing R) := by
-  intro _ _ _
-  ext <;> congr
+  intro _ _ h
+  ext x y
+  · exact congrArg (·.toAdd.add x y) h
+  · exact congrArg (·.toMul.mul x y) h
 
 theorem toSemiring_injective :
     Function.Injective (@toSemiring R) := by
