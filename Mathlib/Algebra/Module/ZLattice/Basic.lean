@@ -660,8 +660,8 @@ instance instCountable_of_discrete_submodule {E : Type*} [NormedAddCommGroup E] 
 /--
 Assume that the set `s` spans over `ℤ` a discrete set. Then its `ℝ`-rank is equal to its `ℤ`-rank.
 -/
-theorem Real.finrank_eq_int_finrank_of_discrete {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [FiniteDimensional ℝ E] {s : Set E} (hs : DiscreteTopology (span ℤ s)) :
+theorem Real.setFinrank_eq_setFinrank_int_of_discrete {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] [FiniteDimensional ℝ E] {s : Set E} (hs : DiscreteTopology (span ℤ s)) :
     Set.finrank ℝ s = Set.finrank ℤ s := by
   let F := span ℝ s
   let L : Submodule ℤ (span ℝ s) := comap (F.restrictScalars ℤ).subtype (span ℤ s)
@@ -675,15 +675,18 @@ theorem Real.finrank_eq_int_finrank_of_discrete {E : Type*} [NormedAddCommGroup 
   rw [Set.finrank, Set.finrank, ← f.finrank_eq]
   exact (ZLattice.rank ℝ L).symm
 
+@[deprecated (since := "2026-05-31")]
+alias Real.finrank_eq_int_finrank_of_discrete := Real.setFinrank_eq_setFinrank_int_of_discrete
+
 omit [DiscreteTopology L] [ProperSpace E] in
 theorem finrank_real_span_eq_finrank_int_span [hL : DiscreteTopology L] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {s : Set E} (hs : s ⊆ L) :
     finrank ℝ (span ℝ s) = finrank ℤ (span ℤ s) := by
   have hd : DiscreteTopology (span ℤ s) := hL.of_subset (span_le.mpr hs)
-  simpa only [Set.finrank] using Real.finrank_eq_int_finrank_of_discrete hd
+  simpa only [Set.finrank] using Real.setFinrank_eq_setFinrank_int_of_discrete hd
 
 omit [ProperSpace E] in
-@[simp] theorem Real.finrank_real_span_eq_finrank_int [NormedSpace ℝ E] [FiniteDimensional ℝ E] :
+@[simp] theorem Real.setFinrank_real_eq_finrank_int [NormedSpace ℝ E] [FiniteDimensional ℝ E] :
     Set.finrank ℝ (L : Set E) = finrank ℤ L := by
   have h := finrank_real_span_eq_finrank_int_span L (le_refl _)
   rw [L.span_eq] at h
