@@ -166,11 +166,9 @@ def lift : C ⥤ FullSubcategory P where
     original functor. This is actually true definitionally. -/
 def liftCompιIso : P.lift F hF ⋙ P.ι ≅ F := Iso.refl _
 
-@[simp]
 lemma ι_obj_lift_obj (X : C) :
     P.ι.obj ((P.lift F hF).obj X) = F.obj X := rfl
 
-@[simp]
 lemma ι_obj_lift_map {X Y : C} (f : X ⟶ Y) :
     P.ι.map ((P.lift F hF).map f) = F.map f := rfl
 
