@@ -63,7 +63,6 @@ class IsCohenRing [IsDomain R] extends IsDiscreteValuationRing R, IsAdicComplete
     where
   span : maximalIdeal R = Ideal.span {(ringChar (ResidueField R) : R)}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ CharZero k) :
     ∃ (R : Type u) (_ : CommRing R) (_ : IsDomain R) (_ : IsCohenRing R),
       Nonempty (ResidueField R ≃+* k) := by
@@ -268,7 +267,6 @@ section
 
 variable {R} [IsLocalRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_section_of_charZero [IsAdicComplete (maximalIdeal R) R]
     (char : CharZero (ResidueField R)) :
     ∃ (f : ResidueField R →+* R), (IsLocalRing.residue R).comp f = RingHom.id _ := by
@@ -421,7 +419,6 @@ lemma exists_isCohenRing_residueField_map_bijective [IsAdicComplete (maximalIdea
 end
 
 variable {R} in
-set_option backward.isDefEq.respectTransparency false in
 open MvPowerSeries in
 lemma exists_mvPowerSeries_surjective_of_residueField_map_bijective [IsLocalRing R]
     [IsAdicComplete (maximalIdeal R) R] (fg : (maximalIdeal R).FG)
