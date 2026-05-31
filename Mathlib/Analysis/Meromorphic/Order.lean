@@ -865,3 +865,37 @@ lemma meromorphicOrderAt_mul_of_ne_zero {f : 𝕜 → 𝕜} (hg : AnalyticAt �
   meromorphicOrderAt_smul_of_ne_zero hg hg'
 
 end smul
+
+/-!
+## Order at a Point of the Derivative
+-/
+
+section deriv
+
+/-- The meromorphic order of the derivative is one less than the order of the original function.
+This however is not true if the characteristic of the domain field divides the original order,
+where the order of the derivative can rise to a larger integer. -/
+lemma meromorphicOrderAt_deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} {n : ℤ} (hn : (n : 𝕜) ≠ 0)
+    (hf : meromorphicOrderAt f x = ↑n) :
+    meromorphicOrderAt (deriv f) x = ↑(n - 1) := by
+  have hmero : MeromorphicAt f x := by
+    refine meromorphicAt_of_meromorphicOrderAt_ne_zero fun h ↦ ?_
+    rw [hf, WithTop.coe_eq_zero] at h
+    simp [h] at hn
+  rw [meromorphicOrderAt_eq_int_iff hmero] at hf
+  rw [meromorphicOrderAt_eq_int_iff hmero.deriv]
+  obtain ⟨g, hga, hg0, hg⟩ := hf
+  refine ⟨fun z ↦ (n : 𝕜) • g z + (z - x) • deriv g z, by fun_prop, by simpa using ⟨hn, hg0⟩, ?_⟩
+  have hg : f =ᶠ[𝓝[≠] x] fun z ↦ (z - x) ^ n • g z := hg
+  filter_upwards [hga.eventually_analyticAt.filter_mono (nhdsWithin_le_nhds),
+    eventually_mem_nhdsWithin, hg.nhdsNE_deriv] with z hgz hmem hz
+  have hzx : z - x ≠ 0 := by simpa [sub_eq_zero] using hmem
+  rw [hz, deriv_fun_smul (DifferentiableAt.zpow (by fun_prop) (Or.inl (by exact hzx)))
+    hgz.differentiableAt, smul_add, smul_smul, smul_smul, ← zpow_add_one₀ hzx, sub_add_cancel,
+    add_comm, mul_comm]
+  congr
+  suffices deriv ((· ^ n) ∘ (· - x)) z = n * (z - x) ^ (n - 1) by simpa
+  rw [deriv_comp _ (DifferentiableAt.zpow (by fun_prop) (Or.inl (by exact hzx))) (by fun_prop)]
+  simp [deriv_zpow]
+
+end deriv
