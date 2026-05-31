@@ -136,10 +136,10 @@ lemma _root_.MeasureTheory.Measure.map_infinitePi_prod {Ω : ι → Type*}
     {mΩ : ∀ i, MeasurableSpace (Ω i)} {P : ∀ i, Measure (Ω i)}
     [∀ i, IsProbabilityMeasure (P i)] {i : ι} {j : ι} (hij : i ≠ j) :
     (infinitePi P).map (fun ω ↦ (ω i, ω j)) = (P i).prod (P j) := by
-  rw [IndepFun.map_prod_eq_prod_map_map]
+  rw [IndepFun.map_prod_eq_prod_map_map]; rotate_right
+  · exact iIndepFun_infinitePi (X := fun x ω ↦ ω) (by fun_prop)|>.indepFun hij
   · simp [infinitePi_map_eval]
-  any_goals exact Measurable.aemeasurable (by fun_prop)
-  exact iIndepFun_infinitePi (X := fun x ω ↦ ω) (by fun_prop)|>.indepFun hij
+  all_goals exact Measurable.aemeasurable (by fun_prop)
 
 lemma _root_.MeasureTheory.Measure.map_infinitePi_infinitePi_of_inj {α : Type*} {Ω : ι → Type*}
     {mΩ : ∀ i, MeasurableSpace (Ω i)} {P : ∀ i, Measure (Ω i)}
