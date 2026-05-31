@@ -197,8 +197,7 @@ theorem leadingMonomial_eventually_ne_zero {basis : Basis} {ms : MultiseriesExpa
       obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
       have coef_ih := coef.leadingMonomial_eventually_ne_zero h_coef_trimmed h_coef_ne_zero
         (h_basis.tail)
-      apply (coef_ih.and (h_basis.head_eventually_pos)).mono
-      rintro t ⟨coef_ih, h_basis_hd_pos⟩
+      filter_upwards [coef_ih, h_basis.head_eventually_pos] with t coef_ih h_basis_hd_pos
       suffices ¬basis_hd t ^ exp = 0 by
         simp [Monomial.toFun] at coef_ih ⊢
         grind
@@ -241,9 +240,7 @@ mutual
         apply (isLittleO_iff_tendsto' _).mp
         · have : (fun t ↦ basis_hd t ^ exp / basis_hd t ^ exp') =ᶠ[atTop]
               fun t ↦ (basis_hd t)^(exp - exp') := by
-            apply (h_basis.head_eventually_pos).mono
-            intro t h
-            simp only
+            filter_upwards [h_basis.head_eventually_pos] with t h
             rw [← Real.rpow_sub h]
           apply IsLittleO.trans_eventuallyEq _ this.symm
           have := IsEquivalent.inv coef_ih
@@ -254,8 +251,7 @@ mutual
           · exact h_basis
           · simp only [exp']
             linarith
-        · apply (h_basis.head_eventually_pos).mono
-          intro t h1 h2
+        · filter_upwards [h_basis.head_eventually_pos] with t h1 h2
           absurd h2
           apply div_ne_zero <;> exact (Real.rpow_pos_of_pos h1 _).ne.symm
       · have h_C_ne_zero : ∀ᶠ t in atTop, coef.toFun t ≠ 0 := by
@@ -263,13 +259,11 @@ mutual
           have h_φ_pos : ∀ᶠ t in atTop, 0 < φ t := by
             apply Filter.Tendsto.eventually_const_lt (by simp) h_φ
           apply EventuallyEq.rw (p := fun _ b => b ≠ 0) h_C.symm
-          apply (h_φ_pos.and (leadingMonomial_eventually_ne_zero
-            h_coef_trimmed h_coef_ne_zero ((h_basis.tail)))).mono
-          rintro t ⟨h_φ_pos, h⟩
+          filter_upwards [h_φ_pos,
+            leadingMonomial_eventually_ne_zero h_coef_trimmed h_coef_ne_zero (h_basis.tail)]
+            with t h_φ_pos h
           exact mul_ne_zero h_φ_pos.ne.symm h
-        apply (h_C_ne_zero.and (h_basis.head_eventually_pos)).mono
-        rintro t ⟨h_C_ne_zero, h_basis_pos⟩
-        intro h
+        filter_upwards [h_C_ne_zero, h_basis.head_eventually_pos] with t h_C_ne_zero h_basis_pos h
         absurd h
         apply mul_ne_zero _ h_C_ne_zero
         exact (Real.rpow_pos_of_pos h_basis_pos _).ne.symm
@@ -333,8 +327,7 @@ theorem eventually_ne_zero_of_not_zero {basis : Basis} {ms : MultiseriesExpansio
     linarith
   have h_leadingMonomial := leadingMonomial_eventually_ne_zero h_trimmed h_ne_zero h_basis
   simp only [EventuallyEq] at h_eq
-  apply ((h_eq.and hφ).and h_leadingMonomial).mono
-  intro t ⟨⟨h_eq, hφ⟩, h_leadingMonomial⟩
+  filter_upwards [h_eq, hφ, h_leadingMonomial] with t h_eq hφ h_leadingMonomial
   rw [h_eq]
   simp only [Pi.mul_apply, ne_eq, mul_eq_zero, not_or]
   constructor

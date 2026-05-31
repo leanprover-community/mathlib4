@@ -377,8 +377,7 @@ theorem pow_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a : 
           have : coef.toFun =ᶠ[atTop] (fun t ↦ (basis_hd t)^exp * coef.toFun t) /
               (fun t ↦ (basis_hd t)^exp) := by
             simp only [EventuallyEq]
-            apply h_basis_hd_pos.mono
-            intro t ht
+            filter_upwards [h_basis_hd_pos] with t ht
             simp only [Pi.div_apply]
             rw [mul_div_cancel_left₀]
             apply ne_of_gt
@@ -387,17 +386,15 @@ theorem pow_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a : 
           apply IsEquivalent.div hF_equiv.symm
           rfl
         apply hC_equiv.eventually_pos
-        apply (hF_pos.and h_basis_hd_pos).mono
-        intro t ⟨hF_pos, h_basis_hd_pos⟩
-        simp only [Pi.div_apply, gt_iff_lt]
+        filter_upwards [hF_pos, h_basis_hd_pos] with t hF_pos h_basis_hd_pos
+        simp only [Pi.div_apply]
         apply div_pos hF_pos
         apply Real.rpow_pos_of_pos h_basis_hd_pos
       have hg_gt : ∀ᶠ t in atTop, -1/2 ≤ g t := by
         apply Filter.Tendsto.eventually_const_le (by norm_num) h_tendsto_zero
       apply (powSeries_toFun_eq' a).comp_tendsto at h_tendsto_zero
       grw [h_tendsto_zero]
-      apply (hC_pos.and (h_basis_hd_pos.and hg_gt)).mono
-      intro t ⟨hC_pos, h_basis_hd_pos, hg_gt⟩
+      filter_upwards [hC_pos, h_basis_hd_pos, hg_gt] with t hC_pos h_basis_hd_pos hg_gt
       simp only [Pi.mul_apply, Function.comp_apply, Pi.sub_apply, Pi.pow_apply, Pi.inv_apply, g]
       have : 0 ≤ 1 + (f t - basis_hd t ^ exp * coef.toFun t) * (basis_hd t ^ exp)⁻¹ *
           (coef.toFun t)⁻¹ := by

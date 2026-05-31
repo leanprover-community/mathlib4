@@ -192,9 +192,8 @@ theorem log_Approximates {basis : Basis}
   | nil f =>
     simp only [log, mk_seq, Multiseries.log, Multiseries.destruct_nil, mk_toFun,
       Approximates.nil_iff]
-    simp at h_approx
-    apply h_approx.mono
-    intro x hx
+    simp only [Approximates.nil_iff] at h_approx
+    filter_upwards [h_approx] with x hx
     simp at hx ⊢
     grind
   | cons exp coef tl f =>
@@ -237,8 +236,7 @@ theorem log_Approximates {basis : Basis}
     set g := coef.toReal⁻¹ • (f - fun x ↦ coef.toReal)
     apply logSeries_toFun.comp_tendsto at h_tendsto_zero
     grw [h_tendsto_zero]
-    apply h_f_pos.mono
-    intro t h_f_pos
+    filter_upwards [h_f_pos] with t h_f_pos
     simp only [Pi.add_apply, Function.comp_apply, Pi.smul_apply, Pi.sub_apply, smul_eq_mul, g]
     simp at h_pos
     rw [← Real.log_mul (by positivity)]
@@ -318,8 +316,8 @@ theorem log_Approximates {basis : Basis}
       eventually_pos_of_coef_pos (by simpa using h_pos) h_coef_sorted h_coef
       h_coef_trimmed h_basis.tail
     have h_basis_hd_pos : ∀ᶠ t in atTop, 0 < basis_hd t := h_basis.head_eventually_pos
-    apply (h_f_pos.and (h_coef_pos.and (h_basis_hd_pos.and hg_gt))).mono
-    intro t ⟨h_f_pos, h_coef_pos, h_basis_hd_pos, hg_gt⟩
+    filter_upwards [h_f_pos, h_coef_pos, h_basis_hd_pos, hg_gt] with
+      t h_f_pos h_coef_pos h_basis_hd_pos hg_gt
     simp only [Pi.add_apply, Function.comp_apply, Pi.smul_apply, smul_eq_mul]
     rw [← Real.log_rpow (by positivity), ← Real.log_mul (by positivity) (by positivity),
       ← Real.log_mul (by positivity) (by linarith)]

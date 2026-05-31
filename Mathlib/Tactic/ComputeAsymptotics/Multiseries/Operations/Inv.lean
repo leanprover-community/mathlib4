@@ -214,8 +214,7 @@ theorem tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero
   have h_coef_ne_zero : ∀ᶠ t in atTop, coef.toFun t ≠ 0 :=
     eventually_ne_zero_of_not_zero h_coef_ne_zero h_coef_sorted h_coef h_coef_trimmed h_basis.tail
   apply Filter.Tendsto.congr' (f₁ := φ - 1)
-  · apply (hf.and (h_basis_hd_pos.and h_coef_ne_zero)).mono
-    intro t ⟨hf, h_basis_hd_pos, h_coef_ne_zero⟩
+  · filter_upwards [hf, h_basis_hd_pos, h_coef_ne_zero] with t hf h_basis_hd_pos h_coef_ne_zero
     simp only [Pi.sub_apply, Pi.one_apply, Pi.mul_apply, hf, Pi.pow_apply, Pi.inv_apply]
     rw [Real.rpow_neg h_basis_hd_pos.le]
     field_simp
@@ -276,8 +275,7 @@ theorem inv_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
       set g := (f - basis_hd ^ exp * coef.toFun) * basis_hd ^ (-exp) * coef.toFun⁻¹
       apply invSeries_toFun_eq'.comp_tendsto at h_tendsto_zero
       grw [h_tendsto_zero]
-      apply (h_coef_ne_zero.and h_basis_hd_pos).mono
-      intro t ⟨h_coef_ne_zero, h_basis_hd_pos⟩
+      filter_upwards [h_coef_ne_zero, h_basis_hd_pos] with t h_coef_ne_zero h_basis_hd_pos
       simp only [Pi.mul_apply, Function.comp_apply, Pi.sub_apply, Pi.pow_apply, Pi.inv_apply, g]
       rw [Real.rpow_neg h_basis_hd_pos.le]
       field_simp

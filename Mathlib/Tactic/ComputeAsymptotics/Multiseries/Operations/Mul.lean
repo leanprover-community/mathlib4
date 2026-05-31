@@ -817,8 +817,7 @@ mutual
       · exact h_basis.head_eventually_pos
     use mk B_tl (fB - basis_hd ^ B_exp * B_coef.toFun)
     simp only [mk_seq, mk_toFun, true_and, h_tl_approx, hM_approx, and_self, and_true]
-    apply (hf_eq.and (h_basis.head_eventually_pos)).mono
-    intro t ⟨hf_eq, h_pos⟩
+    filter_upwards [hf_eq, h_basis.head_eventually_pos] with t hf_eq h_pos
     simp [hf_eq, Real.rpow_add h_pos]
     ring_nf
 
@@ -874,8 +873,7 @@ mutual
       · simp
       · simp only [mk_toFun]
         grw [hf_eq]
-        apply (h_basis.head_eventually_pos).mono
-        intro t h
+        filter_upwards [h_basis.head_eventually_pos] with t h
         simp [Real.rpow_add h]
         ring_nf
       · assumption
@@ -985,8 +983,7 @@ theorem Approximates.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   · simp only [mul_seq, mk_seq]
     rw [Multiseries.mul_assoc' (by simpa using hY_sorted)]
   · grw [hf_eq, hfB]
-    apply (h_basis.head_eventually_pos).mono
-    intro t ht
+    filter_upwards [h_basis.head_eventually_pos] with t ht
     simp only [Pi.sub_apply, Pi.mul_apply, Pi.add_apply, Pi.pow_apply, mul_toFun, mk_toFun]
     rw [Real.rpow_add ht]
     ring

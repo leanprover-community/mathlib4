@@ -359,8 +359,7 @@ theorem MultiseriesExpansion.sub_log_exp_toFun {basis basis' : Basis} {ex : Basi
     ext
     simp [← Real.exp_add]
   rw [this]
-  apply (h_basis.eventually_pos ).mono
-  intro t h_pos
+  filter_upwards [h_basis.eventually_pos] with t h_pos
   simp only [hB, Fin.getElem_fin, h_ms, hL, Pi.mul_apply, Pi.pow_apply, Function.comp_apply,
     Pi.sub_apply, Pi.smul_apply, smul_eq_mul, mul_eq_mul_right_iff, Real.exp_ne_zero, or_false]
   rw [Real.rpow_def_of_pos, mul_comm]

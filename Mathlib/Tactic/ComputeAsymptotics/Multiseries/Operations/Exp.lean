@@ -204,8 +204,7 @@ theorem pow_eq_exp_toFun
     ms2.toFun =ᶠ[atTop] (fun x ↦ (f x) ^ (g x)) := by
   have := eventually_pos_of_coef_pos h_pos1 h_sorted1 h_approx1 h_trimmed1 h_basis1
   rw [h1] at this
-  apply this.mono
-  intro t h_pos
+  filter_upwards [this] with t h_pos
   simp [h2, Real.rpow_def_of_pos h_pos]
 
 end MultiseriesExpansion
