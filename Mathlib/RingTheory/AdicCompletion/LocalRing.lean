@@ -49,7 +49,8 @@ lemma isMaximal_map_of_le (m : Ideal R) [m.IsMaximal] (le : I ≤ m) (fg : I.FG)
     exact Ideal.map_mono le
   have : (Ideal.map (Ideal.Quotient.mk I) m).IsMaximal :=
     Ideal.IsMaximal.map_of_surjective_of_ker_le Ideal.Quotient.mk_surjective (by simpa using le)
-  simpa [mapeq] using Ideal.comap_isMaximal_of_surjective _ (evalOneₐ_surjective I)
+  rw [mapeq]
+  exact Ideal.comap_isMaximal_of_surjective _ (evalOneₐ_surjective I)
 
 lemma isLocalRing_of_fg [IsLocalRing R] (fg : (maximalIdeal R).FG) :
     IsLocalRing (AdicCompletion (maximalIdeal R) R) := by
