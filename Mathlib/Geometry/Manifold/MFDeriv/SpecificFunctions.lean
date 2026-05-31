@@ -499,7 +499,6 @@ lemma HasMFDerivWithinAt.prodMap {s : Set <| M × M'} {p : M × M'} {f : M → N
   apply HasFDerivWithinAt.prodMap
   exacts [hf.2.mono (fst_image_prod_subset ..), hg.2.mono (snd_image_prod_subset ..)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma HasMFDerivAt.prodMap {p : M × M'} {f : M → N} {g : M' → N'}
     {df : TangentSpace I p.1 →L[𝕜] TangentSpace J (f p.1)} (hf : HasMFDerivAt% f p.1 df)
     {dg : TangentSpace I' p.2 →L[𝕜] TangentSpace J' (g p.2)} (hg : HasMFDerivAt% g p.2 dg) :
@@ -507,8 +506,7 @@ lemma HasMFDerivAt.prodMap {p : M × M'} {f : M → N} {g : M' → N'}
       ((mfderiv% f p.1).prodMap (mfderiv% g p.2)) := by
   simp_rw [← hasMFDerivWithinAt_univ, ← mfderivWithin_univ, ← univ_prod_univ]
   convert! hf.hasMFDerivWithinAt.prodMap hg.hasMFDerivWithinAt
-  · rw [mfderivWithin_univ]; exact hf.mfderiv
-  · rw [mfderivWithin_univ]; exact hg.mfderiv
+  simp [mfderivWithin_univ, hf.mfderiv, hg.mfderiv]
 
 -- Note: this lemma does not apply easily to an arbitrary subset `s ⊆ M × M'` as
 -- unique differentiability on `(Prod.fst '' s)` and `(Prod.snd '' s)` does not imply
@@ -835,6 +833,8 @@ theorem MDifferentiableOn.const_smul (a : 𝕜) (hf : MDiff[s] f) : MDiff[s] (a 
 theorem MDifferentiable.const_smul (s : 𝕜) (hf : MDiff f) : MDiff (s • f) :=
   fun x ↦ (hf x).const_smul s
 
+-- Note: this silently abuses the defeq between tangent spaces and normed spaces.
+-- TODO: should this use `mvfderiv` instead?
 theorem const_smul_mfderiv (hf : MDiffAt f z) (s : 𝕜) : mfderiv% (s • f) z = s • mfderiv% f z :=
   (hf.hasMFDerivAt.const_smul s).mfderiv
 
