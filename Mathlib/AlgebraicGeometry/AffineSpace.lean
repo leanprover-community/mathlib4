@@ -408,9 +408,8 @@ instance [h : IsReduced S] : IsReduced 𝔸(n; S) := by
     have hA : IsReduced 𝔸(n; S.affineCover.X i) := this _ ⟨_, rfl⟩
     exact isReduced_of_isOpenImmersion ((isPullback_map _).isoPullback.inv)
   obtain ⟨R, rfl⟩ := hS
-  refine @isReduced_of_isOpenImmersion _ _ (SpecIso n R).hom _ ?_
   rw [affine_isReduced_iff] at h
-  infer_instance
+  exact isReduced_of_isOpenImmersion (SpecIso n R).hom
 
 instance [IsIntegral S] : IsIntegral 𝔸(n; S) := isIntegral_of_irreducibleSpace_of_isReduced _
 
