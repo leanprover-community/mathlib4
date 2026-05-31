@@ -717,7 +717,7 @@ theorem IsPath.length_eq_one_of_mem_edges {p : G.Walk u v} (hp : p.IsPath) (h : 
 theorem IsPath.disjoint_edges_of_disjoint_support {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath)
     (hd : p.support.tail.Disjoint q.support.tail) (hl : p.length ≠ 1) :
     p.edges.Disjoint q.edges := by
-  dsimp [List.Disjoint] at hd ⊢
+  simp only [List.disjoint_left] at hd ⊢
   contrapose! hd
   obtain ⟨⟨a, b⟩, hep, heq, _⟩ := hd
   have := p.mem_support_iff.mp <| p.fst_mem_support_of_mem_edges hep
@@ -737,7 +737,7 @@ lemma IsPath.isCycle_append {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPa
     exact ⟨hp.support_nodup.tail, hq.support_nodup.tail, h⟩
 
 /--
-Given two distinct paths same endpoints, we can extract a subwalk from each such that their
+Given two distinct paths with the same endpoints, we can extract a subwalk from each such that their
 concatenation, with one reversed, forms a cycle.
 -/
 theorem IsPath.exists_isCycle_of_ne {u v : V} {p q : G.Walk u v} (hp : p.IsPath) (hq : q.IsPath)
