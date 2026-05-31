@@ -147,8 +147,8 @@ lemma exists_linearIndependent_of_successiveMin_lt {r : ℝ≥0} (hsc : Convex �
   · refine ((hf_li.comp _ (Fin.castLE_injective hri)).restrict_scalars ?_).of_comp L.subtype
     exact fun a b h ↦ by simpa using h
 
-lemma isClosed_setOf_lt_finrank_span_smul_inter (hsc : Convex ℝ s) (hs : IsCompact s) (hs₀ : s ∈ 𝓝 0)
-    (hi : i < finrank ℤ L) :
+lemma isClosed_setOf_lt_finrank_span_smul_inter (hsc : Convex ℝ s) (hs : IsCompact s)
+    (hs₀ : s ∈ 𝓝 0) (hi : i < finrank ℤ L) :
     IsClosed {r : ℝ≥0 | i < finrank ℝ (span ℝ (r • s ∩ L))} := by
   have hs₀' : (0 : E) ∈ s := mem_of_mem_nhds hs₀
   apply IsSeqClosed.isClosed
@@ -261,7 +261,7 @@ lemma exists_directional_set' (hsc : Convex ℝ s) (hs : IsCompact s) (hs₀ : s
         intro w hw
         by_contra hx
         exact h w hx hw
-      _ ≤ d := by simpa using finrank_range_le_card v
+      _ ≤ d := by simpa [Set.finrank] using finrank_range_le_card v
   refine ⟨Fin.snoc v w, ?_, ?_⟩
   · intro j
     refine Fin.lastCases ?_ ?_ j
