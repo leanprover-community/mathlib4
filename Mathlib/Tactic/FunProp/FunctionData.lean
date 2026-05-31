@@ -195,6 +195,7 @@ inductive DecompositionResult
   /-- The decomposition failed for some other reason. -/
   | failed
 
+/-- Returns `true` if `DecompositionResult` is `comp _ _`, otherwise returns `false`. -/
 def DecompositionResult.isComp : DecompositionResult → Bool
   | comp _ _ => true
   | _ => false
