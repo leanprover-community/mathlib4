@@ -433,7 +433,7 @@ variable (x) in
   change hull R ({-x} ∪ {x}) = (R ∙ x)
   simp only [span_union, span_eq_hull_neg_sup_hull, Set.neg_singleton]
 
-lemma span_eq_submodule_span_of_neg_eq {s : Set E} (hs : -s = s) :
+lemma hull_eq_span_of_neg_eq {s : Set E} (hs : -s = s) :
     hull R s = span R s := by
   simp [span_eq_hull_neg_sup_hull, hs]
 
