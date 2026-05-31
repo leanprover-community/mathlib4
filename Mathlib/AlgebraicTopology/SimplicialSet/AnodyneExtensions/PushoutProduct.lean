@@ -40,6 +40,7 @@ obtain a similar structure for `f₂` and `f₁`. -/
 def flipTensor : (curriedTensor C).PushoutObjObj f₂ f₁ :=
   sq.flip.ofNatIso (BraidedCategory.curriedBraidingNatIso _).symm
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma flipTensor_ι : dsimp% sq.flipTensor.ι = sq.ι ≫ (β_ _ _).inv := by
   simp [flipTensor]
@@ -114,37 +115,46 @@ lemma anodyneExtensions_pushoutObjObjι'
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 lemma anodyneExtensions_unionProd_ι
     {X Y : SSet.{u}} (A : X.Subcomplex) (B : Y.Subcomplex)
     (hB : anodyneExtensions B.ι) :
     anodyneExtensions (A.unionProd B).ι := by
   simpa using anodyneExtensions_pushoutObjObjι (Subcomplex.unionProd.pushoutObjObj A B) hB
 
+set_option backward.defeqAttrib.useBackward true in
 lemma anodyneExtensions_unionProd_ι'
     {X Y : SSet.{u}} (A : X.Subcomplex) (B : Y.Subcomplex)
     (hA : anodyneExtensions A.ι) :
     anodyneExtensions (A.unionProd B).ι := by
   simpa using anodyneExtensions_pushoutObjObjι' (Subcomplex.unionProd.pushoutObjObj A B) hA
 
+set_option backward.defeqAttrib.useBackward true in
 lemma anodyneExtensions.whiskerRight
     {X Y : SSet.{u}} {f : X ⟶ Y} (hf : anodyneExtensions f) (Z : SSet.{u}) :
     anodyneExtensions (f ▷ Z) := by
   simpa using anodyneExtensions_pushoutObjObjι'
     (.ofIsInitialRight (curriedTensor _) f (initial.to Z) initialIsInitial) hf
 
+set_option backward.defeqAttrib.useBackward true in
 lemma anodyneExtensions.whiskerLeft
     {X Y : SSet.{u}} {f : X ⟶ Y} (hf : anodyneExtensions f) (Z : SSet.{u}) :
     anodyneExtensions (Z ◁ f) := by
   simpa using anodyneExtensions_pushoutObjObjι
     (.ofIsInitialLeft (curriedTensor _) (initial.to Z) f initialIsInitial) hf
 
+set_option backward.defeqAttrib.useBackward true in
 instance {E B X : SSet.{u}} (p : E ⟶ B) [Fibration p] :
     Fibration ((ihom X).map p) := by
   simpa using fibration_pullbackObjObjπ (Functor.PullbackObjObj.ofIsInitial
     MonoidalClosed.internalHom (initial.to X) p initialIsInitial)
 
+set_option backward.isDefEq.respectTransparency false in
 instance {A B : SSet.{u}} (i : A ⟶ B) [Mono i] (X : SSet.{u}) [IsFibrant X] :
     Fibration ((MonoidalClosed.pre i).app X) := by
+  have (X : SSet.{u}ᵒᵖ): PreservesLimitsOfShape (Discrete PEmpty.{1})
+      (MonoidalClosed.internalHom.obj X) := by
+    sorry
   simpa using fibration_pullbackObjObjπ (Functor.PullbackObjObj.ofIsTerminal
     MonoidalClosed.internalHom i (terminal.from X) terminalIsTerminal)
 

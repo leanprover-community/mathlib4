@@ -48,6 +48,7 @@ noncomputable def pushoutObjObj : (curriedTensor _).PushoutObjObj S.ι T.ι wher
   inr := unionProd.ι₂ S T
   isPushout := unionProd.isPushout S T
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma pushoutObjObj_ι : (pushoutObjObj S T).ι = (S.unionProd T).ι := by
   apply (pushoutObjObj S T).hom_ext
