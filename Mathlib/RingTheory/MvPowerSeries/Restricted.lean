@@ -79,7 +79,7 @@ lemma tendsto_antidiagonal {M S : Type*} [AddMonoid M] [Finset.HasAntidiagonal M
       (by simpa using hg.norm) (fun _ => by simp)
   refine .squeeze tendsto_const_nhds
     (tendsto_sup'_antidiagonal_cofinite (tendsto_mul_cofinite_nhds_zero hf hg))
-    (fun x => by simpa using (mul_nonneg (by simp) (hC' x))) fun a ↦ ?_
+    (fun x ↦ mul_nonneg (by simp) (hC' x)) fun a ↦ ?_
   have : 0 ≤ C a := hC' a
   grw [(Finset.nonempty_antidiagonal _).norm_sum_le_sup'_norm, Finset.sup'_mul₀ this]
   refine Finset.sup'_mono_fun fun x hx ↦ ?_
