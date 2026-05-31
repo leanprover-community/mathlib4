@@ -49,7 +49,7 @@ def mk {n : ℕ} (x : X _⦋n⦌) (hx : x ∈ X.nonDegenerate n)
   notMem := hx'
 
 /-- A unification hint for the dimension of `Subcomplex.N.mk`. -/
-unif_hint mk_dim_unif {X : SSet.{u}} {A : X.Subcomplex} (n : ℕ) (x : X _⦋n⦌)
+unif_hint {X : SSet.{u}} {A : X.Subcomplex} (n : ℕ) (x : X _⦋n⦌)
     (hx : x ∈ X.nonDegenerate n) (hx' : x ∉ A.obj _) where
   ⊢ (mk x hx hx').dim ≟ n
 
@@ -104,7 +104,7 @@ lemma cast_eq_self : s.cast hd = s := by
 end
 
 /-- A unification hint for the dimension of `Subcomplex.N.cast`. -/
-unif_hint cast_dim_unif {X : SSet.{u}} {A : X.Subcomplex} (s : A.N) (d : ℕ)
+unif_hint {X : SSet.{u}} {A : X.Subcomplex} (s : A.N) (d : ℕ)
     (hd : s.dim = d) where
   ⊢ (s.cast hd).dim ≟ d
 
