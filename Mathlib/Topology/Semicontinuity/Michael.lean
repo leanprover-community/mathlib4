@@ -6,13 +6,9 @@ Authors: Kevin H. Wilson
 module
 
 public import Mathlib.Analysis.Normed.Module.Convex
-public import Mathlib.Topology.Semicontinuity.TVSandMetric
-public import Mathlib.Topology.PartitionOfUnity
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
-import Mathlib.Topology.Continuous
-import Mathlib.Topology.Separation.AlexandrovDiscrete
-import Mathlib.Topology.Algebra.Module.Basic
+public import Mathlib.Topology.PartitionOfUnity
+import Mathlib.Analysis.LocallyConvex.AbsConvex
 
 /-!
 # Michael's selection theorem
@@ -35,8 +31,34 @@ public section
 open Set Metric
 open scoped Pointwise Topology
 
-variable {α β : Type*} {f : α → Set β} {g : α → β}
-  [TopologicalSpace α] [NormalSpace α] [ParacompactSpace α]
+variable {α β : Type*} {f : α → Set β} [TopologicalSpace α]
+
+section tvs
+
+lemma LowerHemicontinuous.hasOpenCGraph_of_add_isOpen
+      [TopologicalSpace β] [AddGroup β] [IsTopologicalAddGroup β]
+      (hf : LowerHemicontinuous f) {V : Set β} (hV : IsOpen V) :
+    HasOpenCGraph (fun x ↦ f x + V) := by
+  unfold HasOpenCGraph
+  rw [isOpen_prod_iff]
+  intro a b hab
+  simp only [Set.mem_setOf_eq] at hab
+  obtain ⟨y, hy, w, hw, rfl⟩ := Set.mem_add.mp hab
+  have hOpen_pre := hV.preimage (continuous_fst.neg.add continuous_snd)
+  have hmem : (y, y + w) ∈ (fun p : β × β ↦ -p.1 + p.2) ⁻¹' V := by
+    simpa [← add_assoc, neg_add_cancel, zero_add] using hw
+  obtain ⟨U_y, U_b, hU_y, hU_b, hy_Uy, hb_Ub, hU⟩ := isOpen_prod_iff.mp hOpen_pre y (y + w) hmem
+  have hopen_a : IsOpen {a' | (f a' ∩ U_y).Nonempty} := by
+    rw [isOpen_iff_mem_nhds]
+    intro a ha
+    exact ((hf a) U_y ⟨hU_y, ha⟩).mono fun _ h ↦ h.2
+  refine ⟨{a' | (f a' ∩ U_y).Nonempty}, U_b, hopen_a, hU_b, ⟨y, hy, hy_Uy⟩, hb_Ub, ?_⟩
+  intro ⟨a', b'⟩ ⟨⟨y', hy'_fa, hy'_Uy⟩, hb'_Ub⟩
+  exact ⟨y', hy'_fa, -y' + b', hU (Set.mk_mem_prod hy'_Uy hb'_Ub), by simp⟩
+
+end tvs
+
+variable {g : α → β} [NormalSpace α] [ParacompactSpace α]
 
 section approximate
 
@@ -70,13 +92,14 @@ admits a continuous selection -/
 theorem LowerHemicontinuous.exists_continuous_selection (hf : LowerHemicontinuous f)
     (hf_nonempty : ∀ x, (f x).Nonempty) (hf_convex : ∀ x, Convex ℝ (f x))
     (hf_isClosed : ∀ x, IsClosed (f x)) : ∃ g : α → β, Continuous g ∧ ∀ x, g x ∈ f x := by
-  obtain ⟨V, hV⟩ := LocallyConvexSpace.convex_open_symm_add_closure_subset_hasAntitoneBasis_zero ℝ β
+  obtain ⟨V, hV⟩ := exists_nhds_hasAntitoneBasis_absConvex_open_add_closure_subset ℝ β
   -- Produce a sequence of continuous approximations to a selection
   obtain ⟨g, hg_cont, hg_mem⟩ :=
-    hf.hasOpenCGraph_add_isOpen (V := V 0) (hV.1 0).2.1
+    hf.hasOpenCGraph_of_add_isOpen (V := V 0) (hV.2 0).1
       |>.hasOpenLowerSections.exists_continuous_selection
-      (by simp only [add_nonempty, hf_nonempty, true_and]; intro _; use 0; exact (hV.1 0).1)
-      (fun x ↦ (hf_convex x).add (hV.1 0).2.2.1)
+      (by simp only [add_nonempty, hf_nonempty, true_and]; intro _; use 0;
+          exact mem_of_mem_nhds (hV.1.mem 0))
+      (fun x ↦ (hf_convex x).add (hV.2 0).2.1.2)
   obtain ⟨h, hh_cont, hh_mem, hh_mem_ball⟩ : ∃ h : ℕ → α → β, (∀ n, Continuous (h n)) ∧
       (∀ n x, h n x ∈ f x + (V n)) ∧
       (∀ n x, h (n + 1) x - h n x ∈ V n) := by
@@ -86,16 +109,20 @@ theorem LowerHemicontinuous.exists_continuous_selection (hf : LowerHemicontinuou
       intro n hn hn_prop
       have : HasOpenLowerSections (fun x ↦ ((f x + V (n + 1)) ∩ ({hn x} + V n))) := by
         apply HasOpenLowerSections.inter
-        · exact hf.hasOpenCGraph_add_isOpen (hV.1 (n + 1)).2.1 |>.hasOpenLowerSections
-        · exact hn_prop.1.lowerHemicontinuous.hasOpenCGraph_add_isOpen (hV.1 n).2.1
-            |>.hasOpenLowerSections
+        · exact hf.hasOpenCGraph_of_add_isOpen (hV.2 (n + 1)).1 |>.hasOpenLowerSections
+        · have h_lhc : LowerHemicontinuous (fun x ↦ ({hn x} : Set β)) :=
+            fun a U ⟨hU, ha_U⟩ ↦ by
+              obtain ⟨_, rfl, hmem⟩ := ha_U
+              filter_upwards [hn_prop.1.continuousAt (hU.mem_nhds hmem)] with a' ha'
+              exact ⟨hU, ⟨hn a', Set.mem_singleton_iff.mpr rfl, ha'⟩⟩
+          exact h_lhc.hasOpenCGraph_of_add_isOpen (hV.2 n).1 |>.hasOpenLowerSections
       obtain ⟨h', hh'_cont, hh'_mem⟩ := this.exists_continuous_selection (by
           intro x
           obtain ⟨a, ha, v, hv, hav⟩ := (hn_prop.2 x)
-          exact ⟨hn x + (-v), ⟨a, ha, 0, (hV.1 (n + 1)).1, by simp [← hav]⟩,
-              by simp [(hV.1 n).2.2.2.1 v hv]⟩)
-        fun x ↦ ((hf_convex x).add (hV.1 (n + 1)).2.2.1).inter
-            ((convex_singleton _).add (hV.1 n).2.2.1)
+          exact ⟨hn x + (-v), ⟨a, ha, 0, mem_of_mem_nhds (hV.1.mem (n + 1)), by simp [← hav]⟩,
+              by simp [(hV.2 n).2.1.1.neg_mem_iff.mpr hv]⟩)
+        fun x ↦ ((hf_convex x).add (hV.2 (n + 1)).2.1.2).inter
+            ((convex_singleton _).add (hV.2 n).2.1.2)
       use h'
       refine ⟨⟨hh'_cont, fun x ↦ (hh'_mem x).1⟩, fun x ↦ ?_⟩
       obtain ⟨_, rfl, v, hv, hv'⟩ := (hh'_mem x).2
@@ -110,21 +137,23 @@ theorem LowerHemicontinuous.exists_continuous_selection (hf : LowerHemicontinuou
   -- Prove the sequence is uniformly cauchy. The (necessarily continuous) limit is a selection
   have hUnif : UniformCauchySeqOn h Filter.atTop univ := by
     intro U hU
-    obtain ⟨n, -, hn⟩ := hV.2.uniformity_of_nhds_zero.mem_iff.mp hU
+    obtain ⟨n, -, hn⟩ := hV.1.toHasBasis.uniformity_of_nhds_zero.mem_iff.mp hU
     have key : ∀ m k j x, k + 1 ≤ j → h (j + m) x - h j x ∈ V k := fun m ↦ by
       induction m with
-      | zero => intro k j x _; simp only [Nat.add_zero, sub_self]; exact (hV.1 k).1
+      | zero =>
+        intro k j x _; simp only [Nat.add_zero, sub_self]; exact mem_of_mem_nhds (hV.1.mem k)
       | succ m ih =>
         intro k j x hj
-        have h1 : h (j + 1) x - h j x ∈ V (k + 1) := hV.2.antitone hj (hh_mem_ball j x)
+        have h1 : h (j + 1) x - h j x ∈ V (k + 1) := hV.1.antitone hj (hh_mem_ball j x)
         have h2 : h (j + 1 + m) x - h (j + 1) x ∈ V (k + 1) := ih (k + 1) (j + 1) x (by omega)
-        convert (hV.1 k).2.2.2.2.1 (Set.add_mem_add h1 h2) using 1; abel_nf
+        convert (hV.2 k).2.2.1 (Set.add_mem_add h1 h2) using 1; abel_nf
     filter_upwards [(Filter.eventually_ge_atTop (n + 1)).prod_mk
         (Filter.eventually_ge_atTop (n + 1))]
     intro ⟨i, j⟩ ⟨hi, hj⟩ x _
     apply hn
     obtain h_lt | h_le := Nat.lt_or_ge j i
-    · simpa [Nat.add_sub_cancel' h_lt.le, neg_sub] using (hV.1 n).2.2.2.1 _ (key (i - j) n j x hj)
+    · simpa [Nat.add_sub_cancel' h_lt.le, neg_sub] using
+        (hV.2 n).2.1.1.neg_mem_iff.mpr (key (i - j) n j x hj)
     · obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_le h_le
       exact key m n i x hi
   choose H hH using fun x ↦ cauchySeq_tendsto_of_complete (hUnif.cauchySeq (mem_univ x))
@@ -139,20 +168,29 @@ theorem LowerHemicontinuous.exists_continuous_selection (hf : LowerHemicontinuou
         ⊆ ⋂ n, closure (f x + V (n + 1)) :=
           fun y hy ↦ mem_iInter.mpr fun n ↦ mem_iInter.mp hy (n + 1)
       _ ⊆ ⋂ n, f x + V n :=
-          iInter_mono fun n ↦ closure_add_subset_add_u (hV.1 (n + 1)).2.1 (hV.1 (n + 1)).1
-            (hV.1 (n + 1)).2.2.2.1 (hV.1 n).2.2.2.2.1
+          iInter_mono fun n ↦ fun y hy ↦ by
+            -- {z | y - z ∈ V(n+1)} is an open nbhd of y intersecting f x + V(n+1)
+            have hV1_zero := mem_of_mem_nhds (hV.1.mem (n + 1))
+            have h_nbhd : {z : β | y - z ∈ V (n + 1)} ∈ 𝓝 y := by
+              have hcont : ContinuousAt (fun z : β ↦ y - z) y := by fun_prop
+              exact hcont ((hV.2 (n + 1)).1.mem_nhds (by simp [hV1_zero]))
+            obtain ⟨z, hz, hzfx⟩ := mem_closure_iff_nhds.mp hy _ h_nbhd
+            obtain ⟨a, ha, v, hv, hz_eq⟩ := Set.mem_add.mp hzfx
+            -- y = a + (v + (y - z)), with v + (y - z) ∈ V(n+1) + V(n+1) ⊆ V n
+            exact ⟨a, ha, v + (y - z), (hV.2 n).2.2.1 (Set.add_mem_add hv hz),
+              by rw [← hz_eq]; abel⟩
       _ ⊆ f x := by
           intro y hy
           rw [← (hf_isClosed x).closure_eq, mem_closure_iff_nhds]
           intro U hU
-          obtain ⟨n, hn⟩ := hV.2.mem_iff.mp <|
+          obtain ⟨n, hn⟩ := hV.1.mem_iff.mp <|
             (continuous_const_add y).continuousAt (x := 0) |>.preimage_mem_nhds (by simpa)
           obtain ⟨a, ha_f, v, hv, rfl⟩ := mem_iInter.mp hy n
-          exact ⟨a, by simpa using hn ((hV.1 n).2.2.2.1 v hv), ha_f⟩
+          exact ⟨a, by simpa using hn ((hV.2 n).2.1.1.neg_mem_iff.mpr hv), ha_f⟩
   exact key (Set.mem_iInter.mpr fun n ↦ mem_closure_of_tendsto (hH x) <|
     (Filter.eventually_ge_atTop n).mono fun i hi ↦ by
       obtain ⟨a, ha, b, hb, hab⟩ := Set.mem_add.mp (hh_mem i x)
-      exact hab ▸ Set.add_mem_add ha (hV.2.antitone hi hb))
+      exact hab ▸ Set.add_mem_add ha (hV.1.antitone hi hb))
 
 end michael
 
