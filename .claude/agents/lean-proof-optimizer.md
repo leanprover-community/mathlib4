@@ -58,7 +58,7 @@ For each optimization, provide:
 
 1. **Optimized Code**: The complete, working proof in Mathlib style
 2. **Extracted Lemmas**: Any helper lemmas, marked as either:
-   - `-- Problem-specific helper` 
+   - `-- Problem-specific helper`
    - `-- Potentially generalizable to Mathlib`
 3. **Explanation**: Brief notes on key optimizations made
 4. **Golf Score**: Approximate line/character reduction achieved
