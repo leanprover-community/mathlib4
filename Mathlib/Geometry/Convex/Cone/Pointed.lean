@@ -370,11 +370,16 @@ variable {R : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R]
 variable {E : Type*} [AddCommGroup E] [Module R E]
 variable {C : PointedCone R E}
 
+/-- Expresses that the cone is a submodule. -/
 def IsSubmodule (C : PointedCone R E) : Prop := -C = C
 
-lemma IsSubmodule.iff_neg_eq_self : C.IsSubmodule ↔ -C = C := .rfl
+@[simp] lemma IsSubmodule.iff_neg_eq_self : -C = C ↔ C.IsSubmodule := .rfl
+@[simp] lemma IsSubmodule.iff_eq_neg_self : C = -C ↔ C.IsSubmodule := by rw [Eq.comm]; rfl
 
-lemma IsSubmodule.iff_neg_le_self : C.IsSubmodule ↔ -C ≤ C := Submodule.neg_eq_self_iff_neg_le
+@[simp] lemma IsSubmodule.iff_neg_le_self : -C ≤ C ↔ C.IsSubmodule := by
+  rw [Iff.comm, ← Submodule.neg_eq_self_iff_neg_le]; rfl
+@[simp] lemma IsSubmodule.iff_le_neg_self : C ≤ -C ↔ C.IsSubmodule := by
+  rw [Iff.comm, ← Submodule.neg_le, iff_neg_le_self]
 
 @[simp]
 lemma IsSubmodule.submodule (S : Submodule R E) : IsSubmodule (S : PointedCone R E) := by
@@ -397,6 +402,8 @@ abbrev toSubmodule (hC : C.IsSubmodule) : Submodule R E where
       rw [← hC]
       simpa [← neg_smul] using smul_mem _ (sub_nonneg.mpr hab) hx
     aesop
+
+alias IsSubmodule.lift := toSubmodule
 
 @[simp] lemma ofSubmodule_toSubmodule (hC : C.IsSubmodule) : C.toSubmodule hC = C := rfl
 
