@@ -194,7 +194,7 @@ theorem inner_quotient_eq (x y : E ⧸ K) :
     ⟪x, y⟫_𝕜 = ⟪K.quotientEquivOrthogonal x, K.quotientEquivOrthogonal y⟫_𝕜 :=
   rfl
 
-theorem inner_mk_mk (x y : E) (hx : x ∈ Kᗮ) (hy : y ∈ Kᗮ) :
+theorem Quotient.inner_mk_mk (x y : E) (hx : x ∈ Kᗮ) (hy : y ∈ Kᗮ) :
     ⟪Quotient.mk (p := K) x, Quotient.mk y⟫_𝕜 = ⟪x, y⟫_𝕜 := by
   simp [K.quotientEquivOrthogonal_mk x hx, K.quotientEquivOrthogonal_mk y hy]
 
