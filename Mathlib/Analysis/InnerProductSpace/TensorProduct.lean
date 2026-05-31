@@ -430,6 +430,7 @@ lemma exists_repr (x : E ⊗[𝕜] F) :
       rw [hx, hy, Fin.sum_univ_add]
       simp [Fin.append]
 
+/-- Extention of a continuous linear map `f` to the map `x ⊗ₜ[𝕜] y ↦ f(x) ⊗ₜ[𝕜] y`. -/
 noncomputable def mapLId (f : E →L[𝕜] F) : (E ⊗[𝕜] G) →L[𝕜] (F ⊗[𝕜] G) :=
   (map f.toLinearMap LinearMap.id).mkContinuous ‖f‖ (fun x => by
     obtain ⟨n, e, g, hx ⟩ := exists_repr x
@@ -456,6 +457,7 @@ noncomputable def mapLId (f : E →L[𝕜] F) : (E ⊗[𝕜] G) →L[𝕜] (F �
 theorem norm_mapLId (f : E →L[𝕜] F) : ‖mapLId (G:=G) f‖ ≤ ‖f‖ := by
   apply LinearMap.mkContinuous_norm_le _ (norm_nonneg _) _
 
+/-- Extention of a continuous linear map `g` to the map `x ⊗ₜ[𝕜] y ↦ x ⊗ₜ[𝕜] g(y)`. -/
 noncomputable def mapIdL (g : G →L[𝕜] H) : (E ⊗[𝕜] G) →L[𝕜] (E ⊗[𝕜] H) :=
   (commIsometry 𝕜 H E) ∘L (mapLId g) ∘L
     (commIsometry 𝕜 E G).toContinuousLinearEquiv.toContinuousLinearMap
@@ -468,6 +470,7 @@ theorem norm_mapIdL (g : G →L[𝕜] H) : ‖mapIdL (E:=E) g‖ ≤ ‖g‖ := 
     (commIsometry 𝕜 H E).toLinearIsometry.norm_toContinuousLinearMap_le]
   simp
 
+/-- Extention of a continuous linear maps `f` and `g` to the map `x ⊗ₜ[𝕜] y ↦ f(x) ⊗ₜ[𝕜] g(y)`. -/
 noncomputable def mapL (f : E →L[𝕜] F) (g : G →L[𝕜] H) : (E ⊗[𝕜] G) →L[𝕜] (F ⊗[𝕜] H) :=
   mapLId f ∘L mapIdL g
 
