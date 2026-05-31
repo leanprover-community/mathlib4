@@ -10,8 +10,8 @@ public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.NumberTheory.FLT.Basic
 public import Mathlib.NumberTheory.FLT.MasonStothers
 public import Mathlib.RingTheory.Polynomial.Content
-public import Mathlib.RingTheory.Polynomial.IsIntegral
 public import Mathlib.Tactic.GCongr
+import Mathlib.RingTheory.Polynomial.IsIntegral
 
 /-!
 # Fermat's Last Theorem for polynomials over a field
@@ -246,8 +246,7 @@ theorem fermatLastTheoremWith'_polynomial {n : ℕ} (hn : 3 ≤ n) (chn : (n : k
   set d := gcd a b
   have hd : d ≠ 0 := gcd_ne_zero_of_left ha
   rw [eq_a, eq_b, mul_pow, mul_pow, ← mul_add] at heq
-  obtain ⟨c', eq_c⟩ := (IsIntegrallyClosed.pow_dvd_pow_iff (R := k[X]) (show n ≠ 0 by omega)).mp
-    ⟨_, heq.symm⟩
+  obtain ⟨c', eq_c⟩ := (IsIntegrallyClosed.pow_dvd_pow_iff (by lia)).mp ⟨_, heq.symm⟩
   rw [eq_a, mul_ne_zero_iff] at ha
   rw [eq_b, mul_ne_zero_iff] at hb
   rw [eq_c, mul_ne_zero_iff] at hc
