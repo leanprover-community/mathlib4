@@ -8,12 +8,9 @@ module
 public import Mathlib.Probability.CondVar
 public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.Distributions.SetBernoulli
-public import Mathlib.Probability.Moments.Variance
-public import Mathlib.Probability.HasLaw
 
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
 import Mathlib.Order.Interval.Set.Nat
-import Mathlib.Probability.Distributions.TwoValued
 import Mathlib.Probability.Notation
 
 /-!
