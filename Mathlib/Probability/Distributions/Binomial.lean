@@ -6,6 +6,7 @@ Authors: Yaël Dillies, Etienne Marion
 module
 
 public import Mathlib.Probability.CondVar
+public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.Distributions.SetBernoulli
 public import Mathlib.Probability.Moments.Variance
 public import Mathlib.Probability.HasLaw
@@ -166,6 +167,14 @@ lemma binomial_eq_sum_dirac (n : ℕ) (p : I) :
   · simp
   · simp_all
   · simp_all [Nat.choose_eq_zero_of_lt]
+
+lemma binomial_one_eq_bernoulliMeasure (p : I) :
+    Bin(1, p) = Ber(1, 0, p) := by
+  refine ext_of_measureReal_singleton fun k ↦ ?_
+  match k with
+  | 0 => simp [binomial_real_zero]
+  | 1 => simp [binomial_real_self]
+  | k + 2 => simp [binomial_real_singleton]
 
 lemma map_cast_binomial_eq_sum_dirac [MeasurableSingletonClass R] (n : ℕ) (p : I) :
     Bin(R, n, p) =
