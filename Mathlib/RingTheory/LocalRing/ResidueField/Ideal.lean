@@ -140,20 +140,38 @@ lemma Ideal.algebraMap_residueField_surjective (I : Ideal R) [I.IsMaximal] :
 instance (I : Ideal R) [I.IsMaximal] : Module.Finite R I.ResidueField :=
   .of_surjective (Algebra.linearMap _ _) I.algebraMap_residueField_surjective
 
+/-- The equivalence between a field and the residue field of its prime ideal,
+induced by the algebra map. -/
+noncomputable def Ideal.algEquivResidueFieldOfField {k : Type*} [Field k]
+    (p : Ideal k) [p.IsPrime] : k ≃ₐ[k] p.ResidueField :=
+  AlgEquiv.ofBijective (Algebra.ofId k _) ⟨RingHom.injective _,
+    haveI : p.IsMaximal := by simpa [p.eq_bot_of_prime] using Ideal.bot_isMaximal
+    p.algebraMap_residueField_surjective⟩
+
+@[simp]
+lemma Ideal.algEquivResidueFieldOfField_apply {k : Type*} [Field k] (p : Ideal k) [p.IsPrime]
+    (x : k) : p.algEquivResidueFieldOfField x = algebraMap k p.ResidueField x :=
+  rfl
+
 lemma Ideal.surjectiveOnStalks_residueField (I : Ideal R) [I.IsPrime] :
     (algebraMap R I.ResidueField).SurjectiveOnStalks :=
   (RingHom.surjectiveOnStalks_of_surjective Ideal.Quotient.mk_surjective).comp
     (RingHom.surjectiveOnStalks_of_isLocalization I.primeCompl _)
 
-instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] :
-    IsLocalHom (algebraMap (Localization.AtPrime p) (Localization.AtPrime q)) :=
-  Localization.isLocalHom_localRingHom _ _ _ (Ideal.over_def _ _)
+instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
+    [Localization.AtPrime.IsLiesOverAlgebra p q] :
+    IsLocalHom (algebraMap (Localization.AtPrime p) (Localization.AtPrime q)) := by
+  rw [Localization.AtPrime.IsLiesOverAlgebra.algebraMap_eq]
+  exact Localization.isLocalHom_localRingHom _ _ _ (Ideal.over_def _ _)
 
 instance (p : Ideal R) [p.IsPrime] : Algebra.EssFiniteType R p.ResidueField :=
   .comp _ (Localization.AtPrime p) _
 
 instance [Algebra.EssFiniteType R A]
-    (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] :
+    (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
+    [Localization.AtPrime.IsLiesOverAlgebra p q] :
     Algebra.EssFiniteType p.ResidueField q.ResidueField := by
   have : Algebra.EssFiniteType R q.ResidueField := .comp _ A _
   refine .of_comp R _ _

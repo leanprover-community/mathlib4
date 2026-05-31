@@ -17,7 +17,7 @@ In this file, we provide analogues to some of the API in the
 forgetful functor preserves filtered colimits.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Limits
 

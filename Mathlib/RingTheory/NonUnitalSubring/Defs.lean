@@ -207,12 +207,12 @@ theorem toNonUnitalSubsemiring_injective :
     Function.Injective (toNonUnitalSubsemiring : NonUnitalSubring R → NonUnitalSubsemiring R)
   | _r, _s, h => ext (SetLike.ext_iff.mp h :)
 
-@[mono]
+@[gcongr, mono]
 theorem toNonUnitalSubsemiring_strictMono :
     StrictMono (toNonUnitalSubsemiring : NonUnitalSubring R → NonUnitalSubsemiring R) := fun _ _ =>
   id
 
-@[mono]
+@[gcongr, mono]
 theorem toNonUnitalSubsemiring_mono :
     Monotone (toNonUnitalSubsemiring : NonUnitalSubring R → NonUnitalSubsemiring R) :=
   toNonUnitalSubsemiring_strictMono.monotone
@@ -221,11 +221,11 @@ theorem toAddSubgroup_injective :
     Function.Injective (toAddSubgroup : NonUnitalSubring R → AddSubgroup R)
   | _r, _s, h => ext (SetLike.ext_iff.mp h :)
 
-@[mono]
+@[gcongr, mono]
 theorem toAddSubgroup_strictMono :
     StrictMono (toAddSubgroup : NonUnitalSubring R → AddSubgroup R) := fun _ _ => id
 
-@[mono]
+@[gcongr, mono]
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : NonUnitalSubring R → AddSubgroup R) :=
   toAddSubgroup_strictMono.monotone
 
@@ -233,11 +233,11 @@ theorem toSubsemigroup_injective :
     Function.Injective (toSubsemigroup : NonUnitalSubring R → Subsemigroup R)
   | _r, _s, h => ext (SetLike.ext_iff.mp h :)
 
-@[mono]
+@[gcongr, mono]
 theorem toSubsemigroup_strictMono :
     StrictMono (toSubsemigroup : NonUnitalSubring R → Subsemigroup R) := fun _ _ => id
 
-@[mono]
+@[gcongr, mono]
 theorem toSubsemigroup_mono : Monotone (toSubsemigroup : NonUnitalSubring R → Subsemigroup R) :=
   toSubsemigroup_strictMono.monotone
 
@@ -295,9 +295,8 @@ protected theorem sub_mem {x y : R} (hx : x ∈ s) (hy : y ∈ s) : x - y ∈ s 
 
 /-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
 instance toNonUnitalRing {R : Type*} [NonUnitalRing R] (s : NonUnitalSubring R) :
-    NonUnitalRing s := fast_instance%
-  Subtype.coe_injective.nonUnitalRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    NonUnitalRing s :=
+  NonUnitalSubringClass.toNonUnitalRing s
 
 protected theorem zsmul_mem {x : R} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
   zsmul_mem hx n
@@ -323,9 +322,8 @@ theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 := by
 
 /-- A non-unital subring of a `NonUnitalCommRing` is a `NonUnitalCommRing`. -/
 instance toNonUnitalCommRing {R} [NonUnitalCommRing R] (s : NonUnitalSubring R) :
-    NonUnitalCommRing s := fast_instance%
-  Subtype.coe_injective.nonUnitalCommRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    NonUnitalCommRing s :=
+  NonUnitalSubringClass.toNonUnitalCommRing s
 
 /-! ## Partial order -/
 

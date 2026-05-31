@@ -71,7 +71,7 @@ def homotopicMapsNatIso (H : ContinuousMap.Homotopy f g) : map f ⟶ map g where
   naturality := by
     rintro ⟨x⟩ ⟨y⟩ p
     rcases Path.Homotopic.Quotient.mk_surjective p with ⟨p, rfl⟩
-    simp only [map_map, map_obj_as, Path.Homotopic.Quotient.mk''_eq_mk, comp_eq,
+    simp only [map_map, Path.Homotopic.Quotient.mk''_eq_mk, comp_eq,
       ← Path.Homotopic.Quotient.mk_map, ← Path.Homotopic.Quotient.mk_trans]
     rw [Path.Homotopic.Quotient.eq]
     exact .map_trans_evalAt _ _
@@ -134,11 +134,11 @@ open unitInterval (uhpath01)
 section Casts
 
 /-- Abbreviation for `eqToHom` that accepts points in a topological space -/
-abbrev hcast {X : TopCat} {x₀ x₁ : X} (hx : x₀ = x₁) : fromTop x₀ ⟶ fromTop x₁ :=
+abbrev hcast {X : TopCat.{u}} {x₀ x₁ : X} (hx : x₀ = x₁) : fromTop x₀ ⟶ fromTop x₁ :=
   eqToHom <| FundamentalGroupoid.ext hx
 
 @[simp]
-theorem hcast_def {X : TopCat} {x₀ x₁ : X} (hx₀ : x₀ = x₁) :
+theorem hcast_def {X : TopCat.{u}} {x₀ x₁ : X} (hx₀ : x₀ = x₁) :
     hcast hx₀ = eqToHom (FundamentalGroupoid.ext hx₀) :=
   rfl
 
@@ -155,10 +155,10 @@ theorem heq_path_of_eq_image :
   exact hfg
 
 set_option backward.privateInPublic true in
-private theorem start_path : f x₀ = g x₂ := by convert hfg 0 <;> simp only [Path.source]
+private theorem start_path : f x₀ = g x₂ := by convert! hfg 0 <;> simp only [Path.source]
 
 set_option backward.privateInPublic true in
-private theorem end_path : f x₁ = g x₃ := by convert hfg 1 <;> simp only [Path.target]
+private theorem end_path : f x₁ = g x₃ := by convert! hfg 1 <;> simp only [Path.target]
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in

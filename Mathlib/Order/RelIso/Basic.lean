@@ -144,6 +144,15 @@ protected def id (r : α → α → Prop) : r →r r :=
 protected def comp (g : s →r t) (f : r →r s) : r →r t :=
   ⟨fun x => g (f x), fun h => g.2 (f.2 h)⟩
 
+theorem comp_assoc (h : r →r s) (g : s →r t) (f : t →r u) :
+  (f.comp g).comp h = f.comp (g.comp h) := rfl
+
+@[simp]
+theorem comp_id (f : r →r s) : f.comp (RelHom.id r) = f := rfl
+
+@[simp]
+theorem id_comp (f : r →r s) : (RelHom.id s).comp f = f := rfl
+
 /-- A relation homomorphism is also a relation homomorphism between dual relations. -/
 @[simps]
 protected def swap (f : r →r s) : swap r →r swap s :=
@@ -276,6 +285,15 @@ theorem trans_apply (f : r ↪r s) (g : s ↪r t) (a : α) : (f.trans g) a = g (
 @[simp]
 theorem coe_trans (f : r ↪r s) (g : s ↪r t) : (f.trans g) = g ∘ f :=
   rfl
+
+theorem trans_assoc (f : r ↪r s) (g : s ↪r t) (h : t ↪r u) :
+  (f.trans g).trans h = f.trans (g.trans h) := rfl
+
+@[simp]
+theorem trans_refl (f : r ↪r s) : f.trans (.refl s) = f := rfl
+
+@[simp]
+theorem refl_trans (f : r ↪r s) : .trans (.refl r) f = f := rfl
 
 /-- A relation embedding is also a relation embedding between dual relations. -/
 protected def swap (f : r ↪r s) : swap r ↪r swap s :=
@@ -757,7 +775,16 @@ instance IsWellOrder.ulift {α : Type u} (r : α → α → Prop) [IsWellOrder �
 /-- A surjective relation embedding is a relation isomorphism. -/
 @[simps! apply]
 noncomputable def ofSurjective (f : r ↪r s) (H : Surjective f) : r ≃r s :=
-  ⟨Equiv.ofBijective f ⟨f.injective, H⟩, f.map_rel_iff⟩
+  ⟨f.toEmbedding.equivOfSurjective H, f.map_rel_iff⟩
+
+/-- Surjective relation embeddings are equivalent to relation isomorphisms. -/
+@[simps]
+noncomputable def embeddingSurjectiveEquivIso :
+    { f : r ↪r s // Function.Surjective f } ≃ (r ≃r s) where
+  toFun f := ofSurjective f f.prop
+  invFun f := ⟨f, f.surjective⟩
+  left_inv _ := rfl
+  right_inv _ := by ext; rfl
 
 /-- Transport a `RelHom` across a pair of `RelIso`s, by pre- and post-composition.
 
