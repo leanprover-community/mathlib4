@@ -10,6 +10,7 @@ public import Mathlib.Topology.Compactification.OnePoint.Basic
 public import Mathlib.Topology.Instances.ENat
 public import Mathlib.Topology.Instances.Nat
 public import Mathlib.Topology.Order.Real
+public import Mathlib.Topology.Order.WithTop
 
 /-!
 # Lemmas around weak (pseudo) extended metric spaces.
@@ -34,21 +35,13 @@ or partial orders.
 
 @[expose] public section
 
-open Set Filter Topology
+open Set Filter Topology WithTop WithBot
 
 open scoped Uniformity Topology NNReal ENNReal Pointwise
 
 universe u
 
 variable {α : Type u} [t : TopologicalSpace α]
-
-@[to_dual]
-instance instTopologicalSpaceWithTopOfPreorder [Preorder α] : TopologicalSpace (WithTop α) :=
-  Preorder.topology (WithTop α)
-
-@[to_dual]
-instance instOrderTopologyWithTop [Preorder α] [OrderTopology α] : OrderTopology (WithTop α) where
-  topology_eq_generate_intervals := rfl
 
 section
 
@@ -198,14 +191,14 @@ so if `WithTop α` -/
 @[to_dual]
 instance instWeakPseudoEMetricSpaceWithTop [m : WeakPseudoEMetricSpace α] :
     WeakPseudoEMetricSpace (WithTop α) :=
-  let : TopologicalSpace (Option α) := instTopologicalSpaceWithTopOfPreorder
+  let : TopologicalSpace (Option α) := TopologicalSpace.instWithTopOfOrderTopology
   Option.weakPseudoEMetricSpace_of_isOpenEmbedding WithTop.isOpenEmbedding_some
 
 /-- If `α` has a topology induced by a linear order in is a weak extended metric space,
 so if `WithTop α` -/
 @[to_dual]
 instance instWeakEMetricSpaceWithTop [m : WeakEMetricSpace α] : WeakEMetricSpace (WithTop α) :=
-  let : TopologicalSpace (Option α) := instTopologicalSpaceWithTopOfPreorder
+  let : TopologicalSpace (Option α) := TopologicalSpace.instWithTopOfOrderTopology
   Option.weakEMetricSpace_of_isOpenEmbedding WithTop.isOpenEmbedding_some
 
 /-- The one point compactification of a weak pseudo extended metric space is again a weak pseudo
