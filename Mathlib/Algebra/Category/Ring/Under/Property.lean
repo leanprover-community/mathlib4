@@ -139,6 +139,7 @@ open RingHom
 
 variable {P}
 
+set_option backward.defeqAttrib.useBackward true in
 lemma CommRingCat.preservesLimit_parallelPair_tensorProd_iff_tensorEqualizer_bijective
     {R S : CommRingCat.{u}} [Algebra R S] {A B : Under R} {f g : A ⟶ B} :
     PreservesLimit (parallelPair f g) (tensorProd R S) ↔
@@ -149,7 +150,7 @@ lemma CommRingCat.preservesLimit_parallelPair_tensorProd_iff_tensorEqualizer_bij
     (AlgHom.equalizer (toAlgHom f) (toAlgHom g)).val.toUnder
   let h' := (R.tensorProd S).map ι
   have w' : h' ≫ (tensorProd R S).map f = h' ≫ (tensorProd R S).map g := by
-    simpa using congr((R.tensorProd S).map $(CommRingCat.Under.equalizer_comp f g))
+    simpa using! congr((R.tensorProd S).map $(CommRingCat.Under.equalizer_comp f g))
   let e : IsLimit ((R.tensorProd S).mapCone c) ≃ IsLimit (Fork.ofι h' w') :=
     isLimitMapConeForkEquiv (tensorProd R S) (Under.equalizer_comp f g)
   rw [preservesLimit_iff_isLimit_mapCone hc, e.nonempty_congr,

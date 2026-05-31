@@ -218,8 +218,8 @@ theorem HasTemperateGrowth.sum {f : ι → E → F} {s : Finset ι}
   induction s using Finset.induction_on with
   | empty => simp
   | insert a s has ih =>
-    obtain ⟨hf, h⟩ := by simpa using hf
-    simpa [has] using hf.add (ih h)
+    obtain ⟨hf, h⟩ := by simpa using! hf
+    simpa [has] using! hf.add (ih h)
 
 end Addition
 
@@ -284,7 +284,7 @@ theorem HasTemperateGrowth.mul {f g : E → R} (hf : f.HasTemperateGrowth)
 theorem HasTemperateGrowth.pow {f : E → R} (hf : f.HasTemperateGrowth) (k : ℕ) :
     (f ^ k).HasTemperateGrowth := by
   induction k with
-  | zero => simpa only [pow_zero] using HasTemperateGrowth.const 1
+  | zero => simpa only [pow_zero] using! HasTemperateGrowth.const 1
   | succ k IH => rw [pow_succ]; fun_prop
 
 end Multiplication
