@@ -360,7 +360,9 @@ theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
       simp only [f_meas, ↓reduceIte, implies_true, MeasurableSet.iUnion,
         indicator_iUnion_of_pairwise_disjoint _ hf, this]
       have I : ∑' (i : ℕ), ∫⁻ (a : α), ‖μ[(f i).indicator (1 : α → ℝ) | M] a‖ₑ ∂μ < ∞ := by
-        simp_rw [lintegral_enorm_condExp_indicator _ (f_meas _), ← measure_iUnion hf f_meas]
+        have A i : ∫⁻ a, ‖μ[(f i).indicator (1 : α → ℝ) | M] a‖ₑ ∂μ = μ (f i) :=
+          lintegral_enorm_condExp_indicator Mle (f_meas i)
+        simp_rw [A, ← measure_iUnion hf f_meas]
         exact measure_lt_top _ _
       rw [integral_tsum (by fun_prop)]; swap
       · apply ne_of_lt

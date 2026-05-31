@@ -93,7 +93,7 @@ lemma condLExp_enorm (m : MeasurableSpace 𝓧) {m𝓧 : MeasurableSpace 𝓧} {
 
 lemma lintegral_enorm_condExp_indicator
     {m : MeasurableSpace 𝓧} {m𝓧 : MeasurableSpace 𝓧} (hm : m ≤ m𝓧) {μ : Measure 𝓧}
-    [SigmaFinite (μ.trim hm)] {s : Set 𝓧} (hs : MeasurableSet s) (h's : μ s ≠ ∞) :
+    [SigmaFinite (μ.trim hm)] {s : Set 𝓧} (hs : MeasurableSet s) (h's : μ s ≠ ∞ := by finiteness) :
     ∫⁻ a, ‖μ[s.indicator (1 : 𝓧 → ℝ) | m] a‖ₑ ∂μ = μ s := calc
   _ = ∫⁻ a, μ⁻[fun x ↦ ‖s.indicator (1 : 𝓧 → ℝ) x‖ₑ | m] a ∂μ := by
     apply lintegral_congr_ae
