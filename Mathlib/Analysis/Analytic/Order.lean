@@ -666,7 +666,7 @@ theorem preimage_zero_mem_codiscreteWithin {x : 𝕜} (h₁f : AnalyticOnNhd �
     f ⁻¹' {0}ᶜ ∈ codiscreteWithin U := by
   rcases h₁f.eqOn_zero_or_eventually_ne_zero_of_preconnected hU.isPreconnected with hzero | hne
   · exact (h₂f (hzero hx)).elim
-  · simpa [Filter.Eventually, Set.mem_setOf_eq] using hne
+  · exact hne
 
 /--
 If an analytic function `f` is not constantly zero on `𝕜`, then its set of zeros is codiscrete.
