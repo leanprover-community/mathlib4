@@ -33,9 +33,6 @@ meta section Elab
 
 open Lean Expr Meta Elab Command Tactic
 
-instance : Repr Dyadic where
-  reprPrec d := reprPrec d.toRat
-
 syntax (name := exact_interval) "exact_interval" ("[" interval_setting,*"]")? : tactic
 
 @[tactic exact_interval]
