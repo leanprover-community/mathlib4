@@ -241,7 +241,7 @@ end ContinuousUnTop
 
 variable (ι) in
 /-- Homeomorphism between the non-top elements of `WithTop ι` and `ι`. -/
-@[to_dual]
+@[to_dual /-- Homeomorphism between the non-bot elements of `WithBot ι` and `ι`. -/]
 noncomputable
 def neTopHomeomorph : { a : WithTop ι | a ≠ ⊤ } ≃ₜ ι where
   toEquiv := Equiv.withTopSubtypeNe
@@ -250,7 +250,7 @@ def neTopHomeomorph : { a : WithTop ι | a ≠ ⊤ } ≃ₜ ι where
 
 variable (ι) in
 /-- If `ι` has a top element, then `WithTop ι` is homeomorphic to `ι ⊕ Unit`. -/
-@[to_dual]
+@[to_dual /-- If `ι` has a bot element, then `WithBot ι` is homeomorphic to `ι ⊕ Unit`. -/]
 noncomputable
 def sumHomeomorph [OrderTop ι] : WithTop ι ≃ₜ ι ⊕ Unit where
   toFun x := if h : x = ⊤ then Sum.inr () else Sum.inl x.untopA
