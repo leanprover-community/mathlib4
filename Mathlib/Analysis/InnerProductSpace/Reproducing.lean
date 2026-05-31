@@ -352,14 +352,26 @@ lemma posSemidef_of_mem (f : H) : ((‖f‖ : 𝕜) ^ 2 • kernel H - outerKern
   refine ⟨((posSemidef_kernel H).1.smul
     (by rw [← RCLike.im_eq_zero_iff_isSelfAdjoint, RCLike.im_ofReal_pow])).sub
     (outerKernel_posSemidef 𝕜 f).1, fun x ↦ ?_⟩
-  simp_rw [Matrix.sub_apply, Matrix.smul_apply, outerKernel_def, coe_sub', coe_smul',
-    Pi.sub_apply, Pi.smul_apply, rankOne_apply, inner_sub_left, Finsupp.sum,
-    Finset.sum_sub_distrib, map_sub, map_sum, sub_nonneg, inner_smul_left, ← inner_kerFun,
-    kernel_inner, ← map_sum, ← Finset.mul_sum, ← Finset.sum_mul, ← map_sum, ← inner_sum,
-    ← sum_inner, inner_self_eq_norm_sq_to_K, RCLike.conj_mul, RCLike.re_ofReal_pow, map_pow,
-    RCLike.conj_ofReal, RCLike.mul_re, RCLike.im_ofReal_pow, mul_zero, sub_zero,
-    RCLike.re_ofReal_pow, ← mul_pow]
-  grw [norm_inner_le_norm]
+  calc
+    _ = ∑ x_1 ∈ x.support, ∑ x_2 ∈ x.support, RCLike.re ⟪(‖f‖ ^ 2: 𝕜) • (kernel H x_2 x_1) (x x_1)
+        - ⟪f x_1, x x_1⟫_𝕜 • f x_2, x x_2⟫_𝕜 := by
+      simp [Finsupp.sum, map_sum]
+    _ = ∑ x_1 ∈ x.support, ∑ x_2 ∈ x.support, (‖f‖ ^ 2 * RCLike.re
+        ⟪(kernel H x_2 x_1) (x x_1), x x_2⟫_𝕜 - RCLike.re (⟪x x_1, f x_1⟫_𝕜 • ⟪ f x_2, x x_2⟫_𝕜))
+        := by
+      simp_rw [inner_sub_left, inner_smul_left]
+      simp
+    _ = (‖f‖ * ‖x.sum fun xi wi ↦ kerFun H xi wi‖) ^ 2 -
+        ‖⟪f, x.sum fun xi wi ↦ kerFun H xi wi⟫_𝕜‖ ^ 2 := by
+      simp_rw [Finset.sum_sub_distrib, ← inner_conj_symm _ (f _), Finsupp.sum, mul_pow _ _ 2,
+        ← Finset.mul_sum, ← map_sum, ← inner_kerFun]
+      congr 1
+      · simp_rw [kernel_inner, ← inner_sum, ← sum_inner]
+        simp
+      · simp_rw [RCLike.norm_sq_eq_def, ← Finset.smul_sum, ← Finset.sum_smul, ← map_sum, ← inner_sum]
+        simp [-inner_conj_symm, smul_eq_mul, RCLike.mul_re, RCLike.conj_im]
+    _ ≥ 0 := by
+      grw [ge_iff_le, sub_nonneg, norm_inner_le_norm]
 
 lemma mem_of_posSemidef (f : X → V) {c : ℝ}
     (hc : ((c : 𝕜) ^ 2 • kernel H - outerKernel 𝕜 f).PosSemidef) : ∃ (g : H), (g : X → V) = f := by
