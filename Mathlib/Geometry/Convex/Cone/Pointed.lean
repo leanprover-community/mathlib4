@@ -407,12 +407,18 @@ alias IsSubmodule.lift := toSubmodule
 
 @[simp] lemma ofSubmodule_toSubmodule (hC : C.IsSubmodule) : C.toSubmodule hC = C := rfl
 
+@[simp] alias IsSubmodule.ofSubmodule_lift := ofSubmodule_toSubmodule
+
 lemma coe_toSubmodule (hC : C.IsSubmodule) : (C.toSubmodule hC : Set E) = C := by simp
+
+alias IsSubmodule.coe_lift := coe_toSubmodule
 
 lemma mem_toSubmodule {hC : C.IsSubmodule} : x ∈ C.toSubmodule hC ↔ x ∈ C := by simp
 
-instance : CanLift (PointedCone R E) (Submodule R E) ofSubmodule (fun C => C.IsSubmodule) where
-  prf _ h := ⟨toSubmodule h, ofSubmodule_toSubmodule h⟩
+alias IsSubmodule.mem_lift := mem_toSubmodule
+
+instance : CanLift (PointedCone R E) (Submodule R E) ofSubmodule IsSubmodule where
+  prf _ h := ⟨h.lift, h.ofSubmodule_lift⟩
 
 lemma IsSubmodule.iff_eq_span : C.IsSubmodule ↔ C = span R (C : Set E) where
   mp h := by lift C to Submodule R E using h; simp
