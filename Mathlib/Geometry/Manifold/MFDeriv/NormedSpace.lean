@@ -571,3 +571,60 @@ lemma mvfderiv_zero {x : M} : d% (0 : M → F) x = 0 := by
   rw [← mvfderivWithin_univ]
   exact mvfderivWithin_zero (uniqueMDiffWithinAt_univ I)
 @[deprecated (since := "2026-05-17")] alias extDerivFun_zero := mvfderiv_zero
+
+section deprecated
+
+variable {f g : M → E'} {z : M}
+
+@[deprecated mvfderiv_add
+  "this lemma abuses the identification of E with its tangent space: use mvfderiv instead"
+  (since := "2026-05-31")]
+theorem mfderiv_add (hf : MDiffAt f z) (hg : MDiffAt g z) :
+    (mfderiv% (f + g) z : TangentSpace I z →L[𝕜] E') =
+      (by exact mfderiv% f z) + (by exact mfderiv% g z) :=
+  (hf.hasMFDerivAt.add hg.hasMFDerivAt).mfderiv
+
+@[deprecated mvfderivWithin_add
+  "this lemma abuses the identification of E with its tangent space: use mvfderivWithin instead"
+  (since := "2026-05-31")]
+theorem mfderivWithin_add (hf : MDiffAt[s] f z) (hg : MDiffAt[s] g z)
+    (hs : UniqueMDiffWithinAt I s z) :
+    (mfderiv[s] (f + g) z : TangentSpace I z →L[𝕜] E') =
+      (by exact mfderiv[s] f z) + (by exact mfderiv[s] g z) :=
+  (hf.hasMFDerivWithinAt.add hg.hasMFDerivWithinAt).mfderivWithin hs
+
+@[deprecated mvfderivWithin_sub
+  "this lemma abuses the identification of E with its tangent space: use mvfderivWithin instead"
+  (since := "2026-05-31")]
+theorem mfderivWithin_sub (hf : MDiffAt[s] f z) (hg : MDiffAt[s] g z)
+    (hs : UniqueMDiffWithinAt I s z) :
+    (mfderiv[s] (f - g) z : TangentSpace I z →L[𝕜] E') =
+      (by exact mfderiv[s] f z) - (by exact mfderiv[s] g z) :=
+  (hf.hasMFDerivWithinAt.sub hg.hasMFDerivWithinAt).mfderivWithin hs
+
+@[deprecated mvfderiv_sub
+  "this lemma abuses the identification of E with its tangent space: use mvfderivWithin instead"
+  (since := "2026-05-31")]
+theorem mfderiv_sub (hf : MDiffAt f z) (hg : MDiffAt g z) :
+    (mfderiv% (f - g) z : TangentSpace I z →L[𝕜] E') =
+      (by exact mfderiv% f z) - (by exact mfderiv% g z) :=
+  (hf.hasMFDerivAt.sub hg.hasMFDerivAt).mfderiv
+
+set_option backward.isDefEq.respectTransparency false in
+@[deprecated mvfderivWithin_neg
+  "this lemma abuses the identification of E with its tangent space: use mvfderivWithin instead"
+  (since := "2026-05-31")]
+theorem mfderivWithin_neg (hs : UniqueMDiffWithinAt I s x) :
+    mfderiv[s] (-f) x = -mfderiv[s] f x := by
+  simp_rw [mfderivWithin]
+  by_cases hf : MDiffAt[s] f x
+  · exact hf.hasMFDerivWithinAt.neg.mfderivWithin hs
+  · rw [if_neg hf]; rw [← mdifferentiableWithinAt_neg] at hf; rw [if_neg hf, neg_zero]
+
+@[deprecated mvfderiv_neg
+  "this lemma abuses the identification of E with its tangent space: use mvfderivWithin instead"
+  (since := "2026-05-31")]
+theorem mfderiv_neg : mfderiv% (-f) x = -mfderiv% f x := by
+  rw [← mfderivWithin_univ, mfderivWithin_neg (uniqueMDiffWithinAt_univ I), mfderivWithin_univ]
+
+end deprecated
