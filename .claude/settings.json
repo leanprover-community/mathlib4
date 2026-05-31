@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__lean-lsp__*",
+      "mcp__quiver__*"
+    ]
+  }
+}
