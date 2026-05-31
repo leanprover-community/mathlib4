@@ -75,29 +75,25 @@ absorbent, and bounded.
 Note that the usual definition of successive minimum is that `r • s ∩ L` spans a subspace of
 dimension *at least* `i`. However, this makes the `0`-th successive minimum be `0`, which is
 inconvenient. Values past the dimension of the ambient space `E` are junk. -/
-noncomputable def successiveMin : ℝ≥0 := sInf {r | i < finrank ℝ (span ℝ <| r • s ∩ L)}
+noncomputable def successiveMin : ℝ≥0 := sInf {r | i < Set.finrank ℝ (r • s ∩ L)}
 
 variable [FiniteDimensional ℝ E]
 
 @[simp] lemma successiveMin_of_finrank_le (hi : finrank ℝ E ≤ i) : successiveMin L s i = 0 := by
-  simp [successiveMin, ((finrank_le _).trans hi).not_gt]
+  simp [successiveMin, Set.finrank, ((finrank_le _).trans hi).not_gt]
 
 @[simp] lemma successiveMin_of_finrank_span_le
-    (hi : finrank ℝ (span ℝ (L : Set E)) ≤ i) : successiveMin L s i = 0 := by
-  simp [successiveMin, fun r : ℝ≥0 =>
+    (hi : Set.finrank ℝ (L : Set E) ≤ i) : successiveMin L s i = 0 := by
+  simp [successiveMin, Set.finrank, fun r ↦
     ((Submodule.finrank_mono (span_mono (inter_subset_right (s := r • s)))).trans hi).not_gt]
 
 variable [hL : DiscreteTopology L]
 
 theorem successiveMin_of_finrank_int_le (hi : finrank ℤ L ≤ i) : successiveMin L s i = 0 := by
-  have hd : DiscreteTopology (span ℤ (L : Set E)) := by rw [L.span_eq]; exact hL
-  have h := Real.finrank_eq_int_finrank_of_discrete hd
-  simp only [Set.finrank] at h
-  rw [L.span_eq] at h
-  simp [h, hi]
+  simp [hi]
 
-lemma exists_lt_finrank_span_smul_inter (hs : Absorbent ℝ s) (hi : i < finrank ℤ L) :
-    ∃ r : ℝ≥0, i < finrank ℝ (span ℝ <| r • s ∩ L) := by
+lemma exists_lt_setFinrank_smul_inter (hs : Absorbent ℝ s) (hi : i < finrank ℤ L) :
+    ∃ r : ℝ≥0, i < Set.finrank ℝ (r • s ∩ L) := by
   obtain ⟨ι, b⟩ := Free.exists_basis ℤ L
   have : (Set.range (Subtype.val ∘ b)).Finite := by
     refine (finite_range_iff ?_).mpr (Module.Finite.finite_basis b)
@@ -124,19 +120,19 @@ lemma exists_lt_finrank_span_smul_inter (hs : Absorbent ℝ s) (hi : i < finrank
       simp [hr]
 
 lemma exists_lt_finrank_span_smul_inter_zLattice [IsZLattice ℝ L] (hs : Absorbent ℝ s)
-    (hi : i < finrank ℝ E) : ∃ r : ℝ≥0, i < finrank ℝ (span ℝ <| r • s ∩ L) :=
-  exists_lt_finrank_span_smul_inter hs (hi.trans_eq (ZLattice.rank ..).symm)
+    (hi : i < finrank ℝ E) : ∃ r : ℝ≥0, i < Set.finrank ℝ (r • s ∩ L) :=
+  exists_lt_setFinrank_smul_inter hs (hi.trans_eq (ZLattice.rank ..).symm)
 
 @[gcongr] lemma successiveMin_mono (hs : Absorbent ℝ s) (hij : i ≤ j) (hj : j < finrank ℤ L) :
     successiveMin L s i ≤ successiveMin L s j :=
-  csInf_le_csInf' (exists_lt_finrank_span_smul_inter hs hj) fun _r ↦ hij.trans_lt
+  csInf_le_csInf' (exists_lt_setFinrank_smul_inter hs hj) fun _r ↦ hij.trans_lt
 
 lemma exists_linearIndependent_of_successiveMin_lt {r : ℝ≥0} (hsc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0)
     (hi : i < finrank ℤ L) (hr : successiveMin L s i < r) :
     ∃ v : Fin (i + 1) → L, (∀ j, (v j : E) ∈ r • s ∩ L) ∧ (LinearIndependent ℤ v) := by
   have h0s : (0 : E) ∈ s := mem_of_mem_nhds hs₀
   obtain ⟨r', hr'mem, hr'r⟩ := exists_lt_of_csInf_lt
-    (exists_lt_finrank_span_smul_inter (absorbent_nhds_zero hs₀) hi) hr
+    (exists_lt_setFinrank_smul_inter (absorbent_nhds_zero hs₀) hi) hr
   have hri : i < finrank ℝ (span ℝ (r • s ∩ L)) :=
     lt_of_lt_of_le hr'mem (finrank_mono (span_mono (inter_subset_inter_left _
       (hsc.smul_mono_of_zero_mem h0s r'.coe_nonneg (by exact_mod_cast hr'r.le)))))
@@ -147,9 +143,9 @@ lemma exists_linearIndependent_of_successiveMin_lt {r : ℝ≥0} (hsc : Convex �
   · refine ((hf_li.comp _ (Fin.castLE_injective hri)).restrict_scalars ?_).of_comp L.subtype
     exact fun a b h ↦ by simpa using h
 
-lemma isClosed_setOf_lt_finrank_span_smul_inter (hsc : Convex ℝ s) (hs : IsCompact s)
+lemma isClosed_setOf_lt_setFinrank_smul_inter (hsc : Convex ℝ s) (hs : IsCompact s)
     (hs₀ : s ∈ 𝓝 0) (hi : i < finrank ℤ L) :
-    IsClosed {r : ℝ≥0 | i < finrank ℝ (span ℝ (r • s ∩ L))} := by
+    IsClosed {r : ℝ≥0 | i < Set.finrank ℝ (r • s ∩ L)} := by
   have hs₀' : (0 : E) ∈ s := mem_of_mem_nhds hs₀
   apply IsSeqClosed.isClosed
   intro r r₀ hr hlim
@@ -221,11 +217,11 @@ lemma isClosed_setOf_lt_finrank_span_smul_inter (hsc : Convex ℝ s) (hs : IsCom
       apply mem_of_subset_of_mem (hsc.smul_mono_of_zero_mem hs₀' (by simp) hn.le)
       exact mem_of_mem_inter_left ((hv n).1 j)
 
-lemma lt_finrank_span_successiveMin (hsc : Convex ℝ s) (hs : IsCompact s)
+lemma lt_setFinrank_successiveMin (hsc : Convex ℝ s) (hs : IsCompact s)
     (hs₀ : s ∈ 𝓝 0) (hi : i < finrank ℤ L) :
-    i < finrank ℝ (span ℝ <| successiveMin L s i • s ∩ L) :=
-  (isClosed_setOf_lt_finrank_span_smul_inter hsc hs hs₀ hi).csInf_mem
-    (exists_lt_finrank_span_smul_inter (absorbent_nhds_zero hs₀) hi) (OrderBot.bddBelow _)
+    i < Set.finrank ℝ (successiveMin L s i • s ∩ L) :=
+  (isClosed_setOf_lt_setFinrank_smul_inter hsc hs hs₀ hi).csInf_mem
+    (exists_lt_setFinrank_smul_inter (absorbent_nhds_zero hs₀) hi) (OrderBot.bddBelow _)
 
 variable (L) in
 /-- A bounded set `s` around the origin admits a directional set with respect to any discrete
@@ -255,7 +251,7 @@ lemma exists_directional_set' (hsc : Convex ℝ s) (hs : IsCompact s) (hs₀ : s
     apply lt_irrefl d
     calc
       d < finrank ℝ (span ℝ (successiveMin L s d • s ∩ L)) :=
-        lt_finrank_span_successiveMin hsc hs hs₀ hd'
+        lt_setFinrank_successiveMin hsc hs hs₀ hd'
       _ ≤ finrank ℝ (span ℝ (.range v)) := by
         refine Submodule.finrank_mono <| span_le.mpr ?_
         intro w hw
