@@ -208,10 +208,8 @@ protected theorem some : Nat.Partrec (PFun.id ℕ) :=
 
 theorem none : Nat.Partrec (PFun.mk fun _ => Part.none) :=
   (of_primrec (Nat.Primrec.const 1)).rfind.of_eq fun _ =>
-    eq_none_iff.2 fun _ ⟨h, _⟩ => by
-      rcases h with ⟨n, hn, _⟩
-      revert hn
-      simp
+    eq_none_iff.2 fun _ ⟨h, _⟩ => by simp at h
+
 theorem prec' {f g h} (hf : Nat.Partrec f) (hg : Nat.Partrec g) (hh : Nat.Partrec h) :
     Nat.Partrec (PFun.mk fun a => (f a).bind fun n => Nat.rec (g a)
       (fun y IH => do let i ← IH; h (Nat.pair a (Nat.pair y i))) n) :=

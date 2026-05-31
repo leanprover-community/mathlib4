@@ -269,7 +269,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     | succ => exact ⟨succ, fun ⟨[v], _⟩ => rfl⟩
     | get i =>
       refine Fin.succRec (fun n => ?_) (fun n i IH => ?_) i
-      · exact ⟨head, fun ⟨List.cons a as, _⟩ => by simp [Code.head_eval]; rfl⟩
+      · exact ⟨head, fun ⟨List.cons a as, _⟩ => by simp; rfl⟩
       · obtain ⟨c, h⟩ := IH
         exact ⟨c.comp tail, fun v => by
           simpa [Code.comp_eval, Code.tail_eval, Bind.bind, PFun.lift_apply, Fin.succ,
@@ -462,18 +462,6 @@ def Cont.eval : Cont → List ℕ →. List ℕ
   | Cont.fix f k => PFun.mk fun v =>
     if v.headI = 0 then k.eval v.tail else f.fix.eval v.tail >>= k.eval
 
-namespace Cont
-
-@[simp]
-theorem comp_eval (f k v) : (comp f k).eval v = (Code.eval f v >>= k.eval) := rfl
-
-@[simp]
-theorem fix_eval (f k v) :
-    (fix f k).eval v =
-      (if v.headI = 0 then k.eval v.tail else f.fix.eval v.tail >>= k.eval) := rfl
-
-end Cont
-
 /-- The set of configurations of the machine:
 
 * `halt v`: The machine is about to stop and `v : List ℕ` is the result.
@@ -562,21 +550,12 @@ def Cont.then : Cont → Cont → Cont
 theorem Cont.then_eval {k k' : Cont} {v} : (k.then k').eval v = k.eval v >>= k'.eval := by
   induction k generalizing v with
   | halt => simp only [Cont.eval, Cont.then, PFun.id_apply, Part.bind_eq_bind, Part.bind_some]
-  | cons₁ fs as k k_ih => simp only [Cont.eval, PFun.mk_apply, Cont.then, bind_assoc, k_ih]
-  | cons₂ ns k k_ih => simp only [Cont.eval, PFun.mk_apply, Cont.then, k_ih]
-  | comp f k k_ih =>
-    simp only [Cont.comp_eval, Cont.then, bind_assoc]
-    congr 1
-    funext x
-    exact k_ih
-  | fix f k k_ih =>
-    simp only [Cont.fix_eval, Cont.then]
-    split_ifs
-    · exact k_ih
-    · simp only [bind_assoc]
-      congr 1
-      funext x
-      exact k_ih
+  | cons₁ => simp only [Cont.eval, PFun.mk_apply, Cont.then, bind_assoc, *]
+  | cons₂ => simp only [Cont.eval, PFun.mk_apply, Cont.then, *]
+  | comp _ _ k_ih => simp only [Cont.eval, PFun.mk_apply, Cont.then, bind_assoc, ← k_ih]
+  | fix _ _ k_ih =>
+    simp only [Cont.eval, PFun.mk_apply, Cont.then, *]
+    split_ifs <;> [rfl; simp only [← k_ih, bind_assoc]]
 
 /-- The `then k` function is a "configuration homomorphism". Its operation on states is to append
 `k` to the continuation of a `Cfg.ret` state, and to run `k` on `v` if we are in the `Cfg.halt v`
@@ -698,20 +677,16 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
     · exact ReflTransGen.single rfl
     refine PFun.fixInduction he fun v (he : v' ∈ f.fix.eval v) IH => ?_
     rw [fok, Part.bind_eq_bind, Part.mem_bind_iff]
-    have he_fix := PFun.mem_fix_iff.1 he
-    simp only [PFun.mk_apply] at he_fix
-    obtain he | ⟨v'', he₁', _⟩ := he_fix
-    · obtain ⟨v_tmp, he₁, he₂⟩ := (Part.mem_map_iff _).1 he
-      split_ifs at he₂ with h;
-      cases he₂
+    obtain he | ⟨v'', he₁', _⟩ := by simpa only [PFun.mk_apply] using PFun.mem_fix_iff.1 he
+    · obtain ⟨v', he₁, he₂⟩ := (Part.mem_map_iff _).1 he
+      split_ifs at he₂ with h; cases he₂
       refine ⟨_, he₁, ?_⟩
       rw [reaches_eval]
       swap
       · exact ReflTransGen.single rfl
       rwa [stepRet, if_pos h]
     · obtain ⟨v₁, he₁, he₂⟩ := (Part.mem_map_iff _).1 he₁'
-      split_ifs at he₂ with h;
-      cases he₂
+      split_ifs at he₂ with h; cases he₂
       clear he₁'
       refine ⟨_, he₁, ?_⟩
       rw [reaches_eval]
@@ -739,14 +714,9 @@ theorem code_is_ok (c) : Code.Ok c := by
   | case f g IHf IHg =>
     rw [Code.case_eval]
     dsimp only
-    generalize he : v.headI = h
-    cases h with
-    | zero => exact IHf k v.tail
-    | succ n => exact IHg k (n :: v.tail)
+    cases v.headI <;> [apply IHf; apply IHg]
   | fix f IHf => rw [cont_eval_fix IHf]
-  | zero' => rw [Code.zero'_eval]; exact (pure_bind _ _).symm
-  | succ => rw [Code.succ_eval]; exact (pure_bind _ _).symm
-  | tail => rw [Code.tail_eval]; exact (pure_bind _ _).symm
+  | _ => simp only [Code.zero'_eval, Code.succ_eval, Code.tail_eval, pure_bind]
 
 theorem stepNormal_eval (c v) : eval step (stepNormal c Cont.halt v) = Cfg.halt <$> c.eval v :=
   (code_is_ok c).zero
@@ -766,13 +736,13 @@ theorem stepRet_eval {k v} : eval step (stepRet k v) = Cfg.halt <$> k.eval v := 
     rw [Cont.eval, PFun.mk_apply, stepRet]
     exact IH
   | comp f k IH =>
-    rw [Cont.comp_eval, stepRet, code_is_ok]
+    rw [Cont.eval, PFun.mk_apply, stepRet, code_is_ok]
     simp only [← bind_pure_comp, bind_assoc]; congr; funext v'
     rw [reaches_eval]; swap
     · exact ReflTransGen.single rfl
     rw [IH, bind_pure_comp]
   | fix f k IH =>
-    rw [Cont.fix_eval, stepRet]
+    rw [Cont.eval, PFun.mk_apply, stepRet]
     split_ifs
     · exact IH
     · rw [cont_eval_fix (code_is_ok f)]

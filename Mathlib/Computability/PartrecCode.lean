@@ -492,13 +492,13 @@ def eval : Code → ℕ →. ℕ
 /-- Helper lemma for the evaluation of `prec` in the base case. -/
 @[simp]
 theorem eval_prec_zero (cf cg : Code) (a : ℕ) : eval (prec cf cg) (Nat.pair a 0) = eval cf a := by
-  ext; simp [eval, Nat.unpaired]
+  simp [eval, Nat.unpaired]
 
 /-- Helper lemma for the evaluation of `prec` in the recursive case. -/
 theorem eval_prec_succ (cf cg : Code) (a k : ℕ) :
     eval (prec cf cg) (Nat.pair a (Nat.succ k)) =
       do {let ih ← eval (prec cf cg) (Nat.pair a k); eval cg (Nat.pair a (Nat.pair k ih))} := by
-  ext; simp [eval, Nat.unpaired, Part.bind_eq_bind]
+  simp [eval, Nat.unpaired, Part.bind_eq_bind]
 
 instance : Membership (ℕ →. ℕ) Code :=
   ⟨fun c f => eval c = f⟩
@@ -559,9 +559,8 @@ theorem exists_code {f : ℕ →. ℕ} : Nat.Partrec f ↔ ∃ c : Code, eval c 
       exact ⟨prec cf cg, rfl⟩
     | rfind pf hf =>
       rcases hf with ⟨cf, rfl⟩
-      refine ⟨comp (rfind' cf) (pair Code.id zero), ?_⟩
-      ext n b
-      simp [eval, Seq.seq, add_zero, Part.map_id']
+      exact ⟨comp (rfind' cf) (pair Code.id zero),
+        DFunLike.ext _ _ fun n => by simp [eval, Seq.seq, add_zero, Part.map_id']⟩
   · rintro ⟨c, rfl⟩
     induction c with
     | zero => exact Nat.Partrec.zero
@@ -1026,18 +1025,15 @@ theorem fixed_point {f : Code → Code} (hf : Computable f) : ∃ c : Code, eval
     hf.comp (primrec₂_curry.comp (_root_.Primrec.const cg) _root_.Primrec.id).to_comp
   let ⟨cF, eF⟩ := exists_code.1 this
   have eF' : eval cF (encode cF) = Part.some (encode (F (encode cF))) := by simp [eF]
-  ⟨curry cg (encode cF), by
-    ext n b
-    simp [F, g, eg', eF', Part.map_id']⟩
+  ⟨curry cg (encode cF),
+    DFunLike.ext _ _ fun n => by simp [F, g, eg', eF', Part.map_id']⟩
 
 /-- **Kleene's second recursion theorem** -/
 theorem fixed_point₂ {f : Code → ℕ →. ℕ} (hf : Partrec₂ f) : ∃ c : Code, eval c = f c :=
   let ⟨cf, ef⟩ := exists_code.1 hf
   (fixed_point (primrec₂_curry.comp (_root_.Primrec.const cf) Primrec.encode).to_comp).imp
-    fun c e => by
-      ext n b
-      rw [e.symm, eval_curry]
-      simp [ef, Part.map_id']
+    fun c e => DFunLike.ext _ _ fun n => by simp [e.symm, ef, Part.map_id']
+
 end
 
 /-- There are only countably many partial recursive partial functions `ℕ →. ℕ`. -/
