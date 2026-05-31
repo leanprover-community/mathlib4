@@ -172,8 +172,8 @@ example (p q : Nat → Prop) (h : ∀ ε > 0, p ε) :
   sorry
 ```
 -/
-syntax (name := convert) "convert" Lean.Parser.Tactic.optConfig " ←"? ppSpace term (" using " num)?
-  (" with" (ppSpace colGt rintroPat)*)? : tactic
+syntax (name := convert) "convert" "!"? Lean.Parser.Tactic.optConfig " ←"? ppSpace term
+  (" using " num)? (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 @[tactic_alt convert]
 syntax (name := convert!) "convert!" Lean.Parser.Tactic.optConfig " ←"? ppSpace term
@@ -181,7 +181,7 @@ syntax (name := convert!) "convert!" Lean.Parser.Tactic.optConfig " ←"? ppSpac
 
 macro_rules
 | `(tactic| convert! $cfg $[←%$l]? $t $[using $n]? $[with $[$w]*]?) =>
-    `(tactic| convert $cfg $[←%$l]? $t:term $[using $n]? $[with $[$w]*]?)
+    `(tactic| convert ! $cfg $[←%$l]? $t:term $[using $n]? $[with $[$w]*]?)
 
 /--
 Elaborates `term` ensuring the expected type, allowing stuck metavariables.
@@ -200,7 +200,7 @@ def elabTermForConvert (term : Syntax) (expectedType? : Option Expr) :
       return t
 
 elab_rules : tactic
-| `(tactic| convert $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
+| `(tactic| convert $[!]? $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
   withMainContext do
     let config ← Congr!.elabConfig (mkOptionalNode cfg)
     let patterns := (ps?.getD #[]).toList

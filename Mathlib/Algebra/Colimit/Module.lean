@@ -271,7 +271,7 @@ theorem exists_eq_of_of_eq {i x y} (h : of R ι G f i x = of R ι G f i y) :
 bigger module in the directed system. -/
 theorem of.zero_exact {i x} (H : of R ι G f i x = 0) :
     ∃ j hij, f i j hij x = (0 : G j) := by
-  convert exists_eq_of_of_eq (H.trans (map_zero <| _).symm)
+  convert! exists_eq_of_of_eq (H.trans (map_zero <| _).symm)
   rw [map_zero]
 
 end DirectLimit
