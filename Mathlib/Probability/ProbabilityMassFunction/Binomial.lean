@@ -59,8 +59,8 @@ theorem binomial_apply_last (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) :
 theorem binomial_apply_self (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) :
     binomial p h n (.last n) = p ^ n := by simp [binomial_apply_last]
 
-@[deprecated ProbabilityTheory.binomial_one_eq_bernoulliMeasure (since := "2026-05-31")]
 /-- The binomial distribution on one coin is the Bernoulli distribution. -/
+@[deprecated ProbabilityTheory.binomial_one_eq_bernoulliMeasure (since := "2026-05-31")]
 theorem binomial_one_eq_bernoulli (p : ℝ≥0) (h : p ≤ 1) :
     binomial p h 1 = (bernoulli p h).map (cond · 1 0) := by
   ext i; fin_cases i <;> simp [binomial_apply, bernoulli_apply]
