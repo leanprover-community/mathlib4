@@ -424,8 +424,8 @@ lemma exists_repr (x : E ⊗[𝕜] F) :
   | tmul m n =>
       exact ⟨1, fun _ => m, fun _ => n, by simp⟩
   | add x y hx hy =>
-      obtain ⟨nx, ex, gx, hx ⟩ := hx
-      obtain ⟨ny, ey, gy, hy ⟩ := hy
+      obtain ⟨nx, ex, gx, hx⟩ := hx
+      obtain ⟨ny, ey, gy, hy⟩ := hy
       refine ⟨nx + ny, Fin.append ex ey, Fin.append gx gy, ?_⟩
       rw [hx, hy, Fin.sum_univ_add]
       simp [Fin.append]
