@@ -602,18 +602,18 @@ lemma mvfderivWithin_smul {a : M → 𝕜} (ha : MDiffAt[s] a x) {g : M → F} (
     (hs : UniqueMDiffWithinAt I s x) :
     d[s](a • g) x =
       a x • d[s] g x + (d[s] a x).smulRight (g x) := by
-  ext v
-  simp [mvfderivWithin, NormedSpace.fromTangentSpace,
-    (ha.hasMFDerivWithinAt.smul hg.hasMFDerivWithinAt).mfderivWithin hs]
+  refine HasMFDerivWithinAt.mfderivWithin ⟨ha.1.smul hg.1, ?_⟩ hs
+  convert ha.hasMFDerivWithinAt.2.smul hg.hasMFDerivWithinAt.2
+  simp
   rfl
 
 @[simp, to_fun mvfderivWithin_fun_mul]
 lemma mvfderivWithin_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x)
     (hs : UniqueMDiffWithinAt I s x) :
     d[s](f * g) x = f x • d[s]g x + (g x) • (d[s]f x) := by
+  convert mvfderivWithin_smul hf hg hs
   ext v
-  simp only [mvfderivWithin, ← smul_eq_mul, mfderivWithin_smul hf hg hs]
-  simp [mul_comm _ (g x)]
+  simp [mul_comm]
 
 @[simp]
 lemma mvfderivWithin_zero {s : Set M} (hs : UniqueMDiffWithinAt I s x) :

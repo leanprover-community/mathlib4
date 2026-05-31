@@ -784,7 +784,7 @@ theorem MDifferentiableOn.add {s : Set M} (hf : MDiff[s] f) (hg : MDiff[s] g) : 
 theorem MDifferentiable.add (hf : MDiff f) (hg : MDiff g) : MDiff (f + g) :=
   fun x ↦ (hf x).add (hg x)
 
--- TODO: this lemma (and others below) uses the identification of tangent spaces silent
+-- TODO: this lemma (and others below) uses the identification of tangent spaces silently
 -- Deprecate all these lemmas in favour of a version using `mvfderiv(Within)`
 -- Porting note: forcing types using `by exact`
 theorem mfderiv_add (hf : MDiffAt f z) (hg : MDiffAt g z) :
