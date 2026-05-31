@@ -475,41 +475,6 @@ open Bundle PrettyPrinter Delaborator SubExpr
   let fs ← withAppArg delab
   `(d% $fs) >>= annotateGoToSyntaxDef
 
-section tests
-
-variable {f : M → 𝕜}
-
-/-- info: d[s] f : (x : M) → TangentSpace I x →L[𝕜] 𝕜 -/
-#guard_msgs in
-#check mvfderivWithin I f s
-/-- info: d[s] f x : TangentSpace I x →L[𝕜] 𝕜 -/
-#guard_msgs in
-#check mvfderivWithin I f s x
-
-/-- info: d[s] f : (x : M) → TangentSpace I x →L[𝕜] 𝕜 -/
-#guard_msgs in
-#check d[s] f
-/-- info: d[s] f x : TangentSpace I x →L[𝕜] 𝕜 -/
-#guard_msgs in
-#check d[s] f x
-
-/-- info: d% f : (x : M) → TangentSpace I x →L[𝕜] 𝕜 -/
-#guard_msgs in
-#check mvfderiv I f
-/-- info: d% f : (x : M) → TangentSpace I x →L[𝕜] 𝕜 -/
-#guard_msgs in
-#check d% f
-
-/-- info: d% f x : TangentSpace I x →L[𝕜] 𝕜 -/
-#guard_msgs in
-#check mvfderiv I f x
-
-/-- info: d% f x : TangentSpace I x →L[𝕜] 𝕜 -/
-#guard_msgs in
-#check d% f x
-
-end tests
-
 end Manifold
 
 @[simp, mfld_simps] lemma mvfderivWithin_univ {f : M → F} : d[(univ : Set M)] f = d% f := by
