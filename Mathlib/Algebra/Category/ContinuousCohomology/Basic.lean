@@ -43,6 +43,8 @@ See `ContinuousCohomology.MultiInd.d`.
 - Show that short exact sequences induce long exact sequences in certain scenarios.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 open CategoryTheory Functor ContinuousMap

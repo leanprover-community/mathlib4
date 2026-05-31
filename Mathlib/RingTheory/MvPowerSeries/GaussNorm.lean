@@ -113,9 +113,9 @@ lemma gaussNorm_add_le_max (f g : MvPowerSeries σ R) (hc : 0 ≤ c)
       rcases max_choice (v ((coeff t) f) * ∏ i ∈ t.support, c i ^ t i)
         (v ((coeff t) g) * ∏ i ∈ t.support, c i ^ t i) with h | h
       · left
-        simpa [h] using le_gaussNorm v c f hbfd t
+        simpa [h] using! le_gaussNorm v c f hbfd t
       · right
-        simpa [h] using le_gaussNorm v c g hbgd t
+        simpa [h] using! le_gaussNorm v c g hbgd t
   · simp only [le_sup_iff]
     left
     exact gaussNorm_nonneg v c f vNonneg
