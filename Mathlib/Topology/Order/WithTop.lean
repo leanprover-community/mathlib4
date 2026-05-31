@@ -23,12 +23,17 @@ namespace TopologicalSpace
 
 variable {ι : Type*} [Preorder ι]
 
-@[nolint unusedArguments, to_dual]
+@[nolint unusedArguments]
 instance [TopologicalSpace ι] [OrderTopology ι] : TopologicalSpace (WithTop ι) :=
   Preorder.topology _
 
-@[to_dual]
+@[nolint unusedArguments]
+instance [TopologicalSpace ι] [OrderTopology ι] : TopologicalSpace (WithBot ι) :=
+  Preorder.topology _
+
 instance [TopologicalSpace ι] [OrderTopology ι] : OrderTopology (WithTop ι) := ⟨rfl⟩
+
+instance [TopologicalSpace ι] [OrderTopology ι] : OrderTopology (WithBot ι) := ⟨rfl⟩
 
 instance [ts : TopologicalSpace ι] [ht : OrderTopology ι] [SecondCountableTopology ι] :
     SecondCountableTopology (WithTop ι) := by
@@ -186,13 +191,11 @@ variable {ι : Type*} [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι]
 
 section Coe
 
-@[to_dual]
 lemma isEmbedding_coe : Topology.IsEmbedding ((↑) : ι → WithTop ι) := by
   refine WithTop.coe_strictMono.isEmbedding_of_ordConnected (α := ι) ?_
   rw [WithTop.range_coe]
   exact Set.ordConnected_Iio
 
-@[to_dual]
 lemma isOpenEmbedding_coe : Topology.IsOpenEmbedding ((↑) : ι → WithTop ι) :=
   ⟨isEmbedding_coe, by rw [WithTop.range_coe]; exact isOpen_Iio⟩
 
@@ -250,7 +253,6 @@ def neTopHomeomorph : { a : WithTop ι | a ≠ ⊤ } ≃ₜ ι where
 
 variable (ι) in
 /-- If `ι` has a top element, then `WithTop ι` is homeomorphic to `ι ⊕ Unit`. -/
-@[to_dual /-- If `ι` has a bot element, then `WithBot ι` is homeomorphic to `ι ⊕ Unit`. -/]
 noncomputable
 def sumHomeomorph [OrderTop ι] : WithTop ι ≃ₜ ι ⊕ Unit where
   toFun x := if h : x = ⊤ then Sum.inr () else Sum.inl x.untopA
@@ -271,7 +273,6 @@ def sumHomeomorph [OrderTop ι] : WithTop ι ≃ₜ ι ⊕ Unit where
     exact Continuous.comp_continuousOn (by fun_prop) continuousOn_untopA
   continuous_invFun := continuous_sum_dom.mpr ⟨by fun_prop, by fun_prop⟩
 
-@[to_dual]
 lemma tendsto_nhds_top_iff {α : Type*} {f : Filter α} (x : α → WithTop ι) :
     Tendsto x f (𝓝 ⊤) ↔ ∀ (i : ι), ∀ᶠ (a : α) in f, i < x a := by
   obtain (h | h) := isEmpty_or_nonempty ι
