@@ -6,9 +6,8 @@ Junyan Xu
 -/
 import Mathlib.Algebra.MvPolynomial.Funext
 import Mathlib.Analysis.Analytic.Polynomial
-import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
-import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.RingTheory.Algebraic.Integral
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Topology.Algebra.MvPolynomial
 

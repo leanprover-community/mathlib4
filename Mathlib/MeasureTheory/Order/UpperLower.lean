@@ -47,7 +47,7 @@ any subset of the antidiagonal `{(x, y) | x + y = 0}`) is order-connected.
 Generalize so that it also applies to `ℝ × ℝ`, for example.
 -/
 
-@[expose] public section
+public section
 
 open Filter MeasureTheory Metric Set
 open scoped Topology
@@ -112,7 +112,6 @@ private lemma aux₁
         rw [subset_compl_comm, ← interior_compl]
         exact hf₁ _ _
       _ = 1 - ENNReal.ofReal (4⁻¹ ^ Fintype.card ι) := ?_
-    dsimp only
     have := hε' n
     rw [measure_diff (hf₀ _ _) _ ((Real.volume_pi_closedBall _ _).trans_ne ENNReal.ofReal_ne_top),
       Real.volume_pi_closedBall, Real.volume_pi_closedBall, ENNReal.sub_div fun _ _ ↦ _,

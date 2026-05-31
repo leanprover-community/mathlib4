@@ -13,7 +13,7 @@ public import Mathlib.Data.Set.Function
 This file contains basic results on piecewise defined functions.
 -/
 
-@[expose] public section
+public section
 
 variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
 
@@ -55,8 +55,6 @@ theorem piecewise_eq_of_mem {i : α} (hi : i ∈ s) : s.piecewise f g i = f i :=
 @[simp]
 theorem piecewise_eq_of_notMem {i : α} (hi : i ∉ s) : s.piecewise f g i = g i :=
   if_neg hi
-
-@[deprecated (since := "2025-05-23")] alias piecewise_eq_of_not_mem := piecewise_eq_of_notMem
 
 theorem piecewise_singleton (x : α) [∀ y, Decidable (y ∈ ({x} : Set α))] [DecidableEq α]
     (f g : α → β) : piecewise {x} f g = Function.update g x (f x) := by

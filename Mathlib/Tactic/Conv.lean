@@ -18,11 +18,33 @@ public meta section
 namespace Mathlib.Tactic.Conv
 open Lean Parser.Tactic Parser.Tactic.Conv Elab.Tactic Meta
 
+/--
+`conv_lhs => cs` runs the `conv` tactic sequence `cs` on the left hand side of the target.
+
+In general, for an `n`-ary operator as the target, it traverses into the second to last argument.
+It is a synonym for `conv => arg -2; cs`.
+
+* `conv_lhs at h => cs` runs `cs` on the left hand side of hypothesis `h`.
+* `conv_lhs in pat => cs` first looks for a subexpression matching `pat` (see also the `pattern`
+  conv tactic) and then traverses into the left hand side of this subexpression.
+  This syntax also supports the `occs` clause for the pattern.
+-/
 syntax (name := convLHS) "conv_lhs" (" at " ident)? (" in " (occs)? term)? " => " convSeq : tactic
 macro_rules
   | `(tactic| conv_lhs $[at $id]? $[in $[$occs]? $pat]? => $seq) =>
     `(tactic| conv $[at $id]? $[in $[$occs]? $pat]? => lhs; ($seq:convSeq))
 
+/--
+`conv_rhs => cs` runs the `conv` tactic sequence `cs` on the right hand side of the target.
+
+In general, for an `n`-ary operator as the target, it traverses into the last argument.
+It is a synonym for `conv => arg -1; cs`.
+
+* `conv_rhs at h => cs` runs `cs` on the right hand side of hypothesis `h`.
+* `conv_rhs in pat => cs` first looks for a subexpression matching `pat` (see the `pattern`
+  conv tactic) and then traverses into the right hand side of this subexpression.
+  This syntax also supports the `occs` clause for the pattern.
+-/
 syntax (name := convRHS) "conv_rhs" (" at " ident)? (" in " (occs)? term)? " => " convSeq : tactic
 macro_rules
   | `(tactic| conv_rhs $[at $id]? $[in $[$occs]? $pat]? => $seq) =>
@@ -83,7 +105,7 @@ There are also shorthand commands for several common conv tactics:
 * `#whnf e` is short for `#conv whnf => e`
 * `#simp e` is short for `#conv simp => e`
 * `#norm_num e` is short for `#conv norm_num => e`
-* `#push_neg e` is short for `#conv push_neg => e`
+* `#push c => e` is short for `#conv push c => e`
 -/
 elab tk:"#conv " conv:conv " => " e:term : command =>
   Command.runTermElabM fun _ ↦ do

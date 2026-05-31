@@ -12,7 +12,7 @@ public import Mathlib.Data.Nat.Prime.Basic
 
 -/
 
-@[expose] public section
+public section
 
 open Bool Subtype
 

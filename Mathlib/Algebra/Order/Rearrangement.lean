@@ -48,7 +48,7 @@ Add equality cases for when the permute function is injective. This comes from t
 If `Monovary f g`, `Injective g` and `σ` is a permutation, then `Monovary f (g ∘ σ) ↔ σ = 1`.
 -/
 
-@[expose] public section
+public section
 
 
 open Equiv Equiv.Perm Finset Function OrderDual
@@ -70,12 +70,9 @@ variable [PosSMulMono α β] {s : Finset ι} {σ : Perm ι} {f : ι → α} {g :
 theorem MonovaryOn.sum_smul_comp_perm_le_sum_smul (hfg : MonovaryOn f g s)
     (hσ : {x | σ x ≠ x} ⊆ s) : ∑ i ∈ s, f i • g (σ i) ≤ ∑ i ∈ s, f i • g i := by
   classical
-  revert hσ σ hfg
-  apply Finset.induction_on_max_value (fun i ↦ toLex (g i, f i))
-    (p := fun t ↦ ∀ {σ : Perm ι}, MonovaryOn f g t → {x | σ x ≠ x} ⊆ t →
-      ∑ i ∈ t, f i • g (σ i) ≤ ∑ i ∈ t, f i • g i) s
-  · simp only [le_rfl, Finset.sum_empty, imp_true_iff]
-  intro a s has hamax hind σ hfg hσ
+  induction s using induction_on_max_value fun i ↦ toLex (g i, f i) generalizing σ with
+  | empty => simp only [le_rfl, Finset.sum_empty]
+  | insert a s has hamax hind => ?_
   set τ : Perm ι := σ.trans (swap a (σ a)) with hτ
   have hτs : {x | τ x ≠ x} ⊆ s := by
     intro x hx
@@ -124,8 +121,9 @@ theorem AntivaryOn.sum_smul_le_sum_smul_comp_perm (hfg : AntivaryOn f g s)
 `f` and `g` monovary together on `s`. Stated by permuting the entries of `f`. -/
 theorem MonovaryOn.sum_comp_perm_smul_le_sum_smul (hfg : MonovaryOn f g s)
     (hσ : {x | σ x ≠ x} ⊆ s) : ∑ i ∈ s, f (σ i) • g i ≤ ∑ i ∈ s, f i • g i := by
-  convert hfg.sum_smul_comp_perm_le_sum_smul
-    (show { x | σ⁻¹ x ≠ x } ⊆ s by simp [set_support_symm_eq, hσ]) using 1
+  convert!
+    hfg.sum_smul_comp_perm_le_sum_smul
+      (show {x | σ⁻¹ x ≠ x} ⊆ s by simp [set_support_symm_eq, hσ]) using 1
   exact σ.sum_comp' s (fun i j ↦ f i • g j) hσ
 
 /-- **Rearrangement Inequality**: Pointwise scalar multiplication of `f` and `g` is minimized when
@@ -177,7 +175,7 @@ theorem MonovaryOn.sum_smul_comp_perm_eq_sum_smul_iff (hfg : MonovaryOn f g s)
   refine ⟨not_imp_not.1 fun h ↦ ?_, fun h ↦ (hfg.sum_smul_comp_perm_le_sum_smul hσ).antisymm <| by
     simpa using h.sum_smul_comp_perm_le_sum_smul ((set_support_symm_eq _).subset.trans hσ)⟩
   rw [MonovaryOn] at h
-  push_neg at h
+  push Not at h
   obtain ⟨x, hx, y, hy, hgxy, hfxy⟩ := h
   set τ : Perm ι := (Equiv.swap x y).trans σ
   have hτs : {x | τ x ≠ x} ⊆ s := by
@@ -214,10 +212,10 @@ theorem MonovaryOn.sum_comp_perm_smul_eq_sum_smul_iff (hfg : MonovaryOn f g s)
   · apply eq_iff_eq_cancel_right.2
     rw [σ.sum_comp' s (fun i j ↦ f i • g j) hσ]
     congr
-  · convert h.comp_right σ
+  · convert! h.comp_right σ
     · rw [comp_assoc, inv_def, symm_comp_self, comp_id]
     · rw [σ.eq_preimage_iff_image_eq, Set.image_perm hσ]
-  · convert h.comp_right σ.symm
+  · convert! h.comp_right σ.symm
     · rw [comp_assoc, self_comp_symm, comp_id]
     · rw [σ.symm.eq_preimage_iff_image_eq]
       exact Set.image_perm hσinv

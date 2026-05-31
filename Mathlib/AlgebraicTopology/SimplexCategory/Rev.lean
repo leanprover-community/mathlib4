@@ -41,6 +41,8 @@ lemma rev_map_apply {n m : SimplexCategory} (f : n ⟶ m) (i : Fin (n.len + 1)) 
     (rev.map f).toOrderHom (a := n) (b := m) i = (f.toOrderHom i.rev).rev := by
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma rev_map_δ {n : ℕ} (i : Fin (n + 2)) :
     rev.map (δ i) = δ i.rev := by
@@ -49,6 +51,8 @@ lemma rev_map_δ {n : ℕ} (i : Fin (n + 2)) :
   dsimp [δ]
   rw [Fin.succAbove_rev_right, Fin.rev_rev]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma rev_map_σ {n : ℕ} (i : Fin (n + 1)) :
     rev.map (σ i) = σ i.rev := by
@@ -57,17 +61,20 @@ lemma rev_map_σ {n : ℕ} (i : Fin (n + 1)) :
   dsimp [σ]
   rw [Fin.predAbove_rev_right, Fin.rev_rev]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `SimplexCategory.rev : SimplexCategory ⥤ SimplexCategory`
 is a covariant involution. -/
-@[simps!]
+@[simps! hom_app inv_app]
 def revCompRevIso : rev ⋙ rev ≅ 𝟭 _ :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma rev_map_rev_map {n m : SimplexCategory} (f : n ⟶ m) :
     rev.map (rev.map f) = f := by
   aesop
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor `SimplexCategory.rev : SimplexCategory ⥤ SimplexCategory`
 as an equivalence of category. -/
 @[simps]
@@ -76,5 +83,7 @@ def revEquivalence : SimplexCategory ≌ SimplexCategory where
   inverse := rev
   unitIso := revCompRevIso.symm
   counitIso := revCompRevIso
+
+instance : rev.IsEquivalence := revEquivalence.isEquivalence_functor
 
 end SimplexCategory

@@ -26,7 +26,7 @@ For the *second* Borel-Cantelli lemma (applying to independent sets in a probabi
 see `ProbabilityTheory.measure_limsup_eq_one`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Set
 open scoped ENNReal Topology
@@ -79,7 +79,7 @@ theorem ae_finite_setOf_mem {s : ι → Set α} (h : ∑' i, μ (s i) ≠ ∞) :
 theorem measure_setOf_frequently_eq_zero {p : ℕ → α → Prop} (hp : ∑' i, μ { x | p i x } ≠ ∞) :
     μ { x | ∃ᶠ n in atTop, p n x } = 0 := by
   simpa only [limsup_eq_iInf_iSup_of_nat, frequently_atTop, ← bex_def, setOf_forall,
-    setOf_exists] using measure_limsup_atTop_eq_zero hp
+    setOf_exists] using! measure_limsup_atTop_eq_zero hp
 
 /-- A version of the **Borel-Cantelli lemma**: if `sᵢ` is a sequence of sets such that
 `∑' i, μ sᵢ` is finite, then for almost all `x`, `x` does not belong to `sᵢ` for large `i`. -/
@@ -87,11 +87,9 @@ theorem ae_eventually_notMem {s : ℕ → Set α} (hs : (∑' i, μ (s i)) ≠ �
     ∀ᵐ x ∂μ, ∀ᶠ n in atTop, x ∉ s n :=
   measure_setOf_frequently_eq_zero hs
 
-@[deprecated (since := "2025-05-23")] alias ae_eventually_not_mem := ae_eventually_notMem
-
 theorem measure_liminf_cofinite_eq_zero [Infinite ι] {s : ι → Set α} (h : ∑' i, μ (s i) ≠ ∞) :
     μ (liminf s cofinite) = 0 := by
-  rw [← le_zero_iff, ← measure_limsup_cofinite_eq_zero h]
+  rw [← nonpos_iff_eq_zero, ← measure_limsup_cofinite_eq_zero h]
   exact measure_mono liminf_le_limsup
 
 theorem measure_liminf_atTop_eq_zero {s : ℕ → Set α} (h : (∑' i, μ (s i)) ≠ ∞) :

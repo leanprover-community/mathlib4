@@ -9,7 +9,6 @@ public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Order.Category.BoolAlg
 public import Mathlib.Order.Category.FinBddDistLat
 public import Mathlib.Order.Hom.CompleteLattice
-public import Mathlib.Tactic.ApplyFun
 public import Mathlib.Data.Set.Subsingleton
 
 /-!
@@ -58,13 +57,13 @@ instance : Inhabited FinBoolAlg :=
   ⟨of PUnit⟩
 
 instance largeCategory : LargeCategory FinBoolAlg :=
-  inferInstanceAs (Category (InducedCategory _ FinBoolAlg.toBoolAlg))
+  inferInstanceAs <| Category (InducedCategory _ toBoolAlg)
 
 instance concreteCategory : ConcreteCategory FinBoolAlg (BoundedLatticeHom · ·) :=
-  InducedCategory.concreteCategory FinBoolAlg.toBoolAlg
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toBoolAlg) _
 
 instance hasForgetToBoolAlg : HasForget₂ FinBoolAlg BoolAlg :=
-  InducedCategory.hasForget₂ FinBoolAlg.toBoolAlg
+  inferInstanceAs <| HasForget₂ (InducedCategory _ toBoolAlg) _
 
 instance hasForgetToFinBddDistLat : HasForget₂ FinBoolAlg FinBddDistLat where
   forget₂.obj X := .of X
@@ -116,9 +115,10 @@ theorem finBoolAlg_dual_comp_forget_to_finBddDistLat :
       forget₂ FinBoolAlg FinBddDistLat ⋙ FinBddDistLat.dual :=
   rfl
 
+attribute [local instance] FintypeCat.fintype in
 /-- The powerset functor. `Set` as a functor. -/
 @[simps]
-def fintypeToFinBoolAlgOp : FintypeCat ⥤ FinBoolAlgᵒᵖ where
+noncomputable def fintypeToFinBoolAlgOp : FintypeCat ⥤ FinBoolAlgᵒᵖ where
   obj X := op <| .of (Set X)
   map {X Y} f :=
     Quiver.Hom.op <| InducedCategory.homMk <|

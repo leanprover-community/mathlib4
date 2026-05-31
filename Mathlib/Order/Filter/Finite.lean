@@ -15,7 +15,7 @@ public import Mathlib.Order.Filter.Basic
 This file proves that finitely many conditions eventually hold if each of them eventually holds.
 -/
 
-@[expose] public section
+public section
 
 open Function Set Order
 open scoped symmDiff
@@ -226,6 +226,18 @@ theorem iInf_principal_finite {ι : Type w} {s : Set ι} (hs : s.Finite) (f : ι
     ⨅ i ∈ s, 𝓟 (f i) = 𝓟 (⋂ i ∈ s, f i) := by
   lift s to Finset ι using hs
   exact mod_cast iInf_principal_finset s f
+
+/-- If a filter has finitely many sets, then it is principal. -/
+theorem eq_principal_of_finite_sets (hf : f.sets.Finite) : ∃ s, f = 𝓟 s := by
+  use ⋂₀ f.sets
+  exact Filter.ext fun B ↦ ⟨sInter_subset_of_mem, mem_of_superset ((sInter_mem hf).2 (by simp))⟩
+
+/-- Any filter on a finite type is principal. -/
+theorem eq_principal_of_finite [Finite α] (f : Filter α) : ∃ s, f = 𝓟 s :=
+  eq_principal_of_finite_sets (finite_univ.powerset.subset (by simp))
+
+theorem principal_surjective [Finite α] : Surjective (𝓟 : Set α → Filter α) :=
+  fun f ↦ (eq_principal_of_finite f).imp fun _ ↦ .symm
 
 end Lattice
 

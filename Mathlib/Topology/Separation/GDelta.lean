@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.Compactness.Lindelof
 public import Mathlib.Topology.Compactness.SigmaCompact
-public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.Inseparable
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.GDelta.Basic
@@ -26,7 +25,7 @@ occasionally the literature swaps definitions for e.g. T₃ and regular.
 
 -/
 
-@[expose] public section
+public section
 
 open Function Set Filter Topology TopologicalSpace
 
@@ -38,7 +37,6 @@ section Separation
 
 theorem IsGδ.compl_singleton (x : X) [T1Space X] : IsGδ ({x}ᶜ : Set X) :=
   isOpen_compl_singleton.isGδ
-
 
 theorem Set.Countable.isGδ_compl {s : Set X} [T1Space X] (hs : s.Countable) : IsGδ sᶜ := by
   rw [← biUnion_of_singleton s, compl_iUnion₂]
@@ -58,7 +56,6 @@ protected theorem IsGδ.singleton [FirstCountableTopology X] [T1Space X] (x : X)
   rcases (nhds_basis_opens x).exists_antitone_subbasis with ⟨U, hU, h_basis⟩
   rw [← biInter_basis_nhds h_basis.toHasBasis]
   exact .biInter (to_countable _) fun n _ => (hU n).2.isGδ
-
 
 theorem Set.Finite.isGδ [FirstCountableTopology X] {s : Set X} [T1Space X] (hs : s.Finite) :
     IsGδ s :=

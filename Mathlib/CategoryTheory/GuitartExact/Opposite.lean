@@ -44,7 +44,7 @@ def functor :
       w.CostructuredArrowDownwards g.unop where
   obj f := CostructuredArrowDownwards.mk _ _ f.unop.right.left.unop
       f.unop.right.hom.unop f.unop.hom.left.unop
-      (Quiver.Hom.op_inj (by simpa using CostructuredArrow.w f.unop.hom))
+      (Quiver.Hom.op_inj (by simpa using! CostructuredArrow.w f.unop.hom))
   map {f f'} φ :=
     CostructuredArrow.homMk
       (StructuredArrow.homMk (φ.unop.right.left.unop)
@@ -71,6 +71,7 @@ def inverse :
 
 end structuredArrowRightwardsOpEquivalence
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `w : TwoSquare T L R B`, and `g : B.op.obj X₃ ⟶ R.op.obj X₂`, this is
 the obvious equivalence of categories between
 `(w.op.StructuredArrowRightwards g)ᵒᵖ` and `w.CostructuredArrowDownwards g.unop`. -/
@@ -92,6 +93,8 @@ instance [w.GuitartExact] : w.op.GuitartExact := by
     isConnected_iff_of_equivalence (w.structuredArrowRightwardsOpEquivalence g)]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma guitartExact_op_iff : w.op.GuitartExact ↔ w.GuitartExact := by
   constructor
   · intro
@@ -107,6 +110,11 @@ instance guitartExact_id' (F : C₁ ⥤ C₂) :
     GuitartExact (TwoSquare.mk F (𝟭 C₁) (𝟭 C₂) F (𝟙 F)) := by
   rw [← guitartExact_op_iff]
   apply guitartExact_id
+
+instance guitartExact_of_isEquivalence_of_isIso'
+    [T.IsEquivalence] [B.IsEquivalence] [IsIso w.natTrans] : GuitartExact w := by
+  rw [← guitartExact_op_iff]
+  infer_instance
 
 end TwoSquare
 

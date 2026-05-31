@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Group.Subgroup.Lattice
 
 /-! # Connection between `Subgroup.closure` and `Finsupp.prod` -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 

@@ -15,7 +15,7 @@ We give basic facts about the `NeZero n` typeclass.
 
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [Zero R]
 

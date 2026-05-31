@@ -76,6 +76,7 @@ variable [W.IsCompatibleWithShift A]
 /-- When `L : C ⥤ D` is a localization functor with respect to a morphism property `W`
 that is compatible with the shift by a monoid `A` on `C`, this is the induced
 shift on the category `D`. -/
+@[implicit_reducible]
 noncomputable def HasShift.localized : HasShift D A :=
   have := Localization.full_whiskeringLeft L W D
   have := Localization.faithful_whiskeringLeft L W D
@@ -85,7 +86,7 @@ noncomputable def HasShift.localized : HasShift D A :=
     (fun _ => Localization.fac _ _ _)
 
 /-- The localization functor `L : C ⥤ D` is compatible with the shift. -/
-@[nolint unusedHavesSuffices]
+@[nolint unusedHavesSuffices, implicit_reducible]
 noncomputable def Functor.CommShift.localized :
     @Functor.CommShift _ _ _ _ L A _ _ (HasShift.localized L W A) :=
   have := Localization.full_whiskeringLeft L W D
@@ -147,6 +148,7 @@ noncomputable def iso (a : A) :
         F.commShiftIso a ≪≫
         isoWhiskerRight (Lifting.iso L W F F').symm _ ≪≫ Functor.associator _ _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma iso_hom_app (a : A) (X : C) :
     (commShiftOfLocalization.iso L W F F' a).hom.app (L.obj X) =
@@ -156,6 +158,7 @@ lemma iso_hom_app (a : A) (X : C) :
           (shiftFunctor E a).map ((Lifting.iso L W F F').inv.app X) := by
   simp [commShiftOfLocalization.iso]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma iso_inv_app (a : A) (X : C) :
     (commShiftOfLocalization.iso L W F F' a).inv.app (L.obj X) =
@@ -167,9 +170,12 @@ lemma iso_inv_app (a : A) (X : C) :
 
 end commShiftOfLocalization
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- In the context of localization of categories, if a functor
 is induced by a functor which commutes with the shift, then
 this functor commutes with the shift. -/
+@[implicit_reducible]
 noncomputable def commShiftOfLocalization : F'.CommShift A where
   commShiftIso := commShiftOfLocalization.iso L W F F'
   commShiftIso_zero := by
@@ -230,6 +236,8 @@ lemma commShiftOfLocalization_iso_inv_app (a : A) (X : C) :
 
 end Functor
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 instance NatTrans.commShift_iso_hom_of_localization :
     letI := Functor.commShiftOfLocalization L W A F F'
     NatTrans.CommShift (Lifting.iso L W F F').hom A := by
@@ -267,10 +275,12 @@ variable (M) in
 `e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G` is an isomorphism, `Φ` is a localizer morphism and
 `L₁` is a localization functor. We assume that all categories involved
 are equipped with shifts and that `L₁`, `L₂` and `Φ.functor` commute to them. -/
+@[implicit_reducible]
 noncomputable def commShift : G.CommShift M := by
   letI : Localization.Lifting L₁ W₁ (Φ.functor ⋙ L₂) G := ⟨e.symm⟩
   exact Functor.commShiftOfLocalization L₁ W₁ M (Φ.functor ⋙ L₂) G
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma commShift_iso_hom_app (m : M) (X : C₁) :
     letI := Φ.commShift M L₁ L₂ G e
@@ -281,6 +291,7 @@ lemma commShift_iso_hom_app (m : M) (X : C₁) :
   simp [Functor.commShiftOfLocalization_iso_hom_app,
     Functor.commShiftIso_comp_hom_app]
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma commShift_iso_inv_app (m : M) (X : C₁) :
     letI := Φ.commShift M L₁ L₂ G e
@@ -291,6 +302,8 @@ lemma commShift_iso_inv_app (m : M) (X : C₁) :
   simp [Functor.commShiftOfLocalization_iso_inv_app,
     Functor.commShiftIso_comp_inv_app]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma natTransCommShift_hom :
     letI := Φ.commShift M L₁ L₂ G e
     NatTrans.CommShift e.hom M := by

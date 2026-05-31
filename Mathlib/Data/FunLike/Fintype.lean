@@ -41,6 +41,7 @@ This is not an instance because specific `DFunLike` types might have a better-su
 
 See also `DFunLike.finite`.
 -/
+@[implicit_reducible]
 noncomputable def DFunLike.fintype [DecidableEq α] [Fintype α] [∀ i, Fintype (β i)] : Fintype F :=
   Fintype.ofInjective _ DFunLike.coe_injective
 
@@ -49,6 +50,7 @@ noncomputable def DFunLike.fintype [DecidableEq α] [Fintype α] [∀ i, Fintype
 Non-dependent version of `DFunLike.fintype` that might be easier to infer.
 This is not an instance because specific `FunLike` types might have a better-suited definition.
 -/
+@[implicit_reducible]
 noncomputable def FunLike.fintype [DecidableEq α] [Fintype α] [Fintype γ] : Fintype G :=
   DFunLike.fintype G
 

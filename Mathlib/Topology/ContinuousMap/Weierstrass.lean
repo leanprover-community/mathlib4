@@ -22,7 +22,7 @@ and then, by precomposing with suitable affine functions,
 `polynomialFunctions_closure_eq_top : (polynomialFunctions (Set.Icc a b)).topologicalClosure = ⊤`
 -/
 
-@[expose] public section
+public section
 
 
 open ContinuousMap Filter

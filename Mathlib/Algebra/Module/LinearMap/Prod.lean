@@ -19,7 +19,7 @@ linear algebra, vector space, module
 
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} {M : Type*} [Semiring R]
 

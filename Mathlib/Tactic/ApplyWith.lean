@@ -8,6 +8,7 @@ module
 public import Mathlib.Init
 public meta import Lean.Elab.Eval
 public meta import Lean.Elab.Tactic.ElabTerm
+public meta import Lean.Elab.ConfigEval
 
 /-!
 # The `applyWith` tactic
@@ -18,14 +19,31 @@ The `applyWith` tactic is like `apply`, but allows passing a custom configuratio
 public meta section
 
 namespace Mathlib.Tactic
-open Lean Meta Elab Tactic Term
+open Lean Parser Meta Elab Tactic Term
+
+/-- A configuration with at least one configuration option.
+
+In comparison, `optConfig` allows zero or more options.
+-/
+syntax manyConfig := (colGt Tactic.configItem)+
+
+/-- Elaborator for the configuration in `apply (config := cfg)` syntax. -/
+declare_config_elab elabApplyConfig ApplyConfig
 
 /--
-`apply (config := cfg) e` is like `apply e` but allows you to provide a configuration
-`cfg : ApplyConfig` to pass to the underlying `apply` operation.
+* `apply (config := cfg) e` allows for additional configuration (see `Lean.Meta.ApplyConfig`):
+  * `newGoals` controls which new goals are added by `apply`, in which order.
+  * `-synthAssignedInstances` will not synthesize instance implicit arguments if they have been
+    assigned by `isDefEq`.
+  * `+allowSynthFailures` will create new goals when instance synthesis fails, rather than erroring.
+  * `+approx` enables `isDefEq` approximations (see `Lean.Meta.approxDefEq`).
 -/
-elab (name := applyWith) "apply" " (" &"config" " := " cfg:term ") " e:term : tactic => do
-  let cfg ← unsafe evalTerm ApplyConfig (mkConst ``ApplyConfig) cfg
+tactic_extension Lean.Parser.Tactic.apply
+
+@[tactic_alt Lean.Parser.Tactic.apply]
+-- We have to use `manyConfig` instead of `optConfig` to avoid ambiguous parses.
+elab (name := applyWith) "apply" cfg:manyConfig ppSpace e:term : tactic => do
+  let cfg ← elabApplyConfig cfg
   evalApplyLikeTactic (·.apply · cfg) e
 
 end Mathlib.Tactic

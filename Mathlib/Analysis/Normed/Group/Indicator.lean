@@ -6,7 +6,6 @@ Authors: Zhouhang Zhou, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Order.Group.Indicator
-public import Mathlib.Algebra.Order.Pi
 public import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
@@ -18,7 +17,7 @@ This file contains a few simple lemmas about `Set.indicator`, `norm` and `enorm`
 indicator, norm
 -/
 
-@[expose] public section
+public section
 
 open Set
 
@@ -37,7 +36,7 @@ theorem enorm_indicator_le_of_subset (h : s ⊆ t) (f : α → ε) (a : α) :
   grw [h]
 
 theorem indicator_enorm_le_enorm_self : indicator s (fun a => ‖f a‖ₑ) a ≤ ‖f a‖ₑ :=
-  indicator_le_self' (fun _ _ ↦ zero_le _) a
+  indicator_le_self' (fun _ _ ↦ zero_le) a
 
 theorem enorm_indicator_le_enorm_self : ‖indicator s f a‖ₑ ≤ ‖f a‖ₑ := by
   rw [enorm_indicator_eq_indicator_enorm]

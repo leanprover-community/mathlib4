@@ -29,7 +29,7 @@ Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noe
 
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter Pointwise

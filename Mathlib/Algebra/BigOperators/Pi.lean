@@ -11,7 +11,6 @@ public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Algebra.Ring.Pi
-public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Fintype.Basic
 
 /-!
@@ -72,7 +71,7 @@ theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [N
 /-- Decomposing `x : ι → R` as a sum along the canonical basis `Pi.single i 1` for `i : ι`. -/
 theorem pi_eq_sum_univ' {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [NonAssocSemiring R]
     (x : ι → R) : x = ∑ i, (x i) • Pi.single (M := fun _ ↦ R) i 1 := by
-  convert pi_eq_sum_univ x
+  convert! pi_eq_sum_univ x
   aesop
 
 section CommSemiring
@@ -175,7 +174,7 @@ def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → 
   invFun φ := ∏ (i : ι), (φ i).comp (Pi.evalMonoidHom M i)
   left_inv φ := by
     ext
-    simp only [MonoidHom.finset_prod_apply, MonoidHom.coe_comp, Function.comp_apply,
+    simp only [MonoidHom.finsetProd_apply, MonoidHom.coe_comp, Function.comp_apply,
       evalMonoidHom_apply, MonoidHom.mulSingle_apply, ← map_prod]
     refine congrArg _ <| funext fun _ ↦ ?_
     rw [Fintype.prod_apply]
@@ -183,7 +182,7 @@ def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → 
   right_inv φ := by
     ext i m
     simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.mulSingle_apply,
-      MonoidHom.finset_prod_apply, evalMonoidHom_apply, ]
+      MonoidHom.finsetProd_apply, evalMonoidHom_apply, ]
     let φ' i : M i → M' := ⇑(φ i)
     conv =>
       enter [1, 2, j]
@@ -228,6 +227,6 @@ theorem eqOn_finsetProd {ι α β : Type*} [CommMonoid α]
 theorem eqOn_fun_finsetProd {ι α β : Type*} [CommMonoid α]
     {s : Set β} {f f' : ι → β → α} (h : ∀ (i : ι), Set.EqOn (f i) (f' i) s) (v : Finset ι) :
     Set.EqOn (fun b ↦ ∏ i ∈ v, f i b) (fun b ↦ ∏ i ∈ v, f' i b) s := by
-  convert eqOn_finsetProd h v <;> simp
+  convert! eqOn_finsetProd h v <;> simp
 
 end EqOn

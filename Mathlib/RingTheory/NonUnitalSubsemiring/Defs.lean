@@ -75,6 +75,16 @@ instance (priority := 75) toNonUnitalNonAssocSemiring :
   Subtype.coe_injective.nonUnitalNonAssocSemiring Subtype.val rfl (by simp) (fun _ _ => rfl)
     fun _ _ => rfl
 
+/- Prefer subclasses of `NonUnitalNonAssocCommSemiring` over subclasses of
+`NonUnitalSubsemiringClass`. -/
+/-- A non-unital subsemiring of a `NonUnitalNonAssocCommSemiring` inherits a
+`NonUnitalNonAssocCommSemiring` structure -/
+instance (priority := 75) toNonUnitalNonAssocCommSemiring {R} [NonUnitalNonAssocCommSemiring R]
+    [SetLike S R] [NonUnitalSubsemiringClass S R] :
+    NonUnitalNonAssocCommSemiring s := fast_instance%
+  Subtype.coe_injective.nonUnitalNonAssocCommSemiring Subtype.val rfl (by simp) (fun _ _ => rfl)
+    fun _ _ => rfl
+
 instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
   Subtype.coe_injective.noZeroDivisors Subtype.val rfl fun _ _ => rfl
 
@@ -123,9 +133,22 @@ add_decl_doc NonUnitalSubsemiring.toAddSubmonoid
 
 namespace NonUnitalSubsemiring
 
+lemma toAddSubmonoid_injective :
+    (toAddSubmonoid : NonUnitalSubsemiring R → AddSubmonoid R).Injective :=
+  fun ⟨s, hs⟩ t ↦ by congr!
+
+@[simp] lemma toAddSubmonoid_inj {s t : NonUnitalSubsemiring R} :
+    s.toAddSubmonoid = t.toAddSubmonoid ↔ s = t := toAddSubmonoid_injective.eq_iff
+
 instance : SetLike (NonUnitalSubsemiring R) R where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+  coe_injective' := SetLike.coe_injective.comp toAddSubmonoid_injective
+
+lemma toSubsemigroup_injective :
+    Function.Injective (toSubsemigroup : NonUnitalSubsemiring R → Subsemigroup R)
+  | _, _, h => SetLike.ext (SetLike.ext_iff.mp h :)
+
+instance : PartialOrder (NonUnitalSubsemiring R) := .ofSetLike (NonUnitalSubsemiring R) R
 
 /-- The actual `NonUnitalSubsemiring` obtained from an element of a `NonUnitalSubsemiringClass`. -/
 @[simps]
@@ -172,14 +195,6 @@ theorem coe_copy (S : NonUnitalSubsemiring R) (s : Set R) (hs : s = ↑S) :
 
 theorem copy_eq (S : NonUnitalSubsemiring R) (s : Set R) (hs : s = ↑S) : S.copy s hs = S :=
   SetLike.coe_injective hs
-
-theorem toSubsemigroup_injective :
-    Function.Injective (toSubsemigroup : NonUnitalSubsemiring R → Subsemigroup R)
-  | _, _, h => ext (SetLike.ext_iff.mp h :)
-
-theorem toAddSubmonoid_injective :
-    Function.Injective (toAddSubmonoid : NonUnitalSubsemiring R → AddSubmonoid R)
-  | _, _, h => ext (SetLike.ext_iff.mp h :)
 
 /-- Construct a `NonUnitalSubsemiring R` from a set `s`, a subsemigroup `sg`, and an additive
 submonoid `sa` such that `x ∈ s ↔ x ∈ sg ↔ x ∈ sa`. -/
@@ -260,17 +275,13 @@ theorem mem_top (x : R) : x ∈ (⊤ : NonUnitalSubsemiring R) :=
 theorem coe_top : ((⊤ : NonUnitalSubsemiring R) : Set R) = Set.univ :=
   rfl
 
+@[simp] lemma toAddSubmonoid_top : (⊤ : NonUnitalSubsemiring R).toAddSubmonoid = ⊤ := rfl
+
+@[simp]
+lemma toAddSubmonoid_eq_top {S : NonUnitalSubsemiring R} : S.toAddSubmonoid = ⊤ ↔ S = ⊤ := by
+  simp [← SetLike.coe_set_eq]
+
 end NonUnitalSubsemiring
-
-namespace NonUnitalRingHom
-
-open NonUnitalSubsemiring
-
-variable [NonUnitalNonAssocSemiring S]
-variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
-variable (f : F)
-
-end NonUnitalRingHom
 
 namespace NonUnitalSubsemiring
 

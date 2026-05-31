@@ -14,7 +14,7 @@ This adapts Pigeonhole-like results from `Mathlib.Data.Fintype.Card` to the sett
 has the type `f : Fin m → Fin n`.
 -/
 
-@[expose] public section
+public section
 
 namespace Fin
 

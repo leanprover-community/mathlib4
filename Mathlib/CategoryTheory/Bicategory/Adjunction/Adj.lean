@@ -116,7 +116,7 @@ instance : Category (a ⟶ b) where
 /-- Constructor for isomorphisms between 1-morphisms in the bicategory `Adj B`. -/
 @[simps]
 def iso₂Mk {α β : a ⟶ b} (el : α.l ≅ β.l) (er : β.r ≅ α.r)
-    (h : conjugateEquiv β.adj α.adj el.hom = er.hom) :
+    (h : conjugateEquiv β.adj α.adj el.hom = er.hom := by cat_disch) :
     α ≅ β where
   hom :=
     { τl := el.hom
@@ -191,7 +191,7 @@ def forget₁ : Adj B ⥤ᵖ B where
 -- TODO: define `forget₂` which sends an adjunction to its right adjoint functor
 
 /-- Given an isomorphism between two 1-morphisms in `Adj B`, this is the
-underlying isomorphisms between the left adjoints. -/
+underlying isomorphism between the left adjoints. -/
 @[simps]
 def lIso {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) : adj₁.l ≅ adj₂.l where
   hom := e.hom.τl
@@ -200,7 +200,7 @@ def lIso {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) : adj�
   inv_hom_id := by rw [← comp_τl, e.inv_hom_id, id_τl]
 
 /-- Given an isomorphism between two 1-morphisms in `Adj B`, this is the
-underlying isomorphisms between the right adjoints. -/
+underlying isomorphism between the right adjoints. -/
 @[simps]
 def rIso {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) : adj₁.r ≅ adj₂.r where
   hom := e.inv.τr

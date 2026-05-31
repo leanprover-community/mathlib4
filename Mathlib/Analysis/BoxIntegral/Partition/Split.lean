@@ -194,8 +194,6 @@ theorem split_of_notMem_Ioo (h : x ∉ Ioo (I.lower i) (I.upper i)) : split I i 
   · rwa [eq_comm, Box.splitUpper_eq_self]
   · rwa [eq_comm, Box.splitLower_eq_self]
 
-@[deprecated (since := "2025-05-23")] alias split_of_not_mem_Ioo := split_of_notMem_Ioo
-
 theorem coe_eq_of_mem_split_of_mem_le {y : ι → ℝ} (h₁ : J ∈ split I i x) (h₂ : y ∈ J)
     (h₃ : y i ≤ x) : (J : Set (ι → ℝ)) = ↑I ∩ { y | y i ≤ x } := by
   refine (mem_split_iff'.1 h₁).resolve_right fun H => ?_

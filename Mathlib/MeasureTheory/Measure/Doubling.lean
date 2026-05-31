@@ -19,9 +19,9 @@ This file records basic facts about uniformly locally doubling measures.
 ## Main definitions
 
   * `IsUnifLocDoublingMeasure`: the definition of a uniformly locally doubling measure (as a
-  typeclass).
+    typeclass).
   * `IsUnifLocDoublingMeasure.doublingConstant`: a function yielding the doubling constant `C`
-  appearing in the definition of a uniformly locally doubling measure.
+    appearing in the definition of a uniformly locally doubling measure.
 -/
 
 @[expose] public section
@@ -106,7 +106,7 @@ theorem eventually_measure_mul_le_scalingConstantOf_mul (K : ℝ) :
   refine ⟨R, Rpos, fun x t r ht hr => ?_⟩
   rcases lt_trichotomy r 0 with (rneg | rfl | rpos)
   · have : t * r < 0 := mul_neg_of_pos_of_neg ht.1 rneg
-    simp only [closedBall_eq_empty.2 this, measure_empty, zero_le']
+    simp only [closedBall_eq_empty.2 this, measure_empty, zero_le]
   · simp only [mul_zero]
     refine le_mul_of_one_le_of_le ?_ le_rfl
     apply ENNReal.one_le_coe_iff.2 (le_max_right _ _)
@@ -123,7 +123,7 @@ theorem eventually_measure_le_scaling_constant_mul (K : ℝ) :
 theorem eventually_measure_le_scaling_constant_mul' (K : ℝ) (hK : 0 < K) :
     ∀ᶠ r in 𝓝[>] 0, ∀ x,
       μ (closedBall x r) ≤ scalingConstantOf μ K⁻¹ * μ (closedBall x (K * r)) := by
-  convert eventually_nhdsGT_zero_mul_left hK (eventually_measure_le_scaling_constant_mul μ K⁻¹)
+  convert! eventually_nhdsGT_zero_mul_left hK (eventually_measure_le_scaling_constant_mul μ K⁻¹)
   simp [inv_mul_cancel_left₀ hK.ne']
 
 /-- A scale below which the doubling measure `μ` satisfies good rescaling properties when one

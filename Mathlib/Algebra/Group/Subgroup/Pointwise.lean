@@ -35,8 +35,7 @@ Where possible, try to keep them in sync.
 assert_not_exists GroupWithZero
 
 open Set
-
-open Pointwise
+open scoped Pointwise
 
 variable {α G A S : Type*}
 
@@ -216,6 +215,14 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Subgroup G) {C : ∀ x, (x ∈ 
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
     exact ⟨_, hmul _ _ _ _ Cx Cy⟩
 
+@[to_additive (attr := simp)]
+theorem mul_subset {t : Set G} {H : Subgroup G} (hs : s ⊆ H) (ht : t ⊆ H) : s * t ⊆ H :=
+  Submonoid.mul_subset hs ht
+
+@[to_additive (attr := simp)]
+lemma pow_subset {H : Subgroup G} {n : ℕ} (hs : s ⊆ H) : s ^ n ⊆ H := by
+  induction n <;> simp [pow_succ, *]
+
 @[to_additive]
 theorem closure_mul_le (S T : Set G) : closure (S * T) ≤ closure S ⊔ closure T :=
   sInf_le fun _x ⟨_s, hs, _t, ht, hx⟩ => hx ▸
@@ -223,19 +230,16 @@ theorem closure_mul_le (S T : Set G) : closure (S * T) ≤ closure S ⊔ closure
       (SetLike.le_def.mp le_sup_right <| subset_closure ht)
 
 @[to_additive]
-lemma closure_pow_le : ∀ {n}, n ≠ 0 → closure (s ^ n) ≤ closure s
-  | 1, _ => by simp
-  | n + 2, _ =>
-    calc
-      closure (s ^ (n + 2))
-      _ = closure (s ^ (n + 1) * s) := by rw [pow_succ]
-      _ ≤ closure (s ^ (n + 1)) ⊔ closure s := closure_mul_le ..
-      _ ≤ closure s ⊔ closure s := by gcongr ?_ ⊔ _; exact closure_pow_le n.succ_ne_zero
-      _ = closure s := sup_idem _
+lemma closure_pow_le {n : ℕ} : closure (s ^ n) ≤ closure s := by simp
+
+@[to_additive]
+lemma closure_pow_anti {m n : ℕ} (hmn : m ∣ n) : closure (s ^ n) ≤ closure (s ^ m) := by
+  obtain ⟨k, rfl⟩ := hmn
+  simp [pow_mul]
 
 @[to_additive]
 lemma closure_pow {n : ℕ} (hs : 1 ∈ s) (hn : n ≠ 0) : closure (s ^ n) = closure s :=
-  (closure_pow_le hn).antisymm <| by gcongr; exact subset_pow hs hn
+  closure_pow_le.antisymm <| by grw [← subset_pow hs hn]
 
 @[to_additive]
 theorem sup_eq_closure_mul (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) * (K : Set G)) :=
@@ -245,7 +249,7 @@ theorem sup_eq_closure_mul (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) *
     ((closure_mul_le _ _).trans <| by rw [closure_eq, closure_eq])
 
 @[to_additive]
-theorem set_mul_normalizer_comm (S : Set G) (N : Subgroup G) (hLE : S ⊆ N.normalizer) :
+theorem set_mul_normalizer_comm (S : Set G) (N : Subgroup G) (hLE : S ⊆ normalizer (N : Set G)) :
     S * N = N * S := by
   rw [← iUnion_mul_left_image, ← iUnion_mul_right_image]
   simp only [image_mul_left, image_mul_right, Set.preimage]
@@ -260,7 +264,7 @@ theorem set_mul_normal_comm (S : Set G) (N : Subgroup G) [hN : N.Normal] :
 when `H` is a subgroup of the normalizer of `N` in `G`. -/
 @[to_additive /-- The carrier of `H ⊔ N` is just `↑H + ↑N` (pointwise set addition)
 when `H` is a subgroup of the normalizer of `N` in `G`. -/]
-theorem coe_mul_of_left_le_normalizer_right (H N : Subgroup G) (hLE : H ≤ N.normalizer) :
+theorem coe_mul_of_left_le_normalizer_right (H N : Subgroup G) (hLE : H ≤ normalizer N) :
     (↑(H ⊔ N) : Set G) = H * N := by
   rw [sup_eq_closure_mul]
   refine Set.Subset.antisymm (fun x hx => ?_) subset_closure
@@ -282,7 +286,7 @@ theorem coe_mul_of_left_le_normalizer_right (H N : Subgroup G) (hLE : H ≤ N.no
 `H` is a subgroup of the normalizer of `N` in `G`. -/
 @[to_additive /-- The carrier of `N ⊔ H` is just `↑N + ↑H` (pointwise set addition)
 when `H` is a subgroup of the normalizer of `N` in `G`. -/]
-theorem coe_mul_of_right_le_normalizer_left (N H : Subgroup G) (hLE : H ≤ N.normalizer) :
+theorem coe_mul_of_right_le_normalizer_left (N H : Subgroup G) (hLE : H ≤ normalizer N) :
     (↑(N ⊔ H) : Set G) = N * H := by
   rw [← set_mul_normalizer_comm _ _ hLE, sup_comm, coe_mul_of_left_le_normalizer_right _ _ hLE]
 
@@ -327,6 +331,36 @@ theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
   exact mul_mem hyz (inv_mem (h hz))
 
 @[to_additive]
+lemma normalizer_inf_normalizer_le_normalizer_sup (H K : Subgroup G) :
+    normalizer H ⊓ normalizer K ≤ normalizer ((H ⊔ K : Subgroup G) : Set G) := by
+  intro g hg
+  simp_rw [mem_inf, mem_normalizer_iff_map_conj_eq, map_sup, hg.1, hg.2] at hg ⊢
+
+@[to_additive]
+lemma conj_mem_sup_of_mem_inf_normalizer_of_mem_inf
+    {H K : Subgroup G} {s : G} (hs : s ∈ normalizer H ⊓ normalizer K) (g : G) (hg : g ∈ H ⊔ K) :
+    s * g * s⁻¹ ∈ H ⊔ K :=
+  (normalizer_inf_normalizer_le_normalizer_sup H K hs g).mp hg
+
+@[to_additive]
+lemma normalizer_le_normalizer_sup_of_normalizer_le_left
+    {H K : Subgroup G} (hHnK : normalizer H ≤ normalizer (K : Set G)) :
+    normalizer H ≤ normalizer ((H ⊔ K : Subgroup G) : Set G) :=
+  (inf_of_le_left hHnK).symm.trans_le (H.normalizer_inf_normalizer_le_normalizer_sup K)
+
+@[to_additive]
+lemma normalizer_le_normalizer_sup_of_normalizer_le_right {H K : Subgroup G}
+    (hHnK : normalizer H ≤ normalizer (K : Set G)) :
+    normalizer H ≤ normalizer ((K ⊔ H : Subgroup G) : Set G) := by
+  rw [sup_comm]
+  exact normalizer_le_normalizer_sup_of_normalizer_le_left hHnK
+
+@[to_additive]
+lemma normalizer_le_normalizer_sup_normal {H K : Subgroup G} [hK : K.Normal] :
+    normalizer H ≤ normalizer ((H ⊔ K : Subgroup G) : Set G) :=
+  normalizer_le_normalizer_sup_of_normalizer_le_left le_normalizer_of_normal
+
+@[to_additive]
 instance sup_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊔ K).Normal where
   conj_mem n hmem g := by
     rw [← SetLike.mem_coe, normal_mul] at hmem ⊢
@@ -346,13 +380,13 @@ theorem smul_mem_of_mem_closure_of_mem {X : Type*} [MulAction G X] {s : Set G} {
 
 @[to_additive]
 theorem smul_opposite_image_mul_preimage' (g : G) (h : Gᵐᵒᵖ) (s : Set G) :
-    (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) := by
+    (fun y => h • y) '' (g * ·) ⁻¹' s = (g * ·) ⁻¹' (fun y => h • y) '' s := by
   simp [preimage_preimage, mul_assoc]
 
 -- TODO: deprecate?
 @[to_additive]
 theorem smul_opposite_image_mul_preimage {H : Subgroup G} (g : G) (h : H.op) (s : Set G) :
-    (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) :=
+    (fun y => h • y) '' (g * ·) ⁻¹' s = (g * ·) ⁻¹' (fun y => h • y) '' s :=
   smul_opposite_image_mul_preimage' g h s
 
 /-! ### Pointwise action -/
@@ -365,11 +399,12 @@ variable [Monoid α] [MulDistribMulAction α G]
 /-- The action on a subgroup corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
+@[instance_reducible]
 protected def pointwiseMulAction : MulAction α (Subgroup G) where
   smul a S := S.map (MulDistribMulAction.toMonoidEnd _ _ a)
   one_smul S := by
     change S.map _ = S
-    simpa only [map_one] using S.map_id
+    simpa only [map_one] using! S.map_id
   mul_smul _ _ S :=
     (congr_arg (fun f : Monoid.End G => S.map f) (map_mul _ _ _)).trans
       (S.map_map _ _).symm
@@ -413,19 +448,6 @@ instance pointwise_isCentralScalar [MulDistribMulAction αᵐᵒᵖ G] [IsCentra
     IsCentralScalar α (Subgroup G) :=
   ⟨fun _ S => (congr_arg fun f => S.map f) <| MonoidHom.ext <| op_smul_eq_smul _⟩
 
-theorem conj_smul_le_of_le {P H : Subgroup G} (hP : P ≤ H) (h : H) :
-    MulAut.conj (h : G) • P ≤ H := by
-  rintro - ⟨g, hg, rfl⟩
-  exact H.mul_mem (H.mul_mem h.2 (hP hg)) (H.inv_mem h.2)
-
-theorem conj_smul_subgroupOf {P H : Subgroup G} (hP : P ≤ H) (h : H) :
-    MulAut.conj h • P.subgroupOf H = (MulAut.conj (h : G) • P).subgroupOf H := by
-  refine le_antisymm ?_ ?_
-  · rintro - ⟨g, hg, rfl⟩
-    exact ⟨g, hg, rfl⟩
-  · rintro p ⟨g, hg, hp⟩
-    exact ⟨⟨g, hP hg⟩, hg, Subtype.ext hp⟩
-
 end Monoid
 
 section Group
@@ -452,6 +474,26 @@ theorem pointwise_smul_subset_iff {a : α} {S T : Subgroup G} : a • S ≤ T �
 
 theorem subset_pointwise_smul_iff {a : α} {S T : Subgroup G} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
   subset_smul_set_iff
+
+theorem conj_smul_le_of_le {P H : Subgroup G} (hP : P ≤ H) (h : H) :
+    MulAut.conj (h : G) • P ≤ H := by
+  rintro - ⟨g, hg, rfl⟩
+  exact H.mul_mem (H.mul_mem h.2 (hP hg)) (H.inv_mem h.2)
+
+theorem conj_smul_eq_self_of_mem {H : Subgroup G} {h : G} (hh : h ∈ H) :
+    MulAut.conj h • H = H := by
+  refine le_antisymm ?_ ?_
+  · exact (conj_smul_le_of_le (le_refl H) ⟨h, hh⟩)
+  · rw [subset_pointwise_smul_iff, ← map_inv]
+    exact conj_smul_le_of_le (le_refl H) ⟨h⁻¹, H.inv_mem hh⟩
+
+theorem conj_smul_subgroupOf {P H : Subgroup G} (hP : P ≤ H) (h : H) :
+    MulAut.conj h • P.subgroupOf H = (MulAut.conj (h : G) • P).subgroupOf H := by
+  refine le_antisymm ?_ ?_
+  · rintro - ⟨g, hg, rfl⟩
+    exact ⟨g, hg, rfl⟩
+  · rintro p ⟨g, hg, hp⟩
+    exact ⟨⟨g, hP hg⟩, hg, Subtype.ext hp⟩
 
 @[simp]
 theorem smul_inf (a : α) (S T : Subgroup G) : a • (S ⊓ T) = a • S ⊓ a • T := by
@@ -491,11 +533,11 @@ theorem normalCore_eq_iInf_conjAct (H : Subgroup G) :
   ext g
   simp only [Subgroup.normalCore, Subgroup.mem_iInf, Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
   refine ⟨fun h x ↦ h x⁻¹, fun h x ↦ ?_⟩
-  simpa only [ConjAct.toConjAct_inv, inv_inv] using h x⁻¹
+  simpa only [ConjAct.toConjAct_inv, inv_inv] using! h x⁻¹
 
 lemma conjAct_pointwise_smul_iff {H : Subgroup G} {g : G} :
     ConjAct.toConjAct g • H = H ↔ g ∈ normalizer H := by
-  rw [← H.normalizer.inv_mem_iff]
+  rw [← (normalizer H : Subgroup G).inv_mem_iff]
   simp only [Subgroup.ext_iff, mem_pointwise_smul_iff_inv_smul_mem,
     ← ConjAct.toConjAct_inv, ConjAct.toConjAct_smul, mem_normalizer_iff, inv_inv, Iff.comm]
 

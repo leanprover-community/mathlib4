@@ -39,7 +39,7 @@ Moreover, we show the convergence of the continued fractions computations, that 
 convergence, fractions
 -/
 
-@[expose] public section
+public section
 
 variable {K : Type*} (v : K) [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
 
@@ -113,7 +113,7 @@ theorem of_convergence_epsilon :
       _ ≤ fib n := by exact_mod_cast le_fib_self <| le_trans (le_max_right N' 5) n_ge_N
       _ ≤ fib (n + 1) := by exact_mod_cast fib_le_fib_succ
       _ ≤ fib (n + 1) * fib (n + 1) := by exact_mod_cast (fib (n + 1)).le_mul_self
-      _ ≤ fib (n + 1) * fib (n + 2) := by gcongr; exact_mod_cast fib_le_fib_succ
+      _ ≤ fib (n + 1) * fib (n + 2) := by gcongr; lia
       _ ≤ B * nB := by gcongr
 
 theorem of_convergence [TopologicalSpace K] [OrderTopology K] :

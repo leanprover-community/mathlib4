@@ -18,7 +18,7 @@ to obtain a term of type `NNReal` (the nonnegative real numbers).
 The resulting nonnegative real number is denoted by `‖n‖₊`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Int
@@ -42,7 +42,7 @@ theorem toNat_add_toNat_neg_eq_nnnorm (n : ℤ) : ↑n.toNat + ↑(-n).toNat = �
 
 @[simp]
 theorem toNat_add_toNat_neg_eq_norm (n : ℤ) : ↑n.toNat + ↑(-n).toNat = ‖n‖ := by
-  simpa only [NNReal.coe_natCast, NNReal.coe_add] using
+  simpa only [NNReal.coe_natCast, NNReal.coe_add] using!
     congrArg NNReal.toReal (toNat_add_toNat_neg_eq_nnnorm n)
 
 end Int

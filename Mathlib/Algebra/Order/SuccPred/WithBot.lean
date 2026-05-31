@@ -13,7 +13,7 @@ public import Mathlib.Order.SuccPred.WithBot
 # Algebraic properties of the successor function on `WithBot`
 -/
 
-@[expose] public section
+public section
 
 namespace WithBot
 variable {α : Type*} [Preorder α] [OrderBot α] [AddMonoidWithOne α] [SuccAddOrder α]
@@ -21,10 +21,11 @@ variable {α : Type*} [Preorder α] [OrderBot α] [AddMonoidWithOne α] [SuccAdd
 lemma succ_natCast (n : ℕ) : succ (n : WithBot α) = n + 1 := by
   rw [← WithBot.coe_natCast, succ_coe, Order.succ_eq_add_one]
 
-@[simp] lemma succ_zero : succ (0 : WithBot α) = 1 := by simpa using succ_natCast 0
+@[simp] lemma succ_zero : succ (0 : WithBot α) = 1 := by simpa using succ_natCast (α := α) 0
 
 @[simp]
-lemma succ_one : succ (1 : WithBot α) = 2 := by simpa [one_add_one_eq_two] using succ_natCast 1
+lemma succ_one : succ (1 : WithBot α) = 2 := by
+  simpa [one_add_one_eq_two] using succ_natCast (α := α) 1
 
 @[simp]
 lemma succ_ofNat (n : ℕ) [n.AtLeastTwo] :

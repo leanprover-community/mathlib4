@@ -32,7 +32,7 @@ As corollaries, we get:
 * `ConcaveOn.exists_le_of_mem_convexHull`: Minimum principle for concave functions.
 -/
 
-@[expose] public section
+public section
 
 
 open Finset LinearMap Set Convex Pointwise
@@ -54,7 +54,7 @@ theorem ConvexOn.map_centerMass_le (hf : ConvexOn 𝕜 s f) (h₀ : ∀ i ∈ t,
     f (t.centerMass w p) ≤ t.centerMass w (f ∘ p) := by
   have hmem' : ∀ i ∈ t, (p i, (f ∘ p) i) ∈ { p : E × β | p.1 ∈ s ∧ f p.1 ≤ p.2 } := fun i hi =>
     ⟨hmem i hi, le_rfl⟩
-  convert (hf.convex_epigraph.centerMass_mem h₀ h₁ hmem').2 <;>
+  convert! (hf.convex_epigraph.centerMass_mem h₀ h₁ hmem').2 <;>
     simp only [centerMass, Function.comp, Prod.smul_fst, Prod.fst_sum, Prod.smul_snd, Prod.snd_sum]
 
 /-- Concave **Jensen's inequality**, `Finset.centerMass` version. -/
@@ -66,7 +66,7 @@ theorem ConcaveOn.le_map_centerMass (hf : ConcaveOn 𝕜 s f) (h₀ : ∀ i ∈ 
 /-- Convex **Jensen's inequality**, `Finset.sum` version. -/
 theorem ConvexOn.map_sum_le (hf : ConvexOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 ≤ w i) (h₁ : ∑ i ∈ t, w i = 1)
     (hmem : ∀ i ∈ t, p i ∈ s) : f (∑ i ∈ t, w i • p i) ≤ ∑ i ∈ t, w i • f (p i) := by
-  simpa only [centerMass, h₁, inv_one, one_smul] using
+  simpa only [centerMass, h₁, inv_one, one_smul] using!
     hf.map_centerMass_le h₀ (h₁.symm ▸ zero_lt_one) hmem
 
 /-- Concave **Jensen's inequality**, `Finset.sum` version. -/
@@ -82,9 +82,9 @@ lemma ConvexOn.map_add_sum_le (hf : ConvexOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 �
   let W j := Option.elim j v w
   let P j := Option.elim j q p
   have : f (∑ j ∈ insertNone t, W j • P j) ≤ ∑ j ∈ insertNone t, W j • f (P j) :=
-    hf.map_sum_le (forall_mem_insertNone.2 ⟨hv, h₀⟩) (by simpa using h₁)
+    hf.map_sum_le (forall_mem_insertNone.2 ⟨hv, h₀⟩) (by simpa using! h₁)
       (forall_mem_insertNone.2 ⟨hq, hmem⟩)
-  simpa using this
+  simpa using! this
 
 /-- Concave **Jensen's inequality** where an element plays a distinguished role. -/
 lemma ConcaveOn.map_add_sum_le (hf : ConcaveOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 ≤ w i)

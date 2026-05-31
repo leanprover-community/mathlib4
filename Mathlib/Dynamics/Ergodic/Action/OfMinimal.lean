@@ -30,7 +30,7 @@ if it is surjective and the preimages of `1` under iterations of `f` are dense i
 This theorem applies, e.g., to the map `z ↦ n • z` on the additive circle or a torus.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Filter Set Function
 open scoped Pointwise Topology
@@ -122,7 +122,7 @@ variable {G : Type*} [Group G] [TopologicalSpace G] [ContinuousInv G]
 theorem aeconst_of_dense_aestabilizer_smul (hsm : NullMeasurableSet s μ)
     (hd : Dense (MulAction.aestabilizer G μ s : Set G)) : EventuallyConst s (ae μ) :=
   aeconst_of_dense_setOf_preimage_smul_ae hsm <| (hd.preimage (isOpenMap_inv _)).mono fun g hg ↦ by
-    simpa only [preimage_smul] using hg
+    simpa only [preimage_smul] using! hg
 
 /-- If a monoid `M` continuously acts on an R₁ topological space `X`,
 `g` is an element of `M` such that its integer powers are dense in `M`,
@@ -212,11 +212,11 @@ variable {G : Type*} [Group G] [TopologicalSpace G]
 
 /-- Let `f : G →* G` be a group endomorphism of a topological group with second countable topology.
 If the preimages of `1` under the iterations of `f` are dense,
-then it is preergodic with respect to any finite inner regular left invariant measure. -/
+then it is pre-ergodic with respect to any finite inner regular left invariant measure. -/
 @[to_additive /-- Let `f : G →+ G` be an additive group endomorphism
 of a topological additive group with second countable topology.
 If the preimages of `0` under the iterations of `f` are dense,
-then it is preergodic with respect to any finite inner regular left invariant measure. -/]
+then it is pre-ergodic with respect to any finite inner regular left invariant measure. -/]
 theorem preErgodic_of_dense_iUnion_preimage_one
     {μ : Measure G} [IsFiniteMeasure μ] [μ.InnerRegular] [μ.IsMulLeftInvariant]
     (f : G →* G) (hf : Dense (⋃ n, f^[n] ⁻¹' 1)) : PreErgodic f μ := by

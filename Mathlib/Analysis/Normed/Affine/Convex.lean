@@ -20,7 +20,7 @@ We prove the following facts:
   polytope between a compact convex set and one of its neighborhoods.
 -/
 
-@[expose] public section
+public section
 
 variable {E P : Type*}
 

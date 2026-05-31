@@ -33,7 +33,7 @@ and we prove that functions sharing a common (local or global) continuity modulu
 equicontinuity, continuity modulus
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Topology Uniformity

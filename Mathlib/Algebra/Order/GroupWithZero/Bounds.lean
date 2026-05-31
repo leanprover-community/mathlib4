@@ -13,7 +13,7 @@ public import Mathlib.Order.Bounds.Image
 # Lemmas about `BddAbove`
 -/
 
-@[expose] public section
+public section
 
 open Set
 

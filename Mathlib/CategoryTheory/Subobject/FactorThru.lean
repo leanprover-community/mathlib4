@@ -92,6 +92,7 @@ theorem factors_of_factors_right {X Y Z : C} {P : Subobject Z} (f : X ⟶ Y) {g 
   obtain ⟨g, rfl⟩ := h
   exact ⟨f ≫ g, by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem factors_zero [HasZeroMorphisms C] {X Y : C} {P : Subobject Y} : P.Factors (0 : X ⟶ Y) :=
   (factors_iff _ _).mpr ⟨0, by simp⟩
 

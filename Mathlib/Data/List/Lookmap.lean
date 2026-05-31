@@ -7,12 +7,12 @@ module
 
 public import Batteries.Logic
 public import Batteries.Data.List.Basic
-public import Mathlib.Tactic.TypeStar
+public import Mathlib.Init
 import all Init.Data.Array.Basic
 
 /-! ### lookmap -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*}
 

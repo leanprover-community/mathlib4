@@ -17,7 +17,7 @@ This file combines the analysis and algebra libraries and shows that evaluation 
 is an analytic function.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 E A B : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [CommSemiring A] {z : E} {s : Set E}
@@ -32,7 +32,7 @@ theorem AnalyticWithinAt.aeval_polynomial (hf : AnalyticWithinAt 𝕜 f s z) (p 
   refine p.induction_on (fun k ↦ ?_) (fun p q hp hq ↦ ?_) fun p i hp ↦ ?_
   · simp_rw [aeval_C]; apply analyticWithinAt_const
   · simp_rw [aeval_add]; exact hp.add hq
-  · convert hp.mul hf
+  · convert! hp.mul hf
     simp_rw [pow_succ, aeval_mul, ← mul_assoc, aeval_X]
 
 theorem AnalyticAt.aeval_polynomial (hf : AnalyticAt 𝕜 f z) (p : A[X]) :

@@ -11,7 +11,7 @@ public import Mathlib.Data.Fintype.Sum
 # Finiteness of sum types
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*}
 

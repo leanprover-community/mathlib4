@@ -50,8 +50,6 @@ universe v u
 type. -/
 def OneTruncation₂ (S : SSet.Truncated 2) := S _⦋0⦌₂
 
-@[deprecated (since := "2025-11-01")] alias OneTruncation₂.Hom := Truncated.Edge
-
 namespace OneTruncation₂
 
 /-- A 2-truncated simplicial set `S` has an underlying refl quiver `SSet.OneTruncation₂ S`. -/
@@ -66,11 +64,6 @@ lemma hom_ext
     (h : f.edge = g.edge) : f = g :=
   Truncated.Edge.ext h
 
-@[deprecated "Use reflQuiver_id" (since := "2025-11-01")]
-lemma id_edge {S : SSet.Truncated 2} (x : OneTruncation₂ S) :
-    Truncated.Edge.edge (𝟙rq x) = S.map (σ₂ 0).op x := by
-  rfl
-
 /-- The prefunctor on refl quivers `OneTruncation₂` induced by a morphism
 of `2`-truncated simplicial sets. -/
 @[simps]
@@ -78,7 +71,7 @@ def map {S T : SSet.Truncated 2} (f : S ⟶ T) :
     OneTruncation₂ S ⥤rq OneTruncation₂ T where
   obj x := f.app _ x
   map e := e.map f
-  map_id x := by ext; simp [← FunctorToTypes.naturality, reflQuiver_id]
+  map_id x := by ext; simp [← NatTrans.naturality_apply, reflQuiver_id]
 
 end OneTruncation₂
 
@@ -136,11 +129,10 @@ lemma nerve_hom_ext {X : (SSet.Truncated 2)} {C : Type u} [Category.{u} C]
     obtain ⟨x₀, x₁, f, rfl⟩ := Truncated.Edge.exists_of_simplex f
     simpa using congr_arg Truncated.Edge.edge (ReflPrefunctor.congr_hom h f))
 
-@[deprecated (since := "2025-11-06")] alias _root_.CategoryTheory.toNerve₂.ext := nerve_hom_ext
-
 end
 end OneTruncation₂
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The refl quiver underlying a nerve is naturally isomorphic to the refl quiver underlying the
 category. -/
 @[simps! hom_app_obj hom_app_map inv_app_obj_obj inv_app_obj_map inv_app_map]
@@ -236,16 +228,6 @@ inductive HoRel₂ : HomRel (Cat.FreeRefl (OneTruncation₂ V)) where
         (Quiver.Hom.toPath e₀₁ ≫ Quiver.Hom.toPath e₁₂))
       ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map (Quiver.Hom.toPath e₀₂))
 
-@[deprecated "HoRel₂.of_compStruct" (since := "2025-11-06")]
-lemma HoRel₂.mk {x₀ x₁ x₂ : V _⦋0⦌₂} {e₀₁ : Truncated.Edge x₀ x₁}
-    {e₁₂ : Truncated.Edge x₁ x₂} {e₀₂ : Truncated.Edge x₀ x₂}
-    (h : Truncated.Edge.CompStruct e₀₁ e₁₂ e₀₂) :
-    HoRel₂ V
-      ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map
-        (Quiver.Hom.toPath e₀₁ ≫ Quiver.Hom.toPath e₁₂))
-      ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map (Quiver.Hom.toPath e₀₂)) :=
-  HoRel₂.of_compStruct h
-
 end OneTruncation₂
 
 namespace Truncated
@@ -316,7 +298,7 @@ lemma homMk_id (x : V _⦋0⦌₂) :
 lemma homMk_comp_homMk {x₀ x₁ x₂ : V _⦋0⦌₂} {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂}
     {e₀₂ : Edge x₀ x₂} (h : Edge.CompStruct e₀₁ e₁₂ e₀₂) :
     homMk e₀₁ ≫ homMk e₁₂ = homMk e₀₂ := by
-  simpa [homMk] using CategoryTheory.Quotient.sound _
+  simpa [homMk] using! CategoryTheory.Quotient.sound _
     (OneTruncation₂.HoRel₂.of_compStruct h)
 
 variable (V) in
@@ -381,7 +363,7 @@ def lift : V.HomotopyCategory ⥤ D :=
     (Cat.FreeRefl.lift' obj (fun f ↦ map f) map_id) (by
       rintro _ _ _ _ ⟨h⟩
       simp only [Functor.map_comp]
-      convert map_comp h <;> apply Cat.FreeRefl.lift'_map)
+      convert! map_comp h <;> apply Cat.FreeRefl.lift'_map)
 
 @[simp]
 lemma lift_obj_mk (x : V _⦋0⦌₂) : (lift obj map map_id map_comp).obj (mk x) = obj x := rfl

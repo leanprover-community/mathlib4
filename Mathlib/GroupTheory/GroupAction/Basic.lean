@@ -9,8 +9,7 @@ public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Action.Prod
 public import Mathlib.Algebra.Group.Subgroup.Map
-public import Mathlib.Algebra.Module.Defs
-public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Data.Finite.Sigma
 public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Data.Setoid.Basic
@@ -37,9 +36,8 @@ of `•` belong elsewhere.
 
 universe u v
 
-open Pointwise
-
-open Function
+open Function Module
+open scoped Pointwise
 
 namespace MulAction
 
@@ -105,7 +103,7 @@ end MulAction
 
 /-- `smul` by a `k : M` over a group is injective, if `k` is not a zero divisor.
 The general theory of such `k` is elaborated by `IsSMulRegular`.
-The typeclass that restricts all terms of `M` to have this property is `NoZeroSMulDivisors`. -/
+The typeclass that restricts all terms of `M` to have this property is `Module.IsTorsionFree`. -/
 theorem smul_cancel_of_non_zero_divisor {M G : Type*} [Monoid M] [AddGroup G]
     [DistribMulAction M G] (k : M) (h : ∀ x : G, k • x = 0 → x = 0) {a b : G} (h' : k • a = k • b) :
     a = b := by
@@ -163,7 +161,7 @@ lemma orbitRel_subgroupOf (H K : Subgroup G) :
   · rcases h with ⟨⟨gv, gp⟩, rfl⟩
     simp only
     refine mem_orbit _ (⟨gv, ?_⟩ : Subgroup.map K.subtype (H.subgroupOf K))
-    simpa using gp
+    simpa using! gp
   · rcases h with ⟨⟨gv, gp⟩, rfl⟩
     simp only
     simp only [Subgroup.subgroupOf_map_subtype, Subgroup.mem_inf] at gp
@@ -197,6 +195,7 @@ theorem pretransitive_iff_unique_quotient_of_nonempty [Nonempty α] :
 
 variable {G α}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance (x : orbitRel.Quotient G α) : IsPretransitive G x.orbit where
   exists_smul_eq := by
@@ -246,9 +245,10 @@ lemma _root_.IsCancelSMul.stabilizer_eq_bot [IsCancelSMul G α] (a : α) :
 @[to_additive]
 lemma _root_.isCancelSMul_iff_stabilizer_eq_bot :
     IsCancelSMul G α ↔ (∀ a : α, stabilizer G a = ⊥) := by
-  simp [isCancelSMul_iff_eq_one_of_smul_eq, Subgroup.eq_bot_iff_forall, forall_swap (α := G)]
+  simp [isCancelSMul_iff_eq_one_of_smul_eq, Subgroup.eq_bot_iff_forall, forall_comm (α := G)]
 
 /-- If the stabilizer of `a` is `S`, then the stabilizer of `g • a` is `gSg⁻¹`. -/
+@[to_additive /-- If the stabilizer of `a` is `S`, then the stabilizer of `g +ᵥ a` is `g+S-g`. -/]
 theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
     stabilizer G (g • a) = (stabilizer G a).map (MulAut.conj g).toMonoidHom := by
   ext h
@@ -258,40 +258,48 @@ theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
 variable {g h k : G} {a b c : α}
 
 /-- The natural group equivalence between the stabilizers of two elements in the same orbit. -/
+@[to_additive /-- The isomorphism between the stabilizers of two elements in the same orbit. -/]
 def stabilizerEquivStabilizer (hg : b = g • a) : stabilizer G a ≃* stabilizer G b :=
   ((MulAut.conj g).subgroupMap (stabilizer G a)).trans
     (MulEquiv.subgroupCongr (by
       rw [hg, stabilizer_smul_eq_stabilizer_map_conj g a, ← MulEquiv.toMonoidHom_eq_coe]))
 
+@[to_additive]
 theorem stabilizerEquivStabilizer_apply (hg : b = g • a) (x : stabilizer G a) :
     stabilizerEquivStabilizer hg x = MulAut.conj g x := by
   simp [stabilizerEquivStabilizer]
 
+@[to_additive]
 theorem stabilizerEquivStabilizer_symm_apply (hg : b = g • a) (x : stabilizer G b) :
     (stabilizerEquivStabilizer hg).symm x = MulAut.conj g⁻¹ x := by
   simp [stabilizerEquivStabilizer]
 
+@[to_additive]
 theorem stabilizerEquivStabilizer_trans (hg : b = g • a) (hh : c = h • b) (hk : c = k • a)
     (H : k = h * g) :
     (stabilizerEquivStabilizer hg).trans (stabilizerEquivStabilizer hh) =
       stabilizerEquivStabilizer hk := by
   ext; simp [stabilizerEquivStabilizer_apply, H]
 
+@[to_additive]
 theorem stabilizerEquivStabilizer_one :
     stabilizerEquivStabilizer (one_smul G a).symm = MulEquiv.refl (stabilizer G a) := by
   ext; simp [stabilizerEquivStabilizer_apply]
 
+@[to_additive]
 theorem stabilizerEquivStabilizer_symm (hg : b = g • a) :
     (stabilizerEquivStabilizer hg).symm =
       stabilizerEquivStabilizer (eq_inv_smul_iff.mpr hg.symm) := by
   ext x; simp [stabilizerEquivStabilizer]
 
+@[to_additive]
 theorem stabilizerEquivStabilizer_inv (hg : b = g⁻¹ • a) :
     stabilizerEquivStabilizer hg =
       (stabilizerEquivStabilizer (inv_smul_eq_iff.mp hg.symm)).symm := by
   ext; simp [stabilizerEquivStabilizer]
 
-/-- A bijection between the stabilizers of two elements in the same orbit. -/
+/-- A isomorphism between the stabilizers of two elements in the same orbit. -/
+@[to_additive /-- A isomorphism between the stabilizers of two elements in the same orbit. -/]
 noncomputable def stabilizerEquivStabilizerOfOrbitRel (h : orbitRel G α a b) :
     stabilizer G a ≃* stabilizer G b :=
   (stabilizerEquivStabilizer (Classical.choose_spec h).symm).symm
@@ -301,65 +309,11 @@ end Stabilizer
 end MulAction
 
 namespace AddAction
-variable {G α : Type*} [AddGroup G] [AddAction G α]
 
-variable {g h k : G} {a b c : α}
-/-- If the stabilizer of `x` is `S`, then the stabilizer of `g +ᵥ x` is `g + S + (-g)`. -/
-theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
-    stabilizer G (g +ᵥ a) = (stabilizer G a).map (AddAut.conj g).toMul.toAddMonoidHom := by
-  ext h
-  rw [mem_stabilizer_iff, ← vadd_left_cancel_iff (-g), vadd_vadd, vadd_vadd, vadd_vadd,
-    neg_add_cancel, zero_vadd, ← mem_stabilizer_iff, AddSubgroup.mem_map_equiv,
-    AddAut.conj_symm_apply]
-
-variable {g h k : G} {a b c : α}
-
-/-- The natural group equivalence between the stabilizers of two elements in the same orbit. -/
-def stabilizerEquivStabilizer (hg : b = g +ᵥ a) : stabilizer G a ≃+ stabilizer G b :=
-  AddEquiv.trans ((AddAut.conj g).toMul.addSubgroupMap _)
-    (AddEquiv.addSubgroupCongr (by
-      rw [hg, stabilizer_vadd_eq_stabilizer_map_conj g a, ← AddEquiv.toAddMonoidHom_eq_coe]))
-
-theorem stabilizerEquivStabilizer_apply (hg : b = g +ᵥ a) (x : stabilizer G a) :
-    stabilizerEquivStabilizer hg x = (AddAut.conj g).toMul x := by
-  simp [stabilizerEquivStabilizer]
-
-theorem stabilizerEquivStabilizer_symm_apply (hg : b = g +ᵥ b) (x : stabilizer G b) :
-    (stabilizerEquivStabilizer hg).symm x = (AddAut.conj (-g)).toMul x := by
-  simp [stabilizerEquivStabilizer]
-
-theorem stabilizerEquivStabilizer_trans
-    (hg : b = g +ᵥ a) (hh : c = h +ᵥ b) (hk : c = k +ᵥ a) (H : k = h + g) :
-    (stabilizerEquivStabilizer hg).trans (stabilizerEquivStabilizer hh)
-      = stabilizerEquivStabilizer hk := by
-  ext; simp [stabilizerEquivStabilizer_apply, H]
-
-theorem stabilizerEquivStabilizer_zero :
-    stabilizerEquivStabilizer (zero_vadd G a).symm = AddEquiv.refl (stabilizer G a) := by
-  ext; simp [stabilizerEquivStabilizer_apply]
-
-theorem stabilizerEquivStabilizer_symm (hg : b = g +ᵥ a) :
-    (stabilizerEquivStabilizer hg).symm =
-      stabilizerEquivStabilizer (eq_neg_vadd_iff.mpr hg.symm) := by
-  ext; simp [stabilizerEquivStabilizer]
-
-theorem stabilizerEquivStabilizer_neg (hg : b = -g +ᵥ a) :
-    stabilizerEquivStabilizer hg =
-      (stabilizerEquivStabilizer (neg_vadd_eq_iff.mp hg.symm)).symm := by
-  ext; simp [stabilizerEquivStabilizer]
-
-/-- A bijection between the stabilizers of two elements in the same orbit. -/
-noncomputable def stabilizerEquivStabilizerOfOrbitRel (h : orbitRel G α a b) :
-    stabilizer G a ≃+ stabilizer G b :=
-  (stabilizerEquivStabilizer (Classical.choose_spec h).symm).symm
+@[deprecated (since := "2026-05-26")] alias stabilizer_vadd_eq_stabilizer_map_conj :=
+  stabilizer_vadd_eq_stabilizer_map_addConj
 
 end AddAction
-
-attribute [to_additive existing] MulAction.stabilizerEquivStabilizer
-attribute [to_additive existing] MulAction.stabilizerEquivStabilizer_trans
-attribute [to_additive existing] MulAction.stabilizerEquivStabilizer_one
-attribute [to_additive existing] MulAction.stabilizerEquivStabilizer_inv
-attribute [to_additive existing] MulAction.stabilizerEquivStabilizerOfOrbitRel
 
 theorem Equiv.swap_mem_stabilizer {α : Type*} [DecidableEq α] {S : Set α} {a b : α} :
     Equiv.swap a b ∈ MulAction.stabilizer (Equiv.Perm α) S ↔ (a ∈ S ↔ b ∈ S) := by
@@ -394,8 +348,7 @@ theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
 end MulAction
 
 section
-
-variable (R M : Type*) [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
+variable (R M : Type*) [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [IsTorsionFree R M]
 
 variable {M} in
 lemma Module.stabilizer_units_eq_bot_of_ne_zero {x : M} (hx : x ≠ 0) :

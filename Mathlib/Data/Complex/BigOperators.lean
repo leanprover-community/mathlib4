@@ -12,7 +12,7 @@ public import Mathlib.Data.Complex.Basic
 # Finite sums and products of complex numbers
 -/
 
-@[expose] public section
+public section
 
 open Fintype
 open scoped BigOperators

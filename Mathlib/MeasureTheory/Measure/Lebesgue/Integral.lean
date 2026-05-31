@@ -11,7 +11,7 @@ public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-! # Properties of integration with respect to the Lebesgue measure -/
 
-@[expose] public section
+public section
 
 
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
@@ -29,7 +29,6 @@ theorem volume_regionBetween_eq_integral' [SigmaFinite μ] (f_int : IntegrableOn
   rw [volume_regionBetween_eq_lintegral f_int.aemeasurable g_int.aemeasurable hs,
     integral_congr_ae h, lintegral_congr_ae,
     lintegral_coe_eq_integral _ ((integrable_congr h).mp (g_int.sub f_int))]
-  dsimp only
   rfl
 
 /-- If two functions are integrable on a measurable set, and one function is less than
@@ -48,7 +47,7 @@ section SummableNormIcc
 open ContinuousMap
 
 /- The following lemma is a minor variation on `integrable_of_summable_norm_restrict` in
-`Mathlib/MeasureTheory/Integral/SetIntegral.lean`, but it is placed here because it needs to know
+`Mathlib/MeasureTheory/Integral/Bochner/Set.lean`, but it is placed here because it needs to know
 that `Icc a b` has volume `b - a`. -/
 /-- If the sequence with `n`-th term the sup norm of `fun x ↦ f (x + n)` on the interval `Icc 0 1`,
 for `n ∈ ℤ`, is summable, then `f` is integrable on `ℝ`. -/
@@ -117,6 +116,6 @@ theorem integral_comp_abs {f : ℝ → ℝ} :
         refine setIntegral_congr_fun measurableSet_Iic (fun _ hx => ?_)
         rw [abs_eq_neg_self.mpr (by exact hx)]
   · have : ¬ Integrable (fun x => f |x|) := by
-      contrapose! hf
+      contrapose hf
       exact hf.integrableOn
     rw [← eq, integral_undef hf, integral_undef this, mul_zero]

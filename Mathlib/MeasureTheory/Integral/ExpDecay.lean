@@ -19,7 +19,7 @@ for integrability:
   exists `b > 0` such that `f(x) = O(exp(-b x))` as `x → ∞`, then `f` is integrable on `(a, ∞)`.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

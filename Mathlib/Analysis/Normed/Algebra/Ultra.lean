@@ -14,7 +14,7 @@ public import Mathlib.Analysis.Normed.Module.Basic
 This file contains the proof that a normed division ring over an ultrametric field is ultrametric.
 -/
 
-@[expose] public section
+public section
 
 variable {K L : Type*} [NormedField K]
 

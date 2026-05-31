@@ -16,7 +16,7 @@ of another function, then the space is a probability space.
 
 -/
 
-@[expose] public section
+public section
 
 open Filter ProbabilityTheory
 

@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Group.FunctionSeries
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Tactic.Rify
+public import Mathlib.Tactic.Qify
 
 /-!
 # Representation of reals in positional system
@@ -19,7 +20,7 @@ representations of reals as sequences of digits in positional system.
 
 * `ofDigits`: takes a sequence of digits `(d₀, d₁, ...)` (as an `ℕ → Fin b`),
   and returns the real number `0.d₀d₁d₂...`.
-* `digits`: takes a real number in [0,1) and returns the sequence of its digits.
+* `digits`: takes a real number in $[0,1)$ and returns the sequence of its digits.
 
 ## Main Statements
 
@@ -55,7 +56,7 @@ theorem summable_ofDigitsTerm {b : ℕ} {digits : ℕ → Fin b} :
     Summable (ofDigitsTerm digits) := by
   refine Summable.of_nonneg_of_le (fun _ ↦ ofDigitsTerm_nonneg) (fun _ ↦ ofDigitsTerm_le) ?_
   obtain rfl | hb := (Nat.one_le_of_lt (b_pos digits)).eq_or_lt
-  · simpa using summable_zero
+  · simp
   simp_rw [pow_succ', mul_inv, ← inv_pow, ← mul_assoc]
   refine Summable.mul_left _ (summable_geometric_of_lt_one (by positivity) ?_)
   simp [inv_lt_one_iff₀, hb]
@@ -73,7 +74,7 @@ theorem ofDigits_le_one {b : ℕ} (digits : ℕ → Fin b) : ofDigits digits ≤
   obtain rfl | hb := (Nat.one_le_of_lt (b_pos digits)).eq_or_lt
   · simp [ofDigits, ofDigitsTerm]
   rify at hb
-  convert Summable.tsum_mono summable_ofDigitsTerm _ (fun _ ↦ ofDigitsTerm_le)
+  convert! Summable.tsum_mono summable_ofDigitsTerm _ (fun _ ↦ ofDigitsTerm_le)
   · simp_rw [pow_succ', mul_inv, ← inv_pow, ← mul_assoc]
     rw [tsum_mul_left, tsum_geometric_of_lt_one (by positivity) (by simp [inv_lt_one_iff₀, hb])]
     have := sub_pos.mpr hb
@@ -101,8 +102,9 @@ theorem abs_ofDigits_sub_ofDigits_le {b : ℕ} {x y : ℕ → Fin b} {n : ℕ}
     Finset.sum_congr rfl fun i hi ↦ by simp [ofDigitsTerm, hxy i (Finset.mem_range.mp hi)]
   rw [this, add_sub_add_left_eq_sub, ← mul_sub, abs_mul, abs_of_nonneg (by positivity)]
   apply mul_le_of_le_one_right (by positivity)
-  convert abs_sub_le_of_le_of_le (ofDigits_nonneg _) (ofDigits_le_one _)
-    (ofDigits_nonneg _) (ofDigits_le_one _)
+  convert!
+    abs_sub_le_of_le_of_le (ofDigits_nonneg _) (ofDigits_le_one _) (ofDigits_nonneg _)
+      (ofDigits_le_one _)
   simp
 
 /-- Converts a real number `x` from the interval `[0, 1)` into sequence of
@@ -148,7 +150,7 @@ theorem hasSum_ofDigitsTerm_digits (x : ℝ) {b : ℕ} [NeZero b] (hb : 1 < b) (
   rw [hasSum_iff_tendsto_nat_of_summable_norm (by exact summable_ofDigitsTerm.abs)]
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le ?_ tendsto_const_nhds
     (le_sum_ofDigitsTerm_digits hx) (sum_ofDigitsTerm_digits_le hx)
-  convert tendsto_const_nhds.sub (tendsto_pow_atTop_nhds_zero_of_abs_lt_one _)
+  convert! tendsto_const_nhds.sub (tendsto_pow_atTop_nhds_zero_of_abs_lt_one _)
   · simp
   · simp [abs_of_nonneg, inv_lt_one_iff₀, hb]
 
@@ -178,7 +180,7 @@ theorem ofDigits_const_last_eq_one (b : ℕ) [NeZero b] :
 /-- A generalization of the identity `0.(9) = 1` to arbitrary positional numeral systems. -/
 theorem ofDigits_const_last_eq_one' {b : ℕ} (hb : 1 < b) :
     ofDigits (fun _ ↦ (⟨b - 1, Nat.sub_one_lt_of_lt hb⟩ : Fin b)) = 1 := by
-  convert ofDigits_const_last_eq_one (b - 1)
+  convert! ofDigits_const_last_eq_one (b - 1)
   · grind
   · constructor
     grind

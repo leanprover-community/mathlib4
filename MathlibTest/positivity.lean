@@ -1,6 +1,6 @@
 import Mathlib.Tactic.Positivity
 import Mathlib.Analysis.Complex.Trigonometric
-import Mathlib.Data.Real.Sqrt
+import Mathlib.Analysis.Real.Sqrt
 import Mathlib.Data.ENNReal.Basic
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
@@ -101,7 +101,7 @@ example {a b : ℤ} (h : 0 ≤ a + b) : 0 ≤ a + b := by positivity
 example {a : ℤ} (hlt : 0 ≤ a) (hne : a ≠ 0) : 0 < a := by positivity
 
 example {a b c d : ℤ} (ha : c < a) (hb : d < b) : 0 < (a - c) * (b - d) := by
-  positivity [sub_pos_of_lt ha, sub_pos_of_lt hb]
+  positivity
 
 section
 
@@ -126,6 +126,12 @@ https://leanprover.zulipchat.com/#narrow/stream/239415-metaprogramming-.2F-tacti
 
 example : 0 ≤ 0 := by apply le_trans _ (le_refl _); positivity
 
+-- Test for a bug in the Nat.cast extension: if a natural number is positive
+-- and applying `cast_pos'` fails (e.g., because our ring could be trivial),
+-- we still prove non-negativity.
+example [Ring α] [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α] (b : ℕ) (_hb : 0 < b) :
+    (0 : α) ≤ ↑b := by
+  positivity
 
 /- ## Tests of the @[positivity] plugin tactics (addition, multiplication, division) -/
 
@@ -168,6 +174,13 @@ example : 0 ≤ max (0 : ℤ) (-3) := by positivity
 example : 0 ≤ max (-3 : ℤ) 5 := by positivity
 
 end MinMax
+
+example {a b : ℚ} (ha : a ≤ b) : 0 ≤ b - a := by positivity
+example {a b : ℚ} (ha : a ≠ b) : 0 ≠ b - a := by positivity
+example {a b : ℚ} (ha : a ≠ b) : 0 ≠ a - b := by positivity
+example {a b : ℚ} (ha : a < b) : 0 < b - a := by positivity
+example {a b : ℚ} (ha : a < b) : 0 ≤ b - a := by positivity
+example {a b : ℚ} (ha : a < b) : 0 ≠ b - a := by positivity
 
 example {a b : ℚ} (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by positivity
 example {a b : ℚ} (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a * b := by positivity
@@ -286,6 +299,13 @@ example (ha : a ≠ 0) : 0 < a * 37 := by positivity
 example (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a * b := by positivity
 example (ha : a ≠ 0) : 0 ≤ a * b := by positivity
 
+example : 0 ≤ a.toReal := by positivity
+example {a' : ℝ≥0} : 0 ≤ ENNReal.ofNNReal a' := by positivity
+
+/- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Adding.20superfluous.20hypotheses.20makes.20positivity.20fail/with/568774307 -/
+example {x y : ℝ≥0∞} : x + y + 1 ≠ 0 := by positivity
+example {x y : ℝ≥0∞} (hx : x ≠ 0) : x + y + 1 ≠ 0 := by positivity
+
 end ENNReal
 
 section EReal
@@ -353,7 +373,7 @@ example {a : ℝ} : 0 < a ^ 0 := by positivity
 example {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hat : a ≠ ⊤) : 0 < a ^ b := by positivity []
 example {a b c d : ℝ} (hab : 0 < a * b) (hb : 0 ≤ b) (hcd : c < d) :
     0 < a ^ c + 1 / (d - c) := by
-  positivity [sub_pos_of_lt hcd, pos_of_mul_pos_left hab hb]
+  positivity [pos_of_mul_pos_left hab hb]
 
 example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 2 + a := by positivity
 example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 3 + a := by positivity

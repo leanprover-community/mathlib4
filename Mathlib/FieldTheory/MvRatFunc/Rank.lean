@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.MvPolynomial
 # Rank of multivariate rational function field
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

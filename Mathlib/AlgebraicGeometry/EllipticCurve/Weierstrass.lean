@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.CubicDiscriminant
-public import Mathlib.RingTheory.Nilpotent.Defs
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.LinearCombination
 
@@ -234,8 +233,11 @@ def map : WeierstrassCurve A :=
 
 variable (A) in
 /-- The Weierstrass curve base changed to an algebra `A` over `R`. -/
-abbrev baseChange [Algebra R A] : WeierstrassCurve A :=
+def baseChange [Algebra R A] : WeierstrassCurve A :=
   W.map <| algebraMap R A
+
+/-- The notation `\textf` for `WeierstrassCurve.baseChange W A`. -/
+scoped notation:max (priority := low) W:max "⁄" A:max => baseChange W A
 
 @[simp]
 lemma map_b₂ : (W.map f).b₂ = f W.b₂ := by
@@ -282,10 +284,11 @@ lemma map_map {B : Type w} [CommRing B] (g : A →+* B) : (W.map f).map g = W.ma
 @[simp]
 lemma map_baseChange {S : Type s} [CommRing S] [Algebra R S] {A : Type v} [CommRing A] [Algebra R A]
     [Algebra S A] [IsScalarTower R S A] {B : Type w} [CommRing B] [Algebra R B] [Algebra S B]
-    [IsScalarTower R S B] (g : A →ₐ[S] B) : (W.baseChange A).map g = W.baseChange B :=
-  congr_arg W.map <| g.comp_algebraMap_of_tower R
+    [IsScalarTower R S B] (g : A →ₐ[S] B) : (W⁄A).map g = W⁄B :=
+  congrArg W.map <| g.comp_algebraMap_of_tower R
 
-lemma map_injective {f : R →+* A} (hf : Function.Injective f) :
+variable {f} in
+lemma map_injective (hf : Function.Injective f) :
     Function.Injective <| map (f := f) := fun _ _ h => by
   rcases mk.inj h with ⟨_, _, _, _, _⟩
   ext <;> apply_fun _ using hf <;> assumption
@@ -306,8 +309,6 @@ lemma twoTorsionPolynomial_discr : W.twoTorsionPolynomial.discr = 16 * W.Δ := b
   simp only [b₂, b₄, b₆, b₈, Δ, twoTorsionPolynomial, Cubic.discr]
   ring1
 
-@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc := twoTorsionPolynomial_discr
-
 section CharTwo
 
 variable [CharP R 2]
@@ -320,9 +321,6 @@ lemma twoTorsionPolynomial_of_char_two : W.twoTorsionPolynomial = ⟨0, W.b₂, 
 
 lemma twoTorsionPolynomial_discr_of_char_two : W.twoTorsionPolynomial.discr = 0 := by
   linear_combination W.twoTorsionPolynomial_discr + 8 * W.Δ * CharP.cast_eq_zero R 2
-
-@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc_of_char_two :=
-  twoTorsionPolynomial_discr_of_char_two
 
 end CharTwo
 
@@ -352,13 +350,6 @@ lemma twoTorsionPolynomial_discr_isUnit (hu : IsUnit (2 : R)) :
 lemma twoTorsionPolynomial_discr_ne_zero [Nontrivial R] (hu : IsUnit (2 : R)) (hΔ : IsUnit W.Δ) :
     W.twoTorsionPolynomial.discr ≠ 0 :=
   ((W.twoTorsionPolynomial_discr_isUnit hu).mpr hΔ).ne_zero
-
-@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc_of_char_three :=
-  twoTorsionPolynomial_discr_of_char_three
-@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc_isUnit :=
-  twoTorsionPolynomial_discr_isUnit
-@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc_ne_zero :=
-  twoTorsionPolynomial_discr_ne_zero
 
 end TorsionPolynomial
 
@@ -402,7 +393,7 @@ lemma j_eq_zero (h : W.c₄ = 0) : W.j = 0 := by
   rw [j_eq_zero_iff', h, zero_pow three_ne_zero]
 
 lemma j_eq_zero_iff [IsReduced R] : W.j = 0 ↔ W.c₄ = 0 := by
-  rw [j_eq_zero_iff', IsReduced.pow_eq_zero_iff three_ne_zero]
+  rw [j_eq_zero_iff', pow_eq_zero_iff three_ne_zero]
 
 section CharTwo
 
@@ -419,7 +410,7 @@ lemma j_eq_zero_of_char_two (h : W.a₁ = 0) : W.j = 0 := by
   rw [j_eq_zero_iff_of_char_two', h, zero_pow (Nat.succ_ne_zero _)]
 
 lemma j_eq_zero_iff_of_char_two [IsReduced R] : W.j = 0 ↔ W.a₁ = 0 := by
-  rw [j_eq_zero_iff_of_char_two', IsReduced.pow_eq_zero_iff (Nat.succ_ne_zero _)]
+  rw [j_eq_zero_iff_of_char_two', pow_eq_zero_iff (Nat.succ_ne_zero _)]
 
 end CharTwo
 
@@ -438,7 +429,7 @@ lemma j_eq_zero_of_char_three (h : W.b₂ = 0) : W.j = 0 := by
   rw [j_eq_zero_iff_of_char_three', h, zero_pow (Nat.succ_ne_zero _)]
 
 lemma j_eq_zero_iff_of_char_three [IsReduced R] : W.j = 0 ↔ W.b₂ = 0 := by
-  rw [j_eq_zero_iff_of_char_three', IsReduced.pow_eq_zero_iff (Nat.succ_ne_zero _)]
+  rw [j_eq_zero_iff_of_char_three', pow_eq_zero_iff (Nat.succ_ne_zero _)]
 
 end CharThree
 
@@ -447,9 +438,6 @@ end CharThree
 lemma twoTorsionPolynomial_discr_ne_zero_of_isElliptic [Nontrivial R] (hu : IsUnit (2 : R)) :
     W.twoTorsionPolynomial.discr ≠ 0 :=
   W.twoTorsionPolynomial_discr_ne_zero hu W.isUnit_Δ
-
-@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc_ne_zero_of_isElliptic :=
-  twoTorsionPolynomial_discr_ne_zero_of_isElliptic
 
 section BaseChange
 

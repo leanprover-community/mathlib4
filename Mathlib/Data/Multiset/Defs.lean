@@ -11,7 +11,6 @@ public import Mathlib.Data.Quot
 public import Mathlib.Order.Monotone.Defs
 public import Mathlib.Order.RelClasses
 public import Mathlib.Tactic.Monotonicity.Attr
-public import Mathlib.Util.AssertExists
 
 /-!
 # Multisets
@@ -203,8 +202,6 @@ theorem mem_of_le (h : s ≤ t) : a ∈ s → a ∈ t :=
 
 theorem notMem_mono (h : s ⊆ t) : a ∉ t → a ∉ s :=
   mt <| @h _
-
-@[deprecated (since := "2025-05-23")] alias not_mem_mono := notMem_mono
 
 @[simp]
 theorem coe_le {l₁ l₂ : List α} : (l₁ : Multiset α) ≤ l₂ ↔ l₁ <+~ l₂ :=

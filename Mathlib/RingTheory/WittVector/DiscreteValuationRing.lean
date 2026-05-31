@@ -124,10 +124,10 @@ theorem exists_eq_pow_p_mul (a : 𝕎 k) (ha : a ≠ 0) :
   simp only [Function.comp_apply] at this
   rw [← this] at hcm
   refine ⟨m, b, ?_, ?_⟩
-  · contrapose! hc
+  · contrapose hc
     simp [hc, zero_pow <| pow_ne_zero _ hp.out.ne_zero]
   · simp_rw [← mul_left_iterate (p : 𝕎 k) m]
-    convert hcm using 2
+    convert! hcm using 2
     ext1 x
     rw [mul_comm, ← WittVector.verschiebung_frobenius x]; rfl
 

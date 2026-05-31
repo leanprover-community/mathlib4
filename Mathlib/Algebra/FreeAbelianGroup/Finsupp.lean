@@ -103,6 +103,7 @@ that occur in the formal sum `a`. -/
 def support (a : FreeAbelianGroup X) : Finset X :=
   a.toFinsupp.support
 
+@[simp]
 theorem mem_support_iff (x : X) (a : FreeAbelianGroup X) : x ∈ a.support ↔ coeff x a ≠ 0 := by
   rw [support, Finsupp.mem_support_iff]
   exact Iff.rfl
@@ -111,15 +112,13 @@ theorem notMem_support_iff (x : X) (a : FreeAbelianGroup X) : x ∉ a.support �
   rw [support, Finsupp.notMem_support_iff]
   exact Iff.rfl
 
-@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
-
 @[simp]
 theorem support_zero : support (0 : FreeAbelianGroup X) = ∅ := by
   simp only [support, Finsupp.support_zero, map_zero]
 
 @[simp]
 theorem support_of (x : X) : support (of x) = {x} := by
-  rw [support, toFinsupp_of, Finsupp.support_single_ne_zero _ one_ne_zero]
+  rw [support, toFinsupp_of, Finsupp.support_single _ one_ne_zero]
 
 @[simp]
 theorem support_neg (a : FreeAbelianGroup X) : support (-a) = support a := by
@@ -129,8 +128,7 @@ theorem support_neg (a : FreeAbelianGroup X) : support (-a) = support a := by
 theorem support_zsmul (k : ℤ) (h : k ≠ 0) (a : FreeAbelianGroup X) :
     support (k • a) = support a := by
   ext x
-  simp only [mem_support_iff, map_zsmul]
-  simp only [h, zsmul_int_int, false_or, Ne, mul_eq_zero]
+  simp [h]
 
 @[simp]
 theorem support_nsmul (k : ℕ) (h : k ≠ 0) (a : FreeAbelianGroup X) :

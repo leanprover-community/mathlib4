@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 # Lemmas about the interaction of power operations with order
 -/
 
-@[expose] public section
+public section
 
 -- We should need only a minimal development of sets in order to get here.
 assert_not_exists Set.Subsingleton

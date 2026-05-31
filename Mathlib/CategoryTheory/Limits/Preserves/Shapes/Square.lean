@@ -10,7 +10,7 @@ public import Mathlib.CategoryTheory.Limits.Yoneda
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
-# Preservations of pullback/pushout squares
+# Preservation of pullback/pushout squares
 
 If a functor `F : C ⥤ D` preserves suitable cospans (resp. spans),
 and `sq : Square C` is a pullback square (resp. a pushout square)
@@ -25,7 +25,7 @@ functor `yoneda.obj X` for all `X : C`.
 
 -/
 
-@[expose] public section
+public section
 
 universe v v' u u'
 
@@ -91,6 +91,7 @@ variable {sq₁ : Square (Type v)} {sq₂ : Square (Type u)}
   (comm₃₄ : e₄ ∘ sq₁.f₃₄ = sq₂.f₃₄ ∘ e₃)
 include comm₁₂ comm₁₃ comm₂₄ comm₃₄
 
+set_option backward.defeqAttrib.useBackward true in
 variable (sq₁ sq₂) in
 lemma IsPullback.iff_of_equiv : sq₁.IsPullback ↔ sq₂.IsPullback := by
   rw [← IsPullback.map_iff sq₁ uliftFunctor.{max u v},

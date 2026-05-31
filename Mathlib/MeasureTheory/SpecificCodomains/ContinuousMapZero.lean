@@ -21,7 +21,7 @@ module docstring.
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory
 

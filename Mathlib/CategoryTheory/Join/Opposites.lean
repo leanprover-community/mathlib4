@@ -25,16 +25,17 @@ universe v₁ v₂ u₁ u₂
 
 variable (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Category.{v₂} D]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `(C ⋆ D)ᵒᵖ ≌ Dᵒᵖ ⋆ Cᵒᵖ` induced by `Join.opEquivFunctor` and
 `Join.opEquivInverse`. -/
 def opEquiv : (C ⋆ D)ᵒᵖ ≌ Dᵒᵖ ⋆ Cᵒᵖ where
   functor := Functor.leftOp <|
-    Join.mkFunctor (inclRight _ _).rightOp (inclLeft _ _).rightOp {app _ := (edge _ _).op}
-  inverse := Join.mkFunctor (inclRight _ _).op (inclLeft _ _).op {app _ := (edge _ _).op}
+    Join.mkFunctor (inclRight _ _).rightOp (inclLeft _ _).rightOp { app _ := (edge _ _).op }
+  inverse := Join.mkFunctor (inclRight _ _).op (inclLeft _ _).op { app _ := (edge _ _).op }
   unitIso := NatIso.ofComponents
     (fun
       | op (left _) => Iso.refl _
-      | op (right _) => Iso.refl _ )
+      | op (right _) => Iso.refl _)
     (@fun
       | op (left _), op (left _), _ => by cat_disch
       | op (right _), op (left _), _ => by cat_disch

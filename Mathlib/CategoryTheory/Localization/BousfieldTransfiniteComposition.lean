@@ -17,7 +17,7 @@ is stable under transfinite compositions.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 
@@ -31,6 +31,8 @@ namespace ObjectProperty
 
 variable (P : ObjectProperty C)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 instance (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J] :
     P.isLocal.IsStableUnderTransfiniteCompositionOfShape J where
   le := fun X Y f ⟨hf⟩ Z hZ ↦ by
@@ -43,7 +45,7 @@ instance (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT 
       | succ j hj hj' => exact (hf.map_mem j hj _ hZ).1 (by simpa)
       | isSuccLimit j hj hj' =>
         exact (hf.F.isColimitOfIsWellOrderContinuous j hj).hom_ext
-          (fun ⟨k, hk⟩ ↦ by simpa using hj' _ hk)
+          (fun ⟨k, hk⟩ ↦ by simpa using! hj' _ hk)
     · let d : (hf.F.op ⋙ yoneda.obj Z).WellOrderInductionData :=
         .ofExists (fun j hj ↦ (hf.map_mem j hj _ hZ).2) (fun j hj s ↦ by
           let c : Cocone ((Set.principalSegIio j).monotone.functor ⋙ hf.F) :=
@@ -51,16 +53,16 @@ instance (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT 
               ι.app k := s.1 (op k)
               ι.naturality _ _ g := by
                 dsimp
-                simpa only [Category.comp_id] using s.2 g.op }
+                simpa only [Category.comp_id] using! s.2 g.op }
           exact ⟨(hf.F.isColimitOfIsWellOrderContinuous j hj).desc c, fun k hk ↦
-            by simpa using (hf.F.isColimitOfIsWellOrderContinuous j hj).fac c ⟨k, hk⟩⟩)
+            by simpa using! (hf.F.isColimitOfIsWellOrderContinuous j hj).fac c ⟨k, hk⟩⟩)
       let σ := d.sectionsMk (hf.isoBot.hom ≫ g)
       let c : Cocone hf.F :=
         { pt := Z
           ι.app j := σ.1 (op j)
           ι.naturality _ _ f := by
             dsimp
-            simpa only [Category.comp_id] using σ.2 f.op }
+            simpa only [Category.comp_id] using! σ.2 f.op }
       exact ⟨hf.isColimit.desc c, by
         simp only [← hf.fac, Category.assoc, hf.isColimit.fac c ⊥, c, σ,
           d.sectionsMk_val_op_bot, Iso.inv_hom_id_assoc]⟩

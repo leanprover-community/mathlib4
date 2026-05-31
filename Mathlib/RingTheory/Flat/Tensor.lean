@@ -26,7 +26,7 @@ See <https://stacks.math.columbia.edu/tag/00HD>.
   tensor product of the inclusion `I → R` and the identity `M → M` is injective.
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

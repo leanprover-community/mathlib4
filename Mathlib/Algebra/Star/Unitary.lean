@@ -29,7 +29,7 @@ unitary
 @[expose] public section
 
 
-/-- In a *-monoid, `unitary R` is the submonoid consisting of all the elements `U` of
+/-- In a \*-monoid, `unitary R` is the submonoid consisting of all the elements `U` of
 `R` such that `star U * U = 1` and `U * star U = 1`.
 -/
 def unitary (R : Type*) [Monoid R] [StarMul R] : Submonoid R where
@@ -283,7 +283,7 @@ variable {R S T : Type*} [Monoid R] [StarMul R] [Monoid S] [StarMul S] [Monoid T
 lemma map_mem {F : Type*} [FunLike F R S] [StarHomClass F R S] [MonoidHomClass F R S]
     (f : F) {r : R} (hr : r ∈ unitary R) : f r ∈ unitary S := by
   rw [mem_iff] at hr
-  simpa [map_star, map_mul] using And.intro congr(f $(hr.1)) congr(f $(hr.2))
+  simpa [map_star, map_mul] using! And.intro congr(f $(hr.1)) congr(f $(hr.2))
 
 /-- The star monoid homomorphism between unitary subgroups induced by a star monoid homomorphism of
 the underlying star monoids. -/
@@ -357,7 +357,7 @@ section CommMonoid
 variable [CommMonoid R] [StarMul R]
 
 instance : CommGroup (unitary R) :=
-  { inferInstanceAs (Group (unitary R)), Submonoid.toCommMonoid _ with }
+  { (inferInstance : Group (unitary R)), Submonoid.toCommMonoid _ with }
 
 theorem mem_iff_star_mul_self {U : R} : U ∈ unitary R ↔ star U * U = 1 :=
   mem_iff.trans <| and_iff_left_of_imp fun h => mul_comm (star U) U ▸ h
@@ -432,56 +432,3 @@ theorem IsStarProjection.two_mul_sub_one_mem_unitary {R : Type*} [Ring R] [StarR
     hp.isSelfAdjoint.star_eq, star_one, mul_sub, mul_add,
     sub_mul, add_mul, hp.isIdempotentElem.eq, one_mul, add_sub_cancel_right,
     mul_one, sub_sub_cancel, and_self]
-
-namespace unitary
-
-/-! ### Deprecated results -/
-
-@[deprecated (since := "2025-10-29")] alias mem_iff := Unitary.mem_iff
-@[deprecated (since := "2025-10-29")] alias star_mul_self_of_mem := Unitary.star_mul_self_of_mem
-@[deprecated (since := "2025-10-29")] alias mul_star_self_of_mem := Unitary.mul_star_self_of_mem
-@[deprecated (since := "2025-10-29")] alias star_mem := Unitary.star_mem
-@[deprecated (since := "2025-10-29")] alias star_mem_iff := Unitary.star_mem_iff
-@[deprecated (since := "2025-10-29")] alias coe_star := Unitary.coe_star
-@[deprecated (since := "2025-10-29")] alias coe_star_mul_self := Unitary.coe_star_mul_self
-@[deprecated (since := "2025-10-29")] alias coe_mul_star_self := Unitary.coe_mul_star_self
-@[deprecated (since := "2025-10-29")] alias star_mul_self := Unitary.star_mul_self
-@[deprecated (since := "2025-10-29")] alias mul_star_self := Unitary.mul_star_self
-@[deprecated (since := "2025-10-29")] alias star_eq_inv := Unitary.star_eq_inv
-@[deprecated (since := "2025-10-29")] alias star_eq_inv' := Unitary.star_eq_inv'
-@[deprecated (since := "2025-10-29")] alias toUnits := Unitary.toUnits
-@[deprecated (since := "2025-10-29")] alias val_toUnits_apply := Unitary.val_toUnits_apply
-@[deprecated (since := "2025-10-29")] alias toUnits_injective := Unitary.toUnits_injective
-@[deprecated (since := "2025-10-29")] alias mul_left_inj := Unitary.mul_left_inj
-@[deprecated (since := "2025-10-29")] alias mul_right_inj := Unitary.mul_right_inj
-@[deprecated (since := "2025-10-29")] alias mul_inv_mem_iff := Unitary.mul_inv_mem_iff
-@[deprecated (since := "2025-10-29")] alias inv_mul_mem_iff := Unitary.inv_mul_mem_iff
-@[deprecated (since := "2025-10-29")] alias inv_mem := Unitary.inv_mem
-@[deprecated (since := "2025-10-29")] alias smul_mem_of_mem := Unitary.smul_mem_of_mem
-@[deprecated (since := "2025-10-29")] alias smul_mem := Unitary.smul_mem
-@[deprecated (since := "2025-10-29")] alias coe_smul := Unitary.coe_smul
-@[deprecated (since := "2025-10-29")] alias map_mem := Unitary.map_mem
-@[deprecated (since := "2025-10-29")] alias map := Unitary.map
-@[deprecated (since := "2025-10-29")] alias coe_map := Unitary.coe_map
-@[deprecated (since := "2025-10-29")] alias coe_map_star := Unitary.coe_map_star
-@[deprecated (since := "2025-10-29")] alias map_id := Unitary.map_id
-@[deprecated (since := "2025-10-29")] alias map_comp := Unitary.map_comp
-@[deprecated (since := "2025-10-29")] alias map_injective := Unitary.map_injective
-@[deprecated (since := "2025-10-29")] alias toUnits_comp_map := Unitary.toUnits_comp_map
-@[deprecated (since := "2025-10-29")] alias mapEquiv := Unitary.mapEquiv
-@[deprecated (since := "2025-10-29")] alias mapEquiv_refl := Unitary.mapEquiv_refl
-@[deprecated (since := "2025-10-29")] alias mapEquiv_symm := Unitary.mapEquiv_symm
-@[deprecated (since := "2025-10-29")] alias mapEquiv_trans := Unitary.mapEquiv_trans
-@[deprecated (since := "2025-10-29")] alias toMonoidHom_mapEquiv := Unitary.toMonoidHom_mapEquiv
-@[deprecated (since := "2025-10-29")] alias mem_iff_star_mul_self := Unitary.mem_iff_star_mul_self
-@[deprecated (since := "2025-10-29")] alias mem_iff_self_mul_star := Unitary.mem_iff_self_mul_star
-@[deprecated (since := "2025-10-29")] alias coe_inv := Unitary.coe_inv
-@[deprecated (since := "2025-10-29")] alias coe_div := Unitary.coe_div
-@[deprecated (since := "2025-10-29")] alias coe_zpow := Unitary.coe_zpow
-@[deprecated (since := "2025-10-29")] alias coe_neg := Unitary.coe_neg
-@[deprecated (since := "2025-10-20")] alias spectrum.unitary_conjugate :=
-  Unitary.spectrum_star_right_conjugate
-@[deprecated (since := "2025-10-20")] alias spectrum.unitary_conjugate' :=
-  Unitary.spectrum_star_left_conjugate
-
-end unitary

@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.Algebra.Ring.Action.Pointwise.Set
 
 /-!
@@ -55,7 +54,6 @@ noncomputable def homeomorphSphereProd (E : Type*) [NormedAddCommGroup E] [Norme
   continuous_toFun := by
     simp only
     fun_prop (disch := simp)
-  continuous_invFun := by fun_prop
 
 /-- The natural homeomorphism between nonzero elements of a normed space `E`
 and `Metric.sphere (0 : E) 1 × Set.Ioi (0 : ℝ)`.

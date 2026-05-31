@@ -9,8 +9,9 @@ public import Mathlib.RingTheory.Derivation.ToSquareZero
 public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.EssentialFiniteness
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # The module of Kähler differentials
@@ -159,7 +160,7 @@ notation "Ω[" S "⁄" R "]" => KaehlerDifferential R S
 instance KaehlerDifferential.module' {R' : Type*} [CommRing R'] [Algebra R' S]
     [SMulCommClass R R' S] :
     Module R' Ω[S⁄R] :=
-  Submodule.Quotient.module' _
+  inferInstanceAs <| Module R' (_ ⧸ _)
 
 instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type*} [CommRing R₁] [CommRing R₂]
     [Algebra R₁ S] [Algebra R₂ S] [SMul R₁ R₂]
@@ -173,6 +174,9 @@ instance KaehlerDifferential.isScalarTower' : IsScalarTower R (S ⊗[R] S) Ω[S�
 /-- The quotient map `I → Ω[S⁄R]` with `I` being the kernel of `S ⊗[R] S → S`. -/
 def KaehlerDifferential.fromIdeal : KaehlerDifferential.ideal R S →ₗ[S ⊗[R] S] Ω[S⁄R] :=
   (KaehlerDifferential.ideal R S).toCotangent
+
+theorem KaehlerDifferential.fromIdeal_surjective : Function.Surjective (fromIdeal R S) :=
+  Ideal.toCotangent_surjective _
 
 /-- (Implementation) The underlying linear map of the derivation into `Ω[S⁄R]`. -/
 def KaehlerDifferential.DLinearMap : S →ₗ[R] Ω[S⁄R] :=
@@ -188,6 +192,8 @@ theorem KaehlerDifferential.DLinearMap_apply (s : S) :
       (KaehlerDifferential.ideal R S).toCotangent
         ⟨1 ⊗ₜ s - s ⊗ₜ 1, KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R s⟩ := rfl
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The universal derivation into `Ω[S⁄R]`. -/
 def KaehlerDifferential.D : Derivation R S Ω[S⁄R] :=
   { toLinearMap := KaehlerDifferential.DLinearMap R S
@@ -201,8 +207,9 @@ def KaehlerDifferential.D : Derivation R S Ω[S⁄R] :=
       rw [← LinearMap.map_smul_of_tower (ideal R S).toCotangent,
         ← LinearMap.map_smul_of_tower (ideal R S).toCotangent,
         ← map_add (ideal R S).toCotangent, Ideal.toCotangent_eq, pow_two]
-      convert Submodule.mul_mem_mul (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R a :)
-        (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R b :) using 1
+      convert!
+        Submodule.mul_mem_mul (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R a :)
+          (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R b :) using 1
       simp only [Submodule.coe_add,
         TensorProduct.tmul_mul_tmul, mul_sub, sub_mul, mul_comm b, Submodule.coe_smul_of_tower,
         smul_sub, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
@@ -217,13 +224,14 @@ theorem KaehlerDifferential.span_range_derivation :
     Submodule.span S (Set.range <| KaehlerDifferential.D R S) = ⊤ := by
   rw [_root_.eq_top_iff]
   rintro x -
-  obtain ⟨⟨x, hx⟩, rfl⟩ := Ideal.toCotangent_surjective _ x
-  have : x ∈ (KaehlerDifferential.ideal R S).restrictScalars S := hx
-  rw [← KaehlerDifferential.submodule_span_range_eq_ideal] at this
-  suffices ∃ hx, (KaehlerDifferential.ideal R S).toCotangent ⟨x, hx⟩ ∈
-      Submodule.span S (Set.range <| KaehlerDifferential.D R S) by
-    exact this.choose_spec
-  refine Submodule.span_induction ?_ ?_ ?_ ?_ this
+  obtain ⟨⟨x, hx⟩, rfl⟩ := fromIdeal_surjective R S x
+  rw [← Submodule.restrictScalars_mem S, ← KaehlerDifferential.submodule_span_range_eq_ideal] at hx
+  suffices ∃ hx,
+      fromIdeal R S ⟨x, hx⟩ ∈ Submodule.span S (Set.range <| KaehlerDifferential.D R S) from
+    this.snd
+  -- TODO: this proof looks like we're reinventing `Submodule.span_le`.
+  -- I'm not sure what's the RHS here though.
+  refine Submodule.span_induction ?_ ?_ ?_ ?_ hx
   · rintro _ ⟨x, rfl⟩
     refine ⟨KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R x, ?_⟩
     apply Submodule.subset_span
@@ -382,10 +390,6 @@ def KaehlerDifferential.endEquivAuxEquiv :
       { f // (TensorProduct.lmul' R : S ⊗[R] S →ₐ[R] S).kerSquareLift.comp f = AlgHom.id R S } :=
   (Equiv.refl _).subtypeEquiv (KaehlerDifferential.End_equiv_aux R S)
 
-set_option synthInstance.maxHeartbeats 25000 in
--- `Module S (Derivation R S ↥(ideal R S).cotangentIdeal)` just barely times out after
--- `SemigroupAction` was added to Mathlib. 22000 heartbeats is enough when this note was added,
--- but we left 25000 for some buffer.
 /--
 The endomorphisms of `Ω[S⁄R]` corresponds to sections of the surjection `S ⊗[R] S ⧸ J ^ 2 →ₐ[R] S`,
 with `J` being the kernel of the multiplication map `S ⊗[R] S →ₐ[R] S`.
@@ -462,6 +466,7 @@ the relations:
 1. `dx + dy = d(x + y)`
 2. `x dy + y dx = d(x * y)`
 3. `dr = 0` for `r ∈ R`
+
 where `db` is the unit in the copy of `S` with index `b`.
 
 This is the kernel of the surjection
@@ -569,7 +574,7 @@ theorem KaehlerDifferential.quotKerTotalEquiv_symm_comp_D :
     (KaehlerDifferential.quotKerTotalEquiv R S).symm.toLinearMap.compDer
         (KaehlerDifferential.D R S) =
       KaehlerDifferential.derivationQuotKerTotal R S := by
-  convert (KaehlerDifferential.derivationQuotKerTotal R S).liftKaehlerDifferential_comp
+  convert! (KaehlerDifferential.derivationQuotKerTotal R S).liftKaehlerDifferential_comp
 
 end Presentation
 
@@ -688,7 +693,7 @@ lemma KaehlerDifferential.ker_map_of_surjective (h : Function.Surjective (algebr
     Submodule.map_sup, ← kerTotal_eq, ← Submodule.comap_bot,
     Submodule.map_comap_eq_of_surjective (linearCombination_surjective _ _),
     bot_sup_eq, Submodule.map_span, ← Set.range_comp]
-  convert bot_sup_eq _
+  convert! bot_sup_eq _
   rw [Submodule.span_eq_bot]; simp
 
 open IsScalarTower (toAlgHom)
@@ -737,7 +742,7 @@ lemma KaehlerDifferential.range_mapBaseChange :
   · convert_to (kerTotal A B).map (Finsupp.linearCombination B (D R B)) ≤ _
     · rw [KaehlerDifferential.ker_map]
       congr 1
-      convert Submodule.comap_id _
+      convert! Submodule.comap_id _
       · ext; simp
     rw [Submodule.map_le_iff_le_comap, kerTotal, Submodule.span_le]
     rintro f ((⟨⟨x, y⟩, rfl⟩ | ⟨⟨x, y⟩, rfl⟩) | ⟨x, rfl⟩)
@@ -812,7 +817,7 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
     simp only [LinearMap.mem_range]
     simp only [map_sum, Finsupp.linearCombination_single]
     have : ∑ i ∈ x.support with algebraMap A B i = c, x i ∈ RingHom.ker (algebraMap A B) := by
-      simpa [Finsupp.mapDomain, Finsupp.sum, Finsupp.finset_sum_apply, RingHom.mem_ker,
+      simpa [Finsupp.mapDomain, Finsupp.sum, Finsupp.finsetSum_apply, RingHom.mem_ker,
         Finsupp.single_apply, ← Finset.sum_filter] using DFunLike.congr_fun hx c
     obtain ⟨a, ha⟩ := h c
     use ∑ i ∈ {i ∈ x.support | algebraMap A B i = c}.attach, x i • Ideal.toCotangent _ ⟨i - a, ?_⟩
@@ -826,7 +831,7 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
       rw [← TensorProduct.smul_tmul, ← Algebra.algebraMap_eq_smul_one, RingHom.mem_ker.mp this,
         TensorProduct.zero_tmul]
     · have : x i ≠ 0 ∧ algebraMap A B i = c := by
-        convert i.prop
+        convert! i.prop
         simp_rw [Finset.mem_filter, Finsupp.mem_support_iff]
       simp [RingHom.mem_ker, ha, this.2]
 

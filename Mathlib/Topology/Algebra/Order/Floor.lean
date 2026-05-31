@@ -26,7 +26,7 @@ This file proves statements about limits and continuity of functions involving `
   `Int.fract` yields another continuous function.
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Function Int Set Topology
@@ -53,7 +53,7 @@ theorem tendsto_mul_pow_div_factorial_sub_atTop (a c : K) (d : ℕ) :
 
 theorem tendsto_pow_div_factorial_atTop (c : K) :
     Tendsto (fun n ↦ c ^ n / n !) atTop (𝓝 0) := by
-  convert tendsto_mul_pow_div_factorial_sub_atTop 1 c 0
+  convert! tendsto_mul_pow_div_factorial_sub_atTop 1 c 0
   rw [one_mul]
 
 end FloorSemiring

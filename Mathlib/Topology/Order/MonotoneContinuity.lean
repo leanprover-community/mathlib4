@@ -22,7 +22,7 @@ We also prove that an `OrderIso` is continuous.
 continuous, monotone
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter
@@ -44,8 +44,7 @@ function `f : ℝ → ℝ` given by `f x = if x ≤ 0 then x else x + 1` would b
 theorem StrictMonoOn.continuousWithinAt_right_of_exists_between {f : α → β} {s : Set α} {a : α}
     (h_mono : StrictMonoOn f s) (hs : s ∈ 𝓝[≥] a) (hfs : ∀ b > f a, ∃ c ∈ s, f c ∈ Ioc (f a) b) :
     ContinuousWithinAt f (Ici a) a := by
-  have ha : a ∈ Ici a := left_mem_Ici
-  have has : a ∈ s := mem_of_mem_nhdsWithin ha hs
+  have has : a ∈ s := mem_of_mem_nhdsWithin self_mem_Ici hs
   refine tendsto_order.2 ⟨fun b hb => ?_, fun b hb => ?_⟩
   · filter_upwards [hs, @self_mem_nhdsWithin _ _ a (Ici a)] with _ hxs hxa using hb.trans_le
       ((h_mono.le_iff_le has hxs).2 hxa)
@@ -64,8 +63,7 @@ because otherwise the function `ceil : ℝ → ℤ` would be a counter-example a
 theorem continuousWithinAt_right_of_monotoneOn_of_exists_between {f : α → β} {s : Set α} {a : α}
     (h_mono : MonotoneOn f s) (hs : s ∈ 𝓝[≥] a) (hfs : ∀ b > f a, ∃ c ∈ s, f c ∈ Ioo (f a) b) :
     ContinuousWithinAt f (Ici a) a := by
-  have ha : a ∈ Ici a := left_mem_Ici
-  have has : a ∈ s := mem_of_mem_nhdsWithin ha hs
+  have has : a ∈ s := mem_of_mem_nhdsWithin self_mem_Ici hs
   refine tendsto_order.2 ⟨fun b hb => ?_, fun b hb => ?_⟩
   · filter_upwards [hs, @self_mem_nhdsWithin _ _ a (Ici a)] with _ hxs hxa using hb.trans_le
       (h_mono has hxs hxa)

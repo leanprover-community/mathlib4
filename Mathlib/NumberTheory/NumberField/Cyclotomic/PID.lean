@@ -19,7 +19,7 @@ but the proof is more and more involved.
 * `five_pid`: If `IsCyclotomicExtension {5} ℚ K` then `𝓞 K` is a principal ideal domain.
 -/
 
-@[expose] public section
+public section
 
 universe u
 

@@ -75,7 +75,7 @@ theorem succ_one_eq_two' [NeZero n] : Fin.succ (1 : Fin (n + 1)) = 2 := by
 The `Fin.le_zero_iff` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
-@[simp]
+@[deprecated "use `nonpos_iff_eq_zero`" (since := "2026-05-11")]
 theorem le_zero_iff' {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
   ⟨fun h => Fin.ext <| by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact Nat.le_refl _⟩
 
@@ -134,12 +134,15 @@ theorem cast_le_cast (eq : n = m) {a b : Fin n} : a.cast eq ≤ b.cast eq ↔ a 
   Iff.rfl
 
 /-- The 'identity' equivalence between `Fin m` and `Fin n` when `m = n`. -/
-@[simps]
+@[simps apply]
 def _root_.finCongr (eq : n = m) : Fin n ≃ Fin m where
   toFun := Fin.cast eq
   invFun := Fin.cast eq.symm
   left_inv := leftInverse_cast eq
   right_inv := rightInverse_cast eq
+
+theorem _root_.finCongr_symm_apply (eq : n = m) (a : Fin m) :
+    (finCongr eq).symm a = a.cast eq.symm := rfl
 
 @[simp] lemma _root_.finCongr_apply_mk (h : m = n) (k : ℕ) (hk : k < m) :
     finCongr h ⟨k, hk⟩ = ⟨k, h ▸ hk⟩ := rfl
@@ -177,7 +180,8 @@ theorem le_of_castSucc_lt_of_succ_lt {a b : Fin (n + 1)} {i : Fin n}
   simp [Fin.lt_def, -val_fin_lt] at *; lia
 
 theorem castSucc_lt_or_lt_succ (p : Fin (n + 1)) (i : Fin n) : castSucc i < p ∨ p < i.succ := by
-  simpa [Fin.lt_def, -val_fin_lt] using by lia
+  simp [Fin.lt_def, -val_fin_lt]
+  lia
 
 theorem succ_le_or_le_castSucc (p : Fin (n + 1)) (i : Fin n) : succ i ≤ p ∨ p ≤ i.castSucc := by
   rw [le_castSucc_iff, ← castSucc_lt_iff_succ_le]
@@ -219,19 +223,10 @@ The `Fin.castSucc_pos` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis. -/
 alias ⟨_, castSucc_pos'⟩ := castSucc_pos_iff
 
-@[deprecated Fin.castSucc_eq_zero_iff (since := "2025-05-13")]
-theorem castSucc_eq_zero_iff' [NeZero n] (a : Fin n) : castSucc a = 0 ↔ a = 0 :=
-  Fin.ext_iff.trans <| (Fin.ext_iff.trans <| by simp).symm
-
-@[deprecated Fin.castSucc_ne_zero_iff (since := "2025-05-13")]
-theorem castSucc_ne_zero_iff' [NeZero n] (a : Fin n) : castSucc a ≠ 0 ↔ a ≠ 0 :=
-  not_iff_not.mpr <| castSucc_eq_zero_iff
-
 theorem castSucc_ne_zero_of_lt {p i : Fin n} (h : p < i) : castSucc i ≠ 0 := by
   cases n
   · exact i.elim0
-  · rw [castSucc_ne_zero_iff, Ne, Fin.ext_iff]
-    exact ((zero_le _).trans_lt h).ne'
+  · grind [castSucc_ne_zero_iff]
 
 theorem succ_ne_last_iff (a : Fin (n + 1)) : succ a ≠ last (n + 1) ↔ a ≠ last n :=
   not_iff_not.mpr <| succ_eq_last_succ
@@ -401,9 +396,6 @@ theorem castPred_inj {i j : Fin (n + 1)} {hi : i ≠ last n} {hj : j ≠ last n}
 @[simp]
 theorem castPred_zero [NeZero n] :
     castPred (0 : Fin (n + 1)) (Fin.ext_iff.not.2 last_pos'.ne) = 0 := rfl
-
-@[deprecated (since := "2025-05-11")]
-alias castPred_zero' := castPred_zero
 
 @[simp]
 theorem castPred_eq_zero [NeZero n] {i : Fin (n + 1)} (h : i ≠ last n) :

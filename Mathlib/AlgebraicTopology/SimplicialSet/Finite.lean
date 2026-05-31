@@ -17,7 +17,7 @@ many nondegenerate simplices.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -48,8 +48,9 @@ lemma finite_of_hasDimensionLT (d : ℕ) [X.HasDimensionLT d]
     by_cases hj : x.dim < d
     · exact ⟨⟨⟨_, hj⟩, ⟨_, x.nonDegenerate⟩⟩, rfl⟩
     · have := x.nonDegenerate
-      simp [X.nonDegenerate_eq_bot_of_hasDimensionLT d x.dim (by simpa using hj)] at this
+      simp [X.nonDegenerate_eq_empty_of_hasDimensionLT d x.dim (by simpa using hj)] at this
 
+set_option backward.defeqAttrib.useBackward true in
 lemma hasDimensionLT_of_finite [X.Finite] :
     ∃ (d : ℕ), X.HasDimensionLT d := by
   have : Fintype X.N := Fintype.ofFinite _
@@ -122,6 +123,7 @@ instance finite_range {Y : SSet.{u}} (f : Y ⟶ X) [Y.Finite] :
     SSet.Finite (Subcomplex.range f) :=
   finite_of_epi (Subcomplex.toRange f)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma finite_iSup_iff {X : SSet.{u}} {ι : Type*} [Finite ι]
     (A : ι → X.Subcomplex) :
     SSet.Finite (⨆ i, A i :) ↔ ∀ i, SSet.Finite (A i) := by

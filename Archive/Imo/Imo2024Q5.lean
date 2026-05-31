@@ -7,8 +7,9 @@ import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.List.ChainOfFn
 import Mathlib.Data.List.TakeWhile
 import Mathlib.Data.Nat.Dist
-import Mathlib.Order.Fin.Basic
+import Mathlib.Data.Fintype.Fin
 import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.FinCases
 
 /-!
 # IMO 2024 Q5
@@ -135,10 +136,6 @@ lemma MonsterData.notMem_monsterCells_of_fst_eq_zero (m : MonsterData N)
     {c : Cell N} (hc : c.1 = 0) : c ∉ m.monsterCells := by
   simp [monsterCells, Prod.ext_iff, hc]
 
-@[deprecated (since := "2025-05-23")]
-alias MonsterData.not_mem_monsterCells_of_fst_eq_zero :=
-  MonsterData.notMem_monsterCells_of_fst_eq_zero
-
 lemma MonsterData.le_N_of_mem_monsterCells {m : MonsterData N} {c : Cell N}
     (hc : c ∈ m.monsterCells) : (c.1 : ℕ) ≤ N := by
   simp only [monsterCells, Set.mem_range, Subtype.exists, Set.mem_Icc] at hc
@@ -187,17 +184,17 @@ lemma Path.exists_mem_fst_eq (p : Path N) (r : Fin (N + 2)) : ∃ c ∈ p.cells,
     rw [Fin.le_def]
     have h := r.isLt
     rw [Nat.lt_succ_iff] at h
-    convert h
+    convert! h
   have hig : r ≤ (p.cells[i]).1 := of_decide_eq_true (List.findIdx_getElem (w := hi))
   refine ⟨p.cells[i], List.getElem_mem _, ?_⟩
   refine (hig.lt_or_eq.resolve_left fun h => ?_).symm
   rcases Nat.eq_zero_or_pos i with hi | hi
-  · simp only [hi, List.getElem_zero, p.head_first_row, Fin.not_lt_zero] at h
+  · simp [hi, List.getElem_zero, p.head_first_row] at h
   · suffices r ≤ p.cells[i - 1].1 by
       have hi' : i - 1 < i := by lia
       exact of_decide_eq_false (List.not_of_lt_findIdx hi') this
     have ha : Adjacent p.cells[i - 1] p.cells[i] := by
-      convert List.isChain_iff_getElem.1 p.valid_move_seq (i - 1) ?_
+      convert! List.isChain_iff_getElem.1 p.valid_move_seq (i - 1) ?_
       · simp [Nat.sub_add_cancel hi]
       · lia
     exact ha.le_of_lt h
@@ -246,18 +243,18 @@ lemma Path.findFstEq_eq_find?_le (p : Path N) (r : Fin (N + 2)) : p.findFstEq r 
     (p.cells.find? (fun c ↦ r ≤ c.1)).get
       (List.find?_isSome.2 (by simpa using p.exists_mem_le_fst r)) := by
   rw [findFstEq]
-  convert rfl using 2
+  convert! rfl using 2
   refine (find?_eq_eq_find?_le p.nonempty ?_ p.valid_move_seq).symm
   simp [p.head_first_row]
 
 lemma Path.firstMonster_isSome {p : Path N} {m : MonsterData N} :
     (p.firstMonster m).isSome = true ↔ ∃ x, x ∈ p.cells ∧ x ∈ m.monsterCells := by
-  convert List.find?_isSome
+  convert! List.find?_isSome
   simp
 
 lemma Path.firstMonster_eq_none {p : Path N} {m : MonsterData N} :
     (p.firstMonster m) = none ↔ ∀ x, x ∈ p.cells → x ∉ m.monsterCells := by
-  convert List.find?_eq_none
+  convert! List.find?_eq_none
   simp
 
 lemma Path.one_lt_length_cells (p : Path N) : 1 < p.cells.length := by
@@ -283,7 +280,7 @@ def Path.tail (p : Path N) : Path N where
     · exact p.nonempty
   head_first_row := by
     split_ifs with h
-    · convert h
+    · convert! h
       rw [List.head_tail]
     · exact p.head_first_row
   last_last_row := by
@@ -342,7 +339,7 @@ lemma Path.firstMonster_eq_of_findFstEq_mem {p : Path N} {m : MonsterData N}
       List.isChain_iff_getElem.1 p.valid_move_seq 0 (by lia)
     simp_rw [Adjacent, Nat.dist] at adj
     have hc0 : (p.cells[0].1 : ℕ) = 0 := by
-      convert Fin.ext_iff.1 p.head_first_row
+      convert! Fin.ext_iff.1 p.head_first_row
       exact List.getElem_zero _
     have hc1 : (p.cells[1].1 : ℕ) ≠ 0 := Fin.val_ne_iff.2 h0
     have h1 : (p.cells[1].1 : ℕ) = 1 := by lia
@@ -377,21 +374,21 @@ lemma Path.findFstEq_fst_sub_one_mem (p : Path N) {r : Fin (N + 2)} (hr : r ≠ 
   rcases p with ⟨cells, nonempty, head_first_row, last_last_row, valid_move_seq⟩
   dsimp only at h1 hcrc ⊢
   have hd : ∃ c ∈ cells, decide (r ≤ c.1) = true := ⟨cr, hcrc, by simpa using hcrr.symm.le⟩
-  have hd' : cells.dropWhile (fun c ↦ ! decide (r ≤ c.1)) ≠ [] := by simpa using hd
-  have ht : cells.takeWhile (fun c ↦ ! decide (r ≤ c.1)) ≠ [] := by
+  have hd' : cells.dropWhile (fun c ↦ !decide (r ≤ c.1)) ≠ [] := by simpa using hd
+  have ht : cells.takeWhile (fun c ↦ !decide (r ≤ c.1)) ≠ [] := by
     intro h
     rw [List.takeWhile_eq_nil_iff] at h
     replace h := h (by lia)
     simp [List.getElem_zero, head_first_row, hr] at h
   simp_rw [cells.find?_eq_head_dropWhile_not hd, Option.get_some]
-  rw [← cells.takeWhile_append_dropWhile (p := fun c ↦ ! decide (r ≤ c.1)),
+  rw [← cells.takeWhile_append_dropWhile (p := fun c ↦ !decide (r ≤ c.1)),
     List.isChain_append] at valid_move_seq
   have ha := valid_move_seq.2.2
   simp only [List.head?_eq_some_head hd', List.getLast?_eq_some_getLast ht, Option.mem_def,
     Option.some.injEq, forall_eq'] at ha
-  nth_rw 1 [← cells.takeWhile_append_dropWhile (p := fun c ↦ ! decide (r ≤ c.1))]
+  nth_rw 1 [← cells.takeWhile_append_dropWhile (p := fun c ↦ !decide (r ≤ c.1))]
   refine List.mem_append_left _ ?_
-  convert List.getLast_mem ht using 1
+  convert! List.getLast_mem ht using 1
   have htr : ((List.takeWhile (fun c ↦ !decide (r ≤ c.1)) cells).getLast ht).1 < r := by
     simpa using List.mem_takeWhile_imp (List.getLast_mem ht)
   have hdr : r ≤ ((List.dropWhile (fun c ↦ !decide (r ≤ c.1)) cells).head hd').1 := by
@@ -455,7 +452,7 @@ def Path.reflect (p : Path N) : Path N where
 lemma Path.firstMonster_reflect (p : Path N) (m : MonsterData N) :
     p.reflect.firstMonster m.reflect = (p.firstMonster m).map Cell.reflect := by
   simp_rw [firstMonster, reflect, List.find?_map]
-  convert rfl
+  convert! rfl
   simp only [Function.comp_apply, decide_eq_decide, MonsterData.monsterCells]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨i, hi⟩
@@ -473,7 +470,7 @@ lemma Strategy.play_comp_castLE (s : Strategy N) (m : MonsterData N) {k₁ k₂ 
   case refl => rfl
   case step k' hk' hki =>
     rw [← hki, ← Fin.castLE_comp_castLE hk' (Nat.le_succ k'), ← Function.comp_assoc]
-    convert rfl
+    convert! rfl
     exact Fin.snoc_comp_castSucc.symm
 
 lemma Strategy.play_apply_of_le (s : Strategy N) (m : MonsterData N) {i k₁ k₂ : ℕ} (hi : i < k₁)
@@ -491,8 +488,8 @@ lemma Strategy.play_one (s : Strategy N) (m : MonsterData N) {k : ℕ} (hk : 1 <
     s.play m k ⟨1, hk⟩ = (s ![(s Fin.elim0).firstMonster m]).firstMonster m := by
   have hk' : 2 ≤ k := by lia
   rw [s.play_apply_of_le m one_lt_two hk']
-  simp only [play, Fin.snoc, lt_self_iff_false, ↓reduceDIte, Nat.reduceAdd,
-    Fin.mk_one, Fin.isValue, cast_eq, Nat.succ_eq_add_one]
+  simp only [play, Fin.snoc, lt_self_iff_false, ↓reduceDIte, Nat.reduceAdd, cast_eq,
+    Nat.succ_eq_add_one]
   congr
   refine funext fun i ↦ ?_
   simp_rw [Fin.fin_one_eq_zero]
@@ -512,7 +509,7 @@ lemma Strategy.play_two (s : Strategy N) (m : MonsterData N) {k : ℕ} (hk : 2 <
   · have h : (1 : Fin 2) = Fin.last 1 := rfl
     simp only [Fin.snoc_zero, Nat.reduceAdd, Fin.mk_one, Fin.isValue, Matrix.cons_val]
     simp only [h, Fin.snoc_last]
-    convert rfl
+    convert! rfl
     simp_rw [Fin.fin_one_eq_zero, Matrix.cons_val]
 
 lemma Strategy.WinsIn.mono (s : Strategy N) (m : MonsterData N) {k₁ k₂ : ℕ} (h : s.WinsIn m k₁)
@@ -558,7 +555,7 @@ lemma row1_mem_monsterCells_monsterData12 (hN : 2 ≤ N) (c₁ c₂ : Fin (N + 1
 
 lemma row2_mem_monsterCells_monsterData12 (hN : 2 ≤ N) {c₁ c₂ : Fin (N + 1)} (h : c₁ ≠ c₂) :
     (⟨2, by lia⟩, c₂) ∈ (monsterData12 hN c₁ c₂).monsterCells := by
-  convert Set.mem_range_self (row2 hN)
+  convert! Set.mem_range_self (row2 hN)
   exact (monsterData12_apply_row2 hN h).symm
 
 lemma Strategy.not_forcesWinIn_two (s : Strategy N) (hN : 2 ≤ N) : ¬ s.ForcesWinIn 2 := by
@@ -571,7 +568,7 @@ lemma Strategy.not_forcesWinIn_two (s : Strategy N) (hN : 2 ≤ N) : ¬ s.Forces
   have h1r : m1.1 = 1 := Path.findFstEq_fst _ _
   have h2r : m2.1 = 2 := Path.findFstEq_fst _ _
   have h1 : m1 ∈ m.monsterCells := by
-    convert row1_mem_monsterCells_monsterData12 hN m1.2 m2.2
+    convert! row1_mem_monsterCells_monsterData12 hN m1.2 m2.2
   refine ⟨m, fun i ↦ ?_⟩
   fin_cases i
   · simp only [Strategy.play_zero, Path.firstMonster_eq_of_findFstEq_mem h1, Option.isSome_some]
@@ -588,7 +585,7 @@ lemma Strategy.not_forcesWinIn_two (s : Strategy N) (hN : 2 ≤ N) : ¬ s.Forces
       exact Path.findFstEq_fst_sub_one_mem _ two_ne_zero
     · rw [Path.firstMonster_isSome]
       refine ⟨m2, Path.findFstEq_mem_cells _ _, ?_⟩
-      convert row2_mem_monsterCells_monsterData12 hN h using 1
+      convert! row2_mem_monsterCells_monsterData12 hN h using 1
       simpa [Prod.ext_iff, h2r, Fin.ext_iff]
 
 lemma Strategy.ForcesWinIn.three_le {s : Strategy N} {k : ℕ} (hf : s.ForcesWinIn k)
@@ -781,9 +778,9 @@ lemma path1_firstMonster_of_not_edge (hN : 2 ≤ N) {m : MonsterData N} (hc₁0 
     (hc₁N : (m (row1 hN) : ℕ) ≠ N) :
     (path1 hN (m (row1 hN))).firstMonster m = none ∨
       (path1 hN (m (row1 hN))).firstMonster m =
-        some (⟨2, by lia⟩, ⟨(m (row1 hN) : ℕ) - 1, by lia⟩) := by
+        some (⟨2, by lia⟩, ⟨(m (row1 hN) : ℕ) - 1, by omega⟩) := by
   suffices h : ∀ c ∈ (path1 hN (m (row1 hN))).cells, c ∉ m.monsterCells ∨
-      c = (⟨2, by lia⟩, ⟨(m (row1 hN) : ℕ) - 1, by lia⟩) by
+      c = (⟨2, by lia⟩, ⟨(m (row1 hN) : ℕ) - 1, by omega⟩) by
     simp only [Path.firstMonster]
     by_cases hn : List.find? (fun x ↦ decide (x ∈ m.monsterCells))
                              (path1 hN (m (row1 hN))).cells = none
@@ -941,8 +938,7 @@ lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_zero (hN : 2 
         lia
       · simp at hm
         exact m.notMem_monsterCells_of_fst_eq_zero rfl hm
-      · simp at h
-        lia
+      · simp [eqComm] at h
       · dsimp only [Nat.reduceAdd, Nat.reduceDiv, Fin.mk_one] at hm
         have h1N : 1 ≤ N := by lia
         rw [m.mk_mem_monsterCells_iff_of_le (le_refl _) h1N] at hm
@@ -990,7 +986,7 @@ lemma winningStrategy_play_two_of_edge_N (hN : 2 ≤ N) {m : MonsterData N}
   simp_rw [winningStrategy_play_two hN, path1, path1OfEdgeN, path2, path2OfEdgeNDef, if_neg hc₁0,
     dif_neg hc₁0, if_pos hc₁N, dif_pos hc₁N, if_pos hc₁r0, dif_pos hc₁r0,
     ← Path.firstMonster_reflect, MonsterData.reflect_reflect]
-  convert rfl using 4
+  convert! rfl using 4
   nth_rw 2 [← m.reflect_reflect]
   rw [Path.firstMonster_reflect]
   rcases ((path1OfEdge0 hN).firstMonster m.reflect).eq_none_or_eq_some with h | h
@@ -1025,10 +1021,10 @@ lemma winningStrategy_forcesWinIn_three (hN : 2 ≤ N) :
   intro m
   rcases winningStrategy_play_one_eq_none_or_play_two_eq_none hN m with h | h
   · rw [Strategy.WinsIn]
-    convert Set.mem_range_self (⟨1, by simp⟩ : Fin 3)
+    convert! Set.mem_range_self (⟨1, by simp⟩ : Fin 3)
     exact h.symm
   · rw [Strategy.WinsIn]
-    convert Set.mem_range_self (⟨2, by simp⟩ : Fin 3)
+    convert! Set.mem_range_self (⟨2, by simp⟩ : Fin 3)
     exact h.symm
 
 /-- This is to be determined by the solver of the original problem (and much of the difficulty

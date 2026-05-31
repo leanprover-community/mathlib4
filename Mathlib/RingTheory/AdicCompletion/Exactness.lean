@@ -5,7 +5,7 @@ Authors: Judith Ludwig, Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.RingTheory.AdicCompletion.Functoriality
 public import Mathlib.RingTheory.Filtration
 
@@ -28,7 +28,7 @@ All results are proven directly without using Mittag-Leffler systems.
 
 -/
 
-@[expose] public section
+public section
 
 universe u v w t
 

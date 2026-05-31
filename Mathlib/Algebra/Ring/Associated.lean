@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Ring.Units
 # Associated elements in rings
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsOrderedMonoid Multiset Field
 

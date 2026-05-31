@@ -48,7 +48,7 @@ separate variables constrained by certain relations.
 * <https://ysharifi.wordpress.com/2011/09/30/the-jacobson-noether-theorem/>
 -/
 
-@[expose] public section
+public section
 
 namespace JacobsonNoether
 
@@ -130,7 +130,7 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
     refine ⟨Nat.find h_exist, ⟨(Nat.find_spec h_exist).1, ?_, (Nat.find_spec h_exist).2⟩⟩
     set t := (Nat.find h_exist - 1 : ℕ) with ht
     by_cases! h_pos : 0 < t
-    · convert (ne_eq _ _) ▸ not_and.mp (Nat.find_min h_exist (m := t) (by lia)) h_pos
+    · convert! (ne_eq _ _) ▸ not_and.mp (Nat.find_min h_exist (m := t) (by lia)) h_pos
       lia
     · suffices h_find : Nat.find h_exist = 1 by
         rwa [h_find]

@@ -5,8 +5,9 @@ Authors: Yuma Mizuno
 -/
 module
 
-public meta import Mathlib.CategoryTheory.Bicategory.Coherence
-public meta import Mathlib.Tactic.CategoryTheory.BicategoricalComp
+public meta import Mathlib.CategoryTheory.Bicategory.Free
+public import Mathlib.CategoryTheory.Bicategory.Free
+public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
 /-!
 # A `coherence` tactic for bicategories
@@ -113,7 +114,7 @@ def mkLiftMap₂LiftExpr (e : Expr) : TermElabM Expr := do
     none
 
 /-- Coherence tactic for bicategories. -/
-def bicategory_coherence (g : MVarId) : TermElabM Unit := g.withContext do
+def bicategoryCoherence (g : MVarId) : TermElabM Unit := g.withContext do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 256 (synthInstance.maxSize.get opts))) do
   let thms := [``BicategoricalCoherence.iso, ``Iso.trans, ``Iso.symm, ``Iso.refl,
@@ -131,9 +132,7 @@ def bicategory_coherence (g : MVarId) : TermElabM Unit := g.withContext do
   let [] ← g₂.applyConst ``Subsingleton.elim
     | exception g "This shouldn't happen; Subsingleton.elim does not create goals."
 
-/-- Coherence tactic for bicategories.
-Use `pure_coherence` instead, which is a frontend to this one. -/
-elab "bicategory_coherence" : tactic => do bicategory_coherence (← getMainGoal)
+@[deprecated (since := "2026-05-27")] alias bicategory_coherence := bicategoryCoherence
 
 open Lean.Parser.Tactic
 

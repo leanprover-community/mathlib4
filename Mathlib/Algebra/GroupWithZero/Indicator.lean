@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Notation.Indicator
 # Indicator functions and support of a function in groups with zero
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ring
 
@@ -78,9 +78,6 @@ variable (M₀) [Nontrivial M₀]
 lemma indicator_eq_zero_iff_notMem : indicator s 1 i = (0 : M₀) ↔ i ∉ s := by
   classical simp [indicator_apply, imp_false]
 
-@[deprecated (since := "2025-05-23")]
-alias indicator_eq_zero_iff_not_mem := indicator_eq_zero_iff_notMem
-
 lemma indicator_eq_one_iff_mem : indicator s 1 i = (1 : M₀) ↔ i ∈ s := by
   classical simp [indicator_apply, imp_false]
 
@@ -116,6 +113,14 @@ variable [NoZeroDivisors M₀]
 
 @[simp] lemma support_mul' (f g : ι → M₀) : support (f * g) = support f ∩ support g :=
   support_mul _ _
+
+/-- If `f` is everywhere nonzero, then `support (f * g) = support g`. -/
+lemma support_mul_of_ne_zero_left {f : ι → M₀} (hf : ∀ x, f x ≠ 0) (g : ι → M₀) :
+    support (fun x => f x * g x) = support g := by simp [support_eq_univ hf]
+
+/-- If `g` is everywhere nonzero, then `support (f * g) = support f`. -/
+lemma support_mul_of_ne_zero_right (f : ι → M₀) {g : ι → M₀} (hg : ∀ x, g x ≠ 0) :
+    support (fun x => f x * g x) = support f := by simp [support_eq_univ hg]
 
 end MulZeroClass
 

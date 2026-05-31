@@ -12,7 +12,7 @@ public import Mathlib.Order.Filter.AtTopBot.Ring
 # Convergence to ±infinity in linear ordered (semi)fields
 -/
 
-@[expose] public section
+public section
 
 namespace Filter
 

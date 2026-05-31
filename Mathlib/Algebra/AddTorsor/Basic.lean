@@ -227,3 +227,24 @@ lemma pointReflection_eq_subLeft {G : Type*} [AddCommGroup G] (x : G) :
   ext; simp [pointReflection, sub_add_eq_add_sub, two_nsmul]
 
 end Equiv
+
+/-- Pullback of an add torsor along an injective map. -/
+abbrev Function.Injective.addTorsor {G P Q : Type*}
+    [AddGroup G] [AddTorsor G P] [VAdd G Q] [VSub G Q] [Nonempty Q] (f : Q → P)
+    (hf : Function.Injective f)
+    (vadd : ∀ (c : G) (x : Q), f (c +ᵥ x) = c +ᵥ f x)
+    (vsub : ∀ (x y : Q), x -ᵥ y = f x -ᵥ f y) : AddTorsor G Q where
+  __ := hf.addAction f vadd
+  vsub_vadd' x y := hf <| by simp only [vsub, vadd, vsub_vadd]
+  vadd_vsub' c x := by simp [vsub, vadd]
+
+/-- Pushforward of an add torsor along a surjective map. -/
+abbrev Function.Surjective.addTorsor {G P Q : Type*}
+    [AddGroup G] [AddTorsor G P] [VAdd G Q] [VSub G Q]
+    (f : P → Q) (hf : Surjective f)
+    (vadd : ∀ (c : G) (x : P), f (c +ᵥ x) = c +ᵥ f x)
+    (vsub : ∀ (x y : P), x -ᵥ y = f x -ᵥ f y) : AddTorsor G Q where
+  __ := hf.addAction f vadd
+  nonempty := AddTorsor.nonempty.map f
+  vsub_vadd' := by simp [hf.forall, ← vadd, ← vsub]
+  vadd_vsub' := by simp [hf.forall, ← vadd, ← vsub]

@@ -21,7 +21,7 @@ occurrence of each.
 duplicate, multiplicity, nodup, `nub`
 -/
 
-@[expose] public section
+public section
 
 
 universe u
@@ -35,17 +35,15 @@ theorem dedup_nil : dedup [] = ([] : List α) :=
   rfl
 
 theorem dedup_cons_of_mem' {a : α} {l : List α} (h : a ∈ dedup l) : dedup (a :: l) = dedup l :=
-  pwFilter_cons_of_neg <| by simpa only [forall_mem_ne, not_not] using h
+  pwFilter_cons_of_neg <| by simpa only [forall_mem_ne, not_not] using! h
 
 theorem dedup_cons_of_notMem' {a : α} {l : List α} (h : a ∉ dedup l) :
     dedup (a :: l) = a :: dedup l :=
-  pwFilter_cons_of_pos <| by simpa only [forall_mem_ne] using h
+  pwFilter_cons_of_pos <| by simpa only [forall_mem_ne] using! h
 
 theorem dedup_cons' (a : α) (l : List α) :
     dedup (a :: l) = if a ∈ dedup l then dedup l else a :: dedup l := by
   split <;> simp [dedup_cons_of_mem', dedup_cons_of_notMem', *]
-
-@[deprecated (since := "2025-05-23")] alias dedup_cons_of_not_mem' := dedup_cons_of_notMem'
 
 @[simp]
 theorem mem_dedup {a : α} {l : List α} : a ∈ dedup l ↔ a ∈ l := by
@@ -61,8 +59,6 @@ theorem dedup_cons_of_mem {a : α} {l : List α} (h : a ∈ l) : dedup (a :: l) 
 @[simp]
 theorem dedup_cons_of_notMem {a : α} {l : List α} (h : a ∉ l) : dedup (a :: l) = a :: dedup l :=
   dedup_cons_of_notMem' <| mt mem_dedup.1 h
-
-@[deprecated (since := "2025-05-23")] alias dedup_cons_of_not_mem := dedup_cons_of_notMem
 
 theorem dedup_cons (a : α) (l : List α) :
     dedup (a :: l) = if a ∈ l then dedup l else a :: dedup l := by

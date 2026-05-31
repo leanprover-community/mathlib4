@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
+public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
 
 /-!
@@ -90,7 +91,7 @@ theorem _root_.Measurable.measure_of_isPiSystem {μ : α → Measure β} [∀ a,
     simp only [measure_compl hsm (measure_ne_top _ _)]
     exact h_univ.sub ihs
   | iUnion f hfd hfm ihf =>
-    simpa only [measure_iUnion hfd hfm] using .ennreal_tsum ihf
+    simpa only [measure_iUnion hfd hfm] using .tsum ihf
 
 theorem _root_.Measurable.measure_of_isPiSystem_of_isProbabilityMeasure {μ : α → Measure β}
     [∀ a, IsProbabilityMeasure (μ a)]
@@ -144,6 +145,11 @@ theorem join_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ �
     (m : Measure (Measure α)) : (c • m).join = c • m.join := by
   ext s hs
   simp [hs]
+
+lemma join_sum {ι : Type*} (m : ι → Measure (Measure α)) :
+    (sum m).join = sum fun (i : ι) ↦ (m i).join := by
+  ext s hs
+  simp_rw [sum_apply _ hs, join_apply hs, lintegral_sum_measure]
 
 @[simp]
 theorem join_dirac (μ : Measure α) : join (dirac μ) = μ := by
@@ -206,7 +212,7 @@ theorem lintegral_join {m : Measure (Measure α)} {f : α → ℝ≥0∞} (hf : 
   · fun_prop
   congr
   funext n
-  rw [lintegral_finset_sum (s n)]
+  rw [lintegral_finsetSum (s n)]
   · simp_rw [lintegral_const_mul _ (hf _ _)]
   · exact fun r _ => (hf _ _).const_mul _
 
@@ -267,6 +273,15 @@ theorem aemeasurable_bind {g : α → Measure β} {m : Measure (Measure α)}
   let ⟨f, hfm, hf⟩ := hg
   ⟨(bind · f), measurable_bind' hfm, (ae_ae_of_ae_join hf).mono fun _ ↦ bind_congr_right⟩
 
+theorem bind_sum {ι : Type*} (m : ι → Measure α) (f : α → Measure β)
+    (h : AEMeasurable f (sum fun i => m i)) :
+    (sum fun (i : ι) ↦ m i).bind f = sum fun (i : ι) ↦ (m i).bind f := by
+  simp_rw [bind, map_sum h, join_sum]
+
+lemma bind_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R) (m : Measure α)
+    (f : α → Measure β) : (c • m).bind f = c • (m.bind f) := by
+  simp_rw [bind, Measure.map_smul, join_smul]
+
 theorem lintegral_bind {m : Measure α} {μ : α → Measure β} {f : β → ℝ≥0∞} (hμ : AEMeasurable μ m)
     (hf : AEMeasurable f (bind m μ)) : ∫⁻ x, f x ∂bind m μ = ∫⁻ a, ∫⁻ x, f x ∂μ a ∂m :=
   (lintegral_join hf).trans (lintegral_map' (aemeasurable_lintegral hf) hμ)
@@ -286,7 +301,7 @@ theorem bind_bind {γ} [MeasurableSpace γ] {m : Measure α} {f : α → Measure
 
 @[simp]
 theorem dirac_bind {f : α → Measure β} (hf : Measurable f) (a : α) : bind (dirac a) f = f a := by
-  simp [bind, map_dirac hf]
+  simp [bind, map_dirac' hf]
 
 @[simp]
 theorem bind_dirac {m : Measure α} : bind m dirac = m := by

@@ -71,7 +71,7 @@ lemma cartanMatrixIn_mul_diagonal_eq {P : RootPairing ι R M N} [P.IsRootSystem]
     (B : P.InvariantForm) (b : P.Base) [DecidableEq ι] :
     (b.cartanMatrixIn S).map (algebraMap S R) *
       (Matrix.diagonal fun i : b.support ↦ B.form (P.root i) (P.root i)) =
-      (2 : R) • BilinForm.toMatrix b.toWeightBasis B.form := by
+      (2 : R) • B.form.toMatrix b.toWeightBasis := by
   ext
   simp [B.two_mul_apply_root_root]
 
@@ -82,7 +82,7 @@ lemma cartanMatrixIn_nondegenerate [IsDomain R] [NeZero (2 : R)] [FaithfulSMul S
   classical
   obtain ⟨B, hB⟩ : ∃ B : P.InvariantForm, B.form.Nondegenerate :=
     ⟨P.toInvariantForm, P.rootForm_nondegenerate⟩
-  replace hB : ((2 : R) • BilinForm.toMatrix b.toWeightBasis B.form).Nondegenerate := by
+  replace hB : ((2 : R) • B.form.toMatrix b.toWeightBasis).Nondegenerate := by
     rwa [Matrix.Nondegenerate.smul_iff two_ne_zero, LinearMap.BilinForm.nondegenerate_toMatrix_iff]
   have aux : (Matrix.diagonal fun i : b.support ↦ B.form (P.root i) (P.root i)).Nondegenerate := by
     rw [Matrix.nondegenerate_iff_det_ne_zero, Matrix.det_diagonal, Finset.prod_ne_zero_iff]
@@ -178,7 +178,7 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
   have hq₀ : q ≠ ⊥ := q.ne_bot_iff.mpr ⟨P.root i, subset_span <| by simpa, P.ne_zero i⟩
   have hq_mem (k : b.support) : P.root k ∈ q ↔ p k := by
     refine ⟨fun hk ↦ ?_, fun hk ↦ subset_span <| by simpa⟩
-    contrapose! hk
+    contrapose hk
     exact b.linearIndepOn_root.linearIndependent.notMem_span_image hk
   have hq_notMem (k : b.support) (hk : P.root k ∉ q) : q ≤ LinearMap.ker (P.coroot' k) := by
     refine fun x hx ↦ LinearMap.mem_ker.mpr ?_
@@ -206,6 +206,7 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
       simp [hk]
   simp [← hq_mem, IsIrreducible.eq_top_of_invtSubmodule_reflection q hq hq₀]
 
+-- TODO Derive from `LinearIndependent.injective`
 open scoped Matrix in
 lemma injective_pairingIn {P : RootPairing ι R M N} [P.IsRootSystem] [P.IsCrystallographic]
     (b : P.Base) :

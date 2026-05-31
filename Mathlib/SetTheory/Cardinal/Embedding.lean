@@ -33,7 +33,7 @@ Let `s : Set α` be a finite set.
   map from `Fin (m + n) ↪ α` to `Fin m ↪ α` is surjective.
 -/
 
-@[expose] public section
+public section
 
 open Set Fin Function Function.Embedding
 
@@ -48,7 +48,7 @@ theorem exists_embedding_disjoint_range_of_add_le_ENat_card
   · use y.trans (subtype _)
     rw [Set.disjoint_right]
     rintro _ ⟨i, rfl⟩
-    simpa only [← mem_compl_iff] using Subtype.coe_prop (y i)
+    simpa only [← mem_compl_iff] using! Subtype.coe_prop (y i)
   rcases finite_or_infinite α with hα | hα
   · let _ : Fintype α := Fintype.ofFinite α
     classical

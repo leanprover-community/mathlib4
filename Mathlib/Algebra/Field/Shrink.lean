@@ -7,13 +7,12 @@ module
 
 public import Mathlib.Algebra.Field.TransferInstance
 public import Mathlib.Logic.Small.Defs
-public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Transfer field structures from `α` to `Shrink α`
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

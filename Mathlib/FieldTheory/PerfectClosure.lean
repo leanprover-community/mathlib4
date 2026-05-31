@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.CharP.Lemmas
 public import Mathlib.FieldTheory.Perfect
-public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
 /-!
 
@@ -407,6 +406,7 @@ instance instReduced : IsReduced (PerfectClosure K p) where
 
 instance instPerfectRing : PerfectRing (PerfectClosure K p) p where
   bijective_frobenius := by
+    simp_rw [← frobenius_def]
     let f : PerfectClosure K p → PerfectClosure K p := fun e ↦
       liftOn e (fun x => mk K p (x.1 + 1, x.2)) fun x y H =>
       match x, y, H with
@@ -459,7 +459,7 @@ end Ring
 theorem eq_iff [CommRing K] [IsReduced K] (p : ℕ) [Fact p.Prime] [CharP K p] (x y : ℕ × K) :
     mk K p x = mk K p y ↔ (frobenius K p)^[y.1] x.2 = (frobenius K p)^[x.1] y.2 :=
   (mk_eq_iff K p x y).trans
-    ⟨fun ⟨z, H⟩ => (frobenius_inj K p).iterate z <| by simpa only [add_comm, iterate_add] using H,
+    ⟨fun ⟨z, H⟩ => (frobenius_inj K p).iterate z <| by simpa only [add_comm, iterate_add] using! H,
       fun H => ⟨0, H⟩⟩
 
 instance [CommRing K] [IsReduced K] (p : ℕ) [Fact p.Prime] [CharP K p] [Nontrivial K] :
@@ -492,7 +492,7 @@ instance instDivisionRing : DivisionRing (PerfectClosure K p) where
     rw [mul_inv_cancel₀ this, iterate_map_one]
   inv_zero := congr_arg (Quot.mk (R K p)) (by rw [inv_zero])
   nnqsmul := _
-  nnqsmul_def := fun _ _  => rfl
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
   qsmul_def := fun _ _ => rfl
 

@@ -13,7 +13,7 @@ public import Mathlib.Order.Filter.Prod
 # `Filter.atTop` and `Filter.atBot` filters on products
 -/
 
-@[expose] public section
+public section
 
 variable {ι ι' α β γ : Type*}
 
@@ -29,7 +29,7 @@ theorem prod_atTop_atTop_eq [Preorder α] [Preorder β] :
   · subsingleton
   simpa [atTop, prod_iInf_left, prod_iInf_right, iInf_prod] using iInf_comm
 
-lemma tendsto_finset_prod_atTop :
+lemma tendsto_finsetProd_atTop :
     Tendsto (fun (p : Finset ι × Finset ι') ↦ p.1 ×ˢ p.2) atTop atTop := by
   classical
   apply Monotone.tendsto_atTop_atTop
@@ -38,6 +38,8 @@ lemma tendsto_finset_prod_atTop :
   · intro b
     use (Finset.image Prod.fst b, Finset.image Prod.snd b)
     exact Finset.subset_product
+
+@[deprecated (since := "2026-04-08")] alias tendsto_finset_prod_atTop := tendsto_finsetProd_atTop
 
 theorem prod_atBot_atBot_eq [Preorder α] [Preorder β] :
     (atBot : Filter α) ×ˢ (atBot : Filter β) = (atBot : Filter (α × β)) :=

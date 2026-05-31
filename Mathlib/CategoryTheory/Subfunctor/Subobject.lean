@@ -27,6 +27,7 @@ variable {C : Type u} [Category.{v} C] (F : C ⥤ Type w)
 
 namespace Subfunctor
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories `Subfunctor F ≌ MonoOver F`. -/
 @[simps]
 noncomputable def equivalenceMonoOver : Subfunctor F ≌ MonoOver F where
@@ -37,7 +38,7 @@ noncomputable def equivalenceMonoOver : Subfunctor F ≌ MonoOver F where
     { obj X := Subfunctor.range X.arrow
       map {X Y} f := homOfLE (by
         rw [← MonoOver.w f]
-        apply range_comp_le ) }
+        apply range_comp_le) }
   unitIso := NatIso.ofComponents (fun A ↦ eqToIso (by simp))
   counitIso := NatIso.ofComponents
     (fun X ↦ MonoOver.isoMk ((asIso (toRange X.arrow)).symm))

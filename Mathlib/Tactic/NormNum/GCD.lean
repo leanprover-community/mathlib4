@@ -5,9 +5,9 @@ Authors: Mario Carneiro, Kyle Miller, Eric Wieser
 -/
 module
 
-public meta import Mathlib.Algebra.Ring.Divisibility.Basic
 public meta import Mathlib.Data.Int.GCD
-public meta import Mathlib.Tactic.NormNum
+public import Mathlib.Algebra.Ring.Divisibility.Basic
+public import Mathlib.Tactic.NormNum
 
 /-! # `norm_num` extensions for GCD-adjacent functions
 
@@ -135,7 +135,7 @@ def evalNatGCD : NormNumExt where eval {u α} e := do
   let .app (.app _ (x : Q(ℕ))) (y : Q(ℕ)) ← Meta.whnfR e | failure
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
   haveI' : $e =Q Nat.gcd $x $y := ⟨⟩
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨ex, p⟩ ← deriveNat x sℕ
   let ⟨ey, q⟩ ← deriveNat y sℕ
   let ⟨ed, pf⟩ := proveNatGCD ex ey
@@ -164,7 +164,7 @@ def evalNatLCM : NormNumExt where eval {u α} e := do
   let .app (.app _ (x : Q(ℕ))) (y : Q(ℕ)) ← Meta.whnfR e | failure
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
   haveI' : $e =Q Nat.lcm $x $y := ⟨⟩
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨ex, p⟩ ← deriveNat x sℕ
   let ⟨ey, q⟩ ← deriveNat y sℕ
   let ⟨ed, pf⟩ := proveNatLCM ex ey

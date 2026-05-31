@@ -46,6 +46,7 @@ instance : Mono (kerι φ) := ConcreteCategory.mono_of_injective (kerι φ) <| S
 
 @[simp] lemma kerι_apply (x) : kerι φ x = x.1 := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `TopModuleCat.ker` is indeed the kernel in `TopModuleCat R`. -/
 def isLimitKer : IsLimit (KernelFork.ofι (kerι φ) (kerι_comp φ)) :=
   isLimitAux (KernelFork.ofι (kerι φ) (kerι_comp φ))
@@ -77,6 +78,7 @@ instance : Epi (cokerπ φ) := ConcreteCategory.epi_of_surjective (cokerπ φ) (
   change Submodule.mkQ _ (φ m) = 0
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `TopModuleCat.coker` is indeed the cokernel in `TopModuleCat R`. -/
 def isColimitCoker : IsColimit (CokernelCofork.ofπ (cokerπ φ) (comp_cokerπ φ)) :=
   isColimitAux (.ofπ (cokerπ φ) (comp_cokerπ φ))
@@ -90,6 +92,7 @@ def isColimitCoker : IsColimit (CokernelCofork.ofπ (cokerπ φ) (comp_cokerπ �
 
 end cokernel
 
+set_option backward.isDefEq.respectTransparency false in
 instance : CategoryWithHomology (TopModuleCat R) := by
   constructor
   intro S

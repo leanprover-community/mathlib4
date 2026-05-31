@@ -19,7 +19,7 @@ a deterministic kernel. See `deterministic_comp_eq_map` and `comp_deterministic_
 
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory

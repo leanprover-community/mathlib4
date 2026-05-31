@@ -25,7 +25,7 @@ The main results of this file are as follows.
   `ArithmeticFunction.LSeries_positive_of_eq_differentiable`.
 -/
 
-@[expose] public section
+public section
 
 open scoped ComplexOrder
 
@@ -48,7 +48,7 @@ lemma iteratedDeriv_alternating {a : ℕ → ℂ} (hn : 0 ≤ a) {x : ℝ}
   · exact le_rfl
   · refine mul_nonneg ?_ <| (inv_natCast_cpow_ofReal_pos (by assumption) x).le
     induction n with
-    | zero => simpa only [Function.iterate_zero, id_eq] using hn k
+    | zero => simpa only [Function.iterate_zero, id_eq] using! hn k
     | succ n IH =>
         rw [Function.iterate_succ_apply']
         refine mul_nonneg ?_ IH

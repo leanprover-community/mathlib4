@@ -50,14 +50,12 @@ instance : NoAtoms (volume : Measure I) where
 theorem measurable_symm : Measurable σ := continuous_symm.measurable
 
 /-- `unitInterval.symm` bundled as a measurable equivalence. -/
-@[simps]
+@[simps apply]
 def symmMeasurableEquiv : I ≃ᵐ I where
   toFun := σ
   invFun := σ
   left_inv := symm_symm
   right_inv := symm_symm
-  measurable_toFun := measurable_symm
-  measurable_invFun := measurable_symm
 
 @[simp]
 lemma symm_symmMeasurableEquiv : symmMeasurableEquiv.symm = symmMeasurableEquiv := rfl

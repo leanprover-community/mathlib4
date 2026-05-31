@@ -29,7 +29,7 @@ inequality.
 ## References
 
 * [Giorgis Petridis, *The Plünnecke-Ruzsa inequality: an overview*][petridis2014]
-* [Terrence Tao, Van Vu, *Additive Combinatorics][tao-vu]
+* [Terence Tao, Van Vu, *Additive Combinatorics*][tao-vu]
 
 ## See also
 
@@ -37,7 +37,7 @@ In general non-abelian groups, small doubling doesn't imply small powers anymore
 does. See `Mathlib/Combinatorics/Additive/SmallTripling.lean`.
 -/
 
-@[expose] public section
+public section
 
 open MulOpposite Nat
 open scoped Pointwise
@@ -186,10 +186,7 @@ theorem ruzsa_triangle_inequality_mul_mul_mul (A B C : Finset G) :
   refine cast_le.1 (?_ : (_ : ℚ≥0) ≤ _)
   push_cast
   rw [← le_div_iff₀ (cast_pos.2 hB.card_pos), mul_div_right_comm, mul_comm _ B]
-  refine (Nat.cast_le.2 <| card_le_card_mul_left hU.1).trans ?_
-  refine le_trans ?_
-    (mul_le_mul (hUA _ hB') (cast_le.2 <| card_le_card <| mul_subset_mul_right hU.2)
-      (zero_le _) (zero_le _))
+  grw [card_le_card_mul_left hU.1, ← hUA _ hB', ← mul_subset_mul_right hU.2]
   rw [← mul_div_right_comm, ← mul_assoc, le_div_iff₀ (cast_pos.2 hU.1.card_pos), mul_comm _ C,
     ← mul_assoc, mul_comm _ C]
   exact mod_cast pluennecke_petridis_inequality_mul C (mul_aux hU.1 hU.2 hUA)
@@ -264,13 +261,13 @@ theorem pluennecke_ruzsa_inequality_pow_div_pow_div (hA : A.Nonempty) (B : Finse
 @[to_additive /-- Special case of the **Plünnecke-Ruzsa inequality**. Addition version. -/]
 theorem pluennecke_ruzsa_inequality_pow_mul (hA : A.Nonempty) (B : Finset G) (n : ℕ) :
     #(B ^ n) ≤ (#(A * B) / #A : ℚ≥0) ^ n * #A := by
-  simpa only [_root_.pow_zero, div_one] using pluennecke_ruzsa_inequality_pow_div_pow_mul hA _ _ 0
+  simpa only [_root_.pow_zero, div_one] using! pluennecke_ruzsa_inequality_pow_div_pow_mul hA _ _ 0
 
 /-- Special case of the **Plünnecke-Ruzsa inequality**. Division version. -/
 @[to_additive /-- Special case of the **Plünnecke-Ruzsa inequality**. Subtraction version. -/]
 theorem pluennecke_ruzsa_inequality_pow_div (hA : A.Nonempty) (B : Finset G) (n : ℕ) :
     #(B ^ n) ≤ (#(A / B) / #A : ℚ≥0) ^ n * #A := by
-  simpa only [_root_.pow_zero, div_one] using pluennecke_ruzsa_inequality_pow_div_pow_div hA _ _ 0
+  simpa only [_root_.pow_zero, div_one] using! pluennecke_ruzsa_inequality_pow_div_pow_div hA _ _ 0
 
 end CommGroup
 end Finset

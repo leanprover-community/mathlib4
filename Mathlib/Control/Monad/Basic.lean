@@ -6,15 +6,18 @@ Authors: Simon Hudon
 module
 
 public import Mathlib.Logic.Equiv.Defs
+public import Batteries.Lean.Except
+
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # Monad
 
 ## Attributes
 
-* ext
-* functor_norm
-* monad_norm
+* `ext`
+* `functor_norm`
+* `monad_norm`
 
 ## Implementation Details
 

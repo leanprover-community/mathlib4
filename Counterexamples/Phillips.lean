@@ -284,8 +284,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     intro n
     rw [div_le_iff₀' (show (0 : ℝ) < 2 by simp), hε]
     convert hF (s n) u using 2
-    · dsimp
-      ext x
+    · ext x
       simp only [u, not_exists, mem_iUnion, mem_diff]
       tauto
     · congr 1
@@ -299,7 +298,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     | succ n IH =>
       have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
         simpa only [s, Function.iterate_succ', union_diff_self]
-          using (diff_union_of_subset subset_union_left).symm
+          using! (diff_union_of_subset subset_union_left).symm
       rw [this, f.additive]
       swap; · exact disjoint_sdiff_self_left
       calc
@@ -361,7 +360,7 @@ theorem discretePart_apply (f : BoundedAdditiveMeasure α) (s : Set α) :
 theorem continuousPart_apply_eq_zero_of_countable (f : BoundedAdditiveMeasure α) (s : Set α)
     (hs : s.Countable) : f.continuousPart s = 0 := by
   simp only [continuousPart, restrict_apply]
-  convert f.apply_countable s hs using 2
+  convert! f.apply_countable s hs using 2
   ext x
   simp [and_comm]
 
@@ -417,6 +416,7 @@ theorem continuousPart_evalCLM_eq_zero [TopologicalSpace α] [DiscreteTopology �
     _ = indicator (univ \ f.discreteSupport ∩ (s \ {x})) 1 x := rfl
     _ = 0 := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toFunctions_toMeasure [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] (s : Set α)
     (hs : MeasurableSet s) :
     μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure s = μ.real s := by
@@ -430,6 +430,7 @@ theorem toFunctions_toMeasure [MeasurableSpace α] (μ : Measure α) [IsFiniteMe
     apply Filter.Eventually.of_forall
     exact norm_indicator_le_one _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toFunctions_toMeasure_continuousPart [MeasurableSpace α] [MeasurableSingletonClass α]
     (μ : Measure α) [IsFiniteMeasure μ] [NoAtoms μ] (s : Set α) (hs : MeasurableSet s) :
     μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure.continuousPart s = μ.real s := by
@@ -455,27 +456,13 @@ along horizontals). Such a set cannot be measurable as it would contradict Fubin
 We need the continuum hypothesis to construct it.
 -/
 
-
+-- TODO: deprecate in favor of `Cardinal.exists_rel_mk_fibers_lt`
 theorem sierpinski_pathological_family (Hcont : #ℝ = ℵ₁) :
     ∃ f : ℝ → Set ℝ, (∀ x, (univ \ f x).Countable) ∧ ∀ y, {x : ℝ | y ∈ f x}.Countable := by
-  rcases Cardinal.ord_eq ℝ with ⟨r, hr, H⟩
-  refine ⟨fun x => {y | r x y}, fun x => ?_, fun y => ?_⟩
-  · have : univ \ {y | r x y} = {y | r y x} ∪ {x} := by
-      ext y
-      simp only [true_and, mem_univ, mem_setOf_eq, mem_insert_iff, union_singleton, mem_diff]
-      rcases trichotomous_of r x y with (h | rfl | h)
-      · simp only [h, not_or, false_iff, not_true]
-        constructor
-        · rintro rfl; exact irrefl_of r y h
-        · exact asymm h
-      · simp only [true_or, iff_true]; exact irrefl x
-      · simp only [h, iff_true, or_true]; exact asymm h
-    rw [this]
-    apply Countable.union _ (countable_singleton _)
-    rw [Cardinal.countable_iff_lt_aleph_one, ← Hcont]
-    exact Cardinal.card_typein_lt r x H
-  · rw [Cardinal.countable_iff_lt_aleph_one, ← Hcont]
-    exact Cardinal.card_typein_lt r y H
+  obtain ⟨r, hr₁, hr₂⟩ := Cardinal.exists_rel_mk_fibers_lt ℝ
+  refine ⟨fun x ↦ setOf (r x), ?_, ?_⟩
+  · simpa [Hcont, ← Set.compl_eq_univ_diff] using! hr₁
+  · simpa [Hcont] using hr₂
 
 /-- A family of sets in `ℝ` which only miss countably many points, but such that any point is
 contained in only countably many of them. -/
@@ -508,6 +495,7 @@ functions of the different fibers of the Sierpinski pathological family -/
 def f (Hcont : #ℝ = ℵ₁) (x : ℝ) : DiscreteCopy ℝ →ᵇ ℝ :=
   ofNormedAddCommGroupDiscrete (indicator (spf Hcont x) 1) 1 (norm_indicator_le_one _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem apply_f_eq_continuousPart (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ)
     (x : ℝ) (hx : φ.toBoundedAdditiveMeasure.discreteSupport ∩ spf Hcont x = ∅) :
     φ (f Hcont x) = φ.toBoundedAdditiveMeasure.continuousPart univ := by
@@ -576,6 +564,7 @@ theorem measurable_comp (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ �
 theorem norm_bound (Hcont : #ℝ = ℵ₁) (x : ℝ) : ‖f Hcont x‖ ≤ 1 :=
   norm_ofNormedAddCommGroup_le _ zero_le_one (norm_indicator_le_one _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The function `f Hcont : ℝ → (DiscreteCopy ℝ →ᵇ ℝ)` has no Pettis integral. -/
 theorem no_pettis_integral (Hcont : #ℝ = ℵ₁) :
     ¬∃ g : DiscreteCopy ℝ →ᵇ ℝ,

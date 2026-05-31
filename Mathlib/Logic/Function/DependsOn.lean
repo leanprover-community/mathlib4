@@ -6,6 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Data.Set.Restrict
+public import Mathlib.Util.Delaborators
 
 /-!
 # Functions depending only on some variables

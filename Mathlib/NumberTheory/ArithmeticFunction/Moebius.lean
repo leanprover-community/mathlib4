@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 module
 
+public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 /-!
 # The Möbius function and Möbius inversion
@@ -67,7 +68,7 @@ theorem moebius_apply_one : μ 1 = 1 := by simp
 
 theorem moebius_ne_zero_iff_squarefree {n : ℕ} : μ n ≠ 0 ↔ Squarefree n := by
   constructor <;> intro h
-  · contrapose! h
+  · contrapose h
     simp [h]
   · simp [h]
 
@@ -161,11 +162,7 @@ theorem moebius_mul_coe_zeta : (μ * ζ : ArithmeticFunction ℤ) = 1 := by
   | one => simp
   | prime_pow p n hp hn =>
     rw [coe_mul_zeta_apply, sum_divisors_prime_pow hp, sum_range_succ']
-    simp_rw [pow_zero, moebius_apply_one, moebius_apply_prime_pow hp (succ_ne_zero _), succ_inj,
-      sum_ite_eq', mem_range, if_pos hn, neg_add_cancel]
-    rw [one_apply_ne]
-    rw [Ne, pow_eq_one_iff hn.ne']
-    exact hp.ne_one
+    simp [moebius_apply_prime_pow, hp.ne_one, hn.ne', hp, hn]
   | coprime a b _ha _hb hab ha' hb' =>
     rw [IsMultiplicative.map_mul_of_coprime _ hab, ha', hb',
       IsMultiplicative.map_mul_of_coprime isMultiplicative_one hab]
@@ -264,13 +261,11 @@ theorem prod_eq_iff_prod_pow_moebius_eq_of_nonzero [CommGroupWithZero R] {f g : 
             if h : 0 < n then Units.mk0 (g n) (hg n h) else 1))
         (forall_congr' fun n => ?_) <;>
     refine imp_congr_right fun hn => ?_
-  · dsimp
-    rw [dif_pos hn, ← Units.val_inj, ← Units.coeHom_apply, map_prod, Units.val_mk0,
+  · rw [dif_pos hn, ← Units.val_inj, ← Units.coeHom_apply, map_prod, Units.val_mk0,
       prod_congr rfl _]
     intro x hx
     rw [dif_pos (pos_of_mem_divisors hx), Units.coeHom_apply, Units.val_mk0]
-  · dsimp
-    rw [dif_pos hn, ← Units.val_inj, ← Units.coeHom_apply, map_prod, Units.val_mk0,
+  · rw [dif_pos hn, ← Units.val_inj, ← Units.coeHom_apply, map_prod, Units.val_mk0,
       prod_congr rfl _]
     intro x hx
     rw [dif_pos (pos_of_mem_divisors (snd_mem_divisors_of_mem_antidiagonal hx)), Units.coeHom_apply,
@@ -350,13 +345,11 @@ theorem prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero [CommGroupWithZero R]
             s hs))
         (forall_congr' fun n => ?_) <;>
     refine imp_congr_right fun hn => ?_
-  · dsimp
-    rw [dif_pos hn, ← Units.val_inj, ← Units.coeHom_apply, map_prod, Units.val_mk0,
+  · rw [dif_pos hn, ← Units.val_inj, ← Units.coeHom_apply, map_prod, Units.val_mk0,
       prod_congr rfl _]
     intro x hx
     rw [dif_pos (pos_of_mem_divisors hx), Units.coeHom_apply, Units.val_mk0]
-  · dsimp
-    rw [dif_pos hn, ← Units.val_inj, ← Units.coeHom_apply, map_prod, Units.val_mk0,
+  · rw [dif_pos hn, ← Units.val_inj, ← Units.coeHom_apply, map_prod, Units.val_mk0,
       prod_congr rfl _]
     intro x hx
     rw [dif_pos (pos_of_mem_divisors (snd_mem_divisors_of_mem_antidiagonal hx)),

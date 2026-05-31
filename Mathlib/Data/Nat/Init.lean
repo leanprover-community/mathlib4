@@ -6,14 +6,9 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 module
 
 public import Batteries.Tactic.Alias
-public import Batteries.Tactic.Init
-public import Mathlib.Init
+public import Batteries.Util.LibraryNote
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
-public import Mathlib.Tactic.Basic
-public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.TypeStar
-public import Mathlib.Util.AssertExists
 
 /-!
 # Basic operations on the natural numbers
@@ -35,7 +30,7 @@ See note [foundational algebra order theory].
 
 @[expose] public section
 
-library_note2 «foundational algebra order theory» /--
+library_note «foundational algebra order theory» /--
 Batteries has a home-baked development of the algebraic and order-theoretic theory of `ℕ` and `ℤ`
 which, in particular, is not typeclass-mediated. This is useful to set up the algebra and finiteness
 libraries in mathlib (naturals and integers show up as indices/offsets in lists, cardinality in
@@ -72,10 +67,6 @@ alias _root_.LT.lt.nat_succ_le := succ_le_of_lt
 
 alias ⟨of_le_succ, _⟩ := le_succ_iff
 
-@[deprecated (since := "2025-08-21")] alias forall_lt_succ := forall_lt_succ_right
-
-@[deprecated (since := "2025-08-15")] alias exists_lt_succ := exists_lt_succ_right
-
 lemma two_lt_of_ne : ∀ {n}, n ≠ 0 → n ≠ 1 → n ≠ 2 → 2 < n
   | 0, h, _, _ => (h rfl).elim
   | 1, _, h, _ => (h rfl).elim
@@ -99,10 +90,6 @@ lemma two_mul_ne_two_mul_add_one : 2 * n ≠ 2 * m + 1 :=
   mt (congrArg (· % 2))
     (by rw [Nat.add_comm, add_mul_mod_self_left, mul_mod_right, mod_eq_of_lt] <;> simp)
 
-@[deprecated (since := "2025-06-05")] alias mul_right_eq_self_iff := mul_eq_left
-@[deprecated (since := "2025-06-05")] alias mul_left_eq_self_iff := mul_eq_right
-@[deprecated (since := "2025-06-05")] alias eq_zero_of_double_le := eq_zero_of_two_mul_le
-
 /-! ### `div` -/
 
 lemma le_div_two_iff_mul_two_le {n m : ℕ} : m ≤ n / 2 ↔ (m : ℤ) * 2 ≤ n := by
@@ -111,12 +98,6 @@ lemma le_div_two_iff_mul_two_le {n m : ℕ} : m ≤ n / 2 ↔ (m : ℤ) * 2 ≤ 
 /-- A version of `Nat.div_lt_self` using successors, rather than additional hypotheses. -/
 lemma div_lt_self' (a b : ℕ) : (a + 1) / (b + 2) < a + 1 :=
   Nat.div_lt_self (Nat.succ_pos _) (Nat.succ_lt_succ (Nat.succ_pos _))
-
-@[deprecated (since := "2025-06-05")] alias eq_zero_of_le_half := eq_zero_of_le_div_two
-@[deprecated (since := "2025-06-05")] alias le_half_of_half_lt_sub := le_div_two_of_div_two_lt_sub
-@[deprecated (since := "2025-06-05")] alias half_le_of_sub_le_half := div_two_le_of_sub_le_div_two
-@[deprecated (since := "2025-06-05")] protected alias div_le_of_le_mul' := Nat.div_le_of_le_mul
-@[deprecated (since := "2025-06-05")] protected alias div_le_self' := Nat.div_le_self
 
 lemma two_mul_odd_div_two (hn : n % 2 = 1) : 2 * (n / 2) = n - 1 := by
   lia
@@ -290,11 +271,24 @@ lemma le_induction {m : ℕ} {P : ∀ n, m ≤ n → Prop} (base : P m m.le_refl
   @Nat.leRec (motive := P) _ base succ
 
 /-- Induction principle deriving the next case from the two previous ones. -/
-def twoStepInduction {P : ℕ → Sort*} (zero : P 0) (one : P 1)
-    (more : ∀ n, P n → P (n + 1) → P (n + 2)) : ∀ a, P a
+@[elab_as_elim]
+def twoStepInduction {motive : ℕ → Sort*} (zero : motive 0) (one : motive 1)
+    (more : ∀ n, motive n → motive (n + 1) → motive (n + 2)) : ∀ a, motive a
   | 0 => zero
   | 1 => one
   | _ + 2 => more _ (twoStepInduction zero one more _) (twoStepInduction zero one more _)
+
+/-- Induction principle deriving the next case from the `k` previous ones. Use as
+```
+induction n using stepInduction 3 with
+| base n hn => ...
+| step n ih => ...
+``` -/
+@[elab_as_elim]
+def stepInduction {motive : ℕ → Sort*} (k : ℕ) (base : ∀ i < k, motive i)
+    (step : ∀ n, (∀ i < k, motive (n + i)) → motive (n + k)) (a : ℕ) : motive a :=
+  if h : a < k then base _ h else
+  (show a - k + k = a by lia) ▸ step (a - k) fun _ _ ↦ stepInduction k base step _
 
 @[elab_as_elim]
 protected theorem strong_induction_on {p : ℕ → Prop} (n : ℕ)
@@ -411,10 +405,6 @@ lemma not_pos_pow_dvd {a n : ℕ} (ha : 1 < a) (hn : 1 < n) : ¬ a ^ n ∣ a :=
   not_dvd_of_pos_of_lt (Nat.lt_trans Nat.zero_lt_one ha)
     (lt_of_eq_of_lt (Nat.pow_one a).symm ((Nat.pow_lt_pow_iff_right ha).2 hn))
 
-/-- `m` is not divisible by `n` if it is between `n * k` and `n * (k + 1)` for some `k`. -/
-@[deprecated (since := "2025-06-05")] alias not_dvd_of_between_consec_multiples :=
-  not_dvd_of_lt_of_lt_mul_succ
-
 @[simp]
 protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ 2 * n + 1 := by
   lia
@@ -424,10 +414,6 @@ protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ 2 * n + 1 := by
 
 /-- A natural number `m` divides the sum `n + m` if and only if `m` divides `n`. -/
 @[simp] protected lemma dvd_add_self_right : m ∣ n + m ↔ m ∣ n := Nat.dvd_add_left (Nat.dvd_refl m)
-
-/-- `n` is not divisible by `a` iff it is between `a * k` and `a * (k + 1)` for some `k`. -/
-@[deprecated (since := "2025-06-05")] alias not_dvd_iff_between_consec_multiples :=
-  not_dvd_iff_lt_mul_succ
 
 /-- Two natural numbers are equal if and only if they have the same multiples. -/
 lemma dvd_right_iff_eq : (∀ a : ℕ, m ∣ a ↔ n ∣ a) ↔ m = n :=
@@ -453,6 +439,9 @@ instance decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
     Decidable (∀ x, lo ≤ x → x ≤ hi → P x) :=
   decidable_of_iff (∀ x, lo ≤ x → x < hi + 1 → P x) <|
     forall₂_congr fun _ _ ↦ imp_congr Nat.lt_succ_iff Iff.rfl
+
+instance (n : ℤ) [NeZero n] : NeZero n.natAbs where
+  out := n.natAbs_ne_zero.mpr (NeZero.ne n)
 
 /-! ### `Nat.AtLeastTwo` -/
 

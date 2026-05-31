@@ -17,23 +17,35 @@ The lemmas in this file have been moved out of
 `Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean` to reduce its imports.
 -/
 
-@[expose] public section
+public section
 
 variable {ι κ M N β : Type*}
 
 @[to_additive]
-theorem MonoidHom.coe_finset_prod [MulOneClass M] [CommMonoid N] (f : ι → M →* N) (s : Finset ι) :
+theorem MonoidHom.coe_finsetProd [MulOneClass M] [CommMonoid N] (f : ι → M →* N) (s : Finset ι) :
     ⇑(∏ x ∈ s, f x) = ∏ x ∈ s, ⇑(f x) :=
   map_prod (MonoidHom.coeFn M N) _ _
+
+@[deprecated (since := "2026-04-08")]
+alias AddMonoidHom.coe_finset_sum := AddMonoidHom.coe_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias MonoidHom.coe_finset_prod := MonoidHom.coe_finsetProd
 
 /-- See also `Finset.prod_apply`, with the same conclusion but with the weaker hypothesis
 `f : α → M → N` -/
 @[to_additive (attr := simp)
   /-- See also `Finset.sum_apply`, with the same conclusion but with the weaker hypothesis
   `f : α → M → N` -/]
-theorem MonoidHom.finset_prod_apply [MulOneClass M] [CommMonoid N] (f : ι → M →* N) (s : Finset ι)
+theorem MonoidHom.finsetProd_apply [MulOneClass M] [CommMonoid N] (f : ι → M →* N) (s : Finset ι)
     (b : M) : (∏ x ∈ s, f x) b = ∏ x ∈ s, f x b :=
   map_prod (MonoidHom.eval b) _ _
+
+@[deprecated (since := "2026-04-08")]
+alias AddMonoidHom.finset_sum_apply := AddMonoidHom.finsetSum_apply
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias MonoidHom.finset_prod_apply := MonoidHom.finsetProd_apply
 
 namespace Finset
 

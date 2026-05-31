@@ -19,7 +19,7 @@ We don't define a `RingHom.Bijective` predicate, but use `fun f ↦ Function.Bij
 the ring hom property.
 -/
 
-@[expose] public section
+public section
 
 open TensorProduct
 

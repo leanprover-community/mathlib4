@@ -5,6 +5,7 @@ Authors: María Inés de Frutos-Fernández, Fabrizio Barroero
 -/
 module
 
+public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Algebra.Order.Hom.Basic
 public import Mathlib.Data.Nat.Choose.Sum
 
@@ -16,7 +17,7 @@ A function `f : α → R` is nonarchimedean if it satisfies the strong triangle 
 nonarchimedean functions.
 -/
 
-@[expose] public section
+public section
 
 namespace IsNonarchimedean
 
@@ -49,21 +50,28 @@ theorem nmul_le {F α : Type*} [NonAssocSemiring α] [FunLike F α R] [ZeroHomCl
   rw [← nsmul_eq_mul]
   exact nsmul_le hna
 
-lemma apply_natCast_le_one_of_isNonarchimedean {F α : Type*} [AddMonoidWithOne α] [FunLike F α R]
+lemma apply_natCast_le_one {F α : Type*} [AddMonoidWithOne α] [FunLike F α R]
     [ZeroHomClass F α R] [NonnegHomClass F α R] [OneHomClass F α R] {f : F}
     (hna : IsNonarchimedean f) {n : ℕ} : f n ≤ 1 := by
   rw [← nsmul_one n, ← map_one f]
   exact nsmul_le hna
 
+@[deprecated (since := "2026-04-27")]
+alias apply_natCast_le_one_of_isNonarchimedean := apply_natCast_le_one
+
 /-- If `f` is a nonarchimedean additive group seminorm on `α` with `f 1 = 1`, then for every `n : ℤ`
   we have `f n ≤ 1`. -/
-theorem apply_intCast_le_one_of_isNonarchimedean [IsStrictOrderedRing R]
+theorem apply_intCast_le_one [IsStrictOrderedRing R]
     {F α : Type*} [AddGroupWithOne α] [FunLike F α R]
     [AddGroupSeminormClass F α R] [OneHomClass F α R] {f : F}
     (hna : IsNonarchimedean f) {n : ℤ} : f n ≤ 1 := by
   obtain ⟨a, rfl | rfl⟩ := Int.eq_nat_or_neg n <;>
-  simp [apply_natCast_le_one_of_isNonarchimedean hna]
+  simp [apply_natCast_le_one hna]
 
+@[deprecated (since := "2026-04-27")]
+alias apply_intCast_le_one_of_isNonarchimedean := apply_intCast_le_one
+
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma add_eq_right_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α}
     (h_lt : f x < f y) : f (x + y) = f y := by
@@ -78,6 +86,7 @@ lemma add_eq_right_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
       exact max_lt h_lt <| lt_of_le_of_ne h1 h
     _   = f y := max_self (f y)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma add_eq_left_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α}
     (h_lt : f y < f x) : f (x + y) = f x := by
@@ -183,7 +192,7 @@ theorem finset_powerset_image_add [IsStrictOrderedRing R]
 omit [Semiring R] in
 open Finset in
 /-- Ultrametric inequality with `Finset.sum`. -/
-lemma apply_sum_le_sup_of_isNonarchimedean {α β : Type*} [AddCommMonoid α] {f : α → R}
+lemma apply_sum_le_sup {α β : Type*} [AddCommMonoid α] {f : α → R}
     (nonarch : IsNonarchimedean f) {s : Finset β} (hnonempty : s.Nonempty) {l : β → α} :
     f (∑ i ∈ s, l i) ≤ s.sup' hnonempty fun i => f (l i) := by
   induction hnonempty using Nonempty.cons_induction with
@@ -194,6 +203,25 @@ lemma apply_sum_le_sup_of_isNonarchimedean {α β : Type*} [AddCommMonoid α] {f
     rcases le_max_iff.mp <| nonarch (l i) (∑ i ∈ s, l i) with h₁ | h₂
     · exact .inl h₁
     · exact .inr <| le_trans h₂ hind
+
+@[deprecated (since := "2026-04-27")]
+alias apply_sum_le_sup_of_isNonarchimedean := apply_sum_le_sup
+
+open Finset in
+lemma apply_sum_eq_of_lt {α β F : Type*} [AddCommGroup α] [FunLike F α R]
+    [AddGroupSeminormClass F α R] {f : F} (nonarch : IsNonarchimedean f) {s : Finset β} {l : β → α}
+    {k : β} (hk : k ∈ s) (hmax : ∀ j ∈ s, j ≠ k → f (l j) < f (l k)) :
+    f (∑ i ∈ s, l i) = f (l k) := by
+  have : s.Nonempty := by use k
+  induction this using Nonempty.cons_induction generalizing k with
+  | singleton a => simp_all
+  | cons a s _ hs _ =>
+    by_cases ha : k = a
+    · rw [sum_cons, ha]
+      apply add_eq_left_of_lt nonarch
+      grw [apply_sum_le_sup nonarch hs]
+      grind [sup'_lt_iff]
+    · grind [add_eq_right_of_lt nonarch]
 
 /-- If `f` is a nonarchimedean additive group seminorm on a commutative ring `α`, `n : ℕ`, and
   `a b : α`, then we can find `m : ℕ` such that `m ≤ n` and

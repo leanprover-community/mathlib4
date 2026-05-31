@@ -22,7 +22,7 @@ In particular, if `e : C ≌ D` is an equivalence of categories and
 
 -/
 
-@[expose] public section
+public section
 
 universe w v v' u u'
 
@@ -45,6 +45,7 @@ lemma isCardinalPresentable_leftAdjoint_obj (X : C) [IsCardinalPresentable X κ]
   exact Functor.isCardinalAccessible_of_natIso
     (show G ⋙ _ ≅ _ from (Adjunction.compUliftCoyonedaIso.{0} adj).symm.app (op X)) κ
 
+set_option backward.isDefEq.respectTransparency false in
 variable {κ} in
 lemma isCardinalFilteredGenerator
     {P : ObjectProperty C} (hP : P.IsCardinalFilteredGenerator κ)

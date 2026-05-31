@@ -36,6 +36,8 @@ instance : SetLike (ClopenUpperSet α) α where
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
 
+instance : PartialOrder (ClopenUpperSet α) := .ofSetLike (ClopenUpperSet α) α
+
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : ClopenUpperSet α) : Set α := s
 
@@ -73,7 +75,7 @@ instance : Bot (ClopenUpperSet α) :=
   ⟨⟨⊥, isUpperSet_empty⟩⟩
 
 instance : Lattice (ClopenUpperSet α) :=
-  SetLike.coe_injective.lattice _ (fun _ _ => rfl) fun _ _ => rfl
+  SetLike.coe_injective.lattice _ .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 instance : BoundedOrder (ClopenUpperSet α) :=
   BoundedOrder.lift ((↑) : _ → Set α) (fun _ _ => id) rfl rfl

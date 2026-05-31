@@ -12,7 +12,7 @@ public import Mathlib.Data.Nat.Prime.Factorial
 # Divisibility properties of binomial coefficients
 -/
 
-@[expose] public section
+public section
 
 
 namespace Nat

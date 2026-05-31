@@ -12,7 +12,7 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 # Distributivity of group operations over supremum/infimum
 -/
 
-@[expose] public section
+public section
 
 open Function Set
 

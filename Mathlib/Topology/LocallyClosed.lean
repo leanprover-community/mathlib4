@@ -27,7 +27,7 @@ public import Mathlib.Tactic.TFAE
 
 -/
 
-@[expose] public section
+public section
 
 open Set Topology
 open scoped Set.Notation
@@ -180,8 +180,9 @@ lemma isLocallyClosed_tfae (s : Set X) :
     · exact (subset_iUnion₂ _ _ <| hxU x ·)
   tfae_have 5 → 1
   | H => by
-    convert H.isLocallyClosed.image IsInducing.subtypeVal
-      (by simpa using isClosed_closure.isLocallyClosed)
+    convert!
+      H.isLocallyClosed.image IsInducing.subtypeVal
+        (by simpa using isClosed_closure.isLocallyClosed)
     simpa using subset_closure
   tfae_finish
 
