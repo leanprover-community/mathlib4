@@ -435,6 +435,11 @@ def H1Cotangent.equiv {P₁ P₂ : Extension R S} (f₁ : P₁.Hom P₂) (f₂ :
     rw [← Extension.H1Cotangent.map_id, eq_comm, map_eq _ (f₁.comp f₂),
       Extension.H1Cotangent.map_comp]; rfl
 
+omit [IsScalarTower R S S'] in
+lemma Cotangent.map_comp_h1Cotangentι (f : P.Hom P') :
+    (Cotangent.map f) ∘ₗ P.h1Cotangentι =
+      (P'.h1Cotangentι.restrictScalars S) ∘ₗ (H1Cotangent.map f) := rfl
+
 end Extension
 
 namespace Generators
