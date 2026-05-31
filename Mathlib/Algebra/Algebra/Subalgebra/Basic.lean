@@ -318,7 +318,8 @@ instance (priority := low) module' [Semiring R'] [SMul R' R] [Module R' A] [IsSc
     Module R' S :=
   inferInstance
 
-instance : Module R S :=
+-- see Note [lower instance priority]
+instance (priority := low) : Module R S :=
   inferInstance
 
 instance [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScalarTower R' R S :=
