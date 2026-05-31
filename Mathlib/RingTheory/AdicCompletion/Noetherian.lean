@@ -290,18 +290,8 @@ lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg 
 
 lemma AdicCompletion.isNoetherianRing_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG) :
     IsNoetherianRing (AdicCompletion I R) := by
-  have eq : I.map (algebraMap R (AdicCompletion I R)) = RingHom.ker (evalOneₐ I).toRingHom := by
-    ext x
-    refine (Iff.trans ?_ (Submodule.ext_iff.mp (pow_smul_top_eq_ker_eval fg (n := 1)) x)).trans ?_
-    · simp
-    · have eq : I ^ 1 * (⊤ : Ideal R) = I := by simp
-      have inj : Function.Injective (Ideal.Quotient.factor (le_of_eq eq)) := by
-        simp [RingHom.injective_iff_ker_eq_bot, Ideal.Quotient.factor_ker,
-          Ideal.map_mk_eq_bot_of_le]
-      simpa [← AdicCompletion.factorₐ_evalₐ_one, ← AdicCompletion.factor_eval_eq_evalₐ]
-        using (map_eq_zero_iff _ inj).symm
   let e : (AdicCompletion I R) ⧸ I.map (algebraMap R (AdicCompletion I R)) ≃+* R ⧸ I :=
-    (Ideal.quotEquivOfEq eq).trans
+    (Ideal.quotEquivOfEq (AdicCompletion.ker_evalOneₐ_eq_map I fg).symm).trans
     (RingHom.quotientKerEquivOfSurjective (AdicCompletion.evalOneₐ_surjective I))
   have := isNoetherianRing_of_ringEquiv _ e.symm
   exact isNoetherianRing_of_isAdicComplete_of_fg _ (fg.map (algebraMap R (AdicCompletion I R)))

@@ -18,10 +18,10 @@ public import Mathlib.RingTheory.Extension.Basic
 ## Main definition
 
 - `Algebra.Generators`: A family of generators of an `R`-algebra `S` consists of
-  1. `vars`: The type of variables.
-  2. `val : vars → S`: The assignment of each variable to a value.
+  1. `ι`: The type of variables.
+  2. `val : ι → S`: The assignment of each variable to a value.
   3. `σ`: A set-theoretic section of the induced `R`-algebra homomorphism `R[X] → S`, where we
-     write `R[X]` for `R[vars]`.
+     write `R[X]` for `R[ι]`.
 
 - `Algebra.Generators.Hom`: Given a commuting square
   ```
@@ -37,11 +37,11 @@ public import Mathlib.RingTheory.Extension.Basic
 
 ## TODOs
 
-Currently, Lean does not see through the `vars` field of terms of `Generators R S` obtained
+Currently, Lean does not see through the `ι` field of terms of `Generators R S` obtained
 from constructions, e.g. composition. This causes fragile and cumbersome proofs, because
 `simp` and `rw` often don't work properly. `Generators R S` (and `Presentation R S`, etc.) should
 be refactored in a way that makes these equalities reducibly def-eq, for example
-by unbundling the `vars` field or making the field globally reducible in constructions using
+by unbundling the `ι` field or making the field globally reducible in constructions using
 unification hints.
 
 -/
@@ -55,8 +55,8 @@ open TensorProduct MvPolynomial
 variable (R : Type u) (S : Type v) (ι : Type w) [CommRing R] [CommRing S] [Algebra R S]
 
 /-- A family of generators of an `R`-algebra `S` consists of
-1. `vars`: The type of variables.
-2. `val : vars → S`: The assignment of each variable to a value in `S`.
+1. `ι`: The type of variables.
+2. `val : ι → S`: The assignment of each variable to a value in `S`.
 3. `σ`: A section of `R[X] → S`. -/
 structure Algebra.Generators where
   /-- The assignment of each variable to a value in `S`. -/
@@ -315,7 +315,7 @@ lemma extend_val_inl (P : Generators R S ι) (b : ι' → S) (i : ι) :
 lemma extend_val_inr (P : Generators R S ι) (b : ι' → S) (i : ι') :
     (P.extend b).val (.inr i) = b i := rfl
 
-/-- Given generators `P` and an equivalence `ι ≃ P.vars`, these
+/-- Given generators `P` with variable type `ι'` and an equivalence `ι ≃ ι'`, these
 are the induced generators indexed by `ι`. -/
 noncomputable def reindex (P : Generators R S ι') (e : ι ≃ ι') :
     Generators R S ι where
@@ -713,7 +713,7 @@ def kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x : Q.ker)
     (Q.comp P).ker := by
   refine ⟨x.1.sum fun n r ↦ ?_, ?_⟩
   · -- The use of `refine` is intentional to control the elaboration order
-    -- so that the term has type `(Q.comp P).Ring` and not `MvPolynomial (Q.vars ⊕ P.vars) R`
+    -- so that the term has type `(Q.comp P).Ring` and not `MvPolynomial (Q.ι ⊕ P.ι) R`
     refine rename ?_ (P.σ r) * monomial ?_ 1
     exacts [Sum.inr, n.mapDomain Sum.inl]
   · simp only [ker_eq_ker_aeval_val, RingHom.mem_ker]

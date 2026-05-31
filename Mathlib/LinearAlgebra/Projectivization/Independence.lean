@@ -112,4 +112,11 @@ theorem dependent_pair_iff_eq (u v : ℙ K V) : Dependent ![u, v] ↔ u = v := b
 theorem independent_pair_iff_ne (u v : ℙ K V) : Independent ![u, v] ↔ u ≠ v := by
   rw [independent_iff_not_dependent, dependent_pair_iff_eq u v]
 
+/-- Two points are independent if and only if their underlying vectors are linearly independent. -/
+lemma independent_mk_iff_LinearIndependent {u v : V} (hu : u ≠ 0) (hv : v ≠ 0) :
+    Independent ![mk K u hu, mk K v hv] ↔ LinearIndependent K ![u, v] := by
+  rw [independent_pair_iff_ne, ne_eq, mk_eq_mk_iff' K u v hu hv, linearIndependent_fin2]
+  simp only [Matrix.cons_val_zero, Matrix.cons_val_one]
+  exact ⟨fun h ↦ ⟨hv, fun a ha ↦ h ⟨a, ha⟩⟩, fun ⟨_, h⟩ ⟨a, ha⟩ ↦ h a ha⟩
+
 end Projectivization

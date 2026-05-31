@@ -370,6 +370,17 @@ theorem type_lt_iff {α β} {r : α → α → Prop} {s : β → β → Prop} [I
     [IsWellOrder β s] : type r < type s ↔ Nonempty (r ≺i s) :=
   Iff.rfl
 
+theorem type_set_le [LinearOrder α] [WellFoundedLT α] (s : Set α) : typeLT s ≤ typeLT α := by
+  rw [type_le_iff']
+  refine ⟨⟨Embedding.subtype _, ?_⟩⟩
+  simp
+
+theorem type_mono [LinearOrder α] [WellFoundedLT α] {s t : Set α} (h : s ⊆ t) :
+    typeLT s ≤ typeLT t := by
+  rw [type_le_iff']
+  refine ⟨⟨embeddingOfSubset _ _ h, ?_⟩⟩
+  aesop
+
 /-- Given two ordinals `α ≤ β`, then `initialSegToType α β` is the initial segment embedding of
 `α.ToType` into `β.ToType`. -/
 @[deprecated type_le_iff (since := "2026-04-12")]
