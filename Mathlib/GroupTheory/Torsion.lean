@@ -329,6 +329,15 @@ lemma isMulTorsionFree_iff_torsion_eq_bot : IsMulTorsionFree G ↔ CommGroup.tor
   simp [not_imp_not, CommGroup.mem_torsion]
 
 @[to_additive]
+lemma le_comap_torsion (f : G →* H) : torsion G ≤ (torsion H).comap f := by
+  intro x
+  exact f.isOfFinOrder
+
+@[to_additive]
+lemma map_torsion_le (f : G →* H) : (torsion G).map f ≤ torsion H :=
+  Subgroup.map_le_iff_le_comap.mpr (le_comap_torsion f)
+
+@[to_additive]
 lemma comap_torsion_of_injective {f : G →* H} (hf : Function.Injective f) :
     (torsion H).comap f = torsion G := by
   ext x
@@ -413,8 +422,14 @@ theorem freeRank_eq_zero_of_finite [Finite G] : freeRank G = 0 :=
   freeRank_eq_zero isTorsion_of_finite
 
 @[to_additive]
-theorem freeRank_congr (e : G ≃* H) [Group.FG G] [Group.FG H] : freeRank G = freeRank H :=
+theorem freeRank_congr [Group.FG G] [Group.FG H] (e : G ≃* H) : freeRank G = freeRank H :=
   Group.rank_congr (QuotientGroup.congr (torsion G) (torsion H) e e.map_torsion)
+
+@[to_additive]
+theorem freeRank_ge_of_surjective [Group.FG G] [Group.FG H] (e : G →* H)
+    (he : Function.Surjective e) : freeRank H ≤ freeRank G :=
+  Group.rank_le_of_surjective _ <| QuotientGroup.map_surjective_of_surjective
+    (torsion G) (torsion H) e (QuotientGroup.mk_surjective.comp he) (le_comap_torsion e)
 
 end CommGroup
 
