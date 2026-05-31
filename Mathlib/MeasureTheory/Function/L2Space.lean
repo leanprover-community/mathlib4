@@ -255,8 +255,9 @@ lemma real_inner_indicatorConstLp_one_indicatorConstLp_one
 lemma _root_.MeasureTheory.posSemidef_matrix_measure_inter {ι : Type*} [Finite ι] {s : ι → (Set α)}
     (mv : ∀ j, MeasurableSet (s j)) (hv : ∀ j, μ (s j) ≠ ∞ := by finiteness) :
     Matrix.PosSemidef (Matrix.of fun i j : ι ↦ μ.real (s i ∩ s j)) := by
-  simpa [mv, hv, ← L2.real_inner_indicatorConstLp_one_indicatorConstLp_one] using
-    Matrix.posSemidef_gram ℝ _
+  simp only [mv, ne_eq, hv, not_false_eq_true,
+    ← real_inner_indicatorConstLp_one_indicatorConstLp_one]
+  exact Matrix.posSemidef_gram _ _
 
 end IndicatorConstLp
 
