@@ -29,9 +29,9 @@ namespace Filter
 section IsDirected
 variable [Preorder α] [IsDirectedOrder α] {p : α → Prop}
 
--- `Filter.HasMonotoneBasis` doesn't exist, so we can use `to_dual` here.
+-- `Filter.HasMonotoneBasis` doesn't exist, so we cannot use `to_dual` here.
 theorem hasAntitoneBasis_atTop [Nonempty α] : (@atTop α _).HasAntitoneBasis Ici :=
-  .iInf_principal fun _ _ _ ↦ by rw [le_iff_subset]; gcongr
+  .iInf_principal fun _ _ ↦ Ici_subset_Ici.2
 
 theorem atTop_basis [Nonempty α] : (@atTop α _).HasBasis (fun _ => True) Ici :=
   hasAntitoneBasis_atTop.1
@@ -72,14 +72,14 @@ theorem atTop_neBot_iff {α : Type*} [Preorder α] :
   exact ((eventually_ge_atTop x).and (eventually_ge_atTop y)).exists
 
 @[to_dual (attr := simp)]
-lemma mem_atTop_sets {s : Set α} : s ∈ (atTop : Filter α) ↔ ∃ a : α, ∀ b ≥ a, b ∈ s :=
+lemma mem_atTop_sets {s : Set α} : s ∈ (atTop : Filter α) ↔ ∃ a : α, ∀ b, a ≤ b → b ∈ s :=
   atTop_basis.mem_iff.trans <| exists_congr fun _ => iff_of_eq (true_and _)
 
 @[to_dual (attr := simp)]
-lemma eventually_atTop : (∀ᶠ x in atTop, p x) ↔ ∃ a, ∀ b ≥ a, p b := mem_atTop_sets
+lemma eventually_atTop : (∀ᶠ x in atTop, p x) ↔ ∃ a, ∀ b, a ≤ b → p b := mem_atTop_sets
 
 @[to_dual]
-theorem frequently_atTop : (∃ᶠ x in atTop, p x) ↔ ∀ a, ∃ b ≥ a, p b :=
+theorem frequently_atTop : (∃ᶠ x in atTop, p x) ↔ ∀ a, ∃ b, a ≤ b ∧ p b :=
   atTop_basis.frequently_iff.trans <| by simp
 
 @[to_dual]
@@ -87,7 +87,7 @@ alias ⟨Eventually.exists_forall_of_atTop, _⟩ := eventually_atTop
 
 -- `to_dual` cannot translate `forall_ge_iff`
 lemma exists_eventually_atTop {r : α → β → Prop} :
-    (∃ b, ∀ᶠ a in atTop, r a b) ↔ ∀ᶠ a₀ in atTop, ∃ b, ∀ a ≥ a₀, r a b := by
+    (∃ b, ∀ᶠ a in atTop, r a b) ↔ ∀ᶠ a₀ in atTop, ∃ b, ∀ a, a₀ ≤ a → r a b := by
   simp_rw [eventually_atTop, ← exists_comm (α := α)]
   exact exists_congr fun a ↦ .symm <| forall_ge_iff <| Monotone.exists fun _ _ _ hb H n hn ↦
     H n (hb.trans hn)
@@ -145,14 +145,14 @@ variable [Preorder α] [IsDirectedOrder α] {F : Filter β} {u : α → β}
 
 @[to_dual inf_map_atBot_neBot_iff]
 theorem inf_map_atTop_neBot_iff [Nonempty α] :
-    NeBot (F ⊓ map u atTop) ↔ ∀ U ∈ F, ∀ N, ∃ n ≥ N, u n ∈ U := by
+    NeBot (F ⊓ map u atTop) ↔ ∀ U ∈ F, ∀ N, ∃ n, N ≤ n ∧ u n ∈ U := by
   simp_rw [inf_neBot_iff_frequently_left, frequently_map, frequently_atTop]; rfl
 
 variable [Preorder β]
 
 @[to_dual (dont_translate := α)]
 lemma exists_le_of_tendsto_atTop (h : Tendsto u atTop atTop) (a : α) (b : β) :
-    ∃ a' ≥ a, b ≤ u a' := by
+    ∃ a', a ≤ a' ∧ b ≤ u a' := by
   have : Nonempty α := ⟨a⟩
   have : ∀ᶠ x in atTop, a ≤ x ∧ b ≤ u x :=
     (eventually_ge_atTop a).and (h.eventually <| eventually_ge_atTop b)
@@ -160,7 +160,7 @@ lemma exists_le_of_tendsto_atTop (h : Tendsto u atTop atTop) (a : α) (b : β) :
 
 @[to_dual (dont_translate := α)]
 theorem exists_lt_of_tendsto_atTop [NoMaxOrder β] (h : Tendsto u atTop atTop) (a : α) (b : β) :
-    ∃ a' ≥ a, b < u a' := by
+    ∃ a', a ≤ a' ∧ b < u a' := by
   obtain ⟨b', hb'⟩ := exists_gt b
   rcases exists_le_of_tendsto_atTop h a b' with ⟨a', ha', ha''⟩
   exact ⟨a', ha', lt_of_lt_of_le hb' ha''⟩
@@ -171,16 +171,16 @@ section IsDirected
 variable [Nonempty α] [Preorder α] [IsDirectedOrder α] {f : α → β} {l : Filter β}
 
 @[to_dual]
-theorem tendsto_atTop' : Tendsto f atTop l ↔ ∀ s ∈ l, ∃ a, ∀ b ≥ a, f b ∈ s := by
+theorem tendsto_atTop' : Tendsto f atTop l ↔ ∀ s ∈ l, ∃ a, ∀ b, a ≤ b → f b ∈ s := by
   simp only [tendsto_def, mem_atTop_sets, mem_preimage]
 
 @[to_dual]
-theorem tendsto_atTop_principal {s : Set β} : Tendsto f atTop (𝓟 s) ↔ ∃ N, ∀ n ≥ N, f n ∈ s := by
+theorem tendsto_atTop_principal {s : Set β} :
+    Tendsto f atTop (𝓟 s) ↔ ∃ N, ∀ n, N ≤ n → f n ∈ s := by
   simp_rw [tendsto_iff_comap, comap_principal, le_principal_iff, mem_atTop_sets, mem_preimage]
 
 variable [Preorder β]
 
-/-- A function `f` grows to `+∞` independent of an order-preserving embedding `e`. -/
 @[to_dual]
 theorem tendsto_atTop_atTop : Tendsto f atTop atTop ↔ ∀ b : β, ∃ i : α, ∀ a : α, i ≤ a → b ≤ f a :=
   tendsto_iInf.trans <| forall_congr' fun _ => tendsto_atTop_principal
@@ -213,11 +213,14 @@ theorem Tendsto.subseq_mem {F : Filter α} {V : ℕ → Set α} (h : ∀ n, V n 
 /-- A function `f` maps upwards closed sets (atTop sets) to upwards closed sets when it is a
 Galois insertion. The Galois "insertion" and "connection" is weakened to only require it to be an
 insertion and a connection above `b`. -/
-@[to_dual]
+@[to_dual
+/-- A function `f` maps downwards closed sets (atBot sets) to downwards closed sets when it is a
+Galois coinsertion. The Galois "coinsertion" and "connection" is weakened to only require it to be
+an insertion and a connection below `b`. -/]
 theorem map_atTop_eq_of_gc_preorder
     [Preorder α] [IsDirectedOrder α] [Preorder β] [IsDirectedOrder β] {f : α → β}
     (hf : Monotone f) (b : β)
-    (hgi : ∀ c ≥ b, ∃ x, f x = c ∧ ∀ a, f a ≤ c ↔ a ≤ x) : map f atTop = atTop := by
+    (hgi : ∀ c, b ≤ c → ∃ x, f x = c ∧ ∀ a, f a ≤ c ↔ a ≤ x) : map f atTop = atTop := by
   have : Nonempty α := (hgi b le_rfl).nonempty
   choose! g hfg hgle using hgi
   refine le_antisymm (hf.tendsto_atTop_atTop fun c ↦ ?_) ?_
@@ -229,15 +232,17 @@ theorem map_atTop_eq_of_gc_preorder
     filter_upwards [eventually_ge_atTop (f a), eventually_ge_atTop b] with c hac hbc
     exact ⟨g c, (hgle _ hbc _).1 hac, hfg _ hbc⟩
 
-
 /-- A function `f` maps upwards closed sets (atTop sets) to upwards closed sets when it is a
 Galois insertion. The Galois "insertion" and "connection" is weakened to only require it to be an
 insertion and a connection above `b`. -/
-@[to_dual]
+@[to_dual
+/-- A function `f` maps downwards closed sets (atBot sets) to downwards closed sets when it is a
+Galois coinsertion. The Galois "coinsertion" and "connection" is weakened to only require it to be
+an insertion and a connection below `b`. -/]
 theorem map_atTop_eq_of_gc
     [Preorder α] [IsDirectedOrder α] [PartialOrder β] [IsDirectedOrder β]
     {f : α → β} (g : β → α) (b : β) (hf : Monotone f)
-    (gc : ∀ a, ∀ c ≥ b, f a ≤ c ↔ a ≤ g c) (hgi : ∀ c ≥ b, c ≤ f (g c)) :
+    (gc : ∀ a, ∀ c, b ≤ c → (f a ≤ c ↔ a ≤ g c)) (hgi : ∀ c, b ≤ c → (c ≤ f (g c))) :
     map f atTop = atTop :=
   map_atTop_eq_of_gc_preorder hf b fun c hc ↦
     ⟨g c, le_antisymm ((gc _ _ hc).2 le_rfl) (hgi c hc), (gc · c hc)⟩
