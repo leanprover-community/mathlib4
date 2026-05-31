@@ -111,7 +111,7 @@ lemma pointsPi_injective [QuasiSeparatedSpace X] : Function.Injective (pointsPi 
 lemma pointsPi_surjective_of_isAffine [IsAffine X] : Function.Surjective (pointsPi R X) := by
   rintro f
   refine ⟨Spec.map (CommRingCat.ofHom
-    (Pi.ringHom fun i ↦ (Spec.preimage (f i ≫ X.isoSpec.hom)).1)) ≫ X.isoSpec.inv, ?_⟩
+    (RingHom.pi fun i ↦ (Spec.preimage (f i ≫ X.isoSpec.hom)).1)) ≫ X.isoSpec.inv, ?_⟩
   ext i : 1
   simp only [pointsPi, ← Spec.map_comp_assoc, Iso.comp_inv_eq]
   exact Spec.map_preimage _
