@@ -125,7 +125,6 @@ theorem smul_of_commute (S : Type*) [Ring S] [Module S R] [IsLinearTopology S R]
   simp_rw [IsTopologicallyNilpotent, hab]
   exact IsLinearTopology.tendsto_smul_zero (R := S) _ _ hb
 
-
 /-- If `a` and `b` commute and `a` is topologically nilpotent,
   then `a * b` is topologically nilpotent. -/
 theorem mul_right_of_commute [IsLinearTopology Rᵐᵒᵖ R]
