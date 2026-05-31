@@ -23,7 +23,7 @@ convex closed nonempty values admits a continuous selection.
   convex, nonempty values admits a continuous selection. A key ingredient to the proof of Michael's
   selection theorem. This holds in any topological vector space over ℝ.
 - `LowerHemicontinuous.exists_continuous_selection`: Michael's selection theorem that a lower
-  hemicontinous function from a paracompact space to a Banach space which takes convex, closed,
+  hemicontinous function from a paracompact space to a Frechet space which takes convex, closed,
   nonempty values admits a continuous selection.
 -/
 
@@ -86,7 +86,7 @@ variable [AddCommGroup β] [Module ℝ β] [UniformSpace β] [IsUniformAddGroup 
     [ContinuousSMul ℝ β] [LocallyConvexSpace ℝ β] [FirstCountableTopology β] [CompleteSpace β]
 
 /-- **Michael's selection theorem**: A lower hemicontinuous function from a paracompact Hausdorff
-space (which is necessarily normal) to a Banach space with nonempty convex closed values
+space (which is necessarily normal) to a Frechet space with nonempty convex closed values
 admits a continuous selection -/
 theorem LowerHemicontinuous.exists_continuous_selection (hf : LowerHemicontinuous f)
     (hf_nonempty : ∀ x, (f x).Nonempty) (hf_convex : ∀ x, Convex ℝ (f x))
