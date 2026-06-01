@@ -55,7 +55,7 @@ check the condition.
 public section
 
 open scoped CompactlySupported
-open Metric ENNReal NNReal Filter Function Set Topology TopologicalSpace MeasureTheory
+open Metric ENNReal NNReal Filter Set Topology TopologicalSpace MeasureTheory
   BoundedContinuousFunction
 
 section Forward
