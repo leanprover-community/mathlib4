@@ -280,7 +280,7 @@ theorem isPrincipal_add_omega0_opow (o : Ordinal) : IsPrincipal (· + ·) (ω ^ 
     obtain ⟨c, hc, m, hm⟩ := (lt_omega0_opow ha').1 ha
     apply (add_lt_add_of_le_of_lt hm.le hm).trans_le
     rw [← mul_add, ← Nat.cast_add]
-    exact (omega0_opow_mul_nat_lt hc _).le
+    exact (opow_mul_lt_opow (natCast_lt_omega0 _) hc).le
 
 @[deprecated (since := "2026-03-17")]
 alias principal_add_omega0_opow := isPrincipal_add_omega0_opow
