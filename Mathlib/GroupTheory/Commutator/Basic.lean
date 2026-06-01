@@ -114,16 +114,6 @@ theorem commutator_eq_bot_iff_le_centralizer : ⁅H₁, H₂⁆ = ⊥ ↔ H₁ �
     forall_congr' fun _hp => forall_congr' fun q => forall_congr' fun hq => ?_
   rw [mem_bot, commutatorElement_eq_one_iff_mul_comm, eq_comm]
 
-@[to_additive (attr := simp)]
-theorem commutator_top_eq_bot_iff_le_center {H : Subgroup G} :
-    ⁅H, (⊤ : Subgroup G)⁆ = ⊥ ↔ H ≤ center G := by
-  rw [← centralizer_univ, ← coe_top, commutator_eq_bot_iff_le_centralizer]
-
-variable (G) in
-@[to_additive (attr := simp)]
-theorem commutator_center_top : ⁅center G, (⊤ : Subgroup G)⁆ = ⊥ :=
-  commutator_top_eq_bot_iff_le_center.mpr le_rfl
-
 /-- **The Three Subgroups Lemma** (via the Hall-Witt identity) -/
 @[to_additive /-- **The Three Subgroups Lemma** (via the Hall-Witt identity) -/]
 theorem commutator_commutator_eq_bot_of_rotate (h1 : ⁅⁅H₂, H₃⁆, H₁⁆ = ⊥) (h2 : ⁅⁅H₃, H₁⁆, H₂⁆ = ⊥) :
@@ -148,6 +138,28 @@ theorem commutator_comm_le : ⁅H₁, H₂⁆ ≤ ⁅H₂, H₁⁆ :=
 @[to_additive]
 theorem commutator_comm : ⁅H₁, H₂⁆ = ⁅H₂, H₁⁆ :=
   le_antisymm (commutator_comm_le H₁ H₂) (commutator_comm_le H₂ H₁)
+
+@[to_additive]
+theorem commutator_self_eq_bot : ⁅H, H⁆ = ⊥ ↔ IsMulCommutative H := by
+  rw [commutator_eq_bot_iff_le_centralizer, le_centralizer_iff_isMulCommutative]
+
+@[to_additive (attr := simp)]
+theorem commutator_left_top_eq_bot_iff_le_center : ⁅H, (⊤ : Subgroup G)⁆ = ⊥ ↔ H ≤ center G := by
+  rw [commutator_eq_bot_iff_le_centralizer, coe_top, centralizer_univ]
+
+@[to_additive (attr := simp)]
+theorem commutator_right_top_eq_bot_iff_le_center : ⁅(⊤ : Subgroup G), H⁆ = ⊥ ↔ H ≤ center G := by
+  rw [commutator_comm, commutator_left_top_eq_bot_iff_le_center]
+
+variable (G) in
+@[to_additive (attr := simp)]
+theorem commutator_left_center : ⁅H, center G⁆ = ⊥ := by
+  simp [commutator_eq_bot_iff_le_centralizer]
+
+variable (G) in
+@[to_additive (attr := simp)]
+theorem commutator_right_center : ⁅center G, H⁆ = ⊥ :=
+  commutator_eq_bot_iff_le_centralizer.mpr <| center_le_centralizer _
 
 section Normal
 
