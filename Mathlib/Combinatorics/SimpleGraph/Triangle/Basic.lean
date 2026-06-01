@@ -251,7 +251,7 @@ lemma farFromTriangleFree_of_disjoint_triangles (tris : Finset (Finset α))
 protected lemma EdgeDisjointTriangles.farFromTriangleFree (hG : G.EdgeDisjointTriangles)
     (tris_big : ε * (card α ^ 2 : ℕ) ≤ #(G.cliqueFinset 3)) :
     G.FarFromTriangleFree ε :=
-  farFromTriangleFree_of_disjoint_triangles _ Subset.rfl (by simpa using hG) tris_big
+  farFromTriangleFree_of_disjoint_triangles _ Subset.rfl (by simpa using! hG) tris_big
 
 end DecidableEq
 

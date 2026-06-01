@@ -48,6 +48,7 @@ variable {B : Type v₁} [Category.{v₁} B]
 variable {T : Type v₁} [Category.{v₁} T]
 variable (L : A ⥤ T) (R : B ⥤ T)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 private lemma final_fst_small [R.Final] : (fst L R).Final := by
   rw [Functor.final_iff_isIso_colimit_pre]
@@ -107,6 +108,7 @@ instance isConnected_comma_of_initial [IsConnected B] [L.Initial] : IsConnected 
 
 end NonSmall
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Let the following diagram commute up to isomorphism:
 
 ```
@@ -151,6 +153,7 @@ variable {B : Type u₂} [Category.{v₂} B]
 variable {T : Type u₃} [Category.{v₃} T]
 variable (L : A ⥤ T) (R : B ⥤ T)
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] map_final in
 /-- Let `A` and `B` be filtered categories, `R : B ⥤ T` be final and `L : A ⥤ T`. Then, the
 comma category `Comma L R` is filtered. -/
@@ -173,6 +176,7 @@ lemma isCofiltered_of_initial [IsCofiltered A] [IsCofiltered B] [L.Initial] :
     IsCofiltered (Comma L R) :=
   IsCofiltered.of_equivalence (Comma.opEquiv _ _).symm
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] final_of_isFiltered_of_pUnit in
 /-- Let `A` and `B` be filtered categories, `R : B ⥤ T` be final and `R : A ⥤ T`. Then, the
 projection `snd L R : Comma L R ⥤ B` is final. -/
