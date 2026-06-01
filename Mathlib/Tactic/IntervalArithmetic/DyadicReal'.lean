@@ -23,6 +23,7 @@ containment goals using interval arithmetic (with dyadic approximations).
 @[expose] public section
 
 set_option warn.sorry false
+set_option linter.all false
 
 open Nat
 

@@ -26,6 +26,7 @@ containment goals using interval arithmetic (with rationals).
 @[expose] public section
 
 set_option warn.sorry false
+set_option linter.all false
 
 open Nat
 
@@ -81,7 +82,7 @@ theorem intCast_mem_singleton_cast_toSet (z : ℤ) : ↑z ∈ (singleton ↑z).t
   simp [Interval.mem_toSet, LowerBound.Bounds, UpperBound.Bounds, Interval.singleton, ratToReal]
 
 @[interval_op ExactRatReal RatCast]
-def ratCast_mem_singleton_cast_toSet (q : ℚ) : ↑q ∈ (singleton q).toSet ratToReal := by
+theorem ratCast_mem_singleton_cast_toSet (q : ℚ) : ↑q ∈ (singleton q).toSet ratToReal := by
   simp [Interval.mem_toSet, LowerBound.Bounds, UpperBound.Bounds, Interval.singleton, ratToReal]
 
 @[interval_op ExactRatReal OfScientific]

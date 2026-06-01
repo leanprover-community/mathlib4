@@ -17,6 +17,8 @@ This file defines functions that preprocess hypothesis for the interval arithmet
 
 @[expose] public meta section
 
+set_option linter.all false
+
 namespace IntervalArithmetic
 
 open Lean Expr Meta Elab Command Tactic

@@ -18,6 +18,7 @@ and interval arithmetic operations.
 
 public meta section
 
+set_option linter.all false
 namespace IntervalArithmetic
 
 open Lean Expr Meta Elab Command Std

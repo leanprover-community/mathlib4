@@ -18,6 +18,8 @@ necessary API.
 
 @[expose] public section
 
+set_option linter.all false
+
 open Set
 
 namespace IntervalArithmetic

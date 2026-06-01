@@ -17,6 +17,8 @@ This file defines the core functions for the interval arithmetic tactics.
 
 @[expose] public meta section
 
+set_option linter.all false
+
 namespace IntervalArithmetic
 
 open Lean Expr Meta Elab Command Tactic
