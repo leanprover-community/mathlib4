@@ -22,5 +22,5 @@ public lemma Finite.iSup_eq_iSup_subtype {ι K M F : Type*} [Finite ι] [Zero K]
   refine le_antisymm (ciSup_le fun j ↦ ?_) <| ciSup_le fun ⟨j, hj⟩ ↦ le_ciSup_of_le j le_rfl
   rcases eq_or_ne (x j) 0 with h | h
   · rw [h, map_zero]
-    exact le_ciSup_of_le ⟨i, hi⟩ (NonnegHomClass.apply_nonneg ..)
+    exact le_ciSup_of_le ⟨i, hi⟩ (apply_nonneg ..)
   · exact le_ciSup_of_le ⟨j, h⟩ le_rfl

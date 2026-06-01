@@ -38,7 +38,7 @@ theorem tan_add
       (∃ k : ℤ, x = (2 * k + 1) * π / 2) ∧ ∃ l : ℤ, y = (2 * l + 1) * π / 2) :
     tan (x + y) = (tan x + tan y) / (1 - tan x * tan y) := by
   simpa only [← Complex.ofReal_inj, Complex.ofReal_sub, Complex.ofReal_add, Complex.ofReal_div,
-    Complex.ofReal_mul, Complex.ofReal_tan] using
+    Complex.ofReal_mul, Complex.ofReal_tan] using!
     @Complex.tan_add (x : ℂ) (y : ℂ) (by convert h <;> norm_cast)
 
 theorem tan_add'
@@ -51,7 +51,7 @@ theorem tan_sub {x y : ℝ}
       (∃ k : ℤ, x = (2 * k + 1) * π / 2) ∧ ∃ l : ℤ, y = (2 * l + 1) * π / 2) :
     tan (x - y) = (tan x - tan y) / (1 + tan x * tan y) := by
   simpa only [← Complex.ofReal_inj, Complex.ofReal_sub, Complex.ofReal_add, Complex.ofReal_div,
-    Complex.ofReal_mul, Complex.ofReal_tan] using
+    Complex.ofReal_mul, Complex.ofReal_tan] using!
     @Complex.tan_sub (x : ℂ) (y : ℂ) (by convert h <;> norm_cast)
 
 theorem tan_sub' {x y : ℝ}

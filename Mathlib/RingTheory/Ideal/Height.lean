@@ -209,7 +209,7 @@ then J is a minimal prime over I -/
 lemma Ideal.mem_minimalPrimes_of_height_eq {I J : Ideal R} (e : I ≤ J) [J.IsPrime]
     [FiniteHeight J] (e' : J.height ≤ I.height) : J ∈ I.minimalPrimes := by
   obtain ⟨p, h₁, h₂⟩ := Ideal.exists_minimalPrimes_le e
-  convert h₁
+  convert! h₁
   refine (eq_of_le_of_not_lt h₂ fun h₃ ↦ ?_).symm
   have := h₁.isPrime
   have := finiteHeight_of_le h₂ IsPrime.ne_top'
@@ -235,7 +235,7 @@ lemma Ideal.one_le_height_span_singleton_of_mem_nonZeroDivisors
   rw [Ideal.height_eq_inf_minimalPrimes]
   refine le_iInf₂ fun q hq => ?_
   have : q.IsPrime := hq.isPrime
-  rw [ENat.one_le_iff_ne_zero, Ne, height_eq_zero_iff]
+  rw [Order.one_le_iff_ne_zero, Ne, height_eq_zero_iff]
   intro hmin
   exact absurd hx <| notMem_nonZeroDivisors_of_mem_mem_minimalPrimes
     (hq.1.2 <| Ideal.mem_span_singleton.mpr <| dvd_refl x) hmin

@@ -35,7 +35,7 @@ def invertibleιOfInvertible (m : M) [Invertible (Q m)] : Invertible (ι Q m) wh
 theorem invOf_ι (m : M) [Invertible (Q m)] [Invertible (ι Q m)] :
     ⅟(ι Q m) = ι Q (⅟(Q m) • m) := by
   letI := invertibleιOfInvertible Q m
-  convert (rfl : ⅟(ι Q m) = _)
+  convert! (rfl : ⅟(ι Q m) = _)
 
 theorem isUnit_ι_of_isUnit {m : M} (h : IsUnit (Q m)) : IsUnit (ι Q m) := by
   cases h.nonempty_invertible

@@ -112,7 +112,7 @@ instance _root_.NormedAlgebra.instRegularNormedAlgebra {𝕜 R : Type*} [Nontriv
     [SeminormedRing R] [NormedAlgebra 𝕜 R] [NormOneClass R] : RegularNormedAlgebra 𝕜 R where
   isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 R) <|
     fun x => le_antisymm (opNorm_mul_apply_le _ _ _) <| by
-      convert ratio_le_opNorm ((mul 𝕜 R) x) (1 : R)
+      convert! ratio_le_opNorm ((mul 𝕜 R) x) (1 : R)
       simp [norm_one]
 
 variable [RegularNormedAlgebra 𝕜 R]
@@ -188,7 +188,7 @@ variable [NormedAlgebra 𝕜 R] [Module R E] [IsBoundedSMul R E] [IsScalarTower 
 /-- Scalar multiplication as a continuous bilinear map. -/
 def lsmul : R →L[𝕜] E →L[𝕜] E :=
   ((Algebra.lsmul 𝕜 𝕜 E).toLinearMap : R →ₗ[𝕜] E →ₗ[𝕜] E).mkContinuous₂ 1 fun c x => by
-    simpa only [one_mul] using norm_smul_le c x
+    simpa only [one_mul] using! norm_smul_le c x
 
 @[simp]
 theorem lsmul_apply (c : R) (x : E) : lsmul 𝕜 R c x = c • x :=
