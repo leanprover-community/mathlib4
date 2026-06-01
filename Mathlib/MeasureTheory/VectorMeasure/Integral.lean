@@ -275,11 +275,6 @@ theorem integral_of_not_completeSpace (hG : ¬CompleteSpace G) :
 variable {f g : X → E} {μ ν : VectorMeasure X F} {B C : E →L[ℝ] F →L[ℝ] G}
 
 @[simp]
-theorem transpose_zero_vectorMeasure (B : E →L[ℝ] F →L[ℝ] G) :
-    (0 : VectorMeasure X F).transpose B = 0 := by
-  simp [transpose]
-
-@[simp]
 theorem transpose_zero_cbm (μ : VectorMeasure X F) :
     μ.transpose (0 : E →L[ℝ] F →L[ℝ] G) = 0 := by
   ext
@@ -401,7 +396,7 @@ end Function
 section VectorMeasure
 
 @[simp] lemma integrable_zero_vectorMeasure : (0 : VectorMeasure X F).Integrable f B := by
-  simp [VectorMeasure.Integrable, transpose]
+  simp [VectorMeasure.Integrable]
 
 lemma integrable_add_vectorMeasure (hμ : μ.Integrable f B) (hν : ν.Integrable f B) :
     (μ + ν).Integrable f B := by
