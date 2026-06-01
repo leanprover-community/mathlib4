@@ -621,14 +621,8 @@ of their languages on `U`. -/
 lemma union_morphism_LanguageOn {X Y : Set (G → A)} (U : Finset G) :
     LanguageOn (X ∪ Y) U = LanguageOn X U ∪ LanguageOn Y U := by
   ext p
-  constructor
-  · rintro ⟨x, hx, rfl⟩
-    rcases hx with hxX | hxY
-    · exact Or.inl ⟨x, hxX, rfl⟩
-    · exact Or.inr ⟨x, hxY, rfl⟩
-  · rintro (⟨x, hxX, rfl⟩ | ⟨x, hxY, rfl⟩)
-    · exact ⟨x, Or.inl hxX, rfl⟩
-    · exact ⟨x, Or.inr hxY, rfl⟩
+  simp only [LanguageOn, mem_union, mem_setOf_eq]
+  grind
 
 /-- The language of a subshift `Y` on a finite shape `U`. -/
 def MulSubshift.languageOn {A G} [TopologicalSpace A] [Inhabited A] [Monoid G]
