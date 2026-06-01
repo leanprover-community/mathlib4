@@ -356,7 +356,6 @@ theorem Measurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0�
   simp_rw [ENNReal.tsum_eq_iSup_sum]
   exact .iSup fun s ↦ s.measurable_fun_sum fun i _ => h i
 
-set_option linter.deprecated false in
 @[fun_prop, deprecated
   "Use `Measurable.tsum'` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
   (since := "2026-04-30")]
@@ -365,7 +364,6 @@ theorem Measurable.ennreal_tsum' {ι} [Countable ι] {f : ι → α → ℝ≥0�
   convert! Measurable.ennreal_tsum h with x
   exact tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
 
-set_option linter.deprecated false in
 @[fun_prop, deprecated
   "Use `Measurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
   (since := "2026-04-30")]
@@ -382,7 +380,6 @@ theorem AEMeasurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0
   simp_rw [ENNReal.tsum_eq_iSup_sum]
   exact .iSup fun s ↦ Finset.aemeasurable_fun_sum s fun i _ => h i
 
-set_option linter.deprecated false in
 @[fun_prop, deprecated
   "Use `AEMeasurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
   (since := "2026-04-30")]

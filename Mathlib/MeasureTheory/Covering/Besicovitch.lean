@@ -658,9 +658,10 @@ one is given a set of admissible closed balls centered at `x`, with arbitrarily 
 Then there exists a disjoint covering of almost all `s` by admissible closed balls centered at some
 points of `s`.
 This version requires that the underlying measure is finite, and that the space has the Besicovitch
-covering property (which is satisfied for instance by normed real vector spaces). It expresses the
-conclusion in a slightly awkward form (with a subset of `α × ℝ`) coming from the proof technique.
-For a version assuming that the measure is sigma-finite,
+covering property (which is satisfied for instance by finite-dimensional normed real vector spaces).
+It expresses the conclusion in a slightly awkward form (with a subset of `α × ℝ`) coming from the
+proof technique.
+For a version assuming that the measure is s-finite,
 see `exists_disjoint_closedBall_covering_ae_aux`.
 For a version giving the conclusion in a nicer form, see `exists_disjoint_closedBall_covering_ae`.
 -/
@@ -802,8 +803,9 @@ Assume that, for any `x` in a set `s`, one is given a set of admissible closed b
 `x`, with arbitrarily small radii. Then there exists a disjoint covering of almost all `s` by
 admissible closed balls centered at some points of `s`.
 
-This version requires the underlying measure to be sigma-finite, and the space to have the
-Besicovitch covering property (which is satisfied for instance by normed real vector spaces).
+This version requires the underlying measure to be s-finite, and the space to have the
+Besicovitch covering property (which is satisfied for instance by finite-dimensional
+normed real vector spaces).
 It expresses the conclusion in a slightly awkward form (with a subset of `α × ℝ`) coming from the
 proof technique.
 

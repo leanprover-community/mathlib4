@@ -328,8 +328,8 @@ theorem toSubgraph_le_iff {w : G.Walk u v} (hnil : ¬w.Nil) {G' : G.Subgraph} :
 lemma toSubgraph_bypass_le_toSubgraph {u v : V} {p : G.Walk u v} [DecidableEq V] :
     p.bypass.toSubgraph ≤ p.toSubgraph := by
   constructor
-  · simpa using! p.support_bypass_subset
-  · simpa [adj_toSubgraph_iff_mem_edges] using! fun _ _ h ↦ p.edges_toPath_subset h
+  · simpa using! p.support_bypass_subset_support
+  · simpa [adj_toSubgraph_iff_mem_edges] using! fun _ _ h ↦ p.edges_toPath_subset_edges h
 
 /-- Map a walk to its own subgraph. -/
 def mapToSubgraph {u v : V} : ∀ w : G.Walk u v, w.toSubgraph.coe.Walk
@@ -502,7 +502,7 @@ lemma exists_mem_support_mem_erase_mem_support_takeUntil_eq_empty (s : Finset V)
   · use x, hxs, hx, h.le
   have : (p.takeUntil x hx).length + #(s.erase x) < n := by
     rw [← card_erase_add_one hxs] at hp
-    have := p.length_takeUntil_le hx
+    have := p.length_takeUntil_le_length hx
     lia
   obtain ⟨y, hys, hyp, h⟩ := ih _ this (s.erase x) h rfl
   use y, mem_of_mem_erase hys, support_takeUntil_subset_support p hx hyp

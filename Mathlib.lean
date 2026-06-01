@@ -1104,6 +1104,7 @@ public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Order.Star.Conjneg
 public import Mathlib.Algebra.Order.Star.Pi
 public import Mathlib.Algebra.Order.Star.Prod
+public import Mathlib.Algebra.Order.Star.Real
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Algebra.Order.Sub.Defs
 public import Mathlib.Algebra.Order.Sub.Prod
@@ -2261,6 +2262,7 @@ public import Mathlib.Analysis.NormedSpace.PiTensorProduct.ProjectiveSeminorm
 public import Mathlib.Analysis.NormedSpace.RieszLemma
 public import Mathlib.Analysis.ODE.Basic
 public import Mathlib.Analysis.ODE.DiscreteGronwall
+public import Mathlib.Analysis.ODE.ExistUnique
 public import Mathlib.Analysis.ODE.Gronwall
 public import Mathlib.Analysis.ODE.PicardLindelof
 public import Mathlib.Analysis.ODE.Transform
@@ -2283,6 +2285,7 @@ public import Mathlib.Analysis.RCLike.Inner
 public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.Analysis.RCLike.Sqrt
 public import Mathlib.Analysis.RCLike.TangentCone
+public import Mathlib.Analysis.Rat.NatSqrt.Real
 public import Mathlib.Analysis.Real.Cardinality
 public import Mathlib.Analysis.Real.Hyperreal
 public import Mathlib.Analysis.Real.OfDigits
@@ -4276,7 +4279,6 @@ public import Mathlib.Data.Rat.Floor
 public import Mathlib.Data.Rat.Init
 public import Mathlib.Data.Rat.Lemmas
 public import Mathlib.Data.Rat.NatSqrt.Defs
-public import Mathlib.Data.Rat.NatSqrt.Real
 public import Mathlib.Data.Rat.Sqrt
 public import Mathlib.Data.Rat.Star
 public import Mathlib.Data.Real.Basic
@@ -4287,7 +4289,6 @@ public import Mathlib.Data.Real.Embedding
 public import Mathlib.Data.Real.Pointwise
 public import Mathlib.Data.Real.Sign
 public import Mathlib.Data.Real.Star
-public import Mathlib.Data.Real.StarOrdered
 public import Mathlib.Data.Rel
 public import Mathlib.Data.Rel.Cover
 public import Mathlib.Data.Rel.Separated
