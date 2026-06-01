@@ -91,7 +91,7 @@ theorem single_eq_update [DecidableEq α] (a : α) (b : M) :
 @[simp, grind =]
 theorem single_zero (a : α) : (single a 0 : α →₀ M) = 0 :=
   DFunLike.coe_injective <| by
-    classical simpa only [single_eq_update, coe_zero] using Function.update_eq_self a (0 : α → M)
+    classical simpa only [single_eq_update, coe_zero] using! Function.update_eq_self a (0 : α → M)
 
 theorem single_of_single_apply (a a' : α) (b : M) :
     single a ((single a' b) a) = single a' (single a' b) a := by
@@ -162,7 +162,7 @@ lemma apply_surjective (a : α) : Surjective fun f : α →₀ M ↦ f a :=
   RightInverse.surjective fun _ ↦ single_eq_same
 
 theorem support_single_ne_bot (i : α) (h : b ≠ 0) : (single i b).support ≠ ⊥ := by
-  simpa only [support_single _ h] using singleton_ne_empty _
+  simpa only [support_single _ h] using! singleton_ne_empty _
 
 theorem support_single_disjoint {b' : M} (hb : b ≠ 0) (hb' : b' ≠ 0) {i j : α} :
     Disjoint (single i b).support (single j b').support ↔ i ≠ j := by
@@ -239,6 +239,26 @@ theorem card_support_le_one [Nonempty α] {f : α →₀ M} :
 theorem card_support_le_one' [Nonempty α] {f : α →₀ M} :
     #f.support ≤ 1 ↔ ∃ a b, f = single a b := by
   simp only [card_le_one_iff_subset_singleton, support_subset_singleton']
+
+/-- If `α` has a unique term, then finitely supported functions `α →₀ M` are in bijection with `M`.
+-/
+@[simps]
+noncomputable def uniqueEquiv (a : α) [Subsingleton α] : (α →₀ M) ≃ M where
+  toFun f := f a
+  invFun := single a
+  left_inv f := by ext b; simp [Subsingleton.elim b a]
+  right_inv x := by simp
+
+-- We want this lemma to fire before `uniqueEquiv_symm_apply`.
+@[simp↓ high] lemma uniqueEquiv_symm_apply_apply (a : α) [Subsingleton α] (m : M) (b : α) :
+    (uniqueEquiv a).symm m b = m := by simp [Subsingleton.elim b a]
+
+/--
+If `α` has a unique term, the type of finitely supported functions `α →₀ β` is equivalent to `β`.
+-/
+@[simps!, deprecated uniqueEquiv (since := "2026-05-06")]
+noncomputable def _root_.Equiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃ M :=
+  Finsupp.equivFunOnFinite.trans (Equiv.funUnique ι M)
 
 @[simp]
 theorem equivFunOnFinite_single [DecidableEq α] [Finite α] (x : α) (m : M) :

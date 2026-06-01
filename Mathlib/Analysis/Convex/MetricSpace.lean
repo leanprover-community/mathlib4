@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineSpace
+public import Mathlib.Geometry.Convex.ConvexSpace.Module
 
 /-!
 
@@ -34,6 +35,8 @@ that has little to do with this definition.
 - Equip `StdSimplex` with a topology and show the analogous continuity result for n-ary
   convex combinations.
 - Tidy up the imports with `Mathlib.Geometric.Convex.ConvexSpace.AffineSpace`.
+- Define convex functions with domain a convex space, and redefine `IsConvexDist` as saying that
+  `dist : X × X → ℝ` is convex.
 -/
 
 public section
@@ -42,7 +45,7 @@ namespace Convexity
 
 open ConvexSpace
 
-variable {I X : Type*} [ConvexSpace ℝ X] [MetricSpace X]
+variable {I X : Type*}
 
 variable (X) in
 /-- A convex metric space is a real convex space with a compatible metric structure.
@@ -54,19 +57,19 @@ In particular, convex subsets of normed affine spaces are convex metric spaces.
 Note that there is a separate notion of
 [convex metric spaces](https://en.wikipedia.org/wiki/Convex_metric_space) in the literature
 that has little to do with this definition. -/
-class IsConvexDist : Prop where
+class IsConvexDist [inst₁ : ConvexSpace ℝ X] [inst₂ : MetricSpace X] : Prop where
   /-- Use `dist_iConvexComb_le` instead. -/
-  dist_iConvexComb_fst_snd_le (f : StdSimplex ℝ (X × X)) :
+  dist_iConvexComb_fst_snd_le [inst₁] [inst₂] (f : StdSimplex ℝ (X × X)) :
     dist (f.iConvexComb Prod.fst) (f.iConvexComb Prod.snd) ≤ f.iConvexComb fun x ↦ dist x.1 x.2
 
 @[deprecated (since := "2026-05-15")] alias IsConvexMetricSpace := IsConvexDist
 
-variable [IsConvexDist X]
+variable [ConvexSpace ℝ X] [MetricSpace X] [IsConvexDist X]
 
 /-- `dist(∑ tᵢ xᵢ, ∑ tᵢ yᵢ) ≤ ∑ tᵢ dist(xᵢ, yᵢ)` -/
 lemma dist_iConvexComb_le {ι : Type*} (f : StdSimplex ℝ ι) (x y : ι → X) :
     dist (f.iConvexComb x) (f.iConvexComb y) ≤ f.iConvexComb fun i ↦ dist (x i) (y i) := by
-  simpa [iConvexComb_map, Function.comp_def]
+  simpa [iConvexComb_map, Finsupp.sum_mapDomain_index, add_mul]
     using IsConvexDist.dist_iConvexComb_fst_snd_le (f.map fun i ↦ (x i, y i))
 
 @[deprecated (since := "2026-05-15")] alias dist_convexCombination_right_le := dist_iConvexComb_le
@@ -255,68 +258,32 @@ lemma continuous_convexCombPair' [BoundedSpace X]
 @[deprecated (since := "2026-05-15")]
 alias continuous_convexComboPair' := continuous_convexCombPair'
 
-/-- A convex subset of a vector space is a convex space. -/
--- TODO: this should generalize to arbitrary convex space once `Convex` is redefined.
-@[expose, implicit_reducible]
-noncomputable def ConvexSpace.ofConvex
-    {R E : Type*} [LinearOrder R] [Field R] [IsStrictOrderedRing R]
-      [AddCommGroup E] [Module R E] {S : Set E} (H : Convex R S) :
-    ConvexSpace R S where
-  sConvexComb f :=
-    ⟨sConvexComb (f.map (↑)), by
-    simpa [sConvexComb_eq_sum, StdSimplex.map, Finsupp.sum_mapDomain_index, add_smul] using
-      H.sum_mem (fun _ _ ↦ f.nonneg _) f.total fun i _ ↦ i.2⟩
-  assoc f := by
-    simp [sConvexComb_eq_sum, StdSimplex.map, Finsupp.sum_mapDomain_index, add_smul,
-      StdSimplex.join, Finsupp.sum_sum_index, Finsupp.sum_smul_index, mul_smul, Finsupp.smul_sum]
-  sConvexComb_single x := by simp [sConvexComb_eq_sum, ← StdSimplex.mk_single, StdSimplex.map]
-
-lemma isAffineMap_coe {R E : Type*} [LinearOrder R] [Field R] [IsStrictOrderedRing R]
-      [AddCommGroup E] [Module R E] (S : Set E) (H : Convex R S) :
-    letI : ConvexSpace R S := .ofConvex H
-    IsAffineMap R ((↑) : S → E) :=
-  letI : ConvexSpace R S := .ofConvex H
-  ⟨fun _ ↦ rfl⟩
-
-@[simp]
-lemma ConvexSpace.ofConvex.coe_sConvexComb
-      {R E : Type*} [LinearOrder R] [Field R] [IsStrictOrderedRing R]
-      [AddCommGroup E] [Module R E] (S : Set E) (H : Convex R S) (f : StdSimplex R S) :
-    letI : ConvexSpace R S := .ofConvex H
-    (↑f.sConvexComb : E) = (f.map (↑)).sConvexComb :=
-  rfl
-
-@[simp]
-lemma ConvexSpace.ofConvex.coe_iConvexComb
-      {R I E : Type*} [LinearOrder R] [Field R] [IsStrictOrderedRing R]
-      [AddCommGroup E] [Module R E] (S : Set E) (H : Convex R S) (f : StdSimplex R I) (g : I → S) :
-    letI : ConvexSpace R S := .ofConvex H
-    (↑(f.iConvexComb g) : E) = f.iConvexComb fun x ↦ ↑(g x) :=
-  letI : ConvexSpace R S := .ofConvex H
-  (isAffineMap_coe S H).map_iConvexComb f g
-
+attribute [local instance] AddTorsor.toConvexSpace in
 instance (priority := low) {V P : Type*}
     [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P] :
     IsConvexDist P where
   dist_iConvexComb_fst_snd_le f := by
     let p : P := Nonempty.some inferInstance
-    simp only [AddTorsor.iConvexComb_eq_affineCombination, ge_iff_le]
+    simp only [AddTorsor.iConvexComb_eq_affineCombination]
     rw [Finset.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ f.total p,
-      Finset.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ f.total p,
-      Finset.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ f.total 0]
+      Finset.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ f.total p]
     suffices ‖f.weights.sum fun a b ↦ b • (a.1 -ᵥ a.2)‖ ≤
       f.weights.sum fun a b ↦ b * ‖a.1 -ᵥ a.2‖ by
       simpa [dist_eq_norm_vsub, Finsupp.sum, ← Finset.sum_sub_distrib, ← smul_sub]
     grw [Finsupp.sum, Finsupp.sum, norm_sum_le]
     simp [norm_smul, abs_eq_self.mpr (f.nonneg _)]
 
-instance IsConvexDist.of_convex {E : Type*} [NormedAddCommGroup E]
-    [NormedSpace ℝ E] {S : Set E} (H : Convex ℝ S) :
-    letI : ConvexSpace ℝ S := .ofConvex H
-    IsConvexDist S := by
-  letI : ConvexSpace ℝ S := .ofConvex H
+instance IsConvexDist.subtype (s : Set X) (hs : IsConvexSet ℝ s) :
+    letI : ConvexSpace ℝ s := .subtype s hs
+    IsConvexDist s := by
+  letI : ConvexSpace ℝ s := .subtype s hs
   refine ⟨fun f ↦ ?_⟩
-  convert dist_iConvexComb_fst_snd_le (X := E) (f.map fun x ↦ (x.1, x.2)) <;>
-    simp [Subtype.dist_eq, iConvexComb_map, Function.comp_def]
+  convert dist_iConvexComb_fst_snd_le (X := X) (f.map fun x ↦ (x.1, x.2)) <;>
+    simp [Subtype.dist_eq, Finsupp.sum_mapDomain_index, add_mul]
+
+instance IsConvexDist.submodule {F M : Type*} [AddCommGroup M] [MetricSpace M]
+    [Module ℝ M] [ConvexSpace ℝ M] [IsModuleConvexSpace ℝ M] [IsConvexDist M]
+    [SetLike F M] [AddSubmonoidClass F M] [SMulMemClass F ℝ M] {S : F} :
+    IsConvexDist S := .subtype _ _
 
 end Convexity

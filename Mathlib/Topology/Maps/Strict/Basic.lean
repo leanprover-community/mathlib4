@@ -112,7 +112,7 @@ lemma IsQuotientMap.isStrictMap_iff (f_quot : IsQuotientMap f) :
   set Φ : range (g ∘ f) ≃ₜ range g := .setCongr <| f_quot.surjective.range_comp g
   have key : rangeFactorization g ∘ f = Φ ∘ rangeFactorization (g ∘ f) := rfl
   simp_rw [isStrictMap_iff_isQuotientMap_rangeFactorization, ← f_quot.of_comp_iff, key]
-  exact ⟨fun H ↦ by simpa using Φ.symm.isQuotientMap.comp H, fun H ↦ Φ.isQuotientMap.comp H⟩
+  exact ⟨fun H ↦ by simpa using! Φ.symm.isQuotientMap.comp H, fun H ↦ Φ.isQuotientMap.comp H⟩
 
 /-- A quotient map is strict. See also `isQuotientMap_iff_isStrictMap_surjective`. -/
 lemma IsQuotientMap.isStrictMap (f_quot : IsQuotientMap f) :

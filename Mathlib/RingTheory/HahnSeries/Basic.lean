@@ -160,7 +160,7 @@ def ofIterate [PartialOrder Γ'] (x : R⟦Γ'⟧⟦Γ⟧) : R⟦Γ ×ₗ Γ'⟧ 
     · refine Set.IsPWO.mono x.isPWO_support' ?_
       simp_rw [Set.image_subset_iff, support_subset_iff, Set.mem_preimage, Function.mem_support]
       exact fun _ ↦ ne_zero_of_coeff_ne_zero
-    · exact fun a => by simpa [Function.mem_support, ne_eq] using (x.coeff a).isPWO_support'
+    · exact fun a => by simpa [Function.mem_support, ne_eq] using! (x.coeff a).isPWO_support'
 
 @[simp]
 lemma mk_eq_zero (f : Γ → R) (h) : HahnSeries.mk f h = 0 ↔ f = 0 := by
@@ -589,7 +589,6 @@ theorem ofSuppBddBelow_eq_zero {f : Γ → R} {hf} : ofSuppBddBelow f hf = 0 ↔
 theorem coeff_ofSuppBddBelow {f : Γ → R} {hf} : (ofSuppBddBelow f hf).coeff = f :=
   rfl
 
-set_option linter.deprecated false in
 @[deprecated le_order_iff_forall (since := "2026-01-02")]
 theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
     (hn : ∀ (m : Γ), m < n → f m = 0) :

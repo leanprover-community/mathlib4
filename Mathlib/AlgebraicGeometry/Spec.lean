@@ -103,6 +103,7 @@ def Spec.sheafedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
         comap f.hom (unop U) ((TopologicalSpace.Opens.map (Spec.topMap f)).obj (unop U)) fun _ => id
       naturality := fun {_ _} _ => by ext; rfl }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Spec.sheafedSpaceMap_id {R : CommRingCat.{u}} :
@@ -160,7 +161,6 @@ theorem Spec.toPresheafedSpace_map_op (R S : CommRingCat.{u}) (f : R ⟶ S) :
     Spec.toPresheafedSpace.map f.op = (Spec.sheafedSpaceMap f).hom :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
     {α β : X ⟶ Spec.sheafedSpaceObj R} (w : α.hom.base = β.hom.base)
     (h : ∀ r : R,
@@ -175,7 +175,7 @@ theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
       PrimeSpectrum.isBasis_basic_opens
     intro r
     apply (StructureSheaf.to_basicOpen_epi R r).1
-    simpa using h r
+    simpa using! h r
 
 -- `simps!` generates some garbage lemmas, so choose manually,
 -- if more is needed, add them here
@@ -213,6 +213,7 @@ theorem stalkMap_toStalk {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectru
   erw [toOpen_comp_comap_assoc]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Under the isomorphisms `stalkIso`, the map `stalkMap (Spec.sheafedSpaceMap f) p` corresponds
 to the induced local ring homomorphism `Localization.localRingHom`.
@@ -291,7 +292,7 @@ theorem Spec_Γ_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
 @[simps! hom_app inv_app]
 def LocallyRingedSpace.SpecΓIdentity : Spec.toLocallyRingedSpace.rightOp ⋙ Γ ≅ 𝟭 _ :=
   Iso.symm <| NatIso.ofComponents.{u, u, u + 1, u + 1} (fun R ↦ asIso (toSpecΓ R) :)
-    fun {X Y} f => by convert Spec_Γ_naturality (R := X) (S := Y) f
+    fun {X Y} f => by convert! Spec_Γ_naturality (R := X) (S := Y) f
 
 end SpecΓ
 
@@ -356,7 +357,7 @@ def toPushforwardStalkAlgHom :
 
 theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
     ∃ x : S × p.asIdeal.primeCompl, x.2 • y = toPushforwardStalkAlgHom R S p x.1 := by
-  obtain ⟨U, hp, s, e⟩ := TopCat.Presheaf.germ_exist _ _ y
+  obtain ⟨U, hp, s, e⟩ := TopCat.Presheaf.exists_germ_eq _ y
   obtain ⟨_, ⟨r, rfl⟩, hpr : p ∈ PrimeSpectrum.basicOpen r, hrU : PrimeSpectrum.basicOpen r ≤ U⟩ :=
     PrimeSpectrum.isTopologicalBasis_basic_opens.exists_subset_of_mem_open (show p ∈ U from hp) U.2
   change PrimeSpectrum.basicOpen r ≤ U at hrU
