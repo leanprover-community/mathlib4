@@ -184,45 +184,33 @@ namespace Affine.Simplex
 
 section Ring
 variable [Ring k] [PartialOrder k] [IsOrderedAddMonoid k] [AddCommGroup V] [AddTorsor V P]
-  [Module k V] {n : ℕ} [NeZero n] (s : Affine.Simplex k P n) (i : Fin (n + 1)) {x : k}
+  [Module k V] {n : ℕ} [NeZero n] (s : Affine.Simplex k P n) (i : Fin (n + 1))
 
 /-- The base of a simplex shifted with parameter 0 intersects with the closed interior only at the
 vertex. -/
 theorem closedInterior_inter_shift_zero [ZeroLEOneClass k] :
     s.closedInterior ∩ (affineSpan k (Set.range (s.faceOpposite i).points)).shift (s.points i) 0 =
     {s.points i} := by
-  ext p
-  by_cases hp : p ∈ affineSpan k (Set.range s.points)
-  · obtain ⟨w, hw, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype hp
-    rw [Set.mem_inter_iff, range_faceOpposite_points, SetLike.mem_coe,
-      s.independent.affineCombination_mem_shift_iff i hw,
-      affineCombination_mem_closedInterior_iff hw]
-    suffices (∀ (i : Fin (n + 1)), 0 ≤ w i ∧ w i ≤ 1) ∧ w i = 1 ↔
-        (affineCombination k univ s.points) w = s.points i by
-      simpa
-    rw [← affineCombination_piSingle k _ s.points (mem_univ i),
-      s.independent.affineCombination_eq_iff_eq hw (by simp)]
-    refine ⟨fun ⟨h, hi⟩ ↦ ?_, fun h ↦ ⟨fun j ↦ ?_, by simp [h i (mem_univ i)]⟩⟩
-    · intro j _
-      by_cases hj : j = i
-      · aesop
-      · suffices w j = 0 by simp [this, hj]
-        rw [← Finset.univ.sum_erase_add _ (mem_univ i), hi, add_eq_right,
-          Finset.sum_eq_zero_iff_of_nonneg <| fun j _ ↦ (h j).1] at hw
-        exact hw j (by simpa using hj)
-    · by_cases hj : j = i <;> aesop
-  · apply iff_of_false
-    · apply not_and_of_not_left
-      contrapose hp
-      exact Set.mem_of_mem_of_subset hp s.closedInterior_subset_affineSpan
-    · contrapose hp
-      rw [Set.mem_singleton_iff] at hp
-      rw [hp]
-      exact mem_affineSpan _ (by simp)
+  refine Set.Subset.antisymm ?_ (by simp [s.point_mem_closedInterior i])
+  suffices ∀ p ∈ s.closedInterior, p ∈ (affineSpan k (s.points '' {i}ᶜ)).shift (s.points i) 0 →
+      p = s.points i by
+    simpa
+  intro p hp hshift
+  obtain ⟨w, hw, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype <|
+    Set.mem_of_mem_of_subset hp s.closedInterior_subset_affineSpan
+  suffices w = Pi.single i 1 by simp [this]
+  rw [affineCombination_mem_closedInterior_iff hw] at hp
+  rw [s.independent.affineCombination_mem_shift_iff i hw, sub_zero] at hshift
+  ext j
+  by_cases hj : j = i
+  · aesop
+  rw [← univ.sum_erase_add w (mem_univ i), hshift, add_eq_right,
+    sum_eq_zero_iff_of_nonneg fun j _ ↦ (hp j).1] at hw
+  simp [hw j (by simpa using hj), hj]
 
-/-- The base of a simplex shifted with parameter outside $[0, 1] does not intersect with the closed
+/-- The base of a simplex shifted with parameter outside $[0, 1]$ does not intersect with the closed
 interior. -/
-theorem disjoint_closedInterior_shift (hx : x < 0 ∨ 1 < x) :
+theorem disjoint_closedInterior_shift {x : k} (hx : x < 0 ∨ 1 < x) :
     Disjoint s.closedInterior <|
     (affineSpan k (Set.range (s.faceOpposite i).points)).shift (s.points i) x := by
   refine Set.disjoint_left.mpr fun p hleft hright ↦ ?_
@@ -236,8 +224,7 @@ theorem disjoint_closedInterior_shift (hx : x < 0 ∨ 1 < x) :
 end Ring
 
 section Field
-variable [Field k] [LinearOrder k] [IsOrderedRing k] [AddCommGroup V] [AddTorsor V P]
-  [Module k V] {n : ℕ} [NeZero n] (s : Affine.Simplex k P n) (i : Fin (n + 1)) {x : k}
+variable [Field k] [LinearOrder k] [IsOrderedRing k] [AddCommGroup V] [Module k V] [AddTorsor V P]
 
 private theorem closedInterior_inter_shift_aux {n : ℕ} (i : Fin n) {x : k} (hxpos : 0 < x)
     (hx1 : x ≤ 1) {w : Fin n → k} (hw : ∑ i, w i = 1) :
@@ -267,7 +254,8 @@ private theorem closedInterior_inter_shift_aux {n : ℕ} (i : Fin n) {x : k} (hx
       simpa using hxpos
 
 /-- The parallel cross-section of a simplex is the homothety of the base. -/
-theorem closedInterior_inter_shift (hx : x ∈ Set.Icc 0 1) :
+theorem closedInterior_inter_shift {n : ℕ} [NeZero n] (s : Affine.Simplex k P n)
+    (i : Fin (n + 1)) {x : k} (hx : x ∈ Set.Icc 0 1) :
     s.closedInterior ∩ (affineSpan k (Set.range (s.faceOpposite i).points)).shift (s.points i) x =
     homothety (s.points i) x '' (s.faceOpposite i).closedInterior := by
   rcases eq_or_lt_of_le hx.1 with hx0 | hxpos
