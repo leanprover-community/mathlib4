@@ -526,16 +526,18 @@ initialize addLinter doubleUnderscore
 
 private def isBadDefNameWithUnderscoreAux (env : Environment) (moduleAutoSuffix : String)
     (badIfEligible : Bool) : Name → Bool
-  | .num .. => false -- internal
+  | .num .. => false -- exempt; internal
   | .str pre s =>
-    let stillEligible := !(s == "Simps" ||
-      s.endsWith moduleAutoSuffix ||
-      (s.dropSuffix? Char.isDigit).any (·.endsWith '_')) -- ends with "_<number>"
+    let stillEligible := !(
+      s == "Simps" || -- exempt `Simps`
+      s.endsWith moduleAutoSuffix || -- exempt `*_<project>`, e.g. `*_mathlib`
+      (s.dropSuffix? Char.isDigit).any (·.endsWith '_')) -- exempt `*_<number>`
     -- Components are exempt if they are a keyword + `_`.
     -- Inlined to ensure we only compute it if necessary.
     letI exemptComponent := s.dropSuffix? '_' |>.any fun keyword =>
       parserExtension.getState env |>.tokens.find? keyword.toString |>.isSome
     let badIfEligible := badIfEligible || (s.contains '_' && !exemptComponent)
+
     stillEligible &&
       -- If the root is a theorem, stop here.
       if wasOriginallyTheorem env pre then
@@ -598,8 +600,7 @@ public def isBadDefNameWithUnderscore (declName : Name) : MetaM Bool := do
   -- may be made by `unif_hint` in practice, so exempt them
   if ← isProp type then return false
   let project := moduleToSuffix <| (env.getModuleFor? declName).elim `NoProjectFound (·.getRoot)
-  let declName := privateToUserName declName
-  return isBadDefNameWithUnderscoreAux env project false declName
+  return isBadDefNameWithUnderscoreAux env project false (privateToUserName declName)
 
 @[env_linter, inherit_doc isBadDefNameWithUnderscore]
 public def defsWithUnderscore : Batteries.Tactic.Lint.Linter where
