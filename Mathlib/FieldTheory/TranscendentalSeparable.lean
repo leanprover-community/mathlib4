@@ -151,7 +151,7 @@ lemma localization_minimal_isField {S : Type*} [CommRing S] [IsReduced S]
 
 /-- The map of a ring to product of its localizations at minimal primes. -/
 def toLocalizationMinimal (S : Type*) [CommRing S] :=
-  (Pi.ringHom (fun (p : minimalPrimes S) ↦
+  (RingHom.pi (fun (p : minimalPrimes S) ↦
     letI := p.2.isPrime
     algebraMap S (Localization.AtPrime p.1)))
 
@@ -167,7 +167,7 @@ lemma isReduced_injective_to_prod_localizations (S : Type*) [CommRing S] [IsRedu
   rw [← IsLocalization.AtPrime.under_maximalIdeal (Localization.AtPrime p) p, Ideal.mem_comap]
   have : (toLocalizationMinimal S) x ⟨p, min⟩ = 0 := by
     rw [hx, Pi.zero_apply]
-  simp only [toLocalizationMinimal, Pi.ringHom_apply] at this
+  simp only [toLocalizationMinimal, RingHom.pi_apply] at this
   simp [this]
 
 lemma IsReduced.tensorProduct_of_forall_fg_intermediateField {k : Type*} [Field k]
@@ -394,7 +394,7 @@ lemma tensorProduct_isReduced_of_isSeparablyGenerated_of_isReduced [IsReduced S]
         apply Algebra.IsSeparable.of_equiv_equiv e.toRingEquiv.symm (RingEquiv.refl M')
         ext m
         have : (e.symm m).1.1 = (e (e.symm m)).1 := by simp [- AlgEquiv.apply_symm_apply, e]
-        simpa only [e.apply_symm_apply] using this
+        simpa only [e.apply_symm_apply] using! this
       have : Algebra.EssFiniteType (IntermediateField.adjoin k (Set.range f')) ↥M' := by
         rw [← IntermediateField.fg_top_iff]
         use G.preimage M'.val Subtype.val_injective.injOn
