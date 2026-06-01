@@ -9,8 +9,7 @@ public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
 public import Mathlib.NumberTheory.RamificationInertia.Galois
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
-public import Mathlib.RingTheory.RamificationInertia.Ramification
-public import Mathlib.RingTheory.RamificationInertia.Inertia
+public import Mathlib.RingTheory.RamificationInertia.Basic
 public import Mathlib.RingTheory.Unramified.Dedekind
 
 /-!
@@ -23,67 +22,50 @@ This is a trivial corollary of `NumberField.not_dvd_discr_iff_forall_mem` and
 -/
 @[expose] public section
 
-namespace Localization
+section
 
-open AtPrime
+variable (A B C G : Type*) [Group G] (H : Subgroup G) [CommRing A] [CommRing B] [CommRing C]
+  [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
+  [MulSemiringAction G C] [IsGaloisGroup G A C] [IsGaloisGroup H B C]
+  (q : Ideal B) (r : Ideal C) [r.LiesOver q]
 
-variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C] [Algebra A B] [Algebra A C]
-  (p : Ideal A) (q : Ideal B) (r : Ideal C) [p.IsPrime] [q.IsPrime] [r.IsPrime]
-  [q.LiesOver p] [Algebra (Localization.AtPrime p) (Localization.AtPrime q)] [IsLiesOverAlgebra p q]
-  [r.LiesOver p] [Algebra (Localization.AtPrime p) (Localization.AtPrime r)] [IsLiesOverAlgebra p r]
+theorem foo₁ : r.inertia H = (r.inertia G).subgroupOf H := rfl
 
--- PRed
-noncomputable def localAlgEquiv' (f : B ≃ₐ[A] C) (h : q = r.comap f) :
-    Localization.AtPrime q ≃ₐ[Localization.AtPrime p] Localization.AtPrime r where
-  __ := localAlgEquiv q r f h
-  commutes' := by
-    let Ap := Localization.AtPrime p
-    let f := (localAlgEquiv q r f h).toAlgHom.comp (IsScalarTower.toAlgHom A Ap _)
-    let g := IsScalarTower.toAlgHom A Ap (Localization.AtPrime r)
-    have : f.toRingHom.comp (algebraMap A Ap) = g.toRingHom.comp (algebraMap A Ap) := by simp
-    suffices f = g by rwa [DFunLike.ext_iff] at this
-    apply Localization.algHom_ext
-    rwa [DFunLike.ext_iff] at this ⊢
+variable [H.Normal] [FaithfulSMul B C] [FaithfulSMul A C] [IsDomain C] [Finite G]
 
-end Localization
+example :
+    letI := IsGaloisGroup.mulSemiringActionQuotient G B C H
+    IsGaloisGroup (G ⧸ H) A B := by
+  let := IsGaloisGroup.mulSemiringActionQuotient G B C H
+  let := IsGaloisGroup.mulSemiringActionOfNormal G B C H
+  let := IsGaloisGroup.smulCommClassQuotient G A B C H
+  exact IsGaloisGroup.quotient G A B C H
 
-namespace Ideal
+example {G G' : Type*} [Group G] [Group G'] (H : Subgroup G) (f : G →* G') :
+    Nat.card (H ⊓ f.ker :) * Nat.card (H.map f) = Nat.card H := by
+  have := f.restrict H
+  have := Subgroup.index_ker (f.restrict H)
+  rw [MonoidHom.restrict_range, MonoidHom.ker_restrict] at this
+  sorry
 
-open Localization.AtPrime
+include A in
+theorem foo₂ :
+    letI := IsGaloisGroup.mulSemiringActionQuotient G B C H
+    q.inertia (G ⧸ H) = (r.inertia G).map (QuotientGroup.mk' H) := by
+  symm
+  apply Subgroup.eq_of_le_of_card_ge
+  · rintro - ⟨g, hg, rfl⟩
+    intro b
+    simp
+    specialize hg (algebraMap B C b)
+    simp at hg
+    rw [← IsGaloisGroup.algebraMap_smulOfNormal G B C H g b, ← map_sub] at hg
+    rwa [← Ideal.mem_under, ← Ideal.over_def r q] at hg
+  · apply Nat.le_of_dvd Nat.card_pos
+    -- idea: use formula for cardinality of inertia (assuming finite + flat)
+    sorry
 
-variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C] [Algebra A B] [Algebra A C]
-  (p : Ideal A) (q : Ideal B) (r : Ideal C) [p.IsPrime] [q.IsPrime] [r.IsPrime]
-  [q.LiesOver p] [Algebra (Localization.AtPrime p) (Localization.AtPrime q)] [IsLiesOverAlgebra p q]
-  [r.LiesOver p] [Algebra (Localization.AtPrime p) (Localization.AtPrime r)] [IsLiesOverAlgebra p r]
-
-noncomputable def residueFieldRingEquiv (f : B ≃+* C) (h : q = r.comap f) :
-    q.ResidueField ≃+* r.ResidueField :=
-  IsLocalRing.ResidueField.mapEquiv (Localization.localRingEquiv q r f h)
-
-noncomputable def residueFieldAlgEquiv (f : B ≃ₐ[A] C) (h : q = r.comap f) :
-    q.ResidueField ≃ₐ[A] r.ResidueField :=
-  IsLocalRing.ResidueField.mapAlgEquiv (Localization.localAlgEquiv q r f h)
-
-noncomputable def residueFieldAlgEquiv' (f : B ≃ₐ[A] C) (h : q = r.comap f) :
-    q.ResidueField ≃ₐ[p.ResidueField] r.ResidueField :=
-  IsLocalRing.ResidueField.mapAlgEquiv' (Localization.localAlgEquiv' p q r f h)
-
-open Pointwise in
-theorem inertiaDeg'_smul {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
-    (g : G) (q : Ideal B) : (g • q).inertiaDeg' A = q.inertiaDeg' A := by
-  by_cases hq : q.IsPrime; swap
-  · rw [inertiaDeg'_of_not_isPrime, inertiaDeg'_of_not_isPrime] <;> simpa
-  · let p := q.under A
-    let f₀ := MulSemiringAction.toAlgAut G A B g
-    let := Localization.AtPrime.algebraOfLiesOver p q
-    let := Localization.AtPrime.algebraOfLiesOver p (g • q)
-    rw [inertiaDeg'_eq p q, inertiaDeg'_eq p (g • q)]
-    let e₂ := Ideal.residueFieldAlgEquiv' p (g • q) q f₀.symm (comap_symm f₀.toRingEquiv).symm
-    exact e₂.toLinearEquiv.finrank_eq
-
-
-
-end Ideal
+end
 
 open scoped NumberField nonZeroDivisors
 
@@ -154,29 +136,9 @@ lemma NumberField.exists_not_isUnramifiedAt_int_of_isGalois [IsGalois ℚ K]
     ← Algebra.isUnramifiedAt_iff_of_isDedekindDomain (Ideal.IsMaximal.ne_bot_of_isIntegral_int _)]
 
 open IsGaloisGroup NumberField -- probably should become a namespace
-instance {K L : Type*} [Field K] [Field L] [NumberField K] [NumberField L] [Algebra K L]
-    (p : Ideal (𝓞 K)) (q : Ideal (𝓞 L)) [q.LiesOver p] [q.IsMaximal] [p.IsMaximal] :
-    Algebra.IsSeparable ((𝓞 K) ⧸ p) ((𝓞 L) ⧸ q) := by
-  sorry
-
-instance {K : Type*} [Field K] [NumberField K]
-    (p : Ideal ℤ) (q : Ideal (𝓞 K)) [q.LiesOver p] [q.IsMaximal] [p.IsMaximal] :
-    Algebra.IsSeparable (ℤ ⧸ p) ((𝓞 K) ⧸ q) := by
-  sorry
-
-instance {R : Type*} [CommRing R] [IsDomain R] [Ring.HasFiniteQuotients R] {I : Ideal R} [I.IsPrime]
-    [PerfectField (FractionRing R)] :
-    PerfectField I.ResidueField := by
-  by_cases hI : I = ⊥
-  · suffices IsFractionRing R I.ResidueField by
-      sorry
-    sorry
-  · have : Finite (R ⧸ I) := Ring.HasFiniteQuotients.finiteQuotient hI
-    have : Finite I.ResidueField := sorry
-    infer_instance
 
 instance {I : Ideal ℤ} [I.IsPrime] : PerfectField I.ResidueField :=
-  inferInstance
+  sorry
 
 section
 
@@ -206,19 +168,14 @@ theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finit
   have : IsGaloisGroup (G ⧸ H) ℤ R := by
     let := mulSemiringActionOfNormal G R S H
     exact IsGaloisGroup.quotient G ℤ R S H
-
   have : mR.ramificationIdx' ℤ = Nat.card (Ideal.inertia (G ⧸ H) mR) := sorry -- Flat over ℤ
-  rw [this, Subgroup.card_eq_one, Subgroup.eq_bot_iff_forall, QuotientGroup.forall_mk]
-  intro g hg
-  rw [QuotientGroup.eq_one_iff]
-  rw [Ideal.inertia, AddSubgroup.inertia] at hg
-  simp at hg
-  -- Can we go more directly? The quotient `G ⧸ H` is the Galois group of `R/ℤ`,
-  -- and the ramification index equals the cardinality of the inertia subgroup (hopefully?),
-  -- but the inertia subgroup is trivial (argue directly?)
-
-  -- problem is lack of flatness of S/R?
-  -- in theory could do two applications of ramification-inertia, to R/ℤ and S/ℤ?
+  rw [this, Subgroup.card_eq_one]
+  have : Algebra.IsIntegral R S := IsGaloisGroup.isInvariant.isIntegral R S H
+  obtain ⟨mS, hmS, hmRS⟩ := Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain (R := R) (S := S) mR (by simp)
+  replace hmRS : mS.LiesOver mR := ⟨hmRS.symm⟩
+  rw [foo₂ ℤ R S G H mR mS, Subgroup.map_eq_bot_iff, QuotientGroup.ker_mk']
+  apply le_iSup_of_le ⟨mS, hmS⟩
+  rfl
 
 theorem NumberField.supr_inertia_eq_top' (K : Type*) [Field K] [NumberField K]
     (G : Type*) [Group G] [MulSemiringAction G K] [IsGaloisGroup G ℚ K] :
