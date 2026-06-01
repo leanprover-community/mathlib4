@@ -41,7 +41,7 @@ lemma AnalyticAt.meromorphicAt {f : 𝕜 → E} {x : 𝕜} (hf : AnalyticAt 𝕜
     MeromorphicAt f x :=
   ⟨0, by simpa only [pow_zero, one_smul]⟩
 
-/- Analogue of the principle of isolated zeros for an analytic function: if a function is
+/-- Analogue of the principle of isolated zeros for an analytic function: if a function is
 meromorphic at `z₀`, then either it is identically zero in a punctured neighborhood of `z₀`, or it
 does not vanish there at all. -/
 theorem MeromorphicAt.eventually_eq_zero_or_eventually_ne_zero {f : 𝕜 → E} {z₀ : 𝕜}

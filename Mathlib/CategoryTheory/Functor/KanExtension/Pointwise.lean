@@ -410,7 +410,6 @@ variable {F L}
 variable (E E' : RightExtension L F)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The cone for `StructuredArrow.proj Y L ⋙ F` attached to `E : RightExtension L F`.
 The point of this cone is `E.left.obj Y` -/
 @[simps]
