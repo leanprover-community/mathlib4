@@ -54,6 +54,25 @@ def gitMergeBase (targetRef : String) (cwd : FilePath := ".") : IO (Option Strin
     pure none
 
 /--
+Return `true` if `HEAD` is an ancestor of (or equal to) the local `master`
+branch — i.e. the current commit is already part of master's history and has no
+fork-specific divergence.
+
+Uses `git merge-base --is-ancestor HEAD master`, which exits 0 when HEAD is an
+ancestor of master and 1 when it is not. Any other outcome (e.g. `master` not
+present locally, or git unavailable) is treated as "not an ancestor", so callers
+degrade to their default behavior rather than throwing — matching the never-throw
+posture of the rest of the read path.
+-/
+def headIsAncestorOfMaster (cwd : FilePath := ".") : IO Bool := do
+  try
+    let out ← IO.Process.output
+      {cmd := "git", args := #["merge-base", "--is-ancestor", "HEAD", "master"], cwd := cwd}
+    pure (out.exitCode == 0)
+  catch _ =>
+    pure false
+
+/--
 Probe a single container for the per-SHA marker blob.
 
 Issues an anonymous HEAD against `{container}/m/{repo}/{sha}` and returns
