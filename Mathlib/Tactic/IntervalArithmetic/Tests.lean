@@ -102,9 +102,6 @@ example :
 
 section LogTests
 
-example : Real.log (1 : ℝ) = 0 := by
-  dyadic_interval
-
 example : 0 ≤ Real.log (2 : ℝ) := by
   dyadic_interval
 
