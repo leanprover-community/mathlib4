@@ -126,7 +126,9 @@ private theorem exists_embedding_of_agree_qf
     ∃ g : (Substructure.closure L (Set.range v) : L.Substructure M) ↪[L] N,
       ∀ i, g ⟨v i, Substructure.subset_closure ⟨i, rfl⟩⟩ = w i := by
   classical
+  -- For each element of `range v`, choose an index `idx x` with `v (idx x) = x`.
   choose idx hidx using fun x : Set.range v => x.2
+  -- The agreement hypothesis specializes to atomic equalities and relations, hence to variables.
   have hQFeq : ∀ {t u : L.Term α},
       ((t.equal u : L.Formula α).Realize v ↔ (t.equal u).Realize w) := fun {t u} =>
     hQF _ <| by
@@ -141,6 +143,8 @@ private theorem exists_embedding_of_agree_qf
     have hv : (Term.equal (L := L) (Term.var i) (Term.var j)).Realize v := by
       simpa [Formula.realize_equal] using hij
     simpa [Formula.realize_equal] using hQFeq.mp hv
+  -- Relabelling a term over `range v` through `idx` and realizing at `v` agrees with realizing it
+  -- along the inclusion `range v → M`; so equal values in `M` give equal values at `w`.
   have hterm_realize (t : L.Term (Set.range v)) :
       (t.relabel idx).realize v = t.realize ((↑) : Set.range v → M) := by
     rw [Term.realize_relabel]
@@ -153,8 +157,11 @@ private theorem exists_embedding_of_agree_qf
       simpa [Formula.realize_equal, hterm_realize t, hterm_realize u] using htu
     simpa [Formula.realize_equal] using hQFeq.mp hv
   let S : L.Substructure M := Substructure.closure L (Set.range v)
+  -- Every element of `S` is the value of some term in the generators; pick one as `repr x`.
   choose repr hrepr using fun x : S =>
     (Substructure.mem_closure_iff_exists_term (L := L) (s := Set.range v) (x := (x : M))).mp x.2
+  -- Send `x : S` to the value at `w` of its representing term; agreement on quantifier-free
+  -- formulas makes this injective and a homomorphism.
   refine ⟨{
     toFun := fun x => ((repr x).relabel idx).realize w
     inj' := by
@@ -178,6 +185,8 @@ private theorem exists_embedding_of_agree_qf
       intro n R x
       simpa [hterm_realize, hrepr] using (hQFrel R fun i => (repr (x i)).relabel idx).symm
   }, ?_⟩
+  -- The generator `v i` has the same realization as the variable `xi`, so the embedding sends it
+  -- to `w i`.
   intro i
   let xi : Set.range v := ⟨v i, ⟨i, rfl⟩⟩
   have hxi : (repr ⟨v i, Substructure.subset_closure ⟨i, rfl⟩⟩).realize
@@ -204,12 +213,16 @@ private theorem exists_model_not_realize_with_qf_consequences
     ∃ (M1 : Theory.ModelType.{u, v, max u v u'} T) (v0 : α → M1), ¬ φ.Realize v0 ∧
       ∀ q : {ψ : L.Formula α // ψ.IsQF ∧ φ ⟹[T] ψ}, q.1.Realize v0 := by
   classical
+  -- Work in `L[[α]]` with a constant for each variable. The target theory is `T`, the sentence
+  -- `¬φ`, and every quantifier-free consequence `ψ` of `φ`; a model of it provides `v0`.
   let Q1 : Type _ := {ψ : L.Formula α // ψ.IsQF ∧ φ ⟹[T] ψ}
   let base1 : L[[α]].Theory :=
     (L.lhomWithConstants α).onTheory T ∪ {Formula.equivSentence φ.not}
   let U1 : Option Q1 → L[[α]].Theory
     | none => base1
     | some ψ => base1 ∪ {Formula.equivSentence ψ.1}
+  -- By compactness it suffices to satisfy every finite subset; suppose some finite subset `s` is
+  -- unsatisfiable and let `θ` be the conjunction of the quantifier-free consequences it mentions.
   have hsat1 : Theory.IsSatisfiable (⋃ i, U1 i) := by
     by_contra hsat1
     rw [Theory.isSatisfiable_iUnion_iff_isSatisfiable_iUnion_finset] at hsat1
@@ -220,10 +233,13 @@ private theorem exists_model_not_realize_with_qf_consequences
     let lqfs : List Q1 := qfs.toList
     let θ : L.Formula α := qfConj lqfs
     have hθQF : θ.IsQF := qfConj_isQF lqfs
+    -- `φ` implies `θ`, since each conjunct is a consequence of `φ`.
     have hφθ : φ ⟹[T] θ := fun M v xs hφ => by
       change BoundedFormula.Realize (qfConj lqfs) v xs
       rw [realize_qfConj]
       exact fun q _ => q.2.2 M v xs hφ
+    -- Conversely `θ` implies `φ`: a `T`-model of `θ` with `¬φ` would satisfy the finite subset `s`,
+    -- contradicting its unsatisfiability. Thus `θ` is a quantifier-free formula equivalent to `φ`.
     have hθφ : θ ⟹[T] φ := by
       intro M v xs hθ
       by_contra hφ
@@ -247,6 +263,8 @@ private theorem exists_model_not_realize_with_qf_consequences
         exact (Formula.boundedFormula_realize_eq_realize ..).mp (hθall q hqlist)
       exact hs (Theory.Model.isSatisfiable M)
     exact hqe ⟨θ, hθQF, Theory.imp_antisymm hφθ hθφ⟩
+  -- Reduce a model to an `L`-structure modelling `T`, and read off its constants as `v0`: it fails
+  -- `φ` (from the `¬φ` sentence) and realizes every quantifier-free consequence of `φ`.
   obtain ⟨M1⟩ := hsat1
   letI : L.Structure M1 := (L.lhomWithConstants α).reduct M1
   haveI : T.Model M1 := (LHom.onTheory_model _ _).mp <| M1.is_model.mono fun _ hσ =>
@@ -270,12 +288,16 @@ private theorem exists_model_realize_with_qf_realized_at
     ∃ (N1 : Theory.ModelType.{u, v, max u v u'} T) (w : α → N1),
       φ.Realize w ∧ ∀ ψ : L.Formula α, ψ.IsQF → (ψ.Realize v0 ↔ ψ.Realize w) := by
   classical
+  -- Work in `L[[α]]`. The target theory is `T`, the sentence `φ`, and every quantifier-free formula
+  -- `ψ` realized at `v0`; a model of it provides `w` realizing `φ` and agreeing with `v0`.
   let P : Type _ := {ψ : L.Formula α // ψ.IsQF ∧ ψ.Realize v0}
   let base2 : L[[α]].Theory :=
     (L.lhomWithConstants α).onTheory T ∪ {Formula.equivSentence φ}
   let U2 : Option P → L[[α]].Theory
     | none => base2
     | some ψ => base2 ∪ {Formula.equivSentence ψ.1}
+  -- By compactness, satisfy each finite subset. If some finite subset `s` were unsatisfiable, the
+  -- conjunction `θ` of its quantifier-free formulas would give `φ ⟹ ¬θ` while `θ` holds at `v0`.
   have hsat2 : Theory.IsSatisfiable (⋃ i, U2 i) := by
     by_contra hsat2
     rw [Theory.isSatisfiable_iUnion_iff_isSatisfiable_iUnion_finset] at hsat2
@@ -314,6 +336,7 @@ private theorem exists_model_realize_with_qf_realized_at
       change BoundedFormula.Realize (qfConj lqfs) v0 default
       rw [realize_qfConj]
       exact fun q _ => q.2.2
+    -- But then `¬θ` is a quantifier-free consequence of `φ`, so it holds at `v0`, contradiction.
     exact hqfConseq ⟨θ.not, hθQF.not, hφnotθ⟩ hθv0
   obtain ⟨N1⟩ := hsat2
   letI : L.Structure N1 := (L.lhomWithConstants α).reduct N1
@@ -328,6 +351,7 @@ private theorem exists_model_realize_with_qf_realized_at
     fun ψ hψ hψv0 => (Formula.realize_equivSentence (M := N1) ψ).mp
       (N1.is_model.realize_of_mem _
         (Set.mem_iUnion.mpr ⟨some ⟨ψ, hψ, hψv0⟩, .inr rfl⟩))
+  -- Agreement on `ψ`: forward is `hqfIncl`; the reverse follows by applying it to `ψ.not`.
   refine ⟨Theory.ModelType.of T N1, w, hφw, fun ψ hψ =>
     ⟨hqfIncl ψ hψ, fun hψw => ?_⟩⟩
   by_contra hψv0
@@ -343,6 +367,8 @@ private theorem realize_iff_of_embeddings_of_isQFEquivalent
     (f : A ↪[L] M) (g : A ↪[L] N) (a : α → A) :
     φ.Realize (f ∘ a) ↔ φ.Realize (g ∘ a) := by
   obtain ⟨ψ, hψ, hiff⟩ := hφ
+  -- A quantifier-free `ψ` equivalent to `φ` is preserved by embeddings, so its realization depends
+  -- only on the common substructure `A`, not on the model it embeds into.
   have hf : ψ.Realize (f ∘ a) ↔ ψ.Realize a := by
     simpa [Formula.Realize, Unique.eq_default (f ∘ default)] using
       hψ.realize_embedding (f := f) (v := a) (xs := default)
@@ -362,6 +388,9 @@ private theorem isQFEquivalent_of_realize_iff_of_embeddings
       φ.Realize (f ∘ a) ↔ φ.Realize (g ∘ a)) :
     T.IsQFEquivalent φ := by
   by_contra hqe
+  -- Build a model where `φ` fails but every quantifier-free consequence holds, and a second model
+  -- where `φ` holds and the quantifier-free type agrees with the first. The shared quantifier-free
+  -- type yields a common substructure `S` embedding into both, so invariance forces `φ` at `v0`.
   obtain ⟨M1, v0, hnotφv0, hqfConseq⟩ := exists_model_not_realize_with_qf_consequences hqe
   obtain ⟨N1, w, hφw, hqfEq⟩ := exists_model_realize_with_qf_realized_at φ v0 hqfConseq
   obtain ⟨S, g, a, ha, hg⟩ := exists_substructure_embedding_of_agree_qf v0 w hqfEq
@@ -395,10 +424,14 @@ private theorem exists_qf_equiv_ex_of_isQF
         ∃ ψ : L.Formula α, ψ.IsQF ∧ θ.ex ⇔[T] ψ)
     {α : Type u'} [Finite α] {n : ℕ} {θ : L.BoundedFormula α (n + 1)} (hθ : θ.IsQF) :
     ∃ ψ : L.BoundedFormula α n, ψ.IsQF ∧ θ.ex ⇔[T] ψ := by
+  -- Keep the last of the `n + 1` bound variables as the single bound variable handled by `h`, and
+  -- move the other `n` bound variables into the free index type `α ⊕ Fin n`.
   let toOne : α ⊕ Fin (n + 1) → (α ⊕ Fin n) ⊕ Fin 1 :=
     Sum.elim (fun i => Sum.inl (Sum.inl i))
       (Fin.lastCases (Sum.inr 0) fun i => Sum.inl (Sum.inr i))
   let θ' : L.BoundedFormula (α ⊕ Fin n) 1 := BoundedFormula.relabel toOne θ.toFormula
+  -- Apply the one-variable hypothesis, then relabel the result back; the rest checks the bound
+  -- variable lines up on both sides of the equivalence.
   obtain ⟨ψ', hψ', hθψ'⟩ := h θ' (hθ.toFormula.relabel _)
   refine ⟨BoundedFormula.relabel (id : α ⊕ Fin n → α ⊕ Fin n) ψ',
     hψ'.relabel _, fun M v xs => ?_⟩
@@ -451,6 +484,8 @@ theorem hasQuantifierElimination_iff_ex_isQFEquivalent_of_isQF {T : L.Theory} :
       ∀ {α : Type} [Finite α] (θ : L.BoundedFormula α 1), θ.IsQF → T.IsQFEquivalent θ.ex := by
   refine ⟨fun h _ _ θ _ => h θ.ex, fun h => ?_⟩
   refine hasQuantifierElimination_iff_finite_isQFEquivalent.mpr (fun {α} _ φ => ?_)
+  -- Induct on formula structure: quantifier-free equivalence is preserved by negation, by the
+  -- existential step (handled by `exists_qf_equiv_ex_of_isQF`), and along semantic equivalence.
   refine φ.induction_on_exists_not
     (P := fun {_} φ => ∃ ψ, ψ.IsQF ∧ φ ⇔[T] ψ)
     (fun hψ => ⟨_, hψ, Theory.Iff.refl _⟩) ?_ ?_ ?_
@@ -502,6 +537,8 @@ private theorem isQF_realize_partialEquiv
     {v : α → M} (hv : ∀ i, v i ∈ p.dom) :
     φ.Realize (fun i => (p.toEquiv ⟨v i, hv i⟩ : N)) ↔ φ.Realize v := by
   let vdom : α → p.dom := fun i => ⟨v i, hv i⟩
+  -- View the tuple inside the domain substructure: both the inclusion `p.dom ↪ M` and the partial
+  -- equivalence `p.dom ↪ N` are embeddings, so each preserves quantifier-free realization.
   have hdom : φ.Realize v ↔ φ.Realize vdom := by
     simpa [Formula.Realize, vdom, Function.comp_def,
       Unique.eq_default (fun x : Fin 0 => (((default : Fin 0 → p.dom) x : p.dom) : M))] using
@@ -525,6 +562,8 @@ private theorem exists_realize_codMap_of_extends
     (hp_apply : ∀ i, (p₀.toEquiv ⟨f (a i), hp_dom i⟩ : N) = g (a i))
     (hbq : b ∈ q.dom) (hb : φ.Realize (Sum.elim (f ∘ a) (Fin.snoc default b))) :
     ∃ b' : N', φ.Realize (Sum.elim ((e.toEmbedding ∘ g) ∘ a) (Fin.snoc default b')) := by
+  -- As `q` extends `codMap p₀ e`, the generators `f (a i)` lie in `q.dom` and `q` sends them to
+  -- `e (g (a i))`. Transporting the witness `b` along `q` then preserves the realization.
   have hqa_dom (i : α) : f (a i) ∈ q.dom := PartialEquiv.dom_le_dom hpq (hp_dom i)
   have hqa_apply (i : α) : (q.toEquiv ⟨f (a i), hqa_dom i⟩ : N') = e (g (a i)) := by
     have hx' := congr_arg (fun y : q.cod => (y : N'))
@@ -555,6 +594,8 @@ private theorem exists_realize_descent_through_elementary
     (e : N ↪ₑ[L] N') (ga : α → N) (b' : N')
     (htarget : φ.Realize (Sum.elim (e.toEmbedding ∘ ga) (Fin.snoc default b'))) :
     ∃ c : N, φ.Realize (Sum.elim ga (Fin.snoc default c)) := by
+  -- The witness over `α ⊕ Fin 1` is the existential closure `θ.ex`, which the elementary embedding
+  -- `e` reflects from `N'` back to `N`.
   let θ : L.BoundedFormula α 1 := BoundedFormula.relabel (id : α ⊕ Fin 1 → α ⊕ Fin 1) φ
   have hθN' : θ.ex.Realize (e.toEmbedding ∘ ga) default :=
     BoundedFormula.realize_ex.mpr
