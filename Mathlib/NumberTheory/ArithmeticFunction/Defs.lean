@@ -649,4 +649,13 @@ theorem isMultiplicative_finsetProd [CommSemiring R] {ι : Type*}
     rw [Finset.prod_cons]
     exact (hf a (by grind)).mul (by grind)
 
+@[arith_mult]
+theorem IsMultiplicative.pow [CommSemiring R] {f : ArithmeticFunction R}
+    (hf : f.IsMultiplicative) {k : ℕ} : IsMultiplicative (f ^ k) := by
+  induction k
+  case zero => simp
+  case succ k hk =>
+    rw [pow_succ]
+    exact hk.mul hf
+
 end ArithmeticFunction

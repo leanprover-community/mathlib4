@@ -263,7 +263,7 @@ lemma isRegular_of_maximalIdeal_mem_ofList_minimalPrimes
         apply maximalIdeal_mem_minimalPrimes_of_surjective (algebraMap R R')
           Ideal.Quotient.mk_surjective le mem
         have mem_max : ∀ r ∈ rs'.map (algebraMap R R'), r ∈ maximalIdeal R' := by
-          simpa only [List.mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂] using
+          simpa only [List.mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂] using!
             fun r hr ↦ map_nonunit (Ideal.Quotient.mk (x • (⊤ : Ideal R))) r
             (mem.1.2 (Ideal.subset_span (by simp [hr])))
         exact ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (Ideal.span_le.mpr mem_max)
@@ -287,7 +287,7 @@ lemma isRegular_of_ofList_height_eq_length_of_isCohenMacaulayLocalRing [IsCohenM
       (lt_of_lt_of_eq (Nat.lt_add_right rs'.length hi) List.length_append.symm)
     rw [List.take_append_of_le_length (le_of_lt hi)] at this
     simpa [List.getElem_append_left' hi rs'] using this
-  · simpa using (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (span_le.mpr mem)).symm
+  · simpa using! (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (span_le.mpr mem)).symm
 
 lemma Ideal.depth_le_height [IsLocalRing R] (I : Ideal R) (netop : I ≠ ⊤) :
     I.depth (ModuleCat.of R R) ≤ I.height := by
@@ -295,7 +295,7 @@ lemma Ideal.depth_le_height [IsLocalRing R] (I : Ideal R) (netop : I ≠ ⊤) :
     sSup_le_iff, Set.mem_setOf_eq, forall_exists_index, and_imp]
   intro n rs reg mem len
   simpa [← len, ← ofList_height_eq_length_of_isWeaklyRegular' rs reg.1
-    (fun r hr ↦ le_maximalIdeal netop (mem r hr))] using Ideal.height_mono (span_le.mpr mem)
+    (fun r hr ↦ le_maximalIdeal netop (mem r hr))] using! Ideal.height_mono (span_le.mpr mem)
 
 lemma Ideal.exist_regular_sequence_length_eq_height [IsCohenMacaulayLocalRing R]
     (I : Ideal R) (netop : I ≠ ⊤) :
@@ -308,7 +308,7 @@ lemma Ideal.exist_regular_sequence_length_eq_height [IsCohenMacaulayLocalRing R]
     have : {x | ∃ s : { s : Finset R // Submodule.span R s = J}, s.1.card = x}.Nonempty := by
       rcases (isNoetherianRing_iff_ideal_fg R).mp ‹_› J with ⟨s, hs⟩
       use s.card, ⟨s, hs⟩
-    simpa only [Submodule.spanFinrank_eq_iInf J, iInf, Set.range] using Nat.sInf_mem this
+    simpa only [Submodule.spanFinrank_eq_iInf J, iInf, Set.range] using! Nat.sInf_mem this
   simp only [← hs] at rank
   use s.toList
   simp only [Finset.mem_toList, Finset.length_toList, rank, and_true]
