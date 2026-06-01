@@ -72,7 +72,7 @@ theorem Polynomial.isPeriodicPt_eval_two {P : Polynomial ℤ} {t : ℤ}
   have Hdvd : C.Chain (· ∣ ·) := by
     rw [Cycle.chain_map, periodicOrbit_chain' _ ht]
     intro n
-    convert sub_dvd_eval_sub ((fun x => P.eval x)^[n + 1] t) ((fun x => P.eval x)^[n] t) P <;>
+    convert! sub_dvd_eval_sub ((fun x => P.eval x)^[n + 1] t) ((fun x => P.eval x)^[n] t) P <;>
       rw [Function.iterate_succ_apply']
   -- Any two entries in C have the same absolute value.
   have Habs :
@@ -112,7 +112,7 @@ theorem Polynomial.isPeriodicPt_eval_two {P : Polynomial ℤ} {t : ℤ}
     -- They must have opposite sign, so that P^{k + 1}(t) - P^k(t) = P^{k + 2}(t) - P^{k + 1}(t).
     rcases Int.natAbs_eq_natAbs_iff.1 (Habs n n.succ) with hn' | hn'
     · apply (hn _).elim
-      convert hn' <;> simp only [Function.iterate_succ_apply']
+      convert! hn' <;> simp only [Function.iterate_succ_apply']
     -- We deduce P^{k + 2}(t) = P^k(t) and hence P(P(t)) = t.
     · rw [neg_sub, sub_right_inj] at hn'
       simp only [Function.iterate_succ_apply'] at hn'

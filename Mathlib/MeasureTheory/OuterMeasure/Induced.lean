@@ -329,7 +329,7 @@ theorem trim_congr {m₁ m₂ : OuterMeasure α} (H : ∀ {s : Set α}, Measurab
     m₁.trim = m₂.trim := by
   simp +contextual only [trim, H]
 
-@[mono]
+@[gcongr, mono]
 theorem trim_mono : Monotone (trim : OuterMeasure α → OuterMeasure α) := fun _m₁ _m₂ H _s =>
   iInf₂_mono fun _f _hs => ENNReal.tsum_le_tsum fun _b => iInf_mono fun _hf => H _
 

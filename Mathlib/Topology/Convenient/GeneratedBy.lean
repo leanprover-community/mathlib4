@@ -211,7 +211,7 @@ instance : IsGeneratedBy X (WithGeneratedByTopology X Y) where
     rw [continuous_iff X]
     intro j g
     rw [Function.comp_assoc, equiv_symm_comp_continuous_iff]
-    continuity
+    fun_prop
 
 instance : IsGeneratedBy X (PUnit.{v + 1}) := by
   rw [iff_le_generatedBy]
