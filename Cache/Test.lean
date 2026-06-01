@@ -81,16 +81,18 @@ private def withSuppressedOutput (action : IO α) : IO α := do
   let savedErr ← IO.getStderr
   let sink ← IO.FS.Handle.mk "/dev/null" IO.FS.Mode.append
   let sinkStream := IO.FS.Stream.ofHandle sink
-  IO.setStdout sinkStream
-  IO.setStderr sinkStream
+  -- `IO.setStdout`/`IO.setStderr` return the previous stream; we already saved it,
+  -- so discard the return value here.
+  discard <| IO.setStdout sinkStream
+  discard <| IO.setStderr sinkStream
   try
     let r ← action
-    IO.setStdout savedOut
-    IO.setStderr savedErr
+    discard <| IO.setStdout savedOut
+    discard <| IO.setStderr savedErr
     return r
   catch e =>
-    IO.setStdout savedOut
-    IO.setStderr savedErr
+    discard <| IO.setStdout savedOut
+    discard <| IO.setStderr savedErr
     throw e
 
 section ContainerModel

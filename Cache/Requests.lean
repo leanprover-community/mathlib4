@@ -17,7 +17,7 @@ Resolved repository identity for cache lookups.
 -/
 structure RepoInfo where
   repo : String
-  deriving Repr
+  deriving Repr, BEq
 
 /--
 Helper function to extract repository name from a git remote URL
