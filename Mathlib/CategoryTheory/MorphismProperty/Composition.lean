@@ -57,7 +57,7 @@ lemma eqToHom (W : MorphismProperty C) [W.ContainsIdentities] {x y : C} (h : x =
 
 instance inverseImage {P : MorphismProperty D} [P.ContainsIdentities] (F : C ⥤ D) :
     (P.inverseImage F).ContainsIdentities where
-  id_mem X := by simpa only [← F.map_id] using P.id_mem (F.obj X)
+  id_mem X := by simpa only [← F.map_id] using! P.id_mem (F.obj X)
 
 instance inf {P Q : MorphismProperty C} [P.ContainsIdentities] [Q.ContainsIdentities] :
     (P ⊓ Q).ContainsIdentities where
@@ -149,7 +149,7 @@ theorem respectsIso_of_isStableUnderComposition {P : MorphismProperty C}
 
 instance IsStableUnderComposition.inverseImage {P : MorphismProperty D} [P.IsStableUnderComposition]
     (F : C ⥤ D) : (P.inverseImage F).IsStableUnderComposition where
-  comp_mem f g hf hg := by simpa only [← F.map_comp] using P.comp_mem _ _ hf hg
+  comp_mem f g hf hg := by simpa only [← F.map_comp] using! P.comp_mem _ _ hf hg
 
 /-- Given `app : Π X, F₁.obj X ⟶ F₂.obj X` where `F₁` and `F₂` are two functors,
 this is the `MorphismProperty C` satisfied by the morphisms in `C` with respect
