@@ -586,7 +586,6 @@ theorem inclusion_injective {E F : IntermediateField K L} (hEF : E ≤ F) :
     Function.Injective (inclusion hEF) :=
   Subalgebra.inclusion_injective hEF
 
-@[simp]
 theorem inclusion_self {E : IntermediateField K L} : inclusion (le_refl E) = AlgHom.id K E :=
   Subalgebra.inclusion_self
 
@@ -907,3 +906,5 @@ end Restrict
 end Tower
 
 end IntermediateField
+
+#lint
