@@ -80,10 +80,16 @@ jobs:
 
       - name: Authorize commenter
         if: github.event_name == 'issue_comment'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+          COMMENTER: ${{ github.event.comment.user.login }}
+          REPO: ${{ github.repository }}
         run: |
           AUTHORIZED="${{ contains(steps.actorTeams.outputs.teams, 'mathlib-reviewers') || contains(steps.actorTeams.outputs.teams, 'mathlib-maintainers') }}"
           if [[ "$AUTHORIZED" != "true" ]]; then
-            echo "::error::User ${{ github.event.comment.user.login }} is not a mathlib reviewer or maintainer"
+            gh api "repos/$REPO/issues/$PR_NUMBER/comments" \
+              -f body="Hi @$COMMENTER, only mathlib reviewers and maintainers can use \`!downstream-check\`."
             exit 1
           fi
 
