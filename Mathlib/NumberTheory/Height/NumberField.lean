@@ -140,10 +140,11 @@ lemma totalWeight_pos : 0 < totalWeight K := by
     using Fintype.sum_pos
       (Function.ne_iff.mpr ⟨default, (default : InfinitePlace K).mult_ne_zero⟩).pos
 
+variable {ι : Type*} [Finite ι] {x : ι → 𝓞 K}
+
 open IsDedekindDomain.HeightOneSpectrum Ideal FinitePlace Finite in
 -- This statement is a step in the proof of the next one, which is strictly stronger.
-private lemma absNorm_mul_finprod_finitePlace_eq_one_aux {ι : Type*} [Finite ι] [Nonempty ι]
-    {x : ι → 𝓞 K} (hx : ∀ i, x i ≠ 0) :
+private lemma absNorm_mul_finprod_finitePlace_eq_one_aux [Nonempty ι] (hx : ∀ i, x i ≠ 0) :
     (span <| Set.range x).absNorm * ∏ᶠ v : FinitePlace K, ⨆ i, v (x i) = 1 := by
   have H j : span {x j} ≠ ⊥ := mt span_singleton_eq_bot.mp (hx j)
   have hx' : ⨆ i, span {x i} ≠ ⊥ :=
@@ -170,7 +171,7 @@ open Ideal RingOfIntegers in
 /-- This statement is equivalent to the fact that the "finite part" of the multiplicative
 height of a (non-zero) tuple `x` is the inverse of the absolute norm of the ideal generated
 by the values of `x`. We state it in a way that avoids taking an inverse. -/
-lemma absNorm_mul_finprod_finitePlace_eq_one {ι : Type*} [Finite ι] {x : ι → 𝓞 K} (hx : x ≠ 0) :
+lemma absNorm_mul_finprod_finitePlace_eq_one (hx : x ≠ 0) :
     (span <| Set.range x).absNorm * ∏ᶠ v : FinitePlace K, ⨆ i, v (x i) = 1 := by
   obtain ⟨i₀, hi₀⟩ := Function.ne_iff.mp hx
   let i' : { j // (x j : K) ≠ 0 } := ⟨i₀, mod_cast hi₀⟩
