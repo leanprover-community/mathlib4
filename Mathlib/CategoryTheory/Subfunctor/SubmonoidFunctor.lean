@@ -75,7 +75,7 @@ instance : PartialOrder (SubmonoidFunctor M) :=
 @[simps! top_obj bot_obj sup_obj inf_obj sInf_obj sSup_obj]
 instance : CompleteLattice (SubmonoidFunctor M) where
   sup F G :=
-    { obj U := F.obj U ⊔ G.obj U
+    { obj _ := F.obj _ ⊔ G.obj _
       map i := by grw [F.map i, G.map i, (Submonoid.monotone_comap).le_map_sup] }
   le_sup_left _ _ _ := by simp
   le_sup_right _ _ _ := by simp
@@ -127,8 +127,10 @@ def image (S : SubmonoidFunctor M) : SubmonoidFunctor M' where
     grw [S.map_le]
 
 variable (M) in
+@[simp]
 lemma image_id : image (𝟙 M) ⊤ = ⊤ := by aesop
 
+@[simp]
 lemma image_comp (p' : M' ⟶ M'') : S.image (p ≫ p') = (S.image p).image p' := by cat_disch
 
 end image
@@ -146,13 +148,15 @@ def comap (S' : SubmonoidFunctor M') : SubmonoidFunctor M where
     exact Submonoid.mem_comap.mp (Set.mem_of_mem_of_subset h (S'.map _))
 
 variable (M) in
+@[simp]
 lemma comap_id : comap (𝟙 M) ⊤ = ⊤ := rfl
 
+@[simp]
 lemma comap_comp (p' : M' ⟶ M'') : S''.comap (p ≫ p') = (S''.comap p').comap p := by rfl
 
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
-lemma image_comap_ι : image (S.ι) (comap (S.ι) S) = S := by aesop
+lemma image_comap_ι : image S.ι (comap S.ι S) = S := by aesop
 
 end comap
 
