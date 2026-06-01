@@ -43,11 +43,10 @@ attribute [to_additive] isQuotientCoveringMap_iff
 
 namespace IsQuotientCoveringMap
 
-variable {f G} (hf : IsQuotientCoveringMap f G)
-
 @[to_additive] theorem subgroup_congr (S S' : Subgroup G) (eq : S = S') :
     IsQuotientCoveringMap f S ↔ IsQuotientCoveringMap f S' := by rw [eq]
 
+variable {f G} (hf : IsQuotientCoveringMap f G)
 include hf
 
 @[to_additive] protected theorem map_smul (g : G) {e : E} : f (g • e) = f e :=
