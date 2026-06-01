@@ -68,7 +68,7 @@ the projection of `M` onto each corresponding factor. Given a ring homomorphism 
 product `Π i, R i` to the product of the localizations of each `R i` at `M' i`, every `y : M`
 maps to a unit under this homomorphism. -/
 lemma isUnit_piRingHom_algebraMap_comp_piEvalRingHom (y : M) :
-    IsUnit ((Pi.ringHom fun i ↦ (algebraMap (R i) (S i)).comp (Pi.evalRingHom R i)) y) :=
+    IsUnit ((RingHom.pi fun i ↦ (algebraMap (R i) (S i)).comp (Pi.evalRingHom R i)) y) :=
   Pi.isUnit_iff.mpr fun i ↦ map_units _ (⟨y.1 i, y, y.2, rfl⟩ : M.map (Pi.evalRingHom R i))
 
 /-- Let `M` be a submonoid of a direct product of commutative rings `R i`, and let `M' i` denote
@@ -87,7 +87,7 @@ include M in
 variable {R} in
 lemma surjective_piRingHom_algebraMap_comp_piEvalRingHom
     [∀ i, Ring.KrullDimLE 0 (R i)] [∀ i, IsLocalRing (R i)] :
-    Surjective (Pi.ringHom (fun i ↦ (algebraMap (R i) (S i)).comp (Pi.evalRingHom R i))) := by
+    Surjective (RingHom.pi (fun i ↦ (algebraMap (R i) (S i)).comp (Pi.evalRingHom R i))) := by
   apply Surjective.piMap (fun i ↦ ?_)
   by_cases h₀ : (0 : R i) ∈ (M.map (Pi.evalRingHom R i))
   · have := uniqueOfZeroMem h₀ (S := (S i))

@@ -111,7 +111,6 @@ instance [CharP R p] [NoZeroDivisors R] : NoZeroDivisors (𝕎 R) :=
     rcases verschiebung_nonzero ha with ⟨na, wa, hwa0, rfl⟩
     rcases verschiebung_nonzero hb with ⟨nb, wb, hwb0, rfl⟩
     refine ne_of_apply_ne (fun x => x.coeff (na + nb)) ?_
-    dsimp only
     rw [iterate_verschiebung_mul_coeff, zero_coeff]
     exact mul_ne_zero (pow_ne_zero _ hwa0) (pow_ne_zero _ hwb0)⟩
 
