@@ -57,7 +57,7 @@ lemma AdjoinPthRoots.algebraMap_root_symm (x : AdjoinPthRoots k) :
   rw [← ringExpChar.eq k p]
   rfl
 
-instance AdjoinPthRoots.isPurelyInseparable : IsPurelyInseparable k (AdjoinPthRoots k) := by
+instance : IsPurelyInseparable k (AdjoinPthRoots k) := by
   obtain ⟨p, hp⟩ := ExpChar.exists k
   rw [isPurelyInseparable_iff_pow_mem k p]
   intro x
