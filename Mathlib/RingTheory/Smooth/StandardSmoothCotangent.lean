@@ -213,7 +213,6 @@ noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → ι}
     simp [Finsupp.single_eq_pi_single]
   · exact hcompl.2
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma basisKaehlerOfIsCompl_apply {κ : Type*} {f : κ → ι}
     (hf : Function.Injective f) (hcompl : IsCompl (Set.range f) (Set.range P.map)) (k : κ) :
