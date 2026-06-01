@@ -801,7 +801,7 @@ lemma isSheaf : Presheaf.IsSheaf J (presheaf data G₀) := by
           (fun _ ↦ (compPresheafIso _ _).hom.naturality _)) _).1
       (IsLimit.ofIsoLimit (presheafObjIsLimit data G₀ X)
         (Multifork.ext (Iso.refl _) (fun i ↦ ?_)))⟩
-    simp [Multifork.ι, PreOneHypercover.multifork]
+    simp [Multifork.ι, PreOneHypercover.multifork, MulticospanIndex.multicospan]
 
 /-- Let `F : C₀ ⥤ C` be a dense subsite and `data : ∀ X, F.OneHypercoverDenseData J₀ J X`
 be a family of structures. Let `G₀` be a sheaf on `C₀`. This is a sheaf on `C` which
