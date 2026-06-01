@@ -286,13 +286,13 @@ variable {𝕜 α E F : Type*} {m : MeasurableSpace α} {μ : Measure α} [Norme
 theorem eLpNorm_smul_le_eLpNorm_top_mul_eLpNorm {p : ℝ≥0∞} (hp : p ≠ 0)
     (hf : AEStronglyMeasurable f μ) (φ : α → 𝕜) :
     eLpNorm (φ • f) p μ ≤ eLpNorm φ ∞ μ * eLpNorm f p μ := by
-  simpa using (eLpNorm_le_eLpNorm_top_mul_eLpNorm (hp := hp) φ hf (· • ·) 1
+  simpa using! (eLpNorm_le_eLpNorm_top_mul_eLpNorm (hp := hp) φ hf (· • ·) 1
     (.of_forall fun _ => by simpa using! nnnorm_smul_le _ _) :)
 
 theorem eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top {p : ℝ≥0∞} (hp : p ≠ 0) (f : α → E) {φ : α → 𝕜}
     (hφ : AEStronglyMeasurable φ μ) :
     eLpNorm (φ • f) p μ ≤ eLpNorm φ p μ * eLpNorm f ∞ μ := by
-  simpa using (eLpNorm_le_eLpNorm_mul_eLpNorm_top hp hφ f (· • ·) 1
+  simpa using! (eLpNorm_le_eLpNorm_mul_eLpNorm_top hp hφ f (· • ·) 1
     (.of_forall fun _ => by simpa using! nnnorm_smul_le _ _) :)
 
 theorem eLpNorm'_smul_le_mul_eLpNorm' {p q r : ℝ} {f : α → E} (hf : AEStronglyMeasurable f μ)
@@ -306,7 +306,7 @@ theorem eLpNorm'_smul_le_mul_eLpNorm' {p q r : ℝ} {f : α → E} (hf : AEStron
 theorem eLpNorm_smul_le_mul_eLpNorm {p q r : ℝ≥0∞} {f : α → E} (hp : p ≠ 0) (hq : q ≠ 0)
     (hf : AEStronglyMeasurable f μ) {φ : α → 𝕜} (hφ : AEStronglyMeasurable φ μ)
     [hpqr : HolderTriple p q r] : eLpNorm (φ • f) r μ ≤ eLpNorm φ p μ * eLpNorm f q μ := by
-  simpa using (eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hp hq hφ hf (· • ·) 1
+  simpa using! (eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hp hq hφ hf (· • ·) 1
       (.of_forall fun _ => by simpa using! nnnorm_smul_le _ _) : _)
 
 omit [IsBoundedSMul 𝕜 E] in
