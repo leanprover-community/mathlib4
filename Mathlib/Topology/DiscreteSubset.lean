@@ -164,7 +164,7 @@ lemma Continuous.discrete_of_tendsto_cofinite_cocompact [T1Space X] [WeaklyLocal
 lemma tendsto_cofinite_cocompact_of_discrete [DiscreteTopology X]
     (hf : Tendsto f (cocompact _) (cocompact _)) :
     Tendsto f cofinite (cocompact _) := by
-  convert hf
+  convert! hf
   rw [cocompact_eq_cofinite X]
 
 lemma IsClosed.tendsto_coe_cofinite_of_isDiscrete
@@ -365,6 +365,10 @@ lemma mem_codiscrete_subtype_iff_mem_codiscreteWithin {S : Set X} {U : Set S} :
     U ∈ codiscrete S ↔ (↑) '' U ∈ codiscreteWithin S := by
   simp [← Topology.IsEmbedding.subtypeVal.image_mem_codiscreteWithin_range]
 
+@[simp]
+theorem codiscreteWithin_eq_bot_iff {S : Set X} : codiscreteWithin S = ⊥ ↔ IsDiscrete S := by
+  simp [isDiscrete_iff_nhdsNE, codiscreteWithin, ← nhdsWithin_inter', Set.diff_eq, inter_comm]
+
 section T1Space
 
 variable [T1Space X]
@@ -398,7 +402,7 @@ theorem finite_diff_of_mem_codiscreteWithin (hK : IsCompact K) (hs : s ∈ codis
 theorem cofinite_inf_le_codiscreteWithin (hK : IsCompact K) :
     cofinite ⊓ 𝓟 K ≤ codiscreteWithin K := by
   intro s hs
-  simpa [mem_inf_principal, compl_setOf] using hK.finite_diff_of_mem_codiscreteWithin hs
+  simpa [mem_inf_principal, compl_setOf] using! hK.finite_diff_of_mem_codiscreteWithin hs
 
 theorem codiscreteWithin_eq [T1Space X] (hK : IsCompact K) :
     codiscreteWithin K = cofinite ⊓ 𝓟 K := by
@@ -409,10 +413,10 @@ theorem codiscreteWithin_eq [T1Space X] (hK : IsCompact K) :
 end IsCompact
 
 theorem cofinite_le_codiscrete [CompactSpace X] : cofinite ≤ codiscrete X := by
-  simpa using isCompact_univ.cofinite_inf_le_codiscreteWithin
+  simpa using! isCompact_univ.cofinite_inf_le_codiscreteWithin
 
 theorem codiscrete_eq_cofinite [T1Space X] [CompactSpace X] : codiscrete X = cofinite := by
-  simpa using isCompact_univ.codiscreteWithin_eq
+  simpa using! isCompact_univ.codiscreteWithin_eq
 
 end codiscrete_filter
 

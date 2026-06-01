@@ -135,7 +135,7 @@ def dualBasis : Basis ι R (Dual R M) :=
 -- We use `j = i` to match `Basis.repr_self`
 theorem dualBasis_apply_self (i j : ι) : b.dualBasis i (b j) =
     if j = i then 1 else 0 := by
-  convert b.toDual_apply i j using 2
+  convert! b.toDual_apply i j using 2
   rw [@eq_comm _ j i]
 
 theorem linearCombination_dualBasis (f : ι →₀ R) (i : ι) :
