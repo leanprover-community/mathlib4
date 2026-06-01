@@ -214,6 +214,10 @@ theorem integral_non_aestronglyMeasurable {f : α → G} (h : ¬AEStronglyMeasur
     ∫ a, f a ∂μ = 0 :=
   integral_undef <| not_and_of_not_left _ h
 
+theorem integral_of_not_completeSpace {f : α → G} (hG : ¬CompleteSpace G) :
+    ∫ a, f a ∂μ = 0 := by
+  simp [integral, hG]
+
 variable (α G)
 
 @[simp]

@@ -63,7 +63,7 @@ theorem withDensityᵥ_apply (hf : Integrable f μ) {s : Set α} (hs : Measurabl
 @[simp]
 theorem withDensityᵥ_zero : μ.withDensityᵥ (0 : α → E) = 0 := by
   ext1 s hs
-  rw [Pi.zero_def, withDensityᵥ_apply (integrable_zero α E μ) hs]
+  rw [withDensityᵥ_apply (integrable_zero α E μ) hs]
   simp
 
 @[simp]

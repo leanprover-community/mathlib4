@@ -245,9 +245,9 @@ theorem hasFiniteIntegral_zero_measure {m : MeasurableSpace α} (f : α → ε) 
   simp only [HasFiniteIntegral, lintegral_zero_measure, zero_lt_top]
 
 variable (α μ) in
-@[fun_prop, simp]
+@[to_fun (attr := fun_prop, simp) hasFiniteIntegral_fun_zero]
 theorem hasFiniteIntegral_zero {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε] :
-    HasFiniteIntegral (fun _ : α => (0 : ε)) μ := by
+    HasFiniteIntegral (0 : α → ε) μ := by
   simp [hasFiniteIntegral_iff_enorm]
 
 @[fun_prop]
