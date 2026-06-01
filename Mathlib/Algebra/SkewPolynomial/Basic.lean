@@ -242,7 +242,7 @@ def C : R →+ SkewPolynomial R := SkewMonoidAlgebra.singleAddHom 1
 
 variable {a b : R}
 
-@[simp] lemma monomial_zero_left (a : R) : monomial 0 a = C a := rfl
+@[simp] lemma monomial_zero_left ⦃a : R⦄ : monomial 0 a = C a := rfl
 
 lemma C_0 : C (0 : R) = 0 := single_zero _
 
@@ -420,7 +420,7 @@ lemma ext_iff {p q : SkewPolynomial R} : p = q ↔ ∀ n, coeff p n = coeff q n 
     (h : ∀ n, f.comp (monomial n).toAddMonoidHom = g.comp (monomial n).toAddMonoidHom) : f = g :=
   SkewMonoidAlgebra.addHom_ext' h
 
-lemma addHom_ext {M : Type*} [AddMonoid M] {f g : SkewPolynomial R →+ M}
+@[ext] lemma addHom_ext {M : Type*} [AddMonoid M] {f g : SkewPolynomial R →+ M}
     (h : ∀ n a, f (monomial n a) = g (monomial n a)) : f = g :=
   SkewMonoidAlgebra.addHom_ext h
 
