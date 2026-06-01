@@ -73,19 +73,19 @@ lemma cexp_bound_exact : ∀ (u v : ℝ), dist (Complex.exp (↑u * I)) (Complex
 
 /-- The bounded continuous function `z ↦ exp(z * I)` from ℝ to ℂ,
 bounded by 2 since |exp(u * I)| = 1 for all real u. -/
-def bounded_continuous_exp_ofReal_mul_I : ℝ →ᵇ ℂ :=
+def boundedContinuousExpOfRealMulI : ℝ →ᵇ ℂ :=
   BoundedContinuousFunction.mkOfBound
     ⟨fun u => Complex.exp (u * Complex.I), continuous_exp_ofReal_mul_I⟩ 2 cexp_bound_exact
 
 /-- For a vector `t` in Euclidean space, the bounded continuous function
 that composes the inner product with `t` and then applies `exp(· * I)`. -/
-def bounded_continuous_exp_inner_mul_I (t : EuclideanSpace ℝ (Fin d)) :
+def boundedContinuousExpInnerMulI (t : EuclideanSpace ℝ (Fin d)) :
   EuclideanSpace ℝ (Fin d) →ᵇ ℂ :=
-  BoundedContinuousFunction.compContinuous bounded_continuous_exp_ofReal_mul_I ⟨fun x => ⟪x, t⟫,
+  BoundedContinuousFunction.compContinuous boundedContinuousExpOfRealMulI ⟨fun x => ⟪x, t⟫,
     continuous_id.inner continuous_const⟩
 
 @[simp] lemma bounded_continuous_exp_ofReal_mul_I_eq_cexp (u : ℝ) :
-  bounded_continuous_exp_ofReal_mul_I u = Complex.exp (u * Complex.I) :=
+  boundedContinuousExpOfRealMulI u = Complex.exp (u * Complex.I) :=
 rfl
 
 lemma charFun_tendsto_if_inner_tendsto (hX : Measurable X) (hXn : ∀ n, Measurable (Xn n)) :
@@ -95,8 +95,8 @@ lemma charFun_tendsto_if_inner_tendsto (hX : Measurable X) (hXn : ∀ n, Measura
       atTop (𝓝 (charFun (Q.map hX.aemeasurable) t))) :=
   by
     intros hconv t
-    let φ := bounded_continuous_exp_inner_mul_I t
-    let ψ := bounded_continuous_exp_ofReal_mul_I
+    let φ := boundedContinuousExpInnerMulI t
+    let ψ := boundedContinuousExpOfRealMulI
     let ψ_re := (fun u => (ψ u).re)
     let ψ_im := (fun u => (ψ u).im)
     have ψ_re_bcf_bound_exact : ∀ (u v : ℝ), dist (ψ_re u) (ψ_re v) ≤ 2 := fun u v =>
