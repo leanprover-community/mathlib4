@@ -111,7 +111,7 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
 
 namespace LocalGeneratorsData
 
-/-- Given locally free data, this is the quasiCoherentData where there are no relations. -/
+/-- Given locally free data, this is the `QuasiCoherentData` where there are no relations. -/
 @[expose, simps]
 def quasiCoherentData {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData) [q.IsLocallyFreeData] :
     M.QuasicoherentData where
