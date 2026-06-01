@@ -525,26 +525,26 @@ def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
 initialize addLinter doubleUnderscore
 
 private def isBadDefNameWithUnderscoreAux (env : Environment) (moduleAutoSuffix : String)
-    (badIfEligible : Bool) : Name → Bool
+    (badIfNotExempt : Bool) : Name → Bool
   | .num .. => false -- exempt; internal
   | .str pre s =>
-    let stillEligible := !(
+    let exempt :=
       s == "Simps" || -- exempt `Simps`
       s.endsWith moduleAutoSuffix || -- exempt `*_<project>`, e.g. `*_mathlib`
-      (s.dropSuffix? Char.isDigit).any (·.endsWith '_')) -- exempt `*_<number>`
-    -- Components are exempt if they are a keyword + `_`.
-    -- Inlined to ensure we only compute it if necessary.
-    letI exemptComponent := s.dropSuffix? '_' |>.any fun keyword =>
-      parserExtension.getState env |>.tokens.find? keyword.toString |>.isSome
-    let badIfEligible := badIfEligible || (s.contains '_' && !exemptComponent)
+      (s.dropSuffix? Char.isDigit).any (·.endsWith '_') -- exempt `*_<number>`
 
-    stillEligible &&
+    !exempt &&
+      -- Components are exempt if they are a keyword + `_`.
+      -- Inlined to ensure we only compute it if necessary.
+      letI exemptComponent := s.dropSuffix? '_' |>.any fun keyword =>
+        parserExtension.getState env |>.tokens.find? keyword.toString |>.isSome
+      let badIfNotExempt := badIfNotExempt || (s.contains '_' && !exemptComponent)
       -- If the root is a theorem, stop here.
       if wasOriginallyTheorem env pre then
-        badIfEligible
+        badIfNotExempt
       else
-        isBadDefNameWithUnderscoreAux env moduleAutoSuffix badIfEligible pre
-  | .anonymous => badIfEligible
+        isBadDefNameWithUnderscoreAux env moduleAutoSuffix badIfNotExempt pre
+  | .anonymous => badIfNotExempt
 
 /-- Copy of private declaration from `Lean.Elab.DeclNameGen`. Constructs e.g. `mathlib` suffixes. -/
 private def moduleToSuffix : Name → String
