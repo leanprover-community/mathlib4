@@ -632,7 +632,20 @@ theorem ker_fundamentalGroupToMulOpposite :
   ext; simp [fundamentalGroupToMulOpposite_eq_one_iff, DFunLike.ext'_iff, ← hp.monodromy_eq_id_iff]
 
 theorem fundamentalGroupToMulOpposite_surjective [PathConnectedSpace E] :
-    Function.Surjective (hp.fundamentalGroupToMulOpposite e) :=
-  fun g ↦ _
+    Function.Surjective (hp.fundamentalGroupToMulOpposite e) := by
+  intro g
+  set e' : p⁻¹' {x} := ⟨MulOpposite.unop g • (e : E), by
+    have := hp.map_smul (e := e) (MulOpposite.unop g); aesop⟩ with he'
+  set Γ : Path (e : E) (e' : E) :=
+    { toFun := PathConnectedSpace.somePath (e : E) (e' : E)
+      continuous_toFun := by fun_prop
+      source' := by simp
+      target' := by simp }
+  set γ : Path x x := (Γ.map hp.continuous).cast
+    (by simpa using e.property.symm) (by simpa using e'.property.symm)
+  use .fromPath ⟦γ⟧
+  rw [fundamentalGroupToMulOpposite_apply_eq_Iff]
+  change (e' : E) = _
+  rw [← hp.isCoveringMap.monodromy_eq_of_map_eq (γ := ⟦γ⟧) (Γ := ⟦Γ⟧) rfl]
 
 end IsQuotientCoveringMap
