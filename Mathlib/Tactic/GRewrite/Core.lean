@@ -64,7 +64,8 @@ def dischargeMain (hrel : Expr) (goal : MVarId) : MetaM Bool := do
 and then calling `gcongr` to prove that this is related to the original expression. -/
 def grewriteUsingKAbstract (goal : MVarId) (e hrel pattern replacement : Expr)
     (forwardImp : Bool) (config : GRewrite.Config) : MetaM (Expr × Expr × Array MVarId) := do
-  let eAbst ← withConfig ({ config, · with }) <| kabstract e pattern config.occs
+  let eAbst ← withConfig (fun oldConfig => { config, oldConfig with }) <|
+    kabstract e pattern config.occs
   unless eAbst.hasLooseBVars do
     throwTacticEx `grewrite goal
       m!"did not find instance of the pattern in the target expression{indentExpr pattern}"
