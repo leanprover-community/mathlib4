@@ -53,7 +53,7 @@ lemma range_toUniformOnFun [DecidableEq ι] [TopologicalSpace F] :
   · rintro ⟨f, rfl⟩
     exact ⟨f.cont, f.map_update_add, f.map_update_smul⟩
   · rintro ⟨hcont, hadd, hsmul⟩
-    exact ⟨⟨⟨f, by intro; convert hadd, by intro; convert hsmul⟩, hcont⟩, rfl⟩
+    exact ⟨⟨⟨f, by intro; convert! hadd, by intro; convert! hsmul⟩, hcont⟩, rfl⟩
 
 @[simp]
 lemma toUniformOnFun_toFun [TopologicalSpace F] (f : ContinuousMultilinearMap 𝕜 E F) :
@@ -161,7 +161,7 @@ theorem isUniformEmbedding_restrictScalars :
   letI : NontriviallyNormedField 𝕜 :=
     ⟨let ⟨x, hx⟩ := @NontriviallyNormedField.non_trivial 𝕜' _; ⟨algebraMap 𝕜' 𝕜 x, by simpa⟩⟩
   rw [← isUniformEmbedding_toUniformOnFun.of_comp_iff]
-  convert isUniformEmbedding_toUniformOnFun using 4 with s
+  convert! isUniformEmbedding_toUniformOnFun using 4 with s
   exact ⟨fun h ↦ h.extend_scalars _, fun h ↦ h.restrict_scalars _⟩
 
 theorem uniformContinuous_restrictScalars :
@@ -258,6 +258,11 @@ def compContinuousLinearMapL (f : ∀ i, E i →L[𝕜] E₁ i) :
       rintro ⟨U, V⟩ ⟨hU, hV⟩
       set φ : (∀ i, E i) →L[𝕜] (∀ i, E₁ i) := .piMap f
       exact ⟨(φ '' U, V), ⟨hU.image φ, hV⟩, fun g hg ↦ hg.comp (mapsTo_image _ _)⟩ }
+
+@[fun_prop]
+theorem continuous_precomp (f : ∀ i, E i →L[𝕜] E₁ i) :
+    Continuous fun g : ContinuousMultilinearMap 𝕜 E₁ F ↦ g.compContinuousLinearMap f :=
+  map_continuous (compContinuousLinearMapL f)
 
 end CompContinuousLinearMap
 
@@ -385,6 +390,11 @@ def compContinuousMultilinearMapL :
 theorem compContinuousMultilinearMapL_apply (g : F →L[𝕜] G) (f : ContinuousMultilinearMap 𝕜 E F) :
     compContinuousMultilinearMapL 𝕜 E F G g f = g.compContinuousMultilinearMap f :=
   rfl
+
+@[fun_prop]
+theorem _root_.ContinuousLinearMap.continuous_postcomp_continuousMultilinearMap (g : F →L[𝕜] G) :
+    Continuous (g.compContinuousMultilinearMap (M₁ := E)) :=
+  map_continuous (compContinuousMultilinearMapL 𝕜 E F G g)
 
 end ContinuousLinearMap
 

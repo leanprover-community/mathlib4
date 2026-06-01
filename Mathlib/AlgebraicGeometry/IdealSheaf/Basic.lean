@@ -216,6 +216,7 @@ private lemma map_ideal_basicOpen_of_eq
       I.ideal V := by
   subst hV; exact I.map_ideal_basicOpen _ _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma map_ideal {U V : X.affineOpens} (h : U ≤ V) :
     (I.ideal V).map (X.presheaf.map (homOfLE h).op).hom = I.ideal U := by
@@ -282,6 +283,7 @@ lemma supportSet_subset_zeroLocus (I : IdealSheafData X) (U : X.affineOpens) :
     I.supportSet ⊆ X.zeroLocus (U := U.1) (I.ideal U) :=
   I.supportSet_eq_iInter_zeroLocus.trans_subset (Set.iInter_subset _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma zeroLocus_inter_subset_supportSet (I : IdealSheafData X) (U : X.affineOpens) :
     X.zeroLocus (U := U.1) (I.ideal U) ∩ U ⊆ I.supportSet := by
@@ -569,7 +571,7 @@ noncomputable nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
       · rw [Ideal.map_le_iff_le_comap]
         intro x hx
         suffices ∀ p, (X.affineBasicOpen f).2.fromSpec p ∈ Z → F.hom x ∈ p.asIdeal by
-          simpa [PrimeSpectrum.mem_vanishingIdeal] using this
+          simpa [PrimeSpectrum.mem_vanishingIdeal] using! this
         intro x hxZ
         refine (PrimeSpectrum.mem_vanishingIdeal _ _).mp hx
           (Spec.map (X.presheaf.map (homOfLE _).op) x) ?_
@@ -627,6 +629,7 @@ lemma gc : @GaloisConnection X.IdealSheafData (Closeds X)ᵒᵈ _ _ (support ·)
 lemma vanishingIdeal_antimono {S T : Closeds X} (h : S ≤ T) : vanishingIdeal T ≤ vanishingIdeal S :=
   gc.monotone_u h
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma vanishingIdeal_support {I : IdealSheafData X} :
     vanishingIdeal I.support = I.radical := by
@@ -693,6 +696,7 @@ lemma Hom.ideal_ker_le (f : X.Hom Y) (U : Y.affineOpens) :
     f.ker.ideal U ≤ RingHom.ker (f.app U).hom :=
   ideal_ofIdeals_le _ _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Hom.ker_apply (f : X.Hom Y) [QuasiCompact f] (U : Y.affineOpens) :
@@ -783,7 +787,7 @@ lemma Hom.iInf_ker_openCover_map_comp_apply
     Scheme.Hom.appIso_hom']
   simp only [homOfLE_leOfHom, Scheme.Hom.app_eq_appLE, ← RingHom.comp_apply,
     ← CommRingCat.hom_comp, Scheme.Hom.appLE_map, Scheme.Hom.appLE_comp_appLE]
-  simpa [Scheme.Hom.appLE] using ideal_ker_le _ _ (Ideal.mem_iInf.mp hs i)
+  simpa [Scheme.Hom.appLE] using! ideal_ker_le _ _ (Ideal.mem_iInf.mp hs i)
 
 lemma Hom.iInf_ker_openCover_map_comp (f : X ⟶ Y) [QuasiCompact f] (𝒰 : X.OpenCover) :
     ⨅ i, (𝒰.f i ≫ f).ker = f.ker := by
@@ -812,7 +816,7 @@ lemma ker_morphismRestrict_ideal (f : X.Hom Y) [QuasiCompact f]
     (U : Y.Opens) (V : U.toScheme.affineOpens) :
     (f ∣_ U).ker.ideal V = f.ker.ideal ⟨U.ι ''ᵁ V, V.2.image_of_isOpenImmersion _⟩ := by
   ext x
-  simpa [Scheme.Hom.appLE] using map_eq_zero_iff _
+  simpa [Scheme.Hom.appLE] using! map_eq_zero_iff _
     (ConcreteCategory.bijective_of_isIso
       (X.presheaf.map (eqToHom (image_morphismRestrict_preimage f U V)).op)).1
 
@@ -890,7 +894,7 @@ variable (X) in
 @[simp]
 lemma ker_toSpecΓ [CompactSpace X] : X.toSpecΓ.ker = ⊥ := by
   apply IdealSheafData.ext_of_isAffine
-  simpa using RingHom.ker_coe_equiv (ΓSpecIso Γ(X, ⊤)).commRingCatIsoToRingEquiv
+  simpa using! RingHom.ker_coe_equiv (ΓSpecIso Γ(X, ⊤)).commRingCatIsoToRingEquiv
 
 end ker
 
