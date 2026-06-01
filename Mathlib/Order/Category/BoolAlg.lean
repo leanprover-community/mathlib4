@@ -173,7 +173,6 @@ instance hasForgetToHeytAlg : HasForget₂ BoolAlg HeytAlg where
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an equivalence between Boolean algebras from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : BoolAlg.{u}} (e : α ≃o β) : α ≅ β where

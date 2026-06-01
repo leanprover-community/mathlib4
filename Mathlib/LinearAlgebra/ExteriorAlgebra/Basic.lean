@@ -74,8 +74,7 @@ section exteriorPower
 -- New variables `n` and `M`, to get the correct order of variables in the notation.
 variable (n : ℕ) (M : Type u2) [AddCommGroup M] [Module R M]
 
-set_option backward.isDefEq.respectTransparency false in
-/-- Definition of the `n`th exterior power of an `R`-module `N`. We introduce the notation
+/-- Definition of the `n`th exterior power of an `R`-module `M`. We introduce the notation
 `⋀[R]^n M` for `exteriorPower R n M`. -/
 abbrev exteriorPower : Submodule R (ExteriorAlgebra R M) :=
   LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n
@@ -203,7 +202,6 @@ def ιInv : ExteriorAlgebra R M →ₗ[R] M := by
   haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
   exact (TrivSqZeroExt.sndHom R M).comp toTrivSqZeroExt.toLinearMap
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → ExteriorAlgebra R M) := fun x => by
   simp [ιInv]
 
@@ -232,7 +230,6 @@ theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 := by
   rw [← (algebraMap R (ExteriorAlgebra R M)).map_one, Ne, ι_eq_algebraMap_iff]
   exact one_ne_zero ∘ And.right
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The generators of the exterior algebra are disjoint from its scalars. -/
 theorem ι_range_disjoint_one :
     Disjoint (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M))
@@ -257,7 +254,6 @@ theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
     · rw [h, ι_sq_zero, zero_mul]
     · replace hn :=
         congr_arg (ι R (f 0) * ·) <| hn (fun i => f <| Fin.succ i) (i.pred h)
-      simp only at hn
       rw [Fin.succ_pred, ← mul_assoc, mul_zero] at hn
       refine (eq_zero_iff_eq_zero_of_add_eq_zero ?_).mp hn
       rw [← add_mul, ι_add_mul_swap, zero_mul]
@@ -288,7 +284,7 @@ def ιMulti (n : ℕ) : M [⋀^Fin n]→ₗ[R] ExteriorAlgebra R M :=
           rw [hfxy, ← Fin.succ_pred y (ne_of_lt h).symm]
           exact ι_mul_prod_list (f ∘ Fin.succ) _
         -- ignore the left-most term and induct on the remaining ones, decrementing indices
-        · convert mul_zero (ι R (f 0))
+        · convert! mul_zero (ι R (f 0))
           refine
             hn
               (fun i => f <| Fin.succ i) (x.pred hx)
@@ -305,7 +301,6 @@ theorem ιMulti_apply {n : ℕ} (v : Fin n → M) : ιMulti R n v = (List.ofFn f
 theorem ιMulti_zero_apply (v : Fin 0 → M) : ιMulti R 0 v = 1 := by
   simp [ιMulti]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ιMulti_succ_apply {n : ℕ} (v : Fin n.succ → M) :
     ιMulti R _ v = ι R (v 0) * ιMulti R _ (Matrix.vecTail v) := by
@@ -340,7 +335,6 @@ lemma ιMulti_range (n : ℕ) :
   rw [Set.mem_pow]
   exact ⟨fun i => ⟨ι R (v i), LinearMap.mem_range_self _ _⟩, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The image of `ExteriorAlgebra.ιMulti R n` spans the `n`th exterior power, as a submodule
 of the exterior algebra. See `exteriorPower.ιMulti_span_fixedDegree_of_span_eq_top` for a version
 where we restrict to elements of the form `x₁ ∧ ⋯ ∧ xₙ` where the `xᵢ` belong to a spanning set. -/
@@ -446,7 +440,6 @@ theorem ι_range_map_map (f : M →ₗ[R] N) :
     Submodule.map (ι R) (LinearMap.range f) :=
   CliffordAlgebra.ι_range_map_map _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toTrivSqZeroExt_comp_map [Module Rᵐᵒᵖ M] [IsCentralScalar R M] [Module Rᵐᵒᵖ N]
     [IsCentralScalar R N] (f : M →ₗ[R] N) :
     toTrivSqZeroExt.comp (map f) = (TrivSqZeroExt.map f).comp toTrivSqZeroExt := by
@@ -455,7 +448,6 @@ theorem toTrivSqZeroExt_comp_map [Module Rᵐᵒᵖ M] [IsCentralScalar R M] [Mo
   simp only [AlgHom.comp_toLinearMap, LinearMap.coe_comp, Function.comp_apply,
     AlgHom.toLinearMap_apply, map_apply_ι, toTrivSqZeroExt_ι, TrivSqZeroExt.map_inr, forall_const]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ιInv_comp_map (f : M →ₗ[R] N) :
     ιInv.comp (map f).toLinearMap = f.comp ιInv := by
   letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
@@ -483,7 +475,6 @@ lemma map_injective {f : M →ₗ[R] N} (hf : ∃ (g : N →ₗ[R] M), g.comp f 
     Function.Injective (map f) :=
   let ⟨_, hgf⟩ := hf; (leftInverse_map_iff.mpr (DFunLike.congr_fun hgf)).injective
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A morphism of modules is surjective if and only the morphism of exterior algebras that it
 induces is surjective. -/
 @[simp]
@@ -514,7 +505,6 @@ variable {R M}
 def toExterior : TensorAlgebra R M →ₐ[R] ExteriorAlgebra R M :=
   TensorAlgebra.lift R (ExteriorAlgebra.ι R : M →ₗ[R] ExteriorAlgebra R M)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toExterior_ι (m : M) :
     TensorAlgebra.toExterior (TensorAlgebra.ι R m) = ExteriorAlgebra.ι R m := by

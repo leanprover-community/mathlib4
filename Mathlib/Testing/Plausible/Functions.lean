@@ -92,7 +92,6 @@ def zeroDefault : TotalFunction α β → TotalFunction α β
   | .withDefault A _ => .withDefault A 0
 
 /-- The support of a zero default `TotalFunction`. -/
-@[simp]
 def zeroDefaultSupp : TotalFunction α β → Finset α
   | .withDefault A _ =>
     List.toFinset <| (A.dedupKeys.filter fun ab => Sigma.snd ab ≠ 0).map Sigma.fst
@@ -270,7 +269,7 @@ theorem applyId_injective [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup 
     have h₂ := h₁.length_eq
     rw [List.applyId_zip_eq h₀ h₂ _ _ _ hx] at h
     rw [← hx, ← hy]; congr
-    apply List.getElem?_inj _ (h₁.nodup_iff.1 h₀)
+    apply (List.getElem?_inj _ (h₁.nodup_iff.1 h₀)).mp
     · symm; rw [h]
       rw [← List.applyId_zip_eq] <;> assumption
     · rw [← h₁.length_eq]

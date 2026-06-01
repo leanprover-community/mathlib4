@@ -53,12 +53,13 @@ open Function (Injective Surjective)
 
 variable {M N G H α β γ δ : Type*}
 
-attribute [to_additive Add.toVAdd /-- See also `AddMonoid.toAddAction` -/] instSMulOfMul
+-- Note that https://github.com/leanprover/lean4/pull/13554
+-- also makes the instance priority change, so if that is merged then `instance 1100` can
+-- be removed here (we still want `to_additive` though).
 
--- see Note [lower instance priority]
-/-- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
-@[deprecated instSMulOfMul (since := "2025-10-18"), implicit_reducible]
-def Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
+-- see Note [higher instance priority]
+/- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
+attribute [instance 1100, to_additive /-- See also `AddMonoid.toAddAction` -/] instSMulOfMul
 
 /-- Like `Mul.toSMul`, but multiplies on the right.
 
@@ -128,9 +129,9 @@ More precisely this means that the action satisfies the two axioms `1 • p = p`
 acts on `P`.
 
 For example, if `G` is a group and `X` is a type, if a mathematician says
-say "let `G` act on the set `X`" they will probably mean  `[AddAction G X]`.
+say "let `G` act on the set `X`" they will probably mean `[MulAction G X]`.
 -/
-@[to_additive (attr := ext)]
+@[to_additive (attr := ext, wikidata Q288465)]
 class MulAction (α : Type*) (β : Type*) [Monoid α] extends SemigroupAction α β where
   /-- One is the neutral element for `•` -/
   protected one_smul : ∀ b : β, (1 : α) • b = b
@@ -383,13 +384,24 @@ lemma mul_smul_mul_comm [Mul α] [Mul β] [SMul α β] [IsScalarTower α β β]
 variable [SMul M α]
 
 @[to_additive]
+lemma SemiconjBy.smul_right [Mul α] [SMulCommClass M α α] [IsScalarTower M α α] {x a b : α}
+    (h : SemiconjBy x a b) (r : M) : SemiconjBy x (r • a) (r • b) := by
+  rw [SemiconjBy, mul_smul_comm, smul_mul_assoc, h.eq]
+
+@[to_additive]
+lemma SemiconjBy.smul_left [Mul α] [SMulCommClass M α α] [IsScalarTower M α α] {x a b : α}
+    (h : SemiconjBy x a b) (r : M) : SemiconjBy (r • x) a b := by
+  rw [SemiconjBy, mul_smul_comm, smul_mul_assoc, h.eq]
+
+@[to_additive]
 lemma Commute.smul_right [Mul α] [SMulCommClass M α α] [IsScalarTower M α α] {a b : α}
     (h : Commute a b) (r : M) : Commute a (r • b) :=
-  (mul_smul_comm _ _ _).trans ((congr_arg _ h).trans <| (smul_mul_assoc _ _ _).symm)
+  SemiconjBy.smul_right h r
 
 @[to_additive]
 lemma Commute.smul_left [Mul α] [SMulCommClass M α α] [IsScalarTower M α α] {a b : α}
-    (h : Commute a b) (r : M) : Commute (r • a) b := (h.symm.smul_right r).symm
+    (h : Commute a b) (r : M) : Commute (r • a) b :=
+  SemiconjBy.smul_left h r
 
 end
 
@@ -445,15 +457,15 @@ protected abbrev Function.Surjective.mulAction [SMul M β] (f : α → β) (hf :
 section
 variable (M)
 
+-- see Note [higher instance priority]
 /-- The regular action of a monoid on itself by left multiplication.
 
 This is promoted to a module by `Semiring.toModule`. -/
--- see Note [lower instance priority]
 @[to_additive
 /-- The regular action of a monoid on itself by left addition.
 
 This is promoted to an `AddTorsor` by `addGroup_is_addTorsor`. -/]
-instance (priority := 910) Monoid.toMulAction : MulAction M M where
+instance (priority := 1100) Monoid.toMulAction : MulAction M M where
   smul := (· * ·)
   one_smul := one_mul
   mul_smul := mul_assoc
@@ -461,6 +473,11 @@ instance (priority := 910) Monoid.toMulAction : MulAction M M where
 @[to_additive]
 instance IsScalarTower.left : IsScalarTower M M α where
   smul_assoc x y z := mul_smul x y z
+
+@[to_additive]
+instance {R M : Type*} [CommMonoid M] [SMul R M] [IsScalarTower R M M] : SMulCommClass R M M where
+  smul_comm r s x := by
+    rw [← one_smul M (s • x), ← smul_assoc, smul_comm, smul_assoc, one_smul]
 
 variable {M}
 
@@ -491,11 +508,23 @@ lemma smul_inv_smul (g : G) (a : α) : g • g⁻¹ • a = a := by rw [smul_smu
 section Mul
 variable [Mul H] [MulAction G H] [SMulCommClass G H H] [IsScalarTower G H H] {a b : H}
 
-@[simp] lemma Commute.smul_right_iff : Commute a (g • b) ↔ Commute a b :=
-  ⟨fun h ↦ inv_smul_smul g b ▸ h.smul_right g⁻¹, fun h ↦ h.smul_right g⟩
+@[to_additive (attr := simp)]
+lemma SemiconjBy.smul_right_iff {a b x : H} {r : G} :
+    SemiconjBy x (r • a) (r • b) ↔ SemiconjBy x a b :=
+  ⟨fun h ↦ by simpa using h.smul_right r⁻¹, (smul_right · r)⟩
 
-@[simp] lemma Commute.smul_left_iff : Commute (g • a) b ↔ Commute a b := by
-  rw [Commute.symm_iff, Commute.smul_right_iff, Commute.symm_iff]
+@[to_additive (attr := simp)]
+lemma SemiconjBy.smul_left_iff {a b x : H} {r : G} :
+    SemiconjBy (r • x) a b ↔ SemiconjBy x a b :=
+  ⟨fun h ↦ by simpa using h.smul_left r⁻¹, (smul_left · r)⟩
+
+@[to_additive (attr := simp)]
+lemma Commute.smul_right_iff : Commute a (g • b) ↔ Commute a b :=
+  SemiconjBy.smul_right_iff
+
+@[to_additive (attr := simp)]
+lemma Commute.smul_left_iff : Commute (g • a) b ↔ Commute a b :=
+  SemiconjBy.smul_left_iff
 
 end Mul
 
@@ -588,24 +617,40 @@ end CompatibleScalar
 /-- Typeclass for multiplicative actions on multiplicative structures.
 
 The key axiom here is `smul_mul : g • (x * y) = (g • x) * (g • y)`.
-If `G` is a group (with group law multiplication) and `Γ` is its automorphism
-group then there is a natural instance of `MulDistribMulAction Γ G`.
+If `G` is a multiplicative group with automorphism group `Γ`, then there is a natural instance of
+`MulDistribMulAction Γ G`.
 
 The axiom is also satisfied by a Galois group $Gal(L/K)$ acting on the field `L`,
 but here you can use the even stronger class `MulSemiringAction`, which captures
 how the action plays with both multiplication and addition. -/
 @[ext]
 class MulDistribMulAction (M N : Type*) [Monoid M] [Monoid N] extends MulAction M N where
-  /-- Distributivity of `•` across `*` -/
-  smul_mul : ∀ (r : M) (x y : N), r • (x * y) = r • x * r • y
   /-- Multiplying `1` by a scalar gives `1` -/
   smul_one : ∀ r : M, r • (1 : N) = 1
+  /-- Distributivity of `•` across `*` -/
+  smul_mul : ∀ (r : M) (x y : N), r • (x * y) = r • x * r • y
+
+/-- Typeclass for additive actions on additive structures.
+
+The key axiom here is `vadd_add : g +ᵥ (x + y) = (g +ᵥ x) + (g +ᵥ y)`.
+If `G` is an additive group with additive automorphism group `Γ`, then there is a natural instance
+of `AddDistribAddAction Γ G`. -/
+@[ext]
+class AddDistribAddAction (M N : Type*) [AddMonoid M] [AddMonoid N] extends AddAction M N where
+  /-- Acting on `0` by a scalar gives `0` -/
+  vadd_zero : ∀ r : M, r +ᵥ (0 : N) = 0
+  /-- Distributivity of `+ᵥ` across `+` -/
+  vadd_add : ∀ (r : M) (x y : N), r +ᵥ (x + y) = (r +ᵥ x) + (r +ᵥ y)
 
 export MulDistribMulAction (smul_one)
+export AddDistribAddAction (vadd_zero)
+
+attribute [to_additive existing] MulDistribMulAction
 
 section MulDistribMulAction
 variable [Monoid M] [Monoid N] [MulDistribMulAction M N]
 
+@[to_additive]
 lemma smul_mul' (a : M) (b₁ b₂ : N) : a • (b₁ * b₂) = a • b₁ * a • b₂ :=
   MulDistribMulAction.smul_mul ..
 
@@ -630,7 +675,7 @@ lemma IsLeftCancelSMul.left_cancel {G P} [SMul G P] [IsLeftCancelSMul G P] (a : 
     a • b = a • c → b = c := IsLeftCancelSMul.left_cancel' a b c
 
 @[to_additive]
-instance [LeftCancelMonoid G] : IsLeftCancelSMul G G where
+instance [Mul G] [IsLeftCancelMul G] : IsLeftCancelSMul G G where
   left_cancel' := IsLeftCancelMul.mul_left_cancel
 
 /-- A vector addition is cancellative if it is pointwise injective on the left and right.

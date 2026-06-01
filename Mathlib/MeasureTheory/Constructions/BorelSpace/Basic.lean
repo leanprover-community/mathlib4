@@ -588,9 +588,6 @@ instance (priority := 100) ContinuousInv₀.measurableInv [GroupWithZero γ] [T1
     [ContinuousInv₀ γ] : MeasurableInv γ :=
   ⟨measurable_of_continuousOn_compl_singleton 0 continuousOn_inv₀⟩
 
-@[deprecated (since := "2025-09-01")] alias HasContinuousInv₀.measurableInv :=
-  ContinuousInv₀.measurableInv
-
 @[to_additive]
 instance (priority := 100) ContinuousMul.measurableMul₂ [SecondCountableTopology γ] [Mul γ]
     [ContinuousMul γ] : MeasurableMul₂ γ :=
@@ -704,10 +701,10 @@ instance Real.borelSpace : BorelSpace ℝ :=
   ⟨rfl⟩
 
 instance NNReal.measurableSpace : MeasurableSpace ℝ≥0 :=
-  Subtype.instMeasurableSpace
+  inferInstanceAs <| MeasurableSpace (Subtype _)
 
 instance NNReal.borelSpace : BorelSpace ℝ≥0 :=
-  Subtype.borelSpace _
+  inferInstanceAs <| BorelSpace (Subtype _)
 
 instance ENNReal.measurableSpace : MeasurableSpace ℝ≥0∞ :=
   borel ℝ≥0∞

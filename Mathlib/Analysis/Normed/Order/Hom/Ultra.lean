@@ -35,5 +35,5 @@ lemma AddGroupSeminormClass.isUltrametricDist [AddGroup α] [AddGroupSeminormCla
   ⟨fun x y z ↦ by
     simp +instances only [hd, dist_eq_norm_neg_add,
       AddGroupSeminormClass.toSeminormedAddGroup_norm_eq]
-    convert hna (-x + y) (-y + z) using 2
+    convert! hna (-x + y) (-y + z) using 2
     rw [add_assoc, ← add_assoc y, add_neg_cancel, zero_add]⟩

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.PropInstances
 public import Mathlib.Tactic.Lift
+public import Mathlib.Tactic.Attr.Register
 
 /-!
 # Basic properties of sets
@@ -465,7 +466,7 @@ theorem not_nonempty_iff_eq_empty : ¬s.Nonempty ↔ s = ∅ := by
 theorem nonempty_iff_ne_empty : s.Nonempty ↔ s ≠ ∅ :=
   not_nonempty_iff_eq_empty.not_right
 
-/-- Variant of `nonempty_iff_ne_empty` used by `push_neg`. -/
+/-- Variant of `nonempty_iff_ne_empty` used by `push Not`. -/
 @[push ←]
 theorem nonempty_iff_empty_ne : s.Nonempty ↔ ∅ ≠ s :=
   nonempty_iff_ne_empty.trans ne_comm
@@ -485,7 +486,7 @@ theorem not_nonempty_empty : ¬(∅ : Set α).Nonempty := fun ⟨_, hx⟩ => hx
 
 @[simp]
 theorem isEmpty_coe_sort {s : Set α} : IsEmpty (↥s) ↔ s = ∅ :=
-  not_iff_not.1 <| by simpa using nonempty_iff_ne_empty
+  not_iff_not.1 <| by simpa using! nonempty_iff_ne_empty
 
 lemma eq_empty_of_isEmpty (s : Set α) [IsEmpty s] : s = ∅ := by
   simpa using ‹IsEmpty s›

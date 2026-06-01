@@ -94,6 +94,7 @@ fraction. Here is an example to illustrate the idea:
 Let `(v : ℚ) := 3.4`. We have
 - `GenContFract.IntFractPair.stream v 0 = some ⟨3, 0.4⟩`, and
 - `GenContFract.IntFractPair.stream v 1 = some ⟨2, 0.5⟩`.
+
 Now `(GenContFract.of v).convs' 1 = 3 + 1/2`, and our fractional term at position `2` is `0.5`.
 We hence have `v = 3 + 1/(2 + 0.5) = 3 + 1/2.5 = 3.4`.
 This computation corresponds exactly to the one using the recurrence equation in `compExactValue`.
@@ -213,7 +214,7 @@ theorem of_correctness_of_nth_stream_eq_none (nth_stream_eq_none : IntFractPair.
           convs_stable_of_terminated n'.le_succ this
         rw [this]
         exact IH nth_stream_eq_none
-    · simpa [nth_stream_fr_eq_zero, compExactValue] using
+    · simpa [nth_stream_fr_eq_zero, compExactValue] using!
         compExactValue_correctness_of_stream_eq_some nth_stream_eq
 
 /-- If `GenContFract.of v` terminated at step `n`, then the `n`th convergent is exactly `v`. -/

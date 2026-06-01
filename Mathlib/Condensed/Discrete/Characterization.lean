@@ -31,7 +31,7 @@ condensed `R`-modules are nearly identical (`CondensedMod.isDiscrete_tfae`,
 `LightCondSet.isDiscrete_tfae`, and `LightCondMod.isDiscrete_tfae`).
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -72,7 +72,6 @@ noncomputable abbrev LocallyConstant.adjunction :
 
 open Condensed
 
-set_option backward.isDefEq.respectTransparency false in
 open CondensedSet.LocallyConstant List in
 theorem isDiscrete_tfae (X : CondensedSet.{u}) :
     TFAE
@@ -120,7 +119,6 @@ lemma isDiscrete_iff_isDiscrete_forget (M : CondensedMod R) :
 instance : HasLimitsOfSize.{u, u + 1} (ModuleCat.{u + 1} R) :=
   hasLimitsOfSizeShrink.{u, u + 1, u + 1, u + 1} _
 
-set_option backward.isDefEq.respectTransparency false in
 open CondensedMod.LocallyConstant List in
 theorem isDiscrete_tfae (M : CondensedMod.{u} R) :
     TFAE
@@ -193,7 +191,6 @@ noncomputable abbrev LocallyConstant.adjunction :
     LightCondSet.LocallyConstant.functor ⊣ LightCondensed.underlying (Type u) :=
   CompHausLike.LocallyConstant.adjunction _ _
 
-set_option backward.isDefEq.respectTransparency false in
 open LightCondSet.LocallyConstant List in
 theorem isDiscrete_tfae (X : LightCondSet.{u}) :
     TFAE
@@ -228,10 +225,9 @@ variable (R : Type u) [Ring R]
 
 lemma isDiscrete_iff_isDiscrete_forget (M : LightCondMod R) :
     M.IsDiscrete ↔ ((LightCondensed.forget R).obj M).IsDiscrete :=
-  Sheaf.isConstant_iff_forget (coherentTopology LightProfinite)
-    (forget (ModuleCat R)) M LightProfinite.isTerminalPUnit
+  Sheaf.isConstant_iff_forget (coherentTopology LightProfinite.{u})
+    (forget (ModuleCat R)) M LightProfinite.isTerminalPUnit.{u}
 
-set_option backward.isDefEq.respectTransparency false in
 open LightCondMod.LocallyConstant List in
 theorem isDiscrete_tfae (M : LightCondMod.{u} R) :
     TFAE

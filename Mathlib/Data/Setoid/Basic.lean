@@ -115,10 +115,9 @@ def prodQuotientEquiv (r : Setoid α) (s : Setoid β) :
     fun x y hxy ↦ Prod.ext (by simpa [Quotient.eq] using hxy.1) (by simpa [Quotient.eq] using hxy.2)
   left_inv q := by
     rcases q with ⟨qa, qb⟩
-    exact Quotient.inductionOn₂' qa qb fun _ _ ↦ rfl
-  right_inv q := by
-    simp only
-    refine Quotient.inductionOn' q fun _ ↦ rfl
+    induction qa, qb using Quotient.inductionOn₂'
+    rfl
+  right_inv q := by induction q using Quotient.inductionOn'; rfl
 
 /-- A bijection between an indexed product of quotients and the quotient by the product of the
 equivalence relations. -/
@@ -133,7 +132,7 @@ noncomputable def piQuotientEquiv {ι : Sort*} {α : ι → Sort*} (r : ∀ i, S
     ext i
     simp
   right_inv q := by
-    refine Quotient.inductionOn' q fun _ ↦ ?_
+    induction q using Quotient.inductionOn'
     simp only [Quotient.liftOn'_mk'', Quotient.eq'']
     intro i
     change Setoid.r _ _
@@ -228,6 +227,14 @@ by an element of this set. -/
 def map_sInf {S : Set (Setoid α)} {s : Setoid α} (h : s ∈ S) :
     Quotient (sInf S) → Quotient s :=
   Setoid.map_of_le fun _ _ a ↦ a s h
+
+/-- The quotient by the trivial relation is equivalent to the original space. -/
+def quotientBotEquiv :
+    Quotient (⊥ : Setoid α) ≃ α where
+  toFun := Quotient.lift id (fun _ _ ↦ id)
+  invFun := Quotient.mk''
+  left_inv := Quotient.ind fun _ ↦ rfl
+  right_inv := fun _ ↦ rfl
 
 section EqvGen
 
@@ -338,8 +345,6 @@ theorem kerLift_mk (f : α → β) (x : α) : kerLift f ⟦x⟧ = f x :=
 injective. -/
 theorem kerLift_injective (f : α → β) : Injective <| kerLift f :=
   fun x y => Quotient.inductionOn₂' x y fun _ _ h => Quotient.sound' h
-
-@[deprecated (since := "2025-10-11")] alias ker_lift_injective := kerLift_injective
 
 /-- Given a map f from α to β, the kernel of f is the unique equivalence relation on α whose
 induced map from the quotient of α to β is injective. -/
@@ -486,4 +491,4 @@ theorem Quot.subsingleton_iff (r : α → α → Prop) :
   refine Quot.mk_surjective.forall.trans (forall_congr' fun a => ?_)
   refine Quot.mk_surjective.forall.trans (forall_congr' fun b => ?_)
   rw [Quot.eq]
-  simp only [forall_const, le_Prop_eq, Prop.top_eq_true]
+  simp

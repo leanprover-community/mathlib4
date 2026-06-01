@@ -18,6 +18,8 @@ We intentionally keep imports minimal here as this file is used by `Mathlib/Tact
 
 assert_not_exists DenselyOrdered Ring
 
+open scoped Ring
+
 universe u
 
 variable {α : Type u}
@@ -38,7 +40,7 @@ variable [MonoidWithZero α]
 
 /-- A variant of `Ring.inverse_unit`. -/
 @[simp]
-theorem Ring.inverse_invertible (x : α) [Invertible x] : Ring.inverse x = ⅟x :=
+theorem Ring.inverse_invertible (x : α) [Invertible x] : x⁻¹ʳ = ⅟x :=
   Ring.inverse_unit (unitOfInvertible _)
 
 end MonoidWithZero

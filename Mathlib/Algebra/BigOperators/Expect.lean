@@ -122,7 +122,6 @@ lemma expect_univ [Fintype ι] : 𝔼 i, f i = (∑ i, f i) /ℚ Fintype.card ι
 
 @[simp] lemma expect_empty (f : ι → M) : 𝔼 i ∈ ∅, f i = 0 := by simp [expect]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma expect_singleton (f : ι → M) (i : ι) : 𝔼 j ∈ {i}, f j = f i := by simp [expect]
 
 @[simp] lemma expect_const_zero (s : Finset ι) : 𝔼 _i ∈ s, (0 : M) = 0 := by simp [expect]
@@ -169,7 +168,6 @@ lemma expect_ite_zero (s : Finset ι) (p : ι → Prop) [DecidablePred p]
 section DecidableEq
 variable [DecidableEq ι]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma expect_ite_mem (s t : Finset ι) (f : ι → M) :
     𝔼 i ∈ s, (if i ∈ t then f i else 0) = (#(s ∩ t) / #s : ℚ≥0) • 𝔼 i ∈ s ∩ t, f i := by
   obtain hst | hst := (s ∩ t).eq_empty_or_nonempty
@@ -255,7 +253,6 @@ most arguments. -/
 lemma expect_equiv (e : ι ≃ κ) (hst : ∀ i, i ∈ s ↔ e i ∈ t) (hfg : ∀ i ∈ s, f i = g (e i)) :
     𝔼 i ∈ s, f i = 𝔼 i ∈ t, g i := by simp_rw [expect, card_equiv e hst, sum_equiv e hst hfg]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Expectation over a product set equals the expectation of the fiberwise expectations.
 
 For rewriting in the reverse direction, use `Finset.expect_product'`. -/
@@ -263,7 +260,6 @@ lemma expect_product (s : Finset ι) (t : Finset κ) (f : ι × κ → M) :
     𝔼 x ∈ s ×ˢ t, f x = 𝔼 i ∈ s, 𝔼 j ∈ t, f (i, j) := by
   simp only [expect, card_product, sum_product, smul_sum, mul_inv, mul_smul, Nat.cast_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Expectation over a product set equals the expectation of the fiberwise expectations.
 
 For rewriting in the reverse direction, use `Finset.expect_product`. -/
@@ -346,7 +342,6 @@ end Semiring
 section CommSemiring
 variable [CommSemiring M] [Module ℚ≥0 M] [IsScalarTower ℚ≥0 M M] [SMulCommClass ℚ≥0 M M]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma expect_pow (s : Finset ι) (f : ι → M) (n : ℕ) :
     (𝔼 i ∈ s, f i) ^ n = 𝔼 p ∈ Fintype.piFinset fun _ : Fin n ↦ s, ∏ i, f (p i) := by
   classical

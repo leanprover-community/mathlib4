@@ -166,6 +166,11 @@ lemma isSimpleModule_weylGroupRootRep [P.IsIrreducible] :
   have := IsIrreducible.nontrivial P
   P.isSimpleModule_weylGroupRootRep_iff.mpr IsIrreducible.eq_top_of_invtSubmodule_reflection
 
+@[nontriviality]
+lemma not_isIrreducible_of_subsingleton [Subsingleton M] :
+    ¬ P.IsIrreducible :=
+  fun contra ↦ not_nontrivial _ contra.nontrivial
+
 /-- A nonempty irreducible root pairing is a root system. -/
 instance [Nonempty ι] [NeZero (2 : R)] [P.IsIrreducible] : P.IsRootSystem where
   span_root_eq_top := IsIrreducible.eq_top_of_invtSubmodule_reflection
@@ -269,10 +274,10 @@ lemma eq_top_of_mem_invtSubmodule_of_forall_eq_univ
     q = ⊤ := by
   obtain ⟨Φ, b, c⟩ := P.exist_set_root_not_disjoint_and_le_ker_coroot'_of_invtSubmodule q h₁
   rcases Φ.eq_empty_or_nonempty with rfl | hΦ
-  · replace c : q ≤ ⨅ i, LinearMap.ker (P.coroot' i) := by simpa using c
+  · replace c : q ≤ ⨅ i, LinearMap.ker (P.coroot' i) := by simpa using! c
     simp [h₀, ← P.corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot'] at c
   · replace b : P.root '' Φ ⊆ q := by
-      simpa [Submodule.disjoint_span_singleton' (P.ne_zero _)] using b
-    simpa [h₂ Φ hΦ b c, ← span_le] using b
+      simpa [Submodule.disjoint_span_singleton' (P.ne_zero _)] using! b
+    simpa [h₂ Φ hΦ b c, ← span_le] using! b
 
 end RootPairing

@@ -125,7 +125,7 @@ lemma invOf_pow (m : α) [Invertible m] (n : ℕ) [Invertible (m ^ n)] : ⅟(m ^
 /-- If `x ^ n = 1` then `x` has an inverse, `x^(n - 1)`. -/
 @[implicit_reducible]
 def invertibleOfPowEqOne (x : α) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : Invertible x :=
-  (Units.ofPowEqOne x n hx hn).invertible
+  inferInstanceAs <| Invertible (Units.ofPowEqOne x n hx hn : α)
 
 end Monoid
 
@@ -145,8 +145,7 @@ theorem map_invOf {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [Monoid S]
     [FunLike F R S] [MonoidHomClass F R S] (f : F) (r : R)
     [Invertible r] [ifr : Invertible (f r)] :
     f (⅟r) = ⅟(f r) := by
-  have h : ifr = Invertible.map f r := Subsingleton.elim _ _
-  subst h; rfl
+  obtain rfl : ifr = Invertible.map f r := Subsingleton.elim _ _; rfl
 
 /-- If a function `f : R → S` has a left-inverse that is a monoid hom,
   then `r : R` is invertible if `f r` is.

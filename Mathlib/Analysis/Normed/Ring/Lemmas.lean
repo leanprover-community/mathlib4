@@ -40,7 +40,6 @@ theorem Filter.isBoundedUnder_le_mul_tendsto_zero {f g : ι → α} {l : Filter 
   hg.op_zero_isBoundedUnder_le hf (flip (· * ·)) fun x y =>
     (norm_mul_le y x).trans_eq (mul_comm _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 open Finset in
 /-- Non-unital seminormed ring structure on the product of finitely many non-unital seminormed
 rings, using the sup norm. -/
@@ -51,7 +50,7 @@ instance Pi.nonUnitalSeminormedRing {R : ι → Type*} [Fintype ι]
       (univ.sup fun i ↦ ‖x i * y i‖₊) ≤ univ.sup ((‖x ·‖₊) * (‖y ·‖₊)) :=
         sup_mono_fun fun _ _ ↦ nnnorm_mul_le _ _
       _ ≤ (univ.sup (‖x ·‖₊)) * univ.sup (‖y ·‖₊) :=
-        sup_mul_le_mul_sup_of_nonneg (fun _ _ ↦ zero_le _) fun _ _ ↦ zero_le _ }
+        sup_mul_le_mul_sup_of_nonneg (fun _ _ ↦ zero_le) fun _ _ ↦ zero_le }
 
 end NonUnitalSeminormedRing
 
@@ -79,7 +78,7 @@ lemma RingHomIsometric.inv {𝕜₁ 𝕜₂ : Type*} [SeminormedRing 𝕜₁] [S
 lemma tendsto_pow_cobounded_cobounded
     [NormOneClass α] [NormMulClass α] {m : ℕ} (hm : m ≠ 0) :
     Tendsto (· ^ m) (cobounded α) (cobounded α) := by
-  simpa [← tendsto_norm_atTop_iff_cobounded] using
+  simpa [← tendsto_norm_atTop_iff_cobounded] using!
     (tendsto_pow_atTop hm).comp (tendsto_norm_cobounded_atTop (E := α))
 
 end SeminormedRing
@@ -169,7 +168,7 @@ instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSem
             _ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ :=
               norm_add_le_of_le (norm_mul_le _ _) (norm_mul_le _ _)
         refine squeeze_zero (fun e => norm_nonneg _) this ?_
-        convert
+        convert!
           ((continuous_fst.tendsto x).norm.mul
                 ((continuous_snd.tendsto x).sub tendsto_const_nhds).norm).add
             (((continuous_fst.tendsto x).sub tendsto_const_nhds).norm.mul tendsto_const_nhds)
@@ -210,13 +209,14 @@ end SeparationQuotient
 
 namespace NNReal
 
-set_option backward.isDefEq.respectTransparency false in
 lemma lipschitzWith_sub : LipschitzWith 2 (fun (p : ℝ≥0 × ℝ≥0) ↦ p.1 - p.2) := by
   rw [← NNReal.isometry_coe.lipschitzWith_iff]
   have : Isometry (Prod.map ((↑) : ℝ≥0 → ℝ) ((↑) : ℝ≥0 → ℝ)) :=
     NNReal.isometry_coe.prodMap NNReal.isometry_coe
-  convert (((LipschitzWith.prod_fst.comp this.lipschitz).sub
-    (LipschitzWith.prod_snd.comp this.lipschitz)).max_const 0)
+  convert!
+    (((LipschitzWith.prod_fst.comp this.lipschitz).sub
+          (LipschitzWith.prod_snd.comp this.lipschitz)).max_const
+      0)
   norm_num
 
 end NNReal

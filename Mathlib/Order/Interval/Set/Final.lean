@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Filtered.Final
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

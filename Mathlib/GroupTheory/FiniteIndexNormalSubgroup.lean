@@ -103,6 +103,10 @@ instance instSemilatticeSupFiniteIndexNormalSubgroup :
 @[to_additive]
 instance : Lattice (FiniteIndexNormalSubgroup G) where
 
+@[to_additive]
+theorem mem_toSubgroup_iff {H : FiniteIndexNormalSubgroup G} {g : G} : g ∈ H.toSubgroup ↔ g ∈ H :=
+  .rfl
+
 /-- Bundle a subgroup with typeclass assumptions of normality and finite index. -/
 @[to_additive
   /-- Bundle an additive subgroup with typeclass assumptions of normality and finite index. -/]

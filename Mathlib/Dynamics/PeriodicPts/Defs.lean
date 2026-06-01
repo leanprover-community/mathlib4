@@ -219,7 +219,7 @@ theorem isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate (hx : x ∈ peri
   rcases hx with ⟨r, hr, hr'⟩
   suffices n ≤ (n / r + 1) * r by
     unfold IsPeriodicPt IsFixedPt
-    convert (hm.apply_iterate ((n / r + 1) * r - n)).eq <;>
+    convert! (hm.apply_iterate ((n / r + 1) * r - n)).eq <;>
       rw [← iterate_add_apply, Nat.sub_add_cancel this, iterate_mul, (hr'.iterate _).eq]
   rw [Nat.add_mul, one_mul]
   exact (Nat.lt_div_mul_add hr).le
@@ -309,12 +309,9 @@ theorem le_of_lt_minimalPeriod_of_iterate_eq {m n : ℕ} (hm : m < minimalPeriod
     (hmn : f^[m] x = f^[n] x) : m ≤ n := by
   by_contra! hmn'
   rw [← Nat.add_sub_of_le hmn'.le, add_comm, iterate_add_apply] at hmn
-  exact
-    ((IsPeriodicPt.minimalPeriod_le (tsub_pos_of_lt hmn')
-              (isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate
-                (minimalPeriod_pos_iff_mem_periodicPts.1 ((zero_le m).trans_lt hm)) hmn)).trans
-          (Nat.sub_le m n)).not_gt
-      hm
+  exact ((IsPeriodicPt.minimalPeriod_le (tsub_pos_of_lt hmn')
+    (isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate
+      (minimalPeriod_pos_iff_mem_periodicPts.1 hm.pos) hmn)).trans (Nat.sub_le m n)).not_gt hm
 
 theorem iterate_injOn_Iio_minimalPeriod : (Iio <| minimalPeriod f x).InjOn (f^[·] x) :=
   fun _m hm _n hn hmn ↦ (le_of_lt_minimalPeriod_of_iterate_eq hm hmn).antisymm
@@ -443,7 +440,7 @@ theorem iterate_mem_periodicOrbit (hx : x ∈ periodicPts f) (n : ℕ) :
 
 @[simp]
 theorem exists_iterate_apply_eq_of_mem_periodicPts (hx : x ∈ periodicPts f) : ∃ n, f^[n] x = x := by
-  simpa only [← mem_periodicOrbit_iff hx] using iterate_mem_periodicOrbit hx 0
+  simpa only [← mem_periodicOrbit_iff hx] using! iterate_mem_periodicOrbit hx 0
 
 theorem self_mem_periodicOrbit (hx : x ∈ periodicPts f) : x ∈ periodicOrbit f x := by
   simp [hx]

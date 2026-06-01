@@ -88,6 +88,8 @@ def precompose (c : CoconeTypes.{w₁} F) {G : J ⥤ Type w₀'} (app : ∀ j, G
   ι_naturality f := by
     rw [Function.comp_assoc, naturality, ← Function.comp_assoc, ι_naturality]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `F : J ⥤ w₀`, `c : F.CoconeTypes` and `G : J' ⥤ J`, this is
 the induced cocone in `(G ⋙ F).CoconeTypes`. -/
 @[simps]
@@ -225,7 +227,7 @@ lemma fac_apply (c' : CoconeTypes.{w₂} F) (j : J) (x : F.obj j) :
 lemma of_equiv {c' : CoconeTypes.{w₂} F} (e : c.pt ≃ c'.pt)
     (he : ∀ j x, c'.ι j x = e (c.ι j x)) : c'.IsColimit where
   bijective := by
-    convert Function.Bijective.comp e.bijective hc.bijective
+    convert! Function.Bijective.comp e.bijective hc.bijective
     ext y
     obtain ⟨j, x, rfl⟩ := F.ιColimitType_jointly_surjective y
     simp_all
@@ -236,7 +238,7 @@ lemma iff_bijective {c' : CoconeTypes.{w₂} F}
   refine ⟨fun hc' ↦ ?_, fun h ↦ hc.of_equiv (Equiv.ofBijective _ h) hf⟩
   have h₁ := hc.bijective
   rw [← Function.Bijective.of_comp_iff _ hc.bijective]
-  convert hc'.bijective
+  convert! hc'.bijective
   ext x
   obtain ⟨j, x, rfl⟩ := F.ιColimitType_jointly_surjective x
   simp [hf]
@@ -339,6 +341,7 @@ lemma IsColimit.precompose (hc : c.IsColimit) {G : J ⥤ Type w₀'} (e : ∀ j,
     (c.precompose _ naturality).IsColimit :=
   (hc.isColimitCore.precompose e naturality).isColimit
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isColimit_precompose_iff {G : J ⥤ Type w₀'} (e : ∀ j, G.obj j ≃ F.obj j)
     (naturality : ∀ {j j'} (f : j ⟶ j'), e j' ∘ G.map f = F.map f ∘ e j) :
@@ -352,7 +355,7 @@ end CoconeTypes
 set_option backward.isDefEq.respectTransparency false in
 lemma isColimit_coconeTypes : F.coconeTypes.IsColimit where
   bijective := by
-    convert Function.bijective_id
+    convert! Function.bijective_id
     ext y
     obtain ⟨j, x, rfl⟩ := F.ιColimitType_jointly_surjective y
     rfl

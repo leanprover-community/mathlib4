@@ -15,7 +15,7 @@ then the `S`-module `S ⊗[R] M` has a decomposition `fun i ↦ (ℳ i).baseChan
 same `ι`.
 -/
 
-@[expose] public section
+public section
 
 open TensorProduct LinearMap
 
@@ -30,7 +30,7 @@ section Decomposition
 variable [Decomposition ℳ]
 
 instance Decomposition.baseChange : Decomposition fun i ↦ (ℳ i).baseChange S := by
-  refine .ofLinearMap _ (lmap (ℳ ·|>.toBaseChange S) ∘ₗ
+  refine .ofLinearMap _ (lmap (ℳ · |>.toBaseChange S) ∘ₗ
     (directSumRight R S S fun i ↦ ℳ i).toLinearMap ∘ₗ
     ((decomposeLinearEquiv ℳ).baseChange R S)) ?_ ?_
   · simp_rw [← comp_assoc]
@@ -43,7 +43,7 @@ instance Decomposition.baseChange : Decomposition fun i ↦ (ℳ i).baseChange S
     simp
 
 theorem toBaseChange_injective (i : ι) : Function.Injective ((ℳ i).toBaseChange S) := fun x y h ↦ by
-  have := (Function.Bijective.of_comp_iff (lmap (ℳ ·|>.toBaseChange S))
+  have := (Function.Bijective.of_comp_iff (lmap (ℳ · |>.toBaseChange S))
     (by rw [← LinearEquiv.coe_trans]; exact LinearEquiv.bijective _)).1
     (decompose (M := S ⊗[R] M) fun i ↦ (ℳ i).baseChange S).bijective
   refine of_injective (β := fun i ↦ S ⊗[R] ℳ i) i <| this.injective ?_

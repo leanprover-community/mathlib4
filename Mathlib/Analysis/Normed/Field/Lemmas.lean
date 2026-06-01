@@ -181,9 +181,6 @@ instance (priority := 100) NormedDivisionRing.to_continuousInv₀ : ContinuousIn
     · apply Metric.closedBall_mem_nhds
       simpa
 
-@[deprecated (since := "2025-09-01")] alias NormedDivisionRing.to_hasContinuousInv₀ :=
-  NormedDivisionRing.to_continuousInv₀
-
 @[to_fun]
 theorem TendstoLocallyUniformlyOn.div₀ {X ι : Type*} [TopologicalSpace X]
     {s : Set X} {F G : ι → X → α} {f g : X → α} {l : Filter ι}

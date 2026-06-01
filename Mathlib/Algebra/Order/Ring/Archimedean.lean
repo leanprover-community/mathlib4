@@ -62,7 +62,7 @@ private theorem mk_mul_le_of_le {x₁ y₁ x₂ y₂ : R} (hx : mk x₁ ≤ mk x
   obtain ⟨m, hm⟩ := hx
   obtain ⟨n, hn⟩ := hy
   use m * n
-  convert mul_le_mul hm hn (abs_nonneg _) (nsmul_nonneg (abs_nonneg _) _) using 1 <;>
+  convert! mul_le_mul hm hn (abs_nonneg _) (nsmul_nonneg (abs_nonneg _) _) using 1 <;>
     simp_rw [ArchimedeanOrder.val_of, abs_mul]
   ring
 
@@ -243,13 +243,7 @@ variable [IsStrictOrderedRing R]
 
 theorem add_left_cancel_of_ne_top {x y z : ArchimedeanClass R} (hx : x ≠ ⊤) (h : x + y = x + z) :
     y = z := by
-  induction x with | mk x
-  induction y with | mk y
-  induction z with | mk z
-  simp_rw [← mk_mul, mk_eq_mk] at h
-  obtain ⟨⟨m, hm⟩, ⟨n, hn⟩⟩ := h
-  simp_rw [abs_mul, mul_comm |x|, nsmul_eq_mul, ← mul_assoc, ← nsmul_eq_mul] at hm hn
-  refine mk_eq_mk.2 ⟨⟨m, ?_⟩, ⟨n, ?_⟩⟩ <;> exact le_of_mul_le_mul_right ‹_› (by simpa using hx)
+  simp_all
 
 theorem add_right_cancel_of_ne_top {x y z : ArchimedeanClass R} (hx : x ≠ ⊤) (h : y + x = z + x) :
     y = z := by
