@@ -36,10 +36,10 @@ Upload a tiny marker blob to `/m/{repo}/{sha}` in the given container. The
 blob content is the SHA itself, as a debugging aid; existence is the
 signal.
 
-Called from `put-staged` after the `.ltar` artifact uploads complete. If
-this PUT fails the artifacts are already uploaded — the only loss is that
-`cache query` will not find this commit — so failures here are logged but
-not fatal.
+Called from `put` and `put-staged` after the `.ltar` artifact uploads
+complete. If this PUT fails the artifacts are already uploaded — the only
+loss is that `cache query` will not find this commit — so failures here
+are logged but not fatal.
 -/
 def uploadMarker (container : Container) (repo sha : String) (auth : UploadAuth) :
     IO Unit := do

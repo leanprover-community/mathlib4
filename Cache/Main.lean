@@ -197,8 +197,11 @@ def main (args : List String) : IO Unit := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
     let repo := repo?.getD MATHLIBREPO
-    putFiles repo container? (← pack overwrite (verbose := true) unpackedOnly) overwrite
-      (← getUploadAuth)
+    let auth ← getUploadAuth
+    putFiles repo container? (← pack overwrite (verbose := true) unpackedOnly) overwrite auth
+    if let some sha ← getRepoScope then
+      if let some c := container? then
+        uploadMarker c repo sha auth
   let stage outDir (unpackedOnly := true) := do
     stageFiles outDir (← pack (verbose := true) (unpackedOnly := unpackedOnly))
   let unstage (overwrite := false) := do
