@@ -25,14 +25,35 @@ section Polynomial
 
 open RingTheory.Sequence IsLocalRing Polynomial Ideal
 
-lemma Polynomial.exist_monic_mem {F : Type u} [Field F] {I : Ideal F[X]} (ne : I ≠ ⊥) :
-    ∃ f ∈ I, f.Monic := by
-  obtain ⟨g, gmem, gne⟩ : ∃ g ∈ I, g ≠ 0 := by
-    by_contra!
-    exact ne ((Submodule.eq_bot_iff I).mpr this)
-  use C g.leadingCoeff⁻¹ * g
-  refine ⟨mul_mem_left I (C g.leadingCoeff⁻¹) gmem, ?_⟩
-  simpa [Monic] using inv_mul_cancel₀ (leadingCoeff_ne_zero.mpr gne)
+lemma Polynomial.exists_monic_span' {k : Type*} [Field k] (I : Ideal k[X]) (ne : I ≠ ⊥) :
+    ∃ f, f.Monic ∧ I = Ideal.span {f} := by
+  obtain ⟨x, rfl⟩ := IsPrincipalIdealRing.principal I
+  have xne : x ≠ 0 := by
+    by_contra eq0
+    simp [eq0] at ne
+  refine ⟨C x.leadingCoeff⁻¹ * x, ?_, ?_⟩
+  · simp [Monic, leadingCoeff_ne_zero.mpr xne]
+  · apply (Ideal.span_singleton_mul_left_unit _ x).symm
+    simpa using xne
+
+lemma Polynomial.exists_monic_span_sup_map_eq' (p : Ideal R[X]) [p.IsPrime]
+    (ism : (p.comap C).IsMaximal) (ne : p ≠ (p.comap C).map C) :
+    ∃ f : R[X], f.Monic ∧ p = (p.comap C).map C ⊔ Ideal.span {f} := by
+  let q := p.comap C
+  let : Field (R ⧸ q) := Ideal.Quotient.field q
+  have ne' : Ideal.map (mapRingHom (Ideal.Quotient.mk q)) p ≠ ⊥ := by
+    simp only [ne_eq, map_eq_bot_iff_le_ker, Polynomial.ker_mapRingHom, q, mk_ker]
+    exact not_le_of_gt (lt_of_le_of_ne Ideal.map_comap_le ne.symm)
+  rcases Polynomial.exists_monic_span' _ ne' with ⟨y, mony, hy⟩
+  have : y ∈ lifts (Ideal.Quotient.mk q) := map_surjective _ Ideal.Quotient.mk_surjective _
+  rcases Polynomial.lifts_and_natDegree_eq_and_monic this mony with ⟨f, hf, deg, monf⟩
+  use f, monf
+  trans comap (mapRingHom (Ideal.Quotient.mk q)) ((span {f}).map (mapRingHom (Ideal.Quotient.mk q)))
+  · rw [Ideal.map_span, coe_mapRingHom, Set.image_singleton, hf, ← hy,
+      Ideal.comap_map_of_surjective' _ (map_surjective _ Ideal.Quotient.mk_surjective)]
+    simpa [Polynomial.ker_mapRingHom, q] using Ideal.map_comap_le
+  · rw [Ideal.comap_map_of_surjective' _ (map_surjective _ Ideal.Quotient.mk_surjective),
+      sup_comm, Polynomial.ker_mapRingHom, mk_ker]
 
 lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
     [IsCohenMacaulayLocalRing R] (p : Ideal R[X]) [p.IsPrime] (max : p.comap C = maximalIdeal R) :
@@ -40,8 +61,6 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
   apply isCohenMacaulayLocalRing_of_ringKrullDim_le_depth
   let q := (maximalIdeal R).map C
   have qle : q ≤ p := by simpa [q, ← max] using map_comap_le
-  have ker : RingHom.ker (Polynomial.mapRingHom (IsLocalRing.residue R)) = q := by
-    simpa only [residue, ker_mapRingHom, q] using congrArg (Ideal.map C) (Quotient.mkₐ_ker R _)
   have cm := (isCohenMacaulayLocalRing_def R).mp ‹_›
   have ne := (depth_ne_top (ModuleCat.of R R)).lt_top
   rw [depth_eq_sSup_length_regular] at cm ne ⊢
@@ -61,27 +80,23 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
     exact mem r hr
   have : Module.Flat R (Localization.AtPrime p) := Module.Flat.trans R R[X] _
   rw [IsLocalization.AtPrime.ringKrullDim_eq_height p, WithBot.coe_le_coe]
-  by_cases eq0 : p.map (Polynomial.mapRingHom (IsLocalRing.residue R)) = ⊥
+  by_cases eq : p = q
   · have reg : IsRegular (Localization.AtPrime p)
       (rs.map (algebraMap R (Localization.AtPrime p))) := by
       refine ⟨IsWeaklyRegular.of_flat reg.1, ?_⟩
       simp only [smul_eq_mul, mul_top]
       apply (ne_top_of_le_ne_top (b := maximalIdeal _) IsPrime.ne_top' _).symm
-      simpa only [span_le] using mem'
-    have eq : p = q := le_antisymm (by simpa [← ker, ← Ideal.map_eq_bot_iff_le_ker]) qle
+      simpa only [span_le] using! mem'
     have ht1 : p.height ≤ (maximalIdeal R).height := by
       rw [eq, Polynomial.height_map_C (maximalIdeal R)]
     apply le_trans ht1 (le_sSup _)
     use (rs.map (algebraMap R (Localization.AtPrime p))), reg
     simpa [cm] using mem'
-  · rcases exist_monic_mem eq0 with ⟨g, gmem, mong⟩
-    have : g ∈ lifts (IsLocalRing.residue R) := map_surjective _ IsLocalRing.residue_surjective _
-    rcases Polynomial.lifts_and_natDegree_eq_and_monic this mong with ⟨f, hf, deg, monf⟩
+  · have : (p.comap C).IsMaximal := by simpa [max] using maximalIdeal.isMaximal R
+    rcases Polynomial.exists_monic_span_sup_map_eq' R p this (by simpa [max]) with ⟨f, monf, hf⟩
     have fmem : f ∈ p := by
-      simp only [← hf, ← coe_mapRingHom, ← mem_comap] at gmem
-      rw [comap_map_of_surjective' _ (map_surjective _ IsLocalRing.residue_surjective),
-        sup_of_le_left (by simpa [ker_mapRingHom, ker_residue] using qle)] at gmem
-      exact gmem
+      rw [hf]
+      exact Ideal.mem_sup_right (Submodule.mem_span_singleton_self f)
     have reg'' : IsWeaklyRegular R[X] (rs.map (algebraMap R R[X])) := IsWeaklyRegular.of_flat reg.1
     have reg' : IsWeaklyRegular R[X] ((rs.map (algebraMap R R[X])) ++ [f]) := by
       refine ⟨fun i hi ↦ ?_⟩
@@ -115,7 +130,7 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
       refine ⟨IsWeaklyRegular.of_flat reg', ?_⟩
       simp only [smul_eq_mul, mul_top]
       apply (ne_top_of_le_ne_top (b := maximalIdeal _) IsPrime.ne_top' _).symm
-      simpa only [span_le] using mem''
+      simpa only [span_le] using! mem''
     have ht2 : p.height ≤ (maximalIdeal R).height + 1 := by
       rw [← WithBot.coe_le_coe, WithBot.coe_add, maximalIdeal_height_eq_ringKrullDim,
         WithBot.coe_one, ← ringKrullDim_of_isNoetherianRing]
@@ -134,7 +149,7 @@ theorem Polynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] :
   have : IsLocalization pc S := Polynomial.isLocalization _ _
   let pS := p.map (algebraMap R[X] S)
   have disj : Disjoint (pc : Set R[X]) (p : Set R[X]) := by
-    simpa [pc, q] using Set.disjoint_image_left.mpr
+    simpa [pc, q] using! Set.disjoint_image_left.mpr
       (Set.disjoint_compl_left_iff_subset.mpr (fun _ a ↦ a))
   have : pS.IsPrime :=  IsLocalization.isPrime_of_isPrime_disjoint pc _ _ ‹_› disj
   have : IsLocalization.AtPrime (Localization.AtPrime pS) p := by
