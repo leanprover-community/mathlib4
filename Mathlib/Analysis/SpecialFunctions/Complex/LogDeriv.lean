@@ -32,7 +32,7 @@ theorem isOpenMap_exp : IsOpenMap exp :=
 theorem hasStrictDerivAt_log {x : ℂ} (h : x ∈ slitPlane) : HasStrictDerivAt log x⁻¹ x :=
   have h0 : x ≠ 0 := slitPlane_ne_zero h
   expOpenPartialHomeomorph.hasStrictDerivAt_symm h h0 <| by
-    simpa [exp_log h0] using hasStrictDerivAt_exp (log x)
+    simpa [exp_log h0] using! hasStrictDerivAt_exp (log x)
 
 lemma hasDerivAt_log {z : ℂ} (hz : z ∈ slitPlane) : HasDerivAt log z⁻¹ z :=
   HasStrictDerivAt.hasDerivAt <| hasStrictDerivAt_log hz
@@ -71,7 +71,7 @@ theorem HasStrictDerivAt.clog {f : ℂ → ℂ} {f' x : ℂ} (h₁ : HasStrictDe
 
 theorem HasStrictDerivAt.clog_real {f : ℝ → ℂ} {x : ℝ} {f' : ℂ} (h₁ : HasStrictDerivAt f f' x)
     (h₂ : f x ∈ slitPlane) : HasStrictDerivAt (fun t => log (f t)) (f' / f x) x := by
-  simpa only [div_eq_inv_mul] using (hasStrictFDerivAt_log_real h₂).comp_hasStrictDerivAt x h₁
+  simpa only [div_eq_inv_mul] using! (hasStrictFDerivAt_log_real h₂).comp_hasStrictDerivAt x h₁
 
 theorem HasFDerivAt.clog {f : E → ℂ} {f' : StrongDual ℂ E} {x : E} (h₁ : HasFDerivAt f f' x)
     (h₂ : f x ∈ slitPlane) : HasFDerivAt (fun t => log (f t)) ((f x)⁻¹ • f') x :=
@@ -83,7 +83,7 @@ theorem HasDerivAt.clog {f : ℂ → ℂ} {f' x : ℂ} (h₁ : HasDerivAt f f' x
 
 theorem HasDerivAt.clog_real {f : ℝ → ℂ} {x : ℝ} {f' : ℂ} (h₁ : HasDerivAt f f' x)
     (h₂ : f x ∈ slitPlane) : HasDerivAt (fun t => log (f t)) (f' / f x) x := by
-  simpa only [div_eq_inv_mul] using
+  simpa only [div_eq_inv_mul] using!
     (hasStrictFDerivAt_log_real h₂).hasFDerivAt.comp_hasDerivAt x h₁
 
 theorem DifferentiableAt.clog {f : E → ℂ} {x : E} (h₁ : DifferentiableAt ℂ f x)
@@ -103,7 +103,7 @@ theorem HasDerivWithinAt.clog {f : ℂ → ℂ} {f' x : ℂ} {s : Set ℂ} (h₁
 theorem HasDerivWithinAt.clog_real {f : ℝ → ℂ} {s : Set ℝ} {x : ℝ} {f' : ℂ}
     (h₁ : HasDerivWithinAt f f' s x) (h₂ : f x ∈ slitPlane) :
     HasDerivWithinAt (fun t => log (f t)) (f' / f x) s x := by
-  simpa only [div_eq_inv_mul] using
+  simpa only [div_eq_inv_mul] using!
     (hasStrictFDerivAt_log_real h₂).hasFDerivAt.comp_hasDerivWithinAt x h₁
 
 theorem DifferentiableWithinAt.clog {f : E → ℂ} {s : Set E} {x : E}

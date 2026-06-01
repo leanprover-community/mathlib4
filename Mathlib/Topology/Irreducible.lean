@@ -8,8 +8,9 @@ module
 public import Mathlib.Order.Minimal
 public import Mathlib.Order.Zorn
 public import Mathlib.Topology.ContinuousOn
-public import Mathlib.Tactic.StacksAttribute
 public import Mathlib.Topology.DiscreteSubset
+public import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Topology.WithTopology
 
 /-!
 # Irreducibility in topological spaces
@@ -264,11 +265,10 @@ instance (priority := 100) [IndiscreteTopology X] : PreirreducibleSpace X where
 /-- An infinite type with cofinite topology is an irreducible topological space. -/
 instance (priority := 100) {X} [Infinite X] : IrreducibleSpace (CofiniteTopology X) where
   isPreirreducible_univ u v := by
-    haveI : Infinite (CofiniteTopology X) := ‹_›
     simp only [CofiniteTopology.isOpen_iff, univ_inter]
     intro hu hv hu' hv'
     simpa only [compl_union, compl_compl] using ((hu hu').union (hv hv')).infinite_compl.nonempty
-  toNonempty := (inferInstance : Nonempty X)
+  toNonempty := inferInstance
 
 theorem irreducibleComponents_eq_singleton [IrreducibleSpace X] :
     irreducibleComponents X = {univ} :=
@@ -517,7 +517,7 @@ def irreducibleComponentsEquivOfIsPreirreducibleFiber :
   left_inv _ := Subtype.ext <| Set.image_preimage_eq _ hf₄
   map_rel_iff' {W Z} := by
     refine ⟨fun H ↦ ?_, Set.preimage_mono⟩
-    simpa only [Equiv.coe_fn_mk, Set.image_preimage_eq _ hf₄] using Set.image_mono (f := f) H
+    simpa only [Equiv.coe_fn_mk, Set.image_preimage_eq _ hf₄] using! Set.image_mono (f := f) H
 
 end
 

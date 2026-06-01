@@ -114,7 +114,7 @@ theorem projectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
 
 theorem projectiveSeminorm_tprod_le (m : Π i, E i) :
     projectiveSeminorm (⨂ₜ[𝕜] i, m i) ≤ ∏ i, ‖m i‖ := by
-  convert ciInf_le (bddBelow_projectiveSemiNormAux _) ⟨FreeAddMonoid.of ((1 : 𝕜), m), ?_⟩
+  convert! ciInf_le (bddBelow_projectiveSemiNormAux _) ⟨FreeAddMonoid.of ((1 : 𝕜), m), ?_⟩
   · simp [projectiveSeminormAux]
   · simp [mem_lifts_iff]
 
