@@ -592,8 +592,6 @@ def inductivePremetric (I : ∀ n, Isometry (f n)) : PseudoMetricSpace (Σ n, X 
       _ = inductiveLimitDist f x y + inductiveLimitDist f y z := by
         rw [inductiveLimitDist_eq_dist I x y m hx hy, inductiveLimitDist_eq_dist I y z m hy hz]
 
-attribute [local instance] inductivePremetric
-
 /-- The type giving the inductive limit in a metric space context. -/
 def InductiveLimit (I : ∀ n, Isometry (f n)) : Type _ :=
   @SeparationQuotient _ (inductivePremetric I).toUniformSpace.toTopologicalSpace

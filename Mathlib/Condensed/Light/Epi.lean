@@ -128,12 +128,14 @@ attribute [local instance] functorMap_epi Abelian.hasFiniteBiproducts
 
 variable {R : Type u} [Ring R] {M N : ℕ → LightCondMod.{u} R} (f : ∀ n, M n ⟶ N n) [∀ n, Epi (f n)]
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Epi (Limits.Pi.map f) :=
   epi_π_app_zero_of_epi R (isLimit f) (fun n ↦ by
     simp only [Nat.succ_eq_add_one, Functor.ofOpSequence_obj, homOfLE_leOfHom,
       Functor.ofOpSequence_map_homOfLE_succ]
     infer_instance)
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (lim (J := Discrete ℕ) (C := LightCondMod R)).PreservesEpimorphisms where
   preserves f _ := by
     have : lim.map f = (Pi.isoLimit _).inv ≫ Limits.Pi.map (f.app ⟨·⟩) ≫ (Pi.isoLimit _).hom := by
