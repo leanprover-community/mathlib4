@@ -72,6 +72,21 @@ def assertEq (name expected actual : String) : IO Unit := do
     IO.eprintln s!"  FAIL: {name}\n    expected: {expected}\n    actual:   {actual}"
     failures.modify (· + 1)
 
+/-- Run `action` with stdout redirected to /dev/null. Restores the original
+stdout on completion, including on exception. Use this to silence diagnostic
+prints from production code under test that would otherwise clutter test output. -/
+private def withSuppressedStdout (action : IO α) : IO α := do
+  let saved ← IO.getStdout
+  let sink ← IO.FS.Handle.mk "/dev/null" IO.FS.Mode.append
+  IO.setStdout (IO.FS.Stream.ofHandle sink)
+  try
+    let r ← action
+    IO.setStdout saved
+    return r
+  catch e =>
+    IO.setStdout saved
+    throw e
+
 section ContainerModel
 
 /-- The short name is the string used on the CLI (`--container=NAME`) and to
@@ -615,17 +630,17 @@ def test_getRemoteRepo_gitFallback : IO Unit := do
   -- Case 1: nonexistent cwd causes IO.Process.output to throw.
   -- The try...catch in getRemoteRepo must intercept it and return none.
   let fakePath := "/tmp/surely-nonexistent-mathlib-cache-test-xyz-9999999"
-  let r1 ← getRemoteRepo fakePath
+  let r1 ← withSuppressedStdout (getRemoteRepo fakePath)
   assert "getRemoteRepo returns none when git throws (nonexistent cwd)" (r1 == none)
 
   -- Case 2: existing directory that is not a git repo (git returns exit 128).
   -- This exercises the exit-code fallback path that predates the try...catch.
-  let r2 ← getRemoteRepo "/tmp"
+  let r2 ← withSuppressedStdout (getRemoteRepo "/tmp")
   assert "getRemoteRepo returns none in a non-git directory" (r2 == none)
 
   -- resolveRepo propagates the fallback correctly:
   --   detected? = none, resolved = MATHLIBREPO → master-only chain.
-  let (detected?, resolved) ← resolveRepo none fakePath
+  let (detected?, resolved) ← withSuppressedStdout (resolveRepo none fakePath)
   assert "resolveRepo detected? is none on git failure" (detected? == none)
   assert "resolveRepo falls back to MATHLIBREPO on git failure" (resolved == MATHLIBREPO)
   assert "fallback chain includes master"
