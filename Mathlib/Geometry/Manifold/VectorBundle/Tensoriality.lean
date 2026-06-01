@@ -35,6 +35,7 @@ fibre `W x`), the construction produces a continuous linear map `V x →L[𝕜] 
   arguments defines a continuous bilinear map out of `V x` and `V' x`.
 
 -/
+
 open Bundle FiberBundle Topology Module
 
 open scoped Manifold ContDiff
@@ -99,7 +100,7 @@ protected theorem «local» (hΦ : TensorialAt I F Φ x) {σ σ' : Π x : M, V x
 variable [VectorBundle 𝕜 F V] [VectorBundle 𝕜 F' V']
 
 /-- A tensorial operation on sections of a vector bundle respects zero (since it respects scalar
-  multiplication). -/
+multiplication). -/
 theorem zero (hΦ : TensorialAt I F Φ x) : Φ 0 = 0 := by
   calc
     Φ 0 = Φ ((0 : M → 𝕜) • (0 : Π x, V x)) := by simp

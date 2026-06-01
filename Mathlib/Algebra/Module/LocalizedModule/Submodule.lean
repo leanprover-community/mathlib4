@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Localization.Module
 public import Mathlib.Algebra.Algebra.Operations
@@ -148,7 +147,7 @@ theorem localized₀_iSup {ι : Type*} (g : ι → Submodule R M) :
     (⨆ i, g i).localized₀ p f = ⨆ i, (g i).localized₀ p f := by
   let : Module (Localization p) N := IsLocalizedModule.module p f
   have : IsScalarTower R (Localization p) N := IsLocalizedModule.isScalarTower_module p f
-  simpa using congr_arg (restrictScalars R) (localized'_iSup (Localization p) p f g)
+  simpa using! congr_arg (restrictScalars R) (localized'_iSup (Localization p) p f g)
 
 /-- `localized₀` as a `FrameHom`. -/
 noncomputable def localized₀FrameHom : FrameHom (Submodule R M) (Submodule R N) where
@@ -246,7 +245,7 @@ noncomputable def localizedEquiv : M'.localized p ≃ₗ[Localization p] Localiz
   IsLocalizedModule.linearEquiv p (M'.toLocalized p) (LocalizedModule.mkLinearMap _ _)
     |>.restrictScalars _
 
-open Pointwise
+open scoped Pointwise
 
 lemma localized₀_le_localized₀_of_smul_le {P Q : Submodule R M} (x : p) (h : x • P ≤ Q) :
     P.localized₀ p f ≤ Q.localized₀ p f := by
@@ -298,10 +297,10 @@ instance IsLocalizedModule.toLocalizedQuotient' (M' : Submodule R M) :
       by simp only [Function.uncurry_apply_pair, toLocalizedQuotient'_mk, ← mk_smul, mk'_cancel']⟩
   exists_of_eq {m n} e := by
     obtain ⟨⟨m, rfl⟩, n, rfl⟩ := PProd.mk (mk_surjective _ m) (mk_surjective _ n)
-    obtain ⟨x, hx, s, hs⟩ : f (m - n) ∈ _ := by simpa [Submodule.Quotient.eq] using e
+    obtain ⟨x, hx, s, hs⟩ : f (m - n) ∈ _ := by simpa [Submodule.Quotient.eq] using! e
     obtain ⟨c, hc⟩ := exists_of_eq (S := p) (show f (s • (m - n)) = f x by simp [-map_sub, ← hs])
     exact ⟨c * s, by simpa only [← Quotient.mk_smul, Submodule.Quotient.eq,
-      ← smul_sub, mul_smul, hc] using M'.smul_mem c hx⟩
+      ← smul_sub, mul_smul, hc] using! M'.smul_mem c hx⟩
 
 instance (M' : Submodule R M) : IsLocalizedModule p (M'.toLocalizedQuotient p) :=
   IsLocalizedModule.toLocalizedQuotient' _ _ _ _

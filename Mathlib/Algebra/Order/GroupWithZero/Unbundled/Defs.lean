@@ -73,7 +73,7 @@ for a discussion about this notation, and whether to enable it globally (note th
 currently global but broken, hence actually only works locally).
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MulZeroClass
 
@@ -215,10 +215,12 @@ instance (priority := 100) MulRightMono.toMulPosReflectLT [MulRightReflectLT α]
     MulPosReflectLT α where elim _ _ := ‹MulRightReflectLT α›.elim _
 
 instance (priority := 100) MulLeftStrictMono.toPosMulReflectLE [MulLeftReflectLE α] :
-    PosMulReflectLE α where elim _ _ := ‹MulLeftReflectLE α›.elim _
+    PosMulReflectLE α where
+  elim _ _ _ := ‹MulLeftReflectLE α›.le_of_mul_le_mul_left'
 
 instance (priority := 100) MulRightStrictMono.toMulPosReflectLE [MulRightReflectLE α] :
-    MulPosReflectLE α where elim _ _ := ‹MulRightReflectLE α›.elim _
+    MulPosReflectLE α where
+  elim _ _ _ := ‹MulRightReflectLE α›.le_of_mul_le_mul_right'
 
 @[gcongr]
 theorem mul_le_mul_of_nonneg_left [PosMulMono α] (hbc : b ≤ c) (ha : 0 ≤ a) : a * b ≤ a * c :=
@@ -457,7 +459,7 @@ theorem MulPosMono.toMulPosReflectLT [MulPosMono α] : MulPosReflectLT α where
   elim := (covariant_le_iff_contravariant_lt _ _ _).1
     fun a _b _c hbc ↦ mul_le_mul_of_nonneg_right hbc a.2
 
-/- TODO: Currently, only one in four of the above are made instances; we could consider making
+/-! TODO: Currently, only one in four of the above are made instances; we could consider making
   both directions of `covariant_le_iff_contravariant_lt` and `covariant_lt_iff_contravariant_le`
   instances, then all of the above become redundant instances, but there are performance issues. -/
 

@@ -55,7 +55,7 @@ variable (α) [Preorder α] [Preorder β] [Preorder γ] {g : β → γ} {f : α 
 
 @[to_dual]
 protected theorem id : LeftOrdContinuous (id : α → α) where
-  isLUB_image s _ x h := by simpa only [image_id] using h
+  isLUB_image s _ x h := by simpa only [image_id] using! h
 
 variable {α}
 
@@ -82,7 +82,7 @@ theorem mono (hf : LeftOrdContinuous f) : Monotone f := fun a₁ a₂ h =>
 @[to_dual]
 theorem comp (hg : LeftOrdContinuous g) (hf : LeftOrdContinuous f) : LeftOrdContinuous (g ∘ f) where
   isLUB_image s x hs h := by
-    simpa only [image_image] using hg.isLUB_image (.image _ hs) (hf.isLUB_image hs h)
+    simpa only [image_image] using! hg.isLUB_image (.image _ hs) (hf.isLUB_image hs h)
 
 @[to_dual]
 protected theorem iterate {f : α → α} (hf : LeftOrdContinuous f) (n : ℕ) :

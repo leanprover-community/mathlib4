@@ -70,6 +70,7 @@ lemma Presieve.EffectiveEpimorphic.iff_forall_isSheafFor_yoneda {X : C} (R : Pre
   simp_rw [Presieve.isSheafFor_iff_generate R,
     Presieve.EffectiveEpimorphic, Sieve.EffectiveEpimorphic.iff_forall_isSheafFor_yoneda]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma Presieve.EffectiveEpimorphic.isSheafFor_of_isRepresentable {X : C} {R : Presieve X}
     (hR : R.EffectiveEpimorphic) (F : Cᵒᵖ ⥤ Type w) [F.IsRepresentable] :
     R.IsSheafFor F := by
@@ -80,7 +81,7 @@ lemma Presieve.EffectiveEpimorphic.isSheafFor_of_isRepresentable {X : C} {R : Pr
   rw [isSheafFor_comp_uliftFunctor_iff]
   exact hR _
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.proofsInPublic true in
 /--
 Implementation: This is a construction which will be used in the proof that
@@ -102,7 +103,8 @@ def isColimitOfEffectiveEpiStruct {X Y : C} (f : Y ⟶ X) (Hf : EffectiveEpiStru
     fac := by
       rintro S ⟨T, g, hT⟩
       dsimp
-      nth_rewrite 1 [← hT, Category.assoc, Hf.fac]
+      generalize_proofs h₁ h₂ h₃
+      simp only [← hT, Category.assoc, Hf.fac _ h₂]
       let y : D := ⟨Over.mk f, 𝟙 _, by simp⟩
       let x : D := ⟨Over.mk T.hom, g, hT⟩
       let g' : x ⟶ y := ObjectProperty.homMk (Over.homMk g)
@@ -116,6 +118,7 @@ def isColimitOfEffectiveEpiStruct {X Y : C} (f : Y ⟶ X) (Hf : EffectiveEpiStru
       apply Hf.uniq _ h2
       exact hm ⟨Over.mk f, 𝟙 _, by simp⟩ }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 Implementation: This is a construction which will be used in the proof that
@@ -138,22 +141,18 @@ def effectiveEpiStructOfIsColimit {X Y : C} (f : Y ⟶ X)
           apply h
           rw [Category.assoc, hB.choose_spec, hA.choose_spec, Over.w] } }
   { desc := fun {_} e h => Hf.desc (aux e h)
-    fac := by
-      intro W e h
-      dsimp +instances
+    fac {W} e h := by
       have := Hf.fac (aux e h) ⟨Over.mk f, 𝟙 _, by simp⟩
       dsimp [aux] at this; rw [this]; clear this
       nth_rewrite 2 [← Category.id_comp e]
       apply h
       generalize_proofs hh
       rw [hh.choose_spec, Category.id_comp]
-    uniq := by
-      intro W e h m hm
-      dsimp +instances
+    uniq {W} e h m hm := by
       apply Hf.uniq (aux e h)
       rintro ⟨A, g, hA⟩
       dsimp
-      nth_rewrite 1 [← hA, Category.assoc, hm]
+      simp only [← hA, Category.assoc, hm]
       apply h
       generalize_proofs hh
       rwa [hh.choose_spec] }
@@ -197,7 +196,7 @@ lemma Sieve.generateFamily_eq {B : C} {α : Type*} (X : α → C) (π : (a : α)
   · rintro ⟨a, g, rfl⟩
     exact ⟨_, g, π a, ⟨a⟩, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.proofsInPublic true in
 /--
 Implementation: This is a construction which will be used in the proof that
@@ -211,7 +210,6 @@ def isColimitOfEffectiveEpiFamilyStruct {B : C} {α : Type*}
   letI F : D ⥤ _ := (Sieve.generateFamily X π).arrows.diagram
   { desc := fun S => H.desc (fun a => S.ι.app ⟨Over.mk (π a), ⟨a,𝟙 _, by simp⟩⟩) <| by
       intro Z a₁ a₂ g₁ g₂ h
-      dsimp
       let A₁ : D := ⟨Over.mk (π a₁), a₁, 𝟙 _, by simp⟩
       let A₂ : D := ⟨Over.mk (π a₂), a₂, 𝟙 _, by simp⟩
       let Z' : D := ⟨Over.mk (g₁ ≫ π a₁), a₁, g₁, rfl⟩
@@ -222,7 +220,8 @@ def isColimitOfEffectiveEpiFamilyStruct {B : C} {α : Type*}
     fac := by
       intro S ⟨T, a, (g : T.left ⟶ X a), hT⟩
       dsimp
-      nth_rewrite 1 [← hT, Category.assoc, H.fac]
+      generalize_proofs h₁ h₂ h₃
+      simp only [← hT, Category.assoc, H.fac _ h₂]
       let A : D := ⟨Over.mk (π a), a, 𝟙 _, by simp⟩
       let B : D := ⟨Over.mk T.hom, a, g, hT⟩
       let i : B ⟶ A := ObjectProperty.homMk (Over.homMk g)
@@ -231,10 +230,12 @@ def isColimitOfEffectiveEpiFamilyStruct {B : C} {α : Type*}
       rfl
     uniq := by
       intro S m hm; dsimp
-      apply H.uniq
+      generalize_proofs h₁ h₂
+      apply H.uniq _ h₂
       intro a
       exact hm ⟨Over.mk (π a), a, 𝟙 _, by simp⟩ }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 Implementation: This is a construction which will be used in the proof that
@@ -252,7 +253,7 @@ def effectiveEpiFamilyStructOfIsColimit {B : C} {α : Type*}
     Cocone (Sieve.generateFamily X π).arrows.diagram := {
       pt := W
       ι := {
-        app := fun ⟨_,hT⟩ => hT.choose_spec.choose ≫ e hT.choose
+        app := fun ⟨_, hT⟩ => hT.choose_spec.choose ≫ e hT.choose
         naturality := by
           rintro ⟨A, a, (g₁ : A.left ⟶ _), ha⟩ ⟨B, b, (g₂ : B.left ⟶ _), hb⟩ ⟨q : A ⟶ B⟩
           dsimp; rw [Category.comp_id, ← Category.assoc]
@@ -260,21 +261,18 @@ def effectiveEpiFamilyStructOfIsColimit {B : C} {α : Type*}
           generalize_proofs h1 h2 h3 h4
           rw [h2.choose_spec, h4.choose_spec, Over.w] } }
   { desc := fun {_} e h => H.desc (aux e h)
-    fac := by
-      intro W e h a
-      dsimp +instances
+    fac {W} e h a := by
       have := H.fac (aux e h) ⟨Over.mk (π a), a, 𝟙 _, by simp⟩
       dsimp [aux] at this; rw [this]; clear this
       conv_rhs => rw [← Category.id_comp (e a)]
       apply h
       generalize_proofs h1 h2
       rw [h2.choose_spec, Category.id_comp]
-    uniq := by
-      intro W e h m hm
+    uniq {W} e h m hm := by
       apply H.uniq (aux e h)
       rintro ⟨T, a, (g : T.left ⟶ _), ha⟩
       dsimp
-      nth_rewrite 1 [← ha, Category.assoc, hm]
+      simp only [← ha, Category.assoc, hm]
       apply h
       generalize_proofs h1 h2
       rwa [h2.choose_spec] }

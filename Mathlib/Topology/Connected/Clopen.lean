@@ -653,7 +653,7 @@ lemma exists_fun_isClopen_of_infinite [Infinite (ConnectedComponents α)] (n : �
     · simpa [Fin.forall_iff_succ, *] using fun x ↦ h₂ (Equiv.swap 0 i (.succ x))
     · have h₃' (j : _) : Disjoint (U j) a ∧ Disjoint (U j) b := by
         simpa [onFun] using h₃ ((Equiv.swap 0 i).injective.ne (Fin.succ_ne_zero j))
-      simpa [Pairwise, Fin.forall_iff_succ, onFun, hab,  disjoint_comm (a := a),
+      simpa [Pairwise, Fin.forall_iff_succ, onFun, hab, disjoint_comm (a := a),
         disjoint_comm (a := b), h₃'] using
         h₃.comp_of_injective ((Equiv.swap 0 i).injective.comp (Fin.succ_injective _))
     · simpa [← union_assoc, (Equiv.surjective _).iUnion_comp] using h₄

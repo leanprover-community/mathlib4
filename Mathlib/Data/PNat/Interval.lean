@@ -15,7 +15,7 @@ This file proves that `ℕ+` is a `LocallyFiniteOrder` and calculates the cardin
 intervals as finsets and fintypes.
 -/
 
-@[expose] public section
+public section
 
 
 open Finset Function PNat

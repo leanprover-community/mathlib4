@@ -50,7 +50,7 @@ alias ⟨Tendsto.apply, _⟩ := tendsto_pi
 theorem le_pi {g : Filter (∀ i, α i)} : g ≤ pi f ↔ ∀ i, Tendsto (eval i) g (f i) :=
   tendsto_pi
 
-@[mono]
+@[gcongr, mono]
 theorem pi_mono (h : ∀ i, f₁ i ≤ f₂ i) : pi f₁ ≤ pi f₂ :=
   iInf_mono fun i => comap_mono <| h i
 
@@ -102,7 +102,7 @@ theorem hasBasis_pi {ι' : ι → Type*} {s : ∀ i, ι' i → Set (α i)} {p : 
     (h : ∀ i, (f i).HasBasis (p i) (s i)) :
     (pi f).HasBasis (fun If : Set ι × ∀ i, ι' i => If.1.Finite ∧ ∀ i ∈ If.1, p i (If.2 i))
       fun If : Set ι × ∀ i, ι' i => If.1.pi fun i => s i <| If.2 i := by
-  simpa [Set.pi_def] using HasBasis.iInf' fun i => (h i).comap (eval i : (∀ j, α j) → α i)
+  simpa [Set.pi_def] using! HasBasis.iInf' fun i => (h i).comap (eval i : (∀ j, α j) → α i)
 
 theorem hasBasis_pi_same_index {κ : Type*} {p : κ → Prop} {s : Π i : ι, κ → Set (α i)}
     (h : ∀ i : ι, (f i).HasBasis p (s i))
@@ -286,7 +286,7 @@ theorem coprodᵢ_neBot_iff [∀ i, Nonempty (α i)] : NeBot (Filter.coprodᵢ f
 
 theorem coprodᵢ_eq_bot_iff' : Filter.coprodᵢ f = ⊥ ↔ (∃ i, IsEmpty (α i)) ∨ f = ⊥ := by
   simpa only [not_neBot, not_and_or, funext_iff, not_forall, not_exists, not_nonempty_iff]
-    using coprodᵢ_neBot_iff'.not
+    using! coprodᵢ_neBot_iff'.not
 
 @[simp]
 theorem coprodᵢ_eq_bot_iff [∀ i, Nonempty (α i)] : Filter.coprodᵢ f = ⊥ ↔ f = ⊥ := by
@@ -307,7 +307,7 @@ theorem coprodᵢ_neBot [∀ i, Nonempty (α i)] [Nonempty ι] (f : ∀ i, Filte
     [H : ∀ i, NeBot (f i)] : NeBot (Filter.coprodᵢ f) :=
   (H (Classical.arbitrary ι)).coprodᵢ
 
-@[mono]
+@[gcongr, mono]
 theorem coprodᵢ_mono (hf : ∀ i, f₁ i ≤ f₂ i) : Filter.coprodᵢ f₁ ≤ Filter.coprodᵢ f₂ :=
   iSup_mono fun i => comap_mono (hf i)
 

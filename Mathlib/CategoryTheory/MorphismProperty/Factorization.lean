@@ -39,7 +39,7 @@ namespace CategoryTheory
 
 namespace MorphismProperty
 
-variable {C : Type*} [Category* C] (W₁ W₂ : MorphismProperty C)
+variable {C D : Type*} [Category* C] [Category* D] (W₁ W₂ : MorphismProperty C)
 
 /-- Given two classes of morphisms `W₁` and `W₂` on a category `C`, this is
 the data of the factorization of a morphism `f : X ⟶ Y` as `i ≫ p` with
@@ -183,29 +183,22 @@ section
 
 variable (J : Type*) [Category* J]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `FunctorialFactorizationData.functorCategory`. -/
 @[simps]
 def functorCategory.Z : Arrow (J ⥤ C) ⥤ J ⥤ C where
   obj f :=
-    { obj := fun j => (data.factorizationData (f.hom.app j)).Z
-      map := fun φ => data.mapZ
-        { left := f.left.map φ
-          right := f.right.map φ }
-      map_id := fun j => by
-        dsimp
+    { obj j := (data.factorizationData (f.hom.app j)).Z
+      map φ := data.mapZ (Arrow.homMk (f.left.map φ) (f.right.map φ))
+      map_id j := by
         rw [← data.mapZ_id (f.hom.app j)]
         congr <;> simp
-      map_comp := fun _ _ => by
-        dsimp
+      map_comp _ _ := by
         rw [← data.mapZ_comp]
         congr <;> simp }
   map τ :=
-    { app := fun j => data.mapZ
-        { left := τ.left.app j
-          right := τ.right.app j
-          w := congr_app τ.w j }
-      naturality := fun _ _ α => by
+    { app j := data.mapZ (Arrow.homMk (τ.left.app j) (τ.right.app j) (congr_app τ.w j))
+      naturality _ _ _ := by
         dsimp
         rw [← data.mapZ_comp, ← data.mapZ_comp]
         congr 1
@@ -221,6 +214,7 @@ def functorCategory.Z : Arrow (J ⥤ C) ⥤ J ⥤ C where
     rw [← data.mapZ_comp]
     congr 1
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A functorial factorization in the category `C` extends to the functor category `J ⥤ C`. -/
 def functorCategory :
     FunctorialFactorizationData (W₁.functorCategory J) (W₂.functorCategory J) where
@@ -252,6 +246,34 @@ instance [HasFunctorialFactorization W₁ W₂] : HasFactorization W₁ W₂ whe
 instance [HasFunctorialFactorization W₁ W₂] (J : Type*) [Category* J] :
     HasFunctorialFactorization (W₁.functorCategory J) (W₂.functorCategory J) :=
   ⟨⟨(functorialFactorizationData W₁ W₂).functorCategory J⟩⟩
+
+set_option backward.defeqAttrib.useBackward true in
+variable {W₁ W₂} in
+/-- The term in `MapFactorizationData (W₁.inverseImage F) (W₂.inverseImage F) f`
+deduced from `h : MapFactorizationData W₁ W₂ (F.map f)` when `F` is an equivalence
+of categories and both `W₁` and `W₂` respect isomorphisms. -/
+noncomputable def MapFactorizationData.ofIsEquivalence {F : D ⥤ C}
+    [F.IsEquivalence] [W₁.RespectsIso] [W₂.RespectsIso]
+    {X Y : D} {f : X ⟶ Y} (h : MapFactorizationData W₁ W₂ (F.map f)) :
+    MapFactorizationData (W₁.inverseImage F) (W₂.inverseImage F) f where
+  Z := F.objPreimage h.Z
+  i := F.preimage (h.i ≫ (F.objObjPreimageIso h.Z).inv)
+  p := F.preimage ((F.objObjPreimageIso h.Z).hom ≫ h.p)
+  hi := by
+    refine (W₁.arrow_mk_iso_iff ?_).1 h.hi
+    refine Arrow.isoMk (Iso.refl _) (F.objObjPreimageIso h.Z).symm ?_
+    simp [F.map_preimage]
+  hp := by
+    refine (W₂.arrow_mk_iso_iff ?_).1 h.hp
+    refine Arrow.isoMk (F.objObjPreimageIso h.Z).symm (Iso.refl _) ?_
+    simp [F.map_preimage]
+  fac := F.map_injective (by simp)
+
+instance (F : D ⥤ C) [F.IsEquivalence]
+    [W₁.RespectsIso] [W₂.RespectsIso] [HasFactorization W₁ W₂] :
+    HasFactorization (W₁.inverseImage F) (W₂.inverseImage F) where
+  nonempty_mapFactorizationData f :=
+    ⟨(factorizationData W₁ W₂ (F.map f)).ofIsEquivalence⟩
 
 end MorphismProperty
 

@@ -98,10 +98,10 @@ def IsCompatible.sectionPairwise {sf} (h : IsCompatible F U sf) :
   refine ⟨objPairwiseOfFamily sf, ?_⟩
   let G := (Pairwise.diagram U).op ⋙ F
   rintro (i | ⟨i, j⟩) (i' | ⟨i', j'⟩) (_ | _ | _ | _)
-  · exact congr_fun (G.map_id <| op <| Pairwise.single i) _
+  · exact ConcreteCategory.congr_hom (G.map_id <| op <| Pairwise.single i) _
   · rfl
   · exact (h i' i).symm
-  · exact congr_fun (G.map_id <| op <| Pairwise.pair i j) _
+  · exact ConcreteCategory.congr_hom (G.map_id <| op <| Pairwise.pair i j) _
 
 theorem isGluing_iff_pairwise {sf s} : IsGluing F U sf s ↔
     ∀ i, (F.mapCone (Pairwise.cocone U).op).π.app i s = objPairwiseOfFamily sf i := by
@@ -129,7 +129,7 @@ theorem isSheaf_iff_isSheafUniqueGluing_types : F.IsSheaf ↔ F.IsSheafUniqueGlu
   · exact h _ cpt.sectionPairwise.prop
   · specialize h (fun i ↦ s <| op <| Pairwise.single i) fun i j ↦
       (hs <| op <| Pairwise.Hom.left i j).trans (hs <| op <| Pairwise.Hom.right i j).symm
-    convert h; ext (i | ⟨i, j⟩)
+    convert! h; ext (i | ⟨i, j⟩)
     · rfl
     · exact (hs <| op <| Pairwise.Hom.left i j).symm
 
@@ -195,7 +195,7 @@ theorem existsUnique_gluing' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover
     rw [← ConcreteCategory.comp_apply, ← F.1.map_comp]
     exact gl_spec i
   · intro gl' gl'_spec
-    convert congr_arg _ (gl_uniq (F.1.map (eqToHom V_eq_supr_U.symm).op gl') fun i => _) <;>
+    convert! congr_arg _ (gl_uniq (F.1.map (eqToHom V_eq_supr_U.symm).op gl') fun i => _) <;>
       rw [← ConcreteCategory.comp_apply, ← F.1.map_comp]
     · simp
     · exact gl'_spec i
@@ -226,7 +226,7 @@ theorem eq_of_locally_eq' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover : 
     s = t := by
   have V_eq_supr_U : V = iSup U := le_antisymm hcover (iSup_le fun i => (iUV i).le)
   suffices F.1.map (eqToHom V_eq_supr_U.symm).op s = F.1.map (eqToHom V_eq_supr_U.symm).op t by
-    convert congr_arg (F.1.map (eqToHom V_eq_supr_U).op) this <;>
+    convert! congr_arg (F.1.map (eqToHom V_eq_supr_U).op) this <;>
     rw [← ConcreteCategory.comp_apply, ← F.1.map_comp, eqToHom_op, eqToHom_op, eqToHom_trans,
       eqToHom_refl, F.1.map_id, ConcreteCategory.id_apply]
   apply eq_of_locally_eq
@@ -234,7 +234,6 @@ theorem eq_of_locally_eq' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover : 
   rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply, ← F.1.map_comp]
   exact h i
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : U₂ ⟶ V) (hcover : V ≤ U₁ ⊔ U₂)
     (s t : ToType (F.1.obj (op V))) (h₁ : F.1.map i₁.op s = F.1.map i₁.op t)
     (h₂ : F.1.map i₂.op s = F.1.map i₂.op t) : s = t := by
