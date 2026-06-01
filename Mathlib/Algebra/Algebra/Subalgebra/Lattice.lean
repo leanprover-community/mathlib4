@@ -53,10 +53,10 @@ instance : CompleteLattice (Subalgebra R A) where
   bot_le _S := fun _a ⟨_r, hr⟩ => hr ▸ algebraMap_mem _ _
 
 instance {C : Type*} [CommSemiring C] [Algebra R C] (S₁ S₂ : Subalgebra R C) :
-  Algebra ↑(min S₁ S₂) S₁ := RingHom.toAlgebra (Subalgebra.inclusion inf_le_left).toRingHom
+  Algebra ↑(min S₁ S₂) S₁ := fast_instance% RingHom.toAlgebra (Subalgebra.inclusion inf_le_left).toRingHom
 
 instance {C : Type*} [CommSemiring C] [Algebra R C] (S₁ S₂ : Subalgebra R C) :
-  Algebra ↑(S₁ ⊓ S₂) S₂ := RingHom.toAlgebra (Subalgebra.inclusion inf_le_right).toRingHom
+  Algebra ↑(S₁ ⊓ S₂) S₂ := fast_instance% RingHom.toAlgebra (Subalgebra.inclusion inf_le_right).toRingHom
 
 theorem sup_def (S T : Subalgebra R A) : S ⊔ T = adjoin R (S ∪ T : Set A) := rfl
 
