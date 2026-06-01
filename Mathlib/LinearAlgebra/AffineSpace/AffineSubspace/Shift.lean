@@ -230,28 +230,19 @@ private theorem closedInterior_inter_shift_aux {n : ℕ} (i : Fin n) {x : k} (hx
     (hx1 : x ≤ 1) {w : Fin n → k} (hw : ∑ i, w i = 1) :
     (∀ j, w j ∈ Set.Icc 0 1) ∧ w i = 1 - x ↔
     (∀ j, j ≠ i → x⁻¹ * w j ∈ Set.Icc 0 1) ∧ x⁻¹ * (w i - 1) + 1 = 0 := by
-  refine ⟨fun ⟨hj, hi⟩ ↦ ⟨fun j hji ↦ ⟨?_, ?_⟩, ?_⟩, fun ⟨hj, hi⟩ ↦ ?_⟩
+  have : x⁻¹ * (w i - 1) + 1 = 0 ↔ w i = 1 - x := by grind
+  rw [this]
+  refine and_congr_left fun hi ↦ ⟨fun hj j hji ↦ ⟨?_, ?_⟩, fun hj ↦ ?_⟩
   · exact mul_nonneg (by simpa using hxpos.le) (hj j).1
   · rw [eq_sub_iff_add_eq, add_comm, ← eq_sub_iff_add_eq] at hi
     rw [inv_mul_le_one₀ hxpos, hi, le_sub_iff_add_le, ← hw]
-    apply add_le_sum (fun i _ ↦ (hj i).1) (mem_univ j) (mem_univ i)
-    simpa using hji
-  · simp [hi, hxpos.ne.symm]
-  · have hix : w i = 1 - x := by grind
-    refine ⟨?_, hix⟩
-    suffices ∀ (j : Fin n), 0 ≤ w j by
+    exact add_le_sum (fun i _ ↦ (hj i).1) (mem_univ j) (mem_univ i) hji
+  · suffices ∀ j, 0 ≤ w j by
       refine fun j ↦ ⟨this j, ?_⟩
-      contrapose! hw
-      apply ne_of_gt
-      rw [← sum_erase_add _ _ (mem_univ j)]
-      apply lt_add_of_nonneg_of_lt (sum_nonneg fun i _ ↦ this i) hw
+      rw [← hw]
+      exact Finset.single_le_sum (fun j _ ↦ this j) (mem_univ j)
     intro j
-    by_cases hji : j = i
-    · rw [hji, hix]
-      simpa using hx1
-    · specialize hj j (by simpa using hji)
-      apply nonneg_of_mul_nonneg_right hj.1
-      simpa using hxpos
+    by_cases hji : j = i <;> aesop
 
 /-- The parallel cross-section of a simplex is the homothety of the base. -/
 theorem closedInterior_inter_shift {n : ℕ} [NeZero n] (s : Affine.Simplex k P n)
