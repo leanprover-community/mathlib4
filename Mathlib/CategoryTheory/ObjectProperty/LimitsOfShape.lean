@@ -110,6 +110,7 @@ noncomputable def reindex {X : C} (h : P.LimitOfShape J X) (G : J' ⥤ J) [G.Ini
   toLimitPresentation := h.toLimitPresentation.reindex G
   prop_diag_obj _ := h.prop_diag_obj _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given `P : ObjectProperty C`, and a presentation `P.LimitOfShape J X`
 of an object `X : C`, this is the induced functor `J ⥤ StructuredArrow P.ι X`. -/
 @[simps]
