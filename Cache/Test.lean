@@ -72,19 +72,25 @@ def assertEq (name expected actual : String) : IO Unit := do
     IO.eprintln s!"  FAIL: {name}\n    expected: {expected}\n    actual:   {actual}"
     failures.modify (· + 1)
 
-/-- Run `action` with stdout redirected to /dev/null. Restores the original
-stdout on completion, including on exception. Use this to silence diagnostic
-prints from production code under test that would otherwise clutter test output. -/
-private def withSuppressedStdout (action : IO α) : IO α := do
-  let saved ← IO.getStdout
+/-- Run `action` with both stdout and stderr redirected to /dev/null. Restores
+both on completion, including on exception. Apply this to every production code
+call in tests so diagnostic prints never mix with test output, regardless of
+whether the production code currently produces any. -/
+private def withSuppressedOutput (action : IO α) : IO α := do
+  let savedOut ← IO.getStdout
+  let savedErr ← IO.getStderr
   let sink ← IO.FS.Handle.mk "/dev/null" IO.FS.Mode.append
-  IO.setStdout (IO.FS.Stream.ofHandle sink)
+  let sinkStream := IO.FS.Stream.ofHandle sink
+  IO.setStdout sinkStream
+  IO.setStderr sinkStream
   try
     let r ← action
-    IO.setStdout saved
+    IO.setStdout savedOut
+    IO.setStderr savedErr
     return r
   catch e =>
-    IO.setStdout saved
+    IO.setStdout savedOut
+    IO.setStderr savedErr
     throw e
 
 section ContainerModel
@@ -481,17 +487,18 @@ def test_getRepoScope : IO Unit := do
   let saved ← scopeOverride.get
   try
     scopeOverride.set none
-    assert "no scope set returns none" ((← getRepoScope) == none)
+    assert "no scope set returns none" ((← withSuppressedOutput getRepoScope) == none)
 
     scopeOverride.set (some "abc123")
-    assert "the flag value is returned" ((← getRepoScope) == some "abc123")
+    assert "the flag value is returned" ((← withSuppressedOutput getRepoScope) == some "abc123")
 
     -- The flag value is returned as-is, without trimming or normalization.
     scopeOverride.set (some "deadbeef")
-    assert "the flag value is returned verbatim" ((← getRepoScope) == some "deadbeef")
+    assert "the flag value is returned verbatim"
+      ((← withSuppressedOutput getRepoScope) == some "deadbeef")
 
     scopeOverride.set none
-    assert "clearing the flag returns none" ((← getRepoScope) == none)
+    assert "clearing the flag returns none" ((← withSuppressedOutput getRepoScope) == none)
   finally
     scopeOverride.set saved
 
@@ -520,35 +527,41 @@ def test_shouldWarnNonDefaultScope : IO Unit := do
     scopeOverride.set none
 
     assert "plain get with no flags does not warn"
-      (!(← shouldWarnNonDefaultScope none none none MATHLIBREPO))
+      (!(← withSuppressedOutput (shouldWarnNonDefaultScope none none none MATHLIBREPO)))
 
     scopeOverride.set (some "abc123")
     assert "a set scope warns"
-      (← shouldWarnNonDefaultScope none none none MATHLIBREPO)
+      (← withSuppressedOutput (shouldWarnNonDefaultScope none none none MATHLIBREPO))
     scopeOverride.set none
 
     -- --cache-from equal to the repo's default chain is not widening.
     let mathlibDefault := defaultContainersForRepo MATHLIBREPO
     assert "--cache-from equal to the default does not warn"
-      (!(← shouldWarnNonDefaultScope none none (some mathlibDefault) MATHLIBREPO))
+      (!(← withSuppressedOutput
+          (shouldWarnNonDefaultScope none none (some mathlibDefault) MATHLIBREPO)))
 
     assert "--cache-from widening the chain warns"
-      (← shouldWarnNonDefaultScope none none (some [.master, .forks, .legacy]) MATHLIBREPO)
+      (← withSuppressedOutput
+          (shouldWarnNonDefaultScope none none (some [.master, .forks, .legacy]) MATHLIBREPO))
 
     -- A fork checkout (remote ≠ resolved repo) stays silent without an explicit --repo.
     assert "a fork checkout without --repo does not warn"
-      (!(← shouldWarnNonDefaultScope none (some "alice/mathlib4") none "alice/mathlib4"))
+      (!(← withSuppressedOutput
+          (shouldWarnNonDefaultScope none (some "alice/mathlib4") none "alice/mathlib4")))
 
     assert "--repo differing from the remote warns"
-      (← shouldWarnNonDefaultScope (some "bob/mathlib4") (some "alice/mathlib4") none "bob/mathlib4")
+      (← withSuppressedOutput
+          (shouldWarnNonDefaultScope (some "bob/mathlib4") (some "alice/mathlib4") none "bob/mathlib4"))
 
     assert "--repo matching the remote does not warn"
-      (!(← shouldWarnNonDefaultScope (some "alice/mathlib4") (some "alice/mathlib4") none
-        "alice/mathlib4"))
+      (!(← withSuppressedOutput
+          (shouldWarnNonDefaultScope (some "alice/mathlib4") (some "alice/mathlib4") none
+            "alice/mathlib4")))
 
     -- With no detectable remote there is nothing to compare --repo against.
     assert "--repo with no detectable remote does not warn"
-      (!(← shouldWarnNonDefaultScope (some "bob/mathlib4") none none "bob/mathlib4"))
+      (!(← withSuppressedOutput
+          (shouldWarnNonDefaultScope (some "bob/mathlib4") none none "bob/mathlib4")))
   finally
     scopeOverride.set saved
 
@@ -563,31 +576,33 @@ def test_getNonDefaultScopeReason : IO Unit := do
     scopeOverride.set none
 
     -- A placeholder rather than a crash if nothing matches.
-    let reason ← getNonDefaultScopeReason none none none MATHLIBREPO
+    let reason ← withSuppressedOutput (getNonDefaultScopeReason none none none MATHLIBREPO)
     assert "no trigger yields a placeholder reason" (reason == "unknown reason")
 
     scopeOverride.set (some "abc123")
-    let reason ← getNonDefaultScopeReason none none none MATHLIBREPO
+    let reason ← withSuppressedOutput (getNonDefaultScopeReason none none none MATHLIBREPO)
     assert "scope reason names the flag and SHA"
       (reason == "--scope=abc123 (explicit per-commit scope)")
 
     -- Scope outranks cache-from when both apply.
-    let reason ← getNonDefaultScopeReason none none (some [.forks]) MATHLIBREPO
+    let reason ← withSuppressedOutput (getNonDefaultScopeReason none none (some [.forks]) MATHLIBREPO)
     assert "scope is reported ahead of cache-from"
       (reason == "--scope=abc123 (explicit per-commit scope)")
     scopeOverride.set none
 
-    let reason ← getNonDefaultScopeReason none none (some [.forks, .legacy]) MATHLIBREPO
+    let reason ←
+      withSuppressedOutput (getNonDefaultScopeReason none none (some [.forks, .legacy]) MATHLIBREPO)
     assert "cache-from reason names the container list"
       (reason == "--cache-from=forks, legacy (explicit container override)")
 
-    let reason ←
-      getNonDefaultScopeReason (some "bob/mathlib4") (some "alice/mathlib4") none "bob/mathlib4"
+    let reason ← withSuppressedOutput
+      (getNonDefaultScopeReason (some "bob/mathlib4") (some "alice/mathlib4") none "bob/mathlib4")
     assert "repo reason names the override and the detected remote"
       (reason == "--repo=bob/mathlib4 (overrides detected git remote: alice/mathlib4)")
 
     -- --cache-from equal to the default is not a trigger, so no reason applies.
-    let reason ← getNonDefaultScopeReason none none (some [.master, .legacy]) MATHLIBREPO
+    let reason ←
+      withSuppressedOutput (getNonDefaultScopeReason none none (some [.master, .legacy]) MATHLIBREPO)
     assert "cache-from equal to the default yields the placeholder"
       (reason == "unknown reason")
   finally
@@ -600,7 +615,7 @@ HEAD probe per SHA) and aren't unit-tested; here we pin that an empty list
 returns `none` with no probe. -/
 def test_findMostRecentSHAWithCache : IO Unit := do
   IO.println "findMostRecentSHAWithCache:"
-  let result ← findMostRecentSHAWithCache [] MATHLIBREPO
+  let result ← withSuppressedOutput (findMostRecentSHAWithCache [] MATHLIBREPO)
   assert "empty SHA list returns none without probing" (result == none)
 
 end NonDefaultScope
@@ -630,17 +645,17 @@ def test_getRemoteRepo_gitFallback : IO Unit := do
   -- Case 1: nonexistent cwd causes IO.Process.output to throw.
   -- The try...catch in getRemoteRepo must intercept it and return none.
   let fakePath := "/tmp/surely-nonexistent-mathlib-cache-test-xyz-9999999"
-  let r1 ← withSuppressedStdout (getRemoteRepo fakePath)
+  let r1 ← withSuppressedOutput (getRemoteRepo fakePath)
   assert "getRemoteRepo returns none when git throws (nonexistent cwd)" (r1 == none)
 
   -- Case 2: existing directory that is not a git repo (git returns exit 128).
   -- This exercises the exit-code fallback path that predates the try...catch.
-  let r2 ← withSuppressedStdout (getRemoteRepo "/tmp")
+  let r2 ← withSuppressedOutput (getRemoteRepo "/tmp")
   assert "getRemoteRepo returns none in a non-git directory" (r2 == none)
 
   -- resolveRepo propagates the fallback correctly:
   --   detected? = none, resolved = MATHLIBREPO → master-only chain.
-  let (detected?, resolved) ← withSuppressedStdout (resolveRepo none fakePath)
+  let (detected?, resolved) ← withSuppressedOutput (resolveRepo none fakePath)
   assert "resolveRepo detected? is none on git failure" (detected? == none)
   assert "resolveRepo falls back to MATHLIBREPO on git failure" (resolved == MATHLIBREPO)
   assert "fallback chain includes master"
