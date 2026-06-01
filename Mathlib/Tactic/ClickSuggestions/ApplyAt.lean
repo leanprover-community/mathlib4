@@ -94,7 +94,8 @@ def ApplyAtLemma.try (lem : ApplyAtLemma) : ClickSuggestionsM (Result ApplyAtKey
       some <$> mkSuggestion tactic (.element "div" #[] htmls)
   htmls := htmls.push <div> {← lem.name.toHtml} </div>
   let unfiltered ← mkSuggestion tactic (.element "div" #[] htmls)
-  let pattern ← forallTelescopeReducing (← lem.name.getType) fun xs _ => do
+  let pattern ← do
+    let (xs, _, _) ← forallMetaTelescopeReducing (← lem.name.getType)
     exprToHtml (← inferType xs.back!)
   return { filtered, unfiltered, key, pattern }
 

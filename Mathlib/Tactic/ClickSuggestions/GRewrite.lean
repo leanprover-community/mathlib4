@@ -233,7 +233,8 @@ def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) : ClickSuggestionsM (Result GrwK
       pure none
   htmls := htmls.push <div> {← lem.name.toHtml} </div>
   let unfiltered ← mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
-  let pattern ← forallTelescopeReducing (← lem.name.getType) fun _ e => do
+  let pattern ← do
+    let (_, _, e) ← forallMetaTelescopeReducing (← lem.name.getType)
     let mkApp2 _ lhs rhs := (← instantiateMVars e).cleanupAnnotations
       | throwError "Expected relation, not {indentExpr e}"
     exprToHtml <| if lem.symm then rhs else lhs

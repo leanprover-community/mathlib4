@@ -112,7 +112,9 @@ def ApplyLemma.try (lem : ApplyLemma) : ClickSuggestionsM (Result ApplyKey) :=
       pure none
   htmls := htmls.push <div> {← lem.name.toHtml} </div>
   let unfiltered ← mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
-  let pattern ← forallTelescope (← lem.name.getType) fun _ e => exprToHtml e
+  let pattern ← do
+    let (_, _, e) ← forallMetaTelescopeReducing (← lem.name.getType)
+    exprToHtml e
   return { filtered, unfiltered, key, pattern }
 
 end Mathlib.Tactic.ClickSuggestions
