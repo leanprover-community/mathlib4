@@ -64,7 +64,7 @@ variable {T' : Type u₆} [Category.{v₆} T']
 
 /-- The objects of the comma category are triples of an object `left : A`, an object
 `right : B` and a morphism `hom : L.obj left ⟶ R.obj right`. -/
-@[to_dual self (reorder := A B, 2 4, L R)]
+@[to_dual self (reorder := A B, 2 4, L R), wikidata Q1780005]
 structure Comma (L : A ⥤ T) (R : B ⥤ T) : Type max u₁ u₂ v₃ where
   /-- The left subobject -/
   left : A

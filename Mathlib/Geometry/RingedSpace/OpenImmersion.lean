@@ -223,7 +223,6 @@ theorem app_invApp (U : Opens Y) :
   rw [invApp, ← Category.assoc, IsIso.comp_inv_eq, f.c.naturality]
   congr
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `app_inv_app` that gives an `eqToHom` instead of `homOfLe`. -/
 @[reassoc]
 theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.base) :

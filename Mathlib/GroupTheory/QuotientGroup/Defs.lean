@@ -124,9 +124,9 @@ theorem eq_one_iff {N : Subgroup G} [N.Normal] (x : G) : (x : G ⧸ N) = 1 ↔ x
 @[to_additive (attr := simp)]
 lemma mk'_comp_subtype : (mk' N).comp N.subtype = 1 := by ext; simp
 
-/- Note: `range_mk'` is a lemma about the primed constructor `QuotientGroup.mk'`, not a
-  modified version of some `range_mk`. -/
 set_option linter.docPrime false in
+/-- Note: `range_mk'` is a lemma about the primed constructor `QuotientGroup.mk'`, not a
+  modified version of some `range_mk`. -/
 @[to_additive (attr := simp)]
 theorem range_mk' : (QuotientGroup.mk' N).range = ⊤ :=
   MonoidHom.range_eq_top.mpr (mk'_surjective N)
