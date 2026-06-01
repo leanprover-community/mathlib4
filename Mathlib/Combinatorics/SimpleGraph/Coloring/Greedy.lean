@@ -17,8 +17,6 @@ public import Mathlib.SetTheory.Ordinal.Arithmetic
 set_option warn.sorry false
 set_option linter.style.longLine false
 
--- #35619
-theorem SimpleGraph.isClique_univ_iff {V : Type*} (G : SimpleGraph V) : G.IsClique .univ ↔ G = ⊤ := sorry
 -- #36626
 theorem IsLowerSet.eqOn_id_of_injOn_of_forall_not_lt {α : Type*} {r : α → α → Prop} [IsWellOrder α r] {s : Set α} (hs : @IsLowerSet α ⟨r⟩ s) {f : α → α} (hf : s.InjOn f) (h : ∀ x ∈ s, ¬r x (f x)) : s.EqOn f id := sorry
 
@@ -188,7 +186,7 @@ theorem greedyColoring_isClique_tfae {s : Set V} (hs : @IsLowerSet V ⟨r⟩ s) 
 variable {G r} in
 theorem greedyColoring_eq_id_tfae :
     [Function.Injective (G.greedyColoring r), ↑(G.greedyColoring r) = id, G = ⊤].TFAE := by
-  rw [← Set.eqOn_univ, ← Set.injOn_univ, ← isClique_univ_iff]
+  rw [← Set.eqOn_univ, ← Set.injOn_univ, ← isClique_univ]
   exact greedyColoring_isClique_tfae <| @isLowerSet_univ V ⟨r⟩
 
 @[simp]
