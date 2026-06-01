@@ -16,7 +16,7 @@ The commutator of a finite direct product is contained in the direct product of 
 
 public section
 
-variable {G : Type*} [Group G] {H₁ H₂ : Subgroup G}
+variable {G : Type*} [Group G]
 
 namespace Subgroup
 
