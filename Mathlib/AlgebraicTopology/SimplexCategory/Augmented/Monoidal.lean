@@ -170,7 +170,6 @@ abbrev inl' (x y : SimplexCategory) : x ⟶ tensorObjOf x y := WithInitial.down 
 `SimplexCategory`. -/
 abbrev inr' (x y : SimplexCategory) : y ⟶ tensorObjOf x y := WithInitial.down <| inr (.of x) (.of y)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma inl'_eval (x y : SimplexCategory) (i : Fin (x.len + 1)) :
     (inl' x y).toOrderHom i = (i.castAdd _).cast (Nat.succ_add x.len (y.len + 1)) := by
   ext

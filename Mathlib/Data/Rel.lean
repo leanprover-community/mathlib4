@@ -51,18 +51,18 @@ operations on relations. For example:
 * map of a relation `R : α → β → Prop` under `f : α → γ`, `g : β → δ` is
   `Relation.Map R f g := fun c d ↦ ∃ a b, r a b ∧ f a = c ∧ g b = d`.
 
-The latter approach is embodied by `SetRel α β`, with dedicated notation like `○` for composition.
+The latter approach is embodied by `SetRel α β`, with the dedicated notation `○` for composition.
+(Note that `○` is _not_ the same as function composition `∘`.)
 
 Previously, `SetRel` suffered from the leakage of its definition as
 ```
 def SetRel (α β : Type*) := α → β → Prop
 ```
 The fact that `SetRel` wasn't an `abbrev` confuses automation.
-But simply making it an `abbrev` would
-have killed the point of having a separate less see-through type to perform relation operations on,
-so we instead redefined
+But simply making it an `abbrev` would have killed the point of having a separate less see-through
+type to perform relation operations on. So we instead redefined it as
 ```
-def SetRel (α β : Type*) := Set (α × β) → Prop
+abbrev SetRel (α β : Type*) := Set (α × β)
 ```
 This extra level of indirection guides automation correctly and prevents (some kinds of) leakage.
 
