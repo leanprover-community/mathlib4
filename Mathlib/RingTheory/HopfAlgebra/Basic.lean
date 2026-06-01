@@ -256,7 +256,7 @@ noncomputable abbrev ofAlgHom [CommSemiring R] [CommSemiring A] [Bialgebra R A]
     (mul_antipode_rTensor_comul :
       ((Algebra.TensorProduct.lift antipode (.id R A) fun _ ↦ Commute.all _).comp
         (Bialgebra.comulAlgHom R A)) = (Algebra.ofId R A).comp (Bialgebra.counitAlgHom R A))
-    (mul_lTensor_antipode_comul :
+    (mul_antipode_lTensor_comul :
       (Algebra.TensorProduct.lift (.id R A) antipode fun _ _ ↦ Commute.all _ _).comp
         (Bialgebra.comulAlgHom R A) = (Algebra.ofId R A).comp (Bialgebra.counitAlgHom R A)) :
     HopfAlgebra R A :=
@@ -266,6 +266,6 @@ noncomputable abbrev ofAlgHom [CommSemiring R] [CommSemiring A] [Bialgebra R A]
         using congr(($mul_antipode_rTensor_comul).toLinearMap))
     (WithConv.ext <| by
       simpa [← Algebra.TensorProduct.lmul'_comp_map]
-        using congr(($mul_lTensor_antipode_comul).toLinearMap))
+        using congr(($mul_antipode_lTensor_comul).toLinearMap))
 
 end HopfAlgebra
