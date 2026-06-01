@@ -491,16 +491,16 @@ def tryTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
 
   for thm in thms do
 
-    trace[Debug.Meta.Tactic.fun_prop] "trying theorem {← ppOrigin' thm.thmOrigin}"
+    trace[Debug.Meta.Tactic.fun_prop] "trying theorem {thm.thmOrigin}"
 
     match compare thm.appliedArgs fData.args.size with
     | .lt =>
-      trace[Meta.Tactic.fun_prop] "removing argument to later use {← ppOrigin' thm.thmOrigin}"
+      trace[Meta.Tactic.fun_prop] "removing argument to later use {thm.thmOrigin}"
       if let some r ← removeArgRule funPropDecl e fData funProp then
         return r
       continue
     | .gt =>
-      trace[Meta.Tactic.fun_prop] "adding argument to later use {← ppOrigin' thm.thmOrigin}"
+      trace[Meta.Tactic.fun_prop] "adding argument to later use {thm.thmOrigin}"
       if let some r ← applyPiRule funPropDecl e funProp then
         return r
       continue
