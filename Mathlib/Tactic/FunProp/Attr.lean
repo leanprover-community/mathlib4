@@ -36,13 +36,13 @@ Option `always_try_transition`: some definitions can have `@[fun_prop always_try
   general composition theorem stating `Integrable f → Integrable g → Integrable (f ∘ g)` and
   very often integrability can be inferred from continuity. Therefore we might want to apply
   `IsCompact s → ContinuousOn f s → IntegrableOn f s` very early on. -/
-syntax (name := funProp) "fun_prop" (&"always_try_transition")? : attr
+syntax (name := funPropAttr) "fun_prop" (&"always_try_transition")? : attr
 
 
-@[inherit_doc funProp]
+@[inherit_doc funPropAttr]
 initialize
   registerBuiltinAttribute {
-    name  := `funProp
+    name  := `funPropAttr
     descr := funPropHelpString
     applicationTime := AttributeApplicationTime.afterCompilation
     add   := fun declName stx attrKind =>
