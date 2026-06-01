@@ -18,7 +18,7 @@ namespace Lean.Elab.Command
 open Lean Meta Parser Command
 
 /-- Default priority used for specific instances. -/
-def specificInstancePrio := 2000
+def specificInstancePrio := 1000
 
 /-- Wrap the declaration elaborator so more specific instances get declared with a high priority.
 
