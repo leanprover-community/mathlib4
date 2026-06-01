@@ -248,7 +248,6 @@ instance [HasFunctorialFactorization W₁ W₂] (J : Type*) [Category* J] :
   ⟨⟨(functorialFactorizationData W₁ W₂).functorCategory J⟩⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 variable {W₁ W₂} in
 /-- The term in `MapFactorizationData (W₁.inverseImage F) (W₂.inverseImage F) f`
 deduced from `h : MapFactorizationData W₁ W₂ (F.map f)` when `F` is an equivalence
