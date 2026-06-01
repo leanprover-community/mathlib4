@@ -215,7 +215,7 @@ theorem riemannZeta_two_mul_nat {k : ℕ} (hk : k ≠ 0) :
 `bernoulli (2 * k)`. Compare `riemannZeta_two_mul_nat` which avoids a cast in an exponent
 but requires `k ≠ 0`. -/
 theorem riemannZeta_two_mul_nat' {k : ℕ} :
-    riemannZeta (2 * k) = (-1) ^ (k + 1)
+    riemannZeta (2 * k) = (-1) ^ (k + 1) * (2 : ℂ) ^ (2 * k - 1 : ℤ)
       * (π : ℂ) ^ (2 * k) * bernoulli (2 * k) / (2 * k)! := by
   rcases eq_or_ne k 0 with rfl | hk
   · simp [riemannZeta_zero]
