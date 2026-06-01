@@ -393,8 +393,11 @@ theorem norm_toNNReal' : ‖a‖.toNNReal = ‖a‖₊ :=
 lemma toReal_enorm' (x : E) : ‖x‖ₑ.toReal = ‖x‖ := by simp [enorm]
 
 @[to_additive (attr := simp) ofReal_norm]
-lemma ofReal_norm' (x : E) : .ofReal ‖x‖ = ‖x‖ₑ := by
-  simp [enorm, ENNReal.ofReal, Real.toNNReal, nnnorm]
+lemma ofReal_norm' (x : E) : .ofReal ‖x‖ = ‖x‖ₑ := ENNReal.ofReal_eq_coe_nnreal _
+
+@[deprecated (since := "2026-05-25")] alias ofReal_norm_eq_enorm := ofReal_norm
+
+@[deprecated (since := "2026-05-25")] alias ofReal_norm_eq_enorm' := ofReal_norm'
 
 @[to_additive enorm_eq_iff_norm_eq]
 theorem enorm'_eq_iff_norm_eq {x : E} {y : F} : ‖x‖ₑ = ‖y‖ₑ ↔ ‖x‖ = ‖y‖ := by
@@ -444,7 +447,7 @@ lemma norm_pow_le_mul_norm : ∀ {n : ℕ}, ‖a ^ n‖ ≤ n * ‖a‖
 
 @[to_additive nnnorm_nsmul_le]
 lemma nnnorm_pow_le_mul_norm {n : ℕ} : ‖a ^ n‖₊ ≤ n * ‖a‖₊ := by
-  simpa only [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_natCast] using norm_pow_le_mul_norm
+  simpa only [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_natCast] using! norm_pow_le_mul_norm
 
 @[to_additive (attr := simp) nnnorm_abs_zsmul]
 theorem nnnorm_zpow_abs (a : E) (n : ℤ) : ‖a ^ |n|‖₊ = ‖a ^ n‖₊ :=
@@ -621,12 +624,9 @@ lemma exists_enorm_lt' (E : Type*) [TopologicalSpace E] [ESeminormedMonoid E]
 @[to_additive (attr := simp) enorm_neg]
 lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [enorm]
 
-@[to_additive ofReal_norm_eq_enorm]
-lemma ofReal_norm_eq_enorm' (a : E) : .ofReal ‖a‖ = ‖a‖ₑ := ENNReal.ofReal_eq_coe_nnreal _
-
 @[to_additive]
 theorem edist_eq_enorm_inv_mul (a b : E) : edist a b = ‖a⁻¹ * b‖ₑ := by
-  rw [edist_dist, dist_eq_norm_inv_mul, ofReal_norm_eq_enorm']
+  rw [edist_dist, dist_eq_norm_inv_mul, ofReal_norm']
 
 @[deprecated (since := "2026-02-11")] alias edist_one_eq_enorm := edist_one_right
 
@@ -794,7 +794,7 @@ alias nndist_eq_nnnorm := nndist_eq_nnnorm_sub
 
 @[to_additive]
 theorem edist_eq_enorm_div (a b : E) : edist a b = ‖a / b‖ₑ := by
-  rw [edist_dist, dist_eq_norm_div, ofReal_norm_eq_enorm']
+  rw [edist_dist, dist_eq_norm_div, ofReal_norm']
 
 @[to_additive]
 theorem dist_inv (x y : E) : dist x⁻¹ y = dist x y⁻¹ := by
