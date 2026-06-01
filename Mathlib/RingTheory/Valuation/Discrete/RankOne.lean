@@ -13,10 +13,6 @@ public import Mathlib.Data.Int.WithZero
 # Discrete valuations have rank one
 
 ## Main Definitions and Results
-* `Valuation.IsRankOneDiscrete.generator_eq_exp_neg_one_of_mem_range` : the generator of
-a discrete valuation in `ℤᵐ⁰` that contains `exp (-1)` in its range is equal to `exp (-1)`.
-* `Valuation.IsRankOneDiscrete.generator_eq_exp_neg_one_of_surjective` : the generator of
-a surjective discrete valuation in `ℤᵐ⁰` is equal to `exp (-1)`.
 * `Valuation.IsRankOneDiscrete.valueGroup₀_equiv_withZeroMulInt` : the order-preserving isomorphism
   between the `ValueGroup₀` of a discrete valuation and `ℤᵐ⁰`.
 * `Valuation.IsRankOneDiscrete.rankOne` : a discrete valuation has rank one.
