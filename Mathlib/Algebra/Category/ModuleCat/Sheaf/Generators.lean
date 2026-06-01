@@ -173,7 +173,7 @@ then we obtain generating sections of `F.obj M`. -/
 @[simps]
 def GeneratingSections.map : (F.obj M).GeneratingSections where
   I := G.I
-  s := (freeHomEquiv (F.obj M)) (G.mapFreeHom F η)
+  s := freeHomEquiv (F.obj M) (G.mapFreeHom F η)
   epi := by
     simp only [mapFreeHom, Equiv.symm_apply_apply, epi_comp_iff_of_epi]
     infer_instance
