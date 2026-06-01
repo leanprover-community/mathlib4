@@ -5,10 +5,12 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Regular
-public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
-public import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
-public import Mathlib.Topology.Separation.CompletelyRegular
+public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+public import Mathlib.MeasureTheory.Measure.Tight
+
+import Mathlib.MeasureTheory.Integral.Regular
+import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
+import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
 
 /-!
 # Prokhorov theorem
@@ -539,10 +541,8 @@ open ProbabilityMeasure
 
 namespace MeasureTheory
 
-variable {𝓧 : Type*} {m𝓧 : MeasurableSpace 𝓧} {μ : Measure 𝓧}
-
-variable [PseudoMetricSpace 𝓧] [OpensMeasurableSpace 𝓧] [SecondCountableTopology 𝓧]
-  {S : Set (ProbabilityMeasure 𝓧)}
+variable {𝓧 : Type*} {m𝓧 : MeasurableSpace 𝓧} {μ : Measure 𝓧} [PseudoMetricSpace 𝓧]
+  [OpensMeasurableSpace 𝓧] [SecondCountableTopology 𝓧] {S : Set (ProbabilityMeasure 𝓧)}
 
 lemma exists_measure_iUnion_gt_of_isCompact_closure
     (U : ℕ → Set 𝓧) (O : ∀ i, IsOpen (U i)) (Cov : ⋃ i, U i = univ) (hcomp : IsCompact (closure S))
