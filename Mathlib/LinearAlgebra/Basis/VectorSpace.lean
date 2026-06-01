@@ -164,7 +164,7 @@ theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _) :=
 
 theorem ofVectorSpaceIndex.linearIndependent :
     LinearIndependent K ((↑) : ofVectorSpaceIndex K V → V) := by
-  convert (ofVectorSpace K V).linearIndependent
+  convert! (ofVectorSpace K V).linearIndependent
   ext x
   rw [ofVectorSpace_apply_self]
 
@@ -296,9 +296,9 @@ theorem LinearMap.exists_extend_of_notMem {p : Submodule K V} {v : V} (f : p →
   refine ⟨g, ?_, ?_⟩
   · ext x
     have := LinearPMap.supSpanSingleton_apply_mk_of_mem ⟨p, f⟩ y hv x.2
-    simpa using congr($hg _).trans this
+    simpa using! congr($hg _).trans this
   · have := LinearPMap.supSpanSingleton_apply_self ⟨p, f⟩ y hv
-    simpa using congr($hg _).trans this
+    simpa using! congr($hg _).trans this
 
 open Submodule LinearMap
 

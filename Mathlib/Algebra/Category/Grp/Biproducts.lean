@@ -17,10 +17,7 @@ public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 @[expose] public section
 
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe w u
 
@@ -81,6 +78,7 @@ namespace HasLimit
 
 variable {J : Type w} (f : J → AddCommGrpCat.{max w u})
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map from an arbitrary cone over an indexed family of abelian groups
 to the Cartesian product of those groups.
 -/

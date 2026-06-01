@@ -27,7 +27,7 @@ namespace Complex
 
 /-- The complex unit disc, denoted as `𝔻` within the Complex namespace -/
 def UnitDisc : Type :=
-  ball (0 : ℂ) 1 deriving TopologicalSpace
+  Subsemigroup.unitBall ℂ deriving TopologicalSpace
 
 @[inherit_doc] scoped[Complex.UnitDisc] notation "𝔻" => Complex.UnitDisc
 open UnitDisc

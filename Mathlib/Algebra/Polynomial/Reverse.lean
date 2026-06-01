@@ -225,7 +225,7 @@ theorem coeff_reverse (f : R[X]) (n : ℕ) : f.reverse.coeff n = f.coeff (revAt 
 
 @[simp]
 theorem coeff_zero_reverse (f : R[X]) : coeff (reverse f) 0 = leadingCoeff f := by
-  rw [coeff_reverse, revAt_le (zero_le f.natDegree), tsub_zero, leadingCoeff]
+  rw [coeff_reverse, revAt_le zero_le, tsub_zero, leadingCoeff]
 
 @[simp]
 theorem reverse_zero : reverse (0 : R[X]) = 0 :=

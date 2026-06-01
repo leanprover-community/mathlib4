@@ -17,7 +17,7 @@ In this file we define topology on `G ⧸ N`, where `N` is a subgroup of `G`,
 and prove basic properties of this topology.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Cardinal
 

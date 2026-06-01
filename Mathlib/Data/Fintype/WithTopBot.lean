@@ -12,7 +12,7 @@ public import Mathlib.Order.TypeTags
 # Fintype instances for `WithTop α` and `WithBot α`
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

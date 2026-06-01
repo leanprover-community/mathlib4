@@ -289,6 +289,7 @@ instance [K.IsLE n] : QuasiIso (K.ιTruncLE n) := by
 
 variable {K L}
 
+set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_truncGEMap_iff :
     QuasiIso (truncGEMap φ n) ↔ ∀ (i : ℤ) (_ : n ≤ i), QuasiIsoAt φ i := by
   rw [HomologicalComplex.quasiIso_truncGEMap_iff]
@@ -299,6 +300,7 @@ lemma quasiIso_truncGEMap_iff :
   · rintro h i i' rfl
     exact h _ (by dsimp; lia)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_truncLEMap_iff :
     QuasiIso (truncLEMap φ n) ↔ ∀ (i : ℤ) (_ : i ≤ n), QuasiIsoAt φ i := by
   rw [HomologicalComplex.quasiIso_truncLEMap_iff]

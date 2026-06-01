@@ -85,8 +85,8 @@ maps.
 def functorToPresheaves : Type (max u w) ⥤ ((CompHausLike.{u} P)ᵒᵖ ⥤ Type (max u w)) where
   obj X := {
     obj := fun ⟨S⟩ ↦ (LocallyConstant S X)
-    map f := TypeCat.ofHom (fun g ↦ g.comap f.unop.hom.hom) }
-  map f := { app _ := TypeCat.ofHom (fun t ↦ t.map f) }
+    map f := ↾fun g ↦ g.comap f.unop.hom.hom }
+  map f := { app _ := ↾fun t ↦ t.map f }
 
 /--
 Locally constant maps are the same as continuous maps when the target is equipped with the discrete
@@ -97,8 +97,8 @@ def locallyConstantIsoContinuousMap (Y X : Type*) [TopologicalSpace Y] :
     LocallyConstant Y X ≅ C(Y, TopCat.discrete.obj X) :=
   letI : TopologicalSpace X := ⊥
   haveI : DiscreteTopology X := ⟨rfl⟩
-  { hom := TypeCat.ofHom fun f ↦ (f : C(Y, X))
-    inv := TypeCat.ofHom fun f ↦ ⟨f, (IsLocallyConstant.iff_continuous f).mpr f.2⟩ }
+  { hom := ↾fun f ↦ (f : C(Y, X))
+    inv := ↾fun f ↦ ⟨f, (IsLocallyConstant.iff_continuous f).mpr f.2⟩ }
 
 section Adjunction
 
@@ -122,7 +122,7 @@ noncomputable def sigmaIso [HasExplicitFiniteCoproducts.{u} P] : (finiteCoproduc
 lemma sigmaComparison_comp_sigmaIso [HasExplicitFiniteCoproducts.{u} P]
     (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type (max u w)) :
     (X.mapIso (sigmaIso r).op).hom ≫ sigmaComparison X (fun a ↦ (fiber r a).1) ≫
-      TypeCat.ofHom (fun g ↦ g a) = X.map (sigmaIncl r a).op := by
+      (↾fun g ↦ g a) = X.map (sigmaIncl r a).op := by
   ext
   simp only [Functor.mapIso_hom, Iso.op_hom, sigmaComparison, TypeCat.Fun.toFun_apply,
     CategoryTheory.comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk,
@@ -149,7 +149,7 @@ noncomputable def counitAppApp (S : CompHausLike.{u} P)
     (Y : (CompHausLike.{u} P)ᵒᵖ ⥤ Type (max u w))
     [PreservesFiniteProducts Y] [HasExplicitFiniteCoproducts.{u} P] :
     LocallyConstant S (Y.obj (op (CompHausLike.of P PUnit.{u + 1}))) ⟶ Y.obj ⟨S⟩ :=
-  TypeCat.ofHom fun r ↦ (inv (sigmaComparison Y (fun a ↦ (fiber r a).1)) ≫
+  ↾fun r ↦ (inv (sigmaComparison Y (fun a ↦ (fiber r a).1)) ≫
     (Y.mapIso (sigmaIso r).op).inv) (counitAppAppImage r)
 
 -- This is the key lemma to prove naturality of the counit:
@@ -188,7 +188,7 @@ noncomputable def componentHom (a : Fiber (f.comap g.hom.hom)) :
   ConcreteCategory.ofHom
   { toFun x := ⟨g x.val, by
       simp only [Fiber.mk, Set.mem_preimage, Set.mem_singleton_iff]
-      convert map_eq_image _ _ x
+      convert! map_eq_image _ _ x
       exact map_preimage_eq_image_map _ _ a⟩
     continuous_toFun := by
       -- term mode gives "unknown free variable" error.
@@ -201,6 +201,7 @@ lemma incl_comap {S T : (CompHausLike P)ᵒᵖ}
           (sigmaIncl f _).op ≫ (componentHom f g.unop a).op :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The counit is natural in `S : CompHausLike P` -/
 @[simps! app]
 noncomputable def counitApp [HasExplicitFiniteCoproducts.{u} P]
@@ -251,6 +252,7 @@ noncomputable def functorIso :
   NatIso.ofComponents (fun X ↦ (fullyFaithfulSheafToPresheaf _ _).preimageIso
     (functorToPresheavesIso P hs X))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The counit is natural in both `S : CompHausLike P` and
 `Y : Sheaf (coherentTopology (CompHausLike P)) (Type (max u w))` -/
@@ -293,7 +295,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     rw [this]
     apply congrArg
     symm
-    convert (b.preimage).prop
+    convert! (b.preimage).prop
     exact (mem_iff_eq_image (g.hom.app _ ∘ f) _ _).symm
 
 /--
@@ -301,14 +303,15 @@ The unit of the adjunction is given by mapping each element to the corresponding
 -/
 @[simps]
 def unit : 𝟭 _ ⟶ functor P hs ⋙ (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u + 1}⟩ where
-  app _ := TypeCat.ofHom (fun x ↦ LocallyConstant.const _ x)
+  app _ := ↾fun x ↦ LocallyConstant.const _ x
 
 /-- The unit of the adjunction is an iso. -/
 noncomputable def unitIso : 𝟭 (Type (max u w)) ≅ functor.{u, w} P hs ⋙
     (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u + 1}⟩ where
   hom := unit P hs
-  inv := { app _ := TypeCat.ofHom (fun f ↦ f.toFun PUnit.unit) }
+  inv := { app _ := ↾fun f ↦ f.toFun PUnit.unit }
 
+set_option backward.defeqAttrib.useBackward true in
 lemma adjunction_left_triangle [HasExplicitFiniteCoproducts.{u} P]
     (X : Type (max u w)) : functorToPresheaves.{u, w}.map ((unit P hs).app X) ≫
       ((counit P hs).app ((functor P hs).obj X)).hom = 𝟙 (functorToPresheaves.obj X) := by
@@ -352,7 +355,7 @@ noncomputable def adjunction [HasExplicitFiniteCoproducts.{u} P] :
     apply presheaf_ext ((unit P hs).app _ x)
     intro a
     erw [incl_of_counitAppApp]
-    simp only [unit_app, counitAppAppImage]
+    simp only [counitAppAppImage]
     erw [← map_eq_image _ a ⟨PUnit.unit, by simp [mem_iff_eq_image, ← map_preimage_eq_image]⟩]
     rfl
 

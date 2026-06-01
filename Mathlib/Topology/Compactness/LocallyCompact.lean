@@ -12,7 +12,7 @@ public import Mathlib.Topology.Compactness.Compact
 This file contains basic results about locally compact spaces.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Topology TopologicalSpace
 

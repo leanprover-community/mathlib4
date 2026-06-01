@@ -208,10 +208,8 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFin
     intro a b n hn
     have : (f a b).toReal ≤ n := Nat.le_of_ceil_le hn
     rw [← ENNReal.le_ofReal_iff_toReal_le (hf_ne_top a b) _] at this
-    · refine this.trans (le_of_eq ?_)
-      rw [ENNReal.ofReal_natCast]
-    · norm_cast
-      exact zero_le _
+    · simpa
+    · exact n.cast_nonneg
   have h_zero : ∀ a b n, ⌈(f a b).toReal⌉₊ ≤ n → fs n a b = 0 := by
     intro a b n hn
     suffices min (f a b) (n + 1) = f a b ∧ min (f a b) n = f a b by
@@ -224,13 +222,13 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFin
     ext a b : 2
     rw [tsum_apply (Pi.summable.mpr h_sum_a), tsum_apply (h_sum_a a),
       ENNReal.tsum_eq_liminf_sum_nat]
-    have h_finset_sum : ∀ n, ∑ i ∈ Finset.range n, fs i a b = min (f a b) n := fun n ↦ by
+    have h_finsetSum : ∀ n, ∑ i ∈ Finset.range n, fs i a b = min (f a b) n := fun n ↦ by
       induction n with
       | zero => simp
       | succ n hn =>
         rw [Finset.sum_range_succ, hn]
         simp [fs]
-    simp_rw [h_finset_sum]
+    simp_rw [h_finsetSum]
     refine (Filter.Tendsto.liminf_eq ?_).symm
     refine Filter.Tendsto.congr' ?_ tendsto_const_nhds
     rw [Filter.EventuallyEq, Filter.eventually_atTop]

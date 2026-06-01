@@ -86,7 +86,7 @@ theorem ae_lineDifferentiableAt
   have h's : DifferentiableAt ℝ (fun t ↦ f (p + t • v)) (s + 0) := by simpa using hs
   have : DifferentiableAt ℝ (fun t ↦ s + t) 0 := differentiableAt_id.const_add _
   simp only [LineDifferentiableAt]
-  convert h's.comp 0 this with _ t
+  convert! h's.comp 0 this with _ t
   simp only [add_assoc, Function.comp_apply, add_smul]
 
 theorem locallyIntegrable_lineDeriv (hf : LipschitzWith C f) (v : E) :
@@ -210,13 +210,13 @@ theorem ae_lineDeriv_sum_eq
   the derivative to `g` by integration by parts, and use the linearity of the derivative of `g` to
   conclude that the initial integrals coincide. -/
   apply ae_eq_of_integral_contDiff_smul_eq (hf.locallyIntegrable_lineDeriv _)
-    (locallyIntegrable_finset_sum _ (fun i hi ↦ (hf.locallyIntegrable_lineDeriv (v i)).smul (a i)))
+    (locallyIntegrable_finsetSum _ (fun i hi ↦ (hf.locallyIntegrable_lineDeriv (v i)).smul (a i)))
     (fun g g_smooth g_comp ↦ ?_)
   simp_rw [Finset.smul_sum]
   have A : ∀ i ∈ s, Integrable (fun x ↦ g x • (a i • fun x ↦ lineDeriv ℝ f x (v i)) x) μ :=
     fun i hi ↦ (g_smooth.continuous.integrable_of_hasCompactSupport g_comp).smul_of_top_left
       ((hf.memLp_lineDeriv (v i)).const_smul (a i))
-  rw [integral_finset_sum _ A]
+  rw [integral_finsetSum _ A]
   suffices S1 : ∫ x, lineDeriv ℝ f x (∑ i ∈ s, a i • v i) * g x ∂μ
       = ∑ i ∈ s, a i * ∫ x, lineDeriv ℝ f x (v i) * g x ∂μ by
     dsimp only [smul_eq_mul, Pi.smul_apply]
@@ -231,7 +231,7 @@ theorem ae_lineDeriv_sum_eq
     simp only [integral_neg, mul_neg, Finset.sum_neg_distrib, neg_inj]
     exact S2
   suffices B : ∀ i ∈ s, Integrable (fun x ↦ a i * (fderiv ℝ g x (v i) * f x)) μ by
-    simp_rw [Finset.sum_mul, mul_assoc, integral_finset_sum s B, integral_const_mul]
+    simp_rw [Finset.sum_mul, mul_assoc, integral_finsetSum s B, integral_const_mul]
   intro i _hi
   let L : StrongDual ℝ E → ℝ := fun f ↦ f (v i)
   change Integrable (fun x ↦ a i * ((L ∘ (fderiv ℝ g)) x * f x)) μ
@@ -257,7 +257,7 @@ theorem ae_exists_fderiv_of_countable
   let L : StrongDual ℝ E :=
     LinearMap.toContinuousLinearMap (B.constr ℝ (fun i ↦ lineDeriv ℝ f x (B i)))
   refine ⟨L, fun v hv ↦ ?_⟩
-  have J : L v = lineDeriv ℝ f x v := by convert (hx v hv).symm <;> simp [L, B.sum_repr v]
+  have J : L v = lineDeriv ℝ f x v := by convert! (hx v hv).symm <;> simp [L, B.sum_repr v]
   simpa [J] using (h'x v hv).hasLineDerivAt
 
 omit [MeasurableSpace E] in

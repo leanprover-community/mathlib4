@@ -31,7 +31,7 @@ If `V` is a normed space, `ConvexBody V` is a metric space.
 convex, convex body
 -/
 
-@[expose] public section
+public section
 
 
 open scoped Pointwise Topology NNReal

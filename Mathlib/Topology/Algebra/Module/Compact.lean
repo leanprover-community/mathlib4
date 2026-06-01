@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.Noetherian.Defs
 
 -/
 
-@[expose] public section
+public section
 
 variable {R M : Type*} [CommSemiring R] [TopologicalSpace R] [AddCommMonoid M] [Module R M]
 variable [TopologicalSpace M] [ContinuousAdd M] [ContinuousSMul R M]

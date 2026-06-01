@@ -33,7 +33,7 @@ instance (X : Type u) : CoeFun (End X) (fun _ ↦ X → X) := (inferInstance : C
 /-- The group isomorphism between `Function.End X` and `CategoryTheory.End X`. -/
 @[simps apply symm_apply]
 def endEquiv (X : Type u) : Function.End X ≃* End X where
-  toFun f := TypeCat.ofHom f
+  toFun f := ↾f
   invFun f := (ConcreteCategory.hom f : _ → _)
   left_inv := by intro; rfl
   right_inv := by intro; rfl
@@ -77,10 +77,10 @@ def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι →
     LimitCone (Discrete.functor fun i : ι => Action.ofMulAction G (F i)) where
   cone :=
     { pt := Action.ofMulAction G (∀ i : ι, F i)
-      π := Discrete.natTrans (fun i => ⟨TypeCat.ofHom (fun x => x i.as), fun _ => rfl⟩) }
+      π := Discrete.natTrans (fun i => ⟨↾fun x => x i.as, fun _ => rfl⟩) }
   isLimit :=
     { lift := fun s =>
-        { hom := TypeCat.ofHom fun x i => (s.π.app ⟨i⟩).hom x
+        { hom := ↾fun x i => (s.π.app ⟨i⟩).hom x
           comm := fun g => by
             ext x
             funext j
@@ -217,7 +217,7 @@ instance instMulAction {G : Type*} [Monoid G] (X : Action V G) :
       ConcreteCategory.hom (X.ρ g) ((ConcreteCategory.hom (X.ρ h)) x)
     simp
 
-/- Specialize `instMulAction` to assist typeclass inference. -/
+/-- Specialize `instMulAction` to assist typeclass inference. -/
 instance {G : Type*} [Monoid G] (X : Action FintypeCat G) : MulAction G X.V :=
   Action.instMulAction X
 

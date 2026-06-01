@@ -48,7 +48,7 @@ variable {R}
 theorem expand_eq_comp_X_pow {f : R[X]} : expand R p f = f.comp (X ^ p) := rfl
 
 theorem expand_eq_sum {f : R[X]} : expand R p f = f.sum fun e a => C a * (X ^ p) ^ e := by
-  simp [expand, eval₂]
+  simp [expand, eval₂_eq_sum]
 
 @[simp]
 theorem expand_C (r : R) : expand R p (C r) = C r :=
@@ -185,7 +185,7 @@ noncomputable def contract (p : ℕ) (f : R[X]) : R[X] :=
 
 theorem coeff_contract {p : ℕ} (hp : p ≠ 0) (f : R[X]) (n : ℕ) :
     (contract p f).coeff n = f.coeff (n * p) := by
-  simp only [contract, coeff_monomial, sum_ite_eq', finset_sum_coeff, mem_range, not_lt,
+  simp only [contract, coeff_monomial, sum_ite_eq', finsetSum_coeff, mem_range, not_lt,
     ite_eq_left_iff]
   intro hn
   apply (coeff_eq_zero_of_natDegree_lt _).symm
