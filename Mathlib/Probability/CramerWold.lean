@@ -30,8 +30,8 @@ open BoundedContinuousFunction Finset RealInnerProductSpace ProbabilityMeasure M
 open scoped NNReal
 
 variable {Ω : Type*} [MeasurableSpace Ω] {P : ProbabilityMeasure Ω} {Ω' : Type*}
-[MeasurableSpace Ω'] {Q : ProbabilityMeasure Ω'} {d : ℕ+} {X : Ω' → EuclideanSpace ℝ (Fin d)}
-{Xn : ℕ → Ω → EuclideanSpace ℝ (Fin d)}
+  [MeasurableSpace Ω'] {Q : ProbabilityMeasure Ω'} {d : ℕ+} {X : Ω' → EuclideanSpace ℝ (Fin d)}
+  {Xn : ℕ → Ω → EuclideanSpace ℝ (Fin d)}
 
 lemma measurable_dotProduct {n : ℕ} (hX : Measurable (Xn n)) (t : EuclideanSpace ℝ (Fin d)) :
   Measurable (fun ω : Ω => ⟪((Xn n) ω), t⟫) :=
