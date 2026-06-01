@@ -14,10 +14,13 @@ public import Mathlib.RingTheory.Norm.Basic
 /-!
 # Kummer Extensions
 
+Let `K` be a field, `n` be an integer such that `K` contains a primitive `n`-th root of unity.
+Kummer theory is about the classification of finite extensions of `L` whose Galois group is cyclic
+of order `n`.
+
 ## Main result
 - `isCyclic_tfae`:
-  Suppose `L/K` is a finite extension of dimension `n`, and `K` contains
-  a primitive `n`-th root of unity.
+  Suppose `L/K` is a finite extension of dimension `n`
   Then `L/K` is cyclic iff
   `L` is a splitting field of some irreducible polynomial of the form `Xⁿ - a : K[X]` iff
   `L = K[α]` for some `αⁿ ∈ K`.
@@ -27,7 +30,6 @@ public import Mathlib.RingTheory.Norm.Basic
   (perhaps via `isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top`),
   then the Galois group is isomorphic to `rootsOfUnity n K`, by sending
   `σ ↦ σ α / α` for `α ^ n = a`, and the inverse is given by `μ ↦ (α ↦ μ • α)`.
-  (The statement requires that `K` contains a primitive `n`-th root of unity.)
 
 - `autEquivZmod`:
   Furthermore, given an explicit choice `ζ` of a primitive `n`-th root of unity, the Galois group is
@@ -45,9 +47,13 @@ Criteria for `X ^ n - C a` to be irreducible is given:
 
 TODO: criteria for even `n`. See [serge_lang_algebra] VI,§9.
 
-TODO: treat the case where the characteristic of the field divides `n` (Artin-Schreier theory).
-
 TODO: relate Kummer extensions of degree 2 with the class `Algebra.IsQuadraticExtension`.
+
+TODO: treat the case where the characteristic `p` of the field divides `n`, so that `K` never
+contains a primitive `n`-th root of unity.
+For the Galois group part, this is Artin-Schreier theory;
+it also holds that `X ^ p - C a` is irreducible iff `a` is not a `p`-th power in `K`.
+
 -/
 
 @[expose] public section
@@ -539,7 +545,8 @@ end IsCyclic
 
 open Module in
 /--
-Suppose `L/K` is a finite extension of dimension `n`, and `K` contains all `n`-th roots of unity.
+Suppose `L/K` is a finite extension of dimension `n`,
+and `K` contains a primitive`n`-th root of unity.
 Then `L/K` is cyclic iff
 `L` is a splitting field of some irreducible polynomial of the form `Xⁿ - a : K[X]` iff
 `L = K[α]` for some `αⁿ ∈ K`.
