@@ -261,7 +261,6 @@ theorem opNorm_lsmul [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module R E] 
   refine le_of_mul_le_mul_right ?_ (norm_pos_iff.mpr hy)
   simpa using le_of_opNorm_le _ (h 1) y
 
-
 /-- The norm of `lsmul x` equals `‖x‖` in any nontrivial normed group.
 
 This is `ContinuousLinearMap.opNorm_lsmul_apply_le` as an equality. -/
