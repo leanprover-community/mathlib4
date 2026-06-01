@@ -250,7 +250,7 @@ theorem AbsolutelyContinuousOnInterval.integral_deriv_mul_eq_sub
   rw [← (hf.fun_mul hg).integral_deriv_eq_sub]
   apply intervalIntegral.integral_congr_ae
   filter_upwards [hf.ae_differentiableAt, hg.ae_differentiableAt] with x hx₁ hx₂ hx₃
-  have hx₄ : x ∈ uIcc a b := by grind [uIcc, uIoc]
+  have hx₄ : x ∈ uIcc a b := uIoc_subset_uIcc hx₃
   have hx₅ := (hx₁ hx₄).hasDerivAt.mul (hx₂ hx₄).hasDerivAt
   exact hx₅.deriv.symm
 

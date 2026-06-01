@@ -456,4 +456,21 @@ lemma germ_restrictStalkNatIso_inv_app (x : X) (M : Y.Modules) (hxU : x ∈ U) :
 
 end Restriction
 
+/-- `sheafCompose` commutes with `pushforward` -/
+noncomputable def sheafComposePushforwardComp {R S : CommRingCat.{u}} (φ : R ⟶ S) :
+    sheafCompose (Opens.grothendieckTopology (Spec S))
+      (ModuleCat.restrictScalars (Spec.map φ).appTop.hom) ⋙
+      TopCat.Sheaf.pushforward _ (Spec.map φ).base ⋙
+      sheafCompose _ (ModuleCat.restrictScalars (Scheme.ΓSpecIso R).inv.hom) ≅
+    sheafCompose _ (ModuleCat.restrictScalars (Scheme.ΓSpecIso S).inv.hom) ⋙
+      TopCat.Sheaf.pushforward _ (Spec.map φ).base ⋙
+      sheafCompose _ (ModuleCat.restrictScalars φ.hom) := by
+  refine NatIso.ofComponents (fun M ↦ ObjectProperty.isoMk _ ?_) ?_
+  · refine NatIso.ofComponents (fun U ↦ ?_) ?_
+    · refine (ModuleCat.restrictScalarsComp'App _ _ _ ?_ _).symm ≪≫
+        (ModuleCat.restrictScalarsComp φ.hom ((Scheme.ΓSpecIso S).inv).hom).app _
+      rw [← CommRingCat.hom_comp, Scheme.ΓSpecIso_inv_naturality, CommRingCat.hom_comp]
+    · cat_disch
+  · cat_disch
+
 end AlgebraicGeometry.Scheme.Modules
