@@ -225,12 +225,12 @@ theorem disjoint_primeCompl_of_liesOver [p.IsPrime] [hPp : 𝔓.LiesOver p] :
   Disjoint ((Algebra.algebraMapSubmonoid C p.primeCompl) : Set C) (𝔓 : Set C) := by
   rw [liesOver_iff, under_def, SetLike.ext'_iff, coe_comap] at hPp
   simpa only [Algebra.algebraMapSubmonoid, primeCompl, hPp, ← le_compl_iff_disjoint_left]
-    using Set.subset_compl_comm.mp (by simp)
+    using! Set.subset_compl_comm.mp (by simp)
 
 theorem algebraMapSubmonoid_primeCompl_of_liesOver_surjective
     [p.IsPrime] [P.IsPrime] [P.LiesOver p] (hf : Function.Surjective (algebraMap A B)) :
     Algebra.algebraMapSubmonoid B p.primeCompl = P.primeCompl := by
-  simpa [over_def P p] using P.map_primeCompl_comap_of_surjective (algebraMap A B) hf
+  simpa [over_def P p] using! P.map_primeCompl_comap_of_surjective (algebraMap A B) hf
 
 variable (B)
 

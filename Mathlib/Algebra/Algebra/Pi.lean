@@ -36,7 +36,7 @@ variable (A : ι → Type*)
 variable [CommSemiring R] [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)]
 
 instance algebra : Algebra R (Π i, A i) where
-  algebraMap := Pi.ringHom fun i ↦ algebraMap R (A i)
+  algebraMap := RingHom.pi fun i ↦ algebraMap R (A i)
   commutes' := fun a f ↦ by ext; simp [Algebra.commutes]
   smul_def' := fun a f ↦ by ext; simp [Algebra.smul_def]
 
@@ -54,7 +54,7 @@ variable {ι} (R)
 `Pi.algHom g : B →ₐ[R] Π i, A i` given by `Pi.algHom g x i = g i x`. -/
 @[simps!]
 def algHom {B : Type*} [Semiring B] [Algebra R B] (g : ∀ i, B →ₐ[R] A i) : B →ₐ[R] Π i, A i where
-  __ := Pi.ringHom fun i ↦ (g i).toRingHom
+  __ := RingHom.pi fun i ↦ (g i).toRingHom
   commutes' r := by ext; simp
 
 /-- `Function.eval` as an `AlgHom`. The name matches `Pi.evalRingHom`, `Pi.evalMonoidHom`,
@@ -76,7 +76,7 @@ theorem algHom_comp {B C : Type*} [Semiring B] [Algebra R B] [Semiring C] [Algeb
 variable (S : ι → Type*) [∀ i, CommSemiring (S i)]
 
 instance [∀ i, Algebra (S i) (A i)] : Algebra (Π i, S i) (Π i, A i) where
-  algebraMap := Pi.ringHom fun _ ↦ (algebraMap _ _).comp (Pi.evalRingHom S _)
+  algebraMap := RingHom.pi fun _ ↦ (algebraMap _ _).comp (Pi.evalRingHom S _)
   commutes' _ _ := funext fun _ ↦ Algebra.commutes _ _
   smul_def' _ _ := funext fun _ ↦ Algebra.smul_def _ _
 
