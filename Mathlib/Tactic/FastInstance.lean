@@ -277,24 +277,18 @@ public def checkInstance (name : Name) : MetaM CheckInstanceResult := do
       return .canonical
     -- Try to find the first specific binder type mismatch to help diagnose the leak.
     let mismatch ← try findFirstBinderMismatch instVal normalized catch _ => pure none
-    -- Eagerly pretty-print binder types while still in MetaM context so that any
-    -- pp failure produces a graceful fallback instead of a raw "failed to pretty print" string.
+    -- Capture the local context now (we are still inside `MetaM`/`forallTelescope`) so the
+    -- embedded `Expr`s in the `MessageData` render correctly when the result is logged later
+    -- from outside `MetaM`. This preserves the clickable/hoverable expressions in the infoview.
     let detail : MessageData ← match mismatch with
-      | some (field, some (actual, expected)) => do
-        let actualStr : String ← try
-            let fmt ← ppExpr actual
-            pure fmt.pretty
-          catch _ => pure "<unprintable>"
-        let expectedStr : String ← try
-            let fmt ← ppExpr expected
-            pure fmt.pretty
-          catch _ => pure "<unprintable>"
-        pure m!"\n  The data field `{field}` has binder type {actualStr} \
-          where {expectedStr} is expected.\n  Other data fields may also be leaky."
+      | some (field, some (actual, expected)) =>
+        addMessageContext m!"\n  The data field `{field}` has binder type {actual} \
+          where {expected} is expected.\n  Other data fields may also be leaky."
       | some (field, none) =>
-        pure m!"\n  The data field `{field}` differs from the re-inferred canonical form \
-          at instances transparency.\n  Other data fields may also be leaky."
-      | none => pure "\n  The body differs from the re-inferred form at instances transparency."
+        addMessageContext m!"\n  The data field `{field}` differs from the re-inferred canonical \
+          form at instances transparency.\n  Other data fields may also be leaky."
+      | none =>
+        addMessageContext "\n  The body differs from the re-inferred form at instances transparency."
     return .leaky detail
 
 open Elab Command in

@@ -6,6 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Init
+public meta import Mathlib.Lean.MessageData.ForExprs
 public meta import Mathlib.Lean.MessageData.Trace
 public meta import Mathlib.Tactic.FastInstance
 
@@ -248,15 +249,30 @@ partial def findSynthFailures (permSuccesses permFailures : Std.HashSet String)
       return .descend
     else return .ascend
 
+/-- Extract the instance `Name` from a `Meta.synthInstance` apply-node header.
+
+The trace header is built by `Lean/Meta/SynthInstance.lean` as
+`m!"... apply {inst.val} to {target}"`, so the first embedded `Expr` is the instance
+application; its `getAppFn.constName?` is the registered instance `Name`. Returns `none`
+if no such expression is present.
+
+The caller should still verify this is an `apply ...` `Meta.synthInstance` node via the
+existing string-level prefix check; once
+[lean4#12699](https://github.com/leanprover/lean4/pull/12699) lands, that check can move to
+`td.cls == \`Meta.synthInstance.apply`. -/
+def synthApplyInstName? (header : MessageData) : BaseIO (Option Name) := do
+  return (← header.getExprs)[0]?.bind (·.getAppFn.constName?)
+
 /-- Collect instance names from successful `apply @Instance to Goal` trace nodes.
-Once https://github.com/leanprover/lean4/pull/12699 is available, the `headerStr.contains "apply"`
+Once https://github.com/leanprover/lean4/pull/12699 is available, the `headerStr.contains "apply "`
 check can be replaced with ``td.cls == `Meta.synthInstance.apply``. -/
-partial def findSynthSuccessApps (msg : MessageData) : BaseIO (Std.HashSet String) :=
+partial def findSynthSuccessApps (msg : MessageData) : BaseIO (Std.HashSet Name) :=
   msg.visitTraceNodesM fun td header children => do
     if td.cls == `Meta.synthInstance then
       let headerStr ← header.toString
-      if headerStr.contains "apply" && traceResultOf headerStr == some .success then
-        return .descend (butFirst := some {extractInstName headerStr})
+      if headerStr.contains "apply " && traceResultOf headerStr == some .success then
+        if let some name ← synthApplyInstName? header then
+          return .descend (butFirst := some {name})
     return .descend
 
 /-- Result of analyzing strict/permissive trace messages. -/
@@ -266,11 +282,9 @@ structure AnalyzeTracesResult where
   /-- Synthesis-grouped failures: each entry is `(synthApp, failures)`. Empty when
   `includeSynth` is `false`. -/
   synthGroupedFailures : Array (MessageData × Array MessageData)
-  /-- Instance name strings from successful `apply` trace nodes in the permissive run.
-  These are string-formatted because we parse trace `MessageData` text.
-  TODO: extract `Name`s directly from the `FormatWithInfos` data embedded in `MessageData.ofLazy`
-  expression nodes, rather than parsing rendered strings. -/
-  permissiveSuccessApps : Std.HashSet String
+  /-- Instance `Name`s from successful `apply` trace nodes in the permissive run,
+  extracted structurally from the embedded `Expr` in each header. -/
+  permissiveSuccessApps : Std.HashSet Name
 
 /-- Analyze strict and permissive trace messages to find isDefEq transition failures
 and (optionally) synthesis-grouped failures. -/
@@ -289,7 +303,7 @@ def analyzeTraces (strictMsgs permMsgs : Array MessageData) (includeSynth : Bool
       (← findTransitionFailures permSuccesses permFailures msg)
   let uniqueFailures ← dedupByString transitionFailures
   -- Always collect permissive success apps (used downstream for leaky instance detection).
-  let mut permissiveSuccessApps : Std.HashSet String := {}
+  let mut permissiveSuccessApps : Std.HashSet Name := {}
   for msg in permMsgs do
     permissiveSuccessApps := permissiveSuccessApps.union (← findSynthSuccessApps msg)
   -- Optionally find synthesis-grouped failures.
@@ -301,20 +315,11 @@ def analyzeTraces (strictMsgs permMsgs : Array MessageData) (includeSynth : Bool
       (← findSynthFailures permSuccesses permFailures msg)
   -- Filter to only applications that succeed with permissive transparency.
   let filteredResults ← synthResults.filterM fun (app, _) => do
-    return permissiveSuccessApps.contains (extractInstName (← app.toString))
+    return (← synthApplyInstName? app).any permissiveSuccessApps.contains
   -- Dedup failures within each synth result.
   let dedupedResults ← filteredResults.mapM fun (app, failures) => do
     return (app, ← dedupByString failures)
   return ⟨uniqueFailures, dedupedResults, permissiveSuccessApps⟩
-
-/-- Parse a trace-format instance name string (e.g. `"@RestrictScalars.module.{?_uniq.42}"`)
-into a `Name`, stripping leading `@` and universe suffixes.
-TODO: extract `Name`s directly from the `FormatWithInfos` data embedded in `MessageData.ofLazy`
-expression nodes, rather than parsing rendered strings. -/
-def parseTraceInstName (s : String) : Name :=
-  let s := (if s.startsWith "@" then s.drop 1 else s).trimAscii.toString
-  let s := match s.splitOn ".{" with | base :: _ => base | _ => s
-  s.toName
 
 /-- Check a collection of instance `Name`s for leaky data-field binder types using
 `checkInstance`. Returns the names and diagnostic messages for instances detected as leaky. -/
@@ -562,21 +567,18 @@ elab_rules : command
         reportDefEqAbuse "command" disambiguatedFailures disambiguatedSynth
         -- Check for leaky instances.
         -- We check two sources:
-        -- (1) Instances named in failing synthesis apps (from extractInstName).
+        -- (1) Instances named in failing synthesis apps.
         -- (2) ALL registered instances that succeeded in the permissive run.
         --     Failing apps name projections (e.g. HeytingAlgebra.toOrderBot), not the underlying
         --     registered instance (e.g. instFrame). Permissive success apps include the latter.
-        -- Both sources are string-based because we parse trace `MessageData` text.
-        -- TODO: extract `Name`s directly from the `FormatWithInfos` data embedded in
-        -- `MessageData.ofLazy` expression nodes, rather than parsing rendered strings.
         let leaky ← try
-          let mut instStrings : Std.HashSet String ←
+          let mut instNames : Std.HashSet Name ←
             result.synthGroupedFailures.foldlM (init := {}) fun acc (app, _) => do
-              return acc.insert (extractInstName (← app.toString))
-          instStrings := instStrings.union result.permissiveSuccessApps
-          let instNames :=
-            (Std.HashSet.ofArray (instStrings.toArray.map parseTraceInstName)).toArray
-          runTermElabM fun _ => findLeakyInstances instNames
+              match ← synthApplyInstName? app with
+              | some name => return acc.insert name
+              | none => return acc
+          instNames := instNames.union result.permissiveSuccessApps
+          runTermElabM fun _ => findLeakyInstances instNames.toArray
         catch _ => pure #[]
         unless leaky.isEmpty do
           let lines := joinSep (leaky.toList.map fun (_, msg) => m!"  {msg}") "\n"
