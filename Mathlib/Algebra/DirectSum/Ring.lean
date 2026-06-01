@@ -362,7 +362,7 @@ The various `G*` instances are enough to promote the `AddCommMonoid (A 0)` struc
 types of multiplicative structure.
 
 Implementation detail: Note that these instances on `A 0` have very general discrimination
-tree keys (e.g. `DirectSum.GradeZero.ring` has discrimination tree key `Ring _` and often
+tree keys (e.g. `DirectSum.instRingOfNat` has discrimination tree key `Ring _` and often
 sends typeclass inference on a wild goose chase with any goal of the form `Ring (F X)`),
 so we scope these instances to the `DirectSum` namespace.
 
