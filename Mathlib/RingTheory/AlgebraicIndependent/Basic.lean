@@ -241,7 +241,7 @@ theorem algebraicIndependent_finset_map_embedding_subtype (s : Set A)
       rw [Finset.mem_map] at h
       obtain ⟨a, _, rfl⟩ := h
       simp only [Subtype.coe_prop, Embedding.coe_subtype]⟩
-  convert AlgebraicIndependent.comp li f _
+  convert! AlgebraicIndependent.comp li f _
   rintro ⟨x, hx⟩ ⟨y, hy⟩
   rw [Finset.mem_map] at hx hy
   obtain ⟨a, _, rfl⟩ := hx
@@ -311,11 +311,11 @@ lemma IsTranscendenceBasis.of_comp_algebraMap [Algebra A A'] [IsScalarTower R A 
 for the composition with an algebraic extension. -/
 theorem AlgEquiv.isTranscendenceBasis (e : A ≃ₐ[R] A') (hx : IsTranscendenceBasis R x) :
     IsTranscendenceBasis R (e ∘ x) :=
-  .of_comp e.symm.toAlgHom e.symm.injective (by convert hx; ext; simp)
+  .of_comp e.symm.toAlgHom e.symm.injective (by convert! hx; ext; simp)
 
 theorem AlgEquiv.isTranscendenceBasis_iff (e : A ≃ₐ[R] A') :
     IsTranscendenceBasis R (e ∘ x) ↔ IsTranscendenceBasis R x :=
-  ⟨fun hx ↦ by convert e.symm.isTranscendenceBasis hx; ext; simp, e.isTranscendenceBasis⟩
+  ⟨fun hx ↦ by convert! e.symm.isTranscendenceBasis hx; ext; simp, e.isTranscendenceBasis⟩
 
 section trdeg
 
@@ -346,7 +346,7 @@ theorem lift_trdeg_le_of_surjective (f : A →ₐ[R] A') (hf : Surjective f) :
   rw [trdeg, lift_iSup bddAbove_of_small]
   refine ciSup_le' fun i ↦ (lift_cardinalMk_le_trdeg (x := fun a : i.1 ↦ (⇑f).invFun a) <|
     of_comp f ?_)
-  convert i.2; simp [invFun_eq (hf _)]
+  convert! i.2; simp [invFun_eq (hf _)]
 
 theorem trdeg_le_of_surjective {A' : Type v} [CommRing A'] [Algebra R A'] (f : A →ₐ[R] A')
     (hf : Surjective f) : trdeg R A' ≤ trdeg R A := by
@@ -399,7 +399,7 @@ theorem AlgebraicIndependent.image_of_comp {ι ι'} (s : Set ι) (f : ι → ι'
 theorem AlgebraicIndependent.image {ι} {s : Set ι} {f : ι → A}
     (hs : AlgebraicIndependent R fun x : s => f x) :
     AlgebraicIndependent R fun x : f '' s => (x : A) := by
-  convert AlgebraicIndependent.image_of_comp s f id hs
+  convert! AlgebraicIndependent.image_of_comp s f id hs
 
 theorem algebraicIndependent_iUnion_of_directed {η : Type*} [Nonempty η] {s : η → Set A}
     (hs : Directed (· ⊆ ·) s) (h : ∀ i, AlgebraicIndependent R ((↑) : s i → A)) :

@@ -161,8 +161,8 @@ theorem emultiplicity_factorial_mul {n p : ℕ} (hp : p.Prime) :
     congr 1
     rw [add_comm, add_assoc]
 
-/- The multiplicity of a prime `p` in `p ^ n` is the sum of `p ^ i`, where `i` ranges between `0`
-  and `n - 1`. -/
+/-- The multiplicity of a prime `p` in `p ^ n` is the sum of `p ^ i`, where `i` ranges between `0`
+and `n - 1`. -/
 theorem multiplicity_factorial_pow {n p : ℕ} (hp : p.Prime) :
     multiplicity p (p ^ n).factorial = ∑ i ∈ Finset.range n, p ^ i := by
   rw [← ENat.coe_inj, ← (Nat.finiteMultiplicity_iff.2
@@ -211,7 +211,7 @@ theorem emultiplicity_choose' {p n k b : ℕ} (hp : p.Prime) (hnb : log p (n + k
 theorem emultiplicity_choose {p n k b : ℕ} (hp : p.Prime) (hkn : k ≤ n) (hnb : log p n < b) :
     emultiplicity p (choose n k) = #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + (n - k) % p ^ i} := by
   have := Nat.sub_add_cancel hkn
-  convert @emultiplicity_choose' p (n - k) k b hp _
+  convert! @emultiplicity_choose' p (n - k) k b hp _
   · rw [this]
   exact this.symm ▸ hnb
 

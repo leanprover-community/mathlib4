@@ -166,6 +166,16 @@ noncomputable def weakRankFunctionEquiv :
   left_inv _ := by simp
   right_inv _ := by simp
 
+variable {h α} [WellFoundedLT α]
+
+lemma RankFunction.isRegular [h.IsProper] (f : h.RankFunction α) : h.IsRegular := by
+  rw [← isRegular_pairing_iff]
+  exact (h.rankFunctionEquiv α f).isRegular
+
+lemma WeakRankFunction.isRegular [h.IsProper] (f : h.WeakRankFunction α) : h.IsRegular := by
+  rw [← isRegular_pairing_iff]
+  exact (h.weakRankFunctionEquiv α f).isRegular
+
 end PairingCore
 
 end SSet.Subcomplex
