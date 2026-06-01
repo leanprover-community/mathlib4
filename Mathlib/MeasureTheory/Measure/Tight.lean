@@ -5,11 +5,10 @@ Authors: Rémy Degenne, Josha Dekker, Arav Bhattacharyya
 -/
 module
 
+public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.MeasureTheory.Measure.Regular
-public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 
 import Mathlib.MeasureTheory.Measure.RegularityCompacts
-import Mathlib.Topology.Order.Lattice
 
 /-!
 # Tight sets of measures
