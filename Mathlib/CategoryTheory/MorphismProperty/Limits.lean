@@ -364,6 +364,7 @@ theorem underPushoutMap [IsStableUnderCobaseChange P] {S S' : C} (f : S' ⟶ S)
     P ((Under.pushout f).map g).right :=
   pushoutDesc_inl_inr f g.w.symm H
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] hasPushouts_symmetry_of_hasPushoutsAlong in
 theorem pushoutMap
@@ -516,7 +517,6 @@ inductive colimitsOfShape : MorphismProperty C
     (h₁ : IsColimit c₁) (h₂ : IsColimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f) :
       colimitsOfShape (h₁.desc (Cocone.mk _ (f ≫ c₂.ι)))
 
-set_option backward.isDefEq.respectTransparency false in
 variable {W J} in
 lemma colimitsOfShape.mk' (X₁ X₂ : J ⥤ C) (c₁ : Cocone X₁) (c₂ : Cocone X₂)
     (h₁ : IsColimit c₁) (h₂ : IsColimit c₂) (f : X₁ ⟶ X₂) (hf : W.functorCategory J f)
@@ -531,6 +531,7 @@ lemma colimitsOfShape_monotone {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W�
   rintro _ _ _ ⟨_, _, _, _, _, h₂, f, hf⟩
   exact ⟨_, _, _, _, _, h₂, f, fun j ↦ h _ (hf j)⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {J} in
 lemma colimitsOfShape_le_of_final {J' : Type*} [Category* J'] (F : J ⥤ J') [F.Final] :
@@ -577,6 +578,7 @@ lemma colimitsOfShape_colimMap {X Y : J ⥤ C}
     W.colimitsOfShape J (colimMap f) :=
   ⟨_, _, _, _, _, colimit.isColimit Y, _, hf⟩
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] IsCofiltered.isConnected in
 variable {W} in
 lemma colimitsOfShape.of_isColimit
@@ -597,7 +599,6 @@ class IsStableUnderColimitsOfShape : Prop where
     (h₁ : IsColimit c₁) (h₁ : IsColimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f)
     (φ : c₁.pt ⟶ c₂.pt) (hφ : ∀ j, c₁.ι.app j ≫ φ = f.app j ≫ c₂.ι.app j) : W φ
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isStableUnderColimitsOfShape_iff_colimitsOfShape_le :
     W.IsStableUnderColimitsOfShape J ↔ W.colimitsOfShape J ≤ W := by
   constructor
@@ -619,6 +620,7 @@ protected lemma colimMap [W.IsStableUnderColimitsOfShape J] {X Y : J ⥤ C}
     W (colimMap f) :=
   colimitsOfShape_le _ (colimitsOfShape_colimMap _ hf)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (C J) in
 instance IsStableUnderColimitsOfShape.isomorphisms :
@@ -665,6 +667,7 @@ lemma coproducts_of_small {X Y : C} (f : X ⟶ Y) {J : Type w'}
   refine ⟨Shrink J, ?_⟩
   rwa [← W.colimitsOfShape_eq_of_equivalence (Discrete.equivalence (equivShrink.{w} J))]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma le_colimitsOfShape_punit : W ≤ W.colimitsOfShape (Discrete PUnit.{w + 1}) := by
   intro X₁ X₂ f hf
   have h := initialIsInitial (C := Discrete (PUnit.{w + 1}))
@@ -751,7 +754,7 @@ instance (J : Type*) [(monomorphisms C).IsStableUnderCoproductsOfShape J]
     {X₁ X₂ : J → C} (f : ∀ j, X₁ j ⟶ X₂ j) [HasCoproduct X₁] [HasCoproduct X₂]
     [∀ j, Mono (f j)] :
     Mono (Limits.Sigma.map f) :=
-  MorphismProperty.colimMap _ (fun ⟨j⟩ ↦ by dsimp; infer_instance)
+  MorphismProperty.colimMap _ (fun ⟨j⟩ ↦ inferInstanceAs (Mono (f j)))
 
 /-- The condition that a property of morphisms is stable by finite products. -/
 class IsStableUnderFiniteProducts : Prop where
