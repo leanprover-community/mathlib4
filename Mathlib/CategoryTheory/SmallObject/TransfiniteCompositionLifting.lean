@@ -109,6 +109,7 @@ include sq' in
 lemma w : f ≫ p = c.ι.app ⊥ ≫ g := by
   rw [← sq'.w₁, assoc, sq'.w₂, Cocone.w_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 Given `sq' : SqStruct c p f g j`, this is the commutative square
 ```
@@ -127,6 +128,7 @@ lemma sq [SuccOrder J] :
     CommSq sq'.f' (F.map (homOfLE (Order.le_succ j))) p (c.ι.app _ ≫ g) where
   w := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `sqFunctor`. -/
 @[simps]
 def map {j' : J} (α : j' ⟶ j) : SqStruct c p f g j' where
@@ -141,7 +143,7 @@ end SqStruct
 @[simps]
 def sqFunctor : Jᵒᵖ ⥤ Type _ where
   obj j := SqStruct c p f g j.unop
-  map α := TypeCat.ofHom (fun sq' ↦ sq'.map α.unop)
+  map α := ↾fun sq' ↦ sq'.map α.unop
 
 variable [F.IsWellOrderContinuous]
 
@@ -150,6 +152,7 @@ namespace wellOrderInductionData
 variable {p c f g} {j : J} (hj : Order.IsSuccLimit j)
   (s : ((OrderHom.Subtype.val (· ∈ Set.Iio j)).monotone.functor.op ⋙ sqFunctor c p f g).sections)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `transfiniteComposition.wellOrderInductionData`. -/
 noncomputable def liftHom : F.obj j ⟶ X :=
@@ -166,6 +169,7 @@ lemma liftHom_fac (i : J) (hi : i < j) :
     F.map (homOfLE hi.le) ≫ liftHom hj s = (s.1 ⟨⟨i, hi⟩⟩).f' :=
   (F.isColimitOfIsWellOrderContinuous j hj).fac _ ⟨i, hi⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `transfiniteComposition.wellOrderInductionData`. -/
 @[simps]
 noncomputable def lift : (sqFunctor c p f g).obj (Opposite.op j) where
@@ -195,6 +199,7 @@ section
 variable (hF : ∀ (j : J) (_ : ¬IsMax j),
   HasLiftingPropertyFixedBot (F.map (homOfLE (Order.le_succ j))) p (c.ι.app _ ≫ g))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open wellOrderInductionData in
 /-- The projective system `sqFunctor c p f g` has a `WellOrderInductionData` structure. -/
@@ -217,6 +222,7 @@ include hF hc
 
 variable {c f g} (sq : CommSq f (c.ι.app ⊥) p g)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma hasLift : sq.HasLift := by
   obtain ⟨s, hs⟩ := (wellOrderInductionData c f g hF).surjective { w₂ := sq.w, .. }
@@ -264,6 +270,8 @@ instance isStableUnderTransfiniteCompositionOfShape_llp :
   exact (MorphismProperty.arrow_mk_iso_iff _
     (Arrow.isoMk h.isoBot.symm (Iso.refl _))).2 this
 
+instance : MorphismProperty.IsStableUnderTransfiniteComposition.{w} W.llp where
+
 lemma transfiniteCompositionsOfShape_le_llp_rlp :
     W.transfiniteCompositionsOfShape J ≤ W.rlp.llp := by
   have := W.rlp.isStableUnderTransfiniteCompositionOfShape_llp J
@@ -288,7 +296,7 @@ lemma transfiniteCompositions_le_llp_rlp :
 
 lemma transfiniteCompositions_pushouts_coproducts_le_llp_rlp :
     (transfiniteCompositions.{w} (coproducts.{w} W).pushouts) ≤ W.rlp.llp := by
-  simpa using transfiniteCompositions_le_llp_rlp (coproducts.{w} W).pushouts
+  simpa using transfiniteCompositions_le_llp_rlp.{w} (coproducts.{w} W).pushouts
 
 lemma retracts_transfiniteComposition_pushouts_coproducts_le_llp_rlp :
     (transfiniteCompositions.{w} (coproducts.{w} W).pushouts).retracts ≤ W.rlp.llp := by

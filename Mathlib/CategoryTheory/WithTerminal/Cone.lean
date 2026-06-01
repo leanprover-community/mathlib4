@@ -17,6 +17,8 @@ object to `X`. These two functors have equivalent categories of cones (`coneEqui
 As a corollary, the limit of `K` is the limit of `liftFromOver K`, and vice-versa.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 open CategoryTheory Limits
@@ -29,7 +31,7 @@ variable {J : Type w} [Category.{w'} J]
 namespace CategoryTheory.WithTerminal
 variable {X : C} {K : J ⥤ Over X} {F : C ⥤ D} {t : Cone K}
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The category of functors `J ⥤ Over X` can be seen as part of a comma category,
 namely the comma category constructed from the identity of the category of functors
 `J ⥤ C` and the functor that maps `X : C` to the constant functor `J ⥤ C`.
@@ -94,7 +96,7 @@ private def coneBack : Cone (liftFromOver.obj K) ⥤ Cone K where
   obj t := {
     pt := .mk (t.π.app star)
     π.app a := Over.homMk (t.π.app (of a)) (t.w (homFrom a))
-    π.naturality _ _ f := by ext; simpa using (t.w (incl.map f)).symm }
+    π.naturality _ _ f := by ext; simpa using! (t.w (incl.map f)).symm }
   map {t₁ t₂ f} :=
     { hom := Over.homMk f.hom (by simp [dsimp% f.w star] )
       w j := by ext; simp [dsimp% f.w (of j)] }
@@ -144,7 +146,6 @@ instance (X : C) [HasLimitsOfSize.{w, w'} C] : HasLimitsOfSize.{w, w'} (Over X) 
 namespace WithInitial
 variable {X : C} {K : J ⥤ Under X} {F : C ⥤ D} {t : Cocone K}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The category of functors `J ⥤ Under X` can be seen as part of a comma category,
 namely the comma category constructed from the identity of the category of functors
 `J ⥤ C` and the functor that maps `X : C` to the constant functor `J ⥤ C`.
@@ -209,7 +210,7 @@ private def coconeBack : Cocone (liftFromUnder.obj K) ⥤ Cocone K where
   obj t := {
     pt := .mk (t.ι.app star)
     ι.app a := Under.homMk (t.ι.app (of a)) (t.w (homTo a))
-    ι.naturality _ _ f := by ext; simpa using t.ι.naturality (incl.map f) }
+    ι.naturality _ _ f := by ext; simpa using! t.ι.naturality (incl.map f) }
   map {t₁ t₂ f} :=
     { hom := Under.homMk f.hom (f.w .star)
       w j := by ext; simp [dsimp% f.w (of j)] }

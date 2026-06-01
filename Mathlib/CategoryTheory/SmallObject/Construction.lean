@@ -146,6 +146,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma ιFunctorObj_πFunctorObj : ιFunctorObj f πX ≫ πFunctorObj f πX = πX := by
   simp [ιFunctorObj, πFunctorObj]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `ιFunctorObj f πX : X ⟶ functorObj f πX` is obtained by
 attaching `f`-cells. -/
 @[simps]
@@ -179,6 +180,7 @@ instance : Small.{t} (FunctorObjIndex f πX) := by
     simpa [cancel_epi, φ] using h
   exact small_of_injective hφ
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Small.{t} (attachCellsιFunctorObj f πX).ι := by
   dsimp
   infer_instance
@@ -207,6 +209,7 @@ noncomputable def functorMapSrc :
   Sigma.map' (fun x => FunctorObjIndex.mk x.i (x.t ≫ τ.left) (x.b ≫ τ.right) (by simp))
     (fun _ => 𝟙 _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ι_functorMapSrc (i : I) (t : A i ⟶ X) (b : B i ⟶ S) (w : t ≫ πX = f i ≫ b)
@@ -236,6 +239,7 @@ noncomputable def functorMapTgt :
   Sigma.map' (fun x => FunctorObjIndex.mk x.i (x.t ≫ τ.left) (x.b ≫ τ.right) (by simp))
     (fun _ => 𝟙 _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ι_functorMapTgt (i : I) (t : A i ⟶ X) (b : B i ⟶ S) (w : t ≫ πX = f i ≫ b)
@@ -250,18 +254,16 @@ lemma ι_functorMapTgt (i : I) (t : A i ⟶ X) (b : B i ⟶ S) (w : t ≫ πX = 
   subst hb' ht'
   simp [functorMapTgt]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma functorMap_comm :
     functorObjLeft f πX ≫ functorMapTgt f τ =
       functorMapSrc f τ ≫ functorObjLeft f πY := by
   ext ⟨i, t, b, w⟩
-  simp only [ι_colimMap_assoc, Discrete.natTrans_app, ι_colimMap,
-    ι_functorMapTgt f τ i t b w _ rfl,
-    ι_functorMapSrc_assoc f τ i t b w _ rfl]
+  simp [ι_functorMapTgt f τ i t b w _ rfl, ι_functorMapSrc_assoc f τ i t b w _ rfl]
 
 variable [HasPushout (functorObjTop f πX) (functorObjLeft f πX)]
   [HasPushout (functorObjTop f πY) (functorObjLeft f πY)]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor `SmallObject.functor f S : Arrow S ⥤ Arrow S` that is part of
 the small object argument for a family of morphisms `f`, on morphisms. -/
 noncomputable def functorMap : functorObj f πX ⟶ functorObj f πY :=
@@ -275,6 +277,7 @@ lemma functorMap_π : functorMap f τ ≫ πFunctorObj f πY = πFunctorObj f π
   · simp [functorMap]
   · simp [functorMap, ι_functorMapTgt_assoc f τ i t b w _ rfl]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 @[simp]
@@ -319,6 +322,7 @@ end
 variable [HasPushouts C]
   [∀ {X S : C} (πX : X ⟶ S), HasColimitsOfShape (Discrete (FunctorObjIndex f πX)) C]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Arrow C ⥤ Arrow C` that is constructed in order to apply the small
 object argument to a family of morphisms `f i : A i ⟶ B i`, see the introduction
@@ -344,6 +348,7 @@ noncomputable def functor : Arrow C ⥤ Arrow C where
             (t ≫ (τ ≫ τ').left) (by simp)]
     · dsimp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical natural transformation `𝟭 (Arrow C) ⟶ functor f`. -/
 @[simps app]
 noncomputable def ε : 𝟭 (Arrow C) ⟶ functor f where

@@ -62,7 +62,7 @@ theorem LinearIndependent.sumElim_of_quotient
 theorem LinearIndepOn.union_of_quotient {s t : Set ι} {f : ι → M} (hs : LinearIndepOn R f s)
     (ht : LinearIndepOn R (mkQ (span R (f '' s)) ∘ f) t) : LinearIndepOn R f (s ∪ t) := by
   apply hs.union ht.of_comp
-  convert (Submodule.range_ker_disjoint ht).symm
+  convert! (Submodule.range_ker_disjoint ht).symm
   · simp
   aesop
 
@@ -89,11 +89,11 @@ theorem LinearIndepOn.quotient_iff_union {s t : Set ι} {f : ι → M} (hs : Lin
 theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
     Module.rank R (M ⧸ M') + Module.rank R M' ≤ Module.rank R M := by
   conv_lhs => simp only [Module.rank_def]
-  rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range _) _ (bddAbove_range _)]
+  rw [Cardinal.ciSup_add_ciSup _ bddAbove_of_small _ bddAbove_of_small]
   refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
   choose f hf using Submodule.Quotient.mk_surjective M'
-  simpa [add_comm] using (LinearIndependent.sumElim_of_quotient ht (fun (i : s) ↦ f i)
-    (by simpa [Function.comp_def, hf] using hs)).cardinal_le_rank
+  simpa [add_comm] using! (LinearIndependent.sumElim_of_quotient ht (fun (i : s) ↦ f i)
+    (by simpa [Function.comp_def, hf] using! hs)).cardinal_le_rank
 
 theorem rank_quotient_le (p : Submodule R M) : Module.rank R (M ⧸ p) ≤ Module.rank R M :=
   (mkQ p).rank_le_of_surjective Quot.mk_surjective
@@ -103,12 +103,6 @@ theorem Submodule.finrank_quotient_le [StrongRankCondition R] [Module.Finite R M
     (s : Submodule R M) : finrank R (M ⧸ s) ≤ finrank R M :=
   toNat_le_toNat ((Submodule.mkQ s).rank_le_of_surjective Quot.mk_surjective)
     (rank_lt_aleph0 _ _)
-
-theorem LinearMap.finrank_le_finrank_of_surjective
-    [Module R M'] [StrongRankCondition R] [Module.Finite R M]
-    {f : M →ₗ[R] M'} (h : Function.Surjective f) : Module.finrank R M' ≤ Module.finrank R M := by
-  rw [← f.quotKerEquivOfSurjective h |>.finrank_eq]
-  exact Submodule.finrank_quotient_le _
 
 end Quotient
 
@@ -135,7 +129,7 @@ variable [Module R M₁] [Module R M']
 theorem rank_add_rank_le_rank_prod [Nontrivial R] :
     Module.rank R M + Module.rank R M₁ ≤ Module.rank R (M × M₁) := by
   conv_lhs => simp only [Module.rank_def]
-  rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range _) _ (bddAbove_range _)]
+  rw [Cardinal.ciSup_add_ciSup _ bddAbove_of_small _ bddAbove_of_small]
   exact ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦
     (linearIndependent_inl_union_inr' hs ht).cardinal_le_rank
 
@@ -481,7 +475,7 @@ theorem finrank_span_set_eq_card {s : Set M} [Fintype s] (hs : LinearIndepOn R i
 
 theorem finrank_span_finset_eq_card {s : Finset M} (hs : LinearIndepOn R id (s : Set M)) :
     finrank R (span R (s : Set M)) = s.card := by
-  convert finrank_span_set_eq_card (s := (s : Set M)) hs
+  convert! finrank_span_set_eq_card (s := (s : Set M)) hs
   ext
   simp
 
@@ -498,7 +492,7 @@ lemma finrank_le_of_span_eq_top {ι : Type*} [Fintype ι] {v : ι → M}
     (hv : Submodule.span R (Set.range v) = ⊤) : finrank R M ≤ Fintype.card ι := by
   classical
   rw [← finrank_top, ← hv]
-  exact (finrank_span_le_card _).trans (by convert Fintype.card_range_le v; rw [Set.toFinset_card])
+  exact (finrank_span_le_card _).trans (by convert! Fintype.card_range_le v; rw [Set.toFinset_card])
 
 @[simp]
 lemma Pi.dim_spanSubset [Finite ι] [Nontrivial R] {s : Set ι} :
@@ -585,7 +579,7 @@ noncomputable def sumQuot :
   apply Basis.mk (v := b)
   · apply LinearIndependent.sumElim_of_quotient
     · exact bW.linearIndependent
-    · convert bQ.linearIndependent
+    · convert! bQ.linearIndependent
   · unfold b
     rw [Set.Sum.elim_range, Submodule.span_union,
       show Set.range (fun i ↦ (bW i : V)) = W.subtype '' (Set.range (fun i ↦ bW i)) by aesop,

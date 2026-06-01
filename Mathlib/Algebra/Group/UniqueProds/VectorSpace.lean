@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.Basis.VectorSpace
 # A `ℚ`-vector space has `TwoUniqueSums`.
 -/
 
-@[expose] public section
+public section
 
 variable {G : Type*}
 

@@ -215,7 +215,7 @@ def RelCWComplex.mkFinite.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
     simp_rw [Filter.eventually_atTop, ge_iff_le] at eventually_isEmpty_cell
     obtain ⟨N, hN⟩ := eventually_isEmpty_cell
     suffices IsClosed (A ∩ (D ∪ ⋃ (n : {n : ℕ // n < N}), ⋃ j, ↑(map n j) '' closedBall 0 1)) by
-      convert this using 2
+      convert! this using 2
       rw [← union', iUnion_subtype]
       congrm D ∪ ⋃ n, ?_
       refine subset_antisymm ?_ (iUnion_subset (fun i ↦ by rfl))

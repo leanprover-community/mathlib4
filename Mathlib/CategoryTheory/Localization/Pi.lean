@@ -22,7 +22,7 @@ main result of the file `Mathlib/CategoryTheory/Localization/Prod.lean`.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v₁ v₂ u₁ u₂
 

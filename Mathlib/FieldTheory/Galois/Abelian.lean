@@ -15,7 +15,7 @@ In this file, we define the typeclass of abelian extensions and provide some bas
 
 -/
 
-@[expose] public section
+public section
 
 variable (K L M : Type*) [Field K] [Field L] [Algebra K L]
 variable [Field M] [Algebra K M] [Algebra L M] [IsScalarTower K L M]

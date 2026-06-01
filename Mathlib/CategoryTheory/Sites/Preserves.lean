@@ -56,7 +56,7 @@ noncomputable
 def isTerminal_of_isSheafFor_empty_presieve : IsTerminal (F.obj (op I)) := by
   refine @IsTerminal.ofUnique _ _ _ fun Y ↦ ?_
   choose t h using hF (by tauto) (by tauto)
-  exact ⟨⟨TypeCat.ofHom (fun _ ↦ t)⟩, fun a ↦ by ext; exact h.2 _ (by tauto)⟩
+  exact ⟨⟨↾fun _ ↦ t⟩, fun a ↦ by ext; exact h.2 _ (by tauto)⟩
 
 include hF in
 /--
@@ -80,7 +80,7 @@ variable (hI : IsInitial I)
 -- This is the data of a particular disjoint coproduct in `C`.
 variable {α : Type*} [Small.{w} α] {X : α → C} (c : Cofan X) (hc : IsColimit c)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 theorem piComparison_fac :
     have : HasCoproduct X := ⟨⟨c, hc⟩⟩
     piComparison F (fun x ↦ op (X x)) = F.map (opCoproductIsoProduct' hc (productIsProduct _)).inv ≫
@@ -97,6 +97,7 @@ theorem piComparison_fac :
 
 variable [(ofArrows X c.inj).HasPairwisePullbacks]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hc in
 /--
@@ -129,7 +130,7 @@ theorem firstMap_eq_secondMap :
     Equalizer.Presieve.Arrows.firstMap F X c.inj =
     Equalizer.Presieve.Arrows.secondMap F X c.inj := by
   ext ⟨i, j⟩ a
-  simp only [Equalizer.Presieve.Arrows.firstMap, limit.lift_π, Fan.mk_pt, Fan.mk_π_app,
+  simp only [Equalizer.Presieve.Arrows.firstMap, limit.lift_π, Fan.mk_π_app,
     TypeCat.Fun.toFun_apply, comp_apply, Equalizer.Presieve.Arrows.secondMap]
   by_cases hi : i = j
   · rw [hi, Mono.right_cancellation _ _ pullback.condition]

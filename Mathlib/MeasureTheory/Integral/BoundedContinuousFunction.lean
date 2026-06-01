@@ -27,12 +27,18 @@ namespace BoundedContinuousFunction
 
 section NNRealValued
 
-lemma apply_le_nndist_zero {X : Type*} [TopologicalSpace X] (f : X →ᵇ ℝ≥0) (x : X) :
+variable {X : Type*} [TopologicalSpace X]
+
+lemma apply_le_nndist_zero (f : X →ᵇ ℝ≥0) (x : X) :
     f x ≤ nndist 0 f := by
-  convert nndist_coe_le_nndist x
+  convert! nndist_coe_le_nndist x
   simp only [coe_zero, Pi.zero_apply, NNReal.nndist_zero_eq_val]
 
-variable {X : Type*} [MeasurableSpace X] [TopologicalSpace X]
+lemma apply_le_edist_zero (f : X →ᵇ ℝ≥0) (x : X) :
+    f x ≤ edist 0 f := by
+  simpa [← ENNReal.coe_le_coe] using f.apply_le_nndist_zero x
+
+variable [MeasurableSpace X]
 
 lemma lintegral_le_edist_mul (f : X →ᵇ ℝ≥0) (μ : Measure X) :
     (∫⁻ x, f x ∂μ) ≤ edist 0 f * (μ Set.univ) :=
@@ -67,10 +73,10 @@ theorem lintegral_of_real_lt_top (f : X →ᵇ ℝ) :
 
 theorem toReal_lintegral_coe_eq_integral [OpensMeasurableSpace X] (f : X →ᵇ ℝ≥0) (μ : Measure X) :
     (∫⁻ x, (f x : ℝ≥0∞) ∂μ).toReal = ∫ x, (f x : ℝ) ∂μ := by
-  rw [integral_eq_lintegral_of_nonneg_ae _ (by simpa [Function.comp_apply] using
+  rw [integral_eq_lintegral_of_nonneg_ae _ (by simpa [Function.comp_apply] using!
         (NNReal.continuous_coe.comp f.continuous).measurable.aestronglyMeasurable)]
   · simp only [ENNReal.ofReal_coe_nnreal]
-  · exact Eventually.of_forall (by simp only [Pi.zero_apply, NNReal.zero_le_coe, imp_true_iff])
+  · exact Eventually.of_forall (by simp)
 
 end NNRealValued
 
@@ -111,7 +117,7 @@ lemma norm_integral_le_mul_norm [IsFiniteMeasure μ] (f : X →ᵇ E) :
 
 lemma norm_integral_le_norm [IsProbabilityMeasure μ] (f : X →ᵇ E) :
     ‖∫ x, f x ∂μ‖ ≤ ‖f‖ := by
-  convert f.norm_integral_le_mul_norm μ
+  convert! f.norm_integral_le_mul_norm μ
   simp
 
 lemma isBounded_range_integral
