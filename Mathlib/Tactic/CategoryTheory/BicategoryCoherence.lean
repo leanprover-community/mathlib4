@@ -132,6 +132,8 @@ def bicategoryCoherence (g : MVarId) : TermElabM Unit := g.withContext do
   let [] ← g₂.applyConst ``Subsingleton.elim
     | exception g "This shouldn't happen; Subsingleton.elim does not create goals."
 
+@[deprecated (since := "2026-05-27")] alias bicategory_coherence := bicategoryCoherence
+
 open Lean.Parser.Tactic
 
 /--

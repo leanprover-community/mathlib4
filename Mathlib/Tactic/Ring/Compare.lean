@@ -64,6 +64,10 @@ abbrev leOfPartialOrder (α : Type*) [PartialOrder α] : LE α := inferInstance
 /-- `PartialOrder` implies `LT`. -/
 abbrev ltOfPartialOrder (α : Type*) [PartialOrder α] : LT α := inferInstance
 
+@[deprecated (since := "2026-05-27")] alias amwo_of_cs := addMonoidWithOneOfCommSemiring
+@[deprecated (since := "2026-05-27")] alias le_of_po := leOfPartialOrder
+@[deprecated (since := "2026-05-27")] alias lt_of_po := ltOfPartialOrder
+
 end Typeclass
 
 /-! The lemmas like `add_le_add_right` in the root namespace are stated under minimal type classes,

@@ -150,6 +150,8 @@ def monoidalCoherence (g : MVarId) : TermElabM Unit := g.withContext do
   let [] ← g₂.applyConst ``Subsingleton.elim
     | exception g "This shouldn't happen; Subsingleton.elim does not create goals."
 
+@[deprecated (since := "2026-05-27")] alias monoidal_coherence := monoidalCoherence
+
 open Mathlib.Tactic.BicategoryCoherence
 
 /--
@@ -274,6 +276,8 @@ def coherenceLoop (maxSteps := 37) : TacticM Unit :=
         exception' "`coherence` tactic failed, non-structural morphisms don't match"
       -- and whose second terms can be identified by recursively called `coherence`.
       coherenceLoop maxSteps'
+
+@[deprecated (since := "2026-05-27")] alias coherence_loop := coherenceLoop
 
 open Lean.Parser.Tactic
 

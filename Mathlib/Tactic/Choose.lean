@@ -41,6 +41,8 @@ def mkSometimes (u : Level) (α nonemp p : Expr) :
       mkApp7 (Expr.const ``Function.sometimes_spec [u]) t α nonemp p val' e spec)
   else pure (val, spec)
 
+@[deprecated (since := "2026-05-27")] alias mk_sometimes := mkSometimes
+
 /-- Results of searching for nonempty instances,
 to eliminate dependencies on propositions (`choose!`).
 `success` means we found at least one instance;

@@ -111,6 +111,8 @@ def mkNatCastNonnegProof? (p : Expr × Expr) : MetaM (Option Expr) :=
       trace[linarith] "Got exception when using cast {e.toMessageData}"
       return none
 
+@[deprecated (since := "2026-05-27")] alias mk_natCast_nonneg_prf := mkNatCastNonnegProof?
+
 /--
 If `h` is an equality or inequality between natural numbers,
 `natToInt` lifts this inequality to the integers.
@@ -168,6 +170,8 @@ def mkNonstrictIntProof? (pf : Expr) : MetaM (Option Expr) := do
       (← mkAppM ``lt_of_not_ge #[pf])
   | _ => return none
 
+@[deprecated (since := "2026-05-27")] alias mkNonstrictIntProof := mkNonstrictIntProof?
+
 /-- `strengthenStrictInt h` turns a proof `h` of a strict integer inequality `t1 < t2`
 into a proof of `t1 ≤ t2 + 1`. -/
 def strengthenStrictInt : Preprocessor where
@@ -187,6 +191,8 @@ partial def rearrangeComparison? (e : Expr) : MetaM (Option Expr) := do
   | (Ineq.le, _) => try? <| mkAppM ``Linarith.sub_nonpos_of_le #[e]
   | (Ineq.lt, _) => try? <| mkAppM ``Linarith.sub_neg_of_lt #[e]
   | (Ineq.eq, _) => try? <| mkAppM ``sub_eq_zero_of_eq #[e]
+
+@[deprecated (since := "2026-05-27")] alias rearrangeComparison := rearrangeComparison?
 
 /--
 `compWithZero h` takes a proof `h` of an equality, inequality, or negation thereof,

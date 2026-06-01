@@ -32,16 +32,18 @@ partial def isNNRealProp (e : Expr) : MetaM Bool := succeeds do
   let (_, _, .const ``NNReal _, _, _) ← e.ineqOrNotIneq? | failure
 
 /-- If `e` is of the form `((x : ℝ≥0) : ℝ)`, `NNReal.toReal e` returns `x`. -/
-def getNNRealtoRealArg? (e : Expr) : Option Expr :=
+def getNNRealToRealArg? (e : Expr) : Option Expr :=
   match e with
   | .app (.const ``NNReal.toReal _) n => some n
   | _ => none
+
+@[deprecated (since := "2026-05-27")] alias isNNRealtoReal := getNNRealToRealArg?
 
 /--
 `getNNRealComparisons e` returns a list of all subexpressions of `e` of the form `(x : ℝ)`.
 -/
 partial def getNNRealCoes (e : Expr) : List Expr :=
-  match getNNRealtoRealArg? e with
+  match getNNRealToRealArg? e with
   | some x => [x]
   | none => match e.getAppFnArgs with
     | (``HAdd.hAdd, #[_, _, _, _, a, b]) => getNNRealCoes a ++ getNNRealCoes b
@@ -57,6 +59,8 @@ def mkToRealNonnegProof? (e : Expr) : MetaM (Option Expr) :=
   catch e => do
     trace[linarith] "Got exception when using `coe_nonneg` {e.toMessageData}"
     return none
+
+@[deprecated (since := "2026-05-27")] alias mk_toReal_nonneg_prf := mkToRealNonnegProof?
 
 initialize nnrealToRealTransform.set fun l => do
   let l ← l.mapM fun e => do

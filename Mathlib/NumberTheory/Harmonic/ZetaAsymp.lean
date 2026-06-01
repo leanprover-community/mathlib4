@@ -53,6 +53,9 @@ noncomputable def termSum (s : ℝ) (N : ℕ) : ℝ := ∑ n ∈ Finset.range N,
 /-- Topological sum of `term`s. -/
 noncomputable def termTSum (s : ℝ) : ℝ := ∑' n, term (n + 1) s
 
+@[deprecated (since := "2026-05-27")] alias term_sum := termSum
+@[deprecated (since := "2026-05-27")] alias term_tsum := termTSum
+
 lemma term_nonneg (n : ℕ) (s : ℝ) : 0 ≤ term n s := by
   rw [term, intervalIntegral.integral_of_le (by simp)]
   refine setIntegral_nonneg measurableSet_Ioc (fun x hx ↦ ?_)
@@ -121,6 +124,8 @@ lemma termSum_one (N : ℕ) : termSum 1 N = log (N + 1) - harmonic (N + 1) + 1 :
       term_one (by positivity : 0 < N + 1)]
     push_cast
     ring_nf
+
+@[deprecated (since := "2026-05-27")] alias term_sum_one := termSum_one
 
 /-- The topological sum of `ZetaAsymptotics.term (n + 1) 1` over all `n : ℕ` is `1 - γ`. This is
 proved by directly evaluating the sum of the first `N` terms and using the limit definition of `γ`.
@@ -195,6 +200,8 @@ lemma termSum_of_lt (N : ℕ) {s : ℝ} (hs : 1 < s) :
       congr 1
       ring_nf
 
+@[deprecated (since := "2026-05-27")] alias term_sum_of_lt := termSum_of_lt
+
 /-- For `1 < s`, the topological sum of `ZetaAsymptotics.term (n + 1) s` over all `n : ℕ` is
 `1 / (s - 1) - ζ s / s`.
 -/
@@ -214,9 +221,10 @@ lemma termTSum_of_lt {s : ℝ} (hs : 1 < s) :
     apply (((Summable.hasSum ?_).tendsto_sum_nat).sub ?_).const_mul
     · exact_mod_cast (summable_nat_add_iff 1).mpr (summable_one_div_nat_rpow.mpr hs)
     · apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-      · change Tendsto (fun n : ℕ ↦ (1 / ↑(n + 1) : ℝ) ^ (s - 1)) ..
-        exact ((tendsto_const_div_atTop_nhds_zero_nat _).comp
-          (tendsto_add_atTop_nat _)).rpow_const_nhds_zero (by linarith)
+              (h := fun n : ℕ ↦ (1 / ↑(n + 1) : ℝ) ^ (s - 1))
+      · rw [show 𝓝 (0 : ℝ) = 𝓝 (0 ^ (s - 1)) by rw [zero_rpow]; linarith]
+        refine Tendsto.rpow_const ?_ (Or.inr <| by linarith)
+        exact (tendsto_const_div_atTop_nhds_zero_nat _).comp (tendsto_add_atTop_nat _)
       · intro n
         positivity
       · intro n
@@ -228,6 +236,8 @@ lemma termTSum_of_lt {s : ℝ} (hs : 1 < s) :
           rw [rpow_sub_one, ← div_mul, div_one, mul_comm, one_div, inv_rpow, ← div_eq_mul_inv]
           · norm_cast
           all_goals positivity
+
+@[deprecated (since := "2026-05-27")] alias term_tsum_of_lt := termTSum_of_lt
 
 /-- Reformulation of `ZetaAsymptotics.termTSum_of_lt` which is useful for some computations
 below. -/
@@ -285,6 +295,8 @@ lemma continuousOn_termTSum : ContinuousOn termTSum (Ici 1) := by
   · rw [intervalIntegral.integral_of_le (by linarith)]
     refine setIntegral_nonneg measurableSet_Ioc (fun x hx ↦ div_nonneg ?_ (rpow_nonneg ?_ _))
     all_goals linarith [hx.1]
+
+@[deprecated (since := "2026-05-27")] alias continuousOn_term_tsum := continuousOn_termTSum
 
 /-- First version of the limit formula, with a limit over real numbers tending to 1 from above. -/
 lemma tendsto_riemannZeta_sub_one_div_nhds_right :

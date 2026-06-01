@@ -129,7 +129,40 @@ theorem TendstoInDistribution.continuous_comp {F : Type*} [OpensMeasurableSpace 
       congr
       rw [AEMeasurable.map_map_of_aemeasurable hg.aemeasurable h.aemeasurable_limit]
 
+/-- Almost sure convergence implies convergence in distribution. -/
+theorem tendstoInDistribution_of_ae_tendsto [l.IsCountablyGenerated]
+    [OpensMeasurableSpace E] {X : ι → Ω' → E}
+    (hX₁ : ∀ i, AEMeasurable (X i) μ') (hZ : AEMeasurable Z μ')
+    (hX₂ : ∀ᵐ ω ∂μ', Tendsto (fun i ↦ X i ω) l (𝓝 (Z ω))) :
+    TendstoInDistribution X l Z (fun _ ↦ μ') μ' where
+  forall_aemeasurable := hX₁
+  aemeasurable_limit := hZ
+  tendsto := by
+    simp_rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto, ProbabilityMeasure.coe_mk]
+    intro f
+    rw [lintegral_map' (by fun_prop) hZ]
+    conv in ∫⁻ _, _ ∂_ => rw [lintegral_map' (by fun_prop) (hX₁ i)]
+    apply tendsto_lintegral_filter_of_dominated_convergence' (bound := fun _ ↦ edist 0 f)
+    · exact .of_forall (by fun_prop)
+    · simp [f.apply_le_edist_zero]
+    · simp
+    filter_upwards [hX₂] with ω hω
+    simpa [Function.comp_def] using f.continuous.tendsto (Z ω) |>.comp hω
+
 end TendstoInDistribution
+
+/-- Convergence in probability (`TendstoInMeasure`) implies convergence in distribution
+(`TendstoInDistribution`). -/
+theorem TendstoInMeasure.tendstoInDistribution [PseudoEMetricSpace E] [BorelSpace E]
+    [l.IsCountablyGenerated] [l.NeBot] {X : ι → Ω' → E}
+    (h : TendstoInMeasure μ' X l Z) (hX : ∀ i, AEMeasurable (X i) μ') :
+    TendstoInDistribution X l Z (fun _ ↦ μ') μ' := by
+  have hZ := h.aemeasurable hX
+  refine ⟨hX, hZ, ?_⟩
+  refine Filter.tendsto_of_subseq_tendsto (fun ns hns ↦ ?_)
+  obtain ⟨ms, hms1, hms2⟩ := h.comp hns |>.exists_seq_tendsto_ae'
+  refine ⟨ms, TendstoInDistribution.tendsto ?_⟩
+  exact tendstoInDistribution_of_ae_tendsto (by fun_prop) hZ hms2
 
 variable [SeminormedAddCommGroup E] [SecondCountableTopology E] [BorelSpace E]
 
@@ -162,7 +195,7 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub {X : ι → Ω'' → E}
     simp only [← hF_lip, integral_const, smul_eq_mul]
     have h_prob n : IsProbabilityMeasure (μ''.map (Y n)) := Measure.isProbabilityMeasure_map (hY n)
     have : IsProbabilityMeasure (μ'.map Z) := Measure.isProbabilityMeasure_map hZ
-    simpa using tendsto_const_nhds
+    simpa using! tendsto_const_nhds
   -- now `F` is `L`-Lipschitz with `L > 0`
   simp_rw [Metric.tendsto_nhds, Real.dist_eq]
   suffices ∀ ε > 0, ∀ᶠ n in l, |∫ ω, F ω ∂(μ''.map (Y n)) - ∫ ω, F ω ∂(μ'.map Z)| < L * ε by
@@ -244,7 +277,7 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub {X : ι → Ω'' → E}
       exact hXY (ε / 2) (by positivity)
     · replace hXZ := hXZ.tendsto
       simp_rw [tendsto_iff_forall_lipschitz_integral_tendsto] at hXZ
-      simpa [tendsto_iff_dist_tendsto_zero] using hXZ F ⟨M, hF_bounded⟩ ⟨L, hF_lip⟩
+      simpa [tendsto_iff_dist_tendsto_zero] using! hXZ F ⟨M, hF_bounded⟩ ⟨L, hF_lip⟩
   have h_lt : L * ε / 2 < L * ε := half_lt_self (by positivity)
   filter_upwards [h_tendsto.eventually_lt_const h_lt] with n hn using (h_le n).trans_lt hn
 
@@ -256,13 +289,6 @@ lemma TendstoInMeasure.tendstoInDistribution_of_aemeasurable [l.IsCountablyGener
     TendstoInDistribution X l Z (fun _ ↦ μ') μ' :=
   tendstoInDistribution_of_tendstoInMeasure_sub X Z (tendstoInDistribution_const hZ)
     (by simpa [tendstoInMeasure_iff_norm] using h) hX
-
-/-- Convergence in probability (`TendstoInMeasure`) implies convergence in distribution
-(`TendstoInDistribution`). -/
-lemma TendstoInMeasure.tendstoInDistribution [l.NeBot] [l.IsCountablyGenerated]
-    {X : ι → Ω' → E} (h : TendstoInMeasure μ' X l Z) (hX : ∀ i, AEMeasurable (X i) μ') :
-    TendstoInDistribution X l Z (fun _ ↦ μ') μ' :=
-    h.tendstoInDistribution_of_aemeasurable hX (h.aemeasurable hX)
 
 /-- **Slutsky's theorem**: if `X n` converges in distribution to `Z`, and `Y n` converges in
 probability to a constant `c`, then the pair `(X n, Y n)` converges in distribution to `(Z, c)`. -/
