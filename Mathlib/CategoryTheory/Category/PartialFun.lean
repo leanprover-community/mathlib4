@@ -115,13 +115,11 @@ noncomputable def partialFunToPointed : PartialFun ⥤ Pointed where
   map {X Y} f :=
     { toFun := Option.elim' none fun a => ((f : PFun X Y).toFun a).toOption
       map_point := rfl }
-  map_id X := Pointed.Hom.ext <| funext fun (o : Option X) => Option.recOn o rfl fun (a : X) => by
+  map_id X := Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => by
     dsimp [CategoryStruct.id]
     convert! Part.some_toOption a
-  map_comp {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z) := Pointed.Hom.ext <| funext fun (o : Option X) => by
-    cases o with
-    | none => rfl
-    | some a =>
+  map_comp {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z) := Pointed.Hom.ext <| funext fun o =>
+    Option.recOn o rfl fun a => by
       dsimp [CategoryStruct.comp, Pointed.Hom.comp]
       change (((f : PFun X Y).toFun a).bind fun y : Y => ((g : PFun Y Z).toFun y)).toOption =
         Option.elim' (none : Option Z) (fun y : Y => ((g : PFun Y Z).toFun y).toOption)

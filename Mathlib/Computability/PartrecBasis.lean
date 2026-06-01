@@ -108,33 +108,24 @@ theorem comp₁ {n} (f : ℕ →. ℕ) {g : List.Vector ℕ n → ℕ}
 theorem rfindOpt {n} {f : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec' (n + 1) (PFun.lift f)) :
     @Partrec' n (PFun.mk fun v => Nat.rfindOpt fun a => ofNat (Option ℕ) (f (a ::ᵥ v))) :=
   ((rfind <|
-    (of_prim (Primrec.nat_sub.comp (_root_.Primrec.const 1) Primrec.vector_head)).comp₁
+        (of_prim (Primrec.nat_sub.comp (_root_.Primrec.const 1) Primrec.vector_head)).comp₁
           (PFun.lift fun n => 1 - n) hf).bind
     ((prim Nat.Primrec'.pred).comp₁ (PFun.lift Nat.pred) hf)).of_eq
-    fun v => by
-      ext b
-      simp only [PFun.coe_mk, Nat.rfindOpt, Part.mem_bind_iff, PFun.lift_apply, Part.mem_some_iff]
-      have h_rfind : (fun n => decide (1 - f (n ::ᵥ v) = 0)) =
-          fun n => (ofNat (Option ℕ) (f (n ::ᵥ v))).isSome := by
-        funext x
-        cases hx : f (x ::ᵥ v) with
-        | zero => rfl
-        | succ m =>
-          have h1 : 1 - (m + 1) = 0 := by omega
-          rw [h1]
-          rfl
-      simp only [h_rfind]
-      refine exists_congr fun a => and_congr_right fun h1 => ?_
-      cases hfa : f (a ::ᵥ v) with
-      | zero =>
-        have h_spec := Nat.rfind_spec h1
-        simp only [PFun.lift_apply, Part.mem_some_iff, hfa] at h_spec
-        have h_false : (ofNat (Option ℕ) 0).isSome = false := rfl
-        rw [h_false] at h_spec
-        contradiction
-      | succ m =>
-        have h_ofNat : ofNat (Option ℕ) (m + 1) = Option.some m := rfl
-        simp [h_ofNat]
+    fun v => Part.ext fun b => by
+      simp only [Nat.rfindOpt, Nat.sub_eq_zero_iff_le, PFun.coe_mk, PFun.lift_apply,
+        Part.mem_bind_iff, Part.mem_some_iff, Part.mem_coe, Option.mem_def]
+      refine exists_congr fun a =>
+        (and_congr (iff_of_eq ?_) Iff.rfl).trans (and_congr_right fun h => ?_)
+      · congr
+        funext n
+        cases f (n ::ᵥ v) <;> simp <;> rfl
+      · have := Nat.rfind_spec h
+        simp only [PFun.lift_apply, Part.mem_some_iff] at this
+        revert this; rcases f (a ::ᵥ v) with - | c <;> intro this
+        · cases this
+        rw [← Option.some_inj, eq_comm]
+        rfl
+
 open Nat.Partrec.Code
 
 theorem of_part : ∀ {n f}, Partrec f → @Partrec' n f :=
