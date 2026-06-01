@@ -142,11 +142,10 @@ def isDetachedAtNightlyTesting (mathlibDepPath : FilePath) : IO Bool := do
     return false
 
 /--
-Attempts to determine the GitHub repository of a version of Mathlib from its Git remote.
-If the current commit coincides with a PR ref, it will determine the source fork
-of that PR rather than just using the origin remote.
+Inner implementation: may throw if git is unavailable or the directory has no
+git checkout. Callers should use `getRemoteRepo` instead.
 -/
-def getRemoteRepo (mathlibDepPath : FilePath) : IO (Option RepoInfo) := do
+private def getRemoteRepoImpl (mathlibDepPath : FilePath) : IO (Option RepoInfo) := do
 
   -- Since currently we need to push a PR to `leanprover-community/mathlib` build a user cache,
   -- we check if we are a special branch or a branch with PR. This leaves out non-PRed fork
@@ -241,6 +240,22 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO (Option RepoInfo) := do
     return some {repo := repo}
   | none =>
     IO.println s!"Using cache from {MATHLIBREPO}."
+    return none
+
+/--
+Attempts to determine the GitHub repository of a version of Mathlib from its Git remote.
+If the current commit coincides with a PR ref, it will determine the source fork
+of that PR rather than just using the origin remote.
+
+Returns `none` if git is unavailable, the path is not inside a git checkout, or
+the remote cannot be resolved. This is the expected outcome when `cache get` is
+invoked on a dependency that was fetched as an archive rather than a git clone;
+callers fall back to `MATHLIBREPO` and the master container.
+-/
+def getRemoteRepo (mathlibDepPath : FilePath) : IO (Option RepoInfo) := do
+  try
+    return (← getRemoteRepoImpl mathlibDepPath)
+  catch _ =>
     return none
 
 /--

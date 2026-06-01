@@ -590,6 +590,51 @@ def test_findMostRecentSHAWithCache : IO Unit := do
 
 end NonDefaultScope
 
+section GitFallback
+
+/-- `getRemoteRepo` and `resolveRepo` must never throw, regardless of git's
+availability or the state of the target path. This matters for `cache get`
+invoked inside a Lake dependency update, where the Mathlib dependency may be a
+plain archive without a `.git` directory.
+
+Two distinct failure modes are tested:
+
+* **Nonexistent path** — `IO.Process.output` throws before git even starts
+  (the OS rejects the invalid cwd). The `try...catch` in `getRemoteRepo` must
+  catch the exception and return `none`.
+
+* **Non-git directory** — git runs successfully but the path is not a repo, so
+  every git command exits non-zero. The existing exit-code checks already handle
+  this path; the test pins that `none` is returned here too.
+
+In both cases `resolveRepo` must fall back to `MATHLIBREPO`, giving the
+master-only container chain (no `forks`) — exactly what a dependency build
+should read from. -/
+def test_getRemoteRepo_gitFallback : IO Unit := do
+  IO.println "getRemoteRepo git fallback:"
+  -- Case 1: nonexistent cwd causes IO.Process.output to throw.
+  -- The try...catch in getRemoteRepo must intercept it and return none.
+  let fakePath := "/tmp/surely-nonexistent-mathlib-cache-test-xyz-9999999"
+  let r1 ← getRemoteRepo fakePath
+  assert "getRemoteRepo returns none when git throws (nonexistent cwd)" (r1 == none)
+
+  -- Case 2: existing directory that is not a git repo (git returns exit 128).
+  -- This exercises the exit-code fallback path that predates the try...catch.
+  let r2 ← getRemoteRepo "/tmp"
+  assert "getRemoteRepo returns none in a non-git directory" (r2 == none)
+
+  -- resolveRepo propagates the fallback correctly:
+  --   detected? = none, resolved = MATHLIBREPO → master-only chain.
+  let (detected?, resolved) ← resolveRepo none fakePath
+  assert "resolveRepo detected? is none on git failure" (detected? == none)
+  assert "resolveRepo falls back to MATHLIBREPO on git failure" (resolved == MATHLIBREPO)
+  assert "fallback chain includes master"
+    ((defaultContainersForRepo resolved).contains .master)
+  assert "fallback chain excludes forks (no fork container for dependency builds)"
+    (!(defaultContainersForRepo resolved).contains .forks)
+
+end GitFallback
+
 section CliOptions
 
 open Cache.Cli
@@ -727,6 +772,7 @@ def runAll : IO Unit := do
   test_shouldWarnNonDefaultScope
   test_getNonDefaultScopeReason
   test_findMostRecentSHAWithCache
+  test_getRemoteRepo_gitFallback
   test_isKnownOpt
   test_parseNamedOpt
   test_parseFlagOpt
