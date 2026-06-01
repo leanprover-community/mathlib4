@@ -209,6 +209,7 @@ section Definitions
 it was suggested to redefine `LowerSemicontinuous` in a way that works better for partial orders.
 The following example shows that this redefinition can still take place even in light of the
 refactor in terms of `Semicontinuous`. -/
+
 example : Semicontinuous (¬ f · ≤ ·) ↔ ∀ x y, (∃ᶠ x' in 𝓝 x, f x' ≤ y) → f x ≤ y := by
   simp_rw [Semicontinuous, SemicontinuousAt, ← not_frequently, not_imp_not]
 

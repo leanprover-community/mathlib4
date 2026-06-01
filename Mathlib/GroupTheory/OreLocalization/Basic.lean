@@ -547,7 +547,7 @@ protected def hsmul (c : R) :
       ← oreDiv_smul_oreDiv, ← OreLocalization.expand])
 
 set_option linter.overlappingInstances false in
-/- Warning: This gives a diamond on `SMul R[S⁻¹] M[S⁻¹][S⁻¹]`, but we will almost never localize
+/-- Warning: This gives a diamond on `SMul R[S⁻¹] M[S⁻¹][S⁻¹]`, but we will almost never localize
 at the same monoid twice. -/
 /- Although the definition does not require `IsScalarTower R M X`,
 it does not make sense without it. -/
