@@ -253,6 +253,19 @@ lemma integral_gaussianReal_eq_integral_smul {E : Type*} [NormedAddCommGroup E] 
     integral_withDensity_eq_integral_toReal_smul (measurable_gaussianPDF _ _)
       (ae_of_all _ fun _ ↦ gaussianPDF_lt_top)]
 
+lemma measurable_gaussianReal_params :
+    Measurable (fun (p : ℝ × ℝ≥0) => gaussianReal p.1 p.2) := by
+  rw [Measure.measurable_measure]
+  intro s hs
+  simp_rw [gaussianReal, DFunLike.ite_apply]
+  refine Measurable.ite (by measurability) ?_ ?_
+  · simp only [Measure.dirac_apply]
+    exact Measurable.indicator measurable_const <| measurableSet_preimage measurable_fst hs
+  · simp only [hs, withDensity_apply]
+    refine Measurable.lintegral_prod_right <| Measurable.ennreal_ofReal ?_
+    unfold gaussianPDFReal
+    fun_prop
+
 section Transformations
 
 variable {μ : ℝ} {v : ℝ≥0}
