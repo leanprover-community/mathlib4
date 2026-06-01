@@ -301,10 +301,11 @@ theorem finiteDimensional [Finite G] [IsGaloisGroup G K L] : FiniteDimensional K
 section
 
 variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Module.Finite A B]
-  [IsDomain A] [IsDomain B] [FaithfulSMul A B] [MulSemiringAction G B] [IsGaloisGroup G A B]
+  [IsDomain B] [FaithfulSMul A B] [MulSemiringAction G B] [IsGaloisGroup G A B]
 
 include A B in
 protected theorem finite : Finite G := by
+  have := IsDomain.of_faithfulSMul A B
   let := FractionRing.liftAlgebra A (FractionRing B)
   let := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
   have := IsGaloisGroup.to_isFractionRing_of_isIntegral G A B (FractionRing A) (FractionRing B)
@@ -316,6 +317,7 @@ protected theorem finite : Finite G := by
 
 See `IsGaloisGroup.card_eq_finrank` a field-theoretic version that does not assume finiteness. -/
 theorem card_eq_finrank' : Nat.card G = Module.finrank A B := by
+  have := IsDomain.of_faithfulSMul A B
   have : Finite G := IsGaloisGroup.finite G A B
   let := FractionRing.liftAlgebra A (FractionRing B)
   let := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
