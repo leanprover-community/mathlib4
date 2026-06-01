@@ -340,7 +340,7 @@ lemma variation_withDensityᵥ [CompleteSpace E]
   with respect to the measure `μ.withDensity ‖f‖` interpreted as a signed measure. -/
   rcases subsingleton_or_nontrivial E with hE | hE
   · simp [show f = 0 from Subsingleton.elim _ _]
-  have : IsFiniteMeasure (μ.withDensity fun x ↦ ‖f x‖ₑ) := ⟨by simpa using hf.2⟩
+  have : IsFiniteMeasure (μ.withDensity fun x ↦ ‖f x‖ₑ) := ⟨by simpa using! hf.2⟩
   have I : (μ.withDensity fun x ↦ ‖f x‖ₑ).toSignedMeasure.Integrable (fun x ↦ ‖f x‖⁻¹ • f x)
       (ContinuousLinearMap.lsmul ℝ ℝ).flip := by
     apply Integrable.mono_measure _ (variation_transpose_le _ _)
@@ -373,13 +373,5 @@ lemma variation_withDensityᵥ [CompleteSpace E]
   have h'x : ‖f x‖ ≠ 0 := by simp [hx]
   simp only [enorm_smul, Pi.mul_apply, ne_eq, h'x, not_false_eq_true, enorm_inv, enorm_norm]
   rw [ENNReal.inv_mul_cancel (by simpa using hx) (by simp), mul_one]
-
-
-
-
-
-
-
-
 
 end MeasureTheory.VectorMeasure
