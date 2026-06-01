@@ -40,7 +40,7 @@ the base ring `A 0` with:
 
 and the `i`th grade `A i` with `A 0`-actions (`•`) defined as left-multiplication:
 
-* `DirectSum.GradeZero.smul (A 0)`, `DirectSum.instSMulWithZeroOfNat (A 0)`
+* `DirectSum.instSMulWithZeroOfNat (A 0)`
 * `DirectSum.instModuleOfNat (A 0)`
 * (nothing)
 * (nothing)
