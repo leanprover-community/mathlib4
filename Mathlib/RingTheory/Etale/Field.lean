@@ -242,10 +242,9 @@ variable {K A} in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equivPiOfIsSepClosed_comap {B : Type*} [CommRing B] [EssFiniteType K A] [FormallyEtale K A]
-    [Algebra K B] [Algebra.EssFiniteType K B] [FormallyEtale K B] [IsSepClosed K]
+    [Algebra K B] [EssFiniteType K B] [FormallyEtale K B] [IsSepClosed K]
     (f : A →ₐ[K] B) (x : A) (p : PrimeSpectrum B) :
-    equivPiOfIsSepClosed K A x (p.comap f) =
-      equivPiOfIsSepClosed K B (f x) p := by
+    equivPiOfIsSepClosed K A x (p.comap f) = equivPiOfIsSepClosed K B (f x) p := by
   dsimp [equivPiOfIsSepClosed]
   simp only [Equiv.piCongrLeft_symm_apply, AlgEquiv.piCongrRight_apply,
     IsArtinianRing.primeSpectrumEquivMaximalSpectrum_apply_asIdeal, PrimeSpectrum.comap_asIdeal,
@@ -254,7 +253,7 @@ lemma equivPiOfIsSepClosed_comap {B : Type*} [CommRing B] [EssFiniteType K A] [F
     simp
   suffices h : Ideal.quotientMapₐ p.asIdeal f le_rfl x = f x by
     apply FaithfulSMul.algebraMap_injective K (B ⧸ p.asIdeal)
-    rw [← Algebra.ofId_apply, ← Algebra.ofId_apply]
+    rw [← ofId_apply, ← ofId_apply]
     nth_rw 1 [heq]
     simp only [AlgHom.coe_comp, Function.comp_apply, AlgEquiv.ofBijective_apply_symm_apply]
     convert h

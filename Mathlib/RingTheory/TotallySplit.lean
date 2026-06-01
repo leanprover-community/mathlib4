@@ -82,7 +82,7 @@ instance [IsFiniteSplit R S] : Etale R S := by
   exact .of_equiv e.symm
 
 variable (k) in
-lemma bijective_algebraMap_quotient [Algebra.IsFiniteSplit k R] (p : Ideal R) [p.IsPrime] :
+lemma bijective_algebraMap_quotient [IsFiniteSplit k R] (p : Ideal R) [p.IsPrime]
     Function.Bijective (algebraMap k (R ⧸ p)) := by
   obtain ⟨n, ⟨e⟩⟩ := nonempty_algEquiv_fun k R
   let p' : Ideal (Fin n → k) := p.comap e.symm
@@ -95,12 +95,11 @@ lemma bijective_algebraMap_quotient [Algebra.IsFiniteSplit k R] (p : Ideal R) [p
       (Function.surjective_eval _)
   simpa [← g.symm.toAlgHom.comp_algebraMap] using g.symm.bijective
 
-set_option backward.isDefEq.respectTransparency false in
 variable (k R) in
 /-- If `R` is finite split over a field `k`, the `k`-rational points of `R`
 are in one-to-one correspondence with its prime spectrum. -/
 noncomputable
-def algHomEquivPrimeSpectrum [Algebra.IsFiniteSplit k R] : (R →ₐ[k] k) ≃ PrimeSpectrum R where
+def algHomEquivPrimeSpectrum [IsFiniteSplit k R] : (R →ₐ[k] k) ≃ PrimeSpectrum R where
   toFun f := ⟨RingHom.ker f, RingHom.ker_isPrime f⟩
   invFun p := AlgHom.comp
     (AlgEquiv.ofBijective (Algebra.ofId _ _) (bijective_algebraMap_quotient _ _)).symm.toAlgHom
@@ -122,7 +121,7 @@ def algHomEquivPrimeSpectrum [Algebra.IsFiniteSplit k R] : (R →ₐ[k] k) ≃ P
       Ideal.Quotient.mkₐ_ker]
 
 instance [IsSepClosed k] [EssFiniteType k R] [FormallyEtale k R] : IsFiniteSplit k R := by
-  have := Algebra.FormallyUnramified.finite_of_free k R
+  have := FormallyUnramified.finite_of_free k R
   have : IsArtinianRing R := isArtinian_of_tower k inferInstance
   exact .of_algEquiv (Algebra.FormallyEtale.equivPiOfIsSepClosed k R).symm
 
