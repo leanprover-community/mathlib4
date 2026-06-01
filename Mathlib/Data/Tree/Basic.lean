@@ -30,7 +30,7 @@ additional data. We provide the notation `a △ b` for making a `Tree Unit` with
 /-- A binary tree with values stored in non-leaf nodes. -/
 inductive Tree.{u} (α : Type u) : Type u
   | nil : Tree α
-  | node : α → Tree α → Tree α → Tree α
+  | node (value : α) (left : Tree α) (right : Tree α) : Tree α
   deriving DecidableEq, Repr
 compile_inductive% Tree
 

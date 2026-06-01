@@ -152,6 +152,7 @@ theorem dist_coe_le_dist (x : α) : dist (f x) (g x) ≤ dist f g :=
 /- This lemma will be needed in the proof of the metric space instance, but it will become
 useless afterwards as it will be superseded by the general result that the distance is nonnegative
 in metric spaces. -/
+
 set_option backward.privateInPublic true in
 private theorem dist_nonneg' : 0 ≤ dist f g :=
   le_csInf dist_set_exists fun _ => And.left
@@ -179,7 +180,7 @@ theorem dist_lt_iff_of_compact [CompactSpace α] (C0 : (0 : ℝ) < C) :
   · by_cases h : Nonempty α
     · exact dist_lt_of_nonempty_compact
     · rintro -
-      convert C0
+      convert! C0
       apply le_antisymm _ dist_nonneg'
       rw [dist_eq]
       exact csInf_le ⟨0, fun C => And.left⟩ ⟨le_rfl, fun x => False.elim (h (Nonempty.intro x))⟩
@@ -551,8 +552,6 @@ def coeFnMonoidHom [Monoid R] [BoundedMul R] [ContinuousMul R] : (α →ᵇ R) �
   map_one' := coe_one
   map_mul' := coe_mul
 
-@[deprecated (since := "2025-10-30")] alias coeFnAddHom := coeFnAddMonoidHom
-
 variable (α R) in
 /-- The multiplicative map forgetting that a bounded continuous function is bounded. -/
 @[to_additive (attr := simps) /-- The additive map forgetting that a bounded continuous
@@ -564,8 +563,6 @@ def toContinuousMapMonoidHom [Monoid R] [BoundedMul R] [ContinuousMul R] : (α �
     intros
     ext
     simp
-
-@[deprecated (since := "2025-10-30")] alias toContinuousMapAddHom := toContinuousMapAddMonoidHom
 
 @[to_additive (attr := simp)]
 lemma coe_prod {ι : Type*} (s : Finset ι) [CommMonoid R] [BoundedMul R] [ContinuousMul R]

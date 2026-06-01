@@ -117,7 +117,8 @@ class SMulWithZero [Zero M₀] [Zero A] extends SMulZeroClass M₀ A where
   /-- Scalar multiplication by the scalar `0` is `0`. -/
   zero_smul : ∀ m : A, (0 : M₀) • m = 0
 
-instance MulZeroClass.toSMulWithZero [MulZeroClass M₀] : SMulWithZero M₀ M₀ where
+-- see Note [higher instance priority]
+instance (priority := 1100) MulZeroClass.toSMulWithZero [MulZeroClass M₀] : SMulWithZero M₀ M₀ where
   smul := (· * ·)
   smul_zero := mul_zero
   zero_smul := zero_mul
@@ -193,8 +194,9 @@ instance (priority := 100) MulActionWithZero.toSMulWithZero (M₀ A) {_ : Monoid
     {_ : Zero A} [m : MulActionWithZero M₀ A] : SMulWithZero M₀ A :=
   { m with }
 
+-- see Note [higher instance priority]
 /-- See also `Semiring.toModule` -/
-instance MonoidWithZero.toMulActionWithZero : MulActionWithZero M₀ M₀ :=
+instance (priority := 1100) MonoidWithZero.toMulActionWithZero : MulActionWithZero M₀ M₀ :=
   { MulZeroClass.toSMulWithZero M₀, Monoid.toMulAction M₀ with }
 
 /-- Like `MonoidWithZero.toMulActionWithZero`, but multiplies on the right. See also
@@ -346,8 +348,6 @@ class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction 
   smul_zero : ∀ a : M, a • (0 : A) = 0
   /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
-
-attribute [to_additive existing (dont_translate := M) DistribMulAction] MulDistribMulAction
 
 section
 
