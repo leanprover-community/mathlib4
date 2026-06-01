@@ -201,6 +201,7 @@ open Finsupp
 variable {σ : Type*} [LinearOrder σ] [WellFoundedGT σ]
 
 set_option warn.sorry false in
+set_option linter.overlappingInstances false in
 /-- The deg-lexicographic order on `σ →₀ ℕ`, as a `MonomialOrder` -/
 noncomputable def degLex [WellFoundedGT σ] :
     MonomialOrder σ where
