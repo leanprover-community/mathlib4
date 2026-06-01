@@ -50,10 +50,6 @@ discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in
   whose value group is cyclic and nontrivial, then `v.valuationSubring` is a discrete
   valuation ring. This instance is the formalization of Chapter I, Section 1, Proposition 1 in
   [serre1968].
-* `IsDiscreteValuationRing.isRankOneDiscrete`: Given a DVR `A` and a field `K` satisfying
-  `IsFractionRing A K`, the valuation induced on `K` is discrete.
-* `IsDiscreteValuationRing.equivValuationSubring` The ring isomorphism between a DVR and the
-  unit ball in its field of fractions endowed with the adic valuation of the maximal ideal.
 
 
 ## TODO
