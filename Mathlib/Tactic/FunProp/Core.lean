@@ -35,8 +35,8 @@ def synthesizeInstance (thmId : Origin) (x type : Expr) : MetaM Bool := do
       return true
     else
       trace[Meta.Tactic.fun_prop]
-"{← ppOrigin thmId}, failed to assign instance{indentExpr type}
-synthesized value{indentExpr val}\nis not definitionally equal to{indentExpr x}"
+        "{← ppOrigin thmId}, failed to assign instance{indentExpr type}
+      synthesized value{indentExpr val}\nis not definitionally equal to{indentExpr x}"
       return false
   | _ =>
     trace[Meta.Tactic.fun_prop]
@@ -491,16 +491,16 @@ def tryTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
 
   for thm in thms do
 
-    trace[Debug.Meta.Tactic.fun_prop] "trying theorem {thm.thmOrigin}"
+    trace[Debug.Meta.Tactic.fun_prop] "trying theorem {← ppOrigin thm.thmOrigin}"
 
     match compare thm.appliedArgs fData.args.size with
     | .lt =>
-      trace[Meta.Tactic.fun_prop] "removing argument to later use {thm.thmOrigin}"
+      trace[Meta.Tactic.fun_prop] "removing argument to later use {← ppOrigin thm.thmOrigin}"
       if let some r ← removeArgRule funPropDecl e fData funProp then
         return r
       continue
     | .gt =>
-      trace[Meta.Tactic.fun_prop] "adding argument to later use {thm.thmOrigin}"
+      trace[Meta.Tactic.fun_prop] "adding argument to later use {← ppOrigin thm.thmOrigin}"
       if let some r ← applyPiRule funPropDecl e funProp then
         return r
       continue
@@ -516,8 +516,8 @@ def tryTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
           match dec? with
           | some (.comp f g) =>
             trace[Meta.Tactic.fun_prop]
-              s!"decomposing to later use {←ppOrigin' thm.thmOrigin} as:
-                   ({← ppExpr f}) ∘ ({← ppExpr g})"
+              "decomposing to later use {← ppOrigin thm.thmOrigin} as:
+                   ({f}) ∘ ({g})"
             if let some r ← applyCompRule funPropDecl e f g funProp then
               return r
           | some _ =>
@@ -527,8 +527,7 @@ def tryTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
         else
           let some (f, g) ← fData.decompositionOverArgs thm.mainArgs | continue
           trace[Meta.Tactic.fun_prop]
-            s!"decomposing to later use {←ppOrigin' thm.thmOrigin} as:
-                 ({← ppExpr f}) ∘ ({← ppExpr g})"
+            "decomposing to later use {← ppOrigin thm.thmOrigin} as: ({f}) ∘ ({g})"
           if let some r ← applyCompRule funPropDecl e f g funProp then
             return r
       -- todo: decompose if uncurried and arguments do not match exactly
@@ -545,8 +544,8 @@ def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     let .fvar id := fData.fn | throwError "fun_prop bug: invalid use of fvar app case"
     let thms ← getLocalTheorems funPropDecl (.fvar id) fData.mainArgs fData.args.size
     trace[Meta.Tactic.fun_prop]
-      s!"candidate local theorems for {←ppExpr (.fvar id)} \
-         {← thms.mapM fun thm => ppOrigin' thm.thmOrigin}"
+      "candidate local theorems for {← ppExpr (.fvar id)} \
+         {← thms.mapM fun thm => ppOrigin thm.thmOrigin}"
 
     if let some r ← tryTheorems funPropDecl e fData thms funProp then
       return r
@@ -578,7 +577,7 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
   let globalThms ← getDeclTheorems funPropDecl funName fData.mainArgs fData.args.size
 
   trace[Meta.Tactic.fun_prop]
-    s!"candidate theorems for {funName} {← globalThms.mapM fun thm => ppOrigin' thm.thmOrigin}"
+    "candidate theorems for {funName} {← globalThms.mapM fun thm => ppOrigin thm.thmOrigin}"
 
   if let some r ← tryTheorems funPropDecl e fData globalThms funProp then
     return r
@@ -587,14 +586,14 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
   let localThms ← getLocalTheorems funPropDecl (.decl funName) fData.mainArgs fData.args.size
   if localThms.size ≠ 0 then
     trace[Meta.Tactic.fun_prop]
-      s!"candidate local theorems for {funName} \
-        {← localThms.mapM fun thm => ppOrigin' thm.thmOrigin}"
+      "candidate local theorems for {funName} \
+        {← localThms.mapM fun thm => ppOrigin thm.thmOrigin}"
   if let some r ← tryTheorems funPropDecl e fData localThms funProp then
     return r
 
   -- log error if no global or local theorems were found
   if globalThms.size = 0 && localThms.size = 0 then
-     logError s!"No theorems found for `{funName}` in order to prove `{← ppExpr e}`"
+     logError s!"No theorems found for `{funName}` in order to prove `{e}`"
 
   if (← fData.isMorApplication) != .none then
     if let some r ← applyMorRules funPropDecl e fData funProp then
@@ -602,8 +601,8 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
 
   if let .comp f g ← fData.decomposition then
     trace[Meta.Tactic.fun_prop]
-      s!"failed applying `{funPropDecl.funPropName}` theorems for `{funName}`
-         trying again after decomposing function as: `({← ppExpr f}) ∘ ({← ppExpr g})`"
+      "failed applying `{funPropDecl.funPropName}` theorems for `{funName}`
+         trying again after decomposing function as: `({f}) ∘ ({g})`"
 
     if let some r ← applyCompRule funPropDecl e f g funProp then
       return r
@@ -635,15 +634,14 @@ mutual
 
     let e ← instantiateMVars e
 
-    withTraceNode `Meta.Tactic.fun_prop
-      (fun _ => do pure s!"{← ppExpr e}") do
+    withTraceNode `Meta.Tactic.fun_prop (fun _ => do pure m!"{e}") do
 
     -- check cache for successful goals
     if let some { expr := _, proof? := some proof, .. } := (← get).cache.find? e then
-      trace[Meta.Tactic.fun_prop] "reusing previously found proof for {e}"
+      trace[Meta.Tactic.fun_prop] "reusing previously found proof for `{e}`"
       return some { proof := proof }
     else if (← get).failureCache.contains e then
-      trace[Meta.Tactic.fun_prop] "skipping proof search, proving {e} was tried already and failed"
+      trace[Meta.Tactic.fun_prop] "skipping proof search, proving `{e}` was tried already and failed"
       return none
     else
       -- take care of forall and let binders and run main
@@ -681,11 +679,11 @@ mutual
 
     match ← getFunctionData? f (← unfoldNamePred) with
     | .letE f =>
-      trace[Debug.Meta.Tactic.fun_prop] "let case on {← ppExpr f}"
+      trace[Debug.Meta.Tactic.fun_prop] "let case on `{f}`"
       let e := e.setArg funPropDecl.funArgId f -- update e with reduced f
       letCase funPropDecl e f funProp
     | .lam f =>
-      trace[Debug.Meta.Tactic.fun_prop] "pi case on {← ppExpr f}"
+      trace[Debug.Meta.Tactic.fun_prop] "pi case on `{f}`"
       let e := e.setArg funPropDecl.funArgId f -- update e with reduced f
       applyPiRule funPropDecl e funProp
     | .data fData =>
