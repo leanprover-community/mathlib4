@@ -66,7 +66,6 @@ bijections on the middle and on the right. Then, the exactness of the first
 sequence shall follow from the exactness of the second which is
 `Algebra.Extension.exact_cotangentComplex_toKaehler`. -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Same as `comm₂₃` below, but here we have not yet constructed `differentialsSolution`. -/
 lemma comm₂₃' : pres.toExtension.toKaehler.comp pres.cotangentSpaceBasis.repr.symm.toLinearMap =
     Finsupp.linearCombination S (fun g ↦ D _ _ (pres.val g)) := by
