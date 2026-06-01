@@ -101,10 +101,7 @@ lemma Scheme.germToFunctionField_eq_algebraMap_germ {X : Scheme} [IrreducibleSpa
     {U : X.Opens} [Nonempty U] {x : X} (hx : x ∈ U) (f : Γ(X, U)) :
     X.germToFunctionField U f =
       algebraMap (X.presheaf.stalk x) X.functionField (X.presheaf.germ U x hx f) := by
-  let : Algebra Γ(X, U) (X.presheaf.stalk x) := X.presheaf.algebra_section_stalk ⟨x, hx⟩
-  have : IsScalarTower Γ(X, U) (X.presheaf.stalk x) X.functionField :=
-    functionField_isScalarTower X U ⟨x, hx⟩
-  exact IsScalarTower.algebraMap_apply Γ(X, U) (X.presheaf.stalk x) X.functionField f
+  simp [RingHom.algebraMap_toAlgebra, ← ConcreteCategory.comp_apply]
 
 noncomputable instance (R : CommRingCat.{u}) [IsDomain R] :
     Algebra R (Spec R).functionField :=
