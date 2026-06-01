@@ -81,17 +81,18 @@ instance [IsFiniteSplit R S] : Etale R S := by
   obtain ⟨n, ⟨e⟩⟩ := nonempty_algEquiv_fun R S
   exact .of_equiv e.symm
 
+open Ideal in
 variable (k) in
-lemma bijective_algebraMap_quotient [IsFiniteSplit k R] (p : Ideal R) [p.IsPrime]
+lemma bijective_algebraMap_quotient [IsFiniteSplit k R] (p : Ideal R) [p.IsPrime] :
     Function.Bijective (algebraMap k (R ⧸ p)) := by
   obtain ⟨n, ⟨e⟩⟩ := nonempty_algEquiv_fun k R
   let p' : Ideal (Fin n → k) := p.comap e.symm
   obtain ⟨i, q, hq⟩ := PrimeSpectrum.exists_comap_evalRingHom_eq ⟨p', inferInstance⟩
   obtain rfl : q = ⊥ := Subsingleton.elim _ _
   let g : (R ⧸ p) ≃ₐ[k] k :=
-    (Ideal.quotientEquivAlg _ p' e <| Ideal.comap_symm e.toRingEquiv).trans <|
-    (Ideal.quotientEquivAlgOfEq k congr($(hq).asIdeal).symm).trans <|
-    Ideal.quotientKerAlgEquivOfSurjective (f := Pi.evalAlgHom k (fun _ ↦ k) i)
+    (quotientEquivAlg _ p' e <| comap_symm e.toRingEquiv).trans <|
+    (quotientEquivAlgOfEq k congr($(hq).asIdeal).symm).trans <|
+    quotientKerAlgEquivOfSurjective (f := Pi.evalAlgHom k (fun _ ↦ k) i)
       (Function.surjective_eval _)
   simpa [← g.symm.toAlgHom.comp_algebraMap] using g.symm.bijective
 
