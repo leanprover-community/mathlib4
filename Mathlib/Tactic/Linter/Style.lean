@@ -626,7 +626,8 @@ public def defsWithUnderscore : Batteries.Tactic.Lint.Linter where
   errorsFound := "FOUND definitions with an underscore in their name."
   test declName := do
     if ← isBadDefNameWithUnderscore declName then
-      return m!"The definition `{declName}` contains an underscore. \
+      return m!"The {if isPrivateName declName then "private " else ""}definition \
+        `{privateToUserName declName}` contains an underscore. \
         This almost surely violates the definition naming convention; \
         use lowerCamelCase (or UpperCamelCase for `Sort`-valued definitions) instead."
     return none

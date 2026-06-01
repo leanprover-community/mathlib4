@@ -493,6 +493,18 @@ run_meta do
   guard <| not <| ← isBadDefNameWithUnderscore ``foo_bar_baz.testThm -- ok: namespaced under theorem
   guard <| ← isBadDefNameWithUnderscore ``foo_bar_baz.test_badThm -- bad: same, but bad def name
 
+/--
+error: The definition `foo_bar` contains an underscore. This almost surely violates the definition naming convention; use lowerCamelCase (or UpperCamelCase for `Sort`-valued definitions) instead.
+---
+error: The private definition `foo_bar_baz.test_badThm` contains an underscore. This almost surely violates the definition naming convention; use lowerCamelCase (or UpperCamelCase for `Sort`-valued definitions) instead.
+-/
+#guard_msgs in
+run_meta
+  let some msg ← defsWithUnderscore.test `foo_bar | failure
+  Lean.logError msg
+  let some msg ← defsWithUnderscore.test ``foo_bar_baz.test_badThm | failure
+  Lean.logError msg
+
 end
 
 /- Tests for the `openClassical` linter -/
