@@ -71,7 +71,7 @@ can be obtained as `DirectSum.toMonoid (fun i ↦ AddSubmonoid.inclusion <| le_i
 ## Implementation details
 
 The instances on `A 0` are scoped to the `DirectSum` namespace, because they hae
-very general discriminantion trees.
+very general discriminantion tree keys.
 
 ## Tags
 
