@@ -30,8 +30,6 @@ universe u v
 
 variable (R : Type u) [CommRing R]
 
-open IsLocalRing
-
 lemma LinearMap.ker_mapRange_mkQ_eq_smul_top (ι : Type*) (I : Ideal R) :
     LinearMap.ker (Finsupp.mapRange.linearMap I.mkQ) = I • (⊤ : Submodule R (ι →₀ R)) := by
   ext y
@@ -59,7 +57,8 @@ lemma free_iff_quotSMulTop_free (M : Type*) [AddCommGroup M] [Module R M]
     rcases Module.projective_lifting_property (Submodule.mkQ (x • (⊤ : Submodule R M))) f
       (Submodule.mkQ_surjective _) with ⟨g, hg⟩
     have surjf : Function.Surjective f := by
-      simpa [f] using Finsupp.mapRange_surjective _ rfl (Submodule.mkQ_surjective (Ideal.span {x}))
+      simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.comp_surjective, f]
+      exact Finsupp.mapRange_surjective _ rfl (Submodule.mkQ_surjective (Ideal.span {x}))
     have lejac : Ideal.span {x} ≤ (⊥ :Ideal R).jacobson := by simpa
     have surjg : Function.Surjective g := by
       apply g.surjective_of_surjective_comp_mkQ (Ideal.span {x}) lejac
