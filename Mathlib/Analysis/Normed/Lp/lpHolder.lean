@@ -64,7 +64,7 @@ lemma norm_mapCLM_le (p : ℝ≥0∞) [Fact (1 ≤ p)]
 
 end NontriviallyNormedField
 
-lemma norm_tsumCLM {α 𝕜 E : Type*} [NontriviallyNormedField 𝕜]
+lemma norm_tsumCLM_le {α 𝕜 E : Type*} [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] :
     ‖tsumCLM 𝕜 α E‖ ≤ 1 :=
   LinearMap.mkContinuous_norm_le _ zero_le_one _
@@ -278,7 +278,7 @@ lemma norm_dualPairing [Fact (1 ≤ p)] [Fact (1 ≤ q)] [p.HolderConjugate q]
     ContinuousLinearMap.opNorm_comp_le _ _
   _ ≤ 1 * K := by
     gcongr
-    · exact ContinuousLinearMap.norm_postcomp_le _ |>.trans norm_tsumCLM
+    · exact ContinuousLinearMap.norm_postcomp_le _ |>.trans norm_tsumCLM_le
     · exact norm_holderL_le 1 B hBK
   _ = K := one_mul _
 
