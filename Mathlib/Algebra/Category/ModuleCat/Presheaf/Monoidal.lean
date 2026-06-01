@@ -123,7 +123,6 @@ noncomputable instance monoidalCategoryStruct :
     erw [rightUnitor_inv_apply, rightUnitor_inv_apply, tensorObj_map_tmul, (R.map f).hom.map_one]
     rfl))
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance monoidalCategory :
     MonoidalCategory (PresheafOfModules.{u} (R ⋙ forget₂ _ _)) where
   tensorHom_def _ _ := by ext1; apply tensorHom_def
