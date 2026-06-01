@@ -147,6 +147,7 @@ lemma resultant_map_map (φ : R →+* S) :
 /-- For polynomial `f` and constant `a`, `Res(f, a) = a ^ m`. -/
 theorem resultant_C_zero_left : resultant (C r) g 0 m = r ^ m := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Res(f, g) = (-1)ᵐⁿ Res(g, f)` -/
 lemma resultant_comm : resultant f g m n = (-1) ^ (m * n) * resultant g f n m := by
   classical
@@ -232,6 +233,7 @@ private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDeg
   ext i j
   induction j using Fin.addCases <;> simp [M, sylvester, M₁, M₂]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Res(f, g + fp) = Res(f, g)` if `deg f + deg p ≤ deg g`. -/
 lemma resultant_add_mul_right (hp : p.natDegree + m ≤ n) (hf : f.natDegree ≤ m) :
     resultant f (g + f * p) m n = resultant f g m n := by
@@ -365,10 +367,10 @@ theorem resultant_C_left (r : R) :
   simp
 
 @[simp] theorem resultant_one_left : resultant 1 g m n = (-1) ^ (m * n) * g.coeff n ^ m := by
-  simpa [-resultant_C_left] using resultant_C_left g m n 1
+  simpa [-resultant_C_left] using! resultant_C_left g m n 1
 
 @[simp] theorem resultant_one_right : resultant f 1 m n = f.coeff m ^ n := by
-  simpa [-resultant_C_right] using resultant_C_right f m n 1
+  simpa [-resultant_C_right] using! resultant_C_right f m n 1
 
 /-- `Res(X - r, g) = g(r)` -/
 @[simp] lemma resultant_X_sub_C_left (r : R) (hg : g.natDegree ≤ n) :
