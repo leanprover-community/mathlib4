@@ -296,8 +296,7 @@ alias add_absorp := add_of_omega0_opow_le
 
 /-- For `a ≠ 0`, the largest power of `ω` which is less or equal to it is also the smallest ordinal
 `b` with `a - b < a`. -/
-theorem isLeast_sub_lt_omega0_opow_log (h : a ≠ 0) :
-    IsLeast {b | a - b < a} (ω ^ log ω a) := by
+theorem isLeast_sub_lt_omega0_opow_log (h : a ≠ 0) : IsLeast {b | a - b < a} (ω ^ log ω a) := by
   refine ⟨sub_omega0_opow_log_lt h, fun c (hc : a - _ < _) ↦ ?_⟩
   contrapose! hc
   exact le_sub_of_add_le (add_of_omega0_opow_le hc (opow_log_le_self ω h)).le
