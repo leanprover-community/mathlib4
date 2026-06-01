@@ -6,11 +6,7 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Module.FinitePresentation
-public import Mathlib.Algebra.Module.Projective
 public import Mathlib.Algebra.Module.Torsion.Basic
-public import Mathlib.GroupTheory.GroupAction.Ring
-public import Mathlib.LinearAlgebra.Dimension.Finite
-public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.Nakayama
 public import Mathlib.RingTheory.QuotSMulTop
 
