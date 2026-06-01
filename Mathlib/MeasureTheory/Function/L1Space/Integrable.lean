@@ -604,7 +604,7 @@ theorem Integrable.smul_essSup {𝕜 : Type*} [NormedRing 𝕜] [MulActionWithZe
   have hg' : eLpNorm g ∞ μ ≠ ∞ := by rwa [eLpNorm_exponent_top]
   calc
     eLpNorm (fun x : α => f x • g x) 1 μ ≤ _ := by
-      simpa using MeasureTheory.eLpNorm_smul_le_mul_eLpNorm one_ne_zero top_ne_zero
+      simpa using! MeasureTheory.eLpNorm_smul_le_mul_eLpNorm one_ne_zero top_ne_zero
         g_aestronglyMeasurable hf.1 (p := 1) (q := ∞)
     _ < ∞ := ENNReal.mul_lt_top hf.2 hg'.lt_top
 
