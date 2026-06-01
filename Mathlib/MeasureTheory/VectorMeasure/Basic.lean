@@ -665,7 +665,7 @@ variable [ContinuousAdd M] [ContinuousAdd N]
 
 /-- Given a continuous linear map `f : M → N`, `mapRangeₗ` is the linear map mapping the
 vector measure `v` on `M` to the vector measure `f ∘ v` on `N`. -/
-def mapRangeₗ {α : Type*} [MeasurableSpace α]  (f : M →ₗ[R] N) (hf : Continuous f) :
+def mapRangeₗ {α : Type*} [MeasurableSpace α] (f : M →ₗ[R] N) (hf : Continuous f) :
     VectorMeasure α M →ₗ[R] VectorMeasure α N where
   toFun v := v.mapRange f.toAddMonoidHom hf
   map_add' _ _ := mapRange_add hf
@@ -791,7 +791,7 @@ theorem restrict_add (v w : VectorMeasure α M) (i : Set α) :
 
 /-- `VectorMeasure.restrict` as an additive monoid homomorphism. -/
 @[simps]
-def restrictGm {α : Type*} [MeasurableSpace α]  (i : Set α) :
+def restrictGm {α : Type*} [MeasurableSpace α] (i : Set α) :
     VectorMeasure α M →+ VectorMeasure α M where
   toFun v := v.restrict i
   map_zero' := restrict_zero
