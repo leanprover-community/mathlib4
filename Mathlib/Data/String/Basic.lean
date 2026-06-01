@@ -79,6 +79,43 @@ theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos.R
   rw [eq_comm, ← ltb_cons_addChar' c]
   simp
 
+theorem lt_iff_toList_lt {s₁ s₂ : String} : s₁ < s₂ ↔ s₁.toList < s₂.toList :=
+  Iff.rfl
+
+@[simp]
+theorem lt_iff_ltb {s₁ s₂ : String} :
+    s₁ < s₂ ↔ ltb (String.Legacy.iter s₁) (String.Legacy.iter s₂) := by
+  rw [Iff.comm]
+  obtain ⟨s₁, rfl⟩ := s₁.exists_eq_ofList
+  obtain ⟨s₂, rfl⟩ := s₂.exists_eq_ofList
+  simp only [lt_iff_toList_lt, String.Legacy.iter, String.Legacy.mkIterator, String.toList_ofList]
+  induction s₁ generalizing s₂ <;> cases s₂
+  · unfold ltb; decide
+  · rename_i c₂ cs₂; apply iff_of_true
+    · unfold ltb
+      simp [Legacy.Iterator.hasNext, Char.utf8Size_pos]
+    · apply List.nil_lt_cons
+  · rename_i c₁ cs₁ ih; apply iff_of_false
+    · unfold ltb
+      simp [Legacy.Iterator.hasNext]
+    · apply not_lt_of_gt; apply List.nil_lt_cons
+  · rename_i c₁ cs₁ ih c₂ cs₂; unfold ltb
+    simp only [Legacy.Iterator.hasNext, Pos.Raw.byteIdx_zero, rawEndPos_ofList, utf8Len_cons,
+      add_pos_iff, Char.utf8Size_pos, or_true, decide_true, ↓reduceIte, Legacy.Iterator.curr,
+      Pos.Raw.get, String.toList_ofList, Pos.Raw.utf8GetAux, Legacy.Iterator.next, Pos.Raw.next,
+      Bool.ite_eq_true_distrib, decide_eq_true_eq]
+    split_ifs with h
+    · subst c₂
+      suffices ltb ⟨ofList (c₁ :: cs₁), (0 : Pos.Raw) + c₁⟩
+          ⟨ofList (c₁ :: cs₂), (0 : Pos.Raw) + c₁⟩ =
+            ltb ⟨ofList cs₁, 0⟩ ⟨ofList cs₂, 0⟩ by
+        rw [this]; exact (ih cs₂).trans List.lex_cons_iff.symm
+      apply ltb_cons_addChar
+    · refine ⟨List.Lex.rel, fun e ↦ ?_⟩
+      cases e <;> rename_i h'
+      · assumption
+      · contradiction
+
 @[deprecated "Use the new String API" (since := "2026-04-01")]
 theorem toList_nonempty :
     ∀ {s : String}, s ≠ "" → s.toList = String.Legacy.front s :: (String.Legacy.drop s 1).toList
@@ -91,9 +128,6 @@ theorem toList_nonempty :
 @[simp]
 theorem head_empty : "".toList.head! = default :=
   rfl
-
-theorem lt_iff_toList_lt {s₁ s₂ : String} : s₁ < s₂ ↔ s₁.toList < s₂.toList :=
-  Iff.rfl
 
 protected theorem le_iff_not_lt {s₁ s₂ : String} : s₁ ≤ s₂ ↔ ¬ s₂ < s₁ :=
   Iff.rfl
