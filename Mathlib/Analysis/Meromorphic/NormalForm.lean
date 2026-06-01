@@ -732,7 +732,7 @@ theorem meromorphicNFOn_toMeromorphicNFOn :
   · intro z hz
     rw [meromorphicNFAt_congr (toMeromorphicNFOn_eq_toMeromorphicNFAt_on_nhds hf hz)]
     exact meromorphicNFAt_toMeromorphicNFAt
-  · simpa [hf] using analyticOnNhd_const.meromorphicNFOn
+  · simpa [hf] using! analyticOnNhd_const.meromorphicNFOn
 
 /--
 If `f` has normal form on `U`, then `f` equals `toMeromorphicNFOn f U`.

@@ -104,6 +104,12 @@ instance : PosSMulStrictMono ℝ≥0 ℝ≥0∞ where
 instance : SMulPosMono ℝ≥0 ℝ≥0∞ where
   smul_le_smul_of_nonneg_right _r _ _a _b hab := _root_.mul_le_mul_left (coe_le_coe.2 hab) _
 
+instance : CovariantClass ℝ≥0∞ ℝ≥0∞ (· • ·) (· ≤ ·) :=
+  inferInstanceAs <| CovariantClass ℝ≥0∞ ℝ≥0∞ (· * ·) (· ≤ ·)
+
+instance : CovariantClass ℝ≥0 ℝ≥0∞ (· • ·) (· ≤ ·) :=
+  ⟨fun x x y hxy ↦ by simpa [ENNReal.smul_def] using mul_le_mul_right hxy _⟩
+
 end Actions
 
 end ENNReal
