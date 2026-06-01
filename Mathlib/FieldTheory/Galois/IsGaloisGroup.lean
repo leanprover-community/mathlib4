@@ -289,9 +289,7 @@ instance of_isGalois [IsGalois K L] : IsGaloisGroup Gal(L/K) K L where
   commutes := inferInstance
   isInvariant := ⟨fun x ↦ (InfiniteGalois.mem_bot_iff_fixed x).mpr⟩
 
-/-- The cardinality of a Galois group equals the degree of the field extension.
-
-See `IsGaloisGroup.card_eq_finrank'` for a ring-theoretic generalization assuming finiteness. -/
+/-- The cardinality of a Galois group equals the degree of the field extension. -/
 theorem card_eq_finrank [IsGaloisGroup G K L] : Nat.card G = Module.finrank K L := by
   rcases fintypeOrInfinite G with _ | hG
   · have : FaithfulSMul G L := faithful K
@@ -323,17 +321,6 @@ protected theorem finite : Finite G := by
   apply Nat.finite_of_card_ne_zero
   rw [card_eq_finrank G (FractionRing A') (FractionRing B)]
   exact Module.finrank_pos.ne'
-
-/-- The cardinality of a Galois group of `B/A` equals the rank of `B` as an `A`-module.
-
-See `IsGaloisGroup.card_eq_finrank` a field-theoretic version that does not assume finiteness. -/
-theorem card_eq_finrank' [FaithfulSMul A B] : Nat.card G = Module.finrank A B := by
-  have : IsDomain A := IsDomain.of_faithfulSMul A B
-  have : Finite G := IsGaloisGroup.finite G A B
-  let := FractionRing.liftAlgebra A (FractionRing B)
-  let := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
-  rw [(IsGaloisGroup.toFractionRing G A B).card_eq_finrank,
-    Algebra.IsAlgebraic.finrank_of_isFractionRing A (FractionRing A) B (FractionRing B)]
 
 end
 
