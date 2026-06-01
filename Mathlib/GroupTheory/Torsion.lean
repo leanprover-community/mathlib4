@@ -425,6 +425,8 @@ theorem freeRank_eq_zero_of_finite [Finite G] : freeRank G = 0 :=
 theorem freeRank_congr [Group.FG G] [Group.FG H] (e : G ≃* H) : freeRank G = freeRank H :=
   Group.rank_congr (QuotientGroup.congr (torsion G) (torsion H) e e.map_torsion)
 
+-- TODO: Prove monotonicity of `freeRank` along injective homomorphisms. This would require proving
+-- monotonicity of `rank` along injective homomorphism of abelian groups.
 @[to_additive]
 theorem freeRank_ge_of_surjective [Group.FG G] [Group.FG H] (e : G →* H)
     (he : Function.Surjective e) : freeRank H ≤ freeRank G :=
