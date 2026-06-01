@@ -302,7 +302,7 @@ structure AddSubgroup (G : Type*) [AddGroup G] extends AddSubmonoid G where
   /-- `G` is closed under negation -/
   neg_mem' {x} : x ∈ carrier → -x ∈ carrier
 
-attribute [to_additive] Subgroup
+attribute [to_additive (attr := wikidata Q466109)] Subgroup
 
 /-- Reinterpret a `Subgroup` as a `Submonoid`. -/
 add_decl_doc Subgroup.toSubmonoid
@@ -617,7 +617,7 @@ structure Normal (H : AddSubgroup A) : Prop where
   /-- `H` is closed under additive conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : A, g + n + -g ∈ H
 
-attribute [to_additive] Subgroup.Normal
+attribute [to_additive (attr := wikidata Q743179)] Subgroup.Normal
 
 attribute [class] Normal
 

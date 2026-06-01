@@ -131,7 +131,7 @@ acts on `P`.
 For example, if `G` is a group and `X` is a type, if a mathematician says
 say "let `G` act on the set `X`" they will probably mean `[MulAction G X]`.
 -/
-@[to_additive (attr := ext)]
+@[to_additive (attr := ext, wikidata Q288465)]
 class MulAction (α : Type*) (β : Type*) [Monoid α] extends SemigroupAction α β where
   /-- One is the neutral element for `•` -/
   protected one_smul : ∀ b : β, (1 : α) • b = b

@@ -292,6 +292,7 @@ end NonUnitalRingHom
 
 This extends from both `MonoidHom` and `MonoidWithZeroHom` in order to put the fields in a
 sensible order, even though `MonoidWithZeroHom` already extends `MonoidHom`. -/
+@[wikidata Q1194212]
 structure RingHom (α : Type*) (β : Type*) [NonAssocSemiring α] [NonAssocSemiring β] extends
   α →* β, α →+ β, α →ₙ+* β, α →*₀ β
 
