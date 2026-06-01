@@ -80,7 +80,7 @@ instance : LE SignType :=
 instance : DecidableLE SignType := fun a b => by
   cases a <;> cases b <;> first | exact isTrue (by constructor) | exact isFalse (by rintro ⟨_⟩)
 
-/- We can define a `Field` instance on `SignType`, but it's not mathematically sensible,
+/-- We can define a `Field` instance on `SignType`, but it's not mathematically sensible,
 so we only define the `CommGroupWithZero`. -/
 instance : CommGroupWithZero SignType where
   inv := id
