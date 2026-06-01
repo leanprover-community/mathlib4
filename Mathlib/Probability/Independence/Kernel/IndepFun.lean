@@ -520,7 +520,7 @@ lemma iIndepFun.indepFun_mul_left (hf_indep : iIndepFun f κ μ)
     IndepFun (f i * f j) (f k) κ μ := by
   have : IndepFun (fun ω => (f i ω, f j ω)) (f k) κ μ :=
     hf_indep.indepFun_prodMk hf_meas i j k hik hjk
-  simpa using this.comp (measurable_fst.mul measurable_snd) measurable_id
+  simpa using! this.comp (measurable_fst.mul measurable_snd) measurable_id
 
 @[to_additive]
 lemma iIndepFun.indepFun_mul_left₀ (hf_indep : iIndepFun f κ μ)
@@ -528,7 +528,7 @@ lemma iIndepFun.indepFun_mul_left₀ (hf_indep : iIndepFun f κ μ)
     IndepFun (f i * f j) (f k) κ μ := by
   have : IndepFun (fun ω => (f i ω, f j ω)) (f k) κ μ :=
     hf_indep.indepFun_prodMk₀ hf_meas i j k hik hjk
-  simpa using this.comp (measurable_fst.mul measurable_snd) measurable_id
+  simpa using! this.comp (measurable_fst.mul measurable_snd) measurable_id
 
 @[to_additive]
 lemma iIndepFun.indepFun_mul_right (hf_indep : iIndepFun f κ μ)
@@ -569,7 +569,7 @@ lemma iIndepFun.indepFun_div_left (hf_indep : iIndepFun f κ μ)
     IndepFun (f i / f j) (f k) κ μ := by
   have : IndepFun (fun ω => (f i ω, f j ω)) (f k) κ μ :=
     hf_indep.indepFun_prodMk hf_meas i j k hik hjk
-  simpa using this.comp (measurable_fst.div measurable_snd) measurable_id
+  simpa using! this.comp (measurable_fst.div measurable_snd) measurable_id
 
 @[to_additive]
 lemma iIndepFun.indepFun_div_left₀ (hf_indep : iIndepFun f κ μ)
@@ -577,7 +577,7 @@ lemma iIndepFun.indepFun_div_left₀ (hf_indep : iIndepFun f κ μ)
     IndepFun (f i / f j) (f k) κ μ := by
   have : IndepFun (fun ω => (f i ω, f j ω)) (f k) κ μ :=
     hf_indep.indepFun_prodMk₀ hf_meas i j k hik hjk
-  simpa using this.comp (measurable_fst.div measurable_snd) measurable_id
+  simpa using! this.comp (measurable_fst.div measurable_snd) measurable_id
 
 @[to_additive]
 lemma iIndepFun.indepFun_div_right (hf_indep : iIndepFun f κ μ)
@@ -693,6 +693,12 @@ theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β
       (MeasurableSet.ite' (fun _ => hsi.compl) fun _ => ?_)
   · exact @MeasurableSet.empty _ (generateFrom {s i})
   · exact @MeasurableSet.empty _ (generateFrom {s i})
+
+lemma Indep.indicator_const_indepFun {m : MeasurableSpace Ω} {M 𝓧 : Type*}
+    [Zero M] [MeasurableSpace M] (c : M) [NeZero c] {m𝓧 : MeasurableSpace 𝓧} {A : Set Ω}
+    {X : Ω → 𝓧} (hA : MeasurableSet[m] A) (h : Indep m (m𝓧.comap X) κ μ) :
+    IndepFun (A.indicator (fun _ ↦ c)) X κ μ :=
+  indep_of_indep_of_le_left h (measurable_const.indicator hA).comap_le
 
 variable {mβ : MeasurableSpace β} {X : ι → Ω → α} {Y : ι → Ω → β}
   {f : _ → Set Ω} {t : ι → Set β} {s : Finset ι}
