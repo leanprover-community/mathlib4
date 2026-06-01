@@ -110,7 +110,7 @@ theorem derivedSeries_eq_top [IsPerfect G] (n : ℕ) : derivedSeries G n = ⊤ :
   match n with
   | 0 => simp
   | n + 1 =>
-    rw [← commutator_eq_top, commutator_def, derivedSeries_succ, derivedSeries_eq_top]
+    rw [derivedSeries_succ, derivedSeries_eq_top, commutator_eq_self]
 
 variable (G) in
 @[simp]
@@ -119,8 +119,7 @@ theorem lowerCentralSeries_top_eq_top [IsPerfect G] (n : ℕ) :
   match n with
   | 0 => simp
   | n + 1 =>
-    rw [Subgroup.lowerCentralSeries_succ, lowerCentralSeries_top_eq_top, ← commutator_def]
-    exact commutator_eq_top
+    rw [Subgroup.lowerCentralSeries_succ, lowerCentralSeries_top_eq_top, commutator_eq_self]
 
 variable (G) in
 @[simp]
@@ -128,22 +127,19 @@ theorem upperCentralSeries_eq_center [IsPerfect G] {n : ℕ} (hn : n ≠ 0) :
     .upperCentralSeries G n = center G := by
   rw [← Subgroup.upperCentralSeries_one, eq_comm]
   apply Subgroup.upperCentralSeries.eq_ge_of_eq_succ <| by lia
-  rw [Subgroup.upperCentralSeries_one, one_add_one_eq_two]
-  apply le_antisymm
-  · grw [← Subgroup.upperCentralSeries_one, Subgroup.upperCentralSeries_mono G one_le_two]
-  rw [← commutator_top_eq_bot_iff_le_center, ← commutator_eq_top, commutator_comm]
+  apply le_antisymm <| Subgroup.upperCentralSeries_mono G one_le_two
+  rw [Subgroup.upperCentralSeries_one, ← commutator_left_top_eq_bot_iff_le_center,
+    ← commutator_eq_top, commutator_comm, commutator_def]
   suffices ⁅⁅Subgroup.upperCentralSeries G 2, ⊤⁆, ⊤⁆ = ⊥ from
     commutator_commutator_eq_bot_of_rotate (by simpa [commutator_comm]) this
-  apply bot_unique
-  grw [commutator_mono (commutator_upperCentralSeries_top_le G 1) le_rfl]
-  rw [Subgroup.upperCentralSeries_one, commutator_center_top]
+  rw [commutator_left_top_eq_bot_iff_le_center, ← Subgroup.upperCentralSeries_one]
+  apply commutator_upperCentralSeries_top_le
 
 variable (G) in
 /-- **Grün's lemma** -/
 theorem center_quotient_center_eq_bot [IsPerfect G] : center (G ⧸ center G) = ⊥ := by
-  rw [← comap_eq_ker_of_surjective <| QuotientGroup.mk'_surjective _, QuotientGroup.ker_mk']
-  nth_rw 4 [← Subgroup.upperCentralSeries_one]
-  rw [Subgroup.comap_upperCentralSeries_quotient_center, upperCentralSeries_eq_center]
-  lia
+  rw [← Subgroup.upperCentralSeries_one (G ⧸ center G),
+    ← comap_eq_ker_of_surjective <| QuotientGroup.mk'_surjective _, QuotientGroup.ker_mk',
+    Subgroup.comap_upperCentralSeries_quotient_center, upperCentralSeries_eq_center G <| by lia]
 
 end Group.IsPerfect
