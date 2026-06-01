@@ -243,7 +243,7 @@ variable (G) in
 -- `IsNilpotent` is already defined in the root namespace (for elements of rings).
 -- TODO: Rename it to `IsNilpotentElement`?
 /-- A group `G` is nilpotent if its upper central series is eventually `G`. -/
-@[mk_iff]
+@[mk_iff, wikidata Q1755242]
 class IsNilpotent (G : Type*) [Group G] : Prop where
   nilpotent' : ∃ n : ℕ, upperCentralSeries G n = ⊤
 
@@ -711,7 +711,7 @@ theorem upperCentralSeries.map {H : Type*} [Group H] {f : G →* H} (h : Functio
   | succ d hd =>
     rintro _ ⟨x, hx : x ∈ upperCentralSeries G d.succ, rfl⟩ y'
     rcases h y' with ⟨y, rfl⟩
-    simpa using hd (mem_map_of_mem f (hx y))
+    simpa using! hd (mem_map_of_mem f (hx y))
 
 @[to_additive]
 theorem lowerCentralSeries_succ_eq_bot (S : Subgroup G) {n : ℕ}

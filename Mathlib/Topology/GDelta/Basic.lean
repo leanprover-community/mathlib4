@@ -151,7 +151,7 @@ theorem IsGδ.biUnion {s : Set ι} (hs : s.Finite) {f : ι → Set X} (h : ∀ i
 theorem IsGδ.iUnion [Finite ι'] {f : ι' → Set X} (h : ∀ i, IsGδ (f i)) : IsGδ (⋃ i, f i) :=
   .sUnion (finite_range _) <| forall_mem_range.2 h
 
-/- The preimage of a Gδ set under a continuous map is Gδ. -/
+/-- The preimage of a Gδ set under a continuous map is Gδ. -/
 theorem isGδ_induced [TopologicalSpace Y] {f : X → Y} {s : Set Y} (hf : Continuous f)
     (hs : IsGδ s) : IsGδ (f ⁻¹' s) := by
   obtain ⟨U, hU1, hU2⟩ := hs.eq_iInter_nat

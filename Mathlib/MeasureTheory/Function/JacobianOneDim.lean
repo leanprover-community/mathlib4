@@ -175,7 +175,7 @@ theorem exists_decomposition_of_monotoneOn_hasDerivWithinAt (hs : MeasurableSet 
     refine fun h ↦ hx.2 ⟨hx.1, ?_⟩
     exact ⟨x, y, hx.1, hy.1, H, rfl, h.symm⟩
 
-/- Change of variable formula for differentiable functions: if a real function `f` is
+/-- Change of variable formula for differentiable functions: if a real function `f` is
 monotone and differentiable on a measurable set `s`, then the Lebesgue integral of a function
 `u : ℝ → ℝ≥0∞` on `f '' s` coincides with the integral of `(f' x) * u ∘ f` on `s`.
 Note that the measurability of `f '' s` is given by `MeasurableSet.image_of_monotoneOn`. -/
@@ -268,7 +268,7 @@ theorem integral_image_eq_integral_deriv_smul_of_monotoneOn (hs : MeasurableSet 
     ∫ x in f '' s, g x = ∫ x in s, f' x • g (f x) := by
   by_cases H : IntegrableOn g (f '' s); swap
   · rw [integral_undef H, integral_undef]
-    simpa [integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn hs hf' hf] using H
+    simpa [integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn hs hf' hf] using! H
   have H' : IntegrableOn (fun x ↦ (f' x) • g (f x)) s :=
     (integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn hs hf' hf g).1 H
   rcases exists_decomposition_of_monotoneOn_hasDerivWithinAt hs hf hf' with
@@ -354,7 +354,7 @@ theorem integrableOn_Icc_deriv_smul_iff_of_deriv_nonneg {a b : ℝ} {g : ℝ →
   · exact fun z hz ↦ (hff' z hz).hasDerivWithinAt
   · exact M.mono Ioo_subset_Icc_self
 
-/- Change of variable formula for differentiable functions: if a real function `f` is
+/-- Change of variable formula for differentiable functions: if a real function `f` is
 antitone and differentiable on a measurable set `s`, then the Lebesgue integral of a function
 `u : ℝ → ℝ≥0∞` on `f '' s` coincides with the integral of `(-f' x) * u ∘ f` on `s`.
 Note that the measurability of `f '' s` is given by `MeasurableSet.image_of_antitoneOn`. -/
