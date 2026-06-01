@@ -420,7 +420,6 @@ variable {C : Type u} [Category.{v} C] {J : MultispanShape.{w, w'}}
     (I : MultispanIndex J C)
 
 /-- The multispan associated to `I : MultispanIndex`. -/
-@[simps]
 def multispan : WalkingMultispan J ⥤ C where
   obj x :=
     match x with
