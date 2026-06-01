@@ -127,8 +127,8 @@ theorem _root_.AffineIndependent.affineCombination_mem_shift_iff
     (h : AffineIndependent k p) (i : ι) {w : ι → k} (hw : ∑ i, w i = 1) (c : k) :
     affineCombination k univ p w ∈ (affineSpan k <| p '' {i}ᶜ).shift (p i) c ↔
     w i = 1 - c := by
-  refine ⟨?_, fun h ↦ by simpa [h] using affineCombination_mem_shift p i hw⟩
   classical
+  refine ⟨?_, fun h ↦ by simpa [h] using affineCombination_mem_shift p i hw⟩
   obtain ⟨j, hj⟩ : Set.Nonempty {i}ᶜ := by
     by_contra
     simp at this
