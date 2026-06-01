@@ -336,7 +336,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       }
 
     let .data fData := fData?
-      | throwError "function in invalid form {← ppExpr f}"
+      | throwError "function in invalid form {f}"
 
     match fData.fn with
     | .const funName _ =>
