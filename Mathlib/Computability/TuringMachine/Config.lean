@@ -272,20 +272,18 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       · exact ⟨head, fun ⟨List.cons a as, _⟩ => by simp; rfl⟩
       · obtain ⟨c, h⟩ := IH
         exact ⟨c.comp tail, fun v => by
-          simpa [Code.comp_eval, Code.tail_eval, Bind.bind, PFun.lift_apply, Fin.succ,
-            ← List.Vector.get_tail] using h v.tail⟩
+          simpa [Bind.bind, Fin.succ, ← Vector.get_tail] using h v.tail⟩
     | comp g hf hg IHf IHg =>
       simpa [Part.bind_eq_bind] using exists_code.comp IHf IHg
     | @prec n' f g _ _ IHf IHg =>
       obtain ⟨cf, hf⟩ := IHf
       obtain ⟨cg, hg⟩ := IHg
-      simp only [Part.map_eq_map, Part.map_some, PFun.coe_val] at hf hg
       refine ⟨prec cf cg, fun v => ?_⟩
       rw [← v.cons_head_tail]
       specialize hf v.tail
       replace hg := fun a b => hg (a ::ᵥ b ::ᵥ v.tail)
-      simp only [Vector.cons_val, Vector.tail_val] at hf hg
-      simp only [Part.map_eq_map, Part.map_some, Vector.cons_val, PFun.coe_val, Vector.tail_val]
+      simp only [Part.map_eq_map, Part.map_some, PFun.coe_val,
+        Vector.cons_val, Vector.tail_val] at hf hg ⊢
       simp only [← Part.pure_eq_some] at hf hg ⊢
       induction v.head with
       | zero =>
@@ -313,17 +311,13 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
         intro a b e
         induction b generalizing a with
         | zero =>
-          have : a = n' := by omega
-          subst this
-          refine PFun.mem_fix_iff.2 (Or.inl ?_)
-          simp only [hg, PFun.mk_apply, pure, Part.bind_some, List.tail_cons,
-            List.headI, Nat.pred_zero, Part.mem_some_iff]
+          refine PFun.mem_fix_iff.2 (Or.inl <| Part.eq_some_iff.1 ?_)
+          simp only [hg, ← e, PFun.mk_apply, Part.bind_some, List.tail_cons, pure]
           rfl
         | succ b' IH =>
           refine PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, IH (a + 1) (by omega)⟩)
-          simp only [hg, PFun.mk_apply, pure, Part.bind_some, List.tail_cons,
-            List.headI, if_neg (Nat.succ_ne_zero b'), Part.mem_some_iff]
-          congr 3
+          simp only [hg, PFun.mk_apply, Part.bind_some, List.tail_cons, pure]
+          exact Part.mem_some_iff.2 rfl
   | comp g _ _ IHf IHg => exact exists_code.comp IHf IHg
   | @rfind n_val f _ IHf =>
     obtain ⟨cf, hf⟩ := IHf
@@ -334,76 +328,53 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     refine Part.ext fun x => ?_
     simp only [rfind, Part.bind_eq_bind, Part.pure_eq_some, Part.bind_some,
       Code.cons_eval, Code.comp_eval, Code.fix_eval, Code.tail_eval, Code.succ_eval,
-      Code.zero'_eval, Code.pred_eval, Part.map_some, Part.mem_bind_iff, Part.mem_map_iff,
-      List.tail_cons, Part.mem_some_iff, Part.map_bind]
+      Code.zero'_eval, Code.pred_eval, Part.map_some, false_eq_decide_iff,
+      Part.mem_bind_iff, Part.mem_map_iff, Nat.mem_rfind, PFun.mk_apply, PFun.lift_apply,
+      List.tail_cons, true_eq_decide_iff, Part.mem_some_iff, Part.map_bind]
     constructor
     · rintro ⟨v', h1, rfl⟩
       suffices ∀ v₁ : List ℕ, v' ∈ PFun.fix
         (PFun.mk fun v => (cf.eval v).bind fun y => Part.some <|
           if y.headI = 0 then Sum.inl (v.headI.succ :: v.tail)
             else Sum.inr (v.headI.succ :: v.tail)) v₁ →
-        ∀ n', (v₁ = n' :: v.val) → (∀ m < n', ¬f (m ::ᵥ v) = 0) →
+        ∀ n, (v₁ = n :: v.val) → (∀ m < n, ¬f (m ::ᵥ v) = 0) →
           ∃ a : ℕ,
             (f (a ::ᵥ v) = 0 ∧ ∀ {m : ℕ}, m < a → ¬f (m ::ᵥ v) = 0) ∧ [a] = [v'.headI.pred]
-        by
-          obtain ⟨a, ⟨ha1, ha2⟩, eq⟩ := this _ h1 0 rfl (fun m hm => (Nat.not_lt_zero m hm).elim)
-          refine ⟨a, ?_, eq⟩
-          apply Nat.mem_rfind.mpr
-          constructor
-          · simp only [PFun.lift_apply, Part.mem_some_iff]
-            exact (decide_eq_true ha1).symm
-          · intro m hm
-            simp only [PFun.lift_apply, Part.mem_some_iff]
-            exact (decide_eq_false (ha2 hm)).symm
+        by exact this _ h1 0 rfl (by rintro _ ⟨⟩)
+      clear h1
       intro v₀ h1
       refine PFun.fixInduction h1 fun v₁ h2 IH => ?_
-      rintro n' rfl hm
+      clear h1
+      rintro n rfl hm
       have := PFun.mem_fix_iff.1 h2
-      simp only [PFun.mk_apply, hf n', Part.bind_some] at this
+      simp only [PFun.mk_apply, hf, Part.bind_some] at this
       split_ifs at this with h
       · simp only [exists_false, or_false, Part.mem_some_iff,
           List.tail_cons, false_and, Sum.inl.injEq, reduceCtorEq, List.headI] at this
         subst this
-        exact ⟨n', ⟨h, fun {m} => hm m⟩, rfl⟩
-      · refine IH (n'.succ::v.val) (by simp_all) _ rfl fun m h_lt => ?_
-        obtain h_eq | rfl := Nat.lt_succ_iff_lt_or_eq.1 h_lt
-        · exact hm m h_eq
-        · exact h
-    · rintro ⟨n', hn_mem, rfl⟩
-      have h_zero : f (n' ::ᵥ v) = 0 := by
-        have h_spec := Nat.rfind_spec hn_mem
-        simp only [PFun.lift_apply, Part.mem_some_iff] at h_spec
-        exact of_decide_eq_true h_spec.symm
-      have h_min : ∀ m < n', ¬f (m ::ᵥ v) = 0 := by
-        intro m hm
-        have h_min_spec := Nat.rfind_min hn_mem hm
-        simp only [PFun.lift_apply, Part.mem_some_iff] at h_min_spec
-        exact of_decide_eq_false h_min_spec.symm
-      refine ⟨n'.succ::v.1, ?_, rfl⟩
-      have : (n'.succ::v.1 : List ℕ) ∈
+        exact ⟨_, ⟨h, @hm⟩, rfl⟩
+      · refine IH (n.succ::v.val) (by simp_all) _ rfl fun m h' => ?_
+        obtain h' | rfl := Nat.lt_succ_iff_lt_or_eq.1 h'
+        exacts [hm _ h', h]
+    · rintro ⟨n, ⟨hn, hm⟩, rfl⟩
+      refine ⟨n.succ::v.1, ?_, rfl⟩
+      have : (n.succ::v.1 : List ℕ) ∈
         PFun.fix (PFun.mk fun v =>
           (cf.eval v).bind fun y =>
             Part.some <|
               if y.headI = 0 then Sum.inl (v.headI.succ :: v.tail)
                 else Sum.inr (v.headI.succ :: v.tail))
-            (n'::v.val) :=
-        PFun.mem_fix_iff.2 (Or.inl (by simp [hf, h_zero]))
-      generalize (n'.succ :: v.1 : List ℕ) = w at this ⊢
-      clear h_zero hn_mem
-      revert h_min this
-      induction n' with
-      | zero =>
-        intro _ h_this
-        exact h_this
-      | succ n'' IH =>
-        intro h_min h_this
-        have h_rec := IH (fun m h_lt => h_min m (Nat.lt_succ_of_lt h_lt))
-        refine h_rec (PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, h_this⟩))
-        have h_nz : f (n'' ::ᵥ v) ≠ 0 := h_min n'' (Nat.lt_succ_self n'')
-        simp only [hf, PFun.mk_apply, Part.bind_some, List.headI, List.tail_cons]
-        split_ifs with h_eq
-        · exact False.elim (h_nz h_eq)
-        · exact Part.mem_some_iff.2 rfl
+            (n::v.val) :=
+        PFun.mem_fix_iff.2 (Or.inl (by simp [hf, hn]))
+      generalize (n.succ :: v.1 : List ℕ) = w at this ⊢
+      clear hn
+      induction n with
+      | zero => exact this
+      | succ n IH =>
+        refine IH (fun {m} h' => hm (Nat.lt_succ_of_lt h'))
+          (PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, this⟩))
+        simp only [hf, hm n.lt_succ_self, PFun.mk_apply, Part.bind_some, List.headI, if_false,
+          Part.mem_some_iff, List.tail_cons]
 end Code
 
 /-!
