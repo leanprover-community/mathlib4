@@ -54,6 +54,7 @@ def smallEtaleTopology (X : Scheme.{u}) : GrothendieckTopology X.Etale :=
 def smallEtalePretopology (X : Scheme.{u}) : Pretopology X.Etale :=
   X.smallPretopology (Q := @Etale) (P := @Etale)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma ofArrows_mem_smallEtaleTopology_iff
     {X : Scheme.{u}} {W : X.Etale} {ι : Type*}

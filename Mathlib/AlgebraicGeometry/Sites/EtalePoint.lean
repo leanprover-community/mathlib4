@@ -56,6 +56,7 @@ lemma exists_fac_of_etale_of_isSepClosed {X S : Scheme.{u}} (f : X ⟶ S) [Etale
 instance : IsCofiltered (Etale.forget S ⋙ coyoneda.obj (op (Over.mk s))).Elements :=
   Functor.isCofiltered_elements _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A morphism `s : Spec (.of Ω) ⟶ S` where `Ω` is a separably closed field
 defines a point for the small étale site of `S`. -/
 @[simps]
@@ -138,14 +139,13 @@ lemma isConservative_pointSmallEtale
     simp only [Set.mem_iUnion, Set.mem_range, Set.mem_univ, iff_true]
     obtain ⟨i, hi⟩ : ∃ i, s i default = X.hom x := by
       have := Set.mem_univ (X.hom x)
-      simp only [← hs, Functor.const_obj_obj, Functor.id_obj, Set.mem_iUnion,
-        Set.mem_range] at this
+      simp only [← hs, Functor.id_obj, Set.mem_iUnion, Set.mem_range] at this
       obtain ⟨i, y, hy⟩ := this
       obtain rfl := Subsingleton.elim y default
       exact ⟨i, hy⟩
     obtain ⟨x', hx'⟩ := pointSmallEtaleFiberObjToPreimage_surjective (s i) hi X ⟨x, by simp⟩
     rw [Subtype.ext_iff] at hx'
-    dsimp at hx'
+    simp only [Functor.id_obj, pointSmallEtaleFiberObjToPreimage_coe, Etale.forget_obj_left] at hx'
     subst hx'
     obtain ⟨W, g, ⟨Z, p, _, ⟨a⟩, rfl⟩, y, rfl⟩ := hR ⟨_, ⟨i⟩⟩ x'
     exact ⟨a, (pointSmallEtaleFiberObjToPreimage (s i) hi (y ≫ p.hom)).1, rfl⟩)

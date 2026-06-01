@@ -39,7 +39,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
       ∃ y, d x' y ≤ ε / 2 ^ k ∧ 2 * ϕ x' < ϕ y := by
     intro k x'
     have := H (ε / 2 ^ k) (by positivity) x' (div_le_self ε_pos.le <| one_le_pow₀ one_le_two)
-    simpa [reformulation] using this
+    simpa [reformulation] using! this
   haveI : Nonempty X := ⟨x⟩
   choose! F hF using H
   -- Use the axiom of choice
@@ -55,7 +55,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
   have key : ∀ n, d (u n) (u (n + 1)) ≤ ε / 2 ^ n ∧ 2 * ϕ (u n) < ϕ (u (n + 1)) := by
     intro n
     induction n using Nat.case_strong_induction_on with
-    | hz => simpa [u, ε_pos.le] using hu 0
+    | hz => simpa [u, ε_pos.le] using! hu 0
     | hi n IH =>
       have A : d (u (n + 1)) x ≤ 2 * ε := by
         rw [dist_comm]
@@ -77,7 +77,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
   -- Hence u is Cauchy
   have cauchy_u : CauchySeq u := by
     refine cauchySeq_of_le_geometric _ ε one_half_lt_one fun n => ?_
-    simpa only [one_div, inv_pow] using key₁ n
+    simpa only [one_div, inv_pow] using! key₁ n
   -- So u converges to some y
   obtain ⟨y, limy⟩ : ∃ y, Tendsto u atTop (𝓝 y) := CompleteSpace.complete cauchy_u
   -- And ϕ ∘ u goes to +∞

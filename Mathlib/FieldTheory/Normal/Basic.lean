@@ -103,7 +103,7 @@ instance normal_iSup {ι : Type*} (t : ι → IntermediateField F K) [h : ∀ i,
     haveI : IsSplittingField F E (∏ i ∈ s, minpoly F i.snd) := by
       refine isSplittingField_iSup ?_ fun i _ => adjoin_rootSet_isSplittingField ?_
       · exact Finset.prod_ne_zero_iff.mpr fun i _ => minpoly.ne_zero ((h i.1).isIntegral i.2)
-      · simpa [Polynomial.map_map] using ((h i.1).splits i.2).map (algebraMap (t i.1) K)
+      · simpa [Polynomial.map_map] using! ((h i.1).splits i.2).map (algebraMap (t i.1) K)
     apply Normal.of_isSplittingField (∏ i ∈ s, minpoly F i.2)
   have hE : E ≤ ⨆ i, t i := by
     refine iSup_le fun i => iSup_le fun _ => le_iSup_of_le i.1 ?_
@@ -127,7 +127,7 @@ theorem splits_of_mem_adjoin {L} [Field L] [Algebra F L] {S : Set K}
   have : ∀ x ∈ S, ((minpoly F x).map (algebraMap F E)).Splits := fun x hx ↦ splits_of_splits
     (splits x hx).2 fun y hy ↦ (le_iSup _ ⟨x, hx⟩ : _ ≤ E) (subset_adjoin F _ <| by exact hy)
   obtain ⟨φ⟩ := nonempty_algHom_adjoin_of_splits fun x hx ↦ ⟨(splits x hx).1, this x hx⟩
-  convert (normal.splits <| φ ⟨x, hx⟩).map E.val.toRingHom
+  convert! (normal.splits <| φ ⟨x, hx⟩).map E.val.toRingHom
   simp [minpoly.algHom_eq _ φ.injective, ← minpoly.algHom_eq _ (adjoin F S).val.injective,
     Polynomial.map_map]
 

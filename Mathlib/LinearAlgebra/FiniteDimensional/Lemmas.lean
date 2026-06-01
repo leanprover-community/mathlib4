@@ -78,7 +78,7 @@ theorem eq_top_of_disjoint [FiniteDimensional K V] (s t : Submodule K V)
   replace hdim : finrank K V = finrank K s + finrank K t :=
     le_antisymm hdim (finrank_add_finrank_le_of_disjoint hdisjoint)
   rw [hdim]
-  convert s.finrank_sup_add_finrank_inf_eq t
+  convert! s.finrank_sup_add_finrank_inf_eq t
   rw [h_finrank_inf, add_zero]
 
 theorem isCompl_iff_disjoint [FiniteDimensional K V] (s t : Submodule K V)
@@ -356,7 +356,7 @@ theorem is_simple_module_of_finrank_eq_one {A} [Semiring A] [Module A V] [SMul K
   rw [← restrictScalars_inj K] at hn ⊢
   haveI : FiniteDimensional _ _ := .of_finrank_eq_succ h
   refine eq_top_of_finrank_eq ((Submodule.finrank_le _).antisymm ?_)
-  simpa only [h, finrank_bot] using Submodule.finrank_strictMono (Ne.bot_lt hn)
+  simpa only [h, finrank_bot] using! Submodule.finrank_strictMono (Ne.bot_lt hn)
 
 end finrank_eq_one
 

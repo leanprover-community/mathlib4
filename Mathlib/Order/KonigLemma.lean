@@ -149,7 +149,7 @@ theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Finite (α
   have hr : ∀ i, (f i).1 = i :=
     Nat.rec (by rw [hf0, ha₀]) (fun i ih ↦ by rw [← (hcovby.1 (hf i)).2, ih])
   refine ⟨fun i ↦ by rw [← hr i]; exact (f i).2, fun i j hij ↦ ?_⟩
-  convert (f.monotone hij).2 <;>
+  convert! (f.monotone hij).2 <;>
   simp [hr]
 
 end Graded

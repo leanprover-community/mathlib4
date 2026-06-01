@@ -108,6 +108,7 @@ and every epimorphism is the cokernel of some morphism.
 finite products give a terminal object, and in a preadditive category
 any terminal object is a zero object.)
 -/
+@[wikidata Q318737]
 class Abelian extends Preadditive C, IsNormalMonoCategory C, IsNormalEpiCategory C where
   [has_finite_products : HasFiniteProducts C]
   [has_kernels : HasKernels C]
@@ -145,6 +146,7 @@ def imageMonoFactorisation {X Y : C} (f : X ⟶ Y) : MonoFactorisation f where
   e := kernel.lift _ f (cokernel.condition _)
   fac := kernel.lift_ι _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 theorem imageMonoFactorisation_e' {X Y : C} (f : X ⟶ Y) :
     (imageMonoFactorisation f).e = cokernel.π _ ≫ Abelian.coimageImageComparison f := by
   dsimp
@@ -173,6 +175,7 @@ instance [HasZeroObject C] {X Y : C} (f : X ⟶ Y) [Mono f]
   rw [imageMonoFactorisation_e']
   exact IsIso.comp_isIso
 
+set_option backward.defeqAttrib.useBackward true in
 instance [HasZeroObject C] {X Y : C} (f : X ⟶ Y) [Epi f] : IsIso (imageMonoFactorisation f).m := by
   dsimp
   infer_instance
@@ -208,7 +211,7 @@ lemma isNormalMonoCategory : IsNormalMonoCategory C where
           rw [KernelFork.ι_ofι] at hg
           rw [← cancel_mono f, hg, ← aux, KernelFork.ι_ofι]
         · simp only [KernelFork.ι_ofι, Category.assoc]
-          convert limit.lift_π s WalkingParallelPair.zero using 2
+          convert! limit.lift_π s WalkingParallelPair.zero using 2
           rw [IsIso.inv_comp_eq, eq_comm]
           exact (imageMonoFactorisation f).fac }⟩
 
@@ -235,7 +238,7 @@ lemma isNormalEpiCategory : IsNormalEpiCategory C where
           rw [CokernelCofork.π_ofπ] at hg
           rw [← cancel_epi f, hg, ← aux, CokernelCofork.π_ofπ]
         · simp only [CokernelCofork.π_ofπ, ← Category.assoc]
-          convert colimit.ι_desc s WalkingParallelPair.one using 2
+          convert! colimit.ι_desc s WalkingParallelPair.one using 2
           rw [IsIso.comp_inv_eq, IsIso.comp_inv_eq, eq_comm, ← imageMonoFactorisation_e']
           exact (imageMonoFactorisation f).fac }⟩
 
@@ -380,7 +383,7 @@ set_option backward.isDefEq.respectTransparency false in
 See `CategoryTheory.Abelian.ofCoimageImageComparisonIsIso` for the converse.
 -/
 instance : IsIso (coimageImageComparison f) := by
-  convert
+  convert!
     Iso.isIso_hom
       (IsImage.isoExt (coimageStrongEpiMonoFactorisation f).toMonoIsImage
         (imageStrongEpiMonoFactorisation f).toMonoIsImage)
@@ -434,6 +437,9 @@ def coim : Arrow C ⥤ C where
   map {f g} u := cokernel.desc _ (u.left ≫ Abelian.coimage.π g.hom) <| by
     simp [← Category.assoc, coimage.comp_π_eq_zero]; simp
 
+@[deprecated (since := "2025-10-31")] noncomputable alias coimageFunctor := coim
+
+set_option backward.defeqAttrib.useBackward true in
 /-- The image and coimage of an arrow are naturally isomorphic. -/
 @[simps!]
 def coimIsoIm : coim (C := C) ≅ im :=
