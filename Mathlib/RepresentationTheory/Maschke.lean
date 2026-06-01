@@ -39,6 +39,7 @@ of a finite group is semisimple (i.e. a direct sum of irreducibles).
 noncomputable section
 
 open Module MonoidAlgebra
+open scoped Ring
 
 /-!
 We now do the key calculation in Maschke's theorem.
@@ -112,10 +113,10 @@ section
 $$ \frac{1}{|G|} \sum_{g \in G} g⁻¹ • π(g • -). $$
 -/
 def equivariantProjection : W →ₗ[k[G]] V :=
-  Ring.inverse (Fintype.card G : k) • π.sumOfConjugatesEquivariant G
+  (Fintype.card G : k)⁻¹ʳ • π.sumOfConjugatesEquivariant G
 
 theorem equivariantProjection_apply (v : W) :
-    π.equivariantProjection G v = Ring.inverse (Nat.card G : k) • ∑ g : G, π.conjugate g v := by
+    π.equivariantProjection G v = (Nat.card G : k)⁻¹ʳ • ∑ g : G, π.conjugate g v := by
   simp only [equivariantProjection, smul_apply, sumOfConjugatesEquivariant_apply,
     Fintype.card_eq_nat_card]
 
@@ -158,7 +159,6 @@ theorem exists_leftInverse_of_injective (f : V →ₗ[k[G]] W) (hf : LinearMap.k
 
 namespace Submodule
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_isCompl (p : Submodule k[G] V) : ∃ q : Submodule k[G] V, IsCompl p q := by
   rcases MonoidAlgebra.exists_leftInverse_of_injective p.subtype p.ker_subtype with ⟨f, hf⟩
   exact ⟨LinearMap.ker f, LinearMap.isCompl_of_proj <| DFunLike.congr_fun hf⟩

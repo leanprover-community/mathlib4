@@ -5,9 +5,9 @@ Authors: Joseph Myers
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Archimedean.Real.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 import Mathlib.Algebra.Order.ToIntervalMod
-import Mathlib.Data.Real.Archimedean
 import Mathlib.Tactic.Peel
 import Mathlib.Tactic.Recall
 
@@ -52,12 +52,11 @@ lemma condition_sub_two_mul_int_iff {α : ℝ} (m : ℤ) : Condition (α - 2 * m
   simp_rw [← Finset.sum_sub_distrib, mul_sub]
   norm_cast
   simp_rw [Int.floor_sub_intCast, sub_sub_cancel_left]
-  convert condition_two_mul_int (-m) n hn
+  convert! condition_two_mul_int (-m) n hn
   norm_cast
   rw [Int.floor_intCast]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma condition_toIcoMod_iff {α : ℝ} :
     Condition (toIcoMod (by simp : (0 : ℝ) < 2) 0 α) ↔ Condition α := by
   rw [toIcoMod, zsmul_eq_mul, mul_comm, condition_sub_two_mul_int_iff]
@@ -67,7 +66,6 @@ namespace Condition
 variable {α : ℝ} (hc : Condition α)
 include hc
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_Ico_one_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) : α ∈ Set.Ico 1 2 := by
   rcases h with ⟨h0, h2⟩
   refine ⟨?_, h2⟩
@@ -78,9 +76,9 @@ lemma mem_Ico_one_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) : α ∈ Set.Ico 1 2 := by
   apply hr.ne'
   suffices ⌈α⁻¹⌉₊ = (1 : ℤ) from mod_cast this
   apply Int.eq_one_of_dvd_one (Int.zero_le_ofNat _)
-  convert hc ⌈α⁻¹⌉₊ (zero_lt_one.trans hr)
+  convert! hc ⌈α⁻¹⌉₊ (zero_lt_one.trans hr)
   rw [← Finset.add_sum_Ico_eq_sum_Icc hr.le]
-  convert (add_zero _).symm
+  convert! (add_zero _).symm
   · rw [Int.floor_eq_iff]
     constructor
     · rw [Int.cast_one]
@@ -98,7 +96,6 @@ lemma mem_Ico_one_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) : α ∈ Set.Ico 1 2 := by
     calc x * α < α⁻¹ * α := by gcongr; exact hx.2
       _ = 1 := by simp [h0.ne']
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_Ico_n_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) {n : ℕ} (hn : 0 < n) :
     α ∈ Set.Ico ((2 * n - 1) / n : ℝ) 2 := by
   suffices ∑ i ∈ Finset.Icc 1 n, ⌊i * α⌋ = n ^ 2 ∧ α ∈ Set.Ico ((2 * n - 1) / n : ℝ) 2 from this.2
@@ -132,7 +129,7 @@ lemma mem_Ico_n_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) {n : ℕ} (hn : 0 < n) :
       by_contra
       rw [show ⌊(k + 1 : ℕ) * α⌋ = 2 * k by lia] at hc
       have hc' : ((k + 1 : ℕ) : ℤ) ∣ ((k + 1 : ℕ) : ℤ) * ((k + 1 : ℕ) : ℤ) - 1 := by
-        convert hc using 1
+        convert! hc using 1
         push_cast
         ring
       rw [dvd_sub_right (dvd_mul_right _ _), ← isUnit_iff_dvd_one, Int.isUnit_iff] at hc'
@@ -143,7 +140,7 @@ lemma mem_Ico_n_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) {n : ℕ} (hn : 0 < n) :
       ring
     · rw [Int.floor_eq_iff] at hk'
       rw [div_le_iff₀ (by norm_cast; lia), mul_comm α]
-      convert hk'.1
+      convert! hk'.1
       push_cast
       ring
 
@@ -156,7 +153,7 @@ lemma not_condition_of_mem_Ioo {α : ℝ} (h : α ∈ Set.Ioo 0 2) : ¬Condition
   have hna := (hc.mem_Ico_n_of_mem_Ioo h hn).1
   rcases h with ⟨-, h2⟩
   have hna' : 2 - (n : ℝ)⁻¹ ≤ α := by
-    convert hna using 1
+    convert! hna using 1
     field
   rw [sub_eq_add_neg, ← le_sub_iff_add_le', neg_le, neg_sub] at hna'
   rw [le_inv_comm₀ (by linarith) (mod_cast hn), ← not_lt] at hna'
@@ -170,13 +167,12 @@ lemma condition_iff_of_mem_Ico {α : ℝ} (h : α ∈ Set.Ico 0 2) : Condition �
     | inl h => exact h
     | inr ho => exact False.elim (not_condition_of_mem_Ioo ho hc)
   · rintro rfl
-    convert condition_two_mul_int 0
+    convert! condition_two_mul_int 0
     norm_num
 
 recall Imo2024Q1.Condition (α : ℝ) := (∀ n : ℕ, 0 < n → (n : ℤ) ∣ ∑ i ∈ Finset.Icc 1 n, ⌊i * α⌋)
 recall Imo2024Q1.solutionSet := {α : ℝ | ∃ m : ℤ, α = 2 * m}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem result (α : ℝ) : Condition α ↔ α ∈ solutionSet := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · rw [← condition_toIcoMod_iff, condition_iff_of_mem_Ico (toIcoMod_mem_Ico' _ _),

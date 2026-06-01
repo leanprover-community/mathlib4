@@ -18,8 +18,8 @@ to the category `Opens U`.
 
 ## TODO
 * show that both functors of the equivalence `overEquivalence U` are continuous and
-induce an equivalence between `Sheaf ((Opens.grothendieckTopology X).over U) A`
-and `Sheaf (Opens.grothendieckTopology U) A` for any category `A`.
+  induce an equivalence between `Sheaf ((Opens.grothendieckTopology X).over U) A`
+  and `Sheaf (Opens.grothendieckTopology U) A` for any category `A`.
 
 -/
 
@@ -35,6 +35,7 @@ variable {X : Type u} [TopologicalSpace X] (U : Opens X)
 
 namespace Opens
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `X` is a topological space and `U : Opens X`,
 then the category `Over U` is equivalent to `Opens ↥U`. -/
 @[simps!]

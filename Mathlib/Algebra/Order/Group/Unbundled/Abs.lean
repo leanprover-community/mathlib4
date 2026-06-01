@@ -133,10 +133,10 @@ lemma mabs_mabs_div_mabs_le (a b : α) : |(|a|ₘ / |b|ₘ)|ₘ ≤ |a / b|ₘ :
   rw [mabs, sup_le_iff]
   constructor
   · apply div_le_iff_le_mul.2
-    convert mabs_mul_le (a / b) b
+    convert! mabs_mul_le (a / b) b
     rw [div_mul_cancel]
   · rw [div_eq_mul_inv, mul_inv_rev, inv_inv, mul_inv_le_iff_le_mul, mabs_div_comm]
-    convert mabs_mul_le (b / a) a
+    convert! mabs_mul_le (b / a) a
     · rw [div_mul_cancel]
 
 @[to_additive] lemma sup_div_inf_eq_mabs_div (a b : α) : (a ⊔ b) / (a ⊓ b) = |b / a|ₘ := by
@@ -154,7 +154,6 @@ lemma inf_sq_eq_mul_div_mabs_div (a b : α) : (a ⊓ b) ^ 2 = a * b / |b / a|ₘ
   rw [← inf_mul_sup a b, ← sup_div_inf_eq_mabs_div, div_eq_mul_inv, div_eq_mul_inv, mul_inv_rev,
     inv_inv, mul_assoc, mul_inv_cancel_comm_assoc, ← pow_two]
 
-set_option backward.isDefEq.respectTransparency false in
 -- See, e.g. Zaanen, Lectures on Riesz Spaces
 -- 3rd lecture
 @[to_additive]

@@ -166,8 +166,7 @@ lemma hasSum_int_evenKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
   have (n : ℤ) : cexp (-(π * (n + a) ^ 2 * t)) = cexp (-(π * a ^ 2 * t)) *
       jacobiTheta₂_term n (a * I * t) (I * t) := by
     rw [jacobiTheta₂_term, ← Complex.exp_add]
-    ring_nf
-    simp
+    grind [I_sq]
   simpa [this] using (hasSum_jacobiTheta₂_term _ (by simpa)).mul_left _
 
 lemma hasSum_int_cosKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
@@ -484,7 +483,6 @@ end FEPair
 ## Relation to the Dirichlet series for `1 < re s`
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Formula for `completedCosZeta` as a Dirichlet series in the convergence range
 (first version, with sum over `ℤ`). -/
 lemma hasSum_int_completedCosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
@@ -623,7 +621,7 @@ lemma differentiableAt_hurwitzZetaEven (a : UnitAddCircle) {s : ℂ} (hs' : s �
 lemma hurwitzZetaEven_residue_one (a : UnitAddCircle) :
     Tendsto (fun s ↦ (s - 1) * hurwitzZetaEven a s) (𝓝[≠] 1) (𝓝 1) := by
   have : Tendsto (fun s ↦ (s - 1) * completedHurwitzZetaEven a s / Gammaℝ s) (𝓝[≠] 1) (𝓝 1) := by
-    simpa only [Gammaℝ_one, inv_one, mul_one] using (completedHurwitzZetaEven_residue_one a).mul
+    simpa only [Gammaℝ_one, inv_one, mul_one] using! (completedHurwitzZetaEven_residue_one a).mul
       <| (differentiable_Gammaℝ_inv.continuous.tendsto _).mono_left nhdsWithin_le_nhds
   refine this.congr' ?_
   filter_upwards [eventually_ne_nhdsWithin one_ne_zero] with s hs
@@ -656,8 +654,10 @@ lemma differentiable_hurwitzZetaEven_sub_hurwitzZetaEven (a b : UnitAddCircle) :
   intro z
   rcases ne_or_eq z 1 with hz | rfl
   · exact (differentiableAt_hurwitzZetaEven a hz).sub (differentiableAt_hurwitzZetaEven b hz)
-  · convert (differentiableAt_hurwitzZetaEven_sub_one_div a).fun_sub
-      (differentiableAt_hurwitzZetaEven_sub_one_div b) using 2 with s
+  · convert!
+    (differentiableAt_hurwitzZetaEven_sub_one_div a).fun_sub
+      (differentiableAt_hurwitzZetaEven_sub_one_div b) using
+    2 with s
     abel
 
 /--

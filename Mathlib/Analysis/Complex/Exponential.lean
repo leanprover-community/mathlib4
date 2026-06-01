@@ -93,7 +93,7 @@ variable (x y : ℂ)
 theorem exp_zero : exp 0 = 1 := by
   rw [exp]
   refine lim_eq_of_equiv_const fun ε ε0 => ⟨1, fun j hj => ?_⟩
-  convert (config := .unfoldSameFun) ε0 -- ε0 : ε > 0 but goal is _ < ε
+  convert! (config := .unfoldSameFun) ε0 -- ε0 : ε > 0 but goal is _ < ε
   rcases j with - | j
   · exact absurd hj (not_le_of_gt zero_lt_one)
   · dsimp [exp']
@@ -257,7 +257,6 @@ lemma pow_div_factorial_le_exp (hx : 0 ≤ x) (n : ℕ) : x ^ n / n ! ≤ exp x 
         single_le_sum (f := fun k ↦ x ^ k / k !) (fun k _ ↦ by positivity) (self_mem_range_succ n)
     _ ≤ exp x := sum_le_exp_of_nonneg hx _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem quadratic_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 1 + x + x ^ 2 / 2 ≤ exp x :=
   calc
     1 + x + x ^ 2 / 2 = ∑ i ∈ range 3, x ^ i / i ! := by
@@ -298,9 +297,6 @@ theorem exp_strictMono : StrictMono exp := fun x y h => by
   rw [← sub_add_cancel y x, Real.exp_add]
   exact (lt_mul_iff_one_lt_left (exp_pos _)).2
       (lt_of_lt_of_le (by linarith) (add_one_le_exp_of_nonneg (by linarith)))
-
-@[deprecated exp_strictMono (since := "2025-10-20")]
-theorem exp_lt_exp_of_lt {x y : ℝ} (h : x < y) : exp x < exp y := exp_strictMono h
 
 @[gcongr, mono]
 theorem exp_monotone : Monotone exp :=
@@ -479,45 +475,30 @@ lemma norm_exp_sub_sum_le_exp_norm_sub_sum (x : ℂ) (n : ℕ) :
     exact Real.sum_le_exp_of_nonneg (norm_nonneg _) _
 
 lemma norm_exp_le_exp_norm (x : ℂ) : ‖exp x‖ ≤ Real.exp ‖x‖ := by
-  convert norm_exp_sub_sum_le_exp_norm_sub_sum x 0 using 1 <;> simp
+  convert! norm_exp_sub_sum_le_exp_norm_sub_sum x 0 using 1 <;> simp
 
 lemma norm_exp_sub_sum_le_norm_mul_exp (x : ℂ) (n : ℕ) :
     ‖exp x - ∑ m ∈ range n, x ^ m / m.factorial‖ ≤ ‖x‖ ^ n * Real.exp ‖x‖ := by
   rw [← CauSeq.lim_const (abv := norm) (∑ m ∈ range n, _), Complex.exp, sub_eq_add_neg,
     ← CauSeq.lim_neg, CauSeq.lim_add, ← lim_norm]
   refine CauSeq.lim_le (CauSeq.le_of_exists ⟨n, fun j hj => ?_⟩)
-  simp_rw [← sub_eq_add_neg]
   change ‖(∑ m ∈ range j, x ^ m / m.factorial) - ∑ m ∈ range n, x ^ m / m.factorial‖ ≤ _
-  rw [sum_range_sub_sum_range hj]
+  rw [← sum_Ico_eq_sub _ hj]
   calc
-    ‖∑ m ∈ range j with n ≤ m, (x ^ m / m.factorial : ℂ)‖
-      = ‖∑ m ∈ range j with n ≤ m, (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)‖ := by
+    ‖∑ m ∈ Ico n j, (x ^ m / m.factorial : ℂ)‖
+      = ‖∑ m ∈ Ico n j, (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)‖ := by
       refine congr_arg norm (sum_congr rfl fun m hm => ?_)
-      rw [mem_filter, mem_range] at hm
-      rw [← mul_div_assoc, ← pow_add, add_tsub_cancel_of_le hm.2]
-    _ ≤ ∑ m ∈ range j with n ≤ m, ‖x ^ n * (x ^ (m - n) / m.factorial)‖ :=
+      rw [mem_Ico] at hm
+      rw [← mul_div_assoc, ← pow_add, add_tsub_cancel_of_le hm.1]
+    _ ≤ ∑ m ∈ Ico n j, ‖x ^ n * (x ^ (m - n) / m.factorial)‖ :=
       IsAbsoluteValue.abv_sum norm ..
-    _ ≤ ∑ m ∈ range j with n ≤ m, ‖x‖ ^ n * (‖x‖ ^ (m - n) / (m - n).factorial) := by
+    _ ≤ ∑ m ∈ Ico n j, ‖x‖ ^ n * (‖x‖ ^ (m - n) / (m - n).factorial) := by
       simp_rw [Complex.norm_mul, Complex.norm_pow, Complex.norm_div, norm_natCast]
       gcongr with i hi
       · rw [Complex.norm_pow]
       · simp
-    _ = ‖x‖ ^ n * ∑ m ∈ range j with n ≤ m, (‖x‖ ^ (m - n) / (m - n).factorial) := by
-      rw [← mul_sum]
     _ = ‖x‖ ^ n * ∑ m ∈ range (j - n), (‖x‖ ^ m / m.factorial) := by
-      congr 1
-      refine (sum_bij (fun m hm ↦ m + n) ?_ ?_ ?_ ?_).symm
-      · grind
-      · intro a ha b hb hab
-        simpa using hab
-      · intro b hb
-        simp only [mem_range, exists_prop]
-        simp only [mem_filter, mem_range] at hb
-        refine ⟨b - n, ?_, ?_⟩
-        · rw [tsub_lt_tsub_iff_right hb.2]
-          exact hb.1
-        · rw [tsub_add_cancel_of_le hb.2]
-      · simp
+      simp [← mul_sum, sum_Ico_eq_sum_range]
     _ ≤ ‖x‖ ^ n * Real.exp ‖x‖ := by
       gcongr
       refine Real.sum_le_exp_of_nonneg ?_ _
@@ -532,7 +513,7 @@ open Complex Finset
 nonrec theorem exp_bound {x : ℝ} (hx : |x| ≤ 1) {n : ℕ} (hn : 0 < n) :
     |exp x - ∑ m ∈ range n, x ^ m / m.factorial| ≤ |x| ^ n * (n.succ / (n.factorial * n)) := by
   have hxc : ‖(x : ℂ)‖ ≤ 1 := mod_cast hx
-  convert exp_bound hxc hn using 2 <;>
+  convert! exp_bound hxc hn using 2 <;>
   norm_cast
 
 theorem exp_bound' {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) {n : ℕ} (hn : 0 < n) :
@@ -578,7 +559,7 @@ theorem expNear_sub (n x r₁ r₂) : expNear n x r₁ -
 theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) :
     |exp x - expNear m x 0| ≤ |x| ^ m / m.factorial * ((m + 1) / m) := by
   simp only [expNear, mul_zero, add_zero]
-  convert exp_bound (n := m) h ?_ using 1
+  convert! exp_bound (n := m) h ?_ using 1
   · simp [field]
   · lia
 
@@ -588,8 +569,9 @@ theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a�
     |exp x - expNear n x a₁| ≤ |x| ^ n / n.factorial * b₁ := by
   grw [abs_sub_le, h]
   subst e₁; rw [expNear_succ, expNear_sub, abs_mul]
-  convert mul_le_mul_of_nonneg_left (a := |x| ^ n / ↑(Nat.factorial n))
-      (le_sub_iff_add_le'.1 e) ?_ using 1
+  convert!
+    mul_le_mul_of_nonneg_left (a := |x| ^ n / ↑(Nat.factorial n)) (le_sub_iff_add_le'.1 e) ?_
+      using 1
   · simp [mul_add, pow_succ', div_eq_mul_inv, abs_mul, abs_inv, Nat.factorial]
     ac_rfl
   · simp [div_nonneg, abs_nonneg]
@@ -655,7 +637,6 @@ lemma one_sub_lt_exp_neg {x : ℝ} (hx : x ≠ 0) : 1 - x < exp (-x) :=
 lemma one_sub_le_exp_neg (x : ℝ) : 1 - x ≤ exp (-x) :=
   (sub_eq_neg_add _ _).trans_le <| add_one_le_exp _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t / n) ^ n ≤ exp (-t) := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
@@ -672,6 +653,12 @@ lemma le_inv_mul_exp (x : ℝ) {c : ℝ} (hc : 0 < c) : x ≤ c⁻¹ * exp (c * 
   calc c * x
   _ ≤ c * x + 1 := le_add_of_nonneg_right zero_le_one
   _ ≤ _ := Real.add_one_le_exp (c * x)
+
+theorem prod_one_add_le_exp_sum {ι : Type*} (s : Finset ι) {f : ι → ℝ}
+    (hf : ∀ i, 0 ≤ f i) : ∏ i ∈ s, (1 + f i) ≤ exp (∑ i ∈ s, f i) :=
+  (Finset.prod_le_prod (fun i _ ↦ add_nonneg zero_le_one (hf i))
+    fun i _ ↦ (add_comm 1 (f i)).le.trans (add_one_le_exp _)).trans
+    (exp_sum s f).symm.le
 
 end Real
 

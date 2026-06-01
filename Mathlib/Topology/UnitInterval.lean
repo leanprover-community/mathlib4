@@ -52,26 +52,19 @@ theorem div_mem {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ≤ y) : x / 
 theorem fract_mem (x : ℝ) : fract x ∈ I :=
   ⟨fract_nonneg _, (fract_lt_one _).le⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[norm_cast] theorem coe_ne_zero {x : I} : (x : ℝ) ≠ 0 ↔ x ≠ 0 := coe_eq_zero.not
 
-set_option backward.isDefEq.respectTransparency false in
 @[norm_cast] theorem coe_ne_one {x : I} : (x : ℝ) ≠ 1 ↔ x ≠ 1 := coe_eq_one.not
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast] theorem coe_pos {x : I} : (0 : ℝ) < x ↔ 0 < x := Iff.rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast] theorem coe_lt_one {x : I} : (x : ℝ) < 1 ↔ x < 1 := Iff.rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mul_le_left {x y : I} : x * y ≤ x :=
   Subtype.coe_le_coe.mp <| mul_le_of_le_one_right x.2.1 y.2.2
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mul_le_right {x y : I} : x * y ≤ y :=
   Subtype.coe_le_coe.mp <| mul_le_of_le_one_left y.2.1 x.2.2
 
@@ -84,12 +77,10 @@ def symm : I → I := fun t => ⟨1 - t, Icc.mem_iff_one_sub_mem.mp t.prop⟩
 @[inherit_doc]
 scoped notation "σ" => unitInterval.symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 theorem symm_zero : σ 0 = 1 :=
   Subtype.ext <| by simp [symm]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 theorem symm_one : σ 1 = 0 :=
   Subtype.ext <| by simp [symm]
@@ -107,7 +98,7 @@ theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
   rfl
 
 lemma image_coe_preimage_symm {s : Set I} :
-    Subtype.val '' (σ ⁻¹' s) = (1 - ·) ⁻¹' (Subtype.val '' s) := by
+    Subtype.val '' σ ⁻¹' s = (1 - ·) ⁻¹' Subtype.val '' s := by
   simp [symm_involutive, ← Function.Involutive.image_eq_preimage_symm, image_image]
 
 @[simp]
@@ -142,12 +133,10 @@ theorem symm_inj {i j : I} : σ i = σ j ↔ i = j := symm_bijective.injective.e
 theorem half_le_symm_iff (t : I) : 1 / 2 ≤ (σ t : ℝ) ↔ (t : ℝ) ≤ 1 / 2 := by
   rw [coe_symm_eq, le_sub_iff_add_le, add_comm, ← le_sub_iff_add_le, sub_half]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma symm_eq_one {i : I} : σ i = 1 ↔ i = 0 := by
   rw [← symm_zero, symm_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma symm_eq_zero {i : I} : σ i = 0 ↔ i = 1 := by
   rw [← symm_one, symm_inj]
@@ -181,7 +170,6 @@ example : CompactSpace I := by infer_instance
 theorem nonneg (x : I) : 0 ≤ (x : ℝ) :=
   x.2.1
 
-set_option backward.isDefEq.respectTransparency false in
 theorem one_minus_nonneg (x : I) : 0 ≤ 1 - (x : ℝ) := by simpa using x.2.2
 
 theorem le_one (x : I) : (x : ℝ) ≤ 1 :=
@@ -192,23 +180,18 @@ theorem one_minus_le_one (x : I) : 1 - (x : ℝ) ≤ 1 := by simpa using x.2.1
 theorem add_pos {t : I} {x : ℝ} (hx : 0 < x) : 0 < (x + t : ℝ) :=
   add_pos_of_pos_of_nonneg hx <| nonneg _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- like `unitInterval.nonneg`, but with the inequality in `I`. -/
 theorem nonneg' {t : I} : 0 ≤ t :=
   t.2.1
 
-set_option backward.isDefEq.respectTransparency false in
 /-- like `unitInterval.le_one`, but with the inequality in `I`. -/
 theorem le_one' {t : I} : t ≤ 1 :=
   t.2.2
 
-set_option backward.isDefEq.respectTransparency false in
 protected lemma pos_iff_ne_zero {x : I} : 0 < x ↔ x ≠ 0 := bot_lt_iff_ne_bot
 
-set_option backward.isDefEq.respectTransparency false in
 protected lemma lt_one_iff_ne_one {x : I} : x < 1 ↔ x ≠ 1 := lt_top_iff_ne_top
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eq_one_or_eq_zero_of_le_mul {i j : I} (h : i ≤ j * i) : i = 0 ∨ j = 1 := by
   contrapose! h
   rw [← unitInterval.lt_one_iff_ne_one, ← coe_lt_one, ← unitInterval.pos_iff_ne_zero,
@@ -216,7 +199,6 @@ lemma eq_one_or_eq_zero_of_le_mul {i j : I} (h : i ≤ j * i) : i = 0 ∨ j = 1 
   rw [← Subtype.coe_lt_coe, coe_mul]
   simpa using mul_lt_mul_of_pos_right h.right h.left
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Nontrivial I := ⟨⟨1, 0, (one_ne_zero <| congrArg Subtype.val ·)⟩⟩
 
 theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc (0 : ℝ) (1 / a) := by
@@ -243,13 +225,10 @@ protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → ℝ}
     (h : ∀ c ∈ t, f c ∈ unitInterval) :
     ∏ c ∈ t, f c ∈ unitInterval := _root_.prod_mem (S := unitInterval.submonoid) h
 
-set_option backward.isDefEq.respectTransparency false in
 instance : LinearOrderedCommMonoidWithZero I where
-  zero_mul i := zero_mul i
-  mul_zero i := mul_zero i
-  zero_le x := x.2.1
+  isBot_zero x := x.2.1
   mul_lt_mul_of_pos_left i hi j k hjk := by
-    simp only [← Subtype.coe_lt_coe, coe_mul]; gcongr; exact hi
+    simp only [← Subtype.coe_lt_coe, coe_mul]; gcongr
 
 lemma subtype_Iic_eq_Icc (x : I) : Subtype.val ⁻¹' (Iic ↑x) = Icc 0 x := by
   rw [preimage_subtype_val_Iic]
@@ -324,51 +303,68 @@ Form a convex linear combination of two points in a closed interval.
 
 This should be removed once a general theory of convex spaces is available in Mathlib.
 -/
-def convexCombo {a b : ℝ} (x y : Icc a b) (t : unitInterval) : Icc a b :=
+def convexComb {a b : ℝ} (x y : Icc a b) (t : unitInterval) : Icc a b :=
   ⟨(1 - t) * x + t * y, by
     constructor
     · nlinarith [x.2.1, y.2.1, t.2.1, t.2.2]
     · nlinarith [x.2.2, y.2.2, t.2.1, t.2.2]⟩
 
 @[simp, grind =]
-theorem coe_convexCombo {a b : ℝ} (x y : Icc a b) (t : unitInterval) :
-  (convexCombo x y t : ℝ) = (1 - t) * x + t * y := rfl
-
-set_option backward.isDefEq.respectTransparency false in
-@[simp, grind =]
-theorem convexCombo_zero {a b : ℝ} (x y : Icc a b) : convexCombo x y 0 = x := by
-  simp [convexCombo]
-
-set_option backward.isDefEq.respectTransparency false in
-@[simp, grind =]
-theorem convexCombo_one {a b : ℝ} (x y : Icc a b) : convexCombo x y 1 = y := by
-  simp [convexCombo]
+theorem coe_convexComb {a b : ℝ} (x y : Icc a b) (t : unitInterval) :
+  (convexComb x y t : ℝ) = (1 - t) * x + t * y := rfl
 
 @[simp, grind =]
-theorem convexCombo_symm {a b : ℝ} (x y : Icc a b) (t : unitInterval) :
-    convexCombo x y (unitInterval.symm t) = convexCombo y x t := by
-  simp [convexCombo]
+theorem convexComb_zero {a b : ℝ} (x y : Icc a b) : convexComb x y 0 = x := by
+  simp [convexComb]
+
+@[simp, grind =]
+theorem convexComb_one {a b : ℝ} (x y : Icc a b) : convexComb x y 1 = y := by
+  simp [convexComb]
+
+@[simp, grind =]
+theorem convexComb_zero_one (t : unitInterval) : convexComb 0 1 t = t := by
+  simp [convexComb]
+
+@[simp, grind =]
+theorem convexComb_eq {a b : ℝ} (x : Icc a b) (t : unitInterval) : convexComb x x t = x := by
+  simp [convexComb, sub_mul]
+
+@[simp, grind =]
+theorem convexComb_symm {a b : ℝ} (x y : Icc a b) (t : unitInterval) :
+    convexComb x y (unitInterval.symm t) = convexComb y x t := by
+  simp [convexComb]
   abel
 
 @[grind .]
-theorem le_convexCombo {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterval) :
-    x ≤ convexCombo x y t := by
+theorem le_convexComb {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterval) :
+    x ≤ convexComb x y t := by
   rw [← Subtype.coe_le_coe] at h ⊢
   simp
   nlinarith [t.2.1, t.2.2]
 
 @[grind .]
-theorem convexCombo_le {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterval) :
-    convexCombo x y t ≤ y := by
+theorem convexComb_le {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterval) :
+    convexComb x y t ≤ y := by
   rw [← Subtype.coe_le_coe] at h ⊢
   simp
   nlinarith [t.2.1, t.2.2]
 
+@[continuity, fun_prop]
+theorem continuous_convexComb {a b : ℝ} (x y : Icc a b) : Continuous (convexComb x y) := by
+  unfold Icc.convexComb
+  fun_prop
+
+@[continuity, fun_prop]
+theorem continuous_convexComb_prod {a b : ℝ} :
+    Continuous fun x : Icc a b × Icc a b × unitInterval ↦ Icc.convexComb x.1 x.2.1 x.2.2 := by
+  unfold Icc.convexComb
+  fun_prop
+
 /--
-Helper definition for `convexCombo_assoc`, giving one of the coefficients appearing
+Helper definition for `convexComb_assoc`, giving one of the coefficients appearing
 when we reassociate a convex combination.
 -/
-abbrev convexCombo_assoc_coeff₁ (s t : unitInterval) : unitInterval :=
+abbrev convexComb_assoc_coeff₁ (s t : unitInterval) : unitInterval :=
   ⟨s * (1 - t) / (1 - s * t),
     by
       apply div_nonneg
@@ -380,16 +376,16 @@ abbrev convexCombo_assoc_coeff₁ (s t : unitInterval) : unitInterval :=
       · nlinarith [s.2.2, t.2.2, t.2.1]⟩
 
 /--
-Helper definition for `convexCombo_assoc`, giving one of the coefficients appearing
+Helper definition for `convexComb_assoc`, giving one of the coefficients appearing
 when we reassociate a convex combination.
 -/
-abbrev convexCombo_assoc_coeff₂ (s t : unitInterval) : unitInterval := s * t
+abbrev convexComb_assoc_coeff₂ (s t : unitInterval) : unitInterval := s * t
 
-theorem convexCombo_assoc {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
-    convexCombo x (convexCombo y z t) s =
-      convexCombo (convexCombo x y (convexCombo_assoc_coeff₁ s t)) z
-        (convexCombo_assoc_coeff₂ s t) := by
-  simp only [convexCombo, coe_mul, Subtype.mk.injEq]
+theorem convexComb_assoc {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
+    convexComb x (convexComb y z t) s =
+      convexComb (convexComb x y (convexComb_assoc_coeff₁ s t)) z
+        (convexComb_assoc_coeff₂ s t) := by
+  simp only [convexComb, coe_mul, Subtype.mk.injEq]
   by_cases hs : (s : ℝ) = 1
   · simp only [hs]
     by_cases ht : (t : ℝ) = 1
@@ -407,29 +403,29 @@ theorem convexCombo_assoc {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
       ring_nf
 
 /--
-Helper definition for `convexCombo_assoc'`, giving one of the coefficients appearing
+Helper definition for `convexComb_assoc'`, giving one of the coefficients appearing
 when we reassociate a convex combination in the reverse direction.
 -/
-abbrev convexCombo_assoc_coeff₁' (s t : unitInterval) : unitInterval :=
-  unitInterval.symm (convexCombo_assoc_coeff₂ (unitInterval.symm t) (unitInterval.symm s))
+abbrev convexComb_assoc_coeff₁' (s t : unitInterval) : unitInterval :=
+  unitInterval.symm (convexComb_assoc_coeff₂ (unitInterval.symm t) (unitInterval.symm s))
 
 /--
-Helper definition for `convexCombo_assoc'`, giving one of the coefficients appearing
+Helper definition for `convexComb_assoc'`, giving one of the coefficients appearing
 when we reassociate a convex combination in the reverse direction.
 -/
-abbrev convexCombo_assoc_coeff₂' (s t : unitInterval) : unitInterval :=
-  unitInterval.symm (convexCombo_assoc_coeff₁ (unitInterval.symm t) (unitInterval.symm s))
+abbrev convexComb_assoc_coeff₂' (s t : unitInterval) : unitInterval :=
+  unitInterval.symm (convexComb_assoc_coeff₁ (unitInterval.symm t) (unitInterval.symm s))
 
-theorem convexCombo_assoc' {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
-    convexCombo (convexCombo x y s) z t =
-      convexCombo x (convexCombo y z (convexCombo_assoc_coeff₂' s t))
-        (convexCombo_assoc_coeff₁' s t) := by
-  rw [← convexCombo_symm, ← convexCombo_symm y x, convexCombo_assoc, ← convexCombo_symm x,
-    ← convexCombo_symm z y]
-  rw [convexCombo_assoc_coeff₁', convexCombo_assoc_coeff₂', unitInterval.symm_symm]
+theorem convexComb_assoc' {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
+    convexComb (convexComb x y s) z t =
+      convexComb x (convexComb y z (convexComb_assoc_coeff₂' s t))
+        (convexComb_assoc_coeff₁' s t) := by
+  rw [← convexComb_symm, ← convexComb_symm y x, convexComb_assoc, ← convexComb_symm x,
+    ← convexComb_symm z y]
+  rw [convexComb_assoc_coeff₁', convexComb_assoc_coeff₂', unitInterval.symm_symm]
 
 set_option backward.privateInPublic true in
-private theorem eq_convexCombo.zero_le {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
+private theorem eq_convexComb.zero_le {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
     0 ≤ ((y - x) / (z - x) : ℝ) := by
   by_cases h : (z - x : ℝ) = 0
   · simp_all
@@ -438,7 +434,7 @@ private theorem eq_convexCombo.zero_le {a b : ℝ} {x y z : Icc a b} (hxy : x �
     apply div_nonneg <;> grind
 
 set_option backward.privateInPublic true in
-private theorem eq_convexCombo.le_one {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
+private theorem eq_convexComb.le_one {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
     ((y - x) / (z - x) : ℝ) ≤ 1 := by
   by_cases h : (z - x : ℝ) = 0
   · simp_all
@@ -452,11 +448,11 @@ set_option backward.privateInPublic.warn false in
 A point between two points in a closed interval
 can be expressed as a convex combination of them.
 -/
-theorem eq_convexCombo {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
-    y = convexCombo x z ⟨((y - x) / (z - x)),
-          eq_convexCombo.zero_le hxy hyz, eq_convexCombo.le_one hxy hyz⟩ := by
+theorem eq_convexComb {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
+    y = convexComb x z ⟨((y - x) / (z - x)),
+          eq_convexComb.zero_le hxy hyz, eq_convexComb.le_one hxy hyz⟩ := by
   ext
-  simp only [coe_convexCombo]
+  simp only [coe_convexComb]
   by_cases h : (z - x : ℝ) = 0
   · simp_all only [div_zero, sub_zero, one_mul, zero_mul, add_zero]
     replace hxy : (x : ℝ) ≤ (y : ℝ) := hxy
@@ -514,7 +510,10 @@ theorem projIcc_eq_one {x : ℝ} : projIcc (0 : ℝ) 1 zero_le_one x = 1 ↔ 1 �
 
 namespace Tactic.Interactive
 
-/-- A tactic that solves `0 ≤ ↑x`, `0 ≤ 1 - ↑x`, `↑x ≤ 1`, and `1 - ↑x ≤ 1` for `x : I`. -/
+/--
+`unit_interval` solves the goals `0 ≤ ↑x`, `0 ≤ 1 - ↑x`, `↑x ≤ 1`, and `1 - ↑x ≤ 1` for
+any expression `x : I`.
+-/
 macro "unit_interval" : tactic =>
   `(tactic| (first
   | apply unitInterval.nonneg
@@ -566,10 +565,8 @@ open NNReal
 /-- The coercion from `I` to `ℝ≥0`. -/
 def toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma toNNReal_zero : toNNReal 0 = 0 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma toNNReal_one : toNNReal 1 = 1 := rfl
 
 @[fun_prop] lemma toNNReal_continuous : Continuous toNNReal := by delta toNNReal; fun_prop

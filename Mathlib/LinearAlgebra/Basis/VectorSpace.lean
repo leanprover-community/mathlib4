@@ -164,7 +164,7 @@ theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _) :=
 
 theorem ofVectorSpaceIndex.linearIndependent :
     LinearIndependent K ((↑) : ofVectorSpaceIndex K V → V) := by
-  convert (ofVectorSpace K V).linearIndependent
+  convert! (ofVectorSpace K V).linearIndependent
   ext x
   rw [ofVectorSpace_apply_self]
 
@@ -276,7 +276,6 @@ theorem LinearMap.leftInverse_apply_of_inj {f : V →ₗ[K] V'} (h_inj : LinearM
     f.leftInverse (f x) = x :=
   LinearMap.ext_iff.mp (f.leftInverse_comp_of_inj h_inj) x
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Submodule.exists_isCompl (p : Submodule K V) : ∃ q : Submodule K V, IsCompl p q :=
   ⟨LinearMap.ker p.subtype.leftInverse,
     LinearMap.isCompl_of_proj <| LinearMap.leftInverse_apply_of_inj p.ker_subtype⟩
@@ -284,7 +283,6 @@ theorem Submodule.exists_isCompl (p : Submodule K V) : ∃ q : Submodule K V, Is
 instance Submodule.complementedLattice : ComplementedLattice (Submodule K V) :=
   ⟨Submodule.exists_isCompl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any linear map `f : p →ₗ[K] V'` defined on a subspace `p` can be extended to the whole
 space. -/
 theorem LinearMap.exists_extend {p : Submodule K V} (f : p →ₗ[K] V') :
@@ -298,9 +296,9 @@ theorem LinearMap.exists_extend_of_notMem {p : Submodule K V} {v : V} (f : p →
   refine ⟨g, ?_, ?_⟩
   · ext x
     have := LinearPMap.supSpanSingleton_apply_mk_of_mem ⟨p, f⟩ y hv x.2
-    simpa using congr($hg _).trans this
+    simpa using! congr($hg _).trans this
   · have := LinearPMap.supSpanSingleton_apply_self ⟨p, f⟩ y hv
-    simpa using congr($hg _).trans this
+    simpa using! congr($hg _).trans this
 
 open Submodule LinearMap
 
@@ -343,7 +341,6 @@ variable {K : Type*} {V : Type*} [Field K] [AddCommGroup V] [Module K V]
 
 variable {f : V →ₗ[K] K} {v : V}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a vector space, given a nonzero linear form `f`,
 a nonzero vector `v` such that `f v ≠ 0`,
 there exists a basis `b` with an index `i`
@@ -386,7 +383,6 @@ theorem exists_basis_of_pairing_ne_zero
     apply Or.resolve_left (Set.mem_insert_iff.mpr j.prop)
     simp [← hi, b, Subtype.coe_inj, Ne.symm h]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a vector space, given a nonzero linear form `f`,
 a nonzero vector `v` such that `f v = 0`,
 there exists a basis `b` with two distinct indices `i`, `j`

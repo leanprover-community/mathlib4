@@ -40,13 +40,13 @@ cohomology.
 ## References
 
 * [P. Berthelot, *Cohomologie cristalline des schémas de
-caractéristique $p$ > 0*][Berthelot-1974]
+  caractéristique $p$ > 0*][Berthelot-1974]
 
 * [P. Berthelot and A. Ogus, *Notes on crystalline
-cohomology*][BerthelotOgus-1978]
+  cohomology*][BerthelotOgus-1978]
 
 * [N. Roby, *Lois polynomes et lois formelles en théorie des
-modules*][Roby-1963]
+  modules*][Roby-1963]
 
 * [N. Roby, *Les algèbres à puissances dividées*][Roby-1965]
 -/

@@ -59,7 +59,6 @@ def largeSchroder : ℕ → ℕ
 @[simp] theorem largeSchroder_one : largeSchroder 1 = 2 := by simp [largeSchroder]
 @[simp] theorem largeSchroder_two : largeSchroder 2 = 6 := by simp [largeSchroder]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem largeSchroder_succ (n : ℕ) :
     largeSchroder (n + 1) = largeSchroder n + ∑ i ≤ n, largeSchroder i * largeSchroder (n - i) := by
   simp [largeSchroder, ← Iio_add_one_eq_Iic, Nat.Iio_eq_range, ← Fin.sum_univ_eq_sum_range]
@@ -108,7 +107,10 @@ theorem smallSchroder_succ (hn : 1 < n) :
           ∑ i ∈ Ioo 0 (n + 1), (2 * (i + 1).smallSchroder) * (2 * (n + 2 - i).smallSchroder) := by
       congr! 2 with i hi
       simp at hi
-      rw [← two_mul_smallSchroder_succ, ← two_mul_smallSchroder_succ] <;> lia
+      rw [← two_mul_smallSchroder_succ, ← two_mul_smallSchroder_succ] <;>
+      · #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
+        we need to re-enable model-based theory combination in `lia` for this to go through. -/
+        lia +mbtc
     _ = 6 * (n + 2).smallSchroder +
           4 * ∑ i ∈ Ioo 0 (n + 1), (i + 1).smallSchroder * (n + 2 - i).smallSchroder := by
       rw [← two_mul_smallSchroder_succ (by lia)]

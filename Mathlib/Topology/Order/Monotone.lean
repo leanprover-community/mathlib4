@@ -49,7 +49,6 @@ lemma MonotoneOn.insert_of_continuousWithinAt [TopologicalSpace β] [OrderClosed
     filter_upwards [this] with y hy
     exact hf hy.1 hb (le_of_lt hy.2)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a function is monotone on a set in a second countable topological space, then there
 are only countably many points that have several preimages. -/
 lemma MonotoneOn.countable_setOf_two_preimages [SecondCountableTopology α]
@@ -441,7 +440,7 @@ lemma MonotoneOn.tendsto_nhdsLT {α β : Type*} [LinearOrder α] [TopologicalSpa
   rcases eq_empty_or_nonempty (Iio x) with (h | h); · simp [h]
   refine tendsto_order.2 ⟨fun l hl => ?_, fun m hm => ?_⟩
   · obtain ⟨z, zx, lz⟩ : ∃ a : α, a < x ∧ l < f a := by
-      simpa only [mem_image, exists_prop, exists_exists_and_eq_and] using
+      simpa only [mem_image, exists_prop, exists_exists_and_eq_and] using!
         exists_lt_of_lt_csSup (h.image _) hl
     filter_upwards [Ioo_mem_nhdsLT zx] with y hy using lz.trans_le (Mf zx hy.2 hy.1.le)
   · refine mem_of_superset self_mem_nhdsWithin fun y hy => lt_of_le_of_lt ?_ hm

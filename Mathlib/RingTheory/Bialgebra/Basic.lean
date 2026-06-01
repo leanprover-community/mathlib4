@@ -103,6 +103,7 @@ is an `R`-algebra with a coalgebra structure, then `Bialgebra.mk'`
 consumes proofs that the counit and comultiplication preserve
 the identity and multiplication, and produces a bialgebra
 structure on `A`. -/
+@[implicit_reducible]
 def mk' (R : Type u) (A : Type v) [CommSemiring R] [Semiring A]
     [Algebra R A] [C : Coalgebra R A] (counit_one : C.counit 1 = 1)
     (counit_mul : ∀ {a b}, C.counit (a * b) = C.counit a * C.counit b)

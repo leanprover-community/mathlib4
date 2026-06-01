@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Floris van Doorn, Mario Carneiro, Reid Barton, Johan C
 module
 
 public import Mathlib.Logic.Function.Basic
-public meta import Mathlib.Tactic.Basic
 
 /-!
 # `choose` tactic
@@ -24,15 +23,15 @@ namespace Mathlib.Tactic.Choose
 
 /-- Given `α : Sort u`, `nonemp : Nonempty α`, `p : α → Prop`, a context of free variables
 `ctx`, and a pair of an element `val : α` and `spec : p val`,
-`mk_sometimes u α nonemp p ctx (val, spec)` produces another pair `val', spec'`
+`mkSometimes u α nonemp p ctx (val, spec)` produces another pair `val', spec'`
 such that `val'` does not have any free variables from elements of `ctx` whose types are
 propositions. This is done by applying `Function.sometimes` to abstract over all the propositional
 arguments. -/
-def mk_sometimes (u : Level) (α nonemp p : Expr) :
+def mkSometimes (u : Level) (α nonemp p : Expr) :
     List Expr → Expr × Expr → MetaM (Expr × Expr)
 | [], (val, spec) => pure (val, spec)
 | (e :: ctx), (val, spec) => do
-  let (val, spec) ← mk_sometimes u α nonemp p ctx (val, spec)
+  let (val, spec) ← mkSometimes u α nonemp p ctx (val, spec)
   let t ← inferType e
   let b ← isProp t
   if b then do
@@ -41,6 +40,8 @@ def mk_sometimes (u : Level) (α nonemp p : Expr) :
       (mkApp4 (Expr.const ``Function.sometimes [Level.zero, u]) t α nonemp val',
       mkApp7 (Expr.const ``Function.sometimes_spec [u]) t α nonemp p val' e spec)
   else pure (val, spec)
+
+@[deprecated (since := "2026-05-27")] alias mk_sometimes := mkSometimes
 
 /-- Results of searching for nonempty instances,
 to eliminate dependencies on propositions (`choose!`).
@@ -151,7 +152,7 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
         let mut dataVal := mkApp3 (.const ``Classical.choose [u]) α p (mkAppN h ctx)
         let mut specVal := mkApp3 (.const ``Classical.choose_spec [u]) α p (mkAppN h ctx)
         if let some nonemp := nonemp then
-          (dataVal, specVal) ← mk_sometimes u α nonemp p ctx.toList (dataVal, specVal)
+          (dataVal, specVal) ← mkSometimes u α nonemp p ctx.toList (dataVal, specVal)
         dataVal ← mkLambdaFVars ctx' dataVal
         specVal ← mkLambdaFVars ctx specVal
         let (fvar, g) ← withLocalDeclD .anonymous dataTy fun d ↦ do

@@ -8,6 +8,8 @@ module
 public import Mathlib.RingTheory.Finiteness.Basic
 public import Mathlib.RingTheory.Nilpotent.Lemmas
 
+import Mathlib.Data.Fintype.Order
+
 /-!
 # Nilpotent maps on finite modules
 

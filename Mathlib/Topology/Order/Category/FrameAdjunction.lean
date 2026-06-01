@@ -54,7 +54,6 @@ variable (L : Type*) [CompleteLattice L]
 by definition, a frame homomorphism from `L` to `Prop`. -/
 abbrev PT := FrameHom L Prop
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The frame homomorphism from a complete lattice `L` to the complete lattice of sets of
 points of `L`. -/
 @[simps]
@@ -105,7 +104,6 @@ def localePointOfSpacePoint (x : X) : PT (Opens X) where
   map_top' := rfl
   map_sSup' S := by simp [Prop.exists_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The counit is a frame homomorphism. -/
 def counitAppCont : FrameHom L (Opens <| PT L) where
   toFun u := ⟨openOfElementHom L u, u, rfl⟩
@@ -116,7 +114,7 @@ def counitAppCont : FrameHom L (Opens <| PT L) where
 /-- The forgetful functor `topToLocale` is left adjoint to the functor `pt`. -/
 def adjunctionTopToLocalePT : topToLocale ⊣ pt where
   unit := { app := fun X ↦ TopCat.ofHom ⟨localePointOfSpacePoint X, continuous_def.2 <|
-        by rintro _ ⟨u, rfl⟩; simpa using u.2⟩ }
+        by rintro _ ⟨u, rfl⟩; simpa using! u.2⟩ }
   counit := { app := fun L ↦ ⟨Frm.ofHom (counitAppCont L)⟩ }
 
 end locale_top_adjunction

@@ -98,9 +98,8 @@ theorem toMeasurable_iff {X : Ω → E} {s : Set E} :
   rw [ProbabilityTheory.cond_toMeasurable_eq]
 
 protected theorem toMeasurable {X : Ω → E} {s : Set E} (hu : IsUniform X s ℙ μ) :
-    IsUniform X (toMeasurable μ s) ℙ μ := by
-  unfold IsUniform at *
-  rwa [ProbabilityTheory.cond_toMeasurable_eq]
+    IsUniform X (toMeasurable μ s) ℙ μ :=
+  toMeasurable_iff.mpr hu
 
 theorem hasPDF {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
     (hu : IsUniform X s ℙ μ) : HasPDF X ℙ μ := by
@@ -142,7 +141,6 @@ theorem pdf_toReal_ae_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
 
 variable {X : Ω → ℝ} {s : Set ℝ}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s ℙ) :
     Integrable fun x : ℝ => x * (pdf X ℙ volume x).toReal := by
   by_cases hnt : volume s = 0 ∨ volume s = ∞
@@ -165,7 +163,6 @@ theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s ℙ) :
   exact ENNReal.mul_ne_top (setLIntegral_lt_top_of_isCompact hnt.2 hcs continuous_nnnorm).ne
     (ENNReal.inv_lt_top.2 (pos_iff_ne_zero.mpr hnt.1)).ne
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A real uniform random variable `X` with support `s` has expectation
 `(λ s)⁻¹ * ∫ x in s, x ∂λ` where `λ` is the Lebesgue measure. -/
 theorem integral_eq (huX : IsUniform X s ℙ) :
@@ -183,9 +180,8 @@ end IsUniform
 variable {X : Ω → E}
 
 lemma IsUniform.cond {s : Set E} :
-    IsUniform (id : E → E) s (ProbabilityTheory.cond μ s) μ := by
-  unfold IsUniform
-  rw [Measure.map_id]
+    IsUniform (id : E → E) s (ProbabilityTheory.cond μ s) μ :=
+  map_id
 
 /-- The density of the uniform measure on a set with respect to itself. This allows us to abstract
 away the choice of random variable and probability space. -/
@@ -194,17 +190,14 @@ def uniformPDF (s : Set E) (x : E) (μ : Measure E := by volume_tac) : ℝ≥0�
 
 /-- Check that indeed any uniform random variable has the uniformPDF. -/
 lemma uniformPDF_eq_pdf {s : Set E} (hs : MeasurableSet s) (hu : pdf.IsUniform X s ℙ μ) :
-    (fun x ↦ uniformPDF s x μ) =ᵐ[μ] pdf X ℙ μ := by
-  unfold uniformPDF
-  exact Filter.EventuallyEq.trans (pdf.IsUniform.pdf_eq hs hu).symm (ae_eq_refl _)
+    (fun x ↦ uniformPDF s x μ) =ᵐ[μ] pdf X ℙ μ :=
+  (hu.pdf_eq hs).symm.trans (ae_eq_refl _)
 
 open scoped Classical in
 /-- Alternative way of writing the uniformPDF. -/
 lemma uniformPDF_ite {s : Set E} {x : E} :
     uniformPDF s x μ = if x ∈ s then (μ s)⁻¹ else 0 := by
-  unfold uniformPDF
-  unfold Set.indicator
-  simp only [Pi.smul_apply, Pi.one_apply, smul_eq_mul, mul_one]
+  norm_num [uniformPDF, Set.indicator]
 
 end pdf
 
@@ -242,7 +235,6 @@ theorem uniformOfFinset_apply_of_mem (ha : a ∈ s) : uniformOfFinset s hs a = (
 
 theorem uniformOfFinset_apply_of_notMem (ha : a ∉ s) : uniformOfFinset s hs a = 0 := by simp [ha]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem support_uniformOfFinset : (uniformOfFinset s hs).support = s :=
   Set.ext
@@ -250,7 +242,6 @@ theorem support_uniformOfFinset : (uniformOfFinset s hs).support = s :=
       let ⟨a, ha⟩ := hs
       simp [mem_support_iff])
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_support_uniformOfFinset_iff (a : α) : a ∈ (uniformOfFinset s hs).support ↔ a ∈ s := by
   simp
 
@@ -298,13 +289,11 @@ variable [Fintype α] [Nonempty α]
 theorem uniformOfFintype_apply (a : α) : uniformOfFintype α a = (Fintype.card α : ℝ≥0∞)⁻¹ := by
   simp [uniformOfFintype, Finset.mem_univ, uniformOfFinset_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem support_uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] :
     (uniformOfFintype α).support = ⊤ :=
   Set.ext fun x => by simp [mem_support_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_support_uniformOfFintype (a : α) : a ∈ (uniformOfFintype α).support := by simp
 
 section Measure
@@ -328,7 +317,6 @@ end UniformOfFintype
 
 section OfMultiset
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Given a non-empty multiset `s` we construct the `PMF` which sends `a` to the fraction of
   elements in `s` that are `a`. -/
@@ -356,13 +344,11 @@ open scoped Classical in
 theorem ofMultiset_apply (a : α) : ofMultiset s hs a = s.count a / (Multiset.card s) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 @[simp]
 theorem support_ofMultiset : (ofMultiset s hs).support = s.toFinset :=
   Set.ext (by simp [mem_support_iff])
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem mem_support_ofMultiset_iff (a : α) : a ∈ (ofMultiset s hs).support ↔ a ∈ s.toFinset := by
   simp

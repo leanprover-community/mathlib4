@@ -21,6 +21,7 @@ two following conditions:
 * for any `X₂ : C₂`, the category `Φ.RightResolution X₂` of resolutions of `X₂` is connected
 * any arrow in `C₂` admits a resolution (i.e. `Φ.arrow.HasRightResolutions` holds, where
   `Φ.arrow` is the induced localizer morphism on categories of arrows in `C₁` and `C₂`)
+
 (The dual statement for left derivability structures is also obtained.)
 
 This statement is essentially Lemme 6.5 in
@@ -55,6 +56,7 @@ namespace Constructor
 variable {D : Type*} [Category* D] (L : C₂ ⥤ D) [L.IsLocalization W₂]
   {X₂ : C₂} {X₃ : D} (y : L.obj X₂ ⟶ X₃)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given `Φ : LocalizerMorphism W₁ W₂`, `L : C₂ ⥤ D` a localization functor for `W₂` and
 a morphism `y : L.obj X₂ ⟶ X₃`, this is the functor which sends `R : Φ.RightResolution d` to
 `(isoOfHom L W₂ R.w R.hw).inv ≫ y` in the category `w.CostructuredArrowDownwards y`
@@ -72,6 +74,7 @@ noncomputable def fromRightResolution :
       isoOfHom_hom, isoOfHom_hom_inv_id_assoc, assoc, ← L.map_comp_assoc,
       φ.comm, isoOfHom_hom_inv_id_assoc])
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isConnected :
     IsConnected ((TwoSquare.mk Φ.functor (Φ.functor ⋙ L) L (𝟭 _)
@@ -100,10 +103,7 @@ lemma isConnected :
   · apply Zigzag.of_inv
     refine CostructuredArrow.homMk (StructuredArrow.homMk ρ.X₁.hom (by simp)) ?_
     ext
-    dsimp
-    rw [← cancel_epi (isoOfHom L W₂ ρ.w.left ρ.hw.1).hom, isoOfHom_hom,
-      isoOfHom_hom_inv_id_assoc, ← L.map_comp_assoc, Arrow.w_mk_right, Arrow.mk_hom,
-      L.map_comp, assoc, isoOfHom_hom_inv_id_assoc, fac]
+    simp [← cancel_epi (isoOfHom L W₂ ρ.w.left ρ.hw.1).hom, ← L.map_comp_assoc, fac]
 
 end Constructor
 

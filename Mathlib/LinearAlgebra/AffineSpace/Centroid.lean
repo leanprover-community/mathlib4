@@ -83,7 +83,6 @@ def centroid (p : ι → P) : P :=
 theorem centroid_def (p : ι → P) : s.centroid k p = s.affineCombination k p (s.centroidWeights k) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem centroid_univ (s : Finset P) : univ.centroid k ((↑) : s → P) = s.centroid k id := by
   rw [centroid, centroid, ← s.attach_affineCombination_coe]
   congr
@@ -103,8 +102,7 @@ theorem centroid_pair [DecidableEq ι] [Invertible (2 : k)] (p : ι → P) (i₁
   · simp [h]
   · have hc : (#{i₁, i₂} : k) ≠ 0 := by
       rw [card_insert_of_notMem (notMem_singleton.2 h), card_singleton]
-      norm_num
-      exact Invertible.ne_zero _
+      simpa using Invertible.ne_zero _
     rw [centroid_def,
       affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _
         (sum_centroidWeights_eq_one_of_cast_card_ne_zero _ hc) (p i₁)]
@@ -115,7 +113,7 @@ as adding a vector to the first point. -/
 theorem centroid_pair_fin [Invertible (2 : k)] (p : Fin 2 → P) :
     univ.centroid k p = (2⁻¹ : k) • (p 1 -ᵥ p 0) +ᵥ p 0 := by
   rw [univ_fin2]
-  convert centroid_pair k p 0 1
+  convert! centroid_pair k p 0 1
 
 /-- A centroid, over the image of an embedding, equals a centroid with
 the same points and weights over the original `Finset`. -/

@@ -42,9 +42,9 @@ They basically coincide, and the difference of the examples lies in their flavou
 ### The metric
 
 We begin  by defining a metric on `ℕ` (see `dist_def`) that
-1. Induces the discrete topology, as proven in `TopIsDiscrete`;
-2. Is not the discrete metric, in particular because the identity is a Cauchy sequence, as proven
-in `idIsCauchy`
+1. induces the discrete topology, as proven in `TopIsDiscrete`;
+2. is not the discrete metric, in particular because the identity is a Cauchy sequence, as proven
+   in `idIsCauchy`.
 
 The definition is simply `dist m n = |2 ^ (- n : ℤ) - 2 ^ (- m : ℤ)|`, and I am grateful to
 Anatole Dedecker for his suggestion.
@@ -91,7 +91,6 @@ noncomputable local instance : PseudoMetricSpace ℕ where
 @[simp]
 lemma dist_def {n m : ℕ} : dist n m = |2 ^ (-n : ℤ) - 2 ^ (-m : ℤ)| := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Int.eq_of_pow_sub_le {d : ℕ} {m n : ℤ} (hd1 : 1 < d)
     (h : |(d : ℝ) ^ (-m) - d ^ (-n)| < d ^ (-n - 1)) : m = n := by
   have hd0 : 0 < d := one_pos.trans hd1

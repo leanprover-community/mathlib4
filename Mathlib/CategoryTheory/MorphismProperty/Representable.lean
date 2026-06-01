@@ -35,14 +35,14 @@ Throughout this file, `F : C ⥤ D` is a functor between categories `C` and `D`.
 * `Functor.relativelyRepresentable`: A morphism `f : X ⟶ Y` in `D` is said to be relatively
   representable with respect to `F`, if for any `g : F.obj a ⟶ Y`, there exists a pullback square
   of the following form
-```
+  ```
   F.obj b --F.map snd--> F.obj a
       |                     |
      fst                    g
       |                     |
       v                     v
       X ------- f --------> Y
-```
+  ```
 
 * `MorphismProperty.relative`: Given a morphism property `P` in `C`, a morphism `f : X ⟶ Y` in `D`
   satisfies `P.relative F` if it is relatively representable and for any `g : F.obj a ⟶ Y`, the
@@ -55,7 +55,7 @@ Given `hf : relativelyRepresentable f`, with `f : X ⟶ Y` and `g : F.obj a ⟶ 
   pullback of `f` and `g`.
 * `hf.snd g` is the morphism `hf.pullback g ⟶ F.obj a`
 * `hf.fst g` is the morphism `F.obj (hf.pullback g) ⟶ X`
-*  If `F` is full, and `f` is of type `F.obj c ⟶ G`, we also have `hf.fst' g : hf.pullback g ⟶ X`
+* If `F` is full, and `f` is of type `F.obj c ⟶ G`, we also have `hf.fst' g : hf.pullback g ⟶ X`
   which is the preimage under `F` of `hf.fst g`.
 * `hom_ext`, `hom_ext'`, `lift`, `lift'` are variants of the universal property of
   `F.obj (hf.pullback g)`, where as much as possible has been formulated internally to `C`.
@@ -192,7 +192,7 @@ lemma hom_ext [Faithful F] {c : C} {a b : c ⟶ hf.pullback g}
     (h₁ : F.map a ≫ hf.fst g = F.map b ≫ hf.fst g)
     (h₂ : a ≫ hf.snd g = b ≫ hf.snd g) : a = b :=
   F.map_injective <|
-    PullbackCone.IsLimit.hom_ext (hf.isPullback g).isLimit h₁ (by simpa using F.congr_map h₂)
+    PullbackCone.IsLimit.hom_ext (hf.isPullback g).isLimit h₁ (by simpa using! F.congr_map h₂)
 
 /-- In the case of a representable morphism `f' : F.obj Y ⟶ G`, whose codomain lies
 in the image of `F`, we get that two morphism `a b : Z ⟶ hf.pullback g` are equal if
@@ -215,11 +215,11 @@ noncomputable def lift [Full F] : c ⟶ hf.pullback g :=
 
 @[reassoc (attr := simp)]
 lemma lift_fst [Full F] : F.map (hf.lift i h hi) ≫ hf.fst g = i := by
-  simpa [lift] using PullbackCone.IsLimit.lift_fst _ _ _ _
+  simpa [lift] using! PullbackCone.IsLimit.lift_fst _ _ _ _
 
 @[reassoc (attr := simp)]
 lemma lift_snd [Full F] [Faithful F] : hf.lift i h hi ≫ hf.snd g = h :=
-  F.map_injective <| by simpa [lift] using PullbackCone.IsLimit.lift_snd _ _ _ _
+  F.map_injective <| by simpa [lift] using! PullbackCone.IsLimit.lift_snd _ _ _ _
 
 end
 
@@ -322,6 +322,7 @@ category `Cᵒᵖ ⥤ Type v` satisfies the morphism property `P.presheaf` iff:
 * The morphism is representable.
 * For any morphism `g : F.obj a ⟶ G`, the property `P` holds for any represented pullback of
   `f` by `g`.
+
 This is implemented as a special case of the more general notion of `P.relative`, to the case when
 the functor `F` is `yoneda`. -/
 abbrev presheaf : MorphismProperty (Cᵒᵖ ⥤ Type v₁) := P.relative yoneda
@@ -341,6 +342,7 @@ lemma relative.property_snd {f : X ⟶ Y} (hf : P.relative F f) {a : C} (g : F.o
     P (hf.rep.snd g) :=
   hf.property g _ _ (hf.rep.isPullback g)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a morphism property `P` which respects isomorphisms, then to show that a morphism
 `f : X ⟶ Y` satisfies `P.relative` it suffices to show that:
 * The morphism is representable.
@@ -574,6 +576,7 @@ set_option backward.isDefEq.respectTransparency false in
 1. `C` has binary products,
 2. `D` has pullbacks, binary products and a terminal object, and
 3. `F : C ⥤ D` is full and preserves binary products.
+
 For an object `X` in a category `D`, if the diagonal morphism `X ⟶ X × X` is relatively
 representable, then every morphism of the form `F.obj a ⟶ X` is relatively representable with
 respect to `F`.
@@ -599,6 +602,7 @@ lemma of_diag {X : D} (h : F.relativelyRepresentable (Limits.diag X))
 1. `C` has binary products and pullbacks,
 2. `D` has pullbacks, binary products and a terminal object, and
 3. `F : C ⥤ D` is full and preserves binary products and pullbacks.
+
 For a morphism `g : F.obj a ⟶ pullback (terminal.from X) (terminal.from X)`,
 the canonical morphism from `F.obj a` to
 `pullback ((g ≫ pullback.fst _ _) ≫ terminal.from X) ((g ≫ pullback.snd _ _) ≫ terminal.from X)`
@@ -618,11 +622,13 @@ lemma toPullbackTerminal {X : D} {a : C}
   apply (respectsIso F).toRespectsRight.postcomp _ (inferInstance : IsIso _) _
   exact map_preimage F (_ ≫ pbIso.hom) ▸ map F (F.preimage _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Assume that
 1. `C` has binary products and pullbacks,
 2. `D` has pullbacks, binary products and a terminal object, and
 3. `F : C ⥤ D` is full and preserves binary products and pullbacks.
+
 For an object `X` in a category `D`, if every morphism of the form `F.obj a ⟶ X` is relatively
 representable with respect to `F`, so is the diagonal morphism `X ⟶ X × X`.
 -/
@@ -653,6 +659,7 @@ lemma diag_of_map_from_obj [HasPullbacks C] [PreservesLimitsOfShape WalkingCospa
 1. `C` has binary products and pullbacks,
 2. `D` has pullbacks, binary products and a terminal object, and
 3. `F : C ⥤ D` is full and preserves binary products and pullbacks.
+
 For an object `X` in a category `D`, the diagonal morphism `X ⟶ X × X` is relatively representable
 with respect to `F` if and only if so is every morphism of the form `F.obj a ⟶ X`.
 -/

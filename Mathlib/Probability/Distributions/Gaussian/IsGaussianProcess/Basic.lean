@@ -48,7 +48,6 @@ lemma isProbabilityMeasure (hX : IsGaussianProcess X P) :
     IsProbabilityMeasure P :=
   hX.hasGaussianLaw Classical.ofNonempty |>.isProbabilityMeasure
 
-set_option backward.isDefEq.respectTransparency false in
 lemma aemeasurable (hX : IsGaussianProcess X P) (t : T) : AEMeasurable (X t) P :=
   AEMeasurable.of_map_ne_zero
     (hX.hasGaussianLaw {t}).isGaussian_map.toIsProbabilityMeasure.ne_zero |>.eval ⟨t, by simp⟩
@@ -72,14 +71,12 @@ section Maps
 
 variable [NormedSpace ℝ E]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasGaussianLaw_eval (hX : IsGaussianProcess X P) (t : T) : HasGaussianLaw (X t) P := by
   -- removing `by exact` fails
   exact (hX.hasGaussianLaw {t}).map (.proj ⟨t, by simp⟩)
 
 variable [SecondCountableTopology E]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasGaussianLaw_prodMk (hX : IsGaussianProcess X P) {s t : T} :
     HasGaussianLaw (fun ω ↦ (X s ω, X t ω)) P := by
   classical
@@ -97,18 +94,16 @@ lemma hasGaussianLaw_sub (hX : IsGaussianProcess X P) {s t : T} :
 lemma hasGaussianLaw_fun_sub (hX : IsGaussianProcess X P) {s t : T} :
     HasGaussianLaw (fun ω ↦ X s ω - X t ω) P := hX.hasGaussianLaw_sub
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasGaussianLaw_sum (hX : IsGaussianProcess X P) {I : Finset T} :
     HasGaussianLaw (∑ i ∈ I, X i) P := by
-  convert (hX.hasGaussianLaw I).sum
+  convert! (hX.hasGaussianLaw I).sum
   simp [I.sum_attach X]
 
 lemma hasGaussianLaw_fun_sum (hX : IsGaussianProcess X P) {I : Finset T} :
     HasGaussianLaw (fun ω ↦ ∑ i ∈ I, X i ω) P := by
-  convert hX.hasGaussianLaw_sum (I := I)
+  convert! hX.hasGaussianLaw_sum (I := I)
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The increments of a Gaussian process are Gaussian. -/
 lemma hasGaussianLaw_increments (hX : IsGaussianProcess X P) {n : ℕ} {t : Fin (n + 1) → T} :
     HasGaussianLaw (fun ω (i : Fin n) ↦ X (t i.succ) ω - X (t i.castSucc) ω) P := by
@@ -116,8 +111,7 @@ lemma hasGaussianLaw_increments (hX : IsGaussianProcess X P) {n : ℕ} {t : Fin 
   let L : ((univ.image t) → E) →L[ℝ] Fin n → E :=
     { toFun x i := x ⟨t i.succ, by simp⟩ - x ⟨t i.castSucc, by simp⟩
       map_add' x y := by ext; simp; abel
-      map_smul' m x := by ext; simp; module
-      cont := by fun_prop }
+      map_smul' m x := by ext; simp; module }
   exact (hX.hasGaussianLaw _).map L
 
 end Maps
@@ -141,14 +135,12 @@ lemma of_isGaussianProcess (hX : IsGaussianProcess X P)
     let K : (I.biUnion J → E) →L[ℝ] I → F :=
       { toFun x s := L s (fun t ↦ x ⟨t.1, mem_biUnion.2 ⟨s.1, s.2, t.2⟩⟩)
         map_add' x y := by ext; simp [← Pi.add_def]
-        map_smul' c x := by ext; simp [← Pi.smul_def]
-        cont := by fun_prop }
+        map_smul' c x := by ext; simp [← Pi.smul_def] }
     have : (fun ω ↦ I.restrict (Y · ω)) = K ∘ (fun ω ↦ (I.biUnion J).restrict (X · ω)) := by
       ext; simp [K, hL, Finset.restrict_def]
     rw [this]
     exact (hX.hasGaussianLaw _).map _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma comp_right (h : IsGaussianProcess X P) (f : S → T) : IsGaussianProcess (X ∘ f) P :=
   h.of_isGaussianProcess fun s ↦ ⟨{f s},
     { toFun x := x ⟨f s, by simp⟩
@@ -156,7 +148,6 @@ lemma comp_right (h : IsGaussianProcess X P) (f : S → T) : IsGaussianProcess (
       map_smul' := by simp },
     by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma comp_left (L : T → E →L[ℝ] F) (h : IsGaussianProcess X P) :
     IsGaussianProcess (fun t ω ↦ L t (X t ω)) P :=
   h.of_isGaussianProcess fun t ↦ ⟨{t},
@@ -169,7 +160,6 @@ lemma smul (c : T → ℝ) (hX : IsGaussianProcess X P) :
     IsGaussianProcess (fun t ω ↦ c t • (X t ω)) P :=
   hX.comp_left (fun t ↦ .lsmul ℝ ℝ (c t))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma shift [Add T] (h : IsGaussianProcess X P) (t₀ : T) :
     IsGaussianProcess (fun t ω ↦ X (t₀ + t) ω - X t₀ ω) P := by
   classical

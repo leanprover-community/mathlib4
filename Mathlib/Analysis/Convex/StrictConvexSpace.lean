@@ -54,7 +54,7 @@ formulated only for the case `𝕜 = ℝ`.
 convex, strictly convex
 -/
 
-@[expose] public section
+public section
 
 open Convex Pointwise Set Metric
 
@@ -86,7 +86,6 @@ theorem StrictConvexSpace.of_strictConvex_unitClosedBall [LinearMap.CompatibleSM
     (h : StrictConvex 𝕜 (closedBall (0 : E) 1)) : StrictConvexSpace 𝕜 E :=
   ⟨fun r hr => by simpa only [smul_unitClosedBall_of_nonneg hr.le] using h.smul r⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Strict convexity is equivalent to `‖a • x + b • y‖ < 1` for all `x` and `y` of norm at most `1`
 and all strictly positive `a` and `b` such that `a + b = 1`. This lemma shows that it suffices to
 check this for points of norm one and some `a`, `b` such that `a + b = 1`. -/
@@ -103,7 +102,6 @@ theorem StrictConvexSpace.of_norm_combo_lt_one
   rwa [AffineMap.lineMap_apply_module, interior_closedBall (0 : E) one_ne_zero, mem_ball_zero_iff,
     sub_eq_iff_eq_add.2 hab.symm]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem StrictConvexSpace.of_norm_combo_ne_one
     (h :
       ∀ x y : E,
@@ -214,3 +212,6 @@ theorem norm_midpoint_lt_iff (h : ‖x‖ = ‖y‖) : ‖(1 / 2 : ℝ) • (x +
   rw [norm_smul, Real.norm_of_nonneg (one_div_nonneg.2 zero_le_two), ← inv_eq_one_div, ←
     div_eq_inv_mul, div_lt_iff₀ (zero_lt_two' ℝ), mul_two, ← not_sameRay_iff_of_norm_eq h,
     not_sameRay_iff_norm_add_lt, h]
+
+instance Real.instStrictConvexSpace : StrictConvexSpace ℝ ℝ where
+  strictConvex_closedBall _ _ := strictConvex_iff_convex.mpr (convex_closedBall _ _)

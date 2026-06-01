@@ -5,7 +5,7 @@ Authors: Patrick Stevens, Thomas Browning
 -/
 module
 
-public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Data.Nat.Choose.Bounds
 public import Mathlib.Data.Nat.GCD.Basic
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Linarith
@@ -62,6 +62,14 @@ theorem two_le_centralBinom (n : ℕ) (n_pos : 0 < n) : 2 ≤ centralBinom n :=
     _ = (2 * n).choose 1 := (choose_one_right (2 * n)).symm
     _ ≤ centralBinom n := choose_le_centralBinom 1 n
 
+theorem centralBinom_le_four_pow (n : ℕ) : centralBinom n ≤ 4 ^ n := by
+  grw [show 4 = 2 ^ 2 by rfl, ← pow_mul, centralBinom_eq_two_mul_choose, choose_le_two_pow]
+
+theorem centralBinom_lt_four_pow {n : ℕ} (h : n ≠ 0) : centralBinom n < 4 ^ n := by
+  rw [show 4 = 2 ^ 2 by rfl, ← pow_mul]
+  apply choose_lt_two_pow
+  lia
+
 /-- An inductive property of the central binomial coefficient.
 -/
 theorem succ_mul_centralBinom_succ (n : ℕ) :
@@ -109,7 +117,6 @@ theorem four_pow_le_two_mul_self_mul_centralBinom :
       _ ≤ 2 * (n + 4) * centralBinom (n + 4) := by
         rw [mul_assoc]; refine Nat.le_mul_of_pos_left _ zero_lt_two
 
-set_option backward.isDefEq.respectTransparency false in
 theorem two_dvd_centralBinom_succ (n : ℕ) : 2 ∣ centralBinom (n + 1) := by
   use (n + 1 + n).choose n
   rw [centralBinom_eq_two_mul_choose, two_mul, ← add_assoc,
@@ -119,7 +126,6 @@ theorem two_dvd_centralBinom_of_one_le {n : ℕ} (h : 0 < n) : 2 ∣ centralBino
   rw [← Nat.succ_pred_eq_of_pos h]
   exact two_dvd_centralBinom_succ n.pred
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A crucial lemma to ensure that Catalan numbers can be defined via their explicit formula
   `catalan n = n.centralBinom / (n + 1)`. -/
 theorem succ_dvd_centralBinom (n : ℕ) : n + 1 ∣ n.centralBinom := by

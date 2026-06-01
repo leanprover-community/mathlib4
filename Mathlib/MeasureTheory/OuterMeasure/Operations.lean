@@ -40,10 +40,10 @@ section Basic
 variable {α β : Type*} {m : OuterMeasure α}
 
 instance instZero : Zero (OuterMeasure α) :=
-  ⟨{  measureOf := fun _ => 0
+  ⟨{  measureOf _ := 0
       empty := rfl
-      mono := by intro _ _ _; exact le_refl 0
-      iUnion_nat := fun _ _ => zero_le _ }⟩
+      mono _ := le_rfl
+      iUnion_nat _ _ := zero_le }⟩
 
 @[simp]
 theorem coe_zero : ⇑(0 : OuterMeasure α) = 0 :=
@@ -186,7 +186,6 @@ theorem iSup_apply {ι} (f : ι → OuterMeasure α) (s : Set α) : (⨆ i : ι,
 theorem coe_iSup {ι} (f : ι → OuterMeasure α) : ⇑(⨆ i, f i) = ⨆ i, ⇑(f i) :=
   funext fun s => by simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sup_apply (m₁ m₂ : OuterMeasure α) (s : Set α) : (m₁ ⊔ m₂) s = m₁ s ⊔ m₂ s := by
   have := iSup_apply (fun b => cond b m₁ m₂) s; rwa [iSup_bool_eq, iSup_bool_eq] at this
@@ -226,7 +225,7 @@ theorem map_map {β γ} (f : α → β) (g : β → γ) (m : OuterMeasure α) :
     map g (map f m) = map (g ∘ f) m :=
   ext fun _ => rfl
 
-@[mono]
+@[gcongr, mono]
 theorem map_mono {β} (f : α → β) : Monotone (map f) := fun _ _ h _ => h _
 
 @[simp]
@@ -285,7 +284,7 @@ def comap {β} (f : α → β) : OuterMeasure β →ₗ[ℝ≥0∞] OuterMeasure
 theorem comap_apply {β} (f : α → β) (m : OuterMeasure β) (s : Set α) : comap f m s = m (f '' s) :=
   rfl
 
-@[mono]
+@[gcongr, mono]
 theorem comap_mono {β} (f : α → β) : Monotone (comap f) := fun _ _ h _ => h _
 
 @[simp]

@@ -21,20 +21,6 @@ and define some algebraic structures on it.
 * `QuadraticAlgebra R a b`:
   [Bourbaki, *Algebra I*][bourbaki1989] with coefficients `a`, `b` in `R`.
 
-## Warning
-If `R` is a ring, then `QuadraticAlgebra a b` is an `R`-algebra, and if `R` is of characteristic
-zero then the same holds for `QuadraticAlgebra a b`. In particular, in the very common case where
-`R` is `ℚ` and `a` and `b` are such that `QuadraticAlgebra a b` is a field, then
-`QuadraticAlgebra a b` is a `ℚ`-algebra in two ways, that are not definitionally equal. This is a
-known diamond for characteristic zero fields. If you are working in this setting you should start
-your file with
-```
-attribute [-instance] DivisionRing.toRatAlgebra
-```
-to keep the `CharZero` instance but to avoid having two `Algebra` instances. (Note that all the
-basic theorems about `QuadraticAlgebra` are stated using the general instance
-`Algebra R (QuadraticAlgebra a b)`, so you don't want to deactivate that one.)
-
 ## Tags
 
 Quadratic algebra, quadratic extension
@@ -360,8 +346,8 @@ section NonUnitalNonAssocSemiring
 variable [NonUnitalNonAssocSemiring R]
 
 instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (QuadraticAlgebra R a b) where
-  left_distrib _ _ _ := by ext <;> simpa using by simp [mul_add]; abel
-  right_distrib _ _ _ := by ext <;> simpa using by simp [mul_add, add_mul]; abel
+  left_distrib _ _ _ := by ext <;> simp [mul_add] <;> abel
+  right_distrib _ _ _ := by ext <;> simp [mul_add, add_mul] <;> abel
   zero_mul _ := by ext <;> simp
   mul_zero _ := by ext <;> simp
 
@@ -449,8 +435,8 @@ section CommSemiring
 variable [CommSemiring R]
 
 instance instCommSemiring : CommSemiring (QuadraticAlgebra R a b) where
-  mul_assoc _ _ _ := by ext <;> simpa using by ring
-  mul_comm _ _ := by ext <;> simpa using by ring
+  mul_assoc _ _ _ := by ext <;> simp <;> ring
+  mul_comm _ _ := by ext <;> simp <;> ring
 
 instance [CommSemiring S] [Algebra S R] : Algebra S (QuadraticAlgebra R a b) where
   algebraMap.toFun s := .C (algebraMap S R s)
@@ -507,7 +493,7 @@ theorem algebraMap_dvd_iff {r : R} {z : QuadraticAlgebra R a b} :
     (algebraMap R (QuadraticAlgebra R a b) r) ∣ z ↔ r ∣ z.re ∧ r ∣ z.im := by
   constructor
   · rintro ⟨x, rfl⟩
-    simp [dvd_mul_right, ← C_eq_algebraMap]
+    simp
   · rintro ⟨⟨r, hr⟩, ⟨i, hi⟩⟩
     use ⟨r, i⟩
     simp [QuadraticAlgebra.ext_iff, hr, hi, ← C_eq_algebraMap]
@@ -518,10 +504,7 @@ theorem algebraMap_dvd_iff {r : R} {z : QuadraticAlgebra R a b} :
 theorem algebraMap_dvd_iff_dvd {z w : R} :
     algebraMap R (QuadraticAlgebra R a b) z ∣ algebraMap R (QuadraticAlgebra R a b) w ↔ z ∣ w := by
   rw [algebraMap_dvd_iff]
-  constructor
-  · rintro ⟨hx, -⟩
-    simpa using hx
-  · simp [← C_eq_algebraMap]
+  simp
 
 @[deprecated (since := "2025-12-15")] alias coe_dvd_iff_dvd := algebraMap_dvd_iff_dvd
 

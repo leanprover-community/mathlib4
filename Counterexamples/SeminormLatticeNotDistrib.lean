@@ -18,7 +18,6 @@ This proves the lattice `Seminorm ℝ (ℝ × ℝ)` is not distributive.
 * https://en.wikipedia.org/wiki/Seminorm#Examples
 -/
 
-
 open Seminorm
 
 open scoped NNReal
@@ -31,12 +30,10 @@ namespace SeminormNotDistrib
 noncomputable def p : Seminorm ℝ (ℝ × ℝ) :=
   (normSeminorm ℝ ℝ).comp (LinearMap.fst _ _ _) ⊔ (normSeminorm ℝ ℝ).comp (LinearMap.snd _ _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simps!]
 noncomputable def q1 : Seminorm ℝ (ℝ × ℝ) :=
   (4 : ℝ≥0) • (normSeminorm ℝ ℝ).comp (LinearMap.fst _ _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simps!]
 noncomputable def q2 : Seminorm ℝ (ℝ × ℝ) :=
   (4 : ℝ≥0) • (normSeminorm ℝ ℝ).comp (LinearMap.snd _ _ _)

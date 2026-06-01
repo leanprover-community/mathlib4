@@ -69,7 +69,6 @@ variable [Field 𝕜] [Ring R] [AddCommGroup M]
   [TopologicalSpace R] [TopologicalSpace M]
   [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem fst_expSeries (x : tsze R M) (n : ℕ) :
     fst (expSeries 𝕜 (tsze R M) n fun _ => x) = expSeries 𝕜 R n fun _ => x.fst := by
   simp [expSeries_apply_eq]
@@ -83,7 +82,6 @@ variable [Field 𝕜] [CharZero 𝕜] [Ring R] [AddCommGroup M]
   [TopologicalSpace R] [TopologicalSpace M]
   [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem snd_expSeries_of_smul_comm
     (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) (n : ℕ) :
     snd (expSeries 𝕜 (tsze R M) (n + 1) fun _ => x) = (expSeries 𝕜 R n fun _ => x.fst) • x.snd := by
@@ -92,7 +90,6 @@ theorem snd_expSeries_of_smul_comm
     Nat.cast_mul, mul_inv_rev,
     inv_mul_cancel_right₀ ((Nat.cast_ne_zero (R := 𝕜)).mpr <| Nat.succ_ne_zero n)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `NormedSpace.exp R x.fst` converges to `e`
 then `(NormedSpace.exp R x).snd` converges to `e • x.snd`. -/
 theorem hasSum_snd_expSeries_of_smul_comm (x : tsze R M)
@@ -106,7 +103,6 @@ theorem hasSum_snd_expSeries_of_smul_comm (x : tsze R M)
     inv_one, one_smul, snd_one, sub_zero]
   exact h.smul_const _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `NormedSpace.exp R x.fst` converges to `e`
 then `NormedSpace.exp R x` converges to `inl e + inr (e • x.snd)`. -/
 theorem hasSum_expSeries_of_smul_comm
@@ -121,7 +117,6 @@ theorem hasSum_expSeries_of_smul_comm
 variable [Algebra ℚ R] [Module ℚ M]
 variable [T2Space R] [T2Space M]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exp_def_of_smul_comm (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) :
     exp x = inl (exp x.fst) + inr (exp x.fst • x.snd) := by
   simp_rw [exp_eq_expSeries_sum ℚ, FormalMultilinearSeries.sum]
@@ -134,13 +129,11 @@ theorem exp_def_of_smul_comm (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd
     refine mt ?_ h
     exact (Summable.map · (TrivSqZeroExt.fstHom ℚ R M).toLinearMap continuous_fst)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem exp_inl (x : R) : exp (inl x : tsze R M) = inl (exp x) := by
   rw [exp_def_of_smul_comm, snd_inl, fst_inl, smul_zero, inr_zero, add_zero]
   rw [snd_inl, fst_inl, smul_zero, smul_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem exp_inr (m : M) : exp (inr m : tsze R M) = 1 + inr m := by
   rw [exp_def_of_smul_comm, snd_inr, fst_inr, exp_zero, one_smul, inl_one]
@@ -156,21 +149,17 @@ variable [CommRing R] [AddCommGroup M] [Algebra ℚ R] [Module ℚ M] [Module R 
 
 variable [T2Space R] [T2Space M]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exp_def (x : tsze R M) : exp x = inl (exp x.fst) + inr (exp x.fst • x.snd) :=
   exp_def_of_smul_comm x (op_smul_eq_smul _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fst_exp (x : tsze R M) : fst (exp x) = exp x.fst := by
   rw [exp_def, fst_add, fst_inl, fst_inr, add_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem snd_exp (x : tsze R M) : snd (exp x) = exp x.fst • x.snd := by
   rw [exp_def, snd_add, snd_inl, snd_inr, zero_add]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Polar form of trivial-square-zero extension. -/
 theorem eq_smul_exp_of_invertible (x : tsze R M) [Invertible x.fst] :
     x = x.fst • exp (⅟x.fst • inr x.snd) := by
@@ -188,7 +177,6 @@ variable [Field R] [AddCommGroup M]
 
 variable [T2Space R] [T2Space M]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- More convenient version of `TrivSqZeroExt.eq_smul_exp_of_invertible` for when `R` is a
 field. -/
 theorem eq_smul_exp_of_ne_zero (x : tsze R M) (hx : x.fst ≠ 0) :
@@ -212,15 +200,17 @@ variable [Algebra S R] [Module S M]
 variable [IsBoundedSMul S R] [IsBoundedSMul S M]
 
 instance instL1SeminormedAddCommGroup : SeminormedAddCommGroup (tsze R M) :=
-  WithLp.seminormedAddCommGroupToProd 1 R M
+  fast_instance% {
+    WithLp.seminormedAddCommGroupToProd 1 R M with
+    toUniformSpace := inferInstance }
 
 example :
     (TrivSqZeroExt.instUniformSpace : UniformSpace (tsze R M)) =
     PseudoMetricSpace.toUniformSpace := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_def (x : tsze R M) : ‖x‖ = ‖fst x‖ + ‖snd x‖ := by
-  rw [WithLp.norm_seminormedAddCommGroupToProd, WithLp.prod_norm_eq_add (by norm_num)]
+  erw [WithLp.norm_seminormedAddCommGroupToProd]
+  rw [WithLp.prod_norm_eq_add (by norm_num)]
   simp only [WithLp.toLp_fst, ENNReal.toReal_one, Real.rpow_one, WithLp.toLp_snd, ne_eq,
     one_ne_zero, not_false_eq_true, div_self, fst, snd]
 
@@ -231,6 +221,7 @@ theorem nnnorm_def (x : tsze R M) : ‖x‖₊ = ‖fst x‖₊ + ‖snd x‖₊
 @[simp] theorem norm_inr (m : M) : ‖(inr m : tsze R M)‖ = ‖m‖ := by simp [norm_def]
 
 @[simp] theorem nnnorm_inl (r : R) : ‖(inl r : tsze R M)‖₊ = ‖r‖₊ := by simp [nnnorm_def]
+
 @[simp] theorem nnnorm_inr (m : M) : ‖(inr m : tsze R M)‖₊ = ‖m‖₊ := by simp [nnnorm_def]
 
 variable [Module R M] [IsBoundedSMul R M] [Module Rᵐᵒᵖ M] [IsBoundedSMul Rᵐᵒᵖ M]
@@ -250,8 +241,8 @@ instance instL1SeminormedRing : SeminormedRing (tsze R M) where
       apply le_add_of_nonneg_right
       positivity
     _ = (‖r₁‖ + ‖m₁‖) * (‖r₂‖ + ‖m₂‖) := by ring
-  __ : SeminormedAddCommGroup (tsze R M) := inferInstance
   __ : Ring (tsze R M) := inferInstance
+  __ : SeminormedAddCommGroup (tsze R M) := inferInstance
 
 instance instL1IsBoundedSMul : IsBoundedSMul S (tsze R M) :=
   WithLp.isBoundedSMulSeminormedAddCommGroupToProd 1 R M
@@ -268,8 +259,8 @@ variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
 variable [IsBoundedSMul R M]
 
 instance instL1SeminormedCommRing : SeminormedCommRing (tsze R M) where
-  __ : CommRing (tsze R M) := inferInstance
   __ : SeminormedRing (tsze R M) := inferInstance
+  __ : CommRing (tsze R M) := inferInstance
 
 end CommRing
 
@@ -283,11 +274,11 @@ variable [NormedRing R] [NormedAddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 
 instance instL1NormedAddCommGroup : NormedAddCommGroup (tsze R M) :=
-  WithLp.normedAddCommGroupToProd 1 R M
+  fast_instance% WithLp.normedAddCommGroupToProd 1 R M
 
 instance instL1NormedRing : NormedRing (tsze R M) where
-  __ : NormedAddCommGroup (tsze R M) := inferInstance
   __ : SeminormedRing (tsze R M) := inferInstance
+  __ : NormedAddCommGroup (tsze R M) := inferInstance
 
 end Ring
 
@@ -298,8 +289,8 @@ variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
 variable [IsBoundedSMul R M]
 
 instance instL1NormedCommRing : NormedCommRing (tsze R M) where
-  __ : CommRing (tsze R M) := inferInstance
   __ : NormedRing (tsze R M) := inferInstance
+  __ : CommRing (tsze R M) := inferInstance
 
 end CommRing
 
@@ -311,7 +302,7 @@ variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐ�
 variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
 
 instance instL1NormedSpace : NormedSpace 𝕜 (tsze R M) :=
-  WithLp.normedSpaceSeminormedAddCommGroupToProd 1 R M
+  fast_instance% WithLp.normedSpaceSeminormedAddCommGroupToProd 1 R M
 
 instance instL1NormedAlgebra : NormedAlgebra 𝕜 (tsze R M) where
   norm_smul_le := _root_.norm_smul_le
@@ -328,7 +319,6 @@ variable [NormedAlgebra ℚ R] [NormedSpace ℚ M] [Module R M] [Module Rᵐᵒ�
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [CompleteSpace R] [CompleteSpace M]
 
-set_option backward.isDefEq.respectTransparency false in
 -- Evidence that we have sufficient instances on `tsze R N`
 -- to make `NormedSpace.exp_add_of_commute` usable
 example (a b : tsze R M) (h : Commute a b) : exp (a + b) = exp a * exp b :=

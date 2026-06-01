@@ -190,7 +190,7 @@ theorem isWeightedHomogeneous_monomial (w : σ → M) (d : σ →₀ ℕ) (r : R
     exact hm
   · contradiction
 
-/-- A polynomial of weightedTotalDegree `⊥` is weighted_homogeneous of degree `⊥`. -/
+/-- A polynomial of weightedTotalDegree `⊥` is weighted homogeneous of degree `⊥`. -/
 theorem isWeightedHomogeneous_of_total_degree_zero [SemilatticeSup M] [OrderBot M] (w : σ → M)
     {p : MvPolynomial σ R} (hp : weightedTotalDegree w p = (⊥ : M)) :
     IsWeightedHomogeneous w p (⊥ : M) := by
@@ -350,14 +350,14 @@ theorem coeff_weightedHomogeneousComponent [DecidableEq M] (d : σ →₀ ℕ) :
     coeff d (weightedHomogeneousComponent w n φ) =
       if weight w d = n then coeff d φ else 0 :=
   letI := Classical.decEq M
-  Finsupp.filter_apply (fun d : σ →₀ ℕ => weight w d = n) φ d |>.trans <| by convert rfl
+  Finsupp.filter_apply (fun d : σ →₀ ℕ => weight w d = n) φ d |>.trans <| by convert! rfl
 
 set_option backward.isDefEq.respectTransparency false in
 theorem weightedHomogeneousComponent_apply [DecidableEq M] :
     weightedHomogeneousComponent w n φ =
       ∑ d ∈ φ.support with weight w d = n, monomial d (coeff d φ) :=
   letI := Classical.decEq M
-  Finsupp.filter_eq_sum (fun d : σ →₀ ℕ => weight w d = n) φ |>.trans <| by convert rfl
+  Finsupp.filter_eq_sum (fun d : σ →₀ ℕ => weight w d = n) φ |>.trans <| by convert! rfl
 
 /-- The `n` weighted homogeneous component of a polynomial is weighted homogeneous of
 weighted degree `n`. -/
@@ -398,12 +398,12 @@ theorem weightedHomogeneousComponent_eq_zero [SemilatticeSup M] [OrderBot M]
   exact lt_of_le_of_lt (le_weightedTotalDegree w hd.1) h
 
 theorem weightedHomogeneousComponent_finsupp :
-    (Function.support fun m => weightedHomogeneousComponent w m φ).Finite := by
+    (fun m => weightedHomogeneousComponent w m φ).HasFiniteSupport := by
   apply ((fun d : σ →₀ ℕ => (weight w) d) '' (φ.support : Set (σ →₀ ℕ))).toFinite.subset
   intro m hm
   by_contra hm'
   apply hm (weightedHomogeneousComponent_eq_zero' m φ _)
-  simpa only [Set.mem_image, not_exists, not_and] using hm'
+  simpa only [Set.mem_image, not_exists, not_and] using! hm'
 
 variable (w)
 
@@ -472,13 +472,10 @@ theorem weightedHomogeneousComponent_of_mem [DecidableEq M] {m n : M}
     · rfl
     · simp only [coeff_zero]
 
-@[deprecated (since := "2025-10-06")]
-alias weightedHomogeneousComponent_of_isWeightedHomogeneous_same :=
-  IsWeightedHomogeneous.weightedHomogeneousComponent_same
-
-@[deprecated (since := "2025-10-06")]
-alias weightedHomogeneousComponent_of_isWeightedHomogeneous_ne :=
-  IsWeightedHomogeneous.weightedHomogeneousComponent_ne
+lemma support_weightedHomogeneousComponent [DecidableEq M] (n : M) (p : MvPolynomial σ R) :
+    (weightedHomogeneousComponent w n p).support = {c ∈ p.support | (weight w) c = n} := by
+  ext c
+  simp [coeff_weightedHomogeneousComponent, And.comm]
 
 variable (R w)
 
@@ -510,7 +507,7 @@ theorem weightedHomogeneousComponent_directSum [DecidableEq M]
       ((DirectSum.coeLinearMap fun i : M => weightedHomogeneousSubmodule R w i) x) = x m := by
   classical
   rw [DirectSum.coeLinearMap_eq_dfinsuppSum, DFinsupp.sum, map_sum]
-  convert @Finset.sum_eq_single M (MvPolynomial σ R) _ (DFinsupp.support x) _ m _ _
+  convert! @Finset.sum_eq_single M (MvPolynomial σ R) _ (DFinsupp.support x) _ m _ _
   · rw [IsWeightedHomogeneous.weightedHomogeneousComponent_same (x m).prop]
   · intro n _ hmn
     exact IsWeightedHomogeneous.weightedHomogeneousComponent_ne m (x n).prop hmn.symm
@@ -631,6 +628,7 @@ theorem decompose'_apply [DecidableEq M] (φ : MvPolynomial σ R) (m : M) :
 
 /-- Given a weight `w`, the decomposition of `MvPolynomial σ R` into weighted homogeneous
 submodules -/
+@[implicit_reducible]
 def weightedDecomposition [DecidableEq M] :
     DirectSum.Decomposition (weightedHomogeneousSubmodule R w) where
   decompose' := decompose' R w
@@ -656,6 +654,7 @@ def weightedDecomposition [DecidableEq M] :
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a weight, `MvPolynomial` as a graded algebra -/
+@[implicit_reducible]
 def weightedGradedAlgebra [DecidableEq M] :
     GradedAlgebra (weightedHomogeneousSubmodule R w) where
   toDecomposition := weightedDecomposition R w

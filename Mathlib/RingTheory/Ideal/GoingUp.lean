@@ -78,7 +78,7 @@ theorem injective_quotient_le_comap_map (P : Ideal R[X]) :
   refine le_antisymm (sup_le le_rfl ?_) (le_sup_of_le_left le_rfl)
   refine fun p hp =>
     polynomial_mem_ideal_of_coeff_mem_ideal P p fun n => Ideal.Quotient.eq_zero_iff_mem.mp ?_
-  simpa only [coeff_map, coe_mapRingHom] using ext_iff.mp (Ideal.mem_bot.mp (mem_comap.mp hp)) n
+  simpa only [coeff_map, coe_mapRingHom] using! ext_iff.mp (Ideal.mem_bot.mp (mem_comap.mp hp)) n
 
 /-- The identity in this lemma asserts that the "obvious" square
 ```
@@ -127,7 +127,6 @@ theorem exists_coeff_ne_zero_mem_comap_of_root_mem [IsDomain S] {r : S} (r_ne_ze
   exists_coeff_ne_zero_mem_comap_of_non_zero_divisor_root_mem
     (fun {_} h => Or.resolve_right (mul_eq_zero.mp h) r_ne_zero) hr
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_coeff_mem_comap_sdiff_comap_of_root_mem_sdiff [IsPrime I] (hIJ : I ≤ J) {r : S}
     (hr : r ∈ (J : Set S) \ I) {p : R[X]} (p_ne_zero : p.map (Quotient.mk (I.comap f)) ≠ 0)
     (hpI : p.eval₂ f r ∈ I) : ∃ i, p.coeff i ∈ (J.comap f : Set R) \ I.comap f := by
@@ -140,7 +139,7 @@ theorem exists_coeff_mem_comap_sdiff_comap_of_root_mem_sdiff [IsPrime I] (hIJ : 
     (p.map (Ideal.Quotient.mk (I.comap f))).eval₂ (Quotient.lift (I.comap f) _ quotient_f)
         (Ideal.Quotient.mk I r) =
       0 := by
-    convert Quotient.eq_zero_iff_mem.mpr hpI
+    convert! Quotient.eq_zero_iff_mem.mpr hpI
     exact _root_.trans (eval₂_map _ _ _) (hom_eval₂ p f (Ideal.Quotient.mk I) r).symm
   obtain ⟨i, ne_zero, mem⟩ :=
     exists_coeff_ne_zero_mem_comap_of_root_mem rbar_ne_zero rbar_mem_J p_ne_zero rbar_root
@@ -163,7 +162,7 @@ theorem comap_lt_comap_of_integral_mem_sdiff [Algebra R S] [hI : I.IsPrime] (hIJ
     I.comap (algebraMap R S) < J.comap (algebraMap R S) := by
   obtain ⟨p, p_monic, hpx⟩ := integral
   refine comap_lt_comap_of_root_mem_sdiff hIJ mem (map_monic_ne_zero p_monic) ?_
-  convert I.zero_mem
+  convert! I.zero_mem
 
 theorem comap_ne_bot_of_root_mem [IsDomain S] {r : S} (r_ne_zero : r ≠ 0) (hr : r ∈ I) {p : R[X]}
     (p_ne_zero : p ≠ 0) (hp : p.eval₂ f r = 0) : I.comap f ≠ ⊥ := fun h =>
@@ -215,60 +214,67 @@ theorem isMaximal_comap_of_isIntegral_of_isMaximal' {R S : Type*} [CommRing R] [
   have : Algebra.IsIntegral R S := ⟨hf⟩
   isMaximal_comap_of_isIntegral_of_isMaximal (R := R) (S := S) I
 
-section IsIntegralClosure
+section IsIntegral
 
-variable (S) {A : Type*} [CommRing A]
-variable [Algebra R A] [Algebra A S] [IsScalarTower R A S] [IsIntegralClosure A R S]
-include S
+variable {A : Type*} [CommRing A] [Algebra R A] [Algebra.IsIntegral R A]
 
-theorem IsIntegralClosure.comap_lt_comap {I J : Ideal A} [I.IsPrime] (I_lt_J : I < J) :
+theorem IsIntegral.comap_lt_comap {I J : Ideal A} [I.IsPrime] (I_lt_J : I < J) :
     I.comap (algebraMap R A) < J.comap (algebraMap R A) :=
   let ⟨I_le_J, x, hxJ, hxI⟩ := SetLike.lt_iff_le_and_exists.mp I_lt_J
-  comap_lt_comap_of_integral_mem_sdiff I_le_J ⟨hxJ, hxI⟩ (IsIntegralClosure.isIntegral R S x)
+  comap_lt_comap_of_integral_mem_sdiff I_le_J ⟨hxJ, hxI⟩ (Algebra.IsIntegral.isIntegral x)
 
-theorem IsIntegralClosure.isMaximal_of_isMaximal_comap (I : Ideal A) [I.IsPrime]
+@[deprecated (since := "2026-05-08")] alias IsIntegralClosure.comap_le_comap :=
+  IsIntegral.comap_lt_comap
+
+theorem IsIntegral.isMaximal_of_isMaximal_comap (I : Ideal A) [I.IsPrime]
     (hI : IsMaximal (I.comap (algebraMap R A))) : IsMaximal I :=
-  have : Algebra.IsIntegral R A := IsIntegralClosure.isIntegral_algebra R S
   isMaximal_of_isIntegral_of_isMaximal_comap I hI
+
+@[deprecated (since := "2026-05-08")] alias IsIntegralClosure.isMaximal_of_isMaximal_comap :=
+  IsIntegral.isMaximal_of_isMaximal_comap
+
+theorem IsIntegral.mem_minimalPrimes_map_under (I : Ideal A) [I.IsPrime] :
+    I ∈ ((I.under R).map (algebraMap R A)).minimalPrimes := by
+  refine ⟨⟨inferInstance, map_comap_le⟩, fun r ⟨hr, hpr⟩ hrq ↦ ?_⟩
+  contrapose! hpr
+  exact mt map_le_iff_le_comap.mp (not_le_of_gt (IsIntegral.comap_lt_comap (hrq.lt_of_not_ge hpr)))
 
 variable [IsDomain A]
 
-theorem IsIntegralClosure.comap_ne_bot [Nontrivial R] {I : Ideal A} (I_ne_bot : I ≠ ⊥) :
+variable (R) in
+theorem IsIntegral.comap_ne_bot [Nontrivial R] {I : Ideal A} (I_ne_bot : I ≠ ⊥) :
     I.comap (algebraMap R A) ≠ ⊥ :=
   let ⟨x, x_mem, x_ne_zero⟩ := I.ne_bot_iff.mp I_ne_bot
-  comap_ne_bot_of_integral_mem x_ne_zero x_mem (IsIntegralClosure.isIntegral R S x)
+  comap_ne_bot_of_integral_mem x_ne_zero x_mem (Algebra.IsIntegral.isIntegral x)
 
-theorem IsIntegralClosure.eq_bot_of_comap_eq_bot [Nontrivial R] {I : Ideal A} :
+@[deprecated (since := "2026-05-08")] alias IsIntegralClosure.comap_ne_bot :=
+  IsIntegral.comap_ne_bot
+
+variable (R) in
+theorem IsIntegral.eq_bot_of_comap_eq_bot [Nontrivial R] {I : Ideal A} :
     I.comap (algebraMap R A) = ⊥ → I = ⊥ := by
   contrapose
-  exact IsIntegralClosure.comap_ne_bot S
+  exact IsIntegral.comap_ne_bot R
 
-end IsIntegralClosure
+@[deprecated (since := "2026-05-08")] alias IsIntegralClosure.eq_bot_of_comap_eq_bot :=
+    IsIntegral.eq_bot_of_comap_eq_bot
 
-set_option backward.isDefEq.respectTransparency false in
-theorem IntegralClosure.comap_lt_comap {I J : Ideal (integralClosure R S)} [I.IsPrime]
-    (I_lt_J : I < J) :
-    I.comap (algebraMap R (integralClosure R S)) < J.comap (algebraMap R (integralClosure R S)) :=
-  IsIntegralClosure.comap_lt_comap S I_lt_J
+end IsIntegral
 
-set_option backward.isDefEq.respectTransparency false in
-theorem IntegralClosure.isMaximal_of_isMaximal_comap (I : Ideal (integralClosure R S)) [I.IsPrime]
-    (hI : IsMaximal (I.comap (algebraMap R (integralClosure R S)))) : IsMaximal I :=
-  IsIntegralClosure.isMaximal_of_isMaximal_comap S I hI
+@[deprecated (since := "2026-05-08")] alias IntegralClosure.comap_lt_comap :=
+  IsIntegral.comap_lt_comap
+
+@[deprecated (since := "2026-05-08")] alias IntegralClosure.isMaximal_of_isMaximal_comap :=
+  IsIntegral.isMaximal_of_isMaximal_comap
 
 section
 
 variable [IsDomain S]
 
-set_option backward.isDefEq.respectTransparency false in
-theorem IntegralClosure.comap_ne_bot [Nontrivial R] {I : Ideal (integralClosure R S)}
-    (I_ne_bot : I ≠ ⊥) : I.comap (algebraMap R (integralClosure R S)) ≠ ⊥ :=
-  IsIntegralClosure.comap_ne_bot S I_ne_bot
+@[deprecated (since := "2026-05-08")] alias IntegralClosure.comap_ne_bot := IsIntegral.comap_ne_bot
 
-set_option backward.isDefEq.respectTransparency false in
-theorem IntegralClosure.eq_bot_of_comap_eq_bot [Nontrivial R] {I : Ideal (integralClosure R S)} :
-    I.comap (algebraMap R (integralClosure R S)) = ⊥ → I = ⊥ :=
-  IsIntegralClosure.eq_bot_of_comap_eq_bot S
+@[deprecated (since := "2026-05-08")] alias IntegralClosure.eq_bot_of_comap_eq_bot :=
+  IsIntegral.eq_bot_of_comap_eq_bot
 
 /-- `comap (algebraMap R S)` is a surjection from the prime spec of `R` to prime spec of `S`.
 `hP : (algebraMap R S).ker ≤ P` is a slight generalization of the extension being injective -/
@@ -288,7 +294,7 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isDomain [Algebra.IsIntegral R 
   have Qₚ_max : IsMaximal (comap _ Qₚ) :=
     isMaximal_comap_of_isIntegral_of_isMaximal (R := Rₚ) (S := Sₚ) Qₚ
   refine ⟨comap (algebraMap S Sₚ) Qₚ, ⟨comap_isPrime _ Qₚ, ?_⟩⟩
-  convert Localization.AtPrime.comap_maximalIdeal (I := P)
+  convert! Localization.AtPrime.under_maximalIdeal (I := P)
   rw [comap_comap, ← IsLocalRing.eq_maximalIdeal Qₚ_max,
     ← IsLocalization.map_comp (P := S) (Q := Sₚ) (g := algebraMap R S)
     (M := P.primeCompl) (T := Algebra.algebraMapSubmonoid S P.primeCompl) (S := Rₚ)
@@ -367,7 +373,6 @@ lemma map_eq_top_iff {R S} [CommRing R] [CommRing S]
     I.map f = ⊤ ↔ I = ⊤ :=
   map_eq_top_iff_of_ker_le f (by simp [(RingHom.injective_iff_ker_eq_bot f).mp hf₁]) hf₂
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `S` is an integral `R`-algebra such that `q` is the unique prime of `S` lying over
 a prime `p` of `R`, then any `x ∉ q` divides some `r ∉ p`. -/
 lemma exists_notMem_dvd_algebraMap_of_primesOver_eq_singleton
@@ -420,9 +425,6 @@ theorem under_ne_bot [Nontrivial A] [IsDomain B] (hP : P ≠ ⊥) : under A P �
 /-- `B ⧸ P` is an integral `A ⧸ p`-algebra if `B` is an integral `A`-algebra. -/
 instance Quotient.algebra_isIntegral_of_liesOver : Algebra.IsIntegral (A ⧸ p) (B ⧸ P) :=
   Algebra.IsIntegral.tower_top A
-
-@[deprecated (since := "2025-11-06")] alias exists_ideal_liesOver_maximal_of_isIntegral :=
-  exists_maximal_ideal_liesOver_of_isIntegral
 
 end IsIntegral
 

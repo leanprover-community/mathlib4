@@ -34,8 +34,7 @@ Prove that the Sorgenfrey line is a paracompact space.
 
 
 open Set Filter TopologicalSpace
-
-open scoped Topology Filter Cardinal
+open scoped Topology Cardinal
 
 namespace Counterexample
 
@@ -87,7 +86,6 @@ theorem nhds_basis_Ico_rat (a : ℝₗ) :
   rcases exists_rat_btwn hb with ⟨r, har, hrb⟩
   exact ⟨r, har, Ico_subset_Ico_right hrb.le⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem nhds_basis_Ico_inv_pnat (a : ℝₗ) :
     (𝓝 a).HasBasis (fun _ : ℕ+ => True) fun n => Ico a (a + (n : ℝₗ)⁻¹) := by
   refine (nhds_basis_Ico a).to_hasBasis (fun b hb => ?_) fun n hn =>
@@ -120,7 +118,7 @@ theorem exists_Ico_disjoint_closed {a : ℝₗ} {s : Set ℝₗ} (hs : IsClosed 
 @[simp]
 theorem map_toReal_nhds (a : ℝₗ) : map toReal (𝓝 a) = 𝓝[≥] toReal a := by
   refine ((nhds_basis_Ico a).map _).eq_of_same_basis ?_
-  simpa only [toReal.image_eq_preimage_symm] using nhdsGE_basis_Ico (toReal a)
+  simpa only [toReal.image_eq_preimage_symm] using! nhdsGE_basis_Ico (toReal a)
 
 theorem nhds_eq_map (a : ℝₗ) : 𝓝 a = map toReal.symm (𝓝[≥] (toReal a)) := by
   simp_rw [← map_toReal_nhds, map_map, Function.comp_def, toReal.symm_apply_apply, map_id']
@@ -223,7 +221,7 @@ theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ
     exact closure_minimal (hs : s ⊆ {x | x.1 + x.2 = c}) (isClosed_antidiagonal c) H
   rcases mem_closure_iff.1 H (Ici (x, y)) (isClopen_Ici_prod _).2 self_mem_Ici with
     ⟨⟨x', y'⟩, ⟨hx : x ≤ x', hy : y ≤ y'⟩, H⟩
-  convert H
+  convert! H
   · refine hx.antisymm ?_
     rwa [← add_le_add_iff_right, hs _ H, add_le_add_iff_left]
   · refine hy.antisymm ?_

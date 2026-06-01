@@ -45,7 +45,6 @@ noncomputable section
 
 open MvPolynomial Finset
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any injective polynomial map over an algebraic extension of a finite field is surjective. -/
 theorem ax_grothendieck_of_locally_finite {ι K R : Type*} [Field K] [Finite K] [CommRing R]
     [Finite ι] [Algebra K R] [alg : Algebra.IsAlgebraic K R] (ps : ι → MvPolynomial ι R)
@@ -143,7 +142,6 @@ noncomputable def genericPolyMapSurjOnOfInjOn [Finite ι]
             (fun i => (Equiv.sumAssoc _ _ _).symm (Sum.inr i)))))
   Formula.iAlls (α ⊕ Σ i : ι, mons i) ((mapsTo.imp <| injOn.imp <| surjOn).relabel Sum.inr)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem realize_genericPolyMapSurjOnOfInjOn
     [Finite ι] (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
     (K ⊨ genericPolyMapSurjOnOfInjOn φ mons) ↔
@@ -188,7 +186,7 @@ theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime_or_zero
   rcases hp with hp | rfl
   · exact ACF_models_genericPolyMapSurjOnOfInjOn_of_prime hp φ mons
   · rw [ACF_zero_realize_iff_infinite_ACF_prime_realize]
-    convert Set.infinite_univ (α := Nat.Primes)
+    convert! Set.infinite_univ (α := Nat.Primes)
     rw [Set.eq_univ_iff_forall]
     intro ⟨p, hp⟩
     exact ACF_models_genericPolyMapSurjOnOfInjOn_of_prime hp φ mons
@@ -239,7 +237,6 @@ theorem ax_grothendieck_zeroLocus
   obtain ⟨s, rfl⟩ : I.FG := IsNoetherian.noetherian I
   exact ax_grothendieck_of_definable S (mvPolynomial_zeroLocus_definable s) p
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A special case of the **Ax-Grothendieck** theorem
 
 Any injective polynomial map `K^n → K^n` is also surjective if `K` is an

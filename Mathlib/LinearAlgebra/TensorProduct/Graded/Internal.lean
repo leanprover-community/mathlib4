@@ -75,6 +75,7 @@ def GradedTensorProduct
     [GradedAlgebra 𝒜] [GradedAlgebra ℬ] :
     Type _ :=
   A ⊗[R] B
+deriving AddCommGroupWithOne, Module R
 
 namespace GradedTensorProduct
 
@@ -82,10 +83,6 @@ open TensorProduct
 
 @[inherit_doc GradedTensorProduct]
 scoped[TensorProduct] notation:100 𝒜 " ᵍ⊗[" R "] " ℬ:100 => GradedTensorProduct R 𝒜 ℬ
-
-instance instAddCommGroupWithOne : AddCommGroupWithOne (𝒜 ᵍ⊗[R] ℬ) :=
-  Algebra.TensorProduct.instAddCommGroupWithOne
-instance : Module R (𝒜 ᵍ⊗[R] ℬ) := TensorProduct.leftModule
 
 variable (R) in
 /-- The casting equivalence to move between regular and graded tensor products. -/
@@ -132,7 +129,6 @@ noncomputable def auxEquiv : (𝒜 ᵍ⊗[R] ℬ) ≃ₗ[R] (⨁ i, 𝒜 i) ⊗[
 theorem auxEquiv_tmul (a : A) (b : B) :
     auxEquiv R 𝒜 ℬ (a ᵍ⊗ₜ b) = decompose 𝒜 a ⊗ₜ decompose ℬ b := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem auxEquiv_one : auxEquiv R 𝒜 ℬ 1 = 1 := by
   rw [← of_one, Algebra.TensorProduct.one_def, auxEquiv_tmul 𝒜 ℬ, DirectSum.decompose_one,
     DirectSum.decompose_one, Algebra.TensorProduct.one_def]
@@ -142,7 +138,6 @@ theorem auxEquiv_symm_one : (auxEquiv R 𝒜 ℬ).symm 1 = 1 :=
 
 variable [Module ι (Additive ℤˣ)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction used to build the `Mul` instance and get distributivity of `+` and
 `\smul`. -/
 noncomputable def mulHom : (𝒜 ᵍ⊗[R] ℬ) →ₗ[R] (𝒜 ᵍ⊗[R] ℬ) →ₗ[R] (𝒜 ᵍ⊗[R] ℬ) := by
@@ -151,7 +146,6 @@ noncomputable def mulHom : (𝒜 ᵍ⊗[R] ℬ) →ₗ[R] (𝒜 ᵍ⊗[R] ℬ) �
     fAB1.symm.toLinearMap
   exact this
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mulHom_apply (x y : 𝒜 ᵍ⊗[R] ℬ) :
     mulHom 𝒜 ℬ x y
       = (auxEquiv R 𝒜 ℬ).symm (gradedMul R (𝒜 ·) (ℬ ·) (auxEquiv R 𝒜 ℬ x) (auxEquiv R 𝒜 ℬ y)) :=
@@ -164,13 +158,11 @@ instance : Mul (𝒜 ᵍ⊗[R] ℬ) where mul x y := mulHom 𝒜 ℬ x y
 
 theorem mul_def (x y : 𝒜 ᵍ⊗[R] ℬ) : x * y = mulHom 𝒜 ℬ x y := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 -- Before https://github.com/leanprover-community/mathlib4/pull/8386 this was `@[simp]` but it times out when we try to apply it.
 theorem auxEquiv_mul (x y : 𝒜 ᵍ⊗[R] ℬ) :
     auxEquiv R 𝒜 ℬ (x * y) = gradedMul R (𝒜 ·) (ℬ ·) (auxEquiv R 𝒜 ℬ x) (auxEquiv R 𝒜 ℬ y) :=
   LinearEquiv.eq_symm_apply _ |>.mp rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance instMonoid : Monoid (𝒜 ᵍ⊗[R] ℬ) where
   mul_one x := by
     rw [mul_def, mulHom_apply, auxEquiv_one, gradedMul_one, LinearEquiv.symm_apply_apply]
@@ -181,14 +173,11 @@ instance instMonoid : Monoid (𝒜 ᵍ⊗[R] ℬ) where
     rw [gradedMul_assoc]
 
 instance instRing : Ring (𝒜 ᵍ⊗[R] ℬ) where
-  __ := instAddCommGroupWithOne 𝒜 ℬ
-  __ := instMonoid 𝒜 ℬ
   right_distrib x y z := by simp_rw [mul_def, LinearMap.map_add₂]
   left_distrib x y z := by simp_rw [mul_def, map_add]
   mul_zero x := by simp_rw [mul_def, map_zero]
   zero_mul x := by simp_rw [mul_def, LinearMap.map_zero₂]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The characterization of this multiplication on partially homogeneous elements. -/
 theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : B) :
     (a₁ ᵍ⊗ₜ[R] (b₁ : B) * (a₂ : A) ᵍ⊗ₜ[R] b₂ : 𝒜 ᵍ⊗[R] ℬ) =
@@ -220,18 +209,19 @@ theorem tmul_coe_mul_zero_coe_tmul {j₁ : ι} (a₁ : A) (b₁ : ℬ j₁) (a�
 
 theorem tmul_one_mul_coe_tmul {i₂ : ι} (a₁ : A) (a₂ : 𝒜 i₂) (b₂ : B) :
     (a₁ ᵍ⊗ₜ[R] (1 : B) * (a₂ : A) ᵍ⊗ₜ[R] b₂ : 𝒜 ᵍ⊗[R] ℬ) = (a₁ * a₂ : A) ᵍ⊗ₜ (b₂ : B) := by
-  convert tmul_zero_coe_mul_coe_tmul 𝒜 ℬ a₁ (@GradedMonoid.GOne.one _ (ℬ ·) _ _) a₂ b₂
+  convert! tmul_zero_coe_mul_coe_tmul 𝒜 ℬ a₁ (@GradedMonoid.GOne.one _ (ℬ ·) _ _) a₂ b₂
   rw [SetLike.coe_gOne, one_mul]
 
 theorem tmul_coe_mul_one_tmul {j₁ : ι} (a₁ : A) (b₁ : ℬ j₁) (b₂ : B) :
     (a₁ ᵍ⊗ₜ[R] (b₁ : B) * (1 : A) ᵍ⊗ₜ[R] b₂ : 𝒜 ᵍ⊗[R] ℬ) = (a₁ : A) ᵍ⊗ₜ (b₁ * b₂ : B) := by
-  convert tmul_coe_mul_zero_coe_tmul 𝒜 ℬ a₁ b₁ (@GradedMonoid.GOne.one _ (𝒜 ·) _ _) b₂
+  convert! tmul_coe_mul_zero_coe_tmul 𝒜 ℬ a₁ b₁ (@GradedMonoid.GOne.one _ (𝒜 ·) _ _) b₂
   rw [SetLike.coe_gOne, mul_one]
 
 theorem tmul_one_mul_one_tmul (a₁ : A) (b₂ : B) :
     (a₁ ᵍ⊗ₜ[R] (1 : B) * (1 : A) ᵍ⊗ₜ[R] b₂ : 𝒜 ᵍ⊗[R] ℬ) = (a₁ : A) ᵍ⊗ₜ (b₂ : B) := by
-  convert tmul_coe_mul_zero_coe_tmul 𝒜 ℬ
-    a₁ (GradedMonoid.GOne.one (A := (ℬ ·))) (GradedMonoid.GOne.one (A := (𝒜 ·))) b₂
+  convert!
+    tmul_coe_mul_zero_coe_tmul 𝒜 ℬ a₁ (GradedMonoid.GOne.one (A := (ℬ ·)))
+      (GradedMonoid.GOne.one (A := (𝒜 ·))) b₂
   · rw [SetLike.coe_gOne, mul_one]
   · rw [SetLike.coe_gOne, one_mul]
 
@@ -251,7 +241,7 @@ def includeLeftRingHom : A →+* 𝒜 ᵍ⊗[R] ℬ where
     rw [← SetLike.coe_gOne ℬ, tmul_coe_mul_coe_tmul, zero_mul, uzpow_zero, one_smul,
       SetLike.coe_gOne, one_mul]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 instance instAlgebra : Algebra R (𝒜 ᵍ⊗[R] ℬ) where
   algebraMap := (includeLeftRingHom 𝒜 ℬ).comp (algebraMap R A)
   commutes' r x := by
@@ -304,7 +294,7 @@ lemma algebraMap_def' (r : R) : algebraMap R (𝒜 ᵍ⊗[R] ℬ) r = 1 ᵍ⊗�
 
 variable {C} [Ring C] [Algebra R C]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The forwards direction of the universal property; an algebra morphism out of the graded tensor
 product can be assembled from maps on each component that (anti)commute on pure elements of the
 corresponding graded algebras. -/
@@ -341,7 +331,7 @@ theorem lift_tmul (f : A →ₐ[R] C) (g : B →ₐ[R] C)
     lift 𝒜 ℬ f g h_anti_commutes (a ᵍ⊗ₜ b) = f a * g b :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The universal property of the graded tensor product; every algebra morphism uniquely factors
 as a pair of algebra morphisms that anticommute with respect to the grading. -/
 def liftEquiv :
@@ -368,7 +358,6 @@ lemma algHom_ext ⦃f g : (𝒜 ᵍ⊗[R] ℬ) →ₐ[R] C⦄
     (hb : f.comp (includeRight 𝒜 ℬ) = g.comp (includeRight 𝒜 ℬ)) : f = g :=
   (liftEquiv 𝒜 ℬ).symm.injective <| Subtype.ext <| Prod.ext ha hb
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The non-trivial symmetric braiding, sending $a \otimes b$ to
 $(-1)^{\deg a' \deg b} (b \otimes a)$. -/
 def comm : (𝒜 ᵍ⊗[R] ℬ) ≃ₐ[R] (ℬ ᵍ⊗[R] 𝒜) :=
@@ -382,12 +371,10 @@ def comm : (𝒜 ᵍ⊗[R] ℬ) ≃ₐ[R] (ℬ ᵍ⊗[R] 𝒜) :=
       simp_rw [auxEquiv_mul, gradedComm_gradedMul, LinearEquiv.symm_apply_eq,
         ← gradedComm_gradedMul, auxEquiv_mul, LinearEquiv.apply_symm_apply, gradedComm_gradedMul])
 
-set_option backward.isDefEq.respectTransparency false in
 lemma auxEquiv_comm (x : 𝒜 ᵍ⊗[R] ℬ) :
     auxEquiv R ℬ 𝒜 (comm 𝒜 ℬ x) = gradedComm R (𝒜 ·) (ℬ ·) (auxEquiv R 𝒜 ℬ x) :=
   LinearEquiv.eq_symm_apply _ |>.mp rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma comm_coe_tmul_coe {i j : ι} (a : 𝒜 i) (b : ℬ j) :
     comm 𝒜 ℬ (a ᵍ⊗ₜ b) = (-1 : ℤˣ) ^ (j * i) • (b ᵍ⊗ₜ a : ℬ ᵍ⊗[R] 𝒜) :=
   (auxEquiv R ℬ 𝒜).injective <| by

@@ -64,13 +64,13 @@ namespace Set
 section SMul
 
 /-- The dilation of set `x • s` is defined as `{x • y | y ∈ s}` in scope `Pointwise`. -/
-@[to_additive (attr := instance_reducible)
+@[to_additive (attr := implicit_reducible)
 /-- The translation of set `x +ᵥ s` is defined as `{x +ᵥ y | y ∈ s}` in scope `Pointwise`. -/]
 protected def smulSet [SMul α β] : SMul α (Set β) where smul a := image (a • ·)
 
 /-- The pointwise scalar multiplication of sets `s • t` is defined as `{x • y | x ∈ s, y ∈ t}` in
 scope `Pointwise`. -/
-@[to_additive (attr := instance_reducible)
+@[to_additive (attr := implicit_reducible)
 /-- The pointwise scalar addition of sets `s +ᵥ t` is defined as `{x +ᵥ y | x ∈ s, y ∈ t}` in locale
 `Pointwise`. -/]
 protected def smul [SMul α β] : SMul (Set α) (Set β) where smul := image2 (· • ·)
@@ -78,7 +78,7 @@ protected def smul [SMul α β] : SMul (Set α) (Set β) where smul := image2 (�
 scoped[Pointwise] attribute [instance] Set.smulSet Set.smul
 scoped[Pointwise] attribute [instance] Set.vaddSet Set.vadd
 
-open Pointwise
+open scoped Pointwise
 
 section SMul
 variable {ι : Sort*} {κ : ι → Sort*} [SMul α β] {s s₁ s₂ : Set α} {t t₁ t₂ u : Set β} {a : α}
@@ -278,7 +278,7 @@ lemma union_vsub_inter_subset_union : s₁ ∪ s₂ -ᵥ t₁ ∩ t₂ ⊆ s₁ 
 
 end VSub
 
-open Pointwise
+open scoped Pointwise
 
 @[to_additive]
 lemma image_smul_comm [SMul α β] [SMul α γ] (f : β → γ) (a : α) (s : Set β) :

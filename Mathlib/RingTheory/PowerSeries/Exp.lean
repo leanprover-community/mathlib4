@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Mathlib contributors. All rights reserved.
+Copyright (c) 2026 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mathlib contributors
+Authors: Yuma Mizuno, Ralf Stephan
 -/
 module
 
@@ -118,7 +118,6 @@ open Finset Nat
 
 variable {A : Type*} [CommRing A]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Shows that $e^{aX} * e^{bX} = e^{(a + b)X}$ -/
 theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
     rescale a (exp A) * rescale b (exp A) = rescale (a + b) (exp A) := by
@@ -131,7 +130,7 @@ theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
     a ^ x * b ^ (n - x) *
         (algebraMap ℚ A (1 / ↑x.factorial) * algebraMap ℚ A (1 / ↑(n - x).factorial)) =
       a ^ x * b ^ (n - x) * (↑(n.choose x) * (algebraMap ℚ A) (1 / ↑n.factorial))
-    by convert this using 1 <;> ring
+    by convert! this using 1 <;> ring
   congr 1
   rw [← map_natCast (algebraMap ℚ A) (n.choose x), ← map_mul, ← map_mul]
   refine RingHom.congr_arg _ ?_
@@ -148,9 +147,8 @@ theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
 
 /-- Shows that $e^{x} * e^{-x} = 1$ -/
 theorem exp_mul_exp_neg_eq_one [Algebra ℚ A] : exp A * evalNegHom (exp A) = 1 := by
-  convert exp_mul_exp_eq_exp_add (1 : A) (-1) <;> simp
+  convert! exp_mul_exp_eq_exp_add (1 : A) (-1) <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Shows that $(e^{X})^k = e^{kX}$. -/
 theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (k : A) (exp A) := by
   induction k with
@@ -161,7 +159,6 @@ theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (
     simpa only [succ_eq_add_one, cast_add, ← exp_mul_exp_eq_exp_add (k : A), ← h, cast_one,
       id_apply, rescale_one] using pow_succ (exp A) k
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Shows that
 $\sum_{k = 0}^{n - 1} (e^{X})^k = \sum_{p = 0}^{\infty} \sum_{k = 0}^{n - 1} \frac{k^p}{p!}X^p$. -/
 theorem exp_pow_sum [Algebra ℚ A] (n : ℕ) :

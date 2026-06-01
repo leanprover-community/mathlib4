@@ -143,6 +143,18 @@ def updateLevelParams (c : ConstantInfo) (levelParams : List Name) :
     ConstantInfo :=
   c.updateConstantVal {c.toConstantVal with levelParams}
 
+/--
+Update the mutual-block `all` field of a `ConstantInfo`.
+
+This applies to declaration kinds where `ConstantInfo.all` is stored directly.
+-/
+def updateAll : ConstantInfo → List Name → ConstantInfo
+  | .defnInfo info, all => .defnInfo {info with all}
+  | .thmInfo info, all => .thmInfo {info with all}
+  | .opaqueInfo info, all => .opaqueInfo {info with all}
+  | .inductInfo info, all => .inductInfo {info with all}
+  | ci, _ => ci
+
 /-- Update the value of a `ConstantInfo`, if it has one. -/
 def updateValue : ConstantInfo → Expr → ConstantInfo
   | defnInfo   info, v => defnInfo   {info with value := v}
@@ -187,7 +199,7 @@ Each entry in the array is an `Expr.app`,
 and this array has the same length as the one returned by `Lean.Expr.getAppArgs`. -/
 @[inline]
 def getAppApps (e : Expr) : Array Expr :=
-  let dummy := mkSort levelZero
+  let dummy := mkSort .zero
   let nargs := e.getAppNumArgs
   getAppAppsAux e (.replicate nargs dummy) (nargs-1)
 

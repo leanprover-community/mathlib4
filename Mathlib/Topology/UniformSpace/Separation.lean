@@ -116,7 +116,6 @@ instance (priority := 100) UniformSpace.to_regularSpace : RegularSpace α :=
     (fun _ ↦ nhds_basis_uniformity' uniformity_hasBasis_closed)
     fun a _V hV ↦ isClosed_ball a hV.2
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If the uniformity has a linearly ordered basis, then the space is completely normal.
 -/
@@ -331,3 +330,27 @@ theorem map_comp {f : α → β} {g : β → γ} (hf : UniformContinuous f) (hg 
   (map_unique (hg.comp hf) <| by simp only [Function.comp_def, map_mk, hf, hg]).symm
 
 end SeparationQuotient
+
+namespace IndiscreteTopology
+
+variable {α : Type*} [u : UniformSpace α]
+
+theorem of_uniformity_eq_top (h : uniformity α = ⊤) : IndiscreteTopology α :=
+  ⟨(UniformSpace.ext h.symm : ⊤ = u) ▸ rfl⟩
+
+lemma eq_top_uniformSpace [IndiscreteTopology α] : u = ⊤ := by
+  refine UniformSpace.ext ?_
+  rw [top_uniformity, ← Filter.ker_eq_univ]
+  ext x
+  rw [← inseparable_iff_ker_uniformity]
+  simp
+
+lemma eq_top_iff_indiscrete : u = ⊤ ↔ IndiscreteTopology α :=
+  ⟨fun h ↦ IndiscreteTopology.mk <| h ▸ UniformSpace.toTopologicalSpace_top (α := α),
+  fun _ ↦ eq_top_uniformSpace⟩
+
+lemma uniformContinuous [IndiscreteTopology β] {f : α → β} : UniformContinuous f := by
+  rw [UniformContinuous, eq_top_uniformSpace (α := β), top_uniformity]
+  exact Filter.tendsto_top
+
+end IndiscreteTopology

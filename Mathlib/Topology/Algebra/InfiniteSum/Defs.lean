@@ -162,7 +162,7 @@ notation3 "∑' "(...)", "r:67:(scoped f => tsum f (unconditional _)) => r
 @[to_additive]
 lemma hasProd_bot (hL : ¬L.NeBot) (f : β → α) (a : α) :
     HasProd f a L := by
-  have : L.filter = ⊥ := by contrapose! hL; exact ⟨⟨hL⟩⟩
+  have : L.filter = ⊥ := by contrapose! hL; exact ⟨hL⟩
   rw [HasProd, this]
   exact tendsto_bot
 
@@ -269,7 +269,6 @@ theorem Finset.hasProd_support (s : Finset β) (f : β → α) (L := uncondition
       (∏ b ∈ (L.support.toFinset.map <| Embedding.subtype _), f b) L := by
   simpa [prod_attach] using hasProd_fintype_support (f ∘ Subtype.val) L
 
-set_option backward.isDefEq.respectTransparency false in
 -- note this is not deduced from `Finset.hasProd_support` to avoid needing `[DecidableEq β]`
 @[to_additive]
 protected theorem Finset.hasProd (s : Finset β) (f : β → α)
@@ -310,11 +309,11 @@ theorem Multipliable.hasProd (ha : Multipliable f L) : HasProd f (∏'[L] b, f b
   classical
   rw [tprod_def, dif_pos ha]
   split_ifs with h h'
-  · convert hasProd_prod_support_of_ne_finset_one (s := h.2.toFinset) (L := L) _ using 2
+  · convert! hasProd_prod_support_of_ne_finset_one (s := h.2.toFinset) (L := L) _ using 2
     · simp only [Set.inter_eq_left.mpr (show ↑h.2.toFinset ⊆ L.support by simp)]
       simp only [Set.Finite.coe_toFinset, Finset.toFinset_coe]
       rw [finprod_eq_prod_of_mulSupport_subset (s := h.2.toFinset)]
-      · exact Finset.prod_congr rfl (by aesop)
+      · exact Finset.prod_congr rfl (by simp_all)
       · simp
     · grind [Set.Finite.mem_toFinset, mem_mulSupport]
     · exact h.1

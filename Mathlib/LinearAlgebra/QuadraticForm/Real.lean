@@ -29,7 +29,6 @@ open Finset Module QuadraticMap SignType
 namespace QuadraticForm
 variable {ι : Type*} [Fintype ι]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The isometry between a weighted sum of squares with weights `u` on the
 (non-zero) real numbers and the weighted sum of squares with weights `sign ∘ u`. -/
 noncomputable def isometryEquivSignWeightedSumSquares (w : ι → ℝ) :
@@ -43,8 +42,9 @@ noncomputable def isometryEquivSignWeightedSumSquares (w : ι → ℝ) :
     by_cases hi : w i = 0
     · simp [hi]
     · simp only [hi, ↓reduceDIte, Units.val_mk0, u]; field_simp; simp
-  convert QuadraticMap.isometryEquivBasisRepr (weightedSumSquares ℝ w)
-    ((Pi.basisFun ℝ ι).unitsSMul fun i => .mk0 _ (hu i))
+  convert!
+    QuadraticMap.isometryEquivBasisRepr (weightedSumSquares ℝ w)
+      ((Pi.basisFun ℝ ι).unitsSMul fun i => .mk0 _ (hu i))
   ext1 v
   classical
   suffices ∑ i, (w i / |(u i : ℝ)|) * v i ^ 2 = ∑ i, w i * (v i ^ 2 * |(u i : ℝ)|⁻¹) by

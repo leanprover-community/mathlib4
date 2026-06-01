@@ -129,7 +129,7 @@ theorem map_mk_sublist_sym2 (x : α) (xs : List α) (h : x ∈ xs) :
     simp only [map_cons, List.sym2, cons_append]
     cases h with
     | head =>
-      exact (sublist_append_left _ _).cons₂ _
+      exact (sublist_append_left _ _).cons_cons _
     | tail _ h =>
       refine .cons _ ?_
       rw [← singleton_append]
@@ -183,9 +183,9 @@ protected theorem Sublist.sym2 {xs ys : List α} (h : xs <+ ys) : xs.sym2 <+ ys.
   | cons a h ih =>
     simp only [List.sym2]
     exact Sublist.append (nil_sublist _) ih
-  | cons₂ a h ih =>
+  | cons_cons a h ih =>
     simp only [List.sym2, map_cons, cons_append]
-    exact cons₂ _ (append (Sublist.map _ h) ih)
+    exact cons_cons _ (append (Sublist.map _ h) ih)
 
 protected theorem Subperm.sym2 {xs ys : List α} (h : xs <+~ ys) : xs.sym2 <+~ ys.sym2 := by
   obtain ⟨xs', hx, h⟩ := h
@@ -243,10 +243,10 @@ protected theorem Sublist.sym (n : ℕ) {xs ys : List α} (h : xs <+ ys) : xs.sy
     rw [List.sym, ← nil_append (List.sym (n + 1) xs)]
     apply Sublist.append (nil_sublist _)
     exact h.sym (n + 1)
-  | n + 1, .cons₂ a h => by
+  | n + 1, .cons_cons a h => by
     rw [List.sym, List.sym]
     apply Sublist.append
-    · exact ((cons₂ a h).sym n).map _
+    · exact ((cons_cons a h).sym n).map _
     · exact h.sym (n + 1)
 
 theorem sym_sublist_sym_cons {a : α} : xs.sym n <+ (a :: xs).sym n :=

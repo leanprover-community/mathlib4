@@ -73,7 +73,6 @@ theorem zero_mul {f : ℕ → M} (h : HasProd (fun n ↦ f (n + 1)) m) :
     HasProd f (f 0 * m) := by
   simpa only [prod_range_one] using h.prod_range_mul
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem even_mul_odd {f : ℕ → M} (he : HasProd (fun k ↦ f (2 * k)) m)
     (ho : HasProd (fun k ↦ f (2 * k + 1)) m') : HasProd f (m * m') := by
@@ -174,7 +173,7 @@ theorem rel_iSup_prod [CompleteLattice α] (m : α → M) (m0 : m ⊥ = 1) (R : 
 theorem rel_sup_mul [CompleteLattice α] (m : α → M) (m0 : m ⊥ = 1) (R : M → M → Prop)
     (m_iSup : ∀ s : ℕ → α, R (m (⨆ i, s i)) (∏' i, m (s i))) (s₁ s₂ : α) :
     R (m (s₁ ⊔ s₂)) (m s₁ * m s₂) := by
-  convert rel_iSup_tprod m m0 R m_iSup fun b ↦ cond b s₁ s₂
+  convert! rel_iSup_tprod m m0 R m_iSup fun b ↦ cond b s₁ s₂
   · simp only [iSup_bool_eq, cond]
   · rw [tprod_fintype, Fintype.prod_bool, cond, cond]
 
@@ -536,9 +535,6 @@ section PNat
 theorem multipliable_pnat_iff_multipliable_succ {f : ℕ → M} :
     Multipliable (fun x : ℕ+ ↦ f x) ↔ Multipliable fun x ↦ f (x + 1) :=
   Equiv.pnatEquivNat.symm.multipliable_iff.symm
-
-@[deprecated (since := "2025-09-31")]
-alias pnat_multipliable_iff_multipliable_succ := multipliable_pnat_iff_multipliable_succ
 
 @[to_additive]
 lemma multipliable_pnat_iff_multipliable_nat [TopologicalSpace G] [IsTopologicalGroup G]

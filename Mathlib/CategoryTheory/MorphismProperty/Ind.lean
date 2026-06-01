@@ -68,6 +68,7 @@ lemma exists_hom_of_isFinitelyPresentable {J : Type w} [SmallCategory J] [IsFilt
     ∃ (j : J) (q : A ⟶ D.obj j), p ≫ q = s.app j ∧ q ≫ c.ι.app j = f :=
   hp.exists_hom_of_isColimit_under hc _ s _ h
 
+set_option backward.defeqAttrib.useBackward true in
 lemma le_ind : P ≤ ind.{w} P := by
   intro X Y f hf
   refine ⟨PUnit, inferInstance, inferInstance, (Functor.const PUnit).obj Y, ?_, 𝟙 _, ?_, ?_⟩
@@ -77,6 +78,7 @@ lemma le_ind : P ≤ ind.{w} P := by
 
 variable {P}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma ind_iff_ind_underMk {X Y : C} (f : X ⟶ Y) :
     ind.{w} P f ↔ ObjectProperty.ind.{w} P.underObj (CategoryTheory.Under.mk f) := by
@@ -110,7 +112,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance [P.RespectsIso] : P.ind.RespectsIso where
   postcomp {X Y Z} i (hi : IsIso i) f := fun ⟨J, _, _, D, t, s, hs, hst⟩ ↦ by
     refine ⟨J, ‹_›, ‹_›, D, t, s ≫ (Functor.const J).map i, ?_, fun j ↦ ⟨(hst j).1, ?_⟩⟩
-    · exact (IsColimit.equivIsoColimit (Cocones.ext (asIso i))) hs
+    · exact (IsColimit.equivIsoColimit (Cocone.ext (asIso i))) hs
     · simp [reassoc_of% (hst j).2]
 
 lemma ind_underObj_pushout {X Y : C} (g : X ⟶ Y) [HasPushouts C] [P.IsStableUnderCobaseChange]
@@ -180,6 +182,7 @@ class PreIndSpreads (P : MorphismProperty C) : Prop where
 
 alias exists_isPushout_of_isFiltered := PreIndSpreads.exists_isPushout
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `P` ind-spreads and all under categories are finitely accessible, `ind P`
 is stable under composition if `P` is. -/

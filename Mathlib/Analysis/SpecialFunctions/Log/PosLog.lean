@@ -45,7 +45,6 @@ theorem posLog_def : log⁺ x = max 0 (log x) := rfl
 ## Elementary Properties
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Presentation of `log` in terms of its positive part. -/
 theorem posLog_sub_posLog_inv : log⁺ x - log⁺ x⁻¹ = log x := by
   rw [posLog_def, posLog_def, log_inv]
@@ -158,9 +157,6 @@ theorem posLog_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
 ## Estimates for Sums
 -/
 
-set_option backward.isDefEq.respectTransparency false in
--- TODO: non-terminal simp followed by positivity
-set_option linter.flexible false in
 /-- Estimate for `log⁺` of a sum. See `Real.posLog_add` for a variant involving
 just two summands. -/
 theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
@@ -178,7 +174,7 @@ theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
     apply monotoneOn_posLog (by simp) (by simp [Finset.sum_nonneg])
     simp [Finset.abs_sum_le_sum_abs]
   _ ≤ log⁺ (∑ t ∈ s, |f t_max|) := by
-    apply monotoneOn_posLog (by simp [Finset.sum_nonneg]) (by simp; positivity)
+    apply monotoneOn_posLog (by simp [Finset.sum_nonneg]) (by simp [mul_nonneg])
     apply Finset.sum_le_sum (fun i ih ↦ ht_max.2 i ih)
   _ = log⁺ (s.card * |f t_max|) := by
     simp [Finset.sum_const]
@@ -201,7 +197,7 @@ lemma posLog_norm_sum_le {E : Type*} [SeminormedAddCommGroup E] {α : Type*} (s 
 Estimate for `log⁺` of a sum. See `Real.posLog_sum` for a variant involving multiple summands.
 -/
 theorem posLog_add : log⁺ (x + y) ≤ log 2 + log⁺ x + log⁺ y := by
-  convert posLog_sum Finset.univ ![x, y] using 1 <;> simp [add_assoc]
+  convert! posLog_sum Finset.univ ![x, y] using 1 <;> simp [add_assoc]
 
 /--
 Variant of `posLog_add` for norms of elements in normed additive commutative groups, using

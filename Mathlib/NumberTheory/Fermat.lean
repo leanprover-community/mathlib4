@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Moritz Firsching
+Authors: Moritz Firsching, Ralf Stephan
 -/
 module
 
@@ -116,7 +116,6 @@ lemma pairwise_coprime_fermatNumber :
 
 open ZMod
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Prime `a ^ n + 1` implies `n` is a power of two (**Fermat primes**). -/
 theorem pow_of_pow_add_prime {a n : ℕ} (ha : 1 < a) (hn : n ≠ 0) (hP : (a ^ n + 1).Prime) :
     ∃ m : ℕ, n = 2 ^ m := by
@@ -195,7 +194,6 @@ lemma fermat_primeFactors_one_lt (n p : ℕ) (hn : 1 < n) (hp : p.Prime)
 ### Primality of Mersenne numbers `Mₙ = a ^ n - 1`
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Prime `a ^ n - 1` implies `a = 2` and prime `n`. -/
 theorem prime_of_pow_sub_one_prime {a n : ℕ} (hn1 : n ≠ 1) (hP : (a ^ n - 1).Prime) :
     a = 2 ∧ n.Prime := by

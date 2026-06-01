@@ -40,17 +40,16 @@ namespace SingleObj
 
 variable {M G : Type v} [Monoid M] [Group G]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The induced `G`-action on the target of `J : SingleObj G ⥤ Type u`. -/
 instance (J : SingleObj M ⥤ Type u) : MulAction M (J.obj (SingleObj.star M)) where
   smul g x := J.map g x
   one_smul x := by
     change J.map (𝟙 _) x = x
-    simp only [FunctorToTypes.map_id_apply]
+    simp
   mul_smul g h x := by
     change J.map (g * h) x = (J.map h ≫ J.map g) x
     rw [← SingleObj.comp_as_mul]
-    · simp only [FunctorToTypes.map_comp_apply, types_comp_apply]
+    · simp
       rfl
 
 section Limits

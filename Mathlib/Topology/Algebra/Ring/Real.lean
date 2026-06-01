@@ -25,7 +25,7 @@ It also includes a bit of more general topological theory of the reals,
 needed to define the structures and prove continuity.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists StarRing UniformContinuousConstSMul UniformOnFun
 
@@ -86,7 +86,6 @@ instance : IsTopologicalSemiring ℝ≥0 where
 instance : ContinuousSub ℝ≥0 :=
   ⟨((continuous_coe.fst'.sub continuous_coe.snd').max continuous_const).subtype_mk _⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance : ContinuousInv₀ ℝ≥0 := inferInstance
 
 variable {α : Type*}

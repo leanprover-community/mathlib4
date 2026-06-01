@@ -32,7 +32,6 @@ For a complex differentiable function `f`, the theorems in this section compute 
 interior of a disk as circle averages of a weighted function.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The **Generalized Mean Value Property** of complex differentiable functions: If `f : ℂ → E` is
 continuous on a closed disc of radius `R` and center `c`, and is complex differentiable at all but
@@ -45,7 +44,7 @@ theorem circleAverage_sub_sub_inv_smul_of_differentiable_on_off_countable (hs : 
     circleAverage (fun z ↦ ((z - c) / (z - w)) • f z) c R = f w := by
   rw [← circleAverage_abs_radius]
   rcases le_or_gt |R| 0 with hR | hR
-  · simp_all [(ball_eq_empty).2 hR]
+  · simp_all [ball_eq_empty.2 hR]
   calc circleAverage (fun z ↦ ((z - c) * (z - w)⁻¹) • f z) c |R|
   _ = (2 * π * I)⁻¹ • (∮ z in C(c, |R|), (z - w)⁻¹ • f z) := by
     simp only [circleAverage_eq_circleIntegral hR.ne', mul_inv_rev, inv_I, neg_mul, neg_smul,
@@ -71,7 +70,7 @@ theorem DiffContOnCl.circleAverage_smul_div (hf : DiffContOnCl ℂ f (ball c |R|
     (hw : w ∈ ball c |R|) :
     circleAverage (fun z ↦ ((z - c) / (z - w)) • f z) c R = f w := by
   by_cases hR : |R| ≤ 0
-  · simp_all [(ball_eq_empty).2 hR]
+  · simp_all [ball_eq_empty.2 hR]
   apply circleAverage_sub_sub_inv_smul_of_differentiable_on_off_countable countable_empty _ _ hw
   · simpa [← closure_ball _ (ne_of_not_ge hR).symm] using hf.2
   · intro z hz
@@ -89,7 +88,6 @@ center of a circle as a circle average of the function. This specializes the gen
 properties discussed in the previous section.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The **Mean Value Property** of complex differentiable functions: If `f : ℂ → E` is continuous on a
 closed disc of radius `R` and center `c`, and is complex differentiable at all but countably many
@@ -105,7 +103,6 @@ theorem circleAverage_of_differentiable_on_off_countable (hs : s.Countable)
     have : z - c ≠ 0 := by grind [ne_of_mem_sphere]
     simp_all
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The **Mean Value Property** of complex differentiable functions: If `f : ℂ → E` is complex
 differentiable at all points of a closed disc of radius `R` and center `c`, then the circle average

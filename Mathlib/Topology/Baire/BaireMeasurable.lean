@@ -141,7 +141,7 @@ theorem MeasurableSet.residualEq_isOpen [MeasurableSpace α] [BorelSpace α] (h 
     exact .compl <| hsU.trans <| .symm <| closure_residualEq Uo.isLocallyClosed
   | iUnion f _ _ ihf =>
     choose u uo su using ihf
-    exact ⟨⋃ i, u i, isOpen_iUnion uo, EventuallyEq.countable_iUnion su⟩
+    exact ⟨⋃ i, u i, isOpen_iUnion uo, .countable_iUnion su⟩
 
 /-- Any `BaireMeasurableSet` differs from some open set by a meager set. -/
 theorem BaireMeasurableSet.residualEq_isOpen (h : BaireMeasurableSet s) :

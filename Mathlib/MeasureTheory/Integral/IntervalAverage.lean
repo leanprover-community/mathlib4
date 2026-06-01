@@ -49,7 +49,6 @@ notation3 "⨍ "(...)" in "a".."b",
 theorem interval_average_symm (f : ℝ → E) (a b : ℝ) : (⨍ x in a..b, f x) = ⨍ x in b..a, f x := by
   rw [setAverage_eq, setAverage_eq, uIoc_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem interval_average_eq (f : ℝ → E) (a b : ℝ) :
     (⨍ x in a..b, f x) = (b - a)⁻¹ • ∫ x in a..b, f x := by
   rcases le_or_gt a b with h | h
@@ -88,7 +87,7 @@ theorem exists_eq_interval_average_of_noAtoms
   have h : a ≠ b := by intro hab; simp [hab] at hμ0
   let s := uIoo a b
   have hs' : s ⊆ Ι a b := by intro x hx; rcases hx with ⟨h1, h2⟩; grind
-  have hs_ev : s =ᵐ[μ] Ι a b := by simpa using Ioo_ae_eq_Ioc
+  have hs_ev : s =ᵐ[μ] Ι a b := by simpa using! Ioo_ae_eq_Ioc
   have hμ0' : μ s ≠ 0 := by
     have hμ : μ s = μ (Ι a b) := by rw [measure_congr hs_ev]
     rwa [hμ]

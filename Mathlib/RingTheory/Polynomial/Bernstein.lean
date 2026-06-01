@@ -120,8 +120,8 @@ theorem derivative_succ_aux (n ν : ℕ) :
     rw [mul_comm, ← mul_assoc, ← mul_assoc]; congr 1
     norm_cast
     congr 1
-    convert (Nat.choose_mul_succ_eq n (ν + 1)).symm using 1
-    · convert mul_comm _ _ using 2
+    convert! (Nat.choose_mul_succ_eq n (ν + 1)).symm using 1
+    · convert! mul_comm _ _ using 2
       simp
     · apply mul_comm
 
@@ -150,7 +150,7 @@ theorem iterate_derivative_at_0_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
       intro h
       apply mul_eq_zero_of_right
       rw [ih _ _ (Nat.le_of_succ_le h), sub_zero]
-      convert ih _ _ (Nat.pred_le_pred h)
+      convert! ih _ _ (Nat.pred_le_pred h)
       exact (Nat.succ_pred_eq_of_pos (k.succ_pos.trans_le h)).symm
 
 @[simp]
@@ -176,7 +176,7 @@ theorem iterate_derivative_at_0 (n ν : ℕ) :
       obtain rfl | h'' := ν.eq_zero_or_pos
       · simp
       · have : n - 1 - (ν - 1) = n - ν := by lia
-        rw [this, ascPochhammer_eval_succ]
+        rw [this, ascPochhammer_eval_succ, Nat.sub_zero]
         rw_mod_cast [tsub_add_cancel_of_le (h'.trans n.pred_le)]
   · rw [tsub_eq_zero_iff_le.mpr (Nat.le_sub_one_of_lt h), eq_zero_of_lt R h]
     simp [pos_iff_ne_zero.mp (pos_of_gt h)]
@@ -230,7 +230,7 @@ theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
   induction k with
   | zero => apply linearIndependent_empty_type
   | succ k ih =>
-    apply linearIndependent_fin_succ'.mpr
+    apply linearIndependent_finSucc'.mpr
     fconstructor
     · exact ih (le_of_lt h)
     · -- The actual work!
@@ -281,7 +281,6 @@ open Polynomial
 
 open MvPolynomial hiding X
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sum_smul (n : ℕ) :
     (∑ ν ∈ Finset.range (n + 1), ν • bernsteinPolynomial R n ν) = n • X := by
   -- We calculate the `x`-derivative of `(x+y)^n`, evaluated at `y=(1-x)`,
@@ -310,7 +309,7 @@ theorem sum_smul (n : ℕ) :
     -- Step inside the sum:
     refine Finset.sum_congr rfl fun k _ => (w k).trans ?_
     simp only [x, y, e, pderiv_true_x, pderiv_true_y, smul_eq_mul, nsmul_eq_mul,
-      Bool.cond_true, Bool.cond_false, add_zero, mul_one, mul_zero, smul_zero, MvPolynomial.aeval_X,
+      Bool.cond_true, Bool.cond_false, add_zero, mul_one, mul_zero, MvPolynomial.aeval_X,
       MvPolynomial.pderiv_mul, Derivation.leibniz_pow, Derivation.map_natCast, map_natCast, map_pow,
       map_mul]
   · rw [(pderiv true).leibniz_pow, (pderiv true).map_add, pderiv_true_x, pderiv_true_y]

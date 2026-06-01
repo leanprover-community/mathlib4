@@ -18,6 +18,7 @@ oplax functors):
 * oplax natural transformations;
 * lax natural transformations;
 * strong natural transformations.
+
 These differ in the direction (and invertibility) of the 2-morphisms involved in the naturality
 condition.
 
@@ -171,6 +172,7 @@ def vComp (η : LaxTrans F G) (θ : LaxTrans G H) : LaxTrans F H where
   naturality_id := vComp_naturality_id η θ
   naturality_comp := vComp_naturality_comp η θ
 
+attribute [local simp] vCompApp vCompNaturality in
 /-- `CategoryStruct` on `OplaxFunctor B C` where the (1-)morphisms are given by lax
 transformations. -/
 @[simps! id_app id_naturality comp_app comp_naturality]

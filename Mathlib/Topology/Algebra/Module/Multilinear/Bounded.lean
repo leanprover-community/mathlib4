@@ -59,13 +59,13 @@ theorem image_multilinear' [Nonempty ι] {s : Set (∀ i, E i)} (hs : IsVonNBoun
     have : ∀ i, ∃ c : 𝕜, c ≠ 0 ∧ ∀ c' : 𝕜, ‖c'‖ ≤ ‖c‖ → ∀ x ∈ s, c' • x i ∈ t i := fun i ↦ by
       rw [isVonNBounded_pi_iff] at hs
       have := (hs i).tendsto_smallSets_nhds.eventually (mem_lift' (ht₀ i))
-      rcases NormedAddCommGroup.nhds_zero_basis_norm_lt.eventually_iff.1 this with ⟨r, hr₀, hr⟩
+      rcases NormedAddGroup.nhds_zero_basis_norm_lt.eventually_iff.1 this with ⟨r, hr₀, hr⟩
       rcases NormedField.exists_norm_lt 𝕜 hr₀ with ⟨c, hc₀, hc⟩
       refine ⟨c, norm_pos_iff.1 hc₀, fun c' hle x hx ↦ ?_⟩
       exact hr (hle.trans_lt hc) ⟨_, ⟨x, hx, rfl⟩, rfl⟩
     choose c hc₀ hc using this
     rw [absorbs_iff_eventually_nhds_zero (mem_of_mem_nhds hV),
-      NormedAddCommGroup.nhds_zero_basis_norm_lt.eventually_iff]
+      NormedAddGroup.nhds_zero_basis_norm_lt.eventually_iff]
     have hc₀' : ∏ i ∈ I, c i ≠ 0 := Finset.prod_ne_zero_iff.2 fun i _ ↦ hc₀ i
     refine ⟨‖∏ i ∈ I, c i‖, norm_pos_iff.2 hc₀', fun a ha ↦ mapsTo_image_iff.2 fun x hx ↦ ?_⟩
     let ⟨i₀⟩ := ‹Nonempty ι›

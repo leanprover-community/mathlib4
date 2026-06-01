@@ -34,22 +34,19 @@ variable {M N : TopModuleCat.{v} R} (φ : M ⟶ N)
 
 section kernel
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Kernel in `TopModuleCat R` is the kernel of the linear map with the subspace topology. -/
 abbrev ker : TopModuleCat R := .of R φ.hom.ker
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion map from the kernel in `TopModuleCat R`. -/
 def kerι : ker φ ⟶ M := ofHom ⟨Submodule.subtype _, continuous_subtype_val⟩
 
 instance : Mono (kerι φ) := ConcreteCategory.mono_of_injective (kerι φ) <| Subtype.val_injective
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma kerι_comp : kerι φ ≫ φ = 0 := by ext ⟨_, hm⟩; exact hm
 
 @[simp] lemma kerι_apply (x) : kerι φ x = x.1 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- `TopModuleCat.ker` is indeed the kernel in `TopModuleCat R`. -/
 def isLimitKer : IsLimit (KernelFork.ofι (kerι φ) (kerι_comp φ)) :=
   isLimitAux (KernelFork.ofι (kerι φ) (kerι_comp φ))
@@ -81,6 +78,7 @@ instance : Epi (cokerπ φ) := ConcreteCategory.epi_of_surjective (cokerπ φ) (
   change Submodule.mkQ _ (φ m) = 0
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `TopModuleCat.coker` is indeed the cokernel in `TopModuleCat R`. -/
 def isColimitCoker : IsColimit (CokernelCofork.ofπ (cokerπ φ) (comp_cokerπ φ)) :=
   isColimitAux (.ofπ (cokerπ φ) (comp_cokerπ φ))
