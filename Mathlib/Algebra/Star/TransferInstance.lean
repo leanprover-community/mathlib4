@@ -56,4 +56,14 @@ protected abbrev starRing [NonUnitalNonAssocSemiring S] [StarRing S] :
   let := e.nonUnitalNonAssocSemiring
   apply e.injective.starRing <;> (intros; exact e.apply_symm_apply _)
 
+/-- Transfer `StarModule` across an `Equiv` -/
+protected lemma starModule (𝕜 : Type*)
+    [Star 𝕜] [Star S] [SMul 𝕜 S] [StarModule 𝕜 S] :
+    letI := e.star
+    letI := e.smul 𝕜
+    StarModule 𝕜 R := by
+  let := e.star
+  let := e.smul 𝕜
+  apply e.injective.starModule _ 𝕜 <;> (intros; exact e.apply_symm_apply _)
+
 end Equiv
