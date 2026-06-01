@@ -653,10 +653,9 @@ theorem IsPathConnected.pi {s : ∀ i, Set (Z i)} (h : ∀ i, IsPathConnected (s
 
 instance Pi.instPathConnectedSpace [∀ i, PathConnectedSpace (Z i)] :
     PathConnectedSpace (∀ i, Z i) := by
-  have : ∀ i, Nonempty (Z i) := fun i ↦ (inferInstance : PathConnectedSpace (Z i)).nonempty
-  exact { nonempty := inferInstance
-          joined := fun a b ↦
-            ⟨Path.pi fun i ↦ (PathConnectedSpace.joined (a i) (b i)).somePath⟩ }
+  rw [pathConnectedSpace_iff_univ, ← Set.pi_univ (univ : Set ι)]
+  exact IsPathConnected.pi fun i ↦
+    pathConnectedSpace_iff_univ.mp (inferInstance : PathConnectedSpace (Z i))
 
 end Pi
 
