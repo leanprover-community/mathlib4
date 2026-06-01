@@ -81,7 +81,7 @@ def proveIntervalLt (α : Type) [LinearOrder α] [Repr α] (xCert yCert : Interv
   let x_lt_y ← mkAppM ``Interval.lt #[xCert.intervalExpr, yCert.intervalExpr]
   mkDecideProof x_lt_y
 
-def intervalIneqCore (α : Type) [Repr α] [LinearOrder α] [DecidableLE α] [DecidableLT α]
+def intervalIneqCore (α : Type) [Repr α] [LinearOrder α] [DecidableLT α]
     (ineq : Mathlib.Ineq) (lhs : Expr) (rhs : Expr) : IntervalM α Expr := do
   let ctx ← read
   let (lcert, rcert) ← mkCertificate2 α lhs rhs
@@ -96,8 +96,8 @@ def intervalIneqCore (α : Type) [Repr α] [LinearOrder α] [DecidableLE α] [De
       let h_x_lt_y ← proveIntervalLt α lcert rcert
       mkAppM ``Interval.lt_of_lt #[ctx.strictMonoExpr, lcert.proof, rcert.proof, h_x_lt_y]
 
-def intervalMemSetCore (α : Type) [LinearOrder α] [Repr α] [DecidableLE α]
-    [DecidableLT α] (r : Expr) (Ixx : IntervalClass) : IntervalM α Expr := do
+def intervalMemSetCore (α : Type) [LinearOrder α] [Repr α] [DecidableLT α] (r : Expr)
+    (Ixx : IntervalClass) : IntervalM α Expr := do
   let ctx ← read
   match Ixx with
   | .Ici a =>

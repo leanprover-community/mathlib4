@@ -92,7 +92,7 @@ theorem rat_const_inclusion (approxParam : ℕ) (q : ℚ) :
   sorry
 
 @[interval_op DyadicReal OfScientific]
-def rat_of_scientific_inclusion (approxParam : ℕ) (m : ℕ) (s : Bool) (e : ℕ) :
+theorem rat_of_scientific_inclusion (approxParam : ℕ) (m : ℕ) (s : Bool) (e : ℕ) :
     ↑(OfScientific.ofScientific (α := ℝ) m s e)
       ∈ (rat_const approxParam (Rat.ofScientific m s e)).toSet dyadic_to_real := by
   sorry
