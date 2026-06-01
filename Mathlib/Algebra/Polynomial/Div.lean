@@ -666,7 +666,7 @@ lemma modByMonic_eq_of_dvd_sub (hq : q.Monic) (h : q ∣ p₁ - p₂) : p₁ %�
   refine (div_modByMonic_unique (p₂ /ₘ q + f) _ hq ⟨?_, degree_modByMonic_lt _ hq⟩).2
   rw [sub_eq_iff_eq_add.mp sub_eq, mul_add, ← add_assoc, modByMonic_add_div, add_comm]
 
-lemma add_divByMonic_modByMonic (p₁ p₂ : R[X]) :
+private lemma add_divByMonic_modByMonic (p₁ p₂ : R[X]) :
     (p₁ + p₂) /ₘ q = p₁ /ₘ q + p₂ /ₘ q ∧
     (p₁ + p₂) %ₘ q = p₁ %ₘ q + p₂ %ₘ q := by
   by_cases hq : q.Monic

@@ -51,7 +51,7 @@ theorem degree_pos_of_aeval_root [Algebra R S] {p : R[X]} (hp : p ≠ 0) {z : S}
 
 end
 
-theorem smul_divByMonic_modByMonic (c : R) (p : R[X]) :
+private theorem smul_divByMonic_modByMonic (c : R) (p : R[X]) :
     c • p /ₘ q = c • (p /ₘ q) ∧ c • p %ₘ q = c • (p %ₘ q) := by
   by_cases hq : q.Monic
   · rcases subsingleton_or_nontrivial R with hR | hR
