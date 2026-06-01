@@ -24,7 +24,11 @@ open Lean Elab Command
 
 open IntervalArithmetic
 
-set_option trace.profiler true
+set_option warn.sorry false
+set_option linter.all false
+set_option linter.mathlibStandardSet false
+
+-- set_option trace.profiler true
 
 theorem test_mem_share_hard (x : ℝ) (hx₁ : 2 ≤ x) (hx₂ : x ≤ 3) :
     x ^ 2 + Real.sqrt (x + Real.sqrt 2) ∈

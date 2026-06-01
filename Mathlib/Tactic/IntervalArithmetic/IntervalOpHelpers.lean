@@ -17,6 +17,8 @@ This file defiens several helpers for proving the inclusion theorems for interva
 
 -/
 
+@[expose] public section
+
 namespace IntervalArithmetic
 
 open Interval
