@@ -69,15 +69,23 @@ jobs:
        startsWith(github.event.comment.body, '!downstream-check'))
     runs-on: ubuntu-latest
     steps:
+      - name: Check team membership
+        if: github.event_name == 'issue_comment'
+        id: actorTeams
+        uses: tspascoal/get-user-teams-membership@818140d631d5f29f26b151afbe4179f87d9ceb5e # v4.0.1
+        with:
+          organization: leanprover-community
+          username: ${{ github.event.comment.user.login }}
+          GITHUB_TOKEN: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }}
+
       - name: Authorize commenter
         if: github.event_name == 'issue_comment'
-        env:
-          ASSOC: ${{ github.event.comment.author_association }}
         run: |
-          case "$ASSOC" in
-            OWNER|MEMBER|COLLABORATOR) echo "ok" ;;
-            *) echo "::error::author_association=$ASSOC not allowed"; exit 1 ;;
-          esac
+          AUTHORIZED="${{ contains(steps.actorTeams.outputs.teams, 'mathlib-reviewers') || contains(steps.actorTeams.outputs.teams, 'mathlib-maintainers') }}"
+          if [[ "$AUTHORIZED" != "true" ]]; then
+            echo "::error::User ${{ github.event.comment.user.login }} is not a mathlib reviewer or maintainer"
+            exit 1
+          fi
 
       - name: Parse comment
         id: parse
