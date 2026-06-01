@@ -301,7 +301,6 @@ theorem finiteDimensional [Finite G] [IsGaloisGroup G K L] : FiniteDimensional K
 protected theorem finite (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Module.Finite A B]
     [IsDomain A] [IsDomain B] [FaithfulSMul A B] [MulSemiringAction G B] [IsGaloisGroup G A B] :
     Finite G := by
-  have := IsDomain.of_faithfulSMul A B
   let := FractionRing.liftAlgebra A (FractionRing B)
   let := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
   have := IsGaloisGroup.to_isFractionRing_of_isIntegral G A B (FractionRing A) (FractionRing B)
