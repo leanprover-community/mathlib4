@@ -16,7 +16,8 @@ public import Mathlib.RingTheory.Norm.Basic
 
 ## Main result
 - `isCyclic_tfae`:
-  Suppose `L/K` is a finite extension of dimension `n`, and `K` contains all `n`-th roots of unity.
+  Suppose `L/K` is a finite extension of dimension `n`, and `K` contains
+  a primitive `n`-th root of unity.
   Then `L/K` is cyclic iff
   `L` is a splitting field of some irreducible polynomial of the form `Xⁿ - a : K[X]` iff
   `L = K[α]` for some `αⁿ ∈ K`.
@@ -26,6 +27,7 @@ public import Mathlib.RingTheory.Norm.Basic
   (perhaps via `isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top`),
   then the Galois group is isomorphic to `rootsOfUnity n K`, by sending
   `σ ↦ σ α / α` for `α ^ n = a`, and the inverse is given by `μ ↦ (α ↦ μ • α)`.
+  (The statement requires that `K` contains a primitive `n`-th root of unity.)
 
 - `autEquivZmod`:
   Furthermore, given an explicit choice `ζ` of a primitive `n`-th root of unity, the Galois group is
@@ -35,13 +37,15 @@ public import Mathlib.RingTheory.Norm.Basic
 ## Other results
 Criteria for `X ^ n - C a` to be irreducible is given:
 - `X_pow_sub_C_irreducible_iff_of_prime_pow`:
-  For `n = p ^ k` an odd prime power, `X ^ n - C a` is irreducible iff `a` is not a `p`-power.
+  For `n = p ^ k` an odd prime power, `X ^ n - C a` is irreducible iff `a` is not a `p`-th power.
 - `X_pow_sub_C_irreducible_iff_forall_prime_of_odd`:
-  For `n` odd, `X ^ n - C a` is irreducible iff `a` is not a `p`-power for all prime `p ∣ n`.
+  For `n` odd, `X ^ n - C a` is irreducible iff `a` is not a `p`-th power for all prime `p ∣ n`.
 - `X_pow_sub_C_irreducible_iff_of_odd`:
-  For `n` odd, `X ^ n - C a` is irreducible iff `a` is not a `d`-power for `d ∣ n` and `d ≠ 1`.
+  For `n` odd, `X ^ n - C a` is irreducible iff `a` is not a `d`-th power for `d ∣ n` and `d ≠ 1`.
 
 TODO: criteria for even `n`. See [serge_lang_algebra] VI,§9.
+
+TODO: treat the case where the characteristic of the field divides `n` (Artin-Schreier theory).
 
 TODO: relate Kummer extensions of degree 2 with the class `Algebra.IsQuadraticExtension`.
 -/
