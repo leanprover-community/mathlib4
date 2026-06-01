@@ -52,6 +52,7 @@ theorem Subfunctor.isSeparated {J : GrothendieckTopology C} (h : Presieve.IsSepa
 
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.isSeparated := Subfunctor.isSeparated
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The sheafification of a subpresheaf as a subpresheaf.
 Note that this is a sheaf only when the whole presheaf is a sheaf. -/
 def Subfunctor.sheafify : Subfunctor F where
@@ -90,6 +91,7 @@ theorem Subfunctor.eq_sheafify (h : Presieve.IsSheaf J F) (hG : Presieve.IsSheaf
 
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.eq_sheafify := Subfunctor.eq_sheafify
 
+set_option backward.defeqAttrib.useBackward true in
 theorem Subfunctor.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
     Presieve.IsSheaf J (G.sheafify J).toFunctor := by
   refine (isSeparated _ hF.isSeparated).isSheaf fun U S hS x hx ↦ ?_
@@ -110,7 +112,7 @@ theorem Subfunctor.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
   have : x''.Compatible := by
     intro V₁ V₂ V₃ g₁ g₂ g₃ g₄ S₁ S₂ e
     rw [← comp_apply, ← Functor.map_comp, ← comp_apply, Functor.map_comp]
-    simpa using
+    simpa using!
       congr_arg Subtype.val
         (hx (g₁ ≫ i₁ _ _ S₁) (g₂ ≫ i₁ _ _ S₂) (hi₂ _ _ S₁) (hi₂ _ _ S₂)
         (by simp only [Category.assoc, h₂, e]))
@@ -148,6 +150,7 @@ theorem Subfunctor.sheafify_sheafify (h : Presieve.IsSheaf J F) :
 @[deprecated (since := "2025-12-11")]
 alias Subpresheaf.sheafify_sheafify := Subfunctor.sheafify_sheafify
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The lift of a presheaf morphism onto the sheafification subpresheaf. -/
 noncomputable def Subfunctor.sheafifyLift (f : G.toFunctor ⟶ F') (h : Presieve.IsSheaf J F') :
     (G.sheafify J).toFunctor ⟶ F' where
@@ -184,6 +187,7 @@ theorem Subfunctor.to_sheafifyLift (f : G.toFunctor ⟶ F') (h : Presieve.IsShea
 @[deprecated (since := "2025-12-11")]
 alias Subpresheaf.to_sheafifyLift := Subfunctor.to_sheafifyLift
 
+set_option backward.defeqAttrib.useBackward true in
 theorem Subfunctor.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
     (l₁ l₂ : (G.sheafify J).toFunctor ⟶ F')
     (e : Subfunctor.homOfLe (G.le_sheafify J) ≫ l₁ = Subfunctor.homOfLe (G.le_sheafify J) ≫ l₂) :
@@ -246,19 +250,20 @@ def Sheaf.imageι {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Sheaf.image f ⟶ F
   ⟨Subfunctor.ι _⟩
 
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 theorem Sheaf.toImage_ι {F F' : Sheaf J (Type w)} (f : F ⟶ F') :
     toImage f ≫ imageι f = f := by
   ext1
   simp [Subfunctor.toRangeSheafify]
 
+set_option backward.defeqAttrib.useBackward true in
 instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Mono (Sheaf.imageι f) :=
   (sheafToPresheaf J _).mono_of_mono_map
     (by
       dsimp
       infer_instance)
 
-set_option backward.isDefEq.respectTransparency false in
 instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Epi (Sheaf.toImage f) := by
   refine ⟨@fun G' g₁ g₂ e => ?_⟩
   ext U ⟨s, hx⟩
@@ -269,10 +274,9 @@ instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Epi (Sheaf.toImage f) := by
   have E : (Sheaf.toImage f).hom.app (op V) y = (Sheaf.image f).obj.map i.op ⟨s, hx⟩ :=
     Subtype.ext e'
   have := congr_arg (fun f : F ⟶ G' => f.hom.app _ y) e
-  simp only [ObjectProperty.FullSubcategory.comp_hom, Sheaf.image_obj, Sheaf.toImage_hom,
-    NatTrans.comp_app, Subfunctor.toFunctor_obj, comp_apply, op_unop, Subfunctor.toFunctor_map,
-    ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, Subtype.ext_iff] at this E ⊢
-  convert! this <;> exact E.symm
+  simp only [ObjectProperty.FullSubcategory.comp_hom, Sheaf.toImage_hom,
+    NatTrans.comp_app, comp_apply, op_unop] at this E ⊢
+  convert this <;> exact E.symm
 
 /-- The mono factorization given by `image_sheaf` for a morphism. -/
 def imageMonoFactorization {F F' : Sheaf J (Type w)} (f : F ⟶ F') :
@@ -281,6 +285,7 @@ def imageMonoFactorization {F F' : Sheaf J (Type w)} (f : F ⟶ F') :
   m := Sheaf.imageι f
   e := Sheaf.toImage f
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The mono factorization given by `image_sheaf` for a morphism is an image. -/
 noncomputable def imageFactorization {F F' : Sheaf J (Type (max v u))} (f : F ⟶ F') :
     Limits.ImageFactorisation f where

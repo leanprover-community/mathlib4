@@ -551,7 +551,7 @@ lemma _root_.SemiconjBy.exp_right {x a b : 𝔸} (h : SemiconjBy x a b) :
 lemma _root_.SemiconjBy.exp_neg_mul_mul_exp_eq_self {x a b : 𝔸} (h : SemiconjBy x a b) :
     exp (-b) * x * exp a = x := by
   let := invertibleExp b
-  simpa [← invOf_exp, mul_assoc, invOf_mul_eq_iff_eq_mul_left] using h.exp_right
+  simpa [← invOf_exp, mul_assoc, invOf_mul_eq_iff_eq_mul_left] using! h.exp_right
 
 open scoped Function in -- required for scoped `on` notation
 /-- In a Banach-algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`, if a family of elements `f i` mutually

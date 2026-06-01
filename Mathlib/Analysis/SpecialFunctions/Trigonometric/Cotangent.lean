@@ -48,13 +48,13 @@ lemma Complex.cot_eq_exp_ratio (z : ℂ) :
   rw [h1, h2]
   field
 
-/- The version one probably wants to use more. -/
+/-- The version one probably wants to use more. -/
 lemma Complex.cot_pi_eq_exp_ratio (z : ℂ) :
     cot (π * z) = (Complex.exp (2 * π * I * z) + 1) / (I * (1 - Complex.exp (2 * π * I * z))) := by
   rw [cot_eq_exp_ratio (π * z)]
   ring_nf
 
-/- This is the version one probably wants, which is why the pi's are there. -/
+/-- This is the version one probably wants, which is why the pi's are there. -/
 theorem pi_mul_cot_pi_q_exp (z : ℍ) :
     π * cot (π * z) = π * I - 2 * π * I * ∑' n : ℕ, Complex.exp (2 * π * I * z) ^ n := by
   have h1 : π * ((exp (2 * π * I * z) + 1) / (I * (1 - exp (2 * π * I * z)))) =
@@ -282,7 +282,7 @@ lemma eqOn_iteratedDerivWithin_cotTerm_upperHalfPlaneSet (d : ℕ) :
     iteratedDerivWithin_congr_right_of_isOpen (fun z ↦ cotTerm z d) k
     isOpen_upperHalfPlaneSet (isOpen_compl_range_intCast))
   intro z hz
-  simpa using eqOn_iteratedDerivWithin_cotTerm_integerComplement k d
+  simpa using! eqOn_iteratedDerivWithin_cotTerm_integerComplement k d
     (coe_mem_integerComplement ⟨z, hz⟩)
 
 open EisensteinSeries in
@@ -383,7 +383,7 @@ private lemma iteratedDerivWithin_cot_pi_mul_sub_inv {z : ℂ} (hz : z ∈ ℍ�
     (-1) ^ k * k ! * (z ^ (-1 - k : ℤ)) := by
   simp_rw [sub_eq_add_neg]
   rw [iteratedDerivWithin_fun_add hz isOpen_upperHalfPlaneSet.uniqueDiffOn]
-  · simpa [iteratedDerivWithin_fun_neg] using iteratedDerivWithin_one_div k
+  · simpa [iteratedDerivWithin_fun_neg] using! iteratedDerivWithin_one_div k
       isOpen_upperHalfPlaneSet hz
   · exact ContDiffWithinAt.mul (by fun_prop) (cot_pi_mul_contDiffWithinAt k
       (UpperHalfPlane.coe_mem_integerComplement ⟨z, hz⟩))

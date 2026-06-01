@@ -18,7 +18,6 @@ variable {α β : Type}
 @[noinline, deprecated "deprecated without replacement" (since := "2026-01-24")]
 def injectIntoBaseIO {α : Type} (a : α) : BaseIO α := pure a
 
-set_option linter.deprecated false in
 @[deprecated "deprecated without replacement" (since := "2026-01-24")]
 unsafe def memoFixImpl [Nonempty β] (f : (α → β) → (α → β)) : α → β := unsafeBaseIO do
   let cache : IO.Ref (Lean.PtrMap α β) ← ST.mkRef Lean.mkPtrMap
