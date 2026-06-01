@@ -1185,10 +1185,14 @@ theorem distribMulActionHom_ext' [DistribMulAction R M] [DistribMulAction R N] {
     f = g :=
   distribMulActionHom_ext fun a ↦ DistribMulActionHom.congr_fun (h a)
 
+variable (R) in
 /-- Interpret `single a` as a linear map. -/
 def lsingle {α : Type*} (a : α) [Module R M] : M →ₗ[R] (SkewMonoidAlgebra M α) where
   __ := singleAddHom a
   map_smul' _ _ := (smul_single _ _ _).symm
+
+lemma lsingle_apply {α : Type*} (a : α) [Module R M] (m : M) :
+  lsingle R a m = single a m := rfl
 
 /-- Two `R`-linear maps from `SkewMonoidAlgebra M α` which agree on each `single x y`
   agree everywhere. -/
@@ -1198,7 +1202,7 @@ theorem lhom_ext {α : Type*} [Module R M] [Module R N] ⦃φ ψ : SkewMonoidAlg
 
 @[ext high]
 theorem lhom_ext' {α : Type*} [Module R M] [Module R N] ⦃φ ψ : SkewMonoidAlgebra M α →ₗ[R] N⦄
-    (h : ∀ a, φ.comp (lsingle a) = ψ.comp (lsingle a)) : φ = ψ :=
+    (h : ∀ a, φ.comp (lsingle R a) = ψ.comp (lsingle R a)) : φ = ψ :=
   lhom_ext fun a ↦ LinearMap.congr_fun (h a)
 
 variable {A : Type*} [NonUnitalNonAssocSemiring A] [Monoid G] [Semiring k] [MulSemiringAction G k]
