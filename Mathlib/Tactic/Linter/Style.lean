@@ -524,6 +524,10 @@ def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
 
 initialize addLinter doubleUnderscore
 
+/-- `true` iff `s` ends with `_<digits>`. -/
+@[inline] def _root_.String.endsWithAppendedNumber (s : String) : Bool :=
+  (s.dropSuffix? Char.isDigit).any (·.dropEndWhile Char.isDigit |>.endsWith '_')
+
 /-- Component- and prefix-based checks. Assumes the `Name` has already been processed with
 `privateToUsername`.-/
 private def isBadDefNameWithUnderscoreAux (env : Environment) (moduleAutoSuffix : String)
@@ -533,7 +537,7 @@ private def isBadDefNameWithUnderscoreAux (env : Environment) (moduleAutoSuffix 
     let exempt :=
       s == "Simps" || -- exempt `Simps`
       s.endsWith moduleAutoSuffix || -- exempt `*_<project>`, e.g. `*_mathlib`
-      (s.dropSuffix? Char.isDigit).any (·.endsWith '_') -- exempt `*_<number>`
+      s.endsWithAppendedNumber -- exempt `*_<number>`
 
     !exempt &&
       -- Components are exempt if they are a keyword + `_`.
