@@ -42,7 +42,7 @@ syntax (name := funProp) "fun_prop" (&"always_try_transition")? : attr
 @[inherit_doc funProp]
 initialize
   registerBuiltinAttribute {
-    name  := `fun_prop
+    name  := `funProp
     descr := funPropHelpString
     applicationTime := AttributeApplicationTime.afterCompilation
     add   := fun declName stx attrKind =>
