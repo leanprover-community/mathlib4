@@ -12,8 +12,8 @@ public meta import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 public import Mathlib.Tactic.IntervalArithmetic.Interval
 public import Mathlib.Data.Rat.Cast.CharZero
 public import Mathlib.Data.Rat.Cast.Order
-public import Mathlib.Data.Real.Sqrt
 public import Mathlib.Tactic.Rify
+public import Mathlib.Tactic.Linarith
 
 /-!
 ## `exact_interval` tactic

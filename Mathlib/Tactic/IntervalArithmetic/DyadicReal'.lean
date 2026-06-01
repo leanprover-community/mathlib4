@@ -261,24 +261,6 @@ theorem rat_pow_inclusion {r : ℝ} {x : Interval Dyadic} (n : ℕ) (hrx : r ∈
 
 end Pow
 
-section Div
-
-def divLb (approxParam : ℕ) (d₁ d₂ : Dyadic) : Dyadic :=
-  match d₁, d₂ with
-  | .zero, _ => 0
-  | _, .zero => 0
-  | .ofOdd n₁ k₁ _, .ofOdd n₂ k₂ _ =>
-      let shift : Int := k₂ - k₁ + approxParam
-      let num : Int := if n₂ < 0 then -n₁ else n₁
-      let den : Int := if n₂ < 0 then -n₂ else n₂
-      let q : Int :=
-        match shift with
-        | Int.ofNat s => Int.fdiv (num <<< s) den
-        | Int.negSucc s => Int.fdiv num (den <<< (s + 1))
-      Dyadic.ofIntWithPrec q approxParam
-
-end Div
-
 /- ## Transcendental Functions -/
 
 section Exp

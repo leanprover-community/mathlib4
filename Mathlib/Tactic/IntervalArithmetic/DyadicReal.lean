@@ -223,8 +223,6 @@ end Mul
 
 section Pow
 
-section Pow
-
 def Interval.pow (x : Interval Dyadic) (n : ℕ) : Interval Dyadic :=
   let zero_lb : LowerBound Dyadic := some ⟨true, 0⟩
   let zero_ub : UpperBound Dyadic := some ⟨true, 0⟩
@@ -255,7 +253,6 @@ theorem rat_pow_inclusion {r : ℝ} {x : Interval Dyadic} (n : ℕ) (hrx : r ∈
 
 end Pow
 
-end Pow
 
 -- # CHATGPT AFTER THIS POINT:
 
@@ -266,23 +263,9 @@ namespace Dyadic
 /--
 `divDown approxParam a b` is the dyadic approximation of `a / b` rounded downward
 to precision `approxParam`.
-
-This avoids constructing an intermediate `Rat`.
 -/
 def divDown (approxParam : ℕ) (a b : Dyadic) : Dyadic :=
-  match a, b with
-  | zero, _ => 0
-  | _, zero => 0
-  | .ofOdd n₁ k₁ _, .ofOdd n₂ k₂ _ =>
-      let prec : Int := approxParam
-      let shift : Int := k₂ - k₁ + prec
-      let num : Int := if n₂ < 0 then -n₁ else n₁
-      let den : Int := if n₂ < 0 then -n₂ else n₂
-      let q : Int :=
-        match shift with
-        | Int.ofNat s => Int.fdiv (num <<< s) den
-        | Int.negSucc s => Int.fdiv num (den <<< (s + 1))
-      Dyadic.ofIntWithPrec q prec
+  Dyadic.divAtPrec a b (approxParam : Int)
 
 /--
 `divUp approxParam a b` is the dyadic approximation of `a / b` rounded upward
@@ -867,4 +850,3 @@ theorem Interval.dyadic_log_inclusion {r : ℝ} {x : Interval Dyadic}
   sorry
 
 end Log
-#min_imports
