@@ -30,18 +30,35 @@ universe u v
 
 variable (R : Type u) [CommRing R]
 
-lemma LinearMap.ker_mapRange_mkQ_eq_smul_top (ι : Type*) (I : Ideal R) :
-    LinearMap.ker (Finsupp.mapRange.linearMap I.mkQ) = I • (⊤ : Submodule R (ι →₀ R)) := by
-  ext y
-  simp only [Finsupp.ker_mapRange, Submodule.ker_mkQ, Finsupp.mem_submodule_iff]
-  refine ⟨fun h ↦ ?_, fun h i ↦ ?_⟩
-  · rw [← Finsupp.sum_single y]
+@[simp]
+lemma Finsupp.comap_lsingle_submodule {M : Type*} [AddCommGroup M] [Module R M]
+    (ι : Type*) (p : ι → Submodule R M) (i : ι) :
+    Submodule.comap (lsingle i) (submodule p) = p i := by
+  ext x
+  refine ⟨fun hx ↦ by simpa using hx i, fun hx j ↦ ?_⟩
+  obtain (rfl | h) := eq_or_ne i j <;> simp_all
+
+lemma Finsupp.submodule_eq_iSup {M : Type*} [AddCommGroup M] [Module R M]
+    (ι : Type*) (p : ι → Submodule R M) :
+    Finsupp.submodule p = ⨆ i, Submodule.map (Finsupp.lsingle i) (p i) := by
+  refine le_antisymm ?_ ?_
+  · intro x hx
+    rw [← Finsupp.sum_single x]
     refine Submodule.sum_mem _ (fun i _ ↦ ?_)
-    rw [← mul_one (y i), ← smul_eq_mul _ 1, ← Finsupp.smul_single]
-    exact Submodule.smul_mem_smul (h i) trivial
-  · induction h using Submodule.smul_induction_on' with
-    | smul r hr m _ => simpa using I.mul_mem_right (m i) hr
-    | add x _ y _ xmem ymem => simpa using add_mem xmem ymem
+    exact Submodule.mem_iSup_of_mem i (Submodule.mem_map_of_mem (hx i))
+  · simp [iSup_le_iff, Submodule.map_le_iff_le_comap]
+
+lemma Finsupp.submodule_smul {M : Type*} [AddCommGroup M] [Module R M]
+    (ι : Type*) (p : ι → Submodule R M) (I : Ideal R) :
+    Finsupp.submodule (fun i ↦ I • p i) = I • Finsupp.submodule p := by
+  simp only [Finsupp.submodule_eq_iSup, Submodule.map_smul'', ← Submodule.smul_iSup]
+
+@[simp]
+lemma Finsupp.submodule_top {M : Type*} [AddCommGroup M] [Module R M]
+    (ι : Type*) :
+    Finsupp.submodule (fun _ : ι ↦ (⊤ : Submodule R M)) = ⊤ := by
+  ext
+  simp
 
 instance (M : Type*) [AddCommGroup M] [Module R M] [Module.Free R M] (x : R) :
     Module.Free (R ⧸ Ideal.span {x}) (QuotSMulTop x M) :=
@@ -68,7 +85,10 @@ lemma free_iff_quotSMulTop_free (M : Type*) [AddCommGroup M] [Module R M]
     apply g.surjective_of_surjective_comp_mkQ (Ideal.span {x}) lejac
     rwa [Submodule.ideal_span_singleton_smul x ⊤, hg]
   have kerf : LinearMap.ker f = x • (⊤ : Submodule R (I →₀ R)) := by
-    simp [f, LinearMap.ker_mapRange_mkQ_eq_smul_top, Submodule.ideal_span_singleton_smul]
+    simp only [LinearEquiv.ker_comp, f]
+    rw [Finsupp.ker_mapRange, Submodule.ker_mkQ, ← (Ideal.span {x}).mul_top, ← smul_eq_mul,
+      Finsupp.submodule_smul]
+    simp [Submodule.ideal_span_singleton_smul]
   have injg : Function.Injective g := by
     rw [← LinearMap.ker_eq_bot]
     have fg : (LinearMap.ker g).FG := Module.FinitePresentation.fg_ker g surjg
