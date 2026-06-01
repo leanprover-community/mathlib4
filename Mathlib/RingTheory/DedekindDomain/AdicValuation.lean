@@ -298,9 +298,9 @@ instance : v.intValuation.IsNontrivial :=
   have ⟨π, hπ⟩ := v.intValuation_exists_uniformizer
   ⟨π, by aesop⟩
 
-theorem intValuation_val_uniformizer_eq (π : v.intValuation.Uniformizer) :
+theorem intValuation_uniformizer (π : v.intValuation.Uniformizer) :
     v.intValuation (π.val : R) = WithZero.exp (-1) := by
-  simpa [Valuation.IsUniformizer.val π.valuation_gt_one, Int.reduceNeg, Units.ext_iff]
+  simpa [Valuation.IsUniformizer.val π.valuation_gt_one, Units.ext_iff]
     using Valuation.IsRankOneDiscrete.generator_eq_exp_neg_one_of_mem_range
       v.intValuation_exists_uniformizer
 
