@@ -402,7 +402,7 @@ theorem HasProd.update' [L.LeAtTop] [L.NeBot] {α : Type*} [TopologicalSpace α]
   have : ∀ b', f b' * ite (b' = b) x 1 = update f b x b' * ite (b' = b) (f b) 1 := by
     intro b'
     split_ifs with hb'
-    · simpa only [Function.update_apply, hb', eq_self_iff_true] using mul_comm (f b) x
+    · simpa only [Function.update_apply, hb', eq_self_iff_true] using! mul_comm (f b) x
     · simp only [Function.update_apply, hb', if_false]
   have h := hf.mul (hasProd_ite_eq b x L)
   simp_rw [this] at h

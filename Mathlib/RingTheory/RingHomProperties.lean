@@ -60,6 +60,7 @@ theorem RespectsIso.cancel_right_isIso (hP : RespectsIso @P) {R S T : CommRingCa
     simp [← CommRingCat.hom_comp],
    hP.1 f.hom (asIso g).commRingCatIsoToRingEquiv⟩
 
+set_option backward.defeqAttrib.useBackward true in
 theorem RespectsIso.isLocalization_away_iff (hP : RingHom.RespectsIso @P) {R S : Type u}
     (R' S' : Type u) [CommRing R] [CommRing S] [CommRing R'] [CommRing S'] [Algebra R R']
     [Algebra S S'] (f : R →+* S) (r : R) [IsLocalization.Away r R'] [IsLocalization.Away (f r) S'] :

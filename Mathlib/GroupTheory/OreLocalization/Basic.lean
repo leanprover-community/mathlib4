@@ -201,7 +201,6 @@ def lift₂Expand {C : Sort*} (P : X → S → X → S → C)
       simp [this])
     fun r₁ t₁ s₁ ht₁ => by
     ext x; cases x with | _ r₂ s₂
-    dsimp only
     rw [liftExpand_of, liftExpand_of, hP r₁ t₁ s₁ ht₁ r₂ 1 s₂ (by simp)]; simp
 
 @[to_additive (attr := simp)]
@@ -544,7 +543,6 @@ variable [SMul R R'] [IsScalarTower R R' M]
 protected def hsmul (c : R) :
     X[S⁻¹] → X[S⁻¹] :=
   liftExpand (fun m s ↦ oreNum (c • 1) s • m /ₒ oreDenom (c • 1) s) (fun r t s ht ↦ by
-    dsimp only
     rw [← mul_one (oreDenom (c • 1) s), ← oreDiv_smul_oreDiv, ← mul_one (oreDenom (c • 1) _),
       ← oreDiv_smul_oreDiv, ← OreLocalization.expand])
 
