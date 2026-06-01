@@ -56,7 +56,7 @@ instance IsLocallyFreeData.shrink {M : SheafOfModules.{u} R} (q : M.LocalGenerat
 
 end LocalGeneratorsData
 
-/-- A sheaf of modules is locally free if there exists locally free data for it. -/
+/-- A sheaf of modules is locally free if it is locally isomorphic to free sheaves: There exist local generators satisfying `IsLocallyFreeData`. -/
 class IsLocallyFree (M : SheafOfModules.{u} R) : Prop where
   exists_isLocallyFreeData : ∃ q : LocalGeneratorsData.{u₁} M, q.IsLocallyFreeData
 
