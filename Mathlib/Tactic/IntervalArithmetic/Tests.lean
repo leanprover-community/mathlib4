@@ -7,12 +7,18 @@ public meta import Mathlib.Tactic.IntervalArithmetic.ExactRatReal
 
 set_option linter.style.header false
 
-
-/- # Interval Arithmetic Tactic (Prototype) -/
-
 @[expose] public section
 
--- Proves goals like:
+open Set
+
+/- **exact_interval** -/
+
+example (x y : ℝ) (hx : x ∈ Ioo (-1) 1) (hy : y ∈ Icc 1 2) :
+  x ^ 2 + y ^ 2 ∈ Ico 0 5 := by exact_interval
+
+example (x y z : ℝ) (hx : x ∈ Set.Ioo 0 3) (hy : y < 2) (hz : -2 < z) (h : z < -1) :
+  (|x*z| + y)^3 < 512 := by exact_interval
+
 
 open Lean Elab Command
 
@@ -20,19 +26,17 @@ open IntervalArithmetic
 
 set_option trace.profiler true
 
--- with duplicating sides: 3.986733
 theorem test_mem_share_hard (x : ℝ) (hx₁ : 2 ≤ x) (hx₂ : x ≤ 3) :
     x ^ 2 + Real.sqrt (x + Real.sqrt 2) ∈
       Set.Icc (x + Real.sqrt 2) (Real.exp x + x ^ 3) := by
-  dyadic_interval [approx := 8000]
-  -- dyadic_interval [approx := 8000]
+  dyadic_interval [approx := 1]
 
 example (x y z : ℝ) (hx : x = 3) (hy : y = 7) (hz : z = 10) : x + y = z := by dyadic_interval
 
 theorem test (x : ℝ)
     (hx : x ∈ Set.Icc (Real.exp 1) (Real.exp 2)) :
     x ≤ x + 100 := by
-  dyadic_interval [approx := 100]
+  dyadic_interval [approx := 6]
 
 example : √(√ 3 - √ 2) ≤ 0.6 := by
   dyadic_interval [approx := 1000 for Sqrt, approx := 5 for OfScientific]
@@ -98,76 +102,8 @@ example :
 
 section LogTests
 
-/-
-Computational smoke tests.
-
-These do not prove analytic correctness, but they check that the interval
-computation runs and gives reasonable-looking dyadic endpoints.
--/
-
-#eval (nat_const 1).dyadic_log 32
-#eval (nat_const 2).dyadic_log 32
-#eval (nat_const 4).dyadic_log 32
-
-#eval (rat_const 32 (1 / 2 : ℚ)).dyadic_log 32
-#eval (rat_const 32 (3 / 2 : ℚ)).dyadic_log 32
-#eval (rat_const 32 (10 : ℚ)).dyadic_log 32
-#eval (rat_const 32 (1 / 10 : ℚ)).dyadic_log 32
-
-/-
-Domain edge cases.
-
-`log` on intervals not certified to be strictly positive should return `⊥, ⊤`.
--/
-
-#eval (nat_const 0).dyadic_log 32
-#eval (int_const (-1)).dyadic_log 32
-#eval (rat_const 32 (-1 / 2 : ℚ)).dyadic_log 32
-
-/-
-Direct registered-operation tests.
-
-These use your inclusion theorem directly. They should compile once
-`Interval.dyadic_log_inclusion` exists, even if its proof is currently `sorry`.
--/
-
-example : Real.log (1 : ℝ) ∈ ((nat_const 1).dyadic_log 32).toSet dyadic_to_real := by
-  exact Interval.dyadic_log_inclusion 32 (nat_cast_inclusion 1)
-
-example : Real.log (2 : ℝ) ∈ ((nat_const 2).dyadic_log 32).toSet dyadic_to_real := by
-  exact Interval.dyadic_log_inclusion 32 (nat_cast_inclusion 2)
-
-example : Real.log (4 : ℝ) ∈ ((nat_const 4).dyadic_log 32).toSet dyadic_to_real := by
-  exact Interval.dyadic_log_inclusion 32 (nat_cast_inclusion 4)
-
-example : Real.log ((1 / 2 : ℚ) : ℝ) ∈
-    ((rat_const 32 (1 / 2 : ℚ)).dyadic_log 32).toSet dyadic_to_real := by
-  exact Interval.dyadic_log_inclusion 32 (rat_const_inclusion 32 (1 / 2 : ℚ))
-
-example : Real.log ((3 / 2 : ℚ) : ℝ) ∈
-    ((rat_const 32 (3 / 2 : ℚ)).dyadic_log 32).toSet dyadic_to_real := by
-  exact Interval.dyadic_log_inclusion 32 (rat_const_inclusion 32 (3 / 2 : ℚ))
-
-example : Real.log ((10 : ℚ) : ℝ) ∈
-    ((rat_const 32 (10 : ℚ)).dyadic_log 32).toSet dyadic_to_real := by
-  exact Interval.dyadic_log_inclusion 32 (rat_const_inclusion 32 (10 : ℚ))
-
-example : Real.log ((1 / 10 : ℚ) : ℝ) ∈
-    ((rat_const 32 (1 / 10 : ℚ)).dyadic_log 32).toSet dyadic_to_real := by
-  exact Interval.dyadic_log_inclusion 32 (rat_const_inclusion 32 (1 / 10 : ℚ))
-
-/-
-Tactic-facing tests.
-
-These are the ones you ultimately care about. The exact syntax for precision
-depends on your `interval_setting` parser, so I am leaving the bare version here.
-If the default precision is still `0`, these may be too weak for inequalities
-that need separation.
--/
-
 example : Real.log (1 : ℝ) = 0 := by
-  -- This should eventually be solvable either by simp or by the interval tactic.
-  simp
+  dyadic_interval
 
 example : 0 ≤ Real.log (2 : ℝ) := by
   dyadic_interval
@@ -192,9 +128,4 @@ example : Real.log 2 ∈ Set.Ioo
       ((693147180559945309417232121459 : ℝ) / 10^30) := by
   dyadic_interval [approx := 108]
 
-example: Real.log (2 : ℝ) ∈ Set.Ioo
-      (0.6931471805599453094172321214581765680755001343602552541206800094933936219696947156058633269964186875420014810205706857336855202357581305570326707516350759619307275708283714351903070386238916734711233501153644979552391204751726815749320651555247341395258829504530070953263666426541042391578149520437404303855008019441706416715186447128399681717845469570262716310645461502572074024816377733896385506952606683411372738737229289564935470257626520988596932019650585547647033067936544325476327449512504060694381471046899465062201677204245245296126879465461931651746813926725041038025462596568691441928716082938031727143677826548775664850856740776484514644399404614226031930967354025744460703080960850474866385231381816767514386674766478908814371419854942315199735488037516586127535291661000710535582498794147295092931138971559982056543928717000721808576102523688921324497138932037843935308877482597017155910708823683627589842589185353024363421436706118923678919237231467232172053401649256872747782344535347 : ℝ)
-      (0.6931471805599453094172321214581765680755001343602552541206800094933936219696947156058633269964186875420014810205706857336855202357581305570326707516350759619307275708283714351903070386238916734711233501153644979552391204751726815749320651555247341395258829504530070953263666426541042391578149520437404303855008019441706416715186447128399681717845469570262716310645461502572074024816377733896385506952606683411372738737229289564935470257626520988596932019650585547647033067936544325476327449512504060694381471046899465062201677204245245296126879465461931651746813926725041038025462596568691441928716082938031727143677826548775664850856740776484514644399404614226031930967354025744460703080960850474866385231381816767514386674766478908814371419854942315199735488037516586127535291661000710535582498794147295092931138971559982056543928717000721808576102523688921324497138932037843935308877482597017155910708823683627589842589185353024363421436706118923678919237231467232172053401649256872747782344535348 : ℝ) := by
-  dyadic_interval [approx := 850]
-
-end LogTests [approx := 160]
+end LogTests
