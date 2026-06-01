@@ -10,6 +10,7 @@ public import Mathlib.NumberTheory.NumberField.Discriminant.Different
 public import Mathlib.NumberTheory.RamificationInertia.Galois
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
 public import Mathlib.RingTheory.RamificationInertia.Ramification
+public import Mathlib.RingTheory.RamificationInertia.Inertia
 public import Mathlib.RingTheory.Unramified.Dedekind
 
 /-!
@@ -21,6 +22,68 @@ This is a trivial corollary of `NumberField.not_dvd_discr_iff_forall_mem` and
 
 -/
 @[expose] public section
+
+namespace Localization
+
+open AtPrime
+
+variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C] [Algebra A B] [Algebra A C]
+  (p : Ideal A) (q : Ideal B) (r : Ideal C) [p.IsPrime] [q.IsPrime] [r.IsPrime]
+  [q.LiesOver p] [Algebra (Localization.AtPrime p) (Localization.AtPrime q)] [IsLiesOverAlgebra p q]
+  [r.LiesOver p] [Algebra (Localization.AtPrime p) (Localization.AtPrime r)] [IsLiesOverAlgebra p r]
+
+-- PRed
+noncomputable def localAlgEquiv' (f : B ≃ₐ[A] C) (h : q = r.comap f) :
+    Localization.AtPrime q ≃ₐ[Localization.AtPrime p] Localization.AtPrime r where
+  __ := localAlgEquiv q r f h
+  commutes' := by
+    let Ap := Localization.AtPrime p
+    let f := (localAlgEquiv q r f h).toAlgHom.comp (IsScalarTower.toAlgHom A Ap _)
+    let g := IsScalarTower.toAlgHom A Ap (Localization.AtPrime r)
+    have : f.toRingHom.comp (algebraMap A Ap) = g.toRingHom.comp (algebraMap A Ap) := by simp
+    suffices f = g by rwa [DFunLike.ext_iff] at this
+    apply Localization.algHom_ext
+    rwa [DFunLike.ext_iff] at this ⊢
+
+end Localization
+
+namespace Ideal
+
+open Localization.AtPrime
+
+variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C] [Algebra A B] [Algebra A C]
+  (p : Ideal A) (q : Ideal B) (r : Ideal C) [p.IsPrime] [q.IsPrime] [r.IsPrime]
+  [q.LiesOver p] [Algebra (Localization.AtPrime p) (Localization.AtPrime q)] [IsLiesOverAlgebra p q]
+  [r.LiesOver p] [Algebra (Localization.AtPrime p) (Localization.AtPrime r)] [IsLiesOverAlgebra p r]
+
+noncomputable def residueFieldRingEquiv (f : B ≃+* C) (h : q = r.comap f) :
+    q.ResidueField ≃+* r.ResidueField :=
+  IsLocalRing.ResidueField.mapEquiv (Localization.localRingEquiv q r f h)
+
+noncomputable def residueFieldAlgEquiv (f : B ≃ₐ[A] C) (h : q = r.comap f) :
+    q.ResidueField ≃ₐ[A] r.ResidueField :=
+  IsLocalRing.ResidueField.mapAlgEquiv (Localization.localAlgEquiv q r f h)
+
+noncomputable def residueFieldAlgEquiv' (f : B ≃ₐ[A] C) (h : q = r.comap f) :
+    q.ResidueField ≃ₐ[p.ResidueField] r.ResidueField :=
+  IsLocalRing.ResidueField.mapAlgEquiv' (Localization.localAlgEquiv' p q r f h)
+
+open Pointwise in
+theorem inertiaDeg'_smul {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
+    (g : G) (q : Ideal B) : (g • q).inertiaDeg' A = q.inertiaDeg' A := by
+  by_cases hq : q.IsPrime; swap
+  · rw [inertiaDeg'_of_not_isPrime, inertiaDeg'_of_not_isPrime] <;> simpa
+  · let p := q.under A
+    let f₀ := MulSemiringAction.toAlgAut G A B g
+    let := Localization.AtPrime.algebraOfLiesOver p q
+    let := Localization.AtPrime.algebraOfLiesOver p (g • q)
+    rw [inertiaDeg'_eq p q, inertiaDeg'_eq p (g • q)]
+    let e₂ := Ideal.residueFieldAlgEquiv' p (g • q) q f₀.symm (comap_symm f₀.toRingEquiv).symm
+    exact e₂.toLinearEquiv.finrank_eq
+
+
+
+end Ideal
 
 open scoped NumberField nonZeroDivisors
 
