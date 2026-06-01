@@ -528,29 +528,35 @@ initialize addLinter doubleUnderscore
 @[inline] def _root_.String.endsWithAppendedNumber (s : String) : Bool :=
   (s.dropSuffix? Char.isDigit).any (·.dropEndWhile Char.isDigit |>.endsWith '_')
 
+/-- `true` if we can realize the name as a theorem. Executes reserved name actions. -/
+private def realizesAsSomeTheorem (n : Name) : CoreM Bool := do
+  let names ← try realizeGlobalConstCore n catch _ => return false
+  let env ← getEnv
+  return names.any <| wasOriginallyTheorem env
+
 /-- Component- and prefix-based checks. Assumes the `Name` has already been processed with
 `privateToUsername`.-/
 private def isBadDefNameWithUnderscoreAux (env : Environment) (moduleAutoSuffix : String)
-    (badIfNotExempt : Bool) : Name → Bool
-  | .num .. => false -- exempt; internal
-  | .str pre s =>
-    let exempt :=
+    (badIfNotExempt : Bool) : Name → CoreM Bool
+  | .num .. => return false -- exempt; internal
+  | .str pre s => do
+    letI exempt :=
       s == "Simps" || -- exempt `Simps`
       s.endsWith moduleAutoSuffix || -- exempt `*_<project>`, e.g. `*_mathlib`
       s.endsWithAppendedNumber -- exempt `*_<number>`
 
-    !exempt &&
+    pure !exempt <&&> do
       -- Components are exempt if they are a keyword + `_`.
       -- Inlined to ensure we only compute it if necessary.
       letI exemptComponent := s.dropSuffix? '_' |>.any fun keyword =>
         parserExtension.getState env |>.tokens.find? keyword.toString |>.isSome
       let badIfNotExempt := badIfNotExempt || (s.contains '_' && !exemptComponent)
-      -- If the root is a theorem, stop here.
-      if wasOriginallyTheorem env pre then
-        badIfNotExempt
+      if ← realizesAsSomeTheorem pre then
+        -- If `pre` is a theorem, stop linting.
+        return badIfNotExempt
       else
         isBadDefNameWithUnderscoreAux env moduleAutoSuffix badIfNotExempt pre
-  | .anonymous => badIfNotExempt
+  | .anonymous => return badIfNotExempt
 
 /-- Copy of private declaration from `Lean.Elab.DeclNameGen`. Constructs e.g. `mathlib` suffixes. -/
 private def moduleToSuffix : Name → String
@@ -612,7 +618,7 @@ public def isBadDefNameWithUnderscore (declName : Name) : MetaM Bool := do
     -- may be made by `unif_hint` in practice, so exempt them
     if ← isProp type then return false
   let project := moduleToSuffix <| (env.getModuleFor? declName).elim `NoProjectFound (·.getRoot)
-  return isBadDefNameWithUnderscoreAux env project false (privateToUserName declName)
+  isBadDefNameWithUnderscoreAux env project false (privateToUserName declName)
 
 @[env_linter, inherit_doc isBadDefNameWithUnderscore]
 public def defsWithUnderscore : Batteries.Tactic.Lint.Linter where
