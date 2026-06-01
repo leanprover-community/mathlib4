@@ -301,7 +301,7 @@ theorem coprime_card_of_ne {G₂ : Type*} [Group G₂] (p₁ p₂ : ℕ) [hp₁ 
   exact Nat.coprime_pow_primes _ _ hp₁.elim hp₂.elim hne
 
 theorem disjoint_of_coprime {p₁ p₂ : ℕ} {H₁ H₂ : Subgroup G} (hH₁ : IsPGroup p₁ H₁)
-    (hH₂ : IsPGroup p₂ H₂) (h : p₁ |>.Coprime <| p₂) : Disjoint H₁ H₂ := by
+    (hH₂ : IsPGroup p₂ H₂) (h : p₁.Coprime p₂) : Disjoint H₁ H₂ := by
   refine Subgroup.disjoint_def.mpr fun {g} hg₁ hg₂ ↦ ?_
   have ⟨k₁, hk₁⟩ := hH₁ ⟨g, hg₁⟩
   have hg₁ := Subgroup.orderOf_mk g _ ▸ orderOf_dvd_of_pow_eq_one hk₁
@@ -339,17 +339,6 @@ theorem le_or_disjoint_of_coprime [hp : Fact p.Prime] {P : Subgroup G} (hP : IsP
     exact Nat.eq_one_of_dvd_coprimes h4 (H.relIndex_dvd_index_of_normal P)
       (Subgroup.relIndex_dvd_card H P)
   · exact Subgroup.disjoint_of_coprime_natCard h4
-
-theorem commutator_eq_bot_of_coprime {p₁ p₂ : ℕ} {H₁ H₂ : Subgroup G} [H₁.Normal] [H₂.Normal]
-    (hH₁ : IsPGroup p₁ H₁) (hH₂ : IsPGroup p₂ H₂) (h : p₁ |>.Coprime <| p₂) : ⁅H₁, H₂⁆ = ⊥ := by
-  grw [eq_bot_iff, Subgroup.commutator_le_inf]
-  exact disjoint_of_coprime hH₁ hH₂ h |>.eq_bot.le
-
-theorem commute_of_coprime {p₁ p₂ : ℕ} {H₁ H₂ : Subgroup G} [H₁.Normal] [H₂.Normal]
-    (hH₁ : IsPGroup p₁ H₁) (hH₂ : IsPGroup p₂ H₂) (h : p₁ |>.Coprime <| p₂) {g₁ g₂} (h₁ : g₁ ∈ H₁)
-    (h₂ : g₂ ∈ H₂) : Commute g₁ g₂ := by
-  apply commutatorElement_eq_one_iff_commute.mp
-  simpa [commutator_eq_bot_of_coprime hH₁ hH₂ h] using H₁.commutator_mem_commutator h₁ h₂
 
 section P2comm
 

@@ -20,17 +20,6 @@ variable {G : Type*} [Group G] {H₁ H₂ : Subgroup G}
 
 namespace Subgroup
 
-theorem commutator_eq_bot_of_coprime_natCard [H₁.Normal] [H₂.Normal]
-    (h : Nat.card H₁ |>.Coprime <| Nat.card H₂) : ⁅H₁, H₂⁆ = ⊥ := by
-  grw [eq_bot_iff, commutator_le_inf]
-  exact disjoint_of_coprime_natCard h |>.eq_bot.le
-
-theorem commute_of_coprime_natCard [H₁.Normal] [H₂.Normal]
-    (h : Nat.card H₁ |>.Coprime <| Nat.card H₂) {g₁ g₂} (h₁ : g₁ ∈ H₁) (h₂ : g₂ ∈ H₂) :
-    Commute g₁ g₂ := by
-  apply commutatorElement_eq_one_iff_commute.mp
-  simpa [commutator_eq_bot_of_coprime_natCard h] using commutator_mem_commutator h₁ h₂
-
 /-- The commutator of a finite direct product is contained in the direct product of the commutators.
 -/
 @[to_additive /-- The commutator of a finite direct product is contained in the direct product of
