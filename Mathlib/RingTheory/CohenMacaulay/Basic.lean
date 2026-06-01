@@ -226,7 +226,7 @@ lemma isLocalizedModule_quotSMulTopIsLocalizedModuleMap (x : R)
     use c * s
     apply sub_eq_zero.mp
     have h : (0 : QuotSMulTop x M) = Submodule.Quotient.mk (c • s • (y1 - y2)) := by
-      simpa [hc] using (smul_eq_zero_of_right c <| (Submodule.Quotient.mk_eq_zero _).mpr <|
+      simpa [hc] using! (smul_eq_zero_of_right c <| (Submodule.Quotient.mk_eq_zero _).mpr <|
         Submodule.smul_mem_pointwise_smul z x ⊤ Submodule.mem_top).symm
     simp [h, smul_sub, mul_smul]
 
@@ -465,7 +465,7 @@ lemma isCohenMacaulayRing_iff [IsNoetherianRing R] : IsCohenMacaulayRing R ↔
   have disj := (Set.disjoint_compl_left_iff_subset.mpr le)
   have : (p.map (algebraMap R Rₘ)).IsPrime := by
     simpa [IsLocalization.isPrime_iff_isPrime_disjoint m.primeCompl Rₘ, hp,
-      IsLocalization.under_map_of_isPrime_disjoint m.primeCompl Rₘ hp disj] using disj
+      IsLocalization.under_map_of_isPrime_disjoint m.primeCompl Rₘ hp disj] using! disj
   have le' : m.primeCompl ≤ p.primeCompl := by simpa [Ideal.primeCompl] using le
   let : Algebra Rₘ Rₚ := IsLocalization.localizationAlgebraOfSubmonoidLe Rₘ Rₚ _ _ le'
   have := IsLocalization.localization_isScalarTower_of_submonoid_le Rₘ Rₚ _ _ le'
@@ -502,14 +502,14 @@ lemma IsCohenMacaulayRing.of_isCohenMacaulayLocalRing [IsCohenMacaulayLocalRing 
     [IsNoetherianRing R] : IsCohenMacaulayRing R := by
   apply (isCohenMacaulayRing_iff R).mpr (fun m hm ↦ ?_)
   have := IsLocalization.of_le_isUnit (S := m.primeCompl)
-    (fun x hx ↦ by simpa [eq_maximalIdeal hm] using hx)
+    (fun x hx ↦ by simpa [eq_maximalIdeal hm] using! hx)
   let e := (IsLocalization.algEquiv m.primeCompl R (Localization.AtPrime m)).toRingEquiv
   exact isCohenMacaulayLocalRing_of_ringEquiv e
 
 lemma IsCohenMacaulayLocalRing.of_isLocalRing_of_isCohenMacaulayRing [IsLocalRing R]
     [IsNoetherianRing R] [IsCohenMacaulayRing R] : IsCohenMacaulayLocalRing R := by
   have := IsLocalization.of_le_isUnit (S := (maximalIdeal R).primeCompl)
-    (fun x hx ↦ by simpa using hx)
+    (fun x hx ↦ by simpa using! hx)
   have := (isCohenMacaulayRing_def R).mp ‹_› (maximalIdeal R) inferInstance
   let e := (IsLocalization.algEquiv (maximalIdeal R).primeCompl R
     (Localization.AtPrime (maximalIdeal R))).toRingEquiv
@@ -551,7 +551,7 @@ lemma quotient_regular_sequence_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing
       (ne_top_of_le_ne_top IsPrime.ne_top' (span_le.mpr mem))
     IsLocalRing.of_surjective' (Ideal.Quotient.mk _) Ideal.Quotient.mk_surjective
   have reg' : IsRegular R rs :=
-    ⟨reg, by simpa using ((span_le.mpr mem).trans_lt IsPrime.ne_top'.lt_top).ne_top.symm⟩
+    ⟨reg, by simpa using! ((span_le.mpr mem).trans_lt IsPrime.ne_top'.lt_top).ne_top.symm⟩
   simp only [isCohenMacaulayLocalRing_def,
     ← ringKrullDim_add_length_eq_ringKrullDim_of_isRegular rs reg',
     ← depth_quotient_regular_sequence_add_length_eq_depth rs reg mem, WithBot.coe_add]
