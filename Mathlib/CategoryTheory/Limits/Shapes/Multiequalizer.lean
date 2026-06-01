@@ -329,6 +329,7 @@ variable {C : Type u} [Category.{v} C] {J : MulticospanShape.{w, w'}}
   (I : MulticospanIndex J C)
 
 /-- The multicospan associated to `I : MulticospanIndex`. -/
+@[simps]
 def multicospan : WalkingMulticospan J ⥤ C where
   obj x :=
     match x with
@@ -419,6 +420,7 @@ variable {C : Type u} [Category.{v} C] {J : MultispanShape.{w, w'}}
     (I : MultispanIndex J C)
 
 /-- The multispan associated to `I : MultispanIndex`. -/
+@[simps]
 def multispan : WalkingMultispan J ⥤ C where
   obj x :=
     match x with
