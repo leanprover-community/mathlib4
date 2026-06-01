@@ -275,7 +275,7 @@ def divLb (approxParam : ℕ) (d₁ d₂ : Dyadic) : Dyadic :=
         match shift with
         | Int.ofNat s => Int.fdiv (num <<< s) den
         | Int.negSucc s => Int.fdiv num (den <<< (s + 1))
-      Dyadic.ofIntWithPrec q prec
+      Dyadic.ofIntWithPrec q approxParam
 
 end Div
 
