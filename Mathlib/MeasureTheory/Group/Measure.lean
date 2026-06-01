@@ -102,7 +102,7 @@ theorem MeasurePreserving.mul_right (μ : Measure G) [IsMulRightInvariant μ] (g
 @[to_additive]
 instance Subgroup.smulInvariantMeasure {G α : Type*} [Group G] [MulAction G α] [MeasurableSpace α]
     {μ : Measure α} [SMulInvariantMeasure G α μ] (H : Subgroup G) : SMulInvariantMeasure H α μ :=
-  ⟨fun y s hs => by convert SMulInvariantMeasure.measure_preimage_smul (μ := μ) (y : G) hs⟩
+  ⟨fun y s hs => by convert! SMulInvariantMeasure.measure_preimage_smul (μ := μ) (y : G) hs⟩
 
 /-- An alternative way to prove that `μ` is left invariant under multiplication. -/
 @[to_additive /-- An alternative way to prove that `μ` is left invariant under addition. -/]
@@ -442,7 +442,7 @@ protected theorem IsMulLeftInvariant.comap {H} [Group H] {mH : MeasurableSpace H
     ext s hs
     rw [map_apply (by fun_prop) hs]
     repeat rw [hf.comap_apply]
-    have : f '' ((g * ·) ⁻¹' s) = (f g * ·) ⁻¹' (f '' s) := by
+    have : f '' (g * ·) ⁻¹' s = (f g * ·) ⁻¹' f '' s := by
       ext
       constructor
       · rintro ⟨y, hy, rfl⟩
@@ -460,7 +460,7 @@ protected theorem IsMulRightInvariant.comap {H} [Group H] {mH : MeasurableSpace 
     ext s hs
     rw [map_apply (by fun_prop) hs]
     repeat rw [hf.comap_apply]
-    have : f '' ((· * g) ⁻¹' s) = (· * f g) ⁻¹' (f '' s) := by
+    have : f '' (· * g) ⁻¹' s = (· * f g) ⁻¹' f '' s := by
       ext
       constructor
       · rintro ⟨y, hy, rfl⟩
@@ -775,7 +775,7 @@ variable [Group G] [TopologicalSpace G] (μ : Measure G) [IsHaarMeasure μ]
 
 @[to_additive (attr := simp)]
 theorem haar_singleton [ContinuousMul G] [BorelSpace G] (g : G) : μ {g} = μ {(1 : G)} := by
-  convert measure_preimage_mul μ g⁻¹ _
+  convert! measure_preimage_mul μ g⁻¹ _
   simp only [mul_one, preimage_mul_left_singleton, inv_inv]
 
 @[to_additive IsAddHaarMeasure.smul]

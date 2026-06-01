@@ -161,6 +161,31 @@ def Iso.mk {α β : PartOrdEmb.{u}} (e : α ≃o β) : α ≅ β where
   hom := ofHom e
   inv := ofHom e.symm
 
+/-- The order isomorphism corresponding to an isomorphism in `PartOrdEmb`. -/
+@[simps]
+def orderIsoOfIso {α β : PartOrdEmb.{u}} (e : α ≅ β) :
+    α ≃o β where
+  toFun := e.hom
+  invFun := e.inv
+  left_inv := ConcreteCategory.congr_hom e.hom_inv_id
+  right_inv := ConcreteCategory.congr_hom e.inv_hom_id
+  map_rel_iff' := Hom.le_iff_le _ _ _
+
+/-- Isomorphisms in `PartOrdEmb` correspond to order isomorphisms. -/
+@[simps]
+def orderIsoEquivIso {α β : PartOrdEmb.{u}} :
+    (α ≅ β) ≃ (α ≃o β) where
+  toFun := orderIsoOfIso
+  invFun := Iso.mk
+
+instance : (forget PartOrdEmb.{u}).ReflectsIsomorphisms where
+  reflects {α β} f hf := by
+    rw [CategoryTheory.isIso_iff_bijective] at hf
+    let e : α ≃o β :=
+      { toEquiv := Equiv.ofBijective _ hf
+        map_rel_iff' := by simp }
+    exact (Iso.mk e).isIso_hom
+
 /-- `OrderDual` as a functor. -/
 @[simps map]
 def dual : PartOrdEmb ⥤ PartOrdEmb where
@@ -184,11 +209,10 @@ theorem partOrdEmb_dual_comp_forget_to_pardOrd :
 
 namespace PartOrdEmb
 
-variable {J : Type u} [SmallCategory J] [IsFiltered J] {F : J ⥤ PartOrdEmb.{u}}
-
 namespace Limits
 
-variable {c : Cocone (F ⋙ forget _)} (hc : IsColimit c)
+variable {J : Type u} [SmallCategory J] [IsFiltered J] {F : J ⥤ PartOrdEmb.{u}}
+  {c : Cocone (F ⋙ forget _)} (hc : IsColimit c)
 
 /-- Given a functor `F : J ⥤ PartOrdEmb` and a colimit cocone `c` for
 `F ⋙ forget _`, this is the type `c.pt` on which we define a partial order
@@ -261,6 +285,7 @@ def cocone : Cocone F where
         simpa [← hl₁, ← hl₂] using h }
   ι.naturality _ _ f := by ext x; exact ConcreteCategory.congr_hom (c.w f) x
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `isColimitCocone`. -/
 def CoconePt.desc (s : Cocone F) : CoconePt hc ↪o s.pt where
@@ -295,7 +320,6 @@ lemma CoconePt.fac_apply (s : Cocone F) (j : J) (x : F.obj j) :
     dsimp% CoconePt.desc hc s (c.ι.app j x) = s.ι.app j x :=
   ConcreteCategory.congr_hom (hc.fac ((forget _).mapCocone s) j) x
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A colimit cocone for `F : J ⥤ PartOrdEmb` (with `J` filtered) can be
 obtained from a colimit cocone for `F ⋙ forget _`. -/
 def isColimitCocone : IsColimit (cocone hc) where
@@ -320,6 +344,9 @@ instance : HasColimitsOfShape J PartOrdEmb.{u} where
 
 instance : PreservesColimitsOfShape J (forget PartOrdEmb.{u}) where
 
+instance : ReflectsColimitsOfShape J (forget PartOrdEmb.{u}) :=
+  reflectsColimitsOfShape_of_reflectsIsomorphisms
+
 instance : HasFilteredColimitsOfSize.{u, u} PartOrdEmb.{u} where
   HasColimitsOfShape _ := inferInstance
 
@@ -327,5 +354,41 @@ instance : PreservesFilteredColimitsOfSize.{u, u} (forget PartOrdEmb.{u}) where
   preserves_filtered_colimits _ := inferInstance
 
 end Limits
+
+variable {α : PartOrdEmb.{u}} (P : Set α → Prop)
+
+/-- Given a predicate `P : Set α → Prop` on the underlying type of `α : PartOrdEmb.{u}`,
+this is the functor `Subtype P ⥤ PartOrdEmb.{u}` which sends a subset `J` of `α`
+satisfying `P` to the induced partially ordered type `J`. -/
+@[simps obj map]
+def functorOfPredicateSet : Subtype P ⥤ PartOrdEmb.{u} where
+  obj J := .of J.val
+  map f :=
+    ofHom {
+      toFun x := ⟨x, leOfHom f x.prop⟩
+      inj' _ _ _ := by aesop
+      map_rel_iff' := by rfl }
+
+/-- Given a predicate `P : Set α → Prop` on the underlying type of `α : PartOrdEmb.{u}`,
+this is the cocone with point `α` given by all the inclusions of the subsets
+satisfying `P`. -/
+@[simps]
+def coconeOfPredicateSet : Cocone (functorOfPredicateSet P) where
+  pt := α
+  ι.app J := ofHom (OrderEmbedding.subtype _)
+
+/-- Let `P` be a predicate on `Set α` where `α : PartOrdEmb`. We assume
+that `Subtype P` is directed and nonempty, and that any `a : α` belongs
+to some `J : Set α` satisfying `P`. Then, `α` is the colimit in the
+category `PartOrdEmb` of these subsets. -/
+noncomputable def isColimitOfPredicateSet
+    [IsDirectedOrder (Subtype P)] [Nonempty (Subtype P)]
+    (hP : ∀ (a : α), ∃ (J : Set α), P J ∧ a ∈ J) :
+    IsColimit (coconeOfPredicateSet P) :=
+  isColimitOfReflects (forget PartOrdEmb.{u}) (by
+    refine Types.FilteredColimit.isColimitOf' _ _ (fun a ↦ ?_)
+      (fun J x y h ↦ ⟨J, 𝟙 _, Subtype.ext h⟩)
+    obtain ⟨J, hJ, ha⟩ := hP a
+    exact ⟨⟨J, hJ⟩, ⟨a, ha⟩, rfl⟩)
 
 end PartOrdEmb

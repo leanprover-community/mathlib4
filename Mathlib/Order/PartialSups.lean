@@ -66,7 +66,7 @@ lemma partialSups_iff_forall {f : ι → α} (p : α → Prop)
     (hp : ∀ {a b}, p (a ⊔ b) ↔ p a ∧ p b) {i : ι} :
     p (partialSups f i) ↔ ∀ j ≤ i, p (f j) := by
   classical
-  rw [partialSups_apply, comp_sup'_eq_sup'_comp (γ := Propᵒᵈ) _ p, sup'_eq_sup]
+  rw [partialSups_apply, apply_sup'_eq_sup'_comp (γ := Propᵒᵈ) _ p, sup'_eq_sup]
   · change (Iic i).inf (p ∘ f) ↔ _
     simp [Finset.inf_eq_iInf]
   · intro x y
@@ -119,10 +119,10 @@ lemma partialSups_monotone (f : ι → α) :
 def partialSups.gi :
     GaloisInsertion (partialSups : (ι → α) → ι →o α) (↑) where
   choice f h :=
-    ⟨f, by convert (partialSups f).monotone using 1; exact (le_partialSups f).antisymm h⟩
+    ⟨f, by convert! (partialSups f).monotone using 1; exact (le_partialSups f).antisymm h⟩
   gc f g := by
     refine ⟨(le_partialSups f).trans, fun h ↦ ?_⟩
-    convert partialSups_mono h
+    convert! partialSups_mono h
     exact OrderHom.ext _ _ g.monotone.partialSups_eq.symm
   le_l_u f := le_partialSups f
   choice_eq f h := OrderHom.ext _ _ ((le_partialSups f).antisymm h)
@@ -262,7 +262,7 @@ theorem iSup_partialSups_eq (f : ι → α) :
 
 theorem partialSups_eq_biSup (f : ι → α) (i : ι) :
     partialSups f i = ⨆ j ≤ i, f j := by
-  simpa only [iSup_subtype] using partialSups_eq_ciSup_Iic f i
+  simpa only [iSup_subtype] using! partialSups_eq_ciSup_Iic f i
 
 theorem iSup_le_iSup_of_partialSups_le_partialSups {f g : ι → α}
     (h : partialSups f ≤ partialSups g) : ⨆ i, f i ≤ ⨆ i, g i := by

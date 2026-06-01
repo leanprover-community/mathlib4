@@ -18,7 +18,7 @@ no `MeasurableSet.mul` etc.
 public section
 
 
-open Pointwise
+open scoped Pointwise
 
 open Set
 

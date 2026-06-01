@@ -43,7 +43,7 @@ Relevant implications of `IsGrothendieckAbelian` are established in
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

@@ -50,7 +50,7 @@ so the definition does not apply. Hence the definition should be more general, a
 `I : ModelWithCorners 𝕜 E H`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -296,7 +296,7 @@ functions `f : M → N` is `C^n` whenever the denominator is non-zero.
 section Div
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
-{H : Type*} [TopologicalSpace H] {E : Type*}
+  {H : Type*} [TopologicalSpace H] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*}
   [TopologicalSpace G] [ChartedSpace H G] [GroupWithZero G] [ContMDiffInv₀ I n G]
   [ContMDiffMul I n G]
@@ -306,17 +306,17 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
 
 theorem ContMDiffWithinAt.div₀
     (hf : CMDiffAt[s] n f a) (hg : CMDiffAt[s] n g a) (h₀ : g a ≠ 0) : CMDiffAt[s] n (f / g) a := by
-  simpa [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
+  simpa [div_eq_mul_inv] using! hf.mul (hg.inv₀ h₀)
 
 theorem ContMDiffOn.div₀ (hf : CMDiff[s] n f) (hg : CMDiff[s] n g)
     (h₀ : ∀ x ∈ s, g x ≠ 0) : CMDiff[s] n (f / g) := by
-  simpa [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
+  simpa [div_eq_mul_inv] using! hf.mul (hg.inv₀ h₀)
 
 theorem ContMDiffAt.div₀ (hf : CMDiffAt n f a) (hg : CMDiffAt n g a)
     (h₀ : g a ≠ 0) : CMDiffAt n (f / g) a := by
-  simpa [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
+  simpa [div_eq_mul_inv] using! hf.mul (hg.inv₀ h₀)
 
 theorem ContMDiff.div₀ (hf : CMDiff n f) (hg : CMDiff n g) (h₀ : ∀ x, g x ≠ 0) :
-    CMDiff n (f / g) := by simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
+    CMDiff n (f / g) := by simpa only [div_eq_mul_inv] using! hf.mul (hg.inv₀ h₀)
 
 end Div

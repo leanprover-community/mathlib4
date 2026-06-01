@@ -133,7 +133,7 @@ theorem lift_sInf (s : Set Cardinal) : lift.{u, v} (sInf s) = sInf (lift.{u, v} 
 @[simp]
 theorem lift_iInf {ι} (f : ι → Cardinal) : lift.{u, v} (iInf f) = ⨅ i, lift.{u, v} (f i) := by
   unfold iInf
-  convert lift_sInf (range f)
+  convert! lift_sInf (range f)
   simp_rw [← comp_apply (f := lift), range_comp]
 
 end Cardinal
@@ -247,7 +247,7 @@ theorem lift_iSup_le_lift_iSup {ι : Type v} {ι' : Type v'} {f : ι → Cardina
     {f' : ι' → Cardinal.{w'}} (hf : BddAbove (range f)) (hf' : BddAbove (range f')) {g : ι → ι'}
     (h : ∀ i, lift.{w'} (f i) ≤ lift.{w} (f' (g i))) : lift.{w'} (iSup f) ≤ lift.{w} (iSup f') := by
   rw [lift_iSup hf, lift_iSup hf']
-  exact ciSup_mono' (bddAbove_range_comp.{_, _, w} hf' _) fun i => ⟨_, h i⟩
+  exact ciSup_mono_of_forall_exists' (bddAbove_range_comp.{_, _, w} hf' _) fun i => ⟨_, h i⟩
 
 /-- A variant of `lift_iSup_le_lift_iSup` with universes specialized via `w = v` and `w' = v'`.
 This is sometimes necessary to avoid universe unification issues. -/
@@ -285,7 +285,7 @@ lemma lt_natCast_add_one_iff {n : ℕ} {c : Cardinal} : c < n + 1 ↔ c ≤ n :=
   rw [← Order.lt_succ_iff, succ_natCast]
 
 lemma two_le_iff_one_lt {c : Cardinal} : 2 ≤ c ↔ 1 < c := by
-  convert natCast_add_one_le_iff
+  convert! natCast_add_one_le_iff
   norm_cast
 
 @[simp]
@@ -572,8 +572,7 @@ theorem aleph0_mul_aleph0 : ℵ₀ * ℵ₀ = ℵ₀ :=
 @[simp]
 theorem nat_mul_aleph0 {n : ℕ} (hn : n ≠ 0) : ↑n * ℵ₀ = ℵ₀ :=
   le_antisymm (lift_mk_fin n ▸ mk_le_aleph0) <|
-    le_mul_of_one_le_left (zero_le _) <| by
-      rwa [← Nat.cast_one, Nat.cast_le, Nat.one_le_iff_ne_zero]
+    le_mul_of_one_le_left zero_le <| by rwa [← Nat.cast_one, Nat.cast_le, Nat.one_le_iff_ne_zero]
 
 @[simp]
 theorem aleph0_mul_nat {n : ℕ} (hn : n ≠ 0) : ℵ₀ * n = ℵ₀ := by rw [mul_comm, nat_mul_aleph0 hn]
@@ -920,7 +919,7 @@ theorem mk_preimage_of_injective_of_subset_range_lift {β : Type v} (f : α → 
 
 theorem mk_preimage_of_injective_of_subset_range (f : α → β) (s : Set β) (h : Injective f)
     (h2 : s ⊆ range f) : #(f ⁻¹' s) = #s := by
-  convert mk_preimage_of_injective_of_subset_range_lift.{u, u} f s h h2 using 1 <;> rw [lift_id]
+  convert! mk_preimage_of_injective_of_subset_range_lift.{u, u} f s h h2 using 1 <;> rw [lift_id]
 
 @[simp]
 theorem mk_preimage_equiv_lift {β : Type v} (f : α ≃ β) (s : Set β) :
@@ -946,14 +945,14 @@ theorem mk_preimage_of_subset_range (f : α → β) (s : Set β) (h : s ⊆ rang
 theorem mk_subset_ge_of_subset_image_lift {α : Type u} {β : Type v} (f : α → β) {s : Set α}
     {t : Set β} (h : t ⊆ f '' s) : lift.{u} #t ≤ lift.{v} #({ x ∈ s | f x ∈ t } : Set α) := by
   rw [image_eq_range] at h
-  convert mk_preimage_of_subset_range_lift _ _ h using 1
+  convert! mk_preimage_of_subset_range_lift _ _ h using 1
   rw [mk_sep]
   rfl
 
 theorem mk_subset_ge_of_subset_image (f : α → β) {s : Set α} {t : Set β} (h : t ⊆ f '' s) :
     #t ≤ #({ x ∈ s | f x ∈ t } : Set α) := by
   rw [image_eq_range] at h
-  convert mk_preimage_of_subset_range _ _ h using 1
+  convert! mk_preimage_of_subset_range _ _ h using 1
   rw [mk_sep]
   rfl
 
@@ -1054,8 +1053,8 @@ theorem zero_powerlt {a : Cardinal} (h : a ≠ 0) : 0 ^< a = 1 := by
 
 @[simp]
 theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 := by
-  convert Cardinal.iSup_of_empty _
-  exact Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr (Cardinal.zero_le x).not_gt
+  convert! Cardinal.iSup_of_empty _
+  exact Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr not_lt_zero
 
 /-- The cardinality of a set is an upper-bound for the amount of elements before the set's mex
 (minimum excluded value) -/

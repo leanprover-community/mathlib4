@@ -31,7 +31,7 @@ about simple and semisimple Lie algebras.
 lie algebra, radical, simple, semisimple
 -/
 
-@[expose] public section
+public section
 
 section Irreducible
 
@@ -55,7 +55,6 @@ theorem HasTrivialRadical.eq_bot_of_isSolvable [HasTrivialRadical R L]
     (I : LieIdeal R L) [hI : IsSolvable I] : I = ⊥ :=
   sSup_eq_bot.mp radical_eq_bot _ hI
 
-set_option backward.isDefEq.respectTransparency false in
 instance [HasTrivialRadical R L] : LieModule.IsFaithful R L L := by
   rw [isFaithful_self_iff]
   exact HasTrivialRadical.eq_bot_of_isSolvable _
@@ -69,7 +68,6 @@ theorem hasTrivialRadical_iff_no_solvable_ideals :
     HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsSolvable I → I = ⊥ :=
   ⟨@HasTrivialRadical.eq_bot_of_isSolvable _ _ _ _ _, hasTrivialRadical_of_no_solvable_ideals⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hasTrivialRadical_iff_no_abelian_ideals :
     HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsLieAbelian I → I = ⊥ := by
   rw [hasTrivialRadical_iff_no_solvable_ideals]
@@ -97,7 +95,6 @@ protected lemma isAtom_iff_eq_top (I : LieIdeal R L) : IsAtom I ↔ I = ⊤ := i
 variable {R L} in
 lemma eq_top_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : I = ⊤ := isAtom_iff_eq_top.mp hI
 
-set_option backward.isDefEq.respectTransparency false in
 instance : HasTrivialRadical R L := by
   rw [hasTrivialRadical_iff_no_abelian_ideals]
   intro I hI
@@ -296,7 +293,6 @@ instance (priority := 100) instHasTrivialRadical : HasTrivialRadical R L := by
 
 end IsSemisimple
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A simple Lie algebra is semisimple. -/
 instance (priority := 100) IsSimple.instIsSemisimple [IsSimple R L] :
     IsSemisimple R L := by

@@ -247,8 +247,7 @@ theorem IsBase.cardinalMk_eq_cRank (hB : M.IsBase B) : #B = M.cRank := by
   simp [cRank, hrw]
 
 /-- Restrictions of matroids with cardinal rank functions have cardinal rank functions. -/
-instance invariantCardinalRank_restrict [InvariantCardinalRank M] :
-    InvariantCardinalRank (M ↾ X) := by
+instance invariantCardinalRank_restrict : InvariantCardinalRank (M ↾ X) := by
   refine ⟨fun I J Y hI hJ ↦ ?_⟩
   rw [isBasis_restrict_iff'] at hI hJ
   exact hI.1.cardinalMk_diff_comm hJ.1

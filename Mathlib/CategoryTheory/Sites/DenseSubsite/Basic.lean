@@ -190,6 +190,7 @@ noncomputable def pushforwardFamily {X} (x : ℱ.obj (op X)) :
     pushforwardFamily α x = fun _ _ hf =>
     ℱ'.obj.map hf.some.lift.op <| α.app (op _) (ℱ.map hf.some.map.op x) := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem pushforwardFamily_apply [G.IsLocallyFull K]
@@ -221,7 +222,7 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
     Category.assoc, e]
 
 /-- (Implementation). The morphism `ℱ(X) ⟶ ℱ'(X)` given by gluing the `pushforwardFamily`. -/
-noncomputable def appHom (X : D) : ℱ.obj (op X) ⟶ ℱ'.obj.obj (op X) := TypeCat.ofHom fun x =>
+noncomputable def appHom (X : D) : ℱ.obj (op X) ⟶ ℱ'.obj.obj (op X) := ↾fun x =>
   ((isSheaf_iff_isSheaf_of_type _ _).1 ℱ'.property _
     (G.is_cover_of_isCoverDense _ X)).amalgamate (pushforwardFamily α x)
       (pushforwardFamily_compatible α x)
@@ -305,6 +306,7 @@ open Types
 
 variable [G.IsCoverDense K] [G.IsLocallyFull K] {ℱ : Dᵒᵖ ⥤ A} {ℱ' : Sheaf K A}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). The sheaf map given in `types.sheaf_hom` is natural in terms of `X`. -/
 @[simps]
@@ -339,7 +341,7 @@ noncomputable def sheafYonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) :
   app U :=
     let α := (sheafCoyonedaHom α)
     { app := fun X => (α.app X).app U
-      naturality := fun X Y f => by simpa using congr_app (α.naturality f) U }
+      naturality := fun X Y f => by simpa using! congr_app (α.naturality f) U }
   naturality U V i := by
     ext X x
     exact ConcreteCategory.congr_hom (((sheafCoyonedaHom α).app X).naturality i) x
@@ -352,7 +354,7 @@ transformation between presheaves.
 noncomputable def sheafHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) : ℱ ⟶ ℱ'.obj :=
   let α' := sheafYonedaHom α
   { app := fun X => yoneda.preimage (α'.app X)
-    naturality := fun X Y f => yoneda.map_injective (by simpa using α'.naturality f) }
+    naturality := fun X Y f => yoneda.map_injective (by simpa using! α'.naturality f) }
 
 /--
 Given a natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of arbitrary category,
@@ -382,6 +384,7 @@ we may obtain a natural isomorphism between presheaves.
 noncomputable def sheafIso {ℱ ℱ' : Sheaf K A} (i : G.op ⋙ ℱ.obj ≅ G.op ⋙ ℱ'.obj) : ℱ ≅ ℱ' :=
   (fullyFaithfulSheafToPresheaf _ _).preimageIso (presheafIso i)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The constructed `sheafHom α` is equal to `α` when restricted onto `C`. -/
 theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) :
@@ -408,6 +411,7 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) :
       (coyoneda.obj (op ((G.op ⋙ ℱ).obj X))) ℱ'.property⟩)
     (whiskerRight α (coyoneda.obj _)) hf.some.map (𝟙 _)
 
+set_option backward.defeqAttrib.useBackward true in
 variable (G) in
 set_option backward.isDefEq.respectTransparency false in
 /--
@@ -475,7 +479,7 @@ lemma restrictHomEquivHom_naturality_left
 -/
 theorem iso_of_restrict_iso {ℱ ℱ' : Sheaf K A} (α : ℱ ⟶ ℱ') (i : IsIso (whiskerLeft G.op α.hom)) :
     IsIso α := by
-  convert (sheafIso (asIso (whiskerLeft G.op α.hom))).isIso_hom using 1
+  convert! (sheafIso (asIso (whiskerLeft G.op α.hom))).isIso_hom using 1
   ext1
   apply (sheafHom_eq _ _).symm
 
@@ -502,6 +506,7 @@ instance full_sheafPushforwardContinuous [G.IsContinuous J K] :
     Full (G.sheafPushforwardContinuous A J K) where
   map_surjective α := ⟨⟨sheafHom α.hom⟩, Sheaf.hom_ext <| sheafHom_restrict_eq α.hom⟩
 
+set_option backward.defeqAttrib.useBackward true in
 instance faithful_sheafPushforwardContinuous [G.IsContinuous J K] :
     Faithful (G.sheafPushforwardContinuous A J K) where
   map_injective := by
@@ -585,6 +590,7 @@ lemma equalizer_mem {U V} (f₁ f₂ : U ⟶ V) (e : G.map f₁ = G.map f₂) :
 
 variable {J} (F : Sheaf J A)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma map_eq_of_eq {X Y : C} (f₁ f₂ : X ⟶ Y)
     (h : G.map f₁ = G.map f₂) :
     F.obj.map f₁.op = F.obj.map f₂.op :=
@@ -674,8 +680,7 @@ variable (A) in
 and `sheafPushforwardContinuous G A J₀ J` is an equivalence of categories
 this is a sheafification functor `(Dᵒᵖ ⥤ A) ⥤ Sheaf K A`
 when `HasWeakSheafify J A` holds. -/
-noncomputable def sheafifyOfIsEquivalence
-    [IsEquivalence (sheafPushforwardContinuous G A J K)] :
+noncomputable def sheafifyOfIsEquivalence :
     (Dᵒᵖ ⥤ A) ⥤ Sheaf K A :=
   (whiskeringLeft _ _ _).obj G.op ⋙ presheafToSheaf J A ⋙
     inv (G.sheafPushforwardContinuous A J K)
@@ -685,8 +690,7 @@ variable (A) in
 and `sheafPushforwardContinuous G A J₀ J` is an equivalence of categories, this is
 the isomorphism between `sheafifyOfIsEquivalence J K G A ⋙ G.sheafPushforwardContinuous A J K`
 and the functor which sends a presheaf to the sheafification of its precomposition by `G.op`. -/
-noncomputable def sheafifyOfIsEquivalenceCompIso
-    [IsEquivalence (sheafPushforwardContinuous G A J K)] :
+noncomputable def sheafifyOfIsEquivalenceCompIso :
     sheafifyOfIsEquivalence J K G A ⋙ G.sheafPushforwardContinuous A J K ≅
       (whiskeringLeft _ _ _).obj G.op ⋙ presheafToSheaf J A :=
   associator _ _ _ ≪≫ isoWhiskerLeft _ (associator _ _ _) ≪≫
