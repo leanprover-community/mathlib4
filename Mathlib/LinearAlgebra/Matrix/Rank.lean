@@ -44,7 +44,8 @@ section Infinite
 variable [Semiring R]
 
 /-- The rank of a matrix, defined as the dimension of its column space, as a cardinal. -/
-noncomputable def cRank (A : Matrix m n R) : Cardinal := Module.rank R <| span R <| range Aᵀ
+noncomputable def cRank (A : Matrix m n R) : Cardinal :=
+  Module.rank R <| span R <| range <| of.symm Aᵀ
 
 @[simp]
 theorem cRank_subsingleton [Subsingleton R] (A : Matrix m n R) : A.cRank = 1 :=
@@ -59,7 +60,8 @@ lemma lift_cRank_submatrix_le (A : Matrix m n R) (r : m₀ → m) (c : n₀ → 
     Submodule.rank_mono <| span_mono <| by rintro _ ⟨x, rfl⟩; exact ⟨c x, rfl⟩
   refine (Cardinal.lift_monotone h).trans ?_
   let f : (m → R) →ₗ[R] (m₀ → R) := LinearMap.funLeft R R r
-  have h_eq : Submodule.map f (span R (range Aᵀ)) = span R (range (A.submatrix r id)ᵀ) := by
+  have h_eq : Submodule.map f (span R (range <| of.symm Aᵀ)) =
+      span R (range <| of.symm (A.submatrix r id)ᵀ) := by
     rw [LinearMap.map_span, ← image_univ, image_image, transpose_submatrix]
     aesop
   rw [cRank, ← h_eq]
@@ -78,7 +80,7 @@ lemma cRank_le_card_height [StrongRankCondition R] [Fintype m] (A : Matrix m n R
 
 lemma cRank_le_card_width [StrongRankCondition R] [Fintype n] (A : Matrix m n R) :
     A.cRank ≤ Fintype.card n :=
-  (rank_span_le ..).trans <| by simpa using Cardinal.mk_range_le_lift (f := Aᵀ)
+  (rank_span_le ..).trans <| by simpa using Cardinal.mk_range_le_lift (f := of.symm Aᵀ)
 
 /-- The rank of a matrix, defined as the dimension of its column space, as a term in `ℕ∞`. -/
 noncomputable def eRank (A : Matrix m n R) : ℕ∞ := A.cRank.toENat
@@ -129,7 +131,7 @@ theorem rank_subsingleton [Subsingleton R] (A : Matrix m n R) : A.rank = 1 :=
 @[simp]
 theorem cRank_one [Nontrivial R] [DecidableEq m] :
     (cRank (1 : Matrix m m R)) = lift.{uR} #m := by
-  have h : LinearIndependent R (1 : Matrix m m R)ᵀ := by
+  have h : LinearIndependent R <| of.symm (1 : Matrix m m R)ᵀ := by
     convert! Pi.linearIndependent_single_one m R
     simp [funext_iff, Matrix.one_eq_pi_single]
   rw [cRank, rank_span h, ← lift_umax, ← Cardinal.mk_range_eq_of_injective h.injective, lift_id']
@@ -147,12 +149,11 @@ theorem rank_one [Nontrivial R] [DecidableEq n] :
 theorem rank_zero [Nontrivial R] : rank (0 : Matrix m n R) = 0 := by
   rw [rank, mulVecLin_zero, LinearMap.range_zero, finrank_bot]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cRank_zero {m n : Type*} [Nontrivial R] : cRank (0 : Matrix m n R) = 0 := by
   obtain hn | hn := isEmpty_or_nonempty n
   · rw [cRank, range_eq_empty, span_empty, rank_bot]
-  rw [cRank, transpose_zero, range_zero, span_zero_singleton, rank_bot]
+  rw [cRank, transpose_zero, of_symm_zero, range_zero, span_zero_singleton, rank_bot]
 
 @[simp]
 theorem eRank_zero {m n : Type*} [Nontrivial R] : eRank (0 : Matrix m n R) = 0 := by
@@ -336,16 +337,17 @@ theorem rank_diagonal [Fintype m] [DecidableEq m] [DecidableEq R] (w : m → R) 
 theorem cRank_diagonal [DecidableEq m] (w : m → R) :
     (diagonal w).cRank = lift.{uR} #{i // (w i) ≠ 0} := by
   classical
-  set w' : {i // (w i) ≠ 0} → _ := fun i ↦ (diagonal w) i
+  set w' : {i // (w i) ≠ 0} → _ := fun i ↦ of.symm (diagonal w) i
   have h : LinearIndependent R w' := by
     have hli' := Pi.linearIndependent_single_of_ne_zero (R := R)
       (v := fun i : m ↦ if w i = 0 then (1 : R) else w i) (by simp [ite_eq_iff'])
     convert! hli'.comp Subtype.val Subtype.val_injective
     ext ⟨j, hj⟩ k
     simp [w', diagonal, hj, Pi.single_apply, eq_comm]
-  have hrw : insert 0 (range (diagonal w)ᵀ) = insert 0 (range w') := by
-    suffices ∀ a, diagonal w a = 0 ∨ ∃ b, w b ≠ 0 ∧ diagonal w b = diagonal w a
-      by simpa [subset_antisymm_iff, subset_def, w']
+  have hrw : insert 0 (range <| of.symm (diagonal w)ᵀ) = insert 0 (range w') := by
+    suffices ∀ a, of.symm (diagonal w) a = 0 ∨ ∃ b, w b ≠ 0 ∧
+        of.symm (diagonal w) b = of.symm (diagonal w) a
+      by simpa [subset_antisymm_iff, subset_def, w'] using this
     simp_rw [or_iff_not_imp_right, not_exists, not_and, not_imp_not]
     simp +contextual [funext_iff, diagonal]
   rw [cRank, ← span_insert_zero, hrw, span_insert_zero, rank_span h,
