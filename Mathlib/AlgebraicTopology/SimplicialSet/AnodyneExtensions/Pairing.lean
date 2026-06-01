@@ -155,6 +155,7 @@ def ofIso : B.Pairing where
   p := ((Subcomplex.N.orderIsoOfIso e hA).subtypeEquiv (by simp)).trans
     (P.p.trans ((Subcomplex.N.orderIsoOfIso e hA).symm.subtypeEquiv (by simp)))
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma ofIso_p (x : P.II) :
     dsimp% (P.ofIso e hA).p ⟨(Subcomplex.N.orderIsoOfIso e hA).symm x, by simp⟩ =
@@ -164,6 +165,7 @@ lemma ofIso_p (x : P.II) :
   change e'.symm (P.p ⟨e' (e'.symm x), _⟩) = e'.symm (P.p x)
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma ofIso_ancestralRel_iff (x y : P.II) :
     (P.ofIso e hA).AncestralRel
       ⟨(Subcomplex.N.orderIsoOfIso e hA).symm x, by simp⟩
@@ -171,6 +173,7 @@ lemma ofIso_ancestralRel_iff (x y : P.II) :
     P.AncestralRel x y :=
   and_congr (not_congr (by aesop)) (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 instance [P.IsProper] : (P.ofIso e hA).IsProper where
   isUniquelyCodimOneFace := by
     rintro ⟨x, hx⟩

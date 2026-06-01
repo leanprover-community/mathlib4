@@ -175,7 +175,7 @@ theorem Valuation.mk_implies {p} {as ps} (as₁) : as = List.reverseAux as₁ ps
       ∀ bs, mk (as₁.reverseAux bs) n' ↔ mk bs n from this 0 _ rfl (a::as)
     induction as₁ with
     | nil => simp
-    | cons b as₁ ih => simpa using fun n bs ↦ ih (n + 1) _ (Nat.succ_add ..) _
+    | cons b as₁ ih => simpa using! fun n bs ↦ ih (n + 1) _ (Nat.succ_add ..) _
 
 /-- Asserts that `¬⟦f⟧_v` implies `p`. -/
 structure Fmla.reify (v : Valuation) (f : Fmla) (p : Prop) : Prop where
