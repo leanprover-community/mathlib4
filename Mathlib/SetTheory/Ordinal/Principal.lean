@@ -300,7 +300,7 @@ theorem isLeast_sub_lt_omega0_opow_log (h : a ≠ 0) :
     IsLeast {b | a - b < a} (ω ^ log ω a) := by
   refine ⟨sub_omega0_opow_log_lt h, fun c (hc : a - _ < _) ↦ ?_⟩
   contrapose! hc
-  exact Ordinal.le_sub_of_add_le (add_of_omega0_opow_le hc (opow_log_le_self ω h)).le
+  exact le_sub_of_add_le (add_of_omega0_opow_le hc (opow_log_le_self ω h)).le
 
 /-- The main characterization theorem for additive principal ordinals. -/
 theorem isPrincipal_add_iff_zero_or_omega0_opow :
