@@ -23,7 +23,7 @@ A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 

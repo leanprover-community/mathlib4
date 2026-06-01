@@ -12,7 +12,7 @@ public import Mathlib.Data.Fintype.EquivFin
 # fintype instance for `Set α`, when `α` is a fintype
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*}

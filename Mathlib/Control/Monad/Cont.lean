@@ -28,7 +28,7 @@ universe u v w u₀ u₁ v₀ v₁
 structure MonadCont.Label (α : Type w) (m : Type u → Type v) (β : Type u) where
   apply : α → m β
 
-def MonadCont.goto {α β} {m : Type u → Type v} (f : MonadCont.Label α m β) (x : α) :=
+abbrev MonadCont.goto {α β} {m : Type u → Type v} (f : MonadCont.Label α m β) (x : α) :=
   f.apply x
 
 class MonadCont (m : Type u → Type v) where
@@ -58,8 +58,11 @@ export MonadCont (Label goto)
 
 variable {r : Type u} {m : Type u → Type v} {α β : Type w}
 
-def run : ContT r m α → (α → m r) → m r :=
-  id
+/-- Build a `ContT` from a function taking a continuation callback. -/
+def mk (f : (α → m r) → m r) : ContT r m α := f
+
+/-- Run a `ContT` with a provided callback. -/
+def run (x : ContT r m α) : (α → m r) → m r := x
 
 def map (f : m r → m r) (x : ContT r m α) : ContT r m α :=
   f ∘ x
@@ -81,24 +84,55 @@ instance : Monad (ContT r m) where
   pure x f := f x
   bind x f g := x fun i => f i g
 
+@[simp]
+theorem run_mk (f : (α → m r) → m r) (k : α → m r) : (.mk f : ContT r m α).run k = f k := rfl
+
+@[simp]
+theorem run_pure (a : α) (k : α → m r) : (pure a : ContT r m α).run k = k a := rfl
+
+@[simp]
+theorem run_bind (x : ContT r m α) (f : α → ContT r m β) (k : β → m r) :
+    (x >>= f).run k = x.run fun x => (f x).run k := rfl
+
+@[simp]
+theorem run_map (f : α → β) (x : ContT r m α) (k : β → m r) :
+    (f <$> x).run k = x.run (k ∘ f) := rfl
+
+@[simp]
+theorem run_seq (f : ContT r m (α → β)) (x : ContT r m α) (k : β → m r) :
+    (f <*> x).run k = f.run fun f => x.run (k ∘ f) := rfl
+
+@[simp]
+theorem run_seqLeft (x : ContT r m α) (y : ContT r m β) (k : α → m r) :
+    (x <* y).run k = x.run fun x => y.run fun _ => k x := rfl
+
+@[simp]
+theorem run_seqRight (x : ContT r m α) (y : ContT r m β) (k : β → m r) :
+    (x *> y).run k = x.run fun _ => y.run k := rfl
+
 instance : LawfulMonad (ContT r m) := LawfulMonad.mk'
   (id_map := by intros; rfl)
   (pure_bind := by intros; ext; rfl)
   (bind_assoc := by intros; ext; rfl)
 
-def monadLift [Monad m] {α} : m α → ContT r m α := fun x f => x >>= f
-
 instance [Monad m] : MonadLift m (ContT r m) where
-  monadLift := ContT.monadLift
+  monadLift x := .mk fun k => x >>= k
+
+@[simp]
+theorem run_monadLift [Monad m] {α} (x : m α) (k : α → m r) :
+    (monadLift x : ContT r m α).run k = x >>= k := rfl
 
 theorem monadLift_bind [Monad m] [LawfulMonad m] {α β} (x : m α) (f : α → m β) :
     (monadLift (x >>= f) : ContT r m β) = monadLift x >>= monadLift ∘ f := by
   ext
-  simp only [monadLift, (· ∘ ·), (· >>= ·), bind_assoc, id, run,
-    ContT.monadLift]
+  simp only [bind_assoc, run_bind, run_monadLift, Function.comp_apply]
 
 instance : MonadCont (ContT r m) where
-  callCC f g := f ⟨fun x _ => g x⟩ g
+  callCC f := .mk fun k => f ⟨fun x => .mk fun _ => k x⟩ k
+
+@[simp]
+theorem run_callCC (f : Label α (ContT r m) β → ContT r m α) (k : α → m r) :
+    (callCC f).run k = (f ⟨fun x => .mk fun _ => k x⟩).run k := rfl
 
 instance : LawfulMonadCont (ContT r m) where
   callCC_bind_right := by intros; ext; rfl
@@ -121,8 +155,8 @@ See [Zulip](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topi
 for further discussion.
 -/
 instance (ε) [MonadExceptOf ε m] : MonadExceptOf ε (ContT r m) where
-  throw e _ := throw e
-  tryCatch act h f := tryCatch (act.run f) fun e => (h e).run f
+  throw e := .mk fun _ => throw e
+  tryCatch act h := .mk fun k => tryCatch (act.run k) fun e => (h e).run k
 
 @[simp]
 theorem run_throw {ε} [MonadExceptOf ε m]

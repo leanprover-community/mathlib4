@@ -5,6 +5,7 @@ Authors: Robert Y. Lewis, Keeley Hoek
 -/
 module
 
+public import Mathlib.Algebra.Order.IsBotOne
 public import Mathlib.Data.Fin.Embedding
 public import Mathlib.Data.Fin.Rev
 public import Mathlib.Order.Hom.Basic
@@ -70,7 +71,6 @@ instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
 instance instBiheytingAlgebra [NeZero n] : BiheytingAlgebra (Fin n) :=
   LinearOrder.toBiheytingAlgebra (Fin n)
 
-
 /- There is a slight asymmetry here, in the sense that `0` is of type `Fin n` when we have
 `[NeZero n]` whereas `last n` is of type `Fin (n + 1)`. To address this properly would
 require a change to std4, defining `NeZero n` and thus re-defining `last n`
@@ -90,9 +90,13 @@ instance instCoheytingAlgebra [NeZero n] : CoheytingAlgebra (Fin n) := inferInst
 
 /-! ### Miscellaneous lemmas -/
 
-lemma top_eq_last (n : ℕ) : ⊤ = Fin.last n := rfl
+instance [NeZero n] : IsBotZeroClass (Fin n) where
+  isBot_zero := isBot_bot
 
-lemma bot_eq_zero (n : ℕ) [NeZero n] : ⊥ = (0 : Fin n) := rfl
+@[deprecated _root_.bot_eq_zero (since := "2026-05-07")]
+protected lemma bot_eq_zero (n : ℕ) [NeZero n] : ⊥ = (0 : Fin n) := _root_.bot_eq_zero
+
+lemma top_eq_last (n : ℕ) : ⊤ = Fin.last n := rfl
 
 @[simp] theorem rev_bot [NeZero n] : rev (⊥ : Fin n) = ⊤ := rfl
 @[simp] theorem rev_top [NeZero n] : rev (⊤ : Fin n) = ⊥ := rev_rev _

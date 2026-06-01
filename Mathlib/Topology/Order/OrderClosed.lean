@@ -57,7 +57,7 @@ see their statements.
   `min`/`max` tend to `min a b` and `max a b`, respectively.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter TopologicalSpace
 open OrderDual (toDual)
@@ -543,7 +543,7 @@ variable [TopologicalSpace α] [PartialOrder α] [t : OrderClosedTopology α]
 -- see Note [lower instance priority]
 instance (priority := 90) OrderClosedTopology.to_t2Space : T2Space α :=
   t2_iff_isClosed_diagonal.2 <| by
-    simpa only [diagonal, le_antisymm_iff] using
+    simpa only [diagonal, le_antisymm_iff] using!
       t.isClosed_le'.inter (isClosed_le continuous_snd continuous_fst)
 
 end PartialOrder
@@ -555,7 +555,7 @@ variable [TopologicalSpace α] [LinearOrder α] [OrderClosedTopology α]
 @[to_dual self (reorder := f g, hf hg)]
 theorem isOpen_lt [TopologicalSpace β] {f g : β → α} (hf : Continuous f) (hg : Continuous g) :
     IsOpen { b | f b < g b } := by
-  simpa only [lt_iff_not_ge] using (isClosed_le hg hf).isOpen_compl
+  simpa only [lt_iff_not_ge] using! (isClosed_le hg hf).isOpen_compl
 
 @[to_dual isOpen_lt_prod']
 theorem isOpen_lt_prod : IsOpen { p : α × α | p.1 < p.2 } :=
@@ -621,7 +621,7 @@ theorem frontier_le_subset_eq (hf : Continuous f) (hg : Continuous g) :
   rw [frontier_eq_closure_inter_closure, closure_le_eq hf hg]
   rintro b ⟨hb₁, hb₂⟩
   refine le_antisymm hb₁ (closure_lt_subset_le hg hf ?_)
-  convert hb₂ using 2; simp only [not_le.symm]; rfl
+  convert! hb₂ using 2; simp only [not_le.symm]; rfl
 
 @[to_dual]
 theorem frontier_Iic_subset (a : α) : frontier (Iic a) ⊆ {a} :=

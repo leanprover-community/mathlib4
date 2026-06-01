@@ -327,11 +327,11 @@ instance toField : Field S :=
 
 @[norm_cast]
 theorem coe_sum {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∑ i, f i) : L) = ∑ i, (f i : L) :=
-  AddSubmonoidClass.coe_finset_sum f Finset.univ
+  AddSubmonoidClass.coe_finsetSum f Finset.univ
 
 @[norm_cast]
 theorem coe_prod {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∏ i, f i) : L) = ∏ i, (f i : L) :=
-  SubmonoidClass.coe_finset_prod f Finset.univ
+  SubmonoidClass.coe_finsetProd f Finset.univ
 
 /-!
 `IntermediateField`s inherit structure from their `Subfield` coercions.

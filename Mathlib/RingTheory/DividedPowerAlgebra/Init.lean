@@ -65,6 +65,7 @@ divided powers (`DividedPowerAlgebra.lift`).
 -/
 
 @[expose] public section
+
 noncomputable section
 
 open Finset Ideal MvPolynomial RingQuot
@@ -125,7 +126,7 @@ protected theorem induction_on' {P : DividedPowerAlgebra R M → Prop} (f : Divi
   rw [← hf]
   induction F using MvPolynomial.induction_on generalizing f with
   | C a =>
-      convert h_C a using 1
+      convert! h_C a using 1
       rw [mkAlgHom, AlgHom.coe_mk]
   | add g1 g2 hg1 hg2 =>
       rw [map_add]
@@ -285,6 +286,11 @@ theorem submodule_span_prod_dp_eq_top (hv : span R (Set.range v) = ⊤) :
       apply sum_mem (fun c hc ↦ ?_)
       rw [← mul_assoc]
       exact hn (x * dp R c.1 m) c.2 (hm x c.1 hx)
+
+lemma pow_dp (n : ℕ) (m : M) (k : ℕ) :
+    (dp R n m) ^ k = (Multiset.multinomial (k • {n})) * dp R (k * n) m := by
+  rw [Multiset.multinomial_nsmul_singleton, ← Fin.prod_const, prod_dp]
+  simp [Nat.multinomial]
 
 end
 

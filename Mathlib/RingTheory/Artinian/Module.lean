@@ -188,7 +188,7 @@ theorem disjoint_partial_infs_eventually_top (f : ℕ → Submodule R M)
       exact Nat.succ_le_succ_iff.mp p
   obtain ⟨n, w⟩ := monotone_stabilizes (partialSups (OrderDual.toDual ∘ f))
   refine ⟨n, fun m p ↦ (h m).eq_bot_of_ge <| sup_eq_left.mp ?_⟩
-  simpa only [partialSups_add_one] using (w (m + 1) <| le_add_right p).symm.trans <| w m p
+  simpa only [partialSups_add_one] using! (w (m + 1) <| le_add_right p).symm.trans <| w m p
 
 end IsArtinian
 
@@ -536,7 +536,7 @@ lemma isField_of_isDomain [IsDomain R] : IsField R := by
   obtain ⟨n, y, hy⟩ := IsArtinian.exists_pow_succ_smul_dvd x (1 : R)
   replace hy : x ^ n * (x * y - 1) = 0 := by
     rw [mul_sub, sub_eq_zero]
-    convert hy using 1
+    convert! hy using 1
     simp [Nat.succ_eq_add_one, pow_add, mul_assoc]
   rw [mul_eq_zero, sub_eq_zero] at hy
   exact ⟨_, hy.resolve_left <| pow_ne_zero _ hx⟩
@@ -623,6 +623,10 @@ namely the quotients by the maximal ideals. -/
 noncomputable def equivPi [IsReduced R] : R ≃ₐ[R] ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal :=
   .trans (.symm <| .quotientBot R R) <| .trans
     (Ideal.quotientEquivAlgOfEq R (nilradical_eq_zero R).symm) (quotNilradicalEquivPi R)
+
+@[simp]
+lemma equivPi_apply [IsReduced R] (x : R) (m : MaximalSpectrum R) : equivPi R x m = x :=
+  rfl
 
 theorem isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=
   (equivPi R).symm.isSemisimpleRing

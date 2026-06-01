@@ -112,8 +112,8 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
     obtain ⟨ixy, _, hixy_def⟩ := exists_mem_eq_sup' univ_nonempty (fun i ↦ ‖(B.repr (x * y)) i‖)
     -- We rewrite the LHS using `ixy`.
     conv_lhs => simp only [Basis.norm]; rw [hixy_def, ← Basis.sum_repr B x, ← Basis.sum_repr B y]
-    rw [sum_mul, map_finset_sum]
-    simp_rw [smul_mul_assoc, map_smul, mul_sum, map_finset_sum, mul_smul_comm, map_smul]
+    rw [sum_mul, map_finsetSum]
+    simp_rw [smul_mul_assoc, map_smul, mul_sum, map_finsetSum, mul_smul_comm, map_smul]
     have hna' : IsNonarchimedean (NormedField.toMulRingNorm K) := hna
     /- Since the norm is nonarchimedean, the norm of a finite sum is bounded by the maximum of the
           norms of the summands. -/
@@ -123,7 +123,7 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
       IsNonarchimedean.finset_image_add hna'
         (fun i ↦ (B.repr x i • ∑ i_1 : ι, B.repr y i_1 • B.repr (B i * B i_1)) ixy)
         (univ : Finset ι)
-    simp only [Finsupp.coe_smul, Finsupp.coe_finset_sum, Pi.smul_apply, sum_apply, smul_eq_mul,
+    simp only [Finsupp.coe_smul, Finsupp.coe_finsetSum, Pi.smul_apply, sum_apply, smul_eq_mul,
       norm_mul] at hk ⊢
     apply le_trans hk
     -- We use the above property again.

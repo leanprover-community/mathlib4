@@ -201,7 +201,7 @@ theorem isAddUnit_detp_smul_mul_adjp {d : n → R} (hAB : A * B = diagonal d) :
 theorem detp_smul_add_adjp (hAB : A * B = 1) :
     detp 1 B • A + adjp (-1) B = detp (-1) B • A + adjp 1 B := by
   have key := congr(A * $(mul_adjp_add_detp B))
-  simp_rw [mul_add, ← mul_assoc, hAB, one_mul, mul_smul, mul_one] at key
+  simp_rw [mul_add, ← mul_assoc, hAB, one_mul, Matrix.mul_smul, mul_one] at key
   rwa [add_comm, eq_comm, add_comm]
 
 theorem detp_smul_adjp (hAB : A * B = 1) :
@@ -220,7 +220,7 @@ instance (priority := low) instIsStablyFiniteRingOfCommSemiring : IsStablyFinite
   have h0 := detp_mul A B
   rw [hAB, detp_one_one, detp_neg_one_one, zero_add] at h0
   replace h := congr(B * $(detp_smul_adjp hAB))
-  simp only [mul_add, mul_smul] at h
+  simp only [mul_add, Matrix.mul_smul] at h
   replace h := congr($h + (detp 1 A * detp (-1) B + detp (-1) A * detp 1 B) • 1)
   simp_rw [add_smul, ← smul_smul] at h
   rwa [add_assoc, add_add_add_comm, ← smul_add, ← smul_add,

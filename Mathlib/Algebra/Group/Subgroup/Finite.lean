@@ -20,7 +20,7 @@ This file provides some result on multiplicative and additive subgroups in the f
 subgroup, subgroups
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -88,9 +88,15 @@ theorem val_multiset_prod {G} [CommGroup G] (H : Subgroup G) (m : Multiset H) :
   SubmonoidClass.coe_multiset_prod m
 
 @[to_additive (attr := simp 1100, norm_cast)]
-theorem val_finset_prod {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s : Finset ι) :
+theorem val_finsetProd {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s : Finset ι) :
     ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : G) :=
-  SubmonoidClass.coe_finset_prod f s
+  SubmonoidClass.coe_finsetProd f s
+
+@[deprecated (since := "2026-04-08")]
+alias _root_.AddSubgroup.val_finset_sum := _root_.AddSubgroup.val_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias val_finset_prod := val_finsetProd
 
 @[to_additive]
 instance fintypeBot : Fintype (⊥ : Subgroup G) :=
@@ -163,6 +169,11 @@ theorem card_map_of_injective {H : Type*} [Group H] {K : Subgroup G} {f : G →*
 theorem card_subtype (K : Subgroup G) (L : Subgroup K) :
     Nat.card (map K.subtype L) = Nat.card L :=
   card_map_of_injective K.subtype_injective
+
+@[to_additive]
+theorem card_mapSubgroup {G' : Type*} [Group G'] (e : G ≃* G') :
+    Nat.card (e.mapSubgroup H) = Nat.card H :=
+  Subgroup.card_map_of_injective e.injective
 
 end Subgroup
 

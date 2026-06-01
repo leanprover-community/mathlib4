@@ -108,7 +108,7 @@ theorem hasFiniteIntegral_compProd_iff ⦃f : β × γ → E⦄ (h1f : StronglyM
   have : ∀ x, ∀ᵐ y ∂η (a, x), 0 ≤ ‖f (x, y)‖ := fun x => Eventually.of_forall fun y => norm_nonneg _
   simp_rw [integral_eq_lintegral_of_nonneg_ae (this _)
       (h1f.norm.comp_measurable measurable_prodMk_left).aestronglyMeasurable,
-    enorm_eq_ofReal toReal_nonneg, ofReal_norm_eq_enorm]
+    enorm_eq_ofReal toReal_nonneg, ofReal_norm]
   have : ∀ {p q r : Prop} (_ : r → p), (r ↔ p ∧ q) ↔ p → (r ↔ q) := fun {p q r} h1 => by
     rw [← and_congr_right_iff, and_iff_right_of_imp h1]
   rw [this]
@@ -216,16 +216,12 @@ theorem Kernel.continuous_integral_integral :
     Continuous fun f : β × γ →₁[(κ ⊗ₖ η) a] E => ∫ x, ∫ y, f (x, y) ∂η (a, x) ∂κ a := by
   rw [continuous_iff_continuousAt]; intro g
   refine
-    tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_compProd
+    tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_compProd.aestronglyMeasurable
       (Eventually.of_forall fun h => (L1.integrable_coeFn h).integral_compProd) ?_
   simp_rw [← lintegral_fn_integral_sub (‖·‖ₑ) (L1.integrable_coeFn _) (L1.integrable_coeFn g)]
-  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le _) _
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le) _
   · exact fun i => ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖ₑ ∂η (a, x) ∂κ a
   swap; · exact fun i => lintegral_mono fun x => enorm_integral_le_lintegral_enorm _
-  change
-    Tendsto
-      (fun i : β × γ →₁[(κ ⊗ₖ η) a] E => ∫⁻ x, ∫⁻ y : γ, ‖i (x, y) - g (x, y)‖ₑ ∂η (a, x) ∂κ a)
-      (𝓝 g) (𝓝 0)
   have this (i : Lp (α := β × γ) E 1 (((κ ⊗ₖ η) a) : Measure (β × γ))) :
       Measurable fun z => ‖i z - g z‖ₑ :=
     ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).enorm
@@ -254,7 +250,7 @@ theorem integral_compProd :
     simp_rw [integral_add' i_f i_g, Kernel.integral_integral_add' i_f i_g, hf, hg]
   · exact isClosed_eq continuous_integral Kernel.continuous_integral_integral
   · intro f g hfg _ hf
-    convert hf using 1
+    convert! hf using 1
     · exact integral_congr_ae hfg.symm
     · apply integral_congr_ae
       filter_upwards [ae_ae_of_ae_compProd hfg] with x hfgx using
@@ -303,7 +299,7 @@ theorem hasFiniteIntegral_comp_iff ⦃f : γ → E⦄ (hf : StronglyMeasurable f
     (∀ᵐ x ∂κ a, HasFiniteIntegral f (η x)) ∧ HasFiniteIntegral (fun x ↦ ∫ y, ‖f y‖ ∂η x) (κ a) := by
   simp_rw [hasFiniteIntegral_iff_enorm, lintegral_comp _ _ _ hf.enorm]
   simp_rw [integral_eq_lintegral_of_nonneg_ae (ae_of_all _ fun y ↦ norm_nonneg _)
-      hf.norm.aestronglyMeasurable, enorm_eq_ofReal toReal_nonneg, ofReal_norm_eq_enorm]
+      hf.norm.aestronglyMeasurable, enorm_eq_ofReal toReal_nonneg, ofReal_norm]
   have : ∀ {p q r : Prop} (_ : r → p), (r ↔ p ∧ q) ↔ p → (r ↔ q) := fun h ↦ by
     rw [← and_congr_right_iff, and_iff_right_of_imp h]
   rw [this]
@@ -401,12 +397,12 @@ theorem integral_integral_sub'_comp ⦃f g : γ → E⦄ (hf : Integrable f ((η
 theorem continuous_integral_integral_comp :
     Continuous fun f : γ →₁[(η ∘ₖ κ) a] E ↦ ∫ x, ∫ y, f y ∂η x ∂κ a := by
   refine continuous_iff_continuousAt.2 fun g ↦ ?_
-  refine tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_comp
+  refine tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_comp.aestronglyMeasurable
       (Eventually.of_forall fun h ↦ (L1.integrable_coeFn h).integral_comp) ?_
   simp_rw [← lintegral_fn_integral_sub_comp (‖·‖ₑ) (L1.integrable_coeFn _) (L1.integrable_coeFn g)]
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le
     (h := fun i ↦ ∫⁻ x, ∫⁻ y, ‖i y - g y‖ₑ ∂η x ∂κ a)
-    tendsto_const_nhds ?_ (fun _ ↦ zero_le _) ?_
+    tendsto_const_nhds ?_ (fun _ ↦ zero_le) ?_
   swap; · exact fun _ ↦ lintegral_mono fun _ ↦ enorm_integral_le_lintegral_enorm _
   have (i : γ →₁[(η ∘ₖ κ) a] E) : Measurable fun z ↦ ‖i z - g z‖ₑ :=
     ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).enorm
@@ -429,7 +425,7 @@ theorem integral_comp : ∀ {f : γ → E} (_ : Integrable f ((η ∘ₖ κ) a))
     simp_rw [integral_add' i_f i_g, integral_integral_add'_comp i_f i_g, hf, hg]
   · exact isClosed_eq continuous_integral Kernel.continuous_integral_integral_comp
   · rintro f g hfg - hf
-    convert hf using 1
+    convert! hf using 1
     · exact integral_congr_ae hfg.symm
     · apply integral_congr_ae
       filter_upwards [ae_ae_of_ae_comp hfg] with x hfgx using integral_congr_ae (ae_eq_symm hfgx)

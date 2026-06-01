@@ -38,7 +38,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter MeasureTheory MeasurableSpace TopologicalSpace
 
@@ -405,8 +405,8 @@ theorem Dense.borel_eq_generateFrom_Ioc_mem_aux {α : Type*} [TopologicalSpace �
     [OrderTopology α] [SecondCountableTopology α] {s : Set α} (hd : Dense s)
     (hbot : ∀ x, IsTop x → x ∈ s) (hIoo : ∀ x y : α, x < y → Ioo x y = ∅ → x ∈ s) :
     borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ioc l u = S } := by
-  convert hd.orderDual.borel_eq_generateFrom_Ico_mem_aux hbot fun x y hlt he => hIoo y x hlt _
-    using 2
+  convert!
+    hd.orderDual.borel_eq_generateFrom_Ico_mem_aux hbot fun x y hlt he => hIoo y x hlt _ using 2
   · ext s
     constructor <;> rintro ⟨l, hl, u, hu, hlt, rfl⟩
     exacts [⟨u, hu, l, hl, hlt, Ico_toDual⟩, ⟨u, hu, l, hl, hlt, Ioc_toDual⟩]
@@ -588,7 +588,7 @@ variable [SecondCountableTopology α] [OrderClosedTopology α]
 @[fun_prop]
 theorem Measurable.max {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun a => max (f a) (g a) := by
-  simpa only [max_def'] using hf.piecewise (measurableSet_le hg hf) hg
+  simpa only [max_def'] using! hf.piecewise (measurableSet_le hg hf) hg
 
 @[fun_prop]
 nonrec theorem AEMeasurable.max {f g : δ → α} {μ : Measure δ} (hf : AEMeasurable f μ)
@@ -599,7 +599,7 @@ nonrec theorem AEMeasurable.max {f g : δ → α} {μ : Measure δ} (hf : AEMeas
 @[fun_prop]
 theorem Measurable.min {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun a => min (f a) (g a) := by
-  simpa only [min_def] using hf.piecewise (measurableSet_le hf hg) hg
+  simpa only [min_def] using! hf.piecewise (measurableSet_le hf hg) hg
 
 @[fun_prop]
 nonrec theorem AEMeasurable.min {f g : δ → α} {μ : Measure δ} (hf : AEMeasurable f μ)
@@ -642,7 +642,7 @@ section LinearOrder
 variable [LinearOrder α] [OrderTopology α] [SecondCountableTopology α]
 
 theorem measurable_of_Iio {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' Iio x)) : Measurable f := by
-  convert measurable_generateFrom (α := δ) _
+  convert! measurable_generateFrom (α := δ) _
   · exact BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Iio _)
   · rintro _ ⟨x, rfl⟩; exact hf x
 
@@ -651,7 +651,7 @@ theorem UpperSemicontinuous.measurable [TopologicalSpace δ] [OpensMeasurableSpa
   measurable_of_Iio fun y => (hf.isOpen_preimage y).measurableSet
 
 theorem measurable_of_Ioi {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' Ioi x)) : Measurable f := by
-  convert measurable_generateFrom (α := δ) _
+  convert! measurable_generateFrom (α := δ) _
   · exact BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Ioi _)
   · rintro _ ⟨x, rfl⟩; exact hf x
 
@@ -717,7 +717,7 @@ theorem Measurable.isLUB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g'
   classical
   rcases isEmpty_or_nonempty ι with hι | ⟨⟨i⟩⟩
   · rcases eq_empty_or_nonempty s with rfl | ⟨x, hx⟩
-    · convert g'_meas
+    · convert! g'_meas
       rwa [compl_empty, eqOn_univ] at hg'
     · have A : ∀ b ∈ s, IsBot (g b) := by simpa using hg
       have B : ∀ b ∈ s, g b = g x := by
@@ -978,10 +978,10 @@ theorem AEMeasurable.biSup {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ �
   let g : ι → δ → α := fun i ↦ if hi : i ∈ s then (hf i hi).mk (f i) else fun _b ↦ sSup ∅
   have : ∀ i ∈ s, Measurable (g i) := by
     intro i hi
-    simpa [g, hi] using (hf i hi).measurable_mk
+    simpa [g, hi] using! (hf i hi).measurable_mk
   refine ⟨fun b ↦ ⨆ (i) (_ : i ∈ s), g i b, .biSup s hs this, ?_⟩
   have : ∀ i ∈ s, ∀ᵐ b ∂μ, f i b = g i b :=
-    fun i hi ↦ by simpa [g, hi] using (hf i hi).ae_eq_mk
+    fun i hi ↦ by simpa [g, hi] using! (hf i hi).ae_eq_mk
   filter_upwards [(ae_ball_iff hs).2 this] with b hb
   exact iSup_congr fun i => iSup_congr (hb i)
 

@@ -213,7 +213,6 @@ theorem RingHom.ofLocalizationSpanTarget_iff_finite :
 
 open TensorProduct
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 lemma RingHom.OfLocalizationSpan.mk (hP : RingHom.RespectsIso P)
     (H : ∀ {R S : Type u} [CommRing R] [CommRing S] [Algebra R S] (s : Set R),
@@ -318,7 +317,7 @@ lemma RingHom.LocalizationAwayPreserves.respectsIso
       IsLocalization.away_of_isUnit_of_bijective _ isUnit_one (Equiv.refl _).bijective
     have : IsLocalization.Away (f 1) T :=
       IsLocalization.away_of_isUnit_of_bijective _ (by simp) e.bijective
-    convert hP f 1 R T hf
+    convert! hP f 1 R T hf
     trans (IsLocalization.Away.map R T f 1).comp (algebraMap R R)
     · rw [IsLocalization.Away.map, IsLocalization.map_comp]; rfl
     · rfl
@@ -328,11 +327,12 @@ lemma RingHom.LocalizationAwayPreserves.respectsIso
       IsLocalization.away_of_isUnit_of_bijective _ isUnit_one e.symm.bijective
     have : IsLocalization.Away (f 1) T :=
       IsLocalization.away_of_isUnit_of_bijective _ (by simp) (Equiv.refl _).bijective
-    convert hP f 1 R T hf
+    convert! hP f 1 R T hf
+    have : RingHomInvPair (e : R →+* S) e.symm := RingHomInvPair.of_ringEquiv _
     have : (IsLocalization.Away.map R T f 1).comp e.symm.toRingHom = f :=
       IsLocalization.map_comp ..
     conv_lhs => rw [← this, RingHom.comp_assoc]
-    simp only [RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, RingHomCompTriple.comp_eq]
+    simp only [RingEquiv.toRingHom_eq_coe, RingHomCompTriple.comp_eq]
 
 lemma RingHom.StableUnderCompositionWithLocalizationAway.respectsIso
     (hP : StableUnderCompositionWithLocalizationAway P) :
@@ -431,8 +431,7 @@ lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
   apply hP _ s hs
   intro r
   obtain ⟨T, _, _, _, hT⟩ := hT r
-  convert hP'.1 _
-    (Localization.algEquiv (R := S) (Submonoid.powers (r : S)) T).symm.toRingEquiv hT
+  convert! hP'.1 _ (Localization.algEquiv (R := S) (Submonoid.powers (r : S)) T).symm.toRingEquiv hT
   rw [← RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe,
     AlgEquiv.toRingEquiv_toRingHom, Localization.coe_algEquiv_symm, IsLocalization.map_comp,
     RingHom.comp_id]

@@ -131,7 +131,7 @@ lemma linearIndepOn_root_baseOf (f : M →+ ℚ) (hf : ∀ i, f (P.root i) ≠ 0
     suffices (P.rootSpanMem ℚ i : M) ∈ span ℚ (P.root '' baseOf P.root f) by
       rw [← (injective_subtype (P.rootSpan ℚ)).mem_set_image, ← map_coe, SetLike.mem_coe, map_span,
         ← image_univ, ← image_comp]
-      convert this
+      convert! this
       aesop
     rw [← span_span_of_tower ℤ, ← Submodule.coe_toAddSubgroup, span_int_eq_addSubgroupClosure,
       AddSubgroup.closure_image_isAddIndecomposable_baseOf P.root (by simp) f (by simpa)]

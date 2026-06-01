@@ -72,6 +72,7 @@ theorem primaryComponent_map_mem (φ : M₁ →ₗ[A] M₂) (c : primaryComponen
 
 /-- Given an A-linear map between M₁ and M₂, `primaryComponent.map` is the
 restriction to the I-primaryComponent components of M₁ and M₂. -/
+@[simps!]
 def primaryComponent.map (φ : M₁ →ₗ[A] M₂) : primaryComponent M₁ I →ₗ[A] primaryComponent M₂ I :=
   (φ.domRestrict (primaryComponent M₁ I)).codRestrict (primaryComponent M₂ I) (fun c ↦
     by simpa only [LinearMap.domRestrict_apply] using primaryComponent_map_mem I φ c)
@@ -173,7 +174,7 @@ theorem iSup_primaryComponent_eq_top (h : IsTorsion A M) :
 variable (A M) in
 theorem iSupIndep_primaryComponent :
     iSupIndep fun P : HeightOneSpectrum A => primaryComponent M (P : Ideal A) := by
-  rw [iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero]
+  rw [iSupIndep_iff_finsetSum_eq_zero_imp_eq_zero]
   intro s p hmem hsum
   simp only [primaryComponent_mem] at hmem
   choose! f hmem using hmem
@@ -182,9 +183,32 @@ theorem iSupIndep_primaryComponent :
     rw [iSupIndep_iff_supIndep]
     exact fun _ ↦ supIndep_torsionBySet_ideal
       fun _ _ _ _ hPQ ↦ (isCoprime_pow_of_ne _ _ hPQ _ _).sup_eq
-  rw [iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero] at hSupIndep
+  rw [iSupIndep_iff_finsetSum_eq_zero_imp_eq_zero] at hSupIndep
   apply hSupIndep _ _ ?_ hsum
   exact fun P hP ↦ torsionBySet_le_torsionBySet_pow _ _ (Finset.le_sup hP) _ (hmem P hP)
+
+theorem primaryComponent.map_surjective {M₁ M₂ : Type*}
+    [AddCommGroup M₁] [AddCommGroup M₂] [Module A M₁] [Module A M₂] (hM₁ : IsTorsion A M₁)
+    (P : HeightOneSpectrum A) (φ : M₁ →ₗ[A] M₂) (hf : Surjective φ) :
+    Surjective (primaryComponent.map P.asIdeal φ) := by
+  classical
+  rintro ⟨y, hy⟩
+  obtain ⟨b, rfl⟩ : ∃ a, φ a = y := hf y
+  obtain ⟨f, hf⟩ : ∃ f : Π₀ i : HeightOneSpectrum A, primaryComponent M₁ i.asIdeal,
+      (DFinsupp.lsum ℕ fun i : HeightOneSpectrum A ↦
+      (primaryComponent M₁ i.asIdeal).subtype) f = b := by
+    simp only [← mem_iSup_iff_exists_dfinsupp, iSup_primaryComponent_eq_top hM₁, mem_top]
+  refine ⟨f P, Subtype.ext ?_⟩
+  simp only [map_apply_coe]
+  rw [eq_comm, ← sub_eq_zero]
+  refine (Submodule.disjoint_def.mp (iSupIndep_primaryComponent A M₂ P)) _ ?_ ?_
+  · exact Submodule.sub_mem _ hy (primaryComponent_map_mem _ _ _)
+  · have hdiff : φ b - φ ↑(f P) = ∑ Q ∈ f.support \ {P}, φ ↑(f Q) := by
+      rw [sub_eq_iff_eq_add', ← Finset.sum_eq_add_sum_diff_singleton P (fun P ↦ φ (f P)) (by aesop)]
+      simpa [DFinsupp.sumAddHom_apply, DFinsupp.sum] using congr(φ $hf).symm
+    rw [hdiff]
+    exact Submodule.sum_mem _ fun Q hQ ↦ Submodule.mem_iSup_of_mem Q <|
+        Submodule.mem_iSup_of_mem (by grind) (primaryComponent_map_mem _ _ _)
 
 end IsDedekindDomain
 
