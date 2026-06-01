@@ -301,7 +301,6 @@ def bernoulli (p : ℝ≥0) (h : p ≤ 1) : PMF Bool :=
 
 variable {p : ℝ≥0} (h : p ≤ 1) (b : Bool)
 
-set_option linter.deprecated false in
 @[deprecated ProbabilityTheory.bernoulliMeasure_apply (since := "2026-04-07")]
 theorem bernoulli_apply : bernoulli p h b = cond b p (1 - p) := by
   simp only [bernoulli, ofFintype_apply]
