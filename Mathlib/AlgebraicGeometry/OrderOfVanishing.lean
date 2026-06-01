@@ -72,7 +72,6 @@ the function field at any point of codimension one is some finite value.
 -/
 lemma ord_ne_zero {Z : X} (hZ : coheight Z = 1) {f : X.functionField} (hf : f ≠ 0) :
     Scheme.ord Z hZ f ≠ 0 := (map_ne_zero (Scheme.ord Z hZ)).mpr hf
-
 /--
 The order of vanishing of a unit is `1` everywhere.
 -/
@@ -92,57 +91,58 @@ lemma ord_add (x : X) (hx : coheight x = 1) [IsDiscreteValuationRing (X.presheaf
     min (ord x hx f) (ord x hx g) ≤ ord x hx (f + g) := Ring.ordFrac_add f g h
 
 /--
-Order of vanishing function valued in `ℤ`.
+Order of vanishing function valued in `ℤ` with a junk value for the order of vanishing of `0`.
 -/
 noncomputable
 def ordZ (x : X) (hx : coheight x = 1) (f : X.functionField) : ℤ :=
-    WithZero.recZeroCoe 0 id <| X.ord x hx f
+    Multiplicative.toAdd <| WithZero.recZeroCoe 1 id <| X.ord x hx f
 
 lemma ord_eq_coe_ordZ {x : X} {hx : coheight x = 1} (f : X.functionField) (hf : f ≠ 0) :
     ord x hx f = ↑(Multiplicative.ofAdd (ordZ x hx f)) := by
   simp [ordZ]
   obtain ⟨a, ha⟩ := WithZero.ne_zero_iff_exists.mp <| ord_ne_zero hx hf
   simp [← ha]
-  rfl
-/-
-lemma ordZ_eq_ord {x : X} {hx : coheight x = 1} (f : X.functionField) (hf : f ≠ 0) :
+  --rfl
+
+lemma ordZ_eq_ord {x : X} {hx : coheight x = 1} {f : X.functionField} (hf : f ≠ 0) :
     ordZ x hx f = Multiplicative.toAdd WithZero.unzero (ord_ne_zero hx hf) := by
   simp [ordZ]
-  obtain ⟨a, ha⟩ := WithZero.ne_zero_iff_exists.mp <| ord_ne_zero hx hf
-  simp [← ha]
-  have := ord_ne_zero hx hf
-  rw [← ha] at this
-  have o := WithZero.unzero_coe this
-  rw [← o]
+  obtain ⟨a1, ha1⟩ := WithZero.ne_zero_iff_exists.mp <| ord_ne_zero hx hf
+  simp [← ha1]
+  change a1 = unzero _
+  rw [← WithZero.coe_inj, ha1]
+  exact Eq.symm (coe_unzero (ord_ne_zero hx hf))
 
-  /-
-  I'm not sure if this lemma is actually useful...
-  -/
-  sorry-/
-
+lemma bingobangobongo {α : Type*} {a : WithZero (Multiplicative α)} (h : a ≠ 0) (b : α) :
+    Multiplicative.toAdd WithZero.unzero h = b ↔
+    a = ↑(Multiplicative.ofAdd b) := by
+  constructor
+  · intro k
+    rw [← k]
+    exact (coe_unzero h).symm
+  · intro k
+    change unzero h = Multiplicative.ofAdd b
+    rw [← WithZero.coe_inj, ← k]
+    simp
 
 @[simp]
 lemma ordZ_mul {x : X} {hx : coheight x = 1} {f g : X.functionField}
-    {hf : f ≠ 0} {hg : g ≠ 0} : ordZ x hx (f*g) = ordZ x hx f + ordZ x hx g := by
-  have : f * g ≠ 0 := (mul_ne_zero_iff_right hg).mpr hf
-  obtain ⟨a1, ha1⟩ := WithZero.ne_zero_iff_exists.mp <| ord_ne_zero hx this
-  obtain ⟨a2, ha2⟩ := WithZero.ne_zero_iff_exists.mp <| ord_ne_zero hx hf
-  obtain ⟨a3, ha3⟩ := WithZero.ne_zero_iff_exists.mp <| ord_ne_zero hx hg
-  simp only [ordZ, ← ha1, ← ha2, ← ha3]
-  change a1 = a2 * a3
+    (hf : f ≠ 0) (hg : g ≠ 0) : ordZ x hx (f*g) = ordZ x hx f + ordZ x hx g := by
+  simp only [ordZ_eq_ord hf, ordZ_eq_ord hg, ordZ_eq_ord ((mul_ne_zero_iff_right hg).mpr hf)]
+  change unzero _ = unzero (ord_ne_zero hx hf) * _
   rw [← WithZero.coe_inj]
-  simp [ha1, ha2, ha3]
+  simp
 
 lemma ordZ_of_isUnit {U : X.Opens}
     [Nonempty U] {f : Γ(X, U)} (hf : IsUnit f) {x : X} (hx : coheight x = 1) (hx' : x ∈ U) :
     X.ordZ x hx (X.germToFunctionField U f) = 0 := by
-  simp only [ordZ]
   have hf' : X.germToFunctionField U f ≠ 0 :=
     (map_ne_zero_iff _ (germToFunctionField_injective X U)).mpr <| IsUnit.ne_zero hf
-  obtain ⟨a, ha⟩ := WithZero.ne_zero_iff_exists.mp <| ord_ne_zero hx hf'
-  simp only [← ha]
-  change a = 1
-  rw [← WithZero.coe_inj (α := Multiplicative ℤ), ha]
+  simp only [ordZ_eq_ord hf']
+  change _ = Multiplicative.toAdd 1
+  apply Multiplicative.ext_iff.mp
+  rw [← WithZero.coe_inj]
+  simp only [coe_unzero, coe_one]
   exact ord_of_isUnit hf hx hx'
 
 lemma not_mem_of_ordZ_neq_zero (f : X.functionField) {U : X.Opens} [Nonempty U] {g : Γ(X, U)}
@@ -167,11 +167,31 @@ lemma ordZ_add {x : X} (hx : coheight x = 1) [IsDiscreteValuationRing (X.preshea
 lemma ordZ_le_smul {x : X} (hx : coheight x = 1) {U : X.Opens} [Nonempty U] (hxU : x ∈ U)
     {a : Γ(X, U)} (ha : a ≠ 0) (f : X.functionField) :
     ordZ x hx f ≤ ordZ x hx (a • f) := by
-  simp [ordZ]
+
+  suffices ordZ x hx f ≤ ordZ x hx ((algebraMap Γ(X, U) X.functionField a) * f) from
+    Int.le_def.mpr this
+  by_cases o : f = 0
+  · simp [o]
+  have : (algebraMap Γ(X, U) X.functionField a) ≠ 0 :=
+    (map_ne_zero_iff _ (germToFunctionField_injective X U)).mpr ha
+  rw [ordZ_mul this o]
+  simp
+
+
+
+
+  sorry
+  /-
   by_cases o : f = 0
   · simp [o]
   · obtain ⟨a1, ha1⟩ := WithZero.ne_zero_iff_exists.mp <| ord_ne_zero hx o
-    have : (a • f) ≠ 0 := sorry
+    have : (a • f) ≠ 0 := by
+      /-
+      I think this assumes the function field has characteristic 0
+      -/
+      sorry
+      --rw [smul_ne_zero_iff]
+
     obtain ⟨a2, ha2⟩ := WithZero.ne_zero_iff_exists.mp <| ord_ne_zero hx this
     rw [← ha1, ← ha2]
     simp
@@ -183,7 +203,7 @@ lemma ordZ_le_smul {x : X} (hx : coheight x = 1) {U : X.Opens} [Nonempty U] (hxU
     let test : IsScalarTower ↑Γ(X, U) ↑(X.presheaf.stalk x) ↑X.functionField :=
             AlgebraicGeometry.functionField_isScalarTower X U ⟨x, hxU⟩
     refine Ring.ordFrac_le_smul a ?_ f
-    exact (map_ne_zero_iff _ (germ_injective_of_isIntegral  X x hxU)).mpr ha
+    exact (map_ne_zero_iff _ (germ_injective_of_isIntegral  X x hxU)).mpr ha-/
 
 
 end Scheme
