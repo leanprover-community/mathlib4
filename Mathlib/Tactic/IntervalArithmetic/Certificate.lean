@@ -205,7 +205,7 @@ def _root_.Lean.Expr.toIntervalArithmeticCertificateGenerator (α : Type) (e : E
     withLocalDeclsD x_binders fun xs => do
       let hrx_binders := Array.range rIds.size |>.map fun i ↦
         (Name.anonymous,
-          fun _ => do return ← mkMemInterval (mkFVar rIds[i]!) xs[i]! ctx.embeddingExpr)
+          fun _ => do mkMemInterval (mkFVar rIds[i]!) xs[i]! ctx.embeddingExpr)
       withLocalDeclsD hrx_binders fun hrxs => do
         let mut hyps : FVarIdMap (Expr × Expr) := {}
         for i in [:rIds.size] do
