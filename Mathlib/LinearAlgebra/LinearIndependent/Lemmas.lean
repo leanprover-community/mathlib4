@@ -539,6 +539,7 @@ open Submodule
 
 /- TODO: some of the following proofs can generalized with a zero_ne_one predicate type class
 (instead of a data containing type class) -/
+
 theorem mem_span_insert_exchange :
     x ∈ span K (insert y s) → x ∉ span K s → y ∈ span K (insert x s) := by
   simp only [mem_span_insert, forall_exists_index, and_imp]

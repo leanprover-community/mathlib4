@@ -77,7 +77,6 @@ instance : ExponentialIdeal (subterminalInclusion C) := by
   exact uncurry_injective (B.2 (MonoidalClosed.uncurry g) (MonoidalClosed.uncurry h))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If `D` is a reflective subcategory, the property of being an exponential ideal is equivalent to
 the presence of a natural isomorphism `i ⋙ exp A ⋙ leftAdjoint i ⋙ i ≅ i ⋙ exp A`, that is:
 `(A ⟹ iB) ≅ i L (A ⟹ iB)`, naturally in `B`.
@@ -110,7 +109,7 @@ variable (i : D ⥤ C)
 
 /- This cannot be a local instance since it has free variables,
 it can instead be used as a have when needed.
-We assume HasFiniteProducts D as a hypothesis below, to avoid making this a local instance.
+We assume `HasFiniteProducts D` as a hypothesis below, to avoid making this a local instance.
 -/
 theorem reflective_products [Limits.HasFiniteProducts C] [Reflective i] :
     Limits.HasFiniteProducts D := ⟨fun _ => hasLimitsOfShape_of_reflective i⟩
@@ -271,7 +270,6 @@ noncomputable def bijection (A B : C) (X : D) :
       i.fullyFaithfulOfReflective.homEquiv.symm
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem bijection_symm_apply_id (A B : C) :
     (bijection i A B _).symm (𝟙 _) = prodComparison _ _ _ := by
   simp only [bijection, Equiv.trans_def, curriedTensor_obj_obj, Equiv.symm_trans_apply,
