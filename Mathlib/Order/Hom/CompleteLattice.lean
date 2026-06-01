@@ -20,7 +20,9 @@ be satisfied by itself and all stricter types.
 
 * `sSupHom`: Maps which preserve `⨆`.
 * `sInfHom`: Maps which preserve `⨅`.
-* `FrameHom`: Frame homomorphisms. Maps which preserve `⨆`, `⊓` and `⊤`.
+* `FrameHom`: Frame homomorphisms. Maps which preserve `⨆`, `⊓` and `⊤`. Note that while a frame
+  is a Heyting algebra, frame homs need not preserve `⇨`. For instance,
+  `TopologicalSpace.Opens.frameHom` does not in general preserve complementation.
 * `CompleteLatticeHom`: Complete lattice homomorphisms. Maps which preserve `⨆` and `⨅`.
 
 ## Typeclasses
@@ -33,10 +35,6 @@ be satisfied by itself and all stricter types.
 ## Concrete homs
 
 * `CompleteLatticeHom.setPreimage`: `Set.preimage` as a complete lattice homomorphism.
-
-## TODO
-
-Frame homs are Heyting homs.
 -/
 
 @[expose] public section
