@@ -17,7 +17,6 @@ arithmetic tactics.
 
 public meta section
 
-set_option linter.all false
 section Lemmas
 
 variable {α : Type*} [Preorder α]

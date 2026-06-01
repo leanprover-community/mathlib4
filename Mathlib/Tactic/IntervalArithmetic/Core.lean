@@ -3,6 +3,7 @@ Copyright (c) 2026 David Ledvinka. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Ledvinka
 -/
+
 module
 
 public meta import Mathlib.Tactic.IntervalArithmetic.IntervalHyps
@@ -16,8 +17,6 @@ This file defines the core functions for the interval arithmetic tactics.
 -/
 
 @[expose] public meta section
-
-set_option linter.all false
 
 namespace IntervalArithmetic
 
@@ -83,8 +82,8 @@ def proveIntervalLt (α : Type) [LinearOrder α] [Repr α] (xCert yCert : Interv
   let x_lt_y ← mkAppM ``Interval.lt #[xCert.intervalExpr, yCert.intervalExpr]
   mkDecideProof x_lt_y
 
-def intervalIneqCore (α : Type) [Repr α] [LinearOrder α] [DecidableLT α]
-    (ineq : Mathlib.Ineq) (lhs : Expr) (rhs : Expr) : IntervalM α Expr := do
+def intervalIneqCore (α : Type) [Repr α] [LinearOrder α] (ineq : Mathlib.Ineq)
+    (lhs : Expr) (rhs : Expr) : IntervalM α Expr := do
   let ctx ← read
   let (lcert, rcert) ← mkCertificate2 α lhs rhs
   match ineq with
@@ -98,7 +97,7 @@ def intervalIneqCore (α : Type) [Repr α] [LinearOrder α] [DecidableLT α]
       let h_x_lt_y ← proveIntervalLt α lcert rcert
       mkAppM ``Interval.lt_of_lt #[ctx.strictMonoExpr, lcert.proof, rcert.proof, h_x_lt_y]
 
-def intervalMemSetCore (α : Type) [LinearOrder α] [Repr α] [DecidableLT α] (r : Expr)
+def intervalMemSetCore (α : Type) [LinearOrder α] [Repr α] (r : Expr)
     (Ixx : IntervalClass) : IntervalM α Expr := do
   let ctx ← read
   match Ixx with
@@ -147,8 +146,7 @@ def intervalMemSetCore (α : Type) [LinearOrder α] [Repr α] [DecidableLT α] (
       mkAppM ``mem_Ioo_of_interval_lt_lt
         #[ctx.strictMonoExpr, acert.proof, rcert.proof, bcert.proof, har, hrb]
 
-def intervalCore (α : Type) [LinearOrder α] [Repr α] [DecidableLE α] [DecidableLT α]
-    (g : MVarId) : IntervalM α Expr := do
+def intervalCore (α : Type) [LinearOrder α] [Repr α] (g : MVarId) : IntervalM α Expr := do
   let t ← whnfR (← g.getType)
   match ← t.intervalGoal? α with
     | .ineq ineq lhs rhs => intervalIneqCore α ineq lhs rhs
@@ -156,8 +154,8 @@ def intervalCore (α : Type) [LinearOrder α] [Repr α] [DecidableLE α] [Decida
 
 section Tactic
 
-def intervalTactic (α : Type) [LinearOrder α] [Repr α] [DecidableLE α] [DecidableLT α]
-  (declName : Name) (opConfig : NameMap OpConfig) (n : ℕ) : TacticM Unit := withMainContext do
+def intervalTactic (α : Type) [LinearOrder α] [Repr α] (declName : Name)
+    (opConfig : NameMap OpConfig) (n : ℕ) : TacticM Unit := withMainContext do
   let ctx ← mkContext declName n opConfig
   let g ← getMainGoal
   let ⟨g_proof, _⟩ ← intervalCore α g ctx |>.run {}

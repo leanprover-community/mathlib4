@@ -12,12 +12,9 @@ public meta import Mathlib.Tactic.IntervalArithmetic.Environment
 
 This file declares an initialzes the environments that carry interval arithmetic declarations
 and interval arithmetic operations.
-
 -/
 
 public meta section
-
-set_option linter.all false
 
 namespace IntervalArithmetic
 
