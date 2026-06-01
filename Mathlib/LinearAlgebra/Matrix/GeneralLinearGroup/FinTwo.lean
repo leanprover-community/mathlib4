@@ -43,15 +43,6 @@ variable {m}
 
 section conjugation
 
-@[simp] lemma discr_conj : (g.val * m * g.val⁻¹).discr = m.discr := by
-  simp only [discr_fin_two, ← Matrix.coe_units_inv, trace_units_conj, det_units_conj]
-
-@[simp] lemma discr_conj' : (g.val⁻¹ * m * g.val).discr = m.discr := by
-  simpa using discr_conj g⁻¹
-
-@[deprecated (since := "2025-10-20")] alias disc_conj := discr_conj
-@[deprecated (since := "2025-10-20")] alias disc_conj' := discr_conj'
-
 @[simp] lemma isParabolic_conj_iff : (g.val * m * g.val⁻¹).IsParabolic ↔ IsParabolic m := by
   simp_rw [IsParabolic, discr_conj, Set.mem_range, ← Matrix.coe_units_inv,
     Units.eq_mul_inv_iff_mul_eq, scalar_apply, ← smul_eq_diagonal_mul, smul_eq_mul_diagonal,
@@ -59,6 +50,18 @@ section conjugation
 
 @[simp] lemma isParabolic_conj'_iff : (g.val⁻¹ * m * g.val).IsParabolic ↔ m.IsParabolic := by
   simpa using isParabolic_conj_iff g⁻¹
+
+lemma IsParabolic.neg (h : IsParabolic m) : IsParabolic (-m) := by
+  constructor
+  · rw [← RingHom.coe_range, SetLike.mem_coe, neg_mem_iff]
+    exact h.1
+  · -- TODO: prove `discr_neg` for a matrix of any size, use it here
+    simpa [discr_fin_two, det_neg] using h.2
+
+lemma IsParabolic.of_neg (h : IsParabolic (-m)) : IsParabolic m := by
+  simpa using h.neg
+
+@[simp] lemma isParabolic_neg_iff : IsParabolic (-m) ↔ IsParabolic m := ⟨.of_neg, .neg⟩
 
 end conjugation
 
@@ -94,8 +97,6 @@ lemma sub_scalar_sq_eq_discr [NeZero (2 : K)] :
   fin_cases j <;>
   · simp [Matrix.mul_apply]
     field
-
-@[deprecated (since := "2025-10-20")] alias sub_scalar_sq_eq_disc := sub_scalar_sq_eq_discr
 
 variable (m) in
 /-- The unique eigenvalue of a parabolic matrix (junk if `m` is not parabolic). -/
@@ -152,7 +153,37 @@ lemma isElliptic_conj_iff : (g.val * m * g.val⁻¹).IsElliptic ↔ m.IsElliptic
 lemma isElliptic_conj'_iff : (g.val⁻¹ * m * g.val).IsElliptic ↔ m.IsElliptic := by
   simpa using isElliptic_conj_iff g⁻¹
 
+@[simp]
+theorem isHyperbolic_neg_iff : (-m).IsHyperbolic ↔ m.IsHyperbolic := by
+  simp [IsHyperbolic, discr_fin_two, det_neg]
+
+protected alias ⟨IsHyperbolic.of_neg, IsHyperbolic.neg⟩ := isHyperbolic_neg_iff
+
+@[simp]
+theorem isElliptic_neg_iff : (-m).IsElliptic ↔ m.IsElliptic := by
+  simp [IsElliptic, discr_fin_two, det_neg]
+
+protected alias ⟨IsElliptic.of_neg, IsElliptic.neg⟩ := isElliptic_neg_iff
+
 end Preorder
+
+section LinearOrder
+
+variable {R : Type*} [CommRing R] [LinearOrder R] [IsOrderedRing R] {m : Matrix (Fin 2) (Fin 2) R}
+
+theorem IsElliptic.bc_ne_zero (hm : m.IsElliptic) : m 0 1 * m 1 0 ≠ 0 := by
+  intro hc
+  rw [IsElliptic, discr_fin_two, trace_fin_two, det_fin_two, hc] at hm
+  refine hm.not_ge ?_
+  linear_combination sq_nonneg (m 0 0 - m 1 1)
+
+theorem IsElliptic.b_ne_zero (hm : m.IsElliptic) : m 0 1 ≠ 0 :=
+  left_ne_zero_of_mul hm.bc_ne_zero
+
+theorem IsElliptic.c_ne_zero (hm : m.IsElliptic) : m 1 0 ≠ 0 :=
+  right_ne_zero_of_mul hm.bc_ne_zero
+
+end LinearOrder
 
 namespace GeneralLinearGroup
 

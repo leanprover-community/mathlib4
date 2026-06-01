@@ -126,7 +126,7 @@ variable (J)
 
 instance over_forget_locallyCoverDense (X : C) : (Over.forget X).LocallyCoverDense J where
   functorPushforward_functorPullback_mem Y T := by
-    convert T.property
+    convert! T.property
     ext Z f
     constructor
     · rintro ⟨_, _, g', hg, rfl⟩

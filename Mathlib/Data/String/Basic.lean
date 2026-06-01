@@ -10,6 +10,7 @@ public import Mathlib.Data.List.Lex
 public import Mathlib.Data.Char
 public import Mathlib.Algebra.Order.Group.Nat
 import all Init.Data.String.Iterator  -- for unfolding `Iterator.curr`
+import all Init.Data.Ord.String  -- for unfolding `String.compare`
 
 /-!
 # Strings
@@ -31,19 +32,6 @@ def ltb (s₁ s₂ : Legacy.Iterator) : Bool :=
     else true
   else false
 
-/-- This used to override an instance in core Lean. -/
-@[implicit_reducible]
-def LT' : LT String :=
-  ⟨fun s₁ s₂ ↦ ltb (String.Legacy.iter s₁) (String.Legacy.iter s₂)⟩
-
-attribute [local instance] LT' in
-/-- This instance has a prime to avoid the name of the corresponding instance in core Lean. -/
-@[implicit_reducible]
-def decidableLT' : DecidableLT String := by
-  simp +instances only [DecidableLT, LT']
-  infer_instance -- short-circuit type class inference
-
-/-- Induction on `String.ltb`. -/
 @[no_expose] def ltb.inductionOn.{u} {motive : Legacy.Iterator → Legacy.Iterator → Sort u}
     (it₁ it₂ : Legacy.Iterator)
     (ind : ∀ s₁ s₂ i₁ i₂, Legacy.Iterator.hasNext ⟨s₂, i₂⟩ → Legacy.Iterator.hasNext ⟨s₁, i₁⟩ →
@@ -91,67 +79,6 @@ theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos.R
   rw [eq_comm, ← ltb_cons_addChar' c]
   simp
 
-attribute [local instance] LT' in
-@[simp]
-theorem lt_iff_toList_lt' : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList < s₂.toList
-  | s₁, s₂ => show ltb ⟨s₁, 0⟩ ⟨s₂, 0⟩ ↔ s₁.toList < s₂.toList by
-    obtain ⟨s₁, rfl⟩ := s₁.exists_eq_ofList
-    obtain ⟨s₂, rfl⟩ := s₂.exists_eq_ofList
-    simp only [String.toList_ofList]
-    induction s₁ generalizing s₂ <;> cases s₂
-    · unfold ltb; decide
-    · rename_i c₂ cs₂; apply iff_of_true
-      · unfold ltb
-        simp [Legacy.Iterator.hasNext, Char.utf8Size_pos]
-      · apply List.nil_lt_cons
-    · rename_i c₁ cs₁ ih; apply iff_of_false
-      · unfold ltb
-        simp [Legacy.Iterator.hasNext]
-      · apply not_lt_of_gt; apply List.nil_lt_cons
-    · rename_i c₁ cs₁ ih c₂ cs₂; unfold ltb
-      simp only [Legacy.Iterator.hasNext, Pos.Raw.byteIdx_zero, rawEndPos_ofList, utf8Len_cons,
-        add_pos_iff, Char.utf8Size_pos, or_true, decide_true, ↓reduceIte, Legacy.Iterator.curr,
-        Pos.Raw.get, String.toList_ofList, Pos.Raw.utf8GetAux, Legacy.Iterator.next, Pos.Raw.next,
-        Bool.ite_eq_true_distrib, decide_eq_true_eq]
-      split_ifs with h
-      · subst c₂
-        suffices ltb ⟨ofList (c₁ :: cs₁), (0 : Pos.Raw) + c₁⟩
-            ⟨ofList (c₁ :: cs₂), (0 : Pos.Raw) + c₁⟩ =
-              ltb ⟨ofList cs₁, 0⟩ ⟨ofList cs₂, 0⟩ by
-          rw [this]; exact (ih cs₂).trans List.lex_cons_iff.symm
-        apply ltb_cons_addChar
-      · refine ⟨List.Lex.rel, fun e ↦ ?_⟩
-        cases e <;> rename_i h'
-        · assumption
-        · contradiction
-
-attribute [local instance] LT' in
-/-- This used to override an instance in core Lean. -/
-@[implicit_reducible]
-def LE : LE String :=
-  ⟨fun s₁ s₂ ↦ ¬s₂ < s₁⟩
-
-attribute [local instance] LE LT decidableLT' in
-/-- This instance has a prime to avoid the name of the corresponding instance in core Lean. -/
-@[implicit_reducible]
-def decidableLE : DecidableLE String := by
-  simp +instances only [DecidableLE, LE]
-  infer_instance -- short-circuit type class inference
-
-attribute [local instance] LE in
-@[simp]
-theorem le_iff_toList_le' {s₁ s₂ : String} : s₁ ≤ s₂ ↔ s₁.toList ≤ s₂.toList :=
-  (not_congr lt_iff_toList_lt').trans not_lt
-
-@[deprecated ofList_nil (since := "2025-10-31")]
-theorem asString_nil : ofList [] = "" :=
-  ofList_nil
-
-@[deprecated ofList_toList (since := "2025-10-31")]
-theorem asString_toList (s : String) : ofList s.toList = s :=
-  ofList_toList
-
-set_option linter.deprecated false in
 @[deprecated "Use the new String API" (since := "2026-04-01")]
 theorem toList_nonempty :
     ∀ {s : String}, s ≠ "" → s.toList = String.Legacy.front s :: (String.Legacy.drop s 1).toList
@@ -189,24 +116,10 @@ instance : LinearOrder String where
     apply le_total
   toDecidableLE := inferInstance
   toDecidableEq := inferInstance
-  toDecidableLT := inferInstance
-  compare_eq_compareOfLessAndEq a b := by simp [compare]
+  toDecidableLT := String.decidableLT
+  compare_eq_compareOfLessAndEq a b := by simp [Ord.compare, String.compare]
 
 theorem ofList_eq {l : List Char} {s : String} : ofList l = s ↔ l = s.toList := by
   simp [← toList_inj]
 
 end String
-
-open String
-
-namespace List
-
-@[deprecated String.toList_ofList (since := "2025-10-31")]
-theorem toList_asString (l : List Char) : (ofList l).toList = l :=
-  String.toList_ofList
-
-@[deprecated String.ofList_eq (since := "2025-10-31")]
-theorem asString_eq {l : List Char} {s : String} : ofList l = s ↔ l = s.toList :=
-  ofList_eq
-
-end List
