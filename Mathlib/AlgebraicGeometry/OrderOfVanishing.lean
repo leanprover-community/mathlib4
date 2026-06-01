@@ -24,8 +24,7 @@ universe u
 
 variable {X : Scheme.{u}}
 
-namespace AlgebraicGeometry
-namespace Scheme
+namespace AlgebraicGeometry.Scheme
 
 variable [IsIntegral X] [IsLocallyNoetherian X]
 
@@ -56,5 +55,4 @@ lemma ord_of_isUnit {U : X.Opens}
   rw [germToFunctionField_eq_algebraMap_germ hx']
   exact Ring.ordFrac_of_isUnit (hf.map (X.presheaf.germ U x hx').hom)
 
-end Scheme
-end AlgebraicGeometry
+end AlgebraicGeometry.Scheme
