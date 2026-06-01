@@ -144,7 +144,7 @@ theorem card_image_offDiag (s : Finset α) :
     Nat.div_eq_of_eq_mul_right Nat.zero_lt_two (two_mul_card_image_offDiag s).symm]
 
 theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card α := by
-  convert card_image_diag (univ : Finset α)
+  convert! card_image_diag (univ : Finset α)
   rw [← filter_image_mk_isDiag, Fintype.card_of_subtype]
   rintro x
   rw [mem_filter, univ_product_univ, mem_image]
@@ -153,7 +153,7 @@ theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card
 
 theorem card_subtype_not_diag [Fintype α] :
     card { a : Sym2 α // ¬a.IsDiag } = (card α).choose 2 := by
-  convert card_image_offDiag (univ : Finset α)
+  convert! card_image_offDiag (univ : Finset α)
   rw [← filter_image_mk_not_isDiag, Fintype.card_of_subtype]
   rintro x
   rw [mem_filter, univ_product_univ, mem_image]

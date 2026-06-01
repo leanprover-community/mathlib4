@@ -57,7 +57,6 @@ def grothendieckTopology : GrothendieckTopology (Opens T) where
     rcases hR hf _ hU with ⟨V, g, hg, hV⟩
     exact ⟨_, g ≫ f, hg, hV⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Grothendieck pretopology associated to a topological space. -/
 def pretopology : Pretopology (Opens T) where
   coverings X := {R | ∀ x ∈ X, ∃ (U : _) (f : U ⟶ X), R f ∧ x ∈ U}
@@ -73,7 +72,6 @@ def pretopology : Pretopology (Opens T) where
     rcases hTi f hf x hU with ⟨V, g, hg, hV⟩
     exact ⟨_, _, ⟨_, g, f, hf, hg, rfl⟩, hV⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The pretopology associated to a space is the largest pretopology that
 generates the Grothendieck topology associated to the space. -/
 @[simp]
@@ -87,7 +85,6 @@ theorem toPretopology_grothendieckTopology :
     rcases hR x hx with ⟨U, f, hf, hU⟩
     exact ⟨U, f, Sieve.le_generate R U _ hf, hU⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The pretopology associated to a space induces the Grothendieck topology associated to the space.
 -/
 @[simp]

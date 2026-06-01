@@ -9,7 +9,7 @@ public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.Finsupp.Span
-public import Mathlib.Topology.Algebra.Module.WeakBilin
+public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
 
 /-!
 # Weak Dual in Topological Vector Spaces
@@ -185,7 +185,7 @@ the `σ(E, F; B)`-topology is of the form `x ↦ B(x, y)` for some `y : F`. -/
 theorem dualEmbedding_surjective : Function.Surjective (WeakBilin.eval B) := fun f ↦ by
   have : f.toLinearMap ∈
       Submodule.span 𝕜 (ContinuousLinearMap.coeLM 𝕜 ∘ₗ WeakBilin.eval B).range := by
-    simpa [coe_range, mem_span_iff_continuous, continuous_iff_le_induced, ← induced_to_pi] using
+    simpa [coe_range, mem_span_iff_continuous, continuous_iff_le_induced, ← induced_to_pi] using!
       f.continuous.le_induced
   simpa
 

@@ -38,7 +38,7 @@ The two versions of the four functions theorem are
 We deduce a number of corollaries:
 * `Finset.le_card_infs_mul_card_sups`: Daykin inequality. `|s| |t| ≤ |s ⊼ t| |s ⊻ t|`
 * `holley`: Holley inequality.
-* `fkg`: Fortuin-Kastelyn-Ginibre inequality.
+* `fkg`: Fortuin-Kasteleyn-Ginibre inequality.
 * `Finset.card_le_card_diffs`: Marica-Schönheim inequality. `|s| ≤ |{a \ b | a, b ∈ s}|`
 
 ## TODO
@@ -195,8 +195,9 @@ lemma collapse_modular [ExistsAddOfLE β]
     · refine (add_le_add (h ‹_› ‹_›) <| h ‹_› ‹_›).trans ?_
       rw [collapse_of_mem ‹_› (union_mem_sups ‹_› ‹_›) (union_mem_sups ‹_› ‹_›) rfl
         (union_insert _ _ _), inter_insert_of_notMem ‹_›, ← mul_add]
-      exact mul_le_mul_of_nonneg_right (le_collapse_of_mem ‹_› h₃ rfl <| inter_mem_infs ‹_› ‹_›) <|
-        add_nonneg (h₄ _) <| h₄ _
+      gcongr
+      · exact add_nonneg (h₄ _) (h₄ _)
+      · exact le_collapse_of_mem ‹_› h₃ rfl <| inter_mem_infs ‹_› ‹_›
     · rw [mul_zero, add_zero]
       exact (h ‹_› ‹_›).trans <| mul_le_mul (le_collapse_of_mem ‹_› h₃ rfl <|
         inter_mem_infs ‹_› ‹_›) (le_collapse_of_mem ‹_› h₄ rfl <| union_mem_sups ‹_› ‹_›)
@@ -215,8 +216,10 @@ lemma collapse_modular [ExistsAddOfLE β]
         (insert_inter_of_notMem ‹_›) (insert_inter_distrib _ _ _).symm,
         insert_inter_of_notMem ‹_›, ← insert_inter_distrib, insert_union, insert_union_distrib,
         ← add_mul]
-      exact mul_le_mul_of_nonneg_left (le_collapse_of_insert_mem ‹_› h₄
-        (insert_union_distrib _ _ _).symm <| union_mem_sups ‹_› ‹_›) <| add_nonneg (h₃ _) <| h₃ _
+      gcongr
+      · exact add_nonneg (h₃ _) (h₃ _)
+      · exact le_collapse_of_insert_mem ‹_› h₄
+          (insert_union_distrib _ _ _).symm <| union_mem_sups ‹_› ‹_›
     · rw [mul_zero, add_zero]
       refine (h ‹_› ‹_›).trans <| mul_le_mul (le_collapse_of_mem ‹_› h₃
         (insert_inter_of_notMem ‹_›) <| inter_mem_infs ‹_› ‹_›) (le_collapse_of_insert_mem ‹_› h₄
@@ -304,10 +307,10 @@ lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ 
   set s' : Finset L := s.preimage (↑) Subtype.coe_injective.injOn
   set t' : Finset L := t.preimage (↑) Subtype.coe_injective.injOn
   have hs' : s'.map ⟨L.subtype, Subtype.coe_injective⟩ = s := by
-    simpa [s', map_eq_image, image_preimage, filter_eq_self] using
+    simpa [s', map_eq_image, image_preimage, filter_eq_self] using!
       fun a ha ↦ subset_latticeClosure <| Set.subset_union_left ha
   have ht' : t'.map ⟨L.subtype, Subtype.coe_injective⟩ = t := by
-    simpa [t', map_eq_image, image_preimage, filter_eq_self] using
+    simpa [t', map_eq_image, image_preimage, filter_eq_self] using!
       fun a ha ↦ subset_latticeClosure <| Set.subset_union_right ha
   clear_value s' t'
   obtain ⟨β, _, _, g, hg⟩ := exists_birkhoff_representation L
@@ -316,16 +319,16 @@ lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ 
     (extend_nonneg (fun _ ↦ h₂ _) le_rfl) (extend_nonneg (fun _ ↦ h₃ _) le_rfl)
     (extend_nonneg (fun _ ↦ h₄ _) le_rfl) ?_ (s'.map ⟨g, hg⟩) (t'.map ⟨g, hg⟩)
   · simpa only [← hs', ← ht', ← map_sups, ← map_infs, sum_map, Embedding.coeFn_mk, hg.extend_apply]
-      using this
+      using! this
   rintro s t
   classical
   obtain ⟨a, rfl⟩ | hs := em (∃ a, g a = s)
   · obtain ⟨b, rfl⟩ | ht := em (∃ b, g b = t)
     · simp_rw [← sup_eq_union, ← inf_eq_inter, ← map_sup, ← map_inf, hg.extend_apply]
       exact h _ _
-    · simpa [extend_apply' _ _ _ ht] using mul_nonneg
+    · simpa [extend_apply' _ _ _ ht] using! mul_nonneg
         (extend_nonneg (fun a : L ↦ h₃ a) le_rfl _) (extend_nonneg (fun a : L ↦ h₄ a) le_rfl _)
-  · simpa [extend_apply' _ _ _ hs] using mul_nonneg
+  · simpa [extend_apply' _ _ _ hs] using! mul_nonneg
       (extend_nonneg (fun a : L ↦ h₃ a) le_rfl _) (extend_nonneg (fun a : L ↦ h₄ a) le_rfl _)
 
 /-- An inequality of Daykin. Interestingly, any lattice in which this inequality holds is
@@ -361,7 +364,7 @@ lemma holley (hμ₀ : 0 ≤ μ) (hf : 0 ≤ f) (hg : 0 ≤ g) (hμ : Monotone �
     rw [sup_comm, inf_comm]
     exact mul_le_mul (hμ le_sup_left) (h _ _) (mul_nonneg (hf.le _) <| hg.le _) <| hμ₀ _
 
-/-- The **Fortuin-Kastelyn-Ginibre Inequality**. -/
+/-- The **Fortuin-Kasteleyn-Ginibre Inequality**. -/
 lemma fkg (hμ₀ : 0 ≤ μ) (hf₀ : 0 ≤ f) (hg₀ : 0 ≤ g) (hf : Monotone f) (hg : Monotone g)
     (hμ : ∀ a b, μ a * μ b ≤ μ (a ⊓ b) * μ (a ⊔ b)) :
     (∑ a, μ a * f a) * ∑ a, μ a * g a ≤ (∑ a, μ a) * ∑ a, μ a * (f a * g a) := by
@@ -392,5 +395,5 @@ lemma Finset.le_card_diffs_mul_card_diffs (s t : Finset α) :
 
 /-- The **Marica-Schönheim Inequality**. -/
 lemma Finset.card_le_card_diffs (s : Finset α) : #s ≤ #(s \\ s) :=
-  le_of_pow_le_pow_left₀ two_ne_zero (zero_le _) <| by
+  le_of_pow_le_pow_left₀ two_ne_zero zero_le <| by
     simpa [← sq] using s.le_card_diffs_mul_card_diffs s

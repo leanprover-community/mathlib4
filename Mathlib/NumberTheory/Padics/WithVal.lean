@@ -49,7 +49,7 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
     ← map_sub, Padic.eq_padicNorm, true_and, forall_const]
   constructor
   · intro n
-    have hn :  Valued.v (R := (WithVal (Rat.padicValuation p))) (p ^ n) =
+    have hn : Valued.v (R := (WithVal (Rat.padicValuation p))) (p ^ n) =
       exp (-n : ℤ) := by
       simp only [← WithVal.val_apply_equiv, map_pow, map_natCast, Rat.padicValuation_self,
         Int.reduceNeg, exp_neg, inv_pow, ← exp_nsmul, nsmul_eq_mul, mul_one]
@@ -161,7 +161,7 @@ open UniformSpace.Completion in
 @[simp]
 theorem withValUniformEquiv_cast_apply (x : WithVal (Rat.padicValuation p)) :
     Padic.withValUniformEquiv (p := p) x = WithVal.equiv (Rat.padicValuation p) x := by
-  simpa [Equiv.toUniformEquivOfIsUniformInducing] using
+  simpa [Equiv.toUniformEquivOfIsUniformInducing] using!
     extension_coe (Padic.isUniformInducing_cast_withVal (p := p)).uniformContinuous _
 
 open PadicInt in

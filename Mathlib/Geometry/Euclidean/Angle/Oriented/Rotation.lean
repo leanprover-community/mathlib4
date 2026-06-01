@@ -65,7 +65,7 @@ def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
       Real.Angle.sin θ • (LinearIsometryEquiv.toLinearEquiv J).toLinearMap)
     (by
       ext x
-      convert congr_arg (fun t : ℝ => t • x) θ.cos_sq_add_sin_sq using 1
+      convert! congr_arg (fun t : ℝ => t • x) θ.cos_sq_add_sin_sq using 1
       · simp only [o.rightAngleRotation_rightAngleRotation, o.rotationAux_apply,
           Function.comp_apply, id, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
           LinearIsometryEquiv.coe_toLinearEquiv, map_smul, map_sub, LinearMap.coe_comp,
@@ -74,7 +74,7 @@ def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
       · simp)
     (by
       ext x
-      convert congr_arg (fun t : ℝ => t • x) θ.cos_sq_add_sin_sq using 1
+      convert! congr_arg (fun t : ℝ => t • x) θ.cos_sq_add_sin_sq using 1
       · simp only [o.rightAngleRotation_rightAngleRotation, o.rotationAux_apply,
           Function.comp_apply, id, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
           LinearIsometryEquiv.coe_toLinearEquiv, map_add, map_smul, LinearMap.coe_comp,
@@ -154,7 +154,6 @@ theorem rotation_trans (θ₁ θ₂ : Real.Angle) :
     (o.rotation θ₁).trans (o.rotation θ₂) = o.rotation (θ₂ + θ₁) :=
   LinearIsometryEquiv.ext fun _ => by rw [← rotation_rotation, LinearIsometryEquiv.trans_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Rotating the first of two vectors by `θ` scales their Kähler form by `cos θ - sin θ * I`. -/
 @[simp]
 theorem kahler_rotation_left (x y : V) (θ : Real.Angle) :
@@ -184,7 +183,6 @@ theorem kahler_rotation_left' (x y : V) (θ : Real.Angle) :
     o.kahler (o.rotation θ x) y = (-θ).toCircle * o.kahler x y := by
   simp only [Real.Angle.toCircle_neg, Circle.coe_inv_eq_conj, kahler_rotation_left]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Rotating the second of two vectors by `θ` scales their Kähler form by `cos θ + sin θ * I`. -/
 @[simp]
 theorem kahler_rotation_right (x y : V) (θ : Real.Angle) :
@@ -350,7 +348,6 @@ theorem rotation_map (θ : Real.Angle) (f : V ≃ₗᵢ[ℝ] V') (x : V') :
     (Orientation.map (Fin 2) f.toLinearEquiv o).rotation θ x = f (o.rotation θ (f.symm x)) := by
   simp [rotation_apply, o.rightAngleRotation_map]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem _root_.Complex.rotation (θ : Real.Angle) (z : ℂ) :
     Complex.orientation.rotation θ z = θ.toCircle * z := by

@@ -121,7 +121,7 @@ lemma lie_swap_lie [Bracket L₂ L₁] [AddCommGroup M] [IsLieTower L₁ L₂ M]
     (x : L₁) (y : L₂) (m : M) : ⁅⁅x, y⁆, m⁆ = -⁅⁅y, x⁆, m⁆ := by
   have h1 := leibniz_lie x y m
   have h2 := leibniz_lie y x m
-  convert congr($h1.symm - $h2) using 1 <;> simp only [add_sub_cancel_right, sub_add_cancel_right]
+  convert! congr($h1.symm - $h2) using 1 <;> simp only [add_sub_cancel_right, sub_add_cancel_right]
 
 end IsLieTower
 
@@ -361,16 +361,6 @@ theorem toFun_eq_coe (f : L₁ →ₗ⁅R⁆ L₂) : f.toFun = ⇑f :=
 instance : LinearMapClass (L₁ →ₗ⁅R⁆ L₂) R L₁ L₂ where
   map_add _ _ _ := by rw [← coe_toLinearMap, map_add]
   map_smulₛₗ _ _ _ := by rw [← coe_toLinearMap, map_smulₛₗ]
-
-@[deprecated (since := "2025-10-12")] alias map_smul := _root_.map_smul
-
-@[deprecated (since := "2025-10-12")] alias map_add := _root_.map_add
-
-@[deprecated (since := "2025-10-12")] alias map_sub := _root_.map_sub
-
-@[deprecated (since := "2025-10-12")] alias map_neg := _root_.map_neg
-
-@[deprecated (since := "2025-10-12")] alias map_zero := _root_.map_zero
 
 @[simp]
 theorem map_lie (f : L₁ →ₗ⁅R⁆ L₂) (x y : L₁) : f ⁅x, y⁆ = ⁅f x, f y⁆ :=
@@ -707,16 +697,6 @@ theorem coe_toLinearMap (f : M →ₗ⁅R,L⁆ N) : ((f : M →ₗ[R] N) : M →
 instance : LinearMapClass (M →ₗ⁅R,L⁆ N) R M N where
   map_add _ _ _ := by rw [← coe_toLinearMap, map_add]
   map_smulₛₗ _ _ _ := by rw [← coe_toLinearMap, map_smulₛₗ]
-
-@[deprecated (since := "2025-10-12")] alias map_smul := _root_.map_smul
-
-@[deprecated (since := "2025-10-12")] alias map_add := _root_.map_add
-
-@[deprecated (since := "2025-10-12")] alias map_sub := _root_.map_sub
-
-@[deprecated (since := "2025-10-12")] alias map_neg := _root_.map_neg
-
-@[deprecated (since := "2025-10-12")] alias map_zero := _root_.map_zero
 
 @[simp]
 theorem map_lie (f : M →ₗ⁅R,L⁆ N) (x : L) (m : M) : f ⁅x, m⁆ = ⁅x, f m⁆ :=

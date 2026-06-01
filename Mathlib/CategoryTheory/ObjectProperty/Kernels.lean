@@ -39,6 +39,11 @@ inductive kernels : ObjectProperty C
   | of_isLimit {X₁ X₂ : C} (f : X₁ ⟶ X₂) (k : KernelFork f) (hk : IsLimit k)
     (hf : W f) : kernels k.pt
 
+lemma nonempty_kernels {X₁ X₂ : C} (f : X₁ ⟶ X₂) (hf : W f) [HasKernel f] :
+    W.kernels.Nonempty :=
+  ObjectProperty.nonempty_of_prop (kernels.of_isLimit f _ (kernelIsKernel f) hf)
+
+set_option backward.defeqAttrib.useBackward true in
 instance : W.kernels.IsClosedUnderIsomorphisms where
   of_iso := by
     rintro _ _ i ⟨f, k, hk, hf⟩
@@ -49,6 +54,10 @@ instance : W.kernels.IsClosedUnderIsomorphisms where
 inductive cokernels : ObjectProperty C
   | of_isColimit {X₁ X₂ : C} (f : X₁ ⟶ X₂) (k : CokernelCofork f) (hk : IsColimit k)
     (hf : W f) : cokernels k.pt
+
+lemma nonempty_cokernels {X₁ X₂ : C} (f : X₁ ⟶ X₂) (hf : W f) [HasCokernel f] :
+    W.cokernels.Nonempty :=
+  ObjectProperty.nonempty_of_prop (cokernels.of_isColimit f _ (cokernelIsCokernel f) hf)
 
 instance : W.cokernels.IsClosedUnderIsomorphisms where
   of_iso := by
@@ -86,6 +95,7 @@ lemma hasLimit_parallelPair_comp_ι {X Y : P.FullSubcategory} (f : X ⟶ Y) [Has
     HasLimit (parallelPair f 0 ⋙ P.ι) :=
   hasLimit_of_iso (F := parallelPair f.hom 0) (Iso.symm (diagramIsoParallelPair _))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If an object property `P` is closed under kernels, then `P.ι` creates kernels.
 In particular, this implies `P.ι` preserves kernels. -/
 @[reducible]
@@ -133,6 +143,7 @@ lemma hasColimit_parallelPair_comp_ι {X Y : P.FullSubcategory} (f : X ⟶ Y) [H
     HasColimit (parallelPair f 0 ⋙ P.ι) :=
   hasColimit_of_iso (F := parallelPair f.hom 0) (diagramIsoParallelPair _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If an object property `P` is closed under cokernels, then `P.ι` creates cokernels.
 In particular, this implies `P.ι` preserves cokernels. -/
 @[reducible]

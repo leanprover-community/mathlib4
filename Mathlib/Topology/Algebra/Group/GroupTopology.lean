@@ -110,7 +110,6 @@ instance : Bot (GroupTopology α) :=
 theorem toTopologicalSpace_bot : (⊥ : GroupTopology α).toTopologicalSpace = ⊥ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance : BoundedOrder (GroupTopology α) where
   le_top x := show x.toTopologicalSpace ≤ ⊤ from le_top

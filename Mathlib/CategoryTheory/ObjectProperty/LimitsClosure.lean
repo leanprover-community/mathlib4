@@ -43,6 +43,8 @@ inductive limitsClosure : ObjectProperty C
 lemma le_limitsClosure : P ≤ P.limitsClosure J :=
   fun X hX ↦ .of_mem X hX
 
+instance [P.Nonempty] : (P.limitsClosure J).Nonempty := .mono (P.le_limitsClosure J)
+
 instance : (P.limitsClosure J).IsClosedUnderIsomorphisms where
   of_iso e hX := .of_isoClosure e hX
 
@@ -103,6 +105,9 @@ def strictLimitsClosureStep : ObjectProperty C :=
 @[simp]
 lemma le_strictLimitsClosureStep : P ≤ P.strictLimitsClosureStep J := le_sup_left
 
+instance [P.Nonempty] : (P.strictLimitsClosureStep J).Nonempty :=
+  .mono (P.le_strictLimitsClosureStep J)
+
 variable {P} in
 lemma strictLimitsClosureStep_monotone {Q : ObjectProperty C} (h : P ≤ Q) :
     P.strictLimitsClosureStep J ≤ Q.strictLimitsClosureStep J := by
@@ -125,6 +130,9 @@ lemma le_strictLimitsClosureIter (b : β) :
     P ≤ P.strictLimitsClosureIter J b :=
   le_of_eq_of_le (transfiniteIterate_bot _ _).symm
     (monotone_transfiniteIterate _ _ (fun _ ↦ le_strictLimitsClosureStep _ _) bot_le)
+
+instance (b : β) [P.Nonempty] : (P.strictLimitsClosureIter J b).Nonempty :=
+  .mono (P.le_strictLimitsClosureIter J b)
 
 lemma strictLimitsClosureIter_le_limitsClosure (b : β) :
     P.strictLimitsClosureIter J b ≤ P.limitsClosure J := by
@@ -191,12 +199,12 @@ lemma strictLimitsClosureStep_strictLimitsClosureIter_eq_self :
     choose o ho ho' using hF
     obtain ⟨m, hm, hm'⟩ : ∃ (m : Ordinal.{w}) (hm : m < κ.ord), ∀ (j : J a), o j ≤ m := by
       refine ⟨⨆ j, o ((equivShrink.{w} (J a)).symm j),
-          Ordinal.iSup_lt_ord ?_ (fun _ ↦ ho _), fun j ↦ ?_⟩
+        Ordinal.iSup_lt_of_lt_cof ?_ (fun _ ↦ ho _), fun j ↦ ?_⟩
       · rw [hκ.cof_ord, ← hasCardinalLT_iff_cardinal_mk_lt _ κ,
           ← hasCardinalLT_iff_of_equiv (equivShrink.{w} (J a))]
         exact h a
       · obtain ⟨j, rfl⟩ := (equivShrink.{w} (J a)).symm.surjective j
-        exact le_ciSup (Ordinal.bddAbove_range _) _
+        exact le_ciSup Ordinal.bddAbove_of_small _
     refine monotone_transfiniteIterate _ _
       (fun (Q : ObjectProperty C) ↦ Q.le_strictLimitsClosureStep J) (Order.succ_le_iff.2 hm) _ ?_
     dsimp

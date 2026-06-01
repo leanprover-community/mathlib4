@@ -35,11 +35,10 @@ protected lemma segment_eq_uIcc {x y : ℝ≥0} :
     segment ℝ≥0 x y = uIcc x y :=
   Nonneg.segment_eq_uIcc
 
-set_option backward.isDefEq.respectTransparency false in
 protected lemma convex_iff {M : Type*} [AddCommMonoid M] [Module ℝ M] {s : Set M} :
     Convex ℝ≥0 s ↔ Convex ℝ s := by
   refine ⟨fun H ↦ ?_, Convex.lift ℝ≥0⟩
   intro _ hx _ hy a b ha hb hab
-  exact H hx hy (a := ⟨a, ha⟩) (b := ⟨b, hb⟩) (zero_le _) (zero_le _) (by ext; simpa)
+  exact H hx hy (a := ⟨a, ha⟩) (b := ⟨b, hb⟩) zero_le zero_le (by ext; simpa)
 
 end NNReal

@@ -52,13 +52,13 @@ def Cover.toPresieveOverProp {X : Q.Over ⊤ S} (𝒰 : Cover.{u} (precoverage P
     (h : ∀ j, Q (𝒰.X j ↘ S)) : Presieve X :=
   Presieve.ofArrows (fun i ↦ (𝒰.X i).asOverProp S (h i)) (fun i ↦ (𝒰.f i).asOverProp S)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 lemma Cover.overEquiv_generate_toPresieveOver_eq_ofArrows {X : Over S}
     (𝒰 : Cover.{u} (precoverage P) X.left)
     [𝒰.Over S] : Sieve.overEquiv X (Sieve.generate 𝒰.toPresieveOver) =
       Sieve.ofArrows 𝒰.X 𝒰.f := by
   ext V f
-  simp only [Sieve.overEquiv_iff, Functor.const_obj_obj, Sieve.generate_apply]
+  simp only [Sieve.overEquiv_iff, Sieve.generate_apply]
   constructor
   · rintro ⟨U, h, g, ⟨k⟩, hcomp⟩
     exact ⟨𝒰.X k, h.left, 𝒰.f k, ⟨k⟩, congrArg CommaMorphism.left hcomp⟩
@@ -88,14 +88,15 @@ def overPretopology : Pretopology (Over S) where
   pullbacks := by
     rintro Y X f _ ⟨𝒰, h, rfl⟩
     refine ⟨𝒰.pullbackCoverOver' S f.left, inferInstance, ?_⟩
-    simpa [Cover.toPresieveOver] using
+    simpa [Cover.toPresieveOver] using!
       (Presieve.ofArrows_pullback f (fun i ↦ (𝒰.X i).asOver S) (fun i ↦ (𝒰.f i).asOver S)).symm
   transitive := by
     rintro X _ T ⟨𝒰, h, rfl⟩ H
     choose V h hV using H
     refine ⟨𝒰.bind (fun j => V ((𝒰.f j).asOver S) ⟨j⟩), inferInstance, ?_⟩
-    convert Presieve.ofArrows_bind _ (fun j ↦ (𝒰.f j).asOver S) _
-      (fun Y f H j ↦ ((V f H).X j).asOver S) (fun Y f H j ↦ ((V f H).f j).asOver S)
+    convert!
+      Presieve.ofArrows_bind _ (fun j ↦ (𝒰.f j).asOver S) _ (fun Y f H j ↦ ((V f H).X j).asOver S)
+        (fun Y f H j ↦ ((V f H).f j).asOver S)
     apply hV
 
 /-- The topology on `Over S` induced from the topology on `Scheme` defined by `P`.
@@ -197,9 +198,10 @@ def smallPretopology : Pretopology (Q.Over ⊤ S) where
     let 𝒱j (j : 𝒰.I₀) : (Cover (precoverage P) ((𝒰.X j).asOverProp S (p j)).left) :=
       V ((𝒰.f j).asOverProp S) ⟨j⟩
     refine ⟨𝒰.bind (fun j ↦ 𝒱j j), inferInstance, fun j ↦ pV _ _ _, ?_⟩
-    convert Presieve.ofArrows_bind _ (fun j ↦ ((𝒰.f j).asOverProp S)) _
-      (fun Y f H j ↦ ((V f H).X j).asOverProp S (pV _ _ _))
-      (fun Y f H j ↦ ((V f H).f j).asOverProp S)
+    convert!
+      Presieve.ofArrows_bind _ (fun j ↦ ((𝒰.f j).asOverProp S)) _
+        (fun Y f H j ↦ ((V f H).X j).asOverProp S (pV _ _ _))
+        (fun Y f H j ↦ ((V f H).f j).asOverProp S)
     apply hV
 
 set_option backward.isDefEq.respectTransparency false in
@@ -208,7 +210,7 @@ lemma smallGrothendieckTopologyOfLE_eq_toGrothendieck_smallPretopology (hPQ : P 
     S.smallGrothendieckTopologyOfLE hPQ = (S.smallPretopology P Q).toGrothendieck := by
   ext X R
   simp only [Pretopology.mem_toGrothendieck, Functor.mem_inducedTopology_sieves_iff,
-    MorphismProperty.Comma.forget_obj, mem_overGrothendieckTopology]
+    mem_overGrothendieckTopology]
   constructor
   · intro ⟨𝒰, h, le⟩
     have hj (j : 𝒰.I₀) : Q (𝒰.X j ↘ S) := by

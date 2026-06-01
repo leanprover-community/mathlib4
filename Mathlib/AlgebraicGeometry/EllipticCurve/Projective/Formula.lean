@@ -137,14 +137,14 @@ lemma Y_ne_negY_of_Y_ne [NoZeroDivisors R] {P Q : Fin 3 → R} (hP : W'.Equation
     (hQ : W'.Equation Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z)
     (hy : P y * Q z ≠ Q y * P z) : P y ≠ W'.negY P := by
   have hy' : P y * Q z - W'.negY Q * P z = 0 := sub_eq_zero.mpr <| Y_eq_of_Y_ne hP hQ hPz hQz hx hy
-  contrapose! hy
+  contrapose hy
   linear_combination (norm := ring1) Y_sub_Y_add_Y_sub_negY hx + Q z * hy - hy'
 
 lemma Y_ne_negY_of_Y_ne' [NoZeroDivisors R] {P Q : Fin 3 → R} (hP : W'.Equation P)
     (hQ : W'.Equation Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z)
     (hy : P y * Q z ≠ W'.negY Q * P z) : P y ≠ W'.negY P := by
   have hy' : P y * Q z - Q y * P z = 0 := sub_eq_zero.mpr <| Y_eq_of_Y_ne' hP hQ hPz hQz hx hy
-  contrapose! hy
+  contrapose hy
   linear_combination (norm := ring1) Y_sub_Y_add_Y_sub_negY hx + Q z * hy - hy'
 
 lemma Y_eq_negY_of_Y_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hQz : Q z ≠ 0)
@@ -801,38 +801,37 @@ lemma addXYZ_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P
 variable (f : R →+* S) (P Q : Fin 3 → R)
 
 @[simp]
-lemma map_negY : (W'.map f).toProjective.negY (f ∘ P) = f (W'.negY P) := by
+lemma map_negY : (W'.map f).negY (f ∘ P) = f (W'.negY P) := by
   simp only [negY]
   map_simp
 
 @[simp]
-lemma map_dblU (f : F →+* K) (P : Fin 3 → F) :
-    (W.map f).toProjective.dblU (f ∘ P) = f (W.dblU P) := by
+lemma map_dblU (f : F →+* K) (P : Fin 3 → F) : (W.map f).dblU (f ∘ P) = f (W.dblU P) := by
   simp only [dblU_eq]
   map_simp
 
 @[simp]
-lemma map_dblZ : (W'.map f).toProjective.dblZ (f ∘ P) = f (W'.dblZ P) := by
+lemma map_dblZ : (W'.map f).dblZ (f ∘ P) = f (W'.dblZ P) := by
   simp only [dblZ, negY]
   map_simp
 
 @[simp]
-lemma map_dblX : (W'.map f).toProjective.dblX (f ∘ P) = f (W'.dblX P) := by
+lemma map_dblX : (W'.map f).dblX (f ∘ P) = f (W'.dblX P) := by
   simp only [dblX]
   map_simp
 
 @[simp]
-lemma map_negDblY : (W'.map f).toProjective.negDblY (f ∘ P) = f (W'.negDblY P) := by
+lemma map_negDblY : (W'.map f).negDblY (f ∘ P) = f (W'.negDblY P) := by
   simp only [negDblY]
   map_simp
 
 @[simp]
-lemma map_dblY : (W'.map f).toProjective.dblY (f ∘ P) = f (W'.dblY P) := by
+lemma map_dblY : (W'.map f).dblY (f ∘ P) = f (W'.dblY P) := by
   simp only [dblY, negY_eq, map_negDblY, map_dblX, map_dblZ]
   map_simp
 
 @[simp]
-lemma map_dblXYZ : (W'.map f).toProjective.dblXYZ (f ∘ P) = f ∘ dblXYZ W' P := by
+lemma map_dblXYZ : (W'.map f).dblXYZ (f ∘ P) = f ∘ dblXYZ W' P := by
   simp only [dblXYZ, map_dblX, map_dblY, map_dblZ, comp_fin3]
 
 @[simp]
@@ -841,75 +840,65 @@ lemma map_addU (f : F →+* K) (P Q : Fin 3 → F) : addU (f ∘ P) (f ∘ Q) = 
   map_simp
 
 @[simp]
-lemma map_addZ : (W'.map f).toProjective.addZ (f ∘ P) (f ∘ Q) = f (W'.addZ P Q) := by
+lemma map_addZ : (W'.map f).addZ (f ∘ P) (f ∘ Q) = f (W'.addZ P Q) := by
   simp only [addZ]
   map_simp
 
 @[simp]
-lemma map_addX : (W'.map f).toProjective.addX (f ∘ P) (f ∘ Q) = f (W'.addX P Q) := by
+lemma map_addX : (W'.map f).addX (f ∘ P) (f ∘ Q) = f (W'.addX P Q) := by
   simp only [addX]
   map_simp
 
 @[simp]
-lemma map_negAddY : (W'.map f).toProjective.negAddY (f ∘ P) (f ∘ Q) = f (W'.negAddY P Q) := by
+lemma map_negAddY : (W'.map f).negAddY (f ∘ P) (f ∘ Q) = f (W'.negAddY P Q) := by
   simp only [negAddY]
   map_simp
 
 @[simp]
-lemma map_addY : (W'.map f).toProjective.addY (f ∘ P) (f ∘ Q) = f (W'.addY P Q) := by
+lemma map_addY : (W'.map f).addY (f ∘ P) (f ∘ Q) = f (W'.addY P Q) := by
   simp only [addY, negY_eq, map_negAddY, map_addX, map_addZ]
   map_simp
 
 @[simp]
-lemma map_addXYZ : (W'.map f).toProjective.addXYZ (f ∘ P) (f ∘ Q) = f ∘ addXYZ W' P Q := by
+lemma map_addXYZ : (W'.map f).addXYZ (f ∘ P) (f ∘ Q) = f ∘ addXYZ W' P Q := by
   simp only [addXYZ, map_addX, map_addY, map_addZ, comp_fin3]
 
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B] [Algebra S B]
   [IsScalarTower R S B] (f : A →ₐ[S] B) (P Q : Fin 3 → A)
 
-lemma baseChange_negY :
-    (W'.baseChange B).toProjective.negY (f ∘ P) = f ((W'.baseChange A).toProjective.negY P) := by
+lemma baseChange_negY : (W'⁄B).negY (f ∘ P) = f ((W'⁄A).negY P) := by
   rw [← RingHom.coe_coe, ← map_negY, map_baseChange]
 
 lemma baseChange_dblU [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebra R K] [Algebra S K]
     [IsScalarTower R S K] (f : F →ₐ[S] K) (P : Fin 3 → F) :
-    (W'.baseChange K).toProjective.dblU (f ∘ P) = f ((W'.baseChange F).toProjective.dblU P) := by
+    (W'⁄K).dblU (f ∘ P) = f ((W'⁄F).dblU P) := by
   rw [← RingHom.coe_coe, ← map_dblU, map_baseChange]
 
-lemma baseChange_dblZ :
-    (W'.baseChange B).toProjective.dblZ (f ∘ P) = f ((W'.baseChange A).toProjective.dblZ P) := by
+lemma baseChange_dblZ : (W'⁄B).dblZ (f ∘ P) = f ((W'⁄A).dblZ P) := by
   rw [← RingHom.coe_coe, ← map_dblZ, map_baseChange]
 
-lemma baseChange_dblX :
-    (W'.baseChange B).toProjective.dblX (f ∘ P) = f ((W'.baseChange A).toProjective.dblX P) := by
+lemma baseChange_dblX : (W'⁄B).dblX (f ∘ P) = f ((W'⁄A).dblX P) := by
   rw [← RingHom.coe_coe, ← map_dblX, map_baseChange]
 
-lemma baseChange_negDblY : (W'.baseChange B).toProjective.negDblY (f ∘ P) =
-    f ((W'.baseChange A).toProjective.negDblY P) := by
+lemma baseChange_negDblY : (W'⁄B).negDblY (f ∘ P) = f ((W'⁄A).negDblY P) := by
   rw [← RingHom.coe_coe, ← map_negDblY, map_baseChange]
 
-lemma baseChange_dblY :
-    (W'.baseChange B).toProjective.dblY (f ∘ P) = f ((W'.baseChange A).toProjective.dblY P) := by
+lemma baseChange_dblY : (W'⁄B).dblY (f ∘ P) = f ((W'⁄A).dblY P) := by
   rw [← RingHom.coe_coe, ← map_dblY, map_baseChange]
 
-lemma baseChange_dblXYZ : (W'.baseChange B).toProjective.dblXYZ (f ∘ P) =
-    f ∘ (W'.baseChange A).toProjective.dblXYZ P := by
+lemma baseChange_dblXYZ : (W'⁄B).dblXYZ (f ∘ P) = f ∘ (W'⁄A).dblXYZ P := by
   rw [← RingHom.coe_coe, ← map_dblXYZ, map_baseChange]
 
-lemma baseChange_addX : (W'.baseChange B).toProjective.addX (f ∘ P) (f ∘ Q) =
-    f ((W'.baseChange A).toProjective.addX P Q) := by
+lemma baseChange_addX : (W'⁄B).addX (f ∘ P) (f ∘ Q) = f ((W'⁄A).addX P Q) := by
   rw [← RingHom.coe_coe, ← map_addX, map_baseChange]
 
-lemma baseChange_negAddY : (W'.baseChange B).toProjective.negAddY (f ∘ P) (f ∘ Q) =
-    f ((W'.baseChange A).toProjective.negAddY P Q) := by
+lemma baseChange_negAddY : (W'⁄B).negAddY (f ∘ P) (f ∘ Q) = f ((W'⁄A).negAddY P Q) := by
   rw [← RingHom.coe_coe, ← map_negAddY, map_baseChange]
 
-lemma baseChange_addY : (W'.baseChange B).toProjective.addY (f ∘ P) (f ∘ Q) =
-    f ((W'.baseChange A).toProjective.addY P Q) := by
+lemma baseChange_addY : (W'⁄B).addY (f ∘ P) (f ∘ Q) = f ((W'⁄A).addY P Q) := by
   rw [← RingHom.coe_coe, ← map_addY, map_baseChange]
 
-lemma baseChange_addXYZ : (W'.baseChange B).toProjective.addXYZ (f ∘ P) (f ∘ Q) =
-    f ∘ (W'.baseChange A).toProjective.addXYZ P Q := by
+lemma baseChange_addXYZ : (W'⁄B).addXYZ (f ∘ P) (f ∘ Q) = f ∘ (W'⁄A).addXYZ P Q := by
   rw [← RingHom.coe_coe, ← map_addXYZ, map_baseChange]
 
 end Projective

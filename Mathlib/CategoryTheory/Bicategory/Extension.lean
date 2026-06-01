@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Basic
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-public import Mathlib.Tactic.CategoryTheory.CancelIso
 
 /-!
 # Extensions and lifts in bicategories
@@ -153,6 +152,7 @@ def whiskerIso (i : s ≅ t) {x : B} (h : c ⟶ x) :
         _ = (i.inv ≫ i.hom).right ▷ h := by simp [-Iso.inv_hom_id]
         _ = 𝟙 _ := by simp [Iso.inv_hom_id])
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between left extensions induced by a right unitor. -/
 @[simps! hom_right inv_right]
 def whiskerOfCompIdIsoSelf (t : LeftExtension f g) : (t.whisker (𝟙 c)).ofCompId ≅ t :=
@@ -275,6 +275,7 @@ def whiskerIso (i : s ≅ t) {x : B} (h : x ⟶ c) :
         _ = h ◁ (i.inv ≫ i.hom).right := by simp [-Iso.inv_hom_id]
         _ = 𝟙 _ := by simp [Iso.inv_hom_id])
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between left lifts induced by a left unitor. -/
 @[simps! hom_right inv_right]
 def whiskerOfIdCompIsoSelf (t : LeftLift f g) : (t.whisker (𝟙 c)).ofIdComp ≅ t :=

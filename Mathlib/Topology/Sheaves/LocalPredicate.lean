@@ -100,6 +100,7 @@ structure LocalPredicate extends PrelocalPredicate T where
       (_ : ∀ x : U, ∃ (V : Opens X) (_ : x.1 ∈ V) (i : V ⟶ U),
         pred fun x : V ↦ f (i x : U)), pred f
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Continuity is a "local" predicate on functions to a fixed topological space `T`.
 -/
 def continuousLocal (T) [TopologicalSpace T] : LocalPredicate fun _ : X ↦ T :=
@@ -160,7 +161,7 @@ namespace PrelocalPredicate
 
 theorem sheafifyOf {T : X → Type*} {P : PrelocalPredicate T} {U : Opens X}
     {f : ∀ x : U, T x} (h : P.pred f) : P.sheafify.pred f := fun x ↦
-  ⟨U, x.2, 𝟙 _, by convert h⟩
+  ⟨U, x.2, 𝟙 _, by convert! h⟩
 
 /-- For a unary operation (e.g. `x ↦ -x`) defined at each stalk, if a prelocal predicate is closed
 under the operation on each open set (possibly by refinement), then the sheafified predicate is
@@ -223,10 +224,10 @@ end PrelocalPredicate
 
 /-- The subpresheaf of dependent functions on `X` satisfying the "pre-local" predicate `P`.
 -/
-@[simps!]
+@[simps]
 def subpresheafToTypes (P : PrelocalPredicate T) : Presheaf (Type _) X where
   obj U := { f : ∀ x : U.unop, T x // P.pred f }
-  map {_ _} i f := ⟨fun x ↦ f.1 (i.unop x), P.res i.unop f.1 f.2⟩
+  map i := ↾fun f ↦ ⟨fun x ↦ f.1 (i.unop x), P.res i.unop f.1 f.2⟩
 
 namespace subpresheafToTypes
 
@@ -235,7 +236,7 @@ variable (P : PrelocalPredicate T)
 /-- The natural transformation including the subpresheaf of functions satisfying a local predicate
 into the presheaf of all functions.
 -/
-def subtype : subpresheafToTypes P ⟶ presheafToTypes X T where app _ f := f.1
+def subtype : subpresheafToTypes P ⟶ presheafToTypes X T where app _ := ↾fun f ↦ f.1
 
 open TopCat.Presheaf
 
@@ -264,7 +265,7 @@ theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredica
       -- We claim that the predicate holds in `U i`
       use U i, hi, Opens.leSupr U i
       -- This follows, since our original family `sf` satisfies the predicate
-      convert (sf i).property using 1
+      convert! (sf i).property using 1
       exact gl_spec i
     -- It remains to show that the chosen lift is really a gluing for the subsheaf and
     -- that it is unique. Both of which follow immediately from the corresponding facts
@@ -282,21 +283,31 @@ end subpresheafToTypes
 def subsheafToTypes (P : LocalPredicate T) : Sheaf (Type _) X :=
   ⟨subpresheafToTypes P.toPrelocalPredicate, subpresheafToTypes.isSheaf P⟩
 
+/-- Auxiliary definition for `stalkToFiber`. -/
+def LocalPredicate.cocone (P : LocalPredicate T) (x : X) :
+    Cocone ((OpenNhds.inclusion x).op ⋙ subpresheafToTypes P.toPrelocalPredicate) where
+  pt := T x
+  ι := { app U := ↾fun f ↦ f.1 ⟨x, (unop U).2⟩ }
+
 /-- There is a canonical map from the stalk to the original fiber, given by evaluating sections.
 -/
-def stalkToFiber (P : LocalPredicate T) (x : X) : (subsheafToTypes P).presheaf.stalk x ⟶ T x := by
-  refine
-    colimit.desc _
-      { pt := T x
-        ι :=
-          { app := fun U f ↦ ?_
-            naturality := ?_ } }
-  · exact f.1 ⟨x, (unop U).2⟩
-  · aesop
+def stalkToFiber (P : LocalPredicate T) (x : X) :
+    (subsheafToTypes P).presheaf.stalk x ⟶ T x :=
+  colimit.desc _ (P.cocone x)
+
+set_option backward.defeqAttrib.useBackward true in
+@[simp]
+lemma stalkToFiber_ι (P : LocalPredicate T) (x : X) (U : (OpenNhds x)ᵒᵖ)
+    (fU : {f //  P.pred f}) :
+    dsimp% (stalkToFiber P x)
+      (colimit.ι ((OpenNhds.inclusion x).op ⋙ subpresheafToTypes P.toPrelocalPredicate) U fU) =
+      (P.cocone x).ι.app U fU :=
+  colimit.ι_desc_apply _ _ _
 
 theorem stalkToFiber_germ (P : LocalPredicate T) (U : Opens X) (x : X) (hx : x ∈ U) (f) :
     stalkToFiber P x ((subsheafToTypes P).presheaf.germ U x hx f) = f.1 ⟨x, hx⟩ := by
-  simp [Presheaf.germ, stalkToFiber]
+  dsimp [stalkToFiber, Presheaf.germ]
+  exact colimit.ι_desc_apply _ _ _
 
 /-- The `stalkToFiber` map is surjective at `x` if
 every point in the fiber `T x` has an allowed section passing through it.
@@ -309,6 +320,8 @@ theorem stalkToFiber_surjective (P : LocalPredicate T) (x : X)
   · exact (subsheafToTypes P).presheaf.germ _ x U.2 ⟨f, h⟩
   · exact stalkToFiber_germ P U.1 x U.2 ⟨f, h⟩
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The `stalkToFiber` map is injective at `x` if any two allowed sections which agree at `x`
 agree on some neighborhood of `x`.
 -/
@@ -328,11 +341,12 @@ theorem stalkToFiber_injective (P : LocalPredicate T) (x : X)
   · choose W s hW e using Q
     exact e.1.trans e.2.symm
   -- Then use induction to pick particular representatives of `tU tV : stalk x`
+  dsimp at tU tV h
   obtain ⟨U, ⟨fU, hU⟩, rfl⟩ := jointly_surjective' tU
   obtain ⟨V, ⟨fV, hV⟩, rfl⟩ := jointly_surjective' tV
   -- Decompose everything into its constituent parts:
-  dsimp
-  simp only [stalkToFiber, Types.Colimit.ι_desc_apply] at h
+  simp only [Functor.whiskeringLeft_obj_obj, Functor.comp_obj, Functor.op_obj,
+    subpresheafToTypes_obj, stalkToFiber_ι] at h
   specialize w (unop U) (unop V) fU hU fV hV h
   rcases w with ⟨W, iU, iV, w⟩
   -- and put it back together again in the correct order.
@@ -350,8 +364,8 @@ the presheaf of continuous functions.
 def subpresheafContinuousPrelocalIsoPresheafToTop {X : TopCat.{u}} (T : TopCat.{u}) :
     subpresheafToTypes (continuousPrelocal X T) ≅ presheafToTop X T :=
   NatIso.ofComponents fun X ↦
-    { hom := by rintro ⟨f, c⟩; exact ofHom ⟨f, c⟩
-      inv := by rintro ⟨f, c⟩; exact ⟨f, c⟩ }
+    { hom := ↾fun f ↦ ofHom ⟨f.1, f.2⟩
+      inv := ↾fun f ↦ ⟨f.1, f.1.2⟩ }
 
 /-- The sheaf of continuous functions on `X` with values in a space `T`.
 -/

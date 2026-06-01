@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Homology.ComplexShape
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.CategoryTheory.GradedObject.Trifunctor
 
-/-! Signs in constructions on homological complexes
+/-! # Signs in constructions on homological complexes
 
 In this file, we shall introduce various typeclasses which will allow
 the construction of the total complex of a bicomplex and of the
@@ -163,6 +163,7 @@ instance : TotalComplexShape c c c where
     dsimp
     rw [neg_mul, one_mul, mul_one, c.ε_succ h, neg_neg]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : TensorSigns (ComplexShape.down ℕ) where
   ε' := MonoidHom.mk' (fun (i : ℕ) => (-1 : ℤˣ) ^ i) (pow_add (-1 : ℤˣ))
@@ -176,6 +177,7 @@ instance : TensorSigns (ComplexShape.down ℕ) where
 @[simp]
 lemma ε_down_ℕ (n : ℕ) : (ComplexShape.down ℕ).ε n = (-1 : ℤˣ) ^ n := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 instance : TensorSigns (ComplexShape.up ℤ) where
   ε' := MonoidHom.mk' Int.negOnePow Int.negOnePow_add
   rel_add p q r (hpq : p + 1 = q) := by dsimp; lia

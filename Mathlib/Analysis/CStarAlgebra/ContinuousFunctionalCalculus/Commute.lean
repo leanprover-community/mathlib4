@@ -194,7 +194,6 @@ protected theorem Commute.cfcₙ_real {a b : A} (hb : Commute a b) (f : ℝ → 
 
 variable [PartialOrder A] [NonnegSpectrumClass ℝ A] [StarOrderedRing A]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A version of `Commute.cfcₙ` or `IsSelfAdjoint.commute_cfcₙ` which does not require any
 interaction with `star` when the base ring is `ℝ≥0`. -/
 @[grind ←]

@@ -36,7 +36,7 @@ variable {ι α β F : Type*}
 
 open Set Function
 
-open Pointwise
+open scoped Pointwise
 
 section Semiring
 
@@ -156,7 +156,7 @@ theorem sum_pow_mem_span_pow {ι} (s : Finset ι) (f : ι → α) (n : ℕ) :
     (∑ i ∈ s, f i) ^ (s.card * n + 1) ∈ span ((fun i => f i ^ (n + 1)) '' s) := by
   classical
   simpa only [Multiset.card_map, Multiset.map_map, comp_apply, Multiset.toFinset_map,
-    Finset.coe_image, Finset.val_toFinset] using pow_multiset_sum_mem_span_pow (s.1.map f) n
+    Finset.coe_image, Finset.val_toFinset] using! pow_multiset_sum_mem_span_pow (s.1.map f) n
 
 theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
     span ((fun (x : α) => x ^ n) '' s) = ⊤ := by
@@ -270,7 +270,7 @@ theorem exists_maximal_of_not_isField [Nontrivial R] (h : ¬ IsField R) :
 
 theorem not_isField_of_ne_of_ne [Nontrivial R] {I : Ideal R} (h_bot : I ≠ ⊥) (h_top : I ≠ ⊤) :
     ¬ IsField R := by
-  contrapose! h_bot
+  contrapose h_bot
   exact ((isField_iff_maximal_bot.mp h_bot).eq_of_le h_top bot_le).symm
 
 theorem not_isField_iff_exists_ideal_bot_lt_and_lt_top [Nontrivial R] :
