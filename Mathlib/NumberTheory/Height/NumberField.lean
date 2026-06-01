@@ -319,7 +319,7 @@ private lemma infinitePlace_apply_le_of_prod_le {n : ℕ} (hn : n ≠ 0) (B : �
   grw [this, le_div_iff₀' (by positivity)]; clear this
   refine (mul_le_mul_of_nonneg_right ?_ (Real.iSup_nonneg_of_nonnegHomClass ..)).trans h
   have := prod_le_prod (s := univ.erase v) (f := fun v ↦ (n : ℝ) ^ v.mult)
-      (g := fun v ↦ _ ^ v.mult) (by simp) (fun v _ ↦ by simp only; grw [hv v])
+      (g := fun v ↦ _ ^ v.mult) (by simp) (fun v _ ↦ by grw [hv v])
   grw [← this, ← hv v]
   · refine (mul_le_mul_iff_left₀ (show 0 < (n : ℝ) from mod_cast hn.pos)).mp ?_
     rw [← pow_succ, show totalWeight K - 1 + 1 = totalWeight K by grind, mul_assoc, ← pow_succ,
