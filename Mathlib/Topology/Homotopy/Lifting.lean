@@ -590,6 +590,15 @@ theorem ker_monodromyPerm :
     rw [FundamentalGroup.mapOfEq_apply]
     rcases γ; rfl
 
+theorem monodromyPerm_injective [SimplyConnectedSpace E] :
+    Function.Injective (hp.isCoveringMap.monodromyPerm x) := by
+  let e : p⁻¹' {x} := ⟨(hp.surjective x).choose, (hp.surjective x).choose_spec⟩
+  rw [← MonoidHom.ker_eq_bot_iff, hp.ker_monodromyPerm e]
+  set f : FundamentalGroup E (e : E) →* FundamentalGroup X x :=
+    FundamentalGroup.mapOfEq ⟨p, hp.continuous⟩ e.2
+  have : Subsingleton f.range := (Set.subsingleton_coe _).mpr f.subsingleton_coe_range
+  exact Subgroup.eq_bot_of_subsingleton _
+
 open MulOpposite in
 /-- Choosing an arbitrary basepoint `e ∈ f ⁻¹' {x}` induces a bijection `f ⁻¹' {x} ≃ G`, and the
 `G`-action on `f ⁻¹' {x}` corresponds to left multiplication. The monodromy action commutes
@@ -647,5 +656,15 @@ theorem fundamentalGroupToMulOpposite_surjective [PathConnectedSpace E] :
   rw [fundamentalGroupToMulOpposite_apply_eq_Iff]
   change (e' : E) = _
   rw [← hp.isCoveringMap.monodromy_eq_of_map_eq (γ := ⟦γ⟧) (Γ := ⟦Γ⟧) rfl]
+
+lemma fundamentalGroupToMulOpposite_injective [SimplyConnectedSpace E] :
+    Function.Injective (hp.fundamentalGroupToMulOpposite e) := by
+  rw [← MonoidHom.ker_eq_bot_iff, ker_fundamentalGroupToMulOpposite, MonoidHom.ker_eq_bot_iff]
+  exact hp.monodromyPerm_injective
+
+noncomputable abbrev fundamentalGroupEquiv [SimplyConnectedSpace E] :
+    FundamentalGroup X x ≃* Gᵐᵒᵖ :=
+  MulEquiv.ofBijective (hp.fundamentalGroupToMulOpposite e)
+    ⟨hp.fundamentalGroupToMulOpposite_injective e, hp.fundamentalGroupToMulOpposite_surjective e⟩
 
 end IsQuotientCoveringMap

@@ -67,6 +67,10 @@ open Subgroup
 def range (f : G →* N) : Subgroup N :=
   Subgroup.copy ((⊤ : Subgroup G).map f) (Set.range f) (by simp)
 
+@[to_additive]
+lemma subsingleton_coe_range [Subsingleton G] (f : G →* N) : (f.range : Set N).Subsingleton :=
+  Set.subsingleton_range f
+
 @[to_additive (attr := simp)]
 theorem coe_range (f : G →* N) : (f.range : Set N) = Set.range f :=
   rfl
