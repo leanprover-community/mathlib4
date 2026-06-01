@@ -184,14 +184,14 @@ instance [G.IsFiniteType] : (G.map F η).IsFiniteType where
 lemma GeneratingSections.map_π_eq : (G.map F η).π = (mapFreeIso F G.I η).hom ≫ F.map G.π :=
   (F.obj M).freeHomEquiv.symm_apply_eq.mpr rfl
 
+set_option backward.isDefEq.respectTransparency false in
+instance [IsIso G.π] : IsIso (G.map F η).π := by
+  rw [GeneratingSections.map_π_eq]
+  infer_instance
+
 variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
   [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] [HasBinaryProducts C]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
-
-omit [HasBinaryProducts C] in
-@[simp]
-lemma Sieve.ofObject_id (X : C) : Sieve.ofObjects id X = ⊤ :=
-  Sieve.pullback_ofObjects_eq_top _ (𝟙 _)
 
 /-- Given `G : M.GeneratingSections`, we naturally obtain `M.LocalGeneratorsData` using the
 trivial cover of `C`. -/

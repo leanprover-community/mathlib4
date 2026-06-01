@@ -56,7 +56,8 @@ instance IsLocallyFreeData.shrink {M : SheafOfModules.{u} R} (q : M.LocalGenerat
 
 end LocalGeneratorsData
 
-/-- A sheaf of modules is locally free if it is locally isomorphic to free sheaves: There exist local generators satisfying `IsLocallyFreeData`. -/
+/-- A sheaf of modules is locally free if it is locally isomorphic to free sheaves:
+There exist local generators satisfying `IsLocallyFreeData`. -/
 class IsLocallyFree (M : SheafOfModules.{u} R) : Prop where
   exists_isLocallyFreeData : ∃ q : LocalGeneratorsData.{u₁} M, q.IsLocallyFreeData
 
@@ -84,6 +85,11 @@ lemma free.generatingSections_π (I : Type u) :
     (free.generatingSections (R := R) I).π = 𝟙 (free I) :=
   Equiv.symm_apply_apply (free I).freeHomEquiv _
 
+set_option backward.isDefEq.respectTransparency false in
+instance (I : Type u) : IsIso (free.generatingSections (R := R) I).π := by
+  rw [free.generatingSections_π]
+  infer_instance
+
 variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
   [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] [HasBinaryProducts C]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}] [HasSheafify J AddCommGrpCat]
@@ -94,8 +100,6 @@ instance (I : Type u) :
     (free.generatingSections (R := R) I).localGeneratorsData.IsLocallyFreeData where
   isIso i := by
     dsimp
-    simp only [GeneratingSections.map_π_eq, free.generatingSections_I, free.generatingSections_π,
-      CategoryTheory.Functor.map_id, Category.comp_id]
     infer_instance
 
 instance (I : Type u) : (free (R := R) I).IsLocallyFree where
