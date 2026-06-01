@@ -68,7 +68,6 @@ def hom : D.T →ₐ[R] S := Ideal.Quotient.liftₐ _ (aeval P.val) <| by
   simpa only [Generators.toExtension_Ring, Generators.toExtension_commRing, Function.comp_apply,
     SetLike.mem_coe, RingHom.mem_ker, ← P.algebraMap_apply] using (D.f _).property
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Algebra D.T S := D.hom.toAlgebra
 
 set_option backward.isDefEq.respectTransparency false in

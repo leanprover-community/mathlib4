@@ -128,7 +128,6 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
   · simp
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A proper geometrically integral group scheme over a field is commutative. -/
 @[stacks 0BFD]
 theorem isCommMonObj_of_isProper_of_geometricallyIntegral
