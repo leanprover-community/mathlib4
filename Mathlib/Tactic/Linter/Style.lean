@@ -524,6 +524,8 @@ def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
 
 initialize addLinter doubleUnderscore
 
+/-- Component- and prefix-based checks. Assumes the `Name` has already been processed with
+`privateToUsername`.-/
 private def isBadDefNameWithUnderscoreAux (env : Environment) (moduleAutoSuffix : String)
     (badIfNotExempt : Bool) : Name → Bool
   | .num .. => false -- exempt; internal
