@@ -150,11 +150,9 @@ lemma valueGroup_genLTOne_eq_generator : (valueGroup v).genLTOne = generator v :
 
 section WithZeroMulInt
 
-open WithZero MonoidWithZeroHom LinearOrderedCommGroup
+open WithZero
 
-variable {R : Type*} [Ring R]
-
-variable {v : Valuation R ℤᵐ⁰} [hv : v.IsRankOneDiscrete]
+variable {v : Valuation A ℤᵐ⁰} [hv : v.IsRankOneDiscrete]
 
 /--
 The generator of a discrete valuation in `ℤᵐ⁰` that contains `exp (-1)` in its range

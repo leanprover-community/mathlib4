@@ -298,6 +298,7 @@ instance : v.intValuation.IsNontrivial :=
   have ⟨π, hπ⟩ := v.intValuation_exists_uniformizer
   ⟨π, by aesop⟩
 
+@[simp]
 theorem intValuation_uniformizer (π : v.intValuation.Uniformizer) :
     v.intValuation (π.val : R) = WithZero.exp (-1) := by
   simpa [Valuation.IsUniformizer.val π.valuation_gt_one, Units.ext_iff]
