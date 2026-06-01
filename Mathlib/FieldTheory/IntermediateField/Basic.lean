@@ -579,7 +579,7 @@ theorem aeval_coe {R : Type*} [CommSemiring R] [Algebra R K] [Algebra R L] [IsSc
 /-- The map `E → F` when `E` is an intermediate field contained in the intermediate field `F`.
 
 This is the intermediate field version of `Subalgebra.inclusion`. -/
-def inclusion {E F : IntermediateField K L} (hEF : E ≤ F) : E →ₐ[K] F :=
+@[reducible] def inclusion {E F : IntermediateField K L} (hEF : E ≤ F) : E →ₐ[K] F :=
   Subalgebra.inclusion hEF
 
 theorem inclusion_injective {E F : IntermediateField K L} (hEF : E ≤ F) :
