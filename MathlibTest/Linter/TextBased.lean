@@ -449,35 +449,42 @@ section
 
 open Mathlib.Linter.Style.nameCheck
 
+def testDecl_mathlibTest := true
+def testDecl_mathlib := true
+
+theorem foo_bar_baz : True := trivial
+def foo_bar_baz.testThm : Bool := true
+def foo_bar_baz.test_badThm : Bool := true
+
+-- set_option trace.debug true
 /- Unit tests for the `defsWithUnderscore` linter. -/
-#guard isBadNameWithUnderscore `Mathlib `Foo == false
-#guard isBadNameWithUnderscore `Mathlib `fooBarBaz == false
-#guard isBadNameWithUnderscore `Mathlib `foo_bar == true
-#guard isBadNameWithUnderscore `Mathlib `_fooFoo == true
-#guard isBadNameWithUnderscore `Mathlib `Foo._bar == true
--- A namespace `Mathlib` in the middle does not silence the linter: we only test for a *prefix*
--- `Mathlib`, `Mathlib.Parser` or `Mathlib.Tactic`.
-#guard isBadNameWithUnderscore `Mathlib `Nat.Mathlib.foo_bar == true
-#guard isBadNameWithUnderscore `Mathlib
-  `AlgebraicGeometry.Scheme.IdealSheafData.Simps.coe_support == false
-
-#guard isBadNameWithUnderscore `Mathlib `Mathlib.Mat._Foo == true
-#guard isBadNameWithUnderscore `Mathlib `Mathlib.foo_ == true
-#guard isBadNameWithUnderscore `Mathlib `Nat.Mathlib.foo_bar == true
-#guard isBadNameWithUnderscore `Mathlib `Mathlib.Parser.foo_bar == true
-#guard isBadNameWithUnderscore `Mathlib `Mathlib.Tactic.foo_bar == true
-#guard isBadNameWithUnderscore `Mathlib `Nat.foo_bar2 == true
-#guard isBadNameWithUnderscore `Mathlib `Nat.fooBar_2 == false
-#guard isBadNameWithUnderscore `Mathlib `Nat.foo_bar_2 == false
-#guard isBadNameWithUnderscore `Mathlib `foo.bar_foo == true
-#guard isBadNameWithUnderscore `Mathlib `foo.bar_foo.formatter == false
-#guard isBadNameWithUnderscore `Mathlib `foo.bar_foo.parenthesizer == false
-#guard isBadNameWithUnderscore `Mathlib `foo.bar_foo.parenthesizer == false
-#guard isBadNameWithUnderscore `Mathlib `foo.bar_foo.parenthesizer == false
-
-#guard isBadNameWithUnderscore `Mathlib `foo.bar_mathlib == false
-#guard isBadNameWithUnderscore `Foo `foo.bar_mathlib == true
-#guard isBadNameWithUnderscore `Foo `foo.bar_foo == false
+run_meta do
+  guard <| not <| ← isBadDefNameWithUnderscore `Foo
+  guard <| not <| ← isBadDefNameWithUnderscore `fooBarBaz
+  guard <| not <| ← isBadDefNameWithUnderscore `Foo._foo_Foo -- `isAutoDecl`
+  guard <| not <| ← isBadDefNameWithUnderscore `foo_bar_37 -- `_<number>`
+  guard <| ← isBadDefNameWithUnderscore `foo_5bar37 -- (bad) `<number>`
+  guard <| not <| ← isBadDefNameWithUnderscore ``testDecl_mathlibTest -- `_<project>`
+  guard <| ← isBadDefNameWithUnderscore ``testDecl_mathlib -- (bad) wrong `_<project>`
+  guard <| not <| ← isBadDefNameWithUnderscore `Foo.Simps.coe_support -- `Simps`
+  guard <| not <| ← isBadDefNameWithUnderscore `Foo.section_ -- `<keyword>_`
+  guard <| ← isBadDefNameWithUnderscore `Foo.sectionnn_ -- (bad) `<non-keyword>_`
+  guard <| ← isBadDefNameWithUnderscore `set_option -- (bad) `<keyword>`, no trailing `_`
+  guard <| not <| ← isBadDefNameWithUnderscore ``Lean.Json.«json[_]» -- `ParserDescr`
+  guard <| not <| ← isBadDefNameWithUnderscore ``«term_+_» -- `TrailingParserDescr`
+  guard <| ← isBadDefNameWithUnderscore `«term_++++_» -- (bad) not a real parser
+  -- registered formatter:
+  guard <| not <| ← isBadDefNameWithUnderscore ``Lean.Parser.Tactic.set_option.formatter
+  -- unregistered:
+  guard <| ← isBadDefNameWithUnderscore `Lean.Parser.Foo.set_option.formatter
+  -- registered parenthesizer:
+  guard <| not <| ← isBadDefNameWithUnderscore ``Lean.Parser.Tactic.set_option.parenthesizer
+  -- unregistered:
+  guard <| ← isBadDefNameWithUnderscore `Lean.Parser.Foo.set_option.parenthesizer
+  -- theorem & theorem namespace:
+  guard <| not <| ← isBadDefNameWithUnderscore ``foo_bar_baz -- theorem, not linted
+  guard <| not <| ← isBadDefNameWithUnderscore ``foo_bar_baz.testThm -- ok: namespaced under theorem
+  guard <| ← isBadDefNameWithUnderscore ``foo_bar_baz.test_badThm -- bad: same, but bad def name
 
 end
 
