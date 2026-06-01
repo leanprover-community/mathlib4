@@ -190,12 +190,12 @@ theorem tendsto_map_inv_sqrt_smul_sum
       conv_lhs => {
         arg 2
         enter [ω]
-        rw [←ofReal_norm_eq_enorm, ←ENNReal.ofReal_pow (by {simp [norm_nonneg]}),
+        rw [←ofReal_norm, ←ENNReal.ofReal_pow (by {simp [norm_nonneg]}),
           ←real_inner_self_eq_norm_sq]
         simp [inner, ←pow_two]
         rw [ENNReal.ofReal_sum_of_nonneg (fun _ => by {simp [sq_nonneg]})]
       }
-      rw [lintegral_finset_sum' _ (fun _ => by {fun_prop})]
+      rw [lintegral_finsetSum' _ (fun _ => by {fun_prop})]
       rw [ENNReal.sum_lt_top]
       intro i hi
       conv_lhs => {
@@ -257,8 +257,7 @@ theorem tendsto_map_inv_sqrt_smul_sum
                 arg 1
                 arg 2
                 intro
-                unfold inner
-                erw [@RCLike.inner_apply ℝ _ ((X 0 ω).ofLp _ : ℝ) (t'.ofLp _ : ℝ)]
+                rw [RCLike.inner_apply]
                 simp
               }
               simp_rw [pow_two, Finset.sum_mul_sum, ←mul_assoc, mul_comm, ←mul_assoc]
@@ -292,17 +291,17 @@ theorem tendsto_map_inv_sqrt_smul_sum
               @MemLp.mul Ω _ ℝ _ P 2 2 1
                 (fun ω => X 0 ω j') (fun ω => X 0 ω i')
                 (h_L2_pi j') (h_L2_pi i') _
-          rw [integral_finset_sum]
+          rw [integral_finsetSum]
           · apply Finset.sum_congr rfl
             intro i hi
-            rw [integral_finset_sum]
+            rw [integral_finsetSum]
             · apply Finset.sum_congr rfl
               intro j hj
               rw [integral_const_mul]
             · intro j hj
               exact (h_integrable_prod i j).const_mul (t' i * t' j)
           · intro i hi
-            apply MeasureTheory.integrable_finset_sum
+            apply integrable_finsetSum
             intro j hj
             exact (h_integrable_prod i j).const_mul (t' i * t' j)
       _ = ∑ i, ∑ j, (t' i * t' j) * (if i = j then 1 else 0) := by
@@ -432,6 +431,6 @@ theorem tendstoInDistribution_inv_sqrt_smul_sum
           ProbabilityMeasure (EuclideanSpace ℝ (Fin d))) := by
       apply Subtype.ext
       exact hmapY_eq
-    simpa [hY'] using hclt
+    convert hclt
 
 end Multivariate
