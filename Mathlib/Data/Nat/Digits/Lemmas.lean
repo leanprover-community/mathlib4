@@ -41,7 +41,7 @@ theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
   induction L with
   | nil => simp
   | cons hd tl hl =>
-    simpa [List.range_succ_eq_map, List.zipWith_map_right, ofDigits_eq_sum_mapIdx_aux] using
+    simpa [List.range_succ_eq_map, List.zipWith_map_right, ofDigits_eq_sum_mapIdx_aux] using!
       Or.inl hl
 
 /-!
