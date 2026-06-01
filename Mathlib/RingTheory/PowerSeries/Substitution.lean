@@ -162,6 +162,9 @@ noncomputable def subst (a : MvPowerSeries τ S) (f : PowerSeries R) :
 lemma subst_def (a : MvPowerSeries τ S) (f : PowerSeries R) :
     subst a f = MvPowerSeries.subst (fun _ ↦ a) f := rfl
 
+lemma subst_X_comp_const {f : R⟦X⟧} {i : τ} :
+    .subst (.X (R := R) ∘ fun _ ↦ i) f = f.subst (.X i) := rfl
+
 variable {a : MvPowerSeries τ S} {b : S⟦X⟧}
 
 /-- Substitution of power series into a power series, as an `AlgHom`. -/
@@ -183,7 +186,7 @@ theorem substAlgHom_eq_aeval
     (ha : HasSubst a) :
     (substAlgHom ha : R⟦X⟧ →ₐ[R] MvPowerSeries τ S) = PowerSeries.aeval ha.hasEval := by
   ext1 f
-  simpa [substAlgHom] using congr_fun (MvPowerSeries.substAlgHom_eq_aeval ha.const) f
+  simpa [substAlgHom] using! congr_fun (MvPowerSeries.substAlgHom_eq_aeval ha.const) f
 
 theorem subst_add (ha : HasSubst a) (f g : PowerSeries R) :
     subst a (f + g) = subst a f + subst a g := by
@@ -585,6 +588,25 @@ lemma subst_substInvOfIsUnit_left : (P.substInvOfIsUnit hP').subst P = X := by
 end IsUnit
 
 end substInv
+
+section
+
+attribute [local instance] DiscreteTopology.instContinuousSMul
+
+variable {x : ℕ → PowerSeries R} {a : MvPowerSeries τ S}
+  [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S]
+
+lemma subst_tsum (hx : Summable x) (ha : HasSubst a) :
+    (∑' i, x i).subst a = ∑' i, ((x i).subst a) := by
+  rw [← coe_substAlgHom ha, substAlgHom_eq_aeval ha, hx.map_tsum _]
+  exact continuous_aeval _
+
+lemma summable_subst (hx : Summable x) (ha : HasSubst a) :
+    Summable fun i ↦ (x i).subst a := by
+  rw [← coe_substAlgHom ha, substAlgHom_eq_aeval ha]
+  exact hx.map _ (continuous_aeval _)
+
+end
 
 section Bivariate
 
