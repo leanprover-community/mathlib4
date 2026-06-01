@@ -14,8 +14,8 @@ public import Mathlib.RingTheory.QuotSMulTop
 
 # Freeness of QuotSMulTop by regular element
 
-For finitely generated module `M` over Noetherian local ring `(R, m)`, if `x ∈ m` is `M`-regular,
-`M/xM` is free over `R/(x)` iff `M` is free over `R`.
+For finitely presented module `M` over commutative ring `R`, if `x` in the jacobson radical of `R`
+is `M`-regular, then `M/xM` is free over `R/(x)` iff `M` is free over `R`.
 
 ## Main Results
 
