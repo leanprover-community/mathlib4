@@ -100,7 +100,7 @@ lemma setBernoulli_real_mem_of_notMem (p : I) (hi : i ∉ u) :
   simp [measureReal_def, setBernoulli_mem_of_notMem p hi]
 
 lemma HasLaw.indicator_of_setBernoulli_of_mem (hi : i ∈ u) {S : Ω → Set ι} {M : Type*} [Zero M]
-    [MeasurableSpace M] [MeasurableSingletonClass M] (c : M) [NeZero c]
+    [MeasurableSpace M] [MeasurableSingletonClass M] (c : M)
     (hS : HasLaw S setBer(u, p) P) :
     HasLaw ({ω | i ∈ S ω}.indicator (fun _ ↦ c)) Ber(c, 0, p) P := by
   have := hS.isProbabilityMeasure
@@ -124,9 +124,7 @@ lemma HasLaw.indicator_of_setBernoulli_of_notMem' (hi : i ∉ u) {S : Ω → Set
     HasLaw ({ω | i ∈ S ω}.indicator f) (dirac 0) P := by
   have := hS.isProbabilityMeasure
   rw [hasLaw_dirac_iff]
-  have : setBer(u, p) {s | ¬ (i ∉ s)} = 0 := by
-    simp [setBernoulli_mem_of_notMem p hi]
-  rw [← ae_iff (p := (i ∉ ·))] at this
+  have : setBer(u, p) {s | ¬ (i ∉ s)} = 0 := by simp [setBernoulli_mem_of_notMem p hi]
   filter_upwards [hS.ae_iff (by fun_prop) |>.2 this] with ω hω
   grind [Set.indicator]
 
