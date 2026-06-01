@@ -254,6 +254,28 @@ end fundamental_identity
 section tower
 
 variable {A B : Type*} [CommRing A] [IsDedekindDomain A] [CommRing B] [IsDedekindDomain B]
+  [Algebra A B] [IsTorsionFree A B] {p : Ideal A} (P : Ideal B) [p.IsPrime]
+  [P.IsPrime] [P.LiesOver p] (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
+  [IsGaloisGroup G A B] (C : Type*) [CommRing C] [IsDedekindDomain C] [Algebra A C] [Algebra B C]
+  [Module.Finite A B] [Module.Finite A C] [Module.Finite B C] [IsTorsionFree A C]
+  [IsTorsionFree B C] [IsScalarTower A B C]
+  (GAC : Type*) [Group GAC] [Finite GAC] [MulSemiringAction GAC C] [IsGaloisGroup GAC A C]
+  (GBC : Type*) [Group GBC] [Finite GBC] [MulSemiringAction GBC C] [IsGaloisGroup GBC B C]
+
+include G GAC GBC in
+theorem ncard_primesOver_mul_ncard_primesOver' :
+    (p.primesOver B).ncard * (P.primesOver C).ncard = (p.primesOver C).ncard := by
+  -- GAC acts transitively on the primes of `C` above `p`
+  -- G acts transitively on the primes of `B` above `p`
+  have := IsInvariant.orbit_eq_primesOver A C GAC p
+  -- each prime in `B` over `p` has the same number of primes in `C` above it
+  let foo : MulSemiringAction GAC B := by sorry
+
+end tower
+
+section tower
+
+variable {A B : Type*} [CommRing A] [IsDedekindDomain A] [CommRing B] [IsDedekindDomain B]
   [Algebra A B] [IsTorsionFree A B] {p : Ideal A} (P : Ideal B) [p.IsMaximal]
   [P.IsMaximal] [P.LiesOver p] (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
   [IsGaloisGroup G A B] (C : Type*) [CommRing C] [IsDedekindDomain C] [Algebra A C] [Algebra B C]
