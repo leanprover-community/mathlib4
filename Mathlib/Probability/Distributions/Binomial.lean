@@ -231,24 +231,23 @@ lemma measurePreserving_ncard_setBernoulli_binomial_ncard {ι : Type*} [Countabl
     refine ext_of_singleton fun k ↦ ?_
     rw [binomial_singleton, map_ncard_setBernoulli_singleton hu]
 
-/-- A sum of `n` independent Bernoulli random variables is a binomial random variable. -/
-lemma iIndepFun.hasLaw_finset_sum_binomial {ι : Type*} {s : Finset ι} {X : ι → Ω → ℕ}
-    (hX : iIndepFun (s.restrict X) P)
-    (lawX : ∀ i ∈ s, HasLaw (X i) Ber(1, 0, p) P) :
+/-- A sum of independent Bernoulli random variables is a binomial random variable. -/
+lemma iIndepFun.hasLaw_finsetSum_binomial {ι : Type*} {s : Finset ι} {X : ι → Ω → ℕ}
+    (hX : iIndepFun (s.restrict X) P) (lawX : ∀ i ∈ s, HasLaw (X i) Ber(1, 0, p) P) :
     HasLaw (∑ i ∈ s, X i) Bin(s.card, p) P := by
   classical
   obtain ⟨Ω', mΩ', P', S, -, hS⟩ := setBer((Finset.univ (α := s) : Set s), p).exists_hasLaw
-  convert hS.hasLaw_indicator_pi_of_setBernoulli.comp_of_hasLaw_comp
+  convert hS.hasLaw_indicator_infinitePi_ite_of_setBernoulli.comp_of_hasLaw_comp
     (f := fun x ↦ ∑ i, x i) (Y := fun ω i ↦ X i.1 ω) (by fun_prop) ?_ ?_
   · simp only [Finset.sum_apply]
     rw [← Finset.sum_coe_sort, ← Finset.sum_coe_sort]
-  · exact iIndepFun.hasLaw_pi (fun i ↦ lawX i i.1.2) (hX.precomp Subtype.coe_injective)
+  · rw [infinitePi_eq_pi]
+    exact iIndepFun.hasLaw_pi (by simpa using lawX) hX
   have : HasLaw (fun ω ↦ (S ω).ncard) Bin(s.card, p) P' := by
     convert (measurePreserving_ncard_setBernoulli_binomial_ncard (by simp)).comp_hasLaw hS
     simp
   convert this with ω
-  rw [Set.ncard_eq_toFinset_card _ (toFinite (S ω)), Finset.card_eq_sum_ite (Finset.subset_univ _),
-    ← Finset.univ.sum_coe_sort]
+  rw [Set.ncard_eq_toFinset_card _ (toFinite (S ω)), Finset.card_eq_sum_ite (Finset.subset_univ _)]
   congr with i
   simp [Set.indicator]
 
