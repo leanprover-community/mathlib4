@@ -199,7 +199,7 @@ protected theorem induction_on' {motive : (⨂[R] i, s i) → Prop} (z : ⨂[R] 
   refine AddCon.induction_on z fun x ↦ FreeAddMonoid.recOn x C0 ?_
   simp_rw [AddCon.coe_add]
   refine fun f y ih ↦ add _ _ ?_ ih
-  convert tprodCoeff f.1 f.2
+  convert! tprodCoeff f.1 f.2
 
 section DistribMulAction
 
@@ -911,7 +911,7 @@ open TensorProduct
 variable {ι : Type*} {R : Type*} [CommRing R]
 variable {s : ι → Type*} [∀ i, AddCommGroup (s i)] [∀ i, Module R (s i)]
 
-/- Unlike for the binary tensor product, we require `R` to be a `CommRing` here, otherwise
+/-- Unlike for the binary tensor product, we require `R` to be a `CommRing` here, otherwise
 this is false in the case where `ι` is empty. -/
 instance : AddCommGroup (⨂[R] i, s i) :=
   Module.addCommMonoidToAddCommGroup R

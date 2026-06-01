@@ -6,9 +6,7 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Algebra.Order.ZeroLEOne
-public import Mathlib.Tactic.ToAdditive
-public import Mathlib.Order.Max
-public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
 # Typeclasses expressing `IsBot 1` and `IsBot 0`
@@ -40,12 +38,12 @@ theorem isBot_one : IsBot (1 : α) :=
 theorem one_le {a : α} : 1 ≤ a :=
   isBot_one a
 
--- TODO: deprecate
+@[deprecated (since := "2026-05-27")]
 alias zero_le' := zero_le
 
 variable (α) in
 /-- Create an `OrderBot` instance, setting `1` as the bottom element. -/
-@[to_additive (attr := implicit_reducible)
+@[expose, to_additive (attr := implicit_reducible)
 /-- Create an `OrderBot` instance, setting `0` as the bottom element. -/]
 def IsBotOneClass.toOrderBot : OrderBot α where
   bot := 1
@@ -65,7 +63,7 @@ theorem not_lt_one : ¬ a < 1 := one_le.not_gt
 
 @[deprecated (since := "2025-12-03")] alias not_neg := not_lt_zero
 
--- TODO: deprecate
+@[deprecated (since := "2026-05-07")]
 alias not_lt_zero' := not_lt_zero
 
 @[to_additive] -- `(attr := simp)` cannot be used here because `a` cannot be inferred by `simp`.
@@ -89,7 +87,7 @@ variable [PartialOrder α] [One α] [IsBotOneClass α]
 @[to_additive]
 theorem bot_eq_one [OrderBot α] : (⊥ : α) = 1 := isBot_one.eq_bot.symm
 
--- TODO: deprecate
+@[deprecated (since := "2026-05-07")]
 alias bot_eq_zero'' := bot_eq_zero
 
 @[to_additive (attr := simp)]
@@ -129,12 +127,26 @@ section LinearOrder
 variable [LinearOrder α] [One α] [IsBotOneClass α]
 
 @[to_additive]
-theorem one_min (a : α) : min 1 a = 1 :=
-  min_eq_left one_le
+theorem one_min (a : α) : min 1 a = 1 := by simp
 
 @[to_additive]
-theorem min_one (a : α) : min a 1 = 1 :=
-  min_eq_right one_le
+theorem min_one (a : α) : min a 1 = 1 := by simp
+
+@[to_additive]
+theorem one_max (a : α) : max 1 a = a := by simp
+
+@[to_additive]
+theorem max_one (a : α) : max a 1 = a := by simp
+
+@[to_additive (attr := simp)]
+theorem max_eq_one {a b : α} : max a b = 1 ↔ a = 1 ∧ b = 1 :=
+  let := IsBotOneClass.toOrderBot α
+  max_eq_bot
+
+@[to_additive (attr := simp)]
+theorem min_eq_one {a b : α} : min a b = 1 ↔ a = 1 ∨ b = 1 :=
+  let := IsBotOneClass.toOrderBot α
+  min_eq_bot
 
 end LinearOrder
 

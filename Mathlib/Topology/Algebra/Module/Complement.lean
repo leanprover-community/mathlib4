@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2026 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anatole Dedecker
+Authors: Anatole Dedecker, Sharvil Kesarwani
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Quotient
 public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
@@ -13,7 +14,7 @@ public import Mathlib.Topology.Algebra.Module.Equiv
 
 Let `M` be a topological `R`-module. Two submodules `p, q` of `M` are said to be
 *topological complements* (`Submodule.IsTopCompl`) if they are algebraic complements and the
-algebraic isomorphism `M ≃ p × q` is an homeomorphism.
+algebraic isomorphism `M ≃ p × q` is a homeomorphism.
 
 Not all submodules of `M` admit such a topological complements (even if they admit algebraic
 complements). In the literature, such a submodule is called *topologically complemented*
@@ -29,14 +30,20 @@ change to something less misleading.
   to the definition given above.
 * `Submodule.ClosedComplemented`: we say that a submodule is (topologically) *complemented* if
   there exists a continuous projection `M →ₗ[R] p`.
-* `Submodule.IsTopCompl.projectionOnto`: if `h : IsTopCompl p q`, `h.projectionOnto` is the
+* `Submodule.projectionOntoL`: if `h : IsTopCompl p q`, `p.projectionOntoL q h` is the
   continuous linear projection `M →L[R] p` along `q`. This is the continuous version of
-  `Submodule.linearProjOfIsCompl`.
-* `Submodule.IsTopCompl.projection`: if `h : IsTopCompl p q`, `h.projection` is the continuous
+  `Submodule.projectionOnto`.
+* `Submodule.projectionL`: if `h : IsTopCompl p q`, `p.projectionL q h` is the continuous
   linear projection `M →L[R] M` onto `p` along `q`. This is the continuous version of
   `Submodule.IsCompl.projection`.
 * `Submodule.ClosedComplemented.complement`: an arbitrary topological complement of a topologically
   complemented submodule.
+* `Submodule.prodEquivOfIsTopCompl`: the bundled continuous linear equivalence `p × q ≃L[R] M`
+  arising from a topological complement pair.
+* `Submodule.quotientEquivOfIsTopCompl`: the bundled continuous linear equivalence `M ⧸ p ≃L[R] q`
+  arising from a topological complement pair.
+* `ContinuousLinearMap.ofIsTopCompl`: the continuous linear map induced by maps on a topological
+  complement pair.
 
 ## Main statements
 
@@ -54,18 +61,6 @@ map `M ≃ p × q`.
 Because the condition is symmetric, a lot of lemmas could have a left and a right variation.
 In general we only include the left version, the right one being accessible through
 `Submodule.IsTopCompl.symm`.
-
-## TODO
-
-There is still a significant part of the algebraic API which should be ported to the
-topological setting. Notably, we should:
-* show that `Submodule.prodEquivOfIsCompl` is an homeomorphism if and only if
-  the two subspaces are topological complements, and bundle it as a `ContinuousLinearEquiv` when
-  this is the case. (See the existing `ClosedComplemented.exists_submodule_equiv_prod`).
-* show that `Submodule.quotientEquivOfIsCompl` is an homeomorphism if and only if
-  the two subspaces are topological complements, and bundle it as a `ContinuousLinearEquiv` when
-  this is the case.
-* define `ContinuousLinearMap.ofIsTopCompl`, analogous to `LinearMap.ofIsCompl`.
 
 -/
 
@@ -120,6 +115,9 @@ protected theorem IsTopCompl.symm [ContinuousSub M] (h : IsTopCompl p q) : IsTop
   continuous_projection := by
     rw [projection_eq_id_sub_projection h.isCompl]
     exact continuous_id.sub h.continuous_projection
+
+theorem isTopCompl_comm [ContinuousSub M] : IsTopCompl p q ↔ IsTopCompl q p :=
+  ⟨IsTopCompl.symm, IsTopCompl.symm⟩
 
 open LinearMap in
 theorem _root_.ContinuousLinearMap.IsIdempotentElem.isTopCompl {f : M →L[R] M}
@@ -399,4 +397,145 @@ lemma ClosedComplemented.exists_submodule_equiv_prod [IsTopologicalAddGroup M]
 
 end ClosedComplemented
 
+section ContinuousLinearEquiv
+
+variable [IsTopologicalAddGroup M]
+
+/-- Two complementary submodules are topological complements if and only if the linear equivalence
+`Submodule.prodEquivOfIsCompl` is continuous in the inverse direction. -/
+theorem IsCompl.isTopCompl_iff_continuous_symm_prodEquivOfIsCompl (h : IsCompl p q) :
+    IsTopCompl p q ↔ Continuous (p.prodEquivOfIsCompl q h).symm :=
+  ⟨fun hTop ↦ ((p.projectionOntoL q hTop).prod (q.projectionOntoL p hTop.symm)).continuous.congr
+    fun x ↦ (prodEquivOfIsCompl_symm_apply h x).symm,
+  fun hCont ↦ ⟨h, continuous_subtype_val.comp <| continuous_fst.comp hCont⟩⟩
+
+/-- The linear equivalence `Submodule.prodEquivOfIsCompl` from a pair of complementary submodules is
+always continuous. -/
+theorem continuous_prodEquivOfIsCompl (h : IsCompl p q) : Continuous (p.prodEquivOfIsCompl q h) :=
+  (continuous_subtype_val.comp continuous_fst).add (continuous_subtype_val.comp continuous_snd)
+
+/-- Two complementary submodules are topological complements if and only if the linear equivalence
+`Submodule.prodEquivOfIsCompl` is a homeomorphism. -/
+theorem IsCompl.isTopCompl_iff_isHomeomorph_prodEquivOfIsCompl (h : IsCompl p q) :
+    IsTopCompl p q ↔ IsHomeomorph (p.prodEquivOfIsCompl q h) := by
+  rw [(p.prodEquivOfIsCompl q h).isHomeomorph_iff,
+    isTopCompl_iff_continuous_symm_prodEquivOfIsCompl, and_iff_right]
+  exact continuous_prodEquivOfIsCompl h
+
+variable (p q) in
+/-- If two submodules are topological complements, then the linear equivalence
+`Submodule.prodEquivOfIsCompl` is a homeomorphism, bundled as a continuous linear equivalence. -/
+noncomputable def prodEquivOfIsTopCompl (h : IsTopCompl p q) : (p × q) ≃L[R] M :=
+  { p.prodEquivOfIsCompl q h.isCompl with
+    continuous_toFun := continuous_prodEquivOfIsCompl h.isCompl
+    continuous_invFun := h.isCompl.isTopCompl_iff_continuous_symm_prodEquivOfIsCompl.mp h }
+
+@[simp]
+theorem toLinearEquiv_prodEquivOfIsTopCompl (h : IsTopCompl p q) :
+    (prodEquivOfIsTopCompl p q h : (p × q) ≃ₗ[R] M) = p.prodEquivOfIsCompl q h.isCompl :=
+  rfl
+
+@[simp]
+theorem prodEquivOfIsTopCompl_apply (h : IsTopCompl p q) (x : p × q) :
+    prodEquivOfIsTopCompl p q h x = (x.1 : M) + x.2 :=
+  rfl
+
+@[simp]
+theorem prodEquivOfIsTopCompl_symm_apply (h : IsTopCompl p q) (x : M) :
+    (prodEquivOfIsTopCompl p q h).symm x =
+      ((p.projectionOntoL q h x, q.projectionOntoL p h.symm x) : p × q) :=
+  prodEquivOfIsCompl_symm_apply h.isCompl x
+
+/-- Two complementary submodules are topological complements if and only if the linear equivalence
+`Submodule.quotientEquivOfIsCompl` is continuous. -/
+theorem IsCompl.isTopCompl_iff_continuous_quotientEquivOfIsCompl (h : IsCompl p q) :
+    IsTopCompl p q ↔ Continuous (p.quotientEquivOfIsCompl q h) := by
+  have hproj : ⇑(p.quotientEquivOfIsCompl q h) ∘ ⇑p.mkQ = ⇑(q.projectionOnto p h.symm) := by
+    funext; simp
+  rw [p.isQuotientMap_mkQL.continuous_iff, coe_mkQL, hproj, ← h.symm.isTopCompl_iff_projectionOnto,
+    isTopCompl_comm]
+
+variable (p q) in
+/-- If two submodules are topological complements, then the linear equivalence
+`Submodule.quotientEquivOfIsCompl` is a homeomorphism, bundled as a continuous linear
+equivalence. -/
+noncomputable def quotientEquivOfIsTopCompl (h : IsTopCompl p q) : (M ⧸ p) ≃L[R] q :=
+  { p.quotientEquivOfIsCompl q h.isCompl with
+    continuous_toFun := h.isCompl.isTopCompl_iff_continuous_quotientEquivOfIsCompl.mp h
+    continuous_invFun := (p.mkQL.comp q.subtypeL).continuous }
+
+@[simp]
+theorem toLinearEquiv_quotientEquivOfIsTopCompl (h : IsTopCompl p q) :
+    (quotientEquivOfIsTopCompl p q h : (M ⧸ p) ≃ₗ[R] q) = p.quotientEquivOfIsCompl q h.isCompl :=
+  rfl
+
+@[simp]
+theorem quotientEquivOfIsTopCompl_apply (h : IsTopCompl p q) (x : M ⧸ p) :
+    quotientEquivOfIsTopCompl p q h x = p.quotientEquivOfIsCompl q h.isCompl x :=
+  rfl
+
+@[simp]
+theorem quotientEquivOfIsTopCompl_symm_apply (h : IsTopCompl p q) (y : q) :
+    (quotientEquivOfIsTopCompl p q h).symm y = p.mkQ y :=
+  rfl
+
+theorem quotientEquivOfIsTopCompl_apply_mk (h : IsTopCompl p q) (x : M) :
+    quotientEquivOfIsTopCompl p q h (Quotient.mk x) = q.projectionOnto p h.isCompl.symm x :=
+  quotientEquivOfIsCompl_apply_mk h.isCompl x
+
+end ContinuousLinearEquiv
+
 end Submodule
+
+namespace ContinuousLinearMap
+
+variable {R : Type*} [Ring R] {E F : Type*}
+  [TopologicalSpace E] [AddCommGroup E] [Module R E] [IsTopologicalAddGroup E]
+  [TopologicalSpace F] [AddCommGroup F] [Module R F] [ContinuousAdd F]
+  {p q : Submodule R E}
+
+/-- Given continuous linear maps `φ : p →L[R] F` and `ψ : q →L[R] F` from topological complement
+submodules `p` and `q` of `E`, `ContinuousLinearMap.ofIsCompl` is the induced continuous linear map
+`E →L[R] F` over the entire module.
+
+This is the continuous version of `LinearMap.ofIsCompl`. -/
+noncomputable def ofIsTopCompl (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) : E →L[R] F :=
+  φ.coprod ψ ∘L ↑(prodEquivOfIsTopCompl p q h).symm
+
+theorem ofIsTopCompl_eq_add (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) :
+    ofIsTopCompl h φ ψ = φ ∘L p.projectionOntoL q h + ψ ∘L q.projectionOntoL p h.symm := by
+  ext; simp [ofIsTopCompl]
+
+@[simp]
+theorem toLinearMap_ofIsTopCompl (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) :
+    (ofIsTopCompl h φ ψ : E →ₗ[R] F) = LinearMap.ofIsCompl h.isCompl φ ψ :=
+  rfl
+
+@[simp]
+theorem ofIsTopCompl_apply (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) (x : E) :
+    ofIsTopCompl h φ ψ (x : E) = LinearMap.ofIsCompl h.isCompl φ ψ x :=
+  rfl
+
+theorem ofIsTopCompl_apply_left (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) (x : p) :
+    ofIsTopCompl h φ ψ (x : E) = φ x := by simp
+
+theorem ofIsTopCompl_apply_right (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) (x : q) :
+    ofIsTopCompl h φ ψ (x : E) = ψ x := by simp
+
+theorem ofIsTopCompl_eq (h : IsTopCompl p q) {φ : p →L[R] F} {ψ : q →L[R] F} {χ : E →L[R] F}
+    (hφ : ∀ u : p, φ u = χ u) (hψ : ∀ u : q, ψ u = χ u) : ofIsTopCompl h φ ψ = χ := by
+  ext; simp [LinearMap.ofIsCompl_eq h.isCompl hφ, hψ]
+
+@[simp]
+theorem ofIsTopCompl_zero (h : IsTopCompl p q) : (ofIsTopCompl h 0 0 : E →L[R] F) = 0 := by
+  ext; simp
+
+@[simp]
+theorem ofIsTopCompl_add (h : IsTopCompl p q) (φ₁ φ₂ : p →L[R] F) (ψ₁ ψ₂ : q →L[R] F) :
+    ofIsTopCompl h (φ₁ + φ₂) (ψ₁ + ψ₂) = ofIsTopCompl h φ₁ ψ₁ + ofIsTopCompl h φ₂ ψ₂ := by
+  ext; simp
+
+theorem range_ofIsTopCompl (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) :
+    LinearMap.range (ofIsTopCompl h φ ψ : E →ₗ[R] F) = φ.range ⊔ ψ.range := by simp
+
+end ContinuousLinearMap

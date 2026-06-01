@@ -206,7 +206,7 @@ theorem integral_fourierIntegral_swap
     apply hM.comp_aestronglyMeasurable A' -- `exact` works, but `apply` is 10x faster!
   · filter_upwards with ⟨ξ, x⟩
     simp only [Function.uncurry_apply_pair, norm_mul, norm_norm, ge_iff_le, ← mul_assoc]
-    convert M.le_opNorm₂ (g ξ) (e (-L x ξ) • f x) using 2
+    convert! M.le_opNorm₂ (g ξ) (e (-L x ξ) • f x) using 2
     simp
 
 variable [CompleteSpace E] [CompleteSpace F]
@@ -431,12 +431,6 @@ instance instFourierTransform : FourierTransform (V → E) (V → E) where
 
 instance instFourierTransformInv : FourierTransformInv (V → E) (V → E) where
   fourierInv f w := VectorFourier.fourierIntegral 𝐞 volume (-innerₗ V) f w
-
-@[deprecated (since := "2025-11-12")]
-alias fourierIntegral := FourierTransform.fourier
-
-@[deprecated (since := "2025-11-12")]
-alias fourierIntegralInv := FourierTransform.fourierInv
 
 lemma fourier_eq (f : V → E) (w : V) :
     𝓕 f w = ∫ v, 𝐞 (-⟪v, w⟫) • f v := rfl
