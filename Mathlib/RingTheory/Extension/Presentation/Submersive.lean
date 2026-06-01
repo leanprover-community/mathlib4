@@ -192,7 +192,6 @@ lemma jacobiMatrix_ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Typ
     (P.ofAlgEquiv e).jacobiMatrix = P.jacobiMatrix :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma jacobian_ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Type*} [CommRing T]
     [Algebra R T] (e : S ≃ₐ[R] T) [Finite σ] :
@@ -441,7 +440,6 @@ lemma jacobiMatrix_reindex {ι' σ' : Type*} (e : ι' ≃ ι) (f : σ' ≃ σ)
   simp [jacobiMatrix_apply,
     MvPolynomial.pderiv_rename e.symm.injective, reindex, Presentation.reindex]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma jacobian_reindex (P : PreSubmersivePresentation R S ι σ)
     {ι' σ' : Type*} (e : ι' ≃ ι) (f : σ' ≃ σ) [Finite σ] [Finite σ'] :

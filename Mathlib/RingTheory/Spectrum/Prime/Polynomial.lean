@@ -140,7 +140,6 @@ end PrimeSpectrum
 
 namespace Polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_image_comap_C_basicOpen (f : R[X]) (x : PrimeSpectrum R) :
     x ∈ comap C '' basicOpen f ↔ ∃ i, f.coeff i ∉ x.asIdeal := by
   trans f.map (algebraMap R x.asIdeal.ResidueField) ≠ 0

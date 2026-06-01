@@ -82,7 +82,6 @@ noncomputable def iso (a : A) :
     Functor.isoWhiskerRight (lift.isLift r F hF).symm _ ≪≫ Functor.associator _ _ _)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma iso_hom_app (a : A) (X : C) :
     (iso F r hF a).hom.app ((functor r).obj X) =
