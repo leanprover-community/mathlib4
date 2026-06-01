@@ -164,14 +164,12 @@ def Ω (J : GrothendieckTopology C) : Sheaf J (Type max u v) where
     rw [CategoryTheory.isSheaf_iff_isSheaf_of_type]
     exact CategoryTheory.classifier_isSheaf J
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `t : 1 ⟶ Ω` which picks out the maximal sieve -/
 @[simps]
 def truth (J : GrothendieckTopology C) :
     Sheaf.terminal J (Types.isTerminalPUnit) ⟶ Sheaf.Ω J where
   hom := (Functor.closedSieves J).lift (Presheaf.truth C) fun {X} x => by cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given a monomorphism of sheaves `η : F ⟶ G`, an object X of the site, map an element `x : G(X)`
 to the (closed) sieve on X where `f : Y → X` is in the sieve iff

@@ -71,6 +71,8 @@ theorem of_formallyUnramified_and_formallySmooth [FormallyUnramified R A]
     [FormallySmooth R A] : FormallyEtale R A :=
   FormallyEtale.iff_formallyUnramified_and_formallySmooth.mpr ⟨‹_›, ‹_›⟩
 
+instance : FormallyEtale R R := of_formallyUnramified_and_formallySmooth
+
 variable (R A) in
 lemma comp_bijective [FormallyEtale R A] (I : Ideal B) (hI : I ^ 2 = ⊥) :
     Function.Bijective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) :=
@@ -222,6 +224,8 @@ end
 namespace Etale
 
 attribute [instance] formallyEtale finitePresentation
+
+instance : Etale R R where
 
 instance [Etale R A] : Smooth R A where
 

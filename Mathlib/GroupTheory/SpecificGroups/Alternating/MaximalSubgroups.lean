@@ -142,7 +142,7 @@ theorem stabilizer_ne_top {s : Set α} (hs : s.Nonempty) (hsc : sᶜ.Nontrivial)
   simp_rw [mem_stabilizer_set, Subgroup.mk_smul, mul_smul, Perm.smul_def]
   grind
 
-/- Here, we need that `Nat.card α` has at least `4` elements,
+/-- Here, we need that `Nat.card α` has at least `4` elements,
 so that  either `t` has at least 3 elements, or `tᶜ` has at least 2.
 The condition is necessary, because the result is wrong when
 `α = {1, 2, 3}` and either `t = {1, 2}` or `t = {1}`. -/
@@ -209,7 +209,7 @@ end MulAction.IsBlock
 
 namespace alternatingGroup
 
-/- Note : The proof of this statement is close to that
+/-- Note : The proof of this statement is close to that
 of `Equiv.Perm.isCoatom_stabilizer_of_ncard_lt_ncard_compl`,
 and while it would not be absolutely impossible to abstract both proofs,
 the result would be slightly awkward because the
