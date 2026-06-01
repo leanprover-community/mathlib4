@@ -60,6 +60,9 @@ Note: This linter can be disabled with `set_option linter.docPrime false`
 @[simp]
 theorem thm_with_attr_no_doc' : True := .intro
 
+class Dummy where
+  field : True
+
 /--
 warning: `inst_no_doc'` is missing a doc-string, please add one.
 Declarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.
@@ -67,7 +70,7 @@ Declarations whose name ends with a `'` are expected to contain an explanation f
 Note: This linter can be disabled with `set_option linter.docPrime false`
 -/
 #guard_msgs in
-instance inst_no_doc' : True := .intro
+instance inst_no_doc' : Dummy := ⟨.intro⟩
 
 /--
 warning: `abbrev_no_doc'` is missing a doc-string, please add one.
@@ -91,6 +94,6 @@ def def_no_doc' : True := .intro
 namespace Foo'
 
 example : True := .intro
-instance : True := .intro
+instance : Dummy := ⟨.intro⟩
 
 end Foo'

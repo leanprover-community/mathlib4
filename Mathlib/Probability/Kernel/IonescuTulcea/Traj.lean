@@ -780,7 +780,7 @@ lemma map_frestrictLe_trajMeasure_compProd_eq_map_trajMeasure {a : ℕ} :
     traj_map_frestrictLe, Measure.comp_assoc, Measure.map_comp _ _ (by fun_prop)]
   congr with x₀ : 1
   rw [comp_apply, ← Measure.compProd_eq_comp_prod, map_apply _ (by fun_prop),
-    partialTraj_compProd_eq_map_traj zero_le']
+    partialTraj_compProd_eq_map_traj zero_le]
 
 /-- A regular conditional probability distribution of the point at time `a + 1` given the
 trajectory up to time `a` corresponds to the kernel `κ a`. -/
