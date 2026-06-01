@@ -181,8 +181,7 @@ variable (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [MulSemiringAct
   [IsFractionRing A K] [IsFractionRing B L] [IsScalarTower A K L] [IsScalarTower A B L]
   [MulSemiringAction G L] [SMulDistribClass G B L]
 
-instance IsGaloisGroup.toRange [IsGaloisGroup G A B] :
-    IsGaloisGroup G (algebraMap A B).range B where
+instance [IsGaloisGroup G A B] : IsGaloisGroup G (algebraMap A B).range B where
   faithful := IsGaloisGroup.faithful A
   commutes := ⟨fun g ⟨a', ⟨a, ha⟩⟩ b ↦ by simp [Subring.smul_def, ← ha]⟩
   isInvariant := ⟨fun b hb ↦ by
@@ -305,8 +304,8 @@ theorem finiteDimensional [Finite G] [IsGaloisGroup G K L] : FiniteDimensional K
 
 section
 
-variable (A B : Type*) [CommRing A] [CommRing B] [IsDomain B] [Algebra A B] [Module.Finite A B]
-  [MulSemiringAction G B] [IsGaloisGroup G A B]
+variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Module.Finite A B]
+  [IsDomain B] [MulSemiringAction G B] [IsGaloisGroup G A B]
 
 include A B in
 protected theorem finite : Finite G := by
