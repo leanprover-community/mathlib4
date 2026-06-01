@@ -39,6 +39,7 @@ variable [HasZeroMorphisms C₁] [HasZeroMorphisms C₂] [HasZeroMorphisms D]
   (F : C₁ ⥤ C₂ ⥤ D) {I₁ I₂ J : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂)
   [F.PreservesZeroMorphisms] [∀ X₁, (F.obj X₁).PreservesZeroMorphisms]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {c₁} in
 /-- Auxiliary definition for `mapBifunctorHomologicalComplex`. -/
@@ -74,6 +75,7 @@ def mapBifunctorHomologicalComplexObj (K₁ : HomologicalComplex C₁ c₁) :
   map_id K₂ := by dsimp; ext; dsimp; rw [Functor.map_id]
   map_comp f g := by dsimp; ext; dsimp; rw [Functor.map_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a functor `F : C₁ ⥤ C₂ ⥤ D`, this is the bifunctor which sends
 `K₁ : HomologicalComplex C₁ c₁` and `K₂ : HomologicalComplex C₂ c₂` to the bicomplex

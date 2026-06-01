@@ -867,6 +867,11 @@ def algHomUnitsEquiv (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S] :
 instance _root_.Finite.algEquiv [Finite (A →ₛₐ[φ] B)] : Finite (A ≃ₛₐ[φ] B) :=
   Finite.of_injective _ AlgEquiv.coe_algHom_injective
 
+-- TODO Morally this is just `isLocalHom_equiv`: can we obviate the need for this instance?
+instance : IsLocalHom e.toAlgHom := by
+  have : IsLocalHom e.toRingEquiv := inferInstance
+  exact ⟨this.map_nonunit⟩
+
 end Semiring
 
 end AlgEquiv

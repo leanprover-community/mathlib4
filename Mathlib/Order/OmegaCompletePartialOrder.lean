@@ -578,7 +578,7 @@ lemma ωScottContinuous.bind {β γ} {f : α → Part β} {g : α → β → Par
 
 lemma ωScottContinuous.map {β γ} {f : β → γ} {g : α → Part β} (hg : ωScottContinuous g) :
     ωScottContinuous fun x ↦ f <$> g x := by
-  simpa only [map_eq_bind_pure_comp] using ωScottContinuous.bind hg ωScottContinuous.const
+  simpa only [map_eq_bind_pure_comp] using! ωScottContinuous.bind hg ωScottContinuous.const
 
 lemma ωScottContinuous.seq {β γ} {f : α → Part (β → γ)} {g : α → Part β} (hf : ωScottContinuous f)
     (hg : ωScottContinuous g) : ωScottContinuous fun x ↦ f x <*> g x := by
@@ -672,6 +672,7 @@ instance : OmegaCompletePartialOrder (α →𝒄 β) :=
   OmegaCompletePartialOrder.lift ContinuousHom.toMono ContinuousHom.ωSup
     (fun _ _ h => h) (fun _ => rfl)
 
+set_option backward.defeqAttrib.useBackward true in
 @[fun_prop]
 lemma ωScottContinuous_apply
     {f : α → β →𝒄 γ} (hf : ωScottContinuous f) {g : α → β} (hg : ωScottContinuous g) :

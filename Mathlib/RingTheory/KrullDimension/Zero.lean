@@ -57,6 +57,19 @@ lemma ringKrullDimZero_iff_ringKrullDim_eq_zero [Nontrivial R] :
     iff_self_and]
   exact fun _ ↦ ringKrullDim_nonneg_of_nontrivial
 
+/-- A quotient `R ⧸ I` has krull dimension at most zero if and only if all minimal primes over `I`
+are maximal. -/
+theorem Ideal.krullDimLE_zero_quotient_iff_forall_minimalPrimes_isMaximal
+    {R : Type*} [CommRing R] {I : Ideal R} :
+    Ring.KrullDimLE 0 (R ⧸ I) ↔ ∀ J ∈ I.minimalPrimes, J.IsMaximal := by
+  rw [Ring.krullDimLE_zero_iff_forall_minimalPrimes_isMaximal, minimalPrimes_eq_comap,
+    Set.forall_mem_image]
+  refine forall₂_congr fun J hJ ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · exact comap_isMaximal_of_surjective (Quotient.mk I) Quotient.mk_surjective
+  · have := map_eq_top_or_isMaximal_of_surjective (Quotient.mk I) Quotient.mk_surjective h
+    rw [map_comap_of_surjective (Quotient.mk I) Quotient.mk_surjective] at this
+    exact this.resolve_left hJ.1.1.ne_top
+
 section IsLocalRing
 
 omit [Ring.KrullDimLE 0 R] in
