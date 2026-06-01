@@ -56,7 +56,7 @@ theorem pi_iff [Finite I] :
     have hJ' (x) (hx : x ∈ RingHom.ker (Ideal.Quotient.mk J)) : IsNilpotent x := by
       refine ⟨2, show x ^ 2 ∈ (⊥ : Ideal B) from ?_⟩
       rw [← hJ]
-      exact Ideal.pow_mem_pow (by simpa using hx) 2
+      exact Ideal.pow_mem_pow (by simpa using! hx) 2
     obtain ⟨e, he, he'⟩ := ((CompleteOrthogonalIdempotents.single A).map
       g.toRingHom).lift_of_isNilpotent_ker (Ideal.Quotient.mk J) hJ'
         fun _ ↦ Ideal.Quotient.mk_surjective _
@@ -101,7 +101,7 @@ theorem pi_iff [Finite I] :
       rw [map_mul, this, hy, mul_one]
     trans Ideal.Quotient.mk J (y * e i)
     · congr 1; apply iso.injective; ext j
-      suffices a j (Pi.single i x j) = Ideal.Quotient.mk _ (y * e i) by simpa using this
+      suffices a j (Pi.single i x j) = Ideal.Quotient.mk _ (y * e i) by simpa using! this
       by_cases hij : i = j
       · subst hij
         rw [Pi.single_eq_same, hy']

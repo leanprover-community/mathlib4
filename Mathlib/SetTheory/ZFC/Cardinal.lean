@@ -46,11 +46,11 @@ theorem card_empty : card ∅ = 0 := by
 
 theorem card_insert_le : card (insert x y) ≤ card y + 1 := by
   rw [← lift_le.{u + 1}]
-  simpa [← cardinalMk_coe_sort] using mk_insert_le
+  simpa [← cardinalMk_coe_sort] using! mk_insert_le
 
 theorem card_insert (h : x ∉ y) : card (insert x y) = card y + 1 := by
   rw [← lift_inj.{u, u + 1}]
-  simpa [← cardinalMk_coe_sort] using mk_insert (SetLike.mem_coe.not.2 h)
+  simpa [← cardinalMk_coe_sort] using! mk_insert (SetLike.mem_coe.not.2 h)
 
 @[simp]
 theorem card_singleton : card {x} = 1 := by
@@ -62,7 +62,7 @@ theorem card_pair_of_ne (h : x ≠ y) : card {x, y} = 2 := by
 
 theorem card_union_le : card (x ∪ y) ≤ card x + card y := by
   rw [← lift_le.{u + 1}]
-  simpa [← cardinalMk_coe_sort] using mk_union_le (x : Set ZFSet) y
+  simpa [← cardinalMk_coe_sort] using! mk_union_le (x : Set ZFSet) y
 
 @[simp]
 theorem card_powerset (x : ZFSet.{u}) : card (powerset x) = 2 ^ card x := by
