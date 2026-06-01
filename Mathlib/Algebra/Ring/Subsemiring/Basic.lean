@@ -695,7 +695,7 @@ theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι]
     {S : ι → Subsemiring R} [hS : ∀ i, IsMulCommutative (S i)]
     (dir : Directed (· ≤ ·) S) : IsMulCommutative (⨆ i, S i : Subsemiring R) := by
   simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_directed dir,
-    Subsemigroup.coe_iSup_of_directed dir] using Subsemigroup.isMulCommutative_iSup dir
+    Subsemigroup.coe_iSup_of_directed dir] using! Subsemigroup.isMulCommutative_iSup dir
 
 instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
     {S : ι →o Subsemiring R} [hS : ∀ i, IsMulCommutative (S i)] :

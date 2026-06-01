@@ -97,6 +97,7 @@ lemma isVerdierRightLocalizing_op_iff :
 variable [HasZeroObject C] [HasShift C ℤ] [Preadditive C]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isVerdierRightLocalizing_iff [A.IsTriangulated] [B.IsTriangulated]
     [B.IsClosedUnderIsomorphisms] :
     A.IsVerdierRightLocalizing B ↔
@@ -107,7 +108,7 @@ lemma isVerdierRightLocalizing_iff [A.IsTriangulated] [B.IsTriangulated]
     obtain ⟨W, a, b, hT, hW⟩ := hs
     obtain ⟨W', c, d, h₁, h₂, fac⟩ := IsVerdierRightLocalizing.fac a hW hX
     obtain ⟨U, hU, e, f, hT'⟩ := A.distinguished_cocone_triangle d h₁ hX
-    obtain ⟨g, hg, _⟩ := complete_distinguished_triangle_morphism _ _ hT hT'
+    obtain ⟨g, hg, _⟩ := Pretriangulated.complete_distinguished_triangle_morphism _ _ hT hT'
       c (𝟙 _) (by cat_disch)
     refine ⟨U, e, g, hU, ?_, by cat_disch⟩
     rw [ObjectProperty.trW_iff']
@@ -173,6 +174,7 @@ instance [A.IsTriangulated] :
     (triangulatedLocalizerMorphism A B).functor.IsTriangulated :=
   inferInstanceAs A.ι.IsTriangulated
 
+set_option backward.defeqAttrib.useBackward true in
 lemma trW_inverseImage_ι_iff [A.IsTriangulated] {X Y : A.FullSubcategory} (f : X ⟶ Y) :
     (B.inverseImage A.ι).trW f ↔ (A ⊓ B).trW f.hom := by
   simp only [trW_iff]
@@ -188,6 +190,7 @@ lemma trW_inverseImage_ι_iff [A.IsTriangulated] {X Y : A.FullSubcategory} (f : 
     · cat_disch
     · simp [dsimp% (A.ι.commShiftIso (1 : ℤ)).inv_hom_id_app X]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma inverseImage_opEquivalence_inverse_trW_inverseImage_ι_op [A.IsTriangulated]
     [B.IsTriangulated] [B.IsClosedUnderIsomorphisms] :
     (B.op.inverseImage A.op.ι).trW.inverseImage A.opEquivalence.inverse =
@@ -203,6 +206,7 @@ variable [A.IsVerdierRightLocalizing B]
   (L₁ : A.FullSubcategory ⥤ D₁) (L₂ : C ⥤ D₂)
   [L₁.IsLocalization (B.inverseImage A.ι).trW] [L₂.IsLocalization B.trW]
 
+set_option backward.defeqAttrib.useBackward true in
 instance : ((A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂).Full := by
   let F := (A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂
   have : L₁.EssSurj := Localization.essSurj L₁ (B.inverseImage A.ι).trW
@@ -235,6 +239,7 @@ instance [Preadditive D₁] [Preadditive D₂] [L₁.Additive] [L₂.Additive] :
     (A.triangulatedLocalizerMorphism B).functor L₁ L₂ F
   exact Functor.additive_of_iso e
 
+set_option backward.defeqAttrib.useBackward true in
 instance : ((A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂).Faithful := by
   letI := Localization.preadditive L₁ (B.inverseImage A.ι).trW
   letI := Localization.preadditive L₂ B.trW
@@ -286,7 +291,7 @@ instance [A.IsVerdierLeftLocalizing B] :
       simp only [MorphismProperty.inverseImage_iff, Equivalence.symm_functor] at hf ⊢
       exact MorphismProperty.le_isoClosure _ _ hf
     · refine fun _ _ _ hf ↦ Localization.inverts L₁.op (B.inverseImage A.ι).trW.op _ ?_
-      simpa [trW_inverseImage_ι_iff, ← op_inf, trW_op] using hf
+      simpa [trW_inverseImage_ι_iff, ← op_inf, trW_op] using! hf
   exact LocalizerMorphism.IsLocalizedFullyFaithful.mk' (A.triangulatedLocalizerMorphism B)
     L₁ L₂ F (((A.op.triangulatedLocalizerMorphism B.op).fullyFaithful
     (A.opEquivalence.functor ⋙ L₁.op) L₂.op F.op).unop)

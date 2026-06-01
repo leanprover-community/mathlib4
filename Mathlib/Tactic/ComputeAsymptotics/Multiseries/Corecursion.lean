@@ -119,6 +119,7 @@ theorem dist_eq_two_inv_pow {s t : Seq α} (h : s ≠ t) : ∃ n, dist s t = 2�
   simp
 
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward false in
 @[simp]
 theorem dist_cons_cons (x : α) (s t : Seq α) : dist (cons x s) (cons x t) = 2⁻¹ * dist s t := by
   by_cases! h : s = t
@@ -299,7 +300,7 @@ theorem gcorec_nil {F : β → Option (α × γ × β)} {op : γ → Seq α → 
     (h : F b = none) :
     gcorec F op b = nil := by
   have := (FriendlyOperation.exists_fixed_point F op).choose_spec b
-  simpa [h] using this
+  simpa [h] using! this
 
 theorem gcorec_some {F : β → Option (α × γ × β)} {op : γ → Seq α → Seq α}
     [FriendlyOperationClass op] {b : β}
@@ -307,7 +308,7 @@ theorem gcorec_some {F : β → Option (α × γ × β)} {op : γ → Seq α →
     (h : F b = some (a, c, b')) :
     gcorec F op b = Seq.cons a (op c (gcorec F op b')) := by
   have := (FriendlyOperation.exists_fixed_point F op).choose_spec b
-  simpa [h] using this
+  simpa [h] using! this
 
 /-- The operation `cons hd ·` is friendly. -/
 theorem FriendlyOperation.cons (hd : α) : FriendlyOperation (cons hd) := by

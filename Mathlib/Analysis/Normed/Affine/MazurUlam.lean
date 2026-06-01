@@ -122,7 +122,7 @@ theorem coe_toRealLinearIsometryEquivOfMapZero_symm (f : E ≃ᵢ F) (h0 : f 0 =
 over `ℝ`, then `x ↦ f x - f 0` is a linear isometry equivalence. -/
 def toRealLinearIsometryEquiv (f : E ≃ᵢ F) : E ≃ₗᵢ[ℝ] F :=
   (f.trans (IsometryEquiv.addRight (f 0)).symm).toRealLinearIsometryEquivOfMapZero
-    (by simpa only [sub_eq_add_neg] using sub_self (f 0))
+    (by simpa only [sub_eq_add_neg] using! sub_self (f 0))
 
 @[simp]
 theorem toRealLinearIsometryEquiv_apply (f : E ≃ᵢ F) (x : E) :
