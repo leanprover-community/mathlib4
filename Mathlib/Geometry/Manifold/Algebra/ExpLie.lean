@@ -240,7 +240,8 @@ Note: This statement does not assume that `Φ` satisfies the usual flow identiti
 integral curves of `X`.
 
 TODO: Replace this axiom with a proper development of flows (Lee Theorem 9.12)
-once available in Mathlib. -/
+once available in Mathlib. It would be nice to make this a proof_wanted but then
+we end up with sorries. -/
 axiom contMDiff_flow_like
     {M : Type*} [TopologicalSpace M] [ChartedSpace HG M] [IsManifold IG (minSmoothness ℝ 3) M]
     (X : ∀ x : M, TangentSpace IG x)

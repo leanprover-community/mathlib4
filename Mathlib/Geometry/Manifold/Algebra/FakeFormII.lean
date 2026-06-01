@@ -1313,6 +1313,56 @@ theorem frameBundle_triv_equivariant [IsManifold I 1 M] [CompleteSpace E]
 def FrameSpace (_I : ModelWithCorners 𝕜 E H) (_M : Type*) [TopologicalSpace _M] [ChartedSpace H _M]
     [IsManifold _I 1 _M] (_ : _M) : Type _ := (E →L[𝕜] E)ˣ
 
+/-- The frame bundle fiber bundle core. The fiber at each point is `(E →L[𝕜] E)ˣ`,
+the group of invertible continuous linear maps. The coordinate changes are the
+restrictions of the endomorphism bundle coordinate changes to the units, which is
+well-typed by `endBundleCore_coordChange_isUnit_iff`. -/
+def frameBundleFiberBundleCore [IsManifold I 1 M] [CompleteSpace E] [CompleteSpace 𝕜] :
+    FiberBundleCore (atlas H M) M (E →L[𝕜] E)ˣ where
+  baseSet i := i.1.source
+  isOpen_baseSet i := i.1.open_source
+  indexAt := achart H
+  mem_baseSet_at := mem_chart_source H
+  coordChange i j x g := by
+    by_cases hx : x ∈ i.1.source ∩ j.1.source
+    · exact ((endBundleCore_coordChange_isUnit_iff (I := I) i j x hx g.val).mpr g.isUnit).unit
+    · exact 1
+  coordChange_self i x hx g := by
+    have hmem : x ∈ i.1.source ∩ i.1.source := ⟨hx, hx⟩
+    simp only [hmem, dif_pos]
+    have key := (endBundleCore I M).coordChange_self i x hx g.val
+    simp only [endBundleCore, compL_apply] at key
+    exact Units.val_injective key
+  continuousOn_coordChange i j := by
+    have hcont := (endBundleCore I M).continuousOn_coordChange i j
+    rw [(Units.isOpenEmbedding_val (R := E →L[𝕜] E)).isEmbedding.continuousOn_iff]
+    apply ContinuousOn.congr
+    · change ContinuousOn
+        (fun p : M × (E →L[𝕜] E)ˣ => (endBundleCore I M).coordChange i j p.1 p.2.val)
+        ((i.1.source ∩ j.1.source) ×ˢ univ)
+      apply (hcont.comp continuousOn_fst (fun p hp => hp.1)).clm_apply
+      exact Units.continuous_val.comp_continuousOn continuousOn_snd
+    · intro p hp
+      simp only [Function.comp, dif_pos hp.1, IsUnit.unit_spec]
+  coordChange_comp i j k x hx g := by
+    ext
+    have hjk : x ∈ (j.1).source ∩ (k.1).source := ⟨hx.1.2, hx.2⟩
+    have hik : x ∈ (i.1).source ∩ (k.1).source := ⟨hx.1.1, hx.2⟩
+    have hij : x ∈ (i.1).source ∩ (j.1).source := ⟨hx.1.1, hx.1.2⟩
+    simp only [hjk, hik, hij, dif_pos, IsUnit.unit_spec]
+    have key := (endBundleCore I M).coordChange_comp i j k x
+      ⟨⟨hx.1.1, hx.1.2⟩, hx.2⟩ g.val
+    simp only [endBundleCore, compL_apply] at key
+    exact DFunLike.congr key rfl
+
+instance frameBundleTotalSpaceTopology [IsManifold I 1 M] [CompleteSpace E] [CompleteSpace 𝕜] :
+    TopologicalSpace (Bundle.TotalSpace (E →L[𝕜] E)ˣ (FrameSpace I M)) :=
+  (frameBundleFiberBundleCore (I := I) (M := M)).toTopologicalSpace
+
+instance frameBundleFiberBundle [IsManifold I 1 M] [CompleteSpace E] [CompleteSpace 𝕜] :
+    FiberBundle (E →L[𝕜] E)ˣ (FrameSpace I M) :=
+  frameBundleFiberBundleCore.fiberBundle
+
 def frameBundleEquiv [IsManifold I 1 M] [CompleteSpace E] :
     ↥(FrameBundle I M) ≃ Bundle.TotalSpace (E →L[𝕜] E)ˣ (FrameSpace I M) where
   toFun p := ⟨p.1.proj, p.2.unit⟩
@@ -1326,6 +1376,122 @@ def frameBundleEquiv [IsManifold I 1 M] [CompleteSpace E] :
     apply Bundle.TotalSpace.ext
     · rfl
     · simp
+
+lemma frameBundleCore_preimage_eq_endBundleCore [IsManifold I 1 M] [CompleteSpace E]
+  [CompleteSpace 𝕜]
+    (i : atlas H M) (t : Set (M × (E →L[𝕜] E))) :
+    (fun q : Bundle.TotalSpace (E →L[𝕜] E)ˣ (FrameSpace I M) => (⟨q.proj, q.snd.val⟩ :
+    EndBundle I M)) ⁻¹'
+      (((endBundleCore I M).toFiberBundleCore.localTrivAsPartialEquiv i).source ∩
+      ↑((endBundleCore I M).toFiberBundleCore.localTrivAsPartialEquiv i) ⁻¹' t) =
+    (frameBundleFiberBundleCore (I := I) (M := M).localTrivAsPartialEquiv i).source ∩
+      ↑(frameBundleFiberBundleCore (I := I) (M := M).localTrivAsPartialEquiv i) ⁻¹'
+        ((Prod.map id Units.val) ⁻¹' t) := by
+  ext q
+  simp only [FiberBundleCore.localTrivAsPartialEquiv_source,
+        FiberBundleCore.localTrivAsPartialEquiv_coe,
+        frameBundleFiberBundleCore, endBundleCore]
+  constructor
+  · rintro ⟨hb, hm⟩
+    refine ⟨hb, ?_⟩
+    have hbase : q.proj ∈ (achart H q.proj).1.source ∩ i.1.source :=
+      ⟨mem_chart_source H q.proj, hb⟩
+    classical
+    change (q.proj, (if hx : q.proj ∈ (achart H q.proj).1.source ∩ i.1.source
+      then ((endBundleCore_coordChange_isUnit_iff (achart H q.proj) i q.proj hx q.snd.val).mpr
+        q.snd.isUnit).unit
+      else 1).val) ∈ t
+    rw [dif_pos hbase]
+    simp only [IsUnit.unit_spec]
+    exact hm
+  · rintro ⟨hb, hm⟩
+    refine ⟨hb, ?_⟩
+    have hbase : q.proj ∈ (achart H q.proj).1.source ∩ i.1.source :=
+      ⟨mem_chart_source H q.proj, hb⟩
+    classical
+    change (q.proj, (if hx : q.proj ∈ (achart H q.proj).1.source ∩ i.1.source
+      then ((endBundleCore_coordChange_isUnit_iff (achart H q.proj) i q.proj hx q.snd.val).mpr
+        q.snd.isUnit).unit
+      else 1).val) ∈ t at hm
+    rw [dif_pos hbase] at hm
+    simp only [IsUnit.unit_spec] at hm
+    exact hm
+
+/-
+The map from the FiberBundleCore total space to the EndBundle is continuous.
+    On each local trivialization, the map is `id × Units.val`, which is continuous.
+-/
+lemma continuous_frameBundleCore_to_endBundle [IsManifold I 1 M] [CompleteSpace E]
+ [CompleteSpace 𝕜] :
+    Continuous (fun q : Bundle.TotalSpace (E →L[𝕜] E)ˣ (FrameSpace I M) =>
+      (⟨q.proj, q.snd.val⟩ : EndBundle I M)) := by
+  apply continuous_generateFrom_iff.mpr
+  intro s hs
+  obtain ⟨_, ⟨i, rfl⟩, t, ht, foo⟩ := hs
+  obtain ⟨hi, rfl⟩ := ht
+  simp only [Set.mem_iUnion, Set.mem_singleton_iff] at foo
+  obtain ⟨u, rfl⟩ := foo
+  have key := frameBundleCore_preimage_eq_endBundleCore (I := I) (M := M) i hi
+  exact key ▸ TopologicalSpace.GenerateOpen.basic _ (by
+    simp only [Set.mem_iUnion, Set.mem_singleton_iff]
+    exact ⟨i, (Prod.map id Units.val) ⁻¹' hi,
+      u.preimage (continuous_id.prodMap Units.continuous_val), rfl⟩)
+
+/-
+The map from the FrameBundle to the FiberBundleCore total space is continuous.
+    We use `continuous_generateFrom_iff` for the target (FBC) topology and show
+    preimages of generators are open in the subspace topology.
+-/
+lemma continuous_endBundle_to_frameBundleCore [IsManifold I 1 M] [CompleteSpace E] [CompleteSpace 𝕜] :
+    Continuous (fun p : ↥(FrameBundle I M) =>
+      (⟨p.1.proj, p.2.unit⟩ : Bundle.TotalSpace (E →L[𝕜] E)ˣ (FrameSpace I M))) := by
+  apply continuous_generateFrom_iff.mpr
+  intro s hs
+  obtain ⟨_, ⟨i, rfl⟩, t, ht, foo⟩ := hs
+  obtain ⟨hi, rfl⟩ := ht
+  simp only [Set.mem_iUnion, Set.mem_singleton_iff] at foo
+  obtain ⟨u, hu, rfl⟩ := foo
+  have key2 := frameBundleCore_preimage_eq_endBundleCore (I := I) (M := M) i
+    (Prod.map id Units.val '' hi)
+  have hinj : Prod.map id Units.val ⁻¹' Prod.map id Units.val '' hi = hi := by
+    apply Set.preimage_image_eq
+    intro ⟨a, b⟩ ⟨c, d⟩ h
+    simp only [Prod.map, id_eq, Prod.mk.injEq] at h
+    exact Prod.mk.injEq _ _ _ _ |>.mpr ⟨h.1, Units.val_injective h.2⟩
+  rw [hinj] at key2
+  have comp_eq : (fun q : Bundle.TotalSpace (E →L[𝕜] E)ˣ (FrameSpace I M) =>
+        (⟨q.proj, q.snd.val⟩ : EndBundle I M)) ∘
+      (fun p : ↥(FrameBundle I M) => ⟨p.1.proj, p.2.unit⟩) =
+      (fun p : ↥(FrameBundle I M) => p.1) := by
+    ext p <;> simp [IsUnit.unit_spec]
+  have : (fun p : ↥(FrameBundle I M) => ⟨p.1.proj, p.2.unit⟩) ⁻¹'
+      ((frameBundleFiberBundleCore (I := I) (M := M).localTrivAsPartialEquiv i).source ∩
+        ↑(frameBundleFiberBundleCore (I := I) (M := M).localTrivAsPartialEquiv i) ⁻¹' hi) =
+      (fun p : ↥(FrameBundle I M) => p.1) ⁻¹'
+        (((endBundleCore I M).toFiberBundleCore.localTrivAsPartialEquiv i).source ∩
+          ↑((endBundleCore I M).toFiberBundleCore.localTrivAsPartialEquiv i) ⁻¹'
+            (Prod.map id Units.val '' hi)) := by
+    rw [← key2]
+    change ((fun q : Bundle.TotalSpace (E →L[𝕜] E)ˣ (FrameSpace I M) =>
+        (⟨q.proj, q.snd.val⟩ : EndBundle I M)) ∘
+      (fun p : ↥(FrameBundle I M) => ⟨p.1.proj, p.2.unit⟩)) ⁻¹' _ =
+      (fun p : ↥(FrameBundle I M) => p.1) ⁻¹' _
+    rw [comp_eq]
+    exact preimage_congr (congrFun comp_eq)
+  exact this ▸ (IsOpen.preimage continuous_subtype_val
+    (TopologicalSpace.GenerateOpen.basic _ (by
+      simp only [Set.mem_iUnion, Set.mem_singleton_iff]
+      exact ⟨i, Prod.map id Units.val '' hi,
+        (IsOpenMap.id.prodMap (Units.isOpenEmbedding_val (R := E →L[𝕜] E)).isOpenMap) hi u,
+        rfl⟩)))
+
+def frameBundleCoreHomeomorph [IsManifold I 1 M] [CompleteSpace E] [CompleteSpace 𝕜] :
+    Bundle.TotalSpace (E →L[𝕜] E)ˣ (FrameSpace I M) ≃ₜ ↥(FrameBundle I M) where
+  toEquiv := frameBundleEquiv.symm
+  continuous_toFun := by
+    change Continuous (frameBundleEquiv.symm)
+    exact Continuous.subtype_mk continuous_frameBundleCore_to_endBundle _
+  continuous_invFun := continuous_endBundle_to_frameBundleCore
 
 end FrameBundlePrincipal
 
