@@ -342,12 +342,30 @@ theorem preAleph_succ (o : Ordinal) : preAleph (succ o) = succ (preAleph o) :=
   preAleph.map_succ o
 
 @[simp]
-theorem preAleph_nat (n : ℕ) : preAleph n = n := by
+theorem preAleph_natCast (n : ℕ) : preAleph n = n := by
   rw [← card_preOmega, preOmega_natCast, card_nat]
+
+@[simp]
+theorem preAleph_ofNat (n : ℕ) [n.AtLeastTwo] : preAleph ofNat(n) = ofNat(n) :=
+  preAleph_natCast n
+
+@[simp]
+theorem preAleph_symm_natCast (n : ℕ) : preAleph.symm n = n := by
+  simp [OrderIso.symm_apply_eq]
+
+@[simp]
+theorem preAleph_symm_ofNat (n : ℕ) [n.AtLeastTwo] : preAleph.symm ofNat(n) = ofNat(n) :=
+  preAleph_symm_natCast n
+
+@[deprecated (since := "2026-05-22")] alias preAleph_nat := preAleph_natCast
 
 @[simp]
 theorem preAleph_omega0 : preAleph ω = ℵ₀ := by
   rw [← card_preOmega, preOmega_omega0, card_omega0]
+
+@[simp]
+theorem preAleph_symm_aleph0 : preAleph.symm ℵ₀ = ω := by
+  simp [OrderIso.symm_apply_eq]
 
 @[simp]
 theorem preAleph_pos {o : Ordinal} : 0 < preAleph o ↔ 0 < o := by
@@ -397,7 +415,7 @@ theorem preAleph_le_of_strictMono {f : Ordinal → Cardinal} (hf : StrictMono f)
 
 For a version including finite cardinals, see `Cardinal.preAleph`. -/
 def aleph : Ordinal ↪o Cardinal :=
-  (OrderEmbedding.addLeft ω).trans preAleph.toOrderEmbedding
+  (OrderEmbedding.addLeft ω).trans preAleph
 
 @[inherit_doc] scoped notation "ℵ_ " => aleph
 recommended_spelling "aleph" for "ℵ_" in [aleph, «termℵ_»]
@@ -412,6 +430,10 @@ theorem aleph_eq_preAleph (o : Ordinal) : ℵ_ o = preAleph (ω + o) :=
 @[simp]
 theorem _root_.Ordinal.card_omega (o : Ordinal) : (ω_ o).card = ℵ_ o :=
   rfl
+
+@[simp]
+theorem preAleph_symm_aleph (o : Ordinal) : preAleph.symm (ℵ_ o) = ω + o :=
+  preAleph.symm_apply_apply _
 
 @[simp]
 theorem ord_aleph (o : Ordinal) : (ℵ_ o).ord = ω_ o :=

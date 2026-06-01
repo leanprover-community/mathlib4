@@ -1126,7 +1126,7 @@ theorem setToFun_finsetSum_measure {ι} {s : Finset ι} (hs : s.Nonempty)
   induction hs using Finset.Nonempty.cons_induction with
   | singleton i => simp
   | @cons i s his hs' ih =>
-    simpa [his, ih fun j hj => hf j (Finset.mem_cons_of_mem hj)] using
+    simpa [his, ih fun j hj => hf j (Finset.mem_cons_of_mem hj)] using!
       setToFun_add_measure (hTs i) (DominatedFinMeasAdditive.finsetSum_measure hs' μ T C hTs)
       (hf i (Finset.mem_cons_self i s))
       (integrable_finsetSum_measure.2 fun j hj => hf j (Finset.mem_cons_of_mem hj))
