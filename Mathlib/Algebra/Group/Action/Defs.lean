@@ -56,6 +56,8 @@ variable {M N G H α β γ δ : Type*}
 -- Note that https://github.com/leanprover/lean4/pull/13554
 -- also makes the instance priority change, so if that is merged then `instance 1100` can
 -- be removed here (we still want `to_additive` though).
+
+-- see Note [higher instance priority]
 /- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
 attribute [instance 1100, to_additive /-- See also `AddMonoid.toAddAction` -/] instSMulOfMul
 
@@ -129,7 +131,7 @@ acts on `P`.
 For example, if `G` is a group and `X` is a type, if a mathematician says
 say "let `G` act on the set `X`" they will probably mean `[MulAction G X]`.
 -/
-@[to_additive (attr := ext)]
+@[to_additive (attr := ext, wikidata Q288465)]
 class MulAction (α : Type*) (β : Type*) [Monoid α] extends SemigroupAction α β where
   /-- One is the neutral element for `•` -/
   protected one_smul : ∀ b : β, (1 : α) • b = b
@@ -455,6 +457,7 @@ protected abbrev Function.Surjective.mulAction [SMul M β] (f : α → β) (hf :
 section
 variable (M)
 
+-- see Note [higher instance priority]
 /-- The regular action of a monoid on itself by left multiplication.
 
 This is promoted to a module by `Semiring.toModule`. -/

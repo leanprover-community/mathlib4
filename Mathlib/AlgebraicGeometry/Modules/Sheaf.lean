@@ -96,6 +96,19 @@ variable (M) in
     M.presheaf.map i.op (r • x) = X.presheaf.map i.op r • M.presheaf.map i.op x :=
   M.val.map_smul _ _ _
 
+/-- Scalar multiplication as an endomorphism of `Γ(M, U)`. -/
+def smul : Γ(X, U) →+* End Γ(M, U) :=
+  (M.val.obj (.op U)).smul
+
+@[simp]
+lemma smul_apply (r : Γ(X, U)) (x : Γ(M, U)) : (M.smul r).hom x = r • x := rfl
+
+@[reassoc (attr := simp)]
+lemma map_comp_smul (i : U ⟶ V) (r : Γ(X, V)) :
+    M.smul r ≫ M.presheaf.map i.op = M.presheaf.map i.op ≫ M.smul (X.presheaf.map i.op r) := by
+  ext
+  simp
+
 /-- The underlying map between abelian presheaves of a morphism of `𝒪ₓ`-modules. -/
 noncomputable def Hom.mapPresheaf (φ : M ⟶ N) : M.presheaf ⟶ N.presheaf :=
   (toPresheaf X).map φ
@@ -327,10 +340,45 @@ def restrictFunctor : Y.Modules ⥤ X.Modules :=
 abbrev restrict (M : Y.Modules) (f : X ⟶ Y) [IsOpenImmersion f] : X.Modules :=
   (restrictFunctor f).obj M
 
-@[simp] lemma restrict_obj (M : Y.Modules) (f : X ⟶ Y) [IsOpenImmersion f] (U) :
+/-- The sections of the restriction of `M` over `U` are isomorphic to `Γ(M, f ''ᵁ U). -/
+def restrictAppIso (M : Y.Modules) (U : X.Opens) : Γ(M.restrict f, U) ≅ Γ(M, f ''ᵁ U) :=
+  Iso.refl _
+
+@[elementwise (attr := simp), reassoc (attr := simp)]
+lemma smul_restrictAppIso_hom (M : Y.Modules) (U : X.Opens) (r : Γ(X, U)) :
+    dsimp% (M.restrict f).smul r ≫ (M.restrictAppIso f U).hom =
+      (M.restrictAppIso f U).hom ≫ M.smul ((f.appIso U).inv r) :=
+  rfl
+
+@[elementwise (attr := simp), reassoc (attr := simp)]
+lemma smul_restrictAppIso_inv (M : Y.Modules) (U : X.Opens) (r : Γ(Y, f ''ᵁ U)) :
+    M.smul r ≫ (M.restrictAppIso f U).inv =
+      (M.restrictAppIso f U).inv ≫ (M.restrict f).smul ((f.appIso U).hom r) := by
+  simp [← cancel_mono (M.restrictAppIso f U).hom]
+
+@[elementwise (attr := simp), reassoc (attr := simp)]
+lemma map_restrictAppIso_hom (M : Y.Modules) {U V : X.Opens}
+    (hUV : Opposite.op V ⟶ .op U) :
+    (M.restrict f).presheaf.map hUV ≫ (M.restrictAppIso f U).hom =
+      (M.restrictAppIso f V).hom ≫
+      M.presheaf.map (.op <| homOfLE <| Scheme.Hom.image_mono _ (leOfHom hUV.unop)) := by
+  rfl
+
+@[elementwise (attr := simp), reassoc (attr := simp)]
+lemma restrictAppIso_inv_map (M : Y.Modules) {U V : X.Opens} (hUV : .op V ⟶ .op U) :
+    (M.restrictAppIso f V).inv ≫ (M.restrict f).presheaf.map hUV =
+      M.presheaf.map (.op <| homOfLE <| Scheme.Hom.image_mono _ (leOfHom hUV.unop)) ≫
+      (M.restrictAppIso f U).inv :=
+  rfl
+
+/-- Avoid using this. Use the isomorphism `AlgebraicGeometry.Scheme.Modules.restrictAppIso`
+instead. -/
+lemma restrict_obj (M : Y.Modules) (f : X ⟶ Y) [IsOpenImmersion f] (U) :
     Γ(M.restrict f, U) = Γ(M, f ''ᵁ U) := rfl
 
-@[simp] lemma restrict_map (M : Y.Modules) (f : X ⟶ Y) [IsOpenImmersion f] {U V} (i : U ⟶ V) :
+/-- Avoid using this. Use the isomorphism `AlgebraicGeometry.Scheme.Modules.restrictAppIso`
+instead. -/
+lemma restrict_map (M : Y.Modules) (f : X ⟶ Y) [IsOpenImmersion f] {U V} (i : U ⟶ V) :
     (M.restrict f).presheaf.map i.op = M.presheaf.map (f.opensFunctor.map i).op := rfl
 
 /-- The restriction of a module along an open immersion. -/
@@ -455,5 +503,22 @@ lemma germ_restrictStalkNatIso_inv_app (x : X) (M : Y.Modules) (hxU : x ∈ U) :
   simp
 
 end Restriction
+
+/-- `sheafCompose` commutes with `pushforward` -/
+noncomputable def sheafComposePushforwardComp {R S : CommRingCat.{u}} (φ : R ⟶ S) :
+    sheafCompose (Opens.grothendieckTopology (Spec S))
+      (ModuleCat.restrictScalars (Spec.map φ).appTop.hom) ⋙
+      TopCat.Sheaf.pushforward _ (Spec.map φ).base ⋙
+      sheafCompose _ (ModuleCat.restrictScalars (Scheme.ΓSpecIso R).inv.hom) ≅
+    sheafCompose _ (ModuleCat.restrictScalars (Scheme.ΓSpecIso S).inv.hom) ⋙
+      TopCat.Sheaf.pushforward _ (Spec.map φ).base ⋙
+      sheafCompose _ (ModuleCat.restrictScalars φ.hom) := by
+  refine NatIso.ofComponents (fun M ↦ ObjectProperty.isoMk _ ?_) ?_
+  · refine NatIso.ofComponents (fun U ↦ ?_) ?_
+    · refine (ModuleCat.restrictScalarsComp'App _ _ _ ?_ _).symm ≪≫
+        (ModuleCat.restrictScalarsComp φ.hom ((Scheme.ΓSpecIso S).inv).hom).app _
+      rw [← CommRingCat.hom_comp, Scheme.ΓSpecIso_inv_naturality, CommRingCat.hom_comp]
+    · cat_disch
+  · cat_disch
 
 end AlgebraicGeometry.Scheme.Modules

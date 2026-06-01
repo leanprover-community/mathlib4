@@ -94,7 +94,6 @@ lemma discriminantEquiv_apply (f : CuspForm 𝒮ℒ k) (z : ℍ) :
 @[deprecated discriminantEquiv (since := "2026-05-18")]
 def divDiscriminant (f : CuspForm 𝒮ℒ k) : ModularForm 𝒮ℒ (k - 12) := discriminantEquiv f
 
-set_option linter.deprecated false in
 @[deprecated discriminantEquiv_apply (since := "2026-05-18")]
 lemma divDiscriminant_apply (f : CuspForm 𝒮ℒ k) (z : ℍ) :
     (divDiscriminant f) z = f z / Δ z := rfl
