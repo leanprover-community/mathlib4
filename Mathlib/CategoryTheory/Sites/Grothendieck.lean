@@ -72,7 +72,7 @@ three axioms:
 A sieve `S` on `X` is referred to as `J`-covering, (or just covering), if `S ∈ J X`.
 
 See also [nlab] or [MM92] Chapter III, Section 2, Definition 1. -/
-@[stacks 00Z4]
+@[stacks 00Z4, wikidata Q1062242]
 structure GrothendieckTopology where
   /-- A Grothendieck topology on `C` consists of a set of sieves for each object `X`,
   which satisfy some axioms. -/
