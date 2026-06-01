@@ -5,9 +5,10 @@ Authors: Kalle Kytölä
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Layercake
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.MeasureTheory.Measure.Tight
+
+import Mathlib.MeasureTheory.Integral.Layercake
 
 /-!
 # Characterizations of weak convergence of finite measures and probability measures
@@ -650,11 +651,13 @@ lemma tendsto_of_forall_isClosed_limsup_real_le' {L : Filter ι} [L.IsCountablyG
     Tendsto μs L (𝓝 μ) := tendsto_of_forall_isClosed_limsup_le (by simpa using h)
 
 /-- A different version of the (C) → (T) implication of the portmanteau theorem:
-If the set of measures is tight, a `limsup` inequality for compact sets implies weak convergence -/
-theorem tendsto_of_forall_isCompact_of_isTightMeasureSet [NeBot L]
+If the set of measures is tight, a `limsup` inequality for compact sets implies weak convergence. -/
+theorem tendsto_of_forall_isCompact_of_isTightMeasureSet
     (h₁ : IsTightMeasureSet (range (ProbabilityMeasure.toMeasure ∘ μs)))
-    (h₂ : ∀ F, IsCompact F → limsup (fun i ↦ (μs i) F) L ≤ μ F) :
-    Tendsto (fun i ↦ μs i) L (nhds μ) := by
+    (h₂ : ∀ F, IsCompact F → limsup (μs · F) L ≤ μ F) :
+    Tendsto μs L (𝓝 μ) := by
+  obtain rfl | _ := L.eq_or_neBot
+  · simp
   refine tendsto_of_forall_isClosed_limsup_le <| fun F hF_closed ↦ ?_
   rw [← ENNReal.coe_le_coe, ENNReal.ofNNReal_limsup <|
       isBoundedUnder_of_eventually_le (a := 1) (by simp)]
