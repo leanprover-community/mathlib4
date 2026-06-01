@@ -544,7 +544,7 @@ private def isBadDefNameWithUnderscoreAux (env : Environment) (moduleAutoSuffix 
         isBadDefNameWithUnderscoreAux env moduleAutoSuffix badIfEligible pre
   | .anonymous => badIfEligible
 
--- Copy of private declaration from Lean.Elab.DeclNameGen.
+/-- Copy of private declaration from `Lean.Elab.DeclNameGen`. Constructs e.g. `mathlib` suffixes. -/
 private def moduleToSuffix : Name → String
   | .anonymous => ""
   | .num n _ => moduleToSuffix n
