@@ -165,7 +165,7 @@ namespace IndepMatroid
   maximality := M.indep_maximal
   subset_ground B hB := M.subset_ground B hB.1
 
-@[simp] theorem matroid_indep_iff {M : IndepMatroid α} {I : Set α} :
+theorem matroid_indep_iff {M : IndepMatroid α} {I : Set α} :
     M.matroid.Indep I ↔ M.Indep I := Iff.rfl
 
 /-- If `Indep` has the 'compactness' property that each set `I` satisfies `Indep I` if and only if

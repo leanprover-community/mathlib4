@@ -181,7 +181,7 @@ theorem OrthogonalFamily.norm_sq_diff_sum [DecidableEq ι] (f : ∀ i, G i) (s�
       (∑ i ∈ s₁ \ s₂, ‖F i‖ ^ 2) + ∑ i ∈ s₂ \ s₁, ‖F i‖ ^ 2 := by
     have hs : Disjoint (s₁ \ s₂) (s₂ \ s₁) := disjoint_sdiff_sdiff
     simpa only [Finset.sum_union hs] using hV.norm_sum F (s₁ \ s₂ ∪ s₂ \ s₁)
-  convert this using 4
+  convert! this using 4
   · refine Finset.sum_congr rfl fun i hi => ?_
     simp only [hF₁ i hi]
   · refine Finset.sum_congr rfl fun i hi => ?_
@@ -220,13 +220,13 @@ theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : �
       have has : a ≤ s₁ ⊓ s₂ := le_inf hs₁ hs₂
       rw [hV.norm_sq_diff_sum]
       have Hs₁ : ∑ x ∈ s₁ \ s₂, ‖f x‖ ^ 2 < ε ^ 2 / 2 := by
-        convert H _ hs₁ _ has
+        convert! H _ hs₁ _ has
         have : s₁ ⊓ s₂ ⊆ s₁ := Finset.inter_subset_left
         rw [← Finset.sum_sdiff this, add_tsub_cancel_right, Finset.abs_sum_of_nonneg']
         · simp
         · exact fun i => sq_nonneg _
       have Hs₂ : ∑ x ∈ s₂ \ s₁, ‖f x‖ ^ 2 < ε ^ 2 / 2 := by
-        convert H _ hs₂ _ has
+        convert! H _ hs₂ _ has
         have : s₁ ⊓ s₂ ⊆ s₂ := Finset.inter_subset_right
         rw [← Finset.sum_sdiff this, add_tsub_cancel_right, Finset.abs_sum_of_nonneg']
         · simp
@@ -258,10 +258,10 @@ theorem OrthogonalFamily.independent {V : ι → Submodule 𝕜 E}
   intro v hv
   rw [LinearMap.mem_ker] at hv
   ext i
-  suffices ⟪(v i : E), v i⟫ = 0 by simpa only [inner_self_eq_zero] using this
+  suffices ⟪(v i : E), v i⟫ = 0 by simpa only [inner_self_eq_zero] using! this
   calc
     ⟪(v i : E), v i⟫ = ⟪(v i : E), DFinsupp.lsum ℕ (fun i => (V i).subtype) v⟫ := by
-      simpa only [DFinsupp.sumAddHom_apply, DFinsupp.lsum_apply_apply] using
+      simpa only [DFinsupp.sumAddHom_apply, DFinsupp.lsum_apply_apply] using!
         (hV.inner_right_dfinsupp v i (v i)).symm
     _ = 0 := by simp only [hv, inner_zero_right]
 
@@ -270,6 +270,6 @@ theorem DirectSum.IsInternal.collectedBasis_orthonormal [DecidableEq ι] {V : ι
     (hV_sum : DirectSum.IsInternal fun i => V i) {α : ι → Type*}
     {v_family : ∀ i, Basis (α i) 𝕜 (V i)} (hv_family : ∀ i, Orthonormal 𝕜 (v_family i)) :
     Orthonormal 𝕜 (hV_sum.collectedBasis v_family) := by
-  simpa only [hV_sum.collectedBasis_coe] using hV.orthonormal_sigma_orthonormal hv_family
+  simpa only [hV_sum.collectedBasis_coe] using! hV.orthonormal_sigma_orthonormal hv_family
 
 end OrthogonalFamily
