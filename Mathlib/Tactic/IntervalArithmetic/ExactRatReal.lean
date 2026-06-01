@@ -26,7 +26,6 @@ containment goals using interval arithmetic (with rationals).
 @[expose] public section
 
 set_option warn.sorry false
-set_option linter.all false
 
 open Nat
 
@@ -255,8 +254,10 @@ theorem mul_mem_mul_toSet_of_nonneg_nonneg {r s : ℝ} {x y : Interval ℚ}
   · obtain ⟨c₁, a₁, ha₁, hxlb⟩ := lb_eq_of_intervalSignClass_nonneg hx
     obtain ⟨c₂, a₂, ha₂, hylb⟩ := lb_eq_of_intervalSignClass_nonneg hy
     cases hc₁ : c₁ <;> cases hc₂ : c₂
-    <;> (by_cases! ha₁zero : a₁ = 0; swap; have : 0 < (a₁ : ℝ) := by simpa using lt_of_le_of_ne ha₁ ha₁zero.symm)
-    <;> (by_cases! ha₂zero : a₂ = 0; swap; have : 0 < (a₂ : ℝ) := by simpa using lt_of_le_of_ne ha₂ ha₂zero.symm)
+    <;> (by_cases! ha₁zero : a₁ = 0; swap; have : 0 < (a₁ : ℝ) :=
+      (by simpa using lt_of_le_of_ne ha₁ ha₁zero.symm))
+    <;> (by_cases! ha₂zero : a₂ = 0; swap; have : 0 < (a₂ : ℝ) :=
+      (by simpa using lt_of_le_of_ne ha₂ ha₂zero.symm))
     <;> simp [mem_toSet, LowerBound.Bounds, mul, hx, hy, LowerBound.mul, hxlb, hylb, hc₁, hc₂,
       ratToReal, ha₁zero, ha₂zero] at hrx hsy ⊢ <;> rify at ha₁ ha₂
     <;> grind [mul_pos, mul_nonneg, mul_lt_mul, mul_le_mul, mul_lt_mul']

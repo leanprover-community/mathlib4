@@ -24,7 +24,6 @@ containment goals using interval arithmetic (with dyadic approximations).
 @[expose] public section
 
 set_option warn.sorry false
-set_option linter.all false
 
 open Nat
 
@@ -852,3 +851,5 @@ theorem Interval.dyadic_log_inclusion {r : ℝ} {x : Interval Dyadic}
   sorry
 
 end Log
+
+end IntervalArithmetic

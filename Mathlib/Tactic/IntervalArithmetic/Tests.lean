@@ -25,7 +25,7 @@ open Lean Elab Command
 open IntervalArithmetic
 
 set_option warn.sorry false
-set_option linter.all false
+set_option linter.style.longLine false
 
 -- set_option trace.profiler true
 
