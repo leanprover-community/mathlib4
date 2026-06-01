@@ -30,35 +30,10 @@ universe u v
 
 variable (R : Type u) [CommRing R]
 
-@[simp]
-lemma Finsupp.comap_lsingle_submodule {M : Type*} [AddCommGroup M] [Module R M]
-    (ι : Type*) (p : ι → Submodule R M) (i : ι) :
-    Submodule.comap (lsingle i) (submodule p) = p i := by
-  ext x
-  refine ⟨fun hx ↦ by simpa using hx i, fun hx j ↦ ?_⟩
-  obtain (rfl | h) := eq_or_ne i j <;> simp_all
-
-lemma Finsupp.submodule_eq_iSup {M : Type*} [AddCommGroup M] [Module R M]
-    (ι : Type*) (p : ι → Submodule R M) :
-    Finsupp.submodule p = ⨆ i, Submodule.map (Finsupp.lsingle i) (p i) := by
-  refine le_antisymm ?_ ?_
-  · intro x hx
-    rw [← Finsupp.sum_single x]
-    refine Submodule.sum_mem _ (fun i _ ↦ ?_)
-    exact Submodule.mem_iSup_of_mem i (Submodule.mem_map_of_mem (hx i))
-  · simp [iSup_le_iff, Submodule.map_le_iff_le_comap]
-
 lemma Finsupp.submodule_smul {M : Type*} [AddCommGroup M] [Module R M]
     (ι : Type*) (p : ι → Submodule R M) (I : Ideal R) :
     Finsupp.submodule (fun i ↦ I • p i) = I • Finsupp.submodule p := by
   simp only [Finsupp.submodule_eq_iSup, Submodule.map_smul'', ← Submodule.smul_iSup]
-
-@[simp]
-lemma Finsupp.submodule_top {M : Type*} [AddCommGroup M] [Module R M]
-    (ι : Type*) :
-    Finsupp.submodule (fun _ : ι ↦ (⊤ : Submodule R M)) = ⊤ := by
-  ext
-  simp
 
 instance (M : Type*) [AddCommGroup M] [Module R M] [Module.Free R M] (x : R) :
     Module.Free (R ⧸ Ideal.span {x}) (QuotSMulTop x M) :=
