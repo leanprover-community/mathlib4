@@ -95,11 +95,44 @@ file used by the library's own linters.
   Other subcommands to automate git-related actions may be added in the future.
 
 **Analyzing Mathlib's import structure**
+- `unused_in_pole.sh` (followed by an optional `<target>`, defaulting to `Mathlib`)
+  calls `lake exe pole --loc --to <target>` to compute the longest
+  pole to a given target module, and then feeds this into
+  `lake exe unused` to analyze transitively unused imports.
+  Generates `unused.md` containing a markdown table showing the unused imports,
+  and suggests `lake exe graph` commands to visualize the largest "rectangles" of unused imports.
+
 - `topological_sort.py`
   Prints Mathlib modules in topological (import-DAG) order. By default leaves come last
   (roots first); use `--reverse` for leaves first. If filenames or module names are
   provided on stdin, outputs only those modules in topological order.
   Usage: `python3 scripts/topological_sort.py [--reverse]`
+
+**CI debugging tools**
+- `find-ci-errors.sh`
+  Searches through recent failed CI workflow runs to find open PRs whose current CI
+  contains a specific error string. Useful for diagnosing widespread CI issues affecting
+  multiple PRs (e.g., infrastructure problems, toolchain bugs).
+
+  **Usage:**
+  ```bash
+  # Find all PRs currently failing with a specific error
+  ./scripts/find-ci-errors.sh "Error parsing args: cannot parse arguments"
+
+  # Find PRs and automatically add please-merge-master label to trigger rebuilds
+  ./scripts/find-ci-errors.sh --please-merge-master "cannot parse arguments"
+  ```
+
+  **Options:**
+  - `--please-merge-master`: Adds the `please-merge-master` label to all matching PRs,
+    except those with the `merge-conflict` label.
+
+  **Notes:**
+  - Downloads CI logs to `/tmp/gh-run-*.log` (cached to avoid re-downloading)
+  - Checks up to 200 recent failed runs
+  - Only reports PRs whose current CI status is failing (ignores PRs fixed by retries)
+
+  **Requirements:** `gh` (GitHub CLI) installed and authenticated, `jq` for JSON parsing.
 
 **Backward-compatibility `set_option` migration tools**
 

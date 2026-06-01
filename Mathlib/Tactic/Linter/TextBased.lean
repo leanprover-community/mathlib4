@@ -361,11 +361,13 @@ def findBadUnicodeAux (s : String) (pos : s.Pos) (c : Char)
       if ! isAllowedCharacter c then
         -- bad: character not allowed.
         findBadUnicodeAux s posₙ cₙ (err.push (.unwantedUnicode c))
-      else if cₙ == UnicodeVariant.emoji && !(emojis.contains c) then
+      else if cₙ == UnicodeVariant.emoji && !(emojis.contains c) && !(unrestricted.contains c) then
         -- bad: unwanted emoji variant selector.
         let errₙ := err.push (.unicodeVariant (String.ofList [c, cₙ]) none)
         findBadUnicodeAux s posₙ cₙ errₙ
-      else if cₙ == UnicodeVariant.text && !(nonEmojis.contains c) then
+      else if
+        cₙ == UnicodeVariant.text && !(nonEmojis.contains c) && !(unrestricted.contains c)
+      then
         -- bad: unwanted text variant selector.
         let errₙ := err.push (.unicodeVariant (String.ofList [c, cₙ]) none)
         findBadUnicodeAux s posₙ cₙ errₙ
