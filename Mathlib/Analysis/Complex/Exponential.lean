@@ -482,38 +482,23 @@ lemma norm_exp_sub_sum_le_norm_mul_exp (x : ℂ) (n : ℕ) :
   rw [← CauSeq.lim_const (abv := norm) (∑ m ∈ range n, _), Complex.exp, sub_eq_add_neg,
     ← CauSeq.lim_neg, CauSeq.lim_add, ← lim_norm]
   refine CauSeq.lim_le (CauSeq.le_of_exists ⟨n, fun j hj => ?_⟩)
-  simp_rw [← sub_eq_add_neg]
   change ‖(∑ m ∈ range j, x ^ m / m.factorial) - ∑ m ∈ range n, x ^ m / m.factorial‖ ≤ _
-  rw [sum_range_sub_sum_range hj]
+  rw [← sum_Ico_eq_sub _ hj]
   calc
-    ‖∑ m ∈ range j with n ≤ m, (x ^ m / m.factorial : ℂ)‖
-      = ‖∑ m ∈ range j with n ≤ m, (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)‖ := by
+    ‖∑ m ∈ Ico n j, (x ^ m / m.factorial : ℂ)‖
+      = ‖∑ m ∈ Ico n j, (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)‖ := by
       refine congr_arg norm (sum_congr rfl fun m hm => ?_)
-      rw [mem_filter, mem_range] at hm
-      rw [← mul_div_assoc, ← pow_add, add_tsub_cancel_of_le hm.2]
-    _ ≤ ∑ m ∈ range j with n ≤ m, ‖x ^ n * (x ^ (m - n) / m.factorial)‖ :=
+      rw [mem_Ico] at hm
+      rw [← mul_div_assoc, ← pow_add, add_tsub_cancel_of_le hm.1]
+    _ ≤ ∑ m ∈ Ico n j, ‖x ^ n * (x ^ (m - n) / m.factorial)‖ :=
       IsAbsoluteValue.abv_sum norm ..
-    _ ≤ ∑ m ∈ range j with n ≤ m, ‖x‖ ^ n * (‖x‖ ^ (m - n) / (m - n).factorial) := by
+    _ ≤ ∑ m ∈ Ico n j, ‖x‖ ^ n * (‖x‖ ^ (m - n) / (m - n).factorial) := by
       simp_rw [Complex.norm_mul, Complex.norm_pow, Complex.norm_div, norm_natCast]
       gcongr with i hi
       · rw [Complex.norm_pow]
       · simp
-    _ = ‖x‖ ^ n * ∑ m ∈ range j with n ≤ m, (‖x‖ ^ (m - n) / (m - n).factorial) := by
-      rw [← mul_sum]
     _ = ‖x‖ ^ n * ∑ m ∈ range (j - n), (‖x‖ ^ m / m.factorial) := by
-      congr 1
-      refine (sum_bij (fun m hm ↦ m + n) ?_ ?_ ?_ ?_).symm
-      · grind
-      · intro a ha b hb hab
-        simpa using hab
-      · intro b hb
-        simp only [mem_range, exists_prop]
-        simp only [mem_filter, mem_range] at hb
-        refine ⟨b - n, ?_, ?_⟩
-        · rw [tsub_lt_tsub_iff_right hb.2]
-          exact hb.1
-        · rw [tsub_add_cancel_of_le hb.2]
-      · simp
+      simp [← mul_sum, sum_Ico_eq_sum_range]
     _ ≤ ‖x‖ ^ n * Real.exp ‖x‖ := by
       gcongr
       refine Real.sum_le_exp_of_nonneg ?_ _
