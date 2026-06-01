@@ -21,7 +21,9 @@ namespace Equiv
 
 variable (e : R ≃ S)
 
-/-- Transfer `Star` across an `Equiv`. See note [reducible non-instances]. -/
+/-- Transfer `Star` across an `Equiv`. See note [reducible non-instances].
+
+For `star : R → R` bundled as an `Equiv`, see `Equiv.Perm.star`. -/
 protected abbrev star [Star S] : Star R where
   star r := e.symm (star (e r))
 
