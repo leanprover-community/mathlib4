@@ -452,11 +452,13 @@ open Mathlib.Linter.Style.nameCheck
 def testDecl_mathlibTest := true
 def testDecl_mathlib := true
 
+def goodDef := true
+@[deprecated goodDef (since := "today")] def bad_def := true
+
 theorem foo_bar_baz : True := trivial
 def foo_bar_baz.testThm : Bool := true
 def foo_bar_baz.test_badThm : Bool := true
 
--- set_option trace.debug true
 /- Unit tests for the `defsWithUnderscore` linter. -/
 run_meta do
   guard <| not <| ← isBadDefNameWithUnderscore `Foo
@@ -470,6 +472,11 @@ run_meta do
   guard <| not <| ← isBadDefNameWithUnderscore `Foo.section_ -- `<keyword>_`
   guard <| ← isBadDefNameWithUnderscore `Foo.sectionnn_ -- (bad) `<non-keyword>_`
   guard <| ← isBadDefNameWithUnderscore `set_option -- (bad) `<keyword>`, no trailing `_`
+  -- type and env exemptions
+  guard <| not <| ← isBadDefNameWithUnderscore ``bad_def -- deprecated, exempt
+  guard <| not <| ← isBadDefNameWithUnderscore
+    ``Lean.Elab.Tactic.BVDecide.Frontend.Normalize.bool_and -- `Simproc`
+  guard <| not <| ← isBadDefNameWithUnderscore ``LibraryNote.decidable_namespace -- `LibraryNote`
   guard <| not <| ← isBadDefNameWithUnderscore ``Lean.Json.«json[_]» -- `ParserDescr`
   guard <| not <| ← isBadDefNameWithUnderscore ``«term_+_» -- `TrailingParserDescr`
   guard <| ← isBadDefNameWithUnderscore `«term_++++_» -- (bad) not a real parser
