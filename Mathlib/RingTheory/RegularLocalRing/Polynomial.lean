@@ -54,17 +54,15 @@ lemma Polynomial.exists_monic_span_sup_map_eq (p : Ideal R[X]) [p.IsPrime]
 lemma Polynomial.isRegularLocalRing_localization_atPrime_of_comap_eq_maximalIdeal
     [IsRegularLocalRing R] (p : Ideal R[X]) [p.IsPrime] (max : p.comap C = maximalIdeal R) :
     IsRegularLocalRing (Localization.AtPrime p) := by
-  apply (isRegularLocalRing_iff _).mpr
-  apply le_antisymm _ (ringKrullDim_le_spanFinrank_maximalIdeal _)
+  apply IsRegularLocalRing.of_spanFinrank_maximalIdeal_le
   let q := (maximalIdeal R).map C
   have qle : q ≤ p := by simpa [q, ← max] using map_comap_le
   have Ker : RingHom.ker (Polynomial.mapRingHom (IsLocalRing.residue R)) = q := by
     simpa only [residue, ker_mapRingHom, q] using! congrArg (Ideal.map C) (Quotient.mkₐ_ker R _)
   have reg := (isRegularLocalRing_iff R).mp ‹_›
-  have fg : (maximalIdeal R).FG := (isNoetherianRing_iff_ideal_fg R).mp inferInstance _
-  have fg' := (Submodule.FG.finite_generators fg)
-  have ht : (maximalIdeal R).height ≤ q.height :=
-    le_of_eq (Polynomial.height_map_C (maximalIdeal R)).symm
+  have fg' := (maximalIdeal R).fg_of_isNoetherianRing
+  have fg := Submodule.FG.finite_generators fg'
+  have ht : (maximalIdeal R).height ≤ q.height := le_of_eq (height_map_C (maximalIdeal R)).symm
   by_cases eq : p = q
   · have ht1 : (maximalIdeal R).height ≤ p.height := by simpa [eq]
     have : Ideal.span ((algebraMap R (Localization.AtPrime p)) '' (maximalIdeal R).generators) =
@@ -77,9 +75,8 @@ lemma Polynomial.isRegularLocalRing_localization_atPrime_of_comap_eq_maximalIdea
       IsLocalization.AtPrime.under_maximalIdeal _ p, ge_iff_le]
     apply le_trans _ (WithBot.coe_le_coe.mpr ht1)
     simp only [maximalIdeal_height_eq_ringKrullDim, ← reg, Nat.cast_le, ← this,
-      ← Submodule.FG.generators_ncard fg]
-    exact le_trans (Submodule.spanFinrank_span_le_ncard_of_finite (Set.Finite.image _ fg'))
-      (Set.ncard_image_le fg')
+      ← Submodule.FG.generators_ncard fg']
+    exact (Submodule.spanFinrank_span_le_ncard_of_finite (fg.image _)).trans (Set.ncard_image_le fg)
   · have lt : q < p := lt_of_le_of_ne qle (Ne.symm eq)
     have : (comap C p).IsMaximal := by simpa [max] using maximalIdeal.isMaximal R
     obtain ⟨y, _, hy⟩ := Polynomial.exists_monic_span_sup_map_eq R p this (by simpa [max])
@@ -93,12 +90,11 @@ lemma Polynomial.isRegularLocalRing_localization_atPrime_of_comap_eq_maximalIdea
     apply le_trans _ (WithBot.coe_le_coe.mpr (add_le_add_left ht 1))
     rw [WithBot.coe_add, maximalIdeal_height_eq_ringKrullDim, WithBot.coe_one, ← reg,
       ← Nat.cast_one, ← Nat.cast_add, Nat.cast_le]
-    have fin : (((algebraMap R R[X]) '' (maximalIdeal R).generators) ∪ {y}).Finite :=
-      (fg'.image _).union (Set.finite_singleton y)
+    have fin := (fg.image (algebraMap R R[X])).union (Set.finite_singleton y)
     apply le_trans (Submodule.spanFinrank_span_le_ncard_of_finite (fin.image _))
     apply le_trans (Set.ncard_image_le fin) (le_trans (Set.ncard_union_le _ _) _)
-    rw [Set.ncard_singleton, add_le_add_iff_right]
-    exact le_of_le_of_eq (Set.ncard_image_le fg') (Submodule.FG.generators_ncard fg)
+    rw [Set.ncard_singleton, add_le_add_iff_right, ← Submodule.FG.generators_ncard fg']
+    exact Set.ncard_image_le fg
 
 theorem Polynomial.isRegularRing_of_isRegularRing [IsRegularRing R] : IsRegularRing R[X] := by
   apply isRegularRing_iff.mpr (fun p hp ↦ ?_)
