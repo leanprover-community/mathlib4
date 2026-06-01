@@ -115,7 +115,6 @@ theorem antilipschitz_of_not_hasEigenvalue (hT : IsCompactOperator T) (hμ : μ 
   -- which is a contradiction.
   exact hasEigenvalue_of_hasEigenvector this
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given an endomorphism `S` of a normed space that's a closed embedding but not surjective, we can
 find a sequence of vectors `f n`, living inside a shell, such that `f n` is in the
@@ -146,8 +145,7 @@ private theorem exists_seq {S : End 𝕜 X} (hS_not_surj : ¬ (S : X → X).Surj
       simpa [iterate_succ, V, (iterate_injective hS_anti.injective n).eq_iff,
         Function.Surjective] using! hS_not_surj
     obtain ⟨⟨x, hx⟩, hxn, hxy⟩ := riesz_lemma_of_norm_lt hc hR h₁ h₂
-    simp only [Submodule.mem_comap, Submodule.subtype_apply, AddSubgroupClass.coe_norm,
-      AddSubgroupClass.coe_sub, Subtype.forall] at hxn hxy
+    simp only [Submodule.mem_comap, Submodule.subtype_apply, Subtype.forall] at hxn hxy
     exact ⟨x, hx, by simpa using! hxy 0, hxn,
       fun y hy ↦ hxy y (S.iterateRange.monotone (by simp) hy) hy⟩
   -- Use the existential claim to construct the sequence `f n`.

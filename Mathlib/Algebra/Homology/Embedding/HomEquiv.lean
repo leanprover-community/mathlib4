@@ -162,7 +162,6 @@ lemma comm (i j : ι) :
 
 end homRestrict
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `K.restriction e ⟶ L` induced by a morphism `K ⟶ L.extend e`. -/
 noncomputable def homRestrict (ψ : K ⟶ L.extend e) : K.restriction e ⟶ L where
   f i := homRestrict.f ψ i
