@@ -262,9 +262,21 @@ variable {A B : Type*} [CommRing A] [IsDedekindDomain A] [CommRing B] [IsDedekin
   (GAC : Type*) [Group GAC] [Finite GAC] [MulSemiringAction GAC C] [IsGaloisGroup GAC A C]
   (GBC : Type*) [Group GBC] [Finite GBC] [MulSemiringAction GBC C] [IsGaloisGroup GBC B C]
 
+-- assume that `A,B,C` are domains, and use #38864
 include G GAC GBC in
 theorem ncard_primesOver_mul_ncard_primesOver' :
     (p.primesOver B).ncard * (P.primesOver C).ncard = (p.primesOver C).ncard := by
+  -- take any element `x : B` and consider its characteristic polynomial `∏ (T - g x) = 0`.
+  -- this is a polynomial with coefficients in `A` with `x` as a root
+  -- then it also has all `h x` as roots, so we can factor...
+  -- in other words, `H` acts on the `G`-conjugates of `x : B`
+
+  suffices h : ∀ Q : p.primesOver B, (Q.1.primesOver C).ncard = (P.primesOver C).ncard by
+    have : Fintype (p.primesOver B) := sorry
+    transitivity ∑ Q : p.primesOver B, (Q.1.primesOver C).ncard
+    · simp [h]
+    · -- sum fiberwise
+      sorry
   -- GAC acts transitively on the primes of `C` above `p`
   -- G acts transitively on the primes of `B` above `p`
   have := IsInvariant.orbit_eq_primesOver A C GAC p
