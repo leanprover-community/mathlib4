@@ -133,7 +133,6 @@ instance decidableLE : DecidableLE String := by
 theorem le_iff_toList_le {s₁ s₂ : String} : s₁ ≤ s₂ ↔ s₁.toList ≤ s₂.toList :=
   (not_congr lt_iff_toList_lt).trans not_lt
 
-set_option linter.deprecated false in
 @[deprecated "Use the new String API" (since := "2026-04-01")]
 theorem toList_nonempty :
     ∀ {s : String}, s ≠ "" → s.toList = String.Legacy.front s :: (String.Legacy.drop s 1).toList

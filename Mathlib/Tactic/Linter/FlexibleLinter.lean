@@ -32,6 +32,7 @@ directed graph, where
 * two hypotheses/goals are connected by an arrow if there is a tactic that modifies the source
   of the arrow into the target (this does not apply well to all tactics, but it does apply to
   a large number of them).
+
 With this in mind, a tactic like `rw [lemma]` takes a *very specific* input and return a
 *very predictable* output.
 Such a tactic is "rigid". Any tactic is rigid, unless it is in `flexible` or `stoppers`.
