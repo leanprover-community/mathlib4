@@ -622,7 +622,7 @@ theorem lowerCentralSeries_eq_bot_iff_nilpotencyClass_le {n : ℕ} :
 omit [IsNilpotent G] in
 @[to_additive]
 theorem lowerCentralSeries_eq_bot_iff_upperCentralSeries_eq_top {n : ℕ} :
-    lowerCentralSeries G n = ⊥ ↔ upperCentralSeries G n = ⊤ := by
+    lowerCentralSeries (G := G) ⊤ n = ⊥ ↔ upperCentralSeries G n = ⊤ := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · have : IsNilpotent G := nilpotent_iff_lowerCentralSeries.mpr ⟨n, h⟩
     rwa [upperCentralSeries_eq_top_iff_nilpotencyClass_le,
@@ -928,7 +928,7 @@ theorem Subgroup.upperCentralSeries_one_eq_top_iff :
 
 @[to_additive]
 theorem Subgroup.lowerCentralSeries_one_eq_bot_iff :
-    lowerCentralSeries G 1 = ⊥ ↔ IsMulCommutative G := by
+    lowerCentralSeries (G := G) ⊤ 1 = ⊥ ↔ IsMulCommutative G := by
   rw [lowerCentralSeries_eq_bot_iff_upperCentralSeries_eq_top]
   exact upperCentralSeries_one_eq_top_iff
 
