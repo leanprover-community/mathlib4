@@ -548,8 +548,8 @@ protected abbrev starAddMonoid [Star R] [AddMonoid R] [AddMonoid S] [StarAddMono
 /-- A non-unital non-associative ring endowed with `star` is a star ring if it admits an injective
 map that preserves `star`, `*` and `+` to a star ring. See note [reducible non-instances]. -/
 protected abbrev starRing [Star R] [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
-    [StarRing S] (star : ∀ x, f (star x) = star (f x)) (add : ∀ x y, f (x + y) = f x + f y)
-    (mul : ∀ x y, f (x * y) = f x * f y) (hf : Injective f) :
+    [StarRing S] (hf : Injective f) (star : ∀ x, f (star x) = star (f x))
+    (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y) :
     StarRing R :=
   { hf.starMul f star mul, hf.starAddMonoid f star add with }
 
