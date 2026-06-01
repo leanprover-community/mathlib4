@@ -165,6 +165,7 @@ private lemma absNorm_mul_finprod_finitePlace_eq_one_aux {ι : Type*} [Finite ι
   rw [← mul_eq_one_iff_inv_eq₀ h.ne', mul_comm, Nat.cast_pow]
   exact apply_mul_absNorm_pow_eq_one v (hx i)
 
+-- TODO: Generalize the following to integral closures of `ℤ` in `K` in place of `𝓞 K`.
 open Ideal RingOfIntegers in
 /-- This statement is equivalent to the fact that the "finite part" of the multiplicative
 height of a (non-zero) tuple `x` is the inverse of the absolute norm of the ideal generated
@@ -172,7 +173,6 @@ by the values of `x`. We state it in a way that avoids taking an inverse. -/
 lemma absNorm_mul_finprod_finitePlace_eq_one {ι : Type*} [Finite ι] {x : ι → 𝓞 K} (hx : x ≠ 0) :
     (span <| Set.range x).absNorm * ∏ᶠ v : FinitePlace K, ⨆ i, v (x i) = 1 := by
   obtain ⟨i₀, hi₀⟩ := Function.ne_iff.mp hx
-  simp only [Pi.zero_def] at hi₀
   let i' : { j // (x j : K) ≠ 0 } := ⟨i₀, mod_cast hi₀⟩
   have : Nonempty _ := .intro i'
   have hI : span (Set.range x) = span (Set.range fun i : { j // (x j : K) ≠ 0 } ↦ x i.val) := by
