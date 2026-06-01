@@ -82,32 +82,18 @@ noncomputable abbrev _root_.Finpartition.toMeasurableSet {s : Set X} (P : Finpar
 lemma sum_le' {s : Set X} (hs : MeasurableSet s)
     (P : Finpartition s) (hP : ∀ p ∈ P.parts, MeasurableSet p) :
     ∑ p ∈ P.parts, f p ≤ preVariationFun f s := by
-  simp only [preVariationFun, hs, ↓reduceDIte]
-  calc
-    ∑ p ∈ P.parts, f p = ∑ p ∈ (P.toMeasurableSet hs hP).parts, f p :=
-      P.sum_eq_sum_finpartition_subtype (by measurability) (by measurability)
-        (by measurability) hs hP f
-    _ ≤ ⨆ (Q : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)), ∑ p ∈ Q.parts, f p :=
-      le_iSup (fun Q => ∑ p ∈ Q.parts, f p.1) (P.toMeasurableSet hs hP)
+  simp only [P.sum_eq_sum_finpartition_subtype (by measurability) (by measurability)
+    (by measurability) hs hP f, sum_le f hs (P.toMeasurableSet hs hP)]
 
 /-- If `P` is a partition of `s₁` and `s₁ ⊆ s₂` then
 `∑ p ∈ P.parts, f p ≤ preVariationFun f s₂`. -/
 lemma sum_le_preVariationFun_of_subset {s₁ s₂ : Set X} (hs₁ : MeasurableSet s₁)
     (hs₂ : MeasurableSet s₂) (h : s₁ ⊆ s₂) (P : Finpartition (⟨s₁, hs₁⟩ : Subtype MeasurableSet)) :
     ∑ p ∈ P.parts, f p ≤ preVariationFun f s₂ := by
-  by_cases heq : s₁ = s₂
-  · rw [← heq]; exact sum_le f hs₁ P
-  · let b : Subtype MeasurableSet := ⟨s₂ \ s₁, hs₂.diff hs₁⟩
-    have hb : b ≠ ⊥ := fun hc => heq (h.antisymm (Set.diff_eq_empty.mp (congrArg (·.1) hc)))
-    have hab : Disjoint (⟨s₁, hs₁⟩ : Subtype MeasurableSet) b := by
-      simp only [b, disjoint_iff, Subtype.ext_iff]
-      exact Set.inter_diff_self s₁ s₂
-    have hc : (⟨s₁, hs₁⟩ : Subtype MeasurableSet) ⊔ b = ⟨s₂, hs₂⟩ :=
-      Subtype.ext (Set.union_diff_cancel h)
-    calc ∑ p ∈ P.parts, f p
-      _ ≤ ∑ p ∈ (P.extend hb hab hc).parts, f p :=
-          Finset.sum_le_sum_of_subset fun _ hx => Finset.mem_insert_of_mem hx
-      _ ≤ preVariationFun f s₂ := sum_le f hs₂ _
+  calc
+    ∑ p ∈ P.parts, f p ≤ ∑ p ∈ (P.extendOfLE h).parts, f p :=
+      Finset.sum_le_sum_of_subset (P.parts_subset_extendOfLE h)
+    _ ≤ preVariationFun f s₂ := sum_le f hs₂ _
 
 /-- `preVariationFun` is monotone in terms of the (measurable) set. -/
 lemma mono {s₁ s₂ : Set X} (hs₂ : MeasurableSet s₂) (h : s₁ ⊆ s₂) :

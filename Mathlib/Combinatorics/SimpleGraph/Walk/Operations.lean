@@ -375,20 +375,37 @@ theorem mem_support_append_iff {t u v w : V} (p : G.Walk u v) (p' : G.Walk v w) 
     -- this `have` triggers the unusedHavesSuffices linter:
     (try have := h'.symm) <;> simp [*]
 
+theorem support_prefix_support_concat {u v w : V} (p : G.Walk u v) (hadj : G.Adj v w) :
+    p.support <+: (p.concat hadj).support := by
+  simp
+
 theorem support_subset_support_concat {u v w : V} (p : G.Walk u v) (hadj : G.Adj v w) :
     p.support ⊆ (p.concat hadj).support := by
   simp
 
-@[simp]
-theorem subset_support_append_left {V : Type u} {G : SimpleGraph V} {u v w : V}
-    (p : G.Walk u v) (q : G.Walk v w) : p.support ⊆ (p.append q).support := by
+theorem support_prefix_support_append {V : Type u} {G : SimpleGraph V} {u v w : V}
+    (p : G.Walk u v) (q : G.Walk v w) : p.support <+: (p.append q).support := by
   simp [support_append]
 
 @[simp]
-theorem subset_support_append_right {V : Type u} {G : SimpleGraph V} {u v w : V}
-    (p : G.Walk u v) (q : G.Walk v w) : q.support ⊆ (p.append q).support := by
-  intro
-  simp +contextual [mem_support_append_iff]
+theorem support_subset_support_append_left {V : Type u} {G : SimpleGraph V} {u v w : V}
+    (p : G.Walk u v) (q : G.Walk v w) : p.support ⊆ (p.append q).support :=
+  support_prefix_support_append p q |>.subset
+
+@[deprecated (since := "2026-05-25")]
+alias subset_support_append_left := support_subset_support_append_left
+
+theorem support_suffix_support_append {V : Type u} {G : SimpleGraph V} {u v w : V}
+    (p : G.Walk u v) (q : G.Walk v w) : q.support <:+ (p.append q).support := by
+  simp [support_append_eq_support_dropLast_append]
+
+@[simp]
+theorem support_subset_support_append_right {V : Type u} {G : SimpleGraph V} {u v w : V}
+    (p : G.Walk u v) (q : G.Walk v w) : q.support ⊆ (p.append q).support :=
+  support_suffix_support_append p q |>.subset
+
+@[deprecated (since := "2026-05-25")]
+alias subset_support_append_right := support_subset_support_append_right
 
 theorem coe_support_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
     ((p.append p').support : Multiset V) = {u} + p.support.tail + p'.support.tail := by
@@ -808,6 +825,19 @@ lemma ext_getVert {u v} {p q : G.Walk u v} (h : ∀ k, p.getVert k = q.getVert k
   refine ext_getVert_le_length (hpq.antisymm ?_) fun k _ ↦ h k
   by_contra!
   exact (q.adj_getVert_succ this).ne (by simp [← h, getVert_of_length_le])
+
+open scoped List in
+theorem support_tail_perm_support_dropLast (p : G.Walk u u) :
+    p.tail.support ~ p.dropLast.support := by
+  cases p with | nil => rfl | cons h p
+  grw [← List.perm_cons u, List.perm_comm, ← List.perm_append_singleton,
+    cons_support_tail not_nil_cons, support_dropLast_concat not_nil_cons]
+
+open scoped List in
+theorem tail_support_perm_dropLast_support (p : G.Walk u u) :
+    p.support.tail ~ p.support.dropLast := by
+  cases p with | nil => rfl | cons h p
+  simpa using support_tail_perm_support_dropLast <| p.cons h
 
 end Walk
 
