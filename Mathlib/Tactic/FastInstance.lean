@@ -228,16 +228,19 @@ public inductive CheckInstanceResult where
   `fast_instance%` fails on it). `err` describes why. -/
   | unverifiable (err : MessageData) : CheckInstanceResult
 
-/-- Format a `CheckInstanceResult` as `MessageData` for user display. -/
+/-- Format a `CheckInstanceResult` as `MessageData` for user display. Renders `name` as a
+constant so `pp.privateNames` is honored (e.g. private instances aren't shown with their
+`_private.…` mangling prefix). -/
 public def CheckInstanceResult.toMessageData (name : Name) : CheckInstanceResult → MessageData
   | .canonical =>
-    m!"✅️ '{name}': canonical (re-inferred form agrees at instances transparency)"
+    m!"✅️ '{.ofConstName name}': canonical \
+      (re-inferred form agrees at instances transparency)"
   | .leaky detail =>
-    m!"❌️ '{name}': leaky binder types detected.{detail}\n  \
+    m!"❌️ '{.ofConstName name}': leaky binder types detected.{detail}\n  \
       The `fast_instance%` elaborator may be useful as a repair or band-aid:\n  \
       `instance : ... := fast_instance% <body>`"
   | .unverifiable err =>
-    m!"❌️ '{name}': cannot be verified (fast_instance% fails).\
+    m!"❌️ '{.ofConstName name}': cannot be verified (fast_instance% fails).\
       \n  {err}\
       \n  The `fast_instance%` elaborator may be useful as a repair or band-aid:\
       \n  `instance : ... := fast_instance% <body>`"
@@ -267,12 +270,15 @@ public def checkInstance (name : Name) : MetaM CheckInstanceResult := do
     let instVal := mkAppN (.const name (info.levelParams.map mkLevelParam)) xs
     -- Temporarily evict `name` from the instance discrimination tree so that
     -- `trySynthInstance` won't trivially find the instance being checked, then run
-    -- constructor normalization to get the canonical form.
+    -- constructor normalization to get the canonical form. Suppress the
+    -- `fast_instance_existing` linter, which is a user-style hint inappropriate for an
+    -- internal diagnostic.
     -- If normalization fails (e.g. the instance doesn't reduce to a constructor application),
     -- that itself is a sign the instance is not in verifiable canonical form.
     let normalized ← try
-        withDisabledInstance name <| withNewMCtxDepth <|
-          makeFastInstance instVal expectedType
+        withOptions (·.setBool `linter.fast_instance_existing false) <|
+          withDisabledInstance name <| withNewMCtxDepth <|
+            makeFastInstance instVal expectedType
       catch e =>
         return .unverifiable e.toMessageData
     -- Compare at instances transparency. At this level, the instance unfolds to its body,
@@ -297,7 +303,8 @@ public def checkInstance (name : Name) : MetaM CheckInstanceResult := do
         addMessageContext m!"\n  The data field `{field}` differs from the re-inferred canonical \
           form at instances transparency.\n  Other data fields may also be leaky."
       | none =>
-        addMessageContext "\n  The body differs from the re-inferred form at instances transparency."
+        addMessageContext "\n  The body differs from the re-inferred form \
+          at instances transparency."
     return .leaky detail
 
 open Elab Command in
