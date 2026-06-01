@@ -29,7 +29,7 @@ lemma Polynomial.isRegularLocalRing_localization_atPrime_of_comap_eq_maximalIdea
   let q := (maximalIdeal R).map C
   have qle : q ≤ p := by simpa [q, ← max] using map_comap_le
   have Ker : RingHom.ker (Polynomial.mapRingHom (IsLocalRing.residue R)) = q := by
-    simpa only [residue, ker_mapRingHom, q] using congrArg (Ideal.map C) (Quotient.mkₐ_ker R _)
+    simpa only [residue, ker_mapRingHom, q] using! congrArg (Ideal.map C) (Quotient.mkₐ_ker R _)
   have reg := (isRegularLocalRing_iff R).mp ‹_›
   have fg : (maximalIdeal R).FG := (isNoetherianRing_iff_ideal_fg R).mp inferInstance _
   have fg' := (Submodule.FG.finite_generators fg)
