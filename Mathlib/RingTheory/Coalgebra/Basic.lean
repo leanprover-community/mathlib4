@@ -90,8 +90,8 @@ variable {R : Type u} {A : Type v} {ι : Type*} {κ Λ : ι → Type*}
 variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A] {a : A}
 
 /-- The indexing type of a representation of `comul a` -/
-@[nolint unusedArgs, deprecated "The indexing type is now unbundled" (since := "2026-05-31")]
-protected abbrev Repr.ι (repr : Repr R a ι) : Type _ := ι
+@[nolint unusedArguments, deprecated "The indexing type is now unbundled" (since := "2026-05-31")]
+protected abbrev Repr.ι (_repr : Repr R a ι) : Type _ := ι
 
 @[simp]
 theorem coassoc_apply (a : A) :
