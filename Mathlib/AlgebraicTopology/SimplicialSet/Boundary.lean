@@ -296,9 +296,8 @@ lemma isPushout {X : SSet.{u}} {n : ℕ} (A : X.Subcomplex) (x : X _⦋n⦌)
 `∂Δ[n] ↪ Δ[n]` for some `n`. -/
 lemma exists_isPushout_of_ne_top {X : SSet.{u}} (A : X.Subcomplex) (hA : A ≠ ⊤) :
     ∃ (B : X.Subcomplex) (lt : A < B) (n : ℕ)
-      (t : ((∂Δ[n] : (Δ[n] : SSet.{u}).Subcomplex) : SSet.{u}) ⟶ (A : SSet.{u}))
-      (b : (Δ[n] : SSet.{u}) ⟶ (B : SSet.{u})),
-      IsPushout t (∂Δ[n] : (Δ[n] : SSet.{u}).Subcomplex).ι (Subcomplex.homOfLE lt.le) b := by
+      (t : (∂Δ[n] : SSet.{u}) ⟶ (A : SSet.{u})) (b : (Δ[n] : SSet.{u}) ⟶ (B : SSet.{u})),
+      IsPushout t ∂Δ[n].ι (Subcomplex.homOfLE lt.le) b := by
   by_contra h
   apply hA
   ext ⟨⟨n⟩⟩ : 2
