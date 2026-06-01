@@ -19,8 +19,6 @@ public meta section
 namespace Mathlib.Tactic.ClickSuggestions
 open Lean Widget ProofWidgets Jsx
 
-variable {α : Type} [Ord α] [Inhabited α]
-
 /-- `Result` stores the information from a lemma that was successfully applied. -/
 structure Result (α : Type) where
   /-- `filtered` will be shown in the filtered view. -/
@@ -32,6 +30,8 @@ structure Result (α : Type) where
   /-- The `pattern` of the first lemma in a section is shown as the header of that section. -/
   pattern : Html
 deriving Inhabited
+
+variable {α : Type} [Ord α] [Inhabited α]
 
 instance : Ord (Result α) := ⟨(compare ·.key ·.key)⟩
 instance : LT (Result α) := ltOfOrd
@@ -98,7 +98,7 @@ def renderSection {α} (tactic : String) (kind : SectionKind) (s : SectionState 
   let { results, errors } := s
   if results.isEmpty && errors.isEmpty then
     return .text ""
-  let head := if let some head := results[0]? then head.pattern else .text ""
+  let pattern := if let some head := results[0]? then head.pattern else .text ""
   let mut all := .element "div" #[] <| results.map (·.unfiltered)
   let mut filtered := .element "div" #[] <| results.filterMap (·.filtered)
   unless errors.isEmpty do
@@ -108,11 +108,12 @@ def renderSection {α} (tactic : String) (kind : SectionKind) (s : SectionState 
     | .hyp => " (local hypotheses)"
     | .currFile => " (current file)"
     | .imported => ""
-  let header := <span> {.text s!"{tactic} ("} {head} {.text ")"} {.text suffix} </span>
-  -- Don't apply any filter to local results.
-  unless kind matches .imported do
+  let header := <span> {.text s!"{tactic} ("} {pattern} {.text ")"} {.text suffix} </span>
+  if kind matches .imported then
+    return <FilterDetails summary={header} all={all} filtered={filtered} initiallyFiltered={true} />
+  else
+    -- We don't filter local results, because there aren't that many of them.
     return <details «open»={true}> <summary> {header} </summary> {all} </details>
-  return <FilterDetails summary={header} all={all} filtered={filtered} initiallyFiltered={true} />
 where
   renderErrors (errors : Array Html) : Html :=
     <details «open»={true}>
