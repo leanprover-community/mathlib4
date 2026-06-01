@@ -191,8 +191,8 @@ lemma sum_monomial_index {N} [AddCommMonoid N] {n : ℕ} {b : R} {h : ℕ → R 
     (h_zero : h n 0 = 0) : (monomial n b).sum h = h n b :=
   SkewMonoidAlgebra.sum_single_index h_zero
 
-lemma monomial_injective : Function.Injective (monomial n : R → SkewPolynomial R) := by
-  simpa only [monomial_def] using single_injective (ofAdd n)
+lemma monomial_injective : Function.Injective (monomial n : R → SkewPolynomial R) :=
+  single_injective (ofAdd n)
 
 @[simp]
 lemma monomial_eq_zero_iff (t : R) : monomial n t = 0 ↔ t = 0 :=
