@@ -401,6 +401,15 @@ theorem injective_of_top_hom (f : (⊤ : SimpleGraph V) →g G') : Function.Inje
   contrapose! h
   exact G'.ne_of_adj (map_adj _ ((top_adj _ _).mpr h))
 
+/-- A function `f` that is injective on adjacent vertices in a graph `G`
+(equivalently `f` is a valid `W`-coloring of `G`, or `G ≤ comap ⊤ f`)
+is a homomorphism from `G` to the mapped graph. -/
+@[simps]
+protected def map (f : V → W) (G : SimpleGraph V) (h : ∀ {u v}, G.Adj u v → f u ≠ f v) :
+    G →g G.map f where
+  toFun := f
+  map_rel' {u v} hadj := ⟨h hadj, u, v, hadj, rfl, rfl⟩
+
 /-- There is a homomorphism to a graph from a comapped graph.
 When the function is injective, this is an embedding (see `SimpleGraph.Embedding.comap`). -/
 @[simps]
@@ -476,6 +485,11 @@ def mapNeighborSet (v : V) : G.neighborSet v ↪ G'.neighborSet (f v) where
     rintro ⟨w₁, h₁⟩ ⟨w₂, h₂⟩ h
     rw [Subtype.mk_eq_mk] at h ⊢
     exact f.inj' h
+
+/-- A graph embedding induces a graph isomorphism between its domain and its range -/
+noncomputable def isoInduceRange : G ≃g G'.induce (Set.range f) where
+  __ := Equiv.ofInjective f f.injective
+  map_rel_iff' := by simp
 
 /-- Given an injective function, there is an embedding from the comapped graph into the original
 graph. -/
@@ -638,12 +652,12 @@ def mapEdgeSet : G.edgeSet ≃ G'.edgeSet where
   left_inv := by
     rintro ⟨e, h⟩
     simp only [Hom.mapEdgeSet, RelEmbedding.toRelHom, Sym2.map_map, comp_apply, Subtype.mk.injEq]
-    convert congr_fun Sym2.map_id e
+    convert! congr_fun Sym2.map_id e
     exact RelIso.symm_apply_apply _ _
   right_inv := by
     rintro ⟨e, h⟩
     simp only [Hom.mapEdgeSet, RelEmbedding.toRelHom, Sym2.map_map, comp_apply, Subtype.mk.injEq]
-    convert congr_fun Sym2.map_id e
+    convert! congr_fun Sym2.map_id e
     exact RelIso.apply_symm_apply _ _
 
 /-- A graph isomorphism induces an equivalence of neighbor sets. -/
@@ -659,7 +673,7 @@ def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v) where
 include f in
 theorem card_eq [Fintype V] [Fintype W] : Fintype.card V = Fintype.card W := by
   rw [← Fintype.ofEquiv_card f.toEquiv]
-  convert rfl
+  convert! rfl
 
 /-- Given a bijection, there is an embedding from the comapped graph into the original
 graph. -/

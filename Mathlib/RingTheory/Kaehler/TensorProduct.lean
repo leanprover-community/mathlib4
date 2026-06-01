@@ -198,7 +198,6 @@ def tensorKaehlerEquivBase [h : Algebra.IsPushout R S A B] :
     | zero => simp
     | add x y e₁ e₂ => simp only [map_add, e₁, e₂]
     | tmul x y =>
-      dsimp
       -- We use the specialized version of `map_smul` here for performance.
       simp only [Derivation.tensorProductTo_tmul, LinearMap.map_smul,
         Derivation.liftKaehlerDifferential_comp_D, map_liftBaseChange_smul]
@@ -224,8 +223,9 @@ then `Ω[B⁄S]` is the base change of `Ω[A⁄R]` along `R → S`.
 -/
 lemma isBaseChange [h : Algebra.IsPushout R S A B] :
     IsBaseChange S ((map R S A B).restrictScalars R) := by
-  convert (TensorProduct.isBaseChange R Ω[A⁄R] S).comp
-    (IsBaseChange.ofEquiv (tensorKaehlerEquivBase R S A B))
+  convert!
+    (TensorProduct.isBaseChange R Ω[A⁄R] S).comp
+      (IsBaseChange.ofEquiv (tensorKaehlerEquivBase R S A B))
   refine LinearMap.ext fun x ↦ ?_
   simp only [LinearMap.coe_restrictScalars, LinearMap.coe_comp, LinearEquiv.coe_coe,
     Function.comp_apply, mk_apply, tensorKaehlerEquivBase_tmul, one_smul]

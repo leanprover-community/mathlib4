@@ -78,7 +78,7 @@ set_option backward.isDefEq.respectTransparency false in
 def unitHomEquiv (K : SSet.{u}) : (𝟙_ _ ⟶ K) ≃ K _⦋0⦌ where
   toFun φ := φ.app _ PUnit.unit
   invFun x :=
-    { app := fun Δ => TypeCat.ofHom (fun _ => K.map (SimplexCategory.const Δ.unop ⦋0⦌ 0).op x)
+    { app := fun Δ => ↾fun _ => K.map (SimplexCategory.const Δ.unop ⦋0⦌ 0).op x
       naturality := fun Δ Δ' f => by
         ext ⟨⟩
         dsimp
@@ -241,6 +241,7 @@ variable {X Y : SSet.{u}} (S : X.Subcomplex) (T : Y.Subcomplex)
 /-- Given `S ≤ X` and `T ≤ Y`, this is the subcomplex of `X ⊗ Y` given by `(X ⊗ T) ⊔ (S ⊗ Y)`. -/
 def unionProd : (X ⊗ Y).Subcomplex := ((⊤ : X.Subcomplex).prod T) ⊔ (S.prod ⊤)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mem_unionProd_iff {n : SimplexCategoryᵒᵖ} (x : (X ⊗ Y).obj n) :
     x ∈ (unionProd S T).obj _ ↔ x.2 ∈ T.obj _ ∨ x.1 ∈ S.obj _ := by
   dsimp [unionProd, Set.prod]

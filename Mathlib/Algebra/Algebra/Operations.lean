@@ -52,7 +52,7 @@ universe uι u v
 
 open Algebra Set MulOpposite
 
-open Pointwise
+open scoped Pointwise
 
 namespace SubMulAction
 
@@ -518,7 +518,7 @@ end
 
 section
 
-open Pointwise
+open scoped Pointwise
 
 /-- `Submodule.pointwiseNeg` distributes over multiplication.
 
@@ -902,7 +902,7 @@ protected theorem map_div {B : Type*} [CommSemiring B] [Algebra R B] (I J : Subm
   · rintro hx
     refine ⟨h.symm x, fun z hz => ?_, h.apply_symm_apply x⟩
     obtain ⟨xz, xz_mem, hxz⟩ := hx (h z) ⟨z, hz, rfl⟩
-    convert xz_mem
+    convert! xz_mem
     apply h.injective
     rw [map_mul, h.apply_symm_apply, hxz]
 

@@ -49,7 +49,7 @@ commutative domain.
 
 open Finset Function
 
-open Pointwise
+open scoped Pointwise
 
 noncomputable section
 

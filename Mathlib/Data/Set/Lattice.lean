@@ -380,6 +380,37 @@ theorem diff_iUnion [Nonempty ι] (s : Set β) (t : ι → Set β) : (s \ ⋃ i,
 theorem diff_iInter (s : Set β) (t : ι → Set β) : (s \ ⋂ i, t i) = ⋃ i, s \ t i := by
   simp only [diff_eq, compl_iInter, inter_iUnion]
 
+section SymmDiff
+
+open scoped symmDiff
+
+lemma iUnion_symmDiff_subset {s : Set α} [Nonempty ι] {f : ι → Set α} :
+    (⋃ n, f n) ∆ s ⊆ ⋃ n, f n ∆ s :=
+  iSup_symmDiff_le
+
+lemma symmDiff_iUnion_subset {s : Set α} [Nonempty ι] {f : ι → Set α} :
+    s ∆ (⋃ n, f n) ⊆ ⋃ n, s ∆ f n :=
+  symmDiff_iSup_le
+
+lemma iUnion_symmDiff_iUnion_subset {f g : ι → Set α} :
+    (⋃ n, f n) ∆ ⋃ n, g n ⊆ ⋃ n, f n ∆ g n :=
+  iSup_symmDiff_iSup_le
+
+lemma sUnion_symmDiff_subset {s : Set α} {S : Set (Set α)} (hS : S.Nonempty) :
+    (⋃₀ S) ∆ s ⊆ ⋃₀ ((· ∆ s) '' S) :=
+  sSup_symmDiff_le hS
+
+lemma symmDiff_sUnion_subset {s : Set α} {S : Set (Set α)} (hS : S.Nonempty) :
+    s ∆ (⋃₀ S) ⊆ ⋃₀ ((s ∆ ·) '' S) :=
+  symmDiff_sSup_le hS
+
+lemma sUnion_symmDiff_sUnion_subset {S T : Set (Set α)} (hS : S.Nonempty)
+    (hT : T.Nonempty) :
+    (⋃₀ S) ∆ ⋃₀ T ⊆  ⋃₀ (image2 (· ∆ ·) S T) :=
+  sSup_symmDiff_sSup_le hS hT
+
+end SymmDiff
+
 theorem iUnion_inter_subset {ι α} {s t : ι → Set α} : ⋃ i, s i ∩ t i ⊆ (⋃ i, s i) ∩ ⋃ i, t i :=
   le_iSup_inf_iSup s t
 
@@ -983,7 +1014,7 @@ theorem iUnion_eq_range_psigma (s : ι → Set β) : ⋃ i, s i = range fun a : 
   simp [Set.ext_iff]
 
 theorem iUnion_image_preimage_sigma_mk_eq_self {ι : Type*} {σ : ι → Type*} (s : Set (Sigma σ)) :
-    ⋃ i, Sigma.mk i '' (Sigma.mk i ⁻¹' s) = s := by
+    ⋃ i, Sigma.mk i '' Sigma.mk i ⁻¹' s = s := by
   ext x
   simp only [mem_iUnion, mem_image, mem_preimage]
   grind

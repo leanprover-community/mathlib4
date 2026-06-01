@@ -596,7 +596,7 @@ theorem prod_multiset_map_count [DecidableEq ι] (s : Multiset ι) {M : Type*} [
 @[to_additive]
 theorem prod_multiset_count [DecidableEq M] (s : Multiset M) :
     s.prod = ∏ m ∈ s.toFinset, m ^ s.count m := by
-  convert prod_multiset_map_count s id
+  convert! prod_multiset_map_count s id
   rw [Multiset.map_id]
 
 @[to_additive]

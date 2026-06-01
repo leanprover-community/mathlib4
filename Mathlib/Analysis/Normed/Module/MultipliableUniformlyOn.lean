@@ -99,7 +99,7 @@ lemma hasProdUniformlyOn_one_add (hK : IsCompact K) (hu : Summable u)
       filter_upwards [h] with i hi using fun x ↦ hi x x.2
     have hM : Multipliable fun i ↦ 1 + f' i :=
       multipliable_one_add_of_summable (hu.of_norm_bounded_eventually (by simpa using hf'_bd))
-    convert ContinuousMap.tendsto_iff_tendstoUniformly.mp hM.hasProd
+    convert! ContinuousMap.tendsto_iff_tendstoUniformly.mp hM.hasProd
     · simp [f']
     · exact funext fun k ↦ ContinuousMap.tprod_apply hM k
 
