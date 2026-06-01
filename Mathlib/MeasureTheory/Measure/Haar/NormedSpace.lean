@@ -25,7 +25,7 @@ namespace MeasureTheory
 
 namespace Measure
 
-/- The instance `MeasureTheory.Measure.IsAddHaarMeasure.noAtoms` applies in particular to show that
+/-- The instance `MeasureTheory.Measure.IsAddHaarMeasure.noAtoms` applies in particular to show that
 an additive Haar measure on a nontrivial finite-dimensional real vector space has no atom. -/
 example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E] [FiniteDimensional ℝ E]
     [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] : NoAtoms μ := by
