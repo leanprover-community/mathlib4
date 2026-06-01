@@ -290,11 +290,14 @@ theorem card_stabilizer_eq_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
   have : IsScalarTower (R ⧸ p) (S ⧸ P) P.ResidueField := sorry
   have : IsScalarTower (R ⧸ p) p.ResidueField P.ResidueField := sorry
   let f := IsFractionRing.stabilizerHom G p P p.ResidueField P.ResidueField
-
-  sorry
-
-
-
+  have : IsGalois p.ResidueField P.ResidueField := sorry
+  have : Module.Finite p.ResidueField P.ResidueField := sorry
+  have h1 := IsGalois.card_aut_eq_finrank p.ResidueField P.ResidueField
+  have : Subgroup.index _ = _ := Nat.card_congr
+    (IsFractionRing.stabilizerQuotientInertiaEquiv G p P p.ResidueField P.ResidueField).toEquiv
+  rw [inertiaDeg'_eq p P, ← h1, ← this,
+    ← ((inertia G P).subgroupOf (MulAction.stabilizer G P)).card_mul_index,
+    Nat.card_congr (Subgroup.subgroupOfEquivOfLe (inertia_le_stabilizer (M := G) P)).toEquiv]
 
 
   -- have : IsGalois (R ⧸ p) (S ⧸ P) := { __ := Ideal.Quotient.normal (A := R) G p P }
