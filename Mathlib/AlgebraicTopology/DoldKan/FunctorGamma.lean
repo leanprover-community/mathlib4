@@ -180,8 +180,7 @@ theorem map_on_summand₀ {Δ Δ' : SimplexCategoryᵒᵖ} (A : Splitting.IndexS
     Sigma.ι (summand K Δ) A ≫ map K θ =
       Termwise.mapMono K i ≫ Sigma.ι (summand K Δ') (Splitting.IndexSet.mk e) := by
   simp only [map, colimit.ι_desc, Cofan.mk_ι_app]
-  have h := SimplexCategory.image_eq fac
-  subst h
+  obtain rfl := SimplexCategory.image_eq fac
   congr
   · exact SimplexCategory.image_ι_eq fac
   · dsimp only [SimplicialObject.Splitting.IndexSet.pull]
@@ -220,6 +219,7 @@ def obj (K : ChainComplex C ℕ) : SimplicialObject C where
       Obj.Termwise.mapMono_comp_assoc, Obj.map_on_summand₀ K A fac]
     rfl)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- By construction, the simplicial `Γ₀.obj K` is equipped with a splitting. -/
 def splitting (K : ChainComplex C ℕ) : SimplicialObject.Splitting (Γ₀.obj K) where
@@ -234,6 +234,7 @@ def splitting (K : ChainComplex C ℕ) : SimplicialObject.Splitting (Γ₀.obj K
       rw [id_comp]
       rfl))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem Obj.map_on_summand {Δ Δ' : SimplexCategoryᵒᵖ} (A : Splitting.IndexSet Δ) (θ : Δ ⟶ Δ')
@@ -276,7 +277,7 @@ theorem Obj.map_epi_on_summand_id {Δ Δ' : SimplexCategory} (e : Δ' ⟶ Δ) [E
       ((Γ₀.splitting K).cofan _).inj (Splitting.IndexSet.mk e) := by
   simpa only [Γ₀.Obj.map_on_summand K (Splitting.IndexSet.id (op Δ)) e.op
       (rfl : e ≫ 𝟙 Δ = e ≫ 𝟙 Δ),
-    Γ₀.Obj.Termwise.mapMono_id] using id_comp _
+    Γ₀.Obj.Termwise.mapMono_id] using! id_comp _
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Γ₀ : ChainComplex C ℕ ⥤ SimplicialObject C`, on morphisms. -/
@@ -295,6 +296,7 @@ end Γ₀
 
 variable [HasFiniteCoproducts C]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Γ₀' : ChainComplex C ℕ ⥤ SimplicialObject.Split C`
 that induces `Γ₀ : ChainComplex C ℕ ⥤ SimplicialObject C`, which
@@ -343,7 +345,7 @@ theorem PInfty_on_Γ₀_splitting_summand_eq_self (K : ChainComplex C ℕ) {n : 
       ((Γ₀.splitting K).cofan _).inj (Splitting.IndexSet.id (op ⦋n⦌)) := by
   rw [PInfty_f]
   rcases n with _ | n
-  · simpa only [P_f_0_eq] using comp_id _
+  · simpa only [P_f_0_eq] using! comp_id _
   · exact (HigherFacesVanish.on_Γ₀_summand_id K n).comp_P_eq_self
 
 end DoldKan

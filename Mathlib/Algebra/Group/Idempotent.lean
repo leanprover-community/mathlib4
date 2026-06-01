@@ -37,6 +37,8 @@ variable {M N S : Type*}
 /-- An element `a` is said to be idempotent if `a * a = a`. -/
 def IsIdempotentElem [Mul M] (a : M) : Prop := a * a = a
 
+lemma isIdempotentElem_iff [Mul M] {a : M} : IsIdempotentElem a ↔ a * a = a := Iff.rfl
+
 namespace IsIdempotentElem
 section Mul
 variable [Mul M] {a : M}

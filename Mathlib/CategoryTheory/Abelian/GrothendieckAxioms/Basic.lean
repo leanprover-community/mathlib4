@@ -49,7 +49,7 @@ individual axioms. An `AB4` category is an _abelian_ category satisfying `AB4`, 
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -100,6 +100,7 @@ lemma HasExactColimitsOfShape.domain_of_functor {D : Type*} (J : Type*) [Categor
       exact Cone.ext ((preservesColimitNatIso F).symm.app _)
         fun i ↦ (preservesColimitNatIso F).inv.naturality _ } } }
 
+set_option backward.defeqAttrib.useBackward true in
 variable {C} in
 /--
 Pull back a `HasExactLimitsOfShape J` along a functor which preserves and reflects finite colimits
@@ -241,7 +242,7 @@ instance (priority := 100) [HasCoproducts.{w} C] [AB4OfSize.{w} C] :
     haveI : HasCoproducts.{0} C := hasCoproducts_shrink
     AB4OfSize.{0} C := AB4OfSize_shrink C
 
-/-- A category `C` which has products is said to have `AB4Star` (in literature `AB4*`)
+/-- A category `C` which has products is said to have `AB4Star` (in literature AB4\*)
 provided that products are exact. -/
 @[pp_with_univ, stacks 079B]
 class AB4StarOfSize [HasProducts.{w} C] where
@@ -249,7 +250,7 @@ class AB4StarOfSize [HasProducts.{w} C] where
 
 attribute [instance] AB4StarOfSize.ofShape
 
-/-- A category `C` which has products is said to have `AB4Star` (in literature `AB4*`)
+/-- A category `C` which has products is said to have `AB4Star` (in literature AB4\*)
 provided that products are exact. -/
 abbrev AB4Star [HasProducts C] := AB4StarOfSize.{v} C
 
@@ -467,7 +468,7 @@ lemma AB4Star.of_AB5Star [HasCofilteredLimitsOfSize.{w, w} C] [AB5StarOfSize.{w,
   ofShape _ := hasExactLimitsOfShape_discrete_of_hasExactLimitsOfShape_finset_discrete_op _ _
 
 /--
-A category with finite biproducts and finite limits has countable AB4* if sequential limits are
+A category with finite biproducts and finite limits has countable AB4\* if sequential limits are
 exact.
 -/
 lemma CountableAB4Star.of_countableAB5Star [HasLimitsOfShape ℕᵒᵖ C] [HasExactLimitsOfShape ℕᵒᵖ C]
@@ -500,7 +501,7 @@ lemma CountableAB4.of_hasExactColimitsOfShape_nat_and_finite [HasCountableCoprod
 
 /--
 Checking exactness of limits of shape `Discrete ℕ` and `Discrete J` for finite `J` is enough for
-countable AB4*.
+countable AB4\*.
 -/
 lemma CountableAB4Star.of_hasExactLimitsOfShape_nat_and_finite [HasCountableProducts C]
     [HasFiniteColimits C] [∀ (J : Type) [Finite J], HasExactLimitsOfShape (Discrete J) C]
@@ -540,7 +541,7 @@ lemma CountableAB4.of_hasExactColimitsOfShape_nat [HasFiniteLimits C] [HasCounta
   exact fun _ ↦ inferInstance
 
 /--
-Checking exact limits of shape `Discrete ℕ` is enough for countable AB4*, provided that the
+Checking exact limits of shape `Discrete ℕ` is enough for countable AB4\*, provided that the
 category has finite biproducts and finite colimits.
 -/
 lemma CountableAB4Star.of_hasExactLimitsOfShape_nat [HasFiniteColimits C]
@@ -555,7 +556,6 @@ variable [Abelian C] (J : Type u') [Category.{v'} J]
 attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryCoproducts
   preservesBinaryBiproducts_of_preservesBinaryProducts
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `colim` of shape `J` into an abelian category `C` preserves monomorphisms, then `C` has exact
 colimits of shape `J`.
@@ -567,7 +567,6 @@ lemma hasExactColimitsOfShape_of_preservesMono [HasColimitsOfShape J C]
     · exact preservesHomology_of_preservesMonos_and_cokernels _
     · exact additive_of_preservesBinaryBiproducts _
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `lim` of shape `J` into an abelian category `C` preserves epimorphisms, then `C` has exact
 limits of shape `J`.

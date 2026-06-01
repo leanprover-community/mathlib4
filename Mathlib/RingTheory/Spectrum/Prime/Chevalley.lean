@@ -67,7 +67,6 @@ lemma isOpenMap_comap_of_hasGoingDown_of_finitePresentation
     (isConstructible_comap_image (RingHom.finitePresentation_algebraMap.mpr ‹_›)
       isConstructible_basicOpen)
 
-set_option backward.isDefEq.respectTransparency false in
 open TensorProduct in
 @[stacks 037G]
 theorem isOpenMap_comap_algebraMap_tensorProduct_of_field
@@ -81,8 +80,9 @@ theorem isOpenMap_comap_algebraMap_tensorProduct_of_field
   obtain ⟨B', hB, f, rfl⟩ := exists_fg_and_mem_baseChange f
   have : Algebra.FinitePresentation K B' :=
     Algebra.FinitePresentation.of_finiteType.mp ⟨B'.fg_top.mpr hB⟩
-  convert isOpenMap_comap_of_hasGoingDown_of_finitePresentation (R := A) (S := A ⊗[K] B') _
-    (basicOpen f).isOpen using 1
+  convert!
+    isOpenMap_comap_of_hasGoingDown_of_finitePresentation (R := A) (S := A ⊗[K] B') _
+      (basicOpen f).isOpen using 1
   ext x
   rw [PrimeSpectrum.mem_image_comap_basicOpen, PrimeSpectrum.mem_image_comap_basicOpen,
     not_iff_not]

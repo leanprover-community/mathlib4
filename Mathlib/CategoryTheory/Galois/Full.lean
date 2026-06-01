@@ -28,7 +28,7 @@ the fibers of connected objects.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

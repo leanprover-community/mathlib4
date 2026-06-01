@@ -19,7 +19,6 @@ open InnerProductSpace Metric Real
 
 variable {f : ℂ → ℝ} {c : ℂ} {R : ℝ}
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The **Mean Value Property** of harmonic functions: If `f : ℂ → ℝ` is harmonic in a neighborhood of a
 closed disc of radius `R` and center `c`, then the circle average `circleAverage f c R` equals
@@ -43,7 +42,6 @@ theorem HarmonicOnNhd.circleAverage_eq (hf : HarmonicOnNhd f (closedBall c |R|))
     simp [mem_ball, dist_self, add_pos_of_pos_of_nonneg h₁e (abs_nonneg R)]
   · apply (h₁F.continuousOn.mono (fun _ _ ↦ by simp_all [dist_eq_norm])).circleIntegrable'
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The **Mean Value Property** of harmonic functions: If `f : ℂ → ℝ` is harmonic on a disc of radius
 `|R|` and center `c` and continuous on its closure, then the circle average `circleAverage f c R`

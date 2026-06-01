@@ -8,7 +8,7 @@ module
 public import Mathlib.AlgebraicTopology.DoldKan.GammaCompN
 public import Mathlib.AlgebraicTopology.DoldKan.NReflectsIso
 
-/-! The unit isomorphism of the Dold-Kan equivalence
+/-! # The unit isomorphism of the Dold-Kan equivalence
 
 In order to construct the unit isomorphism of the Dold-Kan equivalence,
 we first construct natural transformations
@@ -44,7 +44,6 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
   obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i fun h => by
         rw [← h] at h₁
         exact h₁ rfl)
-  simp only [len_mk] at hk
   rcases k with _ | k
   · change n = m + 1 at hk
     subst hk
@@ -52,7 +51,7 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
     rw [Isδ₀.iff] at h₂
     have h₃ : 1 ≤ (j : ℕ) := by
       by_contra h
-      exact h₂ (by simpa only [Fin.ext_iff, not_le, Nat.lt_one_iff] using h)
+      exact h₂ (by simpa only [Fin.ext_iff, not_le, Nat.lt_one_iff] using! h)
     exact (HigherFacesVanish.of_P (m + 1) m).comp_δ_eq_zero j h₂ (by lia)
   · simp only [← add_assoc] at hk
     clear h₂ hi
@@ -97,7 +96,6 @@ theorem Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' 
   · have h' : n' = n + 1 := hi.left
     subst h'
     simp only [Γ₀.Obj.Termwise.mapMono_δ₀' _ i hi]
-    dsimp
     rw [← PInfty.comm _ n, AlternatingFaceMapComplex.obj_d_eq]
     simp only [Preadditive.comp_sum]
     rw [Finset.sum_eq_single (0 : Fin (n + 2))]
@@ -125,6 +123,7 @@ variable [HasFiniteCoproducts C]
 
 namespace Γ₂N₁
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation `N₁ ⋙ Γ₂ ⟶ toKaroubi (SimplicialObject C)`. -/
 @[simps]
@@ -196,6 +195,7 @@ theorem compatibility_Γ₂N₁_Γ₂N₂_natTrans (X : SimplicialObject C) :
   erw [id_comp]
   rw [comp_id, Iso.inv_hom_id_app_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem identity_N₂_objectwise (P : Karoubi (SimplicialObject C)) :
     (N₂Γ₂.inv.app (N₂.obj P) : N₂.obj P ⟶ N₂.obj (Γ₂.obj (N₂.obj P))) ≫
@@ -216,6 +216,7 @@ theorem identity_N₂_objectwise (P : Karoubi (SimplicialObject C)) :
   simp only [Karoubi.comp_f, HomologicalComplex.comp_f, Karoubi.id_f, N₂_obj_p_f, assoc,
     eq₁, eq₂, PInfty_f_naturality_assoc, app_idem, PInfty_f_idem_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem identity_N₂ :
     (𝟙 (N₂ : Karoubi (SimplicialObject C) ⥤ _) ◫ N₂Γ₂.inv) ≫

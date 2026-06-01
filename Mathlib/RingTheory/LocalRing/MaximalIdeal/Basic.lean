@@ -17,7 +17,7 @@ We prove basic properties of the maximal ideal of a local ring.
 
 -/
 
-@[expose] public section
+public section
 
 namespace IsLocalRing
 

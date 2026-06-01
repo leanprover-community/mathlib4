@@ -64,7 +64,7 @@ theorem exists_lift_nhds {f : C(I × A, X)} {g : I × A → E} (g_lifts : p ∘ 
       p ∘ g' = f ∧ (∀ a, g' (0, a) = g (0, a)) ∧ ∀ t' ≤ t n, g' (t', a) = g (t', a) by
     obtain ⟨N, haN, N_open, hN⟩ := this n_max
     simp_rw [h_max _ le_rfl] at hN
-    refine ⟨N, N_open.mem_nhds haN, ?_⟩; convert hN
+    refine ⟨N, N_open.mem_nhds haN, ?_⟩; convert! hN
     · rw [eq_comm, Set.eq_univ_iff_forall]; exact fun t ↦ ⟨bot_le, le_top⟩
     · rw [imp_iff_right]; exact le_top
   refine Nat.rec ⟨_, Set.mem_univ a, isOpen_univ, g, ?_, g_lifts, fun a ↦ rfl, fun _ _ ↦ rfl⟩
@@ -179,8 +179,8 @@ theorem existsUnique_continuousMap_lifts [PathConnectedSpace A] [LocPathConnecte
     DFunLike.ext _ _ fun a ↦ ?_⟩
   · obtain ⟨p, hep, rfl⟩ := homeo (F a)
     have hfap : f a ∈ p.target := by rw [← this]; exact p.map_source hep
-    refine ContinuousAt.congr (f := p.symm ∘ f) ((p.continuousOn_symm.continuousAt <|
-      p.open_target.mem_nhds hfap).comp f.2.continuousAt) ?_
+    refine ContinuousAt.congr (f := p.symm ∘ f)
+      ((p.continuousAt_symm hfap).comp f.2.continuousAt) ?_
     have ⟨U, ⟨haU, U_conn⟩, hUp⟩ := (path_connected_basis a).mem_iff.mp
       ((p.open_target.preimage f.continuous).mem_nhds hfap)
     refine Filter.mem_of_superset haU fun x hxU ↦ ?_
@@ -224,7 +224,7 @@ theorem exists_path_lifts : ∃ Γ : C(I, E), p ∘ Γ = γ ∧ Γ 0 = e := by
     obtain ⟨Γ, cont, eqOn, Γ_0⟩ := this n_max
     rw [h_max _ le_rfl] at cont eqOn
     exact ⟨⟨Γ, continuousOn_univ.mp
-      (by convert cont; rw [eq_comm, Set.eq_univ_iff_forall]; exact fun t ↦ ⟨bot_le, le_top⟩)⟩,
+      (by convert! cont; rw [eq_comm, Set.eq_univ_iff_forall]; exact fun t ↦ ⟨bot_le, le_top⟩)⟩,
       funext fun _ ↦ eqOn ⟨bot_le, le_top⟩, Γ_0⟩
   intro n
   induction n with
@@ -299,7 +299,7 @@ variable (H : C(I × A, X)) (f : C(A, E)) (H_0 : ∀ a, H (0, a) = p (f a))
     (f ta.2) (H_0 ta.2) ta.1
   continuous_toFun := cov.isLocalHomeomorph.continuous_lift cov.isSeparatedMap H
     (by ext ⟨t, a⟩; exact congr_fun (cov.liftPath_lifts ..) t)
-    (by convert f.continuous with a; exact cov.liftPath_zero ..)
+    (by convert! f.continuous with a; exact cov.liftPath_zero ..)
     fun a ↦ by dsimp only; exact (cov.liftPath (γ_0 := by simp [*])).2
 
 lemma liftHomotopy_lifts : p ∘ cov.liftHomotopy H f H_0 = H :=
@@ -360,7 +360,7 @@ theorem homotopicRel_liftPath {γ₀ γ₁ : C(I, X)}
   h.map fun H ↦ cov.liftHomotopyRel (f₀' := cov.liftPath γ₀ e h₀) (f₁' := cov.liftPath γ₁ e h₁) H
     ⟨0, .inl rfl, by simp_rw [liftPath_zero]⟩ (liftPath_lifts ..) (liftPath_lifts ..)
 
-/-- Lifting two paths that are homotopic relative to {0,1}
+/-- Lifting two paths that are homotopic relative to `{0,1}`
   starting from the same point also ends up in the same point. -/
 theorem liftPath_apply_one_eq_of_homotopicRel {γ₀ γ₁ : C(I, X)}
     (h : γ₀.HomotopicRel γ₁ {0,1}) (e : E) (h₀ : γ₀ 0 = p e) (h₁ : γ₁ 0 = p e) :
@@ -377,6 +377,7 @@ noncomputable def monodromy {x y : X} (γ : Path.Homotopic.Quotient x y) :
       congr($(cov.liftPath_lifts ..) 1).trans γ.target⟩)
     fun _ _ h ↦ Subtype.ext (cov.liftPath_apply_one_eq_of_homotopicRel h ..)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Lift a homotopy class of paths to a covering space. -/
 noncomputable def liftPathQuotient {x y : X} (γ : Path.Homotopic.Quotient x y) (e : p ⁻¹' {x}) :
     Path.Homotopic.Quotient e.1 (cov.monodromy γ e) :=
@@ -432,9 +433,9 @@ open CategoryTheory
 https://ncatlab.org/nlab/show/monodromy. -/
 @[simps] noncomputable def monodromyFunctor : FundamentalGroupoid X ⥤ Type _ where
   obj x := p ⁻¹' {x.as}
-  map := cov.monodromy
-  map_id _ := cov.monodromy_refl
-  map_comp _ _ := funext (cov.monodromy_trans_apply _ _)
+  map f := ↾(cov.monodromy f)
+  map_id _ := by ext x : 3; simpa using! congr_fun cov.monodromy_refl x
+  map_comp _ _ := by ext : 3; simpa using! cov.monodromy_trans_apply _ _ _
 
 theorem monodromy_bijective {x y : X} (γ : Path.Homotopic.Quotient x y) :
     (cov.monodromy γ).Bijective :=
@@ -465,8 +466,11 @@ theorem existsUnique_continuousMap_lifts [SimplyConnectedSpace A] [LocPathConnec
   · simpa [and_comm] using cov.exists_path_lifts (f.comp γ) e₀ (by simp [γ_0, he])
   let pγ : Path a₀ (γ 1) := ⟨γ, γ_0, rfl⟩
   let pγ' : Path a₀ (γ 1) := ⟨γ', γ'_0, γγ'1.symm⟩
-  convert cov.liftPath_apply_one_eq_of_homotopicRel (ContinuousMap.HomotopicRel.comp_continuousMap
-    (SimplyConnectedSpace.paths_homotopic pγ pγ') f) e₀ (by simp [he]) (by simp [he]) <;>
+  convert!
+    cov.liftPath_apply_one_eq_of_homotopicRel
+      (ContinuousMap.HomotopicRel.comp_continuousMap (SimplyConnectedSpace.paths_homotopic pγ pγ')
+        f)
+      e₀ (by simp [he]) (by simp [he]) <;>
     rw [eq_liftPath_iff']
   exacts [⟨Γ_lifts, Γ_0⟩, ⟨Γ'_lifts, Γ'_0⟩]
 
@@ -536,6 +540,7 @@ namespace IsQuotientCoveringMap
 
 variable {G : Type*} [Group G] [MulAction G E] (hp : IsQuotientCoveringMap p G) {g : G}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The monodromy action of a quotient covering map commutes with the group action. -/
 theorem monodromy_toPermFiber {x y : X} {γ : Path.Homotopic.Quotient x y} {e} :
     hp.isCoveringMap.monodromy γ (hp.toPermFiber x g e) =
@@ -606,7 +611,9 @@ variable {e} in
 theorem fundamentalGroupToMulOpposite_apply_eq_Iff {g : Gᵐᵒᵖ} :
     hp.fundamentalGroupToMulOpposite e γ = g ↔ g.unop • e.1 = hp.isCoveringMap.monodromy γ e := by
   rw [fundamentalGroupToMulOpposite, ← MulOpposite.unop_injective.eq_iff, iff_comm, eq_comm,
-    ← hp.fiberEquivGroup_smul_self e, hp.isCancelSMul.right_cancel']
+    ← hp.fiberEquivGroup_smul_self e]
+  have := hp.isCancelSMul.right_cancel'
+  aesop
 
 variable {e} in
 theorem unop_fundamentalGroupToMulOpposite_smul :

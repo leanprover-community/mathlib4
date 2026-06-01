@@ -5,6 +5,7 @@ Authors: Frédéric Dupuis
 -/
 module
 
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 public import Mathlib.Analysis.Normed.Group.NullSubmodule
 public import Mathlib.Topology.Algebra.Module.PerfectPairing
@@ -42,8 +43,6 @@ noncomputable section
 
 open ComplexConjugate Module
 
-universe u v
-
 namespace InnerProductSpace
 
 open RCLike ContinuousLinearMap
@@ -75,8 +74,6 @@ theorem toContinuousLinearMap_toDualMap :
 
 @[simp]
 theorem toDualMap_apply_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ := rfl
-
-@[deprecated (since := "2025-11-15")] alias toDualMap_apply := toDualMap_apply_apply
 
 variable {𝕜} in
 @[simp]
@@ -178,8 +175,6 @@ variable {𝕜} {E}
 @[simp]
 theorem toDual_apply_apply {x y : E} : toDual 𝕜 E x y = ⟪x, y⟫ := rfl
 
-@[deprecated (since := "2025-11-15")] alias toDual_apply := toDual_apply_apply
-
 @[simp]
 theorem toDual_symm_apply {x : E} {y : StrongDual 𝕜 E} : ⟪(toDual 𝕜 E).symm y, x⟫ = y x := by
   rw [← toDual_apply_apply]
@@ -226,7 +221,7 @@ instance [NormedAddCommGroup E] [CompleteSpace E] [InnerProductSpace ℝ E] :
   continuous_uncurry := continuous_inner
   bijective_left := (toDual ℝ E).bijective
   bijective_right := by
-    convert (toDual ℝ E).bijective
+    convert! (toDual ℝ E).bijective
     ext y
     simp
 
@@ -239,3 +234,10 @@ lemma rank_rankOne {𝕜 E F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [
   · exact map_eq_zero_iff _ (toDualMap 𝕜 F).injective |>.not.mpr hy
 
 end InnerProductSpace
+
+lemma OrthonormalBasis.norm_dual {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
+    [InnerProductSpace ℝ E] (b : OrthonormalBasis ι ℝ E) (L : StrongDual ℝ E) :
+    ‖L‖ ^ 2 = ∑ i, L (b i) ^ 2 := by
+  have := b.toBasis.finiteDimensional_of_finite
+  simp_rw [← (InnerProductSpace.toDual ℝ E).symm.norm_map, ← b.sum_sq_inner_left,
+    InnerProductSpace.toDual_symm_apply]

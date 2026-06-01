@@ -13,10 +13,10 @@ public import Mathlib.Dynamics.TopologicalEntropy.NetEntropy
 This file contains general results about the topological entropy of various subsets of the same
 dynamical system `(X, T)`. We prove that:
 - the topological entropy `CoverEntropy T F` of `F` is monotone in `F`: the larger the subset,
-the larger its entropy.
+  the larger its entropy.
 - the topological entropy of a subset equals the entropy of its closure.
 - the entropy of the union of two sets is the maximum of their entropies. We generalize
-the latter property to finite unions.
+  the latter property to finite unions.
 
 ## Implementation notes
 

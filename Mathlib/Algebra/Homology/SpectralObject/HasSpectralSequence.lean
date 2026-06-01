@@ -15,7 +15,7 @@ public import Mathlib.Order.WithBotTop
 
 This file prepares for the construction of the spectral sequence
 of a spectral object in an abelian category which shall be conducted
-in the file `Mathlib/Algebra/Homology/SpectralObject/SpectralSequence.lean` (TODO).
+in the file `Mathlib/Algebra/Homology/SpectralObject/SpectralSequence.lean`.
 
 In this file, we introduce a structure `SpectralSequenceDataCore` which
 contains a recipe for the construction of the pages of the spectral sequence.
@@ -155,8 +155,18 @@ def coreE₂Cohomological :
   hc₁₃ := by rintro r pq hr rfl _; simp; lia
   antitone_i₀ r r' pq hr hrr' := by simp; lia
   monotone_i₃ r r' pq hr hrr' := by simp; lia
-  i₀_prev := by rintro r r' hr pq rfl _ _; dsimp; lia
-  i₃_next := by rintro r r' hr pq rfl _ _; dsimp; lia
+  i₀_prev := by
+    rintro r r' hr pq rfl _ _
+    dsimp
+    #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
+    we need to re-enable model-based theory combination in `lia` for this to go through. -/
+    lia +mbtc
+  i₃_next := by
+    rintro r r' hr pq rfl _ _
+    dsimp
+    #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
+    we need to re-enable model-based theory combination in `lia` for this to go through. -/
+    lia +mbtc
 
 /-- The data which allows to construct an `E₂`-cohomological spectral sequence
 indexed by `ℕ × ℕ` from a spectral object indexed by `EInt`. (Note: additional
@@ -177,18 +187,26 @@ def coreE₂CohomologicalNat :
   hc r pq pq' hpq hr := by simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq; lia
   hc₀₂ r pq pq' hpq hr := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
-    lia
+    #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
+    we need to re-enable model-based theory combination in `lia` for this to go through. -/
+    lia +mbtc
   hc₁₃ r pq pq' hpq hr := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
-    lia
+    #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
+    we need to re-enable model-based theory combination in `lia` for this to go through. -/
+    lia +mbtc
   antitone_i₀ r r' pq hr hrr' := by simp; lia
   monotone_i₃ r r' pq hr hrr' := by simp; lia
   i₀_prev r r' pq pq' hpq hrr' hr := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
-    lia
+    #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
+    we need to re-enable model-based theory combination in `lia` for this to go through. -/
+    lia +mbtc
   i₃_next r r' pq pq' hpq hrr' hr := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
-    lia
+    #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
+    we need to re-enable model-based theory combination in `lia` for this to go through. -/
+    lia +mbtc
 
 /-- The data which allows to construct an `E₂`-cohomological spectral sequence
 indexed by `ℤ × Fin l` from a spectral object indexed by `Fin (l + 1)`. -/
@@ -209,7 +227,6 @@ def coreE₂CohomologicalFin (l : ℕ) :
   hc _ _ _ := fun ⟨h₁, h₂⟩ ↦ by lia
   hc₀₂ r := by
     rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨b₁, ⟨b₂, _⟩⟩ ⟨h₁, h₂⟩ hr
-    ext
     grind
   hc₁₃ r := by
     rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨b₁, ⟨b₂, _⟩⟩ ⟨h₁, h₂⟩ hr
@@ -256,18 +273,26 @@ def coreE₂HomologicalNat :
     lia
   hc₀₂ r pq pq' hpq hr := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
-    lia
+    #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
+    we need to re-enable model-based theory combination in `lia` for this to go through. -/
+    lia +mbtc
   hc₁₃ r pq pq' hpq hr := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
-    lia
+    #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
+    we need to re-enable model-based theory combination in `lia` for this to go through. -/
+    lia +mbtc
   antitone_i₀ r r' pq hr hrr' := by simp; lia
   monotone_i₃ r r' pq hr hrr' := by simp; lia
   i₀_prev r r' pq pq' hpq hrr' hr := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
-    lia
+    #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
+    we need to re-enable model-based theory combination in `lia` for this to go through. -/
+    lia +mbtc
   i₃_next r r' pq pq' hpq hrr' hr := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
-    lia
+    #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
+    we need to re-enable model-based theory combination in `lia` for this to go through. -/
+    lia +mbtc
 
 variable (X : SpectralObject C ι) (data : SpectralSequenceDataCore ι c r₀)
 
@@ -277,7 +302,7 @@ by `data`. The conditions given allow to show that the homology of a page identi
 to the next page. -/
 class HasSpectralSequence : Prop where
   isZero_H_obj_mk₁_i₀_le (r r' : ℤ) (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq pq'))
-    (n : ℤ) (hn : n = data.deg pq + 1 )
+    (n : ℤ) (hn : n = data.deg pq + 1)
     (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
       IsZero ((X.H n).obj (mk₁ (homOfLE (data.i₀_le r r' pq))))
   isZero_H_obj_mk₁_i₃_le (r r' : ℤ) (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq' pq))
@@ -325,8 +350,9 @@ instance (E : SpectralObject C EInt) : E.HasSpectralSequence coreE₂Cohomologic
     exact hpq _ rfl
   isZero_H_obj_mk₁_i₃_le r r' pq hpq n hn hrr' hr := by
     exfalso
-    exact hpq (pq - (r, 1-r)) (by simp)
+    exact hpq (pq - (r, 1 - r)) (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 instance {l : ℕ} (E : SpectralObject C (Fin (l + 1))) :
     E.HasSpectralSequence (coreE₂CohomologicalFin l) where
   isZero_H_obj_mk₁_i₀_le r r' pq hpq n hn hrr' hr := by
@@ -358,6 +384,91 @@ instance {l : ℕ} (E : SpectralObject C (Fin (l + 1))) :
       rw [add_sub_cancel_right, Fin.clamp_eq_last _ _ (by lia), Fin.clamp_eq_last _ _ (by lia)]
     have := isIso_homOfLE this
     apply E.isZero_H_map_mk₁_of_isIso
+
+section
+
+variable (Y : SpectralObject C EInt)
+
+/-- The conditions on a spectral object indexed by `EInt` which allow
+to obtain a (convergent) first quadrant `E₂` cohomological spectral sequence. -/
+class IsFirstQuadrant : Prop where
+  isZero₁ (i j : EInt) (hij : i ≤ j) (hj : j ≤ (0 : ℤ)) (n : ℤ) :
+    IsZero ((Y.H n).obj (mk₁ (homOfLE hij)))
+  isZero₂ (i j : EInt) (hij : i ≤ j) (n : ℤ) (hi : n < i) :
+    IsZero ((Y.H n).obj (mk₁ (homOfLE hij)))
+
+variable [Y.IsFirstQuadrant]
+
+lemma isZero₁_of_isFirstQuadrant (i j : EInt) (hij : i ≤ j) (hj : j ≤ (0 : ℤ)) (n : ℤ) :
+    IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=
+  IsFirstQuadrant.isZero₁ i j hij hj n
+
+lemma isZero₂_of_isFirstQuadrant (i j : EInt) (hij : i ≤ j) (n : ℤ) (hi : n < i) :
+    IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=
+  IsFirstQuadrant.isZero₂ i j hij n hi
+
+instance : Y.HasSpectralSequence coreE₂CohomologicalNat where
+  isZero_H_obj_mk₁_i₀_le := by
+    rintro r _ ⟨p, q⟩ hpq n rfl rfl hr
+    apply isZero₁_of_isFirstQuadrant
+    simp only [coreE₂CohomologicalNat_i₀, WithBotTop.coe_le_coe]
+    by_contra!
+    obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p + r by lia)
+    obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q + 1 - r by lia)
+    exact hpq ⟨p', q'⟩ (by constructor <;> lia)
+  isZero_H_obj_mk₁_i₃_le := by
+    rintro r _ ⟨p, q⟩ hpq n rfl rfl hr
+    apply isZero₂_of_isFirstQuadrant
+    simp only [coreE₂CohomologicalNat_deg, coreE₂CohomologicalNat_i₃, WithBotTop.coe_lt_coe]
+    by_contra!
+    obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p - r by lia)
+    obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q - 1 + r by lia)
+    exact hpq ⟨p', q'⟩ (by constructor <;> lia)
+
+end
+
+section
+
+variable (Y : SpectralObject C EInt)
+
+/-- The conditions on a spectral object indexed by `EInt` which allow
+to obtain a (convergent) third quadrant `E₂` cohomological spectral sequence,
+or a (convergent) first quadrant `E₂` *homological* spectral sequence -/
+class IsThirdQuadrant where
+  isZero₁ (i j : EInt) (hij : i ≤ j) (hi : (0 : ℤ) < i) (n : ℤ) :
+    IsZero ((Y.H n).obj (mk₁ (homOfLE hij)))
+  isZero₂ (i j : EInt) (hij : i ≤ j) (n : ℤ) (hj : j ≤ n) :
+    IsZero ((Y.H n).obj (mk₁ (homOfLE hij)))
+
+variable [Y.IsThirdQuadrant]
+
+lemma isZero₁_of_isThirdQuadrant (i j : EInt) (hij : i ≤ j) (hi : (0 : ℤ) < i) (n : ℤ) :
+    IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=
+  IsThirdQuadrant.isZero₁ i j hij hi n
+
+lemma isZero₂_of_isThirdQuadrant (i j : EInt) (hij : i ≤ j) (n : ℤ) (hj : j ≤ n) :
+    IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=
+  IsThirdQuadrant.isZero₂ i j hij n hj
+
+instance : Y.HasSpectralSequence coreE₂HomologicalNat where
+  isZero_H_obj_mk₁_i₀_le := by
+    rintro r _ ⟨p, q⟩ hpq n rfl rfl hr
+    apply isZero₂_of_isThirdQuadrant
+    simp only [coreE₂HomologicalNat_i₀, coreE₂HomologicalNat_deg, WithBotTop.coe_le_coe]
+    by_contra!
+    obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p - r by lia)
+    obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q + r - 1 by lia)
+    exact hpq ⟨p', q'⟩ (by constructor <;> lia)
+  isZero_H_obj_mk₁_i₃_le := by
+    rintro r _ ⟨p, q⟩ hpq n rfl rfl hr
+    apply isZero₁_of_isThirdQuadrant
+    simp only [coreE₂HomologicalNat_i₃, WithBotTop.coe_lt_coe]
+    by_contra!
+    obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p + r by lia)
+    obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q + 1 - r by lia)
+    exact hpq ⟨p', q'⟩ (by constructor <;> lia)
+
+end
 
 end SpectralObject
 

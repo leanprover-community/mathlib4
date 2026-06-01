@@ -81,9 +81,6 @@ protected theorem UniqueMDiffWithinAt.preimage_openPartialHomeomorph
     (he.mdifferentiableAt hx).hasMFDerivAt.hasMFDerivWithinAt
     (he.mfderiv_surjective hx).denseRange
 
-@[deprecated (since := "2025-08-29")] alias
-UniqueMDiffWithinAt.preimage_PartialHomeomorph := UniqueMDiffWithinAt.preimage_openPartialHomeomorph
-
 /-- If a set has the unique differential property, then its image under a local
 diffeomorphism also has the unique differential property. -/
 theorem UniqueMDiffOn.uniqueMDiffOn_preimage (hs : UniqueMDiffOn I s)
@@ -164,7 +161,7 @@ private lemma UniqueMDiffWithinAt.bundle_preimage_aux {p : TotalSpace F Z}
       ModelWithCorners.toPartialEquiv_coe_symm, PartialEquiv.refl_coe,
       OpenPartialHomeomorph.prod_symm, OpenPartialHomeomorph.refl_symm,
       OpenPartialHomeomorph.prod_apply, OpenPartialHomeomorph.refl_apply]
-    convert hz.1
+    convert! hz.1
     apply Trivialization.proj_symm_apply'
     exact h's hz.1
   · rcases hz.2 with ⟨u, rfl⟩

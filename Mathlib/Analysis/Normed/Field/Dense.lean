@@ -36,17 +36,16 @@ approximated by a *separable* polynomial.
 Normed field, algebraically closedness
 -/
 
-@[expose] public section
+public section
 
 open Polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `K` is an algebraically closed dense subfield of a complete nonarchimedean normed field `L`
 of characteristic zero, then `L` is also algebraically closed. -/
 theorem IsAlgClosed.of_denseRange {K L : Type*} [Field K] [NontriviallyNormedField L]
     [CompleteSpace L] [CharZero L] [IsUltrametricDist L] [Algebra K L]
     (hi : DenseRange (algebraMap K L)) [IsAlgClosed K] : IsAlgClosed L := by
-  -- Fix any monic irreducible polynoial `f` in `L`.
+  -- Fix any monic irreducible polynomial `f` in `L`.
   -- Let `F` be the splitting field of `f`. Let `a` be a root of `f` in `F`.
   apply IsAlgClosed.of_exists_root
   intro f fmon firr

@@ -41,8 +41,11 @@ a monoidal structure.
 - Type alias for `C ⥤ V` with a `LawfulDayConvolutionMonoidalCategoryStruct`.
 - Characterization of lax monoidal functors out of a Day convolution monoidal category.
 - Case `V = Type u` and its universal property.
+- Fix the abuse of functor associativity that causes `erw [id_apply]` in a few places in this file.
 
 -/
+
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -109,12 +112,14 @@ section unit
 
 variable {x x' y y' : C}
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma unit_naturality (f : x ⟶ x') (g : y ⟶ y') :
     (F.map f ⊗ₘ G.map g) ≫ (unit F G).app (x', y') =
     (unit F G).app (x, y) ≫ (F ⊛ G).map (f ⊗ₘ g) := by
   simpa [tensorHom_def] using (unit F G).naturality (f ×ₘ g)
 
+set_option backward.defeqAttrib.useBackward true in
 variable (y) in
 set_option backward.isDefEq.respectTransparency false in -- Needed in DayConvolution.lean
 @[reassoc (attr := simp)]
@@ -123,6 +128,7 @@ lemma whiskerRight_comp_unit_app (f : x ⟶ x') :
     (unit F G).app (x, y) ≫ (F ⊛ G).map (f ▷ y) := by
   simpa [tensorHom_def] using (unit F G).naturality (f ×ₘ 𝟙 _)
 
+set_option backward.defeqAttrib.useBackward true in
 variable (x) in
 @[reassoc (attr := simp)]
 lemma whiskerLeft_comp_unit_app (g : y ⟶ y') :
@@ -145,12 +151,13 @@ def map (f : F ⟶ F') (g : G ⟶ G') : F ⊛ G ⟶ F' ⊛ G' :=
 
 variable (f : F ⟶ F') (g : G ⟶ G') (x y : C)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in -- Needed in DayConvolution.lean
 @[reassoc (attr := simp)]
 lemma unit_app_map_app :
     (unit F G).app (x, y) ≫ (map f g).app (x ⊗ y : C) =
     (f.app x ⊗ₘ g.app y) ≫ (unit F' G').app (x, y) := by
-  simpa [tensorHom_def] using
+  simpa [tensorHom_def] using!
     (Functor.descOfIsLeftKanExtension_fac_app (F ⊛ G) (unit F G) (F' ⊛ G') <|
       (externalProductBifunctor C C V).map (f ×ₘ g) ≫ unit F' G') (x, y)
 
@@ -158,6 +165,7 @@ end map
 
 variable (F G)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The universal property of left Kan extensions characterizes the functor
 corepresented by `F ⊛ G`. -/
@@ -168,6 +176,7 @@ def corepresentableBy :
   homEquiv := Functor.homEquivOfIsLeftKanExtension _ (unit F G) _
   homEquiv_comp := by aesop
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Use the fact that `(F ⊛ G).obj c` is a colimit to characterize morphisms out of it at a
 point. -/
 theorem convolution_hom_ext_at (c : C) {v : V} {f g : (F ⊛ G).obj c ⟶ v}
@@ -198,6 +207,7 @@ instance : ((F ⊛ G) ⊠ H).IsLeftKanExtension <|
   (isPointwiseLeftKanExtensionExtensionUnitLeft _ _ _ <|
     isPointwiseLeftKanExtensionUnit F G).isLeftKanExtension
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The `CorepresentableBy` structure asserting that the Type-valued functor
 `Y ↦ (F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ Y)` is corepresented by
@@ -212,6 +222,7 @@ def corepresentableBy₂ :
       Functor.homEquivOfIsLeftKanExtension _ (extensionUnitRight (G ⊛ H) (unit G H) F) _
   homEquiv_comp := by aesop
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The `CorepresentableBy` structure asserting that the Type-valued functor
 `Y ↦ ((F ⊠ G) ⊠ H ⟶ (tensor C).prod (𝟭 C) ⋙ tensor C ⋙ Y)` is corepresented by
@@ -226,11 +237,12 @@ def corepresentableBy₂' :
       Functor.homEquivOfIsLeftKanExtension _ (extensionUnitLeft (F ⊛ G) (unit F G) H) _
   homEquiv_comp := by aesop
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism of functors between
 `((F ⊠ G) ⊠ H ⟶ (tensor C).prod (𝟭 C) ⋙ tensor C ⋙ -)` and
 `(F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ -)` that corresponds to the associator
 isomorphism for Day convolution through `corepresentableBy₂` and `corepresentableBy₂`. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def associatorCorepresentingIso :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((tensor C).prod (𝟭 C)) ⋙
@@ -263,6 +275,7 @@ def associator : (F ⊛ G) ⊛ H ≅ F ⊛ G ⊛ H :=
   corepresentableBy₂' F G H |>.ofIso (associatorCorepresentingIso F G H) |>.uniqueUpToIso <|
     corepresentableBy₂ F G H
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Characterizing the forward direction of the associator isomorphism
 with respect to the unit transformations. -/
@@ -284,7 +297,10 @@ lemma associator_hom_unit_unit (x y z : C) :
     Functor.corepresentableByEquiv, associatorCorepresentingIso] at this ⊢
   simp only [whiskerLeft_id, Category.comp_id, Category.assoc] at this
   simp only [Category.assoc, this]
-  simp [Functor.FullyFaithful.homEquiv, Equivalence.fullyFaithfulFunctor, prod.associativity]
+  dsimp [Functor.FullyFaithful.homEquiv, Equivalence.fullyFaithfulFunctor, prod.associativity]
+  erw [id_apply] -- TODO: remove this `erw` (introduced in #36613)
+  simp
+
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Characterizing the inverse direction of the associator
@@ -306,7 +322,10 @@ lemma associator_inv_unit_unit (x y z : C) :
     Functor.corepresentableByEquiv, associatorCorepresentingIso] at this ⊢
   simp only [whiskerRight_tensor, id_whiskerRight, Category.id_comp, Iso.inv_hom_id] at this
   simp only [this]
-  simp [Functor.FullyFaithful.homEquiv, Equivalence.fullyFaithfulFunctor, prod.associativity]
+  dsimp [Functor.FullyFaithful.homEquiv, Equivalence.fullyFaithfulFunctor, prod.associativity]
+  erw [id_apply] -- TODO: remove this `erw` (introduced in #36613)
+  simp
+
 
 set_option backward.isDefEq.respectTransparency false in
 variable {F G H} in
@@ -473,7 +492,7 @@ def corepresentableByRight [DayConvolution F U] :
 
 /-- The isomorphism of corepresentable functors that defines the left unitor for
 Day convolution. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def leftUnitorCorepresentingIso :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((Functor.fromPUnit.{0} (𝟙_ C)).prod (𝟭 C)) ⋙
@@ -501,7 +520,7 @@ def leftUnitorCorepresentingIso :
 
 /-- The isomorphism of corepresentable functors that defines the right unitor for
 Day convolution. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def rightUnitorCorepresentingIso :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((𝟭 C).prod (Functor.fromPUnit.{0} (𝟙_ C))) ⋙
@@ -560,6 +579,7 @@ lemma leftUnitor_hom_unit_app (y : C) :
   simp only [Category.comp_id, this]
   simp [prod.leftUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
     Functor.FullyFaithful.homEquiv]
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
@@ -570,8 +590,10 @@ lemma leftUnitor_inv_app (x : C) :
   dsimp [leftUnitor, Coyoneda.fullyFaithful, corepresentableByLeft,
     leftUnitorCorepresentingIso, Functor.CorepresentableBy.ofIso,
     Functor.corepresentableByEquiv]
-  simp [prod.leftUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
+  dsimp [prod.leftUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
     Functor.FullyFaithful.homEquiv]
+  erw [id_apply] -- TODO: remove this `erw` (introduced in #36613)
+  simp
 
 set_option backward.isDefEq.respectTransparency false in
 variable {F} in
@@ -610,6 +632,7 @@ lemma rightUnitor_hom_unit_app (x : C) :
   simp only [Category.comp_id, this]
   simp [prod.rightUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
     Functor.FullyFaithful.homEquiv]
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
@@ -619,9 +642,11 @@ lemma rightUnitor_inv_app (x : C) :
       (F ⊛ U).map (ρ_ x).hom := by
   dsimp [rightUnitor, Coyoneda.fullyFaithful, corepresentableByRight,
     rightUnitorCorepresentingIso, Functor.CorepresentableBy.ofIso,
-    Functor.corepresentableByEquiv]
-  simp [prod.rightUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
+    Functor.corepresentableByEquiv, Iso.toEquiv, Equiv.toIso]
+  dsimp [prod.rightUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
     Functor.FullyFaithful.homEquiv]
+  erw [id_apply] -- TODO: remove this `erw` (introduced in #36613)
+  simp
 
 set_option backward.isDefEq.respectTransparency false in
 variable {F} in
@@ -892,6 +917,7 @@ open DayConvolution DayConvolutionUnit in
 /-- We can promote a `LawfulDayConvolutionMonoidalCategoryStruct` to a monoidal category,
 note that every non-prop data is already here, so this is just about showing that they
 satisfy the axioms of a monoidal category. -/
+@[implicit_reducible]
 def monoidalOfLawfulDayConvolutionMonoidalCategoryStruct
     (D : Type u₃) [Category.{v₃} D]
     [MonoidalCategoryStruct D]
@@ -1180,6 +1206,7 @@ lemma ι_map_tensorHom_eq {d₁ d₁' d₂ d₂' : D} (f : d₁ ⟶ d₂) (f' : 
 set_option backward.isDefEq.respectTransparency false in
 /-- The monoidal category struct constructed in `DayConvolution.mkMonoidalCategoryStruct` extends
 to a `LawfulDayConvolutionMonoidalCategoryStruct`. -/
+@[implicit_reducible]
 def mkLawfulDayConvolutionMonoidalCategoryStruct :
     letI : MonoidalCategoryStruct D := mkMonoidalCategoryStruct C V D
     LawfulDayConvolutionMonoidalCategoryStruct C V D :=
@@ -1226,6 +1253,7 @@ variable {C V} in
 `ι.obj d` and `ι.obj d'` such that the convolution remains in the essential image of `ι`,
 construct an `InducedLawfulDayConvolutionMonoidalCategoryStructCore` by letting all other
 data be the generic ones from the `HasPointwiseLeftKanExtension` API. -/
+@[implicit_reducible]
 noncomputable def ofHasDayConvolutions
     {D : Type u₃} [Category.{v₃} D]
     (ι : D ⥤ C ⥤ V)
@@ -1304,6 +1332,7 @@ variable {C V}
 of relevant colimits by the tensor product of `V`, we can define a `MonoidalCategory D`
 from the data of a fully faithful functor `ι : D ⥤ C ⥤ V` whose essential image
 contains a Day convolution unit and is stable under binary Day convolutions. -/
+@[implicit_reducible]
 noncomputable def monoidalOfHasDayConvolutions : MonoidalCategory D :=
   letI induced : InducedLawfulDayConvolutionMonoidalCategoryStructCore C V D :=
     .ofHasDayConvolutions ι ffι essImageDayConvolution essImageDayConvolutionUnit
@@ -1315,6 +1344,7 @@ noncomputable def monoidalOfHasDayConvolutions : MonoidalCategory D :=
 open InducedLawfulDayConvolutionMonoidalCategoryStructCore in
 /-- The monoidal category constructed via `monoidalOfHasDayConvolutions` has a canonical
 `LawfulDayConvolutionMonoidalCategoryStruct C V D`. -/
+@[implicit_reducible]
 noncomputable def lawfulDayConvolutionMonoidalCategoryStructOfHasDayConvolutions :
     letI := monoidalOfHasDayConvolutions
       ι ffι essImageDayConvolution essImageDayConvolutionUnit

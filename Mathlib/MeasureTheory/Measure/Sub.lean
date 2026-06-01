@@ -53,11 +53,11 @@ theorem sub_top : μ - ⊤ = 0 :=
   sub_eq_zero_of_le le_top
 
 @[simp]
-theorem zero_sub : 0 - μ = 0 :=
+protected theorem zero_sub : 0 - μ = 0 :=
   sub_eq_zero_of_le μ.zero_le
 
 @[simp]
-theorem sub_self : μ - μ = 0 :=
+protected theorem sub_self : μ - μ = 0 :=
   sub_eq_zero_of_le le_rfl
 
 @[simp]
@@ -149,11 +149,7 @@ instance isFiniteMeasure_sub [IsFiniteMeasure μ] : IsFiniteMeasure (μ - ν) :=
 hypothesis `ν ≤ μ`. -/
 lemma sub_le_iff_le_add_of_le [IsFiniteMeasure ν] (h_le : ν ≤ μ) : μ - ν ≤ ξ ↔ μ ≤ ξ + ν := by
   refine ⟨fun h ↦ ?_, Measure.sub_le_of_le_add⟩
-  rw [Measure.le_iff] at h ⊢
-  intro s hs
-  specialize h s hs
-  simp only [Measure.coe_add, Pi.add_apply]
-  rwa [Measure.sub_apply hs h_le, tsub_le_iff_right] at h
+  simpa [sub_add_cancel_of_le h_le] using add_le_add_left h ν
 
 end Measure
 

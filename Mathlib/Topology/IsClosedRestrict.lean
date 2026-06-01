@@ -15,8 +15,8 @@ the restriction to a subset of coordinates `S : Set ι` is a closed set.
 The idea of the proof is to use `isClosedMap_snd_of_compactSpace`, which is the fact that if
 `X` is a compact topological space, then `Prod.snd : X × Y → Y` is a closed map.
 
-We remark that `s` is included in the set `Sᶜ.restrict ⁻¹' (Sᶜ.restrict '' s)`, and we build
-a homeomorphism `Sᶜ.restrict ⁻¹' (Sᶜ.restrict '' s) ≃ₜ Sᶜ.restrict '' s × Π i : S, α i`.
+We remark that `s` is included in the set `Sᶜ.restrict ⁻¹' Sᶜ.restrict '' s`, and we build
+a homeomorphism `Sᶜ.restrict ⁻¹' Sᶜ.restrict '' s ≃ₜ Sᶜ.restrict '' s × Π i : S, α i`.
 `Sᶜ.restrict '' s` is a compact space since `s` is compact, and the lemma applies,
 with `X = Sᶜ.restrict '' s` and `Y = Π i : S, α i`.
 
@@ -68,12 +68,12 @@ lemma continuous_reorderRestrictProd [∀ i, TopologicalSpace (α i)] :
   · exact ((continuous_apply _).comp continuous_subtype_val).comp continuous_fst
 
 lemma reorderRestrictProd_mem_preimage_image_restrict (p : Sᶜ.restrict '' s × (Π i : S, α i)) :
-    reorderRestrictProd S s p ∈ Sᶜ.restrict ⁻¹' (Sᶜ.restrict '' s) := by
+    reorderRestrictProd S s p ∈ Sᶜ.restrict ⁻¹' Sᶜ.restrict '' s := by
   obtain ⟨y, hy_mem_s, hy_eq⟩ := p.1.2
   exact ⟨y, hy_mem_s, hy_eq.trans (restrict_compl_reorderRestrictProd p).symm⟩
 
 @[simp]
-lemma reorderRestrictProd_restrict_compl (x : Sᶜ.restrict ⁻¹' (Sᶜ.restrict '' s)) :
+lemma reorderRestrictProd_restrict_compl (x : Sᶜ.restrict ⁻¹' Sᶜ.restrict '' s) :
     reorderRestrictProd S s ⟨⟨Sᶜ.restrict x, x.2⟩, fun i ↦ (x : Π j, α j) i⟩ = (x : Π j, α j) := by
   ext; simp [reorderRestrictProd]
 
@@ -82,7 +82,7 @@ from a given set `S`, and dependent functions away from `S` times any value on `
 noncomputable
 def _root_.Homeomorph.preimageImageRestrict (α : ι → Type*) [∀ i, TopologicalSpace (α i)]
     (S : Set ι) (s : Set (Π j, α j)) :
-    Sᶜ.restrict ⁻¹' (Sᶜ.restrict '' s) ≃ₜ Sᶜ.restrict '' s × (Π i : S, α i) where
+    Sᶜ.restrict ⁻¹' Sᶜ.restrict '' s ≃ₜ Sᶜ.restrict '' s × (Π i : S, α i) where
   toFun x := ⟨⟨Sᶜ.restrict x, x.2⟩, fun i ↦ (x : Π j, α j) i⟩
   invFun p := ⟨reorderRestrictProd S s p, reorderRestrictProd_mem_preimage_image_restrict p⟩
   left_inv x := by ext; simp
@@ -94,14 +94,14 @@ def _root_.Homeomorph.preimageImageRestrict (α : ι → Type*) [∀ i, Topologi
   continuous_invFun := continuous_reorderRestrictProd.subtype_mk _
 
 /-- The image by `preimageImageRestrict α S s` of `s` seen as a set of
-`Sᶜ.restrict ⁻¹' (Sᶜ.restrict '' s)` is a set of `Sᶜ.restrict '' s × (Π i : S, α i)`, and the
+`Sᶜ.restrict ⁻¹' Sᶜ.restrict '' s` is a set of `Sᶜ.restrict '' s × (Π i : S, α i)`, and the
 image of that set by `Prod.snd` is `S.restrict '' s`.
 
 Used in `IsCompact.isClosed_image_restrict` to prove that the restriction of a compact closed set
 in a product space to a set of coordinates is closed. -/
 lemma image_snd_preimageImageRestrict [∀ i, TopologicalSpace (α i)] :
     Prod.snd '' (Homeomorph.preimageImageRestrict α S s ''
-        ((fun (x : Sᶜ.restrict ⁻¹' (Sᶜ.restrict '' s)) ↦ (x : Π j, α j)) ⁻¹' s))
+        ((fun (x : Sᶜ.restrict ⁻¹' Sᶜ.restrict '' s) ↦ (x : Π j, α j)) ⁻¹' s))
       = S.restrict '' s := by
   ext x
   simp only [Homeomorph.preimageImageRestrict, Homeomorph.homeomorph_mk_coe, Equiv.coe_fn_mk,
@@ -131,7 +131,6 @@ theorem IsCompact.isClosed_image_restrict (S : Set ι)
   rw [Homeomorph.isClosed_image]
   exact hs_closed.preimage continuous_subtype_val
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isClosedMap_restrict_of_compactSpace [∀ i, CompactSpace (α i)] :
     IsClosedMap (S.restrict : (Π i, α i) → _) := fun s hs ↦ by
   classical

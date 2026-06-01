@@ -73,6 +73,7 @@ variable {n R : Type*} [Ring R] [LinearOrder R]
 
 /-- The directed graph (quiver) associated with a matrix `A`,
 with an edge `i ⟶ j` iff `0 < A i j`. -/
+@[implicit_reducible]
 def toQuiver (A : Matrix n n R) : Quiver n :=
   ⟨fun i j => PLift (0 < A i j)⟩
 
@@ -122,7 +123,7 @@ theorem pow_apply_pos_iff_nonempty_path
     refine ⟨fun h_pos ↦ ?_, fun ⟨p, hp⟩ ↦ ?_⟩
     · rcases eq_or_ne i j with rfl | h_eq
       · exact ⟨⟨Quiver.Path.nil, rfl⟩⟩
-      · simp_all only [pow_zero, ne_eq, not_false_eq_true, one_apply_ne, lt_self_iff_false]
+      · simp_all
     · simp [Quiver.Path.eq_of_length_zero p hp]
   | succ m ih =>
     rw [pow_succ, mul_apply]

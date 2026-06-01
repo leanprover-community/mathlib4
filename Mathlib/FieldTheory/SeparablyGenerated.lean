@@ -70,9 +70,10 @@ theorem irreducible_toPolynomialAdjoinImageCompl {F : MvPolynomial ι k} (hF : I
     Irreducible (toPolynomialAdjoinImageCompl F a i) := by
   have : a '' {i}ᶜ = Set.range (fun x : {j | j ≠ i} ↦ a x) := by ext; simp
   delta toPolynomialAdjoinImageCompl
-  convert hF.map (renameEquiv k (Equiv.optionSubtypeNe i).symm) |>.map (optionEquivLeft k _) |>.map
-    (Polynomial.mapAlgEquiv (H.aevalEquiv.trans
-      (Subalgebra.equivOfEq _ _ congr(Algebra.adjoin k $this.symm))))
+  convert!
+    hF.map (renameEquiv k (Equiv.optionSubtypeNe i).symm) |>.map (optionEquivLeft k _) |>.map
+      (Polynomial.mapAlgEquiv
+        (H.aevalEquiv.trans (Subalgebra.equivOfEq _ _ congr(Algebra.adjoin k $this.symm))))
   rw [← AlgEquiv.coe_algHom]
   congr
   aesop
@@ -87,7 +88,8 @@ include HF
 lemma irreducible_of_forall_totalDegree_le (hF0 : F ≠ 0) (hFa : F.aeval a = 0) : Irreducible F := by
   refine ⟨fun h' ↦ (h'.map (aeval a)).ne_zero hFa, fun q₁ q₂ e ↦ ?_⟩
   wlog h₁ : aeval a q₁ = 0 generalizing q₁ q₂
-  · exact .symm (this q₂ q₁ (e.trans (mul_comm ..)) <| by simpa [h₁, hFa] using congr(aeval a $e))
+  · exact .symm (this q₂ q₁ (e.trans (mul_comm ..)) <| by
+      simpa [h₁, hFa] using Eq.symm <| congr(aeval a $e))
   have ne := mul_ne_zero_iff.mp (e ▸ hF0)
   have := HF q₁ ne.1 h₁
   rw [e, totalDegree_mul_of_isDomain ne.1 ne.2, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
@@ -123,16 +125,16 @@ theorem coeff_toPolynomialAdjoinImageCompl_ne_zero
     simp_rw [← H, ← AlgHom.comp_apply]
     congr; ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isAlgebraic_of_mem_vars_of_forall_totalDegree_le (hFa : F.aeval a = 0) (i : ι)
     (hi : i ∈ F.vars) : IsAlgebraic (Algebra.adjoin k (a '' {i}ᶜ)) (a i) := by
   classical
-  have ⟨σ, hσ, hσi⟩ := (mem_vars i).mp hi
+  have ⟨σ, hσ, hσi⟩ := (mem_vars_iff_mem_support i).mp hi
   refine ⟨toPolynomialAdjoinImageCompl F a i,
     fun h ↦ coeff_toPolynomialAdjoinImageCompl_ne_zero HF σ hσ i
       (Finsupp.mem_support_iff.mp hσi) ?_, aeval_toPolynomialAdjoinImageCompl_eq_zero hFa ..⟩
   rw [h, Polynomial.coeff_zero]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hp H in
 theorem exists_mem_support_not_dvd_of_forall_totalDegree_le (hF0 : F ≠ 0) (hFa : F.aeval a = 0) :
@@ -147,10 +149,10 @@ theorem exists_mem_support_not_dvd_of_forall_totalDegree_le (hF0 : F ≠ 0) (hFa
   replace H (ι : Type u_3) (_ : Fintype ι) (v : ι → K) (hv : LinearIndependent k v) :
       LinearIndependent k (v · ^ p) := by
     simpa only [Finset.coe_image, Finset.coe_univ, Set.image_univ, linearIndepOn_range_iff
-      hv.injective] using H (Finset.univ.image v) (by simpa using hv.linearIndepOn_id)
+      hv.injective] using! H (Finset.univ.image v) (by simpa using! hv.linearIndepOn_id)
   have := mt (H F.support inferInstance (fun s ↦ aeval a (monomial (σ' s) (1 : k)))) (by
     simp_rw [← map_pow, monomial_pow, ← hσ'', one_pow, not_linearIndependent_iff]
-    refine ⟨.univ, (F.coeff ·), ?_, by simpa [MvPolynomial.eq_zero_iff] using hF0⟩
+    refine ⟨.univ, (F.coeff ·), ?_, by simpa [MvPolynomial.eq_zero_iff] using! hF0⟩
     simp only [← map_smul, ← map_sum, Finset.univ_eq_attach, smul_eq_mul, mul_one]
     rw [F.support.sum_attach (fun i ↦ monomial i (F.coeff i)), support_sum_monomial_coeff, hFa])
   simp only [LinearIndependent, injective_iff_map_eq_zero, not_forall] at this
@@ -161,11 +163,11 @@ theorem exists_mem_support_not_dvd_of_forall_totalDegree_le (hF0 : F ≠ 0) (hFa
   have hF'' : aeval a F'' = 0 := by
     have : (aeval a).toLinearMap ∘ₗ (Finsupp.lmapDomain k k fun s : F.support ↦ σ' s) =
         (Finsupp.linearCombination k fun s : F.support ↦ aeval a (monomial (σ' s) (1 : k))) := by
-      ext v; simp [MvPolynomial, AddMonoidAlgebra, monomial]
+      ext v; simp [AddMonoidAlgebra, monomial]
     simp only [← hF', F'', ← this]; rfl
   suffices hpm : p * F''.totalDegree ≤ F.totalDegree by
     have hF''0' : F''.totalDegree ≠ 0 := by
-      contrapose! hF''0
+      contrapose hF''0
       rw [totalDegree_eq_zero_iff_eq_C.mp hF''0, aeval_C, map_eq_zero] at hF''
       rw [totalDegree_eq_zero_iff_eq_C.mp hF''0, hF'', map_zero]
     replace this := hpm.trans ((HF F'' hF''0 hF'').trans_eq (one_mul _).symm)
@@ -186,43 +188,45 @@ variable [ExpChar k p]
 
 include hp H
 
-set_option backward.isDefEq.respectTransparency false in
 /--
-Suppose `k` has chararcteristic `p` and `a₁,...,aₙ` is a transcendental basis of `K/k`.
+Suppose `k` has characteristic `p` and `a₁,...,aₙ` is a transcendence basis of `K/k`.
 Suppose furthermore that if `{ sᵢ } ⊆ K` is an arbitrary `k`-linearly independent set,
 `{ sᵢᵖ } ⊆ K` is also `k`-linearly independent (which is true when `K ⊗ₖ k^{1/p}` is reduced).
 
-Then some subset of `a₁,...,aₙ₊₁` forms a transcedental basis that `a₁,...,aₙ₊₁` are separable over.
+Then some subset of `a₁,...,aₙ₊₁` forms a transcendence basis over which `a₁,...,aₙ₊₁` are
+separable.
 -/
 lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
     (ha' : IsTranscendenceBasis k fun i : {i // i ≠ n} ↦ a i) :
     ∃ i : ι, IsTranscendenceBasis k (fun j : {j // j ≠ i} ↦ a j) ∧
       IsSeparable (adjoin k (a '' {i}ᶜ)) (a i) := by
-  have : a '' {n}ᶜ = Set.range (ι := { i // i ≠ n }) (a ·) := by aesop
-  have ha'' : ¬ AlgebraicIndependent k a := fun h ↦
-    ((AlgebraicIndepOn.insert_iff (show n ∉ {n}ᶜ by simp)).mp
-      (by simpa [Set.insert_def, eq_or_ne])).2 (by convert ha'.isAlgebraic.isAlgebraic _)
-  have HF : {F : MvPolynomial ι k | F ≠ 0 ∧ F.aeval a = 0}.Nonempty := by
-    simpa [algebraicIndependent_iff, and_comm] using ha''
-  let F := totalDegree.argminOn _ HF
-  obtain ⟨hF0, hFa⟩ := totalDegree.argminOn_mem _ HF
-  replace HF f h₁ h₂ := totalDegree.argminOn_le _ (a := f) (.intro h₁ h₂) HF
-  have hFirr : Irreducible F := irreducible_of_forall_totalDegree_le HF hF0 hFa
-  obtain ⟨i, σ, hσ, hi⟩ := exists_mem_support_not_dvd_of_forall_totalDegree_le p hp H HF hF0 hFa
+  set S := {F : MvPolynomial ι k | F ≠ 0 ∧ F.aeval a = 0}
+  obtain ⟨F, ⟨hF₀, hFa⟩, hFmin⟩ :
+      ∃ F ∈ S, ∀ G : MvPolynomial ι k, G ≠ 0 → G.aeval a = 0 → totalDegree F ≤ totalDegree G := by
+    suffices S.Nonempty from
+      ⟨totalDegree.argminOn S this, totalDegree.argminOn_mem ..,
+        fun _ h₁ h₂ ↦ totalDegree.argminOn_le S ⟨h₁, h₂⟩⟩
+    suffices ¬ AlgebraicIndependent k a by simpa [S, algebraicIndependent_iff, and_comm] using! this
+    intro h
+    refine h.transcendental_adjoin (i := n) (s := {n}ᶜ) (by simp) ?_
+    have : a '' {n}ᶜ = Set.range (ι := {i // i ≠ n}) (a ·) := by aesop
+    convert! ha'.isAlgebraic.isAlgebraic _
+  have hFirr : Irreducible F := irreducible_of_forall_totalDegree_le hFmin hF₀ hFa
+  obtain ⟨i, σ, hσ, hi⟩ := exists_mem_support_not_dvd_of_forall_totalDegree_le p hp H hFmin hF₀ hFa
   have hσi : σ i ≠ 0 := by aesop
-  have alg := isAlgebraic_of_mem_vars_of_forall_totalDegree_le HF hFa i <|
-    (mem_vars i).mpr ⟨σ, hσ, by simpa⟩
+  have alg := isAlgebraic_of_mem_vars_of_forall_totalDegree_le hFmin hFa i <|
+    (mem_vars_iff_mem_support i).mpr ⟨σ, hσ, by simpa⟩
   have Hi := ha'.of_isAlgebraic_adjoin_image_compl _ i _ alg
   refine ⟨i, Hi, ?_⟩
   let k' := adjoin k (a '' {i}ᶜ)
   have hF₁irr := irreducible_toPolynomialAdjoinImageCompl hFirr i Hi.1
   have := (AlgebraicIndepOn.aevalEquiv (s := {i}ᶜ) Hi.1).uniqueFactorizationMonoid inferInstance
-  have coeff_ne := coeff_toPolynomialAdjoinImageCompl_ne_zero HF σ hσ i hσi
+  have coeff_ne := coeff_toPolynomialAdjoinImageCompl_ne_zero hFmin σ hσ i hσi
   open scoped algebraAdjoinAdjoin in
   have hF₂irr := (hF₁irr.isPrimitive fun h ↦ coeff_ne <| Polynomial.coeff_eq_zero_of_natDegree_lt <|
     h.trans_lt <| Nat.pos_iff_ne_zero.2 hσi).irreducible_iff_irreducible_map_fraction_map
     (K := k').1 hF₁irr
-  contrapose! coeff_ne with Hsep
+  contrapose coeff_ne with Hsep
   have : CharP k' p := (expChar_of_injective_algebraMap (algebraMap k k').injective p).casesOn
     (fun e ↦ (e rfl).elim) (fun _ _ _ ↦ ‹_›) hp.ne_one
   obtain ⟨g, hg, eq⟩ := (((minpoly k' (a i)).separable_or p (minpoly.irreducible
@@ -234,7 +238,6 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
     (by simpa using hF₂irr.ne_zero), zero_mul, eq_comm,
     Polynomial.coeff_map, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective ..)] at eq
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow'
     (s : Set ι) (n : ι) (ha : IsTranscendenceBasis k fun i : s ↦ a i) (hn : n ∉ s) :
     ∃ i : ι, IsTranscendenceBasis k (fun j : ↥(insert n s \ {i}) ↦ a j) ∧
@@ -246,16 +249,15 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow'
   let e₂ : {j // j ≠ i} ≃ ↥(insert n s \ {i.1}) := ⟨fun x ↦ ⟨x, x.1.2, fun h ↦ x.2 (Subtype.ext h)⟩,
     fun x ↦ ⟨⟨x, x.2.1⟩, fun h ↦ x.2.2 congr($h.1)⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
   have : a '' (insert n s \ {i.1}) = (a ·.1) '' {i}ᶜ := by ext; aesop
-  refine ⟨i, hi.comp_equiv e₂.symm, by convert hi'⟩
+  refine ⟨i, hi.comp_equiv e₂.symm, by convert! hi'⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /--
-Suppose `k` has chararcteristic `p` and `K/k` is generated by `a₁,...,aₙ₊₁`,
-where `a₁,...aₙ` forms a transcendental basis.
+Suppose `k` has characteristic `p` and `K/k` is generated by `a₁,...,aₙ₊₁`,
+where `a₁,...aₙ` form a transcendence basis.
 Suppose furthermore that if `{ sᵢ } ⊆ K` is an arbitrary `k`-linearly independent set,
 `{ sᵢᵖ } ⊆ K` is also `k`-linearly independent (which is true when `K ⊗ₖ k^{1/p}` is reduced).
 
-Then some subset of `a₁,...,aₙ₊₁` forms a separable transcedental basis.
+Then some subset of `a₁,...,aₙ₊₁` forms a separating transcendence basis.
 -/
 @[stacks 0H71]
 lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_adjoin_eq_top
@@ -272,9 +274,8 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_adjoin
   · exact hi.2
   · exact isSeparable_algebraMap (F := adjoin k (a '' {i}ᶜ)) ⟨_, subset_adjoin _ _ ⟨x, ne, rfl⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /--
-Suppose `k` has chararcteristic `p` and `K/k` is finitely generated.
+Suppose `k` has characteristic `p` and `K/k` is finitely generated.
 Suppose furthermore that if `{ sᵢ } ⊆ K` is an arbitrary `k`-linearly independent set,
 `{ sᵢᵖ } ⊆ K` is also `k`-linearly independent (which is true when `K ⊗ₖ k^{1/p}` is reduced).
 
@@ -282,7 +283,7 @@ Then `K/k` is finite separably generated.
 
 TODO: show that this is an if and only if.
 -/
-@[stacks 030W "(2) ⇒ (1) finitely genenerated case"]
+@[stacks 030W "(2) ⇒ (1) finitely generated case"]
 lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_essFiniteType
     [Algebra.EssFiniteType k K] :
     ∃ s : Finset K, IsTranscendenceBasis k ((↑) : s → K) ∧
@@ -303,7 +304,6 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_essFin
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 variable (k K) in
 /-- Any finitely generated extension over perfect fields are separably generated. -/
 lemma exists_isTranscendenceBasis_and_isSeparable_of_perfectField
@@ -318,7 +318,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_perfectField
     obtain ⟨t, hts, ht⟩ := exists_isTranscendenceBasis_subset (R := k) (s : Set K)
     lift t to Finset K using s.finite_toSet.subset hts
     have : Algebra.IsAlgebraic (IntermediateField.adjoin k (t : Set K)) K := by
-      convert ht.isAlgebraic_field <;> simp
+      convert! ht.isAlgebraic_field <;> simp
     exact ⟨t, ht, inferInstance⟩
   have : ExpChar k p := .prime hp.out
   have : CharP K p := .of_ringHom_of_ne_zero (algebraMap k K) p hp.out.ne_zero

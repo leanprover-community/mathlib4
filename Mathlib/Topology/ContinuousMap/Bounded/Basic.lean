@@ -179,7 +179,7 @@ theorem dist_lt_iff_of_compact [CompactSpace α] (C0 : (0 : ℝ) < C) :
   · by_cases h : Nonempty α
     · exact dist_lt_of_nonempty_compact
     · rintro -
-      convert C0
+      convert! C0
       apply le_antisymm _ dist_nonneg'
       rw [dist_eq]
       exact csInf_le ⟨0, fun C => And.left⟩ ⟨le_rfl, fun x => False.elim (h (Nonempty.intro x))⟩
@@ -510,19 +510,13 @@ theorem coe_mul [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) : �
 theorem mul_apply [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) (x : α) :
     (f * g) x = f x * g x := rfl
 
-@[simp]
+@[deprecated "dont use `nsmulRec` directly" (since := "2026-03-06")]
 theorem coe_nsmulRec [PseudoMetricSpace β] [AddMonoid β] [BoundedAdd β] [ContinuousAdd β]
     (f : α →ᵇ β) : ∀ n, ⇑(nsmulRec n f) = n • ⇑f
   | 0 => by rw [nsmulRec, zero_smul, coe_zero]
   | n + 1 => by rw [nsmulRec, succ_nsmul, coe_add, coe_nsmulRec _ n]
 
-instance instSMulNat [PseudoMetricSpace β] [AddMonoid β] [BoundedAdd β] [ContinuousAdd β] :
-    SMul ℕ (α →ᵇ β) where
-  smul n f :=
-    { toContinuousMap := n • f.toContinuousMap
-      map_bounded' := by simpa [coe_nsmulRec] using (nsmulRec n f).map_bounded' }
-
-@[to_additive existing instSMulNat]
+@[to_additive]
 instance instPow [Monoid R] [BoundedMul R] [ContinuousMul R] : Pow (α →ᵇ R) ℕ where
   pow f n :=
     { toFun := fun x ↦ (f x) ^ n
@@ -557,8 +551,6 @@ def coeFnMonoidHom [Monoid R] [BoundedMul R] [ContinuousMul R] : (α →ᵇ R) �
   map_one' := coe_one
   map_mul' := coe_mul
 
-@[deprecated (since := "2025-10-30")] alias coeFnAddHom := coeFnAddMonoidHom
-
 variable (α R) in
 /-- The multiplicative map forgetting that a bounded continuous function is bounded. -/
 @[to_additive (attr := simps) /-- The additive map forgetting that a bounded continuous
@@ -570,8 +562,6 @@ def toContinuousMapMonoidHom [Monoid R] [BoundedMul R] [ContinuousMul R] : (α �
     intros
     ext
     simp
-
-@[deprecated (since := "2025-10-30")] alias toContinuousMapAddHom := toContinuousMapAddMonoidHom
 
 @[to_additive (attr := simp)]
 lemma coe_prod {ι : Type*} (s : Finset ι) [CommMonoid R] [BoundedMul R] [ContinuousMul R]

@@ -141,7 +141,6 @@ theorem centerMass_le_sup {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ 
   rw [centerMass, inv_smul_le_iff_of_pos hw₁, sum_smul]
   exact sum_le_sum fun i hi => smul_le_smul_of_nonneg_left (le_sup' _ hi) <| hw₀ i hi
 
-set_option backward.isDefEq.respectTransparency false in
 theorem inf_le_centerMass {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ : ∀ i ∈ s, 0 ≤ w i)
     (hw₁ : 0 < ∑ i ∈ s, w i) :
     s.inf' (nonempty_of_ne_empty <| by rintro rfl; simp at hw₁) f ≤ s.centerMass w f :=
@@ -243,7 +242,7 @@ theorem convex_iff_sum_mem : Convex R s ↔ ∀ (t : Finset E) (w : E → R),
   by_cases h_cases : x = y
   · rw [h_cases, ← add_smul, hab, one_smul]
     exact hy
-  · convert h {x, y} (fun z => if z = y then b else a) _ _ _
+  · convert! h { x, y } (fun z => if z = y then b else a) _ _ _
     · simp only [sum_pair h_cases, if_neg h_cases, if_pos trivial]
     · grind
     · simp only [sum_pair h_cases, if_neg h_cases, if_pos trivial, hab]

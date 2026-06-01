@@ -19,9 +19,9 @@ predicate is called `IsSMulRegular`.
 There are very limited typeclass assumptions on `R` and `M`, but the "mathematical" case of interest
 is a commutative ring `R` acting on a module `M`. Since the properties are "multiplicative", there
 is no actual requirement of having an addition, but there is a zero in both `R` and `M`.
-SMultiplications involving `0` are, of course, all trivial.
+Scalar multiplications involving `0` are, of course, all trivial.
 
-The defining property is that an element `a ∈ R` is `M`-regular if the smultiplication map
+The defining property is that an element `a ∈ R` is `M`-regular if the scalar multiplication map
 `M → M`, defined by `m ↦ a • m`, is injective.
 
 This property is the direct generalization to modules of the property `IsLeftRegular` defined in
@@ -63,15 +63,6 @@ lemma isSMulRegular_map [SMul R M] [SMul S M] (f : R → S) (smul : ∀ m : M, f
 protected alias ⟨IsSMulRegular.of_map, IsSMulRegular.map⟩ := isSMulRegular_map
 
 namespace IsSMulRegular
-
-@[simp] theorem natAbs_iff [SubtractionMonoid M] {n : ℤ} :
-    IsSMulRegular M n.natAbs ↔ IsSMulRegular M n := by
-  simp_rw [IsSMulRegular, Function.Injective]
-  conv_rhs => rw [← n.sign_mul_natAbs]
-  obtain h | h | h := n.sign_trichotomy
-  · simp [h]
-  · simp [Int.sign_eq_zero_iff_zero.mp h]
-  · simp [h, neg_zsmul]
 
 @[simp] theorem natAbs_iff [SubtractionMonoid M] {n : ℤ} :
     IsSMulRegular M n.natAbs ↔ IsSMulRegular M n := by
@@ -199,7 +190,7 @@ theorem zero_iff_subsingleton : IsSMulRegular M (0 : R) ↔ Subsingleton M :=
 /-- The `0` element is not `M`-regular, on a non-trivial module. -/
 theorem not_zero_iff : ¬IsSMulRegular M (0 : R) ↔ Nontrivial M := by
   rw [nontrivial_iff, not_iff_comm, zero_iff_subsingleton, subsingleton_iff]
-  push_neg
+  push Not
   exact Iff.rfl
 
 /-- The element `0` is `M`-regular when `M` is trivial. -/
@@ -233,7 +224,7 @@ variable {G : Type*} [Group G]
 of the inverse given by groups, since there is no `LeftCancelSMul` typeclass. -/
 theorem isSMulRegular_of_group [MulAction G R] (g : G) : IsSMulRegular R g := by
   intro x y h
-  convert congr_arg (g⁻¹ • ·) h using 1 <;> simp [← smul_assoc]
+  convert! congr_arg (g⁻¹ • ·) h using 1 <;> simp [← smul_assoc]
 
 end Group
 

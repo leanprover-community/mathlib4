@@ -80,6 +80,7 @@ attribute [local instance] preservesBinaryProducts_of_preservesKernels
 
 variable [HasBinaryBiproducts C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor between preadditive categories preserves the equalizer of two
 morphisms if it preserves all kernels. -/
 lemma preservesEqualizer_of_preservesKernels
@@ -162,6 +163,7 @@ attribute [local instance] preservesBinaryCoproducts_of_preservesCokernels
 
 variable [HasBinaryBiproducts C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor between preadditive categories preserves the coequalizer of two
 morphisms if it preserves all cokernels. -/
 lemma preservesCoequalizer_of_preservesCokernels
@@ -204,7 +206,7 @@ lemma preservesFiniteColimits_of_preservesCokernels [HasFiniteCoproducts C] [Has
   letI := preservesInitialObject_of_preservesZeroMorphisms F
   letI := preservesColimitsOfShape_pempty_of_preservesInitial F
   letI : PreservesFiniteCoproducts F :=
-    ⟨fun _ ↦ preservesFiniteCoproductsOfPreservesBinaryAndInitial F _⟩
+    ⟨fun _ ↦ PreservesFiniteCoproducts.of_preserves_binary_and_initial F _⟩
   exact preservesFiniteColimits_of_preservesCoequalizers_and_finiteCoproducts F
 
 end FiniteColimits

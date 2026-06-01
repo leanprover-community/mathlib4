@@ -40,7 +40,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {D' : Type u₃} [Category.{v₃} D'] {D'' : Type u₄} [Category.{v₄} D'']
   {J : GrothendieckTopology C} {K : GrothendieckTopology D} {F : C ⥤ D}
   {S : Sheaf J RingCat.{u}} {R : Sheaf K RingCat.{u}}
-  [Functor.IsContinuous.{u} F J K] [Functor.IsContinuous.{v} F J K]
+  [Functor.IsContinuous F J K]
   (φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R)
 
 section
@@ -72,6 +72,7 @@ variable [(PresheafOfModules.pushforward.{v} φ.hom).IsRightAdjoint]
 
 namespace PullbackConstruction
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Construction of a left adjoint to the functor `pushforward.{v} φ` by using the
 pullback of presheaves of modules and the sheafification. -/
@@ -151,8 +152,8 @@ section
 
 variable {K' : GrothendieckTopology D'} {K'' : GrothendieckTopology D''}
   {G : D ⥤ D'} {R' : Sheaf K' RingCat.{u}}
-  [Functor.IsContinuous.{u} G K K'] [Functor.IsContinuous.{v} G K K']
-  [Functor.IsContinuous.{u} (F ⋙ G) J K'] [Functor.IsContinuous.{v} (F ⋙ G) J K']
+  [Functor.IsContinuous G K K']
+  [Functor.IsContinuous (F ⋙ G) J K']
   (ψ : R ⟶ (G.sheafPushforwardContinuous RingCat.{u} K K').obj R')
 
 variable [(pushforward.{v} ψ).IsRightAdjoint]
@@ -181,13 +182,10 @@ lemma conjugateEquiv_pullbackComp_inv :
   Adjunction.conjugateEquiv_leftAdjointCompIso_inv _ _ _ _
 
 variable {G' : D' ⥤ D''} {R'' : Sheaf K'' RingCat.{u}}
-  [Functor.IsContinuous.{u} G' K' K''] [Functor.IsContinuous.{v} G' K' K'']
-  [Functor.IsContinuous.{u} (G ⋙ G') K K'']
-  [Functor.IsContinuous.{v} (G ⋙ G') K K'']
-  [Functor.IsContinuous.{u} ((F ⋙ G) ⋙ G') J K'']
-  [Functor.IsContinuous.{v} ((F ⋙ G) ⋙ G') J K'']
-  [Functor.IsContinuous.{u} (F ⋙ G ⋙ G') J K'']
-  [Functor.IsContinuous.{v} (F ⋙ G ⋙ G') J K'']
+  [Functor.IsContinuous G' K' K'']
+  [Functor.IsContinuous (G ⋙ G') K K'']
+  [Functor.IsContinuous ((F ⋙ G) ⋙ G') J K'']
+  [Functor.IsContinuous (F ⋙ G ⋙ G') J K'']
   (ψ' : R' ⟶ (G'.sheafPushforwardContinuous RingCat.{u} K' K'').obj R'')
 
 variable [(pushforward.{v} ψ').IsRightAdjoint]

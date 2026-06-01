@@ -148,7 +148,7 @@ elab "ghost_fun_tac " φ:term ", " fn:term : tactic => do
     HAdd.hAdd, Add.add, HSub.hSub, Sub.sub, Neg.neg, HMul.hMul, Mul.mul, HPow.hPow, Pow.pow,
     wittNSMul, wittZSMul, HSMul.hSMul, SMul.smul]
   simpa +unfoldPartialApp [WittVector.ghostFun, aeval_rename, aeval_bind₁,
-    comp, uncurry, peval, eval] using this
+    comp, uncurry, peval, eval] using! this
   )))
 
 end Tactic
@@ -301,7 +301,6 @@ def ghostComponent (n : ℕ) : 𝕎 R →+* R :=
 theorem ghostComponent_apply (n : ℕ) (x : 𝕎 R) : ghostComponent n x = aeval x.coeff (W_ ℤ n) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pow_dvd_ghostComponent_of_dvd_coeff {x : 𝕎 R} {n : ℕ}
     (hx : ∀ i ≤ n, (p : R) ∣ x.coeff i) : (p : R) ^ (n + 1) ∣ ghostComponent n x := by
   rw [WittVector.ghostComponent_apply, wittPolynomial, MvPolynomial.aeval_sum]

@@ -40,6 +40,7 @@ jobs:
         pip install -r "$CI_SCRIPTS_DIR/zulip/requirements.txt"
 
     - name: Update zulip emoji reactions
+      continue-on-error: true  # Emoji updates are cosmetic; never fail CI over them
       env:
         ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
         ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
@@ -53,4 +54,4 @@ jobs:
           while read -r pr_number; do
             printf $'Running the python script with pr "%s"\n' "${pr_number}"
             python "${CI_SCRIPTS_DIR}/zulip/zulip_emoji_reactions.py" "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "[Merged by Bors]" "none" "${pr_number}"
-          done < <(git log --oneline -n 10 | awk -F# '{ gsub(/)$/, ""); print $NF}')
+          done < <(git log --oneline -n 10 | grep -oP '.*\(#\K\d+(?=\))')

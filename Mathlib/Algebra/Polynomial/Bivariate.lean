@@ -81,9 +81,11 @@ lemma evalEval_sum (x y : R) (p : R[X]) (f : ℕ → R → R[X][Y]) :
     (p.sum f).evalEval x y = p.sum fun n a => (f n a).evalEval x y := by
   simp only [evalEval, eval, eval₂_sum]
 
-lemma evalEval_finset_sum {ι : Type*} (s : Finset ι) (x y : R) (f : ι → R[X][Y]) :
+lemma evalEval_finsetSum {ι : Type*} (s : Finset ι) (x y : R) (f : ι → R[X][Y]) :
     (∑ i ∈ s, f i).evalEval x y = ∑ i ∈ s, (f i).evalEval x y := by
-  simp only [evalEval, eval_finset_sum]
+  simp only [evalEval, eval_finsetSum]
+
+@[deprecated (since := "2026-04-08")] alias evalEval_finset_sum := evalEval_finsetSum
 
 @[simp]
 lemma evalEval_smul [DistribSMul S R] [IsScalarTower S R R] (x y : R) (s : S)
@@ -216,7 +218,7 @@ variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
 variable (R A) in
 /-- Given valuations `x` and `y` of the variables in an `R`-algebra `A`, the bijection induced by
 the unique `R`-algebra homomorphism from `R[X][Y]` to `A` sending `X` to `x` and `Y` to `y`. -/
-@[simps! apply_apply symm_apply symm_apply_fst symm_apply_snd]
+@[simps! apply_apply symm_apply]
 def aevalAevalEquiv : A × A ≃ (R[X][Y] →ₐ[R] A) where
   toFun xy := aeval xy.fst |>.restrictScalars R |>.comp <|
     let := Polynomial.algebra; aeval (R := R[X]) (C xy.snd) |>.restrictScalars R
@@ -250,8 +252,9 @@ def Bivariate.swap : R[X][Y] ≃ₐ[R] R[X][Y] := by
 @[simp]
 theorem Bivariate.swap_symm : swap.symm = (swap (R := R)) := rfl
 
-@[simp]
 theorem Bivariate.swap_apply (p : R[X][Y]) : swap p = p.aevalAeval (A := R[X][Y]) Y (C X) := rfl
+
+attribute [local simp] Bivariate.swap_apply
 
 theorem Bivariate.swap_X : swap (R := R) (C X) = Y := by simp
 

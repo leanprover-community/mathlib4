@@ -47,6 +47,8 @@ variable {x : X} {U V W : OpenNhds x}
 instance partialOrder (x : X) : PartialOrder (OpenNhds x) :=
   inferInstanceAs (PartialOrder { U : Opens X // x ∈ U })
 
+theorem le_def (U V : OpenNhds x) : U ≤ V ↔ U.1 ≤ V.1 := Iff.rfl
+
 instance (x : X) : Lattice (OpenNhds x) :=
   { inf := fun U V => ⟨U.1 ⊓ V.1, ⟨U.2, V.2⟩⟩
     le_inf := fun U V W => @le_inf _ _ U.1.1 V.1.1 W.1.1
@@ -59,7 +61,9 @@ instance (x : X) : Lattice (OpenNhds x) :=
 
 instance (x : X) : OrderTop (OpenNhds x) where
   top := ⟨⊤, trivial⟩
-  le_top _ := by simp [LE.le]
+  le_top x := by
+    cases x
+    simp [le_def]
 
 instance (x : X) : Inhabited (OpenNhds x) :=
   ⟨⊤⟩
@@ -118,12 +122,10 @@ theorem map_id_obj' (x : X) (U) (p) (q) : (map (𝟙 X) x).obj ⟨⟨U, p⟩, q�
 theorem map_id_obj_unop (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).obj (unop U) = unop U := by
   simp
 
-@[simp]
 theorem op_map_id_obj (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).op.obj U = U := by simp
 
 /-- `Opens.map f` and `OpenNhds.map f` form a commuting square (up to natural isomorphism)
 with the inclusion functors into `Opens X`. -/
-@[simps! hom_app inv_app]
 def inclusionMapIso (x : X) : inclusion (f x) ⋙ Opens.map f ≅ map f x ⋙ inclusion x :=
   NatIso.ofComponents fun U => { hom := 𝟙 _, inv := 𝟙 _ }
 
@@ -171,7 +173,7 @@ abbrev Topology.IsOpenEmbedding.functorNhds (h : Topology.IsOpenEmbedding f) (x 
     h.isOpenMap.functorNhds x
 
 /--
-An open enbedding `f : X ⟶ Y` induces an adjunction between `OpenNhds x` and `OpenNhds (f x)`.
+An open embedding `f : X ⟶ Y` induces an adjunction between `OpenNhds x` and `OpenNhds (f x)`.
 We define `IsOpenEmbedding.adjunctionNhds` as `IsOpenEmbedding.isOpenMap.adjunctionNds`, so it
 won't default to `IsInducing.adjunctionNhds`, which is an adjunction in the other direction.
 -/

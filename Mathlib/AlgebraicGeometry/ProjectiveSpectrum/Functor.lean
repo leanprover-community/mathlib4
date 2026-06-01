@@ -159,7 +159,6 @@ noncomputable def map : Proj ℬ ⟶ Proj 𝒜 where
 theorem ι_comp_map (s : A) : (basicOpen ℬ (f s)).ι ≫ map f hf =
     (map f hf).resLE _ _ le_rfl ≫ (basicOpen 𝒜 s).ι := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc] lemma awayToSection_comp_appLE {i : ℕ} {s : A} (hs : s ∈ 𝒜 i) :
     awayToSection 𝒜 s ≫
       Scheme.Hom.appLE (map f hf) (basicOpen 𝒜 s) (basicOpen ℬ (f s)) (by rfl) =
@@ -204,14 +203,14 @@ an affine open cover of `Proj ℬ` consisting of `D(f(s))` for `s ∈ A` positiv
 set_option backward.isDefEq.respectTransparency false in
 theorem map_comp : map (g.comp f) (irrelevant_le_map_comp hf hg) = map g hg ≫ map f hf := by
   refine (mapAffineOpenCover _ <| irrelevant_le_map_comp hf hg).openCover.hom_ext _ _ fun s ↦ ?_
-  simp only [Scheme.AffineOpenCover.openCover_X, Scheme.AffineOpenCover.openCover_f,
-    mapAffineOpenCover_f, awayι_comp_map (g.comp f) _ s.1.2 _ s.2.2]
+  simp only [Scheme.AffineOpenCover.openCover_f, mapAffineOpenCover_f,
+    awayι_comp_map (g.comp f) _ s.1.2 _ s.2.2]
   simp [awayι_comp_map_assoc _ _ _ _ (map_mem f s.2.2), awayι_comp_map _ _ _ _ s.2.2]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem map_id : map (.id 𝒜) (by simp) = 𝟙 (Proj 𝒜) := by
   refine (affineOpenCover _).openCover.hom_ext _ _ fun s ↦ ?_
-  convert awayι_comp_map (.id 𝒜) _ _ _ s.2.2 using 1
+  convert! awayι_comp_map (.id 𝒜) _ _ _ s.2.2 using 1
   simp
 
 end Proj

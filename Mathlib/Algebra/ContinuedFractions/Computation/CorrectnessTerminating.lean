@@ -94,6 +94,7 @@ fraction. Here is an example to illustrate the idea:
 Let `(v : ℚ) := 3.4`. We have
 - `GenContFract.IntFractPair.stream v 0 = some ⟨3, 0.4⟩`, and
 - `GenContFract.IntFractPair.stream v 1 = some ⟨2, 0.5⟩`.
+
 Now `(GenContFract.of v).convs' 1 = 3 + 1/2`, and our fractional term at position `2` is `0.5`.
 We hence have `v = 3 + 1/(2 + 0.5) = 3 + 1/2.5 = 3.4`.
 This computation corresponds exactly to the one using the recurrence equation in `compExactValue`.
@@ -180,7 +181,6 @@ theorem compExactValue_correctness_of_stream_eq_some :
       have tmp_calc' :=
         compExactValue_correctness_of_stream_eq_some_aux_comp pB ppB ifp_succ_n_fr_ne_zero
       let f := Int.fract (1 / ifp_n.fr)
-      have f_ne_zero : f ≠ 0 := by simpa [f] using ifp_succ_n_fr_ne_zero
       -- now unfold the recurrence one step and simplify both sides to arrive at the conclusion
       dsimp only [conts, pconts, ppconts]
       have hfr : (IntFractPair.of (1 / ifp_n.fr)).fr = f := rfl
@@ -214,7 +214,7 @@ theorem of_correctness_of_nth_stream_eq_none (nth_stream_eq_none : IntFractPair.
           convs_stable_of_terminated n'.le_succ this
         rw [this]
         exact IH nth_stream_eq_none
-    · simpa [nth_stream_fr_eq_zero, compExactValue] using
+    · simpa [nth_stream_fr_eq_zero, compExactValue] using!
         compExactValue_correctness_of_stream_eq_some nth_stream_eq
 
 /-- If `GenContFract.of v` terminated at step `n`, then the `n`th convergent is exactly `v`. -/

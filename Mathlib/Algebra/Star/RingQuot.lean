@@ -9,7 +9,7 @@ public import Mathlib.Algebra.RingQuot
 public import Mathlib.Algebra.Star.Basic
 
 /-!
-# The *-ring structure on suitable quotients of a *-ring.
+# The \*-ring structure on suitable quotients of a \*-ring.
 -/
 
 public section
@@ -43,6 +43,7 @@ private theorem star'_quot (hr : ∀ a b, r a b → r (star a) (star b)) {a} :
     (star' r hr ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (star a)⟩ := rfl
 
 /-- Transfer a `StarRing` instance through a quotient, if the quotient is invariant to `star` -/
+@[implicit_reducible]
 def starRing {R : Type u} [Semiring R] [StarRing R] (r : R → R → Prop)
     (hr : ∀ a b, r a b → r (star a) (star b)) : StarRing (RingQuot r) where
   star := star' r hr

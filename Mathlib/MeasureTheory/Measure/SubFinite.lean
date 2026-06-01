@@ -29,7 +29,7 @@ not imported in the other file: the Hahn decomposition of finite measures and me
 
 -/
 
-@[expose] public section
+public section
 
 open scoped ENNReal
 

@@ -41,6 +41,7 @@ attribute [local simp] Triangle.eqToHom_hom₁ Triangle.eqToHom_hom₂ Triangle.
   shiftFunctorAdd_zero_add_hom_app shiftFunctorAdd_add_zero_hom_app
   shiftFunctorAdd'_eq_shiftFunctorAdd shift_shiftFunctorCompIsoId_inv_app
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The shift functor `Triangle C ⥤ Triangle C` by `n : ℤ` sends a triangle
 to the triangle obtained by shifting the objects by `n` in `C` and by
@@ -62,10 +63,9 @@ noncomputable def Triangle.shiftFunctor (n : ℤ) : Triangle C ⥤ Triangle C wh
       comm₃ := by
         dsimp
         rw [Linear.units_smul_comp, Linear.comp_units_smul, ← Functor.map_comp_assoc, ← f.comm₃,
-          Functor.map_comp, assoc, assoc]
-        erw [(shiftFunctorComm C 1 n).hom.naturality]
-        rfl }
+          Functor.map_comp, assoc, assoc, dsimp% (shiftFunctorComm C 1 n).hom.naturality] }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism `Triangle.shiftFunctor C 0 ≅ 𝟭 (Triangle C)`. -/
 @[simps!]
@@ -80,6 +80,7 @@ noncomputable def Triangle.shiftFunctorZero : Triangle.shiftFunctor C 0 ≅ 𝟭
           comp_id, NatTrans.naturality, Functor.id_map]))
     (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism
 `Triangle.shiftFunctor C n ≅ Triangle.shiftFunctor C a ⋙ Triangle.shiftFunctor C b`
@@ -106,13 +107,13 @@ noncomputable def Triangle.shiftFunctorAdd' (a b n : ℤ) (h : a + b = n) :
         subst h
         dsimp
         rw [Linear.units_smul_comp, Linear.comp_units_smul, Functor.map_units_smul,
-          Linear.units_smul_comp, Linear.comp_units_smul, smul_smul, assoc,
-          Functor.map_comp, assoc]
-        erw [← NatTrans.naturality_assoc]
+          Linear.units_smul_comp, Linear.comp_units_smul, smul_smul, assoc, Functor.map_comp, assoc,
+          ← dsimp% (CategoryTheory.shiftFunctorAdd' C a b (a + b) rfl).hom.naturality_assoc]
         simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, Int.negOnePow_add,
           shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app, add_comm a]))
     (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Rotating triangles three times identifies with the shift by `1`. -/
 noncomputable def rotateRotateRotateIso :
@@ -122,6 +123,7 @@ noncomputable def rotateRotateRotateIso :
       (by simp) (by simp) (by simp))
     (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Rotating triangles three times backwards identifies with the shift by `-1`. -/
 noncomputable def invRotateInvRotateInvRotateIso :
@@ -156,6 +158,7 @@ noncomputable def invRotateIsoRotateRotateShiftFunctorNegOne :
 
 namespace Triangle
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : HasShift (Triangle C) ℤ :=
   hasShiftMk (Triangle C) ℤ

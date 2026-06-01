@@ -15,7 +15,7 @@ public import Mathlib.Algebra.GroupWithZero.Units.Equiv
 # fintype instances relating to units
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 

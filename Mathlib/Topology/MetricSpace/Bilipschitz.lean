@@ -29,7 +29,7 @@ choose to use these convenience lemmas. This encourages good hygiene in the deve
 synonyms.
 -/
 
-@[expose] public section
+public section
 
 open NNReal
 

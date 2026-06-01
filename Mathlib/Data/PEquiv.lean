@@ -147,8 +147,8 @@ theorem trans_eq_some (f : α ≃. β) (g : β ≃. γ) (a : α) (c : γ) :
 theorem trans_eq_none (f : α ≃. β) (g : β ≃. γ) (a : α) :
     f.trans g a = none ↔ ∀ b c, b ∉ f a ∨ c ∉ g b := by
   simp only [eq_none_iff_forall_not_mem, mem_trans, imp_iff_not_or.symm]
-  push_neg
-  exact forall_swap
+  push Not
+  exact forall_comm
 
 @[simp]
 theorem refl_trans (f : α ≃. β) : (PEquiv.refl α).trans f = f := by

@@ -56,9 +56,6 @@ theorem coe_inv_of_ne_zero {J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
     (↑J⁻¹ : Submodule R₁ K) = IsLocalization.coeSubmodule K ⊤ / (J : Submodule R₁ K) := by
   simp_rw [inv_of_ne_zero _ h, coe_one, coe_mk, IsLocalization.coeSubmodule_top]
 
-@[deprecated (since := "2025-09-14")] alias inv_nonzero := inv_of_ne_zero
-@[deprecated (since := "2025-09-14")] alias coe_inv_of_nonzero := coe_inv_of_ne_zero
-
 variable {K}
 
 theorem mem_inv_iff (hI : I ≠ 0) {x : K} : x ∈ I⁻¹ ↔ ∀ y ∈ I, x * y ∈ (1 : FractionalIdeal R₁⁰ K) :=
