@@ -1089,9 +1089,7 @@ instance [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] [CovariantC
 
 instance [SMul R ℝ≥0∞] [LE R] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] [IsOrderedSMul R ℝ≥0∞] :
     IsOrderedSMul R (Measure α) where
-  smul_le_smul_left μ ν hμν a s := by
-    simp only [smul_apply]
-    gcongr
+  smul_le_smul_left μ ν hμν a s := by gcongr
   smul_le_smul_right a b hab μ s := by
     simp only [smul_apply]
     gcongr
