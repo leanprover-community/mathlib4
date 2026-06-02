@@ -814,6 +814,29 @@ def test_parseFlagOpt : IO Unit := do
 
 end CliOptions
 
+section CacheMissStatus
+
+/-- `isCacheMissStatus` decides whether a read's HTTP status is a benign miss
+(fall through to the next container) or a real transfer failure. `404` is always
+a miss; `403` is a miss only for a container flagged `treatForbiddenAsMiss`
+(currently `legacy`, whose reads start returning `403` once public access is
+revoked ahead of retirement). This guards old clients — whose chain still lists
+`legacy` — against per-file failures when the container is brought down. -/
+def test_isCacheMissStatus : IO Unit := do
+  IO.println "isCacheMissStatus:"
+  -- 404 is a miss regardless of the flag.
+  assert "404 is a miss (flag off)"        (isCacheMissStatus 404 false)
+  assert "404 is a miss (flag on)"         (isCacheMissStatus 404 true)
+  -- 403 is a miss only when the flag is set (i.e. for `legacy`).
+  assert "403 is a failure when flag off"  (!isCacheMissStatus 403 false)
+  assert "403 is a miss when flag on"      (isCacheMissStatus 403 true)
+  -- Success and server errors are never misses; they must surface.
+  assert "200 is not a miss"               (!isCacheMissStatus 200 true)
+  assert "500 is not a miss"               (!isCacheMissStatus 500 true)
+  assert "403-as-miss is scoped to 403"    (!isCacheMissStatus 401 true)
+
+end CacheMissStatus
+
 def runAll : IO Unit := do
   test_Container_name
   test_Container_parse
@@ -838,6 +861,7 @@ def runAll : IO Unit := do
   test_isKnownOpt
   test_parseNamedOpt
   test_parseFlagOpt
+  test_isCacheMissStatus
 
 end Cache.Test
 

@@ -490,9 +490,24 @@ def dispatchDecompBatch (pending : Array (FilePath × Lean.Name)) (config : Deco
   let task ← IO.asTask (decompressBatch pending config.force config.isMathlibRoot config.mathlibDepPath)
   return some task
 
+/--
+Whether an HTTP status returned for a single-file read should be treated as a
+cache miss (fall through to the next container in the chain) rather than a
+transfer failure worth reporting.
+
+`404` is always a miss. A `403` is a miss only when `treatForbiddenAsMiss` is
+set, which callers do for the `legacy` container: when its public read access is
+revoked ahead of retirement it answers reads with `403`, and old clients whose
+chain still lists `legacy` should fall through quietly instead of printing a
+per-file transfer failure. Any other status is a real failure.
+-/
+def isCacheMissStatus (httpCode : Nat) (treatForbiddenAsMiss : Bool) : Bool :=
+  httpCode == 404 || (httpCode == 403 && treatForbiddenAsMiss)
+
 def monitorCurl (args : Array String) (size : Nat)
     (caption : String) (speedVar : String) (removeOnError := false)
-    (decompConfig : Option DecompConfig := none) : IO TransferState := do
+    (decompConfig : Option DecompConfig := none)
+    (treatForbiddenAsMiss : Bool := false) : IO TransferState := do
   let useAnsi := (← IO.getEnv "TERM").isSome
   let mkStatus (s : TransferState) : String := Id.run do
     let speedStr :=
@@ -556,26 +571,31 @@ def monitorCurl (args : Array String) (size : Nat)
                   currentTask ← dispatchDecompBatch pending config
                   pending := #[]
           success := success + 1
-        | .ok 404 => pure ()
+        -- A cache miss (404, or 403 from a retiring `legacy`) just falls through
+        -- to the next container; anything else is a transfer failure we report.
         | code? =>
-          failed := failed + 1
-          let mkFailureMsg code? fn? msg? : String := Id.run do
-            let mut msg := "Transfer failed"
+          let isMiss := match code? with
+            | .ok c     => isCacheMissStatus c treatForbiddenAsMiss
+            | .error _  => false
+          unless isMiss do
+            failed := failed + 1
+            let mkFailureMsg code? fn? msg? : String := Id.run do
+              let mut msg := "Transfer failed"
+              if let .ok fn := fn? then
+                msg := s!"{fn}: {msg}"
+              if let .ok code := code? then
+                msg := s!"{msg} (error code: {code})"
+              if let .ok errMsg := msg? then
+                msg := s!"{msg}: {errMsg}"
+              return msg
+            let msg? := result.getObjValAs? String "errormsg"
+            let fn? :=  result.getObjValAs? String "filename_effective"
+            IO.println (mkFailureMsg code? fn? msg?)
             if let .ok fn := fn? then
-              msg := s!"{fn}: {msg}"
-            if let .ok code := code? then
-              msg := s!"{msg} (error code: {code})"
-            if let .ok errMsg := msg? then
-              msg := s!"{msg}: {errMsg}"
-            return msg
-          let msg? := result.getObjValAs? String "errormsg"
-          let fn? :=  result.getObjValAs? String "filename_effective"
-          IO.println (mkFailureMsg code? fn? msg?)
-          if let .ok fn := fn? then
-            if removeOnError then
-              -- `curl --remove-on-error` can already do this, but only from 7.83 onwards
-              if (← System.FilePath.pathExists fn) then
-                IO.FS.removeFile fn
+              if removeOnError then
+                -- `curl --remove-on-error` can already do this, but only from 7.83 onwards
+                if (← System.FilePath.pathExists fn) then
+                  IO.FS.removeFile fn
         done := done + 1
         let now ← IO.monoMsNow
         if now - last ≥ 100 then -- max 10/s update rate
@@ -608,7 +628,12 @@ private def downloadFilesFromContainer
         "--silent",
         "--retry", "5", -- there seem to be some intermittent failures
         "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
-    let s ← monitorCurl args size "Downloaded" "speed_download" (removeOnError := true) decompConfig
+    -- `legacy` answers reads with 403 once its public access is revoked ahead
+    -- of retirement; treat that as a miss so the chain stays quiet for clients
+    -- whose chain still lists it.
+    let treatForbiddenAsMiss := container == some Container.legacy
+    let s ← monitorCurl args size "Downloaded" "speed_download" (removeOnError := true)
+      decompConfig (treatForbiddenAsMiss := treatForbiddenAsMiss)
     IO.FS.removeFile IO.CURLCFG
     return (s.failed, s)
   else
