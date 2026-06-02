@@ -45,7 +45,7 @@ lemma iteratedDeriv_mul_pow_sub_of_analytic {k t : ℕ} {z₀ : 𝕜} {R R₁ : 
         (z - z₀) ^ (t + 1) * ((k + (t + 1))! / (t + 1)! * deriv R₁ z +
           (R₂ z + (z - z₀) * deriv R₂ z)) := by
         have hsub : HasDerivAt (· - z₀) 1 z := (hasDerivAt_id z).sub_const z₀
-        simpa using ((hsub.fun_pow (t + 1)).mul
+        simpa using! ((hsub.fun_pow (t + 1)).mul
           (((hf1 z).differentiableAt.hasDerivAt.const_mul ((k + (t + 1))! / (t + 1)! : 𝕜)).add
             (hsub.mul (hR₂ z).differentiableAt.hasDerivAt))).deriv
       _ = (z - z₀) ^ t * ((k + 1 + t)! / t ! * R₁ z + (z - z₀) * R₂' z) := by

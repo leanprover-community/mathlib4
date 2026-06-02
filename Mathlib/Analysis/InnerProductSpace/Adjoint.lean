@@ -543,6 +543,12 @@ theorem adjoint_eq_toCLM_adjoint (A : E →ₗ[𝕜] F) :
     A.adjoint = A.toContinuousLinearMap.adjoint :=
   rfl
 
+theorem _root_.ContinuousLinearMap.adjoint_toLinearMap (A : E →L[𝕜] F) :
+    haveI := FiniteDimensional.complete 𝕜 E
+    haveI := FiniteDimensional.complete 𝕜 F
+    A.toLinearMap.adjoint = A.adjoint.toLinearMap :=
+  rfl
+
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_inner_left (A : E →ₗ[𝕜] F) (x : E) (y : F) : ⟪adjoint A y, x⟫ = ⟪y, A x⟫ := by
   have := FiniteDimensional.complete 𝕜 E
@@ -594,20 +600,20 @@ See `ContinuousLinearMap.orthogonal_ker` for the infinite-dimensional version. -
 lemma orthogonal_ker (A : E →ₗ[𝕜] F) : A.kerᗮ = A.adjoint.range := by
   haveI := FiniteDimensional.complete 𝕜 E
   haveI := FiniteDimensional.complete 𝕜 F
-  simpa using A.toContinuousLinearMap.orthogonal_ker
+  simpa using! A.toContinuousLinearMap.orthogonal_ker
 
 /-- 7.6(a) from [axler2024].
 See `ContinuousLinearMap.orthogonal_range` for the infinite-dimensional version. -/
 lemma orthogonal_range (A : E →ₗ[𝕜] F) : A.rangeᗮ = A.adjoint.ker := by
   haveI := FiniteDimensional.complete 𝕜 E
   haveI := FiniteDimensional.complete 𝕜 F
-  simpa using A.toContinuousLinearMap.orthogonal_range
+  simpa using! A.toContinuousLinearMap.orthogonal_range
 
 /-- 7.64(b) in [axler2024] -/
 lemma ker_adjoint_comp_self (A : E →ₗ[𝕜] F) : (A.adjoint ∘ₗ A).ker = A.ker := by
   haveI := FiniteDimensional.complete 𝕜 E
   haveI := FiniteDimensional.complete 𝕜 F
-  simpa using A.toContinuousLinearMap.ker_adjoint_comp_self
+  simpa using! A.toContinuousLinearMap.ker_adjoint_comp_self
 
 lemma ker_self_comp_adjoint (A : E →ₗ[𝕜] F) : (A ∘ₗ A.adjoint).ker = A.adjoint.ker := by
   simpa using A.adjoint.ker_adjoint_comp_self
@@ -702,7 +708,7 @@ theorem isAdjointPair_inner (A : E →ₗ[𝕜] F) :
   intro x y
   simp [adjoint_inner_left]
 
-/- This next batch of lemmas is based on theorems like `LinearMap.IsPositive.conj_adjoint`, which
+/-! This next batch of lemmas is based on theorems like `LinearMap.IsPositive.conj_adjoint`, which
 are in a downstream file but historically existed before these lemmas. We can't put them in the file
 where `LinearMap.IsSymmetric` is defined because they depend on the adjoint. -/
 

@@ -1,4 +1,4 @@
-module  -- shake: keep-all
+module  -- shake: keep-all --deprecated_module: ignore
 
 public import Std
 public import Batteries
@@ -921,6 +921,8 @@ public import Mathlib.Algebra.Order.Archimedean.Class
 public import Mathlib.Algebra.Order.Archimedean.Defs
 public import Mathlib.Algebra.Order.Archimedean.Hom
 public import Mathlib.Algebra.Order.Archimedean.IndicatorCard
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
+public import Mathlib.Algebra.Order.Archimedean.Real.Hom
 public import Mathlib.Algebra.Order.Archimedean.Submonoid
 public import Mathlib.Algebra.Order.BigOperators.Expect
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
@@ -1003,6 +1005,7 @@ public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 public import Mathlib.Algebra.Order.GroupWithZero.WithZero
 public import Mathlib.Algebra.Order.Hom.Basic
+public import Mathlib.Algebra.Order.Hom.Lattice
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Algebra.Order.Hom.MonoidWithZero
 public import Mathlib.Algebra.Order.Hom.Ring
@@ -1102,6 +1105,7 @@ public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Order.Star.Conjneg
 public import Mathlib.Algebra.Order.Star.Pi
 public import Mathlib.Algebra.Order.Star.Prod
+public import Mathlib.Algebra.Order.Star.Real
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Algebra.Order.Sub.Defs
 public import Mathlib.Algebra.Order.Sub.Prod
@@ -1314,6 +1318,7 @@ public import Mathlib.Algebra.Star.StarRingHom
 public import Mathlib.Algebra.Star.Subalgebra
 public import Mathlib.Algebra.Star.Subsemiring
 public import Mathlib.Algebra.Star.TensorProduct
+public import Mathlib.Algebra.Star.TransferInstance
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.Algebra.Star.UnitaryStarAlgAut
 public import Mathlib.Algebra.Symmetrized
@@ -2259,6 +2264,7 @@ public import Mathlib.Analysis.NormedSpace.PiTensorProduct.ProjectiveSeminorm
 public import Mathlib.Analysis.NormedSpace.RieszLemma
 public import Mathlib.Analysis.ODE.Basic
 public import Mathlib.Analysis.ODE.DiscreteGronwall
+public import Mathlib.Analysis.ODE.ExistUnique
 public import Mathlib.Analysis.ODE.Gronwall
 public import Mathlib.Analysis.ODE.PicardLindelof
 public import Mathlib.Analysis.ODE.Transform
@@ -2281,6 +2287,7 @@ public import Mathlib.Analysis.RCLike.Inner
 public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.Analysis.RCLike.Sqrt
 public import Mathlib.Analysis.RCLike.TangentCone
+public import Mathlib.Analysis.Rat.NatSqrt.Real
 public import Mathlib.Analysis.Real.Cardinality
 public import Mathlib.Analysis.Real.Hyperreal
 public import Mathlib.Analysis.Real.OfDigits
@@ -2655,6 +2662,7 @@ public import Mathlib.CategoryTheory.EpiMono
 public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.Equivalence.Symmetry
+public import Mathlib.CategoryTheory.EquivalenceRelation
 public import Mathlib.CategoryTheory.EssentialImage
 public import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.Extensive
@@ -3425,6 +3433,7 @@ public import Mathlib.CategoryTheory.Subfunctor.Finite
 public import Mathlib.CategoryTheory.Subfunctor.Image
 public import Mathlib.CategoryTheory.Subfunctor.OfSection
 public import Mathlib.CategoryTheory.Subfunctor.Sieves
+public import Mathlib.CategoryTheory.Subfunctor.SubmonoidFunctor
 public import Mathlib.CategoryTheory.Subfunctor.Subobject
 public import Mathlib.CategoryTheory.Subobject.ArtinianObject
 public import Mathlib.CategoryTheory.Subobject.Basic
@@ -4274,20 +4283,16 @@ public import Mathlib.Data.Rat.Floor
 public import Mathlib.Data.Rat.Init
 public import Mathlib.Data.Rat.Lemmas
 public import Mathlib.Data.Rat.NatSqrt.Defs
-public import Mathlib.Data.Rat.NatSqrt.Real
 public import Mathlib.Data.Rat.Sqrt
 public import Mathlib.Data.Rat.Star
-public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Data.Real.CompleteField
 public import Mathlib.Data.Real.ConjExponents
 public import Mathlib.Data.Real.ENatENNReal
 public import Mathlib.Data.Real.Embedding
-public import Mathlib.Data.Real.Hom
 public import Mathlib.Data.Real.Pointwise
 public import Mathlib.Data.Real.Sign
 public import Mathlib.Data.Real.Star
-public import Mathlib.Data.Real.StarOrdered
 public import Mathlib.Data.Rel
 public import Mathlib.Data.Rel.Cover
 public import Mathlib.Data.Rel.Separated
@@ -4375,6 +4380,7 @@ public import Mathlib.Data.Sum.Lattice
 public import Mathlib.Data.Sum.Order
 public import Mathlib.Data.Sym.Basic
 public import Mathlib.Data.Sym.Card
+public import Mathlib.Data.Sym.NatCard
 public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Data.Sym.Sym2.Finsupp
 public import Mathlib.Data.Sym.Sym2.Init
@@ -4824,6 +4830,7 @@ public import Mathlib.GroupTheory.Submonoid.Centralizer
 public import Mathlib.GroupTheory.Submonoid.Inverses
 public import Mathlib.GroupTheory.Subsemigroup.Center
 public import Mathlib.GroupTheory.Subsemigroup.Centralizer
+public import Mathlib.GroupTheory.Subsemigroup.Lemmas
 public import Mathlib.GroupTheory.Sylow
 public import Mathlib.GroupTheory.Torsion
 public import Mathlib.GroupTheory.Transfer
@@ -5057,6 +5064,7 @@ public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Card
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.MvPolynomial
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Projective
 public import Mathlib.LinearAlgebra.Matrix.Gershgorin
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
@@ -6166,6 +6174,7 @@ public import Mathlib.Order.WithBotTop
 public import Mathlib.Order.Zorn
 public import Mathlib.Order.ZornAtoms
 public import Mathlib.Probability.BorelCantelli
+public import Mathlib.Probability.BrownianMotion.GaussianProjectiveFamily
 public import Mathlib.Probability.CDF
 public import Mathlib.Probability.CentralLimitTheorem
 public import Mathlib.Probability.Combinatorics.BinomialRandomGraph.Defs
@@ -6390,7 +6399,8 @@ public import Mathlib.RingTheory.Bialgebra.SymmetricAlgebra
 public import Mathlib.RingTheory.Bialgebra.TensorProduct
 public import Mathlib.RingTheory.Binomial
 public import Mathlib.RingTheory.ChainOfDivisors
-public import Mathlib.RingTheory.ClassGroup
+public import Mathlib.RingTheory.ClassGroup.Basic
+public import Mathlib.RingTheory.ClassGroup.ExtendedHom
 public import Mathlib.RingTheory.Coalgebra.Basic
 public import Mathlib.RingTheory.Coalgebra.CoassocSimps
 public import Mathlib.RingTheory.Coalgebra.Convolution
@@ -6551,6 +6561,7 @@ public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.Ideal.CotangentBaseChange
 public import Mathlib.RingTheory.Ideal.Defs
+public import Mathlib.RingTheory.Ideal.Finsupp
 public import Mathlib.RingTheory.Ideal.GoingDown
 public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Ideal.Height
@@ -6849,6 +6860,7 @@ public import Mathlib.RingTheory.ReesAlgebra
 public import Mathlib.RingTheory.Regular.Category
 public import Mathlib.RingTheory.Regular.Depth
 public import Mathlib.RingTheory.Regular.Flat
+public import Mathlib.RingTheory.Regular.Free
 public import Mathlib.RingTheory.Regular.IsSMulRegular
 public import Mathlib.RingTheory.Regular.LinearMap
 public import Mathlib.RingTheory.Regular.ProjectiveDimension
@@ -7090,6 +7102,7 @@ public import Mathlib.Tactic.ArithMult
 public import Mathlib.Tactic.ArithMult.Init
 public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Attr.Register
+public import Mathlib.Tactic.BDSimp
 public import Mathlib.Tactic.Basic
 public import Mathlib.Tactic.Bound
 public import Mathlib.Tactic.Bound.Attribute
@@ -7240,7 +7253,6 @@ public import Mathlib.Tactic.Linter
 public import Mathlib.Tactic.Linter.AuxLemma
 public import Mathlib.Tactic.Linter.CommandRanges
 public import Mathlib.Tactic.Linter.CommandStart
-public import Mathlib.Tactic.Linter.DeprecatedModule
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
 public import Mathlib.Tactic.Linter.DocPrime
