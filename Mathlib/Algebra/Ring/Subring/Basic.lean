@@ -782,7 +782,7 @@ theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι] {S : ι → Subring R}
     [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
     IsMulCommutative (⨆ i, S i : Subring R) := by
   simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_directed dir,
-    Subsemigroup.coe_iSup_of_directed dir] using Subsemigroup.isMulCommutative_iSup dir
+    Subsemigroup.coe_iSup_of_directed dir] using! Subsemigroup.isMulCommutative_iSup dir
 
 instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
     {S : ι →o Subring R} [hS : ∀ i, IsMulCommutative (S i)] :
@@ -1152,7 +1152,7 @@ theorem comap_map_eq (f : R →+* S) (s : Subring R) :
 
 theorem comap_map_eq_self {f : R →+* S} {s : Subring R}
     (h : f ⁻¹' {0} ⊆ s) : (s.map f).comap f = s := by
-  convert comap_map_eq f s
+  convert! comap_map_eq f s
   rwa [left_eq_sup, closure_le]
 
 theorem comap_map_eq_self_of_injective
@@ -1163,5 +1163,5 @@ end Subring
 
 theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) :
     (k : R) * g ∈ G := by
-  convert AddSubgroup.zsmul_mem G h k using 1
+  convert! AddSubgroup.zsmul_mem G h k using 1
   rw [zsmul_eq_mul]
