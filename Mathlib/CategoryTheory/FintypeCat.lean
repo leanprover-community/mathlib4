@@ -62,7 +62,7 @@ example : ConcreteCategory FintypeCat
     (fun X Y ↦ TypeCat.Fun X.obj Y.obj) :=
   inferInstance
 
-/- Help typeclass inference infer fullness of forgetful functor. -/
+/-- Help typeclass inference infer fullness of forgetful functor. -/
 instance : (forget FintypeCat).Full := inferInstanceAs <| FintypeCat.incl.Full
 
 @[simp]
@@ -91,18 +91,18 @@ lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g 
 
 /-- Constructor for morphisms in `FintypeCat`. -/
 def homMk {X Y : FintypeCat} (f : X → Y) : X ⟶ Y where
-  hom := TypeCat.ofHom f
+  hom := ↾f
 
 @[simp]
 lemma homMk_apply {X Y : FintypeCat} (f : X → Y) (x : X) :
     homMk f x = f x := rfl
 
 @[simp]
-lemma id_hom (X : FintypeCat) : 𝟙 X.obj = TypeCat.ofHom id := rfl
+lemma id_hom (X : FintypeCat) : 𝟙 X.obj = ↾id := rfl
 
 @[simp, reassoc]
 lemma comp_hom {X Y Z : FintypeCat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    f.hom ≫ g.hom = TypeCat.ofHom (g.hom ∘ f.hom) := rfl
+    f.hom ≫ g.hom = ↾(g.hom ∘ f.hom) := rfl
 
 @[simp]
 lemma homMk_eq_id_iff {X : FintypeCat} (f : X → X) :
@@ -234,9 +234,9 @@ attribute [local instance] FintypeCat.fintype in
 @[simp]
 theorem incl_mk_nat_card (n : ℕ) :
     Fintype.card (incl.obj (mk n)) = n := by
-  convert Finset.card_fin n
+  convert! Finset.card_fin n
   dsimp [incl, mk, len]
-  convert (Fintype.ofEquiv_card Equiv.ulift).symm
+  convert! (Fintype.ofEquiv_card Equiv.ulift).symm
 
 end Skeleton
 
@@ -285,6 +285,7 @@ lemma uSwitch_map_uSwitch_map {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
       f ≫ (equivEquivIso ((uSwitch.obj Y).uSwitchEquiv.trans
       Y.uSwitchEquiv)).inv := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] uSwitch_map_uSwitch_map in
 /-- `uSwitch.{u, v}` is an equivalence of categories with quasi-inverse `uSwitch.{v, u}`. -/

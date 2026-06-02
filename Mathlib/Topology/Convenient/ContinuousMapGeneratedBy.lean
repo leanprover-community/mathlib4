@@ -20,6 +20,7 @@ the composition `g ∘ f` is continuous.
   categories of (core) compactly generated spaces*][escardo-lawson-simpson-2004]
 
 -/
+
 universe v v' t u
 
 @[expose] public section
@@ -97,6 +98,8 @@ instance : FunLike (ContinuousMapGeneratedBy X Y Z) Y Z where
   coe f := f.toFun
   coe_injective' _ _ _ := by aesop
 
+initialize_simps_projections ContinuousMapGeneratedBy (toFun → apply)
+
 /-- The identity, as a `X`-continous map. -/
 @[simps]
 def ContinuousMapGeneratedBy.id : ContinuousMapGeneratedBy X Y Y where
@@ -127,7 +130,7 @@ def equivSymmAsContinuousMapGeneratedBy :
     rw [continuousGeneratedBy_def]
     intro i f
     rw [IsGeneratedBy.equiv_symm_comp_continuous_iff]
-    continuity
+    fun_prop
 
 @[simp]
 lemma equivSymmAsContinuousMapGeneratedBy_coe :

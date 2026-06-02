@@ -156,6 +156,8 @@ theorem left_inv' (e : α ≃ β) : Function.LeftInverse e.symm e := e.left_inv
 /-- Restatement of `Equiv.right_inv` in terms of `Function.RightInverse`. -/
 theorem right_inv' (e : α ≃ β) : Function.RightInverse e.symm e := e.right_inv
 
+@[simp] lemma symm_mk (f : α → β) (g hl hr) : (mk f g hl hr).symm = mk g f hr hl := rfl
+
 /-- Composition of equivalences `e₁ : α ≃ β` and `e₂ : β ≃ γ`. -/
 @[trans]
 protected def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
@@ -286,7 +288,7 @@ theorem cast_symm {α β} (h : α = β) : Equiv.cast h.symm = (Equiv.cast h).sym
 
 theorem cast_trans {α β γ} (h : α = β) (h2 : β = γ) :
     Equiv.cast (h.trans h2) = (Equiv.cast h).trans (Equiv.cast h2) :=
-  ext fun x => by substs h h2; rfl
+  ext fun x => by subst h h2; rfl
 
 theorem cast_eq_iff_heq {α β} (h : α = β) {a : α} {b : β} : Equiv.cast h a = b ↔ a ≍ b := by
   subst h; simp
@@ -819,6 +821,9 @@ noncomputable def ofBijective (f : α → β) (hf : Bijective f) : α ≃ β whe
   right_inv := rightInverse_surjInv _
 
 @[simp] lemma coe_ofBijective (f : α → β) (hf : Bijective f) : ⇑(ofBijective f hf) = f := rfl
+
+@[simp] lemma ofBijective_coe {f : α ≃ β} :
+    Equiv.ofBijective f f.bijective = f := Equiv.ext (congrFun rfl)
 
 lemma ofBijective_apply_symm_apply (f : α → β) (hf : Bijective f) (x : β) :
     f ((ofBijective f hf).symm x) = x :=

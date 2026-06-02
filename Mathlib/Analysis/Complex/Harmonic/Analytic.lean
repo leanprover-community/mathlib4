@@ -64,7 +64,6 @@ theorem HarmonicAt.analyticAt_complex_partial (hf : HarmonicAt f x) :
     (fun _ hy ↦ (HarmonicAt.differentiableAt_complex_partial hy).differentiableWithinAt)
     ((isOpen_setOf_harmonicAt f).mem_nhds hf)
 
-set_option backward.isDefEq.respectTransparency false in
 /-
 If a function `f : ℂ → ℝ` is harmonic on an open ball, then `f` is the real part of a function
 `F : ℂ → ℂ` that is holomorphic on the ball.
@@ -105,7 +104,6 @@ theorem InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_ball_re_eq {z : ℂ
 alias harmonic_is_realOfHolomorphic :=
   InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_ball_re_eq
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If a function `f : ℂ → ℝ` is harmonic, then `f` is the real part of a holomorphic function.
 -/
@@ -139,7 +137,6 @@ theorem InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_univ_re_eq {f : ℂ
 alias InnerProductSpace.harmonic_is_realOfHolomorphic_univ :=
   InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_univ_re_eq
 
-set_option backward.isDefEq.respectTransparency false in
 /-
 Harmonic functions are real analytic.
 TODO: Prove this for harmonic functions on an arbitrary f.d. inner product space (not just on `ℂ`).
