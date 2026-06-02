@@ -17,7 +17,7 @@ with sums instead of integrals.
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Function
 open scoped ENNReal NNReal
@@ -37,7 +37,7 @@ lemma avgRisk_countable [Countable Θ] [MeasurableSingletonClass Θ] :
   simp [avgRisk, lintegral_countable']
 
 lemma avgRisk_fintype' [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
-    (hl : Measurable (uncurry ℓ)) :
+    (hl : Measurable ℓ) :
     avgRisk ℓ P κ π = ∑ y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ P θ) {y} ∂π := by
   simp only [avgRisk, lintegral_fintype]
   rw [lintegral_finsetSum]
@@ -45,7 +45,7 @@ lemma avgRisk_fintype' [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
   exact fun y _ ↦ Measurable.mul (by fun_prop) ((κ ∘ₖ P).measurable_coe (measurableSet_singleton y))
 
 lemma avgRisk_countable' [Countable 𝓨] [MeasurableSingletonClass 𝓨]
-    (hl : Measurable (uncurry ℓ)) :
+    (hl : Measurable ℓ) :
     avgRisk ℓ P κ π = ∑' y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ P θ) {y} ∂π := by
   simp only [avgRisk, lintegral_countable']
   rw [lintegral_tsum]
@@ -64,13 +64,13 @@ lemma bayesRisk_countable [Countable Θ] [MeasurableSingletonClass Θ] :
   simp [bayesRisk, avgRisk_countable]
 
 lemma bayesRisk_fintype' [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
-    (hl : Measurable (uncurry ℓ)) :
+    (hl : Measurable ℓ) :
     bayesRisk ℓ P π
       = ⨅ (κ : Kernel 𝓧 𝓨) (_ : IsMarkovKernel κ), ∑ y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ P θ) {y} ∂π := by
   simp [bayesRisk, avgRisk_fintype' hl]
 
 lemma bayesRisk_countable' [Countable 𝓨] [MeasurableSingletonClass 𝓨]
-    (hl : Measurable (uncurry ℓ)) :
+    (hl : Measurable ℓ) :
     bayesRisk ℓ P π
       = ⨅ (κ : Kernel 𝓧 𝓨) (_ : IsMarkovKernel κ), ∑' y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ P θ) {y} ∂π := by
   simp [bayesRisk, avgRisk_countable' hl]
@@ -78,12 +78,12 @@ lemma bayesRisk_countable' [Countable 𝓨] [MeasurableSingletonClass 𝓨]
 section Const
 
 lemma avgRisk_const_of_fintype [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
-    (hℓ : Measurable (uncurry ℓ)) (μ : Measure 𝓧) (κ : Kernel 𝓧 𝓨) (π : Measure Θ) :
+    (hℓ : Measurable ℓ) (μ : Measure 𝓧) (κ : Kernel 𝓧 𝓨) (π : Measure Θ) :
     avgRisk ℓ (Kernel.const Θ μ) κ π = ∑ y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ μ) {y} ∂π := by
   simp [avgRisk_fintype' hℓ]
 
 lemma avgRisk_const_of_countable [Countable 𝓨] [MeasurableSingletonClass 𝓨]
-    (hℓ : Measurable (uncurry ℓ)) (μ : Measure 𝓧) (κ : Kernel 𝓧 𝓨) (π : Measure Θ) :
+    (hℓ : Measurable ℓ) (μ : Measure 𝓧) (κ : Kernel 𝓧 𝓨) (π : Measure Θ) :
     avgRisk ℓ (Kernel.const Θ μ) κ π = ∑' y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ μ) {y} ∂π := by
   simp [avgRisk_countable' hℓ]
 
