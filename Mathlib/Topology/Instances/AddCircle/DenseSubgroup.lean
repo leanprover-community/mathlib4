@@ -31,7 +31,7 @@ theorem dense_addSubgroupClosure_pair_iff {a b : ℝ} :
     Dense (AddSubgroup.closure {a, b} : Set ℝ) ↔ Irrational (a / b) := by
   rcases eq_or_ne b 0 with rfl | hb
   · rw [pair_comm]
-    simpa [← AddSubgroup.zmultiples_eq_closure] using not_denseRange_zsmul
+    simpa [← AddSubgroup.zmultiples_eq_closure] using! not_denseRange_zsmul
   constructor
   · rintro hd ⟨r, hr⟩
     refine not_denseRange_zsmul (a := b / r.den) <| hd.mono ?_
