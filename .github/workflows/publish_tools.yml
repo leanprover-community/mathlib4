@@ -1,17 +1,15 @@
 # Builds the trusted CI tooling (`cache` binary + the `lake-build-*` helper scripts)
 # from `master` and publishes them as a small artifact (`tools-bin`).
 #
-# `build_template.yml` normally checks out `master` and builds these tools from
-# source on *every* CI run (the "build tools-branch tools" step, ~30s + a full
-# checkout). Instead, regular CI runs download the artifact produced here via the
-# `get-tools` composite action, and only fall back to building from source when no
-# artifact is available or a non-`master` tools branch is requested (bors, ci_dev,
-# nightly-testing).
+# CI runs (build_template.yml, via the `get-tools` composite action) download this
+# artifact and use the tools directly, saving a full `master` checkout plus a ~30s
+# build on every run. They build the tools from source only when no artifact is
+# available or a non-`master` tools branch is requested (bors, ci_dev, nightly-testing).
 #
 # Trust model: this workflow is triggered *only* by pushes to `master` on the
-# canonical repository, so every artifact it emits is provably built from trusted
-# `master` code. The consumer pins its download to this workflow's `push` runs on
-# `master`, preserving the same guarantee that the previous `master` checkout gave.
+# canonical repository, so every artifact it emits is built from trusted `master`
+# code, and the consumer pins its download to this workflow's `master` `push` runs.
+# The tools a CI run executes are therefore always built from trusted `master` code.
 name: publish CI tools
 
 on:
