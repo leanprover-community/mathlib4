@@ -82,7 +82,7 @@ noncomputable def addSubMapCoeff : Fin 3 × Fin 3 → MvPolynomial (Fin 3) R :=
 /-- The multipless of the relation `W.b_relation`, which is equivalent to
 `4*W.b₈ - W.b₂*W.b₆ + W.b₄^2 = 0`, that we have to add to show the equality in
 `addSubMapCoeff_condition` below. -/
-noncomputable def b_relation_coeffs : Fin 3 → MvPolynomial (Fin 3) R :=
+noncomputable def bRelationCoeffs : Fin 3 → MvPolynomial (Fin 3) R :=
   ![C (3 * W.b₂ * W.b₈) * s ^ 2 * t * u + C (-8 * W.b₄ ^ 2) * s ^ 3 * u +
       C (-11 * W.b₄ * W.b₆) * s ^ 2 * t * u + C (-3 * W.b₆ ^ 2) * s * t ^ 2 * u +
       C (-24 * W.b₆ * W.b₈) * s * t * u ^ 2 + C (5 * W.b₆ * W.b₈) * t ^ 3 * u +
@@ -161,13 +161,13 @@ lemma addSubMapCoeff_condition (x : Fin 3 → R) (i : Fin 3) :
   simp only [eval_mul, eval_C, mul_assoc]
   rw [← Finset.mul_sum, Units.inv_mul_eq_iff_eq_mul, Fin.sum_univ_three]
   simp only [addSubMap, addSubMapCoeff, Function.uncurry_apply_pair]
-  have : -(b_relation_coeffs W i).eval x * (4 * W.b₈ - W.b₂ * W.b₆ + W.b₄ ^ 2) = 0 := by simp [hr]
+  have : -(bRelationCoeffs W i).eval x * (4 * W.b₈ - W.b₂ * W.b₆ + W.b₄ ^ 2) = 0 := by simp [hr]
   fin_cases i <;>
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, neg_mul, Fin.zero_eta,
       Matrix.cons_val_zero, Matrix.cons_val_one, map_sub, map_add, map_mul, eval_C, map_pow,
       eval_X, map_neg, Fin.reduceFinMk, Matrix.cons_val, Fin.mk_one, coe_Δ', Δ] <;>
     rw [← sub_eq_zero] <;>
-    simp [← this, b_relation_coeffs] <;>
+    simp [← this, bRelationCoeffs] <;>
     ring
 
 lemma addSubMap_ne_zero [IsDomain R] {x : Fin 3 → R} (hx : x ≠ 0) :
