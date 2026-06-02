@@ -98,12 +98,7 @@ theorem liftPath_apply_one_eq_ofBasedPath_append
   let Γ : C(I, UniversalCover x₀) := by
     refine ⟨fun t ↦ ofBasedPath x₀ (BasedPath.append α (Path.initialSegmentFamily γ t)),
       ?_⟩
-    exact (continuous_ofBasedPath x₀).comp <| Continuous.subtype_mk (by
-      refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
-      simpa using
-        Path.trans_continuous_family (fun _ : I ↦ α.toPath)
-          (Path.continuous_uncurry_iff.mpr continuous_const) (Path.initialSegmentFamily γ)
-          (Path.continuous_initialSegmentFamily_uncurry γ)) _
+    exact (continuous_ofBasedPath x₀).comp (BasedPath.continuous_append_initialSegmentFamily α γ)
   have hΓ_lifts : proj (x₀ := x₀) ∘ Γ = γ := by
     ext t
     simpa [Γ] using

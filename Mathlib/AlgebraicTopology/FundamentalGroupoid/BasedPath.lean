@@ -278,6 +278,20 @@ public theorem continuous_initialSegmentFamily {x₀ : X} (γ : BasedPath x₀) 
   refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
   simpa only using γ.toPath.continuous_initialSegmentFamily_uncurry
 
+/-- Appending a fixed terminal path's initial-segment family to a fixed based path is jointly
+continuous in the family parameter. This packages the boilerplate for using
+`Path.trans_continuous_family` to lift `append γ ∘ Path.initialSegmentFamily δ` to a continuous
+map `I → BasedPath x₀`. -/
+public theorem continuous_append_initialSegmentFamily {x₀ z : X}
+    (γ : BasedPath x₀) (δ : Path (endpoint γ) z) :
+    Continuous fun t : I ↦ γ.append (Path.initialSegmentFamily δ t) := by
+  apply Continuous.subtype_mk
+  refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
+  simpa using
+    Path.trans_continuous_family (fun _ : I ↦ γ.toPath)
+      (Path.continuous_uncurry_iff.mpr continuous_const) (Path.initialSegmentFamily δ)
+      (Path.continuous_initialSegmentFamily_uncurry δ)
+
 /-- Extract an open path-connected endpoint neighborhood and a terminal interval avoiding the
 subbasic compact sets that do not contain `1`. -/
 theorem exists_endpointNeighborhood_of_basicNeighborhood [LocPathConnectedSpace X]
@@ -484,13 +498,7 @@ public theorem joinedIn_preimage_of_append {U : Set X} {z : X} (γ : BasedPath x
       JoinedIn (endpoint (x₀ := x₀) ⁻¹' U) (append γ γrefl) (append γ δ) := by
     let η : Path (append γ γrefl) (append γ δ) := {
       toFun := fun t ↦ append γ (Path.initialSegmentFamily δ t)
-      continuous_toFun := by
-        apply Continuous.subtype_mk
-        refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
-        simpa using
-          Path.trans_continuous_family (fun _ : I ↦ γ.toPath)
-            (Path.continuous_uncurry_iff.mpr continuous_const) (Path.initialSegmentFamily δ)
-            (Path.continuous_initialSegmentFamily_uncurry δ)
+      continuous_toFun := continuous_append_initialSegmentFamily γ δ
       source' := by
         simpa [γrefl] using
           congrArg (append γ) (Path.initialSegmentFamily_zero δ)
