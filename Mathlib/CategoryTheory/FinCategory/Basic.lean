@@ -50,7 +50,7 @@ attribute [instance_reducible, instance] FinCategory.fintypeObj FinCategory.fint
 
 instance finCategoryDiscreteOfFintype (J : Type v) [Fintype J] : FinCategory (Discrete J) where
 
-instance {J : Type u} [Finite J] [SmallCategory J] [Quiver.IsThin J] : FinCategory J :=
+instance {J : Type u} [Fintype J] [SmallCategory J] [Quiver.IsThin J] : FinCategory J :=
   FinCategory.mk (Fintype.ofFinite J) (fun j j' ↦ Fintype.ofFinite (j ⟶ j'))
 
 open Opposite
