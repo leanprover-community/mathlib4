@@ -112,8 +112,8 @@ def Measure.toProbabilityMeasure (μ : Measure Ω) [IsProbabilityMeasure μ] :
 
 theorem Measure.toProbabilityMeasure_inj (μ ν : Measure Ω)
     [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
-    μ = ν ↔ μ.toProbabilityMeasure = ν.toProbabilityMeasure :=
-  ⟨fun h ↦ Subtype.ext h, fun h ↦ congrArg Subtype.val h⟩
+    μ.toProbabilityMeasure = ν.toProbabilityMeasure ↔ μ = ν :=
+  ⟨fun h ↦ congrArg Subtype.val h, fun h ↦ Subtype.ext h⟩
 
 namespace ProbabilityMeasure
 
@@ -136,12 +136,13 @@ instance (μ : ProbabilityMeasure Ω) : IsProbabilityMeasure (μ : Measure Ω) :
 theorem val_eq_to_measure (ν : ProbabilityMeasure Ω) : ν.val = (ν : Measure Ω) := rfl
 
 @[simp]
-theorem coe_toProbabilityMeasure (μ : Measure Ω) [IsProbabilityMeasure μ] :
-    (μ.toProbabilityMeasure : Measure Ω) = μ := rfl
+theorem _root_.MeasureTheory.Measure.coe_toProbabilityMeasure (μ : Measure Ω)
+    [IsProbabilityMeasure μ] :
+  μ.toProbabilityMeasure = μ := rfl
 
 @[simp]
 theorem toProbabilityMeasure_coe (ν : ProbabilityMeasure Ω) :
-    (ν : Measure Ω).toProbabilityMeasure = ν := rfl
+    (↑ν : Measure Ω).toProbabilityMeasure = ν := rfl
 
 theorem toMeasure_injective : Function.Injective ((↑) : ProbabilityMeasure Ω → Measure Ω) :=
   Subtype.coe_injective
