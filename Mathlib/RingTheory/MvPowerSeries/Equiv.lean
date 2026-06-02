@@ -495,7 +495,7 @@ lemma optionEquivRight_X_some (i : σ) : optionEquivRight σ R (X (some i)) = X 
   simpa [← X_def] using optionEquivRight_monomial (single (some i) 1) (1 : R)
 
 lemma optionEquivRight_X_none : optionEquivRight σ R (X none) = C PowerSeries.X := by
-  simpa [← X_def, PowerSeries.monomial, PowerSeries.X] using
+  simpa [← X_def, PowerSeries.monomial_eq_C_mul_X_pow] using
     optionEquivRight_monomial (single none 1) (1 : R)
 
 lemma optionEquivRight_C (r : R) : optionEquivRight σ R (C r) = C (PowerSeries.C r) := by
