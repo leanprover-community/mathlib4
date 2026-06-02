@@ -861,7 +861,6 @@ theorem induction [MeasurableSpace α] [AddZeroClass β] [TopologicalSpace β]
     (f : α → β) (hf : StronglyMeasurable f) : P f hf := by
   let s := hf.approx
   refine lim (fun n ↦ (s n).stronglyMeasurable) hf (fun n ↦ ?_) hf.tendsto_approx
-  change P (s n) (s n).stronglyMeasurable
   induction s n using SimpleFunc.induction with
   | const c hs => exact ind c hs
   | @add f g h_supp hf hg =>
@@ -885,7 +884,6 @@ theorem induction' [MeasurableSpace α] [Nonempty β] [TopologicalSpace β]
     (f : α → β) (hf : StronglyMeasurable f) : P f hf := by
   let s := hf.approx
   refine lim (fun n ↦ (s n).stronglyMeasurable) hf (fun n ↦ ?_) hf.tendsto_approx
-  change P (s n) (s n).stronglyMeasurable
   induction s n with
   | const c => exact const c
   | @pcw f g s hs Pf Pg =>
@@ -940,7 +938,7 @@ lemma measurableSet_le (hf : StronglyMeasurable[m] f) (hg : StronglyMeasurable[m
 
 lemma measurableSet_lt (hf : StronglyMeasurable[m] f) (hg : StronglyMeasurable[m] g) :
     MeasurableSet[m] {a | f a < g a} := by
-  simpa only [lt_iff_le_not_ge] using (hf.measurableSet_le hg).inter (hg.measurableSet_le hf).compl
+  simpa only [lt_iff_le_not_ge] using! (hf.measurableSet_le hg).inter (hg.measurableSet_le hf).compl
 
 lemma ae_le_trim_of_stronglyMeasurable (hm : m ≤ m₀) (hf : StronglyMeasurable[m] f)
     (hg : StronglyMeasurable[m] g) (hfg : f ≤ᵐ[μ] g) : f ≤ᵐ[μ.trim hm] g := by

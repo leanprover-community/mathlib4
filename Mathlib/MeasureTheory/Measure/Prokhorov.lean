@@ -131,7 +131,7 @@ theorem isCompact_setOf_finiteMeasure_le_of_compactSpace [CompactSpace E] (C : �
     apply this.trans
     gcongr
     apply le_of_tendsto (hΛ o)
-    filter_upwards [hf] with μ hμ using by simpa [o] using hμ
+    filter_upwards [hf] with μ hμ using by simpa [o] using! hμ
   let μlim' : FiniteMeasure E := ⟨μlim, ⟨μlim_le.trans_lt (by simp)⟩⟩
   refine ⟨μlim', ?_, ?_⟩
   · simp only [mem_setOf_eq, FiniteMeasure.mk_apply, μlim', FiniteMeasure.mass]
@@ -484,11 +484,11 @@ lemma isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le {u : ℕ →
     simp only [mem_image, mem_setOf_eq]
     refine ⟨?_, ?_⟩
     · rintro ⟨ν, hν, rfl⟩
-      simpa using hν
+      simpa using! hν
     · rintro ⟨hμ, h'μ⟩
-      let ν : ProbabilityMeasure E := ⟨μ, isProbabilityMeasure_iff_real.2 (by simpa using hμ)⟩
+      let ν : ProbabilityMeasure E := ⟨μ, isProbabilityMeasure_iff_real.2 (by simpa using! hμ)⟩
       have : ν.toFiniteMeasure = μ := by ext; rfl
-      exact ⟨ν, by simpa [← this] using h'μ , this⟩
+      exact ⟨ν, by simpa [← this] using! h'μ , this⟩
   rw [this]
   exact isCompact_setOf_finiteMeasure_mass_eq_compl_isCompact_le 1 hu hK h
 
