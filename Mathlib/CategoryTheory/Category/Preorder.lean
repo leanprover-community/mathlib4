@@ -5,7 +5,6 @@ Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl, Reid Barton
 -/
 module
 
-public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Data.ULift
@@ -185,7 +184,7 @@ variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 namespace CategoryTheory.Functor
 
 /-- A functor between preorder categories is monotone. -/
-@[mono]
+@[gcongr, mono]
 theorem monotone (f : X ⥤ Y) : Monotone f.obj := fun _ _ hxy => (f.map hxy.hom).le
 
 /-- A functor `X ⥤ Y` between preorder categories as an `OrderHom`. -/

@@ -204,7 +204,7 @@ noncomputable def toENat : Cardinal.{u} →+*o ℕ∞ where
       · simp only [toENatAux_eq_top hy]
         rw [toENatAux_eq_top, ENat.mul_top]
         · rwa [Ne, toENatAux_eq_zero]
-        · exact le_mul_of_one_le_of_le (one_le_iff_ne_zero.2 hx) hy
+        · exact le_mul_of_one_le_of_le (Cardinal.one_le_iff_ne_zero.2 hx) hy
   map_add' x y := by
     wlog hle : x ≤ y; · rw [add_comm, this y x (le_of_not_ge hle), add_comm]
     cases lt_or_ge y ℵ₀ with
@@ -240,7 +240,7 @@ lemma ofENat_toENat_le (a : Cardinal) : ↑(toENat a) ≤ a := enat_gc.l_u_le _
 @[simp]
 lemma ofENat_toENat_eq_self {a : Cardinal} : toENat a = a ↔ a ≤ ℵ₀ := by
   rw [eq_comm, ← enat_gc.exists_eq_l]
-  simpa only [mem_range, eq_comm] using Set.ext_iff.1 range_ofENat a
+  simpa only [mem_range, eq_comm] using! Set.ext_iff.1 range_ofENat a
 
 @[simp] alias ⟨_, ofENat_toENat⟩ := ofENat_toENat_eq_self
 
@@ -274,7 +274,6 @@ lemma toENat_eq_iff_of_le_aleph0 (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) : toE
   natCast_le_toENat
 
 @[simp] lemma toENat_lt_natCast : toENat c < n ↔ c < n := by simp [← not_le]
-@[simp] lemma toENat_lt_one : toENat c < 1 ↔ c < 1 := toENat_lt_natCast
 @[simp] lemma toENat_lt_ofNat [n.AtLeastTwo] : toENat c < ofNat(n) ↔ c < ofNat(n) :=
   toENat_lt_natCast
 
@@ -288,6 +287,9 @@ lemma toENat_eq_iff_of_le_aleph0 (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) : toE
 @[simp] lemma toENat_eq_one : toENat c = 1 ↔ c = 1 := toENat_eq_natCast
 @[simp] lemma toENat_eq_ofNat [n.AtLeastTwo] : toENat c = ofNat(n) ↔ c = ofNat(n) :=
   toENat_eq_natCast
+
+@[deprecated toENat_eq_zero (since := "2026-05-25")]
+lemma toENat_lt_one : toENat c < 1 ↔ c < 1 := by simp
 
 @[deprecated (since := "2026-01-13")] alias toENat_eq_nat := toENat_eq_natCast
 

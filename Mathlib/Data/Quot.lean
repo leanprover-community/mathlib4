@@ -455,6 +455,7 @@ theorem true_equivalence : @Equivalence α fun _ _ ↦ True :=
 /-- Always-true relation as a `Setoid`.
 
 Note that in later files the preferred spelling is `⊤ : Setoid α`. -/
+@[implicit_reducible]
 def trueSetoid : Setoid α :=
   ⟨_, true_equivalence⟩
 

@@ -158,7 +158,6 @@ noncomputable def hilbertPoly_linearMap (d : ℕ) : F[X] →ₗ[F] F[X] where
 
 variable [CharZero F]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The key property of Hilbert polynomials. If `F` is a field with characteristic `0`, `p : F[X]` and
 `d : ℕ`, then for any large enough `n : ℕ`, `(Polynomial.hilbertPoly p d).eval (n : F)` equals the
@@ -171,7 +170,7 @@ theorem coeff_mul_invOneSubPow_eq_hilbertPoly_eval
   | zero => simp only [invOneSubPow_zero, Units.val_one, mul_one, coeff_coe, eval_zero]
             exact coeff_eq_zero_of_natDegree_lt hn
   | succ d hd =>
-      simp only [eval_finset_sum, eval_smul, smul_eq_mul]
+      simp only [eval_finsetSum, eval_smul, smul_eq_mul]
       rw [← Finset.sum_coe_sort]
       have h_le (i : p.support) : (i : ℕ) ≤ n :=
         le_trans (le_natDegree_of_ne_zero <| mem_support_iff.1 i.2) hn.le
@@ -218,7 +217,6 @@ theorem eq_hilbertPoly_of_forall_coeff_eq_eval
   ExistsUnique.unique (existsUnique_hilbertPoly p d) ⟨N, hhN⟩
     ⟨p.natDegree, fun _ x => coeff_mul_invOneSubPow_eq_hilbertPoly_eval d x⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hilbertPoly_mul_one_sub_succ (p : F[X]) (d : ℕ) :
     hilbertPoly (p * (1 - X)) (d + 1) = hilbertPoly p d := by
   apply eq_hilbertPoly_of_forall_coeff_eq_eval (p * (1 - X)).natDegree
@@ -260,7 +258,7 @@ theorem natDegree_hilbertPoly_of_ne_zero_of_rootMultiplicity_lt
     apply le_trans (natDegree_smul_le _ _)
     rw [natDegree_preHilbertPoly]
   · have : (fun (x : ℕ) (a : F) => a) = fun x a => a * 1 ^ x := by simp only [one_pow, mul_one]
-    simp only [finset_sum_coeff, coeff_smul, smul_eq_mul, coeff_preHilbertPoly_self,
+    simp only [finsetSum_coeff, coeff_smul, smul_eq_mul, coeff_preHilbertPoly_self,
       ← Finset.sum_mul, ← sum_def _ (fun _ a => a), this, ← eval_eq_sum, eval_mul, eval_pow,
       eval_neg, eval_one, _root_.mul_eq_zero, pow_eq_zero_iff', neg_eq_zero, one_ne_zero, ne_eq,
       false_and, or_false, inv_eq_zero, cast_eq_zero, not_or]

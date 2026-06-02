@@ -154,7 +154,7 @@ noncomputable def isometryEquivWeightedSumSquares (Q : QuadraticForm K V)
     Q.IsometryEquiv (weightedSumSquares K fun i => Q (v i)) := by
   let iso := Q.isometryEquivBasisRepr v
   refine ⟨iso, fun m => ?_⟩
-  convert iso.map_app m
+  convert! iso.map_app m
   rw [basisRepr_eq_of_iIsOrtho _ _ hv₁]
 
 variable [FiniteDimensional K V]
@@ -185,7 +185,6 @@ def weightedSumSquaresCongr (h : w = w') :
   __ := LinearEquiv.refl R (ι → R)
   map_app' := by simp [h]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The isometry between two weighted sum of squares, give that each weight is scaled by the square
 of a unit. -/
 def isometryEquivWeightedSumSquaresWeightedSumSquares (u : ι → Sˣ) (h : ∀ i, w' i * u i ^ 2 = w i) :

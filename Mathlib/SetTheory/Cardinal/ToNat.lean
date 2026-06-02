@@ -160,4 +160,14 @@ lemma natCast_toNat_le (a : Cardinal) : (toNat a : Cardinal) ≤ a := by
   · simp [cast_toNat_of_lt_aleph0 h]
   · simp [Cardinal.toNat_apply_of_aleph0_le h]
 
+lemma toNat_le_iff_of_lt_aleph0 {a : Cardinal.{u}} (n : ℕ) (lt : a < Cardinal.aleph0) :
+    a.toNat ≤ n ↔ a ≤ n := by
+  nth_rw 1 [← Cardinal.toNat_natCast.{u} n,
+    Cardinal.toNat_le_iff_le_of_lt_aleph0 lt (Cardinal.natCast_lt_aleph0)]
+
+lemma toNat_eq_iff_of_lt_aleph0 {a : Cardinal.{u}} (n : ℕ) (lt : a < Cardinal.aleph0) :
+    a.toNat = n ↔ a = n := by
+  nth_rw 2 [← Cardinal.cast_toNat_of_lt_aleph0 lt]
+  exact Nat.cast_inj.symm
+
 end Cardinal

@@ -20,7 +20,7 @@ one-liners from the corresponding axioms. For the definitions of semigroups, mon
 `Mathlib/Algebra/Group/Defs.lean`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
@@ -283,6 +283,10 @@ variable [InvolutiveInv G] {a b : G}
 theorem inv_involutive : Function.Involutive (Inv.inv : G → G) :=
   inv_inv
 
+@[to_additive]
+theorem inv_bijective : Function.Bijective (Inv.inv : G → G) :=
+  inv_involutive.bijective
+
 @[to_additive (attr := simp)]
 theorem inv_surjective : Function.Surjective (Inv.inv : G → G) :=
   inv_involutive.surjective
@@ -297,7 +301,7 @@ theorem inv_inj : a⁻¹ = b⁻¹ ↔ a = b :=
 
 @[to_additive]
 theorem inv_eq_iff_eq_inv : a⁻¹ = b ↔ a = b⁻¹ :=
-  ⟨fun h => h ▸ (inv_inv a).symm, fun h => h.symm ▸ inv_inv b⟩
+  inv_involutive.eq_iff
 
 variable (G)
 

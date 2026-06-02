@@ -120,11 +120,6 @@ def semilinearEquiv [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
     [EquivLike F M M₂] [SemilinearEquivClass F σ M M₂] (f : F) : M ≃ₛₗ[σ] M₂ :=
   { (f : M ≃+ M₂), (f : M →ₛₗ[σ] M₂) with }
 
-/-- Reinterpret an element of a type of semilinear equivalences as a semilinear equivalence. -/
-instance instCoeToSemilinearEquiv [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-    [EquivLike F M M₂] [SemilinearEquivClass F σ M M₂] : CoeHead F (M ≃ₛₗ[σ] M₂) where
-  coe f := semilinearEquiv f
-
 end SemilinearEquivClass
 
 namespace LinearEquiv
@@ -301,6 +296,7 @@ variable [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₄
 variable [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₄₃ σ₃₂ σ₄₂]
 variable (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃)
 
+set_option linter.overlappingInstances false in
 /-- Linear equivalences are transitive. -/
 -- Note: the `RingHomCompTriple σ₃₂ σ₂₁ σ₃₁` is unused, but is convenient to carry around
 -- implicitly for lemmas like `LinearEquiv.self_trans_symm`.
@@ -528,15 +524,12 @@ theorem mk_coe' (f h₁ h₂ h₃ h₄) :
     (LinearEquiv.mk ⟨⟨f, h₁⟩, h₂⟩ (⇑e) h₃ h₄ : M₂ ≃ₛₗ[σ'] M) = e.symm :=
   symm_bijective.injective <| ext fun _ ↦ rfl
 
-/-- Auxiliary definition to avoid looping in `dsimp` with `LinearEquiv.symm_mk`. -/
-protected def symm_mk.aux (f h₁ h₂ h₃ h₄) := (⟨⟨⟨e, h₁⟩, h₂⟩, f, h₃, h₄⟩ : M ≃ₛₗ[σ] M₂).symm
-
 @[simp]
-theorem symm_mk (f h₁ h₂ h₃ h₄) :
-    (⟨⟨⟨e, h₁⟩, h₂⟩, f, h₃, h₄⟩ : M ≃ₛₗ[σ] M₂).symm =
-      { symm_mk.aux e f h₁ h₂ h₃ h₄ with
-        toFun := f
-        invFun := e } :=
+theorem symm_mk (toLinearMap invFun h₁ h₂) : dsimp%
+    (mk toLinearMap invFun h₁ h₂ : M ≃ₛₗ[σ] M₂).symm =
+      { (mk toLinearMap invFun h₁ h₂ : M ≃ₛₗ[σ] M₂).symm with
+        toFun := invFun
+        invFun := toLinearMap } :=
   rfl
 
 /-- For a more powerful version, see `coe_symm_mk'`. -/
@@ -590,6 +583,10 @@ def _root_.RingEquiv.toSemilinearEquiv (f : R ≃+* S) :
   { f with
     toFun := f
     map_smul' := f.map_mul }
+
+@[simp]
+lemma _root_.RingEquiv.symm_toSemilinearEquiv_symm_apply (f : R ≃+* S) (x : R) :
+  f.symm.toSemilinearEquiv.symm (σ' := RingHomClass.toRingHom f) x = f x := rfl
 
 variable [AddCommMonoid M]
 
