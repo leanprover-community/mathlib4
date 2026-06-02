@@ -147,9 +147,9 @@ theorem edist_eq_iSup : edist f g = ⨆ (x : α), edist (f x) (g x) := by
 instance {R} [Zero R] [Zero β] [PseudoMetricSpace R] [SMul R β] [IsBoundedSMul R β] :
     IsBoundedSMul R C(α, β) where
   dist_smul_pair' r f g := by
-    simpa only [← dist_mkOfCompact] using dist_smul_pair r (mkOfCompact f) (mkOfCompact g)
+    simpa only [← dist_mkOfCompact] using! dist_smul_pair r (mkOfCompact f) (mkOfCompact g)
   dist_pair_smul' r₁ r₂ f := by
-    simpa only [← dist_mkOfCompact] using dist_pair_smul r₁ r₂ (mkOfCompact f)
+    simpa only [← dist_mkOfCompact] using! dist_pair_smul r₁ r₂ (mkOfCompact f)
 
 end
 
@@ -358,8 +358,8 @@ open BoundedContinuousFunction
 is the maximum of their norms. -/
 lemma norm_add_eq_max {f g : C(α, R)} (h : f * g = 0) :
     ‖f + g‖ = max ‖f‖ ‖g‖ := by
-  replace h : mkOfCompact f * mkOfCompact g = 0 := by ext x; simpa using congr($h x)
-  simpa using BoundedContinuousFunction.norm_add_eq_max h
+  replace h : mkOfCompact f * mkOfCompact g = 0 := by ext x; simpa using! congr($h x)
+  simpa using! BoundedContinuousFunction.norm_add_eq_max h
 
 /-- If the product of continuous functions on a compact space is zero, then the norm of their sum
 is the maximum of their norms. -/
@@ -461,7 +461,7 @@ theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     -- TODO: there is a non-confluence problem in the lemmas here,
     -- and `SetLike.coe_sort_coe` prevents `restrict_apply` from being used.
     simp [-SetLike.coe_sort_coe]
-  simpa only [HasSum, A] using (hF K).of_norm
+  simpa only [HasSum, A] using! (hF K).of_norm
 
 end LocalNormalConvergence
 

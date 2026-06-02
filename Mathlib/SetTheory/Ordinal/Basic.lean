@@ -565,7 +565,6 @@ def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.ToType where
   bot := (enum (· < ·)) ⟨0, _⟩
   bot_le := enum_zero_le' (bot_lt_iff_ne_bot.2 ho)
 
-set_option linter.deprecated false in
 @[deprecated "use `WellFoundedLT.toOrderBot` if you need an `OrderBot` instance"
 (since := "2026-04-12")]
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
@@ -1211,7 +1210,6 @@ theorem mk_Iio_toType_ord_lt {c : Cardinal} (i : c.ord.ToType) : #(Iio i) < c :=
 
 @[deprecated (since := "2026-03-20")] alias mk_Iio_ord_toType := mk_Iio_toType_ord_lt
 
-set_option linter.deprecated false in
 @[deprecated mk_Iio_lt (since := "2026-03-20")]
 theorem card_typein_toType_lt (c : Cardinal) (x : c.ord.ToType) :
     card (typein (α := c.ord.ToType) (· < ·) x) < c :=
@@ -1256,7 +1254,6 @@ theorem ord_eq_omega0 {a : Cardinal} : a.ord = ω ↔ a = ℵ₀ :=
 def ord.orderEmbedding : Cardinal ↪o Ordinal :=
   OrderEmbedding.ofStrictMono _ fun _ _ ↦ Cardinal.ord_lt_ord.2
 
-set_option linter.deprecated false in
 @[deprecated ord (since := "2026-02-27")]
 theorem ord.orderEmbedding_coe : (ord.orderEmbedding : Cardinal → Ordinal) = ord :=
   rfl
