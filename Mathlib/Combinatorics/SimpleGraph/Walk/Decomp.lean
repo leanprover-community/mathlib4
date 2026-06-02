@@ -129,14 +129,6 @@ theorem isSubwalk_takeUntil (p : G.Walk u v) (h : w ∈ p.support) : (p.takeUnti
 theorem isSubwalk_dropUntil (p : G.Walk u v) (h : w ∈ p.support) : (p.dropUntil w h).IsSubwalk p :=
   ⟨p.takeUntil w h, nil, by simp⟩
 
-lemma support_takeUntil_prefix {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
-    (p.takeUntil u h).support <+: p.support := by
-  grw [takeUntil_eq_take, support_copy, take_support_eq_support_take_succ, List.take_prefix]
-
-lemma support_dropUntil_suffix {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
-    (p.dropUntil u h).support <:+ p.support := by
-  grw [dropUntil_eq_drop, support_copy, drop_support_eq_support_drop_min, List.drop_suffix]
-
 theorem mem_support_iff_exists_append {V : Type u} {G : SimpleGraph V} {u v w : V}
     {p : G.Walk u v} : w ∈ p.support ↔ ∃ (q : G.Walk u w) (r : G.Walk w v), p = q.append r := by
   classical
@@ -312,7 +304,7 @@ lemma length_takeUntil_lt_length {u v w : V} {p : G.Walk v w} (h : u ∈ p.suppo
 
 @[deprecated (since := "2026-05-25")] alias length_takeUntil_lt := length_takeUntil_lt_length
 
-lemma length_dropUntil_lt {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (huv : u ≠ v) :
+lemma length_dropUntil_lt_length {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (huv : u ≠ v) :
     (p.dropUntil u h).length < p.length := by
   grind [length_dropUntil, cons_tail_support]
 

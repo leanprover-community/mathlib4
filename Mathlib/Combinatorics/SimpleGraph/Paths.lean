@@ -762,10 +762,10 @@ theorem IsPath.exists_isCycle_of_ne {u v : V} {p q : G.Walk u v} (hp : p.IsPath)
   · classical
     have ⟨w, hwp, hwq, hwu, hwv⟩ := hw
     by_cases! p.takeUntil w hwp ≠ q.takeUntil w hwq
-    · have := ih _ (hs ▸ length_takeUntil_lt hwp hwv) (hp.takeUntil hwp) (hq.takeUntil hwq)
+    · have := ih _ (hs ▸ length_takeUntil_lt_length hwp hwv) (hp.takeUntil hwp) (hq.takeUntil hwq)
       grind [isSubwalk_takeUntil, IsSubwalk.trans]
-    · have := ih _ (hs ▸ length_dropUntil_lt hwp hwu) (hp.dropUntil hwp) (hq.dropUntil hwq) <| by
-        grind [take_spec]
+    · have := ih _ (hs ▸ length_dropUntil_lt_length hwp hwu) (hp.dropUntil hwp) (hq.dropUntil hwq)
+        <| by grind [take_spec]
       grind [isSubwalk_dropUntil, IsSubwalk.trans]
   · refine ⟨u, v, p, q, p.isSubwalk_rfl, q.isSubwalk_rfl, ?_⟩
     refine hp.isCycle_append (isPath_reverse_iff q |>.mpr hq) (fun _ ↦ ?_) ?_
