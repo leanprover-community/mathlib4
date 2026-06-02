@@ -18,7 +18,7 @@ public import Mathlib.RingTheory.Depth.AuslanderBuchsbaum
 
 universe u v
 
-variable (R : Type u) [CommRing R]
+variable {R : Type u} [CommRing R]
 
 open IsLocalRing CategoryTheory
 
