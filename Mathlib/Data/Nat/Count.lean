@@ -66,16 +66,12 @@ theorem count_le {n : ℕ} : count p n ≤ n := by
 theorem count_succ (n : ℕ) : count p (n + 1) = count p n + if p n then 1 else 0 := by
   grind [count, List.range_succ]
 
-@[mono]
+@[gcongr, mono]
 theorem count_monotone : Monotone (count p) :=
   monotone_nat_of_le_succ (by grind)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem count_add (a b : ℕ) : count p (a + b) = count p a + count (fun k ↦ p (a + k)) b := by
-  have : Disjoint {x ∈ range a | p x} {x ∈ (range b).map <| addLeftEmbedding a | p x} := by
-    grind [Finset.disjoint_left]
-  simp_rw [count_eq_card_filter_range, range_add, filter_union, card_union_of_disjoint this,
-    filter_map, addLeftEmbedding, card_map, Function.Embedding.coeFn_mk, Function.comp_def]
+  simp [count, List.range_add, Function.comp_def]
 
 theorem count_add' (a b : ℕ) : count p (a + b) = count (fun k ↦ p (k + b)) a + count p b := by
   rw [add_comm, count_add, add_comm]
