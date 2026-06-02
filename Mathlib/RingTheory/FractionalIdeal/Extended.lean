@@ -228,7 +228,7 @@ theorem le_one_of_extendedHom_le_one [IsIntegrallyClosed A] [IsIntegrallyClosed 
   obtain ⟨x, hx₁, hx₂⟩ := hI
   refine ⟨algebraMap K L x, ?_, ?_⟩
   · simpa [← FractionalIdeal.mem_coe, IsLocalization.algebraMap_eq_map_map_submonoid A⁰ B K L]
-      using subset_span <| Set.mem_image_of_mem _ hx₁
+      using! subset_span <| Set.mem_image_of_mem _ hx₁
   · contrapose hx₂
     rw [mem_one_iff, ← IsIntegrallyClosed.isIntegral_iff] at hx₂ ⊢
     exact IsIntegral.tower_bot_of_field <| isIntegral_trans _ hx₂
@@ -243,6 +243,8 @@ theorem extendedHom_le_one_iff [IsIntegrallyClosed A] [IsIntegrallyClosed B] :
 @[deprecated (since := "2026-04-16")] alias extendedHomₐ_le_one_iff := extendedHom_le_one_iff
 
 section IsDedekindDomain
+
+set_option linter.overlappingInstances false
 
 variable [IsDedekindDomain A] [IsDedekindDomain B]
 
