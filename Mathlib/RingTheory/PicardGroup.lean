@@ -884,11 +884,11 @@ theorem Module.Invertible.exists_linearEquiv_ideal [Subsingleton (Pic (FractionR
   ⟨_, ⟨e ≪≫ₗ FractionalIdeal.equivNumOfIsLocalization
     ⟨_, I.submodule_isFractional (S := nonZeroDivisors R)⟩⟩⟩
 
-/- Every invertible module over a domain is isomorphic to an ideal. -/
+/-- Every invertible module over a domain is isomorphic to an ideal. -/
 example [IsDomain R] : ∃ I : Ideal R, Nonempty (M ≃ₗ[R] I) :=
   Module.Invertible.exists_linearEquiv_ideal R M
 
-/- Every invertible module over a Noetherian ring is isomorphic to an ideal.
+/-- Every invertible module over a Noetherian ring is isomorphic to an ideal.
 See https://mathoverflow.net/a/499611. -/
 example [IsNoetherianRing R] : ∃ I : Ideal R, Nonempty (M ≃ₗ[R] I) :=
   Module.Invertible.exists_linearEquiv_ideal R M
