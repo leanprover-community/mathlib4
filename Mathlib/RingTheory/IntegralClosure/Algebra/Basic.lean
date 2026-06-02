@@ -209,6 +209,14 @@ theorem isIntegral_natCast (a : ℕ) : IsIntegral ℤ (a : B) := by
   rw [← Int.cast_natCast]
   exact isIntegral_intCast a
 
+namespace IsIntegral
+
+theorem Cast (a : ℤ) : IsIntegral ℤ (a : B) := isIntegral_intCast a
+
+theorem Nat (a : ℕ) : IsIntegral ℤ (a : B) := isIntegral_natCast a
+
+end IsIntegral
+
 variable (R A)
 
 /-- The integral closure of `R` in an `R`-algebra `A`. -/

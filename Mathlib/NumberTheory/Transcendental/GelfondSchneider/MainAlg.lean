@@ -401,10 +401,14 @@ lemma bl_le_mq : b q t * l q u ≤ m K * q := by
   unfold b
   exact fin_mul_l_le_mq q u ((finProdFinEquiv.symm t).2)
 
-include h2mq in
+include hq0 h2mq in
 lemma mq_le_m_two_mnq : m K * q ≤ m K * (2 * (m K * n K q)) := by
-  simpa [mul_assoc] using Nat.mul_le_mul_left (m K)
-    ((Nat.le_pow Nat.zero_lt_two).trans (Nat.mul_div_cancel' h2mq).symm.le)
+  rw [show 2 * (m K * n K q) = q ^ 2 by
+    unfold n
+    calc 2 * (m K * (q ^ 2 / (2 * m K))) = (2 * m K) * (q ^ 2 / (2 * m K)) := by ring
+      _ = q ^ 2 := Nat.mul_div_cancel' h2mq]
+  have h1 : 1 ≤ q := Nat.one_le_iff_ne_zero.mpr hq0.ne'
+  exact Nat.mul_le_mul_left _ (le_self_pow h1 (by decide : (2 : ℕ) ≠ 0))
 
 include α' β' γ' in
 lemma house_c₁_smul_le (x : K) :
@@ -490,7 +494,7 @@ lemma house_smul_pow_le_abs :
   have hk := k_le_n_sub_one q u
   have hal := al_le_mq q u t
   have hbl := bl_le_mq q u t
-  have h_mq := mq_le_m_two_mnq q h2mq
+  have h_mq := mq_le_m_two_mnq q hq0 h2mq
   have hbd : ∀ x : K, house (c₁ α' β' γ' • x) ≤ ↑|c₁ α' β' γ'| * house x :=
     fun _ ↦ by rw [zsmul_eq_mul]; exact (house_mul_le _ _).trans_eq (by simp)
   gcongr
@@ -506,8 +510,8 @@ lemma house_smul_pow_le_abs :
         mul_one_add (((|(q : ℤ)| : ℤ) : ℝ)) (house β')]
     refine (house_add_le _ _).trans (add_le_add ?_ ((house_mul_le _ _).trans ?_)) <;>
       simp only [house_intCast]
-    · simpa using (finProdFinEquiv.symm t).1.isLt
-    · gcongr; simpa using (finProdFinEquiv.symm t).2.isLt
+    · exact Nat.le_succ_of_lt (finProdFinEquiv.symm t).1.isLt
+    · gcongr; exact Nat.le_succ_of_lt (finProdFinEquiv.symm t).2.isLt
   · exact (pow_le_pow_left₀ (house_nonneg _) (hbd _) _).trans (pow_le_pow_right₀
       ((one_le_house_of_isIntegral (isIntegral_c₁α α' β' γ')
         (c₁α_ne_zero α β σ α' β' γ' hirr htriv habc)).trans (hbd _)) (hal.trans h_mq))
@@ -529,7 +533,7 @@ lemma abs_bound_le_c₂ :
   have hk := k_le_n_sub_one q u
   have hal := al_le_mq q u t
   have hbl := bl_le_mq q u t
-  have h_mq := mq_le_m_two_mnq q h2mq
+  have h_mq := mq_le_m_two_mnq q hq0 h2mq
   calc
     _ = |(c₁ α' β' γ')| ^ (n K q - 1 - k q u) *
           |(c₁ α' β' γ')| ^ (m K * q - a q t * l q u) *
