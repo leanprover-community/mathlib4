@@ -162,6 +162,7 @@ def induce (G : SimpleGraph V) (s : Set V) : Copy (G.induce s) G := (Embedding.i
 /-- The copy of `⊥` in any simple graph that can embed its vertices. -/
 protected def bot (f : α ↪ β) : Copy (⊥ : SimpleGraph α) B := ⟨⟨f, False.elim⟩, f.injective⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism from a subgraph of `A` to its map under a copy `f : Copy A B`. -/
 noncomputable def isoSubgraphMap (f : Copy A B) (A' : A.Subgraph) :
@@ -313,7 +314,8 @@ alias ⟨IsContained.exists_iso_subgraph, IsContained.of_exists_iso_subgraph⟩ 
 
 theorem Copy.degree_le (f : Copy G H) (v : V) [Fintype <| G.neighborSet v]
     [Fintype <| H.neighborSet (f v)] : G.degree v ≤ H.degree (f v) := by
-  simpa using Fintype.card_le_of_injective _ (f.mapNeighborSet v).injective
+  simpa [card_neighborSet_eq_degree] using
+    Fintype.card_le_of_injective _ (f.mapNeighborSet v).injective
 
 theorem Copy.maxDegree_mono [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
     (f : Copy G H) : G.maxDegree ≤ H.maxDegree := by
