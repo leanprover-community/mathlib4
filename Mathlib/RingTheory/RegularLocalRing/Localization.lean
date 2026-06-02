@@ -65,7 +65,7 @@ lemma isRegularRing_of_localization_maximal_isRegularLocalRing [IsNoetherianRing
   have disj := (Set.disjoint_compl_left_iff_subset.mpr le)
   have : (p.map (algebraMap R Rₘ)).IsPrime := by
     simpa [IsLocalization.isPrime_iff_isPrime_disjoint m.primeCompl Rₘ, hp,
-      IsLocalization.under_map_of_isPrime_disjoint m.primeCompl Rₘ hp disj] using disj
+      IsLocalization.under_map_of_isPrime_disjoint m.primeCompl Rₘ hp disj] using! disj
   have le' : m.primeCompl ≤ p.primeCompl := by simpa [Ideal.primeCompl] using le
   let : Algebra Rₘ Rₚ := IsLocalization.localizationAlgebraOfSubmonoidLe Rₘ Rₚ _ _ le'
   have := IsLocalization.localization_isScalarTower_of_submonoid_le Rₘ Rₚ _ _ le'
