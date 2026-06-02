@@ -408,13 +408,6 @@ instance normal_pCore : pCore p G |>.Normal := by
   simp_rw [pCore_eq_iSup, iSup_and']
   exact biSup_normal _ _ fun _ ↦ And.left
 
-variable (p G) in
-theorem isPGroup_pCore : IsPGroup p <| pCore p G := by
-  generalize h : pCore p G = H
-  simp_rw [pCore_eq_iSup, iSup_and'] at h
-  subst h
-  exact .biSup_of_normal _ id (fun _ ↦ And.right) (fun _ ↦ And.left)
-
 theorem _root_.IsPGroup.le_pCore {N : Subgroup G} [N.Normal] (h : IsPGroup p N) :
     N ≤ pCore p G := by
   rw [pCore_eq_iSup]
@@ -425,36 +418,6 @@ theorem _root_.IsPGroup.pCore_eq_top (h : IsPGroup p G) : pCore p G = ⊤ :=
 
 theorem pCore_le_of_dvd {q : ℕ} (hpq : p ∣ q) : pCore p G ≤ pCore q G :=
   iSup₂_mono fun _ _ ↦ iSup_const_mono <| .mono hpq
-
-variable (p) in
-theorem comap_pCore_le_of_injective {H : Type*} [Group H] {f : H →* G} (h : Function.Injective f) :
-    (pCore p G).comap f ≤ pCore p H :=
-  isPGroup_pCore p G |>.comap_of_injective f h |>.le_pCore
-
-variable (p) in
-theorem map_pCore_le_of_surjective {H : Type*} [Group H] {f : G →* H} (h : Function.Surjective f) :
-    (pCore p G).map f ≤ pCore p H :=
-  have := normal_pCore p G |>.map f h
-  isPGroup_pCore p G |>.map f |>.le_pCore
-
-/-- A surjective group homomorphism can be lifted to a homomorphism between the `p`-cores. -/
-@[simps]
-def pCoreMonoidHom {H : Type*} [Group H] (f : G →* H) (h : Function.Surjective f) :
-    pCore p G →* pCore p H where
-  toFun g := ⟨f g, map_pCore_le_of_surjective p h <| (pCore p G).mem_map_of_mem f g.property⟩
-  map_one' := by simp
-  map_mul' := by simp
-
-/-- A group isomorphism can be lifted to an isomorphism between the `p`-cores. -/
-@[simps]
-def pCoreMulEquiv {H : Type*} [Group H] (φ : G ≃* H) : pCore p G ≃* pCore p H where
-  __ := pCoreMonoidHom φ φ.surjective
-  invFun := pCoreMonoidHom φ.symm φ.symm.surjective
-  left_inv _ := by simp [pCoreMonoidHom]
-  right_inv _ := by simp [pCoreMonoidHom]
-
-instance characteristic_pCore : pCore p G |>.Characteristic :=
-  characteristic_iff_map_le.mpr (map_pCore_le_of_surjective p ·.surjective)
 
 end Subgroup
 
