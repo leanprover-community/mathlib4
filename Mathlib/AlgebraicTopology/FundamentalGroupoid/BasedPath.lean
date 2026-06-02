@@ -276,7 +276,6 @@ public theorem continuous_initialSegmentFamily {x₀ : X} (γ : BasedPath x₀) 
     Continuous γ.initialSegmentFamily := by
   refine Continuous.subtype_mk ?_ _
   refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
-  change Continuous fun ts : I × I ↦ (Path.initialSegmentFamily γ.toPath ts.1) ts.2
   simpa only using γ.toPath.continuous_initialSegmentFamily_uncurry
 
 /-- Extract an open path-connected endpoint neighborhood and a terminal interval avoiding the
@@ -463,8 +462,7 @@ public theorem joinedIn_preimage_singleton_of_homotopic (x₀ : X) {y : X} {U : 
       target' := by
         ext s
         simp }
-  refine ⟨γ, ?_⟩
-  intro t
+  refine ⟨γ, fun t ↦ ?_⟩
   -- Unfold `γ t = ofPath (H.eval t)` and apply `endpoint_ofPath`.
   change endpoint (ofPath (H.eval t)) ∈ U
   rw [endpoint_ofPath]
@@ -499,8 +497,7 @@ public theorem joinedIn_preimage_of_append {U : Set X} {z : X} (γ : BasedPath x
       target' := by
         simpa using
           congrArg (append γ) (Path.initialSegmentFamily_one δ) }
-    refine ⟨η, ?_⟩
-    intro t
+    refine ⟨η, fun t ↦ ?_⟩
     -- Unfold `η t = append γ (Path.initialSegmentFamily δ t)` and apply `endpoint_append`.
     change endpoint (append γ (Path.initialSegmentFamily δ t)) ∈ U
     rw [BasedPath.endpoint_append]
