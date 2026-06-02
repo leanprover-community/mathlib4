@@ -456,7 +456,7 @@ theorem singularPart_smul_right (μ ν : Measure α) (r : ℝ≥0) (hr : r ≠ 0
         smul_absolutelyContinuous
     · rw [ENNReal.smul_def r, withDensity_smul_measure, ← withDensity_smul]
       swap; · exact (measurable_rnDeriv _ _).const_smul _
-      convert haveLebesgueDecomposition_add μ ν
+      convert! haveLebesgueDecomposition_add μ ν
       ext x
       simp only [Pi.smul_apply]
       rw [← ENNReal.smul_def, smul_inv_smul₀ hr]
@@ -812,7 +812,7 @@ theorem iSup_mem_measurableLE (f : ℕ → α → ℝ≥0∞) (hf : ∀ n, f n �
 
 theorem iSup_mem_measurableLE' (f : ℕ → α → ℝ≥0∞) (hf : ∀ n, f n ∈ measurableLE μ ν) (n : ℕ) :
     (⨆ (k) (_ : k ≤ n), f k) ∈ measurableLE μ ν := by
-  convert iSup_mem_measurableLE f hf n
+  convert! iSup_mem_measurableLE f hf n
   simp
 
 section SuprLemmas
@@ -863,19 +863,19 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
           fun n ↦ ?_
         · rw [← hf₂ n]
           apply lintegral_mono
-          convert iSup_le_le f n n le_rfl
+          convert! iSup_le_le f n n le_rfl
           simp only [iSup_apply]
         · exact le_sSup ⟨⨆ (k : ℕ) (_ : k ≤ n), f k, iSup_mem_measurableLE' _ hf₁ _, rfl⟩
       · intro n
         refine Measurable.aemeasurable ?_
-        convert (iSup_mem_measurableLE _ hf₁ n).1
+        convert! (iSup_mem_measurableLE _ hf₁ n).1
         simp
       · refine Filter.Eventually.of_forall fun a ↦ ?_
         simp [iSup_monotone' f _]
       · refine Filter.Eventually.of_forall fun a ↦ ?_
         simp [tendsto_atTop_iSup (iSup_monotone' f a)]
     have hξm : Measurable ξ := by
-      convert Measurable.iSup fun n ↦ (iSup_mem_measurableLE _ hf₁ n).1
+      convert! Measurable.iSup fun n ↦ (iSup_mem_measurableLE _ hf₁ n).1
       simp [hξ]
     -- we see that `ξ` has the largest integral among all functions in `measurableLE`
     have hξle A (hA : MeasurableSet A) : ∫⁻ a in A, ξ a ∂ν ≤ μ A := by
