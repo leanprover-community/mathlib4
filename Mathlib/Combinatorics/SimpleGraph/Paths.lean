@@ -772,6 +772,7 @@ theorem IsPath.exists_isCycle_of_ne {u v : V} {p q : G.Walk u v} (hp : p.IsPath)
     · grind [dropLast_support_concat, IsPath.support_nodup, support_reverse, cons_tail_support]
     · grind [length_reverse, eq_of_length_le_one]
 
+open List in
 /--
 Given two distinct paths, `p` and `q`, with same endpoints, we can extract a cycle whose support
 is a sublist of `p.support ++ q.support.reverse.tail`.
@@ -779,7 +780,7 @@ is a sublist of `p.support ++ q.support.reverse.tail`.
 theorem IsPath.exists_isCycle_sublist_of_ne {u v : V} {p q : G.Walk u v} (hp : p.IsPath)
     (hq : q.IsPath) (h : p ≠ q) :
     ∃ w, w ∈ p.support ∧ w ∈ q.support ∧
-      ∃ c : G.Walk w w, c.IsCycle ∧ c.support.Sublist (p.support ++ q.support.reverse.tail) := by
+      ∃ c : G.Walk w w, c.IsCycle ∧ c.support <+ (p.support ++ q.support.reverse.tail) := by
   have ⟨u', v', p', q', hp', hq', hcyc⟩ := hp.exists_isCycle_of_ne hq h
   use u', hp'.support_subset p'.start_mem_support, hq'.support_subset q'.start_mem_support
   refine ⟨_, hcyc, ?_⟩
