@@ -276,7 +276,7 @@ public theorem continuous_initialSegmentFamily {x₀ : X} (γ : BasedPath x₀) 
     Continuous γ.initialSegmentFamily := by
   refine Continuous.subtype_mk ?_ _
   refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
-  change Continuous fun ts : I × I => (Path.initialSegmentFamily γ.toPath ts.1) ts.2
+  change Continuous fun ts : I × I ↦ (Path.initialSegmentFamily γ.toPath ts.1) ts.2
   simpa only using γ.toPath.continuous_initialSegmentFamily_uncurry
 
 /-- Extract an open path-connected endpoint neighborhood and a terminal interval avoiding the
@@ -517,12 +517,12 @@ theorem exists_refined_terminal_vertex
       IsOpen V_last' ∧ IsPathConnected V_last' ∧ endpoint α ∈ V_last' ∧
       V_last' ⊆ T.V (Fin.last (n' + 1)) ∧ V_last' ⊆ U := by
   have hα_at_last : α.toPath (part.t (Fin.last (n' + 1))) = endpoint α := by
-    rw [part.h_end]
+    rw [part.t_last]
     exact α.toPath.target
   let V_last := T.V (Fin.last (n' + 1))
   have hα_V_last : endpoint α ∈ V_last := hα_at_last ▸ hα_tube.passes_through_V _
   let W : Set X := V_last ∩ U
-  have hW_open : IsOpen W := (T.h_V_open _).inter hU_open
+  have hW_open : IsOpen W := (T.V_open _).inter hU_open
   have hα_W : endpoint α ∈ W := ⟨hα_V_last, hα⟩
   refine ⟨pathComponentIn W (endpoint α), hW_open.pathComponentIn _,
     isPathConnected_pathComponentIn hα_W, mem_pathComponentIn_self hα_W, ?_, ?_⟩
@@ -589,7 +589,7 @@ public theorem exists_open_nhd_pathComponent_preimage
   | n' + 1, part, T, hα_tube =>
   -- Endpoint of α at the last partition point equals `endpoint α`.
   have hα_at_last : α.toPath (part.t (Fin.last (n' + 1))) = endpoint α := by
-    rw [part.h_end]; exact α.toPath.target
+    rw [part.t_last]; exact α.toPath.target
   obtain ⟨V_last', hV'_open, hV'_pathConn, hα_V', hV'_sub_V, hV'_sub_U⟩ :=
     exists_refined_terminal_vertex hU_open α hα part T hα_tube
   -- Refined V function: `V_last'` at the last partition point, `T.V` elsewhere.
@@ -607,12 +607,12 @@ public theorem exists_open_nhd_pathComponent_preimage
     intro j
     induction j using Fin.lastCases with
     | last => rw [hV'_last_eq]; exact hV'_open
-    | cast k => rw [hV'_castSucc_eq]; exact T.h_V_open _
+    | cast k => rw [hV'_castSucc_eq]; exact T.V_open _
   have hV'_pathConn_all : ∀ j, IsPathConnected (V' j) := by
     intro j
     induction j using Fin.lastCases with
     | last => rw [hV'_last_eq]; exact hV'_pathConn
-    | cast k => rw [hV'_castSucc_eq]; exact T.h_V_pathConn _
+    | cast k => rw [hV'_castSucc_eq]; exact T.V_pathConn _
   have hα_passes_V' : ∀ j, α.toPath (part.t j) ∈ V' j := by
     intro j
     induction j using Fin.lastCases with
@@ -624,14 +624,14 @@ public theorem exists_open_nhd_pathComponent_preimage
           (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ T.U i) ∧
       (∀ j, β.1 (part.t j) ∈ V' j)} with hN_def
   refine ⟨N, ?_, ?_, ?_, ?_⟩
-  · simpa [hN_def] using isOpen_refined_tubeNeighborhood part T.h_U_open hV'_open_all
+  · simpa [hN_def] using isOpen_refined_tubeNeighborhood part T.U_open hV'_open_all
   · -- `α ∈ N`.
     exact ⟨hα_tube.stays_in_U, hα_passes_V'⟩
   · -- `N ⊆ endpoint ⁻¹' U`.
     intro β hβ
     have h1 : β.1 (part.t (Fin.last (n' + 1))) ∈ V' (Fin.last (n' + 1)) := hβ.2 _
     rw [hV'_last_eq] at h1
-    exact hV'_sub_U (by simpa [part.h_end] using h1)
+    exact hV'_sub_U (by simpa [part.t_last] using h1)
   · -- Every `β ∈ N` is `JoinedIn (endpoint ⁻¹' U)` to `α`.
     intro β hβ
     obtain ⟨hβ_stays, hβ_passes⟩ := hβ
@@ -639,7 +639,7 @@ public theorem exists_open_nhd_pathComponent_preimage
     have hβ_end_U : endpoint β ∈ U := by
       have h1 : β.1 (part.t (Fin.last (n' + 1))) ∈ V' (Fin.last (n' + 1)) := hβ_passes _
       rw [hV'_last_eq] at h1
-      exact hV'_sub_U (by simpa [part.h_end] using h1)
+      exact hV'_sub_U (by simpa [part.t_last] using h1)
     -- Rung paths in `V' j`.
     choose ρ hρ_range using fun j : Fin (n' + 2) ↦
       (hV'_pathConn_all j).exists_path (hα_passes_V' j) (hβ_passes j)
@@ -651,7 +651,7 @@ public theorem exists_open_nhd_pathComponent_preimage
             (β.toPath.subpathOn (part.t i.castSucc) (part.t i.succ))) := by
       intro i
       have hab : (part.t i.castSucc : ℝ) ≤ part.t i.succ :=
-        part.h_mono i.castSucc_lt_succ.le
+        part.mono i.castSucc_lt_succ.le
       have hα_sub :
           Set.range (α.toPath.subpathOn (part.t i.castSucc) (part.t i.succ)) ⊆ T.U i :=
         hα_tube.subpathOn_range_subset i
@@ -662,26 +662,26 @@ public theorem exists_open_nhd_pathComponent_preimage
         exact hβ_stays i _ ⟨Set.Icc.le_convexComb hab t, Set.Icc.convexComb_le hab t⟩
       have hρ_cast : Set.range (ρ i.castSucc) ⊆ T.U i := by
         refine (hρ_range _).trans ?_
-        rw [hV'_castSucc_eq]; exact T.h_V_left_subset i
+        rw [hV'_castSucc_eq]; exact T.V_left_subset i
       have hρ_succ : Set.range (ρ i.succ) ⊆ T.U i :=
-        (hρ_range _).trans ((hV'_sub_TV _).trans (T.h_V_right_subset i))
+        (hρ_range _).trans ((hV'_sub_TV _).trans (T.V_right_subset i))
       exact Path.segment_rung_homotopy (T.U i)
-        (fun p q hp_a hp_d hp_range hq_range ↦ T.h_U_slsc i hp_a hp_d p q hp_range hq_range)
+        (fun p q hp_a hp_d hp_range hq_range ↦ T.U_slsc i hp_a hp_d p q hp_range hq_range)
         _ _ _ _ hα_sub hβ_sub hρ_cast hρ_succ
     -- Paste the segment homotopies; use `T.U 0` as the enclosing SLSC neighborhood.
     have h_paste :=
       Path.paste_segment_homotopies_slsc_source α.toPath β.toPath part ρ h_rectangles
         (T.U ⟨0, Nat.succ_pos n'⟩)
         (fun p q hp_a hp_d hp_range hq_range ↦
-          T.h_U_slsc ⟨0, Nat.succ_pos n'⟩ hp_a hp_d p q hp_range hq_range)
+          T.U_slsc ⟨0, Nat.succ_pos n'⟩ hp_a hp_d p q hp_range hq_range)
         ((hρ_range 0).trans (by
           have h_zero : (0 : Fin (n' + 2)) =
               (⟨0, Nat.succ_pos n'⟩ : Fin (n' + 1)).castSucc := rfl
           rw [h_zero, hV'_castSucc_eq]
-          exact T.h_V_left_subset ⟨0, Nat.succ_pos n'⟩))
+          exact T.V_left_subset ⟨0, Nat.succ_pos n'⟩))
     -- Package the final rung as a path from `endpoint α` to `endpoint β`.
     have hβ_at_last : β.toPath (part.t (Fin.last (n' + 1))) = endpoint β := by
-      rw [part.h_end]; exact β.toPath.target
+      rw [part.t_last]; exact β.toPath.target
     let ρ_final : Path (endpoint α) (endpoint β) :=
       (ρ (Fin.last (n' + 1))).cast hα_at_last.symm hβ_at_last.symm
     have hρ_final_range : Set.range ρ_final ⊆ U :=

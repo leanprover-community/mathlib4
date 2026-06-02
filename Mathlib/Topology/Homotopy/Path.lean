@@ -500,7 +500,7 @@ private theorem subpathOn_trans_aux₂ (γ : Path x y) (a b : unitInterval) (_ha
       ((γ.subpathOn a (convexComb a b t)).trans
         (γ.subpathOn (convexComb a b t) b)) := by
   refine ⟨{
-      toFun := fun ⟨u, v⟩ =>
+      toFun := fun ⟨u, v⟩ ↦
         ((γ.subpathOn a (convexComb a b (convexComb s t u))).trans
           (γ.subpathOn (convexComb a b (convexComb s t u)) b)) v
       continuous_toFun := by

@@ -56,8 +56,8 @@ public theorem isCoveringMap [LocPathConnectedSpace X] [PathConnectedSpace X]
   have h_open_iff : ∀ q : Path.Homotopic.Quotient x₀ x, ∀ {W : Set X}, W ⊆ U →
       (IsOpen W ↔ IsOpen (proj (x₀ := x₀) ⁻¹' W ∩ S q)) := by
     intro q W hWU
-    refine ⟨fun hW => (hW.preimage (continuous_proj x₀)).inter (isOpen_sheet U hU_open hxU q),
-      fun h_open_inter => ?_⟩
+    refine ⟨fun hW ↦ (hW.preimage (continuous_proj x₀)).inter (isOpen_sheet U hU_open hxU q),
+      fun h_open_inter ↦ ?_⟩
     have h := isOpenMap_proj x₀ _ h_open_inter
     rwa [Set.image_preimage_inter,
       Set.inter_eq_left.mpr (hWU.trans (sheet_surjOn hU_pathConn hxU q))] at h

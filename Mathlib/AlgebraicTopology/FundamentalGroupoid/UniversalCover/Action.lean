@@ -92,7 +92,7 @@ instance : ContinuousConstSMul (FundamentalGroup X x₀) (UniversalCover x₀) w
     rw [(isQuotientMap_ofBasedPath x₀).continuous_iff]
     obtain ⟨γ, hγ⟩ := Quotient.exists_rep (g⁻¹.toPath : Path.Homotopic.Quotient x₀ x₀)
     have hγ' : Path.Homotopic.Quotient.mk γ = g⁻¹.toPath := hγ
-    suffices h_cont : Continuous (fun β : BasedPath x₀ =>
+    suffices h_cont : Continuous (fun β : BasedPath x₀ ↦
         ofBasedPath x₀ (BasedPath.ofPath (γ.trans β.toPath))) by
       apply h_cont.congr
       intro β
@@ -101,12 +101,12 @@ instance : ContinuousConstSMul (FundamentalGroup X x₀) (UniversalCover x₀) w
     refine (continuous_ofBasedPath x₀).comp ?_
     refine Continuous.subtype_mk ?_ _
     refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
-    have h_eval : Continuous fun p : BasedPath x₀ × I => p.1.1 p.2 :=
+    have h_eval : Continuous fun p : BasedPath x₀ × I ↦ p.1.1 p.2 :=
       continuous_eval.comp (continuous_subtype_val.prodMap continuous_id)
     simpa using
-      Path.trans_continuous_family (a := fun _ : BasedPath x₀ => x₀)
-        (b := fun _ : BasedPath x₀ => x₀)
-        (c := fun β : BasedPath x₀ => BasedPath.endpoint β)
+      Path.trans_continuous_family (a := fun _ : BasedPath x₀ ↦ x₀)
+        (b := fun _ : BasedPath x₀ ↦ x₀)
+        (c := fun β : BasedPath x₀ ↦ BasedPath.endpoint β)
         (fun _ ↦ γ) (Path.continuous_uncurry_iff.mpr continuous_const)
         (fun β ↦ β.toPath) h_eval
 
@@ -116,7 +116,7 @@ instance : IsCancelSMul (FundamentalGroup X x₀) (UniversalCover x₀) where
   right_cancel' a b c h := by
     rcases c with ⟨x, q⟩
     rw [smul_mk, smul_mk, mk_inj] at h
-    have h' := congrArg (fun r => r.trans q.symm) h
+    have h' := congrArg (fun r ↦ r.trans q.symm) h
     simp only [Path.Homotopic.Quotient.trans_assoc, Path.Homotopic.Quotient.trans_symm,
       Path.Homotopic.Quotient.trans_refl] at h'
     exact inv_injective h'
