@@ -149,63 +149,26 @@ theorem IsHadamard.card_eq_sq_of_const_row_sum [Fintype n] [DecidableEq n]
 theorem IsHadamard.kronecker [Fintype m] [DecidableEq m] [Fintype n]
     [DecidableEq n] [Semiring R] [StarRing R] {A : Matrix m m R} {B : Matrix n n R}
     (hA : A.IsHadamard) (hB : B.IsHadamard) : (A ⊗ₖ B).IsHadamard := by
-  refine ⟨?_, ?_, ?_⟩
-  · rintro ⟨i, i'⟩ ⟨j, j'⟩
-    exact (unitary R).mul_mem (hA.apply i j) (hB.apply i' j')
-  · ext ⟨i, i'⟩ ⟨j, j'⟩
-    have hAmul :
-        ∑ k, A i k * star (A j k) =
-          ((Fintype.card m : R) • (1 : Matrix m m R)) i j := by
-      simpa [Matrix.mul_apply, conjTranspose_apply] using
-        congr_fun (congr_fun hA.mul_conjTranspose i) j
-    have hentry :
-        ((A ⊗ₖ B) * (A ⊗ₖ B)ᴴ) (i, i') (j, j') =
-          ∑ k, A i k * ((∑ k', B i' k' * star (B j' k')) * star (A j k)) := by
-      rw [Matrix.mul_apply, ← Finset.univ_product_univ, Finset.sum_product]
-      change (∑ k, ∑ k', (A i k * B i' k') * star (A j k * B j' k')) =
-        ∑ k, A i k * ((∑ k', B i' k' * star (B j' k')) * star (A j k))
-      simp_rw [star_mul]
-      simp [Finset.mul_sum, Finset.sum_mul, mul_assoc]
-    rw [hentry, show ∑ k', B i' k' * star (B j' k') =
-        ((Fintype.card n : R) • (1 : Matrix n n R)) i' j' by
-      simpa [Matrix.mul_apply, conjTranspose_apply] using
-        congr_fun (congr_fun hB.mul_conjTranspose i') j']
-    by_cases hij' : i' = j'
-    · subst j'
-      by_cases hij : i = j
-      · subst j
-        suffices Fintype.card n • (Fintype.card m : R) =
-            Fintype.card m • (Fintype.card n : R) by
-          simpa [← nsmul_eq_mul, Finset.sum_nsmul, hAmul, Fintype.card_prod, Nat.cast_mul]
-        rw [nsmul_eq_mul, nsmul_eq_mul,
-          (Nat.cast_commute (Fintype.card n) (Fintype.card m : R)).eq]
-      · simp [hij, ← nsmul_eq_mul, Finset.sum_nsmul, hAmul]
-    · simp [hij']
-  · ext ⟨i, i'⟩ ⟨j, j'⟩
-    have hBmul :
-        ∑ k', star (B k' i') * B k' j' =
-          ((Fintype.card n : R) • (1 : Matrix n n R)) i' j' := by
-      simpa [Matrix.mul_apply, conjTranspose_apply] using
-        congr_fun (congr_fun hB.conjTranspose_mul i') j'
-    have hentry :
-        ((A ⊗ₖ B)ᴴ * (A ⊗ₖ B)) (i, i') (j, j') =
-          ∑ k', star (B k' i') * ((∑ k, star (A k i) * A k j) * B k' j') := by
-      rw [Matrix.mul_apply, ← Finset.univ_product_univ, Finset.sum_product_right]
-      change (∑ k', ∑ k, star (A k i * B k' i') * (A k j * B k' j')) =
-        ∑ k', star (B k' i') * ((∑ k, star (A k i) * A k j) * B k' j')
-      simp_rw [star_mul]
-      simp [Finset.mul_sum, Finset.sum_mul, mul_assoc]
-    rw [hentry, show ∑ k, star (A k i) * A k j =
-        ((Fintype.card m : R) • (1 : Matrix m m R)) i j by
-      simpa [Matrix.mul_apply, conjTranspose_apply] using
-        congr_fun (congr_fun hA.conjTranspose_mul i) j]
-    by_cases hij : i = j
-    · subst j
-      by_cases hij' : i' = j'
-      · subst j'
-        simp [← nsmul_eq_mul, Finset.sum_nsmul, hBmul, Fintype.card_prod, Nat.cast_mul]
-      · simp [hij', ← nsmul_eq_mul, Finset.sum_nsmul, hBmul]
-    · simp [hij]
+  refine ⟨fun _ _ ↦ mul_mem (hA.apply _ _) (hB.apply _ _), ?_, ?_⟩ <;> ext ⟨i, i'⟩ ⟨j, j'⟩
+  · calc
+      _ = ∑ x₁, ∑ x₂, A i x₁ * (B i' x₂ * Bᴴ x₂ j') * Aᴴ x₁ j := by
+        simp [conjTranspose_kronecker', mul_apply, mul_assoc, ← Finset.sum_product']
+      _ = if i' = j' then ∑ x, A i x * (Fintype.card n • Aᴴ) x j else 0 := by
+        simp [← Finset.sum_mul, ← Finset.mul_sum, ← mul_apply, hB.mul_conjTranspose,
+          one_apply, mul_assoc _ (Fintype.card n : R), -conjTranspose_apply]
+      _ = _ := by
+        simp only [← mul_apply, mul_smul_comm, hA.mul_conjTranspose]
+        simp [one_apply, ← Nat.cast_mul, mul_comm, ← ite_and, and_comm]
+  · calc
+      _ = ∑ x₁, ∑ x₂, Bᴴ i' x₂ * (Aᴴ i x₁ * A x₁ j) * B x₂ j' := by
+        simp [conjTranspose_kronecker', mul_apply, mul_assoc, ← Finset.sum_product']
+      _ = if i = j then ∑ x, Bᴴ i' x * (Fintype.card m • B) x j' else 0 := by
+        rw [Finset.sum_comm]
+        simp [← Finset.sum_mul, ← Finset.mul_sum, ← mul_apply, hA.conjTranspose_mul,
+          one_apply, mul_assoc _ (Fintype.card m : R), -conjTranspose_apply]
+      _ = _ := by
+        simp only [← mul_apply, mul_smul_comm, hB.conjTranspose_mul]
+        simp [one_apply, ← Nat.cast_mul, ← ite_and]
 
 /-- A Hadamard matrix of order greater than two has order divisible by four.
 
