@@ -199,8 +199,9 @@ protected lemma IsPath.cons {p : Walk G v w} (hp : p.IsPath) (hu : u ∉ p.suppo
 theorem isPath_iff_nil {u : V} {p : G.Walk u u} : p.IsPath ↔ p.Nil := by
   cases p <;> simp [IsPath.nil]
 
+@[deprecated isPath_iff_nil (since := "2026-06-01")]
 theorem isPath_iff_eq_nil {u : V} {p : G.Walk u u} : p.IsPath ↔ p = nil := by
-  simp [nil_iff_eq_nil]
+  simp
 
 theorem IsPath.nil_iff_eq {u v : V} {p : G.Walk u v} (hp : p.IsPath) : p.Nil ↔ u = v := by
   refine ⟨fun ⟨⟩ ↦ rfl, ?_⟩
