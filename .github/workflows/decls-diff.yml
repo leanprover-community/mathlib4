@@ -70,14 +70,20 @@ jobs:
           set -euo pipefail
           RUN="$(gh api "repos/$REPO/actions/runs?head_sha=$MB&event=push&status=success&branch=master" \
                   --jq '[.workflow_runs[] | select(.name=="ci")] | .[0].id // ""')"
+          # A successful run is not enough: it must also carry the `import-graph` artifact.
+          HAS_ARTIFACT=""
           if [ -n "$RUN" ]; then
+            HAS_ARTIFACT="$(gh api "repos/$REPO/actions/runs/$RUN/artifacts" \
+                    --jq '[.artifacts[] | select(.name=="import-graph")] | length')"
+          fi
+          if [ -n "$RUN" ] && [ "${HAS_ARTIFACT:-0}" -gt 0 ]; then
             {
               echo "found=true"
               echo "run-id=$RUN"
             } | tee -a "$GITHUB_OUTPUT"
           else
             echo "found=false" | tee -a "$GITHUB_OUTPUT"
-            echo "No master Build found for merge-base $MB (cache miss)."
+            echo "No usable master Build for merge-base $MB (no run, or run lacks the import-graph artifact)."
           fi
 
       - name: Download master-side artifact
