@@ -106,24 +106,25 @@ variable {n S}
 def homOfVector {X : Scheme.{u}} (f : X ⟶ S) (v : n → Γ(X, ⊤)) : X ⟶ 𝔸(n; S) :=
   pullback.lift f ((toSpecMvPolyIntEquiv n).symm v) (by simp)
 
+variable {X : Scheme.{u}} (f : X ⟶ S) (v : n → Γ(X, ⊤))
+
 @[reassoc (attr := simp)]
-lemma homOfVector_over {X : Scheme.{u}} (f : X ⟶ S) (v : n → Γ(X, ⊤)) :
-    homOfVector f v ≫ 𝔸(n; S) ↘ S = f :=
+lemma homOfVector_over : homOfVector f v ≫ 𝔸(n; S) ↘ S = f :=
   pullback.lift_fst _ _ _
 
 @[reassoc]
-lemma homOfVector_toSpecMvPoly {X : Scheme.{u}} (f : X ⟶ S) (v : n → Γ(X, ⊤)) :
+lemma homOfVector_toSpecMvPoly :
     homOfVector f v ≫ toSpecMvPoly n S = (toSpecMvPolyIntEquiv n).symm v :=
   pullback.lift_snd _ _ _
 
 @[simp]
-lemma homOfVector_appTop_coord {X : Scheme.{u}} (f : X ⟶ S) (v : n → Γ(X, ⊤)) (i) :
+lemma homOfVector_appTop_coord (i) :
     (homOfVector f v).appTop (coord S i) = v i := by
   rw [coord, ← toSpecMvPolyIntEquiv_comp, homOfVector_toSpecMvPoly,
     Equiv.apply_symm_apply]
 
 @[ext 1100]
-lemma hom_ext {X : Scheme.{u}} {f g : X ⟶ 𝔸(n; S)}
+lemma hom_ext {f g : X ⟶ 𝔸(n; S)}
     (h₁ : f ≫ 𝔸(n; S) ↘ S = g ≫ 𝔸(n; S) ↘ S)
     (h₂ : ∀ i, f.appTop (coord S i) = g.appTop (coord S i)) : f = g := by
   apply pullback.hom_ext h₁
