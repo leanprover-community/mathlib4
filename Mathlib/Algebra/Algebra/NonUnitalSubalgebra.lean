@@ -153,7 +153,7 @@ Useful to fix definitional equalities. -/
 protected def copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
     NonUnitalSubalgebra R A :=
   { S.toNonUnitalSubsemiring.copy s hs with
-    smul_mem' r a := by simpa [hs] using S.smul_mem r }
+    smul_mem' r a := by simpa [hs] using! S.smul_mem r }
 
 @[simp, norm_cast]
 theorem coe_copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
@@ -1010,7 +1010,6 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalSubalgebra R A) (d
           Set.iUnionLift (fun i => ↑(K i)) (fun i x => f i x)
             (fun i j x hxi hxj => by
               let ⟨k, hik, hjk⟩ := dir i j
-              simp only
               rw [hf i k hik, hf j k hjk]
               rfl)
             _ (by rw [coe_iSup_of_directed dir])
@@ -1183,7 +1182,7 @@ lemma adjoin_le_centralizer_centralizer (s : Set A) :
 lemma commute_of_mem_adjoin_of_forall_mem_commute {a b : A} {s : Set A}
     (hb : b ∈ adjoin R s) (h : ∀ b ∈ s, Commute a b) :
     Commute a b := by
-  have : a ∈ centralizer R s := by simpa only [Commute.symm_iff (a := a)] using h
+  have : a ∈ centralizer R s := by simpa only [Commute.symm_iff (a := a)] using! h
   exact adjoin_le_centralizer_centralizer R s hb a this
 
 lemma commute_of_mem_adjoin_singleton_of_commute {a b c : A}
