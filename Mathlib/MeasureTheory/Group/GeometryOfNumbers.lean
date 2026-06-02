@@ -82,12 +82,12 @@ variable [FiniteDimensional ℝ E]
 @[simp] lemma successiveMin_of_finrank_le (hi : finrank ℝ E ≤ i) : successiveMin L s i = 0 := by
   simp [successiveMin, Set.finrank, ((finrank_le _).trans hi).not_gt]
 
-@[simp] lemma successiveMin_of_finrank_span_le
+@[simp] lemma successiveMin_of_setFinrank_le
     (hi : Set.finrank ℝ (L : Set E) ≤ i) : successiveMin L s i = 0 := by
   simp [successiveMin, Set.finrank, fun r ↦
     ((Submodule.finrank_mono (span_mono (inter_subset_right (s := r • s)))).trans hi).not_gt]
 
-variable [hL : DiscreteTopology L]
+variable [DiscreteTopology L]
 
 theorem successiveMin_of_finrank_int_le (hi : finrank ℤ L ≤ i) : successiveMin L s i = 0 := by
   simp [hi]
@@ -102,24 +102,25 @@ lemma exists_lt_setFinrank_smul_inter (hs : Absorbent ℝ s) (hi : i < finrank �
     ((hs.absorbs_finite this).filter_mono IsOrderBornology.atTop_le_cobounded |>.and
       (eventually_ge_atTop (0 : ℝ))).exists
   use ⟨r, hr0⟩
-  have hspan_eq : span ℤ (.range (Subtype.val ∘ b)) = L := by
-    have h : (span ℤ (.range b)).map L.subtype = L := by
-      rw [b.span_eq, map_subtype_top]
-    rwa [map_span, ← range_comp] at h
   calc
     i < finrank ℤ L := hi
-    _ = finrank ℤ (span ℤ (.range (Subtype.val ∘ b))) := by rw [hspan_eq]
-    _ = finrank ℝ (span ℝ (.range (Subtype.val ∘ b))) :=
-        (finrank_real_span_eq_finrank_int_span _
+    _ = Set.finrank ℤ (.range <| Subtype.val ∘ b) := by
+        have hspan_eq : span ℤ (.range (Subtype.val ∘ b)) = L := by
+          have h : (span ℤ (.range b)).map L.subtype = L := by
+            rw [b.span_eq, map_subtype_top]
+          rwa [map_span, ← range_comp] at h
+        rw [Set.finrank, hspan_eq]
+    _ = Set.finrank ℝ (.range <| Subtype.val ∘ b) :=
+        (setFinrank_real_eq_setFinrank_int_of_subset_discreteTopology L
           (Set.range_subset_iff.mpr fun i => (b i).prop)).symm
-    _ ≤ finrank ℝ (span ℝ <| r • s ∩ L) := by
-      refine finrank_mono <| span_mono ?_
-      rintro x ⟨j, rfl⟩
-      refine mem_inter ?_ (by simp)
-      simp_rw [subset_def, mem_range] at hr
-      simp [hr]
+    _ ≤ Set.finrank ℝ (r • s ∩ L) := by
+        refine finrank_mono <| span_mono ?_
+        rintro x ⟨j, rfl⟩
+        refine mem_inter ?_ (by simp)
+        simp_rw [subset_def, mem_range] at hr
+        simp [hr]
 
-lemma exists_lt_finrank_span_smul_inter_zLattice [IsZLattice ℝ L] (hs : Absorbent ℝ s)
+lemma exists_lt_setFinrank_smul_inter_zLattice [IsZLattice ℝ L] (hs : Absorbent ℝ s)
     (hi : i < finrank ℝ E) : ∃ r : ℝ≥0, i < Set.finrank ℝ (r • s ∩ L) :=
   exists_lt_setFinrank_smul_inter hs (hi.trans_eq (ZLattice.rank ..).symm)
 
@@ -129,7 +130,7 @@ lemma exists_lt_finrank_span_smul_inter_zLattice [IsZLattice ℝ L] (hs : Absorb
 
 lemma exists_linearIndependent_of_successiveMin_lt {r : ℝ≥0} (hsc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0)
     (hi : i < finrank ℤ L) (hr : successiveMin L s i < r) :
-    ∃ v : Fin (i + 1) → L, (∀ j, (v j : E) ∈ r • s ∩ L) ∧ (LinearIndependent ℤ v) := by
+    ∃ v : Fin (i + 1) → L, (∀ j, (v j : E) ∈ r • s ∩ L) ∧ LinearIndependent ℤ v := by
   have h0s : (0 : E) ∈ s := mem_of_mem_nhds hs₀
   obtain ⟨r', hr'mem, hr'r⟩ := exists_lt_of_csInf_lt
     (exists_lt_setFinrank_smul_inter (absorbent_nhds_zero hs₀) hi) hr
@@ -153,7 +154,7 @@ lemma isClosed_setOf_lt_setFinrank_smul_inter (hsc : Convex ℝ s) (hs : IsCompa
   have hr₀ : successiveMin L s i ≤ r₀ := ge_of_tendsto' hlim fun n => csInf_le' (hr n)
   have hbdd := hlim.eventually_le_const (lt_add_of_pos_right r₀ one_pos)
   have hL_closed : IsClosed (L : Set E) := by
-    haveI : DiscreteTopology L.toAddSubgroup := hL
+    haveI : DiscreteTopology L.toAddSubgroup := ‹_›
     have : IsClosed (L.toAddSubgroup : Set E) := AddSubgroup.isClosed_of_discrete
     simpa using this
   have hfin : ((r₀ + 1) • s ∩ (L : Set E)).Finite :=
@@ -169,10 +170,10 @@ lemma isClosed_setOf_lt_setFinrank_smul_inter (hsc : Convex ℝ s) (hs : IsCompa
   by_cases! hn : ∃ n, r n ≤ r₀
   · obtain ⟨n, hn'⟩ := hn
     calc
-      i < finrank ℝ (span ℝ <| r n • s ∩ L) := hr n
-      _ ≤ finrank ℝ (span ℝ <| r₀ • s ∩ L) := by
+      i < Set.finrank ℝ (r n • s ∩ L) := hr n
+      _ ≤ Set.finrank ℝ (r₀ • s ∩ L) := by
         refine finrank_mono <| span_mono (inter_subset_inter_left _ ?_)
-        exact (hsc.smul_mono_of_zero_mem hs₀' (by simp) hn')
+        exact hsc.smul_mono_of_zero_mem hs₀' (by simp) hn'
   have : ∀ n, ∃ vₙ : Fin (i + 1) → L,
     (∀ j, (vₙ j : E) ∈ (r n • s ∩ (L : Set E))) ∧ LinearIndependent ℤ vₙ :=
     fun n ↦ exists_linearIndependent_of_successiveMin_lt hsc hs₀ hi (hr₀.trans_lt (hn n))
@@ -186,18 +187,19 @@ lemma isClosed_setOf_lt_setFinrank_smul_inter (hsc : Convex ℝ s) (hs : IsCompa
   obtain ⟨v₀, hv₀, hfreq⟩ : ∃ v₀ ∈ S, ∃ᶠ n in atTop, v n = v₀ :=
     hS.frequently_exists.mp (this.frequently.mono fun _ hn ↦ ⟨_, hn, rfl⟩)
   calc
-    i < i + 1 := by linarith
-    _ = finrank ℤ (span ℤ (.range v₀)) := by
+    i < i + 1 := by lia
+    _ = Set.finrank ℤ (.range v₀) := by
       obtain ⟨n, rfl⟩ := hfreq.exists
       exact (Fintype.card_fin _).symm.trans (finrank_span_eq_card ((hv n).2)).symm
-    _ = finrank ℝ (span ℝ (.range (Subtype.val ∘ v₀))) := by
-        trans finrank ℤ (span ℤ (.range (Subtype.val ∘ v₀)))
-        · have : .range (Subtype.val ∘ v₀) = L.subtype '' .range v₀ := by
-            rw [range_comp]; rfl
-          rw [this, ← Submodule.map_span, Submodule.finrank_map_subtype_eq]
-        · exact (finrank_real_span_eq_finrank_int_span _
-            (Set.range_subset_iff.mpr fun j => (v₀ j).prop)).symm
-    _ ≤ finrank ℝ (span ℝ <| r₀ • s ∩ L) := by
+    _ = Set.finrank ℤ (.range <| Subtype.val ∘ v₀) := by
+      simp only [Set.finrank]
+      have : .range (Subtype.val ∘ v₀) = L.subtype '' .range v₀ := by
+        rw [range_comp]; rfl
+      rw [this, ← Submodule.map_span, Submodule.finrank_map_subtype_eq]
+    _ = Set.finrank ℝ (.range <| Subtype.val ∘ v₀) :=
+        (setFinrank_real_eq_setFinrank_int_of_subset_discreteTopology L
+          (Set.range_subset_iff.mpr fun j => (v₀ j).prop)).symm
+    _ ≤ Set.finrank ℝ (r₀ • s ∩ L) := by
       refine finrank_mono <| span_mono ?_
       rintro x ⟨j, rfl⟩
       simp only [Function.comp_apply, mem_inter_iff, Subtype.coe_prop, and_true]
@@ -217,7 +219,7 @@ lemma isClosed_setOf_lt_setFinrank_smul_inter (hsc : Convex ℝ s) (hs : IsCompa
       apply mem_of_subset_of_mem (hsc.smul_mono_of_zero_mem hs₀' (by simp) hn.le)
       exact mem_of_mem_inter_left ((hv n).1 j)
 
-lemma lt_setFinrank_successiveMin (hsc : Convex ℝ s) (hs : IsCompact s)
+lemma lt_setFinrank_successiveMin_smul (hsc : Convex ℝ s) (hs : IsCompact s)
     (hs₀ : s ∈ 𝓝 0) (hi : i < finrank ℤ L) :
     i < Set.finrank ℝ (successiveMin L s i • s ∩ L) :=
   (isClosed_setOf_lt_setFinrank_smul_inter hsc hs hs₀ hi).csInf_mem
