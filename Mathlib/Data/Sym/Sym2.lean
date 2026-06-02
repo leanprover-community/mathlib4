@@ -675,10 +675,9 @@ def _root_.Equiv.sigmaFiberFromRel (sym : Symmetric r) {f : α → β} (hf : r �
   toFun z := z.val.fromRelNdrec z.prop
     (fun a₁ a₂ h ↦ ⟨f a₁, s(⟨a₁, rfl⟩, ⟨a₂, hf a₁ a₂ h |>.symm⟩), h⟩)
     fun a₁ a₂ h ↦ by
-      dsimp only
       rw! [hf a₁ a₂ h, eq_swap]
       rfl
-  invFun z := ⟨z.snd.val.map Subtype.val, mem_fromRel_comap sym .. |>.mp z.snd.prop⟩
+  invFun z := ⟨z.snd.val.map (↑), mem_fromRel_comap sym .. |>.mp z.snd.prop⟩
   left_inv z := by
     rcases z with ⟨⟨a₁, a₂⟩, h⟩
     rfl
