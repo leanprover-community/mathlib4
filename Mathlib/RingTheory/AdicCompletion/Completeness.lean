@@ -211,7 +211,7 @@ namespace MvPowerSeries
 instance {σ : Type*} [Finite σ] :
     IsAdicComplete (.span (.range X) : Ideal (MvPowerSeries σ R)) (MvPowerSeries σ R) := by
   have : Ideal.map (toAdicCompletionAlgEquiv σ R).toRingEquiv (Ideal.span (Set.range X)) =
-    (MvPolynomial.idealOfVars σ R).map (algebraMap ..):= by
+    (MvPolynomial.idealOfVars σ R).map (algebraMap ..) := by
     simp_rw [Ideal.map_span, ← Set.range_comp]
     congr 2; ext1
     simp [AdicCompletion.algebraMap_apply, ← MvPolynomial.coe_X, toAdicCompletion_coe]

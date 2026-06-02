@@ -160,7 +160,7 @@ lemma ord_eq_of_associated {x y : R} (h : Associated x y) : ord R x = ord R y :=
   simp
 
 @[simp]
-lemma ord_neg (x : R) : ord R (-x) = ord R x:= by
+lemma ord_neg (x : R) : ord R (-x) = ord R x := by
     simp [ord_eq_of_associated (x := -x) (y := x) (by simp)]
 
 /--
