@@ -169,6 +169,10 @@ theorem end_mem_tail_support_of_ne {u v : V} (h : u ≠ v) (p : G.Walk u v) : v 
   obtain ⟨_, _, _, rfl⟩ := exists_eq_cons_of_ne h p
   simp
 
+theorem support_suffix_support_cons (p : G.Walk v w) (hadj : G.Adj u v) :
+    p.support <:+ (p.cons hadj).support := by
+  simp
+
 theorem support_subset_support_cons {u v w : V} (p : G.Walk v w) (hadj : G.Adj u v) :
     p.support ⊆ (p.cons hadj).support := by
   simp
@@ -226,7 +230,7 @@ theorem map_fst_darts_append {u v : V} (p : G.Walk u v) :
   induction p <;> simp [*]
 
 theorem map_fst_darts {u v : V} (p : G.Walk u v) : p.darts.map (·.fst) = p.support.dropLast := by
-  simpa! using congr_arg List.dropLast (map_fst_darts_append p)
+  simpa! using! congr_arg List.dropLast (map_fst_darts_append p)
 
 @[simp]
 theorem edges_nil {u : V} : (nil : G.Walk u u).edges = [] := rfl

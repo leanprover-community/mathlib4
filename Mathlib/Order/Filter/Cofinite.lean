@@ -205,7 +205,7 @@ lemma Set.Finite.cofinite_inf_principal_diff {s t : Set α} (ht : t.Finite) :
 theorem Nat.cofinite_eq_atTop : @cofinite ℕ = atTop := by
   refine le_antisymm ?_ atTop_le_cofinite
   refine atTop_basis.ge_iff.2 fun N _ => ?_
-  simpa only [mem_cofinite, compl_Ici] using finite_lt_nat N
+  simpa only [mem_cofinite, compl_Ici] using! finite_lt_nat N
 
 theorem Nat.frequently_atTop_iff_infinite {p : ℕ → Prop} :
     (∃ᶠ n in atTop, p n) ↔ Set.Infinite { n | p n } := by
