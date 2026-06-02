@@ -118,6 +118,9 @@ instance Std.Refl.comap [Std.Refl r] (f : α → β) : Std.Refl (r on f) where
 
 theorem Symmetric.comap (h : Symmetric r) (f : α → β) : Symmetric (r on f) := fun _ _ hab ↦ h hab
 
+instance Std.Symm.comap [Std.Symm r] (f : α → β) : Std.Symm (r on f) where
+  symm _ _ hab := symm_of r hab
+
 instance IsTrans.comap [IsTrans β r] (f : α → β) : IsTrans α (r on f) where
   trans _ _ _ := trans_of r
 
@@ -250,6 +253,10 @@ lemma map_symmetric {r : α → α → Prop} (hr : Symmetric r) (f : α → β) 
     Symmetric (Relation.Map r f f) := by
   rintro _ _ ⟨x, y, hxy, rfl, rfl⟩; exact ⟨_, _, hr hxy, rfl, rfl⟩
 
+instance _root_.Std.Symm.map {r : α → α → Prop} [h : Std.Symm r] (f : α → β) :
+    Std.Symm (Relation.Map r f f) where
+  symm := map_symmetric h.symm f
+
 lemma _root_.IsTrans.map {r : α → α → Prop} [IsTrans α r] {f : α → β}
     (hf : ∀ x y, f x = f y → r x y) : IsTrans β (Relation.Map r f f) := by
   refine ⟨fun _ _ _ ⟨x, y, hxy, hx, hy⟩ ⟨y', z, hyz, hy', hz⟩ ↦ ?_⟩
@@ -321,6 +328,9 @@ inductive ReflGen (r : α → α → Prop) (a : α) : α → Prop
   | refl : ReflGen r a a
   | single {b : α} : r a b → ReflGen r a b
 
+attribute [refl] ReflGen.refl
+attribute [grind =] reflGen_iff
+
 /-- `SymmGen r`: symmetric closure of `r`. This is also the comparability relation, such
   that `SymmGen r a b` means that either `r a b` or `r b a` (see `Mathlib.Order.Comparable`). -/
 def SymmGen (r : α → α → Prop) (a b : α) : Prop :=
@@ -337,8 +347,6 @@ inductive EqvGen : α → α → Prop
 
 attribute [mk_iff] TransGen
 attribute [grind] TransGen
-attribute [refl] ReflGen.refl
-attribute [grind =] reflGen_iff
 
 namespace ReflGen
 
@@ -352,6 +360,23 @@ theorem mono {p : α → α → Prop} (hp : ∀ a b, r a b → p a b) : ∀ {a b
 
 instance : Std.Refl (ReflGen r) :=
   ⟨@refl α r⟩
+
+lemma symmetric (h' : Symmetric r) : Symmetric (ReflGen r) := by
+  intro a b h
+  induction h with
+  | refl => exact refl
+  | single h => exact single (h' h)
+
+instance [H : Std.Symm r] : Std.Symm (ReflGen r) where
+  symm := symmetric H.symm
+
+instance [IsTrans α r] : IsTrans α (ReflGen r) where
+  trans a b c h₁ h₂ := by
+    obtain (rfl | h₂) := h₂
+    · exact h₁
+    obtain (rfl | h₁) := h₁
+    · exact single h₂
+    exact single (trans_of r h₁ h₂)
 
 end ReflGen
 
@@ -416,6 +441,9 @@ theorem symmetric (h : Symmetric r) : Symmetric (ReflTransGen r) := by
   induction h with
   | refl => rfl
   | tail _ b c => apply Relation.ReflTransGen.head (h b) c
+
+instance [H : Std.Symm r] : Std.Symm (ReflTransGen r) where
+  symm := symmetric H.symm
 
 theorem cases_tail : ReflTransGen r a b → b = a ∨ ∃ c, ReflTransGen r a c ∧ r c b :=
   (cases_tail_iff r a b).1
@@ -537,8 +565,13 @@ theorem symmetric (hr : Symmetric r) : Symmetric (TransGen r) := by
   | single i => exact .single (hr i)
   | tail _ h₁ h₂ => exact .head (hr h₁) h₂
 
-end TransGen
+instance [Std.Refl r] : Std.Refl (TransGen r) where
+  refl x := .single (refl x)
 
+instance [H : Std.Symm r] : Std.Symm (TransGen r) where
+  symm := symmetric H.symm
+
+end TransGen
 
 section reflGen
 
@@ -812,6 +845,9 @@ theorem symmetric_join : Symmetric (Join r) := fun _ _ ⟨c, hac, hcb⟩ ↦ ⟨
 
 instance reflexive_join [Std.Refl r] : Std.Refl (Join r) where
   refl a := ⟨a, refl a, refl a⟩
+
+instance : Std.Symm (Join r) where
+  symm := symmetric_join
 
 theorem isTrans_join [IsTrans α r] (h : ∀ a b c, r a b → r a c → Join r b c) :
     IsTrans α (Join r) :=

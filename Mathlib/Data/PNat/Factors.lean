@@ -30,9 +30,8 @@ gives an equivalence between this set and ℕ+, as we will formalize
 below. -/
 def PrimeMultiset :=
   Multiset Nat.Primes
-deriving Inhabited, AddCommMonoid, DistribLattice,
-  SemilatticeSup, Sub,
-  IsOrderedCancelAddMonoid, CanonicallyOrderedAdd, OrderBot, OrderedSub
+deriving Inhabited, AddCommMonoid, SemilatticeSup, DistribLattice,
+  Sub, IsOrderedCancelAddMonoid, CanonicallyOrderedAdd, OrderBot, OrderedSub
 
 namespace PrimeMultiset
 
@@ -120,7 +119,7 @@ def prod (v : PrimeMultiset) : ℕ+ :=
 theorem coe_prod (v : PrimeMultiset) : (v.prod : ℕ) = (v : Multiset ℕ).prod := by
   have h : (v.prod : ℕ) = ((v.map (↑) : Multiset ℕ+).map (↑)).prod :=
     PNat.coeMonoidHom.map_multiset_prod v.toPNatMultiset
-  simpa [Multiset.map_map] using h
+  simpa [Multiset.map_map] using! h
 
 theorem prod_ofPrime (p : Nat.Primes) : (ofPrime p).prod = (p : ℕ+) :=
   Multiset.prod_singleton _

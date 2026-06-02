@@ -5,7 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public meta import Lean.Elab.Tactic.Config
+public meta import Lean.Elab.ConfigEval
 public meta import Lean.Elab.Tactic.RCases
 public meta import Lean.Meta.Tactic.Assumption
 public meta import Lean.Meta.Tactic.Rfl
@@ -185,7 +185,7 @@ structure Congr!.Config where
 /-- A configuration option that makes `congr!` do the sorts of aggressive unfoldings that `congr`
 does while also similarly preventing `congr!` from considering partial applications or congruences
 between different functions being applied. -/
-def Congr!.Config.unfoldSameFun : Congr!.Config where
+@[expose] def Congr!.Config.unfoldSameFun : Congr!.Config where
   partialApp := false
   sameFun := true
   transparency := .default
@@ -552,12 +552,12 @@ structure CongrState where
   /-- Accumulated goals that `congr!` could not handle. -/
   goals : Array MVarId
   /-- Patterns to use when doing intro. -/
-  patterns : List (TSyntax `rcasesPat)
+  patterns : List (TSyntax `rintroPat)
 
 abbrev CongrMetaM := StateRefT CongrState MetaM
 
 /-- Pop the next pattern from the current state. -/
-def CongrMetaM.nextPattern : CongrMetaM (Option (TSyntax `rcasesPat)) := do
+def CongrMetaM.nextPattern : CongrMetaM (Option (TSyntax `rintroPat)) := do
   modifyGet fun s =>
     if let p :: ps := s.patterns then
       (p, {s with patterns := ps})
@@ -697,7 +697,7 @@ The `depth?` argument controls the depth of the recursion. If `none`, then it us
 large bound that is linear in the expression depth. -/
 def Lean.MVarId.congrN! (mvarId : MVarId)
     (depth? : Option Nat := none) (config : Congr!.Config := {})
-    (patterns : List (TSyntax `rcasesPat) := []) :
+    (patterns : List (TSyntax `rintroPat) := []) :
     MetaM (List MVarId) := do
   let ty ← withReducible <| mvarId.getType'
   -- A reasonably large yet practically bounded default recursion depth.
@@ -757,7 +757,7 @@ syntax (name := congr!) "congr!" Parser.Tactic.optConfig (ppSpace num)?
 elab_rules : tactic
 | `(tactic| congr! $cfg:optConfig $[$n]? $[with $ps?*]?) => do
   let config ← elabConfig cfg
-  let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
+  let patterns := (ps?.getD #[]).toList
   liftMetaTactic fun g ↦
     let depth := n.map (·.getNat)
     g.congrN! depth config patterns

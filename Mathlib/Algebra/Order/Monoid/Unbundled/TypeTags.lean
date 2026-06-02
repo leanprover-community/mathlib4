@@ -11,7 +11,7 @@ public import Mathlib.Order.BoundedOrder.Basic
 
 /-! # Ordered monoid structures on `Multiplicative α` and `Additive α`. -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

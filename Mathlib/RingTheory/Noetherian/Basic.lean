@@ -54,7 +54,7 @@ Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noe
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Matrix
 
@@ -74,6 +74,10 @@ theorem isNoetherian_of_surjective {σ : R →+* S} [RingHomSurjective σ] (f : 
   ⟨fun s ↦
     have : (s.comap f).map f = s := Submodule.map_comap_eq_self <| hf.symm ▸ le_top
     this ▸ (IsNoetherian.noetherian _).map _⟩
+
+instance isNoetherian_map {σ : R →+* S} [RingHomSurjective σ] {s : Submodule R M}
+    (f : M →ₛₗ[σ] P) [IsNoetherian R s] : IsNoetherian S (Submodule.map f s) :=
+  isNoetherian_of_surjective (f.submoduleMap s) (by simp [LinearMap.submoduleMap])
 
 instance isNoetherian_range {σ : R →+* S} [RingHomSurjective σ] (f : M →ₛₗ[σ] P)
     [IsNoetherian R M] : IsNoetherian S (LinearMap.range f) :=
