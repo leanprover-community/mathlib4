@@ -262,7 +262,7 @@ theorem mul_smul' (f g : ArithmeticFunction R) (h : ArithmeticFunction M) :
 
 theorem one_smul' (b : ArithmeticFunction M) : (1 : ArithmeticFunction R) • b = b := by
   ext x
-  simp_all [← Nat.map_div_right_divisors, sum_eq_single 1]
+  simp_all [← map_div_right_divisors, sum_eq_single 1]
 
 end Module
 
@@ -274,7 +274,7 @@ instance instMonoid : Monoid (ArithmeticFunction R) where
   one_mul := one_smul'
   mul_one f := by
     ext x
-    simp_all [← Nat.map_div_left_divisors, sum_eq_single 1]
+    simp_all [← map_div_left_divisors, sum_eq_single 1]
   mul_assoc := mul_smul'
 
 instance instSemiring : Semiring (ArithmeticFunction R) where
