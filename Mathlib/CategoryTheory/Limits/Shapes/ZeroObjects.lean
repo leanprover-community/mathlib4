@@ -267,7 +267,7 @@ instance {X : C} (f : 0 ⟶ X) : Mono f where right_cancellation g h _ := by ext
 instance {X : C} (f : X ⟶ 0) : Epi f where left_cancellation g h _ := by ext
 
 instance zero_to_zero_isIso (f : (0 : C) ⟶ 0) : IsIso f := by
-  convert show IsIso (𝟙 (0 : C)) by infer_instance
+  convert! show IsIso (𝟙 (0 : C)) by infer_instance
   subsingleton
 
 /-- A zero object is in particular initial. -/
@@ -315,5 +315,8 @@ open ZeroObject
 
 theorem Functor.isZero_iff [HasZeroObject D] (F : C ⥤ D) : IsZero F ↔ ∀ X, IsZero (F.obj X) :=
   ⟨fun hF X => hF.obj X, Functor.isZero _⟩
+
+instance {C : Type*} [Category* C] (A : C) [HasZeroObject C] : Epi (terminalIsTerminal.from A) :=
+  (((isZero_zero C).of_iso HasZeroObject.zeroIsoTerminal.symm).epi _)
 
 end CategoryTheory

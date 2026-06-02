@@ -108,7 +108,8 @@ lemma irreducible_of_disjoint_support [IsDomain R]
   apply irreducible_mul_X_add
   · grind only [monomial_eq_zero]
   · simp [φ, hfd, d₀, hdi]
-  · suffices ∀ x, d ≠ x → x ∈ f.support → i ∉ x.support by simpa [mem_vars, hdψ] using this
+  · suffices ∀ x, d ≠ x → x ∈ f.support → i ∉ x.support by
+      simpa [mem_vars_iff_mem_support, hdψ] using this
     exact fun x hxd hx hix ↦
       Finset.disjoint_iff_ne.mp (disjoint hd hx hxd) i (by simp [hdi]) _ hix rfl
   · rintro p hpφ ⟨q, hq⟩
@@ -226,7 +227,7 @@ theorem irreducible_sumSMulXSMulY [IsDomain R]
   · simp [ι]
   · rw [hsupp, Finset.coe_map, ι.injective.injOn.pairwiseDisjoint_image]
     suffices (c.support : Set n).PairwiseDisjoint fun x ↦ {Sum.inl x, Sum.inr x} by
-      simpa [ι, Function.comp_def, Finsupp.support_add_eq, Finsupp.support_single_ne_zero]
+      simpa [ι, Function.comp_def, Finsupp.support_add_eq, Finsupp.support_single]
     simp [Set.PairwiseDisjoint, Set.Pairwise, ne_comm]
   · intro r hr
     apply h_dvd
