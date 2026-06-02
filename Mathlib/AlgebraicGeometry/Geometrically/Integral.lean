@@ -26,7 +26,7 @@ public import Mathlib.AlgebraicGeometry.Geometrically.Irreducible
   If `X` is geometrically integral over a field, then it is integral.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory MorphismProperty Limits
 

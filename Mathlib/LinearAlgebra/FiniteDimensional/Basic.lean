@@ -53,6 +53,14 @@ section DivisionRing
 variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
   [Module K V₂]
 
+theorem finrank_le_iff_rank_le [FiniteDimensional K V] {n : ℕ} :
+    finrank K V ≤ n ↔ Module.rank K V ≤ n := by
+  simp [← Cardinal.toNat_le_iff_le_of_lt_aleph0 (rank_lt_aleph0 K V), finrank]
+
+theorem finrank_lt_iff_rank_lt [FiniteDimensional K V] {n : ℕ} :
+    finrank K V < n ↔ Module.rank K V < n := by
+  simp [← Cardinal.toNat_lt_iff_lt_of_lt_aleph0 (rank_lt_aleph0 K V), finrank]
+
 theorem _root_.LinearIndependent.lt_aleph0_of_finiteDimensional {ι : Type w} [FiniteDimensional K V]
     {v : ι → V} (h : LinearIndependent K v) : #ι < ℵ₀ :=
   h.lt_aleph0_of_finite
@@ -129,9 +137,9 @@ noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) 
       map_smul' := by simp [mul_div]
       left_inv := fun w => by
         apply_fun b.repr using b.repr.toEquiv.injective
-        apply_fun Equiv.finsuppUnique
+        apply_fun Finsupp.uniqueEquiv default
         simp only [map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
-          smul_eq_mul, Pi.smul_apply, Equiv.finsuppUnique_apply]
+          smul_eq_mul, Pi.smul_apply, Finsupp.uniqueEquiv_apply]
         exact div_mul_cancel₀ _ h
       right_inv := fun f => by
         ext

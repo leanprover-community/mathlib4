@@ -26,7 +26,7 @@ open scoped nonZeroDivisors
 
 open FractionalIdeal Ideal
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommRing R] [IsDomain R] [Nonempty (NormalizedGCDMonoid R)]
 namespace NormalizedGCDMonoid
@@ -98,7 +98,6 @@ private theorem isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
           (fun t =>
             spanSingleton R⁰ ((algebraMap R (FractionRing R)) a) * I * t)
           h.symm
-      dsimp only at h
       rwa [mul_mul_mul_comm, ← spanSingleton_inv, ha0', one_mul, mul_assoc, hI, mul_one] at h
   refine isPrincipal_of_exists_mul_ne_zero_isPrincipal (J := I) ?_
   refine ⟨K, ?_, ?_⟩

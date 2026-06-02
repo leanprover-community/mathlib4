@@ -13,7 +13,7 @@ public import Mathlib.Topology.Sets.Compacts
 In this file we prove that a locally compact regular topological space has Baire property.
 -/
 
-@[expose] public section
+public section
 
 open TopologicalSpace Set
 
@@ -61,7 +61,7 @@ instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace : BaireSpac
 /-- A Gδ subset of a locally compact R₁ space is Baire. -/
 theorem IsGδ.of_t2Space_locallyCompactSpace (hG : IsGδ s) : BaireSpace s := by
   have : BaireSpace (closure s) := by
-    convert BaireSpace.of_t2Space_locallyCompactSpace using 1
+    convert! BaireSpace.of_t2Space_locallyCompactSpace using 1
     · infer_instance
     · exact isClosed_closure.locallyCompactSpace
   have : BaireSpace ((↑) ⁻¹' s : Set (closure s)) :=

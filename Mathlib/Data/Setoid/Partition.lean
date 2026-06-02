@@ -127,7 +127,7 @@ theorem eqv_class_mem {c : Set (Set α)} (H : ∀ a, ∃! b ∈ c, a ∈ b) {y} 
 
 theorem eqv_class_mem' {c : Set (Set α)} (H : ∀ a, ∃! b ∈ c, a ∈ b) {x} :
     { y : α | mkClasses c H x y } ∈ c := by
-  convert @Setoid.eqv_class_mem _ _ H x using 3
+  convert! @Setoid.eqv_class_mem _ _ H x using 3
   rw [Setoid.comm']
 
 /-- Distinct elements of a set of sets partitioning α are disjoint. -/
@@ -510,7 +510,7 @@ theorem range_piecewise (f : ι → α → β) : range (hs.piecewise f) = ⋃ i,
     obtain ⟨a, ha1, ha2⟩ := ht
     refine ⟨a, ?_⟩
     simp only [hs.mem_iff_index_eq] at ha1
-    simpa [hs.mem_iff_index_eq, ← ha1] using ha2
+    simpa [hs.mem_iff_index_eq, ← ha1] using! ha2
 
 theorem range_piecewise_subset (f : ι → α → β) : range (hs.piecewise f) ⊆ ⋃ i, range (f i) :=
   fun x ⟨y, hy⟩ => by simpa [IndexedPartition.piecewise_apply] using ⟨hs.index y, y, hy⟩
