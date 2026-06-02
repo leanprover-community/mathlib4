@@ -237,7 +237,7 @@ lemma linearizeTrivial_def (X : Type w) (g : G) :
     linearize k G (Action.trivial _ X) g = LinearMap.id := by
   ext (x : X) : 2
   rw [LinearMap.comp_apply, LinearMap.id_comp, Finsupp.lsingle_apply, linearize_single]
-  simp only [Action.trivial_V, Action.trivial_ρ]
+  simp only [Action.trivial_ρ]
   rfl
 
 variable (k G) in
@@ -246,7 +246,7 @@ variable (k G) in
 def linearizeTrivialIso (X : Type w) : (linearize k G (Action.trivial _ X)).Equiv
     (trivial k G (X →₀ k)) :=
   .mk (LinearEquiv.refl _ _) fun g ↦ by
-    simpa using linearizeTrivial_def (k := k) X g
+    simpa using! linearizeTrivial_def (k := k) X g
 
 open CategoryTheory
 lemma linearizeTrivialIso_apply {X : Type w} (f : (Action.trivial _ X).V →₀ k) :

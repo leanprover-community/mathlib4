@@ -340,7 +340,7 @@ def IsLocalDiffeomorph.diffeomorphOfBijective
   have aux (x) : EqOn g (Φ x).symm (Φ x).target :=
     eqOn_of_leftInvOn_of_rightInvOn (fun x' _ ↦ hgInverse.1 x')
       (LeftInvOn.congr_left ((Φ x).toOpenPartialHomeomorph).rightInvOn
-        ((Φ x).toOpenPartialHomeomorph).symm_mapsTo (hyp x).2.symm)
+        ((Φ x).toOpenPartialHomeomorph).mapsTo_symm (hyp x).2.symm)
       (fun _y hy ↦ (Φ x).map_target hy)
   exact {
     toFun := f

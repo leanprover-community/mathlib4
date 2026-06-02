@@ -124,7 +124,7 @@ def mkProjectMapExpr (e : Expr) : TermElabM Expr := do
     none
 
 /-- Coherence tactic for monoidal categories. -/
-def monoidal_coherence (g : MVarId) : TermElabM Unit := g.withContext do
+def monoidalCoherence (g : MVarId) : TermElabM Unit := g.withContext do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 512 (synthInstance.maxSize.get opts))) do
   let thms := [``MonoidalCoherence.iso, ``Iso.trans, ``Iso.symm, ``Iso.refl,
@@ -141,6 +141,8 @@ def monoidal_coherence (g : MVarId) : TermElabM Unit := g.withContext do
     | exception g "congrArg failed in coherence"
   let [] ← g₂.applyConst ``Subsingleton.elim
     | exception g "This shouldn't happen; Subsingleton.elim does not create goals."
+
+@[deprecated (since := "2026-05-27")] alias monoidal_coherence := monoidalCoherence
 
 open Mathlib.Tactic.BicategoryCoherence
 
@@ -173,12 +175,12 @@ elab (name := pure_coherence) "pure_coherence" : tactic => do
     They are given in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and \
     `Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively."
   let g ← getMainGoal
-  monoidal_coherence g <|> bicategory_coherence g
+  monoidalCoherence g <|> bicategoryCoherence g
 
 /-- The same as `pure_coherence`, but used internally in `coherence` without the warning. -/
 elab (name := pure_coherence_internal) "pure_coherence_internal" : tactic => do
   let g ← getMainGoal
-  monoidal_coherence g <|> bicategory_coherence g
+  monoidalCoherence g <|> bicategoryCoherence g
 
 /--
 Auxiliary simp lemma for the `coherence` tactic:
@@ -238,7 +240,7 @@ def insertTrailingIds (g : MVarId) : MetaM MVarId := do
 -- Porting note: this is an ugly port, using too many `evalTactic`s.
 -- We can refactor later into either a `macro` (but the flow control is awkward)
 -- or a `MetaM` tactic.
-def coherence_loop (maxSteps := 37) : TacticM Unit :=
+def coherenceLoop (maxSteps := 37) : TacticM Unit :=
   match maxSteps with
   | 0 => exception' "`coherence` tactic reached iteration limit"
   | maxSteps' + 1 => do
@@ -265,7 +267,9 @@ def coherence_loop (maxSteps := 37) : TacticM Unit :=
       evalTactic (← `(tactic| rfl)) <|>
         exception' "`coherence` tactic failed, non-structural morphisms don't match"
       -- and whose second terms can be identified by recursively called `coherence`.
-      coherence_loop maxSteps'
+      coherenceLoop maxSteps'
+
+@[deprecated (since := "2026-05-27")] alias coherence_loop := coherenceLoop
 
 open Lean.Parser.Tactic
 
@@ -317,7 +321,7 @@ elab_rules : tactic
     (simp -failIfUnchanged only [bicategoricalComp, monoidalComp]);
     whisker_simps -failIfUnchanged;
     monoidal_simps -failIfUnchanged))
-  coherence_loop
+  coherenceLoop
 
 end Coherence
 

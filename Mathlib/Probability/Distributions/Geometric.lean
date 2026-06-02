@@ -151,7 +151,6 @@ variable {p : ℝ}
 noncomputable
 def geometricPMFReal (p : ℝ) (n : ℕ) : ℝ := (1 - p) ^ n * p
 
-set_option linter.deprecated false in
 @[deprecated hasSum_one_geometricMeasure (since := "2026-03-08")]
 lemma geometricPMFRealSum (hp_pos : 0 < p) (hp_le_one : p ≤ 1) :
     HasSum (fun n ↦ geometricPMFReal p n) 1 := by
@@ -162,21 +161,18 @@ lemma geometricPMFRealSum (hp_pos : 0 < p) (hp_le_one : p ≤ 1) :
   rw [inv_mul_eq_div, div_self hp_pos.ne'] at this
   exact this
 
-set_option linter.deprecated false in
 @[deprecated geometricMeasure_real_singleton_pos (since := "2026-03-08")]
 lemma geometricPMFReal_pos {n : ℕ} (hp_pos : 0 < p) (hp_lt_one : p < 1) :
     0 < geometricPMFReal p n := by
   rw [geometricPMFReal]
   positivity [sub_pos.mpr hp_lt_one]
 
-set_option linter.deprecated false in
 @[deprecated measureReal_nonneg (since := "2026-03-08")]
 lemma geometricPMFReal_nonneg {n : ℕ} (hp_pos : 0 < p) (hp_le_one : p ≤ 1) :
     0 ≤ geometricPMFReal p n := by
   rw [geometricPMFReal]
   positivity [sub_nonneg.mpr hp_le_one]
 
-set_option linter.deprecated false in
 /-- Geometric distribution with success probability `p`. -/
 @[deprecated geometricMeasure (since := "2026-03-08")]
 noncomputable
@@ -187,12 +183,10 @@ def geometricPMF (hp_pos : 0 < p) (hp_le_one : p ≤ 1) : PMF ℕ :=
     exact (geometricPMFRealSum hp_pos hp_le_one).toNNReal
       (fun n ↦ geometricPMFReal_nonneg hp_pos hp_le_one)⟩
 
-set_option linter.deprecated false in
 @[deprecated Measurable.of_discrete (since := "2026-03-08")]
 lemma measurable_geometricPMFReal : Measurable (geometricPMFReal p) := by
   fun_prop
 
-set_option linter.deprecated false in
 @[deprecated StronglyMeasurable.of_discrete (since := "2026-03-08")]
 lemma stronglyMeasurable_geometricPMFReal : StronglyMeasurable (geometricPMFReal p) :=
   stronglyMeasurable_iff_measurable.mpr measurable_geometricPMFReal

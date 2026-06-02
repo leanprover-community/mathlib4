@@ -478,7 +478,7 @@ private lemma ZariskisMainProperty.of_adjoin_eq_top
     rwa [← AlgHom.range_eq_top, ← Algebra.adjoin_singleton_eq_range_aeval]
   have ⟨f, (hf : aeval x f = 0), hfp⟩ := SetLike.not_le_iff_exists.mp
     (Polynomial.not_ker_le_map_C_of_surjective_of_weaklyQuasiFiniteAt _ H₀ p)
-  obtain ⟨n, hfn⟩ : ∃ x, algebraMap R S (f.coeff x) ∉ p := by simpa [Ideal.mem_map_C_iff] using hfp
+  obtain ⟨n, hfn⟩ : ∃ x, algebraMap R S (f.coeff x) ∉ p := by simpa [Ideal.mem_map_C_iff] using! hfp
   clear hfp
   induction hm : f.natDegree using Nat.strong_induction_on generalizing f n with | h m IH =>
   obtain (_ | m) := m
@@ -495,13 +495,13 @@ private lemma ZariskisMainProperty.of_adjoin_eq_top
         simpa [eraseLead_coeff, show n ≠ f.natDegree by rintro rfl; exact hfn (by simpa)]
       rwa [Ideal.add_mem_iff_left]
       split_ifs
-      · convert! p.mul_mem_right x Hfp
-        simpa [Algebra.smul_def] using ha
+      · convert p.mul_mem_right x Hfp
+        simpa [Algebra.smul_def] using! ha
       · simp
   · refine zariskisMainProperty_iff_exists_saturation_eq_top.mpr ⟨_, Hfp, isIntegral_algebraMap, ?_⟩
     rw [← top_le_iff, ← hx]
     refine Algebra.adjoin_singleton_le ⟨_, ⟨1, rfl⟩, ?_⟩
-    simpa [Algebra.smul_def] using isIntegral_leadingCoeff_smul f x hf
+    simpa [Algebra.smul_def] using! isIntegral_leadingCoeff_smul f x hf
 
 -- Subsumed by `ZariskisMainProperty.of_finiteType`.
 private lemma ZariskisMainProperty.of_algHom_polynomial
