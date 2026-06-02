@@ -127,6 +127,9 @@ jobs:
           ref: ${{ inputs.pr_branch_ref }}
           fetch-depth: 2 # we may fetch cache from the commit before this one (or earlier)
           path: pr-branch
+          # This is an untrusted (potentially fork) checkout whose code we build.
+          # Don't leave the GITHUB_TOKEN in pr-branch/.git/config, where that code could read it.
+          persist-credentials: false
 
       - name: Prepare DownstreamTest directory
         shell: bash
@@ -689,6 +692,8 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ inputs.pr_branch_ref }}
+          # Untrusted (potentially fork) checkout: don't persist the GITHUB_TOKEN into its .git/config.
+          persist-credentials: false
 
       - name: Configure Lean
         uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
