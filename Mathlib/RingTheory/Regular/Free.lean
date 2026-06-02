@@ -29,17 +29,15 @@ public section
 
 universe u v
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
 
-instance (M : Type*) [AddCommGroup M] [Module R M] [Module.Free R M] (x : R) :
-    Module.Free (R ⧸ Ideal.span {x}) (QuotSMulTop x M) :=
+instance [Module.Free R M] (x : R) : Module.Free (R ⧸ Ideal.span {x}) (QuotSMulTop x M) :=
   Module.Free.of_equiv ((QuotSMulTop.equivQuotTensor x M).extendScalarsOfSurjective
     Ideal.Quotient.mk_surjective).symm
 
 open Pointwise in
-lemma free_iff_quotSMulTop_free (M : Type*) [AddCommGroup M] [Module R M]
-    [Module.FinitePresentation R M] {x : R} (mem : x ∈ (⊥ : Ideal R).jacobson)
-    (reg : IsSMulRegular M x) :
+lemma Module.free_quotSMulTop_iff_free [Module.FinitePresentation R M] {x : R}
+    (mem : x ∈ (⊥ : Ideal R).jacobson) (reg : IsSMulRegular M x) :
     Module.Free (R ⧸ Ideal.span {x}) (QuotSMulTop x M) ↔ Module.Free R M := by
   refine ⟨fun free ↦ ?_, fun free ↦ inferInstance⟩
   have := Module.Finite.of_restrictScalars_finite R (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
