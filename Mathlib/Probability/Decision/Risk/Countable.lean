@@ -36,7 +36,7 @@ lemma avgRisk_fintype [Fintype Θ] [MeasurableSingletonClass Θ] :
     avgRisk ℓ P κ π = ∑ θ, (∫⁻ y, ℓ θ y ∂((κ ∘ₖ P) θ)) * π {θ} := by
   simp [avgRisk, lintegral_fintype]
 
-lemma avgRisk_countable' [Countable 𝓨] [MeasurableSingletonClass 𝓨] (hl : Measurable ℓ) :
+lemma avgRisk_countable' [Countable 𝓨] [MeasurableSingletonClass 𝓨] (hℓ : Measurable ℓ) :
     avgRisk ℓ P κ π = ∑' y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ P θ) {y} ∂π := by
   simp only [avgRisk, lintegral_countable']
   rw [lintegral_tsum]
@@ -44,9 +44,9 @@ lemma avgRisk_countable' [Countable 𝓨] [MeasurableSingletonClass 𝓨] (hl : 
   · refine fun y ↦ Measurable.aemeasurable ?_
     exact Measurable.mul (by fun_prop) ((κ ∘ₖ P).measurable_coe (measurableSet_singleton y))
 
-lemma avgRisk_fintype' [Fintype 𝓨] [MeasurableSingletonClass 𝓨] (hl : Measurable ℓ) :
+lemma avgRisk_fintype' [Fintype 𝓨] [MeasurableSingletonClass 𝓨] (hℓ : Measurable ℓ) :
     avgRisk ℓ P κ π = ∑ y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ P θ) {y} ∂π := by
-  rw [avgRisk_countable' hl, tsum_fintype]
+  rw [avgRisk_countable' hℓ, tsum_fintype]
 
 lemma bayesRisk_countable [Countable Θ] [MeasurableSingletonClass Θ] :
     bayesRisk ℓ P π
@@ -58,15 +58,15 @@ lemma bayesRisk_fintype [Fintype Θ] [MeasurableSingletonClass Θ] :
       = ⨅ (κ : Kernel 𝓧 𝓨) (_ : IsMarkovKernel κ), ∑ θ, (∫⁻ y, ℓ θ y ∂((κ ∘ₖ P) θ)) * π {θ} := by
   simp [bayesRisk, avgRisk_fintype]
 
-lemma bayesRisk_countable' [Countable 𝓨] [MeasurableSingletonClass 𝓨] (hl : Measurable ℓ) :
+lemma bayesRisk_countable' [Countable 𝓨] [MeasurableSingletonClass 𝓨] (hℓ : Measurable ℓ) :
     bayesRisk ℓ P π
       = ⨅ (κ : Kernel 𝓧 𝓨) (_ : IsMarkovKernel κ), ∑' y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ P θ) {y} ∂π := by
-  simp [bayesRisk, avgRisk_countable' hl]
+  simp [bayesRisk, avgRisk_countable' hℓ]
 
-lemma bayesRisk_fintype' [Fintype 𝓨] [MeasurableSingletonClass 𝓨] (hl : Measurable ℓ) :
+lemma bayesRisk_fintype' [Fintype 𝓨] [MeasurableSingletonClass 𝓨] (hℓ : Measurable ℓ) :
     bayesRisk ℓ P π
       = ⨅ (κ : Kernel 𝓧 𝓨) (_ : IsMarkovKernel κ), ∑ y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ P θ) {y} ∂π := by
-  simp [bayesRisk, avgRisk_fintype' hl]
+  simp [bayesRisk, avgRisk_fintype' hℓ]
 
 section Const
 
