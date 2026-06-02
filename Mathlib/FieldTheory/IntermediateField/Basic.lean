@@ -546,15 +546,9 @@ theorem mem_fieldRange {y : L'} : y ∈ f.fieldRange ↔ ∃ x, f x = y :=
   Iff.rfl
 
 /-- The isomorphism from `L` to the field range of the `AlgHom` `f`, sending `x` to `f x`. -/
+@[simps! apply_coe]
 noncomputable def equivFieldRange : L ≃ₐ[K] f.fieldRange :=
-  (AlgEquiv.ofBijective
-    (f.codRestrict f.range fun x ↦ AlgHom.mem_fieldRange.mpr ⟨x, rfl⟩)
-    ⟨fun _ _ h ↦ f.injective (congr_arg Subtype.val h),
-     fun ⟨_, hy⟩ ↦ (AlgHom.mem_fieldRange.mp hy).imp fun _ hx => Subtype.ext hx⟩)
-
-@[simp]
-theorem equivFieldRange_apply (x : L) : f.equivFieldRange x = f x :=
-  rfl
+  .ofBijective f.rangeRestrict ⟨f.rangeRestrict.injective, fun ⟨_, ⟨x, hx⟩⟩ ↦ ⟨x, Subtype.ext hx⟩⟩
 
 end AlgHom
 
