@@ -103,6 +103,10 @@ def _root_.IsPGroup.toSylow [Fact p.Prime] {P : Subgroup G}
     (hP1 : IsPGroup p P) (hP2 : ¬ p ∣ P.index) {g : G} : g ∈ hP1.toSylow hP2 ↔ g ∈ P :=
   .rfl
 
+theorem _root_.IsPGroup.le_sylow_of_normal {N : Subgroup G} [N.Normal] (h : IsPGroup p N)
+    (H : Sylow p G) : N ≤ H :=
+  le_sup_left.trans_eq <| H.is_maximal' (h.to_sup_of_normal_left H.isPGroup') le_sup_right
+
 /-- A subgroup with cardinality `p ^ n` is a Sylow subgroup
 where `n` is the multiplicity of `p` in the group order. -/
 def ofCard [Finite G] {p : ℕ} [Fact p.Prime] (H : Subgroup G)
@@ -115,6 +119,13 @@ def ofCard [Finite G] {p : ℕ} [Fact p.Prime] (H : Subgroup G)
 theorem coe_ofCard [Finite G] {p : ℕ} [Fact p.Prime] (H : Subgroup G)
     (card_eq : Nat.card H = p ^ (Nat.card G).factorization p) : ofCard H card_eq = H :=
   rfl
+
+theorem eq_top (H : Sylow 0 G) : (H : Subgroup G) = ⊤ :=
+  H.is_maximal' (.zero _) le_top |>.symm
+
+theorem eq_bot (H : Sylow 1 G) : (H : Subgroup G) = ⊥ :=
+  have := isPGroup_one_iff_subsingleton.mp H.isPGroup'
+  eq_bot_of_subsingleton _
 
 variable (P : Sylow p G)
 
