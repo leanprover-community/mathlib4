@@ -144,7 +144,6 @@ lemma covariance_eval_projectiveFamily (I : Finset ℝ≥0) (s t : I) :
     covariance_eval_multivariateGaussian (posSemidef_covMatrix I),
     covMatrix_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma variance_eval_projectiveFamily (s : I) :
     Var[fun x ↦ x s; projectiveFamily I] = s := by
   rw [← covariance_self, covariance_eval_projectiveFamily, min_self]
