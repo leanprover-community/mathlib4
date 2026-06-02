@@ -2,7 +2,6 @@
 Copyright (c) 2025 Xavier Généreux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Généreux, María Inés de Frutos-Fernández
-Authors: Xavier Généreux, María Inés de Frutos-Fernández
 -/
 module
 
@@ -50,6 +49,10 @@ Furthermore, with this notation `φ^[n](a) = (ofAdd n) • a`, see `φ_iterate_a
 * `p.sum f` is `∑ n ∈ p.support, f n (p.coeff n)`, i.e., one sums the values of functions applied
   to coefficients of the polynomial `p`.
 * `SkewPolynomial.coeff p n` is the coefficient of `X ^ n` in `p`.
+* `SkewPolynomial.erase p n` is the skew polynomial `p` in which one removes the `c X ^ n` term.
+* `SkewPolynomial.update p n a` is the skew polynomial obtained by replacing the coefficient of
+  degree `n` by a given value `a : R`.  If `a = 0`, this is equal to `p.erase n` If
+  `p.natDegree < n` and `a ≠ 0`, this increases the degree of `p` to `n`.
 
 ## Implementation notes
 
@@ -87,7 +90,7 @@ open Function Multiplicative SkewMonoidAlgebra
 
 /-- The skew polynomials over `R` is the type of univariate polynomials over `R`
 endowed with a skewed convolution product. -/
-def SkewPolynomial (R : Type*) [AddCommMonoid R] := SkewMonoidAlgebra R (Multiplicative ℕ)
+abbrev SkewPolynomial (R : Type*) [AddCommMonoid R] := SkewMonoidAlgebra R (Multiplicative ℕ)
 
 namespace SkewPolynomial
 
@@ -97,33 +100,10 @@ section Semiring
 
 variable [Semiring R] {p q : SkewPolynomial R}
 
-instance : Inhabited (SkewPolynomial R) := SkewMonoidAlgebra.instInhabited
-
-instance : AddCommMonoid (SkewPolynomial R) := SkewMonoidAlgebra.instAddCommMonoid
-
-instance instSemiring [MulSemiringAction (Multiplicative ℕ) R] : Semiring (SkewPolynomial R) :=
-  SkewMonoidAlgebra.instSemiring
 
 lemma zero_def : (0 : SkewPolynomial R) = (0 : SkewMonoidAlgebra R (Multiplicative ℕ)) := rfl
 
 variable {S S₁ S₂ : Type*}
-
-instance [Semiring S] [Module S R] : Module S (SkewPolynomial R) :=
-  SkewMonoidAlgebra.instModule
-
-instance [Semiring S₁] [Semiring S₂] [Module S₁ R] [Module S₂ R]
-    [SMulCommClass S₁ S₂ R] : SMulCommClass S₁ S₂ (SkewPolynomial R) :=
-  SkewMonoidAlgebra.instSMulCommClass
-
-instance [SMulZeroClass S R] : SMulZeroClass S (SkewPolynomial R) :=
-  SkewMonoidAlgebra.instSMulZeroClass
-
-instance [SMul S₁ S₂] [SMulZeroClass S₁ R] [SMulZeroClass S₂ R]
-    [IsScalarTower S₁ S₂ R] : IsScalarTower S₁ S₂ (SkewPolynomial R) :=
-  SkewMonoidAlgebra.instIsScalarTower
-
-instance [Subsingleton R] : Unique (SkewPolynomial R) :=
-  SkewMonoidAlgebra.instUniqueOfSubsingleton
 
 /--
 The set of all `n` such that `X^n` has a non-zero coefficient.
@@ -139,7 +119,6 @@ lemma support_eq_skewMonoidAlgebra_support (p : SkewPolynomial R) :
 
 @[simp] lemma support_zero : (0 : SkewPolynomial R).support = ∅ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma support_eq_empty : p.support = ∅ ↔ p = 0 := by simp [support]
 
 lemma card_support_eq_zero : p.support.card = 0 ↔ p = 0 := by simp
@@ -193,7 +172,7 @@ def monomial : R →ₗ[R] SkewPolynomial R := lsingle R (ofAdd n)
 
 lemma monomial_zero_right : monomial n (0 : R) = 0 := single_zero _
 
-lemma monomial_zero_one [MulSemiringAction (Multiplicative ℕ) R] : monomial (0 : ℕ) 1 = 1 :=
+lemma monomial_zero_one [MulSemiringAction (Multiplicative ℕ) R] : monomial (0 : ℕ) (1 : R) = 1 :=
   rfl
 
 lemma monomial_def (a : R) : monomial n a = single (ofAdd n) a := rfl
@@ -459,7 +438,7 @@ section Support
 
 lemma support_monomial (n) {a : R} (H : a ≠ 0) : (monomial n a).support = singleton n := by
   ext m
-  simp [monomial_def, support_eq_skewMonoidAlgebra_support, coeff_single, Pi.single_apply, H]
+  simp [monomial_def, support_eq_skewMonoidAlgebra_support, H]
 
 lemma support_monomial' (n) {a : R} : (monomial n a).support ⊆ singleton n := by
   simp only [monomial_def, support_eq_skewMonoidAlgebra_support]
@@ -508,6 +487,8 @@ lemma support_trinomial' [MulSemiringAction (Multiplicative ℕ) R] (k m n : ℕ
 
 end Support
 
+variable {a b : R}
+
 lemma X_pow_eq_monomial (n) [MulSemiringAction (Multiplicative ℕ) R] :
     X ^ n = monomial n (1 : R) := by
   induction n with
@@ -522,7 +503,7 @@ lemma smul_X_eq_monomial {n} [MulSemiringAction (Multiplicative ℕ) R] :
   calc monomial n a = monomial n (a * 1) := by simp only [mul_one]
     _ = monomial n (a • 1) := by simp_all only [mul_one, smul_eq_mul]
     _ = a • monomial n 1 := (SkewMonoidAlgebra.smul_single _ _ _).symm
-    _ = a • X ^ n  := by rw [X_pow_eq_monomial]; rfl
+    _ = a • X ^ n  := by rw [X_pow_eq_monomial]
 
 lemma support_X_pow (H : ¬ (1 : R) = 0) (n : ℕ) [MulSemiringAction (Multiplicative ℕ) R] :
     (X ^ n : SkewPolynomial R).support = singleton n := by
@@ -604,7 +585,7 @@ end Semiring
 
 section Ring
 
-variable [Ring R]
+variable [Ring R] {a b : R}
 
 lemma sum_neg {S : Type*} [Ring S] (p : SkewPolynomial R) (f : ℕ → R → S) :
     (p.sum fun n x => - f n x) = - p.sum f := by
@@ -614,9 +595,8 @@ lemma sum_sub {S : Type*} [Ring S] (p : SkewPolynomial R) (f g : ℕ → R → S
     (p.sum fun n x => f n x - g n x) = p.sum f - p.sum g := by
   simp only [sub_eq_add_neg, sum_add, sum_neg]
 
-variable [MulSemiringAction (Multiplicative ℕ) R]
-
-instance instRing : Ring (SkewPolynomial R) := SkewMonoidAlgebra.instRing
+instance instRing [MulSemiringAction (Multiplicative ℕ) R] : Ring (SkewPolynomial R) :=
+  SkewMonoidAlgebra.instRing
 
 @[simp]
 lemma coeff_neg (p : SkewPolynomial R) (n : ℕ) : coeff (-p) n = -coeff p n := by
@@ -637,13 +617,13 @@ lemma coeff_sub (p q : SkewPolynomial R) (n : ℕ) : coeff (p - q) n = coeff p n
 lemma monomial_sub (n : ℕ) : monomial n (a - b) = monomial n a - monomial n b := by
   rw [sub_eq_add_neg, monomial_add, monomial_neg, sub_eq_add_neg]
 
+variable [MulSemiringAction (Multiplicative ℕ) R]
+
 lemma C_eq_intCast (n : ℤ) : C (n : R) = n := by simp [← CRingHom_eq_C]
 
-lemma C_neg : C (-a) = -C a :=
-  RingHom.map_neg CRingHom a
+lemma C_neg : C (-a) = -C a := RingHom.map_neg CRingHom a
 
-lemma C_sub : C (a - b) = C a - C b :=
-  RingHom.map_sub CRingHom a b
+lemma C_sub : C (a - b) = C a - C b := RingHom.map_sub CRingHom a b
 
 end Ring
 
@@ -674,7 +654,7 @@ lemma support_erase (p : SkewPolynomial R) (n : ℕ) :
 lemma monomial_add_erase (p : SkewPolynomial R) (n : ℕ) :
     monomial n (coeff p n) + p.erase n = p := by
   simp only [coeff, monomial_def, erase]
-  erw [SkewMonoidAlgebra.single_add_erase]
+  rw [SkewMonoidAlgebra.single_add_erase]
 
 lemma coeff_erase (p : SkewPolynomial R) (n i : ℕ) :
     (p.erase n).coeff i = if i = n then 0 else p.coeff i := by
