@@ -209,20 +209,20 @@ variable {p₁ p₂}
 
 /-- An internal reflexive relation in the category of types gives rise to a standard reflexive
 relation. -/
-lemma of_reflexiveRelation (e : ReflexiveRelation p₁ p₂) :
+lemma refl_of_reflexiveRelation (e : ReflexiveRelation p₁ p₂) :
     Std.Refl (Rel.ofPair p₁ p₂) where
   refl x := ⟨e.r x, congr($e.reflexivity₁ x), by simp⟩
 
 /-- An internal symmetric relation in the category of types gives rise to a standard symmetric
 relation. -/
-lemma of_symmetricRelation (e : SymmetricRelation p₁ p₂) :
+lemma symmetric_of_symmetricRelation (e : SymmetricRelation p₁ p₂) :
     Symmetric (Rel.ofPair p₁ p₂) := by
   refine fun x₁ x₂ ⟨r, hr₁, hr₂⟩ => ⟨e.s r, ?_, ?_⟩
   all_goals simpa
 
 /-- An internal transitive relation in the category of types gives rise to a standard transitive
 relation. -/
-lemma of_transitiveRelation (e : TransitiveRelation p₁ p₂) :
+lemma isTrans_of_transitiveRelation (e : TransitiveRelation p₁ p₂) :
     IsTrans _ (Rel.ofPair p₁ p₂) where
   trans x₁ x₂ x₃ := by
     refine fun ⟨r, ⟨hr₁, hr₂⟩⟩ ⟨r', ⟨hr₁', hr₂'⟩⟩ =>
@@ -232,11 +232,11 @@ lemma of_transitiveRelation (e : TransitiveRelation p₁ p₂) :
 
 /-- An internal equivalence relation in the category of types gives rise to a standard equivalence
 relation. -/
-lemma of_equivalenceRelation (e : EquivalenceRelation p₁ p₂) :
+lemma equivalence_of_equivalenceRelation (e : EquivalenceRelation p₁ p₂) :
     Equivalence (Rel.ofPair p₁ p₂) where
-  refl := (of_reflexiveRelation e.toReflexiveRelation).refl
-  symm h := of_symmetricRelation e.toSymmetricRelation h
-  trans := (of_transitiveRelation e.toTransitiveRelation).trans _ _ _
+  refl := (refl_of_reflexiveRelation e.toReflexiveRelation).refl
+  symm h := symmetric_of_symmetricRelation e.toSymmetricRelation h
+  trans := (isTrans_of_transitiveRelation e.toTransitiveRelation).trans _ _ _
 
 end TypeCat
 
