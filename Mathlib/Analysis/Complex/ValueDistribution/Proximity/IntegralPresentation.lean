@@ -151,7 +151,7 @@ end Cartan
 /--
 Presentation of the proximity function as iterated circle averages.
 -/
-@[simp] theorem proximity_top_eq_circleAverage_circleAverage (h : Meromorphic f) :
+theorem proximity_top_eq_circleAverage_circleAverage (h : Meromorphic f) :
     (fun R ↦ circleAverage (fun a ↦ circleAverage (log ‖f · - a‖) 0 R) 0 1) = proximity f ⊤ := by
   ext R
   let F : ℝ → ℝ → ℝ := Cartan.cartanKernel f R
@@ -169,7 +169,8 @@ Presentation of the proximity function as iterated circle averages.
           simp [μ, intervalIntegral.integral_of_le two_pi_pos.le]
         _ = ∫ y, ∫ x, F x y ∂μ ∂μ := by
           apply MeasureTheory.integral_integral_swap
-          simpa [uIoc_of_le two_pi_pos.le] using Cartan.integrable_cartanKernel h
+          simp only [← uIoc_of_le two_pi_pos.le, F, μ]
+          exact Cartan.integrable_cartanKernel h
         _ = ∫ y in 0..2 * π, ∫ x in 0..2 * π, F x y := by
           simp [μ, intervalIntegral.integral_of_le two_pi_pos.le]
     _ = (2 * π)⁻¹ * ∫ β in 0..2 * π, ((2 * π)⁻¹ * ∫ α in 0..2 * π, F α β) := by
