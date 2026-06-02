@@ -49,28 +49,21 @@ assert_not_exists RelIso
 
 open Function OrderDual
 
+to_dual_name_hint Compl HNot
+
 universe u
 
 variable {ι α β : Type*}
 
 /-! ### Notation -/
 
-section
-variable (α β)
-
--- `to_dual` cannot yet reorder arguments of arguments
+@[to_dual]
 instance Prod.instHImp [HImp α] [HImp β] : HImp (α × β) :=
   ⟨fun a b => (a.1 ⇨ b.1, a.2 ⇨ b.2)⟩
 
 @[to_dual]
 instance Prod.instHNot [HNot α] [HNot β] : HNot (α × β) :=
   ⟨fun a => (￢a.1, ￢a.2)⟩
-
-@[to_dual existing instHImp]
-instance Prod.instSDiff [SDiff α] [SDiff β] : SDiff (α × β) :=
-  ⟨fun a b => (a.1 \ b.1, a.2 \ b.2)⟩
-
-end
 
 @[to_dual (attr := simp)]
 theorem fst_himp [HImp α] [HImp β] (a b : α × β) : (a ⇨ b).1 = a.1 ⇨ b.1 :=
@@ -537,11 +530,11 @@ theorem himp_bot (a : α) : a ⇨ ⊥ = aᶜ :=
 theorem bot_himp (a : α) : ⊥ ⇨ a = ⊤ :=
   himp_eq_top_iff.2 bot_le
 
-@[to_dual hnot_inf_distrib]
+@[to_dual]
 theorem compl_sup_distrib (a b : α) : (a ⊔ b)ᶜ = aᶜ ⊓ bᶜ := by
   simp_rw [← himp_bot, sup_himp_distrib]
 
-@[to_dual (attr := simp) hnot_inf]
+@[to_dual (attr := simp)]
 theorem compl_sup : (a ⊔ b)ᶜ = aᶜ ⊓ bᶜ :=
   compl_sup_distrib _ _
 
@@ -589,27 +582,27 @@ alias le_compl_iff_le_compl := le_compl_comm
 @[to_dual hnot_le_of_hnot_le]
 alias ⟨le_compl_of_le_compl, _⟩ := le_compl_comm
 
-@[to_dual codisjoint_hnot_left]
+@[to_dual]
 theorem disjoint_compl_left : Disjoint aᶜ a :=
   disjoint_iff_inf_le.mpr <| le_himp_iff.1 (himp_bot _).ge
 
-@[to_dual codisjoint_hnot_right]
+@[to_dual]
 theorem disjoint_compl_right : Disjoint a aᶜ :=
   disjoint_compl_left.symm
 
-@[to_dual codisjoint_hnot_left]
+@[to_dual]
 theorem LE.le.disjoint_compl_left (h : b ≤ a) : Disjoint aᶜ b :=
   _root_.disjoint_compl_left.mono_right h
 
-@[to_dual codisjoint_hnot_right]
+@[to_dual]
 theorem LE.le.disjoint_compl_right (h : a ≤ b) : Disjoint a bᶜ :=
   _root_.disjoint_compl_right.mono_left h
 
-@[to_dual hnot_eq]
+@[to_dual]
 theorem IsCompl.compl_eq (h : IsCompl a b) : aᶜ = b :=
   h.1.le_compl_left.antisymm' <| Disjoint.le_of_codisjoint disjoint_compl_left h.2
 
-@[to_dual eq_hnot]
+@[to_dual]
 theorem IsCompl.eq_compl (h : IsCompl a b) : a = bᶜ :=
   h.1.le_compl_right.antisymm <| Disjoint.le_of_codisjoint disjoint_compl_left h.2.symm
 
@@ -617,44 +610,44 @@ theorem IsCompl.eq_compl (h : IsCompl a b) : a = bᶜ :=
 theorem compl_unique (h₀ : a ⊓ b = ⊥) (h₁ : a ⊔ b = ⊤) : aᶜ = b :=
   (IsCompl.of_eq h₀ h₁).compl_eq
 
-@[to_dual (attr := simp) sup_hnot_self]
+@[to_dual (attr := simp)]
 theorem inf_compl_self (a : α) : a ⊓ aᶜ = ⊥ :=
   disjoint_compl_right.eq_bot
 
-@[to_dual (attr := simp) hnot_sup_self]
+@[to_dual (attr := simp)]
 theorem compl_inf_self (a : α) : aᶜ ⊓ a = ⊥ :=
   disjoint_compl_left.eq_bot
 
-@[to_dual sup_hnot_eq_top]
+@[to_dual]
 theorem inf_compl_eq_bot : a ⊓ aᶜ = ⊥ :=
   inf_compl_self _
 
-@[to_dual hnot_sup_eq_top]
+@[to_dual]
 theorem compl_inf_eq_bot : aᶜ ⊓ a = ⊥ :=
   compl_inf_self _
 
-@[to_dual (attr := simp) hnot_bot]
+@[to_dual (attr := simp)]
 theorem compl_top : (⊤ : α)ᶜ = ⊥ :=
   eq_of_forall_le_iff fun a => by rw [le_compl_iff_disjoint_right, disjoint_top, le_bot_iff]
 
-@[to_dual (attr := simp) hnot_top]
+@[to_dual (attr := simp)]
 theorem compl_bot : (⊥ : α)ᶜ = ⊤ := by rw [← himp_bot, himp_self]
 
-@[to_dual (attr := simp) le_hnot_self]
+@[to_dual (attr := simp)]
 theorem le_compl_self : a ≤ aᶜ ↔ a = ⊥ := by
   rw [le_compl_iff_disjoint_left, disjoint_self]
 
-@[to_dual (attr := simp) ne_hnot_self]
+@[to_dual (attr := simp)]
 theorem ne_compl_self [Nontrivial α] : a ≠ aᶜ := by
   intro h
   cases le_compl_self.1 (le_of_eq h)
   simp at h
 
-@[to_dual (attr := simp) hnot_ne_self]
+@[to_dual (attr := simp)]
 theorem compl_ne_self [Nontrivial α] : aᶜ ≠ a :=
   ne_comm.1 ne_compl_self
 
-@[to_dual (attr := simp) lt_hnot_self]
+@[to_dual (attr := simp)]
 theorem lt_compl_self [Nontrivial α] : a < aᶜ ↔ a = ⊥ := by
   rw [lt_iff_le_and_ne]; simp
 
@@ -662,23 +655,23 @@ theorem lt_compl_self [Nontrivial α] : a < aᶜ ↔ a = ⊥ := by
 theorem le_compl_compl : a ≤ aᶜᶜ :=
   disjoint_compl_right.le_compl_right
 
-@[to_dual hnot_anti]
+@[to_dual]
 theorem compl_anti : Antitone (compl : α → α) := fun _ _ h =>
   le_compl_comm.1 <| h.trans le_compl_compl
 
-@[to_dual (attr := gcongr) hnot_le_hnot]
+@[to_dual (attr := gcongr)]
 theorem compl_le_compl (h : a ≤ b) : bᶜ ≤ aᶜ :=
   compl_anti h
 
-@[to_dual (attr := simp) hnot_hnot_hnot]
+@[to_dual (attr := simp)]
 theorem compl_compl_compl (a : α) : aᶜᶜᶜ = aᶜ :=
   (compl_anti le_compl_compl).antisymm le_compl_compl
 
-@[to_dual (attr := simp) codisjoint_hnot_hnot_left_iff]
+@[to_dual (attr := simp)]
 theorem disjoint_compl_compl_left_iff : Disjoint aᶜᶜ b ↔ Disjoint a b := by
   simp_rw [← le_compl_iff_disjoint_left, compl_compl_compl]
 
-@[to_dual (attr := simp) codisjoint_hnot_hnot_right_iff]
+@[to_dual (attr := simp)]
 theorem disjoint_compl_compl_right_iff : Disjoint a bᶜᶜ ↔ Disjoint a b := by
   simp_rw [← le_compl_iff_disjoint_right, compl_compl_compl]
 
@@ -686,14 +679,14 @@ theorem disjoint_compl_compl_right_iff : Disjoint a bᶜᶜ ↔ Disjoint a b := 
 theorem compl_sup_compl_le : aᶜ ⊔ bᶜ ≤ (a ⊓ b)ᶜ :=
   sup_le (compl_anti inf_le_left) <| compl_anti inf_le_right
 
-@[to_dual hnot_hnot_sup_distrib]
+@[to_dual]
 theorem compl_compl_inf_distrib (a b : α) : (a ⊓ b)ᶜᶜ = aᶜᶜ ⊓ bᶜᶜ := by
   refine ((compl_anti compl_sup_compl_le).trans (compl_sup_distrib _ _).le).antisymm ?_
   rw [le_compl_iff_disjoint_right, disjoint_assoc, disjoint_compl_compl_left_iff,
     disjoint_left_comm, disjoint_compl_compl_left_iff, ← disjoint_assoc, inf_comm]
   exact disjoint_compl_right
 
-@[to_dual hnot_hnot_sdiff_distrib]
+@[to_dual]
 theorem compl_compl_himp_distrib (a b : α) : (a ⇨ b)ᶜᶜ = aᶜᶜ ⇨ bᶜᶜ := by
   apply le_antisymm
   · rw [le_himp_iff, ← compl_compl_inf_distrib]
@@ -720,10 +713,10 @@ instance OrderDual.instHeytingAlgebra {α : Type u_2} [CoheytingAlgebra α] : He
 theorem ofDual_hnot (a : αᵒᵈ) : ofDual (￢a) = (ofDual a)ᶜ :=
   rfl
 
-@[to_dual (attr := simp) ofDual_himp]
+@[to_dual (attr := simp)]
 theorem ofDual_sdiff (a b : αᵒᵈ) : ofDual (a \ b) = ofDual b ⇨ ofDual a :=
   rfl
-@[to_dual (attr := simp) toDual_hnot]
+@[to_dual (attr := simp)]
 theorem toDual_compl (a : α) : toDual aᶜ = ￢toDual a :=
   rfl
 
@@ -817,7 +810,6 @@ instance Pi.instBiheytingAlgebra {α : ι → Type*} [∀ i, BiheytingAlgebra (�
 
 section lift
 
--- `to_dual` cannot yet reorder arguments of arguments
 -- See note [reducible non-instances]
 /-- Pullback a `GeneralizedHeytingAlgebra` along an injection. -/
 protected abbrev Function.Injective.generalizedHeytingAlgebra [Max α] [Min α]
@@ -835,6 +827,7 @@ protected abbrev Function.Injective.generalizedHeytingAlgebra [Max α] [Min α]
 
 -- See note [reducible non-instances]
 /-- Pullback a `GeneralizedCoheytingAlgebra` along an injection. -/
+@[to_dual existing (reorder := 3 4, le (x y), lt (x y), map_sup map_inf, map_sdiff (a b))]
 protected abbrev Function.Injective.generalizedCoheytingAlgebra [Max α] [Min α]
     [LE α] [LT α] [Bot α] [SDiff α] [GeneralizedCoheytingAlgebra β] (f : α → β) (hf : Injective f)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
@@ -850,6 +843,7 @@ protected abbrev Function.Injective.generalizedCoheytingAlgebra [Max α] [Min α
 
 -- See note [reducible non-instances]
 /-- Pullback a `HeytingAlgebra` along an injection. -/
+@[to_dual (reorder := le (x y), lt (x y), map_sup map_inf, map_top map_bot, map_himp (a b))]
 protected abbrev Function.Injective.heytingAlgebra [Max α] [Min α] [LE α] [LT α] [Top α] [Bot α]
     [Compl α] [HImp α] [HeytingAlgebra β] (f : α → β) (hf : Injective f)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
@@ -863,21 +857,9 @@ protected abbrev Function.Injective.heytingAlgebra [Max α] [Min α] [LE α] [LT
   himp_bot a := hf <| by rw [map_himp, map_compl, map_bot, himp_bot]
 
 -- See note [reducible non-instances]
-/-- Pullback a `CoheytingAlgebra` along an injection. -/
-protected abbrev Function.Injective.coheytingAlgebra [Max α] [Min α] [LE α] [LT α] [Top α] [Bot α]
-    [HNot α] [SDiff α] [CoheytingAlgebra β] (f : α → β) (hf : Injective f)
-    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
-    (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
-    (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_hnot : ∀ a, f (￢a) = ￢f a)
-    (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) : CoheytingAlgebra α where
-  __ := hf.generalizedCoheytingAlgebra f le lt map_sup map_inf map_bot map_sdiff
-  le_top a := by
-    rw [← le, map_top]
-    exact le_top
-  top_sdiff a := hf <| by rw [map_sdiff, map_hnot, map_top, top_sdiff']
-
--- See note [reducible non-instances]
 /-- Pullback a `BiheytingAlgebra` along an injection. -/
+@[to_dual self (reorder := 3 4, 7 8, 9 10, 11 12, le (x y), lt (x y),
+  map_sup map_inf, map_top map_bot, map_compl map_hnot, map_himp map_sdiff (a b))]
 protected abbrev Function.Injective.biheytingAlgebra [Max α] [Min α] [LE α] [LT α] [Top α] [Bot α]
     [Compl α] [HNot α] [HImp α] [SDiff α] [BiheytingAlgebra β] (f : α → β) (hf : Injective f)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)

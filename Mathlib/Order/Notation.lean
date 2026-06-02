@@ -150,6 +150,7 @@ class HImp (α : Type*) where
   himp : α → α → α
 
 attribute [to_dual existing (reorder := 3 4)] HImp.himp
+attribute [to_dual existing (reorder := himp (1 2))] HImp.mk
 
 /-- Syntax typeclass for Heyting negation `￢`.
 
