@@ -69,21 +69,19 @@ lemma gaussianPDFReal_nonneg (μ : ℝ) (v : ℝ≥0) (x : ℝ) : 0 ≤ gaussian
 
 /-- The Gaussian pdf is measurable. -/
 @[fun_prop]
-lemma measurable_gaussianPDFReal' : Measurable (fun (μ, v, x) ↦ gaussianPDFReal μ v x) := by
+lemma measurable_uncurry_gaussianPDFReal : Measurable (fun (μ, v, x) ↦ gaussianPDFReal μ v x) := by
   unfold gaussianPDFReal
   fun_prop
 
-@[fun_prop]
 lemma measurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDFReal μ v) := by
   fun_prop
 
 /-- The Gaussian pdf is strongly measurable. -/
 @[fun_prop]
-lemma stronglyMeasurable_gaussianPDFReal' :
+lemma stronglyMeasurable_uncurry_gaussianPDFReal :
     StronglyMeasurable (fun (μ, v, x) ↦ gaussianPDFReal μ v x) :=
-  measurable_gaussianPDFReal'.stronglyMeasurable
+  measurable_uncurry_gaussianPDFReal.stronglyMeasurable
 
-@[fun_prop]
 lemma stronglyMeasurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
     StronglyMeasurable (gaussianPDFReal μ v) := by
   fun_prop
@@ -193,11 +191,19 @@ lemma support_gaussianPDF {μ : ℝ} {v : ℝ≥0} (hv : v ≠ 0) :
   exact (gaussianPDF_pos _ hv x).ne'
 
 @[fun_prop]
-lemma measurable_gaussianPDF' : Measurable (fun (μ, v, x) ↦ gaussianPDF μ v x) :=
+lemma measurable_uncurry_gaussianPDF : Measurable (fun (μ, v, x) ↦ gaussianPDF μ v x) :=
   Measurable.ennreal_ofReal (by fun_prop)
 
-@[fun_prop]
 lemma measurable_gaussianPDF (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDF μ v) := by
+  fun_prop
+
+@[fun_prop]
+lemma stronglyMeasurable_uncurry_gaussianPDF :
+    StronglyMeasurable (fun (μ, v, x) ↦ gaussianPDF μ v x) :=
+  measurable_uncurry_gaussianPDF.stronglyMeasurable
+
+lemma stronglyMeasurable_gaussianPDF (μ : ℝ) (v : ℝ≥0) :
+    StronglyMeasurable (gaussianPDF μ v) := by
   fun_prop
 
 @[simp]
@@ -267,6 +273,7 @@ lemma integral_gaussianReal_eq_integral_smul {E : Type*} [NormedAddCommGroup E] 
     integral_withDensity_eq_integral_toReal_smul (measurable_gaussianPDF _ _)
       (ae_of_all _ fun _ ↦ gaussianPDF_lt_top)]
 
+@[fun_prop]
 lemma measurable_gaussianReal :
     Measurable (fun (μ, v) ↦ gaussianReal μ v) :=
   Measurable.ite (by measurability) (by fun_prop) (by fun_prop)
