@@ -404,7 +404,7 @@ protected def pointwiseMulAction : MulAction α (Subgroup G) where
   smul a S := S.map (MulDistribMulAction.toMonoidEnd _ _ a)
   one_smul S := by
     change S.map _ = S
-    simpa only [map_one] using S.map_id
+    simpa only [map_one] using! S.map_id
   mul_smul _ _ S :=
     (congr_arg (fun f : Monoid.End G => S.map f) (map_mul _ _ _)).trans
       (S.map_map _ _).symm
@@ -533,7 +533,7 @@ theorem normalCore_eq_iInf_conjAct (H : Subgroup G) :
   ext g
   simp only [Subgroup.normalCore, Subgroup.mem_iInf, Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
   refine ⟨fun h x ↦ h x⁻¹, fun h x ↦ ?_⟩
-  simpa only [ConjAct.toConjAct_inv, inv_inv] using h x⁻¹
+  simpa only [ConjAct.toConjAct_inv, inv_inv] using! h x⁻¹
 
 lemma conjAct_pointwise_smul_iff {H : Subgroup G} {g : G} :
     ConjAct.toConjAct g • H = H ↔ g ∈ normalizer H := by
