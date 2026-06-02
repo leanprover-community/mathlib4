@@ -189,14 +189,6 @@ variable (F) in
   ext v w
   exact real_inner_comm _ _
 
-@[deprecated (since := "2025-11-15")] alias innerₛₗ_apply_coe := coe_innerₛₗ_apply
-@[deprecated (since := "2025-11-15")] alias innerₛₗ_apply := innerₛₗ_apply_apply
-@[deprecated (since := "2025-11-15")] alias innerₗ_apply := innerₗ_apply_apply
-@[deprecated (since := "2025-11-15")] alias innerSL_apply_coe := coe_innerSL_apply
-@[deprecated (since := "2025-11-15")] alias innerSL_apply := innerSL_apply_apply
-@[deprecated (since := "2025-11-15")] alias innerSLFlip_apply := innerSLFlip_apply_apply
-@[deprecated (since := "2025-11-15")] alias innerSL_real_flip := flip_innerSL_real
-
 variable {𝕜}
 
 namespace ContinuousLinearMap

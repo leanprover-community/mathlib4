@@ -186,6 +186,8 @@ theorem map_subset_iff {l₁ l₂ : List α} (f : α → β) (h : Injective f) :
   rcases mem_map.1 (h2 (mem_map_of_mem hx)) with ⟨x', hx', hxx'⟩
   cases h hxx'; exact hx'
 
+lemma notMem_of_subset (h : l ⊆ l₁) {a : α} (ha : a ∉ l₁) : a ∉ l := (ha <| h ·)
+
 /-! ### append -/
 
 theorem append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L₁ ++ L₂ :=
@@ -663,7 +665,7 @@ theorem get_reverse' (l : List α) (n) (hn') :
   simp
 
 theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by lia⟩] := by
-  refine ext_get (by convert h) (by grind)
+  refine ext_get (by convert! h) (by grind)
 
 end deprecated
 

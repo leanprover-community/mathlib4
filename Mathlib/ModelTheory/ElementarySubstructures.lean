@@ -226,7 +226,7 @@ theorem meetsDefinable (S : L.ElementarySubstructure M) : L.MeetsDefinable (S : 
     simp only [Formula.Realize, ← BoundedFormula.realize_constantsVarsEquiv,
       ← S.subtype.map_boundedFormula] at hv'
     simp only [Formula.Realize, ← BoundedFormula.realize_constantsVarsEquiv]
-    convert hv' using 1
+    convert! hv' using 1
     funext i
     cases i <;> rfl
   change (Subtype.val ∘ v') ∈ {x | x 0 ∈ D}
