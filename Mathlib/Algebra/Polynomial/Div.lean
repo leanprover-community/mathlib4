@@ -317,7 +317,7 @@ theorem degree_divByMonic_lt (p q : R[X]) (hp0 : p ≠ 0)
       exact
         Nat.cast_lt.2
           (Nat.lt_add_of_pos_left (Nat.cast_lt.1 <|
-            by simpa [degree_eq_natDegree hq.ne_zero] using h0q))
+            by simpa [degree_eq_natDegree hq.ne_zero] using! h0q))
   else by
     rwa [divByMonic_eq_of_not_monic _ hq, degree_zero, bot_lt_iff_ne_bot, degree_ne_bot]
 
