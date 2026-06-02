@@ -3,10 +3,11 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.Stream.Init
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Control.Fix
-import Mathlib.Order.OmegaCompletePartialOrder
+module
+
+public import Mathlib.Data.Stream.Init
+public import Mathlib.Control.Fix
+public import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # Lawful fixed point operators
@@ -19,6 +20,8 @@ omega complete partial orders (ωCPO). Proofs of the lawfulness of all `Fix` ins
 
 * class `LawfulFix`
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -83,15 +86,14 @@ theorem approx_le_fix (i : ℕ) : approx f i ≤ Part.fix f := fun a b hh ↦ by
   exact ⟨_, hh⟩
 
 theorem exists_fix_le_approx (x : α) : ∃ i, Part.fix f x ≤ approx f i x := by
-  by_cases hh : ∃ i b, b ∈ approx f i x
+  by_cases! hh : ∃ i b, b ∈ approx f i x
   · rcases hh with ⟨i, b, hb⟩
     exists i
     intro b' h'
     have hb' := approx_le_fix f i _ _ hb
     obtain rfl := Part.mem_unique h' hb'
     exact hb
-  · simp only [not_exists] at hh
-    exists 0
+  · exists 0
     intro b' h'
     simp only [mem_iff f] at h'
     obtain ⟨i, h'⟩ := h'
@@ -138,7 +140,7 @@ theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ 
   simp only [Fix.approxChain]
   intro i
   induction i with
-  | zero => dsimp [Fix.approx]; apply bot_le
+  | zero => apply bot_le
   | succ _ i_ih =>
     trans f X
     · apply f.monotone i_ih
@@ -158,13 +160,10 @@ theorem fix_eq_of_ωScottContinuous (hc : ωScottContinuous g) :
   · apply ωSup_le_ωSup_of_le _
     intro i
     exists i
-    intro x
     apply le_f_of_mem_approx _ ⟨i, rfl⟩
   · apply ωSup_le_ωSup_of_le _
     intro i
     exists i.succ
-
-variable {f}
 
 end Part
 
@@ -176,6 +175,7 @@ def toUnitMono (f : Part α →o Part α) : (Unit → Part α) →o Unit → Par
   toFun x u := f (x u)
   monotone' x y (h : x ≤ y) u := f.monotone <| h u
 
+set_option backward.defeqAttrib.useBackward true in
 theorem ωScottContinuous_toUnitMono (f : Part α → Part α) (hc : ωScottContinuous f) :
     ωScottContinuous (toUnitMono ⟨f,hc.monotone⟩) := .of_map_ωSup_of_orderHom fun _ => by
   ext ⟨⟩ : 1
@@ -229,6 +229,7 @@ theorem ωScottContinuous_curry :
     rw [map_comp, map_comp]
     rfl
 
+set_option backward.defeqAttrib.useBackward true in
 theorem ωScottContinuous_uncurry :
     ωScottContinuous (monotoneUncurry α β γ) :=
     .of_map_ωSup_of_orderHom fun c ↦ by

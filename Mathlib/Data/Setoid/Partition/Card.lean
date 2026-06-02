@@ -3,10 +3,11 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Data.Set.Card
-import Mathlib.Data.Setoid.Partition
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Data.Set.Card
+public import Mathlib.Data.Setoid.Partition
 
 /-! # Cardinality of parts of partitions
 
@@ -15,9 +16,9 @@ import Mathlib.Data.Setoid.Partition
 
 -/
 
-section Finite
+public section
 
-open scoped BigOperators
+section Finite
 
 /-- Given a partition of the ambient type, the cardinal of a finite set
   is the `finsum` of the cardinalities of its traces on the parts of the partition -/

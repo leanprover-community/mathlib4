@@ -3,13 +3,17 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Finite
-import Mathlib.Data.Set.Card
+module
+
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Finite
+public import Mathlib.Data.Set.Card
 
 /-!
 # Cardinalities of pointwise operations on sets
 -/
+
+public section
 
 assert_not_exists Field
 

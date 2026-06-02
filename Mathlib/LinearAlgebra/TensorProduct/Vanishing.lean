@@ -3,9 +3,11 @@ Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee, Junyan Xu
 -/
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
 /-! # Vanishing of elements in a tensor product of two modules
 
@@ -54,6 +56,8 @@ is injective for every submodule $M' \subseteq M$.
 
 -/
 
+public section
+
 variable (R : Type*) [CommRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 variable {N : Type*} [AddCommGroup N] [Module R N]
@@ -84,7 +88,7 @@ theorem VanishesTrivially.of_fintype {κ} [Fintype κ] (a : ι → κ → R) (y 
     (hay : ∀ i, n i = ∑ j, a i j • y j) (ham : ∀ j, ∑ i, a i j • m i = 0) :
     VanishesTrivially R m n :=
   have e := (Fintype.equivFin κ).symm
-  ⟨Fintype.card κ, (a · ∘ e), y ∘ e, by simpa only [← e.sum_comp] using hay, by
+  ⟨Fintype.card κ, (a · ∘ e), y ∘ e, by simpa only [← e.sum_comp] using! hay, by
     rwa [← e.forall_congr_right] at ham⟩
 
 theorem _root_.Equiv.vanishesTrivially_comp {κ} [Fintype κ] (e : κ ≃ ι) :
@@ -156,11 +160,11 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero (hm : Submodule.span R (Set.range 
     apply_fun (· i) at hkn
     symm at hkn
     simp only [map_sum, finsuppScalarLeft_apply_tmul, zero_smul, Finsupp.single_zero,
-      Finsupp.sum_single_index, one_smul, Finsupp.finset_sum_apply, Finsupp.single_apply,
+      Finsupp.sum_single_index, one_smul, Finsupp.finsetSum_apply, Finsupp.single_apply,
       Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, rTensor_tmul, coe_subtype, Finsupp.sum_apply,
       Finsupp.sum_ite_eq', Finsupp.mem_support_iff, ne_eq, ite_not, en] at hkn
     simp only [Finset.univ_eq_attach, Finset.sum_attach ma (fun x ↦ (x.1 : ι →₀ R) i • x.2)]
-    convert hkn using 2 with x _
+    convert! hkn using 2 with x _
     split
     · next h'x => rw [h'x, zero_smul]
     · rfl
@@ -199,8 +203,8 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero_of_rTensor_injective
     simp only [m'_eq, map_sum, rTensor_tmul, coe_subtype, Subtype.coind_coe, map_zero, hmn]
   have : VanishesTrivially R m' n := vanishesTrivially_of_sum_tmul_eq_zero R hm' hm'n
   unfold VanishesTrivially at this ⊢
-  convert this with κ _ a y j
-  convert (injective_iff_map_eq_zero' _).mp (injective_subtype (span R (Set.range m))) _
+  convert! this with κ _ a y j
+  convert! (injective_iff_map_eq_zero' _).mp (injective_subtype (span R (Set.range m))) _
   simp [m'_eq]
 
 /-- **Equational criterion for vanishing**
@@ -235,9 +239,9 @@ theorem rTensor_injective_of_forall_vanishesTrivially
   have := hMN hx
   rw [← e.vanishesTrivially_comp]
   unfold VanishesTrivially at this ⊢
-  convert this
+  convert! this
   symm
-  convert (injective_iff_map_eq_zero' _).mp (injective_subtype M') _
+  convert! (injective_iff_map_eq_zero' _).mp (injective_subtype M') _
   simp
 
 /-- Every expression $\sum_i m_i \otimes n_i$ which vanishes also vanishes trivially if and only if

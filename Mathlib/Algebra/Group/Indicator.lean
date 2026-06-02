@@ -3,10 +3,12 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Notation.Indicator
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Notation.Indicator
 
 /-!
 # Indicator function
@@ -33,13 +35,16 @@ arguments. This is in contrast with the design of `Pi.single` or `Set.piecewise`
 indicator, characteristic
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero
 
 open Function
 
-variable {α β M N : Type*}
+variable {α β γ M N : Type*}
 
 namespace Set
+
 section Monoid
 
 variable [MulOneClass M] {s t : Set α} {a : α}
@@ -59,12 +64,6 @@ theorem mulIndicator_union_mul_inter (f : α → M) (s t : Set α) :
 theorem mulIndicator_union_of_notMem_inter (h : a ∉ s ∩ t) (f : α → M) :
     mulIndicator (s ∪ t) f a = mulIndicator s f a * mulIndicator t f a := by
   rw [← mulIndicator_union_mul_inter_apply f s t, mulIndicator_of_notMem h, mul_one]
-
-@[deprecated (since := "2025-05-23")]
-alias indicator_union_of_not_mem_inter := indicator_union_of_notMem_inter
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias mulIndicator_union_of_not_mem_inter := mulIndicator_union_of_notMem_inter
 
 @[to_additive]
 theorem mulIndicator_union_of_disjoint (h : Disjoint s t) (f : α → M) :
@@ -198,9 +197,38 @@ theorem apply_mulIndicator_symmDiff {g : G → β} (hg : ∀ x, g x⁻¹ = g x)
 
 end Group
 
+section One
+
+@[to_additive]
+lemma mulSupport_subset_subsingleton_of_disjoint_on_mulSupport [One β] {s : γ → Set α} (f : α → β)
+  (hs : Pairwise (Disjoint on (fun j ↦ s j ∩ f.mulSupport))) (i : α) (j : γ) (hj : i ∈ s j) :
+    (fun d ↦ (s d).mulIndicator f i).mulSupport ⊆ {j} := by
+  suffices ∀ j', j' ≠ j → {i} ⊆ s j → {i} ⊆ s j' → {i} ⊆ mulSupport f → False by by_contra; aesop
+  intro j' h hj hj' hi
+  simp only [Pairwise, Disjoint, Set.le_eq_subset, Set.subset_inter_iff] at hs
+  simpa using hs h ⟨hj', hi⟩ ⟨hj, hi⟩
+
+end One
+
+/-! ### Relationship with `Pi.mulSingle`/`Pi.single` -/
+
+variable {ι : Type*} [DecidableEq ι] {M : Type*} [One M]
+
+/-- On non-dependent functions, `Set.mulIndicator` on a singleton set equals `Pi.mulSingle`. -/
+@[to_additive (attr := simp)
+  /-- On non-dependent functions, `Set.indicator` on a singleton set equals `Pi.single`. -/]
+theorem mulIndicator_singleton (i : ι) (f : ι → M) :
+    Set.mulIndicator {i} f = Pi.mulSingle i (f i) := by
+  ext j
+  simp only [Set.mulIndicator_apply, Pi.mulSingle_apply, Set.mem_singleton_iff]
+  split_ifs with h <;> simp [h]
+
 end Set
 
 @[to_additive]
-theorem MonoidHom.map_mulIndicator {M N : Type*} [MulOneClass M] [MulOneClass N] (f : M →* N)
+theorem map_mulIndicator {M N F : Type*} [One M] [One N] [FunLike F M N] [OneHomClass F M N] (f : F)
     (s : Set α) (g : α → M) (x : α) : f (s.mulIndicator g x) = s.mulIndicator (f ∘ g) x := by
   simp [Set.mulIndicator_comp_of_one]
+
+@[deprecated (since := "2025-12-08")] alias MonoidHom.map_mulIndicator := map_mulIndicator
+@[deprecated (since := "2025-12-08")] alias AddMonoidHom.map_indicator := map_indicator

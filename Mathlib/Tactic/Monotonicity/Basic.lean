@@ -3,8 +3,10 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Lean.Elab.Tactic.SolveByElim
-import Mathlib.Tactic.Monotonicity.Attr
+module
+
+public meta import Lean.Elab.Tactic.SolveByElim
+public import Mathlib.Tactic.Monotonicity.Attr
 
 /-! # Monotonicity tactic
 
@@ -22,6 +24,8 @@ count these as separate steps, throwing off the count in the desired configurati
 local hypotheses and `rfl` are all applied repeatedly until nothing more is applicable.  The syntax
 for this in Lean 3 was `mono*`. Both `mono` and `mono*` implement this behavior for now.
 -/
+
+public meta section
 
 open Lean Elab Tactic Parser Tactic
 open Tactic SolveByElim

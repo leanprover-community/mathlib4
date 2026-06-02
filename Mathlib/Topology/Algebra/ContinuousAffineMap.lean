@@ -3,19 +3,16 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-import Mathlib.Topology.Algebra.Module.LinearMap
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
+public import Mathlib.Topology.Algebra.Affine
 
 /-!
 # Continuous affine maps.
 
 This file defines a type of bundled continuous affine maps.
-
-Note that the definition and basic properties established here require minimal assumptions, and do
-not even assume compatibility between the topological and algebraic structures. Of course it is
-necessary to assume some compatibility in order to obtain a useful theory. Such a theory is
-developed elsewhere for affine spaces modelled on _normed_ vector spaces, but not yet for general
-topological affine spaces (since we have not defined these yet).
 
 ## Main definitions:
 
@@ -23,9 +20,12 @@ topological affine spaces (since we have not defined these yet).
 
 ## Notation:
 
-We introduce the notation `P →ᴬ[R] Q` for `ContinuousAffineMap R P Q`. Note that this is parallel
-to the notation `E →L[R] F` for `ContinuousLinearMap R E F`.
+We introduce the notation `P →ᴬ[R] Q` for `ContinuousAffineMap R P Q` (not to be confused with the
+notation `A →A[R] B` for `ContinuousAlgHom`). Note that this is parallel to the notation `E →L[R] F`
+for `ContinuousLinearMap R E F`.
 -/
+
+@[expose] public section
 
 
 /-- A continuous map of affine spaces -/
@@ -149,6 +149,12 @@ theorem comp_id (f : P →ᴬ[R] Q) : f.comp (id R P) = f :=
 theorem id_comp (f : P →ᴬ[R] Q) : (id R Q).comp f = f :=
   ext fun _ => rfl
 
+/-- Applying a `ContinuousAffineMap` commutes with `AffineMap.lineMap`. -/
+@[simp]
+theorem apply_lineMap (f : P →ᴬ[R] Q) (p₀ p₁ : P) (c : R) :
+    f (AffineMap.lineMap p₀ p₁ c) = AffineMap.lineMap (f p₀) (f p₁) c := by
+  rw [← ContinuousAffineMap.coe_toAffineMap, AffineMap.apply_lineMap]
+
 /-- The continuous affine map sending `0` to `p₀` and `1` to `p₁` -/
 def lineMap (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
     [ContinuousSMul R V] [ContinuousVAdd V P] : R →ᴬ[R] P where
@@ -162,6 +168,77 @@ def lineMap (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
 lemma coe_lineMap_eq (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
     [ContinuousSMul R V] [ContinuousVAdd V P] :
     ⇑(ContinuousAffineMap.lineMap p₀ p₁) = ⇑(AffineMap.lineMap (k := R) p₀ p₁) := rfl
+
+/-- Applying a `ContinuousAffineMap` commutes with `ContinuousAffineMap.lineMap`. -/
+@[simp]
+theorem apply_lineMap' [TopologicalSpace R] [TopologicalSpace V] [TopologicalSpace W]
+    [ContinuousSMul R V] [ContinuousSMul R W] [ContinuousVAdd V P] [ContinuousVAdd W Q]
+    (f : P →ᴬ[R] Q) (p₀ p₁ : P) (c : R) :
+    f (lineMap p₀ p₁ c) = lineMap (f p₀) (f p₁) c := by
+  simp_rw [coe_lineMap_eq, apply_lineMap]
+
+section IsTopologicalAddTorsor
+
+variable [TopologicalSpace V] [IsTopologicalAddTorsor P]
+variable [TopologicalSpace W] [IsTopologicalAddTorsor Q]
+variable [TopologicalSpace W₂] [IsTopologicalAddTorsor Q₂]
+
+/-- The linear map underlying a continuous affine map is continuous. -/
+def contLinear (f : P →ᴬ[R] Q) : V →L[R] W :=
+  { f.linear with
+    toFun := f.linear
+    cont := by rw [AffineMap.continuous_linear_iff]; exact f.cont }
+
+@[simp]
+theorem coe_contLinear (f : P →ᴬ[R] Q) : (f.contLinear : V → W) = f.linear :=
+  rfl
+
+@[simp]
+theorem coe_contLinear_eq_linear (f : P →ᴬ[R] Q) :
+    (f.contLinear : V →ₗ[R] W) = (f : P →ᵃ[R] Q).linear :=
+  rfl
+
+@[simp]
+theorem coe_mk_contLinear_eq_linear (f : P →ᵃ[R] Q) (h) :
+    ((⟨f, h⟩ : P →ᴬ[R] Q).contLinear : V → W) = f.linear :=
+  rfl
+
+theorem coe_linear_eq_coe_contLinear (f : P →ᴬ[R] Q) :
+    ((f : P →ᵃ[R] Q).linear : V → W) = (⇑f.contLinear : V → W) :=
+  rfl
+
+@[simp]
+theorem comp_contLinear (f : P →ᴬ[R] Q) (g : Q →ᴬ[R] Q₂) :
+    (g.comp f).contLinear = g.contLinear.comp f.contLinear :=
+  rfl
+
+@[simp]
+theorem map_vadd (f : P →ᴬ[R] Q) (p : P) (v : V) : f (v +ᵥ p) = f.contLinear v +ᵥ f p :=
+  f.map_vadd' p v
+
+@[simp]
+theorem contLinear_map_vsub (f : P →ᴬ[R] Q) (p₁ p₂ : P) : f.contLinear (p₁ -ᵥ p₂) = f p₁ -ᵥ f p₂ :=
+  f.toAffineMap.linearMap_vsub p₁ p₂
+
+@[simp]
+theorem const_contLinear (q : Q) : (const R P q).contLinear = 0 :=
+  rfl
+
+theorem contLinear_eq_zero_iff_exists_const (f : P →ᴬ[R] Q) :
+    f.contLinear = 0 ↔ ∃ q, f = const R P q := by
+  have h₁ : f.contLinear = 0 ↔ (f : P →ᵃ[R] Q).linear = 0 := by
+    refine ⟨fun h => ?_, fun h => ?_⟩ <;> ext
+    · rw [← coe_contLinear_eq_linear, h]; rfl
+    · rw [← coe_linear_eq_coe_contLinear, h]; rfl
+  have h₂ : ∀ q : Q, f = const R P q ↔ (f : P →ᵃ[R] Q) = AffineMap.const R P q := by
+    intro q
+    refine ⟨fun h => ?_, fun h => ?_⟩ <;> ext
+    · rw [h]; rfl
+    · rw [← coe_toAffineMap, h, AffineMap.const_apply, coe_const, Function.const_apply]
+  simp_rw [h₁, h₂]
+  exact (f : P →ᵃ[R] Q).linear_eq_zero_iff_exists_const
+
+end IsTopologicalAddTorsor
 
 section ModuleValuedMaps
 
@@ -194,6 +271,12 @@ instance [DistribMulAction Sᵐᵒᵖ W] [IsCentralScalar S W] : IsCentralScalar
 
 instance : MulAction S (P →ᴬ[R] W) :=
   Function.Injective.mulAction _ coe_injective coe_smul
+
+variable [TopologicalSpace V] [IsTopologicalAddTorsor P] [IsTopologicalAddGroup W]
+
+@[simp]
+theorem smul_contLinear (t : S) (f : P →ᴬ[R] W) : (t • f).contLinear = t • f.contLinear :=
+  rfl
 
 end MulAction
 
@@ -236,7 +319,72 @@ instance [Semiring S] [Module S W] [SMulCommClass R S W] [ContinuousConstSMul S 
     Module S (P →ᴬ[R] W) :=
   Function.Injective.module S ⟨⟨fun f ↦ f.toAffineMap.toFun, rfl⟩, coe_add⟩ coe_injective coe_smul
 
+variable [TopologicalSpace V] [IsTopologicalAddTorsor P]
+
+@[simp]
+theorem zero_contLinear : (0 : P →ᴬ[R] W).contLinear = 0 :=
+  rfl
+
+@[simp]
+theorem add_contLinear (f g : P →ᴬ[R] W) : (f + g).contLinear = f.contLinear + g.contLinear :=
+  rfl
+
+@[simp]
+theorem sub_contLinear (f g : P →ᴬ[R] W) : (f - g).contLinear = f.contLinear - g.contLinear :=
+  rfl
+
+@[simp]
+theorem neg_contLinear (f : P →ᴬ[R] W) : (-f).contLinear = -f.contLinear :=
+  rfl
+
 end ModuleValuedMaps
+
+section
+
+variable [TopologicalSpace W] [IsTopologicalAddGroup W] [IsTopologicalAddTorsor Q]
+
+/-- The space of continuous affine maps from `P` to `Q` is an affine space over the space of
+continuous affine maps from `P` to `W`. -/
+instance : AddTorsor (P →ᴬ[R] W) (P →ᴬ[R] Q) where
+  vadd f g := { __ := f.toAffineMap +ᵥ g.toAffineMap, cont := f.cont.vadd g.cont }
+  zero_vadd _ := ext fun _ ↦ zero_vadd _ _
+  add_vadd _ _ _ := ext fun _ ↦ add_vadd _ _ _
+  vsub f g := { __ := f.toAffineMap -ᵥ g.toAffineMap, cont := f.cont.vsub g.cont }
+  vsub_vadd' _ _ := ext fun _ ↦ vsub_vadd _ _
+  vadd_vsub' _ _ := ext fun _ ↦ vadd_vsub _ _
+
+@[simp] lemma vadd_apply (f : P →ᴬ[R] W) (g : P →ᴬ[R] Q) (p : P) : (f +ᵥ g) p = f p +ᵥ g p :=
+  rfl
+
+@[simp] lemma vsub_apply (f g : P →ᴬ[R] Q) (p : P) : (f -ᵥ g) p = f p -ᵥ g p :=
+  rfl
+
+@[simp] lemma vadd_toAffineMap (f : P →ᴬ[R] W) (g : P →ᴬ[R] Q) :
+    (f +ᵥ g).toAffineMap = f.toAffineMap +ᵥ g.toAffineMap :=
+  rfl
+
+@[simp] lemma vsub_toAffineMap (f g : P →ᴬ[R] Q) :
+    (f -ᵥ g).toAffineMap = f.toAffineMap -ᵥ g.toAffineMap :=
+  rfl
+
+/-- Interpolating between `ContinuousAffineMap`s with `AffineMap.lineMap` commutes with
+evaluation. -/
+@[simp]
+lemma lineMap_apply' [ContinuousConstSMul R W] [SMulCommClass R R W] (f g : P →ᴬ[R] Q) (c : R)
+    (p : P) : AffineMap.lineMap f g c p = AffineMap.lineMap (f p) (g p) c := by
+  simp [AffineMap.lineMap_apply]
+
+variable [TopologicalSpace V] [IsTopologicalAddTorsor P]
+
+@[simp] lemma vadd_contLinear (f : P →ᴬ[R] W) (g : P →ᴬ[R] Q) :
+    (f +ᵥ g).contLinear = f.contLinear + g.contLinear :=
+  rfl
+
+@[simp] lemma vsub_contLinear (f g : P →ᴬ[R] Q) :
+    (f -ᵥ g).contLinear = f.contLinear - g.contLinear :=
+  rfl
+
+end
 
 section Prod
 
@@ -252,7 +400,7 @@ def prod (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) : P₁ →ᴬ[k] P�
   __ := AffineMap.prod f g
   cont := by eta_expand; dsimp; fun_prop
 
-theorem coe_prod (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) : prod f g = Pi.prod f g :=
+theorem coe_prod (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) : prod f g = Function.prod f g :=
   rfl
 
 @[simp]
@@ -270,6 +418,22 @@ theorem coe_prodMap (f : P₁ →ᴬ[k] P₂) (g : P₃ →ᴬ[k] P₄) : ⇑(f.
 
 @[simp]
 theorem prodMap_apply (f : P₁ →ᴬ[k] P₂) (g : P₃ →ᴬ[k] P₄) (x) : f.prodMap g x = (f x.1, g x.2) :=
+  rfl
+
+variable
+  [TopologicalSpace V₁] [IsTopologicalAddTorsor P₁]
+  [TopologicalSpace V₂] [IsTopologicalAddTorsor P₂]
+  [TopologicalSpace V₃] [IsTopologicalAddTorsor P₃]
+  [TopologicalSpace V₄] [IsTopologicalAddTorsor P₄]
+
+@[simp]
+theorem prod_contLinear (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) :
+    (f.prod g).contLinear = f.contLinear.prod g.contLinear :=
+  rfl
+
+@[simp]
+theorem prodMap_contLinear (f : P₁ →ᴬ[k] P₂) (g : P₃ →ᴬ[k] P₄) :
+    (f.prodMap g).contLinear = f.contLinear.prodMap g.contLinear :=
   rfl
 
 end Prod
@@ -295,4 +459,138 @@ theorem coe_toContinuousAffineMap (f : V →L[R] W) : ⇑f.toContinuousAffineMap
 @[simp]
 theorem toContinuousAffineMap_map_zero (f : V →L[R] W) : f.toContinuousAffineMap 0 = 0 := by simp
 
+variable [IsTopologicalAddGroup V] [IsTopologicalAddGroup W]
+
+@[simp]
+theorem toContinuousAffineMap_contLinear (f : V →L[R] W) : f.toContinuousAffineMap.contLinear = f :=
+  rfl
+
+theorem _root_.ContinuousAffineMap.decomp (f : V →ᴬ[R] W) :
+    (f : V → W) = f.contLinear + Function.const V (f 0) := by
+  rcases f with ⟨f, h⟩
+  rw [ContinuousAffineMap.coe_mk_contLinear_eq_linear, ContinuousAffineMap.coe_mk, f.decomp,
+    Pi.add_apply, LinearMap.map_zero, zero_add, ← Function.const_def]
+
 end ContinuousLinearMap
+
+namespace ContinuousAffineMap
+
+variable (R S V : Type*) {W : Type*} (Q : Type*) [Ring S] [Ring R]
+variable [AddCommGroup V] [Module R V] [TopologicalSpace V] [IsTopologicalAddGroup V]
+variable [AddCommGroup W] [Module R W] [TopologicalSpace W]
+variable [Module S W] [SMulCommClass R S W] [ContinuousConstSMul S W]
+variable [AddTorsor W Q] [TopologicalSpace Q]
+
+section
+
+variable [IsTopologicalAddTorsor Q]
+
+/-- The space of continuous affine maps from a topological vector space to a topological affine
+space is in bijection with the product of the codomain with the space of linear maps, by taking the
+value of the affine map at `(0 : V)` and the linear part. -/
+def decompEquiv : (V →ᴬ[R] Q) ≃ Q × (V →L[R] W) where
+  toFun f := ⟨f 0, f.contLinear⟩
+  invFun p :=
+    haveI := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
+    p.2.toContinuousAffineMap +ᵥ const R V p.1
+  left_inv f := by
+    ext x
+    simp_rw [vadd_apply, f.contLinear.coe_toContinuousAffineMap, coe_const, Function.const_apply,
+      ← f.map_vadd, vadd_eq_add, add_zero]
+  right_inv := by
+    haveI := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
+    rintro ⟨v, f⟩; ext <;> simp
+
+@[simp]
+theorem fst_decompEquiv (f : V →ᴬ[R] Q) :
+    (decompEquiv R V Q f).1 = f 0 :=
+  rfl
+
+@[simp]
+theorem snd_decompEquiv (f : V →ᴬ[R] Q) :
+    (decompEquiv R V Q f).2 = f.contLinear :=
+  rfl
+
+@[simp]
+theorem decompEquiv_symm_apply (p : Q × (V →L[R] W)) (x : V) :
+    (decompEquiv R V Q).symm p x = p.2 x +ᵥ p.1 :=
+  rfl
+
+@[simp]
+theorem decompEquiv_symm_contLinear (p : Q × (V →L[R] W)) :
+    ((decompEquiv R V Q).symm p).contLinear = p.2 := by
+  haveI := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
+  ext; simp [decompEquiv]
+
+end
+
+section
+
+variable (W) [IsTopologicalAddGroup W]
+
+/-- The space of continuous affine maps between topological vector spaces is linearly isomorphic to
+the product of the codomain with the space of linear maps, by taking the value of the affine map at
+`(0 : V)` and the linear part. -/
+def decompLinearEquiv : (V →ᴬ[R] W) ≃ₗ[S] W × (V →L[R] W) where
+  __ := decompEquiv R V W
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+@[simp]
+theorem fst_decompLinearEquiv (f : V →ᴬ[R] W) :
+    (decompLinearEquiv R S V W f).1 = f 0 :=
+  rfl
+
+@[simp]
+theorem snd_decompLinearEquiv (f : V →ᴬ[R] W) :
+    (decompLinearEquiv R S V W f).2 = f.contLinear :=
+  rfl
+
+@[simp]
+theorem decompLinearEquiv_symm_apply (p : W × (V →L[R] W)) (x : V) :
+    (decompLinearEquiv R S V W).symm p x = p.2 x + p.1 :=
+  rfl
+
+@[simp]
+theorem decompLinearEquiv_symm_contLinear (p : W × (V →L[R] W)) :
+    ((decompLinearEquiv R S V W).symm p).contLinear = p.2 := by
+  ext; simp [decompLinearEquiv]
+
+end
+
+section
+
+variable [IsTopologicalAddGroup W] [IsTopologicalAddTorsor Q]
+
+/-- The space of continuous affine maps from a topological vector space to a topological affine
+space is affinely isomorphic to the product of the codomain with the space of linear maps, by taking
+the value of the affine map at `(0 : V)` and the linear part. -/
+@[simps linear]
+def decompAffineEquiv : (V →ᴬ[R] Q) ≃ᵃ[S] Q × (V →L[R] W) where
+  __ := decompEquiv R V Q
+  linear := decompLinearEquiv R S V W
+  map_vadd' _ _ := rfl
+
+@[simp]
+theorem fst_decompAffineEquiv (f : V →ᴬ[R] Q) :
+    (decompAffineEquiv R S V Q f).1 = f 0 :=
+  rfl
+
+@[simp]
+theorem snd_decompAffineEquiv (f : V →ᴬ[R] Q) :
+    (decompAffineEquiv R S V Q f).2 = f.contLinear :=
+  rfl
+
+@[simp]
+theorem decompAffineEquiv_symm_apply (p : Q × (V →L[R] W)) (x : V) :
+    (decompAffineEquiv R S V Q).symm p x = p.2 x +ᵥ p.1 :=
+  rfl
+
+@[simp]
+theorem decompAffineEquiv_symm_contLinear (p : Q × (V →L[R] W)) :
+    ((decompAffineEquiv R S V Q).symm p).contLinear = p.2 := by
+  rw [decompAffineEquiv, ← AffineEquiv.coe_symm_toEquiv, decompEquiv_symm_contLinear]
+
+end
+
+end ContinuousAffineMap

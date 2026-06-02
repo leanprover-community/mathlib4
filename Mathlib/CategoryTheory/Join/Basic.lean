@@ -3,24 +3,26 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Products.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.Products.Basic
 
 /-!
-# Joins of category
+# Joins of categories
 
 Given categories `C, D`, this file constructs a category `C ⋆ D`. Its objects are either
 objects of `C` or objects of `D`, morphisms between objects of `C` are morphisms in `C`,
-morphisms between object of `D` are morphisms in `D`, and finally, given `c : C` and `d : D`,
+morphisms between objects of `D` are morphisms in `D`, and finally, given `c : C` and `d : D`,
 there is a unique morphism `c ⟶ d` in `C ⋆ D`.
 
 ## Main constructions
 
 * `Join.edge c d`: the unique map from `c` to `d`.
-* `Join.inclLeft : C ⥤ C ⋆ D`, the left inclusion. Its action on morphism is the main entry point
+* `Join.inclLeft : C ⥤ C ⋆ D`, the left inclusion. Its action on morphisms is the main entry point
   to construct maps in `C ⋆ D` between objects coming from `C`.
-* `Join.inclRight : D ⥤ C ⋆ D`, the left inclusion. Its action on morphism is the main entry point
-  to construct maps in `C ⋆ D` between object coming from `D`.
+* `Join.inclRight : D ⥤ C ⋆ D`, the right inclusion. Its action on morphisms is the main entry point
+  to construct maps in `C ⋆ D` between objects coming from `D`.
 * `Join.mkFunctor`, A constructor for functors out of a join of categories.
 * `Join.mkNatTrans`, A constructor for natural transformations between functors out of a join
   of categories.
@@ -32,6 +34,8 @@ there is a unique morphism `c ⟶ d` in `C ⋆ D`.
 * [Kerodon: section 1.4.3.2](https://kerodon.net/tag/0160)
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
@@ -58,7 +62,7 @@ section CategoryStructure
 
 variable {C D}
 
-/-- Morphisms in `C ⋆ D` are those of `C` and `D`, plus an unique
+/-- Morphisms in `C ⋆ D` are those of `C` and `D`, plus a unique
 morphism `(left c ⟶ right d)` for every `c : C` and `d : D`. -/
 def Hom : C ⋆ D → C ⋆ D → Type (max v₁ v₂)
   | .left x, .left y => ULift (x ⟶ y)
@@ -75,7 +79,7 @@ def id : ∀ X : C ⋆ D, Hom X X
 def comp : ∀ {x y z : C ⋆ D}, Hom x y → Hom y z → Hom x z
   | .left _x, .left _y, .left _z, f, g => ULift.up (ULift.down f ≫ ULift.down g)
   | .left _x, .left _y, .right _z, _, _ => PUnit.unit
-  | .left _x, .right _y, .right _z, _, _ =>  PUnit.unit
+  | .left _x, .right _y, .right _z, _, _ => PUnit.unit
   | .right _x, .right _y, .right _z, f, g => ULift.up (ULift.down f ≫ ULift.down g)
 
 instance : Category.{max v₁ v₂} (C ⋆ D) where
@@ -107,7 +111,7 @@ end CategoryStructure
 section Inclusions
 
 /-- The canonical inclusion from C to `C ⋆ D`.
-Terms of the form `(inclLeft C D).map f`should be treated as primitive when working with joins
+Terms of the form `(inclLeft C D).map f` should be treated as primitive when working with joins
 and one should avoid trying to reduce them. For this reason, there is no `inclLeft_map` simp
 lemma. -/
 @[simps! obj]
@@ -116,7 +120,7 @@ def inclLeft : C ⥤ C ⋆ D where
   map := ULift.up
 
 /-- The canonical inclusion from D to `C ⋆ D`.
-Terms of the form `(inclRight C D).map f`should be treated as primitive when working with joins
+Terms of the form `(inclRight C D).map f` should be treated as primitive when working with joins
 and one should avoid trying to reduce them. For this reason, there is no `inclRight_map` simp
 lemma. -/
 @[simps! obj]
@@ -126,7 +130,7 @@ def inclRight : D ⥤ C ⋆ D where
 
 variable {C D}
 
-/-- An induction principle for morphisms in a join of category: a morphism is either of the form
+/-- An induction principle for morphisms in a join of categories: a morphism is either of the form
 `(inclLeft _ _).map _`, `(inclRight _ _).map _`, or is `edge _ _`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 def homInduction {P : {x y : C ⋆ D} → (x ⟶ y) → Sort*}
@@ -205,8 +209,10 @@ section Functoriality
 
 variable {C D} {E : Type u₃} [Category.{v₃} E] {E' : Type u₄} [Category.{v₄} E']
 
-/-- A pair of functor `F : C ⥤ E, G : D ⥤ E` as well as a natural transformation
-`α : (Prod.fst C D) ⋙ F ⟶ (Prod.snd C D) ⋙ G`. defines a functor out of `C ⋆ D`.
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- A pair of functors `F : C ⥤ E, G : D ⥤ E` as well as a natural transformation
+`α : (Prod.fst C D) ⋙ F ⟶ (Prod.snd C D) ⋙ G` defines a functor out of `C ⋆ D`.
 This is the main entry point to define functors out of a join of categories. -/
 def mkFunctor (F : C ⥤ E) (G : D ⥤ E) (α : Prod.fst C D ⋙ F ⟶ Prod.snd C D ⋙ G) :
     C ⋆ D ⥤ E where
@@ -218,7 +224,7 @@ def mkFunctor (F : C ⥤ E) (G : D ⥤ E) (α : Prod.fst C D ⋙ F ⟶ Prod.snd 
     homInduction
       (left := fun _ _ f ↦ F.map f)
       (right := fun _ _ g ↦ G.map g)
-      (edge := fun c d ↦ α.app (c,d))
+      (edge := fun c d ↦ α.app (c, d))
       f
   map_id x := by
     cases x
@@ -229,15 +235,15 @@ def mkFunctor (F : C ⥤ E) (G : D ⥤ E) (α : Prod.fst C D ⋙ F ⟶ Prod.snd 
   map_comp {x y z} f g := by
     cases f <;> cases g
     · simp [← Functor.map_comp]
-    · case left.edge f d => simpa using (α.naturality <| (Prod.sectL _ d).map f).symm
+    · case left.edge f d => simpa using! (α.naturality <| (Prod.sectL _ d).map f).symm
     · simp [← Functor.map_comp]
-    · case edge.right c _ _ f => simpa using α.naturality <| (Prod.sectR c _).map f
+    · case edge.right c _ _ f => simpa using! α.naturality <| (Prod.sectR c _).map f
 
 section
 
 variable (F : C ⥤ E) (G : D ⥤ E) (α : Prod.fst C D ⋙ F ⟶ Prod.snd C D ⋙ G)
 
--- As these equality of objects are definitional, they should be fine.
+-- As these equalities of objects are definitional, they should be fine.
 @[simp]
 lemma mkFunctor_obj_left (c : C) : (mkFunctor F G α).obj (left c) = F.obj c := rfl
 
@@ -262,6 +268,7 @@ lemma mkFunctor_map_inclRight {d d' : D} (f : d ⟶ d') :
     (mkFunctor F G α).map ((inclRight C D).map f) = G.map f :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Whiskering `mkFunctor F G α` with the universal transformation gives back `α`. -/
 @[simp]
 lemma mkFunctor_edgeTransform :
@@ -276,22 +283,21 @@ lemma mkFunctor_map_edge (c : C) (d : D) :
 
 end
 
-/-- Construct a natural transformation between functors from a join from
+/-- Construct a natural transformation between functors out of a join from
 the data of natural transformations between each side that are compatible with the
 action on edge maps. -/
 def mkNatTrans {F : C ⋆ D ⥤ E} {F' : C ⋆ D ⥤ E}
     (αₗ : inclLeft C D ⋙ F ⟶ inclLeft C D ⋙ F') (αᵣ : inclRight C D ⋙ F ⟶ inclRight C D ⋙ F')
     (h : whiskerRight (edgeTransform C D) F ≫ whiskerLeft (Prod.snd C D) αᵣ =
-      whiskerLeft (Prod.fst C D) αₗ ≫ whiskerRight (edgeTransform C D) F' :=
-      by cat_disch) :
+      whiskerLeft (Prod.fst C D) αₗ ≫ whiskerRight (edgeTransform C D) F' := by cat_disch) :
     F ⟶ F' where
   app x := match x with
     | left x => αₗ.app x
     | right x => αᵣ.app x
   naturality {x y} f := by
     cases f with
-    | @left x y f => simpa using αₗ.naturality f
-    | @right x y f => simpa using αᵣ.naturality f
+    | @left x y f => simpa using! αₗ.naturality f
+    | @right x y f => simpa using! αᵣ.naturality f
     | @edge c d => exact funext_iff.mp (NatTrans.ext_iff.mp h) (c, d)
 
 section
@@ -299,18 +305,25 @@ section
 variable {F : C ⋆ D ⥤ E} {F' : C ⋆ D ⥤ E}
     (αₗ : inclLeft C D ⋙ F ⟶ inclLeft C D ⋙ F') (αᵣ : inclRight C D ⋙ F ⟶ inclRight C D ⋙ F')
     (h : whiskerRight (edgeTransform C D) F ≫ whiskerLeft (Prod.snd C D) αᵣ =
-      whiskerLeft (Prod.fst C D) αₗ ≫ whiskerRight (edgeTransform C D) F' :=
-      by cat_disch)
+      whiskerLeft (Prod.fst C D) αₗ ≫ whiskerRight (edgeTransform C D) F' := by cat_disch)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 lemma mkNatTrans_app_left (c : C) : (mkNatTrans αₗ αᵣ h).app (left c) = αₗ.app c := rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 lemma mkNatTrans_app_right (d : D) : (mkNatTrans αₗ αᵣ h).app (right d) = αᵣ.app d := rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 lemma whiskerLeft_inclLeft_mkNatTrans : whiskerLeft (inclLeft C D) (mkNatTrans αₗ αᵣ h) = αₗ := rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 lemma whiskerLeft_inclRight_mkNatTrans :
     whiskerLeft (inclRight C D) (mkNatTrans αₗ αᵣ h) = αᵣ := rfl
@@ -328,12 +341,14 @@ lemma natTrans_ext {F F' : C ⋆ D ⥤ E} {α β : F ⟶ F'}
   | left t => exact congrArg (fun x ↦ x.app t) h₁
   | right t => exact congrArg (fun x ↦ x.app t) h₂
 
+set_option backward.defeqAttrib.useBackward true in
 lemma eq_mkNatTrans {F F' : C ⋆ D ⥤ E} (α : F ⟶ F') :
     mkNatTrans (whiskerLeft (inclLeft C D) α) (whiskerLeft (inclRight C D) α) = α := by
   apply natTrans_ext <;> simp
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `mkNatTrans` respects vertical composition. -/
 lemma mkNatTransComp
     {F F' F'' : C ⋆ D ⥤ E}
@@ -342,8 +357,7 @@ lemma mkNatTransComp
     (βₗ : inclLeft C D ⋙ F' ⟶ inclLeft C D ⋙ F'')
     (βᵣ : inclRight C D ⋙ F' ⟶ inclRight C D ⋙ F'')
     (h : whiskerRight (edgeTransform C D) F ≫ whiskerLeft (Prod.snd C D) αᵣ =
-      whiskerLeft (Prod.fst C D) αₗ ≫ whiskerRight (edgeTransform C D) F' :=
-      by cat_disch)
+      whiskerLeft (Prod.fst C D) αₗ ≫ whiskerRight (edgeTransform C D) F' := by cat_disch)
     (h' : whiskerRight (edgeTransform C D) F' ≫ whiskerLeft (Prod.snd C D) βᵣ =
       whiskerLeft (Prod.fst C D) βₗ ≫ whiskerRight (edgeTransform C D) F'' := by cat_disch) :
     mkNatTrans (αₗ ≫ βₗ) (αᵣ ≫ βᵣ) (by simp [← h', reassoc_of% h]) =
@@ -352,7 +366,8 @@ lemma mkNatTransComp
 
 end
 
-/-- Two functors out of a join of category are naturally isomorphic if their
+set_option backward.isDefEq.respectTransparency false in
+/-- Two functors out of a join of categories are naturally isomorphic if their
 compositions with the inclusions are isomorphic and the whiskering with the canonical
 transformation is respected through these isomorphisms. -/
 @[simps]
@@ -398,6 +413,7 @@ def mapPairRight : inclRight _ _ ⋙ mapPair Fₗ Fᵣ ≅ Fᵣ ⋙ inclRight _ 
 
 end mapPair
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Any functor out of a join is naturally isomorphic to a functor of the form `mkFunctor F G α`. -/
 @[simps!]
 def isoMkFunctor (F : C ⋆ D ⥤ E) :
@@ -434,24 +450,28 @@ section mapPairComp
 
 variable (Fₗ : C ⥤ E) (Fᵣ : D ⥤ E') (Gₗ : E ⥤ J) (Gᵣ : E' ⥤ K)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma mapPairComp_hom_app_left (c : C) :
     (mapPairComp Fₗ Fᵣ Gₗ Gᵣ).hom.app (left c) = 𝟙 (left (Gₗ.obj (Fₗ.obj c))) := by
   dsimp [mapPairComp]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma mapPairComp_hom_app_right (d : D) :
     (mapPairComp Fₗ Fᵣ Gₗ Gᵣ).hom.app (right d) = 𝟙 (right (Gᵣ.obj (Fᵣ.obj d))) := by
   dsimp [mapPairComp]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma mapPairComp_inv_app_left (c : C) :
     (mapPairComp Fₗ Fᵣ Gₗ Gᵣ).inv.app (left c) = 𝟙 (left (Gₗ.obj (Fₗ.obj c))) := by
   dsimp [mapPairComp]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma mapPairComp_inv_app_right (d : D) :
     (mapPairComp Fₗ Fᵣ Gₗ Gᵣ).inv.app (right d) = 𝟙 (right (Gᵣ.obj (Fᵣ.obj d))) := by
@@ -478,12 +498,14 @@ def mapWhiskerRight {Fₗ : C ⥤ E} {Gₗ : C ⥤ E} (α : Fₗ ⟶ Gₗ) (H : 
     ((mapPairLeft Fₗ H).hom ≫ whiskerRight α (inclLeft E E') ≫ (mapPairLeft Gₗ H).inv)
     ((mapPairRight Fₗ H).hom ≫ whiskerRight (𝟙 H) (inclRight E E') ≫ (mapPairRight Gₗ H).inv)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma mapWhiskerRight_comp {Fₗ : C ⥤ E} {Gₗ : C ⥤ E} {Hₗ : C ⥤ E}
     (α : Fₗ ⟶ Gₗ) (β : Gₗ ⟶ Hₗ) (H : D ⥤ E') :
     mapWhiskerRight (α ≫ β) H = mapWhiskerRight α H ≫ mapWhiskerRight β H := by
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma mapWhiskerRight_id (Fₗ : C ⥤ E) (H : D ⥤ E') :
     mapWhiskerRight (𝟙 Fₗ) H = 𝟙 _ := by
@@ -498,17 +520,20 @@ def mapWhiskerLeft (H : C ⥤ E) {Fᵣ : D ⥤ E'} {Gᵣ : D ⥤ E'} (α : Fᵣ 
     ((mapPairLeft H Fᵣ).hom ≫ whiskerRight (𝟙 H) (inclLeft E E') ≫ (mapPairLeft H Gᵣ).inv)
     ((mapPairRight H Fᵣ).hom ≫ whiskerRight α (inclRight E E') ≫ (mapPairRight H Gᵣ).inv)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma mapWhiskerLeft_comp {Fᵣ : D ⥤ E'} {Gᵣ : D ⥤ E'} {Hᵣ : D ⥤ E'}
     (H : C ⥤ E) (α : Fᵣ ⟶ Gᵣ) (β : Gᵣ ⟶ Hᵣ) :
     mapWhiskerLeft H (α ≫ β) = mapWhiskerLeft H α ≫ mapWhiskerLeft H β := by
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma mapWhiskerLeft_id (H : C ⥤ E) (Fᵣ : D ⥤ E') :
     mapWhiskerLeft H (𝟙 Fᵣ) = 𝟙 _ := by
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 /-- One can exchange `mapWhiskerLeft` and `mapWhiskerRight`. -/
 lemma mapWhisker_exchange (Fₗ : C ⥤ E) (Gₗ : C ⥤ E) (Fᵣ : D ⥤ E') (Gᵣ : D ⥤ E')
     (αₗ : Fₗ ⟶ Gₗ) (αᵣ : Fᵣ ⟶ Gᵣ) :
@@ -538,6 +563,7 @@ def mapIsoWhiskerRight {Fₗ : C ⥤ E} {Gₗ : C ⥤ E} (α : Fₗ ≅ Gₗ) (H
 lemma mapIsoWhiskerRight_hom {Fₗ : C ⥤ E} {Gₗ : C ⥤ E} (α : Fₗ ≅ Gₗ) (H : D ⥤ E') :
     (mapIsoWhiskerRight α H).hom = mapWhiskerRight α.hom H := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mapIsoWhiskerRight_inv {Fₗ : C ⥤ E} {Gₗ : C ⥤ E} (α : Fₗ ≅ Gₗ) (H : D ⥤ E') :
     (mapIsoWhiskerRight α H).inv = mapWhiskerRight α.inv H := by
   ext x
@@ -546,6 +572,7 @@ lemma mapIsoWhiskerRight_inv {Fₗ : C ⥤ E} {Gₗ : C ⥤ E} (α : Fₗ ≅ G�
 lemma mapIsoWhiskerLeft_hom (H : C ⥤ E) {Fᵣ : D ⥤ E'} {Gᵣ : D ⥤ E'} (α : Fᵣ ≅ Gᵣ) :
     (mapIsoWhiskerLeft H α).hom = mapWhiskerLeft H α.hom := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mapIsoWhiskerLeft_inv (H : C ⥤ E) {Fᵣ : D ⥤ E'} {Gᵣ : D ⥤ E'} (α : Fᵣ ≅ Gᵣ) :
     (mapIsoWhiskerLeft H α).inv = mapWhiskerLeft H α.inv := by
   ext x
@@ -560,6 +587,8 @@ variable {C' : Type u₃} [Category.{v₃} C']
 
 variable {C D}
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Equivalent categories have equivalent joins. -/
 @[simps]
 def mapPairEquiv (e : C ≌ C') (e' : D ≌ D') : C ⋆ D ≌ C' ⋆ D' where

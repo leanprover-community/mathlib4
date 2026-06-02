@@ -3,7 +3,9 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Group.Defs
+module
+
+public import Mathlib.Algebra.Group.Defs
 
 /-!
 # Invertible elements
@@ -73,6 +75,8 @@ invertible, inverse element, invOf, a half, one half, a third, one third, ½, �
 
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero DenselyOrdered
 
 universe u
@@ -104,60 +108,78 @@ theorem mul_invOf_self' [Mul α] [One α] (a : α) {_ : Invertible a} : a * ⅟a
 
 theorem mul_invOf_self [Mul α] [One α] (a : α) [Invertible a] : a * ⅟a = 1 := mul_invOf_self' _
 
+section Monoid
+
+variable [Monoid α] (a b : α)
+
 @[simp]
-theorem invOf_mul_cancel_left' [Monoid α] (a b : α) {_ : Invertible a} : ⅟a * (a * b) = b := by
+theorem invOf_mul_cancel_left' {_ : Invertible a} : ⅟a * (a * b) = b := by
   rw [← mul_assoc, invOf_mul_self, one_mul]
 example {G} [Group G] (a b : G) : a⁻¹ * (a * b) = b := inv_mul_cancel_left a b
 
-theorem invOf_mul_cancel_left [Monoid α] (a b : α) [Invertible a] : ⅟a * (a * b) = b :=
+theorem invOf_mul_cancel_left [Invertible a] : ⅟a * (a * b) = b :=
   invOf_mul_cancel_left' _ _
 
 @[simp]
-theorem mul_invOf_cancel_left' [Monoid α] (a b : α) {_ : Invertible a} : a * (⅟a * b) = b := by
+theorem mul_invOf_cancel_left' {_ : Invertible a} : a * (⅟a * b) = b := by
   rw [← mul_assoc, mul_invOf_self, one_mul]
 example {G} [Group G] (a b : G) : a * (a⁻¹ * b) = b := mul_inv_cancel_left a b
 
-theorem mul_invOf_cancel_left [Monoid α] (a b : α) [Invertible a] : a * (⅟a * b) = b :=
+theorem mul_invOf_cancel_left [Invertible a] : a * (⅟a * b) = b :=
   mul_invOf_cancel_left' a b
 
 @[simp]
-theorem invOf_mul_cancel_right' [Monoid α] (a b : α) {_ : Invertible b} : a * ⅟b * b = a := by
+theorem invOf_mul_cancel_right' {_ : Invertible b} : a * ⅟b * b = a := by
   simp [mul_assoc]
 example {G} [Group G] (a b : G) : a * b⁻¹ * b = a := inv_mul_cancel_right a b
 
-theorem invOf_mul_cancel_right [Monoid α] (a b : α) [Invertible b] : a * ⅟b * b = a :=
+theorem invOf_mul_cancel_right [Invertible b] : a * ⅟b * b = a :=
   invOf_mul_cancel_right' _ _
 
 @[simp]
-theorem mul_invOf_cancel_right' [Monoid α] (a b : α) {_ : Invertible b} : a * b * ⅟b = a := by
+theorem mul_invOf_cancel_right' {_ : Invertible b} : a * b * ⅟b = a := by
   simp [mul_assoc]
 example {G} [Group G] (a b : G) : a * b * b⁻¹ = a := mul_inv_cancel_right a b
 
-theorem mul_invOf_cancel_right [Monoid α] (a b : α) [Invertible b] : a * b * ⅟b = a :=
+theorem mul_invOf_cancel_right [Invertible b] : a * b * ⅟b = a :=
   mul_invOf_cancel_right' _ _
 
-theorem invOf_eq_right_inv [Monoid α] {a b : α} [Invertible a] (hac : a * b = 1) : ⅟a = b :=
+variable {a b}
+
+theorem invOf_eq_right_inv [Invertible a] (hac : a * b = 1) : ⅟a = b :=
   left_inv_eq_right_inv (invOf_mul_self _) hac
 
-theorem invOf_eq_left_inv [Monoid α] {a b : α} [Invertible a] (hac : b * a = 1) : ⅟a = b :=
+theorem invOf_eq_left_inv [Invertible a] (hac : b * a = 1) : ⅟a = b :=
   (left_inv_eq_right_inv hac (mul_invOf_self _)).symm
 
-theorem invertible_unique {α : Type u} [Monoid α] (a b : α) [Invertible a] [Invertible b]
+theorem invOf_eq_iff_right [Invertible a] : ⅟a = b ↔ a * b = 1 :=
+  ⟨fun h ↦ by rw [← h, mul_invOf_self], invOf_eq_right_inv⟩
+
+theorem invOf_eq_iff_left [Invertible a] : ⅟a = b ↔ b * a = 1 :=
+  ⟨fun h ↦ by rw [← h, invOf_mul_self], invOf_eq_left_inv⟩
+
+variable (a b)
+
+theorem invertible_unique [Invertible a] [Invertible b]
     (h : a = b) : ⅟a = ⅟b := by
   apply invOf_eq_right_inv
   rw [h, mul_invOf_self]
 
-instance Invertible.subsingleton [Monoid α] (a : α) : Subsingleton (Invertible a) :=
+instance Invertible.subsingleton : Subsingleton (Invertible a) :=
   ⟨fun ⟨b, hba, hab⟩ ⟨c, _, hac⟩ => by
     congr
     exact left_inv_eq_right_inv hba hac⟩
 
 /-- If `a` is invertible and `a = b`, then `⅟a = ⅟b`. -/
 @[congr]
-theorem Invertible.congr [Monoid α] (a b : α) [Invertible a] [Invertible b] (h : a = b) :
-    ⅟a = ⅟b := by subst h; congr; apply Subsingleton.allEq
+theorem Invertible.congr [Invertible a] [Invertible b] (h : a = b) :
+    ⅟a = ⅟b :=
+  invertible_unique a b h
+
+end Monoid
 
 /-- If `r` is invertible and `s = r` and `si = ⅟r`, then `s` is invertible with `⅟s = si`. -/
+@[implicit_reducible]
 def Invertible.copy' [MulOneClass α] {r : α} (hr : Invertible r) (s : α) (si : α) (hs : s = r)
     (hsi : si = ⅟r) : Invertible s where
   invOf := si
@@ -170,6 +192,7 @@ abbrev Invertible.copy [MulOneClass α] {r : α} (hr : Invertible r) (s : α) (h
   hr.copy' _ _ hs rfl
 
 /-- Each element of a group is invertible. -/
+@[implicit_reducible]
 def invertibleOfGroup [Group α] (a : α) : Invertible a :=
   ⟨a⁻¹, inv_mul_cancel a, mul_inv_cancel a⟩
 
@@ -178,6 +201,7 @@ theorem invOf_eq_group_inv [Group α] (a : α) [Invertible a] : ⅟a = a⁻¹ :=
   invOf_eq_right_inv (mul_inv_cancel a)
 
 /-- `1` is the inverse of itself -/
+@[implicit_reducible]
 def invertibleOne [Monoid α] : Invertible (1 : α) :=
   ⟨1, mul_one _, one_mul _⟩
 
@@ -200,6 +224,7 @@ theorem invOf_inj [Monoid α] {a b : α} [Invertible a] [Invertible b] : ⅟a = 
   ⟨invertible_unique _ _, invertible_unique _ _⟩
 
 /-- `⅟b * ⅟a` is the inverse of `a * b` -/
+@[implicit_reducible]
 def invertibleMul [Monoid α] (a b : α) [Invertible a] [Invertible b] : Invertible (a * b) :=
   ⟨⅟b * ⅟a, by simp [← mul_assoc], by simp [← mul_assoc]⟩
 
@@ -235,5 +260,17 @@ theorem mul_invOf_eq_iff_eq_mul_right : a * ⅟c = b ↔ a = b * c := by
 
 theorem mul_right_eq_iff_eq_mul_invOf : a * c = b ↔ a = b * ⅟c := by
   rw [← mul_left_inj_of_invertible (c := ⅟c), mul_invOf_cancel_right]
+
+variable [IsDedekindFiniteMonoid α] (a b : α)
+
+/-- An element in a Dedekind-finite monoid is invertible if it has a left inverse. -/
+@[implicit_reducible]
+def invertibleOfLeftInverse (h : b * a = 1) : Invertible a :=
+  ⟨b, h, mul_eq_one_symm h⟩
+
+/-- An element in a Dedekind-finite monoid is invertible if it has a right inverse. -/
+@[implicit_reducible]
+def invertibleOfRightInverse (h : a * b = 1) : Invertible a :=
+  ⟨b, mul_eq_one_symm h, h⟩
 
 end

@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.WithOne.Defs
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.WithOne.Defs
 
 /-!
 # More operations on `WithOne` and `WithZero`
@@ -18,6 +20,8 @@ that were not available in `Algebra/Group/WithOne/Defs`.
 * `WithOne.lift`, `WithZero.lift`
 * `WithOne.map`, `WithZero.map`
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
@@ -50,10 +54,8 @@ variable [Mul α] [MulOneClass β]
 Lift an additive semigroup homomorphism `f` to a bundled additive monoid homomorphism. -/]
 def lift : (α →ₙ* β) ≃ (WithOne α →* β) where
   toFun f :=
-    { toFun := fun x => Option.casesOn x 1 f, map_one' := rfl,
-      map_mul' := fun x y => WithOne.cases_on x (by rw [one_mul]; exact (one_mul _).symm)
-        (fun x => WithOne.cases_on y (by rw [mul_one]; exact (mul_one _).symm)
-          (fun y => f.map_mul x y)) }
+    { toFun := WithOne.recOneCoe 1 f, map_one' := rfl,
+      map_mul' := fun x y => x.cases_on (by simp) (fun x => y.cases_on (by simp) (f.map_mul x)) }
   invFun F := F.toMulHom.comp coeMulHom
   right_inv F := MonoidHom.ext fun x => WithOne.cases_on x F.map_one.symm (fun _ => rfl)
 
@@ -70,6 +72,9 @@ theorem lift_one : lift f 1 = 1 :=
 @[to_additive]
 theorem lift_unique (f : WithOne α →* β) : f = lift (f.toMulHom.comp coeMulHom) :=
   (lift.apply_symm_apply f).symm
+
+@[to_additive (attr := simp)]
+theorem lift_symm_apply (f : WithOne α →* β) (x : α) : lift.symm f x = f x := rfl
 
 end lift
 
@@ -93,60 +98,30 @@ theorem mapMulHom_id : mapMulHom (MulHom.id α) = MonoidHom.id (WithOne α) := b
   ext x
   induction x <;> rfl
 
-@[deprecated (since := "2025-08-26")]
-alias map_id := mapMulHom_id
-@[deprecated (since := "2025-08-26")]
-alias _root_.WithZero.map_id := WithZero.mapAddHom_id
-
 @[to_additive]
 theorem mapMulHom_injective {f : α →ₙ* β} (hf : Function.Injective f) :
     Function.Injective (mapMulHom f)
   | none, none, _ => rfl
   | (a₁ : α), (a₂ : α), H => by simpa [hf.eq_iff] using H
 
-@[deprecated (since := "2025-08-26")]
-alias map_injective := mapMulHom_injective
-@[deprecated (since := "2025-08-26")]
-alias _root_.WithZero.map_injective := WithZero.mapAddHom_injective
-
 @[to_additive]
 theorem mapMulHom_injective' :
     Function.Injective (WithOne.mapMulHom (α := α) (β := β)) :=
   fun f g h ↦ MulHom.ext fun x ↦ coe_injective <| by simp only [← mapMulHom_coe, h]
 
-@[deprecated (since := "2025-08-26")]
-alias map_injective' := mapMulHom_injective'
-@[deprecated (since := "2025-08-26")]
-alias _root_.WithZero.map_injective' := WithZero.mapAddHom_injective'
-
 @[to_additive (attr := simp)]
 theorem mapMulHom_inj {f g : α →ₙ* β} : mapMulHom f = mapMulHom g ↔ f = g :=
   mapMulHom_injective'.eq_iff
-
-@[deprecated (since := "2025-08-26")]
-alias map_inj := mapMulHom_inj
-@[deprecated (since := "2025-08-26")]
-alias _root_.WithZero.map_inj := WithZero.mapAddHom_inj
 
 @[to_additive]
 theorem mapMulHom_mapMulHom (f : α →ₙ* β) (g : β →ₙ* γ) (x) :
     mapMulHom g (mapMulHom f x) = mapMulHom (g.comp f) x := by
   induction x <;> rfl
 
-@[deprecated (since := "2025-08-26")]
-alias map_map := mapMulHom_mapMulHom
-@[deprecated (since := "2025-08-26")]
-alias _root_.WithZero.map_map := WithZero.mapAddHom_mapAddHom
-
 @[to_additive (attr := simp)]
 theorem mapMulHom_comp (f : α →ₙ* β) (g : β →ₙ* γ) :
     mapMulHom (g.comp f) = (mapMulHom g).comp (mapMulHom f) :=
   MonoidHom.ext fun x => (mapMulHom_mapMulHom f g x).symm
-
-@[deprecated (since := "2025-08-26")]
-alias map_comp := mapMulHom_comp
-@[deprecated (since := "2025-08-26")]
-alias _root_.WithZero.map_comp := WithZero.mapAddHom_comp
 
 /-- A version of `Equiv.optionCongr` for `WithOne`. -/
 @[to_additive (attr := simps apply) /-- A version of `Equiv.optionCongr` for `WithZero`. -/]

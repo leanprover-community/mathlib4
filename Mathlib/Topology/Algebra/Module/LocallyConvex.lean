@@ -3,9 +3,11 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.Convex.Topology
-import Mathlib.Topology.Connected.LocPathConnected
-import Mathlib.Analysis.Convex.PathConnected
+module
+
+public import Mathlib.Analysis.Convex.Topology
+public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Analysis.Convex.PathConnected
 
 /-!
 # Locally convex topological modules
@@ -31,6 +33,8 @@ In a module, this is equivalent to `0` satisfying such properties.
   bases generating a locally convex topology
 
 -/
+
+public section
 
 assert_not_exists NormedSpace
 
@@ -135,7 +139,7 @@ is closed admit disjoint convex open neighborhoods. -/
 theorem Disjoint.exists_open_convexes (disj : Disjoint s t)
     (hs₁ : Convex 𝕜 s) (hs₂ : IsCompact s) (ht₁ : Convex 𝕜 t) (ht₂ : IsClosed t) :
     ∃ u v, IsOpen u ∧ IsOpen v ∧ Convex 𝕜 u ∧ Convex 𝕜 v ∧ s ⊆ u ∧ t ⊆ v ∧ Disjoint u v := by
-  letI : UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
+  letI : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
   haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   have := (LocallyConvexSpace.convex_open_basis_zero 𝕜 E).comap fun x : E × E => x.2 - x.1
   rw [← uniformity_eq_comap_nhds_zero] at this
@@ -152,9 +156,6 @@ lemma exists_open_convex_of_notMem (hx : x ∉ s) (hsconv : Convex 𝕜 s) (hscl
     ∃ U V : Set E,
       IsOpen U ∧ IsOpen V ∧ Convex 𝕜 U ∧ Convex 𝕜 V ∧ x ∈ U ∧ s ⊆ V ∧ Disjoint U V := by
   simpa [*] using Disjoint.exists_open_convexes (s := {x}) (t := s) (𝕜 := 𝕜)
-
-@[deprecated (since := "2025-05-23")]
-alias exists_open_convex_of_not_mem := exists_open_convex_of_notMem
 
 end LinearOrderedField
 
@@ -175,16 +176,10 @@ protected theorem LocallyConvexSpace.sInf {ts : Set (TopologicalSpace E)}
   rw [nhds_sInf, ← iInf_subtype'']
   exact .iInf' fun i : ts => (@locallyConvexSpace_iff 𝕜 E _ _ _ _ ↑i).mp (h (↑i) i.2) x
 
-@[deprecated (since := "2025-05-05")]
-alias locallyConvexSpace_sInf := LocallyConvexSpace.sInf
-
 protected theorem LocallyConvexSpace.iInf {ts' : ι → TopologicalSpace E}
     (h' : ∀ i, @LocallyConvexSpace 𝕜 E _ _ _ _ (ts' i)) :
     @LocallyConvexSpace 𝕜 E _ _ _ _ (⨅ i, ts' i) :=
   .sInf <| by rwa [forall_mem_range]
-
-@[deprecated (since := "2025-05-05")]
-alias locallyConvexSpace_iInf := LocallyConvexSpace.iInf
 
 protected theorem LocallyConvexSpace.inf {t₁ t₂ : TopologicalSpace E}
     (h₁ : @LocallyConvexSpace 𝕜 E _ _ _ _ t₁)
@@ -192,9 +187,6 @@ protected theorem LocallyConvexSpace.inf {t₁ t₂ : TopologicalSpace E}
   rw [inf_eq_iInf]
   refine .iInf fun b => ?_
   cases b <;> assumption
-
-@[deprecated (since := "2025-05-05")]
-alias locallyConvexSpace_inf := LocallyConvexSpace.inf
 
 protected theorem LocallyConvexSpace.induced {t : TopologicalSpace F} [LocallyConvexSpace 𝕜 F]
     (f : E →ₗ[𝕜] F) : @LocallyConvexSpace 𝕜 E _ _ _ _ (t.induced f) := by
@@ -205,8 +197,15 @@ protected theorem LocallyConvexSpace.induced {t : TopologicalSpace F} [LocallyCo
   rw [nhds_induced]
   exact (LocallyConvexSpace.convex_basis <| f x).comap f
 
-@[deprecated (since := "2025-05-05")]
-alias locallyConvexSpace_induced := LocallyConvexSpace.induced
+theorem Topology.IsInducing.locallyConvexSpace [TopologicalSpace F] [LocallyConvexSpace 𝕜 F]
+    [TopologicalSpace E] {f : E →ₗ[𝕜] F} (hf : IsInducing f) :
+    LocallyConvexSpace 𝕜 E := by
+  rw [hf.eq_induced]
+  exact .induced f
+
+instance [TopologicalSpace E] [LocallyConvexSpace 𝕜 E] {S : Submodule 𝕜 E} :
+    LocallyConvexSpace 𝕜 S :=
+  IsInducing.locallyConvexSpace (f := S.subtype) .subtypeVal
 
 instance Pi.locallyConvexSpace {ι : Type*} {X : ι → Type*} [∀ i, AddCommMonoid (X i)]
     [∀ i, TopologicalSpace (X i)] [∀ i, Module 𝕜 (X i)] [∀ i, LocallyConvexSpace 𝕜 (X i)] :
@@ -239,14 +238,12 @@ instance LinearOrderedSemiring.toLocallyConvexSpace {R : Type*} [TopologicalSpac
       intro
       refine nhds_top_basis.to_hasBasis' ?_ ?_
       · intros
-        refine ⟨Set.Ioi _, ?_, subset_refl _⟩
+        refine ⟨Set.Ioi _, ?_, subset_rfl⟩
         simp_all
       · simp +contextual
     refine (nhds_basis_Ioo' hl hu).to_hasBasis' ?_ ?_
     · simp only [id_eq, and_imp, Prod.forall]
-      intros
-      refine ⟨_, ?_, subset_refl _⟩
-      simp_all [Ioo_mem_nhds, convex_Ioo]
+      exact fun _ _ h₁ h₂ ↦ ⟨_, by simp [h₁, h₂, Ioo_mem_nhds, convex_Ioo], subset_rfl⟩
     · simp +contextual
 
 end LinearOrderedSemiring

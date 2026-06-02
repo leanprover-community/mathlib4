@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Partition.Split
-import Mathlib.Analysis.Normed.Operator.Mul
+module
+
+public import Mathlib.Analysis.BoxIntegral.Partition.Split
+public import Mathlib.Analysis.Normed.Operator.Mul
 
 /-!
 # Box additive functions
@@ -25,6 +27,8 @@ In this file we define box-additive functions and prove that a function such tha
 
 rectangular box, additive function
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -194,7 +198,6 @@ def upperSubLower.{u} {G : Type u} [AddCommGroup G] (I₀ : Box (Fin (n + 1))) (
       · have : (J.face i : WithTop (Box (Fin n))) ≤ I₀.face i :=
           WithTop.coe_le_coe.2 (face_mono hJ i)
         rw [le_iff_Icc, @Box.Icc_eq_pi _ I₀] at hJ
-        simp only
         rw [hf _ (hJ J.upper_mem_Icc _ trivial), hf _ (hJ J.lower_mem_Icc _ trivial),
           ← (fb _).map_split_add this j x, ← (fb _).map_split_add this j x]
         have hx' : x ∈ Ioo ((J.face i).lower j) ((J.face i).upper j) := hx

@@ -3,13 +3,15 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.NNReal.Basic
-import Mathlib.Order.Fin.Tuple
-import Mathlib.Order.Interval.Set.Monotone
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Topology.MetricSpace.Pseudo.Real
-import Mathlib.Topology.Order.MonotoneConvergence
+module
+
+public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Order.Fin.Tuple
+public import Mathlib.Order.Interval.Set.Monotone
+public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Topology.MetricSpace.Pseudo.Real
+public import Mathlib.Topology.Order.MonotoneConvergence
 /-!
 # Rectangular boxes in `ℝⁿ`
 
@@ -51,6 +53,8 @@ that returns the box `⟨l, u, _⟩` if it is nonempty and `⊥` otherwise.
 
 rectangular box
 -/
+
+@[expose] public section
 
 open Set Function Metric Filter
 
@@ -459,8 +463,7 @@ theorem nndist_le_distortion_mul (I : Box ι) (i : ι) :
         nndist I.lower I.upper / nndist (I.lower i) (I.upper i) * nndist (I.lower i) (I.upper i) :=
       (div_mul_cancel₀ _ <| mt nndist_eq_zero.1 (I.lower_lt_upper i).ne).symm
     _ ≤ I.distortion * nndist (I.lower i) (I.upper i) := by
-      apply mul_le_mul_right'
-      apply Finset.le_sup (Finset.mem_univ i)
+      grw [distortion, ← Finset.le_sup (Finset.mem_univ i)]
 
 theorem dist_le_distortion_mul (I : Box ι) (i : ι) :
     dist I.lower I.upper ≤ I.distortion * (I.upper i - I.lower i) := by

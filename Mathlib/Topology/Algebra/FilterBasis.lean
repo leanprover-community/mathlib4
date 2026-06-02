@@ -3,7 +3,9 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Module.Basic
+module
+
+public import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Group and ring filter bases
@@ -32,6 +34,8 @@ Given a group `G` and a ring `R`:
 
 * [N. Bourbaki, *General Topology*][bourbaki1966]
 -/
+
+@[expose] public section
 
 
 open Filter Set TopologicalSpace Function
@@ -63,7 +67,8 @@ class AddGroupFilterBasis (A : Type u) [AddGroup A] extends FilterBasis A where
 attribute [to_additive] GroupFilterBasis
 
 /-- `GroupFilterBasis` constructor in the commutative group case. -/
-@[to_additive /-- `AddGroupFilterBasis` constructor in the additive commutative group case. -/]
+@[to_additive (attr := implicit_reducible)
+  /-- `AddGroupFilterBasis` constructor in the additive commutative group case. -/]
 def groupFilterBasisOfComm {G : Type*} [CommGroup G] (sets : Set (Set G))
     (nonempty : sets.Nonempty) (inter_sets : ∀ x y, x ∈ sets → y ∈ sets → ∃ z ∈ sets, z ⊆ x ∩ y)
     (one : ∀ U ∈ sets, (1 : G) ∈ U) (mul : ∀ U ∈ sets, ∃ V ∈ sets, V * V ⊆ U)
@@ -133,7 +138,8 @@ protected theorem hasBasis (B : GroupFilterBasis G) (x : G) :
   HasBasis.map (fun y ↦ x * y) toFilterBasis.hasBasis
 
 /-- The topological space structure coming from a group filter basis. -/
-@[to_additive /-- The topological space structure coming from an additive group filter basis. -/]
+@[to_additive (attr := implicit_reducible)
+  /-- The topological space structure coming from an additive group filter basis. -/]
 def topology (B : GroupFilterBasis G) : TopologicalSpace G :=
   TopologicalSpace.mkOfNhds B.N
 
@@ -197,7 +203,7 @@ instance (priority := 100) isTopologicalGroup (B : GroupFilterBasis G) :
     exact hV <| mul_mem_mul a_in b_in
   · rw [basis.tendsto_iff basis]
     intro U U_in
-    simpa using inv U_in
+    simpa using! inv U_in
   · intro x₀
     rw [nhds_eq, nhds_one_eq]
     rfl
@@ -205,6 +211,20 @@ instance (priority := 100) isTopologicalGroup (B : GroupFilterBasis G) :
     rw [basis.tendsto_iff basis]
     intro U U_in
     exact conj x₀ U_in
+
+@[to_additive]
+lemma t2Space_iff [t : TopologicalSpace G] (F : GroupFilterBasis G)
+    (hG : F.topology = t) : T2Space G ↔ ⋂₀ F.sets = {1} := by
+  have : IsTopologicalGroup G := hG ▸ F.isTopologicalGroup
+  rw [IsTopologicalGroup.t2Space_iff_one_closed, ← closure_eq_iff_isClosed,
+    R0Space.closure_singleton, ← hG, F.nhds_one_eq, FilterBasis.ker_filter]
+
+@[to_additive]
+lemma t2Space_iff_sInter_subset [t : TopologicalSpace G] (F : GroupFilterBasis G)
+    (hG : F.topology = t) : T2Space G ↔ ⋂₀ F.sets ⊆ {1} := by
+  rw [F.t2Space_iff hG, subset_antisymm_iff, and_iff_left_iff_imp]
+  rintro -
+  simpa using! fun _ ↦ F.one
 
 end GroupFilterBasis
 
@@ -235,6 +255,7 @@ theorem mul_right (x₀ : R) {U : Set R} (hU : U ∈ B) : ∃ V ∈ B, V ⊆ (fu
 
 /-- The topology associated to a ring filter basis.
 It has the given basis as a basis of neighborhoods of zero. -/
+@[implicit_reducible]
 def topology : TopologicalSpace R :=
   B.toAddGroupFilterBasis.topology
 
@@ -258,11 +279,11 @@ instance (priority := 100) isTopologicalRing {R : Type u} [Ring R] (B : RingFilt
   · intro x₀
     rw [basis.tendsto_iff basis]
     intro U
-    simpa using B.mul_left x₀
+    simpa using! B.mul_left x₀
   · intro x₀
     rw [basis.tendsto_iff basis]
     intro U
-    simpa using B.mul_right x₀
+    simpa using! B.mul_right x₀
 
 end RingFilterBasis
 
@@ -316,12 +337,14 @@ instance [DiscreteTopology R] : Inhabited (ModuleFilterBasis R M) :=
 
 /-- The topology associated to a module filter basis on a module over a topological ring.
 It has the given basis as a basis of neighborhoods of zero. -/
+@[implicit_reducible]
 def topology : TopologicalSpace M :=
   B.toAddGroupFilterBasis.topology
 
 /-- The topology associated to a module filter basis on a module over a topological ring.
 It has the given basis as a basis of neighborhoods of zero. This version gets the ring
 topology by unification instead of type class inference. -/
+@[implicit_reducible]
 def topology' {R M : Type*} [CommRing R] {_ : TopologicalSpace R} [AddCommGroup M] [Module R M]
     (B : ModuleFilterBasis R M) : TopologicalSpace M :=
   B.toAddGroupFilterBasis.topology
@@ -365,8 +388,8 @@ instance (priority := 100) continuousSMul [IsTopologicalRing R] :
   let _ := B'.topology
   have _ := B'.isTopologicalAddGroup
   exact ContinuousSMul.of_basis_zero B'.nhds_zero_hasBasis
-      (fun {_} => by simpa using B.smul)
-      (by simpa using B.smul_left) B.smul_right
+      (fun {_} => by simpa using! B.smul)
+      (by simpa using! B.smul_left) B.smul_right
 
 /-- Build a module filter basis from compatible ring and additive group filter bases. -/
 def ofBases {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (BR : RingFilterBasis R)

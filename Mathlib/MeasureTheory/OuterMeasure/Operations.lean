@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Indicator
-import Mathlib.MeasureTheory.OuterMeasure.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Indicator
+public import Mathlib.MeasureTheory.OuterMeasure.Basic
 
 /-!
 # Operations on outer measures
@@ -23,6 +25,8 @@ outer measure
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Set Function Filter
@@ -36,10 +40,10 @@ section Basic
 variable {α β : Type*} {m : OuterMeasure α}
 
 instance instZero : Zero (OuterMeasure α) :=
-  ⟨{  measureOf := fun _ => 0
+  ⟨{  measureOf _ := 0
       empty := rfl
-      mono := by intro _ _ _; exact le_refl 0
-      iUnion_nat := fun _ _ => zero_le _ }⟩
+      mono _ := le_rfl
+      iUnion_nat _ _ := zero_le }⟩
 
 @[simp]
 theorem coe_zero : ⇑(0 : OuterMeasure α) = 0 :=
@@ -139,6 +143,9 @@ instance instPartialOrder : PartialOrder (OuterMeasure α) where
   le_trans _ _ _ hab hbc s := le_trans (hab s) (hbc s)
   le_antisymm _ _ hab hba := ext fun s => le_antisymm (hab s) (hba s)
 
+instance instIsOrderedAddMonoid {α : Type*} : IsOrderedAddMonoid (OuterMeasure α) where
+  add_le_add_left _ _ h _ s := add_le_add_left (h s) _
+
 instance orderBot : OrderBot (OuterMeasure α) :=
   { bot := 0,
     bot_le := fun a s => by simp only [coe_zero, Pi.zero_apply, zero_le] }
@@ -218,7 +225,7 @@ theorem map_map {β γ} (f : α → β) (g : β → γ) (m : OuterMeasure α) :
     map g (map f m) = map (g ∘ f) m :=
   ext fun _ => rfl
 
-@[mono]
+@[gcongr, mono]
 theorem map_mono {β} (f : α → β) : Monotone (map f) := fun _ _ h _ => h _
 
 @[simp]
@@ -237,7 +244,7 @@ instance instLawfulFunctor : LawfulFunctor OuterMeasure := by constructor <;> in
 def dirac (a : α) : OuterMeasure α where
   measureOf s := indicator s (fun _ => 1) a
   empty := by simp
-  mono {_ _} h := indicator_le_indicator_of_subset h (fun _ => zero_le _) a
+  mono {_ _} h := by grw [h]
   iUnion_nat s _ := calc
     indicator (⋃ n, s n) 1 a = ⨆ n, indicator (s n) 1 a :=
       indicator_iUnion_apply (M := ℝ≥0∞) rfl _ _ _
@@ -277,7 +284,7 @@ def comap {β} (f : α → β) : OuterMeasure β →ₗ[ℝ≥0∞] OuterMeasure
 theorem comap_apply {β} (f : α → β) (m : OuterMeasure β) (s : Set α) : comap f m s = m (f '' s) :=
   rfl
 
-@[mono]
+@[gcongr, mono]
 theorem comap_mono {β} (f : α → β) : Monotone (comap f) := fun _ _ h _ => h _
 
 @[simp]

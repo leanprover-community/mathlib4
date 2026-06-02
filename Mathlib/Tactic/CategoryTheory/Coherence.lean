@@ -1,12 +1,16 @@
 /-
-Copyright (c) 2022. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
-import Mathlib.CategoryTheory.Monoidal.Free.Coherence
-import Mathlib.Lean.Meta
-import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
-import Mathlib.Tactic.CategoryTheory.MonoidalComp
+module
+
+public meta import Mathlib.Lean.Meta
+public import Mathlib.CategoryTheory.Monoidal.Free.Basic
+public meta import Mathlib.CategoryTheory.Monoidal.Free.Basic
+public import Mathlib.Lean.Meta
+public import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
+public import Mathlib.Tactic.CategoryTheory.MonoidalComp
 
 /-!
 # A `coherence` tactic for monoidal categories
@@ -22,6 +26,8 @@ in a monoidal category which are built out of associators and unitors
 are equal.
 
 -/
+
+public meta section
 
 universe v u
 
@@ -118,7 +124,7 @@ def mkProjectMapExpr (e : Expr) : TermElabM Expr := do
     none
 
 /-- Coherence tactic for monoidal categories. -/
-def monoidal_coherence (g : MVarId) : TermElabM Unit := g.withContext do
+def monoidalCoherence (g : MVarId) : TermElabM Unit := g.withContext do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 512 (synthInstance.maxSize.get opts))) do
   let thms := [``MonoidalCoherence.iso, ``Iso.trans, ``Iso.symm, ``Iso.refl,
@@ -136,17 +142,23 @@ def monoidal_coherence (g : MVarId) : TermElabM Unit := g.withContext do
   let [] ← g₂.applyConst ``Subsingleton.elim
     | exception g "This shouldn't happen; Subsingleton.elim does not create goals."
 
-/-- Coherence tactic for monoidal categories.
-Use `pure_coherence` instead, which is a frontend to this one. -/
-elab "monoidal_coherence" : tactic => do monoidal_coherence (← getMainGoal)
+@[deprecated (since := "2026-05-27")] alias monoidal_coherence := monoidalCoherence
 
 open Mathlib.Tactic.BicategoryCoherence
+
+/--
+If set to `false`, the warning on the use of the deprecated coherence tactic is disabled.
+-/
+register_option warn.refl_coherence : Bool := {
+  defValue := true
+  descr := "warn when the deprecated coherence tactic is used"
+}
 
 /--
 `pure_coherence` uses the coherence theorem for monoidal categories to prove the goal.
 It can prove any equality made up only of associators, unitors, and identities.
 ```lean
-example {C : Type} [Category C] [MonoidalCategory C] :
+example {C : Type} [Category* C] [MonoidalCategory C] :
   (λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom := by
   pure_coherence
 ```
@@ -157,8 +169,18 @@ which can also cope with identities of the form
 where `a = a'`, `b = b'`, and `c = c'` can be proved using `pure_coherence`
 -/
 elab (name := pure_coherence) "pure_coherence" : tactic => do
+  if warn.refl_coherence.get (← getOptions) then
+    Lean.logWarning
+      "Usually, use `monoidal` or `bicategory` instead, depending on the context. \
+    They are given in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and \
+    `Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively."
   let g ← getMainGoal
-  monoidal_coherence g <|> bicategory_coherence g
+  monoidalCoherence g <|> bicategoryCoherence g
+
+/-- The same as `pure_coherence`, but used internally in `coherence` without the warning. -/
+elab (name := pure_coherence_internal) "pure_coherence_internal" : tactic => do
+  let g ← getMainGoal
+  monoidalCoherence g <|> bicategoryCoherence g
 
 /--
 Auxiliary simp lemma for the `coherence` tactic:
@@ -194,11 +216,11 @@ elab (name := liftable_prefixes) "liftable_prefixes" : tactic => do
     (simp -failIfUnchanged only
       [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂])))
 
-lemma insert_id_lhs {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f ≫ 𝟙 _ = g) :
+lemma insert_id_lhs {C : Type*} [Category* C] {X Y : C} (f g : X ⟶ Y) (w : f ≫ 𝟙 _ = g) :
     f = g := by
   simpa using w
 
-lemma insert_id_rhs {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f = g ≫ 𝟙 _) :
+lemma insert_id_rhs {C : Type*} [Category* C] {X Y : C} (f g : X ⟶ Y) (w : f = g ≫ 𝟙 _) :
     f = g := by
   simpa using w
 
@@ -218,13 +240,13 @@ def insertTrailingIds (g : MVarId) : MetaM MVarId := do
 -- Porting note: this is an ugly port, using too many `evalTactic`s.
 -- We can refactor later into either a `macro` (but the flow control is awkward)
 -- or a `MetaM` tactic.
-def coherence_loop (maxSteps := 37) : TacticM Unit :=
+def coherenceLoop (maxSteps := 37) : TacticM Unit :=
   match maxSteps with
   | 0 => exception' "`coherence` tactic reached iteration limit"
   | maxSteps' + 1 => do
     -- To prove an equality `f = g` in a monoidal category,
     -- first try the `pure_coherence` tactic on the entire equation:
-    evalTactic (← `(tactic| pure_coherence)) <|> do
+    evalTactic (← `(tactic| pure_coherence_internal)) <|> do
     -- Otherwise, rearrange so we have a maximal prefix of each side
     -- that is built out of unitors and associators:
     evalTactic (← `(tactic| liftable_prefixes)) <|>
@@ -234,7 +256,7 @@ def coherence_loop (maxSteps := 37) : TacticM Unit :=
     liftMetaTactic MVarId.congrCore
     -- and now we have two goals `f₀ = g₀` and `f₁ = g₁`.
     -- Discharge the first using `coherence`,
-    evalTactic (← `(tactic| { pure_coherence })) <|>
+    evalTactic (← `(tactic| { pure_coherence_internal })) <|>
       exception' "`coherence` tactic failed, subgoal not true in the free monoidal category"
     -- Then check that either `g₀` is identically `g₁`,
     evalTactic (← `(tactic| rfl)) <|> do
@@ -245,7 +267,9 @@ def coherence_loop (maxSteps := 37) : TacticM Unit :=
       evalTactic (← `(tactic| rfl)) <|>
         exception' "`coherence` tactic failed, non-structural morphisms don't match"
       -- and whose second terms can be identified by recursively called `coherence`.
-      coherence_loop maxSteps'
+      coherenceLoop maxSteps'
+
+@[deprecated (since := "2026-05-27")] alias coherence_loop := coherenceLoop
 
 open Lean.Parser.Tactic
 
@@ -288,11 +312,16 @@ syntax (name := coherence) "coherence" : tactic
 @[inherit_doc coherence]
 elab_rules : tactic
 | `(tactic| coherence) => do
+  if warn.refl_coherence.get (← getOptions) then
+    Lean.logWarning
+      "Usually, use `monoidal` or `bicategory` instead, depending on the context. \
+    They are given in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and \
+    `Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively."
   evalTactic (← `(tactic|
     (simp -failIfUnchanged only [bicategoricalComp, monoidalComp]);
     whisker_simps -failIfUnchanged;
     monoidal_simps -failIfUnchanged))
-  coherence_loop
+  coherenceLoop
 
 end Coherence
 

@@ -3,9 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.RingTheory.WittVector.Frobenius
-import Mathlib.RingTheory.WittVector.Verschiebung
-import Mathlib.RingTheory.WittVector.MulP
+module
+
+public import Mathlib.RingTheory.WittVector.Frobenius
+public import Mathlib.RingTheory.WittVector.Verschiebung
+public import Mathlib.RingTheory.WittVector.MulP
 
 /-!
 ## Identities between operations on the ring of Witt vectors
@@ -25,6 +27,8 @@ In this file we derive common identities between the Frobenius and Verschiebung 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
 
+public section
+
 
 namespace WittVector
 
@@ -35,7 +39,7 @@ local notation "𝕎" => WittVector p
 
 noncomputable section
 
--- Porting note: `ghost_calc` failure: `simp only []` and the manual instances had to be added.
+-- Porting note: `ghost_calc` failure: the manual instances had to be added.
 /-- The composition of Frobenius and Verschiebung is multiplication by `p`. -/
 theorem frobenius_verschiebung (x : 𝕎 R) : frobenius (verschiebung x) = x * p := by
   have : IsPoly p fun {R} [CommRing R] x ↦ frobenius (verschiebung x) :=
@@ -90,7 +94,7 @@ theorem FractionRing.p_nonzero [Nontrivial R] [CharP R p] : (p : FractionRing (�
 
 variable {p R}
 
--- Porting note: `ghost_calc` failure: `simp only []` and the manual instances had to be added.
+-- Porting note: `ghost_calc` failure: the manual instances had to be added.
 /-- The “projection formula” for Frobenius and Verschiebung. -/
 theorem verschiebung_mul_frobenius (x y : 𝕎 R) :
     verschiebung (x * frobenius y) = verschiebung x * y := by
@@ -170,7 +174,8 @@ theorem iterate_verschiebung_mul_left (x y : 𝕎 R) (i : ℕ) :
   induction i generalizing y with
   | zero => simp
   | succ i ih =>
-    rw [iterate_succ_apply', ← verschiebung_mul_frobenius, ih, iterate_succ_apply']; rfl
+    rw [iterate_succ_apply', ← verschiebung_mul_frobenius, ih, iterate_succ_apply',
+      iterate_succ_apply]
 
 section CharP
 
@@ -209,7 +214,7 @@ theorem iterate_verschiebung_mul_coeff (x y : 𝕎 R) (i j : ℕ) :
     _ = (frobenius^[j] x).coeff 0 * (frobenius^[i] y).coeff 0 := ?_
     _ = _ := ?_
   · rw [iterate_verschiebung_mul]
-  · convert iterate_verschiebung_coeff (p := p) (R := R) _ _ _ using 2
+  · convert! iterate_verschiebung_coeff (p := p) (R := R) _ _ _ using 2
     rw [zero_add]
   · apply mul_coeff_zero
   · simp only [iterate_frobenius_coeff]

@@ -3,8 +3,10 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.GroupTheory.GroupAction.DomAct.Basic
+module
+
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
 # Topological space structure on `Mᵈᵐᵃ` and `Mᵈᵃᵃ`
@@ -20,6 +22,8 @@ since the types aren't definitionally equal.
 topological space, group action, domain action
 -/
 
+@[expose] public section
+
 open Filter TopologicalSpace Topology
 
 namespace DomMulAct
@@ -28,7 +32,7 @@ variable {M : Type*} [TopologicalSpace M]
 
 /-- Put the same topological space structure on `Mᵈᵐᵃ` as on the original space. -/
 @[to_additive /-- Put the same topological space structure on `Mᵈᵃᵃ` as on the original space. -/]
-instance instTopologicalSpace : TopologicalSpace Mᵈᵐᵃ := .induced mk.symm  ‹_›
+instance instTopologicalSpace : TopologicalSpace Mᵈᵐᵃ := .induced mk.symm ‹_›
 
 @[to_additive (attr := continuity, fun_prop)]
 theorem continuous_mk : Continuous (@mk M) := continuous_induced_rng.2 continuous_id

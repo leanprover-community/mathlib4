@@ -3,9 +3,11 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Floor.Div
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Nat.Factorization.Defs
+module
+
+public import Mathlib.Algebra.Order.Floor.Div
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Data.Nat.Factorization.Defs
 
 /-!
 # Roots of natural numbers, rounded up and down
@@ -28,6 +30,8 @@ multiple of `a` as the multiples of some fixed number (aka `ceilRoot n a`). See
 
 * `norm_num` extension
 -/
+
+@[expose] public section
 
 open Finsupp
 
@@ -76,9 +80,8 @@ lemma floorRoot_ne_zero : floorRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
   rw [floorRoot_def]
   split_ifs with h
   · obtain rfl | rfl := h <;> simp
-  refine prod_pow_factorization_eq_self fun p hp ↦ ?_
-  have : p.Prime ∧ p ∣ a ∧ ¬a = 0 := by simpa using support_floorDiv_subset hp
-  exact this.1
+  apply a.factorization_prod_pow_eq_self_of_le_factorization
+  exact le_self_nsmul (by simp) (by lia) |>.trans <| smul_floorDiv_le (by lia)
 
 /-- Galois connection between `a ↦ a ^ n : ℕ → ℕ` and `floorRoot n : ℕ → ℕ` where `ℕ` is ordered
 by divisibility. -/

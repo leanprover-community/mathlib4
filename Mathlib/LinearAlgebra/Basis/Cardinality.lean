@@ -3,14 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Kim Morrison
 -/
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.LinearIndependent.Defs
-import Mathlib.LinearAlgebra.Span.Basic
-import Mathlib.SetTheory.Cardinal.Pigeonhole
+module
+
+public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
+public import Mathlib.LinearAlgebra.Span.Basic
+public import Mathlib.SetTheory.Cardinal.Pigeonhole
 
 /-!
 # Results relating bases and cardinality.
 -/
+
+public section
 
 section Finite
 
@@ -26,7 +30,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 lemma finite_of_span_finite_eq_top_finsupp [Nontrivial M] {ι : Type*} {s : Set (ι →₀ M)}
     (hs : s.Finite) (hsspan : span R s = ⊤) : Finite ι :=
-  suffices ⋃ i ∈ s, i.support.toSet = .univ from
+  suffices ⋃ i ∈ s, i.support = .univ from
     .of_finite_univ (this ▸ hs.biUnion fun _ _ ↦ by simp)
   have ⟨x, hx⟩ := exists_ne (0 : M)
   eq_univ_of_forall fun j ↦ (top_unique (hsspan.ge.trans (span_le_supported_biUnion_support R s)) ▸
@@ -49,8 +53,8 @@ Over any nontrivial ring, the existence of a finite spanning set implies that an
 -/
 lemma basis_finite_of_finite_spans [Nontrivial R] {s : Set M} (hs : s.Finite)
     (hsspan : span R s = ⊤) {ι : Type w} (b : Basis ι R M) : Finite ι := by
-  have := congr(($hsspan).map b.repr)
-  rw [← span_image, Submodule.map_top, LinearEquivClass.range] at this
+  have := congr(($hsspan).map b.repr.toLinearMap)
+  rw [← span_image, Submodule.map_top, LinearEquiv.range] at this
   exact finite_of_span_finite_eq_top_finsupp (hs.image _) this
 
 end Semiring
@@ -112,7 +116,7 @@ theorem infinite_basis_le_maximal_linearIndependent' {ι : Type w} (b : Basis ι
     Cardinal.lift.{w'} #ι ≤ Cardinal.lift.{w} #κ := by
   let Φ := fun k : κ => (b.repr (v k)).support
   have w₁ : #ι ≤ #(Set.range Φ) := by
-    apply Cardinal.le_range_of_union_finset_eq_top
+    apply Cardinal.le_range_of_union_finset_eq_univ
     exact union_support_maximal_linearIndependent_eq_range_basis b v i m
   have w₂ : Cardinal.lift.{w'} #(Set.range Φ) ≤ Cardinal.lift.{w} #κ := Cardinal.mk_range_le_lift
   exact (Cardinal.lift_le.mpr w₁).trans w₂

@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue.Map
-import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
-import Mathlib.MeasureTheory.Measure.Count
+module
+
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Map
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
+public import Mathlib.MeasureTheory.Measure.Count
 
 /-!
 # Lebesgue integral over finite and countable types, sets and measures
@@ -15,6 +17,8 @@ The lemmas in this file require at least one of the following of the Lebesgue in
 * The set of integration is finite or countable
 * The measure is finite, s-finite or sigma-finite
 -/
+
+public section
 
 namespace MeasureTheory
 
@@ -106,7 +110,7 @@ theorem _root_.NNReal.count_const_le_le_of_tsum_le [MeasurableSingletonClass α]
   apply
     ENNReal.count_const_le_le_of_tsum_le (measurable_coe_nnreal_ennreal.comp a_mble) _
       (mod_cast ε_ne_zero) (@ENNReal.coe_ne_top ε)
-  convert ENNReal.coe_le_coe.mpr tsum_le_c
+  convert! ENNReal.coe_le_coe.mpr tsum_le_c
   simp_rw [Function.comp_apply]
   rw [ENNReal.tsum_coe_eq a_summable.hasSum]
 
@@ -184,7 +188,7 @@ theorem exists_measurable_le_forall_setLIntegral_eq [SFinite μ] (f : α → ℝ
   -- we can choose a measurable function $g_{n}$
   -- such that $g_{n}(x) ≤ \min (f(x), n)$ for all $x$
   -- and both sides have the same integral over the whole space w.r.t. $μ$.
-  have (n : ℕ): ∃ g : α → ℝ≥0∞, Measurable g ∧ g ≤ f ∧ g ≤ n ∧
+  have (n : ℕ) : ∃ g : α → ℝ≥0∞, Measurable g ∧ g ≤ f ∧ g ≤ n ∧
       ∫⁻ a, min (f a) n ∂μ = ∫⁻ a, g a ∂μ := by
     simpa [and_assoc] using exists_measurable_le_lintegral_eq μ (f ⊓ n)
   choose g hgm hgf hgle hgint using this
@@ -299,7 +303,7 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
       Measure.exists_subset_measure_lt_top hs this
     refine ⟨piecewise t ht (const α c) (const α 0), fun x => ?_, ?_, ?_⟩
     · refine indicator_le_indicator_of_subset ts (fun x => ?_) x
-      exact zero_le _
+      exact zero_le
     · simp only [ht, const_zero, coe_piecewise, coe_const, SimpleFunc.coe_zero, univ_inter,
         piecewise_eq_indicator, ENNReal.coe_indicator, Function.const_apply, lintegral_indicator,
         lintegral_const, Measure.restrict_apply', ENNReal.mul_lt_top ENNReal.coe_lt_top t_top]
@@ -316,12 +320,12 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
     · simp only [hf₁, zero_add] at hL
       rcases h₂ hL with ⟨g, g_le, g_top, gL⟩
       refine ⟨g, fun x => (g_le x).trans ?_, g_top, gL⟩
-      simp only [SimpleFunc.coe_add, Pi.add_apply, le_add_iff_nonneg_left, zero_le']
+      simp only [SimpleFunc.coe_add, Pi.add_apply, le_add_iff_nonneg_left, zero_le]
     by_cases hf₂ : ∫⁻ x, f₂ x ∂μ = 0
     · simp only [hf₂, add_zero] at hL
       rcases h₁ hL with ⟨g, g_le, g_top, gL⟩
       refine ⟨g, fun x => (g_le x).trans ?_, g_top, gL⟩
-      simp only [SimpleFunc.coe_add, Pi.add_apply, le_add_iff_nonneg_right, zero_le']
+      simp only [SimpleFunc.coe_add, Pi.add_apply, le_add_iff_nonneg_right, zero_le]
     obtain ⟨L₁, hL₁, L₂, hL₂, hL⟩ : ∃ L₁ < ∫⁻ x, f₁ x ∂μ, ∃ L₂ < ∫⁻ x, f₂ x ∂μ, L < L₁ + L₂ :=
       ENNReal.exists_lt_add_of_lt_add hL hf₁ hf₂
     rcases h₁ hL₁ with ⟨g₁, g₁_le, g₁_top, hg₁⟩
@@ -340,11 +344,11 @@ theorem exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : MeasurableSpace α} 
   simp_rw [lintegral_eq_nnreal, lt_iSup_iff] at hL
   rcases hL with ⟨g₀, hg₀, g₀L⟩
   have h'L : L < ∫⁻ x, g₀ x ∂μ := by
-    convert g₀L
+    convert! g₀L
     rw [← SimpleFunc.lintegral_eq_lintegral, SimpleFunc.coe_map]
     simp only [Function.comp_apply]
   rcases SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral h'L with ⟨g, hg, gL, gtop⟩
-  exact ⟨g, fun x => (hg x).trans (coe_le_coe.1 (hg₀ x)), gL, gtop⟩
+  exact ⟨g, fun x => (hg x).trans (ENNReal.coe_le_coe.1 (hg₀ x)), gL, gtop⟩
 
 end SFinite
 

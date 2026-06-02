@@ -3,10 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Functor.Currying
-import Mathlib.CategoryTheory.Functor.Trifunctor
-import Mathlib.CategoryTheory.Products.Associator
+public import Mathlib.CategoryTheory.Functor.Currying
+public import Mathlib.CategoryTheory.Functor.Trifunctor
+public import Mathlib.CategoryTheory.Products.Associator
 
 /-!
 # Currying of functors in three variables
@@ -16,13 +17,15 @@ We study the equivalence of categories
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 namespace Functor
 
 variable {C₁ C₂ C₁₂ C₃ C₂₃ D₁ D₂ D₃ E : Type*}
-  [Category C₁] [Category C₂] [Category C₃] [Category C₁₂] [Category C₂₃]
-  [Category D₁] [Category D₂] [Category D₃] [Category E]
+  [Category* C₁] [Category* C₂] [Category* C₃] [Category* C₁₂] [Category* C₂₃]
+  [Category* D₁] [Category* D₂] [Category* D₃] [Category* E]
 
 /-- The equivalence of categories `(C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ≌ C₁ × C₂ × C₃ ⥤ E`
 given by the curryfication of functors in three variables. -/
@@ -39,6 +42,23 @@ abbrev curry₃ : (C₁ × C₂ × C₃ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ E 
 def fullyFaithfulUncurry₃ :
     (uncurry₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ (C₁ × C₂ × C₃ ⥤ E)).FullyFaithful :=
   currying₃.fullyFaithfulFunctor
+
+/-- Currying functors in three variables gives a fully faithful functor. -/
+def fullyFaithfulCurry₃ :
+    (curry₃ : (C₁ × C₂ × C₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E)).FullyFaithful :=
+  currying₃.fullyFaithfulInverse
+
+instance : (uncurry₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ C₁ × C₂ × C₃ ⥤ E).Full :=
+  fullyFaithfulUncurry₃.full
+
+instance : (uncurry₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ C₁ × C₂ × C₃ ⥤ E).Faithful :=
+  fullyFaithfulUncurry₃.faithful
+
+instance : (curry₃ : (C₁ × C₂ × C₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E)).Full :=
+  fullyFaithfulCurry₃.full
+
+instance : (curry₃ : (C₁ × C₂ × C₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E)).Faithful :=
+  fullyFaithfulCurry₃.faithful
 
 @[simp]
 lemma curry₃_obj_map_app_app (F : C₁ × C₂ × C₃ ⥤ E)
@@ -60,18 +80,22 @@ lemma curry₃_map_app_app_app {F G : C₁ × C₂ × C₃ ⥤ E} (f : F ⟶ G)
     (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) :
     (((curry₃.map f).app X₁).app X₂).app X₃ = f.app ⟨X₁, X₂, X₃⟩ := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma currying₃_unitIso_hom_app_app_app_app (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E)
     (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) :
     (((currying₃.unitIso.hom.app F).app X₁).app X₂).app X₃ = 𝟙 _ := by
   simp [currying₃, Equivalence.unit]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma currying₃_unitIso_inv_app_app_app_app (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E)
     (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) :
     (((currying₃.unitIso.inv.app F).app X₁).app X₂).app X₃ = 𝟙 _ := by
   simp [currying₃, Equivalence.unitInv]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Given functors `F₁ : C₁ ⥤ D₁`, `F₂ : C₂ ⥤ D₂`, `F₃ : C₃ ⥤ D₃`
 and `G : D₁ × D₂ × D₃ ⥤ E`, this is the isomorphism between
 `curry₃.obj (F₁.prod (F₂.prod F₃) ⋙ G) : C₁ ⥤ C₂ ⥤ C₃ ⥤ E`
@@ -84,12 +108,14 @@ def curry₃ObjProdComp (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) (F₃ : C�
     (fun X₁ ↦ NatIso.ofComponents
       (fun X₂ ↦ NatIso.ofComponents (fun X₃ ↦ Iso.refl _)))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `bifunctorComp₁₂` can be described in terms of the curryfication of functors. -/
 @[simps!]
 def bifunctorComp₁₂Iso (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ E) :
     bifunctorComp₁₂ F₁₂ G ≅ curry.obj (uncurry.obj F₁₂ ⋙ G) :=
   NatIso.ofComponents (fun _ => NatIso.ofComponents (fun _ => Iso.refl _))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `bifunctorComp₂₃` can be described in terms of the curryfication of functors. -/
 @[simps!]
 def bifunctorComp₂₃Iso (F : C₁ ⥤ C₂₃ ⥤ E) (G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃) :
@@ -98,6 +124,58 @@ def bifunctorComp₂₃Iso (F : C₁ ⥤ C₂₃ ⥤ E) (G₂₃ : C₂ ⥤ C₃
       uncurry.obj (uncurry.obj G₂₃ ⋙ F.flip).flip)) :=
   NatIso.ofComponents (fun _ ↦ NatIso.ofComponents (fun _ ↦
     NatIso.ofComponents (fun _ ↦ Iso.refl _)))
+
+/--
+Flip the first and third arguments in a trifunctor.
+-/
+@[simps!]
+def flip₁₃ (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E) : C₃ ⥤ C₂ ⥤ C₁ ⥤ E where
+  obj G := {
+    obj H := {
+      obj K := ((F.obj K).obj H).obj G
+      map f := ((F.map f).app _).app _ }
+    map g := { app X := ((F.obj X).map g).app _ } }
+  map h := { app X := { app Y := ((F.obj Y).obj X).map h } }
+
+set_option backward.defeqAttrib.useBackward true in
+/--
+Flip the first and third arguments in a trifunctor, as a functor.
+-/
+@[simps!]
+def flip₁₃Functor : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ (C₃ ⥤ C₂ ⥤ C₁ ⥤ E) where
+  obj F := F.flip₁₃
+  map f := {
+    app X := {
+      app Y := {
+        app Z := ((f.app _).app _).app _
+        naturality _ _ g := by
+          simp [← NatTrans.comp_app] } } }
+
+/--
+Flip the second and third arguments in a trifunctor.
+-/
+@[simps!]
+def flip₂₃ (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E) : C₁ ⥤ C₃ ⥤ C₂ ⥤ E where
+  obj G := (F.obj G).flip
+  map f := (flipFunctor _ _ _).map (F.map f)
+
+set_option backward.defeqAttrib.useBackward true in
+/--
+Flip the second and third arguments in a trifunctor, as a functor.
+-/
+@[simps!]
+def flip₂₃Functor : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ (C₁ ⥤ C₃ ⥤ C₂ ⥤ E) where
+  obj F := F.flip₂₃
+  map f := {
+    app X := {
+      app Y := {
+        app Z := ((f.app _).app _).app _
+        naturality _ _ g := by
+          simp [← NatTrans.comp_app] } }
+    naturality _ _ g := by
+      ext
+      simp only [flip₂₃_obj_obj_obj, NatTrans.comp_app, flip₂₃_map_app_app]
+      simp [← NatTrans.comp_app] }
 
 end Functor
 

@@ -3,7 +3,9 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.WSeq.Relation
+module
+
+public import Mathlib.Data.WSeq.Relation
 
 /-!
 # Parallel computation
@@ -15,6 +17,8 @@ terminates_parallel and exists_of_mem_parallel.
 (This operation is nondeterministic in the sense that it does not
 honor sequence equivalence (irrelevance of computation time).)
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -31,6 +35,7 @@ private def parallel.aux2 : List (Computation α) → α ⊕ (List (Computation 
       | Sum.inr ls => rmap (fun c' => c' :: ls) (destruct c))
     (Sum.inr [])
 
+set_option backward.privateInPublic true in
 private def parallel.aux1 :
     List (Computation α) × WSeq (Computation α) →
       α ⊕ (List (Computation α) × WSeq (Computation α))
@@ -43,11 +48,15 @@ private def parallel.aux1 :
         | some (some c, S') => (c :: l', S'))
       (parallel.aux2 l)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Parallel computation of an infinite stream of computations,
   taking the first result -/
 def parallel (S : WSeq (Computation α)) : Computation α :=
   corec parallel.aux1 ([], S)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem terminates_parallel.aux :
     ∀ {l : List (Computation α)} {S c},
       c ∈ l → Terminates c → Terminates (corec parallel.aux1 (l, S)) := by
@@ -73,8 +82,7 @@ theorem terminates_parallel.aux :
       simp only [parallel.aux2, rmap, List.foldr_cons, destruct_pure]
       split <;> simp
     · obtain ⟨a', e⟩ := IH m
-      simp only [parallel.aux2, rmap, List.foldr_cons]
-      simp? [parallel.aux2] at e says simp only [parallel.aux2, rmap] at e
+      simp only [parallel.aux2, rmap, List.foldr_cons] at ⊢ e
       rw [e]
       exact ⟨a', rfl⟩
   · intro s IH l S m
@@ -94,14 +102,10 @@ theorem terminates_parallel.aux :
             match o with
             | Sum.inl a => Sum.inl a
             | Sum.inr ls => rmap (fun c' => c' :: ls) (destruct c))
-          (Sum.inr List.nil) l with a' | ls <;> erw [e] at e'
+          (Sum.inr List.nil) l with a' | ls <;> simp only [rmap] at e <;> rw [e] at e'
         · contradiction
         have := IH' m _ e
-        -- Porting note: `revert e'` & `intro e'` are required.
-        revert e'
-        cases destruct c <;> intro e' <;> [injection e'; injection e' with h']
-        rw [← h']
-        simp [this]
+        grind
     rcases h : parallel.aux2 l with a | l'
     · exact lem1 _ _ ⟨a, h⟩
     · have H2 : corec parallel.aux1 (l, S) = think _ := destruct_eq_think (by
@@ -112,6 +116,7 @@ theorem terminates_parallel.aux :
       have := H1 _ h
       rcases Seq.destruct S with (_ | ⟨_ | c, S'⟩) <;> apply IH <;> simp [this]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : Terminates c] :
     Terminates (parallel S) := by
   suffices
@@ -161,14 +166,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
         apply IH _ _ _ (Or.inr _) T
         rw [a, Seq.get?_tail]
       rcases e : Seq.get? S 0 with - | o
-      · have D : Seq.destruct S = none := by
-          dsimp [Seq.destruct]
-          rw [e]
-          rfl
-        rw [D]
-        simp only
-        have TT := TT l'
-        rwa [Seq.destruct_eq_none D, Seq.tail_nil] at TT
+      · grind [Seq.get?_zero_eq_none, Seq.get?_nil]
       · have D : Seq.destruct S = some (o, S.tail) := by
           dsimp [Seq.destruct]
           rw [e]
@@ -269,13 +267,8 @@ theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map 
           = lmap f (rmap (List.map (map f)) (parallel.aux2 l)) := by
         simp only [parallel.aux2, rmap, lmap]
         induction l with
-        | nil => simp
-        | cons c l IH =>
-          simp only [List.map_cons, List.foldr_cons, destruct_map, lmap, rmap]
-          rw [IH]
-          cases List.foldr _ _ _
-          · simp
-          · cases destruct c <;> simp
+        | nil => grind
+        | cons => grind [destruct_map, lmap, rmap]
       simp only [BisimO, destruct_map, lmap, rmap, corec_eq, parallel.aux1.eq_1]
       rw [this]
       rcases parallel.aux2 l with a | l'

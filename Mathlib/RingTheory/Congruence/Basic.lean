@@ -3,9 +3,11 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Ring.Action.Basic
-import Mathlib.GroupTheory.Congruence.Basic
-import Mathlib.RingTheory.Congruence.Defs
+module
+
+public import Mathlib.Algebra.Ring.Action.Basic
+public import Mathlib.GroupTheory.Congruence.Basic
+public import Mathlib.RingTheory.Congruence.Defs
 
 /-!
 # Congruence relations on rings
@@ -24,8 +26,10 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 ## TODO
 
 * Use this for `RingQuot` too.
-* Copy across more API from `Con` and `AddCon` in `GroupTheory/Congruence.lean`.
+* Copy across more API from `Con` and `AddCon` in `Mathlib/GroupTheory/Congruence/`.
 -/
+
+@[expose] public section
 
 variable {α β R : Type*}
 
@@ -77,17 +81,20 @@ instance smulCommClass' [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R 
   haveI := SMulCommClass.symm R α R
   SMulCommClass.symm _ _ _
 
+instance [Monoid α] [NonAssocSemiring R] [MulAction α R] [IsScalarTower α R R]
+    (c : RingCon R) : MulAction α c.Quotient :=
+  inferInstanceAs <| MulAction α c.toCon.Quotient
+
 instance [Monoid α] [NonAssocSemiring R] [DistribMulAction α R] [IsScalarTower α R R]
-    (c : RingCon R) : DistribMulAction α c.Quotient :=
-  { c.toCon.mulAction with
-    smul_zero := fun _ => congr_arg toQuotient <| smul_zero _
-    smul_add := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <| smul_add _ _ _ }
+    (c : RingCon R) : DistribMulAction α c.Quotient where
+  smul_zero := fun _ => congr_arg toQuotient <| smul_zero _
+  smul_add := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <| smul_add _ _ _
 
 instance [Monoid α] [Semiring R] [MulSemiringAction α R] [IsScalarTower α R R] (c : RingCon R) :
-    MulSemiringAction α c.Quotient :=
-  { smul_one := fun _ => congr_arg toQuotient <| smul_one _
-    smul_mul := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <|
-      MulSemiringAction.smul_mul _ _ _ }
+    MulSemiringAction α c.Quotient where
+  smul_one := fun _ => congr_arg toQuotient <| smul_one _
+  smul_mul := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <|
+    MulSemiringAction.smul_mul _ _ _
 
 end Algebraic
 
@@ -95,12 +102,12 @@ end Quotient
 
 /-! ### Lattice structure
 
-The API in this section is copied from `Mathlib/GroupTheory/Congruence.lean`
+The API in this section is copied from `Mathlib/GroupTheory/Congruence/Defs.lean`
 -/
 
 section Lattice
 
-variable [Add R] [Mul R]
+variable [Add R] [Mul R] {c d : RingCon R}
 
 /-- For congruence relations `c, d` on a type `M` with multiplication and addition, `c ≤ d` iff
 `∀ x y ∈ M`, `x` is related to `y` by `d` if `x` is related to `y` by `c`. -/
@@ -108,8 +115,13 @@ instance : LE (RingCon R) where
   le c d := ∀ ⦃x y⦄, c x y → d x y
 
 /-- Definition of `≤` for congruence relations. -/
-theorem le_def {c d : RingCon R} : c ≤ d ↔ ∀ {x y}, c x y → d x y :=
-  Iff.rfl
+theorem le_def : c ≤ d ↔ ∀ {x y}, c x y → d x y := .rfl
+
+theorem comap_mono {R' : Type*} [Add R'] [Mul R']
+    {F : Type*} [FunLike F R R'] [AddHomClass F R R'] [MulHomClass F R R']
+    {J J' : RingCon R'} {f : F} (h : J ≤ J') :
+    J.comap f ≤ J'.comap f :=
+  fun _ _ h₁ ↦ h h₁
 
 /-- The infimum of a set of congruence relations on a given type with multiplication and
 addition. -/
@@ -167,11 +179,19 @@ instance : CompleteLattice (RingCon R) where
       add' := congr_arg₂ _ }
   bot_le c := fun x _y h => h ▸ c.refl x
 
-@[simp, norm_cast]
-theorem coe_top : ⇑(⊤ : RingCon R) = ⊤ := rfl
+@[simp, norm_cast] lemma coe_top : ⇑(⊤ : RingCon R) = ⊤ := rfl
+@[simp, norm_cast] lemma coe_bot : ⇑(⊥ : RingCon R) = Eq := rfl
 
-@[simp, norm_cast]
-theorem coe_bot : ⇑(⊥ : RingCon R) = Eq := rfl
+@[simp] lemma toCon_top : (⊤ : RingCon R).toCon = ⊤ := rfl
+@[simp] lemma toCon_bot : (⊥ : RingCon R).toCon = ⊥ := rfl
+
+@[simp] lemma toCon_eq_top : c.toCon = ⊤ ↔ c = ⊤ := by rw [← toCon_top, toCon_inj]
+@[simp] lemma toCon_eq_bot : c.toCon = ⊥ ↔ c = ⊥ := by rw [← toCon_bot, toCon_inj]
+
+@[simp] lemma subsingleton_quotient : Subsingleton c.Quotient ↔ c = ⊤ := by simp [RingCon.Quotient]
+
+@[simp] lemma nontrivial_quotient : Nontrivial c.Quotient ↔ c ≠ ⊤ := by
+  simp [← not_subsingleton_iff_nontrivial]
 
 /-- The infimum of two congruence relations equals the infimum of the underlying binary
 operations. -/

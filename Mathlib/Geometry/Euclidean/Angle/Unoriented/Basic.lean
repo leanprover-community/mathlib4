@@ -3,8 +3,11 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
-import Mathlib.Analysis.InnerProductSpace.Subspace
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Subspace
+public import Mathlib.Analysis.Normed.Module.Normalize
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 
 /-!
 # Angles between vectors
@@ -14,11 +17,9 @@ This file defines unoriented angles in real inner product spaces.
 ## Main definitions
 
 * `InnerProductGeometry.angle` is the undirected angle between two vectors.
-
-## TODO
-
-Prove the triangle inequality for the angle.
 -/
+
+@[expose] public section
 
 
 assert_not_exists HasFDerivAt ConformalAt
@@ -26,8 +27,6 @@ assert_not_exists HasFDerivAt ConformalAt
 noncomputable section
 
 open Real Set
-
-open Real
 
 open RealInnerProductSpace
 
@@ -98,8 +97,6 @@ theorem angle_neg_right (x y : V) : angle x (-y) = π - angle x y := by
 /-- The angle between the negation of a vector and another vector. -/
 theorem angle_neg_left (x y : V) : angle (-x) y = π - angle x y := by
   rw [← angle_neg_neg, neg_neg, angle_neg_right]
-
-proof_wanted angle_triangle (x y z : V) : angle x z ≤ angle x y + angle y z
 
 /-- The angle between the zero vector and a vector. -/
 @[simp]
@@ -178,7 +175,7 @@ theorem sin_angle_mul_norm_mul_norm (x y : V) :
 theorem sin_angle {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     Real.sin (angle x y) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) / (‖x‖ * ‖y‖) := by
   rw [← sin_angle_mul_norm_mul_norm]
-  field_simp
+  field
 
 /-- The sine of the angle between `x` and `x + y`. -/
 theorem sin_angle_add {x y : V} (hx : x ≠ 0) (hy : x + y ≠ 0) :
@@ -279,13 +276,8 @@ theorem norm_sub_eq_add_norm_iff_angle_eq_pi {x y : V} (hx : x ≠ 0) (hy : y �
 if and only the angle between the two vectors is 0. -/
 theorem norm_add_eq_add_norm_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ‖x + y‖ = ‖x‖ + ‖y‖ ↔ angle x y = 0 := by
-  refine ⟨fun h => ?_, norm_add_eq_add_norm_of_angle_eq_zero⟩
-  rw [← inner_eq_mul_norm_iff_angle_eq_zero hx hy]
-  obtain ⟨hxy₁, hxy₂⟩ := norm_nonneg (x + y), add_nonneg (norm_nonneg x) (norm_nonneg y)
-  rw [← sq_eq_sq₀ hxy₁ hxy₂, norm_add_pow_two_real] at h
-  calc
-    ⟪x, y⟫ = ((‖x‖ + ‖y‖) ^ 2 - ‖x‖ ^ 2 - ‖y‖ ^ 2) / 2 := by linarith
-    _ = ‖x‖ * ‖y‖ := by ring
+  refine ⟨?_, norm_add_eq_add_norm_of_angle_eq_zero⟩
+  grind [inner_eq_mul_norm_iff_angle_eq_zero hx hy, norm_add_pow_two_real]
 
 /-- The norm of the difference of two non-zero vectors equals the absolute value
 of the difference of their norms if and only the angle between the two vectors is 0. -/
@@ -335,5 +327,30 @@ theorem sin_eq_one_iff_angle_eq_pi_div_two : sin (angle x y) = 1 ↔ angle x y =
   refine ⟨fun h => ?_, fun h => by rw [h, sin_pi_div_two]⟩
   rw [← cos_eq_zero_iff_angle_eq_pi_div_two, ← abs_eq_zero, abs_cos_eq_sqrt_one_sub_sin_sq, h]
   simp
+
+/-- If the angle between two vectors of equal norm is equal to 0, then the vectors are equal. -/
+lemma eq_of_angle_eq_zero_of_norm_eq {x y : V} (hxy : angle x y = 0) (h : ‖x‖ = ‖y‖) : x = y := by
+  grind [angle_eq_zero_iff, norm_smul, Real.norm_eq_abs, norm_ne_zero_iff, abs, one_smul]
+
+/-- The angle between a normalized vector and another vector is equal to the angle
+between the original vectors. -/
+@[simp]
+lemma angle_normalize_left (x y : V) :
+    angle (NormedSpace.normalize x) y = angle x y := by
+  by_cases hx : x = 0
+  · simp [hx]
+  · rw [NormedSpace.normalize, angle_smul_left_of_pos _ _ (by positivity)]
+
+/-- The angle between a vector and another normalized vector is equal to the angle
+between the original vectors. -/
+@[simp]
+lemma angle_normalize_right (x y : V) :
+    angle x (NormedSpace.normalize y) = angle x y := by
+  rw [angle_comm, angle_normalize_left, angle_comm]
+
+/-- The inner product of two unit vectors is equal to the cosine of the angle between them. -/
+lemma inner_eq_cos_angle_of_norm_eq_one {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+    ⟪x, y⟫ = Real.cos (angle x y) := by
+  simp [cos_angle, hx, hy]
 
 end InnerProductGeometry

@@ -3,14 +3,16 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Algebra.Ring.NonZeroDivisors
-import Mathlib.RingTheory.Localization.FractionRing
+module
+
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Algebra.Ring.NonZeroDivisors
+public import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # The field of rational functions
 
-Files in this folder define the field `RatFunc K` of rational functions over a field `K`, show it
+Files in this folder define the field `K⟮X⟯` of rational functions over a field `K`, show it
 is the field of fractions of `K[X]` and provide the main results concerning it. This file contains
 the basic definition.
 
@@ -33,7 +35,7 @@ To provide good API encapsulation and speed up unification problems,
 We need a couple of maps to set up the `Field` and `IsFractionRing` structure,
 namely `RatFunc.ofFractionRing`, `RatFunc.toFractionRing`, `RatFunc.mk` and
 `RatFunc.toFractionRingRingEquiv`.
-All these maps get `simp`ed to bundled morphisms like `algebraMap K[X] (RatFunc K)`
+All these maps get `simp`ed to bundled morphisms like `algebraMap K[X] K⟮X⟯`
 and `IsLocalization.algEquiv`.
 
 There are separate lifts and maps of homomorphisms, to provide routes of lifting even when
@@ -47,6 +49,8 @@ the codomain is not a field or even an integral domain.
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open scoped nonZeroDivisors Polynomial
@@ -57,13 +61,15 @@ variable (K : Type u)
 
 /-- `RatFunc K` is `K(X)`, the field of rational functions over `K`.
 
-The inclusion of polynomials into `RatFunc` is `algebraMap K[X] (RatFunc K)`,
-the maps between `RatFunc K` and another field of fractions of `K[X]`,
+The inclusion of polynomials into `RatFunc` is `algebraMap K[X] K⟮X⟯`,
+the maps between `K⟮X⟯` and another field of fractions of `K[X]`,
 especially `FractionRing K[X]`, are given by `IsLocalization.algEquiv`.
 -/
 structure RatFunc [CommRing K] : Type u where ofFractionRing ::
 /-- the coercion to the fraction ring of the polynomial ring -/
   toFractionRing : FractionRing K[X]
+
+@[inherit_doc] scoped[RatFunc] notation:9000 R "⟮X⟯" => RatFunc R
 
 namespace RatFunc
 
@@ -76,30 +82,30 @@ section Rec
 
 /-! ### Constructing `RatFunc`s and their induction principles -/
 
-theorem ofFractionRing_injective : Function.Injective (ofFractionRing : _ → RatFunc K) :=
+theorem ofFractionRing_injective : Function.Injective (ofFractionRing : _ → K⟮X⟯) :=
   fun _ _ => ofFractionRing.inj
 
 theorem toFractionRing_injective : Function.Injective (toFractionRing : _ → FractionRing K[X])
   | ⟨x⟩, ⟨y⟩, xy => by subst xy; rfl
 
-@[simp] lemma toFractionRing_inj {x y : RatFunc K} :
+@[simp] lemma toFractionRing_inj {x y : K⟮X⟯} :
     toFractionRing x = toFractionRing y ↔ x = y :=
   toFractionRing_injective.eq_iff
 
-/-- Non-dependent recursion principle for `RatFunc K`:
-To construct a term of `P : Sort*` out of `x : RatFunc K`,
+/-- Non-dependent recursion principle for `K⟮X⟯`:
+To construct a term of `P : Sort*` out of `x : K⟮X⟯`,
 it suffices to provide a constructor `f : Π (p q : K[X]), P`
 and a proof that `f p q = f p' q'` for all `p q p' q'` such that `q' * p = q * p'` where
 both `q` and `q'` are not zero divisors, stated as `q ∉ K[X]⁰`, `q' ∉ K[X]⁰`.
 
 If considering `K` as an integral domain, this is the same as saying that
-we construct a value of `P` for such elements of `RatFunc K` by setting
+we construct a value of `P` for such elements of `K⟮X⟯` by setting
 `liftOn (p / q) f _ = f p q`.
 
 When `[IsDomain K]`, one can use `RatFunc.liftOn'`, which has the stronger requirement
 of `∀ {p q a : K[X]} (hq : q ≠ 0) (ha : a ≠ 0), f (a * p) (a * q) = f p q)`.
 -/
-protected irreducible_def liftOn {P : Sort v} (x : RatFunc K) (f : K[X] → K[X] → P)
+protected irreducible_def liftOn {P : Sort v} (x : K⟮X⟯) (f : K[X] → K[X] → P)
     (H : ∀ {p q p' q'} (_hq : q ∈ K[X]⁰) (_hq' : q' ∈ K[X]⁰), q' * p = q * p' → f p q = f p' q') :
     P :=
   Localization.liftOn (toFractionRing x) (fun p q => f p q) fun {_ _ q q'} h =>
@@ -131,14 +137,14 @@ If `q = 0`, then `mk` returns 0.
 This is an auxiliary definition used to define an `Algebra` structure on `RatFunc`;
 the `simp` normal form of `mk p q` is `algebraMap _ _ p / algebraMap _ _ q`.
 -/
-protected irreducible_def mk (p q : K[X]) : RatFunc K :=
+protected irreducible_def mk (p q : K[X]) : K⟮X⟯ :=
   ofFractionRing (algebraMap _ _ p / algebraMap _ _ q)
 
 theorem mk_eq_div' (p q : K[X]) :
     RatFunc.mk p q = ofFractionRing (algebraMap _ _ p / algebraMap _ _ q) := by rw [RatFunc.mk]
 
 theorem mk_zero (p : K[X]) : RatFunc.mk p 0 = ofFractionRing (0 : FractionRing K[X]) := by
-  rw [mk_eq_div', RingHom.map_zero, div_zero]
+  rw [mk_eq_div', map_zero, div_zero]
 
 theorem mk_coe_def (p : K[X]) (q : K[X]⁰) :
     RatFunc.mk p q = ofFractionRing (IsLocalization.mk' _ p q) := by
@@ -180,14 +186,14 @@ theorem liftOn_mk {P : Sort v} (p q : K[X]) (f : K[X] → K[X] → P) (f0 : ∀ 
       liftOn_ofFractionRing_mk, Submonoid.coe_one]
   · simp only [mk_eq_localization_mk _ hq, liftOn_ofFractionRing_mk]
 
-/-- Non-dependent recursion principle for `RatFunc K`: if `f p q : P` for all `p q`,
+/-- Non-dependent recursion principle for `K⟮X⟯`: if `f p q : P` for all `p q`,
 such that `f (a * p) (a * q) = f p q`, then we can find a value of `P`
-for all elements of `RatFunc K` by setting `lift_on' (p / q) f _ = f p q`.
+for all elements of `K⟮X⟯` by setting `lift_on' (p / q) f _ = f p q`.
 
 The value of `f p 0` for any `p` is never used and in principle this may be anything,
 although many usages of `lift_on'` assume `f p 0 = f 0 1`.
 -/
-protected irreducible_def liftOn' {P : Sort v} (x : RatFunc K) (f : K[X] → K[X] → P)
+protected irreducible_def liftOn' {P : Sort v} (x : K⟮X⟯) (f : K[X] → K[X] → P)
   (H : ∀ {p q a} (_hq : q ≠ 0) (_ha : a ≠ 0), f (a * p) (a * q) = f p q) : P :=
   x.liftOn f fun {_p _q _p' _q'} hq hq' =>
     liftOn_condition_of_liftOn'_condition (@H) (nonZeroDivisors.ne_zero hq)
@@ -199,14 +205,14 @@ theorem liftOn'_mk {P : Sort v} (p q : K[X]) (f : K[X] → K[X] → P) (f0 : ∀
   rw [RatFunc.liftOn', RatFunc.liftOn_mk _ _ _ f0]
   apply liftOn_condition_of_liftOn'_condition H
 
-/-- Induction principle for `RatFunc K`: if `f p q : P (RatFunc.mk p q)` for all `p q`,
-then `P` holds on all elements of `RatFunc K`.
+/-- Induction principle for `K⟮X⟯`: if `f p q : P (RatFunc.mk p q)` for all `p q`,
+then `P` holds on all elements of `K⟮X⟯`.
 
 See also `induction_on`, which is a recursion principle defined in terms of `algebraMap`.
 -/
 @[elab_as_elim]
-protected theorem induction_on' {P : RatFunc K → Prop} :
-    ∀ (x : RatFunc K) (_pq : ∀ (p q : K[X]) (_ : q ≠ 0), P (RatFunc.mk p q)), P x
+protected theorem induction_on' {P : K⟮X⟯ → Prop} :
+    ∀ (x : K⟮X⟯) (_pq : ∀ (p q : K[X]) (_ : q ≠ 0), P (RatFunc.mk p q)), P x
   | ⟨x⟩, f =>
     Localization.induction_on x fun ⟨p, q⟩ => by
       simpa only [mk_coe_def, Localization.mk_eq_mk'] using

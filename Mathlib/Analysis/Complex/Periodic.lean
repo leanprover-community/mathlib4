@@ -3,9 +3,11 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Complex.RemovableSingularity
-import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
-import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
+module
+
+public import Mathlib.Analysis.Complex.RemovableSingularity
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
+public import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 
 /-!
 # Periodic holomorphic functions
@@ -19,6 +21,8 @@ for all sufficiently large `im z`, then `F` extends to a holomorphic function on
 `0`. As a consequence, if `f` tends to zero as `im z → ∞`, then in fact it decays *exponentially*
 to zero. These results are important in the theory of modular forms.
 -/
+
+@[expose] public section
 
 open Complex Filter Asymptotics
 
@@ -74,6 +78,11 @@ lemma qParam_ne_zero (z : ℂ) : 𝕢 h z ≠ 0 := by
   simp [qParam, exp_ne_zero]
 
 @[fun_prop]
+lemma continuous_qParam : Continuous (𝕢 h) := by
+  unfold qParam
+  fun_prop
+
+@[fun_prop]
 lemma differentiable_qParam : Differentiable ℂ (𝕢 h) := by
   unfold qParam
   fun_prop
@@ -127,6 +136,11 @@ theorem eq_cuspFunction (hh : h ≠ 0) (hf : Periodic f h) (z : ℂ) :
   obtain ⟨m, hm⟩ := qParam_left_inv_mod_period hh z
   simpa only [this, hm] using hf.int_mul m z
 
+lemma tendsto_nhds_zero {f : ℂ → ℂ} (hcts : ContinuousAt (cuspFunction h f) 0) :
+    Tendsto (fun x ↦ f (invQParam h x)) (𝓝[≠] 0) (𝓝 (cuspFunction h f 0)) := by
+  apply (tendsto_nhdsWithin_of_tendsto_nhds hcts.tendsto).congr'
+  filter_upwards [self_mem_nhdsWithin] with a using cuspFunction_eq_of_nonzero h f
+
 end PeriodicOnℂ
 
 section HoloOnC
@@ -142,16 +156,17 @@ theorem differentiableAt_cuspFunction (hh : h ≠ 0) (hf : Periodic f h)
     DifferentiableAt ℂ (cuspFunction h f) (𝕢 h z) := by
   let q := 𝕢 h z
   have qdiff : HasStrictDerivAt (𝕢 h) (q * (2 * π * I / h)) z := by
-    simpa only [id_eq, mul_one] using (((hasStrictDerivAt_id z).const_mul _).div_const _).cexp
+    simpa only [id_eq, mul_one] using! (((hasStrictDerivAt_id z).const_mul _).div_const _).cexp
   -- Now show that the q-map has a differentiable local inverse at z, say L : ℂ → ℂ with L q = z.
   have diff_ne : q * (2 * π * I / h) ≠ 0 :=
     mul_ne_zero (exp_ne_zero _) (div_ne_zero two_pi_I_ne_zero <| mod_cast hh)
   let L := (qdiff.localInverse (𝕢 h) _ z) diff_ne
-  have diff_L : DifferentiableAt ℂ L q := (qdiff.to_localInverse diff_ne).differentiableAt
+  have diff_L : DifferentiableAt ℂ L q :=
+    (qdiff.to_localInverse diff_ne).hasStrictFDerivAt.differentiableAt
   have hL : 𝕢 h ∘ L =ᶠ[𝓝 q] (id : ℂ → ℂ) :=
     (qdiff.hasStrictFDerivAt_equiv diff_ne).eventually_right_inverse
   -- Thus, if F = cuspFunction h f, we have F q' = f (L q') for q' near q.
-  -- Since L is differentiable at q, and f is diff'ble at L q [ = z], we conclude
+  -- Since L is differentiable at q, and f is differentiable at L q [ = z], we conclude
   -- that F is differentiable at q.
   have hF := hL.fun_comp (cuspFunction h f)
   have : cuspFunction h f ∘ 𝕢 h ∘ L = f ∘ L := funext fun z ↦ eq_cuspFunction hh hf (L z)
@@ -197,7 +212,7 @@ theorem differentiableAt_cuspFunction_zero (hh : 0 < h) (hf : Periodic f h)
     use c
     simp only [mem_upperBounds, Set.mem_image, Set.mem_diff, forall_exists_index, and_imp]
     intro y q hq hq2 hy
-    simpa only [← hy, norm_one, mul_one] using (hS1 q hq hq2).2
+    simpa only [← hy, norm_one, mul_one] using! (hS1 q hq hq2).2
   have := differentiableOn_update_limUnder_of_bddAbove (IsOpen.mem_nhds hS2 hS3) h_diff hF_bd
   rw [← cuspFunction_zero_eq_limUnder_nhds_ne, update_eq_self] at this
   exact this.differentiableAt (IsOpen.mem_nhds hS2 hS3)
@@ -215,19 +230,58 @@ theorem tendsto_at_I_inf (hh : 0 < h) (hf : Periodic f h)
     (differentiableAt_cuspFunction_zero hh hf h_hol h_bd).continuousAt.tendsto
 
 /--
+If `f` is periodic, and holomorphic and bounded at `I∞`, then it has the form (constant) +
+(exponentially decaying term) as `z → I∞`.
+-/
+theorem exp_decay_sub_of_bounded_at_inf (hh : 0 < h) (hf : Periodic f h)
+    (h_hol : ∀ᶠ z in I∞, DifferentiableAt ℂ f z) (h_bd : BoundedAtFilter I∞ f) :
+    (fun z ↦ f z - cuspFunction h f 0) =O[I∞] (fun z ↦ Real.exp (-2 * π * im z / h)) := by
+  simpa [comp_def, eq_cuspFunction hh.ne' hf, norm_qParam] using
+    differentiableAt_cuspFunction_zero hh hf h_hol h_bd |>.isBigO_sub.mono
+      nhdsWithin_le_nhds |>.comp_tendsto (qParam_tendsto hh) |>.norm_right
+
+/--
 If `f` is periodic, holomorphic near `I∞`, and tends to zero at `I∞`, then in fact it tends to zero
 exponentially fast.
 -/
 theorem exp_decay_of_zero_at_inf (hh : 0 < h) (hf : Periodic f h)
     (h_hol : ∀ᶠ z in I∞, DifferentiableAt ℂ f z) (h_zer : ZeroAtFilter I∞ f) :
     f =O[I∞] fun z ↦ Real.exp (-2 * π * im z / h) := by
-  suffices cuspFunction h f =O[_] id by
-    simpa only [comp_def, eq_cuspFunction hh.ne' hf, id_eq, norm_qParam]
-      using (this.comp_tendsto (qParam_tendsto hh)).norm_right
-  simpa only [cuspFunction_zero_of_zero_at_inf hh h_zer, sub_zero] using
-    (differentiableAt_cuspFunction_zero hh hf h_hol h_zer.boundedAtFilter).isBigO_sub.mono
-      nhdsWithin_le_nhds
+  simpa [cuspFunction_zero_of_zero_at_inf hh h_zer, sub_zero] using
+    exp_decay_sub_of_bounded_at_inf hh hf h_hol h_zer.boundedAtFilter
 
 end HoloAtInfC
+
+section arithmetic
+
+lemma cuspFunction_smul {h} {f : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0) (a : ℂ) :
+    cuspFunction h (a • f) = a • cuspFunction h f := by
+  simp only [cuspFunction] at *
+  ext y
+  obtain rfl | hy := eq_or_ne y 0
+  · simpa using! (Tendsto.const_mul _ (by simpa using! hfcts)).limUnder_eq
+  · simp [hy]
+
+lemma cuspFunction_neg {h} {f : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0) :
+    cuspFunction h (-f) = -cuspFunction h f := by
+  simpa using cuspFunction_smul hfcts (-1)
+
+lemma cuspFunction_add {h} {f g : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)
+    (hgcts : ContinuousAt (cuspFunction h g) 0) :
+    cuspFunction h (f + g) = cuspFunction h f + cuspFunction h g := by
+  simp only [cuspFunction]
+  ext y
+  obtain hy | rfl := ne_or_eq y 0
+  · simp [hy]
+  · simpa using! (tendsto_nhds_limUnder ⟨_, tendsto_nhds_zero hfcts⟩).add
+      (tendsto_nhds_limUnder ⟨_, tendsto_nhds_zero hgcts⟩) |>.limUnder_eq
+
+lemma cuspFunction_sub {h} {f g : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)
+    (hgcts : ContinuousAt (cuspFunction h g) 0) :
+    cuspFunction h (f - g) = cuspFunction h f - cuspFunction h g := by
+  simpa [sub_eq_add_neg, ← cuspFunction_neg hgcts]
+    using cuspFunction_add hfcts (by simp [cuspFunction_neg, hgcts])
+
+end arithmetic
 
 end Function.Periodic

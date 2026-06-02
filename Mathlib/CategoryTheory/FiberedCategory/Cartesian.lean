@@ -3,8 +3,9 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Lezeau, Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.FiberedCategory.HomLift
+public import Mathlib.CategoryTheory.FiberedCategory.HomLift
 
 /-!
 # Cartesian morphisms
@@ -37,6 +38,8 @@ equalities.
 * [Stacks: Fibred Categories](https://stacks.math.columbia.edu/tag/02XJ)
 -/
 
+@[expose] public section
+
 universe v₁ v₂ u₁ u₂
 
 open CategoryTheory Functor Category IsHomLift
@@ -54,9 +57,11 @@ morphisms `φ' : a' ⟶ b`, also lying over `f`, there exists a unique morphism 
 `𝟙 R` such that `φ' = χ ≫ φ`.
 
 See SGA 1 VI 5.1. -/
-class IsCartesian : Prop extends IsHomLift p f φ where
+class IsCartesian : Prop where
+  [toIsHomLift : IsHomLift p f φ]
   universal_property {a' : 𝒳} (φ' : a' ⟶ b) [IsHomLift p f φ'] :
       ∃! χ : a' ⟶ a, IsHomLift p (𝟙 R) χ ∧ χ ≫ φ = φ'
+attribute [instance] IsCartesian.toIsHomLift
 
 /-- A morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is strongly Cartesian if for
 all morphisms `φ' : a' ⟶ b` and all diagrams of the form
@@ -68,9 +73,11 @@ R' --g--> R --f--> S
 ```
 such that `φ'` lifts `g ≫ f`, there exists a lift `χ` of `g` such that `φ' = χ ≫ φ`. -/
 @[stacks 02XK]
-class IsStronglyCartesian : Prop extends IsHomLift p f φ where
+class IsStronglyCartesian : Prop where
+  [toIsHomLift : IsHomLift p f φ]
   universal_property' {a' : 𝒳} (g : p.obj a' ⟶ R) (φ' : a' ⟶ b) [IsHomLift p (g ≫ f) φ'] :
       ∃! χ : a' ⟶ a, IsHomLift p g χ ∧ χ ≫ φ = φ'
+attribute [instance] IsStronglyCartesian.toIsHomLift
 
 end
 
@@ -181,7 +188,7 @@ lemma universal_property {R' : 𝒮} {a' : 𝒳} (g : R' ⟶ R) (f' : R' ⟶ S) 
   have : p.IsHomLift (g ≫ f) φ' := (hf' ▸ inferInstance)
   apply IsStronglyCartesian.universal_property' f
 
-instance isCartesian_of_isStronglyCartesian [p.IsStronglyCartesian f φ] : p.IsCartesian f φ where
+instance isCartesian_of_isStronglyCartesian : p.IsCartesian f φ where
   universal_property := fun φ' => universal_property p f φ (𝟙 R) f (by simp) φ'
 
 section
@@ -352,7 +359,7 @@ lemma isIso_of_base_isIso (φ : a ⟶ b) [IsStronglyCartesian p f φ] [IsIso f] 
   have inv_hom : φ' ≫ φ = 𝟙 b := fac p (p.map φ) φ _ (𝟙 b)
   refine ⟨?_, inv_hom⟩
   -- We will now show that `φ ≫ φ' = 𝟙 a` by showing that `(φ ≫ φ') ≫ φ = 𝟙 a ≫ φ`.
-  have h₁ : IsHomLift p (𝟙 (p.obj a)) (φ  ≫ φ') := by
+  have h₁ : IsHomLift p (𝟙 (p.obj a)) (φ ≫ φ') := by
     rw [← IsIso.hom_inv_id (p.map φ)]
     apply IsHomLift.comp
   apply IsStronglyCartesian.ext p (p.map φ) φ (𝟙 (p.obj a))

@@ -3,10 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Algebra.Ring.Pointwise.Set
-import Mathlib.Order.Filter.AtTopBot.CompleteLattice
-import Mathlib.Order.Filter.AtTopBot.Group
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.Order.Filter.AtTopBot.CompleteLattice
+public import Mathlib.Order.Filter.AtTopBot.Group
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Neighborhoods to the left and to the right on an `OrderTopology`
@@ -14,6 +15,8 @@ import Mathlib.Topology.Order.Basic
 We've seen some properties of left and right neighborhood of a point in an `OrderClosedTopology`.
 In an `OrderTopology`, such neighborhoods can be characterized as the sets containing suitable
 intervals to the right or to the left of `a`. We give now these characterizations. -/
+
+public section
 
 open Set Filter TopologicalSpace Topology Function
 
@@ -132,8 +135,8 @@ theorem countable_setOf_isolated_right_within [SecondCountableTopology α] {s : 
   apply Set.PairwiseDisjoint.countable_of_Ioo (y := y) _ hy
   simp only [PairwiseDisjoint, Set.Pairwise, Function.onFun]
   intro a ha b hb hab
-  wlog H : a < b generalizing a b with h
-  · have : b < a := lt_of_le_of_ne (not_lt.1 H) hab.symm
+  wlog! H : a < b generalizing a b with h
+  · have : b < a := lt_of_le_of_ne H hab.symm
     exact (h hb ha hab.symm this).symm
   have : y a ≤ b := by
     by_contra!
@@ -169,12 +172,12 @@ open List in
 3. `s` includes `(l, b)` for some `l ∈ [a, b)`
 4. `s` includes `(l, b)` for some `l < b` -/
 theorem TFAE_mem_nhdsLT {a b : α} (h : a < b) (s : Set α) :
-    TFAE [s ∈ 𝓝[<] b,-- 0 : `s` is a neighborhood of `b` within `(-∞, b)`
-        s ∈ 𝓝[Ico a b] b,-- 1 : `s` is a neighborhood of `b` within `[a, b)`
-        s ∈ 𝓝[Ioo a b] b,-- 2 : `s` is a neighborhood of `b` within `(a, b)`
-        ∃ l ∈ Ico a b, Ioo l b ⊆ s,-- 3 : `s` includes `(l, b)` for some `l ∈ [a, b)`
-        ∃ l ∈ Iio b, Ioo l b ⊆ s] := by-- 4 : `s` includes `(l, b)` for some `l < b`
-  simpa using TFAE_mem_nhdsGT h.dual (ofDual ⁻¹' s)
+    TFAE [s ∈ 𝓝[<] b, -- 0 : `s` is a neighborhood of `b` within `(-∞, b)`
+        s ∈ 𝓝[Ico a b] b, -- 1 : `s` is a neighborhood of `b` within `[a, b)`
+        s ∈ 𝓝[Ioo a b] b, -- 2 : `s` is a neighborhood of `b` within `(a, b)`
+        ∃ l ∈ Ico a b, Ioo l b ⊆ s, -- 3 : `s` includes `(l, b)` for some `l ∈ [a, b)`
+        ∃ l ∈ Iio b, Ioo l b ⊆ s] := by -- 4 : `s` includes `(l, b)` for some `l < b`
+  simpa using! TFAE_mem_nhdsGT h.dual (ofDual ⁻¹' s)
 
 theorem mem_nhdsLT_iff_exists_mem_Ico_Ioo_subset {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[<] a ↔ ∃ l ∈ Ico l' a, Ioo l a ⊆ s :=
@@ -198,7 +201,7 @@ with `l < a`. -/
 theorem mem_nhdsLT_iff_exists_Ico_subset [NoMinOrder α] [DenselyOrdered α] {a : α} {s : Set α} :
     s ∈ 𝓝[<] a ↔ ∃ l ∈ Iio a, Ico l a ⊆ s := by
   have : ofDual ⁻¹' s ∈ 𝓝[>] toDual a ↔ _ := mem_nhdsGT_iff_exists_Ioc_subset
-  simpa using this
+  simpa using! this
 
 theorem nhdsLT_basis_of_exists_lt {a : α} (h : ∃ b, b < a) : (𝓝[<] a).HasBasis (· < a) (Ioo · a) :=
   let ⟨_, h⟩ := h
@@ -208,8 +211,8 @@ theorem nhdsLT_basis [NoMinOrder α] (a : α) : (𝓝[<] a).HasBasis (· < a) (I
   nhdsLT_basis_of_exists_lt <| exists_lt a
 
 theorem nhdsLT_eq_bot_iff {a : α} : 𝓝[<] a = ⊥ ↔ IsBot a ∨ ∃ b, b ⋖ a := by
-  convert (config := {preTransparency := .default}) nhdsGT_eq_bot_iff (a := OrderDual.toDual a)
-    using 4
+  convert! (config := { preTransparency := .default })
+    nhdsGT_eq_bot_iff (a := OrderDual.toDual a) using 4
   exact ofDual_covBy_ofDual_iff
 
 open List in
@@ -280,12 +283,12 @@ open List in
 3. `s` includes `(l, b]` for some `l ∈ [a, b)`
 4. `s` includes `(l, b]` for some `l < b` -/
 theorem TFAE_mem_nhdsLE {a b : α} (h : a < b) (s : Set α) :
-    TFAE [s ∈ 𝓝[≤] b,-- 0 : `s` is a neighborhood of `b` within `(-∞, b]`
-      s ∈ 𝓝[Icc a b] b,-- 1 : `s` is a neighborhood of `b` within `[a, b]`
-      s ∈ 𝓝[Ioc a b] b,-- 2 : `s` is a neighborhood of `b` within `(a, b]`
-      ∃ l ∈ Ico a b, Ioc l b ⊆ s,-- 3 : `s` includes `(l, b]` for some `l ∈ [a, b)`
-      ∃ l ∈ Iio b, Ioc l b ⊆ s] := by-- 4 : `s` includes `(l, b]` for some `l < b`
-  simpa using TFAE_mem_nhdsGE h.dual (ofDual ⁻¹' s)
+    TFAE [s ∈ 𝓝[≤] b, -- 0 : `s` is a neighborhood of `b` within `(-∞, b]`
+      s ∈ 𝓝[Icc a b] b, -- 1 : `s` is a neighborhood of `b` within `[a, b]`
+      s ∈ 𝓝[Ioc a b] b, -- 2 : `s` is a neighborhood of `b` within `(a, b]`
+      ∃ l ∈ Ico a b, Ioc l b ⊆ s, -- 3 : `s` includes `(l, b]` for some `l ∈ [a, b)`
+      ∃ l ∈ Iio b, Ioc l b ⊆ s] := by -- 4 : `s` includes `(l, b]` for some `l < b`
+  simpa using! TFAE_mem_nhdsGE h.dual (ofDual ⁻¹' s)
 
 theorem mem_nhdsLE_iff_exists_mem_Ico_Ioc_subset {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[≤] a ↔ ∃ l ∈ Ico l' a, Ioc l a ⊆ s :=
@@ -402,7 +405,7 @@ theorem nhds_basis_mabs_div_lt [NoMaxOrder α] (a : α) :
 @[to_additive]
 theorem nhds_basis_Ioo_one_lt [NoMaxOrder α] (a : α) :
     (𝓝 a).HasBasis (fun ε : α => (1 : α) < ε) fun ε => Ioo (a / ε) (a * ε) := by
-  convert nhds_basis_mabs_div_lt a
+  convert! nhds_basis_mabs_div_lt a
   simp only [Ioo, mabs_lt, ← div_lt_iff_lt_mul, inv_lt_div_iff_lt_mul, div_lt_comm]
 
 @[to_additive]
@@ -418,9 +421,6 @@ variable (α) in
 theorem nhds_basis_one_mabs_lt [NoMaxOrder α] :
     (𝓝 (1 : α)).HasBasis (fun ε : α => (1 : α) < ε) fun ε => { b | |b|ₘ < ε } := by
   simpa using nhds_basis_mabs_div_lt (1 : α)
-
-@[deprecated (since := "2025-03-18")]
-alias nhds_basis_zero_abs_sub_lt := nhds_basis_zero_abs_lt
 
 /-- If `a > 1`, then open intervals `(a / ε, aε)`, `1 < ε ≤ a`,
 form a basis of neighborhoods of `a`.

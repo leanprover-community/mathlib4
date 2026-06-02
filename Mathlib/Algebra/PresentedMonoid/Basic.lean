@@ -1,12 +1,13 @@
 /-
-Copyright (c) 2024. All rights reserved.
+Copyright (c) 2024 Hannah Fechtner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hannah Fechtner
 -/
+module
 
-import Mathlib.Algebra.FreeMonoid.Basic
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.GroupTheory.Congruence.Hom
+public import Mathlib.Algebra.FreeMonoid.Basic
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.GroupTheory.Congruence.Hom
 
 /-!
 # Defining a monoid given by generators and relations
@@ -27,6 +28,8 @@ given by generators `x : α` and relations `rels`.
 generators, relations, monoid presentations
 -/
 
+@[expose] public section
+
 variable {α : Type*}
 
 /-- Given a set of relations, `rels`, over a type `α`, `PresentedMonoid` constructs the monoid with
@@ -34,16 +37,15 @@ generators `x : α` and relations `rels` as a quotient of a congruence structure
 @[to_additive /-- Given a set of relations, `rels`, over a type `α`, `PresentedAddMonoid` constructs
 the monoid with generators `x : α` and relations `rels` as a quotient of an AddCon structure over
 rels -/]
-def PresentedMonoid (rel : FreeMonoid α → FreeMonoid α → Prop) := (conGen rel).Quotient
+def PresentedMonoid (rels : FreeMonoid α → FreeMonoid α → Prop) := (conGen rels).Quotient
 
 namespace PresentedMonoid
 
 open Set Submonoid
 
-
 @[to_additive]
 instance {rels : FreeMonoid α → FreeMonoid α → Prop} : Monoid (PresentedMonoid rels) :=
-  Con.monoid (conGen rels)
+  inferInstanceAs <| Monoid (conGen rels).Quotient
 
 /-- The quotient map from the free monoid on `α` to the presented monoid with the same generators
 and the given relations `rels`. -/
@@ -88,7 +90,11 @@ protected theorem inductionOn₃ {δ : P₁ → P₂ → P₃ → Prop} (q₁ : 
 
 end inductionOn
 
-variable {α : Type*} {rels : FreeMonoid α → FreeMonoid α → Prop}
+variable {α : Type*} {rels : FreeMonoid α → FreeMonoid α → Prop} {x y : FreeMonoid α}
+
+lemma mk_eq_mk_iff : mk rels x = mk rels y ↔ conGen rels x y := Quotient.eq
+
+lemma mk_eq_mk_of_rel (h : rels x y) : mk rels x = mk rels y := mk_eq_mk_iff.2 (.of _ _ h)
 
 /-- The generators of a presented monoid generate the presented monoid. That is, the submonoid
 closure of the set of generators equals `⊤`. -/
@@ -96,7 +102,7 @@ closure of the set of generators equals `⊤`. -/
 presented additive monoid. That is, the additive submonoid closure of the set of generators equals
 `⊤`. -/]
 theorem closure_range_of (rels : FreeMonoid α → FreeMonoid α → Prop) :
-    Submonoid.closure (Set.range (PresentedMonoid.of rels)) = ⊤ := by
+    Submonoid.closure (Set.range (of rels)) = ⊤ := by
   rw [Submonoid.eq_top_iff']
   intro x
   induction x with | _ a

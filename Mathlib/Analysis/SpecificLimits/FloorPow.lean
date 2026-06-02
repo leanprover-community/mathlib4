@@ -3,9 +3,11 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Order.Field.GeomSum
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
+module
+
+public import Mathlib.Algebra.Order.Field.GeomSum
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Results on discretized exponentials
@@ -17,6 +19,8 @@ We state several auxiliary results pertaining to sequences of the form `⌊c^n�
 * `sum_div_nat_floor_pow_sq_le_div_sq`: The sum of `1/⌊c^i⌋₊^2` above a threshold `j` is comparable
   to `1/j^2`, up to a multiplicative constant.
 -/
+
+public section
 
 open Filter Finset
 
@@ -42,7 +46,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       tendsto_const_nhds.div_atTop (tendsto_natCast_atTop_iff.2 ctop)
     apply le_of_tendsto_of_tendsto' this clim fun n => ?_
     gcongr
-    exact hmono (zero_le _)
+    exact hmono zero_le
   have A : ∀ ε : ℝ, 0 < ε → ∀ᶠ n in atTop, u n - n * l ≤ ε * (1 + ε + l) * n := by
     intro ε εpos
     rcases hlim (1 + ε) ((lt_add_iff_pos_right _).2 εpos) with ⟨c, cgrowth, ctop, clim⟩
@@ -52,7 +56,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       filter_upwards [clim εpos, ctop (Ioi_mem_atTop 0)] with n hn cnpos'
       have cnpos : 0 < c n := cnpos'
       calc
-        u (c n) - c n * l = (u (c n) / c n - l) * c n := by field_simp
+        u (c n) - c n * l = (u (c n) / c n - l) * c n := by field
         _ ≤ ε * c n := by
           gcongr
           refine (le_abs_self _).trans ?_
@@ -64,7 +68,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     filter_upwards [Ici_mem_atTop M] with n hn
     have exN : ∃ N, n < c N := by
       rcases (tendsto_atTop.1 ctop (n + 1)).exists with ⟨N, hN⟩
-      exact ⟨N, by omega⟩
+      exact ⟨N, by lia⟩
     let N := Nat.find exN
     have ncN : n < c N := Nat.find_spec exN
     have aN : a + 1 ≤ N := by
@@ -79,10 +83,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       have : N - 1 < N := Nat.pred_lt Npos.ne'
       simpa only [not_lt] using Nat.find_min exN this
     have IcN : (c N : ℝ) ≤ (1 + ε) * c (N - 1) := by
-      have A : a ≤ N - 1 := by
-        apply @Nat.le_of_add_le_add_right a 1 (N - 1)
-        rw [Nat.sub_add_cancel Npos]
-        exact aN
+      have A : a ≤ N - 1 := (Nat.le_sub_one_iff_lt Npos).mpr aN
       have B : N - 1 + 1 = N := Nat.succ_pred_eq_of_pos Npos
       have := (ha _ A).1
       rwa [B] at this
@@ -105,7 +106,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       filter_upwards [clim εpos, ctop (Ioi_mem_atTop 0)] with n hn cnpos'
       have cnpos : 0 < c n := cnpos'
       calc
-        (c n : ℝ) * l - u (c n) = -(u (c n) / c n - l) * c n := by field_simp; ring
+        (c n : ℝ) * l - u (c n) = -(u (c n) / c n - l) * c n := by field
         _ ≤ ε * c n := by
           gcongr
           refine le_trans (neg_le_abs _) ?_
@@ -118,7 +119,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     filter_upwards [Ici_mem_atTop M] with n hn
     have exN : ∃ N, n < c N := by
       rcases (tendsto_atTop.1 ctop (n + 1)).exists with ⟨N, hN⟩
-      exact ⟨N, by omega⟩
+      exact ⟨N, by lia⟩
     let N := Nat.find exN
     have ncN : n < c N := Nat.find_spec exN
     have aN : a + 1 ≤ N := by
@@ -129,10 +130,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
         exact mem_range.2 h
       exact lt_irrefl _ ((cNM.trans hn).trans_lt ncN)
     have Npos : 0 < N := lt_of_lt_of_le Nat.succ_pos' aN
-    have aN' : a ≤ N - 1 := by
-      apply @Nat.le_of_add_le_add_right a 1 (N - 1)
-      rw [Nat.sub_add_cancel Npos]
-      exact aN
+    have aN' : a ≤ N - 1 := (Nat.le_sub_one_iff_lt Npos).mpr aN
     have cNn : c (N - 1) ≤ n := by
       have : N - 1 < N := Nat.pred_lt Npos.ne'
       simpa only [not_lt] using Nat.find_min exN this
@@ -175,7 +173,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     filter_upwards [A ε εpos, Ioi_mem_atTop 0] with n hn (npos : 0 < n)
     calc
       u n / n ≤ (n * l + ε * (1 + ε + l) * n) / n := by gcongr; linarith only [hn]
-      _ = (l + ε * (1 + ε + l)) := by field_simp
+      _ = (l + ε * (1 + ε + l)) := by field
       _ < d := hε
 
 /-- If a monotone sequence `u` is such that `u ⌊c^n⌋₊ / ⌊c^n⌋₊` converges to a limit `l` for all
@@ -205,10 +203,9 @@ theorem tendsto_div_of_monotone_of_tendsto_div_floor_pow (u : ℕ → ℝ) (l : 
       exact tendsto_pow_atTop_atTop_of_one_lt (cone k)
   have B : Tendsto (fun n : ℕ => (⌊c k ^ (n + 1)⌋₊ : ℝ) / ⌊c k ^ n⌋₊) atTop (𝓝 (c k)) := by
     simp only [one_mul, div_one] at A
-    convert A using 1
+    convert! A using 1
     ext1 n
-    field_simp [(zero_lt_one.trans (cone k)).ne']
-    ring
+    field [(zero_lt_one.trans (cone k)).ne']
   filter_upwards [(tendsto_order.1 B).2 a hk] with n hn
   exact (div_le_iff₀ (H n)).1 hn.le
 
@@ -244,16 +241,15 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
       geom_sum_Ico_le_of_lt_one (sq_nonneg _) C
     _ ≤ (c⁻¹ ^ 2) ^ (Real.log j / Real.log c - 1) / ((1 : ℝ) - c⁻¹ ^ 2) := by
       gcongr
-      · exact sub_nonneg.2 C.le
-      · rw [← Real.rpow_natCast]
-        exact Real.rpow_le_rpow_of_exponent_ge A C.le (Nat.sub_one_lt_floor _).le
+      rw [← Real.rpow_natCast]
+      exact Real.rpow_le_rpow_of_exponent_ge A C.le (Nat.sub_one_lt_floor _).le
     _ = c ^ 2 * ((1 : ℝ) - c⁻¹ ^ 2)⁻¹ / j ^ 2 := by
       have I : (c⁻¹ ^ 2) ^ (Real.log j / Real.log c) = (1 : ℝ) / j ^ 2 := by
         apply Real.log_injOn_pos (Real.rpow_pos_of_pos A _)
         · rw [Set.mem_Ioi]; positivity
         rw [Real.log_rpow A]
         simp only [one_div, Real.log_inv, Real.log_pow, mul_neg, neg_inj]
-        field_simp [(Real.log_pos hc).ne']
+        field [(Real.log_pos hc).ne']
       rw [Real.rpow_sub A, I]
       simp
       ring
@@ -280,8 +276,7 @@ theorem sum_div_nat_floor_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c :
   calc
     (∑ i ∈ range N with j < ⌊c ^ i⌋₊, (1 : ℝ) / (⌊c ^ i⌋₊ : ℝ) ^ 2) ≤
         ∑ i ∈ range N with j < c ^ i, (1 : ℝ) / (⌊c ^ i⌋₊ : ℝ) ^ 2 := by
-      gcongr
-      exact fun k hk ↦ hk.trans_le <| Nat.floor_le (by positivity)
+      gcongr with k hk; exact Nat.floor_le (by positivity)
     _ ≤ ∑ i ∈ range N with j < c ^ i, (1 - c⁻¹)⁻¹ ^ 2 * ((1 : ℝ) / (c ^ i) ^ 2) := by
       gcongr with i
       rw [mul_div_assoc', mul_one, div_le_div_iff₀]; rotate_left
@@ -299,4 +294,4 @@ theorem sum_div_nat_floor_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c :
       exact sum_div_pow_sq_le_div_sq N hj hc
     _ = c ^ 5 * (c - 1)⁻¹ ^ 3 / j ^ 2 := by
       congr 1
-      field_simp
+      field

@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Map
-import Mathlib.Order.ZornAtoms
+module
+
+public import Mathlib.Order.Filter.Map
+public import Mathlib.Order.ZornAtoms
 
 /-!
 # Ultrafilters
@@ -17,6 +19,8 @@ In this file we define
 * `pure x : Ultrafilter α`: `pure x` as an `Ultrafilter`;
 * `Ultrafilter.map`, `Ultrafilter.bind`, `Ultrafilter.comap` : operations on ultrafilters;
 -/
+
+@[expose] public section
 
 assert_not_exists Set.Finite
 
@@ -104,8 +108,6 @@ theorem compl_notMem_iff : sᶜ ∉ f ↔ s ∈ f :=
       f.le_of_inf_neBot ⟨fun h => hsc <| mem_of_eq_bot <| by rwa [compl_compl]⟩,
     compl_notMem⟩
 
-@[deprecated (since := "2025-05-23")] alias compl_not_mem_iff := compl_notMem_iff
-
 @[simp]
 theorem frequently_iff_eventually : (∃ᶠ x in f, p x) ↔ ∀ᶠ x in f, p x :=
   compl_notMem_iff
@@ -113,8 +115,6 @@ theorem frequently_iff_eventually : (∃ᶠ x in f, p x) ↔ ∀ᶠ x in f, p x 
 alias ⟨_root_.Filter.Frequently.eventually, _⟩ := frequently_iff_eventually
 
 theorem compl_mem_iff_notMem : sᶜ ∈ f ↔ s ∉ f := by rw [← compl_notMem_iff, compl_compl]
-
-@[deprecated (since := "2025-05-23")] alias compl_mem_iff_not_mem := compl_mem_iff_notMem
 
 theorem diff_mem_iff (f : Ultrafilter α) : s \ t ∈ f ↔ s ∈ f ∧ t ∉ f :=
   inter_mem_iff.trans <| and_congr Iff.rfl compl_mem_iff_notMem
@@ -142,8 +142,6 @@ theorem ne_empty_of_mem (hs : s ∈ f) : s ≠ ∅ :=
 theorem empty_notMem : ∅ ∉ f :=
   Filter.empty_notMem (f : Filter α)
 
-@[deprecated (since := "2025-05-23")] alias empty_not_mem := empty_notMem
-
 @[simp]
 theorem le_sup_iff {u : Ultrafilter α} {f g : Filter α} : ↑u ≤ f ⊔ g ↔ ↑u ≤ f ∨ ↑u ≤ g :=
   not_iff_not.1 <| by simp only [← disjoint_iff_not_le, not_or, disjoint_sup_right]
@@ -161,6 +159,7 @@ protected theorem em (f : Ultrafilter α) (p : α → Prop) : (∀ᶠ x in f, p 
 theorem eventually_or : (∀ᶠ x in f, p x ∨ q x) ↔ (∀ᶠ x in f, p x) ∨ ∀ᶠ x in f, q x :=
   union_mem_iff
 
+@[push ← high] -- higher priority than `Filter.not_eventually`
 theorem eventually_not : (∀ᶠ x in f, ¬p x) ↔ ¬∀ᶠ x in f, p x :=
   compl_mem_iff_notMem
 
@@ -339,7 +338,7 @@ theorem Iic_pure (a : α) : Iic (pure a : Filter α) = {⊥, pure a} :=
 theorem mem_iff_ultrafilter : s ∈ f ↔ ∀ g : Ultrafilter α, ↑g ≤ f → s ∈ g := by
   refine ⟨fun hf g hg => hg hf, fun H => by_contra fun hf => ?_⟩
   set g : Filter (sᶜ : Set α) := comap (↑) f
-  haveI : NeBot g := comap_neBot_iff_compl_range.2 (by simpa [compl_setOf] )
+  haveI : NeBot g := comap_neBot_iff_compl_range.2 (by simpa [compl_setOf])
   simpa using H ((of g).map (↑)) (map_le_iff_le_comap.mpr (of_le g))
 
 theorem le_iff_ultrafilter {f₁ f₂ : Filter α} : f₁ ≤ f₂ ↔ ∀ g : Ultrafilter α, ↑g ≤ f₁ → ↑g ≤ f₂ :=

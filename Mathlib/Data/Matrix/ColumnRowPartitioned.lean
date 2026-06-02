@@ -3,9 +3,10 @@ Copyright (c) 2023 Mohanad ahmed. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mohanad Ahmed
 -/
+module
 
-import Mathlib.Data.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.SemiringInverse
+public import Mathlib.Data.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 
 /-! # Block Matrices from Rows and Columns
 
@@ -20,6 +21,8 @@ with block matrices
 ## Tags
 column matrices, row matrices, column row block matrices
 -/
+
+@[expose] public section
 
 namespace Matrix
 
@@ -186,7 +189,6 @@ lemma vecMul_fromCols [Fintype m] (B₁ : Matrix m n₁ R) (B₂ : Matrix m n₂
     v ᵥ* fromCols B₁ B₂ = Sum.elim (v ᵥ* B₁) (v ᵥ* B₂) := by
   ext (_ | _) <;> rfl
 
-@[simp]
 lemma sumElim_vecMul_fromRows [Fintype m₁] [Fintype m₂] (B₁ : Matrix m₁ n R) (B₂ : Matrix m₂ n R)
     (v₁ : m₁ → R) (v₂ : m₂ → R) :
     Sum.elim v₁ v₂ ᵥ* fromRows B₁ B₂ = v₁ ᵥ* B₁ + v₂ ᵥ* B₂ := by
@@ -194,11 +196,22 @@ lemma sumElim_vecMul_fromRows [Fintype m₁] [Fintype m₂] (B₁ : Matrix m₁ 
   simp [Matrix.vecMul, fromRows, dotProduct]
 
 @[simp]
+lemma vecMul_fromRows [Fintype m₁] [Fintype m₂]
+    (B₁ : Matrix m₁ n R) (B₂ : Matrix m₂ n R) (v : m₁ ⊕ m₂ → R) :
+    v ᵥ* fromRows B₁ B₂ = v ∘ Sum.inl ᵥ* B₁ + v ∘ Sum.inr ᵥ* B₂ := by
+  simp [← sumElim_vecMul_fromRows]
+
 lemma fromCols_mulVec_sumElim [Fintype n₁] [Fintype n₂]
     (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R) (v₁ : n₁ → R) (v₂ : n₂ → R) :
     fromCols A₁ A₂ *ᵥ Sum.elim v₁ v₂ = A₁ *ᵥ v₁ + A₂ *ᵥ v₂ := by
   ext
   simp [Matrix.mulVec, fromCols]
+
+@[simp]
+lemma fromCols_mulVec [Fintype n₁] [Fintype n₂]
+    (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R) (v : n₁ ⊕ n₂ → R) :
+    fromCols A₁ A₂ *ᵥ v = A₁ *ᵥ v ∘ Sum.inl + A₂ *ᵥ v ∘ Sum.inr := by
+  simp [← fromCols_mulVec_sumElim]
 
 @[simp]
 lemma fromRows_mul [Fintype n] (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) (B : Matrix n m R) :
@@ -234,7 +247,7 @@ lemma fromCols_mul_fromRows [Fintype n₁] [Fintype n₂] (A₁ : Matrix m n₁ 
   ext
   simp [mul_apply]
 
-/-- A column partitioned matrix multipiled by a block matrix results in a column partitioned
+/-- A column partitioned matrix multiplied by a block matrix results in a column partitioned
 matrix. -/
 lemma fromCols_mul_fromBlocks [Fintype m₁] [Fintype m₂] (A₁ : Matrix m m₁ R) (A₂ : Matrix m m₂ R)
     (B₁₁ : Matrix m₁ n₁ R) (B₁₂ : Matrix m₁ n₂ R) (B₂₁ : Matrix m₂ n₁ R) (B₂₂ : Matrix m₂ n₂ R) :

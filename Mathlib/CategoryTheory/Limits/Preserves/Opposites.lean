@@ -3,8 +3,10 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
+module
+
+public import Mathlib.CategoryTheory.Limits.Opposites
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 /-!
 # Limit preservation properties of `Functor.op` and related constructions
@@ -13,6 +15,8 @@ We formulate conditions about `F` which imply that `F.op`, `F.unop`, `F.leftOp` 
 preserve certain (co)limits and vice versa.
 
 -/
+
+public section
 
 
 universe w w' v₁ v₂ u₁ u₂
@@ -467,7 +471,7 @@ products. -/
 lemma preservesFiniteProducts_op (F : C ⥤ D) [PreservesFiniteCoproducts F] :
     PreservesFiniteProducts F.op where
   preserves n := by
-    apply (config := { allowSynthFailures := true }) preservesLimitsOfShape_op
+    apply +allowSynthFailures preservesLimitsOfShape_op
     exact preservesColimitsOfShape_of_equiv (Discrete.opposite _).symm _
 
 /-- If `F : C ⥤ Dᵒᵖ` preserves finite coproducts, then `F.leftOp : Cᵒᵖ ⥤ D` preserves finite
@@ -475,7 +479,7 @@ products. -/
 lemma preservesFiniteProducts_leftOp (F : C ⥤ Dᵒᵖ) [PreservesFiniteCoproducts F] :
     PreservesFiniteProducts F.leftOp where
   preserves _ := by
-    apply (config := { allowSynthFailures := true }) preservesLimitsOfShape_leftOp
+    apply +allowSynthFailures preservesLimitsOfShape_leftOp
     exact preservesColimitsOfShape_of_equiv (Discrete.opposite _).symm _
 
 /-- If `F : Cᵒᵖ ⥤ D` preserves finite coproducts, then `F.rightOp : C ⥤ Dᵒᵖ` preserves finite
@@ -483,7 +487,7 @@ products. -/
 lemma preservesFiniteProducts_rightOp (F : Cᵒᵖ ⥤ D) [PreservesFiniteCoproducts F] :
     PreservesFiniteProducts F.rightOp where
   preserves _ := by
-    apply (config := { allowSynthFailures := true }) preservesLimitsOfShape_rightOp
+    apply +allowSynthFailures preservesLimitsOfShape_rightOp
     exact preservesColimitsOfShape_of_equiv (Discrete.opposite _).symm _
 
 /-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` preserves finite coproducts, then `F.unop : C ⥤ D` preserves finite
@@ -491,7 +495,7 @@ products. -/
 lemma preservesFiniteProducts_unop (F : Cᵒᵖ ⥤ Dᵒᵖ) [PreservesFiniteCoproducts F] :
     PreservesFiniteProducts F.unop where
   preserves _ := by
-    apply (config := { allowSynthFailures := true }) preservesLimitsOfShape_unop
+    apply +allowSynthFailures preservesLimitsOfShape_unop
     exact preservesColimitsOfShape_of_equiv (Discrete.opposite _).symm _
 
 /-- If `F : C ⥤ D` preserves finite products, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` preserves finite
@@ -499,7 +503,7 @@ coproducts. -/
 lemma preservesFiniteCoproducts_op (F : C ⥤ D) [PreservesFiniteProducts F] :
     PreservesFiniteCoproducts F.op where
   preserves _ := by
-    apply (config := { allowSynthFailures := true }) preservesColimitsOfShape_op
+    apply +allowSynthFailures preservesColimitsOfShape_op
     exact preservesLimitsOfShape_of_equiv (Discrete.opposite _).symm _
 
 /-- If `F : C ⥤ Dᵒᵖ` preserves finite products, then `F.leftOp : Cᵒᵖ ⥤ D` preserves finite
@@ -507,7 +511,7 @@ coproducts. -/
 lemma preservesFiniteCoproducts_leftOp (F : C ⥤ Dᵒᵖ) [PreservesFiniteProducts F] :
     PreservesFiniteCoproducts F.leftOp where
   preserves _ := by
-    apply (config := { allowSynthFailures := true }) preservesColimitsOfShape_leftOp
+    apply +allowSynthFailures preservesColimitsOfShape_leftOp
     exact preservesLimitsOfShape_of_equiv (Discrete.opposite _).symm _
 
 /-- If `F : Cᵒᵖ ⥤ D` preserves finite products, then `F.rightOp : C ⥤ Dᵒᵖ` preserves finite
@@ -515,7 +519,7 @@ coproducts. -/
 lemma preservesFiniteCoproducts_rightOp (F : Cᵒᵖ ⥤ D) [PreservesFiniteProducts F] :
     PreservesFiniteCoproducts F.rightOp where
   preserves _ := by
-    apply (config := { allowSynthFailures := true }) preservesColimitsOfShape_rightOp
+    apply +allowSynthFailures preservesColimitsOfShape_rightOp
     exact preservesLimitsOfShape_of_equiv (Discrete.opposite _).symm _
 
 /-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` preserves finite products, then `F.unop : C ⥤ D` preserves finite
@@ -523,7 +527,506 @@ coproducts. -/
 lemma preservesFiniteCoproducts_unop (F : Cᵒᵖ ⥤ Dᵒᵖ) [PreservesFiniteProducts F] :
     PreservesFiniteCoproducts F.unop where
   preserves _ := by
-    apply (config := { allowSynthFailures := true }) preservesColimitsOfShape_unop
+    apply +allowSynthFailures preservesColimitsOfShape_unop
     exact preservesLimitsOfShape_of_equiv (Discrete.opposite _).symm _
+
+/-- If `F : C ⥤ D` reflects colimits of `K.leftOp : Jᵒᵖ ⥤ C`, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` reflects
+limits of `K : J ⥤ Cᵒᵖ`. -/
+lemma reflectsLimit_op (K : J ⥤ Cᵒᵖ) (F : C ⥤ D) [ReflectsColimit K.leftOp F] :
+    ReflectsLimit K F.op where
+  reflects {_} hc :=
+    ⟨isLimitOfCoconeLeftOpOfCone _ <| isColimitOfReflects F (isColimitCoconeLeftOpOfCone _ hc)⟩
+
+/-- If `F.op : Cᵒᵖ ⥤ Dᵒᵖ` reflects colimits of `K.op : Jᵒᵖ ⥤ Cᵒᵖ`, then `F : C ⥤ D` reflects
+limits of `K : J ⥤ C`. -/
+lemma reflectsLimit_of_op (K : J ⥤ C) (F : C ⥤ D) [ReflectsColimit K.op F.op] :
+    ReflectsLimit K F where
+  reflects {_} hc := ⟨isLimitOfOp (isColimitOfReflects F.op (IsLimit.op hc))⟩
+
+/-- If `F : C ⥤ Dᵒᵖ` reflects colimits of `K.leftOp : Jᵒᵖ ⥤ C`, then `F.leftOp : Cᵒᵖ ⥤ D`
+reflects limits of `K : J ⥤ Cᵒᵖ`. -/
+lemma reflectsLimit_leftOp (K : J ⥤ Cᵒᵖ) (F : C ⥤ Dᵒᵖ) [ReflectsColimit K.leftOp F] :
+    ReflectsLimit K F.leftOp where
+  reflects {_} hc :=
+    ⟨isLimitOfCoconeLeftOpOfCone _ <| isColimitOfReflects F hc.op⟩
+
+/-- If `F.leftOp : Cᵒᵖ ⥤ D` reflects colimits of `K.op : Jᵒᵖ ⥤ Cᵒᵖ`, then `F : C ⥤ Dᵒᵖ` reflects
+limits of `K : J ⥤ C`. -/
+lemma reflectsLimit_of_leftOp (K : J ⥤ C) (F : C ⥤ Dᵒᵖ) [ReflectsColimit K.op F.leftOp] :
+    ReflectsLimit K F where
+  reflects {_} hc :=
+    ⟨isLimitOfOp <|
+      isColimitOfReflects F.leftOp (isColimitOfConeRightOpOfCocone _ hc)⟩
+
+/-- If `F : Cᵒᵖ ⥤ D` reflects colimits of `K.op : Jᵒᵖ ⥤ Cᵒᵖ`, then `F.rightOp : C ⥤ Dᵒᵖ` reflects
+limits of `K : J ⥤ C`. -/
+lemma reflectsLimit_rightOp (K : J ⥤ C) (F : Cᵒᵖ ⥤ D) [ReflectsColimit K.op F] :
+    ReflectsLimit K F.rightOp where
+  reflects {_} hc :=
+    ⟨isLimitOfOp <| isColimitOfReflects F <| isColimitOfConeRightOpOfCocone _ hc⟩
+
+/-- If `F.rightOp : C ⥤ Dᵒᵖ` reflects colimits of `K.leftOp : Jᵒᵖ ⥤ Cᵒᵖ`, then `F : Cᵒᵖ ⥤ D`
+reflects limits of `K : J ⥤ Cᵒᵖ`. -/
+lemma reflectsLimit_of_rightOp (K : J ⥤ Cᵒᵖ) (F : Cᵒᵖ ⥤ D) [ReflectsColimit K.leftOp F.rightOp] :
+    ReflectsLimit K F where
+  reflects {_} hc :=
+    ⟨isLimitOfCoconeLeftOpOfCone _ <| isColimitOfReflects F.rightOp <|
+      isColimitOfConeUnopOfCocone _ hc⟩
+
+/-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects colimits of `K.op : Jᵒᵖ ⥤ Cᵒᵖ`, then `F.unop : C ⥤ D` reflects
+limits of `K : J ⥤ C`. -/
+lemma reflectsLimit_unop (K : J ⥤ C) (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsColimit K.op F] :
+    ReflectsLimit K F.unop where
+  reflects {_} hc := ⟨isLimitOfOp (isColimitOfReflects F hc.op)⟩
+
+/-- If `F.unop : C ⥤ D` reflects colimits of `K.leftOp : Jᵒᵖ ⥤ C`, then `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects
+limits of `K : J ⥤ Cᵒᵖ`. -/
+lemma reflectsLimit_of_unop (K : J ⥤ Cᵒᵖ) (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsColimit K.leftOp F.unop] :
+    ReflectsLimit K F where
+  reflects {_} hc :=
+    ⟨isLimitOfCoconeLeftOpOfCone _ (isColimitOfReflects F.unop (isColimitCoconeLeftOpOfCone _ hc))⟩
+
+/-- If `F : C ⥤ D` reflects limits of `K.leftOp : Jᵒᵖ ⥤ C`, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` reflects
+colimits of `K : J ⥤ Cᵒᵖ`. -/
+lemma reflectsColimit_op (K : J ⥤ Cᵒᵖ) (F : C ⥤ D) [ReflectsLimit K.leftOp F] :
+    ReflectsColimit K F.op where
+  reflects {_} hc :=
+    ⟨isColimitOfConeLeftOpOfCocone _ (isLimitOfReflects F (isLimitConeLeftOpOfCocone _ hc))⟩
+
+/-- If `F.op : Cᵒᵖ ⥤ Dᵒᵖ` reflects limits of `K.op : Jᵒᵖ ⥤ Cᵒᵖ`, then `F : C ⥤ D` reflects
+colimits of `K : J ⥤ C`. -/
+lemma reflectsColimit_of_op (K : J ⥤ C) (F : C ⥤ D) [ReflectsLimit K.op F.op] :
+    ReflectsColimit K F where
+  reflects {_} hc := ⟨isColimitOfOp (isLimitOfReflects F.op (IsColimit.op hc))⟩
+
+/-- If `F : C ⥤ Dᵒᵖ` reflects limits of `K.leftOp : Jᵒᵖ ⥤ C`, then `F.leftOp : Cᵒᵖ ⥤ D` reflects
+colimits of `K : J ⥤ Cᵒᵖ`. -/
+lemma reflectsColimit_leftOp (K : J ⥤ Cᵒᵖ) (F : C ⥤ Dᵒᵖ) [ReflectsLimit K.leftOp F] :
+    ReflectsColimit K F.leftOp where
+  reflects {_} hc :=
+    ⟨isColimitOfConeLeftOpOfCocone _ (isLimitOfReflects F (isLimitOfCoconeUnopOfCone _ hc))⟩
+
+/-- If `F.leftOp : Cᵒᵖ ⥤ D` reflects limits of `K.op : Jᵒᵖ ⥤ Cᵒᵖ`, then `F : C ⥤ Dᵒᵖ` reflects
+colimits of `K : J ⥤ C`. -/
+lemma reflectsColimit_of_leftOp (K : J ⥤ C) (F : C ⥤ Dᵒᵖ) [ReflectsLimit K.op F.leftOp] :
+    ReflectsColimit K F where
+  reflects {_} hc :=
+    ⟨isColimitOfOp (isLimitOfReflects F.leftOp <| isLimitOfCoconeRightOpOfCone _ hc)⟩
+
+/-- If `F : Cᵒᵖ ⥤ D` reflects limits of `K.op : Jᵒᵖ ⥤ Cᵒᵖ`, then `F.rightOp : C ⥤ Dᵒᵖ` reflects
+colimits of `K : J ⥤ C`. -/
+lemma reflectsColimit_rightOp (K : J ⥤ C) (F : Cᵒᵖ ⥤ D) [ReflectsLimit K.op F] :
+    ReflectsColimit K F.rightOp where
+  reflects {_} hc := ⟨isColimitOfOp (isLimitOfReflects F <| isLimitOfCoconeRightOpOfCone _ hc)⟩
+
+/-- If `F.rightOp : C ⥤ Dᵒᵖ` reflects limits of `K.leftOp : Jᵒᵖ ⥤ C`, then `F : Cᵒᵖ ⥤ D`
+reflects colimits of `K : J ⥤ Cᵒᵖ`. -/
+lemma reflectsColimit_of_rightOp (K : J ⥤ Cᵒᵖ) (F : Cᵒᵖ ⥤ D) [ReflectsLimit K.leftOp F.rightOp] :
+    ReflectsColimit K F where
+  reflects {_} hc :=
+    ⟨isColimitOfConeLeftOpOfCocone _ (isLimitOfReflects F.rightOp hc.op)⟩
+
+/-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects limits of `K.op : Jᵒᵖ ⥤ Cᵒᵖ`, then `F.unop : C ⥤ D` reflects
+colimits of `K : J ⥤ C`. -/
+lemma reflectsColimit_unop (K : J ⥤ C) (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsLimit K.op F] :
+    ReflectsColimit K F.unop where
+  reflects {_} hc := ⟨isColimitOfOp (isLimitOfReflects F hc.op)⟩
+
+/-- If `F.unop : C ⥤ D` reflects limits of `K.op : Jᵒᵖ ⥤ C`, then `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects
+colimits of `K : J ⥤ Cᵒᵖ`. -/
+lemma reflectsColimit_of_unop (K : J ⥤ Cᵒᵖ) (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsLimit K.leftOp F.unop] :
+    ReflectsColimit K F where
+  reflects {_} hc :=
+    ⟨isColimitOfConeLeftOpOfCocone _ (isLimitOfReflects F.unop (isLimitConeLeftOpOfCocone _ hc))⟩
+
+section
+
+variable (J)
+
+/-- If `F : C ⥤ D` reflects colimits of shape `Jᵒᵖ`, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` reflects limits of
+shape `J`. -/
+lemma reflectsLimitsOfShape_op (F : C ⥤ D) [ReflectsColimitsOfShape Jᵒᵖ F] :
+    ReflectsLimitsOfShape J F.op where reflectsLimit {K} := reflectsLimit_op K F
+
+/-- If `F : C ⥤ Dᵒᵖ` reflects colimits of shape `Jᵒᵖ`, then `F.leftOp : Cᵒᵖ ⥤ D` reflects limits
+of shape `J`. -/
+lemma reflectsLimitsOfShape_leftOp (F : C ⥤ Dᵒᵖ) [ReflectsColimitsOfShape Jᵒᵖ F] :
+    ReflectsLimitsOfShape J F.leftOp where reflectsLimit {K} := reflectsLimit_leftOp K F
+
+/-- If `F : Cᵒᵖ ⥤ D` reflects colimits of shape `Jᵒᵖ`, then `F.rightOp : C ⥤ Dᵒᵖ` reflects limits
+of shape `J`. -/
+lemma reflectsLimitsOfShape_rightOp (F : Cᵒᵖ ⥤ D) [ReflectsColimitsOfShape Jᵒᵖ F] :
+    ReflectsLimitsOfShape J F.rightOp where reflectsLimit {K} := reflectsLimit_rightOp K F
+
+/-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects colimits of shape `Jᵒᵖ`, then `F.unop : C ⥤ D` reflects limits of
+shape `J`. -/
+lemma reflectsLimitsOfShape_unop (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsColimitsOfShape Jᵒᵖ F] :
+    ReflectsLimitsOfShape J F.unop where reflectsLimit {K} := reflectsLimit_unop K F
+
+/-- If `F : C ⥤ D` reflects limits of shape `Jᵒᵖ`, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` reflects colimits of
+shape `J`. -/
+lemma reflectsColimitsOfShape_op (F : C ⥤ D) [ReflectsLimitsOfShape Jᵒᵖ F] :
+    ReflectsColimitsOfShape J F.op where reflectsColimit {K} := reflectsColimit_op K F
+
+/-- If `F : C ⥤ Dᵒᵖ` reflects limits of shape `Jᵒᵖ`, then `F.leftOp : Cᵒᵖ ⥤ D` reflects colimits
+of shape `J`. -/
+lemma reflectsColimitsOfShape_leftOp (F : C ⥤ Dᵒᵖ) [ReflectsLimitsOfShape Jᵒᵖ F] :
+    ReflectsColimitsOfShape J F.leftOp where reflectsColimit {K} := reflectsColimit_leftOp K F
+
+/-- If `F : Cᵒᵖ ⥤ D` reflects limits of shape `Jᵒᵖ`, then `F.rightOp : C ⥤ Dᵒᵖ` reflects colimits
+of shape `J`. -/
+lemma reflectsColimitsOfShape_rightOp (F : Cᵒᵖ ⥤ D) [ReflectsLimitsOfShape Jᵒᵖ F] :
+    ReflectsColimitsOfShape J F.rightOp where reflectsColimit {K} := reflectsColimit_rightOp K F
+
+/-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects limits of shape `Jᵒᵖ`, then `F.unop : C ⥤ D` reflects colimits
+of shape `J`. -/
+lemma reflectsColimitsOfShape_unop (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsLimitsOfShape Jᵒᵖ F] :
+    ReflectsColimitsOfShape J F.unop where reflectsColimit {K} := reflectsColimit_unop K F
+
+/-- If `F.op : Cᵒᵖ ⥤ Dᵒᵖ` reflects colimits of shape `Jᵒᵖ`, then `F : C ⥤ D` reflects limits
+of shape `J`. -/
+lemma reflectsLimitsOfShape_of_op (F : C ⥤ D) [ReflectsColimitsOfShape Jᵒᵖ F.op] :
+    ReflectsLimitsOfShape J F where reflectsLimit {K} := reflectsLimit_of_op K F
+
+/-- If `F.leftOp : Cᵒᵖ ⥤ D` reflects colimits of shape `Jᵒᵖ`, then `F : C ⥤ Dᵒᵖ` reflects limits
+of shape `J`. -/
+lemma reflectsLimitsOfShape_of_leftOp (F : C ⥤ Dᵒᵖ) [ReflectsColimitsOfShape Jᵒᵖ F.leftOp] :
+    ReflectsLimitsOfShape J F where reflectsLimit {K} := reflectsLimit_of_leftOp K F
+
+/-- If `F.rightOp : C ⥤ Dᵒᵖ` reflects colimits of shape `Jᵒᵖ`, then `F : Cᵒᵖ ⥤ D` reflects limits
+of shape `J`. -/
+lemma reflectsLimitsOfShape_of_rightOp (F : Cᵒᵖ ⥤ D) [ReflectsColimitsOfShape Jᵒᵖ F.rightOp] :
+    ReflectsLimitsOfShape J F where reflectsLimit {K} := reflectsLimit_of_rightOp K F
+
+/-- If `F.unop : C ⥤ D` reflects colimits of shape `Jᵒᵖ`, then `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects limits
+of shape `J`. -/
+lemma reflectsLimitsOfShape_of_unop (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsColimitsOfShape Jᵒᵖ F.unop] :
+    ReflectsLimitsOfShape J F where reflectsLimit {K} := reflectsLimit_of_unop K F
+
+/-- If `F.op : Cᵒᵖ ⥤ Dᵒᵖ` reflects limits of shape `Jᵒᵖ`, then `F : C ⥤ D` reflects colimits
+of shape `J`. -/
+lemma reflectsColimitsOfShape_of_op (F : C ⥤ D) [ReflectsLimitsOfShape Jᵒᵖ F.op] :
+    ReflectsColimitsOfShape J F where reflectsColimit {K} := reflectsColimit_of_op K F
+
+/-- If `F.leftOp : Cᵒᵖ ⥤ D` reflects limits of shape `Jᵒᵖ`, then `F : C ⥤ Dᵒᵖ` reflects colimits
+of shape `J`. -/
+lemma reflectsColimitsOfShape_of_leftOp (F : C ⥤ Dᵒᵖ) [ReflectsLimitsOfShape Jᵒᵖ F.leftOp] :
+    ReflectsColimitsOfShape J F where reflectsColimit {K} := reflectsColimit_of_leftOp K F
+
+/-- If `F.rightOp : C ⥤ Dᵒᵖ` reflects limits of shape `Jᵒᵖ`, then `F : Cᵒᵖ ⥤ D` reflects colimits
+of shape `J`. -/
+lemma reflectsColimitsOfShape_of_rightOp (F : Cᵒᵖ ⥤ D) [ReflectsLimitsOfShape Jᵒᵖ F.rightOp] :
+    ReflectsColimitsOfShape J F where reflectsColimit {K} := reflectsColimit_of_rightOp K F
+
+/-- If `F.unop : C ⥤ D` reflects limits of shape `Jᵒᵖ`, then `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects colimits
+of shape `J`. -/
+lemma reflectsColimitsOfShape_of_unop (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsLimitsOfShape Jᵒᵖ F.unop] :
+    ReflectsColimitsOfShape J F where reflectsColimit {K} := reflectsColimit_of_unop K F
+
+end
+
+/-- If `F : C ⥤ D` reflects colimits, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` reflects limits. -/
+lemma reflectsLimitsOfSize_op (F : C ⥤ D) [ReflectsColimitsOfSize.{w, w'} F] :
+    ReflectsLimitsOfSize.{w, w'} F.op where
+  reflectsLimitsOfShape {_} _ := reflectsLimitsOfShape_op _ _
+
+/-- If `F : C ⥤ Dᵒᵖ` reflects colimits, then `F.leftOp : Cᵒᵖ ⥤ D` reflects limits. -/
+lemma reflectsLimitsOfSize_leftOp (F : C ⥤ Dᵒᵖ) [ReflectsColimitsOfSize.{w, w'} F] :
+    ReflectsLimitsOfSize.{w, w'} F.leftOp where
+  reflectsLimitsOfShape {_} _ := reflectsLimitsOfShape_leftOp _ _
+
+/-- If `F : Cᵒᵖ ⥤ D` reflects colimits, then `F.rightOp : C ⥤ Dᵒᵖ` reflects limits. -/
+lemma reflectsLimitsOfSize_rightOp (F : Cᵒᵖ ⥤ D) [ReflectsColimitsOfSize.{w, w'} F] :
+    ReflectsLimitsOfSize.{w, w'} F.rightOp where
+  reflectsLimitsOfShape {_} _ := reflectsLimitsOfShape_rightOp _ _
+
+/-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects colimits, then `F.unop : C ⥤ D` reflects limits. -/
+lemma reflectsLimitsOfSize_unop (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsColimitsOfSize.{w, w'} F] :
+    ReflectsLimitsOfSize.{w, w'} F.unop where
+  reflectsLimitsOfShape {_} _ := reflectsLimitsOfShape_unop _ _
+
+/-- If `F : C ⥤ D` reflects limits, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` reflects colimits. -/
+lemma reflectsColimitsOfSize_op (F : C ⥤ D) [ReflectsLimitsOfSize.{w, w'} F] :
+    ReflectsColimitsOfSize.{w, w'} F.op where
+  reflectsColimitsOfShape {_} _ := reflectsColimitsOfShape_op _ _
+
+/-- If `F : C ⥤ Dᵒᵖ` reflects limits, then `F.leftOp : Cᵒᵖ ⥤ D` reflects colimits. -/
+lemma reflectsColimitsOfSize_leftOp (F : C ⥤ Dᵒᵖ) [ReflectsLimitsOfSize.{w, w'} F] :
+    ReflectsColimitsOfSize.{w, w'} F.leftOp where
+  reflectsColimitsOfShape {_} _ := reflectsColimitsOfShape_leftOp _ _
+
+/-- If `F : Cᵒᵖ ⥤ D` reflects limits, then `F.rightOp : C ⥤ Dᵒᵖ` reflects colimits. -/
+lemma reflectsColimitsOfSize_rightOp (F : Cᵒᵖ ⥤ D) [ReflectsLimitsOfSize.{w, w'} F] :
+    ReflectsColimitsOfSize.{w, w'} F.rightOp where
+  reflectsColimitsOfShape {_} _ := reflectsColimitsOfShape_rightOp _ _
+
+/-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects limits, then `F.unop : C ⥤ D` reflects colimits. -/
+lemma reflectsColimitsOfSize_unop (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsLimitsOfSize.{w, w'} F] :
+    ReflectsColimitsOfSize.{w, w'} F.unop where
+  reflectsColimitsOfShape {_} _ := reflectsColimitsOfShape_unop _ _
+
+/-- If `F.op : Cᵒᵖ ⥤ Dᵒᵖ` reflects colimits, then `F : C ⥤ D` reflects limits. -/
+lemma reflectsLimitsOfSize_of_op (F : C ⥤ D) [ReflectsColimitsOfSize.{w, w'} F.op] :
+    ReflectsLimitsOfSize.{w, w'} F where
+  reflectsLimitsOfShape {_} _ := reflectsLimitsOfShape_of_op _ _
+
+/-- If `F.leftOp : Cᵒᵖ ⥤ D` reflects colimits, then `F : C ⥤ Dᵒᵖ` reflects limits. -/
+lemma reflectsLimitsOfSize_of_leftOp (F : C ⥤ Dᵒᵖ) [ReflectsColimitsOfSize.{w, w'} F.leftOp] :
+    ReflectsLimitsOfSize.{w, w'} F where
+  reflectsLimitsOfShape {_} _ := reflectsLimitsOfShape_of_leftOp _ _
+
+/-- If `F.rightOp : C ⥤ Dᵒᵖ` reflects colimits, then `F : Cᵒᵖ ⥤ D` reflects limits. -/
+lemma reflectsLimitsOfSize_of_rightOp (F : Cᵒᵖ ⥤ D) [ReflectsColimitsOfSize.{w, w'} F.rightOp] :
+    ReflectsLimitsOfSize.{w, w'} F where
+  reflectsLimitsOfShape {_} _ := reflectsLimitsOfShape_of_rightOp _ _
+
+/-- If `F.unop : C ⥤ D` reflects colimits, then `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects limits. -/
+lemma reflectsLimitsOfSize_of_unop (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsColimitsOfSize.{w, w'} F.unop] :
+    ReflectsLimitsOfSize.{w, w'} F where
+  reflectsLimitsOfShape {_} _ := reflectsLimitsOfShape_of_unop _ _
+
+/-- If `F.op : Cᵒᵖ ⥤ Dᵒᵖ` reflects limits, then `F : C ⥤ D` reflects colimits. -/
+lemma reflectsColimitsOfSize_of_op (F : C ⥤ D) [ReflectsLimitsOfSize.{w, w'} F.op] :
+    ReflectsColimitsOfSize.{w, w'} F where
+  reflectsColimitsOfShape {_} _ := reflectsColimitsOfShape_of_op _ _
+
+/-- If `F.leftOp : Cᵒᵖ ⥤ D` reflects limits, then `F : C ⥤ Dᵒᵖ` reflects colimits. -/
+lemma reflectsColimitsOfSize_of_leftOp (F : C ⥤ Dᵒᵖ) [ReflectsLimitsOfSize.{w, w'} F.leftOp] :
+    ReflectsColimitsOfSize.{w, w'} F where
+  reflectsColimitsOfShape {_} _ := reflectsColimitsOfShape_of_leftOp _ _
+
+/-- If `F.rightOp : C ⥤ Dᵒᵖ` reflects limits, then `F : Cᵒᵖ ⥤ D` reflects colimits. -/
+lemma reflectsColimitsOfSize_of_rightOp (F : Cᵒᵖ ⥤ D) [ReflectsLimitsOfSize.{w, w'} F.rightOp] :
+    ReflectsColimitsOfSize.{w, w'} F where
+  reflectsColimitsOfShape {_} _ := reflectsColimitsOfShape_of_rightOp _ _
+
+/-- If `F.unop : C ⥤ D` reflects limits, then `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects colimits. -/
+lemma reflectsColimitsOfSize_of_unop (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsLimitsOfSize.{w, w'} F.unop] :
+    ReflectsColimitsOfSize.{w, w'} F where
+  reflectsColimitsOfShape {_} _ := reflectsColimitsOfShape_of_unop _ _
+
+/-- If `F : C ⥤ D` reflects colimits, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` reflects limits. -/
+lemma reflectsLimits_op (F : C ⥤ D) [ReflectsColimits F] : ReflectsLimits F.op where
+  reflectsLimitsOfShape {_} _ := reflectsLimitsOfShape_op _ _
+
+/-- If `F : C ⥤ Dᵒᵖ` reflects colimits, then `F.leftOp : Cᵒᵖ ⥤ D` reflects limits. -/
+lemma reflectsLimits_leftOp (F : C ⥤ Dᵒᵖ) [ReflectsColimits F] : ReflectsLimits F.leftOp where
+  reflectsLimitsOfShape {_} _ := reflectsLimitsOfShape_leftOp _ _
+
+/-- If `F : Cᵒᵖ ⥤ D` reflects colimits, then `F.rightOp : C ⥤ Dᵒᵖ` reflects limits. -/
+lemma reflectsLimits_rightOp (F : Cᵒᵖ ⥤ D) [ReflectsColimits F] : ReflectsLimits F.rightOp where
+  reflectsLimitsOfShape {_} _ := reflectsLimitsOfShape_rightOp _ _
+
+/-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects colimits, then `F.unop : C ⥤ D` reflects limits. -/
+lemma reflectsLimits_unop (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsColimits F] : ReflectsLimits F.unop where
+  reflectsLimitsOfShape {_} _ := reflectsLimitsOfShape_unop _ _
+
+/-- If `F : C ⥤ D` reflects limits, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` reflects colimits. -/
+lemma reflectsColimits_op (F : C ⥤ D) [ReflectsLimits F] : ReflectsColimits F.op where
+  reflectsColimitsOfShape {_} _ := reflectsColimitsOfShape_op _ _
+
+/-- If `F : C ⥤ Dᵒᵖ` reflects limits, then `F.leftOp : Cᵒᵖ ⥤ D` reflects colimits. -/
+lemma reflectsColimits_leftOp (F : C ⥤ Dᵒᵖ) [ReflectsLimits F] : ReflectsColimits F.leftOp where
+  reflectsColimitsOfShape {_} _ := reflectsColimitsOfShape_leftOp _ _
+
+/-- If `F : Cᵒᵖ ⥤ D` reflects limits, then `F.rightOp : C ⥤ Dᵒᵖ` reflects colimits. -/
+lemma reflectsColimits_rightOp (F : Cᵒᵖ ⥤ D) [ReflectsLimits F] :
+    ReflectsColimits F.rightOp where
+  reflectsColimitsOfShape {_} _ := reflectsColimitsOfShape_rightOp _ _
+
+/-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects limits, then `F.unop : C ⥤ D` reflects colimits. -/
+lemma reflectsColimits_unop (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsLimits F] : ReflectsColimits F.unop where
+  reflectsColimitsOfShape {_} _ := reflectsColimitsOfShape_unop _ _
+
+/-- If `F.op : Cᵒᵖ ⥤ Dᵒᵖ` reflects colimits, then `F : C ⥤ D` reflects limits. -/
+lemma reflectsLimits_of_op (F : C ⥤ D) [ReflectsColimits F.op] : ReflectsLimits F where
+  reflectsLimitsOfShape {_} _ := reflectsLimitsOfShape_of_op _ _
+
+/-- If `F.leftOp : Cᵒᵖ ⥤ D` reflects colimits, then `F : C ⥤ Dᵒᵖ` reflects limits. -/
+lemma reflectsLimits_of_leftOp (F : C ⥤ Dᵒᵖ) [ReflectsColimits F.leftOp] : ReflectsLimits F where
+  reflectsLimitsOfShape {_} _ := reflectsLimitsOfShape_of_leftOp _ _
+
+/-- If `F.rightOp : C ⥤ Dᵒᵖ` reflects colimits, then `F : Cᵒᵖ ⥤ D` reflects limits. -/
+lemma reflectsLimits_of_rightOp (F : Cᵒᵖ ⥤ D) [ReflectsColimits F.rightOp] :
+    ReflectsLimits F where
+  reflectsLimitsOfShape {_} _ := reflectsLimitsOfShape_of_rightOp _ _
+
+/-- If `F.unop : C ⥤ D` reflects colimits, then `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects limits. -/
+lemma reflectsLimits_of_unop (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsColimits F.unop] : ReflectsLimits F where
+  reflectsLimitsOfShape {_} _ := reflectsLimitsOfShape_of_unop _ _
+
+/-- If `F.op : Cᵒᵖ ⥤ Dᵒᵖ` reflects limits, then `F : C ⥤ D` reflects colimits. -/
+lemma reflectsColimits_of_op (F : C ⥤ D) [ReflectsLimits F.op] : ReflectsColimits F where
+  reflectsColimitsOfShape {_} _ := reflectsColimitsOfShape_of_op _ _
+
+/-- If `F.leftOp : Cᵒᵖ ⥤ D` reflects limits, then `F : C ⥤ Dᵒᵖ` reflects colimits. -/
+lemma reflectsColimits_of_leftOp (F : C ⥤ Dᵒᵖ) [ReflectsLimits F.leftOp] :
+    ReflectsColimits F where
+  reflectsColimitsOfShape {_} _ := reflectsColimitsOfShape_of_leftOp _ _
+
+/-- If `F.rightOp : C ⥤ Dᵒᵖ` reflects limits, then `F : Cᵒᵖ ⥤ D` reflects colimits. -/
+lemma reflectsColimits_of_rightOp (F : Cᵒᵖ ⥤ D) [ReflectsLimits F.rightOp] :
+    ReflectsColimits F where
+  reflectsColimitsOfShape {_} _ := reflectsColimitsOfShape_of_rightOp _ _
+
+/-- If `F.unop : C ⥤ D` reflects limits, then `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects colimits. -/
+lemma reflectsColimits_of_unop (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsLimits F.unop] : ReflectsColimits F where
+  reflectsColimitsOfShape {_} _ := reflectsColimitsOfShape_of_unop _ _
+
+/-- If `F : C ⥤ D` reflects finite colimits, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` reflects finite
+limits. -/
+lemma reflectsFiniteLimits_op (F : C ⥤ D) [ReflectsFiniteColimits F] :
+    ReflectsFiniteLimits F.op where
+  reflects J _ _ := reflectsLimitsOfShape_op J F
+
+/-- If `F : C ⥤ Dᵒᵖ` reflects finite colimits, then `F.leftOp : Cᵒᵖ ⥤ D` reflects finite
+limits. -/
+lemma reflectsFiniteLimits_leftOp (F : C ⥤ Dᵒᵖ) [ReflectsFiniteColimits F] :
+    ReflectsFiniteLimits F.leftOp where
+  reflects J _ _ := reflectsLimitsOfShape_leftOp J F
+
+/-- If `F : Cᵒᵖ ⥤ D` reflects finite colimits, then `F.rightOp : C ⥤ Dᵒᵖ` reflects finite
+limits. -/
+lemma reflectsFiniteLimits_rightOp (F : Cᵒᵖ ⥤ D) [ReflectsFiniteColimits F] :
+    ReflectsFiniteLimits F.rightOp where
+  reflects J _ _ := reflectsLimitsOfShape_rightOp J F
+
+/-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects finite colimits, then `F.unop : C ⥤ D` reflects finite
+limits. -/
+lemma reflectsFiniteLimits_unop (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsFiniteColimits F] :
+    ReflectsFiniteLimits F.unop where
+  reflects J _ _ := reflectsLimitsOfShape_unop J F
+
+/-- If `F : C ⥤ D` reflects finite limits, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` reflects finite
+colimits. -/
+lemma reflectsFiniteColimits_op (F : C ⥤ D) [ReflectsFiniteLimits F] :
+    ReflectsFiniteColimits F.op where
+  reflects J _ _ := reflectsColimitsOfShape_op J F
+
+/-- If `F : C ⥤ Dᵒᵖ` reflects finite limits, then `F.leftOp : Cᵒᵖ ⥤ D` reflects finite
+colimits. -/
+lemma reflectsFiniteColimits_leftOp (F : C ⥤ Dᵒᵖ) [ReflectsFiniteLimits F] :
+    ReflectsFiniteColimits F.leftOp where
+  reflects J _ _ := reflectsColimitsOfShape_leftOp J F
+
+/-- If `F : Cᵒᵖ ⥤ D` reflects finite limits, then `F.rightOp : C ⥤ Dᵒᵖ` reflects finite
+colimits. -/
+lemma reflectsFiniteColimits_rightOp (F : Cᵒᵖ ⥤ D) [ReflectsFiniteLimits F] :
+    ReflectsFiniteColimits F.rightOp where
+  reflects J _ _ := reflectsColimitsOfShape_rightOp J F
+
+/-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects finite limits, then `F.unop : C ⥤ D` reflects finite
+colimits. -/
+lemma reflectsFiniteColimits_unop (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsFiniteLimits F] :
+    ReflectsFiniteColimits F.unop where
+  reflects J _ _ := reflectsColimitsOfShape_unop J F
+
+/-- If `F.op : Cᵒᵖ ⥤ Dᵒᵖ` reflects finite colimits, then `F : C ⥤ D` reflects finite limits. -/
+lemma reflectsFiniteLimits_of_op (F : C ⥤ D) [ReflectsFiniteColimits F.op] :
+    ReflectsFiniteLimits F where
+  reflects J _ _ := reflectsLimitsOfShape_of_op J F
+
+/-- If `F.leftOp : Cᵒᵖ ⥤ D` reflects finite colimits, then `F : C ⥤ Dᵒᵖ` reflects finite
+limits. -/
+lemma reflectsFiniteLimits_of_leftOp (F : C ⥤ Dᵒᵖ) [ReflectsFiniteColimits F.leftOp] :
+    ReflectsFiniteLimits F where
+  reflects J _ _ := reflectsLimitsOfShape_of_leftOp J F
+
+/-- If `F.rightOp : C ⥤ Dᵒᵖ` reflects finite colimits, then `F : Cᵒᵖ ⥤ D` reflects finite
+limits. -/
+lemma reflectsFiniteLimits_of_rightOp (F : Cᵒᵖ ⥤ D) [ReflectsFiniteColimits F.rightOp] :
+    ReflectsFiniteLimits F where
+  reflects J _ _ := reflectsLimitsOfShape_of_rightOp J F
+
+/-- If `F.unop : C ⥤ D` reflects finite colimits, then `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects finite limits. -/
+lemma reflectsFiniteLimits_of_unop (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsFiniteColimits F.unop] :
+    ReflectsFiniteLimits F where
+  reflects J _ _ := reflectsLimitsOfShape_of_unop J F
+
+/-- If `F.op : Cᵒᵖ ⥤ Dᵒᵖ` reflects finite limits, then `F : C ⥤ D` reflects finite colimits. -/
+lemma reflectsFiniteColimits_of_op (F : C ⥤ D) [ReflectsFiniteLimits F.op] :
+    ReflectsFiniteColimits F where
+  reflects J _ _ := reflectsColimitsOfShape_of_op J F
+
+/-- If `F.leftOp : Cᵒᵖ ⥤ D` reflects finite limits, then `F : C ⥤ Dᵒᵖ` reflects finite
+colimits. -/
+lemma reflectsFiniteColimits_of_leftOp (F : C ⥤ Dᵒᵖ) [ReflectsFiniteLimits F.leftOp] :
+    ReflectsFiniteColimits F where
+  reflects J _ _ := reflectsColimitsOfShape_of_leftOp J F
+
+/-- If `F.rightOp : C ⥤ Dᵒᵖ` reflects finite limits, then `F : Cᵒᵖ ⥤ D` reflects finite
+colimits. -/
+lemma reflectsFiniteColimits_of_rightOp (F : Cᵒᵖ ⥤ D) [ReflectsFiniteLimits F.rightOp] :
+    ReflectsFiniteColimits F where
+  reflects J _ _ := reflectsColimitsOfShape_of_rightOp J F
+
+/-- If `F.unop : C ⥤ D` reflects finite limits, then `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects finite colimits. -/
+lemma reflectsFiniteColimits_of_unop (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsFiniteLimits F.unop] :
+    ReflectsFiniteColimits F where
+  reflects J _ _ := reflectsColimitsOfShape_of_unop J F
+
+/-- If `F : C ⥤ D` reflects finite coproducts, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` reflects finite
+products. -/
+lemma reflectsFiniteProducts_op (F : C ⥤ D) [ReflectsFiniteCoproducts F] :
+    ReflectsFiniteProducts F.op where
+  reflects n := by
+    apply +allowSynthFailures reflectsLimitsOfShape_op
+    exact reflectsColimitsOfShape_of_equiv (Discrete.opposite _).symm _
+
+/-- If `F : C ⥤ Dᵒᵖ` reflects finite coproducts, then `F.leftOp : Cᵒᵖ ⥤ D` reflects finite
+products. -/
+lemma reflectsFiniteProducts_leftOp (F : C ⥤ Dᵒᵖ) [ReflectsFiniteCoproducts F] :
+    ReflectsFiniteProducts F.leftOp where
+  reflects _ := by
+    apply +allowSynthFailures reflectsLimitsOfShape_leftOp
+    exact reflectsColimitsOfShape_of_equiv (Discrete.opposite _).symm _
+
+/-- If `F : Cᵒᵖ ⥤ D` reflects finite coproducts, then `F.rightOp : C ⥤ Dᵒᵖ` reflects finite
+products. -/
+lemma reflectsFiniteProducts_rightOp (F : Cᵒᵖ ⥤ D) [ReflectsFiniteCoproducts F] :
+    ReflectsFiniteProducts F.rightOp where
+  reflects _ := by
+    apply +allowSynthFailures reflectsLimitsOfShape_rightOp
+    exact reflectsColimitsOfShape_of_equiv (Discrete.opposite _).symm _
+
+/-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects finite coproducts, then `F.unop : C ⥤ D` reflects finite
+products. -/
+lemma reflectsFiniteProducts_unop (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsFiniteCoproducts F] :
+    ReflectsFiniteProducts F.unop where
+  reflects _ := by
+    apply +allowSynthFailures reflectsLimitsOfShape_unop
+    exact reflectsColimitsOfShape_of_equiv (Discrete.opposite _).symm _
+
+/-- If `F : C ⥤ D` reflects finite products, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` reflects finite
+coproducts. -/
+lemma reflectsFiniteCoproducts_op (F : C ⥤ D) [ReflectsFiniteProducts F] :
+    ReflectsFiniteCoproducts F.op where
+  reflects _ := by
+    apply +allowSynthFailures reflectsColimitsOfShape_op
+    exact reflectsLimitsOfShape_of_equiv (Discrete.opposite _).symm _
+
+/-- If `F : C ⥤ Dᵒᵖ` reflects finite products, then `F.leftOp : Cᵒᵖ ⥤ D` reflects finite
+coproducts. -/
+lemma reflectsFiniteCoproducts_leftOp (F : C ⥤ Dᵒᵖ) [ReflectsFiniteProducts F] :
+    ReflectsFiniteCoproducts F.leftOp where
+  reflects _ := by
+    apply +allowSynthFailures reflectsColimitsOfShape_leftOp
+    exact reflectsLimitsOfShape_of_equiv (Discrete.opposite _).symm _
+
+/-- If `F : Cᵒᵖ ⥤ D` reflects finite products, then `F.rightOp : C ⥤ Dᵒᵖ` reflects finite
+coproducts. -/
+lemma reflectsFiniteCoproducts_rightOp (F : Cᵒᵖ ⥤ D) [ReflectsFiniteProducts F] :
+    ReflectsFiniteCoproducts F.rightOp where
+  reflects _ := by
+    apply +allowSynthFailures reflectsColimitsOfShape_rightOp
+    exact reflectsLimitsOfShape_of_equiv (Discrete.opposite _).symm _
+
+/-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects finite products, then `F.unop : C ⥤ D` reflects finite
+coproducts. -/
+lemma reflectsFiniteCoproducts_unop (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsFiniteProducts F] :
+    ReflectsFiniteCoproducts F.unop where
+  reflects _ := by
+    apply +allowSynthFailures reflectsColimitsOfShape_unop
+    exact reflectsLimitsOfShape_of_equiv (Discrete.opposite _).symm _
 
 end CategoryTheory.Limits

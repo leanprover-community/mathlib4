@@ -3,11 +3,13 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Defs
-import Mathlib.Algebra.Group.End
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.Nat.Factorial.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
 # `Fintype` instances for `Equiv` and `Perm`
@@ -16,6 +18,8 @@ Main declarations:
 * `permsOfFinset s`: The finset of permutations of the finset `s`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -54,15 +58,8 @@ theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x
     exact hx hfa
   have hfa' : f (f a) ≠ f a := mt (fun h => f.injective h) hfa
   have : ∀ x : α, (Equiv.swap a (f a) * f) x ≠ x → x ∈ l := by
-    intro x hx
-    have hxa : x ≠ a := by
-      rintro rfl
-      apply hx
-      simp only [mul_apply, swap_apply_right]
-    refine List.mem_of_ne_of_mem hxa (h x fun h => ?_)
-    simp only [mul_apply, swap_apply_def, mul_apply, Ne, apply_eq_iff_eq] at hx
-    split_ifs at hx with h_1
-    exacts [hxa (h.symm.trans h_1), hx h]
+    simp
+    grind
   suffices f ∈ permsOfList l ∨ ∃ b ∈ l, ∃ g ∈ permsOfList l, Equiv.swap a b * g = f by
     simpa only [permsOfList, exists_prop, List.mem_map, mem_append, List.mem_flatMap]
   refine or_iff_not_imp_left.2 fun _hfl => ⟨f a, ?_, Equiv.swap a (f a) * f, IH this, ?_⟩
@@ -113,10 +110,9 @@ theorem nodup_permsOfList : ∀ {l : List α}, l.Nodup → (permsOfList l).Nodup
     · intro f hf₁ hf₂
       let ⟨x, hx, hx'⟩ := List.mem_flatMap.1 hf₂
       let ⟨g, hg⟩ := List.mem_map.1 hx'
-      have hgxa : g⁻¹ x = a := f.injective <| by rw [hmeml hf₁, ← hg.2]; simp
-      have hxa : x ≠ a := fun h => (List.nodup_cons.1 hl).1 (h ▸ hx)
-      exact (List.nodup_cons.1 hl).1 <|
-          hgxa ▸ mem_of_mem_permsOfList hg.1 (by rwa [apply_inv_self, hgxa])
+      obtain rfl : g.symm x = a := f.injective <| by rw [hmeml hf₁, ← hg.2]; simp
+      have hxa : x ≠ g.symm x := fun h => (List.nodup_cons.1 hl).1 (h ▸ hx)
+      exact (List.nodup_cons.1 hl).1 <| mem_of_mem_permsOfList hg.1 (by simpa using hxa)
 
 /-- Given a finset, produce the finset of all permutations of its elements. -/
 def permsOfFinset (s : Finset α) : Finset (Perm α) :=
@@ -134,6 +130,7 @@ theorem card_perms_of_finset : ∀ s : Finset α, #(permsOfFinset s) = (#s)! := 
   rintro ⟨⟨l⟩, hs⟩; exact length_permsOfList l
 
 /-- The collection of permutations of a fintype is a fintype. -/
+@[implicit_reducible]
 def fintypePerm [Fintype α] : Fintype (Perm α) :=
   ⟨permsOfFinset (@Finset.univ α _), by simp [mem_perms_of_finset_iff]⟩
 

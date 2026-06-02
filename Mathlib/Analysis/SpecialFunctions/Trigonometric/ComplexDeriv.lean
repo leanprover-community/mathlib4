@@ -3,14 +3,18 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 /-!
 # Complex trigonometric functions
 
 Basic facts and derivatives for the complex trigonometric functions.
 -/
+
+public section
 
 
 noncomputable section
@@ -22,7 +26,7 @@ open Set Filter
 open scoped Real
 
 theorem hasStrictDerivAt_tan {x : ℂ} (h : cos x ≠ 0) : HasStrictDerivAt tan (1 / cos x ^ 2) x := by
-  convert (hasStrictDerivAt_sin x).div (hasStrictDerivAt_cos x) h using 1
+  convert! (hasStrictDerivAt_sin x).div (hasStrictDerivAt_cos x) h using 1
   rw_mod_cast [← sin_sq_add_cos_sq x]
   ring
 

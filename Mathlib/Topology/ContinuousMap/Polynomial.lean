@@ -3,10 +3,12 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Topology.ContinuousMap.Star
-import Mathlib.Topology.UnitInterval
-import Mathlib.Algebra.Star.Subalgebra
+module
+
+public import Mathlib.Topology.Algebra.Polynomial
+public import Mathlib.Topology.ContinuousMap.Star
+public import Mathlib.Topology.UnitInterval
+public import Mathlib.Algebra.Star.Subalgebra
 
 /-!
 # Constructions relating polynomial functions and continuous functions.
@@ -21,6 +23,8 @@ import Mathlib.Algebra.Star.Subalgebra
   the polynomial functions separate points.
 
 -/
+
+@[expose] public section
 
 
 variable {R : Type*}
@@ -146,6 +150,7 @@ theorem polynomialFunctions_coe (X : Set R) :
   ext
   simp [polynomialFunctions]
 
+set_option backward.defeqAttrib.useBackward true in
 -- TODO:
 -- if `f : R → R` is an affine equivalence, then pulling back along `f`
 -- induces a normed algebra isomorphism between `polynomialFunctions X` and
@@ -161,6 +166,7 @@ open unitInterval
 
 open ContinuousMap
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The preimage of polynomials on `[0,1]` under the pullback map by `x ↦ (b-a) * x + a`
 is the polynomials on `[a,b]`. -/
 theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a < b) :
@@ -175,19 +181,17 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
     refine ⟨q, ⟨?_, ?_⟩⟩
     · simp
     · ext x
-      simp only [q, neg_mul, RingHom.map_neg, RingHom.map_mul, AlgHom.coe_toRingHom,
+      simp only [q, neg_mul, map_neg, map_mul, AlgHom.coe_toRingHom,
         Polynomial.eval_X, Polynomial.eval_neg, Polynomial.eval_C, Polynomial.eval_smul,
         smul_eq_mul, Polynomial.eval_mul, Polynomial.eval_add,
         Polynomial.eval_comp, Polynomial.toContinuousMapOnAlgHom_apply,
         Polynomial.toContinuousMapOn_apply, Polynomial.toContinuousMap_apply]
-      convert w ⟨_, _⟩
+      convert! w ⟨_, _⟩
       · ext
         simp only [iccHomeoI_symm_apply_coe]
         replace h : b - a ≠ 0 := sub_ne_zero_of_ne h.ne.symm
-        field_simp
-        ring
-      · change _ + _ ∈ I
-        rw [mul_comm (b - a)⁻¹, ← neg_mul, ← add_mul, ← sub_eq_add_neg]
+        field
+      · rw [mul_comm (b - a)⁻¹, ← neg_mul, ← add_mul, ← sub_eq_add_neg]
         have w₁ : 0 < (b - a)⁻¹ := inv_pos.mpr (sub_pos.mpr h)
         have w₂ : 0 ≤ (x : ℝ) - a := sub_nonneg.mpr x.2.1
         have w₃ : (x : ℝ) - a ≤ b - a := sub_le_sub_right x.2.2 a

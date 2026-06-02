@@ -3,9 +3,11 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Abelian
-import Mathlib.Algebra.Lie.Solvable
-import Mathlib.LinearAlgebra.Dual.Defs
+module
+
+public import Mathlib.Algebra.Lie.Abelian
+public import Mathlib.Algebra.Lie.Solvable
+public import Mathlib.LinearAlgebra.Dual.Defs
 
 /-!
 # Characters of Lie algebras
@@ -23,6 +25,8 @@ algebra (e.g., a Cartan subalgebra of a semisimple Lie algebra) a character is j
 
 lie algebra, lie character
 -/
+
+@[expose] public section
 
 
 universe u v w w₁
@@ -48,11 +52,14 @@ theorem lieCharacter_apply_of_mem_derived (χ : LieCharacter R L) {x : L}
     (h : x ∈ derivedSeries R L 1) : χ x = 0 := by
   rw [derivedSeries_def, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero, ←
     LieSubmodule.mem_toSubmodule, LieSubmodule.lieIdeal_oper_eq_linear_span] at h
-  refine Submodule.span_induction ?_ ?_ ?_ ?_ h
-  · rintro y ⟨⟨z, hz⟩, ⟨⟨w, hw⟩, rfl⟩⟩; apply lieCharacter_apply_lie
-  · exact χ.map_zero
-  · intro y z _ _ hy hz; rw [LieHom.map_add, hy, hz, add_zero]
-  · intro t y _ hy; rw [LieHom.map_smul, hy, smul_zero]
+  induction h using Submodule.span_induction with
+  | mem y h =>
+    simp only [Subtype.exists, LieSubmodule.mem_top, exists_const, Set.mem_setOf_eq] at h
+    obtain ⟨z, w, rfl⟩ := h
+    exact lieCharacter_apply_lie ..
+  | zero => exact map_zero _
+  | add y z _ _ hy hz => rw [map_add, hy, hz, add_zero]
+  | smul t y _ hy => rw [map_smul, hy, smul_zero]
 
 /-- For an Abelian Lie algebra, characters are just linear forms. -/
 @[simps! apply symm_apply]
@@ -62,6 +69,6 @@ def lieCharacterEquivLinearDual [IsLieAbelian L] : LieCharacter R L ≃ Module.D
     { ψ with
       map_lie' := fun {x y} => by
         rw [LieModule.IsTrivial.trivial, LieRing.of_associative_ring_bracket, mul_comm, sub_self,
-          LinearMap.toFun_eq_coe, LinearMap.map_zero] }
+          LinearMap.toFun_eq_coe, map_zero] }
 
 end LieAlgebra

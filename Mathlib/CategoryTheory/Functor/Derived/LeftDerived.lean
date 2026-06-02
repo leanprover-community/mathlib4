@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.KanExtension.Basic
-import Mathlib.CategoryTheory.Localization.Predicate
+module
+
+public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
+public import Mathlib.CategoryTheory.Localization.Predicate
 
 /-!
 # Left derived functors
@@ -18,7 +20,7 @@ asserting the existence of a right Kan extension is satisfied.
 `Functor.leftDerived` which are the left derived functors in
 the context of abelian categories.)
 
-Given `LF : D ⥤ H` and `α : L ⋙ RF ⟶ F`, we also introduce a type class
+Given `LF : D ⥤ H` and `α : L ⋙ LF ⟶ F`, we also introduce a type class
 `F.IsLeftDerivedFunctor α W` saying that `α` is a right Kan extension of `F`
 along the localization functor `L`.
 
@@ -31,12 +33,14 @@ along the localization functor `L`.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 namespace Functor
 
-variable {C C' D D' H H' : Type _} [Category C] [Category C']
-  [Category D] [Category D'] [Category H] [Category H']
+variable {C C' D D' H H' : Type _} [Category* C] [Category* C']
+  [Category* D] [Category* D'] [Category* H] [Category* H']
   (LF'' LF' LF : D ⥤ H) {F F' F'' : C ⥤ H} (e : F ≅ F') {L : C ⥤ D}
   (α'' : L ⋙ LF'' ⟶ F'') (α' : L ⋙ LF' ⟶ F') (α : L ⋙ LF ⟶ F) (α'₂ : L ⋙ LF' ⟶ F)
   (W : MorphismProperty C)

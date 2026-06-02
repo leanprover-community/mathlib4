@@ -3,11 +3,13 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Matrix
-import Mathlib.Algebra.Lie.Semisimple.Lemmas
-import Mathlib.Algebra.Lie.Weights.Linear
-import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
-import Mathlib.RingTheory.Finiteness.Nilpotent
+module
+
+public import Mathlib.Algebra.Lie.Matrix
+public import Mathlib.Algebra.Lie.Semisimple.Lemmas
+public import Mathlib.Algebra.Lie.Weights.Linear
+public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
+public import Mathlib.RingTheory.Finiteness.Nilpotent
 
 /-!
 # Geck's construction of a Lie algebra associated to a root system yields semisimple algebras
@@ -25,6 +27,8 @@ algebras.
   Lie algebras.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -49,7 +53,7 @@ private lemma isNilpotent_e_aux {j : ι} (n : ℕ) (h : letI _i := P.indexNeg; j
       ∃ (k : ι) (x : ℕ), P.root k = P.root j + n • P.root i ∧
         (e i ^ n).col (.inr j) = x • Pi.single (.inr k) 1 := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : NoZeroSMulDivisors ℤ M := .int_of_charZero R M
+  have : IsAddTorsionFree M := .of_isTorsionFree R M
   letI := P.indexNeg
   have aux (n : ℕ) : (e i ^ (n + 1)).col (.inr j) = (e i).mulVec ((e i ^ n).col (.inr j)) := by
     rw [pow_succ', ← Matrix.mulVec_single_one, ← Matrix.mulVec_mulVec]; simp
@@ -70,7 +74,7 @@ private lemma isNilpotent_e_aux {j : ι} (n : ℕ) (h : letI _i := P.indexNeg; j
       · apply h
         rw [zero_add, one_smul, EmbeddingLike.apply_eq_iff_eq] at hk₁
         simp [← hk₁, -indexNeg_neg]
-      · have _i : (n + 1).AtLeastTwo := ⟨by omega⟩
+      · have _i : (n + 1).AtLeastTwo := ⟨by lia⟩
         exact P.nsmul_notMem_range_root (n := n + 1) (i := i) ⟨-j, hk₁⟩
     by_cases hij : P.root j + (n + 1) • P.root i ∈ range P.root
     · obtain ⟨l, hl⟩ := hij
@@ -95,7 +99,7 @@ lemma isNilpotent_e :
     IsNilpotent (e i) := by
   classical
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : NoZeroSMulDivisors ℤ M := .int_of_charZero R M
+  have : IsAddTorsionFree M := .of_isTorsionFree R M
   letI := P.indexNeg
   rw [Matrix.isNilpotent_iff_forall_col]
   have case_inl (j : b.support) : (e i ^ 2).col (Sum.inl j) = 0 := by
@@ -125,13 +129,13 @@ lemma isNilpotent_e :
       apply IsReduced.linearIndependent P ?_ ?_
       · rintro rfl
         apply P.nsmul_notMem_range_root (n := P.chainTopCoeff i i + 2) (i := i)
-        convert hk₁ using 1
+        convert! hk₁ using 1
         module
-      · contrapose! hij
+      · contrapose hij
         rw [root_eq_neg_iff] at hij
         rw [hij, ← indexNeg_neg, neg_neg]
     rw [root_add_nsmul_mem_range_iff_le_chainTopCoeff hij'] at hk₁
-    omega
+    lia
 
 lemma isNilpotent_f :
     IsNilpotent (f i) := by
@@ -143,9 +147,10 @@ lemma isNilpotent_f :
   | zero => simp
   | succ n ih => rw [pow_succ, pow_succ, ← mul_assoc, ih, mul_assoc, ω_mul_f, ← mul_assoc]
 
-omit [P.IsReduced] [IsDomain R] in
+omit [P.IsReduced] [IsDomain R] [DecidableEq ι] in
 @[simp] lemma trace_h_eq_zero :
     (h i).trace = 0 := by
+  classical
   letI _i := P.indexNeg
   suffices ∑ j, P.pairingIn ℤ j i = 0 by
     simp only [h_eq_diagonal, Matrix.trace_diagonal, Fintype.sum_sum_type, Finset.univ_eq_attach,
@@ -174,7 +179,7 @@ section Field
 
 variable {ι K M N : Type*} [Field K] [CharZero K] [DecidableEq ι] [Fintype ι]
   [AddCommGroup M] [Module K M] [AddCommGroup N] [Module K N]
-  {P : RootSystem ι K M N} [P.IsCrystallographic] {b : P.Base}
+  {P : RootPairing ι K M N} [P.IsRootSystem] [P.IsCrystallographic] {b : P.Base}
 
 open LieModule Matrix
 
@@ -186,7 +191,7 @@ private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι �
   suffices ∀ {w : b.support ⊕ ι → K} (hw₀ : w ≠ 0) (hw : w ∈ genWeightSpace (b.support ⊕ ι → K) χ),
       ∃ (i : ι) (t : K), t • w = v b i by
     obtain ⟨w, hw, hw₀⟩ : ∃ w ∈ genWeightSpace U χ, w ≠ 0 := by
-      simpa only [ne_eq, LieSubmodule.eq_bot_iff, not_forall, exists_prop] using hχ'
+      simpa only [ne_eq, LieSubmodule.eq_bot_iff, not_forall, exists_prop] using! hχ'
     replace hw : U.incl w ∈ genWeightSpace (b.support ⊕ ι → K) χ :=
       map_genWeightSpace_le (f := U.incl) <| by simpa
     obtain ⟨i, t, hi : t • w = v b i⟩ := this (by simpa) hw
@@ -201,7 +206,7 @@ private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι �
         ∃ k, diagonal ((d - χ x • 1) ^ k) *ᵥ w = 0 := by
     set μ := χ x
     obtain ⟨⟨x, hx⟩, hx'⟩ := x
-    replace hdx : x = diagonal d := by simpa using hdx
+    replace hdx : x = diagonal d := by simpa using! hdx
     have this (d : b.support ⊕ ι → K) (μ : K) :
         (diagonal d).toLin' - μ • 1 = (diagonal (d - μ • 1)).toLin' := by
       aesop (add simp Pi.single_apply)
@@ -209,9 +214,9 @@ private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι �
   obtain ⟨i, hi⟩ : ∃ i, w (Sum.inr i) ≠ 0 := by
     obtain ⟨l, hl⟩ : ∃ l, χ (h' l) ≠ 0 := by
       replace hw₀ : genWeightSpace (b.support ⊕ ι → K) χ ≠ ⊥ := by
-        contrapose! hw₀; rw [LieSubmodule.eq_bot_iff] at hw₀; exact hw₀ _ hw
+        contrapose hw₀; rw [LieSubmodule.eq_bot_iff] at hw₀; exact hw₀ _ hw
       let χ' : H →ₗ[K] K := (Weight.mk χ hw₀).toLinear
-      replace hχ : χ' ≠ 0 := by contrapose! hχ; ext x; simpa using LinearMap.congr_fun hχ x
+      replace hχ : χ' ≠ 0 := by contrapose hχ; ext x; simpa using! LinearMap.congr_fun hχ x
       contrapose! hχ
       apply LinearMap.ext_on (span_range_h'_eq_top b)
       rintro - ⟨l, rfl⟩
@@ -222,7 +227,7 @@ private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι �
     replace hw := genWeightSpace_le_genWeightSpaceOf (b.support ⊕ ι → K) (h' l) χ hw
     rw [aux (Sum.elim 0 (P.pairingIn ℤ · l)) (h' l) (h_eq_diagonal l)] at hw
     obtain ⟨k, hk⟩ := hw
-    simpa [mulVec_eq_sum, diagonal_apply, hl] using congr_fun hk (Sum.inl i)
+    simpa [mulVec_eq_sum, diagonal_apply, hl] using! congr_fun hk (Sum.inl i)
   refine ⟨i, (w (Sum.inr i))⁻¹, ?_⟩
   suffices ∃ d : ι → K, (∀ i, d i ≠ 0) ∧ Pairwise ((· ≠ ·) on d) ∧
       diagonal (Sum.elim 0 d) ∈ cartanSubalgebra b by
@@ -232,14 +237,14 @@ private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι �
     rw [aux (Sum.elim 0 d) x rfl] at hw
     obtain ⟨k, hk⟩ := hw
     obtain ⟨hχx, hk₀⟩ : d i = χ x ∧ k ≠ 0 := by
-      simpa [hi, mulVec_eq_sum, diagonal_apply, sub_eq_zero] using congr_fun hk (Sum.inr i)
+      simpa [hi, mulVec_eq_sum, diagonal_apply, sub_eq_zero] using! congr_fun hk (Sum.inr i)
     ext (j | j)
     · have : χ x ≠ 0 := hχx ▸ hd₀ i
-      simpa [hi, mulVec_eq_sum, diagonal_apply, hk₀, this] using congr_fun hk (Sum.inl j)
+      simpa [hi, mulVec_eq_sum, diagonal_apply, hk₀, this] using! congr_fun hk (Sum.inl j)
     · rcases eq_or_ne i j with rfl | hij
       · simp [hi]
       · suffices d j ≠ χ x by
-          simpa [mulVec_eq_sum, diagonal_apply, sub_eq_zero, this, hij, hi] using
+          simpa [mulVec_eq_sum, diagonal_apply, sub_eq_zero, this, hij, hi] using!
             congr_fun hk (Sum.inr j)
         rw [← hχx]
         exact hd₁ <| by simp [hij.symm]
@@ -259,6 +264,7 @@ private lemma instIsIrreducible_aux₁ (U : LieSubmodule K H (b.support ⊕ ι �
   have : ⨆ (χ : H → K), ⨆ (_ : χ ≠ 0), (⊥ : LieSubmodule K H U) = ⊥ := biSup_const ⟨1, one_ne_zero⟩
   rw [← iSup_genWeightSpace_eq_top K H U, iSup_split_single _ 0, biSup_congr hU, this, sup_bot_eq]
 
+omit [P.IsRootSystem] in
 private lemma instIsIrreducible_aux₂ [P.IsReduced] [P.IsIrreducible]
     {U : LieSubmodule K (lieAlgebra b) (b.support ⊕ ι → K)} {i : ι} (hi : v b i ∈ U) :
     U = ⊤ := by
@@ -272,7 +278,7 @@ private lemma instIsIrreducible_aux₂ [P.IsReduced] [P.IsIrreducible]
     · intro i h U hi
       replace hi : v b i ∈ ωConjLieSubmodule U := by simpa [hωv]
       obtain ⟨j, hj⟩ := h hi
-      exact ⟨j, by simpa [hωu] using hj⟩
+      exact ⟨j, by simpa [hωu] using! hj⟩
     · intro j hj U hj'
       let f' : lieAlgebra b := ⟨f ⟨j, hj⟩, f_mem_lieAlgebra _⟩
       have : ⁅f', v b j⁆ = u ⟨j, hj⟩ := f_lie_v_same ⟨j, hj⟩
@@ -306,11 +312,11 @@ private lemma instIsIrreducible_aux₂ [P.IsReduced] [P.IsIrreducible]
   revert U
   apply b.induction_add j
   · intro j h U hU
-    suffices v b j ∈ ωConjLieSubmodule U by simpa [hωv] using this
+    suffices v b j ∈ ωConjLieSubmodule U by simpa [hωv] using! this
     exact h fun k ↦ by simp [hωu, hU]
   · intro k hk U aux
     have : ⁅e ⟨k, hk⟩, u ⟨k, hk⟩⁆ = (2 : K) • v b k := by
-      simpa [-lie_apply] using e_lie_u ⟨k, hk⟩ ⟨k, hk⟩
+      simpa [-lie_apply] using! e_lie_u ⟨k, hk⟩ ⟨k, hk⟩
     let e' : lieAlgebra b := ⟨e ⟨k, hk⟩, e_mem_lieAlgebra ⟨k, hk⟩⟩
     change ⁅e', u ⟨k, hk⟩⁆ = _ at this
     replace aux := U.lie_mem (x := e') <| aux ⟨k, hk⟩
@@ -325,6 +331,7 @@ private lemma instIsIrreducible_aux₂ [P.IsReduced] [P.IsIrreducible]
       exact U.lie_mem (hk aux)
     exact (U.smul_mem_iff (by norm_cast)).mp this
 
+omit [P.IsRootSystem] in
 lemma coe_genWeightSpace_zero_eq_span_range_u :
     genWeightSpace (b.support ⊕ ι → K) (0 : H → K) = span K (range <| u (b := b)) := by
   refine le_antisymm (fun w hw ↦ Pi.mem_span_range_single_inl_iff.mpr fun i ↦ ?_) ?_
@@ -352,9 +359,9 @@ instance instIsIrreducible [Nonempty ι] :
     LieModule.IsIrreducible K (lieAlgebra b) (b.support ⊕ ι → K) := by
   refine LieModule.IsIrreducible.mk fun U hU ↦ ?_
   suffices ∃ i, v b i ∈ U by obtain ⟨i, hi⟩ := this; exact instIsIrreducible_aux₂ hi
-  let U' : LieSubmodule K H (b.support ⊕ ι → K) := {U with lie_mem := U.lie_mem}
+  let U' : LieSubmodule K H (b.support ⊕ ι → K) := { U with lie_mem := U.lie_mem }
   apply instIsIrreducible_aux₁ U'
-  contrapose! hU
+  contrapose hU
   replace hU : U ≤ span K (range (u (b := b))) := by rwa [← coe_genWeightSpace_zero_eq_span_range_u]
   refine (LieSubmodule.eq_bot_iff _).mpr fun x hx ↦ ?_
   obtain ⟨c, hc⟩ : ∃ c : b.support → K, ∑ i, c i • u i = x :=

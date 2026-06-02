@@ -3,9 +3,13 @@ Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Control.Functor
-import Mathlib.Control.Basic
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Control.Functor
+public import Mathlib.Control.Basic
+
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # `applicative` instances
@@ -16,6 +20,8 @@ This file provides `Applicative` instances for concrete functors:
 * `Functor.const`
 * `Functor.add_const`
 -/
+
+public section
 
 universe u v w
 
@@ -34,6 +40,7 @@ theorem Applicative.map_seq_map (f : α → β → γ) (g : σ → β) (x : F α
 theorem Applicative.pure_seq_eq_map' (f : α → β) : ((pure f : F (α → β)) <*> ·) = (f <$> ·) := by
   simp [functor_norm]
 
+set_option linter.overlappingInstances false in
 theorem Applicative.ext {F} :
     ∀ {A1 : Applicative F} {A2 : Applicative F} [@LawfulApplicative F A1] [@LawfulApplicative F A2],
       (∀ {α : Type u} (x : α), @Pure.pure _ A1.toPure _ x = @Pure.pure _ A2.toPure _ x) →

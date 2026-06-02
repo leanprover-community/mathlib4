@@ -3,8 +3,10 @@ Copyright (c) 2024 Miguel Marco. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miguel Marco
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Data.Set.Functor
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.Data.Set.Functor
 
 /-!
 # Sets in subtypes
@@ -36,6 +38,8 @@ Theorem names refer to `↓∩` as `preimage_val`.
 
 subsets
 -/
+
+public section
 
 open Set
 
@@ -130,7 +134,7 @@ lemma image_val_injective : Function.Injective ((↑) : Set A → Set α) :=
 lemma subset_of_image_val_subset_image_val (h : (↑D : Set α) ⊆ ↑E) : D ⊆ E :=
   (image_subset_image_iff Subtype.val_injective).1 h
 
-@[mono]
+@[gcongr, mono]
 lemma image_val_mono (h : D ⊆ E) : (↑D : Set α) ⊆ ↑E :=
   (image_subset_image_iff Subtype.val_injective).2 h
 

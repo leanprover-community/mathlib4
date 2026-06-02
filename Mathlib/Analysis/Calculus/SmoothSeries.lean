@@ -3,10 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-import Mathlib.Topology.Algebra.InfiniteSum.Module
-import Mathlib.Analysis.Normed.Group.FunctionSeries
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
+public import Mathlib.Topology.Algebra.InfiniteSum.Module
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
 
 /-!
 # Smoothness of series
@@ -20,6 +22,8 @@ More specifically,
 
 We also give versions of these statements which are localized to a set.
 -/
+
+public section
 
 
 open Set Metric TopologicalSpace Function Asymptotics Filter
@@ -88,7 +92,7 @@ theorem hasDerivAt_tsum_of_isPreconnected (hu : Summable u) (ht : IsOpen t)
     (hg' : ∀ n y, y ∈ t → ‖g' n y‖ ≤ u n) (hy₀ : y₀ ∈ t) (hg0 : Summable fun n => g n y₀)
     (hy : y ∈ t) : HasDerivAt (fun z => ∑' n, g n z) (∑' n, g' n y) y := by
   simp_rw [hasDerivAt_iff_hasFDerivAt] at hg ⊢
-  convert hasFDerivAt_tsum_of_isPreconnected hu ht h't hg ?_ hy₀ hg0 hy
+  convert! hasFDerivAt_tsum_of_isPreconnected hu ht h't hg ?_ hy₀ hg0 hy
   · exact (ContinuousLinearMap.smulRightL 𝕜 𝕜 F 1).map_tsum <|
       .of_norm_bounded hu fun n ↦ hg' n y hy
   · simpa
@@ -139,12 +143,11 @@ Note that our assumptions do not ensure the pointwise convergence, but if there 
 convergence then the series is zero everywhere so the result still holds. -/
 theorem differentiable_tsum (hu : Summable u) (hf : ∀ n x, HasFDerivAt (f n) (f' n x) x)
     (hf' : ∀ n x, ‖f' n x‖ ≤ u n) : Differentiable 𝕜 fun y => ∑' n, f n y := by
-  by_cases h : ∃ x₀, Summable fun n => f n x₀
+  by_cases! h : ∃ x₀, Summable fun n => f n x₀
   · rcases h with ⟨x₀, hf0⟩
     intro x
     exact (hasFDerivAt_tsum hu hf hf' hf0 x).differentiableAt
-  · push_neg at h
-    have : (fun x => ∑' n, f n x) = 0 := by ext1 x; exact tsum_eq_zero_of_not_summable (h x)
+  · have : (fun x => ∑' n, f n x) = 0 := by ext1 x; exact tsum_eq_zero_of_not_summable (h x)
     rw [this]
     exact differentiable_const 0
 
@@ -270,8 +273,8 @@ theorem contDiff_tsum_of_eventually (hf : ∀ i, ContDiff 𝕜 N (f i))
         fun x => ∑' i : { i // i ∉ T }, f i x := by
       ext1 x
       refine (Summable.sum_add_tsum_subtype_compl ?_ T).symm
-      refine .of_norm_bounded_eventually (hv 0 (zero_le _)) ?_
-      filter_upwards [h'f 0 (zero_le _)] with i hi
+      refine .of_norm_bounded_eventually (hv 0 zero_le) ?_
+      filter_upwards [h'f 0 zero_le] with i hi
       simpa only [norm_iteratedFDeriv_zero] using hi x
     rw [this]
     apply (ContDiff.sum fun i _ => (hf i).of_le (mod_cast hm)).add

@@ -3,9 +3,11 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+module
 
-import Mathlib.Order.Filter.AtTopBot.Group
-import Mathlib.Topology.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+public import Mathlib.Order.Filter.AtTopBot.Group
+public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Topological closure of the submonoid closure
@@ -17,6 +19,8 @@ then the topological closures of `Submonoid.closure s` and `Subgroup.closure s` 
 The proof is based on the following observation, see `mapClusterPt_self_zpow_atTop_pow`:
 each `x^m`, `m : ℤ` is a limit point (`MapClusterPt`) of the sequence `x^n`, `n : ℕ`, as `n → ∞`.
 -/
+
+public section
 
 open Filter Function Set
 open scoped Topology
@@ -39,7 +43,7 @@ theorem mapClusterPt_self_zpow_atTop_pow (x : G) (m : ℤ) :
   have H : MapClusterPt (x ^ m) (atTop.curry atTop) ↿(fun a b ↦ x ^ (m + b - a)) := by
     have : ContinuousAt (fun yz ↦ x ^ m * yz.2 / yz.1) (y, y) := by fun_prop
     simpa only [comp_def, ← zpow_sub, ← zpow_add, div_eq_mul_inv, Prod.map, mul_inv_cancel_right]
-      using (hy.curry_prodMap hy).continuousAt_comp this
+      using! (hy.curry_prodMap hy).continuousAt_comp this
   suffices Tendsto ↿(fun a b ↦ m + b - a) (atTop.curry atTop) atTop from H.of_comp this
   refine Tendsto.curry <| .of_forall fun a ↦ ?_
   simp only [sub_eq_add_neg] -- TODO: add `Tendsto.atTop_sub_const` etc

@@ -3,11 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
-import Mathlib.Order.Bounds.OrderIso
-import Mathlib.Order.GaloisConnection.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.OrderIso
+public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+public import Mathlib.Order.Bounds.OrderIso
+public import Mathlib.Order.GaloisConnection.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Upper/lower bounds in ordered monoids and groups
@@ -15,6 +17,8 @@ import Mathlib.Algebra.Group.Pointwise.Set.Basic
 In this file we prove a few facts like “`-s` is bounded above iff `s` is bounded below”
 (`bddAbove_neg`).
 -/
+
+public section
 
 open Function Set
 open scoped Pointwise
@@ -63,9 +67,9 @@ lemma BddBelow.range_mul (hf : BddBelow (range f)) (hg : BddBelow (range g)) :
 
 end Mul
 
-section InvNeg
+section Group
 variable [Group G] [Preorder G] [MulLeftMono G]
-  [MulRightMono G] {s : Set G} {a : G}
+  [MulRightMono G] {s t : Set G} {a b : G}
 
 @[to_additive (attr := simp)]
 theorem bddAbove_inv : BddAbove s⁻¹ ↔ BddBelow s :=
@@ -117,4 +121,26 @@ lemma BddAbove.range_inv {α : Type*} {f : α → G} (hf : BddAbove (range f)) :
     BddBelow (range (fun x => (f x)⁻¹)) :=
   BddBelow.range_inv (G := Gᵒᵈ) hf
 
-end InvNeg
+@[to_additive]
+lemma IsLUB.mul (hs : IsLUB s a) (ht : IsLUB t b) :
+    IsLUB (s * t) (a * b) :=
+  isLUB_image2_of_isLUB_isLUB (fun _ => (OrderIso.mulRight _).to_galoisConnection)
+    (fun _ => (OrderIso.mulLeft _).to_galoisConnection) hs ht
+
+@[to_additive]
+lemma IsGLB.mul (hs : IsGLB s a) (ht : IsGLB t b) :
+    IsGLB (s * t) (a * b) :=
+  IsLUB.mul (G := Gᵒᵈ) hs ht
+
+@[to_additive]
+lemma IsLUB.div (hs : IsLUB s a) (ht : IsGLB t b) :
+    IsLUB (s / t) (a / b) := by
+  rw [div_eq_mul_inv, div_eq_mul_inv]
+  exact hs.mul ht.inv
+
+@[to_additive]
+lemma IsGLB.div (hs : IsGLB s a) (ht : IsLUB t b) :
+    IsGLB (s / t) (a / b) :=
+  IsLUB.div (G := Gᵒᵈ) hs ht
+
+end Group

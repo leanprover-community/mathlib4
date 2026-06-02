@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # Limits of eventually constant functors
@@ -20,11 +22,13 @@ the dual results for filtered categories and colimits are also obtained.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits
 
-variable {J C : Type*} [Category J] [Category C] (F : J ⥤ C)
+variable {J C : Type*} [Category* J] [Category* C] (F : J ⥤ C)
 
 namespace Functor
 
@@ -96,6 +100,7 @@ lemma coneπApp_eq (j j' : J) (α : j' ⟶ i₀) (β : j' ⟶ j) :
 lemma coneπApp_eq_id : h.coneπApp i₀ = 𝟙 _ := by
   rw [h.coneπApp_eq i₀ i₀ (𝟙 _) (𝟙 _), h.isoMap_inv_hom_id]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given `h : F.IsEventuallyConstantTo i₀`, this is the (limit) cone for `F` whose
 point is `F.obj i₀`. -/
 @[simps]
@@ -111,6 +116,7 @@ noncomputable def cone : Cone F where
         let β : i ⟶ j := IsCofiltered.minToRight _ _
         rw [h.coneπApp_eq j _ α β, assoc, h.coneπApp_eq j' _ α (β ≫ φ), map_comp] }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- When `h : F.IsEventuallyConstantTo i₀`, the limit of `F` exists and is `F.obj i₀`. -/
 noncomputable def isLimitCone : IsLimit h.cone where
   lift s := s.π.app i₀
@@ -122,6 +128,7 @@ noncomputable def isLimitCone : IsLimit h.cone where
 
 lemma hasLimit : HasLimit F := ⟨_, h.isLimitCone⟩
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isIso_π_of_isLimit {c : Cone F} (hc : IsLimit c) :
     IsIso (c.π.app i₀) := by
   simp only [← IsLimit.conePointUniqueUpToIso_hom_comp hc h.isLimitCone i₀,
@@ -132,6 +139,18 @@ lemma isIso_π_of_isLimit {c : Cone F} (hc : IsLimit c) :
 lemma isIso_π_of_isLimit' {c : Cone F} (hc : IsLimit c) (j : J) (π : j ⟶ i₀) :
     IsIso (c.π.app j) :=
   (h.precomp π).isIso_π_of_isLimit hc
+
+set_option backward.defeqAttrib.useBackward true in
+/-- Given a cone `c` on a cofiltered diagram `F` which `IsEventuallyConstantTo i₀`, such that
+`c.π.app i₀` is an isomorphism, `c` a limit cone. -/
+noncomputable def isLimitOfIsIso (c : Cone F) [IsIso (c.π.app i₀)] : IsLimit c :=
+  IsLimit.ofIsoLimit h.isLimitCone (by
+    refine Cone.ext (asIso (c.π.app i₀)).symm (fun j ↦ ?_)
+    let i := IsCofiltered.min i₀ j
+    let α : i ⟶ i₀ := IsCofiltered.minToLeft _ _
+    let β : i ⟶ j := IsCofiltered.minToRight _ _
+    dsimp
+    rw [IsIso.eq_inv_comp, ← c.w α, ← c.w β, h.coneπApp_eq j _ α β, assoc, isoMap_hom_inv_id_assoc])
 
 end IsEventuallyConstantTo
 
@@ -178,7 +197,7 @@ noncomputable def coconeιApp (j : J) : F.obj j ⟶ F.obj i₀ :=
   F.map (rightToMax i₀ j) ≫ (h.isoMap (leftToMax i₀ j) ⟨𝟙 _⟩).inv
 
 lemma coconeιApp_eq (j j' : J) (α : j ⟶ j') (β : i₀ ⟶ j') :
-    h.coconeιApp j = F.map α ≫ (h.isoMap β ⟨𝟙 _⟩).inv  := by
+    h.coconeιApp j = F.map α ≫ (h.isoMap β ⟨𝟙 _⟩).inv := by
   obtain ⟨s, γ, δ, h₁, h₂⟩ := IsFiltered.bowtie
     (IsFiltered.leftToMax i₀ j) β (IsFiltered.rightToMax i₀ j) α
   dsimp [coconeιApp]
@@ -190,6 +209,7 @@ lemma coconeιApp_eq (j j' : J) (α : j ⟶ j') (β : i₀ ⟶ j') :
 lemma coconeιApp_eq_id : h.coconeιApp i₀ = 𝟙 _ := by
   rw [h.coconeιApp_eq i₀ i₀ (𝟙 _) (𝟙 _), h.isoMap_hom_inv_id]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given `h : F.IsEventuallyConstantFrom i₀`, this is the (limit) cocone for `F` whose
 point is `F.obj i₀`. -/
 @[simps]
@@ -205,6 +225,8 @@ noncomputable def cocone : Cocone F where
         let β : j' ⟶ i := IsFiltered.rightToMax _ _
         rw [h.coconeιApp_eq j' _ β α, h.coconeιApp_eq j _ (φ ≫ β) α, map_comp, assoc] }
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- When `h : F.IsEventuallyConstantFrom i₀`, the colimit of `F` exists and is `F.obj i₀`. -/
 noncomputable def isColimitCocone : IsColimit h.cocone where
   desc s := s.ι.app i₀
@@ -216,6 +238,7 @@ noncomputable def isColimitCocone : IsColimit h.cocone where
 
 lemma hasColimit : HasColimit F := ⟨_, h.isColimitCocone⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_ι_of_isColimit {c : Cocone F} (hc : IsColimit c) :
     IsIso (c.ι.app i₀) := by
   simp only [← IsColimit.comp_coconePointUniqueUpToIso_inv hc h.isColimitCocone i₀,
@@ -226,6 +249,19 @@ lemma isIso_ι_of_isColimit {c : Cocone F} (hc : IsColimit c) :
 lemma isIso_ι_of_isColimit' {c : Cocone F} (hc : IsColimit c) (j : J) (ι : i₀ ⟶ j) :
     IsIso (c.ι.app j) :=
   (h.postcomp ι).isIso_ι_of_isColimit hc
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- Given a cocone `c` on a filtered diagram `F` which `IsEventuallyConstantFrom i₀`, such that
+`c.π.app i₀` is an isomorphism, `c` a colimit cocone. -/
+noncomputable def isColimitOfIsIso (c : Cocone F) [IsIso (c.ι.app i₀)] : IsColimit c :=
+  IsColimit.ofIsoColimit h.isColimitCocone (by
+    refine Cocone.ext (asIso (c.ι.app i₀)) (fun j ↦ ?_)
+    let i := IsFiltered.max i₀ j
+    let α : i₀ ⟶ i := IsFiltered.leftToMax _ _
+    let β : j ⟶ i := IsFiltered.rightToMax _ _
+    dsimp
+    rw [← c.w α, ← c.w β, h.coconeιApp_eq j _ β α, assoc, isoMap_inv_hom_id_assoc])
 
 end IsEventuallyConstantFrom
 

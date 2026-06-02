@@ -3,12 +3,14 @@ Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.ContinuedFractions.Determinant
-import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Data.Nat.Fib.Basic
-import Mathlib.Tactic.Monotonicity
-import Mathlib.Tactic.GCongr
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Determinant
+public import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
+public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Data.Nat.Fib.Basic
+public import Mathlib.Tactic.Monotonicity
+public import Mathlib.Tactic.GCongr
 
 /-!
 # Approximations for Continued Fraction Computations (`GenContFract.of`)
@@ -45,6 +47,8 @@ in `Algebra.ContinuedFractions.Computation.ApproximationCorollaries`.
 - [*Hardy, GH and Wright, EM and Heath-Brown, Roger and Silverman, Joseph*][hardy2008introduction]
 
 -/
+
+@[expose] public section
 
 open GenContFract
 
@@ -177,8 +181,8 @@ theorem GenContFract.of_isSimpContFract :
   of_partNum_eq_one nth_partNum_eq
 
 /-- Creates the simple continued fraction of a value. -/
-nonrec def SimpContFract.of : SimpContFract K :=
-  ⟨of v, GenContFract.of_isSimpContFract v⟩
+def SimpContFract.of : SimpContFract K :=
+  ⟨GenContFract.of v, GenContFract.of_isSimpContFract v⟩
 
 theorem SimpContFract.of_isContFract :
     (SimpContFract.of v).IsContFract := fun _ _ nth_partDen_eq =>
@@ -209,9 +213,9 @@ theorem fib_le_of_contsAux_b :
       intro n IH hyp
       rcases n with (_ | _ | n)
       · simp [contsAux] -- case n = 0
-      · simp [contsAux] -- case n = 1
+      · simp -- case n = 1
       · let g := of v -- case 2 ≤ n
-        have : ¬n + 2 ≤ 1 := by omega
+        have : ¬n + 2 ≤ 1 := by lia
         have not_terminatedAt_n : ¬g.TerminatedAt n := Or.resolve_left hyp this
         obtain ⟨gp, s_ppred_nth_eq⟩ : ∃ gp, g.s.get? n = some gp :=
           Option.ne_none_iff_exists'.mp not_terminatedAt_n
@@ -230,7 +234,8 @@ theorem fib_le_of_contsAux_b :
           mt (terminated_stable (n - 1).pred_le) not_terminatedAt_pred_n
         -- use the IH to get the inequalities for `pconts` and `ppconts`
         have ppred_nth_fib_le_ppconts_B : (fib n : K) ≤ ppconts.b :=
-          IH n (lt_trans (Nat.lt.base n) <| Nat.lt.base <| n + 1) (Or.inr not_terminatedAt_ppred_n)
+          IH n (lt_trans (Nat.lt_add_one n) <| Nat.lt_add_one <| n + 1)
+            (Or.inr not_terminatedAt_ppred_n)
         suffices (fib (n + 1) : K) ≤ gp.b * pconts.b by gcongr
         -- finally use the fact that `1 ≤ gp.b` to solve the goal
         suffices 1 * (fib (n + 1) : K) ≤ gp.b * pconts.b by rwa [one_mul] at this
@@ -336,7 +341,7 @@ theorem sub_convs_eq {ifp : IntFractPair K}
   obtain (ifp_fr_eq_zero | ifp_fr_ne_zero) := eq_or_ne ifp.fr 0
   · suffices v - g.convs n = 0 by simpa [ifp_fr_eq_zero]
     replace g_finite_correctness : v = g.convs n := by
-      simpa [GenContFract.compExactValue, ifp_fr_eq_zero] using g_finite_correctness
+      simpa [GenContFract.compExactValue, ifp_fr_eq_zero] using! g_finite_correctness
     exact sub_eq_zero.2 g_finite_correctness
   · -- more shorthand notation
     let A := conts.a
@@ -348,7 +353,7 @@ theorem sub_convs_eq {ifp : IntFractPair K}
     -- now we can unfold `g.compExactValue` to derive the following equality for `v`
     replace g_finite_correctness : v = (pA + ifp.fr⁻¹ * A) / (pB + ifp.fr⁻¹ * B) := by
       simpa [GenContFract.compExactValue, ifp_fr_ne_zero, nextConts, nextNum, nextDen, add_comm]
-        using g_finite_correctness
+        using! g_finite_correctness
     -- let's rewrite this equality for `v` in our goal
     suffices
       (pA + ifp.fr⁻¹ * A) / (pB + ifp.fr⁻¹ * B) - A / B = (-1) ^ n / (B * (ifp.fr⁻¹ * B + pB)) by
@@ -361,8 +366,14 @@ theorem sub_convs_eq {ifp : IntFractPair K}
         have : ¬g.TerminatedAt n' :=
           (not_congr of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none).2 this
         exact Or.inr this
-    have determinant_eq : pA * B - pB * A = (-1) ^ n :=
-      (SimpContFract.of v).determinant_aux n_eq_zero_or_not_terminatedAt_pred_n
+    have determinant_eq : pA * B - pB * A = (-1) ^ n := by
+      match hn : n with
+      | 0 => subst n; simp [pA, pB, A, B, pred_conts, conts]
+      | n' + 1 =>
+        subst n
+        simp only [succ_ne_zero, false_or] at n_eq_zero_or_not_terminatedAt_pred_n
+        rw [add_tsub_cancel_right] at n_eq_zero_or_not_terminatedAt_pred_n
+        exact (SimpContFract.of v).determinant n_eq_zero_or_not_terminatedAt_pred_n
     -- now all we got to do is to rewrite this equality in our goal and re-arrange terms;
     -- however, for this, we first have to derive quite a few tedious inequalities.
     have pB_ineq : (fib n : K) ≤ pB :=
@@ -374,11 +385,11 @@ theorem sub_convs_eq {ifp : IntFractPair K}
     have B_ineq : (fib (n + 1) : K) ≤ B :=
       haveI : n + 1 ≤ 1 ∨ ¬g.TerminatedAt (n + 1 - 2) := by
         rcases n_eq_zero_or_not_terminatedAt_pred_n with n_eq_zero | not_terminatedAt_pred_n
-        · simp [n_eq_zero, le_refl]
+        · simp [n_eq_zero]
         · exact Or.inr not_terminatedAt_pred_n
       fib_le_of_contsAux_b this
     have zero_lt_B : 0 < B := B_ineq.trans_lt' <| cast_pos.2 <| fib_pos.2 n.succ_pos
-    have : 0 ≤ pB := (cast_nonneg _).trans pB_ineq
+    have : 0 ≤ pB := (Nat.cast_nonneg _).trans pB_ineq
     have : 0 < ifp.fr :=
       ifp_fr_ne_zero.lt_of_le' <| IntFractPair.nth_stream_fr_nonneg stream_nth_eq
     have : pB + ifp.fr⁻¹ * B ≠ 0 := by positivity
@@ -402,7 +413,6 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
     simp [nextConts, contsAux_recurrence s_nth_eq pred_conts_eq conts_eq, gp_a_eq_one,
       pred_conts_eq.symm, conts_eq.symm, add_comm]
   let den := conts.b * (pred_conts.b + gp.b * conts.b)
-  suffices |v - g.convs n| ≤ 1 / den by rw [nextConts_b_eq]; congr 1
   obtain ⟨ifp_succ_n, succ_nth_stream_eq, ifp_succ_n_b_eq_gp_b⟩ :
       ∃ ifp_succ_n, IntFractPair.stream v (n + 1) = some ifp_succ_n ∧ (ifp_succ_n.b : K) = gp.b :=
     IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some s_nth_eq

@@ -3,10 +3,12 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.GroupTheory.Congruence.Defs
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.GroupTheory.Congruence.Defs
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Congruence relations on rings
@@ -25,9 +27,12 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 ## TODO
 
 * Use this for `RingQuot` too.
-* Copy across more API from `Con` and `AddCon` in `GroupTheory/Congruence.lean`.
+* Copy across more API from `Con` and `AddCon` in `Mathlib/GroupTheory/Congruence/`.
 -/
 
+@[expose] public section
+
+open Function
 
 /-- A congruence relation on a type with an addition and multiplication is an equivalence relation
 which preserves both. -/
@@ -65,17 +70,18 @@ namespace RingCon
 
 section Basic
 
-variable [Add R] [Mul R] (c : RingCon R)
+variable [Add R] [Mul R] {c d : RingCon R}
+
+lemma toCon_injective : Injective fun c : RingCon R ↦ c.toCon := fun c d ↦ by cases c; congr!
+
+@[simp] lemma toCon_inj : c.toCon = d.toCon ↔ c = d := toCon_injective.eq_iff
 
 /-- A coercion from a congruence relation to its underlying binary relation. -/
 instance : FunLike (RingCon R) R (R → Prop) where
   coe c := c.r
-  coe_injective' x y h := by
-    rcases x with ⟨⟨x, _⟩, _⟩
-    rcases y with ⟨⟨y, _⟩, _⟩
-    congr!
-    rw [Setoid.ext_iff, (show ⇑x = ⇑y from h)]
-    simp
+  coe_injective' := DFunLike.coe_injective.comp toCon_injective
+
+variable (c)
 
 @[simp]
 theorem coe_mk (s : Con R) (h) : ⇑(mk s h) = s := rfl
@@ -115,7 +121,7 @@ protected theorem zsmul {S : Type*} [AddGroup S] [Mul S] (t : RingCon S)
     (z : ℤ) {x y : S} (hx : t x y) : t (z • x) (z • y) := t.toAddCon.zsmul z hx
 
 instance : Inhabited (RingCon R) :=
-  ⟨ringConGen EmptyRelation⟩
+  ⟨ringConGen emptyRelation⟩
 
 @[simp]
 theorem rel_mk {s : Con R} {h a b} : RingCon.mk s h a b ↔ s a b :=
@@ -129,15 +135,29 @@ theorem ext' {c d : RingCon R} (H : ⇑c = ⇑d) : c = d := DFunLike.coe_injecti
 theorem ext {c d : RingCon R} (H : ∀ x y, c x y ↔ d x y) : c = d :=
   ext' <| by ext; apply H
 
+/-- The map sending a ring congruence relation to its underlying equivalence
+relation is injective. -/
+theorem ext'' {c d : RingCon R} (H : c.toSetoid = d.toSetoid) : c = d :=
+  ext <| Setoid.ext_iff.1 H
+
+/-- Two ring congruence relations are equal iff their underlying binary
+relations are equal. -/
+theorem coe_inj {c d : RingCon R} : ⇑c = ⇑d ↔ c = d := by simp
+
+variable {R R' F : Type*} [Add R] [Add R']
+    [FunLike F R R'] [AddHomClass F R R'] [Mul R] [Mul R'] [MulHomClass F R R']
+
 /--
 Pulling back a `RingCon` across a ring homomorphism.
 -/
-def comap {R R' F : Type*} [Add R] [Add R']
-    [FunLike F R R'] [AddHomClass F R R'] [Mul R] [Mul R'] [MulHomClass F R R']
-    (J : RingCon R') (f : F) :
+def comap (J : RingCon R') (f : F) :
     RingCon R where
   __ := J.toCon.comap f (map_mul f)
   __ := J.toAddCon.comap f (map_add f)
+
+@[simp]
+theorem comap_rel {J : RingCon R'} {f : F} {x y : R} :
+    J.comap f x y ↔ J (f x) (f y) := Iff.rfl
 
 end Basic
 
@@ -366,13 +386,22 @@ instance [CommRing R] (c : RingCon R) : CommRing c.Quotient := fast_instance%
 
 end Algebraic
 
-/-- The natural homomorphism from a ring to its quotient by a congruence relation. -/
-def mk' [NonAssocSemiring R] (c : RingCon R) : R →+* c.Quotient where
+variable [NonAssocSemiring R] (c : RingCon R)
+
+/-- The natural homomorphism from a ring to its quotient by a ring congruence relation. -/
+def mk' : R →+* c.Quotient where
   toFun := toQuotient
   map_zero' := rfl
   map_one' := rfl
   map_add' _ _ := rfl
   map_mul' _ _ := rfl
+
+theorem mk'_surjective : Function.Surjective c.mk' :=
+  Quotient.mk''_surjective
+
+@[simp]
+theorem coe_mk' : (c.mk' : R → c.Quotient) = ((↑) : R → c.Quotient) :=
+  rfl
 
 end Quotient
 

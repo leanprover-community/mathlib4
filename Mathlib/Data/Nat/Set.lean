@@ -3,11 +3,15 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Set.Image
+module
+
+public import Mathlib.Data.Set.Image
 
 /-!
 ### Recursion on the natural numbers and `Set.range`
 -/
+
+public section
 
 
 namespace Nat
@@ -32,7 +36,7 @@ theorem range_of_succ (f : ℕ → α) : {f 0} ∪ range (f ∘ succ) = range f 
 theorem range_rec {α : Type*} (x : α) (f : ℕ → α → α) :
     (Set.range fun n => Nat.rec x f n : Set α) =
       {x} ∪ Set.range fun n => Nat.rec (f 0 x) (f ∘ succ) n := by
-  convert (range_of_succ (fun n => Nat.rec x f n : ℕ → α)).symm using 4
+  convert! (range_of_succ (fun n => Nat.rec x f n : ℕ → α)).symm using 4
   dsimp
   rename_i n
   induction n with

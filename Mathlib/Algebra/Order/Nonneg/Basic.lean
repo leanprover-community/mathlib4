@@ -3,12 +3,14 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Data.Nat.Cast.Order.Basic
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Algebra.Order.ZeroLEOne
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!
 # The type of nonnegative elements
@@ -30,8 +32,10 @@ equal, this often confuses the elaborator. Similar problems arise when doing cas
 
 The disadvantage is that we have to duplicate some instances about `Set.Ici` to this subtype.
 -/
+
+@[expose] public section
 assert_not_exists GeneralizedHeytingAlgebra
-assert_not_exists OrderedCommMonoid
+assert_not_exists IsOrderedMonoid
 -- TODO -- assert_not_exists PosMulMono
 assert_not_exists mem_upperBounds
 
@@ -69,6 +73,17 @@ theorem mk_add_mk [AddZeroClass α] [Preorder α] [AddLeftMono α] {x y : α}
 protected theorem coe_add [AddZeroClass α] [Preorder α] [AddLeftMono α]
     (a b : { x : α // 0 ≤ x }) : ((a + b : { x : α // 0 ≤ x }) : α) = a + b :=
   rfl
+
+instance [AddZeroClass α] [Preorder α] [AddLeftMono α] [IsLeftCancelAdd α] :
+    IsLeftCancelAdd { x : α // 0 ≤ x } where
+  add_left_cancel _ _ _ eq := Subtype.ext (add_left_cancel congr($eq))
+
+instance [AddZeroClass α] [Preorder α] [AddLeftMono α] [IsRightCancelAdd α] :
+    IsRightCancelAdd { x : α // 0 ≤ x } where
+  add_right_cancel _ _ _ eq := Subtype.ext (add_right_cancel congr($eq))
+
+instance [AddZeroClass α] [Preorder α] [AddLeftMono α] [IsCancelAdd α] :
+    IsCancelAdd { x : α // 0 ≤ x } where
 
 instance nsmul [AddMonoid α] [Preorder α] [AddLeftMono α] : SMul ℕ { x : α // 0 ≤ x } :=
   ⟨fun n x => ⟨n • (x : α), nsmul_nonneg x.prop n⟩⟩
@@ -125,7 +140,7 @@ section AddMonoid
 variable [AddMonoid α] [Preorder α] [AddLeftMono α]
 
 instance addMonoid : AddMonoid { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.addMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
+  fast_instance% Subtype.coe_injective.addMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
 
 /-- Coercion `{x : α // 0 ≤ x} → α` as an `AddMonoidHom`. -/
 @[simps]
@@ -146,9 +161,19 @@ section AddCommMonoid
 variable [AddCommMonoid α] [Preorder α] [AddLeftMono α]
 
 instance addCommMonoid : AddCommMonoid { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.addCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
+  fast_instance%
+    Subtype.coe_injective.addCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
 
 end AddCommMonoid
+
+section AddCancelCommMonoid
+variable [AddCancelCommMonoid α] [Preorder α] [AddLeftMono α]
+
+instance addCancelCommMonoid : AddCancelCommMonoid {x : α // 0 ≤ x} :=
+  fast_instance%
+    Subtype.coe_injective.addCancelCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
+
+end AddCancelCommMonoid
 
 section AddMonoidWithOne
 
@@ -190,8 +215,6 @@ theorem mk_pow {x : α} (hx : 0 ≤ x) (n : ℕ) :
     (⟨x, hx⟩ : { x : α // 0 ≤ x }) ^ n = ⟨x ^ n, pow_nonneg hx n⟩ :=
   rfl
 
-@[deprecated (since := "2025-05-19")] alias pow_nonneg := _root_.pow_nonneg
-
 end Pow
 
 section Semiring
@@ -200,7 +223,7 @@ variable [Semiring α] [PartialOrder α] [ZeroLEOneClass α]
   [AddLeftMono α] [PosMulMono α]
 
 instance semiring : Semiring { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.semiring _ Nonneg.coe_zero Nonneg.coe_one
+  fast_instance% Subtype.coe_injective.semiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 
@@ -222,7 +245,7 @@ variable [CommSemiring α] [PartialOrder α] [ZeroLEOneClass α]
   [AddLeftMono α] [PosMulMono α]
 
 instance commSemiring : CommSemiring { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.commSemiring _ Nonneg.coe_zero Nonneg.coe_one
+  fast_instance% Subtype.coe_injective.commSemiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 

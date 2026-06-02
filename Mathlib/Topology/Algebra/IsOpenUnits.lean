@@ -3,9 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Jacobson.Ideal
-import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
+module
+
+public import Mathlib.RingTheory.Jacobson.Ideal
+public import Mathlib.Topology.Algebra.GroupWithZero
+public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 
 /-!
 
@@ -22,6 +24,8 @@ A non-example is `𝔸ₖ`, because the topology on ideles is not the induced to
 This condition is necessary and sufficient for `U(R)` to be an open subspace of `X(R)`
 for all affine scheme `X` over `R` and all affine open subscheme `U ⊆ X`.
 -/
+
+public section
 
 open Topology
 
@@ -50,7 +54,7 @@ instance (priority := 900) {M : Type*} [GroupWithZero M]
     [TopologicalSpace M] [ContinuousInv₀ M] [T1Space M] : IsOpenUnits M where
   isOpenEmbedding_unitsVal := by
     refine ⟨Units.isEmbedding_val₀, ?_⟩
-    convert (isClosed_singleton (X := M) (x := 0)).isOpen_compl
+    convert! (isClosed_singleton (X := M) (x := 0)).isOpen_compl
     ext
     simp only [Set.mem_range, Set.mem_compl_iff, Set.mem_singleton_iff]
     exact isUnit_iff_ne_zero
@@ -62,7 +66,7 @@ lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [IsTop
     (hR : IsAdic I) (hI : I ≤ Ideal.jacobson ⊥) :
     IsOpenUnits R := by
   refine ⟨.of_continuous_injective_isOpenMap Units.continuous_val Units.val_injective ?_⟩
-  refine (TopologicalGroup.isOpenMap_iff_nhds_one (f := Units.coeHom R)).mpr ?_
+  refine (IsTopologicalGroup.isOpenMap_iff_nhds_one (f := Units.coeHom R)).mpr ?_
   rw [nhds_induced, nhds_prod_eq]
   simp only [Units.embedProduct_apply, Units.val_one, inv_one, MulOpposite.op_one]
   intro s hs

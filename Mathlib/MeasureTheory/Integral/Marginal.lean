@@ -3,7 +3,9 @@ Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.MeasureTheory.Constructions.Pi
+module
+
+public import Mathlib.MeasureTheory.Constructions.Pi
 
 /-!
 # Marginals of multivariate functions
@@ -53,6 +55,8 @@ since there is no well-behaved measure on the domain of `f`.
 
 -/
 
+@[expose] public section
+
 
 open scoped ENNReal
 open Set Function Equiv Finset
@@ -85,13 +89,8 @@ notation "∫⋯∫⁻_" s ", " f => lmarginal (fun _ ↦ volume) s f
 variable (μ)
 
 theorem _root_.Measurable.lmarginal [∀ i, SigmaFinite (μ i)] (hf : Measurable f) :
-    Measurable (∫⋯∫⁻_s, f ∂μ) := by
-  refine Measurable.lintegral_prod_right ?_
-  refine hf.comp ?_
-  rw [measurable_pi_iff]; intro i
-  by_cases hi : i ∈ s
-  · simpa [hi, updateFinset] using measurable_pi_iff.1 measurable_snd _
-  · simpa [hi, updateFinset] using measurable_pi_iff.1 measurable_fst _
+    Measurable (∫⋯∫⁻_s, f ∂μ) :=
+  Measurable.lintegral_prod_right (hf.comp measurable_updateFinset')
 
 @[simp] theorem lmarginal_empty (f : (∀ i, X i) → ℝ≥0∞) : ∫⋯∫⁻_∅, f ∂μ = f := by
   ext1 x
@@ -108,7 +107,7 @@ theorem lmarginal_congr {x y : ∀ i, X i} (f : (∀ i, X i) → ℝ≥0∞)
 theorem lmarginal_update_of_mem {i : δ} (hi : i ∈ s)
     (f : (∀ i, X i) → ℝ≥0∞) (x : ∀ i, X i) (y : X i) :
     (∫⋯∫⁻_s, f ∂μ) (Function.update x i y) = (∫⋯∫⁻_s, f ∂μ) x := by
-  grind [Function.update_of_ne, MeasureTheory.lmarginal_congr]
+  grind [MeasureTheory.lmarginal_congr]
 
 variable {μ} in
 theorem lmarginal_singleton (f : (∀ i, X i) → ℝ≥0∞) (i : δ) :
@@ -218,9 +217,6 @@ theorem lmarginal_update_of_notMem {i : δ}
     have hii' : i ≠ i' := mt (by rintro rfl; exact mem_insert_self i s) hi
     simp_rw [update_comm hii', ih (mt Finset.mem_insert_of_mem hi)]
 
-@[deprecated (since := "2025-05-23")]
-alias lmarginal_update_of_not_mem := lmarginal_update_of_notMem
-
 theorem lmarginal_eq_of_subset {f g : (∀ i, X i) → ℝ≥0∞} (hst : s ⊆ t)
     (hf : Measurable f) (hg : Measurable g) (hfg : ∫⋯∫⁻_s, f ∂μ = ∫⋯∫⁻_s, g ∂μ) :
     ∫⋯∫⁻_t, f ∂μ = ∫⋯∫⁻_t, g ∂μ := by
@@ -237,14 +233,14 @@ theorem lmarginal_le_of_subset {f g : (∀ i, X i) → ℝ≥0∞} (hst : s ⊆ 
 theorem lintegral_eq_of_lmarginal_eq [Fintype δ] (s : Finset δ) {f g : (∀ i, X i) → ℝ≥0∞}
     (hf : Measurable f) (hg : Measurable g) (hfg : ∫⋯∫⁻_s, f ∂μ = ∫⋯∫⁻_s, g ∂μ) :
     ∫⁻ x, f x ∂Measure.pi μ = ∫⁻ x, g x ∂Measure.pi μ := by
-  rcases isEmpty_or_nonempty (∀ i, X i) with h|⟨⟨x⟩⟩
+  rcases isEmpty_or_nonempty (∀ i, X i) with h | ⟨⟨x⟩⟩
   · simp_rw [lintegral_of_isEmpty]
   simp_rw [lintegral_eq_lmarginal_univ x, lmarginal_eq_of_subset (Finset.subset_univ s) hf hg hfg]
 
 theorem lintegral_le_of_lmarginal_le [Fintype δ] (s : Finset δ) {f g : (∀ i, X i) → ℝ≥0∞}
     (hf : Measurable f) (hg : Measurable g) (hfg : ∫⋯∫⁻_s, f ∂μ ≤ ∫⋯∫⁻_s, g ∂μ) :
     ∫⁻ x, f x ∂Measure.pi μ ≤ ∫⁻ x, g x ∂Measure.pi μ := by
-  rcases isEmpty_or_nonempty (∀ i, X i) with h|⟨⟨x⟩⟩
+  rcases isEmpty_or_nonempty (∀ i, X i) with h | ⟨⟨x⟩⟩
   · simp_rw [lintegral_of_isEmpty, le_rfl]
   simp_rw [lintegral_eq_lmarginal_univ x, lmarginal_le_of_subset (Finset.subset_univ s) hf hg hfg x]
 

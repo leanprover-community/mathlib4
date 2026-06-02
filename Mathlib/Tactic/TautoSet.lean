@@ -3,13 +3,16 @@ Copyright (c) 2025 Lenny Taelman. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lenny Taelman
 -/
+module
 
-import Mathlib.Data.Set.SymmDiff
-import Mathlib.Data.Set.Disjoint
+public import Mathlib.Data.Set.SymmDiff  -- shake: keep (Qq dependency)
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # The `tauto_set` tactic
 -/
+
+public meta section
 
 assert_not_exists RelIso
 
@@ -26,10 +29,12 @@ elab (name := specialize_all) "specialize_all" x:term : tactic => withMainContex
 
 
 /--
-`tauto_set` attempts to prove tautologies involving hypotheses and goals of the form `X ⊆ Y`
-or `X = Y`, where `X`, `Y` are expressions built using ∪, ∩, \, and ᶜ from finitely many
+`tauto_set` proves tautologies involving hypotheses and goals of the form `X ⊆ Y`
+or `X = Y`, where `X`, `Y` are expressions built using `∪`, `∩`, `\`, and `ᶜ` from finitely many
 variables of type `Set α`. It also unfolds expressions of the form `Disjoint A B` and
 `symmDiff A B`.
+In other words, this tactic proves propositional tautologies, expressed in the language of sets.
+This is a finishing tactic: it either closes the goal or raises an error.
 
 Examples:
 ```lean

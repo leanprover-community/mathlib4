@@ -3,10 +3,12 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Calculus.SmoothSeries
-import Mathlib.Analysis.Normed.Operator.Prod
-import Mathlib.Analysis.SpecialFunctions.Gaussian.PoissonSummation
-import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+module
+
+public import Mathlib.Analysis.Calculus.SmoothSeries
+public import Mathlib.Analysis.Normed.Operator.Prod
+public import Mathlib.Analysis.SpecialFunctions.Gaussian.PoissonSummation
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!
 # The two-variable Jacobi theta function
@@ -25,6 +27,8 @@ $$\theta'(z, τ) = \sum_{n \in \mathbb{Z}} 2 \pi i n \exp (2 i \pi n z + i \pi n
 (Note that the Mellin transform of `θ` will give us functional equations for `L`-functions
 of even Dirichlet characters, and that of `θ'` will do the same for odd Dirichlet characters.)
 -/
+
+@[expose] public section
 
 open Complex Real Asymptotics Filter Topology
 
@@ -209,7 +213,7 @@ lemma summable_jacobiTheta₂_term_fderiv_iff (z τ : ℂ) :
       (?_ : 3 * π * |n| ^ 2 * ‖jacobiTheta₂_term n z τ‖ ≤ _)
     simp_rw [mul_assoc (3 * π)]
     refine mul_le_mul_of_nonneg_left ?_ (mul_pos (by simp : 0 < (3 : ℝ)) pi_pos).le
-    refine mul_le_mul_of_nonneg_left ?_ (pow_nonneg (Int.cast_nonneg.mpr (abs_nonneg _)) _)
+    refine mul_le_mul_of_nonneg_left ?_ (pow_nonneg (Int.cast_nonneg (abs_nonneg _)) _)
     exact norm_jacobiTheta₂_term_le hτ le_rfl le_rfl n
 
 lemma summable_jacobiTheta₂'_term_iff (z τ : ℂ) :
@@ -297,7 +301,7 @@ lemma hasFDerivAt_jacobiTheta₂ (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
   have hVmem : (z, τ) ∈ V := ⟨hz, hτ'⟩
   have hVp : IsPreconnected V := by
     refine (Convex.isPreconnected ?_).prod (convex_halfSpace_im_gt T).isPreconnected
-    simpa only [abs_lt] using (convex_halfSpace_im_gt _).inter (convex_halfSpace_im_lt _)
+    simpa only [abs_lt] using! (convex_halfSpace_im_gt _).inter (convex_halfSpace_im_lt _)
   let f : ℤ → ℂ × ℂ → ℂ := fun n p ↦ jacobiTheta₂_term n p.1 p.2
   let f' : ℤ → ℂ × ℂ → ℂ × ℂ →L[ℂ] ℂ := fun n p ↦ jacobiTheta₂_term_fderiv n p.1 p.2
   have hf (n : ℤ) : ∀ p ∈ V, HasFDerivAt (f n) (f' n p) p :=
@@ -312,8 +316,8 @@ lemma hasFDerivAt_jacobiTheta₂ (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
     exact (summable_pow_mul_jacobiTheta₂_term_bound S hT 2).mul_left _
   have hf_sum : Summable fun n : ℤ ↦ f n (z, τ) := by
     refine (summable_pow_mul_jacobiTheta₂_term_bound S hT 0).of_norm_bounded ?_
-    simpa only [pow_zero, one_mul] using norm_jacobiTheta₂_term_le hT hz.le hτ'.le
-  simpa only [jacobiTheta₂, jacobiTheta₂_fderiv, f, f'] using
+    simpa only [pow_zero, one_mul] using! norm_jacobiTheta₂_term_le hT hz.le hτ'.le
+  simpa only [jacobiTheta₂, jacobiTheta₂_fderiv, f, f'] using!
     hasFDerivAt_tsum_of_isPreconnected hu_sum hVo hVp hf hu hVmem hf_sum hVmem
 
 lemma continuousAt_jacobiTheta₂ (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
@@ -336,10 +340,8 @@ lemma hasDerivAt_jacobiTheta₂_fst (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
   -- through infinite sums of continuous linear maps.
   let eval_fst_CLM : (ℂ × ℂ →L[ℂ] ℂ) →L[ℂ] ℂ :=
   { toFun := fun f ↦ f (1, 0)
-    cont := continuous_id'.clm_apply continuous_const
     map_add' := by simp only [ContinuousLinearMap.add_apply, forall_const]
-    map_smul' := by simp only [ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul,
-      RingHom.id_apply, forall_const] }
+    map_smul' := by simp }
   have step1 : HasSum (fun n ↦ (jacobiTheta₂_term_fderiv n z τ) (1, 0))
       ((jacobiTheta₂_fderiv z τ) (1, 0)) := by
     apply eval_fst_CLM.hasSum (hasSum_jacobiTheta₂_term_fderiv z hτ)
@@ -508,7 +510,7 @@ theorem jacobiTheta₂'_functional_equation (z τ : ℂ) :
   have hj : HasDerivAt (fun w ↦ jacobiTheta₂ (w / τ) (-1 / τ))
       ((1 / τ) * jacobiTheta₂' (z / τ) (-1 / τ)) z := by
     have := hasDerivAt_jacobiTheta₂_fst (z / τ) hτ'
-    simpa only [mul_comm, one_div] using this.comp z (hasDerivAt_mul_const τ⁻¹)
+    simpa only [mul_comm, one_div] using! this.comp z (hasDerivAt_mul_const τ⁻¹)
   calc
   _ = deriv (jacobiTheta₂ · τ) z := (hasDerivAt_jacobiTheta₂_fst z hτ).deriv.symm
   _ = deriv (fun z ↦ 1 / (-I * τ) ^ (1 / 2 : ℂ) *

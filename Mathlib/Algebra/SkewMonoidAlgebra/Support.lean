@@ -3,14 +3,18 @@ Copyright (c) 2025 Xavier Généreux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Généreux, María Inés de Frutos Fernández
 -/
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Algebra.SkewMonoidAlgebra.Basic
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.SkewMonoidAlgebra.Basic
 
 /-!
-#  Lemmas about the support of an element of a skew monoid algebra
+# Lemmas about the support of an element of a skew monoid algebra
 
 For `f : SkewMonoidAlgebra k G`, `f.support` is the set of all `a ∈ G` such that `f.coeff a ≠ 0`.
 -/
+
+public section
 
 open scoped Pointwise
 
@@ -24,8 +28,10 @@ section AddCommMonoid
 
 variable [AddCommMonoid k] {a : G} {b : k}
 
-theorem support_single_ne_zero (a : G) (h : b ≠ 0) : (single a b).support = {a} :=
-  Finsupp.support_single_ne_zero _ h
+@[simp] lemma support_single (a : G) (h : b ≠ 0) : (single a b).support = {a} :=
+  Finsupp.support_single _ h
+
+@[deprecated (since := "2026-05-05")] alias support_single_ne_zero := support_single
 
 theorem support_single_subset : (single a b).support ⊆ {a} := Finsupp.support_single_subset
 
@@ -55,7 +61,7 @@ lemma support_one_subset : (1 : SkewMonoidAlgebra k G).support ⊆ 1 :=
 
 @[simp]
 lemma support_one [NeZero (1 : k)] : (1 : SkewMonoidAlgebra k G).support = 1 :=
-  Finsupp.support_single_ne_zero _ one_ne_zero
+  Finsupp.support_single _ one_ne_zero
 
 end AddCommMonoidWithOne
 
@@ -101,19 +107,21 @@ theorem support_mul_single_eq_image {r : k} {x : G} (rx : IsRightRegular x)
   simp [coeff_mul, mem_support_iff.mp yf, hrx, mem_support_iff, sum_single_index, mul_zero,
     ite_self, rx.eq_iff]
 
+end DecidableEq
+
 theorem support_mul_single [IsRightCancelMul G] (r : k) (x : G)
    (hrx : ∀ g : G, ∀ y, y * g • r = 0 ↔ y = 0) :
     (f * single x r).support = f.support.map (mulRightEmbedding x) := by
+  classical
   ext a
   simp [support_mul_single_eq_image f (IsRightRegular.all x) hrx]
 
 theorem support_single_mul [IsLeftCancelMul G] (r : k) (x : G)
     (hrx : ∀ y, r * x • y = 0 ↔ y = 0) :
     (single x r * f : SkewMonoidAlgebra k G).support = f.support.map (mulLeftEmbedding x) := by
+  classical
   ext a
   simp [support_single_mul_eq_image f (IsLeftRegular.all x) hrx]
-
-end DecidableEq
 
 section Span
 

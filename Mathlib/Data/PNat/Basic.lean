@@ -3,11 +3,13 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Ralf Stephan, Neil Strickland, Ruben Van de Velde
 -/
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Order.Positive.Ring
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Data.PNat.Equiv
+module
+
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.Order.Positive.Ring
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Data.PNat.Equiv
 
 /-!
 # The positive natural numbers
@@ -17,15 +19,15 @@ It is defined in `Data.PNat.Defs`, but most of the development is deferred to he
 that `Data.PNat.Defs` can have very few imports.
 -/
 
-deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigroup,
-  Add, Mul, Distrib for PNat
+@[expose] public section
+
+deriving instance Add, Mul, Distrib, AddLeftCancelSemigroup, AddRightCancelSemigroup,
+  AddCommSemigroup, CommMonoid, IsOrderedCancelMonoid, WellFoundedLT, AddLeftMono,
+  AddLeftStrictMono, AddLeftReflectLE, AddLeftReflectLT for PNat
 
 namespace PNat
 
-instance instCommMonoid : CommMonoid ℕ+ := Positive.commMonoid
-instance instIsOrderedCancelMonoid : IsOrderedCancelMonoid ℕ+ := Positive.isOrderedCancelMonoid
 instance instCancelCommMonoid : CancelCommMonoid ℕ+ where
-instance instWellFoundedLT : WellFoundedLT ℕ+ := WellFoundedRelation.isWellFounded
 
 @[simp]
 theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
@@ -35,10 +37,10 @@ theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
 theorem natPred_add_one (n : ℕ+) : n.natPred + 1 = n :=
   (add_comm _ _).trans n.one_add_natPred
 
-@[mono]
+@[gcongr, mono]
 theorem natPred_strictMono : StrictMono natPred := fun m _ h => Nat.pred_lt_pred m.2.ne' h
 
-@[mono]
+@[gcongr, mono]
 theorem natPred_monotone : Monotone natPred :=
   natPred_strictMono.monotone
 
@@ -71,10 +73,10 @@ end PNat
 
 namespace Nat
 
-@[mono]
+@[gcongr, mono]
 theorem succPNat_strictMono : StrictMono succPNat := fun _ _ => Nat.succ_lt_succ
 
-@[mono]
+@[gcongr, mono]
 theorem succPNat_mono : Monotone succPNat :=
   succPNat_strictMono.monotone
 
@@ -106,7 +108,7 @@ subtraction, division and powers.
 -/
 @[simp, norm_cast]
 theorem coe_inj {m n : ℕ+} : (m : ℕ) = n ↔ m = n :=
-  SetCoe.ext_iff
+  Subtype.ext_iff.symm
 
 @[simp, norm_cast]
 theorem add_coe (m n : ℕ+) : ((m + n : ℕ+) : ℕ) = m + n :=
@@ -117,18 +119,6 @@ theorem add_coe (m n : ℕ+) : ((m + n : ℕ+) : ℕ) = m + n :=
 def coeAddHom : AddHom ℕ+ ℕ where
   toFun := (↑)
   map_add' := add_coe
-
-instance addLeftMono : AddLeftMono ℕ+ :=
-  Positive.addLeftMono
-
-instance addLeftStrictMono : AddLeftStrictMono ℕ+ :=
-  Positive.addLeftStrictMono
-
-instance addLeftReflectLE : AddLeftReflectLE ℕ+ :=
-  Positive.addLeftReflectLE
-
-instance addLeftReflectLT : AddLeftReflectLT ℕ+ :=
-  Positive.addLeftReflectLT
 
 /-- The order isomorphism between ℕ and ℕ+ given by `succ`. -/
 @[simps! -fullyApplied apply]
@@ -147,6 +137,9 @@ theorem add_one_le_iff : ∀ {a b : ℕ+}, a + 1 ≤ b ↔ a < b := Nat.add_one_
 instance instOrderBot : OrderBot ℕ+ where
   bot := 1
   bot_le a := a.property
+
+instance : IsBotOneClass ℕ+ where
+  isBot_one a := a.2
 
 @[simp]
 theorem bot_eq_one : (⊥ : ℕ+) = 1 :=
@@ -214,9 +207,9 @@ def coeMonoidHom : ℕ+ →* ℕ where
 theorem coe_coeMonoidHom : (coeMonoidHom : ℕ+ → ℕ) = (↑) :=
   rfl
 
-@[simp]
-theorem le_one_iff {n : ℕ+} : n ≤ 1 ↔ n = 1 :=
-  le_bot_iff
+@[deprecated le_one_iff_eq_one (since := "2026-05-07")]
+theorem le_one_iff {n : ℕ+} : n ≤ 1 ↔ n = 1 := by
+  simp
 
 theorem lt_add_left (n m : ℕ+) : n < m + n :=
   lt_add_of_pos_left _ m.2
@@ -228,12 +221,12 @@ theorem lt_add_right (n m : ℕ+) : n < n + m :=
 theorem pow_coe (m : ℕ+) (n : ℕ) : ↑(m ^ n) = (m : ℕ) ^ n :=
   rfl
 
-/-- b is greater one if any a is less than b -/
-theorem one_lt_of_lt {a b : ℕ+} (hab : a < b) : 1 < b := bot_le.trans_lt hab
+@[deprecated one_lt_of_gt (since := "2026-05-07")]
+theorem one_lt_of_lt {a b : ℕ+} (hab : a < b) : 1 < b := hab.one_lt
 
 theorem add_one (a : ℕ+) : a + 1 = succPNat a := rfl
 
-theorem lt_succ_self (a : ℕ+) : a < succPNat a := lt.base a
+theorem lt_succ_self (a : ℕ+) : a < succPNat a := Nat.lt_add_one a
 
 /-- Subtraction a - b is defined in the obvious way when
   a > b, and by a - b = 1 if a ≤ b.
@@ -314,13 +307,8 @@ theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
   split_ifs with h
   · have hm : (m : ℕ) > 0 := m.pos
     rw [← Nat.mod_add_div (m : ℕ) (k : ℕ), h, zero_add] at hm ⊢
-    by_cases h₁ : (m : ℕ) / (k : ℕ) = 0
-    · rw [h₁, mul_zero] at hm
-      exact (lt_irrefl _ hm).elim
-    · let h₂ : (k : ℕ) * 1 ≤ k * (m / k) :=
-        Nat.mul_le_mul_left (k : ℕ) (Nat.succ_le_of_lt (Nat.pos_of_ne_zero h₁))
-      rw [mul_one] at h₂
-      exact ⟨h₂, le_refl (k : ℕ)⟩
+    simp
+    lia
   · exact ⟨Nat.mod_le (m : ℕ) (k : ℕ), (Nat.mod_lt (m : ℕ) k.pos).le⟩
 
 theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by

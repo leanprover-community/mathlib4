@@ -1,14 +1,18 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.Topology.MetricSpace.Pseudo.Pi
+module
+
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.Topology.MetricSpace.Pseudo.Pi
 
 /-!
 # Lemmas about distances between points in intervals in `ℝ`.
 -/
+
+public section
 
 open Bornology Filter Metric Set
 open scoped NNReal Topology
@@ -18,10 +22,10 @@ namespace Real
 variable {ι : Type*}
 
 lemma dist_left_le_of_mem_uIcc {x y z : ℝ} (h : y ∈ uIcc x z) : dist x y ≤ dist x z := by
-  simpa only [dist_comm x] using abs_sub_left_of_mem_uIcc h
+  simpa only [dist_comm x] using! abs_sub_left_of_mem_uIcc h
 
 lemma dist_right_le_of_mem_uIcc {x y z : ℝ} (h : y ∈ uIcc x z) : dist y z ≤ dist x z := by
-  simpa only [dist_comm _ z] using abs_sub_right_of_mem_uIcc h
+  simpa only [dist_comm _ z] using! abs_sub_right_of_mem_uIcc h
 
 lemma dist_le_of_mem_uIcc {x y x' y' : ℝ} (hx : x ∈ uIcc x' y') (hy : y ∈ uIcc x' y') :
     dist x y ≤ dist x' y' :=

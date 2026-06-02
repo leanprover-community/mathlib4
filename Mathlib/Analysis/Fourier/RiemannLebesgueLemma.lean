@@ -3,14 +3,15 @@ Copyright (c) 2022 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Fourier.FourierTransform
-import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Analysis.InnerProductSpace.EuclideanDist
-import Mathlib.MeasureTheory.Function.ContinuousMapDense
-import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.Topology.EMetricSpace.Paracompact
-import Mathlib.MeasureTheory.Measure.Haar.Unique
+module
+
+public import Mathlib.Analysis.Fourier.FourierTransform
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
+public import Mathlib.MeasureTheory.Function.ContinuousMapDense
+public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # The Riemann-Lebesgue Lemma
@@ -42,6 +43,8 @@ equivalence to an inner-product space.
   reformulations explicitly using the Fourier integral.
 -/
 
+public section
+
 noncomputable section
 
 open MeasureTheory Filter Complex Set Module
@@ -70,9 +73,9 @@ theorem fourierIntegral_half_period_translate {w : V} (hw : w ≠ 0) :
     ext1 v
     simp_rw [inner_add_left, hiw, Circle.smul_def, Real.fourierChar_apply, neg_add, mul_add,
       ofReal_add, add_mul, exp_add]
-    have : 2 * π * -(1 / 2) = -π := by field_simp
-    rw [this, ofReal_neg, neg_mul, exp_neg, exp_pi_mul_I, inv_neg, inv_one, mul_neg_one, neg_smul,
-      neg_neg]
+    match_scalars
+    have H : exp (- (π * I)) = (-1)⁻¹ := by rw [exp_neg, exp_pi_mul_I]
+    linear_combination (norm := ring_nf) cexp (-2 * π * ⟪v, w⟫ * I) * H
   rw [this, integral_add_right_eq_self (fun (x : V) ↦ -(𝐞 (-⟪x, w⟫) • f x))
         ((fun w ↦ (1 / (2 * ‖w‖ ^ (2 : ℕ))) • w) w)]
   simp only [integral_neg]
@@ -84,7 +87,7 @@ theorem fourierIntegral_eq_half_sub_half_period_translate {w : V} (hw : w ≠ 0)
   simp_rw [smul_sub]
   rw [integral_sub, fourierIntegral_half_period_translate hw, sub_eq_add_neg, neg_neg, ←
     two_smul ℂ _, ← @smul_assoc _ _ _ _ _ _ (IsScalarTower.left ℂ), smul_eq_mul]
-  · norm_num
+  · simp
   exacts [(Real.fourierIntegral_convergent_iff w).2 hf,
     (Real.fourierIntegral_convergent_iff w).2 (hf.comp_add_right _)]
 
@@ -95,7 +98,7 @@ of interest as a preparatory step for the more general result
 theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support (hf1 : Continuous f)
     (hf2 : HasCompactSupport f) :
     Tendsto (fun w : V => ∫ v : V, 𝐞 (-⟪v, w⟫) • f v) (cocompact V) (𝓝 0) := by
-  refine NormedAddCommGroup.tendsto_nhds_zero.mpr fun ε hε => ?_
+  refine NormedAddGroup.tendsto_nhds_zero.mpr fun ε hε => ?_
   suffices ∃ T : ℝ, ∀ w : V, T ≤ ‖w‖ → ‖∫ v : V, 𝐞 (-⟪v, w⟫) • f v‖ < ε by
     simp_rw [← comap_dist_left_atTop_eq_cocompact (0 : V), eventually_comap, eventually_atTop,
       dist_eq_norm', sub_zero]
@@ -165,7 +168,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
   rw [this] at bdA2
   refine bdA2.trans_lt ?_
   rw [div_mul_eq_mul_div, div_lt_iff₀ (NNReal.coe_pos.mpr hB_pos), mul_comm (2 : ℝ), mul_assoc,
-    mul_lt_mul_left hε]
+    mul_lt_mul_iff_right₀ hε]
   refine (ENNReal.toReal_mono ENNReal.coe_ne_top hB_vol).trans_lt ?_
   rw [ENNReal.coe_toReal, two_mul]
   exact lt_add_of_pos_left _ hB_pos
@@ -177,7 +180,7 @@ variable (f)
 theorem tendsto_integral_exp_inner_smul_cocompact :
     Tendsto (fun w : V => ∫ v, 𝐞 (-⟪v, w⟫) • f v) (cocompact V) (𝓝 0) := by
   by_cases hfi : Integrable f; swap
-  · convert tendsto_const_nhds (x := (0 : E)) with w
+  · convert! tendsto_const_nhds (x := (0 : E)) with w
     apply integral_undef
     rwa [Real.fourierIntegral_convergent_iff]
   refine Metric.tendsto_nhds.mpr fun ε hε => ?_
@@ -195,7 +198,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact :
     simp_rw [← integral_sub ((Real.fourierIntegral_convergent_iff w).2 hfi)
       ((Real.fourierIntegral_convergent_iff w).2 (hg_cont.integrable_of_hasCompactSupport hg_supp)),
       ← smul_sub, ← Pi.sub_apply]
-    exact VectorFourier.norm_fourierIntegral_le_integral_norm 𝐞 _ bilinFormOfRealInner (f - g) w
+    exact VectorFourier.norm_fourierIntegral_le_integral_norm 𝐞 _ (innerₗ V) (f - g) w
   replace := add_lt_add_of_le_of_lt this hI
   rw [add_halves] at this
   refine ((le_of_eq ?_).trans (norm_add_le _ _)).trans_lt this
@@ -207,9 +210,13 @@ theorem Real.tendsto_integral_exp_smul_cocompact (f : ℝ → E) :
   simp_rw [mul_comm]
   exact tendsto_integral_exp_inner_smul_cocompact f
 
-/-- The Riemann-Lebesgue lemma for functions on `ℝ`, formulated via `Real.fourierIntegral`. -/
-theorem Real.zero_at_infty_fourierIntegral (f : ℝ → E) : Tendsto (𝓕 f) (cocompact ℝ) (𝓝 0) :=
+/-- The Riemann-Lebesgue lemma for functions on `ℝ`, formulated via
+`Real.instFourierTransform.fourier`. -/
+theorem Real.zero_at_infty_fourier (f : ℝ → E) : Tendsto (𝓕 f) (cocompact ℝ) (𝓝 0) :=
   tendsto_integral_exp_inner_smul_cocompact f
+
+@[deprecated (since := "2025-11-16")]
+alias Real.zero_at_infty_fourierIntegral := Real.zero_at_infty_fourier
 
 /-- Riemann-Lebesgue lemma for functions on a finite-dimensional inner-product space, formulated
 via dual space. **Do not use** -- it is only a stepping stone to
@@ -254,8 +261,10 @@ theorem tendsto_integral_exp_smul_cocompact (μ : Measure V) [μ.IsAddHaarMeasur
   -- isomorphism between duals derived from A
   let Adual : StrongDual ℝ V ≃L[ℝ] StrongDual ℝ V' := A.arrowCongrSL (.refl _ _)
   have : (μ.map Aₘ).IsAddHaarMeasure := A.isAddHaarMeasure_map _
-  convert (tendsto_integral_exp_smul_cocompact_of_inner_product (f ∘ A.symm) (μ.map Aₘ)).comp
-    Adual.toHomeomorph.toCocompactMap.cocompact_tendsto' with w
+  convert!
+    (tendsto_integral_exp_smul_cocompact_of_inner_product (f ∘ A.symm) (μ.map Aₘ)).comp
+      Adual.toHomeomorph.toCocompactMap.cocompact_tendsto' with
+    w
   suffices ∫ v, 𝐞 (-w v) • f v ∂μ = ∫ (x : V), 𝐞 (-w (A.symm (Aₘ x))) • f (A.symm (Aₘ x)) ∂μ by
     simpa [Function.comp_apply, integral_map_equiv, Adual]
   simp [Aₘ]

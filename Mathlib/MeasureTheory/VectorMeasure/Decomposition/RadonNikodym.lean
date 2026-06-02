@@ -3,8 +3,10 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Thomas Zhu
 -/
-import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
-import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Lebesgue
+module
+
+public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Lebesgue
 
 /-!
 # Radon-Nikodym derivatives of vector measures
@@ -13,6 +15,8 @@ This file contains results about Radon-Nikodym derivatives of signed measures
 that depend both on the Lebesgue decomposition of signed measures
 and the theory of Radon-Nikodym derivatives of usual measures.
 -/
+
+public section
 
 namespace MeasureTheory
 
@@ -30,8 +34,8 @@ theorem withDensityᵥ_rnDeriv_eq (s : SignedMeasure α) (μ : Measure α) [Sigm
     rw [withDensityᵥ_apply (integrable_rnDeriv _ _) hi, rnDeriv_def, integral_sub,
       setIntegral_toReal_rnDeriv h.1 i, setIntegral_toReal_rnDeriv h.2 i]
     · conv_rhs => rw [← s.toSignedMeasure_toJordanDecomposition]
-      erw [VectorMeasure.sub_apply]
-      rw [toSignedMeasure_apply_measurable hi, toSignedMeasure_apply_measurable hi, measureReal_def,
+      rw [JordanDecomposition.toSignedMeasure, VectorMeasure.sub_apply,
+        toSignedMeasure_apply_measurable hi, toSignedMeasure_apply_measurable hi, measureReal_def,
         measureReal_def]
     all_goals
       refine Integrable.integrableOn ?_

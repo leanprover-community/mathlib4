@@ -140,3 +140,125 @@ set_option linter.unusedTactic false in
 example : True := by
   my_skip
   trivial
+
+-- Test the linter applies within have statements
+#guard_msgs(drop warning) in
+/--
+  warning: The following tactic starts with 2 goals and ends with 1 goal, 1 of which is not operated on.
+  trivial
+Please focus on the current goal, for instance using `·` (typed as "\.").
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+-/
+#guard_msgs in
+example : true ∧ true := by
+  have : true ∧ true := by
+    constructor
+    trivial
+    trivial
+  exact this
+
+-- Test that `grind` interactive mode is treated properly, following the above tests
+-- we have to pick slightly less trivial goals that `grind only` will not immediately close
+
+section grind_interactive
+
+variable {x y z : Nat}
+
+/--
+warning: The following tactic starts with 2 goals and ends with 1 goal, 1 of which is not operated on.
+  finish
+Please focus on the current goal, for instance using `·` (typed as "\.").
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+-/
+#guard_msgs in
+example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
+  grind =>
+    cases #484a
+    finish
+    finish
+
+-- `focus` is ignored.
+example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
+  grind =>
+    cases #484a
+    focus finish
+    focus finish
+
+-- `next` is ignored.
+example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
+  grind =>
+    cases #484a
+    next => finish
+    finish
+
+-- Exclude `skip` from linting.
+example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
+  grind =>
+    cases #484a
+    skip
+    · finish
+    · finish
+
+-- Test the linter applies within have statements
+/--
+  warning: The following tactic starts with 2 goals and ends with 1 goal, 1 of which is not operated on.
+  trivial
+Please focus on the current goal, for instance using `·` (typed as "\.").
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+-/
+#guard_msgs in
+example (hx : x = 0 ∨ x = 1) : x ≤ 1 := by
+  grind =>
+    have : true ∧ true := by
+      constructor
+      trivial
+      trivial
+    cases #01c5
+
+-- ignore `cases`
+example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x + y ≤ 2 := by
+  grind =>
+    cases #484a
+    cases #01c5
+    cases #01c5
+
+-- ignore `<;>`
+example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) (hz : z = 0 ∨ z = 1) :
+    x + y + z ≤ 3 := by
+  grind =>
+    cases #f5ad
+    cases #484a <;> cases #01c5
+    cases #484a <;> cases #01c5
+
+-- excluded tactics
+
+example (hx : x = 0 ∨ x = 1) : x ≤ 1 := by
+  grind =>
+    fail_if_success cases #1234
+    finish
+
+example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
+  grind =>
+    first (cases #484a) (cases #01c5)
+    first (cases #484a) (cases #01c5)
+    first (cases #484a) (cases #01c5)
+
+example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
+  grind =>
+    cases #484a
+    repeat finish
+
+example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
+  grind =>
+    cases #484a
+    all_goals finish
+
+example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
+  grind =>
+    cases #484a
+    any_goals finish
+
+end grind_interactive

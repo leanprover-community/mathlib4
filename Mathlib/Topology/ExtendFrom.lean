@@ -3,7 +3,9 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Anatole Dedecker
 -/
-import Mathlib.Topology.Separation.Regular
+module
+
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # Extending a function from a subset
@@ -21,6 +23,8 @@ it suffices that `f` converges within `A` at any point of `B`, provided that
 `f` is a function to a T₃ space.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

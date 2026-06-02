@@ -3,15 +3,19 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Filter.CountablyGenerated
-import Mathlib.Order.Filter.Prod
-import Mathlib.Order.Filter.Ultrafilter.Defs
+module
+
+public import Mathlib.Order.Filter.CountablyGenerated
+public import Mathlib.Order.Filter.Prod
+public import Mathlib.Order.Filter.Ultrafilter.Defs
 /-!
 # Subsingleton filters
 
 We say that a filter `l` is a *subsingleton* if there exists a subsingleton set `s ∈ l`.
 Equivalently, `l` is either `⊥` or `pure a` for some `a`.
 -/
+
+@[expose] public section
 
 open Set
 variable {α β : Type*} {l : Filter α}

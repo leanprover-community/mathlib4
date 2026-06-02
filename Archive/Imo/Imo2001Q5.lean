@@ -11,7 +11,7 @@ import Mathlib.Geometry.Euclidean.Triangle
 Let `ABC` be a triangle. Let `AP` bisect `∠BAC` and let `BQ` bisect `∠ABC`, with `P` on `BC` and
 `Q` on `AC`. If `AB + BP = AQ + QB` and `∠BAC = 60°`, what are the angles of the triangle?
 
-# Solution
+## Solution
 
 We follow the solution from https://web.evanchen.cc/exams/IMO-2001-notes.pdf.
 
@@ -104,7 +104,7 @@ lemma x_pos : 0 < s.x := by
   have col := s.ABC_eq; rw [h, mul_zero] at col
   replace col : Collinear ℝ {s.A, s.B, s.C} := by
     apply collinear_of_sin_eq_zero; rw [col, Real.sin_zero]
-  apply s.not_collinear_BAC; convert col using 1; grind
+  apply s.not_collinear_BAC; convert! col using 1; grind
 
 lemma Q_ne_A : s.Q ≠ s.A := by
   by_contra h; have := s.ABQ_eq
@@ -127,7 +127,7 @@ lemma x_lt_pi_div_three : s.x < π / 3 := by
   have col : ∠ s.A s.C s.B = 0 := by linarith [s.ACB_eq, angle_nonneg s.A s.C s.B]
   replace col : Collinear ℝ {s.A, s.C, s.B} := by
     apply collinear_of_sin_eq_zero; rw [col, Real.sin_zero]
-  apply s.not_collinear_BAC; convert col using 1; grind
+  apply s.not_collinear_BAC; convert! col using 1; grind
 
 lemma APB_eq : ∠ s.A s.P s.B = 5 * π / 6 - 2 * s.x := by
   have := angle_add_angle_add_angle_eq_pi s.P s.A_ne_B
