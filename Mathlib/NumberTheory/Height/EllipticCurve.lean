@@ -41,7 +41,7 @@ variable {K : Type*} [Field K] [AdmissibleAbsValues K] {a b : K}
 open MvPolynomial
 
 include hab in
-/-- If `a b : K` and  `D := 32*a^3 + 216*b^2` is nonzero, then the map `F : ℙ² → ℙ²` given by
+/-- If `a b : K` and `D := 32*a^3 + 216*b^2` is nonzero, then the map `F : ℙ² → ℙ²` given by
 `(s : t : u) ↦ (s^2 - 2*a*s*u - 4*b*t*u + a²*u² : 2*s*t + 2*a*t*u + 4*b*u² : t² - 4*s*u)`
 (called `addSubMap` here) is a morphism.
 
