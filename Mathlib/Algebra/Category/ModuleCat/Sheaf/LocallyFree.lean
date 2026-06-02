@@ -58,6 +58,7 @@ end LocalGeneratorsData
 
 /-- A sheaf of modules is locally free if it is locally isomorphic to free sheaves:
 There exist local generators satisfying `IsLocallyFreeData`. -/
+@[stacks 01C6 "(1)"]
 class IsLocallyFree (M : SheafOfModules.{u} R) : Prop where
   exists_isLocallyFreeData : ∃ q : LocalGeneratorsData.{u₁} M, q.IsLocallyFreeData
 
