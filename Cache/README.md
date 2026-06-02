@@ -85,7 +85,7 @@ order, depending on the repo:
 |-------------------------------------------------|-----------------------------|
 | `leanprover-community/mathlib4`                 | `master`, `legacy`          |
 | `leanprover-community/mathlib4-nightly-testing` | `nightly-testing`, `legacy` |
-| any fork (PRs)                                  | `forks`, `legacy`           |
+| any fork (PRs)                                  | `master`, `forks`, `legacy` |
 
 Override the read chain with `--cache-from=LIST`:
 
