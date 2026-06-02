@@ -177,30 +177,60 @@ theorem adicAbv_intCast_le_one (n : ℤ) : adicAbv K v n ≤ 1 :=
 @[deprecated (since := "2026-03-11")]
 alias NumberField.RingOfIntegers.HeightOneSpectrum.one_lt_absNorm := one_lt_absNorm
 @[deprecated (since := "2026-03-11")]
+alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.one_lt_absNorm := one_lt_absNorm
+@[deprecated (since := "2026-03-11")]
 alias NumberField.RingOfIntegers.HeightOneSpectrum.one_lt_absNorm_nnreal := one_lt_absNorm_nnreal
+@[deprecated (since := "2026-03-11")]
+alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.one_lt_absNorm_nnreal :=
+  one_lt_absNorm_nnreal
 @[deprecated (since := "2026-03-11")]
 alias NumberField.RingOfIntegers.HeightOneSpectrum.absNorm_ne_zero := absNorm_ne_zero
 @[deprecated (since := "2026-03-11")]
+alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.absNorm_ne_zero := absNorm_ne_zero
+@[deprecated (since := "2026-03-11")]
 alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv := adicAbv
 @[deprecated (since := "2026-03-11")]
+alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv := adicAbv
+@[deprecated (since := "2026-03-11")]
 alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_def := adicAbv_def
+@[deprecated (since := "2026-03-11")]
+alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_def := adicAbv_def
 @[deprecated (since := "2026-03-11")]
 alias NumberField.RingOfIntegers.HeightOneSpectrum.isNonarchimedean_adicAbv :=
   isNonarchimedean_adicAbv
 @[deprecated (since := "2026-03-11")]
+alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.isNonarchimedean_adicAbv :=
+  isNonarchimedean_adicAbv
+@[deprecated (since := "2026-03-11")]
 alias NumberField.instRankOneAdicCompletion := instRankOneAdicCompletion
+@[deprecated (since := "2026-03-11")]
+alias _root_.NumberField.instRankOneAdicCompletion := instRankOneAdicCompletion
 @[deprecated (since := "2026-03-11")]
 alias NumberField.instNormedFieldValuedAdicCompletion := instNormedFieldValuedAdicCompletion
 @[deprecated (since := "2026-03-11")]
+alias _root_.NumberField.instNormedFieldValuedAdicCompletion := instNormedFieldValuedAdicCompletion
+@[deprecated (since := "2026-03-11")]
 alias NumberField.rankOne_hom'_def := rankOne_hom'_def
+@[deprecated (since := "2026-03-11")]
+alias _root_.NumberField.rankOne_hom'_def := rankOne_hom'_def
 @[deprecated (since := "2026-03-11")]
 alias NumberField.toNNReal_valued_eq_adicAbv := toNNReal_valued_eq_adicAbv
 @[deprecated (since := "2026-03-11")]
+alias _root_.NumberField.toNNReal_valued_eq_adicAbv := toNNReal_valued_eq_adicAbv
+@[deprecated (since := "2026-03-11")]
 alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max := adicAbv_add_le_max
+@[deprecated (since := "2026-03-11")]
+alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max := adicAbv_add_le_max
 @[deprecated (since := "2026-03-11")]
 alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_natCast_le_one := adicAbv_natCast_le_one
 @[deprecated (since := "2026-03-11")]
+alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_natCast_le_one :=
+  adicAbv_natCast_le_one
+@[deprecated (since := "2026-03-11")]
 alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_intCast_le_one := adicAbv_intCast_le_one
+@[deprecated (since := "2026-03-11")]
+alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_intCast_le_one :=
+  adicAbv_intCast_le_one
 
 end HeightOneSpectrum
 
@@ -210,7 +240,7 @@ open HeightOneSpectrum Valuation.IsRankOneDiscrete
 for the equality involving `‖embedding v x‖` on the LHS. -/
 theorem FinitePlace.norm_def (x : v.adicCompletion K) :
     ‖x‖ = toNNReal (absNorm_ne_zero v) (Valued.v x) := by
-  simp [Valued.toNormedField.norm_def, Valuation.RankOne.hom, rankOne_hom'_def,
+  simp [Valued.toNormedField.norm_def, Valuation.RankOne.hom, HeightOneSpectrum.rankOne_hom'_def,
     valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective
       (valuedAdicCompletion_surjective K v)]
 

@@ -238,13 +238,13 @@ def discharge (useSimp := true) (e : Expr) : SimpM (Option Expr) := do
 open Tactic in
 /-- Constructs a simp context from the simp argument syntax. -/
 def getSimpContext (cfg args : Syntax) (simpOnly := false) : TacticM Simp.Context := do
-  let config ← elabSimpConfigCore cfg
+  let { config, userConfig } ← elabSimpConfigCore cfg
   let simpTheorems ←
     if simpOnly then simpOnlyBuiltins.foldlM (·.addConst ·) {} else getSimpTheorems
   let { ctx, .. } ←
     elabSimpArgs args[0] (eraseLocal := false) (kind := .simp) (simprocs := {})
       (← Simp.mkContext config (simpTheorems := #[simpTheorems])
-        (congrTheorems := ← getSimpCongrTheorems))
+        (congrTheorems := ← getSimpCongrTheorems) (userConfig := userConfig))
   return ctx
 
 open Elab Tactic in

@@ -629,7 +629,6 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
       simp only [prodCongrLeft_apply]
     · intro σ _ σ' _ eq
       ext x hx k
-      simp only at eq
       have :
         ∀ k x,
           prodCongrLeft (fun k => σ k (Finset.mem_univ _)) (k, x) =
