@@ -90,4 +90,4 @@ theorem IsRegularLocalRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegu
       apply (moduleDepth_eq_zero_of_hom_nontrivial _ _).mpr
       use LinearMap.id, 0
       exact LinearMap.ne_zero_of_injective fun ⦃_ _⦄ a ↦ a
-    simpa [← eq, eq0] using le_biSup projectiveDimension ‹_›
+    simpa [← eq, eq0] using! le_biSup projectiveDimension ‹_›
