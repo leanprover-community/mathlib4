@@ -105,7 +105,7 @@ def _root_.IsPGroup.toSylow [Fact p.Prime] {P : Subgroup G}
 
 theorem _root_.IsPGroup.le_sylow_of_normal {N : Subgroup G} [N.Normal] (h : IsPGroup p N)
     (H : Sylow p G) : N ≤ H :=
-  le_sup_left.trans_eq <| H.is_maximal' (h.to_sup_of_normal_left H.isPGroup') le_sup_right
+  sup_eq_right.mp <| H.is_maximal' (h.to_sup_of_normal_left H.isPGroup') le_sup_right
 
 /-- A subgroup with cardinality `p ^ n` is a Sylow subgroup
 where `n` is the multiplicity of `p` in the group order. -/
