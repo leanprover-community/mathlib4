@@ -27,7 +27,7 @@ protected theorem symmDiff_def (s t : Set α) : s ∆ t = s \ t ∪ t \ s := rfl
 
 @[simp] theorem mem_bihimp : a ∈ s ⇔ t ↔ (a ∈ s ↔ a ∈ t) := by simp [bihimp, iff_def']
 
-protected theorem bihimp_def : s ⇔ t = (sᶜ ∪ t) ∩ (s ∪ tᶜ) := by ext; simp; tauto
+protected theorem bihimp_def : s ⇔ t = (s ∪ tᶜ) ∩ (t ∪ sᶜ) := bihimp_eq ..
 
 theorem symmDiff_subset_union : s ∆ t ⊆ s ∪ t :=
   @symmDiff_le_sup (Set α) _ _ _

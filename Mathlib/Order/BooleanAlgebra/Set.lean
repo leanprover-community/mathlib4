@@ -37,15 +37,12 @@ variable {α β : Type*} {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 instance : HImp (Set α) where
   himp s t := {x | x ∈ s → x ∈ t}
 
-@[simp]
-theorem mem_himp_iff : a ∈ s ⇨ t ↔ a ∈ s → a ∈ t :=
-  .rfl
-
-theorem himp_def : s ⇨ t = sᶜ ∪ t := by
-  ext; simp [imp_iff_not_or]
+@[simp] theorem mem_himp_iff : a ∈ s ⇨ t ↔ a ∈ s → a ∈ t := .rfl
 
 instance instBooleanAlgebra : BooleanAlgebra (Set α) :=
   fast_instance% { (inferInstance : BooleanAlgebra (α → Prop)) with }
+
+theorem himp_def : s ⇨ t = t ∪ sᶜ := himp_eq
 
 /-- See also `Set.sdiff_inter_right_comm`. -/
 lemma inter_diff_assoc (a b c : Set α) : (a ∩ b) \ c = a ∩ (b \ c) := inf_sdiff_assoc ..
