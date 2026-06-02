@@ -46,7 +46,7 @@ Options:
   --repo=OWNER/REPO  Override the repository to fetch/push cache from
   --staging-dir=<output-directory> Required for 'stage', 'stage!', 'unstage' and 'put-staged': staging directory.
   --cache-from=LIST  Comma-separated, trust-ordered list of containers to read from
-                     (e.g. `--cache-from=master,legacy`). Overrides the per-repo default.
+                     (e.g. `--cache-from=master,forks`). Overrides the per-repo default.
                      Known containers: master, forks, nightly-testing,
                      pr-toolchain-tests, legacy.
   --scope=REF        Read from the SHA-scoped namespace for the given commit ref

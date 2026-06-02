@@ -196,9 +196,6 @@ lake exe cache query
 #
 # To use this cache, run:
 #   lake exe cache get --scope=5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e
-
-# Or specify the containers explicitly:
-#   lake exe cache get --scope=5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e --cache-from=forks,legacy
 ```
 
 The `query` command walks your git log backwards from `HEAD`, stopping at the
