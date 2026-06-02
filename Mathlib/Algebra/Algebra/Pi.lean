@@ -72,12 +72,12 @@ variable (R)
 
 /-- Use `AlgHom.pi` instead. -/
 @[deprecated AlgHom.pi (since := "2026-05-30")] def algHom {B : Type*} [Semiring B] [Algebra R B]
-    (g : ∀ i, B →ₐ[R] A i) : B →ₐ[R] Π i, A i :=
+    (g : Π i, B →ₐ[R] A i) : B →ₐ[R] Π i, A i :=
   .pi g
 
 /-- Use `AlgHom.pi_apply` instead. -/
 @[deprecated AlgHom.pi_apply (since := "2026-05-30")] theorem algHom_apply {B : Type*} [Semiring B]
-    [Algebra R B] (g : ∀ i, B →ₐ[R] A i) (x : B) (i : ι) : Pi.algHom R A g x i = g i x :=
+    [Algebra R B] (g : Π i, B →ₐ[R] A i) (x : B) (i : ι) : Pi.algHom R A g x i = g i x :=
   AlgHom.pi_apply g x i
 
 /-- `Function.eval` as an `AlgHom`. The name matches `Pi.evalRingHom`, `Pi.evalMonoidHom`,
