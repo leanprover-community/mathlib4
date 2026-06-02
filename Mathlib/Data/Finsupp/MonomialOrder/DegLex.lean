@@ -131,17 +131,16 @@ noncomputable instance : LinearOrder (DegLex (α →₀ ℕ)) :=
     (fun (f : DegLex (α →₀ ℕ)) ↦ toLex ((ofDegLex f).degree, toLex (ofDegLex f)))
     (fun f g ↦ by simp)
 
-set_option warn.sorry false in
+set_option backward.isDefEq.respectTransparency false in
 theorem le_iff {x y : DegLex (α →₀ ℕ)} :
     x ≤ y ↔ (ofDegLex x).degree < (ofDegLex y).degree ∨
       (ofDegLex x).degree = (ofDegLex y).degree ∧ toLex (ofDegLex x) ≤ toLex (ofDegLex y) := by
-  sorry
-  -- simp only [le_iff_eq_or_lt, lt_iff, EmbeddingLike.apply_eq_iff_eq]
-  -- by_cases h : x = y
-  -- · simp [h]
-  -- · by_cases k : (ofDegLex x).degree < (ofDegLex y).degree
-  --   · simp [k]
-  --   · simp only [h, k, false_or]
+  simp only [le_iff_eq_or_lt, lt_iff, EmbeddingLike.apply_eq_iff_eq]
+  by_cases h : x = y
+  · simp [h]
+  · by_cases k : (ofDegLex x).degree < (ofDegLex y).degree
+    · simp [k]
+    · simp only [h, k, false_or]
 
 instance : IsOrderedCancelAddMonoid (DegLex (α →₀ ℕ)) where
   le_of_add_le_add_left a b c h := by
@@ -152,12 +151,11 @@ instance : IsOrderedCancelAddMonoid (DegLex (α →₀ ℕ)) where
     rw [le_iff] at h ⊢
     simpa [ofDegLex_add, map_add] using h
 
-set_option warn.sorry false in
+set_option backward.isDefEq.respectTransparency false in
 theorem single_strictAnti : StrictAnti (fun (a : α) ↦ toDegLex (single a 1)) := by
-  sorry
-  -- intro _ _ h
-  -- simp only [lt_iff, ofDegLex_toDegLex, degree_single, lt_self_iff_false, Lex.single_lt_iff, h,
-  --   and_self, or_true]
+  intro _ _ h
+  simp only [lt_iff, ofDegLex_toDegLex, degree_single, lt_self_iff_false, Lex.single_lt_iff, h,
+    and_self, or_true]
 
 theorem single_antitone : Antitone (fun (a : α) ↦ toDegLex (single a 1)) :=
   single_strictAnti.antitone
@@ -200,12 +198,10 @@ open Finsupp
 
 variable {σ : Type*} [LinearOrder σ] [WellFoundedGT σ]
 
-set_option warn.sorry false in
-set_option linter.overlappingInstances false in
 /-- The deg-lexicographic order on `σ →₀ ℕ`, as a `MonomialOrder` -/
-noncomputable def degLex [WellFoundedGT σ] :
+noncomputable def degLex :
     MonomialOrder σ where
-  wf := sorry
+  wf := DegLex.wellFoundedLT
   syn := DegLex (σ →₀ ℕ)
   toSyn := { toEquiv := toDegLex, map_add' := toDegLex_add }
   toSyn_monotone a b h := by
