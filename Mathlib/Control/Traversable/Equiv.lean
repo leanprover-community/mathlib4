@@ -78,7 +78,7 @@ protected theorem lawfulFunctor' [F : Functor t']
   have : F = Equiv.functor eqv := by
     cases F
     dsimp [Equiv.functor]
-    congr <;> ext <;> dsimp only <;> [rw [← h₀]; rw [← h₁]] <;> rfl
+    congr <;> ext <;> [rw [← h₀]; rw [← h₁]] <;> rfl
   subst this
   exact Equiv.lawfulFunctor eqv
 
