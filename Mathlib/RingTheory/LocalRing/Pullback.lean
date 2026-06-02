@@ -69,7 +69,8 @@ abbrev pullbackSnd (f : R →+* T) (g : S →+* T) : f.pullback g →+* S :=
   (RingHom.snd R S).comp (f.pullback g).subtype
 
 theorem pullback_comm_sq (f : R →+* T) (g : S →+* T) :
-    f.comp (f.pullbackFst g) = g.comp (f.pullbackSnd g) := ext fun x ↦ x.prop
+    f.comp (f.pullbackFst g) = g.comp (f.pullbackSnd g) :=
+  ext fun x ↦ x.prop
 
 theorem isUnit_pullback_mk_iff (f : R →+* T) (g : S →+* T) {a : R × S} (a_in : a ∈ f.pullback g) :
     IsUnit (⟨a, a_in⟩ : f.pullback g) ↔ IsUnit a.1 ∧ IsUnit a.2 := by
@@ -95,14 +96,24 @@ theorem surjective_pullbackSnd_of_surjective (f : R →+* T) (g : S →+* T)
     (h : Function.Surjective f) : Function.Surjective (f.pullbackSnd g) :=
   fun s ↦ by simpa [eq_comm] using h (g s)
 
+theorem map_pullbackSnd_ker_pullbackFst_eq (f : R →+* T) (g : S →+* T) :
+    Ideal.map (f.pullbackSnd g) (RingHom.ker (f.pullbackFst g)) = RingHom.ker g := by
+  apply le_antisymm
+  · rw [Ideal.map_le_iff_le_comap]
+    rintro ⟨⟨_, _⟩, h⟩
+    simp at h ⊢; grind
+  · intro s hs
+    rw [RingHom.mem_ker] at hs
+    exact Ideal.mem_map_of_mem (f.pullbackSnd g) (x := ⟨(0, s), by simpa using hs.symm⟩)
+      (I := RingHom.ker (f.pullbackFst g)) (by simp)
+
 theorem isLocalRing_pullback [IsLocalRing R] (f : R →+* T) (g : S →+* T) (hg : IsLocalHom g) :
     IsLocalRing (f.pullback g) where
   isUnit_or_isUnit_of_add_one {a b} h := by
     rcases a with ⟨⟨u, v⟩, huv⟩; rcases b with ⟨⟨s, t⟩, hst⟩
-    simp only [AddMemClass.mk_add_mk, Prod.mk_add_mk, ← Subtype.val_inj, OneMemClass.coe_one,
-      Prod.mk_eq_one] at h
-    simp only [RingHom.mem_eqLocus, RingHom.coe_comp, RingHom.coe_fst, Function.comp_apply,
-      RingHom.coe_snd] at huv hst
+    replace h : u + s = 1 ∧ v + t = 1 := by simpa [← Subtype.val_inj] using h
+    replace huv : f u = g v := by simpa using huv
+    replace hst : f s = g t := by simpa using hst
     rcases IsLocalRing.isUnit_or_isUnit_of_add_one h.left with hu | hs
     · have : IsUnit (g v) := by rw [← huv]; exact IsUnit.map f hu
       apply IsLocalHom.map_nonunit at this
