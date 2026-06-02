@@ -139,8 +139,10 @@ noncomputable def TransitiveRelation.map (e : TransitiveRelation p₁ p₂) (F :
   t := F.map e.t
   c := e.c.map F
   isLimit := isLimitPullbackConeMapOfIsLimit F e.c.condition (.ofIsoLimit e.isLimit e.c.eta)
-  transitivity₁ := by simp [← Functor.map_comp]
-  transitivity₂ := by simp [← Functor.map_comp]
+  transitivity₁ :=
+    (F.map_comp _ _).symm.trans ((congr(F.map $e.transitivity₁)).trans (F.map_comp _ _))
+  transitivity₂ :=
+    (F.map_comp _ _).symm.trans ((congr(F.map $e.transitivity₂)).trans (F.map_comp _ _))
 
 end CategoryTheory
 
@@ -282,7 +284,7 @@ epimorphism. -/
 structure UniversallyEffectiveEquivalenceRelation {R A : C} (p₁ p₂ : R ⟶ A)
     extends EffectiveEquivalenceRelation p₁ p₂ where
   universally_effectiveEpi_π : MorphismProperty.universally (fun _ _ f => EffectiveEpi f)
-    (toEffectiveEquivalenceRelation.π)
+    toEffectiveEquivalenceRelation.π
 
 /-- The typeclass associated with the structure `UniversallyEffectiveEquivalenceRelation`. -/
 class IsUniversallyEffectiveEquivalenceRelation {R A : C} (p₁ p₂ : R ⟶ A) : Prop where
