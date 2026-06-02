@@ -652,12 +652,12 @@ def mapEdgeSet : G.edgeSet ≃ G'.edgeSet where
   left_inv := by
     rintro ⟨e, h⟩
     simp only [Hom.mapEdgeSet, RelEmbedding.toRelHom, Sym2.map_map, comp_apply, Subtype.mk.injEq]
-    convert congr_fun Sym2.map_id e
+    convert! congr_fun Sym2.map_id e
     exact RelIso.symm_apply_apply _ _
   right_inv := by
     rintro ⟨e, h⟩
     simp only [Hom.mapEdgeSet, RelEmbedding.toRelHom, Sym2.map_map, comp_apply, Subtype.mk.injEq]
-    convert congr_fun Sym2.map_id e
+    convert! congr_fun Sym2.map_id e
     exact RelIso.apply_symm_apply _ _
 
 /-- A graph isomorphism induces an equivalence of neighbor sets. -/
@@ -673,7 +673,7 @@ def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v) where
 include f in
 theorem card_eq [Fintype V] [Fintype W] : Fintype.card V = Fintype.card W := by
   rw [← Fintype.ofEquiv_card f.toEquiv]
-  convert rfl
+  convert! rfl
 
 /-- Given a bijection, there is an embedding from the comapped graph into the original
 graph. -/
@@ -721,6 +721,34 @@ abbrev comp (f' : G' ≃g G'') (f : G ≃g G') : G ≃g G'' :=
 @[simp]
 theorem coe_comp (f' : G' ≃g G'') (f : G ≃g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
+
+section induce
+
+variable {s : Set V} {t : Set W} {r : Set X}
+         (φ : G ≃g G') (φst : Set.BijOn φ s t) (ψ : G' ≃g G'') (ψtr : Set.BijOn ψ t r)
+
+/-- The restriction of an isomorphism of graphs to induced subgraphs. -/
+protected def induce : G.induce s ≃g G'.induce t where
+  toFun v := ⟨φ v.val, φst.mapsTo v.property⟩
+  invFun w := ⟨φ.symm w.val, (φ.bijOn_symm.mpr φst).mapsTo w.property⟩
+  left_inv v := by simp
+  right_inv w := by simp
+  map_rel_iff' := by simp [map_adj_iff φ]
+
+@[simp, norm_cast]
+protected lemma coe_induce :
+    ⇑(φ.induce φst) = φst.mapsTo.restrict φ s t := rfl
+
+@[simp]
+protected lemma induce_refl (G : SimpleGraph V) (s : Set V) :
+    (.refl : G ≃g G).induce (Set.bijOn_id s) = .refl := rfl
+
+@[simp]
+protected lemma induce_comp_induce :
+    (ψ.induce ψtr).comp (φ.induce φst) = (ψ.comp φ).induce (ψtr.comp φst) := by
+  rfl
+
+end induce
 
 end Iso
 

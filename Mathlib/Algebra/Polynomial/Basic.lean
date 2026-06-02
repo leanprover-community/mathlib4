@@ -428,7 +428,7 @@ theorem monomial_eq_monomial_iff {m n : ℕ} {a b : R} :
   rw [← toFinsupp_inj, toFinsupp_monomial, toFinsupp_monomial, Finsupp.single_eq_single_iff]
 
 theorem support_add : (p + q).support ⊆ p.support ∪ q.support := by
-  simpa [support] using Finsupp.support_add
+  simpa [support] using! Finsupp.support_add
 
 /-- `C a` is the constant polynomial `a`.
 `C` is provided as a ring homomorphism.
@@ -440,7 +440,7 @@ def C : R →+* R[X] :=
     map_zero' := by simp }
 
 @[simp]
-theorem monomial_zero_left (a : R) : monomial 0 a = C a :=
+theorem monomial_zero_left ⦃a : R⦄ : monomial 0 a = C a :=
   rfl
 
 @[simp]
@@ -633,7 +633,7 @@ theorem notMem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
 
 @[aesop simp]
 theorem coeff_C : coeff (C a) n = ite (n = 0) a 0 := by
-  convert coeff_monomial (a := a) (m := n) (n := 0) using 2
+  convert! coeff_monomial (a := a) (m := n) (n := 0) using 2
   simp [eq_comm]
 
 @[simp]
@@ -706,7 +706,7 @@ theorem forall_eq_iff_forall_eq : (∀ f g : R[X], f = g) ↔ ∀ a b : R, a = b
 theorem ext_iff {p q : R[X]} : p = q ↔ ∀ n, coeff p n = coeff q n := by
   rcases p with ⟨f : ℕ →₀ R⟩
   rcases q with ⟨g : ℕ →₀ R⟩
-  simpa [coeff] using DFunLike.ext_iff (f := f) (g := g)
+  simpa [coeff] using! DFunLike.ext_iff (f := f) (g := g)
 
 @[ext]
 theorem ext {p q : R[X]} : (∀ n, coeff p n = coeff q n) → p = q :=
@@ -723,6 +723,7 @@ theorem addSubmonoid_closure_setOf_eq_monomial :
   rintro _ ⟨n, a, rfl⟩
   exact ⟨n, a, Polynomial.ofFinsupp_single _ _⟩
 
+@[ext high]
 theorem addHom_ext {M : Type*} [AddZeroClass M] {f g : R[X] →+ M}
     (h : ∀ n a, f (monomial n a) = g (monomial n a)) : f = g :=
   AddMonoidHom.eq_of_eqOn_denseM addSubmonoid_closure_setOf_eq_monomial <| by
@@ -806,7 +807,7 @@ theorem smul_X_eq_monomial {n} : a • X ^ n = monomial n (a : R) := by
   rw [X_pow_eq_monomial, smul_monomial, smul_eq_mul, mul_one]
 
 theorem support_X_pow (H : ¬(1 : R) = 0) (n : ℕ) : (X ^ n : R[X]).support = singleton n := by
-  convert support_monomial n H
+  convert! support_monomial n H
   exact X_pow_eq_monomial n
 
 theorem support_X_empty (H : (1 : R) = 0) : (X : R[X]).support = ∅ := by
@@ -913,7 +914,7 @@ protected theorem induction_on {motive : R[X] → Prop} (p : R[X]) (C : ∀ a, m
     | succ n ih => exact monomial _ _ ih
   have B : ∀ s : Finset ℕ, motive (s.sum fun n : ℕ => Polynomial.C (p.coeff n) * X ^ n) := by
     apply Finset.induction
-    · convert C 0
+    · convert! C 0
       exact C_0.symm
     · intro n s ns ih
       rw [sum_insert ns]

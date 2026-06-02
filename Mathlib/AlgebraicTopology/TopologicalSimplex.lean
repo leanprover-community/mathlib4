@@ -39,6 +39,7 @@ associating the topological `n`-simplex to `⦋n⦌ : SimplexCategory`. -/
 noncomputable def toTop : SimplexCategory ⥤ TopCat.{u} :=
   toTop₀ ⋙ TopCat.uliftFunctor
 
+set_option backward.defeqAttrib.useBackward true in
 instance (n : SimplexCategory) : Nonempty (toTop₀.obj n) := by dsimp; infer_instance
 
 instance (n : SimplexCategory) : Nonempty (toTop.{u}.obj n) := inferInstanceAs (Nonempty (ULift _))
@@ -47,6 +48,7 @@ instance : Unique (toTop₀.obj ⦋0⦌) := inferInstanceAs (Unique (stdSimplex 
 
 instance : Unique (toTop.{u}.obj ⦋0⦌) := inferInstanceAs (Unique (ULift _))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance (n : SimplexCategory) : PathConnectedSpace (toTop₀.obj n) := by dsimp; infer_instance
 

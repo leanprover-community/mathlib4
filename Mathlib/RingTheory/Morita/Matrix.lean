@@ -25,6 +25,8 @@ public import Mathlib.RingTheory.Morita.Basic
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 universe u v
@@ -51,6 +53,7 @@ open Matrix
 variable {M : Type*} [AddCommGroup M] [Module (Matrix ι ι R) M] [Module R M]
   [IsScalarTower R (Matrix ι ι R) M]
 
+set_option backward.defeqAttrib.useBackward true in
 variable (M) in
 /-- The image of `Eᵢᵢ` (the elementary matrix) acting on all elements in `M`. -/
 def toModuleCatObj (i : ι) : Submodule R M :=
@@ -191,7 +194,7 @@ def ModuleCat.matrixEquivalence (i : ι) : ModuleCat R ≌ ModuleCat (Matrix ι 
     ext1
     suffices (toModuleCatFromModuleCatLinearEquiv R ((ModuleCat.toMatrixModCat R ι).obj X)
       i).symm.toLinearMap ∘ₗ LinearMap.mapMatrixModule ι (ModuleCat.Hom.hom
-      ((unitIso R i).inv.app X)) = LinearMap.id by simpa using this
+      ((unitIso R i).inv.app X)) = LinearMap.id by simpa using! this
     ext x
     simp [unitIso, toModuleCatFromModuleCatLinearEquiv, fromModuleCatToModuleCatLinearEquiv,
       fromModuleCatToModuleCatLinearEquivtoModuleCatObj, Finset.univ_sum_single]
