@@ -61,7 +61,7 @@ lemma extEquivCohomologyClass_symm_mk_hom [HasDerivedCategory C]
             (zero_add _)) (add_zero _) := by
   change SmallShiftedHom.equiv _ _ (.comp _ (CohomologyClass.mk x).toSmallShiftedHom _) = _
   simp only [SmallShiftedHom.equiv_comp, SmallShiftedHom.equiv_mk₀Inv, isoOfHom, asIso_inv,
-    CohomologyClass.equiv_toSmallShiftedHom_mk, Functor.comp_obj,
+    CohomologyClass.equiv_toSmallShiftedHom_mk,
     DerivedCategory.singleFunctorIsoCompQ, Iso.refl_hom, NatTrans.id_app, Category.id_comp,
     Iso.refl_inv]
   congr

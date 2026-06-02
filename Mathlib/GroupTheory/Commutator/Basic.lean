@@ -62,12 +62,22 @@ theorem commutatorElement_self : ⁅g, g⁆ = 1 :=
 theorem commutatorElement_inv : ⁅g₁, g₂⁆⁻¹ = ⁅g₂, g₁⁆ := by
   simp_rw [commutatorElement_def, mul_inv_rev, inv_inv, mul_assoc]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_commutatorElement : (f ⁅g₁, g₂⁆ : G') = ⁅f g₁, f g₂⁆ := by
   simp_rw [commutatorElement_def, map_mul f, map_inv f]
 
 @[to_additive]
 theorem conjugate_commutatorElement : g₃ * ⁅g₁, g₂⁆ * g₃⁻¹ = ⁅g₃ * g₁ * g₃⁻¹, g₃ * g₂ * g₃⁻¹⁆ := by
+  simp [mul_assoc, commutatorElement_def]
+
+@[to_additive]
+theorem commutatorElement_mul_left_eq_conj_mul (a b c : G) :
+    ⁅a * b, c⁆ = a * ⁅b, c⁆ * a⁻¹ * ⁅a, c⁆ := by
+  simp [mul_assoc, commutatorElement_def]
+
+@[to_additive]
+theorem commutatorElement_mul_right_eq_mul_conj (a b c : G) :
+    ⁅a, b * c⁆ = ⁅a, b⁆ * b * ⁅a, c⁆ * b⁻¹ := by
   simp [mul_assoc, commutatorElement_def]
 
 namespace Subgroup
@@ -82,7 +92,7 @@ theorem commutator_def (H₁ H₂ : Subgroup G) :
     ⁅H₁, H₂⁆ = closure { g | ∃ g₁ ∈ H₁, ∃ g₂ ∈ H₂, ⁅g₁, g₂⁆ = g } :=
   rfl
 
-variable {g₁ g₂ g₃} {H H₁ H₂ H₃ K₁ K₂ : Subgroup G}
+variable {g₁ g₂ g₃} {H H₁ H₂ H₃ K K₁ K₂ : Subgroup G}
 
 @[to_additive]
 theorem commutator_mem_commutator (h₁ : g₁ ∈ H₁) (h₂ : g₂ ∈ H₂) : ⁅g₁, g₂⁆ ∈ ⁅H₁, H₂⁆ :=
@@ -165,6 +175,16 @@ theorem commutator_top_left_le_iff : ⁅(⊤ : Subgroup G), H⁆ ≤ H ↔ H.Nor
 theorem commutator_top_right_le_iff : ⁅H, ⊤⁆ ≤ H ↔ H.Normal :=
   commutator_comm H ⊤ ▸ commutator_top_left_le_iff
 
+@[to_additive]
+theorem le_normalizer_iff_commutator_le_right : H ≤ normalizer K ↔ ⁅H, K⁆ ≤ K := by
+  refine le_normalizer_iff.trans ⟨fun hH ↦ ?_, fun hH h hh k hk ↦ ?_⟩
+  · exact commutator_le.mpr fun h hh k hk ↦ mul_mem (hH h hh k hk) (inv_mem hk)
+  · exact (mul_mem_cancel_right <| inv_mem hk).mp <| hH <| commutator_mem_commutator hh hk
+
+@[to_additive]
+theorem le_normalizer_iff_commutator_le_left : H ≤ normalizer K ↔ ⁅K, H⁆ ≤ K :=
+  commutator_comm H K ▸ le_normalizer_iff_commutator_le_right
+
 @[to_additive (attr := simp)]
 theorem commutator_bot_left : ⁅(⊥ : Subgroup G), H₁⁆ = ⊥ :=
   le_bot_iff.mp (commutator_le_left ⊥ H₁)
@@ -177,7 +197,34 @@ theorem commutator_bot_right : ⁅H₁, ⊥⁆ = (⊥ : Subgroup G) :=
 theorem commutator_le_inf [Normal H₁] [Normal H₂] : ⁅H₁, H₂⁆ ≤ H₁ ⊓ H₂ :=
   le_inf (commutator_le_left H₁ H₂) (commutator_le_right H₁ H₂)
 
+variable {H₁ H₂} in
+theorem commutator_eq_bot_of_disjoint [H₁.Normal] [H₂.Normal] (h : Disjoint H₁ H₂) :
+    ⁅H₁, H₂⁆ = ⊥ := by
+  grw [eq_bot_iff, commutator_le_inf, h.eq_bot.le]
+
 end Normal
+
+@[to_additive]
+theorem commutator_le_sup : ⁅H₁, H₂⁆ ≤ H₁ ⊔ H₂ :=
+  commutator_le.mpr <| by grind [mul_assoc, mul_mem, mul_mem_sup, inv_mem]
+
+@[to_additive]
+theorem normalizer_commutator_ge_left : H₁ ≤ normalizer (⁅H₁, H₂⁆ : Subgroup G) := by
+  apply le_normalizer_closure_iff.mpr
+  rintro g hg _ ⟨g₁, hg₁, g₂, hg₂, rfl⟩
+  apply (mul_mem_cancel_right <| commutator_mem_commutator hg hg₂).mp
+  rw [← commutatorElement_mul_left_eq_conj_mul g g₁ g₂]
+  exact commutator_mem_commutator (mul_mem hg hg₁) hg₂
+
+@[to_additive]
+theorem normalizer_commutator_ge_right : H₂ ≤ normalizer (⁅H₁, H₂⁆ : Subgroup G) := by
+  rw [commutator_comm]
+  apply normalizer_commutator_ge_left
+
+@[to_additive]
+instance normal_subgroupOf_commutator_sup : (⁅H₁, H₂⁆.subgroupOf <| H₁ ⊔ H₂).Normal :=
+  normal_subgroupOf_of_le_normalizer <| sup_le
+    (normalizer_commutator_ge_left H₁ H₂) (normalizer_commutator_ge_right H₁ H₂)
 
 @[to_additive]
 theorem map_commutator (f : G →* G') : map f ⁅H₁, H₂⁆ = ⁅map f H₁, map f H₂⁆ := by

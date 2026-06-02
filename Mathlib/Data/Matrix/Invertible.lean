@@ -112,7 +112,7 @@ instance invertibleTranspose [Invertible A] : Invertible Aᵀ where
 
 lemma transpose_invOf [Invertible A] [Invertible Aᵀ] : (⅟A)ᵀ = ⅟(Aᵀ) := by
   letI := invertibleTranspose A
-  convert (rfl : _ = ⅟(Aᵀ))
+  convert! (rfl : _ = ⅟(Aᵀ))
 
 /-- `Aᵀ` is invertible when `A` is. -/
 @[implicit_reducible]
@@ -199,7 +199,7 @@ See `Matrix.invOf_add_mul_mul'` for the Binomial Inverse Theorem. -/
 theorem invOf_add_mul_mul [Invertible (A + U * C * V)] :
     ⅟(A + U * C * V) = ⅟A - ⅟A * U * ⅟(⅟C + V * ⅟A * U) * V * ⅟A := by
   letI := invertibleAddMulMul A U C V
-  convert (rfl : ⅟(A + U * C * V) = _)
+  convert! (rfl : ⅟(A + U * C * V) = _)
 
 end Woodbury
 
@@ -243,7 +243,7 @@ See `Matrix.invOf_add_mul_mul` for the Woodbury identity. -/
 theorem invOf_add_mul_mul' [Invertible (A + U * C * V)] :
     ⅟(A + U * C * V) = ⅟A - ⅟A * U * C * ⅟(C + C * V * ⅟A * U * C) * C * V * ⅟A := by
   letI := invertibleAddMulMul' A U C V
-  convert (rfl : ⅟(A + U * C * V) = _)
+  convert! (rfl : ⅟(A + U * C * V) = _)
 
 end BinomialInverseTheorem
 

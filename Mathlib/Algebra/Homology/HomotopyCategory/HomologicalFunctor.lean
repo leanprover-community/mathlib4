@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
 public import Mathlib.Algebra.Homology.HomologySequence
 public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 
-/-! The homological functor
+/-! # The homological functor
 
 In this file, it is shown that if `C` is an abelian category,
 then `homologyFunctor C (ComplexShape.up ℤ) n` is a homological functor

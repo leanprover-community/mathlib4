@@ -179,7 +179,7 @@ theorem comap_id : S.comap (ContinuousMap.id X) = S := rfl
 theorem comap_comp (S : DiscreteQuotient Z) : S.comap (g.comp f) = (S.comap g).comap f :=
   rfl
 
-@[mono]
+@[gcongr, mono]
 theorem comap_mono {A B : DiscreteQuotient Y} (h : A ≤ B) : A.comap f ≤ B.comap f := by tauto
 
 end Comap
@@ -229,9 +229,9 @@ instance [LocallyConnectedSpace X] : OrderBot (DiscreteQuotient X) where
   bot :=
     { toSetoid := connectedComponentSetoid X
       isOpen_setOf_rel := fun x => by
-        convert isOpen_connectedComponent (x := x)
+        convert! isOpen_connectedComponent (x := x)
         ext y
-        simpa only [connectedComponentSetoid, ← connectedComponent_eq_iff_mem] using eq_comm }
+        simpa only [connectedComponentSetoid, ← connectedComponent_eq_iff_mem] using! eq_comm }
   bot_le S := fun x y (h : connectedComponent x = connectedComponent y) =>
     (S.isClopen_setOf_rel x).connectedComponent_subset (S.refl _) <| h.symm ▸ mem_connectedComponent
 
@@ -267,7 +267,7 @@ theorem leComap_id_iff : LEComap (ContinuousMap.id X) A A' ↔ A ≤ A' :=
 
 theorem LEComap.comp : LEComap g B C → LEComap f A B → LEComap (g.comp f) A C := by tauto
 
-@[mono]
+@[gcongr, mono]
 theorem LEComap.mono (h : LEComap f A B) (hA : A' ≤ A) (hB : B ≤ B') : LEComap f A' B' :=
   hA.trans <| h.trans <| comap_mono _ hB
 
@@ -288,7 +288,7 @@ theorem map_proj (cond : LEComap f A B) (x : X) : map f cond (A.proj x) = B.proj
 @[simp]
 theorem map_id : map _ (leComap_id A) = id := by ext ⟨⟩; rfl
 
-/- This can't be a `@[simp]` lemma since `h1` and `h2` can't be found by unification in a Prop. -/
+-- This can't be a `@[simp]` lemma since `h1` and `h2` can't be found by unification in a Prop.
 theorem map_comp (h1 : LEComap g B C) (h2 : LEComap f A B) :
     map (g.comp f) (h1.comp h2) = map g h1 ∘ map f h2 := by
   ext ⟨⟩
@@ -373,7 +373,7 @@ lemma comp_finsetClopens [CompactSpace X] :
   constructor
   · refine fun ⟨y, h⟩ ↦ ⟨Quotient.out (s := d.toSetoid) y, ?_⟩
     ext
-    simpa [← h] using Quotient.mk_eq_iff_out (s := d.toSetoid)
+    simpa [← h] using! Quotient.mk_eq_iff_out (s := d.toSetoid)
   · exact fun ⟨y, h⟩ ↦ ⟨d.proj y, by ext; simp [h, proj, Quotient.eq]⟩
 
 /-- `finsetClopens X` is injective. -/
