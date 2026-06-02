@@ -14,6 +14,7 @@ public import Batteries.Tactic.Lint.Misc
 import Mathlib.Tactic.Linter.Header  --shake: keep
 public import Batteries.Tactic.Lint.Basic
 import Lean.Elab.Term.TermElabM
+public import Lean.Elab.Term.TermElabM
 
 /-!
 # Additions to `Lean.Elab.InfoTree.Main`
@@ -130,21 +131,39 @@ def getDeclsByBody (t : InfoTree) : List Name :=
       else decls
     | _ => decls
 
+structure Body extends Term.BodyInfo where
+  stx : Syntax
+
+deriving instance Inhabited for Term.BodyInfo
+
+def _root_.Lean.Elab.CustomInfo.toBodyInfo? (i : CustomInfo) : Option Body := do
+  guard <| i.value.typeName == ``Lean.Elab.Term.BodyInfo
+  let bodyInfo := i.value.get? Lean.Elab.Term.BodyInfo |>.get!
+  return { bodyInfo with stx := i.stx }
+
 /-- Gets the first child info of each `Lean.Elab.BodyInfo`, which should be the only child, and
 should be a `TermInfo`, `PartialTermInfo`, or `TacticInfo`. `getDeclBodyInfos` does not validate
 either of these conditions. -/
-def getDeclBodyInfos (t : InfoTree) : List (Syntax × ContextInfo × Info) :=
-  t.foldInfoTree (init := []) fun ctx t acc =>
+@[specialize f]
+def foldDeclBodyInfos {α} (t : InfoTree) (f : Body → ContextInfo → Info → α → α)
+    (init : α) : α :=
+  t.foldInfoTree (init := init) fun ctx t acc =>
     match t with
     | .node (.ofCustomInfo i) body => Id.run do
-      if i.value.typeName == ``Lean.Elab.Term.BodyInfo then
+      if let some bi := i.toBodyInfo? then
         if h : 0 < body.size then
           -- See through `.context`s instead of just matching on `.node`:
           let result? := body[0].getHighestInfo? ctx
-          if let some result := result? then
-            return (i.stx, result) :: acc
+          if let some (ctx, info) := result? then
+            return f bi ctx info acc
       return acc
     | _ => acc
+
+/-- Gets the first child info of each `Lean.Elab.BodyInfo`, which should be the only child, and
+should be a `TermInfo`, `PartialTermInfo`, or `TacticInfo`. `getDeclBodyInfos` does not validate
+either of these conditions. -/
+def getDeclBodyInfos (t : InfoTree) : Array (Body × ContextInfo × Info) :=
+  t.foldDeclBodyInfos (init := #[]) fun bi ctx i acc => acc.push (bi, ctx, i)
 
 /--
 Get the declarations elaborated in the infotree `t` which are theorems according to the
