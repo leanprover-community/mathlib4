@@ -539,7 +539,6 @@ theorem mem_diagSet_iff_isDiag (z : Sym2 α) : z ∈ diagSet ↔ z.IsDiag := .rf
 
 theorem diagSet_eq_setOf_isDiag : diagSet = {z : Sym2 α | z.IsDiag} := rfl
 
-set_option linter.deprecated false in
 @[deprecated Set.compl_setOf (since := "2025-12-10")]
 theorem diagSet_compl_eq_setOf_not_isDiag : diagSetᶜ = {z : Sym2 α | ¬z.IsDiag} :=
   congrArg _ diagSet_eq_setOf_isDiag
@@ -687,7 +686,7 @@ def fromRelOrderIso : { r : α → α → Prop // Symmetric r } ≃o Set (Sym2 �
   invFun s := ⟨ToRel s, toRel_symmetric s⟩
   left_inv r := by simp [toRel_fromRel]
   right_inv s := by simp [fromRel_toRel]
-  map_rel_iff' {r₁ r₂} := by simpa using fromRel_mono_iff ..
+  map_rel_iff' {r₁ r₂} := by simpa using! fromRel_mono_iff ..
 
 /-- `fromRel` induces an order embedding from symmetric relations to `Sym2` sets. -/
 @[deprecated fromRelOrderIso (since := "2026-03-11")]
