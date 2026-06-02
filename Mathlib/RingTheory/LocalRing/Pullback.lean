@@ -12,8 +12,9 @@ public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 /-!
 # Local Ring Properties of Equalizers and Pullbacks
 
-In this file we provide basic lemmas for the equalizers the pullbacks and of ring homomorphisms.
-Then we show that they preserve the property of being a local ring under suitable conditions.
+In this file we provide basic lemmas for the equalizers the pullbacks and of ring homomorphisms
+and algebra homomorphisms. We show that they preserve the property of being a local ring under
+suitable conditions.
 
 ## Main definitions
 
@@ -46,8 +47,7 @@ theorem isUnit_eqLocus_mk_iff (f g : R →+* T) {r : R} (r_in : r ∈ f.eqLocus 
     grind
   rw [mem_eqLocus] at r_in
   obtain ⟨s, hs⟩ := isUnit_iff_exists.mp h
-  simp only [isUnit_iff_exists, ← Subtype.val_inj, Subring.coe_mul, OneMemClass.coe_one,
-    Subtype.exists, mem_eqLocus, exists_and_left, exists_prop]
+  suffices ∃ a, r * a = 1 ∧ f a = g a ∧ a * r = 1 by simpa [isUnit_iff_exists, ← Subtype.val_inj]
   refine ⟨s, hs.left, ?_, hs.right⟩
   rw [← mul_one (f s), ← map_one g, ← hs.left, map_mul, ← mul_assoc, ← r_in, ← map_mul, hs.right,
     map_one, one_mul]
@@ -69,7 +69,8 @@ abbrev pullbackSnd (f : R →+* T) (g : S →+* T) : f.pullback g →+* S :=
   (RingHom.snd R S).comp (f.pullback g).subtype
 
 theorem pullback_comm_sq (f : R →+* T) (g : S →+* T) :
-    f.comp (f.pullbackFst g) = g.comp (f.pullbackSnd g) := ext fun x ↦ x.prop
+    f.comp (f.pullbackFst g) = g.comp (f.pullbackSnd g) :=
+  ext fun x ↦ x.prop
 
 theorem isUnit_pullback_mk_iff (f : R →+* T) (g : S →+* T) {a : R × S} (a_in : a ∈ f.pullback g) :
     IsUnit (⟨a, a_in⟩ : f.pullback g) ↔ IsUnit a.1 ∧ IsUnit a.2 := by
@@ -110,10 +111,9 @@ theorem isLocalRing_pullback [IsLocalRing R] (f : R →+* T) (g : S →+* T) (hg
     IsLocalRing (f.pullback g) where
   isUnit_or_isUnit_of_add_one {a b} h := by
     rcases a with ⟨⟨u, v⟩, huv⟩; rcases b with ⟨⟨s, t⟩, hst⟩
-    simp only [AddMemClass.mk_add_mk, Prod.mk_add_mk, ← Subtype.val_inj, OneMemClass.coe_one,
-      Prod.mk_eq_one] at h
-    simp only [RingHom.mem_eqLocus, RingHom.coe_comp, RingHom.coe_fst, Function.comp_apply,
-      RingHom.coe_snd] at huv hst
+    replace h : u + s = 1 ∧ v + t = 1 := by simpa [← Subtype.val_inj] using h
+    replace huv : f u = g v := by simpa using huv
+    replace hst : f s = g t := by simpa using hst
     rcases IsLocalRing.isUnit_or_isUnit_of_add_one h.left with hu | hs
     · have : IsUnit (g v) := by rw [← huv]; exact IsUnit.map f hu
       apply IsLocalHom.map_nonunit at this
