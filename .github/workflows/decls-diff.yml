@@ -10,7 +10,9 @@ name: Declarations diff (post-build)
 
 on:
   workflow_run:
-    workflows: ["ci"]
+    # Match the build workflows by their `name:` — `build.yml` (non-fork PRs,
+    # push-triggered) and `build_fork.yml` (fork PRs, pull_request_target).
+    workflows: ["continuous integration", "continuous integration (mathlib forks)"]
     types: [completed]
 
 permissions:
@@ -19,10 +21,22 @@ permissions:
 
 jobs:
   diff:
+    # The build never runs on a `pull_request` event: non-fork PRs build via
+    # `build.yml` on `push` (head_branch = the PR branch), fork PRs via
+    # `build_fork.yml` on `pull_request_target`. Accept both, and for `push`
+    # exclude master and the non-PR maintenance branches.
     if: >-
       github.repository == 'leanprover-community/mathlib4'
       && github.event.workflow_run.conclusion == 'success'
-      && github.event.workflow_run.event == 'pull_request'
+      && (
+        github.event.workflow_run.event == 'pull_request_target'
+        || (
+          github.event.workflow_run.event == 'push'
+          && github.event.workflow_run.head_branch != 'master'
+          && github.event.workflow_run.head_branch != 'nightly-testing'
+          && !startsWith(github.event.workflow_run.head_branch, 'lean-pr-testing-')
+        )
+      )
     runs-on: ubuntu-latest
     steps:
       - name: Resolve Build run + SHA
@@ -69,7 +83,7 @@ jobs:
         run: |
           set -euo pipefail
           RUN="$(gh api "repos/$REPO/actions/runs?head_sha=$MB&event=push&status=success&branch=master" \
-                  --jq '[.workflow_runs[] | select(.name=="ci")] | .[0].id // ""')"
+                  --jq '[.workflow_runs[] | select(.name=="continuous integration")] | .[0].id // ""')"
           # A successful run is not enough: it must also carry the `import-graph` artifact.
           HAS_ARTIFACT=""
           if [ -n "$RUN" ]; then
