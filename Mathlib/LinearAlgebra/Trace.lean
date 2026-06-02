@@ -321,9 +321,9 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
 @[simp] theorem _root_.Matrix.trace_map {K m n : Type*} [Field K] [Fintype m] [Fintype n]
     [DecidableEq m] [DecidableEq n] {F : Type*} [EquivLike F (Matrix m m K) (Matrix n n K)]
     [AlgEquivClass F K _ _] (f : F) (x : Matrix m m K) : (f x).trace = x.trace := by
-  simpa [toMatrixAlgEquiv', Matrix.toLinAlgEquiv'] using
-    LinearMap.trace_map ((Matrix.toLinAlgEquiv'.symm.trans
-      (AlgEquivClass.toAlgEquiv f)).trans Matrix.toLinAlgEquiv') x.toLin'
+  simpa [Matrix.toLinAlgEquiv', toMatrixAlgEquiv'] using
+    LinearMap.trace_map ((Matrix.toLinAlgEquiv'.symm.trans (SemialgEquivClass.toAlgEquiv f)).trans
+      Matrix.toLinAlgEquiv') x.toLin'
 
 -- TODO: show `(f x).trace = x.trace` for when `f : Matrix m m K →ₐ[K] Matrix m m K`
 -- (using Skolem-Noether)
