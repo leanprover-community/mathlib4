@@ -25,7 +25,7 @@ open scoped symmDiff
 
 protected theorem symmDiff_def (s t : Set α) : s ∆ t = s \ t ∪ t \ s := rfl
 
-@[simp] theorem mem_bihimp : a ∈ s ⇔ t ↔ (a ∈ s ↔ a ∈ t) := by simp [bihimp, iff_def']
+@[simp] theorem mem_bihimp_iff : a ∈ s ⇔ t ↔ (a ∈ s ↔ a ∈ t) := by simp [bihimp, iff_def']
 
 protected theorem bihimp_def : s ⇔ t = (s ∪ tᶜ) ∩ (t ∪ sᶜ) := bihimp_eq ..
 
