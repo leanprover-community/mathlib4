@@ -81,12 +81,16 @@ theorem, which is phrased in this language. -/
 noncomputable def projectiveFamily (I : Finset ℝ≥0) : Measure (I → ℝ) :=
   multivariateGaussian 0 (covMatrix I) |>.map (MeasurableEquiv.toLp 2 (I → ℝ)).symm
 
+/-- Up to a measurable equivalence, `projectiveFamily I` is the centered multivariate Gaussian
+with covariance matrix `covMatrix I`. -/
 lemma measurePreserving_ofLp_multivariateGaussian (I : Finset ℝ≥0) :
     MeasurePreserving ofLp
       (multivariateGaussian 0 (covMatrix I)) (projectiveFamily I) where
   measurable := by fun_prop
   map_eq := rfl
 
+/-- Up to a measurable equivalence, `projectiveFamily I` is the centered multivariate Gaussian
+with covariance matrix `covMatrix I`. -/
 lemma measurePreserving_toLp_projectiveFamily (I : Finset ℝ≥0) :
     MeasurePreserving (toLp 2) (projectiveFamily I)
       (multivariateGaussian 0 (covMatrix I)) where
@@ -149,6 +153,8 @@ lemma variance_eval_projectiveFamily (s : I) :
   rw [← covariance_self, covariance_eval_projectiveFamily, min_self]
   exact aemeasurable_id.eval s
 
+/-- The distribution of finite-dimensional marginals of the real Brownian motion at time `s`
+is the centered Gaussian with variance `s`. -/
 lemma measurePreserving_eval_projectiveFamily (s : I) :
     MeasurePreserving (fun x ↦ x s) (projectiveFamily I) (gaussianReal 0 s) where
   measurable := by fun_prop
@@ -157,9 +163,11 @@ lemma measurePreserving_eval_projectiveFamily (s : I) :
       integral_eval_projectiveFamily,
       variance_eval_projectiveFamily, Real.toNNReal_coe]
 
+/-- The distribution of the increment of the real Brownian motion from time `s` to time `t`
+is the centered Gaussian with variance `t - s`. -/
 lemma measurePreserving_eval_sub_eval_projectiveFamily (I : Finset ℝ≥0) (s t : I) :
     MeasurePreserving (fun x ↦ x s - x t) (projectiveFamily I)
-      (gaussianReal 0 (max (s - t) (t - s))) where
+      (gaussianReal 0 (nndist s.1 t.1)) where
   measurable := by fun_prop
   map_eq := by
     rw [HasGaussianLaw.map_eq_gaussianReal, variance_fun_sub,
@@ -172,8 +180,9 @@ lemma measurePreserving_eval_sub_eval_projectiveFamily (I : Finset ℝ≥0) (s t
       · wlog hst : (s : ℝ≥0) ≤ t generalizing s t
         · convert this t s (le_of_not_ge hst) using 1
           · rw [add_comm, min_comm]
-          · rw [max_comm]
-        grw [min_eq_left hst, max_eq_right (by grw [hst]), two_mul, add_tsub_add_eq_tsub_left]
+          · rw [nndist_comm]
+        grw [min_eq_left hst, NNReal.nndist_eq, max_eq_right (by grw [hst]), two_mul,
+          add_tsub_add_eq_tsub_left]
       nth_grw 1 [two_mul, min_le_left, min_le_right]
     · exact (IsGaussian.hasGaussianLaw_id.eval s).integrable
     · exact (IsGaussian.hasGaussianLaw_id.eval t).integrable
@@ -193,6 +202,9 @@ lemma isProjectiveMeasureFamily_projectiveFamily :
   · exact Finset.measurable_restrict₂ _ -- fun_prop fails
   · fun_prop
 
+/-- If one restricts the finite-dimensional distribution of the real Brownian motion over a finset
+`J` to a smaller finset `I`, one obtains the finite-dimensional distribution of
+the real Brownian motion over `I`. -/
 lemma measurePreserving_restrict_projectiveFamily (hIJ : I ⊆ J) :
     MeasurePreserving (Finset.restrict₂ (π := fun _ ↦ ℝ) hIJ) (projectiveFamily J)
       (projectiveFamily I) where
