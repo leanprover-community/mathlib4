@@ -102,7 +102,7 @@ theorem local_lubell_yamamoto_meshalkin_inequality_div (hr : r ≠ 0)
     · exact (hr rfl).elim
     rw [tsub_add_eq_add_tsub hr', add_tsub_add_eq_tsub_right] at h𝒜
     apply le_of_mul_le_mul_right _ (pos_iff_ne_zero.2 hr)
-    convert Nat.mul_le_mul_right ((Fintype.card α).choose r) h𝒜 using 1
+    convert! Nat.mul_le_mul_right ((Fintype.card α).choose r) h𝒜 using 1
     · simpa [mul_assoc, Nat.choose_succ_right_eq] using Or.inl (mul_comm _ _)
     · simp only [mul_assoc, choose_succ_right_eq, mul_eq_mul_left_iff]
       exact Or.inl (mul_comm _ _)
@@ -170,7 +170,6 @@ theorem IsAntichain.disjoint_slice_shadow_falling {m n : ℕ}
     rintro rfl
     exact notMem_erase _ _ (hst ha)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A bound on any top part of the sum in LYM in terms of the size of `falling k 𝒜`. -/
 theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :

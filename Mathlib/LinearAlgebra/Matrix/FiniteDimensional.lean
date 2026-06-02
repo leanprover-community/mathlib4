@@ -27,7 +27,7 @@ matrix, finite dimensional, findim, finrank
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u v
@@ -38,7 +38,6 @@ section FiniteDimensional
 
 variable {m n : Type*} {R : Type v} [Field R]
 
-set_option backward.isDefEq.respectTransparency false in
 instance finiteDimensional [Finite m] [Finite n] : FiniteDimensional R (Matrix m n R) :=
   Module.Finite.matrix
 

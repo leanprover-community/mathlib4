@@ -21,7 +21,7 @@ This module contains some results on atoms and simple lattices in the finite con
 
 -/
 
-@[expose] public section
+public section
 
 
 variable {α β : Type*}

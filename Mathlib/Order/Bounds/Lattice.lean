@@ -28,7 +28,7 @@ theorem gc_upperBounds_lowerBounds : GaloisConnection
     (OrderDual.toDual ∘ upperBounds : Set α → (Set α)ᵒᵈ)
     (lowerBounds ∘ OrderDual.ofDual : (Set α)ᵒᵈ → Set α) := by
   simpa [GaloisConnection, subset_def, mem_upperBounds, mem_lowerBounds]
-    using fun S T ↦ forall₂_swap
+    using fun S T ↦ forall₂_comm
 
 @[simp]
 theorem upperBounds_iUnion :

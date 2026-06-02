@@ -27,6 +27,7 @@ variable {C : Type u} [Category.{v} C] (F : C ⥤ Type w)
 
 namespace Subfunctor
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories `Subfunctor F ≌ MonoOver F`. -/
 @[simps]
 noncomputable def equivalenceMonoOver : Subfunctor F ≌ MonoOver F where

@@ -44,7 +44,7 @@ explicitly as the pullbacks and pushouts of binary (co)fans in the base category
 For `Over X`, one could construct these binary products from the general theory of arbitrary
 products from the next section, i.e.
 ```
-(Cones.postcomposeEquivalence (diagramIsoCospan _).symm).trans
+(Cone.postcomposeEquivalence (diagramIsoCospan _).symm).trans
   (Over.ConstructProducts.conesEquiv _ (pair (Over.mk f) (Over.mk g)))
 ```
 but this gives worse defeqs.
@@ -56,6 +56,7 @@ namespace CategoryTheory.Limits
 section Over
 variable {f : Y ⟶ X} {g : Z ⟶ X}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Pullback cones to `X` are the same thing as binary fans in `Over X`. -/
 @[simps]
@@ -85,14 +86,15 @@ def IsLimit.pullbackConeEquivBinaryFanFunctor {c : PullbackCone f g} (hc : IsLim
     -- TODO: Drop `BinaryFan.IsLimit.lift'`. Instead provide the lemmas it bundles separately.
     -- TODO: Define `abbrev BinaryFan.IsLimit (c : BinaryFan X Y) := IsLimit c` for dot notation?
     (fun s ↦ Over.homMk (hc.lift <| pullbackConeEquivBinaryFan.inverse.obj s) <| by
-      simpa using s.fst.w)
+      simpa using! s.fst.w)
     (fun s ↦ Over.OverMorphism.ext (hc.fac _ _)) (fun s ↦ Over.OverMorphism.ext (hc.fac _ _))
     fun s m e₁ e₂ ↦ by
       ext1
       apply PullbackCone.IsLimit.hom_ext hc
-      · simpa using congr(($e₁).left)
-      · simpa using congr(($e₂).left)
+      · simpa using! congr(($e₁).left)
+      · simpa using! congr(($e₂).left)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A pullback cone to `X` is a limit if its corresponding binary fan in `Over X` is a limit. -/
 -- This could also be `(IsLimit.ofConeEquiv pullbackConeEquivBinaryFan.symm).symm hc`, but possibly
 -- bad defeqs?
@@ -101,16 +103,12 @@ def IsLimit.pullbackConeEquivBinaryFanInverse {c : BinaryFan (Over.mk f) (.mk g)
   PullbackCone.IsLimit.mk
     (c.fst.w.trans c.snd.w.symm)
     (fun s ↦ (hc.lift <| pullbackConeEquivBinaryFan.functor.obj s).left)
-    (fun s ↦ by simpa only using congr($(hc.fac _ _).left))
-    (fun s ↦ by simpa only using congr($(hc.fac _ _).left))
+    (fun s ↦ by simpa only using! congr($(hc.fac _ _).left))
+    (fun s ↦ by simpa only using! congr($(hc.fac _ _).left))
     <| fun s m hm₁ hm₂ ↦ by
       change PullbackCone f g at s
       have := hc.uniq (pullbackConeEquivBinaryFan.functor.obj s) (Over.homMk m <| by
-        have := c.fst.w
-        simp only [pair_obj_left, Over.mk_left, Functor.id_obj, pair_obj_right,
-          Functor.const_obj_obj, Over.mk_hom, Functor.id_map, CostructuredArrow.right_eq_id]
-          at hm₁ this
-        simp [← hm₁, this])
+        simp [← hm₁, dsimp% c.fst.w])
         (by rintro (_ | _) <;> ext <;> simpa)
       exact congr(($this).left)
 
@@ -119,6 +117,7 @@ end Over
 section Under
 variable {f : X ⟶ Y} {g : X ⟶ Z}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Pushout cocones from `X` are the same thing as binary cofans in `Under X`. -/
 @[simps]
@@ -126,14 +125,14 @@ def pushoutCoconeEquivBinaryCofan : PushoutCocone f g ≌ BinaryCofan (Under.mk 
   functor.obj c := .mk (Under.homMk (U := .mk f) (V := .mk (f ≫ c.inl)) c.inl rfl)
       (Under.homMk (U := .mk g) (V := .mk (f ≫ c.inl)) c.inr c.condition.symm)
   functor.map {c₁ c₂} a := { hom := Under.homMk a.hom, w := by rintro (_ | _) <;> cat_disch }
-  inverse.obj c := .mk c.inl.right c.inr.right (c.inl.w.symm.trans c.inr.w)
+  inverse.obj c := .mk c.inl.right c.inr.right (c.inl.w.trans c.inr.w.symm)
   inverse.map {c₁ c₂} a := {
     hom := a.hom.right
     w := by rintro (_ | _ | _) <;> simp [← Under.comp_right]
   }
   unitIso := NatIso.ofComponents (fun c ↦ c.eta) (fun f ↦ by ext; simp)
   counitIso := NatIso.ofComponents (fun X ↦ BinaryCofan.ext (Under.isoMk (.refl _)
-    (by dsimp; simpa using X.inl.w.symm)) (by ext; simp) (by ext; simp))
+    (by dsimp; simpa using X.inl.w)) (by ext; simp) (by ext; simp))
     (by intros; ext; simp)
   functor_unitIso_comp c := by ext; simp
 
@@ -147,15 +146,16 @@ def IsColimit.pushoutCoconeEquivBinaryCofanFunctor {c : PushoutCocone f g} (hc :
     IsColimit <| pushoutCoconeEquivBinaryCofan.functor.obj c :=
   BinaryCofan.isColimitMk
     (fun s ↦ Under.homMk
-      (hc.desc (PushoutCocone.mk s.inl.right s.inr.right (s.inl.w.symm.trans s.inr.w))) <| by
-        simpa using s.inl.w.symm)
+      (hc.desc (PushoutCocone.mk s.inl.right s.inr.right (s.inl.w.trans s.inr.w.symm))) <| by
+        simpa using! s.inl.w)
     (fun s ↦ Under.UnderMorphism.ext (hc.fac _ _)) (fun s ↦ Under.UnderMorphism.ext (hc.fac _ _))
       fun s m e₁ e₂ ↦ by
     ext1
     refine PushoutCocone.IsColimit.hom_ext hc ?_ ?_
-    · simpa using congr(($e₁).right)
-    · simpa using congr(($e₂).right)
+    · simpa using! congr(($e₁).right)
+    · simpa using! congr(($e₂).right)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A pushout cocone from `X` is a colimit if its corresponding binary cofan in `Under X` is a
 colimit. -/
 -- This could also be `(IsColimit.ofCoconeEquiv pushoutCoconeEquivBinaryCofan.symm).symm hc`,
@@ -163,17 +163,14 @@ colimit. -/
 def IsColimit.pushoutCoconeEquivBinaryCofanInverse {c : BinaryCofan (Under.mk f) (.mk g)}
     (hc : IsColimit c) : IsColimit <| pushoutCoconeEquivBinaryCofan.inverse.obj c :=
   PushoutCocone.IsColimit.mk
-    (c.inl.w.symm.trans c.inr.w)
+    (c.inl.w.trans c.inr.w.symm)
     (fun s ↦ (hc.desc <| pushoutCoconeEquivBinaryCofan.functor.obj s).right)
-    (fun s ↦ by simpa only using congr($(hc.fac _ _).right))
-    (fun s ↦ by simpa only using congr($(hc.fac _ _).right))
+    (fun s ↦ by simpa only using! congr($(hc.fac _ _).right))
+    (fun s ↦ by simpa only using! congr($(hc.fac _ _).right))
     <| fun s m hm₁ hm₂ ↦ by
       change PushoutCocone f g at s
       have := hc.uniq (pushoutCoconeEquivBinaryCofan.functor.obj s) (Under.homMk m <| by
-        have := c.inl.w
-        simp only [pair_obj_left, Functor.const_obj_obj, Functor.id_obj, StructuredArrow.left_eq_id,
-          Under.mk_right, Under.mk_hom, Functor.id_map, pair_obj_right] at this hm₁
-        simp [← hm₁, ← Category.assoc, ← this])
+        simp [← hm₁, dsimp% c.inl.w_assoc])
         (by rintro (_ | _) <;> ext <;> simpa)
       exact congr(($this).right)
 
@@ -186,7 +183,7 @@ variable {X : C} {Y Z : Over X}
 
 open Limits
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 lemma isPullback_of_binaryFan_isLimit (c : BinaryFan Y Z) (hc : IsLimit c) :
     IsPullback c.fst.left c.snd.left Y.hom Z.hom :=
   ⟨by simp, ⟨hc.pullbackConeEquivBinaryFanInverse⟩⟩
@@ -243,7 +240,7 @@ abbrev widePullbackDiagramOfDiagramOver (B : C) {J : Type w} (F : Discrete J ⥤
     WidePullbackShape J ⥤ C :=
   WidePullbackShape.wideCospan B (fun j => (F.obj ⟨j⟩).left) fun j => (F.obj ⟨j⟩).hom
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
 def conesEquivInverseObj (B : C) {J : Type w} (F : Discrete J ⥤ Over B) (c : Cone F) :
@@ -258,7 +255,7 @@ def conesEquivInverseObj (B : C) {J : Type w} (F : Discrete J ⥤ Over B) (c : C
         · rw [Over.w, Category.id_comp]
         · rw [Category.id_comp, Category.comp_id] }
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
 def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
@@ -295,26 +292,29 @@ def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
 -- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] WidePullbackShape
 -- If this worked we could avoid the `rintro` in `conesEquivUnitIso`.
 
+set_option backward.defeqAttrib.useBackward true in
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps!]
 def conesEquivUnitIso (B : C) (F : Discrete J ⥤ Over B) :
     𝟭 (Cone (widePullbackDiagramOfDiagramOver B F)) ≅
       conesEquivFunctor B F ⋙ conesEquivInverse B F :=
-  NatIso.ofComponents fun _ => Cones.ext
+  NatIso.ofComponents fun _ => Cone.ext
     { hom := 𝟙 _
       inv := 𝟙 _ }
     (by rintro (j | j) <;> cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 -- TODO: Can we add `:= by aesop` to the second arguments of `NatIso.ofComponents` and
---       `Cones.ext`?
+--       `Cone.ext`?
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps!]
 def conesEquivCounitIso (B : C) (F : Discrete J ⥤ Over B) :
     conesEquivInverse B F ⋙ conesEquivFunctor B F ≅ 𝟭 (Cone F) :=
-  NatIso.ofComponents fun _ => Cones.ext
+  NatIso.ofComponents fun _ => Cone.ext
     { hom := Over.homMk (𝟙 _)
       inv := Over.homMk (𝟙 _) }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- (Impl) Establish an equivalence between the category of cones for `F` and for the "grown" `F`.
 -/
 @[simps]
@@ -354,6 +354,7 @@ theorem over_finiteProducts_of_finiteWidePullbacks [HasFiniteWidePullbacks C] {B
 
 end ConstructProducts
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Construct terminal object in the over category. This isn't an instance as it's not typically the
 way we want to define terminal objects.
 (For instance, this gives a terminal object which is different from the generic one given by
@@ -366,14 +367,8 @@ theorem over_hasTerminal (B : C) : HasTerminal (Over B) where
           π :=
             { app := fun p => p.as.elim } }
       isLimit :=
-        { lift := fun s => Over.homMk s.pt.hom
-          fac := fun _ j => j.as.elim
-          uniq := fun s m _ => by
-            simp only
-            ext
-            rw [Over.homMk_left _]
-            have := m.w
-            dsimp at this
-            rwa [Category.comp_id, Category.comp_id] at this } }
+        { lift s := Over.homMk s.pt.hom
+          fac _ j := j.as.elim
+          uniq s m _ := by ext; simpa using m.w } }
 
 end CategoryTheory.Over

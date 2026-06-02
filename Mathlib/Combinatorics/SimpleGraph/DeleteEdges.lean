@@ -65,6 +65,11 @@ theorem deleteEdges_deleteEdges (s s' : Set (Sym2 V)) :
 lemma deleteEdges_empty : G.deleteEdges ∅ = G := by simp [deleteEdges]
 @[simp] lemma deleteEdges_univ : G.deleteEdges Set.univ = ⊥ := by simp [deleteEdges]
 
+@[simp]
+theorem deleteEdges_le_iff (s : Set (Sym2 V)) (G' : SimpleGraph V) :
+    G.deleteEdges s ≤ G' ↔ G ≤ fromEdgeSet s ⊔ G' := by
+    rw [deleteEdges, sdiff_le_iff]
+
 lemma deleteEdges_le (s : Set (Sym2 V)) : G.deleteEdges s ≤ G := sdiff_le
 
 lemma deleteEdges_anti (h : s₁ ⊆ s₂) : G.deleteEdges s₂ ≤ G.deleteEdges s₁ :=
@@ -72,7 +77,6 @@ lemma deleteEdges_anti (h : s₁ ⊆ s₂) : G.deleteEdges s₂ ≤ G.deleteEdge
 
 lemma deleteEdges_mono (h : G ≤ H) : G.deleteEdges s ≤ H.deleteEdges s := sdiff_le_sdiff_right h
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma deleteEdges_eq_self : G.deleteEdges s = G ↔ Disjoint G.edgeSet s := by
   rw [deleteEdges, sdiff_eq_left, disjoint_fromEdgeSet]
 
@@ -92,7 +96,6 @@ theorem deleteEdges_sdiff_eq_of_le {H : SimpleGraph V} (h : H ≤ G) :
 theorem edgeSet_deleteEdges (s : Set (Sym2 V)) : (G.deleteEdges s).edgeSet = G.edgeSet \ s := by
   simp [deleteEdges]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem edgeFinset_deleteEdges [DecidableEq V] [Fintype G.edgeSet] (s : Finset (Sym2 V))
     [Fintype (G.deleteEdges s).edgeSet] :
     (G.deleteEdges s).edgeFinset = G.edgeFinset \ s := by
@@ -104,6 +107,8 @@ set_option backward.isDefEq.respectTransparency false in
 
 @[simp] lemma deleteEdges_fromEdgeSet (s t : Set (Sym2 V)) :
     (fromEdgeSet s).deleteEdges t = fromEdgeSet (s \ t) := by ext; simp +contextual
+
+@[simp] lemma deleteEdges_eq_bot : G.deleteEdges s = ⊥ ↔ G.edgeSet ⊆ s := by simp [deleteEdges]
 
 end DeleteEdges
 

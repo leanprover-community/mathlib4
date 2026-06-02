@@ -71,7 +71,7 @@ noncomputable def associatesEquivIsPrincipal :
   toFun := _root_.Quotient.lift (fun x ↦ ⟨span {x}, x, rfl⟩)
     (fun _ _ _ ↦ by simpa [span_singleton_eq_span_singleton])
   invFun I := .mk I.2.generator
-  left_inv := Quotient.ind fun _ ↦ by simpa [Quotient.eq] using
+  left_inv := Quotient.ind fun _ ↦ by simpa [Quotient.eq] using!
     Ideal.span_singleton_eq_span_singleton.mp (@Ideal.span_singleton_generator _ _ _ ⟨_, rfl⟩)
   right_inv I := by simp only [_root_.Quotient.lift_mk, span_singleton_generator, Subtype.coe_eta]
 
@@ -124,7 +124,8 @@ noncomputable def associatesNonZeroDivisorsEquivIsPrincipal :
           associatesEquivIsPrincipal_apply, span_singleton_nonZeroDivisors])
     _ ≃ {I : Ideal R // IsPrincipal I ∧ I ∈ (Ideal R)⁰} :=
       Equiv.subtypeSubtypeEquivSubtypeInter (fun I ↦ IsPrincipal I) (fun I ↦ I ∈ (Ideal R)⁰)
-    _ ≃ {I : Ideal R // I ∈ (Ideal R)⁰ ∧ IsPrincipal I} := Equiv.setCongr (by simp_rw [and_comm])
+    _ ≃ {I : Ideal R // I ∈ (Ideal R)⁰ ∧ IsPrincipal I} :=
+      .subtypeEquivProp <| by simp_rw [and_comm]
     _ ≃ {I : (Ideal R)⁰ // IsPrincipal I.1} := (Equiv.subtypeSubtypeEquivSubtypeInter _ _).symm
 
 @[simp]

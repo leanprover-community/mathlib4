@@ -6,7 +6,8 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Nat.Cast.Defs
-public import Mathlib.Order.Synonym
+public import Mathlib.Order.OrderDual
+public import Mathlib.Order.Lex
 
 /-!
 # Cast of natural numbers (additional theorems)
@@ -15,41 +16,9 @@ This file proves additional properties about the *canonical* homomorphism from
 the natural numbers into an additive monoid with a one (`Nat.cast`).
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
-
-/-! ### Order dual -/
-
-
-open OrderDual
-
-instance [h : NatCast α] : NatCast αᵒᵈ :=
-  h
-
-instance [h : AddMonoidWithOne α] : AddMonoidWithOne αᵒᵈ :=
-  h
-
-instance [h : AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵒᵈ :=
-  h
-
-@[simp]
-theorem toDual_natCast [NatCast α] (n : ℕ) : toDual (n : α) = n :=
-  rfl
-
-@[simp]
-theorem toDual_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
-    (toDual (ofNat(n) : α)) = ofNat(n) :=
-  rfl
-
-@[simp]
-theorem ofDual_natCast [NatCast α] (n : ℕ) : (ofDual n : α) = n :=
-  rfl
-
-@[simp]
-theorem ofDual_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
-    (ofDual (ofNat(n) : αᵒᵈ)) = ofNat(n) :=
-  rfl
 
 /-! ### Lexicographic order -/
 
