@@ -275,7 +275,7 @@ lemma integral_gaussianReal_eq_integral_smul {E : Type*} [NormedAddCommGroup E] 
 
 @[fun_prop]
 lemma measurable_gaussianReal :
-    Measurable (fun (μ, v) ↦ gaussianReal μ v) :=
+    Measurable gaussianReal.uncurry :=
   Measurable.ite (by measurability) (by fun_prop) (by fun_prop)
 
 section Transformations

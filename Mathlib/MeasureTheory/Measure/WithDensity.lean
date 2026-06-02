@@ -374,8 +374,7 @@ theorem count_withDensity [MeasurableSingletonClass α] (f : α → ℝ≥0∞) 
 
 @[fun_prop]
 theorem measurable_withDensity {β : Type*} [MeasurableSpace β] {f : β → α → ℝ≥0∞}
-    [SFinite μ]
-    (hf : Measurable fun p : β × α => f p.1 p.2) :
+    [SFinite μ] (hf : Measurable f.uncurry) :
     Measurable fun b ↦ μ.withDensity (f b) := by
   rw [Measure.measurable_measure]
   intro s hs
