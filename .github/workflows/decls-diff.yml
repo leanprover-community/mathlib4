@@ -1,0 +1,128 @@
+# Post-build workflow that emits a Lean-aware declarations-diff in the Actions
+# step summary for each successful PR build. Consumes the `import-graph`
+# artifact uploaded by `build_template.yml` on both sides (PR head + master
+# merge-base) and computes the diff via mathlib-ci's `decls-diff` action.
+#
+# Stage-2 scope: visibility only. No `### PR summary` comment patching; that
+# behaviour ships in a follow-up PR.
+
+name: Declarations diff (post-build)
+
+on:
+  workflow_run:
+    workflows: ["ci"]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read           # for cross-workflow artifact downloads
+
+jobs:
+  diff:
+    if: >-
+      github.repository == 'leanprover-community/mathlib4'
+      && github.event.workflow_run.conclusion == 'success'
+      && github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve Build run + SHA
+        id: meta
+        run: |
+          set -euo pipefail
+          RUN_ID="${{ github.event.workflow_run.id }}"
+          NEW_SHA="${{ github.event.workflow_run.head_sha }}"
+          {
+            echo "run-id=$RUN_ID"
+            echo "new-sha=$NEW_SHA"
+          } | tee -a "$GITHUB_OUTPUT"
+
+      - name: Checkout new commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ steps.meta.outputs.new-sha }}
+          fetch-depth: 0
+
+      - name: Resolve merge-base against master
+        id: resolve
+        env:
+          NEW_SHA: ${{ steps.meta.outputs.new-sha }}
+        run: |
+          set -euo pipefail
+          git fetch --quiet origin master
+          MB="$(git merge-base "$NEW_SHA" origin/master)"
+          echo "merge-base=$MB" | tee -a "$GITHUB_OUTPUT"
+
+      - name: Download new-side artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: import-graph
+          path: ./new-artifact
+          run-id: ${{ steps.meta.outputs.run-id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Find master Build for the merge-base
+        id: master-run
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          MB: ${{ steps.resolve.outputs.merge-base }}
+        run: |
+          set -euo pipefail
+          RUN="$(gh api "repos/$REPO/actions/runs?head_sha=$MB&event=push&status=success&branch=master" \
+                  --jq '[.workflow_runs[] | select(.name=="ci")] | .[0].id // ""')"
+          # A successful run is not enough: it must also carry the `import-graph` artifact.
+          HAS_ARTIFACT=""
+          if [ -n "$RUN" ]; then
+            HAS_ARTIFACT="$(gh api "repos/$REPO/actions/runs/$RUN/artifacts" \
+                    --jq '[.artifacts[] | select(.name=="import-graph")] | length')"
+          fi
+          if [ -n "$RUN" ] && [ "${HAS_ARTIFACT:-0}" -gt 0 ]; then
+            {
+              echo "found=true"
+              echo "run-id=$RUN"
+            } | tee -a "$GITHUB_OUTPUT"
+          else
+            echo "found=false" | tee -a "$GITHUB_OUTPUT"
+            echo "No usable master Build for merge-base $MB (no run, or run lacks the import-graph artifact)."
+          fi
+
+      - name: Download master-side artifact
+        if: steps.master-run.outputs.found == 'true'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: import-graph
+          path: ./ref-artifact
+          run-id: ${{ steps.master-run.outputs.run-id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout local actions
+        if: steps.master-run.outputs.found == 'true'
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+
+      - name: Get mathlib-ci
+        if: steps.master-run.outputs.found == 'true'
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+
+      - name: Compute Lean-aware declarations diff
+        if: steps.master-run.outputs.found == 'true'
+        uses: ./ci-tools/.github/actions/decls-diff
+        with:
+          reference-decls-file:   ${{ github.workspace }}/ref-artifact/decls.txt
+          reference-imports-file: ${{ github.workspace }}/ref-artifact/imports.json
+          new-decls-file:         ${{ github.workspace }}/new-artifact/decls.txt
+          new-imports-file:       ${{ github.workspace }}/new-artifact/imports.json
+          new-sha:                ${{ steps.meta.outputs.new-sha }}
+
+      - name: Note cache miss
+        if: steps.master-run.outputs.found != 'true'
+        run: |
+          {
+            echo "## Declarations diff"
+            echo
+            echo "⚠️ The Mathlib cache for this PR's merge-base \`${{ steps.resolve.outputs.merge-base }}\` isn't on the server (typically because the merge-base is a bors-batch intermediate that CI never built). Merge \`master\` into this PR and push to retrigger the build."
+          } >> "$GITHUB_STEP_SUMMARY"
