@@ -215,12 +215,6 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Subgroup G) {C : ∀ x, (x ∈ 
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
     exact ⟨_, hmul _ _ _ _ Cx Cy⟩
 
-theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Subgroup G) :
-    ((⨆ i, S i : Subgroup G) : Set G) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Subgroup G) := by
-  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le ?_]
-  simp_rw [← Finset.sup_eq_iSup]
-  exact fun _ _ ↦ Finset.sup_mono
-
 @[to_additive (attr := simp)]
 theorem mul_subset {t : Set G} {H : Subgroup G} (hs : s ⊆ H) (ht : t ⊆ H) : s * t ⊆ H :=
   Submonoid.mul_subset hs ht
