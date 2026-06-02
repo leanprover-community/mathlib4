@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.RingTheory.Ideal.Finsupp
 public import Mathlib.RingTheory.Nakayama
 public import Mathlib.RingTheory.QuotSMulTop
 
@@ -30,15 +31,10 @@ universe u v
 
 variable (R : Type u) [CommRing R]
 
-lemma Finsupp.submodule_smul {M : Type*} [AddCommGroup M] [Module R M]
-    (ι : Type*) (p : ι → Submodule R M) (I : Ideal R) :
-    Finsupp.submodule (fun i ↦ I • p i) = I • Finsupp.submodule p := by
-  simp only [Finsupp.submodule_eq_iSup, Submodule.map_smul'', ← Submodule.smul_iSup]
-
 instance (M : Type*) [AddCommGroup M] [Module R M] [Module.Free R M] (x : R) :
     Module.Free (R ⧸ Ideal.span {x}) (QuotSMulTop x M) :=
   Module.Free.of_equiv ((QuotSMulTop.equivQuotTensor x M).extendScalarsOfSurjective
-      Ideal.Quotient.mk_surjective).symm
+    Ideal.Quotient.mk_surjective).symm
 
 open Pointwise in
 lemma free_iff_quotSMulTop_free (M : Type*) [AddCommGroup M] [Module R M]
