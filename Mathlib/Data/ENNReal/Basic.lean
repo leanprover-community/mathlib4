@@ -560,14 +560,17 @@ theorem toReal_le_coe_of_le_coe {a : ℝ≥0∞} {b : ℝ≥0} (h : a ≤ b) : a
   lift a to ℝ≥0 using ne_top_of_le_ne_top coe_ne_top h
   simpa using h
 
--- TODO: the following 4 theorems should be generalized to `CanonicallyOrderedAdd`
+@[deprecated max_eq_zero (since := "2026-05-07")]
+theorem max_eq_zero_iff : max a b = 0 ↔ a = 0 ∧ b = 0 := max_eq_bot
 
-@[simp] theorem max_eq_zero_iff : max a b = 0 ↔ a = 0 ∧ b = 0 := max_eq_bot
-@[simp] theorem min_eq_zero_iff : min a b = 0 ↔ a = 0 ∨ b = 0 := min_eq_bot
+@[deprecated min_eq_zero (since := "2026-05-07")]
+theorem min_eq_zero_iff : min a b = 0 ↔ a = 0 ∨ b = 0 := min_eq_bot
 
+@[deprecated zero_max (since := "2026-05-07")]
 theorem max_zero_left : max 0 a = a :=
   max_eq_right zero_le
 
+@[deprecated max_zero (since := "2026-05-07")]
 theorem max_zero_right : max a 0 = a :=
   max_eq_left zero_le
 
@@ -720,7 +723,7 @@ theorem preimage_ennreal_ofReal (h : u.OrdConnected) : (ENNReal.ofReal ⁻¹' u)
   h.preimage_coe_nnreal_ennreal.preimage_real_toNNReal
 
 theorem image_ennreal_ofReal (h : s.OrdConnected) : (ENNReal.ofReal '' s).OrdConnected := by
-  simpa only [image_image] using h.image_real_toNNReal.image_coe_nnreal_ennreal
+  simpa only [image_image] using! h.image_real_toNNReal.image_coe_nnreal_ennreal
 
 end OrdConnected
 

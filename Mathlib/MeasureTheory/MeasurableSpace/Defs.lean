@@ -293,9 +293,9 @@ definitional equalities. -/
 protected def copy (m : MeasurableSpace α) (p : Set α → Prop) (h : ∀ s, p s ↔ MeasurableSet[m] s) :
     MeasurableSpace α where
   MeasurableSet' := p
-  measurableSet_empty := by simpa only [h] using m.measurableSet_empty
-  measurableSet_compl := by simpa only [h] using m.measurableSet_compl
-  measurableSet_iUnion := by simpa only [h] using m.measurableSet_iUnion
+  measurableSet_empty := by simpa only [h] using! m.measurableSet_empty
+  measurableSet_compl := by simpa only [h] using! m.measurableSet_compl
+  measurableSet_iUnion := by simpa only [h] using! m.measurableSet_iUnion
 
 lemma measurableSet_copy {m : MeasurableSpace α} {p : Set α → Prop}
     (h : ∀ s, p s ↔ MeasurableSet[m] s) {s} : MeasurableSet[.copy m p h] s ↔ p s :=
@@ -395,7 +395,7 @@ instance : CompleteLattice (MeasurableSpace α) :=
 
 instance : Inhabited (MeasurableSpace α) := ⟨⊤⟩
 
-@[mono]
+@[gcongr, mono]
 theorem generateFrom_mono {s t : Set (Set α)} (h : s ⊆ t) : generateFrom s ≤ generateFrom t :=
   giGenerateFrom.gc.monotone_l h
 
