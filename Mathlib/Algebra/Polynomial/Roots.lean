@@ -217,6 +217,29 @@ lemma roots_neg (p : R[X]) : (-p).roots = p.roots := by
   rw [← neg_one_smul R p, roots_smul_nonzero p (neg_ne_zero.mpr one_ne_zero)]
 
 @[simp]
+theorem map_roots_comp_C_mul_X_add_C (p : R[X]) (a b : R) (ha : IsUnit a) :
+    (p.comp (C a * X + C b)).roots.map (fun x ↦ a * x + b) = p.roots := by
+  classical
+  set f := fun x ↦ a * x + b
+  have hf : Function.Bijective f :=
+    (AddGroup.addRight_bijective b).comp (IsUnit.isUnit_iff_mulLeft_bijective.mp ha)
+  rw [Multiset.ext]
+  intro x
+  obtain ⟨x, rfl⟩ := hf.surjective x
+  rw [count_roots, count_map_eq_count' f _ hf.injective, count_roots,
+    rootMultiplicity_comp_C_mul_X_add_C p a b x ha]
+
+open scoped Ring in
+theorem roots_comp_C_mul_X_add_C (p : R[X]) (a b : R) (ha : IsUnit a) :
+    (p.comp (C a * X + C b)).roots = p.roots.map (fun x ↦ a⁻¹ʳ * (x - b)) := by
+  conv_rhs => rw [← p.map_roots_comp_C_mul_X_add_C a b ha]
+  simp [← mul_assoc, Ring.inverse_mul_cancel a ha]
+
+@[simp]
+theorem roots_comp_neg_X (p : R[X]) : (p.comp (-X)).roots = p.roots.map fun x ↦ -x := by
+  simp [← map_roots_comp_C_mul_X_add_C p (-1) 0 isUnit_neg_one]
+
+@[simp]
 theorem roots_C_mul_X_sub_C_of_IsUnit (b : R) (a : Rˣ) : (C (a : R) * X - C b).roots =
     {a⁻¹ * b} := by
   rw [← roots_C_mul _ (Units.ne_zero a⁻¹), mul_sub, ← mul_assoc, ← C_mul, ← C_mul,
@@ -237,7 +260,7 @@ theorem roots_list_prod (L : List R[X]) :
 
 theorem roots_multiset_prod (m : Multiset R[X]) : (0 : R[X]) ∉ m → m.prod.roots = m.bind roots := by
   rcases m with ⟨L⟩
-  simpa only [Multiset.prod_coe, quot_mk_to_coe''] using roots_list_prod L
+  simpa only [Multiset.prod_coe, quot_mk_to_coe''] using! roots_list_prod L
 
 theorem roots_prod {ι : Type*} (f : ι → R[X]) (s : Finset ι) :
     s.prod f ≠ 0 → (s.prod f).roots = s.val.bind fun i => roots (f i) := by
