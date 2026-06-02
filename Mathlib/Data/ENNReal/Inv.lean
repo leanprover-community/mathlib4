@@ -486,14 +486,12 @@ theorem le_of_forall_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r < x
 lemma eq_of_forall_nnreal_le_iff {x y : ℝ≥0∞} : (∀ r : ℝ≥0, ↑r ≤ x ↔ ↑r ≤ y) → x = y :=
   WithTop.eq_of_forall_coe_le_iff
 
-@[deprecated (since := "2025-10-20")] alias eq_of_forall_nnreal_iff := eq_of_forall_nnreal_le_iff
-
 lemma eq_of_forall_le_nnreal_iff {x y : ℝ≥0∞} : (∀ r : ℝ≥0, x ≤ r ↔ y ≤ r) → x = y :=
   WithTop.eq_of_forall_le_coe_iff
 
 theorem le_of_forall_pos_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, 0 < r → ↑r < x → ↑r ≤ y) : x ≤ y :=
   le_of_forall_nnreal_lt fun r hr =>
-    (zero_le r).eq_or_lt.elim (fun h => h ▸ zero_le _) fun h0 => h r h0 hr
+    (eq_zero_or_pos r).elim (fun h => h ▸ zero_le) fun h0 => h r h0 hr
 
 theorem eq_top_of_forall_nnreal_le {x : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r ≤ x) : x = ∞ :=
   top_unique <| le_of_forall_nnreal_lt fun r _ => h r
@@ -646,7 +644,7 @@ theorem exists_inv_nat_lt {a : ℝ≥0∞} (h : a ≠ 0) : ∃ n : ℕ, (n : ℝ
 
 theorem exists_nat_pos_mul_gt (ha : a ≠ 0) (hb : b ≠ ∞) : ∃ n > 0, b < (n : ℕ) * a :=
   let ⟨n, hn⟩ := ENNReal.exists_nat_gt (div_lt_top hb ha).ne
-  ⟨n, Nat.cast_pos.1 ((zero_le _).trans_lt hn), by
+  ⟨n, Nat.cast_pos.1 hn.pos, by
     rwa [← ENNReal.div_lt_iff (Or.inl ha) (Or.inr hb)]⟩
 
 theorem exists_nat_mul_gt (ha : a ≠ 0) (hb : b ≠ ∞) : ∃ n : ℕ, b < n * a :=
@@ -748,7 +746,7 @@ theorem zpow_le_of_le {x : ℝ≥0∞} (hx : 1 ≤ x) {a b : ℤ} (h : a ≤ b) 
     refine (ENNReal.inv_le_one.2 ?_).trans ?_ <;> exact one_le_pow_of_one_le' hx _
   · simp only [zpow_negSucc, ENNReal.inv_le_inv]
     apply pow_right_mono₀ hx
-    simpa only [← Int.ofNat_le, neg_le_neg_iff, Int.natCast_add, Int.ofNat_one] using h
+    simpa only [← Int.ofNat_le, neg_le_neg_iff, Int.natCast_add, Int.ofNat_one] using! h
 
 theorem monotone_zpow {x : ℝ≥0∞} (hx : 1 ≤ x) : Monotone ((x ^ ·) : ℤ → ℝ≥0∞) := fun _ _ h =>
   zpow_le_of_le hx h

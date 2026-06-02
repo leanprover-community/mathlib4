@@ -93,7 +93,7 @@ theorem ofNat_smul {R A} [CommSemiring R] [CommSemiring A] [Algebra R A]
 
 theorem neg_ofNat_smul {R A} [CommRing R] [CommRing A] [Algebra R A] {a : A} [n.AtLeastTwo] :
     (- ofNat(n) : R) • a = - (ofNat(n)) * a := by
-  simpa [← nat_rawCast_2] using ofNat_smul
+  simpa [← nat_rawCast_2] using! ofNat_smul
 
 theorem neg_1_smul {R A} [CommRing R] [CommRing A] [Algebra R A] {a : A} :
     (-1 : R) • a = - a := by
@@ -189,6 +189,12 @@ theorem add_algebraMap_isNat_zero {r s : R} (h : r + s = 0) :
     IsNat (algebraMap R A r + algebraMap R A s) 0 := by
   rw [← map_add, h, map_zero]
   exact ⟨by simp⟩
+
+/- RingCompute.cast -/
+theorem cast_zero_smul_eq_zero_mul {R' : Type*} [HSMul R' A A] {r' : R'} {r : R}
+    (hr : r = 0) (h_smul : ∀ (a : A), r • a = r' • a) (a : A) :
+    r' • a = (0 : A) * a := by
+  simp [← h_smul, hr]
 
 /- RingCompute.cast -/
 theorem cast_smul_eq_mul {R' : Type*} [HSMul R' A A] {r' : R'} {r r'' : R}

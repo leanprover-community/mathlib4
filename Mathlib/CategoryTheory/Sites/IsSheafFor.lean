@@ -5,6 +5,7 @@ Authors: Bhavik Mehta
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 public import Mathlib.CategoryTheory.Sites.Sieves
 
 /-!
@@ -227,6 +228,13 @@ theorem restrict_extend {x : FamilyOfElements P R} (t : x.Compatible) :
   funext Y f hf
   exact extend_agrees t hf
 
+lemma FamilyOfElements.Compatible.of_mono (f : P ⟶ Q) [Mono f] {x : R.FamilyOfElements P}
+    (hx : (x.map f).Compatible) :
+    x.Compatible := by
+  intro Y Z W g₁ g₂ f₁ f₂ hf₁ hf₂ heq
+  refine injective_of_mono (f.app _) ?_
+  simpa using hx _ _ hf₁ hf₂ heq
+
 /--
 If the arrow set for a family of elements is actually a sieve (i.e. it is downward closed) then the
 consistency condition can be simplified.
@@ -407,6 +415,13 @@ lemma FamilyOfElements.isAmalgamation_singleton_iff {X Y : C} (f : X ⟶ Y)
   rintro H Y g ⟨rfl⟩
   exact H
 
+lemma FamilyOfElements.IsAmalgamation.of_mono (f : P ⟶ Q) [Mono f] {x : R.FamilyOfElements P}
+    {t : P.obj (.op X)} (ht : (x.map f).IsAmalgamation (f.app _ t)) :
+    x.IsAmalgamation t := by
+  intro Y u hu
+  refine injective_of_mono (f.app _) ?_
+  simpa using ht _ hu
+
 /-- A presheaf is separated for a presieve if there is at most one amalgamation. -/
 def IsSeparatedFor (P : Cᵒᵖ ⥤ Type w) (R : Presieve X) : Prop :=
   ∀ (x : FamilyOfElements P R) (t₁ t₂), x.IsAmalgamation t₁ → x.IsAmalgamation t₂ → t₁ = t₂
@@ -457,6 +472,7 @@ See the discussion before Equation (3) of [MM92], Chapter III, Section 4. See al
 def YonedaSheafCondition (P : Cᵒᵖ ⥤ Type v₁) (S : Sieve X) : Prop :=
   ∀ f : S.functor ⟶ P, ∃! g, S.functorInclusion ≫ g = f
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). This is a (primarily internal) equivalence between natural transformations
 and compatible families.
@@ -474,11 +490,11 @@ noncomputable def shrinkFunctorHomEquiv [LocallySmall.{w} C] {F : Cᵒᵖ ⥤ Ty
     rw! [shrinkYonedaObjObjEquiv_symm_comp]
     rfl⟩
   invFun t :=
-    { app X := TypeCat.ofHom fun f ↦ t.1 _ f.mem
+    { app X := ↾fun f ↦ t.1 _ f.mem
       naturality Y Z g := by
         ext ⟨f, hf⟩
         dsimp
-        convert t.2.to_sieveCompatible _ _ _
+        convert! t.2.to_sieveCompatible _ _ _
         simp only [Opposite.op_unop, shrinkYonedaObjObjEquiv_obj_map]
         rfl }
   left_inv t := by cat_disch
@@ -491,6 +507,7 @@ noncomputable def shrinkFunctorHomEquiv [LocallySmall.{w} C] {F : Cᵒᵖ ⥤ Ty
 @[deprecated "In terms of `Sieve.shrinkFunctor`" (since := "2026-03-13")]
 alias natTransEquivCompatibleFamily := shrinkFunctorHomEquiv
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma shrinkFunctor_ι_comp_eq_iff_isAmalgamation [LocallySmall.{w} C] (F : Cᵒᵖ ⥤ Type w)
     (f : S.shrinkFunctor.toFunctor ⟶ F) (g : shrinkYoneda.{w}.obj X ⟶ F) :
@@ -501,7 +518,7 @@ lemma shrinkFunctor_ι_comp_eq_iff_isAmalgamation [LocallySmall.{w} C] (F : Cᵒ
   · rintro rfl Y f hf
     simp [shrinkYonedaEquiv_naturality, shrinkYonedaEquiv_comp, shrinkYonedaEquiv_shrinkYoneda_map]
   · ext Y ⟨u, hu⟩
-    convert h (shrinkYonedaObjObjEquiv u) hu
+    convert! h (shrinkYonedaObjObjEquiv u) hu
     · rw [shrinkYonedaEquiv_naturality, shrinkYonedaEquiv_comp, shrinkYonedaEquiv_shrinkYoneda_map]
       simp
     · rw! [Equiv.symm_apply_apply]
@@ -519,6 +536,7 @@ lemma isSheafFor_iff_bijective_shrinkFunctor_ι_comp [LocallySmall.{w} C] {X : C
     Subtype.forall]
   exact forall₂_congr fun x hx ↦ by simp [Equiv.existsUnique_congr_right]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda version of the sheaf condition is equivalent to the sheaf condition.
 
@@ -727,6 +745,11 @@ theorem isSeparatedFor_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (hP : IsSepa
   intro x t₁ t₂ ht₁ ht₂
   simpa using congrArg (i.hom.app _) <| hP (x.map i.inv) _ _ (ht₁.map i.inv) (ht₂.map i.inv)
 
+lemma IsSeparatedFor.of_mono (f : P ⟶ Q) [Mono f] (h : R.IsSeparatedFor Q) :
+    R.IsSeparatedFor P := by
+  intro x t₁ t₂ ht₁ ht₂
+  exact injective_of_mono _ <|  h (x.map f) _ _ (ht₁.map f) (ht₂.map f)
+
 /-- If a presieve `R` on `X` has a subsieve `S` such that:
 
 * `P` is a sheaf for `S`.
@@ -870,10 +893,11 @@ lemma isSheafFor_pullback_iff (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Sieve X)
   simp only [this, ← isSheafFor_iff_generate,
     isSheafFor_ofArrows_iff_bijective_toCompabible, ← e.bijective.of_comp_iff',
     ← Function.Bijective.of_comp_iff _ (P.mapIso (asIso f).symm.op).toEquiv.bijective]
-  convert Iff.rfl using 2
+  convert! Iff.rfl using 2
   ext
   simp [e]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isSheafFor_over_map_op_comp_ofArrows_iff
     {B B' : C} (p : B ⟶ B') (P : (Over B')ᵒᵖ ⥤ Type w)
@@ -895,7 +919,7 @@ lemma isSheafFor_over_map_op_comp_ofArrows_iff
         replace this := congr_arg (P.map φ.op) this
         dsimp at this
         simp only [← comp_apply, ← Functor.map_comp, ← op_comp] at this
-        convert this <;> cat_disch⟩
+        convert! this <;> cat_disch⟩
       invFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ Z g₁ g₂ h ↦
         s.property i₁ i₂ _ ((Over.map p).map g₁) ((Over.map p).map g₂)
           (by simp only [← Functor.map_comp, h])⟩ }
@@ -912,7 +936,7 @@ lemma isSheafFor_over_map_op_comp_iff
   obtain ⟨ι, Z, g, rfl⟩ := R.exists_eq_ofArrows
   rw [← isSheafFor_iff_generate, isSheafFor_pullback_iff,
     isSheafFor_over_map_op_comp_ofArrows_iff, isSheafFor_iff_generate]
-  convert Iff.rfl
+  convert! Iff.rfl
   refine le_antisymm ?_ ?_
   · rintro W _ ⟨T, _, a, ⟨_, b, _, ⟨i⟩, rfl⟩, rfl⟩
     refine ⟨(Over.map p).obj (Z i), Over.homMk (a.left ≫ b.left) ?_, _, ⟨i⟩, ?_⟩
