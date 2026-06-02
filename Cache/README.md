@@ -66,8 +66,8 @@ When arguments are provided, only the specified files and their transitive impor
 |---------------------|--------------------------------------------------------------------------------------------|
 | `--repo=OWNER/REPO` | Override the repository to fetch cache from (e.g., `--repo=leanprover-community/mathlib4`) |
 | `--cache-from=LIST` | For `get`/`get!`/`get-`/`lookup`: trust-ordered, comma-separated list of containers to read from. Overrides the per-repo default (see [Trust-ordered containers](#trust-ordered-containers)). |
-| `--scope=REF`       | For `get`/`get!`/`get-`: read from the SHA-scoped namespace for the given git ref (anything `git rev-parse` accepts: `HEAD`, branch, tag, SHA). Use the SHA reported by `cache query`. Wins over the `MATHLIB_CACHE_REPO_SCOPE` env var. Triggers the non-default-scope security notice. |
-| `--container=NAME`  | For `put`/`put!`/`put-unpacked`/`put-staged`/`commit`/`commit!`: target container for upload. Required unless `MATHLIB_CACHE_PUT_URL` is set. |
+| `--scope=REF`       | For `get`/`get!`/`get-`: read from the SHA-scoped namespace for the given git ref (anything `git rev-parse` accepts: `HEAD`, branch, tag, SHA). Use the SHA reported by `cache query`. Triggers the non-default-scope security notice. |
+| `--container=NAME`  | For `put`/`put!`/`put-unpacked`/`put-staged`/`commit`/`commit!`: target container for upload. |
 
 Container names (known to both flags): `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`.
 
@@ -87,8 +87,7 @@ order, depending on the repo:
 | `leanprover-community/mathlib4-nightly-testing` | `nightly-testing`, `legacy` |
 | any fork (PRs)                                  | `forks`, `legacy`           |
 
-Override the read chain with `--cache-from=LIST` (CLI) or
-`MATHLIB_CACHE_FROM` (env var):
+Override the read chain with `--cache-from=LIST`:
 
 ```bash
 # Read only from the master container
@@ -102,34 +101,9 @@ Uploads target a single container via `--container=NAME`.
 
 ## Environment Variables
 
-### Cache Location
-
 | Variable            | Description                        | Default                                         |
 |---------------------|------------------------------------|-------------------------------------------------|
 | `MATHLIB_CACHE_DIR` | Directory for cached `.ltar` files | `$XDG_CACHE_HOME/mathlib` or `~/.cache/mathlib` |
-
-### Custom Cache URLs
-
-Override the cache endpoints. When either is set, the multi-container
-resolution is bypassed for that direction.
-
-| Variable                | Description                     | Default                                              |
-|-------------------------|---------------------------------|------------------------------------------------------|
-| `MATHLIB_CACHE_GET_URL` | URL for downloading cache files | Azure container URLs (see [containers](#trust-ordered-containers)) |
-| `MATHLIB_CACHE_PUT_URL` | URL for uploading cache files   | Azure container URL chosen by `--container=NAME`     |
-
-### Read fallback chain
-
-| Variable             | Description                                                          | Default                |
-|----------------------|----------------------------------------------------------------------|------------------------|
-| `MATHLIB_CACHE_FROM` | Comma-separated container list (same shape as `--cache-from`). `--cache-from` (CLI) takes precedence when both are set. | per-repo default chain |
-
-### Authentication (for uploads)
-
-| Variable                 | Description                            |
-|--------------------------|----------------------------------------|
-| `MATHLIB_CACHE_AZURE_BEARER_TOKEN` | Azure bearer token (preferred)  |
-| `MATHLIB_CACHE_SAS`      | Azure SAS token fallback               |
 
 ## How It Works
 
@@ -238,7 +212,7 @@ override is supplied.
 When you read cache artifacts at a non-default scope, the cache tool prints a
 security warning to stderr. This happens when:
 
-1. **`MATHLIB_CACHE_REPO_SCOPE` is set** — you are reading from a specific commit's
+1. **`--scope=` is passed** — you are reading from a specific commit's
    namespace instead of the repo's default trust chain.
 2. **`--cache-from` widens the read chain** — you are explicitly telling the tool
    to trust containers beyond the repo default.
@@ -256,7 +230,7 @@ boundary for this repo. The cache cannot verify the contents of these
 artifacts; you are choosing to trust whoever uploaded them.
 
 Repository: leanprover-community/mathlib4
-Reason: MATHLIB_CACHE_REPO_SCOPE=5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e (explicit per-commit scope)
+Reason: --scope=5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e (explicit per-commit scope)
 =================================================================
 ```
 
