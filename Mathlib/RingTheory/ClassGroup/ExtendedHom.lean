@@ -83,6 +83,8 @@ theorem extendedIdeal_extendedIdeal (C : Type*) [CommRing C] [IsDomain C] [Algeb
 
 end
 
+section DedekindDomain
+
 variable [IsDedekindDomain A] (C : Type*) [CommRing C] [Algebra B C] [Algebra A C]
   [IsScalarTower A B C] [Module.IsTorsionFree B C] [Module.IsTorsionFree A C]
   [IsDedekindDomain C]
