@@ -97,6 +97,6 @@ jobs:
           name: tools-bin
           path: tools-bin.tar.gz
           # Master is pushed frequently, so a short retention keeps storage bounded
-          # while always leaving a recent artifact available, even over a quiet weekend.
+          # while still leaving a recent artifact available.
           retention-days: 7
           if-no-files-found: error
