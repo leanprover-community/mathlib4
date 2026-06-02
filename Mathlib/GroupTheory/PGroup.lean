@@ -391,18 +391,6 @@ end P2comm
 
 end IsPGroup
 
-section Dependencies
-
-set_option warn.sorry false
-set_option linter.style.longLine false
-
--- #40011
-@[to_additive] theorem Subgroup.biSup_normal {ι : Type*} (s : Set ι) (H : ι → Subgroup G) (h : ∀ i ∈ s, (H i).Normal) : ⨆ i ∈ s, H i |>.Normal := sorry
--- #40012
-theorem IsPGroup.biSup_of_normal {ι : Type*} (s : Set ι) (H : ι → Subgroup G) (h : ∀ i ∈ s, IsPGroup p (H i)) (hn : ∀ i ∈ s, (H i).Normal) : IsPGroup p (⨆ i ∈ s, H i : Subgroup G) := sorry
-
-end Dependencies
-
 namespace Subgroup
 
 variable (p G) in
