@@ -35,10 +35,9 @@ With this convention, `(g * h) • p = g • (h • p)` follows from `(g * h)⁻
 * `instance : MulAction (FundamentalGroup X x₀) (UniversalCover x₀)` —
   the action, with `FaithfulSMul`, `ContinuousConstSMul`, and **freeness** as
   `IsCancelSMul` (all stated without geometric hypotheses on `X`).
+  Freeness in the form `g • e = e → g = 1` is then `IsCancelSMul.eq_one_of_smul`.
 * `UniversalCover.proj_eq_iff_mem_orbit` — two points have the same projection iff they
   lie in the same orbit.
-* `UniversalCover.eq_one_of_smul_eq` — strengthening of freeness: any stabilising point
-  forces `g = 1` (uses the universal cover's path-connectedness).
 * `UniversalCover.exists_nhds_smul_disjoint` — **proper discontinuity**: every point has
   a neighborhood whose non-identity translates are disjoint from it.
 * `UniversalCover.isQuotientCoveringMap` — packages it all: `proj` is a quotient covering
@@ -141,25 +140,11 @@ theorem proj_surjective [PathConnectedSpace X] :
     Function.Surjective (proj : UniversalCover x₀ → X) := fun x ↦
   ⟨mk x (Path.Homotopic.Quotient.mk (PathConnectedSpace.somePath x₀ x)), rfl⟩
 
-section ProperlyDiscontinuous
-
-variable [LocPathConnectedSpace X] [PathConnectedSpace X] [SemilocallySimplyConnectedSpace X]
-
-/-- **Freeness** of the action: a stabilising point forces the action to be trivial.
-If `g • e = e` for some `e`, then `g = 1`. -/
-theorem eq_one_of_smul_eq (g : FundamentalGroup X x₀) (e : UniversalCover x₀)
-    (h : g • e = e) : g = 1 := by
-  haveI : PathConnectedSpace (UniversalCover x₀) := pathConnectedSpace x₀
-  have h_lift_eq : (g • ·) = (id : UniversalCover x₀ → UniversalCover x₀) :=
-    (isCoveringMap x₀).eq_of_comp_eq (continuous_const_smul g) continuous_id
-      (funext fun p ↦ proj_smul g p) e h
-  refine eq_of_smul_eq_smul (α := UniversalCover x₀) (m₁ := g) (m₂ := 1) fun p ↦ ?_
-  rw [show g • p = p from congrFun h_lift_eq p, one_smul]
-
 /-- **Proper discontinuity** of the action (in the local form `IsQuotientCoveringMap`
 consumes): every point of the universal cover has a neighborhood whose non-identity
 translates are disjoint from it. -/
-theorem exists_nhds_smul_disjoint (e : UniversalCover x₀) :
+theorem exists_nhds_smul_disjoint [LocPathConnectedSpace X] [SemilocallySimplyConnectedSpace X]
+    (e : UniversalCover x₀) :
     ∃ U ∈ 𝓝 e, ∀ g : FundamentalGroup X x₀,
       ((g • ·) '' U ∩ U).Nonempty → g = 1 := by
   rcases e with ⟨x, q⟩
@@ -171,20 +156,18 @@ theorem exists_nhds_smul_disjoint (e : UniversalCover x₀) :
     | h p => exact ofBasedPath_ofPath p ▸ mem_sheet_self hxU p
   refine ⟨U, hU_open'.mem_nhds hU_mem, fun g hgU ↦ ?_⟩
   obtain ⟨_, ⟨y, hyU, rfl⟩, hgyU⟩ := hgU
-  have h_proj_eq : proj (g • y) = proj y := proj_smul g y
-  have heq : g • y = y :=
-    sheet_proj_injOn hU_slsc hxU q hgyU hyU h_proj_eq
-  exact eq_one_of_smul_eq g y heq
+  -- The sheet is injective on fibers, so `g • y = y`; freeness (`IsCancelSMul`) gives `g = 1`.
+  exact IsCancelSMul.eq_one_of_smul
+    (sheet_proj_injOn hU_slsc hxU q hgyU hyU (proj_smul g y))
 
 /-- The endpoint projection from the universal cover is a quotient covering map for the
 `π₁(X, x₀)`-action. Combines the action's continuity, transitivity on fibers, and proper
 discontinuity into the standard `IsQuotientCoveringMap` package. -/
-theorem isQuotientCoveringMap :
+theorem isQuotientCoveringMap
+    [LocPathConnectedSpace X] [PathConnectedSpace X] [SemilocallySimplyConnectedSpace X] :
     IsQuotientCoveringMap (proj : UniversalCover x₀ → X) (FundamentalGroup X x₀) where
   __ := (isCoveringMap x₀).isOpenMap.isQuotientMap (continuous_proj x₀) proj_surjective
   apply_eq_iff_mem_orbit := proj_eq_iff_mem_orbit
   disjoint := exists_nhds_smul_disjoint
-
-end ProperlyDiscontinuous
 
 end UniversalCover
