@@ -57,13 +57,11 @@ noncomputable def LinearEquiv.finsuppUnique (α : Type*) [Unique α] : (α →�
 
 variable {R M}
 
-set_option linter.deprecated false in
 @[deprecated uniqueLinearEquiv_apply (since := "2026-05-06")]
 theorem LinearEquiv.finsuppUnique_apply (α : Type*) [Unique α] (f : α →₀ M) :
     LinearEquiv.finsuppUnique R M α f = f default :=
   rfl
 
-set_option linter.deprecated false in
 @[deprecated uniqueLinearEquiv_symm_apply (since := "2026-05-06")]
 theorem LinearEquiv.finsuppUnique_symm_apply (α : Type*) [Unique α] (m : M) :
     (LinearEquiv.finsuppUnique R M α).symm m = Finsupp.single default m := by

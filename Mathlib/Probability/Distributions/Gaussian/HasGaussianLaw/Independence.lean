@@ -226,7 +226,7 @@ lemma HasGaussianLaw.iIndepFun_of_covariance_inner
       cov[fun ω ↦ ⟪x, X i ω⟫, fun ω ↦ ⟪y, X j ω⟫; P] = 0) :
     iIndepFun X P :=
   hX.iIndepFun_of_covariance_strongDual fun i j hij L₁ L₂ ↦ by
-    simpa using h i j hij ((toDual ℝ (E i)).symm L₁) ((toDual ℝ (E j)).symm L₂)
+    simpa using! h i j hij ((toDual ℝ (E i)).symm L₁) ((toDual ℝ (E j)).symm L₂)
 
 end InnerProductSpace
 
@@ -332,7 +332,7 @@ lemma HasGaussianLaw.indepFun_of_covariance_inner [InnerProductSpace ℝ E] [Inn
     (h : ∀ x y, cov[fun ω ↦ ⟪x, X ω⟫, fun ω ↦ ⟪y, Y ω⟫; P] = 0) :
     IndepFun X Y P :=
   hXY.indepFun_of_covariance_strongDual fun L₁ L₂ ↦ by
-    simpa using h ((toDual ℝ E).symm L₁) ((toDual ℝ F).symm L₂)
+    simpa using! h ((toDual ℝ E).symm L₁) ((toDual ℝ F).symm L₂)
 
 /-- If $((X_i)_{i \in \iota}, (Y_j)_{j \in \kappa})$ is Gaussian, then $(X_i)_{i \in \iota}$ and
 $(Y_j)_{j \in \kappa}$ are independent if for all $i \in \iota, j \in \kappa$,

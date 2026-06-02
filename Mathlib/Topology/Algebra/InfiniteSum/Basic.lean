@@ -402,7 +402,7 @@ theorem HasProd.update' [L.LeAtTop] [L.NeBot] {α : Type*} [TopologicalSpace α]
   have : ∀ b', f b' * ite (b' = b) x 1 = update f b x b' * ite (b' = b) (f b) 1 := by
     intro b'
     split_ifs with hb'
-    · simpa only [Function.update_apply, hb', eq_self_iff_true] using mul_comm (f b) x
+    · simpa only [Function.update_apply, hb', eq_self_iff_true] using! mul_comm (f b) x
     · simp only [Function.update_apply, hb', if_false]
   have h := hf.mul (hasProd_ite_eq b x L)
   simp_rw [this] at h
@@ -719,7 +719,7 @@ protected theorem Multipliable.tprod_eq_mul_tprod_ite' [DecidableEq β] [L.LeAtT
     ∏'[L] x, f x = f b * ∏'[L] x, ite (x = b) 1 (f x) :=
   calc
     ∏'[L] x, f x = ∏'[L] x, (ite (x = b) (f x) 1 * update f b 1 x) :=
-      tprod_congr fun n ↦ by split_ifs with h <;> simp [update_apply, h]
+      tprod_congr fun n ↦ by split_ifs with h <;> simp [h]
     _ = (∏'[L] x, ite (x = b) (f x) 1) * ∏'[L] x, update f b 1 x :=
       Multipliable.tprod_mul ⟨ite (b = b) (f b) 1, hasProd_single b (fun _ hb ↦ if_neg hb) L⟩ hf
     _ = ite (b = b) (f b) 1 * ∏'[L] x, update f b 1 x := by
