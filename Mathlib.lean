@@ -4379,6 +4379,7 @@ public import Mathlib.Data.Sum.Lattice
 public import Mathlib.Data.Sum.Order
 public import Mathlib.Data.Sym.Basic
 public import Mathlib.Data.Sym.Card
+public import Mathlib.Data.Sym.NatCard
 public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Data.Sym.Sym2.Finsupp
 public import Mathlib.Data.Sym.Sym2.Init
@@ -7097,6 +7098,7 @@ public import Mathlib.Tactic.ArithMult
 public import Mathlib.Tactic.ArithMult.Init
 public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Attr.Register
+public import Mathlib.Tactic.BDSimp
 public import Mathlib.Tactic.Basic
 public import Mathlib.Tactic.Bound
 public import Mathlib.Tactic.Bound.Attribute
