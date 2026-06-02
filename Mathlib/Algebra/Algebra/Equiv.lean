@@ -514,7 +514,7 @@ variable (l : A ≃ₛₗ[φ] B) (map_one : l 1 = 1) (map_mul : ∀ x y : A, l (
 Upgrade a linear equivalence to an algebra equivalence,
 given that it distributes over multiplication and the identity
 -/
-@[simps apply]
+@[simps! apply]
 def ofLinearEquiv : A ≃ₛₐ[φ] B where
   __ := l
   map_mul' := map_mul
