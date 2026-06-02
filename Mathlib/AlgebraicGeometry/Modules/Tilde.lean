@@ -83,6 +83,60 @@ instance : (modulesSpecToSheaf (R := R)).Faithful := SpecModulesToSheafFullyFait
 
 instance : (modulesSpecToSheaf (R := R)).Full := SpecModulesToSheafFullyFaithful.full
 
+namespace Scheme.Modules
+
+variable {M : (Spec R).Modules} {U V : (Spec R).Opens}
+
+instance : Module R Γ(M, U) :=
+  inferInstanceAs <| Module R ((modulesSpecToSheaf.obj M).obj.obj (.op U))
+
+instance : IsScalarTower R Γ(Spec R, U) Γ(M, U) :=
+  IsScalarTower.of_compHom R Γ(Spec R, U) Γ(M, U)
+
+lemma smul_Spec_def (r : R) (x : Γ(M, U)) :
+    r • x = ((Spec R).presheaf.map U.leTop.op) ((Scheme.ΓSpecIso R).inv r) • x :=
+  rfl
+
+@[simp]
+lemma map_smul_Spec (hUV : .op V ⟶ .op U) (f : R) (x : Γ(M, V)) :
+    dsimp% M.presheaf.map hUV (f • x) = f • M.presheaf.map hUV x :=
+  ((modulesSpecToSheaf.obj M).obj.map hUV).hom.map_smul f x
+
+lemma isUnit_algebraMap_end_of_le_basicOpen (f : R) (hf : U ≤ PrimeSpectrum.basicOpen f) :
+    IsUnit (algebraMap R (Module.End R Γ(M, U)) f) := by
+  rw [Module.End.isUnit_iff]
+  have : ⇑((algebraMap R (Module.End ↑R ↑Γ(M, U))) f) =
+      algebraMap (Γ(Spec R, U)) (Module.End Γ(Spec R, U) Γ(M, U))
+        (((Spec R).presheaf.map (homOfLE hf).op) <| algebraMap R _ f) :=
+    rfl
+  rw [this, ← Module.End.isUnit_iff]
+  exact ((IsLocalization.Away.algebraMap_isUnit _).map _).map _
+
+lemma isSMulRegular_of_le_basicOpen {f : R} (hle : U ≤ PrimeSpectrum.basicOpen f) :
+    IsSMulRegular Γ(M, U) f := by
+  intro x y hxy
+  have := M.isUnit_algebraMap_end_of_le_basicOpen _ hle
+  rw [Module.End.isUnit_iff] at this
+  exact this.injective hxy
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma Scheme.Modules.restrictAppIso_smul_Spec {S : CommRingCat.{u}} (f : R ⟶ S)
+    [IsOpenImmersion (Spec.map f)] {U : (Spec S).Opens} (r : R)
+    (x : Γ(M.restrict (Spec.map f), U)) :
+    dsimp% (M.restrictAppIso (Spec.map f) U).hom (f r • x) =
+      r • (M.restrictAppIso (Spec.map f) U).hom x := by
+  rw [Scheme.Modules.smul_Spec_def, Scheme.Modules.smul_Spec_def]
+  simp_rw [smul_restrictAppIso_hom_apply, ← ConcreteCategory.comp_apply, Category.assoc]
+  have :
+      f ≫ (ΓSpecIso S).inv ≫ (Spec S).presheaf.map U.leTop.op ≫ (Hom.appIso (Spec.map f) U).inv =
+        (ΓSpecIso R).inv ≫ (Spec R).presheaf.map (Spec.map f ''ᵁ U).leTop.op := by
+    simp [Iso.cancel_iso_inv_left, Hom.app_eq_appLE]
+    rfl
+  rw [this]
+
+end Scheme.Modules
+
 /--
 `M^~` as a sheaf of `𝒪_{Spec R}`-modules
 -/
@@ -180,15 +234,8 @@ noncomputable def isoTop (M : ModuleCat R) :
     M ≅ (modulesSpecToSheaf.obj (tilde M)).presheaf.obj (.op ⊤) :=
   asIso (toOpen M ⊤)
 
-open PrimeSpectrum in
-lemma isUnit_algebraMap_end_basicOpen (M : (Spec (.of R)).Modules) (f : R) :
-    IsUnit (algebraMap R (Module.End R
-      ((modulesSpecToSheaf.obj M).presheaf.obj (.op (basicOpen f)))) f) := by
-  rw [Module.End.isUnit_iff]
-  change Function.Bijective (algebraMap Γ(Spec R, basicOpen f)
-      (Module.End Γ(Spec R, basicOpen f) Γ(M, basicOpen f)) (algebraMap R _ f))
-  rw [← Module.End.isUnit_iff]
-  exact (IsLocalization.Away.algebraMap_isUnit _).map _
+@[deprecated (since := "2026-05-30")]
+alias isUnit_algebraMap_end_basicOpen := Scheme.Modules.isUnit_algebraMap_end_of_le_basicOpen
 
 end tilde
 
@@ -206,7 +253,7 @@ noncomputable def Scheme.Modules.fromTildeΓ (M : (Spec (.of R)).Modules) :
         rw [Subtype.forall]
         change Submonoid.powers _ ≤ (IsUnit.submonoid _).comap _
         simp only [inducedFunctor_obj, Submonoid.powers_le, Submonoid.mem_comap]
-        exact tilde.isUnit_algebraMap_end_basicOpen M f.unop
+        exact M.isUnit_algebraMap_end_of_le_basicOpen f.unop le_rfl
       naturality {f g : Rᵒᵖ} i := by
         letI N := (modulesSpecToSheaf.obj M).presheaf.obj (.op ⊤)
         ext1
@@ -220,7 +267,7 @@ noncomputable def Scheme.Modules.fromTildeΓ (M : (Spec (.of R)).Modules) :
               (basicOpen_le_basicOpen_iff _ _).mp (i.1.hom.le)
           refine ((Commute.isUnit_mul_iff (b := algebraMap R _ a) (.map (.all _ _) _)).mp ?_).1
           rw [← map_mul, ← e, map_pow]
-          exact (tilde.isUnit_algebraMap_end_basicOpen M g.unop).pow n
+          exact (M.isUnit_algebraMap_end_of_le_basicOpen g.unop le_rfl).pow n
         · dsimp [← ModuleCat.hom_comp]
           rw [tilde.toOpen_res_assoc]
           ext x
@@ -263,7 +310,7 @@ noncomputable def Scheme.Modules.fromTildeΓNatTrans :
     · rw [Subtype.forall]
       change Submonoid.powers _ ≤ (IsUnit.submonoid _).comap _
       simp only [Submonoid.powers_le, Submonoid.mem_comap, IsUnit.mem_submonoid_iff]
-      exact tilde.isUnit_algebraMap_end_basicOpen ..
+      exact N.isUnit_algebraMap_end_of_le_basicOpen r.unop le_rfl
     dsimp [TopCat.Sheaf.restrictHomEquivHom, Functor.IsCoverDense.restrictHomEquivHom,
       moduleSpecΓFunctor, Sheaf.forget]
     simp only [← ModuleCat.hom_comp, Functor.map_comp]
@@ -294,7 +341,7 @@ def tilde.adjunction : tilde.functor R ⊣ moduleSpecΓFunctor where
     · rw [Subtype.forall]
       change Submonoid.powers _ ≤ (IsUnit.submonoid _).comap _
       simp only [Submonoid.powers_le, Submonoid.mem_comap, IsUnit.mem_submonoid_iff]
-      exact isUnit_algebraMap_end_basicOpen ..
+      exact Scheme.Modules.isUnit_algebraMap_end_of_le_basicOpen r.unop le_rfl
     dsimp [toTildeΓNatIso, isoTop,
       TopCat.Sheaf.restrictHomEquivHom, Functor.IsCoverDense.restrictHomEquivHom,
       fromTildeΓNatTrans, moduleSpecΓFunctor, Sheaf.forget, sheafToPresheaf]

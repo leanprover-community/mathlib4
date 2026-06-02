@@ -150,7 +150,6 @@ open Limits
 
 open MorphismProperty
 
-set_option backward.isDefEq.respectTransparency false in
 variable (J C) in
 instance isStableUnderColimitsOfShape_monomorphisms
     [HasColimitsOfShape J C] [(colim : (J ⥤ C) ⥤ C).PreservesMonomorphisms] :
