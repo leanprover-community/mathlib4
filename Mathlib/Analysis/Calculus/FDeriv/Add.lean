@@ -133,7 +133,7 @@ lemma differentiableAt_smul_iff (c : R) [Invertible c] :
 `c` must be invertible, i.e. if `R` is a field. -/
 theorem fderiv_const_smul_of_invertible (c : R) [Invertible c] :
     fderiv 𝕜 (c • f) x = c • fderiv 𝕜 f x := by
-  simp [← fderivWithin_univ, fderivWithin_const_smul_of_invertible c uniqueDiffWithinAt_univ]
+  simp [← fderivWithin_univ, fderivWithin_const_smul_of_invertible]
 
 end ConstSMul
 
@@ -178,7 +178,7 @@ typeclass. -/
 lemma fderiv_const_smul_field (c : R) : fderiv 𝕜 (c • f) = c • fderiv 𝕜 f := by
   simp_rw [← fderivWithin_univ]
   ext x
-  simp [fderivWithin_const_smul_field c uniqueDiffWithinAt_univ]
+  simp [fderivWithin_const_smul_field]
 
 @[deprecated (since := "2026-01-11")] alias fderiv_const_smul_of_field := fderiv_const_smul_field
 
