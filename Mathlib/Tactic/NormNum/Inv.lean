@@ -85,7 +85,7 @@ def evalMkRat : NormNumExt where eval {u α} (e : Q(ℚ)) : MetaM (Result e) := 
   return .isRat _ q n d q(isRat_mkRat $pa $pb $p)
 
 /-- The `norm_num` extension which identifies expressions of the form `NNRat.divNat a b`,
-such that `norm_num` successfully recognises both `a` and `b`, and returns `(a : ℤ) / b`. -/
+such that `norm_num` successfully recognises both `a` and `b`, and returns `a / b`. -/
 @[norm_num NNRat.divNat _ _]
 def evalNNRatDivNat : NormNumExt where eval {u α} (e : Q(ℚ≥0)) : MetaM (Result e) := do
   let .app (.app (.const ``NNRat.divNat _) (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
