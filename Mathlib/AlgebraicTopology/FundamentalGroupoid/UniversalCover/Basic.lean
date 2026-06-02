@@ -19,9 +19,10 @@ the quotient topology coming from the compact-open based-path space.
 
 ## Main definitions
 
-* `UniversalCover x₀ := Σ x : X, Path.Homotopic.Quotient x₀ x`, topologised as the quotient
-  of `BasedPath x₀` under endpoint-preserving homotopy.
-* `UniversalCover.proj : UniversalCover x₀ → X`: the endpoint projection.
+* `UniversalCover x₀`: a `structure` with fields `proj : X` (the endpoint) and
+  `path : Path.Homotopic.Quotient x₀ proj` (the homotopy class of paths from `x₀`),
+  topologised as the quotient of `BasedPath x₀` under endpoint-preserving homotopy.
+* `UniversalCover.proj : UniversalCover x₀ → X`: the endpoint projection (auto-generated).
 * `UniversalCover.Fiber x₀ x`, `UniversalCover.fiberEquiv`: the fiber over `x` and its
   identification with the homotopy class of paths.
 * `UniversalCover.sheet`: the sheet indexed by `q : Path.Homotopic.Quotient x₀ x` over a good
@@ -57,33 +58,24 @@ open Topology
 variable {X : Type*} [TopologicalSpace X]
 
 /-- The endpoint-plus-homotopy-class model for the universal cover. The topology is supplied below
-as the quotient topology from `BasedPath x₀`.
-
-This definition is exposed (rather than the constructor `mk` alone) so that downstream files
-can define functions whose computation rules — e.g. the deck-transformation action's
-`smul_mk` — reduce by `rfl`. Users should still prefer the `mk`/`proj`/`fiberEquiv` API
-whenever possible. -/
-@[expose]
-def UniversalCover (x₀ : X) :=
-  Σ x : X, Path.Homotopic.Quotient x₀ x
+as the quotient topology from `BasedPath x₀`. -/
+@[ext]
+structure UniversalCover (x₀ : X) where
+  /-- The endpoint of a representative path. -/
+  proj : X
+  /-- The homotopy class of paths from the basepoint to `proj`. -/
+  path : Path.Homotopic.Quotient x₀ proj
 
 namespace UniversalCover
 
 variable {x₀ x : X}
 
-/-- Construct a term of `UniversalCover`.
-The constructor is exposed together with `UniversalCover` itself so that downstream
-functions defined on `mk` reduce by `rfl`. Users should still prefer the
-`mk`/`proj`/`fiberEquiv` API whenever possible. -/
-@[expose]
-def mk (x : X) (q : Path.Homotopic.Quotient x₀ x) : UniversalCover x₀ :=
-  ⟨x, q⟩
-
 /-- Two `mk` values with the same endpoint are equal iff their homotopy classes are equal. -/
 @[simp]
 theorem mk_inj {x : X} {q₁ q₂ : Path.Homotopic.Quotient x₀ x} :
-    mk x q₁ = mk x q₂ ↔ q₁ = q₂ :=
-  ⟨fun h => eq_of_heq (Sigma.mk.inj_iff.mp h).2, fun h => h ▸ rfl⟩
+    mk x q₁ = mk x q₂ ↔ q₁ = q₂ := by
+  rw [UniversalCover.mk.injEq]
+  exact ⟨fun h => eq_of_heq h.2, fun h => ⟨rfl, h ▸ HEq.rfl⟩⟩
 
 
 /-- The quotient map from based paths to endpoint/path-homotopy classes. -/
@@ -118,15 +110,10 @@ theorem surjective_ofBasedPath (x₀ : X) : Function.Surjective (ofBasedPath x�
 theorem isQuotientMap_ofBasedPath (x₀ : X) : IsQuotientMap (ofBasedPath x₀) :=
   ⟨⟨rfl⟩, surjective_ofBasedPath x₀⟩
 
-/-- The endpoint projection. -/
-@[expose]
-def proj : UniversalCover x₀ → X :=
-  Sigma.fst
-
 /-- The projection of a pair in the universal cover is its endpoint. -/
 @[simp]
 theorem proj_mk (q : Path.Homotopic.Quotient x₀ x) :
-    proj (mk x q) = x := (rfl)
+    proj (mk x q) = x := rfl
 
 /-- `proj` composed with `ofBasedPath` reads off the endpoint of the representative. -/
 @[simp]
@@ -134,7 +121,7 @@ theorem proj_ofBasedPath (x₀ : X) (γ : BasedPath x₀) :
     proj (ofBasedPath x₀ γ) = BasedPath.endpoint γ :=
   (rfl)
 
-/-- `ofBasedPath` unpacks to an explicit sigma pair: endpoint and homotopy class of `toPath`. -/
+/-- `ofBasedPath` unpacks to `mk (endpoint α) ⟦α.toPath⟧`. -/
 theorem ofBasedPath_eq (α : BasedPath x₀) :
     ofBasedPath x₀ α = mk (BasedPath.endpoint α) (Path.Homotopic.Quotient.mk α.toPath) := by
   cases α; rfl
@@ -143,7 +130,7 @@ theorem ofBasedPath_eq (α : BasedPath x₀) :
 endpoint-and-homotopy-class pair. -/
 theorem ofBasedPath_ofPath {y : X} (p : Path x₀ y) :
     ofBasedPath x₀ (BasedPath.ofPath p) = mk y (Path.Homotopic.Quotient.mk p) := by
-  refine Sigma.ext p.target ?_
+  refine UniversalCover.ext p.target ?_
   apply Path.Homotopic.hpath_hext
   intro t
   rfl
@@ -159,7 +146,7 @@ theorem toPath_homotopic_of_ofBasedPath_eq {α β : BasedPath x₀}
         exact heq.symm))
       β.toPath := by
   rw [ofBasedPath_eq α, ofBasedPath_eq β] at h
-  obtain ⟨hend, hq⟩ := Sigma.mk.inj_iff.mp (show (⟨_, _⟩ : Σ x, _) = ⟨_, _⟩ from h)
+  obtain ⟨hend, hq⟩ := UniversalCover.mk.injEq .. |>.mp h
   have hcast : HEq (Path.Homotopic.Quotient.mk α.toPath)
       (Path.Homotopic.Quotient.mk (α.toPath.cast rfl hend.symm)) :=
     Path.Homotopic.hpath_hext (fun _ ↦ rfl)
@@ -172,7 +159,7 @@ theorem ofBasedPath_eq_of_homotopic_toPath {α β : BasedPath x₀}
     (h : Path.Homotopic (α.toPath.cast rfl heq.symm) β.toPath) :
     ofBasedPath x₀ α = ofBasedPath x₀ β := by
   rw [ofBasedPath_eq α, ofBasedPath_eq β]
-  refine Sigma.ext heq ?_
+  refine UniversalCover.ext heq ?_
   have h1 : HEq (Path.Homotopic.Quotient.mk α.toPath)
       (Path.Homotopic.Quotient.mk (α.toPath.cast rfl heq.symm)) :=
     Path.Homotopic.hpath_hext (fun _ ↦ rfl)
@@ -214,11 +201,11 @@ fibre is discrete (see `Covering.lean`), any continuous section of the universal
 to a choice of homotopy class. -/
 noncomputable def fiberEquiv (x₀ x : X) :
     Fiber x₀ x ≃ Path.Homotopic.Quotient x₀ x where
-  toFun p := p.1.2.cast rfl p.2.symm
-  invFun q := ⟨⟨x, q⟩, by simp [proj]⟩
+  toFun p := p.1.path.cast rfl p.2.symm
+  invFun q := ⟨mk x q, rfl⟩
   left_inv p := by
     rcases p with ⟨⟨y, q⟩, hp⟩
-    dsimp [proj] at hp ⊢
+    dsimp at hp ⊢
     subst hp
     simp
   right_inv q := by simp
@@ -415,7 +402,7 @@ theorem sheet_pairwise_disjoint [LocPathConnectedSpace X]
         ofBasedPath_eq_of_homotopic_toPath h_end_eq
           (BasedPath.toPath_homotopic_of_joinedIn_slsc hU_slsc hp₁_end h_end_eq h_join)
       rw [ofBasedPath_ofPath, ofBasedPath_ofPath] at h_uc_eq
-      exact eq_of_heq ((Sigma.mk.injEq _ _ _ _).mp h_uc_eq).2
+      exact eq_of_heq ((UniversalCover.mk.injEq _ _ _ _).mp h_uc_eq).2
 
 /-- Sheets exhaust `proj ⁻¹' U`: every element of the preimage lies in some sheet. -/
 theorem sheet_exhaustive [LocPathConnectedSpace X]

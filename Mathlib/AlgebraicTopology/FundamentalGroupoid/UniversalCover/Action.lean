@@ -40,6 +40,7 @@ With this convention, `(g * h) • p = g • (h • p)` follows from `(g * h)⁻
   a neighborhood whose non-identity translates are disjoint from it.
 * `UniversalCover.isQuotientCoveringMap` — packages it all: `proj` is a quotient covering
   map for the `π₁(X, x₀)`-action.
+* `UniversalCover.isCancelSMul` — the action is cancellative (free) as a typeclass instance.
 -/
 
 public section
@@ -58,7 +59,7 @@ homotopy class.
 
 The inverse is needed because `End` reverses multiplication; see the module docstring. -/
 instance : SMul (FundamentalGroup X x₀) (UniversalCover x₀) where
-  smul g p := mk p.1 (g⁻¹.toPath.trans p.2)
+  smul g p := mk p.proj (g⁻¹.toPath.trans p.path)
 
 @[simp]
 theorem smul_mk (g : FundamentalGroup X x₀) (x : X) (q : Path.Homotopic.Quotient x₀ x) :
