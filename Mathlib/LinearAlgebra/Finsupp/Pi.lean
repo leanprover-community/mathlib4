@@ -213,7 +213,7 @@ lemma comap_lsingle_submodule (p : α → Submodule R M) (i : α) :
     Submodule.comap (lsingle i) (submodule p) = p i := by
   ext x
   refine ⟨fun hx ↦ by simpa using hx i, fun hx j ↦ ?_⟩
-  obtain (rfl | h) := eq_or_ne i j <;> simp_all
+  rcases eq_or_ne i j with rfl|h <;> simp_all
 
 lemma submodule_eq_iSup (p : α → Submodule R M) :
     Finsupp.submodule p = ⨆ i, Submodule.map (Finsupp.lsingle i) (p i) := by
