@@ -4828,6 +4828,7 @@ public import Mathlib.GroupTheory.Submonoid.Centralizer
 public import Mathlib.GroupTheory.Submonoid.Inverses
 public import Mathlib.GroupTheory.Subsemigroup.Center
 public import Mathlib.GroupTheory.Subsemigroup.Centralizer
+public import Mathlib.GroupTheory.Subsemigroup.Lemmas
 public import Mathlib.GroupTheory.Sylow
 public import Mathlib.GroupTheory.Torsion
 public import Mathlib.GroupTheory.Transfer
