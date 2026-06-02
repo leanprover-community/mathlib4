@@ -202,7 +202,6 @@ instance : IsCardinalFiltered (Subtype (J.PropSetWithTop κ')) κ' :=
       hasCardinalLT_union hκ' (hasCardinalLT_iUnion _ hK (fun k ↦ (α k).property.left))
         (hasCardinalLT_of_finite _ _ hκ'), by simp⟩, fun k ↦ ?_⟩
     rw [Subtype.mk_le_mk]
-    simp only [Set.le_eq_subset]
     exact subset_trans (Set.subset_iUnion (fun i ↦ (α i).1) k) Set.subset_union_left)
 
 instance : IsFiltered (Subtype (J.PropSetWithTop κ')) :=
