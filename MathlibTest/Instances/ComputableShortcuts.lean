@@ -3,30 +3,35 @@ This test must import everything to make the noncomputable instances which we do
 -/
 import Mathlib
 
+/-!
+# Tests that basic algebraic typeclasses are computable
+
+Frequently mathlib will have instances of the form
+```
+instance : FooAndBar X := ...
+
+-- in a later file
+noncomputable instance : VeryNoncomputableFoo X := ...
+```
+which means that `Foo X` will sometimes be synthesized noncomputably even though a computable
+version is available.
+
+TODO: test this more exhaustively.
+-/
+
+macro "#guard_computable" t:term : command =>
+  `(#guard_msgs (drop info) in #eval $t)
+
 section Real
 
-/-- info: Real.ofCauchy (sorry /- 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, ... -/) -/
-#guard_msgs in
-#eval LinearMap.mul ℝ ℝ 2 3
-
-/-- info: Real.ofCauchy (sorry /- -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, ... -/) -/
-#guard_msgs in
-#eval LinearEquiv.neg ℝ (2 : ℝ)
+#guard_computable LinearMap.mul ℝ ℝ 2 3
+#guard_computable LinearEquiv.neg ℝ (2 : ℝ)
 
 end Real
 
 section Complex
 
-/--
-info: Real.ofCauchy (sorry /- 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, ... -/) + Real.ofCauchy (sorry /- 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ... -/)*I
--/
-#guard_msgs in
-#eval LinearMap.mul ℂ ℂ 2 3
-
-/--
-info: Real.ofCauchy (sorry /- -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, ... -/) + Real.ofCauchy (sorry /- 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ... -/)*I
--/
-#guard_msgs in
-#eval LinearEquiv.neg ℂ (2 : ℂ)
+#guard_computable LinearMap.mul ℂ ℂ 2 3
+#guard_computable LinearEquiv.neg ℂ (2 : ℂ)
 
 end Complex
