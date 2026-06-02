@@ -1046,7 +1046,7 @@ variable [TopologicalSpace β]
 
 /-- A function `f : α → Set β` has an open cgraph if the set of all `x` such that `x.2 ∈ f x.1`
 is open in `α × β`. -/
-abbrev HasOpenCGraph (f : α → Set β) := IsOpen {x : α × β | x.2 ∈ f x.1}
+abbrev HasOpenCGraph (f : α → Set β) : Prop := IsOpen {x : α × β | x.2 ∈ f x.1}
 
 theorem HasOpenCGraph.const {z : Set β} (hz : IsOpen z) : HasOpenCGraph (fun _x : α => z) :=
   hz.preimage continuous_snd
