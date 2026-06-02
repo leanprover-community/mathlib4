@@ -628,7 +628,7 @@ end WalkDecomp
 theorem isPath_iff_isSubwalk_imp_nil {u v} {p : G.Walk u v} :
     p.IsPath ↔ ∀ (v : V) (w : G.Walk v v), w.IsSubwalk p → w.Nil := by
   refine ⟨fun hp v w hwp ↦ ?_, fun h ↦ .mk' ?_⟩
-  · simp [w.isPath_iff_eq_nil.mp <| isPath_of_isSubwalk hwp hp]
+  · simp [w.isPath_iff_nil.mp <| isPath_of_isSubwalk hwp hp]
   · refine List.pairwise_iff_getElem.mpr fun i j _ _ _ _ ↦ ?_
     let p' := p.take j |>.drop i
     have : ¬p'.Nil := by grind [nil_drop_iff, take_length]
