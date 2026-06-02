@@ -119,6 +119,8 @@ def test_Container_parse : IO Unit := do
   assert "pr-toolchain-tests parses"
     (Container.parse? "pr-toolchain-tests" == some .prToolchainTests)
   assert "legacy parses"          (Container.parse? "legacy" == some .legacy)
+  -- Matching is case-insensitive, so `--container=Master` canonicalizes too.
+  assert "case-insensitive"       (Container.parse? "Master" == some .master)
   -- An unknown name returns `none` so `--container=bogus` errors out rather than
   -- defaulting to some container the user didn't ask for.
   assert "unknown rejected"       (Container.parse? "bogus" == none)
@@ -204,11 +206,11 @@ def test_defaultContainersForRepo : IO Unit := do
     (defaultContainersForRepo "some/other-repo" == [.master, .forks, .legacy])
   -- Every chain ends with `legacy`; dropping it would quietly shrink hit rates.
   assert "fork chain ends with legacy"
-    ((defaultContainersForRepo "alice/mathlib4").getLast? == some Container.legacy)
+    ((defaultContainersForRepo "alice/mathlib4").getLast? == some .legacy)
   assert "canonical chain ends with legacy"
-    ((defaultContainersForRepo MATHLIBREPO).getLast? == some Container.legacy)
+    ((defaultContainersForRepo MATHLIBREPO).getLast? == some .legacy)
   assert "nightly-testing chain ends with legacy"
-    ((defaultContainersForRepo NIGHTLY_TESTING_REPO).getLast? == some Container.legacy)
+    ((defaultContainersForRepo NIGHTLY_TESTING_REPO).getLast? == some .legacy)
 
 end PerRepoAllowlist
 
@@ -464,14 +466,14 @@ def test_markerURL : IO Unit := do
   IO.println "markerURL:"
   assertEq "forks marker URL"
     "https://lakecache.blob.core.windows.net/mathlib4-forks/m/alice/mathlib4/abc123"
-    (markerURL Container.forks "alice/mathlib4" "abc123")
+    (markerURL .forks "alice/mathlib4" "abc123")
   -- The marker lives under `/m/`, its own namespace, and is keyed by repo.
   assertEq "marker is under /m/, keyed by repo"
     "https://lakecache.blob.core.windows.net/mathlib4-forks/m/leanprover-community/mathlib4/deadbeef"
-    (markerURL Container.forks MATHLIBREPO "deadbeef")
+    (markerURL .forks MATHLIBREPO "deadbeef")
   assertEq "marker URL respects the container base"
     "https://lakecache.blob.core.windows.net/mathlib4/m/someorg/mathlib4/sha9999"
-    (markerURL Container.legacy "someorg/mathlib4" "sha9999")
+    (markerURL .legacy "someorg/mathlib4" "sha9999")
 
 end Marker
 

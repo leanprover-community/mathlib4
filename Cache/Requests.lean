@@ -274,9 +274,7 @@ single probe keyed on `mathlibDepPath`.
 -/
 def resolveRepo (repo? : Option String) (mathlibDepPath : FilePath) :
     IO (Option String × String) := do
-  let detected? ← match ← getRemoteRepo mathlibDepPath with
-    | some info => pure (some info.repo)
-    | none => pure none
+  let detected? := (← getRemoteRepo mathlibDepPath).map (·.repo)
   return (detected?, repo?.getD (detected?.getD MATHLIBREPO))
 
 /--
@@ -310,7 +308,8 @@ Precedence (most specific wins):
 def effectiveGetURLs (repo : String) : IO (List (Option Container × String)) := do
   if let some url ← IO.getEnv "MATHLIB_CACHE_GET_URL" then
     return [(none, url)]
-  let cliOverride? ← cacheFromOverride.get
+  if let some cliOverride ← cacheFromOverride.get then
+    return cliOverride.map fun c => (some c, c.azureURL)
   let envOverride? ← do
     match (← IO.getEnv "MATHLIB_CACHE_FROM") with
     | none => pure none
@@ -322,8 +321,7 @@ def effectiveGetURLs (repo : String) : IO (List (Option Container × String)) :=
           (unrecognized container name). Known containers: \
           {", ".intercalate (Container.all.map Container.name)}."
         pure none
-  let containers :=
-    cliOverride?.getD (envOverride?.getD (defaultContainersForRepo repo))
+  let containers := envOverride?.getD (defaultContainersForRepo repo)
   return containers.map fun c => (some c, c.azureURL)
 
 /-- Authentication method used for cache upload operations. -/

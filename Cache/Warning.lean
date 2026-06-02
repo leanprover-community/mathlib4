@@ -106,14 +106,14 @@ def getNonDefaultScopeReason (repoExplicit? detectedRepo? : Option String)
   -- Condition 2: --cache-from override
   if let some cliOverride := cliCacheFromOverride? then
     let defaultContainers := defaultContainersForRepo resolvedRepo
-    if cliOverride ≠ defaultContainers then
+    if cliOverride != defaultContainers then
       let overrideStr := ", ".intercalate (cliOverride.map Container.name)
       return s!"--cache-from={overrideStr} (explicit container override)"
 
   -- Condition 3: --repo was explicitly passed AND doesn't match the git remote
   match repoExplicit?, detectedRepo? with
   | some explicitRepo, some detected =>
-    if explicitRepo ≠ detected then
+    if explicitRepo != detected then
       return s!"--repo={explicitRepo} (overrides detected git remote: {detected})"
   | _, _ => pure ()
 

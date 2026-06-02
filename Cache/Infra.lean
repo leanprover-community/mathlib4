@@ -61,8 +61,9 @@ def name : Container → String
 def all : List Container :=
   [.master, .forks, .nightlyTesting, .prToolchainTests, .legacy]
 
-/-- Parse a short name back into a `Container`. -/
-def parse? : String → Option Container
+/-- Parse a short name back into a `Container`. Matching is case-insensitive. -/
+def parse? (s : String) : Option Container :=
+  match s.toLower with
   | "master"             => some .master
   | "forks"              => some .forks
   | "nightly-testing"    => some .nightlyTesting
