@@ -94,7 +94,7 @@ theorem pimage_empty : pimage f ∅ = ∅ := by
 theorem pimage_subset {t : Finset β} : s.pimage f ⊆ t ↔ ∀ x ∈ s, ∀ y ∈ f x, y ∈ t := by
   simp [subset_iff, @forall_comm _ β]
 
-@[mono]
+@[gcongr, mono]
 theorem pimage_mono (h : s ⊆ t) : s.pimage f ⊆ t.pimage f :=
   pimage_subset.2 fun x hx _ hy => mem_pimage.2 ⟨x, h hx, hy⟩
 

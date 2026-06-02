@@ -146,7 +146,7 @@ noncomputable def mapSubmodule :
           AddSubmonoid.mem_map, Submodule.mem_toAddSubmonoid]
         exact ⟨aeval a f • m, aeval_apply_smul_mem_of_le_comap' h f a p.2, of_aeval_smul a f m⟩ }
   invFun q := ⟨(Submodule.orderIsoMapComap (of R M a)).symm (q.restrictScalars R), fun m hm ↦ by
-    simpa [← X_smul_of] using q.smul_mem (X : R[X]) hm⟩
+    simpa [← X_smul_of] using! q.smul_mem (X : R[X]) hm⟩
   left_inv p := by ext; simp
   right_inv q := by ext; aesop
   map_rel_iff' {p p'} := ⟨fun h x hx ↦ by aesop (rule_sets := [SetLike!]), fun h x hx ↦ by aesop⟩
