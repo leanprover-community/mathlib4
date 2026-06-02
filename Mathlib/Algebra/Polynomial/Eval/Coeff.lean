@@ -93,7 +93,7 @@ theorem map_id : p.map (RingHom.id _) = p := by simp [Polynomial.ext_iff, coeff_
 the product of polynomial rings over individual rings. -/
 def piEquiv {ι} [Finite ι] (R : ι → Type*) [∀ i, Semiring (R i)] :
     (∀ i, R i)[X] ≃+* ∀ i, (R i)[X] :=
-  .ofBijective (Pi.ringHom fun i ↦ mapRingHom (Pi.evalRingHom R i))
+  .ofBijective (RingHom.pi fun i ↦ mapRingHom (Pi.evalRingHom R i))
     ⟨fun p q h ↦ by ext n i; simpa using congr_arg (fun p ↦ coeff (p i) n) h,
       fun p ↦ ⟨.ofFinsupp (.ofSupportFinite (fun n i ↦ coeff (p i) n) <|
         (Set.finite_iUnion fun i ↦ (p i).support.finite_toSet).subset fun n hn ↦ by
@@ -205,7 +205,7 @@ section Map
 theorem support_map_subset [Semiring R] [Semiring S] (f : R →+* S) (p : R[X]) :
     (map f p).support ⊆ p.support := by
   intro x
-  contrapose!
+  contrapose
   simp +contextual
 
 theorem support_map_of_injective [Semiring R] [Semiring S] (p : R[X]) {f : R →+* S}

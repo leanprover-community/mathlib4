@@ -38,13 +38,13 @@ We provide many variations to stricten the result under more assumptions on the 
 * `geometric_hahn_banach_point_point`: Both sets are singletons. Strict separation.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists ContinuousLinearMap.hasOpNorm
 
 open Set
 
-open Pointwise
+open scoped Pointwise
 
 variable {𝕜 E : Type*}
 
@@ -78,7 +78,7 @@ theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [IsTopolo
   simp only [mul_one, smul_eq_mul]
   obtain h | h := le_or_gt y 0
   · exact h.trans (gauge_nonneg _)
-  · rw [gauge_smul_of_nonneg h.le, smul_eq_mul, le_mul_iff_one_le_right h]
+  · rw [gauge_smul_of_nonneg h.le, smul_eq_mul, RingHom.id_apply, le_mul_iff_one_le_right h]
     exact
       one_le_gauge_of_notMem (hs₁.starConvex hs₀)
         (absorbent_nhds_zero <| hs₂.mem_nhds hs₀).absorbs hx₀
@@ -234,7 +234,7 @@ theorem geometric_hahn_banach_closed_point (hs₁ : Convex ℝ s) (hs₂ : IsClo
       (disjoint_singleton_right.2 disj)
   ⟨f, s, ha, hst.trans <| hb x <| mem_singleton _⟩
 
-/-- See also `NormedSpace.eq_iff_forall_dual_eq`. -/
+/-- See also `SeparatingDual.eq_iff_forall_dual_eq`. -/
 theorem geometric_hahn_banach_point_point [T1Space E] (hxy : x ≠ y) :
     ∃ f : StrongDual ℝ E, f x < f y := by
   obtain ⟨f, s, t, hs, st, ht⟩ :=

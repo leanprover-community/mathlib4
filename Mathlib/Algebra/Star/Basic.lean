@@ -93,7 +93,7 @@ theorem star_inj [InvolutiveStar R] {x y : R} : star x = star y ↔ x = y :=
   star_injective.eq_iff
 
 /-- `star` as an equivalence when it is involutive. -/
-protected def Equiv.star [InvolutiveStar R] : Equiv.Perm R :=
+protected def Equiv.Perm.star [InvolutiveStar R] : Equiv.Perm R :=
   star_involutive.toPerm _
 
 theorem eq_star_of_eq_star [InvolutiveStar R] {r s : R} (h : r = star s) : s = star r := by
@@ -115,7 +115,7 @@ export TrivialStar (star_trivial)
 
 attribute [simp] star_trivial
 
-/-- A `*`-magma is a magma `R` with an involutive operation `star`
+/-- A \*-magma is a magma `R` with an involutive operation `star`
 such that `star (r * s) = star s * star r`.
 -/
 class StarMul (R : Type u) [Mul R] extends InvolutiveStar R where
@@ -202,7 +202,7 @@ theorem star_zpow [Group R] [StarMul R] (x : R) (z : ℤ) : star (x ^ z) = star 
 theorem star_div [CommGroup R] [StarMul R] (x y : R) : star (x / y) = star x / star y :=
   map_div (starMulAut : R ≃* R) _ _
 
-/-- Any commutative monoid admits the trivial `*`-structure.
+/-- Any commutative monoid admits the trivial \*-structure.
 
 See note [reducible non-instances].
 -/
@@ -221,7 +221,7 @@ theorem star_id_of_comm {R : Type*} [CommMonoid R] {x : R} : star x = x :=
 
 end
 
-/-- A `*`-additive monoid `R` is an additive monoid with an involutive `star` operation which
+/-- A \*-additive monoid `R` is an additive monoid with an involutive `star` operation which
 preserves addition. -/
 class StarAddMonoid (R : Type u) [AddMonoid R] extends InvolutiveStar R where
   /-- `star` commutes with addition -/
@@ -269,8 +269,8 @@ theorem star_nsmul [AddMonoid R] [StarAddMonoid R] (n : ℕ) (x : R) : star (n �
 theorem star_zsmul [AddGroup R] [StarAddMonoid R] (n : ℤ) (x : R) : star (n • x) = n • star x :=
   (starAddEquiv : R ≃+ R).toAddMonoidHom.map_zsmul _ _
 
-/-- A `*`-ring `R` is a non-unital, non-associative (semi)ring with an involutive `star` operation
-which is additive which makes `R` with its multiplicative structure into a `*`-multiplication
+/-- A \*-ring `R` is a non-unital, non-associative (semi)ring with an involutive `star` operation
+which is additive which makes `R` with its multiplicative structure into a \*-multiplication
 (i.e. `star (r * s) = star s * star r`). -/
 class StarRing (R : Type u) [NonUnitalNonAssocSemiring R] extends StarMul R where
   /-- `star` commutes with addition -/
@@ -370,7 +370,7 @@ theorem star_div₀ [CommGroupWithZero R] [StarMul R] (x y : R) : star (x / y) =
   apply op_injective
   rw [division_def, op_div, mul_comm, star_mul, star_inv₀, op_mul, op_inv]
 
-/-- Any commutative semiring admits the trivial `*`-structure.
+/-- Any commutative semiring admits the trivial \*-structure.
 
 See note [reducible non-instances].
 -/
@@ -461,13 +461,15 @@ instance {A : Type*} [Star A] [SMul R A] [StarModule R A] : StarModule Rˣ A :=
 
 end Units
 
+@[aesop safe apply]
 protected theorem IsUnit.star [Monoid R] [StarMul R] {a : R} : IsUnit a → IsUnit (star a)
   | ⟨u, hu⟩ => ⟨Star.star u, hu ▸ rfl⟩
 
-@[simp]
+@[simp, grind =]
 theorem isUnit_star [Monoid R] [StarMul R] {a : R} : IsUnit (star a) ↔ IsUnit a :=
   ⟨fun h => star_star a ▸ h.star, IsUnit.star⟩
 
+@[grind _=_]
 theorem Ring.inverse_star [Semiring R] [StarRing R] (a : R) :
     (star a)⁻¹ʳ = star (a⁻¹ʳ) := by
   by_cases ha : IsUnit a
@@ -483,12 +485,8 @@ protected instance Invertible.star {R : Type*} [MulOneClass R] [StarMul R] (r : 
 
 theorem star_invOf {R : Type*} [Monoid R] [StarMul R] (r : R) [Invertible r]
     [Invertible (star r)] : star (⅟r) = ⅟(star r) := by
-  have : star (⅟r) = star (⅟r) * ((star r) * ⅟(star r)) := by
-    simp only [mul_invOf_self, mul_one]
-  rw [this, ← mul_assoc]
-  have : (star (⅟r)) * (star r) = star 1 := by rw [← star_mul, mul_invOf_self]
-  rw [this, star_one, one_mul]
-
+  rw [← mul_one (star (⅟r)), ← mul_invOf_self (star r), ← mul_assoc, ← star_mul]
+  simp
 
 section Regular
 
@@ -521,6 +519,49 @@ theorem isRegular_star_iff [Mul R] [StarMul R] {x : R} :
 
 end Regular
 
+namespace Function.Injective
+
+variable {S : Type v} (f : R → S)
+
+/-- Given a type endowed with `star`, that `star` is involutive if it admits an injective map that
+preserves `star` to a type with whose `star` is involutive. See note [reducible non-instances]. -/
+protected abbrev involutiveStar [Star R] [InvolutiveStar S] (hf : Injective f)
+    (star : ∀ x, f (star x) = star (f x)) : InvolutiveStar R where
+  star_involutive r := hf <| by rw [star, star, star_star]
+
+/-- A type endowed with `star` and `*` is a star magma if it admits an injective map that
+preserves `star` and `*` to star magma.  See note [reducible non-instances]. -/
+protected abbrev starMul [Star R] [Mul R] [Mul S] [StarMul S] (hf : Injective f)
+    (star : ∀ x, f (star x) = star (f x)) (mul : ∀ x y, f (x * y) = f x * f y) :
+    StarMul R where
+  toInvolutiveStar := hf.involutiveStar _ star
+  star_mul x y := hf <| by rw [star, mul, star_mul, mul, star, star]
+
+/-- A additive monoid endowed with `star` is an additive star monoid if it admits an injective map
+that preserves `star` and `+` to an additive star monoid.  See note [reducible non-instances]. -/
+protected abbrev starAddMonoid [Star R] [AddMonoid R] [AddMonoid S] [StarAddMonoid S]
+    (hf : Injective f) (star : ∀ x, f (star x) = star (f x)) (add : ∀ x y, f (x + y) = f x + f y) :
+    StarAddMonoid R where
+  toInvolutiveStar := hf.involutiveStar f star
+  star_add x y := hf <| by rw [star, add, star_add, add, star, star]
+
+/-- A non-unital non-associative ring endowed with `star` is a star ring if it admits an injective
+map that preserves `star`, `*` and `+` to a star ring. See note [reducible non-instances]. -/
+protected abbrev starRing [Star R] [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
+    [StarRing S] (hf : Injective f) (star : ∀ x, f (star x) = star (f x))
+    (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y) :
+    StarRing R :=
+  { hf.starMul f star mul, hf.starAddMonoid f star add with }
+
+/-- A type endowed with `star` is a star module over some other type with `star` if it admits an
+injective map that preserves `star` and `•` to a star module. See note [reducible non-instances]. -/
+protected lemma starModule (𝕜 : Type*) [Star 𝕜] [SMul 𝕜 R]
+    [Star R] [SMul 𝕜 S] [Star S] [StarModule 𝕜 S] (hf : Injective f)
+    (star : ∀ x, f (star x) = star (f x)) (smul : ∀ (r : 𝕜) x, f (r • x) = r • f x) :
+    StarModule 𝕜 R where
+  star_smul r x := hf <| by rw [star, smul, star_smul, smul, star]
+
+end Function.Injective
 
 namespace MulOpposite
 

@@ -132,7 +132,7 @@ theorem prime_def_le_sqrt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m →
 
 theorem prime_iff_not_exists_mul_eq {p : ℕ} :
     p.Prime ↔ 2 ≤ p ∧ ¬ ∃ m n, m < p ∧ n < p ∧ m * n = p := by
-  push_neg
+  push Not
   simp_rw [prime_def_lt, dvd_def, exists_imp]
   refine and_congr_right fun hp ↦ forall_congr' fun m ↦ (forall_congr' fun h ↦ ?_).trans forall_comm
   simp_rw [Ne, forall_comm (β := _ = _), eq_comm, imp_false, not_lt]

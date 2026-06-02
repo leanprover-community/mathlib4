@@ -20,6 +20,7 @@ To avoid coercions, we rather consider `DividedPowers.dpow : ℕ → A → A`, e
 
 * `DividedPowers.dpow_null` asserts that `dpow n x = 0` for `x ∉ I`
 * `DividedPowers.dpow_mem` : `dpow n x ∈ I` for `n ≠ 0`
+
 For `x y : A` and `m n : ℕ` such that `x ∈ I` and `y ∈ I`, one has
 * `DividedPowers.dpow_zero` : `dpow 0 x = 1`
 * `DividedPowers.dpow_one` : `dpow 1 x = 1`
@@ -195,7 +196,7 @@ theorem exp_add (hI : DividedPowers I) (ha : a ∈ I) (hb : b ∈ I) :
 
 variable (hI : DividedPowers I)
 
-/- ## Rewriting lemmas -/
+/-! ## Rewriting lemmas -/
 
 theorem dpow_smul {n : ℕ} (ha : a ∈ I) :
     hI.dpow n (b • a) = b ^ n • hI.dpow n a := by
@@ -319,7 +320,7 @@ theorem dpow_sum' {M : Type*} [AddCommMonoid M] {I : AddSubmonoid M} (dpow : ℕ
       conv_lhs => rw [← m.fill_filterNe a]
       exact Sym.count_coe_fill_of_ne (ne_of_mem_of_not_mem hi ha)
     · intro m hm
-      convert sym_filterNe_mem a hm
+      convert! sym_filterNe_mem a hm
       rw [erase_insert ha]
 
 variable {ι : Type*} [DecidableEq ι]

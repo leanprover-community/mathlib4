@@ -65,7 +65,7 @@ theorem lift_genericMonicPoly [CommRing K] [Nontrivial K] {n : ℕ} (v : Fin (n 
     FreeCommRing.lift v (genericMonicPoly n) =
     (((monicEquivDegreeLT n).trans (degreeLTEquiv K n).toEquiv).symm (v ∘ Fin.castSucc)).1.eval
       (v (Fin.last _)) := by
-  simp [genericMonicPoly, monicEquivDegreeLT, degreeLTEquiv, eval_finset_sum]
+  simp [genericMonicPoly, monicEquivDegreeLT, degreeLTEquiv, eval_finsetSum]
 
 /-- A sentence saying every monic polynomial of degree `n` has a root. -/
 noncomputable def genericMonicPolyHasRoot (n : ℕ) : Language.ring.Sentence :=
@@ -74,7 +74,6 @@ noncomputable def genericMonicPolyHasRoot (n : ℕ) : Language.ring.Sentence :=
 theorem realize_genericMonicPolyHasRoot [Field K] [CompatibleRing K] (n : ℕ) :
     K ⊨ genericMonicPolyHasRoot n ↔
       ∀ p : { p : K[X] // p.Monic ∧ p.natDegree = n }, ∃ x, p.1.eval x = 0 := by
-  let _ := Classical.decEq K
   rw [Equiv.forall_congr_left ((monicEquivDegreeLT n).trans (degreeLTEquiv K n).toEquiv)]
   simp [Sentence.Realize, genericMonicPolyHasRoot, lift_genericMonicPoly]
 

@@ -658,7 +658,7 @@ theorem univ_pi_nonempty_iff : (pi univ t).Nonempty ↔ ∀ i, (t i).Nonempty :=
 
 theorem pi_eq_empty_iff : s.pi t = ∅ ↔ ∃ i, IsEmpty (α i) ∨ i ∈ s ∧ t i = ∅ := by
   rw [← not_nonempty_iff_eq_empty, pi_nonempty_iff]
-  push_neg
+  push Not
   refine exists_congr fun i => ?_
   cases isEmpty_or_nonempty (α i) <;> simp [*, forall_and, eq_empty_iff_forall_notMem]
 
@@ -857,7 +857,7 @@ theorem update_preimage_pi [DecidableEq ι] {f : ∀ i, α i} (hi : i ∈ s)
     (hf : ∀ j ∈ s, j ≠ i → f j ∈ t j) : update f i ⁻¹' s.pi t = t i := by
   ext x
   refine ⟨fun h => ?_, fun hx j hj => ?_⟩
-  · convert h i hi
+  · convert! h i hi
     simp
   · obtain rfl | h := eq_or_ne j i
     · simpa
@@ -958,7 +958,7 @@ lemma fst_injOn_graph : (s.graphOn f).InjOn Prod.fst := by aesop (add simp InjOn
 
 lemma graphOn_comp (s : Set α) (f : α → β) (g : β → γ) :
     s.graphOn (g ∘ f) = (fun x ↦ (x.1, g x.2)) '' s.graphOn f := by
-  simpa using image_comp (fun x ↦ (x.1, g x.2)) (fun x ↦ (x, f x)) _
+  simpa using! image_comp (fun x ↦ (x.1, g x.2)) (fun x ↦ (x, f x)) _
 
 lemma graphOn_univ_eq_range : univ.graphOn f = range fun x ↦ (x, f x) := image_univ
 
