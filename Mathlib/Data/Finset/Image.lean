@@ -110,7 +110,7 @@ theorem map_toFinset [DecidableEq α] [DecidableEq β] {s : Multiset α} :
 
 @[simp]
 theorem map_refl : s.map (Embedding.refl _) = s :=
-  ext fun _ => by simpa only [mem_map, exists_prop] using exists_eq_right
+  ext fun _ => by simpa only [mem_map, exists_prop] using! exists_eq_right
 
 @[simp]
 theorem map_cast_heq {α β} (h : α = β) (s : Finset α) :
@@ -388,7 +388,7 @@ alias ⟨_root_.Set.SurjOn.finsetImage_eq_of_mapsTo, _⟩ := image_eq_iff_surjOn
 theorem image_mono (f : α → β) : Monotone (Finset.image f) := fun _ _ => image_subset_image
 
 lemma image_injective (hf : Injective f) : Injective (image f) := by
-  simpa only [funext (map_eq_image _)] using map_injective ⟨f, hf⟩
+  simpa only [funext (map_eq_image _)] using! map_injective ⟨f, hf⟩
 
 lemma image_inj {t : Finset α} (hf : Injective f) : s.image f = t.image f ↔ s = t :=
   (image_injective hf).eq_iff

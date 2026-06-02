@@ -171,7 +171,7 @@ theorem ae_eq_condLExp₀ {P : Measure[mΩ₀] Ω} [hσ : SigmaFinite (P.trim hm
   rw [setLIntegral_trim_ae hm hY hs, setLIntegral_condLExp_trim _ _ _ hs]
   exact hXY s hs
 
-/- The conditional (Lebesgue) expectation `P⁻[X|mΩ]` is defined uniquely as an `mΩ`-measurable
+/-- The conditional (Lebesgue) expectation `P⁻[X|mΩ]` is defined uniquely as an `mΩ`-measurable
 function up to `P`-ae equality by its (Lebesgue) integral over all `mΩ`-measurable sets. -/
 theorem ae_eq_condLExp (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)]
     (X : Ω → ℝ≥0∞) (hY : Measurable[mΩ] Y)
