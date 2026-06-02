@@ -550,11 +550,11 @@ lemma integral_comp_id_comm' (L : E ≃L[𝕜] F) :
 lemma integral_comp_id_comm (L : E ≃L[𝕜] F) :
     μ[L] = L (∫ x, x ∂μ) := L.integral_comp_id_comm'
 
-variable [OpensMeasurableSpace E] [MeasurableSpace F] [BorelSpace F] [SecondCountableTopology F]
+variable [BorelSpace E] [MeasurableSpace F] [BorelSpace F]
 
 lemma integral_id_map (L : E ≃L[𝕜] F) :
     ∫ x, x ∂(μ.map L) = L (∫ x, x ∂μ) := by
-  rw [integral_map (by fun_prop) (by fun_prop)]
+  rw [show ⇑L = ⇑L.toHomeomorph.toMeasurableEquiv from rfl, integral_map_equiv]
   simp [L.integral_comp_id_comm]
 
 end ContinuousLinearEquiv
