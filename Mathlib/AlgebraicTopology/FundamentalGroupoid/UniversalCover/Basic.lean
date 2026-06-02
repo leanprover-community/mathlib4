@@ -74,8 +74,7 @@ variable {x₀ x : X}
 @[simp]
 theorem mk_inj {x : X} {q₁ q₂ : Path.Homotopic.Quotient x₀ x} :
     mk x q₁ = mk x q₂ ↔ q₁ = q₂ := by
-  rw [UniversalCover.mk.injEq]
-  exact ⟨fun h => eq_of_heq h.2, fun h => ⟨rfl, h ▸ HEq.rfl⟩⟩
+  rw [UniversalCover.mk.injEq]; simp
 
 
 /-- The quotient map from based paths to endpoint/path-homotopy classes. -/
