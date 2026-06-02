@@ -75,8 +75,8 @@ instance _root_.LinearMap.CompatibleSMul.finsupp_dom [SMulZeroClass R M] [Distri
     [LinearMap.CompatibleSMul M N R S] : LinearMap.CompatibleSMul (ι →₀ M) N R S where
   map_smul f r m := by
     conv_rhs => rw [← sum_single m, map_finsuppSum, smul_sum]
-    erw [← sum_single (r • m), sum_mapRange_index single_zero, map_finsuppSum]
-    congr; ext i m; exact (f.comp <| lsingle i).map_smul_of_tower r m
+    rw [← sum_single (r • m), sum_smul_index' single_zero, map_finsuppSum]
+    simp only [← lsingle_apply (R := S), ← LinearMap.comp_apply, LinearMap.map_smul_of_tower]
 
 instance _root_.LinearMap.CompatibleSMul.finsupp_cod [SMul R M] [SMulZeroClass R N]
     [LinearMap.CompatibleSMul M N R S] : LinearMap.CompatibleSMul M (ι →₀ N) R S where

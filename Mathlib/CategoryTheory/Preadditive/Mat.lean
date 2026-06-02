@@ -360,10 +360,8 @@ set_option backward.defeqAttrib.useBackward true in
 lemma additiveObjIsoBiproduct_hom_π (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) (i : M.ι) :
     (additiveObjIsoBiproduct F M).hom ≫ biproduct.π _ i =
       F.map (M.isoBiproductEmbedding.hom ≫ biproduct.π _ i) := by
-  dsimp [additiveObjIsoBiproduct]
-  rw [biproduct.lift_π, Category.assoc]
-  erw [biproduct.lift_π, ← F.map_comp]
-  simp
+  simp only [additiveObjIsoBiproduct, Iso.trans_hom, Functor.mapIso_hom, Functor.mapBiproduct_hom,
+    Category.assoc, biproduct.lift_π, ← F.map_comp]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

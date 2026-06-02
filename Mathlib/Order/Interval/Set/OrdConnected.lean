@@ -212,7 +212,7 @@ theorem ordConnected_preimage {F : Type*} [FunLike F α β] [OrderHomClass F α 
 @[instance]
 theorem ordConnected_image {E : Type*} [EquivLike E α β] [OrderIsoClass E α β] (e : E) {s : Set α}
     [hs : OrdConnected s] : OrdConnected (e '' s) := by
-  erw [(e : α ≃o β).image_eq_preimage_symm]
+  rw [← EquivLike.coe_coe e, (e : α ≃ β).image_eq_preimage_symm]
   apply ordConnected_preimage (e : α ≃o β).symm
 
 @[instance]
