@@ -210,6 +210,9 @@ variable {R 𝕜}
 theorem opNorm_lsmul_apply_le (x : R) : ‖(lsmul 𝕜 R x : E →L[𝕜] E)‖ ≤ ‖x‖ :=
   ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg x) fun y => norm_smul_le x y
 
+theorem opNNNorm_lsmul_apply_le (x : R) : ‖(lsmul 𝕜 R x : E →L[𝕜] E)‖₊ ≤ ‖x‖₊ :=
+  ContinuousLinearMap.opNNNorm_le_bound _ _ fun y => nnnorm_smul_le x y
+
 /-- The norm of `lsmul` is at most 1 in any semi-normed group. -/
 theorem opNorm_lsmul_le : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
@@ -240,11 +243,9 @@ variable [SMulCommClass 𝕜 R R] [RegularNormedAlgebra 𝕜 R] [Nontrivial R]
 theorem opNorm_mul : ‖mul 𝕜 R‖ = 1 :=
   (mulₗᵢ 𝕜 R).norm_toContinuousLinearMap
 
-
 @[simp]
 theorem opNNNorm_mul : ‖mul 𝕜 R‖₊ = 1 :=
   Subtype.ext <| opNorm_mul 𝕜 R
-
 
 end
 
@@ -261,6 +262,12 @@ theorem opNorm_lsmul [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module R E] 
   refine le_of_mul_le_mul_right ?_ (norm_pos_iff.mpr hy)
   simpa using le_of_opNorm_le _ (h 1) y
 
+@[simp]
+theorem opNNNorm_lsmul [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module R E] [NormSMulClass R E]
+    [IsScalarTower 𝕜 R E] [Nontrivial E] : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖₊ = 1 := by
+  rw [← NNReal.coe_inj]
+  simp
+
 /-- The norm of `lsmul x` equals `‖x‖` in any nontrivial normed group.
 
 This is `ContinuousLinearMap.opNorm_lsmul_apply_le` as an equality. -/
@@ -273,6 +280,13 @@ theorem opNorm_lsmul_apply [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module
   obtain ⟨y, hy⟩ := exists_ne (0 : E)
   refine le_of_mul_le_mul_right ?_ (norm_pos_iff.mpr hy)
   simpa [norm_smul] using h y
+
+@[simp]
+theorem opNNNorm_lsmul_apply [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module R E]
+    [NormSMulClass R E] [IsScalarTower 𝕜 R E] [Nontrivial E] {a : R} :
+    ‖(lsmul 𝕜 R a : E →L[𝕜] E)‖₊ = ‖a‖₊ := by
+  rw [← NNReal.coe_inj]
+  simp
 
 end ContinuousLinearMap
 
