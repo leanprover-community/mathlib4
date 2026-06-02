@@ -25,5 +25,5 @@ def basepoint : curve.Point :=
 set_option maxRecDepth 300 in
 theorem addOrderOf_basepoint : addOrderOf basepoint = 37 := by
   apply addOrderOf_eq_prime
-  · rfl
+  · decide +kernel
   · simp [basepoint]
