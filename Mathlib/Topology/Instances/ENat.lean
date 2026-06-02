@@ -10,6 +10,7 @@ public import Mathlib.Topology.Instances.Discrete
 public import Mathlib.Order.Interval.Set.WithBotTop
 public import Mathlib.Order.Filter.Pointwise
 public import Mathlib.Topology.Algebra.Monoid.Defs
+public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # Topology on extended natural numbers
@@ -85,6 +86,10 @@ instance : ContinuousMul ℕ∞ where
           .of_forall fun _ ↦ mul_comm ..
       | (a : ℕ), (b : ℕ) => by
         simp [ContinuousAt, nhds_prod_eq, tendsto_pure_nhds]
+
+instance : IsTopologicalSemiring ℕ∞ where
+  toContinuousAdd := inferInstance
+  toContinuousMul := inferInstance
 
 protected theorem continuousAt_sub {a b : ℕ∞} (h : a ≠ ⊤ ∨ b ≠ ⊤) :
     ContinuousAt (· - ·).uncurry (a, b) := by
