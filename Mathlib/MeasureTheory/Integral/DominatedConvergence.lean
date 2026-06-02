@@ -86,7 +86,6 @@ theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι →
   exact hasSum_setToFun_of_dominated_convergence _ bound hF_meas h_bound bound_summable
     bound_integrable h_lim
 
-set_option backward.defeqAttrib.useBackward true in
 theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AEStronglyMeasurable (f i) μ)
     (hf' : ∑' i, ∫⁻ a : α, ‖f i a‖ₑ ∂μ ≠ ∞) :
     ∫ a, ∑' i, f i a ∂μ = ∑' i, ∫ a, f i a ∂μ := by
