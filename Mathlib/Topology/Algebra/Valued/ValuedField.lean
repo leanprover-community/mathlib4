@@ -498,9 +498,9 @@ noncomputable def valueGroup₀_equiv_extensionValuation :
       rwa [← hx, ← hy]
   · intro x
     obtain ⟨k', hk'⟩ := restrict₀_surjective (hv.extensionValuation : (hat K) →*₀ Γ₀) x
-    obtain ⟨k, hk⟩ := restrict₀_surjective (hv.v : K →*₀ Γ₀) (extension k')
+    -- obtain ⟨k, hk⟩ := restrict₀_surjective (hv.v : K →*₀ Γ₀) (extension k')
     use extension k'
-    simpa [valueGroup₀_hom_extensionValuation, Valuation.restrict_def, ← hk', ← embedding_inj] using
+    simpa [valueGroup₀_hom_extensionValuation, Valuation.restrict_def, ← hk', ← embedding_inj, ] using
       congrArg embedding (restrict₀_surjective (hv.v : K →*₀ Γ₀) _).choose_spec
 
 noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
