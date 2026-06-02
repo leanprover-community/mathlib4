@@ -800,7 +800,7 @@ theorem coeFn_finsetProd [CommMonoid γ] [ContinuousMul γ]
     grw [coeFn_mul, ih]
 
 @[to_additive]
-theorem coeFn_finsetProd_fun [CommMonoid γ] [ContinuousMul γ]
+theorem coeFn_fun_finsetProd [CommMonoid γ] [ContinuousMul γ]
     {ι : Type*} (s : Finset ι) (f : ι → α →ₘ[μ] γ) :
     ⇑(∏ i ∈ s, f i) =ᵐ[μ] fun x ↦ ∏ i ∈ s, f i x := by
   grw [coeFn_finsetProd]

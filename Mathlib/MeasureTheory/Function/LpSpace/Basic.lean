@@ -203,7 +203,7 @@ theorem coeFn_finsetSum {ι : Type*} (s : Finset ι) (f : ι → Lp E p μ) :
     ⇑(∑ i ∈ s, f i) =ᵐ[μ] ∑ i ∈ s, ⇑(f i) := by
   simp [AEEqFun.coeFn_finsetSum]
 
-theorem coeFn_finsetSum_fun {ι : Type*} (s : Finset ι) (f : ι → Lp E p μ) :
+theorem coeFn_fun_finsetSum {ι : Type*} (s : Finset ι) (f : ι → Lp E p μ) :
     ⇑(∑ i ∈ s, f i) =ᵐ[μ] fun x ↦ ∑ i ∈ s, f i x := by
   grw [coeFn_finsetSum]
   filter_upwards with x using by simp
