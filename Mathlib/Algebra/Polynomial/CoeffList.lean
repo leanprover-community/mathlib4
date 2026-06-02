@@ -109,7 +109,7 @@ theorem coeffList_monomial {x : R} (hx : x ≠ 0) (n : ℕ) :
     simpa [coeffList, withBotSucc_degree_eq_natDegree_add_one h]
       using Polynomial.coeff_monomial_of_ne _ (by lia)
 
-/- Coefficients of a polynomial `P` are always the leading coefficient, some number of zeros, and
+/-- Coefficients of a polynomial `P` are always the leading coefficient, some number of zeros, and
 then `coeffList P.eraseLead`. -/
 theorem coeffList_eraseLead (h : P ≠ 0) :
     P.coeffList =

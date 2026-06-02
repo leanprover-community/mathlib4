@@ -1005,6 +1005,7 @@ public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 public import Mathlib.Algebra.Order.GroupWithZero.WithZero
 public import Mathlib.Algebra.Order.Hom.Basic
+public import Mathlib.Algebra.Order.Hom.Lattice
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Algebra.Order.Hom.MonoidWithZero
 public import Mathlib.Algebra.Order.Hom.Ring
@@ -3430,6 +3431,7 @@ public import Mathlib.CategoryTheory.Subfunctor.Finite
 public import Mathlib.CategoryTheory.Subfunctor.Image
 public import Mathlib.CategoryTheory.Subfunctor.OfSection
 public import Mathlib.CategoryTheory.Subfunctor.Sieves
+public import Mathlib.CategoryTheory.Subfunctor.SubmonoidFunctor
 public import Mathlib.CategoryTheory.Subfunctor.Subobject
 public import Mathlib.CategoryTheory.Subobject.ArtinianObject
 public import Mathlib.CategoryTheory.Subobject.Basic
