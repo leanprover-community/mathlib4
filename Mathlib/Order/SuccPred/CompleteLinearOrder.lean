@@ -157,7 +157,7 @@ lemma exists_eq_iInf_of_not_isPredPrelimit (hf : ¬ IsPredPrelimit (⨅ i, f i))
 @[to_dual lt_sInf_iff_of_not_isPredPrelimit]
 theorem sSup_lt_iff_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit x) :
     sSup s < x ↔ ∀ a ∈ s, a < x := by
-  have ⟨y, hy⟩ := not_isSuccPrelimit_iff_exists_covBy x |>.mp h
+  have ⟨y, hy⟩ := not_isSuccPrelimit_iff.mp h
   simp_rw [← hy.le_iff_lt_left]
   exact sSup_le_iff
 
@@ -190,7 +190,7 @@ theorem Order.IsSuccPrelimit.iSup_lt_iff (h : IsSuccPrelimit x) :
 @[to_dual sInf_le_iff]
 theorem Order.IsSuccPrelimit.le_sSup_iff (h : IsSuccPrelimit x) :
     x ≤ sSup s ↔ IsCofinalFor (Iio x) s := by
-  simpa using h.sSup_lt_iff.not
+  simpa [IsCofinalFor] using h.sSup_lt_iff.not
 
 @[to_dual iInf_le_iff]
 theorem Order.IsSuccPrelimit.le_iSup_iff (h : IsSuccPrelimit x) :
