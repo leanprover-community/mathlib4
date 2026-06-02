@@ -665,15 +665,12 @@ public theorem exists_open_nhd_pathComponent_preimage
         rw [hV'_castSucc_eq]; exact T.V_left_subset i
       have hρ_succ : Set.range (ρ i.succ) ⊆ T.U i :=
         (hρ_range _).trans ((hV'_sub_TV _).trans (T.V_right_subset i))
-      exact Path.segment_rung_homotopy (T.U i)
-        (fun p q hp_a hp_d hp_range hq_range ↦ T.U_slsc i hp_a hp_d p q hp_range hq_range)
+      exact Path.segment_rung_homotopy (T.U i) (T.U_slsc i)
         _ _ _ _ hα_sub hβ_sub hρ_cast hρ_succ
     -- Paste the segment homotopies; use `T.U 0` as the enclosing SLSC neighborhood.
     have h_paste :=
       Path.paste_segment_homotopies_slsc_source α.toPath β.toPath part ρ h_rectangles
-        (T.U ⟨0, Nat.succ_pos n'⟩)
-        (fun p q hp_a hp_d hp_range hq_range ↦
-          T.U_slsc ⟨0, Nat.succ_pos n'⟩ hp_a hp_d p q hp_range hq_range)
+        (T.U ⟨0, Nat.succ_pos n'⟩) (T.U_slsc ⟨0, Nat.succ_pos n'⟩)
         ((hρ_range 0).trans (by
           have h_zero : (0 : Fin (n' + 2)) =
               (⟨0, Nat.succ_pos n'⟩ : Fin (n' + 1)).castSucc := rfl

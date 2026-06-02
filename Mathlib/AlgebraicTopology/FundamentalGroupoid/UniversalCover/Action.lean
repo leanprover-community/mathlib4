@@ -163,10 +163,7 @@ theorem exists_nhds_smul_disjoint (e : UniversalCover x₀) :
     ∃ U ∈ 𝓝 e, ∀ g : FundamentalGroup X x₀,
       ((g • ·) '' U ∩ U).Nonempty → g = 1 := by
   rcases e with ⟨x, q⟩
-  obtain ⟨baseU, hU_open, hxU, hU_pathConn, hU_slsc_raw⟩ :=
-    exists_pathConnected_slsc_neighborhood x
-  have hU_slsc : IsPathHomotopyTrivial baseU := fun {_ _} p _ hp hq ↦
-    hU_slsc_raw (p.source ▸ hp ⟨0, rfl⟩) (p.target ▸ hp ⟨1, rfl⟩) p _ hp hq
+  obtain ⟨baseU, hU_open, hxU, -, hU_slsc⟩ := exists_pathConnected_slsc_neighborhood x
   let U := sheet baseU hxU q
   have hU_open' : IsOpen U := isOpen_sheet baseU hU_open hxU q
   have hU_mem : mk x q ∈ U := by

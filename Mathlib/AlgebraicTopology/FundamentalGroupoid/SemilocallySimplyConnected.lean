@@ -231,12 +231,10 @@ This is derived from the basic SLSC definition by composing paths: if p and q ar
 from a to b in U, then p · q⁻¹ is a loop at a contained in U, hence nullhomotopic by SLSC,
 which implies p ≃ q. -/
 public theorem exists_uniquePath_neighborhood [SemilocallySimplyConnectedSpace X] (x : X) :
-    ∃ U : Set X, IsOpen U ∧ x ∈ U ∧
-      (∀ {a b : X}, a ∈ U → b ∈ U → ∀ (p q : Path a b),
-        Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q) := by
+    ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ IsPathHomotopyTrivial U := by
   obtain ⟨U, hU_open, hx_in_U, hU_loops⟩ := semilocallySimplyConnectedSpace_iff.mp ‹_› x
   refine ⟨U, hU_open, hx_in_U, ?_⟩
-  intro _ _ _ _ p q hp hq
+  intro _ _ p q hp hq
   exact (Path.Homotopic.paths_homotopic_iff_loops_nullhomotopic U).mpr hU_loops p q hp hq
 
 /-- An SLSC neighborhood can be chosen to be path-connected. In a locally path-connected space,
@@ -244,21 +242,17 @@ we can use the path component of x in an SLSC neighborhood V to get a neighborho
 open, path-connected, and has the SLSC property (paths with same endpoints in U are homotopic). -/
 public theorem exists_pathConnected_slsc_neighborhood [SemilocallySimplyConnectedSpace X]
     [LocPathConnectedSpace X] (x : X) :
-    ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ IsPathConnected U ∧
-      (∀ {a b : X}, a ∈ U → b ∈ U → ∀ (p q : Path a b),
-        Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q) := by
+    ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ IsPathConnected U ∧ IsPathHomotopyTrivial U := by
   -- Get an SLSC neighborhood from the SLSC property
   obtain ⟨V, hV_open, hx_in_V, hV_slsc⟩ := exists_uniquePath_neighborhood x
   -- The path component of x in V is open (since V is open and X is locally path-connected)
   let W := pathComponentIn V x
   refine ⟨W, hV_open.pathComponentIn x, mem_pathComponentIn_self hx_in_V,
     isPathConnected_pathComponentIn hx_in_V, ?_⟩
-  intro a b ha hb p q hp hq
-  -- W ⊆ V, so a, b ∈ V and p, q have ranges in V, hence are homotopic by SLSC property of V
+  intro _ _ p q hp hq
+  -- W ⊆ V, so p, q have ranges in V, hence are homotopic by SLSC property of V
   have hW_subset : W ⊆ V := pathComponentIn_subset
-  apply @hV_slsc a b (hW_subset ha) (hW_subset hb) p q
-  · exact Set.Subset.trans hp hW_subset
-  · exact Set.Subset.trans hq hW_subset
+  exact hV_slsc p q (hp.trans hW_subset) (hq.trans hW_subset)
 
 /-! ### Tube data structures -/
 
@@ -308,8 +302,7 @@ public structure TubeData (X : Type*) [TopologicalSpace X] (x y : X) (n : ℕ) w
   /-- Each U[i] is open -/
   U_open : ∀ i, IsOpen (U i)
   /-- SLSC property: paths in U[i] with same endpoints are homotopic -/
-  U_slsc : ∀ i, ∀ {a b : X}, a ∈ U i → b ∈ U i →
-    ∀ (p q : Path a b), Set.range p ⊆ U i → Set.range q ⊆ U i → Path.Homotopic p q
+  U_slsc : ∀ i, IsPathHomotopyTrivial (U i)
   /-- Each V[j] is open -/
   V_open : ∀ j, IsOpen (V j)
   /-- Each V[j] is path-connected -/
@@ -410,14 +403,8 @@ public theorem Path.exists_partition_in_slsc_neighborhoods [SemilocallySimplyCon
   -- Apply the generic partition lemma with the property:
   -- "U is path-connected and paths in U with same endpoints are homotopic"
   obtain ⟨n, t, h_mono, h_start, h_end, h_partition⟩ := γ.exists_partition_with_property
-    (fun U ↦ IsPathConnected U ∧
-      ∀ {a b : X}, a ∈ U → b ∈ U → ∀ (p q : Path a b),
-        Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q)
-    (by
-      intro z hz
-      -- For each point z on the path, we get a path-connected SLSC neighborhood
-      exact exists_pathConnected_slsc_neighborhood z
-    )
+    (fun U ↦ IsPathConnected U ∧ IsPathHomotopyTrivial U)
+    (fun z _ ↦ exists_pathConnected_slsc_neighborhood z)
   -- Extract U sets from the partition using choice
   choose U hU_open hU_prop hU_contains using h_partition
   obtain ⟨V, hV_open, hV_pathConn, hγ_in_V, hV_left, hV_right⟩ :=
@@ -636,26 +623,14 @@ homotopic to α_i · γ'_i (down the current rung then along γ'). Both paths li
 the SLSC neighborhood U_i, and since they share endpoints, the SLSC property implies they
 are homotopic. This is the crucial "rectangle" homotopy for each segment. -/
 public theorem Path.segment_rung_homotopy {a b c d : X} (U : Set X)
-    (h_slsc : ∀ {x y : X} (p q : Path x y), x ∈ U → y ∈ U →
-      Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q)
+    (hU : IsPathHomotopyTrivial U)
     (γ : Path a b) (γ' : Path c d) (α_start : Path a c) (α_end : Path b d)
     (hγ : Set.range γ ⊆ U) (hγ' : Set.range γ' ⊆ U)
     (hα_start : Set.range α_start ⊆ U) (hα_end : Set.range α_end ⊆ U) :
     Path.Homotopic (γ.trans α_end) (α_start.trans γ') := by
-  -- Both paths go from a to d and lie entirely in U.
-  -- Endpoints are in U because they're on the paths.
-  have ha : a ∈ U := γ.source ▸ hγ (Set.mem_range_self 0)
-  have hd : d ∈ U := γ'.target ▸ hγ' (Set.mem_range_self 1)
-  -- So we can apply the SLSC property
-  apply h_slsc
-  · exact ha
-  · exact hd
-  · -- Show γ.trans α_end has range in U
-    rw [Path.trans_range]
-    exact Set.union_subset hγ hα_end
-  · -- Show α_start.trans γ' has range in U
-    rw [Path.trans_range]
-    exact Set.union_subset hα_start hγ'
+  apply hU
+  · rw [Path.trans_range]; exact Set.union_subset hγ hα_end
+  · rw [Path.trans_range]; exact Set.union_subset hα_start hγ'
 
 /-! ### Pasting lemma: telescoping cancellation of rungs -/
 
@@ -779,11 +754,10 @@ public theorem Path.paste_segment_homotopies {x y y' : X} {n : ℕ}
 
 /-- A loop in an SLSC neighborhood is null-homotopic if its range lies in that neighborhood. -/
 public theorem Path.nullhomotopic_of_range_subset_slsc {x : X} (γ : Path x x)
-    (U : Set X) (U_slsc : ∀ {a b : X} (p q : Path a b), a ∈ U → b ∈ U →
-      Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q)
+    (U : Set X) (hU : IsPathHomotopyTrivial U)
     (hxU : x ∈ U) (hγU : Set.range γ ⊆ U) :
     Path.Homotopic γ (Path.refl x) :=
-  U_slsc γ (Path.refl x) hxU hxU hγU <| by
+  hU γ (Path.refl x) hγU <| by
     rintro _ ⟨_, rfl⟩
     simpa using hxU
 
@@ -792,14 +766,13 @@ private theorem Path.first_rung_nullhomotopic_of_range_subset_slsc
     (γ : Path x y) (γ' : Path x y')
     (part : IntervalPartition n)
     (α : (i : Fin (n + 1)) → Path (γ (part.t i)) (γ' (part.t i)))
-    (U₀ : Set X) (h_U₀_slsc : ∀ {a b : X} (p q : Path a b), a ∈ U₀ → b ∈ U₀ →
-      Set.range p ⊆ U₀ → Set.range q ⊆ U₀ → Path.Homotopic p q)
+    (U₀ : Set X) (hU₀ : IsPathHomotopyTrivial U₀)
     (h_α₀_in_U₀ : Set.range (α 0) ⊆ U₀) :
     let α₀ := (α 0).cast (show x = γ (part.t 0) by rw [part.t_zero, γ.source])
       (show x = γ' (part.t 0) by rw [part.t_zero, γ'.source])
     Path.Homotopic α₀ (Path.refl x) := by
   intro α₀
-  apply Path.nullhomotopic_of_range_subset_slsc α₀ U₀ h_U₀_slsc
+  apply Path.nullhomotopic_of_range_subset_slsc α₀ U₀ hU₀
   · have : (α 0) 0 = x := by simp [(α 0).source, part.t_zero, γ.source]
     rw [← this]
     exact h_α₀_in_U₀ ⟨0, rfl⟩
@@ -809,15 +782,14 @@ private theorem Path.last_rung_nullhomotopic_of_range_subset_slsc
     {x y : X} {n : ℕ}
     (γ γ' : Path x y) (part : IntervalPartition n)
     (α : (i : Fin (n + 1)) → Path (γ (part.t i)) (γ' (part.t i)))
-    (Uₙ : Set X) (h_Uₙ_slsc : ∀ {a b : X} (p q : Path a b), a ∈ Uₙ → b ∈ Uₙ →
-      Set.range p ⊆ Uₙ → Set.range q ⊆ Uₙ → Path.Homotopic p q)
+    (Uₙ : Set X) (hUₙ : IsPathHomotopyTrivial Uₙ)
     (h_αₙ_in_Uₙ : Set.range (α (Fin.last n)) ⊆ Uₙ) :
     let αₙ := (α (Fin.last n)).cast
       (show y = γ (part.t (Fin.last n)) by rw [part.t_last, γ.target])
       (show y = γ' (part.t (Fin.last n)) by rw [part.t_last, γ'.target])
     Path.Homotopic αₙ (Path.refl y) := by
   intro αₙ
-  apply Path.nullhomotopic_of_range_subset_slsc αₙ Uₙ h_Uₙ_slsc
+  apply Path.nullhomotopic_of_range_subset_slsc αₙ Uₙ hUₙ
   · have : (α (Fin.last n)) 0 = y := by simp [(α (Fin.last n)).source, part.t_last]
     rw [← this]
     exact h_αₙ_in_Uₙ ⟨0, rfl⟩
@@ -837,8 +809,7 @@ public theorem Path.paste_segment_homotopies_slsc_source {x y y' : X} {n : ℕ}
         Path.Homotopic
           ((γ.subpathOn (part.t i.castSucc) (part.t i.succ)).trans (α i.succ))
           ((α i.castSucc).trans (γ'.subpathOn (part.t i.castSucc) (part.t i.succ))))
-    (U₀ : Set X) (h_U₀_slsc : ∀ {a b : X} (p q : Path a b), a ∈ U₀ → b ∈ U₀ →
-      Set.range p ⊆ U₀ → Set.range q ⊆ U₀ → Path.Homotopic p q)
+    (U₀ : Set X) (hU₀ : IsPathHomotopyTrivial U₀)
     (h_α₀_in_U₀ : Set.range (α 0) ⊆ U₀) :
     Path.Homotopic
       (γ.trans ((α (Fin.last n)).cast
@@ -850,7 +821,7 @@ public theorem Path.paste_segment_homotopies_slsc_source {x y y' : X} {n : ℕ}
                        (show x = γ' (part.t 0) by rw [part.t_zero, γ'.source])
   have h_α₀_null : Path.Homotopic α₀ (Path.refl x) := by
     simpa [α₀] using
-      Path.first_rung_nullhomotopic_of_range_subset_slsc γ γ' part α U₀ h_U₀_slsc h_α₀_in_U₀
+      Path.first_rung_nullhomotopic_of_range_subset_slsc γ γ' part α U₀ hU₀ h_α₀_in_U₀
   exact h_paste.trans <| Path.Homotopic.trans_left_of_nullhomotopic h_α₀_null
 
 /-- Two-sided specialization of `paste_segment_homotopies`: if the source and target rungs live in
@@ -862,11 +833,9 @@ public theorem Path.paste_segment_homotopies_slsc {x y : X} {n : ℕ} (γ γ' : 
         Path.Homotopic
           ((γ.subpathOn (part.t i.castSucc) (part.t i.succ)).trans (α i.succ))
           ((α i.castSucc).trans (γ'.subpathOn (part.t i.castSucc) (part.t i.succ))))
-    (U₀ : Set X) (h_U₀_slsc : ∀ {a b : X} (p q : Path a b), a ∈ U₀ → b ∈ U₀ →
-      Set.range p ⊆ U₀ → Set.range q ⊆ U₀ → Path.Homotopic p q)
+    (U₀ : Set X) (hU₀ : IsPathHomotopyTrivial U₀)
     (h_α₀_in_U₀ : Set.range (α 0) ⊆ U₀)
-    (Uₙ : Set X) (h_Uₙ_slsc : ∀ {a b : X} (p q : Path a b), a ∈ Uₙ → b ∈ Uₙ →
-      Set.range p ⊆ Uₙ → Set.range q ⊆ Uₙ → Path.Homotopic p q)
+    (Uₙ : Set X) (hUₙ : IsPathHomotopyTrivial Uₙ)
     (h_αₙ_in_Uₙ : Set.range (α (Fin.last n)) ⊆ Uₙ) :
     Path.Homotopic γ γ' := by
   let αₙ := (α (Fin.last n)).cast
@@ -874,10 +843,10 @@ public theorem Path.paste_segment_homotopies_slsc {x y : X} {n : ℕ} (γ γ' : 
               (show y = γ' (part.t (Fin.last n)) by rw [part.t_last, γ'.target])
   have h_source : Path.Homotopic (γ.trans αₙ) γ' := by
     simpa only [αₙ] using
-      paste_segment_homotopies_slsc_source γ γ' part α h_rectangles U₀ h_U₀_slsc h_α₀_in_U₀
+      paste_segment_homotopies_slsc_source γ γ' part α h_rectangles U₀ hU₀ h_α₀_in_U₀
   have h_αₙ_null : Path.Homotopic αₙ (Path.refl y) := by
     simpa [αₙ] using
-      Path.last_rung_nullhomotopic_of_range_subset_slsc γ γ' part α Uₙ h_Uₙ_slsc h_αₙ_in_Uₙ
+      Path.last_rung_nullhomotopic_of_range_subset_slsc γ γ' part α Uₙ hUₙ h_αₙ_in_Uₙ
   exact (Path.Homotopic.trans_right_of_nullhomotopic h_αₙ_null).symm.trans h_source
 
 /-- Given a path γ in an SLSC space, paths in the tube around γ are homotopic to γ.
@@ -901,8 +870,7 @@ public theorem Path.tube_subset_homotopy_class {x y : X} {n : ℕ}
         ((γ.subpathOn (part.t i.castSucc) (part.t i.succ)).trans (α i.succ))
         ((α i.castSucc).trans (γ'.subpathOn (part.t i.castSucc) (part.t i.succ))) := by
     intro i
-    apply segment_rung_homotopy (T.U i)
-      (fun p q hp_a hp_d hp_range hq_range ↦ T.U_slsc i hp_a hp_d p q hp_range hq_range)
+    apply segment_rung_homotopy (T.U i) (T.U_slsc i)
     · -- γ.subpathOn has range in U_i
       exact hγ.subpathOn_range_subset i
     · -- γ'.subpathOn has range in U_i
@@ -918,12 +886,8 @@ public theorem Path.tube_subset_homotopy_class {x y : X} {n : ℕ}
     let i_first : Fin (n' + 1) := ⟨0, Nat.zero_lt_succ n'⟩
     let i_last : Fin (n' + 1) := ⟨n', Nat.lt_succ_self n'⟩
     refine Path.Homotopic.symm <| paste_segment_homotopies_slsc γ γ' part α h_rectangles
-      (T.U i_first)
-      (fun p q hp_a hp_d hp_range hq_range ↦ T.U_slsc i_first hp_a hp_d p q hp_range hq_range)
-      (hα_ranges i_first).1
-      (T.U i_last)
-      (fun p q hp_a hp_d hp_range hq_range ↦ T.U_slsc i_last hp_a hp_d p q hp_range hq_range)
-      (hα_ranges i_last).2
+      (T.U i_first) (T.U_slsc i_first) (hα_ranges i_first).1
+      (T.U i_last) (T.U_slsc i_last) (hα_ranges i_last).2
 
 /--
 In an SLSC locally path-connected space, every path p has an open tubular neighborhood
