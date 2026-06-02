@@ -30,18 +30,18 @@ Respectively, these five typeclasses imbue the external direct sum `⨁ i, A i` 
 * `DirectSum.commSemiring`
 * `DirectSum.commRing`
 
-the base ring `A 0` with:
+the base ring `A 0` with instances of these types:
 
-* `DirectSum.instNonUnitalNonAssocSemiringOfNat`, `DirectSum.instNonUnitalNonAssocRingOfNat`
-* `DirectSum.instSemiringOfNat`
-* `DirectSum.instRingOfNat`
-* `DirectSum.instCommSemiringOfNat`
-* `DirectSum.instCommRingOfNat`
+* `NonUnitalNonAssocSemiring (A 0)`, `NonUnitalNonAssocRing (A 0)`
+* `Semiring (A 0)`
+* `Ring (A 0)`
+* `CommSemiring (A 0)`
+* `CommRing (A 0)`
 
-and the `i`th grade `A i` with `A 0`-actions (`•`) defined as left-multiplication:
+and the `i`th grade `A i` with `A 0`-actions (`•`) of these types:
 
-* `DirectSum.instSMulWithZeroOfNat (A 0)`
-* `DirectSum.instModuleOfNat (A 0)`
+* `SMulWithZero (A 0) (A i)`
+* `Module (A 0) (A i)`
 * (nothing)
 * (nothing)
 * (nothing)
