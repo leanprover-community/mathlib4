@@ -6560,6 +6560,7 @@ public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.Ideal.CotangentBaseChange
 public import Mathlib.RingTheory.Ideal.Defs
+public import Mathlib.RingTheory.Ideal.Finsupp
 public import Mathlib.RingTheory.Ideal.GoingDown
 public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Ideal.Height
@@ -6858,6 +6859,7 @@ public import Mathlib.RingTheory.ReesAlgebra
 public import Mathlib.RingTheory.Regular.Category
 public import Mathlib.RingTheory.Regular.Depth
 public import Mathlib.RingTheory.Regular.Flat
+public import Mathlib.RingTheory.Regular.Free
 public import Mathlib.RingTheory.Regular.IsSMulRegular
 public import Mathlib.RingTheory.Regular.LinearMap
 public import Mathlib.RingTheory.Regular.ProjectiveDimension
