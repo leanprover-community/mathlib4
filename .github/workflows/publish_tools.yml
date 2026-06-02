@@ -35,12 +35,12 @@ jobs:
     # Only publish from the canonical repository. nightly-testing has no `master`
     # branch and builds its tools from `nightly-testing-green` on demand instead.
     if: github.repository == 'leanprover-community/mathlib4'
-    # Must run on the same runner class as the consumers (build_template's `pr`
-    # runners) so the produced binary is ABI/toolchain/path compatible.
+    # Must run on the same kind of runner as the consumers (build_template's `pr`
+    # runners), so the binary we build here will run on the machines that use it.
     runs-on: pr
     steps:
-      # Build in `tools-branch/` so the on-disk layout (and absolute paths baked
-      # into any rpaths) matches exactly what `build_template.yml` reconstructs.
+      # Build under `tools-branch/`, the same directory `build_template.yml` unpacks
+      # the tools into, in case the build bakes its own location into the binary.
       - name: Checkout master
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -76,16 +76,16 @@ jobs:
           # We bundle exactly what `build_template.yml` invokes from `tools-branch/`:
           #   - .lake/build:                    holds the `cache` binary that the build
           #                                     job runs by path (.lake/build/bin/cache).
-          #                                     We include the whole build dir, not just
-          #                                     the binary, so any shared libraries it
-          #                                     resolves via rpath sit beside it.
+          #                                     We ship the whole build dir, not just the
+          #                                     binary, in case it needs other files there
+          #                                     to run.
           #   - scripts/lake-build-with-retry.sh: builds Mathlib/Archive/Counterexamples
           #                                     with retries.
           #   - scripts/lake-build-wrapper.py:  wraps the `lake test` step.
-          #   - lean-toolchain:                 the toolchain the binary was linked
-          #                                     against; the consumer `elan toolchain
-          #                                     install`s it so the prebuilt binary has a
-          #                                     matching runtime even on a bump PR.
+          #   - lean-toolchain:                 the toolchain this binary was built with;
+          #                                     the consumer installs it (via elan) so the
+          #                                     binary has a matching Lean to run against,
+          #                                     even when the PR uses a newer toolchain.
           tar -czf "${GITHUB_WORKSPACE}/tools-bin.tar.gz" \
             .lake/build \
             scripts/lake-build-with-retry.sh \
