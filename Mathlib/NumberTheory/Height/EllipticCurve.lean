@@ -35,31 +35,28 @@ namespace WeierstrassCurve
 
 open Height
 
-variable {K : Type*} [Field K] [AdmissibleAbsValues K] {a b : K}
-  (hab : 32 * a ^ 3 + 216 * b ^ 2 ≠ 0)
+variable {K : Type*} [Field K] [AdmissibleAbsValues K] {W : WeierstrassCurve K} [W.IsElliptic]
 
 open MvPolynomial
 
-include hab in
-/-- If `a b : K` and `D := 32*a^3 + 216*b^2` is nonzero, then the map `F : ℙ² → ℙ²` given by
-`(s : t : u) ↦ (s^2 - 2*a*s*u - 4*b*t*u + a²*u² : 2*s*t + 2*a*t*u + 4*b*u² : t² - 4*s*u)`
-(called `addSubMap` here) is a morphism.
+/-- If `W` is an elliptic curve over `K`, then the map `F : ℙ² → ℙ²` given by `addSubMap W`
+is a morphism.
 
 This implies that `|logHeight (F x) - 2 * logHeight x| ≤ C` for a constant `C`,
 where `x = ![s, t, u]` and `F` acts on the coordinate vector. -/
 theorem abs_logHeight_addSubMap_sub_two_mul_logHeight_le :
     ∃ C, ∀ x : Fin 3 → K,
-      |logHeight (fun i ↦ (addSubMap a b i).eval x) - 2 * logHeight x| ≤ C := by
+      |logHeight (fun i ↦ (addSubMap W i).eval x) - 2 * logHeight x| ≤ C := by
   obtain ⟨C₁, hC₁⟩ : ∃ C₁, ∀ x : Fin 3 → K,
-      logHeight (fun i ↦ (addSubMap a b i).eval x) ≤ C₁ + 2 * logHeight x :=
-    logHeight_eval_le' <| isHomogeneous_addSubMap a b
+      logHeight (fun i ↦ (addSubMap W i).eval x) ≤ C₁ + 2 * logHeight x :=
+    logHeight_eval_le' <| isHomogeneous_addSubMap W
   obtain ⟨C₂, hC₂⟩ : ∃ C₂, ∀ x : Fin 3 → K,
-      logHeight (fun i ↦ (addSubMap a b i).eval x) ≥ C₂ + 2 * logHeight x := by
+      logHeight (fun i ↦ (addSubMap W i).eval x) ≥ C₂ + 2 * logHeight x := by
     have H (ij : Fin 3 × Fin 3) :
-        (C ((32 * a ^ 3 + 216 * b ^ 2)⁻¹) * addSubMapCoeff a b ij).IsHomogeneous 2 :=
-      IsHomogeneous.C_mul (isHomogenous_addSubMapCoeff a b ij) _
+        (C (↑W.Δ'⁻¹ : K) * addSubMapCoeff W ij).IsHomogeneous 2 :=
+      IsHomogeneous.C_mul (isHomogenous_addSubMapCoeff W ij) _
     obtain ⟨C₂, h⟩ := logHeight_eval_ge' H
-    exact ⟨C₂, fun x ↦ h _ <| addSubMapCoeff_condition hab x⟩
+    exact ⟨C₂, fun x ↦ h _ <| addSubMapCoeff_condition W x⟩
   refine ⟨max C₁ (-C₂), fun x ↦ abs_sub_le_iff.mpr ⟨?_, ?_⟩⟩ <;> grind
 
 end WeierstrassCurve
