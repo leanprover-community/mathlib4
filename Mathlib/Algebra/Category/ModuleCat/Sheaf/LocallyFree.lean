@@ -44,7 +44,7 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
 namespace LocalGeneratorsData
 
 /-- Local generator data `q` is locally free data if all of the natural morphisms
-`free (q.generators i).I ⟶ M.over (q.X i)` are isomorphisms -/
+`free (q.generators i).I ⟶ M.over (q.X i)` are isomorphisms. -/
 class IsLocallyFreeData {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData) : Prop where
   isIso : ∀ i, IsIso (q.generators i).π := by infer_instance
 
