@@ -307,8 +307,6 @@ public structure TubeData (X : Type*) [TopologicalSpace X] (x y : X) (n : ℕ) w
   V : Fin (n + 1) → Set X
   /-- Each U[i] is open -/
   h_U_open : ∀ i, IsOpen (U i)
-  /-- Each U[i] is path-connected -/
-  h_U_pathConn : ∀ i, IsPathConnected (U i)
   /-- SLSC property: paths in U[i] with same endpoints are homotopic -/
   h_U_slsc : ∀ i, ∀ {a b : X}, a ∈ U i → b ∈ U i →
     ∀ (p q : Path a b), Set.range p ⊆ U i → Set.range q ⊆ U i → Path.Homotopic p q
@@ -353,7 +351,7 @@ public lemma PathInTube.subpathOn_range_subset {X : Type*} [TopologicalSpace X] 
 
 /-- Given segment neighborhoods covering each subpath of `γ`, construct the vertex neighborhoods
 as path components of the finite intersections of adjacent segment neighborhoods. -/
-theorem Path.exists_vertexNeighborhood_family [LocPathConnectedSpace X]
+private theorem Path.exists_vertexNeighborhood_family [LocPathConnectedSpace X]
     {x y : X} {γ : Path x y} {n : ℕ}
     {t : Fin (n + 1) → unitInterval} {U : Fin n → Set X}
     (h_mono : Monotone t) (hU_open : ∀ i, IsOpen (U i))
@@ -436,7 +434,6 @@ public theorem Path.exists_partition_in_slsc_neighborhoods [SemilocallySimplyCon
     U := U
     V := V
     h_U_open := hU_open
-    h_U_pathConn := fun i ↦ (hU_prop i).1
     h_U_slsc := fun i ↦ (hU_prop i).2
     h_V_open := hV_open
     h_V_pathConn := hV_pathConn
@@ -621,12 +618,8 @@ public theorem Path.exists_rung_paths {x y : X} {n : ℕ} (γ γ' : Path x y)
   -- For each point j, construct a rung path α_j from γ(t_j) to γ'(t_j)
   -- using the path-connected neighborhood V[j]
   have rung_exists : ∀ j, ∃ α_j : Path (γ (part.t j)) (γ' (part.t j)),
-      Set.range α_j ⊆ T.V j := by
-    intro j
-    have hγ_in_V : γ (part.t j) ∈ T.V j := hγ.passes_through_V j
-    have hγ'_in_V : γ' (part.t j) ∈ T.V j := hγ'.passes_through_V j
-    obtain ⟨α_j, hα_range⟩ := IsPathConnected.exists_path (T.h_V_pathConn j) hγ_in_V hγ'_in_V
-    exact ⟨α_j, hα_range⟩
+      Set.range α_j ⊆ T.V j := fun j ↦
+    (T.h_V_pathConn j).exists_path (hγ.passes_through_V j) (hγ'.passes_through_V j)
   choose α hα_range using rung_exists
   -- Prove the range conditions using the subset properties
   refine ⟨α, fun i ↦ ?_⟩
@@ -671,7 +664,7 @@ equals the class of `p` itself. This packages `Path.Homotopic.Quotient.subpathOn
 together with `part.h_start` / `part.h_end`, sidestepping the dependent-type "motive"
 obstruction one hits when rewriting `part.t 0 = 0` / `part.t (Fin.last n) = 1` directly
 through `subpathOn`. -/
-theorem Path.Homotopic.Quotient.cast_mk_subpathOn_part_endpoints
+private theorem Path.Homotopic.Quotient.cast_mk_subpathOn_part_endpoints
     {x y : X} (p : Path x y) {n : ℕ} (part : IntervalPartition n)
     (h₁ : x = p (part.t 0)) (h₂ : y = p (part.t (Fin.last n))) :
     (Path.Homotopic.Quotient.mk (p.subpathOn (part.t 0) (part.t (Fin.last n)))).cast h₁ h₂ =
@@ -794,7 +787,7 @@ public theorem Path.nullhomotopic_of_range_subset_slsc {x : X} (γ : Path x x)
     rintro _ ⟨_, rfl⟩
     simpa using hxU
 
-theorem Path.first_rung_nullhomotopic_of_range_subset_SLSC
+private theorem Path.first_rung_nullhomotopic_of_range_subset_slsc
     {x y y' : X} {n : ℕ}
     (γ : Path x y) (γ' : Path x y')
     (part : IntervalPartition n)
@@ -812,7 +805,7 @@ theorem Path.first_rung_nullhomotopic_of_range_subset_SLSC
     exact h_α₀_in_U₀ ⟨0, rfl⟩
   · simpa only [α₀, Path.cast, Set.range] using h_α₀_in_U₀
 
-theorem Path.last_rung_nullhomotopic_of_range_subset_SLSC
+private theorem Path.last_rung_nullhomotopic_of_range_subset_slsc
     {x y : X} {n : ℕ}
     (γ γ' : Path x y) (part : IntervalPartition n)
     (α : (i : Fin (n + 1)) → Path (γ (part.t i)) (γ' (part.t i)))
@@ -857,7 +850,7 @@ public theorem Path.paste_segment_homotopies_slsc_source {x y y' : X} {n : ℕ}
                        (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])
   have h_α₀_null : Path.Homotopic α₀ (Path.refl x) := by
     simpa [α₀] using
-      Path.first_rung_nullhomotopic_of_range_subset_SLSC γ γ' part α U₀ h_U₀_slsc h_α₀_in_U₀
+      Path.first_rung_nullhomotopic_of_range_subset_slsc γ γ' part α U₀ h_U₀_slsc h_α₀_in_U₀
   exact h_paste.trans <| Path.Homotopic.trans_left_of_nullhomotopic h_α₀_null
 
 /-- Two-sided specialization of `paste_segment_homotopies`: if the source and target rungs live in
@@ -884,7 +877,7 @@ public theorem Path.paste_segment_homotopies_slsc {x y : X} {n : ℕ} (γ γ' : 
       paste_segment_homotopies_slsc_source γ γ' part α h_rectangles U₀ h_U₀_slsc h_α₀_in_U₀
   have h_αₙ_null : Path.Homotopic αₙ (Path.refl y) := by
     simpa [αₙ] using
-      Path.last_rung_nullhomotopic_of_range_subset_SLSC γ γ' part α Uₙ h_Uₙ_slsc h_αₙ_in_Uₙ
+      Path.last_rung_nullhomotopic_of_range_subset_slsc γ γ' part α Uₙ h_Uₙ_slsc h_αₙ_in_Uₙ
   exact (Path.Homotopic.trans_right_of_nullhomotopic h_αₙ_null).symm.trans h_source
 
 /-- Given a path γ in an SLSC space, paths in the tube around γ are homotopic to γ.
@@ -970,16 +963,19 @@ public theorem Path.isOpen_setOf_homotopic [SemilocallySimplyConnectedSpace X]
   rw [mem_nhds_iff]
   refine ⟨T, fun p' hp' ↦ (hT_subset hp').trans hq, hT_open, hqT⟩
 
+/-- The quotient topology on `Path.Homotopic.Quotient x₀ x` induced from `Path x₀ x`
+(which itself inherits the compact-open topology via `C(I, X)`). -/
+public instance Path.Homotopic.Quotient.instTopologicalSpace (x₀ x : X) :
+    TopologicalSpace (Path.Homotopic.Quotient x₀ x) :=
+  inferInstanceAs (TopologicalSpace (Quotient _))
+
 /--
 In a semilocally simply connected, locally path-connected space, the quotient of paths by
 homotopy has discrete topology.
 -/
-public theorem Path.Homotopic.Quotient.discreteTopology
-    [SemilocallySimplyConnectedSpace X] [LocPathConnectedSpace X] (x y : X) :
-    @DiscreteTopology (Path.Homotopic.Quotient x y)
-      (inferInstanceAs (TopologicalSpace (Quotient (Path.Homotopic.setoid x y)))) := by
-  let : TopologicalSpace (Path.Homotopic.Quotient x y) :=
-    inferInstanceAs (TopologicalSpace (Quotient (Path.Homotopic.setoid x y)))
+public instance Path.Homotopic.Quotient.instDiscreteTopology
+    [SemilocallySimplyConnectedSpace X] [LocPathConnectedSpace X] {x y : X} :
+    DiscreteTopology (Path.Homotopic.Quotient x y) := by
   rw [discreteTopology_iff_isOpen_singleton]
   intro a
   induction a using Quotient.inductionOn with

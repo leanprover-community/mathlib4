@@ -52,8 +52,6 @@ public theorem isCoveringMap [LocPathConnectedSpace X] [PathConnectedSpace X]
     ⟨Path.Homotopic.Quotient.mk (PathConnectedSpace.somePath x₀ x)⟩
   have _ne_fun : Nonempty (X → UniversalCover x₀) :=
     ⟨fun _ ↦ ofBasedPath x₀ (BasedPath.ofPath (PathConnectedSpace.somePath x₀ x₀))⟩
-  have _disc : DiscreteTopology (Path.Homotopic.Quotient x₀ x) :=
-    Path.Homotopic.Quotient.discreteTopology x₀ x
   -- Build the trivialization.
   have h_open_iff : ∀ q : Path.Homotopic.Quotient x₀ x, ∀ {W : Set X}, W ⊆ U →
       (IsOpen W ↔ IsOpen (proj (x₀ := x₀) ⁻¹' W ∩ S q)) := by

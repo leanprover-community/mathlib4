@@ -47,14 +47,6 @@ open Topology
 
 variable {X : Type*} [TopologicalSpace X]
 
-/-- Pin the topology on `Path.Homotopic.Quotient x₀ x` to the quotient topology induced
-from `Path x₀ x` (which itself inherits the compact-open topology via `C(I, X)`). This is
-what makes the based-path-quotient model of the universal cover line up with the
-compact-open topology on `BasedPath x₀`. -/
-public instance instTopologicalSpaceHomotopicQuotient (x₀ x : X) :
-    TopologicalSpace (Path.Homotopic.Quotient x₀ x) :=
-  inferInstanceAs (TopologicalSpace (Quotient _))
-
 /-- The compact-open based-path space out of `x₀`. -/
 @[expose] public def BasedPath (x₀ : X) :=
   { γ : C(I, X) // γ 0 = x₀ }
@@ -148,28 +140,13 @@ public theorem endpoint_append {y : X} (γ : BasedPath x₀) (δ : Path (endpoin
 /-- The tail of a based path past time `a`, viewed as a `Path (γ.toPath.extend a) u` where
 `u = endpoint γ`. Concretely it is `γ.toPath.truncateOfLE` between `a` and `1`, cast on the right
 to land at `u`; the only hypothesis required is `a ≤ 1` (for `a < 0` the source is clamped
-through `Path.extend`). The endpoint identities are
-`terminalTail_source : terminalTail γ hu a ha1 0 = γ.toPath.extend a` and
-`terminalTail_target : terminalTail γ hu a ha1 1 = u`. This is the "compressed tail" piece used
-by `deformTerminal` to splice a new endpoint path onto `γ` while preserving its image on
-`[0, a]`. -/
+through `Path.extend`). This is the "compressed tail" piece used by `deformTerminal` to splice
+a new endpoint path onto `γ` while preserving its image on `[0, a]`. -/
 @[expose] public noncomputable def terminalTail {u : X} (γ : BasedPath x₀)
     (hu : endpoint γ = u) (a : ℝ) (ha1 : a ≤ 1) :
     Path (γ.toPath.extend a) u :=
   (γ.toPath.truncateOfLE (t₀ := a) (t₁ := 1) ha1).cast rfl
     (by simpa using hu.symm)
-
-public theorem terminalTail_source {u : X} (γ : BasedPath x₀) (hu : endpoint γ = u) (a : ℝ)
-    (ha1 : a ≤ 1) :
-    terminalTail γ hu a ha1 0 = γ.toPath.extend a := by
-  simp [terminalTail]
-
-public theorem terminalTail_target {u : X} (γ : BasedPath x₀) (hu : endpoint γ = u) (a : ℝ)
-    (ha1 : a ≤ 1) :
-    terminalTail γ hu a ha1 1 = u := by
-  have htail : terminalTail γ hu a ha1 1 = γ.toPath 1 := by
-    simpa [terminalTail, endpoint_def] using (γ.toPath.truncateOfLE ha1).target
-  exact htail.trans hu
 
 /-- Replace the terminal interval of a based path by first traversing a compressed tail of the
 original path and then a new endpoint path. -/
@@ -469,24 +446,6 @@ public theorem isOpenMap_endpoint [LocPathConnectedSpace X] (x₀ : X) :
 
 variable {x₀ : X}
 
-public theorem joined_of_homotopic (x₀ : X) {y : X} {p q : Path x₀ y} (h : Path.Homotopic p q) :
-    Joined (ofPath p) (ofPath q) := by
-  rcases h with ⟨H⟩
-  refine ⟨{
-    toFun := fun t ↦ ofPath (H.eval t)
-    continuous_toFun := by
-      apply Continuous.subtype_mk
-      exact continuous_induced_dom.comp <| (Path.continuous_uncurry_iff.mp <| by
-        change Continuous fun ts : I × I ↦ H ts
-        exact H.continuous)
-    source' := by
-      ext s
-      simp
-    target' := by
-      ext s
-      simp
-  }⟩
-
 public theorem joinedIn_preimage_singleton_of_homotopic (x₀ : X) {y : X} {U : Set X}
     (hy : y ∈ U) {p q : Path x₀ y} (h : Path.Homotopic p q) :
     JoinedIn (endpoint (x₀ := x₀) ⁻¹' U) (ofPath p) (ofPath q) := by
@@ -750,13 +709,17 @@ public theorem isOpen_pathComponent_preimage
   intro γ hγ_N
   exact hβ.trans (hN_joined γ hγ_N)
 
-def joinedInSLSC_uReal (ts : ℝ × ℝ) : ℝ :=
+section joinedInSLSC
+
+/-! Reparametrisation helpers for `toPath_homotopic_of_joinedIn_slsc` (private to this section). -/
+
+private def joinedInSLSC_uReal (ts : ℝ × ℝ) : ℝ :=
   ts.1 + max 0 (2 * ts.2 - 1) * (1 - ts.1)
 
-def joinedInSLSC_vReal (ts : ℝ × ℝ) : ℝ :=
+private def joinedInSLSC_vReal (ts : ℝ × ℝ) : ℝ :=
   min (2 * ts.2) 1
 
-theorem joinedInSLSC_uReal_mem (t s : I) :
+private theorem joinedInSLSC_uReal_mem (t s : I) :
     joinedInSLSC_uReal ((t : ℝ), (s : ℝ)) ∈ I := by
   simp only [joinedInSLSC_uReal]
   have hm_nn : (0 : ℝ) ≤ max 0 (2 * (s : ℝ) - 1) := le_max_left _ _
@@ -767,42 +730,42 @@ theorem joinedInSLSC_uReal_mem (t s : I) :
     linarith [t.2.1]
   · nlinarith [t.2.1, t.2.2]
 
-theorem joinedInSLSC_vReal_mem (t s : I) :
+private theorem joinedInSLSC_vReal_mem (t s : I) :
     joinedInSLSC_vReal ((t : ℝ), (s : ℝ)) ∈ I := by
   refine ⟨le_min (by linarith [s.2.1]) zero_le_one, min_le_right _ _⟩
 
-def joinedInSLSC_uFn : I × I → I := fun ts ↦
+private def joinedInSLSC_uFn : I × I → I := fun ts ↦
   ⟨joinedInSLSC_uReal ((ts.1 : ℝ), (ts.2 : ℝ)), joinedInSLSC_uReal_mem ts.1 ts.2⟩
 
-def joinedInSLSC_vFn : I × I → I := fun ts ↦
+private def joinedInSLSC_vFn : I × I → I := fun ts ↦
   ⟨joinedInSLSC_vReal ((ts.1 : ℝ), (ts.2 : ℝ)), joinedInSLSC_vReal_mem ts.1 ts.2⟩
 
-theorem joinedInSLSC_uFn_zero_left (s : I) :
+private theorem joinedInSLSC_uFn_zero_left (s : I) :
     (joinedInSLSC_uFn (0, s) : ℝ) = max 0 (2 * (s : ℝ) - 1) := by
   simp [joinedInSLSC_uFn, joinedInSLSC_uReal]
 
-theorem joinedInSLSC_uFn_one_left (s : I) : joinedInSLSC_uFn (1, s) = 1 :=
+private theorem joinedInSLSC_uFn_one_left (s : I) : joinedInSLSC_uFn (1, s) = 1 :=
   Subtype.ext (by simp [joinedInSLSC_uFn, joinedInSLSC_uReal])
 
-theorem joinedInSLSC_uFn_one_right (t : I) : joinedInSLSC_uFn (t, 1) = 1 :=
+private theorem joinedInSLSC_uFn_one_right (t : I) : joinedInSLSC_uFn (t, 1) = 1 :=
   Subtype.ext (by simp [joinedInSLSC_uFn, joinedInSLSC_uReal]; ring)
 
-theorem joinedInSLSC_vFn_left (t s : I) :
+private theorem joinedInSLSC_vFn_left (t s : I) :
     (joinedInSLSC_vFn (t, s) : ℝ) = min (2 * (s : ℝ)) 1 := by
   simp [joinedInSLSC_vFn, joinedInSLSC_vReal]
 
-theorem joinedInSLSC_vFn_zero_right (t : I) : joinedInSLSC_vFn (t, 0) = 0 :=
+private theorem joinedInSLSC_vFn_zero_right (t : I) : joinedInSLSC_vFn (t, 0) = 0 :=
   Subtype.ext (by simp [joinedInSLSC_vFn, joinedInSLSC_vReal])
 
-theorem joinedInSLSC_vFn_one_right (t : I) : joinedInSLSC_vFn (t, 1) = 1 :=
+private theorem joinedInSLSC_vFn_one_right (t : I) : joinedInSLSC_vFn (t, 1) = 1 :=
   Subtype.ext (by simp [joinedInSLSC_vFn, joinedInSLSC_vReal])
 
-theorem joinedInSLSC_uFn_zero_left_eq_zero_of_le_half {s : I}
+private theorem joinedInSLSC_uFn_zero_left_eq_zero_of_le_half {s : I}
     (hs : (s : ℝ) ≤ 1 / 2) : joinedInSLSC_uFn (0, s) = 0 :=
   Subtype.ext <| by
     rw [joinedInSLSC_uFn_zero_left, max_eq_left (by linarith)]; rfl
 
-theorem joinedInSLSC_uFn_zero_left_eq_two_mul_sub_one_of_half_le
+private theorem joinedInSLSC_uFn_zero_left_eq_two_mul_sub_one_of_half_le
     {s : I} (hs : 1 / 2 ≤ (s : ℝ)) :
     joinedInSLSC_uFn (0, s) =
       ⟨2 * (s : ℝ) - 1,
@@ -810,17 +773,19 @@ theorem joinedInSLSC_uFn_zero_left_eq_two_mul_sub_one_of_half_le
   Subtype.ext <| by
     rw [joinedInSLSC_uFn_zero_left, max_eq_right (by linarith)]
 
-theorem joinedInSLSC_vFn_eq_two_mul_of_le_half {t s : I}
+private theorem joinedInSLSC_vFn_eq_two_mul_of_le_half {t s : I}
     (hs : (s : ℝ) ≤ 1 / 2) :
     joinedInSLSC_vFn (t, s) =
       ⟨2 * (s : ℝ),
         (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨s.2.1, hs⟩⟩ :=
   Subtype.ext <| by rw [joinedInSLSC_vFn_left, min_eq_left (by linarith)]
 
-theorem joinedInSLSC_vFn_eq_one_of_half_le {t s : I}
+private theorem joinedInSLSC_vFn_eq_one_of_half_le {t s : I}
     (hs : 1 / 2 ≤ (s : ℝ)) : joinedInSLSC_vFn (t, s) = 1 :=
   Subtype.ext <| by
     rw [joinedInSLSC_vFn_left, min_eq_right (by linarith)]; rfl
+
+end joinedInSLSC
 
 /-- If `α` and `β` are based paths with the same endpoint `v ∈ U`, joined inside
 `endpoint ⁻¹' U`, and `U` has the SLSC uniqueness property, then their associated paths
