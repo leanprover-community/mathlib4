@@ -104,10 +104,6 @@ jobs:
 
       - name: Compute Lean-aware declarations diff
         if: steps.master-run.outputs.found == 'true'
-        # Run the action from the get-mathlib-ci checkout (in ./ci-tools), so it
-        # tracks the same bot-managed mathlib-ci ref as CI_SCRIPTS_DIR instead of
-        # a separately hand-pinned SHA. See get-mathlib-ci's `default:` ref, which
-        # is bumped hourly by .github/workflows/update_dependencies.yml.
         uses: ./ci-tools/.github/actions/decls-diff
         with:
           reference-decls-file:   ${{ github.workspace }}/ref-artifact/decls.txt
