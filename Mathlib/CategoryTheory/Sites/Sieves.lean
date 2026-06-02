@@ -868,7 +868,7 @@ lemma pullback_ofObjects {I : Type*} (X : I → C) {Y Z : C} (f : Z ⟶ Y) :
   simp [Sieve.ofObjects]
 
 @[simp]
-lemma ofObject_id (X : C) : Sieve.ofObjects id X = ⊤ :=
+lemma ofObjects_id (X : C) : Sieve.ofObjects id X = ⊤ :=
   Sieve.pullback_ofObjects_eq_top _ (𝟙 _)
 
 /-- Push a sieve `R` on `Y` forward along an arrow `f : Y ⟶ X`: `gf : Z ⟶ X` is in the sieve if `gf`
