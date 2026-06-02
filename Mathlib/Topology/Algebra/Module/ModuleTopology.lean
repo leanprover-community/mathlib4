@@ -109,7 +109,7 @@ the module topology.
 
 -/
 
-@[expose] public section
+public section
 
 section basics
 
@@ -401,7 +401,7 @@ theorem isQuotientMap_of_surjectiveₛₗ [τB : TopologicalSpace B'] [IsModuleT
     letI : TopologicalSpace B' := .coinduced φ inferInstance
     -- With this new topology on `B`, φ is a quotient map by definition,
     -- and hence an open quotient map by a result in the library.
-    have hφo : IsOpenQuotientMap φ := AddMonoidHom.isOpenQuotientMap_of_isQuotientMap ⟨hφ, rfl⟩
+    have hφo : IsOpenQuotientMap φ := AddMonoidHom.isOpenQuotientMap_of_isQuotientMap ⟨⟨rfl⟩, hφ⟩
     -- We're trying to prove the module topology on B is ≤ the coinduced topology.
     -- But recall that the module topology is the Inf of the topologies on B making addition
     -- and scalar multiplication continuous, so it suffices to prove

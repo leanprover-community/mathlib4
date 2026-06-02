@@ -71,7 +71,6 @@ noncomputable def unitToPushforwardObjUnit : unit S ⟶ (pushforward.{u} φ).obj
 lemma unitToPushforwardObjUnit_val_app_apply {X : Cᵒᵖ} (a : S.obj.obj X) :
     (unitToPushforwardObjUnit φ).val.app X a = φ.hom.app X a := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pushforwardSections_unitHomEquiv
     {M : SheafOfModules.{u} R} (f : unit R ⟶ M) :
     pushforwardSections φ (M.unitHomEquiv f) =
@@ -107,7 +106,7 @@ instance [F.Final] : IsIso (pullbackObjUnitToUnit φ) := by
   intro M
   rw [← ((pullbackPushforwardAdjunction.{u} φ).homEquiv _ _).bijective.of_comp_iff',
     ← (unitHomEquiv _).bijective.of_comp_iff']
-  convert (bijective_pushforwardSections φ M).comp (unitHomEquiv _).bijective
+  convert! (bijective_pushforwardSections φ M).comp (unitHomEquiv _).bijective
   ext f : 1
   dsimp
   rw [pushforwardSections_unitHomEquiv, EmbeddingLike.apply_eq_iff_eq,
@@ -131,6 +130,7 @@ lemma pullback_map_ιFree_comp_pullbackObjFreeIso_hom {I : Type u} (i : I) :
       pullbackObjUnitToUnit φ ≫ ιFree i := by
   simp [pullbackObjFreeIso, ιFree]
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma pullbackObjFreeIso_hom_naturality {I J : Type u} (f : I → J) :
     (pullback φ).map (freeMap f) ≫ (pullbackObjFreeIso φ J).hom =
@@ -138,10 +138,11 @@ lemma pullbackObjFreeIso_hom_naturality {I J : Type u} (f : I → J) :
   Cofan.IsColimit.hom_ext (isColimitCofanMkObjOfIsColimit (pullback φ) _ _
     (isColimitFreeCofan (R := S) I)) _ _ (fun i ↦ by simp [← Functor.map_comp_assoc])
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism `freeFunctor ⋙ pullback φ ≅ freeFunctor` for a
 continuous map between ringed sites, when the underlying functor between the sites
 is final. -/
 noncomputable def freeFunctorCompPullbackIso : freeFunctor ⋙ pullback φ ≅ freeFunctor :=
-  NatIso.ofComponents (pullbackObjFreeIso φ)
+  NatIso.ofComponents (fun X ↦ pullbackObjFreeIso φ X)
 
 end SheafOfModules

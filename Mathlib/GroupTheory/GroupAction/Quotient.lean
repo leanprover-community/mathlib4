@@ -125,6 +125,13 @@ theorem _root_.MulActionHom.toQuotient_apply (H : Subgroup α) (g : α) :
     MulActionHom.toQuotient H g = g :=
   rfl
 
+@[to_additive (attr := simp)]
+theorem coe_quotient_smul {H : Subgroup α} [H.Normal] [SMul α β]
+    [MulAction (α ⧸ H) β] [IsScalarTower α (α ⧸ H) β] (g : α) (x : β) :
+    (g : α ⧸ H) • x = g • x := by
+  rw [← smul_one_smul (α ⧸ H) g x, ← QuotientGroup.mk_one, Quotient.smul_coe,
+    smul_eq_mul, mul_one]
+
 @[to_additive]
 instance mulLeftCosetsCompSubtypeVal (H I : Subgroup α) : MulAction I (α ⧸ H) :=
   MulAction.compHom (α ⧸ H) (Subgroup.subtype I)
@@ -167,7 +174,7 @@ theorem injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilize
 noncomputable def orbitEquivQuotientStabilizer (b : β) : orbit α b ≃ α ⧸ stabilizer α b :=
   Equiv.symm <|
     Equiv.ofBijective (fun g => ⟨ofQuotientStabilizer α b g, ofQuotientStabilizer_mem_orbit α b g⟩)
-      ⟨fun x y hxy => injective_ofQuotientStabilizer α b (by convert congr_arg Subtype.val hxy),
+      ⟨fun x y hxy => injective_ofQuotientStabilizer α b (by convert! congr_arg Subtype.val hxy),
         fun ⟨_, ⟨g, hgb⟩⟩ => ⟨g, Subtype.ext hgb⟩⟩
 
 /-- Orbit-stabilizer theorem. -/
@@ -256,7 +263,8 @@ noncomputable def sigmaFixedByEquivOrbitsProdGroup : (Σ a : α, fixedBy β a) �
 
 /-- **Burnside's lemma** : given a finite group `G` acting on a set `X`, the average number of
 elements fixed by each `g ∈ G` is the number of orbits. -/
-@[to_additive AddAction.sum_card_fixedBy_eq_card_orbits_mul_card_addGroup
+@[to_additive (attr := wikidata Q1330377)
+      AddAction.sum_card_fixedBy_eq_card_orbits_mul_card_addGroup
       /-- **Burnside's lemma** : given a finite additive group `G` acting on a set `X`,
       the average number of elements fixed by each `g ∈ G` is the number of orbits. -/]
 theorem sum_card_fixedBy_eq_card_orbits_mul_card_group [Fintype α] [∀ a : α, Fintype <| fixedBy β a]
@@ -362,21 +370,20 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
   invFun := fun q ↦ q.liftOn' (fun g ↦ ⟦g⁻¹ • x⟧) (by
     intro g₁ g₂ h
     rw [leftRel_eq] at h
-    simp only
     rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
     exact ⟨⟨_, h⟩, by simp [mul_smul]⟩)
   left_inv := fun y ↦ by
     cases y using Quotient.inductionOn'
     simp only [Quotient.liftOn'_mk'']
     rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
-    convert mem_orbit_self _
+    convert! mem_orbit_self _
     rw [inv_smul_eq_iff, (exists_smul_eq α _ x).choose_spec]
   right_inv := fun g ↦ by
     cases g using Quotient.inductionOn' with | _ g
     simp only [Quotient.liftOn'_mk'', QuotientGroup.mk]
     rw [Quotient.eq'', leftRel_eq]
     simp only
-    convert one_mem H
+    convert! one_mem H
     rw [inv_mul_eq_one, eq_comm, ← inv_mul_eq_one, ← Subgroup.mem_bot,
         ← IsCancelSMul.stabilizer_eq_bot (g⁻¹ • x), mem_stabilizer_iff, mul_smul,
         (exists_smul_eq α (g⁻¹ • x) x).choose_spec]

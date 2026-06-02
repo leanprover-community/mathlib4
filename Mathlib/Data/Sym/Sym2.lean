@@ -380,7 +380,7 @@ theorem other_spec {a : α} {z : Sym2 α} (h : a ∈ z) : s(a, Mem.other h) = z 
   (Classical.choose_spec h).symm
 
 theorem other_mem {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.other h ∈ z := by
-  convert mem_mk_right a <| Mem.other h
+  convert! mem_mk_right a <| Mem.other h
   rw [other_spec h]
 
 theorem mem_and_mem_iff {x y : α} {z : Sym2 α} (hne : x ≠ y) : x ∈ z ∧ y ∈ z ↔ z = s(x, y) := by
@@ -537,17 +537,8 @@ theorem mem_diagSet_iff_isDiag (z : Sym2 α) : z ∈ diagSet ↔ z.IsDiag := .rf
 @[simp] lemma range_diag : .range (diag : α → Sym2 α) = diagSet := by
   ext ⟨a, b⟩; simp [diag, eq_comm]
 
-@[deprecated (since := "2025-11-05")] alias ⟨_, IsDiag.mem_range_diag⟩ := mem_diagSet_iff_isDiag
-
-@[deprecated range_diag (since := "2025-11-05")]
-theorem isDiag_iff_mem_range_diag (z : Sym2 α) : IsDiag z ↔ z ∈ Set.range (@diag α) := by simp
-
-@[deprecated mem_diagSet (since := "2025-11-05")]
-theorem mem_diagSet_iff_eq {a b : α} : s(a, b) ∈ diagSet ↔ a = b := by simp
-
 theorem diagSet_eq_setOf_isDiag : diagSet = {z : Sym2 α | z.IsDiag} := rfl
 
-set_option linter.deprecated false in
 @[deprecated Set.compl_setOf (since := "2025-12-10")]
 theorem diagSet_compl_eq_setOf_not_isDiag : diagSetᶜ = {z : Sym2 α | ¬z.IsDiag} :=
   congrArg _ diagSet_eq_setOf_isDiag
@@ -561,7 +552,7 @@ instance decidablePred_mem_diagSet (α : Type u) [DecidableEq α] : DecidablePre
   IsDiag.decidablePred _
 
 theorem other_ne {a : α} {z : Sym2 α} (hd : ¬IsDiag z) (h : a ∈ z) : Mem.other h ≠ a := by
-  contrapose! hd
+  contrapose hd
   have h' := Sym2.other_spec h
   rw [hd] at h'
   rw [← h']
@@ -620,20 +611,19 @@ lemma diagSet_eq_fromRel_eq : diagSet = fromRel (α := α) eq_equivalence.symmet
 lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) (fun _ _ ↦ Ne.symm) := by
   ext ⟨a, b⟩; simp
 
-@[simp] lemma diagSet_subset_fromRel (hr : Symmetric r) : diagSet ⊆ fromRel hr ↔ Reflexive r := by
-  simp [Set.subset_def, Sym2.forall, Reflexive]
+@[simp] lemma diagSet_subset_fromRel (hr : Symmetric r) : diagSet ⊆ fromRel hr ↔ Std.Refl r := by
+  simp [Set.subset_def, Sym2.forall, refl_def]
 
 @[simp] lemma disjoint_diagSet_fromRel (hr : Symmetric r) :
     Disjoint diagSet (fromRel hr) ↔ Std.Irrefl r := by
-  refine .trans ?_ ⟨(⟨·⟩), (·.irrefl)⟩
-  simp [Set.disjoint_left, Sym2.forall]
+  simp [Set.disjoint_left, Sym2.forall, irrefl_def]
 
 @[simp] lemma fromRel_subset_compl_diagSet (hr : Symmetric r) :
     fromRel hr ⊆ diagSetᶜ ↔ Std.Irrefl r := by simp [Set.subset_compl_iff_disjoint_left]
 
 @[deprecated diagSet_subset_fromRel (since := "2025-12-10")]
 theorem reflexive_iff_diagSet_subset_fromRel (sym : Symmetric r) :
-    Reflexive r ↔ diagSet ⊆ fromRel sym := by simp
+    Std.Refl r ↔ diagSet ⊆ fromRel sym := by simp
 
 @[deprecated fromRel_subset_compl_diagSet (since := "2025-12-10")]
 theorem irreflexive_iff_fromRel_subset_diagSet_compl (sym : Symmetric r) :
@@ -696,7 +686,7 @@ def fromRelOrderIso : { r : α → α → Prop // Symmetric r } ≃o Set (Sym2 �
   invFun s := ⟨ToRel s, toRel_symmetric s⟩
   left_inv r := by simp [toRel_fromRel]
   right_inv s := by simp [fromRel_toRel]
-  map_rel_iff' {r₁ r₂} := by simpa using fromRel_mono_iff ..
+  map_rel_iff' {r₁ r₂} := by simpa using! fromRel_mono_iff ..
 
 /-- `fromRel` induces an order embedding from symmetric relations to `Sym2` sets. -/
 @[deprecated fromRelOrderIso (since := "2026-03-11")]
@@ -909,7 +899,7 @@ theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈
     Mem.other hb = a := by
   classical
     rw [other_eq_other'] at hb ⊢
-    convert other_invol' ha hb using 2
+    convert! other_invol' ha hb using 2
     apply other_eq_other'
 
 theorem filter_image_mk_isDiag [DecidableEq α] (s : Finset α) :

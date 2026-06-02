@@ -145,11 +145,11 @@ theorem subset_toFinset {s : Finset α} : s ⊆ ht.toFinset ↔ ↑s ⊆ t := by
 theorem ssubset_toFinset {s : Finset α} : s ⊂ ht.toFinset ↔ ↑s ⊂ t := by
   rw [← Finset.coe_ssubset, Finite.coe_toFinset]
 
-@[mono]
+@[gcongr, mono]
 protected theorem toFinset_subset_toFinset : hs.toFinset ⊆ ht.toFinset ↔ s ⊆ t := by
   simp only [← Finset.coe_subset, Finite.coe_toFinset]
 
-@[mono]
+@[gcongr, mono]
 protected theorem toFinset_ssubset_toFinset : hs.toFinset ⊂ ht.toFinset ↔ s ⊂ t := by
   simp only [← Finset.coe_ssubset, Finite.coe_toFinset]
 
@@ -380,7 +380,7 @@ namespace Multiset
 
 @[simp]
 theorem finite_toSet (s : Multiset α) : { x | x ∈ s }.Finite := by
-  classical simpa only [← Multiset.mem_toFinset] using s.toFinset.finite_toSet
+  classical simpa only [← Multiset.mem_toFinset] using! s.toFinset.finite_toSet
 
 @[simp]
 theorem finite_toSet_toFinset [DecidableEq α] (s : Multiset α) :
@@ -698,8 +698,8 @@ theorem finite_option {s : Set (Option α)} : s.Finite ↔ { x : α | some x ∈
 /-- Induction principle for finite sets: To prove a property `motive` of a finite set `s`, it's
 enough to prove for the empty set and to prove that `motive t → motive ({a} ∪ t)` for all `t`.
 
-See also `Set.Finite.induction_on` for the version requiring to check `motive t → motive ({a} ∪ t)`
-only for `t ⊆ s`. -/
+See also `Set.Finite.induction_on_subset` for the version requiring to check
+`motive t → motive ({a} ∪ t)` only for `t ⊆ s`. -/
 @[elab_as_elim]
 theorem Finite.induction_on {motive : ∀ s : Set α, s.Finite → Prop} (s : Set α) (hs : s.Finite)
     (empty : motive ∅ finite_empty)
@@ -715,7 +715,7 @@ theorem Finite.induction_on {motive : ∀ s : Set α, s.Finite → Prop} (s : Se
 to prove for the empty set and to prove that `C t → C ({a} ∪ t)` for all `t ⊆ s`.
 
 This is analogous to `Finset.induction_on'`. See also `Set.Finite.induction_on` for the version
-requiring `C t → C ({a} ∪ t)` for all `t`. -/
+requiring `motive t → motive ({a} ∪ t)` for all `t`. -/
 @[elab_as_elim]
 theorem Finite.induction_on_subset {motive : ∀ s : Set α, s.Finite → Prop} (s : Set α)
     (hs : s.Finite) (empty : motive ∅ finite_empty)
@@ -744,7 +744,7 @@ theorem seq_of_forall_finite_exists {γ : Type*} {P : γ → Set γ → Prop}
   set f : (n : ℕ) → (g : (m : ℕ) → m < n → γ) → γ := fun n g => c (range fun k : Iio n => g k.1 k.2)
   set u : ℕ → γ := fun n => Nat.strongRecOn' n f
   refine ⟨u, fun n => ?_⟩
-  convert hc (u '' Iio n) ((finite_lt_nat _).image _)
+  convert! hc (u '' Iio n) ((finite_lt_nat _).image _)
   rw [image_eq_range]
   exact Nat.strongRecOn'_beta
 
@@ -759,7 +759,6 @@ theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ 
     @Fintype.card _ (fintypeInsertOfNotMem s h) = Fintype.card s + 1 := by
   simp [Fintype.card_ofFinset]
 
-@[simp]
 theorem card_insert {a : α} (s : Set α) [Fintype s] (h : a ∉ s)
     {d : Fintype (insert a s : Set α)} : @Fintype.card _ d = Fintype.card s + 1 := by
   rw [← card_fintypeInsertOfNotMem s h]; congr!
@@ -897,7 +896,7 @@ theorem not_injOn_infinite_finite_image {f : α → β} {s : Set α} (h_inf : s.
   have : Infinite s := infinite_coe_iff.mpr h_inf
   have h := not_injective_infinite_finite
             ((f '' s).codRestrict (s.restrict f) fun x => ⟨x, x.property, rfl⟩)
-  contrapose! h
+  contrapose h
   rwa [injective_codRestrict, ← injOn_iff_injective]
 
 theorem finite_range_findGreatest {P : α → ℕ → Prop} [∀ x, DecidablePred (P x)] {b : ℕ} :
@@ -940,6 +939,6 @@ lemma Finite.of_forall_not_lt_lt (h : ∀ ⦃x y z : α⦄, x < y → y < z → 
 /-- If a set `s` does not contain any triple of elements `x < y < z`, then `s` is finite. -/
 lemma Set.finite_of_forall_not_lt_lt (h : ∀ x ∈ s, ∀ y ∈ s, ∀ z ∈ s, x < y → y < z → False) :
     Set.Finite s :=
-  @Set.toFinite _ s <| Finite.of_forall_not_lt_lt <| by simpa only [SetCoe.forall'] using h
+  @Set.toFinite _ s <| Finite.of_forall_not_lt_lt <| by simpa only [SetCoe.forall'] using! h
 
 end LinearOrder

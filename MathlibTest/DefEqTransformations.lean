@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.DefEqTransformations
 
 set_option autoImplicit true

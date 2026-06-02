@@ -426,11 +426,6 @@ theorem val_image_orbit {p : SubMulAction R M} (m : p) :
     Subtype.val '' MulAction.orbit R m = MulAction.orbit R (m : M) :=
   (Set.range_comp _ _).symm
 
-/- -- Previously, the relatively useless :
-lemma orbit_of_sub_mul {p : SubMulAction R M} (m : p) :
-    (mul_action.orbit R m : set M) = MulAction.orbit R (m : M) := rfl
--/
-
 @[to_additive]
 theorem val_preimage_orbit {p : SubMulAction R M} (m : p) :
     Subtype.val ⁻¹' MulAction.orbit R (m : M) = MulAction.orbit R m := by
@@ -579,7 +574,7 @@ def nonZeroSubMul : SubMulAction Rˣ M where
   smul_mem' := by simp [Units.smul_def]
 
 instance : MulAction Rˣ { x : M // x ≠ 0 } :=
-  SubMulAction.mulAction' (nonZeroSubMul R M)
+  inferInstanceAs <| MulAction Rˣ (nonZeroSubMul R M)
 
 @[simp]
 lemma smul_coe (a : Rˣ) (x : { x : M // x ≠ 0 }) :
@@ -611,7 +606,7 @@ def fixedPointsSubMulOfNormal [hH : H.Normal] : SubMulAction G α where
   smul_mem' := smul_mem_fixedPoints_of_normal
 
 instance [hH : H.Normal] : MulAction G (MulAction.fixedPoints H α) :=
-  SubMulAction.mulAction' fixedPointsSubMulOfNormal
+  inferInstanceAs <| MulAction G fixedPointsSubMulOfNormal
 
 @[simp]
 lemma coe_smul_fixedPoints_of_normal [hH : H.Normal]
