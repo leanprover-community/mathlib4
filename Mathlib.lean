@@ -1318,6 +1318,7 @@ public import Mathlib.Algebra.Star.StarRingHom
 public import Mathlib.Algebra.Star.Subalgebra
 public import Mathlib.Algebra.Star.Subsemiring
 public import Mathlib.Algebra.Star.TensorProduct
+public import Mathlib.Algebra.Star.TransferInstance
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.Algebra.Star.UnitaryStarAlgAut
 public import Mathlib.Algebra.Symmetrized
@@ -5060,6 +5061,7 @@ public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Card
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.MvPolynomial
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Projective
 public import Mathlib.LinearAlgebra.Matrix.Gershgorin
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
