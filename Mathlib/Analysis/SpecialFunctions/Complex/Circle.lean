@@ -394,7 +394,7 @@ open AddCircle
 
 theorem Circle.isAddQuotientCoveringMap_exp :
     IsAddQuotientCoveringMap exp (AddSubgroup.zmultiples (2 * π)) := by
-  convert (isAddQuotientCoveringMap_coe _).homeomorph_comp (homeomorphCircle _)
+  convert! (isAddQuotientCoveringMap_coe _).homeomorph_comp (homeomorphCircle _)
   on_goal 2 => simp
   ext; simp [homeomorphCircle_apply, toCircle]
 
@@ -403,7 +403,7 @@ theorem Circle.isCoveringMap_exp : IsCoveringMap exp := isAddQuotientCoveringMap
 lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp :=
   Circle.isCoveringMap_exp.isLocalHomeomorph
 
-/- TODO: this generalizes to a large class of groups, but requires an open mapping theorem for
+/-- TODO: this generalizes to a large class of groups, but requires an open mapping theorem for
 topological groups to show the `n`th power map is open (see https://www.mathematik.tu-darmstadt.de/media/mathematik/forschung/preprint/preprints/2480.pdf
 and https://www.math.uwaterloo.ca/~cgodsil/pdfs/topology/topgr.pdf), and discreteness of the
 kernel (see https://gemini.google.com/share/6e9ab4abcb95). -/
@@ -414,10 +414,12 @@ theorem Circle.isQuotientCoveringMap_zpow (n : ℤ) [NeZero n] :
   refine Topology.IsQuotientMap.isQuotientCoveringMap_of_isDiscrete_ker_monoidHom
     (f := zpowGroupHom (α := Circle) n) ?_ (Set.Finite.isDiscrete <| .of_preimage ?_ e.surjective)
   · refine .of_comp e.continuous (continuous_zpow n) ?_
-    convert e.isQuotientMap.comp <| IsUnit.isQuotientMap_zsmul (M := ℝ)
-      (QuotientAddGroup.mk' (AddSubgroup.zmultiples (1 : ℝ))) isQuotientMap_quotient_mk' n hn
+    convert!
+      e.isQuotientMap.comp <|
+        IsUnit.isQuotientMap_zsmul (M := ℝ) (QuotientAddGroup.mk' (AddSubgroup.zmultiples (1 : ℝ)))
+          isQuotientMap_quotient_mk' n hn
     ext; simp [zpowGroupHom, e, homeomorphCircle_apply, toCircle_zsmul]
-  · convert finite_torsion_of_isSMulRegular_int (1 : ℝ) n fun _ ↦ by simp [NeZero.ne]
+  · convert! finite_torsion_of_isSMulRegular_int (1 : ℝ) n fun _ ↦ by simp [NeZero.ne]
     ext
     simp [e, homeomorphCircle_apply, ← toCircle_zsmul, ← (injective_toCircle one_ne_zero).eq_iff]
 
