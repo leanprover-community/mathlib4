@@ -17,6 +17,9 @@ import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
 In this file we define `projectiveFamily : (I : Finset ℝ≥0) → Measure (I → ℝ)`. Each
 `projectiveFamily I` is the centered Gaussian measure over `I → ℝ`
 with covariance matrix given by `covMatrix I s t := min s t`.
+Note that we build a measure over `I → ℝ` rather than `EuclideanSpace I ℝ`. This is because
+we want to extend this family to a measure over `ℝ≥0 → ℝ` through the Kolmogorov's extension
+theorem, which is phrased in this language.
 
 We prove that these measures satisfy `IsProjectiveMeasureFamily`, which means that they can be
 extended into a measure over `ℝ≥0 → ℝ` thanks to the Kolmogorov's extension theorem
@@ -70,7 +73,11 @@ lemma posSemidef_covMatrix (I : Finset ℝ≥0) :
     (fun _ ↦ isCompact_Icc.measure_ne_top)
 
 /-- Each `projectiveFamily I` is the centered Gaussian measure with covariance matrix given
-by `covMatrix I s t := min s t`. -/
+by `covMatrix I s t := min s t`.
+
+Note that we build a measure over `I → ℝ` rather than `EuclideanSpace I ℝ`. This is because
+we want to extend this family to a measure over `ℝ≥0 → ℝ` through the Kolmogorov's extension
+theorem, which is phrased in this language. -/
 noncomputable def projectiveFamily (I : Finset ℝ≥0) : Measure (I → ℝ) :=
   multivariateGaussian 0 (covMatrix I) |>.map (MeasurableEquiv.toLp 2 (I → ℝ)).symm
 
