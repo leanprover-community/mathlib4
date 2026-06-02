@@ -510,7 +510,7 @@ theorem range_piecewise (f : ι → α → β) : range (hs.piecewise f) = ⋃ i,
     obtain ⟨a, ha1, ha2⟩ := ht
     refine ⟨a, ?_⟩
     simp only [hs.mem_iff_index_eq] at ha1
-    simpa [hs.mem_iff_index_eq, ← ha1] using ha2
+    simpa [hs.mem_iff_index_eq, ← ha1] using! ha2
 
 theorem range_piecewise_subset (f : ι → α → β) : range (hs.piecewise f) ⊆ ⋃ i, range (f i) :=
   fun x ⟨y, hy⟩ => by simpa [IndexedPartition.piecewise_apply] using ⟨hs.index y, y, hy⟩

@@ -250,7 +250,7 @@ instance (priority := 50) [SequentialSpace E] [CountablyCompactSpace E] :
     refine hx a φ hφ1 (tendsto_atTop_nhds.2 fun U ha hUo => ⟨0, fun n _ => ?_⟩)
     simpa using mem_closure_iff.1 (hφ2 n) U hUo ha
   have : a ∉ ⋃ i, closure {x (i + (k + 1))} := by
-    simpa [← iUnion_ge_eq_iUnion_nat_add (fun n => closure {x n}) (k + 1)] using
+    simpa [← iUnion_ge_eq_iUnion_nat_add (fun n => closure {x n}) (k + 1)] using!
       fun i hi => hk i (Nat.lt_of_lt_of_eq hi rfl)
   apply this
   suffices h : closure (x '' Ici (k + 1)) ⊆ ⋃ i, closure {x (i + (k + 1))} from
