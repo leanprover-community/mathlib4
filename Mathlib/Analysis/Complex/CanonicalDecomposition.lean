@@ -319,9 +319,9 @@ theorem _root_.MeromorphicOn.exists_canonicalDecomp
   by_cases hR : R ≤ 0
   · use fun _ ↦ f 0
     exact {
-      f_meromorphicOn := h₁f
-      g_meromorphicNFOn := fun z hz ↦ AnalyticAt.meromorphicNFAt analyticAt_const
-      g_ne_zero := by simp [ball_eq_empty.2 hR]
+      meromorphicOn := h₁f
+      meromorphicNFOn := fun z hz ↦ AnalyticAt.meromorphicNFAt analyticAt_const
+      ne_zero := by simp [ball_eq_empty.2 hR]
       eventuallyEq := by
         filter_upwards [self_mem_codiscreteWithin (closedBall 0 R)] with a ha
         have : R = 0 := by grind [nonneg_of_mem_closedBall ha]
@@ -355,9 +355,9 @@ theorem _root_.MeromorphicOn.exists_canonicalDecomp
   use g
   have η₀ : (-divisor f (ball 0 R)).support.Finite := by simp [h₁f.divisor_ball_finiteSupport]
   exact {
-    f_meromorphicOn := h₁f
-    g_meromorphicNFOn := meromorphicNFOn_toMeromorphicNFOn φ (closedBall 0 R)
-    g_ne_zero := by
+    meromorphicOn := h₁f
+    meromorphicNFOn := meromorphicNFOn_toMeromorphicNFOn φ (closedBall 0 R)
+    ne_zero := by
       intro z hz
       rw [← MeromorphicNFAt.meromorphicOrderAt_eq_zero_iff (h₂g (ball_subset_closedBall hz))]
       have : divisor g (ball 0 R) z = 0 := by simp [h₃g]
