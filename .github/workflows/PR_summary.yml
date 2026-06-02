@@ -215,6 +215,10 @@ jobs:
         else
           declDiff="$(printf '#### Declarations diff\n\n%s\n' "${declDiff}")"
         fi
+        # Delimit the declarations-diff part so the post-build `decls-diff.yml`
+        # workflow can replace it with a Lean-aware version. The markers are HTML
+        # comments (invisible when rendered). See mathlib-ci's updateDeclsDiffSection.py.
+        declDiff="$(printf '<!-- DECLS_DIFF_BEGIN -->\n%s\n<!-- DECLS_DIFF_END -->' "${declDiff}")"
         git checkout "${currentHash}" --
         hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${currentHash}"
         printf 'hashURL: %s' "${hashURL}"

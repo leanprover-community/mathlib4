@@ -16,6 +16,7 @@ on:
 permissions:
   contents: read
   actions: read           # for cross-workflow artifact downloads
+  pull-requests: write    # for PATCHing the `### PR summary` comment
 
 jobs:
   diff:
@@ -25,15 +26,25 @@ jobs:
       && github.event.workflow_run.event == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - name: Resolve Build run + SHA
+      - name: Resolve Build run + SHA + PR number
         id: meta
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
           RUN_ID="${{ github.event.workflow_run.id }}"
           NEW_SHA="${{ github.event.workflow_run.head_sha }}"
+          # Fork-safe PR-number resolution: `commits/<sha>/pulls` is empty for
+          # fork PRs, so fall back to a commit-SHA search (which finds them).
+          PR_NUMBER="$(gh api "repos/$REPO/commits/$NEW_SHA/pulls" --jq '.[0].number // empty')"
+          if [ -z "$PR_NUMBER" ]; then
+            PR_NUMBER="$(gh api "/search/issues?q=repo:$REPO+type:pr+sha:$NEW_SHA" --jq '.items[0].number // empty')"
+          fi
           {
             echo "run-id=$RUN_ID"
             echo "new-sha=$NEW_SHA"
+            echo "pr-number=$PR_NUMBER"
           } | tee -a "$GITHUB_OUTPUT"
 
       - name: Checkout new commit
@@ -95,8 +106,9 @@ jobs:
           run-id: ${{ steps.master-run.outputs.run-id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      # Tooling is checked out unconditionally: the patcher (from CI_SCRIPTS_DIR)
+      # is needed on the cache-miss path too, to post the warning notice.
       - name: Checkout local actions
-        if: steps.master-run.outputs.found == 'true'
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.workflow_sha }}
@@ -105,11 +117,11 @@ jobs:
           path: workflow-actions
 
       - name: Get mathlib-ci
-        if: steps.master-run.outputs.found == 'true'
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
       - name: Compute Lean-aware declarations diff
         if: steps.master-run.outputs.found == 'true'
+        id: diff
         uses: ./ci-tools/.github/actions/decls-diff
         with:
           reference-decls-file:   ${{ github.workspace }}/ref-artifact/decls.txt
@@ -117,10 +129,32 @@ jobs:
           new-decls-file:         ${{ github.workspace }}/new-artifact/decls.txt
           new-imports-file:       ${{ github.workspace }}/new-artifact/imports.json
           new-sha:                ${{ steps.meta.outputs.new-sha }}
+          with-heading:           'true'
+
+      - name: Patch PR summary comment (success)
+        if: steps.master-run.outputs.found == 'true'
+        env:
+          GH_TOKEN:      ${{ secrets.GITHUB_TOKEN }}
+          REPO:          ${{ github.repository }}
+          PR_HEAD_SHA:   ${{ steps.meta.outputs.new-sha }}
+          PR_NUMBER:     ${{ steps.meta.outputs.pr-number }}
+          MODE:          success
+          OVERRIDE_FILE: ${{ steps.diff.outputs.decls-override-file }}
+        run: python3 "$CI_SCRIPTS_DIR/pr_summary/updateDeclsDiffSection.py"
 
       - name: Note cache miss
         if: steps.master-run.outputs.found != 'true'
+        env:
+          GH_TOKEN:       ${{ secrets.GITHUB_TOKEN }}
+          REPO:           ${{ github.repository }}
+          PR_HEAD_SHA:    ${{ steps.meta.outputs.new-sha }}
+          PR_NUMBER:      ${{ steps.meta.outputs.pr-number }}
+          MODE:           warning
+          DEFAULT_BRANCH: master
         run: |
+          # Append the cache-miss notice to the PR-summary comment, and keep a
+          # run-local record in the step summary.
+          python3 "$CI_SCRIPTS_DIR/pr_summary/updateDeclsDiffSection.py"
           {
             echo "## Declarations diff"
             echo
