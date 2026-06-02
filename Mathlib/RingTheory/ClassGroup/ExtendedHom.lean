@@ -81,7 +81,7 @@ theorem extendedIdeal_extendedIdeal (C : Type*) [CommRing C] [IsDomain C] [Algeb
     extendedIdeal B C (extendedIdeal A B I) = extendedIdeal A C I := by
   simp [Ideal.map_map, IsScalarTower.algebraMap_eq A B C]
 
-end
+end CommRing
 
 section DedekindDomain
 
