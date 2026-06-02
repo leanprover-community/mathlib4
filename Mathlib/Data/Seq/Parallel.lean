@@ -102,7 +102,7 @@ theorem terminates_parallel.aux :
             match o with
             | Sum.inl a => Sum.inl a
             | Sum.inr ls => rmap (fun c' => c' :: ls) (destruct c))
-          (Sum.inr List.nil) l with a' | ls <;> erw [e] at e'
+          (Sum.inr List.nil) l with a' | ls <;> simp only [rmap] at e <;> rw [e] at e'
         · contradiction
         have := IH' m _ e
         grind
@@ -267,13 +267,8 @@ theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map 
           = lmap f (rmap (List.map (map f)) (parallel.aux2 l)) := by
         simp only [parallel.aux2, rmap, lmap]
         induction l with
-        | nil => simp
-        | cons c l IH =>
-          simp only [List.map_cons, List.foldr_cons, destruct_map, lmap, rmap]
-          rw [IH]
-          cases List.foldr _ _ _
-          · simp
-          · cases destruct c <;> simp
+        | nil => grind
+        | cons => grind [destruct_map, lmap, rmap]
       simp only [BisimO, destruct_map, lmap, rmap, corec_eq, parallel.aux1.eq_1]
       rw [this]
       rcases parallel.aux2 l with a | l'

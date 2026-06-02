@@ -25,7 +25,7 @@ assuming that set is finite.
 
 variable {G P : Type*}
 
-open Pointwise
+open scoped Pointwise
 
 namespace Set
 

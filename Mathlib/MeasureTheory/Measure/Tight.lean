@@ -123,7 +123,7 @@ protected lemma subset (hT : IsTightMeasureSet T) (hST : S ⊆ T) :
 protected lemma union (hS : IsTightMeasureSet S) (hT : IsTightMeasureSet T) :
     IsTightMeasureSet (S ∪ T) := by
   rw [IsTightMeasureSet, iSup_union]
-  convert Tendsto.sup_nhds hS hT
+  convert! Tendsto.sup_nhds hS hT
   simp
 
 protected lemma inter (hS : IsTightMeasureSet S) (T : Set (Measure 𝓧)) :
@@ -144,6 +144,24 @@ lemma map [TopologicalSpace 𝓨] [MeasurableSpace 𝓨] [OpensMeasurableSpace �
   refine (measure_mono ?_).trans (hKS μ hμS)
   simp only [preimage_compl, compl_subset_compl]
   exact subset_preimage_image f K
+
+/-- A set of measures on a product space is tight if both marginals are tight. -/
+lemma prodMk {m𝓨 : MeasurableSpace 𝓨} [TopologicalSpace 𝓨] {μ : Set (Measure (𝓧 × 𝓨))}
+    (hμ₁ : IsTightMeasureSet (Measure.fst '' μ)) (hμ₂ : IsTightMeasureSet (Measure.snd '' μ)) :
+    IsTightMeasureSet μ := by
+  rw [isTightMeasureSet_iff_exists_isCompact_measure_compl_le] at hμ₁ hμ₂ ⊢
+  intro ε hε
+  obtain ⟨K₁, hK₁_compact, hK₁_le⟩ := hμ₁ (ε / 2) (by aesop)
+  obtain ⟨K₂, hK₂_compact, hK₂_le⟩ := hμ₂ (ε / 2) (by aesop)
+  refine ⟨K₁ ×ˢ K₂, hK₁_compact.prod hK₂_compact, fun κ hκ_mem ↦ ?_⟩
+  grw [compl_prod_eq_union, measure_union_le, ← ENNReal.add_halves (a := ε)]
+  apply add_le_add
+  · specialize hK₁_le _ <| mem_image_of_mem _ hκ_mem
+    grw [Measure.fst, ← Measure.le_map_apply (by fun_prop)] at hK₁_le
+    simpa [prod_univ] using hK₁_le
+  · specialize hK₂_le _ <| Set.mem_image_of_mem _ hκ_mem
+    grw [Measure.snd, ← Measure.le_map_apply (by fun_prop)] at hK₂_le
+    simpa [univ_prod] using hK₂_le
 
 end IsTightMeasureSet
 end Basic
