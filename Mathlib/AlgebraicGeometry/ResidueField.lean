@@ -344,10 +344,13 @@ lemma SpecToEquivOfField_comp_fst {K : Type u} [Field K] (g : Spec (.of K) ⟶ X
     (SpecToEquivOfField K Y (g ≫ f)).fst = f (SpecToEquivOfField K X g).fst :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma SpecToEquivOfField_comp_snd {K : Type u} [Field K] (g : Spec (.of K) ⟶ X) :
     (SpecToEquivOfField K Y (g ≫ f)).snd =
       f.residueFieldMap (SpecToEquivOfField K X g).fst ≫ (SpecToEquivOfField K X g).snd := by
-  simp [stalkClosedPointTo_comp, ← cancel_epi (Y.residue _), residue_descResidueField]
+  simp only [SpecToEquivOfField_apply_fst, Hom.comp_base, TopCat.hom_comp, ContinuousMap.comp_apply,
+    SpecToEquivOfField_apply_snd, stalkClosedPointTo_comp, ← cancel_epi (Y.residue _),
+    residue_descResidueField]
   rfl
 
 end Scheme

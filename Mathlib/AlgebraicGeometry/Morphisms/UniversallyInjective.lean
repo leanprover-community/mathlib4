@@ -20,7 +20,7 @@ We show that being universally injective is local at the target, and is stable u
 compositions and base changes.
 
 We also prove that universally injective is equivalent to being injective with
-purely inseparable residue field extensions (`AlgebraicGeometry.universallyInjective_tfae`,
+purely inseparable residue field extensions (`AlgebraicGeometry.tfae_universallyInjective`,
 Stacks tag 01S4).
 
 -/
@@ -97,6 +97,7 @@ instance universallyInjective_isZariskiLocalAtTarget :
     IsZariskiLocalAtTarget @UniversallyInjective :=
   universallyInjective_eq_diagonal.symm ▸ inferInstance
 
+set_option backward.defeqAttrib.useBackward true in
 @[stacks 01S4]
 theorem tfae_universallyInjective :
     List.TFAE [
@@ -135,16 +136,14 @@ theorem tfae_universallyInjective :
     rw [surjective_iff] at hf
     intro x
     algebraize [(f.residueFieldMap x).hom]
-    rw [isPurelyInseparable_iff_finSepDegree_eq_one, Field.finSepDegree, Nat.card_eq_one_iff_unique,
-      subsingleton_iff]
-    refine ⟨?_, inferInstance⟩
+    rw [isPurelyInseparable_iff_subsingleton_emb, subsingleton_iff]
     intro σ₁ σ₂
     apply AlgHom.coe_ringHom_injective
     let g₁ := (X.SpecToEquivOfField _).symm ⟨_, CommRingCat.ofHom σ₁.toRingHom⟩
     let g₂ := (X.SpecToEquivOfField _).symm ⟨_, CommRingCat.ofHom σ₂.toRingHom⟩
     suffices X.SpecToEquivOfField _ g₁ = X.SpecToEquivOfField _ g₂ by
       rw [Equiv.apply_symm_apply, Equiv.apply_symm_apply] at this
-      simpa using congr($(this).2.hom)
+      exact congr($(this).2.hom)
     let q := pullback.lift (f := f) (g := f) g₁ g₂ <| by
       simp only [g₁, g₂, Scheme.SpecToEquivOfField_symm_apply, AlgHom.toRingHom_eq_coe,
         Category.assoc, ← f.SpecMap_residueFieldMap_fromSpecResidueField x, ← Spec.map_comp_assoc]
