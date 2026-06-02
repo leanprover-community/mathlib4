@@ -46,11 +46,11 @@ variable [Preorder α]
 
 -- `to_dual` cannot yet reorder arguments of arguments
 instance [SuccOrder α] [IsSuccArchimedean α] : IsPredArchimedean αᵒᵈ :=
-  ⟨fun {a b} h => by convert exists_succ_iterate_of_le h.ofDual⟩
+  ⟨fun {a b} h => by convert! exists_succ_iterate_of_le h.ofDual⟩
 
 @[to_dual existing]
 instance [PredOrder α] [IsPredArchimedean α] : IsSuccArchimedean αᵒᵈ :=
-  ⟨fun {a b} h => by convert exists_pred_iterate_of_le h.ofDual⟩
+  ⟨fun {a b} h => by convert! exists_pred_iterate_of_le h.ofDual⟩
 
 section SuccOrder
 
@@ -217,7 +217,6 @@ instance (priority := 100) WellFoundedLT.toIsPredArchimedean [h : WellFoundedLT 
     · exact ⟨0, rfl⟩
     rcases eq_or_lt_of_le (pred_le b) with hb | hb
     · cases (min_of_le_pred hb.ge).not_lt hab
-    dsimp at ih
     obtain ⟨k, hk⟩ := ih (pred b) hb (le_pred_of_lt hab)
     refine ⟨k + 1, ?_⟩
     rw [iterate_add_apply, iterate_one, hk]⟩

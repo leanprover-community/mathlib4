@@ -36,6 +36,9 @@ noncomputable instance {M : Type*} [MulAction ℝ≥0∞ M] : MulAction ℝ≥0 
 theorem smul_def {M : Type*} [MulAction ℝ≥0∞ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ≥0∞) • x :=
   rfl
 
+@[simp]
+theorem smul_one (c : ℝ≥0) : c • (1 : ℝ≥0∞) = (c : ℝ≥0∞) := by simp [smul_def]
+
 instance {M N : Type*} [MulAction ℝ≥0∞ M] [MulAction ℝ≥0∞ N] [SMul M N] [IsScalarTower ℝ≥0∞ M N] :
     IsScalarTower ℝ≥0 M N where smul_assoc r := smul_assoc (r : ℝ≥0∞)
 
@@ -100,6 +103,12 @@ instance : PosSMulStrictMono ℝ≥0 ℝ≥0∞ where
 
 instance : SMulPosMono ℝ≥0 ℝ≥0∞ where
   smul_le_smul_of_nonneg_right _r _ _a _b hab := _root_.mul_le_mul_left (coe_le_coe.2 hab) _
+
+instance : CovariantClass ℝ≥0∞ ℝ≥0∞ (· • ·) (· ≤ ·) :=
+  inferInstanceAs <| CovariantClass ℝ≥0∞ ℝ≥0∞ (· * ·) (· ≤ ·)
+
+instance : CovariantClass ℝ≥0 ℝ≥0∞ (· • ·) (· ≤ ·) :=
+  ⟨fun x x y hxy ↦ by simpa [ENNReal.smul_def] using mul_le_mul_right hxy _⟩
 
 end Actions
 
