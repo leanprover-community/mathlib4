@@ -188,14 +188,14 @@ instance whiskerRight_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
 instance whiskerLeft_unit_iso_of_R_fully_faithful [R.Full] [R.Faithful] :
     IsIso (whiskerLeft R h.unit) := by
   have := h.right_triangle
-  erw [comp_hom_eq_id] at this
+  rw [← IsIso.eq_comp_inv] at this
   rw [this]
   infer_instance
 
 instance whiskerRight_unit_iso_of_R_fully_faithful [R.Full] [R.Faithful] :
     IsIso (whiskerRight h.unit L) := by
   have := h.left_triangle
-  erw [comp_hom_eq_id] at this
+  rw [← IsIso.eq_comp_inv] at this
   rw [this]
   infer_instance
 
