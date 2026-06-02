@@ -22,6 +22,8 @@ inside its field of fractions.
 ## Main results
 - `ClassGroup.mk0_eq_mk0_iff` shows the equivalence with the "classical" definition,
   where `I ~ J` iff `x I = y J` for `x y ≠ (0 : R)`
+- `ClassGroup.mk0_eq_quotientMk` identifies `ClassGroup.mk0` with the canonical quotient
+  projection on `(FractionalIdeal R⁰ (FractionRing R))ˣ`
 
 ## Implementation details
 
@@ -257,6 +259,13 @@ theorem ClassGroup.mk_mk0 [IsDedekindDomain R] (I : (Ideal R)⁰) :
     ClassGroup.mk K (FractionalIdeal.mk0 K I) = ClassGroup.mk0 I := by
   rw [ClassGroup.mk0, MonoidHom.comp_apply, ← ClassGroup.mk_canonicalEquiv K (FractionRing R),
     FractionalIdeal.map_canonicalEquiv_mk0]
+
+/-- `ClassGroup.mk0` factors through the canonical quotient projection on
+`(FractionalIdeal R⁰ (FractionRing R))ˣ`. -/
+theorem ClassGroup.mk0_eq_quotientMk [IsDedekindDomain R] (I : (Ideal R)⁰) :
+    (ClassGroup.mk0 I : ClassGroup R) =
+      QuotientGroup.mk (FractionalIdeal.mk0 (FractionRing R) I) :=
+  (ClassGroup.mk_mk0 (K := FractionRing R) I).symm.trans (ClassGroup.Quot_mk_eq_mk _).symm
 
 @[simp]
 theorem ClassGroup.equiv_mk0 [IsDedekindDomain R] (I : (Ideal R)⁰) :
