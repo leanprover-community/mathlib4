@@ -33,14 +33,16 @@ With this convention, `(g * h) • p = g • (h • p)` follows from `(g * h)⁻
 ## Main definitions and results
 
 * `instance : MulAction (FundamentalGroup X x₀) (UniversalCover x₀)` —
-  the action, with `FaithfulSMul` and `ContinuousConstSMul`.
-* `UniversalCover.eq_one_of_smul_eq` — **freeness**: if any point is fixed by `g`, then
-  `g = 1`.
+  the action, with `FaithfulSMul`, `ContinuousConstSMul`, and **freeness** as
+  `IsCancelSMul` (all stated without geometric hypotheses on `X`).
+* `UniversalCover.proj_eq_iff_mem_orbit` — two points have the same projection iff they
+  lie in the same orbit.
+* `UniversalCover.eq_one_of_smul_eq` — strengthening of freeness: any stabilising point
+  forces `g = 1` (uses the universal cover's path-connectedness).
 * `UniversalCover.exists_nhds_smul_disjoint` — **proper discontinuity**: every point has
   a neighborhood whose non-identity translates are disjoint from it.
 * `UniversalCover.isQuotientCoveringMap` — packages it all: `proj` is a quotient covering
   map for the `π₁(X, x₀)`-action.
-* `UniversalCover.isCancelSMul` — the action is cancellative (free) as a typeclass instance.
 -/
 
 public section
@@ -108,9 +110,20 @@ instance : ContinuousConstSMul (FundamentalGroup X x₀) (UniversalCover x₀) w
         (fun _ ↦ γ) (Path.continuous_uncurry_iff.mpr continuous_const)
         (fun β ↦ β.toPath) h_eval
 
+/-- The action of `π₁(X, x₀)` is **free**: it is a cancellative `SMul`. The proof is
+purely algebraic, using right-cancellation in the path-homotopy-class groupoid. -/
+instance : IsCancelSMul (FundamentalGroup X x₀) (UniversalCover x₀) where
+  right_cancel' a b c h := by
+    rcases c with ⟨x, q⟩
+    rw [smul_mk, smul_mk, mk_inj] at h
+    have h' := congrArg (fun r => r.trans q.symm) h
+    simp only [Path.Homotopic.Quotient.trans_assoc, Path.Homotopic.Quotient.trans_symm,
+      Path.Homotopic.Quotient.trans_refl] at h'
+    exact inv_injective h'
+
 /-- The action of `π₁(X, x₀)` is transitive on each fiber: two points with the same projection
 are in the same orbit. -/
-theorem apply_eq_iff_mem_orbit {p₁ p₂ : UniversalCover x₀} :
+theorem proj_eq_iff_mem_orbit {p₁ p₂ : UniversalCover x₀} :
     proj p₁ = proj p₂ ↔ p₁ ∈ MulAction.orbit (FundamentalGroup X x₀) p₂ := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · rcases p₁ with ⟨x₁, q₁⟩
@@ -172,13 +185,8 @@ discontinuity into the standard `IsQuotientCoveringMap` package. -/
 theorem isQuotientCoveringMap :
     IsQuotientCoveringMap (proj : UniversalCover x₀ → X) (FundamentalGroup X x₀) where
   __ := (isCoveringMap x₀).isOpenMap.isQuotientMap (continuous_proj x₀) proj_surjective
-  apply_eq_iff_mem_orbit := apply_eq_iff_mem_orbit
+  apply_eq_iff_mem_orbit := proj_eq_iff_mem_orbit
   disjoint := exists_nhds_smul_disjoint
-
-/-- The action is **free**: it is a cancellative `SMul`. -/
-instance isCancelSMul :
-    IsCancelSMul (FundamentalGroup X x₀) (UniversalCover x₀) :=
-  isQuotientCoveringMap.isCancelSMul
 
 end ProperlyDiscontinuous
 
