@@ -285,12 +285,6 @@ all repos use `cs` instead.
 initialize cacheFromOverride : IO.Ref (Option (List Container)) ← IO.mkRef none
 
 /--
-Base URL for read-only Azure operations that target a single container
-(e.g. `getFilesInfo`): the master container.
--/
-def masterContainerURL : String := Container.master.azureURL
-
-/--
 Compute the trust-ordered list of container base URLs to try when downloading
 files for a given GitHub repo.
 
@@ -1060,7 +1054,7 @@ Example: `["f/39476538726384726.tar.gz", "Sat, 24 Dec 2022 17:33:01 GMT"]`
 def getFilesInfo (q : QueryType) : IO <| List (String × String) := do
   IO.println s!"Downloading info list of {q.desc}"
   let ret ← IO.runCurl
-    #["-X", "GET", s!"{masterContainerURL}?comp=list&restype=container{q.prefix}"]
+    #["-X", "GET", s!"{Container.master.azureURL}?comp=list&restype=container{q.prefix}"]
   match ret.splitOn "<Name>" with
   | [] => formatError
   | [_] => return []
