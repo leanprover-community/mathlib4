@@ -213,14 +213,14 @@ then `LocalizationFunctor R S` and `R'` are isomorphic. -/
 noncomputable def iso : LocalizationFunctor R S ≅ R' := asIso (fromLocalization S p)
 
 /-- The ring equivalence between `R'(U)` and `(LocalizationFunctor R S)(U)` for each `U : C`. -/
-noncomputable def iso_app (U : C) : (LocalizationFunctor R S).obj U ≅ R'.obj U :=
+noncomputable def isoApp (U : C) : (LocalizationFunctor R S).obj U ≅ R'.obj U :=
   asIso ((fromLocalization S p).app U)
 
 theorem iso_inv_apply_aux {U : C} (r : R'.obj U) : ((iso S p).inv.app U) r = Localization.mk
     ((SubmonoidFunctor.isLocalization.surj p U r).choose : (R.obj U) × (S.ringObj U)).1
       (SubmonoidFunctor.isLocalization.surj p U r).choose.2 := by
   apply_fun ((iso S p).hom.app U).hom using
-    RingEquiv.injective (CategoryTheory.Iso.commRingCatIsoToRingEquiv (iso_app S p U))
+    RingEquiv.injective (CategoryTheory.Iso.commRingCatIsoToRingEquiv (isoApp S p U))
   rw [Iso.inv_hom_id_app_apply]
   simp only [iso, fromLocalization, asIso_hom, lift', ConcreteCategory.hom_ofHom]
   rw [mk_eq_mk, IsLocalization.lift_mk', Units.eq_mul_inv_iff_mul_eq, IsUnit.coe_liftRight,
