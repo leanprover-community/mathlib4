@@ -6,7 +6,7 @@ Authors: Andrew Yang, Justus Springer
 module
 
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
-public import Mathlib.FieldTheory.PurelyInseparable.Basic
+public import Mathlib.RingTheory.RingHom.IsPurelyInseparable
 public import Mathlib.Topology.LocalAtTarget
 
 /-!
@@ -103,9 +103,7 @@ theorem tfae_universallyInjective :
     List.TFAE [
       UniversallyInjective f,
       ∀ (K : Type u) [Field K], Function.Injective (fun g : Spec (.of K) ⟶ X ↦ g ≫ f),
-      Function.Injective f ∧
-        ∀ x, letI := (f.residueFieldMap x).hom.toAlgebra
-        IsPurelyInseparable (Y.residueField (f x)) (X.residueField x),
+      Function.Injective f ∧ ∀ x, (f.residueFieldMap x).hom.IsPurelyInseparable,
       Surjective (pullback.diagonal f) ] := by
   tfae_have 1 ↔ 4 := UniversallyInjective.iff_diagonal f
   tfae_have 3 → 2 := by
@@ -116,6 +114,7 @@ theorem tfae_universallyInjective :
     replace e := h_inj e
     rw [← f.residueFieldMap_congr'_assoc e, CommRingCat.hom_ext_iff] at h
     rw [Scheme.SpecToEquivOfField_eq_iff]
+    have hfx := hf (g₁ (IsLocalRing.closedPoint K))
     algebraize [(f.residueFieldMap (g₁ (IsLocalRing.closedPoint K))).hom]
     refine ⟨e, CommRingCat.hom_ext ?_⟩
     exact IsPurelyInseparable.injective_comp_algebraMap
@@ -136,7 +135,7 @@ theorem tfae_universallyInjective :
     rw [surjective_iff] at hf
     intro x
     algebraize [(f.residueFieldMap x).hom]
-    rw [isPurelyInseparable_iff_subsingleton_emb, subsingleton_iff]
+    rw [RingHom.IsPurelyInseparable, isPurelyInseparable_iff_subsingleton_emb, subsingleton_iff]
     intro σ₁ σ₂
     apply AlgHom.coe_ringHom_injective
     let g₁ := (X.SpecToEquivOfField _).symm ⟨_, CommRingCat.ofHom σ₁.toRingHom⟩
