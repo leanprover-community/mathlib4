@@ -10,7 +10,7 @@ public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 
-# Submodule of ideal smul in Finsupp
+# Lemmas for action of ideal on submodules of `Finsupp`
 
 -/
 
