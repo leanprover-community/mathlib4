@@ -13,15 +13,11 @@ public import Mathlib.RingTheory.QuotSMulTop
 
 /-!
 
-# Freeness of QuotSMulTop by regular element
+# Freeness of QuotSMulTop by a regular element
 
-For finitely presented module `M` over commutative ring `R`, if `x` in the jacobson radical of `R`
-is `M`-regular, then `M/xM` is free over `R/(x)` iff `M` is free over `R`.
-
-## Main Results
-
-* `free_iff_quotSMulTop_free` : If `x ∈ m` is `M`-regular,
-  `M/xM` is free over `R/(x)` iff `M` is free over `R`.
+Let `M` be a finitely presented module over a commutative ring `R`. If `x` is in the
+Jacobson radical of `R` and `x` is `M`-regular, then `M/xM` is free over `R/(x)` if and only if
+`M` is free over `R`.
 
 -/
 
