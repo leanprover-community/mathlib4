@@ -14,9 +14,12 @@ public import Mathlib.Algebra.Order.Monoid.Units
 
 @[expose] public section
 
+variable {α β : Type*} [Preorder α] [Monoid α] [Preorder β] [Monoid β] (e : α ≃*o β)
+
 /-- An isomorphism of ordered monoids descends to their units. -/
 @[simps!]
-def OrderMonoidIso.unitsCongr {α β : Type*} [Preorder α] [Monoid α] [Preorder β] [Monoid β]
-    (e : α ≃*o β) : αˣ ≃*o βˣ where
+def OrderMonoidIso.unitsCongr : αˣ ≃*o βˣ where
   __ := Units.mapEquiv e.toMulEquiv
   map_le_map_iff' {x y} := by simp [← Units.val_le_val]
+
+lemma OrderMonoidIso.unitsCongr_symm_apply (x : βˣ) : e.unitsCongr.symm x = e.symm x := rfl
