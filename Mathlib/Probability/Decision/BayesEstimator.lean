@@ -62,7 +62,7 @@ section Posterior
 
 variable [StandardBorelSpace Θ] [Nonempty Θ]
 
-/-- The Bayesian risk of an estimator `κ` with respect to a prior `π` can be expressed as
+/-- The average risk of an estimator `κ` with respect to a prior `π` can be expressed as
 an integral in the following way: `R_π(κ) = ((P†π × κ) ∘ P ∘ π)[(θ, y) ↦ ℓ θ y]`. -/
 lemma avgRisk_eq_lintegral_posterior_prod
     (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧) [IsFiniteKernel P]
@@ -139,7 +139,6 @@ lemma IsArgminEstimator.isBayesEstimator (hf : IsArgminEstimator ℓ P π f)
   exact lintegral_iInf_posterior_le_bayesRisk hl _ _
 
 /-- The estimation problem admits an argmin estimator with respect to the prior `π`.
-
 That is, we can choose the argmin of the posterior expected loss in a measurable way. -/
 class HasArgminEstimator {𝓨 : Type*} [MeasurableSpace 𝓨]
     (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (π : Measure Θ) [IsFiniteMeasure π] :
