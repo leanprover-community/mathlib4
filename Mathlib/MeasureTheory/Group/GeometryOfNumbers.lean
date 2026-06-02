@@ -252,9 +252,9 @@ lemma exists_directional_set' (hsc : Convex ℝ s) (hs : IsCompact s) (hs₀ : s
     by_contra! h
     apply lt_irrefl d
     calc
-      d < finrank ℝ (span ℝ (successiveMin L s d • s ∩ L)) :=
-        lt_setFinrank_successiveMin hsc hs hs₀ hd'
-      _ ≤ finrank ℝ (span ℝ (.range v)) := by
+      d < Set.finrank ℝ (successiveMin L s d • s ∩ L) :=
+        lt_setFinrank_successiveMin_smul hsc hs hs₀ hd'
+      _ ≤ Set.finrank ℝ (.range v) := by
         refine Submodule.finrank_mono <| span_le.mpr ?_
         intro w hw
         by_contra hx

@@ -131,7 +131,7 @@ theorem isMaxRank_iff_closure_finiteIndex {u : Fin (rank K) → (𝓞 K)ˣ} :
     exact ⟨Additive.ofMul (u i), mem_top, rfl⟩
   rw [finiteIndex_iff_sup_torsion_finiteIndex, finiteIndex_iff, h₁, finiteQuotient_iff,
     unitLattice_rank, ← Set.finrank, IsMaxRank, linearIndependent_iff_card_eq_finrank_span,
-    Real.setFinrank_eq_setFinrank_int_of_discrete h₂, Set.finrank, Set.finrank,
+    setFinrank_real_eq_setFinrank_int_of_discrete h₂, Set.finrank, Set.finrank,
     ← finrank_map_subtype_eq, map_span, ← Set.range_comp', eq_comm]
   simp
 
