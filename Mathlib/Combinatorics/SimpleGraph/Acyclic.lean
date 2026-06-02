@@ -550,12 +550,12 @@ theorem isTree_iff_isAcyclic_and_card_edgeSet_add_one_eq_card [Finite V] :
     G.IsTree ↔ G.IsAcyclic ∧ Nat.card G.edgeSet + 1 = Nat.card V := by
   have := Fintype.ofFinite V
   have := Fintype.ofFinite G.edgeSet
-  refine ⟨fun h ↦ ⟨h.isAcyclic, by simpa using h.card_edgeFinset⟩, fun ⟨h, _⟩ ↦ ⟨?_, h⟩⟩
-  refine { preconnected a b := ?_, nonempty := by grind [Nat.card_pos_iff] }
+  refine ⟨fun h ↦ ⟨h.isAcyclic, by simpa [edgeFinset] using h.card_edgeFinset⟩, ?_⟩
+  refine fun ⟨h, _⟩ ↦ ⟨{ preconnected a b := ?_, nonempty := by grind [Nat.card_pos_iff] }, h⟩
   suffices G.Reachable = ⊤ by simp [this]
   rw [← G.reachable_is_equivalence.eqvGen_eq]
   refine Quot.subsingleton_iff _ |>.mp <| Nat.card_eq_one_iff_unique.mp ?_ |>.left
-  grind [h.card_edgeSet_add_card_connectedComponent]
+  grind [h.card_edgeSet_add_card_connectedComponent, ConnectedComponent]
 
 /-- The minimum degree of all vertices in a nontrivial tree is one. -/
 lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [Nontrivial V]
