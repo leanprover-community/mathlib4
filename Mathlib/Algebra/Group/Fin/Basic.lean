@@ -53,7 +53,7 @@ silently introducing wraparound arithmetic.
 -/
 @[instance_reducible]
 def instAddMonoidWithOne (n) [NeZero n] : AddMonoidWithOne (Fin n) where
-  __ := inferInstanceAs (AddCommMonoid (Fin n))
+  __ := (inferInstance : AddCommMonoid (Fin n))
   natCast i := Fin.ofNat n i
   natCast_zero := rfl
   natCast_succ _ := Fin.ext (add_mod _ _ _)

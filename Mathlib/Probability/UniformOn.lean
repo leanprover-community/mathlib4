@@ -59,9 +59,7 @@ This is a probability measure when `s` is finite and nonempty and is given by
 `ProbabilityTheory.uniformOn_isProbabilityMeasure`. -/
 def uniformOn (s : Set Ω) : Measure Ω :=
   Measure.count[|s]
-
-instance {s : Set Ω} : IsZeroOrProbabilityMeasure (uniformOn s) := by
-  unfold uniformOn; infer_instance
+deriving IsZeroOrProbabilityMeasure
 
 @[simp]
 theorem uniformOn_empty_meas : (uniformOn ∅ : Measure Ω) = 0 := by simp [uniformOn]

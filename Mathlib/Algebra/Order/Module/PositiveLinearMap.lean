@@ -61,9 +61,6 @@ lemma _root_.OrderHomClass.of_addMonoidHom {F' E₁' E₂' : Type*} [FunLike F' 
     (h : ∀ f : F', ∀ x, 0 ≤ x → 0 ≤ f x) : OrderHomClass F' E₁' E₂' where
   map_rel f a b hab := by simpa using h f (b - a) (sub_nonneg.mpr hab)
 
-@[deprecated (since := "2025-09-13")] alias _root_.OrderHomClass.ofLinear :=
-  OrderHomClass.of_addMonoidHom
-
 end PositiveLinearMapClass
 
 namespace PositiveLinearMap

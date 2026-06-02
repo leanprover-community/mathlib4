@@ -196,6 +196,37 @@ lemma single_neg (p : ℝ≥0∞) (i : ι) {a : β i} :
 
 end AddCommGroup
 
+section LinearIndependent
+
+theorem linearIndependent_single [Semiring 𝕜] {η : Type*} {ιs : η → Type*}
+    {Ms : η → Type*} [∀ i, AddCommGroup (Ms i)] [∀ i, Module 𝕜 (Ms i)] [DecidableEq η]
+    (v : ∀ j, ιs j → Ms j) (hs : ∀ i, LinearIndependent 𝕜 (v i)) :
+    LinearIndependent 𝕜 fun ji : Σ j, ιs j ↦ single p ji.1 (v ji.1 ji.2) := by
+  suffices LinearIndependent 𝕜 ((WithLp.linearEquiv p 𝕜 _).symm.toLinearMap ∘
+      fun ji : Σ j, ιs j ↦ Pi.single ji.1 (v ji.1 ji.2)) by
+    simpa
+  rw [LinearMap.linearIndependent_iff_of_injOn _ (by simp)]
+  exact Pi.linearIndependent_single v hs
+
+theorem linearIndependent_single_one [Ring 𝕜] :
+    LinearIndependent 𝕜 (fun i : ι ↦ single p i (1 : 𝕜)) := by
+  suffices LinearIndependent 𝕜 ((WithLp.linearEquiv p 𝕜 _).symm.toLinearMap ∘
+      fun i : ι ↦ Pi.single i (1 : 𝕜)) by
+    simpa
+  rw [LinearMap.linearIndependent_iff_of_injOn _ (by simp)]
+  exact Pi.linearIndependent_single_one ι 𝕜
+
+theorem linearIndependent_single_of_ne_zero [Ring 𝕜] [IsDomain 𝕜] {M : Type*}
+    [AddCommGroup M] [Module 𝕜 M] [IsTorsionFree 𝕜 M] {v : ι → M} (hv : ∀ i, v i ≠ 0) :
+    LinearIndependent 𝕜 fun i : ι ↦ single p i (v i) := by
+  suffices LinearIndependent 𝕜 ((WithLp.linearEquiv p 𝕜 _).symm.toLinearMap ∘
+      fun i : ι ↦ Pi.single i (v i)) by
+    simpa
+  rw [LinearMap.linearIndependent_iff_of_injOn _ (by simp)]
+  exact Pi.linearIndependent_single_of_ne_zero hv
+
+end LinearIndependent
+
 end Single
 
 section DistNorm
@@ -515,8 +546,6 @@ theorem continuous_toLp [∀ i, TopologicalSpace (β i)] : Continuous (@toLp p (
 /-- `WithLp.equiv` as a homeomorphism. -/
 def homeomorph [∀ i, TopologicalSpace (β i)] : PiLp p β ≃ₜ (Π i, β i) where
   toEquiv := WithLp.equiv p (Π i, β i)
-  continuous_toFun := continuous_ofLp p β
-  continuous_invFun := continuous_toLp p β
 
 @[simp]
 lemma toEquiv_homeomorph [∀ i, TopologicalSpace (β i)] :
@@ -756,7 +785,7 @@ theorem nnnorm_eq_of_L2 (x : PiLp 2 β) :
 theorem norm_sq_eq_of_L2 (β : ι → Type*) [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
     ‖x‖ ^ 2 = ∑ i : ι, ‖x i‖ ^ 2 := by
   suffices ‖x‖₊ ^ 2 = ∑ i : ι, ‖x i‖₊ ^ 2 by
-    simpa only [NNReal.coe_sum] using congr_arg ((↑) : ℝ≥0 → ℝ) this
+    simpa only [NNReal.coe_sum] using! congr_arg ((↑) : ℝ≥0 → ℝ) this
   rw [nnnorm_eq_of_L2, NNReal.sq_sqrt]
 
 theorem dist_eq_of_L2 (x y : PiLp 2 β) :
@@ -918,6 +947,7 @@ variable {ι : Type*} {κ : ι → Type*} (p : ℝ≥0∞) [Fact (1 ≤ p)]
   [Fintype ι] [∀ i, Fintype (κ i)]
   (α : ∀ i, κ i → Type*) [∀ i k, SeminormedAddCommGroup (α i k)] [∀ i k, Module 𝕜 (α i k)]
 
+set_option backward.defeqAttrib.useBackward true in
 variable (𝕜) in
 /-- `LinearEquiv.piCurry` for `PiLp`, as an isometry. -/
 def _root_.LinearIsometryEquiv.piLpCurry :
@@ -984,7 +1014,6 @@ section Single
 variable (p)
 variable [DecidableEq ι]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nnnorm_single (i : ι) (b : β i) : ‖single p i b‖₊ = ‖b‖₊ := by
   haveI : Nonempty ι := ⟨i⟩
@@ -995,8 +1024,7 @@ theorem nnnorm_single (i : ι) (b : β i) : ‖single p i b‖₊ = ‖b‖₊ :
       ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun j => ?_) fun n hn => ⟨i, hn.trans_eq ?_⟩
     · obtain rfl | hij := Decidable.eq_or_ne i j
       · rw [single_eq_same]
-      · rw [single_eq_of_ne' _ hij, nnnorm_zero]
-        exact zero_le _
+      · simp [hij]
     · rw [single_eq_same]
   | coe p =>
     have hp0 : (p : ℝ) ≠ 0 :=
@@ -1109,12 +1137,11 @@ section
 
 variable [Semiring 𝕜] [∀ i, SeminormedAddCommGroup (β i)] [∀ i, Module 𝕜 (β i)]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `WithLp.linearEquiv` as a continuous linear equivalence. -/
 @[simps! apply symm_apply]
 def continuousLinearEquiv : PiLp p β ≃L[𝕜] ∀ i, β i where
   toLinearEquiv := WithLp.linearEquiv _ _ _
-  continuous_toFun := continuous_ofLp _ _
-  continuous_invFun := continuous_toLp p _
 
 lemma coe_continuousLinearEquiv :
     ⇑(PiLp.continuousLinearEquiv p 𝕜 β) = ofLp := rfl
@@ -1122,12 +1149,12 @@ lemma coe_continuousLinearEquiv :
 lemma coe_symm_continuousLinearEquiv :
     ⇑(PiLp.continuousLinearEquiv p 𝕜 β).symm = toLp p := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 variable {𝕜} in
 /-- The projection on the `i`-th coordinate of `PiLp p β`, as a continuous linear map. -/
 @[simps!]
 def proj (i : ι) : PiLp p β →L[𝕜] β i where
   __ := projₗ p β i
-  cont := PiLp.continuous_apply ..
 
 end
 

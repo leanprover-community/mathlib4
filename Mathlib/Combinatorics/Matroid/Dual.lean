@@ -61,7 +61,7 @@ section dual
     rw [← compl_subset_compl, ← hIB.sdiff_eq_right, ← union_diff_distrib, diff_eq, compl_inter,
       compl_compl, union_subset_iff, compl_subset_compl] at hB''₂
     have hssu := (subset_inter (hB''₂.2) hIE).ssubset_of_ne
-      (by { rintro rfl; apply hI; convert hB''; simp [hB''.subset_ground] })
+      (by { rintro rfl; apply hI; convert! hB''; simp [hB''.subset_ground] })
     obtain ⟨e, ⟨(heB'' : e ∉ _), heE⟩, heI⟩ := exists_of_ssubset hssu
     use e
     simp_rw [mem_diff, insert_subset_iff, and_iff_left heI, and_iff_right heE, and_iff_right hIE]

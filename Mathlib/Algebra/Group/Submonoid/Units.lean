@@ -43,7 +43,7 @@ variable {M : Type*} [Monoid M]
 
 open Units
 
-open Pointwise in
+open scoped Pointwise in
 /-- The units of `S`, packaged as a subgroup of `Mˣ`. -/
 @[to_additive /-- The additive units of `S`, packaged as an additive subgroup of `AddUnits M`. -/]
 def Submonoid.units (S : Submonoid M) : Subgroup Mˣ where
@@ -177,7 +177,7 @@ lemma units_surjective : Function.Surjective (units (M := M)) :=
 @[to_additive]
 lemma units_left_inverse :
     Function.LeftInverse (units (M := M)) (Subgroup.ofUnits (M := M)) :=
-  ofUnits_units_gci.u_l_leftInverse
+  ofUnits_units_gci.leftInverse_u_l
 
 /-- The equivalence between the subgroup of units of `S` and the submonoid of unit
 elements of `S`. -/
@@ -299,7 +299,7 @@ lemma ofUnits_inf_units (S T : Subgroup Mˣ) : (S.ofUnits ⊓ T.ofUnits).units =
 @[to_additive]
 lemma ofUnits_right_inverse :
     Function.RightInverse (ofUnits (M := M)) (Submonoid.units (M := M)) :=
-  ofUnits_units_gci.u_l_leftInverse
+  ofUnits_units_gci.leftInverse_u_l
 
 @[to_additive]
 lemma ofUnits_strictMono : StrictMono (ofUnits (M := M)) := ofUnits_units_gci.strictMono_l

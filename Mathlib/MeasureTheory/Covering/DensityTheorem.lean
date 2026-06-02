@@ -94,20 +94,17 @@ theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ
         apply closedBall_subset_closedBall'
         linarith
       have I2 : closedBall y ((4 * K + 3) * r) ⊆ closedBall y (max (4 * K + 3) 3 * r) := by
-        apply closedBall_subset_closedBall
-        exact mul_le_mul_of_nonneg_right (le_max_left _ _) rpos.le
+        gcongr
+        exact le_max_left ..
       apply (measure_mono (I1.trans I2)).trans
       exact measure_mul_le_scalingConstantOf_mul _
         ⟨zero_lt_three.trans_le (le_max_right _ _), le_rfl⟩ hr
-  · refine ⟨R / 4, H, ?_⟩
-    have : closedBall x (3 * (R / 4)) ⊆ closedBall y r := by
-      apply closedBall_subset_closedBall'
-      have A : y ∈ closedBall y r := mem_closedBall_self rpos.le
-      have B := mem_closedBall'.1 (H A)
-      linarith
-    apply (measure_mono this).trans _
-    refine le_mul_of_one_le_left (zero_le _) ?_
-    exact ENNReal.one_le_coe_iff.2 (le_max_right _ _)
+  · refine ⟨_, H, ?_⟩
+    grw [scalingConstantOf, ← le_max_right, ENNReal.coe_one, one_mul,
+      closedBall_subset_closedBall' (y := y)]
+    have A : y ∈ closedBall y r := mem_closedBall_self rpos.le
+    have B := mem_closedBall'.1 (H A)
+    linarith
 
 theorem tendsto_closedBall_filterAt {K : ℝ} {x : α} {ι : Type*} {l : Filter ι} (w : ι → α)
     (δ : ι → ℝ) (δlim : Tendsto δ l (𝓝[>] 0)) (xmem : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)) :

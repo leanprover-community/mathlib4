@@ -206,7 +206,7 @@ def directionOfNonempty {s : AffineSubspace k P} (h : (s : Set P).Nonempty) : Su
     rintro _ _ ⟨p₁, hp₁, p₂, hp₂, rfl⟩ ⟨p₃, hp₃, p₄, hp₄, rfl⟩
     rw [← vadd_vsub_assoc]
     refine vsub_mem_vsub ?_ hp₄
-    convert s.smul_vsub_vadd_mem 1 hp₁ hp₂ hp₃
+    convert! s.smul_vsub_vadd_mem 1 hp₁ hp₂ hp₃
     rw [one_smul]
   smul_mem' := by
     rintro c _ ⟨p₁, hp₁, p₂, hp₂, rfl⟩
@@ -241,7 +241,7 @@ theorem vadd_mem_of_mem_direction {s : AffineSubspace k P} {v : V} (hv : v ∈ s
   rw [mem_direction_iff_eq_vsub ⟨p, hp⟩] at hv
   rcases hv with ⟨p₁, hp₁, p₂, hp₂, hv⟩
   rw [hv]
-  convert s.smul_vsub_vadd_mem 1 hp₁ hp₂ hp
+  convert! s.smul_vsub_vadd_mem 1 hp₁ hp₂ hp
   rw [one_smul]
 
 /-- Subtracting two points in the subspace produces a vector in the direction. -/
@@ -260,7 +260,7 @@ the original point is in the subspace. -/
 theorem vadd_mem_iff_mem_of_mem_direction {s : AffineSubspace k P} {v : V} (hv : v ∈ s.direction)
     {p : P} : v +ᵥ p ∈ s ↔ p ∈ s := by
   refine ⟨fun h => ?_, fun h => vadd_mem_of_mem_direction hv h⟩
-  convert vadd_mem_of_mem_direction (Submodule.neg_mem _ hv) h
+  convert! vadd_mem_of_mem_direction (Submodule.neg_mem _ hv) h
   simp
 
 /-- Given a point in an affine subspace, the set of vectors in its direction equals the set of
@@ -744,8 +744,6 @@ points. -/
 theorem coe_inf (s₁ s₂ : AffineSubspace k P) : (s₁ ⊓ s₂ : Set P) = (s₁ : Set P) ∩ s₂ :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias inf_coe := coe_inf
-
 /-- A point is in the inf of two affine subspaces if and only if it is in both of them. -/
 theorem mem_inf_iff (p : P) (s₁ s₂ : AffineSubspace k P) : p ∈ s₁ ⊓ s₂ ↔ p ∈ s₁ ∧ p ∈ s₂ :=
   Iff.rfl
@@ -892,6 +890,15 @@ theorem affineSpan_coe (s : AffineSubspace k P) : affineSpan k (s : Set P) = s :
   refine le_antisymm ?_ (subset_affineSpan _ _)
   rintro p ⟨p₁, hp₁, v, hv, rfl⟩
   exact vadd_mem_of_mem_direction hv hp₁
+
+@[simp, gcongr]
+theorem mk'_le_mk'_iff (p : P) {d₁ d₂ : Submodule k V} : mk' p d₁ ≤ mk' p d₂ ↔ d₁ ≤ d₂ := by
+  simp_rw [SetLike.le_def, mem_mk']
+  refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ h hx⟩
+  simpa using h (show (x +ᵥ p) -ᵥ p ∈ d₁ by simpa using hx)
+
+theorem mk'_strictMono (p : P) : StrictMono (mk' p (k := k)) :=
+  strictMono_of_le_iff_le (fun _ _ ↦ (mk'_le_mk'_iff p).symm)
 
 end AffineSubspace
 

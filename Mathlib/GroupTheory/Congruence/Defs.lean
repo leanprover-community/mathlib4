@@ -98,7 +98,7 @@ inductive ConGen.Rel [Mul M] (r : M → M → Prop) : M → M → Prop
 
 /-- The inductively defined smallest multiplicative congruence relation containing a given binary
 relation. -/
-@[to_additive addConGen /-- The inductively defined smallest additive congruence relation containing
+@[to_additive /-- The inductively defined smallest additive congruence relation containing
 a given binary relation. -/]
 def conGen [Mul M] (r : M → M → Prop) : Con M :=
   ⟨⟨ConGen.Rel r, ⟨ConGen.Rel.refl, ConGen.Rel.symm, ConGen.Rel.trans⟩⟩, ConGen.Rel.mul⟩
@@ -394,7 +394,7 @@ theorem inf_iff_and {c d : Con M} {x y} : (c ⊓ d) x y ↔ c x y ∧ d x y :=
 
 /-- The inductively defined smallest congruence relation containing a binary relation `r` equals
 the infimum of the set of congruence relations containing `r`. -/
-@[to_additive addConGen_eq /-- The inductively defined smallest additive congruence relation
+@[to_additive /-- The inductively defined smallest additive congruence relation
 containing a binary relation `r` equals the infimum of the set of additive congruence relations
 containing `r`. -/]
 theorem conGen_eq (r : M → M → Prop) : conGen r = sInf { s : Con M | ∀ x y, r x y → s x y } :=
@@ -411,14 +411,14 @@ theorem conGen_eq (r : M → M → Prop) : conGen r = sInf { s : Con M | ∀ x y
 
 /-- The smallest congruence relation containing a binary relation `r` is contained in any
 congruence relation containing `r`. -/
-@[to_additive addConGen_le /-- The smallest additive congruence relation containing a binary
+@[to_additive /-- The smallest additive congruence relation containing a binary
 relation `r` is contained in any additive congruence relation containing `r`. -/]
 theorem conGen_le {r : M → M → Prop} {c : Con M} (h : ∀ x y, r x y → c x y) :
     conGen r ≤ c := by rw [conGen_eq]; exact sInf_le h
 
 /-- Given binary relations `r, s` with `r` contained in `s`, the smallest congruence relation
 containing `s` contains the smallest congruence relation containing `r`. -/
-@[to_additive addConGen_mono /-- Given binary relations `r, s` with `r` contained in `s`, the
+@[to_additive /-- Given binary relations `r, s` with `r` contained in `s`, the
 smallest additive congruence relation containing `s` contains the smallest additive congruence
 relation containing `r`. -/]
 theorem conGen_mono {r s : M → M → Prop} (h : ∀ x y, r x y → s x y) : conGen r ≤ conGen s :=
@@ -432,13 +432,13 @@ theorem conGen_of_con (c : Con M) : conGen c = c :=
 
 /-- The map sending a binary relation to the smallest congruence relation in which it is
 contained is idempotent. -/
-@[to_additive addConGen_idem /-- The map sending a binary relation to the smallest additive
+@[to_additive /-- The map sending a binary relation to the smallest additive
 congruence relation in which it is contained is idempotent. -/]
 theorem conGen_idem (r : M → M → Prop) : conGen (conGen r) = conGen r := by simp
 
 /-- The supremum of congruence relations `c, d` equals the smallest congruence relation containing
 the binary relation '`x` is related to `y` by `c` or `d`'. -/
-@[to_additive sup_eq_addConGen /-- The supremum of additive congruence relations `c, d` equals the
+@[to_additive /-- The supremum of additive congruence relations `c, d` equals the
 smallest additive congruence relation containing the binary relation '`x` is related to `y`
 by `c` or `d`'. -/]
 theorem sup_eq_conGen (c d : Con M) : c ⊔ d = conGen fun x y => c x y ∨ d x y := by
@@ -454,7 +454,7 @@ theorem sup_def {c d : Con M} : c ⊔ d = conGen (⇑c ⊔ ⇑d) := by rw [sup_e
 
 /-- The supremum of a set of congruence relations `S` equals the smallest congruence relation
 containing the binary relation 'there exists `c ∈ S` such that `x` is related to `y` by `c`'. -/
-@[to_additive sSup_eq_addConGen /-- The supremum of a set of additive congruence relations `S`
+@[to_additive /-- The supremum of a set of additive congruence relations `S`
 equals the smallest additive congruence relation containing the binary relation 'there exists
 `c ∈ S` such that `x` is related to `y` by `c`'. -/]
 theorem sSup_eq_conGen (S : Set (Con M)) :
@@ -507,17 +507,18 @@ theorem comap_rel {f : M → N} (H : ∀ x y, f (x * y) = f x * f y) {c : Con N}
 
 end
 
-section MulOneClass
+section
 
-variable [MulOneClass M] (c : Con M)
+variable [Mul M] [One M] (c : Con M)
 
-/-- The quotient of a monoid by a congruence relation is a monoid. -/
-@[to_additive /-- The quotient of an `AddMonoid` by an additive congruence relation is
-an `AddMonoid`. -/]
-instance mulOneClass : MulOneClass c.Quotient where
-  one := ((1 : M) : c.Quotient)
-  mul_one x := Quotient.inductionOn' x fun _ => congr_arg ((↑) : M → c.Quotient) <| mul_one _
-  one_mul x := Quotient.inductionOn' x fun _ => congr_arg ((↑) : M → c.Quotient) <| one_mul _
+@[to_additive]
+instance one : One c.Quotient where
+  -- Using Quotient.mk'' here instead of c.toQuotient
+  -- since c.toQuotient is not reducible.
+  -- This would lead to non-defeq diamonds since this instance ends up in
+  -- quotients modulo ideals.
+  one := Quotient.mk'' (1 : M)
+  -- one := ((1 : M) : c.Quotient)
 
 variable {c}
 
@@ -534,6 +535,19 @@ theorem coe_one : ((1 : M) : c.Quotient) = 1 :=
 instance Quotient.inhabited : Inhabited c.Quotient :=
   ⟨((1 : M) : c.Quotient)⟩
 
+end
+
+section MulOneClass
+
+variable [MulOneClass M] (c : Con M)
+
+/-- The quotient of a monoid by a congruence relation is a monoid. -/
+@[to_additive /-- The quotient of an `AddMonoid` by an additive congruence relation is
+an `AddMonoid`. -/]
+instance mulOneClass : MulOneClass c.Quotient where
+  mul_one x := Quotient.inductionOn' x fun _ => congr_arg ((↑) : M → c.Quotient) <| mul_one _
+  one_mul x := Quotient.inductionOn' x fun _ => congr_arg ((↑) : M → c.Quotient) <| one_mul _
+
 end MulOneClass
 
 section Monoids
@@ -544,15 +558,6 @@ protected theorem pow {M : Type*} [Monoid M] (c : Con M) :
     ∀ (n : ℕ) {w x}, c w x → c (w ^ n) (x ^ n)
   | 0, w, x, _ => by simpa using c.refl _
   | Nat.succ n, w, x, h => by simpa [pow_succ] using c.mul (Con.pow c n h) h
-
-@[to_additive]
-instance one [Mul M] [One M] (c : Con M) : One c.Quotient where
-  -- Using Quotient.mk'' here instead of c.toQuotient
-  -- since c.toQuotient is not reducible.
-  -- This would lead to non-defeq diamonds since this instance ends up in
-  -- quotients modulo ideals.
-  one := Quotient.mk'' (1 : M)
-  -- one := ((1 : M) : c.Quotient)
 
 @[to_additive]
 instance {M : Type*} [Monoid M] (c : Con M) : Pow c.Quotient ℕ where
@@ -589,7 +594,6 @@ instance commMonoid {M : Type*} [CommMonoid M] (c : Con M) : CommMonoid c.Quotie
   fast_instance% Function.Surjective.commMonoid _ Quotient.mk''_surjective rfl
     (fun _ _ => rfl) fun _ _ => rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Sometimes, a group is defined as a quotient of a monoid by a congruence relation.
 Usually, the inverse operation is defined as `Setoid.map f _` for some `f`.
 This lemma allows to avoid code duplication in the definition of the inverse operation:
