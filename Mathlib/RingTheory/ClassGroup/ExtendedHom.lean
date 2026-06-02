@@ -120,6 +120,8 @@ theorem extendedHom_eq_one_of_forall_isPrincipal
   rw [extendedHom_mk0, MonoidHom.one_apply]
   exact (ClassGroup.mk0_eq_one_iff (extendedIdeal A B I).2).mpr (by simpa using h I)
 
+end DededkinDomain
+
 end ClassGroup
 
 end
