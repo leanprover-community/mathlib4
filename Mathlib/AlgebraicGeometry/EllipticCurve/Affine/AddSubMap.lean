@@ -5,6 +5,7 @@ Authors: Michael Stoll
 -/
 module
 
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.Tactic.Ring.NamePolyVars
@@ -30,57 +31,102 @@ namespace WeierstrassCurve
 ### The addition-and-subtraction map on x-coordinates
 -/
 
-variable {K : Type*} [Field K] (a b : K)
+variable {R : Type*} [CommRing R] (W : WeierstrassCurve R) (a b : R)
 
 open MvPolynomial
 
-name_poly_vars s, t, u over K
+name_poly_vars s, t, u over R
 
 /-- The polynomial map on coordinate vectors giving
 `(x(P) * x(Q) : x(P) + x(Q) : 1) ↦ (x(P+Q) * x(P-Q) : x(P+Q) + x(P-Q) : 1)`
-for points `P`, `Q` on the elliptic curve `y² = x³ + a*x + b`. -/
-noncomputable def addSubMap : Fin 3 → MvPolynomial (Fin 3) K :=
-  ![s ^ 2 - C (2 * a) * s * u - C (4 * b) * t * u + C (a ^ 2) * u ^ 2,
-    C 2 * t * s + C (2 * a) * t * u + C (4 * b) * u ^ 2,
+for points `P`, `Q` on the elliptic curve `W`. -/
+noncomputable def addSubMap : Fin 3 → MvPolynomial (Fin 3) R :=
+  ![s ^ 2 - C W.b₄ * s * u - C W.b₆ * t * u - C W.b₈ * u ^ 2,
+    C 2 * t * s + C W.b₂ * s * u + C W.b₄ * t * u + C W.b₆ * u ^ 2,
     t ^ 2 - C 4 * s * u]
 
 /-- The coefficient polynomials in linear combinations of the polynomials in `addSubMap`
-that result in the fourth powers of the variables, multiplied by `32*a^3 + 216*b^2`. -/
-noncomputable def addSubMapCoeff : Fin 3 × Fin 3 → MvPolynomial (Fin 3) K :=
-  ![![C (-4 * a ^ 2 * b) * t * s + C (12 * a ^ 3 * b + 96 * b ^ 3) * t * u +
-        C (32 * a ^ 3 + 216 * b ^ 2) * s ^ 2 + C (24 * a ^ 4 + 176 * a * b ^ 2) * s * u,
-      C (5 * a ^ 4 + 32 * a * b ^ 2 ) * t * s + C (-3 * a ^ 5 - 24 * a ^ 2 * b ^ 2) * t * u +
-        C (2 * a ^ 2 * b) * s ^ 2 + C (52 * a ^ 3 * b + 384 * b ^ 3) * s * u,
-      C (-10 * a ^ 4 - 64 * a * b ^ 2) * s ^ 2 + C (-4 * a ^ 5 - 32 * a ^ 2 * b ^ 2) * s * u +
-        C (6 * a ^ 6 + 96 * a ^ 3 * b ^ 2 + 384 * b ^ 4) * u ^ 2],
-    ![C (128 * a * b) * t * u - C (128 * a ^ 2) * s * u + C (384 * b ^ 2) * u ^ 2,
-      C (16 * a ^ 2) * t * s + C (16 * a ^ 3 + 384 * b ^ 2) * t * u - C (64 * a * b) * s * u -
-        C (96 * a ^ 2 * b) * u ^ 2,
-      C (32 * a ^ 3 + 216 * b ^ 2) * t ^ 2 - C (32 * a ^ 2) * s ^ 2 +
-        C (64 * a ^ 3 + 96 * b ^ 2) * s * u + C (-32 * a ^ 4 - 256 * a * b ^ 2) * u ^ 2],
-    ![C 24 * s * u + C (32 * a) * u ^ 2,
-      C (-3) * t * s  + C (5 * a) * t * u + C (54 * b) * u ^ 2,
-      C 6 * s ^ 2 - C (4 * a) * s * u - C (10 * a ^ 2) * u ^ 2]].uncurry
+that result in the fourth powers of the variables, multiplied by `W.Δ`. -/
+noncomputable def addSubMapCoeff : Fin 3 × Fin 3 → MvPolynomial (Fin 3) R :=
+  ![![C (-W.b₂ ^ 2 * W.b₈ + 9 * W.b₂ * W.b₄ * W.b₆ - 8 * W.b₄ ^ 3 - 27 * W.b₆ ^ 2) * s ^ 2 +
+        C (2 * W.b₂ * W.b₄ * W.b₈ - 2 * W.b₄ ^ 2 * W.b₆ + 8 * W.b₆ * W.b₈) * s * t +
+        C (8 * W.b₄ ^ 2 * W.b₈ + W.b₄ * W.b₆ ^ 2 - 16 * W.b₈ ^ 2) * s * u +
+        C (3 * W.b₂ * W.b₆ * W.b₈ - 3 * W.b₄ * W.b₆ ^ 2) * t ^ 2 +
+        C (12 * W.b₄ * W.b₆ * W.b₈ - 3 * W.b₆ ^ 3) * t * u +
+        C (9 * W.b₆ ^ 2 * W.b₈) * u ^ 2,
+      C (-W.b₂ * W.b₄ * W.b₈ + W.b₄ ^ 2 * W.b₆ - 4 * W.b₆ * W.b₈) * s ^ 2 +
+        C (2 * W.b₂ * W.b₆ * W.b₈ - 2 * W.b₄ * W.b₆^2 - 10 * W.b₈ ^ 2) * s * t  +
+        C (-W.b₂ * W.b₈ ^ 2 + 10 * W.b₄ * W.b₆ * W.b₈) * s * u +
+        C (3 * W.b₄ * W.b₆ * W.b₈ - 3 * W.b₆ ^ 3) * t ^ 2 +
+        C (3 * W.b₄ * W.b₈ ^ 2 + 6 * W.b₆ ^ 2 * W.b₈) * t * u +
+        C (9 * W.b₆ * W.b₈ ^ 2) * u ^ 2,
+      C (-7 * W.b₂ * W.b₆ * W.b₈ + 7 * W.b₄ * W.b₆ ^ 2 + 20 * W.b₈ ^ 2) * s ^ 2 +
+        C (-6 * W.b₄ * W.b₆ * W.b₈ + 6 * W.b₆ ^ 3) * s * t +
+        C (4 * W.b₄ * W.b₈ ^ 2 + 8 * W.b₆ ^ 2 * W.b₈) * s * u +
+        C (8 * W.b₂ * W.b₆ ^ 2 * W.b₈ - 8 * W.b₄ ^ 2 * W.b₆ * W.b₈ - 20 * W.b₆ * W.b₈ ^ 2) * t * u +
+        C (8 * W.b₂ * W.b₆ * W.b₈ ^ 2 - 8 * W.b₄ ^ 2 * W.b₈ ^ 2 - 20 * W.b₈ ^ 3) * u ^ 2],
+    ![C (96 * W.b₆) * s * t +  C (-256 * W.b₈) * s * u + C (12 * W.b₂ * W.b₆) * t ^ 2 +
+        C (16 * W.b₄ * W.b₆) * t * u,
+      C (-48 * W.b₆) * s ^ 2 + C (32 * W.b₈) * s * t +
+        C (-4 * W.b₂ * W.b₈ + 16 * W.b₄ * W.b₆) * t ^ 2 + C (16 * W.b₄ * W.b₈) * t * u,
+      C (-12 * W.b₂ * W.b₆ - 64 * W.b₈) * s ^ 2 + C (8 * W.b₂ * W.b₈ - 32 * W.b₄ * W.b₆) * s * t +
+        C (64 * W.b₄ * W.b₈ - 12 * W.b₆ ^ 2) * s * u +
+        C (-W.b₂ ^ 2 * W.b₈ + 9 * W.b₂ * W.b₄ * W.b₆ - 8 * W.b₄ ^ 3 - 27 * W.b₆ ^ 2) * t ^ 2 +
+        C (4 * W.b₂ * W.b₄ * W.b₈ - 4 * W.b₄ ^ 2 * W.b₆ + 48 * W.b₆ * W.b₈) * t * u +
+        C (64 * W.b₈ ^ 2) * u ^ 2],
+    ![C (-48) * s * u + C (-4 * W.b₂) * t * u +  C (W.b₂ ^ 2 - 32 * W.b₄) * u ^ 2,
+      C 6 * s * t + C (-W.b₂) * s * u + C (-5 * W.b₄) * t * u + C (W.b₂ * W.b₄ - 27 * W.b₆) * u ^ 2,
+      C (-12) * s ^ 2 + C (4 * W.b₄) * s * u +
+        C (-31 * W.b₂ * W.b₆ + 32 * W.b₄^2 + 108 * W.b₈) * u ^ 2]].uncurry
 
-lemma isHomogeneous_addSubMap (i : Fin 3) : (addSubMap a b i).IsHomogeneous 2 := by
+/-- The multipless of the relation `W.b_relation`, which is equivalent to
+`4*W.b₈ - W.b₂*W.b₆ + W.b₄^2 = 0`, that we have to add to show the equality in
+`addSubMapCoeff_condition` below. -/
+noncomputable def b_relation_coeffs : Fin 3 → MvPolynomial (Fin 3) R :=
+  ![C (3 * W.b₂ * W.b₈) * s ^ 2 * t * u + C (-8 * W.b₄ ^ 2) * s ^ 3 * u +
+      C (-11 * W.b₄ * W.b₆) * s ^ 2 * t * u + C (-3 * W.b₆ ^ 2) * s * t ^ 2 * u +
+      C (-24 * W.b₆ * W.b₈) * s * t * u ^ 2 + C (5 * W.b₆ * W.b₈) * t ^ 3 * u +
+      C (-24 * W.b₈ ^ 2) * s * u ^ 3 + C (5 * W.b₈ ^ 2) * t ^ 2 * u ^ 2 +
+      C (24 * W.b₈) * s ^ 3 * u,
+    C (-32 * W.b₄) * s * t ^ 2 * u + C (-12 * W.b₆) * t ^ 3 * u + C (-16 * W.b₈) * t ^ 2 * u ^ 2,
+    C (-W.b₂) * t * u ^ 3 + C (-8 * W.b₄) * u ^ 4 + C 96 * s * u ^ 3 + C (-27) * t ^ 2 * u ^ 2]
+
+lemma isHomogeneous_addSubMap (i : Fin 3) : (addSubMap W i).IsHomogeneous 2 := by
   simp only [addSubMap]
   fin_cases i <;>
     simp only [Fin.isValue, Fin.mk_one, Fin.zero_eta, Fin.reduceFinMk, Matrix.cons_val,
       Matrix.cons_val_one, Matrix.cons_val_zero]
-  · refine .add (.sub (.sub (isHomogeneous_X_pow ..) ?_) ?_) (isHomogeneous_C_mul_X_pow ..) <;>
+  · refine .sub (.sub (.sub (isHomogeneous_X_pow ..) ?_) ?_) (isHomogeneous_C_mul_X_pow ..) <;>
       exact .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-  · refine .add (.add ?_ ?_) (isHomogeneous_C_mul_X_pow ..) <;>
+  · refine .add (.add (.add ?_ ?_) ?_) (isHomogeneous_C_mul_X_pow ..) <;>
       exact .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
   · exact .sub (isHomogeneous_X_pow ..) <|
       .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
 
 lemma isHomogenous_addSubMapCoeff (ij : Fin 3 × Fin 3) :
-    (addSubMapCoeff a b ij).IsHomogeneous 2 := by
+    (addSubMapCoeff W ij).IsHomogeneous 2 := by
   simp only [addSubMapCoeff]
   fin_cases ij <;>
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Function.uncurry_apply_pair,
       Matrix.cons_val', Matrix.cons_val_zero, Matrix.cons_val_fin_one, neg_mul, Fin.mk_one,
       Matrix.cons_val_one, Fin.reduceFinMk, Matrix.cons_val, Fin.zero_eta]
+  · refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
+    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
+    refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
+    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
+    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
+    exact isHomogeneous_C_mul_X_pow ..
+  · refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
+    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
+    refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
+    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
+    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
+    exact isHomogeneous_C_mul_X_pow ..
+  · refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
+    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
+    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
+    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
+    exact isHomogeneous_C_mul_X_pow ..
   · refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
     refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
     refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
@@ -88,54 +134,50 @@ lemma isHomogenous_addSubMapCoeff (ij : Fin 3 × Fin 3) :
   · refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
     refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
     refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
+    exact isHomogeneous_C_mul_X_pow ..
+  · refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
+    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
+    refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
+    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
+    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
+    exact isHomogeneous_C_mul_X_pow ..
+  · refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
+    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
+    exact .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
+  · refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
+    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
+    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
     exact .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
   · refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
     refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
     exact isHomogeneous_C_mul_X_pow ..
-  · refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
-    refine .sub ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    exact .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-  · refine .sub ?_ (isHomogeneous_C_mul_X_pow ..)
-    refine .sub ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    exact .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-  · refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
-    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    exact .sub (isHomogeneous_C_mul_X_pow ..) (isHomogeneous_C_mul_X_pow ..)
-  · refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
-    exact .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-  · refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
-    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    exact .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-  · refine .sub ?_ (isHomogeneous_C_mul_X_pow ..)
-    refine .sub ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    exact isHomogeneous_C_mul_X_pow ..
 
-variable (hab : 32 * a ^ 3 + 216 * b ^ 2 ≠ 0)
+variable [W.IsElliptic]
 
-variable {a b}
-
-include hab in
-lemma addSubMapCoeff_condition (x : Fin 3 → K) (i : Fin 3) :
-    ∑ j : Fin 3, (C ((32 * a ^ 3 + 216 * b ^ 2)⁻¹) * addSubMapCoeff a b (i, j)).eval x *
-      (addSubMap a b j).eval x = x i ^ (2 + 2) := by
+lemma addSubMapCoeff_condition (x : Fin 3 → R) (i : Fin 3) :
+    ∑ j : Fin 3, (C (↑W.Δ'⁻¹ : R) * addSubMapCoeff W (i, j)).eval x *
+      (addSubMap W j).eval x = x i ^ (2 + 2) := by
+  have hr : 4 * W.b₈ - W.b₂ * W.b₆ + W.b₄ ^ 2 = 0 := by linear_combination W.b_relation
   simp only [eval_mul, eval_C, mul_assoc]
-  rw [← Finset.mul_sum, inv_mul_eq_iff_eq_mul₀ hab, Fin.sum_univ_three]
+  rw [← Finset.mul_sum, Units.inv_mul_eq_iff_eq_mul, Fin.sum_univ_three]
   simp only [addSubMap, addSubMapCoeff, Function.uncurry_apply_pair]
+  have : -(b_relation_coeffs W i).eval x * (4 * W.b₈ - W.b₂ * W.b₆ + W.b₄ ^ 2) = 0 := by simp [hr]
   fin_cases i <;>
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, neg_mul, Fin.zero_eta,
       Matrix.cons_val_zero, Matrix.cons_val_one, map_sub, map_add, map_mul, eval_C, map_pow,
-      eval_X, map_neg, Fin.reduceFinMk, Matrix.cons_val, Fin.mk_one] <;>
+      eval_X, map_neg, Fin.reduceFinMk, Matrix.cons_val, Fin.mk_one, coe_Δ', Δ] <;>
+    rw [← sub_eq_zero] <;>
+    simp [← this, b_relation_coeffs] <;>
     ring
 
-include hab in
-lemma addSubMap_ne_zero {x : Fin 3 → K} (hx : x ≠ 0) : (fun i ↦ (addSubMap a b i).eval x) ≠ 0 := by
+lemma addSubMap_ne_zero [IsDomain R] {x : Fin 3 → R} (hx : x ≠ 0) :
+    (fun i ↦ (addSubMap W i).eval x) ≠ 0 := by
   contrapose! hx
-  ext1 i
-  replace hx i : (addSubMap a b i).eval x = 0 := by
+  ext i : 1
+  replace hx i : (addSubMap W i).eval x = 0 := by
     rw [Pi.zero_def, _root_.funext_iff] at hx
     exact hx i
-  simpa [hx] using (addSubMapCoeff_condition hab x i).symm
+  simpa [hx] using (addSubMapCoeff_condition W x i).symm
 
 end WeierstrassCurve
 
