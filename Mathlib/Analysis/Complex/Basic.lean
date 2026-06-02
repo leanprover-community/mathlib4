@@ -51,10 +51,6 @@ namespace Complex
 `Complex.instNormedField.toNormedModule.toModule`. -/
 instance instModuleSelf : Module ℂ ℂ := delta% inferInstance
 
-/-- A shortcut instance to ensure computability; otherwise we get the noncomputable instance
-`Complex.instNormedField.⋯.toENormedAddCommMonoid.toAddCommMonoid`. -/
-instance : AddCommMonoid ℂ := delta% inferInstance
-
 end Complex
 
 noncomputable section
