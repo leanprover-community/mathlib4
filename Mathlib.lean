@@ -1481,6 +1481,7 @@ public import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SemilocallySimplyConnected
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.UniversalCover.Action
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.UniversalCover.Basic
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.UniversalCover.Covering
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic

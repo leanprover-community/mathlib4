@@ -58,6 +58,7 @@ variable {X : Type*} [TopologicalSpace X]
 
 /-- The endpoint-plus-homotopy-class model for the universal cover. The topology is supplied below
 as the quotient topology from `BasedPath x₀`. -/
+@[expose]
 def UniversalCover (x₀ : X) :=
   Σ x : X, Path.Homotopic.Quotient x₀ x
 
@@ -65,8 +66,8 @@ namespace UniversalCover
 
 variable {x₀ x : X}
 
-/-- Construct a term of `UniversalCover`.
-This allows us to avoid exposing the definition of `UniversalCover` for downstream modules. -/
+/-- Construct a term of `UniversalCover`. -/
+@[expose]
 def mk (x : X) (q : Path.Homotopic.Quotient x₀ x) : UniversalCover x₀ :=
   ⟨x, q⟩
 
@@ -75,6 +76,7 @@ def mk (x : X) (q : Path.Homotopic.Quotient x₀ x) : UniversalCover x₀ :=
 theorem mk_inj {x : X} {q₁ q₂ : Path.Homotopic.Quotient x₀ x} :
     mk x q₁ = mk x q₂ ↔ q₁ = q₂ :=
   ⟨fun h => eq_of_heq (Sigma.mk.inj_iff.mp h).2, fun h => h ▸ rfl⟩
+
 
 /-- The quotient map from based paths to endpoint/path-homotopy classes. -/
 def ofBasedPath (x₀ : X) : BasedPath x₀ → UniversalCover x₀
@@ -109,6 +111,7 @@ theorem isQuotientMap_ofBasedPath (x₀ : X) : IsQuotientMap (ofBasedPath x₀) 
   ⟨⟨rfl⟩, surjective_ofBasedPath x₀⟩
 
 /-- The endpoint projection. -/
+@[expose]
 def proj : UniversalCover x₀ → X :=
   Sigma.fst
 
@@ -116,6 +119,7 @@ def proj : UniversalCover x₀ → X :=
 @[simp]
 theorem proj_mk (q : Path.Homotopic.Quotient x₀ x) :
     proj (mk x q) = x := (rfl)
+
 
 /-- `proj` composed with `ofBasedPath` reads off the endpoint of the representative. -/
 @[simp]
