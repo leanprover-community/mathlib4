@@ -69,14 +69,24 @@ lemma gaussianPDFReal_nonneg (μ : ℝ) (v : ℝ≥0) (x : ℝ) : 0 ≤ gaussian
 
 /-- The Gaussian pdf is measurable. -/
 @[fun_prop]
-lemma measurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDFReal μ v) :=
-  (((measurable_id.add_const _).pow_const _).neg.div_const _).exp.const_mul _
+lemma measurable_gaussianPDFReal' : Measurable (fun (μ, v, x) ↦ gaussianPDFReal μ v x) := by
+  unfold gaussianPDFReal
+  fun_prop
+
+@[fun_prop]
+lemma measurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDFReal μ v) := by
+  fun_prop
 
 /-- The Gaussian pdf is strongly measurable. -/
 @[fun_prop]
+lemma stronglyMeasurable_gaussianPDFReal' :
+    StronglyMeasurable (fun (μ, v, x) ↦ gaussianPDFReal μ v x) :=
+  measurable_gaussianPDFReal'.stronglyMeasurable
+
+@[fun_prop]
 lemma stronglyMeasurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
-    StronglyMeasurable (gaussianPDFReal μ v) :=
-  (measurable_gaussianPDFReal μ v).stronglyMeasurable
+    StronglyMeasurable (gaussianPDFReal μ v) := by
+  fun_prop
 
 @[fun_prop]
 lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
@@ -183,8 +193,12 @@ lemma support_gaussianPDF {μ : ℝ} {v : ℝ≥0} (hv : v ≠ 0) :
   exact (gaussianPDF_pos _ hv x).ne'
 
 @[fun_prop]
-lemma measurable_gaussianPDF (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDF μ v) :=
-  (measurable_gaussianPDFReal _ _).ennreal_ofReal
+lemma measurable_gaussianPDF' : Measurable (fun (μ, v, x) ↦ gaussianPDF μ v x) :=
+  Measurable.ennreal_ofReal (by fun_prop)
+
+@[fun_prop]
+lemma measurable_gaussianPDF (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDF μ v) := by
+  fun_prop
 
 @[simp]
 lemma lintegral_gaussianPDF_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
@@ -254,17 +268,8 @@ lemma integral_gaussianReal_eq_integral_smul {E : Type*} [NormedAddCommGroup E] 
       (ae_of_all _ fun _ ↦ gaussianPDF_lt_top)]
 
 lemma measurable_gaussianReal :
-    Measurable (fun (p : ℝ × ℝ≥0) ↦ gaussianReal p.1 p.2) := by
-  rw [Measure.measurable_measure]
-  intro s hs
-  simp_rw [gaussianReal, DFunLike.ite_apply]
-  refine Measurable.ite (by measurability) ?_ ?_
-  · simp only [Measure.dirac_apply]
-    exact Measurable.indicator measurable_const <| measurableSet_preimage measurable_fst hs
-  · simp only [hs, withDensity_apply]
-    refine Measurable.lintegral_prod_right <| Measurable.ennreal_ofReal ?_
-    unfold gaussianPDFReal
-    fun_prop
+    Measurable (fun (p : ℝ × ℝ≥0) ↦ gaussianReal p.1 p.2) :=
+  Measurable.ite (by measurability) (by fun_prop) (by fun_prop)
 
 section Transformations
 
