@@ -192,7 +192,7 @@ lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE [IsLocalRing R] [IsN
     have fin : ({(maximalIdeal R) ^ 2} ∪ associatedPrimes R R).Finite :=
       Set.Finite.union (Set.finite_singleton _) (associatedPrimes.finite R R)
     rcases (Ideal.subset_union_prime_finite fin ((maximalIdeal R) ^ 2) ((maximalIdeal R) ^ 2)
-      (fun I hI ne _ ↦ IsAssociatedPrime.isPrime (by simpa [ne] using hI))).mp h' with
+      (fun I hI ne _ ↦ IsAssociatedPrime.isPrime (by simpa [ne] using! hI))).mp h' with
       ⟨I, hI, sub⟩
     simp only [Set.singleton_union, Set.mem_insert_iff] at hI
     rcases hI with eq|ass
@@ -364,7 +364,7 @@ theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
     let i := i'.extendScalarsOfSurjective (Ideal.Quotient.mk_surjective (I := Ideal.span {x}))
     have compid' : r.comp i = LinearMap.id := by
       apply LinearMap.ext (fun y ↦ ?_)
-      simpa using LinearMap.ext_iff.mp compid y
+      exact LinearMap.ext_iff.mp compid y
     have retr  : Retract (ModuleCat.of (R ⧸ Ideal.span {x}) (Shrink.{v} (maximalIdeal R')))
       (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x (Shrink.{v} (maximalIdeal R)))) := {
       i := ModuleCat.ofHom i
