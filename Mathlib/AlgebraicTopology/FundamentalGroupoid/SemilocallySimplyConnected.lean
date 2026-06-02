@@ -221,21 +221,15 @@ public theorem semilocallySimplyConnectedSpace_iff_paths :
 
 /-! ### Helper lemmas for discreteness of path homotopy quotients -/
 
-/-- In an SLSC space, every point has an open neighborhood U such that for any two points
-in U, there is a unique (up to homotopy) path between them.
+/-- In an SLSC space, every point has an open neighborhood `U` with the
+`IsPathHomotopyTrivial U` property: any two paths in `U` with the same endpoints are
+homotopic (so path homotopy classes are determined by endpoints).
 
-This is a key reformulation of the SLSC property: it says that SLSC neighborhoods are
-"locally simply connected" in the sense that path homotopy classes are determined by endpoints.
-
-This is derived from the basic SLSC definition by composing paths: if p and q are two paths
-from a to b in U, then p · q⁻¹ is a loop at a contained in U, hence nullhomotopic by SLSC,
-which implies p ≃ q. -/
+This is `semilocallySimplyConnectedSpace_iff_paths.mp` repackaged with the
+`IsPathHomotopyTrivial` abstraction, which is the form most downstream users consume. -/
 public theorem exists_uniquePath_neighborhood [SemilocallySimplyConnectedSpace X] (x : X) :
-    ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ IsPathHomotopyTrivial U := by
-  obtain ⟨U, hU_open, hx_in_U, hU_loops⟩ := semilocallySimplyConnectedSpace_iff.mp ‹_› x
-  refine ⟨U, hU_open, hx_in_U, ?_⟩
-  intro _ _ p q hp hq
-  exact (Path.Homotopic.paths_homotopic_iff_loops_nullhomotopic U).mpr hU_loops p q hp hq
+    ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ IsPathHomotopyTrivial U :=
+  semilocallySimplyConnectedSpace_iff_paths.mp ‹_› x
 
 /-- An SLSC neighborhood can be chosen to be path-connected. In a locally path-connected space,
 we can use the path component of x in an SLSC neighborhood V to get a neighborhood that is both
@@ -243,16 +237,13 @@ open, path-connected, and has the SLSC property (paths with same endpoints in U 
 public theorem exists_pathConnected_slsc_neighborhood [SemilocallySimplyConnectedSpace X]
     [LocPathConnectedSpace X] (x : X) :
     ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ IsPathConnected U ∧ IsPathHomotopyTrivial U := by
-  -- Get an SLSC neighborhood from the SLSC property
+  -- Take the path component of `x` in any SLSC neighborhood `V`. It is open by local
+  -- path-connectedness, path-connected by construction, and inherits SLSC from `V` by
+  -- composing the range subsets through `pathComponentIn_subset : pathComponentIn V x ⊆ V`.
   obtain ⟨V, hV_open, hx_in_V, hV_slsc⟩ := exists_uniquePath_neighborhood x
-  -- The path component of x in V is open (since V is open and X is locally path-connected)
-  let W := pathComponentIn V x
-  refine ⟨W, hV_open.pathComponentIn x, mem_pathComponentIn_self hx_in_V,
-    isPathConnected_pathComponentIn hx_in_V, ?_⟩
-  intro _ _ p q hp hq
-  -- W ⊆ V, so p, q have ranges in V, hence are homotopic by SLSC property of V
-  have hW_subset : W ⊆ V := pathComponentIn_subset
-  exact hV_slsc p q (hp.trans hW_subset) (hq.trans hW_subset)
+  refine ⟨pathComponentIn V x, hV_open.pathComponentIn x, mem_pathComponentIn_self hx_in_V,
+    isPathConnected_pathComponentIn hx_in_V, fun _ _ p q hp hq ↦ ?_⟩
+  exact hV_slsc p q (hp.trans pathComponentIn_subset) (hq.trans pathComponentIn_subset)
 
 /-! ### Tube data structures -/
 
