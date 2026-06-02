@@ -156,7 +156,7 @@ lemma padicIntToIntQuotient_surjective (p : ℕ) [Fact (Nat.Prime p)] (n : ℕ) 
 
 lemma padicIntToIntQuotient_ker (p : ℕ) [Fact (Nat.Prime p)] (n : ℕ) :
     RingHom.ker (padicIntToIntQuotient p n) = Ideal.span {(p ^ n : ℤ_[p])} := by
-  simpa [← PadicInt.ker_toZModPow, padicIntToIntQuotient] using RingHom.ker_equiv_comp _ _
+  simpa [← PadicInt.ker_toZModPow, padicIntToIntQuotient] using! RingHom.ker_equiv_comp _ _
 
 set_option backward.isDefEq.respectTransparency false in
 lemma padicInt_to_int_quotient_comm (p : ℕ) [Fact (Nat.Prime p)] {m n : ℕ} (hle : m ≤ n) :
@@ -186,7 +186,7 @@ noncomputable def padicIntOfCharP [IsLocalRing R] [IsAdicComplete (maximalIdeal 
     simp only [padicInt_to_int_quotient_comm p hle, f]
     congr)
 
-lemma padicIntOfCharP_flat_of_isCohenRing [IsLocalRing R] [IsDomain R] [IsCohenRing R]
+lemma padicIntOfCharP_flat_of_isCohenRing [IsDomain R] [IsCohenRing R]
     (p : ℕ) [Fact (Nat.Prime p)] (char : CharP (ResidueField R) p) :
     (padicIntOfCharP R p char).Flat := by
   let := (padicIntOfCharP R p char).toAlgebra
@@ -420,6 +420,7 @@ end
 
 variable {R} in
 open MvPowerSeries in
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_mvPowerSeries_surjective_of_residueField_map_bijective [IsLocalRing R]
     [IsAdicComplete (maximalIdeal R) R] (fg : (maximalIdeal R).FG)
     (S : Type u) [CommRing S] [IsLocalRing S]
@@ -449,7 +450,8 @@ lemma exists_mvPowerSeries_surjective_of_residueField_map_bijective [IsLocalRing
     congr
     ext r
     suffices (∃ a, (s.equivFin.symm a) = r) ↔ r ∈ s by
-      simpa [eval₂Hom_eq_extend, F, ← MvPolynomial.coe_X, IsDenseInducing.extend_eq _ aux_cont]
+      simp [eval₂Hom_eq_extend, F, ← MvPolynomial.coe_X, ← this,
+        IsDenseInducing.extend_eq _ aux_cont]
     exact ⟨fun ⟨i, hi⟩ ↦ by simp [← hi], fun h ↦ ⟨s.equivFin ⟨r, h⟩, by simp⟩⟩
   have : IsAdicComplete (I.map F) R := by simpa [map_F_I]
   have F_C (s : S) : F (C s) = f s := by
