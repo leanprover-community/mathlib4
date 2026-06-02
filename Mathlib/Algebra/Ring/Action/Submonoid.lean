@@ -40,14 +40,14 @@ def FixedPoints.addSubgroup : AddSubgroup α where
   neg_mem' ha _ := by rw [smul_neg, ha]
 
 /-- The notation for `FixedPoints.addSubgroup`, chosen to resemble `αᴹ`. -/
-notation α "^+" M:51 => FixedPoints.addSubgroup M α
+notation α " ^+ " M:51 => FixedPoints.addSubgroup M α
 
 @[simp]
-lemma FixedPoints.mem_addSubgroup (a : α) : a ∈ α^+M ↔ ∀ m : M, m • a = a :=
+lemma FixedPoints.mem_addSubgroup (a : α) : a ∈ α ^+ M ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 
 @[simp]
-lemma FixedPoints.addSubgroup_toAddSubmonoid : (α^+M).toAddSubmonoid = addSubmonoid M α :=
+lemma FixedPoints.addSubgroup_toAddSubmonoid : (α ^+ M).toAddSubmonoid = addSubmonoid M α :=
   rfl
 
 end AddGroup
