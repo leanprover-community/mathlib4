@@ -105,23 +105,6 @@ lemma isDeterministic_iff_isZeroOneMeasure (κ : Kernel α β) [IsFiniteKernel �
 instance (κ : Kernel α β) [IsFiniteKernel κ] [IsDeterministic κ] : ∀ a, IsZeroOneMeasure (κ a) :=
   (isDeterministic_iff_isZeroOneMeasure κ).mp ‹_›
 
-/-- A kernel that takes values in the Dirac measures is equal to `deterministic f hf` for
-a measurable function `f`. -/
-theorem exists_eq_deterministic_of_forall_eq_dirac
-    {κ : Kernel α β} (hκ : ∀ a, ∃ b, κ a = Measure.dirac b) :
-    ∃ (f : α → β) (hf : Measurable f), κ = deterministic f hf := by
-  choose f hf using hκ
-  refine ⟨f, ?_, ?_⟩
-  · intro s hs
-    suffices f ⁻¹' s = (fun a => κ a s) ⁻¹' {1} by
-      rw [this]
-      exact κ.measurable_coe hs (measurableSet_singleton 1)
-    ext x
-    simp only [mem_preimage, hf, Measure.dirac_apply' _ hs, mem_singleton_iff]
-    exact (indicator_eq_one_iff_mem ENNReal).symm
-  · ext a : 1
-    exact hf a
-
 /-- In a countably generated measurable space, a deterministic Markov kernel is a Dirac kernel
 of one measurable function. -/
 theorem IsDeterministic.exists_eq_deterministic' [MeasurableSpace.CountablyGenerated β]
