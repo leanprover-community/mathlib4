@@ -1009,7 +1009,6 @@ def precompFork (s : Fork f g) (c : PullbackCone s.ι h) : Fork (h ≫ f) (h ≫
   Fork.ofι c.snd <| by
     rw [← c.condition_assoc, ← c.condition_assoc, s.condition]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Any fork on `h ≫ f` and `h ≫ g` lifts to a pullback along `h` of an equalizer of `f` and `g`.
 -/
