@@ -209,15 +209,13 @@ lemma mem_submodule_iff (S : α → Submodule R M) (x : α →₀ M) :
   rfl
 
 @[simp]
-lemma comap_lsingle_submodule {M : Type*} [AddCommGroup M] [Module R M]
-    (ι : Type*) (p : ι → Submodule R M) (i : ι) :
+lemma comap_lsingle_submodule (p : α → Submodule R M) (i : α) :
     Submodule.comap (lsingle i) (submodule p) = p i := by
   ext x
   refine ⟨fun hx ↦ by simpa using hx i, fun hx j ↦ ?_⟩
   obtain (rfl | h) := eq_or_ne i j <;> simp_all
 
-lemma submodule_eq_iSup {M : Type*} [AddCommGroup M] [Module R M]
-    (ι : Type*) (p : ι → Submodule R M) :
+lemma submodule_eq_iSup (p : α → Submodule R M) :
     Finsupp.submodule p = ⨆ i, Submodule.map (Finsupp.lsingle i) (p i) := by
   refine le_antisymm ?_ ?_
   · intro x hx
@@ -227,9 +225,7 @@ lemma submodule_eq_iSup {M : Type*} [AddCommGroup M] [Module R M]
   · simp [iSup_le_iff, Submodule.map_le_iff_le_comap]
 
 @[simp]
-lemma submodule_top {M : Type*} [AddCommGroup M] [Module R M]
-    (ι : Type*) :
-    Finsupp.submodule (fun _ : ι ↦ (⊤ : Submodule R M)) = ⊤ := by
+lemma submodule_top : Finsupp.submodule (fun _ : α ↦ (⊤ : Submodule R M)) = ⊤ := by
   ext
   simp
 
