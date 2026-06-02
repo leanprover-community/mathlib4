@@ -17,7 +17,7 @@ public import Batteries.Util.LibraryNote -- For `library_note` command.
 This file defines some basic utilities for tactic writing, and also
 - a dummy `variables` macro (which warns that the Lean 4 name is `variable`)
 - the `introv` tactic, which allows the user to automatically introduce the variables of a theorem
-and explicitly name the non-dependent hypotheses,
+  and explicitly name the non-dependent hypotheses,
 - an `assumption` macro, calling the `assumption` tactic on all goals
 - the tactics `match_target` and `clear_aux_decl` (clearing all auxiliary declarations from the
   context).

@@ -203,7 +203,7 @@ theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ 
   have hncol : ¬ Collinear ℝ {p₁', p', p₃'} := by
     rw [← affineIndependent_iff_not_collinear_set,
       ← s_isom.toAffineMap.affineIndependent_iff s_isom.injective]
-    convert hindep
+    convert! hindep
     ext i; fin_cases i <;> rfl
   exact cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi_aux h_dist' hp₁'p₂' hp₃'p₄' hncol
 
