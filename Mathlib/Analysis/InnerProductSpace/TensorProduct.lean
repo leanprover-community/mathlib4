@@ -501,6 +501,16 @@ variable (E) in
 lemma _root_.ContinuousLinearMap.lTensor_tmul (g : G →L[𝕜] H) (m : E) (n : G) :
     g.lTensor E (m ⊗ₜ n) = m ⊗ₜ g n := rfl
 
+lemma _root_.ContinuousLinearMap.lTensor_apply (g : G →L[𝕜] H) (x : E ⊗ G) :
+    g.lTensor E x = (map LinearMap.id g.toLinearMap) x := by
+  simp only [ContinuousLinearMap.lTensor_def, ContinuousLinearMap.coe_comp',
+    ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_toContinuousLinearEquiv,
+    Function.comp_apply, commIsometry_apply, ContinuousLinearMap.rTensor_apply]
+  induction x using TensorProduct.induction_on with
+  | zero => simp
+  | tmul => simp
+  | add _ _ h1 h2 => simp [h1, h2]
+
 variable (E) in
 lemma _root_.ContinuousLinearMap.toLinearMap_lTensor (g : G →L[𝕜] H) :
     (g.lTensor E).toLinearMap = g.toLinearMap.lTensor E := by
