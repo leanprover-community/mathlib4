@@ -33,7 +33,7 @@ and `μ` is the Haar measure.
 measure theory, group action, domain action, continuous action, Lp space
 -/
 
-@[expose] public section
+public section
 
 open scoped ENNReal
 open DomMulAct

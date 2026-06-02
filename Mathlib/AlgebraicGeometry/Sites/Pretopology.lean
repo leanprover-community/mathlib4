@@ -63,18 +63,12 @@ lemma bot_mem_grothendieckTopology (X : Scheme.{u}) [IsEmpty X] : ⊥ ∈ grothe
   rw [← Sieve.generate_bot]
   exact Precoverage.generate_mem_toGrothendieck (bot_mem_precoverage _ X)
 
-@[deprecated (since := "2025-08-28")]
-alias grothendieckTopology_cover := Cover.mem_grothendieckTopology
-
 variable [P.IsStableUnderBaseChange] [P.IsMultiplicative]
 
 @[grind ←]
 lemma Cover.mem_pretopology {X : Scheme.{u}} {𝒰 : X.Cover (precoverage P)} :
     Presieve.ofArrows 𝒰.X 𝒰.f ∈ pretopology P X :=
   𝒰.mem₀
-
-@[deprecated (since := "2025-08-28")]
-alias pretopology_cover := Cover.mem_pretopology
 
 lemma mem_pretopology_iff {X : Scheme.{u}} {R : Presieve X} :
     R ∈ pretopology P X ↔ ∃ (𝒰 : Cover.{u + 1} (precoverage P) X),
@@ -96,21 +90,19 @@ alias ⟨exists_cover_of_mem_grothendieckTopology, _⟩ := mem_grothendieckTopol
 
 section
 
-@[deprecated (since := "2025-08-18")] alias surjectiveFamiliesPretopology :=
-  jointlySurjectivePretopology
-
 /-- The jointly surjective topology on `Scheme` is defined by the same condition as the jointly
 surjective pretopology. -/
 def jointlySurjectiveTopology : GrothendieckTopology Scheme.{u} :=
-  jointlySurjectivePretopology.toGrothendieck.copy (fun X s ↦ jointlySurjectivePretopology X ↑s) <|
+  jointlySurjectivePretopology.toGrothendieck.copy
+    (fun X ↦ {s | ↑s ∈ jointlySurjectivePretopology X}) <|
     funext fun _ ↦ Set.ext fun s ↦
       ⟨fun ⟨_, hp, hps⟩ x ↦ let ⟨Y, u, hu, hmem⟩ := hp x;
-        ⟨Y, u, Presieve.map_monotone hps _ hu, hmem⟩,
+        ⟨Y, u, Presieve.map_monotone hps _ _ hu, hmem⟩,
       fun hs ↦ ⟨s, hs, le_rfl⟩⟩
 
 theorem mem_jointlySurjectiveTopology_iff_jointlySurjectivePretopology
     {X : Scheme.{u}} {s : Sieve X} :
-    s ∈ jointlySurjectiveTopology X ↔ jointlySurjectivePretopology X ↑s :=
+    s ∈ jointlySurjectiveTopology X ↔ ↑s ∈ jointlySurjectivePretopology X :=
   Iff.rfl
 
 lemma jointlySurjectiveTopology_eq_toGrothendieck_jointlySurjectivePretopology :
@@ -124,9 +116,6 @@ The pretopology defined by `P`-covers agrees with the
 intersection of the pretopology of surjective families with the pretopology defined by `P`.
 -/
 lemma pretopology_eq_inf : pretopology P = jointlySurjectivePretopology ⊓ P.pretopology := rfl
-
-@[deprecated (since := "2025-08-28")]
-alias pretopology_le_inf := pretopology_eq_inf
 
 /--
 The Grothendieck topology defined by `P`-covers agrees with the Grothendieck
@@ -148,17 +137,11 @@ lemma grothendieckTopology_monotone (hPQ : P ≤ Q) :
     grothendieckTopology P ≤ grothendieckTopology Q :=
   Precoverage.toGrothendieck_mono (precoverage_mono hPQ)
 
-@[deprecated (since := "2025-09-22")]
-alias grothendieckTopology_le_grothendieckTopology := grothendieckTopology_monotone
-
 variable [P.IsMultiplicative] [P.IsStableUnderBaseChange]
   [Q.IsMultiplicative] [Q.IsStableUnderBaseChange]
 
 lemma pretopology_monotone (hPQ : P ≤ Q) : pretopology P ≤ pretopology Q :=
   precoverage_mono hPQ
-
-@[deprecated (since := "2025-09-22")]
-alias pretopology_le_pretopology := pretopology_monotone
 
 end
 

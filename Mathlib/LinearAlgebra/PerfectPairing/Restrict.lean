@@ -216,7 +216,6 @@ variable {M' N' : Type*}
   [AddCommGroup M'] [AddCommGroup N'] [Module K M'] [Module K N'] [IsScalarTower K L N]
   (i : M' →ₗ[K] M) (j : N' →ₗ[K] N) (hi : Injective i) (hj : Injective j)
 
-set_option backward.isDefEq.respectTransparency false in
 include hi hj in
 /-- An auxiliary definition used only to simplify the construction of the more general definition
 `PerfectPairing.restrictScalarsField`. -/

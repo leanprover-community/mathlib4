@@ -173,12 +173,10 @@ instance : NatCast (RingQuot r) :=
 @[no_expose] instance : Mul (RingQuot r) :=
   ⟨fun ⟨a⟩ ⟨b⟩ ↦ ⟨Quot.map₂ (· * ·) Rel.mul_right Rel.mul_left a b⟩⟩
 
-set_option backward.whnf.reducibleClassField false in
 @[no_expose] instance : NatPow (RingQuot r) :=
   ⟨fun ⟨a⟩ n ↦ ⟨Quot.lift (fun a ↦ Quot.mk (RingQuot.Rel r) (a ^ n))
     (fun a b (h : Rel r a b) ↦ by
       -- note we can't define a `Rel.pow` as `Rel` isn't reflexive so `Rel r 1 1` isn't true
-      dsimp only
       induction n with
       | zero => rw [pow_zero, pow_zero]
       | succ n ih =>
@@ -281,7 +279,6 @@ instance instMonoidWithZero (r : R → R → Prop) : MonoidWithZero (RingQuot r)
     rintro n ⟨⟨⟩⟩
     simp only [pow_quot, mul_quot, pow_succ]
 
-set_option backward.whnf.reducibleClassField false in
 instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
   natCast_zero := by simp +instances [instNatCast, natCast, ← zero_quot]
   natCast_succ := by simp +instances [instNatCast, natCast, ← one_quot, add_quot]

@@ -50,7 +50,6 @@ open Complex
 
 variable (θ : ℂ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `n`-th Chebyshev polynomial of the first kind evaluates on `cos θ` to the
 value `cos (n * θ)`. -/
 @[simp]
@@ -69,7 +68,6 @@ theorem T_complex_cos (n : ℤ) : (T ℂ n).eval (cos θ) = cos (n * θ) := by
     push_cast
     ring_nf
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `n`-th Chebyshev polynomial of the second kind evaluates on `cos θ` to the
 value `sin ((n + 1) * θ) / sin θ`. -/
 @[simp]

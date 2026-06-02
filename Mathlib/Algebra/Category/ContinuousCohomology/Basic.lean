@@ -43,6 +43,8 @@ See `ContinuousCohomology.MultiInd.d`.
 - Show that short exact sequences induce long exact sequences in certain scenarios.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 open CategoryTheory Functor ContinuousMap
@@ -62,8 +64,7 @@ abbrev Iobj (rep : Action (TopModuleCat R) G) : Action (TopModuleCat R) G where
   { toFun g := TopModuleCat.ofHom
       { toFun f := .comp (rep.ρ g).hom (f.comp (Homeomorph.mulLeft g⁻¹))
         map_add' _ _ := by ext; simp
-        map_smul' _ _ := by ext; simp
-        cont := (continuous_postcomp _).comp (continuous_precomp _) }
+        map_smul' _ _ := by ext; simp }
     map_one' := ConcreteCategory.ext (by ext; simp)
     map_mul' _ _ := ConcreteCategory.ext (by ext; simp [mul_assoc]) }
 
@@ -136,7 +137,6 @@ def complex : CochainComplex (Action (TopModuleCat R) G ⥤ Action (TopModuleCat
 
 end MultiInd
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor taking an `R`-linear `G`-representation to its `G`-invariant submodule. -/
 def invariants : Action (TopModuleCat R) G ⥤ TopModuleCat R where
   obj M := .of R
@@ -144,15 +144,12 @@ def invariants : Action (TopModuleCat R) G ⥤ TopModuleCat R where
       add_mem' hx hy g := by simp [hx g, hy g]
       zero_mem' := by simp
       smul_mem' r x hx g := by simp [hx g] : Submodule R M.V }
-  map f := TopModuleCat.ofHom
-    { toLinearMap := f.hom.hom.restrict fun x hx g ↦
-        congr($(f.comm g) x).symm.trans congr(f.hom.hom $(hx g))
-      cont := continuous_induced_rng.mpr (f.hom.hom.2.comp continuous_subtype_val) }
+  map f := TopModuleCat.ofHom <| f.hom.hom.restrict fun x hx g ↦
+    congr($(f.comm g) x).symm.trans congr(f.hom.hom $(hx g))
 
 instance : (invariants R G).Linear R where
 instance : (invariants R G).Additive where
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `homogeneousCochains R G` is the functor taking
 an `R`-linear `G`-representation to the complex of homogeneous cochains. -/
 def homogeneousCochains : Action (TopModuleCat R) G ⥤ CochainComplex (TopModuleCat R) ℕ :=

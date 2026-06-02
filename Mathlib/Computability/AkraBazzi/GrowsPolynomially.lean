@@ -15,8 +15,8 @@ import Mathlib.Algebra.Order.Interval.Set.Group
 
 This file defines and develops an API for the polynomial growth condition that appears in the
 statement of the Akra-Bazzi theorem: for the theorem to hold, the function `g` must
-satisfy the condition that `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for u between b*n and n for any constant
-`b ∈ (0,1)`.
+satisfy the condition that `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for `u` between `b*n` and `n` for any
+constant `b ∈ (0,1)`.
 
 ## Implementation notes
 
@@ -85,7 +85,6 @@ lemma eventually_atTop_ge_nat {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPoly
   obtain ⟨c, hc_mem, hc⟩ := hf.eventually_atTop_ge hb
   exact ⟨c, hc_mem, hc.natCast_atTop⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃ᶠ x in atTop, f x = 0) :
     ∀ᶠ x in atTop, f x = 0 := by
   obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf (1 / 2) (by norm_num)
@@ -474,7 +473,6 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
            _ = c₂ / 3 * (3 / 2 * f x) := by ring
            _ ≤ c₂ / 3 * (f x + g x) := by gcongr
 
-set_option backward.isDefEq.respectTransparency false in
 protected lemma GrowsPolynomially.inv {f : ℝ → ℝ} (hf : GrowsPolynomially f) :
     GrowsPolynomially fun x => (f x)⁻¹ := by
   cases hf.eventually_atTop_zero_or_pos_or_neg with
@@ -581,7 +579,7 @@ protected lemma GrowsPolynomially.rpow (p : ℝ) (hf : GrowsPolynomially f)
       have : ∀ᶠ (_ : ℝ) in atTop, False := by
         filter_upwards [hf_nonneg, hneg] with x hx hx'; linarith
       rw [Filter.eventually_false_iff_eq_bot] at this
-      exact False.elim <| (atTop_neBot).ne this
+      exact False.elim <| atTop_neBot.ne this
 
 protected lemma GrowsPolynomially.pow (p : ℕ) (hf : GrowsPolynomially f)
     (hf_nonneg : ∀ᶠ x in atTop, 0 ≤ f x) : GrowsPolynomially fun x => (f x) ^ p := by
@@ -594,13 +592,13 @@ protected lemma GrowsPolynomially.zpow (p : ℤ) (hf : GrowsPolynomially f)
   exact hf.rpow p hf_nonneg
 
 lemma growsPolynomially_rpow (p : ℝ) : GrowsPolynomially fun x => x ^ p :=
-  (growsPolynomially_id).rpow p (eventually_ge_atTop 0)
+  growsPolynomially_id.rpow p (eventually_ge_atTop 0)
 
 lemma growsPolynomially_pow (p : ℕ) : GrowsPolynomially fun x => x ^ p :=
-  (growsPolynomially_id).pow p (eventually_ge_atTop 0)
+  growsPolynomially_id.pow p (eventually_ge_atTop 0)
 
 lemma growsPolynomially_zpow (p : ℤ) : GrowsPolynomially fun x => x ^ p :=
-  (growsPolynomially_id).zpow p (eventually_ge_atTop 0)
+  growsPolynomially_id.zpow p (eventually_ge_atTop 0)
 
 lemma growsPolynomially_log : GrowsPolynomially Real.log := by
   intro b hb

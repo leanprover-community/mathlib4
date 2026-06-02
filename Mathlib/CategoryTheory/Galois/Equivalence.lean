@@ -48,7 +48,7 @@ instance : (functorToContAction F).Full :=
 
 instance {F : C ⥤ FintypeCat.{u₁}} [FiberFunctor F] : (functorToContAction F).EssSurj where
   mem_essImage X := by
-    have : ContinuousSMul (Aut F) X.obj.V.carrier := X.2
+    have : ContinuousSMul (Aut F) X.obj.V := X.2
     obtain ⟨A, ⟨i⟩⟩ := exists_lift_of_continuous (F := F) X
     exact ⟨A, ⟨ObjectProperty.isoMk _ i⟩⟩
 

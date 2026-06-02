@@ -24,25 +24,25 @@ universe u
 
 variable {α : Type u}
 
-set_option backward.whnf.reducibleClassField false in
 /-- A function to create a provable equal copy of a top order
 with possibly different definitional equalities. -/
+@[implicit_reducible]
 def OrderTop.copy {h : LE α} {h' : LE α} (c : @OrderTop α h')
     (top : α) (eq_top : top = (by infer_instance : Top α).top)
     (le_eq : ∀ x y : α, (@LE.le α h) x y ↔ x ≤ y) : @OrderTop α h :=
   @OrderTop.mk α h { top := top } fun _ ↦ by simp [eq_top, le_eq]
 
-set_option backward.whnf.reducibleClassField false in
 /-- A function to create a provable equal copy of a bottom order
 with possibly different definitional equalities. -/
+@[implicit_reducible]
 def OrderBot.copy {h : LE α} {h' : LE α} (c : @OrderBot α h')
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
     (le_eq : ∀ x y : α, (@LE.le α h) x y ↔ x ≤ y) : @OrderBot α h :=
   @OrderBot.mk α h { bot := bot } fun _ ↦ by simp [eq_bot, le_eq]
 
-set_option backward.whnf.reducibleClassField false in
 /-- A function to create a provable equal copy of a bounded order
 with possibly different definitional equalities. -/
+@[implicit_reducible]
 def BoundedOrder.copy {h : LE α} {h' : LE α} (c : @BoundedOrder α h')
     (top : α) (eq_top : top = (by infer_instance : Top α).top)
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
@@ -52,6 +52,7 @@ def BoundedOrder.copy {h : LE α} {h' : LE α} (c : @BoundedOrder α h')
 
 /-- A function to create a provable equal copy of a lattice
 with possibly different definitional equalities. -/
+@[implicit_reducible]
 def Lattice.copy (c : Lattice α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (sup : α → α → α) (eq_sup : sup = (by infer_instance : Max α).max)
@@ -70,9 +71,9 @@ def Lattice.copy (c : Lattice α)
   inf_le_right := by intros; simp [eq_le, eq_inf]
   le_inf := by intro _ _ _ hac hbc; simp_rw [eq_le] at hac hbc ⊢; simp [eq_inf, hac, hbc]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A function to create a provable equal copy of a distributive lattice
 with possibly different definitional equalities. -/
+@[implicit_reducible]
 def DistribLattice.copy (c : DistribLattice α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (sup : α → α → α) (eq_sup : sup = (by infer_instance : Max α).max)
@@ -80,9 +81,9 @@ def DistribLattice.copy (c : DistribLattice α)
   toLattice := Lattice.copy (@DistribLattice.toLattice α c) le eq_le sup eq_sup inf eq_inf
   le_sup_inf := by intros; simp +instances [eq_le, eq_sup, eq_inf, le_sup_inf]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A function to create a provable equal copy of a generalised heyting algebra
 with possibly different definitional equalities. -/
+@[implicit_reducible]
 def GeneralizedHeytingAlgebra.copy (c : GeneralizedHeytingAlgebra α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (top : α) (eq_top : top = (by infer_instance : Top α).top)
@@ -96,9 +97,9 @@ def GeneralizedHeytingAlgebra.copy (c : GeneralizedHeytingAlgebra α)
   himp := himp
   le_himp_iff _ _ _ := by simp +instances [eq_le, eq_himp, eq_inf]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A function to create a provable equal copy of a generalised co-Heyting algebra
 with possibly different definitional equalities. -/
+@[implicit_reducible]
 def GeneralizedCoheytingAlgebra.copy (c : GeneralizedCoheytingAlgebra α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
@@ -112,9 +113,9 @@ def GeneralizedCoheytingAlgebra.copy (c : GeneralizedCoheytingAlgebra α)
   sdiff := sdiff
   sdiff_le_iff := by simp +instances [eq_le, eq_sdiff, eq_sup]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A function to create a provable equal copy of a heyting algebra
 with possibly different definitional equalities. -/
+@[implicit_reducible]
 def HeytingAlgebra.copy (c : HeytingAlgebra α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (top : α) (eq_top : top = (by infer_instance : Top α).top)
@@ -132,9 +133,9 @@ def HeytingAlgebra.copy (c : HeytingAlgebra α)
   compl := compl
   himp_bot := by simp +instances [eq_le, eq_himp, eq_bot, eq_compl]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A function to create a provable equal copy of a co-Heyting algebra
 with possibly different definitional equalities. -/
+@[implicit_reducible]
 def CoheytingAlgebra.copy (c : CoheytingAlgebra α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (top : α) (eq_top : top = (by infer_instance : Top α).top)
@@ -154,6 +155,7 @@ def CoheytingAlgebra.copy (c : CoheytingAlgebra α)
 
 /-- A function to create a provable equal copy of a bi-Heyting algebra
 with possibly different definitional equalities. -/
+@[implicit_reducible]
 def BiheytingAlgebra.copy (c : BiheytingAlgebra α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (top : α) (eq_top : top = (by infer_instance : Top α).top)
@@ -170,9 +172,9 @@ def BiheytingAlgebra.copy (c : BiheytingAlgebra α)
   __ := CoheytingAlgebra.copy (@BiheytingAlgebra.toCoheytingAlgebra α c) le eq_le top eq_top bot
     eq_bot sup eq_sup inf eq_inf sdiff eq_sdiff hnot eq_hnot
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A function to create a provable equal copy of a complete lattice
 with possibly different definitional equalities. -/
+@[implicit_reducible]
 def CompleteLattice.copy (c : CompleteLattice α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (top : α) (eq_top : top = (by infer_instance : Top α).top)
@@ -187,15 +189,14 @@ def CompleteLattice.copy (c : CompleteLattice α)
   bot := bot
   sSup := sSup
   sInf := sInf
-  le_sSup := by intro _ _ h; simp +instances [eq_le, eq_sSup, le_sSup _ _ h]
-  sSup_le := by intro _ _ h; simpa +instances [eq_le, eq_sSup] using h
-  sInf_le := by intro _ _ h; simp +instances [eq_le, eq_sInf, sInf_le _ _ h]
-  le_sInf := by intro _ _ h; simpa +instances [eq_le, eq_sInf] using h
+  isLUB_sSup _ := by simp +instances only [eq_le, eq_sSup, isLUB_sSup]
+  isGLB_sInf _ := by simp +instances only [eq_le, eq_sInf, isGLB_sInf]
   le_top := by intros; simp +instances [eq_le, eq_top]
   bot_le := by intros; simp +instances [eq_le, eq_bot]
 
 /-- A function to create a provable equal copy of a frame with possibly different definitional
 equalities. -/
+@[implicit_reducible]
 def Frame.copy (c : Frame α) (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (top : α) (eq_top : top = (by infer_instance : Top α).top)
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
@@ -212,6 +213,7 @@ def Frame.copy (c : Frame α) (le : α → α → Prop) (eq_le : le = (by infer_
 
 /-- A function to create a provable equal copy of a coframe with possibly different definitional
 equalities. -/
+@[implicit_reducible]
 def Coframe.copy (c : Coframe α) (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (top : α) (eq_top : top = (by infer_instance : Top α).top)
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
@@ -228,6 +230,7 @@ def Coframe.copy (c : Coframe α) (le : α → α → Prop) (eq_le : le = (by in
 
 /-- A function to create a provable equal copy of a complete distributive lattice
 with possibly different definitional equalities. -/
+@[implicit_reducible]
 def CompleteDistribLattice.copy (c : CompleteDistribLattice α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (top : α) (eq_top : top = (by infer_instance : Top α).top)
@@ -248,6 +251,7 @@ def CompleteDistribLattice.copy (c : CompleteDistribLattice α)
 
 /-- A function to create a provable equal copy of a conditionally complete lattice
 with possibly different definitional equalities. -/
+@[implicit_reducible]
 def ConditionallyCompleteLattice.copy (c : ConditionallyCompleteLattice α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (sup : α → α → α) (eq_sup : sup = (by infer_instance : Max α).max)
@@ -259,7 +263,5 @@ def ConditionallyCompleteLattice.copy (c : ConditionallyCompleteLattice α)
     le eq_le sup eq_sup inf eq_inf
   sSup := sSup
   sInf := sInf
-  le_csSup := by intro _ _ hb h; subst_vars; exact le_csSup _ _ hb h
-  csSup_le := by intro _ _ hb h; subst_vars; exact csSup_le _ _ hb h
-  csInf_le := by intro _ _ hb h; subst_vars; exact csInf_le _ _ hb h
-  le_csInf := by intro _ _ hb h; subst_vars; exact le_csInf _ _ hb h
+  isLUB_csSup := by subst_vars; exact c.isLUB_csSup
+  isGLB_csInf := by subst_vars; exact c.isGLB_csInf

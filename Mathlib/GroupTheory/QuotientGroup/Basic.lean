@@ -8,7 +8,6 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
 public import Mathlib.Data.Int.Cast.Lemmas
-public import Mathlib.GroupTheory.Congruence.Hom
 public import Mathlib.GroupTheory.Coset.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
@@ -71,6 +70,25 @@ theorem strictMono_comap_prod_map :
     StrictMono fun H : Subgroup G ↦ (H.comap N.subtype, H.map (mk' N)) :=
   strictMono_comap_prod_image N
 
+/-- `(G × H) / (A × B)` is in bijection with `G / A × H / B`. -/
+@[to_additive (attr := simps) QuotientAddGroup.prodEquiv
+/-- `(G × H) / (A × B)` is in bijection with `G / A × H / B`. -/]
+def prodEquiv (A : Subgroup G) (B : Subgroup H) : (G × H) ⧸ (A.prod B) ≃ (G ⧸ A) × H ⧸ B where
+  toFun q := q.liftOn' (fun (g, h) ↦ (g, h))
+      (by simp [QuotientGroup.leftRel_apply, Subgroup.mem_prod, QuotientGroup.eq])
+  invFun q := q.1.liftOn₂' q.2 (fun g h ↦ (g, h))
+    (by simp [QuotientGroup.leftRel_apply, Subgroup.mem_prod, QuotientGroup.eq, ← and_imp])
+  left_inv q := q.inductionOn' (by simp)
+  right_inv := fun (q₁, q₂) ↦ Quotient.inductionOn₂' q₁ q₂ (by simp)
+
+/-- `(G × H) / (A × B)` is isomorphic to `G / A × H / B`. -/
+@[to_additive (attr := simps!) QuotientAddGroup.prodAddEquiv
+/-- `(G × H) / (A × B)` is isomorphic to `G / A × H / B`. -/]
+def prodMulEquiv (A : Subgroup G) (B : Subgroup H) [A.Normal] [B.Normal] :
+    (G × H) ⧸ (A.prod B) ≃* (G ⧸ A) × H ⧸ B where
+  __ := prodEquiv A B
+  map_mul' q₁ q₂ := Quotient.inductionOn₂' q₁ q₂ (fun _ _ ↦ rfl)
+
 variable (φ : G →* H)
 
 open MonoidHom
@@ -83,11 +101,6 @@ def kerLift : G ⧸ ker φ →* H :=
 @[to_additive (attr := simp)]
 theorem kerLift_mk (g : G) : (kerLift φ) g = φ g :=
   rfl
-
-@[deprecated (since := "2025-10-28")]
-alias _root_.QuotientAddGroup.kerLift_mk' := _root_.QuotientAddGroup.kerLift_mk
-@[to_additive existing, deprecated (since := "2025-10-28")]
-alias kerLift_mk' := kerLift_mk
 
 @[to_additive]
 theorem kerLift_injective : Injective (kerLift φ) := fun a b =>
@@ -264,7 +277,7 @@ defines an isomorphism between `H/(H ∩ N)` and `(HN)/N`. -/
 subgroup `H` of the normalizer of `N` in `G`,
 defines an isomorphism between `H/(H ∩ N)` and `(H + N)/N` -/]
 noncomputable def quotientInfEquivProdNormalizerQuotient (H N : Subgroup G)
-    (hLE : H ≤ N.normalizer) :
+    (hLE : H ≤ normalizer N) :
     letI := Subgroup.normal_subgroupOf_of_le_normalizer hLE
     letI := Subgroup.normal_subgroupOf_sup_of_le_normalizer hLE
     H ⧸ N.subgroupOf H ≃* (H ⊔ N : Subgroup G) ⧸ N.subgroupOf (H ⊔ N) :=
@@ -342,7 +355,6 @@ section CorrespTheorem
 -- All these theorems are primed because `QuotientGroup.mk'` is.
 set_option linter.docPrime false
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem le_comap_mk' (N : Subgroup G) [N.Normal] (H : Subgroup (G ⧸ N)) :
     N ≤ Subgroup.comap (QuotientGroup.mk' N) H := by
@@ -353,7 +365,6 @@ theorem comap_map_mk' (N H : Subgroup G) [N.Normal] :
     Subgroup.comap (mk' N) (Subgroup.map (mk' N) H) = N ⊔ H := by
   simp [Subgroup.comap_map_eq, sup_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **correspondence theorem**, or lattice theorem,
 or fourth isomorphism theorem for multiplicative groups -/
 @[to_additive /-- The **correspondence theorem**, or lattice theorem,
@@ -374,7 +385,6 @@ section trivial
 theorem subsingleton_quotient_top : Subsingleton (G ⧸ (⊤ : Subgroup G)) := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the quotient by a subgroup gives a singleton then the subgroup is the whole group. -/
 @[to_additive /-- If the quotient by an additive subgroup gives a singleton then the additive
 subgroup is the whole additive group. -/]
@@ -413,7 +423,7 @@ of type `G →+ A` and the group of homomorphisms `G ⧸ H →+ A`.
 def _root_.MonoidHom.restrictHomKerEquiv (A : Type*) [CommGroup A] (H : Subgroup G) [H.Normal] :
     (MonoidHom.restrictHom H A).ker ≃* (G ⧸ H →* A) where
   toFun := fun ⟨f, hf⟩ ↦ QuotientGroup.lift _ f
-    (by simpa [mem_ker, restrictHom_apply, restrict_eq_one_iff] using hf)
+    (by simpa [mem_ker, restrictHom_apply, restrict_eq_one_iff] using! hf)
   invFun f := ⟨f.comp (QuotientGroup.mk' H), restrict_eq_one_iff.mpr <| le_comap_mk' H f.ker⟩
   map_mul' _ _ := by ext; simp
   left_inv _ := by simp
@@ -444,3 +454,38 @@ theorem mk_int_mul (n : ℤ) (a : R) : ((n * a : R) : R ⧸ N) = n • ↑a := b
   rw [← zsmul_eq_mul, mk_zsmul N a n]
 
 end QuotientAddGroup
+
+namespace QuotientGroup
+
+section powMonoidHom
+
+-- TODO: Generalize to arbitrary products of homomorphisms
+
+variable {ι : Type*} (A : ι → Type*) [∀ i, CommGroup (A i)] (n : ℕ)
+
+/-- The isomorphism between the quotient of a product by the image of the `n`th power map
+and the product of the quotients by the images of the `n`th power maps on the factors. -/
+@[to_additive
+  /-- The isomorphism between the quotient of a product by the image of the multiplication-by-`n`
+  map and the product of the quotients by the images of the multiplication-by-`n` maps
+  on the factors. -/ ]
+noncomputable
+def mulEquivPiModRangePowMonoidHom :
+    ((i : ι) → A i) ⧸ (powMonoidHom n).range ≃* ((i : ι) → A i ⧸ (powMonoidHom n).range) :=
+  let φ : ((i : ι) → A i) →* (i : ι) → A i ⧸ (powMonoidHom n).range := {
+    toFun x := (x ·)
+    map_one' := by simp [Pi.one_def]
+    map_mul' x y := by simp [Pi.mul_def]
+  }
+  liftEquiv (φ := φ) _ (fun y ↦ ⟨fun i ↦ Quotient.out (y i), by simp [φ]⟩) <| by
+    ext x : 1
+    simpa [φ, funext_iff] using (Classical.skolem (p := fun i a ↦ a ^ n = x i)).symm
+
+@[to_additive (attr := simp)]
+lemma mulEquivPiModRangePowMonoidHom_apply (x : (i : ι) → A i) :
+    mulEquivPiModRangePowMonoidHom A n ↑x = fun i ↦ ↑(x i) :=
+  rfl
+
+end powMonoidHom
+
+end QuotientGroup
