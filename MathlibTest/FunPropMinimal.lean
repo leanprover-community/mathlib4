@@ -481,12 +481,12 @@ theorem Dif_Con [Add 𝕜] (f : α → β) (hf : Dif 𝕜 f) : Con f := silentSo
 
 def f4 (a : α) := a
 
-example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch :=aesop)
+example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch := aesop)
 
 @[fun_prop]
 theorem f4_dif : Dif Nat (f4 : α → α) := silentSorry
 
-example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch :=aesop)
+example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch := aesop)
 
 
 -- Test abbrev transparency
