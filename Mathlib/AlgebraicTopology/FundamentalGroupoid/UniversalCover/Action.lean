@@ -14,9 +14,9 @@ public import Mathlib.Topology.Covering.Quotient
 
 The fundamental group `FundamentalGroup X x₀` acts on `UniversalCover x₀` by deck
 transformations: an element `g` acts on a point represented by a homotopy class of paths
-from `x₀` by prepending a loop representing `g⁻¹`. We show the action is free,
-continuous in the second variable, and locally properly discontinuous in the sense
-required by `IsQuotientCoveringMap`. As a corollary, `proj` is a quotient covering map.
+from `x₀` by prepending a loop representing `g⁻¹`. We show the action is **free**,
+continuous in the second variable, and **properly discontinuous** (in the local form
+required by `IsQuotientCoveringMap`). As a corollary, `proj` is a quotient covering map.
 
 ## Convention
 
@@ -32,8 +32,14 @@ With this convention, `(g * h) • p = g • (h • p)` follows from `(g * h)⁻
 
 ## Main definitions and results
 
-* `instance : MulAction (FundamentalGroup X x₀) (UniversalCover x₀)`
-* `UniversalCover.proj_smul`: deck transformations preserve `proj`.
+* `instance : MulAction (FundamentalGroup X x₀) (UniversalCover x₀)` —
+  the action, with `FaithfulSMul` and `ContinuousConstSMul`.
+* `UniversalCover.eq_one_of_smul_eq` — **freeness**: if any point is fixed by `g`, then
+  `g = 1`.
+* `UniversalCover.exists_nhds_smul_disjoint` — **proper discontinuity**: every point has
+  a neighborhood whose non-identity translates are disjoint from it.
+* `UniversalCover.isQuotientCoveringMap` — packages it all: `proj` is a quotient covering
+  map for the `π₁(X, x₀)`-action.
 -/
 
 public section
@@ -46,8 +52,9 @@ variable {X : Type*} [TopologicalSpace X] {x₀ : X}
 
 namespace UniversalCover
 
-/-- The `π₁(X, x₀)`-action on the universal cover: a deck transformation by `g` sends a
-homotopy class of paths from `x₀` to `x` to the class obtained by prepending `g⁻¹`.
+/-- The `π₁(X, x₀)`-action on the universal cover: a deck transformation by `g` sends
+`mk x q` to `mk x (g⁻¹.toPath.trans q)`, i.e. prepends a loop representing `g⁻¹` to the
+homotopy class.
 
 The inverse is needed because `End` reverses multiplication; see the module docstring. -/
 instance : SMul (FundamentalGroup X x₀) (UniversalCover x₀) where
@@ -81,10 +88,7 @@ instance : FaithfulSMul (FundamentalGroup X x₀) (UniversalCover x₀) where
 instance : ContinuousConstSMul (FundamentalGroup X x₀) (UniversalCover x₀) where
   continuous_const_smul g := by
     rw [(isQuotientMap_ofBasedPath x₀).continuous_iff]
-    -- Pick a loop representing `g⁻¹.toPath`.
     obtain ⟨γ, hγ⟩ := Quotient.exists_rep (g⁻¹.toPath : Path.Homotopic.Quotient x₀ x₀)
-    -- Continuity of the based-path-level lift `β ↦ ofPath (γ.trans β.toPath)`,
-    -- composed with `ofBasedPath`.
     have hγ' : Path.Homotopic.Quotient.mk γ = g⁻¹.toPath := hγ
     suffices h_cont : Continuous (fun β : BasedPath x₀ =>
         ofBasedPath x₀ (BasedPath.ofPath (γ.trans β.toPath))) by
@@ -96,7 +100,6 @@ instance : ContinuousConstSMul (FundamentalGroup X x₀) (UniversalCover x₀) w
     refine (continuous_ofBasedPath x₀).comp ?_
     refine Continuous.subtype_mk ?_ _
     refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
-    -- Continuity of `(β, t) ↦ (γ.trans β.toPath) t : BasedPath x₀ × I → X`.
     have h_eval : Continuous fun p : BasedPath x₀ × I => p.1.1 p.2 :=
       continuous_eval.comp (continuous_subtype_val.prodMap continuous_id)
     simpa using
@@ -110,9 +113,8 @@ instance : ContinuousConstSMul (FundamentalGroup X x₀) (UniversalCover x₀) w
 are in the same orbit. -/
 theorem apply_eq_iff_mem_orbit {p₁ p₂ : UniversalCover x₀} :
     proj p₁ = proj p₂ ↔ p₁ ∈ MulAction.orbit (FundamentalGroup X x₀) p₂ := by
-  constructor
-  · intro h
-    rcases p₁ with ⟨x₁, q₁⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · rcases p₁ with ⟨x₁, q₁⟩
     rcases p₂ with ⟨x₂, q₂⟩
     have hx : x₁ = x₂ := h
     subst hx
@@ -135,8 +137,8 @@ section ProperlyDiscontinuous
 
 variable [LocPathConnectedSpace X] [PathConnectedSpace X] [SemilocallySimplyConnectedSpace X]
 
-/-- A stabilising point forces the action to be trivial: if `g • e = e` for some `e`, then
-`g = 1`. -/
+/-- **Freeness** of the action: a stabilising point forces the action to be trivial.
+If `g • e = e` for some `e`, then `g = 1`. -/
 theorem eq_one_of_smul_eq (g : FundamentalGroup X x₀) (e : UniversalCover x₀)
     (h : g • e = e) : g = 1 := by
   haveI : PathConnectedSpace (UniversalCover x₀) := pathConnectedSpace x₀
@@ -146,18 +148,17 @@ theorem eq_one_of_smul_eq (g : FundamentalGroup X x₀) (e : UniversalCover x₀
   refine eq_of_smul_eq_smul (α := UniversalCover x₀) (m₁ := g) (m₂ := 1) fun p ↦ ?_
   rw [show g • p = p from congrFun h_lift_eq p, one_smul]
 
-/-- Every point of the universal cover has a neighborhood whose non-identity translates
-are disjoint from it. -/
+/-- **Proper discontinuity** of the action (in the local form `IsQuotientCoveringMap`
+consumes): every point of the universal cover has a neighborhood whose non-identity
+translates are disjoint from it. -/
 theorem exists_nhds_smul_disjoint (e : UniversalCover x₀) :
     ∃ U ∈ 𝓝 e, ∀ g : FundamentalGroup X x₀,
       ((g • ·) '' U ∩ U).Nonempty → g = 1 := by
-  -- Decompose `e` and pick a good neighborhood of its projection.
   rcases e with ⟨x, q⟩
   obtain ⟨baseU, hU_open, hxU, hU_pathConn, hU_slsc_raw⟩ :=
     exists_pathConnected_slsc_neighborhood x
   have hU_slsc : IsPathHomotopyTrivial baseU := fun {_ _} p _ hp hq ↦
     hU_slsc_raw (p.source ▸ hp ⟨0, rfl⟩) (p.target ▸ hp ⟨1, rfl⟩) p _ hp hq
-  -- The sheet through `mk x q` is the required open neighborhood.
   let U := sheet baseU hxU q
   have hU_open' : IsOpen U := isOpen_sheet baseU hU_open hxU q
   have hU_mem : mk x q ∈ U := by
@@ -168,7 +169,6 @@ theorem exists_nhds_smul_disjoint (e : UniversalCover x₀) :
         rw [ofBasedPath_ofPath]]
       exact mem_sheet_self hxU p
   refine ⟨U, hU_open'.mem_nhds hU_mem, fun g hgU ↦ ?_⟩
-  -- A point in the intersection witnesses that g fixes some point of U.
   obtain ⟨_, ⟨y, hyU, rfl⟩, hgyU⟩ := hgU
   have h_proj_eq : proj (g • y) = proj y := proj_smul g y
   have heq : g • y = y :=
@@ -176,12 +176,18 @@ theorem exists_nhds_smul_disjoint (e : UniversalCover x₀) :
   exact eq_one_of_smul_eq g y heq
 
 /-- The endpoint projection from the universal cover is a quotient covering map for the
-`π₁(X, x₀)`-action. -/
+`π₁(X, x₀)`-action. Combines the action's continuity, transitivity on fibers, and proper
+discontinuity into the standard `IsQuotientCoveringMap` package. -/
 theorem isQuotientCoveringMap :
     IsQuotientCoveringMap (proj : UniversalCover x₀ → X) (FundamentalGroup X x₀) where
   __ := (isCoveringMap x₀).isOpenMap.isQuotientMap (continuous_proj x₀) proj_surjective
   apply_eq_iff_mem_orbit := apply_eq_iff_mem_orbit
   disjoint := exists_nhds_smul_disjoint
+
+/-- The action is **free**: it is a cancellative `SMul`. -/
+instance isCancelSMul :
+    IsCancelSMul (FundamentalGroup X x₀) (UniversalCover x₀) :=
+  isQuotientCoveringMap.isCancelSMul
 
 end ProperlyDiscontinuous
 

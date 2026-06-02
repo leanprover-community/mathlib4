@@ -57,7 +57,12 @@ open Topology
 variable {X : Type*} [TopologicalSpace X]
 
 /-- The endpoint-plus-homotopy-class model for the universal cover. The topology is supplied below
-as the quotient topology from `BasedPath x₀`. -/
+as the quotient topology from `BasedPath x₀`.
+
+This definition is exposed (rather than the constructor `mk` alone) so that downstream files
+can define functions whose computation rules — e.g. the deck-transformation action's
+`smul_mk` — reduce by `rfl`. Users should still prefer the `mk`/`proj`/`fiberEquiv` API
+whenever possible. -/
 @[expose]
 def UniversalCover (x₀ : X) :=
   Σ x : X, Path.Homotopic.Quotient x₀ x
@@ -66,7 +71,10 @@ namespace UniversalCover
 
 variable {x₀ x : X}
 
-/-- Construct a term of `UniversalCover`. -/
+/-- Construct a term of `UniversalCover`.
+The constructor is exposed together with `UniversalCover` itself so that downstream
+functions defined on `mk` reduce by `rfl`. Users should still prefer the
+`mk`/`proj`/`fiberEquiv` API whenever possible. -/
 @[expose]
 def mk (x : X) (q : Path.Homotopic.Quotient x₀ x) : UniversalCover x₀ :=
   ⟨x, q⟩
@@ -119,7 +127,6 @@ def proj : UniversalCover x₀ → X :=
 @[simp]
 theorem proj_mk (q : Path.Homotopic.Quotient x₀ x) :
     proj (mk x q) = x := (rfl)
-
 
 /-- `proj` composed with `ofBasedPath` reads off the endpoint of the representative. -/
 @[simp]
