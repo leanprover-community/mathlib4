@@ -374,6 +374,12 @@ lemma «exists» {p : Finset α → Prop} :
   mp := fun ⟨s, hs⟩ ↦ ⟨s, s.finite_toSet, by simpa⟩
   mpr := fun ⟨s, hs, hs'⟩ ↦ ⟨hs.toFinset, hs'⟩
 
+lemma mem_range_coe_iff {s : Set α} : s ∈ Set.range ((↑) : Finset α → Set α) ↔ s.Finite where
+  mp := by
+    rintro ⟨t, rfl⟩
+    simp
+  mpr hs := ⟨hs.toFinset, by simp⟩
+
 end Finset
 
 namespace Multiset
@@ -475,12 +481,6 @@ after possibly setting up some `Fintype` and classical `Decidable` instances.
 
 section SetFiniteConstructors
 variable {s t u : Set α} {a : α}
-
-lemma _root_.Finset.mem_range_coe_iff : s ∈ range ((↑) : Finset α → Set α) ↔ s.Finite where
-  mp := by
-    rintro ⟨t, rfl⟩
-    simp
-  mpr hs := ⟨hs.toFinset, by simp⟩
 
 @[nontriviality]
 theorem Finite.of_subsingleton [Subsingleton α] (s : Set α) : s.Finite :=
