@@ -210,9 +210,10 @@ theorem algebraMap_gradedMul (r : R) (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i))
     exact DFunLike.congr_fun this x
   ext ia a ib b
   dsimp
-  erw [tmul_of_gradedMul_of_tmul]
+  rw [DirectSum.one_def, ← DirectSum.lof_eq_of R, tmul_of_gradedMul_of_tmul]
   rw [zero_mul, uzpow_zero, one_smul, smul_tmul']
-  erw [one_mul, _root_.Algebra.smul_def]
+  simp only [DirectSum.lof_eq_of, ← DirectSum.one_def, one_mul]
+  rw [_root_.Algebra.smul_def]
 
 theorem one_gradedMul (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     gradedMul R 𝒜 ℬ 1 x = x := by

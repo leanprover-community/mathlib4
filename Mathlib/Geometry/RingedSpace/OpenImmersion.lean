@@ -124,8 +124,7 @@ noncomputable def isoRestrict : X ≅ Y.restrict H.base_open :=
       cases U
       dsimp only [IsOpenMap.functor, Functor.op, Opens.map]
       congr 2
-      erw [Set.preimage_image_eq _ H.base_open.injective]
-      rfl
+      simp [Set.preimage_image_eq _ H.base_open.injective]
     · intro U V i
       dsimp
       simp only [NatTrans.naturality_assoc, TopCat.Presheaf.pushforward_obj_obj,
@@ -393,9 +392,11 @@ def pullbackConeOfLeftLift : s.pt ⟶ (pullbackConeOfLeft f g).pt where
                     (TopCat.snd_isOpenEmbedding_of_left hf.base_open g.base).injective]
                 rfl))
       naturality := fun U V i => by
-        erw [s.snd.c.naturality_assoc]
-        rw [Category.assoc]
-        erw [← s.pt.presheaf.map_comp, ← s.pt.presheaf.map_comp]
+        simp only [pullbackConeOfLeft, PullbackCone.mk_pt, restrict_presheaf, Functor.comp_obj,
+          Functor.comp_map, Functor.op_obj, Functor.op_map]
+        rw [s.snd.c.naturality_assoc]
+        simp only [Category.assoc, TopCat.Presheaf.pushforward_obj_map]
+        simp [← Functor.map_comp]
         congr 1 }
 
 set_option backward.isDefEq.respectTransparency false in
@@ -437,7 +438,7 @@ theorem pullbackConeOfLeftLift_snd :
 
 set_option backward.isDefEq.respectTransparency false in
 instance pullbackConeSndIsOpenImmersion : IsOpenImmersion (pullbackConeOfLeft f g).snd := by
-  erw [CategoryTheory.Limits.PullbackCone.mk_snd]
+  rw [pullbackConeOfLeft, CategoryTheory.Limits.PullbackCone.mk_snd]
   infer_instance
 
 /-- The constructed pullback cone is indeed the pullback. -/
@@ -1138,7 +1139,8 @@ theorem pullback_snd_isIso_of_range_subset (H' : Set.range g.base ⊆ Set.range 
     (F := LocallyRingedSpace.forgetToSheafedSpace)
   apply +allowSynthFailures Functor.ReflectsIsomorphisms.reflects
     (F := SheafedSpace.forgetToPresheafedSpace)
-  erw [← PreservesPullback.iso_hom_snd
+  rw [← Functor.comp_map]
+  rw [← PreservesPullback.iso_hom_snd
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace) f g]
   -- Porting note: was `inferInstance`
   exact IsIso.comp_isIso' inferInstance <|

@@ -117,11 +117,9 @@ lemma linearMap_eq_iff_of_eq_span {V : Submodule R M} (f g : V →ₗ[R] N)
     | mem x hx => exact h ⟨x, hx⟩
     | zero => erw [map_zero, map_zero]
     | add x y hx hy hx' hy' =>
-        erw [f.map_add ⟨x, hx⟩ ⟨y, hy⟩, g.map_add ⟨x, hx⟩ ⟨y, hy⟩]
-        rw [hx', hy']
+        rw [← AddMemClass.mk_add_mk (span R S) x y hx hy, map_add, map_add, hx', hy']
     | smul a x hx hx' =>
-        erw [f.map_smul a ⟨x, hx⟩, g.map_smul a ⟨x, hx⟩]
-        rw [hx']
+        rw [← SetLike.mk_smul_mk (span R S) a x hx, map_smul, map_smul, hx']
 
 lemma linearMap_eq_iff_of_span_eq_top (f g : M →ₗ[R] N)
     {S : Set M} (hM : span R S = ⊤) :

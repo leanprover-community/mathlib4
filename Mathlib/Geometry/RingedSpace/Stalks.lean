@@ -160,7 +160,8 @@ instance isIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) [IsIso α] (x 
     IsIso (α.stalkMap x) where
   out := by
     let β : Y ⟶ X := CategoryTheory.inv α
-    have h_eq : (α ≫ β).base x = x := by rw [IsIso.hom_inv_id α, id_base, TopCat.id_app]
+    have h_eq : β.base (α.base x) = x := by
+      rw [← TopCat.comp_app, ← comp_base, IsIso.hom_inv_id α, id_base, TopCat.id_app]
     -- Intuitively, the inverse of the stalk map of `α` at `x` should just be the stalk map of `β`
     -- at `α x`. Unfortunately, we have a problem with dependent type theory here: Because `x`
     -- is not *definitionally* equal to `β (α x)`, the map `stalk_map β (α x)` has not the correct
@@ -168,11 +169,11 @@ instance isIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) [IsIso α] (x 
     -- To get a proper inverse, we need to compose with the `eqToHom` arrow
     -- `X.stalk x ⟶ X.stalk ((α ≫ β).base x)`.
     refine
-      ⟨eqToHom (show X.presheaf.stalk x = X.presheaf.stalk ((α ≫ β).base x) by rw [h_eq]) ≫
+      ⟨eqToHom (show X.presheaf.stalk x = X.presheaf.stalk (β.base (α.base x)) by rw [h_eq]) ≫
           (β.stalkMap (α.base x) :),
         ?_, ?_⟩
-    · rw [← Category.assoc, congr_point α x ((α ≫ β).base x) h_eq.symm, Category.assoc]
-      erw [← stalkMap.comp β α (α.base x)]
+    · rw [← Category.assoc, congr_point α x (β.base (α.base x)) h_eq.symm, Category.assoc]
+      rw [← stalkMap.comp β α (α.base x)]
       rw [congr_hom _ _ (IsIso.inv_hom_id α), stalkMap.id, eqToHom_trans_assoc, eqToHom_refl,
         Category.id_comp]
     · rw [Category.assoc, ← stalkMap.comp, congr_hom _ _ (IsIso.hom_inv_id α), stalkMap.id,
