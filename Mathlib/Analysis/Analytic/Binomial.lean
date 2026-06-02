@@ -203,7 +203,7 @@ theorem one_div_sub_sq_hasFPowerSeriesOnBall_zero {z : ℂ} (hz : z ≠ 0) :
 
 theorem one_div_one_sub_hasFPowerSeriesOnBall_zero :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x : ℂ)) (.ofScalars (𝕜 := ℂ) ℂ 1) 0 1 := by
-  simpa using one_div_sub_hasFPowerSeriesOnBall_zero (z := 1)
+  simpa using! one_div_sub_hasFPowerSeriesOnBall_zero (z := 1)
 
 theorem one_div_one_sub_sq_hasFPowerSeriesOnBall_zero :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x : ℂ) ^ 2) (.ofScalars ℂ fun n ↦ (n + 1 : ℂ)) 0 1 := by
@@ -271,7 +271,7 @@ theorem one_div_one_sub_rpow_hasFPowerSeriesOnBall_zero (a : ℝ) :
     norm_cast
   · simp
   · intro x hx
-    have : |x| < 1 := by simpa [enorm_eq_nnnorm] using hx
+    have : |x| < 1 := by simpa [enorm_eq_nnnorm] using! hx
     have : 0 ≤ 1 - x := by grind
     simp [-Complex.inv_re, ← Complex.ofReal_one, ← Complex.ofReal_sub, ← Complex.ofReal_cpow this]
 
@@ -301,7 +301,7 @@ theorem one_div_sub_sq_hasFPowerSeriesOnBall_zero {r : ℝ} (hr : r ≠ 0) :
 
 theorem one_div_one_sub_hasFPowerSeriesOnBall_zero :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x)) (.ofScalars (𝕜 := ℝ) ℝ 1) 0 1 := by
-  simpa using one_div_sub_hasFPowerSeriesOnBall_zero (r := 1)
+  simpa using! one_div_sub_hasFPowerSeriesOnBall_zero (r := 1)
 
 theorem one_div_one_sub_sq_hasFPowerSeriesOnBall_zero :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x) ^ 2) (.ofScalars ℝ fun n ↦ (n + 1 : ℝ)) 0 1 := by
