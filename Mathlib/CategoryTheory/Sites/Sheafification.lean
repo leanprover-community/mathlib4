@@ -149,9 +149,7 @@ variable {D}
 set_option backward.defeqAttrib.useBackward true in
 theorem isIso_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : IsIso (toSheafify J P) := by
   refine ⟨(sheafificationAdjunction J D |>.counit.app ⟨P, hP⟩).hom, ?_, ?_⟩
-  · change _ = (𝟙 (sheafToPresheaf J D ⋙ 𝟭 (Cᵒᵖ ⥤ D)) :).app ⟨P, hP⟩
-    rw [← sheafificationAdjunction J D |>.right_triangle]
-    rfl
+  · exact sheafificationAdjunction J D |>.right_triangle_components ⟨P, hP⟩
   · change (sheafToPresheaf _ _).map _ ≫ _ = _
     change _ ≫ (sheafificationAdjunction J D).unit.app ((sheafToPresheaf J D).obj ⟨P, hP⟩) = _
     rw [← (sheafificationAdjunction J D).inv_counit_map (X := ⟨P, hP⟩)]
