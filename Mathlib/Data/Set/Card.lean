@@ -954,24 +954,16 @@ theorem ncard_coe {α : Type*} (s : Set α) :
 /-- Given a finite set `s`, the number of subsets of `s` with cardinality `n` is
 `s.ncard.choose n`. See also `Finset.card_powersetCard`. -/
 lemma ncard_powerset_ncard (hs : s.Finite) (n : ℕ) :
-    {t : Set α | t.ncard = n ∧ t ⊆ s}.ncard = s.ncard.choose n := by
-  have : {t : Set α | t.ncard = n ∧ t ⊆ s}.Finite := hs.finite_subsets.subset (by grind)
+    {t ⊆ s | t.ncard = n}.ncard = s.ncard.choose n := by
   lift s to Finset α using hs
-  suffices h : {t | t.ncard = n ∧ t ⊆ (s : Set α)}.ncard = (Finset.powersetCard n s).card by
-    rw [h, ncard_coe_finset s, s.card_powersetCard]
-  rw [Set.ncard_eq_toFinset_card _ this]
-  convert Finset.card_image_of_injOn Finset.coe_injective.injOn
-  ext t
-  simp only [Finite.mem_toFinset, mem_setOf_eq, Finset.mem_image, Finset.mem_powersetCard]
-  constructor
-  · intro ⟨t_ncard, t_subset⟩
-    lift t to Finset α using s.finite_toSet.subset t_subset
-    rw [Set.ncard_coe_finset] at t_ncard
-    rw [Finset.coe_subset] at t_subset
-    use t
-  · rintro ⟨t₁, ⟨t₁_subset, t₁_card⟩, rfl⟩
-    rw [Set.ncard_coe_finset, t₁_card, Finset.coe_subset]
-    exact ⟨rfl, t₁_subset⟩
+  have h₁ : {t ⊆ (s : Set α) | t.ncard = n} ⊆ range ((↑) : Finset α → Set α) := by
+    intro t ht
+    rw [Finset.mem_range_coe_iff]
+    exact s.finite_toSet.subset ht.1
+  have h₂ : (↑) ⁻¹' {t ⊆ (s : Set α) | t.ncard = n} = (s.powersetCard n : Set (Finset α)) := by
+    ext t
+    simp
+  grind [ncard_coe_finset, ncard_preimage_of_injective_subset_range, Finset.card_powersetCard]
 
 section Lattice
 
