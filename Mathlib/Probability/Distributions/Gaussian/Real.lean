@@ -268,7 +268,7 @@ lemma integral_gaussianReal_eq_integral_smul {E : Type*} [NormedAddCommGroup E] 
       (ae_of_all _ fun _ ↦ gaussianPDF_lt_top)]
 
 lemma measurable_gaussianReal :
-    Measurable (fun (p : ℝ × ℝ≥0) ↦ gaussianReal p.1 p.2) :=
+    Measurable (fun (μ, v) ↦ gaussianReal μ v) :=
   Measurable.ite (by measurability) (by fun_prop) (by fun_prop)
 
 section Transformations
