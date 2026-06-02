@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Monad
 public import Mathlib.Algebra.MvPolynomial.Nilpotent
-public import Mathlib.AlgebraicGeometry.Geometrically.Irreducible
+public import Mathlib.AlgebraicGeometry.Geometrically.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 
 /-!
@@ -400,16 +400,25 @@ instance : GeometricallyIrreducible (𝔸(n; S) ↘ S) := by
 instance [IrreducibleSpace S] : IrreducibleSpace 𝔸(n; S) :=
   GeometricallyIrreducible.irreducibleSpace (𝔸(n; S) ↘ S) (isOpenMap_over S)
 
+instance : GeometricallyReduced (𝔸(n; S) ↘ S) := by
+  rw [geometricallyReduced_iff]
+  introv K h
+  apply ObjectProperty.prop_of_iso _
+    ((h.isoIsPullback _ _ (isPullback_map _)) ≪≫ (SpecIso n (.of K))).symm
+  infer_instance
+
 instance [h : IsReduced S] : IsReduced 𝔸(n; S) := by
   wlog hS : ∃ R, S = Spec R
-  · apply +allowSynthFailures @IsReduced.of_openCover _ (S.affineCover.pullback₁ (𝔸(n; S) ↘ S))
+  · rw [IsReduced.iff_of_openCover _ (S.affineCover.pullback₁ (𝔸(n; S) ↘ S))]
     intro i
-    have hU : IsReduced (S.affineCover.X i) := isReduced_of_isOpenImmersion (S.affineCover.f i)
-    have hA : IsReduced 𝔸(n; S.affineCover.X i) := this _ ⟨_, rfl⟩
+    have : IsReduced 𝔸(n; S.affineCover.X i) := this _ ⟨_, rfl⟩
     exact isReduced_of_isOpenImmersion ((isPullback_map _).isoPullback.inv)
   obtain ⟨R, rfl⟩ := hS
   rw [affine_isReduced_iff] at h
   exact isReduced_of_isOpenImmersion (SpecIso n R).hom
+
+instance : GeometricallyIntegral (𝔸(n; S) ↘ S) :=
+  .of_geometricallyReduced_of_geometricallyIrreducible _
 
 instance [IsIntegral S] : IsIntegral 𝔸(n; S) := isIntegral_of_irreducibleSpace_of_isReduced _
 
