@@ -27,7 +27,7 @@ since they have both `≤` and `⊆` defined on them, with different meanings.
 TODO: Unify more order operations suh as `∪`/`⊔` and `∩`/`⊓`.
 -/
 
-/-- `UsesSetNotationForOrder` is used to tracks whether a type is tagged with
+/-- `UsesSetNotationForOrder` is used to track whether a type is tagged with
 `@[use_set_notation_for_order]`. -/
 public class UsesSetNotationForOrder (α : Type*)
 
