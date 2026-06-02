@@ -116,8 +116,8 @@ given by `MulHom.piMap f x i = f i x`. This is `Pi.map` for `MulHom`s. -/
   /-- A family of AddHom's `f i : M i →ₙ+ N i` defines an AddHom
   `AddHom.piMap f : (Π i, M i) →ₙ+ (Π i, N i)`
   given by `AddHom.piMap f x i = f i x`. This is `Pi.map` for `AddHom`s. -/]
-def MulHom.piMap [∀ i, Mul (M i)] [∀ i, Mul (N i)] (g : ∀ i, M i →ₙ* N i) :
-    (∀ i, M i) →ₙ* (∀ i, N i) :=
+def MulHom.piMap [Π i, Mul (M i)] [Π i, Mul (N i)] (g : Π i, M i →ₙ* N i) :
+    (Π i, M i) →ₙ* (Π i, N i) :=
   .pi fun i ↦ (g i).comp (Pi.evalMulHom M i)
 
 /-- `Function.const` as a `MulHom`. -/
@@ -209,8 +209,8 @@ given by `MonoidHom.piMap f x i = f i x`. This is `Pi.map` for `MonoidHom`s. -/
   /-- A family of additive monoid homomorphisms `f i : M i →+ N i` defines an additive monoid
   homomorphism  `AddMonoidHom.piMap f : (Π i, M i) →+ (Π i, N i)`
   given by `AddMonoidHom.piMap f x i = f i x`. This is `Pi.map` for `AddMonoidHom`s. -/]
-def MonoidHom.piMap [∀ i, MulOneClass (M i)] [∀ i, MulOneClass (N i)] (g : ∀ i, M i →* N i) :
-    (∀ i, M i) →* (∀ i, N i) :=
+def MonoidHom.piMap [Π i, MulOneClass (M i)] [Π i, MulOneClass (N i)] (g : Π i, M i →* N i) :
+    (Π i, M i) →* (Π i, N i) :=
   .pi fun i ↦ (g i).comp (Pi.evalMonoidHom M i)
 
 /-- `Function.const` as a `MonoidHom`. -/
