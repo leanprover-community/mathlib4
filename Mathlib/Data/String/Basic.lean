@@ -129,7 +129,7 @@ theorem toList_nonempty :
 theorem head_empty : "".toList.head! = default :=
   rfl
 
-protected theorem le_iff_not_lt {s₁ s₂ : String} : s₁ ≤ s₂ ↔ ¬ s₂ < s₁ :=
+private theorem le_iff_not_lt {s₁ s₂ : String} : s₁ ≤ s₂ ↔ ¬ s₂ < s₁ :=
   Iff.rfl
 
 theorem le_iff_toList_le {s₁ s₂ : String} : s₁ ≤ s₂ ↔ s₁.toList ≤ s₂.toList := by
