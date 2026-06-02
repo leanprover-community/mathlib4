@@ -394,7 +394,7 @@ def optionEquivLeft : MvPowerSeries (Option σ) R ≃ₐ[R] PowerSeries (MvPower
   map_mul' := optionFunLeft_mul
   map_add' _ _ := by ext; simp [coeff_coeff_optionFunLeft]
   commutes' := by
-    simpa [MvPowerSeries.algebraMap_apply, PowerSeries.algebraMap_apply] using
+    simpa [MvPowerSeries.algebraMap_apply, PowerSeries.C] using
       optionFunLeft_monomial (0 : Option σ →₀ ℕ)
 
 lemma coeff_coeff_optionEquivLeft (p : MvPowerSeries (Option σ) R) (n : ℕ) (x : σ →₀ ℕ) :
@@ -495,7 +495,8 @@ lemma optionEquivRight_X_some (i : σ) : optionEquivRight σ R (X (some i)) = X 
   simpa [← X_def] using optionEquivRight_monomial (single (some i) 1) (1 : R)
 
 lemma optionEquivRight_X_none : optionEquivRight σ R (X none) = C PowerSeries.X := by
-  simpa [← X_def] using optionEquivRight_monomial (single none 1) (1 : R)
+  simpa [← X_def, PowerSeries.monomial, PowerSeries.X] using
+    optionEquivRight_monomial (single none 1) (1 : R)
 
 lemma optionEquivRight_C (r : R) : optionEquivRight σ R (C r) = C (PowerSeries.C r) := by
   simpa using optionEquivRight_monomial 0 (r : R)
