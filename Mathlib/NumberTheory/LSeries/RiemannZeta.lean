@@ -160,8 +160,8 @@ lemma riemannZeta_eq_completedRiemannZeta₀_div :
   ext1 s
   rcases eq_or_ne s 0 with rfl | hs
   · simp [riemannZeta_zero]
-  have : s / 2 ≠ 0 := by grind
-  grind [Gamma_add_one, Gammaℝ, completedRiemannZeta_eq, riemannZeta_def_of_ne_zero]
+  rw [riemannZeta_def_of_ne_zero hs, completedRiemannZeta_eq, Gammaℝ, Gamma_add_one _ (by grind)]
+  field
 
 /-- The trivial zeroes of the zeta function. -/
 theorem riemannZeta_neg_two_mul_nat_add_one (n : ℕ) : riemannZeta (-2 * (n + 1)) = 0 :=
