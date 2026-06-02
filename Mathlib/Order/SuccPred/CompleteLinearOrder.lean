@@ -26,7 +26,7 @@ variable [ConditionallyCompleteLinearOrder α] [Nonempty ι] {f : ι → α} {s 
 @[to_dual]
 lemma csSup_mem_of_not_isSuccLimit (hne : s.Nonempty) (hbdd : BddAbove s)
     (hlim : ¬ IsSuccLimit (sSup s)) : sSup s ∈ s := by
-  rw [IsSuccLimit, not_and_or, not_not] at hlim
+  rw [isSuccLimit_iff, not_and_or, not_not] at hlim
   rcases hlim with (hmin | hlim)
   · have ⟨a, has⟩ := hne
     rwa [← hmin.eq_of_le <| le_csSup hbdd has]
