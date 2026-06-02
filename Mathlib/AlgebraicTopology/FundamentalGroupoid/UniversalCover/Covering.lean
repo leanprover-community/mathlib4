@@ -147,9 +147,7 @@ public theorem simplyConnectedSpace [LocPathConnectedSpace X] [PathConnectedSpac
   let γ : Path (BasedPath.endpoint α) (BasedPath.endpoint α) :=
     (p.map (continuous_proj x₀)).cast
       (proj_ofBasedPath x₀ α).symm (proj_ofBasedPath x₀ α).symm
-  have hγ0 : γ 0 = proj (ofBasedPath x₀ α) := by
-    change proj (p 0) = _
-    rw [p.source]
+  have hγ0 : γ 0 = proj (ofBasedPath x₀ α) := by simp [γ]
   have hp_eq_lift :
       (p : C(I, UniversalCover x₀)) =
         (isCoveringMap x₀).liftPath γ (ofBasedPath x₀ α) hγ0 :=
@@ -162,7 +160,6 @@ public theorem simplyConnectedSpace [LocPathConnectedSpace X] [PathConnectedSpac
       Path.Homotopic.Quotient.mk (α.toPath.trans γ) = Path.Homotopic.Quotient.mk α.toPath := by
     have h_end' : ofBasedPath x₀ (BasedPath.ofPath (α.toPath.trans γ)) =
         ofBasedPath x₀ (BasedPath.ofPath α.toPath) := by
-      change ofBasedPath x₀ (BasedPath.append α γ) = _
       rw [show BasedPath.ofPath α.toPath = α from by cases α; rfl]
       exact h_end
     rw [ofBasedPath_ofPath, ofBasedPath_ofPath] at h_end'

@@ -72,12 +72,11 @@ theorem proj_smul (g : FundamentalGroup X x₀) (p : UniversalCover x₀) :
 instance : MulAction (FundamentalGroup X x₀) (UniversalCover x₀) where
   one_smul p := by
     rcases p with ⟨x, q⟩
-    change mk x ((1 : FundamentalGroup X x₀)⁻¹.toPath.trans q) = mk x q
-    rw [inv_one, FundamentalGroup.toPath_one, Path.Homotopic.Quotient.refl_trans]
+    rw [smul_mk, inv_one, FundamentalGroup.toPath_one, Path.Homotopic.Quotient.refl_trans]
   mul_smul g h p := by
     rcases p with ⟨x, q⟩
-    change mk x ((g * h)⁻¹.toPath.trans q) = mk x (g⁻¹.toPath.trans (h⁻¹.toPath.trans q))
-    rw [mul_inv_rev, FundamentalGroup.toPath_mul, Path.Homotopic.Quotient.trans_assoc]
+    rw [smul_mk, smul_mk, smul_mk, mul_inv_rev, FundamentalGroup.toPath_mul,
+      Path.Homotopic.Quotient.trans_assoc]
 
 instance : FaithfulSMul (FundamentalGroup X x₀) (UniversalCover x₀) where
   eq_of_smul_eq_smul {g₁ g₂} h := by
@@ -95,8 +94,7 @@ instance : ContinuousConstSMul (FundamentalGroup X x₀) (UniversalCover x₀) w
         ofBasedPath x₀ (BasedPath.ofPath (γ.trans β.toPath))) by
       apply h_cont.congr
       intro β
-      change ofBasedPath x₀ (BasedPath.ofPath (γ.trans β.toPath)) = g • ofBasedPath x₀ β
-      rw [ofBasedPath_ofPath, ofBasedPath_eq, smul_mk,
+      rw [ofBasedPath_ofPath, Function.comp_apply, ofBasedPath_eq, smul_mk,
         Path.Homotopic.Quotient.mk_trans, hγ']
     refine (continuous_ofBasedPath x₀).comp ?_
     refine Continuous.subtype_mk ?_ _
@@ -120,12 +118,8 @@ theorem apply_eq_iff_mem_orbit {p₁ p₂ : UniversalCover x₀} :
     have hx : x₁ = x₂ := h
     subst hx
     refine ⟨(FundamentalGroup.fromPath (q₁.trans q₂.symm))⁻¹, ?_⟩
-    change mk x₁ (((FundamentalGroup.fromPath
-      (q₁.trans q₂.symm))⁻¹)⁻¹.toPath.trans q₂) = mk x₁ q₁
-    rw [inv_inv]
-    change mk x₁ ((q₁.trans q₂.symm).trans q₂) = mk x₁ q₁
-    rw [Path.Homotopic.Quotient.trans_assoc, Path.Homotopic.Quotient.symm_trans,
-      Path.Homotopic.Quotient.trans_refl]
+    simp only [smul_mk, inv_inv, Path.Homotopic.Quotient.trans_assoc,
+      Path.Homotopic.Quotient.symm_trans, Path.Homotopic.Quotient.trans_refl]
   · rintro ⟨g, hg⟩
     rw [← hg, proj_smul]
 
@@ -164,11 +158,7 @@ theorem exists_nhds_smul_disjoint (e : UniversalCover x₀) :
   have hU_open' : IsOpen U := isOpen_sheet baseU hU_open hxU q
   have hU_mem : mk x q ∈ U := by
     induction q using Quotient.inductionOn with
-    | h p =>
-      change mk x (Path.Homotopic.Quotient.mk p) ∈ sheet baseU hxU (Path.Homotopic.Quotient.mk p)
-      rw [show mk x (Path.Homotopic.Quotient.mk p) = ofBasedPath x₀ (BasedPath.ofPath p) by
-        rw [ofBasedPath_ofPath]]
-      exact mem_sheet_self hxU p
+    | h p => exact ofBasedPath_ofPath p ▸ mem_sheet_self hxU p
   refine ⟨U, hU_open'.mem_nhds hU_mem, fun g hgU ↦ ?_⟩
   obtain ⟨_, ⟨y, hyU, rfl⟩, hgyU⟩ := hgU
   have h_proj_eq : proj (g • y) = proj y := proj_smul g y
