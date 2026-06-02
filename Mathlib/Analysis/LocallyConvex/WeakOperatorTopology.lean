@@ -330,7 +330,7 @@ lemma continuous_inducingFn : Continuous (inducingFn σ E F) :=
   continuous_induced_dom
 
 lemma continuous_dual_apply (x : E) (y : F⋆) : Continuous fun (A : E →SWOT[σ] F) => y (A x) := by
-  refine (continuous_pi_iff.mp continuous_inducingFn) ⟨x, y⟩
+  exact (continuous_pi_iff.mp continuous_inducingFn) ⟨x, y⟩
 
 @[fun_prop]
 lemma continuous_of_dual_apply_continuous {α : Type*} [TopologicalSpace α] {g : α → E →SWOT[σ] F}

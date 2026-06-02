@@ -635,7 +635,7 @@ theorem restrict_exists_div_eq {K : Type*} [Field K] {Γ₀ : Type*}
     simp only [map_one, zero_lt_one, restrict_def, hr, div_one, and_self, and_true]
     rw [← map_zero v, ← embedding_restrict₀,  ← embedding_restrict₀ r, hr,
       embedding_strictMono.lt_iff_lt, map_zero]
-    refine WithZero.pos_iff_ne_zero.mpr (Units.ne_zero γ)⟩
+    exact WithZero.pos_iff_ne_zero.mpr (Units.ne_zero γ)⟩
 
 set_option backward.isDefEq.respectTransparency false in
 open UniformSpace.Completion in

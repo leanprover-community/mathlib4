@@ -334,7 +334,7 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
       AlgEquiv.apply_symm_apply] at this
     rw [H, pow_add, map_mul, mul_assoc, IsLocalization.mk'_spec'_mk, ← map_mul] at this
     obtain ⟨k, hk⟩ := IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_algebraMap hfg this
-    refine ⟨k + n, by convert! hk using 1; ring_nf⟩
+    exact ⟨k + n, by convert! hk using 1; ring_nf⟩
   -- We now use the key lemma `exists_derivative_mul_eq_and_isIntegral_coeff` to get a `y : B[X]`
   -- with `R`-integral coefficients such that `f' * gᵏ * a = y` in `S ⊗[R] B`.
   obtain ⟨y, hy, hRy⟩ := exists_derivative_mul_eq_and_isIntegral_coeff

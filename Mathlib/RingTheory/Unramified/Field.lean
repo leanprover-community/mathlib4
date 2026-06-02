@@ -169,7 +169,7 @@ theorem range_eq_top_of_isPurelyInseparable
   intro x _
   obtain ⟨n, hn⟩ := IsPurelyInseparable.pow_mem K (ringExpChar K) x
   have : ExpChar (L ⊗[K] L) (ringExpChar K) := by
-    refine expChar_of_injective_ringHom (algebraMap K _).injective (ringExpChar K)
+    exact expChar_of_injective_ringHom (algebraMap K _).injective (ringExpChar K)
   have : (1 ⊗ₜ x - x ⊗ₜ 1 : L ⊗[K] L) ^ (ringExpChar K) ^ n = 0 := by
     rw [sub_pow_expChar_pow, TensorProduct.tmul_pow, one_pow, TensorProduct.tmul_pow, one_pow]
     obtain ⟨r, hr⟩ := hn

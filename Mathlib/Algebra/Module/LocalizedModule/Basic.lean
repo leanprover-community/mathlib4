@@ -754,7 +754,7 @@ lemma IsLocalizedModule.of_restrictScalars (S : Submonoid R)
     exact ⟨⟨x, ⟨_, t, t.2, rfl⟩⟩, by simpa [Submonoid.smul_def] using e⟩
   exists_of_eq {x₁ x₂} e := by
     obtain ⟨c, hc⟩ := IsLocalizedModule.exists_of_eq (S := S) (f := f.restrictScalars R) e
-    refine ⟨⟨_, c, c.2, rfl⟩, by simpa [Submonoid.smul_def]⟩
+    exact ⟨⟨_, c, c.2, rfl⟩, by simpa [Submonoid.smul_def]⟩
 
 lemma IsLocalizedModule.restrictScalars_iff (S : Submonoid R)
     {N : Type*} [AddCommMonoid N] [Module R N] [Module A M] [Module A N]

@@ -72,7 +72,7 @@ theorem iteratedFDeriv_charFun {n : ℕ} {t : E} (hint : MemLp id n μ) (x : Fin
   have h : innerₗ E = (innerSL ℝ).toLinearMap₁₂ := rfl
   have hint' (k : ℕ) (hk : k ≤ (n : ℕ∞)) : Integrable (fun x ↦ ‖x‖ ^ k * ‖(1 : E → ℂ) x‖) μ := by
     simp only [Pi.one_apply, one_mem, CStarRing.norm_of_mem_unitary, mul_one]
-    refine MemLp.integrable_norm_pow' (hint.mono_exponent (by simp_all))
+    exact MemLp.integrable_norm_pow' (hint.mono_exponent (by simp_all))
   simp_rw [funext charFun_eq_fourierIntegral']
   rw [iteratedFDeriv_comp_const_smul]
   swap

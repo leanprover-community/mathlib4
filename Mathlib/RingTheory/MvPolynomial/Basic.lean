@@ -154,7 +154,7 @@ def restrictSupportIdeal (s : Set (σ →₀ ℕ)) (hs : IsUpperSet s) :
     classical
     simp only [mem_support_iff, coeff_mul, ne_eq] at hm
     obtain ⟨⟨i, j⟩, hij, e⟩ := Finset.exists_ne_zero_of_sum_ne_zero hm
-    refine hs (by simp_all [eq_comm]) (hy (show j ∈ y.support by aesop))
+    exact hs (by simp_all [eq_comm]) (hy (show j ∈ y.support by aesop))
 
 @[simp]
 lemma restrictScalars_restrictSupportIdeal (s : Set (σ →₀ ℕ)) (hs) :

@@ -47,7 +47,7 @@ lemma isNilpotent_inl_iff (r : R) : IsNilpotent (.inl r : TrivSqZeroExt R M) ↔
 
 @[simp]
 lemma isNilpotent_inr (x : M) : IsNilpotent (.inr x : TrivSqZeroExt R M) := by
-  refine ⟨2, by simp [pow_two]⟩
+  exact ⟨2, by simp [pow_two]⟩
 
 end Semiring
 

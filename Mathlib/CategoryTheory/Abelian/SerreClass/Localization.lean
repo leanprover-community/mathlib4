@@ -202,7 +202,7 @@ lemma epi_map_tfae {X Y : C} (f : X ⟶ Y) :
     rw [← L.map_comp] at hz
     rw [map_eq_zero_iff L P, ← exists_epiModSerre_comp_eq_zero_iff P] at hz ⊢
     obtain ⟨W, s, hs, eq⟩ := hz
-    refine ⟨_, s ≫ f, MorphismProperty.comp_mem _ _ _ hs hf, by simpa⟩
+    exact ⟨_, s ≫ f, MorphismProperty.comp_mem _ _ _ hs hf, by simpa⟩
   tfae_have 3 → 1 := fun hf ↦ by
     rw [Preadditive.epi_iff_cancel_zero]
     intro W z hz

@@ -52,7 +52,7 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
   set S : Set (Set α) := { J : Set α | IsIdeal J ∧ I ≤ J ∧ Disjoint (F : Set α) J }
   -- Then I is in S...
   have IinS : ↑I ∈ S := by
-    refine ⟨Order.Ideal.isIdeal I, by trivial⟩
+    exact ⟨Order.Ideal.isIdeal I, by trivial⟩
   -- ...and S contains upper bounds for any non-empty chains.
   have chainub : ∀ c ⊆ S, IsChain (· ⊆ ·) c → c.Nonempty → ∃ ub ∈ S, ∀ s ∈ c, s ⊆ ub := by
     intro c hcS hcC hcNe

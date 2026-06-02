@@ -647,7 +647,7 @@ lemma degBound_le_degBound (hk : k₁ ≤ k₂) :
   | 0, hD => by simp
   | n + 1, hD => by
     rw [degBound_succ, degBound_succ]
-    refine Nat.mul_le_mul (Nat.pow_self_mono (numBound_mono hk _ hD)) (degBound_le_degBound hk _
+    exact Nat.mul_le_mul (Nat.pow_self_mono (numBound_mono hk _ hD)) (degBound_le_degBound hk _
       fun i hi ↦ hD _ (hi.trans n.lt_succ_self))
 
 lemma numBound_mono (hk : k₁ ≤ k₂) :

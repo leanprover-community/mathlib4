@@ -163,7 +163,7 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
         (P := @IsOpenImmersion) inferInstance _ _ hsy.symm
     obtain ⟨ix, x, rfl⟩ := (𝒱 is).exists_eq x
     obtain ⟨iy, y, rfl⟩ := (𝒲 is).exists_eq y
-    refine ⟨is, ix, iy, ⟨x, hx⟩, ⟨y, hy⟩⟩
+    exact ⟨is, ix, iy, ⟨x, hx⟩, ⟨y, hy⟩⟩
   let 𝓤 := (Scheme.Pullback.openCoverOfBase 𝒰 f g).bind
     (fun i ↦ Scheme.Pullback.openCoverOfLeftRight (𝒱 i) (𝒲 i) _ _)
   refine isEmbedding_of_iSup_eq_top_of_preimage_subset_range _ ?_ U this _ (𝓤.f ·)

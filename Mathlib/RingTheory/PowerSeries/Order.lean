@@ -142,7 +142,7 @@ theorem order_eq_order {φ : R⟦X⟧} : φ.order = MvPowerSeries.order φ := by
       have : coeff ↑(Finsupp.degree d) φ = 0 := coeff_of_lt_order _ hd
       have eq_aux : d.degree = d () := Finset.sum_eq_single _ (by simp) (by simp)
       exact (PowerSeries.coeff_def rfl (R := R)) ▸ (eq_aux ▸ this)
-  · refine le_order φ (MvPowerSeries.order φ) fun i hi => by
+  · exact le_order φ (MvPowerSeries.order φ) fun i hi => by
       rw [← Finsupp.degree_single () i] at hi
       exact MvPowerSeries.coeff_of_lt_order hi
 

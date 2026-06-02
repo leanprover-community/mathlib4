@@ -36,7 +36,7 @@ noncomputable def sigma (𝒰 : Cover.{v} (precoverage P) S) : S.Cover (precover
     rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun s ↦ ?_, fun _ ↦ IsZariskiLocalAtSource.sigmaDesc 𝒰.map_prop⟩
     obtain ⟨i, y, rfl⟩ := 𝒰.exists_eq s
-    refine ⟨default, Sigma.ι 𝒰.X i y, by simp [← Scheme.Hom.comp_apply]⟩
+    exact ⟨default, Sigma.ι 𝒰.X i y, by simp [← Scheme.Hom.comp_apply]⟩
 
 @[simp]
 lemma presieve₀_sigma {S : Scheme.{u}} (𝒰 : Cover.{v} (precoverage P) S) :

@@ -478,7 +478,7 @@ lemma IsCircuit.exists_subset_isCircuit_of_contract (hC : (M ／ K).IsCircuit C)
   refine ⟨C', hC', ?_, hC'ss⟩
   have hdep2 : (M ／ K).Dep (C' \ K) := by
     rw [hKi.contract_dep_iff, and_iff_right disjoint_sdiff_left]
-    refine hC'.dep.superset (by simp)
+    exact hC'.dep.superset (by simp)
   rw [← (hC.eq_of_dep_subset hdep2 (diff_subset_iff.2 (union_comm _ _ ▸ hC'ss)))]
   exact diff_subset
 

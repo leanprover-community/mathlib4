@@ -843,7 +843,7 @@ lemma baseChange_eq_span : p.baseChange A = span A (p.map (TensorProduct.mk R A 
     rw [← h, SetLike.mem_coe, mem_comap, LinearMap.baseChange_tmul, ← mul_one a, ← smul_eq_mul,
       ← smul_tmul']
     exact smul_mem _ a (subset_span ⟨m, m.2, rfl⟩)
-  · refine span_le.2 fun _ ⟨m, hm, h⟩ ↦ h ▸ ⟨1 ⊗ₜ[R] ⟨m, hm⟩, rfl⟩
+  · exact span_le.2 fun _ ⟨m, hm, h⟩ ↦ h ▸ ⟨1 ⊗ₜ[R] ⟨m, hm⟩, rfl⟩
 
 @[simp]
 lemma baseChange_bot : (⊥ : Submodule R M).baseChange A = ⊥ := by simp [baseChange_eq_span]

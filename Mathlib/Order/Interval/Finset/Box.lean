@@ -31,7 +31,7 @@ namespace Finset
 variable {α : Type*} [Ring α] [PartialOrder α] [IsOrderedRing α] [LocallyFiniteOrder α] {n : ℕ}
 
 private lemma Icc_neg_mono : Monotone fun n : ℕ ↦ Icc (-n : α) n := by
-  refine fun m n hmn ↦ by apply Icc_subset_Icc <;> simpa using Nat.mono_cast hmn
+  exact fun m n hmn ↦ by apply Icc_subset_Icc <;> simpa using Nat.mono_cast hmn
 
 variable [DecidableEq α]
 

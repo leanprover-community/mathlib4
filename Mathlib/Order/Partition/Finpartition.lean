@@ -800,7 +800,7 @@ def ofSetSetoid (s : Setoid α) (x : Finset α) [DecidableRel s.r] : Finpartitio
   sup_parts := by
     ext a
     simp_rw [sup_image, id_comp, mem_sup, mem_filter]
-    refine ⟨(·.choose_spec.2.1), fun _ ↦ by use a⟩
+    exact ⟨(·.choose_spec.2.1), fun _ ↦ by use a⟩
   bot_notMem := by
     suffices ∀ x₁ ∈ x, ∃ x₂ ∈ x, s x₁ x₂ by simpa [filter_eq_empty_iff]
     intro x _

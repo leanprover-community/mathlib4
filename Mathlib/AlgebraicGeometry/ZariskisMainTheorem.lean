@@ -428,7 +428,7 @@ lemma exists_finite_imageι_comp_morphismRestrict_of_finite_image_preimage
     suffices UniversallyClosed (f.imageι ≫ g) from ⟨⟩
     have : UniversallyClosed (f.toImage ≫ f.imageι ≫ g) := by
       rw [Scheme.Hom.toImage_imageι_assoc]; infer_instance
-    refine .of_comp_surjective f.toImage _
+    exact .of_comp_surjective f.toImage _
   refine exists_isFinite_morphismRestrict_of_finite_preimage_singleton _ _ ?_
   refine .of_finite_image (f := f.imageι) (H.subset ?_) f.imageι.isClosedEmbedding.injective.injOn
   rintro _ ⟨x, hx, rfl⟩

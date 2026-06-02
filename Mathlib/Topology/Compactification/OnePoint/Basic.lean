@@ -379,7 +379,7 @@ def continuousMapMk {Y : Type*} [TopologicalSpace Y] (f : C(X, Y)) (y : Y)
   toFun x := x.elim y f
   continuous_toFun := by
     rw [continuous_iff]
-    refine ⟨h, f.continuous⟩
+    exact ⟨h, f.continuous⟩
 
 lemma continuous_iff_from_discrete {Y : Type*} [TopologicalSpace Y]
     [DiscreteTopology X] (f : OnePoint X → Y) :

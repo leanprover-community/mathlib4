@@ -309,7 +309,7 @@ theorem eq_bot_of_card_le_two (h2 : Nat.card α ≤ 2) : alternatingGroup α = �
 theorem nontrivial_of_three_le_card (h3 : 3 ≤ Nat.card α) : Nontrivial (alternatingGroup α) := by
   have : Nontrivial α := by
     rw [← Fintype.one_lt_card_iff_nontrivial, ← Nat.card_eq_fintype_card]
-    refine lt_of_lt_of_le (by decide) h3
+    exact lt_of_lt_of_le (by decide) h3
   rw [← Fintype.one_lt_card_iff_nontrivial, ← Nat.card_eq_fintype_card]
   refine lt_of_mul_lt_mul_left ?_ (le_of_lt Nat.prime_two.pos)
   rw [two_mul_nat_card_alternatingGroup, Nat.card_perm, ← Nat.succ_le_iff]

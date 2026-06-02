@@ -58,7 +58,7 @@ lemma isCardinalPresentable (hX : HasCardinalLT X κ) [Fact κ.IsRegular] :
             IsCardinalFiltered.toCoeq φ hX,
             fun x ↦ IsCardinalFiltered.toMax k hX x ≫ IsCardinalFiltered.coeqHom φ hX,
             fun x ↦ by simpa [φ] using IsCardinalFiltered.coeq_condition φ hX x⟩
-        refine ⟨l, b, by ext x; simp [← hl x, hk]⟩⟩⟩⟩
+        exact ⟨l, b, by ext x; simp [← hl x, hk]⟩⟩⟩⟩
 
 /-- Given `X : Type u` and `κ : Cardinal.{u} X`, this is the preordered type
 of subsets of `X` of cardinality `< κ`. -/

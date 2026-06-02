@@ -382,7 +382,7 @@ lemma exists_finset_maximalFor_isTranscendenceBasis_separableClosure
     have ⟨s, hs⟩ := IntermediateField.fg_top F E
     have : Algebra.IsAlgebraic (Algebra.adjoin F (s : Set E)) E := by
       rw [← isAlgebraic_adjoin_iff_top, hs, Algebra.isAlgebraic_iff_isIntegral]
-      refine Algebra.isIntegral_of_surjective topEquiv.surjective
+      exact Algebra.isIntegral_of_surjective topEquiv.surjective
     have ⟨t, hts, ht⟩ := exists_isTranscendenceBasis_subset (R := F) (s : Set E)
     lift t to Finset E using s.finite_toSet.subset hts
     exact ⟨t, ht⟩

@@ -92,7 +92,7 @@ lemma Precoverage.HasIsos.of_preZeroHypercoverFamily {P : PreZeroHypercoverFamil
     P.precoverage.HasIsos where
   mem_coverings_of_isIso {S T} f hf := by
     rw [← PreZeroHypercover.presieve₀_singleton.{_, _, max u v}]
-    refine .mk _ (h _)
+    exact .mk _ (h _)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
