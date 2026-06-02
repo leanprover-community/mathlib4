@@ -251,7 +251,8 @@ private lemma canonicalDecomposition_aux₁ (F : locallyFinsuppWithin (ball (0 :
   refine meromorphicNFOn_finprod (fun w ↦ ?_) fun z hz a ha b hb ↦ ?_
   · by_cases hw : w ∈ ball 0 R
     · exact fun _ _ ↦ (meromorphicNFOn_canonicalFactor hw).zpow (by trivial)
-    · simpa [hw] using analyticOnNhd_const.meromorphicNFOn
+    · simp only [hw, not_false_eq_true, locallyFinsuppWithin.apply_eq_zero_of_notMem, zpow_zero]
+      exact analyticOnNhd_const.meromorphicNFOn
   · have ⟨h₂a, h₂b⟩ : a ∈ ball 0 R ∧ b ∈ ball 0 R := by constructor <;> (by_contra; aesop)
     grind [eq_zero_of_zpow_eq_zero hb, eq_zero_of_zpow_eq_zero ha,
       zero_canonicalFactor_iff h₂b hz, zero_canonicalFactor_iff h₂a hz]
