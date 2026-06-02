@@ -88,6 +88,10 @@ theorem one_eq_map_iff {α} {f : α → β} {v : WithTop α} [One β] :
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithTop α) :=
   ⟨coe_le_coe.2 zero_le_one⟩
 
+@[to_additive]
+instance [LE α] [IsBotOneClass α] : IsBotOneClass (WithTop α) where
+  isBot_one x := by cases x <;> simp
+
 end One
 
 section Add
