@@ -67,7 +67,7 @@ theorem eLpNorm_add_le' (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasura
   · simp
   rcases lt_or_ge p 1 with (h'p | h'p)
   · simp only [eLpNorm_eq_eLpNorm' hp (h'p.trans ENNReal.one_lt_top).ne]
-    convert eLpNorm'_add_le_of_le_one hf ENNReal.toReal_nonneg _
+    convert! eLpNorm'_add_le_of_le_one hf ENNReal.toReal_nonneg _
     · have : p ∈ Set.Ioo (0 : ℝ≥0∞) 1 := ⟨hp.bot_lt, h'p⟩
       simp only [LpAddConst, if_pos this]
     · simpa using ENNReal.toReal_mono ENNReal.one_ne_top h'p.le
@@ -147,7 +147,7 @@ theorem memLp_finsetSum [ContinuousAdd ε']
   haveI : DecidableEq ι := Classical.decEq _
   revert hf
   refine Finset.induction_on s ?_ ?_
-  · simp only [MemLp.zero', Finset.sum_empty, imp_true_iff]
+  · simp
   · intro i s his ih hf
     simp only [his, Finset.sum_insert, not_false_iff]
     exact (hf i (s.mem_insert_self i)).add (ih fun j hj => hf j (Finset.mem_insert_of_mem hj))
@@ -157,7 +157,7 @@ theorem memLp_finsetSum [ContinuousAdd ε']
 theorem memLp_finsetSum' [ContinuousAdd ε']
     {ι} (s : Finset ι) {f : ι → α → ε'} (hf : ∀ i ∈ s, MemLp (f i) p μ) :
     MemLp (∑ i ∈ s, f i) p μ := by
-  convert memLp_finsetSum s hf using 1
+  convert! memLp_finsetSum s hf using 1
   ext x
   simp
 

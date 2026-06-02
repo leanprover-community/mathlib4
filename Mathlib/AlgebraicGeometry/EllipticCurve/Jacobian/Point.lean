@@ -127,8 +127,10 @@ lemma neg_of_Z_eq_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z = 0) 
 
 lemma neg_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.neg P = P z • ![P x / P z ^ 2, W.toAffine.negY (P x / P z ^ 2) (P y / P z ^ 3), 1] := by
-  simp only [neg, smul_fin3, fin3_def_ext, mul_div_cancel₀ _ <| pow_ne_zero 2 hPz,
-    ← negY_of_Z_ne_zero hPz, mul_div_cancel₀ _ <| pow_ne_zero 3 hPz, mul_one]
+  rw [neg, smul_fin3]
+  simp only [fin3_def_ext]
+  rw [mul_div_cancel₀ _ <| pow_ne_zero 2 hPz, ← negY_of_Z_ne_zero hPz,
+    mul_div_cancel₀ _ <| pow_ne_zero 3 hPz, mul_one]
 
 private lemma nonsingular_neg_of_Z_ne_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z ≠ 0) :
     W.Nonsingular ![P x / P z ^ 2, W.toAffine.negY (P x / P z ^ 2) (P y / P z ^ 3), 1] :=
@@ -161,10 +163,7 @@ lemma addY_neg {P : Fin 3 → R} (hP : W'.Equation P) : W'.addY P (W'.neg P) = -
 lemma addXYZ_neg {P : Fin 3 → R} (hP : W'.Equation P) :
     W'.addXYZ P (W'.neg P) = -W'.dblZ P • ![1, 1, 0] := by
   rw [addXYZ, addX_neg hP, addY_neg hP, addZ_neg, smul_fin3]
-  simp only [Matrix.vecCons_inj, fin3_def_ext, mul_zero, mul_one, and_true]
-  constructor
-  · rw [neg_sq]
-  · rw [Odd.neg_pow (show Odd (3 : ℕ) by decide)]
+  simp +decide [fin3_def_ext, Odd.neg_pow]
 
 variable (W') in
 /-- The negation of a Jacobian point class on a Weierstrass curve `W`.
@@ -222,8 +221,8 @@ lemma add_smul_of_not_equiv {P Q : Fin 3 → R} (h : ¬P ≈ Q) {u v : R} (hu : 
 lemma add_smul_equiv (P Q : Fin 3 → R) {u v : R} (hu : IsUnit u) (hv : IsUnit v) :
     W'.add (u • P) (v • Q) ≈ W'.add P Q := by
   by_cases h : P ≈ Q
-  · exact ⟨hu.unit ^ 4, by convert (add_smul_of_equiv h hu hv).symm⟩
-  · exact ⟨(hu.unit * hv.unit) ^ 2, by convert (add_smul_of_not_equiv h hu hv).symm⟩
+  · exact ⟨hu.unit ^ 4, by convert! (add_smul_of_equiv h hu hv).symm⟩
+  · exact ⟨(hu.unit * hv.unit) ^ 2, by convert! (add_smul_of_not_equiv h hu hv).symm⟩
 
 lemma add_equiv {P P' Q Q' : Fin 3 → R} (hP : P ≈ P') (hQ : Q ≈ Q') :
     W'.add P Q ≈ W'.add P' Q' := by

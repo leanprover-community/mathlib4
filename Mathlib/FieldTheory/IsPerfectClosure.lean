@@ -167,7 +167,7 @@ theorem IsPRadical.comap_pNilradical [IsPRadical i p] :
 variable (K) in
 instance IsPRadical.of_id : IsPRadical (RingHom.id K) p where
   pow_mem' x := ⟨0, x, by simp⟩
-  ker_le' x h := by convert Ideal.zero_mem _
+  ker_le' x h := by convert! Ideal.zero_mem _
 
 /-- Composition of `p`-radical ring homomorphisms is also `p`-radical. -/
 theorem IsPRadical.trans [IsPRadical i p] [IsPRadical f p] :
@@ -261,7 +261,7 @@ theorem injective_comp_of_pNilradical_eq_bot [IsPRadical i p] (h : pNilradical M
   ext x
   obtain ⟨n, y, hx⟩ := IsPRadical.pow_mem i p x
   apply_fun _ using pow_expChar_pow_inj_of_pNilradical_eq_bot M p h n
-  simpa only [← map_pow, ← hx] using congr($(heq) y)
+  simpa only [← map_pow, ← hx] using! congr($(heq) y)
 
 variable (M)
 

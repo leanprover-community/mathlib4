@@ -111,6 +111,28 @@ end
 lemma symm_p [HasBinaryProducts C] :
     P.symm.p = P.p ≫ (prod.braiding A A).hom := by aesop_cat
 
+/-- The pre-path object in a full subcategory of `C` induced by a pre-path object
+in the category `C`. -/
+@[simps]
+def toFullSubcategory {P : ObjectProperty C} {X : P.FullSubcategory} (Q : PrepathObject X.obj)
+    (hQ : P Q.P) :
+    PrepathObject X where
+  P := ⟨Q.P, hQ⟩
+  p₀ := P.homMk Q.p₀
+  p₁ := P.homMk Q.p₁
+  ι := P.homMk Q.ι
+
+/-- The image of a pre-path object by a functor. -/
+@[simps]
+def map {X : C} (P : PrepathObject X) {D : Type*} [Category* D] (F : C ⥤ D) :
+    PrepathObject (F.obj X) where
+  P := F.obj P.P
+  p₀ := F.map P.p₀
+  p₁ := F.map P.p₁
+  ι := F.map P.ι
+  ι_p₀ := by simp [← F.map_comp]
+  ι_p₁ := by simp [← F.map_comp]
+
 end PrepathObject
 
 /-- In a category with weak equivalences, a path object is the
@@ -126,6 +148,7 @@ section
 
 variable {A : C} [CategoryWithWeakEquivalences C] (P : PathObject A)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The path object obtained by switching the two projections. -/
 @[simps!]
 def symm : PathObject A where
@@ -199,6 +222,7 @@ variable [CategoryWithFibrations C] [CategoryWithCofibrations C]
 instance [HasBinaryProduct A A] [HasInitial C] [IsCofibrant A] [P.IsVeryGood] : IsCofibrant P.P :=
   isCofibrant_of_cofibration P.ι
 
+set_option backward.defeqAttrib.useBackward true in
 instance [(fibrations C).RespectsIso] [HasBinaryProducts C] [P.IsVeryGood] :
     P.symm.IsVeryGood where
   cofibration_ι := by dsimp; infer_instance
@@ -224,10 +248,10 @@ noncomputable def ofFactorizationData : PathObject A where
   p₁ := h.p ≫ prod.snd
   ι := h.i
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma ofFactorizationData_p : (ofFactorizationData h).p = h.p := by aesop_cat
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (ofFactorizationData h).IsVeryGood where
   fibration_p := by simpa using inferInstanceAs (Fibration h.p)
   cofibration_ι := by dsimp; infer_instance
@@ -246,6 +270,7 @@ lemma exists_very_good :
 
 instance : Nonempty (PathObject A) := ⟨(exists_very_good A).choose⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The gluing of two good path objects. -/
 @[simps!]
 noncomputable def trans [IsFibrant A] (P P' : PathObject A) [P'.IsGood] :
