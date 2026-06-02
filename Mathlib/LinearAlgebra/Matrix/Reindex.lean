@@ -102,7 +102,7 @@ theorem symm_reindexRingEquiv (e : m ≃ n) :
   rfl
 
 @[simp]
-theorem reindexRingEquiv_refl_refl : reindexRingEquiv R (.refl n) = .refl _ :=
+theorem reindexRingEquiv_refl : reindexRingEquiv R (.refl n) = .refl _ :=
   rfl
 
 @[simp]
