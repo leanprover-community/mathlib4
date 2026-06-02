@@ -158,7 +158,7 @@ lemma measurePreserving_eval_projectiveFamily (s : I) :
       variance_eval_projectiveFamily, Real.toNNReal_coe]
 
 lemma measurePreserving_eval_sub_eval_projectiveFamily (I : Finset ℝ≥0) (s t : I) :
-    MeasurePreserving ((fun x ↦ x s - x t)) (projectiveFamily I)
+    MeasurePreserving (fun x ↦ x s - x t) (projectiveFamily I)
       (gaussianReal 0 (max (s - t) (t - s))) where
   measurable := by fun_prop
   map_eq := by
