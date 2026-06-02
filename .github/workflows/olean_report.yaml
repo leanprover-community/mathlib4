@@ -88,6 +88,8 @@ jobs:
           ref: refs/pull/${{ github.event.issue.number }}/head
           fetch-depth: 0
           path: pr-branch
+          # Untrusted (potentially fork) checkout: don't persist the GITHUB_TOKEN into its .git/config.
+          persist-credentials: false
 
       # Check out master into tools-branch.  We build the `cache` binary from
       # here so that a single binary can fetch oleans for both checkouts.
