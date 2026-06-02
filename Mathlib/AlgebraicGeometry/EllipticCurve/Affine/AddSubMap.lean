@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+public import Mathlib.Tactic.Ring.NamePolyVars
 
 /-!
 # The approximate parallelogram law on elliptic curves
@@ -33,13 +34,12 @@ variable {K : Type*} [Field K] (a b : K)
 
 open MvPolynomial
 
+name_poly_vars s, t, u over K
+
 /-- The polynomial map on coordinate vectors giving
 `(x(P) * x(Q) : x(P) + x(Q) : 1) ↦ (x(P+Q) * x(P-Q) : x(P+Q) + x(P-Q) : 1)`
 for points `P`, `Q` on the elliptic curve `y² = x³ + a*x + b`. -/
 noncomputable def addSubMap : Fin 3 → MvPolynomial (Fin 3) K :=
-  letI s := X 0
-  letI t := X 1
-  letI u := X 2
   ![s ^ 2 - C (2 * a) * s * u - C (4 * b) * t * u + C (a ^ 2) * u ^ 2,
     C 2 * t * s + C (2 * a) * t * u + C (4 * b) * u ^ 2,
     t ^ 2 - C 4 * s * u]
@@ -47,9 +47,6 @@ noncomputable def addSubMap : Fin 3 → MvPolynomial (Fin 3) K :=
 /-- The coefficient polynomials in linear combinations of the polynomials in `addSubMap`
 that result in the fourth powers of the variables, multiplied by `32*a^3 + 216*b^2`. -/
 noncomputable def addSubMapCoeff : Fin 3 × Fin 3 → MvPolynomial (Fin 3) K :=
-  letI s := X (σ := Fin 3) 0
-  letI t := X (σ := Fin 3) 1
-  letI u := X (σ := Fin 3) 2
   ![![C (-4 * a ^ 2 * b) * t * s + C (12 * a ^ 3 * b + 96 * b ^ 3) * t * u +
         C (32 * a ^ 3 + 216 * b ^ 2) * s ^ 2 + C (24 * a ^ 4 + 176 * a * b ^ 2) * s * u,
       C (5 * a ^ 4 + 32 * a * b ^ 2 ) * t * s + C (-3 * a ^ 5 - 24 * a ^ 2 * b ^ 2) * t * u +
