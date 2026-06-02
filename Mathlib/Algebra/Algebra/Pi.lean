@@ -63,7 +63,7 @@ variable {A} in
 /-- A family of algebra homomorphisms `g i : B →ₐ[R] A i` defines an algebra homomorphism
 `AlgHom.pi g : B →ₐ[R] Π i, A i` given by `AlgHom.pi g x i = g i x`. -/
 @[simps!]
-def _root_.AlgHom.pi {B : Type*} [Semiring B] [Algebra R B] (g : ∀ i, B →ₐ[R] A i) :
+def _root_.AlgHom.pi {B : Type*} [Semiring B] [Algebra R B] (g : Π i, B →ₐ[R] A i) :
     B →ₐ[R] Π i, A i where
   __ := RingHom.pi fun i ↦ (g i).toRingHom
   commutes' r := by ext; simp
@@ -87,6 +87,8 @@ def evalAlgHom (i : ι) : (Π i, A i) →ₐ[R] A i :=
   { Pi.evalRingHom A i with
     toFun := fun f ↦ f i
     commutes' := fun _ ↦ rfl }
+
+lemma coe_evalAlgHom (i : ι) : evalAlgHom R A i = evalRingHom A i := rfl
 
 @[simp]
 theorem algHom_evalAlgHom : AlgHom.pi (evalAlgHom R A) = AlgHom.id R (Π i, A i) := rfl
