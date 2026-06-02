@@ -103,6 +103,10 @@ def _root_.IsPGroup.toSylow [Fact p.Prime] {P : Subgroup G}
     (hP1 : IsPGroup p P) (hP2 : ¬ p ∣ P.index) {g : G} : g ∈ hP1.toSylow hP2 ↔ g ∈ P :=
   .rfl
 
+theorem _root_.IsPGroup.le_sylow_of_normal {N : Subgroup G} [N.Normal] (h : IsPGroup p N)
+    (H : Sylow p G) : N ≤ H :=
+  sup_eq_right.mp <| H.is_maximal' (h.to_sup_of_normal_left H.isPGroup') le_sup_right
+
 /-- A subgroup with cardinality `p ^ n` is a Sylow subgroup
 where `n` is the multiplicity of `p` in the group order. -/
 def ofCard [Finite G] {p : ℕ} [Fact p.Prime] (H : Subgroup G)
@@ -196,6 +200,22 @@ theorem exists_comap_eq_of_injective {H : Type*} [Group H] (P : Sylow p H) {f : 
 theorem exists_comap_subtype_eq {H : Subgroup G} (P : Sylow p H) :
     ∃ Q : Sylow p G, Q.comap H.subtype = P :=
   P.exists_comap_eq_of_injective Subtype.coe_injective
+
+theorem iSup_of_normal {ι : Type*} (H : ι → Subgroup G) [∀ i, (H i).Normal]
+    (h : ∀ i, IsPGroup p (H i)) : IsPGroup p (⨆ i, H i : Subgroup G) :=
+  have H' := Classical.arbitrary <| Sylow p G
+  H'.isPGroup'.to_le <| iSup_le (h · |>.le_sylow_of_normal H')
+
+theorem biSup_of_normal {ι : Type*} (s : Set ι) (H : ι → Subgroup G) (h : ∀ i ∈ s, IsPGroup p (H i))
+    (hn : ∀ i ∈ s, (H i).Normal) : IsPGroup p (⨆ i ∈ s, H i : Subgroup G) := by
+  rw [← iSup_subtype'']
+  have : ∀ i : s, (H i).Normal := fun i ↦ hn i i.property
+  exact iSup_of_normal _ fun i ↦ h i i.property
+
+theorem sSup_of_normal (Hs : Set (Subgroup G)) (h : ∀ H ∈ Hs, IsPGroup p H)
+    (hn : ∀ H ∈ Hs, H.Normal) : IsPGroup p (sSup Hs : Subgroup G) := by
+  rw [sSup_eq_iSup]
+  exact biSup_of_normal Hs id h hn
 
 /-- If the kernel of `f : H →* G` is a `p`-group,
   then `Finite (Sylow p G)` implies `Finite (Sylow p H)`. -/
