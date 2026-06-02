@@ -48,6 +48,8 @@ abbrev mathlibLeanOptions := #[
 
 package mathlib where
   testDriver := "MathlibTest"
+  lintDriver := "batteries/runLinter"
+  lintDriverArgs := #["Mathlib"]
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
