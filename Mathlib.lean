@@ -1318,6 +1318,7 @@ public import Mathlib.Algebra.Star.StarRingHom
 public import Mathlib.Algebra.Star.Subalgebra
 public import Mathlib.Algebra.Star.Subsemiring
 public import Mathlib.Algebra.Star.TensorProduct
+public import Mathlib.Algebra.Star.TransferInstance
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.Algebra.Star.UnitaryStarAlgAut
 public import Mathlib.Algebra.Symmetrized
