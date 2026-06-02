@@ -54,15 +54,12 @@ un-`@[simp]`ed):
 
 open Function
 
-set_option backward.isDefEq.respectTransparency false in
 instance Rat.instPosMulMono : PosMulMono ℚ where
   mul_le_mul_of_nonneg_left r hr p q hpq := by
     simpa [mul_sub, sub_nonneg] using Rat.mul_nonneg hr (sub_nonneg.2 hpq)
 
-set_option backward.isDefEq.respectTransparency false in
 deriving instance CommSemiring for NNRat
 
-set_option backward.isDefEq.respectTransparency false in
 deriving instance AddCancelCommMonoid for NNRat
 
 deriving instance LinearOrder for NNRat
@@ -83,7 +80,7 @@ instance instOrderBot : OrderBot ℚ≥0 where
 @[simp] lemma val_eq_cast (q : ℚ≥0) : q.1 = q := rfl
 
 instance instCharZero : CharZero ℚ≥0 where
-  cast_injective a b hab := by simpa using congr_arg num hab
+  cast_injective a b hab := by simpa using! congr_arg num hab
 
 instance canLift : CanLift ℚ ℚ≥0 (↑) fun q ↦ 0 ≤ q where
   prf q hq := ⟨⟨q, hq⟩, rfl⟩
@@ -183,7 +180,6 @@ theorem toNNRat_mono : Monotone toNNRat :=
 theorem toNNRat_coe (q : ℚ≥0) : toNNRat q = q :=
   ext <| max_eq_left q.2
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toNNRat_coe_nat (n : ℕ) : toNNRat n = n :=
   ext <| by simp only [Nat.cast_nonneg', Rat.coe_toNNRat]; rfl
@@ -311,11 +307,10 @@ theorem toNNRat_mul (hp : 0 ≤ p) : toNNRat (p * q) = toNNRat p * toNNRat q := 
 
 end Rat
 
-#adaptation_note /-- We can remove `_root_.` after https://github.com/leanprover/lean4/pull/12504 -/
 /-- The absolute value on `ℚ` as a map to `ℚ≥0`. -/
 @[pp_nodot]
 def Rat.nnabs (x : ℚ) : ℚ≥0 :=
-  ⟨abs x, _root_.abs_nonneg x⟩
+  ⟨abs x, abs_nonneg x⟩
 
 @[norm_cast, simp]
 theorem Rat.coe_nnabs (x : ℚ) : (Rat.nnabs x : ℚ) = abs x := rfl

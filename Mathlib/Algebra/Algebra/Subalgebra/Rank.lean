@@ -29,7 +29,6 @@ namespace Subalgebra
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
   (A B : Subalgebra R S)
 
-set_option backward.isDefEq.respectTransparency false in
 section
 variable [Module.Free R A] [Module.Free A (Algebra.adjoin A (B : Set S))]
 
@@ -48,14 +47,13 @@ theorem rank_sup_eq_rank_left_mul_rank_of_free :
 
 theorem finrank_sup_eq_finrank_left_mul_finrank_of_free :
     finrank R ↥(A ⊔ B) = finrank R A * finrank A (Algebra.adjoin A (B : Set S)) := by
-  simpa only [map_mul] using congr(Cardinal.toNat $(rank_sup_eq_rank_left_mul_rank_of_free A B))
+  simpa only [map_mul] using! congr(Cardinal.toNat $(rank_sup_eq_rank_left_mul_rank_of_free A B))
 
 theorem finrank_left_dvd_finrank_sup_of_free :
     finrank R A ∣ finrank R ↥(A ⊔ B) := ⟨_, finrank_sup_eq_finrank_left_mul_finrank_of_free A B⟩
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 section
 variable [Module.Free R B] [Module.Free B (Algebra.adjoin B (A : Set S))]
 

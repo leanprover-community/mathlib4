@@ -89,7 +89,6 @@ private theorem ineqofmemIco' {k : ℕ} (hk : k ∈ Ico (⌊a⌋₊ + 1) ⌊b⌋
     a ≤ k ∧ k + 1 ≤ b :=
   ineqofmemIco (by rwa [← Finset.coe_Ico])
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.integrableOn_mul_sum_Icc {m : ℕ} (ha : 0 ≤ a) {g : ℝ → 𝕜}
     (hg_int : IntegrableOn g (Set.Icc a b)) :
     IntegrableOn (fun t ↦ g t * ∑ k ∈ Icc m ⌊t⌋₊, c k) (Set.Icc a b) := by
@@ -126,7 +125,6 @@ theorem _root_.integrableOn_mul_sum_Icc {m : ℕ} (ha : 0 ≤ a) {g : ℝ → �
   · rw [Set.Icc_eq_empty_of_lt hab]
     exact integrableOn_empty
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Abel's summation formula. -/
 theorem _root_.sum_mul_eq_sub_sub_integral_mul (ha : 0 ≤ a) (hab : a ≤ b)
     (hf_diff : ∀ t ∈ Set.Icc a b, DifferentiableAt ℝ f t)
@@ -180,7 +178,7 @@ theorem _root_.sum_mul_eq_sub_sub_integral_mul' {n m : ℕ} (h : n ≤ m)
     ∑ k ∈ Ioc n m, f k * c k =
       f m * (∑ k ∈ Icc 0 m, c k) - f n * (∑ k ∈ Icc 0 n, c k) -
         ∫ t in Set.Ioc (n : ℝ) m, deriv f t * ∑ k ∈ Icc 0 ⌊t⌋₊, c k := by
-  convert sum_mul_eq_sub_sub_integral_mul c n.cast_nonneg (Nat.cast_le.mpr h) hf_diff hf_int
+  convert! sum_mul_eq_sub_sub_integral_mul c n.cast_nonneg (Nat.cast_le.mpr h) hf_diff hf_int
   all_goals rw [Nat.floor_natCast]
 
 end abelSummationProof
@@ -205,7 +203,7 @@ theorem sum_mul_eq_sub_integral_mul' (m : ℕ)
     ∑ k ∈ Icc 0 m, f k * c k =
       f m * (∑ k ∈ Icc 0 m, c k) -
         ∫ t in Set.Ioc (0 : ℝ) m, deriv f t * ∑ k ∈ Icc 0 ⌊t⌋₊, c k := by
-  convert sum_mul_eq_sub_integral_mul c m.cast_nonneg hf_diff hf_int
+  convert! sum_mul_eq_sub_integral_mul c m.cast_nonneg hf_diff hf_int
   all_goals rw [Nat.floor_natCast]
 
 /-- Specialized version of `sum_mul_eq_sub_integral_mul` when the first coefficient of the sequence
@@ -234,7 +232,7 @@ theorem sum_mul_eq_sub_integral_mul₀' (hc : c 0 = 0) (m : ℕ)
     ∑ k ∈ Icc 0 m, f k * c k =
       f m * (∑ k ∈ Icc 0 m, c k) -
         ∫ t in Set.Ioc (1 : ℝ) m, deriv f t * ∑ k ∈ Icc 0 ⌊t⌋₊, c k := by
-  convert sum_mul_eq_sub_integral_mul₀ c hc m hf_diff hf_int
+  convert! sum_mul_eq_sub_integral_mul₀ c hc m hf_diff hf_int
   all_goals rw [Nat.floor_natCast]
 
 /-- Specialized version of `sum_mul_eq_sub_integral_mul` when `c 0 = c 1 = 0`. -/
@@ -280,7 +278,6 @@ theorem locallyIntegrableOn_mul_sum_Icc {m : ℕ} (ha : 0 ≤ a) {g : ℝ → �
   · rw [Set.not_nonempty_iff_eq_empty.mp hK₃]
     exact integrableOn_empty
 
-set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_sum_mul_atTop_nhds_one_sub_integral
     (hf_diff : ∀ t ∈ Set.Ici 0, DifferentiableAt ℝ f t)
     (hf_int : LocallyIntegrableOn (deriv f) (Set.Ici 0)) {l : 𝕜}
@@ -300,7 +297,6 @@ theorem tendsto_sum_mul_atTop_nhds_one_sub_integral
   rw [sum_mul_eq_sub_integral_mul' _ _ (fun t ht ↦ hf_diff _ ht.1)]
   exact hf_int.integrableOn_compact_subset Set.Icc_subset_Ici_self isCompact_Icc
 
-set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_sum_mul_atTop_nhds_one_sub_integral₀ (hc : c 0 = 0)
     (hf_diff : ∀ t ∈ Set.Ici 1, DifferentiableAt ℝ f t)
     (hf_int : LocallyIntegrableOn (deriv f) (Set.Ici 1)) {l : 𝕜}

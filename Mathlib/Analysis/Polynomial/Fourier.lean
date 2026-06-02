@@ -86,7 +86,6 @@ theorem fourierCoeff_toAddCircle_eq_zero_of_lt_zero (n : ℤ) (hn : n < 0) :
     fourierCoeff (T := 2 * π) p.toAddCircle n = 0 := by
   simp [fourierCoeff_toAddCircle, hn]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Parseval's Identity** for polynomials -/
 theorem sum_sq_norm_coeff_eq_circleAverage : ∑ i ∈ p.support, ‖p.coeff i‖ ^ 2 =
     Real.circleAverage (fun θ ↦ ‖p.eval θ‖ ^ 2) 0 1 := by

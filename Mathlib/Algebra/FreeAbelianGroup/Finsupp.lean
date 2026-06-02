@@ -58,7 +58,6 @@ theorem FreeAbelianGroup.toFinsupp_comp_toFreeAbelianGroup :
   ext
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Finsupp.toFreeAbelianGroup_comp_toFinsupp :
     toFreeAbelianGroup.comp toFinsupp = AddMonoidHom.id (FreeAbelianGroup X) := by
@@ -119,7 +118,7 @@ theorem support_zero : support (0 : FreeAbelianGroup X) = ∅ := by
 
 @[simp]
 theorem support_of (x : X) : support (of x) = {x} := by
-  rw [support, toFinsupp_of, Finsupp.support_single_ne_zero _ one_ne_zero]
+  rw [support, toFinsupp_of, Finsupp.support_single _ one_ne_zero]
 
 @[simp]
 theorem support_neg (a : FreeAbelianGroup X) : support (-a) = support a := by

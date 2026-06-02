@@ -181,7 +181,7 @@ theorem r_eq_r' : r S = r' S :=
     le_sInf fun b H ⟨p, q⟩ ⟨x, y⟩ ⟨t, ht⟩ ↦ by
       rw [← one_mul (p, q), ← one_mul (x, y)]
       refine b.trans (b.mul (H (t * y)) (b.refl _)) ?_
-      convert b.symm (b.mul (H (t * q)) (b.refl (x, y))) using 1
+      convert! b.symm (b.mul (H (t * q)) (b.refl (x, y))) using 1
       dsimp only [Prod.mk_mul_mk, Submonoid.coe_mul] at ht ⊢
       simp_rw [mul_assoc, ht, mul_comm y q]
 
@@ -355,11 +355,6 @@ theorem smul_mk [SMul R M] [IsScalarTower R M M] (c : R) (a b) :
   rw [mk, mk, ← OreLocalization.smul_one_oreDiv_one_smul, OreLocalization.oreDiv_smul_oreDiv]
   change (c • 1) • a /ₒ (b * 1) = _
   rw [smul_assoc, one_smul, mul_one]
-
--- move me
-instance {R M : Type*} [CommMonoid M] [SMul R M] [IsScalarTower R M M] : SMulCommClass R M M where
-  smul_comm r s x := by
-    rw [← one_smul M (s • x), ← smul_assoc, smul_comm, smul_assoc, one_smul]
 
 -- Note: Previously there was a `MulDistribMulAction R (Localization S)`.
 -- It was removed as it is not the correct action.
@@ -857,7 +852,7 @@ variable {M N : Type*} [CommMonoid M] {S : Submonoid M} [CommMonoid N]
     Injective f ↔ ∀ ⦃x⦄, x ∈ S → IsRegular x := by
   simp_rw [Commute.isRegular_iff (Commute.all _), IsLeftRegular,
     Injective, LocalizationMap.eq_iff_exists, exists_imp, Subtype.forall]
-  exact forall₂_swap
+  exact forall₂_comm
 
 @[to_additive] theorem top_injective_iff (f : (⊤ : Submonoid M).LocalizationMap N) :
     Injective f ↔ IsCancelMul M := by

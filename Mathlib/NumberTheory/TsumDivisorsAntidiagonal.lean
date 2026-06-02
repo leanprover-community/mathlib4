@@ -43,7 +43,6 @@ lemma divisorsAntidiagonalFactors_one (x : Nat.divisorsAntidiagonal 1) :
   simp only [mul_eq_one, ne_eq, one_ne_zero, not_false_eq_true, and_true] at h
   simp [divisorsAntidiagonalFactors, h.1, h.2]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence from the union over `n` of `Nat.divisorsAntidiagonal n` to `ℕ+ × ℕ+`
 given by sending `n = a * b` to `(a, b)`. -/
 def sigmaAntidiagonalEquivProd : (Σ n : ℕ+, Nat.divisorsAntidiagonal n) ≃ ℕ+ × ℕ+ where
@@ -71,11 +70,10 @@ lemma summable_norm_pow_mul_geometric_div_one_sub (k : ℕ) {r : 𝕜} (hr : ‖
     Summable fun n : ℕ ↦ n ^ k * r ^ n / (1 - r ^ n) := by
   simp only [div_eq_mul_one_div (_ * _ ^ _)]
   apply Summable.mul_tendsto_const (c := 1 / (1 - 0))
-    (by simpa using summable_norm_pow_mul_geometric_of_norm_lt_one k hr)
-  simpa only [Nat.cofinite_eq_atTop] using
+    (by simpa using! summable_norm_pow_mul_geometric_of_norm_lt_one k hr)
+  simpa only [Nat.cofinite_eq_atTop] using!
    tendsto_const_nhds.div ((tendsto_pow_atTop_nhds_zero_of_norm_lt_one hr).const_sub 1) (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma summable_divisorsAntidiagonal_aux (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     Summable fun c : (n : ℕ+) × {x // x ∈ (n : ℕ).divisorsAntidiagonal} ↦
     (c.2.1.2) ^ k * (r ^ (c.2.1.1 * c.2.1.2)) := by
@@ -91,21 +89,20 @@ private lemma summable_divisorsAntidiagonal_aux (k : ℕ) {r : 𝕜} (hr : ‖r�
     · rw [(b : ℕ).divisorsAntidiagonal.sum_attach (fun x ↦ ‖(x.2 : 𝕜)‖ ^ _ * _ ^ (x.1 * x.2)),
           sum_divisorsAntidiagonal ((fun x y ↦ ‖(y : 𝕜)‖ ^ k * _ ^ (x * y)))]
       gcongr with i hi
-      · simpa using le_of_dvd b.2 (div_dvd_of_dvd (dvd_of_mem_divisors hi))
+      · simpa using! le_of_dvd b.2 (div_dvd_of_dvd (dvd_of_mem_divisors hi))
       · rw [norm_pow, mul_comm, Nat.div_mul_cancel (dvd_of_mem_divisors hi)]
     · simp only [norm_pow, Finset.sum_const, nsmul_eq_mul, ← mul_assoc, add_comm k 1, pow_add,
         pow_one, norm_mul]
       gcongr
-      simpa using Nat.card_divisors_le_self b
+      simpa using! Nat.card_divisors_le_self b
 
 theorem summable_prod_mul_pow (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     Summable fun c : (ℕ+ × ℕ+) ↦ c.2 ^ k * (r ^ (c.1 * c.2 : ℕ)) := by
-  simpa [sigmaAntidiagonalEquivProd.summable_iff.symm] using summable_divisorsAntidiagonal_aux k hr
+  simpa [sigmaAntidiagonalEquivProd.summable_iff.symm] using! summable_divisorsAntidiagonal_aux k hr
 
 -- access notation `σ`
 open scoped sigma
 
-set_option backward.isDefEq.respectTransparency false in
 theorem tsum_prod_pow_eq_tsum_sigma (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     ∑' d : ℕ+, ∑' c : ℕ+, c ^ k * r ^ (d * c : ℕ) = ∑' e : ℕ+, σ k e * r ^ (e : ℕ) := by
   suffices ∑' c : ℕ+ × ℕ+, c.2 ^ k * r ^ (c.1 * c.2 : ℕ) =

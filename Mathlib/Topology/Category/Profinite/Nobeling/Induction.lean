@@ -130,12 +130,11 @@ theorem Nobeling.isClosedEmbedding : IsClosedEmbedding (Nobeling.ι S) := by
     refine ((IsLocallyConstant.tfae _).out 0 3).mpr ?_
     rintro ⟨⟩
     · refine IsClopen.isOpen (isClopen_compl_iff.mp ?_)
-      convert C.2
+      convert! C.2
       ext x
-      simp only [Set.mem_compl_iff, Set.mem_preimage, Set.mem_singleton_iff,
-        decide_eq_false_iff_not, not_not]
+      simp
     · refine IsClopen.isOpen ?_
-      convert C.2
+      convert! C.2
       ext x
       simp only [Set.mem_preimage, Set.mem_singleton_iff, decide_eq_true_eq]
   · intro a b h
@@ -154,5 +153,5 @@ open Profinite NobelingProof
 `S : Profinite`. -/
 instance LocallyConstant.freeOfProfinite (S : Profinite.{u}) :
     Module.Free ℤ (LocallyConstant S ℤ) := by
-  obtain ⟨_, _⟩ := exists_wellOrder {C : Set S // IsClopen C}
+  obtain ⟨_, _⟩ := exists_wellFoundedLT {C : Set S // IsClopen C}
   exact @Nobeling_aux {C : Set S // IsClopen C} _ _ S (Nobeling.ι S) (Nobeling.isClosedEmbedding S)

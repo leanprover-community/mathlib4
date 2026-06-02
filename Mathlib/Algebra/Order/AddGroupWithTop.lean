@@ -20,14 +20,14 @@ that show up as the target of so-called “valuations” in algebraic number the
 
 Usually, in the informal literature, these objects are constructed
 by taking a linearly ordered commutative additive group Γ and formally adjoining a
-top element: Γ ∪ {⊤}.
+top element: `Γ ∪ {⊤}`.
 
 The disadvantage is that a type such as `ENNReal` is not of that form,
 whereas it is a very common target for valuations.
 The solutions is to use a typeclass, and that is exactly what we do in this file.
 -/
 
-@[expose] public section
+public section
 
 variable {G α : Type*}
 
@@ -185,7 +185,7 @@ lemma sub_left_injective_of_ne_top (h : b ≠ ⊤) : Function.Injective fun x �
   simpa [sub_eq_add_neg] using add_left_injective_of_ne_top (-b) (by simpa)
 
 lemma sub_right_injective_of_ne_top (h : b ≠ ⊤) : Function.Injective fun x ↦ b - x := by
-  simpa [sub_eq_add_neg] using (add_right_injective_of_ne_top b h).comp neg_injective
+  simpa [sub_eq_add_neg] using! (add_right_injective_of_ne_top b h).comp neg_injective
 
 @[simp]
 lemma sub_left_inj_of_ne_top (h : a ≠ ⊤) : b - a = c - a ↔ b = c :=
@@ -246,7 +246,6 @@ end LinearOrderedAddCommGroupWithTop
 
 namespace WithTop
 
-set_option backward.isDefEq.respectTransparency false in
 instance linearOrderedAddCommMonoidWithTop [AddCancelCommMonoid α] [LinearOrder α]
     [IsOrderedAddMonoid α] : LinearOrderedAddCommMonoidWithTop (WithTop α) where
   top_add' := WithTop.top_add

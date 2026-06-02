@@ -8,8 +8,8 @@ module
 public import Mathlib.CategoryTheory.Category.Init
 public import Mathlib.Combinatorics.Quiver.Basic
 public import Mathlib.Tactic.PPWithUniv
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.StacksAttribute
 public import Mathlib.Tactic.TryThis
 
 /-!
@@ -127,6 +127,7 @@ class CategoryStruct (obj : Type u) : Type max u (v + 1) extends Quiver.{v} obj 
   comp : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z)
 
 attribute [trans, to_dual self (reorder := X Z, 6 7)] CategoryStruct.comp
+attribute [to_dual self (reorder := comp (X Z, 4 5))] CategoryStruct.mk
 
 initialize_simps_projections CategoryStruct (-toQuiver_Hom, -Hom)
 
@@ -229,7 +230,7 @@ specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallC
 -- https://github.com/leanprover/lean4/pull/12423, the morphism universe `v` would default to
 -- being a universe output parameter.
 -- See Note [universe output parameters and typeclass caching].
-@[univ_out_params, pp_with_univ, stacks 0014]
+@[univ_out_params, pp_with_univ, stacks 0014, wikidata Q719395]
 class Category (obj : Type u) : Type max u (v + 1) extends CategoryStruct.{v} obj where
   /-- Identity morphisms are left identities for composition. -/
   id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f := by cat_disch
@@ -243,6 +244,15 @@ attribute [to_dual existing (attr := simp, grind =) id_comp] Category.comp_id
 attribute [simp, grind _=_] Category.assoc
 
 initialize_simps_projections Category (-Hom)
+
+/-- `Category.mk'` is the dual of `Category.mk`, which we need for `to_dual`.
+Please avoid using this directly. -/
+@[to_dual existing mk]
+abbrev Category.mk' {obj : Type u} [CategoryStruct.{v} obj]
+    (id_comp : ∀ {X Y : obj} (f : Y ⟶ X), f ≫ 𝟙 X = f)
+    (comp_id : ∀ {X Y : obj} (f : Y ⟶ X), 𝟙 Y ≫ f = f)
+    (assoc : ∀ {W X Y Z : obj} (f : X ⟶ W) (g : Y ⟶ X) (h : Z ⟶ Y), h ≫ g ≫ f = (h ≫ g) ≫ f) :
+    Category.{v, u} obj where
 
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : 𝟙 X ≫ f = f := by simp
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : f ≫ 𝟙 Y = f := by simp
@@ -285,16 +295,16 @@ scoped infixr:80 " ≫= " => whisker_eq
 @[to_dual eq_of_comp_right_eq]
 theorem eq_of_comp_left_eq {f g : X ⟶ Y} (w : ∀ {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h) :
     f = g := by
-  convert w (𝟙 Y) <;> simp
+  convert! w (𝟙 Y) <;> simp
 
 @[to_dual eq_of_comp_right_eq']
 theorem eq_of_comp_left_eq' (f g : X ⟶ Y)
     (w : (fun {Z} (h : Y ⟶ Z) => f ≫ h) = fun {Z} (h : Y ⟶ Z) => g ≫ h) : f = g :=
-  eq_of_comp_left_eq @fun Z h => by convert congr_fun (congr_fun w Z) h
+  eq_of_comp_left_eq @fun Z h => by convert! congr_fun (congr_fun w Z) h
 
 @[to_dual id_of_comp_right_id]
 theorem id_of_comp_left_id (f : X ⟶ X) (w : ∀ {Y : C} (g : X ⟶ Y), f ≫ g = g) : f = 𝟙 X := by
-  convert w (𝟙 X)
+  convert! w (𝟙 X)
   simp
 
 @[to_dual (reorder := f g' g) ite_comp]
@@ -334,7 +344,7 @@ theorem cancel_epi_assoc_iff (f : X ⟶ Y) [Epi f] {g h : Y ⟶ Z} {W : C} {k l 
 
 @[to_dual]
 theorem cancel_epi_id (f : X ⟶ Y) [Epi f] {h : Y ⟶ Y} : f ≫ h = f ↔ h = 𝟙 Y := by
-  convert cancel_epi f
+  convert! cancel_epi f
   simp
 
 /-- The composition of epimorphisms is again an epimorphism. This version takes `Epi f` and `Epi g`

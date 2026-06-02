@@ -40,7 +40,6 @@ public instance [IsCentral S R] : IsCentral S (End R M) where out T hT :=
 
 end Algebra.IsCentral
 
-set_option backward.isDefEq.respectTransparency false in
 open LinearMap in
 public theorem LinearEquiv.conjAlgEquiv_ext_iff {M₂ : Type*} [AddCommMonoid M₂] [Module R M₂]
     [Module S M₂] [SMulCommClass R S M₂] [IsScalarTower S R M₂] [Algebra.IsCentral S R]

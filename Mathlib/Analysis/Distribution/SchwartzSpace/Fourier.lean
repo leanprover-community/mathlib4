@@ -43,7 +43,6 @@ variable
 
 section definition
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier transform on a real inner product space, as a continuous linear map on the
 Schwartz space.
 
@@ -140,12 +139,6 @@ instance instFourierInvPair : FourierInvPair 𝓢(V, E) 𝓢(V, E) where
     rw [fourier_coe, fourierInv_coe, f.continuous.fourier_fourierInv_eq f.integrable
       (𝓕 f).integrable]
 
-@[deprecated (since := "2025-11-13")]
-alias fourier_inversion := FourierTransform.fourierInv_fourier_eq
-
-@[deprecated (since := "2025-11-13")]
-alias fourier_inversion_inv := FourierTransform.fourier_fourierInv_eq
-
 @[deprecated (since := "2026-01-06")]
 alias fourierTransformCLE := FourierTransform.fourierCLE
 
@@ -163,7 +156,6 @@ variable {𝕜' : Type*} [NormedField 𝕜']
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace ℂ G] [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝕜') in
 theorem fourier_evalCLM_eq (f : 𝓢(V, F →L[ℝ] G)) (m : F) :
     𝓕 (SchwartzMap.evalCLM 𝕜' V G m f) = SchwartzMap.evalCLM 𝕜' V G m (𝓕 f) := by
@@ -174,19 +166,16 @@ end eval
 
 section deriv
 
-set_option backward.isDefEq.respectTransparency false
-
 /-- The derivative of the Fourier transform is given by the Fourier transform of the multiplication
 with `-(2 * π * Complex.I) • innerSL ℝ`. -/
 theorem fderivCLM_fourier_eq (f : 𝓢(V, E)) :
     fderivCLM 𝕜 V E (𝓕 f) = 𝓕 (-(2 * π * Complex.I) • smulRightCLM ℂ E (innerSL ℝ) f) := by
   ext1 x
-  change fderiv ℝ (𝓕 ⇑f) x = _
-  calc
-    _ = 𝓕 (VectorFourier.fourierSMulRight (innerSL ℝ) f) x := by
-      rw [fderiv_fourier f.integrable]
-      simpa using f.integrable_pow_mul volume 1
+  change fderiv ℝ (𝓕 ⇑f) x = 𝓕 (VectorFourier.fourierSMulRight (innerSL ℝ) f) x
+  rw [fderiv_fourier f.integrable]
+  simpa using f.integrable_pow_mul volume 1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier transform of the derivative is given by multiplication of
 `(2 * π * Complex.I) • innerSL ℝ` with the Fourier transform. -/
 theorem fourier_fderivCLM_eq (f : 𝓢(V, E)) :
@@ -198,7 +187,8 @@ theorem fourier_fderivCLM_eq (f : 𝓢(V, E)) :
 
 open LineDeriv
 
-/- The line derivative in direction `m` of the Fourier transform is given by the Fourier transform
+set_option backward.isDefEq.respectTransparency false in
+/-- The line derivative in direction `m` of the Fourier transform is given by the Fourier transform
 of the multiplication with `-(2 * π * Complex.I) • (inner ℝ · m)`. -/
 theorem lineDerivOp_fourier_eq (f : 𝓢(V, E)) (m : V) :
     ∂_{m} (𝓕 f) = 𝓕 (-(2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) f) := by
@@ -209,7 +199,8 @@ theorem lineDerivOp_fourier_eq (f : 𝓢(V, E)) (m : V) :
   have : (inner ℝ · m).HasTemperateGrowth := ((innerSL ℝ).flip m).hasTemperateGrowth
   simp [this, innerSL_apply_apply ℝ]
 
-/- The Fourier transform of line derivative in direction `m` is given by multiplication of
+set_option backward.isDefEq.respectTransparency false in
+/-- The Fourier transform of line derivative in direction `m` is given by multiplication of
 `(2 * π * Complex.I) • (inner ℝ · m)` with the Fourier transform. -/
 theorem fourier_lineDerivOp_eq (f : 𝓢(V, E)) (m : V) :
     𝓕 (∂_{m} f) = (2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) (𝓕 f) := by
@@ -218,13 +209,13 @@ theorem fourier_lineDerivOp_eq (f : 𝓢(V, E)) (m : V) :
   have : (inner ℝ · m).HasTemperateGrowth := ((innerSL ℝ).flip m).hasTemperateGrowth
   simp [fourier_evalCLM_eq ℝ, fourier_fderivCLM_eq, this, innerSL_apply_apply ℝ]
 
-/- The line derivative in direction `m` of the inverse Fourier transform is given by the inverse
+/-- The line derivative in direction `m` of the inverse Fourier transform is given by the inverse
 Fourier transform of the multiplication with `(2 * π * Complex.I) • (inner ℝ · m)`. -/
 theorem lineDerivOp_fourierInv_eq (f : 𝓢(V, E)) (m : V) :
     ∂_{m} (𝓕⁻ f) = 𝓕⁻ ((2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) f) := by
   simp [fourierInv_apply_eq, lineDerivOp_compCLMOfContinuousLinearEquiv, lineDerivOp_fourier_eq]
 
-/- The inverse Fourier transform of line derivative in direction `m` is given by multiplication of
+/-- The inverse Fourier transform of line derivative in direction `m` is given by multiplication of
 `-(2 * π * Complex.I) • (inner ℝ · m)` with the inverse Fourier transform. -/
 theorem fourierInv_lineDerivOp_eq (f : 𝓢(V, E)) (m : V) :
     𝓕⁻ (∂_{m} f) = -(2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) (𝓕⁻ f) := by
@@ -247,19 +238,17 @@ variable [CompleteSpace E] [CompleteSpace F]
 Version where the multiplication is replaced by a general bilinear form `M`. -/
 theorem integral_bilin_fourier_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L[ℂ] F →L[ℂ] G) :
     ∫ ξ, M (𝓕 f ξ) (g ξ) = ∫ x, M (f x) (𝓕 g x) := by
-  simpa using VectorFourier.integral_bilin_fourierIntegral_eq_flip M (L := innerₗ V)
+  simpa using! VectorFourier.integral_bilin_fourierIntegral_eq_flip M (L := innerₗ V)
     continuous_fourierChar continuous_inner f.integrable g.integrable
 
 @[deprecated (since := "2025-11-16")]
 alias integral_bilin_fourierIntegral_eq := integral_bilin_fourier_eq
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier transform satisfies `∫ 𝓕 f • g = ∫ f • 𝓕 g`, i.e., it is self-adjoint. -/
 theorem integral_fourier_smul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, F)) :
     ∫ ξ, 𝓕 f ξ • g ξ = ∫ x, f x • 𝓕 g x :=
   integral_bilin_fourier_eq f g (.lsmul ℂ ℂ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier transform satisfies `∫ 𝓕 f * g = ∫ f * 𝓕 g`, i.e., it is self-adjoint. -/
 theorem integral_fourier_mul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, ℂ)) :
     ∫ ξ, 𝓕 f ξ * g ξ = ∫ x, f x * 𝓕 g x :=
@@ -270,17 +259,15 @@ theorem integral_fourier_mul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, ℂ)) :
 Version where the multiplication is replaced by a general bilinear form `M`. -/
 theorem integral_bilin_fourierInv_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L[ℂ] F →L[ℂ] G) :
     ∫ ξ, M (𝓕⁻ f ξ) (g ξ) = ∫ x, M (f x) (𝓕⁻ g x) := by
-  convert (integral_bilin_fourier_eq (𝓕⁻ f) (𝓕⁻ g) M).symm
+  convert! (integral_bilin_fourier_eq (𝓕⁻ f) (𝓕⁻ g) M).symm
   · exact (FourierTransform.fourier_fourierInv_eq g).symm
   · exact (FourierTransform.fourier_fourierInv_eq f).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inverse Fourier transform satisfies `∫ 𝓕⁻ f • g = ∫ f • 𝓕⁻ g`, i.e., it is self-adjoint. -/
 theorem integral_fourierInv_smul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, F)) :
     ∫ ξ, 𝓕⁻ f ξ • g ξ = ∫ x, f x • 𝓕⁻ g x :=
   integral_bilin_fourierInv_eq f g (.lsmul ℂ ℂ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inverse Fourier transform satisfies `∫ 𝓕⁻ f * g = ∫ f * 𝓕⁻ g`, i.e., it is self-adjoint. -/
 theorem integral_fourierInv_mul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, ℂ)) :
     ∫ ξ, 𝓕⁻ f ξ * g ξ = ∫ x, f x * 𝓕⁻ g x :=
@@ -288,7 +275,7 @@ theorem integral_fourierInv_mul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, ℂ)) :
 
 theorem integral_sesq_fourier_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L⋆[ℂ] F →L[ℂ] G) :
     ∫ ξ, M (𝓕 f ξ) (g ξ) = ∫ x, M (f x) (𝓕⁻ g x) := by
-  simpa [fourierInv_coe] using VectorFourier.integral_sesq_fourierIntegral_eq_neg_flip M
+  simpa [fourierInv_coe] using! VectorFourier.integral_sesq_fourierIntegral_eq_neg_flip M
     (L := innerₗ V) continuous_fourierChar continuous_inner f.integrable g.integrable
 
 @[deprecated (since := "2025-11-16")]
@@ -303,6 +290,28 @@ theorem integral_sesq_fourier_fourier (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E �
 
 end fubini
 
+section L1
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
+
+theorem norm_fourier_apply_le_toLp_one (f : 𝓢(V, F)) (x : V) :
+    ‖𝓕 f x‖ ≤ ‖f.toLp 1‖ := calc
+  _ = ‖∫ (v : V), 𝐞 (-inner ℝ v x) • f v‖ := by rw [fourier_coe, Real.fourier_eq]
+  _ ≤ ∫ (v : V), ‖𝐞 (-inner ℝ v x) • f v‖ := norm_integral_le_integral_norm _
+  _ = _ := by simp [norm_toLp_one]
+
+theorem norm_fourier_toBoundedContinuousFunction_le_toLp_one (f : 𝓢(V, F)) :
+    ‖(𝓕 f).toBoundedContinuousFunction‖ ≤ ‖f.toLp 1‖ := by
+  rw [BoundedContinuousFunction.norm_le (by positivity)]
+  simpa using norm_fourier_apply_le_toLp_one f
+
+theorem norm_fourier_Lp_top_leq_toLp_one (f : 𝓢(V, F)) :
+    ‖(𝓕 f).toLp ⊤‖ ≤ ‖f.toLp 1‖ :=
+  norm_toLp_top_le.trans (seminorm_le_bound ℝ 0 0 _ (by positivity)
+    (by simpa using norm_fourier_apply_le_toLp_one f))
+
+end L1
+
 section L2
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
@@ -312,26 +321,18 @@ variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteS
     ∫ ξ, ⟪𝓕 f ξ, 𝓕 g ξ⟫ = ∫ x, ⟪f x, g x⟫ :=
   integral_sesq_fourier_fourier f g (innerSL ℂ)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integral_norm_sq_fourier (f : 𝓢(V, H)) :
     ∫ ξ, ‖𝓕 f ξ‖ ^ 2 = ∫ x, ‖f x‖ ^ 2 := by
   apply Complex.ofRealLI.injective
   simpa [← LinearIsometry.integral_comp_comm, inner_self_eq_norm_sq_to_K] using
     integral_inner_fourier_fourier f f
 
-set_option backward.isDefEq.respectTransparency false in
 theorem inner_fourier_toL2_eq (f g : 𝓢(V, H)) :
     ⟪(𝓕 f).toLp 2, (𝓕 g).toLp 2⟫ = ⟪f.toLp 2, g.toLp 2⟫ := by simp
-
-@[deprecated (since := "2025-11-13")]
-alias inner_fourierTransformCLM_toL2_eq := inner_fourier_toL2_eq
 
 @[simp] theorem norm_fourier_toL2_eq (f : 𝓢(V, H)) :
     ‖(𝓕 f).toLp 2‖ = ‖f.toLp 2‖ := by
   simp_rw [norm_eq_sqrt_re_inner (𝕜 := ℂ), inner_fourier_toL2_eq]
-
-@[deprecated (since := "2025-11-13")]
-alias norm_fourierTransformCLM_toL2_eq := norm_fourier_toL2_eq
 
 end L2
 

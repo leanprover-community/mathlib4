@@ -29,13 +29,8 @@ This file contains basic facts about resultant of two polynomials over commutati
   `resultant (∏ a ∈ s, (X - C a)) f = ∏ a ∈ s, f.eval a`.
   This allows us to write the `resultant f g` as the product of terms of the form `a - b` where `a`
   is a root of `f` and `b` is a root of `g`.
-* A smaller intermediate goal is to show that the Sylvester matrix corresponds to the linear map
-  that we will call the Sylvester map, which is `R[X]_n × R[X]_m →ₗ[R] R[X]_(n + m)` given by
-  `(p, q) ↦ f * p + g * q`, where `R[X]_n` is
-  `Polynomial.degreeLT` in `Mathlib.RingTheory.Polynomial.Basic`.
 * Resultant of two binary forms (i.e. homogeneous polynomials in two variables), after binary forms
   are implemented.
-
 -/
 
 @[expose] public section
@@ -152,6 +147,7 @@ lemma resultant_map_map (φ : R →+* S) :
 /-- For polynomial `f` and constant `a`, `Res(f, a) = a ^ m`. -/
 theorem resultant_C_zero_left : resultant (C r) g 0 m = r ^ m := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Res(f, g) = (-1)ᵐⁿ Res(g, f)` -/
 lemma resultant_comm : resultant f g m n = (-1) ^ (m * n) * resultant g f n m := by
   classical
@@ -179,7 +175,7 @@ theorem resultant_zero_right : resultant f 0 m n = 0 ^ m * f.coeff 0 ^ n := by
   obtain _ | m := m; · simp
   have (i : Fin (m + 1 + n)) : sylvester f 0 (m + 1) n i ⟨0, by lia⟩ = 0 := by
     simp [sylvester, show (0 : Fin (m + 1 + n)) = Fin.castAdd _ 0 from rfl, Fin.addCases_left]
-  simpa [resultant] using Matrix.det_eq_zero_of_column_eq_zero ⟨0, by simp⟩ this
+  simpa [resultant] using Matrix.det_eq_zero_of_column_eq_zero ⟨0, by lia⟩ this
 
 @[simp]
 theorem resultant_zero_left : resultant 0 g m n = 0 ^ n * g.coeff 0 ^ m := by
@@ -237,6 +233,7 @@ private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDeg
   ext i j
   induction j using Fin.addCases <;> simp [M, sylvester, M₁, M₂]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Res(f, g + fp) = Res(f, g)` if `deg f + deg p ≤ deg g`. -/
 lemma resultant_add_mul_right (hp : p.natDegree + m ≤ n) (hf : f.natDegree ≤ m) :
     resultant f (g + f * p) m n = resultant f g m n := by
@@ -296,7 +293,6 @@ lemma resultant_C_mul_left (r : R) :
   rw [resultant_comm, resultant_C_mul_right, resultant_comm, mul_left_comm, ← mul_assoc ((-1) ^ _),
     mul_comm n m, ← mul_pow, neg_one_mul, neg_neg, one_pow, one_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma resultant_succ_left_deg (hf : f.natDegree ≤ m) :
     resultant f g (m + 1) n = (-1) ^ n * g.coeff n * resultant f g m n := by
   obtain _ | n := n
@@ -371,10 +367,10 @@ theorem resultant_C_left (r : R) :
   simp
 
 @[simp] theorem resultant_one_left : resultant 1 g m n = (-1) ^ (m * n) * g.coeff n ^ m := by
-  simpa [-resultant_C_left] using resultant_C_left g m n 1
+  simpa [-resultant_C_left] using! resultant_C_left g m n 1
 
 @[simp] theorem resultant_one_right : resultant f 1 m n = f.coeff m ^ n := by
-  simpa [-resultant_C_right] using resultant_C_right f m n 1
+  simpa [-resultant_C_right] using! resultant_C_right f m n 1
 
 /-- `Res(X - r, g) = g(r)` -/
 @[simp] lemma resultant_X_sub_C_left (r : R) (hg : g.natDegree ≤ n) :
@@ -383,7 +379,7 @@ theorem resultant_C_left (r : R) :
   obtain hg | hg := g.natDegree.eq_zero_or_pos
   · obtain ⟨s, rfl⟩ := natDegree_eq_zero.mp hg
     simp
-  conv_lhs => rw [← g.modByMonic_add_div (monic_X_sub_C r)]
+  conv_lhs => rw [← g.modByMonic_add_div (X - C r)]
   rw [resultant_add_mul_right _ _ _ _ _ _ (natDegree_X_sub_C_le _), modByMonic_X_sub_C_eq_C_eval]
   · simp
   · rw [natDegree_divByMonic g (monic_X_sub_C r), natDegree_sub_C, natDegree_X]
@@ -405,7 +401,6 @@ theorem resultant_C_left (r : R) :
     f.resultant (X + C r) m 1 = (-1) ^ m * eval (-r) f := by
   rw [← resultant_X_sub_C_right f m (-r) hf, map_neg, sub_neg_eq_add]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` and `g` are monic and splits, then `Res(f, g) = ∏ (α - β)`,
 where `α` and `β` runs through the roots of `f` and `g` respectively. -/
 lemma resultant_eq_prod_roots_sub
@@ -451,7 +446,7 @@ lemma resultant_eq_prod_roots_sub
     (hg'.map _) (SplittingField.splits _) (by simpa [r, natDegree_C_mul, hr₀] using hrd.le) rfl
   rw [resultant_map_map, natDegree_map, natDegree_map, resultant_C_mul_right,
     map_mul, inv_pow, map_inv₀, inv_mul_eq_iff_eq_mul₀ (by simp [hr₀])] at this
-  rw [← f.modByMonic_add_div hg, resultant_add_mul_left, f.modByMonic_add_div hg,
+  rw [← f.modByMonic_add_div, resultant_add_mul_left, f.modByMonic_add_div,
     ← Nat.sub_add_cancel (hrd.le.trans hfg), add_comm, resultant_add_left_deg, resultant_comm]
   · apply (algebraMap K L).injective
     rw [map_mul, map_mul, map_mul, this, map_sub_roots_sprod_eq_prod_map_eval _ _ hf hf',
@@ -465,7 +460,7 @@ lemma resultant_eq_prod_roots_sub
         simp only [mem_roots', ne_eq, IsRoot.def, eval_mul, eval_C, leadingCoeff_eq_zero, hr₀,
           not_false_eq_true, mul_inv_cancel_left₀, and_imp, r]
         intro x hx hxg
-        conv_lhs => rw [← f.modByMonic_add_div hg, eval_add, eval_mul, hxg, zero_mul, add_zero]
+        conv_lhs => rw [← f.modByMonic_add_div, eval_add, eval_mul, hxg, zero_mul, add_zero]
       · simp [hg'.natDegree_eq_card_roots]
     simp only [coeff_natDegree, hg.leadingCoeff, one_pow, map_one, map_multiset_prod,
       ← hf'.natDegree_eq_card_roots, ← hg'.natDegree_eq_card_roots, this, map_mul, Multiset.map_map,
@@ -475,10 +470,9 @@ lemma resultant_eq_prod_roots_sub
     congr 3 with x
     exact aeval_algebraMap_apply _ _ _
   · simp [r, hr₀, natDegree_C_mul]
-  · rw [f.modByMonic_add_div hg, natDegree_divByMonic _ hg, Nat.sub_add_cancel hfg]
+  · rw [f.modByMonic_add_div, natDegree_divByMonic _ hg, Nat.sub_add_cancel hfg]
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` splits with leading coeff `a` and degree `n`,
 then `Res(f, g) = aⁿ * ∏ g(α)` where `α` runs through the roots of `f`. -/
 nonrec lemma resultant_eq_prod_eval [IsDomain R]
@@ -528,7 +522,6 @@ nonrec lemma resultant_eq_prod_eval [IsDomain R]
   simp only [eval_map_algebraMap, Function.comp_apply, Multiset.map_map, L]
   congr; ext; simp [aeval_algebraMap_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.unusedVariables false in
 -- the variable names are used in the code action of `induction`.
 /-- An induction principle useful to prove statements about resultants.
@@ -668,17 +661,17 @@ lemma resultant_prod_right {ι : Type*} (s : Finset ι) (f : R[X]) (g : ι → R
 @[simp]
 lemma resultant_pow_left (hf : f.leadingCoeff ^ m ≠ 0) (hn : g.natDegree ≤ n) :
     (f ^ m).resultant g (f ^ m).natDegree n = (f.resultant g f.natDegree n) ^ m := by
-  convert resultant_prod_left (Finset.range m) (fun _ ↦ f) g n (by simpa) hn <;> simp
+  convert! resultant_prod_left (Finset.range m) (fun _ ↦ f) g n (by simpa) hn <;> simp
 
 @[simp]
 lemma resultant_pow_right (hm : f.natDegree ≤ m) (hg : g.leadingCoeff ^ n ≠ 0) :
     f.resultant (g ^ n) m (g ^ n).natDegree = (f.resultant g m g.natDegree) ^ n := by
-  convert resultant_prod_right (Finset.range n) f (fun _ ↦ g) m hm (by simpa) <;> simp
+  convert! resultant_prod_right (Finset.range n) f (fun _ ↦ g) m hm (by simpa) <;> simp
 
 lemma resultant_X_sub_C_pow_left (r : R) (g : R[X]) (m n : ℕ) (hn : g.natDegree ≤ n) :
     ((X - C r) ^ m).resultant g m n = eval r g ^ m := by
   nontriviality R
-  convert resultant_pow_left _ _ _ _ _ _ <;> simp [natDegree_pow', hn]
+  convert! resultant_pow_left _ _ _ _ _ _ <;> simp [natDegree_pow', hn]
 
 lemma resultant_X_sub_C_pow_right (f : R[X]) (r : R) (m n : ℕ) (hm : f.natDegree ≤ m) :
     f.resultant ((X - C r) ^ n) m n = (-1) ^ (m * n) * eval r f ^ n := by
@@ -686,11 +679,11 @@ lemma resultant_X_sub_C_pow_right (f : R[X]) (r : R) (m n : ℕ) (hm : f.natDegr
 
 lemma resultant_X_pow_left (g : R[X]) (m n : ℕ) (hn : g.natDegree ≤ n) :
     (X ^ m).resultant g m n = g.coeff 0 ^ m := by
-  convert resultant_X_sub_C_pow_left 0 g m n hn <;> simp [coeff_zero_eq_eval_zero]
+  convert! resultant_X_sub_C_pow_left 0 g m n hn <;> simp [coeff_zero_eq_eval_zero]
 
 lemma resultant_X_pow_right (f : R[X]) (m n : ℕ) (hm : f.natDegree ≤ m) :
     f.resultant (X ^ n) m n = (-1) ^ (m * n) * f.coeff 0 ^ n := by
-  convert resultant_X_sub_C_pow_right f 0 m n hm <;> simp [coeff_zero_eq_eval_zero]
+  convert! resultant_X_sub_C_pow_right f 0 m n hm <;> simp [coeff_zero_eq_eval_zero]
 
 nonrec lemma resultant_scaleRoots (f g : R[X]) (r : R) :
     resultant (f.scaleRoots r) (g.scaleRoots r) =
@@ -737,7 +730,6 @@ nonrec lemma resultant_scaleRoots (f g : R[X]) (r : R) :
     rw [← hf', ← hg', resultant_map_map]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma resultant_integralNormalization (f g : R[X]) (hg : g.natDegree ≠ 0) :
     resultant (f.scaleRoots g.leadingCoeff) g.integralNormalization =
       g.leadingCoeff ^ (f.natDegree * (g.natDegree - 1)) * resultant f g := by
@@ -938,8 +930,6 @@ discriminant. -/
 noncomputable def discr (f : R[X]) : R :=
   f.sylvesterDeriv.det * (-1) ^ (f.natDegree * (f.natDegree - 1) / 2)
 
-@[deprecated (since := "2025-10-20")] alias disc := discr
-
 /-- The discriminant of a constant polynomial is `1`. -/
 @[simp] lemma discr_C (r : R) : discr (C r) = 1 := by
   let e : Fin ((C r).natDegree - 1 + (C r).natDegree) ≃ Fin 0 := finCongr (by simp)
@@ -957,7 +947,6 @@ lemma discr_of_degree_eq_one {f : R[X]} (hf : f.degree = 1) : discr f = 1 := by
     simp [e, sylvesterDeriv, mul_comm, hf]
   simp [discr, ← Matrix.det_reindex_self e, this, hf]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Standard formula for the discriminant of a quadratic polynomial. -/
 lemma discr_of_degree_eq_two {f : R[X]} (hf : f.degree = 2) :
@@ -977,10 +966,6 @@ lemma discr_of_degree_eq_two {f : R[X]} (hf : f.degree = 2) :
     Matrix.cons_val_fin_one, Matrix.cons_val_one, Matrix.cons_val, hf]
   ring_nf
 
-@[deprecated (since := "2025-10-20")] alias disc_C := discr_C
-@[deprecated (since := "2025-10-20")] alias disc_of_degree_eq_one := discr_of_degree_eq_one
-@[deprecated (since := "2025-10-20")] alias disc_of_degree_eq_two := discr_of_degree_eq_two
-
 /-- Relation between the resultant and the discriminant.
 
 (Note this is actually false when `f` is a constant polynomial not equal to 1, so the assumption on
@@ -992,7 +977,7 @@ lemma resultant_deriv {f : R[X]} (hf : 0 < f.degree) :
   rw [resultant_comm, resultant, ← sylvesterDeriv_updateRow f hf, Matrix.det_updateRow_smul,
     Matrix.updateRow_eq_self, discr, mul_comm f.natDegree]
   ring_nf
-  rw [Nat.div_mul_cancel (by convert Nat.two_dvd_mul_add_one (f.natDegree - 1) using 2; lia)]
+  rw [Nat.div_mul_cancel (by convert! Nat.two_dvd_mul_add_one (f.natDegree - 1) using 2; lia)]
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 private lemma sylvesterDeriv_of_natDegree_eq_three {f : R[X]} (hf : f.natDegree = 3) :
@@ -1021,7 +1006,6 @@ private lemma sylvesterDeriv_of_natDegree_eq_three {f : R[X]} (hf : f.natDegree 
       OfNat.one_ne_ofNat, ↓reduceIte, zero_add, zero_le]
     fin_cases hj' <;> simp [mul_comm, one_add_one_eq_two, (by norm_num : (2 : R) + 1 = 3)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Standard formula for the discriminant of a cubic polynomial. -/
 lemma discr_of_degree_eq_three {f : R[X]} (hf : f.degree = 3) :
     discr f = f.coeff 2 ^ 2 * f.coeff 1 ^ 2
@@ -1035,8 +1019,6 @@ lemma discr_of_degree_eq_three {f : R[X]} (hf : f.degree = 3) :
   simp [Matrix.det_succ_row_zero (n := 4), Matrix.det_succ_row_zero (n := 3), Fin.succAbove,
     Matrix.det_fin_three, Finset.sum_fin_eq_sum_range, Finset.sum_range_succ, hf]
   ring_nf
-
-@[deprecated (since := "2025-10-20")] alias disc_of_degree_eq_three := discr_of_degree_eq_three
 
 end disc
 
