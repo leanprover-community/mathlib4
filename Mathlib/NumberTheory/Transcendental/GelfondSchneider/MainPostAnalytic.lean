@@ -7,7 +7,7 @@ Authors: Michail Karatarakis
 module
 
 public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainAnalytic
-public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.AnalyticPart
+public import Mathlib.Analysis.Analytic.Order
 
 @[expose] public section
 
