@@ -78,7 +78,7 @@ theorem injective_quotient_le_comap_map (P : Ideal R[X]) :
   refine le_antisymm (sup_le le_rfl ?_) (le_sup_of_le_left le_rfl)
   refine fun p hp =>
     polynomial_mem_ideal_of_coeff_mem_ideal P p fun n => Ideal.Quotient.eq_zero_iff_mem.mp ?_
-  simpa only [coeff_map, coe_mapRingHom] using ext_iff.mp (Ideal.mem_bot.mp (mem_comap.mp hp)) n
+  simpa only [coeff_map, coe_mapRingHom] using! ext_iff.mp (Ideal.mem_bot.mp (mem_comap.mp hp)) n
 
 /-- The identity in this lemma asserts that the "obvious" square
 ```
@@ -232,6 +232,12 @@ theorem IsIntegral.isMaximal_of_isMaximal_comap (I : Ideal A) [I.IsPrime]
 
 @[deprecated (since := "2026-05-08")] alias IsIntegralClosure.isMaximal_of_isMaximal_comap :=
   IsIntegral.isMaximal_of_isMaximal_comap
+
+theorem IsIntegral.mem_minimalPrimes_map_under (I : Ideal A) [I.IsPrime] :
+    I ∈ ((I.under R).map (algebraMap R A)).minimalPrimes := by
+  refine ⟨⟨inferInstance, map_comap_le⟩, fun r ⟨hr, hpr⟩ hrq ↦ ?_⟩
+  contrapose! hpr
+  exact mt map_le_iff_le_comap.mp (not_le_of_gt (IsIntegral.comap_lt_comap (hrq.lt_of_not_ge hpr)))
 
 variable [IsDomain A]
 

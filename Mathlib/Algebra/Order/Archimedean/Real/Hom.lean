@@ -6,7 +6,7 @@ Authors: Alex J. Best
 module
 
 public import Mathlib.Algebra.Order.Archimedean.Hom  -- shake: keep (Subsingleton (ℝ →+*o ℝ)), cf. lean#13417
-public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Analysis.Real.Sqrt
 import Mathlib.Algebra.Order.CompleteField
 
 /-!

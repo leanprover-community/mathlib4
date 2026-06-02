@@ -74,14 +74,10 @@ theorem IsSRGWith.ediam_eq_two [Nontrivial V] (h : G.IsSRGWith n k ℓ μ) (ht :
     by_contra! hc
     obtain ⟨hn, ha, he⟩ := two_lt_edist_iff.mp hc
     have h := h.of_not_adj hn ha
-    simp_rw [he, Fintype.card_eq_zero] at h
-    exact false_of_ne (h ▸ hm)
-  · by_contra! hc
-    cases ENat.le_one_iff_eq_zero_or_eq_one.mp (Order.le_of_lt_succ hc) with
-    | inl hc =>
-      rw [ediam_eq_zero_iff_subsingleton] at hc
-      exact false_of_nontrivial_of_subsingleton V
-    | inr hc => exact ht.elim (ediam_eq_one.mp hc)
+    simp_all
+  · by_contra
+    have := not_subsingleton V
+    simp_all [Order.le_one_iff]
 
 /-- **Conway's 99-graph problem** (from https://oeis.org/A248380/a248380.pdf)
 can be reformulated as the existence of a strongly regular graph with params (99, 14, 1, 2).
