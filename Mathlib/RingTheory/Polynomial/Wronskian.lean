@@ -113,7 +113,7 @@ theorem natDegree_wronskian_lt_add {a b : R[X]} (hw : wronskian a b ≠ 0) :
   have ha : a ≠ 0 := by intro h; subst h; rw [wronskian_zero_left] at hw; exact hw rfl
   have hb : b ≠ 0 := by intro h; subst h; rw [wronskian_zero_right] at hw; exact hw rfl
   rw [← WithBot.coe_lt_coe, WithBot.coe_add]
-  convert ← degree_wronskian_lt_add ha hb
+  convert! ← degree_wronskian_lt_add ha hb
   · exact Polynomial.degree_eq_natDegree hw
   · exact Polynomial.degree_eq_natDegree ha
   · exact Polynomial.degree_eq_natDegree hb
