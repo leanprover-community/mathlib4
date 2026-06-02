@@ -127,11 +127,11 @@ theorem upperCentralSeries_eq_center [IsPerfect G] {n : ℕ} (hn : n ≠ 0) :
   rw [← Subgroup.upperCentralSeries_one, eq_comm]
   apply Subgroup.upperCentralSeries.eq_ge_of_eq_succ <| by lia
   apply le_antisymm <| Subgroup.upperCentralSeries_mono G one_le_two
-  rw [Subgroup.upperCentralSeries_one, ← commutator_left_top_eq_bot_iff_le_center,
+  rw [Subgroup.upperCentralSeries_one, ← commutator_top_right_eq_bot_iff_le_center,
     ← commutator_eq_top, commutator_comm, commutator_def]
   suffices ⁅⁅Subgroup.upperCentralSeries G 2, ⊤⁆, ⊤⁆ = ⊥ from
     commutator_commutator_eq_bot_of_rotate (by simpa [commutator_comm]) this
-  rw [commutator_left_top_eq_bot_iff_le_center, ← Subgroup.upperCentralSeries_one]
+  rw [commutator_top_right_eq_bot_iff_le_center, ← Subgroup.upperCentralSeries_one]
   apply commutator_upperCentralSeries_top_le
 
 variable (G) in

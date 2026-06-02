@@ -144,21 +144,21 @@ theorem commutator_self_eq_bot : ⁅H, H⁆ = ⊥ ↔ IsMulCommutative H := by
   rw [commutator_eq_bot_iff_le_centralizer, le_centralizer_iff_isMulCommutative]
 
 @[to_additive (attr := simp)]
-theorem commutator_left_top_eq_bot_iff_le_center : ⁅H, (⊤ : Subgroup G)⁆ = ⊥ ↔ H ≤ center G := by
+theorem commutator_top_right_eq_bot_iff_le_center : ⁅H, (⊤ : Subgroup G)⁆ = ⊥ ↔ H ≤ center G := by
   rw [commutator_eq_bot_iff_le_centralizer, coe_top, centralizer_univ]
 
 @[to_additive (attr := simp)]
-theorem commutator_right_top_eq_bot_iff_le_center : ⁅(⊤ : Subgroup G), H⁆ = ⊥ ↔ H ≤ center G := by
-  rw [commutator_comm, commutator_left_top_eq_bot_iff_le_center]
+theorem commutator_top_left_eq_bot_iff_le_center : ⁅(⊤ : Subgroup G), H⁆ = ⊥ ↔ H ≤ center G := by
+  rw [commutator_comm, commutator_top_right_eq_bot_iff_le_center]
 
-variable (G) in
+variable (H) in
 @[to_additive (attr := simp)]
-theorem commutator_left_center : ⁅H, center G⁆ = ⊥ := by
+theorem commutator_center_right : ⁅H, center G⁆ = ⊥ := by
   simp [commutator_eq_bot_iff_le_centralizer]
 
-variable (G) in
+variable (H) in
 @[to_additive (attr := simp)]
-theorem commutator_right_center : ⁅center G, H⁆ = ⊥ :=
+theorem commutator_center_left : ⁅center G, H⁆ = ⊥ :=
   commutator_eq_bot_iff_le_centralizer.mpr <| center_le_centralizer _
 
 section Normal
