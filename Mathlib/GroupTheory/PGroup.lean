@@ -40,12 +40,9 @@ theorem _root_.isPGroup_iff_orderOf_dvd_pow : IsPGroup p G ↔ ∀ g : G, ∃ k,
 
 alias ⟨exists_orderOf_dvd_pow, _⟩ := isPGroup_iff_orderOf_dvd_pow
 
-theorem iff_orderOf [hp : Fact p.Prime] : IsPGroup p G ↔ ∀ g : G, ∃ k : ℕ, orderOf g = p ^ k :=
-  forall_congr' fun g =>
-    ⟨fun ⟨_, hk⟩ =>
-      Exists.imp (fun _ h => h.right)
-        ((Nat.dvd_prime_pow hp.out).mp (orderOf_dvd_of_pow_eq_one hk)),
-      Exists.imp fun k hk => by rw [← hk, pow_orderOf_eq_one]⟩
+theorem iff_orderOf [Fact p.Prime] : IsPGroup p G ↔ ∀ g : G, ∃ k, orderOf g = p ^ k := by
+  simp_rw [isPGroup_iff_orderOf_dvd_pow, Nat.dvd_prime_pow Fact.out]
+  exact ⟨fun h g ↦ by grind [h g], (· · |>.imp <| by grind)⟩
 
 alias ⟨exists_orderOf_eq_pow, _⟩ := iff_orderOf
 
