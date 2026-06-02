@@ -38,7 +38,7 @@ variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
 
 namespace ClassGroup
 
-section
+section CommRing
 
 variable [IsDomain A] [IsDomain B]
 
