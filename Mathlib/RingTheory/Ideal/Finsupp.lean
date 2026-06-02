@@ -10,7 +10,7 @@ public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 
-# Lemmas for action of ideal on submodules of `Finsupp`
+# Lemmas for action of ideals on submodules of `Finsupp`
 
 -/
 
