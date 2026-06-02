@@ -150,7 +150,7 @@ def countablyGeneratedAtom (α : Type*) [MeasurableSpace α] [CountablyGenerated
 lemma measurableSet_countablyGeneratedAtom (p : ℕ → Prop) :
     MeasurableSet (countablyGeneratedAtom α p) := by
   refine MeasurableSet.iInter fun n ↦ ?_
-  convert MeasurableSet.ite' (fun _ ↦ measurableSet_natGeneratingSequence n)
+  exact MeasurableSet.ite' (fun _ ↦ measurableSet_natGeneratingSequence n)
     (fun _ ↦ (measurableSet_natGeneratingSequence n).compl)
 
 lemma disjoint_countablyGeneratedAtom :
@@ -169,14 +169,15 @@ lemma disjoint_countablyGeneratedAtom :
 lemma iUnion_countablyGeneratedAtom : ⋃ p, countablyGeneratedAtom α p = univ := by
   ext x
   simp only [countablyGeneratedAtom, mem_iUnion, mem_iInter, mem_univ, iff_true]
-  exact ⟨fun n ↦ x ∈ natGeneratingSequence α n, fun n ↦ by grind⟩
+  exact ⟨fun n ↦ x ∈ natGeneratingSequence α n, by grind⟩
 
 lemma mem_countablyGeneratedAtom_natGeneratingSequence (x : α) :
     x ∈ countablyGeneratedAtom α (x ∈ natGeneratingSequence α ·) := by
   simp [countablyGeneratedAtom]; grind
 
 open Classical in
-/-- Any set in a countably generated measurable space can be expressed as a union of atoms. -/
+/-- Any measurable set in a countably generated measurable space can be expressed as a union of
+atoms. -/
 lemma exists_eq_iUnion_countablyGeneratedAtom {s : Set α} (hs : MeasurableSet s) :
     ∃ (q : (ℕ → Prop) → Prop), s = ⋃ p, if q p then countablyGeneratedAtom α p else ∅ := by
   rw [← generateFrom_natGeneratingSequence α] at hs
@@ -216,7 +217,7 @@ lemma exists_eq_iUnion_countablyGeneratedAtom {s : Set α} (hs : MeasurableSet s
     simp [hq]
     grind
 
-/-- The measurable atom of a point in a countably generated measurable space is the given by
+/-- The measurable atom of a point in a countably generated measurable space is given by
 a `countablyGeneratedAtom`. -/
 lemma measurableAtom_eq_countablyGeneratedAtom_natGeneratingSequence (x : α) :
     measurableAtom x = countablyGeneratedAtom α (x ∈ natGeneratingSequence α ·) := by
