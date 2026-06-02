@@ -11,8 +11,9 @@ public import Mathlib.Topology.Algebra.ConstMulAction
 /-!
 # Deck transformations
 
-For a continuous map `p : E → X`, the **deck transformation group** `Deck p` is the
-subgroup of `E ≃ₜ E` consisting of self-homeomorphisms `h` with `p ∘ h = p`.
+For a map `p : E → X`, the **deck transformation group** `Deck p` is the subgroup of
+`E ≃ₜ E` consisting of self-homeomorphisms `h` with `p ∘ h = p`. No topology on `X` or
+continuity of `p` is assumed.
 
 The definition is stated for an arbitrary `p`; no `IsCoveringMap` hypothesis is needed
 for the basic group structure or the canonical action. Theorems characterising deck
