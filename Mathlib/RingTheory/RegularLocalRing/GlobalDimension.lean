@@ -60,7 +60,7 @@ lemma projectiveDimension_ne_top_of_isRegularLocalRing [IsRegularLocalRing R] [S
     (M : ModuleCat.{v} R) [Module.Finite R M] : projectiveDimension M ≠ ⊤ := by
   rcases FiniteRingKrullDim.ringKrullDim_eq_nat R with ⟨m, hm⟩
   obtain ⟨n, hn⟩ := finite_projectiveDimension_of_isRegularLocalRing_aux M m
-    (by simpa [hm] using WithBot.coe_le_coe.mpr le_add_self)
+    (by simpa [hm] using! WithBot.coe_le_coe.mpr le_add_self)
   exact ne_top_of_le_ne_top (WithBot.coe_inj.not.mpr (ENat.coe_ne_top n))
     ((projectiveDimension_le_iff M n).mpr hn)
 
@@ -90,7 +90,7 @@ theorem IsRegularLocalRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegu
       apply (moduleDepth_eq_zero_of_hom_nontrivial _ _).mpr
       use LinearMap.id, 0
       exact LinearMap.ne_zero_of_injective fun ⦃_ _⦄ a ↦ a
-    simpa [← eq, eq0] using le_biSup projectiveDimension ‹_›
+    simpa [← eq, eq0] using! le_biSup projectiveDimension ‹_›
 
 variable (R) in
 theorem IsRegularRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegularRing R] :

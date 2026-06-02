@@ -332,7 +332,7 @@ noncomputable def atOne [IsLocalization.Away (1 : R) S] : R ≃ₐ[R] S :=
 theorem away_of_isUnit_of_bijective {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S]
     [Algebra R S] {r : R} (hr : IsUnit r) (H : Function.Bijective (algebraMap R S)) :
     IsLocalization.Away r S :=
-  .of_le_isUnit_of_bijective (by simpa [Submonoid.powers_le] using hr.map (algebraMap R S)) H
+  .of_le_isUnit_of_bijective (by simpa [Submonoid.powers_le] using! hr.map (algebraMap R S)) H
 
 variable {R S}
 
@@ -683,11 +683,9 @@ theorem selfZPow_pow_sub (a : R) (b : B) (m d : ℤ) :
   constructor
   · intro h
     have := congr_arg (fun s : B => s * selfZPow x B d) h
-    simp only at this
     rwa [mul_assoc, mul_assoc, selfZPow_neg_mul, mul_one, mul_comm b _] at this
   · intro h
     have := congr_arg (fun s : B => s * selfZPow x B (-d)) h
-    simp only at this
     rwa [mul_comm _ b, mul_assoc b _ _, selfZPow_mul_neg, mul_one] at this
 
 variable {R : Type*} [CommRing R] (x : R) (B : Type*) [CommRing B]
