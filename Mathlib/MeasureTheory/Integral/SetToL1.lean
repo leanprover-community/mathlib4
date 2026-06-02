@@ -5,6 +5,7 @@ Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
 module
 
+public import Mathlib.MeasureTheory.Constructions.Polish.StronglyMeasurable
 public import Mathlib.MeasureTheory.Integral.FinMeasAdditive
 public import Mathlib.Analysis.Normed.Operator.Extend
 
@@ -1309,6 +1310,81 @@ theorem tendsto_setToFun_filter_of_dominated_convergence (hT : DominatedFinMeasA
   · filter_upwards [h_lim]
     refine fun a h_lin => @Tendsto.comp _ _ _ (fun n => x (n + k)) (fun n => fs n a) _ _ _ h_lin ?_
     rwa [tendsto_add_atTop_iff_nat]
+
+/-- Lebesgue dominated convergence theorem for series. -/
+theorem hasSum_setToFun_of_dominated_convergence (hT : DominatedFinMeasAdditive μ T C)
+    {ι} [Countable ι] {F : ι → α → E} {f : α → E}
+    (bound : ι → α → ℝ) (hF_meas : ∀ n, AEStronglyMeasurable (F n) μ)
+    (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound n a)
+    (bound_summable : ∀ᵐ a ∂μ, Summable fun n => bound n a)
+    (bound_integrable : Integrable (fun a => ∑' n, bound n a) μ)
+    (h_lim : ∀ᵐ a ∂μ, HasSum (fun n => F n a) (f a)) :
+    HasSum (fun n => setToFun μ T hT (F n)) (setToFun μ T hT f) := by
+  have hb_nonneg : ∀ᵐ a ∂μ, ∀ n, 0 ≤ bound n a :=
+    eventually_countable_forall.2 fun n => (h_bound n).mono fun a => (norm_nonneg _).trans
+  have hb_le_tsum : ∀ n, bound n ≤ᵐ[μ] fun a => ∑' n, bound n a := by
+    intro n
+    filter_upwards [hb_nonneg, bound_summable]
+      with _ ha0 ha_sum using ha_sum.le_tsum _ fun i _ => ha0 i
+  have hF_integrable : ∀ n, Integrable (F n) μ := by
+    refine fun n => bound_integrable.mono' (hF_meas n) ?_
+    exact EventuallyLE.trans (h_bound n) (hb_le_tsum n)
+  simp only [HasSum, ← setToFun_finsetSum _ _ fun n _ => hF_integrable n]
+  refine tendsto_setToFun_filter_of_dominated_convergence _
+      (fun a => ∑' n, bound n a) ?_ ?_ bound_integrable h_lim
+  · exact Eventually.of_forall fun s => s.aestronglyMeasurable_fun_sum fun n _ => hF_meas n
+  · filter_upwards with s
+    filter_upwards [eventually_countable_forall.2 h_bound, hb_nonneg, bound_summable]
+      with a hFa ha0 has
+    calc
+      ‖∑ n ∈ s, F n a‖ ≤ ∑ n ∈ s, bound n a := norm_sum_le_of_le _ fun n _ => hFa n
+      _ ≤ ∑' n, bound n a := has.sum_le_tsum _ (fun n _ => ha0 n)
+
+theorem setToFun_tsum [CompleteSpace E] (hT : DominatedFinMeasAdditive μ T C)
+    {ι} [Countable ι] {f : ι → α → E} (hf : ∀ i, AEStronglyMeasurable (f i) μ)
+    (hf' : ∑' i, ∫⁻ a : α, ‖f i a‖ₑ ∂μ ≠ ∞) :
+    setToFun μ T hT (fun a ↦ ∑' i, f i a) = ∑' i, setToFun μ T hT (f i) := by
+  by_cases hF : CompleteSpace F; swap
+  · simp [setToFun, hF]
+  have hf'' i : AEMeasurable (‖f i ·‖ₑ) μ := (hf i).enorm
+  have hhh : ∀ᵐ a : α ∂μ, Summable fun n => (‖f n a‖₊ : ℝ) := by
+    rw [← lintegral_tsum hf''] at hf'
+    refine (ae_lt_top' (AEMeasurable.tsum hf'') hf').mono ?_
+    intro x hx
+    rw [← ENNReal.tsum_coe_ne_top_iff_summable_coe]
+    exact hx.ne
+  convert!
+    (MeasureTheory.hasSum_setToFun_of_dominated_convergence hT (fun i a => ‖f i a‖₊) hf _ hhh ⟨_, _⟩
+        _).tsum_eq.symm
+  · intro n
+    filter_upwards with x
+    rfl
+  · fun_prop
+  · dsimp [HasFiniteIntegral]
+    have : ∫⁻ a, ∑' n, ‖f n a‖ₑ ∂μ < ⊤ := by rwa [lintegral_tsum hf'', lt_top_iff_ne_top]
+    convert! this using 1
+    apply lintegral_congr_ae
+    simp_rw [← coe_nnnorm, ← NNReal.coe_tsum, enorm_eq_nnnorm, NNReal.nnnorm_eq]
+    filter_upwards [hhh] with a ha
+    exact ENNReal.coe_tsum (NNReal.summable_coe.mp ha)
+  · filter_upwards [hhh] with x hx
+    exact hx.of_norm.hasSum
+
+/-- Corollary of the Lebesgue dominated convergence theorem: If a sequence of functions `F n` is
+(eventually) uniformly bounded by a constant and converges (eventually) pointwise to a
+function `f`, then the integrals of `F n` with respect to a finite measure `μ` converge
+to the integral of `f`. -/
+theorem tendsto_setToFun_filter_of_norm_le_const (hT : DominatedFinMeasAdditive μ T C)
+    {ι} {l : Filter ι} [l.IsCountablyGenerated]
+    {F : ι → α → E} [IsFiniteMeasure μ] {f : α → E}
+    (h_meas : ∀ᶠ n in l, AEStronglyMeasurable (F n) μ)
+    (h_bound : ∃ C, ∀ᶠ n in l, ∀ᵐ ω ∂μ, ‖F n ω‖ ≤ C)
+    (h_lim : ∀ᵐ ω ∂μ, Tendsto (fun n => F n ω) l (𝓝 (f ω))) :
+    Tendsto (fun n => setToFun μ T hT (F n)) l (𝓝 (setToFun μ T hT f)) := by
+  obtain ⟨c, h_boundc⟩ := h_bound
+  let C : α → ℝ := (fun _ => c)
+  exact tendsto_setToFun_filter_of_dominated_convergence hT
+    C h_meas h_boundc (integrable_const c) h_lim
 
 variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
 
