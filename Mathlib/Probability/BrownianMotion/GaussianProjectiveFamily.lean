@@ -102,14 +102,14 @@ lemma integral_projectiveFamily {E : Type*} [NormedAddCommGroup E] [NormedSpace 
       ∫ x, f (ofLp x) ∂multivariateGaussian 0 (covMatrix I) := by
   simp [projectiveFamily, integral_map_equiv]
 
-@[to_fun]
+@[to_fun covariance_fun_projectiveFamily]
 lemma covariance_projectiveFamily (I : Finset ℝ≥0) (f g : (I → ℝ) → ℝ) :
     cov[f, g; projectiveFamily I] =
       cov[f ∘ ofLp, g ∘ ofLp; multivariateGaussian 0 (covMatrix I)] := by
   rw [projectiveFamily, covariance_map_equiv]
   rfl
 
-@[to_fun]
+@[to_fun variance_fun_projectiveFamily]
 lemma variance_projectiveFamily (I : Finset ℝ≥0) (f : (I → ℝ) → ℝ) :
     Var[f; projectiveFamily I] =
       Var[f ∘ ofLp; multivariateGaussian 0 (covMatrix I)] := by
@@ -140,7 +140,7 @@ lemma integral_eval_projectiveFamily (I : Finset ℝ≥0) (s : I) :
 
 lemma covariance_eval_projectiveFamily (I : Finset ℝ≥0) (s t : I) :
     cov[fun x ↦ x s, fun x ↦ x t; projectiveFamily I] = min s.1 t.1 := by
-  rw [fun_covariance_projectiveFamily,
+  rw [covariance_fun_projectiveFamily,
     covariance_eval_multivariateGaussian (posSemidef_covMatrix I),
     covMatrix_apply]
 
