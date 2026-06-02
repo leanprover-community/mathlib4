@@ -72,6 +72,20 @@ jobs:
           # Tarball (rather than a plain directory artifact) so that executable bits
           # and the hidden `.lake` directory survive upload/download without relying
           # on `include-hidden-files` or post-download `chmod`.
+          #
+          # We bundle exactly what `build_template.yml` invokes from `tools-branch/`:
+          #   - .lake/build:                    holds the `cache` binary that the build
+          #                                     job runs by path (.lake/build/bin/cache).
+          #                                     We include the whole build dir, not just
+          #                                     the binary, so any shared libraries it
+          #                                     resolves via rpath sit beside it.
+          #   - scripts/lake-build-with-retry.sh: builds Mathlib/Archive/Counterexamples
+          #                                     with retries.
+          #   - scripts/lake-build-wrapper.py:  wraps the `lake test` step.
+          #   - lean-toolchain:                 the toolchain the binary was linked
+          #                                     against; the consumer `elan toolchain
+          #                                     install`s it so the prebuilt binary has a
+          #                                     matching runtime even on a bump PR.
           tar -czf "${GITHUB_WORKSPACE}/tools-bin.tar.gz" \
             .lake/build \
             scripts/lake-build-with-retry.sh \
