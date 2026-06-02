@@ -267,7 +267,7 @@ theorem _root_.WithTop.isPredPrelimit_iff {x : WithTop α} :
 @[to_dual (attr := simp)]
 theorem _root_.WithTop.isPredLimit_coe_iff {x : α} :
     IsPredLimit (x : WithTop α) ↔ IsPredLimit x := by
-  simp [WithTop.isPredPrelimit_iff, IsPredLimit, WithTop.exists]
+  simp [WithTop.isPredPrelimit_iff, isPredLimit_iff, WithTop.exists]
 
 @[to_dual]
 theorem IsPredLimit.withTopCoe {x : α} (h : IsPredLimit x) : IsPredLimit (x : WithTop α) :=
