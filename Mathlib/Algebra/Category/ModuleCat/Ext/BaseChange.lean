@@ -259,9 +259,8 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
     have T_exact : T.ShortExact := LinearMap.shortExact_shortComplexKer surjf
     let TS := (T.map (ModuleCat.extendScalars'.{v, v'} R S))
     have TS_exact : TS.ShortExact := T_exact.map_of_exact (ModuleCat.extendScalars'.{v, v'} R S)
-    have _ : Module.Free S TS.X₂ := by
-      simp only [ModuleCat.extendScalars', ShortComplex.map_X₂, ModuleCat.ExtendScalars'.obj', TS]
-      exact Module.Free.of_equiv (Shrink.linearEquiv S (TensorProduct R S T.X₂)).symm
+    have : Module.Free S TS.X₂ :=
+      Module.Free.of_equiv (Shrink.linearEquiv S (TensorProduct R S T.X₂)).symm
     let NS := ((ModuleCat.extendScalars'.{v, v'} R S).obj N)
     let f : Ext T.X₂ N n →ₗ[R] Ext T.X₁ N n := {
       __ := (mk₀ T.f).precomp N (zero_add n)
