@@ -76,7 +76,6 @@ section Ring
 
 variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isEpi_iff_surjective_algebraMap_of_finite [Module.Finite R A] :
     Algebra.IsEpi R A ↔ Surjective (algebraMap R A) := by
   refine ⟨fun h ↦ ?_, isEpi_of_surjective_algebraMap R A⟩
@@ -144,7 +143,7 @@ lemma injective_lift_lsmul :
         map_add' m n := tmul_add _ _ _
         map_smul' r m := tmul_smul _ _ _ }
     have aux : f ∘ₗ (lift <| LinearMap.restrictScalars₁₂ R R (LinearMap.lsmul A M)) = .id := by
-      ext a m; simpa using this a m
+      ext a m; simpa using! this a m
     exact HasLeftInverse.injective ⟨f, fun x ↦ congr($aux x)⟩
   intro a m
   let f : A ⊗[R] A →ₗ[R] A ⊗[R] M := lift
@@ -154,7 +153,7 @@ lemma injective_lift_lsmul :
         map_smul' := by simp }
       map_add' := by intros; ext; simp [add_tmul]
       map_smul' := by intros; ext; simp [smul_tmul'] }
-  simpa [f] using congr_arg f (tmul_comm R 1 a)
+  simpa [f] using! congr_arg f (tmul_comm R 1 a)
 
 /-- A heterogeneous variant of `TensorProduct.lid` when `R → A` is epi. -/
 def _root_.TensorProduct.lid' : A ⊗[R] M ≃ₗ[A] M :=

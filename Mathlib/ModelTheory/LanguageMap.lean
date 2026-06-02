@@ -26,8 +26,8 @@ structures.
 ## References
 
 For the Flypitch project:
-- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
-  [flypitch_cpp]
+- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum
+  hypothesis*][flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
   the continuum hypothesis*][flypitch_itp]
 
@@ -327,15 +327,12 @@ def constantsOnFunc : ℕ → Type u'
 /-- A language with constants indexed by a type. -/
 @[simps]
 def constantsOn : Language.{u', 0} := ⟨constantsOnFunc α, fun _ => Empty⟩
+deriving IsAlgebraic
 
 variable {α}
 
 theorem constantsOn_constants : (constantsOn α).Constants = α :=
   rfl
-
-instance isAlgebraic_constantsOn : IsAlgebraic (constantsOn α) := by
-  unfold constantsOn
-  infer_instance
 
 instance isEmpty_functions_constantsOn_succ {n : ℕ} : IsEmpty ((constantsOn α).Functions (n + 1)) :=
   inferInstanceAs (IsEmpty PEmpty)
@@ -452,19 +449,18 @@ end
 
 open FirstOrder
 
-instance constantsOnSelfStructure : (constantsOn M).Structure M :=
-  constantsOn.structure id
-
-instance withConstantsSelfStructure : L[[M]].Structure M :=
-  Language.sumStructure _ _ M
-
-instance withConstants_self_expansion : (lhomWithConstants L M).IsExpansionOn M :=
-  ⟨fun _ _ => rfl, fun _ _ => rfl⟩
-
 variable (α : Type*) [(constantsOn α).Structure M]
 
 instance withConstantsStructure : L[[α]].Structure M :=
-  Language.sumStructure _ _ _
+  inferInstanceAs <| (L.sum _).Structure M
+
+instance constantsOnSelfStructure : (constantsOn M).Structure M :=
+  fast_instance% constantsOn.structure id
+
+instance withConstantsSelfStructure : L[[M]].Structure M := inferInstance
+
+instance withConstants_self_expansion : (lhomWithConstants L M).IsExpansionOn M :=
+  ⟨fun _ _ => rfl, fun _ _ => rfl⟩
 
 instance withConstants_expansion : (L.lhomWithConstants α).IsExpansionOn M :=
   ⟨fun _ _ => rfl, fun _ _ => rfl⟩
@@ -481,6 +477,7 @@ instance addConstants_expansion {L' : Language} [L'.Structure M] (φ : L →ᴸ 
     (φ.addConstants α).IsExpansionOn M :=
   LHom.sumMap_isExpansionOn _ _ M
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem withConstants_funMap_sumInr {a : α} {x : Fin 0 → M} :
     @funMap L[[α]] M _ 0 (Sum.inr a : L[[α]].Functions 0) x = L.con a := by
@@ -502,6 +499,35 @@ instance constantsOnMap_inclusion_isExpansionOn :
 instance map_constants_inclusion_isExpansionOn :
     (L.lhomWithConstantsMap (Set.inclusion h)).IsExpansionOn M :=
   LHom.sumMap_isExpansionOn _ _ _
+
+variable {L} (A) {N : Type w'} [L.Structure N] (f : M ↪[L] N)
+
+/-- Type synonym for `N` used to equip it with an `L[[A]]`-structure where the new constants on `A`
+are interpreted via the embedding `f`. -/
+@[nolint unusedArguments]
+def Embedding.withConstants (_f : M ↪[L] N) (_A : Set M) : Type w' := N
+deriving L.Structure
+
+instance (f : M ↪[L] N) : (constantsOn A).Structure (f.withConstants A) :=
+  fast_instance% constantsOn.structure fun a => f a
+
+instance : L[[A]].Structure (f.withConstants A) := inferInstance
+
+/-- Lifts an embedding to the expanded language with constants. -/
+def Embedding.liftWithConstants :
+    M ↪[L[[A]]] f.withConstants A := by
+  refine ⟨f.toEmbedding, ?_, ?_⟩
+  · intro n g x
+    cases g with
+    | inl g => exact f.map_fun' g x
+    | inr c =>
+      cases n with
+      | zero => rfl
+      | succ n => exact isEmptyElim c
+  · intro n R x
+    cases R with
+    | inl R => exact f.map_rel' R x
+    | inr r => exact isEmptyElim r
 
 end WithConstants
 

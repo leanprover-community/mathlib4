@@ -73,7 +73,6 @@ theorem map_mkQ_eq_top {N : Submodule R M} [Module.Finite R M] :
     N.map (Submodule.mkQ (𝔪 • ⊤)) = ⊤ ↔ N = ⊤ := by
   rw [← map_mkQ_eq (N₁ := N) le_top Module.Finite.fg_top, Submodule.map_top, Submodule.range_mkQ]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_tensorProduct_mk_eq_top {N : Submodule R M} [Module.Finite R M] :
     N.map (TensorProduct.mk R k M 1) = ⊤ ↔ N = ⊤ := by
   constructor
@@ -100,7 +99,6 @@ theorem subsingleton_tensorProduct [Module.Finite R M] :
     ← Submodule.subsingleton_iff R, ← subsingleton_iff_bot_eq_top,
     ← map_tensorProduct_mk_eq_top (M := M), Submodule.map_bot]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem span_eq_top_of_tmul_eq_basis [Module.Finite R M] {ι}
     (f : ι → M) (b : Basis ι k (k ⊗[R] M))
     (hb : ∀ i, 1 ⊗ₜ f i = b i) : Submodule.span R (Set.range f) = ⊤ := by
@@ -111,7 +109,6 @@ theorem span_eq_top_of_tmul_eq_basis [Module.Finite R M] {ι}
 
 end IsLocalRing
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Module.mem_support_iff_nontrivial_residueField_tensorProduct [Module.Finite R M]
     (p : PrimeSpectrum R) :
     p ∈ Module.support R M ↔ Nontrivial (p.asIdeal.ResidueField ⊗[R] M) := by
@@ -219,7 +216,6 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
   intro j
   simp [iequiv, i]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `M` is a finitely presented module over a local ring `(R, 𝔪)` such that `m ⊗ M → M` is
 injective, then every generating family contains a basis.
@@ -255,7 +251,6 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
   obtain ⟨_, _, b, _⟩ := exists_basis_of_span_of_maximalIdeal_rTensor_injective H id (by simp)
   exact Free.of_basis b
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι → M)
     (h : LinearIndependent k (TensorProduct.mk R k M 1 ∘ v)) : LinearIndependent R v := by
   rw [linearIndependent_iff']; intro s f hfv i hi
@@ -266,7 +261,7 @@ theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι �
   rw [← Finset.sum_coe_sort] at hfv
   have ⟨l, a, y, hay, hfa⟩ := Flat.isTrivialRelation_of_sum_smul_eq_zero hfv
   have : v n ∉ 𝔪 • (⊤ : Submodule R M) := by
-    simpa only [← LinearMap.ker_tensorProductMk] using h.ne_zero n
+    simpa only [← LinearMap.ker_tensorProductMk] using! h.ne_zero n
   set n : ↥(insert n s) := ⟨n, Finset.mem_insert_self ..⟩ with n_def
   obtain ⟨j, hj⟩ : ∃ j, IsUnit (a n j) := by
     contrapose! this
@@ -276,11 +271,11 @@ theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι �
   have a_eq i : a i j = a' i.1 := by simp_rw [a', dif_pos i.2]
   have hfn : f n = -(∑ i ∈ s, f i * a' i) * hj.unit⁻¹ := by
     rw [← hj.mul_left_inj, mul_assoc, hj.val_inv_mul, mul_one, eq_neg_iff_add_eq_zero]
-    convert hfa j
+    convert! hfa j
     simp_rw [a_eq, Finset.sum_coe_sort _ (fun i ↦ f i * a' i), s.sum_insert hn, n_def]
   let c (i : ι) : R := -(if i = n then 0 else a' i) * hj.unit⁻¹
   specialize ih (v + (c · • v n)) ?_ ?_
-  · convert (linearIndependent_add_smul_iff (c := Ideal.Quotient.mk _ ∘ c) (i := n.1) ?_).mpr h
+  · convert! (linearIndependent_add_smul_iff (c := Ideal.Quotient.mk _ ∘ c) (i := n.1) ?_).mpr h
     · ext; simp [tmul_add]; rfl
     simp_rw [Function.comp_def, c, if_pos, neg_zero, zero_mul, map_zero]
   · rw [Finset.sum_coe_sort _ (fun i ↦ f i • v i), s.sum_insert hn, add_comm, hfn] at hfv
@@ -293,7 +288,6 @@ theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι �
     intro i hi; rw [ih i hi, zero_mul]
   · exact ih i hi
 
-set_option backward.isDefEq.respectTransparency false in
 open Finsupp in
 theorem IsLocalRing.linearCombination_bijective_of_flat [Module.Finite R M] [Flat R M] {ι : Type u}
     (v : ι → M) (h : Function.Bijective (linearCombination k (TensorProduct.mk R k M 1 ∘ v))) :
@@ -304,7 +298,6 @@ theorem IsLocalRing.linearCombination_bijective_of_flat [Module.Finite R M] [Fla
   · simpa only [top_le_iff, ← range_linearCombination, LinearMap.range_eq_top] using h.2
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[stacks 00NZ]
 theorem free_of_flat_of_isLocalRing [Module.Finite R P] [Flat R P] : Free R P :=
   let w := Free.chooseBasis k (k ⊗[R] P)
@@ -395,7 +388,6 @@ open Ideal TensorProduct Submodule
 
 variable (R M) [Finite (MaximalSpectrum R)] [AddCommGroup M] [Module R M]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `M` is a finite flat module over a commutative semilocal ring `R` that has the same rank `n`
 at every maximal ideal, then `M` is free of rank `n`. -/
 @[stacks 02M9] theorem nonempty_basis_of_flat_of_finrank_eq [Module.Finite R M] [Flat R M]
@@ -421,7 +413,7 @@ at every maximal ideal, then `M` is free of rank `n`. -/
   apply IsLocalRing.linearCombination_bijective_of_flat
   rw [← (AlgebraTensorModule.cancelBaseChange _ _ P.ResidueField ..).comp_bijective,
     ← (AlgebraTensorModule.cancelBaseChange R (R ⧸ P) P.ResidueField ..).symm.comp_bijective]
-  convert ((b' ⟨P, ‹_›⟩).repr.lTensor _ ≪≫ₗ finsuppScalarRight _ _ P.ResidueField _).symm.bijective
+  convert! ((b' ⟨P, ‹_›⟩).repr.lTensor _ ≪≫ₗ finsuppScalarRight _ _ P.ResidueField _).symm.bijective
   refine funext fun r ↦ Finsupp.induction_linear r (by simp) (by simp +contextual) fun _ _ ↦ ?_
   simp [smul_tmul', ← funext_iff.mp (hb _)]
 

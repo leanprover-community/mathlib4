@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Polynomial.Reverse
 public import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.RingTheory.Localization.Away.Basic
 
-/-!  # Laurent polynomials
+/-! # Laurent polynomials
 
 We introduce Laurent polynomials over a semiring `R`.  Mathematically, they are expressions of the
 form
@@ -189,7 +189,7 @@ theorem _root_.Polynomial.toLaurent_C_mul_T (n : ℕ) (r : R) :
 
 @[simp]
 theorem _root_.Polynomial.toLaurent_C (r : R) : toLaurent (Polynomial.C r) = C r := by
-  convert Polynomial.toLaurent_C_mul_T 0 r
+  convert! Polynomial.toLaurent_C_mul_T 0 r
   simp only [Int.ofNat_zero, T_zero, mul_one]
 
 @[simp]
@@ -244,12 +244,12 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
     · exact fun m => h_C_mul_T_Z m a
   have B : ∀ s : Finset ℤ, M (s.sum fun n : ℤ => C (p n) * T n) := by
     apply Finset.induction
-    · convert h_C 0
+    · convert! h_C 0
       simp only [Finset.sum_empty, map_zero]
     · intro n s ns ih
       rw [Finset.sum_insert ns]
       exact h_add A ih
-  convert B p.support
+  convert! B p.support
   ext a
   simp_rw [← single_eq_C_mul_T]
   rw [Finset.sum_apply', Finset.sum_eq_single a, single_eq_same]
@@ -268,7 +268,7 @@ protected theorem induction_on' {motive : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]
     (C_mul_T : ∀ (n : ℤ) (a : R), motive (C a * T n)) : motive p := by
   refine p.induction_on (fun a => ?_) (fun {p q} => add p q) ?_ ?_ <;>
       try exact fun n f _ => C_mul_T _ f
-  convert C_mul_T 0 a
+  convert! C_mul_T 0 a
   exact (mul_one _).symm
 
 theorem commute_T (n : ℤ) (f : R[T;T⁻¹]) : Commute (T n) f :=
@@ -368,13 +368,14 @@ theorem induction_on_mul_T {motive : R[T;T⁻¹] → Prop} (f : R[T;T⁻¹])
 /-- Suppose that `Q` is a statement about Laurent polynomials such that
 * `Q` is true on *ordinary* polynomials;
 * `Q (f * T)` implies `Q f`;
+
 it follow that `Q` is true on all Laurent polynomials. -/
 theorem reduce_to_polynomial_of_mul_T (f : R[T;T⁻¹]) {Q : R[T;T⁻¹] → Prop}
     (Qf : ∀ f : R[X], Q (toLaurent f)) (QT : ∀ f, Q (f * T 1) → Q f) : Q f := by
   induction f using LaurentPolynomial.induction_on_mul_T with | _ f n
   induction n with
   | zero => simpa only [Nat.cast_zero, neg_zero, T_zero, mul_one] using Qf _
-  | succ n hn => convert QT _ _; simpa using hn
+  | succ n hn => convert! QT _ _; simpa using hn
 
 section Support
 
@@ -387,7 +388,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem support_C_mul_T_of_ne_zero {a : R} (a0 : a ≠ 0) (n : ℤ) :
     Finsupp.support (C a * T n) = {n} := by
   rw [← single_eq_C_mul_T]
-  exact support_single_ne_zero _ a0
+  exact support_single _ a0
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The support of a polynomial `f` is a finset in `ℕ`.  The lemma `toLaurent_support f`
@@ -541,7 +542,7 @@ theorem mk'_one_X_pow (n : ℕ) :
 @[simp]
 theorem mk'_one_X :
     IsLocalization.mk' R[T;T⁻¹] 1 (⟨X, 1, pow_one X⟩ : Submonoid.powers (X : R[X])) = T (-1) := by
-  convert mk'_one_X_pow 1
+  convert! mk'_one_X_pow 1
   exact (pow_one X).symm
 
 /-- Given a ring homomorphism `f : R →+* S` and a unit `x` in `S`, the induced homomorphism

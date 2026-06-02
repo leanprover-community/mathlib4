@@ -22,7 +22,7 @@ finite sets, finset
 
 -/
 
-@[expose] public section
+public section
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
@@ -105,6 +105,12 @@ theorem sdiff_empty : s \ ∅ = s :=
 
 @[mono, gcongr]
 theorem sdiff_subset_sdiff (hst : s ⊆ t) (hvu : v ⊆ u) : s \ u ⊆ t \ v := by grind
+
+variable (u) in
+lemma sdiff_subset_sdiff_left (h : s ⊆ t) : s \ u ⊆ t \ u := by gcongr
+
+variable (u) in
+lemma sdiff_subset_sdiff_right (h : s ⊆ t) : u \ t ⊆ u \ s := by gcongr
 
 theorem sdiff_subset_sdiff_iff_subset {r : Finset α} (hs : s ⊆ r) (ht : t ⊆ r) :
     r \ s ⊆ r \ t ↔ t ⊆ s := by

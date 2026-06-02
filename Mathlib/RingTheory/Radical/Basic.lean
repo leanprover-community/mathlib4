@@ -75,7 +75,7 @@ lemma pairwise_primeFactors_isRelPrime :
   intro x hx y hy hxy
   simp only [Finset.mem_coe, mem_primeFactors, mem_normalizedFactors_iff' ha₀] at hx hy
   rw [hx.1.isRelPrime_iff_not_dvd]
-  contrapose! hxy
+  contrapose hxy
   have : Associated x y := hx.1.associated_of_dvd hy.1 hxy
   exact this.eq_of_normalized hx.2.1 hy.2.1
 
@@ -244,11 +244,6 @@ lemma radical_eq_iff_primeFactors_eq :
     radical a = radical b ↔ primeFactors a = primeFactors b :=
   ⟨fun h => by rw [← primeFactors_radical, h]; exact primeFactors_radical,
     fun h => by simp [radical, h]⟩
-
-@[deprecated "This lemma is deprecated in favor of using `radical_eq_iff_primeFactors_eq.mpr`. "
-   (since := "2025-11-09")]
-lemma radical_eq_of_primeFactors_eq (h : primeFactors a = primeFactors b) :
-    radical a = radical b := radical_eq_iff_primeFactors_eq.mpr h
 
 theorem radical_eq_one_iff : radical a = 1 ↔ a = 0 ∨ IsUnit a := by
   refine ⟨?_, (Or.elim · (by simp +contextual) radical_of_isUnit)⟩

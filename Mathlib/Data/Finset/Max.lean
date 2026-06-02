@@ -286,12 +286,10 @@ theorem ofDual_min' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (min' s hs) = max' (s.image ofDual) (hs.image _) := by
   simp [min'_eq_inf', max'_eq_sup']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ofDual_max' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (max' s hs) = min' (s.image ofDual) (hs.image _) := by
   simp [min'_eq_inf', max'_eq_sup']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toDual_min' {s : Finset α} (hs : s.Nonempty) :
     toDual (min' s hs) = max' (s.image toDual) (hs.image _) := by
   simp [min'_eq_inf', max'_eq_sup']
@@ -341,7 +339,7 @@ theorem min'_lt_of_mem_erase_min' [DecidableEq α] {a : α} (ha : a ∈ s.erase 
 theorem max'_image [LinearOrder β] {f : α → β} (hf : Monotone f) (s : Finset α)
     (h : (s.image f).Nonempty) : (s.image f).max' h = f (s.max' h.of_image) := by
   simp only [max', sup'_image]
-  exact .symm <| comp_sup'_eq_sup'_comp _ _ fun _ _ ↦ hf.map_max
+  exact .symm <| apply_sup'_eq_sup'_comp _ _ fun _ _ ↦ hf.map_max
 
 /-- A version of `Finset.max'_image` with LHS and RHS reversed.
 Also, this version assumes that `s` is nonempty, not its image. -/
@@ -354,7 +352,7 @@ lemma _root_.Monotone.map_finset_max' [LinearOrder β] {f : α → β} (hf : Mon
 theorem min'_image [LinearOrder β] {f : α → β} (hf : Monotone f) (s : Finset α)
     (h : (s.image f).Nonempty) : (s.image f).min' h = f (s.min' h.of_image) := by
   simp only [min', inf'_image]
-  exact .symm <| comp_inf'_eq_inf'_comp _ _ fun _ _ ↦ hf.map_min
+  exact .symm <| apply_inf'_eq_inf'_comp _ _ fun _ _ ↦ hf.map_min
 
 /-- A version of `Finset.min'_image` with LHS and RHS reversed.
 Also, this version assumes that `s` is nonempty, not its image. -/

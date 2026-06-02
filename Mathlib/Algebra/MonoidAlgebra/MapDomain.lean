@@ -33,6 +33,15 @@ Given a function `f : M → N` between magmas, return the corresponding map `R[M
 by summing the coefficients along each fiber of `f`. -/]
 abbrev mapDomain (f : M → N) (x : R[M]) : R[N] := Finsupp.mapDomain f x
 
+@[to_additive (attr := simp)]
+lemma coeff_mapDomain (f : M → N) (x : R[M]) :
+    (mapDomain f x).coeff = x.coeff.mapDomain f := rfl
+
+/-- This isn't marked as simp to avoid looping with unfolding `coeff`. -/
+@[to_additive /-- This isn't marked as simp to avoid looping with unfolding `coeff`. -/]
+lemma ofCoeff_mapDomain (f : M → N) (x : M →₀ R) :
+    ofCoeff (.mapDomain f x) = mapDomain f (ofCoeff x) := rfl
+
 @[to_additive]
 lemma mapDomain_zero (f : M → N) : mapDomain f (0 : R[M]) = 0 := Finsupp.mapDomain_zero ..
 
@@ -58,7 +67,7 @@ theorem mapDomain_one [One M] [One N] {F : Type*} [FunLike F M N] [OneHomClass F
 
 /-- Given a map `f : R →+ S`, return the corresponding map `R[M] → S[M]` obtained by mapping
 each coefficient along `f`. -/
-@[to_additive
+@[to_additive (attr := simps!)
 /-- Given a map `f : R →+ S`, return the corresponding map `R[M] → S[M]` obtained by mapping
 each coefficient along `f`. -/]
 def map (f : R →+ S) (x : R[M]) : S[M] := .ofCoeff <| x.coeff.mapRange f f.map_zero
@@ -81,7 +90,7 @@ protected lemma map_add (f : R →+ S) (x y : R[M]) : map f (x + y) = map f x + 
 
 @[to_additive]
 protected lemma map_sum (f : R →+ S) (s : Finset ι) (x : ι → R[M]) :
-    map f (∑ i ∈ s, x i) = ∑ i ∈ s, map f (x i) := mapRange_finset_sum ..
+    map f (∑ i ∈ s, x i) = ∑ i ∈ s, map f (x i) := mapRange_finsetSum ..
 
 @[to_additive (attr := simp)]
 lemma map_single (f : R →+ S) (r : R) (m : M) : map f (single m r) = single m (f r) :=
@@ -93,6 +102,28 @@ lemma map_id (x : R[M]) : map (.id R) x = x := by simp [map, coeff, ofCoeff]
 @[to_additive (attr := simp)]
 lemma map_map (f : S →+ T) (g : R →+ S) (x : R[M]) :
     map f (map g x) = map (f.comp g) x := by simp [map, coeff, ofCoeff]
+
+@[to_additive]
+lemma range_map (f : R →+ S) : Set.range (map (M := M) f) = {x | ∀ i, x.coeff i ∈ Set.range f} :=
+  calc
+    _ = coeffEquiv ⁻¹' (Set.range (mapRange f (map_zero f) ∘ coeffEquiv)) := by
+      simp_rw [comp_def, Equiv.eq_preimage_iff_image_eq, ← Set.range_comp', coeffEquiv_apply,
+        coeff_map]
+    _ = _ := by simp [Finsupp.range_mapRange]
+
+/-- `MonoidAlgebra.map` of an injective function is injective. -/
+@[to_additive /-- `AddMonoidAlgebra.map` of an injective function is injective. -/]
+lemma map_injective (f : R →+ S) (he : Injective f) : Injective (map (M := M) f) := by
+  have : map (M := M) f = coeffEquiv.symm ∘ Finsupp.mapRange f (map_zero f) ∘ coeffEquiv := by
+    ext; simp [ofCoeff_mapRange]
+  simpa [this] using mapRange_injective _ (map_zero f) he
+
+/-- `MonoidAlgebra.map` of a surjective function is surjective. -/
+@[to_additive /-- `AddMonoidAlgebra.map` of an surjective function is surjective. -/]
+lemma map_surjective (f : R →+ S) (he : Surjective f) : Surjective (map (M := M) f) := by
+  have : map (M := M) f = coeffEquiv.symm ∘ Finsupp.mapRange f (map_zero f) ∘ coeffEquiv := by
+    ext; simp [ofCoeff_mapRange]
+  simpa [this] using mapRange_surjective _ (map_zero f) he
 
 /-- Pullback the coefficients of an element of `R[N]` under an injective `f : M → N`.
 
@@ -120,8 +151,8 @@ lemma comapDomain_add (f : M → N) (hf) (x y : R[N]) :
 lemma comapDomain_single_of_not_mem_range {r : R} {n : N} (hn : n ∉ Set.range f) (hf) :
     comapDomain f hf (single n r) = 0 := by simp [comapDomain, coeff, single, *]
 
-/-- `comapDomain` as an `AddMonoidHom. -/
-@[to_additive (attr := simps) comapDomainAddMonoidHom /-- `comapDomain` as an `AddMonoidHom. -/]
+/-- `comapDomain` as an `AddMonoidHom`. -/
+@[to_additive (attr := simps) comapDomainAddMonoidHom /-- `comapDomain` as an `AddMonoidHom`. -/]
 def comapDomainAddMonoidHom (f : M → N) (hf : Injective f) : R[N] →+ R[M] where
   toFun := comapDomain f hf
   map_zero' := by simp
@@ -145,9 +176,7 @@ lemma mapDomain_mul (f : F) (x y : R[M]) : mapDomain f (x * y) = mapDomain f x *
 
 variable (R) in
 /-- If `f : G → H` is a multiplicative homomorphism between two monoids, then
-`MonoidAlgebra.mapDomain f` is a ring homomorphism between their monoid algebras.
-
-See also `MulEquiv.monoidAlgebraCongrRight`. -/
+`MonoidAlgebra.mapDomain f` is a ring homomorphism between their monoid algebras. -/
 @[to_additive (attr := simps) /--
 If `f : G → H` is a multiplicative homomorphism between two additive monoids, then
 `AddMonoidAlgebra.mapDomain f` is a ring homomorphism between their additive monoid algebras. -/]
@@ -240,6 +269,7 @@ lemma mapAddEquiv_trans (e₁ : R ≃+ S) (e₂ : S ≃+ T) :
 
 @[deprecated (since := "2026-03-20")] alias mapRangeAddEquiv_trans := mapAddEquiv_trans
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp) (dont_translate := R S) map_mul]
 protected lemma map_mul (f : R →+* S) (x y : R[M]) :
     map (f : R →+ S) (x * y) = map f x * map f y := by
@@ -418,17 +448,26 @@ lemma commRingEquiv_single_single (m : M) (n : N) (r : R) :
   simp [commRingEquiv, MonoidAlgebra, curryRingEquiv, curryAddEquiv, mapDomainRingEquiv,
     mapDomainRingHom, EquivLike.toEquiv]
 
+@[to_additive (dont_translate := R) (attr := simp)]
+lemma commRingEquiv_single_one (m : M) :
+    commRingEquiv (single m (1 : R[N])) = single 1 (single m 1) := commRingEquiv_single_single ..
+
+-- We want this lemma to be tried before `commRingEquiv_single_single`.
+@[to_additive (dont_translate := R) (attr := simp high)]
+lemma commRingEquiv_single_one_single (m : M) :
+    commRingEquiv (single 1 <| single m 1) = (single m (1 : R[N])) := commRingEquiv_single_single ..
+
 end Semiring
 
 section Ring
 variable [Ring R] [Ring S]
 
 @[to_additive]
-lemma map_neg (f : R →+ S) (x : R[M]) : map f (-x) = -map f x :=
+protected lemma map_neg (f : R →+ S) (x : R[M]) : map f (-x) = -map f x :=
   Finsupp.mapRange_neg (hf := f.map_zero) f.map_neg ..
 
 @[to_additive]
-lemma map_sub (f : R →+ S) (x y : R[M]) : map f (x - y) = map f x - map f y :=
+protected lemma map_sub (f : R →+ S) (x y : R[M]) : map f (x - y) = map f x - map f y :=
   Finsupp.mapRange_sub (hf := f.map_zero) f.map_sub ..
 
 end Ring

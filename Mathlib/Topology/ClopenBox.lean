@@ -32,7 +32,7 @@ Cartesian products of compact spaces (this is relevant to the theory of light pr
 
 -/
 
-@[expose] public section
+public section
 
 open Function Set Filter TopologicalSpace
 open scoped Topology

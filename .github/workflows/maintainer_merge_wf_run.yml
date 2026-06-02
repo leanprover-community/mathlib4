@@ -20,7 +20,7 @@ jobs:
     steps:
       - name: Consume bridge artifact
         id: bridge
-        uses: leanprover-community/privilege-escalation-bridge/consume@d3bd99c50a4cf8c5350a211e8e3ba07ac19067d8 # v1.1.0
+        uses: leanprover-community/privilege-escalation-bridge/consume@f5dfe313a79647c07315b451b2dc2a81a161a50d # v1.2.0
         with:
           artifact: workflow-data
           source_workflow: Maintainer merge
@@ -40,7 +40,7 @@ jobs:
       - name: Download legacy artifact (fallback)
         id: download-legacy-artifact
         if: ${{ steps.bridge.outputs.pr_number == '' }}
-        uses: dawidd6/action-download-artifact@2536c51d3d126276eb39f74d6bc9c72ac6ef30d3 # v16
+        uses: dawidd6/action-download-artifact@b6e2e70617bc3265edd6dab6c906732b2f1ae151 # v21
         with:
           workflow: maintainer_merge.yml
           name: workflow-data
@@ -104,7 +104,7 @@ jobs:
 
       - if: ${{ ! steps.inputs.outputs.mOrD == '' }}
         name: Check whether user is part of mathlib-reviewers team
-        uses: tspascoal/get-user-teams-membership@57e9f42acd78f4d0f496b3be4368fc5f62696662 # v3.0.0
+        uses: tspascoal/get-user-teams-membership@818140d631d5f29f26b151afbe4179f87d9ceb5e # v4.0.1
         id: actorTeams
         with:
           organization: leanprover-community # optional. Default value ${{ github.repository_owner }}
@@ -150,7 +150,8 @@ jobs:
             legacy_suffix=" (legacy)"
           fi
           metadata=$'['"${trigger_name}"$']('"${trigger_run_url}"$'), [wf_run]('"${wf_run_url}"$')'"${legacy_suffix}"
-          message="${message}"$'\n\n---\n'"${metadata}"
+          echo "${metadata}"
+          # message="${message}"$'\n\n---\n'"${metadata}"
           printf 'title<<EOF\n%s\nEOF' "${message}" | tee "$GITHUB_OUTPUT"
         env:
           AUTHOR: ${{ steps.inputs.outputs.author }}
@@ -188,7 +189,8 @@ jobs:
             legacy_suffix=" (legacy)"
           fi
           metadata=$'['"${trigger_name}"$']('"${trigger_run_url}"$'), [wf_run]('"${wf_run_url}"$')'"${legacy_suffix}"
-          body="${body}"$'\n\n---\n'"${metadata}"
+          echo "${metadata}"
+          # body="${body}"$'\n\n---\n'"${metadata}"
           printf 'body<<EOF\n%s\nEOF\n' "${body}" | tee -a "$GITHUB_OUTPUT"
 
       - name: Add comment to PR
@@ -215,7 +217,7 @@ jobs:
       - name: Add label to PR
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
         continue-on-error: true
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           # labels added by GITHUB_TOKEN won't trigger the Zulip emoji workflow
           # This token is masked by the token minting action and will not be logged accidentally.

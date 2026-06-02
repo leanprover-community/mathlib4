@@ -92,7 +92,7 @@ private lemma alternatizeUncurryFinCLM.aux_apply (f : E →L[𝕜] E [⋀^Fin n]
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 variable (𝕜 E F) in
-/-- `AlternaringMap.alternatizeUncurryFin` as a continuous linear map. -/
+/-- `AlternatingMap.alternatizeUncurryFin` as a continuous linear map. -/
 @[irreducible]
 noncomputable def alternatizeUncurryFinCLM :
     (E →L[𝕜] E [⋀^Fin n]→L[𝕜] F) →L[𝕜] E [⋀^Fin (n + 1)]→L[𝕜] F :=

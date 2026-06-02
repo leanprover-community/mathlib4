@@ -78,7 +78,7 @@ theorem subgroups_basis :
       rw [← restrict_lt_iff_lt_embedding] at *
       calc
         v.restrict (r * s) = v.restrict r * v.restrict s := Valuation.map_mul _ _ _
-        _ < γ₀.1 * γ₀.1 := by gcongr <;> exact zero_le'
+        _ < γ₀.1 * γ₀.1 := by gcongr <;> exact zero_le
         _ ≤ γ := mod_cast h
     leftMul := by
       rintro x γ
@@ -163,7 +163,7 @@ theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ ↦ True)
 theorem toUniformSpace_eq : toUniformSpace =
     @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _ := by
   refine UniformSpace.ext ((hasBasis_uniformity R Γ₀).eq_of_same_basis ?_)
-  convert v.subgroups_basis.hasBasis_nhds_zero.comap _
+  convert! v.subgroups_basis.hasBasis_nhds_zero.comap _
   simp_rw [restrict_lt_iff_lt_embedding, sub_eq_add_neg]
   simp
 
@@ -264,9 +264,6 @@ theorem isOpen_closedBall {r : ValueGroup₀ (_i.v : R →*₀ Γ₀)} (hr : r �
   exact ⟨Units.mk0 _ hr, fun y hy ↦
     (sub_add_cancel y x).symm ▸ le_trans (v.restrict.map_add _ _) (max_le (le_of_lt hy) hx)⟩
 
-@[deprecated (since := "2025-10-09")]
-alias isOpen_closedball := isOpen_closedBall
-
 /-- A closed ball centred at the origin in a valued ring is closed. -/
 theorem isClosed_closedBall (r : ValueGroup₀ (_i.v : R →*₀ Γ₀)) :
     IsClosed (X := R) {x | v.restrict x ≤ r} := by
@@ -274,7 +271,7 @@ theorem isClosed_closedBall (r : ValueGroup₀ (_i.v : R →*₀ Γ₀)) :
   intro x hx
   simp only [mem_compl_iff, mem_setOf_eq, not_le] at hx
   rw [mem_nhds]
-  have hx' : v.restrict x ≠ 0 := ne_of_gt <| lt_of_le_of_lt zero_le' <| hx
+  have hx' : v.restrict x ≠ 0 := hx.ne_zero
   exact ⟨Units.mk0 _ hx', fun y hy hy' ↦ ne_of_lt hy <| map_sub_swap v.restrict x y ▸
       (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' hx)⟩
 

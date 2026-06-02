@@ -62,13 +62,12 @@ open Limits
 
 variable {X : C} (Y Z : Over X)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The binary fan provided by `fst'` and `snd'`. -/
 abbrev binaryFan [ChosenPullbacksAlong Z.hom] : BinaryFan Y Z :=
   BinaryFan.mk (P := (pullback Z.hom ⋙ Over.map Z.hom).obj (Over.mk Y.hom))
     (fst' Y.hom Z.hom) (snd' Y.hom Z.hom)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The binary fan provided by `fst'` and `snd'` is a binary product in `Over X`. -/
 def binaryFanIsBinaryProduct [ChosenPullbacksAlong Z.hom] :
     IsLimit (binaryFan Y Z) :=
@@ -82,6 +81,7 @@ def binaryFanIsBinaryProduct [ChosenPullbacksAlong Z.hom] :
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A computable instance of `CartesianMonoidalCategory` for `Over X` when `C` has
 chosen pullbacks. Contrast this with the noncomputable instance provided by
 `CategoryTheory.Over.cartesianMonoidalCategory`.
@@ -128,7 +128,6 @@ lemma snd_eq_snd' (Y Z : Over X) :
     CartesianMonoidalCategory.snd Y Z = snd' Y.hom Z.hom :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma lift_left {W Y Z : Over X} (f : W ⟶ Y) (g : W ⟶ Z) :
     (CartesianMonoidalCategory.lift f g).left = lift f.left g.left := rfl
@@ -200,7 +199,6 @@ lemma rightUnitor_inv_left_snd (Y : Over X) :
     (ρ_ Y).inv.left ≫ snd Y.hom (𝟙 X) = Y.hom :=
   congr_arg CommaMorphism.left (rightUnitor_inv_snd Y)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma whiskerLeft_left {R S T : Over X} (f : S ⟶ T) :
     (R ◁ f).left = pullbackMap R.hom T.hom R.hom S.hom (𝟙 _) f.left (𝟙 _) :=
   rfl
@@ -215,7 +213,6 @@ lemma whiskerLeft_left_snd {R S T : Over X} (f : S ⟶ T) :
     (R ◁ f).left ≫ snd R.hom T.hom = snd R.hom S.hom ≫ f.left :=
   congr_arg CommaMorphism.left (whiskerLeft_snd R f)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma whiskerRight_left {R S T : Over X} (f : S ⟶ T) :
     (f ▷ R).left = pullbackMap T.hom R.hom S.hom R.hom f.left (𝟙 _) (𝟙 _) :=
   rfl
@@ -230,7 +227,6 @@ lemma whiskerRight_left_snd {R S T : Over X} (f : S ⟶ T) :
     (f ▷ R).left ≫ snd T.hom R.hom = snd S.hom R.hom :=
   congr_arg CommaMorphism.left (whiskerRight_snd f R)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tensorHom_left {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
     (f ⊗ₘ g).left = pullbackMap S.hom U.hom R.hom T.hom f.left g.left (𝟙 _) :=
   rfl
@@ -255,13 +251,15 @@ open ChosenPullbacksAlong CartesianMonoidalCategory MonoidalCategory
 
 variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor which maps an object `A` in `C` to the projection `A ⊗ X ⟶ X` in `Over X`.
 This is the computable analogue of the functor `Over.star`. -/
-@[simps! obj_left obj_hom map_left]
+@[simps! obj_left obj_hom]
 def toOver (X : C) : C ⥤ Over X where
   obj A := Over.mk <| CartesianMonoidalCategory.snd A X
   map f := Over.homMk (f ▷ X)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma toOver_map {X : C} {A A' : C} (f : A ⟶ A') :
     (toOver X).map f = Over.homMk (f ▷ X) := by
@@ -275,6 +273,7 @@ def toOverUnit : C ⥤ Over (𝟙_ C) where
   obj X := Over.mk <| toUnit X
   map f := Over.homMk f
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The slice category over the terminal unit object is equivalent to the original category. -/
 @[simps]
 def equivToOverUnit : Over (𝟙_ C) ≌ C where
@@ -287,6 +286,7 @@ variable {C}
 
 attribute [local instance] ChosenPullbacksAlong.cartesianMonoidalCategoryToUnit
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism of functors `toOverUnit C ⋙ ChosenPullbacksAlong.pullback (toUnit X)` and
 `toOver X`. -/
 @[simps!]
@@ -294,7 +294,7 @@ def toOverUnitPullback (X : C) :
     toOverUnit C ⋙ pullback (toUnit X) ≅ toOver X :=
   NatIso.ofComponents fun X => Iso.refl _
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor `toOver X` is the right adjoint to the functor `Over.forget X`. -/
 @[simps! unit_app counit_app]
 def forgetAdjToOver (X : C) : Over.forget X ⊣ toOver X where
