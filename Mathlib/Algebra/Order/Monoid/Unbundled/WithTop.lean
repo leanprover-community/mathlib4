@@ -715,7 +715,7 @@ namespace AddEquiv
 variable {γ : Type*} [Add α] [Add β] [Add γ] (e e₁ : α ≃+ β) (e₂ : β ≃+ γ)
 
 /-- A `AddEquiv` version of `Equiv.withBotCongr`. -/
-@[to_dual (attr := simps!) /-- A `AddEquiv` version of `Equiv.withTopCongr`. -/]
+@[to_dual (attr := simps! apply) /-- A `AddEquiv` version of `Equiv.withTopCongr`. -/]
 def withBotCongr : WithBot α ≃+ WithBot β where
   __ := e.toEquiv.withBotCongr
   map_add' := e.toAddHom.withBotMap.map_add'

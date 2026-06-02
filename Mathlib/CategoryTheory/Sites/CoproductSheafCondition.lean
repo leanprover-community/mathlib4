@@ -71,6 +71,7 @@ def PreZeroHypercover.isLimitSigmaOfIsColimitEquiv (E : PreZeroHypercover.{w} S)
   · intro ⟨⟩ ⟨⟩ k
     exact Cofan.IsColimit.hom_ext hc' _ _ fun a ↦ by simp; simp [c']
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open PreZeroHypercover in
 /--

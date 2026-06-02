@@ -209,7 +209,8 @@ lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (
   rw [this] at coeff_eq
   refine ⟨coeff', fun i ↦ ?_, fun i hi ↦ ?_, coeff_eq⟩
   · by_cases degle : deg i ≤ n
-    · simpa only [degle, coeff'] using (mem_reesAlgebra_iff I _).mp (c' i).2 (n - deg i)
+    · simp only [degle, coeff']
+      exact (mem_reesAlgebra_iff I _).mp (c' i).2 (n - deg i)
     · simp [degle, coeff']
   · simp [coeff', hi]
 
