@@ -52,7 +52,7 @@ noncomputable def extendedHom : ClassGroup A →* ClassGroup B :=
       refine ⟨Units.mk0 (IsFractionRing.map (j := algebraMap A B)
         (FaithfulSMul.algebraMap_injective _ _) (α : FractionRing A))
         (by simp [α.ne_zero]), ?_⟩
-      simpa [coe_toPrincipalIdeal, Units.coe_map, Units.val_mk0] using
+      simpa [coe_toPrincipalIdeal, Units.coe_map, Units.val_mk0] using!
         (FractionalIdeal.extendedHom_spanSingleton (FractionRing B) B _).symm)
 
 @[simp]
