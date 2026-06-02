@@ -50,15 +50,6 @@ theorem algebraMap_apply (a : R) (i : ι) : algebraMap R (Π i, A i) a i = algeb
 
 variable {ι}
 
-variable (S : ι → Type*) [∀ i, CommSemiring (S i)]
-
-instance [∀ i, Algebra (S i) (A i)] : Algebra (Π i, S i) (Π i, A i) where
-  algebraMap := RingHom.pi fun _ ↦ (algebraMap _ _).comp (Pi.evalRingHom S _)
-  commutes' _ _ := funext fun _ ↦ Algebra.commutes _ _
-  smul_def' _ _ := funext fun _ ↦ Algebra.smul_def _ _
-
-example : Pi.instAlgebraForall S S = Algebra.id _ := rfl
-
 variable {A} in
 /-- A family of algebra homomorphisms `g i : B →ₐ[R] A i` defines an algebra homomorphism
 `AlgHom.pi g : B →ₐ[R] Π i, A i` given by `AlgHom.pi g x i = g i x`. -/
