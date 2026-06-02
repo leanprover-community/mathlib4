@@ -9,6 +9,10 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
 /-!
 # Restriction of scalars for continuous linear maps
+
+In this file, we define and study `ContinuousLinearMap.restrictScalars`, which reinterprets
+a continuous `R`-linear map as a continuous `S`-linear map, for suitable `R` and `S`.
+This is the continuous version of `LinearMap.restrictScalars`.
 -/
 
 @[expose] public section

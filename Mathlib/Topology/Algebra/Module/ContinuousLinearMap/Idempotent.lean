@@ -9,6 +9,24 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
 /-!
 # Idempotent continuous linear maps
+
+In this file, we study the idempotent elements (`IsIdempotentElem`) of the ring `M →L[R] M` of
+continuous endomorphisms of a topological `R`-module `M`.
+
+## Main statements
+
+* `ContinuousLinearMap.isIdempotentElem_toLinearMap_iff`: `T` is idempotent as an element of
+  `M →L[R] M` if and only if it is such as an element of `M →ₗ[R] M`;
+* `ContinuousLinearMap.IsIdempotentElem.ext_iff`: idempotent elements of `M →L[R] M` are determined
+  by their range and kernel;
+* `ContinuousLinearMap.IsIdempotentElem.commute_iff`: a continuous linear map `S` commutes with
+  an idempotent `T` if and only if the range and kernel of `T` are `S`-invariant;
+* `ContinuousLinearMap.IsIdempotentElem.isCLosed_range`: an idempotent continuous linear map
+  has closed range.
+
+Further results can be found in the `Mathlib/Topology/Algebra/Module/Complement.lean` module, where
+we show that idempotent elements of `M →L[R] M` are precisely the projections associated to
+topological complement submodules.
 -/
 
 @[expose] public section
@@ -64,7 +82,7 @@ both `range f` and `ker f` are invariant under `T`. -/
 lemma commute_iff {f T : M →L[R] M}
     (hf : IsIdempotentElem f) :
     Commute f T ↔ (f.range ∈ Module.End.invtSubmodule T ∧ f.ker ∈ Module.End.invtSubmodule T) := by
-  simpa [Commute, SemiconjBy, Module.End.mul_eq_comp, ← coe_comp] using
+  simpa [Commute, SemiconjBy, Module.End.mul_eq_comp, ← coe_comp] using!
     LinearMap.IsIdempotentElem.commute_iff (T := T) hf.toLinearMap
 
 variable [IsTopologicalAddGroup M]
@@ -76,7 +94,7 @@ theorem commute_iff_of_isUnit {f T : M →L[R] M} (hT : IsUnit T)
     Commute f T ↔ f.range.map (T : M →ₗ[R] M) = f.range ∧ f.ker.map (T : M →ₗ[R] M) = f.ker := by
   have := hT.map ContinuousLinearMap.toLinearMapRingHom
   lift T to (M →L[R] M)ˣ using hT
-  simpa [Commute, SemiconjBy, Module.End.mul_eq_comp, ← ContinuousLinearMap.coe_comp] using
+  simpa [Commute, SemiconjBy, Module.End.mul_eq_comp, ← ContinuousLinearMap.coe_comp] using!
     LinearMap.IsIdempotentElem.commute_iff_of_isUnit this hf.toLinearMap
 
 @[deprecated (since := "2025-12-27")] alias range_eq_ker :=

@@ -16,10 +16,32 @@ public import Mathlib.Topology.Algebra.Module.Basic
 /-!
 # Continuous linear maps
 
-In this file we define continuous (semi-)linear maps, as semilinear maps between topological
-modules which are continuous. The set of continuous semilinear maps between the topological
-`R₁`-module `M` and `R₂`-module `M₂` with respect to the `RingHom` `σ` is denoted by `M →SL[σ] M₂`.
-Plain linear maps are denoted by `M →L[R] M₂` and star-linear maps by `M →L⋆[R] M₂`.
+In this file we define the type of continuous (semi)linear maps between topological
+modules that are continuous, and endow it with its algebraic structure.
+
+Later files endow it with a topological structure, see the docstring of
+`Mathlib/Topology/Algebra/Module/Spaces/ContinuousLinearMap.lean`.
+
+## Main definitions
+
+* `ContinuousLinearMap` is the type of (semi)linear maps between two topological modules that are
+  continuous. It is denoted by `M →L[R] N` in the `R`-linear case, `M →SL[σ] N` in the
+  `σ`-semilinear case, and `M →L⋆[R] N` in the conjugate-linear (antilinear) case.
+* `StrongDual R M` is an abbreviation for `M →L[R] R`, the type of continuous `R`-linear forms on
+  `M`. As a vector space, it is often called the "topological dual of `M`". We use the name "strong
+  dual" because it will (in later files) be endowed with the strong-dual topology, namely the
+  topology of uniform convergence on bounded subsets.
+* `ContinuousLinearMap.addCommMonoid`, `ContinuousLinearMap.module`,... : the algebraic structures
+  on `M →SL[σ] N`.
+
+## Notation
+
+* `M →L[R] N`: the type of `R`-linear continuous maps from `M` to `N`;
+* `M →SL[σ] N`: the type of `σ`-semilinear continuous maps from `M` to `N`;
+* `M →L⋆[σ] N`: the type of conjugate-linear (antilinear) continuous maps from `M` to `N`;
+* `f ∘L g`: the composition of two continuous linear maps;
+* `f ∘SL g`: the composition of two continuous semilinear maps.
+
 -/
 
 @[expose] public section
@@ -499,7 +521,7 @@ variable {R E F : Type*} [Semiring R]
 /-- `g ∘ f = id` as `ContinuousLinearMap`s implies `g ∘ f = id` as functions. -/
 lemma leftInverse_of_comp {f : E →L[R] F} {g : F →L[R] E}
     (hinv : g ∘L f = .id R E) : Function.LeftInverse g f := by
-  simpa [← Function.rightInverse_iff_comp] using congr(⇑$hinv)
+  simpa [← Function.rightInverse_iff_comp] using! congr(⇑$hinv)
 
 /-- `f ∘ g = id` as `ContinuousLinearMap`s implies `f ∘ g = id` as functions. -/
 lemma rightInverse_of_comp {f : E →L[R] F} {g : F →L[R] E}
@@ -680,7 +702,7 @@ instance completeSpace_ker {M' : Type*} [UniformSpace M'] [CompleteSpace M']
 
 instance completeSpace_eqLocus {M' : Type*} [UniformSpace M'] [CompleteSpace M']
     [AddCommMonoid M'] [Module R₁ M'] [T2Space M₂]
-    (f g : M' →SL[σ₁₂] M₂) : CompleteSpace (LinearMap.eqLocus f g) :=
+    (f g : M' →SL[σ₁₂] M₂) : CompleteSpace (f.toLinearMap.eqLocus g.toLinearMap) :=
   IsClosed.completeSpace_coe (hs := isClosed_eq (map_continuous f) (map_continuous g))
 
 section
@@ -728,6 +750,7 @@ section ToSpanSingleton
 variable (R₁)
 variable [ContinuousSMul R₁ M₁]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given an element `x` of a topological space `M` over a semiring `R`, the natural continuous
 linear map from `R` to `M` by taking multiples of `x`. -/
 def toSpanSingleton (x : M₁) : R₁ →L[R₁] M₁ where
@@ -1057,7 +1080,9 @@ variable (R S M : Type*) [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M
   [SMulCommClass R S M] [TopologicalSpace M] [ContinuousAdd M] [ContinuousConstSMul S M]
   [TopologicalSpace R] [ContinuousSMul R M]
 
-/-- `ContinuousLinearMap.toSpanSingleton` as a linear equivalence. -/
+/-- `ContinuousLinearMap.toSpanSingleton` as a linear equivalence. See
+`ContinuousLinearMap.toSpanSingletonLIE` for the isometric version
+and `ContinuousLinearMap.toSpanSingletonCLE` for the continuous version. -/
 @[simps -fullyApplied]
 def toSpanSingletonLE : M ≃ₗ[S] (R →L[R] M) where
   toFun := toSpanSingleton R

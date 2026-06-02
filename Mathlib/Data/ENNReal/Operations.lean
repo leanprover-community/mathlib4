@@ -179,11 +179,11 @@ theorem add_ne_top : a + b ≠ ∞ ↔ a ≠ ∞ ∧ b ≠ ∞ := by simpa only 
 protected lemma Finiteness.add_ne_top {a b : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≠ ∞) : a + b ≠ ∞ :=
   ENNReal.add_ne_top.2 ⟨ha, hb⟩
 
-theorem mul_top' : a * ∞ = if a = 0 then 0 else ∞ := by convert WithTop.mul_top' a
+theorem mul_top' : a * ∞ = if a = 0 then 0 else ∞ := by convert! WithTop.mul_top' a
 
 @[simp] theorem mul_top (h : a ≠ 0) : a * ∞ = ∞ := WithTop.mul_top h
 
-theorem top_mul' : ∞ * a = if a = 0 then 0 else ∞ := by convert WithTop.top_mul' a
+theorem top_mul' : ∞ * a = if a = 0 then 0 else ∞ := by convert! WithTop.top_mul' a
 
 @[simp] theorem top_mul (h : a ≠ 0) : ∞ * a = ∞ := WithTop.top_mul h
 
@@ -239,7 +239,7 @@ lemma pow_lt_top (ha : a < ∞) : a ^ n < ∞ := WithTop.pow_lt_top ha
 
 end OperationsAndInfty
 
-protected theorem add_lt_add (ac : a < c) (bd : b < d) : a + b < c + d :=
+@[gcongr] protected theorem add_lt_add (ac : a < c) (bd : b < d) : a + b < c + d :=
   WithTop.add_lt_add ac bd
 
 section Cancel
@@ -340,10 +340,10 @@ protected theorem add_sub_cancel_right (hb : b ≠ ∞) : a + b - b = a := by
 protected theorem sub_add_eq_add_sub (hab : b ≤ a) (b_ne_top : b ≠ ∞) :
     a - b + c = a + c - b := by
   by_cases c_top : c = ∞
-  · simpa [c_top, eqComm]
+  · simpa [c_top] using! ENNReal.eq_sub_of_add_eq b_ne_top rfl
   refine ENNReal.eq_sub_of_add_eq b_ne_top ?_
   simp only [add_assoc, add_comm c b]
-  simpa only [← add_assoc] using (add_left_inj c_top).mpr <| tsub_add_cancel_of_le hab
+  simpa only [← add_assoc] using! (add_left_inj c_top).mpr <| tsub_add_cancel_of_le hab
 
 lemma add_sub_add_eq_sub_right (hc : c ≠ ∞ := by finiteness) : (a + c) - (b + c) = a - b := by
   lift c to ℝ≥0 using hc
@@ -513,7 +513,7 @@ theorem toNNReal_iInf (hf : ∀ i, f i ≠ ∞) : (iInf f).toNNReal = ⨅ i, (f 
 theorem toNNReal_sInf (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
     (sInf s).toNNReal = sInf (ENNReal.toNNReal '' s) := by
   have hf : ∀ i, ((↑) : s → ℝ≥0∞) i ≠ ∞ := fun ⟨r, rs⟩ => hs r rs
-  simpa only [← sInf_range, ← image_eq_range, Subtype.range_coe_subtype] using (toNNReal_iInf hf)
+  simpa only [← sInf_range, ← image_eq_range, Subtype.range_coe_subtype] using! (toNNReal_iInf hf)
 
 theorem toReal_iInf (hf : ∀ i, f i ≠ ∞) : (iInf f).toReal = ⨅ i, (f i).toReal := by
   simp only [ENNReal.toReal, toNNReal_iInf hf, NNReal.coe_iInf]
@@ -612,7 +612,7 @@ theorem toNNReal_iSup (hf : ∀ i, f i ≠ ∞) : (iSup f).toNNReal = ⨆ i, (f 
 theorem toNNReal_sSup (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
     (sSup s).toNNReal = sSup (ENNReal.toNNReal '' s) := by
   have hf : ∀ i, ((↑) : s → ℝ≥0∞) i ≠ ∞ := fun ⟨r, rs⟩ => hs r rs
-  simpa only [← sSup_range, ← image_eq_range, Subtype.range_coe_subtype] using (toNNReal_iSup hf)
+  simpa only [← sSup_range, ← image_eq_range, Subtype.range_coe_subtype] using! (toNNReal_iSup hf)
 
 theorem toReal_iSup (hf : ∀ i, f i ≠ ∞) : (iSup f).toReal = ⨆ i, (f i).toReal := by
   simp only [ENNReal.toReal, toNNReal_iSup hf, NNReal.coe_iSup]
