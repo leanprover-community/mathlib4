@@ -127,7 +127,7 @@ lemma integrable_exp_sq_of_conv_neg (μ : Measure E) [IsGaussian μ] {C C' : ℝ
     simp only [ContinuousLinearEquiv.coe_neg] at hC
     filter_upwards [hC] with y hy
     rw [integrable_map_measure (by fun_prop) (by fun_prop)] at hy
-    convert hy with x
+    convert! hy with x
     simp only [Function.comp_apply, Pi.neg_apply, id_eq, Real.exp_eq_exp, mul_eq_mul_left_iff,
       norm_nonneg, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_left_inj₀]
     left
@@ -188,7 +188,7 @@ lemma memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp : p ≠ ∞
     rw [← memLp_norm_rpow_iff (q := 2) (by fun_prop) (by simp) (by simp)]
     simpa using this
   lift p to ℝ≥0 using hp
-  convert memLp_of_mem_interior_integrableExpSet ?_ (p / 2)
+  convert! memLp_of_mem_interior_integrableExpSet ?_ (p / 2)
   · simp
   obtain ⟨C, hC_pos, hC⟩ := exists_integrable_exp_sq μ
   have hC_neg : Integrable (fun x ↦ rexp (-C * ‖x‖ ^ 2)) μ := by -- `-C` could be any negative
@@ -202,14 +202,12 @@ lemma memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp : p ≠ ∞
     exact fun x hx ↦ integrable_exp_mul_of_le_of_le hC_neg hC hx.1.le hx.2.le
   exact h_subset ⟨by simp [hC_pos], hC_pos⟩
 
+@[to_fun integrable_fun_id]
 lemma integrable_id : Integrable id μ :=
   memLp_one_iff_integrable.1 <| memLp_id μ 1 (by norm_num)
 
-lemma integrable_fun_id : Integrable (fun x ↦ x) μ := integrable_id
-
+@[to_fun memLp_two_fun_id]
 lemma memLp_two_id : MemLp id 2 μ := memLp_id μ 2 (by norm_num)
-
-lemma memLp_two_fun_id : MemLp (fun x ↦ x) 2 μ := memLp_two_id
 
 lemma integral_dual (L : StrongDual ℝ E) : μ[L] = L (∫ x, x ∂μ) :=
   L.integral_comp_comm ((memLp_id μ 1 (by simp)).integrable le_rfl)

@@ -112,7 +112,7 @@ theorem lcs_le_lcs_of_is_nilpotent_span_sup_eq_top {n i j : ℕ}
       ((⊤ : LieIdeal R L).lcs M (i + l) : Submodule R M) ≤
         (I.lcs M j : Submodule R M).map (toEnd R L M x ^ l) ⊔
           (I.lcs M (j + 1) : Submodule R M)
-    by simpa only [bot_sup_eq, LieIdeal.incl_coe, Submodule.map_zero, hxn] using this n
+    by simpa only [bot_sup_eq, LieIdeal.incl_coe, Submodule.map_zero, hxn] using! this n
   intro l
   induction l with
   | zero =>

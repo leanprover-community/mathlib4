@@ -334,7 +334,7 @@ lemma gaussianReal_map_neg : (gaussianReal μ v).map (fun x ↦ -x) = gaussianRe
 lemma gaussianReal_map_div_const (c : ℝ) :
     (gaussianReal μ v).map (· / c) = gaussianReal (μ / c) (v / .mk (c ^ 2) (sq_nonneg _)) := by
   simp_rw [div_eq_mul_inv]
-  convert gaussianReal_map_mul_const c⁻¹ using 2 <;> rw [mul_comm]
+  convert! gaussianReal_map_mul_const c⁻¹ using 2 <;> rw [mul_comm]
   ext; simp
 
 lemma gaussianReal_map_sub_const (y : ℝ) :
@@ -405,7 +405,6 @@ open Real Complex
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {p : Measure Ω} {μ : ℝ} {v : ℝ≥0} {X : Ω → ℝ}
 
-set_option backward.isDefEq.respectTransparency false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 /-- The complex moment-generating function of a Gaussian distribution with mean `μ` and variance `v`
