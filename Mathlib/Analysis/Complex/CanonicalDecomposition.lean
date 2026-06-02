@@ -228,13 +228,13 @@ is formulated by saying that `g` is meromorphic in normal form and `g ≠ 0`.
 -/
 structure CanonicalDecomp (f g : ℂ → E) (R : ℝ) where
   /-- A proof that `f` is meromorphic on `closedBall 0 R`. -/
-  f_meromorphicOn : MeromorphicOn f (closedBall 0 R)
+  meromorphicOn : MeromorphicOn f (closedBall 0 R)
 
   /-- A proof that `g` is meromorphic in normal form on `closedBall 0 R`. -/
-  g_meromorphicNFOn : MeromorphicNFOn g (closedBall 0 R)
+  meromorphicNFOn : MeromorphicNFOn g (closedBall 0 R)
 
   /-- A proof that `g` does not vanish in the interior of the ball. -/
-  g_ne_zero : ∀ u ∈ (ball 0 R), g u ≠ 0
+  ne_zero : ∀ u ∈ (ball 0 R), g u ≠ 0
 
   /--
   A proof that `f` is equal, up to modification over a discrete set, to a product of `g` and
@@ -311,7 +311,7 @@ private lemma canonicalDecomposition_aux₃ {z : ℂ} (hR : 0 < R) :
 a discrete set, to a product of canonical factors and a meromorphic function `g` without zeros or
 poles in the interior of the disk.
 -/
-theorem _root_.MeromorphicOn.congr_codiscreteWitin_closedBall_prod_canonicalFactor
+theorem _root_.MeromorphicOn.exists_canonicalDecomp
     (h₁f : MeromorphicOn f (closedBall 0 R))
     (h₂f : ∀ u : (closedBall (0 : ℂ) R), meromorphicOrderAt f u ≠ ⊤) :
     ∃ g : ℂ → E, CanonicalDecomp f g R := by
