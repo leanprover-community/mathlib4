@@ -134,7 +134,7 @@ lemma iIndepFun_infinitePi {Ω : ι → Type*} {mΩ : ∀ i, MeasurableSpace (Ω
 
 lemma _root_.MeasureTheory.Measure.infinitePi_map_eval_prod {Ω : ι → Type*}
     {mΩ : ∀ i, MeasurableSpace (Ω i)} {P : ∀ i, Measure (Ω i)}
-    [∀ i, IsProbabilityMeasure (P i)] {i : ι} {j : ι} (hij : i ≠ j) :
+    [∀ i, IsProbabilityMeasure (P i)] {i j : ι} (hij : i ≠ j) :
     (infinitePi P).map (fun ω ↦ (ω i, ω j)) = (P i).prod (P j) := by
   rw [IndepFun.map_prod_eq_prod_map_map]; rotate_right
   · exact iIndepFun_infinitePi (X := fun x ω ↦ ω) (by fun_prop) |>.indepFun hij
