@@ -38,6 +38,8 @@ lemma IsLocalRing.ResidueField.map_bijective_of_surjective [IsLocalRing R] {S : 
   ⟨RingHom.injective _, Ideal.Quotient.lift_surjective_of_surjective _ _
     (Ideal.Quotient.mk_surjective.comp surj)⟩
 
+/-- `Ideal.toCotangent` for maximal ideal of local ring,
+ as `IsLocalRing.residue R` semi-linear map. -/
 def IsLocalRing.toCotangentSpace [IsLocalRing R] :
     maximalIdeal R →ₛₗ[residue R] CotangentSpace R where
   __ := (maximalIdeal R).toCotangent
