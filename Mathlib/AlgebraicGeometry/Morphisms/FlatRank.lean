@@ -90,7 +90,6 @@ def Scheme.Hom.finrank {X S : Scheme.{u}} (f : X ⟶ S) (s : S) : ℕ :=
   IsAffine.finrank (pullback.snd f (S.affineOpenCover.f <| S.affineOpenCover.idx s))
     (S.affineOpenCover.covers s).choose
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma Scheme.Hom.finrank_eq_finrank_snd_of_isAffine (g : T ⟶ S) [IsAffine T] (t : T)
     [Flat f] [IsFinite f] :
     f.finrank (g t) = IsAffine.finrank (pullback.snd f g) t := by
@@ -266,6 +265,7 @@ lemma Scheme.Hom.finrank_eq_one_of_isIso (f : X ⟶ Y) [IsIso f] : finrank f = 1
   · exact RingHom.Finite.id R
   · exact RingHom.Flat.id ↑R
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A finite flat locally finitely presented morphism is an isomorphism if and only if
 its rank is constant equal to `1`. -/
 nonrec lemma Scheme.Hom.isIso_iff_finrank_eq : IsIso f ↔ finrank f = 1 := by

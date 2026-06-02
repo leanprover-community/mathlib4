@@ -240,7 +240,7 @@ protected theorem Convex.strictConvex {s : Set E} (hs : Convex 𝕜 s)
   simp only [segment_eq_image_lineMap, ← self_diff_frontier]
   rintro ⟨_, ⟨⟨c, hc, rfl⟩, hcs⟩⟩
   refine ⟨c, hs.segment_subset hx.1 hy.1 ?_, hcs⟩
-  exact (segment_eq_image_lineMap 𝕜 x y).symm ▸ mem_image_of_mem _ hc
+  exact lineMap_mem_segment 𝕜 x y hc
 
 end ContinuousConstSMul
 
