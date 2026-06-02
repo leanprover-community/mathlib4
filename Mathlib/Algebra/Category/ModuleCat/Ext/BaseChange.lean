@@ -289,10 +289,9 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
       extendScalars'.mapExtLinearMap.{v, v'} S T.X₃ N (n + 1)
     apply IsBaseChange.of_right_exact S h₁ h₂ h₃ _ _ (ih T.X₂ N) (ih T.X₁ N) exac1 surj1 exac2 surj2
     · ext x
-      simp only [ShortComplex.map_X₁, ZeroHom.toFun_eq_coe,
-        AddMonoidHom.toZeroHom_coe, LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk,
-        Function.comp_apply, bilinearComp_apply_apply, ShortComplex.map_X₂, ShortComplex.map_f,
-        ← mapExactFunctor_mk₀, LinearMap.coe_restrictScalars, TS, h₂, f, f', h₁]
+      simp only [ShortComplex.map, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
+        LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, f, f',
+        bilinearComp_apply_apply, ← mapExactFunctor_mk₀, LinearMap.coe_restrictScalars, TS, h₁, h₂]
       rw [extendScalars'.mapExtLinearMap_eq_mapExt, extendScalars'.mapExtLinearMap_eq_mapExt,
         Ext.mapExactFunctor_comp]
     · ext x
@@ -322,7 +321,12 @@ noncomputable def Ext.isBaseChangeMapAux {M N : ModuleCat.{v} R}
   __ := (((extFunctorObj ((ModuleCat.extendScalars'.{v, v'} R S).obj M) n).mapIso
   (isoExtendScalars'OfIsBaseChange' S g isb2).symm).trans (((extFunctor n).mapIso
   (isoExtendScalars'OfIsBaseChange' S f isb1).op).app NS)).addCommGroupIsoToAddEquiv
-  map_smul' s x := by simp [Iso.addCommGroupIsoToAddEquiv] }
+  map_smul' s x := by
+    let a := Ext.mk₀ (isoExtendScalars'OfIsBaseChange' S f isb1).hom
+    let b := Ext.mk₀ (isoExtendScalars'OfIsBaseChange' S g isb2).inv
+    change a.comp ((s • x).comp b (add_zero n)) (zero_add n) =
+      s • a.comp (x.comp b (add_zero n)) (zero_add n)
+    simp }
 
 /-- Compostion of `Ext.isBaseChangeMapAux` and `ModuleCat.extendScalars'.mapExtLinearMap`. -/
 noncomputable def Ext.isBaseChangeMap [Module.Flat R S] {M N : ModuleCat.{v} R}
