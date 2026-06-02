@@ -197,6 +197,11 @@ theorem commutator_bot_right : ⁅H₁, ⊥⁆ = (⊥ : Subgroup G) :=
 theorem commutator_le_inf [Normal H₁] [Normal H₂] : ⁅H₁, H₂⁆ ≤ H₁ ⊓ H₂ :=
   le_inf (commutator_le_left H₁ H₂) (commutator_le_right H₁ H₂)
 
+variable {H₁ H₂} in
+theorem commutator_eq_bot_of_disjoint [H₁.Normal] [H₂.Normal] (h : Disjoint H₁ H₂) :
+    ⁅H₁, H₂⁆ = ⊥ := by
+  grw [eq_bot_iff, commutator_le_inf, h.eq_bot.le]
+
 end Normal
 
 @[to_additive]
