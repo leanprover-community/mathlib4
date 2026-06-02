@@ -32,6 +32,7 @@ def ltb (s₁ s₂ : Legacy.Iterator) : Bool :=
     else true
   else false
 
+/-- Induction on `String.ltb`. -/
 @[no_expose] def ltb.inductionOn.{u} {motive : Legacy.Iterator → Legacy.Iterator → Sort u}
     (it₁ it₂ : Legacy.Iterator)
     (ind : ∀ s₁ s₂ i₁ i₂, Legacy.Iterator.hasNext ⟨s₂, i₂⟩ → Legacy.Iterator.hasNext ⟨s₁, i₁⟩ →
