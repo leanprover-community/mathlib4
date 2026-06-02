@@ -619,7 +619,7 @@ lemma top_supp_eq_univ (c : ConnectedComponent (⊤ : SimpleGraph V)) :
     c.supp = (Set.univ : Set V) := by
   obtain ⟨w, rfl⟩ := c.exists_rep
   ext v
-  simpa [-ConnectedComponent.eq] using ConnectedComponent.sound (G := ⊤)
+  simpa [-ConnectedComponent.eq] using! ConnectedComponent.sound (G := ⊤)
 
 lemma reachable_of_mem_supp {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
     (hu : u ∈ C.supp) (hv : v ∈ C.supp) : G.Reachable u v := by
@@ -708,7 +708,7 @@ def homOfConnectedComponents (G : SimpleGraph V) {H : SimpleGraph V'}
   toFun := fun x ↦ (C (G.connectedComponentMk x)) ⟨x, ConnectedComponent.connectedComponentMk_mem⟩
   map_rel' := fun hab ↦ by
     have h : (G.connectedComponentMk _).toSimpleGraph.Adj ⟨_, rfl⟩
-        ⟨_, ((G.connectedComponentMk _).mem_supp_congr_adj hab).1 rfl⟩ := by simpa using hab
+        ⟨_, ((G.connectedComponentMk _).mem_supp_congr_adj hab).1 rfl⟩ := by simpa using! hab
     convert (C (G.connectedComponentMk _)).map_rel h using 3 <;>
       rw [ConnectedComponent.connectedComponentMk_eq_of_adj hab]
 
@@ -822,7 +822,7 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
     · apply Path.cons_isCycle
       rw [Sym2.eq_swap]
       intro h
-      cases hp (Walk.edges_toPath_subset p h)
+      cases hp (Walk.edges_toPath_subset_edges p h)
     · simp
   · rintro ⟨u, c, hc, he⟩
     refine ⟨c.adj_of_mem_edges he, ?_⟩
@@ -930,7 +930,7 @@ lemma IsTrail.not_mem_support_of_not_reachable (hw : w.IsTrail)
     (huy : ¬ (G.deleteEdges {s(x, y)}).Reachable u y)
     (hvy : ¬ (G.deleteEdges {s(x, y)}).Reachable v y) : y ∉ w.support := by
   classical
-  exact fun hy ↦ hw.not_mem_edges_of_not_reachable huy hvy <| w.edges_takeUntil_subset hy <|
+  exact fun hy ↦ hw.not_mem_edges_of_not_reachable huy hvy <| w.edges_takeUntil_subset_edges hy <|
     mem_edges_of_not_reachable_deleteEdges (w.takeUntil y hy) huy
 
 /-- A trail doesn't go through any leaf vertex, except possibly at its endpoints. -/
@@ -952,7 +952,7 @@ lemma Preconnected.induce_of_degree_eq_one (hG : G.Preconnected) {s : Set V}
   rintro ⟨u, hu⟩ ⟨v, hv⟩
   obtain ⟨p, hp⟩ := hG.exists_isPath u v
   constructor
-  convert p.induce s _
+  convert! p.induce s _
   rintro w hwp
   by_contra hws
   exact hp.not_mem_support_of_subsingleton_neighborSet (by grind) (by grind) (hs _ hws) hwp
