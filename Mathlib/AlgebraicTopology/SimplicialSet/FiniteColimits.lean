@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -28,7 +28,6 @@ section
 
 include hc
 
-set_option backward.isDefEq.respectTransparency false in
 lemma iSup_range_eq_top_of_isColimit :
     ⨆ (j : J), Subcomplex.range (c.ι.app j) = ⊤ := by
   ext n x

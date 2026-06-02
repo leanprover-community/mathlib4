@@ -23,7 +23,7 @@ public import Mathlib.Topology.JacobsonSpace
     (i.e. `x` is both a minimal prime and a maximal ideal)
 -/
 
-@[expose] public section
+public section
 
 open Ideal
 
@@ -46,7 +46,6 @@ lemma exists_isClosed_singleton_of_isJacobsonRing [IsJacobsonRing R]
   rintro x ⟨-, hx⟩
   exact sInf_le ⟨this ⟨x, hx.isPrime⟩ hx, hx⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsJacobsonRing R] : JacobsonSpace (PrimeSpectrum R) := by
   rw [jacobsonSpace_iff_locallyClosed]
   rintro S hS ⟨U, Z, hU, hZ, rfl⟩
@@ -55,7 +54,7 @@ instance [IsJacobsonRing R] : JacobsonSpace (PrimeSpectrum R) := by
   simp only [Set.nonempty_iff_ne_empty, ne_eq, Set.inter_assoc,
     ← Set.disjoint_iff_inter_eq_empty, Set.disjoint_compl_left_iff_subset,
     zeroLocus_subset_zeroLocus_iff, Ideal.radical_eq_jacobson, Ideal.jacobson, le_sInf_iff] at hS ⊢
-  contrapose! hS
+  contrapose hS
   rintro x ⟨hJx, hx⟩
   exact @hS ⟨x, hx.isPrime⟩ ⟨hJx, (isClosed_singleton_iff_isMaximal _).mpr hx⟩
 

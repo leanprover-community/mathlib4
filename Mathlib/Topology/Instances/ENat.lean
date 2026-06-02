@@ -10,12 +10,13 @@ public import Mathlib.Topology.Instances.Discrete
 public import Mathlib.Order.Interval.Set.WithBotTop
 public import Mathlib.Order.Filter.Pointwise
 public import Mathlib.Topology.Algebra.Monoid.Defs
+public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # Topology on extended natural numbers
 -/
 
-@[expose] public section
+public section
 
 open Filter Set Topology
 
@@ -72,12 +73,12 @@ instance : ContinuousAdd ℕ∞ := by
 instance : ContinuousMul ℕ∞ where
   continuous_mul :=
     have key (a : ℕ∞) : ContinuousAt (· * ·).uncurry (a, ⊤) := by
-      rcases (zero_le a).eq_or_lt with rfl | ha
+      rcases eq_zero_or_pos a with rfl | ha
       · simp [ContinuousAt, nhds_prod_eq]
       · simp only [ContinuousAt, Function.uncurry, mul_top ha.ne']
         refine tendsto_nhds_top_mono continuousAt_snd ?_
         filter_upwards [continuousAt_fst (lt_mem_nhds ha)] with (x, y) (hx : 0 < x)
-        exact le_mul_of_one_le_left (zero_le y) (Order.one_le_iff_pos.2 hx)
+        exact le_mul_of_one_le_left' (Order.one_le_iff_pos.2 hx)
     continuous_iff_continuousAt.2 <| Prod.forall.2 fun
       | (a : ℕ∞), ⊤ => key a
       | ⊤, (b : ℕ∞) =>
@@ -85,6 +86,10 @@ instance : ContinuousMul ℕ∞ where
           .of_forall fun _ ↦ mul_comm ..
       | (a : ℕ), (b : ℕ) => by
         simp [ContinuousAt, nhds_prod_eq, tendsto_pure_nhds]
+
+instance : IsTopologicalSemiring ℕ∞ where
+  toContinuousAdd := inferInstance
+  toContinuousMul := inferInstance
 
 protected theorem continuousAt_sub {a b : ℕ∞} (h : a ≠ ⊤ ∨ b ≠ ⊤) :
     ContinuousAt (· - ·).uncurry (a, b) := by

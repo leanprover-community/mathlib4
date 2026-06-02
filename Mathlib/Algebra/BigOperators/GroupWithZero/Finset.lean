@@ -34,7 +34,7 @@ lemma prod_ite_zero :
     (∏ i ∈ s, if p i then f i else 0) = if ∀ i ∈ s, p i then ∏ i ∈ s, f i else 0 := by
   split_ifs with h
   · exact prod_congr rfl fun i hi => by simp [h i hi]
-  · push_neg at h
+  · push Not at h
     rcases h with ⟨i, hi, hq⟩
     exact prod_eq_zero hi (by simp [hq])
 
@@ -45,7 +45,6 @@ lemma support_prod_subset (s : Finset ι) (f : ι → κ → M₀) :
     support (fun x ↦ ∏ i ∈ s, f i x) ⊆ ⋂ i ∈ s, support (f i) :=
   fun _ hx ↦ Set.mem_iInter₂.2 fun _ hi H ↦ hx <| prod_eq_zero hi H
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma _root_.Set.indicator_pi_one_apply (s : Finset ι) (t : ∀ i, Set (α i)) (f : ∀ i, α i) :
     ((s : Set ι).pi t).indicator 1 f = ∏ i ∈ s, (t i).indicator (M := M₀) 1 (f i) := by
   classical simp [Set.indicator, prod_boole]
@@ -60,7 +59,7 @@ lemma prod_eq_zero_iff : ∏ x ∈ s, f x = 0 ↔ ∃ a ∈ s, f a = 0 := by
 
 lemma prod_ne_zero_iff : ∏ x ∈ s, f x ≠ 0 ↔ ∀ a ∈ s, f a ≠ 0 := by
   rw [Ne, prod_eq_zero_iff]
-  push_neg; rfl
+  push Not; rfl
 
 lemma support_prod (s : Finset ι) (f : ι → κ → M₀) :
     support (fun j ↦ ∏ i ∈ s, f i j) = ⋂ i ∈ s, support (f i) :=

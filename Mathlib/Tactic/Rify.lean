@@ -44,32 +44,48 @@ open Lean.Parser.Tactic
 open Lean.Elab.Tactic
 
 /--
-The `rify` tactic is used to shift propositions from `ℕ`, `ℤ` or `ℚ` to `ℝ`.
+`rify` rewrites the main goal by shifting propositions from `ℕ`, `ℤ`, `ℚ` or `ℝ≥0` to `ℝ`.
 Although less useful than its cousins `zify` and `qify`, it can be useful when your
 goal or context already involves real numbers.
 
-In the example below, assumption `hn` is about natural numbers, `hk` is about integers
-and involves casting a natural number to `ℤ`, and the conclusion is about real numbers.
-The proof uses `rify` to lift both assumptions to `ℝ` before calling `linarith`.
+`rify` makes use of the `@[zify_simps]`, `@[qify_simps]` and `@[rify_simps]` attributes to insert
+casts into propositions, and the `push_cast` tactic to simplify the `ℝ`-valued expressions.
+
+`rify` is in some sense dual to the `lift` tactic. `lift (r : ℝ) to ℚ` will change the type of a
+real number `r` (in the supertype) to `ℚ` (the subtype), given a proof that `r` is rational;
+propositions concerning `r` will still be over `ℝ`. `rify` changes propositions about `ℕ`, `ℤ`, `ℚ`
+or `ℝ≥0` (the subtype) to propositions about `ℝ` (the supertype), without changing the type of any
+variable.
+
+* `rify at l1 l2 ...` rewrites at the given locations.
+* `rify [h₁, ..., hₙ]` uses the expressions `h₁`, ..., `hₙ` as extra lemmas for simplification.
+  This is especially useful in the presence of nat subtraction or of division: passing arguments of
+  type `· ≤ ·` or `· ∣ ·` will allow `push_cast` to do more work.
+
+Examples:
 ```
+/--
+import Mathlib
+
+open Real
+Here, the assumption `hn` is about natural numbers, `hk` is about integers
+and involves casting a natural number to `ℤ`, and the conclusion is about real numbers.
+-/
 example {n : ℕ} {k : ℤ} (hn : 8 ≤ n) (hk : 2 * k ≤ n + 2) :
     (0 : ℝ) < n - k - 1 := by
   rify at hn hk /- Now have hn : 8 ≤ (n : ℝ)   hk : 2 * (k : ℝ) ≤ (n : ℝ) + 2 -/
   linarith
-```
 
-`rify` makes use of the `@[zify_simps]`, `@[qify_simps]` and `@[rify_simps]` attributes to move
-propositions, and the `push_cast` tactic to simplify the `ℝ`-valued expressions.
-
-`rify` can be given extra lemmas to use in simplification. This is especially useful in the
-presence of nat subtraction: passing `≤` arguments will allow `push_cast` to do more work.
-```
+-- Extra hypotheses allow `push_cast` to do more work.
 example (a b c : ℕ) (h : a - b < c) (hab : b ≤ a) : a < b + c := by
-  rify [hab] at h ⊢
+  rify [hab] at h ⊢ -- Here `zify` or `qify` would have also worked.
   linarith
+
+example (a b : ℕ) (ha : π ≤ a) : 3 ≤ a + b := by
+  rify
+  linarith [pi_gt_three]
 ```
-Note that `zify` or `qify` would work just as well in the above example (and `zify` is the natural
-choice since it is enough to get rid of the pathological `ℕ` subtraction). -/
+-/
 syntax (name := rify) "rify" (simpArgs)? (location)? : tactic
 
 macro_rules

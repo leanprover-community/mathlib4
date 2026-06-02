@@ -30,7 +30,7 @@ This file proves the unsigned version of the Hahn decomposition theorem.
 Hahn decomposition
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MeasureTheory.Measure.rnDeriv
 assert_not_exists MeasureTheory.VectorMeasure
@@ -41,7 +41,6 @@ namespace MeasureTheory
 
 variable {α : Type*} {mα : MeasurableSpace α}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Hahn decomposition theorem** -/
 theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     ∃ s, MeasurableSet s ∧ (∀ t, MeasurableSet t → t ⊆ s → ν t ≤ μ t) ∧

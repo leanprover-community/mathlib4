@@ -176,7 +176,7 @@ theorem fderivWithin_comp₃ {g' : G → G'} {g : F → G} {t : Set F} {u : Set 
     (h3f : f x = y) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (g' ∘ g ∘ f) s x =
       (fderivWithin 𝕜 g' u y').comp ((fderivWithin 𝕜 g t y).comp (fderivWithin 𝕜 f s x)) := by
-  substs h3g h3f
+  subst h3g h3f
   exact (hg'.hasFDerivWithinAt.comp x (hg.hasFDerivWithinAt.comp x hf.hasFDerivWithinAt h2f) <|
     h2g.comp h2f).fderivWithin hxs
 

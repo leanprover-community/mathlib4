@@ -16,6 +16,7 @@ A monoidal category is a category equipped with a tensor product, unitors, and a
 In the definition, we provide the tensor product as a pair of functions
 * `tensorObj : C → C → C`
 * `tensorHom : (X₁ ⟶ Y₁) → (X₂ ⟶ Y₂) → ((X₁ ⊗ X₂) ⟶ (Y₁ ⊗ Y₂))`
+
 and allow use of the overloaded notation `⊗` for both.
 The unitors and associator are provided componentwise.
 
@@ -31,6 +32,7 @@ e.g. `(λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom` in `CategoryTheory.Monoidal.Coh
 In the definition of monoidal categories, we also provide the whiskering operators:
 * `whiskerLeft (X : C) {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂) : X ⊗ Y₁ ⟶ X ⊗ Y₂`, denoted by `X ◁ f`,
 * `whiskerRight {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) : X₁ ⊗ Y ⟶ X₂ ⊗ Y`, denoted by `f ▷ Y`.
+
 These are products of an object and a morphism (the terminology "whiskering"
 is borrowed from 2-category theory). The tensor product of morphisms `tensorHom` can be defined
 in terms of the whiskerings. There are two possible such definitions, which are related by
@@ -155,7 +157,7 @@ Tensor product does not need to be strictly associative on objects, but there is
 specified associator, `α_ X Y Z : (X ⊗ Y) ⊗ Z ≅ X ⊗ (Y ⊗ Z)`. There is a tensor unit `𝟙_ C`,
 with specified left and right unitor isomorphisms `λ_ X : 𝟙_ C ⊗ X ≅ X` and `ρ_ X : X ⊗ 𝟙_ C ≅ X`.
 These associators and unitors satisfy the pentagon and triangle equations. -/
-@[stacks 0FFK]
+@[stacks 0FFK, wikidata Q1945014]
 -- Porting note: The Mathport did not translate the temporary notation
 class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] extends MonoidalCategoryStruct C where
   tensorHom_def {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
@@ -849,16 +851,19 @@ abbrev tensorUnitRight : C ⥤ C := tensorRight (𝟙_ C)
 def associatorNatIso : leftAssocTensor C ≅ rightAssocTensor C :=
   NatIso.ofComponents (fun _ => MonoidalCategory.associator _ _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The left unitor as a natural isomorphism. -/
 @[simps!]
 def leftUnitorNatIso : tensorUnitLeft C ≅ 𝟭 C :=
   NatIso.ofComponents MonoidalCategory.leftUnitor
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The right unitor as a natural isomorphism. -/
 @[simps!]
 def rightUnitorNatIso : tensorUnitRight C ≅ 𝟭 C :=
   NatIso.ofComponents MonoidalCategory.rightUnitor
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The associator as a natural isomorphism between trifunctors `C ⥤ C ⥤ C ⥤ C`. -/
 @[simps!]
 def curriedAssociatorNatIso :
@@ -871,6 +876,7 @@ section
 
 variable {C}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Tensoring on the left with `X ⊗ Y` is naturally isomorphic to
 tensoring on the left with `Y`, and then again with `X`.
 -/
@@ -906,6 +912,7 @@ We later show this is a monoidal functor.
 -/
 abbrev tensoringRight : C ⥤ C ⥤ C := (curriedTensor C).flip
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (tensoringRight C).Faithful where
   map_injective {X} {Y} f g h := by
     injections h
@@ -914,6 +921,7 @@ instance : (tensoringRight C).Faithful where
 
 variable {C}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Tensoring on the right with `X ⊗ Y` is naturally isomorphic to
 tensoring on the right with `X`, and then again with `Y`.
 -/

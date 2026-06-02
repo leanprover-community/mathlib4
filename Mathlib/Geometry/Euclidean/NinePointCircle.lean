@@ -83,7 +83,6 @@ theorem ninePointCircle_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [Inner
   · simp [ninePointCircle_center, centroid_map]
   · simp [ninePointCircle_radius]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ninePointCircle_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
     (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
@@ -217,7 +216,7 @@ theorem eulerPoint_eq_midpoint (s : Triangle ℝ P) (i : Fin 3) :
 
 theorem altitudeFoot_mem_ninePointCircle (s : Triangle ℝ P) (i : Fin 3) :
     s.altitudeFoot i ∈ s.ninePointCircle := by
-  convert s.orthogonalProjectionSpan_eulerPoint_mem_ninePointCircle i
+  convert! s.orthogonalProjectionSpan_eulerPoint_mem_ninePointCircle i
   rw [Simplex.altitudeFoot]
   unfold Simplex.orthogonalProjectionSpan
   congr 1

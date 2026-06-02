@@ -261,10 +261,10 @@ instance [Subsingleton M] : Subsingleton (MulArchimedeanClass M) :=
 
 @[to_additive]
 noncomputable
-instance : LinearOrder (MulArchimedeanClass M) := by
-  classical
-  unfold MulArchimedeanClass
-  infer_instance
+instance : LinearOrder (MulArchimedeanClass M) :=
+  open Classical in
+  -- TODO: why does `inferInstanceAs` not work here?
+  fast_instance% (inferInstance : LinearOrder (Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·)))
 
 @[to_additive]
 theorem mk_le_mk : mk a ≤ mk b ↔ ∃ n, |b|ₘ ≤ |a|ₘ ^ n := .rfl
@@ -477,13 +477,13 @@ theorem mk_prod {ι : Type*} [LinearOrder ι] {s : Finset ι} (hnonempty : s.Non
 
 @[to_additive]
 theorem lt_of_mk_lt_mk_of_one_le (h : mk a < mk b) (hpos : 1 ≤ a) : b < a := by
-  obtain h := (mk_lt_mk).mp h 1
+  obtain h := mk_lt_mk.mp h 1
   rw [pow_one, mabs_lt, mabs_eq_self.mpr hpos] at h
   exact h.2
 
 @[to_additive]
 theorem lt_of_mk_lt_mk_of_le_one (h : mk a < mk b) (hneg : a ≤ 1) : a < b := by
-  obtain h := (mk_lt_mk).mp h 1
+  obtain h := mk_lt_mk.mp h 1
   rw [pow_one, mabs_lt, mabs_eq_inv_self.mpr hneg, inv_inv] at h
   exact h.1
 
@@ -504,7 +504,7 @@ theorem mulArchimedean_of_mk_eq_mk (h : ∀ a ≠ (1 : M), ∀ b ≠ 1, mk a = m
     · use 0
       simpa using hx
     · have hxy : mk x = mk y := h x hx.ne.symm y hy.ne.symm
-      obtain ⟨_, ⟨m, hm⟩⟩ := (mk_eq_mk).mp hxy
+      obtain ⟨_, ⟨m, hm⟩⟩ := mk_eq_mk.mp hxy
       rw [mabs_eq_self.mpr hx.le, mabs_eq_self.mpr hy.le] at hm
       exact ⟨m, hm⟩
 
@@ -644,7 +644,6 @@ theorem subgroup_strictAntiOn : StrictAntiOn (subgroup (M := M)) (Set.Iio ⊤) :
   apply le_of_eq
   simpa [mk_surjective, subsemigroup] using heq
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem subgroup_antitone : Antitone (subgroup (M := M)) := by
   intro s t hst
@@ -679,7 +678,7 @@ theorem mem_closedBallSubgroup_iff {a : M} {c : MulArchimedeanClass M} :
 variable (M) in
 @[to_additive (attr := simp)]
 theorem ballSubgroup_top : ballSubgroup (M := M) ⊤ = ⊥ := by
-  convert subgroup_eq_bot M
+  convert! subgroup_eq_bot M
   simp
 
 variable (M) in
@@ -765,8 +764,7 @@ def lift {α : Type*} (f : {a : M // a ≠ 1} → α)
     FiniteMulArchimedeanClass M → α := fun ⟨A, hA⟩ ↦ by
   refine (MulArchimedeanClass.lift
     (fun b ↦ if h : b = 1 then ⊤ else WithTop.some (f ⟨b, h⟩)) (fun a b h' ↦ ?_) A).untop ?_
-  · simp only
-    split_ifs with ha hb hb
+  · split_ifs with ha hb hb
     · rfl
     · exact (hb (MulArchimedeanClass.mk_eq_top_iff.mp (ha ▸ h').symm)).elim
     · exact (ha (MulArchimedeanClass.mk_eq_top_iff.mp (by apply hb ▸ h'))).elim

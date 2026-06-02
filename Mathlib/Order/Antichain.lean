@@ -192,9 +192,6 @@ theorem isAntichain_union :
       IsAntichain r s ∧ IsAntichain r t ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → rᶜ a b ∧ rᶜ b a := by
   rw [IsAntichain, IsAntichain, IsAntichain, pairwise_union]
 
-@[deprecated (since := "2025-09-20")]
-alias isAntichain_singleton := IsAntichain.singleton
-
 theorem Set.Subsingleton.isAntichain (hs : s.Subsingleton) (r : α → α → Prop) : IsAntichain r s :=
   hs.pairwise _
 

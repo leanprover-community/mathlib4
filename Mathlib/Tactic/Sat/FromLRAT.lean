@@ -175,7 +175,7 @@ theorem Valuation.mk_implies {p} {as ps} (as₁) : as = List.reverseAux as₁ ps
       ∀ bs, mk (as₁.reverseAux bs) n' ↔ mk bs n from this 0 _ rfl (a::as)
     induction as₁ with
     | nil => simp
-    | cons b as₁ ih => simpa using fun n bs ↦ ih (n + 1) _ (Nat.succ_add ..) _
+    | cons b as₁ ih => simpa using! fun n bs ↦ ih (n + 1) _ (Nat.succ_add ..) _
 
 /-- Asserts that `¬⟦f⟧_v` implies `p`. -/
 structure Fmla.reify (v : Valuation) (f : Fmla) (p : Prop) : Prop where
@@ -445,15 +445,15 @@ partial def buildReify (ctx ctx' proof : Expr) (nvars : Nat) : Expr × Expr := I
     pr := mkLambda `h default ty pr
   pr := mkLambda `v default (mkConst ``Sat.Valuation) pr
   let mut e := e.lowerLooseBVars (nvars+1) (nvars+1)
-  let cons := mkApp (mkConst ``List.cons [levelZero]) (mkSort levelZero)
-  let nil := mkApp (mkConst ``List.nil [levelZero]) (mkSort levelZero)
+  let cons := mkApp (mkConst ``List.cons [.zero]) (mkSort .zero)
+  let nil := mkApp (mkConst ``List.nil [.zero]) (mkSort .zero)
   let rec mkPS depth e
   | 0 => e
   | n + 1 => mkPS (depth+1) (mkApp2 cons (mkBVar depth) e) n
   pr := mkApp5 (mkConst ``Sat.Fmla.refute) e (mkPS 0 nil nvars) ctx proof pr
   for _ in [0:nvars] do
-    e := mkForall `a default (mkSort levelZero) e
-    pr := mkLambda `a default (mkSort levelZero) pr
+    e := mkForall `a default (mkSort .zero) e
+    pr := mkLambda `a default (mkSort .zero) pr
   pure (e, pr)
 where
   /-- The `v` variable under the `a1 ... an, v, h1 ... hn` context -/

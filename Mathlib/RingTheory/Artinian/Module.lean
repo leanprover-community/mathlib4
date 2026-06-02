@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Regular.Opposite
 public import Mathlib.Data.SetLike.Fintype
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.Order.Filter.EventuallyConst
+public import Mathlib.RingTheory.Artinian.Defs
 public import Mathlib.RingTheory.Ideal.Prod
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Jacobson.Semiprimary
@@ -27,14 +28,6 @@ if the relation `<` on submodules is well founded.
 
 A ring is said to be left (or right) Artinian if it is Artinian as a left (or right) module over
 itself, or simply Artinian if it is both left and right Artinian.
-
-## Main definitions
-
-Let `R` be a ring and let `M` and `P` be `R`-modules. Let `N` be an `R`-submodule of `M`.
-
-* `IsArtinian R M` is the proposition that `M` is an Artinian `R`-module. It is a class,
-  implemented as the predicate that the `<` relation on submodules is well founded.
-* `IsArtinianRing R` is the proposition that `R` is a left Artinian ring.
 
 ## Main results
 
@@ -65,15 +58,6 @@ Artinian, artinian, Artinian ring, Artinian module, artinian ring, artinian modu
 @[expose] public section
 
 open Set Filter Pointwise
-
-/-- `IsArtinian R M` is the proposition that `M` is an Artinian `R`-module,
-implemented as the well-foundedness of submodule inclusion. -/
-abbrev IsArtinian (R M) [Semiring R] [AddCommMonoid M] [Module R M] : Prop :=
-  WellFoundedLT (Submodule R M)
-
-theorem isArtinian_iff (R M) [Semiring R] [AddCommMonoid M] [Module R M] : IsArtinian R M ↔
-    WellFounded (· < · : Submodule R M → Submodule R M → Prop) :=
-  isWellFounded_iff _ _
 
 section Semiring
 
@@ -173,16 +157,11 @@ theorem eventuallyConst_of_isArtinian (f : ℕ →o (Submodule R M)ᵒᵈ) :
   simp_rw [eventuallyConst_atTop, eq_comm]
   exact monotone_stabilizes f
 
-/-- If `∀ I > J, P I` implies `P J`, then `P` holds for all submodules. -/
-theorem induction {P : Submodule R M → Prop} (hgt : ∀ I, (∀ J < I, P J) → P I) (I : Submodule R M) :
-    P I :=
-  WellFoundedLT.induction I hgt
-
 open Function
 
 /-- Any injective endomorphism of an Artinian module is surjective. -/
 theorem surjective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective f) : Surjective f := by
-  have h := ‹IsArtinian R M›; contrapose! h
+  have h := ‹IsArtinian R M›; contrapose h
   rw [IsArtinian, WellFoundedLT, isWellFounded_iff]
   refine (RelEmbedding.natGT (LinearMap.range <| f ^ ·) ?_).not_wellFounded
   intro n
@@ -209,7 +188,7 @@ theorem disjoint_partial_infs_eventually_top (f : ℕ → Submodule R M)
       exact Nat.succ_le_succ_iff.mp p
   obtain ⟨n, w⟩ := monotone_stabilizes (partialSups (OrderDual.toDual ∘ f))
   refine ⟨n, fun m p ↦ (h m).eq_bot_of_ge <| sup_eq_left.mp ?_⟩
-  simpa only [partialSups_add_one] using (w (m + 1) <| le_add_right p).symm.trans <| w m p
+  simpa only [partialSups_add_one] using! (w (m + 1) <| le_add_right p).symm.trans <| w m p
 
 end IsArtinian
 
@@ -247,7 +226,6 @@ instance isArtinian_of_quotient_of_artinian
     (N : Submodule R M) [IsArtinian R M] : IsArtinian R (M ⧸ N) :=
   isArtinian_of_surjective M (Submodule.mkQ N) (Submodule.Quotient.mk_surjective N)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isArtinian_of_range_eq_ker [IsArtinian R M] [IsArtinian R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
     (h : LinearMap.range f = LinearMap.ker g) : IsArtinian R N :=
   wellFounded_lt_exact_sequence (LinearMap.range f)
@@ -259,7 +237,6 @@ theorem isArtinian_of_range_eq_ker [IsArtinian R M] [IsArtinian R P] (f : M →�
     (by simp [Submodule.map_comap_eq, inf_comm, Submodule.range_liftQ])
     (by simp [Submodule.comap_map_eq, h])
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isArtinian_iff_submodule_quotient (S : Submodule R P) :
     IsArtinian R P ↔ IsArtinian R S ∧ IsArtinian R (P ⧸ S) := by
   refine ⟨fun h ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ ?_⟩
@@ -269,7 +246,6 @@ theorem isArtinian_iff_submodule_quotient (S : Submodule R P) :
 instance isArtinian_prod [IsArtinian R M] [IsArtinian R P] : IsArtinian R (M × P) :=
   isArtinian_of_range_eq_ker (LinearMap.inl R M P) (LinearMap.snd R M P) (LinearMap.range_inl R M P)
 
-set_option backward.isDefEq.respectTransparency false in
 instance isArtinian_sup (M₁ M₂ : Submodule R P) [IsArtinian R M₁] [IsArtinian R M₂] :
     IsArtinian R ↥(M₁ ⊔ M₂) := by
   have := isArtinian_range (M₁.subtype.coprod M₂.subtype)
@@ -394,22 +370,6 @@ theorem isArtinian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsArtinian R M) : IsArtinian S M :=
   ⟨(Submodule.restrictScalarsEmbedding R S M).wellFounded h.wf⟩
 
--- See `Mathlib/RingTheory/Artinian/Ring.lean`
-assert_not_exists IsLocalization IsLocalRing
-
-/-- A ring is Artinian if it is Artinian as a module over itself.
-
-Strictly speaking, this should be called `IsLeftArtinianRing` but we omit the `Left` for
-convenience in the commutative case. For a right Artinian ring, use `IsArtinian Rᵐᵒᵖ R`.
-
-For equivalent definitions, see `Mathlib/RingTheory/Artinian/Ring.lean`.
--/
-@[stacks 00J5]
-abbrev IsArtinianRing (R) [Semiring R] :=
-  IsArtinian R R
-
-theorem isArtinianRing_iff {R} [Semiring R] : IsArtinianRing R ↔ IsArtinian R R := Iff.rfl
-
 instance DivisionSemiring.instIsArtinianRing {K : Type*} [DivisionSemiring K] : IsArtinianRing K :=
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
 
@@ -436,7 +396,6 @@ instance isArtinian_of_fg_of_artinian' {R M} [Ring R] [AddCommGroup M] [Module R
   have ⟨_, _, h⟩ := Module.Finite.exists_fin' R M
   isArtinian_of_surjective _ _ h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isArtinian_of_fg_of_artinian {R M} [Ring R] [AddCommGroup M] [Module R M]
     (N : Submodule R M) [IsArtinianRing R] (hN : N.FG) : IsArtinian R N := by
   rw [← Module.Finite.iff_fg] at hN; infer_instance
@@ -445,11 +404,9 @@ theorem IsArtinianRing.of_finite (R S) [Ring R] [Ring S] [Module R S] [IsScalarT
     [IsArtinianRing R] [Module.Finite R S] : IsArtinianRing S :=
   isArtinian_of_tower R isArtinian_of_fg_of_artinian'
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n R) [Fintype n] [DecidableEq n] [Ring R] [IsNoetherianRing R] :
     IsNoetherianRing (Matrix n n R) := .of_finite R _
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n R) [Fintype n] [DecidableEq n] [Ring R] [IsArtinianRing R] :
     IsArtinianRing (Matrix n n R) := .of_finite R _
 
@@ -538,8 +495,6 @@ variable (R)
 theorem isUnitSubmonoid_eq [IsArtinianRing R] : IsUnit.submonoid R = R⁰ := by
   ext; simp [IsUnit.mem_submonoid_iff, isUnit_iff_mem_nonZeroDivisors]
 
-@[deprecated (since := "2025-08-26")] alias isUnit_submonoid_eq := isUnitSubmonoid_eq
-
 theorem isUnitSubmonoid_eq_of_mulOpposite [IsArtinianRing Rᵐᵒᵖ] :
     IsUnit.submonoid R = R⁰ := by
   ext; simp [IsUnit.mem_submonoid_iff, isUnit_iff_mem_nonZeroDivisors_of_mulOpposite]
@@ -581,7 +536,7 @@ lemma isField_of_isDomain [IsDomain R] : IsField R := by
   obtain ⟨n, y, hy⟩ := IsArtinian.exists_pow_succ_smul_dvd x (1 : R)
   replace hy : x ^ n * (x * y - 1) = 0 := by
     rw [mul_sub, sub_eq_zero]
-    convert hy using 1
+    convert! hy using 1
     simp [Nat.succ_eq_add_one, pow_add, mul_assoc]
   rw [mul_eq_zero, sub_eq_zero] at hy
   exact ⟨_, hy.resolve_left <| pow_ne_zero _ hx⟩
@@ -596,6 +551,9 @@ instance isMaximal_of_isPrime {R : Type*} [CommRing R] (p : Ideal R) [p.IsPrime]
 
 lemma isPrime_iff_isMaximal (p : Ideal R) : p.IsPrime ↔ p.IsMaximal :=
   ⟨fun _ ↦ isMaximal_of_isPrime p, fun h ↦ h.isPrime⟩
+
+theorem mem_minimalPrimes {I p : Ideal R} [hp : p.IsPrime] (hIp : I ≤ p) : p ∈ I.minimalPrimes :=
+  ⟨⟨hp, hIp⟩, fun q ⟨_, _⟩ hqp ↦ ((isMaximal_of_isPrime q).eq_of_le hp.ne_top hqp).ge⟩
 
 /-- The prime spectrum is in bijection with the maximal spectrum. -/
 @[simps]
@@ -618,6 +576,18 @@ lemma primeSpectrum_asIdeal_range_eq :
 
 variable (R)
 
+theorem nilradical_pow_eq_iInf (n : ℕ) :
+    nilradical R ^ n = iInf fun I : MaximalSpectrum R ↦ I.1 ^ n := by
+  have : Fintype (MaximalSpectrum R) := Fintype.ofFinite (MaximalSpectrum R)
+  rw [← iInf_univ, ← Finset.coe_univ, PrimeSpectrum.nilradical_eq_iInf]
+  simp only [Finset.mem_coe]
+  rw [← Ideal.prod_eq_iInf_of_pairwise_isCoprime fun I _ _ _ ↦ .pow ∘ I.isCoprime_of_ne,
+    Finset.prod_pow, Ideal.prod_eq_iInf_of_pairwise_isCoprime fun I _ _ _ ↦ I.isCoprime_of_ne]
+  simp [Finset.mem_univ, iInf, IsArtinianRing.primeSpectrum_asIdeal_range_eq]
+
+theorem nilradical_eq_iInf : nilradical R = iInf MaximalSpectrum.asIdeal := by
+  simpa using nilradical_pow_eq_iInf R 1
+
 lemma setOf_isPrime_finite : {I : Ideal R | I.IsPrime}.Finite := by
   simpa only [isPrime_iff_isMaximal] using setOf_isMaximal_finite R
 
@@ -632,24 +602,32 @@ instance : Finite (PrimeSpectrum R) :=
 
 /-- The quotient of a commutative Artinian ring by its nilradical is isomorphic to
 a finite product of fields, namely the quotients by the maximal ideals. -/
+@[simps!]
 noncomputable def quotNilradicalEquivPi :
-    R ⧸ nilradical R ≃+* ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal :=
-  let f := MaximalSpectrum.asIdeal (R := R)
-  .trans
-    (Ideal.quotEquivOfEq <| ext fun x ↦ by
-      rw [PrimeSpectrum.nilradical_eq_iInf, iInf, primeSpectrum_asIdeal_range_eq]; rfl)
-    (Ideal.quotientInfRingEquivPiQuotient f <| fun I J h ↦
-      Ideal.isCoprime_iff_sup_eq.mpr <| I.2.coprime_of_ne J.2 <|
-      fun hIJ ↦ h <| MaximalSpectrum.ext hIJ)
+    (R ⧸ nilradical R) ≃ₐ[R] ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal :=
+  (Ideal.quotientEquivAlgOfEq R (nilradical_eq_iInf R)).trans
+    { __ := Ideal.quotientInfRingEquivPiQuotient _ fun I _ ↦ I.isCoprime_of_ne
+      commutes' _ := rfl}
+
+/-- The quotient of a commutative Artinian ring by a power of its nilradical is isomorphic to
+a finite product of local rings, namely the quotients by the powers of the maximal ideals. -/
+@[simps!]
+noncomputable def quotNilradicalPowEquivPi (n : ℕ) :
+    (R ⧸ nilradical R ^ n) ≃ₐ[R] ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal ^ n :=
+  (Ideal.quotientEquivAlgOfEq R (nilradical_pow_eq_iInf R n)).trans
+    { __ := Ideal.quotientInfRingEquivPiQuotient _ fun I _ ↦ .pow ∘ I.isCoprime_of_ne
+      commutes' _ := rfl}
 
 /-- A reduced commutative Artinian ring is isomorphic to a finite product of fields,
 namely the quotients by the maximal ideals. -/
-noncomputable def equivPi [IsReduced R] : R ≃ₐ[R] ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal where
-  __ := RingEquiv.trans (.symm <| .quotientBot R) <| .trans
-    (Ideal.quotEquivOfEq (nilradical_eq_zero R).symm) (quotNilradicalEquivPi R)
-  commutes' _ := rfl
+noncomputable def equivPi [IsReduced R] : R ≃ₐ[R] ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal :=
+  .trans (.symm <| .quotientBot R R) <| .trans
+    (Ideal.quotientEquivAlgOfEq R (nilradical_eq_zero R).symm) (quotNilradicalEquivPi R)
 
-set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma equivPi_apply [IsReduced R] (x : R) (m : MaximalSpectrum R) : equivPi R x m = x :=
+  rfl
+
 theorem isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=
   (equivPi R).symm.isSemisimpleRing
 

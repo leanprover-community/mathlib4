@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Spectrum
 public import Mathlib.Analysis.Matrix.Hermitian
-public import Mathlib.LinearAlgebra.Matrix.PosDef
+public import Mathlib.Analysis.Matrix.Order
+public import Mathlib.LinearAlgebra.Trace
 
 /-!
 # Positive operators
@@ -43,7 +44,7 @@ Positive operator
 
 open InnerProductSpace RCLike LinearMap ContinuousLinearMap
 
-open scoped InnerProduct ComplexConjugate
+open scoped InnerProduct ComplexConjugate ComplexOrder
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
@@ -86,18 +87,15 @@ theorem IsPositive.isSelfAdjoint [FiniteDimensional 𝕜 E] {T : E →ₗ[𝕜] 
 theorem IsPositive.adjoint_eq [FiniteDimensional 𝕜 E] {T : E →ₗ[𝕜] E} (hT : IsPositive T) :
     T.adjoint = T := hT.isSelfAdjoint
 
-open ComplexOrder in
 theorem isPositive_iff (T : E →ₗ[𝕜] E) :
     IsPositive T ↔ IsSymmetric T ∧ ∀ x, 0 ≤ ⟪T x, x⟫ := by
   simp_rw [IsPositive, and_congr_right_iff, ← RCLike.ofReal_nonneg (K := 𝕜)]
   intro hT
   simp [hT]
 
-open ComplexOrder in
 theorem IsPositive.inner_nonneg_left {T : E →ₗ[𝕜] E} (hT : IsPositive T) (x : E) : 0 ≤ ⟪T x, x⟫ :=
   (T.isPositive_iff.mp hT).right x
 
-open ComplexOrder in
 theorem IsPositive.inner_nonneg_right {T : E →ₗ[𝕜] E} (hT : IsPositive T) (x : E) :
     0 ≤ ⟪x, T x⟫ :=
   hT.isSymmetric _ _ ▸ hT.inner_nonneg_left x
@@ -116,7 +114,7 @@ theorem isPositive_natCast {n : ℕ} : IsPositive (n : E →ₗ[𝕜] E) := by
   refine ⟨IsSymmetric.natCast n, fun x => ?_⟩
   simp only [Module.End.natCast_apply, ← Nat.cast_smul_eq_nsmul 𝕜, inner_smul_left, map_natCast,
     mul_re, natCast_re, inner_self_im, mul_zero, sub_zero]
-  exact mul_nonneg n.cast_nonneg' inner_self_nonneg
+  positivity [inner_self_nonneg (x := x) (𝕜 := 𝕜)]
 
 @[simp]
 theorem isPositive_ofNat {n : ℕ} [n.AtLeastTwo] : IsPositive (ofNat(n) : E →ₗ[𝕜] E) :=
@@ -134,12 +132,10 @@ theorem isPositive_sum {ι : Type*} {T : ι → (E →ₗ[𝕜] E)} (s : Finset 
   refine ⟨isSymmetric_sum s fun _ hi ↦ (hT _ hi).isSymmetric, fun _ ↦ ?_⟩
   simpa [sum_inner] using Finset.sum_nonneg fun _ hi ↦ (hT _ hi).re_inner_nonneg_left _
 
-open ComplexOrder in
 theorem IsPositive.ne_zero_iff {T : E →ₗ[𝕜] E} (hT : T.IsPositive) :
     T ≠ 0 ↔ ∃ x, 0 < inner 𝕜 (T x) x := by
   simp [← hT.isSymmetric.inner_map_self_eq_zero, lt_iff_le_and_ne', hT.inner_nonneg_left]
 
-open ComplexOrder in
 @[aesop safe apply]
 theorem IsPositive.smul_of_nonneg {T : E →ₗ[𝕜] E} (hT : T.IsPositive) {c : 𝕜} (hc : 0 ≤ c) :
     (c • T).IsPositive := by
@@ -149,7 +145,6 @@ theorem IsPositive.smul_of_nonneg {T : E →ₗ[𝕜] E} (hT : T.IsPositive) {c 
   rw [smul_apply, inner_smul_left, hc', mul_re, conj_eq_iff_im.mp hc', zero_mul, sub_zero]
   exact mul_nonneg ((re_nonneg_of_nonneg hc').mpr hc) (re_inner_nonneg_left hT x)
 
-open scoped ComplexOrder in
 theorem IsPositive.isPositive_smul_iff {T : E →ₗ[𝕜] E} (hT : T.IsPositive) (hT' : T ≠ 0) {α : 𝕜} :
     (α • T).IsPositive ↔ 0 ≤ α := by
   refine ⟨fun h ↦ ?_, hT.smul_of_nonneg⟩
@@ -185,6 +180,8 @@ lemma le_def (f g : E →ₗ[𝕜] E) : f ≤ g ↔ (g - f).IsPositive := Iff.rf
 lemma nonneg_iff_isPositive (f : E →ₗ[𝕜] E) : 0 ≤ f ↔ f.IsPositive := by
   simpa using le_def 0 f
 
+instance : IsOrderedAddMonoid (E →ₗ[𝕜] E) where add_le_add_left a b hab c := by simpa [le_def]
+
 end PartialOrder
 
 /-- An idempotent linear map is positive iff it is symmetric. -/
@@ -202,24 +199,22 @@ theorem isPositive_linearIsometryEquiv_conj_iff {T : E →ₗ[𝕜] E} (f : E �
     Function.comp_apply, LinearIsometryEquiv.inner_map_eq_flip]
   exact fun _ => ⟨fun h x => by simpa using h (f x), fun h x => h _⟩
 
-open scoped ComplexOrder in
 /-- `A.toEuclideanLin` is positive if and only if `A` is positive semi-definite. -/
 @[simp] theorem _root_.Matrix.isPositive_toEuclideanLin_iff {n : Type*} [Fintype n] [DecidableEq n]
     {A : Matrix n n 𝕜} : A.toEuclideanLin.IsPositive ↔ A.PosSemidef := by
-  simp_rw [LinearMap.IsPositive, ← Matrix.isHermitian_iff_isSymmetric, inner_re_symm,
+  simp_rw [LinearMap.IsPositive, Matrix.isSymmetric_toEuclideanLin_iff, inner_re_symm,
     EuclideanSpace.inner_eq_star_dotProduct, Matrix.ofLp_toLpLin, Matrix.toLin'_apply,
     dotProduct_comm (A.mulVec _), Matrix.posSemidef_iff_dotProduct_mulVec, and_congr_right_iff,
     RCLike.nonneg_iff (K := 𝕜)]
   refine fun hA ↦ (EuclideanSpace.equiv n 𝕜).forall_congr' fun x ↦ ?_
   simp [hA.im_star_dotProduct_mulVec_self]
 
-open ComplexOrder in
 /-- `A.toMatrix` is positive semi-definite if and only if `A` is positive. -/
 @[simp] theorem posSemidef_toMatrix_iff {ι : Type*} [Fintype ι] [DecidableEq ι]
     {A : E →ₗ[𝕜] E} (b : OrthonormalBasis ι 𝕜 E) :
     (A.toMatrix b.toBasis b.toBasis).PosSemidef ↔ A.IsPositive := by
   rw [← Matrix.isPositive_toEuclideanLin_iff]
-  convert isPositive_linearIsometryEquiv_conj_iff b.repr
+  convert! isPositive_linearIsometryEquiv_conj_iff b.repr
   ext
   simp [LinearMap.toMatrix]
 
@@ -229,14 +224,6 @@ theorem IsSymmetricProjection.isPositive {p : E →ₗ[𝕜] E} (hp : p.IsSymmet
     p.IsPositive :=
   hp.isIdempotentElem.isPositive_iff_isSymmetric.mpr hp.isSymmetric
 
-@[deprecated (since := "2025-10-17")] alias IsPositive.of_isSymmetricProjection :=
-  IsSymmetricProjection.isPositive
-
-/-- A star projection operator is positive. -/
-@[deprecated (since := "2025-08-19")]
-alias IsPositive.of_isStarProjection := IsSymmetricProjection.isPositive
-
-set_option backward.isDefEq.respectTransparency false in
 theorem IsSymmetricProjection.le_iff_range_le_range {p q : E →ₗ[𝕜] E}
     (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) : p ≤ q ↔ range p ≤ range q := by
   refine ⟨fun ⟨h1, h2⟩ a ha ↦ ?_, fun hpq ↦ (hp.sub_of_range_le_range hq hpq).isPositive⟩
@@ -250,6 +237,25 @@ theorem IsSymmetricProjection.le_iff_range_le_range {p q : E →ₗ[𝕜] E}
   obtain ⟨U, _, rfl⟩ := isSymmetricProjection_iff_eq_coe_starProjection.mp hq
   simpa [Submodule.toLinearMap_starProjection_eq_isComplProjection] using
     U.mem_iff_norm_starProjection _ |>.mpr <| le_antisymm (U.norm_starProjection_apply_le a) h2
+
+theorem IsPositive.trace_nonneg {f : E →ₗ[𝕜] E} (hf : f.IsPositive) : 0 ≤ f.trace 𝕜 E := by
+  unfold trace
+  split_ifs with h
+  · have : FiniteDimensional 𝕜 E := Module.Finite.of_basis h.choose_spec.some
+    classical
+    simp_rw [traceAux_eq 𝕜 _ (stdOrthonormalBasis 𝕜 E).toBasis]
+    exact posSemidef_toMatrix_iff (stdOrthonormalBasis 𝕜 E) |>.mpr hf |>.trace_nonneg
+  · simp
+
+variable (𝕜 E) in
+/-- `LinearMap.trace` as a positive linear map. -/
+noncomputable def tracePositiveLinearMap : (E →ₗ[𝕜] E) →ₚ[𝕜] 𝕜 :=
+  .mk₀ (LinearMap.trace 𝕜 E) fun x h ↦ sub_zero x ▸ h.trace_nonneg
+
+@[simp] lemma toLinearMap_tracePositiveLinearMap :
+    (tracePositiveLinearMap 𝕜 E).toLinearMap = trace 𝕜 E := rfl
+
+@[simp] lemma tracePositiveLinearMap_apply (x) : tracePositiveLinearMap 𝕜 E x = x.trace 𝕜 E := rfl
 
 end LinearMap
 
@@ -293,7 +299,6 @@ alias ⟨_, IsPositive.toLinearMap⟩ := isPositive_toLinearMap_iff
 theorem IsPositive.re_inner_nonneg_right {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
     0 ≤ re ⟪x, T x⟫ := hT.toLinearMap.re_inner_nonneg_right x
 
-open ComplexOrder in
 /-- An operator is positive iff it is symmetric and `0 ≤ ⟪T x, x⟫`.
 
 For the version with `IsSelfAdjoint` instead of `IsSymmetric`, see
@@ -301,7 +306,6 @@ For the version with `IsSelfAdjoint` instead of `IsSymmetric`, see
 theorem isPositive_iff (T : E →L[𝕜] E) :
     IsPositive T ↔ T.IsSymmetric ∧ ∀ x, 0 ≤ ⟪T x, x⟫ := LinearMap.isPositive_iff _
 
-open ComplexOrder in
 /-- An operator is positive iff it is self-adjoint and `0 ≤ ⟪T x, x⟫`.
 
 For the version with `IsSymmetric` instead of `IsSelfAdjoint`, see
@@ -310,11 +314,9 @@ theorem isPositive_iff' [CompleteSpace E] (T : E →L[𝕜] E) :
     IsPositive T ↔ IsSelfAdjoint T ∧ ∀ x, 0 ≤ ⟪T x, x⟫ := by
   simp [isSelfAdjoint_iff_isSymmetric, isPositive_iff]
 
-open ComplexOrder in
 theorem IsPositive.inner_nonneg_left {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
     0 ≤ ⟪T x, x⟫ := hT.toLinearMap.inner_nonneg_left x
 
-open ComplexOrder in
 theorem IsPositive.inner_nonneg_right {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
     0 ≤ ⟪x, T x⟫ := hT.toLinearMap.inner_nonneg_right x
 
@@ -344,7 +346,6 @@ theorem isPositive_sum {ι : Type*} {T : ι → (E →L[𝕜] E)} (s : Finset ι
     (hT : ∀ i ∈ s, (T i).IsPositive) : (∑ i ∈ s, T i).IsPositive :=
   (isPositive_toLinearMap_iff _).mp <| by simp [LinearMap.isPositive_sum s hT]
 
-open ComplexOrder in
 @[aesop safe apply]
 theorem IsPositive.smul_of_nonneg {T : E →L[𝕜] E} (hT : T.IsPositive) {c : 𝕜} (hc : 0 ≤ c) :
     (c • T).IsPositive :=
@@ -359,17 +360,17 @@ theorem IsPositive.conj_adjoint [CompleteSpace E] [CompleteSpace F] {T : E →L[
 
 theorem isPositive_self_comp_adjoint [CompleteSpace E] [CompleteSpace F] (S : E →L[𝕜] F) :
     (S ∘L S†).IsPositive := by
-  simpa using isPositive_one.conj_adjoint S
+  simpa using! isPositive_one.conj_adjoint S
 
 @[aesop safe apply]
 theorem IsPositive.adjoint_conj [CompleteSpace E] [CompleteSpace F] {T : E →L[𝕜] E}
     (hT : T.IsPositive) (S : F →L[𝕜] E) : (S† ∘L T ∘L S).IsPositive := by
-  convert hT.conj_adjoint (S†)
+  convert! hT.conj_adjoint (S†)
   rw [adjoint_adjoint]
 
 theorem isPositive_adjoint_comp_self [CompleteSpace E] [CompleteSpace F] (S : E →L[𝕜] F) :
     (S† ∘L S).IsPositive := by
-  simpa using isPositive_one.adjoint_conj S
+  simpa using! isPositive_one.adjoint_conj S
 
 section LinearMap
 variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
@@ -379,22 +380,22 @@ theorem _root_.LinearMap.IsPositive.conj_adjoint {T : E →ₗ[𝕜] E}
     (hT : T.IsPositive) (S : E →ₗ[𝕜] F) : (S ∘ₗ T ∘ₗ S.adjoint).IsPositive := by
   have := FiniteDimensional.complete 𝕜 E
   have := FiniteDimensional.complete 𝕜 F
-  simpa [← isPositive_toContinuousLinearMap_iff] using
+  simpa [← isPositive_toContinuousLinearMap_iff] using!
     ((T.isPositive_toContinuousLinearMap_iff.mpr hT).conj_adjoint S.toContinuousLinearMap)
 
 theorem _root_.LinearMap.isPositive_self_comp_adjoint (S : E →ₗ[𝕜] F) :
     (S ∘ₗ S.adjoint).IsPositive := by
-  simpa using LinearMap.isPositive_one.conj_adjoint S
+  simpa using! LinearMap.isPositive_one.conj_adjoint S
 
 @[aesop safe apply]
 theorem _root_.LinearMap.IsPositive.adjoint_conj {T : E →ₗ[𝕜] E}
     (hT : T.IsPositive) (S : F →ₗ[𝕜] E) : (S.adjoint ∘ₗ T ∘ₗ S).IsPositive := by
-  convert hT.conj_adjoint S.adjoint
+  convert! hT.conj_adjoint S.adjoint
   rw [LinearMap.adjoint_adjoint]
 
 theorem _root_.LinearMap.isPositive_adjoint_comp_self (S : E →ₗ[𝕜] F) :
     (S.adjoint ∘ₗ S).IsPositive := by
-  simpa using LinearMap.isPositive_one.adjoint_conj S
+  simpa using! LinearMap.isPositive_one.adjoint_conj S
 
 end LinearMap
 
@@ -407,7 +408,6 @@ theorem IsPositive.conj_starProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] 
     U.starProjection_isSymmetric _, ← U.starProjection_isSymmetric _, coe_coe,
     hT.inner_nonneg_right, implies_true, and_self]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsPositive.orthogonalProjection_comp {T : E →L[𝕜] E} (hT : T.IsPositive) (U : Submodule 𝕜 E)
     [U.HasOrthogonalProjection] : (U.orthogonalProjection ∘L T ∘L U.subtypeL).IsPositive := by
   simp only [isPositive_iff, IsSymmetric, coe_comp, LinearMap.coe_comp, coe_coe,
@@ -512,7 +512,7 @@ theorem Submodule.starProjection_le_starProjection_iff {U V : Submodule 𝕜 E}
     U.starProjection ≤ V.starProjection ↔ U ≤ V := by
   simp_rw [← coe_le_coe_iff, isSymmetricProjection_starProjection _
       |>.le_iff_range_le_range <| isSymmetricProjection_starProjection _,
-    toLinearMap_starProjection_eq_isComplProjection, IsCompl.projection_range]
+    toLinearMap_starProjection_eq_isComplProjection, range_projection]
 
 /-- `U.starProjection = V.starProjection` iff `U = V`. -/
 theorem Submodule.starProjection_inj {U V : Submodule 𝕜 E}
@@ -550,7 +550,6 @@ theorem ContinuousLinearMap.isPositive_iff_eq_sum_rankOne [FiniteDimensional �
     ← smul_eq_mul, smul_assoc, ← hT.isSymmetric.apply_eigenvectorBasis, ← map_smul, ← map_sum,
     ← OrthonormalBasis.repr_apply_apply, OrthonormalBasis.sum_repr, coe_coe]
 
-open scoped ComplexOrder in
 theorem Matrix.posSemidef_iff_eq_sum_vecMulVec {n : Type*} [Finite n] {M : Matrix n n 𝕜} :
     M.PosSemidef ↔ ∃ (m : ℕ) (v : Fin m → (n → 𝕜)), M = ∑ i, vecMulVec (v i) (star (v i)) := by
   classical

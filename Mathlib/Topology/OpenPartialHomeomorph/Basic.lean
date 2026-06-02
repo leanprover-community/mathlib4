@@ -67,11 +67,11 @@ theorem symm_image_target_inter_eq (s : Set Y) :
   e.symm.image_source_inter_eq _
 
 theorem source_inter_preimage_inv_preimage (s : Set X) :
-    e.source ∩ e ⁻¹' (e.symm ⁻¹' s) = e.source ∩ s :=
+    e.source ∩ e ⁻¹' e.symm ⁻¹' s = e.source ∩ s :=
   e.toPartialEquiv.source_inter_preimage_inv_preimage s
 
 theorem target_inter_inv_preimage_preimage (s : Set Y) :
-    e.target ∩ e.symm ⁻¹' (e ⁻¹' s) = e.target ∩ s :=
+    e.target ∩ e.symm ⁻¹' e ⁻¹' s = e.target ∩ s :=
   e.symm.source_inter_preimage_inv_preimage _
 
 theorem source_inter_preimage_target_inter (s : Set Y) :
@@ -245,24 +245,16 @@ noncomputable def toOpenPartialHomeomorph [Nonempty X] : OpenPartialHomeomorph X
   OpenPartialHomeomorph.ofContinuousOpen (h.isEmbedding.injective.injOn.toPartialEquiv f univ)
     h.continuous.continuousOn h.isOpenMap isOpen_univ
 
-@[deprecated (since := "2025-08-29")] alias toPartialHomeomorph := toOpenPartialHomeomorph
-
 variable [Nonempty X]
 
 lemma toOpenPartialHomeomorph_left_inv {x : X} : (h.toOpenPartialHomeomorph f).symm (f x) = x := by
   rw [← congr_fun (h.toOpenPartialHomeomorph_apply f), OpenPartialHomeomorph.left_inv]
   exact Set.mem_univ _
 
-@[deprecated (since := "2025-08-29")] alias
-  toPartialHomeomorph_left_inv := toOpenPartialHomeomorph_left_inv
-
 lemma toOpenPartialHomeomorph_right_inv {x : Y} (hx : x ∈ Set.range f) :
     f ((h.toOpenPartialHomeomorph f).symm x) = x := by
   rw [← congr_fun (h.toOpenPartialHomeomorph_apply f), OpenPartialHomeomorph.right_inv]
   rwa [toOpenPartialHomeomorph_target]
-
-@[deprecated (since := "2025-08-29")] alias
-  toPartialHomeomorph_right_inv := toOpenPartialHomeomorph_right_inv
 
 end Topology.IsOpenEmbedding
 
@@ -279,32 +271,20 @@ from the subtype `s` to `X`. -/
 noncomputable def openPartialHomeomorphSubtypeCoe : OpenPartialHomeomorph s X :=
   IsOpenEmbedding.toOpenPartialHomeomorph _ s.2.isOpenEmbedding_subtypeVal
 
-@[deprecated (since := "2025-08-29")] alias
-  partialHomeomorphSubtypeCoe := openPartialHomeomorphSubtypeCoe
-
 @[simp, mfld_simps]
 theorem openPartialHomeomorphSubtypeCoe_coe :
     (s.openPartialHomeomorphSubtypeCoe hs : s → X) = (↑) :=
   rfl
-
-@[deprecated (since := "2025-08-29")] alias
-  partialHomeomorphSubtypeCoe_coe := openPartialHomeomorphSubtypeCoe_coe
 
 @[simp, mfld_simps]
 theorem openPartialHomeomorphSubtypeCoe_source :
     (s.openPartialHomeomorphSubtypeCoe hs).source = Set.univ :=
   rfl
 
-@[deprecated (since := "2025-08-29")] alias
-  partialHomeomorphSubtypeCoe_source := openPartialHomeomorphSubtypeCoe_source
-
 @[simp, mfld_simps]
 theorem openPartialHomeomorphSubtypeCoe_target :
     (s.openPartialHomeomorphSubtypeCoe hs).target = s := by
   simp only [openPartialHomeomorphSubtypeCoe, Subtype.range_coe_subtype, mfld_simps]
   rfl
-
-@[deprecated (since := "2025-08-29")] alias
-  partialHomeomorphSubtypeCoe_target := openPartialHomeomorphSubtypeCoe_target
 
 end TopologicalSpace.Opens

@@ -309,7 +309,7 @@ lemma house_matrixA_le : house ((algebraMap (𝓞 h7.K) h7.K) ((h7.A q) u t)) �
     · apply mul_le_mul ?_ ?_ (by dsimp [house];positivity) (by dsimp [house];positivity)
       · apply mul_le_mul ?_ ?_ (by dsimp [house];positivity)
           (by simp only [abs_mul, abs_pow, Int.cast_mul, Int.cast_pow, Int.cast_abs]; positivity)
-        · rw [← house_intCast (K := h7.K)]; simp
+        ·  rw [← house_intCast (K := h7.K)];  simp
         · refine pow_le_pow_left₀ (house_nonneg _) ?_ (h7.n q - 1)
           · rw [← mul_assoc]; apply h7.house_add_mul_le q t
       · calc _ ≤ house (h7.c₁ • h7.α') ^ (h7.m * (2 * (h7.m * h7.n q))) := ?_
