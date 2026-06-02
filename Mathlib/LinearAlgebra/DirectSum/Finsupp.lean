@@ -91,14 +91,14 @@ variable (R S M N ι) in
 noncomputable def finsuppRight :
     M ⊗[R] (ι →₀ N) ≃ₗ[S] ι →₀ M ⊗[R] N :=
   AlgebraTensorModule.congr (.refl S M) (finsuppLEquivDirectSum R N ι) ≪≫ₗ
-    directSumRight' R S M (fun _ : ι ↦ N) ≪≫ₗ (finsuppLEquivDirectSum _ _ ι).symm
+    directSumRight R S M (fun _ : ι ↦ N) ≪≫ₗ (finsuppLEquivDirectSum _ _ ι).symm
 
 lemma finsuppRight_apply_tmul (m : M) (p : ι →₀ N) :
     finsuppRight R S M N ι (m ⊗ₜ[R] p) = p.sum fun i n ↦ Finsupp.single i (m ⊗ₜ[R] n) := by
   induction p using Finsupp.induction_linear with
   | zero => simp
   | add f g hf hg => simp [tmul_add, map_add, hf, hg, Finsupp.sum_add_index]
-  | single => simp [finsuppRight, directSumRight']; simp [lof_eq_of R, ← lof_eq_of S]
+  | single => simp [finsuppRight]
 
 @[simp]
 lemma finsuppRight_apply_tmul_apply (m : M) (p : ι →₀ N) (i : ι) :

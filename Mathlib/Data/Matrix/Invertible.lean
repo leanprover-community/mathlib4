@@ -89,6 +89,7 @@ instance invertibleConjTranspose [Invertible A] : Invertible Aᴴ := Invertible.
 lemma conjTranspose_invOf [Invertible A] [Invertible Aᴴ] : (⅟A)ᴴ = ⅟(Aᴴ) := star_invOf _
 
 /-- A matrix is invertible if the conjugate transpose is invertible. -/
+@[implicit_reducible]
 def invertibleOfInvertibleConjTranspose [Invertible Aᴴ] : Invertible A := by
   rw [← conjTranspose_conjTranspose A, ← star_eq_conjTranspose]
   infer_instance
@@ -111,9 +112,10 @@ instance invertibleTranspose [Invertible A] : Invertible Aᵀ where
 
 lemma transpose_invOf [Invertible A] [Invertible Aᵀ] : (⅟A)ᵀ = ⅟(Aᵀ) := by
   letI := invertibleTranspose A
-  convert (rfl : _ = ⅟(Aᵀ))
+  convert! (rfl : _ = ⅟(Aᵀ))
 
 /-- `Aᵀ` is invertible when `A` is. -/
+@[implicit_reducible]
 def invertibleOfInvertibleTranspose [Invertible Aᵀ] : Invertible A where
   invOf := (⅟(Aᵀ))ᵀ
   invOf_mul_self := by rw [← transpose_one, ← mul_invOf_self Aᵀ, transpose_mul, transpose_transpose]
@@ -185,6 +187,7 @@ lemma add_mul_mul_invOf_mul_eq_one' :
       abel
 
 /-- If matrices `A`, `C`, and `C⁻¹ + V * A⁻¹ * U` are invertible, then so is `A + U * C * V`. -/
+@[implicit_reducible]
 def invertibleAddMulMul : Invertible (A + U * C * V) where
   invOf := ⅟A - ⅟A * U * ⅟(⅟C + V * ⅟A * U) * V * ⅟A
   invOf_mul_self := add_mul_mul_invOf_mul_eq_one' _ _ _ _
@@ -196,7 +199,7 @@ See `Matrix.invOf_add_mul_mul'` for the Binomial Inverse Theorem. -/
 theorem invOf_add_mul_mul [Invertible (A + U * C * V)] :
     ⅟(A + U * C * V) = ⅟A - ⅟A * U * ⅟(⅟C + V * ⅟A * U) * V * ⅟A := by
   letI := invertibleAddMulMul A U C V
-  convert (rfl : ⅟(A + U * C * V) = _)
+  convert! (rfl : ⅟(A + U * C * V) = _)
 
 end Woodbury
 
@@ -228,6 +231,7 @@ lemma add_mul_mul_mul_invOf_eq_one' :
   simp only [Matrix.mul_assoc]
 
 /-- If matrices `A` and `C + C * V * A⁻¹ * U * C` are invertible, then so is `A + U * C * V`. -/
+@[implicit_reducible]
 def invertibleAddMulMul' : Invertible (A + U * C * V) where
   invOf := ⅟A - ⅟A * U * C * ⅟(C + C * V * ⅟A * U * C) * C * V * ⅟A
   invOf_mul_self := add_mul_mul_mul_invOf_eq_one' A U C V
@@ -239,7 +243,7 @@ See `Matrix.invOf_add_mul_mul` for the Woodbury identity. -/
 theorem invOf_add_mul_mul' [Invertible (A + U * C * V)] :
     ⅟(A + U * C * V) = ⅟A - ⅟A * U * C * ⅟(C + C * V * ⅟A * U * C) * C * V * ⅟A := by
   letI := invertibleAddMulMul' A U C V
-  convert (rfl : ⅟(A + U * C * V) = _)
+  convert! (rfl : ⅟(A + U * C * V) = _)
 
 end BinomialInverseTheorem
 

@@ -161,7 +161,6 @@ def lift : (α → R) ≃ (FreeCommRing α →+* R) :=
 theorem lift_of (x : α) : lift f (of x) = f x :=
   (FreeAbelianGroup.lift_apply_of _ _).trans <| mul_one _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift_comp_of (f : FreeCommRing α →+* R) : lift (f ∘ of) = f :=
   RingHom.ext fun x =>
@@ -240,7 +239,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
   suffices IsSupported (of p) s → p ∈ s from ⟨this, fun hps => Subring.subset_closure ⟨p, hps, rfl⟩⟩
   fun hps : IsSupported (of p) s => by
   classical
-  haveI := Classical.decPred s
+  haveI := Classical.decPred (· ∈ s)
   have : ∀ x, IsSupported x s →
         ∃ n : ℤ, lift (fun a => if a ∈ s then (0 : ℤ[X]) else Polynomial.X) x = n := by
     intro x hx
@@ -386,7 +385,7 @@ def subsingletonEquivFreeCommRing [Subsingleton α] : FreeRing α ≃+* FreeComm
     apply Equiv.bijective)
 
 instance instCommRing [Subsingleton α] : CommRing (FreeRing α) :=
-  { inferInstanceAs (Ring (FreeRing α)) with
+  { (inferInstance : Ring (FreeRing α)) with
     mul_comm := fun x y => by
       rw [← (subsingletonEquivFreeCommRing α).symm_apply_apply (y * x),
         (subsingletonEquivFreeCommRing α).map_mul, mul_comm,
@@ -411,7 +410,7 @@ noncomputable alias freeCommRingPemptyEquivInt := freeCommRingPEmptyEquivInt
 
 /-- The free commutative ring on a type with one term is isomorphic to `ℤ[X]`. -/
 def freeCommRingPUnitEquivPolynomialInt : FreeCommRing PUnit.{u + 1} ≃+* ℤ[X] :=
-  (freeCommRingEquivMvPolynomialInt _).trans (MvPolynomial.pUnitAlgEquiv ℤ).toRingEquiv
+  (freeCommRingEquivMvPolynomialInt _).trans (MvPolynomial.uniqueAlgEquiv ℤ PUnit).toRingEquiv
 
 @[deprecated (since := "2026-02-08")]
 noncomputable alias freeCommRingPunitEquivPolynomialInt := freeCommRingPUnitEquivPolynomialInt

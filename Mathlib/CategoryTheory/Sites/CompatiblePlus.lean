@@ -26,17 +26,18 @@ namespace CategoryTheory.GrothendieckTopology
 
 open CategoryTheory Limits Opposite Functor
 
-universe w₁ w₂ v u
+universe v u
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-variable {D : Type w₁} [Category.{max v u} D]
-variable {E : Type w₂} [Category.{max v u} E]
+variable {D : Type*} [Category* D]
+variable {E : Type*} [Category* E]
 variable (F : D ⥤ E)
 variable [∀ (J : MulticospanShape.{max v u, max v u}), HasLimitsOfShape (WalkingMulticospan J) D]
 variable [∀ (J : MulticospanShape.{max v u, max v u}), HasLimitsOfShape (WalkingMulticospan J) E]
 variable [∀ (X : C) (W : J.Cover X) (P : Cᵒᵖ ⥤ D), PreservesLimit (W.index P).multicospan F]
 variable (P : Cᵒᵖ ⥤ D)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The diagram used to define `P⁺`, composed with `F`, is isomorphic
 to the diagram used to define `P ⋙ F`. -/
@@ -52,6 +53,7 @@ def diagramCompIso (X : C) : J.diagram P X ⋙ F ≅ J.diagram (P ⋙ F) X :=
       ext g
       simp [← F.map_comp])
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem diagramCompIso_hom_ι (X : C) (W : (J.Cover X)ᵒᵖ) (i : W.unop.Arrow) :
@@ -64,6 +66,7 @@ variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ E]
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between `P⁺ ⋙ F` and `(P ⋙ F)⁺`. -/
 def plusCompIso : J.plusObj P ⋙ F ≅ J.plusObj (P ⋙ F) :=
@@ -86,7 +89,7 @@ def plusCompIso : J.plusObj P ⋙ F ≅ J.plusObj (P ⋙ F) :=
         simp only [← F.map_comp]
         dsimp [colimMap, IsColimit.map, colimit.pre]
         simp only [colimit.ι_desc_assoc, colimit.ι_desc]
-        dsimp [Cocones.precompose]
+        dsimp [Cocone.precompose]
         simp only [Category.assoc, colimit.ι_desc]
         dsimp [Cocone.whisker]
         rw [F.map_comp]
@@ -116,6 +119,7 @@ theorem ι_plusCompIso_hom (X) (W) :
   erw [(isColimitOfPreserves F (colimit.isColimit (J.diagram P (unop X)))).fac]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem plusCompIso_whiskerLeft {F G : D ⥤ E} (η : F ⟶ G) (P : Cᵒᵖ ⥤ D)
@@ -144,6 +148,7 @@ def plusFunctorWhiskerLeftIso (P : Cᵒᵖ ⥤ D)
     (whiskeringLeft _ _ E).obj (J.plusObj P) ≅ (whiskeringLeft _ _ _).obj P ⋙ J.plusFunctor E :=
   NatIso.ofComponents (fun _ => plusCompIso _ _ _) @fun _ _ _ => plusCompIso_whiskerLeft _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem plusCompIso_whiskerRight {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
@@ -158,7 +163,7 @@ theorem plusCompIso_whiskerRight {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
   simp only [← Category.assoc, ← F.map_comp]
   dsimp [colimMap, IsColimit.map]
   simp only [colimit.ι_desc]
-  dsimp [Cocones.precompose]
+  dsimp [Cocone.precompose]
   simp only [Functor.map_comp, Category.assoc, ι_plusCompIso_hom]
   simp only [← Category.assoc]
   congr 1
@@ -176,6 +181,7 @@ def plusFunctorWhiskerRightIso :
       (whiskeringRight _ _ _).obj F ⋙ J.plusFunctor E :=
   NatIso.ofComponents (fun _ => J.plusCompIso _ _) @fun _ _ _ => plusCompIso_whiskerRight _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem whiskerRight_toPlus_comp_plusCompIso_hom :

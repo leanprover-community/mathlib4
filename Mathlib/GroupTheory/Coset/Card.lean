@@ -16,7 +16,7 @@ public import Mathlib.SetTheory.Cardinal.Finite
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -60,12 +60,12 @@ lemma card_mul_eq_card_subgroup_mul_card_quotient (s : Subgroup α) (t : Set α)
   rw [← Nat.card_prod, Nat.card_congr]
   apply Equiv.trans _ (QuotientGroup.preimageMkEquivSubgroupProdSet _ _)
   rw [QuotientGroup.preimage_image_mk]
-  convert Equiv.refl ↑(t * s)
+  convert! Equiv.refl ↑(t * s)
   aesop (add simp [Set.mem_mul])
 
 /-- **Lagrange's Theorem**: The order of a subgroup divides the order of its ambient group. -/
-@[to_additive /-- **Lagrange's Theorem**: The order of an additive subgroup divides the order of its
-ambient additive group. -/]
+@[to_additive (attr := wikidata Q505798) /-- **Lagrange's Theorem**: The order of an additive
+subgroup divides the order of its ambient additive group. -/]
 theorem card_subgroup_dvd_card (s : Subgroup α) : Nat.card s ∣ Nat.card α := by
   classical simp [card_eq_card_quotient_mul_card_subgroup s, @dvd_mul_left ℕ]
 

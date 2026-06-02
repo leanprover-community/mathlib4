@@ -35,7 +35,6 @@ local notation "ℂ_ℤ" => integerComplement
 
 local notation "ℍₒ" => UpperHalfPlane.upperHalfPlaneSet
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Complex.cot_eq_exp_ratio (z : ℂ) :
     cot z = (Complex.exp (2 * I * z) + 1) / (I * (1 - Complex.exp (2 * I * z))) := by
   rw [Complex.cot, Complex.sin, Complex.cos]
@@ -49,13 +48,13 @@ lemma Complex.cot_eq_exp_ratio (z : ℂ) :
   rw [h1, h2]
   field
 
-/- The version one probably wants to use more. -/
+/-- The version one probably wants to use more. -/
 lemma Complex.cot_pi_eq_exp_ratio (z : ℂ) :
     cot (π * z) = (Complex.exp (2 * π * I * z) + 1) / (I * (1 - Complex.exp (2 * π * I * z))) := by
   rw [cot_eq_exp_ratio (π * z)]
   ring_nf
 
-/- This is the version one probably wants, which is why the pi's are there. -/
+/-- This is the version one probably wants, which is why the pi's are there. -/
 theorem pi_mul_cot_pi_q_exp (z : ℍ) :
     π * cot (π * z) = π * I - 2 * π * I * ∑' n : ℕ, Complex.exp (2 * π * I * z) ^ n := by
   have h1 : π * ((exp (2 * π * I * z) + 1) / (I * (1 - exp (2 * π * I * z)))) =
@@ -133,7 +132,7 @@ lemma HasProdUniformlyOn_sineTerm_prod_on_compact (hZ2 : Z ⊆ ℂ_ℤ)
 lemma HasProdLocallyUniformlyOn_euler_sin_prod :
     HasProdLocallyUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sineTerm z n))
     (fun x => (Complex.sin (π * x) / (π * x))) ℂ_ℤ := by
-  apply hasProdLocallyUniformlyOn_of_forall_compact isOpen_compl_range_intCast
+  apply hasProdLocallyUniformlyOn_of_forall_compact Complex.isOpen_compl_range_intCast
   exact fun _ hZ hZC => HasProdUniformlyOn_sineTerm_prod_on_compact hZ hZC
 
 /-- `sin π z` is non vanishing on the complement of the integers in `ℂ`. -/
@@ -164,7 +163,7 @@ lemma logDeriv_sin_div_eq_cot (hz : x ∈ ℂ_ℤ) :
   rw [this, logDeriv_div _ (by apply sin_pi_mul_ne_zero hz) ?_
     (DifferentiableAt.comp _ (Complex.differentiableAt_sin) (by fun_prop)) (by fun_prop),
     logDeriv_comp (Complex.differentiableAt_sin) (by fun_prop), Complex.logDeriv_sin,
-    deriv_const_mul _ (by fun_prop), deriv_id'', logDeriv_const_mul, logDeriv_id']
+    deriv_const_mul_id, logDeriv_const_mul, logDeriv_id']
   · ring
   · simp
   · simp only [ne_eq, mul_eq_zero, ofReal_eq_zero, not_or]
@@ -262,16 +261,16 @@ lemma eqOn_iteratedDeriv_cotTerm (d : ℕ) :
     rw [h2, h3]
     ring
   · simpa [sub_eq_add_neg] using (contDiffOn_inv_linear k (-(d + 1))).contDiffAt
-      ((isOpen_compl_range_intCast).mem_nhds hz)
+      (isOpen_compl_range_intCast.mem_nhds hz)
   · simpa using (contDiffOn_inv_linear k (d + 1)).contDiffAt
-      ((isOpen_compl_range_intCast).mem_nhds hz)
+      (isOpen_compl_range_intCast.mem_nhds hz)
 
 lemma eqOn_iteratedDerivWithin_cotTerm_integerComplement (d : ℕ) :
     EqOn
       (iteratedDerivWithin k (fun z ↦ cotTerm z d) ℂ_ℤ)
       (fun z ↦ (-1) ^ k * k ! * ((z + (d + 1)) ^ (-1 - k : ℤ) + (z - (d + 1)) ^ (-1 - k : ℤ)))
       ℂ_ℤ := by
-  apply Set.EqOn.trans (iteratedDerivWithin_of_isOpen isOpen_compl_range_intCast)
+  apply Set.EqOn.trans (iteratedDerivWithin_of_isOpen Complex.isOpen_compl_range_intCast)
   exact eqOn_iteratedDeriv_cotTerm ..
 
 lemma eqOn_iteratedDerivWithin_cotTerm_upperHalfPlaneSet (d : ℕ) :
@@ -283,7 +282,7 @@ lemma eqOn_iteratedDerivWithin_cotTerm_upperHalfPlaneSet (d : ℕ) :
     iteratedDerivWithin_congr_right_of_isOpen (fun z ↦ cotTerm z d) k
     isOpen_upperHalfPlaneSet (isOpen_compl_range_intCast))
   intro z hz
-  simpa using eqOn_iteratedDerivWithin_cotTerm_integerComplement k d
+  simpa using! eqOn_iteratedDerivWithin_cotTerm_integerComplement k d
     (coe_mem_integerComplement ⟨z, hz⟩)
 
 open EisensteinSeries in
@@ -384,7 +383,7 @@ private lemma iteratedDerivWithin_cot_pi_mul_sub_inv {z : ℂ} (hz : z ∈ ℍ�
     (-1) ^ k * k ! * (z ^ (-1 - k : ℤ)) := by
   simp_rw [sub_eq_add_neg]
   rw [iteratedDerivWithin_fun_add hz isOpen_upperHalfPlaneSet.uniqueDiffOn]
-  · simpa [iteratedDerivWithin_fun_neg] using iteratedDerivWithin_one_div k
+  · simpa [iteratedDerivWithin_fun_neg] using! iteratedDerivWithin_one_div k
       isOpen_upperHalfPlaneSet hz
   · exact ContDiffWithinAt.mul (by fun_prop) (cot_pi_mul_contDiffWithinAt k
       (UpperHalfPlane.coe_mem_integerComplement ⟨z, hz⟩))
@@ -405,7 +404,7 @@ theorem iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_div_pow {k : ℕ} (hk : 1 ≤
     (hz : z ∈ ℍₒ) :
     iteratedDerivWithin k (fun x : ℂ ↦ π * cot (π * x)) ℍₒ z =
       (-1) ^ k * k ! * ∑' n : ℤ, 1 / (z + n) ^ (k + 1) := by
-  convert iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_zpow hk hz with n
+  convert! iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_zpow hk hz with n
   rw [show (-1 - k : ℤ) = -(k + 1 :) by norm_cast; lia, zpow_neg_coe_of_pos _ (by lia),
     one_div]
 

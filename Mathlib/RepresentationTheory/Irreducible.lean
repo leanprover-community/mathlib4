@@ -16,7 +16,7 @@ This file defines irreducible monoid representations.
 
 -/
 
-@[expose] public section
+public section
 
 namespace Representation
 
@@ -65,6 +65,9 @@ theorem bijective_or_eq_zero [IsIrreducible σ] : Bijective f ∨ f = 0 := by
   rw [← LinearEquiv.map_eq_zero_iff (equivLinearMapAsModule ρ σ)]
   exact LinearMap.bijective_or_eq_zero (equivLinearMapAsModule ρ σ f)
 
+instance [IsIrreducible σ] [IsEmpty (Equiv ρ σ)] : Subsingleton (IntertwiningMap ρ σ) :=
+  ⟨fun f g ↦ sub_eq_zero.mp <| (bijective_or_eq_zero _).resolve_left
+    fun h ↦ isEmpty_iff.mp inferInstance <| (f - g).ofBijective h⟩
 variable [FiniteDimensional k V] [IsAlgClosed k]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -75,12 +78,17 @@ theorem algebraMap_intertwiningMap_bijective_of_isAlgClosed :
     IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed k
   exact (Bijective.of_comp_iff' (IntertwiningMap.equivAlgEnd (ρ := ρ)).bijective _).1 this
 
+variable (ρ) in
+@[simp] theorem finrank_intertwiningMap_self : Module.finrank k (IntertwiningMap ρ ρ) = 1 := by
+  rw [LinearEquiv.finrank_eq (LinearEquiv.ofBijective (Algebra.linearMap k (IntertwiningMap ρ ρ))
+      algebraMap_intertwiningMap_bijective_of_isAlgClosed).symm]
+  exact CommSemiring.finrank_self k
+
+open scoped IsMulCommutative in
 set_option backward.isDefEq.respectTransparency false in
 include ρ in
 variable (ρ) in
-theorem finrank_eq_one_of_isMulCommutative
-    [IsMulCommutative G] : Module.finrank k V = 1 := by
-  have _ : IsMulCommutative k[G] := ⟨⟨mul_comm⟩⟩
+theorem finrank_eq_one_of_isMulCommutative [IsMulCommutative G] : Module.finrank k V = 1 := by
   exact IsSimpleModule.finrank_eq_one_of_isMulCommutative k[G] ρ.asModule k
 
 end IsIrreducible
