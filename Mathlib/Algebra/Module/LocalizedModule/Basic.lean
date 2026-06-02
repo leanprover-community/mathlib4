@@ -123,7 +123,7 @@ def liftOn {α : Type*} (x : LocalizedModule S M) (f : M × S → α)
   Quotient.liftOn x f (by simpa +instances only [r.setoid, ← oreEqv_eq_r S M] using wd)
 
 theorem liftOn_mk {α : Type*} {f : M × S → α} (wd : ∀ (p p' : M × S), p ≈ p' → f p = f p')
-    (m : M) (s : S) : liftOn (mk m s) f wd = f ⟨m, s⟩ := by convert Quotient.liftOn_mk f wd ⟨m, s⟩
+    (m : M) (s : S) : liftOn (mk m s) f wd = f ⟨m, s⟩ := by convert! Quotient.liftOn_mk f wd ⟨m, s⟩
 
 /-- If `f : M × S → M × S → α` respects the equivalence relation `LocalizedModule.r`, then
 `f` descents to a map `LocalizedModule M S → LocalizedModule M S → α`.
@@ -135,7 +135,7 @@ def liftOn₂ {α : Type*} (x y : LocalizedModule S M) (f : M × S → M × S �
 theorem liftOn₂_mk {α : Type*} (f : M × S → M × S → α)
     (wd : ∀ (p q p' q' : M × S), p ≈ p' → q ≈ q' → f p q = f p' q') (m m' : M)
     (s s' : S) : liftOn₂ (mk m s) (mk m' s') f wd = f ⟨m, s⟩ ⟨m', s'⟩ := by
-  convert Quotient.liftOn₂_mk f wd _ _
+  convert! Quotient.liftOn₂_mk f wd _ _
 
 /-- If `S` contains `0` then the localization at `S` is trivial. -/
 theorem subsingleton (h : 0 ∈ S) : Subsingleton (LocalizedModule S M) := by
@@ -569,6 +569,22 @@ instance IsLocalizedModule.of_linearEquiv_right (e : M'' ≃ₗ[R] M) [hf : IsLo
     exact ⟨c, by simpa only [Submonoid.smul_def, map_smul, e.symm_apply_apply]
       using congr(e.symm $hc)⟩
 
+lemma IsLocalizedModule.comp_iff_of_bijective_left {f : M →ₗ[R] M'} (e : M' →ₗ[R] M'')
+    (he : Function.Bijective e) :
+    IsLocalizedModule S (e ∘ₗ f) ↔ IsLocalizedModule S f := by
+  refine ⟨fun h ↦ ?_, fun h ↦ .of_linearEquiv _ _ (.ofBijective _ he)⟩
+  have : (LinearEquiv.ofBijective _ he).symm.toLinearMap ∘ₗ e ∘ₗ f = f := by ext; simp
+  rw [← this]
+  exact .of_linearEquiv _ _ _
+
+lemma IsLocalizedModule.comp_iff_of_bijective_right (e : M →ₗ[R] M') {f : M' →ₗ[R] M''}
+    (he : Function.Bijective e) :
+    IsLocalizedModule S (f ∘ₗ e) ↔ IsLocalizedModule S f := by
+  refine ⟨fun h ↦ ?_, fun h ↦ .of_linearEquiv_right _ _ (.ofBijective _ he)⟩
+  have : (f ∘ₗ e) ∘ₗ (LinearEquiv.ofBijective _ he).symm.toLinearMap = f := by ext; simp
+  rw [← this]
+  exact .of_linearEquiv_right _ _ _
+
 variable (M) in
 lemma isLocalizedModule_id (R') [CommSemiring R'] [Algebra R R'] [IsLocalization S R'] [Module R' M]
     [IsScalarTower R R' M] : IsLocalizedModule S (.id : M →ₗ[R] M) where
@@ -699,6 +715,30 @@ instance localizedModuleIsLocalizedModule :
         ← Submonoid.smul_def, LocalizedModule.mk_cancel t]
   exists_of_eq eq1 := by simpa only [eq_comm, one_smul] using LocalizedModule.mk_eq.mp eq1
 
+lemma IsLocalizedModule.restrictScalars (S : Submonoid R) [Module A M]
+    {N : Type*} [AddCommMonoid N] [Module R N] [Module A N]
+    [IsScalarTower R A M] [IsScalarTower R A N]
+    (f : M →ₗ[A] N) [h : IsLocalizedModule (Algebra.algebraMapSubmonoid A S) f] :
+    IsLocalizedModule S (f.restrictScalars R) where
+  map_units s := by
+    have := h.1 ⟨algebraMap R A s, Algebra.mem_algebraMapSubmonoid_of_mem s⟩
+    simp only [← IsScalarTower.algebraMap_apply, Module.End.isUnit_iff] at this ⊢
+    exact this
+  surj y := by
+    obtain ⟨⟨x, ⟨_, ⟨r, ⟨hr₁, rfl⟩⟩⟩⟩, hx⟩ := h.2 y
+    exact ⟨⟨x, ⟨r, hr₁⟩⟩, by simpa [Submonoid.smul_def] using hx⟩
+  exists_of_eq {x₁ x₂} e := by
+    obtain ⟨⟨_, ⟨r, ⟨hr, rfl⟩⟩⟩, hc⟩ := h.3 e
+    exact ⟨⟨r, hr⟩, by simpa [Submonoid.smul_def] using hc⟩
+
+lemma IsLocalizedModule.restrictScalars_powers [Module A M]
+    {N : Type*} [AddCommMonoid N] [Module R N] [Module A N]
+    [IsScalarTower R A M] [IsScalarTower R A N]
+    (r : R) (f : M →ₗ[A] N) [h : IsLocalizedModule (.powers (algebraMap R A r)) f] :
+    IsLocalizedModule (.powers r) (f.restrictScalars R) := by
+  rw [← Algebra.algebraMapSubmonoid_powers] at h
+  exact IsLocalizedModule.restrictScalars _ f
+
 lemma IsLocalizedModule.of_restrictScalars (S : Submonoid R)
     {N : Type*} [AddCommMonoid N] [Module R N] [Module A M] [Module A N]
     [IsScalarTower R A M] [IsScalarTower R A N]
@@ -715,6 +755,13 @@ lemma IsLocalizedModule.of_restrictScalars (S : Submonoid R)
   exists_of_eq {x₁ x₂} e := by
     obtain ⟨c, hc⟩ := IsLocalizedModule.exists_of_eq (S := S) (f := f.restrictScalars R) e
     refine ⟨⟨_, c, c.2, rfl⟩, by simpa [Submonoid.smul_def]⟩
+
+lemma IsLocalizedModule.restrictScalars_iff (S : Submonoid R)
+    {N : Type*} [AddCommMonoid N] [Module R N] [Module A M] [Module A N]
+    [IsScalarTower R A M] [IsScalarTower R A N] (f : M →ₗ[A] N) :
+    IsLocalizedModule (Algebra.algebraMapSubmonoid A S) f ↔
+    IsLocalizedModule S (f.restrictScalars R) :=
+  ⟨fun _ => restrictScalars _ _, fun _ => of_restrictScalars _ _⟩
 
 lemma IsLocalizedModule.of_exists_mul_mem {N : Type*} [AddCommMonoid N] [Module R N]
     (S T : Submonoid R) (h : S ≤ T) (h' : ∀ x : T, ∃ m : R, m * x ∈ S)
@@ -932,6 +979,12 @@ lemma linearEquiv_apply [IsLocalizedModule S g] (x : M) :
 lemma linearEquiv_symm_apply [IsLocalizedModule S g] (x : M) :
     (linearEquiv S f g).symm (g x) = f x := by
   simp [linearEquiv]
+
+lemma linearEquiv_of_isLocalizedModule_comp (g : M' →ₗ[R] M'') [IsLocalizedModule S (g ∘ₗ f)] :
+    linearEquiv S f (g ∘ₗ f) = g  := by
+  refine ext S f (IsLocalizedModule.map_units (g ∘ₗ f)) ?_
+  ext
+  simp
 
 variable {S}
 
@@ -1377,3 +1430,19 @@ instance [IsDomain R] (S : Submonoid R) [IsTorsionFree R M] :
   isTorsionFree (LocalizedModule.mkLinearMap S M) S
 
 end IsLocalizedModule
+
+/-!
+## Localizations of modules away from an element
+-/
+
+/-- Given `x : R` and `f : M →ₗ[R] M'`, `IsLocalizedModule.Away x f` states that `M'`
+  is isomorphic to the localization of `M` at the submonoid generated by `x`. -/
+protected abbrev IsLocalizedModule.Away {R M M' : Type*} [CommSemiring R] (x : R) [AddCommMonoid M]
+    [Module R M] [AddCommMonoid M'] [Module R M'] (f : M →ₗ[R] M') :=
+  IsLocalizedModule (Submonoid.powers x) f
+
+/-- Given `x : R`, `LocalizedModule.Away x M` is the localization of `M` at the
+  submonoid generated by `x`. -/
+protected abbrev LocalizedModule.Away {R : Type*} [CommSemiring R] (x : R)
+    (M : Type*) [AddCommMonoid M] [Module R M] :=
+  LocalizedModule (Submonoid.powers x) M
