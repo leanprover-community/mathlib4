@@ -375,20 +375,37 @@ theorem mem_support_append_iff {t u v w : V} (p : G.Walk u v) (p' : G.Walk v w) 
     -- this `have` triggers the unusedHavesSuffices linter:
     (try have := h'.symm) <;> simp [*]
 
+theorem support_prefix_support_concat {u v w : V} (p : G.Walk u v) (hadj : G.Adj v w) :
+    p.support <+: (p.concat hadj).support := by
+  simp
+
 theorem support_subset_support_concat {u v w : V} (p : G.Walk u v) (hadj : G.Adj v w) :
     p.support ⊆ (p.concat hadj).support := by
   simp
 
-@[simp]
-theorem subset_support_append_left {V : Type u} {G : SimpleGraph V} {u v w : V}
-    (p : G.Walk u v) (q : G.Walk v w) : p.support ⊆ (p.append q).support := by
+theorem support_prefix_support_append {V : Type u} {G : SimpleGraph V} {u v w : V}
+    (p : G.Walk u v) (q : G.Walk v w) : p.support <+: (p.append q).support := by
   simp [support_append]
 
 @[simp]
-theorem subset_support_append_right {V : Type u} {G : SimpleGraph V} {u v w : V}
-    (p : G.Walk u v) (q : G.Walk v w) : q.support ⊆ (p.append q).support := by
-  intro
-  simp +contextual [mem_support_append_iff]
+theorem support_subset_support_append_left {V : Type u} {G : SimpleGraph V} {u v w : V}
+    (p : G.Walk u v) (q : G.Walk v w) : p.support ⊆ (p.append q).support :=
+  support_prefix_support_append p q |>.subset
+
+@[deprecated (since := "2026-05-25")]
+alias subset_support_append_left := support_subset_support_append_left
+
+theorem support_suffix_support_append {V : Type u} {G : SimpleGraph V} {u v w : V}
+    (p : G.Walk u v) (q : G.Walk v w) : q.support <:+ (p.append q).support := by
+  simp [support_append_eq_support_dropLast_append]
+
+@[simp]
+theorem support_subset_support_append_right {V : Type u} {G : SimpleGraph V} {u v w : V}
+    (p : G.Walk u v) (q : G.Walk v w) : q.support ⊆ (p.append q).support :=
+  support_suffix_support_append p q |>.subset
+
+@[deprecated (since := "2026-05-25")]
+alias subset_support_append_right := support_subset_support_append_right
 
 theorem coe_support_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
     ((p.append p').support : Multiset V) = {u} + p.support.tail + p'.support.tail := by
@@ -653,7 +670,7 @@ lemma drop_zero {u v} (p : G.Walk u v) :
 
 lemma nil_drop_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
     (p.drop n).Nil := by
-  rw [nil_iff_length_eq, drop_length, Nat.sub_eq_zero_of_le h]
+  rw [← length_eq_zero_iff, drop_length, Nat.sub_eq_zero_of_le h]
 
 lemma drop_support_eq_support_drop_min {u v} (p : G.Walk u v) (n : ℕ) :
     (p.drop n).support = p.support.drop (n ⊓ p.length) := by
@@ -702,8 +719,8 @@ lemma dropLast_concat {t u v} (p : G.Walk u v) (h : G.Adj v t) :
     (p.concat h).dropLast = p.copy rfl (by simp) := by
   induction p
   · rfl
-  · simp_rw [concat_cons]
-    rw [dropLast_cons_of_not_nil] <;> simp [*, nil_iff_length_eq]
+  · rw! [concat_cons, dropLast_cons_of_not_nil] <;>
+      simp [*, ← length_eq_zero_iff]
 
 lemma cons_tail_eq (p : G.Walk u v) (hp : ¬ p.Nil) :
     cons (p.adj_snd hp) p.tail = p := by
@@ -756,11 +773,8 @@ protected lemma Nil.dropLast {p : G.Walk v w} (hp : p.Nil) : p.dropLast.Nil := b
   subst_vars
   rfl
 
-lemma Nil.eq_copy_nil {p : G.Walk u v} (h : p.Nil) :
-    p = Walk.nil.copy rfl h.eq := by
-  have := h.eq
-  subst this
-  simp [nil_iff_eq_nil.mp h]
+lemma Nil.eq_copy_nil {p : G.Walk u v} (h : p.Nil) : p = Walk.nil.copy rfl h.eq := by
+  grind [eq_nil_iff_nil, copy_rfl_rfl]
 
 lemma drop_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
     p.drop n = nil.copy rfl (p.getVert_of_length_le h) :=
@@ -811,6 +825,19 @@ lemma ext_getVert {u v} {p q : G.Walk u v} (h : ∀ k, p.getVert k = q.getVert k
   refine ext_getVert_le_length (hpq.antisymm ?_) fun k _ ↦ h k
   by_contra!
   exact (q.adj_getVert_succ this).ne (by simp [← h, getVert_of_length_le])
+
+open scoped List in
+theorem support_tail_perm_support_dropLast (p : G.Walk u u) :
+    p.tail.support ~ p.dropLast.support := by
+  cases p with | nil => rfl | cons h p
+  grw [← List.perm_cons u, List.perm_comm, ← List.perm_append_singleton,
+    cons_support_tail not_nil_cons, support_dropLast_concat not_nil_cons]
+
+open scoped List in
+theorem tail_support_perm_dropLast_support (p : G.Walk u u) :
+    p.support.tail ~ p.support.dropLast := by
+  cases p with | nil => rfl | cons h p
+  simpa using support_tail_perm_support_dropLast <| p.cons h
 
 end Walk
 

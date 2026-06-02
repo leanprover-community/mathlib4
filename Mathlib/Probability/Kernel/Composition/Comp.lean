@@ -197,6 +197,16 @@ lemma comp_sum_left {ι : Type*} [Countable ι] (κ : Kernel α β) (η : ι →
   rw [lintegral_tsum]
   exact fun _ ↦ (Kernel.measurable_coe _ hs).aemeasurable
 
+lemma copy_comp_apply_prod (κ : Kernel α β) (a : α) {s t : Set β} (hs : MeasurableSet s)
+    (ht : MeasurableSet t) : (copy β ∘ₖ κ) a (s ×ˢ t) = κ a (s ∩ t) := by
+  rw [comp_apply' _ _ _ <| hs.prod ht]
+  simp_rw [copy_apply, Measure.dirac_apply' _ <| hs.prod ht, Set.indicator_prod_one]
+  calc
+  _ = ∫⁻ b, (s ∩ t).indicator 1 b ∂κ a := by
+    congr with b
+    simp [Set.inter_indicator_one]
+  _ = κ a (s ∩ t) := lintegral_indicator_one <| hs.inter ht
+
 instance IsMarkovKernel.comp (η : Kernel β γ) [IsMarkovKernel η] (κ : Kernel α β)
     [IsMarkovKernel κ] : IsMarkovKernel (η ∘ₖ κ) where
   isProbabilityMeasure a := by

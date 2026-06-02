@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Convenient.ContinuousMapGeneratedBy
 
@@ -21,7 +21,8 @@ objects are all topological spaces, but morphisms from `Y` to `Z` identify
 to the type `ContinuousMapGeneratedBy X Y Z` of `X`-continuous maps from
 `Y` to `Z`. While `GeneratedByTopCat X` is defined as a full subcategory
 of `TopCat`, `ContinuousGeneratedByCat X` should be thought of as
-a localization of the category `TopCat`. This alternative point of view
+a localization of the category `TopCat` (for a proof of this fact, see the file
+`Mathlib/Topology/Convenient/Localization.lean`). This alternative point of view
 from the article by Martín Escardó, Jimmie Lawson and Alex Simpson
 shall allow a very nice construction of a cartesian monoidal closed
 structure on `GeneratedByTopCat X` under suitable assumptions (TODO @joelriou).
@@ -173,6 +174,10 @@ def fullyFaithfulToTopCat : (toTopCat.{v} X).FullyFaithful where
       rw [continuousGeneratedBy_iff]
       exact g.hom.continuous)
 
+instance : (toTopCat.{v} X).Full := (fullyFaithfulToTopCat X).full
+
+instance : (toTopCat.{v} X).Faithful := (fullyFaithfulToTopCat X).faithful
+
 variable {X}
 
 /-- The unit (isomorphism) of the adjunction `ContinuousGeneratedByCat.adj` between
@@ -198,7 +203,7 @@ instance : (toTopCat.{v} X).IsLeftAdjoint := adj.isLeftAdjoint
 
 instance : (TopCat.toContinuousGeneratedByCat.{v} X).IsRightAdjoint := adj.isRightAdjoint
 
-instance : IsIso (adj.{v} (X := X)).unit := by dsimp; infer_instance
+instance : IsIso (adj.{v} (X := X)).unit := inferInstanceAs (IsIso adjUnitIso.hom)
 
 /-- The functor `GeneratedByTopCat X ⥤ ContinuousGeneratedByCat X` which is
 part of the equivalence `ContinuousGeneratedByCat.equivalence`. It sends
@@ -222,8 +227,7 @@ part of the equivalence `ContinuousGeneratedByCat.equivalence`. -/
 def toGeneratedByTopCat : ContinuousGeneratedByCat.{v} X ⥤ GeneratedByTopCat.{v} X :=
   ObjectProperty.lift _ (toTopCat X) (fun Y ↦ by
     rw [TopCat.generatedBy_def]
-    dsimp +instances
-    infer_instance)
+    exact inferInstanceAs (IsGeneratedBy X (WithGeneratedByTopology X ↑Y)))
 
 lemma toGeneratedByTopCat_map_apply {Y Z : ContinuousGeneratedByCat.{v} X} (f : Y ⟶ Z)
     (y : WithGeneratedByTopology X Y) :
@@ -286,10 +290,21 @@ def adj : toTopCat.{v} (X := X) ⊣ TopCat.toGeneratedByTopCat where
   unit := adjUnitIso.hom
   counit := adjCounit
 
-instance : IsIso (adj.{v} (X := X)).unit := by dsimp; infer_instance
+instance : IsIso (adj.{v} (X := X)).unit := inferInstanceAs (IsIso adjUnitIso.hom)
 
 instance : (toTopCat.{v} (X := X)).IsLeftAdjoint := adj.isLeftAdjoint
 
 instance : (TopCat.toGeneratedByTopCat.{v} (X := X)).IsRightAdjoint := adj.isRightAdjoint
+
+instance (Z : TopCat.{v}) :
+    IsIso ((TopCat.toGeneratedByTopCat (X := X)).map
+      ((GeneratedByTopCat.adjCounit (X := X)).app Z)) :=
+  inferInstanceAs (IsIso (TopCat.toGeneratedByTopCat.map (GeneratedByTopCat.adj.counit.app Z)))
+
+instance (Z : TopCat.{v}) :
+    IsIso ((TopCat.toContinuousGeneratedByCat.{v} X).map
+      ((GeneratedByTopCat.adjCounit (X := X)).app Z)) :=
+  inferInstanceAs (IsIso ((TopCat.toContinuousGeneratedByCat X).map
+    (ContinuousGeneratedByCat.adj.counit.app Z)))
 
 end GeneratedByTopCat

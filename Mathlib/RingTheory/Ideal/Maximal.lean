@@ -43,6 +43,7 @@ namespace Ideal
 variable [Semiring α] (I : Ideal α) {a b : α}
 
 /-- An ideal is maximal if it is maximal in the collection of proper ideals. -/
+@[wikidata Q1203540]
 class IsMaximal (I : Ideal α) : Prop where
   /-- The maximal ideal is a coatom in the ordering on ideals; that is, it is not the entire ring,
   and there are no other proper ideals strictly containing it. -/
@@ -63,6 +64,9 @@ theorem isMaximal_iff {I : Ideal α} :
 
 theorem IsMaximal.eq_of_le {I J : Ideal α} (hI : I.IsMaximal) (hJ : J ≠ ⊤) (IJ : I ≤ J) : I = J :=
   eq_iff_le_not_lt.2 ⟨IJ, fun h => hJ (hI.1.2 _ h)⟩
+
+theorem IsMaximal.eq_iff_le {I J : Ideal α} (hI : I.IsMaximal) (hJ : J ≠ ⊤) : I = J ↔ I ≤ J :=
+  ⟨by aesop, Ideal.IsMaximal.eq_of_le hI hJ⟩
 
 instance : IsCoatomic (Ideal α) := CompleteLattice.coatomic_of_top_compact isCompactElement_top
 
