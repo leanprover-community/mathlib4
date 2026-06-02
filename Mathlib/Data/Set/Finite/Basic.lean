@@ -476,6 +476,12 @@ after possibly setting up some `Fintype` and classical `Decidable` instances.
 section SetFiniteConstructors
 variable {s t u : Set α} {a : α}
 
+lemma Finset.mem_range_coe_iff : s ∈ range ((↑) : Finset α → Set α) ↔ s.Finite where
+  mp := by
+    rintro ⟨t, rfl⟩
+    simp
+  mpr hs := ⟨hs.toFinset, by simp⟩
+
 @[nontriviality]
 theorem Finite.of_subsingleton [Subsingleton α] (s : Set α) : s.Finite :=
   s.toFinite
