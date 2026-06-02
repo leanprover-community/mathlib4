@@ -196,7 +196,7 @@ theorem isComplement'_top_right : IsComplement' H ⊤ ↔ H = ⊥ :=
 @[to_additive]
 lemma isComplement_iff_existsUnique_inv_mul_mem :
     IsComplement S T ↔ ∀ g, ∃! s : S, (s : G)⁻¹ * g ∈ T := by
-  convert isComplement_iff_existsUnique with g
+  convert! isComplement_iff_existsUnique with g
   constructor <;> rintro ⟨x, hx, hx'⟩
   · exact ⟨(x, ⟨_, hx⟩), by simp, by aesop⟩
   · exact ⟨x.1, by simp [← hx], fun y hy ↦ (Prod.ext_iff.1 <| by simpa using hx' (y, ⟨_, hy⟩)).1⟩
@@ -204,7 +204,7 @@ lemma isComplement_iff_existsUnique_inv_mul_mem :
 @[to_additive]
 lemma isComplement_iff_existsUnique_mul_inv_mem :
     IsComplement S T ↔ ∀ g, ∃! t : T, g * (t : G)⁻¹ ∈ S := by
-  convert isComplement_iff_existsUnique with g
+  convert! isComplement_iff_existsUnique with g
   constructor <;> rintro ⟨x, hx, hx'⟩
   · exact ⟨(⟨_, hx⟩, x), by simp, by aesop⟩
   · exact ⟨x.2, by simp [← hx], fun y hy ↦ (Prod.ext_iff.1 <| by simpa using hx' (⟨_, hy⟩, y)).2⟩
