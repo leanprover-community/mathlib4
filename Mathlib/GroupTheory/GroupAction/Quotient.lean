@@ -206,17 +206,18 @@ variable (β)
 
 local notation "Ω" => Quotient <| orbitRel α β
 
-/-- **Class formula** : given `G` a group acting on `X` and `φ` a function mapping each orbit of `X`
-under this action (that is, each element of the quotient of `X` by the relation `orbitRel G X`) to
-an element in this orbit, this gives a (noncomputable) bijection between `X` and the disjoint union
-of `G/Stab(φ(ω))` over all orbits `ω`. In most cases you'll want `φ` to be `Quotient.out`, so we
-provide `MulAction.selfEquivSigmaOrbitsQuotientStabilizer'` as a special case. -/
+/-- **Class formula** : let `α` be a group acting on `β` and let `φ` be a function mapping each
+  orbit of `β` under this action (that is, each element of the quotient of `α` by the relation
+  `orbitRel α β`) to an element in this orbit. We provide a  (noncomputable) bijection between `X`
+  and the disjoint union of `α/Stab(φ(ω))` over all orbits `ω : Ω`. In most cases you'll want `φ`
+  to be `Quotient.out`, so we provide `MulAction.selfEquivSigmaOrbitsQuotientStabilizer'` as a
+  special case. -/
 @[to_additive
-      /-- **Class formula** : given `G` an additive group acting on `X` and `φ` a function
-      mapping each orbit of `X` under this action (that is, each element of the quotient of `X` by
-      the relation `orbit_rel G X`) to an element in this orbit, this gives a (noncomputable)
-      bijection between `X` and the disjoint union of `G/Stab(φ(ω))` over all orbits `ω`. In most
-      cases you'll want `φ` to be `Quotient.out`, so we provide
+      /-- **Class formula** : let `α` be an additive group acting on `X` and let `φ` be a function
+      mapping each orbit of `X` under this action (that is, each element of the quotient of `β` by
+      the relation `orbitRel G X`) to an element in this orbit. This definition is a (noncomputable)
+      bijection between `β` and the disjoint union of `α/Stab(φ(ω))` over all orbits `ω : Ω`. In
+      most cases you'll want `φ` to be `Quotient.out`, so we provide
       `AddAction.selfEquivSigmaOrbitsQuotientStabilizer'` as a special case. -/]
 noncomputable def selfEquivSigmaOrbitsQuotientStabilizer' {φ : Ω → β}
     (hφ : LeftInverse Quotient.mk'' φ) : β ≃ Σ ω : Ω, α ⧸ stabilizer α (φ ω) :=
@@ -236,12 +237,12 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer : β ≃ Σ ω : Ω, α
   selfEquivSigmaOrbitsQuotientStabilizer' α β Quotient.out_eq'
 
 /-- **Burnside's lemma** : a (noncomputable) bijection between the disjoint union of all
-`{x ∈ X | g • x = x}` for `g ∈ G` and the product `G × X/G`, where `G` is a group acting on `X` and
-`X/G` denotes the quotient of `X` by the relation `orbitRel G X`. -/
+  `{x ∈ β | a • x = x}` for `a ∈ α` and the product `α × Ω`, where `α` is a group acting on `β`
+  and `Ω = β/α` denotes the quotient of `β` by the relation `orbitRel α β`. -/
 @[to_additive AddAction.sigmaFixedByEquivOrbitsProdAddGroup
       /-- **Burnside's lemma** : a (noncomputable) bijection between the disjoint union of all
-      `{x ∈ X | g • x = x}` for `g ∈ G` and the product `G × X/G`, where `G` is an additive group
-      acting on `X` and `X/G` denotes the quotient of `X` by the relation `orbitRel G X`. -/]
+      `{x ∈ β | a • x = x}` for `a ∈ α` and the product `α × Ω`, where `α` is an additive group
+      acting on `β` and `Ω = β/α` denotes the quotient of `β` by the relation `orbitRel α β`. -/]
 noncomputable def sigmaFixedByEquivOrbitsProdGroup : (Σ a : α, fixedBy β a) ≃ Ω × α :=
   calc
     (Σ a : α, fixedBy β a) ≃ { ab : α × β // ab.1 • ab.2 = ab.2 } :=
@@ -261,12 +262,13 @@ noncomputable def sigmaFixedByEquivOrbitsProdGroup : (Σ a : α, fixedBy β a) �
     _ ≃ Σ _ : Ω, α := Equiv.sigmaCongrRight fun ω => orbitProdStabilizerEquivGroup α ω.out
     _ ≃ Ω × α := Equiv.sigmaEquivProd Ω α
 
-/-- **Burnside's lemma** : given a finite group `G` acting on a set `X`, the average number of
-elements fixed by each `g ∈ G` is the number of orbits. -/
+/-- **Burnside's lemma** : given a finite group `α` acting on a type `β`, the sum the orders of the
+  stabilisers coincides with the number of orbits multiplied by the order of `α`. -/
 @[to_additive (attr := wikidata Q1330377)
       AddAction.sum_card_fixedBy_eq_card_orbits_mul_card_addGroup
-      /-- **Burnside's lemma** : given a finite additive group `G` acting on a set `X`,
-      the average number of elements fixed by each `g ∈ G` is the number of orbits. -/]
+      /-- **Burnside's lemma** : given a finite additive group `α` acting on a type `β`,
+      the sum the orders of the stabilisers coincides with the number of orbits multiplied by the
+      order of `α`. -/]
 theorem sum_card_fixedBy_eq_card_orbits_mul_card_group [Fintype α] [∀ a : α, Fintype <| fixedBy β a]
     [Fintype Ω] : (∑ a : α, Fintype.card (fixedBy β a)) = Fintype.card Ω * Fintype.card α := by
   rw [← Fintype.card_prod, ← Fintype.card_sigma,
@@ -331,9 +333,9 @@ noncomputable def equivSubgroupOrbitsSetoidComap (H : Subgroup α) (ω : Ω) :
     rfl
 
 /-- A bijection between the orbits under the action of a subgroup `H` on `β`, and the orbits
-under the action of `H` on each orbit under the action of `G`. -/
+under the action of `H` on each orbit under the action of `α`. -/
 @[to_additive /-- A bijection between the orbits under the action of an additive subgroup `H` on
-`β`, and the orbits under the action of `H` on each orbit under the action of `G`. -/]
+`β`, and the orbits under the action of `H` on each orbit under the action of `α`. -/]
 noncomputable def equivSubgroupOrbits (H : Subgroup α) :
     orbitRel.Quotient H β ≃ Σ ω : Ω, orbitRel.Quotient H (orbitRel.Quotient.orbit ω) :=
   (Setoid.sigmaQuotientEquivOfLe (orbitRel_subgroup_le H)).symm.trans
@@ -349,9 +351,9 @@ instance finite_quotient_of_finite_quotient_of_finite_quotient {H : Subgroup α}
   infer_instance
 
 /-- Given a group acting freely and transitively, an equivalence between the orbits under the
-action of a subgroup and the quotient group. -/
+action of a subgroup and the quotient of the group by the subgroup. -/
 @[to_additive /-- Given an additive group acting freely and transitively, an equivalence between the
-orbits under the action of an additive subgroup and the quotient group. -/]
+orbits under the action of an additive subgroup and the quotient of the group by the subgroup. -/]
 noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
     [IsCancelSMul α β] (H : Subgroup α) :
     orbitRel.Quotient H β ≃ α ⧸ H where
