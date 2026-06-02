@@ -36,14 +36,6 @@ lemma avgRisk_countable [Countable Θ] [MeasurableSingletonClass Θ] :
     avgRisk ℓ P κ π = ∑' θ, (∫⁻ y, ℓ θ y ∂((κ ∘ₖ P) θ)) * π {θ} := by
   simp [avgRisk, lintegral_countable']
 
-lemma avgRisk_fintype' [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
-    (hl : Measurable ℓ) :
-    avgRisk ℓ P κ π = ∑ y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ P θ) {y} ∂π := by
-  simp only [avgRisk, lintegral_fintype]
-  rw [lintegral_finsetSum]
-  · congr
-  exact fun y _ ↦ Measurable.mul (by fun_prop) ((κ ∘ₖ P).measurable_coe (measurableSet_singleton y))
-
 lemma avgRisk_countable' [Countable 𝓨] [MeasurableSingletonClass 𝓨]
     (hl : Measurable ℓ) :
     avgRisk ℓ P κ π = ∑' y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ P θ) {y} ∂π := by
@@ -52,6 +44,11 @@ lemma avgRisk_countable' [Countable 𝓨] [MeasurableSingletonClass 𝓨]
   · rfl
   · refine fun y ↦ Measurable.aemeasurable ?_
     exact Measurable.mul (by fun_prop) ((κ ∘ₖ P).measurable_coe (measurableSet_singleton y))
+
+lemma avgRisk_fintype' [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
+    (hl : Measurable ℓ) :
+    avgRisk ℓ P κ π = ∑ y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ P θ) {y} ∂π := by
+  rw [avgRisk_countable' hl, tsum_fintype]
 
 lemma bayesRisk_fintype [Fintype Θ] [MeasurableSingletonClass Θ] :
     bayesRisk ℓ P π
