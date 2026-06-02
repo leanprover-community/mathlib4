@@ -89,11 +89,9 @@ lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Mod
   have : Nonempty S := B.index_nonempty
   have h := Ext.addEquivBiproduct N (biconeIsBilimitOfColimitCoconeOfIsColimit <|
     ModuleCat.coproductCoconeIsColimit (fun s : S ↦ ModuleCat.of R (Shrink.{v} R))) i
-  simp only [ModuleCat.coproductCocone, Bicone.ofColimitCocone_pt, Cofan.mk_pt] at h
-  change Subsingleton ((extFunctorObj N i).obj M) ↔ _
   let e := (B.repr ≪≫ₗ Finsupp.mapRange.linearEquiv (Shrink.linearEquiv R R).symm ≪≫ₗ
     finsuppLEquivDirectSum R (Shrink.{v} R) S).toModuleIso
-  rw [((extFunctorObj.{v} N i).mapIso e).addCommGroupIsoToAddEquiv.subsingleton_congr]
+  apply ((extFunctorObj.{v} N i).mapIso e).addCommGroupIsoToAddEquiv.subsingleton_congr.trans
   exact h.subsingleton_congr.trans ⟨subsingleton_of_pi, fun _ ↦ Pi.instSubsingleton⟩
 
 lemma free_depth_eq_ring_depth (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
@@ -138,7 +136,7 @@ lemma basis_lift_ker_le [IsLocalRing R]
     simp only [LinearMap.mem_ker, Finsupp.mapRange.linearMap_apply, LinearMap.coe_comp,
       LinearEquiv.coe_coe, mem_comap, Finsupp.ext_iff, Finsupp.zero_apply]
     congr!
-    simpa [Shrink.ringEquiv] using Ideal.Quotient.eq_zero_iff_mem
+    simpa [Shrink.ringEquiv] using! Ideal.Quotient.eq_zero_iff_mem
   simp only [LinearEquiv.ker_comp, this, mem_comap]
   intro h
   rw [← (Finsupp.univ_sum_single x)]
