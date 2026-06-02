@@ -384,10 +384,11 @@ def getRepoScope : IO (Option String) := do
 section Get
 
 /-- Formats the config file for `curl`, containing the list of files to be downloaded
-from a single container's base URL. -/
+from a single container's base URL. `scope?` is the per-round SHA scope (see
+`mkFileURL`); it is the resolved `getRepoScope` for a normal read and an
+individual walked SHA for an `--unsafe` forks round. -/
 def mkGetConfigContent (container : Option Container) (repo containerURL : String)
-    (hashMap : IO.ModuleHashMap) : IO String := do
-  let scope? ← getRepoScope
+    (hashMap : IO.ModuleHashMap) (scope? : Option String) : IO String := do
   hashMap.toArray.foldlM (init := "") fun acc ⟨_, hash⟩ => do
     let fileName := hash.asLTar
     -- Below we use `String.quote`, which is intended for quoting for use in Lean code
@@ -407,10 +408,10 @@ def mkGetConfigContent (container : Option Container) (repo containerURL : Strin
       -o {(IO.CACHEDIR / (fileName ++ ".part")).toString.quote}\n"
 
 /-- Calls `curl` to download a single file from a specific container to `CACHEDIR`
-(`.cache`). Returns `true` on success, `false` on any error including 404. -/
+(`.cache`). Returns `true` on success, `false` on any error including 404.
+`scope?` is the per-round SHA scope (see `mkGetConfigContent`). -/
 def downloadFile (container : Option Container) (repo containerURL : String)
-    (hash : UInt64) : IO Bool := do
-  let scope? ← getRepoScope
+    (hash : UInt64) (scope? : Option String) : IO Bool := do
   let fileName := hash.asLTar
   let url := mkFileURL container repo containerURL fileName scope?
   let path := IO.CACHEDIR / fileName
@@ -618,11 +619,12 @@ serial mode). Side effect: any files successfully fetched are written to
 private def downloadFilesFromContainer
     (container : Option Container) (repo containerURL : String)
     (hashMap : IO.ModuleHashMap)
-    (parallel : Bool) (decompConfig : Option DecompConfig) :
+    (parallel : Bool) (decompConfig : Option DecompConfig)
+    (scope? : Option String) :
     IO (Nat × TransferState) := do
   let size := hashMap.size
   if parallel then
-    IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent container repo containerURL hashMap)
+    IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent container repo containerURL hashMap scope?)
     let args := #["--request", "GET", "--parallel",
         -- commented as this creates a big slowdown on curl 8.13.0: "--fail",
         "--silent",
@@ -638,10 +640,34 @@ private def downloadFilesFromContainer
     return (s.failed, s)
   else
     let r ← hashMap.foldM (init := []) fun acc _ hash => do
-      pure <| (← IO.asTask do downloadFile container repo containerURL hash) :: acc
+      pure <| (← IO.asTask do downloadFile container repo containerURL hash scope?) :: acc
     let failed := r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
     let emptyState : TransferState := ⟨0, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
     return (failed, emptyState)
+
+/-- Expand the trust-ordered container list into the concrete download rounds to
+run, each carrying the SHA scope to read at. A round is
+`(container?, url, scope?)`.
+
+Without `--unsafe` (`unsafeScopes` empty) every round uses the single resolved
+`scope?`: one round per container, all at the same scope.
+
+With `--unsafe` (`unsafeScopes` non-empty) the `forks` container — the only
+SHA-scoped container, whose markers the walk probed — is expanded into one round
+per discovered SHA, most recent first. Every other container reads unscoped
+(`master` is flat and serves the bulk of files by hash; `legacy` has no walked
+markers), so the base `scope?` is intentionally dropped here. -/
+def expandDownloadRounds (containerURLs : List (Option Container × String))
+    (scope? : Option String) (unsafeScopes : List String) :
+    List (Option Container × String × Option String) :=
+  if unsafeScopes.isEmpty then
+    containerURLs.map fun (c, url) => (c, url, scope?)
+  else
+    containerURLs.flatMap fun (c, url) =>
+      if c == some Container.forks then
+        unsafeScopes.map fun sha => (c, url, some sha)
+      else
+        [(c, url, none)]
 
 /-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
 Return the number of files which failed to download.
@@ -649,12 +675,16 @@ If `decompress` is true, decompresses files as they're downloaded (pipelined).
 
 For each repo, the tool tries the trust-ordered container list returned by
 `effectiveGetURLs`. After each container round, files that were successfully
-fetched are filtered out so the next container only retries genuine misses. -/
+fetched are filtered out so the next container only retries genuine misses.
+
+`unsafeScopes` is the list of SHA scopes discovered by `cache get --unsafe`
+(empty for a normal read); see `expandDownloadRounds`. -/
 def downloadFiles
     (repo : String) (hashMap : IO.ModuleHashMap)
     (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool)
     (decompress : Bool := false) (forceUnpack : Bool := false)
-    (isMathlibRoot : Bool := false) (mathlibDepPath : FilePath := ".") : IO Nat := do
+    (isMathlibRoot : Bool := false) (mathlibDepPath : FilePath := ".")
+    (unsafeScopes : List String := []) : IO Nat := do
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
   if hashMap.isEmpty then IO.println "No files to download"; return 0
   IO.FS.createDirAll IO.CACHEDIR
@@ -674,20 +704,45 @@ def downloadFiles
     pure none
 
   -- Walk container URLs in trust order. After each round, drop files that
-  -- succeeded so the next round only retries genuine misses.
+  -- succeeded so the next round only retries genuine misses. With `--unsafe`
+  -- the `forks` container is expanded into one round per discovered SHA scope.
+  let scope? ← getRepoScope
+  let rounds := expandDownloadRounds containerURLs scope? unsafeScopes
+  let unsafeMode := !unsafeScopes.isEmpty
   let mut remaining := hashMap
   let mut finalState : TransferState := ⟨0, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
   let mut downloadFailed := 0
-  for (container?, url) in containerURLs do
+  -- For the `--unsafe` summary: how many files each scoped (forks) round supplied,
+  -- attributed by the drop in `remaining` across that round.
+  let mut scopeServed : Array (String × Nat) := #[]
+  for (container?, url, roundScope?) in rounds do
     if remaining.isEmpty then break
-    IO.println s!"Attempting to download {remaining.size} file(s) from {repo} cache at {url}"
-    let (failed, s) ← downloadFilesFromContainer container? repo url remaining parallel decompConfig
+    let scopeNote := match roundScope? with | some s => s!" (scope {s})" | none => ""
+    IO.println s!"Attempting to download {remaining.size} file(s) from {repo} cache at {url}{scopeNote}"
+    let before := remaining.size
+    let (failed, s) ← downloadFilesFromContainer container? repo url remaining parallel decompConfig roundScope?
     -- Carry forward the decompression-related state across container rounds.
     -- Counter fields (success/failed/done) reflect only the last round; we
     -- aggregate `downloadFailed` separately below.
     finalState := s
     downloadFailed := failed
     remaining ← remaining.filterExists false
+    if unsafeMode then
+      if let some sha := roundScope? then
+        scopeServed := scopeServed.push (sha, before - remaining.size)
+
+  -- `--unsafe`: report which fork commits actually contributed files, so the
+  -- user knows whose artifacts they ended up trusting.
+  if unsafeMode then
+    if scopeServed.isEmpty then
+      IO.eprintln "--unsafe: no fork scopes were needed; \
+        all files were served by higher-trust containers."
+    else
+      IO.eprintln s!"--unsafe: cache served from {scopeServed.size} fork commit scope(s):"
+      for (sha, n) in scopeServed do
+        IO.eprintln s!"  {sha} → {n} file(s)"
+      if remaining.size > 0 then
+        IO.eprintln s!"  {remaining.size} file(s) still missing after all scopes."
 
   if warnOnMissing && downloadFailed > 0 && parallel then
     IO.eprintln "Warning: some files were not found in the cache."
@@ -813,6 +868,7 @@ chain (the highest-trust source, holding the bulk of any fork's deps). -/
 def getFiles
     (repo : String) (hashMap : IO.ModuleHashMap)
     (forceDownload forceUnpack parallel decompress : Bool)
+    (unsafeScopes : List String := [])
     : IO.CacheM Unit := do
   let isMathlibRoot ← IO.isMathlibRoot
   unless isMathlibRoot do
@@ -840,7 +896,7 @@ def getFiles
   let failed ← downloadFiles repo hashMap forceDownload parallel
     (warnOnMissing := true)
     (decompress := decompress) (forceUnpack := forceUnpack)
-    isMathlibRoot mathlibDepPath
+    isMathlibRoot mathlibDepPath (unsafeScopes := unsafeScopes)
   if failed > 0 then
     IO.println s!"Downloading {failed} files failed"
     IO.Process.exit 1

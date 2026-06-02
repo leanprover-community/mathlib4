@@ -67,6 +67,8 @@ When arguments are provided, only the specified files and their transitive impor
 | `--repo=OWNER/REPO` | Override the repository to fetch cache from (e.g., `--repo=leanprover-community/mathlib4`) |
 | `--cache-from=LIST` | For `get`/`get!`/`get-`/`lookup`: trust-ordered, comma-separated list of containers to read from. Overrides the per-repo default (see [Trust-ordered containers](#trust-ordered-containers)). |
 | `--scope=REF`       | For `get`/`get!`/`get-`: read from the SHA-scoped namespace for the given git ref (anything `git rev-parse` accepts: `HEAD`, branch, tag, SHA). Use the SHA reported by `cache query`. Triggers the non-default-scope security notice. |
+| `--unsafe`          | For `get`/`get!`/`get-`: instead of pinning one `--scope`, automatically walk this branch's history and read the `forks` container at the most recent cached fork commit (newest first if `--unsafe-window` allows more than one), until the cache is satisfied (see [Unsafe automatic scope walk](#unsafe-automatic-scope-walk)). Mutually exclusive with `--scope`; always triggers the security notice. |
+| `--unsafe-window=N` | Number of cached fork commits `--unsafe` will try (default `1`). Implies `--unsafe`. |
 | `--container=NAME`  | For `put`/`put!`/`put-unpacked`/`put-staged`/`commit`/`commit!`: target container for upload. |
 
 Container names (known to both flags): `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`.
@@ -174,11 +176,11 @@ lake exe cache query
 
 The `query` command walks your git log backwards from `HEAD`, stopping at the
 merge base with `master` or a hard cap of 50 commits (whichever comes first),
-and probes each commit for the per-SHA marker blob (`/m/{repo}/{sha}`) in the
-`forks` container. The marker is written by `put-staged` after a successful
-SHA-scoped upload, so its presence is a reliable "this commit was cached"
-signal. `query` prints the SHA to stdout (and does not auto-apply it) — you
-manually copy the result into your `cache get` command if desired.
+and probes each commit for a completed SHA-scoped upload in the `forks`
+container. That signal is written by `put-staged` only after a successful
+upload, so its presence is a reliable "this commit was cached" signal. `query`
+prints the SHA to stdout (and does not auto-apply it) — you manually copy the
+result into your `cache get` command if desired.
 
 ### Boolean probe on a single commit
 
@@ -198,6 +200,30 @@ lake exe cache query 5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e
 By default `query` (both modes) targets the cwd's git remote — pass `--repo=`
 to override.
 
+### Unsafe automatic scope walk
+
+`cache get --unsafe` folds the `query` discovery into the download itself: rather
+than asking you to copy one SHA into `--scope=`, it walks your branch history
+(`HEAD` back to the merge base with `master`) for commits that have a cached fork
+build and reads the `forks` container at their scope. By
+default it uses just the single most recent such commit; `--unsafe-window=N`
+widens this to the `N` most recent, tried newest first with files fetched in one
+round dropped from the next.
+
+```bash
+lake exe cache get --unsafe             # use the most recent cached fork commit
+lake exe cache get --unsafe-window=10   # try the 10 most recent (implies --unsafe)
+```
+
+The trust-ordered container chain is unchanged: `master` is still tried first and
+serves the bulk of every fork's files by hash; only the `forks` round is expanded
+into one round per discovered SHA. If no cached fork commit is found in range,
+`--unsafe` falls back to a plain unscoped read.
+
+`--unsafe` trusts the artifacts of *every* commit it tries, so it always prints
+the [non-default-scope security notice](#security-warning-non-default-scope). It
+is mutually exclusive with `--scope=` (which pins exactly one commit).
+
 ### Heads-up note from `cache get`
 
 When you run `cache get` on a fork-trust repo and HEAD has not been built and
@@ -212,11 +238,13 @@ override is supplied.
 When you read cache artifacts at a non-default scope, the cache tool prints a
 security warning to stderr. This happens when:
 
-1. **`--scope=` is passed** — you are reading from a specific commit's
+1. **`--unsafe` is passed** — you are letting the tool walk history and trust the
+   artifacts of whichever recent fork commit(s) it finds cached.
+2. **`--scope=` is passed** — you are reading from a specific commit's
    namespace instead of the repo's default trust chain.
-2. **`--cache-from` widens the read chain** — you are explicitly telling the tool
+3. **`--cache-from` widens the read chain** — you are explicitly telling the tool
    to trust containers beyond the repo default.
-3. **`--repo` overrides the detected git remote** — you are reading cache for a
+4. **`--repo` overrides the detected git remote** — you are reading cache for a
    different repository than your cwd's git remote.
 
 Example warning:

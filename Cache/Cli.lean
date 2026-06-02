@@ -19,10 +19,11 @@ helpers implement that partitioning and the validation of known option names.
 namespace Cache.Cli
 
 /-- The named options supported by the CLI. -/
-def knownNamedOpts : List String := ["repo", "staging-dir", "cache-from", "container", "scope"]
+def knownNamedOpts : List String :=
+  ["repo", "staging-dir", "cache-from", "container", "scope", "unsafe-window"]
 
 /-- The flag options supported by the CLI. -/
-def knownFlagOpts : List String := ["help"]
+def knownFlagOpts : List String := ["help", "unsafe"]
 
 /-- Parses an optional `--foo=bar` option. Returns the value for the
 last-mentioned occurrence (so a later `--foo=` overrides an earlier one). -/

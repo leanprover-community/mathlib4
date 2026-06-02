@@ -24,6 +24,8 @@ namespace Cache.Requests
 Condition to determine if a non-default scope warning should be printed.
 
 Returns `true` if any of these hold:
+0. `--unsafe` was passed (`unsafeWindow?` is `some _`): the read walks several
+   fork commits and trusts whoever built each of them
 1. `MATHLIB_CACHE_REPO_SCOPE` is set in the environment (any non-empty value)
 2. `--cache-from` was passed and widens the lookup chain beyond `defaultContainersForRepo` for the resolved repo
 3. `--repo` was passed and does not match the git remote (`detectedRepo?`)
@@ -34,8 +36,12 @@ probed once per command); it is `none` if it could not be determined.
 Otherwise returns `false` (default lookup chain, no warning needed).
 -/
 def shouldWarnNonDefaultScope (repoExplicit? detectedRepo? : Option String)
-    (cliCacheFromOverride? : Option (List Container)) (resolvedRepo : String) :
+    (cliCacheFromOverride? : Option (List Container)) (resolvedRepo : String)
+    (unsafeWindow? : Option Nat := none) :
     IO Bool := do
+  -- Condition 0: `--unsafe` (with its SHA window) — the most permissive read.
+  if unsafeWindow?.isSome then return true
+
   -- Condition 1: `--scope=` flag or `MATHLIB_CACHE_REPO_SCOPE` env var supplied
   if (← getRepoScope).isSome then return true
 
@@ -89,9 +95,15 @@ Determine the reason why a non-default scope warning is being issued.
 Returns a human-readable string describing which condition triggered the warning.
 -/
 def getNonDefaultScopeReason (repoExplicit? detectedRepo? : Option String)
-    (cliCacheFromOverride? : Option (List Container)) (resolvedRepo : String) :
+    (cliCacheFromOverride? : Option (List Container)) (resolvedRepo : String)
+    (unsafeWindow? : Option Nat := none) :
     IO String := do
   -- Check conditions in order; return the first that matches.
+
+  -- Condition 0: `--unsafe` walks up to `window` fork commits, trusting each.
+  if let some window := unsafeWindow? then
+    return s!"--unsafe (automatic walk over up to {window} fork commit(s); \
+      trusting whoever built them)"
 
   -- Condition 1: `--scope=` flag (preferred form) or `MATHLIB_CACHE_REPO_SCOPE`
   -- env var (CI form). Reported with the source that set it.
@@ -126,12 +138,14 @@ Called before a read (`cache get`). The warning is informational only — it
 never prompts, so it stays safe to run in CI.
 -/
 def warnIfNonDefaultScope (repoExplicit? detectedRepo? : Option String)
-    (cliCacheFromOverride? : Option (List Container)) (resolvedRepo : String) :
+    (cliCacheFromOverride? : Option (List Container)) (resolvedRepo : String)
+    (unsafeWindow? : Option Nat := none) :
     IO Unit := do
-  if (← shouldWarnNonDefaultScope repoExplicit? detectedRepo? cliCacheFromOverride? resolvedRepo)
+  if (← shouldWarnNonDefaultScope repoExplicit? detectedRepo? cliCacheFromOverride? resolvedRepo
+        unsafeWindow?)
     then
     let reason ← getNonDefaultScopeReason repoExplicit? detectedRepo? cliCacheFromOverride?
-      resolvedRepo
+      resolvedRepo unsafeWindow?
     printNonDefaultScopeWarning resolvedRepo reason
 
 /--

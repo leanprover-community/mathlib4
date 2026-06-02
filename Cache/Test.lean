@@ -18,7 +18,9 @@ These tests cover the pure logic of the cache system, including:
 - Container model (trust levels, URL shapes, Azure integration)
 - Trust-ordered fallback chains per repo
 - URL construction (`mkFileURL`) with support for per-SHA scoping
-- CLI flag parsing (`--cache-from`, `--scope`, `--repo`, etc.)
+- CLI flag parsing (`--cache-from`, `--scope`, `--unsafe`, `--repo`, etc.)
+- `--unsafe` download-round expansion (`expandDownloadRounds`) and the
+  non-default-scope security warning it triggers
 - Utility functions (URL extraction, filename hashing, etc.)
 
 Anything that touches `curl` or the network is left to CI, which exercises the
@@ -566,6 +568,14 @@ def test_shouldWarnNonDefaultScope : IO Unit := do
     assert "--repo with no detectable remote does not warn"
       (!(← withSuppressedOutput
           (shouldWarnNonDefaultScope (some "bob/mathlib4") none none "bob/mathlib4")))
+
+    -- `--unsafe` (any window) always warns; it walks several untrusted scopes.
+    assert "--unsafe warns regardless of other inputs"
+      (← withSuppressedOutput
+          (shouldWarnNonDefaultScope none none none MATHLIBREPO (unsafeWindow? := some 5)))
+    assert "no --unsafe (none window) does not warn on its own"
+      (!(← withSuppressedOutput
+          (shouldWarnNonDefaultScope none none none MATHLIBREPO (unsafeWindow? := none))))
   finally
     scopeOverride.set saved
 
@@ -609,6 +619,15 @@ def test_getNonDefaultScopeReason : IO Unit := do
       withSuppressedOutput (getNonDefaultScopeReason none none (some [.master, .legacy]) MATHLIBREPO)
     assert "cache-from equal to the default yields the placeholder"
       (reason == "unknown reason")
+
+    -- `--unsafe` outranks every other trigger and names its window.
+    scopeOverride.set (some "abc123")
+    let reason ← withSuppressedOutput
+      (getNonDefaultScopeReason (some "bob/mathlib4") (some "alice/mathlib4") (some [.forks])
+        "bob/mathlib4" (unsafeWindow? := some 7))
+    assert "unsafe reason names the window and outranks scope/cache-from/repo"
+      (reason == "--unsafe (automatic walk over up to 7 fork commit(s); trusting whoever built them)")
+    scopeOverride.set none
   finally
     scopeOverride.set saved
 
@@ -621,6 +640,16 @@ def test_findMostRecentSHAWithCache : IO Unit := do
   IO.println "findMostRecentSHAWithCache:"
   let result ← withSuppressedOutput (findMostRecentSHAWithCache [] MATHLIBREPO)
   assert "empty SHA list returns none without probing" (result == none)
+
+/-- `findRecentSHAsWithCache` collects up to `limit` marked SHAs. The non-empty
+cases hit the network (a marker HEAD probe per SHA); here we pin that an empty
+candidate list returns `[]` for any limit, with no probe. -/
+def test_findRecentSHAsWithCache : IO Unit := do
+  IO.println "findRecentSHAsWithCache:"
+  let result ← withSuppressedOutput (findRecentSHAsWithCache [] MATHLIBREPO 5)
+  assert "empty SHA list returns [] without probing" (result == [])
+  let result ← withSuppressedOutput (findRecentSHAsWithCache [] MATHLIBREPO 0)
+  assert "limit 0 returns [] without probing" (result == [])
 
 end NonDefaultScope
 
@@ -719,6 +748,7 @@ def test_isKnownOpt : IO Unit := do
   assert "--scope=HEAD is known"         (isKnownOpt "--scope=HEAD")
   assert "--container=master is known"   (isKnownOpt "--container=master")
   assert "--staging-dir=/tmp is known"   (isKnownOpt "--staging-dir=/tmp")
+  assert "--unsafe-window=5 is known" (isKnownOpt "--unsafe-window=5")
 
   -- Empty value passes recognition (parseNamedOpt returns the empty string
   -- for these — callers decide whether to treat that as an error).
@@ -726,6 +756,11 @@ def test_isKnownOpt : IO Unit := do
 
   -- Flags use the bare `--name` form, no `=`.
   assert "--help (no =) is known" (isKnownOpt "--help")
+  assert "--unsafe (no =) is known" (isKnownOpt "--unsafe")
+
+  -- `--unsafe` is a flag, not a named option: the `=value` form is a user error.
+  assert "--unsafe=5 is NOT known (flags don't take values)"
+    (!isKnownOpt "--unsafe=5")
 
   -- A typo on a known option name should fail recognition, not be silently
   -- accepted. This is the regression-guard: if `--scoop=` were accepted, the
@@ -837,6 +872,43 @@ def test_isCacheMissStatus : IO Unit := do
 
 end CacheMissStatus
 
+section UnsafeRounds
+
+/-- `expandDownloadRounds` turns the trust-ordered container list into the
+concrete download rounds to run, each tagged with the SHA scope to read at.
+
+Without `--unsafe` (empty `unsafeScopes`) every round carries the single resolved
+base scope. With `--unsafe` the `forks` container — the only SHA-scoped container
+— fans out into one round per discovered SHA (most recent first), while every
+other container reads unscoped and the base scope is dropped. -/
+def test_expandDownloadRounds : IO Unit := do
+  IO.println "expandDownloadRounds:"
+  let chain : List (Option Container × String) :=
+    [(some .master, "U_m"), (some .forks, "U_f"), (some .legacy, "U_l")]
+
+  -- No unsafe scopes: one round per container, each carrying the base scope.
+  assert "no unsafe scopes, no base scope → scope none on every round"
+    (expandDownloadRounds chain none [] ==
+      [(some .master, "U_m", none), (some .forks, "U_f", none), (some .legacy, "U_l", none)])
+  assert "no unsafe scopes, base scope → base scope on every round"
+    (expandDownloadRounds chain (some "S") [] ==
+      [(some .master, "U_m", some "S"), (some .forks, "U_f", some "S"),
+       (some .legacy, "U_l", some "S")])
+
+  -- Unsafe scopes: only forks fans out, in order; others unscoped, base dropped.
+  assert "unsafe scopes fan out forks (in order), others unscoped"
+    (expandDownloadRounds chain (some "ignored") ["a", "b"] ==
+      [(some .master, "U_m", none),
+       (some .forks, "U_f", some "a"), (some .forks, "U_f", some "b"),
+       (some .legacy, "U_l", none)])
+
+  -- A chain without forks admits no SHA-scoped reads, so it is left unchanged.
+  assert "no forks container → unsafe scopes have no effect"
+    (expandDownloadRounds [(some .master, "U_m"), (some .legacy, "U_l")] none ["a", "b"] ==
+      [(some .master, "U_m", none), (some .legacy, "U_l", none)])
+
+end UnsafeRounds
+
 def runAll : IO Unit := do
   test_Container_name
   test_Container_parse
@@ -856,12 +928,14 @@ def runAll : IO Unit := do
   test_shouldWarnNonDefaultScope
   test_getNonDefaultScopeReason
   test_findMostRecentSHAWithCache
+  test_findRecentSHAsWithCache
   test_getRemoteRepo_gitFallback
   test_headIsAncestorOfMaster_gitFallback
   test_isKnownOpt
   test_parseNamedOpt
   test_parseFlagOpt
   test_isCacheMissStatus
+  test_expandDownloadRounds
 
 end Cache.Test
 

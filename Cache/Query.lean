@@ -96,21 +96,37 @@ def probeContainerForSHA (container : Container) (repo sha : String) :
   else
     pure (out.stdout.trimAscii.toString == "200")
 
+/-- Default number of marked fork commits `cache get --unsafe` will try as SHA
+scopes: 1, namely just the latest cached SHA. Overridden by
+`--unsafe-window=N`. -/
+def defaultUnsafeSHAWindow : Nat := 1
+
+/--
+Walk a list of SHAs (most recent first) and collect up to `limit` of them whose
+per-SHA marker exists in the `forks` container. Stops early once `limit` are
+found, so at most `limit` probes succeed (and at most `shas.length` are made).
+
+`forks` is the only SHA-scoped container; master/nightly-testing/pr-toolchain-tests
+are not scoped, so probing them here would be meaningless.
+-/
+def findRecentSHAsWithCache (shas : List String) (repo : String) (limit : Nat) :
+    IO (List String) := do
+  let container := Container.forks
+  let mut found : Array String := #[]
+  for sha in shas do
+    if found.size ≥ limit then break
+    if ← probeContainerForSHA container repo sha then
+      found := found.push sha
+  pure found.toList
+
 /--
 Given a list of SHAs, find the most recent one that has cached entries in the
 forks container under the SHA-scoped namespace. Returns the first SHA the probe
 accepts, or none if none are found.
 -/
 def findMostRecentSHAWithCache (shas : List String) (repo : String) :
-    IO (Option String) := do
-  -- `forks` is the SHA-scoped container; master/nightly-testing/pr-toolchain-tests
-  -- are not scoped, so probing them here would be meaningless.
-  let container := Container.forks
-  for sha in shas do
-    let found ← probeContainerForSHA container repo sha
-    if found then
-      return (some sha)
-  pure none
+    IO (Option String) :=
+  return (← findRecentSHAsWithCache shas repo 1).head?
 
 /--
 Resolve a git ref (HEAD, branch name, tag, short SHA, full SHA) to a full
@@ -189,5 +205,25 @@ def cacheQuery (repo : String) (cap : Nat := 50) (cwd : FilePath := ".") : IO Un
   | none =>
     IO.println s!"No cached CI build found for fork {repo} within the last {cap} commits on this branch."
     IO.println s!"This usually means CI hasn't built any of these commits yet."
+
+/--
+Discover the SHA scopes `cache get --unsafe` should try, most recent first.
+
+Walks git history from HEAD back to the merge base with `master` (or a hard
+`cap` if the merge base is not reachable) and returns up to `window` commit SHAs
+whose per-SHA marker exists in the `forks` container — i.e. the most recent
+`window` commits on this branch that CI has fully cached for this fork.
+
+Unlike `cacheQuery`, this is consumed automatically by `cache get` rather than
+printed for the user, and it returns several SHAs instead of one. An empty
+result means no cached commit was found in range; the caller falls back to a
+normal (unscoped) read.
+-/
+def discoverUnsafeScopes (repo : String) (window : Nat := defaultUnsafeSHAWindow)
+    (cap : Nat := 50) (cwd : FilePath := ".") : IO (List String) := do
+  let mergeBase? ← gitMergeBase "master" cwd
+  let stopRef := mergeBase?.getD ""
+  let shas ← gitLogWalk "HEAD" stopRef cap cwd
+  findRecentSHAsWithCache shas repo window
 
 end Cache.Requests

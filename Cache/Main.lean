@@ -55,6 +55,13 @@ Options:
                      MATHLIB_CACHE_REPO_SCOPE env var. Reading at a non-default
                      scope means trusting the artifacts produced at that commit;
                      `cache get` prints a security notice when this is set.
+  --unsafe           (get only) Instead of pinning one --scope, automatically walk
+                     this branch's history and try the most recent cached fork
+                     commits as scopes, in order, until the cache is satisfied.
+                     Trusts the artifacts of every commit it tries. Mutually
+                     exclusive with --scope; always prints a security notice.
+  --unsafe-window=N  Number of cached fork commits --unsafe will try (default
+                     1). Implies --unsafe.
   --container=NAME   Target container for upload commands (put/put!/put-unpacked/
                      put-staged/commit/commit!). Known containers: master, forks,
                      nightly-testing, pr-toolchain-tests, legacy. Pass this
@@ -123,6 +130,30 @@ def main (args : List String) : IO Unit := do
   let cacheFromStr? ← parseNamedOpt "cache-from" options
   let containerStr? ← parseNamedOpt "container" options
   let scopeStr? ← parseNamedOpt "scope" options
+  let unsafeFlag := parseFlagOpt "unsafe" options
+  let unsafeWindowStr? ← parseNamedOpt "unsafe-window" options
+
+  -- Resolve `--unsafe` / `--unsafe-window=N` into an optional SHA window.
+  -- `some n` means unsafe mode is on with window `n`; `none` means off. Passing
+  -- `--unsafe-window` implies `--unsafe`.
+  let unsafeWindow? : Option Nat ← match unsafeWindowStr? with
+    | some s => match s.toNat? with
+      | some n =>
+        if n == 0 then
+          IO.eprintln "--unsafe-window must be a positive integer"
+          Process.exit 1
+        pure (some n)
+      | none =>
+        IO.eprintln s!"--unsafe-window must be a positive integer (got '{s}')"
+        Process.exit 1
+    | none => pure (if unsafeFlag then some defaultUnsafeSHAWindow else none)
+
+  -- `--unsafe` and `--scope` are mutually exclusive: `--unsafe` walks several
+  -- commit scopes automatically, `--scope` pins exactly one.
+  if unsafeWindow?.isSome && scopeStr?.isSome then
+    IO.eprintln "--unsafe and --scope are mutually exclusive: --unsafe walks several commit \
+      scopes automatically, while --scope pins exactly one."
+    Process.exit 1
 
   -- Apply `--scope=` to the process-wide override read by `getRepoScope`.
   -- Accepts any git ref `git rev-parse` resolves (HEAD, branch, tag, SHA);
@@ -188,11 +219,25 @@ def main (args : List String) : IO Unit := do
     -- read path, the non-default-scope warning, and the HEAD hint below.
     let cliOverride? ← cacheFromOverride.get
     let (detectedRepo?, resolvedRepo) ← resolveRepo repo? (← read).mathlibDepPath
-    -- Warn before reading if the scope is non-default; otherwise point an
-    -- uncached fork HEAD at the per-commit workflow.
-    warnIfNonDefaultScope repo? detectedRepo? cliOverride? resolvedRepo
-    informIfHeadNotBuilt resolvedRepo
-    getFiles resolvedRepo hashMap force force goodCurl decompress
+    -- Warn before reading if the scope is non-default (`--unsafe` always is).
+    warnIfNonDefaultScope repo? detectedRepo? cliOverride? resolvedRepo unsafeWindow?
+    -- In `--unsafe` mode, walk history for recent cached fork commits to try as
+    -- scopes; otherwise point an uncached fork HEAD at the per-commit workflow.
+    let unsafeScopes ← match unsafeWindow? with
+      | some window =>
+        let scopes ← discoverUnsafeScopes resolvedRepo window
+        if scopes.isEmpty then
+          IO.eprintln s!"--unsafe: no cached fork commits found in range for {resolvedRepo}; \
+            reading the default cache only."
+        else
+          IO.eprintln s!"--unsafe: trying {scopes.length} cached fork commit scope(s) for \
+            {resolvedRepo} (most recent first):"
+          for s in scopes do IO.eprintln s!"  {s}"
+        pure scopes
+      | none =>
+        informIfHeadNotBuilt resolvedRepo
+        pure []
+    getFiles resolvedRepo hashMap force force goodCurl decompress (unsafeScopes := unsafeScopes)
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
