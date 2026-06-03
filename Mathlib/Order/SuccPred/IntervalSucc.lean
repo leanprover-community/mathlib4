@@ -114,19 +114,19 @@ theorem pairwise_disjoint_on_Ioo_succ [SuccOrder α] [Preorder β] {f : α → �
 the intervals `Set.Ioc (f Order.pred n) (f n)` are pairwise disjoint. -/
 theorem pairwise_disjoint_on_Ioc_pred [PredOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
     Pairwise (Disjoint on fun n => Ioc (f (pred n)) (f n)) := by
-  simpa using hf.dual.pairwise_disjoint_on_Ico_succ
+  simpa using! hf.dual.pairwise_disjoint_on_Ico_succ
 
 /-- If `α` is a linear pred order, `β` is a preorder, and `f : α → β` is a monotone function, then
 the intervals `Set.Ico (f Order.pred n) (f n)` are pairwise disjoint. -/
 theorem pairwise_disjoint_on_Ico_pred [PredOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
     Pairwise (Disjoint on fun n => Ico (f (pred n)) (f n)) := by
-  simpa using hf.dual.pairwise_disjoint_on_Ioc_succ
+  simpa using! hf.dual.pairwise_disjoint_on_Ioc_succ
 
 /-- If `α` is a linear pred order, `β` is a preorder, and `f : α → β` is a monotone function, then
 the intervals `Set.Ioo (f Order.pred n) (f n)` are pairwise disjoint. -/
 theorem pairwise_disjoint_on_Ioo_pred [PredOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
     Pairwise (Disjoint on fun n => Ioo (f (pred n)) (f n)) := by
-  simpa using hf.dual.pairwise_disjoint_on_Ioo_succ
+  simpa using! hf.dual.pairwise_disjoint_on_Ioo_succ
 
 end Monotone
 

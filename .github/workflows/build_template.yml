@@ -127,6 +127,9 @@ jobs:
           ref: ${{ inputs.pr_branch_ref }}
           fetch-depth: 2 # we may fetch cache from the commit before this one (or earlier)
           path: pr-branch
+          # This is an untrusted (potentially fork) checkout whose code we build.
+          # Don't leave the GITHUB_TOKEN in pr-branch/.git/config, where that code could read it.
+          persist-credentials: false
 
       - name: Prepare DownstreamTest directory
         shell: bash
@@ -222,7 +225,7 @@ jobs:
 
       - name: validate lake-manifest.json inputRevs
         # Only enforce this on the main mathlib4 repository, not on nightly-testing
-        if: github.repository == 'leanprover-community/mathlib4'
+        if: github.repository == 'leanprover-community/mathlib4' && github.ref_name != 'nightly-testing'
         shell: bash
         run: |
           cd pr-branch
@@ -513,19 +516,19 @@ jobs:
         run: |
           cd pr-branch
           set -o pipefail
-          # Try running with --trace; if it fails due to argument parsing, the PR needs to merge master
+          # If lint fails because the PR predates lake-lint configuration or the
+          # old --trace argument-parsing behavior, ask the author to merge master.
           # We use .lake/ for the output file because landrun restricts /tmp access
           for attempt in 1 2; do
-            if timeout 10m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake exe runLinter --trace Mathlib 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
+            if timeout 10m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake lint -- --trace 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
               break
             fi
             status=${PIPESTATUS[0]}
-            if grep -q "cannot parse arguments" ".lake/lint_output_attempt_${attempt}.txt"; then
+            if grep -qE "cannot parse arguments|no lint driver configured" ".lake/lint_output_attempt_${attempt}.txt"; then
               echo ""
               echo "=============================================================================="
-              echo "ERROR: Your branch uses an older version of runLinter that doesn't support"
-              echo "the --trace flag. Please merge 'master' into your PR branch to get the"
-              echo "updated linter, then push again."
+              echo "ERROR: Your branch predates the current 'lake lint' configuration."
+              echo "Please merge 'master' into your PR branch and push again."
               echo ""
               echo "You can do this with:"
               echo "  git fetch upstream"
@@ -689,6 +692,8 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ inputs.pr_branch_ref }}
+          # Untrusted (potentially fork) checkout: don't persist the GITHUB_TOKEN into its .git/config.
+          persist-credentials: false
 
       - name: Configure Lean
         uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0

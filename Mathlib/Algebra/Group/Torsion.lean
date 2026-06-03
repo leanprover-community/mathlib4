@@ -63,8 +63,8 @@ variable [Group G] [IsMulTorsionFree G] {n : ℤ} {a b : G}
 @[to_additive zsmul_right_injective]
 lemma zpow_left_injective : ∀ {n : ℤ}, n ≠ 0 → Injective fun a : G ↦ a ^ n
   | (n + 1 : ℕ), _ => by
-    simpa [← Int.natCast_one, ← Int.natCast_add] using pow_left_injective n.succ_ne_zero
-  | .negSucc n, _ => by simpa using inv_injective.comp (pow_left_injective n.succ_ne_zero)
+    simpa [← Int.natCast_one, ← Int.natCast_add] using! pow_left_injective n.succ_ne_zero
+  | .negSucc n, _ => by simpa using! inv_injective.comp (pow_left_injective n.succ_ne_zero)
 
 @[to_additive zsmul_right_inj]
 lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (zpow_left_injective hn).eq_iff
