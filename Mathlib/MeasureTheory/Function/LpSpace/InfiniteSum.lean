@@ -107,7 +107,7 @@ private theorem hasSum_coeFn_tsum_nat {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
     exact (enorm_def (f n)).symm
   have B : ∀ᵐ x ∂μ, ∀ n, ⇑((∑ i ∈ range n, f i)) x = ∑ i ∈ range n, f i x := by
     rw [ae_all_iff]
-    exact fun i ↦ coeFn_finsetSum_fun _ _
+    exact fun i ↦ coeFn_fun_finsetSum _ _
   obtain ⟨ns, hns, nslim⟩ : ∃ ns : ℕ → ℕ, StrictMono ns ∧ ∀ᵐ x ∂μ,
       Tendsto (fun i ↦ (∑ j ∈ range (ns i), f j : Lp E p μ) x) atTop (𝓝 ((∑' n, f n) x)) := by
     have : Tendsto (fun i ↦ (∑ j ∈ range i, f j)) atTop (𝓝 (∑' n, f n)) :=
@@ -125,7 +125,7 @@ theorem hasSum_coeFn_tsum {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] {ι : Type*} [C
   rcases finite_or_infinite ι with hι | hι
   · let : Fintype ι := Fintype.ofFinite ι
     simp only [tsum_fintype]
-    filter_upwards [coeFn_finsetSum_fun univ f] with x hx
+    filter_upwards [coeFn_fun_finsetSum univ f] with x hx
     rw [hx]
     exact hasSum_fintype _
   · obtain ⟨e⟩ := nonempty_equiv_of_countable (α := ℕ) (β := ι)
