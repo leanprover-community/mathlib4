@@ -6,13 +6,14 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
+public import Mathlib.MeasureTheory.Function.LpSpace.InfiniteSum
 
 /-! # Conditional expectation
 
 We build the conditional expectation of an integrable function `f` with value in a Banach space
 with respect to a measure `μ` (defined on a measurable space structure `m₀`) and a measurable space
 structure `m` with `hm : m ≤ m₀` (a sub-sigma-algebra). This is an `m`-strongly measurable
-function `μ[f|hm]` which is integrable and verifies `∫ x in s, μ[f|hm] x ∂μ = ∫ x in s, f x ∂μ`
+function `μ[f | m]` which is integrable and verifies `∫ x in s, μ[f | m] x ∂μ = ∫ x in s, f x ∂μ`
 for all `m`-measurable sets `s`. It is unique as an element of `L¹`.
 
 The construction is done in four steps:
@@ -171,7 +172,7 @@ theorem condExp_of_not_integrable (hf : ¬Integrable f μ) : μ[f | m] = 0 := by
   swap; · rw [condExp_of_not_sigmaFinite hm hμm]
   rw [condExp_of_sigmaFinite, if_neg hf]
 
-@[simp]
+@[to_fun (attr := simp) condExp_fun_zero]
 theorem condExp_zero : μ[(0 : α → E) | m] = 0 := by
   by_cases hm : m ≤ m₀
   swap; · rw [condExp_of_not_le hm]
@@ -452,6 +453,30 @@ theorem tendsto_condExpL1_of_dominated_convergence (hm : m ≤ m₀) [SigmaFinit
     (hfs : ∀ᵐ x ∂μ, Tendsto (fun n => fs n x) atTop (𝓝 (f x))) :
     Tendsto (fun n => condExpL1 hm μ (fs n)) atTop (𝓝 (condExpL1 hm μ f)) :=
   tendsto_setToFun_of_dominated_convergence _ bound_fs hfs_meas h_int_bound_fs hfs_bound hfs
+
+theorem condExp_tsum [CompleteSpace E]
+    {ι : Type*} [Countable ι] {f : ι → α → E} (hf : ∀ i, AEStronglyMeasurable (f i) μ)
+    (hf' : ∑' i, ∫⁻ a, ‖f i a‖ₑ ∂μ ≠ ∞) :
+    μ[fun a ↦ ∑' i, f i a | m] =ᵐ[μ] fun a ↦ ∑' i, μ[f i | m] a := by
+  by_cases hm : m ≤ m₀; swap
+  · simp only [condExp_of_not_le hm, Pi.zero_apply, tsum_zero]
+    exact ae_eq_rfl
+  by_cases hμm : SigmaFinite (μ.trim hm); swap
+  · simp only [condExp_of_not_sigmaFinite hm hμm, Pi.zero_apply, tsum_zero]
+    exact ae_eq_rfl
+  grw [condExp_ae_eq_condExpL1 hm, condExpL1]
+  have A : ∀ᵐ a ∂μ, ∀ i, μ[f i | m] a = condExpL1 hm μ (f i) a :=
+    ae_all_iff.2 (fun i ↦ condExp_ae_eq_condExpL1 hm _)
+  have B : ∑' (n : ι), ‖setToFun μ (condExpInd E hm μ)
+      (dominatedFinMeasAdditive_condExpInd E hm μ) (f n)‖ₑ ≠ ∞ := by
+    apply (lt_of_le_of_lt ?_ hf'.lt_top).ne
+    gcongr with i
+    exact (enorm_setToFun_le _ (by simp)).trans_eq (by simp)
+  have C := coeFn_tsum (f := fun i ↦ setToFun μ (condExpInd E hm μ)
+    (dominatedFinMeasAdditive_condExpInd E hm μ) (f i)) B
+  filter_upwards [A, C] with a ha h'a
+  simp only [ha, condExpL1]
+  rw [setToFun_tsum _ hf hf', h'a]
 
 variable [CompleteSpace E]
 
