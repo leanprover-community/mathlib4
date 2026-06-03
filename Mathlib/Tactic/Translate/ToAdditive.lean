@@ -349,6 +349,7 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("le_zero", "Nonpos"),
   ("ltzero", "Neg"),
   ("lt_zero", "Neg"),
+  ("addAntidiagonal", "Antidiagonal"),
   ("addSingle", "Single"),
   ("addSupport", "Support"),
   ("addTSupport", "TSupport"),
