@@ -417,9 +417,9 @@ protected theorem inv [Inv β] [ContinuousInv β] (hf : StronglyMeasurable f) :
   ⟨fun n => (hf.approx n)⁻¹, fun x => (hf.tendsto_approx x).inv⟩
 
 @[fun_prop]
-protected theorem inv₀ [GroupWithZero β] [ContinuousInv₀ β] [PseudoMetrizableSpace β]
-    [MeasurableSpace β] [BorelSpace β] [MeasurableSingletonClass β] (hf : StronglyMeasurable f) :
-    StronglyMeasurable f⁻¹ := by
+protected theorem inv₀ [GroupWithZero β] [ContinuousInv₀ β] [MetrizableSpace β]
+    (hf : StronglyMeasurable f) : StronglyMeasurable f⁻¹ := by
+  borelize β
   refine ⟨fun n => ((hf.approx n).restrict {x | f x ≠ 0})⁻¹, fun x => ?_⟩
   have : MeasurableSet {x | f x ≠ 0} := ((MeasurableSet.singleton 0).preimage hf.measurable).compl
   by_cases h : f x = 0
@@ -443,10 +443,10 @@ theorem div₀ [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] (hf :
     fun x => (hf.tendsto_approx x).div (hg.tendsto_approx x) (h₀ x)⟩
 
 @[fun_prop]
-theorem div [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] [PseudoMetrizableSpace β]
-    [MeasurableSpace β] [BorelSpace β] [MeasurableSingletonClass β] (hf : StronglyMeasurable f)
-    (hg : StronglyMeasurable g) :
+theorem div [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] [MetrizableSpace β]
+    (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
     StronglyMeasurable (f / g) := by
+  borelize β
   refine ⟨fun n => hf.approx n / (hg.approx n).restrict {x | g x ≠ 0}, fun x => ?_⟩
   have : MeasurableSet {x | g x ≠ 0} := ((MeasurableSet.singleton 0).preimage hg.measurable).compl
   by_cases h : g x = 0

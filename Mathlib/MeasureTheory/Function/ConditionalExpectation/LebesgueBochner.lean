@@ -71,14 +71,14 @@ lemma condLExp_ofReal (m : MeasurableSpace 𝓧) {m𝓧 : MeasurableSpace 𝓧} 
       filter_upwards [h'f] with x hx using by simp [g, Real.enorm_eq_ofReal hx]
     rw [this]
     exact hf.2.ne
-  have J : ∀ᵐ x ∂μ, μ⁻[g|m] x < ∞ := by
+  have J : ∀ᵐ x ∂μ, μ⁻[g | m] x < ∞ := by
     apply ae_lt_top (by fun_prop)
     convert I using 1
     exact lintegral_condLExp _ _ _
   filter_upwards [toReal_condLExp m (f := g) (by fun_prop) I, h'f, A, B, J]
     with a ha h'a h''a h'''a C
   rw [← ENNReal.toReal_eq_toReal_iff' C.ne, ENNReal.toReal_ofReal h'''a, ha, h''a]
-  simp only [ne_eq, ENNReal.ofReal_ne_top, not_false_eq_true]
+  simp
 
 /-- The two definitions of the conditional expectation `condExp` and `condLExp` (for Bochner and
 Lebesgue integrals respectively) agree almost everywhere. -/
