@@ -418,8 +418,8 @@ variable {R : Type*} [Ring R] (v : Valuation R Γ₀)
 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
-theorem valueGroup_eq : valueGroup (Valued.v (R := WithVal v) : (WithVal v) →*₀ _) =
-    valueGroup (v : R →*₀ Γ₀) := by
+theorem valueGroup_eq : valueGroup (.ofClass (Valued.v (R := WithVal v))) =
+    valueGroup (.ofClass v) := by
   simp [valueGroup, valueMonoid, ← (WithVal.ofVal_surjective v).range_comp]
   rfl
 
@@ -427,7 +427,7 @@ theorem valueGroup_eq : valueGroup (Valued.v (R := WithVal v) : (WithVal v) →*
 and the valuation `v`. -/
 @[simps! apply symm_apply]
 def valueGroupEquiv :
-    valueGroup (Valued.v (R := WithVal v) : (WithVal v) →*₀ Γ₀) ≃* valueGroup (v : R →*₀ Γ₀) where
+    valueGroup (.ofClass (Valued.v (R := WithVal v))) ≃* valueGroup (.ofClass v) where
   __ := Equiv.setCongr (by simp [valueGroup_eq v])
   map_mul' := by simp [Equiv.setCongr, Equiv.subtypeEquivProp]
 
@@ -440,8 +440,8 @@ theorem strictMono_valueGroupEquiv_symm : StrictMono (valueGroupEquiv v).symm :=
 /-- The order-preserving, multiplicative equivalence between the `ValueGroup₀` of the valuation
 on `WithVal v` and the valuation `v`. -/
 @[simps!]
-def valueGroupOrderIso₀ : ValueGroup₀ (Valued.v (R := WithVal v) : (WithVal v) →*₀ Γ₀) ≃*o
-    ValueGroup₀ (v : R →*₀ Γ₀) where
+def valueGroupOrderIso₀ : ValueGroup₀ (.ofClass (Valued.v (R := WithVal v))) ≃*o
+    ValueGroup₀ (.ofClass v) where
   toFun := WithZero.map' (valueGroupEquiv v)
   invFun := WithZero.map' (valueGroupEquiv v).symm
   left_inv x := by
@@ -560,7 +560,7 @@ theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valu
   use .mk0 ((Valued.v.restrict ((WithVal.equiv v) r)) /
     (Valued.v.restrict ((WithVal.equiv v) s))) (by
     simp only [equiv_apply, restrict_def, ne_eq, div_eq_zero_iff, restrict₀_eq_zero_iff, hv,
-      MonoidWithZeroHom.coe_coe, not_or, (eq_zero h (r := r.ofVal)).ne,
+      MonoidWithZeroHom.coe_ofClass, not_or, (eq_zero h (r := r.ofVal)).ne,
       (eq_zero h (r := s.ofVal)).ne]
     exact ⟨hr₀.ne', hs₀.ne'⟩)
   intro x hx
@@ -635,9 +635,9 @@ theorem exists_div_eq_of_surjective {K : Type*} [DivisionRing K] {Γ₀ : Type*}
 
 theorem restrict_exists_div_eq {K : Type*} [DivisionRing K] {Γ₀ : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀)
-    (γ : (MonoidWithZeroHom.ValueGroup₀ (v : K →*₀ Γ₀))ˣ) :
+    (γ : (MonoidWithZeroHom.ValueGroup₀ (.ofClass v))ˣ) :
     ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
-  obtain ⟨r, hr⟩ := MonoidWithZeroHom.ValueGroup₀.restrict₀_surjective (v : K →*₀ Γ₀) γ
+  obtain ⟨r, hr⟩ := MonoidWithZeroHom.ValueGroup₀.restrict₀_surjective (.ofClass v) γ
   classical
   exact ⟨r, 1, by
     simp only [map_one, zero_lt_one, restrict_def, hr, div_one, and_self, and_true]

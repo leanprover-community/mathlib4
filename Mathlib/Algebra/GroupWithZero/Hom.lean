@@ -82,11 +82,6 @@ infixr:25 " →*₀ " => MonoidWithZeroHom
 def MonoidWithZeroHom.ofClass [FunLike F α β] [MonoidWithZeroHomClass F α β]
     (f : F) : α →*₀ β := { (f : α →* β), (f : ZeroHom α β) with }
 
-/-- Any type satisfying `MonoidWithZeroHomClass` can be cast into `MonoidWithZeroHom` via
-`MonoidWithZeroHom.ofClass`. -/
-instance [FunLike F α β] [MonoidWithZeroHomClass F α β] : CoeTC F (α →*₀ β) :=
-  ⟨MonoidWithZeroHom.ofClass⟩
-
 namespace MonoidWithZeroHom
 
 attribute [nolint docBlame] toMonoidHom
@@ -105,7 +100,8 @@ instance [Subsingleton α] : Subsingleton (α →*₀ β) := .of_oneHomClass
 
 variable [FunLike F α β]
 
-@[simp] lemma coe_coe [MonoidWithZeroHomClass F α β] (f : F) : ((f : α →*₀ β) : α → β) = f := rfl
+@[simp] lemma coe_ofClass [MonoidWithZeroHomClass F α β] (f : F) :
+    (MonoidWithZeroHom.ofClass f : α → β) = f := rfl
 
 -- Completely uninteresting lemmas about coercion to function, that all homs need
 section Coes

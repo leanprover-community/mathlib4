@@ -127,7 +127,7 @@ hom `f : A \to B` into the codomain `B`. -/
 @[simps! -isSimp]
 def ValueGroup₀.embedding : ValueGroup₀ f →*₀ B :=
   letI : DecidablePred fun b : B ↦ b = 0 := Classical.decPred fun b ↦ b = 0
-  MonoidWithZeroHom.comp (WithZero.withZeroUnitsEquiv (G := B))
+  comp (.ofClass WithZero.withZeroUnitsEquiv)
     <| WithZero.map' (valueGroup f).subtype
 
 variable (f) in

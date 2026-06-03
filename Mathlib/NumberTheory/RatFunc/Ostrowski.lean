@@ -197,7 +197,7 @@ lemma uniformizingPolynomial_isUniformizer [hv : IsRankOneDiscrete v] :
       simp [← hk]
     · obtain ⟨ka, hka⟩ := exists_zpow_uniformizingPolynomial hle ha
       obtain ⟨kb, hkb⟩ := exists_zpow_uniformizingPolynomial hle (f := b) (by aesop)
-      rw [MonoidWithZeroHom.coe_coe, hka, hkb] at hab
+      rw [MonoidWithZeroHom.coe_ofClass, hka, hkb] at hab
       use kb - ka
       have : v ↑πᵥ ^ ka ≠ 0 := zpow_ne_zero _ h0
       simp at hab

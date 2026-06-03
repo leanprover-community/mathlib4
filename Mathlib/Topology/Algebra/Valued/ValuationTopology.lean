@@ -57,8 +57,8 @@ lemma map_eq_one_of_forall_lt [MulArchimedean Γ₀] {v : Valuation K Γ₀} {r 
 
 /-- The basis of open subgroups for the topology on a ring determined by a valuation. -/
 theorem subgroups_basis :
-    RingSubgroupsBasis fun γ : (ValueGroup₀ (v : R →*₀ Γ₀))ˣ ↦
-      v.ltAddSubgroup (Units.map (ValueGroup₀.embedding (f := (v : R →*₀ Γ₀))) γ) :=
+    RingSubgroupsBasis fun γ : (ValueGroup₀ (.ofClass v))ˣ ↦
+      v.ltAddSubgroup (Units.map (ValueGroup₀.embedding (f := (.ofClass v))) γ) :=
   { inter := by
       classical
       rintro γ₀ γ₁
@@ -83,12 +83,12 @@ theorem subgroups_basis :
     leftMul := by
       rintro x γ
       rcases GroupWithZero.eq_zero_or_unit (v x) with (Hx | ⟨γx, Hx⟩)
-      · use (1 : (ValueGroup₀ (v : R →*₀ Γ₀))ˣ)
+      · use (1 : (ValueGroup₀ (.ofClass v))ˣ)
         rintro y _
         simp only [coe_ltAddSubgroup, preimage_setOf_eq, mem_setOf_eq]
         rw [Valuation.map_mul, Hx, zero_mul]
         exact Units.zero_lt _
-      · set u : (ValueGroup₀ (v : R →*₀ Γ₀))ˣ := Units.mk0 ((restrict₀ (v : R →*₀ Γ₀)) x)
+      · set u : (ValueGroup₀ (.ofClass v))ˣ := Units.mk0 ((restrict₀ (.ofClass v)) x)
           (by simp [restrict₀_apply]; aesop) with hu_def
         have hu : ValueGroup₀.embedding u⁻¹.1 = γx⁻¹ := by
           simp [restrict₀_apply, embedding_apply, hu_def, Hx]
@@ -105,7 +105,7 @@ theorem subgroups_basis :
         rintro y _
         simp only [coe_ltAddSubgroup, preimage_setOf_eq, mem_setOf_eq, Valuation.map_mul, Hx,
           mul_zero, Units.zero_lt]
-      · set u : (ValueGroup₀ (v : R →*₀ Γ₀))ˣ := Units.mk0 ((restrict₀ (v : R →*₀ Γ₀)) x)
+      · set u : (ValueGroup₀ (.ofClass v))ˣ := Units.mk0 ((restrict₀ (.ofClass v)) x)
           (by simp [restrict₀_apply]; aesop) with hu_def
         have hu : ValueGroup₀.embedding u⁻¹.1 = γx⁻¹ := by simp [restrict₀_apply, embedding_apply,
           hu_def, Hx]
@@ -128,7 +128,7 @@ class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
   [LinearOrderedCommGroupWithZero Γ₀] extends UniformSpace R, IsUniformAddGroup R where
   v : Valuation R Γ₀
   is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔
-    ∃ γ : (MonoidWithZeroHom.ValueGroup₀ (v : R →*₀ Γ₀))ˣ, { x : R | v.restrict x < γ.1 } ⊆ s
+    ∃ γ : (MonoidWithZeroHom.ValueGroup₀ (.ofClass v))ˣ, { x : R | v.restrict x < γ.1 } ⊆ s
 
 namespace Valued
 
@@ -150,12 +150,12 @@ variable [_i : Valued R Γ₀]
 
 theorem hasBasis_nhds_zero :
     (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
-      fun γ : (MonoidWithZeroHom.ValueGroup₀ (_i.v : R →*₀ Γ₀))ˣ ↦ { x | v.restrict x < γ.1 } := by
+      fun γ : (MonoidWithZeroHom.ValueGroup₀ (.ofClass _i.v))ˣ ↦ { x | v.restrict x < γ.1 } := by
   simp [Filter.hasBasis_iff, is_topological_valuation]
 
 open Uniformity in
 theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ ↦ True)
-    fun γ : (MonoidWithZeroHom.ValueGroup₀ (_i.v : R →*₀ Γ₀))ˣ ↦
+    fun γ : (MonoidWithZeroHom.ValueGroup₀ (.ofClass _i.v))ˣ ↦
       { p : R × R | v.restrict (p.2 - p.1) < γ.1 } := by
   rw [uniformity_eq_comap_nhds_zero]
   exact (hasBasis_nhds_zero R Γ₀).comap _
@@ -170,13 +170,13 @@ theorem toUniformSpace_eq : toUniformSpace =
 variable {R Γ₀}
 
 theorem mem_nhds {s : Set R} {x : R} : s ∈ 𝓝 x ↔
-    ∃ γ : (MonoidWithZeroHom.ValueGroup₀ (_i.v : R →*₀ Γ₀))ˣ,
+    ∃ γ : (MonoidWithZeroHom.ValueGroup₀ (.ofClass _i.v))ˣ,
     { y | (v.restrict (y - x) ) < γ.1 } ⊆ s := by
   simp only [← nhds_translation_add_neg x, ← sub_eq_add_neg, preimage_setOf_eq, true_and,
     ((hasBasis_nhds_zero R Γ₀).comap fun y ↦ y - x).mem_iff]
 
 theorem mem_nhds_zero {s : Set R} : s ∈ 𝓝 (0 : R) ↔
-    ∃ γ : (MonoidWithZeroHom.ValueGroup₀ (_i.v : R →*₀ Γ₀))ˣ, { x | v.restrict x < γ.1 } ⊆ s := by
+    ∃ γ : (MonoidWithZeroHom.ValueGroup₀ (.ofClass _i.v))ˣ, { x | v.restrict x < γ.1 } ⊆ s := by
   simp only [mem_nhds, sub_zero]
 
 /-- The set `{ y : R | v y = v x }` is a neighbourhood of `x`.
@@ -214,7 +214,7 @@ lemma discreteTopology_of_forall_lt [MulArchimedean Γ₀] [Valued K Γ₀] {r :
 end Discrete
 
 theorem cauchy_iff {F : Filter R} : Cauchy F ↔
-    F.NeBot ∧ ∀ γ : (MonoidWithZeroHom.ValueGroup₀ (_i.v : R →*₀ Γ₀))ˣ,
+    F.NeBot ∧ ∀ γ : (MonoidWithZeroHom.ValueGroup₀ (.ofClass _i.v))ˣ,
       ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), _i.v.restrict (y - x) < γ.1 := by
   rw [toUniformSpace_eq, AddGroupFilterBasis.cauchy_iff]
   apply and_congr Iff.rfl
@@ -230,7 +230,7 @@ theorem cauchy_iff {F : Filter R} : Cauchy F ↔
 variable (R)
 
 /-- An open ball centred at the origin in a valued ring is open. -/
-theorem isOpen_ball (r : ValueGroup₀ (_i.v : R →*₀ Γ₀)) :
+theorem isOpen_ball (r : ValueGroup₀ (.ofClass _i.v)) :
     IsOpen (X := R) {x | v.restrict x < r} := by
   rw [isOpen_iff_mem_nhds]
   rcases eq_or_ne r 0 with rfl | hr
@@ -242,7 +242,7 @@ theorem isOpen_ball (r : ValueGroup₀ (_i.v : R →*₀ Γ₀)) :
     fun y hy ↦ (sub_add_cancel y x).symm ▸ (v.restrict.map_add _ x).trans_lt (max_lt hy hx)⟩
 
 /-- An open ball centred at the origin in a valued ring is closed. -/
-theorem isClosed_ball (r : ValueGroup₀ (_i.v : R →*₀ Γ₀)) :
+theorem isClosed_ball (r : ValueGroup₀ (.ofClass _i.v)) :
     IsClosed (X := R) {x | v.restrict x < r} := by
   rcases eq_or_ne r 0 with rfl | hr
   · simp
@@ -250,12 +250,12 @@ theorem isClosed_ball (r : ValueGroup₀ (_i.v : R →*₀ Γ₀)) :
     (isOpen_ball _ _)
 
 /-- An open ball centred at the origin in a valued ring is clopen. -/
-theorem isClopen_ball (r : ValueGroup₀ (_i.v : R →*₀ Γ₀)) :
+theorem isClopen_ball (r : ValueGroup₀ (.ofClass _i.v)) :
     IsClopen (X := R) {x | v.restrict x < r} :=
   ⟨isClosed_ball _ _, isOpen_ball _ _⟩
 
 /-- A closed ball centred at the origin in a valued ring is open. -/
-theorem isOpen_closedBall {r : ValueGroup₀ (_i.v : R →*₀ Γ₀)} (hr : r ≠ 0) :
+theorem isOpen_closedBall {r : ValueGroup₀ (.ofClass _i.v)} (hr : r ≠ 0) :
   IsOpen (X := R) {x | v.restrict x ≤ r} := by
   rw [isOpen_iff_mem_nhds]
   intro x hx
@@ -265,7 +265,7 @@ theorem isOpen_closedBall {r : ValueGroup₀ (_i.v : R →*₀ Γ₀)} (hr : r �
     (sub_add_cancel y x).symm ▸ le_trans (v.restrict.map_add _ _) (max_le (le_of_lt hy) hx)⟩
 
 /-- A closed ball centred at the origin in a valued ring is closed. -/
-theorem isClosed_closedBall (r : ValueGroup₀ (_i.v : R →*₀ Γ₀)) :
+theorem isClosed_closedBall (r : ValueGroup₀ (.ofClass _i.v)) :
     IsClosed (X := R) {x | v.restrict x ≤ r} := by
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro x hx
@@ -276,12 +276,12 @@ theorem isClosed_closedBall (r : ValueGroup₀ (_i.v : R →*₀ Γ₀)) :
       (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' hx)⟩
 
 /-- A closed ball centred at the origin in a valued ring is clopen. -/
-theorem isClopen_closedBall {r : ValueGroup₀ (_i.v : R →*₀ Γ₀)} (hr : r ≠ 0) :
+theorem isClopen_closedBall {r : ValueGroup₀ (.ofClass _i.v)} (hr : r ≠ 0) :
     IsClopen (X := R) {x | v.restrict x ≤ r} :=
   ⟨isClosed_closedBall _ _, isOpen_closedBall _ hr⟩
 
 /-- A sphere centred at the origin in a valued ring is clopen. -/
-theorem isClopen_sphere {r : ValueGroup₀ (_i.v : R →*₀ Γ₀)} (hr : r ≠ 0) :
+theorem isClopen_sphere {r : ValueGroup₀ (.ofClass _i.v)} (hr : r ≠ 0) :
     IsClopen (X := R) {x | v.restrict x = r} := by
   have h : {x : R | v.restrict x = r} = {x | v.restrict x ≤ r} \ {x | v.restrict x < r} := by
     ext x
@@ -290,12 +290,12 @@ theorem isClopen_sphere {r : ValueGroup₀ (_i.v : R →*₀ Γ₀)} (hr : r ≠
   exact IsClopen.diff (isClopen_closedBall _ hr) (isClopen_ball _ _)
 
 /-- A sphere centred at the origin in a valued ring is open. -/
-theorem isOpen_sphere {r : ValueGroup₀ (_i.v : R →*₀ Γ₀)} (hr : r ≠ 0) :
+theorem isOpen_sphere {r : ValueGroup₀ (.ofClass _i.v)} (hr : r ≠ 0) :
     IsOpen (X := R) {x | v.restrict x = r} :=
   isClopen_sphere _ hr |>.isOpen
 
 /-- A sphere centred at the origin in a valued ring is closed. -/
-theorem isClosed_sphere (r : ValueGroup₀ (_i.v : R →*₀ Γ₀)) :
+theorem isClosed_sphere (r : ValueGroup₀ (.ofClass _i.v)) :
     IsClosed (X := R) {x | v.restrict x = r} := by
   rcases eq_or_ne r 0 with rfl | hr
   · simpa using isClosed_closedBall R 0
