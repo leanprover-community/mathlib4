@@ -176,7 +176,7 @@ theorem comp_apply (f : β →*₀o γ) (g : α →*₀o β) (a : α) : (f.comp 
   rfl
 
 theorem ofClass_comp_monoidWithZeroHom (f : β →*₀o γ) (g : α →*₀o β) :
-    ((.ofClass f : β →*₀ γ).comp (.ofClass g)) = (.ofClass f : β →*₀ γ).comp (.ofClass g) :=
+    .ofClass (f.comp g) = (.ofClass f : β →*₀ γ).comp (.ofClass g) :=
   rfl
 
 theorem coe_comp_orderMonoidHom (f : β →*₀o γ) (g : α →*₀o β) :
