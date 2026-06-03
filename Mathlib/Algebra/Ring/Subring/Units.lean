@@ -33,10 +33,22 @@ theorem Units.mem_posSubgroup {R : Type*} [Semiring R] [LinearOrder R] [IsStrict
     (u : Rˣ) : u ∈ Units.posSubgroup R ↔ (0 : R) < u :=
   Iff.rfl
 
-theorem RingHom.isUnit_eqLocusS_mk_iff {R T : Type*} [Semiring R] [Semiring T] (f g : R →+* T)
-    {r : R} (hr : f r = g r) : IsUnit (⟨r, hr⟩ : f.eqLocusS g) ↔ IsUnit r :=
+namespace RingHom
+
+variable {R T : Type*} [Semiring T]
+
+theorem isUnit_eqLocusS_mk_iff [Semiring R] (f g : R →+* T) {r : R} (hr : f r = g r) :
+    IsUnit (⟨r, hr⟩ : f.eqLocusS g) ↔ IsUnit r :=
   MonoidHom.isUnit_eqLocusM_mk_iff ..
 
-theorem RingHom.isUnit_eqLocus_mk_iff {R T : Type*} [Ring R] [Semiring T] (f g : R →+* T)
-    {r : R} (hr : f r = g r) : IsUnit (⟨r, hr⟩ : f.eqLocus g) ↔ IsUnit r :=
+theorem isUnit_eqLocus_mk_iff [Ring R] (f g : R →+* T) {r : R} (hr : f r = g r) :
+    IsUnit (⟨r, hr⟩ : f.eqLocus g) ↔ IsUnit r :=
   MonoidHom.isUnit_eqLocusM_mk_iff ..
+
+instance [Semiring R] (f g : R →+* T) : IsLocalHom (f.eqLocusS g).subtype where
+  map_nonunit r := f.isUnit_eqLocusS_mk_iff g r.prop |>.2
+
+instance [Ring R] (f g : R →+* T) : IsLocalHom (f.eqLocus g).subtype where
+  map_nonunit r := f.isUnit_eqLocus_mk_iff g r.prop |>.2
+
+end RingHom
