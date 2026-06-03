@@ -429,14 +429,14 @@ if `t` is measurable. -/
 theorem IntegrableOn.of_forall_sdiff_eq_zero {f : α → ε'}
     (hf : IntegrableOn f s μ) (ht : MeasurableSet t)
     (h't : ∀ x ∈ t \ s, f x = 0) : IntegrableOn f t μ :=
-  hf.of_ae_diff_eq_zero ht.nullMeasurableSet (Eventually.of_forall h't)
+  hf.of_ae_sdiff_eq_zero ht.nullMeasurableSet (Eventually.of_forall h't)
 
 /-- If a function is integrable on a set `s` and vanishes almost everywhere on its complement,
 then it is integrable. -/
 theorem IntegrableOn.integrable_of_ae_notMem_eq_zero
     {f : α → ε'} (hf : IntegrableOn f s μ) (h't : ∀ᵐ x ∂μ, x ∉ s → f x = 0) : Integrable f μ := by
   rw [← integrableOn_univ]
-  apply hf.of_ae_diff_eq_zero nullMeasurableSet_univ
+  apply hf.of_ae_sdiff_eq_zero nullMeasurableSet_univ
   filter_upwards [h't] with x hx h'x using hx h'x.2
 
 /-- If a function is integrable on a set `s` and vanishes everywhere on its complement,
@@ -448,7 +448,7 @@ theorem IntegrableOn.integrable_of_forall_notMem_eq_zero
 theorem IntegrableOn.of_inter_support {f : α → ε'}
     (hs : MeasurableSet s) (hf : IntegrableOn f (s ∩ support f) μ) :
     IntegrableOn f s μ := by
-  simpa using hf.of_forall_diff_eq_zero hs
+  simpa using hf.of_forall_sdiff_eq_zero hs
 
 theorem integrableOn_iff_integrable_of_support_subset
     {f : α → ε'} (h1s : support f ⊆ s) : IntegrableOn f s μ ↔ Integrable f μ := by

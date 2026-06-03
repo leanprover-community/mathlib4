@@ -42,7 +42,7 @@ variable (X : Scheme.{u}) (Z : Set X) (hZ : Z ∈ irreducibleComponents X) [IsNo
 def irreducibleComponentOpen : Opens X :=
   ⟨(⋃₀ (irreducibleComponents X \ {Z}))ᶜ, by
     rw [Set.sUnion_eq_biUnion, isOpen_compl_iff]
-    exact TopologicalSpace.NoetherianSpace.finite_irreducibleComponents.diff.isClosed_biUnion
+    exact TopologicalSpace.NoetherianSpace.finite_irreducibleComponents.sdiff.isClosed_biUnion
       fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1⟩
 
 /-- The ideal sheaf data associated to an irreducible component of a Noetherian scheme. -/

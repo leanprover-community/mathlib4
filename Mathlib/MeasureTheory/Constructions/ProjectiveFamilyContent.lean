@@ -156,14 +156,14 @@ lemma projectiveFamilyContent_sdiff (hP : IsProjectiveMeasureFamily P)
     (hs : s ∈ measurableCylinders α) (ht : t ∈ measurableCylinders α) :
     projectiveFamilyContent hP s - projectiveFamilyContent hP t
       ≤ projectiveFamilyContent hP (s \ t) :=
-  le_addContent_diff (projectiveFamilyContent hP) isSetRing_measurableCylinders hs ht
+  le_addContent_sdiff (projectiveFamilyContent hP) isSetRing_measurableCylinders hs ht
 
 lemma projectiveFamilyContent_sdiff_of_subset [∀ J, IsFiniteMeasure (P J)]
     (hP : IsProjectiveMeasureFamily P) (hs : s ∈ measurableCylinders α)
     (ht : t ∈ measurableCylinders α) (hts : t ⊆ s) :
     projectiveFamilyContent hP (s \ t)
       = projectiveFamilyContent hP s - projectiveFamilyContent hP t :=
-  addContent_diff_of_ne_top (projectiveFamilyContent hP) isSetRing_measurableCylinders
+  addContent_sdiff_of_ne_top (projectiveFamilyContent hP) isSetRing_measurableCylinders
     (fun _ _ ↦ projectiveFamilyContent_ne_top hP) hs ht hts
 
 end ProjectiveFamilyContent

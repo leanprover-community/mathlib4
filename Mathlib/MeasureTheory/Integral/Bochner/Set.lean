@@ -97,7 +97,7 @@ theorem setIntegral_sdiff (ht : MeasurableSet t) (hfs : IntegrableOn f s μ) (ht
     ∫ x in s \ t, f x ∂μ = ∫ x in s, f x ∂μ - ∫ x in t, f x ∂μ :=
   setIntegral_sdiff₀ ht.nullMeasurableSet hfs hts
 
-@[deprecated (since := "2026-03-04")] alias integral_diff := setIntegral_diff
+@[deprecated (since := "2026-03-04")] alias integral_diff := setIntegral_sdiff
 
 theorem integral_inter_add_sdiff₀ (ht : NullMeasurableSet t μ) (hfs : IntegrableOn f s μ) :
     ∫ x in s ∩ t, f x ∂μ + ∫ x in s \ t, f x ∂μ = ∫ x in s, f x ∂μ := by
@@ -273,7 +273,7 @@ theorem tendsto_setIntegral_of_monotone₀
   have : ∀ᶠ i in atTop, ν (s i) ∈ Icc (ν S - ε) (ν S + ε) :=
     tendsto_measure_iUnion_atTop h_mono (ENNReal.Icc_mem_nhds hfi'.ne (ENNReal.coe_pos.2 ε0).ne')
   filter_upwards [this] with i hi
-  rw [mem_closedBall_iff_norm', ← setIntegral_diff₀ (hsm i) hfi hsub, ← coe_nnnorm,
+  rw [mem_closedBall_iff_norm', ← setIntegral_sdiff₀ (hsm i) hfi hsub, ← coe_nnnorm,
     NNReal.coe_le_coe, ← ENNReal.coe_le_coe]
   refine (enorm_integral_le_lintegral_enorm _).trans ?_
   have hsm' : NullMeasurableSet (s i) ν := (hsm i).mono_ac (withDensity_absolutelyContinuous ..)
@@ -299,9 +299,9 @@ theorem tendsto_setIntegral_of_antitone
   suffices Tendsto (∫ x in s i₀, f x ∂μ - ∫ x in s i₀ \ s ·, f x ∂μ) atTop
       (𝓝 (∫ x in s i₀, f x ∂μ - ∫ x in ⋃ i, s i₀ \ s i, f x ∂μ)) by
     convert! this.congr' <| (eventually_ge_atTop i₀).mono fun i hi ↦ ?_
-    · rw [← sdiff_iInter, setIntegral_diff _ hi₀ (iInter_subset _ _), sub_sub_cancel]
+    · rw [← sdiff_iInter, setIntegral_sdiff _ hi₀ (iInter_subset _ _), sub_sub_cancel]
       exact .iInter_of_antitone h_anti hsm
-    · rw [setIntegral_diff (hsm i) hi₀ (h_anti hi), sub_sub_cancel]
+    · rw [setIntegral_sdiff (hsm i) hi₀ (h_anti hi), sub_sub_cancel]
   apply tendsto_const_nhds.sub
   refine tendsto_setIntegral_of_monotone (by measurability) ?_ ?_
   · exact fun i j h ↦ sdiff_subset_sdiff_right (h_anti h)
@@ -416,7 +416,7 @@ theorem setIntegral_eq_of_subset_of_ae_sdiff_eq_zero_aux (hts : s ⊆ t)
       apply setIntegral_congr_set
       filter_upwards [h't] with x hx
       change (x ∈ t \ k) = (x ∈ s \ k)
-      simp only [eq_iff_iff, and_congr_left_iff, mem_sdiff]
+      simp only [eq_iff_iff, and_congr_left_iff, Set.mem_sdiff]
       intro h'x
       by_cases xs : x ∈ s
       · simp only [xs, hts xs]
@@ -433,7 +433,7 @@ and `t` coincide if `t` is null-measurable. -/
 theorem setIntegral_eq_of_subset_of_ae_sdiff_eq_zero (ht : NullMeasurableSet t μ) (hts : s ⊆ t)
     (h't : ∀ᵐ x ∂μ, x ∈ t \ s → f x = 0) : ∫ x in t, f x ∂μ = ∫ x in s, f x ∂μ := by
   by_cases h : IntegrableOn f t μ; swap
-  · have : ¬IntegrableOn f s μ := fun H => h (H.of_ae_diff_eq_zero ht h't)
+  · have : ¬IntegrableOn f s μ := fun H => h (H.of_ae_sdiff_eq_zero ht h't)
     rw [integral_undef h, integral_undef this]
   let f' := h.1.mk f
   calc
@@ -1009,13 +1009,14 @@ variable {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M] {mX : Measurable
 
 theorem MeasureTheory.setIntegral_support : ∫ x in support F, F x ∂ν = ∫ x, F x ∂ν := by
   nth_rw 2 [← setIntegral_univ]
-  rw [setIntegral_eq_of_subset_of_forall_diff_eq_zero MeasurableSet.univ (subset_univ (support F))]
+  rw [setIntegral_eq_of_subset_of_forall_sdiff_eq_zero MeasurableSet.univ (subset_univ (support F))]
   exact fun _ hx => notMem_support.mp <| notMem_of_mem_sdiff hx
 
 theorem MeasureTheory.setIntegral_tsupport [TopologicalSpace X] :
     ∫ x in tsupport F, F x ∂ν = ∫ x, F x ∂ν := by
   nth_rw 2 [← setIntegral_univ]
-  rw [setIntegral_eq_of_subset_of_forall_diff_eq_zero MeasurableSet.univ (subset_univ (tsupport F))]
+  rw [setIntegral_eq_of_subset_of_forall_sdiff_eq_zero MeasurableSet.univ
+    (subset_univ (tsupport F))]
   exact fun _ hx => image_eq_zero_of_notMem_tsupport <| notMem_of_mem_sdiff hx
 
 end Support

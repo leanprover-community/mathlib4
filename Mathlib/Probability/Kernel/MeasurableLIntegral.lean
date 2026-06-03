@@ -58,7 +58,7 @@ theorem measurable_kernel_prodMk_left_of_finite {t : Set (α × β)} (ht : Measu
     have h_eq_sdiff : ∀ a, Prod.mk a ⁻¹' tᶜ = Set.univ \ Prod.mk a ⁻¹' t := by
       intro a
       ext1 b
-      simp only [mem_compl_iff, mem_preimage, mem_sdiff, mem_univ, true_and]
+      simp only [mem_compl_iff, mem_preimage, Set.mem_sdiff, mem_univ, true_and]
     simp_rw [h_eq_sdiff]
     have : (fun a => κ a (Set.univ \ Prod.mk a ⁻¹' t)) =
         fun a => κ a Set.univ - κ a (Prod.mk a ⁻¹' t) := by

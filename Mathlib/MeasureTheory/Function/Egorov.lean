@@ -195,7 +195,7 @@ theorem tendstoUniformlyOn_of_ae_tendsto_of_measurable_edist
     Egorov.iUnionNotConvergentSeq_subset hε hf hsm hs hfg,
     Egorov.iUnionNotConvergentSeq_measurableSet hε hf hsm hs hfg,
     Egorov.measure_iUnionNotConvergentSeq hε hf hsm hs hfg,
-    Egorov.tendstoUniformlyOn_diff_iUnionNotConvergentSeq hε hf hsm hs hfg⟩
+    Egorov.tendstoUniformlyOn_sdiff_iUnionNotConvergentSeq hε hf hsm hs hfg⟩
 
 /-- **Egorov's theorem**: If `f : ι → α → β` is a sequence of strongly measurable functions that
 converges to `g : α → β` almost everywhere on a measurable set `s` of finite measure,

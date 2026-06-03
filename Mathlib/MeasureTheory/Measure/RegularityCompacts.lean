@@ -78,7 +78,8 @@ theorem innerRegularWRT_of_exists_compl_lt {p q : Set α → Prop} (hpq : ∀ A 
     obtain ⟨K', hpK', hK'_lt⟩ := hμ (μ A - r) (tsub_pos_of_lt hr)
     refine ⟨K' ∩ A, hpq K' A hpK' hA, inter_subset_right, ?_⟩
     · refine (measure_mono fun x ↦ ?_).trans_lt hK'_lt
-      simp only [sdiff_inter_self_eq_sdiff, mem_sdiff, mem_compl_iff, and_imp, imp_self, imp_true_iff]
+      simp only [sdiff_inter_self_eq_sdiff, mem_sdiff, mem_compl_iff, and_imp, imp_self,
+        imp_true_iff]
   refine ⟨K, hK_subset, hK, ?_⟩
   have h_lt' : μ A - μ K < μ A - r := le_measure_sdiff.trans_lt h_lt
   exact lt_of_tsub_lt_tsub_left h_lt'

@@ -272,7 +272,7 @@ theorem Set.OrdConnected.measurableSet [OrderClosedTopology α] (h : OrdConnecte
   let u := ⋃ (x ∈ s) (y ∈ s), Ioo x y
   have huopen : IsOpen u := isOpen_biUnion fun _ _ => isOpen_biUnion fun _ _ => isOpen_Ioo
   have humeas : MeasurableSet u := huopen.measurableSet
-  have hfinite : (s \ u).Finite := s.finite_diff_iUnion_Ioo
+  have hfinite : (s \ u).Finite := s.finite_sdiff_iUnion_Ioo
   have : u ⊆ s := iUnion₂_subset fun x hx => iUnion₂_subset fun y hy =>
     Ioo_subset_Icc_self.trans (h.out hx hy)
   rw [← union_sdiff_cancel this]

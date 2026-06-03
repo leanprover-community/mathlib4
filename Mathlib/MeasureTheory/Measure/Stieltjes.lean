@@ -456,7 +456,7 @@ theorem measurableSet_Ioi {c : R} : MeasurableSet[f.outer.caratheodory] (Ioi c) 
   simp only [length_eq]
   refine le_iInf fun a => le_iInf fun b => le_iInf fun h => ?_
   simp only [← length_eq]
-  rw [← length_diff_botSet, inter_sdiff_right_comm, ← length_diff_botSet (s := t \ Ioi c),
+  rw [← length_sdiff_botSet, inter_sdiff_right_comm, ← length_sdiff_botSet (s := t \ Ioi c),
     sdiff_sdiff_comm]
   refine
     le_trans
@@ -469,8 +469,8 @@ theorem measurableSet_Ioi {c : R} : MeasurableSet[f.outer.caratheodory] (Ioi c) 
       ← ENNReal.ofReal_add, f.mono hac, f.mono hbc, sub_nonneg,
       sub_add_sub_cancel, le_refl,
       max_eq_right]
-  · simp only [hbc, le_refl, Ioc_eq_empty, Ioc_inter_Ioi, min_eq_left, Ioc_sdiff_Ioi, f.length_empty,
-      zero_add, or_true, le_sup_iff, f.length_Ioc, not_lt]
+  · simp only [hbc, le_refl, Ioc_eq_empty, Ioc_inter_Ioi, min_eq_left, Ioc_sdiff_Ioi,
+      f.length_empty, zero_add, or_true, le_sup_iff, f.length_Ioc, not_lt]
   · simp only [hac, hbc, Ioc_inter_Ioi, Ioc_sdiff_Ioi, f.length_Ioc, min_eq_right,
       le_refl, Ioc_eq_empty, add_zero, max_eq_left, f.length_empty, not_lt]
 
@@ -502,7 +502,7 @@ theorem outer_trim [MeasurableSpace R] [BorelSpace R] [DenselyOrdered R] :
       _ ≤ f.outer botSet + f.outer (Ioc a b) := measure_union_le _ _
       _ ≤ f.length botSet + f.outer (Ioc a b) := by gcongr; apply outer_le_length
       _ = 0 + f.outer (Ioc a b) := by
-        simp only [← length_diff_botSet, sdiff_self, bot_eq_empty, empty_sdiff, outer_Ioc, zero_add]
+        simp only [← length_sdiff_botSet, sdiff_self, empty_sdiff, outer_Ioc, zero_add]
         simp [empty_sdiff]
       _ = f.outer (Ioc a b) := by simp
       _ < f.length (t i) + ofReal ↑(ε' i) := by simpa using h₂
@@ -547,7 +547,7 @@ theorem measure_singleton (a : R) : f.measure {a} = ofReal (f a - leftLim f a) :
     apply eq_bot_iff.2
     rw [StieltjesFunction.measure]
     apply (outer_le_length _ _).trans
-    rw [← length_diff_botSet]
+    rw [← length_sdiff_botSet]
     simp [subsingleton_botSet.eq_singleton_of_mem ha]
   obtain ⟨b, hb⟩ : ∃ b, b < a := by simpa only [IsBot, not_forall, not_le] using ha
   obtain ⟨u, u_mono, u_lt_a, u_lim⟩ :

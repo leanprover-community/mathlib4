@@ -349,26 +349,26 @@ theorem measureReal_eq_measureReal_of_null_sdiff (hst : s ⊆ t)
     (h_nulldiff : μ.real (t \ s) = 0) (h : μ (t \ s) ≠ ∞ := by finiteness) :
     μ.real s = μ.real t := by
   rw [measureReal_eq_zero_iff h] at h_nulldiff
-  simp [measureReal_def, measure_eq_measure_of_null_diff hst h_nulldiff]
+  simp [measureReal_def, measure_eq_measure_of_null_sdiff hst h_nulldiff]
 
 theorem measureReal_eq_measureReal_of_between_null_sdiff
     (h12 : s₁ ⊆ s₂) (h23 : s₂ ⊆ s₃) (h_nulldiff : μ.real (s₃ \ s₁) = 0)
     (h' : μ (s₃ \ s₁) ≠ ∞ := by finiteness) :
     μ.real s₁ = μ.real s₂ ∧ μ.real s₂ = μ.real s₃ := by
   have A : μ s₁ = μ s₂ ∧ μ s₂ = μ s₃ :=
-    measure_eq_measure_of_between_null_diff h12 h23 ((measureReal_eq_zero_iff h').1 h_nulldiff)
+    measure_eq_measure_of_between_null_sdiff h12 h23 ((measureReal_eq_zero_iff h').1 h_nulldiff)
   simp [measureReal_def, A.1, A.2]
 
 theorem measureReal_eq_measureReal_smaller_of_between_null_sdiff (h12 : s₁ ⊆ s₂)
     (h23 : s₂ ⊆ s₃) (h_nulldiff : μ.real (s₃ \ s₁) = 0)
     (h' : μ (s₃ \ s₁) ≠ ∞ := by finiteness) :
     μ.real s₁ = μ.real s₂ :=
-  (measureReal_eq_measureReal_of_between_null_diff h12 h23 h_nulldiff h').1
+  (measureReal_eq_measureReal_of_between_null_sdiff h12 h23 h_nulldiff h').1
 
 theorem measureReal_eq_measureReal_larger_of_between_null_sdiff (h12 : s₁ ⊆ s₂)
     (h23 : s₂ ⊆ s₃) (h_nulldiff : μ.real (s₃ \ s₁) = 0) (h' : μ (s₃ \ s₁) ≠ ∞ := by finiteness) :
     μ.real s₂ = μ.real s₃ :=
-  (measureReal_eq_measureReal_of_between_null_diff h12 h23 h_nulldiff h').2
+  (measureReal_eq_measureReal_of_between_null_sdiff h12 h23 h_nulldiff h').2
 
 theorem measureReal_compl [IsFiniteMeasure μ] (h₁ : MeasurableSet s) :
     μ.real sᶜ = μ.real univ - μ.real s := by

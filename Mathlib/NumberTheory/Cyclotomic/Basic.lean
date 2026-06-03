@@ -127,7 +127,7 @@ theorem isCyclotomicExtension_zero_iff :
     IsCyclotomicExtension {0} A B ↔ Function.Surjective (algebraMap A B) := by
   rw [surjective_algebraMap_iff, eq_comm]
   refine ⟨?_, fun h ↦ singleton_zero_of_bot_eq_top h⟩
-  rw [eq_self_sdiff_zero, sdiff_self, Set.bot_eq_empty, subsingleton_iff_bot_eq_top]
+  rw [eq_self_sdiff_zero, sdiff_self, subsingleton_iff_bot_eq_top]
   exact fun _ ↦ instSubsingleton A B
 
 variable (A B)

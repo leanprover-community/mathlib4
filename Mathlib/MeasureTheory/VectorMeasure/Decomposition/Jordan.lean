@@ -290,7 +290,7 @@ theorem of_sdiff_eq_zero_of_symmDiff_eq_zero_negative (hu : MeasurableSet u) (hv
     (hsu : s ≤[u] 0) (hsv : s ≤[v] 0) (hs : s (u ∆ v) = 0) : s (u \ v) = 0 ∧ s (v \ u) = 0 := by
   rw [← s.neg_le_neg_iff _ hu, neg_zero] at hsu
   rw [← s.neg_le_neg_iff _ hv, neg_zero] at hsv
-  have := of_diff_eq_zero_of_symmDiff_eq_zero_positive hu hv hsu hsv
+  have := of_sdiff_eq_zero_of_symmDiff_eq_zero_positive hu hv hsu hsv
   simp only [Pi.neg_apply, neg_eq_zero, coe_neg] at this
   exact this hs
 
@@ -305,10 +305,10 @@ theorem of_inter_eq_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv : Me
     rw [← Set.inter_symmDiff_distrib_left]
     exact Set.inter_subset_right
   obtain ⟨huv, hvu⟩ :=
-    of_diff_eq_zero_of_symmDiff_eq_zero_positive (hw.inter hu) (hw.inter hv)
+    of_sdiff_eq_zero_of_symmDiff_eq_zero_positive (hw.inter hu) (hw.inter hv)
       (restrict_le_restrict_subset _ _ hu hsu (w.inter_subset_right))
       (restrict_le_restrict_subset _ _ hv hsv (w.inter_subset_right)) hwuv
-  rw [← of_diff_of_diff_eq_zero (hw.inter hu) (hw.inter hv) hvu, huv, zero_add]
+  rw [← of_sdiff_of_sdiff_eq_zero (hw.inter hu) (hw.inter hv) hvu, huv, zero_add]
 
 theorem of_inter_eq_of_symmDiff_eq_zero_negative (hu : MeasurableSet u) (hv : MeasurableSet v)
     (hw : MeasurableSet w) (hsu : s ≤[u] 0) (hsv : s ≤[v] 0) (hs : s (u ∆ v) = 0) :

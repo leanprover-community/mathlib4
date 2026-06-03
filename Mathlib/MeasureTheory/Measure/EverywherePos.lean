@@ -82,19 +82,19 @@ variable {μ ν : Measure α} {s k : Set α}
 protected lemma _root_.MeasurableSet.everywherePosSubset [OpensMeasurableSpace α]
     (hs : MeasurableSet s) :
     MeasurableSet (μ.everywherePosSubset s) := by
-  rcases exists_isOpen_everywherePosSubset_eq_diff μ s with ⟨u, u_open, hu⟩
+  rcases exists_isOpen_everywherePosSubset_eq_sdiff μ s with ⟨u, u_open, hu⟩
   rw [hu]
   exact hs.diff u_open.measurableSet
 
 protected lemma _root_.IsClosed.everywherePosSubset (hs : IsClosed s) :
     IsClosed (μ.everywherePosSubset s) := by
-  rcases exists_isOpen_everywherePosSubset_eq_diff μ s with ⟨u, u_open, hu⟩
+  rcases exists_isOpen_everywherePosSubset_eq_sdiff μ s with ⟨u, u_open, hu⟩
   rw [hu]
   exact hs.sdiff u_open
 
 protected lemma _root_.IsCompact.everywherePosSubset (hs : IsCompact s) :
     IsCompact (μ.everywherePosSubset s) := by
-  rcases exists_isOpen_everywherePosSubset_eq_diff μ s with ⟨u, u_open, hu⟩
+  rcases exists_isOpen_everywherePosSubset_eq_sdiff μ s with ⟨u, u_open, hu⟩
   rw [hu]
   exact hs.diff u_open
 
@@ -231,7 +231,7 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
     ∧ Tendsto u atTop (𝓝 0) := exists_seq_strictAnti_tendsto' (zero_lt_one : (0 : ℝ≥0∞) < 1)
   have : ∀ n, ∃ (W : Set G), IsOpen W ∧ 1 ∈ W ∧ ∀ g ∈ W * W, μ ((g • k) \ k) < u n :=
     fun n ↦ exists_open_nhds_one_mul_subset
-      (eventually_nhds_one_measure_smul_diff_lt hk h'k (u_mem n).1.ne')
+      (eventually_nhds_one_measure_smul_sdiff_lt hk h'k (u_mem n).1.ne')
   choose W W_open mem_W hW using this
   let V n := ⋂ i ∈ Finset.range n, W i
   suffices ⋂ n, V n * k ⊆ k by
