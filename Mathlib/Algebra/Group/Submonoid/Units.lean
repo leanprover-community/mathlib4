@@ -350,3 +350,6 @@ theorem MonoidHom.isUnit_eqLocusM_mk_iff {N : Type*} [Monoid N] (f g : M →* N)
   refine ⟨s, hs.left, ?_, hs.right⟩
   rw [← mul_one (f s), ← map_one g, ← hs.left, map_mul, ← mul_assoc, ← hr, ← map_mul,
     hs.right, map_one, one_mul]
+
+instance {N : Type*} [Monoid N] (f g : M →* N) : IsLocalHom (f.eqLocusM g).subtype where
+  map_nonunit r := f.isUnit_eqLocusM_mk_iff g r.prop |>.2
