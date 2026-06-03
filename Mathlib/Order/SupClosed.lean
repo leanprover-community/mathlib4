@@ -64,6 +64,7 @@ lemma supClosed_sInter (hS : ∀ s ∈ S, SupClosed s) : SupClosed (⋂₀ S) :=
 lemma supClosed_iInter (hf : ∀ i, SupClosed (f i)) : SupClosed (⋂ i, f i) :=
   supClosed_sInter <| forall_mem_range.2 hf
 
+@[to_dual InfClosed.codirectedOn]
 lemma SupClosed.directedOn (hs : SupClosed s) : DirectedOn (· ≤ ·) s :=
   fun _a ha _b hb ↦ ⟨_, hs ha hb, le_sup_left, le_sup_right⟩
 
@@ -126,19 +127,6 @@ lemma SupClosed.finsetSup_mem [OrderBot α] (hs : SupClosed s) (ht : t.Nonempty)
 
 end Finset
 end SemilatticeSup
-
-section SemilatticeInf
-variable [SemilatticeInf α] [SemilatticeInf β]
-
-section Set
-variable {ι : Sort*} {S : Set (Set α)} {f : ι → Set α} {s t : Set α} {a : α}
-
-lemma InfClosed.codirectedOn (hs : InfClosed s) : DirectedOn (· ≥ ·) s :=
-  fun _a ha _b hb ↦ ⟨_, hs ha hb, inf_le_left, inf_le_right⟩
-
-end Set
-
-end SemilatticeInf
 
 open Finset OrderDual
 
