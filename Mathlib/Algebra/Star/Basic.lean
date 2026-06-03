@@ -245,7 +245,7 @@ def starAddEquiv [AddMonoid R] [StarAddMonoid R] : R ≃+ R where
 
 @[simp]
 theorem toEquiv_starAddEquiv [AddMonoid R] [StarAddMonoid R] :
-    (starAddEquiv : R ≃+ R).toEquiv = Equiv.Perm.star :=
+    (starAddEquiv : R ≃+ R) = (Equiv.Perm.star : R ≃ R) :=
   rfl
 
 @[simp]
