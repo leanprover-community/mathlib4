@@ -100,7 +100,7 @@ lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
       Disjoint (⨅ i, (f i).maxGenEigenspace (χ i))
         (s.sup fun (χ : ι → R) ↦ ⨅ i, (f i).maxGenEigenspace (χ i)) by
     simpa only [iSupIndep_iff_supIndep,
-      Finset.supIndep_iff_disjoint_erase] using fun s χ _ ↦ this _ _ (s.notMem_erase χ)
+      Finset.supIndep_iff_disjoint_erase] using! fun s χ _ ↦ this _ _ (s.notMem_erase χ)
   intro χ₁ s
   induction s using Finset.induction_on with
   | empty => simp
@@ -119,7 +119,7 @@ lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
       ((f l - algebraMap R (Module.End R M) (χ₂ l)) ^ k) (y + z) ∈
       (⨅ i, (f i).maxGenEigenspace (χ₁ i)) ⊓
         Finset.sup s fun χ ↦ ⨅ i, (f i).maxGenEigenspace (χ i) by
-    simpa [ih.eq_bot, Submodule.mem_bot] using this
+    simpa [ih.eq_bot, Submodule.mem_bot] using! this
   intro l
   let g : Module.End R M := f l - algebraMap R (Module.End R M) (χ₂ l)
   obtain ⟨k, hk : (g ^ k) y = 0⟩ := (mem_iInf_maxGenEigenspace_iff _ _ _).mp hy l

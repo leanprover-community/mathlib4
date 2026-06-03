@@ -58,7 +58,7 @@ theorem ringHom_ext {S} [Semiring S] {f g : R[X] →+* S} (h₁ : ∀ a, f (C a)
   have A : f' = g' := by
     ext
     · simp [f', g', h₁, RingEquiv.toRingHom_eq_coe]
-    simpa using h₂
+    simpa using! h₂
   have B : f = f'.comp (toFinsuppIso R) := by
     rw [hf', RingHom.comp_assoc]
     ext x

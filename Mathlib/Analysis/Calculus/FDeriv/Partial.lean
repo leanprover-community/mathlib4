@@ -52,6 +52,7 @@ theorem isLittleO_sub_sub_fderiv
 variable {𝕜 E₁ E₂ F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁]
   [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If bivariate `f : E₁ → E₂ → F` has partial derivatives `f₁` and `f₂` in a neighbourhood of
 `u : E₁ × E₂` and if they are continuous there then the uncurried function `↿f` is strictly
 differentiable at `u` with its derivative mapping `z` to `f₁ u.1 u.2 z.1 + f₂ u.1 u.2 z.2`. -/
@@ -83,8 +84,8 @@ public theorem hasStrictFDerivAt_uncurry_coprod
             apply isLittleO_sub_sub_fderiv (α := (E₁ × E₂) × (E₁ × E₂))
               (f := fun (v, w) x => f x w.2) (f' := fun (v, w) x => f₁ x w.2)
               (tendsto_fst.comp tendsto_fst) (tendsto_fst.comp tendsto_snd)
-            · simpa using h.eventually df₁
-            · simpa using cf₁.comp h
+            · simpa using! h.eventually df₁
+            · simpa using! cf₁.comp h
           _ =O[(𝓝 u.1 ×ˢ 𝓝 u.2) ×ˢ (𝓝 u.1 ×ˢ 𝓝 u.2)] (fun (v, w) => v - w : _ → E₁ × E₂) := by
             simp [isBigO_of_le]
       · calc
@@ -95,7 +96,7 @@ public theorem hasStrictFDerivAt_uncurry_coprod
             let : NormedSpace ℝ E₂ := RestrictScalars.normedSpace ℝ 𝕜 E₂
             apply isLittleO_sub_sub_fderiv (f' := fun (v, w) y => f₂ v.1 y)
               (tendsto_snd.comp tendsto_fst) (tendsto_snd.comp tendsto_snd)
-            · simpa using h.eventually df₂
-            · simpa using cf₂.comp h
+            · simpa using! h.eventually df₂
+            · simpa using! cf₂.comp h
           _ =O[(𝓝 u.1 ×ˢ 𝓝 u.2) ×ˢ (𝓝 u.1 ×ˢ 𝓝 u.2)] (fun (v, w) => v - w : _ → E₁ × E₂) := by
             simp [isBigO_of_le]

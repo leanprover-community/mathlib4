@@ -369,7 +369,7 @@ can 'cancel' it to give a natural iso between `F` and `G`.
 noncomputable def fullyFaithfulCancelRight {F G : C ⥤ D} (H : D ⥤ E) [Full H] [H.Faithful]
     (comp_iso : F ⋙ H ≅ G ⋙ H) : F ≅ G :=
   NatIso.ofComponents (fun X => H.preimageIso (comp_iso.app X)) fun f =>
-    H.map_injective (by simpa using comp_iso.hom.naturality f)
+    H.map_injective (by simpa using! comp_iso.hom.naturality f)
 
 @[simp]
 theorem fullyFaithfulCancelRight_hom_app {F G : C ⥤ D} {H : D ⥤ E} [Full H] [H.Faithful]

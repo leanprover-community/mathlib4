@@ -13,6 +13,10 @@ public import Mathlib.RingTheory.Polynomial.Ideal
 public import Mathlib.RingTheory.Valuation.Integral
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 
+-- The copyright notice exceeds the maximum column width, but the `linter.style.header` linter
+-- flags the copyright notice if "All rights reserved." is not on the same line as "Copyright".
+set_option linter.style.header false
+
 /-!
 
 # Valuation subrings are exactly the maximal local subrings
@@ -224,7 +228,7 @@ lemma bijective_rangeRestrict_comp_of_valuationRing [IsDomain R] [ValuationRing 
     (f : R →+* S) (g : S →+* K) (h : g.comp f = algebraMap R K) [IsLocalHom f] :
     Function.Bijective (g.rangeRestrict.comp f) := by
   refine ⟨?_, ?_⟩
-  · exact .of_comp (f := Subtype.val) (by convert (IsFractionRing.injective R K); rw [← h]; rfl)
+  · exact .of_comp (f := Subtype.val) (by convert! (IsFractionRing.injective R K); rw [← h]; rfl)
   · let V : ValuationSubring K :=
       ⟨(algebraMap R K).range, ValuationRing.isInteger_or_isInteger R⟩
     suffices LocalSubring.range g ≤ V.toLocalSubring by
@@ -238,7 +242,7 @@ lemma bijective_rangeRestrict_comp_of_valuationRing [IsDomain R] [ValuationRing 
     suffices IsUnit a from this.map (algebraMap R K).rangeRestrict
     apply IsUnit.of_map f
     apply (IsLocalHom.of_surjective g.rangeRestrict g.rangeRestrict_surjective).1
-    convert ha
+    convert! ha
     simp [← h]
 
 lemma IsLocalRing.exists_factor_valuationRing [IsLocalRing R] (f : R →+* K) :

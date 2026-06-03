@@ -48,7 +48,7 @@ variable {R}
 theorem expand_eq_comp_X_pow {f : R[X]} : expand R p f = f.comp (X ^ p) := rfl
 
 theorem expand_eq_sum {f : R[X]} : expand R p f = f.sum fun e a => C a * (X ^ p) ^ e := by
-  simp [expand, eval₂]
+  simp [expand, eval₂_eq_sum]
 
 @[simp]
 theorem expand_C (r : R) : expand R p (C r) = C r :=

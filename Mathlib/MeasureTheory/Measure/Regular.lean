@@ -275,7 +275,7 @@ protected theorem comap {α β} [MeasurableSpace α] {mβ : MeasurableSpace β}
 theorem smul (H : InnerRegularWRT μ p q) (c : ℝ≥0∞) : InnerRegularWRT (c • μ) p q := by
   intro U hU r hr
   rw [smul_apply, H.measure_eq_iSup hU, smul_eq_mul] at hr
-  simpa only [ENNReal.mul_iSup, lt_iSup_iff, exists_prop] using hr
+  simpa only [ENNReal.mul_iSup, lt_iSup_iff, exists_prop] using! hr
 
 theorem trans {q' : Set α → Prop} (H : InnerRegularWRT μ p q) (H' : InnerRegularWRT μ q q') :
     InnerRegularWRT μ p q' := by
@@ -420,7 +420,7 @@ protected theorem smul (μ : Measure α) [OuterRegular μ] {x : ℝ≥0∞} (hx 
     exact OuterRegular.zero
   · refine ⟨fun A _ r hr => ?_⟩
     rw [smul_apply, A.measure_eq_iInf_isOpen, smul_eq_mul] at hr
-    simpa only [ENNReal.mul_iInf_of_ne h0 hx, gt_iff_lt, iInf_lt_iff, exists_prop] using hr
+    simpa only [ENNReal.mul_iInf_of_ne h0 hx, gt_iff_lt, iInf_lt_iff, exists_prop] using! hr
 
 instance smul_nnreal (μ : Measure α) [OuterRegular μ] (c : ℝ≥0) :
     OuterRegular (c • μ) :=
@@ -745,7 +745,7 @@ protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace
     [BorelSpace β] (f : α ≃ₜ β) :
     InnerRegular (Measure.map f μ) ↔ InnerRegular μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.map f⟩
-  convert h.map f.symm
+  convert! h.map f.symm
   rw [map_map f.symm.continuous.measurable f.continuous.measurable]
   simp
 
@@ -881,7 +881,7 @@ instance restrict [h : InnerRegularCompactLTTop μ] (A : Set α) :
 instance (priority := 50) [h : InnerRegularCompactLTTop μ] [IsFiniteMeasure μ] :
     InnerRegular μ := by
   constructor
-  convert h.innerRegular with s
+  convert! h.innerRegular with s
   simp [measure_ne_top μ s]
 
 instance (priority := 50) [BorelSpace α] [R1Space α] [InnerRegularCompactLTTop μ]
@@ -922,7 +922,6 @@ protected theorem _root_.IsCompact.exists_isOpen_lt_add [InnerRegularCompactLTTo
     ∃ U, K ⊆ U ∧ IsOpen U ∧ μ U < μ K + ε :=
   hK.exists_isOpen_lt_of_lt _ (ENNReal.lt_add_right hK.measure_lt_top.ne hε)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `μ` be a locally finite measure on an R₁ topological space with Borel σ-algebra.
 If `μ` is inner regular for finite measure sets with respect to compact sets,
 then any measurable set of finite measure can be approximated in measure by an open set.
@@ -970,7 +969,7 @@ instance smul [h : InnerRegularCompactLTTop μ] (c : ℝ≥0∞) : InnerRegularC
     · simp [h's] at hr
     · simp [h'c, h's] at hs
   · constructor
-    convert InnerRegularWRT.smul h.innerRegular c using 2 with s
+    convert! InnerRegularWRT.smul h.innerRegular c using 2 with s
     have : (c • μ) s ≠ ∞ ↔ μ s ≠ ∞ := by simp [ENNReal.mul_eq_top, hc, h'c]
     simp only [this]
 
@@ -1122,7 +1121,7 @@ protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace
     [BorelSpace β] (f : α ≃ₜ β) :
     Regular (Measure.map f μ) ↔ Regular μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.map f⟩
-  convert h.map f.symm
+  convert! h.map f.symm
   rw [map_map f.symm.continuous.measurable f.continuous.measurable]
   simp
 

@@ -33,14 +33,8 @@ instance CauchyFilter.isSymm_gen {s : SetRel X X} [s.IsSymm] : (gen s).IsSymm wh
   symm _ := by simp [CauchyFilter.gen, s.mem_filter_prod_comm]
 
 
-@[deprecated (since := "2025-10-17")]
-alias IsSymmetricRel.cauchyFilter_gen := CauchyFilter.isSymm_gen
-
 instance CauchyFilter.isTrans_gen {s : SetRel X X} [s.IsTrans] : (gen s).IsTrans where
   trans _ _ _ := IsTransitiveRel.mem_filter_prod_trans
-
-@[deprecated (since := "2025-10-17")]
-alias IsTransitiveRel.cauchyFilter_gen := CauchyFilter.isTrans_gen
 
 set_option linter.flexible false in -- simp followed by infer_instance
 instance IsUltraUniformity.cauchyFilter [IsUltraUniformity X] :

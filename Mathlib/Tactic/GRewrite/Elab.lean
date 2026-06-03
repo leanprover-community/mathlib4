@@ -6,6 +6,7 @@ Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 module
 
 public meta import Lean.Elab.Tactic.Rewrite
+public meta import Lean.Elab.ConfigEval
 public import Mathlib.Tactic.GRewrite.Core
 
 /-!

@@ -204,7 +204,7 @@ lemma mulIndicator_inter_mulSupport (s : Set α) (f : α → M) :
 lemma comp_mulIndicator (h : M → β) (f : α → M) {s : Set α} {x : α} [DecidablePred (· ∈ s)] :
     h (s.mulIndicator f x) = s.piecewise (h ∘ f) (const α (h 1)) x := by
   letI := Classical.decPred (· ∈ s)
-  convert s.apply_piecewise f (const α 1) (fun _ => h) (x := x) using 2
+  convert! s.apply_piecewise f (const α 1) (fun _ => h) (x := x) using 2
 
 @[to_additive]
 lemma mulIndicator_comp_right {s : Set α} (f : β → α) {g : α → M} {x : β} :

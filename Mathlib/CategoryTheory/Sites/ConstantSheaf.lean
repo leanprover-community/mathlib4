@@ -40,6 +40,7 @@ open Limits Opposite Category Functor Sheaf Adjunction
 variable {C : Type*} [Category* C] (J : GrothendieckTopology C)
 variable (D : Type*) [Category* D]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The constant presheaf functor is left adjoint to evaluation at a terminal object. -/
 @[simps! unit_app counit_app_app]
@@ -194,6 +195,7 @@ lemma constantCommuteCompose_hom_app_hom (X : D) : ((constantCommuteCompose J U)
 @[deprecated (since := "2026-03-05")]
 alias constantCommuteCompose_hom_app_val := constantCommuteCompose_hom_app_hom
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The counit of `constantSheafAdj` factors through the isomorphism `constantCommuteCompose`. -/
 lemma constantSheafAdj_counit_w {T : C} (hT : IsTerminal T) :

@@ -78,7 +78,7 @@ instance : IsContinuousRiemannianBundle F₁ (Bundle.Trivial B F₁) := by
   intro x
   rw [FiberBundle.continuousAt_totalSpace]
   refine ⟨continuousAt_id, ?_⟩
-  convert continuousAt_const (y := innerSL ℝ)
+  convert! continuousAt_const (y := innerSL ℝ)
   ext v w
   simp [hom_trivializationAt_apply, inCoordinates]
 
@@ -188,7 +188,7 @@ lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr 
     rw [inCoordinates_apply_eq₂ h'y h'y (Set.mem_univ _)]
     have A : ((trivializationAt F E x).symm y)
        ((trivializationAt F E x).linearMapAt ℝ y v) = v := by
-      convert ((trivializationAt F E x).continuousLinearEquivAt ℝ _ h'y).symm_apply_apply v
+      convert! ((trivializationAt F E x).continuousLinearEquivAt ℝ _ h'y).symm_apply_apply v
       simp [Trivialization.coe_continuousLinearEquivAt_eq _ h'y]
     simp [A, w]
   have hgx : g x ((trivializationAt F E x).symm x w) ((trivializationAt F E x).symm x w) =
@@ -230,7 +230,7 @@ lemma eventually_norm_trivializationAt_lt (x : B) :
     have h'x : x ∈ (trivializationAt F E x).baseSet := FiberBundle.mem_baseSet_trivializationAt' x
     simp only [coe_comp', Trivialization.continuousLinearMapAt_apply, Trivialization.symmL_apply,
       Function.comp_apply, coe_id', id_eq]
-    convert ((trivializationAt F E x).continuousLinearEquivAt ℝ _ h'x).apply_symm_apply v
+    convert! ((trivializationAt F E x).continuousLinearEquivAt ℝ _ h'x).apply_symm_apply v
     simp [Trivialization.coe_continuousLinearEquivAt_eq _ h'x]
   have : (trivializationAt F E x).continuousLinearMapAt ℝ y =
     (ContinuousLinearMap.id _ _) ∘L ((trivializationAt F E x).continuousLinearMapAt ℝ y) := by simp
@@ -291,7 +291,7 @@ lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr 
     rw [inCoordinates_apply_eq₂ h'x h'x (Set.mem_univ _)]
     have A : ((trivializationAt F E x).symm x)
        ((trivializationAt F E x).linearMapAt ℝ x v) = v := by
-      convert ((trivializationAt F E x).continuousLinearEquivAt ℝ _ h'x).symm_apply_apply v
+      convert! ((trivializationAt F E x).continuousLinearEquivAt ℝ _ h'x).symm_apply_apply v
       simp [Trivialization.coe_continuousLinearEquivAt_eq _ h'x]
     simp [A, w]
   have hgy : g y ((trivializationAt F E x).symm y w) ((trivializationAt F E x).symm y w)
@@ -335,7 +335,7 @@ lemma eventually_norm_symmL_trivializationAt_lt (x : B) :
     have h'x : x ∈ (trivializationAt F E x).baseSet := FiberBundle.mem_baseSet_trivializationAt' x
     simp only [coe_comp', Trivialization.continuousLinearMapAt_apply, Trivialization.symmL_apply,
       Function.comp_apply, coe_id', id_eq]
-    convert ((trivializationAt F E x).continuousLinearEquivAt ℝ _ h'x).apply_symm_apply v
+    convert! ((trivializationAt F E x).continuousLinearEquivAt ℝ _ h'x).apply_symm_apply v
     simp [Trivialization.coe_continuousLinearEquivAt_eq _ h'x]
   have : (trivializationAt F E x).symmL ℝ y =
      ((trivializationAt F E x).symmL ℝ y) ∘L (ContinuousLinearMap.id _ _) := by simp

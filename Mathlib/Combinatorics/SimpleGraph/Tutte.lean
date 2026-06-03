@@ -59,7 +59,7 @@ variable [Finite V]
 
 lemma IsTutteViolator.mono {u : Set V} (h : G ≤ G') (ht : G'.IsTutteViolator u) :
     G.IsTutteViolator u := by
-  simp only [IsTutteViolator, Subgraph.induce_verts, Subgraph.verts_top] at *
+  simp only [IsTutteViolator] at *
   have := ncard_oddComponents_mono _ (Subgraph.deleteVerts_mono' (G := G) (G' := G') u h)
   simp only [oddComponents] at *
   #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
@@ -113,7 +113,7 @@ private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
     by_cases h : v ∈ M1.verts
     · exact M1.verts.mem_union_left _ h
     right
-    simp only [deleteUniversalVerts_verts, Subgraph.verts_iSup, Set.mem_iUnion, M2,
+    simp only [Subgraph.verts_iSup, Set.mem_iUnion, M2,
       hcomplMatch_compl]
     use G.deleteUniversalVerts.coe.connectedComponentMk ⟨v, hv⟩
     aesop
@@ -149,7 +149,7 @@ lemma not_isTutteViolator_of_isPerfectMatching {M : Subgraph G} (hM : M.IsPerfec
   have hfinj : f.Injective := fun c d hcd ↦ by
     replace hcd : g c = g d := Subtype.val_injective <| hM.1.eq_of_adj_right (hgf c) (hcd ▸ hgf d)
     exact Subtype.val_injective <| ConnectedComponent.eq_of_common_vertex (hg c) (hcd ▸ hg d)
-  simpa [IsTutteViolator] using
+  simpa [IsTutteViolator] using!
     Nat.card_le_card_of_injective (fun c ↦ ⟨f c, hf c⟩) (fun c d ↦ by simp [hfinj.eq_iff])
 
 open scoped symmDiff
@@ -295,7 +295,7 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
     obtain ⟨x, a, b, hxa, hxb, hnadjxb, hnxb⟩ := Walk.exists_adj_adj_not_adj_ne hp.2
       (p.reachable.one_lt_dist_of_ne_of_not_adj hxy.1 hxy.2)
     simp only [ConnectedComponent.toSimpleGraph, deleteUniversalVerts, universalVerts, ne_eq,
-      Subgraph.induce_verts, Subgraph.verts_top, comap_adj, Function.Embedding.coe_subtype,
+      Subgraph.verts_top, comap_adj, Function.Embedding.coe_subtype,
       Subgraph.coe_adj, Subgraph.induce_adj, Subtype.coe_prop, Subgraph.top_adj, true_and]
       at hxa hxb hnadjxb
     obtain ⟨c, hc⟩ : ∃ (c : V), (a : V) ≠ c ∧ ¬ Gmax.Adj c a := by

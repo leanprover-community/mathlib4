@@ -302,9 +302,9 @@ lemma spine_δ₀ {m : ℕ} (x : X _⦋m + 1⦌) :
     X.spine m (X.δ 0 x) = (X.spine (m + 1) x).interval 1 m := by
   obtain _ | m := m
   · ext
-    simp [spine, Path.vertex, Truncated.Path.vertex, SimplicialObject.truncation,
-      Truncated.spine, Path.interval, Truncated.Path.interval, Truncated.inclusion,
-      Truncated.Hom.tr, ← SimplexCategory.δ_zero_eq_const, ← SimplicialObject.δ_def]
+    simp [spine, Path.vertex, Truncated.Path.vertex,
+      Truncated.spine, Path.interval, Truncated.Path.interval,
+      Truncated.Hom.tr, ← SimplexCategory.δ_zero_eq_const]
     rfl
   · ext i
     dsimp
@@ -373,7 +373,7 @@ def horn.spineId {n : ℕ} (i : Fin (n + 3))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
     Path (Λ[n + 2, i] : SSet.{u}) (n + 2) :=
   Λ[n + 2, i].liftPath (stdSimplex.spineId (n + 2)) (by simp) (fun j ↦ by
-    convert (horn.primitiveEdge.{u} h₀ hₙ j).2
+    convert! (horn.primitiveEdge.{u} h₀ hₙ j).2
     ext a
     fin_cases a <;> rfl)
 

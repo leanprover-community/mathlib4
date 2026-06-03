@@ -192,7 +192,7 @@ lemma exists_comap_evalRingHom_eq
   let h₁ : Function.Surjective (Pi.evalRingHom R i) := RingHomSurjective.is_surjective
   have h₂ : RingHom.ker (Pi.evalRingHom R i) ≤ p.asIdeal := by
     intro x hx
-    convert p.asIdeal.mul_mem_left x hi
+    convert! p.asIdeal.mul_mem_left x hi
     ext j
     by_cases hj : i = j
     · subst hj; simpa [e]
@@ -258,7 +258,7 @@ alias image_specComap_zeroLocus_eq_zeroLocus_comap := image_comap_zeroLocus_eq_z
 theorem range_comap_of_surjective (hf : Surjective f) :
     Set.range (comap f) = zeroLocus (ker f) := by
   rw [← Set.image_univ]
-  convert image_comap_zeroLocus_eq_zeroLocus_comap _ _ hf _
+  convert! image_comap_zeroLocus_eq_zeroLocus_comap _ _ hf _
   rw [zeroLocus_bot]
 
 @[deprecated (since := "2025-12-10")]

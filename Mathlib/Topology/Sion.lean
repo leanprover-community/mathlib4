@@ -503,13 +503,13 @@ public theorem DMCompletion.exists_isSaddlePointOn :
   let φ : E → F → γ := fun x y ↦ ι (f x y)
   -- suffices : ∃ a ∈ X, ∃ b ∈ Y, IsSaddlePointOn X Y φ a b
   have hφx (x) (hx : x ∈ X) : UpperSemicontinuousOn (fun y ↦ φ x y) Y := by
-    convert Continuous.comp_upperSemicontinuousOn hι (hfx x hx) ι.monotone
+    convert! Continuous.comp_upperSemicontinuousOn hι (hfx x hx) ι.monotone
   have hφx' (x) (hx : x ∈ X) : QuasiconcaveOn ℝ Y fun y ↦ φ x y := by
-    convert (hfx' x hx).monotone_comp ι.monotone
+    convert! (hfx' x hx).monotone_comp ι.monotone
   have hφy (y) (hy : y ∈ Y) : LowerSemicontinuousOn (fun x ↦ φ x y) X := by
-    convert Continuous.comp_lowerSemicontinuousOn hι (hfy y hy) ι.monotone
+    convert! Continuous.comp_lowerSemicontinuousOn hι (hfy y hy) ι.monotone
   have hφy' (y) (hy : y ∈ Y) : QuasiconvexOn ℝ X fun x ↦ φ x y := by
-    convert (hfy' y hy).monotone_comp ι.monotone
+    convert! (hfy' y hy).monotone_comp ι.monotone
   obtain ⟨a, ha, b, hb, hab⟩ :=
     exists_isSaddlePointOn' ne_X kX hφy hφy' cY kY hφx hφx' cX ne_Y
   use a, ha, b, hb

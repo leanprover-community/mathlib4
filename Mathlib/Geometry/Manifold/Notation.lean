@@ -973,18 +973,20 @@ initialize registerTraceClass `Elab.DiffGeo.MDiff (inherited := true)
 
 end trace
 
-section delaborators
-
 /-!
 ### Delaborators
 
-In this section we make sure the infoview also uses those notations.
-Not all notations are supported yet.
+In this section we make sure the infoview also uses the above notation.
+Not all elaborators are supported yet.
 -/
+section delaborators
+
+namespace Manifold
+
 open Bundle PrettyPrinter Delaborator SubExpr
 
 /-- Delaborator for `Bundle.TotalSpace.mk` using anonymous constructor notation. -/
-@[app_delab TotalSpace.mk] meta def delabTotalSpace_mk : Delab := do
+@[app_delab TotalSpace.mk] meta def delabTotalSpaceMk : Delab := do
   whenPPOption getPPNotation do
   withOverApp 5 do
   let bd ← withNaryArg 3 <| delab
@@ -992,7 +994,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
   `(⟨$bd, $vd⟩)
 
 /-- Delaborator for `Bundle.TotalSpace.mk'` using anonymous constructor notation. -/
-@[app_delab Bundle.TotalSpace.mk'] meta def delabTotalSpace_mk' : Delab := do
+@[app_delab Bundle.TotalSpace.mk'] meta def delabTotalSpaceMkPrime : Delab := do
   whenPPOption getPPNotation do
   withOverApp 5 do
   let bd ← withNaryArg 3 <| delab
@@ -1001,7 +1003,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
 
 /-- Delaborator for `mfderiv` using the custom elaborator, and special-casing
 arguments that can use the `T%` elaborator. -/
-@[app_delab mfderiv] meta def delab_mfderiv : Delab := do
+@[app_delab mfderiv] meta def delabMFDeriv : Delab := do
   whenPPOption getPPNotation do
   withOverApp 21 do
   try
@@ -1034,7 +1036,7 @@ arguments that can use the `T%` elaborator. -/
     let Tσs ← withAppArg do
       let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
       `((T% $σs)) >>= annotateGoToSyntaxDef
-    `(MDiffAt $Tσs) >>= annotateGoToSyntaxDef
+    `(MDiff $Tσs) >>= annotateGoToSyntaxDef
   catch _ =>
     let fs ← withAppArg delab
     `(MDiff $fs) >>= annotateGoToSyntaxDef
@@ -1102,5 +1104,7 @@ arguments that can use the `T%` elaborator. -/
 -- ContMDiff, ContMDiffOn, ContMDiffAt, ContMDiffWithinAt, HasMFDerivAt, HasMFDerivWithinAt
 
 -- TODO: when adding more elaborators, also add the corresponding delaborators
+
+end Manifold
 
 end delaborators

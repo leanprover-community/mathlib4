@@ -61,6 +61,7 @@ lemma mapComp'_hom_naturality :
       ((F.map f).toFunctor.map a) :=
   (F.mapComp' f g fg hfg).hom.toNatTrans.naturality a
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in -- Needed in Sites/Descent/IsPrestack.lean
 @[reassoc (attr := simp)]
 lemma mapComp'_inv_naturality :

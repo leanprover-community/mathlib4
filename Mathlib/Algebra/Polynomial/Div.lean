@@ -317,7 +317,7 @@ theorem degree_divByMonic_lt (p q : R[X]) (hp0 : p ≠ 0)
       exact
         Nat.cast_lt.2
           (Nat.lt_add_of_pos_left (Nat.cast_lt.1 <|
-            by simpa [degree_eq_natDegree hq.ne_zero] using h0q))
+            by simpa [degree_eq_natDegree hq.ne_zero] using! h0q))
   else by
     rwa [divByMonic_eq_of_not_monic _ hq, degree_zero, bot_lt_iff_ne_bot, degree_ne_bot]
 
@@ -422,7 +422,7 @@ theorem map_dvd_map [Ring S] (f : R →+* S) (hf : Function.Injective f) {x y : 
 
 @[simp]
 theorem modByMonic_one (p : R[X]) : p %ₘ 1 = 0 :=
-  (modByMonic_eq_zero_iff_dvd (by convert monic_one (R := R))).2 (one_dvd _)
+  (modByMonic_eq_zero_iff_dvd (by convert! monic_one (R := R))).2 (one_dvd _)
 
 @[simp]
 theorem divByMonic_one (p : R[X]) : p /ₘ 1 = p := by
@@ -789,7 +789,7 @@ lemma _root_.Irreducible.isRoot_eq_bot_of_natDegree_ne_one
     (hi : Irreducible p) (hdeg : p.natDegree ≠ 1) : p.IsRoot = ⊥ :=
   le_bot_iff.mp fun _ ↦ hi.not_isRoot_of_natDegree_ne_one hdeg
 
-lemma _root_.Irreducible.subsingleton_isRoot [IsLeftCancelMulZero R]
+lemma _root_.Irreducible.subsingleton_isRoot
     (hi : Irreducible p) : { x | p.IsRoot x }.Subsingleton :=
   fun _ hx ↦ (subsingleton_isRoot_of_natDegree_eq_one <| natDegree_eq_of_degree_eq_some <|
     degree_eq_one_of_irreducible_of_root hi hx) hx

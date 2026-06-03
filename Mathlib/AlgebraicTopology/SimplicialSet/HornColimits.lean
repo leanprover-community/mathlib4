@@ -157,7 +157,7 @@ lemma hom_ext' {i : Fin (n + 2)} {f g : (Λ[n + 1, i] : SSet) ⟶ X}
     (h : ∀ (j : Fin (n + 2)) (hj : j ≠ i), horn.ι i j hj ≫ f = horn.ι i j hj ≫ g) :
     f = g := by
   refine Multicofork.IsColimit.hom_ext (isColimit i) (fun ⟨j, hj⟩ ↦ ?_)
-  simpa only [faceSingletonComplIso_inv_ι_assoc] using
+  simpa only [faceSingletonComplIso_inv_ι_assoc] using!
     (stdSimplex.faceSingletonComplIso j).inv ≫= h j hj
 
 /-- Let `i : Fin (n + 2)`. This is the condition that a family of morphisms
@@ -206,6 +206,7 @@ lemma δ_pred_comp {i : Fin (n + 3)} {f : ∀ (j : Fin (n + 3)) (_ : j ≠ i), (
 
 variable {i : Fin (n + 2)} {f : ∀ (j : Fin (n + 2)) (_ : j ≠ i), (Δ[n] : SSet) ⟶ X}
 
+set_option backward.defeqAttrib.useBackward true in
 open stdSimplex in
 /-- Auxiliary definition for `horn.IsCompatible.desc`. -/
 private def multicofork (hf : horn.IsCompatible f) :
@@ -227,7 +228,7 @@ lemma exists_desc (hf : horn.IsCompatible f) :
       ∀ (j : Fin (n + 2)) (hj : j ≠ i), horn.ι i j hj ≫ φ = f j hj :=
   ⟨(horn.isColimit.{u} i).desc hf.multicofork, fun j hj ↦ by
     rw [← cancel_epi (stdSimplex.faceSingletonComplIso j).inv]
-    simpa using (horn.isColimit.{u} i).fac hf.multicofork (.right ⟨j, hj⟩)⟩
+    simpa using! (horn.isColimit.{u} i).fac hf.multicofork (.right ⟨j, hj⟩)⟩
 
 /-- Let `i : Fin (n + 2)`. Given a compatible family of morphisms `Δ[n] ⟶ X` for `j ≠ i`,
 this is the glued morphism `Λ[n + 1, i] ⟶ X`. -/
@@ -260,6 +261,7 @@ variable {X : SSet.{u}} (f₀ f₂ f₃ : Δ[2] ⟶ X)
   (h₁₃ : stdSimplex.δ 1 ≫ f₀ = stdSimplex.δ 0 ≫ f₂)
   (h₂₃ : stdSimplex.δ 2 ≫ f₂ = stdSimplex.δ 2 ≫ f₃)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `desc`. -/
 @[simps! pt]
@@ -275,15 +277,15 @@ def desc.multicofork :
       fin_cases x
       · simp only [← cancel_epi (stdSimplex.facePairIso.{u} (n := 3) 1 3 (by simp)).hom,
           ← Category.assoc]
-        convert h₁₃ <;> decide
+        convert! h₁₃ <;> decide
       · dsimp
         simp only [← cancel_epi (stdSimplex.facePairIso.{u} (n := 3) 1 2 (by simp)).hom,
           ← Category.assoc]
-        convert h₁₂ <;> decide
+        convert! h₁₂ <;> decide
       · dsimp
         simp only [← cancel_epi (stdSimplex.facePairIso.{u} (n := 3) 0 1 (by simp)).hom,
           ← Category.assoc]
-        convert h₂₃ <;> decide)
+        convert! h₂₃ <;> decide)
 
 @[simp, reassoc]
 lemma desc.multicofork_π_zero :
@@ -346,6 +348,7 @@ variable {X : SSet.{u}} (f₀ f₁ f₃ : Δ[2] ⟶ X)
   (h₁₂ : stdSimplex.δ 2 ≫ f₀ = stdSimplex.δ 0 ≫ f₃)
   (h₂₃ : stdSimplex.δ 0 ≫ f₀ = stdSimplex.δ 0 ≫ f₁)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `desc`. -/
 @[simps! pt]
@@ -362,15 +365,15 @@ def desc.multicofork :
       · dsimp
         simp only [← cancel_epi (stdSimplex.facePairIso.{u} (n := 3) 2 3 (by simp)).hom,
           ← Category.assoc]
-        convert h₂₃ <;> decide
+        convert! h₂₃ <;> decide
       · dsimp
         simp only [← cancel_epi (stdSimplex.facePairIso.{u} (n := 3) 1 2 (by simp)).hom,
           ← Category.assoc]
-        convert h₁₂ <;> decide
+        convert! h₁₂ <;> decide
       · dsimp
         simp only [← cancel_epi (stdSimplex.facePairIso.{u} (n := 3) 0 2 (by simp)).hom,
           ← Category.assoc]
-        convert h₀₂ <;> decide)
+        convert! h₀₂ <;> decide)
 
 @[simp, reassoc]
 lemma desc.multicofork_π_zero :

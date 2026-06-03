@@ -252,7 +252,7 @@ theorem withDensity_apply_eq_zero' {f : α → ℝ≥0∞} {s : Set α} (hf : AE
     swap
     · simp only [measurableSet_toMeasurable, MeasurableSet.nullMeasurableSet]
     simp only [Pi.zero_apply] at A
-    convert A using 2
+    convert! A using 2
     ext x
     simp only [and_comm, exists_prop, mem_inter_iff, mem_setOf_eq,
       not_forall]
@@ -371,6 +371,15 @@ theorem count_withDensity' {f : α → ℝ≥0∞} (hf : Measurable f) :
 theorem count_withDensity [MeasurableSingletonClass α] (f : α → ℝ≥0∞) :
     count.withDensity f = sum (fun a ↦ f a • dirac a) := by
   simp [count, withDensity_sum, dirac_withDensity]
+
+@[fun_prop]
+theorem measurable_withDensity {β : Type*} [MeasurableSpace β] {f : β → α → ℝ≥0∞}
+    [SFinite μ] (hf : Measurable f.uncurry) :
+    Measurable fun b ↦ μ.withDensity (f b) := by
+  rw [Measure.measurable_measure]
+  intro s hs
+  simp only [withDensity_apply _ hs]
+  fun_prop
 
 open MeasureTheory.SimpleFunc
 

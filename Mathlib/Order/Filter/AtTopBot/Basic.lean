@@ -445,6 +445,18 @@ theorem map_div_atTop_eq_nat (k : ℕ) (hk : 0 < k) : map (fun a => a / k) atTop
     (fun a b _ => by rw [Nat.div_le_iff_le_mul_add_pred hk])
     fun b _ => by rw [Nat.mul_add_div hk, Nat.div_eq_of_lt, Nat.add_zero]; lia
 
+theorem tendsto_inf_atTop {α β : Type*} [SemilatticeInf α]
+    {f g : β → α} (F : Filter β) (hf : Tendsto f F atTop) (hg : Tendsto g F atTop) :
+    Tendsto (fun x ↦ f x ⊓ g x) F atTop := by
+  rw [Filter.tendsto_atTop] at *
+  simp [eventually_and, hf, hg]
+
+theorem tendsto_sup_atBot {α β : Type*} [SemilatticeSup α]
+    {f g : β → α} (F : Filter β) (hf : Tendsto f F atBot) (hg : Tendsto g F atBot) :
+    Tendsto (fun x ↦ f x ⊔ g x) F atBot := by
+  rw [Filter.tendsto_atBot] at *
+  simp [eventually_and, hf, hg]
+
 section NeBot
 variable [Preorder β] {l : Filter α} [NeBot l] {f : α → β}
 

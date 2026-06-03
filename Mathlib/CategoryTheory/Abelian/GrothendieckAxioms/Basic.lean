@@ -100,6 +100,7 @@ lemma HasExactColimitsOfShape.domain_of_functor {D : Type*} (J : Type*) [Categor
       exact Cone.ext ((preservesColimitNatIso F).symm.app _)
         fun i ↦ (preservesColimitNatIso F).inv.naturality _ } } }
 
+set_option backward.defeqAttrib.useBackward true in
 variable {C} in
 /--
 Pull back a `HasExactLimitsOfShape J` along a functor which preserves and reflects finite colimits

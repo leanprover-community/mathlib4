@@ -252,7 +252,6 @@ variable (W') in
 `(x₂, y₂)` on a Weierstrass curve `W`, where the line through them has a slope of `ℓ`.
 
 This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `ℓ`. -/
-@[simp]
 def addY (x₁ x₂ y₁ ℓ : R) : R :=
   W'.negY (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ)
 
@@ -272,7 +271,7 @@ lemma addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
     rw [equation_iff] at h₁ h₂
     rw [slope_of_Y_ne rfl hy]
     rw [negY, ← sub_ne_zero] at hy
-    replace hy : y₁ - (-y₁ - x₁ * W.a₁ - W.a₃) ≠ 0 := by convert hy using 1; ring
+    replace hy : y₁ - (-y₁ - x₁ * W.a₁ - W.a₃) ≠ 0 := by convert! hy using 1; ring
     ext
     · rfl
     · simp only [addX]

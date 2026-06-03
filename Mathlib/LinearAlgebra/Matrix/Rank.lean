@@ -93,7 +93,7 @@ lemma eRank_toNat_eq_finrank (A : Matrix m n R) :
 
 lemma eRank_submatrix_le (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
     (A.submatrix r c).eRank ≤ A.eRank := by
-  simpa using OrderHom.mono (β := ℕ∞) Cardinal.toENat <| lift_cRank_submatrix_le A r c
+  simpa using! OrderHom.mono (β := ℕ∞) Cardinal.toENat <| lift_cRank_submatrix_le A r c
 
 lemma eRank_le_card_width [StrongRankCondition R] (A : Matrix m n R) : A.eRank ≤ ENat.card n := by
   wlog hfin : Finite n
@@ -130,7 +130,7 @@ theorem rank_subsingleton [Subsingleton R] (A : Matrix m n R) : A.rank = 1 :=
 theorem cRank_one [Nontrivial R] [DecidableEq m] :
     (cRank (1 : Matrix m m R)) = lift.{uR} #m := by
   have h : LinearIndependent R (1 : Matrix m m R)ᵀ := by
-    convert Pi.linearIndependent_single_one m R
+    convert! Pi.linearIndependent_single_one m R
     simp [funext_iff, Matrix.one_eq_pi_single]
   rw [cRank, rank_span h, ← lift_umax, ← Cardinal.mk_range_eq_of_injective h.injective, lift_id']
 
@@ -218,7 +218,7 @@ lemma rank_mul_eq_right_of_isUnit_det [Fintype m] [DecidableEq m]
     (A * B).rank = B.rank := by
   let b : Basis m R (m → R) := Pi.basisFun R m
   replace hA : IsUnit (LinearMap.toMatrix b b A.mulVecLin).det := by
-    convert hA; rw [← LinearEquiv.eq_symm_apply]; rfl
+    convert! hA; rw [← LinearEquiv.eq_symm_apply]; rfl
   have hAB : mulVecLin (A * B) = (LinearEquiv.ofIsUnitDet hA).comp (mulVecLin B) := by ext; simp
   rw [rank, rank, hAB, LinearMap.range_comp, LinearEquiv.finrank_map_eq]
 
@@ -250,7 +250,7 @@ theorem rank_reindex [Fintype n₀] (em : m ≃ m₀) (en : n ≃ n₀) (A : Mat
 @[simp]
 theorem rank_submatrix [Fintype n₀] (A : Matrix m n R) (em : m₀ ≃ m) (en : n₀ ≃ n) :
     rank (A.submatrix em en) = rank A := by
-  simpa only [reindex_apply] using rank_reindex em.symm en.symm A
+  simpa only [reindex_apply] using! rank_reindex em.symm en.symm A
 
 @[simp]
 theorem lift_cRank_submatrix {n : Type un} (A : Matrix m n R) (em : m₀ ≃ m) (en : n₀ ≃ n) :
@@ -276,7 +276,7 @@ theorem cRank_reindex {m₀ : Type um} {n : Type un} (A : Matrix m n R) (em : m 
 @[simp]
 theorem eRank_submatrix {n : Type un} (A : Matrix m n R) (em : m₀ ≃ m) (en : n₀ ≃ n) :
     eRank (A.submatrix em en) = eRank A := by
-  simpa [-lift_cRank_submatrix] using congr_arg Cardinal.toENat <| A.lift_cRank_submatrix em en
+  simpa [-lift_cRank_submatrix] using! congr_arg Cardinal.toENat <| A.lift_cRank_submatrix em en
 
 theorem eRank_reindex {m₀ : Type um} {n : Type un} (A : Matrix m n R) (em : m ≃ m₀) (en : n ≃ n₀) :
     eRank (A.reindex em en) = eRank A :=
@@ -340,7 +340,7 @@ theorem cRank_diagonal [DecidableEq m] (w : m → R) :
   have h : LinearIndependent R w' := by
     have hli' := Pi.linearIndependent_single_of_ne_zero (R := R)
       (v := fun i : m ↦ if w i = 0 then (1 : R) else w i) (by simp [ite_eq_iff'])
-    convert hli'.comp Subtype.val Subtype.val_injective
+    convert! hli'.comp Subtype.val Subtype.val_injective
     ext ⟨j, hj⟩ k
     simp [w', diagonal, hj, Pi.single_apply, eq_comm]
   have hrw : insert 0 (range (diagonal w)ᵀ) = insert 0 (range w') := by

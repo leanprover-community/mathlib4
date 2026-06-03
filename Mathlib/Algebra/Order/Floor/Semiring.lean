@@ -51,8 +51,6 @@ theorem floor_eq_iff (ha : 0 ≤ a) : ⌊a⌋₊ = n ↔ ↑n ≤ a ∧ a < ↑n
   rw [← le_floor_iff ha, ← Nat.cast_one, ← Nat.cast_add, ← floor_lt ha, Nat.lt_add_one_iff,
     le_antisymm_iff, and_comm]
 
-variable [IsStrictOrderedRing R]
-
 theorem lt_of_floor_lt (h : ⌊a⌋₊ < n) : a < n :=
   lt_of_not_ge fun h' => (le_floor h').not_gt h
 
@@ -63,6 +61,8 @@ theorem lt_succ_floor (a : R) : a < ⌊a⌋₊.succ :=
 
 @[bound]
 theorem lt_floor_add_one (a : R) : a < ⌊a⌋₊ + 1 := by simpa using lt_succ_floor a
+
+variable [IsStrictOrderedRing R]
 
 @[simp]
 theorem floor_natCast (n : ℕ) : ⌊(n : R)⌋₊ = n :=
@@ -198,8 +198,6 @@ theorem preimage_ceil_zero : (Nat.ceil : R → ℕ) ⁻¹' {0} = Iic 0 :=
 theorem preimage_ceil_of_ne_zero (hn : n ≠ 0) : (Nat.ceil : R → ℕ) ⁻¹' {n} = Ioc (↑(n - 1) : R) n :=
   ext fun _ => ceil_eq_iff hn
 
-variable [IsStrictOrderedRing R]
-
 @[bound]
 theorem ceil_le_floor_add_one (a : R) : ⌈a⌉₊ ≤ ⌊a⌋₊ + 1 := by
   rw [ceil_le, Nat.cast_add, Nat.cast_one]
@@ -212,6 +210,8 @@ theorem ceil_intCast {R : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R]
   eq_of_forall_ge_iff fun a => by
     simp only [ceil_le, Int.toNat_le]
     norm_cast
+
+variable [IsStrictOrderedRing R]
 
 @[simp]
 theorem ceil_natCast (n : ℕ) : ⌈(n : R)⌉₊ = n :=

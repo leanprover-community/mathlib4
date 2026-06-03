@@ -112,7 +112,7 @@ lemma of_span_eq_top_target (s : Set S) (hs : Ideal.span (s : Set S) = ⊤)
   have Ht (g : t) : Algebra.FinitePresentation R (Localization.Away (f' g)) := by
     have : ∃ (a : S) (hb : a ∈ s), (Ideal.Quotient.mk I) (g' ⟨a, hb⟩) = g.val := by
       obtain ⟨g, hg⟩ := g
-      convert hg
+      convert! hg
       simp [A, t]
     obtain ⟨r, hr, hrr⟩ := this
     simp only [f']

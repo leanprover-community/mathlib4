@@ -120,7 +120,6 @@ def coeAddHom : AddHom ℕ+ ℕ where
   toFun := (↑)
   map_add' := add_coe
 
-
 /-- The order isomorphism between ℕ and ℕ+ given by `succ`. -/
 @[simps! -fullyApplied apply]
 def _root_.OrderIso.pnatIsoNat : ℕ+ ≃o ℕ where
@@ -138,6 +137,9 @@ theorem add_one_le_iff : ∀ {a b : ℕ+}, a + 1 ≤ b ↔ a < b := Nat.add_one_
 instance instOrderBot : OrderBot ℕ+ where
   bot := 1
   bot_le a := a.property
+
+instance : IsBotOneClass ℕ+ where
+  isBot_one a := a.2
 
 @[simp]
 theorem bot_eq_one : (⊥ : ℕ+) = 1 :=
@@ -205,9 +207,9 @@ def coeMonoidHom : ℕ+ →* ℕ where
 theorem coe_coeMonoidHom : (coeMonoidHom : ℕ+ → ℕ) = (↑) :=
   rfl
 
-@[simp]
-theorem le_one_iff {n : ℕ+} : n ≤ 1 ↔ n = 1 :=
-  le_bot_iff
+@[deprecated le_one_iff_eq_one (since := "2026-05-07")]
+theorem le_one_iff {n : ℕ+} : n ≤ 1 ↔ n = 1 := by
+  simp
 
 theorem lt_add_left (n m : ℕ+) : n < m + n :=
   lt_add_of_pos_left _ m.2
@@ -219,8 +221,8 @@ theorem lt_add_right (n m : ℕ+) : n < n + m :=
 theorem pow_coe (m : ℕ+) (n : ℕ) : ↑(m ^ n) = (m : ℕ) ^ n :=
   rfl
 
-/-- b is greater one if any a is less than b -/
-theorem one_lt_of_lt {a b : ℕ+} (hab : a < b) : 1 < b := bot_le.trans_lt hab
+@[deprecated one_lt_of_gt (since := "2026-05-07")]
+theorem one_lt_of_lt {a b : ℕ+} (hab : a < b) : 1 < b := hab.one_lt
 
 theorem add_one (a : ℕ+) : a + 1 = succPNat a := rfl
 
@@ -305,13 +307,8 @@ theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
   split_ifs with h
   · have hm : (m : ℕ) > 0 := m.pos
     rw [← Nat.mod_add_div (m : ℕ) (k : ℕ), h, zero_add] at hm ⊢
-    by_cases h₁ : (m : ℕ) / (k : ℕ) = 0
-    · rw [h₁, mul_zero] at hm
-      exact (lt_irrefl _ hm).elim
-    · let h₂ : (k : ℕ) * 1 ≤ k * (m / k) :=
-        Nat.mul_le_mul_left (k : ℕ) (Nat.succ_le_of_lt (Nat.pos_of_ne_zero h₁))
-      rw [mul_one] at h₂
-      exact ⟨h₂, le_refl (k : ℕ)⟩
+    simp
+    lia
   · exact ⟨Nat.mod_le (m : ℕ) (k : ℕ), (Nat.mod_lt (m : ℕ) k.pos).le⟩
 
 theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by

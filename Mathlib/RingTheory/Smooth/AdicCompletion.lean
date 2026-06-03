@@ -107,7 +107,7 @@ public lemma exists_kerProj_comp_eq_id (f : S →ₐ[R] A) (hf : Function.Surjec
     (Ideal.quotientKerAlgEquivOfSurjective hf).symm.toAlgHom
   use g
   ext x
-  simpa using congr(Ideal.quotientKerAlgEquivOfSurjective hf ($hg x))
+  simpa using! congr(Ideal.quotientKerAlgEquivOfSurjective hf ($hg x))
 
 end FormallySmooth
 

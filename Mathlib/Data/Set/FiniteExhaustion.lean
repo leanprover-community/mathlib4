@@ -74,11 +74,14 @@ noncomputable def _root_.Set.Countable.finiteExhaustion {s : Set α} (hs : s.Cou
   · refine ⟨fun _ ↦ ∅, by simp [Finite.to_subtype], fun n ↦ by simp, ?_⟩
     simp [Set.not_nonempty_iff_eq_empty'.mp h]
 
-lemma Set.nonempty_finiteExhaustion_iff {s : Set α} :
+lemma _root_.Set.nonempty_finiteExhaustion_iff {s : Set α} :
     Nonempty s.FiniteExhaustion ↔ s.Countable := by
   refine ⟨fun ⟨K⟩ ↦ ?_, fun h ↦ ⟨h.finiteExhaustion⟩⟩
   rw [← K.iUnion_eq]
   exact countable_iUnion <| fun i ↦ (K.finite i).countable
+
+@[deprecated (since := "2026-05-24")]
+alias Set.nonempty_finiteExhaustion_iff := Set.nonempty_finiteExhaustion_iff
 
 section prod
 

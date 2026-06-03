@@ -68,6 +68,7 @@ lemma exists_hom_of_isFinitelyPresentable {J : Type w} [SmallCategory J] [IsFilt
     ∃ (j : J) (q : A ⟶ D.obj j), p ≫ q = s.app j ∧ q ≫ c.ι.app j = f :=
   hp.exists_hom_of_isColimit_under hc _ s _ h
 
+set_option backward.defeqAttrib.useBackward true in
 lemma le_ind : P ≤ ind.{w} P := by
   intro X Y f hf
   refine ⟨PUnit, inferInstance, inferInstance, (Functor.const PUnit).obj Y, ?_, 𝟙 _, ?_, ?_⟩
@@ -77,6 +78,7 @@ lemma le_ind : P ≤ ind.{w} P := by
 
 variable {P}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma ind_iff_ind_underMk {X Y : C} (f : X ⟶ Y) :
     ind.{w} P f ↔ ObjectProperty.ind.{w} P.underObj (CategoryTheory.Under.mk f) := by
@@ -180,6 +182,7 @@ class PreIndSpreads (P : MorphismProperty C) : Prop where
 
 alias exists_isPushout_of_isFiltered := PreIndSpreads.exists_isPushout
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `P` ind-spreads and all under categories are finitely accessible, `ind P`
 is stable under composition if `P` is. -/

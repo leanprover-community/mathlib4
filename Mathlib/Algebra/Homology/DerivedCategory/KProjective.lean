@@ -57,8 +57,8 @@ lemma quasiIso_iff {K L : CochainComplex C ℤ} [K.IsKProjective] [L.IsKProjecti
   obtain ⟨g, hg⟩ := (Qh_map_bijective _ _).surjective
     ((quotientCompQhIso C).hom.app L ≫ inv (Q.map f) ≫ (quotientCompQhIso C).inv.app K)
   refine ⟨g, (Qh_map_bijective _ _).injective ?_, (Qh_map_bijective _ _).injective ?_⟩
-  · simp [hg]
-  · simp [hg, ← quotientCompQhIso_inv_naturality f, -NatTrans.naturality]
+  · simp [hg]; rfl
+  · simp [hg, ← quotientCompQhIso_inv_naturality f, -NatTrans.naturality]; rfl
 
 end IsKProjective
 
@@ -75,7 +75,7 @@ lemma bijective_toSmallShiftedHom_of_isKProjective [K.IsKProjective] :
       (SmallShiftedHom.equiv _ DerivedCategory.Q).bijective,
     ← Function.Bijective.of_comp_iff' (Iso.homCongr ((quotientCompQhIso C).symm.app K)
       ((Q.commShiftIso n).symm.app L ≪≫ (quotientCompQhIso C).symm.app (L⟦n⟧))).bijective]
-  convert (CochainComplex.IsKProjective.Qh_map_bijective _ _).comp (toHom_bijective K L n)
+  convert! (CochainComplex.IsKProjective.Qh_map_bijective _ _).comp (toHom_bijective K L n)
   ext x
   obtain ⟨x, rfl⟩ := x.mk_surjective
   simp [toHom_mk, ShiftedHom.map]

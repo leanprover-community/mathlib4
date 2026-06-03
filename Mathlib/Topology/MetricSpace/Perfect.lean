@@ -52,7 +52,7 @@ private theorem Perfect.small_diam_aux (hC : Perfect C) (ε_pos : 0 < ε) {x : �
     apply inter_subset_right
   rw [Metric.ediam_closure]
   apply le_trans (Metric.ediam_mono inter_subset_left)
-  convert Metric.ediam_eball_le (x := x)
+  convert! Metric.ediam_eball_le (x := x)
   rw [mul_comm, ENNReal.div_mul_cancel] <;> norm_num
 
 /-- A refinement of `Perfect.splitting` for metric spaces, where we also control
@@ -109,9 +109,9 @@ theorem Perfect.exists_nat_bool_injection
     rcases Nat.exists_eq_succ_of_ne_zero hm with ⟨n, rfl⟩
     dsimp
     cases x n
-    · convert (h0 _ _ _).2.2.2
+    · convert! (h0 _ _ _).2.2.2
       rw [PiNat.res_length]
-    convert (h1 _ _ _).2.2.2
+    convert! (h1 _ _ _).2.2.2
     rw [PiNat.res_length]
   have hdisj' : CantorScheme.Disjoint D := by
     rintro l (a | a) (b | b) hab <;> try contradiction

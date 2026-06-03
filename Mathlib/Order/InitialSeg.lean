@@ -64,7 +64,7 @@ structure InitialSeg {α β : Type*} (r : α → α → Prop) (s : β → β →
 scoped[InitialSeg] infixl:25 " ≼i " => InitialSeg
 
 /-- An `InitialSeg` between the `<` relations of two types. -/
-notation:25 α:24 " ≤i " β:25 => @InitialSeg α β (· < ·) (· < ·)
+notation3:25 α:24 " ≤i " β:25 => @InitialSeg α β (· < ·) (· < ·)
 
 namespace InitialSeg
 
@@ -251,7 +251,7 @@ structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β �
 scoped[InitialSeg] infixl:25 " ≺i " => PrincipalSeg
 
 /-- A `PrincipalSeg` between the `<` relations of two types. -/
-notation:25 α:24 " <i " β:25 => @PrincipalSeg α β (· < ·) (· < ·)
+notation3:25 α:24 " <i " β:25 => @PrincipalSeg α β (· < ·) (· < ·)
 
 open scoped InitialSeg
 

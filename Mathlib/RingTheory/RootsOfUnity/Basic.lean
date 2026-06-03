@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.CharP.Reduced
 public import Mathlib.RingTheory.IntegralDomain
+
 -- TODO: remove Mathlib.Algebra.CharP.Reduced and move the last two lemmas to Lemmas
 
 /-!
@@ -314,7 +315,7 @@ def monoidHomMulEquivRootsOfUnityOfGenerator {G : Type*} [CommGroup G] {g : G}
       ← map_pow, pow_card_eq_one', map_one, Units.val_one]⟩
   invFun ζ := monoidHomOfForallMemZpowers hg (g' := (ζ.val : G')) <| by
     simpa only [orderOf_eq_card_of_forall_mem_zpowers hg, orderOf_dvd_iff_pow_eq_one,
-      ← Units.val_pow_eq_pow_val, Units.val_eq_one] using ζ.prop
+      ← Units.val_pow_eq_pow_val, Units.val_eq_one] using! ζ.prop
   left_inv φ := (MonoidHom.eq_iff_eq_on_generator hg _ φ).mpr <| by
     simp only [IsUnit.unit_spec, monoidHomOfForallMemZpowers_apply_gen]
   right_inv φ := Subtype.ext <| by

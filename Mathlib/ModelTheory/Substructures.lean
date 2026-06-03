@@ -190,7 +190,7 @@ instance instInfSet : InfSet (L.Substructure M) :=
           (by
             rintro _ ⟨t, rfl⟩
             by_cases h : t ∈ s
-            · simpa [h] using t.fun_mem f
+            · simpa [h] using! t.fun_mem f
             · simp [h]) }⟩
 
 @[simp, norm_cast]

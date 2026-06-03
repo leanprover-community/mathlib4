@@ -19,6 +19,12 @@ Known limitations:
   `le_mul`, `le_add` and `add_le`, and in particular should realize that `le_add` and `add_le`
   are dual to each other. Currently, this requires writing
   `attribute [to_dual existing le_add] add_le`.
+- It is currently not possible for a constant to have multiple possible duals.
+  This would be useful for constants that have orders on different types, such as `Monotone f`.
+  If the domain and codomain of `f` are both dualized, then `Monotone f` is simply dual to itself.
+  But there are also cases where only the domain or only the codomain should be dualized.
+  Then, `Monotone f` would be dual to `Antitone f`.
+  We may also want this feature for dualizing results about bicategories.
 -/
 
 public meta section

@@ -76,7 +76,7 @@ lemma sumOfPowersConjecture_of_ringHom {R S : Type*} [Semiring R] [Semiring S] {
     SumOfPowersConjectureWith R n := by
   intro a b ha ha₀ hb hsum
   have h : (· ^ n) ∘ f = f ∘ (· ^ n) := by ext; simp
-  convert conj (a.map f) (f b) ?_ ?_ ?_ (by simp [h, hsum, List.sum_map_hom]) <;> grind
+  convert! conj (a.map f) (f b) ?_ ?_ ?_ (by simp [h, hsum, List.sum_map_hom]) <;> grind
 
 /-- Given an injective ring homomorphism from `R` to `S`,
 the conjecture over `S` implies the conjecture over `R`. -/

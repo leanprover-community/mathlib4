@@ -99,14 +99,18 @@ theorem continuousOn_symm : ContinuousOn e.symm e.target :=
   e.continuousOn_invFun
 
 @[simp, mfld_simps]
-theorem mk_coe (e : PartialEquiv X Y) (a b c d) :
-    (OpenPartialHomeomorph.mk e a b c d : X → Y) = e :=
+theorem coe_mk (e : PartialEquiv X Y) (h₁ h₂ h₃ h₄) :
+    (OpenPartialHomeomorph.mk e h₁ h₂ h₃ h₄ : X → Y) = e :=
   rfl
 
+@[deprecated (since := "2026-05-20")] alias mk_coe := coe_mk
+
 @[simp, mfld_simps]
-theorem mk_coe_symm (e : PartialEquiv X Y) (a b c d) :
-    ((OpenPartialHomeomorph.mk e a b c d).symm : Y → X) = e.symm :=
+theorem coe_mk_symm (e : PartialEquiv X Y) (h₁ h₂ h₃ h₄) :
+    ((OpenPartialHomeomorph.mk e h₁ h₂ h₃ h₄).symm : Y → X) = e.symm :=
   rfl
+
+@[deprecated (since := "2026-05-20")] alias mk_coe_symm := coe_mk_symm
 
 theorem toPartialEquiv_injective :
     Injective (toPartialEquiv : OpenPartialHomeomorph X Y → PartialEquiv X Y)
@@ -114,6 +118,7 @@ theorem toPartialEquiv_injective :
 
 /- Register a few simp lemmas to make sure that `simp` puts the application of a local
 homeomorphism in its normal form, i.e., in terms of its coercion to a function. -/
+
 @[simp, mfld_simps]
 theorem toFun_eq_coe (e : OpenPartialHomeomorph X Y) : e.toFun = e :=
   rfl
@@ -123,12 +128,16 @@ theorem invFun_eq_coe (e : OpenPartialHomeomorph X Y) : e.invFun = e.symm :=
   rfl
 
 @[simp, mfld_simps]
-theorem coe_coe : (e.toPartialEquiv : X → Y) = e :=
+theorem coe_toPartialEquiv : (e.toPartialEquiv : X → Y) = e :=
   rfl
 
+@[deprecated (since := "2026-05-18")] alias coe_coe := coe_toPartialEquiv
+
 @[simp, mfld_simps]
-theorem coe_coe_symm : (e.toPartialEquiv.symm : Y → X) = e.symm :=
+theorem coe_toPartialEquiv_symm : (e.toPartialEquiv.symm : Y → X) = e.symm :=
   rfl
+
+@[deprecated (since := "2026-05-18")] alias coe_coe_symm := coe_toPartialEquiv_symm
 
 @[simp, mfld_simps]
 theorem map_source {x : X} (h : x ∈ e.source) : e x ∈ e.target :=
@@ -156,8 +165,10 @@ theorem eq_symm_apply {x : X} {y : Y} (hx : x ∈ e.source) (hy : y ∈ e.target
 
 protected theorem mapsTo : MapsTo e e.source e.target := fun _ => e.map_source
 
-protected theorem symm_mapsTo : MapsTo e.symm e.target e.source :=
+protected theorem mapsTo_symm : MapsTo e.symm e.target e.source :=
   e.symm.mapsTo
+
+@[deprecated (since := "2026-05-28")] alias symm_mapsTo := OpenPartialHomeomorph.mapsTo_symm
 
 protected theorem leftInvOn : LeftInvOn e.symm e e.source := fun _ => e.left_inv
 
@@ -170,7 +181,7 @@ protected theorem injOn : InjOn e e.source :=
   e.leftInvOn.injOn
 
 protected theorem bijOn : BijOn e e.source e.target :=
-  e.invOn.bijOn e.mapsTo e.symm_mapsTo
+  e.invOn.bijOn e.mapsTo e.mapsTo_symm
 
 protected theorem surjOn : SurjOn e e.source e.target :=
   e.bijOn.surjOn
@@ -196,7 +207,7 @@ def _root_.Homeomorph.toOpenPartialHomeomorph (e : X ≃ₜ Y) : OpenPartialHome
     by rw [image_univ, e.surjective.range_eq]
 
 /-- Replace `toPartialEquiv` field to provide better definitional equalities. -/
-def replaceEquiv (e : OpenPartialHomeomorph X Y) (e' : PartialEquiv X Y)
+def replacePartialEquiv (e : OpenPartialHomeomorph X Y) (e' : PartialEquiv X Y)
     (h : e.toPartialEquiv = e') : OpenPartialHomeomorph X Y where
   toPartialEquiv := e'
   open_source := h ▸ e.open_source
@@ -204,11 +215,15 @@ def replaceEquiv (e : OpenPartialHomeomorph X Y) (e' : PartialEquiv X Y)
   continuousOn_toFun := h ▸ e.continuousOn_toFun
   continuousOn_invFun := h ▸ e.continuousOn_invFun
 
-theorem replaceEquiv_eq_self (e' : PartialEquiv X Y)
-    (h : e.toPartialEquiv = e') : e.replaceEquiv e' h = e := by
+@[deprecated (since := "2026-05-19")] alias replaceEquiv := replacePartialEquiv
+
+theorem replacePartialEquiv_eq_self (e' : PartialEquiv X Y)
+    (h : e.toPartialEquiv = e') : e.replacePartialEquiv e' h = e := by
   cases e
   subst e'
   rfl
+
+@[deprecated (since := "2026-05-20")] alias replaceEquiv_eq_self := replacePartialEquiv_eq_self
 
 /-- Two open partial homeomorphisms are equal when they have equal `toFun`, `invFun` and `source`.
 It is not sufficient to have equal `toFun` and `source`, as this only determines `invFun` on

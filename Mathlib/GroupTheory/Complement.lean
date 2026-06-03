@@ -196,7 +196,7 @@ theorem isComplement'_top_right : IsComplement' H ⊤ ↔ H = ⊥ :=
 @[to_additive]
 lemma isComplement_iff_existsUnique_inv_mul_mem :
     IsComplement S T ↔ ∀ g, ∃! s : S, (s : G)⁻¹ * g ∈ T := by
-  convert isComplement_iff_existsUnique with g
+  convert! isComplement_iff_existsUnique with g
   constructor <;> rintro ⟨x, hx, hx'⟩
   · exact ⟨(x, ⟨_, hx⟩), by simp, by aesop⟩
   · exact ⟨x.1, by simp [← hx], fun y hy ↦ (Prod.ext_iff.1 <| by simpa using hx' (y, ⟨_, hy⟩)).1⟩
@@ -204,7 +204,7 @@ lemma isComplement_iff_existsUnique_inv_mul_mem :
 @[to_additive]
 lemma isComplement_iff_existsUnique_mul_inv_mem :
     IsComplement S T ↔ ∀ g, ∃! t : T, g * (t : G)⁻¹ ∈ S := by
-  convert isComplement_iff_existsUnique with g
+  convert! isComplement_iff_existsUnique with g
   constructor <;> rintro ⟨x, hx, hx'⟩
   · exact ⟨(⟨_, hx⟩, x), by simp, by aesop⟩
   · exact ⟨x.2, by simp [← hx], fun y hy ↦ (Prod.ext_iff.1 <| by simpa using hx' (⟨_, hy⟩, y)).2⟩
@@ -670,7 +670,7 @@ theorem isComplement'_iff_card_mul_and_disjoint [Finite G] :
 theorem isComplement'_of_coprime [Finite G]
     (h1 : Nat.card H * Nat.card K = Nat.card G)
     (h2 : Nat.Coprime (Nat.card H) (Nat.card K)) : IsComplement' H K :=
-  isComplement'_of_card_mul_and_disjoint h1 (disjoint_iff.mpr (inf_eq_bot_of_coprime h2))
+  isComplement'_of_card_mul_and_disjoint h1 <| disjoint_of_coprime_natCard h2
 
 theorem isComplement'_stabilizer {α : Type*} [MulAction G α] (a : α)
     (h1 : ∀ h : H, h • a = a → h = 1) (h2 : ∀ g : G, ∃ h : H, h • g • a = a) :

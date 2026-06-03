@@ -37,9 +37,6 @@ local instance : Measure.IsAddHaarMeasure (volume : Measure UnitAddCircle) :=
 local instance : IsProbabilityMeasure (volume : Measure UnitAddCircle) :=
   inferInstanceAs (IsProbabilityMeasure AddCircle.haarAddCircle)
 
-/-- The product of finitely many copies of the unit circle, indexed by `d`. -/
-abbrev UnitAddTorus (d : Type*) := d → UnitAddCircle
-
 namespace UnitAddTorus
 
 variable {d : Type*} [Fintype d]
@@ -178,17 +175,17 @@ lemma measurePreserving_equivPiIoc :
     measurable_subtype_coe (α := {x : d → ℝ // ∀ i, x i ∈ Ioc (a i) (a i + 1)})
   simp only [Function.comp_def] at this
   simp_rw [coe_symm_measurableEquivPiIoc, ← this]
-  convert (measurePreserving_pi _ _ (fun i => AddCircle.measurePreserving_mk 1 (a i))).map_eq.symm
+  convert! (measurePreserving_pi _ _ (fun i => AddCircle.measurePreserving_mk 1 (a i))).map_eq.symm
   · simp [volume, AddCircle.haarAddCircle]
-  · convert (map_comap_subtype_coe (MeasurableSet.univ_pi'
-      (fun i => measurableSet_Ioc (a := a i))) volume)
-    convert (Measure.restrict_pi_pi (fun i => volume) (fun i => Ioc (a i) (a i + 1))).symm
+  · convert!
+    (map_comap_subtype_coe (MeasurableSet.univ_pi' (fun i => measurableSet_Ioc (a := a i))) volume)
+    convert! (Measure.restrict_pi_pi (fun i => volume) (fun i => Ioc (a i) (a i + 1))).symm
     grind
 
 theorem lintegral_preimage (f : UnitAddTorus d → ℝ≥0∞) (a : d → ℝ) :
     ∫⁻ x : UnitAddTorus d, f x =
     ∫⁻ (x : d → ℝ) in {x : d → ℝ | ∀ i, x i ∈ Ioc (a i) (a i + 1)}, f (fun i => x i) := by
-  convert lintegral_map_equiv (μ := volume.comap Subtype.val) f (measurableEquivPiIoc a).symm
+  convert! lintegral_map_equiv (μ := volume.comap Subtype.val) f (measurableEquivPiIoc a).symm
   · exact (measurePreserving_equivPiIoc a).symm.map_eq.symm
   · rw [← lintegral_subtype_comap (MeasurableSet.univ_pi' (fun i => measurableSet_Ioc))]
     rfl
@@ -197,7 +194,7 @@ theorem integral_preimage {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (f : UnitAddTorus d → E) (a : d → ℝ) :
     ∫ x : UnitAddTorus d, f x =
     ∫ (x : d → ℝ) in {x : d → ℝ | ∀ i, x i ∈ Ioc (a i) (a i + 1)}, f (fun i => x i) := by
-  convert integral_map_equiv (μ := volume.comap Subtype.val) (measurableEquivPiIoc a).symm f
+  convert! integral_map_equiv (μ := volume.comap Subtype.val) (measurableEquivPiIoc a).symm f
   · exact (measurePreserving_equivPiIoc a).symm.map_eq.symm
   · rw [← integral_subtype_comap (MeasurableSet.univ_pi' (fun i => measurableSet_Ioc))]
     rfl
@@ -230,13 +227,13 @@ theorem orthonormal_mFourier : Orthonormal ℂ (mFourierLp (d := d) 2) := by
   intro m n
   simp only [ContinuousMap.inner_toLp, ← mFourier_neg, ← mFourier_add]
   split_ifs with h
-  · simpa only [h, add_neg_cancel, mFourier_zero, probReal_univ, one_smul] using
+  · simpa only [h, add_neg_cancel, mFourier_zero, probReal_univ, one_smul] using!
       integral_const (α := UnitAddTorus d) (μ := volume) (1 : ℂ)
   rw [mFourier, ContinuousMap.coe_mk, MeasureTheory.integral_fintype_prod_volume_eq_prod]
   obtain ⟨i, hi⟩ := Function.ne_iff.mp h
   apply Finset.prod_eq_zero (Finset.mem_univ i)
   simpa only [eq_false_intro hi, if_false, ContinuousMap.inner_toLp, ← fourier_neg,
-    ← fourier_add] using (orthonormal_iff_ite.mp <| orthonormal_fourier) (m i) (n i)
+    ← fourier_add] using! (orthonormal_iff_ite.mp <| orthonormal_fourier) (m i) (n i)
 
 end Lp
 
@@ -330,7 +327,7 @@ theorem hasSum_mFourier_series_of_summable (h : Summable (mFourierCoeff f)) :
 converges everywhere pointwise to `f`. -/
 theorem hasSum_mFourier_series_apply_of_summable (h : Summable (mFourierCoeff f))
     (x : UnitAddTorus d) : HasSum (fun i ↦ mFourierCoeff f i • mFourier i x) (f x) := by
-  simpa only [map_smul] using (ContinuousMap.evalCLM ℂ x).hasSum
+  simpa only [map_smul] using! (ContinuousMap.evalCLM ℂ x).hasSum
     (hasSum_mFourier_series_of_summable h)
 
 end Convergence

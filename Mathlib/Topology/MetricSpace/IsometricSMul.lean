@@ -61,7 +61,7 @@ instance (priority := 100) IsIsometricSMul.to_continuousConstSMul [PseudoEMetric
 @[to_additive]
 instance (priority := 100) IsIsometricSMul.opposite_of_comm [PseudoEMetricSpace X] [SMul M X]
     [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] [IsIsometricSMul M X] : IsIsometricSMul Mᵐᵒᵖ X :=
-  ⟨fun c x y => by simpa only [← op_smul_eq_smul] using isometry_smul X c.unop x y⟩
+  ⟨fun c x y => by simpa only [← op_smul_eq_smul] using! isometry_smul X c.unop x y⟩
 
 variable {M G X}
 
@@ -448,15 +448,15 @@ instance Units.isIsometricSMul [Monoid M] : IsIsometricSMul Mˣ X :=
 
 @[to_additive]
 instance : IsIsometricSMul M Xᵐᵒᵖ :=
-  ⟨fun c x y => by simpa only using edist_smul_left c x.unop y.unop⟩
+  ⟨fun c x y => by simpa only using! edist_smul_left c x.unop y.unop⟩
 
 @[to_additive]
 instance ULift.isIsometricSMul : IsIsometricSMul (ULift M) X :=
-  ⟨fun c => by simpa only using isometry_smul X c.down⟩
+  ⟨fun c => by simpa only using! isometry_smul X c.down⟩
 
 @[to_additive]
 instance ULift.isIsometricSMul' : IsIsometricSMul M (ULift X) :=
-  ⟨fun c x y => by simpa only using edist_smul_left c x.1 y.1⟩
+  ⟨fun c x y => by simpa only using! edist_smul_left c x.1 y.1⟩
 
 @[to_additive]
 instance {ι} {X : ι → Type*} [Fintype ι] [∀ i, SMul M (X i)] [∀ i, PseudoEMetricSpace (X i)]

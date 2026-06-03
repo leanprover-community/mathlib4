@@ -75,8 +75,7 @@ lemma iIndepFun_of_covariance_strongDual [NormedSpace ℝ E]
   · let L : (I.sigma (fun i ↦ if hi : i ∈ I then J ⟨i, hi⟩ else ∅) → E) →L[ℝ] (i : I) → J i → E :=
       { toFun x i j := x ⟨⟨i, j⟩, by simp⟩
         map_add' x y := by ext; simp
-        map_smul' c x := by ext; simp
-        cont := by fun_prop }
+        map_smul' c x := by ext; simp }
     exact (hX.hasGaussianLaw _).map L
   have h1 : L₁ ∘ (fun ω k ↦ X i k ω) = ∑ k : J i, (L₁ ∘L .single ℝ _ k) ∘ X i k := by
     ext; simp [-ContinuousLinearMap.coe_comp', ← L₁.sum_comp_single]
@@ -97,7 +96,7 @@ lemma iIndepFun_of_covariance_inner [InnerProductSpace ℝ E]
       cov[fun ω ↦ ⟪x, X t₁ s₁ ω⟫, fun ω ↦ ⟪y, X t₂ s₂ ω⟫; P] = 0) :
     ProbabilityTheory.iIndepFun (fun t ω s ↦ X t s ω) P :=
   hX.iIndepFun_of_covariance_strongDual mX fun t₁ t₂ ht s₁ s₂ L₁ L₂ ↦ by
-    simpa using h t₁ t₂ ht s₁ s₂ ((toDual ℝ E).symm L₁) ((toDual ℝ E).symm L₂)
+    simpa using! h t₁ t₂ ht s₁ s₂ ((toDual ℝ E).symm L₁) ((toDual ℝ E).symm L₂)
 
 /-- Assume that the processes $((X^t_s)_{s \in S_t})_{t \in T}$ are jointly Gaussian. Then they are
 independent if for all $t_1, t_2 \in T$ with $t_1 \ne t_2$ and
@@ -150,7 +149,7 @@ lemma indepFun_of_covariance_inner [InnerProductSpace ℝ E]
     (h : ∀ s t x y, cov[fun ω ↦ ⟪x, X s ω⟫, fun ω ↦ ⟪y, Y t ω⟫; P] = 0) :
     IndepFun (fun ω s ↦ X s ω) (fun ω t ↦ Y t ω) P :=
   hXY.indepFun_of_covariance_strongDual mX mY fun s t L₁ L₂ ↦ by
-    simpa using h s t ((toDual ℝ E).symm L₁) ((toDual ℝ E).symm L₂)
+    simpa using! h s t ((toDual ℝ E).symm L₁) ((toDual ℝ E).symm L₂)
 
 /-- Two Gaussian processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ that are jointly Gaussian
 are independent if for all $s \in S$ and $t \in T$, $X_s$ and $Y_t$ are uncorrelated. -/

@@ -41,7 +41,7 @@ theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
   induction L with
   | nil => simp
   | cons hd tl hl =>
-    simpa [List.range_succ_eq_map, List.zipWith_map_right, ofDigits_eq_sum_mapIdx_aux] using
+    simpa [List.range_succ_eq_map, List.zipWith_map_right, ofDigits_eq_sum_mapIdx_aux] using!
       Or.inl hl
 
 /-!
@@ -139,7 +139,7 @@ theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2
   apply Nat.mul_le_mul_left
   refine le_trans ?_ (Nat.le_add_left _ _)
   have : 0 < l.getLast hl := by rwa [pos_iff_ne_zero]
-  convert Nat.mul_le_mul_left ((b + 2) ^ (l.length - 1)) this using 1
+  convert! Nat.mul_le_mul_left ((b + 2) ^ (l.length - 1)) this using 1
   rw [Nat.mul_one]
 
 /-- Any non-zero natural number `m` is greater than
@@ -148,8 +148,7 @@ theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2
 theorem base_pow_length_digits_le' (b m : ℕ) (hm : m ≠ 0) :
     (b + 2) ^ (digits (b + 2) m).length ≤ (b + 2) * m := by
   have : digits (b + 2) m ≠ [] := digits_ne_nil_iff_ne_zero.mpr hm
-  convert @pow_length_le_mul_ofDigits b (digits (b + 2) m)
-    this (getLast_digit_ne_zero _ hm)
+  convert! @pow_length_le_mul_ofDigits b (digits (b + 2) m) this (getLast_digit_ne_zero _ hm)
   rw [ofDigits_digits]
 
 /-- Any non-zero natural number `m` is greater than
@@ -201,8 +200,9 @@ theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits {p : ℕ} (n : ℕ) :
   obtain h | rfl | h : 1 < p ∨ 1 = p ∨ p < 1 := trichotomous 1 p
   · rcases eq_or_ne n 0 with rfl | hn
     · simp
-    · convert sub_one_mul_sum_div_pow_eq_sub_sum_digits (p.digits n) (getLast_digit_ne_zero p hn) <|
-          (fun l a ↦ digits_lt_base h a)
+    · convert!
+      sub_one_mul_sum_div_pow_eq_sub_sum_digits (p.digits n) (getLast_digit_ne_zero p hn) <|
+        (fun l a ↦ digits_lt_base h a)
       · refine (length_digits p n h hn).symm
       all_goals exact (ofDigits_digits p n).symm
   · simp
@@ -288,7 +288,7 @@ theorem modEq_digits_sum (b b' : ℕ) (h : b' % b = 1) (n : ℕ) : n ≡ (digits
     congr
     · skip
     · rw [← ofDigits_digits b' n]
-  convert ofDigits_modEq b' b (digits b' n)
+  convert! ofDigits_modEq b' b (digits b' n)
   exact h.symm
 
 theorem zmodeq_ofDigits_digits (b b' : ℕ) (c : ℤ) (h : b' ≡ c [ZMOD b]) (n : ℕ) :
@@ -421,7 +421,7 @@ This spelling can be helpful for some proofs.
 theorem _root_.Nat.bijOn_ofDigits' {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.BijOn (ofDigits b) (fixedLengthDigits hb l) (Finset.range (b ^ l)) := by
   rw [fixedLengthDigits, Set.coe_toFinset]
-  convert bijOn_ofDigits hb l
+  convert! bijOn_ofDigits hb l
   ext; simp
 
 /--
@@ -431,7 +431,7 @@ This spelling can be helpful for some proofs.
 theorem _root_.Nat.bijOn_digitsAppend' {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.BijOn (digitsAppend b l) (Finset.range (b ^ l)) (fixedLengthDigits hb l) := by
   rw [fixedLengthDigits, Set.coe_toFinset]
-  convert bijOn_digitsAppend hb l
+  convert! bijOn_digitsAppend hb l
   ext; simp
 
 @[simp]

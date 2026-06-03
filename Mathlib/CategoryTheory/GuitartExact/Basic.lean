@@ -48,6 +48,8 @@ derived functors.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
@@ -301,7 +303,7 @@ instance guitartExact_id (F : C₁ ⥤ C₂) :
   let X₀ : Z := StructuredArrow.mk (Y := CostructuredArrow.mk g) (CostructuredArrow.homMk (𝟙 _))
   have φ : ∀ (X : Z), X₀ ⟶ X := fun X =>
     StructuredArrow.homMk (CostructuredArrow.homMk X.hom.left
-      (by simpa using CostructuredArrow.w X.hom))
+      (by simpa using! CostructuredArrow.w X.hom))
   have : Nonempty Z := ⟨X₀⟩
   apply zigzag_isConnected
   intro X Y

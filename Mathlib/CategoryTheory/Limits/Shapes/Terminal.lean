@@ -118,10 +118,12 @@ abbrev terminal.from [HasTerminal C] (P : C) : P ⟶ ⊤_ C :=
 abbrev initial.to [HasInitial C] (P : C) : ⊥_ C ⟶ P :=
   colimit.desc (Functor.empty C) (asEmptyCocone P)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A terminal object is terminal. -/
 def terminalIsTerminal [HasTerminal C] : IsTerminal (⊤_ C) where
   lift _ := terminal.from _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An initial object is initial. -/
 def initialIsInitial [HasInitial C] : IsInitial (⊥_ C) where
   desc _ := initial.to _
@@ -176,6 +178,7 @@ theorem hasTerminal_of_hasInitial_op [HasInitial Cᵒᵖ] : HasTerminal C :=
 theorem hasInitial_of_hasTerminal_op [HasTerminal Cᵒᵖ] : HasInitial C :=
   (initialUnopOfTerminal terminalIsTerminal).hasInitial
 
+set_option backward.defeqAttrib.useBackward true in
 instance {J : Type*} [Category* J] {C : Type*} [Category* C] [HasTerminal C] :
     HasLimit ((CategoryTheory.Functor.const J).obj (⊤_ C)) :=
   HasLimit.mk
@@ -184,6 +187,7 @@ instance {J : Type*} [Category* J] {C : Type*} [Category* C] [HasTerminal C] :
           π := { app := fun _ => terminal.from _ } }
       isLimit := { lift := fun _ => terminal.from _ } }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The limit of the constant `⊤_ C` functor is `⊤_ C`. -/
 @[simps hom]
 def limitConstTerminal {J : Type*} [Category* J] {C : Type*} [Category* C] [HasTerminal C] :
@@ -194,12 +198,14 @@ def limitConstTerminal {J : Type*} [Category* J] {C : Type*} [Category* C] [HasT
       { pt := ⊤_ C
         π := { app := fun _ => terminal.from _ } }
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 theorem limitConstTerminal_inv_π {J : Type*} [Category* J] {C : Type*} [Category* C] [HasTerminal C]
     {j : J} :
     limitConstTerminal.inv ≫ limit.π ((CategoryTheory.Functor.const J).obj (⊤_ C)) j =
       terminal.from _ := by cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 instance {J : Type*} [Category* J] {C : Type*} [Category* C] [HasInitial C] :
     HasColimit ((CategoryTheory.Functor.const J).obj (⊥_ C)) :=
   HasColimit.mk
@@ -208,6 +214,7 @@ instance {J : Type*} [Category* J] {C : Type*} [Category* C] [HasInitial C] :
           ι := { app := fun _ => initial.to _ } }
       isColimit := { desc := fun _ => initial.to _ } }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The colimit of the constant `⊥_ C` functor is `⊥_ C`. -/
 @[simps inv]
 def colimitConstInitial {J : Type*} [Category* J] {C : Type*} [Category* C] [HasInitial C] :
@@ -218,6 +225,7 @@ def colimitConstInitial {J : Type*} [Category* J] {C : Type*} [Category* C] [Has
         ι := { app := fun _ => initial.to _ } }
   inv := initial.to _
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 theorem ι_colimitConstInitial_hom {J : Type*} [Category* J] {C : Type*} [Category* C] [HasInitial C]
     {j : J} :
@@ -335,6 +343,7 @@ theorem isIso_ι_of_isTerminal {j : J} (I : IsTerminal j) (F : J ⥤ C) [HasColi
 instance isIso_ι_terminal [HasTerminal J] (F : J ⥤ C) : IsIso (colimit.ι F (⊤_ J)) :=
   isIso_ι_of_isTerminal terminalIsTerminal F
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem isIso_ι_of_isInitial {j : J} (I : IsInitial j) (F : J ⥤ C) [HasColimit F]
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : IsIso (colimit.ι F j) :=

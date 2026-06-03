@@ -10,7 +10,9 @@ public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.LinearAlgebra.Matrix.ZPow
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
+public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.Topology.UniformSpace.Matrix
+public import Mathlib.Topology.Instances.Matrix
 
 /-!
 # Lemmas about the matrix exponential
@@ -67,7 +69,7 @@ open scoped Matrix
 
 open NormedSpace -- For `exp`.
 
-variable {m n : Type*} {n' : m → Type*} {𝔸 : Type*}
+variable {m n : Type*} {n' : m → Type*} {α 𝔸 : Type*}
 
 namespace Matrix
 
@@ -97,6 +99,11 @@ theorem exp_conjTranspose [StarRing 𝔸] [ContinuousStar 𝔸] (A : Matrix m m 
 theorem IsHermitian.exp [StarRing 𝔸] [ContinuousStar 𝔸] {A : Matrix m m 𝔸} (h : A.IsHermitian) :
     (exp A).IsHermitian :=
   (exp_conjTranspose _).symm.trans <| congr_arg _ h
+
+theorem BlockTriangular.exp [LinearOrder α] [Algebra ℚ 𝔸] {M : Matrix m m 𝔸} {b : m → α}
+    (hM : BlockTriangular M b) :
+    (exp M).BlockTriangular b :=
+  exp_mem (s := blockTriangularSubalgebra ℚ _ b) isClosed_setOf_blockTriangular hM
 
 end Ring
 

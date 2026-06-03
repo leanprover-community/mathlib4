@@ -46,6 +46,7 @@ noncomputable def equivalence : D₁ ≌ D₂ :=
   Equivalence.mk G' F' (liftNatIso L₁ W₁ L₁ (G ⋙ F') (𝟭 D₁) (G' ⋙ F') α.symm)
     (liftNatIso L₂ W₂ (F ⋙ G') L₂ (F' ⋙ G') (𝟭 D₂) β)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma equivalence_counitIso_app (X : C₂) :
     (equivalence L₁ W₁ L₂ W₂ G G' F F' α β).counitIso.app (L₂.obj X) =

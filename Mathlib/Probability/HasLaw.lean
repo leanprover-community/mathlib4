@@ -183,12 +183,44 @@ lemma HasPDF.hasLaw [h : HasPDF X P μ] : HasLaw X (μ.withDensity (pdf X P μ))
   aemeasurable := h.aemeasurable
   map_eq := map_eq_withDensity_pdf X P μ
 
+lemma HasLaw.ae_eq_of_smul_dirac {c : ℝ≥0∞} [MeasurableSingletonClass 𝓧] {x : 𝓧}
+    (hX : HasLaw X (c • .dirac x) P) :
+    X =ᵐ[P] (fun _ ↦ x) := by
+  apply ae_of_ae_map (p := fun y ↦ y = x) hX.aemeasurable
+  rw [hX.map_eq]
+  apply Measure.ae_smul_measure (by simp)
+
+lemma HasLaw.ae_eq_of_dirac [MeasurableSingletonClass 𝓧] {x : 𝓧} (hX : HasLaw X (.dirac x) P) :
+    X =ᵐ[P] (fun _ ↦ x) :=
+  HasLaw.ae_eq_of_smul_dirac (c := 1) (by simpa)
+
+lemma hasLaw_smul_dirac_of_ae_eq {x : 𝓧} (hX : X =ᵐ[P] fun _ ↦ x) :
+    HasLaw X ((P Set.univ) • .dirac x) P where
+  aemeasurable := aemeasurable_const.congr hX.symm
+  map_eq := by
+    rw [map_congr hX]
+    simp
+
+lemma hasLaw_dirac_of_ae_eq [IsProbabilityMeasure P] {x : 𝓧} (hX : X =ᵐ[P] fun _ ↦ x) :
+    HasLaw X (.dirac x) P := by
+  simpa using hasLaw_smul_dirac_of_ae_eq hX
+
+lemma hasLaw_smul_dirac_iff [MeasurableSingletonClass 𝓧] {x : 𝓧} :
+    HasLaw X ((P Set.univ) • .dirac x) P ↔ X =ᵐ[P] (fun _ ↦ x) where
+  mp := HasLaw.ae_eq_of_smul_dirac
+  mpr := hasLaw_smul_dirac_of_ae_eq
+
+lemma hasLaw_dirac_iff [IsProbabilityMeasure P] [MeasurableSingletonClass 𝓧] {x : 𝓧} :
+    HasLaw X (.dirac x) P ↔ X =ᵐ[P] (fun _ ↦ x) where
+  mp := HasLaw.ae_eq_of_dirac
+  mpr := hasLaw_dirac_of_ae_eq
+
 lemma indepFun_iff_hasLaw_prodMk_prod [IsFiniteMeasure P] {𝓨 : Type*} {m𝓨 : MeasurableSpace 𝓨}
     {ν : Measure 𝓨} {Y : Ω → 𝓨} (hX : HasLaw X μ P) (hY : HasLaw Y ν P) :
     X ⟂ᵢ[P] Y ↔ HasLaw (fun ω ↦ (X ω, Y ω)) (μ.prod ν) P where
   mp h :=
     { map_eq := by
-        rw [(indepFun_iff_map_prod_eq_prod_map_map (by fun_prop) (by fun_prop)).1 h, hX.map_eq,
+        rw [h.map_prod_eq_prod_map_map (by fun_prop) (by fun_prop), hX.map_eq,
           hY.map_eq] }
   mpr h := by
     rw [indepFun_iff_map_prod_eq_prod_map_map (by fun_prop) (by fun_prop),
@@ -201,8 +233,7 @@ lemma iIndepFun.hasLaw_pi {ι : Type*} [Fintype ι] {𝓧 : ι → Type*} {m𝓧
     (h : iIndepFun X P) :
     HasLaw (fun ω i ↦ X i ω) (Measure.pi μ) P where
   map_eq := by
-    have := h.isProbabilityMeasure
-    rw [(iIndepFun_iff_map_fun_eq_pi_map (by fun_prop)).1 h]
+    rw [h.map_fun_eq_pi_map (by fun_prop)]
     simp_rw [fun i ↦ (hX i).map_eq]
 
 lemma iIndepFun_iff_hasLaw_pi_pi [IsProbabilityMeasure P] {ι : Type*} [Fintype ι] {𝓧 : ι → Type*}

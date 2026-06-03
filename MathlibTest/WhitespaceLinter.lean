@@ -315,6 +315,7 @@ omit  [h : Add Nat]  [Add Nat]
 -- Include statements are not linted.
 include     h
 
+set_option linter.overlappingInstances false in
 /--
 warning: extra space in the source
 
@@ -459,7 +460,9 @@ Note: This linter can be disabled with `set_option linter.style.whitespace false
 example  {a :Nat} : a = a := rfl
 
 /--
-warning: unused variable `b`
+warning: Variable name `b` is not explicitly referenced.
+
+The binding can be removed (if unused) or named `_` (if used implicitly).
 
 Note: This linter can be disabled with `set_option linter.unusedVariables false`
 ---

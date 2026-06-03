@@ -377,7 +377,6 @@ theorem mem_dilatransvections_iff_rank {e : V ≃ₗ[K] V} :
     rintro _ ⟨x, rfl⟩
     simp [mem_span_singleton, he, LinearMap.transvection.apply]
   · intro he
-    simp only at he
     simp only [Set.mem_setOf_eq]
     set u := (e : V →ₗ[K] V) - LinearMap.id with hu
     rw [eq_sub_iff_add_eq] at hu
@@ -609,7 +608,7 @@ private theorem det_ofField [FiniteDimensional K V] (f : Dual K V) (v : V) :
     · simp [← hxy, hxi]
     · rw [Finsupp.single_eq_of_ne hxi]; simp [hxy]
     · rw [Finsupp.single_eq_of_ne hxy, zero_add, mul_assoc]
-      convert mul_zero _
+      convert! mul_zero _
       by_cases hxi : x = i
       · simp [← hxi, Finsupp.single_eq_of_ne hxy]
       · simp [Finsupp.single_eq_of_ne hxi]

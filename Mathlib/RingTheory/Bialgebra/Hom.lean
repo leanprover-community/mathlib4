@@ -133,7 +133,7 @@ def Simps.apply {R α β : Type*} [CommSemiring R]
     [Algebra R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
     (f : α →ₐc[R] β) : α → β := f
 
-initialize_simps_projections BialgHom (toFun → apply)
+initialize_simps_projections BialgHom (toFun → apply, as_prefix toCoalgHom)
 
 @[simp]
 protected theorem coe_coe {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f : F) :

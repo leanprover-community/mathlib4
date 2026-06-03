@@ -42,13 +42,16 @@ for the full discussion.
 def PolynomialModule (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] := ℕ →₀ M
 deriving Inhabited, FunLike, AddCommGroup
 
-set_option backward.inferInstanceAs.wrap.data false in
-deriving instance CoeFun for PolynomialModule
-
 variable (R : Type*) {M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
 variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
 
 namespace PolynomialModule
+
+/-- Workaround to defeq problems: if we interpret a `PolynomialModule` as a `Finsupp`, also transfer
+the `DFunLike` instance. -/
+@[simp]
+theorem funLike_eq (x : PolynomialModule R M) :
+    DFunLike.coe (self := Finsupp.instFunLike) x = x := rfl
 
 /-- This is required to have the `IsScalarTower S R M` instance to avoid diamonds. -/
 instance : Module S (PolynomialModule R M) :=
@@ -174,8 +177,8 @@ def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :=
       | add _ _ hp hq => rw [smul_add, map_add, map_add, mul_add, hp, hq]
       | single n a =>
         ext i
-        simp_rw [toFinsuppIso_symm_apply, coeff_ofFinsupp, coeff_mul, smul_single_apply,
-          smul_eq_mul, coeff_ofFinsupp, single_apply, mul_ite, mul_zero]
+        simp_rw [toFinsuppIso_symm_apply, coeff_ofFinsupp, coeff_mul, funLike_eq, smul_single_apply,
+          smul_eq_mul, coeff_ofFinsupp, funLike_eq, single_apply, mul_ite, mul_zero]
         split_ifs with hn
         · rw [Finset.sum_eq_single (i - n, n)]
           · simp only [ite_true]

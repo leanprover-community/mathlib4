@@ -28,6 +28,7 @@ namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /- If the morphisms in `C` were in `Type w`, the functor
 `sigmaConst.{w}`
@@ -75,6 +76,7 @@ noncomputable def sigmaConstCokernelCofork :
       if hb : b ∈ (Set.range f)ᶜ then Sigma.ι (fun _ ↦ R) ⟨b, hb⟩ else 0))
     (by ext; simp [Sigma.ι_desc])
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma ι_sigmaConstCokernelCofork_π (b : β) (hb : b ∉ Set.range f) :
     dsimp% Sigma.ι (fun _ ↦ R) b ≫ (sigmaConstCokernelCofork R f).π =
@@ -83,6 +85,7 @@ lemma ι_sigmaConstCokernelCofork_π (b : β) (hb : b ∉ Set.range f) :
   rw [Sigma.ι_desc]
   apply dif_pos
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma ι_sigmaConstCokernelCofork_π_eq_zero (a : α) :
     dsimp% Sigma.ι (fun _ ↦ R) (f a) ≫ (sigmaConstCokernelCofork R f).π = 0 := by
@@ -90,6 +93,7 @@ lemma ι_sigmaConstCokernelCofork_π_eq_zero (a : α) :
   rw [Sigma.ι_desc]
   exact dif_neg (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The cokernel of the map `∐ fun (_ : α) ↦ R ⟶ ∐ fun (_ : β) ↦ R` induced
 by a map `f : α → β` identifies to the coproduct of copies of `R`
@@ -115,6 +119,7 @@ instance :
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 instance [HasCoproducts.{w} C] {α β : Type w} (f : α ⟶ β) :
     HasCokernel ((sigmaConst.obj R).map f) := by
   dsimp; infer_instance

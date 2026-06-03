@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.Meromorphic.Complex
 public import Mathlib.NumberTheory.Harmonic.GammaDeriv
 
+import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+
 /-!
 # The digamma function
 

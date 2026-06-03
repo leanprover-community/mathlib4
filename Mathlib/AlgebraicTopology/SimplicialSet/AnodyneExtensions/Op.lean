@@ -35,11 +35,13 @@ def op : A.op.Pairing where
   p := (N.opEquiv.subtypeEquiv (by simp)).trans
     (P.p.trans (N.opEquiv.symm.subtypeEquiv (by simp)))
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma op_p (x : P.II) :
     dsimp% P.op.p ⟨Subcomplex.N.opEquiv.symm x.1, x.2⟩ =
       ⟨Subcomplex.N.opEquiv.symm (P.p x), by simp⟩ := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma op_ancestralRel_iff (x y : P.II) :
     P.op.AncestralRel ⟨Subcomplex.N.opEquiv.symm x.1, x.2⟩
       ⟨Subcomplex.N.opEquiv.symm y.1, y.2⟩ ↔ P.AncestralRel x y :=

@@ -236,7 +236,6 @@ def mathlibLabelData : (l : Label) → LabelData l
   | .«t-meta» => {
     dirs := #[
       "Mathlib" / "Lean",
-      "Mathlib" / "Mathport",
       "Mathlib" / "Tactic",
       "Mathlib" / "Util"],
     exclusions := #["Mathlib" / "Tactic" / "Linter"] }

@@ -92,7 +92,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
     rw [eval_sub, eval_X_pow, eval_one, ← key, Int.dvd_add_left this] at contra
     refine (Nat.le_of_dvd ?_ ?_).not_gt (sub_one_lt_natAbs_cyclotomic_eval (n := n) ?_ hq.ne')
     · exact tsub_pos_of_lt hq
-    · convert Int.natAbs_dvd_natAbs.mpr contra
+    · convert! Int.natAbs_dvd_natAbs.mpr contra
       clear_value q
       simp only [eq_comm, Int.natAbs_eq_iff, Nat.cast_sub hq.le, Nat.cast_one, neg_sub, true_or]
     · by_contra! h
@@ -153,7 +153,7 @@ private theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
   rw [IH (Fintype.card R) _ R inferInstance rfl]
   · trivial
   rw [← hn, ← Subring.card_top D]
-  convert Set.card_lt_card hR
+  convert! Set.card_lt_card hR
 
 end LittleWedderburn
 

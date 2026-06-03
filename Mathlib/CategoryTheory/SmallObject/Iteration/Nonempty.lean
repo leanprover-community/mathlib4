@@ -46,6 +46,7 @@ def mkOfBot : Φ.Iteration (⊥ : J) where
 
 variable {Φ}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open Functor in
 /-- When `j : J` is not maximal, this is the extension in `Φ.Iteration (Order.succ j)`
@@ -113,6 +114,7 @@ lemma arrowMap_functor_to_top (i : J) (hi : i < j) :
 
 end mkOfLimit
 
+set_option backward.defeqAttrib.useBackward true in
 open mkOfLimit in
 /-- When `j` is a limit element, this is the element in `Φ.Iteration j`
 that is constructed from elements in `Φ.Iteration i` for all `i < j`. -/

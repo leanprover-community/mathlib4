@@ -108,6 +108,7 @@ namespace MulAut
 variable [Monoid M]
 
 /-- The tautological action by `MulAut M` on `M`. -/
+@[to_additive /-- The tautological action by `AddAut M` on `M`. -/]
 instance applyMulAction : MulAction (MulAut M) M where
   smul := (· <| ·)
   one_smul _ := rfl
@@ -116,16 +117,15 @@ instance applyMulAction : MulAction (MulAut M) M where
 /-- The tautological action by `MulAut M` on `M`.
 
 This generalizes `Function.End.applyMulAction`. -/
+@[to_additive /-- The tautological action by `AddAut M` on `M`. -/]
 instance applyMulDistribMulAction : MulDistribMulAction (MulAut M) M where
-  smul := (· <| ·)
-  one_smul _ := rfl
-  mul_smul _ _ _ := rfl
   smul_one := map_one
   smul_mul := map_mul
 
-@[simp] protected lemma smul_def (f : MulAut M) (a : M) : f • a = f a := rfl
+@[to_additive (attr := simp)] protected lemma smul_def (f : MulAut M) (a : M) : f • a = f a := rfl
 
 /-- `MulAut.applyDistribMulAction` is faithful. -/
+@[to_additive /-- `AddAut.applyAddDistribAddAction` is faithful. -/]
 instance apply_faithfulSMul : FaithfulSMul (MulAut M) M where eq_of_smul_eq_smul := MulEquiv.ext
 
 end MulAut
@@ -135,16 +135,8 @@ end MulAut
 namespace AddAut
 variable [AddMonoid M]
 
-/-- The tautological action by `AddAut M` on `M`. -/
-instance applyMulAction : MulAction (AddAut M) M where
-  smul := (· <| ·)
-  one_smul _ := rfl
-  mul_smul _ _ _ := rfl
-
-@[simp] protected lemma smul_def (f : AddAut M) (a : M) : f • a = f a := rfl
-
-/-- `AddAut.applyDistribMulAction` is faithful. -/
-instance apply_faithfulSMul : FaithfulSMul (AddAut M) M where eq_of_smul_eq_smul := AddEquiv.ext
+@[deprecated (since := "2026-05-26")] alias smul_def := AddAut.vadd_def
+@[deprecated (since := "2026-05-26")] alias apply_faithfulSMul := apply_faithfulVAdd
 
 end AddAut
 

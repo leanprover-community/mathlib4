@@ -143,7 +143,7 @@ lemma Finitary.sigma (h : ∀ i, (M i).Finitary) : (Matroid.sigma M).Finitary :=
   intro i
   apply indep_of_forall_finite_subset_indep
   intro J hJI hJ
-  convert hI (Sigma.mk i '' J) (by simpa) (hJ.image _) i
+  convert! hI (Sigma.mk i '' J) (by simpa) (hJ.image _) i
   rw [sigma_mk_preimage_image_eq_self]
 
 end Sigma
@@ -160,7 +160,7 @@ protected def sum' (M : ι → Matroid α) : Matroid (ι × α) :=
 @[simp] lemma sum'_indep_iff {I} :
     (Matroid.sum' M).Indep I ↔ ∀ i, (M i).Indep (Prod.mk i ⁻¹' I) := by
   simp only [Matroid.sum', mapEquiv_indep_iff, Equiv.sigmaEquivProd_symm_apply, sigma_indep_iff]
-  convert Iff.rfl
+  convert! Iff.rfl
   ext
   simp
 
@@ -172,14 +172,14 @@ protected def sum' (M : ι → Matroid α) : Matroid (ι × α) :=
 @[simp] lemma sum'_isBase_iff {B} :
     (Matroid.sum' M).IsBase B ↔ ∀ i, (M i).IsBase (Prod.mk i ⁻¹' B) := by
   simp only [Matroid.sum', mapEquiv_isBase_iff, Equiv.sigmaEquivProd_symm_apply, sigma_isBase_iff]
-  convert Iff.rfl
+  convert! Iff.rfl
   ext
   simp
 
 @[simp] lemma sum'_isBasis_iff {I X} :
     (Matroid.sum' M).IsBasis I X ↔ ∀ i, (M i).IsBasis (Prod.mk i ⁻¹' I) (Prod.mk i ⁻¹' X) := by
   simp only [Matroid.sum', mapEquiv_isBasis_iff, Equiv.sigmaEquivProd_symm_apply, sigma_isBasis_iff]
-  convert Iff.rfl <;>
+  convert! Iff.rfl <;>
   exact ext <| by simp
 
 lemma Finitary.sum' (h : ∀ i, (M i).Finitary) : (Matroid.sum' M).Finitary := by
@@ -242,7 +242,7 @@ set_option backward.isDefEq.respectTransparency false in
     (M.sum N).Indep I ↔ M.Indep (.inl ⁻¹' I) ∧ N.Indep (.inr ⁻¹' I) := by
   simp only [Matroid.sum, mapEquiv_indep_iff, Equiv.sumCongr_symm, Equiv.sumCongr_apply,
     Equiv.symm_symm, sigma_indep_iff, Bool.forall_bool]
-  convert Iff.rfl <;>
+  convert! Iff.rfl <;>
     simp [Set.ext_iff, Equiv.ulift, Equiv.sumEquivSigmaBool]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -250,7 +250,7 @@ set_option backward.isDefEq.respectTransparency false in
     (M.sum N).IsBase B ↔ M.IsBase (.inl ⁻¹' B) ∧ N.IsBase (.inr ⁻¹' B) := by
   simp only [Matroid.sum, mapEquiv_isBase_iff, Equiv.sumCongr_symm, Equiv.sumCongr_apply,
     Equiv.symm_symm, sigma_isBase_iff, Bool.forall_bool]
-  convert Iff.rfl <;>
+  convert! Iff.rfl <;>
     simp [Set.ext_iff, Equiv.ulift, Equiv.sumEquivSigmaBool]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -260,7 +260,7 @@ set_option backward.isDefEq.respectTransparency false in
   simp only [Matroid.sum, mapEquiv_isBasis_iff, Equiv.sumCongr_symm,
     Equiv.sumCongr_apply, Equiv.symm_symm, sigma_isBasis_iff, Bool.forall_bool,
     Equiv.sumEquivSigmaBool, Equiv.coe_fn_mk, Equiv.ulift]
-  convert Iff.rfl <;> exact ext <| by simp
+  convert! Iff.rfl <;> exact ext <| by simp
 
 end Sum
 

@@ -42,6 +42,7 @@ def range (p : F' ⟶ F) : Subfunctor F where
 variable (F) in
 lemma range_id : range (𝟙 F) = ⊤ := by aesop
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma range_ι (G : Subfunctor F) : range G.ι = G := by aesop
 
@@ -51,6 +52,7 @@ section lift
 
 variable (f : F' ⟶ F) {G : Subfunctor F} (hf : range f ≤ G)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If the image of a morphism falls in a subfunctor, then the morphism factors through it. -/
 @[simps! app]
 def lift : F' ⟶ G.toFunctor where
@@ -82,6 +84,7 @@ lemma toRange_app_val {i : C} (x : F'.obj i) :
     ((toRange p).app i x).val = p.app i x := by
   simp [toRange]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma range_toRange : range (toRange p) = ⊤ := by

@@ -13,6 +13,13 @@ on:
   pull_request_review_comment:
     types: [created]
 
+# This job only parses the triggering comment and emits an artifact for the
+# privileged `maintainer_bors_wf_run` workflow to consume; it never uses the
+# token to mutate the repo. Keep it read-only rather than inheriting the
+# default token permissions.
+permissions:
+  contents: read
+
 jobs:
   add_ready_to_merge_label:
     # we set some variables. The ones of the form `${{ X }}${{ Y }}` are typically not

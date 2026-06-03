@@ -29,6 +29,7 @@ open Functor Limits CartesianMonoidalCategory
 
 variable {C : Type*} [Category* C] [HasPullbacks C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A choice of finite products of `Over X` given by `Limits.pullback`. -/
 abbrev cartesianMonoidalCategory (X : C) : CartesianMonoidalCategory (Over X) :=
   .ofChosenFiniteProducts
@@ -206,6 +207,7 @@ lemma ε_pullback_left : (LaxMonoidal.ε (Over.pullback f)).left = inv (pullback
   apply IsIso.eq_inv_of_hom_inv_id
   rw [← η_pullback_left, ← Over.comp_left, Monoidal.η_ε, Over.id_left]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma μ_pullback_left_fst_fst (R S : Over X) :
     (LaxMonoidal.μ (Over.pullback f) R S).left ≫
@@ -215,6 +217,7 @@ lemma μ_pullback_left_fst_fst (R S : Over X) :
     Iso.hom_inv_id]
   simp [CartesianMonoidalCategory.prodComparison, fst]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma μ_pullback_left_fst_snd (R S : Over X) :
     (LaxMonoidal.μ (Over.pullback f) R S).left ≫
@@ -260,6 +263,7 @@ lemma preservesTerminalIso_pullback (f : R ⟶ S) :
       Over.isoMk (asIso (pullback.snd (𝟙 _) f)) (by simp) := by
   ext1; exact toUnit_unique _ _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma prodComparisonIso_pullback_inv_left_fst_fst (f : X ⟶ Y) (A B : Over Y) :
@@ -277,6 +281,7 @@ lemma prodComparisonIso_pullback_Spec_inv_left_fst_fst' (f : X ⟶ Y) (gA : A �
         pullback.fst (pullback.snd gA f) (pullback.snd gB f) ≫ pullback.fst _ _ :=
   prodComparisonIso_pullback_inv_left_fst_fst ..
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma prodComparisonIso_pullback_inv_left_fst_snd' (f : X ⟶ Y) (gA : A ⟶ Y) (gB : B ⟶ Y) :
@@ -312,6 +317,7 @@ instance isCommMonObj_mk_pullbackSnd [MonObj (Over.mk f)] [IsCommMonObj (Over.mk
 abbrev grpObjMkPullbackSnd [GrpObj (Over.mk f)] : GrpObj (Over.mk (pullback.snd f g)) :=
   ((Over.pullback g).mapGrp.obj <| .mk <| .mk f).grp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] monObjMkPullbackSnd_one in
 instance isMonHom_pullbackFst_id_right [MonObj (Over.mk f)] :

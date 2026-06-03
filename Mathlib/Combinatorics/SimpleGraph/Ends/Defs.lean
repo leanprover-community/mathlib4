@@ -263,7 +263,7 @@ def componentComplFunctor : (Finset V)ᵒᵖ ⥤ Type u where
     simp [ComponentCompl.hom_refl]
   map_comp {_ Y Z} h h' := by
     ext C
-    simp [C.hom_trans (le_of_op_hom h) (le_of_op_hom h')]
+    simp
 
 /-- The end of a graph, defined as the sections of the functor `component_compl_functor` . -/
 protected def «end» :=

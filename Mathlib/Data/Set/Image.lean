@@ -219,6 +219,8 @@ theorem image_comp (f : β → γ) (g : α → β) (a : Set α) : f ∘ g '' a =
 
 theorem image_comp_eq {g : β → γ} : image (g ∘ f) = image g ∘ image f := by grind
 
+theorem image_comp_image {g : β → γ} : image g ∘ image f = image (g ∘ f) := by grind
+
 /-- A variant of `image_comp`, useful for rewriting -/
 @[grind =]
 theorem image_image (g : β → γ) (f : α → β) (s : Set α) : g '' f '' s = (fun x => g (f x)) '' s :=
@@ -954,6 +956,11 @@ theorem preimage_rangeSplitting {f : α → β} (hf : Injective f) :
     preimage (rangeSplitting f) = image (rangeFactorization f) :=
   (image_eq_preimage_of_inverse (rightInverse_rangeSplitting hf)
       (leftInverse_rangeSplitting f)).symm
+
+theorem rangeSplitting_strictMono [LinearOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
+    StrictMono (rangeSplitting f) := by
+  refine fun x y h ↦ hf.reflect_lt ?_
+  simpa [apply_rangeSplitting f]
 
 theorem isCompl_range_some_none (α : Type*) : IsCompl (range (some : α → Option α)) {none} :=
   IsCompl.of_le (fun _ ⟨⟨_, ha⟩, (hn : _ = none)⟩ => Option.some_ne_none _ (ha.trans hn))

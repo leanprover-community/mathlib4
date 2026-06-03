@@ -32,6 +32,7 @@ For example, if the goal contains `1+1`, then it will suggest rewriting this int
 Clicking on a suggestion pastes a rewrite into the editor, which will be of the form
 - `rw [show 1+1 = Nat.add 1 1 from rfl]`
 - `rw [show 1+1 = 2 from rfl]`
+
 It also takes into account the position of the selected expression if it appears in multiple places,
 and whether the rewrite is in the goal or a local hypothesis.
 The rewrite string is created using `mkRewrite`.

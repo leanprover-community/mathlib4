@@ -435,10 +435,10 @@ section Preorder
 variable {R S : Type*} [Mul R] [Add R] [Mul S] [Add S] [Preorder R] [Preorder S]
 
 theorem lt_symm_apply (e : R ≃+*o S) {x : R} {y : S} : x < e.symm y ↔ e x < y := by
-  simpa using e.toOrderIso.lt_symm_apply
+  simpa using! e.toOrderIso.lt_symm_apply
 
 theorem symm_apply_lt (e : R ≃+*o S) {x : R} {y : S} : e.symm y < x ↔ y < e x := by
-  simpa using e.toOrderIso.symm_apply_lt
+  simpa using! e.toOrderIso.symm_apply_lt
 
 end Preorder
 
@@ -463,7 +463,7 @@ theorem coe_toOrderRingHom_refl : (OrderRingIso.refl α : α →+*o α) = OrderR
   rfl
 
 theorem toOrderRingHom_injective : Injective (toOrderRingHom : α ≃+*o β → α →+*o β) :=
-  fun f g h => DFunLike.coe_injective <| by convert DFunLike.ext'_iff.1 h using 0
+  fun f g h => DFunLike.coe_injective <| by convert! DFunLike.ext'_iff.1 h using 0
 
 end NonAssocSemiring
 

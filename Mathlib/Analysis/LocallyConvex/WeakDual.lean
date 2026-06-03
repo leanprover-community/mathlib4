@@ -105,7 +105,7 @@ section TopologicalRing
 variable [Finite ι] [Field 𝕜] [t𝕜 : TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [T0Space 𝕜]
 
-/- A linear functional `φ` can be expressed as a linear combination of linear functionals `f₁,…,fₙ`
+/-- A linear functional `φ` can be expressed as a linear combination of linear functionals `f₁,…,fₙ`
 if and only if `φ` is continuous with respect to the topology induced by `f₁,…,fₙ`. See
 `LinearMap.mem_span_iff_continuous` for a result about arbitrary collections of linear functionals.
 -/
@@ -130,7 +130,7 @@ section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
-/- A linear functional `φ` is in the span of a collection of linear functionals if and only if `φ`
+/-- A linear functional `φ` is in the span of a collection of linear functionals if and only if `φ`
 is continuous with respect to the topology induced by the collection of linear functionals. See
 `LinearMap.mem_span_iff_continuous_of_finite` for a result about finite collections of linear
 functionals. -/
@@ -185,7 +185,7 @@ the `σ(E, F; B)`-topology is of the form `x ↦ B(x, y)` for some `y : F`. -/
 theorem dualEmbedding_surjective : Function.Surjective (WeakBilin.eval B) := fun f ↦ by
   have : f.toLinearMap ∈
       Submodule.span 𝕜 (ContinuousLinearMap.coeLM 𝕜 ∘ₗ WeakBilin.eval B).range := by
-    simpa [coe_range, mem_span_iff_continuous, continuous_iff_le_induced, ← induced_to_pi] using
+    simpa [coe_range, mem_span_iff_continuous, continuous_iff_le_induced, ← induced_to_pi] using!
       f.continuous.le_induced
   simpa
 

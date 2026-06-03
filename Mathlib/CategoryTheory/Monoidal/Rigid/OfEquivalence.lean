@@ -49,11 +49,6 @@ noncomputable def ExactPairing.ofFullyFaithful [F.Full] [F.Faithful] (X Y : C)
   .ofFaithful F (F.preimage (δ F _ _ ≫ ε_ _ _ ≫ (ε F)))
     (F.preimage (η F ≫ η_ _ _ ≫ μ F _ _)) (by simp) (by simp)
 
-@[deprecated (since := "2025-10-17")] alias exactPairingOfFaithful := ExactPairing.ofFaithful
-
-@[deprecated (since := "2025-10-17")]
-alias exactPairingOfFullyFaithful := ExactPairing.ofFullyFaithful
-
 variable {F}
 variable {G : D ⥤ C} (adj : F ⊣ G) [F.IsEquivalence]
 

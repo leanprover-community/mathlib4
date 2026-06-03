@@ -71,7 +71,7 @@ def map : PreOneHypercover (F.obj X) where
   Y _ _ j := F.obj (E.Y j)
   p₁ _ _ j := F.map (E.p₁ j)
   p₂ _ _ j := F.map (E.p₂ j)
-  w _ _ j := by simpa using F.congr_map (E.w j)
+  w _ _ j := by simpa using! F.congr_map (E.w j)
 
 @[simp]
 lemma map_id : E.map (𝟭 _) = E :=
@@ -84,6 +84,60 @@ lemma map_comp {D' : Type*} [Category* D'] (G : D ⥤ D') : E.map (F ⋙ G) = (E
 then `(E.map F).multifork P` is a limit iff `E.multifork (F.op ⋙ P)` is a limit. -/
 def isLimitMapMultiforkEquiv {A : Type u} [Category.{t} A] (P : Dᵒᵖ ⥤ A) :
     IsLimit ((E.map F).multifork P) ≃ IsLimit (E.multifork (F.op ⋙ P)) := by rfl
+
+section
+
+variable {E} {W : C} {i₁ i₂ : E.I₀} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ E.X i₂)
+
+set_option backward.defeqAttrib.useBackward true in
+lemma functorPushforward_sieve₁_map_le :
+    Sieve.functorPushforward F (E.sieve₁ p₁ p₂) ≤ (E.map F).sieve₁ (F.map p₁) (F.map p₂) := by
+  rw [Sieve.functorPushforward_le_iff_le_functorPullback]
+  intro Y f ⟨k, u, hf₁, hf₂⟩
+  exact ⟨k, F.map u, by simp [← Functor.map_comp, hf₁], by simp [← Functor.map_comp, hf₂]⟩
+
+variable (i₁ i₂) in
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+lemma functorPushforward_sieve₁'_of_preservesLimit [HasPullback (E.f i₁) (E.f i₂)]
+    [PreservesLimit (cospan (E.f i₁) (E.f i₂)) F] :
+    Sieve.functorPushforward F (E.sieve₁' i₁ i₂) =
+      (E.map F).sieve₁ (F.map <| pullback.fst _ _) (F.map <| pullback.snd _ _) := by
+  have : HasPullback ((E.map F).f i₁) ((E.map F).f i₂) :=
+    hasPullback_of_preservesPullback F (E.f i₁) (E.f i₂)
+  refine le_antisymm ?_ ?_
+  · rw [PreOneHypercover.sieve₁'_eq_sieve₁]
+    apply PreOneHypercover.functorPushforward_sieve₁_map_le
+  · rw [PreOneHypercover.sieve₁_eq_pullback_sieve₁' _ _ _
+      (by simp [← Functor.map_comp, pullback.condition])]
+    rintro W f ⟨Z, u, v, ⟨k⟩, h⟩
+    refine ⟨E.Y k, pullback.lift (E.p₁ k) (E.p₂ k) (E.w _), u, ?_, ?_⟩
+    · use E.Y k, 𝟙 _, pullback.lift (E.p₁ k) (E.p₂ k) (E.w _), ⟨k⟩
+      simp
+    · simp only [pullback.hom_ext_iff, Category.assoc, limit.lift_π, PullbackCone.mk_π_app] at h
+      apply IsPullback.hom_ext (IsPullback.map _ (.of_hasPullback _ _)) <;>
+        simp [← h.left, ← h.right, ← Functor.map_comp]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma functorPushforward_sieve₁_of_preservesPullbacks (h : p₁ ≫ E.f _ = p₂ ≫ E.f _)
+    [HasPullbacks C] [PreservesLimitsOfShape WalkingCospan F] :
+    Sieve.functorPushforward F (E.sieve₁ p₁ p₂) = (E.map F).sieve₁ (F.map p₁) (F.map p₂) := by
+  refine le_antisymm (PreOneHypercover.functorPushforward_sieve₁_map_le _ _ _) ?_
+  have : HasPullback ((E.map F).f i₁) ((E.map F).f i₂) :=
+    hasPullback_of_preservesPullback F (E.f i₁) (E.f i₂)
+  rintro T f ⟨k, u, hf₁, hf₂⟩
+  let l : W ⟶ pullback (E.f i₁) (E.f i₂) := pullback.lift p₁ p₂ h
+  have hl₁ : l ≫ pullback.fst _ _ = p₁ := by simp [l]
+  have hl₂ : l ≫ pullback.snd _ _ = p₂ := by simp [l]
+  let r : E.Y k ⟶ pullback (E.f i₁) (E.f i₂) := pullback.lift (E.p₁ _) (E.p₂ _) (E.w _)
+  refine ⟨pullback l r, pullback.fst _ _, IsPullback.lift
+    (IsPullback.map _ (.of_hasPullback _ _)) f u ?_, ?_, ?_⟩
+  · apply (IsPullback.map _ (.of_hasPullback _ _)).hom_ext <;>
+      simp [l, r, ← Functor.map_comp, hf₁, hf₂]
+  · refine ⟨k, pullback.snd _ _, ?_, ?_⟩ <;> simp [← hl₁, ← hl₂, pullback.condition_assoc, r]
+  · simp
+
+end
 
 end PreOneHypercover
 
@@ -149,6 +203,7 @@ private lemma W_map_of_adjunction_of_isContinuous_aux (F : C ⥤ D)
   rw [isSheaf_iff_isSheaf_of_type]
   exact IsContinuous.op_comp_isSheaf_of_types (F := F) ⟨U, hU⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Functor.IsContinuous` is preserved under enlarging the universe if the starting
 universe is large enough. SGA 4 III 1.5. -/
 private lemma isSheaf_of_isContinuous_aux (F : C ⥤ D) [Functor.IsContinuous F J K]
@@ -200,6 +255,13 @@ lemma op_comp_isSheaf [Functor.IsContinuous F J K] (G : Sheaf K A) :
 lemma op_comp_isSheaf_of_isSheaf [IsContinuous F J K] (P : Dᵒᵖ ⥤ A) (h : Presheaf.IsSheaf K P) :
     Presheaf.IsSheaf J (F.op ⋙ P) :=
   F.op_comp_isSheaf J K ⟨P, h⟩
+
+variable {K} in
+lemma op_comp_isSheaf_of_isSheaf_type [F.IsContinuous J K] {G : Dᵒᵖ ⥤ Type*}
+    (h : Presieve.IsSheaf K G) :
+    Presieve.IsSheaf J (F.op ⋙ G) := by
+  rw [← isSheaf_iff_isSheaf_of_type] at h ⊢
+  exact F.op_comp_isSheaf_of_isSheaf _ _ _ h
 
 /-- SGA 4 III 1.2 (i) => (iii) -/
 lemma W_map_of_adjunction_of_isContinuous (F : C ⥤ D) (H : (Cᵒᵖ ⥤ A) ⥤ (Dᵒᵖ ⥤ A))
@@ -318,6 +380,7 @@ def sheafPushforwardContinuousComp [IsContinuous G K L] :
     sheafPushforwardContinuous G A K L ⋙ sheafPushforwardContinuous F A J K ≅
     sheafPushforwardContinuous (F ⋙ G) A J L := Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 variable {F F'} in
 /-- The action of a natural transformation on pushforward functors of sheaves. -/
 @[simps]
@@ -325,6 +388,7 @@ def sheafPushforwardContinuousNatTrans [IsContinuous F' J K] :
     sheafPushforwardContinuous F' A J K ⟶ sheafPushforwardContinuous F A J K where
   app M := ⟨whiskerRight (NatTrans.op τ) _⟩
 
+set_option backward.defeqAttrib.useBackward true in
 variable {F F'} in
 /-- The action of a natural isomorphism on pushforward functors of sheaves. -/
 @[simps]
@@ -357,6 +421,7 @@ def sheafPushforwardContinuousComp'
 
 end Functor
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `F ⊣ G` is an adjunction between continuous functors, the associated
 pushforwards on sheaves are adjoint. -/
 @[simps!]

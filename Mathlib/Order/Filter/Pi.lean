@@ -102,7 +102,7 @@ theorem hasBasis_pi {ι' : ι → Type*} {s : ∀ i, ι' i → Set (α i)} {p : 
     (h : ∀ i, (f i).HasBasis (p i) (s i)) :
     (pi f).HasBasis (fun If : Set ι × ∀ i, ι' i => If.1.Finite ∧ ∀ i ∈ If.1, p i (If.2 i))
       fun If : Set ι × ∀ i, ι' i => If.1.pi fun i => s i <| If.2 i := by
-  simpa [Set.pi_def] using HasBasis.iInf' fun i => (h i).comap (eval i : (∀ j, α j) → α i)
+  simpa [Set.pi_def] using! HasBasis.iInf' fun i => (h i).comap (eval i : (∀ j, α j) → α i)
 
 theorem hasBasis_pi_same_index {κ : Type*} {p : κ → Prop} {s : Π i : ι, κ → Set (α i)}
     (h : ∀ i : ι, (f i).HasBasis p (s i))
@@ -286,7 +286,7 @@ theorem coprodᵢ_neBot_iff [∀ i, Nonempty (α i)] : NeBot (Filter.coprodᵢ f
 
 theorem coprodᵢ_eq_bot_iff' : Filter.coprodᵢ f = ⊥ ↔ (∃ i, IsEmpty (α i)) ∨ f = ⊥ := by
   simpa only [not_neBot, not_and_or, funext_iff, not_forall, not_exists, not_nonempty_iff]
-    using coprodᵢ_neBot_iff'.not
+    using! coprodᵢ_neBot_iff'.not
 
 @[simp]
 theorem coprodᵢ_eq_bot_iff [∀ i, Nonempty (α i)] : Filter.coprodᵢ f = ⊥ ↔ f = ⊥ := by

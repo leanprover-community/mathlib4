@@ -19,7 +19,7 @@ Given `n : ℕ`, we define `Nat.bitIndices n`, which is the `List` of indices of
 binary expansion of `n`. If `s : Finset ℕ` and `n = ∑ i ∈ s, 2 ^ i`, then
 `Nat.bitIndices n` is the sorted list of elements of `s`.
 
-The lemma `twoPowSum_bitIndices` proves that summing `2 ^ i` over this list gives `n`.
+The lemma `sum_map_two_pow_bitIndices` proves that summing `2 ^ i` over this list gives `n`.
 This is used in `Combinatorics.colex` to construct a bijection `equivBitIndices : ℕ ≃ Finset ℕ`.
 
 ## TODO
@@ -80,7 +80,8 @@ theorem bitIndices_bit_false (n : ℕ) :
 @[simp] theorem bitIndices_two_pow (k : ℕ) : bitIndices (2 ^ k) = [k] := by
   rw [← mul_one (a := 2 ^ k), bitIndices_two_pow_mul]; simp
 
-@[simp] theorem twoPowSum_bitIndices (n : ℕ) : (n.bitIndices.map (fun i ↦ 2 ^ i)).sum = n := by
+@[simp] theorem sum_map_two_pow_bitIndices (n : ℕ) :
+    (n.bitIndices.map (fun i ↦ 2 ^ i)).sum = n := by
   induction n using binaryRec with
   | zero => simp
   | bit b n hs =>
@@ -90,9 +91,18 @@ theorem bitIndices_bit_false (n : ℕ) :
     · simpa [hrw, List.sum_map_mul_left]
     simp [hrw, List.sum_map_mul_left, hs, add_comm (a := 1)]
 
-/-- Together with `Nat.twoPowSum_bitIndices`, this implies a bijection between `ℕ` and `Finset ℕ`.
-See `Finset.equivBitIndices` for this bijection. -/
-theorem bitIndices_twoPowsum {L : List ℕ} (hL : List.SortedLT L) :
+@[deprecated (since := "2026-05-15")] alias twoPowSum_bitIndices := sum_map_two_pow_bitIndices
+
+@[simp] theorem mem_bitIndices {i n : ℕ} : i ∈ n.bitIndices ↔ n.testBit i := by
+  induction n using Nat.binaryRec generalizing i with
+  | zero => simp
+  | bit b n ih => cases b <;> cases i <;> simp_all [Nat.testBit_add_one, Nat.mul_add_div]
+
+/--
+Together with `Nat.sum_map_bitIndices_two_pow`, this implies a bijection between `ℕ` and `Finset ℕ`.
+See `Finset.equivBitIndices` for this bijection.
+-/
+theorem bitIndices_sum_map_two_pow {L : List ℕ} (hL : List.SortedLT L) :
     (L.map (fun i ↦ 2 ^ i)).sum.bitIndices = L := by
   cases L with | nil => simp | cons a L =>
   obtain ⟨haL, hL⟩ := pairwise_cons.1 hL.pairwise
@@ -112,15 +122,16 @@ theorem bitIndices_twoPowsum {L : List ℕ} (hL : List.SortedLT L) :
   simp only [List.map_cons, List.map_map, List.sum_map_mul_left, List.sum_cons, hrw]
   nth_rw 1 [← mul_one (a := 2 ^ a)]
   rw [← mul_add, bitIndices_two_pow_mul, add_comm, bitIndices_two_mul_add_one,
-    bitIndices_twoPowsum hL₀]
+    bitIndices_sum_map_two_pow hL₀]
   simp [add_comm (a := 1), add_assoc]
 termination_by L.length
 
-theorem two_pow_le_of_mem_bitIndices (ha : a ∈ n.bitIndices) : 2 ^ a ≤ n := by
-  rw [← twoPowSum_bitIndices n]
-  exact List.single_le_sum (by simp) _ <| mem_map_of_mem ha
+@[deprecated (since := "2026-05-15")] alias bitIndices_twoPowsum := bitIndices_sum_map_two_pow
+
+theorem two_pow_le_of_mem_bitIndices (ha : a ∈ n.bitIndices) : 2 ^ a ≤ n :=
+  ge_two_pow_of_testBit (by simpa using ha)
 
 theorem notMem_bitIndices_self (n : ℕ) : n ∉ n.bitIndices :=
-  fun h ↦ (n.lt_two_pow_self).not_ge <| two_pow_le_of_mem_bitIndices h
+  fun h ↦ n.lt_two_pow_self.not_ge <| two_pow_le_of_mem_bitIndices h
 
 end Nat

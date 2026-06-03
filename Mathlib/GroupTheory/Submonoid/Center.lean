@@ -69,6 +69,16 @@ field. -/
 abbrev center.commMonoid' : CommMonoid (center M) :=
   { (center M).toMulOneClass, Subsemigroup.center.commSemigroup with }
 
+@[to_additive]
+protected theorem center_prod {N : Type*} [MulOneClass N] :
+    center (M × N) = prod (center M) (center N) :=
+  SetLike.coe_injective Set.center_prod
+
+@[to_additive]
+protected theorem center_pi {ι : Type*} {M : ι → Type*} [Π i, MulOneClass (M i)] :
+    center (Π i, M i) = pi .univ fun i ↦ center (M i) :=
+  SetLike.coe_injective Set.center_pi
+
 end MulOneClass
 
 section Monoid

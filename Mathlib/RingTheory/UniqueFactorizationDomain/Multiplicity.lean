@@ -9,6 +9,8 @@ public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
+import Mathlib.Algebra.FiniteSupport.Basic
+
 /-!
 # Unique factorization and multiplicity
 
@@ -118,7 +120,7 @@ theorem count_normalizedFactors_eq {p x : R} (hp : Irreducible p) (hnorm : norma
   by_cases hx0 : x = 0
   · simp [hx0] at hlt
   apply Nat.cast_injective (R := ℕ∞)
-  convert (emultiplicity_eq_count_normalizedFactors hp hx0).symm
+  convert! (emultiplicity_eq_count_normalizedFactors hp hx0).symm
   · exact hnorm.symm
   exact (emultiplicity_eq_coe.mpr ⟨hle, hlt⟩).symm
 
@@ -175,5 +177,13 @@ lemma pow_dvd_pow_iff_dvd {a b : R} {n : ℕ} (hn : n ≠ 0) : a ^ n ∣ b ^ n �
   have := H p hp
   rwa [emultiplicity_pow hp, emultiplicity_pow hp,
     ENat.mul_le_mul_left_iff (by exact_mod_cast hn) (ENat.coe_ne_top _)] at this
+
+@[fun_prop]
+lemma hasFiniteMulSupport_fun_pow_multiplicity {α M : Type*} [CommMonoid M] [Subsingleton Rˣ]
+    (f : α → M) {g : α → R} (hgi : g.Injective) (hg : ∀ s, Irreducible (g s)) {r : R} (hr : r ≠ 0) :
+    (fun s : α ↦ f s ^ multiplicity (g s) r).HasFiniteMulSupport := by
+  classical
+  simp only [multiplicity_eq_count_normalizedFactors (hg _) hr, normalize_eq]
+  fun_prop
 
 end UniqueFactorizationMonoid

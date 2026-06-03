@@ -202,6 +202,13 @@ theorem IsIntegral.smul {R} [CommSemiring R] [Algebra R B] [Algebra S B] [Algebr
   .of_mem_of_fg _ hx.fg_adjoin_singleton _ <| by
     rw [← algebraMap_smul S]; apply Subalgebra.smul_mem; exact Algebra.subset_adjoin rfl
 
+theorem isIntegral_intCast (a : ℤ) : IsIntegral ℤ (a : B) :=
+  isIntegral_algebraMap
+
+theorem isIntegral_natCast (a : ℕ) : IsIntegral ℤ (a : B) := by
+  rw [← Int.cast_natCast]
+  exact isIntegral_intCast a
+
 variable (R A)
 
 /-- The integral closure of `R` in an `R`-algebra `A`. -/

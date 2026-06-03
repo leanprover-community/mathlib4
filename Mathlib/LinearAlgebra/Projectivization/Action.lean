@@ -50,6 +50,11 @@ lemma generalLinearGroup_smul_def (g : LinearMap.GeneralLinearGroup K V) (x : �
     g • x = x.map g.toLinearEquiv.toLinearMap g.toLinearEquiv.injective := by
   rfl
 
+lemma matrixSpecialLinearGroup_smul_def {ι F : Type*} [Fintype ι] [DecidableEq ι] [Field F]
+    (g : Matrix.SpecialLinearGroup ι F) (x : ℙ F (ι → F)) :
+    g • x = g.toLin'_equiv • x := by
+  rfl
+
 @[simp]
 lemma smul_mk (g : G) {v : V} (hv : v ≠ 0) :
     g • mk K v hv = mk K (g • v) ((smul_ne_zero_iff_ne g).mpr hv) :=
@@ -163,6 +168,19 @@ instance specialLinearGroup_is_two_pretransitive :
 
 /-- The special linear group `SpecialLinearGroup K V` acts primitively on `ℙ K V`. -/
 instance : IsPreprimitive (SpecialLinearGroup K V) (ℙ K V) :=
+  isPreprimitive_of_is_two_pretransitive inferInstance
+
+variable {ι : Type*} [Fintype ι] [DecidableEq ι]
+
+instance : IsMultiplyPretransitive (Matrix.SpecialLinearGroup ι K) (ℙ K (ι → K)) 2 :=
+  let φ : SpecialLinearGroup K (ι → K) →* Matrix.SpecialLinearGroup ι K :=
+    Matrix.SpecialLinearGroup.toLin'_equiv.symm.toMonoidHom
+  let f : ℙ K (ι → K) →ₑ[φ] ℙ K (ι → K) :=
+    { toFun := id
+      map_smul' g D := by simp [φ, matrixSpecialLinearGroup_smul_def]}
+  IsPretransitive.of_embedding (f := f) Function.surjective_id
+
+instance prePrimitive_SL : IsPreprimitive (Matrix.SpecialLinearGroup ι K) (ℙ K (ι → K)) :=
   isPreprimitive_of_is_two_pretransitive inferInstance
 
 end Field

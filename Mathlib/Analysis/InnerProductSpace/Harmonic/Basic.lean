@@ -146,7 +146,7 @@ The negative of a harmonic function is harmonic.
 theorem HarmonicAt.neg (h : HarmonicAt f x) :
     HarmonicAt (-f) x := by
   constructor
-  · simpa using h.1.neg
+  · simpa using! h.1.neg
   · filter_upwards [h.2] with x hx
     simp_all [laplacian_neg]
 

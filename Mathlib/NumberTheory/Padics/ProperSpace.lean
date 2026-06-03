@@ -66,6 +66,6 @@ instance : ProperSpace ℚ_[p] := by
   have : closedBall 0 1 ∈ 𝓝 (0 : ℚ_[p]) := closedBall_mem_nhds _ zero_lt_one
   simp only [closedBall, dist_eq_norm_sub, sub_zero] at this
   refine IsCompact.locallyCompactSpace_of_mem_nhds_of_addGroup ?_ this
-  simpa only [isCompact_iff_compactSpace] using PadicInt.compactSpace p
+  simpa only [isCompact_iff_compactSpace] using! PadicInt.compactSpace p
 
 end Padic

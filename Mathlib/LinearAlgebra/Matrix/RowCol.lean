@@ -329,11 +329,11 @@ theorem updateRow_comm [DecidableEq m] (A : Matrix m n α) {i i' : m} (h : i ≠
 @[simp]
 theorem updateCol_idem [DecidableEq n] (A : Matrix m n α) (j : n) (x y : m → α) :
     (A.updateCol j x).updateCol j y = A.updateCol j y := by
-  simpa only [updateRow_transpose] using congr_arg transpose <| updateRow_idem Aᵀ j x y
+  simpa only [updateRow_transpose] using! congr_arg transpose <| updateRow_idem Aᵀ j x y
 
 theorem updateCol_comm [DecidableEq n] (A : Matrix m n α) {j j' : n} (h : j ≠ j') (x y : m → α) :
     (A.updateCol j x).updateCol j' y = (A.updateCol j' y).updateCol j x := by
-  simpa only [updateRow_transpose] using congr_arg transpose <| updateRow_comm Aᵀ h x y
+  simpa only [updateRow_transpose] using! congr_arg transpose <| updateRow_comm Aᵀ h x y
 
 /-! Updating rows and columns commutes in the obvious way with reindexing the matrix. -/
 
@@ -352,7 +352,7 @@ theorem submatrix_updateRow_equiv [DecidableEq l] [DecidableEq m] (A : Matrix m 
 theorem updateCol_submatrix_equiv [DecidableEq o] [DecidableEq n] (A : Matrix m n α) (j : o)
     (c : l → α) (e : l ≃ m) (f : o ≃ n) : updateCol (A.submatrix e f) j c =
     (A.updateCol (f j) fun i => c (e.symm i)).submatrix e f := by
-  simpa only [← transpose_submatrix, updateRow_transpose] using
+  simpa only [← transpose_submatrix, updateRow_transpose] using!
     congr_arg transpose (updateRow_submatrix_equiv Aᵀ j c f e)
 
 theorem submatrix_updateCol_equiv [DecidableEq o] [DecidableEq n] (A : Matrix m n α) (j : n)

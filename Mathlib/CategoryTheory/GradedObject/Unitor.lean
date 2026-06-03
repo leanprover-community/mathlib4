@@ -65,6 +65,7 @@ noncomputable def mapBifunctorLeftUnitorCofan (hp : ∀ (j : J), p ⟨0, j⟩ = 
     else
       (mapBifunctorObjSingle₀ObjIsInitial F X Y a ha).to _)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma mapBifunctorLeftUnitorCofan_inj (j : J) :
     (mapBifunctorLeftUnitorCofan F X e p hp Y j).inj ⟨⟨0, j⟩, hp j⟩ =
@@ -75,7 +76,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The cofan `mapBifunctorLeftUnitorCofan F X e p hp Y j` is a colimit. -/
 noncomputable def mapBifunctorLeftUnitorCofanIsColimit (j : J) :
     IsColimit (mapBifunctorLeftUnitorCofan F X e p hp Y j) :=
-  mkCofanColimit _
+  Cofan.IsColimit.mk _
     (fun s => e.inv.app (Y j) ≫
       (F.map (singleObjApplyIso (0 : I) X).inv).app (Y j) ≫ s.inj ⟨⟨0, j⟩, hp j⟩)
     (fun s => by
@@ -104,6 +105,7 @@ noncomputable def mapBifunctorLeftUnitor : mapBifunctorMapObj F p ((single₀ I)
   isoMk _ _ (fun j => (CofanMapObjFun.iso
     (mapBifunctorLeftUnitorCofanIsColimit F X e p hp Y j)).symm)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_mapBifunctorLeftUnitor_hom_apply (j : J) :
@@ -180,6 +182,7 @@ noncomputable def mapBifunctorRightUnitorCofan (hp : ∀ (j : J), p ⟨j, 0⟩ =
     else
       (mapBifunctorObjObjSingle₀IsInitial F Y X a ha).to _)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma mapBifunctorRightUnitorCofan_inj (j : J) :
     (mapBifunctorRightUnitorCofan F Y e p hp X j).inj ⟨⟨j, 0⟩, hp j⟩ =
@@ -190,7 +193,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The cofan `mapBifunctorRightUnitorCofan F Y e p hp X j` is a colimit. -/
 noncomputable def mapBifunctorRightUnitorCofanIsColimit (j : J) :
     IsColimit (mapBifunctorRightUnitorCofan F Y e p hp X j) :=
-  mkCofanColimit _
+  Cofan.IsColimit.mk _
     (fun s => e.inv.app (X j) ≫
       (F.obj (X j)).map (singleObjApplyIso (0 : I) Y).inv ≫ s.inj ⟨⟨j, 0⟩, hp j⟩)
     (fun s => by
@@ -199,13 +202,11 @@ noncomputable def mapBifunctorRightUnitorCofanIsColimit (j : J) :
       · subst hi
         simp only [Set.mem_preimage, hp, Set.mem_singleton_iff] at h
         subst h
-        dsimp
         rw [mapBifunctorRightUnitorCofan_inj, assoc, Iso.hom_inv_id_app_assoc,
           ← Functor.map_comp_assoc, Iso.hom_inv_id, Functor.map_id, id_comp]
       · apply IsInitial.hom_ext
         exact mapBifunctorObjObjSingle₀IsInitial _ _ _ _ hi)
     (fun s m hm => by
-      dsimp
       rw [← hm ⟨⟨j, 0⟩, hp j⟩, mapBifunctorRightUnitorCofan_inj, assoc, ← Functor.map_comp_assoc,
         Iso.inv_hom_id, Functor.map_id, id_comp, Iso.inv_hom_id_app_assoc])
 
@@ -224,6 +225,7 @@ noncomputable def mapBifunctorRightUnitor : mapBifunctorMapObj F p X ((single₀
   isoMk _ _ (fun j => (CofanMapObjFun.iso
     (mapBifunctorRightUnitorCofanIsColimit F Y e p hp X j)).symm)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_mapBifunctorRightUnitor_hom_apply (j : J) :
@@ -344,7 +346,7 @@ lemma mapBifunctor_triangle
     (mapBifunctorRightUnitor F₁ X₂ e₁ τ.p₁₂ τ.h₁ X₁).inv (𝟙 X₃)))]
   ext j i₁ i₃ hj
   simp only [categoryOfGradedObjects_comp, ι_mapBifunctorMapMap_assoc,
-    mapBifunctorRightUnitor_inv_apply, Functor.id_obj, Functor.flip_obj_obj, Functor.map_comp,
+    mapBifunctorRightUnitor_inv_apply, Functor.id_obj, Functor.map_comp,
     NatTrans.comp_app, categoryOfGradedObjects_id, Functor.map_id, id_comp, assoc,
     ι_mapBifunctorMapMap]
   congr 2

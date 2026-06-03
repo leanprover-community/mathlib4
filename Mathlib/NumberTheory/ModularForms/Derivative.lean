@@ -164,7 +164,7 @@ If `F : ℍ → ℂ` is MDifferentiable, then `serreDerivative k F` is also MDif
 theorem serreDerivative_mdifferentiable {F : ℍ → ℂ} (k : ℂ) (hF : MDiff F) :
     MDiff (serreDerivative k F) := by
   refine (normalizedDerivOfComplex_mdifferentiable hF).sub ?_
-  convert
+  convert!
     (MDifferentiable.mul mdifferentiable_const (E2_mdifferentiable.mul hF) :
       MDiff (fun z ↦ (k * 12⁻¹) * (EisensteinSeries.E2 z * F z)))
   simp [Pi.mul_apply, mul_assoc, mul_left_comm, mul_comm]

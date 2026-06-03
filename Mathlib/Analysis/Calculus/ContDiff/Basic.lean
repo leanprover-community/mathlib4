@@ -174,32 +174,20 @@ theorem LinearIsometryEquiv.contDiff (f : E ≃ₗᵢ[𝕜] F) : ContDiff 𝕜 n
   (f : E →L[𝕜] F).contDiff
 
 /-- The identity is `C^n`. -/
+@[to_fun (attr := fun_prop) contDiff_fun_id]
 theorem contDiff_id : ContDiff 𝕜 n (id : E → E) :=
   IsBoundedLinearMap.id.contDiff
 
-@[fun_prop]
-theorem contDiff_fun_id : ContDiff 𝕜 n (fun x : E => x) :=
-  IsBoundedLinearMap.id.contDiff
-
+@[to_fun (attr := fun_prop) contDiffWithinAt_fun_id]
 theorem contDiffWithinAt_id {s x} : ContDiffWithinAt 𝕜 n (id : E → E) s x :=
   contDiff_id.contDiffWithinAt
 
-@[fun_prop]
-theorem contDiffWithinAt_fun_id {s x} : ContDiffWithinAt 𝕜 n (fun x : E => x) s x :=
-  contDiff_id.contDiffWithinAt
-
+@[to_fun (attr := fun_prop) contDiffAt_fun_id]
 theorem contDiffAt_id {x} : ContDiffAt 𝕜 n (id : E → E) x :=
   contDiff_id.contDiffAt
 
-@[fun_prop]
-theorem contDiffAt_fun_id {x} : ContDiffAt 𝕜 n (fun x : E => x) x :=
-  contDiff_id.contDiffAt
-
+@[to_fun (attr := fun_prop) contDiffOn_fun_id]
 theorem contDiffOn_id {s} : ContDiffOn 𝕜 n (id : E → E) s :=
-  contDiff_id.contDiffOn
-
-@[fun_prop]
-theorem contDiffOn_fun_id {s} : ContDiffOn 𝕜 n (fun x : E => x) s :=
   contDiff_id.contDiffOn
 
 /-- Bilinear functions are `C^n`. -/
@@ -384,7 +372,8 @@ theorem HasFTaylorSeriesUpToOn.comp_continuousAffineMap
     rw [map_zero]
     rfl
   · intro m hm x hx
-    convert (hA m).hasFDerivAt.comp_hasFDerivWithinAt x
+    convert!
+      (hA m).hasFDerivAt.comp_hasFDerivWithinAt x
         ((hf.fderivWithin m hm (g x) hx).comp x g.hasFDerivWithinAt (Subset.refl _))
     ext y v
     change p (g x) (Nat.succ m) (g.contLinear ∘ cons y v)
@@ -542,7 +531,8 @@ theorem HasFTaylorSeriesUpToOn.prodMk {n : ℕ∞ω}
   constructor
   · intro x hx; rw [← hf.zero_eq x hx, ← hg.zero_eq x hx]; rfl
   · intro m hm x hx
-    convert (L m).hasFDerivAt.comp_hasFDerivWithinAt x
+    convert!
+      (L m).hasFDerivAt.comp_hasFDerivWithinAt x
         ((hf.fderivWithin m hm x hx).prodMk (hg.fderivWithin m hm x hx))
   · intro m hm
     exact (L m).continuous.comp_continuousOn ((hf.cont m hm).prodMk (hg.cont m hm))

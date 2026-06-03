@@ -604,7 +604,7 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
     rw [e₃] at e
     cases e
     simp only [List.head?_cons, e₂, List.tail_cons, cond_false]
-    convert @IH _ (update (update S k₁ Sk) k₂ (a :: S k₂)) _ using 2 <;>
+    convert! @IH _ (update (update S k₁ Sk) k₂ (a :: S k₂)) _ using 2 <;>
       simp [Function.update_of_ne, h₁, h₁.symm, e₃, List.reverseAux]
     simp [Function.update_comm h₁.symm]
 
@@ -621,14 +621,14 @@ theorem move₂_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k
   simp only [TM2.step, Option.mem_def, Option.elim]
   cases o <;> simp only <;> rw [tr]
     <;> simp only [id, TM2.stepAux, Option.isSome, cond_true, cond_false]
-  · convert move_ok h₁.2.1.symm (splitAtPred_false _) using 2
+  · convert! move_ok h₁.2.1.symm (splitAtPred_false _) using 2
     simp only [Function.update_comm h₁.1, Function.update_idem]
     rw [show update S rev [] = S by rw [← h₂, Function.update_eq_self]]
     simp only [Function.update_of_ne h₁.2.2.symm, Function.update_of_ne h₁.2.1,
       Function.update_of_ne h₁.1.symm, List.reverseAux_eq, h₂, Function.update_self,
       List.append_nil, List.reverse_reverse]
   · simp only [Option.getD_some]
-    convert move_ok h₁.2.1.symm (splitAtPred_false _) using 2
+    convert! move_ok h₁.2.1.symm (splitAtPred_false _) using 2
     simp only [h₂, Function.update_comm h₁.1, List.reverseAux_eq, Function.update_self,
       List.append_nil, Function.update_idem]
     rw [show update S rev [] = S by rw [← h₂, Function.update_eq_self]]
@@ -661,7 +661,7 @@ theorem clear_ok {p k q s L₁ o L₂} {S : K' → List Γ'} (e : splitAtPred p 
     rw [e₃] at e
     cases e
     simp only [List.head?_cons, e₂, List.tail_cons, cond_false]
-    convert @IH _ (update S k Sk) _ using 2 <;> simp [e₃]
+    convert! @IH _ (update S k Sk) _ using 2 <;> simp [e₃]
 
 theorem copy_ok (q s a b c d) :
     Reaches₁ (TM2.step tr) ⟨some (Λ'.copy q), s, K'.elim a b c d⟩
@@ -715,7 +715,7 @@ theorem head_main_ok {q s L} {c d : List Γ'} :
   rw [if_neg (show o ≠ some Γ'.consₗ by cases L <;> simp [o])]
   refine (clear_ok (splitAtPred_eq _ _ _ none [] ?_ ⟨rfl, rfl⟩)).trans ?_
   · exact fun x h => Bool.decide_false (trList_ne_consₗ _ _ h)
-  convert unrev_ok using 2; simp [List.reverseAux_eq]
+  convert! unrev_ok using 2; simp [List.reverseAux_eq]
 
 theorem head_stack_ok {q s L₁ L₂ L₃} :
     Reaches₁ (TM2.step tr)
@@ -731,7 +731,7 @@ theorem head_stack_ok {q s L₁ L₂ L₃} :
     simp only [TM2.step, Option.mem_def, TM2.stepAux, ite_true, id_eq, trList, List.nil_append,
       elim_update_stack, elim_rev, List.reverseAux_nil, elim_update_rev, Function.update_self,
       List.headI_nil, trNat_default]
-    convert unrev_ok using 2
+    convert! unrev_ok using 2
     simp
   · refine
       TransGen.trans
@@ -748,7 +748,7 @@ theorem head_stack_ok {q s L₁ L₂ L₃} :
           (splitAtPred_eq _ _ (trList L₂) (some Γ'.consₗ) L₃
             (fun x h => Bool.decide_false (trList_ne_consₗ _ _ h)) ⟨rfl, by simp⟩))
         ?_
-    convert unrev_ok using 2
+    convert! unrev_ok using 2
     simp [List.reverseAux_eq]
 
 theorem succ_ok {q s n} {c d : List Γ'} :
@@ -758,7 +758,7 @@ theorem succ_ok {q s n} {c d : List Γ'} :
   rcases (n : Num) with - | a
   · refine TransGen.head rfl ?_
     simp only [Option.mem_def]
-    convert unrev_ok using 1
+    convert! unrev_ok using 1
     simp only [elim_update_rev, elim_rev, elim_main, List.reverseAux_nil, elim_update_main]
     rfl
   simp only [trNum, Num.succ, Num.succ']
@@ -769,7 +769,7 @@ theorem succ_ok {q s n} {c d : List Γ'} :
     obtain ⟨l₁', l₂', s', e, h⟩ := this []
     simp only [List.reverseAux] at e
     refine h.trans ?_
-    convert unrev_ok using 2
+    convert! unrev_ok using 2
     simp [e, List.reverseAux_eq]
   induction a generalizing s with intro l₁
   | one =>
@@ -803,7 +803,7 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
   · simp only [trPosNum, Num.succ', List.singleton_append, List.nil_append]
     refine TransGen.head rfl ?_
     rw [tr]; simp only [pop', TM2.stepAux]
-    convert unrev_ok using 2
+    convert! unrev_ok using 2
     simp
   simp only [Num.succ']
   suffices ∀ l₁, ∃ l₁' l₂' s',
@@ -814,7 +814,7 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
     obtain ⟨l₁', l₂', s', e, h⟩ := this []
     simp only [List.reverseAux] at e
     refine h.trans ?_
-    convert unrev_ok using 2
+    convert! unrev_ok using 2
     simp [e, List.reverseAux_eq]
   induction a generalizing s with intro l₁
   | one =>
@@ -843,7 +843,7 @@ theorem trNormal_respects (c k v s) :
   | succ => refine ⟨_, ⟨none, rfl⟩, head_main_ok.trans succ_ok⟩
   | tail =>
     let o : Option Γ' := List.casesOn v none fun _ _ => some Γ'.cons
-    refine ⟨_, ⟨o, rfl⟩, ?_⟩; convert clear_ok _ using 2
+    refine ⟨_, ⟨o, rfl⟩, ?_⟩; convert! clear_ok _ using 2
     · simp; rfl
     swap
     refine splitAtPred_eq _ _ (trNat v.headI) _ _ (trNat_natEnd _) ?_
@@ -854,7 +854,7 @@ theorem trNormal_respects (c k v s) :
     simp only [TM2.step, Option.mem_def, elim_stack, elim_update_stack, elim_update_main,
       elim_main, elim_rev, elim_update_rev]
     refine (copy_ok _ none [] (trList v).reverse _ _).trans ?_
-    convert h₂ using 2
+    convert! h₂ using 2
     simp [List.reverseAux_eq, trContStack]
   | comp f _ _ IHg => exact IHg (Cont.comp f k) v s
   | case f g IHf IHg =>
@@ -918,9 +918,9 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
     · obtain ⟨s', h₁, h₂⟩ := trNormal_respects f (Cont.fix f k) v.tail (some Γ'.cons)
       refine ⟨_, h₁, TransGen.head rfl <| TransGen.trans ?_ h₂⟩
       rw [trCont, tr]; simp only [pop', TM2.stepAux, elim_main, this.1]
-      convert clear_ok (splitAtPred_eq _ _ (trNat v.headI).tail (some Γ'.cons) _ _ _) using 2
+      convert! clear_ok (splitAtPred_eq _ _ (trNat v.headI).tail (some Γ'.cons) _ _ _) using 2
       · simp
-        convert rfl
+        convert! rfl
       · exact fun x h => trNat_natEnd _ _ (List.tail_subset _ h)
       · exact ⟨rfl, this.2⟩
 

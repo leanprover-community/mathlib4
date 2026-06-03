@@ -44,7 +44,7 @@ theorem ofDirectSumEquiv_tprod_lof [Fintype ι] [(i : ι) → DecidableEq (κ i)
       DirectSum.lof R _ _ p (⨂ₜ[R] i, x i) := by
   classical
   rw [ofDirectSumEquiv]
-  convert ofDFinsuppEquiv_tprod_single p x
+  convert! ofDFinsuppEquiv_tprod_single p x
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -54,13 +54,13 @@ theorem ofDirectSumEquiv_symm_lof_tprod [Fintype ι] [(i : ι) → DecidableEq (
       (⨂ₜ[R] i, DirectSum.lof R _ _ (p i) (x i)) := by
   classical
   rw [ofDirectSumEquiv]
-  convert ofDFinsuppEquiv_symm_single_tprod p x
+  convert! ofDFinsuppEquiv_symm_single_tprod p x
 
 @[simp]
 theorem ofDirectSumEquiv_tprod_apply [Finite ι]
     (x : Π i, ⨁ j, M i j) (p : Π i, κ i) :
     ofDirectSumEquiv (tprod R x) p = ⨂ₜ[R] i, x i (p i) := by
   have : Fintype ι := Fintype.ofFinite ι
-  convert ofDFinsuppEquiv_tprod_apply _ _
+  convert! ofDFinsuppEquiv_tprod_apply _ _
 
 end PiTensorProduct

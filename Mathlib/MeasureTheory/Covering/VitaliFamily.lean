@@ -207,7 +207,7 @@ def filterAt (x : X) : Filter (Set X) := (𝓝 x).smallSets ⊓ 𝓟 (v.setsAt x
 
 theorem _root_.Filter.HasBasis.vitaliFamily {ι : Sort*} {p : ι → Prop} {s : ι → Set X} {x : X}
     (h : (𝓝 x).HasBasis p s) : (v.filterAt x).HasBasis p (fun i ↦ {t ∈ v.setsAt x | t ⊆ s i}) := by
-  simpa only [← Set.setOf_inter_eq_sep] using h.smallSets.inf_principal _
+  simpa only [← Set.setOf_inter_eq_sep] using! h.smallSets.inf_principal _
 
 theorem filterAt_basis_closedBall (x : X) :
     (v.filterAt x).HasBasis (0 < ·) ({t ∈ v.setsAt x | t ⊆ closedBall x ·}) :=

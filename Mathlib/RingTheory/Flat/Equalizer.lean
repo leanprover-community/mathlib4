@@ -351,3 +351,18 @@ lemma Algebra.kerTensorProductMapIdToAlgHomEquiv_symm_apply [Module.Flat R T]
       x ⊗ₜ (y * z.1) := rfl
 
 end Algebra
+
+namespace RingHom
+
+/--
+A property `P` of ring homomorphisms is said to have stable equalizers, if the equalizer
+of algebra maps between algebras with structure morphisms satisfying `P`, is preserved by
+arbitrary base change.
+-/
+def HasStableEqualizers (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop) : Prop :=
+  ∀ {R S A B : Type u} [CommRing R] [CommRing S] [CommRing A] [CommRing B]
+    [Algebra R A] [Algebra R S] [Algebra R B]
+    (f g : A →ₐ[R] B), P (algebraMap R A) → P (algebraMap R B) →
+    Function.Bijective (f.tensorEqualizer R S g)
+
+end RingHom

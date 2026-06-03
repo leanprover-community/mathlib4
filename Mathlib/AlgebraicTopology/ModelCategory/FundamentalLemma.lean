@@ -77,7 +77,7 @@ lemma bijective_rightHomotopyClassToHom :
       (by rwa [← weakEquivalence_iff])
     rw [← Function.Bijective.of_comp_iff _
       (LeftHomotopyClass.postcomp_bijective_of_fibration_of_weakEquivalence _ p)]
-    convert (Iso.homCongr (Iso.refl (L.obj X)) (asIso (L.map p))).bijective.comp hY'
+    convert! (Iso.homCongr (Iso.refl (L.obj X)) (asIso (L.map p))).bijective.comp hY'
     ext f
     obtain ⟨f, rfl⟩ := f.mk_surjective
     simp
@@ -91,7 +91,7 @@ lemma bijective_rightHomotopyClassToHom :
       (by rwa [← weakEquivalence_iff])
     rw [← Function.Bijective.of_comp_iff _
       (RightHomotopyClass.precomp_bijective_of_cofibration_of_weakEquivalence Y i)]
-    convert (Iso.homCongr (asIso (L.map i)) (Iso.refl (L.obj Y))).symm.bijective.comp hX'
+    convert! (Iso.homCongr (asIso (L.map i)) (Iso.refl (L.obj Y))).symm.bijective.comp hX'
     ext f
     obtain ⟨f, rfl⟩ := f.mk_surjective
     simp

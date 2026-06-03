@@ -217,7 +217,7 @@ theorem strongRankCondition_iff_forall_not_injective :
   constructor <;> refine fun ⟨n, f, inj⟩ ↦ ⟨n, ?_⟩
   · exact f.exists_finsupp_nat_of_fin_fun_injective inj
   · exact ⟨f ∘ₗ Finsupp.lmapDomain R R (↑) ∘ₗ (Finsupp.linearEquivFunOnFinite ..).symm.toLinearMap,
-      inj.comp <| by simpa using Finsupp.mapDomain_injective Fin.val_injective⟩
+      inj.comp <| by simpa using! Finsupp.mapDomain_injective Fin.val_injective⟩
 
 end
 

@@ -96,6 +96,7 @@ section
 
 variable {ι' : Type*} [Category ι'] (F : ι' ⥤ ι)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] Precomp.map Precomp.obj δ in
 /-- The precomposition of a spectral object with a functor. -/
@@ -111,7 +112,7 @@ def precomp : SpectralObject C ι' where
     dsimp at this ⊢
     simp only [← Functor.map_comp_assoc, ← Functor.map_comp, Category.assoc,
       Iso.inv_hom_id, Functor.map_id, Category.comp_id] at this ⊢
-    convert this using 3
+    convert! this using 3
     · cat_disch
     · congr 2; cat_disch
   distinguished' D := by
@@ -133,7 +134,7 @@ def precomp : SpectralObject C ι' where
       rw [← cancel_epi (X.ω₁.map (F.mapComposableArrowsObjMk₁Iso _).inv)]
       simp only [← Functor.map_comp_assoc, ← Functor.map_comp, Category.assoc,
         Iso.inv_hom_id, Functor.map_id, Category.id_comp] at this ⊢
-      convert this.symm using 3
+      convert! this.symm using 3
       · congr; cat_disch
       · cat_disch
 
@@ -199,6 +200,7 @@ namespace Functor
 
 variable {C}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor between categories of spectral objects that is induced by
 a triangulated functor. -/
 def mapTriangulatedSpectralObject (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]

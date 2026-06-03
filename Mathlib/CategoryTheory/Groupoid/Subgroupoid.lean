@@ -117,7 +117,7 @@ theorem mem_objs_of_tgt {c d : C} {f : c ⟶ d} (h : f ∈ S.arrows c d) : d ∈
 
 theorem id_mem_of_nonempty_isotropy (c : C) : c ∈ objs S → 𝟙 c ∈ S.arrows c c := by
   rintro ⟨γ, hγ⟩
-  convert S.mul hγ (S.inv hγ)
+  convert! S.mul hγ (S.inv hγ)
   simp only [inv_eq_inv, IsIso.hom_inv_id]
 
 theorem id_mem_of_src {c d : C} {f : c ⟶ d} (h : f ∈ S.arrows c d) : 𝟙 c ∈ S.arrows c c :=
@@ -305,7 +305,7 @@ structure IsNormal : Prop extends IsWide S where
 
 theorem IsNormal.conj' {S : Subgroupoid C} (Sn : IsNormal S) :
     ∀ {c d} (p : d ⟶ c) {γ : c ⟶ c}, γ ∈ S.arrows c c → p ≫ γ ≫ Groupoid.inv p ∈ S.arrows d d :=
-  fun p γ hs => by convert Sn.conj (Groupoid.inv p) hs; simp
+  fun p γ hs => by convert! Sn.conj (Groupoid.inv p) hs; simp
 
 theorem IsNormal.conjugation_bij (Sn : IsNormal S) {c d} (p : c ⟶ d) :
     Set.BijOn (fun γ : c ⟶ c => Groupoid.inv p ≫ γ ≫ p) (S.arrows c c) (S.arrows d d) := by
@@ -481,7 +481,7 @@ theorem mem_map_objs_iff (hφ : Function.Injective φ.obj) (d : D) :
 
 @[simp]
 theorem map_objs_eq (hφ : Function.Injective φ.obj) : (map φ hφ S).objs = φ.obj '' S.objs := by
-  ext x; convert mem_map_objs_iff S φ hφ x
+  ext x; convert! mem_map_objs_iff S φ hφ x
 
 /-- The image of a functor injective on objects -/
 def im (hφ : Function.Injective φ.obj) :=
@@ -491,7 +491,7 @@ theorem mem_im_iff (hφ : Function.Injective φ.obj) {c d : D} (f : c ⟶ d) :
     f ∈ (im φ hφ).arrows c d ↔
       ∃ (a b : C) (g : a ⟶ b) (ha : φ.obj a = c) (hb : φ.obj b = d),
         f = eqToHom ha.symm ≫ φ.map g ≫ eqToHom hb := by
-  convert Map.arrows_iff φ hφ ⊤ f; simp only [Top.top, mem_univ, exists_true_left]
+  convert! Map.arrows_iff φ hφ ⊤ f; simp only [Top.top, mem_univ, exists_true_left]
 
 theorem mem_im_objs_iff (hφ : Function.Injective φ.obj) (d : D) :
     d ∈ (im φ hφ).objs ↔ ∃ c : C, φ.obj c = d := by

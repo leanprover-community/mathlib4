@@ -224,6 +224,7 @@ def mkIso {M N : Comon C} (f : M.X ≅ N.X) (f_counit : f.hom ≫ ε[N.X] = ε[M
   have : IsComonHom f.hom := ⟨f_counit, f_comul⟩
   ⟨⟨f.hom⟩, ⟨f.inv⟩, by cat_disch, by cat_disch⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
 instance uniqueHomToTrivial (A : Comon C) : Unique (A ⟶ trivial C) where
@@ -264,6 +265,7 @@ Turn a comonoid object into a monoid object in the opposite category.
   X := op A.X
   mon := ComonToMonOpOpObjMon A
 
+set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /--
 The contravariant functor turning comonoid objects into monoid objects in the opposite category.
@@ -295,6 +297,7 @@ Turn a monoid object in the opposite category into a comonoid object.
 
 variable (C)
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 The contravariant functor turning monoid objects in the opposite category into comonoid objects.
 -/
@@ -306,6 +309,7 @@ def MonOpOpToComon : (Mon Cᵒᵖ)ᵒᵖ ⥤ Comon C where
       isComonHom_hom.hom_counit := by apply Quiver.Hom.op_inj; simp
       isComonHom_hom.hom_comul := by apply Quiver.Hom.op_inj; simp [op_tensorHom] }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 Comonoid objects are contravariantly equivalent to monoid objects in the opposite category.
@@ -369,6 +373,7 @@ theorem tensorObj_comul (A B : C) [ComonObj A] [ComonObj B] :
     Δ[A ⊗ B] = (Δ[A] ⊗ₘ Δ[B]) ≫ tensorμ A A B B := by
   simp [tensorObj_comul']
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The forgetful functor from `Comon C` to `C` is monoidal when `C` is monoidal. -/
 instance : (forget C).Monoidal :=

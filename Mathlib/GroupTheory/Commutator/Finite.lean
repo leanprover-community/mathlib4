@@ -22,6 +22,8 @@ namespace Subgroup
 
 /-- The commutator of a finite direct product is contained in the direct product of the commutators.
 -/
+@[to_additive /-- The commutator of a finite direct product is contained in the direct product of
+the commutators. -/]
 theorem commutator_pi_pi_of_finite {η : Type*} [Finite η] {Gs : η → Type*} [∀ i, Group (Gs i)]
     (H K : ∀ i, Subgroup (Gs i)) : ⁅Subgroup.pi Set.univ H, Subgroup.pi Set.univ K⁆ =
     Subgroup.pi Set.univ fun i => ⁅H i, K i⁆ := by

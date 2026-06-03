@@ -266,7 +266,7 @@ def inducedOrderRingHom : α →+*o β :=
       suffices ∀ x, 0 < x → inducedAddHom α β (x * x) = inducedAddHom α β x * inducedAddHom α β x by
         intro x
         obtain h | rfl | h := lt_trichotomy x 0
-        · convert this (-x) (neg_pos.2 h) using 1
+        · convert! this (-x) (neg_pos.2 h) using 1
           · rw [neg_mul, mul_neg, neg_neg]
           · simp_rw [map_neg, neg_mul, mul_neg, neg_neg]
         · simp only [mul_zero, map_zero]
@@ -288,7 +288,7 @@ def inducedOrderRingIso : β ≃+*o γ :=
     map_le_map_iff' := by
       dsimp
       refine ⟨fun h => ?_, fun h => inducedMap_mono _ _ h⟩
-      convert inducedMap_mono γ β h <;>
+      convert! inducedMap_mono γ β h <;>
       · rw [inducedOrderRingHom, AddMonoidHom.coe_fn_mkRingHomOfMulSelfOfTwoNeZero, inducedAddHom]
         dsimp
         rw [inducedMap_inv_self β γ _] }

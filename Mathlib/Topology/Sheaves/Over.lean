@@ -35,6 +35,7 @@ variable {X : Type u} [TopologicalSpace X] (U : Opens X)
 
 namespace Opens
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `X` is a topological space and `U : Opens X`,
 then the category `Over U` is equivalent to `Opens ↥U`. -/
 @[simps!]

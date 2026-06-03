@@ -178,7 +178,7 @@ variable [PseudoEMetricSpace α] {x y z : α} {s : Set α}
 
 theorem einfsep_pair (hxy : x ≠ y) : ({x, y} : Set α).einfsep = edist x y := by
   nth_rw 1 [← min_self (edist x y)]
-  convert einfsep_pair_eq_inf hxy using 2
+  convert! einfsep_pair_eq_inf hxy using 2
   rw [edist_comm]
 
 theorem einfsep_insert : einfsep (insert x s) =

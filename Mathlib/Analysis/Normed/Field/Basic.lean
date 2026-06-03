@@ -248,7 +248,7 @@ theorem nhdsNE_neBot (x : α) : NeBot (𝓝[≠] x) := by
 
 @[instance]
 theorem nhdsWithin_isUnit_neBot : NeBot (𝓝[{ x : α | IsUnit x }] 0) := by
-  simpa only [isUnit_iff_ne_zero] using nhdsNE_neBot (0 : α)
+  simpa only [isUnit_iff_ne_zero] using! nhdsNE_neBot (0 : α)
 
 end Nontrivially
 

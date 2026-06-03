@@ -47,7 +47,7 @@ lemma exists_finite_sum_smul_approximation_of_mem_uniformity [TopologicalSpace R
     f.curry (nhdsSet_diagonal_le_uniformity hS')
   refine ⟨n, fun i ↦ ⟨_, (U i).isClopen.continuous_indicator <| continuous_const (y := 1)⟩,
     v, fun x y ↦ ?_⟩
-  convert hv x y using 2
+  convert! hv x y using 2
   simp only [sum_apply]
   congr 1 with i
   by_cases hi : x ∈ U i <;> simp [hi]

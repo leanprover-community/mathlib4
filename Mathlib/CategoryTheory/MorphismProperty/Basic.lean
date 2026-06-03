@@ -24,7 +24,6 @@ The following meta-property is defined
 
 @[expose] public section
 
-
 universe w v v' u u'
 
 open CategoryTheory Opposite
@@ -746,12 +745,19 @@ def arrow (W : MorphismProperty C) :
     MorphismProperty (Arrow C) :=
   fun _ _ f => W f.left ∧ W f.right
 
+instance (W : MorphismProperty C) [W.RespectsIso] : W.arrow.RespectsIso where
+  precomp f (_ : IsIso f) _ h :=
+    ⟨RespectsIso.precomp _ _ _ h.1, RespectsIso.precomp _ _ _ h.2⟩
+  postcomp f (_ : IsIso f) _ h :=
+    ⟨RespectsIso.postcomp _ _ _ h.1, RespectsIso.postcomp _ _ _ h.2⟩
+
 end MorphismProperty
 
 namespace NatTrans
 
 variable {C : Type u} [Category.{v} C] {D : Type*} [Category* D]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isIso_app_iff_of_iso {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (e : X ≅ Y) :
     IsIso (α.app X) ↔ IsIso (α.app Y) :=
   (MorphismProperty.isomorphisms D).arrow_mk_iso_iff

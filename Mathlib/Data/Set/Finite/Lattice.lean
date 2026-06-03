@@ -375,7 +375,7 @@ theorem _root_.iInf_iSup_eq_of_finite {ι : Sort v} {κ : ι → Sort w} [Order.
   suffices ∀ {ι : Type v} {κ : ι → Type w} [Finite ι] (f : Π a, κ a → α),
       ⨅ a, ⨆ b, f a b = ⨆ g : (Π a, κ a), ⨅ a, f a (g a) by
     simpa [← Equiv.plift.symm.iInf_comp, ← Equiv.plift.symm.iSup_comp,
-        ← (Equiv.plift.piCongr fun a => @Equiv.plift (κ a.down)).symm.iSup_comp] using
+        ← (Equiv.plift.piCongr fun a => @Equiv.plift (κ a.down)).symm.iSup_comp] using!
       this (κ := fun a => PLift (κ a.down)) fun (a : PLift ι) b => f a.down b.down
   intro ι κ _ f
   induction ι using Finite.induction_empty_option with

@@ -136,7 +136,7 @@ theorem isCaratheodory_iUnion_of_disjoint {s : ℕ → Set α} (h : ∀ i, IsCar
   apply (isCaratheodory_iff_le' m).mpr
   intro t
   have hp : m (t ∩ ⋃ i, s i) ≤ ⨆ n, m (t ∩ ⋃ i < n, s i) := by
-    convert measure_iUnion_le (μ := m) fun i => t ∩ s i using 1
+    convert! measure_iUnion_le (μ := m) fun i => t ∩ s i using 1
     · simp [inter_iUnion]
     · simp [ENNReal.tsum_eq_iSup_nat, isCaratheodory_sum m h hd]
   grw [hp, ENNReal.iSup_add]
@@ -214,7 +214,7 @@ theorem boundedBy_caratheodory {m : Set α → ℝ≥0∞} {s : Set α}
   apply ofFunction_caratheodory; intro t
   rcases t.eq_empty_or_nonempty with rfl | h
   · simp [Set.not_nonempty_empty]
-  · convert le_trans _ (hs t)
+  · convert! le_trans _ (hs t)
     · simp [h]
     exact add_le_add iSup_const_le iSup_const_le
 

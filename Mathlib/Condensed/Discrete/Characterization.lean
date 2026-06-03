@@ -225,8 +225,8 @@ variable (R : Type u) [Ring R]
 
 lemma isDiscrete_iff_isDiscrete_forget (M : LightCondMod R) :
     M.IsDiscrete ↔ ((LightCondensed.forget R).obj M).IsDiscrete :=
-  Sheaf.isConstant_iff_forget (coherentTopology LightProfinite)
-    (forget (ModuleCat R)) M LightProfinite.isTerminalPUnit
+  Sheaf.isConstant_iff_forget (coherentTopology LightProfinite.{u})
+    (forget (ModuleCat R)) M LightProfinite.isTerminalPUnit.{u}
 
 open LightCondMod.LocallyConstant List in
 theorem isDiscrete_tfae (M : LightCondMod.{u} R) :

@@ -110,7 +110,7 @@ theorem map_toFinset [DecidableEq α] [DecidableEq β] {s : Multiset α} :
 
 @[simp]
 theorem map_refl : s.map (Embedding.refl _) = s :=
-  ext fun _ => by simpa only [mem_map, exists_prop] using exists_eq_right
+  ext fun _ => by simpa only [mem_map, exists_prop] using! exists_eq_right
 
 @[simp]
 theorem map_cast_heq {α β} (h : α = β) (s : Finset α) :
@@ -349,6 +349,17 @@ theorem image_id' [DecidableEq α] : (s.image fun x => x) = s :=
 theorem image_image [DecidableEq γ] {g : β → γ} : (s.image f).image g = s.image (g ∘ f) :=
   eq_of_veq <| by simp only [image_val, dedup_map_dedup_eq, Multiset.map_map]
 
+/-- Reverse of `Finset.image_image`. The `Finset` analogue of `Set.image_comp`. -/
+theorem image_comp [DecidableEq γ] {g : β → γ} : s.image (g ∘ f) = (s.image f).image g :=
+  image_image.symm
+
+/-- Point-free form of `Finset.image_image`: `image` distributes over `Function.comp`. -/
+theorem image_comp_image [DecidableEq γ] {g : β → γ} :
+    image g ∘ image f = image (g ∘ f) := by ext s; simp [image_image]
+
+theorem image_comp_eq [DecidableEq γ] {g : β → γ} :
+    image (g ∘ f) = image g ∘ image f := image_comp_image.symm
+
 theorem image_comm {β'} [DecidableEq β'] [DecidableEq γ] {f : β → γ} {g : α → β} {f' : α → β'}
     {g' : β' → γ} (h_comm : ∀ a, f (g a) = g' (f' a)) :
     (s.image g).image f = (s.image f').image g' := by simp_rw [image_image, comp_def, h_comm]
@@ -388,7 +399,7 @@ alias ⟨_root_.Set.SurjOn.finsetImage_eq_of_mapsTo, _⟩ := image_eq_iff_surjOn
 theorem image_mono (f : α → β) : Monotone (Finset.image f) := fun _ _ => image_subset_image
 
 lemma image_injective (hf : Injective f) : Injective (image f) := by
-  simpa only [funext (map_eq_image _)] using map_injective ⟨f, hf⟩
+  simpa only [funext (map_eq_image _)] using! map_injective ⟨f, hf⟩
 
 lemma image_inj {t : Finset α} (hf : Injective f) : s.image f = t.image f ↔ s = t :=
   (image_injective hf).eq_iff
@@ -396,6 +407,17 @@ lemma image_inj {t : Finset α} (hf : Injective f) : s.image f = t.image f ↔ s
 theorem image_subset_image_iff {t : Finset α} (hf : Injective f) :
     s.image f ⊆ t.image f ↔ s ⊆ t :=
   mod_cast Set.image_subset_image_iff hf (s := s) (t := t)
+
+/-- Variant of `Finset.image_subset_image_iff` under an `InjOn` rather than `Injective`
+hypothesis. -/
+theorem image_subset_image_iff_of_injOn {s₁ s₂ : Finset α} (ht : (s : Set α).InjOn f)
+    (h₁ : s₁ ⊆ s) (h₂ : s₂ ⊆ s) : s₁.image f ⊆ s₂.image f ↔ s₁ ⊆ s₂ := by
+  exact_mod_cast ht.image_subset_image_iff (mod_cast h₁) (mod_cast h₂)
+
+/-- Variant of `Finset.image_inj` under an `InjOn` rather than `Injective` hypothesis. -/
+theorem image_eq_image_iff_of_injOn {s₁ s₂ : Finset α} (ht : (s : Set α).InjOn f)
+    (h₁ : s₁ ⊆ s) (h₂ : s₂ ⊆ s) : s₁.image f = s₂.image f ↔ s₁ = s₂ := by
+  exact_mod_cast ht.image_eq_image_iff (mod_cast h₁) (mod_cast h₂)
 
 lemma image_ssubset_image {t : Finset α} (hf : Injective f) : s.image f ⊂ t.image f ↔ s ⊂ t := by
   simp_rw [← lt_iff_ssubset]
@@ -637,7 +659,7 @@ subtype. -/
 theorem map_subtype_subset {t : Set α} (s : Finset t) : ↑(s.map (Embedding.subtype _)) ⊆ t := by
   intro a ha
   rw [mem_coe] at ha
-  convert property_of_mem_map_subtype s ha
+  convert! property_of_mem_map_subtype s ha
 
 end Subtype
 

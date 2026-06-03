@@ -146,6 +146,7 @@ lemma quasiIsoAt_shortComplexTruncLE_g (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
   rw [quasiIsoAt_iff_isIso_homologyMap]
   exact K.isIso_homologyMap_shortComplexTruncLE_g e i' hi'
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma shortComplexTruncLE_X₃_isSupportedOutside :
     (K.shortComplexTruncLE e).X₃.IsSupportedOutside e where

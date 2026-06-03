@@ -35,7 +35,7 @@ variable {f g : β → α} {a a₁ a₂ : α}
 -- `by simpa using` speeds up elaboration. Why?
 @[to_additive]
 theorem HasProd.inv (h : HasProd f a L) : HasProd (fun b ↦ (f b)⁻¹) a⁻¹ L := by
-  simpa only using h.map (MonoidHom.id α)⁻¹ continuous_inv
+  simpa only using! h.map (MonoidHom.id α)⁻¹ continuous_inv
 
 @[to_additive]
 theorem Multipliable.inv (hf : Multipliable f L) : Multipliable (fun b ↦ (f b)⁻¹) L :=
@@ -73,7 +73,7 @@ theorem multipliable_iff_of_multipliable_div (hfg : Multipliable (fun b ↦ f b 
 @[to_additive]
 theorem HasProd.update [L.LeAtTop] (hf : HasProd f a₁ L) (b : β) [DecidableEq β] (a : α) :
     HasProd (update f b a) (a / f b * a₁) L := by
-  convert (hasProd_ite_eq b (a / f b) (L := L)).mul hf with b'
+  convert! (hasProd_ite_eq b (a / f b) (L := L)).mul hf with b'
   by_cases h : b' = b
   · rw [h, update_self]
     simp
@@ -90,7 +90,7 @@ theorem HasProd.hasProd_compl_iff {s : Set β} (hf : HasProd (f ∘ (↑) : s �
   refine ⟨fun h ↦ hf.mul_compl h, fun h ↦ ?_⟩
   rw [hasProd_subtype_iff_mulIndicator] at hf ⊢
   rw [Set.mulIndicator_compl]
-  simpa only [div_eq_mul_inv, mul_inv_cancel_comm] using h.div hf
+  simpa only [div_eq_mul_inv, mul_inv_cancel_comm] using! h.div hf
 
 @[to_additive]
 theorem HasProd.hasProd_iff_compl {s : Set β} (hf : HasProd (f ∘ (↑) : s → α) a₁) :
@@ -126,7 +126,7 @@ theorem Set.Finite.multipliable_compl_iff {s : Set β} (hs : s.Finite) :
 @[to_additive]
 theorem hasProd_ite_div_hasProd [L.LeAtTop] [DecidableEq β] (hf : HasProd f a L) (b : β) :
     HasProd (fun n ↦ ite (n = b) 1 (f n)) (a / f b) L := by
-  convert hf.update b 1 using 1
+  convert! hf.update b 1 using 1
   · ext n
     rw [Function.update_apply]
   · rw [div_mul_eq_mul_div, one_mul]
@@ -387,7 +387,7 @@ theorem Multipliable.hasFiniteMulSupport_of_discreteTopology
 @[to_additive]
 theorem Multipliable.countable_mulSupport [FirstCountableTopology G] [T1Space G]
     (hf : Multipliable f) : f.mulSupport.Countable := by
-  simpa only [ker_nhds] using hf.tendsto_cofinite_one.countable_compl_preimage_ker
+  simpa only [ker_nhds] using! hf.tendsto_cofinite_one.countable_compl_preimage_ker
 
 @[to_additive]
 theorem multipliable_const_iff [Infinite β] [T2Space G] (a : G) :

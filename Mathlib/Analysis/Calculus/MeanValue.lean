@@ -152,7 +152,7 @@ theorem image_le_of_liminf_slope_right_le_deriv_boundary {f : ℝ → ℝ} {a b 
     exact hx
   intro x hx
   have : ContinuousWithinAt (fun r => B x + r * (x - a)) (Ioi 0) 0 := by fun_prop
-  convert continuousWithinAt_const.closure_le _ this (Hr x hx) using 1 <;> simp
+  convert! continuousWithinAt_const.closure_le _ this (Hr x hx) using 1 <;> simp
 
 /-- General fencing theorem for continuous functions with an estimate on the derivative.
 Let `f` and `B` be continuous functions on `[a, b]` such that
@@ -316,7 +316,7 @@ theorem norm_image_sub_le_of_norm_deriv_right_le_segment {f' : ℝ → E} {C : �
   let B x := C * (x - a)
   have hB : ∀ x, HasDerivAt B C x := by
     intro x
-    simpa using (hasDerivAt_const x C).mul ((hasDerivAt_id x).sub (hasDerivAt_const x a))
+    simpa using! (hasDerivAt_const x C).mul ((hasDerivAt_id x).sub (hasDerivAt_const x a))
   convert image_norm_le_of_norm_deriv_right_le_deriv_boundary hg hg' _ hB bound
   simp only [g, B]; rw [sub_self, norm_zero, sub_self, mul_zero]
 
@@ -379,7 +379,7 @@ theorem eq_of_has_deriv_right_eq (derivf : ∀ x ∈ Ico a b, HasDerivWithinAt f
     (gcont : ContinuousOn g (Icc a b)) (hi : f a = g a) : ∀ y ∈ Icc a b, f y = g y := by
   simp only [← @sub_eq_zero _ _ (f _)] at hi ⊢
   exact hi ▸ constant_of_has_deriv_right_zero (fcont.sub gcont) fun y hy => by
-    simpa only [sub_self] using (derivf y hy).sub (derivg y hy)
+    simpa only [sub_self] using! (derivf y hy).sub (derivg y hy)
 
 /-- If two differentiable functions on `[a, b]` have the same derivative within `[a, b]` everywhere
   on `[a, b)` and are equal at `a`, then they are equal everywhere on `[a, b]`. -/
@@ -592,11 +592,12 @@ theorem _root_.IsOpen.isOpen_inter_preimage_of_fderiv_eq_zero
   have := (convex_ball y r).is_const_of_fderivWithin_eq_zero (hf.mono h) ?_ hx (mem_ball_self hr)
   · simpa [this]
   · intro z hz
-    simpa only [fderivWithin_of_isOpen Metric.isOpen_ball hz] using hf' (h hz)
+    simpa only [fderivWithin_of_isOpen Metric.isOpen_ball hz] using! hf' (h hz)
 
 theorem _root_.isLocallyConstant_of_fderiv_eq_zero (h₁ : Differentiable 𝕜 f)
     (h₂ : ∀ x, fderiv 𝕜 f x = 0) : IsLocallyConstant f := by
-  simpa using isOpen_univ.isOpen_inter_preimage_of_fderiv_eq_zero h₁.differentiableOn fun _ _ ↦ h₂ _
+  simpa using!
+    isOpen_univ.isOpen_inter_preimage_of_fderiv_eq_zero h₁.differentiableOn fun _ _ ↦ h₂ _
 
 /-- If `f` has zero derivative on a connected open set, then `f` is constant on `s`. -/
 theorem _root_.IsOpen.exists_is_const_of_fderiv_eq_zero
@@ -662,9 +663,11 @@ lemma isLittleO_pow_succ {x₀ : E} {n : ℕ} (hs : Convex ℝ s) (hx₀s : x₀
     gcongr
     exact norm_sub_le_of_mem_segment hy
   filter_upwards [this] with x ⟨h_segment, h⟩
-  convert (convex_segment x₀ x).norm_image_sub_le_of_norm_hasFDerivWithin_le
-    (f := fun x ↦ f x - f x₀) (y := x) (x := x₀) (s := segment ℝ x₀ x) ?_ h
-    (left_mem_segment ℝ x₀ x) (right_mem_segment ℝ x₀ x) using 1
+  convert!
+    (convex_segment x₀ x).norm_image_sub_le_of_norm_hasFDerivWithin_le (f := fun x ↦ f x - f x₀)
+      (y := x) (x := x₀) (s := segment ℝ x₀ x) ?_ h
+      (left_mem_segment ℝ x₀ x)
+      (right_mem_segment ℝ x₀ x) using 1
   · simp
   · simp only [hasFDerivWithinAt_sub_const_iff]
     exact fun x hx ↦ (hff' x (h_segment hx)).mono h_segment
@@ -677,7 +680,7 @@ theorem isLittleO_pow_succ_real {f f' : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : S
   · rw [Asymptotics.isLittleO_iff] at h ⊢
     simpa using h
   · rw [Asymptotics.isLittleO_iff] at hf' ⊢
-    convert hf' using 4 with c hc x
+    convert! hf' using 4 with c hc x
     simp
 
 end Convex

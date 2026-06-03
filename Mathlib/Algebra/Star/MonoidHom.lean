@@ -220,7 +220,7 @@ theorem coe_refl : ⇑(.refl A : A ≃⋆* A) = id :=
 nonrec def symm (e : A ≃⋆* B) : B ≃⋆* A :=
   { e.symm with
     map_star' := fun b => by
-      simpa only [EquivLike.apply_inv_apply, EquivLike.inv_apply_apply] using
+      simpa only [EquivLike.apply_inv_apply, EquivLike.inv_apply_apply] using!
         congr_arg (EquivLike.inv e) (map_star e (EquivLike.inv e b)).symm }
 
 /-- See Note [custom simps projection] -/

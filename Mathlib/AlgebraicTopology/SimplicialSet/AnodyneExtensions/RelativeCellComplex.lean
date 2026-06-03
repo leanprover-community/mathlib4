@@ -25,6 +25,8 @@ cell complex with basic cells given by horn inclusions.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 universe v u
@@ -77,6 +79,7 @@ abbrev map : Δ[c.dim + 1] ⟶ X :=
   yonedaEquiv.symm
     ((P.p c.s).val.cast (P.isUniquelyCodimOneFace c.s).dim_eq).simplex
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma range_map : Subcomplex.range c.map = (P.p c.s).val.subcomplex := by
   rw [range_eq_ofSimplex, Equiv.apply_symm_apply, S.ofSimplex_eq_subcomplex_mk,
@@ -101,8 +104,8 @@ lemma subcomplex_not_le_image_horn : ¬ c.s.val.subcomplex ≤ c.horn.image c.ma
 
 lemma image_horn_lt_subcomplex : c.horn.image c.map < (P.p c.s).val.subcomplex := by
   rw [lt_iff_le_and_ne]
-  exact ⟨by simpa using image_le_range c.horn c.map,
-    fun h ↦ c.subcomplex_not_le_image_horn (by simpa only [h] using P.le c.s)⟩
+  exact ⟨by simpa using! image_le_range c.horn c.map,
+    fun h ↦ c.subcomplex_not_le_image_horn (by simpa only [h] using! P.le c.s)⟩
 
 @[simp]
 lemma image_face_index_compl :
@@ -320,7 +323,7 @@ of a simplicial set. -/
 noncomputable def m (j : ι) : f.sigmaHorn j ⟶ f.sigmaStdSimplex j :=
   Limits.Sigma.map (basicCell _ _)
 
-instance (j : ι) : Mono (f.m j) := by dsimp [m]; infer_instance
+instance (j : ι) : Mono (f.m j) := inferInstanceAs <| Mono (Limits.Sigma.map _)
 
 @[reassoc (attr := simp)]
 lemma Cell.ι_m {j : ι} (c : f.Cell j) :
@@ -490,7 +493,7 @@ lemma isPullback (j : ι) :
       rwa [x.ι_b_app_apply] at hy
     refine ⟨x.ιSigmaHorn.app _ ⟨b, hb⟩, ?_, ?_⟩
     · simpa only [Subfunctor.toFunctor_obj, Subtype.ext_iff,
-        x.ι_b_app_apply, x.ι_t_app_apply] using h.symm
+        x.ι_b_app_apply, x.ι_t_app_apply] using! h.symm
     · rw [← NatTrans.comp_app_apply]
       simp)⟩
 
@@ -531,8 +534,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma mapN_type₂ {j : ι} (c : f.Cell j) : f.mapN c.type₂ = S.mk c.s.val.simplex := by
   dsimp [mapN]
   rw [S.ext_iff, c.ι_b_app_apply, Cell.mapToSucc]
-  dsimp
-  rw [Cell.map_app_objEquiv_symm_δ_index]
+  exact c.map_app_objEquiv_symm_δ_index
 
 private lemma isPushout_aux₁ {j : ι} (s : (Subcomplex.range (f.m j)).N) :
     (f.mapN s).simplex  ∈ SSet.nonDegenerate _ _ := by

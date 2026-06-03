@@ -88,6 +88,10 @@ theorem one_eq_map_iff {α} {f : α → β} {v : WithTop α} [One β] :
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithTop α) :=
   ⟨coe_le_coe.2 zero_le_one⟩
 
+@[to_additive]
+instance [LE α] [IsBotOneClass α] : IsBotOneClass (WithTop α) where
+  isBot_one x := by cases x <;> simp
+
 end One
 
 section Add
@@ -715,7 +719,7 @@ namespace AddEquiv
 variable {γ : Type*} [Add α] [Add β] [Add γ] (e e₁ : α ≃+ β) (e₂ : β ≃+ γ)
 
 /-- A `AddEquiv` version of `Equiv.withBotCongr`. -/
-@[to_dual (attr := simps!) /-- A `AddEquiv` version of `Equiv.withTopCongr`. -/]
+@[to_dual (attr := simps! apply) /-- A `AddEquiv` version of `Equiv.withTopCongr`. -/]
 def withBotCongr : WithBot α ≃+ WithBot β where
   __ := e.toEquiv.withBotCongr
   map_add' := e.toAddHom.withBotMap.map_add'

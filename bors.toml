@@ -6,3 +6,5 @@ delete_merged_branches = true
 update_base_for_deletes = true
 cut_body_after = "\n---"
 max_batch_size = 16
+[delegation]
+default_expiry_sec = 1209600
