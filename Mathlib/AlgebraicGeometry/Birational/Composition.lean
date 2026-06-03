@@ -145,7 +145,7 @@ set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma comp_id (f : X.PartialMap Y) [IsDominant f.hom] :
     f.comp (PartialMap.id Y) = f := by
-  rw [comp_toPartialMap, id_compHom]
+  rw [comp_toPartialMap, compHom_id]
 
 end PartialMap
 
@@ -181,7 +181,7 @@ lemma comp_assoc {X₁ X₂ X₃ Y : Scheme.{u}} [PreirreducibleSpace X₁] [Irr
   rw [← f₃.toRationalMap_representative]
   simp_rw [comp_def, ← PartialMap.comp_assoc, PartialMap.toRationalMap_eq_iff]
   apply PartialMap.comp_equiv_of_equiv_left
-  rw [← f₂.toRationalMap_representative]
+  rw [← f₂.toRationalMap_representative, comp_def]
   apply (f₁.representative.comp f₂.representative).representative_toRationalMap_equiv.trans
   apply PartialMap.comp_equiv_of_equiv_right
   rw [toRationalMap_representative]

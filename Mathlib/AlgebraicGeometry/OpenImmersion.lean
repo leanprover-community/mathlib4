@@ -169,7 +169,6 @@ lemma id_image {X : Scheme} (U : X.Opens) : 𝟙 X ''ᵁ U = U :=
 lemma inv_image {X Y : Scheme} (e : X ≅ Y) (U : Y.Opens) : e.inv ''ᵁ U = e.hom ⁻¹ᵁ U :=
   TopologicalSpace.Opens.ext <| (Scheme.homeoOfIso e.symm).toEquiv.image_eq_preimage_symm _
 
-@[simp]
 lemma inv_preimage {X Y : Scheme} (e : X ≅ Y) (U : X.Opens) : e.inv ⁻¹ᵁ U = e.hom ''ᵁ U :=
   (inv_image e.symm U).symm
 

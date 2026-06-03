@@ -122,7 +122,7 @@ def compHom (f : X.PartialMap Y) (g : Y ⟶ Z) : X.PartialMap Z where
 
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
-lemma id_compHom (f : X.PartialMap Y) : f.compHom (𝟙 Y) = f := by
+lemma compHom_id (f : X.PartialMap Y) : f.compHom (𝟙 Y) = f := by
   ext <;> simp
 
 set_option backward.defeqAttrib.useBackward true in
@@ -144,10 +144,11 @@ lemma _root_.AlgebraicGeometry.Scheme.Hom.toPartialMap_compHom (f : X ⟶ Y) (g 
     f.toPartialMap.compHom g = (f ≫ g).toPartialMap := rfl
 
 variable (X) in
+/-- The identity partial map. -/
 protected abbrev id : X.PartialMap X := (𝟙 X : X ⟶ X).toPartialMap
 
 @[simp]
-lemma compHom_id (f : X ⟶ Y) : (PartialMap.id X).compHom f = f.toPartialMap := rfl
+lemma id_compHom (f : X ⟶ Y) : (PartialMap.id X).compHom f = f.toPartialMap := rfl
 
 set_option backward.defeqAttrib.useBackward true in
 instance [X.Over S] [Y.Over S] (f : X ⟶ Y) [f.IsOver S] : f.toPartialMap.IsOver S where
@@ -273,7 +274,6 @@ lemma equiv.trans {f g h : X.PartialMap Y} : f.equiv g → g.equiv h → f.equiv
     Category.assoc, e₁, ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_right hW₂r, ← e₂]
   simp only [homOfLE_homOfLE_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma equivalence_rel : Equivalence (@Scheme.PartialMap.equiv X Y) where
   refl := equiv.refl
   symm := equiv.symm
@@ -373,6 +373,7 @@ def PartialMap.toRationalMap (f : X.PartialMap Y) : X ⤏ Y := Quotient.mk _ f
 abbrev Hom.toRationalMap (f : X.Hom Y) : X ⤏ Y := f.toPartialMap.toRationalMap
 
 variable (X) in
+/-- The identity rational map. -/
 abbrev RationalMap.id : X ⤏ X := (𝟙 X : X ⟶ X).toRationalMap
 
 variable (S) in
