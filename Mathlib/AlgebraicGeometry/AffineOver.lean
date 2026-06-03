@@ -100,7 +100,7 @@ end AffineCat
 
 section Equivalence
 
-instance {f : MorphismProperty.Over @IsAffineHom ⊤ X} : IsAffineHom f.hom := f.prop
+instance {f : X.AffineCat} : IsAffineHom f.hom := f.prop
 
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). The "relative Spec" functor from quasi-coherent `𝒪ₓ`-algebras to
@@ -225,25 +225,25 @@ noncomputable def coequifiberedQCohAlgCatEquivOver (X : Scheme.{u}) :
 
 @[simp]
 lemma coequifiberedQCohAlgCatEquivOver_inverse_obj_unop_obj_right_obj
-    (Y : MorphismProperty.Over @IsAffineHom ⊤ X) (U : X.AffineZariskiSiteᵒᵖ) :
+    (Y : X.AffineCat) (U : X.AffineZariskiSiteᵒᵖ) :
     (X.coequifiberedQCohAlgCatEquivOver.inverse.obj Y).unop.obj.right.obj U =
       Γ(Y.left, Y.hom ⁻¹ᵁ U.unop.toOpens) := rfl
 
 @[simp]
 lemma coequifiberedQCohAlgCatEquivOver_inverse_obj_unop_obj_right_map
-    (Y : MorphismProperty.Over @IsAffineHom ⊤ X) {U V : X.AffineZariskiSiteᵒᵖ} (i : U ⟶ V) :
+    (Y : X.AffineCat) {U V : X.AffineZariskiSiteᵒᵖ} (i : U ⟶ V) :
     (X.coequifiberedQCohAlgCatEquivOver.inverse.obj Y).unop.obj.right.map i =
       Y.left.presheaf.map (homOfLE (Y.hom.preimage_mono (toOpens_mono i.unop.le))).op := rfl
 
 @[simp]
 lemma coequifiberedQCohAlgCatEquivOver_inverse_obj_unop_obj_hom_app
-    (Y : MorphismProperty.Over @IsAffineHom ⊤ X) (U : X.AffineZariskiSiteᵒᵖ) :
+    (Y : X.AffineCat) (U : X.AffineZariskiSiteᵒᵖ) :
     (X.coequifiberedQCohAlgCatEquivOver.inverse.obj Y).unop.obj.hom.app U =
       Y.hom.app U.unop.toOpens := rfl
 
 @[simp]
 lemma coequifiberedQCohAlgCatEquivOver_inverse_map_unop_hom_right_app
-    {Y Z : MorphismProperty.Over @IsAffineHom ⊤ X} (f : Y ⟶ Z) (U : X.AffineZariskiSiteᵒᵖ) :
+    {Y Z : X.AffineCat} (f : Y ⟶ Z) (U : X.AffineZariskiSiteᵒᵖ) :
     (X.coequifiberedQCohAlgCatEquivOver.inverse.map f).unop.hom.right.app U =
     f.hom.left.appLE _ _ congr(($(MorphismProperty.Over.w f)) ⁻¹ᵁ U.unop.1).ge := rfl
 
