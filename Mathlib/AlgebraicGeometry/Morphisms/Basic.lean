@@ -125,11 +125,12 @@ protected lemma mk' {P : MorphismProperty Scheme} [P.RespectsIso]
     (of_sSup_eq_top :
       ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → Y.Opens), iSup U = ⊤ →
         (∀ i, P (f ∣_ U i)) → P f) :
-    IsZariskiLocalAtTarget P where
-  pullbackSnd 𝒰 i hf := (P.arrow_mk_iso_iff (morphismRestrictOpensRange _ _)).mp (restrict _ _ hf)
-  of_zeroHypercover {X Y f} 𝒰 h := by
-    refine of_sSup_eq_top f _ (Scheme.OpenCover.iSup_opensRange 𝒰) ?_
-    exact fun i ↦ (P.arrow_mk_iso_iff (morphismRestrictOpensRange f _)).mpr (h i)
+    IsZariskiLocalAtTarget P := by
+  refine .mk_of_iff_of_zeroHypercover fun {X Y} f 𝒰 ↦ ?_
+  refine ⟨fun hf i ↦ (P.arrow_mk_iso_iff (morphismRestrictOpensRange _ _)).mp (restrict _ _ hf),
+    fun h ↦ ?_⟩
+  refine of_sSup_eq_top f _ (Scheme.OpenCover.iSup_opensRange <| .ulift 𝒰) ?_
+  exact fun i ↦ (P.arrow_mk_iso_iff (morphismRestrictOpensRange f _)).mpr (h _)
 
 variable {P : MorphismProperty Scheme.{u}} [IsZariskiLocalAtTarget P]
   {X Y : Scheme.{u}} {f : X ⟶ Y} (𝒰 : Y.OpenCover)
@@ -163,6 +164,7 @@ theorem iff_of_openCover (𝒰 : Y.OpenCover) :
     P f ↔ ∀ i, P (𝒰.pullbackHom f i) :=
   ⟨fun H _ ↦ of_isPullback (.of_hasPullback _ _) H, of_openCover _⟩
 
+set_option backward.defeqAttrib.useBackward true in
 lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : ι → Y.Opens)
     (H : Set.range f ⊆ (⨆ i, U i : Y.Opens)) (hf : ∀ i, P (f ∣_ U i)) : P f := by
   let g : X ⟶ (⨆ i, U i : Y.Opens) := IsOpenImmersion.lift (Scheme.Opens.ι _) f (by simpa using H)
@@ -207,11 +209,11 @@ lemma coprodMap {X Y X' Y' : Scheme.{u}} (f : X ⟶ X') (g : Y ⟶ Y') (hf : P f
   rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩)
   · rw [← MorphismProperty.cancel_left_of_respectsIso P
       (isPullback_inl_inl_coprodMap f g).flip.isoPullback.hom]
-    convert hf
+    convert! hf
     simp [Scheme.Cover.pullbackHom, coprodOpenCover]
   · rw [← MorphismProperty.cancel_left_of_respectsIso P
       (isPullback_inr_inr_coprodMap f g).flip.isoPullback.hom]
-    convert hg
+    convert! hg
     simp [Scheme.Cover.pullbackHom, coprodOpenCover]
 
 end IsZariskiLocalAtTarget
@@ -222,6 +224,7 @@ abbrev IsZariskiLocalAtSource (P : MorphismProperty Scheme.{u}) :=
 
 namespace IsZariskiLocalAtSource
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 `P` is local at the source if
 1. `P` respects isomorphisms.
@@ -233,18 +236,18 @@ protected lemma mk' {P : MorphismProperty Scheme} [P.RespectsIso]
     (of_sSup_eq_top :
       ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → X.Opens), iSup U = ⊤ →
         (∀ i, P ((U i).ι ≫ f)) → P f) :
-    IsZariskiLocalAtSource P where
-  comp 𝒰 i H := by
-    rw [← IsOpenImmersion.isoOfRangeEq_hom_fac (𝒰.f i) (Scheme.Opens.ι _)
+    IsZariskiLocalAtSource P := by
+  refine .mk_of_iff_of_zeroHypercover fun {X Y} f 𝒰 ↦ ⟨fun hf i ↦ ?_, fun hf ↦ ?_⟩
+  · rw [← IsOpenImmersion.isoOfRangeEq_hom_fac (𝒰.f i) (Scheme.Opens.ι _)
       (congr_arg Opens.carrier (𝒰.f i).opensRange.opensRange_ι.symm), Category.assoc,
       P.cancel_left_of_respectsIso]
-    exact restrict _ _ H
-  of_zeroHypercover {X Y} f 𝒰 h := by
-    refine of_sSup_eq_top f _ (Scheme.OpenCover.iSup_opensRange 𝒰) fun i ↦ ?_
-    rw [← IsOpenImmersion.isoOfRangeEq_inv_fac (𝒰.f i) (Scheme.Opens.ι _)
-      (congr_arg Opens.carrier (𝒰.f i).opensRange.opensRange_ι.symm), Category.assoc,
+    exact restrict _ _ hf
+  · refine of_sSup_eq_top f _ (Scheme.OpenCover.iSup_opensRange <| .ulift 𝒰) fun i ↦ ?_
+    dsimp
+    rw [← IsOpenImmersion.isoOfRangeEq_inv_fac (𝒰.f _) (Scheme.Opens.ι _)
+      (congr_arg Opens.carrier (𝒰.f _).opensRange.opensRange_ι.symm), Category.assoc,
       P.cancel_left_of_respectsIso]
-    exact h _
+    exact hf _
 
 variable {P : MorphismProperty Scheme.{u}} [IsZariskiLocalAtSource P]
 variable {X Y : Scheme.{u}} {f : X ⟶ Y} (𝒰 : X.OpenCover)
@@ -286,13 +289,12 @@ lemma of_isOpenImmersion [P.ContainsIdentities] [IsOpenImmersion f] : P f :=
 
 lemma isZariskiLocalAtTarget [P.IsMultiplicative]
     (hP : ∀ {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsOpenImmersion g], P (f ≫ g) → P f) :
-    IsZariskiLocalAtTarget P where
-  pullbackSnd {X Y} f 𝒰 i hf := by
-    apply hP _ (𝒰.f i)
+    IsZariskiLocalAtTarget P := by
+  refine .mk_of_iff_of_zeroHypercover fun {X Y} f 𝒰 ↦ ⟨fun hf i ↦ ?_, fun h ↦ ?_⟩
+  · apply hP _ (𝒰.f i)
     rw [← pullback.condition]
     exact IsZariskiLocalAtSource.comp hf _
-  of_zeroHypercover {X Y} f 𝒰 h := by
-    rw [P.iff_of_zeroHypercover_source (𝒰.pullback₁ f)]
+  · rw [P.iff_of_zeroHypercover_source (𝒰.pullback₁ f)]
     intro i
     rw [← Scheme.Cover.pullbackHom_map]
     exact P.comp_mem _ _ (h i) (of_isOpenImmersion _)
@@ -633,7 +635,7 @@ theorem isStableUnderBaseChange (hP' : Q.IsStableUnderBaseChange) :
           (pullbackRightPullbackFstIso (S.affineCover.f i) g
             (pullback.snd f (S.affineCover.f i))).symm
         exact asIso
-          (pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simpa using pullback.condition) (by simp))
+          (pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simpa using! pullback.condition) (by simp))
       have : e.hom ≫ pullback.fst _ _ =
           pullback.snd (pullback.fst f g) ((S.affineCover.pullback₁ f).f i) := by
         simp [e]
@@ -646,13 +648,16 @@ theorem isStableUnderBaseChange (hP' : Q.IsStableUnderBaseChange) :
 lemma isZariskiLocalAtSource
     (H : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffine Y] (𝒰 : Scheme.OpenCover.{u} X),
         Q f ↔ ∀ i, Q (𝒰.f i ≫ f)) : IsZariskiLocalAtSource P := by
-  refine .mk_of_iff ?_
-  intro X Y f 𝒰
-  simp_rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top _ (iSup_affineOpens_eq_top Y)]
-  rw [forall_comm]
-  refine forall_congr' fun U ↦ ?_
-  simp_rw [HasAffineProperty.iff_of_isAffine, morphismRestrict_comp]
-  exact @H _ _ (f ∣_ U.1) U.2 (Scheme.OpenCover.restrict 𝒰 (f ⁻¹ᵁ U.1))
+  refine .mk_of_small (fun {X Y f} 𝒰 hf ↦ ?_) (fun {X Y f} 𝒰 hf ↦ ?_) <;>
+  simp_rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top _ (iSup_affineOpens_eq_top Y),
+      HasAffineProperty.iff_of_isAffine, morphismRestrict_comp] at hf ⊢
+  · intro i U
+    let 𝒰' : X.OpenCover := (Scheme.Cover.ulift 𝒰).add (𝒰.f i)
+    exact (H (f ∣_ U.1) (𝒰'.restrict _)).mp (hf _) none
+  · intro U
+    rw [H (f ∣_ U.1) (Scheme.OpenCover.restrict 𝒰 _)]
+    intro i
+    exact hf _ _
 
 end HasAffineProperty
 

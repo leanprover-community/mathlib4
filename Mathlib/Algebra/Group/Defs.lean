@@ -15,6 +15,7 @@ public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.OfNat
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -557,7 +558,8 @@ theorem npowRec'_two_mul {M : Type*} [Semigroup M] [One M] (k : ℕ) (m : M) :
     match k' with
     | 0 => rfl
     | 1 => simp [npowRec']
-    | k + 2 => simp [npowRec', ← mul_assoc, ← ih]
+    | k + 2 =>
+      simp [npowRec', ← mul_assoc, ← ih, Nat.mul_succ]
 
 @[to_additive]
 theorem npowRec'_mul_comm {M : Type*} [Semigroup M] [One M] {k : ℕ} (k0 : k ≠ 0) (m : M) :
