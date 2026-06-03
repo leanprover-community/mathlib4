@@ -36,7 +36,7 @@ namespace GenContFract
 
 open GenContFract (of)
 
-variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
+variable {K : Type*} [Field K] [LinearOrder K] [FloorRing K]
 
 /-
 We will have to constantly coerce along our structures in the following proofs using their provided
@@ -150,7 +150,7 @@ the Computation first and then lift the results step-by-step.
 
 
 -- The lifting works for arbitrary linear ordered fields with a floor function.
-variable {v : K} {q : ℚ}
+variable [IsStrictOrderedRing K] {v : K} {q : ℚ}
 
 /-! First, we show the correspondence for the very basic functions in
 `GenContFract.IntFractPair`. -/
@@ -313,7 +313,8 @@ theorem terminates_of_rat (q : ℚ) : (of q).Terminates :=
 end TerminatesOfRat
 
 /-- The continued fraction `GenContFract.of v` terminates if and only if `v ∈ ℚ`. -/
-theorem terminates_iff_rat (v : K) : (of v).Terminates ↔ ∃ q : ℚ, v = (q : K) :=
+theorem terminates_iff_rat [IsStrictOrderedRing K] (v : K) :
+    (of v).Terminates ↔ ∃ q : ℚ, v = (q : K) :=
   Iff.intro
     (fun terminates_v : (of v).Terminates =>
       show ∃ q : ℚ, v = (q : K) from exists_rat_eq_of_terminates terminates_v)

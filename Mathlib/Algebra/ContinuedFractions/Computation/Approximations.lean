@@ -141,6 +141,7 @@ theorem of_one_le_get?_partDen {b : K}
   rw [← ifp_n_b_eq_gp_n_b]
   exact mod_cast IntFractPair.one_le_succ_nth_stream_b succ_nth_stream_eq
 
+omit [IsStrictOrderedRing K] in
 /--
 Shows that the partial numerators `aᵢ` of the continued fraction are equal to one and the partial
 denominators `bᵢ` correspond to integers.
@@ -156,6 +157,7 @@ theorem of_partNum_eq_one_and_exists_int_partDen_eq {gp : GenContFract.Pair K}
     injection this
   simp [this]
 
+omit [IsStrictOrderedRing K] in
 /-- Shows that the partial numerators `aᵢ` are equal to one. -/
 theorem of_partNum_eq_one {a : K} (nth_partNum_eq : (of v).partNums.get? n = some a) :
     a = 1 := by
@@ -164,6 +166,7 @@ theorem of_partNum_eq_one {a : K} (nth_partNum_eq : (of v).partNums.get? n = som
   have : gp.a = 1 := (of_partNum_eq_one_and_exists_int_partDen_eq nth_s_eq).left
   rwa [gp_a_eq_a_n] at this
 
+omit [IsStrictOrderedRing K] in
 /-- Shows that the partial denominators `bᵢ` correspond to an integer. -/
 theorem exists_int_eq_of_partDen {b : K}
     (nth_partDen_eq : (of v).partDens.get? n = some b) : ∃ z : ℤ, b = (z : K) := by
@@ -176,6 +179,7 @@ end GenContFract
 
 variable (v)
 
+omit [IsStrictOrderedRing K] in
 theorem GenContFract.of_isSimpContFract :
     (of v).IsSimpContFract := fun _ _ nth_partNum_eq =>
   of_partNum_eq_one nth_partNum_eq
