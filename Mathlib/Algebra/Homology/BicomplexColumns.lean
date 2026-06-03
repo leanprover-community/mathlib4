@@ -87,6 +87,7 @@ variable [IsIdempotentComplete C] {I : Type*}
   {X : I → C} (Y : I → C)
   (hX : ∀ (i : I), Retract (X i) (Y i))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hX in
 lemma hasCoproduct_of_direct_factor [HasCoproduct Y] : HasCoproduct X := by
@@ -134,6 +135,7 @@ lemma cofanOfIsZero_inj (j : J) :
   apply Sigma.eqToHom_comp_ι (X ∘ ι)
   exact (hι hi.choose_spec).symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hι in
 noncomputable def isColimitCofanOfIsZero : IsColimit (cofanOfIsZero X ι) :=
@@ -201,6 +203,7 @@ lemma cofanOfIsZeroButOne_ι_self :
     (cofanOfIsZeroButOne X i hX).inj i = 𝟙 _ :=
   dif_pos rfl
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def isColimitCofanOfIsZeroButOne :
     IsColimit (cofanOfIsZeroButOne X i hX) :=
   Cofan.IsColimit.mk _ (fun s => s.inj i) (fun s j => by
@@ -274,7 +277,7 @@ def φ : κ.J → π c₁ c₂ c ⁻¹' {n} := fun j => ⟨⟨κ.φ₁ j, κ.φ�
 lemma injective_φ : Function.Injective κ.φ := by
   intro j₁ j₂ h
   apply κ.hφ
-  simpa only [Subtype.ext_iff] using h
+  rwa [Subtype.ext_iff] at h
 
 attribute [instance] hasCoproduct'
 
@@ -345,6 +348,7 @@ noncomputable def total.shortComplex : ShortComplex (HomologicalComplex C c) whe
   g := total.map S.g c
   zero := by rw [← total.map_comp, S.zero, total.map_zero]
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def total.shortComplexSplitting
     (σ : (S.map (toGradedObjectFunctor C c₁ c₂)).Splitting) (i : ι) :
     ((total.shortComplex S c).map (HomologicalComplex.eval _ _ i)).Splitting := by
@@ -362,6 +366,7 @@ noncomputable def total.shortComplexSplitting
 
 variable {S S'}
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 noncomputable def total.mapShortComplex : total.shortComplex S c ⟶ total.shortComplex S' c where
   τ₁ := total.map φ.τ₁ _
@@ -382,6 +387,7 @@ namespace ComplexShape
 
 open Embedding
 
+set_option backward.defeqAttrib.useBackward true in
 lemma embeddingUpIntGE_monotone (a a' : ℤ) (h : a' ≤ a) :
     (embeddingUpIntGE a).Subset (embeddingUpIntGE a') where
   subset := by
@@ -409,6 +415,7 @@ variable (K L : CochainComplex C ℤ)
 noncomputable abbrev stupidFiltrationGE : ℤᵒᵖ ⥤ CochainComplex C ℤ :=
   stupidFiltrationGEFunctor C ⋙ ((evaluation _ _).obj K)
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def stupidFiltrationGEObjToSingle (n : ℤ) :
     K.stupidFiltrationGE.obj ⟨n⟩ ⟶ (HomologicalComplex.single C (up ℤ) n).obj (K.X n) :=
   HomologicalComplex.mkHomToSingle
@@ -419,6 +426,7 @@ noncomputable def stupidFiltrationGEObjToSingle (n : ℤ) :
       dsimp at hk ⊢
       omega)
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma stupidFiltrationGE_map_to_single (n₀ n₁ : ℤ) (h : n₀ < n₁) :
     K.stupidFiltrationGE.map (homOfLE h.le).op ≫
@@ -435,6 +443,7 @@ noncomputable def shortComplexStupidFiltrationGE (n₀ n₁ : ℤ) (h : n₀ + 1
     ShortComplex (CochainComplex C ℤ) :=
   ShortComplex.mk _ _ (K.stupidFiltrationGE_map_to_single n₀ n₁ (by omega))
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isIso_stupidFiltrationGE_map_f (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) (k : ℤ) (hk : n₁ ≤ k ∨ k < n₀) :
     IsIso ((K.stupidFiltrationGE.map (homOfLE h).op).f k) := by
   apply HomologicalComplex.isIso_mapStupidTruncGE_f
@@ -443,6 +452,7 @@ lemma isIso_stupidFiltrationGE_map_f (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) (k : 
     exact Or.inl ⟨j, by dsimp; omega⟩
   · exact Or.inr (fun i₂ => by dsimp; omega)
 
+set_option backward.defeqAttrib.useBackward true in
 variable {K L} in
 @[simps]
 noncomputable def mapShortComplexStupidFiltrationGE (φ : K ⟶ L) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
@@ -462,6 +472,7 @@ section
 variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C]
   (K L : CochainComplex C ℤ) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def shortComplexStupidFiltrationGESplitting (k : ℤ) :
     ((K.shortComplexStupidFiltrationGE n₀ n₁ h).map
@@ -582,6 +593,7 @@ noncomputable abbrev rowFiltrationGEFunctor :
     ℤᵒᵖ ⥤ HomologicalComplex₂ C (up ℤ) c ⥤ HomologicalComplex₂ C (up ℤ) c :=
   CochainComplex.stupidFiltrationGEFunctor _
 
+set_option backward.defeqAttrib.useBackward true in
 instance (n : ℤᵒᵖ) {ι' : Type*} {c' : ComplexShape ι'}
     (K : HomologicalComplex₂ C (up ℤ) c) [TotalComplexShape (up ℤ) c c'] [K.HasTotal c'] :
     (((rowFiltrationGEFunctor C _).obj n).obj K).HasTotal c' := by
@@ -590,15 +602,18 @@ instance (n : ℤᵒᵖ) {ι' : Type*} {c' : ComplexShape ι'}
 
 variable {C c}
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable abbrev rowFiltrationGE (K : HomologicalComplex₂ C (up ℤ) c) :
     ℤᵒᵖ ⥤ HomologicalComplex₂ C (up ℤ) c :=
   rowFiltrationGEFunctor C c ⋙ ((evaluation _ _).obj K)
 
+set_option backward.defeqAttrib.useBackward true in
 instance (K : HomologicalComplex₂ C (up ℤ) c) (n : ℤ) :
     CochainComplex.IsStrictlyGE ((rowFiltrationGE K).obj ⟨n⟩) n := by
   dsimp
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance (K : HomologicalComplex₂ C (up ℤ) c) (n x : ℤ) [CochainComplex.IsStrictlyLE K x] :
     CochainComplex.IsStrictlyLE ((rowFiltrationGE K).obj ⟨n⟩) x := by
   dsimp
@@ -611,6 +626,7 @@ noncomputable abbrev rowFiltrationGEMap {K L : HomologicalComplex₂ C (up ℤ) 
 variable (K : HomologicalComplex₂ C (up ℤ) (up ℤ))
 variable [K.HasTotal (up ℤ)]
 
+set_option backward.defeqAttrib.useBackward true in
 instance (n : ℤᵒᵖ) : (K.rowFiltrationGE.obj n).HasTotal (up ℤ) := by
   dsimp [rowFiltrationGE]
   infer_instance
@@ -658,6 +674,7 @@ lemma singleColumn_ιTotal
       (singleColumnXXIso (up ℤ) L x y).hom ≫(singleColumnObjTotalXIso L x y n h).inv := by
   rw [singleColumnObjTotalXIso_inv, Iso.hom_inv_id_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def singleColumnObjTotal (L : CochainComplex C ℤ) (x x' : ℤ) (h : x + x' = 0) :
     ((singleColumn C (up ℤ) (up ℤ) x).obj L).total (up ℤ) ≅ L⟦x'⟧ :=
@@ -672,6 +689,7 @@ noncomputable def singleColumnObjTotal (L : CochainComplex C ℤ) (x x' : ℤ) (
       obtain rfl : x' = -x := by omega
       simp))
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 noncomputable def singleColumnObjTotal_inv_naturality {K L : CochainComplex C ℤ} (φ : K ⟶ L)
     (x x' : ℤ) (h : x + x' = 0) :
@@ -760,6 +778,7 @@ lemma hasTotal_of_isStrictlyGE_of_isStrictlyLE (K : HomologicalComplex₂ C (up 
     · exact (HomologicalComplex.eval _ _ y).map_isZero
         (CochainComplex.isZero_of_isStrictlyGE K x₀ x (by simpa using hx))
 
+set_option backward.defeqAttrib.useBackward true in
 lemma total.quasiIso_map_of_finitely_many_columns {K L : HomologicalComplex₂ C (up ℤ) (up ℤ)}
     (φ : K ⟶ L) [K.HasTotal (up ℤ)] [L.HasTotal (up ℤ)] (x₀ x₁ : ℤ)
     [CochainComplex.IsStrictlyGE K x₀] [CochainComplex.IsStrictlyLE K x₁]
@@ -836,6 +855,7 @@ lemma total.quasiIso_map_of_finitely_many_columns {K L : HomologicalComplex₂ C
         exact Arrow.isoMk (singleColumnObjTotal _ _ _ (by simp))
           (singleColumnObjTotal _ _ _ (by simp))
 
+set_option backward.defeqAttrib.useBackward true in
 lemma total.isIso_ιStupidTrunc_map_f
     (K : HomologicalComplex₂ C (up ℤ) (up ℤ)) [K.HasTotal (up ℤ)] (y₀ x n : ℤ) (hn : x + y₀ ≤ n)
     [∀ x, CochainComplex.IsStrictlyLE (K.X x) y₀] :
@@ -873,6 +893,7 @@ lemma total.quasiIsoAt_ιStupidTrunc_map
     all_goals exact total.isIso_ιStupidTrunc_map_f K y₀ x _ (by omega)
   apply ShortComplex.quasiIso_of_isIso
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma total.quasiIso_map_of_isStrictlyGE_of_isStrictlyLE
     {K L : HomologicalComplex₂ C (up ℤ) (up ℤ)}

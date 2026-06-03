@@ -56,6 +56,7 @@ namespace Derives
 
 variable {Φ F} (h : Φ.Derives F)
 
+set_option backward.defeqAttrib.useBackward true in
 include h in
 protected lemma op : Φ.op.Derives F.op := fun _ _ f hf ↦ by
   have := h f.unop hf
@@ -90,6 +91,7 @@ lemma isIso_of_isRightDerivedFunctor
   rw [← Φ.isIso_iff_of_isRightDerivabilityStructure W₁.Q L₂ F G eG.inv RF α]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma of_isIso_app_functor_obj (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
     Φ.Derives F := by
@@ -100,6 +102,7 @@ lemma of_isIso_app_functor_obj (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.funct
   infer_instance
 
 include h in
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isRightDerivedFunctor_of_isIso [Φ.IsRightDerivabilityStructure]
     (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
@@ -150,6 +153,7 @@ lemma of_isIso_app_functor_obj' (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.func
   infer_instance
 
 include h in
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isLeftDerivedFunctor_of_isIso [Φ.IsLeftDerivabilityStructure]
     (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :

@@ -29,6 +29,7 @@ variable {C₁ C₂ C₃ C₁₂ C₂₃ C D₁ D₂ D₃ D₁₂ D₂₃ D : Ty
   (α₂₃ : (((whiskeringLeft₂ D₂₃).obj L₂).obj L₃).obj LG₂₃ ⟶ G₂₃ ⋙ (whiskeringRight _ _ _).obj L₂₃)
   (β₂₃ : (((whiskeringLeft₂ D).obj L₁).obj L₂₃).obj LF ⟶ F ⋙ (whiskeringRight _ _ _).obj L)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def bifunctorComp₁₂Counit :
     (((((whiskeringLeft₃ _).obj L₁).obj L₂)).obj L₃).obj (bifunctorComp₁₂ LF₁₂ LG) ⟶
@@ -56,8 +57,7 @@ def bifunctorComp₁₂Counit :
     rw [Category.assoc, ← h₁, ← NatTrans.comp_app_assoc, ← Functor.map_comp, h₂,
       Functor.map_comp, NatTrans.comp_app_assoc]
 
-set_option maxHeartbeats 400000 in
--- this is slow
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def bifunctorComp₂₃Counit :
     (((((whiskeringLeft₃ _).obj L₁).obj L₂)).obj L₃).obj (bifunctorComp₂₃ LF LG₂₃) ⟶

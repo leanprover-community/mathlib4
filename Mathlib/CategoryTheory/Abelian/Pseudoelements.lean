@@ -243,6 +243,7 @@ end Zero
 
 open Pseudoelement
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Morphisms map the zero pseudoelement to the zero pseudoelement. -/
 @[simp]
 theorem apply_zero {P Q : C} (f : P ⟶ Q) : f 0 = 0 := by
@@ -305,6 +306,7 @@ theorem pseudo_surjective_of_epi {P Q : C} (f : P ⟶ Q) [Epi f] : Function.Surj
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A morphism that is surjective on pseudoelements is an epimorphism. -/
 theorem epi_of_pseudo_surjective {P Q : C} (f : P ⟶ Q) : Function.Surjective f → Epi f := by
@@ -352,17 +354,13 @@ theorem pseudo_exact_of_exact {S : ShortComplex C} (hS : S.Exact) :
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 theorem apply_eq_zero_of_comp_eq_zero {P Q R : C} (f : Q ⟶ R) (a : P ⟶ Q) : a ≫ f = 0 → f a = 0 :=
   fun h => by simp [over_coe_def, pseudoApply_mk', h]
 
 section
 
-<<<<<<< HEAD
-/- should be refactored using `ShortComplex.Exact`
-
-=======
 set_option backward.isDefEq.respectTransparency false in
->>>>>>> origin
 /-- If two morphisms are exact on pseudoelements, they are exact. -/
 theorem exact_of_pseudo_exact (S : ShortComplex C)
     (hS : ∀ b, S.g b = 0 → ∃ a, S.f a = b) : S.Exact :=
@@ -395,8 +393,6 @@ theorem exact_of_pseudo_exact (S : ShortComplex C)
       simp only [Category.assoc, kernel.condition, HasZeroMorphisms.comp_zero])
 
 -/
-
-end
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If two pseudoelements `x` and `y` have the same image under some morphism `f`, then we can form
@@ -464,7 +460,6 @@ theorem ModuleCat.eq_range_of_pseudoequal {R : Type*} [Ring R] {G : ModuleCat R}
 
 end Module
 
--/
 end Pseudoelement
 
 end CategoryTheory.Abelian

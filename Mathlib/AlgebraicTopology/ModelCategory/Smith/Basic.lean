@@ -124,7 +124,7 @@ instance : (cofibrations (CategoryWithSmithStructure hIW₁ hIW₃)).HasFunctori
   have le : I.rlp ≤ (I.rlp.llp ⊓ W).rlp ⊓ W := by
     simp only [le_inf_iff]
     exact ⟨by simp [← le_llp_iff_le_rlp], hIW₁⟩
-  simpa [trivialFibrations] using HasFunctorialFactorization.of_le le_rfl le
+  simpa [trivialFibrations] using! HasFunctorialFactorization.of_le le_rfl le
 
 set_option backward.isDefEq.respectTransparency false in
 open lemma_1_9 in

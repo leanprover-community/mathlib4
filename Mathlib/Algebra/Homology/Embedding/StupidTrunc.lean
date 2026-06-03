@@ -115,6 +115,7 @@ lemma ιStupidTruncf_eq [e.IsRelIff] (i : ι) :
   rw [dif_pos ⟨i, rfl⟩]
   simp [extendXIso, extend.XIso, stupidTruncXIso]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma ιStupidTruncf'_eq [e.IsRelIff] {i : ι} {i' : ι'} (h : e.f i = i') :
     K.ιStupidTruncf e i' = ((K.restriction e).extendXIso e h).hom ≫
       (K.restrictionXIso e h).hom := by
@@ -123,6 +124,7 @@ lemma ιStupidTruncf'_eq [e.IsRelIff] {i : ι} {i' : ι'} (h : e.f i = i') :
 
 variable [e.IsTruncGE]
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def ιStupidTrunc : K.stupidTrunc e ⟶ K where
   f := K.ιStupidTruncf e
   comm' i' j' hij' := by
@@ -212,6 +214,7 @@ lemma πStupidTruncf_eq [e.IsRelIff] (i : ι) :
   rw [dif_pos ⟨i, rfl⟩]
   simp [extendXIso, extend.XIso, stupidTruncXIso]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Variant of `πStupidTruncf_eq`. -/
 lemma πStupidTruncf_eq' [e.IsRelIff] {i : ι} {i' : ι'} (h : e.f i = i') :
     K.πStupidTruncf e i' = (K.restrictionXIso e h).inv ≫
@@ -221,6 +224,7 @@ lemma πStupidTruncf_eq' [e.IsRelIff] {i : ι} {i' : ι'} (h : e.f i = i') :
 
 variable [e.IsTruncLE]
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def πStupidTrunc : K ⟶ K.stupidTrunc e where
   f := K.πStupidTruncf e
   comm' i' j' hij' := by
@@ -327,11 +331,13 @@ noncomputable def stupidTruncFunctor [e.IsRelIff] :
   obj K := K.stupidTrunc e
   map φ := HomologicalComplex.stupidTruncMap φ e
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 noncomputable def ιStupidTruncNatTrans [e.IsTruncGE] :
     e.stupidTruncFunctor C ⟶ 𝟭 _ where
   app K := K.ιStupidTrunc e
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 noncomputable def πStupidTruncNatTrans [e.IsTruncLE] :
     𝟭 _ ⟶ e.stupidTruncFunctor C  where

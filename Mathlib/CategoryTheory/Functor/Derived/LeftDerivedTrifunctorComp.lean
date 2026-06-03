@@ -28,8 +28,7 @@ variable {C₁ C₂ C₃ C₄ C₂₃₄ C D₁ D₂ D₃ D₄ D₂₃₄ D : Ty
     Functor.postcompose₂.obj L₂₃₄)
   (β : (((whiskeringLeft₂ D).obj L₁).obj L₂₃₄).obj LF ⟶ F ⋙ (whiskeringRight _ _ _).obj L)
 
-set_option maxHeartbeats 3200000 in
--- this is slow
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def trifunctorComp₂₃₄Counit :
     (((((whiskeringLeft₄ D).obj L₁).obj L₂).obj L₃).obj L₄).obj (trifunctorComp₂₃₄ LF LG₂₃₄) ⟶

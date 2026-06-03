@@ -83,12 +83,16 @@ are composable. -/
 def δ : X.ω₁.obj (mk₁ g) ⟶ (X.ω₁.obj (mk₁ f))⟦(1 : ℤ)⟧ :=
   X.δ'.app (mk₂ f g)
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma δ_naturality {i' j' k' : ι} (f' : i' ⟶ j') (g' : j' ⟶ k')
     (α : mk₁ f ⟶ mk₁ f') (β : mk₁ g ⟶ mk₁ g') (hαβ : α.app 1 = β.app 0) :
     X.ω₁.map β ≫ X.δ f' g' = X.δ f g ≫ (X.ω₁.map α)⟦(1 : ℤ)⟧' := by
   let φ : mk₂ f g ⟶ mk₂ f' g' := homMk₂ (α.app 0) (α.app 1) (β.app 1) (naturality' α 0 1)
-    (by simpa only [hαβ] using naturality' β 0 1)
+    (by
+      dsimp
+      simp only [hαβ]
+      exact naturality' β 0 1)
   have h := X.δ'.naturality φ
   dsimp at h
   simp only [φ, hαβ] at h
@@ -109,6 +113,7 @@ section
 variable {f g}
 variable {i' j' k' : ι} {f' : i' ⟶ j'} {g' : j' ⟶ k'}
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def mapTriangle (φ : mk₂ f g ⟶ mk₂ f' g') :
     X.triangle f g ⟶ X.triangle f' g' where
   hom₁ := X.ω₁.map ((functorArrows ι 0 1 2).map φ)
@@ -138,6 +143,7 @@ end
 end
 variable {ι' : Type*} [Category ι'] (F : ι' ⥤ ι)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] Precomp.map Precomp.obj δ in
 /-- The precomposition of a spectral object with a functor. -/
@@ -264,6 +270,7 @@ namespace Functor
 
 variable {C}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor between categories of spectral objects that is induced by
 a triangulated functor. -/
 def mapTriangulatedSpectralObject (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]

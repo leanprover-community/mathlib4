@@ -46,7 +46,6 @@ noncomputable def mapExtendIso :
     · by_cases hj' : ∃ j, e.f j = j'
       · obtain ⟨i, rfl⟩ := hi'
         obtain ⟨j, rfl⟩ := hj'
-        dsimp
         simp [mapExtendX_hom_eq _ _ (e.r_f _), extend_d_eq _ e rfl rfl, extendXIso,
           extend.XIso, eqToHom_map]
       · apply IsZero.eq_of_tgt
@@ -80,11 +79,11 @@ namespace Embedding
 
 variable (e : c.Embedding c') (F : C ⥤ D) [F.PreservesZeroMorphisms]
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def mapExtendFunctorNatIso :
     e.extendFunctor C ⋙ F.mapHomologicalComplex c' ≅
       F.mapHomologicalComplex c ⋙ e.extendFunctor D :=
   NatIso.ofComponents (fun K => K.mapExtendIso e F)
-
 
 end Embedding
 

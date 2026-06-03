@@ -55,6 +55,7 @@ instance {X Y : CochainComplex.Minus C} (p : X ⟶ Y) [Fibration p] :
 
 variable [EnoughProjectives C]
 
+set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 def opEquivalence : (Minus C)ᵒᵖ ≌ Plus Cᵒᵖ where
   functor :=

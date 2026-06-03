@@ -60,6 +60,7 @@ structure CommShift₂Setup (M : Type*) [AddCommMonoid M] [HasShift D M] extends
   ε (m n : M) : (CatCenter D)ˣ
   hε (m n : M) : ε m n = (z (0, n) (m, 0))⁻¹ * z (m, 0) (0, n) := by aesop
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The standard setup for the commutation of bifunctors with shifts by `ℤ`. -/
 @[simps]
 noncomputable def CommShift₂Setup.int [Preadditive D] [HasShift D ℤ]
@@ -69,7 +70,9 @@ noncomputable def CommShift₂Setup.int [Preadditive D] [HasShift D ℤ]
   assoc _ _ _ := by
     dsimp
     rw [← zpow_add, ← zpow_add]
-    lia
+    #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
+    we need to re-enable model-based theory combination in `lia` for this to go through. -/
+    lia +mbtc
   commShift _ _ := ⟨by cat_disch⟩
   ε p q := (-1) ^ (p * q)
 
@@ -114,6 +117,7 @@ namespace CommShift₂
 attribute [instance_reducible] commShiftObj commShiftFlipObj
 attribute [instance] commShiftObj commShiftFlipObj commShift_map commShift_flip_map
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.inferInstanceAs.wrap.data false in
 set_option backward.isDefEq.respectTransparency false in
 instance precomp₁ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C₁' M]
@@ -132,6 +136,7 @@ instance precomp₁ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C�
     rw [NatTrans.shift_app (G.map ((F.commShiftIso m).hom.app X₁')) n X₂]
     simp [this]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.inferInstanceAs.wrap false in
 instance precomp₂ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C₂' M]
     [HasShift C₂ M] [HasShift D M] (F : C₂' ⥤ C₂) [F.CommShift M]
@@ -177,12 +182,14 @@ namespace CommShift₂
 
 attribute [instance] commShift_app commShift_flipApp
 
+set_option backward.defeqAttrib.useBackward true in
 instance : CommShift₂ (𝟙 G₁) h where
   commShift_app _ := by dsimp; infer_instance
   commShift_flipApp _ := by
     simp only [flipApp, flipFunctor_obj, Functor.map_id, id_app]
     infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance [CommShift₂ τ h] [CommShift₂ τ' h] : CommShift₂ (τ ≫ τ') h where
   commShift_app _ := by dsimp; infer_instance
   commShift_flipApp _ := by
@@ -223,6 +230,7 @@ noncomputable def shiftIso (m n p : M) (hp : m + n = p) :
     shiftFunctor h.Category (m, n) ≅ shiftFunctor D p :=
   h.toTwistShiftData.shiftIso (m, n) ≪≫ pullbackShiftIso _ _ _ _ hp.symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma shiftFunctor_map (m n p : M) (hp : m + n = p) {X Y : D} (f : X ⟶ Y) :
     (shiftFunctor h.Category (m, n)).map f =
@@ -267,6 +275,7 @@ protected abbrev uncurry : C₁ × C₂ ⥤ h.Category := uncurry.obj F
 
 namespace commShiftUncurry
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def iso₁ (m₁ : M) :
     shiftFunctor (C₁ × C₂) (m₁, (0 : M)) ⋙ h.uncurry F ≅
@@ -289,6 +298,7 @@ noncomputable def iso₁ (m₁ : M) :
       simp only [Functor.map_id, Category.comp_id, Category.assoc,
         ← NatTrans.naturality, ← NatTrans.naturality_assoc, ← reassoc_of% this]))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma iso₁_hom_app (X₁ : C₁) (X₂ : C₂) (m₁ : M) :
@@ -298,11 +308,13 @@ lemma iso₁_hom_app (X₁ : C₁) (X₂ : C₂) (m₁ : M) :
       (h.shiftIso m₁ 0 m₁ (add_zero m₁)).inv.app ((F.obj X₁).obj X₂) := by
   simp [iso₁, fullyFaithfulCurry, Equivalence.fullyFaithfulInverse]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma iso₁_zero : iso₁ h F 0 = Functor.CommShift.isoZero _ _ := by
   ext ⟨X₁, X₂⟩
   simp [iso₁_hom_app, shiftFunctorZero_inv_app, Functor.commShiftIso_zero]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma iso₁_add (m m' : M) :
     iso₁ h F (m + m') =
@@ -327,6 +339,7 @@ lemma iso₁_add (m m' : M) :
   nth_rw 3 [← Functor.map_comp_assoc]
   simp [← reassoc_of% this]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def iso₂ (m₂ : M) :
     shiftFunctor (C₁ × C₂) ((0 : M), m₂) ⋙ h.uncurry F ≅
@@ -345,6 +358,7 @@ noncomputable def iso₂ (m₂ : M) :
       simp only [Functor.map_id, Category.comp_id, Category.assoc, ← NatTrans.naturality]
       rw [NatTrans.shift_app_comm_assoc (F.map f) m₂ X₂, reassoc_of% this]))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma iso₂_hom_app (X₁ : C₁) (X₂ : C₂) (m₂ : M) :
@@ -354,11 +368,13 @@ lemma iso₂_hom_app (X₁ : C₁) (X₂ : C₂) (m₂ : M) :
         (h.shiftIso 0 m₂ m₂ (zero_add m₂)).inv.app ((F.obj X₁).obj X₂) := by
   simp [iso₂, fullyFaithfulCurry, Equivalence.fullyFaithfulInverse]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma iso₂_zero : iso₂ h F 0 = Functor.CommShift.isoZero _ _ := by
   ext ⟨X₁, X₂⟩
   simp [iso₂_hom_app, shiftFunctorZero_inv_app, Functor.commShiftIso_zero]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma iso₂_add (m m' : M) :
     iso₂ h F (m + m') =
@@ -381,6 +397,7 @@ lemma iso₂_add (m m' : M) :
   nth_rw 2 [← Functor.map_comp_assoc]
   simp [reassoc_of% this]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isoAdd'_iso₁_iso₂ (m₁ m₂ : M) :
     Functor.CommShift.isoAdd' (show _ = (m₁, m₂) by aesop)
@@ -444,6 +461,7 @@ noncomputable def iso₁ (m : M) :
     G.commShiftIso ((0 : M), m) ≪≫
     isoWhiskerLeft G (h.shiftIso 0 m m (zero_add m)))
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma iso₁_hom_app_app (X₁ : C₁) (X₂ : C₂) (m : M) :
     ((iso₁ h G m).hom.app X₁).app X₂ =
@@ -452,6 +470,7 @@ lemma iso₁_hom_app_app (X₁ : C₁) (X₂ : C₂) (m : M) :
           (h.shiftIso 0 m m (zero_add m)).hom.app _ := by
   simp [iso₁, NatTrans.prod]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (X₁ : C₁) :
     ((h.curry G).obj X₁).CommShift M where
@@ -497,6 +516,7 @@ namespace commShift₂Curry
 
 attribute [local simp] commShift_curry_obj_hom_app
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) :
     NatTrans.CommShift ((h.curry G).map f) M where
@@ -520,6 +540,7 @@ noncomputable def iso₂ (m : M) :
     G.commShiftIso (m, (0 : M)) ≪≫
     isoWhiskerLeft G (h.shiftIso m 0 m (add_zero m)))
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma iso₂_hom_app_app (X₁ : C₁) (X₂ : C₂) (m : M) :
     ((iso₂ h G m).hom.app X₁).app X₂ =
@@ -528,6 +549,7 @@ lemma iso₂_hom_app_app (X₁ : C₁) (X₂ : C₂) (m : M) :
           (h.shiftIso m 0 m (add_zero m)).hom.app _ := by
   simp [iso₂, NatTrans.prod]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (X₂ : C₂) : ((h.curry G).flip.obj X₂).CommShift M where
   commShiftIso m := ((flipFunctor _ _ _).mapIso (iso₂ h G m)).app X₂
@@ -574,6 +596,7 @@ namespace commShift₂Curry
 
 attribute [local simp] commShift_curry_flip_obj_hom_app
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance {X₂ Y₂ : C₂} (f : X₂ ⟶ Y₂) :
     NatTrans.CommShift ((h.curry G).flip.map f) M where
@@ -592,6 +615,7 @@ instance {X₂ Y₂ : C₂} (f : X₂ ⟶ Y₂) :
 
 end commShift₂Curry
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open commShift₂Curry in
 noncomputable instance commShift₂Curry : (h.curry G).CommShift₂ h where
@@ -653,6 +677,7 @@ variable (G : C₁ × C₂ ⥤ h.Category) [G.CommShift (M × M)]
 
 abbrev uncurryCurryIso : h.uncurry (h.curry G) ≅ G := currying.counitIso.app G
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open commShiftUncurry in
 instance : NatTrans.CommShift (h.uncurryCurryIso G).hom (M × M) where

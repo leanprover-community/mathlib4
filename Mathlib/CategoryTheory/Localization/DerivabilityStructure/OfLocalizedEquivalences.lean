@@ -83,6 +83,7 @@ lemma isLeftDerivabilityStructure_of_isLocalizedEquivalence
   rw [B.isLeftDerivabilityStructure_iff W₁'.Q W₂'.Q F e']
   apply TwoSquare.GuitartExact.of_hComp iso.inv
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isLeftDerivabilityStructure_iff_of_isLocalizedEquivalence
     [L.functor.EssSurj] [R.functor.Full] [R.IsInduced]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor)
@@ -114,6 +115,7 @@ lemma isLeftDerivabilityStructure_iff_of_isLocalizedEquivalence
     (R.functor ⋙ W₂'.Q) F e, ← this]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isRightDerivabilityStructure_of_isLocalizedEquivalence
     [T.IsRightDerivabilityStructure]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor)
@@ -126,6 +128,7 @@ lemma isRightDerivabilityStructure_of_isLocalizedEquivalence
   have : R.op.functor.EssSurj := by dsimp; infer_instance
   exact isLeftDerivabilityStructure_of_isLocalizedEquivalence iso'
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isRightDerivabilityStructure_iff_of_isLocalizedEquivalence
     [L.functor.EssSurj] [R.functor.Full] [R.IsInduced]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor)
@@ -171,6 +174,7 @@ lemma isLeftDerivabilityStructure_iff_of_equivalences
     have : W₂.RespectsIso := by rw [← R.inverseImage_eq]; infer_instance
     exact isLeftDerivabilityStructure_of_equivalences e⟩
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isRightDerivabilityStructure_iff_of_equivalences
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) :
     T.IsRightDerivabilityStructure ↔ B.IsRightDerivabilityStructure := by

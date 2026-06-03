@@ -44,6 +44,7 @@ variable (Φ : LocalizerMorphism W₁ W₂) [Φ.IsRightDerivabilityStructure]
   [F.CommShift ℤ] [L₂.CommShift ℤ] [RF.CommShift ℤ] [Φ.functor.CommShift ℤ]
   [NatTrans.CommShift α ℤ] [F.IsTriangulated] [L₂.IsTriangulated] [Φ.functor.IsTriangulated]
 
+set_option backward.defeqAttrib.useBackward true in
 include α hF in
 lemma isTriangulated_of_isRightDerivedFunctor : RF.IsTriangulated :=
   RF.isTriangulated_of_isRightDerivedFunctor α (fun X Y f => by

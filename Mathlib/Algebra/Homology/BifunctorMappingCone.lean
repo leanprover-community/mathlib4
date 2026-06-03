@@ -87,6 +87,7 @@ lemma inr_p₁₀ [HasMapBifunctor L₁ K₂ F (ComplexShape.up ℤ)] :
   simp [ι_p₁₀_v _ _ _ p q n hpq _ rfl _ rfl, ← Functor.map_comp,
       ← NatTrans.comp_app_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 noncomputable def p₁ : Cocycle (mapBifunctor (mappingCone φ) K₂ F (.up ℤ))
     (mapBifunctor K₁ K₂ F (.up ℤ)) 1 :=
@@ -164,6 +165,7 @@ noncomputable def hom : mapBifunctor (mappingCone φ) K₂ F (.up ℤ) ⟶
       mapBifunctor.d₂_eq L₁ K₂ F (.up ℤ) p h₁ (n + 1) (by dsimp; omega),
       ← Functor.map_comp, ← NatTrans.comp_app_assoc, d_snd_v])
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def inv :
     mappingCone (mapBifunctorMap φ (𝟙 K₂) F (.up ℤ)) ⟶
       mapBifunctor (mappingCone φ) K₂ F (.up ℤ) :=
@@ -218,6 +220,7 @@ lemma hom_inv_id : hom φ K₂ F ≫ inv φ K₂ F = 𝟙 _ := by
     ← NatTrans.app_add, ← Functor.map_add, mappingCone.id_X,
     CategoryTheory.Functor.map_id, NatTrans.id_app, Category.id_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inv_hom_id : inv φ K₂ F ≫ hom φ K₂ F = 𝟙 _ := by
   apply (Cocycle.equivHom _ _).injective
@@ -326,6 +329,7 @@ lemma inr_p₁₀ [HasMapBifunctor K₁ L₂ F (ComplexShape.up ℤ)] :
   dsimp at hpq
   simp [ι_p₁₀_v _ _ _ p q n hpq _ rfl _ rfl, ← Functor.map_comp_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 noncomputable def p₁ : Cocycle (mapBifunctor K₁ (mappingCone φ) F (.up ℤ))
     (mapBifunctor K₁ K₂ F (.up ℤ)) 1 :=
@@ -403,6 +407,7 @@ noncomputable def hom : mapBifunctor K₁ (mappingCone φ) F (.up ℤ) ⟶
       mapBifunctor.d₁_eq K₁ L₂ F (.up ℤ) h₁ q (n + 1) (by dsimp; omega),
       -Functor.map_comp, ← Functor.map_comp_assoc, d_snd_v])
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def inv :
     mappingCone (mapBifunctorMap (𝟙 K₁) φ F (.up ℤ)) ⟶
       mapBifunctor K₁ (mappingCone φ) F (.up ℤ) :=
@@ -458,6 +463,7 @@ lemma hom_inv_id : hom K₁ φ F ≫ inv K₁ φ F = 𝟙 _ := by
   simp only [← Functor.map_comp_assoc, ← Preadditive.add_comp, ← Functor.map_add,
     mappingCone.id_X, CategoryTheory.Functor.map_id, Category.id_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inv_hom_id : inv K₁ φ F ≫ hom K₁ φ F = 𝟙 _ := by
   apply (Cocycle.equivHom _ _).injective

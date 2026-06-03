@@ -148,6 +148,7 @@ lemma ιE₂OneZero_πE₃ZeroOne
   simp only [assoc, Preadditive.IsIso.comp_left_eq_zero]
   rw [(hE 1).pageInfinityι_π_eq_zero_assoc 0 1 (by apply @zero_lt_one ℕ), zero_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma ιE₂OneZero_πE₃ZeroOne_exact
     [E.HasEdgeMonoAtFrom (1, 0) 2] [E.HasEdgeEpiAtFrom (1, 0) 2]
     [E.HasEdgeMonoAtFrom (0, 1) 3] [E.HasEdgeEpiAtFrom (0, 1) 3] :
@@ -205,11 +206,13 @@ noncomputable def d₂Sequence
     ((E.page 2 (E.le₀_of_hasEdgeMonoAt ⟨0, 1⟩ 2)).d ⟨0, 1⟩ ⟨2, 0⟩)
     (E.edgeEpiStep ⟨2, 0⟩ 2 3 rfl)
 
+set_option backward.defeqAttrib.useBackward true in
 instance [E.HasEdgeMonoAt (0, 1) 2] [E.HasEdgeEpiAt (2, 0) 2] :
     Mono ((d₂Sequence E).map' 0 1) := by
   dsimp
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance [E.HasEdgeMonoAt (0, 1) 2] [E.HasEdgeEpiAt (2, 0) 2] :
     Epi ((d₂Sequence E).map' 2 3) := by
@@ -264,6 +267,7 @@ noncomputable def lowDegreesComposableArrows
   ComposableArrows.mk₄ (ιE₂OneZero hE) (toE₂ZeroOne hE)
     ((E.page 2 (E.le₀_of_hasEdgeMonoAtFrom ⟨0, 1⟩ 2)).d ⟨0, 1⟩ ⟨2, 0⟩) (fromE₂TwoZero hE)
 
+set_option backward.defeqAttrib.useBackward true in
 instance [E.HasEdgeMonoAtFrom (1, 0) 2] [E.HasEdgeEpiAtFrom (1, 0) 2]
     [E.HasEdgeMonoAtFrom (0, 1) 2]
     [E.HasEdgeMonoAtFrom (2, 0) 3] [E.HasEdgeEpiAtFrom (2, 0) 2] :

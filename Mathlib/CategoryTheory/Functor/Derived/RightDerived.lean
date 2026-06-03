@@ -110,7 +110,6 @@ lemma rightDerivedNatTrans_fac (τ : F ⟶ F') :
   dsimp only [rightDerivedNatTrans]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma rightDerivedNatTrans_app (τ : F ⟶ F') (X : C) :
     α.app X ≫ (rightDerivedNatTrans RF RF' α α' W τ).app (L.obj X) =
@@ -214,6 +213,7 @@ instance : (F.totalRightDerived L W).IsRightDerivedFunctor
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 instance [IsIso α] : RF.IsRightDerivedFunctor α W where
   isLeftKanExtension :=
     letI lifting : Localization.Lifting L W F RF := ⟨(asIso α).symm⟩
@@ -320,6 +320,7 @@ variable {C₁ C₂ H₁ H₂ D : Type*} [Category C₁] [Category C₂] [Catego
   (h : α₁ = e₁.inv ≫ whiskerLeft Φ.functor α₂ ≫ (Functor.associator _ _ _).inv ≫
     whiskerRight iso.hom RF₂ ≫ (Functor.associator L₁ G RF₂).hom ≫ whiskerLeft L₁ e₂.hom)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include h in
 lemma isRightDerivedFunctor_iff_precomp :

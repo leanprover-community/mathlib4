@@ -59,6 +59,7 @@ lemma natTransLift₃_app_app_app
     (((natTransLift₃ r₁ r₂ r₃ τ).app ((functor r₁).obj X₁)).app ((functor r₂).obj X₂)).app
       ((functor r₃).obj X₃) = ((τ.app X₁).app X₂).app X₃ := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def natIsoLift₃ {F G : Quotient r₁ ⥤ Quotient r₂ ⥤ Quotient r₃ ⥤ C}
@@ -82,9 +83,7 @@ def natIsoLift₃ {F G : Quotient r₁ ⥤ Quotient r₂ ⥤ Quotient r₃ ⥤ C
 
 variable {r₁ r₂ r₁₂ r₂₃ r₃ r}
 
-set_option maxHeartbeats 400000 in
--- this is slow
-suppress_compilation in
+set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 def bifunctorComp₁₂Iso {F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂} {G : C₁₂ ⥤ C₃ ⥤ C}
     {F₁₂' : Quotient r₁ ⥤ Quotient r₂ ⥤ Quotient r₁₂}
@@ -122,9 +121,7 @@ def bifunctorComp₁₂Iso {F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂} {G : C₁₂ �
       simp only [Functor.map_comp, NatTrans.comp_app] at h₂
       simp only [Category.assoc, ← h₁, reassoc_of% h₂])
 
-set_option maxHeartbeats 400000 in
--- this is slow
-suppress_compilation in
+set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 def bifunctorComp₂₃Iso {F : C₁ ⥤ C₂₃ ⥤ C} {G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃}
     {F' : Quotient r₁ ⥤ Quotient r₂₃ ⥤ Quotient r}

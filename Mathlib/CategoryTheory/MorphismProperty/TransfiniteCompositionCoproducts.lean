@@ -96,6 +96,7 @@ def diagramFunctor :
 
 abbrev columnFunctor (j : J) : J ⥤ C := (diagramFunctor f).flip.obj (.mk j)
 
+set_option backward.defeqAttrib.useBackward true in
 instance (j : J) [OrderBot J] [SuccOrder J] :
     (columnFunctor f j).IsWellOrderContinuous where
   nonempty_isColimit m hm := by
@@ -132,11 +133,13 @@ variable [HasCoproductsOfShape J C] in
 noncomputable def isoBot [OrderBot J] : ∐ (obj f ⊥) ≅ ∐ X :=
   Sigma.mapIso (fun j ↦ objIso₁ f ⊥ j bot_le)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def cocone : Cocone (diagramFunctor f) where
   pt := Discrete.functor Y
   ι.app i := Discrete.natTrans (fun ⟨j⟩ ↦ objι f i j)
 
+set_option backward.defeqAttrib.useBackward true in
 def isColimitCocone [SuccOrder J] [NoMaxOrder J] :
     IsColimit (cocone f) :=
   evaluationJointlyReflectsColimits _ (fun ⟨j⟩ ↦
@@ -173,6 +176,7 @@ instance [OrderBot J] : (diagramFunctor f ⋙ colim).IsWellOrderContinuous where
       ((diagramFunctor f).isColimitOfIsWellOrderContinuous m hm)⟩
 
 open Classical in
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isPushout (i : J) :
     IsPushout ((objIso₁ f i i le_rfl).inv ≫ Sigma.ι _ i) (f i)
@@ -209,7 +213,6 @@ lemma isPushout (i : J) :
     refine PushoutCocone.IsColimit.mk _ (fun s ↦ Sigma.desc (φ s))
       (fun s ↦ by ext; simp [hφ₂]) (fun s ↦ by simp [hφ₁])
       (fun s l hl₁ hl₂ ↦ Sigma.hom_ext _ _ (fun j ↦ ?_))
-    dsimp
     rw [Sigma.ι_desc]
     by_cases hij : i = j
     · subst hij
@@ -233,6 +236,7 @@ section
 variable [HasCoproductsOfShape J C] [OrderBot J] [SuccOrder J] [WellFoundedLT J] [NoMaxOrder J]
 
 open transfiniteCompositionOfShapeSigmaMap in
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def transfiniteCompositionOfShapeSigmaMap :
     TransfiniteCompositionOfShape (MorphismProperty.ofHoms f).pushouts J
@@ -336,6 +340,7 @@ instance [W.ContainsIdentities] [W.RespectsIso] :
     have : IsIso φ := ⟨hX₂.to _, hX₁.hom_ext _ _, hX₂.hom_ext _ _⟩
     exact W.of_isIso φ
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance [HasFiniteCoproducts C] [W.IsMultiplicative]
     [W.IsStableUnderCobaseChange] :

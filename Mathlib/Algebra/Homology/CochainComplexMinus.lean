@@ -81,6 +81,7 @@ section
 
 variable [HasZeroMorphisms C] [HasZeroMorphisms D] [F.PreservesZeroMorphisms]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 def mapCochainComplexMinus : CochainComplex.Minus C ⥤ CochainComplex.Minus D :=
   ObjectProperty.lift _ (CochainComplex.Minus.ι C ⋙ F.mapHomologicalComplex _) (fun K => by

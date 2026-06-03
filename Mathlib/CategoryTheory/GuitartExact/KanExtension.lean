@@ -61,6 +61,7 @@ abbrev compTwoSquare (w : TwoSquare T L R B) : L.LeftExtension (T ⋙ F) :=
     (whiskerLeft _ E.hom ≫ (associator _ _ _).inv ≫
       whiskerRight w.natTrans _ ≫ (associator _ _ _).hom)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `w : TwoSquare T L R B` is a Guitart exact square, and `E` is a left extension
 of `F` along `R`, then `E` is a pointwise left Kan extension of `F` along `R` at
 `B.obj X₃` iff `E.compTwoSquare w` is a pointwise left Kan extension
@@ -127,6 +128,7 @@ abbrev compTwoSquare (w : TwoSquare T L R B) : T.RightExtension (L ⋙ F) :=
     ((associator _ _ _).inv ≫ whiskerRight w.natTrans E.left ≫
       (associator _ _ _).hom ≫ whiskerLeft L E.hom)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `w : TwoSquare T L R B` is a Guitart exact square, and `E` is a right extension
 of `F` along `B`, then `E` is a pointwise right Kan extension of `F` along `B` at
 `R.obj X₂` iff `E.compTwoSquare w` is a pointwise right Kan extension
@@ -254,6 +256,7 @@ section
 
 variable [∀ (F : C₁ ⥤ D), L.HasLeftKanExtension F] [∀ (F : C₂ ⥤ D), R.HasLeftKanExtension F]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The base change natural transformation for left Kan extensions associated to
 a 2-square. -/
@@ -272,6 +275,7 @@ noncomputable def lanBaseChange :
     have := R.lanUnit.naturality_app (T.obj X) τ
     simp [reassoc_of% this]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isIso_lanBaseChange_app_iff (F : C₂ ⥤ D) :
     IsIso (w.lanBaseChange.app F) ↔
@@ -299,6 +303,7 @@ section
 
 variable [∀ (F : C₁ ⥤ D), T.HasRightKanExtension F] [∀ (F : C₃ ⥤ D), B.HasRightKanExtension F]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The base change natural transformation for right Kan extensions associated to
 a 2-square. -/
 @[simps -isSimp]
@@ -316,6 +321,7 @@ noncomputable def ranBaseChange :
     dsimp at this
     simp [← this]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isIso_ranBaseChange_app_iff (F : C₃ ⥤ D) :
     IsIso (w.ranBaseChange.app F) ↔

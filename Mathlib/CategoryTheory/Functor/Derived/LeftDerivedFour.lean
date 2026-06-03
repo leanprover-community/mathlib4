@@ -24,9 +24,8 @@ variable {C₁ C₂ C₃ C₄ D₁ D₂ D₃ D₄ H : Type*}
   [Category C₁] [Category C₂] [Category C₃] [Category C₄]
   [Category D₁] [Category D₂] [Category D₃] [Category D₄] [Category H]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-set_option maxHeartbeats 800000 in
--- this is slow
 --@[simps!]
 def whiskeringLeft₄Equiv {F : D₁ ⥤ D₂ ⥤ D₃ ⥤ D₄ ⥤ H} {G : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ H}
     {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂} {L₃ : C₃ ⥤ D₃} {L₄ : C₄ ⥤ D₄} :
@@ -86,7 +85,6 @@ abbrev IsLeftDerivedFunctor₄ : Prop :=
 section
 
 variable (F L₁ L₂ L₃ L₄) [HasLeftDerivedFunctor₄ F W₁ W₂ W₃ W₄]
-  [W₁.ContainsIdentities] [W₂.ContainsIdentities] [W₃.ContainsIdentities] [W₄.ContainsIdentities]
 
 noncomputable def leftDerived₄ : D₁ ⥤ D₂ ⥤ D₃ ⥤ D₄ ⥤ H :=
     curry₄.obj ((uncurry₄.obj F).totalLeftDerived
@@ -127,22 +125,27 @@ noncomputable def leftDerived₄Lift : G ⟶ LF :=
       (whiskeringLeft₄Equiv α) (W₁.prod (W₂.prod (W₃.prod W₄))) (uncurry₄.obj G)
       (whiskeringLeft₄Equiv β))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma leftDerived₄_fac_app_app (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄) :
     ((((leftDerived₄Lift LF α W₁ W₂ W₃ W₄ G β).app (L₁.obj X₁)).app (L₂.obj X₂)).app
       (L₃.obj X₃)).app (L₄.obj X₄) ≫
       (((α.app X₁).app X₂).app X₃).app X₄ = (((β.app X₁).app X₂).app X₃).app X₄ := by
-  simpa [leftDerived₄Lift, fullyFaithfulUncurry₄, Equivalence.fullyFaithfulFunctor] using
-    (leftDerived_fac_app (LF := uncurry₄.obj LF)
-      (whiskeringLeft₄Equiv α) (W₁.prod (W₂.prod (W₃.prod W₄))) (uncurry₄.obj G)
-      (whiskeringLeft₄Equiv β)) (X₁, X₂, X₃, X₄)
+  simp only [leftDerived₄Lift, fullyFaithfulUncurry₄, Equivalence.fullyFaithfulFunctor, comp_obj,
+    NatTrans.comp_app, currying₄_unitIso_hom_app_app_app_app_app, id_obj,
+    curry₄_map_app_app_app_app, currying₄_unitIso_inv_app_app_app_app_app, Category.comp_id,
+    Category.id_comp]
+  exact (leftDerived_fac_app (LF := uncurry₄.obj LF)
+    (whiskeringLeft₄Equiv α) (W₁.prod (W₂.prod (W₃.prod W₄))) (uncurry₄.obj G)
+    (whiskeringLeft₄Equiv β)) (X₁, X₂, X₃, X₄)
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma leftDerived₄_fac :
     (((((whiskeringLeft₄ H).obj L₁).obj L₂).obj L₃).obj L₄).map
       (leftDerived₄Lift LF α W₁ W₂ W₃ W₄ G β) ≫ α = β := by
-  aesop
+  cat_disch
 
 include W₁ W₂ W₃ W₄ in
 lemma leftDerived₄_ext (G : D₁ ⥤ D₂ ⥤ D₃ ⥤ D₄ ⥤ H) (γ₁ γ₂ : G ⟶ LF)

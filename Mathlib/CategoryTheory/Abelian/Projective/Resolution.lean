@@ -302,6 +302,7 @@ by the induction construction. -/
 def ofComplexXIso (n : ℕ) : (ofComplex Z).X (n + 2) ≅ syzygies ((ofComplex Z).d (n + 1) n) := by
   apply ChainComplex.mk'XIso
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Isomorphism describing the (exact) short complex `(ofComplex Z).sc' (n + 2) (n + 1) n`. -/
 def ofComplexSc'Iso (n : ℕ) : (ofComplex Z).sc' (n + 2) (n + 1) n ≅
     ShortComplex.mk (d ((ofComplex Z).d (n + 1) n)) ((ofComplex Z).d (n + 1) n) (by simp) :=
@@ -322,6 +323,7 @@ lemma ofComplex_exactAt_succ (n : ℕ) :
 instance (n : ℕ) : Projective ((ofComplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Projective.projective_over
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- In any abelian category with enough projectives,
 `ProjectiveResolution.of Z` constructs a projective resolution of the object `Z`.

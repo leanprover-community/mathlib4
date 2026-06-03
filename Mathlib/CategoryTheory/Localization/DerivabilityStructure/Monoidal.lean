@@ -21,6 +21,7 @@ open Functor
 
 namespace NatTrans
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isIso_app_app_iff_of_iso
     {C₁ C₂ D : Type*} [Category C₁] [Category C₂] [Category D] {F G : C₁ ⥤ C₂ ⥤ D}
     (τ : F ⟶ G) {X₁ Y₁ : C₁} (e₁ : X₁ ≅ Y₁) {X₂ Y₂ : C₂} (e₂ : X₂ ≅ Y₂) :
@@ -51,6 +52,7 @@ namespace DerivesMonoidalStructure
 
 variable [L.IsLocalization W] (h : Φ.DerivesMonoidalStructure L)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open Functor.Monoidal DerivedMonoidal in
 include h in

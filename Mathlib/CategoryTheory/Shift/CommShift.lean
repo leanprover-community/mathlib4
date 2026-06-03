@@ -28,6 +28,8 @@ shift functors.)
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory
@@ -40,8 +42,8 @@ instance {C D E : Type*} [Category C] [Category D] [Category E] (G : D ⥤ E)
     { app := fun X => G.preimage (τ.app X)
       naturality := fun X Y f => by
         apply G.map_injective
-        simpa only [Functor.whiskeringRight_obj_obj, Functor.map_comp, Functor.map_preimage]
-          using τ.naturality f }, by aesop_cat⟩
+        simpa only [Functor.whiskeringRight_obj_obj, Functor.map_comp, Functor.map_preimage,
+          Functor.comp_obj, Functor.comp_map] using τ.naturality f }, by aesop_cat⟩
 
 namespace Functor
 

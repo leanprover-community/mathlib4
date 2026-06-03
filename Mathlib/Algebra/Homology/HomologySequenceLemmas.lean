@@ -40,6 +40,7 @@ namespace HomologicalComplex
 
 namespace HomologySequence
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `snakeInput hS₁ i j hij ⟶ snakeInput hS₂ i j hij` induced by
 a morphism `φ : S₁ ⟶ S₂` of short complexes of homological complexes, that
 are short exact (`hS₁ : S₁.ShortExact` and `hS₂ : S₁.ShortExact`). -/
@@ -83,6 +84,7 @@ lemma composableArrows₅_exact (i j : ι) (hij : c.Rel i j) :
       (exact_of_δ₀ (hS₁.homology_exact₁ i j hij).exact_toComposableArrows
         (hS₁.homology_exact₂ j).exact_toComposableArrows))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The map between the exact sequences `S₁.X₁.homology i ⟶ S₁.X₂.homology i ⟶ S₁.X₃.homology i`
 and `S₂.X₁.homology i ⟶ S₂.X₂.homology i ⟶ S₂.X₃.homology i` that is induced by `φ : S₁ ⟶ S₂`. -/
@@ -130,6 +132,7 @@ lemma mono_homologyMap_τ₃ (i : ι)
     apply epi_homologyMap_of_epi_of_not_rel
     simpa using hi
 
+set_option backward.defeqAttrib.useBackward true in
 lemma epi_homologyMap_τ₃ (i : ι)
     (h₁ : Epi (homologyMap φ.τ₂ i))
     (h₂ : ∀ j, c.Rel i j → Epi (homologyMap φ.τ₁ j))
@@ -193,6 +196,7 @@ lemma epi_homologyMap_τ₁ (j : ι)
     apply HomologicalComplex.mono_homologyMap_of_mono_of_not_rel
     simpa using hj
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mono_homologyMap_τ₁ (j : ι)
     (h₁ : Mono (homologyMap φ.τ₂ j))
     (h₂ : ∀ i, c.Rel i j → Mono (homologyMap φ.τ₃ i))

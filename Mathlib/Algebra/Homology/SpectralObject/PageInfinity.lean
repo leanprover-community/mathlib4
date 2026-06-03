@@ -68,6 +68,7 @@ lemma spectralSequence_page_d_eq_zero_iff_isIso₁
   rw [eq₁, eq₂]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma spectralSequence_page_d_eq_zero_iff_isIso₂
     (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
     (pq pq' : κ) (hpq' : (c r).Rel pq pq') (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁)
@@ -257,6 +258,7 @@ lemma spectralSequenceHasEdgeMonoAtFrom (r : ℤ) (hr : r₀ ≤ r) (pq : κ)
   le := (X.spectralSequence data).rToMin_LE pq r
     (X.mem_spectralSequence_hasEdgeMonoSet data r hr pq n₀ hn₀ isZero)
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma spectralSequence_edgeMonoStep_compatibility
     (pq : κ) (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
@@ -285,6 +287,7 @@ lemma spectralSequence_edgeMonoStep_compatibility
     hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁', Iso.inv_hom_id_assoc, Iso.inv_hom_id_assoc]
   dsimp
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma spectralSequence_edgeEpiStep_compatibility
     (pq : κ) (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)

@@ -73,6 +73,7 @@ variable [Preadditive C₁] [HasZeroMorphisms C₂] [Preadditive D]
   (F : C₁ ⥤ C₂ ⥤ D) [F.Additive] [∀ (X₁ : C₁), (F.obj X₁).PreservesZeroMorphisms] (x : ℤ)
   [HasMapBifunctor K₁ K₂ F] [HasMapBifunctor K₁ L₂ F] [HasMapBifunctor L₁ K₂ F]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `mapBifunctorShift₁Iso`. -/
 @[simps! hom_f_f inv_f_f]
@@ -97,6 +98,7 @@ noncomputable def mapBifunctorShift₁Iso :
   HomologicalComplex₂.total.mapIso (mapBifunctorHomologicalComplexShift₁Iso K₁ K₂ F x) _ ≪≫
     (((F.mapBifunctorHomologicalComplex _ _).obj K₁).obj K₂).totalShift₁Iso x
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ι_mapBifunctorShift₁Iso_hom_f (n₁ n₂ n : ℤ) (h : n₁ + n₂ = n)
@@ -111,6 +113,7 @@ lemma ι_mapBifunctorShift₁Iso_hom_f (n₁ n₂ n : ℤ) (h : n₁ + n₂ = n)
   simp [HomologicalComplex₂.ιTotal, HomologicalComplex₂.shiftFunctor₁XXIso,
     HomologicalComplex.XIsoOfEq, eqToHom_map]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {K₁ L₁} in
 @[reassoc (attr := simp)]
@@ -121,6 +124,7 @@ lemma mapBifunctorShift₁Iso_hom_naturality₁ :
   simp [ι_mapBifunctorShift₁Iso_hom_f _ _ _ _ _ _ _ _ (p + x) (n + x) rfl rfl,
     ι_mapBifunctorShift₁Iso_hom_f_assoc _ _ _ _ _ _ _ _ (p + x) (n + x) rfl rfl]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {K₂ L₂} in
 @[reassoc (attr := simp)]
@@ -141,6 +145,7 @@ variable [HasZeroMorphisms C₁] [Preadditive C₂] [Preadditive D]
   (F : C₁ ⥤ C₂ ⥤ D) [F.PreservesZeroMorphisms] [∀ (X₁ : C₁), (F.obj X₁).Additive] (y : ℤ)
   [HasMapBifunctor K₁ K₂ F] [HasMapBifunctor L₁ K₂ F]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `mapBifunctorShift₂Iso`. -/
 @[simps! hom_f_f inv_f_f]
 def mapBifunctorHomologicalComplexShift₂Iso :
@@ -166,6 +171,7 @@ noncomputable def mapBifunctorShift₂Iso :
     (mapBifunctorHomologicalComplexShift₂Iso K₁ K₂ F y) (ComplexShape.up ℤ) ≪≫
     (((F.mapBifunctorHomologicalComplex _ _).obj K₁).obj K₂).totalShift₂Iso y
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ι_mapBifunctorShift₂Iso_hom_f (n₁ n₂ n : ℤ) (h : n₁ + n₂ = n)
@@ -180,6 +186,7 @@ lemma ι_mapBifunctorShift₂Iso_hom_f (n₁ n₂ n : ℤ) (h : n₁ + n₂ = n)
   simp [HomologicalComplex₂.ιTotal, HomologicalComplex₂.shiftFunctor₂XXIso,
     HomologicalComplex.XIsoOfEq, eqToHom_map]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {K₁ L₁} in
 @[reassoc (attr := simp)]
@@ -190,6 +197,7 @@ lemma mapBifunctorShift₂Iso_hom_naturality₁ :
   simp [mapBifunctorShift₂Iso, HomologicalComplex₂.ι_totalShift₂Iso_hom_f _ _ _ _ _ _ _ rfl _ rfl,
     HomologicalComplex₂.ι_totalShift₂Iso_hom_f_assoc _ _ _ _ _ _ _ rfl _ rfl]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {K₂ L₂} in
 @[reassoc (attr := simp)]
@@ -209,6 +217,7 @@ variable [Preadditive C₁] [Preadditive C₂] [Preadditive D]
   (F : C₁ ⥤ C₂ ⥤ D) [F.Additive] [∀ (X₁ : C₁), (F.obj X₁).Additive] (x y : ℤ)
   [HasMapBifunctor K₁ K₂ F]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma mapBifunctorShift₁Iso_trans_mapBifunctorShift₂Iso :
     mapBifunctorShift₁Iso K₁ (K₂⟦y⟧) F x ≪≫
@@ -243,6 +252,7 @@ variable [Preadditive C₁] [Preadditive C₂] [Preadditive D]
   [∀ (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ),
     CochainComplex.HasMapBifunctor K₁ K₂ F]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (K₁ : CochainComplex C₁ ℤ) :
     (F.map₂CochainComplex.obj K₁).CommShift ℤ where
@@ -277,6 +287,7 @@ lemma commShiftIso_map₂CochainComplex_inv_app (K₁ : CochainComplex C₁ ℤ)
     ((F.map₂CochainComplex.obj K₁).commShiftIso n).inv.app K₂ =
       (CochainComplex.mapBifunctorShift₂Iso K₁ K₂ F n).inv := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance {K₁ L₁ : CochainComplex C₁ ℤ} (f : K₁ ⟶ L₁) :
     NatTrans.CommShift (F.map₂CochainComplex.map f) ℤ where
@@ -288,6 +299,7 @@ instance {K₁ L₁ : CochainComplex C₁ ℤ} (f : K₁ ⟶ L₁) :
       CochainComplex.ι_mapBifunctorShift₂Iso_hom_f _ _ _ _ _ _ _ _ (q + n) (d + n) rfl rfl,
       CochainComplex.ι_mapBifunctorShift₂Iso_hom_f_assoc _ _ _ _ _ _ _ _ (q + n) (d + n) rfl rfl]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (K₂ : CochainComplex C₂ ℤ) :
     (F.map₂CochainComplex.flip.obj K₂).CommShift ℤ where
@@ -321,6 +333,7 @@ lemma commShiftIso_map₂CochainComplex_flip_inv_app (K₁ : CochainComplex C₁
     ((F.map₂CochainComplex.flip.obj K₂).commShiftIso n).inv.app K₁ =
       (CochainComplex.mapBifunctorShift₁Iso K₁ K₂ F n).inv := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance {K₂ L₂ : CochainComplex C₂ ℤ} (g : K₂ ⟶ L₂) :
     NatTrans.CommShift (F.map₂CochainComplex.flip.map g) ℤ where
@@ -332,6 +345,7 @@ instance {K₂ L₂ : CochainComplex C₂ ℤ} (g : K₂ ⟶ L₂) :
       CochainComplex.ι_mapBifunctorShift₁Iso_hom_f _ _ _ _ _ _ _ _ (p + n) (d + n) rfl rfl,
       CochainComplex.ι_mapBifunctorShift₁Iso_hom_f_assoc _ _ _ _ _ _ _ _ (p + n) (d + n) rfl rfl]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance :
     F.map₂CochainComplex.CommShift₂Int where
@@ -344,9 +358,8 @@ noncomputable instance :
       reassoc_of% this, smul_smul]
 
 open CochainComplex in
-noncomputable def map₂CochainComplexObjShiftIso
-    [Preadditive C₁] [HasZeroMorphisms C₂] [Preadditive D]
-    (F : C₁ ⥤ C₂ ⥤ D)
+set_option backward.defeqAttrib.useBackward true in
+noncomputable def map₂CochainComplexObjShiftIso (F : C₁ ⥤ C₂ ⥤ D)
     [F.Additive] [∀ (X₁ : C₁), (F.obj X₁).PreservesZeroMorphisms]
       [∀ (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ), HasMapBifunctor K₁ K₂ F]
     (K₁ : CochainComplex C₁ ℤ) (n : ℤ) :
@@ -354,9 +367,8 @@ noncomputable def map₂CochainComplexObjShiftIso
   NatIso.ofComponents (fun K₂ ↦ mapBifunctorShift₁Iso K₁ K₂ F n)
 
 open CochainComplex in
-noncomputable def map₂CochainComplexFlipObjShiftIso
-    [HasZeroMorphisms C₁] [Preadditive C₂] [Preadditive D]
-    (F : C₁ ⥤ C₂ ⥤ D)
+set_option backward.defeqAttrib.useBackward true in
+noncomputable def map₂CochainComplexFlipObjShiftIso (F : C₁ ⥤ C₂ ⥤ D)
     [F.PreservesZeroMorphisms] [∀ (X₁ : C₁), (F.obj X₁).Additive]
       [∀ (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ), HasMapBifunctor K₁ K₂ F]
     (K₂ : CochainComplex C₂ ℤ) (n : ℤ) :

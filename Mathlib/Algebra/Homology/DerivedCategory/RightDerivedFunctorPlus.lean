@@ -33,11 +33,13 @@ variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C]
 
 open ComplexShape
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isIso_πStupidTrunc_f (K : CochainComplex C ℤ) (n i : ℤ) (hi : i ≤ n) :
     IsIso ((K.πStupidTrunc (embeddingUpIntLE n)).f i) := by
   have ⟨k, hk⟩ := Int.le.dest hi
   exact HomologicalComplex.isIso_πStupidTrunc_f K _ (i := k) (by dsimp; omega)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isIso_ιStupidTrunc_f (K : CochainComplex C ℤ) (n i : ℤ) (hi : n ≤ i) :
     IsIso ((K.ιStupidTrunc (embeddingUpIntGE n)).f i) := by
   have ⟨k, hk⟩ := Int.le.dest hi
@@ -148,9 +150,11 @@ lemma isIso_rightDerivedFunctorPlusUnit_app_of_bounded
   intro i ha hb
   replace hK := hK i ha hb
   change (ObjectProperty.ofNatTrans (F.rightDerivedFunctorPlusUnit)) _ at hK
-  simpa only [← ObjectProperty.prop_map_obj_iff (ObjectProperty.ofNatTrans
-      (F.rightDerivedFunctorPlusUnit)) (HomotopyCategory.Plus.ι C)] using hK
+  simp only [← ObjectProperty.prop_map_obj_iff (ObjectProperty.ofNatTrans
+    (F.rightDerivedFunctorPlusUnit)) (HomotopyCategory.Plus.ι C)] at hK
+  exact hK
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isIso_rightDerivedFunctorPlusUnit_app
     (K : CochainComplex C ℤ) (a : ℤ) [ha : K.IsStrictlyGE a]

@@ -74,6 +74,7 @@ lemma kFlat_iff_preservesQuasiIso (K : CochainComplex A ℤ) :
     (quasiIso A (.up ℤ)).kFlat K ↔
       preservesQuasiIso (tensorLeft K) ∧ preservesQuasiIso (tensorRight K) := Iff.rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : (quasiIso A (.up ℤ)).kFlat.ContainsZero where
   exists_zero := ⟨_, isZero_zero _, by
@@ -150,6 +151,7 @@ instance : (quasiIso A (.up ℤ)).kFlat.ContainsZero where
     rw [kFlat_quotient_obj_iff]
     exact ObjectProperty.prop_zero _⟩
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (quasiIso A (.up ℤ)).kFlat.IsStableUnderShift ℤ where
   isStableUnderShiftBy n := ⟨fun K hK ↦ by
     obtain ⟨K, rfl⟩ := K.quotient_obj_surjective
@@ -203,6 +205,7 @@ instance : (quasiIso A (.up ℤ)).kFlat.IsStableUnderRetracts where
     rw [← HomotopyCategory.kFlat_quotient_obj_iff] at h ⊢
     exact ObjectProperty.prop_of_retract _ (e.map (HomotopyCategory.quotient _ _)) h
 
+set_option backward.defeqAttrib.useBackward true in
 variable (A) in
 instance closedUnderLimitsOfShape_discrete_kFlat (J : Type) [Finite J] :
     (quasiIso A (.up ℤ)).kFlat.IsClosedUnderLimitsOfShape (Discrete J) where
@@ -254,7 +257,8 @@ instance closedUnderLimitsOfShape_discrete_flat (J : Type) [Finite J] :
     rw [← kFlat_single_obj_iff_flat _ 0]
     refine ObjectProperty.prop_of_isLimit _
       (isLimitOfPreserves (single _ (.up ℤ) 0) p.isLimit) (fun j ↦ ?_)
-    simpa only [← kFlat_single_obj_iff_flat _ 0] using p.prop_diag_obj j
+    have := p.prop_diag_obj j
+    rwa [← kFlat_single_obj_iff_flat _ 0] at this
 
 instance : HasFiniteProducts (ObjectProperty.flat (A := A)).FullSubcategory where
   out n := by
@@ -279,7 +283,8 @@ lemma closedUnderColimitsOfShape_flat (J : Type*) [Category J]
     simp only [← kFlat_single_obj_iff_flat _ 0]
     refine ObjectProperty.prop_of_isColimit _
       (isColimitOfPreserves (single _ (.up ℤ) 0) p.isColimit) (fun j ↦ ?_)
-    simpa only [← kFlat_single_obj_iff_flat _ 0] using p.prop_diag_obj j
+    have := p.prop_diag_obj j
+    rwa [← kFlat_single_obj_iff_flat _ 0] at this
 
 lemma kFlat_of_bounded_of_flat (K : CochainComplex A ℤ) (a b : ℤ)
     [K.IsStrictlyGE a] [K.IsStrictlyLE b]
@@ -299,6 +304,7 @@ section
 
 variable (K : CochainComplex A ℤ)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 noncomputable def coconeStupidFiltrationGE :
     Cocone K.stupidFiltrationGE where
@@ -316,6 +322,7 @@ noncomputable def isColimitCoconeStupidFiltrationGE :
 variable [∀ (X : A), PreservesColimitsOfShape ℤ ((curriedTensor A).flip.obj X)]
   [∀ (X : A), PreservesColimitsOfShape ℤ ((curriedTensor A).obj X)]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma kFlat_of_isStrictlyLE_of_flat (b : ℤ) [K.IsStrictlyLE b]
     [HasColimitsOfShape ℤ A] [HasExactColimitsOfShape ℤ A]
     (hK : ∀ n, ObjectProperty.flat (K.X n)) :
@@ -360,6 +367,7 @@ namespace kFlatLocalizerSquare
 
 variable (A)
 
+set_option backward.defeqAttrib.useBackward true in
 def L : LocalizerMorphism (HomologicalComplex.quasiIso A (ComplexShape.up ℤ)).WKFlat
     (HomotopyCategory.quasiIso A (ComplexShape.up ℤ)).WKFlat where
   functor := ObjectProperty.lift _ (ObjectProperty.ι _ ⋙ HomotopyCategory.quotient _ _)
@@ -397,6 +405,7 @@ instance : (L A).functor.Full where
 noncomputable def iso : (T A).functor ⋙ (R A).functor ≅ (L A).functor ⋙ (B A).functor :=
   Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 variable {A} in
 lemma kFlat_cylinder (K : CochainComplex A ℤ)
     (hK : (HomologicalComplex.quasiIso A (.up ℤ)).kFlat K) :
@@ -449,6 +458,7 @@ instance : (R A).functor.EssSurj := by
   dsimp [R]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance : TwoSquare.GuitartExact (iso A).inv :=
   TwoSquare.GuitartExact.quotient_of_nonempty_leftHomotopy (iso A).symm (by
     rintro ⟨K₁, hK₁⟩ K₂ (f₀ f₁ : K₁ ⟶ K₂) hf

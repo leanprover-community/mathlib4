@@ -23,6 +23,7 @@ variable {C₁ C₂ D : Type*} [Category C₁] [Category C₂] [Category D]
   (F : C₁ ⥤ C₂ ⥤ D) [F.PreservesZeroMorphisms]
   [∀ (X₁ : C₁), (F.obj X₁).PreservesZeroMorphisms]
 
+set_option backward.defeqAttrib.useBackward true in
 instance [HasZeroObject C₁] (X₁ : C₁) (K₂ : CochainComplex C₂ ℤ) (x₁ : ℤ) :
     HasMapBifunctor ((single C₁ (ComplexShape.up ℤ) x₁).obj X₁) K₂ F (.up ℤ) :=
   fun n ↦ by
@@ -61,6 +62,7 @@ instance [HasZeroObject C₂] (X₂ : C₂) (K₁ : CochainComplex C₁ ℤ) (x�
   rw [← hasMapBifunctor_flip_iff]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps inv]
 noncomputable def mapBifunctorSingle₁XIso
     [HasZeroObject C₁] (X₁ : C₁) (K₂ : CochainComplex C₂ ℤ) (n : ℤ) :
@@ -88,6 +90,7 @@ noncomputable def mapBifunctorSingle₁XIso
 section
 variable [HasZeroObject C₁] (X₁ : C₁)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps! inv_f]
 noncomputable def mapBifunctorSingle₁Iso (K₂ : CochainComplex C₂ ℤ) :
     mapBifunctor ((single C₁ (.up ℤ) 0).obj X₁) K₂ F (.up ℤ) ≅
@@ -104,6 +107,7 @@ noncomputable def mapBifunctorSingle₁Iso (K₂ : CochainComplex C₂ ℤ) :
     dsimp
     simp only [one_smul])).symm
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma mapBifunctorSingle₁Iso_inv_naturality {K₂ K₂' : CochainComplex C₂ ℤ} (φ : K₂ ⟶ K₂') :
     (mapBifunctorSingle₁Iso F X₁ K₂).inv ≫ mapBifunctorMap (𝟙 _) φ F (.up ℤ) =
@@ -151,6 +155,7 @@ end
 variable [∀ (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ),
     HasMapBifunctor K₁ K₂ F (.up ℤ)]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps! hom_app inv_app]
 noncomputable def map₂HomologicalComplexObjSingleIso
     [HasZeroObject C₁] (X₁ : C₁) :
@@ -159,6 +164,7 @@ noncomputable def map₂HomologicalComplexObjSingleIso
           (F.obj X₁).mapHomologicalComplex (.up ℤ) :=
   NatIso.ofComponents (mapBifunctorSingle₁Iso F X₁)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps! hom_app inv_app]
 noncomputable def map₂HomologicalComplexFlipObjSingleIso
     [HasZeroObject C₂] (X₂ : C₂) :

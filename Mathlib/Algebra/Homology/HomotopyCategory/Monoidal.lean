@@ -78,6 +78,7 @@ noncomputable def bifunctorComp₂₃Iso :
 
 variable {C c}
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma bifunctorComp₁₂Iso_hom_app_app_app (K₁ K₂ K₃ : HomologicalComplex C c) :
     (((bifunctorComp₁₂Iso C c).hom.app K₁).app K₂).app K₃ = 𝟙 _ := by
@@ -89,6 +90,7 @@ lemma bifunctorComp₁₂Iso_hom_app_app_app (K₁ K₂ K₃ : HomologicalComple
   erw [comp_id, (bifunctor C c).map_id]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma bifunctorComp₁₂Iso_inv_app_app_app (K₁ K₂ K₃ : HomologicalComplex C c) :
     (((bifunctorComp₁₂Iso C c).inv.app K₁).app K₂).app K₃ = 𝟙 _ := by
@@ -100,6 +102,7 @@ lemma bifunctorComp₁₂Iso_inv_app_app_app (K₁ K₂ K₃ : HomologicalComple
   erw [id_comp, (bifunctor C c).map_id]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma bifunctorComp₂₃Iso_hom_app_app_app (K₁ K₂ K₃ : HomologicalComplex C c) :
     (((bifunctorComp₂₃Iso C c).hom.app K₁).app K₂).app K₃ = 𝟙 _ := by
@@ -111,6 +114,7 @@ lemma bifunctorComp₂₃Iso_hom_app_app_app (K₁ K₂ K₃ : HomologicalComple
   erw [comp_id, ((bifunctor C c).obj _).map_id]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma bifunctorComp₂₃Iso_inv_app_app_app (K₁ K₂ K₃ : HomologicalComplex C c) :
     (((bifunctorComp₂₃Iso C c).inv.app K₁).app K₂).app K₃ = 𝟙 _ := by
@@ -132,6 +136,7 @@ noncomputable def associator :
       (curriedAssociatorNatIso (HomologicalComplex C c)) ≪≫
         (bifunctorComp₂₃Iso C c).symm)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {C c} in
 @[simp]
@@ -171,6 +176,7 @@ lemma rightUnitor_hom_app (K : HomologicalComplex C c) :
     (rightUnitor C c).hom.app ((quotient C c).obj K) = (quotient C c).map (ρ_ K).hom := by
   apply id_comp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma triangle :
     NatTrans.Triangle (associator C c).hom (unit C c) (leftUnitor C c) (rightUnitor C c) where
   triangle := by
@@ -193,9 +199,8 @@ lemma quotient_map_whiskerLeft (K₁ : HomologicalComplex C c) {K₂ L₂ : Homo
     (quotient C c).map (K₁ ◁ f₂) =
       ((bifunctor C c).obj ((quotient C c).obj K₁)).map ((quotient C c).map f₂) := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-set_option maxHeartbeats 400000 in
--- this is slow
 lemma pentagon :
     NatTrans.Pentagon (associator C c).hom where
   natTrans₁₂_comp_natTrans₂₃_comp_natTrans₃₄ := by

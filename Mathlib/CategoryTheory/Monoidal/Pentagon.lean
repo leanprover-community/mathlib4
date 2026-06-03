@@ -52,26 +52,31 @@ def functor₄ : C ⥤ C ⥤ C ⥤ C ⥤ C :=
 def functor₅ : C ⥤ C ⥤ C ⥤ C ⥤ C :=
   bifunctorComp₁₂ F (bifunctorComp₂₃ F F)
 
+set_option backward.defeqAttrib.useBackward true in
 example (X₁ X₂ X₃ X₄ : C) :
     ((((functor₁ F).obj X₁).obj X₂).obj X₃).obj X₄ =
     (F.obj ((F.obj ((F.obj X₁).obj X₂)).obj X₃)).obj X₄ := by
   dsimp
 
+set_option backward.defeqAttrib.useBackward true in
 example (X₁ X₂ X₃ X₄ : C) :
     ((((functor₂ F).obj X₁).obj X₂).obj X₃).obj X₄ =
     (F.obj ((F.obj X₁).obj (((F.obj X₂).obj X₃)))).obj X₄ := by
   dsimp
 
+set_option backward.defeqAttrib.useBackward true in
 example (X₁ X₂ X₃ X₄ : C) :
     ((((functor₃ F).obj X₁).obj X₂).obj X₃).obj X₄ =
     (F.obj X₁).obj ((F.obj ((F.obj X₂).obj X₃)).obj X₄) := by
   dsimp
 
+set_option backward.defeqAttrib.useBackward true in
 example (X₁ X₂ X₃ X₄ : C) :
     ((((functor₄ F).obj X₁).obj X₂).obj X₃).obj X₄ =
     (F.obj X₁).obj ((F.obj X₂).obj ((F.obj X₃).obj X₄)) := by
   dsimp
 
+set_option backward.defeqAttrib.useBackward true in
 example (X₁ X₂ X₃ X₄ : C) :
     ((((functor₅ F).obj X₁).obj X₂).obj X₃).obj X₄ =
     (F.obj ((F.obj X₁).obj X₂)).obj ((F.obj X₃).obj X₄) := by
@@ -149,9 +154,11 @@ end NatTrans
 
 namespace MonoidalCategory
 
+set_option backward.defeqAttrib.useBackward true in
 lemma pentagon_curriedAssociatorNatIso_hom [MonoidalCategory C] :
     NatTrans.Pentagon (curriedAssociatorNatIso C).hom where
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[implicit_reducible]
 def ofBifunctor (unit : C) (F : C ⥤ C ⥤ C) (α : bifunctorComp₁₂ F F ≅ bifunctorComp₂₃ F F)

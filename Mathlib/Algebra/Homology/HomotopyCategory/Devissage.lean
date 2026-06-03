@@ -73,6 +73,7 @@ namespace HomotopyCategory
 variable (S : ObjectProperty (HomotopyCategory C (ComplexShape.up ℤ))) [S.IsTriangulated]
   [S.IsClosedUnderIsomorphisms]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mem_subcategory_of_strictly_bounded (K : CochainComplex C ℤ) (a b : ℤ)
     [ha : K.IsStrictlyGE a] [hb : K.IsStrictlyLE b]
     (hK : ∀ (n : ℤ), a ≤ n → n ≤ b → S ((singleFunctor C 0).obj (K.X n))) :
@@ -107,7 +108,6 @@ lemma mem_subcategory_of_strictly_bounded (K : CochainComplex C ℤ) (a b : ℤ)
         · dsimp
           refine @h _ (a + 1) b (CochainComplex.isStrictlyGE_of_ge _ _ b (by omega))
             inferInstance (fun m h₁ h₂ => ?_) (by omega)
-          dsimp
           obtain h₃ | rfl := h₂.lt_or_eq
           · apply S.prop_of_isZero
             apply Functor.map_isZero

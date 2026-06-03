@@ -111,6 +111,7 @@ def localizerMorphism :
 
 variable [HasKInjectiveResolutions C]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance (K : CochainComplex C ℤ) :
     IsConnected ((localizerMorphism C).RightResolution K) := by
@@ -135,6 +136,7 @@ instance (K : CochainComplex C ℤ) :
   exact (Zigzag.of_hom g₁).trans ((Zigzag.of_inv f₁).trans
     ((Zigzag.of_hom f₂).trans (Zigzag.of_inv g₂)))
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (localizerMorphism C).arrow.HasRightResolutions := by
   intro f
   obtain ⟨K₁, K₂, f, rfl⟩ := Arrow.mk_surjective f
@@ -271,6 +273,7 @@ lemma isIso_toHomotopyCategory_map_iff {K L : KInjectives C} (f : K ⟶ L) :
   obtain ⟨f, rfl⟩ := ObjectProperty.homMk_surjective f
   exact DerivedCategory.isIso_Q_map_iff_quasiIso C f
 
+set_option backward.defeqAttrib.useBackward true in
 instance (K : CochainComplex C ℤ) [K.IsKInjective] :
     CochainComplex.IsKInjective (HomologicalComplex.cylinder K) := by
   rw [CochainComplex.isKInjective_iff_rightOrthogonal]
@@ -284,6 +287,7 @@ instance (K : CochainComplex C ℤ) [K.IsKInjective] :
 
 variable [HasKInjectiveResolutions C]
 
+set_option backward.defeqAttrib.useBackward true in
 instance : toHomotopyCategory.IsLocalization (KInjectives.quasiIso C) := by
   refine Functor.isLocalization_of_essSurj_of_full_of_exists_cylinders _ _ ?_ ?_
   · intro K L f hf
@@ -302,6 +306,7 @@ instance : toHomotopyCategory.IsLocalization (KInjectives.quasiIso C) := by
     · exact (HomologicalComplex.cylinder.homotopyEquiv K
         (fun n ↦ ⟨n - 1, by simp⟩)).quasiIso_hom
 
+set_option backward.defeqAttrib.useBackward true in
 instance [HasDerivedCategory C] :
     (ι ⋙ DerivedCategory.Q).IsLocalization (quasiIso C) := by
   change (toHomotopyCategory ⋙ (HomotopyCategory.KInjectives.Qh (C := C))).IsLocalization _
@@ -327,6 +332,7 @@ instance [HasDerivedCategory C] :
         (asIso ((HomotopyCategory.quotient _ _).map f))).isIso_hom
     simpa [quasiIso]
 
+set_option backward.defeqAttrib.useBackward true in
 instance [HasDerivedCategory C] :
     ((localizerMorphism C).functor ⋙ DerivedCategory.Q).IsLocalization (quasiIso C) := by
   dsimp

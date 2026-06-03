@@ -31,6 +31,7 @@ def liftObjectProperty {ι : Type*} {c : ComplexShape ι}
   X n := ⟨_, hK n⟩
   d i j := ObjectProperty.homMk (K.d i j)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def liftFunctorObjectProperty {D : Type*} [Category* D] {ι : Type*} {c : ComplexShape ι}
     {V : Type*} [Category* V] [Preadditive V] (P : ObjectProperty V)

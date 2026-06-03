@@ -45,8 +45,7 @@ protected def LeftExtension.unop (E : LeftExtension L.op F.op) : RightExtension 
 
 variable (L F)
 
-set_option maxHeartbeats 400000 in
--- this is slow
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def rightExtensionOpEquivalence :
     (RightExtension L F)ᵒᵖ ≌ LeftExtension L.op F.op where
@@ -61,8 +60,7 @@ def rightExtensionOpEquivalence :
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
-set_option maxHeartbeats 400000 in
--- this is slow
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def leftExtensionOpEquivalence :
     (LeftExtension L F)ᵒᵖ ≌ RightExtension L.op F.op where

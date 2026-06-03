@@ -126,6 +126,7 @@ def δ₃ : Arrow₃ C ⥤ Arrow₂ C where
       τ₁ := φ.τ₁
       τ₂ := φ.τ₂ }
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def δ₃Toδ₂ : (δ₃ : Arrow₃ C ⥤ _) ⟶ δ₂ where
   app D :=
@@ -133,6 +134,7 @@ def δ₃Toδ₂ : (δ₃ : Arrow₃ C ⥤ _) ⟶ δ₂ where
       τ₁ := 𝟙 _
       τ₂ := D.h }
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def δ₂Toδ₁ : (δ₂ : Arrow₃ C ⥤ _) ⟶ δ₁ where
   app D :=
@@ -140,6 +142,7 @@ def δ₂Toδ₁ : (δ₂ : Arrow₃ C ⥤ _) ⟶ δ₁ where
       τ₁ := D.g
       τ₂ := 𝟙 _ }
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def δ₁Toδ₀ : (δ₁ : Arrow₃ C ⥤ _) ⟶ δ₀ where
   app D :=
@@ -147,9 +150,11 @@ def δ₁Toδ₀ : (δ₁ : Arrow₃ C ⥤ _) ⟶ δ₀ where
       τ₁ := 𝟙 _
       τ₂ := 𝟙 _ }
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 def δ₃Toδ₀ := (δ₃Toδ₂ : (δ₃ : Arrow₃ C ⥤ _) ⟶ _) ≫ δ₂Toδ₁ ≫ δ₁Toδ₀
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def fMor : Arrow₃ C ⥤ Arrow C where
   obj D := Arrow.mk D.f
@@ -157,6 +162,7 @@ def fMor : Arrow₃ C ⥤ Arrow C where
     { left := φ.τ₀
       right := φ.τ₁ }
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def gMor : Arrow₃ C ⥤ Arrow C where
   obj D := Arrow.mk D.g
@@ -164,6 +170,7 @@ def gMor : Arrow₃ C ⥤ Arrow C where
     { left := φ.τ₁
       right := φ.τ₂ }
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def hMor : Arrow₃ C ⥤ Arrow C where
   obj D := Arrow.mk D.h
@@ -182,26 +189,32 @@ lemma δ₀_map_δ₃Toδ₂_app_eq_δ₂Toδ₁_app_δ₀_obj (D : Arrow₃ C) 
 lemma δ₀_map_δ₁Toδ₀_app (D : Arrow₃ C) :
   Arrow₂.δ₀.map (Arrow₃.δ₁Toδ₀.app D) = 𝟙 _ := by aesop_cat
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def δ₂δ₂Toδ₃δ₁ : (Arrow₃.δ₂ : Arrow₃ C ⥤ _) ⋙ Arrow₂.δ₂ ⟶ Arrow₃.δ₃ ⋙ Arrow₂.δ₁ where
   app D := Arrow.homMk (𝟙 _) D.g
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def δ₃δ₁Toδ₂δ₁ : (Arrow₃.δ₃ : Arrow₃ C ⥤ _) ⋙ Arrow₂.δ₁ ⟶ Arrow₃.δ₂ ⋙ Arrow₂.δ₁ where
   app D := Arrow.homMk (𝟙 _) D.h
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def δ₃δ₁Toδ₂δ₀ : (Arrow₃.δ₃ : Arrow₃ C ⥤ _) ⋙ Arrow₂.δ₁ ⟶ Arrow₃.δ₂ ⋙ Arrow₂.δ₀ where
   app D := Arrow.homMk D.f D.h
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def δ₃δ₁Toδ₀δ₁ : (Arrow₃.δ₃ : Arrow₃ C ⥤ _) ⋙ Arrow₂.δ₁ ⟶ Arrow₃.δ₀ ⋙ Arrow₂.δ₁ where
   app D := Arrow.homMk D.f D.h
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def δ₃δ₁Toδ₀δ₂ : (Arrow₃.δ₃ : Arrow₃ C ⥤ _) ⋙ Arrow₂.δ₁ ⟶ Arrow₃.δ₀ ⋙ Arrow₂.δ₂ where
   app D := Arrow.homMk D.f (𝟙 _)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def δ₃δ₀Toδ₀δ₁ : (Arrow₃.δ₃ : Arrow₃ C ⥤ _) ⋙ Arrow₂.δ₀ ⟶ Arrow₃.δ₀ ⋙ Arrow₂.δ₁ where
   app D := Arrow.homMk (𝟙 _) D.h

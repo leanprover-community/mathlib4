@@ -65,6 +65,7 @@ variable {ι ι₁ ι₂ ι₃ : Type*} {c₁ : ComplexShape ι₁} {c₂ : Comp
   (K L : HomologicalComplex C c) (φ : K ⟶ L)
   {e₁ : c₁.Embedding c} {e₂ : c₂.Embedding c} {e₃ : c₃.Embedding c} (h : e₁.Subset e₂)
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def restrictionStupidTruncIso [e₁.IsRelIff] [e₂.IsRelIff] :
     (K.stupidTrunc e₂).restriction e₁ ≅ K.restriction e₁ :=
   Hom.isoOfComponents (fun i₁ => K.stupidTruncXIso e₂ (h.f_index i₁)) (fun i₁ j₁ _ => by
@@ -73,6 +74,7 @@ noncomputable def restrictionStupidTruncIso [e₁.IsRelIff] [e₂.IsRelIff] :
       K.restriction_d_eq e₂ (h.f_index i₁) (h.f_index j₁)]
     simp [restrictionXIso])
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {K L} in
 @[reassoc (attr := simp)]
@@ -84,6 +86,7 @@ lemma restrictionStupidTruncIso_hom_naturality [e₁.IsRelIff] [e₂.IsRelIff] :
   rw [extendMap_f _ e₂ (h.f_index i₁), restrictionMap_f' _ e₂ (h.f_index i₁)]
   simp [restrictionXIso]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {K L} in
 @[reassoc (attr := simp)]
@@ -120,6 +123,7 @@ lemma mapStupidTruncLE_naturality [e₁.IsTruncLE] [e₂.IsRelIff] :
     homRestrict_liftExtend]
   apply restrictionStupidTruncIso_hom_naturality
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapStupidTruncLE_fac [e₁.IsTruncLE] [e₂.IsTruncLE] :
@@ -148,6 +152,7 @@ noncomputable def mapStupidTruncLE_trans [e₁.IsTruncLE] [e₂.IsTruncLE] [e₃
   rw [← cancel_epi (K.πStupidTrunc e₃), mapStupidTruncLE_fac_assoc,
     mapStupidTruncLE_fac, mapStupidTruncLE_fac]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {K L} in
 @[reassoc (attr := simp)]
@@ -161,6 +166,7 @@ lemma mapStupidTruncGE_naturality [e₁.IsTruncGE] [e₂.IsRelIff] :
     homRestrict'_descExtend]
   apply restrictionStupidTruncIso_inv_naturality
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapStupidTruncGE_fac [e₁.IsTruncGE] [e₂.IsTruncGE] :
@@ -176,6 +182,7 @@ lemma mapStupidTruncGE_fac [e₁.IsTruncGE] [e₂.IsTruncGE] :
 instance [e₁.IsTruncGE] [e₂.IsTruncGE] : Mono (K.mapStupidTruncGE h) :=
   mono_of_mono_fac (K.mapStupidTruncGE_fac h)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isIso_mapStupidTruncGE_f [e₁.IsTruncGE] [e₂.IsTruncGE] (i : ι)
     (hi : (∃ i₁, e₁.f i₁ = i) ∨ (∀ i₂, e₂.f i₂ ≠ i)) :
     IsIso ((K.mapStupidTruncGE h).f i) := by
@@ -222,6 +229,7 @@ variable {ι ι₁ ι₂ ι₃ : Type*} {c₁ : ComplexShape ι₁} {c₂ : Comp
   {e₁ : c₁.Embedding c} {e₂ : c₂.Embedding c} (h : e₁.Subset e₂)
 variable (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 noncomputable def restrictionStupidTruncNatIso [e₁.IsRelIff] [e₂.IsRelIff] :
     e₂.stupidTruncFunctor C ⋙ e₁.restrictionFunctor C ≅ e₁.restrictionFunctor C :=
@@ -232,6 +240,7 @@ section
 variable [e₁.IsTruncLE] [e₂.IsRelIff] (h : e₁.Subset e₂)
 variable (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 noncomputable def mapStupidTruncLE :
     e₂.stupidTruncFunctor C ⟶ e₁.stupidTruncFunctor C where
@@ -244,6 +253,7 @@ section
 variable [e₁.IsTruncGE] [e₂.IsRelIff] (h : e₁.Subset e₂)
 variable (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 noncomputable def mapStupidTruncGE :
     e₁.stupidTruncFunctor C ⟶ e₂.stupidTruncFunctor C where
@@ -262,12 +272,14 @@ variable {ι' : Type*} {c' : ComplexShape ι'} {α : Type*} [Category α] {ι : 
   [∀ a, (e a).IsTruncLE]
   (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 noncomputable def stupidTruncLEFiltration :
     α ⥤ (HomologicalComplex C c' ⥤ HomologicalComplex C c') where
   obj a := (e a).stupidTruncFunctor C
   map {a a'} φ := (he φ).mapStupidTruncLE C
 
+set_option backward.defeqAttrib.useBackward true in
 instance {a a' : α} (φ : a ⟶ a') (K : HomologicalComplex C c') :
     Epi (((stupidTruncLEFiltration e he C).map φ).app K) := by
   dsimp
@@ -283,19 +295,20 @@ variable {ι' : Type*} {c' : ComplexShape ι'} {α : Type*} [Category α] {ι : 
   [∀ a, (e a).IsTruncGE]
   (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 noncomputable def stupidTruncGEFiltration :
     α ⥤ (HomologicalComplex C c' ⥤ HomologicalComplex C c') where
   obj a := (e a).stupidTruncFunctor C
   map {a a'} φ := (he φ).mapStupidTruncGE C
 
+set_option backward.defeqAttrib.useBackward true in
 instance {a a' : α} (φ : a ⟶ a') (K : HomologicalComplex C c') :
     Mono (((stupidTruncGEFiltration e he C).map φ).app K) := by
   dsimp
   infer_instance
 
 end
-
 
 end Embedding
 

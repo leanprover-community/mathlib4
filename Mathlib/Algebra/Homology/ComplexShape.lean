@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Logic.Relation
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Tactic.ToDual
+public import Mathlib.Tactic.BDSimp
 
 /-!
 # Shapes of homological complexes
@@ -191,10 +192,10 @@ def up (α : Type*) [Add α] [IsRightCancelAdd α] [One α] : ComplexShape α :=
   up' 1
 
 instance (α : Type _) [AddRightCancelSemigroup α] [One α] [DecidableEq α] :
-  DecidableRel (up α).Rel := fun _ _ => by dsimp; infer_instance
+  DecidableRel (up α).Rel := fun _ _ => by bdsimp; infer_instance
 
 instance (α : Type _) [AddRightCancelSemigroup α] [One α] [DecidableEq α] :
-  DecidableRel (down α).Rel := fun _ _ => by dsimp; infer_instance
+  DecidableRel (down α).Rel := fun _ _ => by bdsimp; infer_instance
 
 @[to_dual (reorder := i j) down_mk]
 theorem up_mk {α : Type*} [Add α] [IsRightCancelAdd α] [One α] (i j : α) (h : i + 1 = j) :
@@ -209,6 +210,7 @@ namespace ComplexShape
 
 variable (α : Type*) [AddRightCancelSemigroup α] [DecidableEq α]
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_dual instDecidableRelRelDown']
 instance instDecidableRelRelUp' (a : α) : DecidableRel (ComplexShape.up' a).Rel :=
   fun _ _ => by dsimp; infer_instance

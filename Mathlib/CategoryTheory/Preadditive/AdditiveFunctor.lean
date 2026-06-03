@@ -157,12 +157,14 @@ instance : (Functor.whiskeringRight C D E).Additive where
 omit [Preadditive C] [Preadditive D] in
 instance (F : C ⥤ D) : ((Functor.whiskeringLeft C D E).obj F).Additive where
 
+set_option backward.defeqAttrib.useBackward true in
 omit [Preadditive D] in
 instance {E' : Type*} [Category* E'] [Preadditive E'] (G : C ⥤ D ⥤ E) (F : E ⥤ E')
     [F.Additive] [G.Additive] : ((Functor.postcompose₂.obj F).obj G).Additive := by
   dsimp [Functor.postcompose₂]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 universe w in
 instance [HasCoproducts.{w} C] : (sigmaConst.{w} (C := C)).Additive where
@@ -239,6 +241,7 @@ section
 variable {J : Type _} [Fintype J] {X : J → C} (c : Fan X) (hc : IsLimit c)
   [DecidableEq J]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def biconeOfLimitCone : Bicone X where
   pt := c.pt
@@ -249,6 +252,7 @@ def biconeOfLimitCone : Bicone X where
     dsimp
     congr
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 def isBilimitBiconeOfLimitCone : (biconeOfLimitCone c hc).IsBilimit :=
   isBilimitOfTotal _ (hc.hom_ext (fun ⟨j⟩ => by
@@ -269,6 +273,7 @@ section
 variable {J : Type _} [Fintype J] {X : J → C} (c : Cofan X) (hc : IsColimit c)
   [DecidableEq J]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def biconeOfColimitCocone : Bicone X where
   pt := c.pt
@@ -302,6 +307,7 @@ namespace Equivalence
 
 variable {C D : Type*} [Category* C] [Category* D] [Preadditive C] [Preadditive D]
 
+set_option backward.defeqAttrib.useBackward true in
 instance inverse_additive (e : C ≌ D) [e.functor.Additive] : e.inverse.Additive where
   map_add {f g} := e.functor.map_injective (by simp)
 

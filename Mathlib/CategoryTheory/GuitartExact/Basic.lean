@@ -48,6 +48,8 @@ derived functors.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₁' v₂' v₃' v₄' u₁ u₂ u₃ u₄ u₁' u₂' u₃' u₄'
@@ -324,10 +326,16 @@ namespace JRightwardsProdEquivalence
 @[simp]
 def functorObj (X : StructuredArrowRightwards (w.prod w') g) :
     (StructuredArrowRightwards w g.1) × (StructuredArrowRightwards w' g.2) :=
-  ⟨StructuredArrowRightwards.mk w g.1 _ X.hom.left.1 X.right.hom.1
-      (by simpa using congr_arg _root_.Prod.fst X.hom.w),
-    StructuredArrowRightwards.mk w' g.2 _ X.hom.left.2 X.right.hom.2
-      (by simpa using congr_arg _root_.Prod.snd X.hom.w)⟩
+  ⟨StructuredArrowRightwards.mk w g.1 _ X.hom.left.1 X.right.hom.1 (by
+      have := congr_arg _root_.Prod.fst X.hom.w
+      dsimp at this
+      simp only [comp_id] at this
+      exact this),
+    StructuredArrowRightwards.mk w' g.2 _ X.hom.left.2 X.right.hom.2 (by
+      have := congr_arg _root_.Prod.snd X.hom.w
+      dsimp at this
+      simp only [comp_id] at this
+      exact this)⟩
 
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
@@ -357,8 +365,14 @@ def inverseObj (X : (StructuredArrowRightwards w g.1) × (StructuredArrowRightwa
     ⟨X.1.hom.left, X.2.hom.left⟩ ⟨X.1.right.hom, X.2.right.hom⟩ (by
       dsimp
       ext
-      · simpa using X.1.hom.w
-      · simpa using X.2.hom.w)
+      · have := X.1.hom.w
+        dsimp at this
+        simp only [comp_id] at this
+        exact this
+      · have := X.2.hom.w
+        dsimp at this
+        simp only [comp_id] at this
+        exact this)
 
 @[simps]
 def inverse : (StructuredArrowRightwards w g.1) × (StructuredArrowRightwards w' g.2) ⥤
@@ -432,7 +446,7 @@ instance guitartExact_id (F : C₁ ⥤ C₂) :
   let X₀ : Z := StructuredArrow.mk (Y := CostructuredArrow.mk g) (CostructuredArrow.homMk (𝟙 _))
   have φ : ∀ (X : Z), X₀ ⟶ X := fun X =>
     StructuredArrow.homMk (CostructuredArrow.homMk X.hom.left
-      (by simpa using CostructuredArrow.w X.hom))
+      (by simpa using! CostructuredArrow.w X.hom))
   have : Nonempty Z := ⟨X₀⟩
   apply zigzag_isConnected
   intro X Y

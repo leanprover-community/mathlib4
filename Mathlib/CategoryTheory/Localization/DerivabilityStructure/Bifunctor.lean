@@ -50,6 +50,7 @@ variable {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
 class PrecompLocalizerMorphismsInverts : Prop where
   isInvertedBy : (W₁'.prod W₂').IsInvertedBy ((Φ₁.functor.prod Φ₂.functor) ⋙ F.uncurry)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma precompLocalizerMorphismsInverts_iff [W₁'.ContainsIdentities] [W₂'.ContainsIdentities] :
     PrecompLocalizerMorphismsInverts F Φ₁ Φ₂ ↔
         (∀ ⦃X₁ Y₁ : C₁'⦄ (f₁ : X₁ ⟶ Y₁) (X₂ : C₂') (_ : W₁' f₁),
@@ -94,6 +95,7 @@ def toWhiskeringLeft₂Eval₂ {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂}
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def whiskeringLeft₂Equiv (F : Bifunctor C₁ C₂ H) (G : (D₁ × D₂) ⥤ H)
@@ -153,6 +155,7 @@ section
 variable [Φ₁.IsRightDerivabilityStructure] [Φ₂.IsRightDerivabilityStructure]
 variable {W₁ W₂}
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isIso_app_app_of_isRightDerivedBifunctor
     [W₁'.ContainsIdentities] [W₂'.ContainsIdentities]
     [hF : PrecompLocalizerMorphismsInverts F Φ₁ Φ₂] (X₁' : C₁') (X₂' : C₂') :
@@ -225,6 +228,7 @@ lemma hasRightDerivedBifunctor_of_precompLocalizerMorphismsInverts
     HasRightDerivedBifunctor F W₁ W₂ :=
   (Φ₁.prod Φ₂).hasRightDerivedFunctor F.uncurry hF.isInvertedBy
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isInverted₁_of_precompLocalizerMorphismsInverts (X₁ : C₁') [W₁'.ContainsIdentities] :
     W₂'.IsInvertedBy (Φ₂.functor ⋙ F.obj (Φ₁.functor.obj X₁)) := by
   intro X₂ Y₂ f₂ hf₂
@@ -237,6 +241,7 @@ lemma hasRightDerivedFunctor₁_of_precompLocalizerMorphismsInverts
     (F.obj (Φ₁.functor.obj X₁)).HasRightDerivedFunctor W₂ :=
   Φ₂.hasRightDerivedFunctor _ (isInverted₁_of_precompLocalizerMorphismsInverts F Φ₁ Φ₂ X₁)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isInverted₂_of_precompLocalizerMorphismsInverts [W₂'.ContainsIdentities] (X₂ : C₂') :
     W₁'.IsInvertedBy (Φ₁.functor ⋙ F.flip.obj (Φ₂.functor.obj X₂)) := by
   intro X₁ Y₁ f₁ hf₁

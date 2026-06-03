@@ -35,6 +35,7 @@ section
 variable (C : Type*) [Category* C] {ι : Type*} (c : ComplexShape ι) [HasZeroMorphisms C]
   [CategoryWithHomology C]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma HomologicalComplex.homologyFunctor_inverts_quasiIso (i : ι) :
     (quasiIso C c).IsInvertedBy (homologyFunctor C c i) := fun _ _ _ hf => by
   rw [mem_quasiIso_iff] at hf
@@ -66,6 +67,7 @@ noncomputable def homologyFunctorFactors (i : ι) :
 
 variable {C c}
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isIso_Q_map_iff_mem_quasiIso {K L : HomologicalComplex C c} (f : K ⟶ L) :
     IsIso (Q.map f) ↔ HomologicalComplex.quasiIso C c f := by
   constructor
@@ -118,6 +120,7 @@ instance : (quasiIso C c).IsMultiplicative where
     simp only [Functor.map_comp]
     infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 lemma quotient_map_mem_quasiIso_iff {K L : HomologicalComplex C c} (f : K ⟶ L) :
     quasiIso C c ((quotient C c).map f) ↔ HomologicalComplex.quasiIso C c f := by
   have eq := fun (i : ι) => NatIso.isIso_map_iff (homologyFunctorFactors C c i) f
@@ -410,6 +413,7 @@ noncomputable instance :
 
 variable {c}
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma mapHomologicalComplexUpToQuasiIsoFactorsh_hom_app (K : HomologicalComplex C c) :
     (F.mapHomologicalComplexUpToQuasiIsoFactorsh c).hom.app

@@ -23,6 +23,7 @@ namespace Functor
 variable {C₁ C₂ D₁ D₂ H : Type*} [Category C₁] [Category C₂]
   [Category D₁] [Category D₂] [Category H]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def whiskeringLeft₂Equiv {F : D₁ ⥤ D₂ ⥤ H} {G : C₁ ⥤ C₂ ⥤ H}
     {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂} :
@@ -65,7 +66,7 @@ abbrev IsLeftDerivedFunctor₂ : Prop :=
 section
 
 variable (F L₁ L₂)
-variable [HasLeftDerivedFunctor₂ F W₁ W₂] [W₁.ContainsIdentities] [W₂.ContainsIdentities]
+variable [HasLeftDerivedFunctor₂ F W₁ W₂]
 
 noncomputable def leftDerived₂ : D₁ ⥤ D₂ ⥤ H :=
     curry.obj ((uncurry.obj F).totalLeftDerived (L₁.prod L₂) (W₁.prod W₂))
@@ -75,6 +76,7 @@ noncomputable def leftDerivedCounit₂ :
   whiskeringLeft₂Equiv.symm (whiskerLeft _ (currying.counitIso.hom.app _) ≫
     ((uncurry.obj F).totalLeftDerivedCounit (L₁.prod L₂) (W₁.prod W₂)))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : (leftDerived₂ F L₁ L₂ W₁ W₂).IsLeftDerivedFunctor₂
     (leftDerivedCounit₂ F L₁ L₂ W₁ W₂) W₁ W₂ := by
@@ -99,6 +101,7 @@ noncomputable def leftDerived₂Lift : G ⟶ LF :=
       (whiskeringLeft₂Equiv α) (W₁.prod W₂) (uncurry.obj G)
       (whiskeringLeft₂Equiv β))
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma leftDerived₂_fac_app_app (X₁ : C₁) (X₂ : C₂) :
     ((leftDerived₂Lift LF α W₁ W₂ G β).app (L₁.obj X₁)).app (L₂.obj X₂) ≫
@@ -108,6 +111,7 @@ lemma leftDerived₂_fac_app_app (X₁ : C₁) (X₂ : C₂) :
       (whiskeringLeft₂Equiv α) (W₁.prod W₂) (uncurry.obj G)
       (whiskeringLeft₂Equiv β) (X₁, X₂)
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma leftDerived₂_fac :
     (((whiskeringLeft₂ H).obj L₁).obj L₂).map (leftDerived₂Lift LF α W₁ W₂ G β) ≫ α = β := by

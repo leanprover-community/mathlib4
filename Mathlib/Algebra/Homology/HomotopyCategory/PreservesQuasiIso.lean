@@ -23,6 +23,7 @@ variable {C₁ C₂ : Type*} [Category C₁] [Category C₂] [Abelian C₁] [Abe
   (F : HomotopyCategory C₁ (.up ℤ) ⥤ HomotopyCategory C₂ (.up ℤ))
   [F.CommShift ℤ] [F.IsTriangulated]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma preservesQuasiIso_iff_preserves_acyclic :
     preservesQuasiIso F ↔
       subcategoryAcyclic C₁ ≤ (subcategoryAcyclic C₂).inverseImage F := by

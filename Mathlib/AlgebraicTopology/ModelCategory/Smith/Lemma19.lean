@@ -85,6 +85,7 @@ lemma J_le_inter [W.HasTwoOutOfThreeProperty] :
   simp only [le_inf_iff]
   exact ⟨J_le_llp_rlp hIW₃, J_le hIW₁ hIW₃⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma condition {i w : Arrow C} (sq : i ⟶ w) (hi : I i.hom) (hw : W w.hom) :
     ∃ (j : Arrow C) (_ : J hIW₃ j.hom) (a : i ⟶ j) (b : j ⟶ w), a ≫ b = sq := by

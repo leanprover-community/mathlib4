@@ -44,6 +44,7 @@ def whiskeringLeft₄ObjObjObjObj (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) 
   (whiskeringRight _ _ _).obj ((((whiskeringLeft₃ E).obj F₂).obj F₃).obj F₄) ⋙
     (whiskeringLeft C₁ D₁ _).obj F₁
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `whiskeringLeft₄`. -/
 @[simps]
 def whiskeringLeft₄ObjObjObjMap (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) (F₃ : C₃ ⥤ D₃)
@@ -60,6 +61,7 @@ def whiskeringLeft₄ObjObjObj (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) (F�
   obj F₄ := whiskeringLeft₄ObjObjObjObj E F₁ F₂ F₃ F₄
   map τ₄ := whiskeringLeft₄ObjObjObjMap E F₁ F₂ F₃ τ₄
 
+set_option backward.defeqAttrib.useBackward true in
 variable (C₄ D₄) in
 /-- Auxiliary definition for `whiskeringLeft₃`. -/
 @[simps]
@@ -76,6 +78,7 @@ def whiskeringLeft₄ObjObj (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) :
   obj F₃ := whiskeringLeft₄ObjObjObj C₄ D₄ E F₁ F₂ F₃
   map τ₃ := whiskeringLeft₄ObjObjMap C₄ D₄ E F₁ F₂ τ₃
 
+set_option backward.defeqAttrib.useBackward true in
 variable (C₃ C₄ D₃ D₄) in
 /-- Auxiliary definition for `whiskeringLeft₃`. -/
 @[simps]
@@ -96,8 +99,7 @@ def whiskeringLeft₄Obj (F₁ : C₁ ⥤ D₁) :
   obj F₂ := whiskeringLeft₄ObjObj C₃ C₄ D₃ D₄ E F₁ F₂
   map τ₂ := whiskeringLeft₄ObjMap C₃ C₄ D₃ D₄ E F₁ τ₂
 
-set_option maxHeartbeats 800000 in
--- this is slow
+set_option backward.defeqAttrib.useBackward true in
 variable (C₂ C₃ C₄ D₂ D₃ D₄) in
 /-- Auxiliary definition for `whiskeringLeft₄`. -/
 @[simps]
@@ -172,6 +174,7 @@ lemma curry₄_map_app_app_app_app {F G : C₁ × C₂ × C₃ × C₄ ⥤ E} (f
     (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄) :
     ((((curry₄.map f).app X₁).app X₂).app X₃).app X₄ = f.app ⟨X₁, X₂, X₃, X₄⟩ := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma currying₄_unitIso_hom_app_app_app_app_app (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E)
@@ -179,6 +182,7 @@ lemma currying₄_unitIso_hom_app_app_app_app_app (F : C₁ ⥤ C₂ ⥤ C₃ �
     ((((currying₄.unitIso.hom.app F).app X₁).app X₂).app X₃).app X₄ = 𝟙 _ := by
   simp [currying₄, Equivalence.unit]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma currying₄_unitIso_inv_app_app_app_app_app (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E)

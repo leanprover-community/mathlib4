@@ -45,11 +45,13 @@ noncomputable def bicomplexFunctor :
     CochainComplex A ℤ ⥤ HomologicalComplex₂ C (ComplexShape.up ℤ) (ComplexShape.up ℤ) :=
       Λ.cochainComplexFunctor.mapHomologicalComplex (ComplexShape.up ℤ)
 
+set_option backward.defeqAttrib.useBackward true in
 instance (K : CochainComplex A ℤ) (i : ℤ) :
     CochainComplex.IsStrictlyLE ((Λ.bicomplexFunctor.obj K).X i) 0 := by
   dsimp [bicomplexFunctor]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance (K : CochainComplex A ℤ) (i : ℤ) :
     IsStrictlyLE (((bicomplexFunctor Λ ⋙
       Functor.mapHomologicalComplex₂ ι (ComplexShape.up ℤ) (ComplexShape.up ℤ)).obj K).X i) 0 := by
@@ -67,12 +69,14 @@ instance (K : CochainComplex A ℤ) (i : ℤ) [K.IsStrictlyLE i] :
   dsimp [bicomplexFunctor, Functor.mapHomologicalComplex₂]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance (K : CochainComplex A ℤ) (i : ℤ) [K.IsStrictlyLE i] :
     IsStrictlyLE ((bicomplexFunctor Λ ⋙
       Functor.mapHomologicalComplex₂ ι (ComplexShape.up ℤ) (ComplexShape.up ℤ)).obj K) i := by
   dsimp
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance (K : CochainComplex A ℤ) (i : ℤ) :
     CochainComplex.IsStrictlyLE (((ι.mapHomologicalComplex₂ _ _).obj
       (Λ.bicomplexFunctor.obj K)).X i) 0 := by
@@ -92,12 +96,14 @@ instance (K : CochainComplex.Minus A) :
   obtain ⟨i, hi⟩ := K.2
   exact HomologicalComplex₂.hasTotal_of_isStrictlyLE _ i 0
 
+set_option backward.defeqAttrib.useBackward true in
 instance (K : CochainComplex.Minus A) :
     ((Λ.bicomplexFunctor ⋙ ι.mapHomologicalComplex₂ _ _).obj K.obj).HasTotal
       (ComplexShape.up ℤ) := by
   dsimp
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance (K : CochainComplex C ℤ) (i : ℤ) :
     IsStrictlyLE (((HomologicalComplex₂.singleRow C
       (ComplexShape.up ℤ) (ComplexShape.up ℤ) 0).obj K).X i) 0 := by
@@ -120,6 +126,7 @@ instance (K : CochainComplex C ℤ) :
     obtain rfl : p = i := by simpa using hpq
     exact h rfl)
 
+set_option backward.defeqAttrib.useBackward true in
 instance (K : CochainComplex A ℤ) (i : ℤ) [K.IsStrictlyLE i]
     [(Λ.bicomplexFunctor.obj K).HasTotal (ComplexShape.up ℤ)] :
     CochainComplex.IsStrictlyLE ((Λ.bicomplexFunctor.obj K).total (ComplexShape.up ℤ)) i where
@@ -153,6 +160,7 @@ noncomputable def totalπ' :
         (ComplexShape.up ℤ) (ComplexShape.up ℤ) 0).obj K.obj).total (ComplexShape.up ℤ) :=
   HomologicalComplex₂.total.map (Λ.bicomplexπ.app K.obj) (ComplexShape.up ℤ)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 omit [HasFiniteCoproducts C] in
 variable {K L} in
@@ -185,6 +193,7 @@ lemma totalπ'_naturality :
     apply HomologicalComplex₂.isZero_singleRow_X_X
     exact hy
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : QuasiIso (Λ.totalπ' K) := by
   obtain ⟨i, hi⟩ := K.2
@@ -242,6 +251,7 @@ instance (K : CochainComplex.Minus A) :
     QuasiIso (Λ.minusResolutionNatTrans.app K).hom :=
   Λ.quasiIso_minusResolutionNatTrans_app K
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance (K : Minus A) :
     QuasiIso ((Functor.whiskerRight Λ.minusResolutionNatTrans (Minus.ι A)).app K) := by

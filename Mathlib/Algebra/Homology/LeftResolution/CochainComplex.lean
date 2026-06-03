@@ -53,6 +53,7 @@ noncomputable def leftResolutionπ :
     whiskerRight (filtrationLEMinusFunctorCompWhiskeringRightObjιIso A).hom _ ≫
     (filtrationLEFunctorCompColimIso A).hom
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance quasiIso_leftResolutionπ_app [HasExactColimitsOfShape ℤ A]
     [∀ K, QuasiIso (α.app K)] (K : CochainComplex A ℤ) :

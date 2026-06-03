@@ -138,10 +138,12 @@ def abutmentFiltrationShortComplex :
   ShortComplex.mk _ _
     (X.abutmentFiltrationMap_abutmentFiltrationToPageInfinity n₀ n₁ n₂ hn₁ hn₂ i j hij)
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Mono (X.abutmentFiltrationShortComplex n₀ n₁ n₂ hn₁ hn₂ i j hij).f := by
   dsimp
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Epi (X.abutmentFiltrationShortComplex n₀ n₁ n₂ hn₁ hn₂ i j hij).g := by
   dsimp
   infer_instance
@@ -223,7 +225,7 @@ lemma mapWithBot_pred_le_i₂ (n : σ) (i : WithBot (α n)) (j : α n) (hij : s.
   · apply hdata.i₂_monotone
     rw [← WithBot.coe_le_coe]
     change _ = WithBot.some i at hij
-    simpa only [← hij] using s.pred'_le n j
+    simpa only [← hij] using! s.pred'_le n j
 
 end CompatibleWithConvergenceStripes
 
@@ -282,6 +284,7 @@ def homologicalStripesNat :
     ext1
     simpa using h
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def coreE₂HomologicalNatCompatibility :
     coreE₂HomologicalNat.CompatibleWithConvergenceStripes
@@ -531,6 +534,7 @@ lemma π_pageInfinityIso_hom_iso₃_hom :
   · simp [iso₃, dif_pos h]
   · simp [iso₃, dif_neg h]
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def iso : composableArrows X hdata n i j hij pq hpq ≅
     (X.abutmentFiltrationShortComplex (hdata.deg n - 1) (hdata.deg n) (hdata.deg n + 1)
       (by simp) (by simp) _ _ (hdata.mapWithBot_pred_le_i₂ n i j hij)).toComposableArrows :=
@@ -590,6 +594,7 @@ instance (X : SpectralObject C EInt) [X.IsFirstQuadrant] (n : ℤ) :
     | bot => simp at hij
     | coe i => exact (coreE₂Cohomological_i₁_eq_i₂ n i j hij pq hpq).symm
 
+set_option backward.defeqAttrib.useBackward true in
 instance (X : SpectralObject C EInt) [X.IsFirstQuadrant] (n : ℕ) :
     X.ConvergesInDegree coreE₂CohomologicalNatCompatibility n where
   isZero₁ := ⟨0, fun j hj => by
@@ -641,6 +646,7 @@ instance (X : SpectralObject C EInt) [X.IsFirstQuadrant] (n : ℕ) :
         rw [← hpq]
         rfl
 
+set_option backward.defeqAttrib.useBackward true in
 instance (X : SpectralObject C EInt) [X.IsThirdQuadrant] (n : ℕ) :
     X.ConvergesInDegree coreE₂HomologicalNatCompatibility n where
   isZero₁ := ⟨0, fun j hj => by
@@ -659,6 +665,7 @@ instance (X : SpectralObject C EInt) [X.IsThirdQuadrant] (n : ℕ) :
     · obtain rfl : j = i := by simpa using hij
       rw [← hpq]
       dsimp
+      congr
       lia
   isIso₂ := by
     rintro i ⟨j, hj⟩ hij pq hpq _ _ _ rfl rfl rfl h

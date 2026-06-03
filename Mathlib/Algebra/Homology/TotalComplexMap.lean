@@ -83,6 +83,7 @@ lemma mapHomologicalComplex₂_d₁ :
     · simp [d₁_eq_zero' _ _ h₁ _ _ h₂]
   · simp [d₁_eq_zero _ _ _ _ _ h₁]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapHomologicalComplex₂_d₂ :
@@ -96,6 +97,7 @@ lemma mapHomologicalComplex₂_d₂ :
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {K L} in
 @[reassoc (attr := simp)]
@@ -120,6 +122,7 @@ noncomputable def mapTotalIso : ((F.mapHomologicalComplex₂ c₁ c₂).obj K).t
 
 variable {K L}
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma mapTotalIso_hom_naturality :
     total.map ((F.mapHomologicalComplex₂ c₁ c₂).map φ) c ≫ (mapTotalIso F L c).hom =

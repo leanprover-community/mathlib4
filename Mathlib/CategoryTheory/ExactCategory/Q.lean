@@ -65,14 +65,14 @@ lemma Hom.mk'_surjective {X Y : Q C} (φ : Hom X Y) : ∃ (Z : C) (j : Z ⟶ X.o
     (_ : AdmissibleMono i) (_ : AdmissibleEpi j), φ = Hom.mk' _ _ j i  := by
   refine ⟨_ , φ.j, φ.i.arrow, inferInstance, inferInstance, ?_⟩
   refine Hom.ext _ _ (Subobject.isoOfEq _ _ (Subobject.mk_arrow φ.i).symm) ?_ ?_
-  · dsimp
-    simp
+  · simp
   · dsimp [mk']
     simp only [← assoc]
     refine (Category.id_comp φ.j).symm.trans ?_
     congr
     aesop_cat
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Hom.ext' -/
 lemma Hom.ext' {X Y : Q C} {Z₁ Z₂ : C}
     (j₁ : Z₁ ⟶ X.obj) (i₁ : Z₁ ⟶ Y.obj) [AdmissibleMono i₁] [AdmissibleEpi j₁]
@@ -120,8 +120,9 @@ noncomputable instance : Category (Q C) where
   comp := Hom.comp
   id_comp {X Y} f := by
     obtain ⟨Z, j, i, hj, hi, rfl⟩ := Hom.mk'_surjective f
-    simpa only [comp_id, id_comp]
-      using (Hom.comp_eq (𝟙 X.obj) (𝟙 X.obj) j i j (𝟙 Z) (IsPullback.of_vert_isIso ⟨by simp⟩))
+    have := Hom.comp_eq (𝟙 X.obj) (𝟙 X.obj) j i j (𝟙 Z) (IsPullback.of_vert_isIso ⟨by simp⟩)
+    simp only [comp_id, id_comp] at this
+    exact this
   comp_id {X Y} f := by
     obtain ⟨Z, j, i, hj, hi, rfl⟩ := Hom.mk'_surjective f
     change Hom.comp _ (Hom.mk' _ _ _ _) = _

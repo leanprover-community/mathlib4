@@ -28,6 +28,7 @@ namespace MorphismProperty
 
 variable {C₁ C₂ D : Type*} [Category C₁] [Category C₂] [Category D]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma prod_isInvertedBy_iff (W₁ : MorphismProperty C₁)
     (W₂ : MorphismProperty C₂) [W₁.ContainsIdentities] [W₂.ContainsIdentities]
     (F : C₁ × C₂ ⥤ D) :
@@ -64,6 +65,7 @@ abbrev Derives₂ : Prop :=
 
 variable [W₁₀.ContainsIdentities] [W₂₀.ContainsIdentities]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma derives₂_iff :
     Derives₂ Φ₁ Φ₂ F ↔
       (∀ (X₂₀ : C₂₀), W₁₀.IsInvertedBy (Φ₁.functor ⋙ F.flip.obj (Φ₂.functor.obj X₂₀))) ∧

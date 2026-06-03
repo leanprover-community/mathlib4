@@ -58,6 +58,7 @@ noncomputable def inv :
   (shiftFunctorCompIsoId C (-n) n (neg_add_cancel n)).inv.app ((t.truncLE a).obj (X⟦n⟧)) ≫
     (inv' t X h)⟦n⟧'
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inv_ι : inv t X h ≫ ((t.truncLEι a').app X)⟦n⟧' = (t.truncLEι a).app (X⟦n⟧) := by
@@ -81,6 +82,7 @@ lemma shift_inv :
   dsimp
   rw [← Functor.map_comp_assoc, inv_ι]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
 noncomputable def iso : ((t.truncLE a').obj X)⟦n⟧ ≅ (t.truncLE a).obj (X⟦n⟧) where
@@ -135,6 +137,7 @@ noncomputable def inv :
   (inv' t X h)⟦n⟧' ≫ (shiftFunctorCompIsoId C (-n) n (neg_add_cancel n)).hom.app
     ((t.truncGE a).obj (X⟦n⟧))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π_inv :
@@ -159,6 +162,7 @@ lemma shift_inv :
   dsimp
   erw [← Functor.map_comp, π_inv]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
 noncomputable def iso : (t.truncGE a).obj (X⟦n⟧) ≅ ((t.truncGE a').obj X)⟦n⟧ where
@@ -184,6 +188,7 @@ end ShiftTruncGE
 
 variable (n a a' b b')
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def shiftTruncLE :
     t.truncLE a' ⋙ shiftFunctor C n ≅ shiftFunctor C n ⋙ t.truncLE a :=
@@ -201,6 +206,7 @@ lemma shiftTruncLE_hom_app_ι :
       ((t.truncLEι a').app X)⟦n⟧' := by
   simp [shiftTruncLE]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def shiftTruncGE :
     t.truncGE a' ⋙ shiftFunctor C n ≅ shiftFunctor C n ⋙ t.truncGE a :=

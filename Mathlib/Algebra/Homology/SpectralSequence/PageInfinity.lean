@@ -613,6 +613,7 @@ instance (r : ℤ) [E.HasEdgeMonoAtFrom pq r] :
   dsimp [edgeMono]
   split_ifs <;> infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma edgeMono_edgeMonoSteps (r r' : ℤ) (h : r ≤ r' := by lia)
     [E.HasEdgeMonoAtFrom pq r] [E.HasEdgeMonoAtFrom pq r'] :
@@ -638,6 +639,7 @@ lemma edgeMono_edgeMonoSteps (r r' : ℤ) (h : r ≤ r' := by lia)
       assoc, assoc, assoc, edgeIsoSteps_hom, edgeMonoSteps_edgeEpiSteps,
       comp_id, edgeEpiSteps_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 -- priority less than that of pageInfinityIso_hom_edgeMonoSteps
 /-- `(E.pageInfinityIso pq r').hom ≫ E.edgeMonoSteps pq r r' h = E.edgeMono pq r`. -/
 @[reassoc (attr := simp 900)]
@@ -683,6 +685,7 @@ instance (r : ℤ) [E.HasEdgeEpiAtFrom pq r] :
   dsimp [edgeEpi]
   split_ifs <;> infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma edgeEpiSteps_edgeEpi (r r' : ℤ) (h : r ≤ r')
     [E.HasEdgeEpiAtFrom pq r] [E.HasEdgeEpiAtFrom pq r'] :
@@ -703,6 +706,7 @@ lemma edgeEpiSteps_edgeEpi (r r' : ℤ) (h : r ≤ r')
     have : E.HasEdgeMonoAtFrom pq r := ⟨by have := E.rToMin_LE_rMin pq; lia⟩
     simp [← cancel_epi (E.edgeIsoSteps pq r r' h).inv]
 
+set_option backward.defeqAttrib.useBackward true in
 -- priority less than that of edgeEpiSteps_pageInfinityIso_inv
 /-- `E.edgeEpiSteps pq r r' h ≫ (E.pageInfinityIso pq r').inv = E.edgeEpi pq r`. -/
 @[reassoc (attr := simp 900)]

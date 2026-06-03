@@ -72,8 +72,8 @@ lemma isIso_iff_bijective [(forget D).ReflectsIsomorphisms] :
     rwa [CategoryTheory.isIso_iff_bijective] at this
   · intro hφ
     have : ∀ (X : Cᵒᵖ), IsIso (φ.1.app X) := fun X => by
-      have : IsIso ((forget D).map (φ.hom.app X)) := by
-        simpa only [CategoryTheory.isIso_iff_bijective] using hφ X
+      have : IsIso ((forget D).map (φ.hom.app X)) :=
+        (CategoryTheory.isIso_iff_bijective _).2 (hφ X)
       apply isIso_of_reflects_iso _ (forget D)
     apply NatIso.isIso_of_isIso_app
 

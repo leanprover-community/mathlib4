@@ -69,6 +69,7 @@ section
 
 variable [h : F.RightTExact t₁ t₂]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def truncGEComparison (n : ℤ) : F ⋙ t₂.truncGE n ⟶ t₁.truncGE n ⋙ F where
   app X :=
@@ -86,6 +87,7 @@ noncomputable def truncGEComparison (n : ℤ) : F ⋙ t₂.truncGE n ⟶ t₁.tr
     rw [TStructure.π_descTruncGE, ← F.map_comp, ← F.map_comp, ← NatTrans.naturality]
     rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma truncGEComparison_app_fac (X : C) (n : ℤ) :
     (t₂.truncGEπ n).app (F.obj X) ≫ (truncGEComparison F t₁ t₂ n).app X =
@@ -100,6 +102,7 @@ section
 
 variable [h : F.LeftTExact t₁ t₂]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def truncLEComparison (n : ℤ) : t₁.truncLE n ⋙ F ⟶ F ⋙ t₂.truncLE n where
   app X :=
@@ -114,6 +117,7 @@ noncomputable def truncLEComparison (n : ℤ) : t₁.truncLE n ⋙ F ⟶ F ⋙ t
     simp only [Category.assoc, TStructure.liftTruncLE_ι, NatTrans.naturality, id_obj, id_map,
       TStructure.liftTruncLE_ι_assoc, ← F.map_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma truncLEComparison_app_fac (X : C) (n : ℤ) :
     (truncLEComparison F t₁ t₂ n).app X ≫ (t₂.truncLEι n).app (F.obj X) =
@@ -128,6 +132,7 @@ variable [h : F.TExact t₁ t₂]
 
 namespace TExact
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 def triangleGELEIso_aux (a b : ℤ) (h : a + 1 = b) (X : C) :
   ∃ (e : (t₂.triangleLEGE a b h).obj (F.obj X) ≅
@@ -204,6 +209,7 @@ lemma truncLEIso_inv_hom_id_app (X : C) (n : ℤ) :
     (F.truncLEIso t₁ t₂ n).inv.app X ≫ (F.truncLEComparison t₁ t₂ n).app X = 𝟙 _ :=
   (F.truncLEIso t₁ t₂ n).inv_hom_id_app X
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def triangleLEGEIso (a b : ℤ) (h : a + 1 = b) :
     F ⋙ t₂.triangleLEGE a b h ≅ t₁.triangleLEGE a b h ⋙ F.mapTriangle :=

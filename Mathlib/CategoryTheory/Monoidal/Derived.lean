@@ -174,7 +174,6 @@ lemma associator_hom_fac_app_app_app (X₁ X₂ X₃ : C) :
         ((counit L W).app X₁).app (X₂ ⊗ X₃) =
       ((bifunctor L W).map (((counit L W).app X₁).app X₂)).app ((L').obj X₃) ≫
         ((counit L W).app (X₁ ⊗ X₂)).app X₃ ≫ (L').map (α_ X₁ X₂ X₃).hom := by
-  dsimp
   conv_rhs => rw [← Category.assoc]
   apply Functor.leftDerived₃NatTrans_fac_app_app_app
 
@@ -182,26 +181,35 @@ noncomputable def leftUnitor : (bifunctor L W).obj ((L').obj (𝟙_ C)) ≅ 𝟭
   Functor.leftDerivedNatIso _ _ (tensorUnitLeftCounit L W) (L').rightUnitor.hom W
     (isoWhiskerRight (leftUnitorNatIso C) (L') ≪≫ (L').leftUnitor)
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma leftUnitor_hom_app (X : C) :
     (leftUnitor L W).hom.app ((L').obj X) =
       ((counit L W).app (𝟙_ C)).app X ≫ (L').map (λ_ X).hom := by
-  simpa using Functor.leftDerivedNatTrans_app _ _
+  have := Functor.leftDerivedNatTrans_app _ _
       (tensorUnitLeftCounit L W) (L').rightUnitor.hom W
       (whiskerRight (leftUnitorNatIso C).hom (L') ≫ (L').leftUnitor.hom) X
+  dsimp at this
+  simp only [Category.comp_id] at this
+  exact this
 
 noncomputable def rightUnitor : (bifunctor L W).flip.obj ((L').obj (𝟙_ C)) ≅ 𝟭 _ :=
   Functor.leftDerivedNatIso _ _ (tensorUnitRightCounit L W) (L').rightUnitor.hom W
     (isoWhiskerRight (rightUnitorNatIso C) (L') ≪≫ (L').leftUnitor)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma rightUnitor_hom_app (X : C) :
     (rightUnitor L W).hom.app ((L').obj X) =
       ((counit L W).app X).app (𝟙_ C) ≫ (L').map (ρ_ X).hom := by
-  simpa using Functor.leftDerivedNatTrans_app
+  have := Functor.leftDerivedNatTrans_app
     ((bifunctor L W).flip.obj ((L').obj (𝟙_ C))) (𝟭 _)
     (tensorUnitRightCounit L W) (L').rightUnitor.hom W
       (whiskerRight (rightUnitorNatIso C).hom (L') ≫ (L').leftUnitor.hom) X
+  dsimp at this
+  simp only [Category.comp_id] at this
+  exact this
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma triangle :
     NatTrans.Triangle (associator L W).hom ((L').obj (𝟙_ C))
@@ -220,6 +228,7 @@ lemma triangle :
       Category.assoc, Category.assoc, ← (L').map_comp,
       MonoidalCategory.triangle, h₂]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma pentagon :
     NatTrans.Pentagon (associator L W).hom where

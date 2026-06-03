@@ -26,6 +26,7 @@ namespace IsPullback
 
 variable {C : Type _} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma of_hasBinaryBiproduct_fst_snd (X₁ X₂ : C) [HasBinaryBiproduct X₁ X₂] :
     IsPullback biprod.fst biprod.snd (0 : X₁ ⟶ 0) (0 : X₂ ⟶ 0) where
   w := by simp
@@ -204,6 +205,7 @@ instance [AdmissibleMono f] (g : X ⟶ X') : AdmissibleMono (pushout.inl g f) wh
 instance [AdmissibleMono f] (g : X ⟶ X') : AdmissibleMono (pushout.inr f g) where
   mem' := MorphismProperty.of_isPushout (IsPushout.of_hasPushout f g).flip (AdmissibleMono.mem f)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma shortExact_of_admissibleMono_of_isColimit (S : ShortComplex C)
     (hf : AdmissibleMono S.f) (hS : IsColimit (CokernelCofork.ofπ _ S.zero)) :
     shortExact C S := by
@@ -216,6 +218,7 @@ lemma shortExact_of_admissibleMono_of_isColimit (S : ShortComplex C)
   dsimp at eq ⊢
   rw [eq, id_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma shortExact_of_admissibleEpi_of_isLimit (S : ShortComplex C)
     (hg : AdmissibleEpi S.g) (hS : IsLimit (KernelFork.ofι _ S.zero)) :
     shortExact C S := by
@@ -281,8 +284,7 @@ instance {Y' : C} (f : X ⟶ Y) (g : Y' ⟶ Y) [hf : AdmissibleMono f] [Admissib
     rw [← pullback.condition_assoc, hp, comp_zero])
   have hS : shortExact C S := by
     apply shortExact_of_admissibleEpi_of_isLimit
-    · dsimp
-      infer_instance
+    · infer_instance
     · exact KernelFork.IsLimit.ofι _ _
         (fun a ha => pullback.lift (KernelFork.IsLimit.lift' hf'' (a ≫ g)
           (by rw [assoc, ha])).1 a (by exact (KernelFork.IsLimit.lift' _ _ _).2))

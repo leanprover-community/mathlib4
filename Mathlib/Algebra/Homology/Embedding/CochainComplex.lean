@@ -64,6 +64,7 @@ instance (n : ℤ) : Epi (K.πTruncGE n) := by
   dsimp only [πTruncGE]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isIso_ιTruncLE_f (n m : ℤ) (h : m < n) : IsIso ((K.ιTruncLE n).f m) := by
   obtain ⟨a, rfl⟩ : ∃ a, (embeddingUpIntLE n).f a = m := by
     obtain ⟨a, ha⟩ := Int.le.dest h.le
@@ -73,6 +74,7 @@ lemma isIso_ιTruncLE_f (n m : ℤ) (h : m < n) : IsIso ((K.ιTruncLE n).f m) :=
   rintro rfl
   simp at h
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isIso_πTruncGE_f (n m : ℤ) (h : n < m) : IsIso ((K.πTruncGE n).f m) := by
   obtain ⟨a, rfl⟩ : ∃ a, (embeddingUpIntGE n).f a = m := by
     obtain ⟨a, ha⟩ := Int.le.dest h.le
@@ -317,6 +319,7 @@ instance [K.IsLE n] : QuasiIso (K.ιTruncLE n) := by
 
 variable {K L}
 
+set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_truncGEMap_iff :
     QuasiIso (truncGEMap φ n) ↔ ∀ (i : ℤ) (_ : n ≤ i), QuasiIsoAt φ i := by
   rw [HomologicalComplex.quasiIso_truncGEMap_iff]
@@ -327,6 +330,7 @@ lemma quasiIso_truncGEMap_iff :
   · rintro h i i' rfl
     exact h _ (by dsimp; lia)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_truncLEMap_iff :
     QuasiIso (truncLEMap φ n) ↔ ∀ (i : ℤ) (_ : i ≤ n), QuasiIsoAt φ i := by
   rw [HomologicalComplex.quasiIso_truncLEMap_iff]
@@ -394,6 +398,7 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
 
 variable [∀ (i : ℤ), K.HasHomology i] [∀ (i : ℤ), L.HasHomology i] (n : ℤ)
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def truncGEXIso (n : ℤ) (i : ℤ) (hi : n < i) :
     (K.truncGE n).X i ≅ K.X i :=
   HomologicalComplex.truncGEXIso K (embeddingUpIntGE n) (i := (i - n).natAbs) (by

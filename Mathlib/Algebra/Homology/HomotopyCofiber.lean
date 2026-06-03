@@ -190,9 +190,9 @@ lemma ext_to_X (i j : ι) (hij : c.Rel i j) {A : C} {f g : A ⟶ X φ i}
   haveI := HasHomotopyCofiber.hasBinaryBiproduct φ _ _ hij
   rw [← cancel_mono (XIsoBiprod φ i j hij).hom]
   apply biprod.hom_ext
-  · simpa using h₁
+  · simpa using! h₁
   · obtain rfl := c.next_eq' hij
-    simpa [sndX, dif_pos hij] using h₂
+    simpa [sndX, dif_pos hij] using! h₂
 
 lemma ext_to_X' (i : ι) (hi : ¬ c.Rel i (c.next i)) {A : C} {f g : A ⟶ X φ i}
     (h : f ≫ sndX φ i = g ≫ sndX φ i) : f = g := by
@@ -266,8 +266,7 @@ noncomputable def homotopyCofiber : HomologicalComplex C c where
   shape i j hij := homotopyCofiber.shape φ i j hij
   d_comp_d' i j k hij hjk := by
     apply homotopyCofiber.ext_from_X φ j i hij
-    · dsimp
-      simp only [comp_zero, homotopyCofiber.inlX_d_assoc φ i j k hij hjk,
+    · simp only [comp_zero, homotopyCofiber.inlX_d_assoc φ i j k hij hjk,
         add_comp, assoc, homotopyCofiber.inrX_d, Hom.comm_assoc, neg_comp]
       by_cases hk : c.Rel k (c.next k)
       · simp [homotopyCofiber.inlX_d φ j k _ hjk hk]
@@ -276,6 +275,7 @@ noncomputable def homotopyCofiber : HomologicalComplex C c where
 
 namespace homotopyCofiber
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The right inclusion `G ⟶ homotopyCofiber φ`. -/
 @[simps!]
 noncomputable def inr : G ⟶ homotopyCofiber φ where
@@ -314,6 +314,7 @@ section
 
 variable (α : G ⟶ K) (hα : Homotopy (φ ≫ α) 0)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `homotopyCofiber φ ⟶ K` that is induced by a morphism `α : G ⟶ K`
 and a homotopy `hα : Homotopy (φ ≫ α) 0`. -/
 noncomputable def desc :
@@ -349,16 +350,19 @@ lemma inlX_desc_f (i j : ι) (hjk : c.Rel j i) :
   dsimp [desc]
   rw [dif_pos hjk, comp_add, inlX_fstX_assoc, inlX_sndX_assoc, zero_comp, add_zero]
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inrX_desc_f (i : ι) :
     inrX φ i ≫ (desc φ α hα).f i = α.f i := by
   dsimp [desc]
   split_ifs <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inr_desc :
     inr φ ≫ desc φ α hα = α := by cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inrCompHomotopy_hom_desc_hom (hc : ∀ j, ∃ i, c.Rel i j) (i j : ι) :
     (inrCompHomotopy φ hc).hom i j ≫ (desc φ α hα).f j = hα.hom i j := by
@@ -368,6 +372,7 @@ lemma inrCompHomotopy_hom_desc_hom (hc : ∀ j, ∃ i, c.Rel i j) (i j : ι) :
       comp_add, inlX_fstX_assoc, inlX_sndX_assoc, zero_comp, add_zero]
   · simp only [Homotopy.zero _ _ _ hij, zero_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma eq_desc (f : homotopyCofiber φ ⟶ K) (hc : ∀ j, ∃ i, c.Rel i j) :
     f = desc φ (inr φ ≫ f) (Homotopy.trans (Homotopy.ofEq (by simp))
       (((inrCompHomotopy φ hc).compRight f).trans (Homotopy.ofEq (by simp)))) := by
@@ -397,7 +402,6 @@ lemma descSigma_ext_iff {φ : F ⟶ G} {K : HomologicalComplex C c}
     · exact h _ _ hij
     · simp only [Homotopy.zero _ _ _ hij]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Morphisms `homotopyCofiber φ ⟶ K` are uniquely determined by
 a morphism `α : G ⟶ K` and a homotopy from `φ ≫ α` to `0`. -/
 noncomputable def descEquiv (K : HomologicalComplex C c) (hc : ∀ j, ∃ i, c.Rel i j) :
@@ -414,6 +418,7 @@ variable {F' F'' G' G'' : HomologicalComplex C c} (φ' : F' ⟶ G') (φ'' : F'' 
   [HasHomotopyCofiber φ'] [HasHomotopyCofiber φ'']
   (H : ∀ (j : ι), ∃ i, c.Rel i j)
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def mapArrowHom (α : Arrow.mk φ ⟶ Arrow.mk φ') :
     homotopyCofiber φ ⟶ homotopyCofiber φ' :=
   desc _ (α.right ≫ homotopyCofiber.inr φ')
@@ -423,6 +428,7 @@ noncomputable def mapArrowHom (α : Arrow.mk φ ⟶ Arrow.mk φ') :
         simp [reassoc_of% this])).trans (((inrCompHomotopy φ' H).compLeft α.left).trans
       (Homotopy.ofEq (by simp))))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 noncomputable def mapArrowHom_id :
@@ -434,6 +440,7 @@ noncomputable def mapArrowHom_id :
     all_goals simp [mapArrowHom, desc_f _ _ _ _ _ hi, inrCompHomotopy_hom _ _ _ _ hi]
   · exact ext_to_X' _ _ hi (by simp [mapArrowHom, desc_f' _ _ _ _ hi])
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 noncomputable def mapArrowHom_comp
@@ -497,6 +504,7 @@ lemma map_inrX_mapHomologicalComplexObjXIso_hom (i : ι) :
       inrX ((H.mapHomologicalComplex c).map φ) i := by
   rw [← inrX_mapHomologicalComplexObjXIso_inv_assoc, Iso.inv_hom_id, comp_id]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def mapHomologicalComplexObjIso :
     (H.mapHomologicalComplex c).obj (homotopyCofiber φ) ≅
@@ -588,6 +596,7 @@ noncomputable abbrev inlX (i j : ι) (hij : c.Rel j i) : K.X i ⟶ K.cylinder.X 
 noncomputable abbrev inrX (i : ι) : (K ⊞ K).X i ⟶ K.cylinder.X i :=
   homotopyCofiber.inrX (biprod.lift (𝟙 K) (-𝟙 K)) i
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inlX_π (i j : ι) (hij : c.Rel j i) :
     inlX K i j hij ≫ (π K).f j = 0 := by
@@ -622,13 +631,13 @@ lemma inlX_nullHomotopy_f (i j : ι) (hij : c.Rel j i) :
   dsimp [nullHomotopicMap]
   by_cases! hj : ∃ (k : ι), c.Rel k j
   · obtain ⟨k, hjk⟩ := hj
-    simp only [assoc, Homotopy.nullHomotopicMap'_f hjk hij, homotopyCofiber_X, homotopyCofiber_d,
+    simp only [assoc, Homotopy.nullHomotopicMap'_f hjk hij, homotopyCofiber_d,
       homotopyCofiber.d_sndX_assoc _ _ _ hij, add_comp, comp_add, homotopyCofiber.inlX_fstX_assoc,
       homotopyCofiber.inlX_sndX_assoc, zero_comp, add_zero, comp_sub, inlX_π_assoc, comp_id,
       zero_sub, ← HomologicalComplex.comp_f_assoc, biprod.lift_snd, neg_f_apply, id_f,
       neg_comp, id_comp]
-  · simp only [Homotopy.nullHomotopicMap'_f_of_not_rel_right hij hj,
-      homotopyCofiber_X, homotopyCofiber_d, assoc, comp_sub, comp_id,
+  · simp only [Homotopy.nullHomotopicMap'_f_of_not_rel_right hij hj, homotopyCofiber_d, assoc,
+    comp_sub, comp_id,
       homotopyCofiber.d_sndX_assoc _ _ _ hij, add_comp, comp_add, zero_comp, add_zero,
       homotopyCofiber.inlX_fstX_assoc, homotopyCofiber.inlX_sndX_assoc,
       ← HomologicalComplex.comp_f_assoc, biprod.lift_snd, neg_f_apply, id_f, neg_comp,
@@ -645,20 +654,18 @@ lemma inrX_nullHomotopy_f (j : ι) :
   dsimp [nullHomotopicMap]
   by_cases hj : ∃ (k : ι), c.Rel j k
   · obtain ⟨k, hjk⟩ := hj
-    simp only [Homotopy.nullHomotopicMap'_f hij hjk,
-      homotopyCofiber_X, homotopyCofiber_d, assoc, comp_add,
+    simp only [Homotopy.nullHomotopicMap'_f hij hjk, homotopyCofiber_d, assoc, comp_add,
       homotopyCofiber.inrX_d_assoc, homotopyCofiber.inrX_sndX_assoc, comp_sub,
       inrX_π_assoc, comp_id, ← Hom.comm_assoc, homotopyCofiber.inlX_d _ _ _ _ _ hjk,
       comp_neg, add_neg_cancel_left]
     rw [← cancel_epi (biprodXIso K K j).inv]
     ext
     · simp [ι₀]
-    · dsimp
-      simp only [inr_biprodXIso_inv_assoc, biprod_inr_snd_f_assoc, comp_sub,
+    · simp only [inr_biprodXIso_inv_assoc, biprod_inr_snd_f_assoc, comp_sub,
         biprod_inr_desc_f_assoc, id_f, id_comp, ι₀, comp_f, this,
-        sub_f_apply, sub_comp, homotopyCofiber_X, homotopyCofiber.inr_f]
+        sub_f_apply, sub_comp, homotopyCofiber.inr_f]
   · simp only [not_exists] at hj
-    simp only [assoc, Homotopy.nullHomotopicMap'_f_of_not_rel_left hij hj, homotopyCofiber_X,
+    simp only [assoc, Homotopy.nullHomotopicMap'_f_of_not_rel_left hij hj,
       homotopyCofiber_d, homotopyCofiber.inlX_d' _ _ _ _ (hj _), homotopyCofiber.inrX_sndX_assoc,
       comp_sub, inrX_π_assoc, comp_id, ι₀, comp_f, homotopyCofiber.inr_f]
     rw [← cancel_epi (biprodXIso K K j).inv]
@@ -717,6 +724,7 @@ variable (F) {D : Type*} [Category* D] [Preadditive D] (H : C ⥤ D) [H.Additive
 
 attribute [local instance] preservesBinaryBiproduct_of_preservesBiproduct
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def mapHomologicalComplexObjIso :
     (H.mapHomologicalComplex c).obj (cylinder F) ≅
       cylinder ((H.mapHomologicalComplex c).obj F) :=
@@ -727,6 +735,7 @@ noncomputable def mapHomologicalComplexObjIso :
         · simp [← Functor.map_comp]
         · simp [← Functor.map_comp]))
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma map_ι₀_mapHomologicalComplexObjIso_hom :
     (H.mapHomologicalComplex c).map (cylinder.ι₀ F) ≫ (mapHomologicalComplexObjIso F H hc).hom =
@@ -738,6 +747,7 @@ lemma map_ι₀_mapHomologicalComplexObjIso_hom :
   congr 1
   apply biprod.hom_ext <;> simp [← Functor.map_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma map_ι₁_mapHomologicalComplexObjIso_hom :
     (H.mapHomologicalComplex c).map (cylinder.ι₁ F) ≫ (mapHomologicalComplexObjIso F H hc).hom =

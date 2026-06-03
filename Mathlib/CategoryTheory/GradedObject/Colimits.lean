@@ -28,6 +28,7 @@ section HasColimitsOfShape
 
 variable {I : Type*} {K : Type*} [Category K]
 
+set_option backward.defeqAttrib.useBackward true in
 def evalJointlyReflectsColimits {F : K ⥤ GradedObject I C} {c : Cocone F}
     (hc : ∀ i, IsColimit ((eval i).mapCocone c)) :
     IsColimit c where
@@ -47,6 +48,7 @@ section
 
 variable [HasColimitsOfShape K C]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 noncomputable def colimitCocone (F : K ⥤ GradedObject I C) :
     Cocone F where
@@ -61,7 +63,7 @@ noncomputable def isColimitColimitCocone (F : K ⥤ GradedObject I C) :
     IsColimit (colimitCocone F) :=
   evalJointlyReflectsColimits (fun _ ↦ colimit.isColimit _)
 
-instance [HasColimitsOfShape K C] : HasColimitsOfShape K (GradedObject I C) where
+instance : HasColimitsOfShape K (GradedObject I C) where
   has_colimit F := ⟨⟨_, isColimitColimitCocone F⟩⟩
 
 instance (i : I) : PreservesColimitsOfShape K (eval i : _ ⥤ C) where
@@ -73,6 +75,7 @@ end
 
 end HasColimitsOfShape
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance {I J : Type*} (p : I → J)
     [∀ (j : J), HasColimitsOfShape (Discrete (p ⁻¹' {j})) C]

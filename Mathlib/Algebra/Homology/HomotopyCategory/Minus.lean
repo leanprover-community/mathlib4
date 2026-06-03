@@ -36,6 +36,7 @@ open HomologicalComplex
 
 variable {C} [HasBinaryBiproducts C]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma minus_cylinder (K : CochainComplex C ℤ) (hK : CochainComplex.minus C K) :
     CochainComplex.minus C (cylinder K) := by
   obtain ⟨n, hn⟩ := hK
@@ -74,6 +75,7 @@ namespace HomotopyCategory
 def minus : ObjectProperty (HomotopyCategory C (ComplexShape.up ℤ)) :=
   fun K ↦ ∃ (n : ℤ), CochainComplex.IsStrictlyLE K.1 n
 
+set_option backward.defeqAttrib.useBackward true in
 variable [HasZeroObject C] [HasBinaryBiproducts C] in
 set_option backward.isDefEq.respectTransparency false in
 instance : (minus C).IsTriangulated where
@@ -160,6 +162,7 @@ instance : (quotient C).EssSurj where
 
 instance : (quotient C).Full := by dsimp [quotient]; infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable [HasZeroObject C] [HasBinaryBiproducts C] in
 open HomologicalComplex in
@@ -216,6 +219,7 @@ namespace Functor
 variable {C}
 variable (F : C ⥤ D) [F.Additive]
 
+set_option backward.defeqAttrib.useBackward true in
 def mapHomotopyCategoryMinus : HomotopyCategory.Minus C ⥤ HomotopyCategory.Minus D :=
   (HomotopyCategory.minus D).lift
     (HomotopyCategory.Minus.ι C ⋙ F.mapHomotopyCategory (ComplexShape.up ℤ)) (by

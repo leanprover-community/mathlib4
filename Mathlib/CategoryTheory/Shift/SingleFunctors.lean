@@ -58,6 +58,7 @@ variable (F G H : SingleFunctors C D A)
 
 namespace SingleFunctors
 
+set_option backward.defeqAttrib.useBackward true in
 lemma shiftIso_add_hom_app (n m a a' a'' : A) (ha' : n + a = a') (ha'' : m + a' = a'') (X : C) :
     (F.shiftIso (m + n) a a'' (by rw [add_assoc, ha', ha''])).hom.app X =
       (shiftFunctorAdd D m n).hom.app ((F.functor a'').obj X) ≫
@@ -65,6 +66,7 @@ lemma shiftIso_add_hom_app (n m a a' a'' : A) (ha' : n + a = a') (ha'' : m + a' 
         (F.shiftIso n a a' ha').hom.app X := by
   simp [F.shiftIso_add n m a a' a'' ha' ha'']
 
+set_option backward.defeqAttrib.useBackward true in
 lemma shiftIso_add_inv_app (n m a a' a'' : A) (ha' : n + a = a') (ha'' : m + a' = a'') (X : C) :
     (F.shiftIso (m + n) a a'' (by rw [add_assoc, ha', ha''])).inv.app X =
       (F.shiftIso n a a' ha').inv.app X ≫
@@ -80,6 +82,7 @@ lemma shiftIso_add' (n m mn : A) (hnm : m + n = mn) (a a' a'' : A)
   subst hnm
   rw [shiftFunctorAdd'_eq_shiftFunctorAdd, shiftIso_add]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma shiftIso_add'_hom_app (n m mn : A) (hnm : m + n = mn) (a a' a'' : A)
     (ha' : n + a = a') (ha'' : m + a' = a'') (X : C) :
     (F.shiftIso mn a a'' (by rw [← hnm, ← ha'', ← ha', add_assoc])).hom.app X =
@@ -87,6 +90,7 @@ lemma shiftIso_add'_hom_app (n m mn : A) (hnm : m + n = mn) (a a' a'' : A)
         ((F.shiftIso m a' a'' ha'').hom.app X)⟦n⟧' ≫ (F.shiftIso n a a' ha').hom.app X := by
   simp [F.shiftIso_add' n m mn hnm a a' a'' ha' ha'']
 
+set_option backward.defeqAttrib.useBackward true in
 lemma shiftIso_add'_inv_app (n m mn : A) (hnm : m + n = mn) (a a' a'' : A)
     (ha' : n + a = a') (ha'' : m + a' = a'') (X : C) :
     (F.shiftIso mn a a'' (by rw [← hnm, ← ha'', ← ha', add_assoc])).inv.app X =
@@ -199,6 +203,7 @@ instance (f : F ⟶ G) [IsIso f] (n : A) : IsIso (f.hom n) :=
 
 variable (F)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given `F : SingleFunctors C D A`, and a functor `G : D ⥤ E` which commutes
 with the shift by `A`, this is the "composition" of `F` and `G` in `SingleFunctors C E A`. -/
@@ -225,6 +230,7 @@ def postcomp (G : D ⥤ E) [G.CommShift A] :
 
 variable (C A)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor `SingleFunctors C D A ⥤ SingleFunctors C E A` given by the postcomposition
 by a functor `G : D ⥤ E` which commutes with the shift. -/
@@ -240,6 +246,7 @@ def postcompFunctor (G : D ⥤ E) [G.CommShift A] :
 
 variable {C E' A}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism `(F.postcomp G).postcomp G' ≅ F.postcomp (G ⋙ G')`. -/
 @[simps!]
 def postcompPostcompIso (G : D ⥤ E) (G' : E ⥤ E') [G.CommShift A] [G'.CommShift A] :
@@ -264,6 +271,7 @@ section
 variable {F} (G : D ⥤ E) [G.CommShift A] {F' : SingleFunctors C E A}
   (e : F' ≅ F.postcomp G) (n a a' : A) (ha' : n + a = a') (X : C)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Variant of `postcomp_shiftIso_hom_app'`. -/
 lemma postcomp_shiftIso_hom_app' :
@@ -276,6 +284,7 @@ lemma postcomp_shiftIso_hom_app' :
   simp only [Functor.comp_obj, postcomp_functor, postcomp_shiftIso_hom_app, assoc,
     ← NatTrans.comp_app, inv_hom_id_hom, NatTrans.id_app, comp_id]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Variant of `postcomp_shiftIso_inv_app'`. -/
 lemma postcomp_shiftIso_inv_app' :
@@ -290,6 +299,7 @@ lemma postcomp_shiftIso_inv_app' :
     postcomp_functor, Functor.comp_obj, Functor.map_id, id_comp, Iso.hom_inv_id_app_assoc,
     Iso.inv_hom_id, hom_inv_id_hom]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma map_shiftIso_inv_app :
     G.map ((F.shiftIso n a a' ha').inv.app X) =
@@ -299,6 +309,7 @@ lemma map_shiftIso_inv_app :
     inv_hom_id_hom_app_assoc, ← Functor.map_comp_assoc, inv_hom_id_hom_app,
     Functor.map_id, id_comp, Iso.hom_inv_id_app, comp_id]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma map_shiftIso_hom_app :
     G.map ((F.shiftIso n a a' ha').hom.app X) =

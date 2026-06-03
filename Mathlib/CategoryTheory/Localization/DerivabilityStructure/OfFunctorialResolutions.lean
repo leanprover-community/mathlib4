@@ -150,6 +150,7 @@ lemma hasLeftResolutions_arrow_of_functorial_resolutions :
 variable [Φ.functor.Full] [Φ.functor.Faithful] [W₂.HasTwoOutOfThreeProperty]
 
 include hp
+set_option backward.defeqAttrib.useBackward true in
 lemma isConnected_leftResolution_of_functorial_resolutions (X₂ : C₂) :
     IsConnected (Φ.LeftResolution X₂) := by
   have : Φ.op.functor.Faithful := by dsimp; infer_instance
@@ -161,6 +162,7 @@ lemma isConnected_leftResolution_of_functorial_resolutions (X₂ : C₂) :
   exact isConnected_of_isConnected_op
 
 include hW₁ in
+set_option backward.defeqAttrib.useBackward true in
 lemma isLocalizedEquivalence_of_functorial_left_resolutions [Φ.IsInduced] :
     Φ.IsLocalizedEquivalence := by
   rw [← Φ.isLocalizedEquivalence_op_iff]
@@ -170,6 +172,7 @@ lemma isLocalizedEquivalence_of_functorial_left_resolutions [Φ.IsInduced] :
     (NatTrans.op p) (fun _ ↦ hp _) (by simp only [hW₁]; rfl)
 
 include hW₁ in
+set_option backward.defeqAttrib.useBackward true in
 lemma isLeftDerivabilityStructure_of_functorial_resolutions [W₂.ContainsIdentities]
     [Φ.IsInduced] :
     Φ.IsLeftDerivabilityStructure := by

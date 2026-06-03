@@ -70,6 +70,7 @@ noncomputable def filtrationLE : ℤ ⥤ CochainComplex C ℤ where
   map_id _ := by simp [← cancel_mono (K.ιTruncLE _)]
   map_comp _ _ := by simp [← cancel_mono (K.ιTruncLE _), assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def filtrationLEMinus : ℤ ⥤ CochainComplex.Minus C :=
   ObjectProperty.lift _ K.filtrationLE
     (fun n ↦ ⟨n, by dsimp; infer_instance⟩)
@@ -87,6 +88,7 @@ lemma ι_map_filtrationLEMinus_map {n m : ℤ} (h : n ⟶ m) :
 noncomputable def filtrationLEMinusCompιIso :
     K.filtrationLEMinus ⋙ Minus.ι _ ≅ K.filtrationLE := Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 noncomputable def filtrationLECocone :
     Cocone K.filtrationLE where
@@ -101,6 +103,7 @@ noncomputable def isColimitFiltrationLECocone :
       replace h := leOfHom h
       exact isIso_ιTruncLE_f _ _ _ (by omega)))
 
+set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 @[simps]
 noncomputable def filtrationLEFunctor :
@@ -131,6 +134,7 @@ noncomputable def filtrationLEMinusFunctorCompWhiskeringRightObjιIso :
   filtrationLEMinusFunctor C ⋙ (whiskeringRight _ _ _).obj (Minus.ι C) ≅
     filtrationLEFunctor C := Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def filtrationLEFunctorCompColimIso [HasColimitsOfShape ℤ C] :
     filtrationLEFunctor C ⋙ colim ≅ 𝟭 (CochainComplex C ℤ) :=

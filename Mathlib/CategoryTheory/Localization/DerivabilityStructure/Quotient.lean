@@ -80,6 +80,7 @@ lemma isConnected_leftResolution
   have := (leftResolutionComparison iso X).isConnected_of_isConnected_of_essSurj
   exact isConnected_of_equivalent (LocalizerMorphism.LeftResolution.chgObjEquivalence B e)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma hasLeftResolutions_arrow [R.functor.EssSurj] [R.functor.Full]
     [T.arrow.HasLeftResolutions] [Wₕ.IsMultiplicative] [Wₕ.RespectsIso] :

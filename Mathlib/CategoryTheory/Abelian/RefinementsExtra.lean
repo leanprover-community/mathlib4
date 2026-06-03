@@ -42,6 +42,7 @@ noncomputable def shortComplex : ShortComplex C where
   g := biprod.desc c.inl c.inr
   zero := by simp [c.condition]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def isColimitOfExactShortComplex [Balanced C]
     (hc : c.shortComplex.Exact) (hc' : Epi c.shortComplex.g) :
@@ -72,6 +73,7 @@ noncomputable def shortComplex : ShortComplex C where
   g := biprod.desc f₁ (-f₂)
   zero := by simp [c.condition]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma exact_shortComplex_of_isLimit (hc : IsLimit c)
     [(shortComplex c).HasHomology] : c.shortComplex.Exact := by
@@ -119,6 +121,7 @@ noncomputable def effectiveEpiStructOfEpiOfIsPushout (hc : IsPushout π₁ π₂
     symm
     apply PushoutCocone.IsColimit.inl_desc hc.isColimit
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isPushout_of_isPullback_of_epi (hc : IsPullback π₁ π₂ f f) :
     IsPushout π₁ π₂ f f := by
@@ -141,6 +144,7 @@ lemma effective_epi_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] :
 
 variable (C)
 
+set_option backward.defeqAttrib.useBackward true in
 def refinementsTopology :
     GrothendieckTopology C where
   sieves X S := ∃ (T : C) (p : T ⟶ X) (_ : Epi p), S p

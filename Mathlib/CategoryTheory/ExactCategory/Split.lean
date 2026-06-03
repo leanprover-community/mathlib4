@@ -85,8 +85,7 @@ noncomputable def isColimitSplitShortExactPushoutCocone (S : ShortComplex C) (h 
     (fun s => by simp)
     (fun s m h₁ h₂ => by
       ext
-      · dsimp
-        simp only [biprod.inl_desc, ← h₁, Preadditive.add_comp, assoc,
+      · simp only [biprod.inl_desc, ← h₁, Preadditive.add_comp, assoc,
           Preadditive.comp_add, h.s_g_assoc, left_eq_add, h₂, h.s_r_assoc, zero_comp]
       · simp [h₂])
 
@@ -100,7 +99,7 @@ lemma admissibleSplitEpi_quarrable {X Y : C} (f : X ⟶ Y) (hf : (admissibleSpli
     MorphismProperty.quarrable C f := by
   apply MorphismProperty.coquarrable.unop
   apply admissibleSplitMono_coquarrable
-  simpa only [← admissibleSplitEpi_op  C] using hf
+  rwa [← admissibleSplitEpi_op C]
 
 variable (C)
 
@@ -119,17 +118,13 @@ lemma admissibleSplitMono_stableUnderComposition :
       s_g := by
         dsimp
         ext
-        · dsimp
-          simp only [assoc, biprod.lift_fst, biprod.inl_desc_assoc, id_comp, biprod.inl_fst]
+        · simp only [assoc, biprod.lift_fst, biprod.inl_desc_assoc, id_comp, biprod.inl_fst]
           rw [h₂.f_r_assoc, h₁.s_g]
-        · dsimp
-          simp only [biprod.inl_desc_assoc, assoc, biprod.lift_snd, comp_id, biprod.inl_snd,
+        · simp only [biprod.inl_desc_assoc, assoc, biprod.lift_snd, comp_id, biprod.inl_snd,
             zero₂, comp_zero]
-        · dsimp
-          simp only [assoc, biprod.lift_fst, biprod.inr_desc_assoc,
+        · simp only [assoc, biprod.lift_fst, biprod.inr_desc_assoc,
             h₂.s_r_assoc, zero_comp, id_comp, biprod.inr_fst]
-        · dsimp
-          simp only [assoc, biprod.lift_snd, biprod.inr_desc_assoc, id_comp, biprod.inr_snd]
+        · simp only [assoc, biprod.lift_snd, biprod.inr_desc_assoc, id_comp, biprod.inr_snd]
           rw [h₂.s_g]
       f_r := by
         dsimp

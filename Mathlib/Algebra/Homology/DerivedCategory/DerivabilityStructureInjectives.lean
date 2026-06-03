@@ -78,6 +78,7 @@ instance (X : HomotopyCategory.Plus (InjectiveObject C)) (n : ℤ) :
   change Injective ((ι C).obj (X.obj.as.X n))
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance (K : CochainComplex.Plus (InjectiveObject C)) :
     CochainComplex.IsKInjective
       (((InjectiveObject.ι C).mapHomologicalComplex (.up ℤ)).obj K.obj) := by
@@ -158,6 +159,7 @@ instance (K : FibrantObject (Plus C)) (n : ℤ) :
   dsimp
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 def fibrantObjectEquivalence :
     Plus (InjectiveObject C) ≌ FibrantObject (Plus C) where
   functor := ObjectProperty.lift _ (InjectiveObject.ι C).mapCochainComplexPlus (fun K ↦ by
@@ -189,6 +191,7 @@ def fibrantObjectLocalizerMorphism :
 instance : (fibrantObjectLocalizerMorphism C).IsInduced where
   inverseImage_eq := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (fibrantObjectLocalizerMorphism C).functor.IsEquivalence := by
   dsimp; infer_instance
 
@@ -219,6 +222,7 @@ def localizerMorphism : LocalizerMorphism
     intro n
     infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {C} in
 lemma isIso_quotient_map
@@ -257,6 +261,7 @@ def R : LocalizerMorphism (CochainComplex.Plus.quasiIso C) (quasiIso C) where
 instance : (R C).IsInduced where
   inverseImage_eq := by ext; apply quotient_map_mem_quasiIso_iff
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open HomologicalComplex in
 lemma inverseImage_quasiIso_mapCochainComplexPlus_injectivesι :
@@ -300,8 +305,11 @@ instance {D : Type*} [Category* D] (L : Plus C ⥤ D) [L.IsLocalization (quasiIs
     obtain ⟨L, rfl⟩ := Plus.quotient_obj_surjective L
     obtain ⟨f, rfl⟩ := (Plus.quotient C).map_surjective f
     apply MorphismProperty.map_mem_map
-    simpa [quasiIso, HomotopyCategory.quotient_map_mem_quasiIso_iff] using hf
+    simp only [quasiIso, inverseImage_iff, ObjectProperty.ι_obj, ObjectProperty.ι_map,
+      quotient_map_hom, quotient_map_mem_quasiIso_iff, HomologicalComplex.mem_quasiIso_iff] at hf
+    exact hf
 
+set_option backward.defeqAttrib.useBackward true in
 instance {D : Type*} [Category* D] (L : Plus C ⥤ D) [L.IsLocalization (quasiIso C)] :
     ((R C).functor ⋙ L).IsLocalization (CochainComplex.Plus.quasiIso C) := by
   dsimp; infer_instance
@@ -310,14 +318,19 @@ instance : (R C).IsLocalizedEquivalence :=
   LocalizerMorphism.IsLocalizedEquivalence.of_isLocalization_of_isLocalization
     (R C) ((quasiIso C).Q)
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (L C).functor.Full := by dsimp; infer_instance
+set_option backward.defeqAttrib.useBackward true in
 instance : (R C).functor.Full := by dsimp; infer_instance
+set_option backward.defeqAttrib.useBackward true in
 instance : (L C).functor.EssSurj := by dsimp; infer_instance
+set_option backward.defeqAttrib.useBackward true in
 instance : (R C).functor.EssSurj := by dsimp; infer_instance
 
 def iso : (CochainComplex.Plus.localizerMorphism C).functor ⋙
   (R C).functor ≅ (L C).functor ⋙ (localizerMorphism C).functor := Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open HomologicalComplex CochainComplex in
 instance : TwoSquare.GuitartExact (iso C).hom :=
@@ -352,9 +365,11 @@ instance : (HomotopyCategory.Plus.localizerMorphism C).arrow.HasRightResolutions
   LocalizerMorphism.hasRightResolutions_arrow_of_essSurj_of_full
     (isRightDerivabilityStructure.iso C)
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable instance : (HomotopyCategory.Plus.localizerMorphism C).functor.CommShift ℤ := by
   dsimp; infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : (HomotopyCategory.Plus.localizerMorphism C).functor.IsTriangulated := by
   dsimp; infer_instance

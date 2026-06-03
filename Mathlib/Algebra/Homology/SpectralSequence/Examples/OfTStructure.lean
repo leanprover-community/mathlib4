@@ -66,9 +66,10 @@ open Abelian.SpectralObject
 
 section
 
-variable (t : TStructure C) (X : C) (H : C ⥤ A) [H.PreservesZeroMorphisms] [H.IsHomological]
+variable (t : TStructure C) (X : C) (H : C ⥤ A) [H.IsHomological]
   [H.ShiftSequence ℤ]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance [t.IsGE X 0] [H.VanishesOnGEOne t] :
     ((t.spectralObject X).mapHomologicalFunctor H).IsFirstQuadrant where
@@ -135,9 +136,10 @@ end
 
 section
 
-variable (t : TStructure C) (X : C) (H : C ⥤ A) [H.PreservesZeroMorphisms] [H.IsHomological]
+variable (t : TStructure C) (X : C) (H : C ⥤ A) [H.IsHomological]
   [H.ShiftSequence ℤ] [H.VanishesOnLESubOne t] [t.IsLE X 0]
 
+set_option backward.defeqAttrib.useBackward true in
 instance :
     ((t.spectralObject X).mapHomologicalFunctor H).IsThirdQuadrant where
   isZero₁ i j hij hi n :=

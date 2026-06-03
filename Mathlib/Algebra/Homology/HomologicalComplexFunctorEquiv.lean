@@ -47,6 +47,7 @@ def inverse : (J ⥤ HomologicalComplex C c) ⥤ HomologicalComplex (J ⥤ C) c 
 
 end functorEquivalence
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def functorEquivalence :
     HomologicalComplex (J ⥤ C) c ≌ (J ⥤ HomologicalComplex C c) where

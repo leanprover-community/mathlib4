@@ -65,6 +65,7 @@ variable {i} {Φ : i.Factorization J}
 
 attribute [reassoc (attr := simp)] fac
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma fac_left : dsimp% Φ.α.left ≫ Φ.β.left = i.γ.left := by
@@ -167,6 +168,7 @@ lemma factorizationM_ι_inr (i : Index I W g) :
   simpa using (Sigma.ι (fun i ↦ (i.factorization hJ₁).A') i ≫=
     pushout.condition (f := sigmaDesc g hJ₁) (g := sigmaMap g hJ₁)).symm
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def attachCells' : AttachCells J.homFamily (ιSuccObj g hJ₁) := by
   have := hasCoproductsOfShape_index I W g
   exact {
@@ -244,6 +246,7 @@ lemma succStruct_prop_le_inverseImage_rlp_llp_inter :
       ((attachCellsOfProp f hJ₁ φ hφ).pushouts_coproducts)
   exact MorphismProperty.pushouts_le _ (by simpa)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_lift {Z₀ Z₁ : Over Y} (φ : Z₀ ⟶ Z₁) (hφ : (succStruct f hJ₁).prop φ)
     (h₀ : W Z₀.hom)
@@ -288,6 +291,7 @@ variable
   (κ : Cardinal.{w}) [Fact κ.IsRegular]
   (hκ : ∀ {A B : C} (i : A ⟶ B), I i → IsCardinalPresentable A κ)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hJ₁ hJ₂ hκ in
 lemma lemma_1_8 [OrderBot κ.ord.ToType] {X Y : C} (f : X ⟶ Y) (hf : W f) :

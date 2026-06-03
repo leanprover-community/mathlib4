@@ -88,6 +88,7 @@ lemma double_d_eq_zero₁ (a b : ι) (hb : b ≠ i₁) :
     (double f hi₀₁).d a b = 0 :=
   dif_neg (by tauto)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 noncomputable def arrowIsoDoubleD (hi₀₁' : i₀ ≠ i₁) :
     Arrow.mk ((double f hi₀₁).d i₀ i₁) ≅ Arrow.mk f :=
@@ -175,6 +176,7 @@ noncomputable def mapHomologicalComplexObjDoubleXIso (n : ι) :
       else IsZero.iso (F.map_isZero (isZero_double_X _ _ _ h₀ h₁))
         (isZero_double_X _ _ _ h₀ h₁)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 noncomputable def mapHomologicalComplexObjDoubleIso :
     (F.mapHomologicalComplex _).obj (double f hi₀₁) ≅ double (F.map f) hi₀₁ :=
@@ -206,6 +208,7 @@ attribute [local simp] doubleFunctor_map
 
 variable {C} (F : C ⥤ D) [F.PreservesZeroMorphisms]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 noncomputable def doubleFunctorCompMapHomologicalComplex :
     doubleFunctor C hi₀₁ hi₀₁' ⋙ F.mapHomologicalComplex c ≅

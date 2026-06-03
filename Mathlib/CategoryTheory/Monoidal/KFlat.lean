@@ -50,6 +50,7 @@ lemma kFlat.whiskerRight {Y X₁ X₂ : C} (hY : W.kFlat Y)
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 instance [W.RespectsIso] : W.kFlat.IsMonoidal where
   prop_unit :=
     ⟨fun _ _ _ hf ↦ (W.arrow_mk_iso_iff (Arrow.isoMk (λ_ _) (λ_ _))).2 hf,
@@ -76,7 +77,9 @@ def localizerMorphismKFlat :
   functor := W.ιKFlat
   map := by rfl
 
+set_option backward.defeqAttrib.useBackward true in
 instance : W.localizerMorphismKFlat.functor.Faithful := by dsimp; infer_instance
+set_option backward.defeqAttrib.useBackward true in
 instance : W.localizerMorphismKFlat.functor.Full := by dsimp; infer_instance
 
 instance [W.RespectsIso] :

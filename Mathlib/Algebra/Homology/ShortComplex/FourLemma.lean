@@ -24,6 +24,7 @@ variable {C : Type _} [Category C] [Abelian C]
 
 namespace ShortComplex₄
 
+set_option backward.defeqAttrib.useBackward true in
 lemma four_lemma_mono (hK : K.Exact) (hL : L.shortComplex₁.Exact)
     (hf₁ : Epi φ.τ₁) (hf₂ : Mono φ.τ₂) (hf₄ : Mono φ.τ₄) : Mono φ.τ₃ := by
   rw [mono_iff_cancel_zero]

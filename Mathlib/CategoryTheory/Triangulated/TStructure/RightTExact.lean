@@ -85,6 +85,7 @@ variable [Functor.RightTExact F t₁ t₂]
 instance (X : H₁) :
   t₂.IsGE (F.obj (t₁.ιHeart.obj X)) 0 := F.isGE_obj t₁ t₂ _ 0
 
+set_option backward.defeqAttrib.useBackward true in
 instance :
     (F.homologyRightTExact t₁ t₂ (H₁ := H₁) (H₂ := H₂) 0).PreservesMonomorphisms where
   preserves {X Y} f _ := by
@@ -97,6 +98,7 @@ instance :
     dsimp
     exact t₂.isZero_homology_of_isGE _ _ 0 (by linarith)
 
+set_option backward.defeqAttrib.useBackward true in
 variable {H₁ H₂} in
 lemma homologyRightTExact₀_map_exact (h : S.Exact) [hf : Mono S.f] :
     (S.map (F.homologyRightTExact t₁ t₂ (H₁ := H₁) (H₂ := H₂) 0)).Exact := by

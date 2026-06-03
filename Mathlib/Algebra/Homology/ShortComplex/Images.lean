@@ -105,6 +105,7 @@ noncomputable def shortComplex : ShortComplex C where
       image.lift_ι_assoc, ← cancel_epi (Abelian.factorThruImage I.S.f), comp_zero,
       kernel.lift_ι_assoc, I.S.zero]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma shortComplex_f_fac :
     I.shortComplex.f ≫ image.ι I.f₂ = image.ι I.S.f := by simp
 
@@ -117,6 +118,7 @@ lemma shortComplex_g_fac :
 set_option backward.isDefEq.respectTransparency false in
 instance : Epi I.shortComplex.g := epi_of_epi_fac I.shortComplex_g_fac
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma shortComplex_exact : I.shortComplex.Exact := by
   rw [ShortComplex.exact_iff_exact_up_to_refinements]

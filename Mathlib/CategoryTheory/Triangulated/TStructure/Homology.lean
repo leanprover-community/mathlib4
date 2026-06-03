@@ -141,12 +141,14 @@ lemma image_preimageNatTrans {F₁ F₂ : H ⥤ C} (τ : F₁ ⋙ i ⟶ F₂ ⋙
     i.map ((i.preimageNatTrans τ).app X) = τ.app X := by
   simp [preimageNatTrans]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma preimageNatTrans_id (F : H ⥤ C) : i.preimageNatTrans (𝟙 (F ⋙ i)) = 𝟙 F := by
   ext X
   apply i.map_injective
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma preimageNatTrans_comp {F₁ F₂ F₃ : H ⥤ C} (τ : F₁ ⋙ i ⟶ F₂ ⋙ i) (τ' : F₂ ⋙ i ⟶ F₃ ⋙ i) :
     i.preimageNatTrans τ ≫ i.preimageNatTrans τ' = i.preimageNatTrans (τ ≫ τ') := by
@@ -184,6 +186,7 @@ namespace TStructure
 
 variable (t : TStructure C) [IsTriangulated C]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma truncLE₀GE₀_mem_heart (X : C) :
     t.heart ((t.truncLEGE 0 0).obj X) := by
   rw [t.mem_heart_iff]
@@ -371,16 +374,19 @@ variable {X₁ X₂ : H} {X₃ : C} {f₁ : X₁ ⟶ X₂} {f₂ : t.ιHeart.obj
 omit [IsTriangulated C]
 include hT
 
+set_option backward.defeqAttrib.useBackward true in
 lemma cocone_heart_isLE_zero : t.IsLE X₃ 0 :=
   t.isLE₂ _ (rot_of_distTriang _ hT) 0 (by dsimp; infer_instance)
     (by dsimp; infer_instance)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma cocone_heart_isGE_neg_one : t.IsGE X₃ (-1) :=
   t.isGE₂ _ (rot_of_distTriang _ hT) (-1)
     (by dsimp; infer_instance) (by dsimp; infer_instance)
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_distinguished_triangle_of_isLE_zero_of_isGE_neg_one
     (X : C) [t.IsLE X 0] [t.IsGE X (-1)] :
@@ -389,7 +395,7 @@ lemma exists_distinguished_triangle_of_isLE_zero_of_isGE_neg_one
       Triangle.mk α β γ ∈ distTriang C := by
   have hK : t.heart (((t.truncLE (-1)).obj X)⟦(-1 : ℤ)⟧) := by
     rw [t.mem_heart_iff]
-    constructor <;> dsimp <;> infer_instance
+    constructor <;> infer_instance
   have hQ : t.heart ((t.truncGE 0).obj X) := by
     rw [t.mem_heart_iff]
     constructor <;> infer_instance
@@ -442,10 +448,14 @@ noncomputable def truncLETriangle :
     ((t.truncLE n).map T.mor₂)
     ((t.truncLEι n).app T.obj₃ ≫ T.mor₃ ≫ (asIso ((t.truncLEι n).app T.obj₁)).inv⟦(1 : ℤ)⟧')
 
+set_option backward.defeqAttrib.useBackward true in
 instance : t.IsLE (t.truncLETriangle T n).obj₁ n := by dsimp; infer_instance
+set_option backward.defeqAttrib.useBackward true in
 instance : t.IsLE (t.truncLETriangle T n).obj₂ n := by dsimp; infer_instance
+set_option backward.defeqAttrib.useBackward true in
 instance : t.IsLE (t.truncLETriangle T n).obj₃ n := by dsimp; infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hT in
 lemma truncLETriangle_distinguished :
@@ -501,8 +511,11 @@ noncomputable def truncGETriangle :
   Triangle.mk ((t.truncGE n).map T.mor₁) ((t.truncGE n).map T.mor₂)
     ((asIso ((t.truncGEπ n).app T.obj₃)).inv ≫ T.mor₃ ≫ ((t.truncGEπ n).app T.obj₁)⟦(1 : ℤ)⟧')
 
+set_option backward.defeqAttrib.useBackward true in
 instance : t.IsGE (t.truncGETriangle T n).obj₁ n := by dsimp; infer_instance
+set_option backward.defeqAttrib.useBackward true in
 instance : t.IsGE (t.truncGETriangle T n).obj₂ n := by dsimp; infer_instance
+set_option backward.defeqAttrib.useBackward true in
 instance : t.IsGE (t.truncGETriangle T n).obj₃ n := by dsimp; infer_instance
 
 instance (X : C) [t.IsGE X n] : t.IsGE (X⟦(-1 : ℤ)⟧) n := by
@@ -510,6 +523,7 @@ instance (X : C) [t.IsGE X n] : t.IsGE (X⟦(-1 : ℤ)⟧) n := by
     t.isGE_shift X n (-1) (n + 1) (by linarith)
   exact t.isGE_of_ge _ n (n + 1) (by linarith)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hT in
 lemma truncGETriangle_distinguished :
@@ -754,6 +768,7 @@ lemma case₁ [t.IsLE T.obj₁ 0] [t.IsLE T.obj₂ 0] [t.IsLE T.obj₃ 0] :
   intro (x : T.obj₁⟦(1 : ℤ)⟧ ⟶ t.ιHeart.obj A)
   exact t.zero x (-1) 0 (by linarith)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma case₂ (h₁ : t.IsLE T.obj₁ 0) :
     (shortComplex t (H := H) hT).Exact ∧ Epi (shortComplex t (H := H) hT).g := by
@@ -803,6 +818,7 @@ lemma case₁' [t.IsGE T.obj₁ 0] [t.IsGE T.obj₂ 0] [t.IsGE T.obj₃ 0] :
   have : t.IsGE (T.obj₃⟦(-1 : ℤ)⟧) 1 := t.isGE_shift T.obj₃ 0 (-1) 1 (by linarith)
   exact t.zero x 0 1 (by linarith)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- case₂' -/
 lemma case₂' (h₃ : t.IsGE T.obj₃ 0) :
@@ -821,6 +837,7 @@ end IsHomologicalAux
 
 open IsHomologicalAux
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : (t.homology₀ (H := H)).IsHomological where
   exact T hT := by
@@ -879,6 +896,7 @@ lemma homology_exact₃ :
     (ShortComplex.mk _ _ (t.comp_homologyδ (H := H) T hT n₀ n₁ h)).Exact :=
   t.homology₀.homologySequence_exact₃ _ hT _ _ h
 
+set_option backward.defeqAttrib.useBackward true in
 omit [IsTriangulated C] [(t.homology₀ (H := H)).ShiftSequence ℤ] in
 lemma isZero_homology₀_of_isGE_one (X : C) [t.IsGE X 1] :
     IsZero (((t.homology₀ (H := H))).obj X) := by
@@ -903,6 +921,7 @@ lemma isZero_homology_of_isGE (X : C) (q n : ℤ) (hn₁ : q < n) [t.IsGE X n] :
     (((t.homology₀.shiftIso q 0 q (by linarith)).app X).symm.trans
     ((t.homology₀.isoShiftZero ℤ).app (X⟦q⟧)))
 
+set_option backward.defeqAttrib.useBackward true in
 omit [(t.homology₀ (H := H)).ShiftSequence ℤ] in
 lemma isZero_homology₀_of_isLE_neg_one (X : C) [t.IsLE X (-1)] :
     IsZero ((t.homology₀ (H := H)).obj X) := by
@@ -956,6 +975,7 @@ lemma isGE_succ_iff_isGE_and_isZero_homology (X : C) (n₀ n₁ : ℤ) (hn₁ : 
   rw [← eq₁, ←eq₂, eq₃]
   exact t.isGE₁_iff_isGE₀_and_isZero_homology₀ _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 omit [t.HasHomology₀ H] [IsTriangulated C] in
 lemma isIso_whiskerLeft_ιHeart_truncLEι (b : ℤ) (hb : 0 ≤ b) :
@@ -966,6 +986,7 @@ lemma isIso_whiskerLeft_ιHeart_truncLEι (b : ℤ) (hb : 0 ≤ b) :
   rw [← t.isLE_iff_isIso_truncLEι_app]
   exact t.isLE_of_le _ 0 _ hb
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 omit [t.HasHomology₀ H] [IsTriangulated C] in
 lemma isIso_whiskerLeft_ιHeart_truncGEπ (a : ℤ) (ha : a ≤ 0) :
@@ -1026,6 +1047,7 @@ section
 
 variable {H : Type*} [Category* H] [Abelian H] [t.Heart H]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma shortExact_of_distTriang {X₁ X₂ X₃ : H} {f : X₁ ⟶ X₂}
     {g : X₂ ⟶ X₃} (δ : t.ιHeart.obj X₃ ⟶ (t.ιHeart.obj X₁)⟦(1 : ℤ)⟧)
     (h : Triangle.mk (t.ιHeart.map f) (t.ιHeart.map g) δ ∈ distTriang C) :
@@ -1036,8 +1058,8 @@ lemma shortExact_of_distTriang {X₁ X₂ X₃ : H} {f : X₁ ⟶ X₂}
   have : t.HasHomology₀ H := t.hasHomology₀
   have : (t.homology₀ (H := H)).ShiftSequence ℤ := Functor.ShiftSequence.tautological _ _
   have w : f ≫ g = 0 := t.ιHeart.map_injective (by
-    simpa only [Functor.map_comp, Functor.map_zero]
-      using comp_distTriang_mor_zero₁₂ _ h)
+    simp only [Functor.map_comp, Functor.map_zero]
+    exact comp_distTriang_mor_zero₁₂ _ h)
   let S := (ShortComplex.mk _ _ w).map (t.ιHeart ⋙ t.homology (H := H) 0)
   have : Mono S.f := (t.homology_exact₁ _ h (-1) 0 (by linarith)).mono_g (by
     apply IsZero.eq_of_src
@@ -1055,6 +1077,7 @@ lemma shortExact_of_distTriang {X₁ X₂ X₃ : H} {f : X₁ ⟶ X₂}
 
 variable (S : ShortComplex H) (hS : S.ShortExact)
 
+set_option backward.defeqAttrib.useBackward true in
 include hS in
 lemma exists_distTriang_of_shortExact :
     ∃ (δ : t.ιHeart.obj S.X₃ ⟶ (t.ιHeart.obj S.X₁)⟦(1 : ℤ)⟧),
@@ -1111,6 +1134,7 @@ lemma heartShortExactTriangle_distinguished :
     t.heartShortExactTriangle S hS ∈ distTriang C :=
   (t.exists_distTriang_of_shortExact S hS).choose_spec
 
+set_option backward.defeqAttrib.useBackward true in
 lemma heartShortExactδ_unique (δ : t.ιHeart.obj S.X₃ ⟶ (t.ιHeart.obj S.X₁)⟦(1 : ℤ)⟧)
     (hδ : Triangle.mk (t.ιHeart.map S.f) (t.ιHeart.map S.g) δ ∈ distTriang C) :
     δ = t.heartShortExactδ S hS := by
@@ -1125,6 +1149,7 @@ lemma heartShortExactδ_unique (δ : t.ιHeart.obj S.X₃ ⟶ (t.ιHeart.obj S.X
     simpa using h₁.symm
   simpa using h₂.symm
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def mapHeartShortExactTriangle {S₁ S₂ : ShortComplex H} (φ : S₁ ⟶ S₂)
     (hS₁ : S₁.ShortExact) (hS₂ : S₂.ShortExact) :
     t.heartShortExactTriangle S₁ hS₁ ⟶ t.heartShortExactTriangle S₂ hS₂ where

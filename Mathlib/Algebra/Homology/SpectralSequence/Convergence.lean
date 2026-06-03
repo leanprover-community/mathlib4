@@ -381,6 +381,7 @@ def filtration : WithBot (α n) ⥤ C := h.filtration' ⋙ MonoOver.forget X ⋙
 def filtrationι (i : WithBot (α n)) : h.filtration.obj i ⟶ X :=
   ((h.filtration' ⋙ MonoOver.forget X).obj i).hom
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance (i : WithBot (α n)) : Mono (h.filtrationι i) := by
   dsimp [filtrationι]
@@ -415,6 +416,7 @@ lemma comp_π (i : WithBot (α n)) (j : α n) (hij : i < j) (pq : ι) (hpq : s.p
     homOfLE (s.pred_le n j) by rfl, h.filtration.map_comp, assoc,
     h.comp_π' _ j rfl pq hpq, comp_zero]
 
+set_option backward.defeqAttrib.useBackward true in
 def ofIso {Y : C} (e : X ≅ Y) : E.StronglyConvergesToInDegree s n Y where
   hasPageInfinityAt := h.hasPageInfinityAt
   filtration' := h.filtration' ⋙ MonoOver.map e.hom
@@ -444,8 +446,10 @@ noncomputable def shortComplex :
     ShortComplex C :=
   ShortComplex.mk _ _ (h.comp_π'' i j hij pq hpq)
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Mono (h.shortComplex i j hij pq hpq).f := by dsimp; infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : Epi (h.shortComplex i j hij pq hpq).g := by dsimp; infer_instance
 
@@ -472,7 +476,8 @@ lemma isIso_filtration_map_from_pred'_iff
     · intro
       obtain rfl : i = none := by
         have : i ≤ ⊥ := leOfHom φ
-        simpa using this
+        simp only [le_bot_iff] at this
+        exact this
       obtain rfl : φ = 𝟙 _ := rfl
       infer_instance
   · constructor
@@ -838,8 +843,9 @@ class CollapsesAsSESAt : Prop where
   isIso_π (pq : ι) (hpq : s.position n i = pq) : IsIso (h.π i pq hpq)
   isIso_filtration_map (k : WithBot (α n)) (hk : s.pred n j = k) :
     IsIso (h.filtration.map (homOfLE (by
-      simpa only [← hk] using s.le_pred'_of_lt n i j (by simpa using hij)) :
-        WithBot.some i ⟶ k))
+      have := s.le_pred'_of_lt n i j (by simpa using hij)
+      simp only [ConvergenceStripes.pred'_some, hk] at this
+      exact this) : WithBot.some i ⟶ k))
   isIso_filtrationι : IsIso (h.filtrationι j) := by infer_instance
 
 variable (i j : α n)
@@ -871,9 +877,10 @@ lemma isIso_filtrationι_of_collapsesAsSESAt :
 
 lemma isIso_filtration_map (k : WithBot (α n)) (hk : s.pred n j = k) :
     IsIso (h.filtration.map (homOfLE (by
-      simpa only [← hk] using s.le_pred'_of_lt n i j
-          (by simpa using h.lt_of_collapsesAsSESAt i j)) :
-        WithBot.some i ⟶ k)) := H.isIso_filtration_map k hk
+      have := s.le_pred'_of_lt n i j
+        (by simpa using h.lt_of_collapsesAsSESAt i j)
+      simp only [ConvergenceStripes.pred'_some, hk] at this
+      exact this) : WithBot.some i ⟶ k)) := H.isIso_filtration_map k hk
 
 variable (pqi pqj : ι) (hpqi : s.position n i = pqi) (hpqj : s.position n j = pqj)
 
@@ -883,14 +890,17 @@ noncomputable def shortComplexOfCollapses : ShortComplex C :=
     (h.lt_of_collapsesAsSESAt i j) pqi pqj hpqi hpqj
     (h.isIso_π_of_collapsesAsSESAt i j pqi hpqi) (h.isIso_filtrationι_of_collapsesAsSESAt i j))
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Mono (h.shortComplexOfCollapses i j pqi pqj hpqi hpqj).f := by
   dsimp
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Epi (h.shortComplexOfCollapses i j pqi pqj hpqi hpqj).g := by
   dsimp
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def shortComplexOfCollapsesIso
     (k : WithBot (α n)) (hk : s.pred n j = k) :

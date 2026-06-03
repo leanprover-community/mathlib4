@@ -89,6 +89,7 @@ lemma τ₂_comp {D₁ D₂ D₃ : Arrow₂ C} (f : D₁ ⟶ D₂) (g : D₂ ⟶
 
 attribute [simp] τ₀_comp τ₁_comp τ₂_comp
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def δ₀ : Arrow₂ C ⥤ Arrow C where
   obj D := Arrow.mk D.g
@@ -96,6 +97,7 @@ def δ₀ : Arrow₂ C ⥤ Arrow C where
     { left := φ.τ₁
       right := φ.τ₂ }
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def δ₁ : Arrow₂ C ⥤ Arrow C where
   obj D := Arrow.mk (D.f ≫ D.g)
@@ -103,6 +105,7 @@ def δ₁ : Arrow₂ C ⥤ Arrow C where
     { left := φ.τ₀
       right := φ.τ₂ }
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def δ₂ : Arrow₂ C ⥤ Arrow C where
   obj D := Arrow.mk D.f
@@ -110,11 +113,13 @@ def δ₂ : Arrow₂ C ⥤ Arrow C where
     { left := φ.τ₀
       right := φ.τ₁ }
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def δ₂Toδ₁ : (δ₂ : Arrow₂ C ⥤ _) ⟶ δ₁ where
   app D :=
     Arrow.homMk (𝟙 _) D.g
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def δ₁Toδ₀ : (δ₁ : Arrow₂ C ⥤ _) ⟶ δ₀ where
   app D := Arrow.homMk D.f (𝟙 _)

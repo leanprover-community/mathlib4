@@ -210,6 +210,7 @@ instance : (F.totalLeftDerived L W).IsLeftDerivedFunctor
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 instance [IsIso α] : LF.IsLeftDerivedFunctor α W where
   isRightKanExtension :=
     letI lifting : Localization.Lifting L W F LF := ⟨asIso α⟩

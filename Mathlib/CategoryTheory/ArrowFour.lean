@@ -150,6 +150,7 @@ def δ₄ : Arrow₄ C ⥤ Arrow₃ C where
       τ₂ := φ.τ₂
       τ₃ := φ.τ₃ }
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def δ₁Toδ₀ : (Arrow₄.δ₁ : Arrow₄ C ⥤ _) ⟶ Arrow₄.δ₀ where
   app D :=
@@ -158,6 +159,7 @@ def δ₁Toδ₀ : (Arrow₄.δ₁ : Arrow₄ C ⥤ _) ⟶ Arrow₄.δ₀ where
       τ₂ := 𝟙 _
       τ₃ := 𝟙 _ }
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def δ₄Toδ₃ : (Arrow₄.δ₄ : Arrow₄ C ⥤ _) ⟶ Arrow₄.δ₃ where
   app D :=

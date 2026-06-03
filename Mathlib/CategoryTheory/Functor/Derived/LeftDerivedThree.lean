@@ -22,6 +22,7 @@ namespace Functor
 variable {C₁ C₂ C₃ D₁ D₂ D₃ H : Type*} [Category C₁] [Category C₂] [Category C₃]
   [Category D₁] [Category D₂] [Category D₃] [Category H]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def whiskeringLeft₃Equiv {F : D₁ ⥤ D₂ ⥤ D₃ ⥤ H} {G : C₁ ⥤ C₂ ⥤ C₃ ⥤ H}
@@ -72,7 +73,6 @@ abbrev IsLeftDerivedFunctor₃ : Prop :=
 section
 
 variable (F L₁ L₂ L₃) [HasLeftDerivedFunctor₃ F W₁ W₂ W₃]
-  [W₁.ContainsIdentities] [W₂.ContainsIdentities] [W₃.ContainsIdentities]
 
 noncomputable def leftDerived₃ : D₁ ⥤ D₂ ⥤ D₃ ⥤ H :=
     curry₃.obj ((uncurry₃.obj F).totalLeftDerived (L₁.prod (L₂.prod L₃)) (W₁.prod (W₂.prod W₃)))
@@ -109,6 +109,7 @@ noncomputable def leftDerived₃Lift : G ⟶ LF :=
       (whiskeringLeft₃Equiv α) (W₁.prod (W₂.prod W₃)) (uncurry₃.obj G)
       (whiskeringLeft₃Equiv β))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma leftDerived₃_fac_app_app (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) :
@@ -119,6 +120,7 @@ lemma leftDerived₃_fac_app_app (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) :
       (whiskeringLeft₃Equiv α) (W₁.prod (W₂.prod W₃)) (uncurry₃.obj G)
       (whiskeringLeft₃Equiv β)) (X₁, X₂, X₃)
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma leftDerived₃_fac :
     ((((whiskeringLeft₃ H).obj L₁).obj L₂).obj L₃).map
