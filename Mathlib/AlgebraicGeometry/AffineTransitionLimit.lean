@@ -815,7 +815,6 @@ lemma exists_app_map_eq_zero_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D
     simp [Scheme.Hom.app_eq_appLE, Scheme.Hom.resLE_appLE]
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 include hc in
 lemma exists_app_map_eq_map_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
     {i : I} {U : (D.obj i).Opens} (hU : IsCompact (X := D.obj i) U) (s t : Γ(D.obj i, U))
