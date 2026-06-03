@@ -6,9 +6,9 @@ Authors: Kalle Kytölä
 module
 
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-public import Mathlib.MeasureTheory.Integral.Layercake
-public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+public import Mathlib.MeasureTheory.Measure.Tight
+
+import Mathlib.MeasureTheory.Integral.Layercake
 
 /-!
 # Characterizations of weak convergence of finite measures and probability measures
@@ -51,6 +51,9 @@ Assume that, applied to all the elements of a π-system, a sequence of probabili
 converges to a limiting probability measure. Assume also that the π-system contains arbitrarily
 small neighborhoods of any point. Then the sequence of probability measures converges for the
 weak topology.
+
+In case the set of measures is tight, (C) implies (T) even when 'closed' is replaced by 'compact'.
+This is shown in `MeasureTheory.tendsto_of_forall_isCompact_of_isTightMeasureSet`.
 
 ## Implementation notes
 
@@ -646,6 +649,34 @@ lemma tendsto_of_forall_isClosed_limsup_real_le' {L : Filter ι} [L.IsCountablyG
     (h : ∀ F : Set Ω, IsClosed F →
       limsup (fun i ↦ (μs i : Measure Ω).real F) L ≤ (μ : Measure Ω).real F) :
     Tendsto μs L (𝓝 μ) := tendsto_of_forall_isClosed_limsup_le (by simpa using h)
+
+/-- A different version of the (C) → (T) implication of the portmanteau theorem:
+If the set of measures is tight, a `limsup` inequality for compact sets implies weak convergence. -/
+theorem tendsto_of_forall_isCompact_of_isTightMeasureSet
+    (h₁ : IsTightMeasureSet (range (ProbabilityMeasure.toMeasure ∘ μs)))
+    (h₂ : ∀ F, IsCompact F → limsup (μs · F) L ≤ μ F) :
+    Tendsto μs L (𝓝 μ) := by
+  obtain rfl | _ := L.eq_or_neBot
+  · simp
+  refine tendsto_of_forall_isClosed_limsup_le <| fun F hF_closed ↦ ?_
+  rw [← ENNReal.coe_le_coe, ENNReal.ofNNReal_limsup <|
+      isBoundedUnder_of_eventually_le (a := 1) (by simp)]
+  refine ENNReal.le_of_forall_pos_le_add <| fun ε hε _ ↦ ?_
+  obtain ⟨K, hKc, hK_le⟩ := isTightMeasureSet_iff_exists_isCompact_measure_compl_le.mp
+    h₁ ε (by positivity)
+  grw [limsup_le_limsup (v := fun i ↦ μs i (F ∩ K) + (ε : ENNReal))]
+  · rw [limsup_add_const _ _ _ (by isBoundedDefault) (by isBoundedDefault)]
+    apply add_le_add _ (by simp)
+    specialize h₂ (F ∩ K) <| hKc.inter_left hF_closed
+    rw [← ENNReal.coe_le_coe, ENNReal.ofNNReal_limsup <|
+      isBoundedUnder_of_eventually_le (a := 1) (by simp)] at h₂
+    grw [h₂]
+    simp [measure_mono]
+  · refine .of_forall (fun i ↦ ?_)
+    simp_rw [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
+    grw [measure_mono (t := (F ∩ K) ∪ F \ K) (by simp), measure_union_le]
+    gcongr
+    exact le_trans (measure_mono (by simp)) <| hK_le (μs i) <| by simp
 
 end Closed
 
