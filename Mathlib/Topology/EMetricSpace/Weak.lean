@@ -119,7 +119,7 @@ theorem ball_infty_of_pos {r : ENNReal} (hr : 0 < r) :
 
 /-- If `some : α → Option α` is an open embedding and `α` is has a weak pseudo extended metric
 structure, the structure extends naturally to `Option α`. -/
-abbrev weakPseudoEMetricSpace_of_isOpenEmbedding {α : Type u} [t : TopologicalSpace α]
+abbrev WeakPseudoEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSpace α]
     [TopologicalSpace (Option α)] [m : WeakPseudoEMetricSpace α] [inst : EDist (Option α)]
     (h_edist : inst = Option.toEDist) (h : IsOpenEmbedding (some (α := α))) :
     WeakPseudoEMetricSpace (Option α) where
@@ -164,11 +164,11 @@ abbrev weakPseudoEMetricSpace_of_isOpenEmbedding {α : Type u} [t : TopologicalS
 
 /-- If `some : α → Option α` is an open embedding and `α` is has a weak pseudo extended metric
 structure, the structure extends naturally to `Option α`. -/
-abbrev weakEMetricSpace_of_isOpenEmbedding {α : Type u} [t : TopologicalSpace α]
+abbrev WeakEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSpace α]
     [TopologicalSpace (Option α)] [m : WeakEMetricSpace α] [inst : EDist (Option α)]
     (h_edist : inst = Option.toEDist) (h : IsOpenEmbedding (some (α := α))) :
     WeakEMetricSpace (Option α) :=
-  { toWeakPseudoEMetricSpace := weakPseudoEMetricSpace_of_isOpenEmbedding h_edist h,
+  { toWeakPseudoEMetricSpace := WeakPseudoEMetricSpace.OfIsOpenEmbedding h_edist h,
     eq_of_edist_eq_zero {x y} xy := by
       rw [congr(@edist _ $h_edist x y)] at xy
       cases x <;> cases y
@@ -203,7 +203,7 @@ so if `WithTop α` -/
 instance instWeakPseudoEMetricSpaceWithTop [m : WeakPseudoEMetricSpace α] :
     WeakPseudoEMetricSpace (WithTop α) :=
   let : TopologicalSpace (Option α) := TopologicalSpace.instWithTopOfOrderTopology
-  Option.weakPseudoEMetricSpace_of_isOpenEmbedding (inst := instEDistWithTop) rfl
+  Option.WeakPseudoEMetricSpace.OfIsOpenEmbedding (inst := instEDistWithTop) rfl
     WithTop.isOpenEmbedding_some
 
 /-- If `α` has a topology induced by a linear order in is a weak extended metric space,
@@ -211,7 +211,7 @@ so if `WithTop α` -/
 @[to_dual]
 instance instWeakEMetricSpaceWithTop [m : WeakEMetricSpace α] : WeakEMetricSpace (WithTop α) :=
   let : TopologicalSpace (Option α) := TopologicalSpace.instWithTopOfOrderTopology
-  Option.weakEMetricSpace_of_isOpenEmbedding (inst := instEDistWithTop) rfl
+  Option.WeakEMetricSpace.OfIsOpenEmbedding (inst := instEDistWithTop) rfl
     WithTop.isOpenEmbedding_some
 
 open scoped OnePoint in
@@ -227,7 +227,7 @@ extended metric space. -/
 instance instWeakPseudoEMetricSpaceOnePoint [m : WeakPseudoEMetricSpace α] :
     WeakPseudoEMetricSpace (OnePoint α) :=
   let : TopologicalSpace (Option α) := OnePoint.instTopologicalSpace
-  Option.weakPseudoEMetricSpace_of_isOpenEmbedding (inst := instEDistOnePoint) rfl
+  Option.WeakPseudoEMetricSpace.OfIsOpenEmbedding (inst := instEDistOnePoint) rfl
     OnePoint.isOpenEmbedding_coe
 
 /-- The one point compactification of a weak extended metric space is again a weak extended metric
@@ -235,7 +235,7 @@ space. -/
 instance instWeakEMetricSpaceOnePoint [m : WeakEMetricSpace α] :
     WeakEMetricSpace (OnePoint α) :=
   let : TopologicalSpace (Option α) := OnePoint.instTopologicalSpace
-  Option.weakEMetricSpace_of_isOpenEmbedding (inst := instEDistOnePoint) rfl
+  Option.WeakEMetricSpace.OfIsOpenEmbedding (inst := instEDistOnePoint) rfl
     OnePoint.isOpenEmbedding_coe
 
 /-- `ℝ≥0∞` is a weak extended metric space with its usual distance function. -/
