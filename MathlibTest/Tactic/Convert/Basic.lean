@@ -161,12 +161,4 @@ example (P : ℕ → Prop) {a b : ℕ} (hab : b = a) (h : P a) : P (semireducibl
 example (P : ℕ → Prop) {a b : ℕ} (hab : b = a) (h : P (semireducibleId a)) : P b := by
   convert! h
 
-example (P : ℕ → Prop) {a b : ℕ} (hab : b = a) (h : P a) : P (semireducibleId b) := by
-  convert h
-  guard_target =ₛ semireducibleId b = a
-  exact hab
-
-example (P : ℕ → Prop) {a b : ℕ} (hab : b = a) (h : P (semireducibleId a)) : P b := by
-  convert! h
-
 end Tests
