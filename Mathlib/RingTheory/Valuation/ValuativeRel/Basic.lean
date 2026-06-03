@@ -71,7 +71,7 @@ More precisely, if v is a valuation on R then the associated relation is `x ≤�
 Use this class to talk about the case where `R` is equipped with an equivalence class
 of valuations. -/
 @[ext]
-class ValuativeRel (R : Type*) [Ring R] where
+class ValuativeRel (R : Type*) [Semiring R] where
   /-- The valuation less-equal operator arising from `ValuativeRel`. -/
   vle : R → R → Prop
   vle_total (x y) : vle x y ∨ vle y x
