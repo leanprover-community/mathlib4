@@ -603,9 +603,9 @@ lemma valuedAdicCompletion_surjective :
     Function.Surjective (Valued.v : (v.adicCompletion K) → ℤᵐ⁰) :=
   Valued.valuedCompletion_surjective_iff.mpr <| .of_comp (v.valuation_surjective K)
 
-lemma adicCompletion_valueGroup_eq : MonoidWithZeroHom.valueGroup (Valued.v
-    (R := adicCompletion K v) : adicCompletion K v →*₀ (WithZero (Multiplicative ℤ))) =
-    MonoidWithZeroHom.valueGroup (valuation K v : K →*₀ (WithZero (Multiplicative ℤ))) := by
+lemma adicCompletion_valueGroup_eq : MonoidWithZeroHom.valueGroup (.ofClass (Valued.v
+    (R := adicCompletion K v))) =
+    MonoidWithZeroHom.valueGroup (.ofClass (valuation K v)) := by
   ext n
   simp only [MonoidWithZeroHom.mem_valueGroup_iff_of_comm, ne_eq, map_eq_zero]
   refine ⟨fun ⟨a, ha0, x, hx⟩ ↦ ?_, fun ⟨a, ha0, x, hx⟩  ↦ ⟨a, by simp [ha0], x, by simpa using hx⟩⟩
