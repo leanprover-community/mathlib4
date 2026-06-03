@@ -103,8 +103,6 @@ lemma isHomogeneous_addSubMap (i : Fin 3) : (addSubMap W i).IsHomogeneous 2 := b
   · exact .sub (isHomogeneous_X_pow ..) <|
       .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
 
-set_option Elab.async false in
--- #count_heartbeats in -- 12694 -- 84214
 lemma isHomogenous_addSubMapCoeff (ij : Fin 3 × Fin 3) :
     (addSubMapCoeff W ij).IsHomogeneous 2 := by
   have H₁ {i : Fin 3} {a : R} : (C a * X (R := R) i ^ 2).IsHomogeneous 2 :=
