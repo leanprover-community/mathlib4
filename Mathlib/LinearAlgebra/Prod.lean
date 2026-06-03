@@ -640,15 +640,12 @@ theorem prod_eq_top_iff {p₁ : Submodule R M} {p₂ : Submodule R M₂} :
     p₁.prod p₂ = ⊤ ↔ p₁ = ⊤ ∧ p₂ = ⊤ := by
   simp only [eq_top_iff, le_prod_iff, map_top, range_fst, range_snd]
 
-theorem span_prod_eq {R M M'} [Semiring R] [AddCommMonoid M] [Module R M]
-    [AddCommMonoid M'] [Module R M'] {s : Set M} {t : Set M'} (hs : 0 ∈ s) (ht : 0 ∈ t) :
+theorem span_prod_eq {R M M₂} [Semiring R] [AddCommMonoid M] [Module R M]
+    [AddCommMonoid M₂] [Module R M₂] {s : Set M} {t : Set M₂} (hs : 0 ∈ s) (ht : 0 ∈ t) :
     span R (s ×ˢ t) = (span R s).prod (span R t) := by
-  apply le_antisymm
-  · exact span_prod_le s t
-  · rw [Submodule.prod_le_iff]
-    constructor <;> rw [map_span] <;> refine Submodule.span_mono (Set.image_subset_iff.mpr ?_)
-    · exact fun x hx ↦ ⟨hx, ht⟩
-    · exact fun x hx ↦ ⟨hs, hx⟩
+  refine le_antisymm (span_prod_le s t) ?_
+  simp [Submodule.prod_le_iff, map_span]
+  grind [span_mono]
 
 end Submodule
 
