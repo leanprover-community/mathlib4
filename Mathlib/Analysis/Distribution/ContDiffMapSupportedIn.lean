@@ -381,14 +381,14 @@ noncomputable def fderivLM :
     else 0
   map_add' f g := by
     split_ifs with hk
-    · have hk' : 0 < (n : ℕ∞ω) := mod_cast (ENat.add_one_pos.trans_le hk)
+    · have hk' : 0 < (n : ℕ∞ω) := mod_cast (add_pos_of_right zero_lt_one k).trans_le hk
       ext
       simp [fderiv_add (f.contDiff.differentiable hk'.ne').differentiableAt
                        (g.contDiff.differentiable hk'.ne').differentiableAt]
     · simp
   map_smul' c f := by
     split_ifs with hk
-    · have hk' : 0 < (n : ℕ∞ω) := mod_cast (ENat.add_one_pos.trans_le hk)
+    · have hk' : 0 < (n : ℕ∞ω) := mod_cast (add_pos_of_right zero_lt_one k).trans_le hk
       ext
       simp [fderiv_const_smul (f.contDiff.differentiable hk'.ne').differentiableAt]
     · simp
@@ -700,7 +700,7 @@ theorem norm_iteratedFDeriv_apply_le_seminorm_top {i : ℕ}
 theorem norm_apply_le_seminorm {f : 𝓓^{n}_{K}(E, F)} {x : E} :
     ‖f x‖ ≤ N[𝕜]_{K, n, 0} f := by
   rw [← norm_iteratedFDeriv_zero (𝕜 := ℝ) (f := f) (x := x)]
-  exact norm_iteratedFDeriv_apply_le_seminorm 𝕜 (zero_le _)
+  exact norm_iteratedFDeriv_apply_le_seminorm 𝕜 zero_le
 
 theorem norm_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
     ‖(f : E →ᵇ F)‖ = N[𝕜]_{K, n, 0} f := by
@@ -973,7 +973,7 @@ noncomputable def integralAgainstBilinCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F
     refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms ..)
       (norm_withSeminorms 𝕜 _) _
       (.of_real fun _ ↦ ⟨{0}, (∫ x in K, ‖φ x‖ ∂μ) * ‖B‖, fun f ↦ ?_⟩)
-    simpa using norm_integralAgainstBilinLM_le
+    simpa using! norm_integralAgainstBilinLM_le
 
 @[simp]
 lemma integralAgainstBilinCLM_apply {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}

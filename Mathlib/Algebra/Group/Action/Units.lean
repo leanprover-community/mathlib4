@@ -88,6 +88,9 @@ example {M} [CommMonoid M] :
   ext
   rfl
 
+/-- This is not the usual `smul_eq_mul` because `mulAction'` creates a diamond.
+
+Discussed [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/units.2Emul_action'.20diamond/near/246400399). -/
 @[simp]
 lemma smul_eq_mul {M} [CommMonoid M] (u₁ u₂ : Mˣ) :
     u₁ • u₂ = u₁ * u₂ := by

@@ -383,6 +383,7 @@ variable (e : X ≃ₜ Y) (e' : Y ≃ₜ Z)
 
 /- Register as simp lemmas that the fields of an open partial homeomorphism built from a
 homeomorphism correspond to the fields of the original homeomorphism. -/
+
 @[simp, mfld_simps]
 theorem refl_toOpenPartialHomeomorph :
     (Homeomorph.refl X).toOpenPartialHomeomorph = OpenPartialHomeomorph.refl X :=

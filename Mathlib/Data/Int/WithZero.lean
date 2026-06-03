@@ -72,27 +72,24 @@ theorem toNNReal_ne_zero {e : ℝ≥0} {m : ℤᵐ⁰} (he : e ≠ 0) (hm : m �
 
 /-- `toNNReal` sends nonzero elements to positive elements. -/
 theorem toNNReal_pos {e : ℝ≥0} {m : ℤᵐ⁰} (he : e ≠ 0) (hm : m ≠ 0) : 0 < toNNReal he m :=
-  lt_of_le_of_ne zero_le' (toNNReal_ne_zero he hm).symm
+  (toNNReal_ne_zero he hm).pos
 
 /-- The map `toNNReal` is strictly monotone whenever `1 < e`. -/
 theorem toNNReal_strictMono {e : ℝ≥0} (he : 1 < e) :
-    StrictMono (toNNReal (ne_zero_of_lt he)) := by
-  intro x y hxy
-  simp only [toNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
-  split_ifs with hx hy hy
-  · simp only [hy, not_lt_zero'] at hxy
-  · exact zpow_pos he.bot_lt _
-  · simp only [hy, not_lt_zero'] at hxy
-  · rw [zpow_lt_zpow_iff_right₀ he, Multiplicative.toAdd_lt, ← coe_lt_coe, coe_unzero hx,
-      WithZero.coe_unzero hy]
-    exact hxy
+    StrictMono (toNNReal he.ne_zero) := by
+  intro x y
+  cases y
+  · simp
+  cases x
+  · simpa using! zpow_pos he.pos _
+  · simp [toNNReal, he]
 
 theorem toNNReal_eq_one_iff {e : ℝ≥0} (m : ℤᵐ⁰) (he0 : e ≠ 0) (he1 : e ≠ 1) :
     toNNReal he0 m = 1 ↔ m = 1 := by
   by_cases hm : m = 0
   · simp only [hm, map_zero, zero_ne_one]
   · refine ⟨fun h1 ↦ ?_, fun h1 ↦ h1 ▸ map_one _⟩
-    rw [toNNReal_neg_apply he0 hm, zpow_eq_one_iff_right₀ (zero_le e) he1, toAdd_eq_zero] at h1
+    rw [toNNReal_neg_apply he0 hm, zpow_eq_one_iff_right₀ _root_.zero_le he1, toAdd_eq_zero] at h1
     rw [← WithZero.coe_unzero hm, h1, coe_one]
 
 theorem toNNReal_lt_one_iff {e : ℝ≥0} {m : ℤᵐ⁰} (he : 1 < e) :
