@@ -196,8 +196,17 @@ protected lemma IsPath.cons {p : Walk G v w} (hp : p.IsPath) (hu : u ∉ p.suppo
   (cons_isPath_iff _ _).2 ⟨hp, hu⟩
 
 @[simp]
-theorem isPath_iff_eq_nil {u : V} (p : G.Walk u u) : p.IsPath ↔ p = nil := by
+theorem isPath_iff_nil {u : V} {p : G.Walk u u} : p.IsPath ↔ p.Nil := by
   cases p <;> simp [IsPath.nil]
+
+@[deprecated isPath_iff_nil (since := "2026-06-01")]
+theorem isPath_iff_eq_nil {u : V} {p : G.Walk u u} : p.IsPath ↔ p = nil := by
+  simp
+
+theorem IsPath.nil_iff_eq {u v : V} {p : G.Walk u v} (hp : p.IsPath) : p.Nil ↔ u = v := by
+  refine ⟨fun ⟨⟩ ↦ rfl, ?_⟩
+  rintro rfl
+  exact isPath_iff_nil.mp hp
 
 theorem IsPath.reverse {u v : V} {p : G.Walk u v} (h : p.IsPath) : p.reverse.IsPath := by
   simpa [isPath_def] using h
@@ -619,7 +628,7 @@ end WalkDecomp
 theorem isPath_iff_isSubwalk_imp_nil {u v} {p : G.Walk u v} :
     p.IsPath ↔ ∀ (v : V) (w : G.Walk v v), w.IsSubwalk p → w.Nil := by
   refine ⟨fun hp v w hwp ↦ ?_, fun h ↦ .mk' ?_⟩
-  · simp [w.isPath_iff_eq_nil.mp <| isPath_of_isSubwalk hwp hp]
+  · simp [w.isPath_iff_nil.mp <| isPath_of_isSubwalk hwp hp]
   · refine List.pairwise_iff_getElem.mpr fun i j _ _ _ _ ↦ ?_
     let p' := p.take j |>.drop i
     have : ¬p'.Nil := by grind [nil_drop_iff, take_length]
