@@ -42,7 +42,7 @@ theorem UniqueFactorizationMonoid.of_forall_isPrincipal_of_height_eq_one [IsNoet
     Ideal.span_singleton_eq_bot.mp <| bot_unique (hpmin.le.trans_eq hpb)
   have hpp : p.IsPrincipal := h p <| le_antisymm
     ((Ideal.span {x}).height_le_one_of_isPrincipal_of_mem_minimalPrimes p hpmin)
-      (ENat.one_le_iff_ne_zero.mpr (p.height_eq_zero_iff_eq_bot.not.mpr hpn))
+      (Order.one_le_iff_ne_zero.mpr (p.height_eq_zero_iff_eq_bot.not.mpr hpn))
   exact ⟨hpp.generator p, hpl (hpp.generator_mem p), hpp.prime_generator_of_isPrime p hpn⟩
 
 /-- Let `R` be a Noetherian domain. Then `R` is a UFD if and only if every height `1` prime ideal is

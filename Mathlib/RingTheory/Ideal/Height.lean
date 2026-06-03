@@ -240,7 +240,7 @@ lemma Ideal.one_le_height_span_singleton_of_mem_nonZeroDivisors
   rw [Ideal.height_eq_inf_minimalPrimes]
   refine le_iInf₂ fun q hq => ?_
   have : q.IsPrime := hq.isPrime
-  rw [ENat.one_le_iff_ne_zero, Ne, height_eq_zero_iff]
+  rw [Order.one_le_iff_ne_zero, Ne, height_eq_zero_iff]
   intro hmin
   exact absurd hx <| notMem_nonZeroDivisors_of_mem_mem_minimalPrimes
     (hq.1.2 <| Ideal.mem_span_singleton.mpr <| dvd_refl x) hmin
@@ -568,6 +568,6 @@ lemma Ideal.eq_span_singleton_of_height_eq_one [IsDomain R] {p : Ideal R} [p.IsP
   have : p.FiniteHeight := by simp [p.finiteHeight_iff, h1]
   by_contra! hne
   apply hxp.ne_zero
-  rw [← span_singleton_eq_bot, ← height_eq_zero_iff_eq_bot, ← ENat.lt_one_iff_eq_zero, ← h1]
+  rw [← span_singleton_eq_bot, ← height_eq_zero_iff_eq_bot, ← Order.lt_one_iff, ← h1]
   refine height_strict_mono_of_isPrime_of_isPrime (lt_of_le_of_ne ?_ hne.symm)
   simp only [p.span_singleton_le_iff_mem, hx]
