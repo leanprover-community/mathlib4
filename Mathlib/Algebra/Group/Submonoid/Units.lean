@@ -341,8 +341,8 @@ def unitsEquivSelf (H : Subgroup G) : H.units ≃* H :=
 end Subgroup
 
 @[to_additive]
-theorem MonoidHom.isUnit_eqLocusM_mk_iff {M N : Type*} [Monoid M] [Monoid N]
-    (f g : M →* N) {r : M} (hr : f r = g r) : IsUnit (⟨r, hr⟩ : f.eqLocusM g) ↔ IsUnit r := by
+theorem MonoidHom.isUnit_eqLocusM_mk_iff {N : Type*} [Monoid N] (f g : M →* N) {r : M}
+    (hr : f r = g r) : IsUnit (⟨r, hr⟩ : f.eqLocusM g) ↔ IsUnit r := by
   refine ⟨fun h ↦ h.map (SubmonoidClass.subtype _), fun h ↦ ?_⟩
   obtain ⟨s, hs⟩ := isUnit_iff_exists.mp h
   suffices ∃ a, r * a = 1 ∧ f a = g a ∧ a * r = 1 by
