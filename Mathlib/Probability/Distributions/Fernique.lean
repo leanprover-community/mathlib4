@@ -329,7 +329,7 @@ open Metric in
 /-- Auxiliary lemma for `lintegral_exp_mul_sq_norm_le_mul`, in which we find an upper bound on an
 integral by dealing separately with the contribution of each set in a sequence of annuli.
 This is the bound of the integral over one of those annuli. -/
-lemma lintegral_closedBall_diff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ]
+lemma lintegral_closedBall_sdiff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ]
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
     (ha_gt : 2⁻¹ < μ {x | ‖x‖ ≤ a}) (ha_lt : μ {x | ‖x‖ ≤ a} < 1) (n : ℕ) :
     ∫⁻ x in (closedBall 0 (normThreshold a (n + 1)) \ closedBall 0 (normThreshold a n)),
@@ -346,7 +346,7 @@ lemma lintegral_closedBall_diff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ]
     refine setLIntegral_mono (by fun_prop) fun x hx ↦ ?_
     gcongr
     · exact mul_nonneg (logRatio_pos ha_gt ha_lt).le (by positivity)
-    · simp only [Set.mem_diff, mem_closedBall, dist_zero_right, not_le] at hx
+    · simp only [Set.mem_sdiff, mem_closedBall, dist_zero_right, not_le] at hx
       exact hx.1
   -- The integral of a constant is the constant times the measure of the set
   _ = .ofReal (rexp (C * t (n + 1) ^ 2)) * μ (closedBall 0 (t (n + 1)) \ closedBall 0 (t n)) := by
@@ -429,7 +429,7 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
       = closedBall 0 a ∪ ⋃ n, closedBall 0 (t (n + 1)) \ closedBall 0 (t n) := by
     ext x
     simp only [Set.mem_univ, Set.mem_union, Metric.mem_closedBall, dist_zero_right, Set.mem_iUnion,
-      Set.mem_diff, not_le, true_iff]
+      Set.mem_sdiff, not_le, true_iff]
     simp_rw [and_comm (b := t _ < ‖x‖)]
     rcases le_or_gt (‖x‖) a with ha' | ha'
     · exact Or.inl ha'
@@ -454,7 +454,7 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
   rw [← ENNReal.tsum_mul_left]
   gcongr with n
   -- Now we prove the bound for each annulus, by calling a previous lemma
-  refine (le_trans ?_ (lintegral_closedBall_diff_exp_logRatio_mul_sq_le h_rot
+  refine (le_trans ?_ (lintegral_closedBall_sdiff_exp_logRatio_mul_sq_le h_rot
     (hc'_gt.trans_le hc') ha_lt n)).trans ?_
   · gcongr
     simp only [inv_pow, C]

@@ -153,4 +153,4 @@ instance compactSpace_withConstructibleTopology [CompactSpace X] [QuasiSober X]
       grind [hB.prop, Set.union_subset_iff]
     · rw [← Set.sInter_union]
       refine hB.prop.2.1 (_ ∪ F) ?_ <| (hA₁'.diff.union hA₂'.diff).union hF
-      grind [Set.diff_singleton_subset_iff, Set.union_subset_iff]
+      grind [Set.sdiff_singleton_subset_iff, Set.union_subset_iff]

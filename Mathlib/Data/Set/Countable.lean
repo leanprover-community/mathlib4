@@ -241,8 +241,8 @@ theorem countable_union {s t : Set α} : (s ∪ t).Countable ↔ s.Countable ∧
 theorem Countable.union {s t : Set α} (hs : s.Countable) (ht : t.Countable) : (s ∪ t).Countable :=
   countable_union.2 ⟨hs, ht⟩
 
-theorem Countable.of_diff {s t : Set α} (h : (s \ t).Countable) (ht : t.Countable) : s.Countable :=
-  (h.union ht).mono (subset_diff_union _ _)
+theorem Countable.of_sdiff {s t : Set α} (h : (s \ t).Countable) (ht : t.Countable) : s.Countable :=
+  (h.union ht).mono (subset_sdiff_union _ _)
 
 @[simp]
 theorem countable_insert {s : Set α} {a : α} : (insert a s).Countable ↔ s.Countable := by

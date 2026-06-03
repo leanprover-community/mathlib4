@@ -39,7 +39,7 @@ variable {G : Type*} [Group G] (H : Subgroup G) [IsMulCommutative H] [FiniteInde
 def QuotientDiff :=
   Quotient
     (Setoid.mk (fun α β => diff (MonoidHom.id H) α β = 1)
-      ⟨fun α => diff_self (MonoidHom.id H) α, fun h => by rw [← diff_inv, h, inv_one],
+      ⟨fun α => sdiff_self (MonoidHom.id H) α, fun h => by rw [← diff_inv, h, inv_one],
         fun h h' => by rw [← diff_mul_diff, h, h', one_mul]⟩)
 
 instance : Inhabited H.QuotientDiff :=
@@ -95,7 +95,7 @@ theorem eq_one_of_smul_eq_one (hH : Nat.Coprime (Nat.card H) H.index) (α : H.Qu
     (powCoprime hH).injective <|
       calc
         h ^ H.index = diff (MonoidHom.id H) (op ((h⁻¹ : H) : G) • α) α := by
-          rw [← diff_inv, smul_diff', diff_self, one_mul, inv_pow, inv_inv]
+          rw [← diff_inv, smul_diff', sdiff_self, one_mul, inv_pow, inv_inv]
         _ = 1 ^ H.index := (Quotient.exact' hα).trans (one_pow H.index).symm
 
 theorem exists_smul_eq (hH : Nat.Coprime (Nat.card H) H.index) (α β : H.QuotientDiff) :

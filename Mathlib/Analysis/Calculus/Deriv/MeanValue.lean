@@ -177,7 +177,7 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) 
   case pos =>
     intro hdiff
     replace hdiff := hdiff.hasDerivWithinAt
-    rw [hasDerivWithinAt_iff_tendsto_slope, Set.diff_singleton_eq_self self_notMem_Ioi] at hdiff
+    rw [hasDerivWithinAt_iff_tendsto_slope, Set.sdiff_singleton_eq_self self_notMem_Ioi] at hdiff
     have h₀ : ∀ᶠ b in 𝓝[>] a,
         ∀ x ∈ Ioc a b, max (derivWithin f (Ioi a) a + 1) 0 < derivWithin f (Ioi a) x := by
       rw [(nhdsGT_basis a).eventually_iff]

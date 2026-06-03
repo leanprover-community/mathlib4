@@ -85,12 +85,12 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
     simpa only [r, s.piecewise_eq_of_mem _ _ hJs] using hπ.1 J hJ (Box.coe_subset_Icc hx)
   refine abs_sub_le_iff.2 ⟨?_, ?_⟩
   · refine (ENNReal.le_toReal_sub B).trans (ENNReal.toReal_le_coe_of_le_coe ?_)
-    refine (tsub_le_tsub (measure_mono htU) le_rfl).trans (le_measure_diff.trans ?_)
+    refine (tsub_le_tsub (measure_mono htU) le_rfl).trans (le_measure_sdiff.trans ?_)
     refine (measure_mono fun x hx => ?_).trans hμU.le
     exact ⟨hx.1.1, fun hx' => hx.2 ⟨hx'.1, hx.1.2⟩⟩
   · have hμt : μ t ≠ ∞ := ((measure_mono (htU.trans inter_subset_left)).trans_lt hUt).ne
     refine (ENNReal.le_toReal_sub hμt).trans (ENNReal.toReal_le_coe_of_le_coe ?_)
-    refine le_measure_diff.trans ((measure_mono ?_).trans hμF.le)
+    refine le_measure_sdiff.trans ((measure_mono ?_).trans hμF.le)
     rintro x ⟨⟨hxs, hxI⟩, hxt⟩
     refine ⟨⟨hxs, Box.coe_subset_Icc hxI⟩, fun hxF => hxt ?_⟩
     simp only [t, TaggedPrepartition.iUnion_def, TaggedPrepartition.mem_filter, Set.mem_iUnion]
@@ -330,7 +330,7 @@ theorem AEContinuous.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (
     repeat rw [μ.restrict_apply hs]
     apply le_of_le_of_eq <| μ.mono s.inter_subset_left
     refine measure_eq_measure_of_null_diff s.inter_subset_left ?_ |>.symm
-    rw [diff_self_inter, Set.diff_eq, ← nonpos_iff_eq_zero]
+    rw [sdiff_self_inter, Set.sdiff_eq, ← nonpos_iff_eq_zero]
     grw [s.inter_subset_right]
     exact hc.le
   · have : IsFiniteMeasure (μ.restrict (Box.Icc I)) :=

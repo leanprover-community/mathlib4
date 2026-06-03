@@ -94,8 +94,8 @@ theorem tendsto_measure_symmDiff_preimage_nhds_zero
   rw [symmDiff_of_ge ha.subset_preimage, symmDiff_of_le hKg.subset_preimage]
   gcongr
   have hK' : μ K ≠ ∞ := ne_top_of_le_ne_top hνs' <| measure_mono hKg.subset_preimage
-  rw [measure_diff_le_iff_le_add hKm ha.subset_preimage hK', hfa.measure_preimage hs,
-    ← hg.measure_preimage hs, ← measure_diff_le_iff_le_add hKm hKg.subset_preimage hK']
+  rw [measure_sdiff_le_iff_le_add hKm ha.subset_preimage hK', hfa.measure_preimage hs,
+    ← hg.measure_preimage hs, ← measure_sdiff_le_iff_le_add hKm hKg.subset_preimage hK']
   exact hKμ.le
 
 /-- Let `f : Z → C(X, Y)` be a continuous (in the compact open topology) family

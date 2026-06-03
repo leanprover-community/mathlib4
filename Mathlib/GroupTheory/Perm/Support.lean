@@ -460,7 +460,7 @@ theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
       simp [swap_apply_of_ne_of_ne, h.left.left, h.left.left.symm, h.left.right.symm,
         h.left.right.left.symm, h.right.left.symm]
 
-theorem support_swap_mul_ge_support_diff (f : Perm α) (x y : α) :
+theorem support_swap_mul_ge_support_sdiff (f : Perm α) (x y : α) :
     f.support \ {x, y} ≤ (swap x y * f).support := by
   intro
   simp only [and_imp, Perm.coe_mul, Function.comp_apply, Ne, mem_support, mem_insert, mem_sdiff,

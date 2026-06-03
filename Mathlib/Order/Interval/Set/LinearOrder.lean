@@ -41,16 +41,16 @@ theorem compl_Iio : (Iio a)ᶜ = Ici a :=
   ext fun _ => not_lt
 
 @[to_dual (attr := simp)]
-theorem Ici_diff_Ici : Ici a \ Ici b = Ico a b := by rw [diff_eq, compl_Ici, Ici_inter_Iio]
+theorem Ici_sdiff_Ici : Ici a \ Ici b = Ico a b := by rw [sdiff_eq, compl_Ici, Ici_inter_Iio]
 
 @[to_dual (attr := simp)]
-theorem Ici_diff_Ioi : Ici a \ Ioi b = Icc a b := by rw [diff_eq, compl_Ioi, Ici_inter_Iic]
+theorem Ici_sdiff_Ioi : Ici a \ Ioi b = Icc a b := by rw [sdiff_eq, compl_Ioi, Ici_inter_Iic]
 
 @[to_dual (attr := simp)]
-theorem Ioi_diff_Ioi : Ioi a \ Ioi b = Ioc a b := by rw [diff_eq, compl_Ioi, Ioi_inter_Iic]
+theorem Ioi_sdiff_Ioi : Ioi a \ Ioi b = Ioc a b := by rw [sdiff_eq, compl_Ioi, Ioi_inter_Iic]
 
 @[to_dual (attr := simp)]
-theorem Ioi_diff_Ici : Ioi a \ Ici b = Ioo a b := by rw [diff_eq, compl_Ici, Ioi_inter_Iio]
+theorem Ioi_sdiff_Ici : Ioi a \ Ici b = Ioo a b := by rw [sdiff_eq, compl_Ici, Ioi_inter_Iio]
 
 @[to_dual]
 theorem Ioi_injective : Injective (Ioi : α → Set α) := fun _ _ =>
@@ -499,11 +499,11 @@ theorem Ioo_inter_Ioc_of_right_lt (h : b₂ < b₁) : Ioo a₁ b₁ ∩ Ioc a₂
   grind
 
 @[simp]
-theorem Ico_diff_Iio : Ico a b \ Iio c = Ico (max a c) b := by
+theorem Ico_sdiff_Iio : Ico a b \ Iio c = Ico (max a c) b := by
   grind
 
 @[simp]
-theorem Ioc_diff_Ioi : Ioc a b \ Ioi c = Ioc a (min b c) := by
+theorem Ioc_sdiff_Ioi : Ioc a b \ Ioi c = Ioc a (min b c) := by
   grind
 
 @[simp]
@@ -515,20 +515,20 @@ theorem Ico_inter_Iio : Ico a b ∩ Iio c = Ico a (min b c) := by
   grind
 
 @[simp]
-theorem Ioc_diff_Iic : Ioc a b \ Iic c = Ioc (max a c) b := by
+theorem Ioc_sdiff_Iic : Ioc a b \ Iic c = Ioc (max a c) b := by
   grind
 
 theorem compl_Ioc : (Ioc a b)ᶜ = Iic a ∪ Ioi b := by
   grind
 
-theorem Iic_diff_Ioc : Iic b \ Ioc a b = Iic (a ⊓ b) := by
+theorem Iic_sdiff_Ioc : Iic b \ Ioc a b = Iic (a ⊓ b) := by
   grind
 
 @[simp]
-theorem Ioi_diff_Ioc : Ioi a \ Ioc a b = Ioi (max a b) := by
+theorem Ioi_sdiff_Ioc : Ioi a \ Ioc a b = Ioi (max a b) := by
   grind
 
-theorem Iic_diff_Ioc_self_of_le (hab : a ≤ b) : Iic b \ Ioc a b = Iic a := by
+theorem Iic_sdiff_Ioc_self_of_le (hab : a ≤ b) : Iic b \ Ioc a b = Iic a := by
   grind
 
 @[simp]

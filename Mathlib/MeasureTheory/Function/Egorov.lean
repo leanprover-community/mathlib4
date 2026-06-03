@@ -159,7 +159,7 @@ theorem iUnionNotConvergentSeq_subset (hε : 0 < ε)
   rw [iUnionNotConvergentSeq, ← Set.inter_iUnion]
   exact Set.inter_subset_left
 
-theorem tendstoUniformlyOn_diff_iUnionNotConvergentSeq (hε : 0 < ε)
+theorem tendstoUniformlyOn_sdiff_iUnionNotConvergentSeq (hε : 0 < ε)
     (hf : ∀ n, Measurable (fun a ↦ edist (f n a) (g a))) (hsm : MeasurableSet s)
     (hs : μ s ≠ ∞) (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     TendstoUniformlyOn f g atTop (s \ Egorov.iUnionNotConvergentSeq hε hf hsm hs hfg) := by
@@ -221,7 +221,7 @@ theorem tendstoUniformlyOn_of_ae_tendsto_of_measurable_edist' [IsFiniteMeasure �
     tendstoUniformlyOn_of_ae_tendsto_of_measurable_edist hf MeasurableSet.univ
     (measure_ne_top μ Set.univ) (by filter_upwards [hfg] with _ htendsto _ using htendsto) hε
   refine ⟨_, ht, ?_⟩
-  rwa [Set.compl_eq_univ_diff]
+  rwa [Set.compl_eq_univ_sdiff]
 
 /-- Egorov's theorem for finite measure spaces. -/
 theorem tendstoUniformlyOn_of_ae_tendsto' [IsFiniteMeasure μ] (hf : ∀ n, StronglyMeasurable (f n))

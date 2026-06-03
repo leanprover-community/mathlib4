@@ -131,12 +131,12 @@ lemma isClosed_of_subset_lattice {s : Set ℂ} (hs : s ⊆ L.lattice) : IsClosed
   convert! Set.image_preimage_eq_inter_range.symm using 1
   simpa
 
-lemma isOpen_compl_lattice_diff {s : Set ℂ} : IsOpen (L.lattice \ s)ᶜ :=
-  (L.isClosed_of_subset_lattice Set.diff_subset).isOpen_compl
+lemma isOpen_compl_lattice_sdiff {s : Set ℂ} : IsOpen (L.lattice \ s)ᶜ :=
+  (L.isClosed_of_subset_lattice Set.sdiff_subset).isOpen_compl
 
 open scoped Topology in
-lemma compl_lattice_diff_singleton_mem_nhds (x : ℂ) : (↑L.lattice \ {x})ᶜ ∈ 𝓝 x :=
-  L.isOpen_compl_lattice_diff.mem_nhds (by simp)
+lemma compl_lattice_sdiff_singleton_mem_nhds (x : ℂ) : (↑L.lattice \ {x})ᶜ ∈ 𝓝 x :=
+  L.isOpen_compl_lattice_sdiff.mem_nhds (by simp)
 
 instance : ProperSpace L.lattice := .of_isClosed L.isClosed_lattice
 
@@ -316,7 +316,7 @@ lemma not_continuousAt_weierstrassP (x : ℂ) (hx : x ∈ L.lattice) : ¬ Contin
   apply (NormedField.continuousAt_zpow (n := -2) (x := (0 : ℂ))).not.mpr (by simp)
   simpa [Function.comp_def] using!
     (((H.sub ((L.differentiableOn_weierstrassPExcept x).differentiableAt
-      (L.compl_lattice_diff_singleton_mem_nhds x)).continuousAt).add
+      (L.compl_lattice_sdiff_singleton_mem_nhds x)).continuousAt).add
       (continuous_const (y := 1 / x ^ 2)).continuousAt).comp_of_eq
       (continuous_const_add x).continuousAt (add_zero _) :)
 
@@ -449,7 +449,7 @@ private lemma weierstrassPExcept_add_coe_aux
     rw [L.eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept,
       L.eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept, L.derivWeierstrassPExcept_add_coe]
     · simpa using hx
-    · simp only [Set.mem_compl_iff, Set.mem_diff, SetLike.mem_coe, Set.mem_singleton_iff, not_and,
+    · simp only [Set.mem_compl_iff, Set.mem_sdiff, SetLike.mem_coe, Set.mem_singleton_iff, not_and,
         Decidable.not_not, eq_sub_iff_add_eq] at hx ⊢
       exact fun H ↦ hx (by simpa using sub_mem H l.2)
   · simp [hl]
@@ -662,7 +662,7 @@ lemma summable_weierstrassPExceptSummand (l₀ z x : ℂ)
   obtain ⟨κ, hκ, hκ'⟩ : ∃ κ : ℝ, 1 < κ ∧ ∀ l : L.lattice, l.1 ≠ l₀ → ‖z - x‖ * κ < ‖l - x‖ := by
     obtain ⟨κ, hκ, hκ'⟩ := Metric.isOpen_iff.mp ((continuous_mul_const ‖z - x‖).isOpen_preimage _
       (isClosedMap_dist x _
-      (L.isClosed_of_subset_lattice (Set.diff_subset (t := {l₀})))).upperClosure.isOpen_compl) 1
+      (L.isClosed_of_subset_lattice (Set.sdiff_subset (t := {l₀})))).upperClosure.isOpen_compl) 1
       (by simpa [Complex.dist_eq, @forall_comm ℝ, norm_sub_rev x] using hx)
     refine ⟨κ / 2 + 1, by simpa, fun l hl ↦ ?_⟩
     have : ∀ l ∈ L.lattice, l ≠ l₀ → (κ / 2 + 1) * ‖z - x‖ < dist x l := by
@@ -759,7 +759,7 @@ lemma hasFPowerSeriesAt_weierstrassPExcept (l : ℂ) :
     HasFPowerSeriesAt ℘[L - l] (.ofScalars (𝕜 := ℂ) ℂ fun i : ℕ ↦
       if i = 0 then ℘[L - l] l else (i + 1) * L.sumInvPow l (i + 2)) l := by
   obtain ⟨r, h₁, h₂⟩ := Metric.nhds_basis_closedBall.mem_iff.mp
-    (L.compl_lattice_diff_singleton_mem_nhds l)
+    (L.compl_lattice_sdiff_singleton_mem_nhds l)
   lift r to NNReal using h₁.le
   simpa [weierstrassPExceptSeries] using
     (L.hasFPowerSeriesOnBall_weierstrassPExcept l l r h₁ h₂).hasFPowerSeriesAt
@@ -809,7 +809,7 @@ lemma hasFPowerSeriesAt_derivWeierstrassPExcept (l : ℂ) :
     HasFPowerSeriesAt ℘'[L - l]
       (.ofScalars ℂ fun i ↦ (i + 1) * (i + 2) * L.sumInvPow l (i + 3)) l := by
   obtain ⟨r, h₁, h₂⟩ := Metric.nhds_basis_closedBall.mem_iff.mp
-    (L.compl_lattice_diff_singleton_mem_nhds l)
+    (L.compl_lattice_sdiff_singleton_mem_nhds l)
   simpa [derivWeierstrassPExceptSeries] using
     (L.hasFPowerSeriesOnBall_derivWeierstrassPExcept l l ⟨r, h₁.le⟩ h₁ h₂).hasFPowerSeriesAt
 
@@ -888,7 +888,7 @@ lemma hasFPowerSeriesOnBall_weierstrassP (x : ℂ) (r : NNReal) (hr0 : 0 < r)
   simp_rw [← L.weierstrassPExceptSeries_of_notMem _ L.ω₁_div_two_notMem_lattice,
     ← L.weierstrassPExcept_of_notMem _ L.ω₁_div_two_notMem_lattice]
   exact L.hasFPowerSeriesOnBall_weierstrassPExcept _ x r hr0
-    (hr.trans (Set.compl_subset_compl.mpr Set.diff_subset))
+    (hr.trans (Set.compl_subset_compl.mpr Set.sdiff_subset))
 
 lemma analyticOnNhd_weierstrassP : AnalyticOnNhd ℂ ℘[L] L.latticeᶜ :=
   L.differentiableOn_weierstrassP.analyticOnNhd L.isClosed_lattice.isOpen_compl
@@ -964,7 +964,7 @@ private lemma meromorphic_relation : Meromorphic L.relation := by
   have : Meromorphic fun z ↦ ℘'[L] z ^ 2 - 4 * ℘[L] z ^ 3 + L.g₂ * ℘[L] z + L.g₃ := by fun_prop
   refine fun z ↦ (this _).congr ?_
   filter_upwards [self_mem_nhdsWithin, mem_nhdsWithin_of_mem_nhds
-    (L.compl_lattice_diff_singleton_mem_nhds _)] with w hw hw'
+    (L.compl_lattice_sdiff_singleton_mem_nhds _)] with w hw hw'
   rw [relation, if_neg (by simp_all)]
 
 private lemma relation_mul_id_pow_six_eventuallyEq :
@@ -972,7 +972,7 @@ private lemma relation_mul_id_pow_six_eventuallyEq :
       (℘'[L - (0 : ℂ)] z * z ^ 3 - 2) ^ 2 - 4 *
       (℘[L - (0 : ℂ)] z * z ^ 2 + 1) ^ 3 + L.g₂ *
       (℘[L - (0 : ℂ)] z * z ^ 6 + z ^ 4) + L.g₃ * z ^ 6 := by
-  filter_upwards [L.compl_lattice_diff_singleton_mem_nhds _] with z hz
+  filter_upwards [L.compl_lattice_sdiff_singleton_mem_nhds _] with z hz
   by_cases hz0 : z = 0
   · simp [hz0, relation]; norm_num
   replace hz : z ∉ L.lattice := by simp_all

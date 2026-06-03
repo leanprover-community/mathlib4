@@ -373,7 +373,7 @@ theorem finset_sup_le_sum (p : ι → Seminorm 𝕜 E) (s : Finset ι) : s.sup p
   classical
   refine Finset.sup_le_iff.mpr ?_
   intro i hi
-  rw [Finset.sum_eq_sum_diff_singleton_add hi, le_add_iff_nonneg_left]
+  rw [Finset.sum_eq_sum_sdiff_singleton_add hi, le_add_iff_nonneg_left]
   exact bot_le
 
 theorem finset_sup_apply_le {p : ι → Seminorm 𝕜 E} {s : Finset ι} {x : E} {a : ℝ} (ha : 0 ≤ a)

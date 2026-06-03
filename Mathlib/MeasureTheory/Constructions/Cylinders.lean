@@ -213,9 +213,9 @@ theorem compl_cylinder (s : Finset ι) (S : Set (∀ i : s, α i)) :
     (cylinder s S)ᶜ = cylinder s (Sᶜ) := by
   ext1 f; simp only [mem_compl_iff, mem_cylinder]
 
-theorem diff_cylinder_same (s : Finset ι) (S T : Set (∀ i : s, α i)) :
+theorem sdiff_cylinder_same (s : Finset ι) (S T : Set (∀ i : s, α i)) :
     cylinder s S \ cylinder s T = cylinder s (S \ T) := by
-  ext1 f; simp only [mem_diff, mem_cylinder]
+  ext1 f; simp only [mem_sdiff, mem_cylinder]
 
 theorem eq_of_cylinder_eq_of_subset [h_nonempty : Nonempty (∀ i, α i)] {I J : Finset ι}
     {S : Set (∀ i : I, α i)} {T : Set (∀ i : J, α i)} (h_eq : cylinder I S = cylinder J T)
@@ -345,10 +345,10 @@ theorem union_mem_measurableCylinders (hs : s ∈ measurableCylinders α)
   exact compl_mem_measurableCylinders (inter_mem_measurableCylinders
     (compl_mem_measurableCylinders hs) (compl_mem_measurableCylinders ht))
 
-theorem diff_mem_measurableCylinders (hs : s ∈ measurableCylinders α)
+theorem sdiff_mem_measurableCylinders (hs : s ∈ measurableCylinders α)
     (ht : t ∈ measurableCylinders α) :
     s \ t ∈ measurableCylinders α := by
-  rw [diff_eq_compl_inter]
+  rw [sdiff_eq_compl_inter]
   exact inter_mem_measurableCylinders (compl_mem_measurableCylinders ht) hs
 
 /-- The measurable cylinders generate the product σ-algebra. -/

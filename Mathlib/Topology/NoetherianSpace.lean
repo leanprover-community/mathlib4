@@ -204,7 +204,7 @@ theorem NoetherianSpace.exists_isOpen_nonempty_subset_irreducibleComponent [Noet
     (Z : Set α) (H : Z ∈ irreducibleComponents α) :
     ∃ o : Set α, IsOpen o ∧ o.Nonempty ∧ o ⊆ Z := by
   have hα : (irreducibleComponents α).Finite := finite_irreducibleComponents
-  have hZ := closure_sUnion_irreducibleComponents_diff_singleton hα Z H
+  have hZ := closure_sUnion_irreducibleComponents_sdiff_singleton hα Z H
   refine ⟨(⋃₀ (irreducibleComponents α \ {Z}))ᶜ, ?_, ?_, subset_closure.trans hZ.le⟩
   · rw [Set.sUnion_eq_biUnion, isOpen_compl_iff]
     exact hα.diff.isClosed_biUnion fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1

@@ -442,7 +442,7 @@ noncomputable def AddContent.onIoc (f : α → G) :
       have UI' : ⋃₀ ↑I' = Ioc u u' := by
         have : (Ioc u' v ∪ ⋃₀ ↑I') \ Ioc u' v = ⋃₀ ↑I' := by
           refine Disjoint.sup_sdiff_cancel_left ?_
-          simp only [coe_erase, disjoint_sUnion_right, mem_diff, mem_singleton_iff, and_imp, I']
+          simp only [coe_erase, disjoint_sUnion_right, mem_sdiff, mem_singleton_iff, and_imp, I']
           intro u hu hu'
           exact (h'I hu tI hu').symm
         simp only [I_eq_insert, coe_insert, sUnion_insert] at h'uv
@@ -553,9 +553,9 @@ variable [PartialOrder G] [CanonicallyOrderedAdd G]
 
 lemma addContent_union_le (hC : IsSetRing C) (hs : s ∈ C) (ht : t ∈ C) :
     m (s ∪ t) ≤ m s + m t := by
-  rw [← union_diff_self, addContent_union hC hs (hC.diff_mem ht hs)]
-  · exact add_le_add_right (addContent_mono hC.isSetSemiring (hC.diff_mem ht hs) ht diff_subset) _
-  · rw [Set.disjoint_iff_inter_eq_empty, inter_diff_self]
+  rw [← union_sdiff_self, addContent_union hC hs (hC.sdiff_mem ht hs)]
+  · exact add_le_add_right (addContent_mono hC.isSetSemiring (hC.sdiff_mem ht hs) ht sdiff_subset) _
+  · rw [Set.disjoint_iff_inter_eq_empty, inter_sdiff_self]
 
 lemma addContent_biUnion_le {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     {S : Finset ι} (hs : ∀ n ∈ S, s n ∈ C) :
@@ -570,21 +570,21 @@ lemma addContent_biUnion_le {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     refine (addContent_union_le hC hs.1 (hC.biUnion_mem S hs.2)).trans ?_
     exact add_le_add le_rfl (h hs.2)
 
-lemma le_addContent_diff (m : AddContent ℝ≥0∞ C) (hC : IsSetRing C) (hs : s ∈ C) (ht : t ∈ C) :
+lemma le_addContent_sdiff (m : AddContent ℝ≥0∞ C) (hC : IsSetRing C) (hs : s ∈ C) (ht : t ∈ C) :
     m s - m t ≤ m (s \ t) := by
-  conv_lhs => rw [← inter_union_diff s t]
-  rw [addContent_union hC (hC.inter_mem hs ht) (hC.diff_mem hs ht) disjoint_inf_sdiff, add_comm]
+  conv_lhs => rw [← inter_union_sdiff s t]
+  rw [addContent_union hC (hC.inter_mem hs ht) (hC.sdiff_mem hs ht) disjoint_inf_sdiff, add_comm]
   refine add_tsub_le_assoc.trans_eq ?_
   rw [tsub_eq_zero_of_le
     (addContent_mono hC.isSetSemiring (hC.inter_mem hs ht) ht inter_subset_right), add_zero]
 
-lemma addContent_diff_of_ne_top (m : AddContent ℝ≥0∞ C) (hC : IsSetRing C)
+lemma addContent_sdiff_of_ne_top (m : AddContent ℝ≥0∞ C) (hC : IsSetRing C)
     (hm_ne_top : ∀ s ∈ C, m s ≠ ∞)
     {s t : Set α} (hs : s ∈ C) (ht : t ∈ C) (hts : t ⊆ s) :
     m (s \ t) = m s - m t := by
   have h_union : m (t ∪ s \ t) = m t + m (s \ t) :=
-    addContent_union hC ht (hC.diff_mem hs ht) disjoint_sdiff_self_right
-  simp_rw [Set.union_diff_self, Set.union_eq_right.mpr hts] at h_union
+    addContent_union hC ht (hC.sdiff_mem hs ht) disjoint_sdiff_self_right
+  simp_rw [Set.union_sdiff_self, Set.union_eq_right.mpr hts] at h_union
   rw [h_union, ENNReal.add_sub_cancel_left (hm_ne_top _ ht)]
 
 /-- In a ring of sets, continuity of an additive content at `∅` implies σ-additivity.
@@ -599,17 +599,17 @@ theorem addContent_iUnion_eq_sum_of_tendsto_zero (hC : IsSetRing C) (m : AddCont
     m (⋃ i, f i) = ∑' i, m (f i) := by
   -- We use the continuity of `m` at `∅` on the sequence `n ↦ (⋃ i, f i) \ (Set.accumulate f n)`
   let s : ℕ → Set α := fun n ↦ (⋃ i, f i) \ Set.accumulate f n
-  have hCs n : s n ∈ C := hC.diff_mem hUf (hC.accumulate_mem hf n)
+  have hCs n : s n ∈ C := hC.sdiff_mem hUf (hC.accumulate_mem hf n)
   have h_tendsto : Tendsto (fun n ↦ m (s n)) atTop (𝓝 0) := by
     refine hm_tendsto hCs ?_ ?_
     · intro i j hij x hxj
-      rw [Set.mem_diff] at hxj ⊢
+      rw [Set.mem_sdiff] at hxj ⊢
       exact ⟨hxj.1, fun hxi ↦ hxj.2 (Set.monotone_accumulate hij hxi)⟩
-    · simp_rw [s, Set.diff_eq]
+    · simp_rw [s, Set.sdiff_eq]
       rw [Set.iInter_inter_distrib, Set.iInter_const, ← Set.compl_iUnion, Set.iUnion_accumulate]
       exact Set.inter_compl_self _
   have hmsn n : m (s n) = m (⋃ i, f i) - ∑ i ∈ Finset.range (n + 1), m (f i) := by
-    rw [addContent_diff_of_ne_top m hC hm_ne_top hUf (hC.accumulate_mem hf n)
+    rw [addContent_sdiff_of_ne_top m hC hm_ne_top hUf (hC.accumulate_mem hf n)
       (Set.accumulate_subset_iUnion _), addContent_accumulate m hC h_disj hf n]
   simp_rw [hmsn] at h_tendsto
   refine tendsto_nhds_unique ?_ (ENNReal.tendsto_nat_tsum fun i ↦ m (f i))

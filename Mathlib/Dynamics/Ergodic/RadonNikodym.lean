@@ -81,10 +81,10 @@ theorem rnDeriv_comp_aeEq [IsFiniteMeasure ν] {f : X → X}
   set s := {a | μ.rnDeriv ν a < c}
   have hsm : MeasurableSet s := measurable_rnDeriv _ _ measurableSet_Iio
   have hμ_diff : μ (f ⁻¹' s \ s) = μ (s \ f ⁻¹' s) :=
-    measure_diff_symm (hfμ.measurable hsm).nullMeasurableSet hsm.nullMeasurableSet
+    measure_sdiff_symm (hfμ.measurable hsm).nullMeasurableSet hsm.nullMeasurableSet
       (hfμ.measure_preimage hsm.nullMeasurableSet) (by finiteness)
   have hν_diff : ν (f ⁻¹' s \ s) = ν (s \ f ⁻¹' s) :=
-    measure_diff_symm (hfν.measurable hsm).nullMeasurableSet hsm.nullMeasurableSet
+    measure_sdiff_symm (hfν.measurable hsm).nullMeasurableSet hsm.nullMeasurableSet
       (hfν.measure_preimage hsm.nullMeasurableSet) (by finiteness)
   suffices f ⁻¹' s =ᵐ[ν] s from this.mem_iff
   suffices ν (f ⁻¹' s \ s) = 0 from (ae_le_set.mpr this).antisymm (ae_le_set.mpr <| hν_diff ▸ this)

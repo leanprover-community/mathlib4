@@ -153,15 +153,15 @@ theorem intrinsicClosure_subset_affineSpan : intrinsicClosure 𝕜 s ⊆ affineS
   (image_subset_range _ _).trans Subtype.range_coe.subset
 
 @[simp]
-theorem intrinsicClosure_diff_intrinsicFrontier (s : Set P) :
+theorem intrinsicClosure_sdiff_intrinsicFrontier (s : Set P) :
     intrinsicClosure 𝕜 s \ intrinsicFrontier 𝕜 s = intrinsicInterior 𝕜 s :=
-  (image_diff Subtype.coe_injective _ _).symm.trans <| by
-    rw [closure_diff_frontier, intrinsicInterior]
+  (image_sdiff Subtype.coe_injective _ _).symm.trans <| by
+    rw [closure_sdiff_frontier, intrinsicInterior]
 
 @[simp]
-theorem intrinsicClosure_diff_intrinsicInterior (s : Set P) :
+theorem intrinsicClosure_sdiff_intrinsicInterior (s : Set P) :
     intrinsicClosure 𝕜 s \ intrinsicInterior 𝕜 s = intrinsicFrontier 𝕜 s :=
-  (image_diff Subtype.coe_injective _ _).symm
+  (image_sdiff Subtype.coe_injective _ _).symm
 
 @[simp]
 theorem intrinsicInterior_union_intrinsicFrontier (s : Set P) :
@@ -283,12 +283,12 @@ theorem intrinsicClosure_eq_closure : intrinsicClosure 𝕜 s = closure s := by
 variable {𝕜}
 
 @[simp]
-theorem closure_diff_intrinsicInterior (s : Set P) :
+theorem closure_sdiff_intrinsicInterior (s : Set P) :
     closure s \ intrinsicInterior 𝕜 s = intrinsicFrontier 𝕜 s :=
   intrinsicClosure_eq_closure 𝕜 s ▸ intrinsicClosure_diff_intrinsicInterior s
 
 @[simp]
-theorem closure_diff_intrinsicFrontier (s : Set P) :
+theorem closure_sdiff_intrinsicFrontier (s : Set P) :
     closure s \ intrinsicFrontier 𝕜 s = intrinsicInterior 𝕜 s :=
   intrinsicClosure_eq_closure 𝕜 s ▸ intrinsicClosure_diff_intrinsicFrontier s
 

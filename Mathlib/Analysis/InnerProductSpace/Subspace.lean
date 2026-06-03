@@ -165,7 +165,7 @@ theorem OrthogonalFamily.orthonormal_sigma_orthonormal {α : ι → Type*} {v_fa
     simpa only [LinearIsometry.inner_map_map] using (hv_family i).2 this
   · exact hV hij (v_family i v) (v_family j w)
 
-theorem OrthogonalFamily.norm_sq_diff_sum [DecidableEq ι] (f : ∀ i, G i) (s₁ s₂ : Finset ι) :
+theorem OrthogonalFamily.norm_sq_sdiff_sum [DecidableEq ι] (f : ∀ i, G i) (s₁ s₂ : Finset ι) :
     ‖(∑ i ∈ s₁, V i (f i)) - ∑ i ∈ s₂, V i (f i)‖ ^ 2 =
       (∑ i ∈ s₁ \ s₂, ‖f i‖ ^ 2) + ∑ i ∈ s₂ \ s₁, ‖f i‖ ^ 2 := by
   rw [← Finset.sum_sdiff_sub_sum_sdiff, sub_eq_add_neg, ← Finset.sum_neg_distrib]

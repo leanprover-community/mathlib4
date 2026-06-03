@@ -552,7 +552,7 @@ protected lemma Nonempty.diffs : s.Nonempty → t.Nonempty → (s \\ t).Nonempty
 lemma Nonempty.of_diffs_left : (s \\ t).Nonempty → s.Nonempty := Nonempty.of_image₂_left
 lemma Nonempty.of_diffs_right : (s \\ t).Nonempty → t.Nonempty := Nonempty.of_image₂_right
 
-@[simp] lemma empty_diffs : ∅ \\ t = ∅ := image₂_empty_left
+@[simp] lemma empty_sdiffs : ∅ \\ t = ∅ := image₂_empty_left
 @[simp] lemma diffs_empty : s \\ ∅ = ∅ := image₂_empty_right
 @[simp] lemma diffs_eq_empty : s \\ t = ∅ ↔ s = ∅ ∨ t = ∅ := image₂_eq_empty_iff
 

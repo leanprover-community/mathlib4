@@ -108,12 +108,12 @@ theorem IsCountablyCompact.elim_directed_cover [Countable ι] [Nonempty ι]
     (hAU : A ⊆ ⋃ i, U i) (hdU : Directed (· ⊆ ·) U) : ∃ i, A ⊆ U i := by
   by_contra! h
   have hdir : Directed (· ≥ ·) fun i => 𝓟 (A \ U i) :=
-    fun i j => (hdU i j).imp fun _ ⟨hi, hj⟩ => ⟨principal_mono.mpr <| diff_subset_diff_right hi,
-      principal_mono.mpr <| diff_subset_diff_right hj⟩
+    fun i j => (hdU i j).imp fun _ ⟨hi, hj⟩ => ⟨principal_mono.mpr <| sdiff_subset_sdiff_right hi,
+      principal_mono.mpr <| sdiff_subset_sdiff_right hj⟩
   have : NeBot (⨅ i, 𝓟 (A \ U i)) :=
-    iInf_neBot_of_directed' hdir fun i => (diff_nonempty.mpr (h i)).principal_neBot
+    iInf_neBot_of_directed' hdir fun i => (sdiff_nonempty.mpr (h i)).principal_neBot
   have hle : (⨅ i, 𝓟 (A \ U i)) ≤ 𝓟 A :=
-    iInf_le_of_le ‹Nonempty ι›.some <| principal_mono.mpr diff_subset
+    iInf_le_of_le ‹Nonempty ι›.some <| principal_mono.mpr sdiff_subset
   rcases hA hle with ⟨a, ha, hac⟩
   rcases mem_iUnion.mp (hAU ha) with ⟨k, hk⟩
   exact closure_minimal (fun _ hx => hx.2) (hUo k).isClosed_compl

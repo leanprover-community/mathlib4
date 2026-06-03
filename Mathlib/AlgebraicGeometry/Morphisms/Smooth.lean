@@ -379,7 +379,7 @@ lemma Scheme.Hom.dense_smoothLocus_of_perfectField
       exact TopologicalSpace.NoetherianSpace.finite_irreducibleComponents.diff.isClosed_biUnion
         fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1⟩
   have hU : closure U = irreducibleComponent x :=
-    closure_sUnion_irreducibleComponents_diff_singleton
+    closure_sUnion_irreducibleComponents_sdiff_singleton
       TopologicalSpace.NoetherianSpace.finite_irreducibleComponents
       _ (irreducibleComponent_mem_irreducibleComponents x)
   have : AlgebraicGeometry.IsIntegral U :=

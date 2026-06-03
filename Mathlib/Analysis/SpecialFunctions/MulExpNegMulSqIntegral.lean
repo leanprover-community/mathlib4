@@ -182,7 +182,7 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
   let K := KP ∪ KP'
   have hKco := IsCompact.union hKPco hKP'co
   have hKcl := IsClosed.union hKPcl hKP'cl
-  simp only [← Set.compl_eq_univ_diff] at hKP hKP'
+  simp only [← Set.compl_eq_univ_sdiff] at hKP hKP'
   have hKPbound : P (KP ∪ KP')ᶜ < ε.toNNReal := lt_of_le_of_lt
         (measure_mono (Set.compl_subset_compl_of_subset (Set.subset_union_left))) hKP
   have hKP'bound : P' (KP ∪ KP')ᶜ < ε.toNNReal := lt_of_le_of_lt

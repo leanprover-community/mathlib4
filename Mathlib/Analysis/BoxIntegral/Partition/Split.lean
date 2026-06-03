@@ -324,7 +324,7 @@ theorem IsPartition.exists_splitMany_le {I : Box ι} {π : Prepartition I} (h : 
 
 /-- For every prepartition `π` of `I` there exists a prepartition that covers exactly
 `I \ π.iUnion`. -/
-theorem exists_iUnion_eq_diff (π : Prepartition I) :
+theorem exists_iUnion_eq_sdiff (π : Prepartition I) :
     ∃ π' : Prepartition I, π'.iUnion = ↑I \ π.iUnion := by
   rcases π.eventually_splitMany_inf_eq_filter.exists with ⟨s, hs⟩
   use (splitMany I s).filter fun J => ¬(J : Set (ι → ℝ)) ⊆ π.iUnion
@@ -333,11 +333,11 @@ theorem exists_iUnion_eq_diff (π : Prepartition I) :
 /-- If `π` is a prepartition of `I`, then `π.compl` is a prepartition of `I`
 such that `π.compl.iUnion = I \ π.iUnion`. -/
 def compl (π : Prepartition I) : Prepartition I :=
-  π.exists_iUnion_eq_diff.choose
+  π.exists_iUnion_eq_sdiff.choose
 
 @[simp]
 theorem iUnion_compl (π : Prepartition I) : π.compl.iUnion = ↑I \ π.iUnion :=
-  π.exists_iUnion_eq_diff.choose_spec
+  π.exists_iUnion_eq_sdiff.choose_spec
 
 /-- Since the definition of `BoxIntegral.Prepartition.compl` uses `Exists.choose`,
 the result depends only on `π.iUnion`. -/
@@ -347,7 +347,7 @@ theorem compl_congr {π₁ π₂ : Prepartition I} (h : π₁.iUnion = π₂.iUn
   rw [h]
 
 theorem IsPartition.compl_eq_bot {π : Prepartition I} (h : IsPartition π) : π.compl = ⊥ := by
-  rw [← iUnion_eq_empty, iUnion_compl, h.iUnion_eq, diff_self]
+  rw [← iUnion_eq_empty, iUnion_compl, h.iUnion_eq, sdiff_self]
 
 @[simp]
 theorem compl_top : (⊤ : Prepartition I).compl = ⊥ :=

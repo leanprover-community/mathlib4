@@ -51,7 +51,7 @@ def irreducibleComponentIdeal : X.IdealSheafData where
   supportSet := Z
   supportSet_eq_iInter_zeroLocus := by
     rw [← IdealSheafData.coe_support_eq_eq_iInter_zeroLocus, Hom.support_ker, Opens.range_ι]
-    exact (closure_sUnion_irreducibleComponents_diff_singleton
+    exact (closure_sUnion_irreducibleComponents_sdiff_singleton
       TopologicalSpace.NoetherianSpace.finite_irreducibleComponents Z hZ).symm
 
 theorem irreducibleComponentIdeal_def :

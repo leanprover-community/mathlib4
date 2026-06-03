@@ -159,7 +159,7 @@ theorem IsTopologicalBasis.insert_empty {s : Set (Set α)} (h : IsTopologicalBas
   h.of_isOpen_of_subset (by rintro _ (rfl | hu); exacts [isOpen_empty, h.isOpen hu])
     (subset_insert ..)
 
-theorem IsTopologicalBasis.diff_empty {s : Set (Set α)} (h : IsTopologicalBasis s) :
+theorem IsTopologicalBasis.sdiff_empty {s : Set (Set α)} (h : IsTopologicalBasis s) :
     IsTopologicalBasis (s \ {∅}) :=
   isTopologicalBasis_of_isOpen_of_nhds (fun _ hu ↦ h.isOpen hu.1) fun a _ ha hu ↦
     have ⟨t, hts, ht⟩ := h.isOpen_iff.mp hu a ha
@@ -310,7 +310,7 @@ theorem IsTopologicalBasis.continuousOn_iff [TopologicalSpace β]
 
 @[simp]
 lemma isTopologicalBasis_singleton_empty : IsTopologicalBasis {(∅ : Set α)} ↔ IsEmpty α where
-  mp h := by simpa using h.diff_empty
+  mp h := by simpa using h.sdiff_empty
   mpr h := ⟨by simp, by simp [Set.univ_eq_empty_iff.2], Subsingleton.elim ..⟩
 
 variable (α)
@@ -789,8 +789,8 @@ variable (α)
 theorem exists_countable_basis [SecondCountableTopology α] :
     ∃ b : Set (Set α), b.Countable ∧ ∅ ∉ b ∧ IsTopologicalBasis b := by
   obtain ⟨b, hb₁, hb₂⟩ := @SecondCountableTopology.is_open_generated_countable α _ _
-  refine ⟨_, ?_, notMem_diff_of_mem ?_, (isTopologicalBasis_of_subbasis hb₂).diff_empty⟩
-  exacts [((countable_setOf_finite_subset hb₁).image _).mono diff_subset, rfl]
+  refine ⟨_, ?_, notMem_sdiff_of_mem ?_, (isTopologicalBasis_of_subbasis hb₂).sdiff_empty⟩
+  exacts [((countable_setOf_finite_subset hb₁).image _).mono sdiff_subset, rfl]
 
 theorem exists_seq_basis [SecondCountableTopology α] :
     ∃ b : ℕ → Set α, IsTopologicalBasis (range b) := by

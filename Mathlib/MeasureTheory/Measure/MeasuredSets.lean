@@ -56,7 +56,7 @@ lemma MeasuredSets.edist_def (s t : MeasuredSets μ) : edist s t = μ ((s : Set 
 
 We cannot state this in terms of `LipschitzWith`, because `ℝ≥0∞` is not a `PseudoEMetricSpace`. -/
 lemma MeasuredSets.sub_le_edist (s t : MeasuredSets μ) : μ s - μ t ≤ edist s t :=
-  le_measure_diff.trans <| measure_mono subset_union_left
+  le_measure_sdiff.trans <| measure_mono subset_union_left
 
 lemma MeasuredSets.continuous_measure : Continuous (fun (s : MeasuredSets μ) ↦ μ s) := by
   refine continuous_of_le_add_edist 1 ENNReal.one_ne_top fun s t ↦ ?_
@@ -124,7 +124,7 @@ lemma exists_measure_symmDiff_lt_of_generateFrom_isSetRing [IsFiniteMeasure μ]
       obtain ⟨n, hn⟩ : ∃ n, μ (accumulate f n)ᶜ < ε / 2 :=
         ((tendsto_order.1 this).2 _ (ENNReal.half_pos εpos.ne')).exists
       exact ⟨accumulate f n, fC n, hn⟩
-    refine ⟨t' \ t, hC.diff_mem t'C tC, ?_⟩
+    refine ⟨t' \ t, hC.sdiff_mem t'C tC, ?_⟩
     calc μ ((t' \ t) ∆ sᶜ)
       _ ≤ μ (t ∆ s ∪ t'ᶜ) := by gcongr; grind
       _ ≤ μ (t ∆ s) + μ (t'ᶜ) := measure_union_le _ _
