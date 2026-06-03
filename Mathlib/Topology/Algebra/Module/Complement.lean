@@ -418,9 +418,11 @@ theorem continuous_prodEquivOfIsCompl (h : IsCompl p q) : Continuous (p.prodEqui
 `Submodule.prodEquivOfIsCompl` is a homeomorphism. -/
 theorem IsCompl.isTopCompl_iff_isHomeomorph_prodEquivOfIsCompl (h : IsCompl p q) :
     IsTopCompl p q ↔ IsHomeomorph (p.prodEquivOfIsCompl q h) := by
-  rw [(p.prodEquivOfIsCompl q h).isHomeomorph_iff,
-    isTopCompl_iff_continuous_symm_prodEquivOfIsCompl, and_iff_right]
-  exact continuous_prodEquivOfIsCompl h
+  change _ ↔ IsHomeomorph (p.prodEquivOfIsCompl q h).toAddEquiv.toEquiv
+  erw [(p.prodEquivOfIsCompl q h).isHomeomorph_iff,
+    isTopCompl_iff_continuous_symm_prodEquivOfIsCompl h,
+    and_iff_right (continuous_prodEquivOfIsCompl h)]
+  simp only [LinearEquiv.invFun_eq_symm, Equiv.coe_fn_mk, Equiv.symm_mk]
 
 variable (p q) in
 /-- If two submodules are topological complements, then the linear equivalence
