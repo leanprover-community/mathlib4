@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Mathlib.Order.BooleanSubalgebra
 public import Mathlib.Topology.Continuous
 public import Mathlib.Topology.Defs.Induced
 
@@ -643,6 +644,36 @@ lemma generateFrom_insert_empty {α : Type*} {s : Set (Set α)} :
     generateFrom (insert ∅ s) = generateFrom s := by
   rw [← sUnion_empty]
   exact generateFrom_insert_of_generateOpen (.sUnion ∅ (fun s_1 a ↦ False.elim a))
+
+lemma generateFrom_latticeClosure {α : Type*} (s : Set (Set α)) :
+    generateFrom (latticeClosure s) = generateFrom s := by
+  refine eq_of_le_of_ge ?_ ?_
+  · exact le_generateFrom fun o hos => isOpen_generateFrom_of_mem <| subset_latticeClosure hos
+  · refine le_generateFrom fun o hos => ?_
+    refine latticeClosure_sup_inf_induction (fun o _ => IsOpen[generateFrom s] o) ?_ ?_ ?_ hos
+    · exact fun _ h => isOpen_generateFrom_of_mem h
+    · exact fun _ _ _ _ h1 h2 => @IsOpen.union α _ _ (generateFrom s) h1 h2
+    · exact fun _ _ _ _ h1 h2 => @IsOpen.inter α (generateFrom s) _ _ h1 h2
+
+lemma generateFrom_booleanSubalgebra_closure_eq_of_isSublattice {α : Type*}
+    {s : Set (Set α)} (hs1 : ⊥ ∈ s) (hs2 : compl '' s = s) (hs3 : IsSublattice s) :
+    generateFrom (BooleanSubalgebra.closure s) = generateFrom s := by
+  refine eq_of_le_of_ge ?_ ?_
+  · exact le_generateFrom fun _ h => isOpen_generateFrom_of_mem <|
+      BooleanSubalgebra.subset_closure h
+  · refine le_generateFrom fun o hos =>
+      BooleanSubalgebra.closure_sdiff_sup_induction hs3 hs1 (hs2 ▸ ⟨⊥, hs1, compl_bot⟩) ?_
+        (fun _ _ _ _ h1 h2 => @IsOpen.union _ _ _ (generateFrom s) h1 h2) o hos
+    · exact fun o hos u hus => Set.diff_eq_compl_inter ▸ (isOpen_generateFrom_of_mem <|
+        IsSublattice.infClosed hs3 (hs2 ▸ Set.mem_image_of_mem compl hus) hos)
+
+lemma generateFrom_booleanSubalgebra_closure
+    {α : Type*} {s : Set (Set α)} (hs1 : ⊥ ∈ s) (hs2 : compl '' s = s) :
+    generateFrom (BooleanSubalgebra.closure s) = generateFrom s :=
+  BooleanSubalgebra.closure_latticeClosure s ▸
+    generateFrom_booleanSubalgebra_closure_eq_of_isSublattice (subset_latticeClosure hs1)
+      (compl_image_latticeClosure_eq_of_compl_image_eq_self hs2) isSublattice_latticeClosure ▸
+        generateFrom_latticeClosure s
 
 /-- This construction is left adjoint to the operation sending a topology on `α`
   to its neighborhood filter at a fixed point `a : α`. -/
