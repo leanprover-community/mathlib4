@@ -36,16 +36,9 @@ def ordHom (z : X) (hz : coheight z = 1) : X.functionField →*₀ ℤᵐ⁰ :=
   haveI : Ring.KrullDimLE 1 (X.presheaf.stalk z) := krullDimLE_of_coheight hz
   Ring.ordFrac (X.presheaf.stalk z)
 
-/--
-The order of vanishing of a non-zero element of the function field at any point is not zero. Since
-`Scheme.ord` is valued in `ℤᵐ⁰`, `0` does not denote a value of `ℤ` but an added `⊥` element.
--/
 lemma ordHom_ne_zero {Z : X} (hZ : coheight Z = 1) {f : X.functionField} (hf : f ≠ 0) :
     ordHom Z hZ f ≠ 0 := (map_ne_zero _).mpr hf
 
-/--
-The order of vanishing of a unit is `1` everywhere.
--/
 lemma ordHom_of_isUnit {U : X.Opens}
     [Nonempty U] {f : Γ(X, U)} (hf : IsUnit f) {x : X} (hx : coheight x = 1) (hx' : x ∈ U) :
     ordHom x hx (X.germToFunctionField U f) = 1 := by
