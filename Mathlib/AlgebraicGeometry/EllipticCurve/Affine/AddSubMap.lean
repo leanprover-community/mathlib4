@@ -140,9 +140,7 @@ lemma addSubMapCoeff_condition (x : Fin 3 → R) (i : Fin 3) :
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, neg_mul, Fin.zero_eta,
       Matrix.cons_val_zero, Matrix.cons_val_one, map_sub, map_add, map_mul, eval_C, map_pow,
       eval_X, map_neg, Fin.reduceFinMk, Matrix.cons_val, Fin.mk_one, coe_Δ', Δ] <;>
-    rw [← sub_eq_zero] <;>
-    simp [← this, bRelationCoeffs] <;>
-    ring
+    rw [← sub_eq_zero, ← this] <;> simp [bRelationCoeffs] <;> ring
 
 lemma addSubMap_ne_zero [IsDomain R] {x : Fin 3 → R} (hx : x ≠ 0) :
     (fun i ↦ (addSubMap W i).eval x) ≠ 0 := by
