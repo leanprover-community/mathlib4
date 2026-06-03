@@ -193,7 +193,6 @@ def rankOne_of_nontrivial (H : Nontrivial (ValueGroup₀ (v : K →*₀ Γ₀))�
       simp [hk]
     have h1 : v k ≠ 1 := by
       apply_fun embedding at hk
-      -- apply_fun Units.val at hx
       simp at hk
       apply_fun Units.val at hx using Units.val_injective (α := (v : K →*₀ Γ₀).ValueGroup₀)
       intro h

@@ -148,10 +148,6 @@ instance : v.IsNontrivial := by
     intro y x
     specialize h1 x
     aesop
-  -- have h : generator v < 1 := generator_lt_one v
-  -- have := hvalueGroup ▸ generator_mem_valueGroup v
-  -- simp only [mem_bot] at this
-  -- order
   aesop (add safe forward [generator_lt_one, generator_zpowers_eq_valueGroup])
 
 lemma valueGroup_genLTOne_eq_generator : (valueGroup (v : A →*₀ Γ)).genLTOne = generator v :=
