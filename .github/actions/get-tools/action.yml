@@ -89,11 +89,15 @@ runs:
           if tar -xzf "$tarball" -C "${{ inputs.path }}" \
             && [[ -x "${{ inputs.path }}/.lake/build/bin/cache" ]]; then
             toolchain="$(cat "${{ inputs.path }}/lean-toolchain")"
-            echo "Installing tools toolchain: ${toolchain}"
-            if elan toolchain install "$toolchain"; then
+            echo "Ensuring tools toolchain is installed: ${toolchain}"
+            # `elan toolchain install` exits non-zero when the toolchain is already
+            # present (the common case), so install best-effort and then confirm the
+            # toolchain is available rather than trusting the install exit code.
+            elan toolchain install "$toolchain" || true
+            if elan toolchain list | awk '{print $1}' | grep -qxF "$toolchain"; then
               result=artifact
             else
-              echo "WARNING: failed to install tools toolchain; falling back to source build."
+              echo "WARNING: tools toolchain '${toolchain}' is not available; falling back to source build."
             fi
           else
             echo "WARNING: tools artifact unpack/validation failed; falling back to source build."
