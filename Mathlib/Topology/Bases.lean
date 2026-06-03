@@ -165,6 +165,9 @@ theorem IsTopologicalBasis.sdiff_empty {s : Set (Set α)} (h : IsTopologicalBasi
     have ⟨t, hts, ht⟩ := h.isOpen_iff.mp hu a ha
     ⟨t, ⟨hts, ne_of_mem_of_not_mem' ht.1 <| notMem_empty _⟩, ht⟩
 
+@[deprecated (since := "2026-06-03")]
+alias IsTopologicalBasis.diff_empty := IsTopologicalBasis.sdiff_empty
+
 protected theorem IsTopologicalBasis.mem_nhds {a : α} {s : Set α} {b : Set (Set α)}
     (hb : IsTopologicalBasis b) (hs : s ∈ b) (ha : a ∈ s) : s ∈ 𝓝 a :=
   (hb.isOpen hs).mem_nhds ha

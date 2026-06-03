@@ -90,6 +90,9 @@ theorem log_stirlingSeq_sdiff_hasSum (m : ℕ) :
       factorial_succ, cast_mul, cast_succ, range_one, sum_singleton, h]
     ring
 
+@[deprecated (since := "2026-06-03")]
+alias log_stirlingSeq_diff_hasSum := log_stirlingSeq_sdiff_hasSum
+
 /-- The sequence `log ∘ stirlingSeq ∘ succ` is monotone decreasing -/
 theorem log_stirlingSeq'_antitone : Antitone (Real.log ∘ stirlingSeq ∘ succ) :=
   antitone_nat_of_succ_le fun n =>
@@ -115,6 +118,9 @@ theorem log_stirlingSeq_sdiff_le_geo_sum (n : ℕ) :
     exact inv_le_one_of_one_le₀ (le_add_of_nonneg_left <| by positivity)
   exact hasSum_le hab (log_stirlingSeq_sdiff_hasSum n) g
 
+@[deprecated (since := "2026-06-03")]
+alias log_stirlingSeq_diff_le_geo_sum := log_stirlingSeq_sdiff_le_geo_sum
+
 /-- **Robbins' sharp stepwise bound** for the Stirling sequence:
 `log (stirlingSeq n) - log (stirlingSeq (n+1)) ≤ 1 / (12 n (n + 1))`. -/
 theorem log_stirlingSeq_sdiff_le (n : ℕ) :
@@ -130,6 +136,8 @@ theorem log_stirlingSeq_sdiff_le (n : ℕ) :
     refine hasSum_le (fun j ↦ ?_) (log_stirlingSeq_sdiff_hasSum n) this
     simpa [hr, field] using show (3 : ℝ) ≤ 2 * (j + 1) + 1 by norm_cast; grind
   grind [((hasSum_geometric_of_lt_one (by positivity) hr1).mul_right r).div_const 3]
+
+@[deprecated (since := "2026-06-03")] alias log_stirlingSeq_diff_le := log_stirlingSeq_sdiff_le
 
 /-- We have the bound `log (stirlingSeq n) - log (stirlingSeq (n+1)) ≤ 1 / (4 n ^ 2)`. -/
 @[deprecated "Use `log_stirlingSeq_sdiff_le` instead." (since := "2026-03-16")]

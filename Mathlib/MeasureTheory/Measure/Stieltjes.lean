@@ -86,6 +86,8 @@ def botSet : Set R := {x | IsBot x}
   rintro c ⟨hc, _⟩ _ hc' rfl
   exact (hc' a).not_gt hc
 
+@[deprecated (since := "2026-06-03")] alias Ioc_diff_botSet := Ioc_sdiff_botSet
+
 lemma notMem_botSet_of_lt {x y : R} (h : x < y) : y ∉ botSet := by
   contrapose! h
   exact h x
@@ -316,6 +318,8 @@ theorem length_sdiff_botSet {s : Set R} : f.length (s \ botSet) = f.length s := 
   rcases isEmpty_or_nonempty R with hR | hR
   · simp [length_eq_of_isEmpty]
   · simp [length_eq]
+
+@[deprecated (since := "2026-06-03")] alias length_diff_botSet := length_sdiff_botSet
 
 open MeasureTheory
 

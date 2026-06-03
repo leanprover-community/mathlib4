@@ -284,6 +284,9 @@ theorem of_sdiff_eq_zero_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv
   · assumption
   · assumption
 
+@[deprecated (since := "2026-06-03")]
+alias of_diff_eq_zero_of_symmDiff_eq_zero_positive := of_sdiff_eq_zero_of_symmDiff_eq_zero_positive
+
 /-- If the symmetric difference of two negative sets is a null-set, then so are the differences
 between the two sets. -/
 theorem of_sdiff_eq_zero_of_symmDiff_eq_zero_negative (hu : MeasurableSet u) (hv : MeasurableSet v)
@@ -293,6 +296,9 @@ theorem of_sdiff_eq_zero_of_symmDiff_eq_zero_negative (hu : MeasurableSet u) (hv
   have := of_sdiff_eq_zero_of_symmDiff_eq_zero_positive hu hv hsu hsv
   simp only [Pi.neg_apply, neg_eq_zero, coe_neg] at this
   exact this hs
+
+@[deprecated (since := "2026-06-03")]
+alias of_diff_eq_zero_of_symmDiff_eq_zero_negative := of_sdiff_eq_zero_of_symmDiff_eq_zero_negative
 
 theorem of_inter_eq_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv : MeasurableSet v)
     (hw : MeasurableSet w) (hsu : 0 ≤[u] s) (hsv : 0 ≤[v] s) (hs : s (u ∆ v) = 0) :

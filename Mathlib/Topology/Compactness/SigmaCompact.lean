@@ -407,6 +407,8 @@ theorem mem_sdiff_shiftr_find (x : X) : x ∈ K.shiftr (K.find x + 1) \ K.shiftr
   ⟨K.mem_find _,
     mt K.shiftr.mem_iff_find_le.1 <| by simp only [find_shiftr, not_le, Nat.lt_succ_self]⟩
 
+@[deprecated (since := "2026-06-03")] alias mem_diff_shiftr_find := mem_sdiff_shiftr_find
+
 /-- A choice of an
 [exhaustion by compact sets](https://en.wikipedia.org/wiki/Exhaustion_by_compact_sets)
 of a weakly locally compact σ-compact space. -/

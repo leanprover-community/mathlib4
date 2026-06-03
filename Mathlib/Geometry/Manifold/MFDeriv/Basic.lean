@@ -751,6 +751,9 @@ theorem hasMFDerivWithinAt_sdiff_singleton (y : M) :
     HasMFDerivWithinAt I I' f (s \ {y}) x f' ↔ HasMFDerivWithinAt I I' f s x f' := by
   rw [← hasMFDerivWithinAt_insert, insert_sdiff_singleton, hasMFDerivWithinAt_insert]
 
+@[deprecated (since := "2026-06-03")]
+alias hasMFDerivWithinAt_diff_singleton := hasMFDerivWithinAt_sdiff_singleton
+
 theorem mfderivWithin_eq_mfderiv (hs : UniqueMDiffWithinAt I s x) (h : MDifferentiableAt I I' f x) :
     mfderivWithin I I' f s x = mfderiv I I' f x := by
   rw [← mfderivWithin_univ]

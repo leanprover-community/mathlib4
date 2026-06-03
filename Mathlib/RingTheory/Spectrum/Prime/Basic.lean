@@ -379,6 +379,9 @@ lemma zeroLocus_insert_zero (s : Set R) : zeroLocus (insert 0 s) = zeroLocus s :
 lemma zeroLocus_sdiff_singleton_zero (s : Set R) : zeroLocus (s \ {0}) = zeroLocus s := by
   rw [← zeroLocus_insert_zero, ← zeroLocus_insert_zero (s := s)]; simp
 
+@[deprecated (since := "2026-06-03")]
+alias zeroLocus_diff_singleton_zero := zeroLocus_sdiff_singleton_zero
+
 lemma zeroLocus_smul_of_isUnit {r : R} (hr : IsUnit r) (s : Set R) :
     zeroLocus (r • s) = zeroLocus s := by
   ext; simp [Set.subset_def, ← Set.image_smul, Ideal.unit_mul_mem_iff_mem _ hr]

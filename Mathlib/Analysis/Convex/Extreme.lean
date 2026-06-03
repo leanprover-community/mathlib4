@@ -190,6 +190,8 @@ theorem IsExtreme.convex_sdiff [IsOrderedRing 𝕜] (hA : Convex 𝕜 A) (hAB : 
   convex_iff_openSegment_subset.2 fun _ ⟨hx₁A, hx₁B⟩ _ ⟨hx₂A, _⟩ _ hx ↦
     ⟨hA.openSegment_subset hx₁A hx₂A hx, fun hxB ↦ hx₁B (hAB.2 hx₁A hx₂A hxB hx)⟩
 
+@[deprecated (since := "2026-06-03")] alias IsExtreme.convex_diff := IsExtreme.convex_sdiff
+
 @[simp]
 theorem extremePoints_prod (s : Set E) (t : Set F) :
     (s ×ˢ t).extremePoints 𝕜 = s.extremePoints 𝕜 ×ˢ t.extremePoints 𝕜 := by
@@ -274,10 +276,17 @@ theorem Convex.mem_extremePoints_iff_convex_sdiff (hA : Convex 𝕜 A) :
   exact (hAx ⟨hx₁, fun hx₁ ↦ h.1 (mem_singleton_iff.2 hx₁)⟩
       ⟨hx₂, fun hx₂ ↦ h.2 (mem_singleton_iff.2 hx₂)⟩ hx).2 rfl
 
+@[deprecated (since := "2026-06-03")]
+alias Convex.mem_extremePoints_iff_convex_diff := Convex.mem_extremePoints_iff_convex_sdiff
+
 theorem Convex.mem_extremePoints_iff_mem_sdiff_convexHull_sdiff (hA : Convex 𝕜 A) :
     x ∈ A.extremePoints 𝕜 ↔ x ∈ A \ convexHull 𝕜 (A \ {x}) := by
   rw [hA.mem_extremePoints_iff_convex_sdiff, hA.convex_remove_iff_notMem_convexHull_remove,
     mem_sdiff]
+
+@[deprecated (since := "2026-06-03")]
+alias Convex.mem_extremePoints_iff_mem_diff_convexHull_diff :=
+  Convex.mem_extremePoints_iff_mem_sdiff_convexHull_sdiff
 
 theorem extremePoints_convexHull_subset : (convexHull 𝕜 A).extremePoints 𝕜 ⊆ A := by
   rintro x hx

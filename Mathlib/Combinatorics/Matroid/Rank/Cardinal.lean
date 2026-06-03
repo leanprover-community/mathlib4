@@ -208,13 +208,22 @@ theorem IsBasis.cardinalMk_sdiff_comm (hIX : M.IsBasis I X) (hJX : M.IsBasis J X
     #(I \ J : Set α) = #(J \ I : Set α) :=
   InvariantCardinalRank.forall_card_isBasis_diff hIX hJX
 
+@[deprecated (since := "2026-06-03")]
+alias IsBasis.cardinalMk_diff_comm := IsBasis.cardinalMk_sdiff_comm
+
 theorem IsBasis'.cardinalMk_sdiff_comm (hIX : M.IsBasis' I X) (hJX : M.IsBasis' J X) :
     #(I \ J : Set α) = #(J \ I : Set α) :=
   hIX.isBasis_inter_ground.cardinalMk_sdiff_comm hJX.isBasis_inter_ground
 
+@[deprecated (since := "2026-06-03")]
+alias IsBasis'.cardinalMk_diff_comm := IsBasis'.cardinalMk_sdiff_comm
+
 theorem IsBase.cardinalMk_sdiff_comm (hB : M.IsBase B) (hB' : M.IsBase B') :
     #(B \ B' : Set α) = #(B' \ B : Set α) :=
   hB.isBasis_ground.cardinalMk_sdiff_comm hB'.isBasis_ground
+
+@[deprecated (since := "2026-06-03")]
+alias IsBase.cardinalMk_diff_comm := IsBase.cardinalMk_sdiff_comm
 
 theorem IsBasis.cardinalMk_eq (hIX : M.IsBasis I X) (hJX : M.IsBasis J X) : #I = #J := by
   rw [← sdiff_union_inter I J,

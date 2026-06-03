@@ -183,10 +183,14 @@ theorem mulIndicator_sdiff (h : s ⊆ t) (f : α → G) :
       union_eq_self_of_subset_right h]
     exact disjoint_sdiff_self_left
 
+@[deprecated (since := "2026-06-03")] alias mulIndicator_diff := mulIndicator_sdiff
+
 @[to_additive indicator_sdiff]
 theorem mulIndicator_sdiff' (h : s ⊆ t) (f : α → G) :
     mulIndicator (t \ s) f = mulIndicator t f / mulIndicator s f := by
   rw [mulIndicator_sdiff h, div_eq_mul_inv]
+
+@[deprecated (since := "2026-06-03")] alias mulIndicator_diff' := mulIndicator_sdiff'
 
 open scoped symmDiff in
 @[to_additive]

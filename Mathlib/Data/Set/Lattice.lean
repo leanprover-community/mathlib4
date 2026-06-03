@@ -374,11 +374,17 @@ theorem insert_iInter (x : β) (t : ι → Set β) : insert x (⋂ i, t i) = ⋂
 theorem iUnion_sdiff (s : Set β) (t : ι → Set β) : (⋃ i, t i) \ s = ⋃ i, t i \ s := by
   simp only [sdiff_eq, iUnion_inter]
 
+@[deprecated (since := "2026-06-03")] alias iUnion_diff := iUnion_sdiff
+
 theorem sdiff_iUnion [Nonempty ι] (s : Set β) (t : ι → Set β) : (s \ ⋃ i, t i) = ⋂ i, s \ t i := by
   simp only [sdiff_eq, compl_iUnion, inter_iInter]
 
+@[deprecated (since := "2026-06-03")] alias diff_iUnion := sdiff_iUnion
+
 theorem sdiff_iInter (s : Set β) (t : ι → Set β) : (s \ ⋂ i, t i) = ⋃ i, s \ t i := by
   simp only [sdiff_eq, compl_iInter, inter_iUnion]
+
+@[deprecated (since := "2026-06-03")] alias diff_iInter := sdiff_iInter
 
 section SymmDiff
 
@@ -906,9 +912,15 @@ theorem sInter_insert (s : Set α) (T : Set (Set α)) : ⋂₀ insert s T = s �
 theorem sUnion_sdiff_singleton_empty (s : Set (Set α)) : ⋃₀ (s \ {∅}) = ⋃₀ s :=
   sSup_sdiff_singleton_bot s
 
+@[deprecated (since := "2026-06-03")]
+alias sUnion_diff_singleton_empty := sUnion_sdiff_singleton_empty
+
 @[simp]
 theorem sInter_sdiff_singleton_univ (s : Set (Set α)) : ⋂₀ (s \ {univ}) = ⋂₀ s :=
   sInf_sdiff_singleton_top s
+
+@[deprecated (since := "2026-06-03")]
+alias sInter_diff_singleton_univ := sInter_sdiff_singleton_univ
 
 theorem sUnion_pair (s t : Set α) : ⋃₀ {s, t} = s ∪ t :=
   sSup_pair
@@ -1185,6 +1197,8 @@ theorem pi_sdiff_pi_subset (i : Set α) (s t : ∀ a, Set (π a)) :
   simp only [mem_sdiff, mem_pi, mem_iUnion, not_exists, mem_preimage, not_and, not_not] at hx
   exact hx.2 _ ha (hx.1 _ ha)
 
+@[deprecated (since := "2026-06-03")] alias pi_diff_pi_subset := pi_sdiff_pi_subset
+
 theorem iUnion_univ_pi {ι : α → Type*} (t : (a : α) → ι a → Set (π a)) :
     ⋃ x : (a : α) → ι a, pi univ (fun a => t a (x a)) = pi univ fun a => ⋃ j : ι a, t a j := by
   ext
@@ -1338,6 +1352,9 @@ theorem biUnion_sdiff_biUnion_subset (s₁ s₂ : Set α) :
   apply biUnion_subset_biUnion_left
   rw [union_sdiff_self]
   apply subset_union_right
+
+@[deprecated (since := "2026-06-03")]
+alias biUnion_diff_biUnion_subset := biUnion_sdiff_biUnion_subset
 
 /-- If `t` is an indexed family of sets, then there is a natural map from `Σ i, t i` to `⋃ i, t i`
 sending `⟨i, x⟩` to `x`. -/

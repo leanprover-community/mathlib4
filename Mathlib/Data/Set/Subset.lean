@@ -87,6 +87,8 @@ lemma image_val_inter : (↑(D ∩ E) : Set α) = ↑D ∩ ↑E := image_inter S
 @[simp]
 lemma image_val_sdiff : (↑(D \ E) : Set α) = ↑D \ ↑E := image_sdiff Subtype.val_injective _ _
 
+@[deprecated (since := "2026-06-03")] alias image_val_diff := image_val_sdiff
+
 @[simp]
 lemma image_val_compl : ↑(Dᶜ) = A \ ↑D := by
   rw [compl_eq_univ_sdiff, image_val_sdiff, image_univ, Subtype.range_coe_subtype, setOf_mem_eq]

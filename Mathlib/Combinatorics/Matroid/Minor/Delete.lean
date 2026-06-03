@@ -115,6 +115,9 @@ lemma delete_delete_eq_delete_sdiff (M : Matroid α) (D₁ D₂ : Set α) :
     M ＼ D₁ ＼ D₂ = M ＼ D₁ ＼ (D₂ \ D₁) := by
   simp
 
+@[deprecated (since := "2026-06-03")]
+alias delete_delete_eq_delete_diff := delete_delete_eq_delete_sdiff
+
 lemma IsRestriction.restrict_delete_of_disjoint (h : N ≤r M) (hX : Disjoint X N.E) :
     N ≤r (M ＼ X) := by
   obtain ⟨D, hD, rfl⟩ := isRestriction_iff_exists_eq_delete.1 h

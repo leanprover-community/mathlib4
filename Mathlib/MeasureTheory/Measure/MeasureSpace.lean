@@ -118,13 +118,19 @@ theorem measure_union' (hd : Disjoint s₁ s₂) (h : MeasurableSet s₁) : μ (
 theorem measure_inter_add_sdiff (s : Set α) (ht : MeasurableSet t) : μ (s ∩ t) + μ (s \ t) = μ s :=
   measure_inter_add_sdiff₀ _ ht.nullMeasurableSet
 
+@[deprecated (since := "2026-06-03")] alias measure_inter_add_diff := measure_inter_add_sdiff
+
 theorem measure_sdiff_add_inter (s : Set α) (ht : MeasurableSet t) : μ (s \ t) + μ (s ∩ t) = μ s :=
   (add_comm _ _).trans (measure_inter_add_sdiff s ht)
+
+@[deprecated (since := "2026-06-03")] alias measure_diff_add_inter := measure_sdiff_add_inter
 
 theorem measure_sdiff_eq_top (hs : μ s = ∞) (ht : μ t ≠ ∞) : μ (s \ t) = ∞ := by
   contrapose! hs
   exact ((measure_mono (subset_sdiff_union s t)).trans_lt
     ((measure_union_le _ _).trans_lt (ENNReal.add_lt_top.2 ⟨hs.lt_top, ht.lt_top⟩))).ne
+
+@[deprecated (since := "2026-06-03")] alias measure_diff_eq_top := measure_sdiff_eq_top
 
 theorem measure_union_add_inter (s : Set α) (ht : MeasurableSet t) :
     μ (s ∪ t) + μ (s ∩ t) = μ s + μ t := by
@@ -227,20 +233,30 @@ theorem sum_measure_preimage_singleton (s : Finset β) {f : α → β}
 theorem measure_sdiff_null' (h : μ (s₁ ∩ s₂) = 0) : μ (s₁ \ s₂) = μ s₁ :=
   measure_congr <| sdiff_ae_eq_self.2 h
 
+@[deprecated (since := "2026-06-03")] alias measure_diff_null' := measure_sdiff_null'
+
 theorem measure_add_sdiff (hs : NullMeasurableSet s μ) (t : Set α) :
     μ s + μ (t \ s) = μ (s ∪ t) := by
   rw [← measure_union₀' hs disjoint_sdiff_right.aedisjoint, union_sdiff_self]
+
+@[deprecated (since := "2026-06-03")] alias measure_add_diff := measure_add_sdiff
 
 theorem measure_sdiff' (s : Set α) (hm : NullMeasurableSet t μ) (h_fin : μ t ≠ ∞) :
     μ (s \ t) = μ (s ∪ t) - μ t :=
   ENNReal.eq_sub_of_add_eq h_fin <| by rw [add_comm, measure_add_sdiff hm, union_comm]
 
+@[deprecated (since := "2026-06-03")] alias measure_diff' := measure_sdiff'
+
 theorem measure_sdiff (h : s₂ ⊆ s₁) (h₂ : NullMeasurableSet s₂ μ) (h_fin : μ s₂ ≠ ∞) :
     μ (s₁ \ s₂) = μ s₁ - μ s₂ := by rw [measure_sdiff' _ h₂ h_fin, union_eq_self_of_subset_right h]
+
+@[deprecated (since := "2026-06-03")] alias measure_diff := measure_sdiff
 
 theorem le_measure_sdiff : μ s₁ - μ s₂ ≤ μ (s₁ \ s₂) :=
   tsub_le_iff_left.2 <| (measure_le_inter_add_sdiff μ s₁ s₂).trans <| by
     gcongr; apply inter_subset_right
+
+@[deprecated (since := "2026-06-03")] alias le_measure_diff := le_measure_sdiff
 
 theorem le_measure_symmDiff : μ s₁ - μ s₂ ≤ μ (s₁ ∆ s₂) :=
   le_trans le_measure_sdiff (measure_mono <| by simp [symmDiff_def])
@@ -269,13 +285,21 @@ theorem measure_sdiff_lt_of_lt_add (hs : NullMeasurableSet s μ) (hst : s ⊆ t)
   rw [measure_sdiff hst hs hs']; rw [add_comm] at h
   exact ENNReal.sub_lt_of_lt_add (measure_mono hst) h
 
+@[deprecated (since := "2026-06-03")] alias measure_diff_lt_of_lt_add := measure_sdiff_lt_of_lt_add
+
 theorem measure_sdiff_le_iff_le_add (hs : NullMeasurableSet s μ) (hst : s ⊆ t) (hs' : μ s ≠ ∞)
     {ε : ℝ≥0∞} : μ (t \ s) ≤ ε ↔ μ t ≤ μ s + ε := by
   rw [measure_sdiff hst hs hs', tsub_le_iff_left]
 
+@[deprecated (since := "2026-06-03")]
+alias measure_diff_le_iff_le_add := measure_sdiff_le_iff_le_add
+
 theorem measure_eq_measure_of_null_sdiff {s t : Set α} (hst : s ⊆ t) (h_nullsdiff : μ (t \ s) = 0) :
     μ s = μ t := measure_congr <|
       EventuallyLE.antisymm (HasSubset.Subset.eventuallyLE hst) (ae_le_set.mpr h_nullsdiff)
+
+@[deprecated (since := "2026-06-03")]
+alias measure_eq_measure_of_null_diff := measure_eq_measure_of_null_sdiff
 
 theorem measure_eq_measure_of_between_null_sdiff {s₁ s₂ s₃ : Set α} (h12 : s₁ ⊆ s₂) (h23 : s₂ ⊆ s₃)
     (h_nullsdiff : μ (s₃ \ s₁) = 0) : μ s₁ = μ s₂ ∧ μ s₂ = μ s₃ := by
@@ -288,13 +312,24 @@ theorem measure_eq_measure_of_between_null_sdiff {s₁ s₂ s₃ : Set α} (h12 
       _ = μ s₁ := by simp only [h_nullsdiff, zero_add]
   exact ⟨le12.antisymm (le23.trans key), le23.antisymm (key.trans le12)⟩
 
+@[deprecated (since := "2026-06-03")]
+alias measure_eq_measure_of_between_null_diff := measure_eq_measure_of_between_null_sdiff
+
 theorem measure_eq_measure_smaller_of_between_null_sdiff {s₁ s₂ s₃ : Set α} (h12 : s₁ ⊆ s₂)
     (h23 : s₂ ⊆ s₃) (h_nullsdiff : μ (s₃ \ s₁) = 0) : μ s₁ = μ s₂ :=
   (measure_eq_measure_of_between_null_sdiff h12 h23 h_nullsdiff).1
 
+@[deprecated (since := "2026-06-03")]
+alias measure_eq_measure_smaller_of_between_null_diff :=
+  measure_eq_measure_smaller_of_between_null_sdiff
+
 theorem measure_eq_measure_larger_of_between_null_sdiff {s₁ s₂ s₃ : Set α} (h12 : s₁ ⊆ s₂)
     (h23 : s₂ ⊆ s₃) (h_nullsdiff : μ (s₃ \ s₁) = 0) : μ s₂ = μ s₃ :=
   (measure_eq_measure_of_between_null_sdiff h12 h23 h_nullsdiff).2
+
+@[deprecated (since := "2026-06-03")]
+alias measure_eq_measure_larger_of_between_null_diff :=
+  measure_eq_measure_larger_of_between_null_sdiff
 
 lemma measure_compl₀ (h : NullMeasurableSet s μ) (hs : μ s ≠ ∞) :
     μ sᶜ = μ Set.univ - μ s := by

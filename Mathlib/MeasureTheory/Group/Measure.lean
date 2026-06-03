@@ -558,6 +558,9 @@ lemma eventually_nhds_one_measure_smul_sdiff_lt [LocallyCompactSpace G]
       exact (smul_set_subset_smul hg).trans hVkU
     _ < ε := measure_sdiff_lt_of_lt_add h'k.nullMeasurableSet hUk hk.measure_lt_top.ne hμUk
 
+@[deprecated (since := "2026-06-03")]
+alias eventually_nhds_one_measure_smul_diff_lt := eventually_nhds_one_measure_smul_sdiff_lt
+
 /-- Continuity of the measure of translates of a compact set:
 Given a closed compact set `k` in a topological group,
 the measure of `g • k \ k` tends to zero as `g` tends to `1`. -/
@@ -568,6 +571,9 @@ lemma tendsto_measure_smul_sdiff_isCompact_isClosed [LocallyCompactSpace G]
     Tendsto (fun g : G ↦ μ (g • k \ k)) (𝓝 1) (𝓝 0) :=
   ENNReal.nhds_zero_basis.tendsto_right_iff.mpr <| fun _ h ↦
     eventually_nhds_one_measure_smul_sdiff_lt hk h'k h.ne'
+
+@[deprecated (since := "2026-06-03")]
+alias tendsto_measure_smul_diff_isCompact_isClosed := tendsto_measure_smul_sdiff_isCompact_isClosed
 
 section IsMulLeftInvariant
 variable [IsMulLeftInvariant μ]

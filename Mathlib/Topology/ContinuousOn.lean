@@ -286,6 +286,9 @@ theorem continuousWithinAt_sdiff_self :
     ContinuousWithinAt f (s \ {x}) x ↔ ContinuousWithinAt f s x :=
   continuousWithinAt_singleton.sdiff_iff
 
+@[deprecated (since := "2026-06-03")]
+alias continuousWithinAt_diff_self := continuousWithinAt_sdiff_self
+
 /-- A function is continuous at a point `x` within a set `s` if `x` is not an accumulation point of
 `s`. -/
 lemma continuousWithinAt_of_not_accPt (h : ¬AccPt x (𝓟 s)) : ContinuousWithinAt f s x := by

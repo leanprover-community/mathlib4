@@ -295,6 +295,9 @@ theorem Icc_sdiff_pi_univ_Ioo_subset (x y x' y' : ∀ i, α i) :
   apply Exists.intro w
   cases lt_or_ge (x' w) (a w) <;> simp_all
 
+@[deprecated (since := "2026-06-03")]
+alias Icc_diff_pi_univ_Ioo_subset := Icc_sdiff_pi_univ_Ioo_subset
+
 /-- If `x`, `y`, `z` are functions `Π i : ι, α i`, then
 the set difference between the box `[x, z]` and the product of the intervals `(y i, z i]`
 is covered by the union of the boxes `[x, update z i (y i)]`.
@@ -306,5 +309,8 @@ theorem Icc_sdiff_pi_univ_Ioc_subset (x y z : ∀ i, α i) :
     (Icc x z \ pi univ fun i ↦ Ioc (y i) (z i)) ⊆ ⋃ i : ι, Icc x (update z i (y i)) := by
   rintro a ⟨⟨hax, haz⟩, hay⟩
   simpa [not_and_or, hax, le_update_iff, haz _] using hay
+
+@[deprecated (since := "2026-06-03")]
+alias Icc_diff_pi_univ_Ioc_subset := Icc_sdiff_pi_univ_Ioc_subset
 
 end Set

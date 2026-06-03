@@ -55,6 +55,10 @@ lemma StrictConvex.sdiff_interior_subset_extremePoints {𝕜 A : Type*} [Semirin
     exact hx.2 <| hxab ▸ hc hy hz this ha hb hab
   rwa [← hyz, ← add_smul, hab, one_smul] at hxab
 
+@[deprecated (since := "2026-06-03")]
+alias StrictConvex.diff_interior_subset_extremePoints :=
+  StrictConvex.sdiff_interior_subset_extremePoints
+
 section Normed
 variable {A : Type*} [NormedAddCommGroup A] [NormedSpace ℝ A]
 
@@ -69,6 +73,9 @@ theorem StrictConvex.extremePoints_eq_sdiff_interior [Nontrivial A] {S : Set A}
     (hS : StrictConvex ℝ S) : extremePoints ℝ S = S \ interior S :=
   antisymm (subset_sdiff.mpr ⟨extremePoints_subset, disjoint_interior_extremePoints _ |>.symm⟩)
     hS.sdiff_interior_subset_extremePoints
+
+@[deprecated (since := "2026-06-03")]
+alias StrictConvex.extremePoints_eq_diff_interior := StrictConvex.extremePoints_eq_sdiff_interior
 
 /-- In a strictly convex space, the sphere is contained in the extreme points of the closed ball
 when the radius is nonzero.

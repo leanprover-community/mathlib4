@@ -46,6 +46,9 @@ theorem exists_null_pairwise_disjoint_sdiff [Countable ι] {s : ι → Set α}
     simp only [mem_inter_iff, mem_iUnion, not_and, not_exists] at hU
     exact (hU hi j hne.symm hj).elim
 
+@[deprecated (since := "2026-06-03")]
+alias exists_null_pairwise_disjoint_diff := exists_null_pairwise_disjoint_sdiff
+
 namespace AEDisjoint
 
 protected theorem eq (h : AEDisjoint μ s t) : μ (s ∩ t) = 0 :=
@@ -107,14 +110,22 @@ theorem union_right (ht : AEDisjoint μ s t) (hu : AEDisjoint μ s u) : AEDisjoi
 theorem sdiff_ae_eq_left (h : AEDisjoint μ s t) : (s \ t : Set α) =ᵐ[μ] s :=
   @sdiff_self_inter _ s t ▸ sdiff_null_ae_eq_self h
 
+@[deprecated (since := "2026-06-03")] alias diff_ae_eq_left := sdiff_ae_eq_left
+
 theorem sdiff_ae_eq_right (h : AEDisjoint μ s t) : (t \ s : Set α) =ᵐ[μ] t :=
   sdiff_ae_eq_left <| AEDisjoint.symm h
+
+@[deprecated (since := "2026-06-03")] alias diff_ae_eq_right := sdiff_ae_eq_right
 
 theorem measure_sdiff_left (h : AEDisjoint μ s t) : μ (s \ t) = μ s :=
   measure_congr <| AEDisjoint.sdiff_ae_eq_left h
 
+@[deprecated (since := "2026-06-03")] alias measure_diff_left := measure_sdiff_left
+
 theorem measure_sdiff_right (h : AEDisjoint μ s t) : μ (t \ s) = μ t :=
   measure_congr <| AEDisjoint.sdiff_ae_eq_right h
+
+@[deprecated (since := "2026-06-03")] alias measure_diff_right := measure_sdiff_right
 
 /-- If `s` and `t` are `μ`-a.e. disjoint, then `s \ u` and `t` are disjoint for some measurable null
 set `u`. -/

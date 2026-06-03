@@ -298,6 +298,8 @@ theorem encard_sdiff_le_aux {B₁ B₂ : Set α}
   gcongr
 termination_by (B₂ \ B₁).encard
 
+@[deprecated (since := "2026-06-03")] alias encard_diff_le_aux := encard_sdiff_le_aux
+
 variable {B₁ B₂ : Set α}
 
 /-- For any two sets `B₁`, `B₂` in a family with the exchange property, the differences `B₁ \ B₂`
@@ -305,6 +307,8 @@ and `B₂ \ B₁` have the same `ℕ∞`-cardinality. -/
 theorem encard_sdiff_eq (exch : ExchangeProperty IsBase) (hB₁ : IsBase B₁) (hB₂ : IsBase B₂) :
     (B₁ \ B₂).encard = (B₂ \ B₁).encard :=
   (encard_sdiff_le_aux exch hB₁ hB₂).antisymm (encard_sdiff_le_aux exch hB₂ hB₁)
+
+@[deprecated (since := "2026-06-03")] alias encard_diff_eq := encard_sdiff_eq
 
 /-- Any two sets `B₁`, `B₂` in a family with the exchange property have the same
 `ℕ∞`-cardinality. -/
@@ -345,9 +349,13 @@ private theorem inter_left_subset_ground (hX : X ⊆ M.E) :
 private theorem sdiff_subset_ground (hX : X ⊆ M.E) : X \ Y ⊆ M.E :=
   sdiff_subset.trans hX
 
+@[deprecated (since := "2026-06-03")] alias diff_subset_ground := sdiff_subset_ground
+
 @[aesop unsafe 10% (rule_sets := [Matroid])]
 private theorem ground_sdiff_subset_ground : M.E \ X ⊆ M.E :=
   sdiff_subset_ground rfl.subset
+
+@[deprecated (since := "2026-06-03")] alias ground_diff_subset_ground := ground_sdiff_subset_ground
 
 @[aesop unsafe 10% (rule_sets := [Matroid])]
 private theorem singleton_subset_ground (he : e ∈ M.E) : {e} ⊆ M.E :=
@@ -406,9 +414,13 @@ theorem IsBase.encard_sdiff_comm (hB₁ : M.IsBase B₁) (hB₂ : M.IsBase B₂)
     (B₁ \ B₂).encard = (B₂ \ B₁).encard :=
   M.isBase_exchange.encard_sdiff_eq hB₁ hB₂
 
+@[deprecated (since := "2026-06-03")] alias IsBase.encard_diff_comm := IsBase.encard_sdiff_comm
+
 theorem IsBase.ncard_sdiff_comm (hB₁ : M.IsBase B₁) (hB₂ : M.IsBase B₂) :
     (B₁ \ B₂).ncard = (B₂ \ B₁).ncard := by
   rw [ncard_def, hB₁.encard_sdiff_comm hB₂, ← ncard_def]
+
+@[deprecated (since := "2026-06-03")] alias IsBase.ncard_diff_comm := IsBase.ncard_sdiff_comm
 
 theorem IsBase.encard_eq_encard_of_isBase (hB₁ : M.IsBase B₁) (hB₂ : M.IsBase B₂) :
     B₁.encard = B₂.encard := by
@@ -475,9 +487,13 @@ theorem IsBase.sdiff_finite_comm (hB₁ : M.IsBase B₁) (hB₂ : M.IsBase B₂)
     (B₁ \ B₂).Finite ↔ (B₂ \ B₁).Finite :=
   finite_iff_finite_of_encard_eq_encard (hB₁.encard_sdiff_comm hB₂)
 
+@[deprecated (since := "2026-06-03")] alias IsBase.diff_finite_comm := IsBase.sdiff_finite_comm
+
 theorem IsBase.sdiff_infinite_comm (hB₁ : M.IsBase B₁) (hB₂ : M.IsBase B₂) :
     (B₁ \ B₂).Infinite ↔ (B₂ \ B₁).Infinite :=
   infinite_iff_infinite_of_encard_eq_encard (hB₁.encard_sdiff_comm hB₂)
+
+@[deprecated (since := "2026-06-03")] alias IsBase.diff_infinite_comm := IsBase.sdiff_infinite_comm
 
 theorem ext_isBase {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
     (h : ∀ ⦃B⦄, B ⊆ M₁.E → (M₁.IsBase B ↔ M₂.IsBase B)) : M₁ = M₂ := by
@@ -627,6 +643,9 @@ theorem IsBase.eq_exchange_of_sdiff_eq_singleton (hB : M.IsBase B) (hB' : M.IsBa
   rw [sdiff_subset_iff, insert_subset_iff, union_comm, ← sdiff_subset_iff, h,
     and_iff_left rfl.subset]
   exact Or.inl hf.1
+
+@[deprecated (since := "2026-06-03")]
+alias IsBase.eq_exchange_of_diff_eq_singleton := IsBase.eq_exchange_of_sdiff_eq_singleton
 
 theorem IsBase.exchange_isBase_of_indep (hB : M.IsBase B) (hf : f ∉ B)
     (hI : M.Indep (insert f (B \ {e}))) : M.IsBase (insert f (B \ {e})) := by

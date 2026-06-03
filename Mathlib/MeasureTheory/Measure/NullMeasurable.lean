@@ -272,6 +272,8 @@ theorem measure_inter_add_sdiff₀ (s : Set α) (ht : NullMeasurableSet t μ) :
     _ = μ s' := congr_arg μ (inter_union_sdiff _ _)
     _ = μ s := hs'
 
+@[deprecated (since := "2026-06-03")] alias measure_inter_add_diff₀ := measure_inter_add_sdiff₀
+
 /-- If `s` and `t` are null measurable sets of equal measure
 and their intersection has finite measure,
 then `s \ t` and `t \ s` have equal measures too. -/
@@ -279,6 +281,8 @@ theorem measure_sdiff_symm (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet
     (h : μ s = μ t) (hfin : μ (s ∩ t) ≠ ∞) : μ (s \ t) = μ (t \ s) := by
   rw [← ENNReal.add_right_inj hfin, measure_inter_add_sdiff₀ _ ht, inter_comm,
     measure_inter_add_sdiff₀ _ hs, h]
+
+@[deprecated (since := "2026-06-03")] alias measure_diff_symm := measure_sdiff_symm
 
 theorem measure_union_add_inter₀ (s : Set α) (ht : NullMeasurableSet t μ) :
     μ (s ∪ t) + μ (s ∩ t) = μ s + μ t := by

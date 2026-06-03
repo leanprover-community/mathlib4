@@ -107,6 +107,9 @@ def deleteEdges (G : Graph α β) (F : Set β) : Graph α β :=
 lemma restrict_edgeSet_sdiff_eq_deleteEdges (G : Graph α β) (F : Set β) :
     G.restrict (E(G) \ F) = G.deleteEdges F := copy_eq .. |>.symm
 
+@[deprecated (since := "2026-06-03")]
+alias restrict_edgeSet_diff_eq_deleteEdges := restrict_edgeSet_sdiff_eq_deleteEdges
+
 @[simp]
 lemma deleteEdges_le : G.deleteEdges F ≤ G := by
   simp [← restrict_edgeSet_sdiff_eq_deleteEdges]

@@ -173,6 +173,10 @@ theorem tendstoUniformlyOn_sdiff_iUnionNotConvergentSeq (hε : 0 < ε)
     not_lt.mp fun h ↦ hx.2 <| Set.mem_iUnion.2 ⟨N, hx.1, mem_notConvergentSeq_iff.2 ⟨n, hn, h⟩⟩
   simpa [edist_comm]
 
+@[deprecated (since := "2026-06-03")]
+alias tendstoUniformlyOn_diff_iUnionNotConvergentSeq :=
+  tendstoUniformlyOn_sdiff_iUnionNotConvergentSeq
+
 end Egorov
 
 variable [SemilatticeSup ι] [Nonempty ι] [Countable ι]

@@ -93,9 +93,13 @@ theorem setIntegral_sdiff₀ (ht : NullMeasurableSet t μ) (hfs : IntegrableOn f
   rw [eq_sub_iff_add_eq, ← setIntegral_union₀, sdiff_union_of_subset hts]
   exacts [disjoint_sdiff_self_left.aedisjoint, ht, hfs.mono_set sdiff_subset, hfs.mono_set hts]
 
+@[deprecated (since := "2026-06-03")] alias setIntegral_diff₀ := setIntegral_sdiff₀
+
 theorem setIntegral_sdiff (ht : MeasurableSet t) (hfs : IntegrableOn f s μ) (hts : t ⊆ s) :
     ∫ x in s \ t, f x ∂μ = ∫ x in s, f x ∂μ - ∫ x in t, f x ∂μ :=
   setIntegral_sdiff₀ ht.nullMeasurableSet hfs hts
+
+@[deprecated (since := "2026-06-03")] alias setIntegral_diff := setIntegral_sdiff
 
 @[deprecated (since := "2026-03-04")] alias integral_diff := setIntegral_sdiff
 
@@ -105,9 +109,13 @@ theorem integral_inter_add_sdiff₀ (ht : NullMeasurableSet t μ) (hfs : Integra
   · exact Integrable.mono_measure hfs (Measure.restrict_mono inter_subset_left le_rfl)
   · exact Integrable.mono_measure hfs (Measure.restrict_mono sdiff_subset le_rfl)
 
+@[deprecated (since := "2026-06-03")] alias integral_inter_add_diff₀ := integral_inter_add_sdiff₀
+
 theorem integral_inter_add_sdiff (ht : MeasurableSet t) (hfs : IntegrableOn f s μ) :
     ∫ x in s ∩ t, f x ∂μ + ∫ x in s \ t, f x ∂μ = ∫ x in s, f x ∂μ :=
   integral_inter_add_sdiff₀ ht.nullMeasurableSet hfs
+
+@[deprecated (since := "2026-06-03")] alias integral_inter_add_diff := integral_inter_add_sdiff
 
 theorem integral_biUnion_finset {ι : Type*} (t : Finset ι) {s : ι → Set X}
     (hs : ∀ i ∈ t, MeasurableSet (s i)) (h's : Set.Pairwise (↑t) (Disjoint on s))
@@ -428,6 +436,10 @@ theorem setIntegral_eq_of_subset_of_ae_sdiff_eq_zero_aux (hts : s ⊆ t)
       rw [setIntegral_eq_zero_of_forall_eq_zero this, zero_add]
     _ = ∫ x in s, f x ∂μ := by rw [integral_inter_add_sdiff hk (h'aux.mono hts le_rfl)]
 
+@[deprecated (since := "2026-06-03")]
+alias setIntegral_eq_of_subset_of_ae_diff_eq_zero_aux :=
+  setIntegral_eq_of_subset_of_ae_sdiff_eq_zero_aux
+
 /-- If a function vanishes almost everywhere on `t \ s` with `s ⊆ t`, then its integrals on `s`
 and `t` coincide if `t` is null-measurable. -/
 theorem setIntegral_eq_of_subset_of_ae_sdiff_eq_zero (ht : NullMeasurableSet t μ) (hts : s ⊆ t)
@@ -449,12 +461,19 @@ theorem setIntegral_eq_of_subset_of_ae_sdiff_eq_zero (ht : NullMeasurableSet t �
       apply ae_restrict_of_ae_restrict_of_subset hts
       exact h.1.ae_eq_mk.symm
 
+@[deprecated (since := "2026-06-03")]
+alias setIntegral_eq_of_subset_of_ae_diff_eq_zero := setIntegral_eq_of_subset_of_ae_sdiff_eq_zero
+
 /-- If a function vanishes on `t \ s` with `s ⊆ t`, then its integrals on `s`
 and `t` coincide if `t` is measurable. -/
 theorem setIntegral_eq_of_subset_of_forall_sdiff_eq_zero (ht : MeasurableSet t) (hts : s ⊆ t)
     (h't : ∀ x ∈ t \ s, f x = 0) : ∫ x in t, f x ∂μ = ∫ x in s, f x ∂μ :=
   setIntegral_eq_of_subset_of_ae_sdiff_eq_zero ht.nullMeasurableSet hts
     (Eventually.of_forall fun x hx => h't x hx)
+
+@[deprecated (since := "2026-06-03")]
+alias setIntegral_eq_of_subset_of_forall_diff_eq_zero :=
+  setIntegral_eq_of_subset_of_forall_sdiff_eq_zero
 
 /-- If a function vanishes almost everywhere on `sᶜ`, then its integral on `s`
 coincides with its integral on the whole space. -/

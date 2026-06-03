@@ -158,10 +158,16 @@ theorem intrinsicClosure_sdiff_intrinsicFrontier (s : Set P) :
   (image_sdiff Subtype.coe_injective _ _).symm.trans <| by
     rw [closure_sdiff_frontier, intrinsicInterior]
 
+@[deprecated (since := "2026-06-03")]
+alias intrinsicClosure_diff_intrinsicFrontier := intrinsicClosure_sdiff_intrinsicFrontier
+
 @[simp]
 theorem intrinsicClosure_sdiff_intrinsicInterior (s : Set P) :
     intrinsicClosure 𝕜 s \ intrinsicInterior 𝕜 s = intrinsicFrontier 𝕜 s :=
   (image_sdiff Subtype.coe_injective _ _).symm
+
+@[deprecated (since := "2026-06-03")]
+alias intrinsicClosure_diff_intrinsicInterior := intrinsicClosure_sdiff_intrinsicInterior
 
 @[simp]
 theorem intrinsicInterior_union_intrinsicFrontier (s : Set P) :
@@ -287,10 +293,16 @@ theorem closure_sdiff_intrinsicInterior (s : Set P) :
     closure s \ intrinsicInterior 𝕜 s = intrinsicFrontier 𝕜 s :=
   intrinsicClosure_eq_closure 𝕜 s ▸ intrinsicClosure_sdiff_intrinsicInterior s
 
+@[deprecated (since := "2026-06-03")]
+alias closure_diff_intrinsicInterior := closure_sdiff_intrinsicInterior
+
 @[simp]
 theorem closure_sdiff_intrinsicFrontier (s : Set P) :
     closure s \ intrinsicFrontier 𝕜 s = intrinsicInterior 𝕜 s :=
   intrinsicClosure_eq_closure 𝕜 s ▸ intrinsicClosure_sdiff_intrinsicFrontier s
+
+@[deprecated (since := "2026-06-03")]
+alias closure_diff_intrinsicFrontier := closure_sdiff_intrinsicFrontier
 
 end NormedAddTorsor
 

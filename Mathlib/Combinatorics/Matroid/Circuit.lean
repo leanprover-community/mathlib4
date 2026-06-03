@@ -99,6 +99,9 @@ lemma isCircuit_iff_minimal_not_indep (hCE : C ⊆ M.E) : M.IsCircuit C ↔ Mini
 lemma IsCircuit.sdiff_singleton_indep (hC : M.IsCircuit C) (he : e ∈ C) : M.Indep (C \ {e}) :=
   hC.ssubset_indep (sdiff_singleton_ssubset.2 he)
 
+@[deprecated (since := "2026-06-03")]
+alias IsCircuit.diff_singleton_indep := IsCircuit.sdiff_singleton_indep
+
 lemma isCircuit_iff_forall_ssubset : M.IsCircuit C ↔ M.Dep C ∧ ∀ ⦃I⦄, I ⊂ C → M.Indep I := by
   rw [IsCircuit, minimal_iff_forall_ssubset, and_congr_right_iff]
   exact fun h ↦ ⟨fun h' I hIC ↦ ((not_dep_iff (hIC.subset.trans h.subset_ground)).1 (h' hIC)),
@@ -133,6 +136,10 @@ lemma isCircuit_iff_dep_forall_sdiff_singleton_indep :
     minimal_iff_forall_sdiff_singleton (P := (¬ M.Indep ·))
     (fun _ _ hY hYX hX ↦ hY <| hX.subset hYX)]
 
+@[deprecated (since := "2026-06-03")]
+alias isCircuit_iff_dep_forall_diff_singleton_indep :=
+  isCircuit_iff_dep_forall_sdiff_singleton_indep
+
 /-! ### Independence and bases -/
 
 lemma Indep.insert_isCircuit_of_forall (hI : M.Indep I) (heI : e ∉ I) (he : e ∈ M.closure I)
@@ -157,6 +164,9 @@ lemma IsCircuit.sdiff_singleton_isBasis (hC : M.IsCircuit C) (he : e ∈ C) :
     insert_sdiff_singleton, insert_eq_of_mem he]
   exact Or.inl hC.dep
 
+@[deprecated (since := "2026-06-03")]
+alias IsCircuit.diff_singleton_isBasis := IsCircuit.sdiff_singleton_isBasis
+
 lemma IsCircuit.isBasis_iff_eq_sdiff_singleton (hC : M.IsCircuit C) :
     M.IsBasis I C ↔ ∃ e ∈ C, I = C \ {e} := by
   refine ⟨fun h ↦ ?_, ?_⟩
@@ -166,6 +176,9 @@ lemma IsCircuit.isBasis_iff_eq_sdiff_singleton (hC : M.IsCircuit C) :
       (subset_sdiff_singleton h.subset he.2) sdiff_subset⟩
   rintro ⟨e, he, rfl⟩
   exact hC.sdiff_singleton_isBasis he
+
+@[deprecated (since := "2026-06-03")]
+alias IsCircuit.isBasis_iff_eq_diff_singleton := IsCircuit.isBasis_iff_eq_sdiff_singleton
 
 lemma IsCircuit.isBasis_iff_insert_eq (hC : M.IsCircuit C) :
     M.IsBasis I C ↔ ∃ e ∈ C \ I, C = insert e I := by
@@ -220,6 +233,8 @@ lemma fundCircuit_sdiff_eq_inter (M : Matroid α) (heI : e ∉ I) :
     (M.fundCircuit e I) \ {e} = (M.fundCircuit e I) ∩ I :=
   (subset_inter sdiff_subset (by simp [fundCircuit_subset_insert])).antisymm
     (subset_sdiff_singleton inter_subset_left (by simp [heI]))
+
+@[deprecated (since := "2026-06-03")] alias fundCircuit_diff_eq_inter := fundCircuit_sdiff_eq_inter
 
 /-- The fundamental isCircuit of `e` and `X` has the junk value `{e}` if `e ∈ X` -/
 lemma fundCircuit_eq_of_mem (heX : e ∈ X) : M.fundCircuit e X = {e} := by
@@ -334,14 +349,23 @@ lemma IsCircuit.closure_sdiff_singleton_eq (hC : M.IsCircuit C) (e : α) :
     (fun he ↦ by rw [(hC.sdiff_singleton_isBasis he).closure_eq_closure])
     (fun he ↦ by rw [sdiff_singleton_eq_self he])
 
+@[deprecated (since := "2026-06-03")]
+alias IsCircuit.closure_diff_singleton_eq := IsCircuit.closure_sdiff_singleton_eq
+
 lemma IsCircuit.subset_closure_sdiff_singleton (hC : M.IsCircuit C) (e : α) :
     C ⊆ M.closure (C \ {e}) := by
   rw [hC.closure_sdiff_singleton_eq]
   exact M.subset_closure _ hC.subset_ground
 
+@[deprecated (since := "2026-06-03")]
+alias IsCircuit.subset_closure_diff_singleton := IsCircuit.subset_closure_sdiff_singleton
+
 lemma IsCircuit.mem_closure_sdiff_singleton_of_mem (hC : M.IsCircuit C) (heC : e ∈ C) :
     e ∈ M.closure (C \ {e}) :=
   hC.subset_closure_sdiff_singleton e heC
+
+@[deprecated (since := "2026-06-03")]
+alias IsCircuit.mem_closure_diff_singleton_of_mem := IsCircuit.mem_closure_sdiff_singleton_of_mem
 
 lemma exists_isCircuit_of_mem_closure (he : e ∈ M.closure X) (heX : e ∉ X) :
     ∃ C ⊆ insert e X, M.IsCircuit C ∧ e ∈ C :=
@@ -602,6 +626,10 @@ lemma IsBase.compl_closure_sdiff_singleton_isCocircuit (hB : M.IsBase B) (he : e
     rw [subset_sdiff, and_iff_left hXss.2.symm]
     apply closure_subset_ground
   exact hB.exchange_base_of_notMem_closure he fcl
+
+@[deprecated (since := "2026-06-03")]
+alias IsBase.compl_closure_diff_singleton_isCocircuit :=
+  IsBase.compl_closure_sdiff_singleton_isCocircuit
 
 /-- A version of `Matroid.isCocircuit_iff_minimal_compl_nonspanning` with a support assumption
 in the minimality. -/

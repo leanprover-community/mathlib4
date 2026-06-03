@@ -87,6 +87,8 @@ theorem exists_finpartition_sdiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t 
   · rw [sup_id_eq_sSup, sSup_eq_sUnion, hst]
   · grw [Finpartition.ofErase_parts, Finset.erase_subset, hIC]
 
+@[deprecated (since := "2026-06-03")] alias exists_finpartition_diff := exists_finpartition_sdiff
+
 theorem mem_supClosure_iff (hC : IsSetSemiring C) :
     s ∈ supClosure C ↔ ∃ P : Finpartition s, ↑P.parts ⊆ C where
   mp := by
@@ -124,6 +126,8 @@ theorem mem_supClosure_iff (hC : IsSetSemiring C) :
 theorem sdiff_mem_supClosure (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
     s \ t ∈ supClosure C :=
   hC.mem_supClosure_iff.mpr <| hC.exists_finpartition_sdiff hs ht
+
+@[deprecated (since := "2026-06-03")] alias diff_mem_supClosure := sdiff_mem_supClosure
 
 theorem isSetRing_supClosure (hC : IsSetSemiring C) : IsSetRing (supClosure C) where
   empty_mem := subset_supClosure hC.empty_mem
@@ -288,6 +292,9 @@ lemma exists_disjoint_finset_sdiff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI 
       simp only [mem_coe]
     · simp only [hi, iUnion_of_empty, iUnion_empty]
 
+@[deprecated (since := "2026-06-03")]
+alias exists_disjoint_finset_diff_eq := exists_disjoint_finset_sdiff_eq
+
 open scoped Classical in
 /-- In a semiring of sets `C`, for all set `s ∈ C` and finite set of sets `I ⊆ C`,
 `disjointOfDiffUnion` is a finite set of sets in `C` such that
@@ -324,6 +331,9 @@ lemma sdiff_sUnion_eq_sUnion_disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s 
   rw [(hC.exists_disjoint_finset_sdiff_eq hs hI).choose_spec.2.2]
   simp only [disjointOfDiffUnion, coe_sdiff, coe_singleton]
   rw [sUnion_sdiff_singleton_empty]
+
+@[deprecated (since := "2026-06-03")]
+alias diff_sUnion_eq_sUnion_disjointOfDiffUnion := sdiff_sUnion_eq_sUnion_disjointOfDiffUnion
 
 lemma sUnion_disjointOfDiffUnion_subset (hC : IsSetSemiring C) (hs : s ∈ C)
     (hI : ↑I ⊆ C) : ⋃₀ (hC.disjointOfDiffUnion hs hI : Set (Set α)) ⊆ s := by

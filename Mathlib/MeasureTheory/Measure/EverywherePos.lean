@@ -77,6 +77,9 @@ lemma exists_isOpen_everywherePosSubset_eq_sdiff (μ : Measure α) (s : Set α) 
   have B : w ∈ 𝓝 x := w_open.mem_nhds xw
   exact mem_of_superset B A
 
+@[deprecated (since := "2026-06-03")]
+alias exists_isOpen_everywherePosSubset_eq_diff := exists_isOpen_everywherePosSubset_eq_sdiff
+
 variable {μ ν : Measure α} {s k : Set α}
 
 protected lemma _root_.MeasurableSet.everywherePosSubset [OpensMeasurableSpace α]

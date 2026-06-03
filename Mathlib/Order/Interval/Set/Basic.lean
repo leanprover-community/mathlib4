@@ -504,34 +504,50 @@ lemma subsingleton_Icc_iff {α : Type*} [LinearOrder α] {a b : α} :
 theorem Icc_sdiff_left : Icc a b \ {a} = Ioc a b :=
   ext fun x => by simp [lt_iff_le_and_ne, eq_comm, and_right_comm]
 
+@[deprecated (since := "2026-06-03")] alias Icc_diff_left := Icc_sdiff_left
+
 @[to_dual (attr := simp)]
 theorem Ico_sdiff_left : Ico a b \ {a} = Ioo a b :=
   ext fun x => by simp [and_right_comm, ← lt_iff_le_and_ne, eq_comm]
+
+@[deprecated (since := "2026-06-03")] alias Ico_diff_left := Ico_sdiff_left
 
 @[simp, to_dual none]
 theorem Icc_sdiff_both : Icc a b \ {a, b} = Ioo a b := by
   rw [insert_eq, ← sdiff_sdiff, Icc_sdiff_left, Ioc_sdiff_right]
 
+@[deprecated (since := "2026-06-03")] alias Icc_diff_both := Icc_sdiff_both
+
 @[to_dual (attr := simp)]
 theorem Iic_sdiff_right : Iic a \ {a} = Iio a :=
   ext fun x => by simp [lt_iff_le_and_ne]
+
+@[deprecated (since := "2026-06-03")] alias Iic_diff_right := Iic_sdiff_right
 
 @[to_dual (attr := simp)]
 theorem Ico_sdiff_Ioo_same (h : a < b) : Ico a b \ Ioo a b = {a} := by
   rw [← Ico_sdiff_left, sdiff_sdiff_cancel_left (singleton_subset_iff.2 <| left_mem_Ico.2 h)]
 
+@[deprecated (since := "2026-06-03")] alias Ico_diff_Ioo_same := Ico_sdiff_Ioo_same
+
 @[to_dual (attr := simp)]
 theorem Icc_sdiff_Ico_same (h : a ≤ b) : Icc a b \ Ico a b = {b} := by
   rw [← Icc_sdiff_right, sdiff_sdiff_cancel_left (singleton_subset_iff.2 <| right_mem_Icc.2 h)]
+
+@[deprecated (since := "2026-06-03")] alias Icc_diff_Ico_same := Icc_sdiff_Ico_same
 
 @[simp, to_dual none]
 theorem Icc_sdiff_Ioo_same (h : a ≤ b) : Icc a b \ Ioo a b = {a, b} := by
   rw [← Icc_sdiff_both, sdiff_sdiff_cancel_left]
   simp [insert_subset_iff, h]
 
+@[deprecated (since := "2026-06-03")] alias Icc_diff_Ioo_same := Icc_sdiff_Ioo_same
+
 @[to_dual (attr := simp)]
 theorem Iic_sdiff_Iio_same : Iic a \ Iio a = {a} := by
   rw [← Iic_sdiff_right, sdiff_sdiff_cancel_left (singleton_subset_iff.2 self_mem_Iic)]
+
+@[deprecated (since := "2026-06-03")] alias Iic_diff_Iio_same := Iic_sdiff_Iio_same
 
 @[to_dual]
 theorem Iio_union_right : Iio a ∪ {a} = Iic a :=

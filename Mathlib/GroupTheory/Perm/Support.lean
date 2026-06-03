@@ -470,6 +470,9 @@ theorem support_swap_mul_ge_support_sdiff (f : Perm α) (x y : α) :
   rw [swap_apply_eq_iff, swap_apply_of_ne_of_ne hx hy] at H
   exact ha H
 
+@[deprecated (since := "2026-06-03")]
+alias support_swap_mul_ge_support_diff := support_swap_mul_ge_support_sdiff
+
 theorem support_swap_mul_eq (f : Perm α) (x : α) (h : f (f x) ≠ x) :
     (swap x (f x) * f).support = f.support \ {x} := by
   by_cases hx : f x = x

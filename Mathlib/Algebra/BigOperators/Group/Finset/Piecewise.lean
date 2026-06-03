@@ -187,6 +187,8 @@ theorem prod_inter_mul_prod_sdiff [DecidableEq ι] (s t : Finset ι) (f : ι →
   convert! (s.prod_piecewise t f f).symm
   simp +unfoldPartialApp [Finset.piecewise]
 
+@[deprecated (since := "2026-06-03")] alias prod_inter_mul_prod_diff := prod_inter_mul_prod_sdiff
+
 @[to_additive]
 theorem prod_eq_mul_prod_sdiff_singleton [DecidableEq ι] {s : Finset ι} (i : ι) (f : ι → M)
     (h : i ∉ s → f i = 1) : ∏ x ∈ s, f x = f i * ∏ x ∈ s \ {i}, f x := by
@@ -196,15 +198,24 @@ theorem prod_eq_mul_prod_sdiff_singleton [DecidableEq ι] {s : Finset ι} (i : �
   · simp_all only [not_false_eq_true, forall_const, one_mul]
     apply Finset.prod_congr <;> aesop
 
+@[deprecated (since := "2026-06-03")]
+alias prod_eq_mul_prod_diff_singleton := prod_eq_mul_prod_sdiff_singleton
+
 @[to_additive]
 theorem prod_eq_mul_prod_sdiff_singleton_of_mem [DecidableEq ι] {s : Finset ι} {i : ι} (h : i ∈ s)
     (f : ι → M) : ∏ x ∈ s, f x = f i * ∏ x ∈ s \ {i}, f x :=
   prod_eq_mul_prod_sdiff_singleton _ _ (by simp_all)
 
+@[deprecated (since := "2026-06-03")]
+alias prod_eq_mul_prod_diff_singleton_of_mem := prod_eq_mul_prod_sdiff_singleton_of_mem
+
 @[to_additive]
 theorem prod_eq_prod_sdiff_singleton_mul [DecidableEq ι] {s : Finset ι} {i : ι} (h : i ∈ s)
     (f : ι → M) : ∏ x ∈ s, f x = (∏ x ∈ s \ {i}, f x) * f i := by
   rw [prod_eq_mul_prod_sdiff_singleton_of_mem h, mul_comm]
+
+@[deprecated (since := "2026-06-03")]
+alias prod_eq_prod_diff_singleton_mul := prod_eq_prod_sdiff_singleton_mul
 
 @[to_additive]
 theorem _root_.Fintype.prod_eq_mul_prod_compl [DecidableEq ι] [Fintype ι] (a : ι) (f : ι → M) :

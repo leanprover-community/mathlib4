@@ -399,6 +399,9 @@ theorem finite_sdiff_of_mem_codiscreteWithin (hK : IsCompact K) (hs : s ∈ codi
   contrapose! hs
   exact Set.Infinite.exists_accPt_of_subset_isCompact hs hK (sep_subset _ _)
 
+@[deprecated (since := "2026-06-03")]
+alias finite_diff_of_mem_codiscreteWithin := finite_sdiff_of_mem_codiscreteWithin
+
 theorem cofinite_inf_le_codiscreteWithin (hK : IsCompact K) :
     cofinite ⊓ 𝓟 K ≤ codiscreteWithin K := by
   intro s hs

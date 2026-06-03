@@ -113,6 +113,9 @@ theorem minimal_iff_forall_erase (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
   mpr h := ⟨h.1, fun t ht hts x hxs ↦ by_contra fun hxt ↦
     h.2 x hxs <| hP ht (subset_erase.2 ⟨hts, hxt⟩)⟩
 
+@[deprecated (since := "2026-06-03")]
+alias minimal_iff_forall_diff_singleton := minimal_iff_forall_erase
+
 end minimal
 
 /-! ### Interaction with big lattice/set operations -/

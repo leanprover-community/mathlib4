@@ -389,6 +389,9 @@ theorem _root_.MeasurableSet.exists_isOpen_sdiff_lt [OuterRegular μ] {A : Set �
   use U, hAU, hUo, hU.trans_le le_top
   exact measure_sdiff_lt_of_lt_add hA.nullMeasurableSet hAU hA' hU
 
+@[deprecated (since := "2026-06-03")]
+alias _root_.MeasurableSet.exists_isOpen_diff_lt := _root_.MeasurableSet.exists_isOpen_sdiff_lt
+
 protected theorem map [OpensMeasurableSpace α] [MeasurableSpace β] [TopologicalSpace β]
     [BorelSpace β] (f : α ≃ₜ β) (μ : Measure α) [OuterRegular μ] :
     (Measure.map f μ).OuterRegular := by
@@ -845,6 +848,10 @@ theorem _root_.MeasurableSet.exists_isCompact_sdiff_lt [OpensMeasurableSpace α]
   exact ⟨K, hKA, hKc, measure_sdiff_lt_of_lt_add hKc.nullMeasurableSet hKA
     (ne_top_of_le_ne_top h'A <| measure_mono hKA) hK⟩
 
+@[deprecated (since := "2026-06-03")]
+alias _root_.MeasurableSet.exists_isCompact_diff_lt :=
+  _root_.MeasurableSet.exists_isCompact_sdiff_lt
+
 /-- If `μ` is inner regular for finite measure sets with respect to compact sets,
 then any measurable set of finite measure can be approximated by a compact closed subset.
 Compared to `MeasurableSet.exists_isCompact_sdiff_lt`,
@@ -856,6 +863,10 @@ theorem _root_.MeasurableSet.exists_isCompact_isClosed_sdiff_lt [BorelSpace α] 
   rcases hA.exists_isCompact_isClosed_lt_add h'A hε with ⟨K, hKA, hKco, hKcl, hK⟩
   exact ⟨K, hKA, hKco, hKcl, measure_sdiff_lt_of_lt_add hKcl.nullMeasurableSet hKA
     (ne_top_of_le_ne_top h'A <| measure_mono hKA) hK⟩
+
+@[deprecated (since := "2026-06-03")]
+alias _root_.MeasurableSet.exists_isCompact_isClosed_diff_lt :=
+  _root_.MeasurableSet.exists_isCompact_isClosed_sdiff_lt
 
 /-- If `μ` is inner regular for finite measure sets with respect to compact sets,
 then any measurable set of finite measure can be approximated by a
@@ -1028,6 +1039,9 @@ theorem _root_.MeasurableSet.exists_isClosed_sdiff_lt [OpensMeasurableSpace α] 
   rcases hA.exists_isClosed_lt_add h'A hε with ⟨F, hFA, hFc, hF⟩
   exact ⟨F, hFA, hFc, measure_sdiff_lt_of_lt_add hFc.nullMeasurableSet hFA
     (ne_top_of_le_ne_top h'A <| measure_mono hFA) hF⟩
+
+@[deprecated (since := "2026-06-03")]
+alias _root_.MeasurableSet.exists_isClosed_diff_lt := _root_.MeasurableSet.exists_isClosed_sdiff_lt
 
 /-- Given a weakly regular measure, any measurable set of finite mass can be approximated from
 inside by closed sets. -/

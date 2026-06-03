@@ -449,17 +449,26 @@ lemma Convex.nhdsWithin_sdiff_eq_nhdsNE {s : Set 𝕜} (hs : Convex 𝕜 s) {a :
   rw [sdiff_eq, ← Iio_union_Ioi, inter_union_distrib_left, nhdsWithin_union, nhdsWithin_union]
   simp [hs.nhdsWithin_inter_Ioi_eq_nhdsGT has h_Ioi, hs.nhdsWithin_inter_Iio_eq_nhdsLT has h_Iio]
 
+@[deprecated (since := "2026-06-03")]
+alias Convex.nhdsWithin_diff_eq_nhdsNE := Convex.nhdsWithin_sdiff_eq_nhdsNE
+
 lemma Convex.nhdsWithin_sdiff_eq_nhdsLT {s : Set 𝕜} (hs : Convex 𝕜 s) {a : 𝕜}
     (has : a ∈ closure s) (h_Iio : (s ∩ Iio a).Nonempty) (h_Ioi : s ∩ Ioi a = ∅) :
     𝓝[s \ {a}] a = 𝓝[<] a := by
   rw [sdiff_eq, ← Iio_union_Ioi, inter_union_distrib_left, nhdsWithin_union]
   simp [h_Ioi, hs.nhdsWithin_inter_Iio_eq_nhdsLT has h_Iio]
 
+@[deprecated (since := "2026-06-03")]
+alias Convex.nhdsWithin_diff_eq_nhdsLT := Convex.nhdsWithin_sdiff_eq_nhdsLT
+
 lemma Convex.nhdsWithin_sdiff_eq_nhdsGT {s : Set 𝕜} (hs : Convex 𝕜 s) {a : 𝕜}
     (has : a ∈ closure s) (h_Iio : s ∩ Iio a = ∅) (h_Ioi : (s ∩ Ioi a).Nonempty) :
     𝓝[s \ {a}] a = 𝓝[>] a := by
   rw [sdiff_eq, ← Iio_union_Ioi, inter_union_distrib_left, nhdsWithin_union]
   simp [h_Iio, hs.nhdsWithin_inter_Ioi_eq_nhdsGT has h_Ioi]
+
+@[deprecated (since := "2026-06-03")]
+alias Convex.nhdsWithin_diff_eq_nhdsGT := Convex.nhdsWithin_sdiff_eq_nhdsGT
 
 omit [Field 𝕜] [IsStrictOrderedRing 𝕜] in
 private lemma sdiff_singleton_eventually_mem_nhds_left {s : Set 𝕜} {a : 𝕜}
@@ -470,6 +479,9 @@ private lemma sdiff_singleton_eventually_mem_nhds_left {s : Set 𝕜} {a : 𝕜}
   apply eventually_of_mem (U := Ioo b a) ?_ fun x hx ↦ ?_
   · exact mem_nhdsWithin.2 ⟨Ioi b, isOpen_Ioi, hba, fun _ ⟨h₁, _, h₂⟩ ↦ ⟨h₁, h₂⟩⟩
   · exact mem_nhds_iff.2 ⟨Ioo b a, subset_sdiff_singleton this right_notMem_Ioo, isOpen_Ioo, hx⟩
+
+@[deprecated (since := "2026-06-03")]
+alias diff_singleton_eventually_mem_nhds_left := sdiff_singleton_eventually_mem_nhds_left
 
 theorem Convex.sdiff_singleton_eventually_mem_nhds {s : Set 𝕜} (hs : Convex 𝕜 s) (a : 𝕜) :
     ∀ᶠ x in 𝓝[s \ {a}] a, s \ {a} ∈ 𝓝 x := by
@@ -482,6 +494,9 @@ theorem Convex.sdiff_singleton_eventually_mem_nhds {s : Set 𝕜} (hs : Convex �
   exact ⟨sdiff_singleton_eventually_mem_nhds_left fun x hx ↦ hs.Ioo_subset_of_mem_closure hx has,
     sdiff_singleton_eventually_mem_nhds_left (𝕜 := 𝕜ᵒᵈ) fun x hx z hz ↦
       hs.Ioo_subset_of_mem_closure has hx hz.symm⟩
+
+@[deprecated (since := "2026-06-03")]
+alias Convex.diff_singleton_eventually_mem_nhds := Convex.sdiff_singleton_eventually_mem_nhds
 
 end LinearOrderedField
 

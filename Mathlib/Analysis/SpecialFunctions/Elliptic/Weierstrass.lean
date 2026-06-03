@@ -134,9 +134,14 @@ lemma isClosed_of_subset_lattice {s : Set ℂ} (hs : s ⊆ L.lattice) : IsClosed
 lemma isOpen_compl_lattice_sdiff {s : Set ℂ} : IsOpen (L.lattice \ s)ᶜ :=
   (L.isClosed_of_subset_lattice Set.sdiff_subset).isOpen_compl
 
+@[deprecated (since := "2026-06-03")] alias isOpen_compl_lattice_diff := isOpen_compl_lattice_sdiff
+
 open scoped Topology in
 lemma compl_lattice_sdiff_singleton_mem_nhds (x : ℂ) : (↑L.lattice \ {x})ᶜ ∈ 𝓝 x :=
   L.isOpen_compl_lattice_sdiff.mem_nhds (by simp)
+
+@[deprecated (since := "2026-06-03")]
+alias compl_lattice_diff_singleton_mem_nhds := compl_lattice_sdiff_singleton_mem_nhds
 
 instance : ProperSpace L.lattice := .of_isClosed L.isClosed_lattice
 
@@ -238,7 +243,7 @@ lemma hasSum_weierstrassPExcept (l₀ : ℂ) (z : ℂ) :
 lemma differentiableOn_weierstrassPExcept (l₀ : ℂ) :
     DifferentiableOn ℂ ℘[L - l₀] (L.lattice \ {l₀})ᶜ := by
   refine (L.hasSumLocallyUniformly_weierstrassPExcept l₀).hasSumLocallyUniformlyOn.differentiableOn
-    (.of_forall fun s ↦ .fun_sum fun i hi ↦ ?_) L.isOpen_compl_lattice_diff
+    (.of_forall fun s ↦ .fun_sum fun i hi ↦ ?_) L.isOpen_compl_lattice_sdiff
   split_ifs
   · simp
   · exact .sub (.div (by fun_prop) (by fun_prop) (by aesop (add simp sub_eq_zero))) (by fun_prop)
@@ -364,7 +369,7 @@ lemma differentiableOn_derivWeierstrassPExcept (l₀ : ℂ) :
     DifferentiableOn ℂ ℘'[L - l₀] (L.lattice \ {l₀})ᶜ := by
   refine L.hasSumLocallyUniformly_derivWeierstrassPExcept l₀
     |>.tendstoLocallyUniformlyOn.differentiableOn
-      (.of_forall fun s ↦ .fun_sum fun i hi ↦ ?_) L.isOpen_compl_lattice_diff
+      (.of_forall fun s ↦ .fun_sum fun i hi ↦ ?_) L.isOpen_compl_lattice_sdiff
   split_ifs
   · simp
   refine .div (by fun_prop) (by fun_prop) fun x hx ↦ ?_
@@ -374,7 +379,7 @@ lemma differentiableOn_derivWeierstrassPExcept (l₀ : ℂ) :
 lemma eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept (l₀ : ℂ) :
     Set.EqOn (deriv ℘[L - l₀]) ℘'[L - l₀] (L.lattice \ {l₀})ᶜ := by
   refine ((L.hasSumLocallyUniformly_weierstrassPExcept l₀).tendstoLocallyUniformlyOn.deriv
-    (.of_forall fun s ↦ ?_) L.isOpen_compl_lattice_diff).unique ?_
+    (.of_forall fun s ↦ ?_) L.isOpen_compl_lattice_sdiff).unique ?_
   · refine .fun_sum fun i hi ↦ ?_
     split_ifs
     · simp
@@ -436,7 +441,7 @@ private lemma weierstrassPExcept_add_coe_aux
     (l₀ : ℂ) (hl₀ : l₀ ∈ L.lattice) (l : L.lattice) (hl : l.1 / 2 ∉ L.lattice) :
     Set.EqOn (℘[L - l₀] <| · + l) (℘[L - (l₀ - l)] · + (1 / l₀ ^ 2 - 1 / (l₀ - ↑l) ^ 2))
       (L.lattice \ {l₀ - l})ᶜ := by
-  apply IsOpen.eqOn_of_deriv_eq (𝕜 := ℂ) L.isOpen_compl_lattice_diff
+  apply IsOpen.eqOn_of_deriv_eq (𝕜 := ℂ) L.isOpen_compl_lattice_sdiff
     ?_ ?_ ?_ ?_ (x := -(l / 2)) ?_ ?_
   · refine (Set.Countable.isConnected_compl_of_one_lt_rank (by simp) ?_).2
     exact .mono sdiff_le (countable_of_Lindelof_of_discrete (X := L.lattice))
@@ -765,7 +770,7 @@ lemma hasFPowerSeriesAt_weierstrassPExcept (l : ℂ) :
     (L.hasFPowerSeriesOnBall_weierstrassPExcept l l r h₁ h₂).hasFPowerSeriesAt
 
 lemma analyticOnNhd_weierstrassPExcept (l₀ : ℂ) : AnalyticOnNhd ℂ ℘[L - l₀] (L.lattice \ {l₀})ᶜ :=
-  (L.differentiableOn_weierstrassPExcept l₀).analyticOnNhd L.isOpen_compl_lattice_diff
+  (L.differentiableOn_weierstrassPExcept l₀).analyticOnNhd L.isOpen_compl_lattice_sdiff
 
 @[fun_prop]
 lemma analyticAt_weierstrassPExcept (l₀ : ℂ) : AnalyticAt ℂ ℘[L - l₀] l₀ :=
@@ -815,7 +820,7 @@ lemma hasFPowerSeriesAt_derivWeierstrassPExcept (l : ℂ) :
 
 lemma analyticOnNhd_derivWeierstrassPExcept (l₀ : ℂ) :
     AnalyticOnNhd ℂ ℘'[L - l₀] (L.lattice \ {l₀})ᶜ :=
-  (L.differentiableOn_derivWeierstrassPExcept l₀).analyticOnNhd L.isOpen_compl_lattice_diff
+  (L.differentiableOn_derivWeierstrassPExcept l₀).analyticOnNhd L.isOpen_compl_lattice_sdiff
 
 @[fun_prop]
 lemma analyticAt_derivWeierstrassPExcept (l₀ : ℂ) :

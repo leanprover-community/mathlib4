@@ -364,6 +364,9 @@ theorem Ne.nhdsWithin_sdiff_singleton [T1Space X] {x y : X} (h : x ≠ y) (s : S
   rw [sdiff_eq, inter_comm, nhdsWithin_inter_of_mem]
   exact mem_nhdsWithin_of_mem_nhds (isOpen_ne.mem_nhds h)
 
+@[deprecated (since := "2026-06-03")]
+alias Ne.nhdsWithin_diff_singleton := Ne.nhdsWithin_sdiff_singleton
+
 lemma nhdsWithin_compl_singleton_le [T1Space X] (x y : X) : 𝓝[{x}ᶜ] x ≤ 𝓝[{y}ᶜ] x := by
   rcases eq_or_ne x y with rfl | hy
   · exact Eq.le rfl
@@ -655,6 +658,8 @@ theorem Dense.sdiff_singleton [T1Space X] {s : Set X} (hs : Dense s) (x : X) [Ne
     Dense (s \ {x}) :=
   hs.inter_of_isOpen_right (dense_compl_singleton x) isOpen_compl_singleton
 
+@[deprecated (since := "2026-06-03")] alias Dense.diff_singleton := Dense.sdiff_singleton
+
 /-- Removing a finset from a dense set in a space without isolated points, one still
 obtains a dense set. -/
 theorem Dense.sdiff_finset [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set X} (hs : Dense s)
@@ -666,12 +671,16 @@ theorem Dense.sdiff_finset [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set
     rw [Finset.coe_insert, ← union_singleton, ← sdiff_sdiff]
     exact ih.sdiff_singleton _
 
+@[deprecated (since := "2026-06-03")] alias Dense.diff_finset := Dense.sdiff_finset
+
 /-- Removing a finite set from a dense set in a space without isolated points, one still
 obtains a dense set. -/
 theorem Dense.sdiff_finite [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set X} (hs : Dense s)
     {t : Set X} (ht : t.Finite) : Dense (s \ t) := by
   convert! hs.sdiff_finset ht.toFinset
   exact (Finite.coe_toFinset _).symm
+
+@[deprecated (since := "2026-06-03")] alias Dense.diff_finite := Dense.sdiff_finite
 
 /-- If a function to a `T1Space` tends to some limit `y` at some point `x`, then necessarily
 `y = f x`. -/
@@ -727,6 +736,9 @@ theorem continuousWithinAt_sdiff_singleton [TopologicalSpace Y] [T1Space X]
     {x y : X} {s : Set X} {f : X → Y} :
     ContinuousWithinAt f (s \ {y}) x ↔ ContinuousWithinAt f s x := by
   rw [← continuousWithinAt_insert, insert_sdiff_singleton, continuousWithinAt_insert]
+
+@[deprecated (since := "2026-06-03")]
+alias continuousWithinAt_diff_singleton := continuousWithinAt_sdiff_singleton
 
 /-- If two sets coincide locally around `x`, except maybe at `y`, then it is equivalent to be
 continuous at `x` within one set or the other. -/

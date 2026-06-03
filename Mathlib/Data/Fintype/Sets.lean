@@ -139,6 +139,8 @@ theorem toFinset_sdiff [Fintype (s \ t : Set _)] : (s \ t).toFinset = s.toFinset
   ext
   simp
 
+@[deprecated (since := "2026-06-03")] alias toFinset_diff := toFinset_sdiff
+
 open scoped symmDiff in
 @[simp]
 theorem toFinset_symmDiff [Fintype (s ∆ t : Set _)] :

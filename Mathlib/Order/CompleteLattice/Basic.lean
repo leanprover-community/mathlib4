@@ -102,6 +102,8 @@ theorem sSup_sdiff_singleton_bot (s : Set α) : sSup (s \ {⊥}) = sSup s :=
   (sSup_le_sSup sdiff_subset).antisymm <|
     sSup_le_sSup_of_subset_insert_bot <| subset_insert_sdiff_singleton _ _
 
+@[deprecated (since := "2026-06-03")] alias sSup_diff_singleton_bot := sSup_sdiff_singleton_bot
+
 @[to_dual]
 theorem sSup_pair {a b : α} : sSup {a, b} = a ⊔ b :=
   (@isLUB_pair α _ a b).sSup_eq

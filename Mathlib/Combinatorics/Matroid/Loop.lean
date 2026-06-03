@@ -195,6 +195,8 @@ lemma closure_loops_union_eq (M : Matroid α) (X : Set α) :
   rw [← M.closure_union_loops_eq (X \ M.loops), sdiff_union_self, ← closure_empty,
     closure_union_closure_right_eq, union_empty]
 
+@[deprecated (since := "2026-06-03")] alias closure_diff_loops_eq := closure_sdiff_loops_eq
+
 /-- A version of `restrict_loops_eq` without the hypothesis that `R ⊆ M.E` -/
 lemma restrict_loops_eq' (M : Matroid α) (R : Set α) :
     (M ↾ R).loops = (M.loops ∩ R) ∪ (R \ M.E) := by
@@ -592,10 +594,15 @@ lemma IsColoop.mem_of_mem_closure (he : M.IsColoop e) (heX : e ∈ M.closure X) 
 lemma isColoop_iff_sdiff_not_spanning : M.IsColoop e ↔ ¬ M.Spanning (M.E \ {e}) :=
   (M.isColoop_tfae e).out 0 6
 
+@[deprecated (since := "2026-06-03")]
+alias isColoop_iff_diff_not_spanning := isColoop_iff_sdiff_not_spanning
+
 alias ⟨IsColoop.sdiff_not_spanning, _⟩ := isColoop_iff_sdiff_not_spanning
 
 lemma isColoop_iff_sdiff_closure : M.IsColoop e ↔ M.closure (M.E \ {e}) ≠ M.E := by
   rw [isColoop_iff_sdiff_not_spanning, spanning_iff_closure_eq]
+
+@[deprecated (since := "2026-06-03")] alias isColoop_iff_diff_closure := isColoop_iff_sdiff_closure
 
 lemma isColoop_iff_notMem_closure_compl (he : e ∈ M.E := by aesop_mat) :
     M.IsColoop e ↔ e ∉ M.closure (M.E \ {e}) := by
@@ -677,6 +684,9 @@ lemma closure_sdiff_eq_of_subset_coloops (X : Set α) (hK : K ⊆ M.coloops) :
   rw [IsColoop.mem_closure_iff_mem (hK heK)] at heX
   exact heX.2 heK
 
+@[deprecated (since := "2026-06-03")]
+alias closure_diff_eq_of_subset_coloops := closure_sdiff_eq_of_subset_coloops
+
 lemma closure_disjoint_of_disjoint_of_subset_coloops (hXK : Disjoint X K) (hK : K ⊆ M.coloops) :
     Disjoint (M.closure X) K := by
   rwa [disjoint_iff_inter_eq_empty, closure_inter_eq_of_subset_coloops X hK,
@@ -710,6 +720,9 @@ lemma sdiff_indep_iff_indep_of_subset_coloops (hK : K ⊆ M.coloops) :
   rw [← union_indep_iff_indep_of_subset_coloops hK, sdiff_union_self,
     union_indep_iff_indep_of_subset_coloops hK]
 
+@[deprecated (since := "2026-06-03")]
+alias diff_indep_iff_indep_of_subset_coloops := sdiff_indep_iff_indep_of_subset_coloops
+
 @[simp]
 lemma union_coloops_indep_iff : M.Indep (I ∪ M.coloops) ↔ M.Indep I :=
   union_indep_iff_indep_of_subset_coloops Subset.rfl
@@ -717,6 +730,8 @@ lemma union_coloops_indep_iff : M.Indep (I ∪ M.coloops) ↔ M.Indep I :=
 @[simp]
 lemma sdiff_coloops_indep_iff : M.Indep (I \ M.coloops) ↔ M.Indep I :=
   sdiff_indep_iff_indep_of_subset_coloops Subset.rfl
+
+@[deprecated (since := "2026-06-03")] alias diff_coloops_indep_iff := sdiff_coloops_indep_iff
 
 lemma coloops_indep (M : Matroid α) : M.Indep M.coloops := by
   rw [← empty_union M.coloops, union_coloops_indep_iff]

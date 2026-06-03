@@ -145,6 +145,8 @@ theorem covering_mem_family {p : X × Set X} (hp : p ∈ h.index) : h.covering p
 theorem measure_sdiff_biUnion : μ (s \ ⋃ p ∈ h.index, h.covering p) = 0 :=
   h.exists_disjoint_covering_ae.choose_spec.2.2.2
 
+@[deprecated (since := "2026-06-03")] alias measure_diff_biUnion := measure_sdiff_biUnion
+
 theorem index_countable [SecondCountableTopology X] : h.index.Countable :=
   h.covering_disjoint.countable_of_nonempty_interior fun _ hx =>
     v.nonempty_interior _ _ (h.covering_mem_family hx)

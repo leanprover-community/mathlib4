@@ -424,12 +424,18 @@ theorem IntegrableOn.of_ae_sdiff_eq_zero {f : α → ε'}
   rw [union_sdiff_self]
   exact subset_union_right
 
+@[deprecated (since := "2026-06-03")]
+alias IntegrableOn.of_ae_diff_eq_zero := IntegrableOn.of_ae_sdiff_eq_zero
+
 /-- If a function is integrable on a set `s`, and vanishes on `t \ s`, then it is integrable on `t`
 if `t` is measurable. -/
 theorem IntegrableOn.of_forall_sdiff_eq_zero {f : α → ε'}
     (hf : IntegrableOn f s μ) (ht : MeasurableSet t)
     (h't : ∀ x ∈ t \ s, f x = 0) : IntegrableOn f t μ :=
   hf.of_ae_sdiff_eq_zero ht.nullMeasurableSet (Eventually.of_forall h't)
+
+@[deprecated (since := "2026-06-03")]
+alias IntegrableOn.of_forall_diff_eq_zero := IntegrableOn.of_forall_sdiff_eq_zero
 
 /-- If a function is integrable on a set `s` and vanishes almost everywhere on its complement,
 then it is integrable. -/

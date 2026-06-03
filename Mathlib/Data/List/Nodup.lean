@@ -321,9 +321,13 @@ theorem Nodup.sdiff_eq_filter [BEq α] [LawfulBEq α] :
     rw [diff_cons, (hl₁.erase _).sdiff_eq_filter, hl₁.erase_eq_filter, filter_filter]
     simp only [decide_not, bne, Bool.and_comm, decide_mem_cons, Bool.not_or]
 
+@[deprecated (since := "2026-06-03")] alias Nodup.diff_eq_filter := Nodup.sdiff_eq_filter
+
 theorem Nodup.mem_sdiff_iff [BEq α] [LawfulBEq α] (hl₁ : l₁.Nodup) :
     a ∈ l₁.diff l₂ ↔ a ∈ l₁ ∧ a ∉ l₂ := by
   rw [hl₁.sdiff_eq_filter, mem_filter, decide_eq_true_iff]
+
+@[deprecated (since := "2026-06-03")] alias Nodup.mem_diff_iff := Nodup.mem_sdiff_iff
 
 protected theorem Nodup.set :
     ∀ {l : List α} {n : ℕ} {a : α} (_ : l.Nodup) (_ : a ∉ l), (l.set n a).Nodup

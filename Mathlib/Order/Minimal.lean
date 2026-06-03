@@ -341,15 +341,24 @@ theorem Maximal.mem_of_prop_insert (h : Maximal P s) (hx : P (insert x s)) : x �
 theorem Minimal.notMem_of_prop_sdiff_singleton (h : Minimal P s) (hx : P (s \ {x})) : x ∉ s :=
   fun hxs ↦ ((h.eq_of_superset hx sdiff_subset).subset hxs).2 rfl
 
+@[deprecated (since := "2026-06-03")]
+alias Minimal.notMem_of_prop_diff_singleton := Minimal.notMem_of_prop_sdiff_singleton
+
 theorem Set.minimal_iff_forall_sdiff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
     Minimal P s ↔ P s ∧ ∀ x ∈ s, ¬ P (s \ {x}) :=
   ⟨fun h ↦ ⟨h.1, fun _ hx hP ↦ h.notMem_of_prop_sdiff_singleton hP hx⟩,
     fun h ↦ ⟨h.1, fun _ ht hts x hxs ↦ by_contra fun hxt ↦
       h.2 x hxs (hP ht <| subset_sdiff_singleton hts hxt)⟩⟩
 
+@[deprecated (since := "2026-06-03")]
+alias Set.minimal_iff_forall_diff_singleton := Set.minimal_iff_forall_sdiff_singleton
+
 theorem Set.exists_sdiff_singleton_of_not_minimal (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) (hs : P s)
     (h : ¬ Minimal P s) : ∃ x ∈ s, P (s \ {x}) := by
   simpa [Set.minimal_iff_forall_sdiff_singleton hP, hs] using h
+
+@[deprecated (since := "2026-06-03")]
+alias Set.exists_diff_singleton_of_not_minimal := Set.exists_sdiff_singleton_of_not_minimal
 
 theorem Set.maximal_iff_forall_ssuperset : Maximal P s ↔ P s ∧ ∀ ⦃t⦄, s ⊂ t → ¬ P t :=
   maximal_iff_forall_gt

@@ -579,6 +579,8 @@ lemma le_addContent_sdiff (m : AddContent ℝ≥0∞ C) (hC : IsSetRing C) (hs :
   rw [tsub_eq_zero_of_le
     (addContent_mono hC.isSetSemiring (hC.inter_mem hs ht) ht inter_subset_right), add_zero]
 
+@[deprecated (since := "2026-06-03")] alias le_addContent_diff := le_addContent_sdiff
+
 lemma addContent_sdiff_of_ne_top (m : AddContent ℝ≥0∞ C) (hC : IsSetRing C)
     (hm_ne_top : ∀ s ∈ C, m s ≠ ∞)
     {s t : Set α} (hs : s ∈ C) (ht : t ∈ C) (hts : t ⊆ s) :
@@ -587,6 +589,8 @@ lemma addContent_sdiff_of_ne_top (m : AddContent ℝ≥0∞ C) (hC : IsSetRing C
     addContent_union hC ht (hC.sdiff_mem hs ht) disjoint_sdiff_self_right
   simp_rw [Set.union_sdiff_self, Set.union_eq_right.mpr hts] at h_union
   rw [h_union, ENNReal.add_sub_cancel_left (hm_ne_top _ ht)]
+
+@[deprecated (since := "2026-06-03")] alias addContent_diff_of_ne_top := addContent_sdiff_of_ne_top
 
 /-- In a ring of sets, continuity of an additive content at `∅` implies σ-additivity.
 This is not true in general in semirings, or without the hypothesis that `m` is finite. See the

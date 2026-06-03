@@ -444,6 +444,9 @@ theorem IsBasis.eq_exchange_of_sdiff_eq_singleton (hI : M.IsBasis I X) (hJ : M.I
     (hIJ : I \ J = {e}) : ∃ f ∈ J \ I, J = insert f I \ {e} := by
   rw [← isBase_restrict_iff] at hI hJ; exact hI.eq_exchange_of_sdiff_eq_singleton hJ hIJ
 
+@[deprecated (since := "2026-06-03")]
+alias IsBasis.eq_exchange_of_diff_eq_singleton := IsBasis.eq_exchange_of_sdiff_eq_singleton
+
 theorem IsBasis'.encard_eq_encard (hI : M.IsBasis' I X) (hJ : M.IsBasis' J X) :
     I.encard = J.encard := by
   rw [← isBase_restrict_iff'] at hI hJ; exact hI.encard_eq_encard_of_isBase hJ

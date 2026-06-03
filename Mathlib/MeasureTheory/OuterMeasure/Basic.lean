@@ -97,11 +97,15 @@ lemma measure_univ_le_add_compl (s : Set α) : μ univ ≤ μ s + μ sᶜ :=
 theorem measure_le_inter_add_sdiff (μ : F) (s t : Set α) : μ s ≤ μ (s ∩ t) + μ (s \ t) := by
   simpa using measure_union_le (s ∩ t) (s \ t)
 
+@[deprecated (since := "2026-06-03")] alias measure_le_inter_add_diff := measure_le_inter_add_sdiff
+
 theorem measure_sdiff_null (ht : μ t = 0) : μ (s \ t) = μ s :=
   (measure_mono sdiff_subset).antisymm <| calc
     μ s ≤ μ (s ∩ t) + μ (s \ t) := measure_le_inter_add_sdiff _ _ _
     _ ≤ μ t + μ (s \ t) := by gcongr; apply inter_subset_right
     _ = μ (s \ t) := by simp [ht]
+
+@[deprecated (since := "2026-06-03")] alias measure_diff_null := measure_sdiff_null
 
 theorem measure_biUnion_null_iff {I : Set ι} (hI : I.Countable) {s : ι → Set α} :
     μ (⋃ i ∈ I, s i) = 0 ↔ ∀ i ∈ I, μ (s i) = 0 := by

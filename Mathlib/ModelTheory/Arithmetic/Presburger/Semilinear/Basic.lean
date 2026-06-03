@@ -772,6 +772,8 @@ private theorem Nat.isSemilinearSet_sdiff [Finite ι] {s₁ s₂ : Set (ι → �
     (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemilinearSet s₂) : IsSemilinearSet (s₁ \ s₂) :=
   isSemilinearSet_inter hs₁ (isSemilinearSet_compl hs₂)
 
+@[deprecated (since := "2026-06-03")] alias Nat.isSemilinearSet_diff := Nat.isSemilinearSet_sdiff
+
 /-- Semilinear sets are closed under set difference. -/
 public theorem IsSemilinearSet.sdiff (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemilinearSet s₂) :
     IsSemilinearSet (s₁ \ s₂) := by
@@ -784,6 +786,8 @@ public theorem IsSemilinearSet.sdiff (hs₁ : IsSemilinearSet s₁) (hs₂ : IsS
   rw [← image_preimage_eq (s₁' \ s₂') hf, preimage_sdiff]
   apply image
   apply Nat.isSemilinearSet_sdiff <;> apply Nat.isSemilinearSet_preimage <;> assumption
+
+@[deprecated (since := "2026-06-03")] alias IsSemilinearSet.diff := IsSemilinearSet.sdiff
 
 /-- Semilinear sets in a finitely generated monoid are closed under complement. -/
 public theorem IsSemilinearSet.compl [AddMonoid.FG M] (hs : IsSemilinearSet s) :

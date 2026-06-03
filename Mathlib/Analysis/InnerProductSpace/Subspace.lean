@@ -189,6 +189,9 @@ theorem OrthogonalFamily.norm_sq_sdiff_sum [DecidableEq ι] (f : ∀ i, G i) (s�
   · simp only [hF]
   · simp only [hF]
 
+@[deprecated (since := "2026-06-03")]
+alias OrthogonalFamily.norm_sq_diff_sum := OrthogonalFamily.norm_sq_sdiff_sum
+
 /-- A family `f` of mutually-orthogonal elements of `E` is summable, if and only if
 `(fun i ↦ ‖f i‖ ^ 2)` is summable. -/
 theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : ∀ i, G i) :

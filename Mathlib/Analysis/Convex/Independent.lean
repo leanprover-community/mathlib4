@@ -130,6 +130,9 @@ theorem convexIndependent_iff_notMem_convexHull_sdiff {p : ι → E} :
     rw [Set.sdiff_singleton_eq_self H]
     exact hi
 
+@[deprecated (since := "2026-06-03")]
+alias convexIndependent_iff_notMem_convexHull_diff := convexIndependent_iff_notMem_convexHull_sdiff
+
 theorem convexIndependent_set_iff_inter_convexHull_subset {s : Set E} :
     ConvexIndependent 𝕜 ((↑) : s → E) ↔ ∀ t, t ⊆ s → s ∩ convexHull 𝕜 t ⊆ t := by
   constructor
@@ -152,6 +155,10 @@ theorem convexIndependent_set_iff_notMem_convexHull_sdiff {s : Set E} :
   · rintro hs t ht x ⟨hxs, hxt⟩
     by_contra h
     exact hs _ hxs (convexHull_mono (Set.subset_sdiff_singleton ht h) hxt)
+
+@[deprecated (since := "2026-06-03")]
+alias convexIndependent_set_iff_notMem_convexHull_diff :=
+  convexIndependent_set_iff_notMem_convexHull_sdiff
 
 end OrderedSemiring
 

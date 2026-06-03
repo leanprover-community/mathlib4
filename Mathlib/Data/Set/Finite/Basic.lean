@@ -181,6 +181,8 @@ protected theorem toFinset_sdiff [DecidableEq α] (hs : s.Finite) (ht : t.Finite
   ext
   simp
 
+@[deprecated (since := "2026-06-03")] alias toFinset_diff := toFinset_sdiff
+
 open scoped symmDiff in
 protected theorem toFinset_symmDiff [DecidableEq α] (hs : s.Finite) (ht : t.Finite)
     (h : (s ∆ t).Finite) : h.toFinset = hs.toFinset ∆ ht.toFinset := by
@@ -521,8 +523,12 @@ protected lemma Infinite.mono {s t : Set α} (h : s ⊆ t) : s.Infinite → t.In
 
 @[simp] theorem Finite.sdiff (hs : s.Finite) : (s \ t).Finite := hs.subset sdiff_subset
 
+@[deprecated (since := "2026-06-03")] alias Finite.diff := Finite.sdiff
+
 theorem Finite.of_sdiff {s t : Set α} (hd : (s \ t).Finite) (ht : t.Finite) : s.Finite :=
   (hd.union ht).subset <| subset_sdiff_union _ _
+
+@[deprecated (since := "2026-06-03")] alias Finite.of_diff := Finite.of_sdiff
 
 @[simp]
 lemma Finite.symmDiff (hs : s.Finite) (ht : t.Finite) : (s ∆ t).Finite := hs.sdiff.union ht.sdiff
@@ -851,9 +857,14 @@ theorem Finite.infinite_compl [Infinite α] {s : Set α} (hs : s.Finite) : sᶜ.
 theorem Infinite.sdiff {s t : Set α} (hs : s.Infinite) (ht : t.Finite) :
     (s \ t).Infinite := fun h => hs <| h.of_sdiff ht
 
+@[deprecated (since := "2026-06-03")] alias Infinite.diff := Infinite.sdiff
+
 lemma Infinite.inter_of_finite_sdiff {α : Type*} {s t : Set α} (hs : s.Infinite)
     (ht : (s \ t).Finite) : (s ∩ t).Infinite := by
   simpa using hs.sdiff ht
+
+@[deprecated (since := "2026-06-03")]
+alias Infinite.inter_of_finite_diff := Infinite.inter_of_finite_sdiff
 
 @[simp]
 theorem infinite_union {s t : Set α} : (s ∪ t).Infinite ↔ s.Infinite ∨ t.Infinite := by

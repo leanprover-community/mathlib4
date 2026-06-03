@@ -241,6 +241,8 @@ theorem closure_inter_subset : closure (s ∩ t) ⊆ closure s ∩ closure t :=
 theorem sdiff_subset_closure_iff : s \ t ⊆ closure t ↔ s ⊆ closure t := by
   rw [sdiff_subset_iff, union_eq_self_of_subset_left subset_closure]
 
+@[deprecated (since := "2026-06-03")] alias diff_subset_closure_iff := sdiff_subset_closure_iff
+
 theorem closure_inter_subset_inter_closure (s t : Set X) :
     closure (s ∩ t) ⊆ closure s ∩ closure t :=
   (monotone_closure X).map_inf_le s t
@@ -475,6 +477,8 @@ section Frontier
 theorem closure_sdiff_interior (s : Set X) : closure s \ interior s = frontier s :=
   rfl
 
+@[deprecated (since := "2026-06-03")] alias closure_diff_interior := closure_sdiff_interior
+
 /-- Interior and frontier are disjoint. -/
 lemma disjoint_interior_frontier : Disjoint (interior s) (frontier s) := by
   rw [disjoint_iff_inter_eq_empty, ← closure_sdiff_interior, sdiff_eq,
@@ -484,10 +488,14 @@ lemma disjoint_interior_frontier : Disjoint (interior s) (frontier s) := by
 theorem closure_sdiff_frontier (s : Set X) : closure s \ frontier s = interior s := by
   rw [frontier, sdiff_sdiff_right_self, inter_eq_self_of_subset_right interior_subset_closure]
 
+@[deprecated (since := "2026-06-03")] alias closure_diff_frontier := closure_sdiff_frontier
+
 @[simp]
 theorem self_sdiff_frontier (s : Set X) : s \ frontier s = interior s := by
   rw [frontier, sdiff_sdiff_right, sdiff_eq_empty.2 subset_closure,
     inter_eq_self_of_subset_right interior_subset, empty_union]
+
+@[deprecated (since := "2026-06-03")] alias self_diff_frontier := self_sdiff_frontier
 
 lemma mem_interior_iff_notMem_frontier {s : Set X} {x : X} (hx : x ∈ s) :
     x ∈ interior s ↔ x ∉ frontier s := by

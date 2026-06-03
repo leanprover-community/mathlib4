@@ -97,10 +97,14 @@ theorem sdiff_mem_nhdsWithin_compl {x : α} {s : Set α} (hs : s ∈ 𝓝 x) (t 
     s \ t ∈ 𝓝[tᶜ] x :=
   sdiff_mem_inf_principal_compl hs t
 
+@[deprecated (since := "2026-06-03")] alias diff_mem_nhdsWithin_compl := sdiff_mem_nhdsWithin_compl
+
 theorem sdiff_mem_nhdsWithin_sdiff {x : α} {s t : Set α} (hs : s ∈ 𝓝[t] x) (t' : Set α) :
     s \ t' ∈ 𝓝[t \ t'] x := by
   rw [nhdsWithin, sdiff_eq, sdiff_eq, ← inf_principal, ← inf_assoc]
   exact inter_mem_inf hs (mem_principal_self _)
+
+@[deprecated (since := "2026-06-03")] alias diff_mem_nhdsWithin_diff := sdiff_mem_nhdsWithin_sdiff
 
 theorem nhds_of_nhdsWithin_of_nhds {s t : Set α} {a : α} (h1 : s ∈ 𝓝 a) (h2 : t ∈ 𝓝[s] a) :
     t ∈ 𝓝 a := by

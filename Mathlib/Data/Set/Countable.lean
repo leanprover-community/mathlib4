@@ -244,6 +244,8 @@ theorem Countable.union {s t : Set α} (hs : s.Countable) (ht : t.Countable) : (
 theorem Countable.of_sdiff {s t : Set α} (h : (s \ t).Countable) (ht : t.Countable) : s.Countable :=
   (h.union ht).mono (subset_sdiff_union _ _)
 
+@[deprecated (since := "2026-06-03")] alias Countable.of_diff := Countable.of_sdiff
+
 @[simp]
 theorem countable_insert {s : Set α} {a : α} : (insert a s).Countable ↔ s.Countable := by
   simp only [insert_eq, countable_union, countable_singleton, true_and]

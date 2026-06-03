@@ -447,6 +447,9 @@ theorem card_le_sdiff_of_interleaved {s t : Finset α}
     let ⟨z, hzt, hxz, hzy⟩ := h x hx y hy hxy hs
     ⟨z, mem_sdiff.2 ⟨hzt, fun hzs => hs z hzs ⟨hxz, hzy⟩⟩, hxz, hzy⟩
 
+@[deprecated (since := "2026-06-03")]
+alias card_le_diff_of_interleaved := card_le_sdiff_of_interleaved
+
 /-- Induction principle for `Finset`s in a linearly ordered type: a predicate is true on all
 `s : Finset α` provided that:
 

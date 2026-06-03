@@ -271,10 +271,16 @@ theorem hasFDerivWithinAt_sdiff_singleton_self :
     HasFDerivWithinAt f f' (s \ {x}) x ↔ HasFDerivWithinAt f f' s x := by
   rw [← hasFDerivWithinAt_insert_self, insert_sdiff_singleton, hasFDerivWithinAt_insert_self]
 
+@[deprecated (since := "2026-06-03")]
+alias hasFDerivWithinAt_diff_singleton_self := hasFDerivWithinAt_sdiff_singleton_self
+
 @[simp]
 theorem hasFDerivWithinAt_sdiff_singleton [T1Space E] (y : E) :
     HasFDerivWithinAt f f' (s \ {y}) x ↔ HasFDerivWithinAt f f' s x := by
   rw [← hasFDerivWithinAt_insert, insert_sdiff_singleton, hasFDerivWithinAt_insert]
+
+@[deprecated (since := "2026-06-03")]
+alias hasFDerivWithinAt_diff_singleton := hasFDerivWithinAt_sdiff_singleton
 
 @[simp]
 protected theorem HasFDerivWithinAt.empty : HasFDerivWithinAt f f' ∅ x := by

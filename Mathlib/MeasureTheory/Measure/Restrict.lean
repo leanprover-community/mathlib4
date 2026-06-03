@@ -251,9 +251,13 @@ theorem restrict_inter_add_sdiff₀ (s : Set α) (ht : NullMeasurableSet t μ) :
   simp only [add_apply, restrict_apply hu, ← inter_assoc, sdiff_eq]
   exact measure_inter_add_sdiff₀ (u ∩ s) ht
 
+@[deprecated (since := "2026-06-03")] alias restrict_inter_add_diff₀ := restrict_inter_add_sdiff₀
+
 theorem restrict_inter_add_sdiff (s : Set α) (ht : MeasurableSet t) :
     μ.restrict (s ∩ t) + μ.restrict (s \ t) = μ.restrict s :=
   restrict_inter_add_sdiff₀ s ht.nullMeasurableSet
+
+@[deprecated (since := "2026-06-03")] alias restrict_inter_add_diff := restrict_inter_add_sdiff
 
 theorem restrict_union_add_inter₀ (s : Set α) (ht : NullMeasurableSet t μ) :
     μ.restrict (s ∪ t) + μ.restrict (s ∩ t) = μ.restrict s + μ.restrict t := by

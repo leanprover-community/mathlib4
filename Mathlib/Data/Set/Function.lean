@@ -397,11 +397,17 @@ lemma InjOn.image_sdiff {t : Set α} (h : s.InjOn f) : f '' (s \ t) = f '' s \ f
     (sdiff_subset_iff.2 (by rw [← image_union, inter_union_sdiff]))
   exact Disjoint.image disjoint_sdiff_inter h sdiff_subset inter_subset_left
 
+@[deprecated (since := "2026-06-03")] alias InjOn.image_diff := InjOn.image_sdiff
+
 lemma InjOn.image_sdiff_subset {f : α → β} {t : Set α} (h : InjOn f s) (hst : t ⊆ s) :
     f '' (s \ t) = f '' s \ f '' t := by
   rw [h.image_sdiff, inter_eq_self_of_subset_right hst]
 
+@[deprecated (since := "2026-06-03")] alias InjOn.image_diff_subset := InjOn.image_sdiff_subset
+
 alias image_sdiff_of_injOn := InjOn.image_sdiff_subset
+
+@[deprecated (since := "2026-06-03")] alias image_diff_of_injOn := image_sdiff_of_injOn
 
 theorem InjOn.imageFactorization_injective (h : InjOn f s) :
     Injective (s.imageFactorization f) :=

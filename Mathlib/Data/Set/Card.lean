@@ -198,10 +198,15 @@ theorem encard_mono {α : Type*} : Monotone (encard : Set α → ℕ∞) :=
 theorem encard_sdiff_add_encard_of_subset (h : s ⊆ t) : (t \ s).encard + s.encard = t.encard := by
   rw [← encard_union_eq disjoint_sdiff_left, sdiff_union_of_subset h]
 
+@[deprecated (since := "2026-06-03")]
+alias encard_diff_add_encard_of_subset := encard_sdiff_add_encard_of_subset
+
 theorem encard_sdiff (h : s ⊆ t) (hs : s.Finite) :
     (t \ s).encard = t.encard - s.encard := by
   rw [← @Set.encard_sdiff_add_encard_of_subset _ s t h]
   exact (ENat.addLECancellable_of_ne_top <| encard_ne_top_iff.mpr hs).eq_tsub_of_add_eq rfl
+
+@[deprecated (since := "2026-06-03")] alias encard_diff := encard_sdiff
 
 @[simp] theorem one_le_encard_iff_nonempty : 1 ≤ s.encard ↔ s.Nonempty := by
   rw [nonempty_iff_ne_empty, Ne, ← encard_eq_zero, Order.one_le_iff_ne_zero]
@@ -211,6 +216,9 @@ lemma encard_lt_one : s.encard < 1 ↔ s = ∅ := by simp
 theorem encard_sdiff_add_encard_inter (s t : Set α) :
     (s \ t).encard + (s ∩ t).encard = s.encard := by
   rw [← encard_union_eq disjoint_sdiff_inter, sdiff_union_inter]
+
+@[deprecated (since := "2026-06-03")]
+alias encard_diff_add_encard_inter := encard_sdiff_add_encard_inter
 
 theorem encard_union_add_encard_inter (s t : Set α) :
     (s ∪ t).encard + (s ∩ t).encard = s.encard + t.encard := by
@@ -223,17 +231,29 @@ theorem encard_eq_encard_iff_encard_sdiff_eq_encard_sdiff (h : (s ∩ t).Finite)
   rw [← encard_sdiff_add_encard_inter s t, ← encard_sdiff_add_encard_inter t s, inter_comm t s,
     WithTop.add_right_inj h.encard_lt_top.ne]
 
+@[deprecated (since := "2026-06-03")]
+alias encard_eq_encard_iff_encard_diff_eq_encard_diff :=
+  encard_eq_encard_iff_encard_sdiff_eq_encard_sdiff
+
 set_option backward.isDefEq.respectTransparency false in
 theorem encard_le_encard_iff_encard_sdiff_le_encard_sdiff (h : (s ∩ t).Finite) :
     s.encard ≤ t.encard ↔ (s \ t).encard ≤ (t \ s).encard := by
   rw [← encard_sdiff_add_encard_inter s t, ← encard_sdiff_add_encard_inter t s, inter_comm t s,
     WithTop.add_le_add_iff_right h.encard_lt_top.ne]
 
+@[deprecated (since := "2026-06-03")]
+alias encard_le_encard_iff_encard_diff_le_encard_diff :=
+  encard_le_encard_iff_encard_sdiff_le_encard_sdiff
+
 set_option backward.isDefEq.respectTransparency false in
 theorem encard_lt_encard_iff_encard_sdiff_lt_encard_sdiff (h : (s ∩ t).Finite) :
     s.encard < t.encard ↔ (s \ t).encard < (t \ s).encard := by
   rw [← encard_sdiff_add_encard_inter s t, ← encard_sdiff_add_encard_inter t s, inter_comm t s,
     WithTop.add_lt_add_iff_right h.encard_lt_top.ne]
+
+@[deprecated (since := "2026-06-03")]
+alias encard_lt_encard_iff_encard_diff_lt_encard_diff :=
+  encard_lt_encard_iff_encard_sdiff_lt_encard_sdiff
 
 theorem encard_union_le (s t : Set α) : (s ∪ t).encard ≤ s.encard + t.encard := by
   rw [← encard_union_add_encard_inter]; exact le_self_add
@@ -275,11 +295,19 @@ theorem Finite.encard_lt_card (hfin : s.Finite) (hne : s ≠ univ) : s.encard < 
 theorem encard_sdiff_add_encard (s t : Set α) : (s \ t).encard + t.encard = (s ∪ t).encard := by
   rw [← encard_union_eq disjoint_sdiff_left, sdiff_union_self]
 
+@[deprecated (since := "2026-06-03")] alias encard_diff_add_encard := encard_sdiff_add_encard
+
 theorem encard_le_encard_sdiff_add_encard (s t : Set α) : s.encard ≤ (s \ t).encard + t.encard :=
   (encard_mono subset_union_left).trans_eq (encard_sdiff_add_encard _ _).symm
 
+@[deprecated (since := "2026-06-03")]
+alias encard_le_encard_diff_add_encard := encard_le_encard_sdiff_add_encard
+
 theorem tsub_encard_le_encard_sdiff (s t : Set α) : s.encard - t.encard ≤ (s \ t).encard := by
   rw [tsub_le_iff_left, add_comm]; apply encard_le_encard_sdiff_add_encard
+
+@[deprecated (since := "2026-06-03")]
+alias tsub_encard_le_encard_diff := tsub_encard_le_encard_sdiff
 
 theorem encard_add_encard_compl (s : Set α) : s.encard + sᶜ.encard = (univ : Set α).encard := by
   rw [← encard_union_eq disjoint_compl_right, union_compl_self]
@@ -303,15 +331,24 @@ theorem encard_sdiff_singleton_add_one (h : a ∈ s) :
     (s \ {a}).encard + 1 = s.encard := by
   rw [← encard_insert_of_notMem (fun h ↦ h.2 rfl), insert_sdiff_singleton, insert_eq_of_mem h]
 
+@[deprecated (since := "2026-06-03")]
+alias encard_diff_singleton_add_one := encard_sdiff_singleton_add_one
+
 set_option backward.isDefEq.respectTransparency false in
 theorem encard_sdiff_singleton_of_mem (h : a ∈ s) :
     (s \ {a}).encard = s.encard - 1 := by
   rw [← encard_sdiff_singleton_add_one h, ← WithTop.add_right_inj WithTop.one_ne_top,
     tsub_add_cancel_of_le (self_le_add_left _ _)]
 
+@[deprecated (since := "2026-06-03")]
+alias encard_diff_singleton_of_mem := encard_sdiff_singleton_of_mem
+
 theorem encard_tsub_one_le_encard_sdiff_singleton (s : Set α) (x : α) :
     s.encard - 1 ≤ (s \ {x}).encard := by
   rw [← encard_singleton x]; apply tsub_encard_le_encard_sdiff
+
+@[deprecated (since := "2026-06-03")]
+alias encard_tsub_one_le_encard_diff_singleton := encard_tsub_one_le_encard_sdiff_singleton
 
 theorem encard_exchange (ha : a ∉ s) (hb : b ∈ s) : (insert a (s \ {b})).encard = s.encard := by
   rw [encard_insert_of_notMem, encard_sdiff_singleton_add_one hb]
@@ -340,6 +377,10 @@ theorem eq_empty_or_encard_eq_top_or_encard_sdiff_singleton_lt (s : Set α) :
     (s.finite_or_infinite.elim (fun hfin ↦ Or.inr ⟨a, ha, ?_⟩) (Or.inl ∘ Infinite.encard_eq)))
   rw [← encard_sdiff_singleton_add_one ha]; nth_rw 1 [← add_zero (encard _)]
   exact WithTop.add_lt_add_left hfin.sdiff.encard_lt_top.ne zero_lt_one
+
+@[deprecated (since := "2026-06-03")]
+alias eq_empty_or_encard_eq_top_or_encard_diff_singleton_lt :=
+  eq_empty_or_encard_eq_top_or_encard_sdiff_singleton_lt
 
 end InsertErase
 
@@ -724,15 +765,24 @@ theorem ncard_sdiff_singleton_add_one {a : α} (h : a ∈ s)
   to_encard_tac
   rw [hs.cast_ncard_eq, hs.sdiff.cast_ncard_eq, encard_sdiff_singleton_add_one h]
 
+@[deprecated (since := "2026-06-03")]
+alias ncard_diff_singleton_add_one := ncard_sdiff_singleton_add_one
+
 @[simp] theorem ncard_sdiff_singleton_of_mem {a : α} (h : a ∈ s) :
     (s \ {a}).ncard = s.ncard - 1 := by
   rcases s.infinite_or_finite with hs | hs
   · simp_all [ncard, Infinite.sdiff hs (finite_singleton a)]
   · exact eq_tsub_of_add_eq (ncard_sdiff_singleton_add_one h hs)
 
+@[deprecated (since := "2026-06-03")]
+alias ncard_diff_singleton_of_mem := ncard_sdiff_singleton_of_mem
+
 theorem ncard_sdiff_singleton_lt_of_mem {a : α} (h : a ∈ s) (hs : s.Finite := by toFinite_tac) :
     (s \ {a}).ncard < s.ncard := by
   rw [← ncard_sdiff_singleton_add_one h hs]; apply lt_add_one
+
+@[deprecated (since := "2026-06-03")]
+alias ncard_diff_singleton_lt_of_mem := ncard_sdiff_singleton_lt_of_mem
 
 theorem ncard_sdiff_singleton_le (s : Set α) (a : α) : (s \ {a}).ncard ≤ s.ncard := by
   obtain hs | hs := s.finite_or_infinite
@@ -740,12 +790,17 @@ theorem ncard_sdiff_singleton_le (s : Set α) (a : α) : (s \ {a}).ncard ≤ s.n
   convert! Nat.zero_le _
   exact (hs.sdiff (by simp)).ncard
 
+@[deprecated (since := "2026-06-03")] alias ncard_diff_singleton_le := ncard_sdiff_singleton_le
+
 theorem pred_ncard_le_ncard_sdiff_singleton (s : Set α) (a : α) :
     s.ncard - 1 ≤ (s \ {a}).ncard := by
   by_cases h : a ∈ s
   · rw [ncard_sdiff_singleton_of_mem h]
   rw [sdiff_singleton_eq_self h]
   apply Nat.pred_le
+
+@[deprecated (since := "2026-06-03")]
+alias pred_ncard_le_ncard_diff_singleton := pred_ncard_le_ncard_sdiff_singleton
 
 theorem ncard_exchange {a b : α} (ha : a ∉ s) (hb : b ∈ s) : (insert a (s \ {b})).ncard = s.ncard :=
   congr_arg ENat.toNat <| encard_exchange ha hb
@@ -997,10 +1052,15 @@ theorem ncard_sdiff_add_ncard_of_subset (h : s ⊆ t) (ht : t.Finite := by toFin
   rw [ht.cast_ncard_eq, (ht.subset h).cast_ncard_eq, ht.sdiff.cast_ncard_eq,
     encard_sdiff_add_encard_of_subset h]
 
+@[deprecated (since := "2026-06-03")]
+alias ncard_diff_add_ncard_of_subset := ncard_sdiff_add_ncard_of_subset
+
 /-- This is the same as `ncard_sdiff` but we require `t` to be finite instead. -/
 theorem ncard_sdiff' (hst : s ⊆ t) (ht : t.Finite := by toFinite_tac) :
     (t \ s).ncard = t.ncard - s.ncard := by
   rw [← ncard_sdiff_add_ncard_of_subset hst ht, add_tsub_cancel_right]
+
+@[deprecated (since := "2026-06-03")] alias ncard_diff' := ncard_sdiff'
 
 /-- This is the same as `ncard_sdiff'` but we require `s` to be finite instead. -/
 theorem ncard_sdiff (hst : s ⊆ t) (hs : s.Finite := by toFinite_tac) :
@@ -1008,6 +1068,8 @@ theorem ncard_sdiff (hst : s ⊆ t) (hs : s.Finite := by toFinite_tac) :
   obtain ht | ht := t.finite_or_infinite
   · exact ncard_sdiff' hst ht
   · rw [ht.ncard, Nat.zero_sub, (ht.sdiff hs).ncard]
+
+@[deprecated (since := "2026-06-03")] alias ncard_diff := ncard_sdiff
 
 lemma cast_ncard_sdiff {R : Type*} [AddGroupWithOne R] (hst : s ⊆ t) (ht : t.Finite) :
     ((t \ s).ncard : R) = t.ncard - s.ncard := by
@@ -1022,19 +1084,29 @@ theorem ncard_le_ncard_sdiff_add_ncard (s t : Set α) (ht : t.Finite := by toFin
   convert! Nat.zero_le _
   rw [hs.ncard]
 
+@[deprecated (since := "2026-06-03")]
+alias ncard_le_ncard_diff_add_ncard := ncard_le_ncard_sdiff_add_ncard
+
 theorem le_ncard_sdiff (s t : Set α) (hs : s.Finite := by toFinite_tac) :
     t.ncard - s.ncard ≤ (t \ s).ncard :=
   tsub_le_iff_left.mpr (by rw [add_comm]; apply ncard_le_ncard_sdiff_add_ncard _ _ hs)
+
+@[deprecated (since := "2026-06-03")] alias le_ncard_diff := le_ncard_sdiff
 
 theorem ncard_sdiff_add_ncard (s t : Set α) (hs : s.Finite := by toFinite_tac)
     (ht : t.Finite := by toFinite_tac) :
     (s \ t).ncard + t.ncard = (s ∪ t).ncard := by
   rw [← ncard_union_eq disjoint_sdiff_left hs.sdiff ht, sdiff_union_self]
 
+@[deprecated (since := "2026-06-03")] alias ncard_diff_add_ncard := ncard_sdiff_add_ncard
+
 theorem sdiff_nonempty_of_ncard_lt_ncard (h : s.ncard < t.ncard)
     (hs : s.Finite := by toFinite_tac) : (t \ s).Nonempty := by
   rw [Set.nonempty_iff_ne_empty, Ne, sdiff_eq_empty]
   exact fun h' ↦ h.not_ge (ncard_le_ncard h' hs)
+
+@[deprecated (since := "2026-06-03")]
+alias diff_nonempty_of_ncard_lt_ncard := sdiff_nonempty_of_ncard_lt_ncard
 
 theorem exists_mem_notMem_of_ncard_lt_ncard (h : s.ncard < t.ncard)
     (hs : s.Finite := by toFinite_tac) : ∃ e, e ∈ t ∧ e ∉ s :=
@@ -1045,20 +1117,32 @@ theorem exists_mem_notMem_of_ncard_lt_ncard (h : s.ncard < t.ncard)
   rw [← ncard_union_eq (disjoint_of_subset_left inter_subset_right disjoint_sdiff_right)
     (hs.inter_of_left _) hs.sdiff, union_comm, sdiff_union_inter]
 
+@[deprecated (since := "2026-06-03")]
+alias ncard_inter_add_ncard_diff_eq_ncard := ncard_inter_add_ncard_sdiff_eq_ncard
+
 theorem ncard_eq_ncard_iff_ncard_sdiff_eq_ncard_sdiff (hs : s.Finite := by toFinite_tac)
     (ht : t.Finite := by toFinite_tac) : s.ncard = t.ncard ↔ (s \ t).ncard = (t \ s).ncard := by
   rw [← ncard_inter_add_ncard_sdiff_eq_ncard s t hs, ← ncard_inter_add_ncard_sdiff_eq_ncard t s ht,
     inter_comm, add_right_inj]
+
+@[deprecated (since := "2026-06-03")]
+alias ncard_eq_ncard_iff_ncard_diff_eq_ncard_diff := ncard_eq_ncard_iff_ncard_sdiff_eq_ncard_sdiff
 
 theorem ncard_le_ncard_iff_ncard_sdiff_le_ncard_sdiff (hs : s.Finite := by toFinite_tac)
     (ht : t.Finite := by toFinite_tac) : s.ncard ≤ t.ncard ↔ (s \ t).ncard ≤ (t \ s).ncard := by
   rw [← ncard_inter_add_ncard_sdiff_eq_ncard s t hs, ← ncard_inter_add_ncard_sdiff_eq_ncard t s ht,
     inter_comm, add_le_add_iff_left]
 
+@[deprecated (since := "2026-06-03")]
+alias ncard_le_ncard_iff_ncard_diff_le_ncard_diff := ncard_le_ncard_iff_ncard_sdiff_le_ncard_sdiff
+
 theorem ncard_lt_ncard_iff_ncard_sdiff_lt_ncard_sdiff (hs : s.Finite := by toFinite_tac)
     (ht : t.Finite := by toFinite_tac) : s.ncard < t.ncard ↔ (s \ t).ncard < (t \ s).ncard := by
   rw [← ncard_inter_add_ncard_sdiff_eq_ncard s t hs, ← ncard_inter_add_ncard_sdiff_eq_ncard t s ht,
     inter_comm, add_lt_add_iff_left]
+
+@[deprecated (since := "2026-06-03")]
+alias ncard_lt_ncard_iff_ncard_diff_lt_ncard_diff := ncard_lt_ncard_iff_ncard_sdiff_lt_ncard_sdiff
 
 theorem ncard_add_ncard_compl (s : Set α) (hs : s.Finite := by toFinite_tac)
     (hsc : sᶜ.Finite := by toFinite_tac) : s.ncard + sᶜ.ncard = Nat.card α := by

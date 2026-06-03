@@ -313,13 +313,21 @@ lemma eRk_eq_eRk_sdiff_eRk_le_zero (X : Set α) (hY : M.eRk Y ≤ 0) : M.eRk (X 
   rw [← eRk_eq_eRk_union_eRk_le_zero (X \ Y) hY, sdiff_union_self,
     eRk_eq_eRk_union_eRk_le_zero _ hY]
 
+@[deprecated (since := "2026-06-03")]
+alias eRk_eq_eRk_diff_eRk_le_zero := eRk_eq_eRk_sdiff_eRk_le_zero
+
 lemma eRk_le_eRk_inter_add_eRk_sdiff (M : Matroid α) (X Y : Set α) :
     M.eRk X ≤ M.eRk (X ∩ Y) + M.eRk (X \ Y) := by
   nth_rw 1 [← inter_union_sdiff X Y]; apply eRk_union_le_eRk_add_eRk
 
+@[deprecated (since := "2026-06-03")]
+alias eRk_le_eRk_inter_add_eRk_diff := eRk_le_eRk_inter_add_eRk_sdiff
+
 lemma eRk_le_eRk_add_eRk_sdiff (M : Matroid α) (h : Y ⊆ X) :
     M.eRk X ≤ M.eRk Y + M.eRk (X \ Y) := by
   nth_rw 1 [← union_sdiff_cancel h]; apply eRk_union_le_eRk_add_eRk
+
+@[deprecated (since := "2026-06-03")] alias eRk_le_eRk_add_eRk_diff := eRk_le_eRk_add_eRk_sdiff
 
 lemma eRk_union_le_encard_add_eRk (M : Matroid α) (X Y : Set α) :
     M.eRk (X ∪ Y) ≤ X.encard + M.eRk Y :=

@@ -335,6 +335,8 @@ theorem closure_sdiff : closure s \ closure t ⊆ closure (s \ t) :=
     _ = closure (s \ closure t) := by simp only [sdiff_eq, inter_comm]
     _ ⊆ closure (s \ t) := closure_mono <| sdiff_subset_sdiff (Subset.refl s) subset_closure
 
+@[deprecated (since := "2026-06-03")] alias closure_diff := closure_sdiff
+
 theorem Filter.Frequently.mem_of_closed (h : ∃ᶠ x in 𝓝 x, x ∈ s)
     (hs : IsClosed s) : x ∈ s :=
   hs.closure_subset h.mem_closure

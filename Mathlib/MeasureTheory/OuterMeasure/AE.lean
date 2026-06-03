@@ -165,8 +165,12 @@ theorem union_ae_eq_right : (s ∪ t : Set α) =ᵐ[μ] t ↔ μ (s \ t) = 0 := 
 theorem sdiff_ae_eq_self : (s \ t : Set α) =ᵐ[μ] s ↔ μ (s ∩ t) = 0 := by
   simp [eventuallyLE_antisymm_iff, ae_le_set]
 
+@[deprecated (since := "2026-06-03")] alias diff_ae_eq_self := sdiff_ae_eq_self
+
 theorem sdiff_null_ae_eq_self (ht : μ t = 0) : (s \ t : Set α) =ᵐ[μ] s :=
   sdiff_ae_eq_self.mpr (measure_mono_null inter_subset_right ht)
+
+@[deprecated (since := "2026-06-03")] alias diff_null_ae_eq_self := sdiff_null_ae_eq_self
 
 theorem ae_eq_set {s t : Set α} : s =ᵐ[μ] t ↔ μ (s \ t) = 0 ∧ μ (t \ s) = 0 := by
   simp [eventuallyLE_antisymm_iff, ae_le_set]

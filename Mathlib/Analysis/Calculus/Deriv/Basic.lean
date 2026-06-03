@@ -339,6 +339,9 @@ theorem hasDerivWithinAt_sdiff_singleton :
     HasDerivWithinAt f f' (s \ {x}) x ↔ HasDerivWithinAt f f' s x :=
   hasFDerivWithinAt_sdiff_singleton _
 
+@[deprecated (since := "2026-06-03")]
+alias hasDerivWithinAt_diff_singleton := hasDerivWithinAt_sdiff_singleton
+
 @[simp]
 theorem hasDerivWithinAt_Ioi_iff_Ici [PartialOrder 𝕜] :
     HasDerivWithinAt f f' (Ioi x) x ↔ HasDerivWithinAt f f' (Ici x) x := by

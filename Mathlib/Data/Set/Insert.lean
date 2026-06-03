@@ -338,6 +338,8 @@ theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
 @[simp]
 theorem insert_sdiff_eq_singleton {a : α} {s : Set α} (h : a ∉ s) : insert a s \ s = {a} := by grind
 
+@[deprecated (since := "2026-06-03")] alias insert_diff_eq_singleton := insert_sdiff_eq_singleton
+
 theorem inter_insert_of_mem (h : a ∈ s) : s ∩ insert a t = insert a (s ∩ t) := by grind
 
 theorem insert_inter_of_mem (h : a ∈ t) : insert a s ∩ t = insert a (s ∩ t) := by grind

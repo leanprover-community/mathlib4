@@ -87,6 +87,8 @@ theorem preimage_compl {s : Set β} : f ⁻¹' sᶜ = (f ⁻¹' s)ᶜ :=
 theorem preimage_sdiff (f : α → β) (s t : Set β) : f ⁻¹' (s \ t) = f ⁻¹' s \ f ⁻¹' t :=
   rfl
 
+@[deprecated (since := "2026-06-03")] alias preimage_diff := preimage_sdiff
+
 open scoped symmDiff in
 @[simp]
 lemma preimage_symmDiff {f : α → β} (s t : Set β) : f ⁻¹' (s ∆ t) = (f ⁻¹' s) ∆ (f ⁻¹' t) :=
@@ -246,6 +248,8 @@ theorem image_inter_subset (f : α → β) (s t : Set α) : f '' (s ∩ t) ⊆ f
 theorem image_sdiff_subset (f : α → β) (s t : Set α) : f '' (s \ t) ⊆ f '' s ∩ f '' tᶜ :=
   image_inter_subset f s tᶜ
 
+@[deprecated (since := "2026-06-03")] alias image_diff_subset := image_sdiff_subset
+
 theorem image_inter_on {f : α → β} {s t : Set α} (h : ∀ x ∈ t, ∀ y ∈ s, f x = f y → x = y) :
     f '' (s ∩ t) = f '' s ∩ f '' t :=
   (image_inter_subset _ _ _).antisymm
@@ -361,10 +365,14 @@ private theorem subset_image_sdiff (f : α → β) (s t : Set α) : f '' s \ f '
   rw [sdiff_subset_iff, ← image_union, union_sdiff_self]
   exact image_mono subset_union_right
 
+@[deprecated (since := "2026-06-03")] alias subset_image_diff := subset_image_sdiff
+
 theorem image_sdiff {f : α → β} (hf : Injective f) (s t : Set α) : f '' (s \ t) = f '' s \ f '' t :=
   Subset.antisymm
     (Subset.trans (image_sdiff_subset f s t) <| inter_subset_inter_right _ <| image_compl_subset hf)
     (subset_image_sdiff f s t)
+
+@[deprecated (since := "2026-06-03")] alias image_diff := image_sdiff
 
 open scoped symmDiff in
 theorem image_symmDiff (hf : Injective f) (s t : Set α) : f '' s ∆ t = (f '' s) ∆ (f '' t) := by
@@ -454,6 +462,8 @@ theorem disjoint_image_right {f : α → β} {s : Set α} {t : Set β} :
 
 theorem image_sdiff_preimage {f : α → β} {s : Set α} {t : Set β} :
     f '' (s \ f ⁻¹' t) = f '' s \ t := by simp_rw [sdiff_eq, ← preimage_compl, image_inter_preimage]
+
+@[deprecated (since := "2026-06-03")] alias image_diff_preimage := image_sdiff_preimage
 
 theorem compl_image : image (compl : Set α → Set α) = preimage compl :=
   image_eq_preimage_of_inverse compl_compl compl_compl
@@ -587,10 +597,15 @@ theorem image_univ {f : α → β} : f '' univ = range f := by grind
 lemma image_compl_eq_range_sdiff_image {f : α → β} (hf : Injective f) (s : Set α) :
     f '' sᶜ = range f \ f '' s := by rw [← image_univ, ← image_sdiff hf, compl_eq_univ_sdiff]
 
+@[deprecated (since := "2026-06-03")]
+alias image_compl_eq_range_diff_image := image_compl_eq_range_sdiff_image
+
 /-- Alias of `Set.image_compl_eq_range_sdiff_image`. -/
 lemma range_sdiff_image {f : α → β} (hf : Injective f) (s : Set α) :
     range f \ f '' s = f '' sᶜ := by
   rw [image_compl_eq_range_sdiff_image hf]
+
+@[deprecated (since := "2026-06-03")] alias range_diff_image := range_sdiff_image
 
 @[simp]
 theorem preimage_eq_univ_iff {f : α → β} {s} : f ⁻¹' s = univ ↔ range f ⊆ s := by
@@ -919,6 +934,8 @@ theorem range_insert {x : α} {s : Set α} (f : ((insert x s) : Set α) → β) 
 
 theorem range_sdiff_image_subset (f : α → β) (s : Set α) : range f \ f '' s ⊆ f '' sᶜ :=
   fun _ ⟨⟨x, h₁⟩, h₂⟩ => ⟨x, fun h => h₂ ⟨x, h, h₁⟩, h₁⟩
+
+@[deprecated (since := "2026-06-03")] alias range_diff_image_subset := range_sdiff_image_subset
 
 @[simp]
 theorem range_inclusion (h : s ⊆ t) : range (inclusion h) = { x : t | (x : α) ∈ s } := by

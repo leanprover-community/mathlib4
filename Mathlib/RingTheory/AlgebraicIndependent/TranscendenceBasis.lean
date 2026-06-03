@@ -595,6 +595,9 @@ lemma of_isAlgebraic_adjoin_insert_sdiff (hj : j ∈ insert i s)
     image_insert_eq] at H₂ ⊢
   exact H'.isBase_insert_sdiff_of_mem_closure H₂ (.inr ⟨j, hj, rfl⟩)
 
+@[deprecated (since := "2026-06-03")]
+alias of_isAlgebraic_adjoin_insert_diff := of_isAlgebraic_adjoin_insert_sdiff
+
 lemma of_isAlgebraic_adjoin_image_compl
     (H₁ : IsTranscendenceBasis R fun x : {x // x ≠ i} ↦ v x)
     (H₂ : IsAlgebraic (Algebra.adjoin R (v '' {j}ᶜ)) (v j)) :

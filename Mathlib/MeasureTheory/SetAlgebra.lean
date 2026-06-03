@@ -77,6 +77,8 @@ theorem inter_mem (h𝒜 : IsSetAlgebra 𝒜) (s_mem : s ∈ 𝒜) (t_mem : t �
 theorem sdiff_mem (h𝒜 : IsSetAlgebra 𝒜) (s_mem : s ∈ 𝒜) (t_mem : t ∈ 𝒜) :
     s \ t ∈ 𝒜 := h𝒜.inter_mem s_mem (h𝒜.compl_mem t_mem)
 
+@[deprecated (since := "2026-06-03")] alias diff_mem := sdiff_mem
+
 /-- An algebra of sets is a ring of sets. -/
 theorem isSetRing (h𝒜 : IsSetAlgebra 𝒜) : IsSetRing 𝒜 where
   empty_mem := h𝒜.empty_mem

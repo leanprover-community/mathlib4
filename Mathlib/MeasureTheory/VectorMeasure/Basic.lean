@@ -150,10 +150,14 @@ theorem of_add_of_sdiff {A B : Set α} (hA : MeasurableSet A) (hB : MeasurableSe
     v A + v (B \ A) = v B := by
   rw [← of_union (@Set.disjoint_sdiff_right _ A B) hA (hB.diff hA), Set.union_sdiff_cancel h]
 
+@[deprecated (since := "2026-06-03")] alias of_add_of_diff := of_add_of_sdiff
+
 theorem of_sdiff {M : Type*} [AddCommGroup M] [TopologicalSpace M] [T2Space M]
     {v : VectorMeasure α M} {A B : Set α} (hA : MeasurableSet A) (hB : MeasurableSet B)
     (h : A ⊆ B) : v (B \ A) = v B - v A := by
   rw [← of_add_of_sdiff hA hB h, add_sub_cancel_left]
+
+@[deprecated (since := "2026-06-03")] alias of_diff := of_sdiff
 
 theorem of_compl {M : Type*} [AddCommGroup M] [TopologicalSpace M] [T2Space M]
     {v : VectorMeasure α M} {A : Set α} (hA : MeasurableSet A) :
@@ -177,6 +181,8 @@ theorem of_sdiff_of_sdiff_eq_zero {A B : Set α} (hA : MeasurableSet A) (hB : Me
       · exact hA.inter hB
       · exact hB.diff hA
     _ = v (A \ B) + v B := by rw [Set.union_comm, Set.inter_comm, Set.sdiff_union_inter]
+
+@[deprecated (since := "2026-06-03")] alias of_diff_of_diff_eq_zero := of_sdiff_of_sdiff_eq_zero
 
 theorem of_iUnion_nonneg {M : Type*} [TopologicalSpace M]
     [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
@@ -805,6 +811,8 @@ theorem restrict_inter_add_sdiff (hs : MeasurableSet s) (ht : MeasurableSet t) :
   rw [← of_union (by grind) (hu.inter (hs.inter ht)) (hu.inter (hs.diff ht))]
   congr
   grind
+
+@[deprecated (since := "2026-06-03")] alias restrict_inter_add_diff := restrict_inter_add_sdiff
 
 theorem restrict_union_add_inter (hs : MeasurableSet s) (ht : MeasurableSet t) :
     v.restrict (s ∪ t) + v.restrict (s ∩ t) = v.restrict s + v.restrict t := by

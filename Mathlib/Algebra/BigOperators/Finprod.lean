@@ -996,10 +996,16 @@ theorem finprod_mem_inter_mul_sdiff' (t : Set α) (h : (s ∩ mulSupport f).Fini
     exact fun x hx => hx.2.2 hx.1.2
   exacts [h.subset fun x hx => ⟨hx.1.1, hx.2⟩, h.subset fun x hx => ⟨hx.1.1, hx.2⟩]
 
+@[deprecated (since := "2026-06-03")]
+alias finprod_mem_inter_mul_diff' := finprod_mem_inter_mul_sdiff'
+
 @[to_additive]
 theorem finprod_mem_inter_mul_sdiff (t : Set α) (h : s.Finite) :
     ((∏ᶠ i ∈ s ∩ t, f i) * ∏ᶠ i ∈ s \ t, f i) = ∏ᶠ i ∈ s, f i :=
   finprod_mem_inter_mul_sdiff' _ <| h.inter_of_left _
+
+@[deprecated (since := "2026-06-03")]
+alias finprod_mem_inter_mul_diff := finprod_mem_inter_mul_sdiff
 
 /-- A more general version of `finprod_mem_mul_diff` that requires `t ∩ mulSupport f` rather than
 `t` to be finite. -/
@@ -1010,6 +1016,8 @@ theorem finprod_mem_mul_sdiff' (hst : s ⊆ t) (ht : (t ∩ mulSupport f).Finite
     ((∏ᶠ i ∈ s, f i) * ∏ᶠ i ∈ t \ s, f i) = ∏ᶠ i ∈ t, f i := by
   rw [← finprod_mem_inter_mul_sdiff' _ ht, inter_eq_self_of_subset_right hst]
 
+@[deprecated (since := "2026-06-03")] alias finprod_mem_mul_diff' := finprod_mem_mul_sdiff'
+
 /-- Given a finite set `t` and a subset `s` of `t`, the product of `f i` over `i ∈ s`
 times the product of `f i` over `t \ s` equals the product of `f i` over `i ∈ t`. -/
 @[to_additive
@@ -1018,6 +1026,8 @@ times the product of `f i` over `t \ s` equals the product of `f i` over `i ∈ 
 theorem finprod_mem_mul_sdiff (hst : s ⊆ t) (ht : t.Finite) :
     ((∏ᶠ i ∈ s, f i) * ∏ᶠ i ∈ t \ s, f i) = ∏ᶠ i ∈ t, f i :=
   finprod_mem_mul_sdiff' hst (ht.inter_of_left _)
+
+@[deprecated (since := "2026-06-03")] alias finprod_mem_mul_diff := finprod_mem_mul_sdiff
 
 /-- Given a family of pairwise disjoint finite sets `t i` indexed by a finite type, the product of
 `f a` over the union `⋃ i, t i` is equal to the product over all indexes `i` of the products of
@@ -1085,6 +1095,9 @@ lemma finprod_mem_powerset_sdiff_elem {f : Set α → M} {s : Set α} {a : α} (
   nth_rw 1 2 [← Set.insert_sdiff_self_of_mem has] -- second appearance hidden by notation
   exact finprod_mem_powerset_insert (hs.subset Set.sdiff_subset)
     (notMem_sdiff_of_mem (Set.mem_singleton a))
+
+@[deprecated (since := "2026-06-03")]
+alias finprod_mem_powerset_diff_elem := finprod_mem_powerset_sdiff_elem
 
 @[to_additive]
 theorem mul_finprod_cond_ne (a : α) (hf : HasFiniteMulSupport f) :

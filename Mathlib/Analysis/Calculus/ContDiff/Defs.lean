@@ -335,6 +335,9 @@ theorem contDiffWithinAt_sdiff_singleton {y : E} :
     ContDiffWithinAt 𝕜 n f (s \ {y}) x ↔ ContDiffWithinAt 𝕜 n f s x := by
   rw [← contDiffWithinAt_insert, insert_sdiff_singleton, contDiffWithinAt_insert]
 
+@[deprecated (since := "2026-06-03")]
+alias contDiffWithinAt_diff_singleton := contDiffWithinAt_sdiff_singleton
+
 /-- If a function is `C^n` within a set at a point, with `n ≥ 1`, then it is differentiable
 within this set at this point. -/
 theorem ContDiffWithinAt.differentiableWithinAt' (h : ContDiffWithinAt 𝕜 n f s x) (hn : n ≠ 0) :
