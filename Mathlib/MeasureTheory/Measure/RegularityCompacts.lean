@@ -208,7 +208,7 @@ theorem innerRegular_isCompact_isClosed_measurableSet_of_finite [TopologicalSpac
     P.InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s) MeasurableSet := by
   suffices P.InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s)
       fun s ↦ MeasurableSet s ∧ P s ≠ ∞ by
-    convert this
+    convert! this
     simp only [iff_self_and]
     exact fun _ ↦ measure_ne_top P _
   refine Measure.InnerRegularWRT.measurableSet_of_isOpen ?_ ?_

@@ -1,5 +1,5 @@
 module
-import Mathlib.Data.Real.Archimedean
+import Mathlib.Algebra.Order.Archimedean.Real.Basic
 
 /-- info: max 1 2 : ℕ -/
 #guard_msgs in
