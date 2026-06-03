@@ -57,4 +57,7 @@ theorem prod_inf_prod {S T : Subalgebra R A} {S₁ T₁ : Subalgebra R B} :
     S.prod S₁ ⊓ T.prod T₁ = (S ⊓ T).prod (S₁ ⊓ T₁) :=
   SetLike.coe_injective Set.prod_inter_prod
 
+protected theorem center_prod : center R (A × B) = prod (center R A) (center R B) :=
+  SetLike.coe_injective Set.center_prod
+
 end Subalgebra

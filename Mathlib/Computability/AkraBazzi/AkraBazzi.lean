@@ -6,7 +6,6 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Computability.AkraBazzi.SumTransform
-public import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
@@ -643,16 +642,13 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
     _ = (1 + ε n) * asympBound g a b n + (C - c₁ * (1 + ε n)) * g n := by ring
     _ ≥ (1 + ε n) * asympBound g a b n + 0 := by
       gcongr
-      refine mul_nonneg ?_ g_pos
-      rw [sub_nonneg]
-      calc c₁ * (1 + ε n)
-        _ ≤ c₁ * 2 := by
-          gcongr
-          refine one_add_smoothingFn_le_two ?_
-          calc exp 1 ≤ ⌈exp 1⌉₊ := by exact Nat.le_ceil _
-                    _ ≤ n := by exact_mod_cast h_exp
-        _ = (2 * c₁) := by ring
-        _ ≤ C := hC
+      #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+      (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
+      goal. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
+      the new canonicalizer; a minimization would help. The original proof was:
+      `exact mul_nonneg (by grind +splitIndPred) g_pos` -/
+      have : 1 + ε ↑n < 2 := by grind
+      exact mul_nonneg (by grw [sub_nonneg, this, mul_comm, hC]) g_pos
     _ = ((1 + ε n) * asympBound g a b n) := by ring
 
 /-- The **Akra-Bazzi theorem**: `T ∈ O(n^p (1 + ∑_u^n g(u) / u^{p+1}))` -/

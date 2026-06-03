@@ -14,7 +14,7 @@ public import Mathlib.Logic.Equiv.Set
 In particular we prove `small_of_injective` and `small_of_surjective`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Countable
 

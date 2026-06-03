@@ -44,6 +44,10 @@ variable [Preorder α] [One α]
 instance : One (NonemptyInterval α) :=
   ⟨NonemptyInterval.pure 1⟩
 
+@[to_additive]
+instance : One (Interval α) :=
+  ⟨(1 : NonemptyInterval α)⟩
+
 namespace NonemptyInterval
 
 @[to_additive (attr := simp) toProd_zero]
@@ -74,9 +78,9 @@ namespace Interval
 theorem pure_one : pure (1 : α) = 1 :=
   rfl
 
-@[to_additive] lemma one_ne_bot : (1 : Interval α) ≠ ⊥ := pure_ne_bot
+@[to_additive (attr := simp)] lemma one_ne_bot : (1 : Interval α) ≠ ⊥ := pure_ne_bot
 
-@[to_additive] lemma bot_ne_one : (⊥ : Interval α) ≠ 1 := bot_ne_pure
+@[to_additive (attr := simp)] lemma bot_ne_one : (⊥ : Interval α) ≠ 1 := bot_ne_pure
 
 end Interval
 
@@ -167,7 +171,7 @@ variable (s t : Interval α)
 theorem bot_mul : ⊥ * t = ⊥ :=
   WithBot.map₂_bot_left _ _
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem mul_bot : s * ⊥ = ⊥ :=
   WithBot.map₂_bot_right _ _
 
@@ -180,18 +184,12 @@ end Mul
 
 /-! ### Powers -/
 
-
--- TODO: if `to_additive` gets improved sufficiently, derive this from `hasPow`
-instance NonemptyInterval.hasNSMul [AddMonoid α] [Preorder α] [AddLeftMono α]
-    [AddRightMono α] : SMul ℕ (NonemptyInterval α) :=
-  ⟨fun n s => ⟨(n • s.fst, n • s.snd), nsmul_le_nsmul_right s.fst_le_snd _⟩⟩
-
 section Pow
 
 variable [Monoid α] [Preorder α]
 
-@[to_additive existing]
-instance NonemptyInterval.hasPow [MulLeftMono α] [MulRightMono α] :
+@[to_additive]
+instance NonemptyInterval.instPow [MulLeftMono α] [MulRightMono α] :
     Pow (NonemptyInterval α) ℕ :=
   ⟨fun s n => ⟨s.toProd ^ n, pow_le_pow_left' s.fst_le_snd _⟩⟩
 
@@ -223,14 +221,14 @@ end Pow
 namespace NonemptyInterval
 
 @[to_additive]
-instance commMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+instance commMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     CommMonoid (NonemptyInterval α) :=
-  NonemptyInterval.toProd_injective.commMonoid _ toProd_one toProd_mul toProd_pow
+  fast_instance% NonemptyInterval.toProd_injective.commMonoid _ toProd_one toProd_mul toProd_pow
 
 end NonemptyInterval
 
 @[to_additive]
-instance Interval.mulOneClass [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+instance Interval.mulOneClass [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     MulOneClass (Interval α) where
   one_mul s :=
     (WithBot.map₂_coe_left _ _ _).trans <| by
@@ -240,16 +238,15 @@ instance Interval.mulOneClass [CommMonoid α] [PartialOrder α] [IsOrderedMonoid
       simp_rw [mul_one, ← Function.id_def, WithBot.map_id, id]
 
 @[to_additive]
-instance Interval.commMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
-    CommMonoid (Interval α) :=
-  { Interval.mulOneClass with
-    mul_comm := fun _ _ => Option.map₂_comm mul_comm
-    mul_assoc := fun _ _ _ => Option.map₂_assoc mul_assoc }
+instance Interval.commMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
+    CommMonoid (Interval α) where
+  mul_comm := fun _ _ => Option.map₂_comm mul_comm
+  mul_assoc := fun _ _ _ => Option.map₂_assoc mul_assoc
 
 namespace NonemptyInterval
 
 @[to_additive]
-theorem coe_pow_interval [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α]
+theorem coe_pow_interval [CommMonoid α] [Preorder α] [IsOrderedMonoid α]
     (s : NonemptyInterval α) (n : ℕ) :
     ↑(s ^ n) = (s : Interval α) ^ n :=
   map_pow (⟨⟨(↑), coe_one_interval⟩, coe_mul_interval⟩ : NonemptyInterval α →* Interval α) _ _
@@ -261,7 +258,7 @@ end NonemptyInterval
 
 namespace Interval
 
-variable [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] (s : Interval α) {n : ℕ}
+variable [CommMonoid α] [Preorder α] [IsOrderedMonoid α] (s : Interval α) {n : ℕ}
 
 @[to_additive]
 theorem bot_pow : ∀ {n : ℕ}, n ≠ 0 → (⊥ : Interval α) ^ n = ⊥
@@ -300,7 +297,7 @@ namespace NonemptyInterval
 
 instance [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α] :
     CommSemiring (NonemptyInterval α) :=
-  NonemptyInterval.toProd_injective.commSemiring _
+  fast_instance% NonemptyInterval.toProd_injective.commSemiring _
     toProd_zero toProd_one toProd_add toProd_mul (swap toProd_nsmul) toProd_pow (fun _ => rfl)
 
 end NonemptyInterval
@@ -488,34 +485,32 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pur
 
 instance subtractionCommMonoid {α : Type u}
     [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] :
-    SubtractionCommMonoid (NonemptyInterval α) :=
-  { NonemptyInterval.addCommMonoid with
-    sub_eq_add_neg := fun s t => by
-      refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
-      exact sub_eq_add_neg _ _
-    neg_neg := fun s => by apply NonemptyInterval.ext; exact neg_neg _
-    neg_add_rev := fun s t => by
-      refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
-      exact neg_add_rev _ _
-    neg_eq_of_add := fun s t h => by
-      obtain ⟨a, b, rfl, rfl, hab⟩ := NonemptyInterval.add_eq_zero_iff.1 h
-      rw [neg_pure, neg_eq_of_add_eq_zero_right hab]
-    -- TODO: use a better defeq
-    zsmul := zsmulRec }
+    SubtractionCommMonoid (NonemptyInterval α) where
+  sub_eq_add_neg := fun s t => by
+    refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
+    exact sub_eq_add_neg _ _
+  neg_neg := fun s => by apply NonemptyInterval.ext; exact neg_neg _
+  neg_add_rev := fun s t => by
+    refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
+    exact neg_add_rev _ _
+  neg_eq_of_add := fun s t h => by
+    obtain ⟨a, b, rfl, rfl, hab⟩ := NonemptyInterval.add_eq_zero_iff.1 h
+    rw [neg_pure, neg_eq_of_add_eq_zero_right hab]
+  -- TODO: use a better defeq
+  zsmul := zsmulRec
 
 @[to_additive existing NonemptyInterval.subtractionCommMonoid]
-instance divisionCommMonoid : DivisionCommMonoid (NonemptyInterval α) :=
-  { NonemptyInterval.commMonoid with
-    div_eq_mul_inv := fun s t => by
-      refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
-      exact div_eq_mul_inv _ _
-    inv_inv := fun s => by apply NonemptyInterval.ext; exact inv_inv _
-    mul_inv_rev := fun s t => by
-      refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
-      exact mul_inv_rev _ _
-    inv_eq_of_mul := fun s t h => by
-      obtain ⟨a, b, rfl, rfl, hab⟩ := NonemptyInterval.mul_eq_one_iff.1 h
-      rw [inv_pure, inv_eq_of_mul_eq_one_right hab] }
+instance divisionCommMonoid : DivisionCommMonoid (NonemptyInterval α) where
+  div_eq_mul_inv := fun s t => by
+    refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
+    exact div_eq_mul_inv _ _
+  inv_inv := fun s => by apply NonemptyInterval.ext; exact inv_inv _
+  mul_inv_rev := fun s t => by
+    refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
+    exact mul_inv_rev _ _
+  inv_eq_of_mul := fun s t h => by
+    obtain ⟨a, b, rfl, rfl, hab⟩ := NonemptyInterval.mul_eq_one_iff.1 h
+    rw [inv_pure, inv_eq_of_mul_eq_one_right hab]
 
 end NonemptyInterval
 
@@ -530,39 +525,37 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pur
   cases t
   · simp
   · simp_rw [← NonemptyInterval.coe_mul_interval, ← NonemptyInterval.coe_one_interval,
-      WithBot.coe_inj, NonemptyInterval.coe_eq_pure]
+      Interval.coe_inj, NonemptyInterval.coe_eq_pure]
     exact NonemptyInterval.mul_eq_one_iff
 
 instance subtractionCommMonoid {α : Type u}
     [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] :
-    SubtractionCommMonoid (Interval α) :=
-  { Interval.addCommMonoid with
-    sub_eq_add_neg := by
-      rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (sub_eq_add_neg _ _)
-    neg_neg := by rintro (_ | s) <;> first | rfl | exact congr_arg WithBot.some (neg_neg _)
-    neg_add_rev := by
-      rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (neg_add_rev _ _)
-    neg_eq_of_add := by
-      rintro (_ | s) (_ | t) h <;>
-        first
-          | cases h
-          | exact congr_arg WithBot.some (neg_eq_of_add_eq_zero_right <| WithBot.coe_injective h)
-    -- TODO: use a better defeq
-    zsmul := zsmulRec }
+    SubtractionCommMonoid (Interval α) where
+  sub_eq_add_neg := by
+    rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (sub_eq_add_neg _ _)
+  neg_neg := by rintro (_ | s) <;> first | rfl | exact congr_arg WithBot.some (neg_neg _)
+  neg_add_rev := by
+    rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (neg_add_rev _ _)
+  neg_eq_of_add := by
+    rintro (_ | s) (_ | t) h <;>
+      first
+        | cases h
+        | exact congr_arg WithBot.some (neg_eq_of_add_eq_zero_right <| WithBot.coe_injective h)
+  -- TODO: use a better defeq
+  zsmul := zsmulRec
 
 @[to_additive existing Interval.subtractionCommMonoid]
-instance divisionCommMonoid : DivisionCommMonoid (Interval α) :=
-  { Interval.commMonoid with
-    div_eq_mul_inv := by
-      rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (div_eq_mul_inv _ _)
-    inv_inv := by rintro (_ | s) <;> first | rfl | exact congr_arg WithBot.some (inv_inv _)
-    mul_inv_rev := by
-      rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (mul_inv_rev _ _)
-    inv_eq_of_mul := by
-      rintro (_ | s) (_ | t) h <;>
-        first
-          | cases h
-          | exact congr_arg WithBot.some (inv_eq_of_mul_eq_one_right <| WithBot.coe_injective h) }
+instance divisionCommMonoid : DivisionCommMonoid (Interval α) where
+  div_eq_mul_inv := by
+    rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (div_eq_mul_inv _ _)
+  inv_inv := by rintro (_ | s) <;> first | rfl | exact congr_arg WithBot.some (inv_inv _)
+  mul_inv_rev := by
+    rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (mul_inv_rev _ _)
+  inv_eq_of_mul := by
+    rintro (_ | s) (_ | t) h <;>
+      first
+        | cases h
+        | exact congr_arg WithBot.some (inv_eq_of_mul_eq_one_right <| WithBot.coe_injective h)
 
 end Interval
 
@@ -640,6 +633,10 @@ theorem length_zero : (0 : Interval α).length = 0 :=
 theorem length_neg : ∀ s : Interval α, (-s).length = s.length
   | ⊥ => rfl
   | (s : NonemptyInterval α) => s.length_neg
+
+omit [IsOrderedAddMonoid α] in
+@[simp]
+theorem length_bot : (⊥ : Interval α).length = 0 := rfl
 
 theorem length_add_le : ∀ s t : Interval α, (s + t).length ≤ s.length + t.length
   | ⊥, _ => by simp

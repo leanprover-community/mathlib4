@@ -84,7 +84,7 @@ instance instInfFiniteIndexNormalSubgroup : Min (FiniteIndexNormalSubgroup G) :=
 @[to_additive]
 instance instSemilatticeInfFiniteIndexNormalSubgroup :
     SemilatticeInf (FiniteIndexNormalSubgroup G) :=
-  SetLike.coe_injective.semilatticeInf ((↑) : FiniteIndexNormalSubgroup G → Set G) fun _ _ ↦ rfl
+  SetLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[to_additive]
 instance : Max (FiniteIndexNormalSubgroup G) :=
@@ -98,10 +98,14 @@ instance : Max (FiniteIndexNormalSubgroup G) :=
 @[to_additive]
 instance instSemilatticeSupFiniteIndexNormalSubgroup :
     SemilatticeSup (FiniteIndexNormalSubgroup G) :=
-  toSubgroup_injective.semilatticeSup _ (fun _ _ ↦ rfl)
+  toSubgroup_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 @[to_additive]
 instance : Lattice (FiniteIndexNormalSubgroup G) where
+
+@[to_additive]
+theorem mem_toSubgroup_iff {H : FiniteIndexNormalSubgroup G} {g : G} : g ∈ H.toSubgroup ↔ g ∈ H :=
+  .rfl
 
 /-- Bundle a subgroup with typeclass assumptions of normality and finite index. -/
 @[to_additive

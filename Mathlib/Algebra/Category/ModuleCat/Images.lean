@@ -17,10 +17,7 @@ from the fact that `ModuleCat R` is an abelian category.
 
 @[expose] public section
 
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe u v
 

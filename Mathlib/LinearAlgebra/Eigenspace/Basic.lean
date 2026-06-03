@@ -18,7 +18,7 @@ public import Mathlib.Tactic.Peel
 # Eigenvectors and eigenvalues
 
 This file defines eigenspaces, eigenvalues, and eigenvectors, as well as their generalized
-counterparts. We follow Axler's approach [axler2015] because it allows us to derive many properties
+counterparts. We follow Axler's approach [axler2024] because it allows us to derive many properties
 without choosing a basis and without using matrices.
 
 An eigenspace of a linear map `f` for a scalar `μ` is the kernel of the map `(f - μ • id)`. The
@@ -43,7 +43,7 @@ The existence of eigenvalues over an algebraically closed field
 
 ## References
 
-* [Sheldon Axler, *Linear Algebra Done Right*][axler2015]
+* [Sheldon Axler, *Linear Algebra Done Right*][axler2024]
 * https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors
 
 ## Tags
@@ -66,8 +66,8 @@ variable {K R : Type v} {V M : Type w} [CommRing R] [AddCommGroup M] [Module R M
   [AddCommGroup V] [Module K V]
 
 /-- The submodule `genEigenspace f μ k` for a linear map `f`, a scalar `μ`,
-and a number `k : ℕ∞` is the kernel of `(f - μ • id) ^ k` if `k` is a natural number
-(see Def 8.10 of [axler2015]), or the union of all these kernels if `k = ∞`.
+and a number `k : ℕ∞` is the kernel of `(f - μ • id) ^ k` if `k` is a natural number,
+or the union of all these kernels if `k = ∞`. (`k = ∞` corresponds to Def 8.19 of [axler2024].)
 A generalized eigenspace for some exponent `k` is contained in
 the generalized eigenspace for exponents larger than `k`. -/
 def genEigenspace (f : End R M) (μ : R) : ℕ∞ →o Submodule R M where
@@ -76,7 +76,7 @@ def genEigenspace (f : End R M) (μ : R) : ℕ∞ →o Submodule R M where
 
 lemma mem_genEigenspace {f : End R M} {μ : R} {k : ℕ∞} {x : M} :
     x ∈ f.genEigenspace μ k ↔ ∃ l : ℕ, l ≤ k ∧ x ∈ LinearMap.ker ((f - μ • 1) ^ l) := by
-  have : Nonempty {l : ℕ // l ≤ k} := ⟨⟨0, zero_le _⟩⟩
+  have : Nonempty {l : ℕ // l ≤ k} := ⟨⟨0, zero_le⟩⟩
   have : Directed (ι := { i : ℕ // i ≤ k }) (· ≤ ·) fun i ↦ LinearMap.ker ((f - μ • 1) ^ (i : ℕ)) :=
     Monotone.directed_le fun m n h ↦ by simpa using (f - μ • 1).iterateKer.monotone h
   simp_rw [genEigenspace, OrderHom.coe_mk, LinearMap.mem_ker, iSup_subtype',
@@ -280,7 +280,7 @@ lemma genEigenspace_top_eq_maxUnifEigenspaceIndex [IsNoetherian R M] (f : End R 
     genEigenspace f μ ⊤ = f.genEigenspace μ (maxUnifEigenspaceIndex f μ) := by
   have := WellFoundedGT.iSup_eq_monotonicSequenceLimit <|
     (f.genEigenspace μ).comp <| WithTop.coeOrderHom.toOrderHom
-  convert this using 1
+  convert! this using 1
   simp only [genEigenspace, OrderHom.coe_mk, le_top, iSup_pos, OrderHom.comp_coe,
     Function.comp_def]
   rw [iSup_prod', iSup_subtype', ← sSup_range, ← sSup_range]
@@ -307,7 +307,7 @@ lemma HasUnifEigenvalue.le {f : End R M} {μ : R} {k m : ℕ∞}
     (hm : k ≤ m) (hk : f.HasUnifEigenvalue μ k) :
     f.HasUnifEigenvalue μ m := by
   unfold HasUnifEigenvalue at *
-  contrapose! hk
+  contrapose hk
   rw [← le_bot_iff, ← hk]
   exact (f.genEigenspace _).monotone hm
 
@@ -344,7 +344,7 @@ lemma maxUnifEigenspaceIndex_le_finrank [FiniteDimensional K V] (f : End K V) (�
     apply ker_pow_le_ker_pow_finrank
 
 /-- Every generalized eigenvector is a generalized eigenvector for exponent `finrank K V`.
-(Lemma 8.11 of [axler2015]) -/
+(Lemma 8.20 of [axler2024]) -/
 lemma genEigenspace_le_genEigenspace_finrank [FiniteDimensional K V] (f : End K V)
     (μ : K) (k : ℕ∞) : f.genEigenspace μ k ≤ f.genEigenspace μ (finrank K V) := by
   calc f.genEigenspace μ k
@@ -397,7 +397,7 @@ lemma isNilpotent_restrict_genEigenspace_top [IsNoetherian R M] (f : End R M) (�
   rw [genEigenspace_top_eq_maxUnifEigenspaceIndex]
 
 /-- The submodule `eigenspace f μ` for a linear map `f` and a scalar `μ` consists of all vectors `x`
-such that `f x = μ • x`. (Def 5.36 of [axler2015]). -/
+such that `f x = μ • x`. (Def 5.52 of [axler2024]). -/
 abbrev eigenspace (f : End R M) (μ : R) : Submodule R M :=
   f.genEigenspace μ 1
 
@@ -409,7 +409,7 @@ lemma eigenspace_def {f : End R M} {μ : R} :
 theorem eigenspace_zero (f : End R M) : f.eigenspace 0 = LinearMap.ker f := by
   simp only [eigenspace, ← Nat.cast_one (R := ℕ∞), genEigenspace_zero_nat, pow_one]
 
-/-- A nonzero element of an eigenspace is an eigenvector. (Def 5.7 of [axler2015]) -/
+/-- A nonzero element of an eigenspace is an eigenvector. (Def 5.8 of [axler2024]) -/
 abbrev HasEigenvector (f : End R M) (μ : R) (x : M) : Prop :=
   HasUnifEigenvector f μ 1 x
 
@@ -417,7 +417,7 @@ lemma hasEigenvector_iff {f : End R M} {μ : R} {x : M} :
     f.HasEigenvector μ x ↔ x ∈ f.eigenspace μ ∧ x ≠ 0 := Iff.rfl
 
 /-- A scalar `μ` is an eigenvalue for a linear map `f` if there are nonzero vectors `x`
-such that `f x = μ • x`. (Def 5.5 of [axler2015]). -/
+such that `f x = μ • x`. (Def 5.5 of [axler2024]). -/
 abbrev HasEigenvalue (f : End R M) (a : R) : Prop :=
   HasUnifEigenvalue f a 1
 
@@ -464,6 +464,28 @@ lemma HasEigenvalue.pow {f : End R M} {μ : R} (h : f.HasEigenvalue μ) (n : ℕ
     (f ^ n).HasEigenvalue (μ ^ n) :=
   h.pow n
 
+theorem genEigenspace_mem_invtSubmodule (f : End R M) (μ : R) (n : ℕ∞) :
+    genEigenspace f μ n ∈ invtSubmodule f := by
+  intro x hx
+  simp only [Submodule.mem_comap, mem_genEigenspace, LinearMap.mem_ker] at hx ⊢
+  obtain ⟨k, hk, hx⟩ := hx
+  refine ⟨k, hk, ?_⟩
+  induction k generalizing x
+  case zero => simp_all
+  case succ k ih =>
+    rw [pow_succ, mul_apply] at hx ⊢
+    simpa using ih (le_trans (by simp) hk) hx
+
+theorem eigenspace_mem_invtSubmodule (f : End R M) (μ : R) :
+    eigenspace f μ ∈ invtSubmodule f :=
+  genEigenspace_mem_invtSubmodule f μ 1
+
+theorem restrict_eigenspace (f : End R M) (μ : R) :
+    f.restrict (f.mem_invtSubmodule_iff_forall_mem_of_mem.mp
+      (eigenspace_mem_invtSubmodule f μ)) = μ • LinearMap.id := by
+  ext x
+  exact mem_eigenspace_iff.mp x.2
+
 /-- A nilpotent endomorphism has nilpotent eigenvalues.
 
 See also `LinearMap.isNilpotent_trace_of_isNilpotent`. -/
@@ -489,7 +511,7 @@ theorem eigenspace_div (f : End K V) (a b : K) (hb : b ≠ 0) :
   genEigenspace_div f a b hb
 
 /-- A nonzero element of a generalized eigenspace is a generalized eigenvector.
-(Def 8.9 of [axler2015]) -/
+(Def 8.8 of [axler2024]) -/
 abbrev HasGenEigenvector (f : End R M) (μ : R) (k : ℕ) (x : M) : Prop :=
   HasUnifEigenvector f μ k x
 
@@ -649,7 +671,7 @@ theorem independent_genEigenspace [IsDomain R] [IsTorsionFree R M] (f : End R M)
   classical
   suffices ∀ μ₁ (s : Finset R), μ₁ ∉ s → Disjoint (f.genEigenspace μ₁ k)
     (s.sup fun μ ↦ f.genEigenspace μ k) by
-    simp_rw [iSupIndep_iff_supIndep_of_injOn (injOn_genEigenspace f k),
+    simp_rw [iSupIndep_iff_supIndep,
       Finset.supIndep_iff_disjoint_erase]
     exact fun s μ _ ↦ this _ _ (s.notMem_erase μ)
   intro μ₁ s
@@ -703,7 +725,7 @@ theorem eigenvectors_linearIndependent' {ι : Type*} [IsDomain R] [IsTorsionFree
     (fun i ↦ h_eigenvec i |>.left) (fun i ↦ h_eigenvec i |>.right)
 
 /-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
-independent. (Lemma 5.10 of [axler2015])
+independent. (Lemma 5.11 of [axler2024])
 
 We use the eigenvalues as indexing set to ensure that there is only one eigenvector for each
 eigenvalue in the image of `xs`.
@@ -725,14 +747,10 @@ theorem genEigenspace_restrict (f : End R M) (p : Submodule R M) (k : ℕ∞) (�
     simp_rw [mem_genEigenspace, ← mem_genEigenspace_nat, this,
       Submodule.mem_comap, mem_genEigenspace (k := k), mem_genEigenspace_nat]
   intro l
-  simp only [genEigenspace_nat, ← LinearMap.ker_comp]
-  induction l with
-  | zero =>
-    rw [pow_zero, pow_zero, Module.End.one_eq_id]
-    apply (Submodule.ker_subtype _).symm
-  | succ l ih =>
-    erw [pow_succ, pow_succ, LinearMap.ker_comp, LinearMap.ker_comp, ih, ← LinearMap.ker_comp,
-      LinearMap.comp_assoc]
+  rw [genEigenspace_nat, genEigenspace_nat, ← LinearMap.restrict_smul_one μ,
+    LinearMap.restrict_sub hfp, Module.End.pow_restrict _,
+    ← LinearMap.ker_comp_of_ker_eq_bot _ (Submodule.ker_subtype p),
+    LinearMap.subtype_comp_restrict, LinearMap.domRestrict, ← LinearMap.ker_comp]
 
 lemma _root_.Submodule.inf_genEigenspace (f : End R M) (p : Submodule R M) {k : ℕ∞} {μ : R}
     (hfp : ∀ x : M, x ∈ p → f x ∈ p) :
