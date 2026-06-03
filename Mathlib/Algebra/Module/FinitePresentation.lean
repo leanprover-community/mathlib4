@@ -418,9 +418,8 @@ lemma Module.exists_localizedMap_surjective_of_surjective [Module.FinitePresenta
   refine ⟨φ, ?_⟩
   have hmap : IsLocalizedModule.map S f g φ = s • ϕ := by
     apply IsLocalizedModule.linearMap_ext S f g
-    rw [IsLocalizedModule.map_comp, hφ]
-    rfl
-  simpa only [hmap] using ((Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units g s)).2.comp hϕ
+    simp [IsLocalizedModule.map_comp, hφ, LinearMap.smul_comp]
+  simpa only [hmap] using! ((End.isUnit_iff _).mp (IsLocalizedModule.map_units g s)).2.comp hϕ
 
 lemma Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule
     [hM : Module.Finite R M] (g₁ g₂ : M →ₗ[R] N) (h : f.comp g₁ = f.comp g₂) :

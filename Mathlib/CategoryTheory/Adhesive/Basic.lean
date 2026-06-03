@@ -87,6 +87,7 @@ theorem IsPushout.IsVanKampen.flip {H : IsPushout f g h i} (H' : H.IsVanKampen) 
   simpa only [IsPushout.flip_iff, IsPullback.flip_iff, and_comm] using
     H' g' f' i' h' αW αY αX αZ hg hf hi hh w.flip
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
     H.IsVanKampen ↔ IsVanKampenColimit (PushoutCocone.mk h i H.w) := by
@@ -183,7 +184,8 @@ theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsCol
     refine ⟨H, ⟨Limits.PushoutCocone.isColimitAux' _ ?_⟩⟩
     intro s
     dsimp
-    refine ⟨h.desc (BinaryCofan.mk (c.inr ≫ s.inr) s.inl), h.fac _ ⟨WalkingPair.right⟩, ?_, ?_⟩
+    refine ⟨BinaryCofan.IsColimit.desc h (c.inr ≫ s.inr) s.inl,
+        BinaryCofan.IsColimit.inr_desc h _ _, ?_, ?_⟩
     · apply BinaryCofan.IsColimit.hom_ext hc
       · rw [← H.w_assoc]; erw [h.fac _ ⟨WalkingPair.right⟩]; exact s.condition
       · rw [← Category.assoc]; exact h.fac _ ⟨WalkingPair.left⟩

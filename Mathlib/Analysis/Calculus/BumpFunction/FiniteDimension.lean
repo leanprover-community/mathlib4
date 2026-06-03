@@ -56,7 +56,7 @@ theorem exists_contDiff_tsupport_subset {s : Set E} {x : E} {n : ℕ∞} (hs : s
   have f_supp : f.support ⊆ Euclidean.ball x d := by
     intro y hy
     have : toEuclidean y ∈ Function.support c := by
-      simpa only [Function.mem_support, Function.comp_apply, Ne] using hy
+      simpa only [Function.mem_support, Function.comp_apply, Ne] using! hy
     rwa [c.support_eq] at this
   have f_tsupp : tsupport f ⊆ Euclidean.closedBall x d := by
     rw [tsupport, ← Euclidean.closure_ball _ d_pos.ne']
@@ -117,7 +117,7 @@ theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen 
   have s_g : ∀ x ∈ s, ∃ n, x ∈ support (g n) := fun x hx ↦ by
     rw [← hT] at hx
     obtain ⟨i, iT, hi⟩ : ∃ i ∈ T, x ∈ support (i : E → ℝ) := by
-      simpa only [mem_iUnion, exists_prop] using hx
+      simpa only [mem_iUnion, exists_prop] using! hx
     #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
     (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
     without the `obtain` on the next line. It is not yet clear whether this is due to defeq
@@ -164,7 +164,7 @@ theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen 
   have S : ∀ x, Summable fun n => (r n • g n) x := fun x ↦ by
     refine .of_nnnorm_bounded δc.summable fun n => ?_
     rw [← NNReal.coe_le_coe, coe_nnnorm]
-    simpa only [norm_iteratedFDeriv_zero] using hr n 0 zero_le x
+    simpa only [norm_iteratedFDeriv_zero] using! hr n 0 zero_le x
   refine ⟨fun x => ∑' n, (r n • g n) x, ?_, ?_, ?_⟩
   · apply Subset.antisymm
     · intro x hx
@@ -193,7 +193,7 @@ theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen 
     apply Summable.tsum_le_tsum _ (S y) A.summable
     intro n
     apply (le_abs_self _).trans
-    simpa only [norm_iteratedFDeriv_zero] using hr n 0 zero_le y
+    simpa only [norm_iteratedFDeriv_zero] using! hr n 0 zero_le y
 
 @[deprecated (since := "2025-12-17")]
 alias IsOpen.exists_smooth_support_eq := IsOpen.exists_contDiff_support_eq
