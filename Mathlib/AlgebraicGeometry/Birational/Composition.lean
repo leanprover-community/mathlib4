@@ -66,6 +66,7 @@ lemma comp_restrict_left (f : X.PartialMap Y) [IsDominant f.hom] (U : X.Opens)
       morphismRestrict_comp, Category.assoc, isoOfEq_hom, homOfLE_homOfLE_assoc,
       isoImage_ι_inv_morphismRestrict_homOfLE_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma comp_restrict_right (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.PartialMap Z)
     (V : Y.Opens) (hV : Dense (V : Set Y)) (hV' : V ≤ g.domain) :
     f.comp (g.restrict V hV hV') = (f.comp g).restrict
@@ -79,6 +80,7 @@ lemma comp_restrict_right (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.Partial
       Category.id_comp, ← f.domain.ι.isoImage_inv_homOfLE_assoc _ _ (f.hom.preimage_mono hV'),
       ← morphismRestrict_homOfLE_assoc f.hom _ _ hV']
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Composition respects equivalence of partial maps on the left. -/
 lemma comp_equiv_of_equiv_left {f₁ f₂ : X.PartialMap Y} [IsDominant f₁.hom] [IsDominant f₂.hom]
     (h : f₁.equiv f₂) (g : Y.PartialMap Z) :
@@ -90,6 +92,7 @@ lemma comp_equiv_of_equiv_left {f₁ f₂ : X.PartialMap Y} [IsDominant f₁.hom
   rw [comp_restrict_left, comp_restrict_left] at e
   exact equiv_of_restrict_eq _ _ e
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Composition respects equivalence of partial maps on the right. -/
 lemma comp_equiv_of_equiv_right (f : X.PartialMap Y) [IsDominant f.hom] {g₁ g₂ : Y.PartialMap Z}
     (h : g₁.equiv g₂) : (f.comp g₁).equiv (f.comp g₂) := by
@@ -106,12 +109,14 @@ lemma comp_equiv_of_equiv (f₁ f₂ : X.PartialMap Y) [IsDominant f₁.hom] [Is
     (f₁.comp g₁).equiv (f₂.comp g₂) :=
   equivalence_rel.trans (comp_equiv_of_equiv_left hf _) (comp_equiv_of_equiv_right _ hg)
 
+set_option backward.defeqAttrib.useBackward true in
 instance isDominant_comp_hom (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.PartialMap Z)
     [IsDominant g.hom] : IsDominant (f.comp g).hom := by
   dsimp only [comp_domain, comp_hom]
   have := IsZariskiLocalAtTarget.restrict ‹IsDominant f.hom› g.domain
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 lemma comp_assoc {X₁ X₂ X₃ Y : Scheme.{u}} [PreirreducibleSpace X₁] [IrreducibleSpace X₂]
     [Nonempty X₃] (f : X₁.PartialMap X₂) [IsDominant f.hom] (g : X₂.PartialMap X₃)
     [IsDominant g.hom] (h : X₃.PartialMap Y) :
@@ -127,6 +132,7 @@ lemma comp_assoc {X₁ X₂ X₃ Y : Scheme.{u}} [PreirreducibleSpace X₁] [Irr
     congr 1
     simp [← cancel_mono (Opens.ι _)]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma comp_toPartialMap (f : X.PartialMap Y) [IsDominant f.hom] (g : Y ⟶ Z) :
     f.comp g.toPartialMap = f.compHom g := by
   ext1
@@ -135,6 +141,7 @@ lemma comp_toPartialMap (f : X.PartialMap Y) [IsDominant f.hom] (g : Y ⟶ Z) :
       morphismRestrict_ι_assoc, f.domain.isoImage_ι_inv_ι_assoc, isoOfEq_hom]
     rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma comp_id (f : X.PartialMap Y) [IsDominant f.hom] :
     f.comp (PartialMap.id Y) = f := by
@@ -183,6 +190,7 @@ end RationalMap
 
 end PreirreducibleSpace
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma PartialMap.id_comp {X Y : Scheme.{u}} [IrreducibleSpace X] (f : X.PartialMap Y) :
     (PartialMap.id X).comp f = f := by
