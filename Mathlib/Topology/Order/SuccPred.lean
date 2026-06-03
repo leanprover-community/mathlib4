@@ -58,7 +58,7 @@ theorem nhds_eq_pure {a : α} : 𝓝 a = pure a ↔ ¬ IsSuccLimit a :=
 
 @[to_dual]
 theorem nhds_of_isMin {a : α} (h : IsMin a) : 𝓝 a = pure a := by
-  rw [nhds_eq_pure, IsSuccLimit]
+  rw [nhds_eq_pure, isSuccLimit_iff]
   tauto
 
 @[to_dual (attr := simp)]
@@ -77,7 +77,7 @@ theorem isOpen_iff {s : Set α} : IsOpen s ↔
 @[to_dual]
 theorem accPt_principal {a : α} {s : Set α} :
     AccPt a (𝓟 s) ↔ ¬ IsMin a ∧ ∀ b < a, (s ∩ Ioo b a).Nonempty := by
-  rw [accPt_principal_frequently]
+  rw [accPt_iff_frequently]
   by_cases ha : IsMin a
   · simp [nhds_of_isMin, ha]
   · rw [not_isMin_iff] at ha ⊢
