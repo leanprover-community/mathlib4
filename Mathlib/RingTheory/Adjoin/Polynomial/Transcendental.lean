@@ -9,6 +9,21 @@ public import Mathlib.RingTheory.Algebraic.Basic
 
 /-!
 # Polynomials and adjoining transcendental elements
+
+This file establishes some basic properties about `A[y]` when `y` is transcendental over `A`.
+These are mostly just carried over from the polynomial ring `A[X]`.
+
+## Main Definitions:
+* `Algebra.algEquivOfTranscendental`: Given a transcendental element `s : S` over `R`, the
+  `R`-algebra equivalence between `R[X]` and `R[s]` given by sending `X` to `s`.
+* `Algebra.adjoin.evalOfTranscendental`: If `s : S` is transcendental over `R`,
+  we get an `R`-algebra homomorphism given by evaluation at some element `c`.
+
+## Main Results
+* `Transcendental.euclideanDomainAdjoin`: Given a transcendental element `s : S` over `F`, `F[s]`
+  is a euclidean domain.
+* `Transcendental.uniqueFactorizationMonoid_adjoin`: Given a transcendental element `s : S` over
+  `R`, a unique factorization monoid, `R[s]` is a unique factorization monoid as well.
 -/
 
 @[expose] public noncomputable section
@@ -101,6 +116,7 @@ open Polynomial
 
 variable {s}
 
+/-- Given a transcendental element `s : S` over `F`, `F[s]` is a euclidean domain. -/
 abbrev Transcendental.euclideanDomainAdjoin {F : Type*} [Field F] [Algebra F S]
     (h : Transcendental F s) : EuclideanDomain F[s] :=
   (algEquivOfTranscendental F s h).symm.euclideanDomain
@@ -111,6 +127,8 @@ instance {F : Type*} [Field F] [Algebra F S] [h : Fact (Transcendental F s)] :
 
 variable [UniqueFactorizationMonoid R]
 
+/-- Given a transcendental element `s : S` over `R`, a unique factorization monoid,
+`R[s]` is a unique factorization monoid as well. -/
 theorem Transcendental.uniqueFactorizationMonoid_adjoin (h : Transcendental R s) :
     UniqueFactorizationMonoid R[s] :=
   (algEquivOfTranscendental R s h).toMulEquiv.uniqueFactorizationMonoid inferInstance
