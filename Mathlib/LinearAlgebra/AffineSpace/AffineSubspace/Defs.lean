@@ -216,6 +216,14 @@ lemma vsub_self_of_zero_mem {s : AffineSubspace k V} (hs : 0 ∈ s) :
     simpa using s.smul_vsub_vadd_mem 1 ha hb hs
   · exact fun h => ⟨x, h, 0, hs, by simp⟩
 
+@[simp] lemma vsub_self_eq_iff_zero_mem {s : AffineSubspace k V} [Nonempty s] :
+    (s : Set V) -ᵥ s = s ↔ 0 ∈ s := by
+  refine ⟨fun h ↦ ?_, vsub_self_of_zero_mem⟩
+  obtain x : s := Classical.choice inferInstance
+  suffices (x : V) - x ∈ (s : Set _) by aesop
+  rw [← h, mem_vsub]
+  aesop
+
 /-- The direction of an affine subspace is the submodule spanned by
 the pairwise differences of points.  (Except in the case of an empty
 affine subspace, where the direction is the zero submodule, every
@@ -223,7 +231,7 @@ vector in the direction is the difference of two points in the affine
 subspace.)
 
 This can also be used to reinterpret an affine subspace that contains
-zero as a submodule, see `direction_eq_self_of_zero_mem`.
+zero as a submodule, see `direction_eq_self_iff_zero_mem`.
 -/
 def direction (s : AffineSubspace k P) : Submodule k V :=
   vectorSpan k (s : Set P)
@@ -345,7 +353,7 @@ theorem mem_direction_iff_eq_vsub_left {s : AffineSubspace k P} {p : P} (hp : p 
   mp h := by rw [← h]; simp
   mpr h := by
     ext x
-    change x ∈ (s.direction : Set V) ↔ _
+    rw [Submodule.mem_toAffineSubspace, ← SetLike.mem_coe]
     simp [s.coe_direction_eq_vsub_set ⟨0, h⟩, vsub_self_of_zero_mem h]
 
 instance : CanLift (AffineSubspace k V) (Submodule k V) (·) (0 ∈ ·) :=
