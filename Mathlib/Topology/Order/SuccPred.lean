@@ -75,9 +75,9 @@ theorem isOpen_iff {s : Set α} : IsOpen s ↔
   · simp [nhds_eq_pure.2 ho', ho, ho']
 
 @[to_dual]
-theorem accPt_iff {a : α} {s : Set α} :
+theorem accPt_principal {a : α} {s : Set α} :
     AccPt a (𝓟 s) ↔ ¬ IsMin a ∧ ∀ b < a, (s ∩ Ioo b a).Nonempty := by
-  rw [accPt_iff_frequently]
+  rw [accPt_principal_frequently]
   by_cases ha : IsMin a
   · simp [nhds_of_isMin, ha]
   · rw [not_isMin_iff] at ha ⊢
@@ -86,12 +86,12 @@ theorem accPt_iff {a : α} {s : Set α} :
 
 @[to_dual]
 theorem _root_.AccPt.not_isMin {a : α} {s : Set α} (h : AccPt a (𝓟 s)) : ¬ IsMin a :=
-  (accPt_iff.1 h).1
+  (accPt_principal.1 h).1
 
 @[to_dual]
 theorem _root_.AccPt.isSuccLimit {a : α} {s : Set α} (h : AccPt a (𝓟 s)) : IsSuccLimit a := by
   unfold IsSuccLimit IsSuccPrelimit
-  simp_rw [accPt_iff, Set.Nonempty] at h
+  simp_rw [accPt_principal, Set.Nonempty] at h
   grind [covBy_iff_Ioo_eq]
 
 @[to_dual]
