@@ -9,6 +9,8 @@ module
 public import Mathlib.Algebra.AddTorsor.Defs
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
+import Mathlib.Algebra.Ring.Subring.Units
+
 /-!
 # Local Ring Properties of Equalizers and Pullbacks
 
