@@ -739,8 +739,7 @@ lemma ValueGroupWithZero.lift_valuation {α : Sort*} (f : R → posSubmonoid R �
     ValueGroupWithZero.lift f hf (valuation R x) = f x 1 :=
   rfl
 
-lemma valuation_eq_zero_iff :
-    valuation R x = 0 ↔ x ≤ᵥ 0 :=
+lemma valuation_eq_zero_iff : valuation R x = 0 ↔ x ≤ᵥ 0 :=
   ValueGroupWithZero.mk_eq_zero _ _
 
 lemma valuation_posSubmonoid_ne_zero (x : posSubmonoid R) :
