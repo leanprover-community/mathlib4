@@ -1013,11 +1013,10 @@ section Equalizer
 namespace AlgHom
 
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-variable {F : Type*}
 
 /-- The equalizer of two R-algebra homomorphisms -/
 @[simps coe toSubsemiring]
-def equalizer (ϕ ψ : F) [FunLike F A B] [AlgHomClass F R A B] : Subalgebra R A where
+def equalizer (ϕ ψ : A →ₐ[R] B) : Subalgebra R A where
   carrier := { a | ϕ a = ψ a }
   zero_mem' := by simp only [Set.mem_setOf_eq, map_zero]
   one_mem' := by simp only [Set.mem_setOf_eq, map_one]
@@ -1028,17 +1027,16 @@ def equalizer (ϕ ψ : F) [FunLike F A B] [AlgHomClass F R A B] : Subalgebra R A
   algebraMap_mem' x := by
     simp only [Set.mem_setOf_eq, AlgHomClass.commutes]
 
-variable [FunLike F A B] [AlgHomClass F R A B]
-
 @[simp]
-theorem mem_equalizer (φ ψ : F) (x : A) : x ∈ equalizer φ ψ ↔ φ x = ψ x :=
+theorem mem_equalizer (φ ψ : A →ₐ[R] B) (x : A) : x ∈ equalizer φ ψ ↔ φ x = ψ x :=
   Iff.rfl
 
-theorem equalizer_toSubmodule {φ ψ : F} :
+theorem equalizer_toSubmodule {φ ψ : A →ₐ[R] B} :
     Subalgebra.toSubmodule (equalizer φ ψ) = LinearMap.eqLocus
       (LinearMapClass.linearMap φ) (LinearMapClass.linearMap ψ) := rfl
 
-theorem le_equalizer {φ ψ : F} {S : Subalgebra R A} : S ≤ equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl
+theorem le_equalizer {φ ψ : A →ₐ[R] B} {S : Subalgebra R A} :
+    S ≤ equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl
 
 end AlgHom
 
