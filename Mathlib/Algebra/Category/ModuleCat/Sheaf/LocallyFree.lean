@@ -15,17 +15,17 @@ A sheaf of modules is locally free if it is locally isomorphic to a free module.
 ## Main Definitions
 
 - `SheafOfModules.LocalGeneratorsData.IsLocallyFreeData`: This is defined as a predicate on
-`SheafOfModules.LocalGeneratorData` where `q : M.LocalGeneratorData` is said to be locally
-free data if `(q.generators i).π` is an isomorphism for all `i` in `q.I`.
+  `SheafOfModules.LocalGeneratorData` where `q : M.LocalGeneratorData` is said to be locally
+  free data if `(q.generators i).π` is an isomorphism for all `i` in `q.I`.
 
 - `SheafOfModules.IsLocallyFree`: `M : SheafOfModules R` is locally free is there exists locally
-free data for it.
+  free data for it.
 
 -/
 
 public section
 
-universe u v₁ u₁ w
+universe u v₁ u₁
 
 open CategoryTheory Limits
 
@@ -44,21 +44,23 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
 namespace LocalGeneratorsData
 
 /-- Local generator data `q` is locally free data if all of the natural morphisms
-`free (q.generators i).I ⟶ M.over (q.X i)` are isomorphisms -/
+`free (q.generators i).I ⟶ M.over (q.X i)` are isomorphisms. -/
 class IsLocallyFreeData {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData) : Prop where
-  iso : ∀ i, IsIso (q.generators i).π := by infer_instance
+  isIso : ∀ i, IsIso (q.generators i).π := by infer_instance
 
-attribute [instance] IsLocallyFreeData.iso
+attribute [instance] IsLocallyFreeData.isIso
 
 instance IsLocallyFreeData.shrink {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData)
     [q.IsLocallyFreeData] : q.shrink.IsLocallyFreeData where
-  iso i := inferInstanceAs (IsIso (q.generators i.2.choose).π)
+  isIso i := inferInstanceAs (IsIso (q.generators i.2.choose).π)
 
 end LocalGeneratorsData
 
-/-- A sheaf of modules is locally free if there exists locally free data for it. -/
+/-- A sheaf of modules is locally free if it is locally isomorphic to free sheaves:
+There exist local generators satisfying `IsLocallyFreeData`. -/
+@[stacks 01C6 "(1)"]
 class IsLocallyFree (M : SheafOfModules.{u} R) : Prop where
-  exists_locallyFreeData : ∃ q : LocalGeneratorsData.{u₁} M, q.IsLocallyFreeData
+  exists_isLocallyFreeData : ∃ q : LocalGeneratorsData.{u₁} M, q.IsLocallyFreeData
 
 theorem LocalGeneratorsData.isLocallyFree {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData)
     [q.IsLocallyFreeData] : M.IsLocallyFree := ⟨q.shrink, inferInstance⟩
@@ -80,9 +82,14 @@ def free.generatingSections (I : Type u) : (free (R := R) I).GeneratingSections 
     infer_instance
 
 @[simp]
-lemma free.generatingSections_π_id (I : Type u) :
+lemma free.generatingSections_π (I : Type u) :
     (free.generatingSections (R := R) I).π = 𝟙 (free I) :=
   Equiv.symm_apply_apply (free I).freeHomEquiv _
+
+set_option backward.isDefEq.respectTransparency false in
+instance (I : Type u) : IsIso (free.generatingSections (R := R) I).π := by
+  rw [free.generatingSections_π]
+  infer_instance
 
 variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
   [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] [HasBinaryProducts C]
@@ -92,14 +99,12 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance (I : Type u) :
     (free.generatingSections (R := R) I).localGeneratorsData.IsLocallyFreeData where
-  iso i := by
+  isIso i := by
     dsimp
-    simp only [GeneratingSections.map_π_eq, free.generatingSections_I, free.generatingSections_π_id,
-      CategoryTheory.Functor.map_id, Category.comp_id]
     infer_instance
 
 instance (I : Type u) : (free (R := R) I).IsLocallyFree where
-  exists_locallyFreeData := ⟨(free.generatingSections I).localGeneratorsData, inferInstance⟩
+  exists_isLocallyFreeData := ⟨(free.generatingSections I).localGeneratorsData, inferInstance⟩
 
 end
 
@@ -111,7 +116,7 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
 
 namespace LocalGeneratorsData
 
-/-- Given locally free data, this is the quasiCoherentData where there are no relations. -/
+/-- Given locally free data, this is the `QuasiCoherentData` where there are no relations. -/
 @[expose, simps]
 def quasiCoherentData {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData) [q.IsLocallyFreeData] :
     M.QuasicoherentData where
@@ -132,36 +137,8 @@ lemma quasiCoherentData_localGeneratorsData {M : SheafOfModules.{u} R}
 end LocalGeneratorsData
 
 instance (priority := 100) (M : SheafOfModules.{u} R) [h : M.IsLocallyFree] : M.IsQuasicoherent :=
-  have := h.exists_locallyFreeData.choose_spec
-  h.exists_locallyFreeData.choose.quasiCoherentData.isQuasicoherent
-
-end
-
-section
-
-variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-  [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]
-  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
-  [∀ X Y, ((J.over X).over Y).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-  [∀ X Y, HasSheafify ((J.over X).over Y) AddCommGrpCat.{u}]
-  [∀ X Y, ((J.over X).over Y).WEqualsLocallyBijective AddCommGrpCat.{u}]
-
-set_option backward.isDefEq.respectTransparency false in
-/-- Being locally free is local -/
-theorem LocalGenertorsData.IsLocallFreeData.of_coversTop (M : SheafOfModules.{u} R) {I : Type w}
-    (X : I → C) (hX : J.CoversTop X) (D : Π i, LocalGeneratorsData (M.over (X i)))
-    [h : ∀ i, (D i).IsLocallyFreeData] : (LocalGeneratorsData.bind M X hX D).IsLocallyFreeData where
-  iso i := by
-    rw [LocalGeneratorsData.bind_generators, GeneratingSections.ofEpi_π,
-      GeneratingSections.map_π_eq]
-    infer_instance
-
-theorem IsLocallyFree.of_coversTop (M : SheafOfModules.{u} R) {I : Type w} (X : I → C)
-    (hX : J.CoversTop X) [h : ∀ i, (M.over (X i)).IsLocallyFree] :
-    M.IsLocallyFree :=
-  have := fun i => (h i).1.choose_spec
-  have := LocalGenertorsData.IsLocallFreeData.of_coversTop M X hX (fun i => (h i).1.choose)
-  (LocalGeneratorsData.bind M X hX (fun i => (h i).1.choose)).isLocallyFree
+  have := h.exists_isLocallyFreeData.choose_spec
+  h.exists_isLocallyFreeData.choose.quasiCoherentData.isQuasicoherent
 
 end
 

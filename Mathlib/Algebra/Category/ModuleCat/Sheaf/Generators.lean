@@ -146,14 +146,6 @@ class IsFiniteType (M : SheafOfModules.{u} R) : Prop where
   exists_localGeneratorsData (M) :
     ∃ (σ : (LocalGeneratorsData.{u'} M)), σ.IsFiniteType
 
-/-- A choice of local generators when `M` is a sheaf of modules of finite type. -/
-@[deprecated "Use the lemma `IsFiniteType.exists_localGeneratorsData` instead."
-  (since := "2025-10-28")]
-noncomputable def localGeneratorsDataOfIsFiniteType (M : SheafOfModules.{u} R)
-    [M.IsFiniteType] :
-    M.LocalGeneratorsData :=
-  (IsFiniteType.exists_localGeneratorsData M).choose
-
 end
 
 noncomputable section
@@ -182,24 +174,25 @@ then we obtain generating sections of `F.obj M`. -/
 @[simps]
 def GeneratingSections.map : (F.obj M).GeneratingSections where
   I := G.I
-  s := (freeHomEquiv (F.obj M)) (G.mapFreeHom F η)
+  s := freeHomEquiv (F.obj M) (G.mapFreeHom F η)
   epi := by
     simp only [mapFreeHom, Equiv.symm_apply_apply, epi_comp_iff_of_epi]
-    have : Epi G.π := inferInstance
     infer_instance
 
-lemma GeneratingSections.map_π_eq (G : M.GeneratingSections)
-    (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S) [PreservesColimitsOfSize.{u, u} F]
-    (η : unit S ≅ F.obj (unit R)) : (G.map F η).π = (mapFreeIso F G.I η).hom ≫ F.map G.π :=
+instance [G.IsFiniteType] : (G.map F η).IsFiniteType where
+  finite := inferInstanceAs (Finite G.I)
+
+lemma GeneratingSections.map_π_eq : (G.map F η).π = (mapFreeIso F G.I η).hom ≫ F.map G.π :=
   (F.obj M).freeHomEquiv.symm_apply_eq.mpr rfl
+
+set_option backward.isDefEq.respectTransparency false in
+instance [IsIso G.π] : IsIso (G.map F η).π := by
+  rw [GeneratingSections.map_π_eq]
+  infer_instance
 
 variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
   [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] [HasBinaryProducts C]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
-
-/-- The restriction of generating sections to `Over X` -/
-abbrev GeneratingSections.over {M : SheafOfModules.{u} R} (G : M.GeneratingSections) (X : C) :
-    (M.over X).GeneratingSections := G.map (pushforward (𝟙 (R.over X))) (Iso.refl _)
 
 /-- Given `G : M.GeneratingSections`, we naturally obtain `M.LocalGeneratorsData` using the
 trivial cover of `C`. -/
@@ -208,32 +201,8 @@ def GeneratingSections.localGeneratorsData {M : SheafOfModules.{u} R} (G : M.Gen
     M.LocalGeneratorsData where
   I := C
   X := id
-  coversTop x := GrothendieckTopology.covering_of_eq_top J <| by
-    rw [Sieve.ext_iff]
-    intro _ f
-    simpa [Sieve.top_apply, iff_true] using ⟨x, Nonempty.intro f⟩
-  generators x := G.over x
-
-variable [∀ X Y, ((J.over X).over Y).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-  [∀ X Y, HasSheafify ((J.over X).over Y) AddCommGrpCat.{u}]
-  [∀ X Y, ((J.over X).over Y).WEqualsLocallyBijective AddCommGrpCat.{u}]
-
-/-- Given a cover `X` and local generators for `M` restricted onto each `Mᵢ`, we may glue them
-into local generators of `M` itself. -/
-@[simps]
-noncomputable def LocalGeneratorsData.bind (M : SheafOfModules.{u} R) {I : Type w}
-    (X : I → C) (hX : J.CoversTop X) (D : Π i, LocalGeneratorsData (M.over (X i))) :
-    M.LocalGeneratorsData where
-  I := (i : I) × (D i).I
-  X ij := ((D ij.1).X ij.2).left
-  coversTop := hX.over (fun i ↦ (D i).coversTop)
-  generators i :=
-    letI e := pushforwardPushforwardEquivalence (Over.iteratedSliceEquiv ((D i.1).X i.2))
-      (S := (R.over _).over _) (R := R.over _) (𝟙 _) (𝟙 _)
-      (by ext : 2; exact R.1.map_id _) (by ext : 2; exact R.1.map_id _)
-    (((D i.1).generators i.2).map e.inverse (.refl _)).ofEpi
-      (e.fullyFaithfulFunctor.preimageIso
-      (by exact e.counitIso.app ((M.over (X i.1)).over ((D i.1).X i.2)))).hom
+  coversTop _ := GrothendieckTopology.covering_of_eq_top J <| by simp
+  generators x := G.map (pushforward (𝟙 (R.over x))) (Iso.refl _)
 
 end
 
