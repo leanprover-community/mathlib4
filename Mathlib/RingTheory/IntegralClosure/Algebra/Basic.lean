@@ -203,7 +203,7 @@ theorem IsIntegral.smul {R} [CommSemiring R] [Algebra R B] [Algebra S B] [Algebr
     rw [← algebraMap_smul S]; apply Subalgebra.smul_mem; exact Algebra.subset_adjoin rfl
 
 theorem isIntegral_intCast (a : ℤ) : IsIntegral ℤ (a : B) :=
-  isIntegral_algebraMap (R := ℤ) (A := B) (x := a)
+  isIntegral_algebraMap
 
 theorem isIntegral_natCast (a : ℕ) : IsIntegral ℤ (a : B) := by
   rw [← Int.cast_natCast]
