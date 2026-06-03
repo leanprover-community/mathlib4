@@ -72,7 +72,7 @@ jobs:
       - name: Check team membership
         if: github.event_name == 'issue_comment'
         id: actorTeams
-        uses: tspascoal/get-user-teams-membership@818140d631d5f29f26b151afbe4179f87d9ceb5e # v4.0.1
+        uses: tspascoal/get-user-teams-membership@b2546c5affc730fd8e3d8483ae9ad3621938c2f9 # v4.0.2
         with:
           organization: leanprover-community
           username: ${{ github.event.comment.user.login }}
@@ -116,7 +116,7 @@ jobs:
       # via a sparse checkout so we can run it; we never need the
       # rest of the mathlib4 working tree on this runner.
       - name: Checkout local actions
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
