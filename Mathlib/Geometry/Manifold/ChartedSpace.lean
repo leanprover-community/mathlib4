@@ -566,9 +566,9 @@ lemma ChartedSpace.mem_atlas_sum [h : Nonempty H]
 
 end sum
 
-section IsLocalHomeomorph
-
 variable [TopologicalSpace M] [TopologicalSpace M'] [TopologicalSpace H] [ChartedSpace H M]
+
+section IsLocalHomeomorph
 
 /-- Given a right inverse for a local homeomorphism `f : M → M'`, endow `M'` with a `ChartedSpace`
 structure by pushing forward the `ChartedSpace` structure from `M`. -/
@@ -592,6 +592,15 @@ def IsLocalHomeomorph.chartedSpace
   hf.chartedSpaceOfRightInverse hf'.hasRightInverse.choose_spec
 
 end IsLocalHomeomorph
+
+/-- Given a homeomorphism `f : M' ≃ₜ M`, endow `M'` with a `ChartedSpace` structure by pulling back
+the `ChartedSpace` structure from `M`. -/
+@[implicit_reducible]
+def Homeomorph.chartedSpace {f : M' ≃ₜ M} : ChartedSpace H M' where
+  atlas := {(f.transOpenPartialHomeomorph (chartAt H (f q))) | q : M'}
+  chartAt q := (f.transOpenPartialHomeomorph (chartAt H (f q)))
+  mem_chart_source q := by simp
+  chart_mem_atlas := by simp
 
 end Constructions
 
