@@ -55,9 +55,9 @@ lemma contMDiffAt_ofComplex {z : ℂ} (hz : 0 < z.im) : CMDiffAt n ofComplex z :
   · -- continuity at z
     rw [ContinuousAt, nhds_induced, tendsto_comap_iff]
     refine Tendsto.congr' (eventuallyEq_coe_comp_ofComplex hz).symm ?_
-    simpa [ofComplex_apply_of_im_pos hz] using tendsto_id
+    simpa [ofComplex_apply_of_im_pos hz] using! tendsto_id
   · -- smoothness in local chart
-    simpa using contDiffAt_id.congr_of_eventuallyEq (eventuallyEq_coe_comp_ofComplex hz)
+    simpa using! contDiffAt_id.congr_of_eventuallyEq (eventuallyEq_coe_comp_ofComplex hz)
 
 lemma mdifferentiableAt_ofComplex {z : ℂ} (hz : 0 < z.im) : MDiffAt ofComplex z :=
   (contMDiffAt_ofComplex hz).mdifferentiableAt one_ne_zero
@@ -101,7 +101,7 @@ lemma contMDiff_inv_denom (g : GL (Fin 2) ℝ) : CMDiff n (fun τ : ℍ ↦ (den
 lemma contMDiff_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) : CMDiff n (fun τ : ℍ ↦ g • τ) := by
   intro τ
   refine contMDiffAt_iff_target.mpr ⟨(continuous_const_smul g).continuousAt, ?_⟩
-  simpa [glPos_smul_def hg] using (contMDiff_num g τ).mul (contMDiff_inv_denom g τ)
+  simpa [glPos_smul_def hg] using! (contMDiff_num g τ).mul (contMDiff_inv_denom g τ)
 
 lemma mdifferentiable_num (g : GL (Fin 2) ℝ) : MDiff (fun τ : ℍ ↦ num g τ) :=
   (contMDiff_num g).mdifferentiable one_ne_zero
@@ -124,7 +124,7 @@ lemma eq_zero_of_frequently {f : ℍ → ℂ} (hf : MDiff f) {τ : ℍ} (hτ : �
   rw [mdifferentiable_iff] at hf
   have := hf.analyticOnNhd isOpen_upperHalfPlaneSet
   ext w
-  convert this.eqOn_zero_of_preconnected_of_frequently_eq_zero (z₀ := ↑τ) ?_ τ.2 ?_ w.im_pos
+  convert! this.eqOn_zero_of_preconnected_of_frequently_eq_zero (z₀ := ↑τ) ?_ τ.2 ?_ w.im_pos
   · rw [Function.comp_apply, ofComplex_apply]
   · exact (Complex.isConnected_of_upperHalfPlane subset_rfl (by grind)).isPreconnected
   · contrapose! hτ
@@ -152,6 +152,8 @@ section deriv
 TODO: would it be better to reimplement these using `mfderiv` together with a trivialization of
 the tangent space of `ℍ`, rather than using `ofComplex` as we currently do? Or would that bring
 more pain than gain?
+
+TODO(MR): investigate if using `mvfderiv` can avoid the "pain" above, and be a cleaner design!
 -/
 
 section Complex
@@ -162,8 +164,9 @@ lemma hasStrictDerivAt_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ)
     refine this.congr_of_eventuallyEq ?_
     rw [← isOpenEmbedding_coe.map_nhds_eq, eventuallyEq_map]
     simp [Function.comp_def, coe_smul_of_det_pos hg]
-  convert ((hasStrictDerivAt_id (τ : ℂ)).const_mul _ |>.add_const _).div
-    ((hasStrictDerivAt_id (τ : ℂ)).const_mul _ |>.add_const _) _ using 2
+  convert!
+    ((hasStrictDerivAt_id (τ : ℂ)).const_mul _ |>.add_const _).div
+      ((hasStrictDerivAt_id (τ : ℂ)).const_mul _ |>.add_const _) _ using 2
   · simp [Matrix.det_fin_two]; ring
   · apply denom_ne_zero
 
@@ -182,7 +185,7 @@ lemma analyticAt_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ) :
     AnalyticAt ℂ (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) τ := by
   refine DifferentiableOn.analyticAt (fun z hz ↦ ?_) (isOpen_upperHalfPlaneSet.mem_nhds τ.im_pos)
   apply DifferentiableAt.differentiableWithinAt
-  simpa [mdifferentiableAt_iff] using
+  simpa [mdifferentiableAt_iff] using!
     (mdifferentiable_coe.comp <| (mdifferentiable_smul hg)).mdifferentiableAt (x := ⟨z, hz⟩)
 
 lemma meromorphicOrderAt_comp_smul {f : ℍ → ℂ} {τ : ℍ} {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) :
@@ -231,7 +234,7 @@ lemma hasStrictFDerivAt_smul (g : GL (Fin 2) ℝ) (τ : ℍ) :
     HasStrictFDerivAt (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) (smulFDeriv g τ) τ := by
   wlog hg : 0 < g.det.val generalizing g
   · replace hg := g.det.ne_zero.lt_or_gt.resolve_right hg
-    convert Complex.conjCLE.hasStrictFDerivAt.neg.comp _ (this (J * g) (by simpa))
+    convert! Complex.conjCLE.hasStrictFDerivAt.neg.comp _ (this (J * g) (by simpa))
     · simp [mul_smul, coe_J_smul]
     · ext
       simp

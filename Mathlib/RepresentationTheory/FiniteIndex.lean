@@ -177,6 +177,7 @@ noncomputable def indCoindIso (A : Rep.{max w u} k S) :
 
 variable (k S)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a finite index subgroup `S ≤ G`, this is a natural isomorphism between the `Ind_S^G` and
 `Coind_G^S` functors `Rep k S ⥤ Rep k G`. -/
 @[simps! hom_app inv_app]
@@ -214,6 +215,7 @@ lemma resIndAdjunction_unit_app (B : Rep.{max w u v} k G) :
       (resCoindAdjunction.{max w u} k S.subtype).unit.app B ≫
       (indCoindIso.{max w (max u v)} (res S.subtype B)).inv := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma resIndAdjunction_homEquiv_apply (A : Rep.{max w u v} k S)
     {B : Rep.{max w u v} k G} (f : res S.subtype B ⟶ A) :

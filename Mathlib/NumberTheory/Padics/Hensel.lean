@@ -74,7 +74,7 @@ include ncs_der_val
 
 private theorem ncs_tendsto_const :
     Tendsto (fun i => ‖F.derivative.aeval (ncs i)‖) atTop (𝓝 ‖F.derivative.aeval a‖) := by
-  convert @tendsto_const_nhds ℝ _ ℕ _ _; rw [ncs_der_val]
+  convert! @tendsto_const_nhds ℝ _ ℕ _ _; rw [ncs_der_val]
 
 private theorem norm_deriv_eq : ‖F.derivative.aeval ncs.lim‖ = ‖F.derivative.aeval a‖ :=
   tendsto_nhds_unique ncs_tendsto_lim (ncs_tendsto_const ncs_der_val)

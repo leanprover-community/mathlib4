@@ -131,13 +131,13 @@ theorem toPNat'_coe {n : ℕ} : 0 < n → (n.toPNat' : ℕ) = n :=
 theorem coe_toPNat' (n : ℕ+) : (n : ℕ).toPNat' = n :=
   eq (toPNat'_coe n.pos)
 
-@[simp]
-theorem one_le (n : ℕ+) : (1 : ℕ+) ≤ n :=
+@[deprecated "use `one_le`" (since := "2026-05-07")]
+protected theorem one_le (n : ℕ+) : (1 : ℕ+) ≤ n :=
   n.2
 
-@[simp]
-theorem not_lt_one (n : ℕ+) : ¬n < 1 :=
-  not_lt_of_ge n.one_le
+@[deprecated "use `not_lt_one`" (since := "2026-05-07")]
+protected theorem not_lt_one (n : ℕ+) : ¬n < 1 :=
+  not_lt_of_ge n.2
 
 instance : Inhabited ℕ+ :=
   ⟨1⟩
