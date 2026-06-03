@@ -11,6 +11,8 @@ public import Mathlib.Algebra.Order.GroupWithZero.Submonoid
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Ring.Subring.Basic
 
+import Mathlib.Algebra.Group.Submonoid.Units
+
 /-!
 
 # Unit subgroups of a ring
@@ -32,17 +34,9 @@ theorem Units.mem_posSubgroup {R : Type*} [Semiring R] [LinearOrder R] [IsStrict
   Iff.rfl
 
 theorem RingHom.isUnit_eqLocusS_mk_iff {R T : Type*} [Semiring R] [Semiring T] (f g : R →+* T)
-    {r : R} (hr : f r = g r) : IsUnit (⟨r, hr⟩ : f.eqLocusS g) ↔ IsUnit r := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · simp [isUnit_iff_exists, ← Subtype.val_inj] at h ⊢
-    grind
-  obtain ⟨s, hs⟩ := isUnit_iff_exists.mp h
-  suffices ∃ a, r * a = 1 ∧ f a = g a ∧ a * r = 1 by
-    simpa [isUnit_iff_exists, ← Subtype.val_inj]
-  refine ⟨s, hs.left, ?_, hs.right⟩
-  rw [← mul_one (f s), ← map_one g, ← hs.left, map_mul, ← mul_assoc, ← hr, ← map_mul,
-    hs.right, map_one, one_mul]
+    {r : R} (hr : f r = g r) : IsUnit (⟨r, hr⟩ : f.eqLocusS g) ↔ IsUnit r :=
+  MonoidHom.isUnit_eqLocusM_mk_iff ..
 
 theorem RingHom.isUnit_eqLocus_mk_iff {R T : Type*} [Ring R] [Semiring T] (f g : R →+* T)
     {r : R} (hr : f r = g r) : IsUnit (⟨r, hr⟩ : f.eqLocus g) ↔ IsUnit r :=
-  RingHom.isUnit_eqLocusS_mk_iff ..
+  MonoidHom.isUnit_eqLocusM_mk_iff ..
