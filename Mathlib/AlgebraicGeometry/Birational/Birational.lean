@@ -142,7 +142,7 @@ noncomputable def restrictTarget (f : X.PartialIso Y) (U : Opens Y) (hU : Dense 
 
 lemma restrictTarget_over (f : X.PartialIso Y) (hf : f.IsOver sX sY) (U : Opens Y)
     (hU : Dense (U : Set Y)) (hU' : U ≤ f.target) :
-    (f.restrictTarget U hU hU').IsOver sX sY := 
+    (f.restrictTarget U hU hU').IsOver sX sY :=
   symm_over _ (restrictSource_over _ (symm_over f hf) U hU hU')
 
 /-- Compose two partial isomorphisms, restricting to the intersection of the intermediate opens. -/
