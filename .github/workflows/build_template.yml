@@ -804,7 +804,7 @@ jobs:
         run: |
           lake env lean scripts/create_deprecated_modules.lean
           lake env lean scripts/autolabel.lean
-          lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing"
+          lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing" "dummy PR body"
 
       - name: build everything
         # make sure everything is available for test/import_all.lean
