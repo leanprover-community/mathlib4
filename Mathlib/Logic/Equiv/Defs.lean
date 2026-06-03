@@ -271,8 +271,11 @@ theorem Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e 
     e ∘ (e : α ≃ β).symm = id :=
   (e : α ≃ β).self_comp_symm
 
-@[simp, grind =] theorem symm_trans_apply (f : α ≃ β) (g : β ≃ γ) (a : γ) :
+theorem symm_trans_apply (f : α ≃ β) (g : β ≃ γ) (a : γ) :
     (f.trans g).symm a = f.symm (g.symm a) := rfl
+
+@[simp, grind =]
+theorem symm_trans (f : α ≃ β) (g : β ≃ γ) : (f.trans g).symm = g.symm.trans f.symm := rfl
 
 theorem symm_symm_apply (f : α ≃ β) (b : α) : f.symm.symm b = f b := rfl
 
