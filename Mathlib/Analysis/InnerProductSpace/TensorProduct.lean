@@ -419,7 +419,7 @@ variable (G) in
 the map `x ⊗ₜ[𝕜] y ↦ f(x) ⊗ₜ[𝕜] y`. -/
 noncomputable def _root_.ContinuousLinearMap.rTensor (f : E →L[𝕜] F) :
     (E ⊗[𝕜] G) →L[𝕜] (F ⊗[𝕜] G) :=
-  (map f.toLinearMap LinearMap.id).mkContinuous ‖f‖ (fun x => by
+  (f.toLinearMap.rTensor G).mkContinuous ‖f‖ (fun x => by
     obtain ⟨n, e, g, hx ⟩ := exists_sum_tmul_eq x
     obtain ⟨c, hc_supp, hc⟩ := Submodule.mem_span_set.mp
       ((span_tmul_eq_top 𝕜 E G) ▸ Submodule.mem_top (x := x))
@@ -428,10 +428,10 @@ noncomputable def _root_.ContinuousLinearMap.rTensor (f : E →L[𝕜] F) :
     apply (sq_le_sq₀ (norm_nonneg _) (by positivity)).mp
     simp_rw [sub_eq_iff_eq_add', ← sub_eq_iff_eq_add, ← Matrix.ext_iff, Matrix.sub_apply,
       Matrix.smul_apply, Matrix.gram_apply, Function.comp_apply] at hA
-    simp_rw [mul_pow, hx, map_sum, map_tmul, ContinuousLinearMap.coe_coe, LinearMap.id_coe,
-      id_eq, ← inner_self_eq_norm_sq (𝕜:=𝕜), inner_sum, sum_inner, inner_tmul, ← hA,
-      sub_mul, Finset.sum_sub_distrib, map_sub, ← RCLike.smul_re, Finset.smul_sum,
-      smul_mul_assoc, sub_le_self_iff, Matrix.sum_apply, mul_comm, Finset.mul_sum]
+    simp_rw [mul_pow, hx, map_sum, LinearMap.rTensor_tmul, ContinuousLinearMap.coe_coe,
+      ← inner_self_eq_norm_sq (𝕜:=𝕜), inner_sum, sum_inner, inner_tmul, ← hA, sub_mul,
+      Finset.sum_sub_distrib, map_sub, ← RCLike.smul_re, Finset.smul_sum, smul_mul_assoc,
+      sub_le_self_iff, Matrix.sum_apply, mul_comm, Finset.mul_sum]
     rw [Finset.sum_comm_cycle]
     simp_rw [Matrix.vecMulVec, Matrix.of_apply, Pi.star_apply, ← mul_left_comm, ← mul_assoc]
     simp_rw (config := { singlePass := true }) [← starRingEnd_self_apply (A _ _)]
