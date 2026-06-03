@@ -46,6 +46,17 @@ structure LocExtCat (Λ k : Type u) [CommRing Λ] [Field k] [Algebra Λ k] exten
   of (Λ k) ::
   [localRing : IsLocalRing Ring]
 
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prevents `LocExtCat.of Λ k X` being printed as `{ toExtension := X, localring := ... }` by
+`delabStructureInstance`. -/
+@[app_delab LocExtCat.of]
+meta def LocExtCat.delabOf : Delab := delabApp
+
+end Notation
+
 namespace Algebra.Extension
 
 instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [IsLocalRing S] :

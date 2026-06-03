@@ -40,17 +40,17 @@ namespace RingHom
 
 variable {R S T : Type*} [Ring R] [Ring S] [Semiring T]
 
-theorem isUnit_eqLocus_mk_iff (f g : R →+* T) {r : R} (r_in : r ∈ f.eqLocus g) :
-    IsUnit (⟨r, r_in⟩ : f.eqLocus g) ↔ IsUnit r := by
+theorem isUnit_eqLocus_mk_iff (f g : R →+* T) {r : R} (hr : f r = g r) :
+    IsUnit (⟨r, hr⟩ : f.eqLocus g) ↔ IsUnit r := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · simp [isUnit_iff_exists, ← Subtype.val_inj] at h ⊢
     grind
-  rw [mem_eqLocus] at r_in
   obtain ⟨s, hs⟩ := isUnit_iff_exists.mp h
-  suffices ∃ a, r * a = 1 ∧ f a = g a ∧ a * r = 1 by simpa [isUnit_iff_exists, ← Subtype.val_inj]
+  suffices ∃ a, r * a = 1 ∧ f a = g a ∧ a * r = 1 by
+    simpa [isUnit_iff_exists, ← Subtype.val_inj]
   refine ⟨s, hs.left, ?_, hs.right⟩
-  rw [← mul_one (f s), ← map_one g, ← hs.left, map_mul, ← mul_assoc, ← r_in, ← map_mul, hs.right,
-    map_one, one_mul]
+  rw [← mul_one (f s), ← map_one g, ← hs.left, map_mul, ← mul_assoc, ← hr, ← map_mul,
+    hs.right, map_one, one_mul]
 
 theorem isLocalRing_eqLocus [IsLocalRing R] (f g : R →+* T) : IsLocalRing (f.eqLocus g) :=
   Subring.isLocalRing_of_unit _ fun _ h ↦ (RingHom.isUnit_eqLocus_mk_iff f g h).mpr
