@@ -6,9 +6,9 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.NumberTheory.RamificationInertia.Ramification
-public import Mathlib.RingTheory.HopkinsLevitzki
 public import Mathlib.RingTheory.LocalRing.Length
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
+public import Mathlib.RingTheory.QuasiFinite.Basic
 public import Mathlib.RingTheory.Unramified.LocalRing
 
 /-!
@@ -62,31 +62,23 @@ theorem ramificationIdx'_def [q.IsPrime] :
 theorem ramificationIdx'_of_not_isPrime (hq : ¬ q.IsPrime) : q.ramificationIdx' R = 0 :=
   dif_neg hq
 
-theorem ramificationIdx'_pos [hq : q.IsPrime] [IsNoetherianRing S] [Algebra.IsIntegral R S] :
-    0 < q.ramificationIdx' R := by
+theorem ramificationIdx'_pos [hq : q.IsPrime] [Module.Finite R S] : 0 < q.ramificationIdx' R := by
+  let p := q.under R
   let Sq := Localization.AtPrime q
-  let T := Sq ⧸ (q.under R).map (algebraMap R Sq)
   rw [ramificationIdx'_def]
   apply ENat.toNat_pos
   · rw [← pos_iff_ne_zero, Module.length_pos_iff, Submodule.Quotient.nontrivial_iff,
       IsScalarTower.algebraMap_eq R S, ← map_map, ← lt_top_iff_ne_top]
     grw [map_mono map_comap_le, Localization.AtPrime.map_eq_maximalIdeal]
     exact (IsLocalRing.maximalIdeal.isMaximal _).lt_top
-  · rw [Module.length_eq_of_surjective (R := T) Quotient.mk_surjective, Module.length_ne_top_iff,
-      ← isArtinianRing_iff_isFiniteLength, isArtinianRing_iff_krullDimLE_zero,
-      krullDimLE_zero_quotient_iff_forall_minimalPrimes_isMaximal,
-      IsScalarTower.algebraMap_eq R S, ← map_map]
-    intro r hr
-    have : r.IsPrime := hr.1.1
-    rw [IsLocalization.minimalPrimes_map q.primeCompl, Set.mem_preimage] at hr
-    suffices q = r.under S by
-      rw [← IsLocalization.map_under q.primeCompl Sq r, ← this,
-        Localization.AtPrime.map_eq_maximalIdeal]
-      exact IsLocalRing.maximalIdeal.isMaximal Sq
-    suffices r.under S ≤ q from
-      le_antisymm ((IsIntegral.mem_minimalPrimes_map_under q).2 hr.1 this) this
-    conv_rhs => rw [← IsLocalization.AtPrime.under_maximalIdeal Sq q]
-    exact comap_mono (IsLocalRing.le_maximalIdeal_of_isPrime r)
+  · let r := PrimeSpectrum.primesOverOrderIsoFiber R S p (primesOver.mk p q)
+    have : q = r.1.comap Algebra.TensorProduct.includeRight := by
+      rw [← PrimeSpectrum.coe_primesOverOrderIsoFiber_symm_apply, OrderIso.symm_apply_apply]
+    let := Localization.AtPrime.algebraOfLiesOver p (r.1.comap Algebra.TensorProduct.includeRight)
+    have : IsArtinianRing (Sq ⧸ map (algebraMap R Sq) p) := by
+      convert (Fiber.localizationAlgEquivQuotient p r.1).toRingEquiv.isArtinianRing
+    rwa [Module.length_eq_of_surjective (R := Sq ⧸ p.map (algebraMap R Sq)) Quotient.mk_surjective,
+      Module.length_ne_top_iff, ← isArtinianRing_iff_isFiniteLength]
 
 theorem ramificationIdx'_eq_one [q.IsPrime] [Algebra.EssFiniteType R S]
     [Algebra.IsUnramifiedAt R q] : q.ramificationIdx' R = 1 := by
@@ -200,3 +192,5 @@ theorem ramificationIdx'_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMu
 end
 
 end Ideal
+
+#min_imports
