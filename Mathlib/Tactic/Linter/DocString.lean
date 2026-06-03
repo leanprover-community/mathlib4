@@ -153,7 +153,8 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let currIndent := fm.toPosition pos |>.column
 
     if docStx.isMissing then continue -- this is probably superfluous, thanks to `some pos` above.
-    if docStx.getKind != ``Parser.Command.docComment then continue -- ignore antiquotations from syntax patterns like `$(_)?`
+    -- ignore antiquotations from syntax patterns like `$(_)?`
+    unless docStx.getKind == ``Parser.Command.docComment do continue
     -- `docString` contains e.g. trailing spaces before the `-/`, but does not contain
     -- any leading whitespace before the actual string starts.
     let docString ← try getDocStringText ⟨docStx⟩ catch _ => continue

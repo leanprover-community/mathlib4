@@ -136,7 +136,7 @@ section
 open Lean Elab Command Parser Term in
 #guard_msgs in
 /-- A function that pattern-matches on `declModifiers`. -/
-def _root_.extractAttrs (stx : TSyntax ``Command.declModifiers) :
+def extractAttrs (stx : TSyntax ``Command.declModifiers) :
     CommandElabM (Array <| TSyntax ``attrInstance) := do
   match stx with
   | `(declModifiers| $(_)? @[$[$atts],*] $(_)? $(_)? $(_)? $(_)?) =>
