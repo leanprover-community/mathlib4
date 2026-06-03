@@ -92,6 +92,14 @@ section instances
 
 open Polynomial
 
+abbrev Transcendental.euclideanDomain_adjoin {F : Type*} [Field F] [Algebra F S] {s : S}
+    (h : Transcendental F s) : EuclideanDomain F[s] :=
+  (algEquivOfTranscendental F s h).symm.euclideanDomain
+
+instance {F : Type*} [Field F] [Algebra F S] {s : S}
+    [h : Fact (Transcendental F s)] : EuclideanDomain F[s] :=
+  h.out.euclideanDomain_adjoin
+
 variable [UniqueFactorizationMonoid R]
 
 theorem Transcendental.uniqueFactorizationMonoid_adjoin {s : S} (h : Transcendental R s) :
@@ -99,7 +107,7 @@ theorem Transcendental.uniqueFactorizationMonoid_adjoin {s : S} (h : Transcenden
   (algEquivOfTranscendental R s h).toMulEquiv.uniqueFactorizationMonoid inferInstance
 
 instance {s : S} [h : Fact (Transcendental R s)] : UniqueFactorizationMonoid R[s] :=
-  (algEquivOfTranscendental R s h.out).toMulEquiv.uniqueFactorizationMonoid inferInstance
+  h.out.uniqueFactorizationMonoid_adjoin
 
 theorem Transcendental.wfDvdMonoid_adjoin (ht : Transcendental R s) : WfDvdMonoid R[s] :=
   (uniqueFactorizationMonoid_adjoin ht).toIsWellFounded
