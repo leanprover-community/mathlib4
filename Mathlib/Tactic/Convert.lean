@@ -114,7 +114,7 @@ convert! (postTransparency := .instances)
 ```
 -/
 structure Convert.ExpensiveConfig extends Convert.CheapConfig where
-  -- TODO: also enable this in the future? (For backwards compatibility we won't do so right now.)
+  -- TODO: also enable this in the future?
   -- preTransparency := .default
   -- transparency := .default
   postTransparency := .default
