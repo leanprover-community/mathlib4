@@ -7,7 +7,9 @@ Authors: Riccardo Brasca, Fabrizio Barroero, Stefano Francaviglia,
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Data.Finite.Card
 public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.GroupTheory.FreeGroup.Basic
 
 /-!
@@ -98,6 +100,12 @@ theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented
   refine ⟨n, (iso : G →* H).comp φ, iso.surjective.comp hφsurj, ?_⟩
   rwa [φ.ker_mulEquiv_comp iso]
 
+/-- A group is finitely presented if there exists a surjective homomorphism from
+a free group on an arbitrary finite type such that the kernel is finitely generated as
+a normal subgroup. -/
+@[to_additive /-- An additive group is finitely presented if there exists a surjective homomorphism
+from a free additive group on an arbitrary finite type such that the kernel is finitely generated as
+a normal additive subgroup. -/]
 theorem of_surjective [hG : IsFinitelyPresented G] (f : G →* H)
     (hf_surj : Function.Surjective f) (hf_ker : f.ker.IsNormalClosureFG) :
     IsFinitelyPresented H := by
@@ -105,6 +113,31 @@ theorem of_surjective [hG : IsFinitelyPresented G] (f : G →* H)
   refine ⟨n, f.comp φ, hf_surj.comp hφ_surj, ?_⟩
   rw [← MonoidHom.comap_ker]
   exact hf_ker.comap hφ_surj hφ_ker
+
+/-- A group is finitely presented if there exists a `Set G` such that the canonical inclusion map
+is surjective and the kernel is finitely generated as a normal subgroup. -/
+@[to_additive /-- An additive group is finitely presented if there exists a `Set G` such that the
+canonical inclusion map is surjective and the kernel is finitely generated as a normal additive
+subgroup. -/]
+theorem iff_hom_surj_set_G :
+    IsFinitelyPresented G ↔
+      ∃ (S : Set G) (_ : S.Finite),
+        Function.Surjective (FreeGroup.lift (Subtype.val : S → G)) ∧
+        ((FreeGroup.lift (Subtype.val : S → G)).ker).IsNormalClosureFG := by
+  constructor
+  · rintro ⟨n, φ, hsurj, hker⟩
+    let ψ := FreeGroup.map fun i ↦ (⟨_, ⟨i, rfl⟩⟩ : Set.range (φ ∘ FreeGroup.of))
+    have ψ_surj : Function.Surjective ψ := by
+      apply FreeGroup.map_surjective; rintro ⟨_, ⟨a, rfl⟩⟩; exact ⟨a, rfl⟩
+    have hcomp : φ = (FreeGroup.lift Subtype.val).comp ψ := by
+      ext a; simp [ψ]
+    refine ⟨_, Set.finite_range _, Function.Surjective.of_comp <| hcomp ▸ hsurj, ?_⟩
+    simpa [ψ_surj, ← MonoidHom.comap_ker, hcomp, Subgroup.map_comap_eq_self_of_surjective]
+    using hker.map (hf := ψ_surj)
+  · rintro ⟨S, hS, hsurj, hker⟩
+    have := hS.to_subtype
+    exact of_hom_surj_finite _ hsurj hker
+>>>>>>> d2dd8db539 (feat(FinitelyPresentedGroup): add definitional equivalence with generating set given by S : Set G)
 
 /-- A free group with a finite number of generators is finitely presented. -/
 @[to_additive /-- A free additive group with a finite number of generators is finitely presented. -/
