@@ -245,7 +245,7 @@ lemma isIntegral_c₁_pow_smul_pow (u : K) (n k a l : ℕ) (hnk : a * l ≤ n * 
     (H : IsIntegral ℤ (↑(c₁ α' β' γ') * u)) :
     IsIntegral ℤ (c₁ α' β' γ' ^ (n * k) • u ^ (a * l)) := by
   rw [zsmul_eq_mul, Int.cast_pow, ← Nat.sub_add_cancel hnk, pow_add, mul_assoc, ← mul_pow]
-  exact ((IsIntegral.Cast (c₁ α' β' γ')).pow _).mul (H.pow _)
+  exact ((isIntegral_intCast (c₁ α' β' γ')).pow _).mul (H.pow _)
 
 lemma isIntegral_c₁_pow_smul_α'_pow' :
     IsIntegral ℤ (c₁ α' β' γ' ^ (m K * q) • α' ^ (a q t * l q u)) :=
@@ -268,10 +268,10 @@ lemma isIntegral_c₁_pow_smul_add_smul_pow (n k : ℕ) (hkn : k ≤ n - 1) (a b
     IsIntegral ℤ (c₁ α' β' γ' ^ (n - 1) • (↑a + ↑b • β') ^ k) := by
   rw [zsmul_eq_mul, Int.cast_pow, ← Nat.sub_add_cancel hkn, pow_add, mul_assoc, ← mul_pow,
     mul_add]
-  refine ((IsIntegral.Cast _).pow _).mul ((IsIntegral.add ?_ ?_).pow _)
-  · exact (IsIntegral.Cast _).mul (IsIntegral.Nat _)
+  refine ((isIntegral_intCast _).pow _).mul ((IsIntegral.add ?_ ?_).pow _)
+  · exact (isIntegral_intCast _).mul (isIntegral_natCast _)
   · rw [nsmul_eq_mul, ← mul_assoc, mul_comm (c₁ α' β' γ' : K), mul_assoc]
-    exact (IsIntegral.Nat _).mul (by grind [isIntegral_c₁β])
+    exact (isIntegral_natCast _).mul (by grind [isIntegral_c₁β])
 
 /-!
 Multiplying the system by `c₁^(n-1) c₁^(mq) c₁^(mq) = c₁^(n-1+2mq) ≤ c₂^n` ensures the
@@ -320,8 +320,8 @@ omit [NumberField K] in
 private lemma isIntegral_c₁_smul_addNSMul (a b : ℕ) :
     IsIntegral ℤ (c₁ α' β' γ' • ((a : K) + b • β')) := by
   simpa [smul_add, zsmul_eq_mul, nsmul_eq_mul, mul_assoc, mul_left_comm, mul_comm] using
-    ((IsIntegral.Cast (c₁ α' β' γ')).mul (IsIntegral.Nat a)).add
-      ((IsIntegral.Nat b).mul (isIntegral_c₁β α' β' γ'))
+    ((isIntegral_intCast (c₁ α' β' γ')).mul (isIntegral_natCast a)).add
+      ((isIntegral_natCast b).mul (isIntegral_c₁β α' β' γ'))
 
 omit [NumberField K] in
 /-- The scaled sum `c₁ • (q + q • β')` is an algebraic integer over `ℤ`. -/
