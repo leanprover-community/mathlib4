@@ -19,7 +19,7 @@ subspace `q` such that `p ⊓ q = ⊥`, `p ⊔ q = ⊤`. We also prove that a su
 is always a complemented subspace.
 
 Two submodules `p` and `q` of a Banach space are *topological complements* (`Submodule.IsTopCompl`)
-if and only if they are algebraic complements and both are closed.
+if and only if they are complements (`IsCompl`) and both are closed.
 
 ## Tags
 
