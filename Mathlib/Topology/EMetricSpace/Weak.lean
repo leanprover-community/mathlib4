@@ -77,7 +77,6 @@ theorem edist_some_some {a b : α} :
 theorem some_eball (a : α) (r : ENNReal) :
     Option.some '' Metric.eball a r = Metric.eball (α := Option α) a r := by
   ext x
-  dsimp
   constructor <;> intro h
   · obtain ⟨y, yh, yx⟩ := h
     rw [← yx]
