@@ -75,11 +75,11 @@ theorem toENNReal_lt : (m : ℝ≥0∞) < n ↔ m < n :=
 @[simp, norm_cast]
 lemma toENNReal_lt_top : (n : ℝ≥0∞) < ∞ ↔ n < ⊤ := by simp [← toENNReal_lt]
 
-@[mono]
+@[gcongr, mono]
 theorem toENNReal_mono : Monotone ((↑) : ℕ∞ → ℝ≥0∞) :=
   toENNRealOrderEmbedding.monotone
 
-@[mono]
+@[gcongr, mono]
 theorem toENNReal_strictMono : StrictMono ((↑) : ℕ∞ → ℝ≥0∞) :=
   toENNRealOrderEmbedding.strictMono
 

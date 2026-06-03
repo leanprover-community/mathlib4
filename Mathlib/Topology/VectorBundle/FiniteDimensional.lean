@@ -9,7 +9,7 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 
 /-! # Finite-rank vector bundles -/
 
-@[expose] public section
+public section
 
 namespace VectorBundle
 

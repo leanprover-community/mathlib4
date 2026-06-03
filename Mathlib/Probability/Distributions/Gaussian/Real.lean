@@ -69,14 +69,22 @@ lemma gaussianPDFReal_nonneg (μ : ℝ) (v : ℝ≥0) (x : ℝ) : 0 ≤ gaussian
 
 /-- The Gaussian pdf is measurable. -/
 @[fun_prop]
-lemma measurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDFReal μ v) :=
-  (((measurable_id.add_const _).pow_const _).neg.div_const _).exp.const_mul _
+lemma measurable_uncurry_gaussianPDFReal : Measurable (fun (μ, v, x) ↦ gaussianPDFReal μ v x) := by
+  unfold gaussianPDFReal
+  fun_prop
+
+lemma measurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDFReal μ v) := by
+  fun_prop
 
 /-- The Gaussian pdf is strongly measurable. -/
 @[fun_prop]
+lemma stronglyMeasurable_uncurry_gaussianPDFReal :
+    StronglyMeasurable (fun (μ, v, x) ↦ gaussianPDFReal μ v x) :=
+  measurable_uncurry_gaussianPDFReal.stronglyMeasurable
+
 lemma stronglyMeasurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
-    StronglyMeasurable (gaussianPDFReal μ v) :=
-  (measurable_gaussianPDFReal μ v).stronglyMeasurable
+    StronglyMeasurable (gaussianPDFReal μ v) := by
+  fun_prop
 
 @[fun_prop]
 lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
@@ -89,7 +97,7 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
     suffices g = fun x ↦ (√(2 * π * v))⁻¹ * rexp (-(2 * v)⁻¹ * x ^ 2) by
       rw [this]
       refine (integrable_exp_neg_mul_sq ?_).const_mul (√(2 * π * v))⁻¹
-      simp [lt_of_le_of_ne (zero_le _) (Ne.symm hv)]
+      simpa [pos_iff_ne_zero]
     ext x
     simp only [g, NNReal.zero_le_coe, Real.sqrt_mul',
       mul_inv_rev, NNReal.coe_mul, NNReal.coe_inv, NNReal.coe_ofNat, neg_mul, mul_eq_mul_left_iff,
@@ -183,8 +191,20 @@ lemma support_gaussianPDF {μ : ℝ} {v : ℝ≥0} (hv : v ≠ 0) :
   exact (gaussianPDF_pos _ hv x).ne'
 
 @[fun_prop]
-lemma measurable_gaussianPDF (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDF μ v) :=
-  (measurable_gaussianPDFReal _ _).ennreal_ofReal
+lemma measurable_uncurry_gaussianPDF : Measurable (fun (μ, v, x) ↦ gaussianPDF μ v x) :=
+  Measurable.ennreal_ofReal (by fun_prop)
+
+lemma measurable_gaussianPDF (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDF μ v) := by
+  fun_prop
+
+@[fun_prop]
+lemma stronglyMeasurable_uncurry_gaussianPDF :
+    StronglyMeasurable (fun (μ, v, x) ↦ gaussianPDF μ v x) :=
+  measurable_uncurry_gaussianPDF.stronglyMeasurable
+
+lemma stronglyMeasurable_gaussianPDF (μ : ℝ) (v : ℝ≥0) :
+    StronglyMeasurable (gaussianPDF μ v) := by
+  fun_prop
 
 @[simp]
 lemma lintegral_gaussianPDF_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
@@ -252,6 +272,11 @@ lemma integral_gaussianReal_eq_integral_smul {E : Type*} [NormedAddCommGroup E] 
   simp [gaussianReal, hv,
     integral_withDensity_eq_integral_toReal_smul (measurable_gaussianPDF _ _)
       (ae_of_all _ fun _ ↦ gaussianPDF_lt_top)]
+
+@[fun_prop]
+lemma measurable_gaussianReal :
+    Measurable gaussianReal.uncurry :=
+  Measurable.ite (by measurability) (by fun_prop) (by fun_prop)
 
 section Transformations
 
@@ -334,7 +359,7 @@ lemma gaussianReal_map_neg : (gaussianReal μ v).map (fun x ↦ -x) = gaussianRe
 lemma gaussianReal_map_div_const (c : ℝ) :
     (gaussianReal μ v).map (· / c) = gaussianReal (μ / c) (v / .mk (c ^ 2) (sq_nonneg _)) := by
   simp_rw [div_eq_mul_inv]
-  convert gaussianReal_map_mul_const c⁻¹ using 2 <;> rw [mul_comm]
+  convert! gaussianReal_map_mul_const c⁻¹ using 2 <;> rw [mul_comm]
   ext; simp
 
 lemma gaussianReal_map_sub_const (y : ℝ) :
@@ -405,7 +430,6 @@ open Real Complex
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {p : Measure Ω} {μ : ℝ} {v : ℝ≥0} {X : Ω → ℝ}
 
-set_option backward.isDefEq.respectTransparency false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 /-- The complex moment-generating function of a Gaussian distribution with mean `μ` and variance `v`

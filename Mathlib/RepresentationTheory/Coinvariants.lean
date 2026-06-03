@@ -59,7 +59,10 @@ namespace Coinvariants
 
 instance : AddCommGroup (Coinvariants ρ) := inferInstanceAs <| AddCommGroup (_ ⧸ _)
 
-instance : Module k (Coinvariants ρ) := inferInstanceAs <| Module k (V ⧸ Coinvariants.ker ρ)
+instance : Module k (Coinvariants ρ) := inferInstanceAs <| Module k (_ ⧸ _)
+
+instance [Module.Finite k V] : Module.Finite k (Coinvariants ρ) :=
+  inferInstanceAs <| Module.Finite k (V ⧸ Coinvariants.ker ρ)
 
 variable {ρ}
 
@@ -120,31 +123,26 @@ lemma hom_ext {f g : Coinvariants ρ →ₗ[k] W} (H : f ∘ₗ mk ρ = g ∘ₗ
 
 /-- Given `G`-representations on `k`-modules `V, W`, a linear map `V →ₗ[k] W` commuting with
 the representations induces a `k`-linear map between the coinvariants. -/
-noncomputable def map (f : V →ₗ[k] W) (hf : ∀ g, f ∘ₗ ρ g = τ g ∘ₗ f) :
+noncomputable def map (f : IntertwiningMap ρ τ) :
     Coinvariants ρ →ₗ[k] Coinvariants τ :=
   lift _ (mk _ ∘ₗ f) fun g => LinearMap.ext fun x => (mk_eq_iff _).2 <|
-    mem_ker_of_eq g (f x) _ <| by simpa using congr($((hf g).symm) x)
+    mem_ker_of_eq g (f x) _ <| by simpa using congr($((f.isIntertwining' g).symm) x)
 
 variable {ρ τ}
 
 @[simp]
-lemma map_comp_mk (f : V →ₗ[k] W) (hf : ∀ g, f ∘ₗ ρ g = τ g ∘ₗ f) :
-    map ρ τ f hf ∘ₗ mk ρ = mk τ ∘ₗ f := rfl
+lemma map_comp_mk (f : IntertwiningMap ρ τ) : map ρ τ f ∘ₗ mk ρ = mk τ ∘ₗ f := rfl
 
 @[simp]
-lemma map_mk (f : V →ₗ[k] W) (hf : ∀ g, f ∘ₗ ρ g = τ g ∘ₗ f) (x : V) :
-    map ρ τ f hf (mk _ x) = mk _ (f x) := rfl
+lemma map_mk (f : IntertwiningMap ρ τ) (x : V) : map ρ τ f (mk _ x) = mk _ (f x) := rfl
 
 @[simp]
-lemma map_id (ρ : Representation k G V) :
-    map ρ ρ LinearMap.id (by simp) = LinearMap.id := by
+lemma map_id (ρ : Representation k G V) : map ρ ρ (IntertwiningMap.id ρ) = LinearMap.id := by
   ext; rfl
 
 @[simp]
-lemma map_comp (φ : V →ₗ[k] W) (ψ : W →ₗ[k] X)
-    (H : ∀ g, φ ∘ₗ ρ g = τ g ∘ₗ φ) (h : ∀ g, ψ ∘ₗ τ g = υ g ∘ₗ ψ) :
-    map τ υ ψ h ∘ₗ map ρ τ φ H = map ρ υ (ψ ∘ₗ φ) (fun g => by
-      ext x; have : φ _ = _ := congr($(H g) x); have : ψ _ = _ := congr($(h g) (φ x)); simp_all) :=
+lemma map_comp (φ : IntertwiningMap ρ τ) (ψ : IntertwiningMap τ υ) :
+    map τ υ ψ ∘ₗ map ρ τ φ = map ρ υ (ψ.comp φ) :=
   hom_ext rfl
 
 end Coinvariants
@@ -348,7 +346,7 @@ variable (k G) [Monoid G] (A B : Rep.{w} k G)
 @[simps! obj_carrier map_hom]
 noncomputable def coinvariantsFunctor : Rep.{w} k G ⥤ ModuleCat k where
   obj A := ModuleCat.of k A.ρ.Coinvariants
-  map f := ModuleCat.ofHom (Representation.Coinvariants.map _ _ f.hom.toLinearMap f.hom.2)
+  map f := ModuleCat.ofHom (Representation.Coinvariants.map _ _ f.hom)
   map_id _ := by simp
   map_comp _ _ := by ext; simp
 
@@ -379,6 +377,7 @@ variable (k G)
 instance : (coinvariantsFunctor k G).Additive where
 instance : (coinvariantsFunctor k G).Linear k where
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between the functor sending a representation to its coinvariants and the functor
 equipping a module with the trivial representation. -/
@@ -394,6 +393,7 @@ theorem coinvariantsAdjunction_homEquiv_apply_hom {X : Rep.{w} k G} {Y : ModuleC
     ((coinvariantsMk k G).app X ≫ f).hom := by
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coinvariantsAdjunction_homEquiv_symm_apply_hom {X : Rep.{w} k G} {Y : ModuleCat k}
@@ -486,6 +486,7 @@ noncomputable def finsuppToCoinvariantsTensorFree :
 
 variable {A α}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma finsuppToCoinvariantsTensorFree_single (i : α) (x : A) :
@@ -496,11 +497,10 @@ lemma finsuppToCoinvariantsTensorFree_single (i : α) (x : A) :
 
 variable (A α)
 
-#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
-the simpNF linter complains about `@[simps! symm_apply]`, but removing it seems to be harmless. -/
 /-- Given a `k`-linear `G`-representation `(A, ρ)` and a type `α`, this is the linear equivalence
 `(A ⊗ (α →₀ k[G]))_G ≃ₗ[k] (α →₀ A)` sending
 `⟦a ⊗ single x (single g r)⟧ ↦ single x (r • ρ(g⁻¹)(a)).` -/
+@[simps! symm_apply]
 noncomputable abbrev coinvariantsTensorFreeLEquiv :
     Coinvariants (A ⊗ free k G α).ρ ≃ₗ[k] (α →₀ A) :=
   LinearEquiv.ofLinear (coinvariantsTensorFreeToFinsupp A α) (finsuppToCoinvariantsTensorFree A α)

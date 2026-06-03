@@ -82,25 +82,27 @@ instance : FloorSemiring ℕ where
   gc_ceil n a := by
     rw [Nat.cast_id, id_def]
 
-
 namespace FloorSemiring
 
 variable [Semiring α] [PartialOrder α] [FloorSemiring α]
 
+/-- A version of `Nat.mono_cast` for floor semirings, whose addition is not necessarily monotone. -/
 theorem natCast_mono : Monotone (Nat.cast : ℕ → α) :=
-  fun _ _ h => (gc_ceil _ _).mp <| h.trans' <| (gc_ceil _ _).mpr (le_refl _)
+  fun _ _ h ↦ (gc_ceil _ _).mp <| h.trans' <| (gc_ceil _ _).mpr (le_refl _)
 
+/-- A version of `Nat.cast_nonneg'` for floor semirings, whose addition is not necessarily
+  monotone. -/
 theorem natCast_nonneg (n : ℕ) : 0 ≤ (n : α) := by
-  simpa only [Nat.cast_zero] using natCast_mono (Nat.zero_le n)
+  simpa using natCast_mono n.zero_le
 
+/-- A version of `Nat.strictMono_cast` for floor semirings, whose addition is not necessarily
+  monotone. -/
 theorem natCast_strictMono : StrictMono (Nat.cast : ℕ → α) := by
   refine strictMono_nat_of_lt_succ fun n => (natCast_mono (Nat.le_succ n)).lt_of_ne fun hn => ?_
   replace hn (k : ℕ) : ((n + k : ℕ) : α) = n := by
-    induction k with | zero => rfl | succ k k_ih =>
-      rw [← Nat.add_assoc, Nat.cast_add, k_ih, ← Nat.cast_add, ← hn]
+    induction k with | zero => rfl | succ k k_ih => grind
   have h : n + (floor (n : α) + 1) ≤ floor (n : α) := (gc_floor (natCast_nonneg n)).mpr (hn _).le
-  rw [← Nat.add_assoc, Nat.add_one_le_iff] at h
-  exact Nat.not_le_of_lt h (Nat.le_add_left _ _)
+  grind
 
 theorem natCast_pos {n : ℕ} : 0 < (n : α) ↔ 0 < n := by
   rw [← Nat.cast_zero, natCast_strictMono.lt_iff_lt]
@@ -116,7 +118,6 @@ instance : ZeroLEOneClass α := ⟨by simpa only [Nat.cast_one] using natCast_no
 instance : CharZero α := ⟨natCast_strictMono.injective⟩
 
 end FloorSemiring
-
 
 namespace Nat
 
@@ -358,16 +359,13 @@ theorem floor_lt : ⌊a⌋ < z ↔ a < z :=
 theorem floor_le (a : α) : (⌊a⌋ : α) ≤ a :=
   gc_coe_floor.l_u_le a
 
+theorem floor_le_iff : ⌊a⌋ ≤ z ↔ a < z + 1 := by rw [← lt_add_one_iff, floor_lt]; norm_cast
+
+theorem lt_floor_iff : z < ⌊a⌋ ↔ z + 1 ≤ a := by rw [← add_one_le_iff, le_floor]; norm_cast
+
 theorem floor_nonneg : 0 ≤ ⌊a⌋ ↔ 0 ≤ a := by rw [le_floor, Int.cast_zero]
 
 theorem floor_lt_zero : ⌊a⌋ < 0 ↔ a < 0 := by rw [floor_lt, Int.cast_zero]
-
-@[bound]
-theorem floor_nonpos (ha : a ≤ 0) : ⌊a⌋ ≤ 0 := by
-  obtain ha0 | rfl : a < 0 ∨ a = 0 := ha.lt_or_eq
-  · exact (floor_lt_zero.mpr ha0).le
-  · rw [← Int.lt_add_one_iff, floor_lt, Int.zero_add, Int.cast_one]
-    exact zero_lt_one
 
 /-! #### Ceil -/
 
@@ -384,21 +382,14 @@ theorem lt_ceil : z < ⌈a⌉ ↔ (z : α) < a :=
 theorem le_ceil (a : α) : a ≤ ⌈a⌉ :=
   gc_ceil_coe.le_u_l a
 
+lemma le_ceil_iff : z ≤ ⌈a⌉ ↔ z - 1 < a := by rw [← sub_one_lt_iff, lt_ceil]; norm_cast
+
+lemma ceil_lt_iff : ⌈a⌉ < z ↔ a ≤ z - 1 := by rw [← le_sub_one_iff, ceil_le]; norm_cast
+
 theorem ceil_nonpos : ⌈a⌉ ≤ 0 ↔ a ≤ 0 := by rw [ceil_le, cast_zero]
 
 @[simp]
 theorem ceil_pos : 0 < ⌈a⌉ ↔ 0 < a := by rw [lt_ceil, cast_zero]
-
-@[bound]
-theorem ceil_nonneg (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := by
-  obtain ha0 | rfl : 0 < a ∨ a = 0 := ha.lt_or_eq'
-  · exact (ceil_pos.mpr ha0).le
-  · refine not_lt.mp (fun h => ?_)
-    rw [← le_sub_one_iff, ceil_le, ← cast_zero] at h
-    replace h : ((-1 : ℤ) : α) = ((0 : ℤ) : α) :=
-      h.antisymm' (FloorRing.intCast_mono (neg_ofNat_le_ofNat 1 0))
-    rw [cast_neg, cast_zero, neg_eq_zero, cast_one] at h
-    exact zero_ne_one h.symm
 
 end Int
 
@@ -431,3 +422,38 @@ theorem Nat.ceil_int : (Nat.ceil : ℤ → ℕ) = Int.toNat :=
   rfl
 
 end FloorRingToSemiring
+
+namespace FloorRing
+
+/-! #### `Int.cast` is strictly monotone on floor rings -/
+
+variable [Ring α] [LinearOrder α] [FloorRing α]
+
+/-- A version of `Int.cast_mono` for floor rings, whose addition is not necessarily monotone. -/
+theorem intCast_mono : Monotone (Int.cast : ℤ → α) :=
+  fun _ _ h ↦ (gc_ceil_coe _ _).mp <| h.trans' <| (gc_ceil_coe _ _).mpr (le_refl _)
+
+/-- A version of `Int.cast_strictMono` for floor rings, whose addition is not necessarily
+  monotone. -/
+theorem intCast_strictMono : StrictMono (Int.cast : ℤ → α) := by
+  obtain ⟨h⟩ : NeZero (1 : α) := inferInstance
+  refine strictMono_int_of_lt_succ fun n => (intCast_mono (Int.le_add_one (le_refl _))).lt_of_ne ?_
+  grind
+
+end FloorRing
+
+namespace Int
+
+variable [Ring α] [LinearOrder α] [FloorRing α] {z : ℤ} {a b : α}
+
+@[bound]
+theorem ceil_nonneg (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := by
+  rw [← FloorRing.intCast_strictMono.le_iff_le (β := α), Int.cast_zero]
+  exact ha.trans (le_ceil a)
+
+@[bound]
+theorem floor_nonpos (ha : a ≤ 0) : ⌊a⌋ ≤ 0 := by
+  rw [← FloorRing.intCast_strictMono.le_iff_le (β := α), Int.cast_zero]
+  exact (floor_le a).trans ha
+
+end Int

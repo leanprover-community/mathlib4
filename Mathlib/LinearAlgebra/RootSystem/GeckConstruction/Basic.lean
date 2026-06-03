@@ -328,13 +328,13 @@ instance : IsLieAbelian (cartanSubalgebra' b) := by
   refine ⟨fun ⟨⟨x, hx⟩, hx'⟩ ⟨⟨y, hy⟩, hy'⟩ ↦ ?_⟩
   let x' : cartanSubalgebra b := ⟨x, hx'⟩
   let y' : cartanSubalgebra b := ⟨y, hy'⟩
-  suffices ⁅x', y'⁆ = 0 by simpa [x', y', Subtype.ext_iff, -trivial_lie_zero] using this
-  simp
+  suffices ⁅x', y'⁆ = 0 by simpa [x', y', Subtype.ext_iff] using this
+  simp [trivial_lie_zero]
 
 instance : LieModule.IsTriangularizable R (cartanSubalgebra' b) (b.support ⊕ ι → R) := by
   refine ⟨fun ⟨⟨x, hx'⟩, hx⟩ ↦ ?_⟩
   obtain ⟨d, rfl⟩ : ∃ d : b.support ⊕ ι → R, Matrix.diagonal d = x :=
-    span_range_h_le_range_diagonal <| by simpa using hx
+    span_range_h_le_range_diagonal <| by simpa using! hx
   simp
 
 lemma cartanSubalgebra_le_lieAlgebra :

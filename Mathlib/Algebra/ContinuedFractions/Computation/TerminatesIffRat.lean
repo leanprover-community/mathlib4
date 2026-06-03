@@ -36,7 +36,7 @@ namespace GenContFract
 
 open GenContFract (of)
 
-variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
+variable {K : Type*} [Field K] [LinearOrder K] [FloorRing K]
 
 /-
 We will have to constantly coerce along our structures in the following proofs using their provided
@@ -60,7 +60,6 @@ finite correctness proof (`of_correctness_of_terminates`) of `GenContFract.of` t
 
 variable (v : K) (n : ℕ)
 
-omit [IsStrictOrderedRing K] in
 nonrec theorem exists_gcf_pair_rat_eq_of_nth_contsAux :
     ∃ conts : Pair ℚ, (of v).contsAux n = (conts.map (↑) : Pair K) :=
   Nat.strong_induction_on n
@@ -99,24 +98,20 @@ nonrec theorem exists_gcf_pair_rat_eq_of_nth_contsAux :
           cases ppred_conts; cases pred_conts
           simp [nextConts, nextNum, nextDen])
 
-omit [IsStrictOrderedRing K] in
 theorem exists_gcf_pair_rat_eq_nth_conts :
     ∃ conts : Pair ℚ, (of v).conts n = (conts.map (↑) : Pair K) := by
   rw [nth_cont_eq_succ_nth_contAux]; exact exists_gcf_pair_rat_eq_of_nth_contsAux v <| n + 1
 
-omit [IsStrictOrderedRing K] in
 theorem exists_rat_eq_nth_num : ∃ q : ℚ, (of v).nums n = (q : K) := by
   rcases exists_gcf_pair_rat_eq_nth_conts v n with ⟨⟨a, _⟩, nth_cont_eq⟩
   use a
   simp [num_eq_conts_a, nth_cont_eq]
 
-omit [IsStrictOrderedRing K] in
 theorem exists_rat_eq_nth_den : ∃ q : ℚ, (of v).dens n = (q : K) := by
   rcases exists_gcf_pair_rat_eq_nth_conts v n with ⟨⟨_, b⟩, nth_cont_eq⟩
   use b
   simp [den_eq_conts_b, nth_cont_eq]
 
-omit [IsStrictOrderedRing K] in
 /-- Every finite convergent corresponds to a rational number. -/
 theorem exists_rat_eq_nth_conv : ∃ q : ℚ, (of v).convs n = (q : K) := by
   rcases exists_rat_eq_nth_num v n with ⟨Aₙ, nth_num_eq⟩
@@ -126,7 +121,6 @@ theorem exists_rat_eq_nth_conv : ∃ q : ℚ, (of v).convs n = (q : K) := by
 
 variable {v}
 
-omit [IsStrictOrderedRing K] in
 /-- Every terminating continued fraction corresponds to a rational number. -/
 theorem exists_rat_eq_of_terminates (terminates : (of v).Terminates) : ∃ q : ℚ, v = ↑q := by
   obtain ⟨n, v_eq_conv⟩ : ∃ n, v = (of v).convs n := of_correctness_of_terminates terminates
@@ -156,7 +150,7 @@ the Computation first and then lift the results step-by-step.
 
 
 -- The lifting works for arbitrary linear ordered fields with a floor function.
-variable {v : K} {q : ℚ}
+variable [IsStrictOrderedRing K] {v : K} {q : ℚ}
 
 /-! First, we show the correspondence for the very basic functions in
 `GenContFract.IntFractPair`. -/
@@ -319,7 +313,8 @@ theorem terminates_of_rat (q : ℚ) : (of q).Terminates :=
 end TerminatesOfRat
 
 /-- The continued fraction `GenContFract.of v` terminates if and only if `v ∈ ℚ`. -/
-theorem terminates_iff_rat (v : K) : (of v).Terminates ↔ ∃ q : ℚ, v = (q : K) :=
+theorem terminates_iff_rat [IsStrictOrderedRing K] (v : K) :
+    (of v).Terminates ↔ ∃ q : ℚ, v = (q : K) :=
   Iff.intro
     (fun terminates_v : (of v).Terminates =>
       show ∃ q : ℚ, v = (q : K) from exists_rat_eq_of_terminates terminates_v)
