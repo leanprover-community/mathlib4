@@ -66,6 +66,9 @@ lemma pow_abs (a : α) (n : ℕ) : |a| ^ n = |a ^ n| := (abs_pow a n).symm
 lemma Even.pow_abs (hn : Even n) (a : α) : |a| ^ n = a ^ n := by
   rw [← abs_pow, abs_eq_self]; exact hn.pow_nonneg _
 
+lemma pow_abs_two_mul (a : α) : |a| ^ (2 * n) = a ^ (2 * n) :=
+  Even.pow_abs ⟨n, two_mul n⟩ a
+
 lemma abs_neg_one_pow (n : ℕ) : |(-1 : α) ^ n| = 1 := by rw [← pow_abs, abs_neg, abs_one, one_pow]
 
 omit [IsOrderedRing α] in
@@ -81,9 +84,6 @@ lemma abs_sq (x : α) : |x ^ 2| = x ^ 2 := by simpa only [sq] using abs_mul_self
 
 lemma exists_abs_lt [Nontrivial α] (a : α) : ∃ b > 0, |a| < b :=
   ⟨|a| + 1, lt_of_lt_of_le zero_lt_one <| by simp, lt_add_one |a|⟩
-
-lemma pow_two_mul_abs (a : α) : |a| ^ (2 * n) = a ^ (2 * n) :=
-  Even.pow_abs ⟨n, two_mul n⟩ a
 
 end LinearOrderedRing
 
