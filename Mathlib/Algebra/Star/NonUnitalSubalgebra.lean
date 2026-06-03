@@ -1168,6 +1168,10 @@ instance instNonUnitalCommRing {A : Type*} [NonUnitalRing A] [StarRing A] [Modul
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
   Subsemigroup.mem_center_iff
 
+protected theorem center_prod [IsScalarTower R B B] [SMulCommClass R B B] :
+    center R (A × B) = prod (center R A) (center R B) :=
+  SetLike.coe_injective Set.center_prod
+
 end Center
 
 section Centralizer
