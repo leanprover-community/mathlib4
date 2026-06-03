@@ -238,6 +238,7 @@ section CompleteLattice
 
 variable [CompleteLattice α]
 
+@[to_dual]
 lemma mem_countableSupClosure_iff :
     a ∈ countableSupClosure s ↔ ∃ (t : ℕ → α), (∀ n, t n ∈ s) ∧ ⨆ n, t n = a := by
   simp only [countableSupClosure, Set.mem_sInter, Set.mem_setOf_eq, and_imp]
@@ -251,22 +252,6 @@ lemma mem_countableSupClosure_iff :
     exact fun a ha ↦ ⟨fun _ ↦ a, by simp [ha]⟩
   · obtain ⟨u, hus, rfl⟩ := h
     exact ht.iSup_mem fun n ↦ hts (hus n)
-
-lemma mem_countableInfClosure_iff :
-    a ∈ countableInfClosure s ↔ ∃ (t : ℕ → α), (∀ n, t n ∈ s) ∧ ⨅ n, t n = a := by
-  simp only [countableInfClosure, Set.mem_sInter, Set.mem_setOf_eq, and_imp]
-  refine ⟨fun h ↦ ?_, fun h t hts ht ↦ ?_⟩
-  · have h_cic : CountableInfClosed {a | ∃ (t : ℕ → α), (∀ n, t n ∈ s) ∧ ⨅ n, t n = a} := by
-      refine .of_iInf_mem fun A hA ↦ ?_
-      choose B hB hB_eq using hA
-      refine ⟨fun n ↦ B (Nat.unpair n).1 (Nat.unpair n).2, fun _ ↦ hB _ _, ?_⟩
-      simp [iInf_unpair, ← hB_eq]
-    refine h {a | ∃ (t : ℕ → α), (∀ n, t n ∈ s) ∧ ⨅ n, t n = a} ?_ h_cic
-    exact fun a ha ↦ ⟨fun _ ↦ a, by simp [ha]⟩
-  · obtain ⟨u, hus, rfl⟩ := h
-    exact ht.iInf_mem fun n ↦ hts (hus n)
-
-attribute [to_dual existing] mem_countableSupClosure_iff
 
 @[to_dual (attr := simp)] lemma countableSupClosed_countableSupClosure :
     CountableSupClosed (countableSupClosure s) := CountableSupClosed.sInter fun _ ht ↦ ht.2
@@ -345,6 +330,9 @@ section Frame
 
 /-- If a set is closed under binary suprema, then its countable infimum closure is also closed under
 binary suprema. -/
+@[to_dual
+/-- If a set is closed under binary infima, then its countable supremum closure is also closed under
+binary infima. -/]
 protected lemma SupClosed.countableInfClosure [Order.Coframe α] (hs : SupClosed s) :
     SupClosed (countableInfClosure s) := by
   rintro a ha b hb
@@ -356,22 +344,5 @@ protected lemma SupClosed.countableInfClosure [Order.Coframe α] (hs : SupClosed
   · simp only
     exact hs (ht (Nat.unpair n).1) (hu (Nat.unpair n).2)
   · rw [iInf_unpair (f := (fun n m ↦ t n ⊔ u m)), iInf_prod']
-
-/-- If a set is closed under binary infima, then its countable supremum closure is also closed under
-binary infima. -/
-@[to_dual existing]
-protected lemma InfClosed.countableSupClosure [Order.Frame α] (hs : InfClosed s) :
-    InfClosed (countableSupClosure s) := by
-  rintro a ha b hb
-  rw [mem_countableSupClosure_iff] at ha hb ⊢
-  obtain ⟨t, ht, hts, rfl⟩ := ha
-  obtain ⟨u, hu, hus, rfl⟩ := hb
-  rw [iSup_inf_iSup]
-  refine ⟨fun n ↦ t (Nat.unpair n).1 ⊓ u (Nat.unpair n).2, fun n ↦ ?_, ?_⟩
-  · simp only
-    exact hs (ht (Nat.unpair n).1) (hu (Nat.unpair n).2)
-  · rw [iSup_unpair (f := (fun n m ↦ t n ⊓ u m)), iSup_prod']
-
-attribute [to_dual existing] SupClosed.countableInfClosure
 
 end Frame
