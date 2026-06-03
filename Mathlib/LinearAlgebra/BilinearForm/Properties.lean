@@ -354,6 +354,9 @@ noncomputable def toDual (B : BilinForm K V) (b : B.Nondegenerate) : V ≃ₗ[K]
 theorem toDual_def {B : BilinForm K V} (b : B.Nondegenerate) {m n : V} : B.toDual b m n = B m n :=
   rfl
 
+theorem coe_toDual_apply {B : BilinForm K V} (b : B.Nondegenerate) (m : V) :
+    B m = B.toDual b m := rfl
+
 @[simp]
 lemma apply_toDual_symm_apply {B : BilinForm K V} {hB : B.Nondegenerate}
     (f : Module.Dual K V) (v : V) :
@@ -447,7 +450,7 @@ theorem comp_symmCompOfNondegenerate_apply (B₁ : BilinForm K V) {B₂ : BilinF
     B₂ (B₁.symmCompOfNondegenerate B₂ b₂ v) = B₁ v := by
   rw [symmCompOfNondegenerate]
   simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
-  erw [LinearEquiv.apply_symm_apply (B₂.toDual b₂)]
+  rw [coe_toDual_apply (b := b₂), LinearEquiv.apply_symm_apply]
 
 @[simp]
 theorem symmCompOfNondegenerate_left_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}

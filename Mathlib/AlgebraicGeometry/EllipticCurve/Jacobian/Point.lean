@@ -116,10 +116,14 @@ lemma neg_of_Z_eq_zero' {P : Fin 3 → R} (hPz : P z = 0) : W'.neg P = ![P x, -P
 
 lemma neg_of_Z_eq_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z = 0) :
     W.neg P = -(P y / P x) • ![1, 1, 0] := by
-  have hX {n : ℕ} : IsUnit <| P x ^ n := (isUnit_X_of_Z_eq_zero hP hPz).pow n
-  erw [neg_of_Z_eq_zero' hPz, smul_fin3, neg_sq, div_pow, (equation_of_Z_eq_zero hPz).mp hP.left,
-    pow_succ, hX.mul_div_cancel_left, mul_one, Odd.neg_pow <| by decide, div_pow, pow_succ,
-    (equation_of_Z_eq_zero hPz).mp hP.left, hX.mul_div_cancel_left, mul_one, mul_zero]
+  simp only [neg_of_Z_eq_zero' hPz, smul_fin3, Matrix.vecCons_inj, fin3_def_ext, mul_zero, mul_one,
+    and_true, neg_sq, div_pow]
+  constructor
+  · rw [(equation_of_Z_eq_zero hPz).mp hP.left, pow_succ,
+      ((isUnit_X_of_Z_eq_zero hP hPz).pow 2).mul_div_cancel_left]
+  · rw [Odd.neg_pow (by decide), div_pow, pow_succ,
+      (equation_of_Z_eq_zero hPz).mp hP.left,
+      ((isUnit_X_of_Z_eq_zero hP hPz).pow 3).mul_div_cancel_left]
 
 lemma neg_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.neg P = P z • ![P x / P z ^ 2, W.toAffine.negY (P x / P z ^ 2) (P y / P z ^ 3), 1] := by
