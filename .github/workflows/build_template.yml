@@ -687,6 +687,10 @@ jobs:
     needs: [build, upload_cache]
     if: ${{ always() && needs.build.result == 'success' && (needs.upload_cache.result == 'success' || needs.upload_cache.result == 'skipped') }}
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
+    # This job checks out and executes (potentially fork) PR code unsandboxed,
+    # so it must not inherit any write-capable token.
+    permissions:
+      contents: read
     steps:
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -793,6 +797,10 @@ jobs:
   style_lint:
     name: Lint style
     runs-on: ubuntu-latest
+    # This job lints (potentially fork) PR code, so it must not inherit any write-capable token.
+    # In `check` mode lint-style-action only reads and validates code locally (no API calls).
+    permissions:
+      contents: read
     steps:
       - uses: leanprover-community/lint-style-action@a7e7428fa44f9635d6eb8e01919d16fd498d387a # 2025-08-18
         with:
