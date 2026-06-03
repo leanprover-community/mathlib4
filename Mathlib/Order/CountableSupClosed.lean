@@ -192,21 +192,13 @@ end Finset
 
 open OrderDual
 
-@[simp] lemma countableSupClosed_preimage_toDual [LE α] {s : Set αᵒᵈ} :
+@[to_dual (attr := simp)] lemma countableSupClosed_preimage_toDual [LE α] {s : Set αᵒᵈ} :
     CountableSupClosed (toDual ⁻¹' s) ↔ CountableInfClosed s :=
   ⟨fun h ↦ ⟨h.exists_isLUB⟩, fun h ↦ ⟨h.exists_isGLB⟩⟩
 
-@[simp] lemma countableInfClosed_preimage_toDual [LE α] {s : Set αᵒᵈ} :
-    CountableInfClosed (toDual ⁻¹' s) ↔ CountableSupClosed s :=
-  ⟨fun h ↦ ⟨h.exists_isGLB⟩, fun h ↦ ⟨h.exists_isLUB⟩⟩
-
-@[simp] lemma countableSupClosed_preimage_ofDual [LE α] {s : Set α} :
+@[to_dual (attr := simp)] lemma countableSupClosed_preimage_ofDual [LE α] {s : Set α} :
     CountableSupClosed (ofDual ⁻¹' s) ↔ CountableInfClosed s :=
   ⟨fun h ↦ ⟨h.exists_isLUB⟩, fun h ↦ ⟨h.exists_isGLB⟩⟩
-
-@[simp] lemma countableInfClosed_preimage_ofDual [LE α] {s : Set α} :
-    CountableInfClosed (ofDual ⁻¹' s) ↔ CountableSupClosed s :=
-  ⟨fun h ↦ ⟨h.exists_isGLB⟩, fun h ↦ ⟨h.exists_isLUB⟩⟩
 
 alias ⟨_, CountableInfClosed.dual⟩ := countableSupClosed_preimage_ofDual
 alias ⟨_, CountableSupClosed.dual⟩ := countableInfClosed_preimage_ofDual
