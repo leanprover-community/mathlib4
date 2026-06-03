@@ -53,6 +53,21 @@ jobs:
                && vars.CACHE_PR_TOOLCHAIN_TESTS_WRITER_AZURE_APP_ID
           || vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID
         }}
+      # OIDC environment binding for the upload_cache job. MUST track the cache_application_id
+      # mapping above so the minted token's `:environment:` subject matches the writer app's
+      # federated credential. mathlib4-nightly-testing is intentionally left without an
+      # environment ('') for now, keeping its existing ref-based trust (its two writer apps'
+      # FICs are ref-scoped).
+      # TODO: give mathlib4-nightly-testing its own cache-upload environments + credentials.
+      cache_environment: >-
+        ${{
+             (github.repository == 'leanprover-community/mathlib4'
+               && github.ref_name == 'staging')
+               && 'cache-upload-master'
+          || (github.repository == 'leanprover-community/mathlib4')
+               && 'cache-upload-forks'
+          || ''
+        }}
       # bors runs should build the tools from their commit-under-test: after all, we are trying to
       # test 'what would happen if this was merged', so we need to use the 'would-be-post-merge' tools
       tools_branch_ref: ${{ github.sha }}
