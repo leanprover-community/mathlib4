@@ -249,8 +249,6 @@ lemma sdiff_singleton (s : UpperSet α) (a : α) : s.sdiff {a} = s.erase a := by
 @[to_dual sdiff_le_left] lemma le_sdiff_left : s ≤ s.sdiff t := sdiff_subset
 @[to_dual erase_le] lemma le_erase : s ≤ s.erase a := sdiff_subset
 
-@[deprecated (since := "2026-06-03")] alias le_erase := le_sdiff_left
-
 @[to_dual (attr := simp)]
 protected lemma sdiff_eq_left : s.sdiff t = s ↔ Disjoint ↑s t := by
   simp [← SetLike.coe_set_eq]
