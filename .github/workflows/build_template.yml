@@ -27,6 +27,12 @@ on:
       cache_application_id:
         type: string
         required: true
+      cache_environment:
+        # GitHub environment for the `upload_cache` job. Its only role is to fix the
+        # OIDC `sub` claim to `...:environment:<name>`, which the Azure cache app's
+        # federated credential is scoped to; it must match the writer `cache_application_id`.
+        type: string
+        required: true
 
 env:
   # Disable Lake's automatic fetching of cloud builds.
@@ -608,6 +614,10 @@ jobs:
     name: Upload to cache
     needs: [build]
     runs-on: ubuntu-latest # These steps run on a GitHub runner; no landrun sandboxing is needed.
+    # Pins the OIDC `sub` claim to `...:environment:<cache_environment>`, which the Azure cache
+    # app's federated credential is scoped to. A token minted by any job without this environment
+    # (e.g. the untrusted build/post_steps/style_lint jobs) cannot satisfy that trust.
+    environment: ${{ inputs.cache_environment }}
     permissions:
       contents: read
       id-token: write
