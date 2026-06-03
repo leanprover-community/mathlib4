@@ -5,15 +5,37 @@ Authors: Joël Riou, Jack McKoen
 -/
 module
 
-public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.UnionProd
+public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.PushoutProduct
 public import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
 public import Mathlib.CategoryTheory.Monoidal.Closed.Braided
 
 /-!
 # Anodyne extensions and pushout-products, fibrations and pullbacks
+
+The main result in this file is that if `i : X₁ ⟶ Y₁` is a monomorphism in `SSet`
+and `j : X₂ ⟶ Y₂` is an anodyne extension, then the map from the pushout-product
+of `i` and `j` into `Y₁ ⊗ Y₂` is an anodyne extension
+(`SSet.anodyneExtensions_pushoutObjObjι`). This is closely related to the lemma
+`SSet.fibration_pullbackObjObjπ` which says that if `i : X₁ ⟶ Y₁` is a monomorphism
+and `p : E ⟶ B` is a fibration, then the canonical morphism
+from `Y₁ ⟶[SSet] E` to the pullback of `X₁ ⟶[SSet] E` and `Y₁ ⟶[SSet] B`
+over `X₁ ⟶[SSet] B` is also a fibration. In particular, if `A : SSet`
+and `X` is a Kan complex, then the internal hom `A ⟶[SSet] X` is also a Kan complex.
+
+Besides abstract arguments involving parametrized adjunctions and lifting properties,
+the proof relies on two facts:
+* the case `i : ∂Δ[n] ⟶ Δ[n]` and `j : Λ[m, k] ⟶ Δ[m]` which was obtained
+in the file `Mathlib/AlgebraicTopology/SimplicialSet/AnodyneExtensions/UnionProd.lean`
+* the fact that a morphism has the right lifting property with respect to
+all monomorphisms iff it has the right lifting property with respect
+to morphisms of the form `∂Δ[n] ⟶ Δ[n]` (see `SSet.rlp_monomorphisms`
+in the file `Mathlib/AlgebraicTopology/SimplicialSet/CategoryWithFibrations.lean`),
+which follows from the fact that any monomorphism is a relative cell complex with
+basic cells of the form `∂Δ[n] ⟶ Δ[n]`, see
+the file `Mathlib/AlgebraicTopology/SimplicialSet/Skeleton.lean`).
 
 -/
 
@@ -150,22 +172,19 @@ instance {E B X : SSet.{u}} (p : E ⟶ B) [Fibration p] :
     MonoidalClosed.internalHom (initial.to X) p initialIsInitial)
 
 set_option backward.isDefEq.respectTransparency false in
-instance {A B : SSet.{u}} (i : A ⟶ B) [Mono i] (X : SSet.{u}) [IsFibrant X] :
+instance {A B : SSet.{u}} (i : A ⟶ B) [Mono i] (X : SSet.{u}) [KanComplex X] :
     Fibration ((MonoidalClosed.pre i).app X) := by
-  have (X : SSet.{u}ᵒᵖ) : PreservesLimitsOfShape (Discrete PEmpty.{1})
-      (MonoidalClosed.internalHom.obj X) := by
-    sorry
   simpa using fibration_pullbackObjObjπ (Functor.PullbackObjObj.ofIsTerminal
     MonoidalClosed.internalHom i (terminal.from X) terminalIsTerminal)
 
-instance (A : SSet.{u}) : IsFibrant ((ihom A).obj (⊤_ _)) := by
+instance (A : SSet.{u}) : KanComplex ((ihom A).obj (⊤_ _)) := by
   have : IsIso (terminal.from ((ihom A).obj (⊤_ _))) :=
     isIso_of_isTerminal (IsTerminal.isTerminalObj _ _ terminalIsTerminal)
       terminalIsTerminal _
-  rw [isFibrant_iff]
+  simp only [isFibrant_iff]
   infer_instance
 
-instance {A X : SSet.{u}} [IsFibrant X] : IsFibrant ((ihom A).obj X) :=
+instance {A X : SSet.{u}} [KanComplex X] : KanComplex ((ihom A).obj X) :=
   isFibrant_of_fibration ((ihom A).map (terminal.from X))
 
 end SSet
