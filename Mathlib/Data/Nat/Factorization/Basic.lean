@@ -451,6 +451,12 @@ theorem factorization_eq_of_coprime_right {p a b : ℕ} (hab : Coprime a b)
   rw [mul_comm]
   exact factorization_eq_of_coprime_left (coprime_comm.mp hab) hpb
 
+theorem Prime.padicValNat_lt_self {p n : ℕ} (hp : p.Prime) (hn : n ≠ 0) : padicValNat p n < n :=
+  Nat.padicValNat_lt_self hp.one_lt hn
+
+theorem Prime.padicValNat_le_self {p : ℕ} (n : ℕ) (hp : p.Prime) : padicValNat p n ≤ n :=
+  Nat.padicValNat_le_self n hp.one_lt
+
 /-- Two positive naturals are equal if their prime padic valuations are equal -/
 theorem eq_iff_prime_padicValNat_eq (a b : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) :
     a = b ↔ ∀ p : ℕ, p.Prime → padicValNat p a = padicValNat p b := by
@@ -490,6 +496,28 @@ lemma pairwise_coprime_pow_primeFactors_factorization :
   refine (Nat.coprime_primes ?_ ?_).mpr <| Subtype.coe_ne_coe.mpr hp
   · exact Nat.prime_of_mem_primeFactors p1.2
   · exact Nat.prime_of_mem_primeFactors p2.2
+
+theorem dvd_pow_self_iff {n k : ℕ} (hn : n ≠ 0) (hk : k ≠ 0) :
+    n ∣ k ^ n ↔ n.primeFactors ⊆ k.primeFactors := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [← Nat.primeFactors_pow k hn]
+    exact Nat.primeFactors_mono h <| pow_ne_zero n hk
+  refine Nat.factorization_prime_le_iff_dvd hn (pow_ne_zero n hk) |>.mp fun p hp ↦ ?_
+  by_cases! hpn : p ∉ n.factorization.support
+  · simp [Finsupp.notMem_support_iff.mp hpn]
+  simp_rw [← Nat.support_factorization] at h
+  rw [Nat.factorization_pow, Finsupp.smul_apply]
+  grw [← Nat.one_le_iff_ne_zero.mpr <| Finsupp.mem_support_iff.mp <| h hpn, smul_eq_mul, mul_one,
+    Nat.factorization_def n hp, hp.padicValNat_le_self]
+  exact zero_le n
+
+theorem exists_dvd_pow_iff {n k : ℕ} (hn : n ≠ 0) (hk : k ≠ 0) :
+    (∃ m, n ∣ k ^ m) ↔ n.primeFactors ⊆ k.primeFactors := by
+  refine ⟨fun ⟨m, h⟩ ↦ ?_, fun h ↦ ⟨n, dvd_pow_self_iff hn hk |>.mpr h⟩⟩
+  rcases eq_or_ne m 0 with (rfl | hm)
+  · simp_all
+  rw [← Nat.primeFactors_pow k hm]
+  exact Nat.primeFactors_mono h <| pow_ne_zero m hk
 
 /-! ### Lemmas about factorizations of particular functions -/
 

@@ -136,6 +136,16 @@ theorem pow_padicValNat_mul_divMaxPow (p n : ℕ) : p ^ padicValNat p n * divMax
 theorem _root_.pow_padicValNat_dvd {p n : ℕ} : p ^ padicValNat p n ∣ n :=
   ⟨divMaxPow n p, by simp⟩
 
+theorem padicValNat_lt_self {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) : padicValNat p n < n := by
+  apply Nat.pow_lt_pow_iff_right hp |>.mp
+  apply Nat.lt_of_le_of_lt ?_ <| Nat.lt_pow_self hp
+  exact Nat.le_of_dvd (Nat.pos_of_ne_zero hn) pow_padicValNat_dvd
+
+theorem padicValNat_le_self {p : ℕ} (n : ℕ) (hp : 1 < p) : padicValNat p n ≤ n := by
+  rcases eq_or_ne n 0 with (rfl | hn)
+  · simp
+  · exact Nat.le_of_lt <| padicValNat_lt_self hp hn
+
 theorem not_dvd_divMaxPow {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) : ¬p ∣ divMaxPow n p := by
   simp [divMaxPow, maxPowDvdDiv, maxPowDvdDiv.go_spec, *]
 
