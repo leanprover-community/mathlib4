@@ -120,8 +120,9 @@ def compHom (f : X.PartialMap Y) (g : Y ⟶ Z) : X.PartialMap Z where
   dense_domain := f.dense_domain
   hom := f.hom ≫ g
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
-lemma compHom_id (f : X.PartialMap Y) : f.compHom (𝟙 Y) = f := by
+lemma id_compHom (f : X.PartialMap Y) : f.compHom (𝟙 Y) = f := by
   ext <;> simp
 
 set_option backward.defeqAttrib.useBackward true in
@@ -133,6 +134,7 @@ instance [X.Over S] [Y.Over S] [Z.Over S] (f : X.PartialMap Y) (g : Y ⟶ Z)
 def _root_.AlgebraicGeometry.Scheme.Hom.toPartialMap (f : X ⟶ Y) :
     X.PartialMap Y := ⟨⊤, dense_univ, X.topIso.hom ≫ f⟩
 
+set_option backward.defeqAttrib.useBackward true in
 instance (f : X ⟶ Y) [IsDominant f] : IsDominant f.toPartialMap.hom := by
   dsimp
   have := Opens.isDominant_ι (X := X) (U := ⊤) dense_univ
@@ -143,9 +145,6 @@ lemma _root_.AlgebraicGeometry.Scheme.Hom.toPartialMap_compHom (f : X ⟶ Y) (g 
 
 variable (X) in
 protected abbrev id : X.PartialMap X := (𝟙 X : X ⟶ X).toPartialMap
-
-@[simp]
-lemma id_compHom (f : X ⟶ Y) : (PartialMap.id X).compHom f = f.toPartialMap := rfl
 
 set_option backward.defeqAttrib.useBackward true in
 instance [X.Over S] [Y.Over S] (f : X ⟶ Y) [f.IsOver S] : f.toPartialMap.IsOver S where
@@ -260,6 +259,7 @@ lemma equiv.symm {f g : X.PartialMap Y} : f.equiv g → g.equiv f := by
   intro ⟨W, hW, hWl, hWr, e⟩
   exact ⟨W, hW, hWr, hWl, e.symm⟩
 
+set_option backward.defeqAttrib.useBackward true in
 @[trans]
 lemma equiv.trans {f g h : X.PartialMap Y} : f.equiv g → g.equiv h → f.equiv h := by
   intro ⟨W₁, hW₁, hW₁l, hW₁r, e₁⟩ ⟨W₂, hW₂, hW₂l, hW₂r, e₂⟩
