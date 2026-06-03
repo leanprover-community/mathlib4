@@ -61,6 +61,8 @@ In particular, if `p` is not contained in `P^n`, then the ramification index is 
 
 If there is no largest such `n` (e.g. because `p = ⊥`), then `ramificationIdx` is
 defined to be 0.
+
+Note: This definition of ramification index will eventually be replaced by `Ideal.ramificationIdx'`.
 -/
 noncomputable def ramificationIdx : ℕ := sSup {n | map f p ≤ P ^ n}
 
@@ -69,7 +71,7 @@ variable {p P}
 theorem ramificationIdx_eq_find [DecidablePred fun n ↦ ∀ (k : ℕ), map f p ≤ P ^ k → k ≤ n]
     (h : ∃ n, ∀ k, map f p ≤ P ^ k → k ≤ n) :
     ramificationIdx p P = Nat.find h := by
-  convert Nat.sSup_def h
+  convert! Nat.sSup_def h
 
 theorem ramificationIdx_eq_zero (h : ∀ n : ℕ, ∃ k, map f p ≤ P ^ k ∧ n < k) :
     ramificationIdx p P = 0 :=
@@ -268,7 +270,7 @@ lemma ramificationIdx_eq_one_iff
   have ha' : ¬ a ≤ P := fun h ↦ H₁ (ha.trans_le (Ideal.mul_mono_right h))
   rw [IsScalarTower.algebraMap_eq _ S, ← Ideal.map_map, ha, Ideal.map_mul,
     Localization.AtPrime.map_eq_maximalIdeal]
-  convert Ideal.mul_top _
+  convert! Ideal.mul_top _
   on_goal 2 => infer_instance
   rw [← not_ne_iff, IsLocalization.map_algebraMap_ne_top_iff_disjoint P.primeCompl]
   simpa [primeCompl, Set.disjoint_compl_left_iff_subset]

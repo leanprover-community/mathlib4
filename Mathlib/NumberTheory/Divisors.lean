@@ -261,7 +261,8 @@ lemma nonempty_divisors : (divisors n).Nonempty ↔ n ≠ 0 :=
 
 @[simp]
 lemma divisors_eq_empty : divisors n = ∅ ↔ n = 0 := by
-  contrapose!; exact nonempty_divisors
+  contrapose!
+  exact nonempty_divisors
 
 theorem properDivisors_subset_divisors : properDivisors n ⊆ divisors n :=
   filter_subset_filter _ <| Ico_subset_Ico_right n.le_succ
@@ -317,7 +318,8 @@ lemma nonempty_properDivisors : n.properDivisors.Nonempty ↔ 1 < n :=
 
 @[simp]
 lemma properDivisors_eq_empty : n.properDivisors = ∅ ↔ n ≤ 1 := by
-  contrapose!; exact nonempty_properDivisors
+  contrapose!
+  exact nonempty_properDivisors
 
 @[simp]
 theorem divisorsAntidiagonal_zero : divisorsAntidiagonal 0 = ∅ := by
@@ -476,20 +478,11 @@ theorem Prime.prod_divisors {α : Type*} [CommMonoid α] {p : ℕ} {f : ℕ → 
   rw [← cons_self_properDivisors h.ne_zero, prod_cons, h.prod_properDivisors]
 
 theorem properDivisors_eq_singleton_one_iff_prime : n.properDivisors = {1} ↔ n.Prime := by
-  refine ⟨?_, ?_⟩
-  · intro h
-    refine Nat.prime_def.mpr ⟨?_, fun m hdvd => ?_⟩
-    · match n with
-      | 0 => contradiction
-      | 1 => contradiction
-      | Nat.succ (Nat.succ n) => simp
-    · rw [← mem_singleton, ← h, mem_properDivisors]
-      have := Nat.le_of_dvd ?_ hdvd
-      · simpa [hdvd, this] using (le_iff_eq_or_lt.mp this).symm
-      · by_contra!
-        simp only [nonpos_iff_eq_zero.mp this] at h
-        contradiction
-  · exact fun h => Prime.properDivisors h
+  refine ⟨fun h ↦ ?_, Prime.properDivisors⟩
+  rw [Nat.prime_def_lt]
+  refine ⟨Nat.succ_le_iff.mpr <| one_mem_properDivisors_iff_one_lt.mp (by simp [h]), ?_⟩
+  intro m hm hdvd
+  simpa [h] using mem_properDivisors.mpr ⟨hdvd, hm⟩
 
 theorem sum_properDivisors_eq_one_iff_prime : ∑ x ∈ n.properDivisors, x = 1 ↔ n.Prime := by
   rcases n with - | n
@@ -507,25 +500,17 @@ theorem sum_properDivisors_eq_one_iff_prime : ∑ x ∈ n.properDivisors, x = 1 
 
 theorem mem_properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) {x : ℕ} :
     x ∈ properDivisors (p ^ k) ↔ ∃ (j : ℕ) (_ : j < k), x = p ^ j := by
-  rw [mem_properDivisors, Nat.dvd_prime_pow pp, ← exists_and_right]
-  simp only [exists_prop, and_assoc]
-  apply exists_congr
-  intro a
-  constructor <;> intro h
-  · rcases h with ⟨_h_left, rfl, h_right⟩
-    rw [Nat.pow_lt_pow_iff_right pp.one_lt] at h_right
-    exact ⟨h_right, rfl⟩
-  · rcases h with ⟨h_left, rfl⟩
-    rw [Nat.pow_lt_pow_iff_right pp.one_lt]
-    simp [h_left, le_of_lt]
+  rw [mem_properDivisors, Nat.dvd_prime_pow pp]
+  constructor
+  · rintro ⟨⟨j, hjk, rfl⟩, hlt⟩
+    exact ⟨j, (Nat.pow_lt_pow_iff_right pp.one_lt).mp hlt, rfl⟩
+  · rintro ⟨j, hjk, rfl⟩
+    exact ⟨⟨j, le_of_lt hjk, rfl⟩, Nat.pow_lt_pow_of_lt pp.one_lt hjk⟩
 
 theorem properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
     properDivisors (p ^ k) = (Finset.range k).map ⟨(p ^ ·), Nat.pow_right_injective pp.two_le⟩ := by
   ext a
-  simp only [mem_properDivisors, mem_map, mem_range, Function.Embedding.coeFn_mk]
-  have := mem_properDivisors_prime_pow pp k (x := a)
-  rw [mem_properDivisors] at this
-  grind
+  simp [mem_properDivisors_prime_pow pp, eq_comm]
 
 @[to_additive (attr := simp)]
 theorem prod_properDivisors_prime_pow {α : Type*} [CommMonoid α] {k p : ℕ} {f : ℕ → α}
@@ -562,19 +547,9 @@ lemma primeFactors_filter_dvd_of_dvd {m n : ℕ} (hn : n ≠ 0) (hmn : m ∣ n) 
 @[simp]
 theorem image_div_divisors_eq_divisors (n : ℕ) :
     image (fun x : ℕ => n / x) n.divisors = n.divisors := by
-  by_cases hn : n = 0
-  · simp [hn]
-  ext a
-  constructor
-  · rw [mem_image]
-    rintro ⟨x, hx1, hx2⟩
-    rw [mem_divisors] at *
-    refine ⟨?_, hn⟩
-    rw [← hx2]
-    exact div_dvd_of_dvd hx1.1
-  · rw [mem_divisors, mem_image]
-    rintro ⟨h1, -⟩
-    exact ⟨n / a, mem_divisors.mpr ⟨div_dvd_of_dvd h1, hn⟩, Nat.div_div_self h1 hn⟩
+  conv_rhs =>
+    rw [← image_fst_divisorsAntidiagonal, ← map_div_left_divisors, map_eq_image, image_image]
+  rfl
 
 @[to_additive (attr := simp) sum_div_divisors]
 theorem prod_div_divisors {α : Type*} [CommMonoid α] (n : ℕ) (f : ℕ → α) :
@@ -624,6 +599,12 @@ local notation "natCast" => Nat.castEmbedding (R := ℤ)
 local notation "negNatCast" =>
   Function.Embedding.trans Nat.castEmbedding (Equiv.toEmbedding (Equiv.neg ℤ))
 
+/-- `divisors z` is the `Finset` of divisors of `z`. By convention, we set `divisors 0 = ∅`. -/
+def divisors (z : ℤ) : Finset ℤ :=
+  letI s := z.natAbs.divisors
+  (s.map natCast).disjUnion (s.map negNatCast) <| by
+    simp +contextual [s, disjoint_left, Eq.comm, forall_comm (β := _ = _)]
+
 /-- Pairs of divisors of an integer as a finset.
 
 `z.divisorsAntidiag` is the finset of pairs `(a, b) : ℤ × ℤ` such that `a * b = z`.
@@ -640,45 +621,67 @@ def divisorsAntidiag : (z : ℤ) → Finset (ℤ × ℤ)
     (s.map <| .prodMap natCast negNatCast).disjUnion (s.map <| .prodMap negNatCast natCast) <| by
       simp +contextual [s, disjoint_left, eq_comm, forall_comm (α := _ * _ = _)]
 
+theorem mem_divisors_iff_natAbs_mem_divisors_natAbs :
+    x ∈ z.divisors ↔ x.natAbs ∈ z.natAbs.divisors := calc
+  _ ↔ ∃ y ∈ z.natAbs.divisors, ↑y = x ∨ -↑y = x := by
+    simp [← exists_or, ← and_or_left, divisors]
+  _ ↔ ∃ y ∈ z.natAbs.divisors, y = x.natAbs := congr(∃ y ∈ _, $(by grind))
+  _ ↔ x.natAbs ∈ z.natAbs.divisors := exists_eq_right
+
+@[simp, grind =]
+theorem mem_divisors : x ∈ divisors z ↔ x ∣ z ∧ z ≠ 0 := by
+  simp [mem_divisors_iff_natAbs_mem_divisors_natAbs]
+
+theorem dvd_of_mem_divisors (h : x ∈ divisors z) : x ∣ z := (mem_divisors.mp h).1
+
+theorem ne_zero_of_mem_divisors (h : x ∈ divisors z) : z ≠ 0 := (mem_divisors.mp h).2
+
+theorem one_mem_divisors : 1 ∈ divisors z ↔ z ≠ 0 := by simp
+
+theorem neg_one_mem_divisors : -1 ∈ divisors z ↔ z ≠ 0 := by simp
+
 @[simp]
-lemma mem_divisorsAntidiag :
-    ∀ {z} {xy : ℤ × ℤ}, xy ∈ divisorsAntidiag z ↔ xy.fst * xy.snd = z ∧ z ≠ 0
-  | (n : ℕ), ((x : ℕ), (y : ℕ)) => by
+lemma divisors_zero : divisors 0 = ∅ := by
+  ext
+  simp
+
+@[simp]
+lemma nonempty_divisors : (divisors z).Nonempty ↔ z ≠ 0 :=
+  ⟨fun ⟨z, hz⟩ hx ↦ by simp [hx] at hz, fun hx ↦ ⟨1, one_mem_divisors.mpr hx⟩⟩
+
+@[simp]
+lemma divisors_eq_empty : divisors z = ∅ ↔ z = 0 := by
+  contrapose!
+  exact nonempty_divisors
+
+@[simp]
+theorem divisors_one : divisors 1 = {1, -1} := rfl
+
+lemma mem_divisors_self (hz : z ≠ 0) : z ∈ divisors z :=
+  mem_divisors.mpr ⟨dvd_rfl, hz⟩
+
+@[simp] theorem divisors_neg : divisors (-z) = divisors z := by
+  ext
+  simp
+
+@[simp]
+lemma mem_divisorsAntidiag : xy ∈ divisorsAntidiag z ↔ xy.fst * xy.snd = z ∧ z ≠ 0 := by
+  rcases z, xy with ⟨_ | _, ⟨_ | _, _ | _⟩⟩
+  -- splitting this case saves about 1770 heartbeats i.e. 12.5% faster
+  case ofNat.negSucc.negSucc =>
     simp [divisorsAntidiag]
-    norm_cast
-    simp +contextual [eq_comm]
-  | (n : ℕ), (negSucc x, negSucc y) => by
-    simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
-    norm_cast
-    simp +contextual [eq_comm]
-  | (n : ℕ), ((x : ℕ), negSucc y) => by
-    simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
-    norm_cast
-    aesop
-  | (n : ℕ), (negSucc x, (y : ℕ)) => by
-    suffices
-      (∃ a, (n = a * y ∧ ¬n = 0) ∧ (a : ℤ) = -1 + -↑x) ↔ (n : ℤ) = (-1 + -↑x) * ↑y ∧ ¬n = 0 by
-      simpa [divisorsAntidiag, eq_comm, negSucc_eq]
-    simp only [← Int.neg_add, Int.add_comm 1, Int.neg_mul, Int.add_mul]
-    norm_cast
-    match n with
-    | 0 => simp
-    | n + 1 => simp
-  | .negSucc n, ((x : ℕ), (y : ℕ)) => by
+    grind [Nat.cast_inj]
+  all_goals
     simp [divisorsAntidiag]
-    norm_cast
-  | .negSucc n, (negSucc x, negSucc y) => by
-    simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
-    norm_cast
-    simp +contextual
-  | .negSucc n, ((x : ℕ), negSucc y) => by
-    simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
-    norm_cast
-    aesop
-  | .negSucc n, (negSucc x, (y : ℕ)) => by
-    simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
-    norm_cast
-    simp +contextual [eq_comm]
+    grind
+
+theorem image_fst_divisorsAntidiag : z.divisorsAntidiag.image Prod.fst = z.divisors := by
+  ext
+  simp [Eq.comm, dvd_def]
+
+theorem image_snd_divisorsAntidiag : z.divisorsAntidiag.image Prod.snd = z.divisors := by
+  ext
+  simp [Eq.comm, mul_comm, dvd_def]
 
 @[simp] lemma divisorsAntidiag_zero : divisorsAntidiag 0 = ∅ := rfl
 

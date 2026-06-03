@@ -82,7 +82,7 @@ lemma sigmoid_lt_one (x : ℝ) : sigmoid x < 1 :=
 @[bound]
 lemma sigmoid_le_one (x : ℝ) : sigmoid x ≤ 1 := (sigmoid_lt_one x).le
 
-@[mono]
+@[gcongr, mono]
 lemma sigmoid_strictMono : StrictMono sigmoid := fun a b hab ↦ by
   simp only [sigmoid]
   gcongr
@@ -126,7 +126,7 @@ lemma range_sigmoid : range Real.sigmoid = Ioo 0 1 := by
 open Topology Filter
 
 lemma tendsto_sigmoid_atTop : Tendsto sigmoid atTop (𝓝 1) := by
-  simpa using Real.tendsto_exp_comp_nhds_zero.mpr tendsto_neg_atTop_atBot |>.const_add 1 |>.inv₀ <|
+  simpa using! Real.tendsto_exp_comp_nhds_zero.mpr tendsto_neg_atTop_atBot |>.const_add 1 |>.inv₀ <|
     by norm_num
 
 lemma tendsto_sigmoid_atBot : Tendsto sigmoid atBot (𝓝 0) :=
@@ -135,7 +135,7 @@ lemma tendsto_sigmoid_atBot : Tendsto sigmoid atBot (𝓝 0) :=
 
 lemma hasDerivAt_sigmoid (x : ℝ) :
     HasDerivAt sigmoid (sigmoid x * (1 - sigmoid x)) x := by
-  convert (hasDerivAt_neg' x |>.exp.const_add 1 |>.inv <| by positivity) using 1
+  convert! (hasDerivAt_neg' x |>.exp.const_add 1 |>.inv <| by positivity) using 1
   rw [← sigmoid_neg, ← sigmoid_mul_rexp_neg x, sigmoid_def]
   field [sq]
 
@@ -224,7 +224,7 @@ lemma sigmoid_pos (x : ℝ) : 0 < sigmoid x := Real.sigmoid_pos x
 @[bound]
 lemma sigmoid_lt_one (x : ℝ) : sigmoid x < 1 := Real.sigmoid_lt_one x
 
-@[mono]
+@[gcongr, mono]
 lemma sigmoid_strictMono : StrictMono sigmoid := Real.sigmoid_strictMono
 
 lemma sigmoid_le_iff {a b : ℝ} : sigmoid a ≤ sigmoid b ↔ a ≤ b := Real.sigmoid_le_iff
