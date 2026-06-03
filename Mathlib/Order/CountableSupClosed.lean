@@ -82,16 +82,28 @@ lemma CountableSupClosed.sSup_mem [CompleteLattice α] (hs : CountableSupClosed 
 lemma CountableSupClosed.supClosed [SemilatticeSup α] (hs : CountableSupClosed s) :
     SupClosed s := by
   intro a ha b hb
-  obtain ⟨x, hxs, hx_lub⟩ := hs.exists_isLUB {a, b} (by intro; simp; grind) (by simp) (by simp)
+  obtain ⟨x, hxs, hx_lub⟩ := hs.exists_isLUB {a, b} (by grind) (by simp) (by simp)
   rwa [← hx_lub.unique isLUB_pair]
 
-@[to_dual (attr := simp)] lemma countableSupClosed_singleton_bot [Preorder α] [OrderBot α] :
-    CountableSupClosed ({⊥} : Set α) where
-  exists_isLUB _ _ _ _ := by simp [IsLUB, upperBounds]; grind
+@[to_dual (attr := simp)] lemma countableSupClosed_singleton [Preorder α] {x : α} :
+    CountableSupClosed ({x} : Set α) where
+  exists_isLUB s hs_subset hs_ne _ := by
+    have h_eq : s = {x} := by
+      ext y
+      simp_all only [subset_singleton_iff, mem_singleton_iff]
+      refine ⟨hs_subset y, ?_⟩
+      rintro rfl
+      obtain ⟨z, hzs⟩ := hs_ne
+      rwa [hs_subset z hzs] at hzs
+    simp_all
 
 @[to_dual (attr := simp)] lemma CountableSupClosed.univ [CompleteLattice α] :
     CountableSupClosed (univ : Set α) where
   exists_isLUB A hA _ _ := ⟨sSup A, by simp, isLUB_sSup A⟩
+
+@[to_dual (attr := simp)] lemma CountableSupClosed.empty [CompleteLattice α] :
+    CountableSupClosed (∅ : Set α) where
+  exists_isLUB A hA _ _ := by simp_all
 
 @[to_dual]
 lemma CountableSupClosed.inter [PartialOrder α]
@@ -199,7 +211,7 @@ open OrderDual
 alias ⟨_, CountableInfClosed.dual⟩ := countableSupClosed_preimage_ofDual
 alias ⟨_, CountableSupClosed.dual⟩ := countableInfClosed_preimage_ofDual
 
-/-! ## Closure -/
+/-! ### Closure -/
 
 /-- Every set generates a set closed under countable supremum. -/
 def countableSupClosure [LE α] (s : Set α) : Set α := ⋂₀ {t | s ⊆ t ∧ CountableSupClosed t}
@@ -281,11 +293,14 @@ lemma countableSupClosure_idem (s : Set α) :
   rw [countableSupClosure_eq_self]
   exact countableSupClosed_countableSupClosure
 
-@[to_dual (attr := simp)] lemma countableSupClosure_singleton_bot :
-    countableSupClosure {(⊥ : α)} = {⊥} := by simp
+@[to_dual (attr := simp)] lemma countableSupClosure_singleton {x : α} :
+    countableSupClosure {x} = {x} := by simp
 
 @[to_dual (attr := simp)] lemma countableSupClosure_univ :
     countableSupClosure (Set.univ : Set α) = Set.univ := by simp
+
+@[to_dual (attr := simp)] lemma countableSupClosure_empty :
+    countableSupClosure (∅ : Set α) = ∅ := by simp
 
 @[to_dual (attr := simp)] lemma upperBounds_countableSupClosure (s : Set α) :
     upperBounds (countableSupClosure s) = upperBounds s :=
@@ -304,7 +319,7 @@ lemma sup_mem_countableSupClosure (ha : a ∈ s) (hb : b ∈ s) : a ⊔ b ∈ co
 
 @[to_dual]
 lemma iSup_mem_countableSupClosure [Countable ι] [Nonempty ι] {A : ι → α} (hA : ∀ n, A n ∈ s) :
-    (⨆ n, A n) ∈ countableSupClosure s :=
+    ⨆ n, A n ∈ countableSupClosure s :=
   countableSupClosed_countableSupClosure.iSup_mem (fun n ↦ subset_countableSupClosure (hA n))
 
 @[to_dual]
