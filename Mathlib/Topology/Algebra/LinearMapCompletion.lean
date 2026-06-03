@@ -6,7 +6,7 @@ Authors: Gregory Wickham
 module
 
 public import Mathlib.Topology.Algebra.GroupCompletion
-public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
 /-!
 # Completion of continuous (semi-)linear maps:

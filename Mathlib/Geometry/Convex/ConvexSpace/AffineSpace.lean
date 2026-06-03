@@ -16,8 +16,8 @@ This file shows that every affine space is a convex space.
 
 ## Main results
 
-* `AddTorsor.instConvexSpace`: An affine space over a module is a convex space.
-* `AddTorsor.convexCombination_eq_affineCombination`: The convex combination equals the affine
+* `AddTorsor.toConvexSpace`: An affine space over a module is a convex space.
+* `AddTorsor.sConvexComb_eq_affineCombination`: The convex combination equals the affine
   combination.
 * `AddTorsor.convexCombPair_eq_lineMap`: Binary convex combinations are given by `lineMap`.
 -/
@@ -158,33 +158,3 @@ theorem convexCombPair_eq_lineMap (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t)
   simp [vsub_self]
 
 end AddTorsor
-
-open Finsupp
-
-namespace Convexity
-
-attribute [local instance] AddTorsor.toConvexSpace
-
-theorem sConvexComb_eq_sum (f : StdSimplex R V) :
-    f.sConvexComb = f.weights.sum fun i r ↦ r • i := by
-  simp [AddTorsor.sConvexComb_eq_affineCombination,
-    Finset.affineCombination_eq_linear_combination _ _ _ f.total, Finsupp.sum]
-
-@[deprecated (since := "2026-04-03")]
-alias _root_.convexCombination_eq_sum := sConvexComb_eq_sum
-
-theorem iConvexComb_eq_sum (f : StdSimplex R I) (g : I → V) :
-    f.iConvexComb g = f.weights.sum fun i r ↦ r • g i := by
-  simp [iConvexComb, sConvexComb_eq_sum, add_smul, sum_mapDomain_index]
-
-theorem convexCombPair_eq_add
-    {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y : V) :
-    convexCombPair s t hs ht h x y = s • x + t • y := by
-  classical
-  simp [convexCombPair, sConvexComb_eq_sum, sum_add_index, add_smul]
-
-variable (R I) in
-lemma StdSimplex.isAffineMap_weights : IsAffineMap R (weights (R := R) (M := I)) where
-  map_sConvexComb s := by simp [sConvexComb_eq_sum, StdSimplex.map, sum_mapDomain_index, add_smul]
-
-end Convexity

@@ -76,8 +76,7 @@ lemma pullback_sieve₁ {i₁ i₂ : E.I₀} {W : C} (p₁ : W ⟶ E.X i₁) (p�
     Sieve.pullback f (E.sieve₁ p₁ p₂) = E.sieve₁ (f ≫ p₁) (f ≫ p₂) := by
   refine le_antisymm ?_ ?_ <;>
   · intro Z g ⟨k, u, hu₁, hu₂⟩
-    use k, u
-    simp_all
+    cat_disch
 
 section
 
@@ -147,6 +146,7 @@ def multicospanIndex (F : Cᵒᵖ ⥤ A) : MulticospanIndex E.multicospanShape A
   fst j := F.map ((E.p₁ j.2).op)
   snd j := F.map ((E.p₂ j.2).op)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The multifork attached to a presheaf `F : Cᵒᵖ ⥤ A`, `S : C` and `E : PreOneHypercover S`. -/
 def multifork (F : Cᵒᵖ ⥤ A) :
     Multifork (E.multicospanIndex F) :=
@@ -171,6 +171,7 @@ def forkOfIsColimit {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E.Y'} (hd : Is
     congr 2
     exact Cofan.IsColimit.hom_ext hd _ _ (by simp [E.w])
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma forkOfIsColimit_ι_map_inj {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E.Y'}
     (hd : IsColimit d) (F : Cᵒᵖ ⥤ A) (i : E.I₀) :
@@ -179,6 +180,7 @@ lemma forkOfIsColimit_ι_map_inj {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E
 
 open Opposite
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The multifork associated to a pre-`1`-hypercover is limiting if and only if
 the fork induced by taking the coproduct of the components is limiting. -/
@@ -243,6 +245,7 @@ instance {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E.Y'} (hd : IsColimit d) 
   default := ⟨(⟨⟩, ⟨⟩), ⟨⟩⟩
   uniq _ := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is a pre-`1`-hypercover and `F` a presheaf, the induced equalizer of
 the single object covering obtained from `E` by taking coproducts is limiting
@@ -262,6 +265,7 @@ def isLimitSigmaOfIsColimitEquiv {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E
   · exact fun _ ↦ .refl _
   all_goals cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The trivial pre-`1`-hypercover of `S` with a single component `S`. -/
 @[simps toPreZeroHypercover I₁ Y p₁ p₂]
 def trivial (S : C) : PreOneHypercover.{w} S where
@@ -276,6 +280,7 @@ lemma sieve₀_trivial (S : C) : (trivial S).sieve₀ = ⊤ := by
   rw [PreZeroHypercover.sieve₀, Sieve.ofArrows, ← PreZeroHypercover.presieve₀]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma sieve₁_trivial {S : C} {W : C} {p : W ⟶ S} :
     (trivial S).sieve₁ (i₁ := ⟨⟩) (i₂ := ⟨⟩) p p = ⊤ := by ext; simp
@@ -284,6 +289,7 @@ instance : Nonempty (PreOneHypercover.{w} S) := ⟨trivial S⟩
 
 section
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Intersection of two pre-`1`-hypercovers. -/
 @[simps toPreZeroHypercover I₁ Y p₁ p₂]
@@ -301,6 +307,7 @@ def inter (E F : PreOneHypercover S) [∀ i j, HasPullback (E.f i) (F.f j)]
 
 variable {E} {F : PreOneHypercover S}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma sieve₁_inter [HasPullbacks C] {i j : E.I₀ × F.I₀} {W : C}
     {p₁ : W ⟶ pullback (E.f i.1) (F.f i.2)}
@@ -356,6 +363,7 @@ structure Hom (E F : PreOneHypercover S) extends
 
 attribute [reassoc] Hom.w₁₁ Hom.w₁₂
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The identity refinement of a pre-`1`-hypercover. -/
 @[simps!]
 def Hom.id (E : PreOneHypercover S) : Hom E E where
@@ -366,6 +374,7 @@ def Hom.id (E : PreOneHypercover S) : Hom E E where
 variable {E : PreOneHypercover.{w} S} {F : PreOneHypercover.{w'} S}
   {G : PreOneHypercover S}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Composition of refinement morphisms of pre-`1`-hypercovers. -/
 @[simps!]
 def Hom.comp (f : E.Hom F) (g : F.Hom G) : E.Hom G where
@@ -380,6 +389,7 @@ def Hom.comp (f : E.Hom F) (g : F.Hom G) : E.Hom G where
 def Hom.s₁' (f : E.Hom F) (k : E.I₁') : F.I₁' :=
   ⟨⟨f.s₀ k.1.1, f.s₀ k.1.2⟩, f.s₁ k.2⟩
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps! id_s₀ id_s₁ id_h₀ id_h₁ comp_s₀ comp_s₁ comp_h₀ comp_h₁]
 instance : Category (PreOneHypercover S) where
   Hom := Hom
@@ -392,6 +402,7 @@ def oneToZero : PreOneHypercover.{w} S ⥤ PreZeroHypercover.{w} S where
   obj f := f.1
   map f := f.1
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A refinement morphism `E ⟶ F` induces a morphism on associated multiequalizers. -/
 def Hom.mapMultiforkOfIsLimit (f : E.Hom F) (P : Cᵒᵖ ⥤ A) {c : Multifork (E.multicospanIndex P)}
     (hc : IsLimit c) (d : Multifork (F.multicospanIndex P)) :
@@ -419,6 +430,7 @@ section
 variable (f : E.Hom F) (P : Cᵒᵖ ⥤ A)
   {c : Multifork (E.multicospanIndex P)} (hc : IsLimit c) {d : Multifork (F.multicospanIndex P)}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Hom.mapMultiforkOfIsLimit_id (d : Multifork (E.multicospanIndex P)) :
@@ -426,6 +438,7 @@ lemma Hom.mapMultiforkOfIsLimit_id (d : Multifork (E.multicospanIndex P)) :
   apply Multifork.IsLimit.hom_ext hc
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma Hom.mapMultiforkOfIsLimit_comp (g : F.Hom G) (t : Multifork (G.multicospanIndex P))
@@ -622,6 +635,7 @@ lemma isoMk_aux (h₁ : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), E.Y k ≅ F.Y (
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Construct an isomorphism of `1`-hypercovers by giving the compatibility conditions only
 in the forward direction. -/
@@ -695,24 +709,27 @@ lemma inv_hom_s₀_apply (i : F.I₀) : e.hom.s₀ (e.inv.s₀ i) = i :=
 lemma hom_inv_s₁_apply {i j : E.I₀} (k : E.I₁ i j) :
     e.inv.s₁ (e.hom.s₁ k) = E.congrIndexOneOfEq (by simp) (by simp) k := by
   obtain ⟨hs₀, hh₀, hs₁, hh₁⟩ := PreOneHypercover.Hom.ext'_iff.mp e.hom_inv_id
-  simpa using hs₁ i j k
+  simpa using! hs₁ i j k
 
 @[simp]
 lemma inv_hom_s₁_apply {i j : F.I₀} (k : F.I₁ i j) :
     e.hom.s₁ (e.inv.s₁ k) = F.congrIndexOneOfEq (by simp) (by simp) k := by
   obtain ⟨hs₀, hh₀, hs₁, hh₁⟩ := PreOneHypercover.Hom.ext'_iff.mp e.inv_hom_id
-  simpa using hs₁ i j k
+  simpa using! hs₁ i j k
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma hom_inv_h₀ (i : E.I₀) : e.hom.h₀ i ≫ e.inv.h₀ (e.hom.s₀ i) = eqToHom (by simp) := by
   obtain ⟨hs, hh, _⟩ := Hom.ext'_iff.mp e.hom_inv_id
   simpa using hh i
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inv_hom_h₀ (i : F.I₀) : e.inv.h₀ i ≫ e.hom.h₀ (e.inv.s₀ i) = eqToHom (by simp) := by
   obtain ⟨hs, hh, _⟩ := Hom.ext'_iff.mp e.inv_hom_id
   simpa using hh i
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma hom_inv_h₁ {i j : E.I₀} (k : E.I₁ i j) :
     e.hom.h₁ k ≫ e.inv.h₁ (e.hom.s₁ k) =
@@ -721,6 +738,7 @@ lemma hom_inv_h₁ {i j : E.I₀} (k : E.I₁ i j) :
   obtain ⟨hs, _, _, hh⟩ := Hom.ext'_iff.mp e.hom_inv_id
   simpa using hh i j k
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inv_hom_h₁ {i j : F.I₀} (k : F.I₁ i j) :
     e.inv.h₁ k ≫ e.hom.h₁ (e.inv.s₁ k) =
@@ -763,12 +781,15 @@ def Hom.mapMulticospan {E : PreOneHypercover.{w} S} {F : PreOneHypercover.{w'} S
     | .id _ => .id _
     | .fst i => WalkingMulticospan.Hom.fst (J := F.multicospanShape) (f.s₁' i)
     | .snd i => WalkingMulticospan.Hom.snd (J := F.multicospanShape) (f.s₁' i)
-  map_id := by simp
+  map_id
+    | .left _ => rfl
+    | .right _ => rfl
   map_comp
     | .id _, _ => by simp
     | .fst _, .id _ => by simp
     | .snd _, .id _ => by simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Isomorphic pre-`1`-hypercovers have equivalent multifork index categories. -/
 @[simps! functor inverse]
@@ -789,6 +810,7 @@ def equivalenceMulticospanOfIso {E F : PreOneHypercover.{w} S} (f : E ≅ F) :
   functor_unitIso_comp c := by
     cases c <;> rw [eqToIso.hom, eqToHom_app, eqToHom_map] <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `E` and `F` are isomorphic pre-`1`-hypercovers and `G` is a presheaf,
 the multifork for `E` is exact if and only if the multifork for `F` is exact. -/
@@ -839,6 +861,7 @@ def interSnd : (E.inter F).Hom F where
   s₁ {i j} k := k.2
   h₁ _ := pullback.snd _ _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {E F} in
 /-- Universal property of the intersection of two pre-`1`-hypercovers. -/
@@ -915,7 +938,7 @@ noncomputable def multiforkLift : c.pt ⟶ F.obj.obj (Opposite.op S) :=
     dsimp
     simp only [assoc, ← Functor.map_comp, ← op_comp, fac₁, fac₂]
     simp only [op_comp, Functor.map_comp]
-    simpa using c.condition ⟨⟨i₁, i₂⟩, j⟩ =≫ F.obj.map h.op)
+    simpa using! c.condition ⟨⟨i₁, i₂⟩, j⟩ =≫ F.obj.map h.op)
 
 @[reassoc]
 lemma multiforkLift_map (i₀ : E.I₀) : multiforkLift c ≫ F.obj.map (E.f i₀).op = c.ι i₀ := by
@@ -931,7 +954,6 @@ noncomputable def isLimitMultifork : IsLimit (E.multifork F.1) :=
     intro c m hm
     apply F.property.hom_ext_ofArrows _ E.mem₀
     intro i₀
-    dsimp only
     rw [multiforkLift_map]
     exact hm i₀)
 
@@ -947,6 +969,7 @@ def toZeroHypercover (E : OneHypercover.{w} J S) : J.toPrecoverage.ZeroHypercove
   __ := E.toPreZeroHypercover
   mem₀ := E.mem₀
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (J) in
 /-- The trivial `1`-hypercover of `S` where a single component `S`. -/
@@ -973,7 +996,7 @@ def inter [HasPullbacks C] (E F : J.OneHypercover S)
   mem₀ := (E.toZeroHypercover.inter F.toZeroHypercover).mem₀
   mem₁ i₁ i₂ W p₁ p₂ h := by
     rw [PreOneHypercover.sieve₁_inter h]
-    refine J.bind_covering (E.mem₁ _ _ _ _ (by simpa using h)) fun _ _ _ ↦ ?_
+    refine J.bind_covering (E.mem₁ _ _ _ _ (by simpa using! h)) fun _ _ _ ↦ ?_
     exact J.pullback_stable _
       (F.mem₁ _ _ _ _ (by simpa [Category.assoc, ← pullback.condition]))
 
@@ -987,6 +1010,7 @@ variable {S : C} {E : OneHypercover.{w} J S} {F : OneHypercover.{w'} J S}
 abbrev Hom (E : OneHypercover.{w} J S) (F : OneHypercover.{w'} J S) :=
   E.toPreOneHypercover.Hom F.toPreOneHypercover
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps! id_s₀ id_s₁ id_h₀ id_h₁ comp_s₀ comp_s₁ comp_h₀ comp_h₁]
 instance : Category (J.OneHypercover S) where
   Hom := Hom
@@ -1069,11 +1093,13 @@ noncomputable def PreZeroHypercover.toPreOneHypercover {S : C} (E : PreZeroHyper
   p₂ _ _ _ := pullback.snd _ _
   w _ _ _ := pullback.condition
 
+set_option backward.defeqAttrib.useBackward true in
 instance {S : C} (E : PreZeroHypercover S) [E.HasPullbacks] :
     E.toPreOneHypercover.HasPullbacks := by
   dsimp
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma sieve₁'_toPreOneHypercover_eq_top {S : C} (E : PreZeroHypercover S) [E.HasPullbacks]
     (i j : E.I₀) :
@@ -1084,7 +1110,6 @@ lemma sieve₁'_toPreOneHypercover_eq_top {S : C} (E : PreZeroHypercover S) [E.H
   refine Presieve.ofArrows.mk' ⟨⟩ rfl ?_
   apply pullback.hom_ext <;> simp [PreOneHypercover.toPullback]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the pairwise pullbacks exist, this is the pre-`1`-hypercover where the covers
 by the pullbacks are given by the pullbacks themselves. -/
 @[simps! toPreOneHypercover]
@@ -1113,6 +1138,7 @@ variable {X : C} (E : PreZeroHypercover.{w} X) [E.HasPullbacks]
 
 instance : (E.refineOneHypercover F).HasPullbacks := ‹_›
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma PreZeroHypercover.sieve₁'_refineOneHypercover (i j : E.I₀) :
