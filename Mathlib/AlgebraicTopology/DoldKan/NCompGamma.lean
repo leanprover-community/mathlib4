@@ -136,10 +136,9 @@ def natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ Γ₂ ⟶ toKaroubi _ where
             intro A
             change _ ≫ (Γ₀.obj K[X]).map θ ≫ _ = _
             simp only [Splitting.ι_desc_assoc, assoc, Γ₀.Obj.map_on_summand'_assoc,
-              Splitting.ι_desc]
-            erw [Γ₀_obj_termwise_mapMono_comp_PInfty_assoc X (image.ι (θ.unop ≫ A.e))]
-            dsimp only [toKaroubi]
-            simp only [← X.map_comp]
+              Splitting.ι_desc, Splitting.IndexSet.pull, Splitting.IndexSet.mk,
+              Γ₀_obj_termwise_mapMono_comp_PInfty_assoc X (image.ι (θ.unop ≫ A.e)), toKaroubi,
+              ← X.map_comp]
             congr 2
             simp only [← op_comp]
             exact Quiver.Hom.unop_inj (A.fac_pull θ) }
@@ -182,6 +181,9 @@ theorem natTrans_app_f_app (P : Karoubi (SimplicialObject C)) :
 
 end Γ₂N₂
 
+theorem Γ₂_obj_N₂_obj (P : Karoubi (SimplicialObject C)) :
+    Γ₂.obj (N₂.obj P) = (N₂ ⋙ Γ₂).obj P := rfl
+
 set_option backward.isDefEq.respectTransparency false in
 theorem compatibility_Γ₂N₁_Γ₂N₂_natTrans (X : SimplicialObject C) :
     Γ₂N₁.natTrans.app X =
@@ -192,7 +194,7 @@ theorem compatibility_Γ₂N₁_Γ₂N₂_natTrans (X : SimplicialObject C) :
     NatTrans.comp_app]
   rw [N₂.map_id, Γ₂.map_id, Iso.app_inv]
   dsimp only [toKaroubi]
-  erw [id_comp]
+  simp only [Γ₂_obj_N₂_obj, id_comp]
   rw [comp_id, Iso.inv_hom_id_app_assoc]
 
 set_option backward.defeqAttrib.useBackward true in

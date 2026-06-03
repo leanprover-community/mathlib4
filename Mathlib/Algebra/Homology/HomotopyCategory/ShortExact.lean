@@ -99,9 +99,7 @@ lemma homologySequenceδ_triangleh (n₀ : ℤ) (n₁ : ℤ) (h : n₀ + 1 = n�
   erw [homologySequenceδ_quotient_mapTriangle_obj_assoc _ _ _ h]
   dsimp
   -- simp? says
-  simp only [Iso.inv_hom_id_app, HomologicalComplex.homologyFunctor_obj, Iso.inv_hom_id_app_assoc,
-    comp_id]
-  erw [comp_id]
+  simp only [Iso.inv_hom_id_app, Iso.inv_hom_id_app_assoc, comp_id]
   rw [← cancel_epi π, reassoc_of% hx', reassoc_of% hx',
     HomologicalComplex.homologyπ_naturality_assoc,
     HomologicalComplex.liftCycles_comp_cyclesMap_assoc]
@@ -120,7 +118,7 @@ lemma homologySequenceδ_triangleh (n₀ : ℤ) (n₁ : ℤ) (h : n₀ + 1 = n�
     (by simp only [neg_comp, neg_eq_iff_add_eq_zero, w.2]) (n₁ + 1) (by simp)]
   /- We simplify the LHS. -/
   dsimp [Functor.shiftMap, homologyFunctor_shift]
-  rw [HomologicalComplex.homologyπ_naturality_assoc,
+  rw [comp_id, HomologicalComplex.homologyπ_naturality_assoc,
     HomologicalComplex.liftCycles_comp_cyclesMap_assoc,
     S.X₁.liftCycles_shift_homologyπ_assoc _ _ _ _ n₁ (by lia) (n₁ + 1) (by simp),
     Iso.inv_hom_id_app]
