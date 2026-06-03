@@ -573,7 +573,7 @@ theorem lcs_add_le_iff (l k : ℕ) : N₁.lcs (l + k) ≤ N₂ ↔ N₁.lcs l �
     rw [(by abel : l + (k + 1) = l + 1 + k), ih, ucs_succ, lcs_succ, top_lie_le_iff_le_normalizer]
 
 theorem lcs_le_iff (k : ℕ) : N₁.lcs k ≤ N₂ ↔ N₁ ≤ N₂.ucs k := by
-  convert lcs_add_le_iff (R := R) (L := L) (M := M) 0 k
+  convert! lcs_add_le_iff (R := R) (L := L) (M := M) 0 k
   rw [zero_add]
 
 theorem gc_lcs_ucs (k : ℕ) :

@@ -562,7 +562,7 @@ lemma _root_.exists_continuousLinearEquiv_fderivWithin_symm_eq
   have hN' : ContDiffWithinAt 𝕜 1 (fun y ↦ ((N y).symm : F →L[𝕜] E)) s x := by
     have : ContDiffWithinAt 𝕜 1 (ContinuousLinearMap.inverse ∘ (fun y ↦ (N y : E →L[𝕜] F))) s x :=
       (contDiffAt_map_inverse (N x)).comp_contDiffWithinAt x hN
-    convert this with y
+    convert! this with y
     simp only [Function.comp_apply, ContinuousLinearMap.inverse_equiv]
   refine ⟨N, hN, hN', eN, fun v ↦ ?_⟩
   have A' y : ContinuousLinearMap.compL 𝕜 F E F (N y : E →L[𝕜] F) ((N y).symm : F →L[𝕜] E)

@@ -314,7 +314,7 @@ theorem edist_lt_top {α : Type*} [PseudoMetricSpace α] (x y : α) : edist x y 
   (edist_dist x y).symm ▸ ENNReal.ofReal_lt_top
 
 /-- In a pseudometric space, the extended distance is always finite -/
-@[aesop (rule_sets := [finiteness]) safe apply]
+@[aesop (rule_sets := [finiteness]) safe apply, simp]
 theorem edist_ne_top (x y : α) : edist x y ≠ ⊤ :=
   (edist_lt_top x y).ne
 
@@ -941,7 +941,7 @@ lemma DiscreteTopology.of_forall_le_dist {α} [PseudoMetricSpace α] {r : ℝ} (
     (hr : Pairwise (r ≤ dist · · : α → α → Prop)) : DiscreteTopology α :=
   ⟨by rw [Metric.uniformSpace_eq_bot.2 ⟨r, hpos, hr⟩, UniformSpace.toTopologicalSpace_bot]⟩
 
-/- Instantiate a pseudometric space as a pseudoemetric space. Before we can state the instance,
+/-! Instantiate a pseudometric space as a pseudoemetric space. Before we can state the instance,
 we need to show that the uniform structure coming from the edistance and the
 distance coincide. -/
 
