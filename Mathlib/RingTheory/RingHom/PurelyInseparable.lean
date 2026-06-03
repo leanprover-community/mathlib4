@@ -26,14 +26,14 @@ universe u v
 /-- A ring homomorphism `f : F →+* E` is purely inseparable if `E` is purely inseparable as an
 `F`-algebra. -/
 @[algebraize IsPurelyInseparable]
-def RingHom.IsPurelyInseparable
+protected def RingHom.IsPurelyInseparable
     {F : Type u} {E : Type v} [CommRing F] [CommRing E] (f : F →+* E) : Prop :=
   letI : Algebra F E := f.toAlgebra
-  _root_.IsPurelyInseparable F E
+  IsPurelyInseparable F E
 
 lemma RingHom.isPurelyInseparable_algebraMap_iff
     {F : Type u} {E : Type v} [CommRing F] [CommRing E] [Algebra F E] :
-    (algebraMap F E).IsPurelyInseparable ↔ _root_.IsPurelyInseparable F E := by
+    (algebraMap F E).IsPurelyInseparable ↔ IsPurelyInseparable F E := by
   rw [RingHom.IsPurelyInseparable, toAlgebra_algebraMap]
 
 namespace RingHom.IsPurelyInseparable
@@ -45,12 +45,12 @@ variable (F) in
 lemma id [CommRing F] : RingHom.IsPurelyInseparable (RingHom.id F) :=
   isPurelyInseparable_self F
 
-lemma containsIdentities : ContainsIdentities IsPurelyInseparable := id
+lemma containsIdentities : ContainsIdentities RingHom.IsPurelyInseparable := id
 
 /-- Composition of purely inseparable ring homomorphisms between fields is purely inseparable. -/
 lemma comp [Field F] [Field E] [Field K] {f : F →+* E} {g : E →+* K}
     (hf : f.IsPurelyInseparable) (hg : g.IsPurelyInseparable) :
-    IsPurelyInseparable (g.comp f) := by
+    (g.comp f).IsPurelyInseparable := by
   algebraize [f, g, (g.comp f)]
   exact _root_.IsPurelyInseparable.trans F E K
 
