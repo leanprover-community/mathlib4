@@ -695,6 +695,36 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_surjective (f : M →ₗ[R] M')
   ((f.quotKerEquivOfSurjective hf).dualMap.range_comp _).trans
     (LinearMap.ker f).range_dualMap_mkQ_eq
 
+/-- If the dual of the inclusion of the range of `f` is surjective, then the range of `f.dualMap`
+is the same as the range of the dual of `f.rangeRestrict`.
+
+This is the range statement behind the factorization `f = (range f).subtype.comp f.rangeRestrict`.
+It is useful when dualizing a short exact sequence whose left term is `range f`. -/
+theorem range_dualMap_eq_range_dualMap_rangeRestrict_of_surjective (f : M →ₗ[R] M')
+    (hf : Function.Surjective (range f).subtype.dualMap) :
+    LinearMap.range f.dualMap = LinearMap.range f.rangeRestrict.dualMap := by
+  calc
+    LinearMap.range f.dualMap =
+        LinearMap.range ((range f).subtype.comp f.rangeRestrict).dualMap := by simp
+    _ = LinearMap.range (f.rangeRestrict.dualMap.comp (range f).subtype.dualMap) := by
+        rw [dualMap_comp_dualMap]
+    _ = LinearMap.range f.rangeRestrict.dualMap := by
+        rw [range_comp_of_range_eq_top]
+        rwa [range_eq_top]
+
+/-- If the dual of the inclusion of the range of `f` is surjective, then the range of `f.dualMap`
+is linearly equivalent to the dual of the range of `f`.
+
+This packages the conclusion that appears in dualized exact sequences: after factoring
+`f` through its range, the surjectivity of `(range f).subtype.dualMap` identifies
+`range f.dualMap` with `Dual R (range f)`. -/
+noncomputable def range_dualMap_linearEquiv_dual_range_of_surjective (f : M →ₗ[R] M')
+    (hf : Function.Surjective (range f).subtype.dualMap) :
+    LinearMap.range f.dualMap ≃ₗ[R] Module.Dual R (LinearMap.range f) :=
+  (LinearEquiv.ofEq _ _ (range_dualMap_eq_range_dualMap_rangeRestrict_of_surjective f hf)).trans
+    ((LinearEquiv.ofInjective f.rangeRestrict.dualMap
+      (dualMap_injective_of_surjective f.surjective_rangeRestrict)).symm)
+
 -- Note, this can be specialized to the case where `R` is an injective `R`-module, or when
 -- `f.coker` is a projective `R`-module.
 theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M →ₗ[R] M')
