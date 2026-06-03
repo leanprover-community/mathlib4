@@ -62,8 +62,6 @@ theorem lt_succ_floor (a : R) : a < ⌊a⌋₊.succ :=
 @[bound]
 theorem lt_floor_add_one (a : R) : a < ⌊a⌋₊ + 1 := by simpa using lt_succ_floor a
 
-variable [IsStrictOrderedRing R]
-
 @[simp]
 theorem floor_natCast (n : ℕ) : ⌊(n : R)⌋₊ = n :=
   eq_of_forall_le_iff fun a => by
@@ -213,8 +211,6 @@ theorem ceil_intCast {R : Type*} [Ring R] [LinearOrder R] [IsOrderedAddMonoid R]
   eq_of_forall_ge_iff fun a => by
     simp only [ceil_le, Int.toNat_le]
     norm_cast
-
-variable [IsStrictOrderedRing R]
 
 @[simp]
 theorem ceil_natCast (n : ℕ) : ⌈(n : R)⌉₊ = n :=
