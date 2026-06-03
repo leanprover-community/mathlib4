@@ -144,10 +144,12 @@ instance : IsScalarTower Rₚ Sₚ L := by
     RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq,
     ← IsScalarTower.algebraMap_eq]
 
+set_option linter.overlappingInstances false in
 instance [IsDedekindDomain S] : IsDedekindDomain Sₚ :=
   isDedekindDomain S
     (algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _ P.primeCompl_le_nonZeroDivisors) _
 
+set_option linter.overlappingInstances false in
 instance [IsDedekindDomain R] [IsDedekindDomain S] [Module.Finite R S] [hP : NeZero P] :
     IsPrincipalIdealRing Sₚ :=
   IsDedekindDomain.isPrincipalIdealRing_localization_over_prime S P (fun h ↦ hP.1 h)

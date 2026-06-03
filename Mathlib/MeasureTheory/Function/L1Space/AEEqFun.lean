@@ -90,7 +90,7 @@ variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [IsBoundedSMul 𝕜 �
 
 theorem Integrable.smul {c : 𝕜} {f : α →ₘ[μ] β} : Integrable f → Integrable (c • f) :=
   induction_on f fun _f hfm hfi => (integrable_mk _).2 <|
-    by simpa using ((integrable_mk hfm).1 hfi).smul c
+    by simpa using! ((integrable_mk hfm).1 hfi).smul c
 
 end IsBoundedSMul
 
@@ -212,6 +212,10 @@ theorem enorm_toL1 {f : α → β} (hf : Integrable f μ) : ‖hf.toL1 f‖ₑ =
 theorem norm_toL1_eq_lintegral_norm (f : α → β) (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) := by
   rw [norm_toL1, lintegral_norm_eq_lintegral_edist]
+
+theorem norm_toL1_eq_lintegral_enorm (f : α → β) (hf : Integrable f μ) :
+    ‖hf.toL1 f‖ = (∫⁻ a, ‖f a‖ₑ ∂μ).toReal := by
+  simp_rw [norm_toL1, edist_zero_right]
 
 @[simp]
 theorem edist_toL1_toL1 (f g : α → β) (hf : Integrable f μ) (hg : Integrable g μ) :

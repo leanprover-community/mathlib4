@@ -52,7 +52,7 @@ attribute [instance] topologicalSpace isTopologicalAddGroup continuousSMul
 /-- Make an object in `TopModuleCat R` from an unbundled topological module. -/
 abbrev of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
     [ContinuousSMul R M] : TopModuleCat R :=
-  have : ContinuousNeg M := ⟨by convert continuous_const_smul (-1 : R) (T := M); ext; simp⟩
+  have : ContinuousNeg M := ⟨by convert! continuous_const_smul (-1 : R) (T := M); ext; simp⟩
   have : IsTopologicalAddGroup M := ⟨⟩
   ⟨.of R M⟩
 
@@ -433,6 +433,7 @@ def free : TopCat.{v} ⥤ TopModuleCat.{max v u} R :=
     map_id M := by ext x; exact DFunLike.congr_fun (Finsupp.lmapDomain_id _ _) x
     map_comp f g := by ext; exact DFunLike.congr_fun (Finsupp.lmapDomain_comp _ _ f.hom g.hom) _ }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The free-forgetful adjoint for `TopModuleCat R`. -/
 noncomputable
@@ -447,7 +448,7 @@ def freeAdj : free.{max v u} R ⊣ forget₂ (TopModuleCat.{max v u} R) TopCat.{
       refine sInf_le ⟨continuousSMul_induced (Finsupp.lift _ R X id),
         continuousAdd_induced (Finsupp.lift _ R X id), ?_⟩
       rw [coinduced_le_iff_le_induced, induced_compose]
-      convert induced_id.symm.le
+      convert! induced_id.symm.le
       ext
       simp [coe_freeObj]⟩,
     naturality {X Y} f := by

@@ -229,7 +229,7 @@ lemma isLocallyConstant_rankAtStalk [Module.FinitePresentation R M] [Module.Flat
     IsLocallyConstant (rankAtStalk (R := R) M) := by
   let e : freeLocus R M ≃ₜ PrimeSpectrum R :=
     (Homeomorph.setCongr freeLocus_eq_univ).trans (Homeomorph.Set.univ (PrimeSpectrum R))
-  convert isLocallyConstant_rankAtStalk_freeLocus.comp_continuous e.symm.continuous
+  convert! isLocallyConstant_rankAtStalk_freeLocus.comp_continuous e.symm.continuous
 
 @[simp]
 lemma rankAtStalk_eq_zero_of_subsingleton [Subsingleton M] :
@@ -365,11 +365,22 @@ lemma rankAtStalk_eq (p : PrimeSpectrum R) :
   let e : k ⊗[Localization.AtPrime p.asIdeal] (Localization.AtPrime p.asIdeal ⊗[R] M) ≃ₗ[k]
       k ⊗[R] M :=
     AlgebraTensorModule.cancelBaseChange _ _ _ _ _
-  rw [← e.finrank_eq, finrank_baseChange, rankAtStalk_eq_finrank_tensorProduct]
+  rw [← e.finrank_eq]
+  erw [finrank_baseChange]
+  rw [rankAtStalk_eq_finrank_tensorProduct]
 
 /-- Variant of `Module.rankAtStalk_eq` for better rewriting. -/
 lemma _root_.Ideal.finrank_fiber_eq_rankAtStalk (p : Ideal R) [hp : p.IsPrime] :
     finrank p.ResidueField (p.Fiber M) = rankAtStalk M ⟨p, hp⟩ :=
   (rankAtStalk_eq ⟨p, hp⟩).symm
+
+lemma _root_.Ideal.finrank_fiber_eq_finrank [IsDomain R] (p : Ideal R) [p.IsPrime] :
+    finrank p.ResidueField (p.Fiber M) = finrank R M := by
+  let K := FractionRing R
+  let Rp := Localization.AtPrime p
+  let Mp := LocalizedModule.AtPrime p M
+  rw [p.finrank_fiber_eq_rankAtStalk, rankAtStalk, ← (isBaseChange Rp Mp K).finrank_eq,
+    (((LocalizedModule.equivTensorProduct p.primeCompl M).baseChange Rp K Mp _)).finrank_eq,
+    (AlgebraTensorModule.cancelBaseChange R Rp K K M).finrank_eq, (isBaseChange R M K).finrank_eq]
 
 end Module
