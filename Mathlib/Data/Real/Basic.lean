@@ -75,6 +75,7 @@ set_option backward.privateInPublic true in
 private irreducible_def one : ℝ :=
   ⟨1⟩
 
+
 set_option backward.privateInPublic true in
 private irreducible_def add : ℝ → ℝ → ℝ
   | ⟨a⟩, ⟨b⟩ => ⟨a + b⟩
@@ -100,6 +101,9 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 instance : One ℝ :=
   ⟨one⟩
+
+
+
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -183,6 +187,22 @@ lemma cauchy_natCast (n : ℕ) : (n : ℝ).cauchy = n := rfl
 lemma cauchy_intCast (z : ℤ) : (z : ℝ).cauchy = z := rfl
 lemma cauchy_nnratCast (q : ℚ≥0) : (q : ℝ).cauchy = q := rfl
 lemma cauchy_ratCast (q : ℚ) : (q : ℝ).cauchy = q := rfl
+
+
+
+#check @One.toOfNat1 ℝ _
+#check OfNat
+#check OfNat ℝ 1
+example : (1 : ℕ) = (1 : ℚ) := by rfl
+-- example : (1 : ℕ) = (1 : ℝ) := by rfl
+example : ((1 : ℕ) : ℝ) = @Nat.cast ℝ _ 1 := rfl
+example : @Nat.cast ℝ _ 1 = Real.ofCauchy 1 := rfl
+example : Real.ofCauchy 1 = One.one := by rfl
+example : ((1 : ℕ) : ℝ) = OfNat.ofNat 1 := by rfl
+example : One.ofOfNat1.one = OfNat.ofNat 1 := by rfl
+example : @One.one ℝ _ = OfNat.ofNat 1 := by rfl
+example : One.one = (1 : ℝ) := by rfl
+
 
 instance commRing : CommRing ℝ where
   natCast n := ⟨n⟩

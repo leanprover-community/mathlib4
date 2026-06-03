@@ -296,6 +296,10 @@ noncomputable instance Real.normedField : NormedField ℝ :=
   { Real.normedAddCommGroup, Real.instField with
     norm_mul := abs_mul }
 
+noncomputable instance Real.normedCommRing : NormedCommRing ℝ := inferInstance
+  -- { Real.normedAddCommGroup, Real.commRing with norm_mul_le x y := (abs_mul x y).le }
+
+
 noncomputable instance Real.denselyNormedField : DenselyNormedField ℝ where
   lt_norm_lt _ _ h₀ hr :=
     let ⟨x, h⟩ := exists_between hr
