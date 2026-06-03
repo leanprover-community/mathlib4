@@ -28,6 +28,7 @@ on:
 permissions:
   contents: read
   id-token: write
+  actions: read  # let get-tools download the prebuilt tools artifact from master's publish_tools runs
   # By default let's remove this permission (which is present in the other build pipelines)
   # from the CI experimentation runs to avoid unwitting side effects
   # pull-requests: write
@@ -40,8 +41,10 @@ jobs:
     uses: ./.github/workflows/build_template.yml
     with:
       concurrency_group: ${{ github.workflow }}-${{ github.ref }}
-      # Use the tools from 'this branch', as our changes in the tools might be relevant for experiments
-      tools_branch_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || github.sha }}
+      # E2E TEST for the prebuilt-tools artifact: leave tools_branch_ref empty by
+      # default so build_template's use_artifact becomes true and `get-tools`
+      # downloads the master `tools-bin` artifact (still overridable via dispatch input).
+      tools_branch_ref: ${{ inputs.tools_branch_ref }}
       pr_branch_ref: ${{ inputs.pr_branch_ref != '' && inputs.pr_branch_ref || github.sha }}
       run_post_ci: ${{ inputs.run_post_ci }}
       mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}

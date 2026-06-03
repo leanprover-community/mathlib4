@@ -93,17 +93,6 @@ jobs:
       - name: 'Setup jq'
         uses: dcarbone/install-jq-action@b7ef57d46ece78760b4019dbc4080a1ba2a40b45 # v3.2.0
 
-      # Checkout a trusted branch to build the tooling from
-      - name: Checkout tools branch
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-        with:
-          # Recall that on the `leanprover-community/mathlib4-nightly-testing` repository,
-          # we don't maintain a `master` branch at all.
-          # For PRs and pushes to this repository, we will use `nightly-testing-green` instead,
-          # so that even when `nightly-testing` is broken, we can still build tools from a known good state.
-          ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing-green' || 'master') }}
-          path: tools-branch
-
       - name: Checkout local actions
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
@@ -208,14 +197,22 @@ jobs:
           # Set it as an environment variable for subsequent steps
           echo "LEAN_SRC_PATH=$LEAN_SRC_PATH" >> "$GITHUB_ENV"
 
-      - name: build tools-branch tools
-        shell: bash # We're only building a trusted branch with the tools, so no need to run inside landrun.
-        run: |
-          cd tools-branch
-          lake build cache check-yaml graph
-          ls .lake/build/bin/cache
-          ls .lake/build/bin/check-yaml
-          ls .lake/packages/importGraph/.lake/build/bin/graph
+      # Populate `tools-branch/` with the trusted CI tooling (the `cache` binary and
+      # the `lake-build-*` helper scripts invoked by path below). On the common path
+      # this downloads the prebuilt `tools-bin` artifact published from `master` by
+      # `publish_tools.yml`; otherwise (bors/ci_dev overrides, nightly-testing, or any
+      # download failure) it falls back to checking out and building from source.
+      #
+      # Recall that on the `leanprover-community/mathlib4-nightly-testing` repository,
+      # we don't maintain a `master` branch at all. For PRs and pushes to this
+      # repository, we build tools from `nightly-testing-green` instead, so that even
+      # when `nightly-testing` is broken, we can still build tools from a known good state.
+      - name: Get CI tools
+        uses: ./workflow-actions/.github/actions/get-tools
+        with:
+          use_artifact: ${{ inputs.tools_branch_ref == '' && github.repository == 'leanprover-community/mathlib4' }}
+          tools_source_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing-green' || 'master') }}
+          github_token: ${{ github.token }}
 
       - name: download dependencies
         # We need network access to download dependencies
