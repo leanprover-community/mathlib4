@@ -39,7 +39,7 @@ structure HomologyPretheory
   Hₚ (i : ι) : TopPair.{u} ⥤ C
   /-- The regular homology functor of a `HomologyPretheory`. -/
   H (i : ι) : TopCat.{u} ⥤ C
-  /-- `Hₚ` and `H` agree on `TopCat` -/
+  /-- `Hₚ` and `H` agree on `TopCat`. -/
   iso (i : ι) : H i ≅ incl ⋙ Hₚ i
   /-- The boundary natural transformation of a `HomologyPretheory`. -/
   δ (i j : ι) : Hₚ i ⟶ proj₂ ⋙ H j
