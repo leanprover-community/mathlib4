@@ -88,7 +88,7 @@ variable [Semiring α] [PartialOrder α] [FloorSemiring α]
 
 /-- A version of `Nat.mono_cast` for floor semirings, whose addition is not necessarily monotone. -/
 theorem natCast_mono : Monotone (Nat.cast : ℕ → α) :=
-  fun _ _ h => (gc_ceil _ _).mp <| h.trans' <| (gc_ceil _ _).mpr (le_refl _)
+  fun _ _ h ↦ (gc_ceil _ _).mp <| h.trans' <| (gc_ceil _ _).mpr (le_refl _)
 
 /-- A version of `Nat.cast_nonneg'` for floor semirings, whose addition is not necessarily
   monotone. -/
@@ -374,7 +374,7 @@ variable [Ring α] [LinearOrder α] [FloorRing α]
 
 /-- A version of `Int.cast_mono` for floor rings, whose addition is not necessarily monotone. -/
 theorem intCast_mono : Monotone (Int.cast : ℤ → α) :=
-  fun _ _ h => (gc_ceil_coe _ _).mp <| h.trans' <| (gc_ceil_coe _ _).mpr (le_refl _)
+  fun _ _ h ↦ (gc_ceil_coe _ _).mp <| h.trans' <| (gc_ceil_coe _ _).mpr (le_refl _)
 
 /-- A version of `Int.cast_strictMono` for floor rings, whose addition is not necessarily
   monotone. -/
