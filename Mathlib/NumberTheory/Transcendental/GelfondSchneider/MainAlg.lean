@@ -63,7 +63,7 @@ lemma exists_common_field_of_isAlgebraic (α β γ : ℂ) (hα : IsAlgebraic ℚ
       (_ : DecidableEq (K →+* ℂ)),
       ∃ α' β' γ' : K, α = σ α' ∧ β = σ β' ∧ γ = σ γ' := by
   classical
-  refine ⟨ℚ⟮α, β, γ⟯, inferInstance,
+  refine ⟨ℚ⟮α, β, γ⟯, _,
     isNumberField_adjoin_of_isAlgebraic α β γ hα hβ hγ,
     IntermediateField.val _ |>.toRingHom, inferInstance, ?_⟩
   exact ⟨⟨α, subset_adjoin _ _ (by simp)⟩, ⟨β, subset_adjoin _ _ (by simp)⟩,
@@ -168,15 +168,15 @@ Let `m = 2h + 2` and `n = q² / (2m)`, where `q²` is a perfect square divisible
 def h (K : Type) [Field K] [NumberField K] : ℕ := Module.finrank ℚ K
 
 /-- A parameter `m` dependent on the degree `h = [K : ℚ]`. -/
-def m (K : Type) [Field K] [NumberField K] : ℕ := 2 * h K + 2
+def m (K : Type) [Field K] [NumberField K] : ℕ := 2 * (h K) + 2
 
 lemma one_le_m (K : Type) [Field K] [NumberField K] : 1 ≤ m K :=
-  Nat.succ_le_succ (Nat.zero_le (2 * h K + 1))
+  Nat.succ_le_succ (Nat.zero_le (2 * (h K) + 1))
 
 variable (q : ℕ) (hq0 : 0 < q)
 
 /-- A target bound parameter `n` dependent on a free parameter `q`. -/
-def n (K : Type) [Field K] [NumberField K] (q : ℕ) : ℕ := q ^ 2 / (2 * m K)
+def n (K : Type) [Field K] [NumberField K] (q : ℕ) : ℕ := q ^ 2 / (2 * (m K))
 
 /-- House exponent `m K * (2 * (m K * n K q))`. -/
 def mTwoMnq (K : Type) [Field K] [NumberField K] (q : ℕ) : ℕ :=
@@ -401,10 +401,14 @@ lemma bl_le_mq : b q t * l q u ≤ m K * q := by
   unfold b
   exact fin_mul_l_le_mq q u ((finProdFinEquiv.symm t).2)
 
-include h2mq in
-lemma mq_le_m_two_mnq : m K * q ≤ m K * (2 * (m K * n K q)) := by
-  simpa [mul_assoc] using Nat.mul_le_mul_left (m K)
-    ((Nat.le_pow Nat.zero_lt_two).trans (Nat.mul_div_cancel' h2mq).symm.le)
+include hq0 h2mq in
+lemma mq_le_m_two_mnq : (m K) * q ≤ (m K) * (2 * ((m K) * (n K q))) := by
+  refine Nat.mul_le_mul_left (m K) ?_
+  calc q
+    _ ≤ q ^ 2 := by simpa [pow_two] using Nat.le_mul_of_pos_right q hq0
+    _ = 2 * ((m K) * (n K q)) := by
+      simp only [n, ← Nat.mul_assoc]
+      exact (Nat.mul_div_cancel' h2mq).symm
 
 include α' β' γ' in
 lemma house_c₁_smul_le (x : K) :
@@ -434,7 +438,8 @@ lemma house_cCoeffs_smul_eq_factorized :
       rw [← pow_sub_mul_pow _ hbl]; ring, mul_smul]
   congr 1; ring
 
-include α β K σ α' β' γ' hirr htriv habc hq0 h2mq u t q in
+omit α β σ hirr htriv habc hq0 h2mq in
+include α' β' γ' u t q in
 lemma house_factorized_le_prod :
     house ((c₁ α' β' γ' ^ ((n K q - 1) - k q u) *
         c₁ α' β' γ' ^ (m K * q - a q t * l q u) *
@@ -456,7 +461,7 @@ lemma house_factorized_le_prod :
   exact mul_le_mul (by grind [mul_assoc, house_mul_le]) le_rfl (house_nonneg _)
     (mul_nonneg (house_nonneg _) (house_nonneg _))
 
-include α β K σ α' β' γ' hirr htriv habc hq0 h2mq u t q in
+include K α' β' γ' u t q in
 lemma house_prod_le_smul_pow :
     house (((c₁ α' β' γ' : K) ^ (n K q - 1 - k q u) * (c₁ α' β' γ' : K) ^
         (m K * q - a q t * l q u) *
@@ -490,11 +495,11 @@ lemma house_smul_pow_le_abs :
   have hk := k_le_n_sub_one q u
   have hal := al_le_mq q u t
   have hbl := bl_le_mq q u t
-  have h_mq := mq_le_m_two_mnq q h2mq
+  have h_mq := mq_le_m_two_mnq q hq0 h2mq
   have hbd : ∀ x : K, house (c₁ α' β' γ' • x) ≤ ↑|c₁ α' β' γ'| * house x :=
     fun _ ↦ by rw [zsmul_eq_mul]; exact (house_mul_le _ _).trans_eq (by simp)
   gcongr
-  · rw [← house_intCast (K := K)]; simp
+  · rw [← @house_intCast K _]; simp
   · refine (pow_le_pow_right₀
         (one_le_house_of_isIntegral (isIntegral_c₁_smul_a_b_β' _ _ _ q t)
           (smul_ne_zero (c₁_ne_zero α' β' γ')
@@ -504,17 +509,20 @@ lemma house_smul_pow_le_abs :
     rw [show (↑(a q t) + b q t • β' : K) =
           ((a q t : ℤ) : K) + ((b q t : ℤ) : K) * β' by push_cast [nsmul_eq_mul]; rfl,
         mul_one_add (((|(q : ℤ)| : ℤ) : ℝ)) (house β')]
-    refine (house_add_le _ _).trans (add_le_add ?_ ((house_mul_le _ _).trans ?_)) <;>
-      simp only [house_intCast]
-    · simpa using (finProdFinEquiv.symm t).1.isLt
-    · gcongr; simpa using (finProdFinEquiv.symm t).2.isLt
+    refine (house_add_le _ _).trans (add_le_add ?_ ((house_mul_le _ _).trans ?_))
+    · simp only [house_intCast, a]
+      gcongr
+      exact_mod_cast Nat.succ_le_of_lt (finProdFinEquiv.symm t).1.isLt
+    · simp only [house_intCast, b]
+      gcongr
+      exact_mod_cast Nat.succ_le_of_lt (finProdFinEquiv.symm t).2.isLt
   · exact (pow_le_pow_left₀ (house_nonneg _) (hbd _) _).trans (pow_le_pow_right₀
       ((one_le_house_of_isIntegral (isIntegral_c₁α α' β' γ')
         (c₁α_ne_zero α β σ α' β' γ' hirr htriv habc)).trans (hbd _)) (hal.trans h_mq))
   · exact (pow_le_pow_left₀ (house_nonneg _) (hbd _) _).trans (pow_le_pow_right₀
       ((one_le_house_c₁γ α β σ α' β' γ' hirr htriv habc).trans (hbd _)) (hbl.trans h_mq))
 
-include α β K σ α' β' γ' hq0 h2mq u t q in
+include hq0 h2mq u t q in
 lemma abs_bound_le_c₂ :
     |(((c₁ α' β' γ') ^ (n K q - 1 - k q u) *
         (c₁ α' β' γ') ^ (m K * q - a q t * l q u) *
@@ -529,7 +537,7 @@ lemma abs_bound_le_c₂ :
   have hk := k_le_n_sub_one q u
   have hal := al_le_mq q u t
   have hbl := bl_le_mq q u t
-  have h_mq := mq_le_m_two_mnq q h2mq
+  have h_mq := mq_le_m_two_mnq q hq0 h2mq
   calc
     _ = |(c₁ α' β' γ')| ^ (n K q - 1 - k q u) *
           |(c₁ α' β' γ')| ^ (m K * q - a q t * l q u) *
@@ -553,7 +561,8 @@ lemma abs_bound_le_c₂ :
         (Nat.two_mul (m K * (2 * (m K * n K q)))), add_assoc]
       gcongr <;> omega
 
-include α β K σ α' β' γ' hq0 h2mq q in
+
+include α' β' γ' hq0 h2mq q in
 lemma c₂_bound_le_c₃ :
     ↑(c₂ α' β' γ') ^ (n K q) *
       (↑|↑q| ^ ((n K q ) - 1) * (1 + house β') ^ (n K q - 1) *
@@ -603,11 +612,12 @@ lemma house_matrixA_le :
       (c₃ α' β' γ' ^ (n K q : ℝ) * (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2)) := by
   simp only [A, systemCoeffs, RingOfIntegers.restrict, RingOfIntegers.map_mk]
   rw [house_cCoeffs_smul_eq_factorized]
-  exact (@house_factorized_le_prod K _ α β σ α' β' γ' hirr htriv habc _ q hq0 u t h2mq).trans
-    ((@house_prod_le_smul_pow K _ α β σ α' β' γ' hirr htriv habc _ q hq0 u t h2mq).trans
-      ((@house_smul_pow_le_abs K _ α β σ α' β' γ' hirr htriv habc _ q hq0 u t h2mq).trans
-        ((@abs_bound_le_c₂ K _ α β σ α' β' γ' _ q hq0 u t h2mq).trans
-          (@c₂_bound_le_c₃ K _ α β σ α' β' γ' _ q hq0 h2mq))))
+  have h₁ := @house_factorized_le_prod K _ α' β' γ' _ q u t
+  have h₂ := @house_prod_le_smul_pow K _ α' β' γ' _ q u t
+  have h₃ := @house_smul_pow_le_abs K _ α β σ α' β' γ' hirr htriv habc _ q hq0 u t h2mq
+  have h₄ := @abs_bound_le_c₂ K _ α' β' γ' _ q hq0 u t h2mq
+  have h₅ := @c₂_bound_le_c₃ K _ α' β' γ' _ q hq0 h2mq
+  exact h₁.trans (h₂.trans (h₃.trans (h₄.trans h₅)))
 
 open NumberField
 
