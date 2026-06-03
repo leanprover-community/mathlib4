@@ -36,5 +36,6 @@ jobs:
     with:
       concurrency_group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
       pr_branch_ref: ${{ github.event.pull_request.head.sha }}
+      cache_application_id: ${{ vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID }}
       runs_on: pr
     secrets: inherit

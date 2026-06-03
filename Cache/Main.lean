@@ -39,7 +39,6 @@ Commands:
 Options:
   --repo=OWNER/REPO  Override the repository to fetch/push cache from
   --staging-dir=<output-directory> Required for 'stage', 'stage!', 'unstage' and 'put-staged': staging directory.
-  --skip-proofwidgets  Skip fetching/building ProofWidgets release assets during 'get'
 
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' should be used manually, when hot-fixes are needed
@@ -53,10 +52,13 @@ Options:
 Valid arguments are:
 
 * Module names like 'Mathlib.Init'
+* Module globs like 'Mathlib.Data.+' (find all Lean files inside `Mathlib/Data/`)
+* Module globs like 'Mathlib.Data.*' (both of the above)
 * File names like 'Mathlib/Init.lean'
 * Folder names like 'Mathlib/Data/' (find all Lean files inside `Mathlib/Data/`)
 * With bash's automatic glob expansion one can also write things like
-  'Mathlib/**/Order/*.lean'.
+  'Mathlib/**/Order/*.lean'. However, one would need to write `Mathlib.Data.\\*`
+  to prevent glob expansion.
 
 # Environment variables
 
@@ -76,6 +78,12 @@ def curlArgs : List String :=
 def leanTarArgs : List String :=
   ["get", "get!", "put", "put!", "put-unpacked", "pack", "pack!", "unpack", "lookup", "stage", "stage!"]
 
+/-- The named options supported by the CLI. -/
+def knownNamedOpts : List String := ["repo", "staging-dir"]
+
+/-- The flag options supported by the CLI. -/
+def knownFlagOpts : List String := ["help"]
+
 /-- Parses an optional `--foo=bar` option. -/
 def parseNamedOpt (opt : String) (args : List String) : IO (Option String) := do
   let pref := s!"--{opt}="
@@ -88,9 +96,14 @@ def parseNamedOpt (opt : String) (args : List String) : IO (Option String) := do
 def parseFlagOpt (opt : String) (args : List String) : Bool :=
   args.elem s!"--{opt}"
 
+/-- Check whether `opt` (e.g. `"--repo=foo"` or `"--help"`) is a recognized option. -/
+def isKnownOpt (opt : String) : Bool :=
+  knownNamedOpts.any (opt.startsWith s!"--{·}=") ||
+  knownFlagOpts.any (opt == s!"--{·}")
+
 open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
-  if args.isEmpty then
+  if args.isEmpty || parseFlagOpt "help" args then
     println help
     Process.exit 0
   CacheM.run do
@@ -98,10 +111,15 @@ def main (args : List String) : IO Unit := do
   -- split args and named options
   let (options, args) := args.partition (·.startsWith "--")
 
-  -- parse relevant options, ignore the rest
+  -- check for unrecognized options
+  for opt in options do
+    unless isKnownOpt opt do
+      IO.eprintln s!"Unknown option '{opt}'"
+      IO.eprintln help
+      Process.exit 1
+
   let repo? ← parseNamedOpt "repo" options
   let stagingDir? ← parseNamedOpt "staging-dir" options
-  let skipProofWidgets := parseFlagOpt "skip-proofwidgets" options
 
   let mut roots : Std.HashMap Lean.Name FilePath ← parseArgs args
   if roots.isEmpty then do
@@ -115,15 +133,14 @@ def main (args : List String) : IO Unit := do
   let hashMemo ← getHashMemo roots
   let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
-  if leanTarArgs.contains (args.headD "") then validateLeanTar
   let get (args : List String) (force := false) (decompress := true) := do
     let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
-    getFiles repo? hashMap force force goodCurl decompress skipProofWidgets
+    getFiles repo? hashMap force force goodCurl decompress
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
     let repo := repo?.getD MATHLIBREPO
-    putFiles repo (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getToken)
+    putFiles repo (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getUploadAuth)
   let stage outDir (unpackedOnly := true) := do
     stageFiles outDir (← pack (verbose := true) (unpackedOnly := unpackedOnly))
   let unstage (overwrite := false) := do
@@ -134,7 +151,8 @@ def main (args : List String) : IO Unit := do
     if !(←stagingDir.isDir) then IO.println "--staging-dir must be a directory" return
     else
       let fileSet ← getFilesWithExtension stagingDir "ltar"
-      putFilesAbsolute repo fileSet (tempConfigFilePath := stagingDir / "curl.config") (overwrite := false) (← getToken)
+      putFilesAbsolute repo fileSet (tempConfigFilePath := stagingDir / "curl.config")
+        (overwrite := false) (← getUploadAuth)
 
   match args with
   | "get"  :: args => get args
@@ -161,10 +179,14 @@ def main (args : List String) : IO Unit := do
     putStaged stagingDir?.get!
   | ["commit"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
-    commit hashMap false (← getToken)
+    commit hashMap false (← getUploadAuth)
   | ["commit!"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
-    commit hashMap true (← getToken)
+    commit hashMap true (← getUploadAuth)
   | ["collect"] => IO.println "TODO"
   | "lookup" :: _ => lookup hashMap roots.keys
-  | _ => println help
+  | [] => println help -- unreachable: options are already partitioned out
+  | cmd :: _ =>
+    IO.eprintln s!"Unknown command '{cmd}'"
+    IO.eprintln help
+    Process.exit 1

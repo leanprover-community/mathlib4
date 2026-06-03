@@ -147,7 +147,7 @@ def HoCat.homEquivRight :
     RightHomotopyClass X Y ≃ (toHoCat.obj (mk X) ⟶ toHoCat.obj (mk Y)) where
   toFun := Quot.lift (fun f ↦ toHoCat.map (homMk f)) (fun _ _ h ↦ by rwa [toHoCat_map_eq_iff])
   invFun := Quot.lift (fun f ↦ .mk f.hom) (fun _ _ h ↦ by
-    simpa [RightHomotopyClass.mk_eq_mk_iff] using h)
+    simpa [RightHomotopyClass.mk_eq_mk_iff] using! h)
   left_inv := by rintro ⟨f⟩; rfl
   right_inv := by rintro ⟨f⟩; rfl
 
@@ -176,6 +176,7 @@ lemma HoCat.homEquivLeft_symm_apply (f : X ⟶ Y) :
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The inclusion functor `BifibrantObject.HoCat C ⥤ FibrantObject.HoCat C`. -/
 def HoCat.ιFibrantObject : HoCat C ⥤ FibrantObject.HoCat C :=
   CategoryTheory.Quotient.lift _
@@ -201,6 +202,7 @@ def toHoCatCompιFibrantObject :
     toHoCat (C := C) ⋙ HoCat.ιFibrantObject ≅
       ιFibrantObject ⋙ FibrantObject.toHoCat := Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The inclusion functor `BifibrantObject.HoCat C ⥤ CofibrantObject.HoCat C`. -/
 def HoCat.ιCofibrantObject : HoCat C ⥤ CofibrantObject.HoCat C :=
   CategoryTheory.Quotient.lift _
@@ -327,7 +329,7 @@ lemma bifibrantResolutionObj_hom_ext
     ← RightHomotopyClass.mk_eq_mk_iff]
   apply (RightHomotopyClass.precomp_bijective_of_cofibration_of_weakEquivalence
     _ (iBifibrantResolutionObj X).hom).1
-  simpa using h
+  simpa using! h
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The bifibrant resolution functor from the category of cofibrant objects
@@ -339,6 +341,7 @@ noncomputable def HoCat.bifibrantResolution' : CofibrantObject C ⥤ BifibrantOb
   map_id X := bifibrantResolutionObj_hom_ext (by simp)
   map_comp {X₁ X₂ X₃} f g := bifibrantResolutionObj_hom_ext (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The bifibrant resolution functor from the homotopy category of
 cofibrant objects to the homotopy category of bifibrant objects. -/
@@ -347,7 +350,7 @@ noncomputable def HoCat.bifibrantResolution :
   CategoryTheory.Quotient.lift _ CofibrantObject.HoCat.bifibrantResolution' (by
     intro X Y f g h
     apply bifibrantResolutionObj_hom_ext
-    simpa [← Functor.map_comp, toHoCat_map_eq_iff] using h.postcomp _)
+    simpa [← Functor.map_comp, toHoCat_map_eq_iff] using! h.postcomp _)
 
 @[simp]
 lemma HoCat.bifibrantResolution_obj (X : CofibrantObject C) :
@@ -428,16 +431,15 @@ noncomputable def HoCat.adj :
   left_triangle_components X := by
     obtain ⟨X, rfl⟩ := toHoCat_obj_surjective X
     obtain ⟨X, _, rfl⟩ := CofibrantObject.mk_surjective X
-    rw [← cancel_mono (HoCat.adjCounitIso.inv.app _), Category.assoc, Iso.hom_inv_id_app]
+    rw [comp_hom_eq_id]; push inv
     apply bifibrantResolutionObj_hom_ext
     dsimp
-    simp only [HoCat.adjCounitIso_inv_app, Category.comp_id, Category.id_comp,
+    simp only [HoCat.adjCounitIso_inv_app,
       BifibrantObject.HoCat.ιCofibrantObject_map_toHoCat_map, ObjectProperty.homMk_hom]
     apply bifibrantResolutionMap_fac'
   right_triangle_components X := by
     obtain ⟨X, rfl⟩ := BifibrantObject.toHoCat_obj_surjective X
-    rw [← cancel_mono (BifibrantObject.HoCat.ιCofibrantObject.map (HoCat.adjCounitIso.inv.app _)),
-      Category.assoc, ← Functor.map_comp, Iso.hom_inv_id_app]
+    rw [comp_hom_eq_id]; push inv
     cat_disch
 
 instance : IsIso (HoCat.adj (C := C)).counit := by

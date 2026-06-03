@@ -338,6 +338,11 @@ instance {S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] :
   .ofModule (fun x f g ↦ ext fun n ↦ by simp [Finset.smul_sum])
     fun x f g ↦ ext fun n ↦ by simp [Finset.smul_sum]
 
+@[simp]
+theorem algebraMap_apply_one {S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (x : R) :
+    algebraMap R (ArithmeticFunction S) x 1 = algebraMap R S x := by
+  simp [Algebra.algebraMap_eq_smul_one]
+
 instance {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
     Module (ArithmeticFunction R) (ArithmeticFunction M) where
   one_smul := one_smul'
@@ -643,5 +648,14 @@ theorem isMultiplicative_finsetProd [CommSemiring R] {ι : Type*}
   case cons a s ha ih =>
     rw [Finset.prod_cons]
     exact (hf a (by grind)).mul (by grind)
+
+@[arith_mult]
+theorem IsMultiplicative.pow [CommSemiring R] {f : ArithmeticFunction R}
+    (hf : f.IsMultiplicative) {k : ℕ} : IsMultiplicative (f ^ k) := by
+  induction k
+  case zero => simp
+  case succ k hk =>
+    rw [pow_succ]
+    exact hk.mul hf
 
 end ArithmeticFunction

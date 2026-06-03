@@ -28,7 +28,7 @@ norm, equivalent, power-multiplicative
 
 public section
 
-open Filter Real
+open Filter Real Algebra
 open scoped Topology
 
 /-- If `f : α →+* β` is bounded with respect to a ring seminorm `nα` on `α` and a
@@ -47,9 +47,8 @@ theorem contraction_of_isPowMul_of_boundedWrt {F : Type*} {α : outParam (Type*)
   intro n hn
   have h : (C ^ (1 / n : ℝ)) ^ n = C := by
     have hn0 : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (ne_of_gt hn)
-    rw [← rpow_natCast, ← rpow_mul (le_of_lt hC0), one_div, inv_mul_cancel₀ hn0, rpow_one]
-  apply le_of_pow_le_pow_left₀ (ne_of_gt hn)
-    (mul_nonneg (rpow_nonneg (le_of_lt hC0) _) (apply_nonneg _ _))
+    rw [← rpow_natCast, ← rpow_mul hC0.le, one_div, inv_mul_cancel₀ hn0, rpow_one]
+  apply le_of_pow_le_pow_left₀ (ne_of_gt hn) (by positivity)
   · rw [mul_pow, h, ← hβ _ hn, ← map_pow]
     apply le_trans (hC (x ^ n))
     rw [mul_le_mul_iff_right₀ hC0]
@@ -84,14 +83,14 @@ variable {R S : Type*} [NormedCommRing R] [CommRing S] [Algebra R S]
 theorem eq_of_powMul_faithful (f₁ : AlgebraNorm R S) (hf₁_pm : IsPowMul f₁) (f₂ : AlgebraNorm R S)
     (hf₂_pm : IsPowMul f₂)
     (h_eq : ∀ y : S, ∃ (C₁ C₂ : ℝ) (_ : 0 < C₁) (_ : 0 < C₂),
-      ∀ x : Algebra.adjoin R {y}, f₁ x.val ≤ C₁ * f₂ x.val ∧ f₂ x.val ≤ C₂ * f₁ x.val) :
+      ∀ x : R[y], f₁ x.val ≤ C₁ * f₂ x.val ∧ f₂ x.val ≤ C₂ * f₁ x.val) :
     f₁ = f₂ := by
   ext x
-  set g₁ : AlgebraNorm R (Algebra.adjoin R ({x} : Set S)) := AlgebraNorm.restriction _ f₁
-  set g₂ : AlgebraNorm R (Algebra.adjoin R ({x} : Set S)) := AlgebraNorm.restriction _ f₂
+  set g₁ : AlgebraNorm R R[(x : S)] := AlgebraNorm.restriction _ f₁
+  set g₂ : AlgebraNorm R R[(x : S)] := AlgebraNorm.restriction _ f₂
   have hg₁_pm : IsPowMul g₁ := IsPowMul.restriction _ hf₁_pm
   have hg₂_pm : IsPowMul g₂ := IsPowMul.restriction _ hf₂_pm
-  let y : Algebra.adjoin R ({x} : Set S) := ⟨x, Algebra.self_mem_adjoin_singleton R x⟩
+  let y : R[(x : S)] := ⟨x, self_mem_adjoin_singleton R x⟩
   have hy : x = y.val := rfl
   have h1 : f₁ y.val = g₁ y := rfl
   have h2 : f₂ y.val = g₂ y := rfl

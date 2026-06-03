@@ -78,9 +78,14 @@ theorem nonempty_of_measureReal_ne_zero (h : μ.real s ≠ 0) : s.Nonempty :=
     (c • μ).real s = c * μ.real s := by
   simp [measureReal_def]
 
+theorem map_measureReal_apply_of_aemeasurable [MeasurableSpace β] {f : α → β}
+    (hf : AEMeasurable f μ) {s : Set β} (hs : MeasurableSet s) :
+    (μ.map f).real s = μ.real (f ⁻¹' s) := by
+  simp_rw [measureReal_def, map_apply_of_aemeasurable hf hs]
+
 theorem map_measureReal_apply [MeasurableSpace β] {f : α → β} (hf : Measurable f)
-    {s : Set β} (hs : MeasurableSet s) : (μ.map f).real s = μ.real (f ⁻¹' s) := by
-  simp_rw [measureReal_def, map_apply hf hs]
+    {s : Set β} (hs : MeasurableSet s) : (μ.map f).real s = μ.real (f ⁻¹' s) :=
+  map_measureReal_apply_of_aemeasurable hf.aemeasurable hs
 
 @[gcongr] theorem measureReal_mono (h : s₁ ⊆ s₂) (h₂ : μ s₂ ≠ ∞ := by finiteness) :
     μ.real s₁ ≤ μ.real s₂ :=
@@ -152,7 +157,7 @@ theorem measureReal_biUnion_finset_le (s : Finset β) (f : β → Set α) :
 
 theorem measureReal_iUnion_fintype_le [Fintype β] (f : β → Set α) :
     μ.real (⋃ b, f b) ≤ ∑ p, μ.real (f p) := by
-  convert measureReal_biUnion_finset_le Finset.univ f
+  convert! measureReal_biUnion_finset_le Finset.univ f
   simp
 
 theorem measureReal_iUnion_fintype [Fintype β] {f : β → Set α} (hn : Pairwise (Disjoint on f))
@@ -406,7 +411,7 @@ theorem exists_nonempty_inter_of_measureReal_univ_lt_sum_measureReal [IsFiniteMe
     (fun i mi ↦ (h i mi).nullMeasurableSet)
   simp only [Measure.real] at H
   apply (ENNReal.toReal_lt_toReal (by finiteness) _).1
-  · convert H
+  · convert! H
     rw [ENNReal.toReal_sum (by finiteness)]
   · exact (ENNReal.sum_lt_top.mpr (fun i hi ↦ measure_lt_top ..)).ne
 

@@ -113,7 +113,7 @@ noncomputable def primesEquiv : HeightOneSpectrum R ≃ Nat.Primes where
   toFun v := ⟨natGenerator v, prime_natGenerator v⟩
   invFun p :=
     have h : Prime ((Ideal.span {(p.1 : ℤ)}).map (IsIntegralClosure.intEquiv R).symm) :=
-      map_prime_of_equiv _ (by simp [← Nat.prime_iff_prime_int, p.2]) (by simp [p.2.ne_zero])
+      Ideal.map_prime_of_equiv _ (by simp [← Nat.prime_iff_prime_int, p.2]) (by simp [p.2.ne_zero])
     .ofPrime h
   left_inv v := by
     simp only [Ideal.map_symm]
@@ -156,10 +156,10 @@ noncomputable def adicCompletionIntegers.padicIntEquiv (v : HeightOneSpectrum R)
     v.adicCompletionIntegers ℚ ≃A[ℤ] ℤ_[primesEquiv v] where
   __ := let e := (mapRingEquiv _ (withValEquiv v).continuous
           (withValEquiv v).symm.continuous).restrict _ _ fun _ ↦ by
-            simpa using (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
+            simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
         e.trans withValIntegersRingEquiv
   __ := let e := (mapEquiv (withValEquiv v)).subtype fun _ ↦ by
-          simpa using (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
+          simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
         (e.trans withValIntegersUniformEquiv).toHomeomorph
   commutes' := by simp
 
@@ -210,7 +210,7 @@ variable (R : Type*) [CommRing R] [IsDedekindDomain R] [Algebra R ℚ] [IsFracti
 noncomputable def adicCompletionEquiv (p : Nat.Primes) :
     ℚ_[p] ≃A[ℚ] ((primesEquiv (R := R)).symm p).adicCompletion ℚ := by
   apply (ContinuousAlgEquiv.cast (primesEquiv.apply_symm_apply p).symm).trans
-    (adicCompletion.padicEquiv ((primesEquiv (R := R)).symm p)).symm
+    (adicCompletion.padicEquiv (primesEquiv.symm p)).symm
 
 end Padic
 
@@ -226,7 +226,7 @@ variable (R : Type*) [CommRing R] [IsDedekindDomain R] [Algebra R ℚ] [IsFracti
 noncomputable def adicCompletionIntegersEquiv (p : Nat.Primes) :
     ℤ_[p] ≃A[ℤ] ((primesEquiv (R := R)).symm p).adicCompletionIntegers ℚ := by
   apply (ContinuousAlgEquiv.cast (primesEquiv.apply_symm_apply p).symm).trans
-    (adicCompletionIntegers.padicIntEquiv ((primesEquiv (R := R)).symm p)).symm
+    (adicCompletionIntegers.padicIntEquiv (primesEquiv.symm p)).symm
 
 /-- The diagram
 ```

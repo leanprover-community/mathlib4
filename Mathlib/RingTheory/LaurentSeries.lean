@@ -42,6 +42,7 @@ type with a zero. They are denoted `R⸨X⸩`.
 ## Main Results
 
 * Basic properties of Hasse derivatives
+
 ### About the `X`-Adic valuation:
 * The (integral) valuation of a power series is the order of the first non-zero coefficient, see
   `LaurentSeries.intValuation_le_iff_coeff_lt_eq_zero`.
@@ -244,8 +245,8 @@ theorem single_order_mul_powerSeriesPart (x : R⸨X⸩) :
   · rw [ofPowerSeries_apply, embDomain_notin_range]
     · contrapose! h
       exact order_le_of_coeff_ne_zero h.symm
-    · contrapose! h
-      simp only [Set.mem_range, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk] at h
+    · contrapose h
+      simp only [Nat.castOrderEmbedding_apply, Set.mem_range] at h
       lia
 
 theorem ofPowerSeries_powerSeriesPart (x : R⸨X⸩) :
@@ -338,9 +339,7 @@ theorem coeff_coe (i : ℤ) :
   · rw [Int.ofNat_eq_natCast, coeff_coe_powerSeries, if_neg (Int.natCast_nonneg _).not_gt,
       Int.natAbs_natCast]
   · rw [ofPowerSeries_apply, embDomain_notin_image_support, if_pos (Int.negSucc_lt_zero _)]
-    simp only [not_exists, RelEmbedding.coe_mk, Set.mem_image, not_and, Function.Embedding.coeFn_mk,
-      Ne, toPowerSeries_symm_apply_coeff, mem_support, imp_true_iff,
-      not_false_iff, reduceCtorEq]
+    simp
 
 theorem coe_C (r : R) : ((C r : R⟦X⟧) : R⸨X⸩) = HahnSeries.C r :=
   ofPowerSeries_C _
@@ -386,12 +385,6 @@ theorem single_one_eq_pow {R : Type*} [Semiring R] (n : ℕ) :
     single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
   simp
 
-@[deprecated HahnSeries.inv_single (since := "2025-11-07")]
-theorem single_inv (d : ℤ) {α : F} (hα : α ≠ 0) :
-    single (-d) (α⁻¹ : F) = (single (d : ℤ) (α : F))⁻¹ := by
-  apply eq_inv_of_mul_eq_one_right
-  simp [hα]
-
 theorem single_zpow (n : ℤ) :
     single (n : ℤ) (1 : F) = single (1 : ℤ) 1 ^ n := by
   match n with
@@ -426,7 +419,6 @@ open IsDedekindDomain.HeightOneSpectrum RatFunc WithZero
 
 variable {K}
 
-set_option backward.isDefEq.respectTransparency false in
 /- The `X`-adic valuation of a polynomial equals the `X`-adic valuation of
 its coercion to `K⟦X⟧`. -/
 theorem intValuation_eq_of_coe (P : K[X]) :
@@ -444,15 +436,14 @@ theorem intValuation_eq_of_coe (P : K[X]) :
     simp only [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, coe_eq_zero_iff, hP,
       not_false_eq_true, true_and, (idealX K).3]
   classical
-  rw [count_associates_factors_eq span_ne_zero.1
+  rw [Ideal.count_associates_factors_eq span_ne_zero.1
     (Ideal.span_singleton_prime Polynomial.X_ne_zero |>.mpr prime_X) span_ne_zero.2,
-    count_associates_factors_eq]
-  on_goal 1 => convert (normalized_count_X_eq_of_coe hP).symm
-  exacts [count_span_normalizedFactors_eq_of_normUnit hP Polynomial.normUnit_X prime_X,
-    count_span_normalizedFactors_eq_of_normUnit (by simp [hP]) normUnit_X X_prime,
+    Ideal.count_associates_factors_eq]
+  on_goal 1 => convert! (normalized_count_X_eq_of_coe hP).symm
+  exacts [Ideal.count_span_normalizedFactors_eq_of_normUnit hP Polynomial.normUnit_X prime_X,
+    Ideal.count_span_normalizedFactors_eq_of_normUnit (by simp [hP]) normUnit_X X_prime,
     span_ne_zero'.1, (idealX K).isPrime, span_ne_zero'.2]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The integral valuation of the power series `X : K⟦X⟧` equals `(ofAdd -1) : ℤᵐ⁰`. -/
 @[simp]
 theorem intValuation_X : (idealX K).intValuation X = exp (-1 : ℤ) := by
@@ -471,14 +462,14 @@ open scoped LaurentSeries
 abbrev polynomialValuationX : Valuation K⟮X⟯ ℤᵐ⁰ :=
   (Polynomial.idealX K).valuation _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem valuation_eq_LaurentSeries_valuation (P : K⟮X⟯) :
     polynomialValuationX K P = (PowerSeries.idealX K).valuation K⸨X⸩ P := by
   refine RatFunc.induction_on' P ?_
   intro f g h
   rw [Polynomial.valuation_of_mk K f h, RatFunc.mk_eq_mk' f h, Eq.comm]
-  convert @valuation_of_mk' K⟦X⟧ _ _ K⸨X⸩ _ _ _ (PowerSeries.idealX K) f
-        ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 <| (by simp [h])⟩
+  convert!
+    @valuation_of_mk' K⟦X⟧ _ _ K⸨X⸩ _ _ _ (PowerSeries.idealX K) f
+      ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 <| (by simp [h])⟩
   · simp [← IsScalarTower.algebraMap_apply K[X] K⟮X⟯ K⸨X⸩]
   exacts [intValuation_eq_of_coe _, intValuation_eq_of_coe _]
 
@@ -489,17 +480,14 @@ namespace LaurentSeries
 
 open IsDedekindDomain.HeightOneSpectrum PowerSeries RatFunc WithZero
 
-set_option backward.isDefEq.respectTransparency false in
 instance valued : Valued K⸨X⸩ ℤᵐ⁰ := Valued.mk' ((PowerSeries.idealX K).valuation _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma valuation_def : (Valued.v : Valuation K⸨X⸩ ℤᵐ⁰) = (PowerSeries.idealX K).valuation _ := rfl
 
 lemma valuation_coe_ratFunc (f : K⟮X⟯) :
     Valued.v (f : K⸨X⸩) = Valued.v f := by
   simp [adicValued_apply, ← valuation_eq_LaurentSeries_valuation]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem valuation_X_pow (s : ℕ) :
     Valued.v (((X : K⟦X⟧) : K⸨X⸩) ^ s) = exp (-(s : ℤ)) := by
   rw [map_pow, valuation_def, ← LaurentSeries.coe_algebraMap,
@@ -513,7 +501,6 @@ theorem valuation_single_zpow (s : ℤ) :
   · rw [Int.negSucc_eq, ← inv_inj, ← map_inv₀, inv_single, neg_neg, ← Int.natCast_succ, inv_one,
       ← HahnSeries.ofPowerSeries_X_pow, PowerSeries.coe_pow, valuation_X_pow, exp_neg]
 
-set_option backward.isDefEq.respectTransparency false in
 /- The coefficients of a power series vanish in degree strictly less than its valuation. -/
 theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
     (H : Valued.v (f : K⸨X⸩) ≤ exp (-d : ℤ)) :
@@ -522,9 +509,8 @@ theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
   apply (PowerSeries.X_pow_dvd_iff).mp _ n hnd
   rwa [← LaurentSeries.coe_algebraMap, valuation_def, valuation_of_algebraMap,
     intValuation_le_pow_iff_dvd (PowerSeries.idealX K) f d, PowerSeries.idealX,
-    Ideal.span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd] at H
+    Ideal.span_singleton_pow, Ideal.span_singleton_dvd_span_singleton_iff_dvd] at H
 
-set_option backward.isDefEq.respectTransparency false in
 /- The valuation of a power series is the order of the first non-zero coefficient. -/
 theorem intValuation_le_iff_coeff_lt_eq_zero {d : ℕ} (f : K⟦X⟧) :
     Valued.v (f : K⸨X⸩) ≤ exp (-d : ℤ) ↔
@@ -532,10 +518,10 @@ theorem intValuation_le_iff_coeff_lt_eq_zero {d : ℕ} (f : K⟦X⟧) :
   have : PowerSeries.X ^ d ∣ f ↔ ∀ n : ℕ, n < d → (PowerSeries.coeff n) f = 0 :=
     ⟨PowerSeries.X_pow_dvd_iff.mp, PowerSeries.X_pow_dvd_iff.mpr⟩
   rw [← this, ← LaurentSeries.coe_algebraMap, valuation_def, valuation_of_algebraMap,
-    ← span_singleton_dvd_span_singleton_iff_dvd, ← Ideal.span_singleton_pow]
+    ← Ideal.span_singleton_dvd_span_singleton_iff_dvd, ← Ideal.span_singleton_pow]
   apply intValuation_le_pow_iff_dvd
 
-/- The coefficients of a Laurent series vanish in degree strictly less than its valuation. -/
+/-- The coefficients of a Laurent series vanish in degree strictly less than its valuation. -/
 theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : K⸨X⸩}
     (H : Valued.v f ≤ exp (-D)) : n < D → f.coeff n = 0 := by
   intro hnd
@@ -561,8 +547,7 @@ theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : K⸨X⸩}
       exp_add, valuation_single_zpow, neg_neg]
     gcongr
 
-set_option backward.isDefEq.respectTransparency false in
-/- The valuation of a Laurent series is the order of the first non-zero coefficient. -/
+/-- The valuation of a Laurent series is the order of the first non-zero coefficient. -/
 theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : K⸨X⸩} :
     Valued.v f ≤ exp (-D : ℤ) ↔ ∀ n : ℤ, n < D → f.coeff n = 0 := by
   refine ⟨fun hnD n hn => coeff_zero_of_lt_valuation K hnD hn, fun h_val_f => ?_⟩
@@ -608,7 +593,7 @@ theorem valuation_le_iff_coeff_lt_log_eq_zero {D : ℤᵐ⁰} (hD : D ≠ 0) {f 
     rename_i D
     rw [← exp, ← neg_neg D, valuation_le_iff_coeff_lt_eq_zero, log_exp, neg_neg]
 
-/- Two Laurent series whose difference has small valuation have the same coefficients for
+/-- Two Laurent series whose difference has small valuation have the same coefficients for
 small enough indices. -/
 theorem eq_coeff_of_valuation_sub_lt {d n : ℤ} {f g : K⸨X⸩}
     (H : Valued.v (g - f) ≤ exp (-d)) : n < d → g.coeff n = f.coeff n := by
@@ -619,7 +604,7 @@ theorem eq_coeff_of_valuation_sub_lt {d n : ℤ} {f g : K⸨X⸩}
     rw [← HahnSeries.coeff_sub]
     apply coeff_zero_of_lt_valuation K H hn
 
-/- Every Laurent series of valuation less than `(1 : ℤᵐ⁰)` comes from a power series. -/
+/-- Every Laurent series of valuation less than `(1 : ℤᵐ⁰)` comes from a power series. -/
 theorem val_le_one_iff_eq_coe (f : K⸨X⸩) : Valued.v f ≤ (1 : ℤᵐ⁰) ↔
     ∃ F : K⟦X⟧, F = f := by
   rw [valuation_le_iff_coeff_lt_log_eq_zero _ one_ne_zero, log_one, neg_zero]
@@ -656,7 +641,7 @@ lemma valuation_surjective : Function.Surjective (Valued.v (R := K⸨X⸩)) := b
   · use ((HahnSeries.single (-WithZero.log n)) 1)
     simp [LaurentSeries.valuation_single_zpow, exp_log hn0]
 
-/- Sending a Laurent series to its `d`-th coefficient is uniformly continuous (independently of the
+/-- Sending a Laurent series to its `d`-th coefficient is uniformly continuous (independently of the
 uniformity with which `K` is endowed). -/
 theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
     UniformContinuous fun f : K⸨X⸩ ↦ f.coeff d := by
@@ -722,9 +707,9 @@ lemma Cauchy.exists_lb_eventual_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy �
   intro g hg
   have h_prod : (f, g) ∈ S ×ˢ T := by simp [hf.1, hg.2]
   refine hN g (le_of_lt ?_)
-  simpa [Valuation.restrict_def, ← Valuation.restrict_lt_one_iff] using H h_prod
+  simpa [Valuation.restrict_def, ← Valuation.restrict_lt_one_iff] using! H h_prod
 
-/- The support of `Cauchy.coeff` has a lower bound. -/
+/-- The support of `Cauchy.coeff` has a lower bound. -/
 theorem Cauchy.exists_lb_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
     ∃ N, ∀ n, n < N → coeff hℱ n = 0 := by
   let _ : UniformSpace K := ⊥
@@ -734,7 +719,7 @@ theorem Cauchy.exists_lb_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
   simp only [pure_zero, nonpos_iff]
   apply Filter.mem_of_superset hN (fun _ ha ↦ ha _ hn)
 
-/- The support of `Cauchy.coeff` is bounded below -/
+/-- The support of `Cauchy.coeff` is bounded below -/
 theorem Cauchy.coeff_support_bddBelow {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
     BddBelow (coeff hℱ).support := by
   refine ⟨(exists_lb_support hℱ).choose, fun d hd ↦ ?_⟩
@@ -748,7 +733,7 @@ follows from `Cauchy.coeff_support_bddBelow` -/
 def Cauchy.limit {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) : K⸨X⸩ :=
   HahnSeries.mk (coeff hℱ) <| Set.IsWF.isPWO (coeff_support_bddBelow _).wellFoundedOn_lt
 
-/- The following lemma shows that for every `d` smaller than the minimum between the integers
+/-- The following lemma shows that for every `d` smaller than the minimum between the integers
 produced in `Cauchy.exists_lb_eventual_support` and `Cauchy.exists_lb_support`, for almost all
 series in `ℱ` the `d`th coefficient coincides with the `d`th coefficient of `Cauchy.coeff hℱ`. -/
 theorem Cauchy.exists_lb_coeff_ne {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
@@ -757,7 +742,7 @@ theorem Cauchy.exists_lb_coeff_ne {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
   refine ⟨min N₁ N₂, ℱ.3 hN₁ fun _ hf d hd ↦ ?_⟩
   rw [hf d (lt_of_lt_of_le hd (min_le_left _ _)), hN₂ d (lt_of_lt_of_le hd (min_le_right _ _))]
 
-/- Given a Cauchy filter `ℱ` in the Laurent Series and a bound `D`, for almost all series in the
+/-- Given a Cauchy filter `ℱ` in the Laurent Series and a bound `D`, for almost all series in the
 filter the coefficients below `D` coincide with `Cauchy.coeff hℱ`. -/
 theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) {D : ℤ} :
     ∀ᶠ f : K⸨X⸩ in ℱ, ∀ d, d < D → coeff hℱ d = f.coeff d := by
@@ -766,7 +751,7 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
   have intersec₁ :
     (⋂ n ∈ Set.Iio D, φ n) ⊆ {x : K⸨X⸩ | ∀ d : ℤ, d < D → coeff hℱ d = x.coeff d} := by
     intro _ hf
-    simpa only [Set.mem_iInter] using hf
+    simpa only [Set.mem_iInter] using! hf
   -- The goal is now to show that the intersection of all `φ d` (for `d < D`) is in `ℱ`.
   let ℓ := (exists_lb_coeff_ne hℱ).choose
   let N := max ℓ D
@@ -785,7 +770,7 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
     constructor
     · have := (exists_lb_coeff_ne hℱ).choose_spec
       rw [Filter.eventually_iff] at this
-      convert this
+      convert! this
       ext
       simp only [Set.mem_iInter, Set.mem_setOf_eq]; rfl
     · rw [biInter_mem (Set.finite_Icc ℓ N)]
@@ -796,7 +781,7 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
 open scoped Topology
 open MonoidWithZeroHom.ValueGroup₀
 
-/- The main result showing that the Cauchy filter tends to the `Cauchy.limit` -/
+/-- The main result showing that the Cauchy filter tends to the `Cauchy.limit` -/
 theorem Cauchy.eventually_mem_nhds {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ)
     {U : Set K⸨X⸩} (hU : U ∈ 𝓝 (Cauchy.limit hℱ)) : ∀ᶠ f in ℱ, f ∈ U := by
   obtain ⟨γ, hU₁⟩ := Valued.mem_nhds.mp hU
@@ -814,7 +799,7 @@ theorem Cauchy.eventually_mem_nhds {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ)
   rw [HahnSeries.coeff_sub, sub_eq_zero, eq_comm]
   exact hf _ hn
 
-/- Laurent Series with coefficients in a field are complete w.r.t. the `X`-adic valuation -/
+/-- Laurent Series with coefficients in a field are complete w.r.t. the `X`-adic valuation -/
 instance instLaurentSeriesComplete : CompleteSpace K⸨X⸩ :=
   ⟨fun hℱ ↦ ⟨Cauchy.limit hℱ, fun _ hS ↦ Cauchy.eventually_mem_nhds hℱ hS⟩⟩
 
@@ -826,7 +811,6 @@ open scoped Multiplicative
 
 open LaurentSeries PowerSeries IsDedekindDomain.HeightOneSpectrum WithZero RatFunc
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_Polynomial_intValuation_lt (F : K⟦X⟧) (η : ℤᵐ⁰ˣ) :
     ∃ P : K[X], (PowerSeries.idealX K).intValuation (F - P) < η := by
   by_cases! h_neg : 1 < η
@@ -852,7 +836,6 @@ theorem exists_Polynomial_intValuation_lt (F : K⟦X⟧) (η : ℤᵐ⁰ˣ) :
       Multiplicative.ofAdd_lt]
     exact Int.zero_lt_one
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For every Laurent series `f` and every `γ : ℤᵐ⁰` one can find a rational function `Q` such
 that the `X`-adic valuation `v` satisfies `v (f - Q) < γ`. -/
 theorem exists_ratFunc_val_lt (f : K⸨X⸩) (γ : ℤᵐ⁰ˣ) :
@@ -1010,7 +993,14 @@ abbrev extensionAsRingHom :=
 /-- An abbreviation for the `X`-adic completion of `K⟮X⟯` -/
 abbrev RatFuncAdicCompl := adicCompletion K⟮X⟯ (idealX K)
 
-/- The two instances below make `comparePkg` and `comparePkg_eq_extension` slightly faster. -/
+instance : Field (ratfuncAdicComplPkg (K := K).space) :=
+  inferInstanceAs <| Field (RatFuncAdicCompl K)
+
+-- help typeclass inference along
+instance : Valued (ratfuncAdicComplPkg (K := K).space) (WithZero (Multiplicative ℤ)) :=
+  inferInstanceAs <| Valued (RatFuncAdicCompl K) (WithZero (Multiplicative ℤ))
+
+/-! The two instances below make `comparePkg` and `comparePkg_eq_extension` slightly faster. -/
 instance : UniformSpace (RatFuncAdicCompl K) := inferInstance
 instance : UniformSpace K⸨X⸩ := inferInstance
 
@@ -1041,7 +1031,6 @@ equivalence: it goes from `K⸨X⸩` to `RatFuncAdicCompl K` -/
 abbrev LaurentSeriesRingEquiv : K⸨X⸩ ≃+* RatFuncAdicCompl K :=
   (ratfuncAdicComplRingEquiv K).symm
 
-@[simp]
 lemma LaurentSeriesRingEquiv_def (f : K⟦X⟧) :
     (LaurentSeriesRingEquiv K) f = (LaurentSeriesPkg K).compare ratfuncAdicComplPkg (f : K⸨X⸩) :=
   rfl
@@ -1096,7 +1085,7 @@ theorem tendsto_valuation (a : (idealX K).adicCompletion K⟮X⟯) :
         intro h
         simp only [h, map_zero] at hx
         tauto)
-      simp  [Units.val_mk0, Valuation.restrict_lt_iff, hx]
+      simp [Units.val_mk0, Valuation.restrict_lt_iff, hx]
     · refine Set.Subset.trans (fun a _ ↦ ?_) (Set.preimage_mono γ_le)
       rw [Set.mem_preimage, Set.mem_Iio, ← Valued.valuedCompletion_apply a]
       simp_all
@@ -1108,7 +1097,7 @@ theorem tendsto_valuation (a : (idealX K).adicCompletion K⟮X⟯) :
     rw [← valuedAdicCompletion_eq_valuation']
     exact (Valuation.restrict_inj _).mp <| Valuation.map_eq_of_sub_lt Valued.v.restrict val_y
 
-/- The extension of the `X`-adic valuation from `K⟮X⟯` up to its abstract completion coincides,
+/-- The extension of the `X`-adic valuation from `K⟮X⟯` up to its abstract completion coincides,
 modulo the isomorphism with `K⸨X⸩`, with the `X`-adic valuation on `K⸨X⸩`. -/
 theorem valuation_compare (f : K⸨X⸩) :
     (Valued.v : (RatFuncAdicCompl K) → ℤᵐ⁰)
@@ -1119,8 +1108,7 @@ theorem valuation_compare (f : K⸨X⸩) :
   rw [← valuation_LaurentSeries_equal_extension, ← compare_comp_eq_compare ratfuncAdicComplPkg _]
   · exact congr_fun (ratfuncAdicComplPkg.isDenseInducing.extend_unique
       Valued.valuedCompletion_apply (Valued.continuous_valuation_of_surjective
-      (K := (UniformSpace.Completion (WithVal (polynomialValuationX K))))
-      (valuedAdicCompletion_surjective K⟮X⟯ (idealX K)))).symm _
+        (valuedAdicCompletion_surjective _ _))).symm _
   · refine Valued.continuous_valuation_of_surjective (fun x ↦ ?_)
     obtain ⟨y, rfl⟩ := RatFunc.valuation_surjective K x
     exact ⟨.toVal _ y, rfl⟩
@@ -1153,7 +1141,7 @@ lemma powerSeriesEquivSubring_coe_apply (f : K⟦X⟧) :
     (powerSeriesEquivSubring K f : K⸨X⸩) = ofPowerSeries ℤ K f :=
   rfl
 
-/- Through the isomorphism `LaurentSeriesRingEquiv`, power series land in the unit ball inside the
+/-- Through the isomorphism `LaurentSeriesRingEquiv`, power series land in the unit ball inside the
 completion of `K⟮X⟯`. -/
 theorem mem_integers_of_powerSeries (F : K⟦X⟧) :
     (LaurentSeriesRingEquiv K) F ∈ (idealX K).adicCompletionIntegers K⟮X⟯ := by
@@ -1161,7 +1149,7 @@ theorem mem_integers_of_powerSeries (F : K⟦X⟧) :
     valuation_compare, val_le_one_iff_eq_coe]
   exact ⟨F, rfl⟩
 
-/- Conversely, all elements in the unit ball inside the completion of `K⟮X⟯` come from a power
+/-- Conversely, all elements in the unit ball inside the completion of `K⟮X⟯` come from a power
 series through the isomorphism `LaurentSeriesRingEquiv`. -/
 theorem exists_powerSeries_of_memIntegers {x : RatFuncAdicCompl K}
     (hx : x ∈ (idealX K).adicCompletionIntegers K⟮X⟯) :
@@ -1213,7 +1201,6 @@ instance : Algebra K ((idealX K).adicCompletionIntegers K⟮X⟯) :=
     ((LaurentSeriesRingEquiv K).toRingHom.comp HahnSeries.C).codRestrict _
       (algebraMap_C_mem_adicCompletionIntegers K)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The algebra isomorphism between `K⟦X⟧` and the unit ball inside the `X`-adic completion of
 `K⟮X⟯`. -/
 def powerSeriesAlgEquiv : K⟦X⟧ ≃ₐ[K] (idealX K).adicCompletionIntegers K⟮X⟯ := by

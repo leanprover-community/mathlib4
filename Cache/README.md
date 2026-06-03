@@ -89,7 +89,8 @@ These allow overriding the cache endpoints, useful for mirrors or custom deploym
 
 | Variable                 | Description                                    |
 |--------------------------|------------------------------------------------|
-| `MATHLIB_CACHE_SAS`      | Azure SAS token (when using Azure backend)     |
+| `MATHLIB_CACHE_AZURE_BEARER_TOKEN` | Azure bearer token (preferred for Azure backend) |
+| `MATHLIB_CACHE_SAS`      | Azure SAS token fallback (for Azure backend)   |
 | `MATHLIB_CACHE_S3_TOKEN` | S3 credentials (when using Cloudflare backend) |
 
 ## How It Works
@@ -176,7 +177,9 @@ lake exe cache get
 
 # Upload to a custom endpoint
 export MATHLIB_CACHE_PUT_URL="https://my-upload.example.com/mathlib4"
-export MATHLIB_CACHE_SAS="your-auth-token"  # or MATHLIB_CACHE_S3_TOKEN for S3
+export MATHLIB_CACHE_AZURE_BEARER_TOKEN="your-bearer-token"  # preferred for Azure
+# export MATHLIB_CACHE_SAS="your-sas-token"                  # Azure fallback
+# export MATHLIB_CACHE_S3_TOKEN="ACCESS_KEY:SECRET_KEY"      # for S3/Cloudflare
 lake exe cache put
 ```
 

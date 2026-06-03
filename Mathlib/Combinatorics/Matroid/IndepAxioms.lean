@@ -165,7 +165,7 @@ namespace IndepMatroid
   maximality := M.indep_maximal
   subset_ground B hB := M.subset_ground B hB.1
 
-@[simp] theorem matroid_indep_iff {M : IndepMatroid α} {I : Set α} :
+theorem matroid_indep_iff {M : IndepMatroid α} {I : Set α} :
     M.matroid.Indep I ↔ M.Indep I := Iff.rfl
 
 /-- If `Indep` has the 'compactness' property that each set `I` satisfies `Indep I` if and only if
@@ -383,7 +383,6 @@ instance ofBddAugment_rankFinite (E : Set α) Indep indep_empty indep_subset ind
   rw [IndepMatroid.ofBddAugment]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is finite, then any collection of subsets of `E` satisfying
   the usual independence axioms determines a matroid -/
 protected def ofFinite {E : Set α} (hE : E.Finite) (Indep : Set α → Prop)

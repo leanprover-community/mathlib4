@@ -20,7 +20,7 @@ This file builds on `Data.Int.Init` by adding basic lemmas on integers.
 depending on Mathlib definitions.
 -/
 
-@[expose] public section
+public section
 
 open Nat
 
@@ -32,25 +32,6 @@ attribute [gcongr] ofNat_le
 instance instNontrivial : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
 @[simp] lemma ofNat_injective : Function.Injective ofNat := @Int.ofNat.inj
-
-section inductionOn'
-
-variable {C : ℤ → Sort*} (z b : ℤ)
-  (H0 : C b) (Hs : ∀ k, b ≤ k → C k → C (k + 1)) (Hp : ∀ k ≤ b, C k → C (k - 1))
-
-variable {z b H0 Hs Hp}
-
-lemma inductionOn'_add_one (hz : b ≤ z) :
-    (z + 1).inductionOn' b H0 Hs Hp = Hs z hz (z.inductionOn' b H0 Hs Hp) := by
-  apply cast_eq_iff_heq.mpr
-  lift z - b to ℕ using Int.sub_nonneg.mpr hz with zb hzb
-  rw [show z + 1 - b = zb + 1 by lia]
-  have : b + zb = z := by lia
-  subst this
-  convert cast_heq _ _
-  rw [Int.inductionOn', cast_eq_iff_heq, ← hzb]
-
-end inductionOn'
 
 section strongRec
 
@@ -77,7 +58,7 @@ lemma natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_natCast n�
 
 lemma pow_right_injective (h : 1 < a.natAbs) : ((a ^ ·) : ℕ → ℤ).Injective := by
   refine (?_ : (natAbs ∘ (a ^ · : ℕ → ℤ)).Injective).of_comp
-  convert Nat.pow_right_injective h using 2
+  convert! Nat.pow_right_injective h using 2
   rw [Function.comp_apply, natAbs_pow]
 
 /-! ### dvd -/

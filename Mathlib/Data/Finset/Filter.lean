@@ -147,12 +147,8 @@ theorem filter_congr_decidable (s : Finset α) (p : α → Prop) (h : DecidableP
 @[simp]
 theorem filter_true {h} (s : Finset α) : @filter _ (fun _ => True) h s = s := by ext; simp
 
-@[deprecated (since := "2025-08-24")] alias filter_True := filter_true
-
 @[simp]
 theorem filter_false {h} (s : Finset α) : @filter _ (fun _ => False) h s = ∅ := by ext; simp
-
-@[deprecated (since := "2025-08-24")] alias filter_False := filter_false
 
 variable {p q}
 
@@ -176,6 +172,7 @@ theorem filter_false_of_mem (h : ∀ x ∈ s, ¬p x) : s.filter p = ∅ := filte
 theorem filter_const (p : Prop) [Decidable p] (s : Finset α) :
     (s.filter fun _a => p) = if p then s else ∅ := by split_ifs <;> simp [*]
 
+@[congr]
 theorem filter_congr {s : Finset α} (H : ∀ x ∈ s, p x ↔ q x) : filter p s = filter q s :=
   eq_of_veq <| Multiset.filter_congr H
 
@@ -228,6 +225,11 @@ lemma filter_inj : s.filter p = t.filter p ↔ ∀ ⦃a⦄, p a → (a ∈ s ↔
 
 lemma filter_inj' : s.filter p = s.filter q ↔ ∀ ⦃a⦄, a ∈ s → (p a ↔ q a) := by
   simp [Finset.ext_iff]
+
+@[simp]
+lemma filter_mem_eq_of_subset [DecidablePred (· ∈ s)] (hst : s ⊆ t) :
+    t.filter (· ∈ s) = s := by
+  grind
 
 end Filter
 

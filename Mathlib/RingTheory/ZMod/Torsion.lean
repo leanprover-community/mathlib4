@@ -15,7 +15,7 @@ This file shows that the `ZMod p` has `p - 1` roots-of-unity.
 
 -/
 
-@[expose] public section
+public section
 
 namespace ZMod
 
