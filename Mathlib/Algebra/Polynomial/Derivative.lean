@@ -399,7 +399,7 @@ theorem derivativeFinsupp_derivative (p : R[X]) :
 section IsAddTorsionFree
 variable [IsAddTorsionFree R]
 
-@[simp] lemma mem_support_derivative : n ∈ (derivative p).support ↔ n + 1 ∈ p.support := by
+lemma mem_support_derivative : n ∈ (derivative p).support ↔ n + 1 ∈ p.support := by
   suffices ¬p.coeff (n + 1) * (n + 1 : ℕ) = 0 ↔ coeff p (n + 1) ≠ 0 by
     simpa only [mem_support_iff, coeff_derivative, Ne, Nat.cast_succ]
   rw [← nsmul_eq_mul', smul_eq_zero]
