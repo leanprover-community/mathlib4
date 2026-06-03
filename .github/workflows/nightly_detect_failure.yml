@@ -6,6 +6,13 @@ on:
     types:
       - completed
 
+# Serialize reporting runs per branch so the "read last message, then post" dedup in
+# `report_success` can't interleave between two concurrent runs (which would double-post ✅).
+# Never cancel in-flight runs: `housekeeping` may be mid-push of a tag or branch.
+concurrency:
+  group: nightly-detect-failure-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: false
+
 jobs:
   handle_failure:
 
@@ -16,7 +23,7 @@ jobs:
 
     steps:
     - name: Send message on Zulip
-      uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+      uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'
@@ -28,7 +35,72 @@ jobs:
           ❌ The latest CI for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}) ([${{ github.event.workflow_run.head_sha }}](https://github.com/${{ github.repository }}/commit/${{ github.event.workflow_run.head_sha }})).
           You can `git fetch; git checkout nightly-testing` and push a fix.
 
-  handle_success:
+  # Post the ✅ status as a standalone job, independent of the `housekeeping` job below.
+  # This is the user-facing health signal for the nightly-testing branch, so it must run
+  # on every green CI regardless of the toolchain (nightly/rc/stable) and regardless of
+  # whether any housekeeping step fails. It needs nothing but the Zulip API.
+  report_success:
+    if: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' &&
+            github.event.workflow_run.conclusion == 'success' &&
+            github.event.workflow_run.head_branch == 'nightly-testing' }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install Zulip API client
+      run: pip install zulip
+
+    - name: Check last message and post if necessary
+      env:
+        ZULIP_EMAIL: 'github-mathlib4-bot@leanprover.zulipchat.com'
+        ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
+        ZULIP_SITE: 'https://leanprover.zulipchat.com'
+        # Use the SHA whose CI succeeded. This is the tested commit and is always available
+        # (it does not depend on the toolchain being a nightly, unlike the old `env.SHA`,
+        # which came from the `nightly-testing-YYYY-MM-DD` tag created in the housekeeping job).
+        SHA: ${{ github.event.workflow_run.head_sha }}
+      run: |
+        import os
+        import zulip
+        client = zulip.Client(email=os.getenv('ZULIP_EMAIL'), api_key=os.getenv('ZULIP_API_KEY'), site=os.getenv('ZULIP_SITE'))
+
+        success_message = f"✅ The latest CI for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has succeeded! ([{os.getenv('SHA')}](https://github.com/${{ github.repository }}/commit/{os.getenv('SHA')}))"
+
+        # Get the recent messages from the bot in the 'status updates' topic.
+        # We narrow by sender to ignore human replies in between.
+        # We look at several recent messages (not just the latest) so that an intervening
+        # 🛠️❗ housekeeping notice or ⚠️ warning posted to this same topic does not cause us
+        # to re-post a duplicate ✅ when CI is re-run for the same SHA.
+        bot_email = 'github-mathlib4-bot@leanprover.zulipchat.com'
+        request = {
+          'anchor': 'newest',
+          'num_before': 5,
+          'num_after': 0,
+          'narrow': [
+            {'operator': 'stream', 'operand': 'nightly-testing-mathlib'},
+            {'operator': 'topic', 'operand': 'Mathlib status updates'},
+            {'operator': 'sender', 'operand': bot_email}
+          ],
+          'apply_markdown': False    # Otherwise the content test below fails.
+        }
+        response = client.get_messages(request)
+        messages = response['messages']
+        if not any(message['content'] == success_message for message in messages):
+            # Post the success message
+            request = {
+                'type': 'stream',
+                'to': 'nightly-testing-mathlib',
+                'topic': 'Mathlib status updates',
+                'content': success_message
+            }
+            result = client.send_message(request)
+            print(result)
+      shell: python
+
+  # Housekeeping for a green nightly-testing build: tag the commit, advance the tracking
+  # branches, merge the nightly into Lean's `nightly-with-mathlib`, and remind/PR the bump
+  # branch. None of this is the user-facing status report (that is `report_success` above),
+  # so when it can't run (non-nightly toolchain) or fails, it must not silence the ✅.
+  housekeeping:
     if: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' &&
             github.event.workflow_run.conclusion == 'success' &&
             github.event.workflow_run.head_branch == 'nightly-testing' }}
@@ -50,7 +122,7 @@ jobs:
 
     # This token is masked by the token minting action and will not be logged accidentally.
     - name: Checkout code
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
         # Pin to the SHA whose CI just succeeded, not the current tip of `nightly-testing`,
         # which may have advanced while CI was running. Without this, the tag and
@@ -67,9 +139,11 @@ jobs:
         # In case `nightly-testing` does have its history rewritten, we do a force push once a day.
         git push origin HEAD:nightly-testing-green
     - name: Create a nightly-testing-YYYY-MM-DD tag
+      id: tag
       run: |
         toolchain="$(<lean-toolchain)"
         if [[ $toolchain =~ leanprover/lean4:nightly-([a-zA-Z0-9_-]+) ]]; then
+          echo "is_nightly=true" >> "${GITHUB_OUTPUT}"
           version=${BASH_REMATCH[1]}
           printf 'NIGHTLY=%s\n' "${version}" >> "${GITHUB_ENV}"
           # Check if the remote tag exists
@@ -102,17 +176,23 @@ jobs:
           hash="$(git rev-parse "nightly-testing-${version}")"
           printf 'SHA=%s\n' "${hash}" >> "${GITHUB_ENV}"
         else
-          echo "Error: The file lean-toolchain does not contain the expected pattern."
-          exit 1
+          # nightly-testing is on a non-nightly toolchain (e.g. an rc or stable release such
+          # as `v4.31.0-rc1`). There is no `nightly-YYYY-MM-DD` to tag, no Lean nightly to
+          # merge, and no bump-branch reminder to compute, so we skip the rest of the
+          # housekeeping rather than failing. The ✅ status is still posted by `report_success`.
+          echo "is_nightly=false" >> "${GITHUB_OUTPUT}"
+          echo "lean-toolchain '$toolchain' is not a nightly (rc/stable?); skipping tag, lean merge, and bump-branch reminders."
         fi
 
     # Next, we'll update the `nightly-with-mathlib` branch at Lean.
     - name: Cleanup workspace
+      if: steps.tag.outputs.is_nightly == 'true'
       run: |
         sudo rm -rf -- *
     - name: Generate lean-pr-testing app token
+      if: steps.tag.outputs.is_nightly == 'true'
       id: lean-pr-testing-token
-      uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+      uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
       with:
         app-id: ${{ secrets.MATHLIB_LEAN_PR_TESTING_APP_ID }}
         private-key: ${{ secrets.MATHLIB_LEAN_PR_TESTING_PRIVATE_KEY }}
@@ -121,67 +201,30 @@ jobs:
     # Checkout the Lean repository on 'nightly-with-mathlib'
     # The create-github-app-token README states that this token is masked and will not be logged accidentally.
     - name: Checkout Lean repository
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      if: steps.tag.outputs.is_nightly == 'true'
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
         repository: leanprover/lean4
         token: ${{ steps.lean-pr-testing-token.outputs.token }}
         ref: nightly-with-mathlib
     # Merge the relevant nightly.
     - name: Fetch tags from 'lean4-nightly', and merge relevant nightly into 'nightly-with-mathlib'
+      if: steps.tag.outputs.is_nightly == 'true'
       run: |
         git remote add nightly https://github.com/leanprover/lean4-nightly.git
         git fetch nightly --tags
         # Note: old jobs may run out of order, but it is safe to merge an older `nightly-YYYY-MM-DD`.
-        git merge "nightly-${NIGHTLY}" --strategy-option ours --allow-unrelated-histories || true
+        # `--strategy-option ours --allow-unrelated-histories` makes the benign cases (nothing
+        # new to merge, unrelated histories) succeed, so a genuine failure here is a real
+        # problem and should surface via the "Report housekeeping failure" step rather than
+        # being swallowed by `|| true`.
+        git merge "nightly-${NIGHTLY}" --strategy-option ours --allow-unrelated-histories
         git push origin
-
-    # Now post a success message to zulip, if the last message there is not a success message.
-    # https://chat.openai.com/share/87656d2c-c804-4583-91aa-426d4f1537b3
-    - name: Install Zulip API client
-      run: pip install zulip
-
-    - name: Check last message and post if necessary
-      env:
-        ZULIP_EMAIL: 'github-mathlib4-bot@leanprover.zulipchat.com'
-        ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
-        ZULIP_SITE: 'https://leanprover.zulipchat.com'
-        SHA: ${{ env.SHA }}
-      run: |
-        import os
-        import zulip
-        client = zulip.Client(email=os.getenv('ZULIP_EMAIL'), api_key=os.getenv('ZULIP_API_KEY'), site=os.getenv('ZULIP_SITE'))
-
-        # Get the last message from the bot in the 'status updates' topic.
-        # We narrow by sender to ignore human replies in between.
-        bot_email = 'github-mathlib4-bot@leanprover.zulipchat.com'
-        request = {
-          'anchor': 'newest',
-          'num_before': 1,
-          'num_after': 0,
-          'narrow': [
-            {'operator': 'stream', 'operand': 'nightly-testing-mathlib'},
-            {'operator': 'topic', 'operand': 'Mathlib status updates'},
-            {'operator': 'sender', 'operand': bot_email}
-          ],
-          'apply_markdown': False    # Otherwise the content test below fails.
-        }
-        response = client.get_messages(request)
-        messages = response['messages']
-        if not messages or messages[0]['content'] != f"✅ The latest CI for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has succeeded! ([{os.getenv('SHA')}](https://github.com/${{ github.repository }}/commit/{os.getenv('SHA')}))":
-            # Post the success message
-            request = {
-                'type': 'stream',
-                'to': 'nightly-testing-mathlib',
-                'topic': 'Mathlib status updates',
-                'content': f"✅ The latest CI for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has succeeded! ([{os.getenv('SHA')}](https://github.com/${{ github.repository }}/commit/{os.getenv('SHA')}))"
-            }
-            result = client.send_message(request)
-            print(result)
-      shell: python
 
     # Next, determine if we should remind the humans to create a new PR to the `bump/v4.X.0` branch.
 
     - name: Check for matching bump/nightly-YYYY-MM-DD branch
+      if: steps.tag.outputs.is_nightly == 'true'
       id: check_branch
       uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
       with:
@@ -206,13 +249,13 @@ jobs:
         result-encoding: string
 
     - name: Exit if matching branch exists
-      if: steps.check_branch.outputs.result == 'true'
+      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'true'
       run: |
         echo "Matching bump/nightly-YYYY-MM-DD branch found, no further action needed."
         exit 0
 
     - name: Fetch latest bump branch name
-      if: steps.check_branch.outputs.result == 'false'
+      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false'
       id: latest_bump_branch
       uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
       with:
@@ -233,7 +276,7 @@ jobs:
           return latestBranch;
 
     - name: Fetch lean-toolchain from latest bump branch
-      if: steps.check_branch.outputs.result == 'false'
+      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false'
       id: bump_version
       uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
       with:
@@ -304,8 +347,8 @@ jobs:
           return match[1];
 
     - name: Send warning message on Zulip if pattern doesn't match
-      if: failure() && steps.bump_version.outcome == 'failure'
-      uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+      if: steps.tag.outputs.is_nightly == 'true' && failure() && steps.bump_version.outcome == 'failure'
+      uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'
@@ -323,7 +366,7 @@ jobs:
           This needs to be fixed for the nightly testing process to work correctly.
 
     - name: Setup for automatic PR creation
-      if: steps.check_branch.outputs.result == 'false'
+      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false'
       env:
         BUMP_VERSION: ${{ steps.bump_version.outputs.result }}
         BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
@@ -345,13 +388,13 @@ jobs:
         echo "Setup complete"
 
     - name: Clean workspace and checkout Mathlib4
-      if: steps.check_branch.outputs.result == 'false'
+      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false'
       run: |
         sudo rm -rf -- *
     # Regenerate the app token just before use.
     # GitHub App tokens expire after 1 hour, and the preceding steps can take longer than that.
     - name: Regenerate app token for Mathlib4 checkout
-      if: steps.check_branch.outputs.result == 'false'
+      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false'
       id: app-token-2
       uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
       with:
@@ -361,16 +404,16 @@ jobs:
         azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_NIGHTLY_TESTING }}
         azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
     - name: Checkout Mathlib4 repository
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      if: steps.check_branch.outputs.result == 'false'
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false'
       with:
         ref: nightly-testing # checkout nightly-testing branch (shouldn't matter which)
         fetch-depth: 0 # checkout all branches
         token: ${{ steps.app-token-2.outputs.token }}
 
     - name: Checkout local actions
-      if: steps.check_branch.outputs.result == 'false'
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false'
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
         ref: ${{ github.workflow_sha }}
         fetch-depth: 1
@@ -378,12 +421,12 @@ jobs:
         path: workflow-actions
     - name: Get mathlib-ci
       id: get_mathlib_ci
-      if: steps.check_branch.outputs.result == 'false'
+      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false'
       uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
     - name: Attempt automatic PR creation
       id: auto_pr
-      if: steps.check_branch.outputs.result == 'false'
+      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false'
       continue-on-error: true
       env:
         BUMP_VERSION: ${{ steps.bump_version.outputs.result }}
@@ -404,7 +447,7 @@ jobs:
         "${CI_SCRIPTS_DIR}/nightly/create-adaptation-pr.sh" --bumpversion="${bump_branch_suffix}" --nightlydate="${current_version}" --nightlysha="${SHA}" --auto=yes
 
     - name: Fallback to manual instructions
-      if: steps.auto_pr.outcome == 'failure' && steps.check_branch.outputs.result == 'false'
+      if: steps.tag.outputs.is_nightly == 'true' && steps.auto_pr.outcome == 'failure' && steps.check_branch.outputs.result == 'false'
       env:
         BUMP_VERSION: ${{ steps.bump_version.outputs.result }}
         BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
@@ -481,3 +524,22 @@ jobs:
                 print(result)
         else:
             print('No action needed.')
+
+    # If any non-`continue-on-error` housekeeping step above failed, surface it loudly to the
+    # status topic. Without this, a green CI whose housekeeping breaks (tagging, lean merge,
+    # bump reminders) would fail silently, since `report_success` is a separate job.
+    # We stay quiet when the failure is the malformed-bump-branch case, which already has its
+    # own dedicated ⚠️ warning step above (otherwise we would double-post).
+    - name: Report housekeeping failure to Zulip
+      if: failure() && steps.bump_version.outcome != 'failure'
+      uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
+      with:
+        api-key: ${{ secrets.ZULIP_API_KEY }}
+        email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+        organization-url: 'https://leanprover.zulipchat.com'
+        to: 'nightly-testing-mathlib'
+        type: 'stream'
+        topic: 'Mathlib status updates'
+        content: |
+          🛠️❗ Housekeeping for the nightly-testing branch [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) ([${{ github.event.workflow_run.head_sha }}](https://github.com/${{ github.repository }}/commit/${{ github.event.workflow_run.head_sha }})).
+          CI passed (success reporting is handled by the separate `report_success` job), but tagging / `nightly-with-mathlib` merge / bump-branch reminders did not complete. Please check the run.
