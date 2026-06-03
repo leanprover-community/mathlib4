@@ -145,7 +145,7 @@ def pseudofunctorRight (C : Type u₁) [Category.{v₁} C] :
   map F := (mapPair (𝟭 C) F.toFunctor).toCatHom
   map₂ f := (mapWhiskerLeft (𝟭 C) f.toNatTrans).toCatHom₂
   mapId D := Cat.Hom.isoMk mapPairId
-  mapComp F G:= Cat.Hom.isoMk <| mapCompRight C F.toFunctor G.toFunctor
+  mapComp F G := Cat.Hom.isoMk <| mapCompRight C F.toFunctor G.toFunctor
   map₂_whisker_left := by intros; exact congr($(mapWhiskerLeft_whiskerLeft C _ _).toCatHom₂)
   map₂_whisker_right := by intros; exact congr($(mapWhiskerLeft_whiskerRight C _ _).toCatHom₂)
   map₂_associator := by intros; exact congr($(mapWhiskerLeft_associator_hom C _ _ _).toCatHom₂)
