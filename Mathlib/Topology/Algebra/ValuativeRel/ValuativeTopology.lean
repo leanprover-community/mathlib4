@@ -341,7 +341,7 @@ theorem isClosed_sphere (r : ValueGroup₀ (v : R →*₀ Γ₀)) :
     IsClosed (X := R) {x | v.restrict x = r} := by
   rcases eq_or_ne r 0 with rfl | hr
   · convert! v.isClosed_closedBall 0 using 3
-    exact (le_zero_iff (α := ValueGroup₀ v)).symm
+    simp
   exact isClopen_sphere hr |>.isClosed
 
 /-- For any valuation `v` compatible with the valuative relation on `R`, the closed unit ball
