@@ -55,10 +55,9 @@ jobs:
         }}
       # OIDC environment binding for the upload_cache job. MUST track the cache_application_id
       # mapping above so the minted token's `:environment:` subject matches the writer app's
-      # federated credential. mathlib4-nightly-testing is intentionally left without an
-      # environment ('') for now, keeping its existing ref-based trust (its two writer apps'
-      # FICs are ref-scoped).
-      # TODO: give mathlib4-nightly-testing its own cache-upload environments + credentials.
+      # federated credential. mathlib4-nightly-testing intentionally uses branch/ref-scoped
+      # trust instead of an environment: each nightly writer app is RBAC-isolated to its own
+      # container, so branch scoping is sufficient there.
       cache_environment: >-
         ${{
              (github.repository == 'leanprover-community/mathlib4'
