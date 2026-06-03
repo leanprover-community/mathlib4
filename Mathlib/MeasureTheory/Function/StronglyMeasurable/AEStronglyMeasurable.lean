@@ -316,6 +316,11 @@ protected theorem inv [Inv β] [ContinuousInv β] (hf : AEStronglyMeasurable[m] 
     AEStronglyMeasurable[m] f⁻¹ μ :=
   ⟨(hf.mk f)⁻¹, hf.stronglyMeasurable_mk.inv, hf.ae_eq_mk.inv⟩
 
+@[fun_prop]
+theorem inv₀ [GroupWithZero β] [ContinuousInv₀ β] [MetrizableSpace β]
+    (hf : AEStronglyMeasurable[m] f μ) : AEStronglyMeasurable[m] f⁻¹ μ :=
+  ⟨(hf.mk f)⁻¹, hf.stronglyMeasurable_mk.inv₀, hf.ae_eq_mk.inv⟩
+
 @[to_additive (attr := fun_prop)]
 protected theorem div [Group β] [IsTopologicalGroup β] (hf : AEStronglyMeasurable[m] f μ)
     (hg : AEStronglyMeasurable[m] g μ) : AEStronglyMeasurable[m] (f / g) μ :=
@@ -323,8 +328,7 @@ protected theorem div [Group β] [IsTopologicalGroup β] (hf : AEStronglyMeasura
     hf.ae_eq_mk.div hg.ae_eq_mk⟩
 
 @[fun_prop]
-theorem div₀ [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] [PseudoMetrizableSpace β]
-    [MeasurableSpace β] [BorelSpace β] [MeasurableSingletonClass β]
+theorem div₀ [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] [MetrizableSpace β]
     (hf : AEStronglyMeasurable[m] f μ) (hg : AEStronglyMeasurable[m] g μ) :
     AEStronglyMeasurable[m] (f / g) μ :=
   ⟨hf.mk f / hg.mk g, hf.stronglyMeasurable_mk.div hg.stronglyMeasurable_mk,

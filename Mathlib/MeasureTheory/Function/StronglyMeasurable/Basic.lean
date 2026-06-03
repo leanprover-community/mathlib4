@@ -416,6 +416,21 @@ protected theorem inv [Inv β] [ContinuousInv β] (hf : StronglyMeasurable f) :
     StronglyMeasurable f⁻¹ :=
   ⟨fun n => (hf.approx n)⁻¹, fun x => (hf.tendsto_approx x).inv⟩
 
+@[fun_prop]
+protected theorem inv₀ [GroupWithZero β] [ContinuousInv₀ β] [MetrizableSpace β]
+    (hf : StronglyMeasurable f) : StronglyMeasurable f⁻¹ := by
+  borelize β
+  refine ⟨fun n => ((hf.approx n).restrict {x | f x ≠ 0})⁻¹, fun x => ?_⟩
+  have : MeasurableSet {x | f x ≠ 0} := ((MeasurableSet.singleton 0).preimage hf.measurable).compl
+  by_cases h : f x = 0
+  · simp_all only [ne_eq, measurableSet_setOf, SimpleFunc.coe_inv, SimpleFunc.coe_restrict,
+      Pi.inv_apply, mem_setOf_eq, not_true_eq_false, not_false_eq_true, indicator_of_notMem,
+      _root_.inv_zero]
+    exact tendsto_const_nhds
+  · simp_all only [ne_eq, measurableSet_setOf, SimpleFunc.coe_inv, SimpleFunc.coe_restrict,
+      Pi.inv_apply, mem_setOf_eq, not_false_eq_true, indicator_of_mem]
+    apply (hf.tendsto_approx x).inv₀ h
+
 @[to_additive (attr := fun_prop) sub]
 protected theorem div' [Div β] [ContinuousDiv β] (hf : StronglyMeasurable f)
     (hg : StronglyMeasurable g) : StronglyMeasurable (f / g) :=
@@ -428,10 +443,10 @@ theorem div₀ [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] (hf :
     fun x => (hf.tendsto_approx x).div (hg.tendsto_approx x) (h₀ x)⟩
 
 @[fun_prop]
-theorem div [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] [PseudoMetrizableSpace β]
-    [MeasurableSpace β] [BorelSpace β] [MeasurableSingletonClass β] (hf : StronglyMeasurable f)
-    (hg : StronglyMeasurable g) :
+theorem div [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] [MetrizableSpace β]
+    (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
     StronglyMeasurable (f / g) := by
+  borelize β
   refine ⟨fun n => hf.approx n / (hg.approx n).restrict {x | g x ≠ 0}, fun x => ?_⟩
   have : MeasurableSet {x | g x ≠ 0} := ((MeasurableSet.singleton 0).preimage hg.measurable).compl
   by_cases h : g x = 0
