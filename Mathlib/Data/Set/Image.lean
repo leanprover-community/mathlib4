@@ -365,8 +365,6 @@ private theorem subset_image_sdiff (f : α → β) (s t : Set α) : f '' s \ f '
   rw [sdiff_subset_iff, ← image_union, union_sdiff_self]
   exact image_mono subset_union_right
 
-@[deprecated (since := "2026-06-03")] alias subset_image_diff := subset_image_sdiff
-
 theorem image_sdiff {f : α → β} (hf : Injective f) (s t : Set α) : f '' (s \ t) = f '' s \ f '' t :=
   Subset.antisymm
     (Subset.trans (image_sdiff_subset f s t) <| inter_subset_inter_right _ <| image_compl_subset hf)
