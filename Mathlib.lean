@@ -6399,6 +6399,7 @@ public import Mathlib.RingTheory.Bialgebra.SymmetricAlgebra
 public import Mathlib.RingTheory.Bialgebra.TensorProduct
 public import Mathlib.RingTheory.Binomial
 public import Mathlib.RingTheory.ChainOfDivisors
+public import Mathlib.RingTheory.ClassGroup
 public import Mathlib.RingTheory.ClassGroup.Basic
 public import Mathlib.RingTheory.ClassGroup.ExtendedHom
 public import Mathlib.RingTheory.Coalgebra.Basic
