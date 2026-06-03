@@ -269,7 +269,6 @@ lemma comm (i j : ι) :
 
 end restrictionToTruncGE'
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical morphism `K.restriction e ⟶ K.truncGE' e`. -/
 noncomputable def restrictionToTruncGE' : K.restriction e ⟶ K.truncGE' e where
   f := restrictionToTruncGE'.f K e
