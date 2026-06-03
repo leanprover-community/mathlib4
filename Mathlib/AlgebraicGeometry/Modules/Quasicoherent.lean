@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.LocallyFree
 public import Mathlib.AlgebraicGeometry.Modules.Tilde
+public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 /-!
 # Quasicoherent Sheaves
@@ -15,18 +16,18 @@ A module `M : X.Modules` is quasicoherent if it locally admits a presentation.
 
 -/
 
-public section
+@[expose] public section
 
-universe u
+universe u v₁ u₁
+
+section
+
+open CategoryTheory TopologicalSpace Topology Module
 
 namespace AlgebraicGeometry.Scheme.Modules
 
-/-- The pullback of a quasicoherent sheaf is quasicoherent -/
-instance {X Y : Scheme.{u}} (f : X ⟶ Y) (M : Y.Modules) [M.IsQuasicoherent] :
-    ((pullback f).obj M).IsQuasicoherent := SheafOfModules.IsQuasicoherent.pullback.{u} _
+variable {R : CommRingCat.{u}} (M : ModuleCat.{u} R)
 
-/-- The pullback of a locally free sheaf is locally free -/
-instance {X Y : Scheme.{u}} (f : X ⟶ Y) (M : Y.Modules) [M.IsLocallyFree] :
-    ((pullback f).obj M).IsLocallyFree := SheafOfModules.IsLocallyFree.pullback.{u} _
+#check freeLocus R M
 
 end AlgebraicGeometry.Scheme.Modules
