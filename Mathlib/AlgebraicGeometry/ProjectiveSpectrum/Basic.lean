@@ -141,8 +141,9 @@ noncomputable
 def basicOpenToSpec : (basicOpen 𝒜 f).toScheme ⟶ Spec (.of <| Away 𝒜 f) :=
   (basicOpen 𝒜 f).toSpecΓ ≫ Spec.map (awayToSection 𝒜 f)
 
-lemma basicOpenToSpec_app_top : (Scheme.ΓSpecIso _).hom ≫ awayToSection 𝒜 f ≫
-      (basicOpen 𝒜 f).topIso.inv = (basicOpenToSpec 𝒜 f).app ⊤ := by
+lemma basicOpenToSpec_app_top :
+    (basicOpenToSpec 𝒜 f).app ⊤ = (Scheme.ΓSpecIso _).hom ≫ awayToSection 𝒜 f ≫
+      (basicOpen 𝒜 f).topIso.inv := by
   simp [basicOpenToSpec, Scheme.Opens.toSpecΓ_appTop]
 
 /-- The structure map `Proj A ⟶ Spec A₀`. -/
@@ -174,7 +175,7 @@ when `f` is homogeneous of positive degree. -/
 noncomputable
 def basicOpenIsoAway : CommRingCat.of (Away 𝒜 f) ≅ Γ(Proj 𝒜, basicOpen 𝒜 f) :=
   have : IsIso (awayToSection 𝒜 f) := by
-    have := (basicOpenToSpec_app_top 𝒜 f).symm
+    have := basicOpenToSpec_app_top 𝒜 f
     rw [← Iso.inv_comp_eq, Iso.eq_comp_inv] at this
     rw [← this, ← basicOpenIsoSpec_hom 𝒜 f f_deg hm]
     infer_instance
