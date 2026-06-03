@@ -46,7 +46,11 @@ Given `f : ℂ → ℂ` and `R : ℝ`, define the Cartan kernel of integration a
 noncomputable def cartanKernel (f : ℂ → ℂ) (R : ℝ) (α β : ℝ) : ℝ :=
   log ‖f (circleMap 0 R β) - circleMap 0 1 α‖
 
-private lemma integrable_cartanKernel_in_alpha (f : ℂ → ℂ) (R : ℝ) (β : ℝ) :
+/--
+For every function `f : ℂ → ℂ`, the Cartan kernel of integration `cartanKernel f R α β` is
+integrable as a function in `α`.
+-/
+lemma integrable_cartanKernel_left (f : ℂ → ℂ) (R : ℝ) (β : ℝ) :
     IntegrableOn (cartanKernel f R · β) (Ioc 0 (2 * π)) := by
   apply (intervalIntegrable_iff_integrableOn_Ioc_of_le two_pi_pos.le).1
   simpa [cartanKernel, norm_sub_rev, CircleIntegrable] using circleIntegrable_log_norm_sub_const 1
@@ -80,7 +84,7 @@ private lemma integral_norm_cartanKernel_eq (f : ℂ → ℂ) (R β : ℝ) :
   calc ∫ α, ‖cartanKernel f R α β‖ ∂μ
     _ = 2 * (∫ α, max (cartanKernel f R α β) 0 ∂μ) - ∫ α, cartanKernel f R α β ∂μ := by
       have h_slice : Integrable (cartanKernel f R · β) μ :=
-        integrable_cartanKernel_in_alpha f R β
+        integrable_cartanKernel_left f R β
       exact integral_norm_eq_two_mul_integral_max_sub h_slice (h_slice.sup (integrable_const 0))
     _ = 2 * (∫ α, max (cartanKernel f R α β) 0 ∂μ) - 2 * π * log⁺ ‖f (circleMap 0 R β)‖ := by
       congr
@@ -142,7 +146,7 @@ theorem integrable_cartanKernel (h : Meromorphic f) :
   rw [IntegrableOn, Measure.volume_eq_prod, ← Measure.prod_restrict]
   simpa [uIoc_of_le two_pi_pos.le] using (integrable_prod_iff'
     (measurable_cartanKernel h.measurable).stronglyMeasurable.aestronglyMeasurable).2
-    ⟨Eventually.of_forall (integrable_cartanKernel_in_alpha f R),
+    ⟨Eventually.of_forall (integrable_cartanKernel_left f R),
       integrable_integral_norm_cartanKernel h⟩
 
 end Cartan
