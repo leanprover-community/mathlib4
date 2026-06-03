@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineSpace
 public import Mathlib.Geometry.Convex.ConvexSpace.Module
+public import Mathlib.Topology.MetricSpace.Finsupp
+
+import Mathlib.Tactic.Positivity.Finset
 
 /-!
 
@@ -286,4 +289,29 @@ instance IsConvexDist.submodule {F M : Type*} [AddCommGroup M] [MetricSpace M]
     [SetLike F M] [AddSubmonoidClass F M] [SMulMemClass F ℝ M] {S : F} :
     IsConvexDist S := .subtype _ _
 
-end Convexity
+namespace StdSimplex
+variable {R : Type*} [PartialOrder R] [Semiring R]
+
+noncomputable instance [PseudoEMetricSpace R] : PseudoEMetricSpace (StdSimplex R I) :=
+  .induced weights inferInstance
+
+lemma edist_def [PseudoEMetricSpace R] (w₁ w₂ : StdSimplex R I) :
+    edist w₁ w₂ = (w₁.weights.zipWith edist (edist_self _) w₂.weights).sum fun _i r ↦ r := rfl
+
+noncomputable instance [EMetricSpace R] : EMetricSpace (StdSimplex R I) :=
+  .induced weights weights_injective inferInstance
+
+noncomputable instance [PseudoMetricSpace R] : PseudoMetricSpace (StdSimplex R I) :=
+  .induced weights inferInstance
+
+lemma dist_def [PseudoMetricSpace R] (w₁ w₂ : StdSimplex R I) :
+    dist w₁ w₂ = (w₁.weights.zipWith dist (dist_self _) w₂.weights).sum fun _i r ↦ r := rfl
+
+lemma nndist_def [PseudoMetricSpace R] (w₁ w₂ : StdSimplex R I) :
+    nndist w₁ w₂ = (w₁.weights.zipWith nndist (nndist_self _) w₂.weights).sum fun _i r ↦ r :=
+  Finsupp.nndist_def ..
+
+noncomputable instance [MetricSpace R] : MetricSpace (StdSimplex R I) :=
+  .induced weights weights_injective inferInstance
+
+end Convexity.StdSimplex
