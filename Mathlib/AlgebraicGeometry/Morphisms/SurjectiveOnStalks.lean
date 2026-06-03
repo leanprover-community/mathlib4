@@ -182,11 +182,11 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
     refine ⟨(pullbackFstFstIso _ _ _ _ _ _ (𝒰.f i.1) ?_ ?_).hom z, ?_⟩
     · simp [pullback.condition]
     · simp [pullback.condition]
-    · dsimp only
-      rw [← hx₁', ← hz, ← Scheme.Hom.comp_apply]
-      erw [← Scheme.Hom.comp_apply]
+    · simp only [← hx₁', ← hz, 𝓤, Precoverage.ZeroHypercover.bind_toPreZeroHypercover,
+        PreZeroHypercover.bind_X, Scheme.Pullback.openCoverOfLeftRight_X,
+        Scheme.Pullback.openCoverOfBase_X, ← Scheme.Hom.comp_apply]
       congr 5
-      apply pullback.hom_ext <;> simp [𝓤, ← pullback.condition, ← pullback.condition_assoc]
+      apply pullback.hom_ext <;> simp [pullback.condition, ← pullback.condition_assoc]
   · intro i
     have := H (S.affineOpenCover.X i.1) (((𝒰.pullback₁ f).X i.1).affineOpenCover.X i.2.1)
         (((𝒰.pullback₁ g).X i.1).affineOpenCover.X i.2.2)

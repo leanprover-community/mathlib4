@@ -619,7 +619,7 @@ theorem ext ⦃f g : r ≃r s⦄ (h : ∀ x, f x = g x) : f = g :=
 
 /-- Inverse map of a relation isomorphism is a relation isomorphism. -/
 protected def symm (f : r ≃r s) : s ≃r r :=
-  ⟨f.toEquiv.symm, @fun a b => by erw [← f.map_rel_iff, f.1.apply_symm_apply, f.1.apply_symm_apply]⟩
+  ⟨f.toEquiv.symm, @fun a b => by simp [← f.map_rel_iff, ← RelIso.coe_fn_toEquiv f]⟩
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because `RelIso` defines custom coercions other than the ones given by `DFunLike`. -/
