@@ -129,7 +129,6 @@ def veq : R → R → Prop := AntisymmRel (· ≤ᵥ ·)
 
 @[inherit_doc] infix:50 " =ᵥ " => ValuativeRel.veq
 
-@[gcongr]
 lemma veq_mul_comm (x y : R) : x * y =ᵥ y * x := ⟨vle_mul_comm, vle_mul_comm⟩
 
 macro_rules | `($a =ᵥ $b) => `(binrel% ValuativeRel.veq $a $b)
