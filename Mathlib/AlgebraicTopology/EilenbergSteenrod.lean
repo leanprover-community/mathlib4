@@ -79,14 +79,13 @@ variable {HP HP' : HomologyPretheory.{u} C c}
 -- TODO: generate this with `@[to_app]`
 @[reassoc]
 lemma Hom.iso_comm_app (f : HP ⟶ HP') (i : ι) (X : TopCat.{u}) :
-    dsimp% (HP.iso i).hom.app X ≫ (f.homₚ i).app (ofTopCat X) =
-    (f.hom i).app X ≫ (HP'.iso i).hom.app X :=
+    (HP.iso i).hom.app X ≫ (f.homₚ i).app (ofTopCat X) = (f.hom i).app X ≫ (HP'.iso i).hom.app X :=
   congr($(f.iso_comm _).app _)
 
 -- TODO: generate this with `@[to_app]`
 @[reassoc]
 lemma Hom.w_app (f : HP ⟶ HP') (i j : ι) (X : TopPair.{u}) :
-    dsimp% (HP.δ i j).app X ≫ (f.hom j).app X.left = (f.homₚ i).app X ≫ (HP'.δ i j).app X :=
+    (HP.δ i j).app X ≫ (f.hom j).app X.left = (f.homₚ i).app X ≫ (HP'.δ i j).app X :=
   congr($(f.w _ _).app _)
 
 @[reassoc]
@@ -96,8 +95,8 @@ lemma iso_homₚ_inv_hom (f : HP ⟶ HP') (i : ι) :
 -- TODO: generate this with `@[to_app]`
 @[reassoc (attr := simp)]
 lemma iso_homₚ_inv_hom_app (f : HP ⟶ HP') (i : ι) (X : TopCat.{u}) :
-    dsimp% (HP.iso i).hom.app X ≫ (f.homₚ i).app (ofTopCat X) ≫ (HP'.iso i).inv.app X =
-    (f.hom i).app X := congr($(iso_homₚ_inv_hom _ _).app _)
+    (HP.iso i).hom.app X ≫ (f.homₚ i).app (ofTopCat X) ≫ (HP'.iso i).inv.app X = (f.hom i).app X :=
+  congr($(iso_homₚ_inv_hom _ _).app _)
 
 @[reassoc (attr := simp)]
 lemma inv_hom_iso_homₚ (f : HP ⟶ HP') (i : ι) :
@@ -107,8 +106,8 @@ lemma inv_hom_iso_homₚ (f : HP ⟶ HP') (i : ι) :
 -- TODO: generate this with `@[to_app]`
 @[reassoc (attr := simp)]
 lemma inv_hom_iso_homₚ_app (f : HP ⟶ HP') (i : ι) (X : TopCat.{u}) :
-    dsimp% (HP.iso i).inv.app X ≫ (f.hom i).app X ≫ (HP'.iso i).hom.app X =
-    (f.homₚ i).app (ofTopCat X) := congr($(inv_hom_iso_homₚ _ _).app _)
+    (HP.iso i).inv.app X ≫ (f.hom i).app X ≫ (HP'.iso i).hom.app X = (f.homₚ i).app (ofTopCat X) :=
+  congr($(inv_hom_iso_homₚ _ _).app _)
 
 /-- The forgetful functor that sends a `HomologyPretheory` to it's relative homology functor `Hₚ`.
 -/
