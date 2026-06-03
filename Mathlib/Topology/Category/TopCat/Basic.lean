@@ -161,7 +161,6 @@ def Hom.equivContinuousMap (X Y : TopCat.{u}) : (X ⟶ Y) ≃ C(X, Y) where
   toFun f := f.hom
   invFun f := ofHom f
 
-set_option linter.deprecated false in
 /--
 Replace a function coercion for a morphism `TopCat.of X ⟶ TopCat.of Y` with the definitionally
 equal function coercion for a continuous map `C(X, Y)`.

@@ -143,14 +143,12 @@ lemma isRegular_lift_iff {κ : Cardinal.{v}} :
     (Cardinal.lift.{u} κ).IsRegular ↔ κ.IsRegular :=
   ⟨fun ⟨h₁, h₂⟩ ↦ ⟨by simpa using h₁, by simpa [← lift_le.{u, v}]⟩, fun h ↦ h.lift⟩
 
-set_option linter.deprecated false in
 @[deprecated lift_iSup_add_one_lt_of_lt_cof (since := "2026-03-22")]
 theorem lsub_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c.ord) : Ordinal.lsub.{u, v} f < c.ord := by
   apply lift_iSup_add_one_lt_of_lt_cof _ hf
   rwa [lift_umax, c.ord.lift_id', hc.cof_ord]
 
-set_option linter.deprecated false in
 @[deprecated iSup_add_one_lt_of_lt_cof (since := "2026-03-22")]
 theorem lsub_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
     (∀ i, f i < c.ord) → Ordinal.lsub f < c.ord :=
@@ -167,27 +165,23 @@ theorem iSup_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c
     (∀ i, f i < c.ord) → iSup f < c.ord :=
   Ordinal.iSup_lt_of_lt_cof (by rwa [hc.cof_ord])
 
-set_option linter.deprecated false in
 @[deprecated lift_iSup_add_one_lt_of_lt_cof (since := "2026-03-22")]
 theorem blsub_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (ho : Cardinal.lift.{v, u} o.card < c) :
     (∀ i hi, f i hi < c.ord) → Ordinal.blsub.{u, v} o f < c.ord :=
   blsub_lt_ord_lift (by rwa [hc.cof_ord])
 
-set_option linter.deprecated false in
 @[deprecated lift_iSup_add_one_lt_of_lt_cof (since := "2026-03-22")]
 theorem blsub_lt_ord_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (ho : o.card < c) : (∀ i hi, f i hi < c.ord) → Ordinal.blsub o f < c.ord :=
   blsub_lt_ord (by rwa [hc.cof_ord])
 
-set_option linter.deprecated false in
 @[deprecated iSup_lt_ord_lift_of_isRegular (since := "2026-03-22")]
 theorem bsup_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} o.card < c) :
     (∀ i hi, f i hi < c.ord) → Ordinal.bsup.{u, v} o f < c.ord :=
   bsup_lt_ord_lift (by rwa [hc.cof_ord])
 
-set_option linter.deprecated false in
 @[deprecated lift_iSup_lt_of_lt_cof (since := "2026-03-22")]
 theorem bsup_lt_ord_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (hι : o.card < c) : (∀ i hi, f i hi < c.ord) → Ordinal.bsup o f < c.ord :=
@@ -431,6 +425,9 @@ theorem IsInaccessible.preAleph_ord (hc : IsInaccessible c) : preAleph c.ord = c
   ((preAleph_le_preBeth _).trans hc.preBeth_ord.le).antisymm
     (preAleph.strictMono.comp ord_strictMono).le_apply
 
+theorem IsInaccessible.preAleph_symm_eq_ord (hc : IsInaccessible c) : preAleph.symm c = c.ord := by
+  rw [OrderIso.symm_apply_eq, hc.preAleph_ord]
+
 theorem IsInaccessible.aleph_ord (hc : IsInaccessible c) : ℵ_ c.ord = c :=
   ((aleph_le_beth _).trans hc.beth_ord.le).antisymm (aleph.strictMono.comp ord_strictMono).le_apply
 
@@ -451,6 +448,10 @@ theorem beth_univ : ℶ_ Ordinal.univ.{u, v} = univ.{u, v} := by
 @[simp]
 theorem preAleph_univ : preAleph Ordinal.univ.{u, v} = univ.{u, v} := by
   simpa using IsInaccessible.univ.preAleph_ord
+
+@[simp]
+theorem preAleph_symm_univ : preAleph.symm univ.{u, v} = Ordinal.univ.{u, v} := by
+  simp [OrderIso.symm_apply_eq]
 
 @[simp]
 theorem aleph_univ : ℵ_ Ordinal.univ.{u, v} = univ.{u, v} := by
