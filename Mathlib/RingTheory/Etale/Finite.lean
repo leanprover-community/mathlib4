@@ -6,9 +6,8 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Category.CommAlgCat.Basic
-public import Mathlib.RingTheory.Etale.Field
-public import Mathlib.RingTheory.TotallySplit
 public import Mathlib.CategoryTheory.FintypeCat
+public import Mathlib.RingTheory.TotallySplit
 
 /-!
 # Category of finite étale `R`-algebras
