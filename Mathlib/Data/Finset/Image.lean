@@ -349,6 +349,17 @@ theorem image_id' [DecidableEq α] : (s.image fun x => x) = s :=
 theorem image_image [DecidableEq γ] {g : β → γ} : (s.image f).image g = s.image (g ∘ f) :=
   eq_of_veq <| by simp only [image_val, dedup_map_dedup_eq, Multiset.map_map]
 
+/-- Reverse of `Finset.image_image`. The `Finset` analogue of `Set.image_comp`. -/
+theorem image_comp [DecidableEq γ] {g : β → γ} : s.image (g ∘ f) = (s.image f).image g :=
+  image_image.symm
+
+/-- Point-free form of `Finset.image_image`: `image` distributes over `Function.comp`. -/
+theorem image_comp_image [DecidableEq γ] {g : β → γ} :
+    image g ∘ image f = image (g ∘ f) := by ext s; simp [image_image]
+
+theorem image_comp_eq [DecidableEq γ] {g : β → γ} :
+    image (g ∘ f) = image g ∘ image f := image_comp_image.symm
+
 theorem image_comm {β'} [DecidableEq β'] [DecidableEq γ] {f : β → γ} {g : α → β} {f' : α → β'}
     {g' : β' → γ} (h_comm : ∀ a, f (g a) = g' (f' a)) :
     (s.image g).image f = (s.image f').image g' := by simp_rw [image_image, comp_def, h_comm]

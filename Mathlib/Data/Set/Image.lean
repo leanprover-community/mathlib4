@@ -219,6 +219,8 @@ theorem image_comp (f : β → γ) (g : α → β) (a : Set α) : f ∘ g '' a =
 
 theorem image_comp_eq {g : β → γ} : image (g ∘ f) = image g ∘ image f := by grind
 
+theorem image_comp_image {g : β → γ} : image g ∘ image f = image (g ∘ f) := by grind
+
 /-- A variant of `image_comp`, useful for rewriting -/
 @[grind =]
 theorem image_image (g : β → γ) (f : α → β) (s : Set α) : g '' f '' s = (fun x => g (f x)) '' s :=
