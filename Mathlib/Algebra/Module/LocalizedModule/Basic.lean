@@ -49,6 +49,7 @@ universe u v
 variable {R : Type u} [CommSemiring R] (S : Submonoid R)
 variable (M : Type v) [AddCommMonoid M] [Module R M]
 variable (T : Type*) [CommSemiring T] [Algebra R T] [IsLocalization S T]
+variable (T' : Type*) [CommSemiring T'] [Algebra R T'] [IsLocalization S T']
 
 /-- The equivalence relation on `M × S` where `(m1, s1) ≈ (m2, s2)` if and only if
 for some (u : S), u * (s2 • m1 - s1 • m2) = 0 -/
@@ -259,6 +260,13 @@ private lemma example_oreLocalizationInstCommRing_eq_localizedModuleInstCommRing
     OreLocalization.instCommRing = (LocalizedModule.instCommRing : CommRing R[S⁻¹]) := by
   with_reducible_and_instances rfl
 
+theorem smul'_mk
+    {R₀ : Type*} [SMul R₀ R] [SMul R₀ M] [IsScalarTower R₀ R R] [IsScalarTower R₀ R M]
+    (r : R₀) (m : M) (s : S) :
+    r • LocalizedModule.mk m s = LocalizedModule.mk (r • m) s := by
+  rw [OreLocalization.smul_oreDiv]
+  simp
+
 /-- If `IsLocalization S T`, then `M[S⁻¹]` has a `T`-action.
 This should eventually be replaced with `IsLocalizedModule f N` and `SMul T N`. -/
 noncomputable abbrev smulOfIsLocalization : SMul T (LocalizedModule S M) where
@@ -291,6 +299,11 @@ theorem mk'_smul_mk (r : R) (m : M) (s s' : S) :
 theorem mk_smul_mk (r : R) (m : M) (s t : S) :
     Localization.mk r s • mk m t = mk (r • m) (s * t) :=
   (OreLocalization.oreDiv_smul_char _ _ _ _ _ _ (mul_comm _ _)).trans (by rw [mul_comm])
+
+instance : SMulCommClass T T' (LocalizedModule S M) where
+  smul_comm t t' p := by
+    induction p with | _ m s
+    simp_rw [smul_def, smul_smul, mul_left_comm, mul_comm]
 
 variable {T}
 
@@ -367,10 +380,6 @@ theorem mk_cancel (s : S) (m : M) : mk (s • m) s = mk m 1 :=
 @[simp]
 theorem mk_cancel_common_right (s s' : S) (m : M) : mk (s' • m) (s * s') = mk m s :=
   mk_eq.mpr ⟨1, by simp [mul_smul]⟩
-
-theorem smul'_mk (r : R) (s : S) (m : M) : r • mk m s = mk (r • m) s := by
-  refine (OreLocalization.smul_oreDiv _ _ _).trans ?_
-  simp
 
 lemma smul_eq_iff_of_mem
     (r : R) (hr : r ∈ S) (x y : LocalizedModule S M) :
