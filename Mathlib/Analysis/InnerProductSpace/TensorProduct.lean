@@ -414,27 +414,13 @@ noncomputable def assocIsometry : E ⊗[𝕜] F ⊗[𝕜] G ≃ₗᵢ[𝕜] E �
 
 end isometry
 
-lemma exists_repr (x : E ⊗[𝕜] F) :
-    ∃ (n : ℕ) (e : Fin n → E) (g : Fin n → F), x = ∑ i, e i ⊗ₜ[𝕜] g i := by
-  induction x using TensorProduct.induction_on with
-  | zero =>
-      exact ⟨0, Fin.elim0, Fin.elim0, by simp⟩
-  | tmul m n =>
-      exact ⟨1, fun _ => m, fun _ => n, by simp⟩
-  | add x y hx hy =>
-      obtain ⟨nx, ex, gx, hx⟩ := hx
-      obtain ⟨ny, ey, gy, hy⟩ := hy
-      refine ⟨nx + ny, Fin.append ex ey, Fin.append gx gy, ?_⟩
-      rw [hx, hy, Fin.sum_univ_add]
-      simp [Fin.append]
-
 variable (G) in
 /-- `LinearMap.rTensor` as a continuous linear map, i.e. the continuous linear map `f` extended to
 the map `x ⊗ₜ[𝕜] y ↦ f(x) ⊗ₜ[𝕜] y`. -/
 noncomputable def _root_.ContinuousLinearMap.rTensor (f : E →L[𝕜] F) :
     (E ⊗[𝕜] G) →L[𝕜] (F ⊗[𝕜] G) :=
   (map f.toLinearMap LinearMap.id).mkContinuous ‖f‖ (fun x => by
-    obtain ⟨n, e, g, hx ⟩ := exists_repr x
+    obtain ⟨n, e, g, hx ⟩ := exists_sum_tmul_eq x
     obtain ⟨c, hc_supp, hc⟩ := Submodule.mem_span_set.mp
       ((span_tmul_eq_top 𝕜 E G) ▸ Submodule.mem_top (x := x))
     obtain ⟨m, A, hA⟩  := Matrix.posSemidef_iff_eq_sum_vecMulVec.mp
