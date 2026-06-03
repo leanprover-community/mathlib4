@@ -237,17 +237,13 @@ affine space `𝔸(n; S)`. -/
 class IsRationalOver {S X : Scheme.{u}} (sX : X ⟶ S) : Prop where
   exists_birationalOver_affineSpace (sX) : ∃ (n : Type u), BirationalOver sX (𝔸(n; S) ↘ S)
 
-lemma exists_birationalOver_affineSpace {S X : Scheme.{u}} (sX : X ⟶ S)
-    [IsRationalOver sX] : ∃ (n : Type u), BirationalOver sX (𝔸(n; S) ↘ S) :=
-  IsRationalOver.exists_birationalOver_affineSpace'
-
 instance (S : Scheme.{u}) (n : Type u) : IsRationalOver (𝔸(n; S) ↘ S) where
-  exists_birationalOver_affineSpace' := ⟨n, .refl _⟩
+  exists_birationalOver_affineSpace := ⟨n, .refl _⟩
 
 /-- If a scheme `X` is `S`-birational to an `S`-rational scheme `Y`, then `X` is `S`-rational. -/
 lemma BirationalOver.isRationalOver {S X Y : Scheme.{u}} (sX : X ⟶ S) (sY : Y ⟶ S)
     [IsRationalOver sY] (h : BirationalOver sX sY) : IsRationalOver sX := by
-  obtain ⟨n, hn⟩ := exists_birationalOver_affineSpace sY
+  obtain ⟨n, hn⟩ := IsRationalOver.exists_birationalOver_affineSpace sY
   exact ⟨n, h.trans hn⟩
 
 section DenseOpen
@@ -275,7 +271,7 @@ lemma Opens.birationalOver_of_dense (hU : Dense (U : Set X)) : BirationalOver (U
 /-- A dense open set `U : Opens X` of a `S`-rational scheme `X` is `S`-rational. -/
 lemma Opens.isRationalOver_of_dense (hU : Dense (U : Set X)) [IsRationalOver sX] :
     IsRationalOver (U.ι ≫ sX) := by
-  obtain ⟨n, hn⟩ := exists_birationalOver_affineSpace sX
+  obtain ⟨n, hn⟩ := IsRationalOver.exists_birationalOver_affineSpace sX
   exact ⟨n, (U.birationalOver_of_dense sX hU).trans hn⟩
 
 end DenseOpen
@@ -287,7 +283,7 @@ variable {X U S : Scheme.{u}}
 /-- A dominant open immersion `f : U ⟶ X` induces a partial isomorphism between `U` and `X`. -/
 @[simps! source target iso]
 noncomputable def Hom.partialIso (f : U ⟶ X) [IsOpenImmersion f] [IsDominant f] : U.PartialIso X :=
-  f.isoOpensRange.toPartialIso.trans' (f.opensRange.partialIsoOfDense f.denseRange) rfl
+  (PartialIso.ofIso f.isoOpensRange).trans' (f.opensRange.partialIsoOfDense f.denseRange) rfl
 
 lemma Hom.birational (f : U ⟶ X) [IsOpenImmersion f] [IsDominant f] : Birational U X :=
   ⟨f.partialIso⟩
@@ -299,6 +295,4 @@ lemma Hom.birationalOver (f : U ⟶ X) [IsOpenImmersion f] [IsDominant f] (sX : 
 
 end OpenImmersion
 
-end Scheme
-
-end AlgebraicGeometry
+end AlgebraicGeometry.Scheme
