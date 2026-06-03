@@ -90,8 +90,7 @@ theorem exists_eq_deterministic_of_forall_eq_dirac
       rw [this]
       exact κ.measurable_coe hs (measurableSet_singleton 1)
     ext x
-    simp only [Set.mem_preimage, hf, Measure.dirac_apply' _ hs, Set.mem_singleton_iff]
-    exact (Set.indicator_eq_one_iff_mem ENNReal).symm
+    simp [hf, hs, Set.indicator_eq_one_iff_mem]
   · ext a : 1
     exact hf a
 
