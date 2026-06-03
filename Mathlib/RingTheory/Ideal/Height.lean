@@ -561,6 +561,6 @@ lemma Ideal.eq_span_singleton_of_height_eq_one [IsDomain R] {p : Ideal R} [p.IsP
   have : p.FiniteHeight := by simp [p.finiteHeight_iff, h1]
   by_contra! hne
   apply hxp.ne_zero
-  rw [← span_singleton_eq_bot, ← height_eq_zero_iff_eq_bot, ← ENat.lt_one_iff_eq_zero, ← h1]
+  rw [← span_singleton_eq_bot, ← height_eq_zero_iff_eq_bot, ← Order.lt_one_iff, ← h1]
   refine height_strict_mono_of_isPrime_of_isPrime (lt_of_le_of_ne ?_ hne.symm)
   simp only [p.span_singleton_le_iff_mem, hx]
