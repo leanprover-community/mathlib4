@@ -34,16 +34,15 @@ variable (G : Type*) [Group G]
 theorem sum_conjClasses_card_eq_card [Fintype <| ConjClasses G] [Fintype G]
     [∀ x : ConjClasses G, Fintype x.carrier] :
     ∑ x : ConjClasses G, x.carrier.toFinset.card = Fintype.card G := by
-  suffices (Σ x : ConjClasses G, x.carrier) ≃ G by simpa using (Fintype.card_congr this)
-  simpa [carrier_eq_preimage_mk] using Equiv.sigmaFiberEquiv ConjClasses.mk
+  suffices (Σ x : ConjClasses G, x.carrier) ≃ G by simpa using! (Fintype.card_congr this)
+  simpa [carrier_eq_preimage_mk] using! Equiv.sigmaFiberEquiv ConjClasses.mk
 
 /-- Conjugacy classes form a partition of G, stated in terms of cardinality. -/
 theorem Group.sum_card_conj_classes_eq_card [Finite G] :
     ∑ᶠ x : ConjClasses G, x.carrier.ncard = Nat.card G := by
   classical
   cases nonempty_fintype G
-  rw [Nat.card_eq_fintype_card, ← sum_conjClasses_card_eq_card, finsum_eq_sum_of_fintype]
-  simp [Set.ncard_eq_toFinset_card']
+  simp [← sum_conjClasses_card_eq_card, finsum_eq_sum_of_fintype]
 
 /-- The **class equation** for finite groups. The cardinality of a group is equal to the size
 of its center plus the sum of the size of all its nontrivial conjugacy classes. -/
