@@ -582,6 +582,7 @@ lemma exists_smul_eq_of_finrank_eq_one
   have : y ∈ Submodule.span K {x} := by rw [this]; exact mem_top
   exact mem_span_singleton.1 this
 
+@[gcongr]
 theorem Set.finrank_mono [FiniteDimensional K V] {s t : Set V} (h : s ⊆ t) :
     s.finrank K ≤ t.finrank K :=
   Submodule.finrank_mono (span_mono h)
