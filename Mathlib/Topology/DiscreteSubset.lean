@@ -303,6 +303,16 @@ theorem codiscreteWithin_iff_locallyFiniteComplementWithin [T1Space X] {s U : Se
     simp
 
 /--
+In a `T1Space`, every set is codiscrete within a subsingleton set.
+-/
+@[simp] theorem mem_codiscreteWithin_subsingleton [T1Space X] {s t : Set X}
+    (h : Set.Subsingleton t) :
+    s ∈ codiscreteWithin t := by
+  rw [codiscreteWithin_iff_locallyEmptyComplementWithin]
+  intro z hz
+  use univ \ t, nhdsNE_of_nhdsNE_sdiff_finite univ_mem h.finite, by aesop
+
+/--
 In a `T1Space`, complements of singleton sets are codiscrete within any set.
 -/
 @[simp]
