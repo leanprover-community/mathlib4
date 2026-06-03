@@ -133,7 +133,7 @@ instance [P.Nonempty] : (P.shiftClosure A).Nonempty :=
 
 variable {P Q} in
 lemma monotone_shiftClosure (h : P ≤ Q) : P.shiftClosure A ≤ Q.shiftClosure A :=
-  fun _ ⟨Y, a, i, hY⟩ ↦  ⟨Y, a, i, h Y hY⟩
+  fun _ ⟨Y, a, i, hY⟩ ↦ ⟨Y, a, i, h Y hY⟩
 
 lemma shiftClosure_eq_self [P.IsClosedUnderIsomorphisms] [P.IsStableUnderShift A] :
     P.shiftClosure A = P := by

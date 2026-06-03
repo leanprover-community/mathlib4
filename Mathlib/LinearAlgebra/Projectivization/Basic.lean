@@ -235,7 +235,7 @@ theorem linearIndependent_pair_iff_ne {D D' : ℙ K V} :
     rw [LinearIndependent.pair_iff' (rep_nonzero _)]
     refine ⟨fun h hD ↦ h 1 (by simp [hD]), fun h a hD ↦ h ?_⟩
     rw [eq_comm, ← mk_rep D, ← mk_rep D', mk_eq_mk_iff]
-    suffices a ≠ 0 by exact ⟨(Ne.isUnit this).unit, by simp [← hD]⟩
+    suffices a ≠ 0 from ⟨(Ne.isUnit this).unit, by simp [← hD]⟩
     exact fun ha ↦ D'.rep_nonzero (by simp [← hD, ha])
 
 theorem linearIndepOn_pair (D D' : ℙ K V) :
