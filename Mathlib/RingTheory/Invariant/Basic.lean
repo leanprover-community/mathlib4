@@ -97,10 +97,10 @@ variable {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 instance (H : Subgroup G) [H.Normal] :
     MulSemiringAction (G ⧸ H) (FixedPoints.subring B H) where
   smul := Quotient.lift (fun g x ↦ ⟨g • x, fun h ↦ by
-    simpa [mul_smul] using congr(g • $(x.2 ⟨_, ‹H.Normal›.conj_mem' _ h.2 g⟩))⟩) (by
+    simpa [mul_smul] using! congr(g • $(x.2 ⟨_, ‹H.Normal›.conj_mem' _ h.2 g⟩))⟩) (by
     rintro _ a ⟨⟨⟨b⟩, hb⟩, rfl⟩
     ext c
-    simpa [mul_smul] using congr(a • $(c.2 ⟨b, hb⟩)))
+    simpa [mul_smul] using! congr(a • $(c.2 ⟨b, hb⟩)))
   one_smul b := Subtype.ext (one_smul G b.1)
   mul_smul := Quotient.ind₂ fun _ _ _ ↦ Subtype.ext (mul_smul _ _ _)
   smul_zero := Quotient.ind fun _ ↦ Subtype.ext (smul_zero _)
@@ -460,7 +460,7 @@ lemma Ideal.Quotient.exists_algHom_fixedPoint_quotient_under
       map_zero, map_zero]
   rw [← Polynomial.aeval_map_algebraMap B, ← Polynomial.coe_mapRingHom, hp] at this
   obtain ⟨τ, hτ⟩ : ∃ τ : G, σ (algebraMap _ _ x) = algebraMap _ _ (τ • x) := by
-    simpa [MulSemiringAction.charpoly, sub_eq_zero, Finset.prod_eq_zero_iff] using this
+    simpa [MulSemiringAction.charpoly, sub_eq_zero, Finset.prod_eq_zero_iff] using! this
   exact ⟨Ideal.Quotient.mk _ (τ • x), hτ.symm⟩
 
 include G in

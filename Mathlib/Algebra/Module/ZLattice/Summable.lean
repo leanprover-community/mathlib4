@@ -47,7 +47,7 @@ lemma exists_forall_abs_repr_le_norm :
     have inst : IsZLattice ℝ L' :=
       ⟨Submodule.map_injective_of_injective E'.subtype_injective (by simp [E', L'])⟩
     obtain ⟨ε, hε, H⟩ := this (b.map e.symm) inst
-    exact ⟨ε, hε, fun x i ↦ by simpa using H ⟨⟨x.1, Submodule.subset_span x.2⟩, x.2⟩ i⟩
+    exact ⟨ε, hε, fun x i ↦ by simpa using! H ⟨⟨x.1, Submodule.subset_span x.2⟩, x.2⟩ i⟩
   have : Finite ι := Module.Finite.finite_basis b
   let b' : Basis ι ℝ E := Basis.ofZLatticeBasis ℝ L b
   let e := ((b'.repr ≪≫ₗ Finsupp.linearEquivFunOnFinite _ _ _).toContinuousLinearEquiv (𝕜 := ℝ))
@@ -59,7 +59,7 @@ lemma exists_forall_abs_repr_le_norm :
   · simp [hx]
   have hx : ‖x.1‖ ≠ 0 := by simpa
   have : |ε / 2 * (‖↑x‖⁻¹ * (b.repr x) i)| < 1 := by
-    simpa [e, b', ← abs_lt] using @hε' ((ε / 2) • ‖x‖⁻¹ • x)
+    simpa [e, b', ← abs_lt] using! @hε' ((ε / 2) • ‖x‖⁻¹ • x)
       (by simpa [norm_smul, inv_mul_cancel₀ hx, abs_eq_self.mpr hε.le]) i trivial
   rw [abs_mul, abs_mul, abs_inv, mul_left_comm, abs_norm, inv_mul_lt_iff₀ (by positivity),
     mul_one, abs_eq_self.mpr (by positivity), ← Int.cast_abs] at this
@@ -192,7 +192,6 @@ lemma exists_finsetSum_norm_rpow_le_tsum :
         Int.norm_eq_abs, ← Int.cast_abs, ← Int.le_floor] at this
       simpa only [Int.ofNat_toNat, Fintype.mem_piFinset, Finset.mem_Icc, ← abs_le, hr'']
     refine (Finset.sum_le_sum_of_subset_of_nonneg hn (by intros; positivity)).trans ?_
-    dsimp
     simp only [Submodule.norm_coe]
     convert! sum_piFinset_Icc_rpow_le b rfl n r hr with x
     simp [e, Finsupp.linearCombination]

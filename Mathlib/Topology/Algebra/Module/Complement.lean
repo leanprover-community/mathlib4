@@ -450,10 +450,8 @@ theorem prodEquivOfIsTopCompl_symm_apply (h : IsTopCompl p q) (x : M) :
 `Submodule.quotientEquivOfIsCompl` is continuous. -/
 theorem IsCompl.isTopCompl_iff_continuous_quotientEquivOfIsCompl (h : IsCompl p q) :
     IsTopCompl p q ↔ Continuous (p.quotientEquivOfIsCompl q h) := by
-  have hproj : ⇑(p.quotientEquivOfIsCompl q h) ∘ ⇑p.mkQ = ⇑(q.projectionOnto p h.symm) := by
-    funext; simp
-  rw [p.isQuotientMap_mkQL.continuous_iff, coe_mkQL, hproj, ← h.symm.isTopCompl_iff_projectionOnto,
-    isTopCompl_comm]
+  rw [p.isQuotientMap_mkQL.continuous_iff, isTopCompl_comm]
+  exact h.symm.isTopCompl_iff_projectionOnto
 
 variable (p q) in
 /-- If two submodules are topological complements, then the linear equivalence
@@ -467,6 +465,10 @@ noncomputable def quotientEquivOfIsTopCompl (h : IsTopCompl p q) : (M ⧸ p) ≃
 @[simp]
 theorem toLinearEquiv_quotientEquivOfIsTopCompl (h : IsTopCompl p q) :
     (quotientEquivOfIsTopCompl p q h : (M ⧸ p) ≃ₗ[R] q) = p.quotientEquivOfIsCompl q h.isCompl :=
+  rfl
+
+theorem quotientEquivOfIsTopCompl_comp_mkQL (h : IsTopCompl p q) :
+    (quotientEquivOfIsTopCompl p q h) ∘L p.mkQL = q.projectionOntoL p h.symm :=
   rfl
 
 @[simp]
