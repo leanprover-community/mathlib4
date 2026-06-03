@@ -32,9 +32,7 @@ universe u
 
 open CategoryTheory
 
-namespace AlgebraicGeometry
-
-namespace Scheme
+namespace AlgebraicGeometry.Scheme
 
 /-- A partial isomorphism from `X` to `Y` is an isomorphism between dense open subschemes
 of `X` and `Y`. -/
@@ -111,7 +109,7 @@ lemma trans'_over (f : X.PartialIso Y) (g : Y.PartialIso Z) (e : f.target = g.so
   simp [← hf, hg]
 
 /-- Restrict the source of a partial isomorphism to a smaller dense open. -/
-@[simps source target iso]
+@[simps]
 noncomputable def restrictSource (f : X.PartialIso Y) (U : Opens X) (hU : Dense (U : Set X))
     (hU' : U ≤ f.source) : X.PartialIso Y where
   source := U
@@ -170,7 +168,7 @@ abbrev toRationalMap (f : X.PartialIso Y) : X ⤏ Y := f.toPartialMap.toRational
 
 /-- A scheme isomorphism viewed as a partial isomorphism defined on all of `X` and `Y`. -/
 @[simps]
-noncomputable def _root_.CategoryTheory.Iso.toPartialIso (f : X ≅ Y) : X.PartialIso Y where
+noncomputable def ofIso (f : X ≅ Y) : X.PartialIso Y where
   source := ⊤
   dense_source := dense_univ
   target := ⊤
@@ -180,6 +178,7 @@ noncomputable def _root_.CategoryTheory.Iso.toPartialIso (f : X ≅ Y) : X.Parti
 end PartialIso
 
 /-- `X` and `Y` are birational if there exists a partial isomorphism between them. -/
+@[stacks 0A20 "(1)"]
 def Birational (X Y : Scheme.{u}) : Prop := Nonempty (PartialIso X Y)
 
 /-- Choose a partial isomorphism witnessing that `X` and `Y` are birational. -/
@@ -232,7 +231,7 @@ lemma BirationalOver.trans {S X Y Z : Scheme.{u}} {sX : X ⟶ S} {sY : Y ⟶ S} 
 affine space `𝔸(n; S)`. -/
 @[mk_iff]
 class IsRationalOver {S X : Scheme.{u}} (sX : X ⟶ S) : Prop where
-  exists_birationalOver_affineSpace' : ∃ (n : Type u), BirationalOver sX (𝔸(n; S) ↘ S)
+  exists_birationalOver_affineSpace (sX) : ∃ (n : Type u), BirationalOver sX (𝔸(n; S) ↘ S)
 
 lemma exists_birationalOver_affineSpace {S X : Scheme.{u}} (sX : X ⟶ S)
     [IsRationalOver sX] : ∃ (n : Type u), BirationalOver sX (𝔸(n; S) ↘ S) :=
@@ -280,9 +279,9 @@ section OpenImmersion
 
 variable {X U S : Scheme.{u}}
 
-/-- A dominant open immersion `f : U ⟶ X` induced a partial isomorphism between `U` and `X`. -/
+/-- A dominant open immersion `f : U ⟶ X` induces a partial isomorphism between `U` and `X`. -/
 @[simps! source target iso]
-noncomputable def Hom.partialIso (f : U ⟶ X) [IsOpenImmersion f] [IsDominant f] :=
+noncomputable def Hom.partialIso (f : U ⟶ X) [IsOpenImmersion f] [IsDominant f] : U.PartialIso X :=
   f.isoOpensRange.toPartialIso.trans' (f.opensRange.partialIsoOfDense f.denseRange) rfl
 
 lemma Hom.birational (f : U ⟶ X) [IsOpenImmersion f] [IsDominant f] : Birational U X :=
