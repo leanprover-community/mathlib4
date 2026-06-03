@@ -715,9 +715,7 @@ theorem setToFun_smul_left' (hT : DominatedFinMeasAdditive μ T C)
 theorem setToFun_zero (hT : DominatedFinMeasAdditive μ T C) : setToFun μ T hT (0 : α → E) = 0 := by
   by_cases hF : CompleteSpace F; swap
   · simp [setToFun, hF]
-  rw [Pi.zero_def, setToFun_eq hT (integrable_zero _ _ _)]
-  simp only [← Pi.zero_def]
-  rw [Integrable.toL1_zero, map_zero]
+  rw [setToFun_eq hT (integrable_zero _ _ _), Integrable.toL1_zero, map_zero]
 
 @[simp]
 theorem setToFun_zero_left {hT : DominatedFinMeasAdditive μ (0 : Set α → E →L[ℝ] F) C} :
