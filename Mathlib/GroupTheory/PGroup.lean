@@ -300,18 +300,19 @@ theorem coprime_card_of_ne {G₂ : Type*} [Group G₂] (p₁ p₂ : ℕ) [hp₁ 
   obtain ⟨n₂, heq₂⟩ := iff_card.mp hH₂; rw [heq₂]; clear heq₂
   exact Nat.coprime_pow_primes _ _ hp₁.elim hp₂.elim hne
 
+theorem disjoint_of_coprime {p₁ p₂ : ℕ} {H₁ H₂ : Subgroup G} (hH₁ : IsPGroup p₁ H₁)
+    (hH₂ : IsPGroup p₂ H₂) (h : p₁.Coprime p₂) : Disjoint H₁ H₂ := by
+  refine Subgroup.disjoint_def.mpr fun {g} hg₁ hg₂ ↦ ?_
+  have ⟨k₁, hk₁⟩ := hH₁ ⟨g, hg₁⟩
+  have hg₁ := Subgroup.orderOf_mk g _ ▸ orderOf_dvd_of_pow_eq_one hk₁
+  have ⟨k₂, hk₂⟩ := hH₂ ⟨g, hg₂⟩
+  have hg₂ := Subgroup.orderOf_mk g _ ▸ orderOf_dvd_of_pow_eq_one hk₂
+  exact orderOf_eq_one_iff.mp <| Nat.eq_one_of_dvd_coprimes (h.pow k₁ k₂) hg₁ hg₂
+
 /-- p-groups with different p are disjoint -/
 theorem disjoint_of_ne (p₁ p₂ : ℕ) [hp₁ : Fact p₁.Prime] [hp₂ : Fact p₂.Prime] (hne : p₁ ≠ p₂)
-    (H₁ H₂ : Subgroup G) (hH₁ : IsPGroup p₁ H₁) (hH₂ : IsPGroup p₂ H₂) : Disjoint H₁ H₂ := by
-  rw [Subgroup.disjoint_def]
-  intro x hx₁ hx₂
-  obtain ⟨n₁, hn₁⟩ := iff_orderOf.mp hH₁ ⟨x, hx₁⟩
-  obtain ⟨n₂, hn₂⟩ := iff_orderOf.mp hH₂ ⟨x, hx₂⟩
-  rw [Subgroup.orderOf_mk] at hn₁ hn₂
-  have : p₁ ^ n₁ = p₂ ^ n₂ := by rw [← hn₁, ← hn₂]
-  rcases n₁.eq_zero_or_pos with (rfl | hn₁)
-  · simpa using hn₁
-  · exact absurd (eq_of_prime_pow_eq hp₁.out.prime hp₂.out.prime hn₁ this) hne
+    (H₁ H₂ : Subgroup G) (hH₁ : IsPGroup p₁ H₁) (hH₂ : IsPGroup p₂ H₂) : Disjoint H₁ H₂ :=
+  disjoint_of_coprime hH₁ hH₂ <| Nat.coprime_primes hp₁.elim hp₂.elim |>.mpr hne
 
 theorem le_or_disjoint_of_coprime [hp : Fact p.Prime] {P : Subgroup G} (hP : IsPGroup p P)
     {H : Subgroup G} [H.Normal] (h_cop : (Nat.card H).Coprime H.index) :
@@ -337,7 +338,7 @@ theorem le_or_disjoint_of_coprime [hp : Fact p.Prime] {P : Subgroup G} (hP : IsP
   · rw [← Subgroup.relIndex_eq_one]
     exact Nat.eq_one_of_dvd_coprimes h4 (H.relIndex_dvd_index_of_normal P)
       (Subgroup.relIndex_dvd_card H P)
-  · exact disjoint_iff.mpr (Subgroup.inf_eq_bot_of_coprime h4)
+  · exact Subgroup.disjoint_of_coprime_natCard h4
 
 section P2comm
 
