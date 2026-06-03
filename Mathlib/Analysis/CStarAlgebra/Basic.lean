@@ -297,7 +297,7 @@ theorem starₗᵢ_toContinuousLinearEquiv :
   ContinuousLinearEquiv.ext rfl
 
 @[simp]
-theorem toLinearEquiv_starₗᵢ : (starₗᵢ 𝕜 : E ≃ₗᵢ⋆[𝕜] E).toLinearEquiv = starLinearEquiv :=
+theorem toLinearEquiv_starₗᵢ : (starₗᵢ 𝕜 : E ≃ₗᵢ⋆[𝕜] E).toLinearEquiv = starLinearEquiv 𝕜 :=
   rfl
 
 end starₗᵢ
