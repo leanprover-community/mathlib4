@@ -63,6 +63,11 @@ theorem tendsto_nhds_top_iff_natCast_lt {α : Type*} {l : Filter α} {f : α →
   simp_rw [nhds_top_order, lt_top_iff_ne_top, tendsto_iInf, tendsto_principal, ENat.forall_ne_top,
     mem_Ioi]
 
+theorem tendsto_natCast_nhds_top : Tendsto Nat.cast atTop (𝓝 (⊤ : ℕ∞)) := by
+  rw [tendsto_nhds_top_iff_natCast_lt]
+  intro n
+  filter_upwards [eventually_ge_atTop (n + 1)] with a ha using by simpa
+
 instance : ContinuousAdd ℕ∞ := by
   refine ⟨continuous_iff_continuousAt.2 fun (a, b) ↦ ?_⟩
   match a, b with
