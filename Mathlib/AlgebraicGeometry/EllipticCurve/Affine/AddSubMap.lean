@@ -103,54 +103,30 @@ lemma isHomogeneous_addSubMap (i : Fin 3) : (addSubMap W i).IsHomogeneous 2 := b
   · exact .sub (isHomogeneous_X_pow ..) <|
       .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
 
+set_option Elab.async false in
+-- #count_heartbeats in -- 12694 -- 84214
 lemma isHomogenous_addSubMapCoeff (ij : Fin 3 × Fin 3) :
     (addSubMapCoeff W ij).IsHomogeneous 2 := by
+  have H₁ {i : Fin 3} {a : R} : (C a * X (R := R) i ^ 2).IsHomogeneous 2 :=
+    isHomogeneous_C_mul_X_pow ..
+  have H₂ {i j : Fin 3} {a : R} : (C a * X (R := R) i * X j).IsHomogeneous 2 :=
+    .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
   simp only [addSubMapCoeff]
   fin_cases ij <;>
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Function.uncurry_apply_pair,
       Matrix.cons_val', Matrix.cons_val_zero, Matrix.cons_val_fin_one, neg_mul, Fin.mk_one,
       Matrix.cons_val_one, Fin.reduceFinMk, Matrix.cons_val, Fin.zero_eta]
-  · refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
-    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
-    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    exact isHomogeneous_C_mul_X_pow ..
-  · refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
-    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
-    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    exact isHomogeneous_C_mul_X_pow ..
-  · refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
-    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    exact isHomogeneous_C_mul_X_pow ..
-  · refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
-    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    exact .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-  · refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
-    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    exact isHomogeneous_C_mul_X_pow ..
-  · refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
-    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
-    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    exact isHomogeneous_C_mul_X_pow ..
-  · refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
-    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    exact .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-  · refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
-    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    exact .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-  · refine .add ?_ (isHomogeneous_C_mul_X_pow ..)
-    refine .add ?_ <| .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-    exact isHomogeneous_C_mul_X_pow ..
+    -- The following works, but is slow (84214 vs. 12694 heartbeats):
+    -- <;> repeat first | exact H₁ | exact H₂ | refine .add ?_ H₁ | refine .add ?_ H₂
+  · exact .add (.add (.add (.add (.add H₁ H₂) H₂) H₁) H₂) H₁
+  · exact .add (.add (.add (.add (.add H₁ H₂) H₂) H₁) H₂) H₁
+  · exact .add (.add (.add (.add H₁ H₂) H₂) H₂) H₁
+  · exact .add (.add (.add H₂ H₂) H₁) H₂
+  · exact .add (.add (.add H₁ H₂) H₁) H₂
+  · exact .add (.add (.add (.add (.add H₁ H₂) H₂) H₁) H₂) H₁
+  · exact .add (.add H₂ H₂) H₁
+  · exact .add (.add (.add H₂ H₂) H₂) H₁
+  · exact .add (.add H₁ H₂) H₁
 
 variable [W.IsElliptic]
 
