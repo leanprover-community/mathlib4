@@ -29,7 +29,7 @@ define sheaves of modules of finite type.
 
 @[expose] public section
 
-universe u v' u'
+universe w u v' u'
 
 open CategoryTheory Limits
 
@@ -112,12 +112,24 @@ variable [∀ (X : C), HasWeakSheafify (J.over X) AddCommGrpCat.{u}]
 over a covering of the terminal object. -/
 structure LocalGeneratorsData where
   /-- the index type of the covering -/
-  I : Type u'
+  I : Type w
   /-- a family of objects which cover the terminal object -/
   X : I → C
   coversTop : J.CoversTop X
   /-- the data of sections of `M` over `X i` which generate `M.over (X i)` -/
   generators (i : I) : (M.over (X i)).GeneratingSections
+
+/-- Shrink the indexing type of `LocalGeneratorsData` into the universe of the site. -/
+noncomputable
+def LocalGeneratorsData.shrink {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData) :
+    LocalGeneratorsData.{u'} M where
+  I := Set.range q.X
+  X i := q.X i.2.choose
+  coversTop X := by
+    refine J.superset_covering (fun Y hY H ↦ ?_) (q.coversTop X)
+    obtain ⟨i, ⟨hi⟩⟩ := (Sieve.mem_ofObjects_iff ..).mp H
+    exact ⟨⟨_, i, rfl⟩, ⟨hi ≫ eqToHom (by grind)⟩⟩
+  generators i := q.generators i.2.choose
 
 variable {M} in
 /-- The data of local generators of a sheaf of modules is finite type if
@@ -129,6 +141,6 @@ class LocalGeneratorsData.IsFiniteType (p : M.LocalGeneratorsData) : Prop where
 many sections. -/
 class IsFiniteType (M : SheafOfModules.{u} R) : Prop where
   exists_localGeneratorsData (M) :
-    ∃ (σ : M.LocalGeneratorsData), σ.IsFiniteType
+    ∃ (σ : (LocalGeneratorsData.{u'} M)), σ.IsFiniteType
 
 end SheafOfModules

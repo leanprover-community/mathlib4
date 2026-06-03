@@ -21,6 +21,7 @@ Note: Currently Category does not extend ReflQuiver, although it could. (TODO: d
 -/
 
 @[expose] public section
+
 namespace CategoryTheory
 universe v v₁ v₂ u u₁ u₂
 
@@ -96,6 +97,7 @@ def id (V : Type*) [ReflQuiver V] : ReflPrefunctor V V where
 instance (V : Type*) [ReflQuiver V] : Inhabited (ReflPrefunctor V V) :=
   ⟨id V⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Composition of morphisms between reflexive quivers. -/
 @[simps!]
 def comp {U : Type*} [ReflQuiver U] {V : Type*} [ReflQuiver V] {W : Type*} [ReflQuiver W]

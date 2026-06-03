@@ -280,7 +280,7 @@ theorem isPrincipal_add_omega0_opow (o : Ordinal) : IsPrincipal (· + ·) (ω ^ 
     obtain ⟨c, hc, m, hm⟩ := (lt_omega0_opow ha').1 ha
     apply (add_lt_add_of_le_of_lt hm.le hm).trans_le
     rw [← mul_add, ← Nat.cast_add]
-    exact (omega0_opow_mul_nat_lt hc _).le
+    exact (opow_mul_lt_opow (natCast_lt_omega0 _) hc).le
 
 @[deprecated (since := "2026-03-17")]
 alias principal_add_omega0_opow := isPrincipal_add_omega0_opow
@@ -293,6 +293,13 @@ theorem add_of_omega0_opow_le (h₁ : a < ω ^ b) (h₂ : ω ^ b ≤ c) : a + c 
 
 @[deprecated (since := "2026-03-18")]
 alias add_absorp := add_of_omega0_opow_le
+
+/-- For `a ≠ 0`, the largest power of `ω` which is less or equal to it is also the smallest ordinal
+`b` with `a - b < a`. -/
+theorem isLeast_sub_lt_omega0_opow_log (h : a ≠ 0) : IsLeast {b | a - b < a} (ω ^ log ω a) := by
+  refine ⟨sub_omega0_opow_log_lt h, fun c (hc : a - _ < _) ↦ ?_⟩
+  contrapose! hc
+  exact le_sub_of_add_le (add_of_omega0_opow_le hc (opow_log_le_self ω h)).le
 
 /-- The main characterization theorem for additive principal ordinals. -/
 theorem isPrincipal_add_iff_zero_or_omega0_opow :
@@ -385,7 +392,7 @@ theorem isPrincipal_mul_iff_mul_left_eq :
     IsPrincipal (· * ·) o ↔ ∀ a, 0 < a → a < o → a * o = o := by
   refine ⟨fun h a ha₀ hao => ?_, fun h a b hao hbo => ?_⟩
   · rcases le_or_gt o 2 with ho | ho
-    · convert one_mul o
+    · convert! one_mul o
       apply le_antisymm
       · rw [← lt_add_one_iff, one_add_one_eq_two]
         exact hao.trans_le ho
