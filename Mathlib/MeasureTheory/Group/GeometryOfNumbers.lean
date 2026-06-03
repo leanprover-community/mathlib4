@@ -172,7 +172,7 @@ lemma isClosed_setOf_lt_setFinrank_smul_inter (hsc : Convex ℝ s) (hs : IsCompa
     calc
       i < Set.finrank ℝ (r n • s ∩ L) := hr n
       _ ≤ Set.finrank ℝ (r₀ • s ∩ L) := by
-        refine finrank_mono <| span_mono (inter_subset_inter_left _ ?_)
+        gcongr
         exact hsc.smul_mono_of_zero_mem hs₀' (by simp) hn'
   have : ∀ n, ∃ vₙ : Fin (i + 1) → L,
     (∀ j, (vₙ j : E) ∈ (r n • s ∩ (L : Set E))) ∧ LinearIndependent ℤ vₙ :=
