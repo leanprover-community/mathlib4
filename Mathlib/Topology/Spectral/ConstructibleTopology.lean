@@ -93,7 +93,7 @@ instance compactSpace_withConstructibleTopology [CompactSpace X] [QuasiSober X]
     [PrespectralSpace X] [QuasiSeparatedSpace X] :
     CompactSpace (WithConstructibleTopology X) := by
   suffices h : @CompactSpace X (constructibleTopology X) from
-    @Continuous.compactSpace_of_surjective _ _ (constructibleTopology X) _ _
+    @Function.Surjective.compactSpace _ _ (constructibleTopology X) _ _
       (WithTopology.continuous_toTopology _) _ (WithTopology.toTopology_surjective _)
   let 𝔅 := constructibleTopologySubbasis X
   /- It suffices to check that any subset of `𝔅` for which every finite subset has non-empty
