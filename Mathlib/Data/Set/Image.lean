@@ -157,6 +157,10 @@ theorem nonempty_of_nonempty_preimage {s : Set β} {f : α → β} (hf : (f ⁻�
   let ⟨x, hx⟩ := hf
   ⟨f x, hx⟩
 
+theorem nonempty_preimage_iff {s : Set β} {f : α → β} :
+    (f ⁻¹' s).Nonempty ↔ (s ∩ range f).Nonempty := by
+  simp [Set.Nonempty]
+
 @[simp] theorem preimage_singleton_true (p : α → Prop) : p ⁻¹' {True} = {a | p a} := by ext; simp
 
 @[simp] theorem preimage_singleton_false (p : α → Prop) : p ⁻¹' {False} = {a | ¬p a} := by ext; simp
