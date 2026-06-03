@@ -92,15 +92,10 @@ instance functionField_isScalarTower [IrreducibleSpace X] (U : X.Opens) (x : U)
   rw [X.presheaf.germ_stalkSpecializes]
 
 @[simp]
-lemma Scheme.germToFunctionField_map {X : Scheme} [IrreducibleSpace X] {U V : X.Opens}
-    (i : U ⟶ V) [Nonempty U] [Nonempty V] (f : Γ(X, V)) :
-    X.germToFunctionField U (X.presheaf.map i.op f) = X.germToFunctionField V f :=
-  X.presheaf.germ_res_apply i _ _ f
-
-lemma Scheme.germToFunctionField_eq_algebraMap_germ {X : Scheme} [IrreducibleSpace X]
+lemma Scheme.algebraMap_germ_eq_germToFunctionField {X : Scheme} [IrreducibleSpace X]
     {U : X.Opens} [Nonempty U] {x : X} (hx : x ∈ U) (f : Γ(X, U)) :
-    X.germToFunctionField U f =
-      algebraMap (X.presheaf.stalk x) X.functionField (X.presheaf.germ U x hx f) := by
+    algebraMap (X.presheaf.stalk x) X.functionField (X.presheaf.germ U x hx f) =
+    X.germToFunctionField U f := by
   simp [RingHom.algebraMap_toAlgebra, ← ConcreteCategory.comp_apply]
 
 noncomputable instance (R : CommRingCat.{u}) [IsDomain R] :
@@ -178,20 +173,6 @@ instance [IsIntegral X] (x : X) :
 instance [IsIntegral X] {x : X} : IsDomain (X.presheaf.stalk x) :=
   Function.Injective.isDomain _ (IsFractionRing.injective (X.presheaf.stalk x) (X.functionField))
 
-
-lemma fhbd [IsIntegral X]
-    {U : X.Opens} {hU : genericPoint X ∈ U} {g : Γ(X, U)} (hg : g ≠ 0) :
-    haveI : Nonempty (X.basicOpen g) := by
-      rw [Scheme.Opens.nonempty_iff, ← Opens.ne_bot_iff_nonempty (X.basicOpen g)]
-      aesop
-    X.germToFunctionField (X.basicOpen g) (X.presheaf.map (X.basicOpen_le g).hom.op g) =
-    (ConcreteCategory.hom (X.presheaf.germ U (genericPoint ↥X) hU)) g ∧
-    IsUnit (X.presheaf.map (X.basicOpen_le g).hom.op g) := by
-  have : Nonempty U := ⟨_, hU⟩
-  constructor
-  · rw [Scheme.germToFunctionField_map]
-  · exact X.toRingedSpace.isUnit_res_basicOpen g
-
 /--
 For `f` an element of the function field of `X`, there exists some open set `U ⊆ X` such that
 `f` is a unit in `Γ(X, U)`.
@@ -199,10 +180,10 @@ For `f` an element of the function field of `X`, there exists some open set `U �
 lemma exists_isUnit_germ_eq [IsIntegral X] (f : X.functionField) (hf : f ≠ 0) :
     ∃ U ∈ X.affineOpens, ∃ f' : Γ(X, U), ∃ _ : Nonempty U,
     X.germToFunctionField U f' = f ∧ IsUnit f' := by
-  obtain ⟨U, hU, g, hg⟩ := X.presheaf.germ_exist (genericPoint X) f
+  obtain ⟨U, hU, g, hg⟩ := X.presheaf.germ_exist _ f
   obtain ⟨_, ⟨A, hA, rfl⟩, hxA, hAU⟩ :=
     X.isBasis_affineOpens.exists_subset_of_mem_open hU U.isOpen
-  haveI : Nonempty A := ⟨_, hxA⟩
+  have : Nonempty A := ⟨_, hxA⟩
   set gA : Γ(X, A) := X.presheaf.map (homOfLE hAU).op g with hgA_def
   have h_germ_gA : X.presheaf.germ A (genericPoint X) hxA gA = f := by
     rw [hgA_def]
@@ -210,13 +191,11 @@ lemma exists_isUnit_germ_eq [IsIntegral X] (f : X.functionField) (hf : f ≠ 0) 
   have hxV : genericPoint X ∈ X.basicOpen gA := by
     rw [Scheme.mem_basicOpen X gA (genericPoint X) hxA, h_germ_gA]
     exact isUnit_iff_ne_zero.mpr hf
-  haveI : Nonempty (X.basicOpen gA) := ⟨⟨_, hxV⟩⟩
+  have : Nonempty (X.basicOpen gA) := ⟨⟨_, hxV⟩⟩
   refine ⟨X.basicOpen gA, hA.basicOpen gA,
-      X.presheaf.map (X.basicOpen_le gA).hom.op gA, ‹_›, ?_, ?_⟩
-  · show X.presheaf.germ (X.basicOpen gA) (genericPoint X) hxV
-      (X.presheaf.map (X.basicOpen_le gA).hom.op gA) = f
-    rw [X.presheaf.germ_res_apply (X.basicOpen_le gA).hom (genericPoint X) hxV]
-    exact h_germ_gA
-  · exact X.toRingedSpace.isUnit_res_basicOpen gA
+      X.presheaf.map (X.basicOpen_le gA).hom.op gA, ‹_›, ?_,
+      X.toRingedSpace.isUnit_res_basicOpen gA⟩
+  simpa using h_germ_gA
+
 
 end AlgebraicGeometry
