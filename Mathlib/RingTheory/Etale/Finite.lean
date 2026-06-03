@@ -129,6 +129,7 @@ def FiniteEtale.finiteSpec (k : Type u) [Field k] : (FiniteEtale.{v} k)ᵒᵖ �
   obj R := .of (PrimeSpectrum R.unop.obj)
   map f := FintypeCat.homMk (PrimeSpectrum.comap f.unop.hom.hom)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If the geometric point `Ω` factors through `S`, the fiber can be computed after base change
 to `S`. -/
 @[expose]
@@ -141,21 +142,20 @@ def FiniteEtale.fiberIsoBaseChangeFiber :
 /-- If `Ω` is separably closed, the fiber functor for finite étale `Ω`-algebras
 is naturally isomorphic to the (finite) `Spec` functor. -/
 @[expose]
-noncomputable
-def FiniteEtale.fiberIsoFiniteSpec [IsSepClosed Ω] :
+noncomputable def FiniteEtale.fiberIsoFiniteSpec [IsSepClosed Ω] :
     FiniteEtale.fiber Ω Ω ≅ FiniteEtale.finiteSpec Ω :=
   NatIso.ofComponents
-    (fun R ↦ FintypeCat.equivEquivIso (Algebra.IsFiniteSplit.algHomEquivPrimeSpectrum _ _))
+    fun R ↦ FintypeCat.equivEquivIso (Algebra.IsFiniteSplit.algHomEquivPrimeSpectrum _ _)
 
 /-- If `Ω` is separably closed, the fiber `S →ₐ[R] Ω`
 is isomorphic to the prime spectrum of the base change `Ω ⊗[R] S`. -/
 @[expose]
-noncomputable
-def FiniteEtale.fiberIsoComp [IsSepClosed Ω] :
+noncomputable def FiniteEtale.fiberIsoComp [IsSepClosed Ω] :
     FiniteEtale.fiber.{v} R Ω ≅
       (FiniteEtale.baseChange.{v} R Ω).op ⋙ FiniteEtale.finiteSpec.{max w v} Ω :=
   fiberIsoBaseChangeFiber _ _ Ω ≪≫ Functor.isoWhiskerLeft _ (fiberIsoFiniteSpec _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `Ω` is a separably closed field, the category of finite étale `Ω`-algebras is
 anti-equivalent to `FintypeCat`. -/
