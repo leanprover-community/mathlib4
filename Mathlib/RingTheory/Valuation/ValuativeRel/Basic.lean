@@ -874,7 +874,7 @@ def supp : Ideal R where
   smul_mem' x _ h := by simpa using mul_vle_mul_right h _
 
 instance : (supp R).IsTwoSided where
-  mul_mem_of_left _ h := by simpa using mul_vle_mul_left h _
+  mul_mem_of_left _ h := by simpa [supp] using mul_vle_mul_left h _
 
 @[simp]
 lemma supp_def (x : R) : x ∈ supp R ↔ x ≤ᵥ 0 := Iff.refl _
