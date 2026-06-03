@@ -79,13 +79,13 @@ infixr:25 " →*₀ " => MonoidWithZeroHom
 /-- Turn an element of a type `F` satisfying `MonoidWithZeroHomClass F α β` into an actual
 `MonoidWithZeroHom`. This is declared as the default coercion from `F` to `α →*₀ β`. -/
 @[coe]
-def MonoidWithZeroHomClass.ofClass [FunLike F α β] [MonoidWithZeroHomClass F α β]
+def MonoidWithZeroHom.ofClass [FunLike F α β] [MonoidWithZeroHomClass F α β]
     (f : F) : α →*₀ β := { (f : α →* β), (f : ZeroHom α β) with }
 
 /-- Any type satisfying `MonoidWithZeroHomClass` can be cast into `MonoidWithZeroHom` via
-`MonoidWithZeroHomClass.toMonoidWithZeroHom`. -/
+`MonoidWithZeroHom.ofClass`. -/
 instance [FunLike F α β] [MonoidWithZeroHomClass F α β] : CoeTC F (α →*₀ β) :=
-  ⟨MonoidWithZeroHomClass.ofClass⟩
+  ⟨MonoidWithZeroHom.ofClass⟩
 
 namespace MonoidWithZeroHom
 
