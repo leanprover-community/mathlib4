@@ -138,7 +138,7 @@ open IsValuativeTopology
 namespace Valuation
 
 lemma mem_nhds_iff {s : Set R} {x : R} : s ∈ 𝓝 x ↔
-    ∃ γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ, { z | v.restrict (z - x) < γ.val } ⊆ s := by
+    ∃ γ : (ValueGroup₀ (v : R →*₀ Γ₀))ˣ, { z | v.restrict (z - x) < γ.val } ⊆ s := by
   convert! IsValuativeTopology.mem_nhds_iff (s := s) using 4
   simpa [neg_add_eq_sub] using v.exists_setOf_restrict_le_iff _ _
 
@@ -341,7 +341,7 @@ theorem isClosed_sphere (r : ValueGroup₀ (v : R →*₀ Γ₀)) :
     IsClosed (X := R) {x | v.restrict x = r} := by
   rcases eq_or_ne r 0 with rfl | hr
   · convert! v.isClosed_closedBall 0 using 3
-    exact (le_zero_iff (α := ValueGroup₀ v)).symm
+    simp
   exact isClopen_sphere hr |>.isClosed
 
 /-- For any valuation `v` compatible with the valuative relation on `R`, the closed unit ball

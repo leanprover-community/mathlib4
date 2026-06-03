@@ -212,8 +212,6 @@ theorem val_apply_equiv (r : WithVal v) : v (equiv v r) = Valued.v r := rfl
 instance [CharZero R] : CharZero (WithVal v) :=
   .of_addMonoidHom (equiv v).symm.toAddMonoidHom (by simp) (equiv v).symm.injective
 
-instance : Ring (WithVal v) := fast_instance% (equiv v).ring
-
 instance : ValuativeRel (WithVal v) := fast_instance% .ofValuation (valuation v)
 
 instance : (valuation v).Compatible := .ofValuation (valuation v)
@@ -420,15 +418,16 @@ variable {R : Type*} [Ring R] (v : Valuation R Γ₀)
 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
-theorem valueGroup_eq : valueGroup (valuation v : (WithVal v) →*₀ _) = valueGroup (v : R →*₀ Γ₀) := by
+theorem valueGroup_eq : valueGroup (Valued.v (R := WithVal v) : (WithVal v) →*₀ _) =
+    valueGroup (v : R →*₀ Γ₀) := by
   simp [valueGroup, valueMonoid, ← (WithVal.ofVal_surjective v).range_comp]
   rfl
 
 /-- The multiplicative equivalence between the `valueGroup` of the valuation on `WithVal v`
 and the valuation `v`. -/
 @[simps! apply symm_apply]
-def valueGroupEquiv : valueGroup (valuation v : (WithVal v) →*₀ Γ₀) ≃*
-    valueGroup (v : R →*₀ Γ₀) where
+def valueGroupEquiv :
+    valueGroup (Valued.v (R := WithVal v) : (WithVal v) →*₀ Γ₀) ≃* valueGroup (v : R →*₀ Γ₀) where
   __ := Equiv.setCongr (by simp [valueGroup_eq v])
   map_mul' := by simp [Equiv.setCongr, Equiv.subtypeEquivProp]
 
@@ -441,7 +440,7 @@ theorem strictMono_valueGroupEquiv_symm : StrictMono (valueGroupEquiv v).symm :=
 /-- The order-preserving, multiplicative equivalence between the `ValueGroup₀` of the valuation
 on `WithVal v` and the valuation `v`. -/
 @[simps!]
-def valueGroupOrderIso₀ : ValueGroup₀ (valuation v : (WithVal v) →*₀ Γ₀) ≃*o
+def valueGroupOrderIso₀ : ValueGroup₀ (Valued.v (R := WithVal v) : (WithVal v) →*₀ Γ₀) ≃*o
     ValueGroup₀ (v : R →*₀ Γ₀) where
   toFun := WithZero.map' (valueGroupEquiv v)
   invFun := WithZero.map' (valueGroupEquiv v).symm
@@ -543,14 +542,12 @@ theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v 
   have h' : v.restrict.IsEquiv w.restrict := h.restrict
   rw [← hr, equiv_apply, Set.mem_setOf_eq, lt_div_iff₀ ((restrict_pos_iff Valued.v s).mpr hs₀), hv,
     ← map_mul, ← lt_def, ← ofVal_mul,
-  --   ← hy, ← toVal_mul, ←  h'.orderRingIso_apply, ← h'.orderRingIso.lt_symm_apply]
-  -- simp only [toVal_mul, orderRingIso_symm_apply, lt_def, ofVal_mul, restrict_lt_iff]
-  -- simp only [equiv_symm_apply, Units.val_mk0, Set.mem_setOf_eq, lt_div_iff₀ hs0'] at hx
-  -- rw [← map_mul] at hx
-  -- rw [restrict_lt_iff] at hx
-  -- exact hx
-    ← hy, ← toVal_mul, ← h'.orderRingIso_apply, ← h'.orderRingIso.lt_symm_apply, lt_def]
-  simpa [lt_div_iff₀ hs0', ← map_mul] using! hx
+    ← hy, ← toVal_mul, ←  h'.orderRingIso_apply, ← h'.orderRingIso.lt_symm_apply]
+  simp only [toVal_mul, orderRingIso_symm_apply, lt_def, ofVal_mul, restrict_lt_iff]
+  simp only [equiv_symm_apply, Units.val_mk0, Set.mem_setOf_eq, lt_div_iff₀ hs0'] at hx
+  rw [← map_mul] at hx
+  rw [restrict_lt_iff] at hx
+  exact hx
 
 theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valued.v = w)
     (h : w.IsEquiv v) : UniformContinuous (WithVal.equiv v).symm := by

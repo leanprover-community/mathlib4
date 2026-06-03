@@ -74,8 +74,8 @@ lemma nonempty_rankOne_iff_mulArchimedean {v : Valuation R Γ₀} [v.IsNontrivia
       exact StrictMono.comp strictMono_id (f.monotone'.strictMono_of_injective hf)
     let rf : Multiplicative ℝ →* ℝ≥0ˣ := {
       toFun x := Units.mk0 (.mk ((2 : ℝ) ^ (log (M := ℝ) x)) (by positivity)) <| by
-        rw [ne_eq, Subtype.ext_iff]
-        simp only [NNReal.val_eq_coe, NNReal.coe_mk, NNReal.coe_zero]
+        rw [ne_eq, NNReal.eq_iff]
+        simp only [NNReal.coe_mk, NNReal.coe_zero]
         positivity
       map_one' := by ext; dsimp; simp
       map_mul' _ _ := by ext; dsimp; simp [Real.rpow_add]

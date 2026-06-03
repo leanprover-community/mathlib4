@@ -513,11 +513,11 @@ lemma restrict_le_one_iff {x : R} : v.restrict x ≤ 1 ↔ v x ≤ 1 := by
 
 @[simp]
 lemma restrict_eq_zero_iff {x : R} : v.restrict x = 0 ↔ v x = 0 := by
-  rw [restrict_def, restrict₀_eq_zero_iff]
+  simp [restrict_def, restrict₀_eq_zero_iff]
 
 @[simp]
 lemma restrict_eq_one_iff {x : R} : v.restrict x = 1 ↔ v x = 1 := by
-  rw [restrict_def, restrict₀_eq_one_iff]
+  simp [restrict_def,restrict₀_eq_one_iff]
 
 @[simp]
 lemma restrict_le_iff {x y : R} : v.restrict x ≤ v.restrict y ↔ v x ≤ v y := by

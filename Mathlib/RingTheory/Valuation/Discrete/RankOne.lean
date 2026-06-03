@@ -42,7 +42,7 @@ variable (v : Valuation R Γ) [hv : v.IsRankOneDiscrete]
 
 /-- An order-preserving isomorphism between the `ValueGroup₀` of a discrete valuation and `ℤᵐ⁰`. -/
 @[simps!]
-noncomputable def valueGroup₀_equiv_withZeroMulInt : (ValueGroup₀ (v : R →*₀ Γ)) ≃* ℤᵐ⁰ :=
+noncomputable def valueGroup₀_equiv_withZeroMulInt : (ValueGroup₀ (v : R →*₀ Γ)) ≃*o ℤᵐ⁰ where
   __ := MulEquiv.withZero (intEquivOfZPowersEqTop _
     (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top)).symm
   map_le_map_iff' {x y} := by
@@ -88,7 +88,8 @@ is equal to `exp (-1)`. -/
 theorem generator_eq_exp_neg_one_of_mem_range (hπ : exp (-1) ∈ Set.range v) :
     hv.generator = Units.mk0 (exp (-1 : ℤ) : ℤᵐ⁰) (by simp) := by
   rw [← Valuation.IsRankOneDiscrete.valueGroup_genLTOne_eq_generator]
-  suffices Units.mk0 (exp (-1)) (by simp) = (Subgroup.genLTOne (valueGroup v)) by simp [← this]
+  suffices Units.mk0 (exp (-1)) (by simp) = (Subgroup.genLTOne (valueGroup (v : R →*₀ _))) by
+    simp [← this]
   apply LinearOrderedCommGroup.Subgroup.genLTOne_unique
   · exact compareOfLessAndEq_eq_lt.mp rfl
   · ext n

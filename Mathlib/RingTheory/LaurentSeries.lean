@@ -1081,7 +1081,10 @@ theorem tendsto_valuation (a : (idealX K).adicCompletion K⟮X⟯) :
     · rw [ha, this]
       obtain ⟨x, hx⟩ := valuedAdicCompletion_surjective K⟮X⟯ (idealX K) γ
       use Units.mk0 (Valued.v.restrict x) (by
-        rwa [Valuation.restrict_def, ne_eq, restrict₀_eq_zero_iff, hx])
+        simp only [Valuation.restrict_def, ne_eq, map_eq_zero]
+        intro h
+        simp only [h, map_zero] at hx
+        tauto)
       simp [Units.val_mk0, Valuation.restrict_lt_iff, hx]
     · refine Set.Subset.trans (fun a _ ↦ ?_) (Set.preimage_mono γ_le)
       rw [Set.mem_preimage, Set.mem_Iio, ← Valued.valuedCompletion_apply a]
@@ -1105,8 +1108,7 @@ theorem valuation_compare (f : K⸨X⸩) :
   rw [← valuation_LaurentSeries_equal_extension, ← compare_comp_eq_compare ratfuncAdicComplPkg _]
   · exact congr_fun (ratfuncAdicComplPkg.isDenseInducing.extend_unique
       Valued.valuedCompletion_apply (Valued.continuous_valuation_of_surjective
-      (K := (UniformSpace.Completion (WithVal (polynomialValuationX K))))
-      (valuedAdicCompletion_surjective K⟮X⟯ (idealX K)))).symm _
+        (valuedAdicCompletion_surjective _ _))).symm _
   · refine Valued.continuous_valuation_of_surjective (fun x ↦ ?_)
     obtain ⟨y, rfl⟩ := RatFunc.valuation_surjective K x
     exact ⟨.toVal _ y, rfl⟩
