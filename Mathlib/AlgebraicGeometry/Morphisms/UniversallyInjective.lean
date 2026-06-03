@@ -114,12 +114,12 @@ theorem tfae_universallyInjective :
     replace e := h_inj e
     rw [← f.residueFieldMap_congr'_assoc e, CommRingCat.hom_ext_iff] at h
     rw [Scheme.SpecToEquivOfField_eq_iff]
-    have hfx := hf (g₁ (IsLocalRing.closedPoint K))
+    let x := g₁ (IsLocalRing.closedPoint K)
+    have hfx := hf x
     algebraize [(f.residueFieldMap (g₁ (IsLocalRing.closedPoint K))).hom]
     refine ⟨e, CommRingCat.hom_ext ?_⟩
     exact IsPurelyInseparable.injective_comp_algebraMap
-      (Y.residueField (f (g₁ (IsLocalRing.closedPoint K))))
-      (X.residueField (g₁ (IsLocalRing.closedPoint K))) _ h
+      (Y.residueField (f x)) (X.residueField x) _ h
   tfae_have 2 → 4 := fun h ↦ by
     rw [surjective_iff]
     intro z
