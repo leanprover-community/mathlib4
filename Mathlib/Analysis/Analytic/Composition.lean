@@ -927,6 +927,7 @@ theorem HasFiniteFPowerSeriesAt.comp {m n : ℕ} {g : F → G} {f : E → F}
 
 /-- If two functions `g` and `f` are continuously polynomial respectively at `f x` and `x`,
 then `g ∘ f` is continuously polynomial at `x`. -/
+@[to_fun]
 theorem CPolynomialAt.comp {g : F → G} {f : E → F} {x : E}
     (hg : CPolynomialAt 𝕜 g (f x)) (hf : CPolynomialAt 𝕜 f x) :
     CPolynomialAt 𝕜 (g ∘ f) x := by
@@ -935,20 +936,12 @@ theorem CPolynomialAt.comp {g : F → G} {f : E → F} {x : E}
   refine ⟨q.comp p, m * (n + 1), ?_⟩
   exact hm.comp (hn.of_le (Nat.le_succ n)) (Nat.zero_lt_succ n)
 
-/-- If two functions `g` and `f` are continuously polynomial respectively at `f x` and `x`,
-then `g ∘ f` is continuously polynomial at `x`. -/
-theorem CPolynomialAt.fun_comp {g : F → G} {f : E → F} {x : E}
-    (hg : CPolynomialAt 𝕜 g (f x)) (hf : CPolynomialAt 𝕜 f x) :
-    CPolynomialAt 𝕜 (fun z ↦ g (f z)) x :=
-  hg.comp hf
-
 /-- Version of `CPolynomialAt.comp` where point equality is a separate hypothesis. -/
+@[to_fun fun_comp_of_eq]
 theorem CPolynomialAt.comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} (hg : CPolynomialAt 𝕜 g y)
     (hf : CPolynomialAt 𝕜 f x) (hy : f x = y) : CPolynomialAt 𝕜 (g ∘ f) x := by
   rw [← hy] at hg
   exact hg.comp hf
--- If we actually need this version, use `@[to_fun comp_of_eq]` to generate it.
-@[deprecated (since := "2026-05-18")] alias CPolynomialAt.fun_comp_of_eq := CPolynomialAt.comp_of_eq
 
 /-- If two functions `g` and `f` are continuously polynomial respectively on `s.image f` and `s`,
 then `g ∘ f` is continuously polynomial on `s`. -/
