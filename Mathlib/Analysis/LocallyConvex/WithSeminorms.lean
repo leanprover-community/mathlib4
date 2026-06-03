@@ -99,8 +99,8 @@ theorem basisSets_univ_mem : univ ∈ p.basisSets :=
   (basisSets_iff _).mpr ⟨∅, _, one_pos, by
     rw [Finset.sup_empty, Seminorm.bot_eq_zero, ball_zero' _ one_pos]⟩
 
-theorem basisSets_nonempty : p.basisSets.Nonempty := by
-  exact nonempty_def.mpr ⟨univ, basisSets_univ_mem _⟩
+theorem basisSets_nonempty : p.basisSets.Nonempty :=
+  nonempty_def.mpr ⟨univ, basisSets_univ_mem _⟩
 
 theorem basisSets_intersect (U V : Set E) (hU : U ∈ p.basisSets) (hV : V ∈ p.basisSets) :
     ∃ z ∈ p.basisSets, z ⊆ U ∩ V := by

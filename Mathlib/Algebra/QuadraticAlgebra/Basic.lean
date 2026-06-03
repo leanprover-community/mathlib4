@@ -174,8 +174,7 @@ theorem mul_star (x y : R) :
   ext <;> simp <;> ring
 
 instance : StarRing (QuadraticAlgebra R a b) where
-  star_involutive _ := by
-    exact QuadraticAlgebra.ext (by simp) (neg_neg _)
+  star_involutive _ := QuadraticAlgebra.ext (by simp) (neg_neg _)
   star_mul a b := by ext <;>
     simp only [re_star, re_mul, im_mul, im_star, mul_neg, neg_mul, neg_neg] <;> ring
   star_add _ _ := QuadraticAlgebra.ext (by simp only [re_star, re_add, im_add]; ring) (neg_add _ _)
