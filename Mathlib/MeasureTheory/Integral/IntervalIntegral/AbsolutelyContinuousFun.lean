@@ -89,7 +89,7 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
   have vol_sum : volume (⋃ z : u, Icc z.val.1 z.val.2) = ENNReal.ofReal (b - d) := by
     convert!
       Real.volume_Ioo ▸
-        measure_eq_measure_of_null_diff (by simp only [iUnion_subset_iff]; grind) hu₄ using 2
+        measure_eq_measure_of_null_sdiff (by simp only [iUnion_subset_iff]; grind) hu₄ using 2
     simp
   rw [measure_iUnion this (by simp)] at vol_sum
   simp_rw [Real.volume_Icc] at vol_sum

@@ -345,7 +345,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
   rw [color_i]
   have N_mem : N ∈ univ \ A := by
     simp only [A, not_exists, true_and, exists_prop, mem_iUnion, mem_singleton_iff,
-      not_and, mem_univ, mem_sdiff, Subtype.exists]
+      not_and, mem_univ, Set.mem_sdiff, Subtype.exists]
     intro j ji _
     exact (IH j ji (ji.trans hi)).ne'
   suffices sInf (univ \ A) ≠ N by
@@ -360,7 +360,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
     intro k hk
     rw [← Inf_eq_N] at hk
     have : k ∈ A := by
-      simpa only [true_and, mem_univ, Classical.not_not, mem_sdiff] using
+      simpa only [true_and, mem_univ, Classical.not_not, Set.mem_sdiff] using
         Nat.notMem_of_lt_sInf hk
     simpa only [A, exists_prop, mem_iUnion, mem_singleton_iff, mem_closedBall, Subtype.exists,
       Subtype.coe_mk]
@@ -494,11 +494,11 @@ theorem exist_disjoint_covering_families {N : ℕ} {τ : ℝ} (hτ : 1 < τ)
       apply csInf_mem
       refine ⟨N, ?_⟩
       simp only [A, not_exists, true_and, exists_prop, mem_iUnion, mem_singleton_iff, not_and,
-        mem_univ, mem_sdiff, Subtype.exists]
+        mem_univ, Set.mem_sdiff, Subtype.exists]
       intro k hk _
       exact (p.color_lt (hk.trans jy_lt) hN).ne'
     simp only [A, not_exists, true_and, exists_prop, mem_iUnion, mem_singleton_iff, not_and,
-      mem_univ, mem_sdiff, Subtype.exists] at h
+      mem_univ, Set.mem_sdiff, Subtype.exists] at h
     specialize h jx jxy
     contrapose! h
     simpa only [jxi, jyi, and_true, eq_self_iff_true, ← not_disjoint_iff_nonempty_inter] using h
@@ -923,7 +923,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
     intro x hx
     have : x ∉ s' := by
       simp only [s', not_exists, exists_prop, mem_iUnion, mem_closedBall, not_and, not_lt, not_le,
-        mem_sdiff, not_forall]
+        Set.mem_sdiff, not_forall]
       intro _
       refine ⟨x, hx, ?_⟩
       rw [dist_self]
@@ -953,7 +953,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
     · obtain ⟨i, y, ySi, xy⟩ : ∃ (i : Fin N) (y : ↥s'), y ∈ S i ∧ x ∈ ball (y : α) (r1 y) := by
         have A : x ∈ range q.c := by
           simpa only [q, not_exists, exists_prop, mem_iUnion, mem_closedBall, not_and,
-            not_le, mem_setOf_eq, Subtype.range_coe_subtype, mem_sdiff] using h'x
+            not_le, mem_setOf_eq, Subtype.range_coe_subtype, Set.mem_sdiff] using h'x
         simpa only [mem_iUnion, mem_image, bex_def] using hS A
       refine mem_iUnion₂.2 ⟨y, Or.inr ?_, ?_⟩
       · simp only [mem_iUnion, mem_image]

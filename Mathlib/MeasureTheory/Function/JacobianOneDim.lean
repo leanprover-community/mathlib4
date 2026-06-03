@@ -135,7 +135,7 @@ theorem exists_decomposition_of_monotoneOn_hasDerivWithinAt (hs : MeasurableSet 
       have J2 : 𝓝[s ∩ Ioo p x] x = 𝓝[s ∩ Iio x] x := by
         simp [nhdsWithin_inter, nhdsWithin_Ioo_eq_nhdsLT px]
       rw [uniqueDiffWithinAt_iff_accPt, accPt_principal_iff_nhdsWithin, J1, J2]
-      simp only [mem_inter_iff, mem_sdiff, hx.1.1, mem_union, mem_setOf_eq, true_and, not_or,
+      simp only [mem_inter_iff, Set.mem_sdiff, hx.1.1, mem_union, mem_setOf_eq, true_and, not_or,
         mem_preimage, b, s₁, a] at hx
       exact neBot_iff.2 hx.1.2
     · have K : HasDerivWithinAt f 0 (s ∩ Ioo x p) x := by
@@ -153,14 +153,14 @@ theorem exists_decomposition_of_monotoneOn_hasDerivWithinAt (hs : MeasurableSet 
       have J2 : 𝓝[s ∩ Ioo x p] x = 𝓝[s ∩ Ioi x] x := by
         simp [nhdsWithin_inter, nhdsWithin_Ioo_eq_nhdsGT px]
       rw [uniqueDiffWithinAt_iff_accPt, accPt_principal_iff_nhdsWithin, J1, J2]
-      simp only [mem_inter_iff, mem_sdiff, hx.1.1, mem_union, mem_setOf_eq, true_and, not_or,
+      simp only [mem_inter_iff, Set.mem_sdiff, hx.1.1, mem_union, mem_setOf_eq, true_and, not_or,
         mem_preimage, b, s₁, a] at hx
       exact neBot_iff.2 hx.1.1
   · /- We have to show that the derivative is nonnegative at points of `c`. As these points are
     not isolated in `s`, this follows from the fact that `f` is monotone on `s`. -/
     intro x hx
     apply (hf' x hx.1.1).nonneg_of_monotoneOn _ hf
-    simp only [mem_sdiff, hx.1.1, mem_union, mem_setOf_eq, true_and, not_or, c, s₁, a, b] at hx
+    simp only [Set.mem_sdiff, hx.1.1, mem_union, mem_setOf_eq, true_and, not_or, c, s₁, a, b] at hx
     rw [accPt_principal_iff_nhdsWithin]
     have : (𝓝[s ∩ Iio x] x).NeBot := neBot_iff.2 hx.1.2
     apply this.mono
