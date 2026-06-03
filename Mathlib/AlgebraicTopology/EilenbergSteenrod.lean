@@ -39,7 +39,7 @@ structure HomologyPretheory
   Hₚ (i : ι) : TopPair.{u} ⥤ C
   /-- The regular homology functor of a `HomologyPretheory`. -/
   H (i : ι) : TopCat.{u} ⥤ C
-  /-- `Hₚ` and `H` agree on `TopCat` -/
+  /-- `Hₚ` and `H` agree on `TopCat`. -/
   iso (i : ι) : H i ≅ incl ⋙ Hₚ i
   /-- The boundary natural transformation of a `HomologyPretheory`. -/
   δ (i j : ι) : Hₚ i ⟶ proj₂ ⋙ H j
@@ -143,6 +143,8 @@ variable (C c) in
 abbrev isHomotopyInvariant : ObjectProperty (HomologyPretheory.{u} C c) :=
   IsHomotopyInvariant
 
+@[simp]
+lemma isHomotopyInvariant_iff : isHomotopyInvariant C c HP ↔ IsHomotopyInvariant HP := .rfl
 instance : IsClosedUnderIsomorphisms (isHomotopyInvariant.{u} C c) where
   of_iso e _ := ⟨fun F _ ↦ by
     simp only [← cancel_epi ((e.hom.homₚ _).app _), ← NatTrans.naturality,
