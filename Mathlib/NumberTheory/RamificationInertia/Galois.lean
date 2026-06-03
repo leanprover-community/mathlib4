@@ -160,7 +160,7 @@ theorem ramificationIdxIn_eq_ramificationIdx :
   exact ramificationIdx_eq_of_isGaloisGroup p h.choose P G
 
 include G in
-theorem ramificationIdxIn_ne_zero [IsNoetherianRing B] {p : Ideal A} [p.IsPrime]
+theorem ramificationIdxIn_ne_zero [Module.Finite A B] {p : Ideal A} [p.IsPrime]
     [Nonempty (primesOver p B)] : p.ramificationIdxIn B ≠ 0 := by
   have : Algebra.IsIntegral A B := IsGaloisGroup.isInvariant.isIntegral A B G
   obtain ⟨P⟩ := (inferInstance : Nonempty (primesOver p B))
@@ -238,7 +238,7 @@ section tower
 variable {A B : Type*} [CommRing A] [IsDomain A] [CommRing B] [IsDomain B]
   [Algebra A B] [Flat A B] {p : Ideal A} (P : Ideal B) [p.IsPrime]
   [P.IsPrime] [P.LiesOver p] (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
-  [IsGaloisGroup G A B] (C : Type*) [CommRing C] [IsDomain C] [IsNoetherianRing C] [Algebra A C]
+  [IsGaloisGroup G A B] (C : Type*) [CommRing C] [IsDomain C] [Algebra A C]
   [Algebra B C] [Module.Finite A B] [Module.Finite A C] [Module.Finite B C] [Flat A C]
   [Flat B C] [IsScalarTower A B C]
   (GAC : Type*) [Group GAC] [Finite GAC] [MulSemiringAction GAC C] [IsGaloisGroup GAC A C]
@@ -320,7 +320,6 @@ lemma card_inertia_eq_ramificationIdxIn [IsDomain R] [IsDomain S] [Module.Finite
     (p : Ideal R) (P : Ideal S) [P.LiesOver p] [p.IsPrime] [P.IsPrime]
     [PerfectField p.ResidueField] :
     Nat.card (P.inertia G) = Ideal.ramificationIdxIn p S := by
-  -- have := (show p.IsPrime from P.over_def p ▸ inferInstance).isMaximal hp
   have H := ncard_primesOver_mul_card_inertia_mul_finrank (G := G) p P
   rw [← inertiaDegIn_eq_inertiaDeg p P G] at H
   have : 0 < Nat.card G := Nat.card_pos
