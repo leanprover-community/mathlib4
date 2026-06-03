@@ -824,6 +824,7 @@ theorem algebraMap_eq_applyₛₐ {y : R} {x : A} :
   ⟨fun h => by simpa using e.symm.toAlgHom.algebraMap_eq_applyₛₐ h, fun h =>
     e.toAlgHom.algebraMap_eq_applyₛₐ h⟩
 
+@[simp]
 theorem algebraMap_eq_apply [Algebra R B] (e : A ≃ₐ[R] B) {y : R} {x : A} :
     algebraMap R B y = e x ↔ algebraMap R A y = x :=
  ⟨fun h => by simpa using e.symm.toAlgHom.algebraMap_eq_apply h, fun h =>
