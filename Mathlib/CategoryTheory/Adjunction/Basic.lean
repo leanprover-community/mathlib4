@@ -269,11 +269,15 @@ theorem homEquiv_naturality_right_square_iff (f : X' ⟶ X) (g : X ⟶ G.obj Y')
     homEquiv_naturality_right_square adj f g h k⟩
 
 @[simp]
-theorem left_triangle : whiskerRight adj.unit F ≫ whiskerLeft F adj.counit = 𝟙 _ := by
+theorem left_triangle :
+    whiskerRight adj.unit F ≫ (Functor.associator ..).hom ≫ whiskerLeft F adj.counit =
+    F.leftUnitor.hom ≫ F.rightUnitor.inv := by
   ext; simp
 
 @[simp]
-theorem right_triangle : whiskerLeft G adj.unit ≫ whiskerRight adj.counit G = 𝟙 _ := by
+theorem right_triangle :
+    whiskerLeft G adj.unit ≫ (Functor.associator ..).inv ≫ whiskerRight adj.counit G =
+    G.rightUnitor.hom ≫ G.leftUnitor.inv := by
   ext; simp
 
 @[reassoc (attr := simp)]
