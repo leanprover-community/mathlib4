@@ -309,6 +309,7 @@ lemma ker_comp_mulEquiv {P : Type*} [MulOneClass P] (g : N →* P) (iso : G ≃*
     (g.comp iso).ker = map (iso.symm : N →* G) g.ker := by
   rw [← comap_ker, comap_equiv_eq_map_symm]
 
+/-- Composing with an injective homomorphism on the codomain does not change the kernel. -/
 @[to_additive]
 lemma ker_comp_of_injective {P : Type*} [MulOneClass P] (f : G →* N) (g : N →* P)
     (hg : Function.Injective g) : (g.comp f).ker = f.ker := by
