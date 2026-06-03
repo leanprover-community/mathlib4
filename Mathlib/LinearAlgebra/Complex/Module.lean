@@ -163,13 +163,13 @@ theorem coe_basisOneI : ⇑basisOneI = ![1, I] :=
 
 end Complex
 
-/- Register as an instance (with low priority) the fact that a complex vector space is also a real
+/-- Register as an instance (with low priority) the fact that a complex vector space is also a real
 vector space. -/
 instance (priority := 900) Module.complexToReal (E : Type*) [AddCommGroup E] [Module ℂ E] :
     Module ℝ E :=
   .restrictScalars ℝ ℂ E
 
-/- Register as an instance (with low priority) the fact that a complex algebra is also a real
+/-- Register as an instance (with low priority) the fact that a complex algebra is also a real
 algebra. -/
 instance (priority := 900) Algebra.complexToReal {A : Type*} [Semiring A] [Algebra ℂ A] :
     Algebra ℝ A :=
@@ -503,7 +503,7 @@ theorem ker_imaginaryPart : imaginaryPart.ker = selfAdjoint.submodule ℝ A := b
 
 @[simp]
 lemma imaginaryPart_eq_zero_iff {x : A} : ℑ x = 0 ↔ IsSelfAdjoint x := by
-  simpa [-ker_imaginaryPart] using SetLike.ext_iff.mp ker_imaginaryPart x
+  simpa [-ker_imaginaryPart] using! SetLike.ext_iff.mp ker_imaginaryPart x
 
 open Submodule
 
