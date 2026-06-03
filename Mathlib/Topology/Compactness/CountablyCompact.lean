@@ -261,9 +261,9 @@ instance (priority := 50) [SequentialSpace E] [CountablyCompactSpace E] :
   · simp only [image_eq_iUnion, mem_Ici, iUnion_ge_eq_iUnion_nat_add _ (k + 1)]
     exact iUnion_mono fun i => subset_closure
 
-/-- If `f : X → Y` is an embedding map, the image `f '' s` of a set `s` is sequentially compact
+/-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is sequentially compact
   if and only if `s` is sequentially compact. -/
-theorem Topology.IsEmbedding.isSeqCompact_iff {f : E → F} (hf : IsEmbedding f) :
+theorem Topology.IsInducing.isSeqCompact_iff {f : E → F} (hf : IsInducing f) :
     IsSeqCompact A ↔ IsSeqCompact (f '' A) where
   mp hA x hx := by
     choose y hy using hx
@@ -358,9 +358,12 @@ theorem IsLindelof.isCompact (hA : IsCountablyCompact A) (hl : IsLindelof A) :
   · exact ⟨∅, by simp_all⟩
 
 /-- A countably compact Lindelöf space is compact. -/
-theorem LindelofSpace.CompactSpace {X : Type*} [TopologicalSpace X]
+theorem LindelofSpace.compactSpace {X : Type*} [TopologicalSpace X]
     [LindelofSpace X] [h : CountablyCompactSpace X] : CompactSpace X where
   isCompact_univ := isLindelof_univ.isCompact h.isCountablyCompact_univ
+
+@[deprecated (since := "2026-05-19")]
+alias LindelofSpace.CompactSpace := LindelofSpace.compactSpace
 
 /-- In a Hereditarily Lindelöf space, a countably compact set is compact. -/
 theorem IsCountablyCompact.isCompact [HereditarilyLindelofSpace E]
