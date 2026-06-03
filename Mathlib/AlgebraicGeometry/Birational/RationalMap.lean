@@ -429,6 +429,7 @@ def RationalMap.compHom (f : X ⤏ Y) (g : Y ⟶ Z) : X ⤏ Z := by
     PartialMap.compHom_hom] at e ⊢
   rw [reassoc_of% e]
 
+@[simp]
 lemma RationalMap.id_compHom (f : X ⟶ Y) :
     (RationalMap.id X).compHom f = f.toRationalMap := rfl
 
