@@ -214,12 +214,8 @@ alias ⟨_, CountableSupClosed.dual⟩ := countableInfClosed_preimage_ofDual
 /-! ### Closure -/
 
 /-- Every set generates a set closed under countable supremum. -/
+@[to_dual /-- Every set generates a set closed under countable infimum. -/]
 def countableSupClosure [LE α] (s : Set α) : Set α := ⋂₀ {t | s ⊆ t ∧ CountableSupClosed t}
-
-/-- Every set generates a set closed under countable infimum. -/
-def countableInfClosure [LE α] (s : Set α) : Set α := ⋂₀ {t | s ⊆ t ∧ CountableInfClosed t}
-
-attribute [to_dual existing] countableSupClosure
 
 @[to_dual (attr := simp)] lemma subset_countableSupClosure [LE α] {s : Set α} :
     s ⊆ countableSupClosure s := by simp [countableSupClosure]; grind
