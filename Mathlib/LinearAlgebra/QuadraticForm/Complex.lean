@@ -14,8 +14,9 @@ deprecated_module (since := "2026-01-19")
 
 public section
 
-namespace QuadraticForm
 open QuadraticMap
+
+namespace QuadraticForm
 
 @[deprecated "Use QuadraticForm.equivalent_weightedSumSquares_of_isAlgClosed"
   (since := "2026-01-19")]

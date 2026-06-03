@@ -115,7 +115,7 @@ This version works for functions between empty types. -/
 theorem stronglyMeasurable_const' (hf : ∀ x y, f x = f y) : StronglyMeasurable f := by
   nontriviality α
   inhabit α
-  convert stronglyMeasurable_const (β := β) using 1
+  convert! stronglyMeasurable_const (β := β) using 1
   exact funext fun x => hf x default
 
 variable [MeasurableSingletonClass α]
@@ -183,7 +183,7 @@ theorem tendsto_approxBounded_of_norm_le {β} {f : α → β} [NormedAddCommGrou
   · rw [norm_eq_zero] at hfx0
     rw [hfx0] at h_tendsto ⊢
     have h_tendsto_norm : Tendsto (fun n => ‖hf.approx n x‖) atTop (𝓝 0) := by
-      convert h_tendsto.norm
+      convert! h_tendsto.norm
       rw [norm_zero]
     refine squeeze_zero_norm (fun n => ?_) h_tendsto_norm
     calc
@@ -861,7 +861,6 @@ theorem induction [MeasurableSpace α] [AddZeroClass β] [TopologicalSpace β]
     (f : α → β) (hf : StronglyMeasurable f) : P f hf := by
   let s := hf.approx
   refine lim (fun n ↦ (s n).stronglyMeasurable) hf (fun n ↦ ?_) hf.tendsto_approx
-  change P (s n) (s n).stronglyMeasurable
   induction s n using SimpleFunc.induction with
   | const c hs => exact ind c hs
   | @add f g h_supp hf hg =>
@@ -885,7 +884,6 @@ theorem induction' [MeasurableSpace α] [Nonempty β] [TopologicalSpace β]
     (f : α → β) (hf : StronglyMeasurable f) : P f hf := by
   let s := hf.approx
   refine lim (fun n ↦ (s n).stronglyMeasurable) hf (fun n ↦ ?_) hf.tendsto_approx
-  change P (s n) (s n).stronglyMeasurable
   induction s n with
   | const c => exact const c
   | @pcw f g s hs Pf Pg =>
@@ -940,7 +938,7 @@ lemma measurableSet_le (hf : StronglyMeasurable[m] f) (hg : StronglyMeasurable[m
 
 lemma measurableSet_lt (hf : StronglyMeasurable[m] f) (hg : StronglyMeasurable[m] g) :
     MeasurableSet[m] {a | f a < g a} := by
-  simpa only [lt_iff_le_not_ge] using (hf.measurableSet_le hg).inter (hg.measurableSet_le hf).compl
+  simpa only [lt_iff_le_not_ge] using! (hf.measurableSet_le hg).inter (hg.measurableSet_le hf).compl
 
 lemma ae_le_trim_of_stronglyMeasurable (hm : m ≤ m₀) (hf : StronglyMeasurable[m] f)
     (hg : StronglyMeasurable[m] g) (hfg : f ≤ᵐ[μ] g) : f ≤ᵐ[μ.trim hm] g := by
@@ -1139,7 +1137,7 @@ protected theorem add [AddZeroClass β] [ContinuousAdd β] (hf : FinStronglyMeas
 protected theorem neg [SubtractionMonoid β] [ContinuousNeg β] (hf : FinStronglyMeasurable f μ) :
     FinStronglyMeasurable (-f) μ := by
   refine ⟨fun n ↦ -hf.approx n, fun n ↦ ?_, fun x ↦ (hf.tendsto_approx x).neg⟩
-  suffices μ (Function.support fun x ↦ -(hf.approx n) x) < ∞ by convert this
+  suffices μ (Function.support fun x ↦ -(hf.approx n) x) < ∞ by convert! this
   rw [Function.support_fun_neg (hf.approx n)]
   exact hf.fin_support_approx n
 
