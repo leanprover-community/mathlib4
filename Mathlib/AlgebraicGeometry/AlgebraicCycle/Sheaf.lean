@@ -698,7 +698,7 @@ lemma stalkToFunctionField_injective {X : Scheme} [IsIntegral X] [IsLocallyNoeth
   rw [stalkToFunctionField_germ, stalkToFunctionField_germ] at hab
   refine TopCat.Presheaf.germ_ext (F := D.sheaf.val.presheaf) (U ⊓ V) ⟨hxU, hxV⟩
     (homOfLE inf_le_left) (homOfLE inf_le_right) ?_
-  haveI : Nonempty (U ⊓ V : X.Opens) := ⟨⟨x, ⟨hxU, hxV⟩⟩⟩
+  have : Nonempty (U ⊓ V : X.Opens) := ⟨⟨x, ⟨hxU, hxV⟩⟩⟩
   apply Subtype.ext
   exact (Sheaf.mapFunApplyNonempty D inf_le_left sa).trans
     (hab.trans (Sheaf.mapFunApplyNonempty D inf_le_right sb).symm)
