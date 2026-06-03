@@ -260,9 +260,11 @@ def IsLoopAt (G : Graph α β) (e : β) (x : α) : Prop := G.IsLink e x x
 @[simp]
 lemma isLink_self_iff : G.IsLink e x x ↔ G.IsLoopAt e x := Iff.rfl
 
+@[grind <=]
 lemma IsLoopAt.inc (h : G.IsLoopAt e x) : G.Inc e x :=
   IsLink.inc_left h
 
+@[grind <=]
 lemma IsLoopAt.eq_of_inc (h : G.IsLoopAt e x) (h' : G.Inc e y) : x = y := by
   obtain rfl | rfl := h'.eq_or_eq_of_isLink h <;> rfl
 

@@ -99,6 +99,7 @@ theorem mem_eq (a : α) (o : Part α) : (a ∈ o) = ∃ h, o.get h = a :=
 theorem dom_iff_mem : ∀ {o : Part α}, o.Dom ↔ ∃ y, y ∈ o
   | ⟨_, f⟩ => ⟨fun h => ⟨f h, h, rfl⟩, fun ⟨_, h, rfl⟩ => h⟩
 
+@[simp, grind →]
 theorem get_mem {o : Part α} (h) : get o h ∈ o :=
   ⟨_, rfl⟩
 
