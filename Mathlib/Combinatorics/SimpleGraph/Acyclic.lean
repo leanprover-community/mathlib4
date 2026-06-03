@@ -158,10 +158,11 @@ theorem IsTree.coe_singletonSubgraph (G : SimpleGraph V) (v : V) :
     G.singletonSubgraph v |>.coe.IsTree :=
   .of_subsingleton
 
+set_option backward.defeqAttrib.useBackward true in
 theorem IsTree.coe_subgraphOfAdj {u v : V} (h : G.Adj u v) : G.subgraphOfAdj h |>.coe.IsTree := by
   refine ⟨Subgraph.subgraphOfAdj_connected h, fun w p hp ↦ ?_⟩
-  have : _ = _ := p.adj_snd <| nil_iff_eq_nil.not.mpr hp.ne_nil
-  have : _ = _ := p.adj_penultimate <| nil_iff_eq_nil.not.mpr hp.ne_nil
+  have : _ = _ := p.adj_snd hp.not_nil
+  have : _ = _ := p.adj_penultimate hp.not_nil
   #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
   (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
   It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
@@ -231,6 +232,21 @@ theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) :
 theorem isAcyclic_iff_path_unique : G.IsAcyclic ↔ ∀ ⦃v w : V⦄ (p q : G.Path v w), p = q :=
   ⟨IsAcyclic.path_unique, isAcyclic_of_path_unique⟩
 
+theorem isAcyclic_iff_subsingleton_path : G.IsAcyclic ↔ ∀ ⦃u v⦄, Subsingleton (G.Path u v) := by
+  simp [isAcyclic_iff_path_unique, subsingleton_iff]
+
+theorem IsAcyclic.eq_snd_of_adj_start (h : G.IsAcyclic) {u v w : V} {p : G.Walk u v} (hp : p.IsPath)
+    (hadj : G.Adj u w) (hsupp : w ∈ p.support) : w = p.snd := by
+  classical
+  have := isAcyclic_iff_path_unique.mp h ⟨_, hp.takeUntil hsupp⟩ <| .singleton hadj
+  grind [p.getVert_length_takeUntil hsupp, Path.singleton_coe, length]
+
+theorem IsAcyclic.eq_penultimate_of_adj_end (h : G.IsAcyclic) {u v w : V} {p : G.Walk u v}
+    (hp : p.IsPath) (hadj : G.Adj v w) (hsupp : w ∈ p.support) : w = p.penultimate := by
+  rw [← snd_reverse]
+  apply h.eq_snd_of_adj_start hp.reverse hadj
+  simpa
+
 lemma IsAcyclic.mem_support_of_ne_mem_support_of_adj_of_isPath (hG : G.IsAcyclic) {u v w : V}
     {p : G.Walk u v} {q : G.Walk u w} (hp : p.IsPath) (hq : q.IsPath) (hadj : G.Adj v w)
     (hv : v ∉ q.support) : w ∈ p.support := by
@@ -286,7 +302,7 @@ theorem IsAcyclic.isPath_iff_isChain (hG : G.IsAcyclic) {v w : V} (p : G.Walk v 
     have hcc := List.isChain_cons.mp (edges_cons _ _ ▸ h)
     refine cons_isPath_iff head tail |>.mpr ⟨ih hcc.2, ?_⟩
     rcases tail.length.eq_zero_or_pos with h' | h'
-    · simp [nil_iff_support_eq.mp (nil_iff_length_eq.mpr h'), head.ne]
+    · simp [nil_iff_support_eq.mp (length_eq_zero_iff.mp h'), head.ne]
     · by_contra hh
       apply hG <| cons head (tail.takeUntil u' hh)
       simp only [isCycle_def, isTrail_def, edges_cons, List.nodup_cons, ne_eq, reduceCtorEq,
@@ -397,7 +413,7 @@ theorem isAcyclic_sup_fromEdgeSet_iff {u v : V} :
   refine ⟨?_, fun ⟨hacyc, hreach⟩ ↦ hacyc.sup_edge_of_not_reachable <| by grind⟩
   refine fun hacyc ↦ ⟨hacyc.anti le_sup_left, fun hreach ↦ False.elim ?_⟩
   refine (isAcyclic_iff_forall_edge_isBridge.mp (e := s(u, v)) hacyc <| by simp [huv]).right ?_
-  convert hreach
+  convert! hreach
   simpa [deleteEdges_sup]
 
 /--
@@ -651,11 +667,7 @@ lemma exists_isCycle_of_two_le_isEdgeReachable {u v : V} (huv : u ≠ v) {n : �
     (h : G.IsEdgeReachable n u v) : ∃ w : G.Walk u u, w.IsCycle := by
   classical
   obtain ⟨w, hw, h⟩ := exists_adj_isEdgeReachable_two huv (h.anti hn)
-  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
-  (replacing grind's canonicalizer with a type-directed normalizer), this was just
-  `have := @h {s(u, w)} (by simp)`. It is not yet clear whether this is due to defeq abuse in
-  Mathlib or a problem in the new canonicalizer; a minimization would help. -/
-  have := @h {s(u, w)} (by simp only [Set.encard_singleton, Nat.cast_ofNat]; decide)
+  have := @h {s(u, w)} (by simp)
   obtain ⟨w, p, hp₁, hp₂⟩ := adj_and_reachable_delete_edges_iff_exists_cycle.mp ⟨hw, this⟩
   exact ⟨p.rotate _ (p.fst_mem_support_of_mem_edges hp₂), hp₁.rotate _⟩
 

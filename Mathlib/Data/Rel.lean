@@ -25,7 +25,7 @@ relations.
 * `SetRel.dom`: Domain of a relation. `a ∈ R.dom` iff there exists `b` such that `a ~[R] b`.
 * `SetRel.cod`: Codomain of a relation. `b ∈ R.cod` iff there exists `a` such that `a ~[R] b`.
 * `SetRel.id`: The identity relation `SetRel α α`.
-* `SetRel.comp`: SetRelation composition. Note that the arguments order follows the category theory
+* `SetRel.comp`: SetRel composition. Note that the arguments order follows the category theory
   convention, namely `(R ○ S) a c ↔ ∃ b, a ~[R] b ∧ b ~[S] c`.
 * `SetRel.image`: Image of a set under a relation. `b ∈ image R s` iff there exists `a ∈ s`
   such that `a ~[R] b`.
@@ -47,22 +47,22 @@ The former approach is used almost everywhere as it is very lightweight and has 
 support from core Lean features, but it cracks at the seams whenever one starts talking about
 operations on relations. For example:
 * composition of relations `R : α → β → Prop`, `S : β → γ → Prop` is
-  `SetRelation.Comp R S := fun a c ↦ ∃ b, R a b ∧ S b c`
+  `Relation.Comp R S := fun a c ↦ ∃ b, R a b ∧ S b c`
 * map of a relation `R : α → β → Prop` under `f : α → γ`, `g : β → δ` is
-  `SetRelation.map R f g := fun c d ↦ ∃ a b, r a b ∧ f a = c ∧ g b = d`.
+  `Relation.Map R f g := fun c d ↦ ∃ a b, r a b ∧ f a = c ∧ g b = d`.
 
-The latter approach is embodied by `SetRel α β`, with dedicated notation like `○` for composition.
+The latter approach is embodied by `SetRel α β`, with the dedicated notation `○` for composition.
+(Note that `○` is _not_ the same as function composition `∘`.)
 
 Previously, `SetRel` suffered from the leakage of its definition as
 ```
 def SetRel (α β : Type*) := α → β → Prop
 ```
 The fact that `SetRel` wasn't an `abbrev` confuses automation.
-But simply making it an `abbrev` would
-have killed the point of having a separate less see-through type to perform relation operations on,
-so we instead redefined
+But simply making it an `abbrev` would have killed the point of having a separate less see-through
+type to perform relation operations on. So we instead redefined it as
 ```
-def SetRel (α β : Type*) := Set (α × β) → Prop
+abbrev SetRel (α β : Type*) := Set (α × β)
 ```
 This extra level of indirection guides automation correctly and prevents (some kinds of) leakage.
 
