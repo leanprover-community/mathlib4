@@ -1,50 +1,84 @@
 name: ci dev
 
+# Repurposed on the `ci-dev/marcelo/2026/06/oidc-env-scope` branch as an OIDC
+# env-binding probe (no build). `ci_dev.yml` is registered on master, so
+# dispatching it against this ci-dev/* branch runs *this* definition.
+#
+# Each job mints a GitHub OIDC token, prints its `sub`, then tries to exchange it
+# for an Azure cache token via the NON_MASTER cache app. The jobs are identical
+# except `with-env` declares `environment: cache-upload-forks`, which makes its
+# `sub` end in `:environment:cache-upload-forks`.
+#
+# Expected results:
+#   - BEFORE the env-scoped federated credential exists: both mints FAIL.
+#   - AFTER adding the cache-upload-forks FIC: only `with-env` succeeds;
+#     `without-env` still fails (its ref-based subject matches no credential).
+
 on:
   workflow_dispatch:
-    inputs:
-      tools_branch_ref:
-        description: ref for tools checkout (defaults to 'this commit')
-        required: false
-        type: string
-        default: ''
-      pr_branch_ref:
-        description: ref for building-branch checkout (defaults to 'this commit')
-        required: false
-        type: string
-        default: ''
-      run_post_ci:
-        description: Run the post-CI job?
-        required: false
-        type: boolean
-        default: false # We shouldn't need this job in typical experiments
-      mathlib_ci_ref:
-        description: ref for mathlib-ci checkout (defaults to 'master')
-        required: false
-        type: string
-        default: 'master'
 
-# Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
   contents: read
   id-token: write
-  # By default let's remove this permission (which is present in the other build pipelines)
-  # from the CI experimentation runs to avoid unwitting side effects
-  # pull-requests: write
 
 jobs:
-  build:
-    name: ci (dev branch)
-    # For sanity and intentionality, let's only trigger this from branches ci-dev/*
-    if: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/') }}
-    uses: ./.github/workflows/build_template.yml
-    with:
-      concurrency_group: ${{ github.workflow }}-${{ github.ref }}
-      # Use the tools from 'this branch', as our changes in the tools might be relevant for experiments
-      tools_branch_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || github.sha }}
-      pr_branch_ref: ${{ inputs.pr_branch_ref != '' && inputs.pr_branch_ref || github.sha }}
-      run_post_ci: ${{ inputs.run_post_ci }}
-      mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
-      cache_application_id: ${{ vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID }}
-      runs_on: pr
-    secrets: inherit
+  with-env:
+    name: mint WITH environment cache-upload-forks
+    if: ${{ github.repository == 'leanprover-community/mathlib4' && startsWith(github.ref_name, 'ci-dev/') }}
+    runs-on: ubuntu-latest
+    environment: cache-upload-forks    # <-- the ONLY difference from without-env
+    steps:
+      - name: show OIDC sub claim
+        run: |
+          JWT="$(curl -sSf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=api://AzureADTokenExchange" | jq -r .value)"
+          echo "::add-mask::$JWT"   # raw token is a live credential; never print it
+          python3 -c 'import sys,base64,json; p=sys.argv[1].split(".")[1]; d=json.loads(base64.urlsafe_b64decode(p+"="*(-len(p)%4))); print("sub:",d["sub"]); print("aud:",d["aud"])' "$JWT"
+      - name: attempt Azure cache-token mint
+        continue-on-error: true
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-cache-token@17db5ff55a65df98d55cbddcc67938f70d10dab2
+        with:
+          azure-client-id: ${{ vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+
+  empty-env:
+    # Option B for nightly-testing: a caller passes an empty cache_environment so the
+    # job runs with NO environment. The expression below always evaluates to '' (the
+    # ref never matches), mimicking `environment: ${{ inputs.cache_environment }}` = ''.
+    # We want to confirm: (1) the job runs (empty env is accepted as "no environment"),
+    # and (2) its `sub` is ref-based (no `:environment:` segment).
+    name: mint with EMPTY environment (Option B)
+    if: ${{ github.repository == 'leanprover-community/mathlib4' && startsWith(github.ref_name, 'ci-dev/') }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref == 'refs/heads/never-matches-anything' && 'x' || '' }}
+    steps:
+      - name: show OIDC sub claim
+        run: |
+          JWT="$(curl -sSf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=api://AzureADTokenExchange" | jq -r .value)"
+          echo "::add-mask::$JWT"
+          python3 -c 'import sys,base64,json; p=sys.argv[1].split(".")[1]; d=json.loads(base64.urlsafe_b64decode(p+"="*(-len(p)%4))); print("sub:",d["sub"]); print("aud:",d["aud"])' "$JWT"
+      - name: attempt Azure cache-token mint
+        continue-on-error: true
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-cache-token@17db5ff55a65df98d55cbddcc67938f70d10dab2
+        with:
+          azure-client-id: ${{ vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+
+  without-env:
+    name: mint WITHOUT environment (baseline)
+    if: ${{ github.repository == 'leanprover-community/mathlib4' && startsWith(github.ref_name, 'ci-dev/') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: show OIDC sub claim
+        run: |
+          JWT="$(curl -sSf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=api://AzureADTokenExchange" | jq -r .value)"
+          echo "::add-mask::$JWT"
+          python3 -c 'import sys,base64,json; p=sys.argv[1].split(".")[1]; d=json.loads(base64.urlsafe_b64decode(p+"="*(-len(p)%4))); print("sub:",d["sub"]); print("aud:",d["aud"])' "$JWT"
+      - name: attempt Azure cache-token mint
+        continue-on-error: true
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-cache-token@17db5ff55a65df98d55cbddcc67938f70d10dab2
+        with:
+          azure-client-id: ${{ vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
