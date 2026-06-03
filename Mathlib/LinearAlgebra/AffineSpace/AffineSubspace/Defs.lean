@@ -165,6 +165,8 @@ instance : SetLike (AffineSubspace k P) P where
 
 instance : PartialOrder (AffineSubspace k P) := .ofSetLike (AffineSubspace k P) P
 
+@[simp] lemma carrier_eq_coe (s : AffineSubspace k P) : s.carrier = s := rfl
+
 /-- A point is in an affine subspace coerced to a set if and only if it is in that affine
 subspace. -/
 theorem mem_coe (p : P) (s : AffineSubspace k P) : p ∈ (s : Set P) ↔ p ∈ s := by simp
@@ -337,15 +339,17 @@ theorem mem_direction_iff_eq_vsub_left {s : AffineSubspace k P} {p : P} (hp : p 
   rw [← SetLike.mem_coe, coe_direction_eq_vsub_set_left hp]
   exact ⟨fun ⟨p₂, hp₂, hv⟩ => ⟨p₂, hp₂, hv.symm⟩, fun ⟨p₂, hp₂, hv⟩ => ⟨p₂, hp₂, hv.symm⟩⟩
 
-/-- If an affine subspace contains zero, then it equals its directions. -/
-lemma direction_eq_self_of_zero_mem {s : AffineSubspace k V} (hs : 0 ∈ s) :
-    s.direction = s := by
-  ext x
-  change x ∈ (s.direction : Set V) ↔ _
-  simp [s.coe_direction_eq_vsub_set ⟨0, hs⟩, vsub_self_of_zero_mem hs]
+/-- An affine subspace contains zero if and only if it equals its directions. -/
+@[simp] lemma direction_eq_self_iff_zero_mem {s : AffineSubspace k V} :
+    s.direction = s ↔ 0 ∈ s where
+  mp h := by rw [← h]; simp
+  mpr h := by
+    ext x
+    change x ∈ (s.direction : Set V) ↔ _
+    simp [s.coe_direction_eq_vsub_set ⟨0, h⟩, vsub_self_of_zero_mem h]
 
-instance : CanLift (AffineSubspace k V) (Submodule k V) (·) (0 ∈ ·) := ⟨
-  fun _ hs => ⟨_, direction_eq_self_of_zero_mem hs⟩⟩
+instance : CanLift (AffineSubspace k V) (Submodule k V) (·) (0 ∈ ·) :=
+  ⟨fun _ hs => ⟨_, direction_eq_self_iff_zero_mem.mpr hs⟩⟩
 
 /-- Two affine subspaces with the same direction and nonempty intersection are equal. -/
 theorem ext_of_direction_eq {s₁ s₂ : AffineSubspace k P} (hd : s₁.direction = s₂.direction)
