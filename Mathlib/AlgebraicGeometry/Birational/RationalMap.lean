@@ -146,6 +146,9 @@ lemma _root_.AlgebraicGeometry.Scheme.Hom.toPartialMap_compHom (f : X ⟶ Y) (g 
 variable (X) in
 protected abbrev id : X.PartialMap X := (𝟙 X : X ⟶ X).toPartialMap
 
+@[simp]
+lemma compHom_id (f : X ⟶ Y) : (PartialMap.id X).compHom f = f.toPartialMap := rfl
+
 set_option backward.defeqAttrib.useBackward true in
 instance [X.Over S] [Y.Over S] (f : X ⟶ Y) [f.IsOver S] : f.toPartialMap.IsOver S where
 

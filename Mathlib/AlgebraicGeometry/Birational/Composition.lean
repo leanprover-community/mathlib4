@@ -145,7 +145,7 @@ set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma comp_id (f : X.PartialMap Y) [IsDominant f.hom] :
     f.comp (PartialMap.id Y) = f := by
-  rw [comp_toPartialMap, compHom_id]
+  rw [comp_toPartialMap, id_compHom]
 
 end PartialMap
 
