@@ -598,64 +598,6 @@ open Functor
 open Limits
 open TopologicalSpace OpenNhds
 
-/-
-noncomputable
-def genericStalkToFunctionField {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
-    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) :
-    (TopCat.Presheaf.stalk D.sheaf.val.presheaf (genericPoint X)) ⟶ ((forget₂ CommRingCat RingCat ⋙
-    forget₂ RingCat Ab).obj X.functionField) := by
-  let c : Cocone <| ((inclusion (genericPoint ↥X)).op ⋙ D.sheaf.val.presheaf) := {
-    pt := (forget₂ RingCat Ab).obj ((forget₂ CommRingCat RingCat).obj X.functionField)
-    ι := {
-      app U :=
-        AddCommGrpCat.ofHom {
-          toFun f := f.1
-          map_zero' := rfl
-          map_add' := fun _ _ ↦ rfl
-        }
-      naturality U V f := by
-        apply AddCommGrpCat.hom_ext
-        simp
-        by_cases t : Nonempty (V.unop.1)
-        · sorry
-        · sorry
-    }
-  }
-  apply colimit.desc _ c
-
-lemma genericStalkToFunctionField_isIso {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
-    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) :
-    IsIso D.genericStalkToFunctionField := sorry
-
-def genericStalkToFunctionFieldModuleHom {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
-    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) :
-    ModuleCat.of X.functionField ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf (genericPoint X)) ⟶
-    ModuleCat.of X.functionField X.functionField := sorry
-
-lemma genericStalkToFunctionFieldModuleHom_isIso {X : Scheme} [IsIntegral X]
-    [IsLocallyNoetherian X]
-    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) :
-    IsIso D.genericStalkToFunctionFieldModuleHom := sorry-/
-
-def Valuation.integer' {R : Type u} {Γ₀ : Type v} [Ring R] [LinearOrderedCommGroupWithZero Γ₀]
-  (v : Valuation R Γ₀) (n : Γ₀) : Submodule v.integer R where
-    carrier := {x : R | v x ≤ n}
-    add_mem' {x y} hx hy := le_trans (v.map_add x y) (max_le hx hy)
-    zero_mem' := by simp only [Set.mem_setOf_eq, map_zero, zero_le']
-    smul_mem' := by
-      intro ⟨x, hx⟩ y hy
-      have : v x ≤ 1 := hx
-      suffices x • y ∈ {x | v x ≤ n} by exact Set.mem_setOf.mpr this
-      simp only [smul_eq_mul, Set.mem_setOf_eq, map_mul]
-      exact mul_le_of_le_one_of_le hx hy
-
-def testing {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
-    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (x : X) (hx : coheight x = 1) :
-    (TopCat.Presheaf.stalk D.sheaf.val.presheaf x).1 =
-    {f : X.functionField | X.ord x hx f ≥ WithZero.coe (Multiplicative.ofAdd D x)} := by
-
-  sorry
-
 noncomputable
 def stalkCocone {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
     [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (x : X) :
@@ -669,7 +611,7 @@ def stalkCocone {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
         map_add' := fun _ _ ↦ rfl
       }
     naturality U V f := by
-      haveI : Nonempty ((inclusion x).op.obj V).unop := ⟨⟨x, V.unop.2⟩⟩
+      have : Nonempty ((inclusion x).op.obj V).unop := ⟨⟨x, V.unop.2⟩⟩
       apply AddCommGrpCat.hom_ext
       ext s
       exact Sheaf.mapFunApplyNonempty D _ s
@@ -754,13 +696,12 @@ def stalkToFunctionFieldLinearMap {X : Scheme} [IsIntegral X] [IsLocallyNoetheri
         (congrArg ((X.presheaf.germ W x hxW r_W : X.presheaf.stalk x) • ·) hR.symm)
 
 /--
-The range of the map from the stalk of O_X(D) at a codimension 1 point `p` is
+The range of the map from the stalk of O_X(D) at a codimension 1 point `x` is the set of all
+rational functions `f` whose order of vanishing at P is at least `- D x`.
 
-TODO: Upgrade this to a statement about the range of this function at an arbitrary point (it should
-be the same thing, but the condition should be on all points specializing to x)
-
-Then we have 2 options. We can either do this easyish thing or prove the algebraic hartog lemma.
-I'm inclined to just do the easier thing for right now
+TODO: Write a more general lemma saying that a point `x` with arbirary codimension is the set of
+rational functions which vanish to order at least `-D p` for all codimension 1 `p` specializing to
+`x`.
 -/
 lemma range_stalkToFunctionField {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
     [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (hD : D.support ⊆ {x | coheight x = 1})
@@ -862,34 +803,60 @@ and I guess we can use Subring.comap + some lemma about Subring.comap of a subri
 contained in the range composed with the ressidue map to give us our result.
 -/
 
-/-
-This follows from mathlib + some stuff developed above.
--/
-lemma bibo {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
-    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (hD : D.support ⊆ {x | coheight x = 1})
+
+lemma range_linearMap_eq_range_mulLeft_stalkToFunctionFieldLinearMap {X : Scheme} [IsIntegral X]
+    [IsLocallyNoetherian X] [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ)
+    (hD : D.support ⊆ {x | coheight x = 1})
     (x : X) (hx : coheight x = 1)
     (ϖ : X.presheaf.stalk x) (hϖ : Irreducible ϖ)
-    : Submodule.map (Algebra.linearMap (X.presheaf.stalk x) X.functionField) ⊤ =
-      Submodule.map ((LinearMap.mulLeft (X.presheaf.stalk x)
+    : LinearMap.range (Algebra.linearMap (X.presheaf.stalk x) X.functionField) =
+      LinearMap.range ((LinearMap.mulLeft (X.presheaf.stalk x)
       ((algebraMap (X.presheaf.stalk x) X.functionField ϖ)^(D x))) ∘ₗ
-      D.stalkToFunctionFieldLinearMap x) ⊤ := by
+      D.stalkToFunctionFieldLinearMap x) := by
+  rw [LinearMap.range_comp]
 
-    sorry
-#check Submodule.comap_map_eq_of_injective
-#check Submodule.comap (Algebra.linearMap (X.presheaf.stalk x) X.functionField)
+  suffices (LinearMap.range (Algebra.linearMap (X.presheaf.stalk x) X.functionField) : Set X.functionField) =
+    (LinearMap.mulLeft (↑(X.presheaf.stalk x)) ((algebraMap ↑(X.presheaf.stalk x) ↑X.functionField) ϖ ^ D x)) ''
+    Set.range (D.stalkToFunctionFieldLinearMap x) by sorry
 
-/-
-This is an isomorphism really.
--/
+  have : Set.range (D.stalkToFunctionFieldLinearMap x) =
+      {f : X.functionField | f ≠ 0 → - D x ≤ X.ordZ x hx f} := sorry
+  rw [this]
+  have : IsDiscreteValuationRing (X.presheaf.stalk x) := sorry
+  have := IsDiscreteValuationRing.map_algebraMap_eq_valuationSubring (A := X.presheaf.stalk x) (K := X.functionField)
+  have : (Subring.map (algebraMap ↑(X.presheaf.stalk x) ↑X.functionField) ⊤).carrier =
+  (IsDedekindDomain.HeightOneSpectrum.valuation (↑X.functionField)
+        (IsDiscreteValuationRing.maximalIdeal ↑(X.presheaf.stalk x))).integer := sorry
+  simp at this
+  rw [LinearMap.coe_range]
+  suffices ↑(IsDedekindDomain.HeightOneSpectrum.valuation (↑X.functionField)
+        (IsDiscreteValuationRing.maximalIdeal ↑(X.presheaf.stalk x))).integer =
+         ⇑(LinearMap.mulLeft (↑(X.presheaf.stalk x)) ((algebraMap ↑(X.presheaf.stalk x) ↑X.functionField) ϖ ^ D x)) ''
+    {f | f ≠ 0 → -D x ≤ ordZ x hx f} by sorry
+  /-
+  From here it's just a matter of adding API for ordZ,
+  precisely we need something which says that n ≤ ord ↔ ↑n ≤ ordHom or something
+
+  -/
+
+  /-suffices Set.range (Algebra.linearMap (X.presheaf.stalk x) X.functionField) =
+      Set.range ((LinearMap.mulLeft (X.presheaf.stalk x)
+      ((algebraMap (X.presheaf.stalk x) X.functionField ϖ)^(D x))) ∘ₗ
+      D.stalkToFunctionFieldLinearMap x) by exact this-/
+
+
+  sorry
+
+
 def zingo {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
     [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (hD : D.support ⊆ {x | coheight x = 1})
     (x : X) (hx : coheight x = 1)
     (ϖ : X.presheaf.stalk x) (hϖ : Irreducible ϖ) :
     ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf x) ≃ₗ[X.presheaf.stalk x] X.presheaf.stalk x := sorry
-/-
-We then want to define our map O_X(D)_P ->(stalkToFunctionFieldLinearMap) K(X) ->(mulLeft) K(X)
-->(comap germToFunctionField) O_X, P ->(residue) k
--/
+
+
+
+
 
 #check Submodule.map ((LinearMap.mulLeft (X.presheaf.stalk x) (1 : X.functionField)) ∘ₗ (Algebra.linearMap (X.presheaf.stalk x) X.functionField)) ⊤
 
