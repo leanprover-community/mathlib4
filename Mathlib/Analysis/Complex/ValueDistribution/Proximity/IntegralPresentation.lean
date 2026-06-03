@@ -138,9 +138,8 @@ If `f : ℂ → ℂ` is meromorphic, then the Cartan kernel of integration is in
 the two variables `α` and `β`.
 -/
 theorem integrable_cartanKernel (h : Meromorphic f) :
-    Integrable (fun p ↦ cartanKernel f R p.1 p.2)
-      ((volume.restrict (uIoc 0 (2 * π))).prod
-       (volume.restrict (uIoc 0 (2 * π)))) := by
+    IntegrableOn (fun p ↦ cartanKernel f R p.1 p.2) (uIoc 0 (2 * π) ×ˢ uIoc 0 (2 * π)) := by
+  rw [IntegrableOn, Measure.volume_eq_prod, ← Measure.prod_restrict]
   simpa [uIoc_of_le two_pi_pos.le] using (integrable_prod_iff'
     (measurable_cartanKernel h.measurable).stronglyMeasurable.aestronglyMeasurable).2
     ⟨Eventually.of_forall (integrable_cartanKernel_in_alpha f R),
@@ -169,7 +168,7 @@ theorem proximity_top_eq_circleAverage_circleAverage (h : Meromorphic f) :
           simp [μ, intervalIntegral.integral_of_le two_pi_pos.le]
         _ = ∫ y, ∫ x, F x y ∂μ ∂μ := by
           apply MeasureTheory.integral_integral_swap
-          simp only [← uIoc_of_le two_pi_pos.le, F, μ]
+          simp only [← uIoc_of_le two_pi_pos.le, μ, Measure.prod_restrict, ← Measure.volume_eq_prod]
           exact Cartan.integrable_cartanKernel h
         _ = ∫ y in 0..2 * π, ∫ x in 0..2 * π, F x y := by
           simp [μ, intervalIntegral.integral_of_le two_pi_pos.le]
@@ -199,7 +198,8 @@ theorem circleIntegrable_circleAverage_log_norm_sub (h : Meromorphic f) :
       Integrable (∫ β in 0..2 * π, Cartan.cartanKernel f R · β)
         (volume.restrict (Ioc 0 (2 * π))) := by
     have h_int := Cartan.integrable_cartanKernel (R := R) h
-    rw [uIoc_of_le two_pi_pos.le] at h_int
+    rw [uIoc_of_le two_pi_pos.le, IntegrableOn, Measure.volume_eq_prod, ← Measure.prod_restrict]
+      at h_int
     simpa [intervalIntegral.integral_of_le two_pi_pos.le, Cartan.cartanKernel]
       using h_int.integral_prod_left
   unfold CircleIntegrable
