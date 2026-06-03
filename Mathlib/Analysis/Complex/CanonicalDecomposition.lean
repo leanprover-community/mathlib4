@@ -255,7 +255,7 @@ private lemma canonicalDecomposition_aux₁ (F : locallyFinsuppWithin (ball (0 :
       exact analyticOnNhd_const.meromorphicNFOn
   · have ⟨h₂a, h₂b⟩ : a ∈ ball 0 R ∧ b ∈ ball 0 R := by constructor <;> (by_contra; aesop)
     grind [eq_zero_of_zpow_eq_zero hb, eq_zero_of_zpow_eq_zero ha,
-      zero_canonicalFactor_iff h₂b hz, zero_canonicalFactor_iff h₂a hz]
+      canonicalFactor_eq_zero_iff h₂b hz, canonicalFactor_eq_zero_iff h₂a hz]
 
 -- Auxiliary lemma for the proof of the canonical decomposition theorem: Write a function with
 -- finite support as a linear combination of singleton indicator functions.
