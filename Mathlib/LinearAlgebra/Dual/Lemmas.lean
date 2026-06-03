@@ -718,7 +718,7 @@ is linearly equivalent to the dual of the range of `f`.
 This packages the conclusion that appears in dualized exact sequences: after factoring
 `f` through its range, the surjectivity of `(range f).subtype.dualMap` identifies
 `range f.dualMap` with `Dual R (range f)`. -/
-noncomputable def range_dualMap_linearEquiv_dual_range_of_surjective (f : M →ₗ[R] M')
+noncomputable def rangeDualMapLinearEquivDualRangeOfSurjective (f : M →ₗ[R] M')
     (hf : Function.Surjective (range f).subtype.dualMap) :
     LinearMap.range f.dualMap ≃ₗ[R] Module.Dual R (LinearMap.range f) :=
   (LinearEquiv.ofEq _ _ (range_dualMap_eq_range_dualMap_rangeRestrict_of_surjective f hf)).trans
