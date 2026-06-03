@@ -250,7 +250,7 @@ theorem IsBase.cardinalMk_eq_cRank (hB : M.IsBase B) : #B = M.cRank := by
 instance invariantCardinalRank_restrict : InvariantCardinalRank (M ↾ X) := by
   refine ⟨fun I J Y hI hJ ↦ ?_⟩
   rw [isBasis_restrict_iff'] at hI hJ
-  exact hI.1.cardinalMk_diff_comm hJ.1
+  exact hI.1.cardinalMk_sdiff_comm hJ.1
 
 theorem IsBasis'.cardinalMk_eq_cRk (hIX : M.IsBasis' I X) : #I = M.cRk X := by
   rw [cRk, (isBase_restrict_iff'.2 hIX).cardinalMk_eq_cRank]
@@ -314,7 +314,7 @@ instance invariantCardinalRank_of_finitary [Finitary M] : InvariantCardinalRank 
   have (a : α) (ha : a ∈ B' \ B) : ∃ S : Set α, Finite S ∧ S ⊆ B ∧ ¬ N.Indep (insert a S) := by
     have := (hB.insert_dep ⟨hB'.subset_ground ha.1, ha.2⟩).1
     contrapose! this
-    exact Finitary.indep_of_forall_finite _ fun J hJ fin ↦ (this (J \ {a}) fin.diff.to_subtype <|
+    exact Finitary.indep_of_forall_finite _ fun J hJ fin ↦ (this (J \ {a}) fin.sdiff.to_subtype <|
       sdiff_singleton_subset_iff.mpr hJ).subset (subset_insert_sdiff_singleton ..)
   choose S S_fin hSB dep using this
   let U := ⋃ a : ↥(B' \ B), S a a.2
@@ -339,7 +339,7 @@ instance invariantCardinalRank_map (M : Matroid α) [InvariantCardinalRank M] (h
   obtain ⟨J, X', hJX, rfl, h'⟩ := map_isBasis_iff'.1 hJ
   obtain rfl : X = X' := by
     rwa [InjOn.image_eq_image_iff hf hIX.subset_ground hJX.subset_ground] at h'
-  have hcard := hIX.cardinalMk_diff_comm hJX
+  have hcard := hIX.cardinalMk_sdiff_comm hJX
   rwa [← lift_inj.{u, v},
     ← mk_image_eq_of_injOn_lift _ _ (hf.mono ((hIX.indep.diff _).subset_ground)),
     ← mk_image_eq_of_injOn_lift _ _ (hf.mono ((hJX.indep.diff _).subset_ground)),
@@ -356,7 +356,7 @@ instance invariantCardinalRank_comap (M : Matroid β) [InvariantCardinalRank M] 
   rw [← lift_inj.{u, v}, ← mk_image_eq_of_injOn_lift _ _ (hfI.mono sdiff_subset),
     ← mk_image_eq_of_injOn_lift _ _ (hfJ.mono sdiff_subset), lift_inj, hfI.image_sdiff,
     hfJ.image_sdiff, ← sdiff_union_sdiff_cancel inter_subset_left (image_inter_subset f I J),
-    inter_comm, sdiff_inter_self_eq_sdiff, mk_union_of_disjoint, hI.cardinalMk_diff_comm hJ,
+    inter_comm, sdiff_inter_self_eq_sdiff, mk_union_of_disjoint, hI.cardinalMk_sdiff_comm hJ,
     ← sdiff_union_sdiff_cancel inter_subset_left (image_inter_subset f J I), inter_comm,
     sdiff_inter_self_eq_sdiff, mk_union_of_disjoint, inter_comm J I] <;>
   exact disjoint_sdiff_left.mono_right (sdiff_subset.trans inter_subset_left)

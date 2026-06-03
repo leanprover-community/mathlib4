@@ -609,7 +609,8 @@ lemma isCocircuit_iff_minimal_compl_nonspanning' :
     M.IsCocircuit K ↔ Minimal (fun X ↦ ¬ M.Spanning (M.E \ X) ∧ X ⊆ M.E) K := by
   rw [isCocircuit_iff_minimal_compl_nonspanning]
   exact minimal_iff_minimal_of_imp_of_forall (fun _ h ↦ h.1)
-    (fun X hX ↦ ⟨X ∩ M.E, inter_subset_left, by rwa [sdiff_inter_self_eq_sdiff], inter_subset_right⟩)
+    (fun X hX ↦ ⟨X ∩ M.E, inter_subset_left, by rwa [sdiff_inter_self_eq_sdiff],
+      inter_subset_right⟩)
 
 /-- A cocircuit and a circuit cannot meet in exactly one element. -/
 lemma IsCircuit.inter_isCocircuit_ne_singleton (hC : M.IsCircuit C) (hK : M.IsCocircuit K) :

@@ -273,28 +273,28 @@ theorem measure_sdiff_le_iff_le_add (hs : NullMeasurableSet s μ) (hst : s ⊆ t
     {ε : ℝ≥0∞} : μ (t \ s) ≤ ε ↔ μ t ≤ μ s + ε := by
   rw [measure_sdiff hst hs hs', tsub_le_iff_left]
 
-theorem measure_eq_measure_of_null_sdiff {s t : Set α} (hst : s ⊆ t) (h_nulldiff : μ (t \ s) = 0) :
+theorem measure_eq_measure_of_null_sdiff {s t : Set α} (hst : s ⊆ t) (h_nullsdiff : μ (t \ s) = 0) :
     μ s = μ t := measure_congr <|
-      EventuallyLE.antisymm (HasSubset.Subset.eventuallyLE hst) (ae_le_set.mpr h_nulldiff)
+      EventuallyLE.antisymm (HasSubset.Subset.eventuallyLE hst) (ae_le_set.mpr h_nullsdiff)
 
 theorem measure_eq_measure_of_between_null_sdiff {s₁ s₂ s₃ : Set α} (h12 : s₁ ⊆ s₂) (h23 : s₂ ⊆ s₃)
-    (h_nulldiff : μ (s₃ \ s₁) = 0) : μ s₁ = μ s₂ ∧ μ s₂ = μ s₃ := by
+    (h_nullsdiff : μ (s₃ \ s₁) = 0) : μ s₁ = μ s₂ ∧ μ s₂ = μ s₃ := by
   have le12 : μ s₁ ≤ μ s₂ := measure_mono h12
   have le23 : μ s₂ ≤ μ s₃ := measure_mono h23
   have key : μ s₃ ≤ μ s₁ :=
     calc
       μ s₃ = μ (s₃ \ s₁ ∪ s₁) := by rw [sdiff_union_of_subset (h12.trans h23)]
       _ ≤ μ (s₃ \ s₁) + μ s₁ := measure_union_le _ _
-      _ = μ s₁ := by simp only [h_nulldiff, zero_add]
+      _ = μ s₁ := by simp only [h_nullsdiff, zero_add]
   exact ⟨le12.antisymm (le23.trans key), le23.antisymm (key.trans le12)⟩
 
 theorem measure_eq_measure_smaller_of_between_null_sdiff {s₁ s₂ s₃ : Set α} (h12 : s₁ ⊆ s₂)
-    (h23 : s₂ ⊆ s₃) (h_nulldiff : μ (s₃ \ s₁) = 0) : μ s₁ = μ s₂ :=
-  (measure_eq_measure_of_between_null_diff h12 h23 h_nulldiff).1
+    (h23 : s₂ ⊆ s₃) (h_nullsdiff : μ (s₃ \ s₁) = 0) : μ s₁ = μ s₂ :=
+  (measure_eq_measure_of_between_null_sdiff h12 h23 h_nullsdiff).1
 
 theorem measure_eq_measure_larger_of_between_null_sdiff {s₁ s₂ s₃ : Set α} (h12 : s₁ ⊆ s₂)
-    (h23 : s₂ ⊆ s₃) (h_nulldiff : μ (s₃ \ s₁) = 0) : μ s₂ = μ s₃ :=
-  (measure_eq_measure_of_between_null_diff h12 h23 h_nulldiff).2
+    (h23 : s₂ ⊆ s₃) (h_nullsdiff : μ (s₃ \ s₁) = 0) : μ s₂ = μ s₃ :=
+  (measure_eq_measure_of_between_null_sdiff h12 h23 h_nullsdiff).2
 
 lemma measure_compl₀ (h : NullMeasurableSet s μ) (hs : μ s ≠ ∞) :
     μ sᶜ = μ Set.univ - μ s := by

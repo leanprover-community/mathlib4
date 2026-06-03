@@ -308,11 +308,11 @@ theorem _root_.HasDerivWithinAt.lhopital_zero_nhdsWithin_convex {s : Set ℝ} (h
   rcases eq_empty_or_nonempty (s ∩ Iio a) with hs_Iio | hs_Iio
     <;> rcases eq_empty_or_nonempty (s ∩ Ioi a) with hs_Ioi | hs_Ioi
   · simp [sdiff_eq, ← Iio_union_Ioi, inter_union_distrib_left, hs_Iio, hs_Ioi]
-  · simp_rw [hs.nhdsWithin_diff_eq_nhdsGT has hs_Iio hs_Ioi] at *
+  · simp_rw [hs.nhdsWithin_sdiff_eq_nhdsGT has hs_Iio hs_Ioi] at *
     exact lhopital_zero_nhdsGT hff' hgg' hg' hfa hga hdiv
-  · simp_rw [hs.nhdsWithin_diff_eq_nhdsLT has hs_Iio hs_Ioi] at *
+  · simp_rw [hs.nhdsWithin_sdiff_eq_nhdsLT has hs_Iio hs_Ioi] at *
     exact lhopital_zero_nhdsLT hff' hgg' hg' hfa hga hdiv
-  · simp_rw [hs.nhdsWithin_diff_eq_nhdsNE has hs_Iio hs_Ioi] at *
+  · simp_rw [hs.nhdsWithin_sdiff_eq_nhdsNE has hs_Iio hs_Ioi] at *
     exact lhopital_zero_nhdsNE hff' hgg' hg' hfa hga hdiv
 
 /-- **L'Hôpital's rule** for approaching a real, `HasDerivAt` version -/

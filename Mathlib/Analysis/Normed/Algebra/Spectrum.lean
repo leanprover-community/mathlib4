@@ -522,7 +522,7 @@ lemma _root_.Subalgebra.frontier_spectrum : frontier (σ 𝕜 x) ⊆ σ 𝕜 (x 
   intro μ hμ
   by_contra h
   rw [spectrum.notMem_iff] at h
-  rw [← frontier_compl, (spectrum.isClosed _).isOpen_compl.frontier_eq, mem_sdiff] at hμ
+  rw [← frontier_compl, (spectrum.isClosed _).isOpen_compl.frontier_eq, Set.mem_sdiff] at hμ
   obtain ⟨hμ₁, hμ₂⟩ := hμ
   rw [mem_closure_iff_clusterPt] at hμ₁
   apply hμ₂

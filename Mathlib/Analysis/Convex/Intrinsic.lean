@@ -285,12 +285,12 @@ variable {𝕜}
 @[simp]
 theorem closure_sdiff_intrinsicInterior (s : Set P) :
     closure s \ intrinsicInterior 𝕜 s = intrinsicFrontier 𝕜 s :=
-  intrinsicClosure_eq_closure 𝕜 s ▸ intrinsicClosure_diff_intrinsicInterior s
+  intrinsicClosure_eq_closure 𝕜 s ▸ intrinsicClosure_sdiff_intrinsicInterior s
 
 @[simp]
 theorem closure_sdiff_intrinsicFrontier (s : Set P) :
     closure s \ intrinsicFrontier 𝕜 s = intrinsicInterior 𝕜 s :=
-  intrinsicClosure_eq_closure 𝕜 s ▸ intrinsicClosure_diff_intrinsicFrontier s
+  intrinsicClosure_eq_closure 𝕜 s ▸ intrinsicClosure_sdiff_intrinsicFrontier s
 
 end NormedAddTorsor
 

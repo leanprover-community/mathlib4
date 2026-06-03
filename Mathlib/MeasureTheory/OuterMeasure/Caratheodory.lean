@@ -90,7 +90,8 @@ lemma IsCaratheodory.biUnion_of_finite {ι : Type*} {s : ι → Set α} {t : Set
 
 theorem measure_inter_union (h : s₁ ∩ s₂ ⊆ ∅) (h₁ : IsCaratheodory m s₁) {t : Set α} :
     m (t ∩ (s₁ ∪ s₂)) = m (t ∩ s₁) + m (t ∩ s₂) := by
-  rw [h₁, Set.inter_assoc, Set.union_inter_cancel_left, inter_sdiff_assoc, union_sdiff_cancel_left h]
+  rw [h₁, Set.inter_assoc, Set.union_inter_cancel_left, inter_sdiff_assoc,
+    union_sdiff_cancel_left h]
 
 theorem isCaratheodory_iUnion_lt {s : ℕ → Set α} :
     ∀ {n : ℕ}, (∀ i < n, IsCaratheodory m (s i)) → IsCaratheodory m (⋃ i < n, s i)
@@ -118,7 +119,7 @@ lemma isCaratheodory_partialSups {ι : Type*} [Preorder ι] [LocallyFiniteOrderB
 lemma isCaratheodory_disjointed {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
     {s : ι → Set α} (h : ∀ i, m.IsCaratheodory (s i)) (i : ι) :
     m.IsCaratheodory (disjointed s i) :=
-  disjointedRec (fun _ j ht ↦ m.isCaratheodory_diff ht <| h j) (h i)
+  disjointedRec (fun _ j ht ↦ m.isCaratheodory_sdiff ht <| h j) (h i)
 
 theorem isCaratheodory_sum {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i))
     (hd : Pairwise (Disjoint on s)) {t : Set α} :

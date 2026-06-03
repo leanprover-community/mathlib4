@@ -310,7 +310,8 @@ lemma eRk_eq_eRk_union_eRk_le_zero (X : Set α) (hY : M.eRk Y ≤ 0) : M.eRk (X 
     (M.eRk_mono subset_union_left)
 
 lemma eRk_eq_eRk_sdiff_eRk_le_zero (X : Set α) (hY : M.eRk Y ≤ 0) : M.eRk (X \ Y) = M.eRk X := by
-  rw [← eRk_eq_eRk_union_eRk_le_zero (X \ Y) hY, sdiff_union_self, eRk_eq_eRk_union_eRk_le_zero _ hY]
+  rw [← eRk_eq_eRk_union_eRk_le_zero (X \ Y) hY, sdiff_union_self,
+    eRk_eq_eRk_union_eRk_le_zero _ hY]
 
 lemma eRk_le_eRk_inter_add_eRk_sdiff (M : Matroid α) (X Y : Set α) :
     M.eRk X ≤ M.eRk (X ∩ Y) + M.eRk (X \ Y) := by

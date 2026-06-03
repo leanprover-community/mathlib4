@@ -588,7 +588,8 @@ lemma of_isAlgebraic_adjoin_insert_sdiff (hj : j ∈ insert i s)
     · exact ⟨his, ne⟩
     · exact ⟨⟨k, hks, rfl⟩, inj.ne hks hj hkj⟩
   have : (insert i s).InjOn v := (injOn_insert hi).mpr ⟨inj, hi'⟩
-  rw [← isTranscendenceBasis_subtype_range (by exact injOn_iff_injective.1 (this.mono sdiff_subset)),
+  rw [← isTranscendenceBasis_subtype_range
+    (by exact injOn_iff_injective.1 (this.mono sdiff_subset)),
     ← matroid_isBase_iff, ← image_eq_range]
   rw [this.image_sdiff_subset (singleton_subset_iff.mpr (.inr hj)), image_singleton,
     image_insert_eq] at H₂ ⊢

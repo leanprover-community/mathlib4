@@ -592,7 +592,7 @@ lemma valuedCompletion_surjective_iff :
             exact hγ
           convert! isClosed_univ.sdiff (isOpen_sphere (hat K) hr') using 1
           ext x
-          simp only [← hr, mem_setOf_eq, mem_sdiff, mem_univ, true_and, ← v.restrict_def,
+          simp only [← hr, mem_setOf_eq, Set.mem_sdiff, mem_univ, true_and, ← v.restrict_def,
             v.restrict_inj]
     · exact ⟨_, by simpa using ha⟩
   · exact ⟨a, by simp [ha]⟩

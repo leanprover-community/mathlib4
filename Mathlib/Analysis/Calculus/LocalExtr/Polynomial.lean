@@ -70,7 +70,7 @@ theorem card_roots_le_derivative (p : ℝ[X]) :
           ((p.derivative.roots.toFinset \ p.roots.toFinset).card + 1) :=
       (add_le_add
         (Finset.sum_le_sum fun _ _ => rootMultiplicity_sub_one_le_derivative_rootMultiplicity _ _)
-        p.card_roots_toFinset_le_card_roots_derivative_diff_roots_succ)
+        p.card_roots_toFinset_le_card_roots_derivative_sdiff_roots_succ)
     _ ≤ (∑ x ∈ p.roots.toFinset, p.derivative.roots.count x) +
           ((∑ x ∈ p.derivative.roots.toFinset \ p.roots.toFinset,
             p.derivative.roots.count x) + 1) := by

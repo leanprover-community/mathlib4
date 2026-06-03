@@ -159,9 +159,9 @@ lemma delete_isBasis_iff : (M ＼ D).IsBasis I X ↔ M.IsBasis I X ∧ Disjoint 
 
 @[simp]
 lemma delete_isBasis'_iff : (M ＼ D).IsBasis' I X ↔ M.IsBasis' I (X \ D) := by
-  rw [isBasis'_iff_isBasis_inter_ground, delete_isBasis_iff, delete_ground, sdiff_eq, inter_comm M.E,
-    ← inter_assoc, ← sdiff_eq, ← isBasis'_iff_isBasis_inter_ground, and_iff_left_iff_imp,
-    inter_comm, ← inter_sdiff_assoc]
+  rw [isBasis'_iff_isBasis_inter_ground, delete_isBasis_iff, delete_ground, sdiff_eq,
+    inter_comm M.E, ← inter_assoc, ← sdiff_eq, ← isBasis'_iff_isBasis_inter_ground,
+    and_iff_left_iff_imp, inter_comm, ← inter_sdiff_assoc]
   exact fun _ ↦ disjoint_sdiff_left
 
 lemma IsBasis.of_delete (h : (M ＼ D).IsBasis I X) : M.IsBasis I X :=
@@ -244,7 +244,7 @@ lemma delete_loops_eq (M : Matroid α) (D : Set α) : (M ＼ D).loops = M.loops 
 
 lemma delete_isColoop_iff (M : Matroid α) (D : Set α) :
     (M ＼ D).IsColoop e ↔ e ∉ M.closure ((M.E \ D) \ {e}) ∧ e ∈ M.E ∧ e ∉ D := by
-  rw [delete_eq_restrict, restrict_isColoop_iff sdiff_subset, mem_sdiff, and_congr_left_iff, and_imp]
+  rw [delete_eq_restrict, restrict_isColoop_iff sdiff_subset, mem_sdiff, and_congr_left_iff]
   simp
 
 /-! ### Finiteness -/
@@ -253,7 +253,7 @@ instance delete_finitary (M : Matroid α) [Finitary M] (D : Set α) : Finitary (
   inferInstanceAs <| Finitary (M ↾ (M.E \ D))
 
 instance delete_finite [M.Finite] : (M ＼ D).Finite :=
-  ⟨M.ground_finite.diff⟩
+  ⟨M.ground_finite.sdiff⟩
 
 instance delete_rankFinite [RankFinite M] : RankFinite (M ＼ D) :=
   restrict_rankFinite _

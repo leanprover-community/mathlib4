@@ -207,7 +207,7 @@ theorem NoetherianSpace.exists_isOpen_nonempty_subset_irreducibleComponent [Noet
   have hZ := closure_sUnion_irreducibleComponents_sdiff_singleton hα Z H
   refine ⟨(⋃₀ (irreducibleComponents α \ {Z}))ᶜ, ?_, ?_, subset_closure.trans hZ.le⟩
   · rw [Set.sUnion_eq_biUnion, isOpen_compl_iff]
-    exact hα.diff.isClosed_biUnion fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1
+    exact hα.sdiff.isClosed_biUnion fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1
   · contrapose! hZ
     rw [hZ, closure_empty, ← Set.nonempty_iff_empty_ne]
     exact H.1.nonempty

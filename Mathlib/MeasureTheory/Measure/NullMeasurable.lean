@@ -228,7 +228,7 @@ theorem exists_subordinate_pairwise_disjoint [Countable ι] {s : ι → Set α}
       (∀ i, t i ⊆ s i) ∧
         (∀ i, s i =ᵐ[μ] t i) ∧ (∀ i, MeasurableSet (t i)) ∧ Pairwise (Disjoint on t) := by
   choose t ht_sub htm ht_eq using fun i => exists_measurable_subset_ae_eq (h i)
-  rcases exists_null_pairwise_disjoint_diff hd with ⟨u, hum, hu₀, hud⟩
+  rcases exists_null_pairwise_disjoint_sdiff hd with ⟨u, hum, hu₀, hud⟩
   exact
     ⟨fun i => t i \ u i, fun i => sdiff_subset.trans (ht_sub _), fun i =>
       (ht_eq _).symm.trans (sdiff_null_ae_eq_self (hu₀ i)).symm, fun i => (htm i).diff (hum i),

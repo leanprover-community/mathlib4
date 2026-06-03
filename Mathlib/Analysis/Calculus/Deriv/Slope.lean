@@ -169,7 +169,7 @@ lemma HasDerivWithinAt.nonneg_of_monotoneOn (hx : AccPt x (𝓟 s))
   have : Tendsto (slope g x) (𝓝[s \ {x}] x) (𝓝 g') := hasDerivWithinAt_iff_tendsto_slope.mp hd
   apply ge_of_tendsto this
   filter_upwards [self_mem_nhdsWithin] with y hy
-  simp only [mem_sdiff, mem_singleton_iff] at hy
+  simp only [Set.mem_sdiff, mem_singleton_iff] at hy
   exact h'g.slope_nonneg (by simp) (by simp [hy])
 
 /-- The derivative within a set of a monotone function is nonnegative. -/

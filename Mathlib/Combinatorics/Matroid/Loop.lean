@@ -384,23 +384,24 @@ lemma IsNonloop.closure_eq_closure_iff_isCircuit_of_ne (he : M.IsNonloop e) (hef
   · have hf := he.isNonloop_of_mem_closure (by rw [← h]; exact M.mem_closure_self e)
     rw [isCircuit_iff_dep_forall_sdiff_singleton_indep, dep_iff, insert_subset_iff,
       and_iff_right he.mem_ground, singleton_subset_iff, and_iff_left hf.mem_ground]
-    suffices ¬ M.Indep {e, f} by simpa [pair_diff_left hef, hf, pair_diff_right hef, he]
+    suffices ¬ M.Indep {e, f} by simpa [pair_sdiff_left hef, hf, pair_sdiff_right hef, he]
     rw [Indep.insert_indep_iff_of_notMem (by simpa) (by simpa)]
     simp [← h, mem_closure_self _ _ he.mem_ground]
   have hclosure := (h.closure_sdiff_singleton_eq e).trans
     (h.closure_sdiff_singleton_eq f).symm
-  rwa [pair_diff_left hef, pair_diff_right hef, eq_comm] at hclosure
+  rwa [pair_sdiff_left hef, pair_sdiff_right hef, eq_comm] at hclosure
 
 lemma IsNonloop.closure_eq_closure_iff_eq_or_dep (he : M.IsNonloop e) (hf : M.IsNonloop f) :
     M.closure {e} = M.closure {f} ↔ e = f ∨ ¬M.Indep {e, f} := by
   obtain (rfl | hne) := eq_or_ne e f
   · exact iff_of_true rfl (Or.inl rfl)
   simp_rw [he.closure_eq_closure_iff_isCircuit_of_ne hne, or_iff_right hne,
-    isCircuit_iff_dep_forall_sdiff_singleton_indep, dep_iff, insert_subset_iff, singleton_subset_iff,
-    and_iff_left hf.mem_ground, and_iff_left he.mem_ground, and_iff_left_iff_imp]
+    isCircuit_iff_dep_forall_sdiff_singleton_indep, dep_iff, insert_subset_iff,
+    singleton_subset_iff, and_iff_left hf.mem_ground, and_iff_left he.mem_ground,
+    and_iff_left_iff_imp]
   rintro hi x (rfl | rfl)
-  · rwa [pair_diff_left hne, indep_singleton]
-  rwa [pair_diff_right hne, indep_singleton]
+  · rwa [pair_sdiff_left hne, indep_singleton]
+  rwa [pair_sdiff_right hne, indep_singleton]
 
 lemma exists_isNonloop (M : Matroid α) [RankPos M] : ∃ e, M.IsNonloop e :=
   let ⟨_, hB⟩ := M.exists_isBase
@@ -598,7 +599,7 @@ lemma isColoop_iff_sdiff_closure : M.IsColoop e ↔ M.closure (M.E \ {e}) ≠ M.
 
 lemma isColoop_iff_notMem_closure_compl (he : e ∈ M.E := by aesop_mat) :
     M.IsColoop e ↔ e ∉ M.closure (M.E \ {e}) := by
-  rw [isColoop_iff_diff_closure, not_iff_not]
+  rw [isColoop_iff_sdiff_closure, not_iff_not]
   refine ⟨fun h ↦ by rwa [h], fun h ↦ (M.closure_subset_ground _).antisymm fun x hx ↦ ?_⟩
   obtain (rfl | hne) := eq_or_ne x e
   · assumption

@@ -29,7 +29,7 @@ theorem setOf_liouville_eq_iInter_iUnion :
       ⋂ n : ℕ, ⋃ (a : ℤ) (b : ℤ) (_ : 1 < b),
       ball ((a : ℝ) / b) (1 / (b : ℝ) ^ n) \ {(a : ℝ) / b} := by
   ext x
-  simp only [mem_iInter, mem_iUnion, Liouville, mem_setOf_eq, exists_prop, mem_sdiff,
+  simp only [mem_iInter, mem_iUnion, Liouville, mem_setOf_eq, exists_prop, Set.mem_sdiff,
     mem_singleton_iff, mem_ball, Real.dist_eq, and_comm]
 
 theorem IsGδ.setOf_liouville : IsGδ { x | Liouville x } := by

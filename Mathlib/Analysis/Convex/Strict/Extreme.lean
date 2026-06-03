@@ -80,7 +80,7 @@ lemma StrictConvexSpace.sphere_subset_extremePoints_closedBall [StrictConvexSpac
 
 theorem StrictConvexSpace.extremePoints_closedBall_eq_sphere [Nontrivial A] {x : A} {r : ℝ}
     [StrictConvexSpace ℝ A] : extremePoints ℝ (closedBall x r) = sphere x r := by
-  rw [(_root_.strictConvex_closedBall ℝ x r).extremePoints_eq_diff_interior, interior_closedBall',
+  rw [(_root_.strictConvex_closedBall ℝ x r).extremePoints_eq_sdiff_interior, interior_closedBall',
     closedBall_sdiff_ball]
 
 end Normed

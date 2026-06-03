@@ -172,7 +172,7 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) 
   case neg =>
     intro hcontra
     have := hcontra.continuousWithinAt
-    rw [← ContinuousWithinAt.diff_iff this] at hcont_at_a
+    rw [← ContinuousWithinAt.sdiff_iff this] at hcont_at_a
     simp at hcont_at_a
   case pos =>
     intro hdiff
