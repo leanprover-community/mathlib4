@@ -104,7 +104,7 @@ analysis, where  `U` is a closed ball and `V` is its interior.
 lemma divisor_ball_support_finite [ProperSpace 𝕜] {f : 𝕜 → E} {R : ℝ} {c : 𝕜}
     (hf : MeromorphicOn f (Metric.closedBall c R)) :
     (divisor f (Metric.ball c R)).support.Finite :=
-  hf.divisor_subset_finiteSupport (isCompact_closedBall c R) Metric.ball_subset_closedBall
+  hf.divisor_support_finite_of_subset (isCompact_closedBall c R) Metric.ball_subset_closedBall
 
 /-!
 ## Congruence Lemmas

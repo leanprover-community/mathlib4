@@ -279,7 +279,7 @@ private lemma sum_apply_smul_single_eq_self
 private lemma canonicalDecomposition_aux₂ (h₁f : MeromorphicOn f (closedBall 0 R)) :
     divisor (∏ᶠ u, (canonicalFactor R u) ^ (divisor f (ball 0 R) u)) (ball 0 R)
       = -(divisor f (ball 0 R)) := by
-  have η₀ : (-divisor f (ball 0 R)).support.Finite := by simp [h₁f.divisor_ball_finiteSupport]
+  have η₀ : (-divisor f (ball 0 R)).support.Finite := by simp [h₁f.divisor_ball_support_finite]
   rw [finprod_eq_prod_of_mulSupport_subset_of_finite _ (by aesop) η₀, divisor_prod]
   · simp_rw [divisor_zpow (fun z hz ↦ meromorphic_canonicalFactor R _ z)]
     conv_rhs => rw [← sum_apply_smul_single_eq_self η₀]
@@ -354,7 +354,7 @@ theorem _root_.MeromorphicOn.exists_canonicalDecomp
     · apply MeromorphicAt.finprod (fun x ↦ (meromorphic_canonicalFactor R x z).zpow _)
   -- Use the function `g` defined above and establish the required properties
   use g
-  have η₀ : (-divisor f (ball 0 R)).support.Finite := by simp [h₁f.divisor_ball_finiteSupport]
+  have η₀ : (-divisor f (ball 0 R)).support.Finite := by simp [h₁f.divisor_ball_support_finite]
   exact {
     meromorphicOn := h₁f
     meromorphicNFOn := meromorphicNFOn_toMeromorphicNFOn φ (closedBall 0 R)
