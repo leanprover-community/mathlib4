@@ -364,7 +364,7 @@ instance (r : β → β → Prop) (s : β → β → Prop) (t : β → β → Pr
     exact this hafg hagh
 
 lemma asympRel_of_subset {r : β → β → Prop} {a b : Set (α → β)} {l : Filter α}
-    (r_refl : ∀ x, r x x) (h : a ⊆ b) :
+    (r_refl : ∀ x, r x x := by intro x; rfl) (h : a ⊆ b) :
     a AR[l, r] b := by
   intro x hx
   refine ⟨_, h hx, ?_⟩
@@ -397,6 +397,58 @@ lemma map_asympRel_map {s₁ s₁' : Set (α → β → γ)} {s₂ s₂' : Set (
 instance : AsympMapClass (α := α) (β := β) Eq Eq Eq where
   imp r₁ r₂ := by grind
 
+instance [LinearOrder α] [LinearOrder β] :
+    AsympMapClass (α := α) (β := β) LE.le LE.le Eq where
+  imp {f₁ f₂ f₁' f₂'} r₁ r₂ := by
+    specialize r₁ f₂
+    grind
+
+@[gcongr]
+lemma iUnion_AR_iUnion {ι : Sort*} {Ω : Type*}
+    {l : Filter Ω} {r : α → α → Prop} {s : ι → Set (Ω → α)}
+    {t : ι → Set (Ω → α)}
+    (h : ∀ i, s i AR[l, r] t i) : (⋃ i, s i) AR[l, r] (⋃ i, t i) := by
+  rintro x ⟨_, ⟨i, rfl⟩, hx⟩
+  obtain ⟨y, hy, hxy⟩ := h i x hx
+  exact ⟨y, Set.mem_iUnion.mpr ⟨i, hy⟩, hxy⟩
+
+open Lean Meta in
+@[gcongr_forward]
+public meta def _root_.Mathlib.Tactic.GCongr.exactAROfSubset :
+    Mathlib.Tactic.GCongr.ForwardExt where
+  eval h goal := do
+    let pf ← mkConstWithFreshMVarLevels ``asympRel_of_subset
+    let (xs, _, _) ← forallMetaTelescope (← inferType pf)
+    xs.back!.mvarId!.assignIfDefEq h
+    goal.assignIfDefEq (mkAppN pf xs)
+    let (_, reflGoal) ← xs[6]!.mvarId!.intro `x
+    reflGoal.applyRfl
+
+@[simp, gcongr]
+lemma AsympRel.singleton_AR_singleton {Ω : Type*} (l : Filter Ω) {r : α → α → Prop} (a : Ω → α)
+    (b : Ω → α) :
+    ({a} AR[l, r] {b}) ↔ ∀ᶠ ω in l, r (a ω) (b ω) := by
+  unfold AsympRel
+  simp
+
+@[gcongr]
+lemma AsympRel.bigO_mono {s₁ s₂ : Set (α → ℝ)} (h : ∀ f₁ ∈ s₁, ∃ f₂ ∈ s₂, f₁ =O[l] f₂) :
+    bigO l s₁ AR[l, Eq] bigO l s₂ := by
+  apply asympRel_of_subset
+  · simp
+  intro f hf
+  simp only [mem_bigO, norm_eq_abs] at hf ⊢
+  peel hf with ι s h
+  obtain ⟨g, hg, hg'⟩ := h
+  choose F hF using h
+  use (fun i ↦ F (g i) (hg i))
+  refine ⟨fun i ↦ ?_, ?_⟩
+  · apply (hF _ _).1
+  apply hg'.trans
+  apply Asymptotics.IsBigO.sum_congr
+  simp only [Finset.mem_univ, isBigO_abs_left, forall_const]
+  intro i
+  apply (hF (g i) _).2
 
 section RightSerial
 
@@ -729,12 +781,15 @@ example : asymp% x : ℝ in atTop => (0 : ℝ) = 0 := by
 
 lemma Real.log_add_one_isBigO_atTop :
     asymp% x : ℝ in atTop => log (x + 1) = log x + O[atTop](x⁻¹) := by
-  sorry
-  -- magic_tac
-  -- simp only [mem_bigO_singleton, rightSerial_eq, Set.singleton_subset_iff, Set.mem_iUnion,
-  --   Set.mem_singleton_iff, exists_prop]
-  -- use (fun x ↦ log (x + 1) - log x), Real.log_add_sub_log_isBigO_inv
-  -- ring_nf
+  magic_tac
+  -- TODO: I'd like to just get to an equation, which this does by discarding the "eventually"
+  -- stuff. It has an annoying reflexivity side condition atm.
+  apply asympRel_of_subset
+  · simp only [implies_true]
+  simp only [mem_bigO_singleton, Set.singleton_subset_iff, Set.mem_iUnion, Set.mem_singleton_iff,
+    exists_prop]
+  use (fun x ↦ log (x + 1) - log x), Real.log_add_sub_log_isBigO_inv
+  ring_nf
 
 -- lemma exp_at_one''' {l : Filter α} {f : α → ℝ} (hf : Filter.Tendsto f l (𝓝 0)) :
 --     asymp% x : α => exp (f x) = 1 + O[l](f x) := by
@@ -760,7 +815,6 @@ lemma Real.log_add_one_isBigO_atTop :
   = n * (1 + O(log n/n)) := _
   = n + O(log n) := _
 -/
-
 
 -- set_option trace.Elab.asymp true in
 theorem terry :
@@ -821,7 +875,7 @@ theorem terry :
     asymp% x : ℝ in atTop => _ = x + O(log x) := by
       grw [mul_bigO]
       gcongr
-      simp only [RightSerial, mem_map, Set.mem_singleton_iff, exists_eq_left, forall_eq]
+      simp only [mem_map, Set.mem_singleton_iff, exists_eq_left, forall_eq]
       apply Filter.EventuallyEq.isBigO
       filter_upwards [Filter.eventually_ne_atTop 0]
       intros
