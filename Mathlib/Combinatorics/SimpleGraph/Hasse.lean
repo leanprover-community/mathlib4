@@ -61,6 +61,17 @@ theorem hasseDualIso_apply (a : αᵒᵈ) : hasseDualIso a = ofDual a :=
 theorem hasseDualIso_symm_apply (a : α) : hasseDualIso.symm a = toDual a :=
   rfl
 
+/-- The Hasse diagram of a preorder is triangle-free. This is the graph-theoretic formulation of
+`not_covBy_of_lt_of_lt`: if `a ⋖ b` and `b ⋖ c` then `¬a ⋖ c`. -/
+theorem cliqueFree_hasse_three : (hasse α).CliqueFree 3 := by
+  classical
+  intro s ⟨hc, hcard⟩
+  obtain ⟨a, b, c, hab, hac, hbc, rfl⟩ := s.card_eq_three.mp hcard
+  have := hc (by simp) (by simp) hab
+  have := hc (by simp) (by simp) hbc
+  have := hc (by simp) (by simp) hac
+  grind [hasse_adj, CovBy]
+
 end Preorder
 
 section PartialOrder
