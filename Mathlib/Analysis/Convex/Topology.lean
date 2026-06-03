@@ -480,9 +480,6 @@ private lemma sdiff_singleton_eventually_mem_nhds_left {s : Set 𝕜} {a : 𝕜}
   · exact mem_nhdsWithin.2 ⟨Ioi b, isOpen_Ioi, hba, fun _ ⟨h₁, _, h₂⟩ ↦ ⟨h₁, h₂⟩⟩
   · exact mem_nhds_iff.2 ⟨Ioo b a, subset_sdiff_singleton this right_notMem_Ioo, isOpen_Ioo, hx⟩
 
-@[deprecated (since := "2026-06-03")]
-alias diff_singleton_eventually_mem_nhds_left := sdiff_singleton_eventually_mem_nhds_left
-
 theorem Convex.sdiff_singleton_eventually_mem_nhds {s : Set 𝕜} (hs : Convex 𝕜 s) (a : 𝕜) :
     ∀ᶠ x in 𝓝[s \ {a}] a, s \ {a} ∈ 𝓝 x := by
   rcases eq_or_neBot (𝓝[s \ {a}] a) with h | has
