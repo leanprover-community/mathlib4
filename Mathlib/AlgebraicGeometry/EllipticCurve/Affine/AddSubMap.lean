@@ -91,40 +91,39 @@ noncomputable def bRelationCoeffs : Fin 3 → MvPolynomial (Fin 3) R :=
     C (-32 * W.b₄) * s * t ^ 2 * u + C (-12 * W.b₆) * t ^ 3 * u + C (-16 * W.b₈) * t ^ 2 * u ^ 2,
     C (-W.b₂) * t * u ^ 3 + C (-8 * W.b₄) * u ^ 4 + C 96 * s * u ^ 3 + C (-27) * t ^ 2 * u ^ 2]
 
+private lemma CXX {i : Fin 3} {a : R} : (C a * X (R := R) i ^ 2).IsHomogeneous 2 :=
+    isHomogeneous_C_mul_X_pow ..
+
+private lemma CXY {i j : Fin 3} {a : R} : (C a * X (R := R) i * X j).IsHomogeneous 2 :=
+    .mul (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
+
 lemma isHomogeneous_addSubMap (i : Fin 3) : (addSubMap W i).IsHomogeneous 2 := by
   simp only [addSubMap]
   fin_cases i <;>
     simp only [Fin.isValue, Fin.mk_one, Fin.zero_eta, Fin.reduceFinMk, Matrix.cons_val,
       Matrix.cons_val_one, Matrix.cons_val_zero]
-  · refine .sub (.sub (.sub (isHomogeneous_X_pow ..) ?_) ?_) (isHomogeneous_C_mul_X_pow ..) <;>
-      exact .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-  · refine .add (.add (.add ?_ ?_) ?_) (isHomogeneous_C_mul_X_pow ..) <;>
-      exact .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
-  · exact .sub (isHomogeneous_X_pow ..) <|
-      .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
+  · exact .sub (.sub (.sub (isHomogeneous_X_pow ..) CXY) CXY) CXX
+  · exact .add (.add (.add CXY CXY) CXY) CXX
+  · exact .sub (isHomogeneous_X_pow ..) CXY
 
 lemma isHomogenous_addSubMapCoeff (ij : Fin 3 × Fin 3) :
     (addSubMapCoeff W ij).IsHomogeneous 2 := by
-  have H₁ {i : Fin 3} {a : R} : (C a * X (R := R) i ^ 2).IsHomogeneous 2 :=
-    isHomogeneous_C_mul_X_pow ..
-  have H₂ {i j : Fin 3} {a : R} : (C a * X (R := R) i * X j).IsHomogeneous 2 :=
-    .mul (m := 1) (n := 1) (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
   simp only [addSubMapCoeff]
   fin_cases ij <;>
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Function.uncurry_apply_pair,
       Matrix.cons_val', Matrix.cons_val_zero, Matrix.cons_val_fin_one, neg_mul, Fin.mk_one,
       Matrix.cons_val_one, Fin.reduceFinMk, Matrix.cons_val, Fin.zero_eta]
     -- The following works, but is slow (84214 vs. 12694 heartbeats):
-    -- <;> repeat first | exact H₁ | exact H₂ | refine .add ?_ H₁ | refine .add ?_ H₂
-  · exact .add (.add (.add (.add (.add H₁ H₂) H₂) H₁) H₂) H₁
-  · exact .add (.add (.add (.add (.add H₁ H₂) H₂) H₁) H₂) H₁
-  · exact .add (.add (.add (.add H₁ H₂) H₂) H₂) H₁
-  · exact .add (.add (.add H₂ H₂) H₁) H₂
-  · exact .add (.add (.add H₁ H₂) H₁) H₂
-  · exact .add (.add (.add (.add (.add H₁ H₂) H₂) H₁) H₂) H₁
-  · exact .add (.add H₂ H₂) H₁
-  · exact .add (.add (.add H₂ H₂) H₂) H₁
-  · exact .add (.add H₁ H₂) H₁
+    -- <;> repeat first | exact CXX | exact CXY | refine .add ?_ CXX | refine .add ?_ CXY
+  · exact .add (.add (.add (.add (.add CXX CXY) CXY) CXX) CXY) CXX
+  · exact .add (.add (.add (.add (.add CXX CXY) CXY) CXX) CXY) CXX
+  · exact .add (.add (.add (.add CXX CXY) CXY) CXY) CXX
+  · exact .add (.add (.add CXY CXY) CXX) CXY
+  · exact .add (.add (.add CXX CXY) CXX) CXY
+  · exact .add (.add (.add (.add (.add CXX CXY) CXY) CXX) CXY) CXX
+  · exact .add (.add CXY CXY) CXX
+  · exact .add (.add (.add CXY CXY) CXY) CXX
+  · exact .add (.add CXX CXY) CXX
 
 variable [W.IsElliptic]
 
