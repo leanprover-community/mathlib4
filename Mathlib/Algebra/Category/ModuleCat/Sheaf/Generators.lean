@@ -190,6 +190,19 @@ instance [IsIso G.π] : IsIso (G.map F η).π := by
   rw [GeneratingSections.map_π_eq]
   infer_instance
 
+variable (M) in
+/-- A sheaf of modules `M` is free if it is isomorphic to `free I` for some `I`. -/
+class IsFree : Prop where
+  is_free : ∃ G : M.GeneratingSections, IsIso G.π
+
+set_option backward.isDefEq.respectTransparency false in
+lemma IsFree.ofIso {M N : SheafOfModules.{u} R} [M.IsFree] (φ : M ≅ N) : N.IsFree := by
+  constructor
+  obtain ⟨G, _⟩ := IsFree.is_free (M := M)
+  use G.ofEpi φ.hom
+  simp [Iso.isIso_hom]
+
+
 variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
   [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] [HasBinaryProducts C]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
