@@ -10,6 +10,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.UnionPro
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.PushoutProduct
 public import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
+public import Mathlib.CategoryTheory.Monoidal.Braided.PushoutObjObj
 public import Mathlib.CategoryTheory.Monoidal.Closed.Braided
 
 /-!
@@ -43,33 +44,7 @@ the file `Mathlib/AlgebraicTopology/SimplicialSet/Skeleton.lean`).
 
 universe u
 
-open CategoryTheory MonoidalCategory MonoidalClosed Simplicial
-  HomotopicalAlgebra Limits Opposite
-
-namespace CategoryTheory
-
--- to be moved...
-namespace Functor.PushoutObjObj
-
-variable {C : Type*} [Category* C] [MonoidalCategory C] [BraidedCategory C]
-  {X₁ Y₁ X₂ Y₂ : C} {f₁ : X₁ ⟶ Y₁} {f₂ : X₂ ⟶ Y₂}
-  (sq : (curriedTensor C).PushoutObjObj f₁ f₂)
-
-/-- In a braided monoidal category, from a `Functor.PushoutObjObj` structure for
-the bifunctor `curriedTensor` and two morphism `f₁` and `f₂`, one may
-obtain a similar structure for `f₂` and `f₁`. -/
-@[simps!]
-def flipTensor : (curriedTensor C).PushoutObjObj f₂ f₁ :=
-  sq.flip.ofNatIso (BraidedCategory.curriedBraidingNatIso _).symm
-
-set_option backward.defeqAttrib.useBackward true in
-@[simp]
-lemma flipTensor_ι : dsimp% sq.flipTensor.ι = sq.ι ≫ (β_ _ _).inv := by
-  simp [flipTensor]
-
-end Functor.PushoutObjObj
-
-end CategoryTheory
+open CategoryTheory MonoidalCategory MonoidalClosed Simplicial HomotopicalAlgebra Limits
 
 namespace SSet
 
