@@ -267,7 +267,7 @@ private lemma example_oreLocalizationInstCommRing_eq_localizedModuleInstCommRing
     OreLocalization.instCommRing = (LocalizedModule.instCommRing : CommRing R[S⁻¹]) := by
   with_reducible_and_instances rfl
 
-theorem mk_prod {ι A : Type*} [CommSemiring A] [Algebra R A] {S : Submonoid R}
+theorem prod_mk {ι A : Type*} [CommSemiring A] [Algebra R A] {S : Submonoid R}
     (t : Finset ι) (a : ι → A) (s : ι → S) :
     ∏ i ∈ t, mk (a i) (s i) = mk (∏ i ∈ t, a i) (∏ i ∈ t, s i) := by
   induction t using Finset.cons_induction <;> simp [OreLocalization.one_def, *, mk_mul_mk]
