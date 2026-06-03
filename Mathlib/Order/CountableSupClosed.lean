@@ -238,6 +238,7 @@ section CompleteLattice
 
 variable [CompleteLattice α]
 
+-- TODO: generalize this lemma beyond complete lattices, using `IsLUB` instead of `iSup`.
 @[to_dual]
 lemma mem_countableSupClosure_iff :
     a ∈ countableSupClosure s ↔ ∃ (t : ℕ → α), (∀ n, t n ∈ s) ∧ ⨆ n, t n = a := by
