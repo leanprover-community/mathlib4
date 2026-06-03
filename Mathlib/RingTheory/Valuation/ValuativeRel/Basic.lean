@@ -554,7 +554,6 @@ instance : CommMonoidWithZero (ValueGroupWithZero R) where
   mul_comm a b := by
     induction a using ValueGroupWithZero.ind
     induction b using ValueGroupWithZero.ind
-    simp only [ValueGroupWithZero.mk_mul_mk]
     apply ValuativeRel.ValueGroupWithZero.sound <;>
     · simp only [Submonoid.coe_mul]
       nth_grw 2 [veq_mul_comm]
