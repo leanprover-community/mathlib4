@@ -60,18 +60,18 @@ variable [m : WeakPseudoEMetricSpace α]
 
 @[simp]
 theorem edist_none_none : edist (self := Option.toEDist (α := α))
-  none none = 0 := rfl
+    none none = 0 := rfl
 
 @[simp]
-theorem edist_none_left {a : α} :
+theorem edist_none_some {a : α} :
     edist (self := Option.toEDist (α := α)) none a = ⊤ := rfl
 
 @[simp]
-theorem edist_none_right {a : α} :
+theorem edist_some_none {a : α} :
     edist (self := Option.toEDist (α := α)) a none = ⊤ := rfl
 
 @[simp]
-theorem edist_cast_cast {a b : α} :
+theorem edist_some_some {a b : α} :
     edist (self := Option.toEDist (α := α)) a b = edist a b := rfl
 
 theorem some_eball (a : α) (r : ENNReal) :
@@ -132,9 +132,7 @@ abbrev weakPseudoEMetricSpace_of_isOpenEmbedding {α : Type u} [t : TopologicalS
     apply (@EMetric.isOpen_iff (Option α) (PseudoEMetricSpace.ofEDist edist
       (h_edist ▸ edist_self' m) (h_edist ▸ edist_comm' m) (h_edist ▸ edist_triangle' m))).mpr
     intro x xs
-    have : @Metric.eball _ {edist := edist} = @Metric.eball (Option α) Option.toEDist := by
-      congr
-    rw [this]
+    suffices ∃ ε > 0, @Metric.eball (Option α) Option.toEDist x ε ⊆ s by rwa [← h_edist] at this
     match x with
     | none =>
       exact ⟨1, by norm_num, by simpa [ball_infty_of_pos]⟩
@@ -145,9 +143,7 @@ abbrev weakPseudoEMetricSpace_of_isOpenEmbedding {α : Type u} [t : TopologicalS
       exact ⟨ε, εp, some_eball x ε ▸ image_subset_iff.mpr εt⟩
   topology_eq_on_restrict := by
     intro x r
-    have : @Metric.eball _ {edist := edist} = @Metric.eball (Option α) Option.toEDist := by
-      congr
-    rw [this]
+    rw [h_edist]
     match x with
     | (x : α) =>
       obtain ⟨s', s'o, s's⟩ := m.topology_eq_on_restrict x r
@@ -175,9 +171,7 @@ abbrev weakEMetricSpace_of_isOpenEmbedding {α : Type u} [t : TopologicalSpace �
     WeakEMetricSpace (Option α) :=
   { toWeakPseudoEMetricSpace := weakPseudoEMetricSpace_of_isOpenEmbedding h_edist h,
     eq_of_edist_eq_zero {x y} xy := by
-      have : edist (α := Option α) = Option.toEDist.edist := by
-        rw [h_edist]
-      rw [this] at xy
+      rw [congr(@edist _ $h_edist x y)] at xy
       cases x <;> cases y
       · rfl
       · simp at xy
