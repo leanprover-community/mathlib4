@@ -90,13 +90,13 @@ instance quotient [QuotientAction X H] : MulAction X (G ⧸ H) where
 variable {X}
 
 @[to_additive (attr := simp)]
-theorem Quotient.smul_mk [QuotientAction X H] (b : X) (a : G) :
-    (b • QuotientGroup.mk a : G ⧸ H) = QuotientGroup.mk (b • a) :=
+theorem Quotient.smul_mk [QuotientAction X H] (b : X) (g : G) :
+    (b • QuotientGroup.mk g : G ⧸ H) = QuotientGroup.mk (b • a) :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem Quotient.smul_coe [QuotientAction X H] (b : X) (a : G) :
-    b • (a : G ⧸ H) = (↑(b • a) : G ⧸ H) :=
+theorem Quotient.smul_coe [QuotientAction X H] (b : X) (g : G) :
+    b • (g : G ⧸ H) = (↑(b • a) : G ⧸ H) :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -107,7 +107,7 @@ theorem Quotient.mk_smul_out [QuotientAction X H] (b : X) (q : G ⧸ H) :
 theorem Quotient.coe_smul_out [QuotientAction X H] (b : X) (q : G ⧸ H) : ↑(b • q.out) = b • q := by
   simp
 
-theorem _root_.QuotientGroup.out_conj_pow_minimalPeriod_mem (a : G) (q : G ⧸ H) :
+theorem _root_.QuotientGroup.out_conj_pow_minimalPeriod_mem (g : G) (q : G ⧸ H) :
     q.out⁻¹ * a ^ Function.minimalPeriod (a • ·) q * q.out ∈ H := by
   rw [mul_assoc, ← QuotientGroup.eq, QuotientGroup.out_eq', ← smul_eq_mul, Quotient.mk_smul_out,
     eq_comm, pow_smul_eq_iff_minimalPeriod_dvd]
@@ -192,7 +192,7 @@ theorem card_orbit_mul_card_stabilizer_eq_card_group (b : X) [Fintype G] [Fintyp
   rw [← Fintype.card_prod, Fintype.card_congr (orbitProdStabilizerEquivGroup G b)]
 
 @[to_additive (attr := simp)]
-theorem orbitEquivQuotientStabilizer_symm_apply (b : X) (a : G) :
+theorem orbitEquivQuotientStabilizer_symm_apply (b : X) (g : G) :
     ((orbitEquivQuotientStabilizer G b).symm a : X) = a • b :=
   rfl
 
@@ -237,15 +237,15 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer : X ≃ Σ ω : Ω, G �
   selfEquivSigmaOrbitsQuotientStabilizer' G X Quotient.out_eq'
 
 /-- **Burnside's lemma** : a (noncomputable) bijection between the disjoint union of all
-`{x ∈ X | a • x = x}` for `a ∈ G` and the product `G × Ω`, where `G` is a group acting on `X`
+`{x ∈ X | g • x = x}` for `g ∈ G` and the product `G × Ω`, where `G` is a group acting on `X`
 and `Ω = X/G` denotes the quotient of `X` by the relation `orbitRel G X`. -/
 @[to_additive AddAction.sigmaFixedByEquivOrbitsProdAddGroup
       /-- **Burnside's lemma** : a (noncomputable) bijection between the disjoint union of all
-      `{x ∈ X | a • x = x}` for `a ∈ G` and the product `G × Ω`, where `G` is an additive group
+      `{x ∈ X | g • x = x}` for `g ∈ G` and the product `G × Ω`, where `G` is an additive group
       acting on `X` and `Ω = X/G` denotes the quotient of `X` by the relation `orbitRel G X`. -/]
-noncomputable def sigmaFixedByEquivOrbitsProdGroup : (Σ a : G, fixedBy X a) ≃ Ω × G :=
+noncomputable def sigmaFixedByEquivOrbitsProdGroup : (Σ g : G, fixedBy X a) ≃ Ω × G :=
   calc
-    (Σ a : G, fixedBy X a) ≃ { ab : G × X // ab.1 • ab.2 = ab.2 } :=
+    (Σ g : G, fixedBy X g) ≃ { ab : G × X // ab.1 • ab.2 = ab.2 } :=
       (Equiv.subtypeProdEquivSigmaSubtype _).symm
     _ ≃ { ba : X × G // ba.2 • ba.1 = ba.1 } := (Equiv.prodComm G X).subtypeEquiv fun _ => Iff.rfl
     _ ≃ Σ b : X, stabilizer G b :=
@@ -269,8 +269,8 @@ stabilisers coincides with the number of orbits multiplied by the order of `G`. 
       /-- **Burnside's lemma** : given a finite additive group `G` acting on a type `X`,
       the sum the orders of the stabilisers coincides with the number of orbits multiplied by the
       order of `G`. -/]
-theorem sum_card_fixedBy_eq_card_orbits_mul_card_group [Fintype G] [∀ a : G, Fintype <| fixedBy X a]
-    [Fintype Ω] : (∑ a : G, Fintype.card (fixedBy X a)) = Fintype.card Ω * Fintype.card G := by
+theorem sum_card_fixedBy_eq_card_orbits_mul_card_group [Fintype G] [∀ g : G, Fintype <| fixedBy X g]
+    [Fintype Ω] : (∑ g : G, Fintype.card (fixedBy X g)) = Fintype.card Ω * Fintype.card G := by
   rw [← Fintype.card_prod, ← Fintype.card_sigma,
     Fintype.card_congr (sigmaFixedByEquivOrbitsProdGroup G X)]
 
