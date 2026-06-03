@@ -84,7 +84,7 @@ protected theorem div {p a n : ℕ} [ExpChar K p] (h : Introspective (X - C (a :
     simp
 
 /-- The product of coprime exponents is Introspective. -/
-protected theorem mul_of_coprime {d e : ℕ} {f : K[X]} (hf : Introspective f e r)
+theorem mul_of_coprime {d e : ℕ} {f : K[X]} (hf : Introspective f e r)
     (hg : Introspective f d r) (h : e.Coprime r) : Introspective f (e * d) r := by
   intro μ hm
   have mu : μ ^ e ∈ primitiveRoots r K := by
@@ -106,17 +106,17 @@ theorem of_multiset {p n b : ℕ} [ExpChar K p] (d e : ℕ) (s : Multiset (Fin b
     simp only [Multiset.map_cons, Multiset.prod_cons]
     refine Introspective.mul ?_ h1
     clear h1
-    refine Introspective.mul_of_coprime ?_ ?_ ?_
+    refine mul_of_coprime ?_ ?_ ?_
     · induction d with
       | zero => simp [Introspective.one]
       | succ i hi =>
         simp only [map_natCast, pow_succ, mul_comm]
-        exact Introspective.mul_of_coprime Introspective.X_sub_C hi hcprm2
+        exact mul_of_coprime Introspective.X_sub_C hi hcprm2
     · induction e with
       | zero => simp [Introspective.one]
       | succ i hi =>
         simp only [pow_succ, mul_comm]
-        refine Introspective.mul_of_coprime ?_ hi ?_
+        refine mul_of_coprime ?_ hi ?_
         · have hsx := hs x
           simp only [ofMultiset_apply, Multiset.map_singleton, Multiset.prod_singleton] at hsx
           exact Introspective.div hsx hdiv hcprm2
