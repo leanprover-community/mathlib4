@@ -135,7 +135,7 @@ theorem galRestrict'_galLift (σ : B →ₐ[A] B₂) :
   have := (IsFractionRing.injective A K).isDomain
   have := IsIntegralClosure.isLocalization A K L B
   AlgHom.ext fun x ↦ IsIntegralClosure.algebraMap_injective B₂ A L₂
-    (by simp [galRestrict', Subalgebra.algebraMap_eq, galLift])
+    (by simp)
 
 /--
 A version of `galLift` for `AlgEquiv`.
@@ -519,7 +519,7 @@ lemma Algebra.algebraMap_intNorm_of_isGalois [IsGalois (FractionRing A) (Fractio
   haveI : FiniteDimensional (FractionRing A) (FractionRing B) := .of_isLocalization A B A⁰
   rw [← (galRestrict A (FractionRing A) (FractionRing B) B).toEquiv.prod_comp]
   simp only [MulEquiv.toEquiv_eq_coe, EquivLike.coe_coe]
-  convert (prod_galRestrict_eq_norm A (FractionRing A) (FractionRing B) B x).symm
+  convert! (prod_galRestrict_eq_norm A (FractionRing A) (FractionRing B) B x).symm
 
 open Polynomial IsScalarTower in
 theorem Algebra.dvd_algebraMap_intNorm_self (x : B) : x ∣ algebraMap A B (intNorm A B x) := by
