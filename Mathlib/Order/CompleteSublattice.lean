@@ -208,4 +208,3 @@ theorem range_coe : (f.range : Set β) = range f := rfl
   (orderEmbeddingOfInjective f hf).orderIso
 
 end CompleteLatticeHom
-
