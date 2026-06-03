@@ -89,7 +89,7 @@ theorem of_semilinearEquiv {S : Type u'} [Ring S] [Small.{v'} S]
         (eFv.symm ∘ₗ fS ∘ₗ eKv) (gS ∘ₗ eFv) ?_ ((e.surjective.comp hg).comp eFv.surjective) ?_
       · exact eFv.symm.injective.comp (hf.comp eKv.injective)
       · exact (LinearEquiv.conj_exact_iff_exact (fS ∘ₗ eKv.toLinearMap) gS eFv.symm).2 <|
-          fun x ↦ by simpa [gS, fS] using he (eF.symm x)
+          fun x ↦ by simpa [gS, fS] using! he (eF.symm x)
 
 variable [Small.{w} R]
 
