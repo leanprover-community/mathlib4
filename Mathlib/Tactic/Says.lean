@@ -75,18 +75,15 @@ def evalTacticCapturingTryThis (tac : TSyntax `tactic) : TacticM (TSyntax ``tact
     | .error err => throwError m!"Failed to parse 'Try this:' suggestion: {s}\n{err}"
 
 /--
-If you write `X says`, where `X` is a tactic that produces a "Try this: Y" message,
-then you will get a message "Try this: X says Y".
-Once you've clicked to replace `X says` with `X says Y`,
-afterwards `X says Y` will only run `Y`.
+`tac₁ says tac₂` runs `tac₂`. In CI it also runs `tac₁` and validates that `tac₁` produces
+a "Try this: `tac₂`" message. Use `set_option says.verify true` to enable the validation step on
+your own machine.
 
-The typical usage case is:
-```
-simp? [X] says simp only [X, Y, Z]
-```
+The `says` combinator is intended to be used when `tac₁` is meaningful but slow and `tac₂` is faster
+but hard to read: for example, `simp? [X] says simp only [X, Y, Z]`.
 
-If you use `set_option says.verify true` (set automatically during CI) then `X says Y`
-runs `X` and verifies that it still prints "Try this: Y".
+To generate or update the correct value of `tac₂`, write `tac₁ says`. You will get a message
+"Try this: `tac₁ says tac₂`.
 -/
 syntax (name := says) tactic " says" (colGt tacticSeq)? : tactic
 

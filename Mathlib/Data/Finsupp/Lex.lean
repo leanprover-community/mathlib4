@@ -158,10 +158,6 @@ theorem Lex.single_le_iff {a b : α} : toLex (single b 1) ≤ toLex (single a 1)
 theorem Colex.single_le_iff {a b : α} : toColex (single a 1) ≤ toColex (single b 1) ↔ a ≤ b :=
   Colex.single_strictMono.le_iff_le
 
-@[deprecated Lex.single_strictAnti (since := "2025-10-28")]
-theorem Lex.single_antitone : Antitone fun (a : α) ↦ toLex (single a 1) :=
-  Lex.single_strictAnti.antitone
-
 variable [PartialOrder N]
 
 theorem toLex_monotone : Monotone (@toLex (α →₀ N)) :=
@@ -169,11 +165,6 @@ theorem toLex_monotone : Monotone (@toLex (α →₀ N)) :=
 
 theorem toColex_monotone : Monotone (@toColex (α →₀ N)) :=
   toLex_monotone (α := αᵒᵈ)
-
-@[deprecated Lex.lt_iff (since := "2025-10-12")]
-theorem lt_of_forall_lt_of_lt (a b : Lex (α →₀ N)) (i : α) :
-    (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b :=
-  fun h1 h2 ↦ ⟨i, h1, h2⟩
 
 end NHasZero
 
@@ -231,15 +222,23 @@ section OrderedAddMonoid
 
 variable [LinearOrder α]
 
-instance Lex.orderBot [AddCommMonoid N] [PartialOrder N] [CanonicallyOrderedAdd N] :
+instance Lex.orderBot [AddCommMonoid N] [PartialOrder N] [IsBotZeroClass N] :
     OrderBot (Lex (α →₀ N)) where
   bot := 0
   bot_le _ := Finsupp.toLex_monotone bot_le
 
-instance Colex.orderBot [AddCommMonoid N] [PartialOrder N] [CanonicallyOrderedAdd N] :
+instance Lex.isBotZeroClass [AddCommMonoid N] [PartialOrder N] [IsBotZeroClass N] :
+    IsBotZeroClass (Lex (α →₀ N)) where
+  isBot_zero := isBot_bot
+
+instance Colex.orderBot [AddCommMonoid N] [PartialOrder N] [IsBotZeroClass N] :
     OrderBot (Colex (α →₀ N)) where
   bot := 0
   bot_le _ := Finsupp.toColex_monotone bot_le
+
+instance Colex.isBotZeroClass [AddCommMonoid N] [PartialOrder N] [IsBotZeroClass N] :
+    IsBotZeroClass (Colex (α →₀ N)) where
+  isBot_zero := isBot_bot
 
 instance Lex.isOrderedCancelAddMonoid
     [AddCommMonoid N] [PartialOrder N] [IsOrderedCancelAddMonoid N] :

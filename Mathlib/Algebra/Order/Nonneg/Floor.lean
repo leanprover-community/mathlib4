@@ -21,7 +21,7 @@ This is used to derive algebraic structures on `ℝ≥0` and `ℚ≥0` automatic
 * `{x : α // 0 ≤ x}` is a `FloorSemiring` if `α` is.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset Field
 

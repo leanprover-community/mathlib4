@@ -68,19 +68,9 @@ theorem InftyValuation.map_mul' (x y : RatFunc F) :
 
 theorem InftyValuation.map_add_le_max' (x y : RatFunc F) :
     inftyValuationDef F (x + y) ≤ max (inftyValuationDef F x) (inftyValuationDef F y) := by
-  by_cases hx : x = 0
-  · rw [hx, zero_add]
-    conv_rhs => rw [inftyValuationDef, if_pos (Eq.refl _)]
-    rw [max_eq_right (WithZero.zero_le (inftyValuationDef F y))]
-  · by_cases hy : y = 0
-    · rw [hy, add_zero]
-      conv_rhs => rw [max_comm, inftyValuationDef, if_pos (Eq.refl _)]
-      rw [max_eq_right (WithZero.zero_le (inftyValuationDef F x))]
-    · by_cases hxy : x + y = 0
-      · rw [inftyValuationDef, if_pos hxy]; exact zero_le'
-      · rw [inftyValuationDef, inftyValuationDef, inftyValuationDef, if_neg hx, if_neg hy,
-          if_neg hxy]
-        simpa using RatFunc.intDegree_add_le hy hxy
+  unfold inftyValuationDef
+  have := @RatFunc.intDegree_add_le F
+  aesop
 
 @[simp]
 theorem inftyValuation_of_nonzero {x : RatFunc F} (hx : x ≠ 0) :
@@ -147,10 +137,11 @@ scoped instance : UniformSpace (RatFunc F) := (inftyValued F).toUniformSpace
 def _root_.RatFunc.CompletionAtInfty := UniformSpace.Completion (RatFunc F)
 deriving Field, Algebra (RatFunc F), Coe (RatFunc F), Inhabited
 
-end CompletionAtInfty
-
 /-- The valuation at infinity on `k(t)` extends to a valuation on `CompletionAtInfty`. -/
-instance : Valued (CompletionAtInfty F) ℤᵐ⁰ := (inftyValued F).valuedCompletion
+instance : Valued (CompletionAtInfty F) ℤᵐ⁰ :=
+  inferInstanceAs <| Valued (UniformSpace.Completion (RatFunc F)) ℤᵐ⁰
+
+end CompletionAtInfty
 
 theorem valuedCompletionAtInfty.def {x : CompletionAtInfty F} :
   Valued.v x = (inftyValued F).extensionValuation x := rfl

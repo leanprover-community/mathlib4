@@ -51,6 +51,7 @@ def SupClosed (s : Set α) : Prop := ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈
 @[to_dual (attr := simp)] lemma supClosed_singleton : SupClosed ({a} : Set α) := by simp [SupClosed]
 
 @[to_dual (attr := simp)] lemma supClosed_univ : SupClosed (univ : Set α) := by simp [SupClosed]
+
 @[to_dual]
 lemma SupClosed.inter (hs : SupClosed s) (ht : SupClosed t) : SupClosed (s ∩ t) :=
   fun _a ha _b hb ↦ ⟨hs ha.1 hb.1, ht ha.2 hb.2⟩
@@ -63,7 +64,7 @@ lemma supClosed_sInter (hS : ∀ s ∈ S, SupClosed s) : SupClosed (⋂₀ S) :=
 lemma supClosed_iInter (hf : ∀ i, SupClosed (f i)) : SupClosed (⋂ i, f i) :=
   supClosed_sInter <| forall_mem_range.2 hf
 
-@[to_dual codirectedOn]
+@[to_dual InfClosed.codirectedOn]
 lemma SupClosed.directedOn (hs : SupClosed s) : DirectedOn (· ≤ ·) s :=
   fun _a ha _b hb ↦ ⟨_, hs ha hb, le_sup_left, le_sup_right⟩
 
@@ -374,7 +375,7 @@ lemma image_latticeClosure' (s : Set α) (f : α → β)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊓ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊔ f b) :
     f '' latticeClosure s = latticeClosure (f '' s) := by
   simpa only [Set.image_comp, Equiv.image_symm_eq_preimage, ← ofDual_preimage_latticeClosure]
-    using image_latticeClosure s (ofDual.symm ∘ f) map_sup map_inf
+    using! image_latticeClosure s (ofDual.symm ∘ f) map_sup map_inf
 
 end Lattice
 

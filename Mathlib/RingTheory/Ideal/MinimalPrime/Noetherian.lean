@@ -19,7 +19,7 @@ This is proved without reference to `PrimeSpectrum` to avoid heavy imports.
 
 -/
 
-@[expose] public section
+public section
 
 variable (R : Type*) [CommSemiring R] [hR : IsNoetherianRing R]
 

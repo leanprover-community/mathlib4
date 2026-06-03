@@ -182,7 +182,7 @@ private theorem integral_divergence_of_hasFDerivAt_off_countable_aux₂ (I : Box
       Tendsto (fun k => ∫ x in Box.Icc ((J k).face i), f (i.insertNth (c k) x) i) atTop
         (𝓝 <| ∫ x in Box.Icc (I.face i), f (i.insertNth d x) i) by
     rw [Box.Icc_eq_pi] at hJ_sub'
-    refine tendsto_finset_sum _ fun i _ => (this _ _ _ ?_ (hJu _)).sub (this _ _ _ ?_ (hJl _))
+    refine tendsto_finsetSum _ fun i _ => (this _ _ _ ?_ (hJu _)).sub (this _ _ _ ?_ (hJl _))
     exacts [fun k => hJ_sub' k (J k).upper_mem_Icc _ trivial, fun k =>
       hJ_sub' k (J k).lower_mem_Icc _ trivial]
   intro i c d hc hcd
@@ -455,8 +455,9 @@ theorem integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le (f g : �
           ((∫ x in Icc a.1 b.1, g (x, b.2)) - ∫ x in Icc a.1 b.1, g (x, a.2)) := by
       have : ∀ (a b : ℝ¹) (f : ℝ¹ → E),
           ∫ x in Icc a b, f x = ∫ x in Icc (a 0) (b 0), f fun _ => x := fun a b f ↦ by
-        convert (((volume_preserving_funUnique (Fin 1) ℝ).symm _).setIntegral_preimage_emb
-          (MeasurableEquiv.measurableEmbedding _) f _).symm
+        convert!
+          (((volume_preserving_funUnique (Fin 1) ℝ).symm _).setIntegral_preimage_emb
+              (MeasurableEquiv.measurableEmbedding _) f _).symm
         exact ((OrderIso.funUnique (Fin 1) ℝ).symm.preimage_Icc a b).symm
       simp only [Fin.sum_univ_two, this]
       rfl

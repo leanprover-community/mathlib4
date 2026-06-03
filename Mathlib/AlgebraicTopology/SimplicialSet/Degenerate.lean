@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 
 /-!
@@ -74,6 +75,24 @@ lemma mem_degenerate_iff (x : X _⦋n⦌) :
     exact ⟨(image f).len, by lia, factorThruImage f, inferInstance, by aesop⟩
   · rintro ⟨m, hm, f, hf, hx⟩
     exact ⟨m, hm, f, hx⟩
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+lemma opObjEquiv_mem_degenerate_iff (x : X.op _⦋n⦌) :
+    opObjEquiv x ∈ X.degenerate n ↔ x ∈ X.op.degenerate n := by
+  simp only [mem_degenerate_iff]
+  refine exists_congr (fun m ↦ exists_congr (fun _ ↦ ?_))
+  constructor
+  · obtain ⟨x, rfl⟩ := opObjEquiv.symm.surjective x
+    rintro ⟨f, _, y, rfl⟩
+    exact ⟨SimplexCategory.rev.map f, inferInstance, opObjEquiv.symm y, by simp [op_map]⟩
+  · rintro ⟨f, _, y, rfl⟩
+    exact ⟨SimplexCategory.rev.map f, inferInstance, opObjEquiv y, by simp [op_map]⟩
+
+lemma opObjEquiv_mem_nonDegenerate_iff (x : X.op _⦋n⦌) :
+    opObjEquiv x ∈ X.nonDegenerate n ↔ x ∈ X.op.nonDegenerate n := by
+  simp only [mem_nonDegenerate_iff_notMem_degenerate,
+    opObjEquiv_mem_degenerate_iff]
 
 lemma degenerate_eq_iUnion_range_σ :
     X.degenerate (n + 1) = ⋃ (i : Fin (n + 1)), Set.range (X.σ i) := by
@@ -243,9 +262,10 @@ namespace Subcomplex
 
 variable {X} (A : X.Subcomplex)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma mem_degenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
-    x ∈ degenerate A n ↔ x.val ∈ X.degenerate n := by
+    dsimp% x ∈ degenerate A n ↔ x.val ∈ X.degenerate n := by
   rw [SSet.mem_degenerate_iff, SSet.mem_degenerate_iff]
   constructor
   · rintro ⟨m, hm, f, _, y, rfl⟩
@@ -257,12 +277,14 @@ lemma mem_degenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
     simpa [Set.mem_preimage, ← op_comp, ← comp_apply, ← Functor.map_comp] using
       A.map (section_ f).op hx
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma mem_nonDegenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
-    x ∈ nonDegenerate A n ↔ x.val ∈ X.nonDegenerate n := by
+    dsimp% x ∈ nonDegenerate A n ↔ x.val ∈ X.nonDegenerate n := by
   rw [mem_nonDegenerate_iff_notMem_degenerate,
     mem_nonDegenerate_iff_notMem_degenerate, mem_degenerate_iff]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma le_iff_contains_nonDegenerate (B : X.Subcomplex) :
     A ≤ B ↔ ∀ (n : ℕ) (x : X.nonDegenerate n), x.val ∈ A.obj _ → x.val ∈ B.obj _ := by
@@ -279,7 +301,7 @@ lemma le_iff_contains_nonDegenerate (B : X.Subcomplex) :
 
 lemma eq_top_iff_contains_nonDegenerate :
     A = ⊤ ↔ ∀ (n : ℕ), X.nonDegenerate n ⊆ A.obj _ := by
-  simpa using le_iff_contains_nonDegenerate ⊤ A
+  simpa using! le_iff_contains_nonDegenerate ⊤ A
 
 set_option backward.isDefEq.respectTransparency false in
 lemma degenerate_eq_top_iff (n : ℕ) :

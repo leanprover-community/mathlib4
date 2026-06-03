@@ -154,6 +154,19 @@ lemma fderivWithin_const_smul_field (c : R) (hs : UniqueDiffWithinAt 𝕜 s x) :
   · have : Invertible c := invertibleOfNonzero ha
     simp [fderivWithin_const_smul_of_invertible c hs]
 
+lemma fderivWithin_const_smul_field' {s : Set 𝕜} {f : 𝕜 → F} {x : 𝕜} (c : R) :
+    fderivWithin 𝕜 (c • f) s x = c • fderivWithin 𝕜 f s x := by
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact fderivWithin_const_smul_field c hsx
+  · simp [fderivWithin_zero_of_not_uniqueDiffWithinAt hsx]
+
+omit [DivisionSemiring R] [Module R F] [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F] in
+/-- Special case of `fderivWithin_neg` for functions `𝕜 → F`, i.e. when the domain `E` is the scalar
+field `𝕜` itself. In this case no `UniqueDiffWithinAt 𝕜 s x` hypothesis is needed. -/
+lemma fderivWithin_neg' {s : Set 𝕜} {f : 𝕜 → F} {x : 𝕜} :
+    fderivWithin 𝕜 (-f) s x = -fderivWithin 𝕜 f s x := by
+  simpa only [neg_smul, one_smul] using fderivWithin_const_smul_field' (f := f) (-1 : 𝕜)
+
 @[deprecated (since := "2026-01-11")] alias fderivWithin_const_smul_of_field :=
   fderivWithin_const_smul_field
 
@@ -389,23 +402,23 @@ variable {ι : Type*} {u : Finset ι} {A : ι → E → F} {A' : ι → E →L[�
 theorem HasStrictFDerivAt.fun_sum (h : ∀ i ∈ u, HasStrictFDerivAt (A i) (A' i) x) :
     HasStrictFDerivAt (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) x := by
   simp only [hasStrictFDerivAt_iff_isLittleO] at *
-  convert IsLittleO.sum h
+  convert! IsLittleO.sum h
   simp [Finset.sum_sub_distrib, ContinuousLinearMap.sum_apply]
 
 @[fun_prop]
 theorem HasStrictFDerivAt.sum (h : ∀ i ∈ u, HasStrictFDerivAt (A i) (A' i) x) :
     HasStrictFDerivAt (∑ i ∈ u, A i) (∑ i ∈ u, A' i) x := by
-  convert HasStrictFDerivAt.fun_sum h; simp
+  convert! HasStrictFDerivAt.fun_sum h; simp
 
 theorem HasFDerivAtFilter.fun_sum (h : ∀ i ∈ u, HasFDerivAtFilter (A i) (A' i) L) :
     HasFDerivAtFilter (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) L := by
   simp only [hasFDerivAtFilter_iff_isLittleO] at *
-  convert IsLittleO.sum h
+  convert! IsLittleO.sum h
   simp [ContinuousLinearMap.sum_apply]
 
 theorem HasFDerivAtFilter.sum (h : ∀ i ∈ u, HasFDerivAtFilter (A i) (A' i) L) :
     HasFDerivAtFilter (∑ i ∈ u, A i) (∑ i ∈ u, A' i) L := by
-  convert HasFDerivAtFilter.fun_sum h; simp
+  convert! HasFDerivAtFilter.fun_sum h; simp
 
 @[fun_prop]
 theorem HasFDerivWithinAt.fun_sum (h : ∀ i ∈ u, HasFDerivWithinAt (A i) (A' i) s x) :
@@ -573,6 +586,9 @@ theorem fderivWithin_fun_neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
       fderivWithin_zero_of_not_differentiableWithinAt, neg_zero]
     simpa
 
+/-- Version of `fderivWithin_fun_neg` where the function is written `-f` instead of `fun y ↦ -f y`.
+For the special case `E = 𝕜` without a `UniqueDiffWithinAt 𝕜 s x` hypothesis, see
+`fderivWithin_neg'`. -/
 theorem fderivWithin_neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (-f) s x = -fderivWithin 𝕜 f s x :=
   fderivWithin_fun_neg hxs
@@ -781,7 +797,7 @@ theorem fderiv_sub_const (c : F) : fderiv 𝕜 (fun y => f y - c) x = fderiv �
 
 theorem HasFDerivAtFilter.const_sub (hf : HasFDerivAtFilter f f' L) (c : F) :
     HasFDerivAtFilter (fun x => c - f x) (-f') L := by
-  simpa only [sub_eq_add_neg] using hf.neg.const_add c
+  simpa only [sub_eq_add_neg] using! hf.neg.const_add c
 
 @[fun_prop]
 theorem HasStrictFDerivAt.const_sub (hf : HasStrictFDerivAt f f' x) (c : F) :
