@@ -31,9 +31,8 @@ theorem Units.mem_posSubgroup {R : Type*} [Semiring R] [LinearOrder R] [IsStrict
     (u : Rˣ) : u ∈ Units.posSubgroup R ↔ (0 : R) < u :=
   Iff.rfl
 
-theorem RingHom.isUnit_eqLocus_mk_iff {R S T : Type*} [Ring R] [Ring S] [Semiring T]
-    (f g : R →+* T) {r : R} (hr : f r = g r) :
-    IsUnit (⟨r, hr⟩ : f.eqLocus g) ↔ IsUnit r := by
+theorem RingHom.isUnit_eqLocus_mk_iff {R T : Type*} [Ring R] [Semiring T] (f g : R →+* T)
+    {r : R} (hr : f r = g r) : IsUnit (⟨r, hr⟩ : f.eqLocus g) ↔ IsUnit r := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · simp [isUnit_iff_exists, ← Subtype.val_inj] at h ⊢
     grind
