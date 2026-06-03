@@ -25,8 +25,8 @@ saying that `R` is endowed with an equivalence class of valuations.
 
 ## Main Definitions
 
-- `ValuativeRel R` endows a ring `R` with a relation arising from a valuation.
-  This is equivalent to fixing an equivalence class of valuations on `R`.
+- `ValuativeRel R` endows a semiring `R` with a relation "arising from a valuation". When `R` is a
+  ring, this is equivalent to fixing an equivalence class of valuations on `R`.
   Use the notation `x ≤ᵥ y` for this relation.
 - `ValuativeRel.valuation R` is the "canonical" valuation associated to `ValuativeRel R`,
   taking values in `ValuativeRel.ValueGroupWithZero R`.
@@ -66,10 +66,10 @@ Split this file. For instance, the universal properties of `ValueGroupWithZero` 
 noncomputable section
 
 /-- The class `[ValuativeRel R]` class introduces an operator `x ≤ᵥ y : Prop` for `x y : R`
-which is the natural relation arising from (the equivalence class of) a valuation on `R`.
-More precisely, if v is a valuation on R then the associated relation is `x ≤ᵥ y ↔ v x ≤ v y`.
-Use this class to talk about the case where `R` is equipped with an equivalence class
-of valuations. -/
+which is the natural relation arising from (the equivalence class of) a valuation on `R` when `R`
+is a ring. More precisely, if `v` is a valuation on `R` then the associated relation is
+`x ≤ᵥ y ↔ v x ≤ v y`. Use this class to talk about the case where `R` is equipped
+with an equivalence class of valuations. -/
 @[ext]
 class ValuativeRel (R : Type*) [Semiring R] where
   /-- The valuation less-equal operator arising from `ValuativeRel`. -/
@@ -100,7 +100,7 @@ end Valuation
 
 /-- A preorder on a ring is said to be "valuative" if it agrees with the
 valuative relation. -/
-class ValuativePreorder (R : Type*) [Ring R] [ValuativeRel R] [Preorder R] where
+class ValuativePreorder (R : Type*) [Semiring R] [ValuativeRel R] [Preorder R] where
   vle_iff_le (x y : R) : x ≤ᵥ y ↔ x ≤ y
 
 namespace ValuativeRel
@@ -113,7 +113,7 @@ namespace ValuativeRel
 @[deprecated (since := "2025-12-20")] alias rel_mul_cancel := vle_mul_cancel
 @[deprecated (since := "2025-12-20")] alias not_rel_one_zero := not_vle_one_zero
 
-variable {R : Type*} [Ring R] [ValuativeRel R] {x x' y y' z : R}
+variable {R : Type*} [Semiring R] [ValuativeRel R] {x x' y y' z : R}
 
 /-- The valuation less-than relation, defined as `x <ᵥ y ↔ ¬ y ≤ᵥ x`. -/
 def vlt (x y : R) : Prop := ¬ y ≤ᵥ x
@@ -718,6 +718,10 @@ instance : LinearOrderedCommGroupWithZero (ValueGroupWithZero R) where
       grw [veq_mul_mul_mul_comm, veq_mul_mul_mul_comm _ c]
       simp_all
 
+section Valuation
+
+variable {R : Type*} [Ring R] [ValuativeRel R] {x : R}
+
 variable (R) in
 /-- The "canonical" valuation associated to a valuative relation. -/
 def valuation : Valuation R (ValueGroupWithZero R) where
@@ -788,6 +792,8 @@ lemma isEquiv {Γ₁ Γ₂ : Type*}
   intro x y
   simp_rw [← Valuation.Compatible.vle_iff_le]
 
+end Valuation
+
 end ValuativeRel
 
 namespace Valuation
@@ -833,14 +839,14 @@ end Valuation
 
 namespace ValuativeRel
 
-variable {R : Type*} [Ring R] [ValuativeRel R]
+variable {R : Type*} [Semiring R] [ValuativeRel R]
 
 variable (R) in
 /-- An alias for endowing a ring with a preorder defined as the valuative relation. -/
 def WithPreorder := R
 
 /-- The ring instance on `WithPreorder R` arising from the ring structure on `R`. -/
-instance : Ring (WithPreorder R) := inferInstanceAs (Ring R)
+instance : Semiring (WithPreorder R) := inferInstanceAs (Semiring R)
 
 /-- The preorder on `WithPreorder R` arising from the valuative relation on `R`. -/
 instance : Preorder (WithPreorder R) where
@@ -1071,6 +1077,10 @@ lemma isNontrivial_iff_nontrivial_units :
     · exact ⟨s.val, by simp, by simpa using h.symm⟩
     · exact ⟨r.val, by simp, by simpa using hr⟩
 
+section Valuation
+
+variable {R : Type*} [Ring R] [ValuativeRel R]
+
 lemma isNontrivial_iff_isNontrivial
     {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀] (v : Valuation R Γ₀) [v.Compatible] :
     IsNontrivial R ↔ v.IsNontrivial := by
@@ -1115,6 +1125,8 @@ lemma exists_valuation_posSubmonoid_div_valuation_posSubmonoid_eq (γ : (ValueGr
 theorem valuation_surjective {K : Type*} [DivisionRing K] [ValuativeRel K] :
     Function.Surjective (valuation K) :=
   ValueGroupWithZero.ind (ValueGroupWithZero.mk_eq_valuation · · ▸ ⟨_, rfl⟩)
+
+end Valuation
 
 variable (R) in
 /-- A ring with a valuative relation is discrete if its value group-with-zero
@@ -1358,16 +1370,20 @@ end ValuativeRel
 /-- If `B` is an `A` algebra and both `A` and `B` have valuative relations,
 we say that `B|A` is a valuative extension if the valuative relation on `A` is
 induced by the one on `B`. -/
-class ValuativeExtension (A B : Type*) [CommRing A] [Ring B] [ValuativeRel A] [ValuativeRel B]
-    [Algebra A B] where
+class ValuativeExtension (A B : Type*) [CommSemiring A] [Semiring B] [ValuativeRel A]
+    [ValuativeRel B] [Algebra A B] where
   vle_iff_vle (a b : A) : algebraMap A B a ≤ᵥ algebraMap A B b ↔ a ≤ᵥ b
 
 namespace ValuativeExtension
 
 open ValuativeRel ValueGroupWithZero MonoidWithZeroHom ValueGroup₀
 
-variable {A B : Type*} [CommRing A] [Ring B] [ValuativeRel A] [ValuativeRel B] [Algebra A B]
-  [ValuativeExtension A B]
+variable {A B : Type*}
+
+section Semiring
+
+variable [CommSemiring A] [Semiring B] [ValuativeRel A] [ValuativeRel B]
+  [Algebra A B] [ValuativeExtension A B]
 
 lemma vlt_iff_vlt {a b : A} : algebraMap A B a <ᵥ algebraMap A B b ↔ a <ᵥ b := by
   rw [← not_vle, vle_iff_vle, not_vle]
@@ -1383,6 +1399,13 @@ def mapPosSubmonoid : posSubmonoid A →* posSubmonoid B where
     by simpa only [posSubmonoid_def, ← (algebraMap A B).map_zero, vlt_iff_vlt] using ha⟩
   map_one' := by simp
   map_mul' := by simp
+
+end Semiring
+
+section Ring
+
+variable [CommRing A] [Ring B] [ValuativeRel A] [ValuativeRel B]
+  [Algebra A B] [ValuativeExtension A B]
 
 variable (A) in
 instance compatible_comap {Γ : Type*}
@@ -1415,11 +1438,13 @@ lemma _root_.ValuativeRel.IsRankLeOne.of_valuativeExtension [IsRankLeOne B] : Is
   obtain ⟨⟨f, hf⟩⟩ := IsRankLeOne.nonempty (R := B)
   exact ⟨⟨f.comp (mapValueGroupWithZero _ _), hf.comp mapValueGroupWithZero_strictMono⟩⟩
 
+end Ring
+
 end ValuativeExtension
 
 namespace ValuativeRel
 
-variable {R : Type*} [Ring R] [ValuativeRel R]
+variable {R : Type*} [Semiring R] [ValuativeRel R]
 
 /-- Any rank-at-most-one valuation has a mul-archimedean value group.
 The converse (for any compatible valuation) is `ValuativeRel.isRankLeOne_iff_mulArchimedean`

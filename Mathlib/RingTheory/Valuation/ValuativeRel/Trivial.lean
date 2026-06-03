@@ -34,7 +34,7 @@ open WithZero
 The domain condition is necessary so that the relation is closed when multiplying.
 -/
 @[implicit_reducible]
-def trivialRel : ValuativeRel R where
+def trivialRel {R : Type} [Semiring R] [DecidableEq R] [IsDomain R] : ValuativeRel R where
   vle x y := if y = 0 then x = 0 else True
   vle_total _ _ := by split_ifs <;> simp_all
   vle_trans _ _ := by split_ifs; simp_all
