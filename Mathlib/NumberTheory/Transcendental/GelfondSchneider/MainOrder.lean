@@ -6,7 +6,7 @@ Authors: Michail Karatarakis
 
 module
 
-public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainAlgSetup
+public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainAlg
 public import Mathlib.Analysis.Analytic.Order
 
 /-!
