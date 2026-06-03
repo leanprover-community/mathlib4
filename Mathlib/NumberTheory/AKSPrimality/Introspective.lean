@@ -60,9 +60,8 @@ protected theorem mul {n : ℕ} {f g : K[X]} (hf : Introspective f n r)
 variable [NeZero r]
 
 protected theorem eval_pow {μ : K} {f : K[X]} {n : ℕ} (h : IsPrimitiveRoot μ r)
-    (hi : Introspective f n r) : f.eval (μ ^ n) = f.eval μ ^ n := by
-  haveI : r ≠ 0 := NeZero.out
-  exact hi μ ((mem_primitiveRoots (by lia)).mpr h)
+    (hi : Introspective f n r) : f.eval (μ ^ n) = f.eval μ ^ n :=
+  hi μ ((mem_primitiveRoots (Nat.ne_zero_iff_zero_lt.mp NeZero.out)).mpr h)
 
 protected theorem div {p a n : ℕ} [ExpChar K p] (h : Introspective (X - C (a : K)) n r) (hd : p ∣ n)
     (hc : p.Coprime r) : Introspective (X - C (a : K)) (n / p) r := by
