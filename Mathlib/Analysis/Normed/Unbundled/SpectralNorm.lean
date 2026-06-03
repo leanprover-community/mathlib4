@@ -271,7 +271,8 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
       set g := fun i : ℕ ↦ p.coeff i • x ^ i
       obtain ⟨m, hm_in, hm⟩ : ∃ (m : ℕ) (_ : 0 < p.natDegree → m < p.natDegree),
           f ((Finset.range p.natDegree).sum g) ≤ f (g m) := by
-        obtain ⟨m, hm, h⟩ := IsNonarchimedean.finset_image_add hf_na g (Finset.range p.natDegree)
+        obtain ⟨m, hm, h⟩ := IsNonarchimedean.finset_image_add (map_zero _) (apply_nonneg _) hf_na g
+          (Finset.range p.natDegree)
         rw [Finset.nonempty_range_iff, ← zero_lt_iff, Finset.mem_range] at hm
         exact ⟨m, hm, h⟩
       exact lt_of_le_of_lt hm (hn' m (hm_in h_deg))
@@ -697,8 +698,8 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
   apply eq_of_powMul_faithful f hf_pm _ spectralAlgNorm_isPowMul
   intro x
   let E : Type v := id K⟮x⟯
-  let : Field E := show Field K⟮x⟯ by infer_instance
-  let : Module K E := show Module K K⟮x⟯ by infer_instance
+  let : Field E := id <| show Field K⟮x⟯ by infer_instance
+  let : Module K E := id <| show Module K K⟮x⟯ by infer_instance
   let id1 : K⟮x⟯ →ₗ[K] E := LinearMap.id
   let id2 : E →ₗ[K] K⟮x⟯ := LinearMap.id
   set hs_norm : RingNorm E :=

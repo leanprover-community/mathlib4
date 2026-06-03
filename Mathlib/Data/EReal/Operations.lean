@@ -179,16 +179,21 @@ lemma add_ne_top_iff_ne_top₂ {x y : EReal} (hx : x ≠ ⊥) (hy : y ≠ ⊥) :
   cases y <;> simp_all only [not_false_eq_true, ne_eq, add_top_of_ne_bot, not_true_eq_false,
     coe_ne_top, and_self, implies_true]
 
-lemma add_ne_top_iff_ne_top_left {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤) :
-    x + y ≠ ⊤ ↔ x ≠ ⊤ := by
+lemma add_eq_top_iff_eq_top_left {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤) :
+    x + y = ⊤ ↔ x = ⊤ := by
   cases x <;> simp [add_ne_top_iff_ne_top₂, hy, hy']
 
-lemma add_ne_top_iff_ne_top_right {x y : EReal} (hx : x ≠ ⊥) (hx' : x ≠ ⊤) :
-    x + y ≠ ⊤ ↔ y ≠ ⊤ := add_comm x y ▸ add_ne_top_iff_ne_top_left hx hx'
+lemma add_ne_top_iff_ne_top_left {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤) :
+    x + y ≠ ⊤ ↔ x ≠ ⊤ := add_eq_top_iff_eq_top_left hy hy' |>.ne
 
-lemma add_ne_top_iff_of_ne_bot_of_ne_top {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤) :
-    x + y ≠ ⊤ ↔ x ≠ ⊤ := by
-  induction x <;> simp [EReal.add_ne_top_iff_ne_top₂, hy, hy']
+lemma add_eq_top_iff_eq_top_right {x y : EReal} (hx : x ≠ ⊥) (hx' : x ≠ ⊤) :
+    x + y = ⊤ ↔ y = ⊤ := add_comm x y ▸ add_eq_top_iff_eq_top_left hx hx'
+
+lemma add_ne_top_iff_ne_top_right {x y : EReal} (hx : x ≠ ⊥) (hx' : x ≠ ⊤) :
+    x + y ≠ ⊤ ↔ y ≠ ⊤ := add_eq_top_iff_eq_top_right hx hx' |>.ne
+
+@[deprecated (since := "2026-07-02")] alias add_ne_top_iff_of_ne_bot_of_ne_top :=
+  add_ne_top_iff_ne_top_left
 
 /-! ### Negation -/
 
@@ -821,7 +826,8 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: sum of two `EReal`s. -/
 @[positivity (_ + _ : EReal)]
-meta def evalERealAdd : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealAdd : PositivityExt where eval {u α} zα pα? e :=
+  match pα? with | none => pure .none | some pα => do
   match u, α, e with
   | 0, ~q(EReal), ~q($a + $b) =>
     assertInstancesCommute
@@ -840,7 +846,8 @@ meta def evalERealAdd : PositivityExt where eval {u α} zα pα e := do
 
 /-- Extension for the `positivity` tactic: product of two `EReal`s. -/
 @[positivity (_ * _ : EReal)]
-meta def evalERealMul : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealMul : PositivityExt where eval {u α} zα pα? e :=
+  match pα? with | none => pure .none | some pα => do
   match u, α, e with
   | 0, ~q(EReal), ~q($a * $b) =>
     assertInstancesCommute

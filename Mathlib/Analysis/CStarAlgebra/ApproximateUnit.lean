@@ -158,6 +158,17 @@ lemma eventually_star_eq {l : Filter A} (hl : l.IsIncreasingApproximateUnit) :
     ∀ᶠ x in l, star x = x :=
   hl.eventually_isSelfAdjoint.mp <| .of_forall fun _ ↦ IsSelfAdjoint.star_eq
 
+omit [StarOrderedRing A] in
+lemma closedBall_mem {l : Filter A} (hl : l.IsIncreasingApproximateUnit) :
+    Metric.closedBall 0 1 ∈ l := by
+  simpa [Metric.closedBall] using! hl.eventually_norm
+
+lemma pure_one (A : Type*) [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A] :
+    (pure 1 : Filter A).IsIncreasingApproximateUnit where
+  toIsApproximateUnit := .pure_one A
+  eventually_nonneg := by simp
+  eventually_norm := by nontriviality A; simp
+
 end Filter.IsIncreasingApproximateUnit
 
 namespace CStarAlgebra
@@ -319,6 +330,8 @@ lemma increasingApproximateUnit :
   eventually_norm := .filter_mono inf_le_right <| by simp
   neBot := hasBasis_approximateUnit A |>.neBot_iff.mpr
     fun hx ↦ ⟨_, ⟨le_rfl, by simpa using hx.2.le⟩⟩
+
+instance : (approximateUnit A).NeBot := (increasingApproximateUnit A).neBot
 
 end CStarAlgebra
 

@@ -137,7 +137,7 @@ theorem not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_filter {f :
 `[a, b] \ {c}`, `‖f x‖ → ∞` as `x → c` within `[a, b] \ {c}`, and `f' = O(g)` along
 `𝓝[[a, b] \ {c}] c`, where `f'` is the derivative of `f`, then `g` is not interval integrable on
 `a..b`. -/
-theorem not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_within_diff_singleton
+theorem not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_within_sdiff_singleton
     {f : ℝ → E} {g : ℝ → F} {a b c : ℝ} (hne : a ≠ b) (hc : c ∈ [[a, b]])
     (h_deriv : ∀ᶠ x in 𝓝[[[a, b]] \ {c}] c, DifferentiableAt ℝ f x)
     (h_infty : Tendsto (fun x => ‖f x‖) (𝓝[[[a, b]] \ {c}] c) atTop)
@@ -146,14 +146,14 @@ theorem not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_within_diff
     ∃ l : Filter ℝ, TendstoIxxClass Icc l l ∧ l.NeBot ∧ l ≤ 𝓝 c ∧ [[a, b]] \ {c} ∈ l := by
     rcases (min_lt_max.2 hne).gt_or_lt c with hlt | hlt
     · refine ⟨𝓝[<] c, inferInstance, inferInstance, inf_le_left, ?_⟩
-      rw [← Iic_diff_right]
-      exact diff_mem_nhdsWithin_diff (Icc_mem_nhdsLE_of_mem ⟨hlt, hc.2⟩) _
+      rw [← Iic_sdiff_right]
+      exact sdiff_mem_nhdsWithin_sdiff (Icc_mem_nhdsLE_of_mem ⟨hlt, hc.2⟩) _
     · refine ⟨𝓝[>] c, inferInstance, inferInstance, inf_le_left, ?_⟩
-      rw [← Ici_diff_left]
-      exact diff_mem_nhdsWithin_diff (Icc_mem_nhdsGE_of_mem ⟨hc.1, hlt⟩) _
+      rw [← Ici_sdiff_left]
+      exact sdiff_mem_nhdsWithin_sdiff (Icc_mem_nhdsGE_of_mem ⟨hc.1, hlt⟩) _
   have : l ≤ 𝓝[[[a, b]] \ {c}] c := le_inf hle (le_principal_iff.2 hmem)
   exact not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_filter l
-    (mem_of_superset hmem diff_subset) (h_deriv.filter_mono this) (h_infty.mono_left this)
+    (mem_of_superset hmem sdiff_subset) (h_deriv.filter_mono this) (h_infty.mono_left this)
     (hg.mono this)
 
 /-- If `f` is differentiable in a punctured neighborhood of `c`, `‖f x‖ → ∞` as `x → c` (more
@@ -165,7 +165,7 @@ theorem not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_punctured {
     (h_infty : Tendsto (fun x => ‖f x‖) (𝓝[≠] c) atTop) (hg : deriv f =O[𝓝[≠] c] g) (hne : a ≠ b)
     (hc : c ∈ [[a, b]]) : ¬IntervalIntegrable g volume a b :=
   have : 𝓝[[[a, b]] \ {c}] c ≤ 𝓝[≠] c := nhdsWithin_mono _ inter_subset_right
-  not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_within_diff_singleton hne hc
+  not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_within_sdiff_singleton hne hc
     (h_deriv.filter_mono this) (h_infty.mono_left this) (hg.mono this)
 
 /-- If `f` grows in the punctured neighborhood of `c : ℝ` at least as fast as `1 / (x - c)`,
