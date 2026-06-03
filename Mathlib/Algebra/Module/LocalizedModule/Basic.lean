@@ -1017,9 +1017,11 @@ lemma isRegular_of_smul_left_injective {m : M'} (inj : Function.Injective fun r 
 noncomputable def mk' (m : M) (s : S) : M' :=
   fromLocalizedModule S f (LocalizedModule.mk m s)
 
-theorem mk'_smul (r : R) (m : M) (s : S) : mk' f (r • m) s = r • mk' f m s := by
+theorem mk'_smul {R₀ : Type*} [SMul R₀ R] [SMul R₀ M] [SMul R₀ M']
+    [IsScalarTower R₀ R R] [IsScalarTower R₀ R M] [IsScalarTower R₀ R M']
+    (r : R₀) (m : M) (s : S) : mk' f (r • m) s = r • mk' f m s := by
   delta mk'
-  rw [← LocalizedModule.smul'_mk, map_smul]
+  rw [← LocalizedModule.smul'_mk, LinearMap.map_smul_of_tower]
 
 theorem mk'_add_mk' (m₁ m₂ : M) (s₁ s₂ : S) :
     mk' f m₁ s₁ + mk' f m₂ s₂ = mk' f (s₂ • m₁ + s₁ • m₂) (s₁ * s₂) := by
