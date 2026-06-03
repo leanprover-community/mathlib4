@@ -105,7 +105,7 @@ private theorem hasSum_coeFn_tsum_nat {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
     apply summable_norm_of_tsum_eLpNorm_ne_top hp.out (fun n ↦ Lp.aestronglyMeasurable (f n))
     convert hf with n
     exact (enorm_def (f n)).symm
-  have B : ∀ᵐ x ∂μ, ∀ n, ⇑((∑ i ∈ range n, f i)) x = ∑ i ∈ range n, f i x := by
+  have B : ∀ᵐ x ∂μ, ∀ n, ⇑(∑ i ∈ range n, f i) x = ∑ i ∈ range n, f i x := by
     rw [ae_all_iff]
     exact fun i ↦ coeFn_fun_finsetSum _ _
   obtain ⟨ns, hns, nslim⟩ : ∃ ns : ℕ → ℕ, StrictMono ns ∧ ∀ᵐ x ∂μ,
