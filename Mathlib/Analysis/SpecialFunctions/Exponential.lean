@@ -71,7 +71,7 @@ variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedRing 𝔸] [C
 `1 : 𝔸 →L[𝕂] 𝔸` at zero, as long as it converges on a neighborhood of zero. -/
 theorem hasStrictFDerivAt_exp_zero_of_radius_pos (h : 0 < (expSeries 𝕂 𝔸).radius) :
     HasStrictFDerivAt exp (1 : 𝔸 →L[𝕂] 𝔸) 0 := by
-  convert (hasFPowerSeriesAt_exp_zero_of_radius_pos h).hasStrictFDerivAt
+  convert! (hasFPowerSeriesAt_exp_zero_of_radius_pos h).hasStrictFDerivAt
   ext x
   change x = expSeries 𝕂 𝔸 1 fun _ => x
   simp [expSeries_apply_eq, Nat.factorial]
@@ -286,7 +286,7 @@ theorem hasFDerivAt_exp_smul_const_of_mem_ball' (x : 𝔸) (t : 𝕊)
     (htx : t • x ∈ Metric.eball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     HasFDerivAt (fun u : 𝕊 => exp (u • x))
       (((1 : 𝕊 →L[𝕂] 𝕊).smulRight x).smulRight (exp (t • x))) t := by
-  convert hasFDerivAt_exp_smul_const_of_mem_ball 𝕂 _ _ htx using 1
+  convert! hasFDerivAt_exp_smul_const_of_mem_ball 𝕂 _ _ htx using 1
   ext t'
   change Commute (t' • x) (exp (t • x))
   exact (((Commute.refl x).smul_left t').smul_right t).exp_right
@@ -307,7 +307,7 @@ theorem hasStrictFDerivAt_exp_smul_const_of_mem_ball' (x : 𝔸) (t : 𝕊)
     HasStrictFDerivAt (fun u : 𝕊 => exp (u • x))
       (((1 : 𝕊 →L[𝕂] 𝕊).smulRight x).smulRight (exp (t • x))) t := by
   let ⟨_, _⟩ := analyticAt_exp_of_mem_ball (t • x) htx
-  convert hasStrictFDerivAt_exp_smul_const_of_mem_ball 𝕂 _ _ htx using 1
+  convert! hasStrictFDerivAt_exp_smul_const_of_mem_ball 𝕂 _ _ htx using 1
   ext t'
   change Commute (t' • x) (exp (t • x))
   exact (((Commute.refl x).smul_left t').smul_right t).exp_right

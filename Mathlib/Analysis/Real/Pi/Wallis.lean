@@ -87,7 +87,7 @@ theorem W_le (k : ℕ) : W k ≤ π / 2 := by
 theorem le_W (k : ℕ) : ((2 : ℝ) * k + 1) / (2 * k + 2) * (π / 2) ≤ W k := by
   rw [← le_div_iff₀ pi_div_two_pos, div_eq_inv_mul (W k) _]
   rw [W_eq_integral_sin_pow_div_integral_sin_pow, le_div_iff₀ (integral_sin_pow_pos _)]
-  convert integral_sin_pow_succ_le (2 * k + 1)
+  convert! integral_sin_pow_succ_le (2 * k + 1)
   rw [integral_sin_pow (2 * k)]
   simp
 
