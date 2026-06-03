@@ -52,15 +52,10 @@ public register_option linter.style.docStringVerso : Bool := {
 /--
 Extract all `declModifiers` from the input syntax. We later extract the `docstring` from it,
 but we avoid extracting directly the `docComment` node, to skip `#adaptation_note`s.
-
-We skip `declModifiers` nodes that lack a canonical (non-synthetic) position, since these arise
-from syntax quotation patterns in meta code (e.g. `` `(declModifiers| ...) ``) and do not
-represent actual declarations.
 -/
 public def getDeclModifiers : Syntax → Array Syntax
   | s@(.node _ kind args) =>
-    (if kind == ``Parser.Command.declModifiers && (s.getPos? (canonicalOnly := true)).isSome
-      then #[s] else #[]) ++ args.flatMap getDeclModifiers
+    (if kind == ``Parser.Command.declModifiers then #[s] else #[]) ++ args.flatMap getDeclModifiers
   | _ => #[]
 
 /--
