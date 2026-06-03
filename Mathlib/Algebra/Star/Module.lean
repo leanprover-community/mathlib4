@@ -115,14 +115,20 @@ def starLinearEquiv : A ≃ₗ⋆[R] A where
   __ := starAddEquiv
   map_smul' := star_smul
 
-@[deprecated "Use `symm_starLinearEquiv` and `starLinearEquiv_apply` instead"
-  (since := "2026-05-24")]
-theorem starLinearEquiv_symm_apply (x : A) : (starLinearEquiv R).symm x = starAddEquiv.invFun x :=
+@[simp]
+theorem toAddEquiv_starLinearEquiv :
+    (starLinearEquiv R : A ≃ₗ⋆[R] A).toAddEquiv = starAddEquiv :=
   rfl
 
 @[simp]
 theorem symm_starLinearEquiv : (starLinearEquiv R : A ≃ₗ⋆[R] A).symm = starLinearEquiv R :=
   rfl
+
+@[deprecated "Use `symm_starLinearEquiv` and `starLinearEquiv_apply` instead"
+  (since := "2026-06-03")]
+theorem starLinearEquiv_symm_apply (x : A) :
+    (starLinearEquiv R).symm x = starAddEquiv.invFun x := by
+  simp
 
 end starLinearEquiv
 

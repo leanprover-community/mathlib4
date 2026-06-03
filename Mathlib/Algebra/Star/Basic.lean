@@ -244,6 +244,11 @@ def starAddEquiv [AddMonoid R] [StarAddMonoid R] : R ≃+ R where
   map_add' := star_add
 
 @[simp]
+theorem toEquiv_starAddEquiv [AddMonoid R] [StarAddMonoid R] :
+    (starAddEquiv : R ≃+ R).toEquiv = Equiv.Perm.star :=
+  rfl
+
+@[simp]
 theorem symm_starAddEquiv [AddMonoid R] [StarAddMonoid R] :
     (starAddEquiv : R ≃+ R).symm = starAddEquiv :=
   rfl

@@ -28,19 +28,24 @@ section starL
 variable (R : Type*) {A : Type*} [CommSemiring R] [StarRing R] [AddCommMonoid A]
     [StarAddMonoid A] [Module R A] [StarModule R A] [TopologicalSpace A] [ContinuousStar A]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `A` is a topological module over a commutative `R` with compatible actions,
 then `star` is a continuous semilinear equivalence. -/
 @[simps! apply]
 def starL : A ≃L⋆[R] A where
   toLinearEquiv := starLinearEquiv R
 
-@[deprecated "Use `symm_starL` and `starL_apply` instead" (since := "2026-05-24")]
-theorem starL_symm_apply (x : A) : (starL R).symm x = starAddEquiv.symm x :=
+@[simp]
+theorem toLinearEquiv_starL : (starL R : A ≃L⋆[R] A).toLinearEquiv = starLinearEquiv R :=
   rfl
 
 @[simp]
 theorem symm_starL : (starL R : A ≃L⋆[R] A).symm = starL R :=
   rfl
+
+@[deprecated "Use `symm_starL` and `starL_apply` instead" (since := "2026-06-03")]
+theorem starL_symm_apply (x : A) : (starL R).symm x = starAddEquiv.symm x := by
+  simp
 
 variable [TrivialStar R]
 
@@ -58,13 +63,13 @@ def starL' : A ≃L[R] A :=
         continuous_invFun := continuous_id } :
       A ≃L⋆[R] A)
 
-@[deprecated "Use `symm_starL'` and `starL'_apply` instead" (since := "2026-05-24")]
-theorem starL'_symm_apply (x : A) : (starL' R).symm x = starAddEquiv.symm x :=
-  rfl
-
 @[simp]
 theorem symm_starL' : (starL' R : A ≃L[R] A).symm = starL' R :=
   rfl
+
+@[deprecated "Use `symm_starL'` and `starL'_apply` instead" (since := "2026-06-03")]
+theorem starL'_symm_apply (x : A) : (starL' R).symm x = starAddEquiv.symm x := by
+  simp
 
 end starL
 

@@ -296,6 +296,12 @@ theorem starₗᵢ_toContinuousLinearEquiv :
     (starₗᵢ 𝕜 : E ≃ₗᵢ⋆[𝕜] E).toContinuousLinearEquiv = (starL 𝕜 : E ≃L⋆[𝕜] E) :=
   ContinuousLinearEquiv.ext rfl
 
+@[simp]
+theorem toLinearEquiv_starₗᵢ :
+    (starₗᵢ 𝕜 : E ≃ₗᵢ⋆[𝕜] E).toContinuousLinearEquiv = starLinearEquiv :=
+  rfl
+
+
 end starₗᵢ
 
 namespace StarSubalgebra
