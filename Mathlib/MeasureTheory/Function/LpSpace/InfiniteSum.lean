@@ -67,7 +67,7 @@ theorem summable_norm_of_tsum_eLpNorm_ne_top {ι : Type*} [Countable ι]
     exact eLpNorm_le_eLpNorm_mul_rpow_measure_univ hp (hf i).restrict
   /- We wish now to reduce to finite measure sets to apply the above. The function `f n` in `L^p`
   has a sigma-finite support, that we denote by `s n`. -/
-  have B n :  ∃ s, MeasurableSet s ∧ (f n =ᵐ[μ.restrict sᶜ] 0) ∧ SigmaFinite (μ.restrict s) := by
+  have B n : ∃ s, MeasurableSet s ∧ (f n =ᵐ[μ.restrict sᶜ] 0) ∧ SigmaFinite (μ.restrict s) := by
     apply AEFinStronglyMeasurable.exists_set_sigmaFinite
     have : MemLp (f n) p μ := by
       simpa [MemLp, hf] using lt_of_le_of_lt (ENNReal.le_tsum n) h'f.lt_top
