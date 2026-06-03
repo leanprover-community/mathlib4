@@ -84,10 +84,9 @@ lemma compl_image_constructibleTopologySubbasis :
     fun hs => ⟨sᶜ, compl_mem_constructibleTopologySubbasis_iff.2 hs, compl_compl s⟩⟩
 
 variable (X) in
-lemma instTopologicalSpaceWithConstructibleTopology_eq_generateFrom_isConstructible
+lemma constructibleTopology_eq_generateFrom_isConstructible
     [CompactSpace X] [QuasiSeparatedSpace X] :
-    instTopologicalSpaceWithConstructibleTopology =
-      generateFrom { s : Set X | IsConstructible s } := by
+    constructibleTopology X = generateFrom { s : Set X | IsConstructible s } := by
   change generateFrom (_ ∪ _) = generateFrom { s : Set X | IsConstructible s }
   refine generateFrom_booleanSubalgebra_closure (bot_mem_constructibleTopologySubbasis X)
     compl_image_constructibleTopologySubbasis ▸ ?_
