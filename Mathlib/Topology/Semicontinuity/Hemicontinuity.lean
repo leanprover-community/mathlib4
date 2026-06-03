@@ -214,35 +214,23 @@ lemma lowerHemicontinuousOn_singleton_iff : LowerHemicontinuousOn ({f ·}) s ↔
 lemma lowerHemicontinuous_singleton_iff : LowerHemicontinuous ({f ·}) ↔ Continuous f := by
   simp [← lowerHemicontinuousOn_univ_iff]
 
-lemma ContinuousWithinAt.upperHemicontinuousWithinAt (hf : ContinuousWithinAt f s x) :
-    UpperHemicontinuousWithinAt ({f ·}) s x :=
-  upperHemicontinuousWithinAt_singleton_iff.mpr hf
+alias ⟨_, ContinuousWithinAt.upperHemicontinuousWithinAt⟩ :=
+  upperHemicontinuousWithinAt_singleton_iff
 
-lemma ContinuousWithinAt.lowerHemicontinuousWithinAt (hf : ContinuousWithinAt f s x) :
-    LowerHemicontinuousWithinAt ({f ·}) s x :=
-  lowerHemicontinuousWithinAt_singleton_iff.mpr hf
+alias ⟨_, ContinuousWithinAt.lowerHemicontinuousWithinAt⟩ :=
+  lowerHemicontinuousWithinAt_singleton_iff
 
-lemma ContinuousAt.upperHemicontinuousAt (hf : ContinuousAt f x) :
-    UpperHemicontinuousAt ({f ·}) x :=
-  upperHemicontinuousAt_singleton_iff.mpr hf
+alias ⟨_, ContinuousAt.upperHemicontinuousAt⟩ := upperHemicontinuousAt_singleton_iff
 
-lemma ContinuousAt.lowerHemicontinuousAt (hf : ContinuousAt f x) :
-    LowerHemicontinuousAt ({f ·}) x :=
-  lowerHemicontinuousAt_singleton_iff.mpr hf
+alias ⟨_, ContinuousAt.lowerHemicontinuousAt⟩ := lowerHemicontinuousAt_singleton_iff
 
-lemma ContinuousOn.upperHemicontinuousOn (hf : ContinuousOn f s) :
-    UpperHemicontinuousOn ({f ·}) s :=
-  upperHemicontinuousOn_singleton_iff.mpr hf
+alias ⟨_, ContinuousOn.upperHemicontinuousOn⟩ := upperHemicontinuousOn_singleton_iff
 
-lemma ContinuousOn.lowerHemicontinuousOn (hf : ContinuousOn f s) :
-    LowerHemicontinuousOn ({f ·}) s :=
-  lowerHemicontinuousOn_singleton_iff.mpr hf
+alias ⟨_, ContinuousOn.lowerHemicontinuousOn⟩ := lowerHemicontinuousOn_singleton_iff
 
-lemma Continuous.upperHemicontinuous (hf : Continuous f) : UpperHemicontinuous ({f ·}) :=
-  upperHemicontinuous_singleton_iff.mpr hf
+alias ⟨_, Continuous.upperHemicontinuous⟩ := upperHemicontinuous_singleton_iff
 
-lemma Continuous.lowerHemicontinuous (hf : Continuous f) : LowerHemicontinuous ({f ·}) :=
-  lowerHemicontinuous_singleton_iff.mpr hf
+alias ⟨_, Continuous.lowerHemicontinuous⟩ := lowerHemicontinuous_singleton_iff
 
 end singleton_maps
 
