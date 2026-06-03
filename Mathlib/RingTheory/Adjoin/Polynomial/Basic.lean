@@ -62,9 +62,7 @@ instance {A B : Type*} [CommSemiring A] [Semiring B] [Algebra A B] (x : B) (p : 
   coe := ⟨p.aeval x, aeval_mem_adjoin_singleton A x⟩
 
 @[simp]
-theorem adjoin_aeval_self (R : Type*) {A : Type*} [CommSemiring R] [Semiring A]
-    [Algebra R A] {p : R[X]} (x : A) :
-    (aeval x p : R[x]) = aeval (x : R[x]) p := by
+theorem adjoin_aeval_self : (aeval x p : R[x]) = aeval (x : R[x]) p := by
   ext; simp
 
 theorem adjoin_mem_exists_aeval {a : A} (h : a ∈ R[x]) :

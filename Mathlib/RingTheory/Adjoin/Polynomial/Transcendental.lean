@@ -28,7 +28,7 @@ variable {p q : R[X]}
 variable (R) in
 /-- Given a transcendental element `s : S` over `R`, the `R`-algebra equivalence
 between `R[X]` and `R[s]` given by sending `X` to `s`. -/
-noncomputable def algEquivOfTranscendental (h : Transcendental R s) :
+def algEquivOfTranscendental (h : Transcendental R s) :
     R[X] ≃ₐ[R] R[s] :=
   AlgEquiv.ofBijective (aeval (s : R[s])) <| by
     refine ⟨transcendental_iff_injective.mp ?_, ?_⟩
@@ -79,7 +79,7 @@ def adjoin.evalOfTranscendental (ht : Transcendental R s) (c : T) : R[s] →ₐ[
 @[simp]
 theorem adjoin.evalOfTranscendental_aeval (ht : Transcendental R s) (c : T) :
     (evalOfTranscendental s ht c) (p.aeval (s : R[s])) = p.aeval c := by
-  simp_all [evalOfTranscendental, algEquivOfTranscendental_symm_aeval A y ht p]
+  simp_all [evalOfTranscendental]
 
 theorem adjoin.evalOfTranscendental_eq_zero_iff (ht : Transcendental R s) (x : R[s]) (c : R) :
     evalOfTranscendental s ht c x = 0 ↔ ((s : R[s]) - algebraMap R R[s] c) ∣ x := by
@@ -88,25 +88,34 @@ theorem adjoin.evalOfTranscendental_eq_zero_iff (ht : Transcendental R s) (x : R
 
 end Algebra
 
+/-!
+We can not directly get the instances on `R[s]` from `(h : Transcendental R s)` because
+it is an explicit argument.
+
+Since this can be cumbersome in a file where these instances are often needed,
+we also provide `Fact` versions that are instances.
+-/
 section instances
 
 open Polynomial
 
-abbrev Transcendental.euclideanDomain_adjoin {F : Type*} [Field F] [Algebra F S] {s : S}
+variable {s}
+
+abbrev Transcendental.euclideanDomainAdjoin {F : Type*} [Field F] [Algebra F S]
     (h : Transcendental F s) : EuclideanDomain F[s] :=
   (algEquivOfTranscendental F s h).symm.euclideanDomain
 
-instance {F : Type*} [Field F] [Algebra F S] {s : S}
-    [h : Fact (Transcendental F s)] : EuclideanDomain F[s] :=
-  h.out.euclideanDomain_adjoin
+instance {F : Type*} [Field F] [Algebra F S] [h : Fact (Transcendental F s)] :
+    EuclideanDomain F[s] :=
+  h.out.euclideanDomainAdjoin
 
 variable [UniqueFactorizationMonoid R]
 
-theorem Transcendental.uniqueFactorizationMonoid_adjoin {s : S} (h : Transcendental R s) :
+theorem Transcendental.uniqueFactorizationMonoid_adjoin (h : Transcendental R s) :
     UniqueFactorizationMonoid R[s] :=
   (algEquivOfTranscendental R s h).toMulEquiv.uniqueFactorizationMonoid inferInstance
 
-instance {s : S} [h : Fact (Transcendental R s)] : UniqueFactorizationMonoid R[s] :=
+instance [h : Fact (Transcendental R s)] : UniqueFactorizationMonoid R[s] :=
   h.out.uniqueFactorizationMonoid_adjoin
 
 theorem Transcendental.wfDvdMonoid_adjoin (ht : Transcendental R s) : WfDvdMonoid R[s] :=
