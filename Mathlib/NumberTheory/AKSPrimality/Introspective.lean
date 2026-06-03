@@ -40,17 +40,17 @@ namespace Introspective
 
 variable {r : ℕ}
 
-theorem one {f : K[X]} : Introspective f 1 r := by
+protected theorem one {f : K[X]} : Introspective f 1 r := by
   grind [Introspective]
 
-theorem X_sub_C {p a : ℕ} [ExpChar K p] : Introspective (X - C (a : K)) p r := by
+protected theorem X_sub_C {p a : ℕ} [ExpChar K p] : Introspective (X - C (a : K)) p r := by
   intro μ hμ
   simp only [eval_sub, eval_X, eval_C]
   change (frobenius K p) μ - _ = (frobenius K p) (μ - a)
   simp
 
 /-- The product of two polynomials is introspective. -/
-theorem mul_poly {n : ℕ} {f g : K[X]} (hf : Introspective f n r)
+protected theorem mul {n : ℕ} {f g : K[X]} (hf : Introspective f n r)
     (hg : Introspective g n r) : Introspective (f * g) n r := by
   intro μ hm
   simp only [eval_mul, hf μ hm, hg μ hm]
@@ -58,12 +58,12 @@ theorem mul_poly {n : ℕ} {f g : K[X]} (hf : Introspective f n r)
 
 variable [NeZero r]
 
-theorem eval_pow {μ : K} {f : K[X]} {n : ℕ} (h : IsPrimitiveRoot μ r)
+protected theorem eval_pow {μ : K} {f : K[X]} {n : ℕ} (h : IsPrimitiveRoot μ r)
     (hi : Introspective f n r) : f.eval (μ ^ n) = f.eval μ ^ n := by
   haveI : r ≠ 0 := NeZero.out
   exact hi μ ((mem_primitiveRoots (by lia)).mpr h)
 
-theorem div {p a n : ℕ} [ExpChar K p] (h : Introspective (X - C (a : K)) n r) (hd : p ∣ n)
+protected theorem div {p a n : ℕ} [ExpChar K p] (h : Introspective (X - C (a : K)) n r) (hd : p ∣ n)
     (hc : p.Coprime r) : Introspective (X - C (a : K)) (n / p) r := by
   simp only [map_natCast, Introspective] at ⊢ h
   intro μ hμ
@@ -84,7 +84,7 @@ theorem div {p a n : ℕ} [ExpChar K p] (h : Introspective (X - C (a : K)) n r) 
     simp
 
 /-- The product of coprime exponents is Introspective. -/
-theorem mul_of_coprime {d e : ℕ} {f : K[X]} (hf : Introspective f e r)
+protected theorem mul_of_coprime {d e : ℕ} {f : K[X]} (hf : Introspective f e r)
     (hg : Introspective f d r) (h : e.Coprime r) : Introspective f (e * d) r := by
   intro μ hm
   have mu : μ ^ e ∈ primitiveRoots r K := by
@@ -104,22 +104,22 @@ theorem of_multiset {p n b : ℕ} [ExpChar K p] (d e : ℕ) (s : Multiset (Fin b
   | empty => simp [Introspective]
   | cons x l h1 =>
     simp only [Multiset.map_cons, Multiset.prod_cons]
-    refine mul_poly ?_ h1
+    refine Introspective.mul ?_ h1
     clear h1
-    refine mul_of_coprime ?_ ?_ ?_
+    refine Introspective.mul_of_coprime ?_ ?_ ?_
     · induction d with
-      | zero => simp [one]
+      | zero => simp [Introspective.one]
       | succ i hi =>
         simp only [map_natCast, pow_succ, mul_comm]
-        exact mul_of_coprime X_sub_C hi hcprm2
+        exact Introspective.mul_of_coprime Introspective.X_sub_C hi hcprm2
     · induction e with
-      | zero => simp [one]
+      | zero => simp [Introspective.one]
       | succ i hi =>
         simp only [pow_succ, mul_comm]
-        refine mul_of_coprime ?_ hi ?_
+        refine Introspective.mul_of_coprime ?_ hi ?_
         · have hsx := hs x
           simp only [ofMultiset_apply, Multiset.map_singleton, Multiset.prod_singleton] at hsx
-          exact div hsx hdiv hcprm2
+          exact Introspective.div hsx hdiv hcprm2
         · exact Coprime.coprime_div_left hcprm hdiv
     · exact Coprime.pow_left d hcprm2
 
