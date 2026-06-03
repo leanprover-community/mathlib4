@@ -331,29 +331,22 @@ theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
   exact mul_mem hyz (inv_mem (h hz))
 
 @[to_additive]
-lemma conj_mem_sup_of_mem_inf_normalizer_of_mem_inf
-    {H K : Subgroup G} {s : G} (hs : s ∈ normalizer H ⊓ normalizer K) (g : G) (hg : g ∈ H ⊔ K) :
-    s * g * s⁻¹ ∈ H ⊔ K := by
-  simp only [mem_inf, mem_normalizer_iff] at hs
-  rw [sup_eq_closure] at hg
-  refine closure_induction ?_ ?_ ?_ ?_ hg
-  · intro x hx
-    obtain hl | hr := (mem_union x _ _).mpr hx
-    · exact mem_sup_left (by rwa [← hs.1])
-    · exact mem_sup_right (by rwa [← hs.2])
-  · simp
-  · intros x y hx hy hsx hsy
-    rw [show s * (x * y) * s⁻¹ = (s * x * s⁻¹) * (s * y * s⁻¹) by simp]
-    exact mul_mem hsx hsy
-  · intros x hx hsx
-    exact inv_mem_iff.mp (by simpa [← mul_assoc])
-
-@[to_additive]
 lemma normalizer_inf_normalizer_le_normalizer_sup (H K : Subgroup G) :
     normalizer H ⊓ normalizer K ≤ normalizer ((H ⊔ K : Subgroup G) : Set G) := by
-  intro s hs g
-  refine ⟨conj_mem_sup_of_mem_inf_normalizer_of_mem_inf hs g, ?_⟩
-  simpa [← mul_assoc] using conj_mem_sup_of_mem_inf_normalizer_of_mem_inf (inv_mem hs) (s * g * s⁻¹)
+  intro g hg
+  simp_rw [mem_inf, mem_normalizer_iff_map_conj_eq, map_sup, hg.1, hg.2] at hg ⊢
+
+@[to_additive]
+theorem iInf_normalizer_le_normalizer_iSup {ι : Sort*} (H : ι → Subgroup G) :
+    ⨅ i, normalizer (H i) ≤ normalizer ((⨆ i, H i : Subgroup G) : Set G) := by
+  intro g hg
+  simp_rw [mem_iInf, mem_normalizer_iff_map_conj_eq, map_iSup, hg] at hg ⊢
+
+@[to_additive]
+lemma conj_mem_sup_of_mem_inf_normalizer_of_mem_inf
+    {H K : Subgroup G} {s : G} (hs : s ∈ normalizer H ⊓ normalizer K) (g : G) (hg : g ∈ H ⊔ K) :
+    s * g * s⁻¹ ∈ H ⊔ K :=
+  (normalizer_inf_normalizer_le_normalizer_sup H K hs g).mp hg
 
 @[to_additive]
 lemma normalizer_le_normalizer_sup_of_normalizer_le_left
@@ -380,6 +373,24 @@ instance sup_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊔ 
     rcases hmem with ⟨h, hh, k, hk, rfl⟩
     refine ⟨g * h * g⁻¹, hH.conj_mem h hh g, g * k * g⁻¹, hK.conj_mem k hk g, ?_⟩
     simp only [mul_assoc, inv_mul_cancel_left]
+
+@[to_additive]
+instance iSup_normal {ι : Sort*} (H : ι → Subgroup G) [∀ i, (H i).Normal] :
+    ⨆ i, H i |>.Normal := by
+  grw [← normalizer_eq_top_iff, eq_top_iff, ← iInf_normalizer_le_normalizer_iSup]
+  simp [normalizer_eq_top]
+
+@[to_additive]
+theorem biSup_normal {ι : Type*} (s : Set ι) (H : ι → Subgroup G) (h : ∀ i ∈ s, (H i).Normal) :
+    ⨆ i ∈ s, H i |>.Normal := by
+  rw [← iSup_subtype'']
+  have : ∀ i : s, (H i).Normal := fun i ↦ h i i.property
+  apply iSup_normal
+
+@[to_additive]
+theorem sSup_normal (Hs : Set (Subgroup G)) (h : ∀ H ∈ Hs, H.Normal) : sSup Hs |>.Normal := by
+  rw [sSup_eq_iSup]
+  exact biSup_normal Hs id h
 
 @[to_additive]
 theorem smul_mem_of_mem_closure_of_mem {X : Type*} [MulAction G X] {s : Set G} {t : Set X}
@@ -417,7 +428,7 @@ protected def pointwiseMulAction : MulAction α (Subgroup G) where
   smul a S := S.map (MulDistribMulAction.toMonoidEnd _ _ a)
   one_smul S := by
     change S.map _ = S
-    simpa only [map_one] using S.map_id
+    simpa only [map_one] using! S.map_id
   mul_smul _ _ S :=
     (congr_arg (fun f : Monoid.End G => S.map f) (map_mul _ _ _)).trans
       (S.map_map _ _).symm
@@ -546,7 +557,7 @@ theorem normalCore_eq_iInf_conjAct (H : Subgroup G) :
   ext g
   simp only [Subgroup.normalCore, Subgroup.mem_iInf, Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
   refine ⟨fun h x ↦ h x⁻¹, fun h x ↦ ?_⟩
-  simpa only [ConjAct.toConjAct_inv, inv_inv] using h x⁻¹
+  simpa only [ConjAct.toConjAct_inv, inv_inv] using! h x⁻¹
 
 lemma conjAct_pointwise_smul_iff {H : Subgroup G} {g : G} :
     ConjAct.toConjAct g • H = H ↔ g ∈ normalizer H := by

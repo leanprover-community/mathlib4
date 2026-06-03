@@ -36,6 +36,9 @@ theorem gcd_greatest {a b d : ℕ} (hda : d ∣ a) (hdb : d ∣ b) (hd : ∀ e :
     d = a.gcd b :=
   (dvd_antisymm (hd _ (gcd_dvd_left a b) (gcd_dvd_right a b)) (dvd_gcd hda hdb)).symm
 
+theorem gcd_right_comm (a b c : ℕ) : gcd (gcd a b) c = gcd (gcd a c) b := by
+  rw [gcd_assoc, gcd_assoc, gcd_comm b c]
+
 /-! Lemmas where one argument consists of addition of a multiple of the other -/
 
 @[simp]
@@ -206,7 +209,7 @@ theorem gcd_mul_of_coprime_of_dvd {a b c : ℕ} (hac : Coprime a c) (b_dvd_c : b
     gcd (a * b) c = b := by
   rcases exists_eq_mul_left_of_dvd b_dvd_c with ⟨d, rfl⟩
   rw [gcd_mul_right]
-  convert one_mul b
+  convert! one_mul b
   exact Coprime.coprime_mul_right_right hac
 
 theorem Coprime.eq_of_mul_eq_zero {m n : ℕ} (h : m.Coprime n) (hmn : m * n = 0) :

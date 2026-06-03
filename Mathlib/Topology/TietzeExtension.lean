@@ -77,7 +77,7 @@ theorem ContinuousMap.exists_extension (he : IsClosedEmbedding e) (f : C(X₁, Y
     ∃ (g : C(X, Y)), g.comp ⟨e, he.continuous⟩ = f := by
   let e' : X₁ ≃ₜ Set.range e := he.isEmbedding.toHomeomorph
   obtain ⟨g, hg⟩ := (f.comp e'.symm).exists_restrict_eq he.isClosed_range
-  exact ⟨g, by ext x; simpa using congr($(hg) ⟨e' x, x, rfl⟩)⟩
+  exact ⟨g, by ext x; simpa using! congr($(hg) ⟨e' x, x, rfl⟩)⟩
 
 /-- **Tietze extension theorem** for `TietzeExtension` spaces. Let `e` be a closed embedding of a
 nonempty topological space `X₁` into a normal topological space `X`. Let `f` be a continuous
@@ -301,7 +301,7 @@ theorem exists_extension_forall_mem_Icc_of_isClosedEmbedding (f : X →ᵇ ℝ) 
       simpa [Real.Icc_eq_closedBall, add_mem_closedBall_iff_norm] using
         (norm_coe_le_norm g y).trans (hgf.trans_le this)
     refine (norm_le <| div_nonneg (sub_nonneg.2 hle) zero_le_two).2 fun x => ?_
-    simpa only [Real.Icc_eq_closedBall] using hf x
+    simpa only [Real.Icc_eq_closedBall] using! hf x
   · ext x
     have : g (e x) = f x - (a + b) / 2 := congr_fun hge x
     simp [this]
@@ -485,7 +485,7 @@ theorem exists_extension_forall_mem_of_isClosedEmbedding (f : C(X, ℝ)) {t : Se
     h.toEquiv.symm_apply_eq.trans Subtype.ext_iff
   refine ⟨g, fun y => ?_, ?_⟩
   · rcases hG y with ⟨a, ha, hay⟩
-    convert ha
+    convert! ha
     exact hgG.2 hay.symm
   · ext x
     exact hgG.2 (congr_fun hGF _)

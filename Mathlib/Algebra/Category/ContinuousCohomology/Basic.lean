@@ -43,6 +43,8 @@ See `ContinuousCohomology.MultiInd.d`.
 - Show that short exact sequences induce long exact sequences in certain scenarios.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 open CategoryTheory Functor ContinuousMap
@@ -62,8 +64,7 @@ abbrev Iobj (rep : Action (TopModuleCat R) G) : Action (TopModuleCat R) G where
   { toFun g := TopModuleCat.ofHom
       { toFun f := .comp (rep.ρ g).hom (f.comp (Homeomorph.mulLeft g⁻¹))
         map_add' _ _ := by ext; simp
-        map_smul' _ _ := by ext; simp
-        cont := (continuous_postcomp _).comp (continuous_precomp _) }
+        map_smul' _ _ := by ext; simp }
     map_one' := ConcreteCategory.ext (by ext; simp)
     map_mul' _ _ := ConcreteCategory.ext (by ext; simp [mul_assoc]) }
 
