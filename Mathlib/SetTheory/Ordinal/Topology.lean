@@ -181,14 +181,14 @@ def IsClosedBelow (S : Set Ordinal) (o : Ordinal) : Prop :=
   IsClosed (Iio o ↓∩ S)
 
 set_option linter.deprecated false in
-@[deprecated SuccOrder.accPt_iff (since := "2026-05-24")]
+@[deprecated SuccOrder.accPt_principal (since := "2026-05-24")]
 theorem isAcc_iff (o : Ordinal) (S : Set Ordinal) : o.IsAcc S ↔
     o ≠ 0 ∧ ∀ p < o, (S ∩ Ioo p o).Nonempty := by
-  apply SuccOrder.accPt_iff.trans
+  apply SuccOrder.accPt_principal.trans
   simp
 
 set_option linter.deprecated false in
-@[deprecated SuccOrder.accPt_iff (since := "2026-05-24")]
+@[deprecated SuccOrder.accPt_principal (since := "2026-05-24")]
 theorem IsAcc.forall_lt {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) :
     ∀ p < o, (S ∩ Ioo p o).Nonempty := ((isAcc_iff _ _).mp h).2
 
@@ -208,7 +208,7 @@ theorem IsAcc.mono {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc
   AccPt.mono ho (monotone_principal h)
 
 set_option linter.deprecated false in
-@[deprecated SuccOrder.accPt_iff (since := "2026-05-24")]
+@[deprecated SuccOrder.accPt_principal (since := "2026-05-24")]
 theorem IsAcc.inter_Ioo_nonempty {o : Ordinal} {S : Set Ordinal} (hS : o.IsAcc S)
     {p : Ordinal} (hp : p < o) : (S ∩ Ioo p o).Nonempty := hS.forall_lt p hp
 
