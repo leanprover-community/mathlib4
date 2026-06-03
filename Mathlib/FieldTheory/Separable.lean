@@ -346,7 +346,7 @@ theorem separable_or {f : F[X]} (hf : Irreducible f) :
   exact if H : derivative f = 0 then by
     rcases p.eq_zero_or_pos with (rfl | hp)
     · haveI := CharP.charP_to_charZero F
-      have := natDegree_eq_zero_of_derivative_eq_zero H
+      have := derivative_eq_zero.1 H
       have := (natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_irreducible hf).ne'
       contradiction
     haveI := isLocalHom_expand F hp
@@ -515,9 +515,9 @@ end Splits
 
 theorem _root_.Irreducible.separable [CharZero F] {f : F[X]} (hf : Irreducible f) :
     f.Separable := by
-  rw [separable_iff_derivative_ne_zero hf, Ne, ← degree_eq_bot, degree_derivative_eq]
+  rw [separable_iff_derivative_ne_zero hf, Ne, ← degree_eq_bot, degree_derivative]
   · rintro ⟨⟩
-  exact Irreducible.natDegree_pos hf
+  exact hf.natDegree_pos.ne'
 
 end Field
 
@@ -754,6 +754,13 @@ lemma IsSeparable.of_equiv_equiv {x : B₁} (h : IsSeparable A₁ x) : IsSeparab
 lemma Algebra.IsSeparable.of_equiv_equiv [Algebra.IsSeparable A₁ B₁] : Algebra.IsSeparable A₂ B₂ :=
   ⟨fun x ↦ (e₂.apply_symm_apply x) ▸ _root_.IsSeparable.of_equiv_equiv e₁ e₂ he
     (Algebra.IsSeparable.isSeparable _ _)⟩
+
+lemma Algebra.IsSeparable.iff_of_equiv_equiv :
+    Algebra.IsSeparable A₁ B₁ ↔ Algebra.IsSeparable A₂ B₂ :=
+  ⟨fun _ ↦ Algebra.IsSeparable.of_equiv_equiv e₁ e₂ he,
+    fun _ ↦ Algebra.IsSeparable.of_equiv_equiv e₁.symm e₂.symm (by
+      ext x
+      simpa [RingEquiv.eq_symm_apply] using (RingHom.ext_iff.mp he (e₁.symm x)).symm)⟩
 
 end AlgEquiv
 

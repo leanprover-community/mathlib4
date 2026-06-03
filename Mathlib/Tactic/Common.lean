@@ -63,6 +63,7 @@ public import Mathlib.Tactic.Find
 public import Mathlib.Tactic.FunProp
 public import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.GRewrite
+public import Mathlib.Tactic.GrindAttrs
 public import Mathlib.Tactic.GuardGoalNums
 public import Mathlib.Tactic.GuardHypNums
 public import Mathlib.Tactic.HigherOrder
@@ -89,6 +90,7 @@ public import Mathlib.Tactic.RenameBVar
 public import Mathlib.Tactic.Says
 public import Mathlib.Tactic.ScopedNS
 public import Mathlib.Tactic.Set
+public import Mathlib.Tactic.Setm
 public import Mathlib.Tactic.SimpIntro
 public import Mathlib.Tactic.SimpRw
 public import Mathlib.Tactic.Simproc.ExistsAndEq
@@ -120,6 +122,8 @@ public import Mathlib.Util.CountHeartbeats
 public import Mathlib.Util.PrintSorries
 public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
+
+public import Lean.Elab.Tactic.Try
 
 /-!
 # Common tactics, linters, and utilities

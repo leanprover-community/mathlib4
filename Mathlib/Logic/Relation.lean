@@ -9,6 +9,7 @@ public import Mathlib.Logic.Relator
 public import Mathlib.Tactic.Use
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.SimpRw
+public import Mathlib.Order.Defs.Prop
 public import Mathlib.Order.Defs.Unbundled
 public import Batteries.Logic
 public import Batteries.Tactic.Trans
@@ -53,7 +54,7 @@ the bundled version, see `Rel`.
 
 open Function
 
-variable {α β γ δ ε ζ : Sort*}
+variable {α β γ δ ε ζ : Type*}
 
 section NeImp
 
@@ -76,33 +77,41 @@ theorem Std.Refl.ne_imp_iff [Std.Refl r] {x y : α} : x ≠ y → r x y ↔ r x 
   ⟨Std.Refl.rel_of_ne_imp, fun hr _ ↦ hr⟩
 
 @[deprecated (since := "2026-03-27")] alias Reflexive.ne_imp_iff := Std.Refl.ne_imp_iff
-
 @[deprecated (since := "2026-03-27")] alias reflexive_ne_imp_iff := Std.Refl.ne_imp_iff
 
-theorem refl_iff_subrelation_eq : Std.Refl r ↔ Subrelation Eq r := by
-  grind [Std.Refl, Subrelation]
+theorem refl_iff_eq_le : Std.Refl r ↔ Eq ≤ r := by
+  unfold Pi.hasLe Prop.le
+  grind [Std.Refl]
 
-@[deprecated (since := "2026-03-27")] alias reflexive_iff_subrelation_eq := refl_iff_subrelation_eq
+@[deprecated (since := "2026-06-30")] alias refl_iff_subrelation_eq := refl_iff_eq_le
+@[deprecated (since := "2026-03-27")] alias reflexive_iff_subrelation_eq := refl_iff_eq_le
 
-theorem irrefl_iff_subrelation_ne : Std.Irrefl r ↔ Subrelation r Ne := by
-  grind [Std.Irrefl, Subrelation]
+theorem irrefl_iff_le_ne : Std.Irrefl r ↔ r ≤ Ne := by
+  unfold Pi.hasLe Prop.le
+  grind [Std.Irrefl]
 
-@[deprecated (since := "2026-02-12")]
-alias irreflexive_iff_subrelation_ne := irrefl_iff_subrelation_ne
+@[deprecated (since := "2026-06-30")] alias irrefl_iff_subrelation_ne := irrefl_iff_le_ne
+@[deprecated (since := "2026-02-12")] alias irreflexive_iff_subrelation_ne := irrefl_iff_le_ne
 
-protected theorem Symmetric.iff (H : Symmetric r) (x y : α) : r x y ↔ r y x :=
-  ⟨fun h ↦ H h, fun h ↦ H h⟩
+protected theorem Std.Symm.iff [Std.Symm r] (x y : α) : r x y ↔ r y x :=
+  ⟨symm_of r, symm_of r⟩
 
-theorem Symmetric.flip_eq (h : Symmetric r) : flip r = r :=
-  funext₂ fun _ _ ↦ propext <| h.iff _ _
+@[deprecated (since := "2026-06-10")] protected alias Symmetric.iff := Std.Symm.iff
 
-theorem Symmetric.swap_eq : Symmetric r → swap r = r :=
-  Symmetric.flip_eq
+theorem Std.Symm.flip_eq [Std.Symm r] : flip r = r :=
+  funext₂ fun _ _ ↦ propext <| Std.Symm.iff (r := r) ..
 
-theorem flip_eq_iff : flip r = r ↔ Symmetric r :=
-  ⟨fun h _ _ ↦ (congr_fun₂ h _ _).mp, Symmetric.flip_eq⟩
+@[deprecated (since := "2026-06-10")] alias Symmetric.flip_eq := Std.Symm.flip_eq
 
-theorem swap_eq_iff : swap r = r ↔ Symmetric r :=
+theorem Std.Symm.swap_eq [Std.Symm r] : swap r = r :=
+  Std.Symm.flip_eq
+
+@[deprecated (since := "2026-06-10")] alias Symmetric.swap_eq := Std.Symm.swap_eq
+
+theorem flip_eq_iff : flip r = r ↔ Std.Symm r :=
+  ⟨fun h ↦ ⟨fun _ _ ↦ congr_fun₂ h .. |>.mp⟩, fun _ ↦ Std.Symm.flip_eq⟩
+
+theorem swap_eq_iff : swap r = r ↔ Std.Symm r :=
   flip_eq_iff
 
 end NeImp
@@ -116,15 +125,17 @@ instance Std.Refl.comap [Std.Refl r] (f : α → β) : Std.Refl (r on f) where
 
 @[deprecated (since := "2026-03-27")] alias Reflexive.comap := Std.Refl.comap
 
-theorem Symmetric.comap (h : Symmetric r) (f : α → β) : Symmetric (r on f) := fun _ _ hab ↦ h hab
-
 instance Std.Symm.comap [Std.Symm r] (f : α → β) : Std.Symm (r on f) where
   symm _ _ hab := symm_of r hab
+
+@[deprecated (since := "2026-06-10")] alias Symmetric.comap := Std.Symm.comap
 
 instance IsTrans.comap [IsTrans β r] (f : α → β) : IsTrans α (r on f) where
   trans _ _ _ := trans_of r
 
 @[deprecated (since := "2026-02-21")] alias Transitive.comap := IsTrans.comap
+
+instance IsEquiv.comap [IsEquiv β r] (f : α → β) : IsEquiv α (r on f) where
 
 theorem Equivalence.comap (h : Equivalence r) (f : α → β) : Equivalence (r on f) :=
   ⟨fun a ↦ h.refl (f a), h.symm, h.trans⟩
@@ -249,13 +260,13 @@ lemma _root_.Std.Refl.map {r : α → α → Prop} [Std.Refl r] {f : α → β} 
 
 @[deprecated (since := "2026-03-27")] alias map_reflexive := Std.Refl.map
 
-lemma map_symmetric {r : α → α → Prop} (hr : Symmetric r) (f : α → β) :
-    Symmetric (Relation.Map r f f) := by
-  rintro _ _ ⟨x, y, hxy, rfl, rfl⟩; exact ⟨_, _, hr hxy, rfl, rfl⟩
-
-instance _root_.Std.Symm.map {r : α → α → Prop} [h : Std.Symm r] (f : α → β) :
+instance _root_.Std.Symm.map {r : α → α → Prop} [Std.Symm r] (f : α → β) :
     Std.Symm (Relation.Map r f f) where
-  symm := map_symmetric h.symm f
+  symm _ _ := by
+    rintro ⟨x, y, hxy, rfl, rfl⟩
+    exact ⟨y, x, symm hxy, rfl, rfl⟩
+
+@[deprecated (since := "2026-06-10")] alias map_symmetric := Std.Symm.map
 
 lemma _root_.IsTrans.map {r : α → α → Prop} [IsTrans α r] {f : α → β}
     (hf : ∀ x y, f x = f y → r x y) : IsTrans β (Relation.Map r f f) := by
@@ -266,20 +277,18 @@ lemma _root_.IsTrans.map {r : α → α → Prop} [IsTrans α r] {f : α → β}
 
 @[deprecated (since := "2026-02-21")] alias map_transitive := isTrans_map
 
-lemma map_equivalence {r : α → α → Prop} (hr : Equivalence r) (f : α → β)
-    (hf : f.Surjective) (hf_ker : ∀ x y, f x = f y → r x y) :
-    Equivalence (Relation.Map r f f) where
+lemma map_equivalence {r : α → α → Prop} (hr : Equivalence r) (f : α → β) (hf : f.Surjective)
+    (hf_ker : ∀ x y, f x = f y → r x y) : Equivalence (Relation.Map r f f) where
   refl := hr.stdRefl.map hf |>.refl
-  symm := @(map_symmetric hr.symmetric _)
+  symm := @(hr.stdSymm.map f |>.symm)
   trans := @(hr.isTrans.map hf_ker |>.trans)
 
--- TODO: state this using `≤`, after adjusting imports.
-lemma map_mono {r s : α → β → Prop} {f : α → γ} {g : β → δ} (h : ∀ x y, r x y → s x y) :
-    ∀ x y, Relation.Map r f g x y → Relation.Map s f g x y :=
+lemma map_mono {r s : α → β → Prop} {f : α → γ} {g : β → δ} (h : r ≤ s) :
+    Relation.Map r f g ≤ Relation.Map s f g :=
   fun _ _ ⟨x, y, hxy, hx, hy⟩ => ⟨x, y, h _ _ hxy, hx, hy⟩
 
-lemma le_onFun_map {r : α → α → Prop} (f : α → β) : Subrelation r (Relation.Map r f f on f) := by
-  intro
+lemma le_onFun_map {r : α → α → Prop} (f : α → β) : r ≤ (Relation.Map r f f on f) := by
+  unfold Pi.hasLe Prop.le
   grind [Relation.Map]
 
 lemma onFun_map_eq_of_injective {r : α → α → Prop} {f : α → β} (hinj : f.Injective) :
@@ -287,8 +296,8 @@ lemma onFun_map_eq_of_injective {r : α → α → Prop} {f : α → β} (hinj :
   ext x y
   exact ⟨fun ⟨x', y', hr, hx, hy⟩ ↦ hinj hx ▸ hinj hy ▸ hr, fun h ↦ ⟨x, y, h, rfl, rfl⟩⟩
 
-lemma map_onFun_le {r : β → β → Prop} (f : α → β) : Subrelation (Relation.Map (r on f) f f) r := by
-  intro
+lemma map_onFun_le {r : β → β → Prop} (f : α → β) : Relation.Map (r on f) f f ≤ r := by
+  unfold Pi.hasLe Prop.le
   grind [Relation.Map]
 
 lemma map_onFun_eq_of_surjective {r : β → β → Prop} {f : α → β} (hsurj : f.Surjective) :
@@ -348,27 +357,28 @@ inductive EqvGen : α → α → Prop
 attribute [mk_iff] TransGen
 attribute [grind] TransGen
 
+theorem reflGen_le_reflTransGen : ReflGen r ≤ ReflTransGen r
+  | a, _, .refl => by rfl
+  | _, _, .single h => ReflTransGen.tail ReflTransGen.refl h
+
 namespace ReflGen
 
-theorem to_reflTransGen : ∀ {a b}, ReflGen r a b → ReflTransGen r a b
-  | a, _, refl => by rfl
-  | _, _, single h => ReflTransGen.tail ReflTransGen.refl h
+theorem to_reflTransGen {a b} : ReflGen r a b → ReflTransGen r a b :=
+  reflGen_le_reflTransGen a b
 
-theorem mono {p : α → α → Prop} (hp : ∀ a b, r a b → p a b) : ∀ {a b}, ReflGen r a b → ReflGen p a b
+theorem mono {p : α → α → Prop} (hp : r ≤ p) : ReflGen r ≤ ReflGen p
   | a, _, ReflGen.refl => by rfl
   | a, b, single h => single (hp a b h)
 
 instance : Std.Refl (ReflGen r) :=
   ⟨@refl α r⟩
 
-lemma symmetric (h' : Symmetric r) : Symmetric (ReflGen r) := by
-  intro a b h
-  induction h with
-  | refl => exact refl
-  | single h => exact single (h' h)
+instance stdSymm [Std.Symm r] : Std.Symm (ReflGen r) where
+  symm _ _
+    | refl => refl
+    | single h => single <| symm h
 
-instance [H : Std.Symm r] : Std.Symm (ReflGen r) where
-  symm := symmetric H.symm
+@[deprecated (since := "2026-06-10")] alias symmetric := stdSymm
 
 instance [IsTrans α r] : IsTrans α (ReflGen r) where
   trans a b c h₁ h₂ := by
@@ -431,19 +441,21 @@ theorem trans (hab : ReflTransGen r a b) (hbc : ReflTransGen r b c) : ReflTransG
 theorem single (hab : r a b) : ReflTransGen r a b :=
   refl.tail hab
 
+theorem le_reflTransGen : r ≤ ReflTransGen r :=
+  fun _ _ ↦ single
+
 theorem head (hab : r a b) (hbc : ReflTransGen r b c) : ReflTransGen r a c := by
   induction hbc with
   | refl => exact refl.tail hab
   | tail _ hcd hac => exact hac.tail hcd
 
-theorem symmetric (h : Symmetric r) : Symmetric (ReflTransGen r) := by
-  intro x y h
-  induction h with
-  | refl => rfl
-  | tail _ b c => apply Relation.ReflTransGen.head (h b) c
+instance stdSymm [Std.Symm r] : Std.Symm (ReflTransGen r) where
+  symm x y h := by
+    induction h with
+    | refl => rfl
+    | tail _ b c => apply c.head <| symm b
 
-instance [H : Std.Symm r] : Std.Symm (ReflTransGen r) where
-  symm := symmetric H.symm
+@[deprecated (since := "2026-06-10")] alias symmetric := stdSymm
 
 theorem cases_tail : ReflTransGen r a b → b = a ∨ ∃ c, ReflTransGen r a c ∧ r c b :=
   (cases_tail_iff r a b).1
@@ -493,12 +505,16 @@ theorem total_of_right_unique (U : Relator.RightUnique r) (ab : ReflTransGen r a
 
 end ReflTransGen
 
-namespace TransGen
-
-theorem to_reflTransGen {a b} (h : TransGen r a b) : ReflTransGen r a b := by
+theorem transGen_le_reflTransGen : TransGen r ≤ ReflTransGen r := by
+  intro a _ h
   induction h with
   | single h => exact ReflTransGen.single h
   | tail _ bc ab => exact ReflTransGen.tail ab bc
+
+namespace TransGen
+
+theorem to_reflTransGen {a b} : TransGen r a b → ReflTransGen r a b :=
+  transGen_le_reflTransGen a b
 
 theorem trans_left (hab : TransGen r a b) (hbc : ReflTransGen r b c) : TransGen r a c := by
   induction hbc with
@@ -559,17 +575,16 @@ theorem head'_iff : TransGen r a c ↔ ∃ b, r a b ∧ ReflTransGen r b c := by
   rcases IH with ⟨d, had, hdb⟩
   exact ⟨_, had, hdb.tail hbc⟩
 
-theorem symmetric (hr : Symmetric r) : Symmetric (TransGen r) := by
-  intro x y h
-  induction h with
-  | single i => exact .single (hr i)
-  | tail _ h₁ h₂ => exact .head (hr h₁) h₂
+instance stdSymm [Std.Symm r] : Std.Symm (TransGen r) where
+  symm x y h := by
+    induction h with
+    | single i => exact .single <| symm i
+    | tail _ h₁ h₂ => exact .head (symm h₁) h₂
+
+@[deprecated (since := "2026-06-10")] alias symmetric := stdSymm
 
 instance [Std.Refl r] : Std.Refl (TransGen r) where
   refl x := .single (refl x)
-
-instance [H : Std.Symm r] : Std.Symm (TransGen r) where
-  symm := symmetric H.symm
 
 end TransGen
 
@@ -583,9 +598,8 @@ lemma reflGen_eq_self [Std.Refl r] : ReflGen r = r := by
 @[deprecated inferInstance (since := "2026-03-27")]
 lemma reflexive_reflGen : Std.Refl (ReflGen r) := inferInstance
 
-lemma reflGen_minimal {r' : α → α → Prop} [Std.Refl r'] (h : ∀ x y, r x y → r' x y) {x y : α}
-    (hxy : ReflGen r x y) : r' x y := by
-  simpa [reflGen_eq_self] using ReflGen.mono h hxy
+lemma reflGen_minimal {r' : α → α → Prop} [Std.Refl r'] (h : r ≤ r') : ReflGen r ≤ r' := by
+  simpa [reflGen_eq_self] using ReflGen.mono h
 
 end reflGen
 
@@ -638,40 +652,39 @@ theorem transitive_transGen : IsTrans α (TransGen r) := inferInstance
 theorem transGen_idem : TransGen (TransGen r) = TransGen r :=
   transGen_eq_self
 
-theorem TransGen.lift {p : β → β → Prop} {a b : α} (f : α → β) (h : ∀ a b, r a b → p (f a) (f b))
-    (hab : TransGen r a b) : TransGen p (f a) (f b) := by
+theorem TransGen.lift {p : β → β → Prop} (f : α → β) (h : r ≤ (p on f)) :
+    TransGen r ≤ (TransGen p on f) := by
+  intro a _ hab
   induction hab with
   | single hac => exact TransGen.single (h a _ hac)
   | tail _ hcd hac => exact TransGen.tail hac (h _ _ hcd)
 
-theorem TransGen.lift' {p : β → β → Prop} {a b : α} (f : α → β)
-    (h : ∀ a b, r a b → TransGen p (f a) (f b)) (hab : TransGen r a b) :
-    TransGen p (f a) (f b) := by
+theorem TransGen.lift' {p : β → β → Prop} (f : α → β) (h : r ≤ (TransGen p on f)) :
+    TransGen r ≤ (TransGen p on f) := by
+  intro _ _ hab
   simpa [transGen_eq_self] using hab.lift f h
 
-theorem TransGen.closed {p : α → α → Prop} :
-    (∀ a b, r a b → TransGen p a b) → TransGen r a b → TransGen p a b :=
+theorem TransGen.closed {p : α → α → Prop} : r ≤ TransGen p → TransGen r ≤ TransGen p :=
   TransGen.lift' id
 
 lemma TransGen.closed' {P : α → Prop} (dc : ∀ {a b}, r a b → P b → P a)
     {a b : α} (h : TransGen r a b) : P b → P a :=
   h.head_induction_on dc fun hr _ hi ↦ dc hr ∘ hi
 
-theorem TransGen.mono {p : α → α → Prop} :
-    (∀ a b, r a b → p a b) → TransGen r a b → TransGen p a b :=
+theorem TransGen.mono {p : α → α → Prop} : r ≤ p → TransGen r ≤ TransGen p :=
   TransGen.lift id
 
-lemma transGen_minimal {r' : α → α → Prop} [IsTrans α r'] (h : ∀ x y, r x y → r' x y) {x y : α}
-    (hxy : TransGen r x y) : r' x y := by
-  simpa [transGen_eq_self] using TransGen.mono h hxy
+lemma transGen_minimal {r' : α → α → Prop} [IsTrans α r'] (h : r ≤ r') : TransGen r ≤ r' := by
+  simpa [transGen_eq_self] using TransGen.mono h
 
-theorem TransGen.swap (h : TransGen r b a) : TransGen (swap r) a b := by
+theorem TransGen.swap : swap (TransGen r) ≤ TransGen (swap r) := by
+  intro _ _ h
   induction h with
   | single h => exact TransGen.single h
   | tail _ hbc ih => exact ih.head hbc
 
 theorem transGen_swap : TransGen (swap r) a b ↔ TransGen r b a :=
-  ⟨TransGen.swap, TransGen.swap⟩
+  ⟨TransGen.swap b a, TransGen.swap a b⟩
 
 end TransGen
 
@@ -693,12 +706,11 @@ theorem reflTransGen_iff_eq_or_transGen : ReflTransGen r a b ↔ b = a ∨ Trans
     · rfl
     · exact h.to_reflTransGen
 
-theorem ReflTransGen.lift {p : β → β → Prop} {a b : α} (f : α → β)
-    (h : ∀ a b, r a b → p (f a) (f b)) (hab : ReflTransGen r a b) : ReflTransGen p (f a) (f b) :=
-  ReflTransGen.trans_induction_on hab (fun _ ↦ refl) (ReflTransGen.single ∘ h _ _) fun _ _ ↦ trans
+theorem ReflTransGen.lift {p : β → β → Prop} (f : α → β) (h : r ≤ (p on f)) :
+    ReflTransGen r ≤ (ReflTransGen p on f) :=
+  fun _ _ hab ↦ trans_induction_on hab (fun _ ↦ refl) (single ∘ h _ _) fun _ _ ↦ trans
 
-theorem ReflTransGen.mono {p : α → α → Prop} : (∀ a b, r a b → p a b) →
-    ReflTransGen r a b → ReflTransGen p a b :=
+theorem ReflTransGen.mono {p : α → α → Prop} : r ≤ p → ReflTransGen r ≤ ReflTransGen p :=
   ReflTransGen.lift id
 
 @[grind =]
@@ -731,22 +743,23 @@ theorem transitive_reflTransGen : IsTrans α (ReflTransGen r) := inferInstance
 theorem reflTransGen_idem : ReflTransGen (ReflTransGen r) = ReflTransGen r :=
   reflTransGen_eq_self
 
-theorem ReflTransGen.lift' {p : β → β → Prop} {a b : α} (f : α → β)
-    (h : ∀ a b, r a b → ReflTransGen p (f a) (f b))
-    (hab : ReflTransGen r a b) : ReflTransGen p (f a) (f b) := by
+theorem ReflTransGen.lift' {p : β → β → Prop} (f : α → β) (h : r ≤ (ReflTransGen p on f)) :
+    ReflTransGen r ≤ (ReflTransGen p on f) := by
+  intro _ _ hab
   simpa [reflTransGen_eq_self] using hab.lift f h
 
 theorem reflTransGen_closed {p : α → α → Prop} :
-    (∀ a b, r a b → ReflTransGen p a b) → ReflTransGen r a b → ReflTransGen p a b :=
+    r ≤ ReflTransGen p → ReflTransGen r ≤ ReflTransGen p :=
   ReflTransGen.lift' id
 
-theorem ReflTransGen.swap (h : ReflTransGen r b a) : ReflTransGen (swap r) a b := by
+theorem ReflTransGen.swap : swap (ReflTransGen r) ≤ ReflTransGen (swap r) := by
+  intro _ _ h
   induction h with
   | refl => rfl
   | tail _ hbc ih => exact ih.head hbc
 
 theorem reflTransGen_swap : ReflTransGen (swap r) a b ↔ ReflTransGen r b a :=
-  ⟨ReflTransGen.swap, ReflTransGen.swap⟩
+  ⟨ReflTransGen.swap b a, ReflTransGen.swap a b⟩
 
 @[simp, grind =] lemma reflGen_transGen : ReflGen (TransGen r) = ReflTransGen r := by
   ext x y
@@ -755,10 +768,10 @@ theorem reflTransGen_swap : ReflTransGen (swap r) a b ↔ ReflTransGen r b a :=
 @[simp, grind =] lemma transGen_reflGen : TransGen (ReflGen r) = ReflTransGen r := by
   ext x y
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · simpa [reflTransGen_eq_self] using (h.mono fun _ _ ↦ ReflGen.to_reflTransGen).to_reflTransGen
+  · simpa [reflTransGen_eq_self] using h.mono reflGen_le_reflTransGen x y |>.to_reflTransGen
   · obtain (rfl | h) := reflTransGen_iff_eq_or_transGen.mp h
     · exact .single .refl
-    · exact TransGen.mono (fun _ _ ↦ .single) h
+    · exact h.mono (fun _ _ ↦ .single) x y
 
 @[simp, grind =] lemma reflTransGen_reflGen : ReflTransGen (ReflGen r) = ReflTransGen r := by
   simp only [← transGen_reflGen, reflGen_eq_self]
@@ -791,8 +804,8 @@ see for example `Quot.eqvGen_exact` and `Quot.eqvGen_sound`. -/
 def setoid : Setoid α :=
   Setoid.mk _ (EqvGen.is_equivalence r)
 
-theorem mono {r p : α → α → Prop} (hrp : ∀ a b, r a b → p a b) (h : EqvGen r a b) :
-    EqvGen p a b := by
+theorem mono {r p : α → α → Prop} (hrp : r ≤ p) : EqvGen r ≤ EqvGen p := by
+  intro _ _ h
   induction h with
   | rel a b h => exact EqvGen.rel _ _ (hrp _ _ h)
   | refl => exact EqvGen.refl _
@@ -837,17 +850,20 @@ theorem church_rosser (h : ∀ a b c, r a b → r a c → ∃ d, ReflGen r b d �
     | refl => exact ⟨b, hea, hcb⟩
     | single hba => exact ⟨a, hea, hcb.tail hba⟩
 
+theorem le_join_of_refl [Std.Refl r] : r ≤ Join r :=
+  fun _ b hab ↦ ⟨b, hab, refl b⟩
 
-theorem join_of_single [Std.Refl r] (hab : r a b) : Join r a b :=
-  ⟨b, hab, refl b⟩
+@[deprecated (since := "2026-06-30")] alias join_of_single := le_join_of_refl
 
-theorem symmetric_join : Symmetric (Join r) := fun _ _ ⟨c, hac, hcb⟩ ↦ ⟨c, hcb, hac⟩
+protected instance Join.symm : Std.Symm (Join r) where
+  symm _ _ := fun ⟨c, hac, hcb⟩ ↦ ⟨c, hcb, hac⟩
 
-instance reflexive_join [Std.Refl r] : Std.Refl (Join r) where
-  refl a := ⟨a, refl a, refl a⟩
+@[deprecated (since := "2026-06-10")] alias symmetric_join := Join.symm
 
-instance : Std.Symm (Join r) where
-  symm := symmetric_join
+protected instance Join.refl [Std.Refl r] : Std.Refl (Join r) where
+  refl a := ⟨a, _root_.refl a, _root_.refl a⟩
+
+@[deprecated (since := "2026-06-10")] alias reflexive_join := Join.refl
 
 theorem isTrans_join [IsTrans α r] (h : ∀ a b c, r a b → r a c → Join r b c) :
     IsTrans α (Join r) :=
@@ -859,30 +875,37 @@ theorem isTrans_join [IsTrans α r] (h : ∀ a b c, r a b → r a c → Join r b
 
 theorem equivalence_join [Std.Refl r] [IsTrans α r] (h : ∀ a b c, r a b → r a c → Join r b c) :
     Equivalence (Join r) :=
-  ⟨reflexive_join.refl, @symmetric_join α r, isTrans_join h |>.trans _ _ _⟩
+  ⟨Join.refl.refl, Join.symm.symm _ _, isTrans_join h |>.trans _ _ _⟩
 
 theorem equivalence_join_reflTransGen
     (h : ∀ a b c, r a b → r a c → ∃ d, ReflGen r b d ∧ ReflTransGen r c d) :
     Equivalence (Join (ReflTransGen r)) :=
   equivalence_join fun _ _ _ ↦ church_rosser h
 
-theorem join_of_equivalence {r' : α → α → Prop} (hr : Equivalence r) (h : ∀ a b, r' a b → r a b) :
-    Join r' a b → r a b
-  | ⟨_, hac, hbc⟩ => hr.trans (h _ _ hac) (hr.symm <| h _ _ hbc)
+theorem join_le_of_equivalence_of_le {r' : α → α → Prop} (hr : Equivalence r) (h : r' ≤ r) :
+    Join r' ≤ r :=
+  fun a b ⟨c, hac, hbc⟩ ↦ hr.trans (h a c hac) (hr.symm <| h b c hbc)
 
-theorem reflTransGen_of_isTrans_reflexive {r' : α → α → Prop} [Std.Refl r] [IsTrans α r]
-    (h : ∀ a b, r' a b → r a b) (h' : ReflTransGen r' a b) : r a b := by
-  simpa [reflTransGen_eq_self] using ReflTransGen.mono h h'
+@[deprecated (since := "2026-06-30")] alias join_of_equivalence := join_le_of_equivalence_of_le
+
+theorem reflTransGen_le_of_le {r' : α → α → Prop} [Std.Refl r] [IsTrans α r]
+    (h : r' ≤ r) : ReflTransGen r' ≤ r := by
+  simpa [reflTransGen_eq_self] using ReflTransGen.mono h
+
+@[deprecated (since := "2026-06-30")]
+alias reflTransGen_of_isTrans_reflexive := reflTransGen_le_of_le
 
 @[deprecated (since := "2026-02-21")]
-alias reflTransGen_of_transitive_reflexive := reflTransGen_of_isTrans_reflexive
+alias reflTransGen_of_transitive_reflexive := reflTransGen_le_of_le
 
-@[deprecated (since := "2025-12-17")] alias reflTransGen_minimal :=
-  reflTransGen_of_transitive_reflexive
+@[deprecated (since := "2025-12-17")] alias reflTransGen_minimal := reflTransGen_le_of_le
 
-theorem reflTransGen_of_equivalence {r' : α → α → Prop} (hr : Equivalence r) :
-    (∀ a b, r' a b → r a b) → ReflTransGen r' a b → r a b :=
-  @reflTransGen_of_isTrans_reflexive _ _ _ _ _ hr.stdRefl hr.isTrans
+theorem reflTransGen_le_of_equivalence_of_le {r' : α → α → Prop} (hr : Equivalence r) :
+    r' ≤ r → ReflTransGen r' ≤ r :=
+  @reflTransGen_le_of_le _ _ _ hr.stdRefl hr.isTrans
+
+@[deprecated (since := "2026-06-30")]
+alias reflTransGen_of_equivalence := reflTransGen_le_of_equivalence_of_le
 
 end Join
 
