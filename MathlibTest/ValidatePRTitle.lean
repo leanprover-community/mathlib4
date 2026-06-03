@@ -87,7 +87,7 @@ section scope
 #check_title "feat(Algebra.lean): title"
 
 /--
-info: Message: 'error: a PR's scope should be a directory or file path, not a module name
+info: Message: 'error: a PR's scope should be a directory or file name, not a module name
 hint: the scope contains a dot, use forward slashes instead'
 -/
 #guard_msgs in
