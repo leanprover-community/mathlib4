@@ -337,6 +337,33 @@ theorem Matrix.toBilin_comp (M : Matrix n n R₁) (P Q : Matrix n o R₁) :
     toMatrix₂_symm, toMatrix₂_symm, ← Matrix.toLinearMap₂_compl₁₂ b b c c]
   simp
 
+lemma LinearMap.BilinForm.isSymm_iff_toMatrix_isSymm (Q : LinearMap.BilinForm R₁ M₁) :
+    Q.IsSymm ↔ (LinearMap.BilinForm.toMatrix b Q).IsSymm := by
+  rw [LinearMap.BilinForm.isSymm_iff, LinearMap.isSymm_def, Matrix.IsSymm.ext_iff]
+  simp only [RingHom.id_apply, LinearMap.BilinForm.toMatrix_apply]
+  constructor
+  · simp_all
+  intro h f g
+  rw [← b.sum_repr f, ← b.sum_repr g, map_sum, map_sum, map_sum, map_sum]
+  simp only [coe_sum, Finset.sum_apply]
+  rw [Finset.sum_comm]
+  simp only [map_smul, LinearMap.smul_apply, smul_eq_mul, h]
+  congr
+  ext x
+  congr
+  ext y
+  ring
+
+lemma Matrix.isSymm_iff_toBilin_isSym (M : Matrix n n R₁) : M.IsSymm ↔ (M.toBilin b).IsSymm := by
+  simp [(M.toBilin b).isSymm_iff_toMatrix_isSymm b]
+
+lemma LinearMap.BilinForm.isSymm_iff_toMatrix'_isSymm (Q : LinearMap.BilinForm R₁ (n → R₁)) :
+    Q.IsSymm ↔ (BilinForm.toMatrix' Q).IsSymm :=
+  LinearMap.BilinForm.isSymm_iff_toMatrix_isSymm Q (b := Pi.basisFun (η := n) (R := R₁))
+
+lemma Matrix.isSymm_iff_toBilin'_isSym (M : Matrix n n R₁) : M.IsSymm ↔ (M.toBilin').IsSymm := by
+  simp [(M.toBilin').isSymm_iff_toMatrix'_isSymm]
+
 end ToMatrix
 
 end Matrix
