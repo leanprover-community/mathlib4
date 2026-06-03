@@ -106,8 +106,8 @@ lemma isHomogenous_addSubMapCoeff (ij : Fin 3 × Fin 3) :
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Function.uncurry_apply_pair,
       Matrix.cons_val', Matrix.cons_val_zero, Matrix.cons_val_fin_one, neg_mul, Fin.mk_one,
       Matrix.cons_val_one, Fin.reduceFinMk, Matrix.cons_val, Fin.zero_eta]
-    -- The following works, but is slow (48631 vs. 11592 heartbeats):
-    -- <;> repeat first | exact CXY | exact CXX | refine .add ?_ CXY | refine .add ?_ CXX
+    -- The following works, but is slow (44883 vs. 11592 heartbeats):
+    -- <;> repeat first | refine .add ?_ CXY | refine .add ?_ CXX | exact CXX | exact CXY
   · exact .add (.add (.add (.add CXX CXY) CXY) CXX) CXY
   · exact .add (.add (.add (.add CXX CXY) CXY) CXX) CXY
   · exact .add (.add CXX CXY) CXY
