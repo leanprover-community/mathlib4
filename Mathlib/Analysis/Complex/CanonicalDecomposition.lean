@@ -145,7 +145,7 @@ theorem canonicalFactor_ne_zero {z : ℂ} (hw : w ∈ ball 0 R) (h₁z : z ∈ c
 /--
 The function `CanonicalFactor R w` vanishes only at `w`.
 -/
-theorem zero_canonicalFactor_iff {z : ℂ} (hw : w ∈ ball 0 R) (hz : z ∈ ball 0 R) :
+theorem canonicalFactor_eq_zero_iff {z : ℂ} (hw : w ∈ ball 0 R) (hz : z ∈ ball 0 R) :
     canonicalFactor R w z = 0 ↔ z = w := by
   constructor
   · contrapose
@@ -226,7 +226,7 @@ Given functions `f`, `g` and a real number `R`, the following convenience struct
 information relevant in the canonical decomposition.  The condition "`g` is without zeros or poles"
 is formulated by saying that `g` is meromorphic in normal form and `g ≠ 0`.
 -/
-structure CanonicalDecomp (f g : ℂ → E) (R : ℝ) where
+structure CanonicalDecomp (f g : ℂ → E) (R : ℝ) : Prop where
   /-- A proof that `f` is meromorphic on `closedBall 0 R`. -/
   meromorphicOn : MeromorphicOn f (closedBall 0 R)
 
