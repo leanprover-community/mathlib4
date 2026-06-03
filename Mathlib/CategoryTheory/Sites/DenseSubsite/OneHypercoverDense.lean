@@ -325,7 +325,7 @@ section
 variable {S} (s : Multifork (S.index G))
 
 /-- Auxiliary definition for `lift`. -/
-noncomputable def liftAux (i : (data X).I₀) : s.pt ⟶ G.obj (op (F.obj ((data X).X i))) :=
+private noncomputable def liftAux (i : (data X).I₀) : s.pt ⟶ G.obj (op (F.obj ((data X).X i))) :=
   hG₀.amalgamate ⟨_, cover_lift F J₀ _ (J.pullback_stable ((data X).f i) S.2)⟩
     (fun ⟨W₀, a, ha⟩ ↦ s.ι ⟨_, F.map a ≫ (data X).f i, ha⟩) (by
       rintro ⟨W₀, a, ha⟩ ⟨Z₀, b, hb⟩ ⟨U₀, p₁, p₂, fac⟩
@@ -335,14 +335,14 @@ noncomputable def liftAux (i : (data X).I₀) : s.pt ⟶ G.obj (op (F.obj ((data
           r := ⟨_, F.map p₁, F.map p₂, by
               simp only [← Functor.map_comp_assoc, fac]⟩ })
 
-lemma liftAux_fac {i : (data X).I₀} {W₀ : C₀} (a : W₀ ⟶ (data X).X i)
+private lemma liftAux_fac {i : (data X).I₀} {W₀ : C₀} (a : W₀ ⟶ (data X).X i)
     (ha : S (F.map a ≫ (data X).f i)) :
     liftAux hG₀ s i ≫ G.map (F.map a).op = s.ι ⟨_, F.map a ≫ (data X).f i, ha⟩ :=
   hG₀.amalgamate_map _ _ _ ⟨W₀, a, ha⟩
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for the lemma `OneHypercoverDenseData.isSheaf_iff`. -/
-noncomputable def lift : s.pt ⟶ G.obj (op X) :=
+private noncomputable def lift : s.pt ⟶ G.obj (op X) :=
   Multifork.IsLimit.lift (hG X) (fun i ↦ liftAux hG₀ s i) (by
     rintro ⟨⟨i₁, i₂⟩, j⟩
     dsimp at i₁ i₂ j ⊢
@@ -360,14 +360,14 @@ noncomputable def lift : s.pt ⟶ G.obj (op X) :=
     rw [map_comp_assoc, map_comp_assoc, (data X).w j])
 
 @[reassoc]
-lemma lift_map (i : (data X).I₀) :
+private lemma lift_map (i : (data X).I₀) :
     lift hG₀ hG s ≫ G.map ((data X).f i).op = liftAux hG₀ s i :=
   Multifork.IsLimit.fac _ _ _ _
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
-lemma fac (a : S.Arrow) :
+private lemma fac (a : S.Arrow) :
     lift hG₀ hG s ≫ G.map a.f.op = s.ι a :=
   Multifork.IsLimit.hom_ext (hG _) (fun i ↦
     Presheaf.IsSheaf.hom_ext hG₀
@@ -394,7 +394,7 @@ lemma fac (a : S.Arrow) :
 set_option backward.isDefEq.respectTransparency false in
 variable {s} in
 include hG hG₀ in
-lemma hom_ext {f₁ f₂ : s.pt ⟶ G.obj (op X)}
+private lemma hom_ext {f₁ f₂ : s.pt ⟶ G.obj (op X)}
     (h : ∀ (a : S.Arrow), f₁ ≫ G.map a.f.op = f₂ ≫ G.map a.f.op) : f₁ = f₂ :=
   Multifork.IsLimit.hom_ext (hG X) (fun i ↦ by
     refine Presheaf.IsSheaf.hom_ext hG₀
@@ -407,7 +407,7 @@ lemma hom_ext {f₁ f₂ : s.pt ⟶ G.obj (op X)}
 end
 
 /-- Auxiliary definition for the lemma `OneHypercoverDenseData.isSheaf_iff`. -/
-noncomputable def isLimit : IsLimit (S.multifork G) :=
+private noncomputable def isLimit : IsLimit (S.multifork G) :=
   Multifork.IsLimit.mk _
     (lift hG₀ hG) (fac hG₀ hG) (fun s _ hm ↦
       hom_ext hG₀ hG (fun a ↦ (hm a).trans (fac hG₀ hG s a).symm))

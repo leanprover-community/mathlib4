@@ -1555,6 +1555,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.PairingC
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RankNat
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RelativeCellComplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.UnionProd
 public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
 public import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
@@ -6403,6 +6404,7 @@ public import Mathlib.RingTheory.Bialgebra.SymmetricAlgebra
 public import Mathlib.RingTheory.Bialgebra.TensorProduct
 public import Mathlib.RingTheory.Binomial
 public import Mathlib.RingTheory.ChainOfDivisors
+public import Mathlib.RingTheory.ClassGroup
 public import Mathlib.RingTheory.ClassGroup.Basic
 public import Mathlib.RingTheory.ClassGroup.ExtendedHom
 public import Mathlib.RingTheory.Coalgebra.Basic
