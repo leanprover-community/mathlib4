@@ -89,6 +89,7 @@ def symm (f : X.PartialIso Y) : Y.PartialIso X where
   dense_target := f.dense_source
   iso := f.iso.symm
 
+set_option backward.defeqAttrib.useBackward true in
 lemma symm_over (f : X.PartialIso Y) (hf : f.iso.hom ≫ f.target.ι ≫ sY = f.source.ι ≫ sX) :
     f.symm.iso.hom ≫ f.symm.target.ι ≫ sX = f.symm.source.ι ≫ sY := by
   simpa [← cancel_epi f.iso.hom] using hf.symm
@@ -104,6 +105,7 @@ noncomputable def trans' (f : X.PartialIso Y) (g : Y.PartialIso Z) (e : f.target
   dense_target := g.dense_target
   iso := f.iso ≪≫ Y.isoOfEq e ≪≫ g.iso
 
+set_option backward.defeqAttrib.useBackward true in
 lemma trans'_over (f : X.PartialIso Y) (g : Y.PartialIso Z) (e : f.target = g.source)
     (hf : f.iso.hom ≫ f.target.ι ≫ sY = f.source.ι ≫ sX)
     (hg : g.iso.hom ≫ g.target.ι ≫ sZ = g.source.ι ≫ sY) :
@@ -126,6 +128,7 @@ noncomputable def restrictSource (f : X.PartialIso Y) (U : Opens X) (hU : Dense 
     (f.iso.hom.isoImage (f.source.ι ⁻¹ᵁ U)) ≪≫
     (f.target.ι.isoImage (f.iso.hom ''ᵁ f.source.ι ⁻¹ᵁ U))
 
+set_option backward.defeqAttrib.useBackward true in
 lemma restrictSource_over (f : X.PartialIso Y)
     (hf : f.iso.hom ≫ f.target.ι ≫ sY = f.source.ι ≫ sX)
     (U : Opens X) (hU : Dense (U : Set X)) (hU' : U ≤ f.source) :
@@ -215,6 +218,7 @@ lemma BirationalOver.partialIso_isOver {S X Y : Scheme.{u}} (sX : X ⟶ S) (sY :
     h.partialIso.iso.hom ≫ h.partialIso.target.ι ≫ sY = h.partialIso.source.ι ≫ sX :=
   h.choose_spec
 
+set_option backward.defeqAttrib.useBackward true in
 lemma BirationalOver.refl {S X : Scheme.{u}} (sX : X ⟶ S) : BirationalOver sX sX :=
   ⟨.refl X, by simp⟩
 
@@ -264,6 +268,7 @@ def Opens.partialIsoOfDense (hU : Dense (U : Set X)) : PartialIso U X where
 lemma Opens.birational_of_dense (hU : Dense (U : Set X)) : Birational U X :=
   ⟨U.partialIsoOfDense hU⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A dense open set `U : Opens X` of a scheme `X` over `S` is `S`-birational to `X`. -/
 lemma Opens.birationalOver_of_dense (hU : Dense (U : Set X)) : BirationalOver (U.ι ≫ sX) sX :=
   ⟨U.partialIsoOfDense hU, by simp⟩
@@ -288,6 +293,7 @@ noncomputable def Hom.partialIso (f : U ⟶ X) [IsOpenImmersion f] [IsDominant f
 lemma Hom.birational (f : U ⟶ X) [IsOpenImmersion f] [IsDominant f] : Birational U X :=
   ⟨f.partialIso⟩
 
+set_option backward.defeqAttrib.useBackward true in
 lemma Hom.birationalOver (f : U ⟶ X) [IsOpenImmersion f] [IsDominant f] (sX : X ⟶ S) (sU : U ⟶ S)
     (hf : f ≫ sX = sU) : BirationalOver sU sX :=
   ⟨f.partialIso, by simp [hf]⟩
