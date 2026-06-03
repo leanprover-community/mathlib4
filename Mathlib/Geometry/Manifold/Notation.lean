@@ -948,7 +948,7 @@ scoped elab:max "HasMFDerivAt%" ppSpace
 trying to determine `I` from the local context. -/
 scoped elab:max "TangentSpace%" ppSpace x:term:arg : term => do
   let ex ← Term.elabTerm x none
-  let extype := (← instantiateMVars <| ← inferType ex).cleanupAnnotations
+  let extype ← instantiateMVars <| ← inferType ex
   let src ← findModel extype
   mkAppM ``TangentSpace #[src, ex]
 
