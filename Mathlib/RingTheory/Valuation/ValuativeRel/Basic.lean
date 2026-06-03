@@ -554,7 +554,6 @@ instance : CommMonoidWithZero (ValueGroupWithZero R) where
   mul_comm a b := by
     induction a using ValueGroupWithZero.ind
     induction b using ValueGroupWithZero.ind
-    simp only [ValueGroupWithZero.mk_mul_mk]
     apply ValuativeRel.ValueGroupWithZero.sound <;>
     · simp only [Submonoid.coe_mul]
       nth_grw 2 [veq_mul_comm]
@@ -740,8 +739,7 @@ lemma ValueGroupWithZero.lift_valuation {α : Sort*} (f : R → posSubmonoid R �
     ValueGroupWithZero.lift f hf (valuation R x) = f x 1 :=
   rfl
 
-lemma valuation_eq_zero_iff :
-    valuation R x = 0 ↔ x ≤ᵥ 0 :=
+lemma valuation_eq_zero_iff : valuation R x = 0 ↔ x ≤ᵥ 0 :=
   ValueGroupWithZero.mk_eq_zero _ _
 
 lemma valuation_posSubmonoid_ne_zero (x : posSubmonoid R) :
