@@ -90,7 +90,7 @@ theorem _root_.AccPt.not_isMin {a : α} {s : Set α} (h : AccPt a (𝓟 s)) : ¬
 
 @[to_dual]
 theorem _root_.AccPt.isSuccLimit {a : α} {s : Set α} (h : AccPt a (𝓟 s)) : IsSuccLimit a := by
-  unfold IsSuccLimit IsSuccPrelimit
+  rw [isSuccLimit_iff, IsSuccPrelimit]
   simp_rw [accPt_principal, Set.Nonempty] at h
   grind [covBy_iff_Ioo_eq]
 
