@@ -379,6 +379,13 @@ instance [AddGroup Y] : AddGroup (locallyFinsuppWithin U Y) :=
   Injective.addGroup (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
     _ coe_injective coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
 
+/--
+Simplifier lemma: Support does not change when replacing a function with locally finite support by
+its negative.
+-/
+@[simp] lemma support_neg [AddGroup Y] (D : locallyFinsuppWithin U Y) :
+    (-D).support = D.support := by rw [support, coe_neg, Function.support_neg]
+
 instance [AddCommGroup Y] : AddCommGroup (locallyFinsuppWithin U Y) :=
   Injective.addCommGroup (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
     _ coe_injective coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
