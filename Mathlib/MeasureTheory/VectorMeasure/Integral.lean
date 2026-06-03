@@ -20,7 +20,7 @@ We fix a continuous linear pairing `B : E →L[ℝ] F →L[ℝ] G` and an `F`-va
 on a measurable space `X`.
 For an integrable function `f : X → E` with respect to the total variation of the vector measure
 on `X` informally written `μ ∘ B.flip`, we define the `G`-valued integral, which is informally
-written `∫ᵛ B (f x) ∂[B; μ] x`.
+written `∫ B (f x) ∂μ x`.
 
 Such integral is defined through the general setting `setToFun` which sends a set function to the
 integral of integrable functions, see the file
