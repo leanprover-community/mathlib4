@@ -158,14 +158,14 @@ noncomputable def freeSumIso : free I ⨿ free J ≅ free (R := R) (I ⊕ J) :=
 @[reassoc (attr := simp)]
 lemma inl_freeSumIso_hom :
     coprod.inl ≫ (freeSumIso (R := R) I J).hom = freeMap Sum.inl := by
-  rw [← dsimp% freeFunctor_map (TypeCat.ofHom (Sum.inl : I → I ⊕ J))]
+  rw [← dsimp% freeFunctor_map (↾(Sum.inl : I → I ⊕ J))]
   exact IsColimit.comp_coconePointUniqueUpToIso_hom
     (coprodIsCoprod (free (R := R) I) (free J)) _ (.mk .left)
 
 @[reassoc (attr := simp)]
 lemma inr_freeSumIso_hom :
     coprod.inr ≫ (freeSumIso (R := R) I J).hom = freeMap Sum.inr := by
-  rw [← dsimp% freeFunctor_map (TypeCat.ofHom (Sum.inr : J → I ⊕ J))]
+  rw [← dsimp% freeFunctor_map (↾(Sum.inr : J → I ⊕ J))]
   exact IsColimit.comp_coconePointUniqueUpToIso_hom
     (coprodIsCoprod (free (R := R) I) (free J)) _ (.mk .right)
 

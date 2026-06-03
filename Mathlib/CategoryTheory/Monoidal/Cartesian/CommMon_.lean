@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon
 
 /-!
 # Yoneda embedding of `CommMon C`
