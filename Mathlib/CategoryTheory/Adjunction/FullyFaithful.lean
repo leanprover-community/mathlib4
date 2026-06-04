@@ -171,8 +171,9 @@ noncomputable def fullyFaithfulROfIsIsoCounit [IsIso h.counit] : R.FullyFaithful
 set_option backward.isDefEq.respectTransparency false in
 instance whiskerLeft_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
     IsIso (whiskerLeft L h.counit) := by
-  have := h.left_triangle
-  rw [← IsIso.eq_inv_comp] at this
+  have := ((Functor.associator ..).inv ≫ whiskerRight (inv h.unit) L) ≫= h.left_triangle
+  simp only [assoc, ← whiskerRight_comp_assoc, IsIso.inv_hom_id, whiskerRight_id', id_comp,
+    Iso.inv_hom_id_assoc] at this
   rw [this]
   infer_instance
 
@@ -180,11 +181,10 @@ set_option backward.isDefEq.respectTransparency false in
 instance whiskerRight_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
     IsIso (whiskerRight h.counit R) := by
   have := h.right_triangle
-  rw [← IsIso.eq_inv_comp] at this
+  rw [← IsIso.eq_inv_comp, Iso.inv_comp_eq] at this
   rw [this]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance whiskerLeft_unit_iso_of_R_fully_faithful [R.Full] [R.Faithful] :
     IsIso (whiskerLeft R h.unit) := by
   have := h.right_triangle
@@ -192,7 +192,6 @@ instance whiskerLeft_unit_iso_of_R_fully_faithful [R.Full] [R.Faithful] :
   rw [this]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance whiskerRight_unit_iso_of_R_fully_faithful [R.Full] [R.Faithful] :
     IsIso (whiskerRight h.unit L) := by
   have := h.left_triangle
