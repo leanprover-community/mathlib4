@@ -122,4 +122,4 @@ theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing
     have := Module.Finite.of_restrictScalars_finite R (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
     have free := ih (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) dim
     have := Module.finitePresentation_of_finite R M
-    exact (free_iff_quotSMulTop_free R M (maximalIdeal_le_jacobson _ xmem) reg).mp free
+    exact (Module.free_quotSMulTop_iff_free R M (maximalIdeal_le_jacobson _ xmem) reg).mp free
