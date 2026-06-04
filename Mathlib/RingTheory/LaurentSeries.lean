@@ -262,8 +262,11 @@ private lemma sum_bij_right (f g : LaurentSeries R) (n : ℤ) :
 /-- **Leibniz rule for the first Hasse derivative on Laurent series.**
 The first derivative on `LaurentSeries R` — defined as `hasseDeriv R 1` and
 packaged as `derivative R` — satisfies the Leibniz product rule
-`(f * g)' = f' * g + f * g'` for coefficients in a commutative ring. -/
-@[simp]
+`(f * g)' = f' * g + f * g'` for coefficients in a commutative ring.
+
+Not marked `@[simp]` because `derivative_apply` already simp-rewrites
+`derivative R x` to `hasseDeriv R 1 x`; the simp-normal form is the
+`hasseDeriv_one_mul` corollary below. -/
 theorem derivative_mul (f g : LaurentSeries R) :
     derivative R (f * g) = derivative R f * g + f * derivative R g := by
   ext n
@@ -281,6 +284,14 @@ theorem derivative_mul (f g : LaurentSeries R) :
   change (n + 1) • (f.coeff i * g.coeff j) =
        i • f.coeff i * g.coeff j + f.coeff i * j • g.coeff j
   rw [← hij', add_smul, smul_mul_assoc, mul_smul_comm]
+
+/-- **Leibniz rule for the first Hasse derivative on Laurent series**, in
+simp-normal `hasseDeriv R 1` form. Corollary of `derivative_mul` via the
+defeq `derivative R = hasseDeriv R 1`. -/
+@[simp]
+theorem hasseDeriv_one_mul (f g : LaurentSeries R) :
+    hasseDeriv R 1 (f * g) = hasseDeriv R 1 f * g + f * hasseDeriv R 1 g :=
+  derivative_mul f g
 
 end LeibnizRule
 
