@@ -63,57 +63,53 @@ lemma IncidenceType.fwd_or_bwd_of_eq (heq : d.source = d.target) :
     d = fwd d.edge d.source ∨ d = bwd d.edge d.target := by
   cases d <;> grind [source, target, edge]
 
+section inc12
+
+variable [DecidableEq V] (e : E) (u v : V)
+
 /-- The first incidence of a link. -/
-def IsLink.inc1 [DecidableEq V] (_ : G.IsLink e u v) :=
-    if h : u = v then fwd e u else dir e u v h
+def inc1 := if h : u = v then fwd e u else dir e u v h
 
 /-- The second incidence of a link. -/
-def IsLink.inc2 [DecidableEq V] (_ : G.IsLink e u v) :=
-    if h : u = v then bwd e u else dir e v u (Ne.symm h)
+def inc2 := if h : u = v then bwd e u else dir e v u (Ne.symm h)
 
-@[simp, grind →]
-lemma IsLink.inc1_edge [DecidableEq V] (h : G.IsLink e u v) :
-    h.inc1.edge = e := by
+@[simp, grind =]
+lemma inc1_edge : (inc1 e u v).edge = e := by
   by_cases huv : u = v <;> simp [inc1, huv, edge]
 
-@[simp, grind →]
-lemma IsLink.inc2_edge [DecidableEq V] (h : G.IsLink e u v) :
-    h.inc2.edge = e := by
+@[simp, grind =]
+lemma inc2_edge : (inc2 e u v).edge = e := by
   by_cases huv : u = v <;> simp [inc2, huv, edge]
 
-@[simp, grind →]
-lemma IsLink.inc1_source [DecidableEq V] (h : G.IsLink e u v) :
-    h.inc1.source = u := by
+@[simp, grind =]
+lemma inc1_source : (inc1 e u v).source = u := by
   by_cases huv : u = v <;> simp [inc1, huv, source]
 
-@[simp, grind →]
-lemma IsLink.inc2_source [DecidableEq V] (h : G.IsLink e u v) :
-    h.inc2.source = v := by
+@[simp, grind =]
+lemma inc2_source : (inc2 e u v).source = v := by
   by_cases huv : u = v <;> simp [inc2, huv, source]
 
-@[simp, grind →]
-lemma IsLink.inc1_target [DecidableEq V] (h : G.IsLink e u v) :
-    h.inc1.target = v := by
+@[simp, grind =]
+lemma inc1_target : (inc1 e u v).target = v := by
   by_cases huv : u = v <;> simp [inc1, huv, target]
 
-@[simp, grind →]
-lemma IsLink.inc2_target [DecidableEq V] (h : G.IsLink e u v) :
-    h.inc2.target = u := by
+@[simp, grind =]
+lemma inc2_target : (inc2 e u v).target = u := by
   by_cases huv : u = v <;> simp [inc2, huv, target]
 
-@[simp, grind →]
-lemma IsLink.inc1_ne_inc2 [DecidableEq V] (h : G.IsLink e u v) :
-    h.inc1 ≠ h.inc2 := by
+@[simp, grind .]
+lemma inc1_ne_inc2 : inc1 e u v ≠ inc2 e u v := by
   by_cases huv : u = v <;> simp [inc1, inc2, huv]
 
-lemma isLink_iff_exists_incidenceType (e u v) : G.IsLink e u v ↔ ∃ i j : IncidenceType V E, i ≠ j ∧
+omit [DecidableEq V]
+lemma isLink_iff_exists_incidenceType : G.IsLink e u v ↔ ∃ i j : IncidenceType V E, i ≠ j ∧
     G.IsLink i.edge i.source i.target ∧ G.IsLink j.edge j.source j.target ∧
     (G.IsLink i.edge i.source i.target ∧ i.source = u ∧ i.edge = e) ∧
     (G.IsLink j.edge j.source j.target ∧ j.source = v ∧ j.edge = e) := by
     classical
     refine ⟨fun h => ?_, fun ⟨i, j, hij, hi, hj, hi', hj'⟩ => ?_⟩
-    · use h.inc1, h.inc2, h.inc1_ne_inc2, ?_, ?_, ⟨?_, h.inc1_source, h.inc1_edge⟩, ?_,
-        h.inc2_source, h.inc2_edge <;> simp [h, h.symm]
+    · use inc1 e u v, inc2 e u v, inc1_ne_inc2 e u v, ?_, ?_, ⟨?_, inc1_source e u v,
+        inc1_edge e u v⟩, ?_, inc2_source e u v, inc2_edge e u v <;> simp [h, h.symm]
     obtain ⟨-, rfl, rfl⟩ := hi'
     obtain ⟨-, rfl, he⟩ := hj'
     have := hi.eq_and_eq_or_eq_and_eq (he ▸ hj)
@@ -123,6 +119,8 @@ lemma isLink_iff_exists_incidenceType (e u v) : G.IsLink e u v ↔ ∃ i j : Inc
     · grind
     have hjne : j.source ≠ j.target := by grind
     grind [dir_of_ne hne, dir_of_ne hjne]
+
+end inc12
 
 @[simps (attr := grind =) -isSimp]
 instance : HyperGraphLike V (IncidenceType V E) E (Graph V E) where
@@ -140,15 +138,15 @@ instance : HyperGraphLike V (IncidenceType V E) E (Graph V E) where
   Adj G u v := G.Adj u v
   adj_def G u v := exists_congr fun e ↦ isLink_iff_exists_incidenceType e u v
 
-@[simp↓, grind =]
-lemma IsLink.mem_edgeFun_inc1_iff [DecidableEq V] (h : G.IsLink e u v) :
-    f ∈ edgeFun G h.inc1 ↔ e = f := by
-  simp [isIncident_def, h]
+@[simp↓, grind .]
+lemma mem_edgeFun_inc1_iff [DecidableEq V] :
+    f ∈ edgeFun G (inc1 e u v) ↔ G.IsLink e u v ∧ e = f := by
+  simp [isIncident_def]
 
-@[simp↓, grind =]
-lemma IsLink.mem_edgeFun_inc2_iff [DecidableEq V] (h : G.IsLink e u v) :
-    f ∈ edgeFun G h.inc2 ↔ e = f := by
-  simp [isIncident_def, h.symm]
+@[simp↓, grind .]
+lemma mem_edgeFun_inc2_iff [DecidableEq V] :
+    f ∈ edgeFun G (inc2 e u v) ↔ G.IsLink e u v ∧ e = f := by
+  simp [isIncident_def, isLink_comm]
 
 lemma edgeFun_preimage_singleton_eq_fwd_bwd_of_isLink_loop (h : G.IsLink e x x) :
     (edgeFun G).preimage {e} = {fwd e x, bwd e x} := by
@@ -181,11 +179,11 @@ instance : GraphLike V (IncidenceType V E) E (Graph V E) where
   exists_isSource_of_mem_edgeSet G e he := by
     obtain ⟨x, y, h⟩ := exists_isLink_of_mem_edgeSet he
     classical
-    refine ⟨h.inc1, by simp, by simpa [IsSource]⟩
+    exact ⟨inc1 e x y, by simpa, by simpa [IsSource]⟩
   exists_isTarget_of_mem_edgeSet G e he := by
     obtain ⟨x, y, h⟩ := exists_isLink_of_mem_edgeSet he
     classical
-    exact ⟨h.inc2, by simp, by simp [IsTarget, h.symm]⟩
+    exact ⟨inc2 e x y, by simpa, by simp [IsTarget, h.symm]⟩
 
 instance : Undirected V (IncidenceType V E) E (Graph V E) where
   isSource_iff G i := by simp [IsSource, IsTarget]

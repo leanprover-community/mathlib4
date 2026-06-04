@@ -223,11 +223,11 @@ lemma isIncident_edgeFun_endPoint (hi : i ∈ I(G)) : IsIncident G i
   simp only [PFun.fn_apply, edgeFun, hi, ↓reduceDIte, Part.get_some, endPoint]
   exact (incs_def (G := G) ▸ hi).choose_spec.choose_spec
 
-@[simp, grind →]
+@[grind →]
 lemma IsIncident.mem_edgeFun (h : IsIncident G i e v) : e ∈ edgeFun G i := by
   simp [← ((isIncident_edgeFun_endPoint h.inc_mem).inj h).1]
 
-@[simp, grind →]
+@[grind →]
 lemma IsIncident.mem_endPoint (h : IsIncident G i e v) : v ∈ endPoint G i := by
   simp [← ((isIncident_edgeFun_endPoint h.inc_mem).inj h).2]
 

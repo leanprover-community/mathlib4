@@ -78,13 +78,12 @@ instance instDecidable [DecidableEq V] [DecidableEq I] {u v : V}
     infer_instance
   exact isFalse (by simp [hv])
 
-instance instDecidableEq [DecidableEq V] [DecidableEq I] [DecidableEq E] :
+instance instDecidableEq [DecidableEq V] [DecidableEq I] :
     DecidableEq (Walk G u v) := Walk.instDecidable
 
 attribute [refl] Walk.nil
 
-@[simps]
-instance instInhabited (G : Gr) [GraphLike V I E Gr] (v : V) : Inhabited (Walk G v v) := ⟨Walk.nil⟩
+@[simps] instance instInhabited (G : Gr) (v : V) : Inhabited (Walk G v v) := ⟨Walk.nil⟩
 
 /-- Pattern to get `Walk.nil` with the vertex as an explicit argument. -/
 @[match_pattern]
