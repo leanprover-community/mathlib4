@@ -3,9 +3,9 @@ Copyright (c) 2026 The Mathlib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathan Hart-Hodgson, Ayden Lamparski, Soleil Repple, Howard Straubing
 -/
+module
 
-import Mathlib.Tactic.Ring.PNat
-import Mathlib.Tactic.Ring.RingNF
+public import Mathlib.Data.PNat.Basic
 
 /-!
 # Positive Natural Number Exponentiation for Semigroups
@@ -30,16 +30,13 @@ so we restrict exponents to positive naturals.
 
 - `x ^ n` for semigroup powers with `n : ℕ+`.
 
-## Implementation notes
-
-The `@[simp]`-tagged lemmas normalize power expressions. For example,
-`(a * b) ^ n * (a * b) ^ m * a ^ 1` normalizes to `a * (b * a) ^ (n + m)`.
-
 ## References
 
 Analogous definitions and lemmas for exponentiation in monoids can be found in
 `Mathlib.Algebra.Group.Defs`.
 -/
+
+@[expose] public section
 
 namespace Semigroup
 
@@ -51,37 +48,48 @@ instance : Pow S ℕ+ where
 
 variable (x y : S) (n m : ℕ+)
 
-@[simp] lemma pow_one : x ^ (1 : ℕ+) = x := by
-  rfl
+@[simp] lemma pow_one : x ^ (1 : ℕ+) = x := by rfl
 
-@[simp] lemma pow_succ : (x ^ n) * x = x ^ (n + 1) := by
+lemma pow_succ : x ^ (n + 1) = (x ^ n) * x := by
   induction n using PNat.recOn <;> rfl
 
-@[simp] lemma pow_add : x ^ m * x ^ n = x ^ (m + n) := by
+lemma pow_succ' : x ^ (n + 1) = x * (x ^ n) := by
+  induction n using PNat.recOn with
+  | one => rfl
+  | succ n ih =>
+    nth_rw 2 [pow_succ]
+    rw [← mul_assoc, ← ih, pow_succ]
+
+@[simp] lemma pow_add : x ^ (m + n) = x ^ m * x ^ n := by
   induction n using PNat.recOn with
   | one => rw [pow_one, pow_succ]
-  | succ k ih => simp_rw [← add_assoc, ← pow_succ, ← mul_assoc, ih]
+  | succ n ih => simp_rw [← add_assoc, pow_succ, ← mul_assoc, ih]
 
-@[simp] lemma mul_pow_mul : (x * y) ^ n * x = x * (y * x) ^ n := by
+lemma mul_pow_mul : (x * y) ^ n * x = x * (y * x) ^ n := by
   induction n using PNat.recOn with
   | one => simp [← mul_assoc]
-  | succ n ih => simp only [← pow_succ, ← mul_assoc, ih]
+  | succ n ih => simp only [pow_succ, ← mul_assoc, ih]
 
-lemma pow_mul_comm : x ^ m * x ^ n = x ^ n * x ^ m := by rw [pow_add, add_comm, pow_add]
+lemma pow_mul_comm : x ^ m * x ^ n = x ^ n * x ^ m := by
+  rw [← pow_add, add_comm, pow_add]
 
 lemma pow_mul_comm' : x ^ n * x = x * x ^ n := by
   induction n using PNat.recOn with
-  | one    => rfl
-  | succ k ih => rw [← pow_succ, ← mul_assoc, ih]
+  | one => rfl
+  | succ n ih => rw [pow_succ, ← mul_assoc, ih]
 
-@[simp] lemma pow_mul : (x ^ n) ^ m = x ^ (m * n) := by
+lemma pow_mul : x ^ (m * n) = (x ^ n) ^ m := by
   induction m using PNat.recOn with
-  | one    => rw [one_mul, pow_one]
-  | succ k ih =>
-    rw [← pow_succ, ih, pow_add, add_one_mul]
+  | one => rw [one_mul, pow_one]
+  | succ k ih => rw [pow_succ, ← ih, ← pow_add, add_one_mul]
+
+lemma pow_mul' : x ^ (m * n) = (x ^ m) ^ n := by
+  induction n using PNat.recOn with
+  | one => rw [mul_one, pow_one]
+  | succ k ih => rw [pow_succ, ← ih, ← pow_add, mul_add_one]
 
 lemma pow_right_comm : (x ^ m) ^ n = (x ^ n) ^ m := by
-  simp only [pow_mul, mul_comm]
+  simp_rw [← pow_mul, mul_comm]
 
 end Semigroup
 
@@ -91,10 +99,10 @@ lemma Monoid.pow_pNat_to_nat {M} [Monoid M] (x : M) (n : ℕ+) :
   induction n with
   | one => simp
   | succ n' ih =>
-    rw [PNat.add_coe, PNat.val_ofNat, ← Semigroup.pow_succ, ← Nat.succ_eq_add_one, pow_succ, ih]
+    rw [PNat.add_coe, PNat.val_ofNat, Semigroup.pow_succ, ← Nat.succ_eq_add_one, pow_succ, ih]
 
 /-- Powers in `WithOne S` correspond to embedded powers from `S`. -/
 lemma WithOne.pow_eq {S} [Semigroup S] (x : S) (n : ℕ+) : (↑x : WithOne S) ^ n = ↑(x ^ n) := by
   induction n with
   | one => rfl
-  | succ n ih => simp_rw [← Semigroup.pow_succ, Semigroup.pow_mul_comm', WithOne.coe_mul, ih]
+  | succ n ih => simp_rw [Semigroup.pow_succ, Semigroup.pow_mul_comm', WithOne.coe_mul, ih]
