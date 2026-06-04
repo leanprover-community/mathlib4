@@ -103,9 +103,6 @@ that occur in the formal sum `a`. -/
 def support (a : FreeAbelianGroup X) : Finset X :=
   a.toFinsupp.support
 
-@[simp] theorem support_eq_empty {a : FreeAbelianGroup X} : a.support = ∅ ↔ a = 0 :=
-  Finsupp.support_eq_empty.trans (equivFinsupp X).map_eq_zero_iff
-
 @[simp]
 theorem mem_support_iff (x : X) (a : FreeAbelianGroup X) : x ∈ a.support ↔ coeff x a ≠ 0 := by
   rw [support, Finsupp.mem_support_iff]
@@ -143,5 +140,12 @@ open scoped Classical in
 theorem support_add (a b : FreeAbelianGroup X) : support (a + b) ⊆ a.support ∪ b.support := by
   simp only [support, map_add]
   apply Finsupp.support_add
+
+@[simp] theorem nonempty_support_iff {a : FreeAbelianGroup X} :
+    a.support.Nonempty ↔ a ≠ 0 := by
+  contrapose!; exact support_eq_empty
+
+theorem card_support_eq_zero {a : FreeAbelianGroup X} : a.support.card = 0 ↔ a = 0 := by
+  simp
 
 end FreeAbelianGroup
