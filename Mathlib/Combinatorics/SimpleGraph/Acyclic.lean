@@ -177,10 +177,11 @@ theorem isAcyclic_iff_forall_isBridge : G.IsAcyclic ↔ ∀ ⦃e⦄, e ∈ G.edg
     obtain ⟨e, he⟩ := c.edges.exists_mem_of_ne_nil <| by simp [hc.not_nil]
     exact (hG <| c.edges_subset_edgeSet he).notMem_edges_of_isCycle hc he
 
-@[deprecated (since := "2026-05-16")]
-alias isAcyclic_iff_forall_adj_isBridge := isAcyclic_iff_forall_isBridge
+lemma isAcyclic_iff_forall_adj_isBridge :
+    G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
+  simp [isAcyclic_iff_forall_isBridge, Sym2.forall]
 
-@[deprecated (since := "2026-05-16")]
+@[deprecated (since := "2026-06-04")]
 alias isAcyclic_iff_forall_edge_isBridge := isAcyclic_iff_forall_isBridge
 
 theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p q : G.Path v w) :
@@ -366,7 +367,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
 
 /-- A minimally connected graph is a tree. -/
 lemma isTree_of_minimal_connected (h : Minimal Connected G) : IsTree G := by
-  rw [isTree_iff, and_iff_right h.prop, isAcyclic_iff_forall_isBridge, Sym2.forall]
+  rw [isTree_iff, and_iff_right h.prop, isAcyclic_iff_forall_adj_isBridge]
   exact fun _ _ _ ↦ by_contra fun hbr ↦ h.not_prop_of_lt
     (by simpa [deleteEdges, ← edgeSet_ssubset_edgeSet])
     <| h.prop.connected_delete_edge_of_not_isBridge hbr

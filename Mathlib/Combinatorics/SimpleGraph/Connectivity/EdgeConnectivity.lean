@@ -125,7 +125,10 @@ lemma isEdgeConnected_add_one (hk : k ≠ 0) :
 lemma IsBridge.not_isEdgeReachable_two (huv : G.IsBridge s(u, v)) : ¬ G.IsEdgeReachable 2 u v :=
   fun hc ↦ huv <| hc <| Set.encard_singleton _ |>.trans_lt Nat.one_lt_ofNat
 
-/-- An edge is a bridge iff its endpoints are not 2-edge-reachable. -/
+/-- An edge is a bridge iff its endpoints are not 2-edge-reachable.
+
+The forward direction of this is true without assuming `u` and `v` are adjacent.
+See `IsBridge.not_isEdgeReachable_two`. -/
 lemma isBridge_iff_not_isEdgeReachable_two (huv : G.Adj u v) :
     G.IsBridge s(u, v) ↔ ¬G.IsEdgeReachable 2 u v := by
   refine ⟨fun h ↦ h.not_isEdgeReachable_two, fun hc hr ↦ hc fun s hs₂ ↦ ?_⟩
@@ -133,8 +136,8 @@ lemma isBridge_iff_not_isEdgeReachable_two (huv : G.Adj u v) :
   · apply G.isEdgeReachable_one.mpr huv.reachable
     exact lt_of_le_of_ne (ENat.lt_coe_add_one_iff.mp hs₂) hs₁
   obtain ⟨x, rfl⟩ := s.encard_eq_one.mp hs₁
-  by_cases hx : s(u, v) = x
-  · exact hx ▸ hr
+  obtain rfl | hx := eq_or_ne s(u, v) x
+  · exact hr
   · exact deleteEdges_adj.mpr ⟨huv, hx⟩ |>.reachable
 
 @[deprecated (since := "2026-05-16")]

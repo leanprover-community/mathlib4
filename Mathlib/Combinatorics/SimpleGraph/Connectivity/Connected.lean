@@ -778,7 +778,7 @@ theorem isBridge_iff_forall_walk_mem_edges {v w : V} :
     G.IsBridge s(v, w) ↔ ∀ p : G.Walk v w, s(v, w) ∈ p.edges := by
   rw [isBridge_iff, reachable_deleteEdges_iff_exists_walk, not_exists_not]
 
-@[deprecated (since := "2026-04-02")]
+@[deprecated (since := "2026-06-04")]
 alias isBridge_iff_adj_and_forall_walk_mem_edges := isBridge_iff_forall_walk_mem_edges
 
 theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
@@ -837,14 +837,14 @@ theorem isBridge_iff_forall_cycle_notMem {e : Sym2 V} (he : e ∈ G.edgeSet) :
   contrapose
   simp_all [isBridge_iff, ← adj_and_reachable_delete_edges_iff_exists_cycle]
 
-@[deprecated (since := "2026-04-02")]
+@[deprecated (since := "2026-06-04")]
 alias isBridge_iff_adj_and_forall_cycle_notMem := isBridge_iff_forall_cycle_notMem
 
 lemma IsBridge.notMem_edges_of_isCycle {e : Sym2 V} {u : V} {p : G.Walk u u}
     (he : G.IsBridge e) (hp : p.IsCycle) : e ∉ p.edges :=
   fun hep ↦ (isBridge_iff_forall_cycle_notMem <| p.edges_subset_edgeSet hep).mp he _ hp hep
 
-@[deprecated (since := "2026-04-02")]
+@[deprecated (since := "2026-06-04")]
 alias isBridge_iff_mem_and_forall_cycle_notMem := isBridge_iff_forall_cycle_notMem
 
 /-- Deleting a non-bridge edge from a connected graph preserves connectedness. -/
@@ -876,14 +876,15 @@ theorem IsBridge.anti {G' : SimpleGraph V} {e : Sym2 V} (hG : G ≤ G') (h : G'.
     (G.deleteEdges {e}).IsBridge e ↔ G.IsBridge e := by
   induction e with | h u v; simp [isBridge_iff]
 
-@[deprecated "Inline the proof" (since := "2026-04-02")]
+@[deprecated "Use `isBridge_sup_edge` and `IsBridge.of_not_reachable`" (since := "2026-06-04")]
 theorem IsBridge.sup_edge_of_not_reachable {u v : V} (h : ¬G.Reachable u v) :
     (G ⊔ edge u v).IsBridge s(u, v) := isBridge_sup_edge.mpr (of_not_reachable h)
 
 @[deprecated (since := "2026-03-18")]
 alias IsBridge.sup_fromEdgeSet_of_not_reachable := IsBridge.sup_edge_of_not_reachable
 
-/-- Connecting two unreachable vertices by an edge preserves existing bridges. -/
+/-- Connecting two unreachable vertices by an edge preserves existing bridges,
+provided the bridge is already an edge. -/
 theorem IsBridge.sup_edge_of_not_reachable_of_isBridge {u v : V} {e : Sym2 V}
     (h : ¬G.Reachable u v) (hb : G.IsBridge e) (he : e ∈ G.edgeSet) :
     (G ⊔ edge u v).IsBridge e := by
