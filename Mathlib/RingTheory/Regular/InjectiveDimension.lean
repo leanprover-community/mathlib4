@@ -200,7 +200,7 @@ universe u'
 variable {R' : Type u'} [CommRing R'] (f : R →+* R')
 
 /-- Restricting scalar by surjective ring homomorphism is fully faithful. -/
-def ModuleCat.restrictScalarsFullyFaithfulOfSurjective (h : Function.Surjective f) :
+noncomputable def ModuleCat.restrictScalarsFullyFaithfulOfSurjective (h : Function.Surjective f) :
     (ModuleCat.restrictScalars.{v} f).FullyFaithful where
   preimage {X Y} g := ofHom
     { __ := g.hom
@@ -221,7 +221,7 @@ lemma hasProjectiveDimensionLE_finsupp_quotient_regular [Small.{v} R] (ι : Type
   let g' : Shrink.{v} R →ₗ[R] Shrink.{v} (R ⧸ Ideal.span {x}) :=
     ((Shrink.linearEquiv R _).symm.toLinearMap.comp
       (Ideal.Quotient.mkₐ R (Ideal.span {x})).toLinearMap).comp (Shrink.linearEquiv R R).toLinearMap
-  have inj : Function.Injective f' := by simpa [f'] using regR
+  have inj : Function.Injective f' := by simpa [f'] using! regR
   have surj : Function.Surjective g' := by simpa [g'] using Ideal.Quotient.mk_surjective
   have exac : Function.Exact f' g' := by
     intro y
