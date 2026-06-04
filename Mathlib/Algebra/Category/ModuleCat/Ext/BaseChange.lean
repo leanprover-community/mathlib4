@@ -259,9 +259,8 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
     have T_exact : T.ShortExact := LinearMap.shortExact_shortComplexKer surjf
     let TS := (T.map (ModuleCat.extendScalars'.{v, v'} R S))
     have TS_exact : TS.ShortExact := T_exact.map_of_exact (ModuleCat.extendScalars'.{v, v'} R S)
-    have _ : Module.Free S TS.X₂ := by
-      simp only [ModuleCat.extendScalars', ShortComplex.map_X₂, ModuleCat.ExtendScalars'.obj', TS]
-      exact Module.Free.of_equiv (Shrink.linearEquiv S (TensorProduct R S T.X₂)).symm
+    have : Module.Free S TS.X₂ :=
+      Module.Free.of_equiv (Shrink.linearEquiv S (TensorProduct R S T.X₂)).symm
     let NS := ((ModuleCat.extendScalars'.{v, v'} R S).obj N)
     let f : Ext T.X₂ N n →ₗ[R] Ext T.X₁ N n := {
       __ := (mk₀ T.f).precomp N (zero_add n)
@@ -289,10 +288,9 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
       extendScalars'.mapExtLinearMap.{v, v'} S T.X₃ N (n + 1)
     apply IsBaseChange.of_right_exact S h₁ h₂ h₃ _ _ (ih T.X₂ N) (ih T.X₁ N) exac1 surj1 exac2 surj2
     · ext x
-      simp only [ShortComplex.map_X₁, ZeroHom.toFun_eq_coe,
-        AddMonoidHom.toZeroHom_coe, LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk,
-        Function.comp_apply, bilinearComp_apply_apply, ShortComplex.map_X₂, ShortComplex.map_f,
-        ← mapExactFunctor_mk₀, LinearMap.coe_restrictScalars, TS, h₂, f, f', h₁]
+      simp only [ShortComplex.map, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
+        LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, f, f',
+        bilinearComp_apply_apply, ← mapExactFunctor_mk₀, LinearMap.coe_restrictScalars, TS, h₁, h₂]
       rw [extendScalars'.mapExtLinearMap_eq_mapExt, extendScalars'.mapExtLinearMap_eq_mapExt,
         Ext.mapExactFunctor_comp]
     · ext x
@@ -311,6 +309,7 @@ noncomputable def ModuleCat.isoExtendScalars'OfIsBaseChange' {M : ModuleCat.{v} 
 
 namespace CategoryTheory.Abelian
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The isomprohism on `Ext` induced by `ModuleCat.isoExtendScalars'OfIsBaseChange'`. -/
 noncomputable def Ext.isBaseChangeMapAux {M N : ModuleCat.{v} R}

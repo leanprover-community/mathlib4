@@ -99,6 +99,7 @@ instance : (epiWithInjectiveKernel : MorphismProperty C).IsMultiplicative where
               BinaryBicone.inl_snd_assoc, BinaryBicone.inr_snd_assoc, zero_add]
             abel }
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (epiWithInjectiveKernel (C := C)).IsStableUnderRetracts where
   of_retract := by
     rintro X' Y' X Y f' f r ⟨_, hf⟩

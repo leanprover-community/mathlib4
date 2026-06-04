@@ -161,7 +161,7 @@ theorem exists_smodEq (pb : PowerBasis A B) (b : B) :
 
 open Submodule.Quotient in
 theorem exists_gen_dvd_sub (pb : PowerBasis A B) (b : B) : ∃ a, pb.gen ∣ b - algebraMap A B a := by
-  simpa [← Ideal.mem_span_singleton, ← mk_eq_zero, mk_sub, sub_eq_zero] using pb.exists_smodEq b
+  simpa [← Ideal.mem_span_singleton, ← mk_eq_zero, mk_sub, sub_eq_zero] using! pb.exists_smodEq b
 
 section minpoly
 
@@ -418,7 +418,6 @@ theorem linearIndependent_pow [Algebra K S] (x : S) :
   · rw [minpoly.eq_zero h, natDegree_zero]
     exact linearIndependent_empty_type
   refine Fintype.linearIndependent_iff.2 fun g hg i => ?_
-  simp only at hg
   simp_rw [Algebra.smul_def, ← aeval_monomial, ← map_sum] at hg
   apply (fun hn0 => (minpoly.degree_le_of_ne_zero K x (mt (fun h0 => ?_) hn0) hg).not_gt).mtr
   · simp_rw [← C_mul_X_pow_eq_monomial]
