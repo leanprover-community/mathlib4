@@ -58,6 +58,9 @@ protected lemma IsStarConvexSet.univ : IsStarConvexSet R x .univ := by simp [IsS
 protected lemma IsStarConvexSet.inter (hs : IsStarConvexSet R x s) (ht : IsStarConvexSet R x t) :
     IsStarConvexSet R x (s ∩ t) := by simp +contextual [IsStarConvexSet, hs _, ht _]
 
+protected lemma IsStarConvexSet.union (hs : IsStarConvexSet R x s) (ht : IsStarConvexSet R x t) :
+    IsStarConvexSet R x (s ∪ t) := by simp +contextual [IsStarConvexSet, hs _, ht _, or_imp]
+
 protected lemma IsStarConvexSet.sInter {S : Set (Set X)} (hS : ∀ s ∈ S, IsStarConvexSet R x s) :
     IsStarConvexSet R x (⋂₀ S) := by simp +contextual [IsStarConvexSet, hS _ _ _]
 
