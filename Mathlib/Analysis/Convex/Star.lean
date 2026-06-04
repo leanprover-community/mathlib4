@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Module.LinearMap.Prod
 public import Mathlib.Algebra.Order.Module.Synonym
 public import Mathlib.Analysis.Convex.Segment
+public import Mathlib.Geometry.Convex.ConvexSpace.Module
 
 /-!
 # Star-convex sets
@@ -45,12 +46,12 @@ Replace with `Convexity.IsStarConvexSet`.
 
 @[expose] public section
 
+open Convexity Set
+open scoped Convex Pointwise
 
-open Set
+variable {R 𝕜 E F : Type*}
 
-open Convex Pointwise
-
-variable {𝕜 E F : Type*}
+/-! ### Deprecated -/
 
 section OrderedSemiring
 
@@ -66,6 +67,7 @@ variable (𝕜) [SMul 𝕜 E] [SMul 𝕜 F] (x : E) (s : Set E)
 
 /-- Star-convexity of sets. `s` is star-convex at `x` if every segment from `x` to a point in `s` is
 contained in `s`. -/
+@[deprecated IsStarConvexSet +typeChanged +typeChanged (since := "2026-06-04")]
 def StarConvex (𝕜 : Type*) {E : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
     [AddCommMonoid E] [SMul 𝕜 E] (x : E) (s : Set E) : Prop :=
   ∀ ⦃y : E⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 → a • x + b • y ∈ s
@@ -95,30 +97,38 @@ theorem starConvex_iff_pointwise_add_subset :
   rintro hA a b ha hb hab w ⟨au, ⟨u, rfl : u = x, rfl⟩, bv, ⟨v, hv, rfl⟩, rfl⟩
   exact hA hv ha hb hab
 
+@[deprecated IsStarConvexSet.empty +typeChanged (since := "2026-06-04")]
 theorem starConvex_empty (x : E) : StarConvex 𝕜 x ∅ := fun _ hy => hy.elim
 
+@[deprecated IsStarConvexSet.univ +typeChanged (since := "2026-06-04")]
 theorem starConvex_univ (x : E) : StarConvex 𝕜 x univ := fun _ _ _ _ _ _ _ => trivial
 
+@[deprecated IsStarConvexSet.inter +typeChanged (since := "2026-06-04")]
 theorem StarConvex.inter (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 x t) : StarConvex 𝕜 x (s ∩ t) :=
   fun _ hy _ _ ha hb hab => ⟨hs hy.left ha hb hab, ht hy.right ha hb hab⟩
 
+@[deprecated IsStarConvexSet.sInter +typeChanged (since := "2026-06-04")]
 theorem starConvex_sInter {S : Set (Set E)} (h : ∀ s ∈ S, StarConvex 𝕜 x s) :
     StarConvex 𝕜 x (⋂₀ S) := fun _ hy _ _ ha hb hab s hs => h s hs (hy s hs) ha hb hab
 
+@[deprecated IsStarConvexSet.iInter +typeChanged (since := "2026-06-04")]
 theorem starConvex_iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, StarConvex 𝕜 x (s i)) :
     StarConvex 𝕜 x (⋂ i, s i) :=
   sInter_range s ▸ starConvex_sInter <| forall_mem_range.2 h
 
+@[deprecated IsStarConvexSet.iInter₂ +typeChanged (since := "2026-06-04")]
 theorem starConvex_iInter₂ {ι : Sort*} {κ : ι → Sort*} {s : (i : ι) → κ i → Set E}
     (h : ∀ i j, StarConvex 𝕜 x (s i j)) : StarConvex 𝕜 x (⋂ (i) (j), s i j) :=
   starConvex_iInter fun i => starConvex_iInter (h i)
 
+@[deprecated IsStarConvexSet.union +typeChanged (since := "2026-06-04")]
 theorem StarConvex.union (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 x t) :
     StarConvex 𝕜 x (s ∪ t) := by
   rintro y (hy | hy) a b ha hb hab
   · exact Or.inl (hs hy ha hb hab)
   · exact Or.inr (ht hy ha hb hab)
 
+@[deprecated IsStarConvexSet.iUnion +typeChanged (since := "2026-06-04")]
 theorem starConvex_iUnion {ι : Sort*} {s : ι → Set E} (hs : ∀ i, StarConvex 𝕜 x (s i)) :
     StarConvex 𝕜 x (⋃ i, s i) := by
   rintro y hy a b ha hb hab
@@ -126,19 +136,23 @@ theorem starConvex_iUnion {ι : Sort*} {s : ι → Set E} (hs : ∀ i, StarConve
   obtain ⟨i, hy⟩ := hy
   exact ⟨i, hs i hy ha hb hab⟩
 
+@[deprecated IsStarConvexSet.iUnion₂ +typeChanged (since := "2026-06-04")]
 theorem starConvex_iUnion₂ {ι : Sort*} {κ : ι → Sort*} {s : (i : ι) → κ i → Set E}
     (h : ∀ i j, StarConvex 𝕜 x (s i j)) : StarConvex 𝕜 x (⋃ (i) (j), s i j) :=
   starConvex_iUnion fun i => starConvex_iUnion (h i)
 
+@[deprecated IsStarConvexSet.sUnion +typeChanged (since := "2026-06-04")]
 theorem starConvex_sUnion {S : Set (Set E)} (hS : ∀ s ∈ S, StarConvex 𝕜 x s) :
     StarConvex 𝕜 x (⋃₀ S) := by
   rw [sUnion_eq_iUnion]
   exact starConvex_iUnion fun s => hS _ s.2
 
+@[deprecated IsStarConvexSet.prod +typeChanged (since := "2026-06-04")]
 theorem StarConvex.prod {y : F} {s : Set E} {t : Set F} (hs : StarConvex 𝕜 x s)
     (ht : StarConvex 𝕜 y t) : StarConvex 𝕜 (x, y) (s ×ˢ t) := fun _ hy _ _ ha hb hab =>
   ⟨hs hy.1 ha hb hab, ht hy.2 ha hb hab⟩
 
+@[deprecated IsStarConvexSet.pi +typeChanged (since := "2026-06-04")]
 theorem starConvex_pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommMonoid (E i)] [∀ i, SMul 𝕜 (E i)]
     {x : ∀ i, E i} {s : Set ι} {t : ∀ i, Set (E i)} (ht : ∀ ⦃i⦄, i ∈ s → StarConvex 𝕜 (x i) (t i)) :
     StarConvex 𝕜 x (s.pi t) := fun _ hy _ _ ha hb hab i hi => ht hi (hy i hi) ha hb hab
@@ -149,6 +163,7 @@ section Module
 
 variable [Module 𝕜 E] [Module 𝕜 F] {x y z : E} {s : Set E}
 
+@[deprecated IsStarConvexSet.mem +typeChanged (since := "2026-06-04")]
 theorem StarConvex.mem [ZeroLEOneClass 𝕜] (hs : StarConvex 𝕜 x s) (h : s.Nonempty) : x ∈ s := by
   obtain ⟨y, hy⟩ := h
   convert! hs hy zero_le_one le_rfl (add_zero 1)
@@ -186,29 +201,35 @@ theorem starConvex_iff_openSegment_subset [ZeroLEOneClass 𝕜] (hx : x ∈ s) :
   starConvex_iff_segment_subset.trans <|
     forall₂_congr fun _ hy => (openSegment_subset_iff_segment_subset hx hy).symm
 
+@[deprecated IsStarConvexSet.singleton +typeChanged (since := "2026-06-04")]
 theorem starConvex_singleton (x : E) : StarConvex 𝕜 x {x} := by
   rintro y (rfl : y = x) a b _ _ hab
   exact Convex.combo_self hab _
 
+@[deprecated IsStarConvexSet.image +typeChanged (since := "2026-06-04")]
 theorem StarConvex.linear_image (hs : StarConvex 𝕜 x s) (f : E →ₗ[𝕜] F) :
     StarConvex 𝕜 (f x) (f '' s) := by
   rintro _ ⟨y, hy, rfl⟩ a b ha hb hab
   exact ⟨a • x + b • y, hs hy ha hb hab, by rw [f.map_add, f.map_smul, f.map_smul]⟩
 
+@[deprecated IsStarConvexSet.image +typeChanged (since := "2026-06-04")]
 theorem StarConvex.is_linear_image (hs : StarConvex 𝕜 x s) {f : E → F} (hf : IsLinearMap 𝕜 f) :
     StarConvex 𝕜 (f x) (f '' s) :=
   hs.linear_image <| hf.mk' f
 
+@[deprecated IsStarConvexSet.preimage +typeChanged (since := "2026-06-04")]
 theorem StarConvex.linear_preimage {s : Set F} (f : E →ₗ[𝕜] F) (hs : StarConvex 𝕜 (f x) s) :
     StarConvex 𝕜 x (f ⁻¹' s) := by
   intro y hy a b ha hb hab
   rw [mem_preimage, f.map_add, f.map_smul, f.map_smul]
   exact hs hy ha hb hab
 
+@[deprecated IsStarConvexSet.preimage +typeChanged (since := "2026-06-04")]
 theorem StarConvex.is_linear_preimage {s : Set F} {f : E → F} (hs : StarConvex 𝕜 (f x) s)
     (hf : IsLinearMap 𝕜 f) : StarConvex 𝕜 x (preimage f s) :=
   hs.linear_preimage <| hf.mk' f
 
+@[deprecated IsStarConvexSet.add +typeChanged (since := "2026-06-04")]
 theorem StarConvex.add {t : Set E} (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 y t) :
     StarConvex 𝕜 (x + y) (s + t) := by
   rw [← add_image_prod]
@@ -344,10 +365,12 @@ theorem StarConvex.affine_image (f : E →ᵃ[𝕜] F) {s : Set E} (hs : StarCon
   refine ⟨a • x + b • y', ⟨hs hy' ha hb hab, ?_⟩⟩
   rw [Convex.combo_affine_apply hab, hy'f]
 
+@[deprecated IsStarConvexSet.neg +typeChanged (since := "2026-06-04")]
 theorem StarConvex.neg (hs : StarConvex 𝕜 x s) : StarConvex 𝕜 (-x) (-s) := by
   rw [← image_neg_eq_neg]
   exact hs.is_linear_image IsLinearMap.isLinearMap_neg
 
+@[deprecated IsStarConvexSet.sub +typeChanged (since := "2026-06-04")]
 theorem StarConvex.sub (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 y t) :
     StarConvex 𝕜 (x - y) (s - t) := by
   simp_rw [sub_eq_add_neg]
