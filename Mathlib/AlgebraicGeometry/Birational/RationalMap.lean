@@ -148,7 +148,9 @@ variable (X) in
 protected abbrev id : X.PartialMap X := (𝟙 X : X ⟶ X).toPartialMap
 
 @[simp]
-lemma id_compHom (f : X ⟶ Y) : (PartialMap.id X).compHom f = f.toPartialMap := rfl
+lemma id_compHom (f : X ⟶ Y) : (PartialMap.id X).compHom f = f.toPartialMap := by
+  apply PartialMap.ext _ _ rfl
+  simp [Scheme.isoOfEq_rfl]
 
 set_option backward.defeqAttrib.useBackward true in
 instance [X.Over S] [Y.Over S] (f : X ⟶ Y) [f.IsOver S] : f.toPartialMap.IsOver S where
@@ -374,7 +376,7 @@ abbrev Hom.toRationalMap (f : X.Hom Y) : X ⤏ Y := f.toPartialMap.toRationalMap
 
 variable (X) in
 /-- The identity rational map. -/
-abbrev RationalMap.id : X ⤏ X := (𝟙 X : X ⟶ X).toRationalMap
+abbrev RationalMap.id : X ⤏ X := (PartialMap.id X).toRationalMap
 
 variable (S) in
 /-- A rational map is an `S`-map if some partial map in the equivalence class is an `S`-map. -/
@@ -430,12 +432,13 @@ def RationalMap.compHom (f : X ⤏ Y) (g : Y ⟶ Z) : X ⤏ Z := by
   rw [reassoc_of% e]
 
 @[simp]
-lemma RationalMap.id_compHom (f : X ⟶ Y) :
-    (RationalMap.id X).compHom f = f.toRationalMap := rfl
-
-@[simp]
 lemma RationalMap.compHom_toRationalMap (f : X.PartialMap Y) (g : Y ⟶ Z) :
     (f.compHom g).toRationalMap = f.toRationalMap.compHom g := rfl
+
+@[simp]
+lemma RationalMap.id_compHom (f : X ⟶ Y) :
+    (RationalMap.id X).compHom f = f.toRationalMap := by
+  rw [RationalMap.id, ← compHom_toRationalMap, PartialMap.id_compHom]
 
 instance [X.Over S] [Y.Over S] [Z.Over S] (f : X ⤏ Y) (g : Y ⟶ Z)
     [f.IsOver S] [g.IsOver S] : (f.compHom g).IsOver S where
