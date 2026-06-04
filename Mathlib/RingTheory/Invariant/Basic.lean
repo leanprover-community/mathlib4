@@ -359,7 +359,7 @@ theorem IsFractionRing.stabilizerHom_apply_apply_mk (σ : MulAction.stabilizer G
 
 omit [Finite G] [Q.IsPrime] [Algebra.IsInvariant A B G] in
 theorem IsFractionRing.ker_stabilizerHom :
-    (stabilizerHom G P Q K L).ker = (Q.inertia G).subgroupOf (MulAction.stabilizer G Q) := by
+    (stabilizerHom G P Q K L).ker = Q.inertia (MulAction.stabilizer G Q) := by
   rw [stabilizerHom, MonoidHom.ker_comp_of_injective, Ideal.Quotient.ker_stabilizerHom]
   apply fieldEquivOfAlgEquivHom_injective
 
@@ -410,8 +410,8 @@ theorem Ideal.Quotient.stabilizerHom_surjective :
 The isomorphism between `stabilizer G Q ⧸ inertia G Q` and the Galois group of the residue fields.
 -/
 noncomputable def IsFractionRing.stabilizerQuotientInertiaEquiv :
-    MulAction.stabilizer G Q ⧸ (Q.inertia G).subgroupOf (MulAction.stabilizer G Q) ≃* Gal(L/K) :=
-  QuotientGroup.liftEquiv (N := (Q.inertia G).subgroupOf (MulAction.stabilizer G Q))
+    MulAction.stabilizer G Q ⧸ Q.inertia (MulAction.stabilizer G Q) ≃* Gal(L/K) :=
+  QuotientGroup.liftEquiv (N := Q.inertia (MulAction.stabilizer G Q))
     (stabilizerHom_surjective G P Q K L) (ker_stabilizerHom G P Q K L).symm
 
 @[simp]
@@ -423,9 +423,9 @@ The isomorphism between `stabilizer G Q ⧸ inertia G Q` and the Galois group of
 extension `B ⧸ Q` over `A ⧸ P`.
 -/
 noncomputable def Ideal.Quotient.stabilizerQuotientInertiaEquiv :
-    MulAction.stabilizer G Q ⧸ (Q.inertia G).subgroupOf (MulAction.stabilizer G Q) ≃*
+    MulAction.stabilizer G Q ⧸ Q.inertia (MulAction.stabilizer G Q) ≃*
       Gal((B ⧸ Q)/(A ⧸ P)) :=
-  QuotientGroup.liftEquiv (N := (Q.inertia G).subgroupOf (MulAction.stabilizer G Q))
+  QuotientGroup.liftEquiv (N := Q.inertia (MulAction.stabilizer G Q))
     (stabilizerHom_surjective G P Q) (ker_stabilizerHom Q P G).symm
 
 @[simp]
@@ -585,3 +585,5 @@ theorem isInvariant [Finite G] : Algebra.IsInvariant K L G :=
   isInvariant_of_isIntegral G A B K L
 
 end IsFractionRing
+
+#lint
