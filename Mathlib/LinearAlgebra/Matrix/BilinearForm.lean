@@ -352,11 +352,11 @@ lemma Matrix.isSymm_toBilin_iff_isSymm (M : Matrix n n R₁) : (M.toBilin b).IsS
 @[simp]
 lemma LinearMap.BilinForm.isSymm_toMatrix'_iff_isSymm (B : BilinForm R₁ (n → R₁)) :
     B.toMatrix'.IsSymm ↔ B.IsSymm :=
-  LinearMap.BilinForm.isSymm_toMatrix_iff_isSymm B (b := Pi.basisFun (η := n) (R := R₁))
+  B.isSymm_toMatrix_iff_isSymm (Pi.basisFun R₁ n)
 
 @[simp]
 lemma Matrix.isSymm_toBilin'_iff_isSymm (M : Matrix n n R₁) : M.toBilin'.IsSymm ↔ M.IsSymm := by
-  simp [← (M.toBilin').isSymm_toMatrix'_iff_isSymm]
+  simp [← M.toBilin'.isSymm_toMatrix'_iff_isSymm]
 
 end ToMatrix
 
