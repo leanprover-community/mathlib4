@@ -211,8 +211,8 @@ theorem norm_eq_norm' : (‖·‖ : ℂ_[p] → ℝ) = Valued.v.norm := by
     exact @uniformContinuous_norm ℂ_[p] this
   · intro x
     simp only [Valued.v.norm_def, RankOne.hom_eq_embedding]
-    rw [embedding_restrict (PadicComplex.valued p).v x, valuation_extends]
-    exact (PadicAlgCl.valuation_coe p x).symm
+    rw [embedding_restrict (PadicComplex.valued p).v x, valuation_extends,
+      ← PadicAlgCl.valuation_coe]
 
 /-- The norm on `ℂ_[p]` is compatible with the valuation. -/
 theorem norm_eq_norm (x : ℂ_[p]) : ‖x‖ = Valued.v.norm x := by

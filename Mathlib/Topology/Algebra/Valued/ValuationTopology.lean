@@ -58,7 +58,7 @@ lemma map_eq_one_of_forall_lt [MulArchimedean Γ₀] {v : Valuation K Γ₀} {r 
 /-- The basis of open subgroups for the topology on a ring determined by a valuation. -/
 theorem subgroups_basis :
     RingSubgroupsBasis fun γ : (ValueGroup₀ (.ofClass v))ˣ ↦
-      v.ltAddSubgroup (Units.map (ValueGroup₀.embedding (f := (.ofClass v))) γ) :=
+      v.ltAddSubgroup <| Units.map (ValueGroup₀.embedding (f := (.ofClass v))) γ :=
   { inter := by
       classical
       rintro γ₀ γ₁
@@ -231,7 +231,7 @@ variable (R)
 
 /-- An open ball centred at the origin in a valued ring is open. -/
 theorem isOpen_ball (r : ValueGroup₀ (.ofClass _i.v)) :
-    IsOpen (X := R) {x | v.restrict x < r} := by
+    IsOpen {x | v.restrict x < r} := by
   rw [isOpen_iff_mem_nhds]
   rcases eq_or_ne r 0 with rfl | hr
   · simp
@@ -243,7 +243,7 @@ theorem isOpen_ball (r : ValueGroup₀ (.ofClass _i.v)) :
 
 /-- An open ball centred at the origin in a valued ring is closed. -/
 theorem isClosed_ball (r : ValueGroup₀ (.ofClass _i.v)) :
-    IsClosed (X := R) {x | v.restrict x < r} := by
+    IsClosed {x | v.restrict x < r} := by
   rcases eq_or_ne r 0 with rfl | hr
   · simp
   exact AddSubgroup.isClosed_of_isOpen (Valuation.ltAddSubgroup v.restrict (Units.mk0 r hr))
@@ -251,7 +251,7 @@ theorem isClosed_ball (r : ValueGroup₀ (.ofClass _i.v)) :
 
 /-- An open ball centred at the origin in a valued ring is clopen. -/
 theorem isClopen_ball (r : ValueGroup₀ (.ofClass _i.v)) :
-    IsClopen (X := R) {x | v.restrict x < r} :=
+    IsClopen {x | v.restrict x < r} :=
   ⟨isClosed_ball _ _, isOpen_ball _ _⟩
 
 /-- A closed ball centred at the origin in a valued ring is open. -/

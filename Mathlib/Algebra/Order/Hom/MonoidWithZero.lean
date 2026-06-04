@@ -64,7 +64,11 @@ variable [FunLike F α β]
 /-- Turn an element of a type `F`
 satisfying `OrderHomClass F α β` and `MonoidWithZeroHomClass F α β`
 into an actual `OrderMonoidWithZeroHom`.
-This is declared as the default coercion from `F` to `α →+*₀o β`. -/
+This is declared as the default coercion from `F` to `α →+*₀o β`. 
+TODO: Following [#mathlib4 > Mathlib's morphism hierarchy]
+(https://leanprover.zulipchat.com/#narrow/channel/287929-
+mathlib4/topic/Mathlib.27s.20morphism.20hierarchy/with/554383157),
+rename this to `OrderMonoidWithZeroHom.ofClass` and remove `@[coe]` tag.  -/
 @[coe]
 def OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom [OrderHomClass F α β]
     [MonoidWithZeroHomClass F α β] (f : F) : α →*₀o β :=
@@ -244,7 +248,7 @@ theorem toMonoidWithZeroHom_eq_ofClass (f : α →*₀o β) : f.toMonoidWithZero
 
 @[simp]
 theorem ofClass_mk (f : α →*₀ β) (hf : Monotone f) :
-    (.ofClass (OrderMonoidWithZeroHom.mk f hf) : α →*₀ β) = f := by
+    .ofClass (OrderMonoidWithZeroHom.mk f hf) = f := by
   rfl
 
 @[simp]

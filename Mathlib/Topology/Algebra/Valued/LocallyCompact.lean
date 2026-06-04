@@ -275,7 +275,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
     -- and this `c` is either less than or greater than (or equal to) the threshold element
     simp only [MonoidWithZeroHom.coe_ofClass] at hc
     split_ifs at hj' with hcj
-    · simp [Set.mem_setOf_eq, hc, Subtype.coe_le_coe, Units.val_le_val] at hj'
+    · simp only [Set.mem_setOf_eq, hc, Subtype.coe_le_coe, Units.val_le_val] at hj'
       simp [hcj, le_antisymm hj' hzi]
     · simp only [Set.mem_setOf_eq] at hj'
       rw [dif_neg hcj]

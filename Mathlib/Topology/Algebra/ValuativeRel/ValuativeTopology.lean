@@ -201,7 +201,7 @@ variable [_u : UniformSpace R] [IsUniformAddGroup R] [IsValuativeTopology R] (v 
   [v.Compatible]
 
 theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ ↦ True)
-    fun γ : (MonoidWithZeroHom.ValueGroup₀ (.ofClass v))ˣ ↦
+    fun γ : (ValueGroup₀ (.ofClass v))ˣ ↦
       { p : R × R | v.restrict (p.2 - p.1) < γ.1 } := by
   rw [uniformity_eq_comap_nhds_zero]
   exact v.hasBasis_nhds_zero.comap _
@@ -279,7 +279,7 @@ theorem isOpen_ball (r : ValueGroup₀ (.ofClass v)) : IsOpen (X := R) {x | v.re
 /-- For any valuation `v` compatible with the valuative relation on `R`, the open `r`-ball
 around zero `{x | v.restrict x < r}` is closed in the valuative topology. -/
 theorem isClosed_ball (r : ValueGroup₀ (.ofClass v)) :
-    IsClosed (X := R) {x | v.restrict x < r} := by
+    IsClosed {x | v.restrict x < r} := by
   rcases eq_or_ne r 0 with rfl | hr
   · simp
   exact AddSubgroup.isClosed_of_isOpen (Valuation.ltAddSubgroup v.restrict (Units.mk0 r hr))
@@ -294,7 +294,7 @@ theorem isClopen_ball (r : ValueGroup₀ (.ofClass v)) :
 /-- For any valuation `v` compatible with the valuative relation on `R`, the closed `r`-ball
 around zero `{x | v.restrict x ≤ r}` is open in the valuative topology. -/
 theorem isOpen_closedBall {r : ValueGroup₀ (.ofClass v)} (hr : r ≠ 0) :
-  IsOpen (X := R) {x | v.restrict x ≤ r} := by
+  IsOpen {x | v.restrict x ≤ r} := by
   rw [isOpen_iff_mem_nhds]
   intro x hx
   simp only [v.mem_nhds_iff, setOf_subset_setOf]
@@ -304,7 +304,7 @@ theorem isOpen_closedBall {r : ValueGroup₀ (.ofClass v)} (hr : r ≠ 0) :
 /-- For any valuation `v` compatible with the valuative relation on `R`, the closed `r`-ball
 around zero `{x | v.restrict x ≤ r}` is closed in the valuative topology. -/
 theorem isClosed_closedBall (r : ValueGroup₀ (.ofClass v)) :
-    IsClosed (X := R) {x | v.restrict x ≤ r} := by
+    IsClosed {x | v.restrict x ≤ r} := by
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro x hx
   simp only [mem_compl_iff, mem_setOf_eq, not_le] at hx
@@ -316,7 +316,7 @@ theorem isClosed_closedBall (r : ValueGroup₀ (.ofClass v)) :
 /-- For any valuation `v` compatible with the valuative relation on `R`, the closed `r`-ball
 around zero `{x | v.restrict x ≤ r}` is clopen in the valuative topology. -/
 theorem isClopen_closedBall {r : ValueGroup₀ (.ofClass v)} (hr : r ≠ 0) :
-    IsClopen (X := R) {x | v.restrict x ≤ r} :=
+    IsClopen {x | v.restrict x ≤ r} :=
   ⟨isClosed_closedBall _, isOpen_closedBall hr⟩
 
 /-- For any valuation `v` compatible with the valuative relation on `R`, the sphere of radius `r`
@@ -332,13 +332,13 @@ theorem isClopen_sphere {r : ValueGroup₀ (.ofClass v)} (hr : r ≠ 0) :
 /-- For any valuation `v` compatible with the valuative relation on `R`, the sphere of radius `r`
 around zero `{x | v.restrict x = r}` is open in the valuative topology. -/
 theorem isOpen_sphere {r : ValueGroup₀ (.ofClass v)} (hr : r ≠ 0) :
-    IsOpen (X := R) {x | v.restrict x = r} :=
+    IsOpen {x | v.restrict x = r} :=
   isClopen_sphere hr |>.isOpen
 
 /-- For any valuation `v` compatible with the valuative relation on `R`, the sphere of radius `r`
 around zero `{x | v.restrict x = r}` is closed in the valuative topology. -/
 theorem isClosed_sphere (r : ValueGroup₀ (.ofClass v)) :
-    IsClosed (X := R) {x | v.restrict x = r} := by
+    IsClosed {x | v.restrict x = r} := by
   rcases eq_or_ne r 0 with rfl | hr
   · convert! v.isClosed_closedBall 0 using 3
     simp

@@ -461,7 +461,7 @@ def restrict : Valuation R (ValueGroup₀ (.ofClass v)) where
     by_cases H : v x ≠ 0 ∨ v y ≠ 0
     · rcases H with h | h <;>
       simp only [ZeroHom.toFun_eq_coe, toZeroHom_coe, restrict₀_apply, coe_ofClass, h,
-        ↓reduceDIte, le_sup_iff] <;>
+        reduceDIte, le_sup_iff] <;>
       · split_ifs with H _ hy
         all_goals simp [← Units.val_le_val]
         simpa using map_add_le _ (by simp_all) (by simp_all)
@@ -517,7 +517,7 @@ lemma restrict_eq_zero_iff {x : R} : v.restrict x = 0 ↔ v x = 0 := by
 
 @[simp]
 lemma restrict_eq_one_iff {x : R} : v.restrict x = 1 ↔ v x = 1 := by
-  simp [restrict_def,restrict₀_eq_one_iff]
+  simp [restrict_def, restrict₀_eq_one_iff]
 
 @[simp]
 lemma restrict_le_iff {x y : R} : v.restrict x ≤ v.restrict y ↔ v x ≤ v y := by
@@ -540,8 +540,7 @@ lemma exists_div_eq_of_unit (γ : (ValueGroup₀ (.ofClass v))ˣ) :
   have ha0 : v.restrict a ≠ 0 := by simpa using ha
   rw [div_eq_iff ha0, mul_comm, ← embedding_strictMono.injective.eq_iff, map_mul,
     embedding_restrict, embedding_restrict]
-  simp only [MonoidWithZeroHom.coe_ofClass] at hax
-  rw [← hax]
+  rw [← MonoidWithZeroHom.coe_ofClass, ← hax]
   congr
   rw [← WithZero.coe_unzero (Units.ne_zero γ)]
   exact Eq.refl ..
@@ -603,14 +602,14 @@ instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation R
   obtain ⟨x, h0, h1⟩ := hv.exists_val_nontrivial
   rw [Submonoid.nontrivial_iff_exists_ne_one]
   use (Units.mk0 (v x) h0), (MonoidWithZeroHom.ofClass v).mem_valueMonoid (Set.mem_range_self x)
-  simpa [Units.ext_iff] using h1
+  simpa [Units.ext_iff]
 
 instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation R Γ₀}
     [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueGroup (.ofClass v)) := by
   obtain ⟨x, h0, h1⟩ := hv.exists_val_nontrivial
   rw [Subgroup.nontrivial_iff_exists_ne_one]
   use (Units.mk0 (v x) h0), (MonoidWithZeroHom.ofClass v).mem_valueGroup (Set.mem_range_self x)
-  simpa [Units.ext_iff] using h1
+  simpa [Units.ext_iff]
 
 section Field
 
@@ -806,8 +805,8 @@ open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 noncomputable def valueGroup₀Fun (h : v.IsEquiv w) (x : ValueGroup₀ (.ofClass v)) :
     ValueGroup₀ (.ofClass w) :=
   if hx : x = 0 then 0 else
-    have c := (x.zero_or_exists_mk'.resolve_left hx).choose
-    valueGroup.mk (.ofClass w) c.1.1 c.1.2 ((h.eq_zero).ne.mp c.2.1) (h.eq_zero.ne.mp c.2.2)
+    haveI c := (x.zero_or_exists_mk'.resolve_left hx).choose
+    valueGroup.mk (.ofClass w) c.1.1 c.1.2 (h.eq_zero.ne.mp c.2.1) (h.eq_zero.ne.mp c.2.2)
 
 theorem valueGroup₀Fun_spec (h : v.IsEquiv w) {r s : R} (hr : v r ≠ 0) (hs : v s ≠ 0) :
     valueGroup₀Fun h (valueGroup.mk (.ofClass v) r s hr hs) =
@@ -858,9 +857,7 @@ noncomputable def orderMonoidIso (h : v.IsEquiv w) :
         ← Units.mk0_mul, ← Units.mk0_mul]
       · simp only [← Units.val_le_val]
         repeat rw [Units.val_mk0]
-        simp only [MonoidWithZeroHom.coe_ofClass]
-        repeat rw [← map_mul w]
-        rw [← h.le_iff_le]
+        simp only [MonoidWithZeroHom.coe_ofClass, ← map_mul w, ← h.le_iff_le]
         simp
       · simp only [MonoidWithZeroHom.coe_ofClass]
         rw [← map_mul v, ne_eq, h.eq_zero, map_mul w]
@@ -877,7 +874,7 @@ theorem orderMonoidIso_spec (h : v.IsEquiv w) (a : R) :
   · rw [← restrict_eq_zero_iff] at ha
     rwa [ha, map_zero, Eq.comm, ← h_res.eq_zero]
   · rw [(v.restrict_eq_mk ha)]
-    convert! valueGroup₀Fun_spec (h := h) (hs := ha) (r := 1) (by simp)
+    convert valueGroup₀Fun_spec (h := h) (hs := ha) (r := 1) (by simp)
     exact w.restrict_eq_mk ((eq_zero h.symm).ne.mpr ha)
 
 theorem orderMonoidIso_symm (h : v.IsEquiv w) (h' : w.IsEquiv v) :
@@ -1071,16 +1068,12 @@ section Basic
 
 section Monoid
 
-
 /-- A valuation is coerced to the underlying function `R → Γ₀`. -/
 instance (R) (Γ₀) [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] :
     FunLike (AddValuation R Γ₀) R Γ₀ where
   coe v := v.toMonoidWithZeroHom.toFun
-  coe_injective' f g := by
+  coe_injective' f _ h := by
     cases f
-    cases g
-    simp only [ZeroHom.toFun_eq_coe, MonoidWithZeroHom.toZeroHom_coe]
-    intro h
     congr
     exact DFunLike.coe_injective h
 
@@ -1398,7 +1391,7 @@ theorem ofAddValuation_apply (v : AddValuation R (Additive Γ₀)ᵒᵈ) (r : R)
     ofAddValuation v r = Additive.toMul (OrderDual.ofDual (v r)) :=
   rfl
 
-instance (v : Valuation R Γ₀) : CommMonoidWithZero (MonoidHom.mrange v) :=
+instance (v : Valuation R Γ₀) : CommMonoidWithZero (MonoidHom.mrange (.ofClass v : R →*₀ _)) :=
   inferInstanceAs (CommMonoidWithZero (MonoidHom.mrange (MonoidWithZeroHom.ofClass v)))
 
 @[simp]
@@ -1406,7 +1399,7 @@ lemma val_mrange_zero (v : Valuation R Γ₀) : ((0 : MonoidHom.mrange v) : Γ�
   rfl
 
 instance {Γ₀} [LinearOrderedCommGroupWithZero Γ₀] [DivisionRing K] (v : Valuation K Γ₀) :
-    CommGroupWithZero (MonoidHom.mrange v) :=
+    CommGroupWithZero (MonoidHom.mrange (.ofClass v : K →*₀ _)) :=
   inferInstanceAs (CommGroupWithZero (MonoidHom.mrange (MonoidWithZeroHom.ofClass v)))
 
 end Valuation

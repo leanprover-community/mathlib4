@@ -604,7 +604,7 @@ lemma valuedAdicCompletion_surjective :
   Valued.valuedCompletion_surjective_iff.mpr <| .of_comp (v.valuation_surjective K)
 
 lemma adicCompletion_valueGroup_eq : MonoidWithZeroHom.valueGroup (.ofClass (Valued.v
-    (R := adicCompletion K v))) =
+      (R := adicCompletion K v))) =
     MonoidWithZeroHom.valueGroup (.ofClass (valuation K v)) := by
   ext n
   simp only [MonoidWithZeroHom.mem_valueGroup_iff_of_comm, ne_eq, map_eq_zero]

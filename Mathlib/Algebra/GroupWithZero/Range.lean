@@ -146,6 +146,7 @@ namespace ValueGroup₀
 lemma embedding_injective : Function.Injective (embedding (f := f)) := by
   simp [embedding, WithZero.map'_injective_iff]
 
+@[simp]
 lemma embedding_inj {a b : ValueGroup₀ f} : embedding a = embedding b ↔ a = b :=
   ⟨fun h ↦ embedding_injective h, congrArg _⟩
 

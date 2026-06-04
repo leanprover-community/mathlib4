@@ -74,11 +74,10 @@ lemma nonempty_rankOne_iff_mulArchimedean {v : Valuation R Γ₀} [v.IsNontrivia
       exact StrictMono.comp strictMono_id (f.monotone'.strictMono_of_injective hf)
     let rf : Multiplicative ℝ →* ℝ≥0ˣ := {
       toFun x := Units.mk0 (.mk ((2 : ℝ) ^ (log (M := ℝ) x)) (by positivity)) <| by
-        rw [ne_eq, NNReal.eq_iff]
-        simp only [NNReal.coe_mk, NNReal.coe_zero]
+        simp only [ne_eq, NNReal.eq_iff, NNReal.coe_mk, NNReal.coe_zero]
         positivity
-      map_one' := by ext; dsimp; simp
-      map_mul' _ _ := by ext; dsimp; simp [Real.rpow_add]
+      map_one' := by ext; simp
+      map_mul' _ _ := by ext; simp [Real.rpow_add]
       }
     have H : StrictMono (map' (rf.comp e)) := by
       refine map'_strictMono ?_
@@ -189,11 +188,11 @@ def rankOne_of_nontrivial (H : Nontrivial (ValueGroup₀ (.ofClass v))ˣ) : Rank
     obtain ⟨k, hk⟩ := ValueGroup₀.restrict₀_surjective _ x.val
     have h0 : v k ≠ 0 := by
       apply_fun embedding at hk
-      simp at hk
+      simp only [embedding_restrict₀, MonoidWithZeroHom.coe_ofClass] at hk
       simp [hk]
     have h1 : v k ≠ 1 := by
       apply_fun embedding at hk
-      simp at hk
+      simp only [embedding_restrict₀, MonoidWithZeroHom.coe_ofClass] at hk
       apply_fun Units.val at hx using
           Units.val_injective (α := (MonoidWithZeroHom.ofClass v).ValueGroup₀)
       intro h
