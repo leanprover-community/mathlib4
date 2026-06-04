@@ -800,6 +800,7 @@ Q733081:
 Q737851:
   title: Banach–Tarski theorem
   url: https://github.com/aetilley/banach-tarski/blob/a920deea0a3f3207049f8201fc1e7a0bb8cf4c93/BanachTarski/Basic.lean#L2577
+  comment: "Note that this statement of the paradox allows reflections in the set of isometries"
 
 Q737892:
   title: Bendixson–Dulac theorem
@@ -1520,6 +1521,7 @@ Q1196538:
 Q1196729:
   title: Mertens's theorems
   url: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/58e860034029b94547abe9bd2065f5b3e3f82ebb/PrimeNumberTheoremAnd/RosserSchoenfeldPrime.lean#L788
+  comment: "This link is to a proof of Mertens' second theorem"
 
 Q1202608:
   title: De Gua's theorem
@@ -2019,8 +2021,7 @@ Q2190744:
 
 Q2197859:
   title: Nicomachus's theorem
-  decl: sum_Ico_pow
-  comment: "Nicomachus's theorem states that the sum of the first n cubes is the square of the nth triangular number. The `sum_Ico_pow` theorem generalizes this to sums of other powers using Bernoulli numbers."
+  comment: "Nicomachus's theorem states that the sum of the first n cubes is the square of the nth triangular number. This follows from Faulhaber's formula, formalized in mathlib as `sum_Ico_pow`, which provides a geeneral formula for sums of powers using Bernoulli numbers."
 
 Q2222575:
   title: Shell theorem
