@@ -253,24 +253,24 @@ lemma nodup_tail_reverse (l : List α) (h : l[0]? = l.getLast?) :
         List.nodup_append_comm]
       simp [List.getLast_eq_getElem]
 
-lemma Nodup.head_suffix_mem (h : l₁ <:+ l₂) {hne : l₂ ≠ []} (hl : l₂.head hne ∈ l₁)
+lemma Nodup.eq_of_head_mem_of_suffix (h : l₁ <:+ l₂) {hne : l₂ ≠ []} (hl : l₂.head hne ∈ l₁)
     (hnd : l₂.Nodup) : l₁ = l₂ := by
   grind [List.IsSuffix]
 
-lemma Nodup.getLast_prefix_mem (h : l₁ <+: l₂) {hne : l₂ ≠ []} (hl : l₂.getLast hne ∈ l₁)
+lemma Nodup.eq_of_getLast_mem_of_prefix (h : l₁ <+: l₂) {hne : l₂ ≠ []} (hl : l₂.getLast hne ∈ l₁)
     (hnd : l₂.Nodup) : l₁ = l₂ := by
   grind [List.IsPrefix]
 
-lemma Nodup.head_infix_mem (h : l₁ <:+: l₂) {hne : l₂ ≠ []} (hl : l₂.head hne ∈ l₁)
+lemma Nodup.prefix_of_head_mem_of_infix (h : l₁ <:+: l₂) {hne : l₂ ≠ []} (hl : l₂.head hne ∈ l₁)
     (hnd : l₂.Nodup) : l₁ <+: l₂ := by
   grind [List.IsInfix]
 
-lemma Nodup.getLast_infix_mem (h : l₁ <:+: l₂) {hne : l₂ ≠ []} (hl : l₂.getLast hne ∈ l₁)
-    (hnd : l₂.Nodup) : l₁ <:+ l₂ := by
+lemma Nodup.suffix_of_getLast_mem_of_infix (h : l₁ <:+: l₂) {hne : l₂ ≠ []}
+    (hl : l₂.getLast hne ∈ l₁) (hnd : l₂.Nodup) : l₁ <:+ l₂ := by
   grind [List.IsInfix]
 
-lemma Nodup.head_getLast_infix_mem (h : l₁ <:+: l₂) {hne : l₂ ≠ []} (hl : l₂.head hne ∈ l₁)
-    (hl : l₂.getLast hne ∈ l₁) (hnd : l₂.Nodup) : l₁ = l₂ := by
+lemma Nodup.eq_of_head_mem_of_getLast_mem_of_infix (h : l₁ <:+: l₂) {hne : l₂ ≠ []}
+    (hlh : l₂.head hne ∈ l₁) (hlg : l₂.getLast hne ∈ l₁) (hnd : l₂.Nodup) : l₁ = l₂ := by
   grind [List.IsInfix]
 
 theorem Nodup.erase_getElem [BEq α] [LawfulBEq α] {l : List α} (hl : l.Nodup)
