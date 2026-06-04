@@ -167,6 +167,13 @@ theorem compContinuousLinearMap_applyComposition {n : ℕ} (p : FormalMultilinea
   ext
   simp [applyComposition, Function.comp_def]
 
+@[simp]
+theorem applyComposition_apply_prod {H : Type*} [CommRing H] [Algebra 𝕜 H] [TopologicalSpace H]
+    [IsTopologicalRing H] [ContinuousConstSMul 𝕜 H] (p : FormalMultilinearSeries 𝕜 E H) {n : ℕ}
+    (c : Composition n) (v : Fin n → E) :
+    ∏ i, p.applyComposition c v i = ∏ i, p (c.blocksFun i) (v ∘ c.embedding i) := by
+  rfl
+
 end FormalMultilinearSeries
 
 namespace ContinuousMultilinearMap
