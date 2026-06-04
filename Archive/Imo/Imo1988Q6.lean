@@ -171,7 +171,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   rw [exceptional_empty, Set.diff_empty]
   -- Now we are ready to prove that p' = (c, m_x) lies on the upper branch.
   -- We need to check two conditions: H(c, m_x) and c < m_x.
-  constructor <;> dsimp only
+  constructor
   · -- The first condition is not so hard. After all, c is the other root of the quadratic equation.
     rw [H_symm, H_quad]
     simpa using h_root

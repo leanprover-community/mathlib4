@@ -499,6 +499,10 @@ theorem get_tail (l : List α) (i) (h : i < l.tail.length)
     l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
   simp
 
+theorem getElem_mem_tail {k : ℕ} (l : List α) (h : k ≠ 0) (hk : k < l.length) :
+    l[k]'hk ∈ l.tail := by
+  cases l <;> grind
+
 /-! ### sublists -/
 
 attribute [refl] List.Sublist.refl
@@ -665,7 +669,7 @@ theorem get_reverse' (l : List α) (n) (hn') :
   simp
 
 theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by lia⟩] := by
-  refine ext_get (by convert h) (by grind)
+  refine ext_get (by convert! h) (by grind)
 
 end deprecated
 

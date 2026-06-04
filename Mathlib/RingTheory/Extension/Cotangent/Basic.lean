@@ -223,7 +223,7 @@ lemma Hom.sub_aux (f g : Hom P P') (x y) :
         Function.comp_apply,
         ker, RingHom.mem_ker, map_sub, algebraMap_toRingHom,
         algebraMap_σ, sub_self, toAlgHom_apply]
-  convert this using 1
+  convert! this using 1
   simp only [map_mul]
   ring
 
@@ -455,6 +455,7 @@ lemma cotangentSpaceBasis_repr_tmul (r x i) :
   simp only [cotangentSpaceBasis, Basis.baseChange_repr_tmul, mvPolynomialBasis_repr_apply,
     Algebra.smul_def, mul_comm r, algebraMap_apply, toExtension]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma cotangentSpaceBasis_repr_one_tmul (x i) :
     P.cotangentSpaceBasis.repr (1 ⊗ₜ .D _ _ x) i = aeval P.val (pderiv i x) := by
@@ -476,6 +477,7 @@ def cotangentRestrict {σ : Type*} {u : σ → ι} (hu : Function.Injective u) :
   Finsupp.lcomapDomain u hu ∘ₗ P.cotangentSpaceBasis.repr.toLinearMap ∘ₗ
     P.toExtension.cotangentComplex
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma cotangentRestrict_mk {σ : Type*} {u : σ → ι} (hu : Function.Injective u) (x : P.ker) :
     cotangentRestrict P hu (Extension.Cotangent.mk x) =
@@ -517,6 +519,7 @@ lemma repr_CotangentSpaceMap (f : Hom P P') (i j) :
   rw [CotangentSpace.map_tmul, map_one]
   erw [cotangentSpaceBasis_repr_one_tmul, Hom.toAlgHom_X]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma toKaehler_tmul_D (i) :
     P.toExtension.toKaehler (1 ⊗ₜ D R P.Ring (X i)) = D _ _ (P.val i) :=
@@ -530,6 +533,7 @@ lemma toKaehler_cotangentSpaceBasis (i) :
 
 end Generators
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 -- TODO: should infer_instance be considered normalising?
 set_option linter.flexible false in
@@ -600,6 +604,7 @@ abbrev Generators.equivH1Cotangent (P : Generators R S ι) :
     P.toExtension.H1Cotangent ≃ₗ[S] H1Cotangent R S :=
   Generators.H1Cotangent.equiv _ _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 -- TODO: should infer_instance be considered normalising?
 set_option linter.flexible false in

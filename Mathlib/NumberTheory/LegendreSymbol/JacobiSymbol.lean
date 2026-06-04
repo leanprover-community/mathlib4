@@ -408,7 +408,7 @@ theorem quadratic_reciprocity' {a b : ℕ} (ha : Odd a) (hb : Odd b) :
   -- define the right-hand side for fixed `a` as a `ℕ →* ℤ`
   let rhs : ℕ → ℕ →* ℤ := fun a =>
     { toFun := fun x => qrSign x a * J(x | a)
-      map_one' := by convert ← mul_one (M := ℤ) _; (on_goal 1 => symm); all_goals apply one_left
+      map_one' := by convert! ← mul_one (M := ℤ) _; (on_goal 1 => symm); all_goals apply one_left
       map_mul' := fun x y => by
         simp_rw [qrSign.mul_left x y a, Nat.cast_mul, mul_left, mul_mul_mul_comm] }
   have rhs_apply : ∀ a b : ℕ, rhs a b = qrSign b a * J(b | a) := fun a b => rfl
