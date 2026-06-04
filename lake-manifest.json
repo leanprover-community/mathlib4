@@ -5,7 +5,7 @@
    "type": "git",
    "subDir": null,
    "scope": "leanprover-community",
-   "rev": "373598f95357e173818035c8c835cd927a9d767f",
+   "rev": "9196a81145e1e291a1469288e77392b0e1b9a493",
    "name": "plausible",
    "manifestFile": "lake-manifest.json",
    "inputRev": "main",
