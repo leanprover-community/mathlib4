@@ -420,8 +420,10 @@ lemma degree_derivative (hp : p.natDegree ≠ 0) : degree (derivative p) = ↑(n
     simp at hp
 
 @[simp]
-lemma natDegree_derivative (hp : p.natDegree ≠ 0) : p.derivative.natDegree = p.natDegree - 1 := by
-  rw [natDegree, degree_derivative hp]; rfl
+lemma natDegree_derivative (p : R[X]) : p.derivative.natDegree = p.natDegree - 1 := by
+  by_cases hp : p.natDegree = 0
+  · grind [natDegree_derivative_le]
+  · simp [natDegree, degree_derivative hp]
 
 @[simp] lemma derivative_eq_zero : p.derivative = 0 ↔ p.natDegree = 0 where
   mp hp := by
@@ -446,7 +448,7 @@ lemma derivative_ne_zero : p.derivative ≠ 0 ↔ p.natDegree ≠ 0 := derivativ
     leadingCoeff (derivative p) = leadingCoeff p * p.natDegree := by
   by_cases hp : p.natDegree = 0
   · simp [hp]
-  rw [leadingCoeff, leadingCoeff, coeff_derivative, natDegree_derivative hp]
+  rw [leadingCoeff, leadingCoeff, coeff_derivative, natDegree_derivative]
   norm_cast
   congr <;> lia
 
