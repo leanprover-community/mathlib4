@@ -27,13 +27,13 @@ metric `g` if and only if the differentiated metric tensor `∇ g` (defined by
   tensor at `x` to vector fields and sections which are differentiable at `x`,
   resp. to extensions of tangent vectors and sections at `x` to differentiable vector fields and
   sections near `x`.
-* `CovariantDerivative.IsCompatible`: predicate for a connection to be metric, namely that
+* `CovariantDerivative.IsMetric`: predicate for a connection to be metric, namely that
   `∇` is metric iff its `metricCompatibilityTensor` vanishes
 
 ## TODO
 
 * When Mathlib has a notion of parallel transport, prove the equivalence of
- `CovariantDerivative.IsCompatible` with the characterisation that parallel transport be an
+ `CovariantDerivative.IsMetric` with the characterisation that parallel transport be an
   isometry.
 
 * Given connections on bundles `V` and `W`, there is an induced connnection on the bundle Hom(V, W).
@@ -50,8 +50,8 @@ variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  -- Let `V` be a bundle over `M`, endowed with a Riemannian metric.
-  (F : Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
+  -- Let `V` be a bundle over `M` with standard fiber `F`, endowed with a Riemannian metric.
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
   [∀ x, AddCommGroup (V x)] [∀ x, Module ℝ (V x)]
   [∀ x : M, TopologicalSpace (V x)]
@@ -82,8 +82,6 @@ variable (cov : CovariantDerivative I F V)
 section. -/
 local syntax "∇" term:arg term : term
 local macro_rules | `(∇ $X $σ) => `(fun (x : M) ↦ cov $σ x ($X x))
-
-variable {F}
 
 /-- The function defining the compatibility tensor for `∇` w.r.t. `g`:
 prefer using `metricCompatibilityTensor` instead -/
@@ -157,12 +155,12 @@ variable {I} [ContMDiffVectorBundle 1 F V I] in
 /-- Predicate saying that a connection `∇` on a Riemannian bundle `(V, g)` is compatible with the
 ambient metric, i.e. for all differentiable vector fields `X` on `M` and sections `σ` and `τ` of
 `V`, we have `X ⟨σ, τ⟩ = ⟨∇_X σ, τ⟩ + ⟨σ, ∇_X τ⟩`. -/
-public def IsCompatible [FiniteDimensional ℝ F] : Prop := metricCompatibilityTensor cov = 0
+public def IsMetric [FiniteDimensional ℝ F] : Prop := metricCompatibilityTensor cov = 0
 
 variable {I} [ContMDiffVectorBundle 1 F V I]
 
 variable {cov} in
-public lemma IsCompatible.mvfderiv_inner_eq [FiniteDimensional ℝ F] (hcov : cov.IsCompatible)
+public lemma IsMetric.mvfderiv_inner_eq [FiniteDimensional ℝ F] (hcov : cov.IsMetric)
     {x : M} (X : Π x, TangentSpace I x) {σ τ : (x : M) → V x}
     (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) :
     d% ⟪σ, τ⟫ x (X x) = ⟪∇ X σ, τ⟫ x + ⟪σ, ∇ X τ⟫ x := by
@@ -172,8 +170,8 @@ public lemma IsCompatible.mvfderiv_inner_eq [FiniteDimensional ℝ F] (hcov : co
 
 variable [IsManifold I 1 M]
 
-public lemma isCompatible_iff [FiniteDimensional ℝ F] :
-    cov.IsCompatible ↔ ∀ {x : M} {X : Π x, TangentSpace I x} {σ τ : (x : M) → V x},
+public lemma isMetric_iff [FiniteDimensional ℝ F] :
+    cov.IsMetric ↔ ∀ {x : M} {X : Π x, TangentSpace I x} {σ τ : (x : M) → V x},
       MDiffAt (T% X) x → MDiffAt (T% σ) x → MDiffAt (T% τ) x →
       d% ⟪σ, τ⟫ x (X x) = ⟪∇ X σ, τ⟫ x + ⟪σ, ∇ X τ⟫ x := by
   refine ⟨fun hcov x X σ τ hX ↦ hcov.mvfderiv_inner_eq X, fun h ↦ ?_⟩
