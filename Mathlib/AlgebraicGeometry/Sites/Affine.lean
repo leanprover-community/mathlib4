@@ -45,6 +45,7 @@ noncomputable def affineOverMk {P : MorphismProperty Scheme.{u}} {R : CommRingCa
 variable (P : MorphismProperty Scheme.{u}) [P.IsMultiplicative] [IsZariskiLocalAtSource P]
   [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The `Spec` functor from affine `P`-schemes over `S` to `P`-schemes over `S` is dense
 if `P` is local at the source. -/
 instance isCoverDense_toOver_Spec :
