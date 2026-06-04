@@ -581,7 +581,7 @@ def MonoidHom.toMulEquiv [MulOneClass M] [MulOneClass N] (f : M →* N) (g : N �
 
 `Monoid.End M` is by definition equal to `M →* M`; this equivalence is the identity and is
 occasionally useful for transporting statements between the two reducibly-equal types. -/
-@[to_additive /-- The identity equivalence between the monoid of endomorphisms
+@[to_additive /-- The identity equivalence between the additive monoid of endomorphisms
 `AddMonoid.End M` and the type `M →+ M` of additive monoid homomorphisms from `M` to itself.
 
 `AddMonoid.End M` is by definition equal to `M →+ M`; this equivalence is the identity and is
