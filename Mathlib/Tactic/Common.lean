@@ -9,7 +9,7 @@ module  -- shake: keep-all, shake: keep-downstream
 
 public import Aesop
 public import Qq
--- public import Plausible
+public import Plausible
 
 -- Import common Batteries tactics and commands
 public import Batteries.Tactic.Basic
