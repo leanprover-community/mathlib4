@@ -294,9 +294,9 @@ theorem card_stabilizer_eq_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
   have : IsScalarTower (R ⧸ p) p.ResidueField P.ResidueField := .of_algebraMap_eq' heq
   let f := IsFractionRing.stabilizerHom G p P p.ResidueField P.ResidueField
   have : IsGalois p.ResidueField P.ResidueField :=
-    { __ := Ideal.foobar.normal G p P p.ResidueField P.ResidueField }
+    { __ := Ideal.IsFractionRing.normal G p P p.ResidueField P.ResidueField }
   have : Module.Finite p.ResidueField P.ResidueField :=
-    Ideal.foobar.finite_of_isInvariant G p P p.ResidueField P.ResidueField
+    Ideal.IsFractionRing.finite_of_isInvariant G p P p.ResidueField P.ResidueField
   have h1 := IsGalois.card_aut_eq_finrank p.ResidueField P.ResidueField
   have : Subgroup.index _ = _ := Nat.card_congr
     (IsFractionRing.stabilizerQuotientInertiaEquiv G p P p.ResidueField P.ResidueField).toEquiv

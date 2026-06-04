@@ -516,24 +516,28 @@ lemma Ideal.Quotient.exists_algEquiv_fixedPoint_quotient_under
     refine .trans ?_ (σ.apply_symm_apply _)
     rw [← h₂, ← e, h₁]
 
-open Polynomial in
-include G in
-lemma Ideal.foobar.normal [P.IsPrime] [Q.IsPrime] (K L : Type*) [Field K] [Field L] [Algebra K L]
+namespace Ideal.IsFractionRing
+
+variable [P.IsPrime] [Q.IsPrime] (K L : Type*) [Field K] [Field L] [Algebra K L]
     [Algebra (A ⧸ P) K] [IsFractionRing (A ⧸ P) K] [Algebra (B ⧸ Q) L] [IsFractionRing (B ⧸ Q) L]
-    [Algebra (A ⧸ P) L] [IsScalarTower (A ⧸ P) (B ⧸ Q) L] [IsScalarTower (A ⧸ P) K L] :
-    Normal K L := by
+    [Algebra (A ⧸ P) L] [IsScalarTower (A ⧸ P) (B ⧸ Q) L] [IsScalarTower (A ⧸ P) K L]
+
+-- PR ready!
+open Polynomial in
+include P Q G in
+lemma normal : Normal K L := by
   have := Algebra.IsInvariant.isIntegral A B G
   have := isAlgebraic_of_isFractionRing (A ⧸ P) (B ⧸ Q) K L
   constructor
   intro x
   obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (B ⧸ Q) x
   obtain ⟨b, a, ha, h⟩ := (Algebra.IsAlgebraic.isAlgebraic (R := A ⧸ P) y).exists_smul_eq_mul x hy
-  obtain ⟨a, rfl⟩ := Ideal.Quotient.mk_surjective a
-  obtain ⟨b, rfl⟩ := Ideal.Quotient.mk_surjective b
+  obtain ⟨a, rfl⟩ := Quotient.mk_surjective a
+  obtain ⟨b, rfl⟩ := Quotient.mk_surjective b
   simp_rw [← Quotient.algebraMap_eq] at *
   cases nonempty_fintype G
   obtain ⟨p, hp, -, h_monic⟩ := lifts_and_natDegree_eq_and_monic
-    (Algebra.IsInvariant.charpoly_mem_lifts A B G b) (MulSemiringAction.monic_charpoly _ _)
+    (Algebra.IsInvariant.charpoly_mem_lifts A B G b) (MulSemiringAction.monic_charpoly ..)
   have h_eval : p.aeval b = 0 := by
     rw [← eval_map_algebraMap, hp, MulSemiringAction.eval_charpoly]
   let q := p.comp (C a * X)
@@ -546,11 +550,10 @@ lemma Ideal.foobar.normal [P.IsPrime] [Q.IsPrime] (K L : Type*) [Field K] [Field
     simp_rw [← IsScalarTower.algebraMap_eq]
   replace h_eval : ((q.map (algebraMap A (A ⧸ P))).map (algebraMap (A ⧸ P) K)).aeval d = 0 := by
     simp_rw [q, map_comp, Polynomial.map_mul, map_C, map_X, aeval_comp, aeval_mul, aeval_C, aeval_X,
-      ← RingHom.comp_apply, ← RingHom.comp_assoc, comm₁, RingHom.comp_apply, d, mul_div, ← map_mul,
-      ← Algebra.smul_def, h, map_mul]
-    rw [mul_div_cancel_left₀ _ (by simpa using hy)]
-    simp_rw [aeval_map_algebraMap, aeval_algebraMap_apply,
-      aeval_map_algebraMap, aeval_algebraMap_apply, h_eval, map_zero]
+      ← RingHom.comp_apply, ← RingHom.comp_assoc, comm₁, RingHom.comp_apply, d, mul_div, ← map_mul]
+    rw [← Algebra.smul_def, h, map_mul, mul_div_cancel_left₀ _ (by simpa using hy),
+      aeval_map_algebraMap, aeval_algebraMap_apply, aeval_map_algebraMap, aeval_algebraMap_apply,
+      h_eval, map_zero, map_zero]
   replace h_splits : (p.map (algebraMap A B)).Splits := by
     rw [hp]
     exact MulSemiringAction.splits_charpoly G b
@@ -559,19 +562,18 @@ lemma Ideal.foobar.normal [P.IsPrime] [Q.IsPrime] (K L : Type*) [Field K] [Field
     refine .comp_of_degree_le_one ?_ (degree_C_mul_X_le _)
     rw [Polynomial.map_map, Polynomial.map_map, comm₁, RingHom.comp_assoc, comm₂,
       ← RingHom.comp_assoc, ← Polynomial.map_map]
-    exact h_splits.map _
+    apply h_splits.map
   · simp_rw [q, map_comp, Polynomial.map_mul, map_C, map_X, Polynomial.map_map]
     exact mt (comp_C_mul_X_eq_zero_iff (by simpa)).mp (map_monic_ne_zero h_monic)
 
-lemma Ideal.foobar.finite_of_isInvariant [P.IsPrime] [Q.IsPrime]
-    (K L : Type*) [Field K] [Field L] [Algebra K L]
-    [Algebra (A ⧸ P) K] [IsFractionRing (A ⧸ P) K] [Algebra (B ⧸ Q) L] [IsFractionRing (B ⧸ Q) L]
-    [Algebra (A ⧸ P) L] [IsScalarTower (A ⧸ P) (B ⧸ Q) L] [IsScalarTower (A ⧸ P) K L]
-    [SMulCommClass G A B] [Algebra.IsSeparable K L] :
+include P Q in
+lemma finite_of_isInvariant [SMulCommClass G A B] [Algebra.IsSeparable K L] :
     Module.Finite K L := by
-  have : IsGalois K L := { __ := Ideal.foobar.normal G P Q K L }
+  have : IsGalois K L := { __ := normal G P Q K L }
   have := Finite.of_surjective _ (IsFractionRing.stabilizerHom_surjective G P Q K L)
-  exact IsGalois.finiteDimensional_of_finite _ _
+  apply IsGalois.finiteDimensional_of_finite
+
+end Ideal.IsFractionRing
 
 attribute [local instance] Ideal.Quotient.field in
 include G in
@@ -580,14 +582,14 @@ For any domain `k` containing `B ⧸ Q`,
 any endomorphism of `k` can be restricted to an endomorphism of `B ⧸ Q`. -/
 lemma Ideal.Quotient.normal [P.IsMaximal] [Q.IsMaximal] :
     Normal (A ⧸ P) (B ⧸ Q) := by
-  exact foobar.normal G P Q (A ⧸ P) (B ⧸ Q)
+  exact IsFractionRing.normal G P Q (A ⧸ P) (B ⧸ Q)
 
 attribute [local instance] Ideal.Quotient.field in
 /-- If the extension `B/Q` over `A/P` is separable, then it is finite dimensional. -/
 lemma Ideal.Quotient.finite_of_isInvariant [P.IsMaximal] [Q.IsMaximal]
     [SMulCommClass G A B] [Algebra.IsSeparable (A ⧸ P) (B ⧸ Q)] :
     Module.Finite (A ⧸ P) (B ⧸ Q) := by
-  exact foobar.finite_of_isInvariant G P Q (A ⧸ P) (B ⧸ Q)
+  exact IsFractionRing.finite_of_isInvariant G P Q (A ⧸ P) (B ⧸ Q)
 
 end normal
 
