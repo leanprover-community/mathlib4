@@ -70,10 +70,9 @@ example {G : Type} [Group G] (a b c d : G) (h : c = (a*b^2)*((b*b)⁻¹*a⁻¹)*
 syntax (name := group) "group" (location)? : tactic
 
 macro_rules
-| `(tactic| group $[$loc]?) =>
-  `(tactic| first
-    | repeat1 fail_if_no_progress
-        (simp -decide -failIfUnchanged only
+| `(tactic| group $[$loc]?) => do
+  let baseSimpTac ← `(tactic |
+    simp -decide -failIfUnchanged only
           [commutatorElement_def, mul_one, one_mul,
             ← zpow_neg_one, ← zpow_natCast, ← zpow_mul,
             Int.natCast_add, Int.natCast_mul,
@@ -83,8 +82,27 @@ macro_rules
             ← zpow_add, ← zpow_add_one, ← zpow_one_add,
             _zpow_trick, _zpow_trick_one, _zpow_trick_one',
             tsub_self, sub_self, add_neg_cancel, neg_add_cancel]
-          $[$loc]?
-        <;> ring_nf (ifUnchanged := .silent) $[$loc]?)
+          $[$loc]?)
+  -- call the `ring_nf` tactic to simplify exponents
+  let simpExpTac ← `(tactic |
+    ring_nf (ifUnchanged := .silent) $[$loc]?)
+  -- tactic block for applying cancellation on the *right*
+  let rightCancelTac ← `(tactic |
+    simp -decide -failIfUnchanged only [mul_left_inj] $[$loc]?)
+  -- tactic block for applying cancellation on the *left*
+  let leftCancelTac ← `(tactic |
+    simp -decide -failIfUnchanged only [↓mul_assoc, mul_right_inj] $[$loc]?)
+  -- post-processing tactic for cleaning up expressions of the form ( · )^(-1) to ( · )⁻¹
+  let cleanUpTac ← `(tactic |
+    simp -decide -failIfUnchanged only [zpow_neg _ 1, zpow_one, ↓← mul_assoc] $[$loc]?)
+  -- normalise the expression, apply left and right cancellation and then clean up the expression
+  -- after the simplifying the expression
+  `(tactic| first
+    | fail_if_no_progress (
+      repeat (fail_if_no_progress ($baseSimpTac <;> $simpExpTac));
+      <;> repeat (fail_if_no_progress ($rightCancelTac <;> $leftCancelTac));
+      <;> $cleanUpTac
+    )
     | fail "`group` made no progress")
 
 end Mathlib.Tactic.Group
