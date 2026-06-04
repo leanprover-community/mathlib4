@@ -45,7 +45,7 @@ theorem measurableSet_exists_tendsto [IsCompletelyPseudoMetrizableSpace E]
   have : IsCompletelyPseudoMetrizableSpace s := isClosed_closure.isCompletelyPseudoMetrizableSpace
   let g i x : s := ⟨f i x, subset_closure <| mem_iUnion.2 ⟨i, ⟨x, rfl⟩⟩⟩
   have mg i : Measurable (g i) := (hf i).measurable.subtype_mk
-  convert MeasureTheory.measurableSet_exists_tendsto (l := l) mg with x
+  convert! MeasureTheory.measurableSet_exists_tendsto (l := l) mg with x
   refine ⟨fun ⟨c, hc⟩ ↦ ⟨⟨c, ?_⟩, tendsto_subtype_rng.2 hc⟩,
     fun ⟨c, hc⟩ ↦ ⟨c, tendsto_subtype_rng.1 hc⟩⟩
   exact mem_closure_of_tendsto hc (Eventually.of_forall fun i ↦ mem_iUnion.2 ⟨i, ⟨x, rfl⟩⟩)

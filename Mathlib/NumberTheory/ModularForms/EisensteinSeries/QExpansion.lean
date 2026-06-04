@@ -71,7 +71,7 @@ private lemma aux_IsBigO_mul (k l : ℕ) (p : ℝ) {f : ℕ → ℂ}
     simpa [h1] using isBigO_ofReal_right.mp (Asymptotics.isBigO_const_mul_self
       ((2 * π * I / p) ^ k) (fun (n : ℕ) ↦ (↑(n ^ k) : ℝ)) atTop)
   push_cast
-  convert hf.mul h0
+  convert! hf.mul h0
   ring
 
 open BoundedContinuousFunction in
@@ -102,7 +102,7 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp (k l : ℕ) {f 
     norm_natCast, abs_norm, ge_iff_le, r, c] at *
   rw [← mul_assoc]
   gcongr
-  convert h0
+  convert! h0
   rw [← norm_pow, ← exp_nsmul']
 
 /-- This is a version of `summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp` for level one
@@ -299,7 +299,7 @@ private lemma eisensteinSeries_coeff_identity {k : ℕ} (hk2 : Even k) (hkn0 : k
 lemma EisensteinSeries.q_expansion_bernoulli {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
     E hk z = 1 - (2 * k / bernoulli k) *
     ∑' n : ℕ+, σ (k - 1) n * cexp (2 * π * I * z) ^ (n : ℤ) := by
-  convert q_expansion_riemannZeta hk hk2 z using 1
+  convert! q_expansion_riemannZeta hk hk2 z using 1
   rw [eisensteinSeries_coeff_identity hk2 (by grind), neg_mul, ← sub_eq_add_neg]
 
 section NonZero
@@ -340,7 +340,7 @@ lemma EisensteinSeries.E_qExpansion_coeff {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k
     rw [this, ← tsum_pnat_eq_tsum_succ (f := fun n ↦ (σ (k - 1) n : ℂ) * cexp (2 * π * I * τ) ^ n)]
     ring
   rw [hval]
-  convert (hS.mul_left β).hasSum using 1
+  convert! (hS.mul_left β).hasSum using 1
   · grind [Periodic.qParam, ofReal_one, div_one]
   · rw [tsum_mul_left]
 
