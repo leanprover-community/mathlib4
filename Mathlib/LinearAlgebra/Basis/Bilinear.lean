@@ -40,6 +40,14 @@ theorem ext_basis {B B' : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (h : �
     B = B' :=
   b₁.ext fun i => b₂.ext fun j => h i j
 
+lemma ext_basis_iff {B B' : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} :
+    B = B' ↔ ∀ (i : ι₁) (j : ι₂), B (b₁ i) (b₂ j) = B' (b₁ i) (b₂ j) :=
+  ⟨fun h _ _ ↦ h ▸ rfl, ext_basis b₁ b₂⟩
+
+lemma BilinForm.ext_basis_iff {B F₂ : LinearMap.BilinForm Rₗ Mₗ} :
+    B = F₂ ↔ ∀ (i j : ι₁), B (b₁' i) (b₁' j) = F₂ (b₁' i) (b₁' j) :=
+  LinearMap.ext_basis_iff b₁' b₁'
+
 /-- Write out `B x y` as a sum over `B (b i) (b j)` if `b` is a basis.
 
 Version for semi-bilinear maps, see `sum_repr_mul_repr_mul` for the bilinear version. -/

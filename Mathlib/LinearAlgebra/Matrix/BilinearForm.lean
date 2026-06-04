@@ -340,10 +340,7 @@ theorem Matrix.toBilin_comp (M : Matrix n n R₁) (P Q : Matrix n o R₁) :
 @[simp]
 lemma LinearMap.BilinForm.isSymm_toMatrix_iff_isSymm (B : BilinForm R₁ M₁) :
     (B.toMatrix b).IsSymm ↔ B.IsSymm := by
-  simp only [isSymm_iff, IsSymm.ext_iff, toMatrix_apply]
-  refine ⟨fun h ↦ ?_, by simp_all [LinearMap.isSymm_def]⟩
-  rw [isSymm_iff_eq_flip]
-  exact ext_basis b <| by simp [h]
+  simp [isSymm_iff, IsSymm.ext_iff, isSymm_iff_eq_flip, ext_basis_iff b, eq_comm]
 
 @[simp]
 lemma Matrix.isSymm_toBilin_iff_isSymm (M : Matrix n n R₁) : (M.toBilin b).IsSymm ↔ M.IsSymm := by
