@@ -9,10 +9,9 @@ public import Mathlib.Combinatorics.GraphLike.Basic
 public import Mathlib.Combinatorics.Digraph.Basic
 
 /-!
-# Digraphs as GraphLike
+# Digraphs are HyperGraphLike
 
-This file makes `Digraph` an instance of `GraphLike`. Every adjacent pair is a dart and every
-adjacent `Sym2 V` is an edge.
+This file shows that `Digraph` is `HyperGraphLike`, `GraphLike`, `Directed`, `NoMultiEdge`.
 -/
 
 public section

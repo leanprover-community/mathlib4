@@ -32,14 +32,19 @@ namespace Dart
 
 variable (d : Dart G)
 
+/-- The first incidence of a dart. -/
 @[expose] def fst : I := d.val.fst
 
+/-- The second incidence of a dart. -/
 @[expose] def snd : I := d.val.snd
 
+/-- The edge of a dart. -/
 @[expose] noncomputable def edge : E := d.prop.2.2.2.choose
 
+/-- The source of a dart. -/
 @[expose] noncomputable def source : V := d.prop.2.2.2.choose_spec.choose
 
+/-- The target of a dart. -/
 @[expose] noncomputable def target : V := d.prop.2.2.2.choose_spec.choose_spec.choose
 
 @[grind .] lemma fst_ne_snd : d.fst ≠ d.snd := d.prop.1

@@ -72,6 +72,7 @@ class HyperGraphLike (V I E : outParam Type*) (Gr : Type*) where
   /-- The set of incident objects of a graph-like structure. -/
   incs : Gr → Set I := fun G ↦ {i | ∃ e v, IsIncident G i e v}
   incs_def ⦃G⦄ : incs G = {i | ∃ e v, IsIncident G i e v} := by grind
+  /-- The predicate for an edge being a link of two vertices. -/
   IsLink : Gr → E → V → V → Prop := fun G e u v ↦ ∃ i j, i ≠ j ∧ IsSource G i ∧ IsTarget G j ∧
     IsIncident G i e u ∧ IsIncident G j e v
   isLink_def ⦃G e u v⦄ : IsLink G e u v ↔
@@ -79,7 +80,6 @@ class HyperGraphLike (V I E : outParam Type*) (Gr : Type*) where
   /-- The adjacency relation of a graph-like structure. -/
   Adj : Gr → V → V → Prop := fun G u v ↦ ∃ e i j, i ≠ j ∧ IsSource G i ∧ IsTarget G j ∧
     IsIncident G i e u ∧ IsIncident G j e v
-  /-- Two vertices are adjacent if and only if there is a dart between them. -/
   adj_def ⦃G u v⦄ : Adj G u v ↔ ∃ e i j, i ≠ j ∧ IsSource G i ∧ IsTarget G j ∧
     IsIncident G i e u ∧ IsIncident G j e v := by grind
 
@@ -254,9 +254,11 @@ lemma mem_edgeFun_mem_endPoint_iff_isIncident (G : Gr) (i : I) (e : E) (v : V) :
   have := isIncident_edgeFun_endPoint (mem_incs_of_mem_edgeFun hei)
   rwa [PFun.fn_apply, PFun.fn_apply, Part.get_eq_of_mem hei, Part.get_eq_of_mem hvi] at this
 
+/-- The order of an edge is the number of incidences of the edge. -/
 @[expose]
 noncomputable def order (G : Gr) (e : E) : ℕ∞ := (edgeFun G |>.preimage {e}).encard
 
+/-- The degree of a vertex is the number of incidences of the vertex. -/
 @[expose]
 noncomputable def degree (G : Gr) (v : V) : ℕ∞ := (endPoint G |>.preimage {v}).encard
 
@@ -270,7 +272,7 @@ lemma edgeFun_preimage_singleton_injOn (h : ∀ e ∈ E(G), order G e ≠ 0) :
     PFun.disjoint_preimage_of_disjoint _ <| by simpa
   exact hef.ne (by simp [← nonempty_iff_ne_empty, h e he])
 
-/-- The ENat-valued incidence matrix of a graph-like structure. -/
+/-- The ENat-valued incidence matrix of a hypergraph-like structure. -/
 noncomputable def incMatrix (G : Gr) (l m n : ℕ∞) : Matrix V E ℕ∞ := .of fun v e ↦
   ({i | IsIncident G i e v ∧ IsSource G i ∧ ¬ IsTarget G i}).encard * l +
   ({i | IsIncident G i e v ∧ IsTarget G i ∧ ¬ IsSource G i}).encard * m +
@@ -283,15 +285,12 @@ lemma incMatrix_same_apply (G : Gr) (n : ℕ∞) (v : V) (e : E) :
   let b : Set I := {i | IsIncident G i e v ∧ IsSource G i ∧ IsTarget G i}
   have hst : Disjoint s t := by grind
   have hsbt : Disjoint (s ∪ t) b := by grind
-  have hpart : {i | IsIncident G i e v} = s ∪ t ∪ b := by
-    ext i
-    simp only [mem_setOf_eq, mem_union]
-    grind
+  have hpart : {i | IsIncident G i e v} = s ∪ t ∪ b := Set.ext <| by grind
   change s.encard * n + t.encard * n + b.encard * n = ({i | IsIncident G i e v}).encard * n
   rw [hpart, Set.encard_union_eq hsbt, Set.encard_union_eq hst]
   grind
 
-/-- The incidence matrix of a graph-like structure represented by `AddMonoidWithOne`. If the
+/-- The incidence matrix of a hypergraph-like structure represented by `AddMonoidWithOne`. If the
 incidence is `∞`, then the entry is `0`. It is most often used as `incMatrixWith R (-1 : ℤ) 1 1`. -/
 noncomputable def incMatrixWith (G : Gr) (l m n : R) : Matrix V E R :=
   .of fun v e ↦ ({i | IsIncident G i e v ∧ IsSource G i ∧ ¬ IsTarget G i}).ncard • l +
@@ -302,6 +301,8 @@ end HyperGraphLike
 
 section GraphLike
 
+/-- A graph-like structure is a hypergraph-like structure where every edge has order 2 and at least
+one source and one target incidence. -/
 class GraphLike (V I E : outParam Type*) (Gr : Type*) [HyperGraphLike V I E Gr] where
   order_eq_two ⦃G : Gr⦄ ⦃e : E⦄ : e ∈ E(G) → order G e = 2
   exists_isSource_of_mem_edgeSet ⦃G : Gr⦄ ⦃e : E⦄ : e ∈ E(G) → ∃ i, e ∈ edgeFun G i ∧ IsSource G i
@@ -343,26 +344,10 @@ lemma IsLink.incMatrix_col_eq [DecidableEq V] {n : ℕ∞} (h : IsLink G e u v) 
   ext w
   simp only [Matrix.col_apply, incMatrix_same_apply, Pi.add_apply, Pi.single_apply]
   split_ifs with hw₁ hw₂ hw₂
-  · have hs : {i | IsIncident G i e w} = {i, j} := by
-      ext k
-      simp only [mem_setOf_eq, mem_insert_iff, mem_singleton_iff]
-      grind
-    simp [hs, encard_pair hij, two_mul]
-  · have hs : {i | IsIncident G i e w} = {i} := by
-      ext k
-      simp only [mem_setOf_eq, mem_singleton_iff]
-      grind
-    simp [hs, encard_singleton]
-  · have hs : {i | IsIncident G i e w} = {j} := by
-      ext k
-      simp only [mem_setOf_eq, mem_singleton_iff]
-      grind
-    simp [hs, encard_singleton]
-  · have hs : {i | IsIncident G i e w} = ∅ := by
-      ext k
-      simp only [mem_setOf_eq, mem_empty_iff_false, iff_false]
-      grind
-    simp [hs, encard_empty]
+  · simp [show {i | IsIncident G i e w} = {i, j} by grind, encard_pair hij, two_mul]
+  · simp [show {i | IsIncident G i e w} = {i} by grind, encard_singleton]
+  · simp [show {i | IsIncident G i e w} = {j} by grind, encard_singleton]
+  · simp [show {i | IsIncident G i e w} = ∅ by grind, encard_empty]
 
 lemma edgeFun_preimage_singleton_injOn_of_GraphLike : InjOn ((edgeFun G) |>.preimage {·}) E(G) :=
   edgeFun_preimage_singleton_injOn (G := G) fun e he ↦ by simp [order_eq_two he]
@@ -371,6 +356,7 @@ end GraphLike
 
 section Undirected
 
+/-- A graph-like structure is undirected if every incidence is both a source and a target. -/
 class Undirected (V I E : outParam Type*) (Gr : Type*) [HyperGraphLike V I E Gr] where
   isSource_iff ⦃G : Gr⦄ ⦃i : I⦄ : IsSource G i ↔ IsTarget G i
 
@@ -402,16 +388,12 @@ lemma isLink_iff_of_undirected : IsLink G e u v ↔
 
 lemma incMatrixWith_apply_of_undirected (G : Gr) (l m n : R) (v : V) (e : E) :
     incMatrixWith G l m n v e = ({i | IsIncident G i e v}).ncard • n := by
-  have h : {i | IsIncident G i e v ∧ IsTarget G i} = {i | IsIncident G i e v} := by
-    ext i
-    simp only [mem_setOf_eq]
-    exact ⟨And.left, fun hi ↦ ⟨hi, hi.isSource_or_isTarget.elim ((isSource_iff G i).mp) id⟩⟩
+  have h : {i | IsIncident G i e v ∧ IsTarget G i} = {i | IsIncident G i e v} := Set.ext <|
+      fun i ↦ ⟨And.left, fun hi ↦ ⟨hi, hi.isSource_or_isTarget.elim ((isSource_iff G i).mp) id⟩⟩
   simp [incMatrixWith, h]
 
 instance : Std.Symm (Adj G) where
-  symm _ _ h := by
-    rw [adj_def] at h ⊢
-    grind
+  symm _ _ h := by grind [adj_def]
 
 @[symm] lemma Adj.symm (h : Adj G v w) : Adj G w v := symm_of (Adj G) h
 
@@ -424,32 +406,17 @@ lemma IsLink.incMatrixWith_col_eq_of_undirected [GraphLike V I E Gr] [DecidableE
   ext w
   simp only [Matrix.col_apply, incMatrixWith_apply_of_undirected, Pi.add_apply, Pi.single_apply]
   split_ifs with hw₁ hw₂ hw₂
-  · have hs : {i | IsIncident G i e w} = {i, j} := by
-      ext k
-      simp only [mem_setOf_eq, mem_insert_iff, mem_singleton_iff]
-      grind
-    rw [hs, ncard_pair hij]
+  · rw [(show {i | IsIncident G i e w} = {i, j} by grind), ncard_pair hij]
     simp [two_nsmul]
-  · have hs : {i | IsIncident G i e w} = {i} := by
-      ext k
-      simp only [mem_setOf_eq, mem_singleton_iff]
-      grind
-    simp [hs]
-  · have hs : {i | IsIncident G i e w} = {j} := by
-      ext k
-      simp only [mem_setOf_eq, mem_singleton_iff]
-      grind
-    simp [hs]
-  · have hs : {i | IsIncident G i e w} = ∅ := by
-      ext k
-      simp only [mem_setOf_eq, mem_empty_iff_false, iff_false]
-      grind
-    simp [hs]
+  · simp [show {i | IsIncident G i e w} = {i} by grind]
+  · simp [show {i | IsIncident G i e w} = {j} by grind]
+  · simp [show {i | IsIncident G i e w} = ∅ by grind]
 
 end Undirected
 
 section Directed
 
+/-- A graph-like structure is directed if no incidence is both a source and a target. -/
 class Directed (V I E : outParam Type*) (Gr : Type*) [HyperGraphLike V I E Gr] where
   not_isTarget_of_isSource ⦃G : Gr⦄ ⦃i : I⦄ : IsSource G i → ¬ IsTarget G i
   not_isSource_of_isTarget ⦃G : Gr⦄ ⦃i : I⦄ : IsTarget G i → ¬ IsSource G i
@@ -473,8 +440,8 @@ lemma incMatrixWith_apply_of_directed (G : Gr) (l m n : R) (v : V) (e : E) :
   have ht : {i | IsIncident G i e v ∧ IsTarget G i ∧ ¬ IsSource G i} =
       {i | IsIncident G i e v ∧ IsTarget G i} :=
     Set.ext fun x ↦ ⟨fun h ↦ ⟨h.1, h.2.1⟩, fun h ↦ ⟨h.1, h.2, h.2.not_isSource⟩⟩
-  have hb : {i | IsIncident G i e v ∧ IsSource G i ∧ IsTarget G i} = ∅ := by
-    ext i; grind
+  have hb : {i | IsIncident G i e v ∧ IsSource G i ∧ IsTarget G i} = ∅ :=
+    Set.ext fun i ↦ by grind
   simp [incMatrixWith, hs, ht, hb]
 
 lemma IsLink.incMatrixWith_col_eq_of_directed [GraphLike V I E Gr] [DecidableEq V]
@@ -483,19 +450,14 @@ lemma IsLink.incMatrixWith_col_eq_of_directed [GraphLike V I E Gr] [DecidableEq 
   obtain ⟨i', j', hne, hpair⟩ := exists_pair_mem_edgeFun_iff hi'.edge_mem
   ext w
   simp only [Matrix.col_apply, incMatrixWith_apply_of_directed, Pi.add_apply, Pi.single_apply]
+  let s := {k | IsIncident G k e w ∧ IsSource G k}
+  let t := {k | IsIncident G k e w ∧ IsTarget G k}
+  change s.ncard • l + t.ncard • m = _
   split_ifs with hw₁ hw₂ hw₂
-  · have hs : {k | IsIncident G k e w ∧ IsSource G k} = {i} := by grind
-    have ht : {k | IsIncident G k e w ∧ IsTarget G k} = {j} := by ext k; grind
-    simp [hs, ht]
-  · have hs : {k | IsIncident G k e w ∧ IsSource G k} = {i} := by grind
-    have ht : {k | IsIncident G k e w ∧ IsTarget G k} = ∅ := by ext k; grind
-    simp [hs, ht]
-  · have hs : {k | IsIncident G k e w ∧ IsSource G k} = ∅ := by grind
-    have ht : {k | IsIncident G k e w ∧ IsTarget G k} = {j} := by ext k; grind
-    simp [hs, ht]
-  · have hs : {k | IsIncident G k e w ∧ IsSource G k} = ∅ := by grind
-    have ht : {k | IsIncident G k e w ∧ IsTarget G k} = ∅ := by grind
-    simp [hs, ht]
+  · simp [show s = {i} by grind, show t = {j} by grind]
+  · simp [show s = {i} by grind, show t = ∅ by grind]
+  · simp [show s = ∅ by grind, show t = {j} by grind]
+  · simp [show s = ∅ by grind, show t = ∅ by grind]
 
 end Directed
 
@@ -534,6 +496,7 @@ end NoMultiEdge
 
 section Loopless
 
+/-- A graph-like structure is loopless if no edge has more than one incidence to a vertex. -/
 class Loopless (V I E : outParam Type*) (Gr : Type*) [HyperGraphLike V I E Gr] where
   no_loops_of_mem_mem ⦃G : Gr⦄ ⦃i j : I⦄ : i ∈ I(G) → j ∈ I(G) → edgeFun G i = edgeFun G j → i ≠ j →
     endPoint G i ≠ endPoint G j

@@ -9,10 +9,10 @@ public import Mathlib.Combinatorics.GraphLike.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Basic
 
 /-!
-# SimpleGraphs as GraphLike
+# SimpleGraphs are HyperGraphLike
 
-This file makes `SimpleGraph` an instance of `GraphLike`. Every adjacent pair is a dart and every
-adjacent pair is an edge.
+This file shows that `SimpleGraph` is `HyperGraphLike`, `GraphLike`, `Undirected`, `NoMultiEdge`,
+and `Loopless`.
 -/
 
 public section

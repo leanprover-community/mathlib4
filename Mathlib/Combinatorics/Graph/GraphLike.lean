@@ -9,7 +9,8 @@ public import Mathlib.Combinatorics.GraphLike.Basic
 public import Mathlib.Combinatorics.Graph.Basic
 
 /-!
-We define a `Dart` type as a directed edge, and a `GraphLike` instance for `Graph`.
+This file `IncidenceType` and using it to show that `Graph` is `HyperGraphLike`, `GraphLike`,
+and `Undirected`.
 -/
 
 public section
@@ -30,6 +31,7 @@ open HyperGraphLike IncidenceType
 
 variable {d : IncidenceType V E}
 
+/-- The edge of a `IncidenceType`. -/
 @[expose]
 def IncidenceType.edge (d : IncidenceType V E) : E :=
   match d with
@@ -37,6 +39,7 @@ def IncidenceType.edge (d : IncidenceType V E) : E :=
   | .fwd e _ => e
   | .bwd e _ => e
 
+/-- The source of a `IncidenceType`. -/
 @[expose]
 def IncidenceType.source (d : IncidenceType V E) : V :=
   match d with
@@ -44,6 +47,7 @@ def IncidenceType.source (d : IncidenceType V E) : V :=
   | .fwd _ v => v
   | .bwd _ v => v
 
+/-- The target of a `IncidenceType`. -/
 @[expose]
 def IncidenceType.target (d : IncidenceType V E) : V :=
   match d with
@@ -59,9 +63,11 @@ lemma IncidenceType.fwd_or_bwd_of_eq (heq : d.source = d.target) :
     d = fwd d.edge d.source ∨ d = bwd d.edge d.target := by
   cases d <;> grind [source, target, edge]
 
+/-- The first incidence of a link. -/
 def IsLink.inc1 [DecidableEq V] (_ : G.IsLink e u v) :=
     if h : u = v then fwd e u else dir e u v h
 
+/-- The second incidence of a link. -/
 def IsLink.inc2 [DecidableEq V] (_ : G.IsLink e u v) :=
     if h : u = v then bwd e u else dir e v u (Ne.symm h)
 
