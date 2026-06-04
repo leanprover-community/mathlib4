@@ -117,26 +117,24 @@ lemma d₁₂_apply_apply_ofTrivial [LieModule.IsTrivial L M] (f : oneCochain R 
     d₁₂ R L M f x y = - f ⁅x, y⁆ := by
   simp [trivial_lie_zero]
 
-set_option backward.privateInPublic true in
 /-- The coboundary operator taking degree 2 cochains to a space containing degree 3 cochains. -/
-private def d₂₃_aux (a : twoCochain R L M) : L →ₗ[R] L →ₗ[R] L →ₗ[R] M where
-  toFun x :=
-    { toFun y :=
-        { toFun z := ⁅x, a y z⁆ - ⁅y, a x z⁆ + ⁅z, a x y⁆ - a ⁅x, y⁆ z + a ⁅x, z⁆ y - a ⁅y, z⁆ x
-          map_add' _ _ := by simp; abel
-          map_smul' _ _ := by abel_nf; simp }
-      map_add' _ _ := by ext; simp; abel
-      map_smul' _ _ := by ext; abel_nf; simp }
-  map_add' _ _ := by ext; simp; abel
-  map_smul' _ _ := by ext; abel_nf; simp
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-/-- The coboundary operator taking degree 2 cochains to a space containing degree 3 cochains. -/
-def d₂₃ : twoCochain R L M →ₗ[R] L →ₗ[R] L →ₗ[R] L →ₗ[R] M where
-  toFun := d₂₃_aux R L M
-  map_add' _ _ := by ext; simp [d₂₃_aux]; abel
-  map_smul' _ _ := by ext; simp [d₂₃_aux]; abel_nf; simp
+def d₂₃ : twoCochain R L M →ₗ[R] L →ₗ[R] L →ₗ[R] L →ₗ[R] M :=
+  let toFun (a : twoCochain R L M) : L →ₗ[R] L →ₗ[R] L →ₗ[R] M := {
+    toFun x :=
+      { toFun y :=
+          { toFun z := ⁅x, a y z⁆ - ⁅y, a x z⁆ + ⁅z, a x y⁆ - a ⁅x, y⁆ z + a ⁅x, z⁆ y - a ⁅y, z⁆ x
+            map_add' _ _ := by simp; abel
+            map_smul' _ _ := by abel_nf; simp }
+        map_add' _ _ := by ext; simp; abel
+        map_smul' _ _ := by ext; abel_nf; simp }
+    map_add' _ _ := by ext; simp; abel
+    map_smul' _ _ := by ext; abel_nf; simp
+    }
+  {
+    toFun
+    map_add' _ _ := by ext; simp [toFun]; abel
+    map_smul' _ _ := by ext; simp [toFun]; abel_nf; simp
+  }
 
 @[simp]
 lemma d₂₃_apply (a : twoCochain R L M) (x y z : L) :
