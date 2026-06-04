@@ -70,6 +70,7 @@ theorem exist_mem_one_of_mem_two {p₁ p₀ p₂ : PrimeSpectrum R}
   exact Exists.intro (e q).1
     ⟨(p₂.1.under_map_of_isLocalizationAtPrime hq.le).le hxq, e.symm.lt_iff_lt.mp h₀, hq⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let $R$ be a Noetherian ring, $\mathfrak{p}_0 < \dots < \mathfrak{p}_n$ be a
   chain of primes, $x \in \mathfrak{p}_n$. Then we can find another chain of primes
   $\mathfrak{q}_0 < \dots < \mathfrak{q}_n$ such that $x \in \mathfrak{q}_1$,
@@ -90,14 +91,14 @@ theorem exist_ltSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
     have h1 : 1 = Fin.last p.length := by
       rw [Fin.last, hp, h0, zero_add]
       exact Fin.natCast_eq_mk (Nat.one_lt_succ_succ 0)
-    simpa [h1, hp] using hx
+    simpa [h1, hp] using! hx
   obtain ⟨q, hxq, h2, hq⟩ : ∃ q : PrimeSpectrum R, x ∈ q.1 ∧ p ⟨p.length - 2, _⟩ < q ∧ q < p.last :=
     (p ⟨p.length - 1, p.length.sub_lt_succ 1⟩).exist_mem_one_of_mem_two
       (p.strictMono (Nat.pred_lt (by simpa [hp]))) (p.strictMono (Nat.pred_lt (by simp [hp]))) hx
-  obtain ⟨Q, hx, hQ, hh, hl⟩ := hn (p.eraseLast.eraseLast.snoc q h2) (by simpa using hxq) <| by
-    simpa [hp] using Nat.succ_pred_eq_of_ne_zero h0
+  obtain ⟨Q, hx, hQ, hh, hl⟩ := hn (p.eraseLast.eraseLast.snoc q h2) (by simpa using! hxq) <| by
+    simpa [hp] using! Nat.succ_pred_eq_of_ne_zero h0
   have h1 : 1 < Q.length + 1 := Nat.lt_of_sub_ne_zero (hQ.symm.trans_ne h0)
   have h : 1 = (1 : Fin (Q.length + 1)).castSucc := by simp [Fin.one_eq_mk_of_lt h1]
-  exact ⟨Q.snoc p.last (by simpa [← hl] using hq), by simpa [h], by simpa, by simp [← hh], by simp⟩
+  exact ⟨Q.snoc p.last (by simpa [← hl] using! hq), by simpa [h], by simpa, by simp [← hh], by simp⟩
 
 end PrimeSpectrum

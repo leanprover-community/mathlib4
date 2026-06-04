@@ -35,6 +35,7 @@ def truncate [HasZeroMorphisms V] : ChainComplex V ℕ ⥤ ChainComplex V ℕ wh
       shape := fun i j w => C.shape _ _ <| by simpa }
   map f := { f := fun i => f.f (i + 1) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- There is a canonical chain map from the truncation of a chain map `C` to
 the "single object" chain complex consisting of the truncated object `C.X 0` in degree 0.
 The components of this chain map are `C.d 1 0` in degree 0, and zero otherwise.
@@ -87,6 +88,7 @@ theorem augment_d_succ_succ (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (
     (i j : ℕ) : (augment C f w).d (i + 1) (j + 1) = C.d i j := by
   cases i <;> rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Truncating an augmented chain complex is isomorphic (with components the identity)
 to the original complex.
 -/
@@ -117,6 +119,7 @@ theorem chainComplex_d_succ_succ_zero (C : ChainComplex V ℕ) (i : ℕ) : C.d (
   rw [C.shape]
   exact i.succ_succ_ne_one.symm
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Augmenting a truncated complex with the original object and morphism is isomorphic
 (with components the identity) to the original complex.
 -/
@@ -190,6 +193,7 @@ def truncate [HasZeroMorphisms V] : CochainComplex V ℕ ⥤ CochainComplex V �
         simpa }
   map f := { f := fun i => f.f (i + 1) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- There is a canonical chain map from the truncation of a cochain complex `C` to
 the "single object" cochain complex consisting of the truncated object `C.X 0` in degree 0.
 The components of this chain map are `C.d 0 1` in degree 0, and zero otherwise.
@@ -200,8 +204,6 @@ def toTruncate [HasZeroObject V] [HasZeroMorphisms V] (C : CochainComplex V ℕ)
 
 variable [HasZeroMorphisms V]
 
--- TODO: fix non-terminal simp (acting on six goals, with different simp sets)
-set_option linter.flexible false in
 /-- We can "augment" a cochain complex by inserting an arbitrary object in degree zero
 (shifting everything else up), along with a suitable differential.
 -/
@@ -213,19 +215,15 @@ def augment (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 
     | i + 1, j + 1 => C.d i j
     | _, _ => 0
   shape i j s := by
-    rcases j with (_ | _ | j) <;> cases i <;> try simp
-    · contradiction
-    · rw [C.shape]
-      simp only [ComplexShape.up_Rel] at ⊢ s
-      contrapose! s
-      rw [← s]
+    rcases j with (_ | _ | j) <;> cases i <;> simp_all
   d_comp_d' i j k hij hjk := by
-    rcases k with (_ | _ | k) <;> rcases j with (_ | _ | j) <;> cases i <;> try simp
-    cases k
-    · exact w
-    · rw [C.shape, comp_zero]
-      simp only [ComplexShape.up_Rel, zero_add]
-      exact (Nat.one_lt_succ_succ _).ne
+    have (k : ℕ) : f ≫ C.d 0 (k + 1) = 0 := by
+      cases k
+      · exact w
+      · rw [C.shape, comp_zero]
+        simp only [ComplexShape.up_Rel, zero_add]
+        exact (Nat.one_lt_succ_succ _).ne
+    rcases k with (_ | _ | k) <;> rcases j with (_ | _ | j) <;> cases i <;> simp [this]
 
 @[simp]
 theorem augment_X_zero (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 0 1 = 0) :
@@ -247,6 +245,7 @@ theorem augment_d_succ_succ (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0)
     (i j : ℕ) : (augment C f w).d (i + 1) (j + 1) = C.d i j :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Truncating an augmented cochain complex is isomorphic (with components the identity)
 to the original complex.
 -/
@@ -281,6 +280,7 @@ theorem cochainComplex_d_succ_succ_zero (C : CochainComplex V ℕ) (i : ℕ) : C
   simp only [ComplexShape.up_Rel, zero_add]
   exact (Nat.one_lt_succ_succ _).ne
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Augmenting a truncated complex with the original object and morphism is isomorphic
 (with components the identity) to the original complex.
 -/

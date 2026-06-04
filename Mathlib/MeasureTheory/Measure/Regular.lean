@@ -123,7 +123,7 @@ for the more fine-grained definitions above as they apply more generally.
   of measure greater than `r`;
 * `MeasurableSet.measure_eq_iSup_isClosed_of_ne_top` asserts that the measure of a measurable set
   of finite measure is the supremum of the measure of closed sets it contains.
-*  `MeasurableSet.exists_lt_isClosed_of_ne_top` and `MeasurableSet.exists_isClosed_lt_add`:
+* `MeasurableSet.exists_lt_isClosed_of_ne_top` and `MeasurableSet.exists_isClosed_lt_add`:
   a measurable set of finite measure can be approximated by a closed subset (stated as
   `r < μ F` and `μ s < μ F + ε`, respectively).
 * `MeasureTheory.Measure.WeaklyRegular.of_pseudoMetrizableSpace_of_isFiniteMeasure` is an
@@ -154,7 +154,7 @@ for the more fine-grained definitions above as they apply more generally.
 
 * `MeasurableSet.measure_eq_iSup_isCompact_of_ne_top` asserts that the measure of a measurable set
   of finite measure is the supremum of the measure of compact sets it contains.
-*  `MeasurableSet.exists_lt_isCompact_of_ne_top` and `MeasurableSet.exists_isCompact_lt_add`:
+* `MeasurableSet.exists_lt_isCompact_of_ne_top` and `MeasurableSet.exists_isCompact_lt_add`:
   a measurable set of finite measure can be approximated by a compact subset (stated as
   `r < μ K` and `μ s < μ K + ε`, respectively).
 
@@ -275,7 +275,7 @@ protected theorem comap {α β} [MeasurableSpace α] {mβ : MeasurableSpace β}
 theorem smul (H : InnerRegularWRT μ p q) (c : ℝ≥0∞) : InnerRegularWRT (c • μ) p q := by
   intro U hU r hr
   rw [smul_apply, H.measure_eq_iSup hU, smul_eq_mul] at hr
-  simpa only [ENNReal.mul_iSup, lt_iSup_iff, exists_prop] using hr
+  simpa only [ENNReal.mul_iSup, lt_iSup_iff, exists_prop] using! hr
 
 theorem trans {q' : Set α → Prop} (H : InnerRegularWRT μ p q) (H' : InnerRegularWRT μ q q') :
     InnerRegularWRT μ p q' := by
@@ -420,7 +420,7 @@ protected theorem smul (μ : Measure α) [OuterRegular μ] {x : ℝ≥0∞} (hx 
     exact OuterRegular.zero
   · refine ⟨fun A _ r hr => ?_⟩
     rw [smul_apply, A.measure_eq_iInf_isOpen, smul_eq_mul] at hr
-    simpa only [ENNReal.mul_iInf_of_ne h0 hx, gt_iff_lt, iInf_lt_iff, exists_prop] using hr
+    simpa only [ENNReal.mul_iInf_of_ne h0 hx, gt_iff_lt, iInf_lt_iff, exists_prop] using! hr
 
 instance smul_nnreal (μ : Measure α) [OuterRegular μ] (c : ℝ≥0) :
     OuterRegular (c • μ) :=
@@ -481,6 +481,15 @@ theorem ext_isOpen {ν : Measure α} [OuterRegular μ] [OuterRegular ν]
   rw [Set.measure_eq_iInf_isOpen, Set.measure_eq_iInf_isOpen]
   congr! 4 with t _ ht2
   exact hμν t ht2
+
+/-- Outer regular measures are determined by values on bounded open sets. -/
+theorem ext_isOpen_isBounded {α : Type*} [PseudoMetricSpace α] {mα : MeasurableSpace α}
+    {μ ν : Measure α} [OuterRegular μ] [OuterRegular ν]
+    (hμν : ∀ U, IsOpen U → Bornology.IsBounded U → μ U = ν U) : μ = ν := by
+  refine ext_isOpen fun U hU ↦ ?_
+  obtain ⟨f, hm, hu, hf⟩ := Metric.eq_countable_union_of_isBounded_of_isOpen hU
+  rw [← hu, hm.measure_iUnion, hm.measure_iUnion]
+  exact iSup_congr fun i ↦ hμν (f i) (hf i).2 (hf i).1
 
 end OuterRegular
 
@@ -736,7 +745,7 @@ protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace
     [BorelSpace β] (f : α ≃ₜ β) :
     InnerRegular (Measure.map f μ) ↔ InnerRegular μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.map f⟩
-  convert h.map f.symm
+  convert! h.map f.symm
   rw [map_map f.symm.continuous.measurable f.continuous.measurable]
   simp
 
@@ -790,11 +799,11 @@ instance {ι : Type*} {μ : ι → Measure α} [∀ i, InnerRegular (μ i)] :
     simp only [hs, Measure.sum_apply]
     exact ENNReal.summable.hasSum
   obtain ⟨a, ha⟩ : ∃ (a : Finset ι), r < (∑ i ∈ a, μ i) s := by
-    simp only [coe_finset_sum, Finset.sum_apply]
+    simp only [coe_finsetSum, Finset.sum_apply]
     exact ((tendsto_order.1 this).1 r hr).exists
   rcases MeasurableSet.exists_lt_isCompact hs ha with ⟨K, Ks, hK, h'K⟩
   refine ⟨K, Ks, hK, h'K.trans_le ?_⟩
-  simp only [coe_finset_sum, Finset.sum_apply]
+  simp only [coe_finsetSum, Finset.sum_apply]
   exact (ENNReal.sum_le_tsum _).trans (le_sum_apply _ _)
 
 end InnerRegular
@@ -872,7 +881,7 @@ instance restrict [h : InnerRegularCompactLTTop μ] (A : Set α) :
 instance (priority := 50) [h : InnerRegularCompactLTTop μ] [IsFiniteMeasure μ] :
     InnerRegular μ := by
   constructor
-  convert h.innerRegular with s
+  convert! h.innerRegular with s
   simp [measure_ne_top μ s]
 
 instance (priority := 50) [BorelSpace α] [R1Space α] [InnerRegularCompactLTTop μ]
@@ -960,7 +969,7 @@ instance smul [h : InnerRegularCompactLTTop μ] (c : ℝ≥0∞) : InnerRegularC
     · simp [h's] at hr
     · simp [h'c, h's] at hs
   · constructor
-    convert InnerRegularWRT.smul h.innerRegular c using 2 with s
+    convert! InnerRegularWRT.smul h.innerRegular c using 2 with s
     have : (c • μ) s ≠ ∞ ↔ μ s ≠ ∞ := by simp [ENNReal.mul_eq_top, hc, h'c]
     simp only [this]
 
@@ -1112,7 +1121,7 @@ protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace
     [BorelSpace β] (f : α ≃ₜ β) :
     Regular (Measure.map f μ) ↔ Regular μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.map f⟩
-  convert h.map f.symm
+  convert! h.map f.symm
   rw [map_map f.symm.continuous.measurable f.continuous.measurable]
   simp
 

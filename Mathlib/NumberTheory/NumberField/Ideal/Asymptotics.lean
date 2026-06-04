@@ -58,7 +58,7 @@ private def tendsto_norm_le_and_mk_eq_div_atTop_aux₂ :
       (ZLattice.comap ℝ (idealLattice K ((FractionalIdeal.mk0 K) J)) (toMixed K).toLinearMap))
         ≃ {a : idealSet K J // mixedEmbedding.norm (a : mixedSpace K) ≤ s} := by
   rw [ZLattice.coe_comap]
-  refine (((toMixed K).toEquiv.image _).trans (Equiv.setCongr ?_)).trans
+  refine (((toMixed K).toEquiv.image _).trans (Equiv.subtypeEquivProp ?_)).trans
     (Equiv.subtypeSubtypeEquivSubtypeInter _ (mixedEmbedding.norm · ≤ s)).symm
   ext
   simp_rw [mem_idealSet, Set.mem_image, Set.mem_inter_iff, Set.mem_preimage, SetLike.mem_coe,
@@ -87,15 +87,16 @@ theorem tendsto_norm_le_and_mk_eq_div_atTop :
   have h₂ : {x | x ∈ fundamentalCone K ∧ mixedEmbedding.norm x ≤ 1} = normLeOne K := by ext; simp
   obtain ⟨J, hJ⟩ := ClassGroup.mk0_surjective C⁻¹
   have h₃ : (absNorm J.1 : ℝ) ≠ 0 := (Nat.cast_ne_zero.mpr (absNorm_ne_zero_of_nonZeroDivisors J))
-  convert ((ZLattice.covolume.tendsto_card_le_div'
-    (ZLattice.comap ℝ (mixedEmbedding.idealLattice K (FractionalIdeal.mk0 K J))
-      (toMixed K).toLinearMap)
-    (F := fun x ↦ mixedEmbedding.norm (toMixed K x))
-    (X := (toMixed K) ⁻¹' (fundamentalCone K)) (fun _ _ _ h ↦ ?_) (fun _ _ h ↦ ?_)
-    ((toMixed K).antilipschitz.isBounded_preimage (isBounded_normLeOne K)) ?_ ?_).mul
-      (tendsto_const_nhds (x := (absNorm (J : Ideal (𝓞 K)) : ℝ) * (torsionOrder K : ℝ)⁻¹))).comp
-    (tendsto_id.atTop_mul_const' <| Nat.cast_pos.mpr (absNorm_pos_of_nonZeroDivisors J))
-    using 2 with s
+  convert!
+    ((ZLattice.covolume.tendsto_card_le_div'
+              (ZLattice.comap ℝ (mixedEmbedding.idealLattice K (FractionalIdeal.mk0 K J))
+                (toMixed K).toLinearMap)
+              (F := fun x ↦ mixedEmbedding.norm (toMixed K x)) (X :=
+              (toMixed K) ⁻¹' (fundamentalCone K)) (fun _ _ _ h ↦ ?_) (fun _ _ h ↦ ?_)
+              ((toMixed K).antilipschitz.isBounded_preimage (isBounded_normLeOne K)) ?_ ?_).mul
+          (tendsto_const_nhds (x := (absNorm (J : Ideal (𝓞 K)) : ℝ) * (torsionOrder K : ℝ)⁻¹))).comp
+      (tendsto_id.atTop_mul_const' <| Nat.cast_pos.mpr (absNorm_pos_of_nonZeroDivisors J)) using
+    2 with s
   · simp_rw [Ideal.tendsto_norm_le_and_mk_eq_div_atTop_aux₁ K hJ, id_eq,
       Nat.card_congr (Ideal.tendsto_norm_le_and_mk_eq_div_atTop_aux₂ K),
       ← card_isPrincipal_dvd_norm_le, Function.comp_def, Nat.cast_mul, div_eq_mul_inv, mul_inv,
@@ -112,8 +113,7 @@ theorem tendsto_norm_le_and_mk_eq_div_atTop :
     ring_nf
     rw [mul_inv_cancel_right₀ h₃]
   · rwa [Set.mem_preimage, map_smul, smul_mem_iff_mem h.ne']
-  · dsimp only
-    rw [map_smul, mixedEmbedding.norm_smul, euclidean.finrank, abs_of_nonneg h]
+  · rw [map_smul, mixedEmbedding.norm_smul, euclidean.finrank, abs_of_nonneg h]
   · exact (toMixed K).continuous.measurable (measurableSet_normLeOne K)
   · rw [h₁, ← (toMixed K).coe_toHomeomorph, ← Homeomorph.preimage_frontier,
       (toMixed K).coe_toHomeomorph, (volumePreserving_toMixed K).measure_preimage
@@ -128,8 +128,9 @@ theorem tendsto_norm_le_div_atTop₀ :
           (𝓝 ((2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K * classNumber K) /
             (torsionOrder K * Real.sqrt |discr K|))) := by
   classical
-  convert Filter.Tendsto.congr' ?_
-    (tendsto_finset_sum Finset.univ (fun C _ ↦ tendsto_norm_le_and_mk_eq_div_atTop K C))
+  convert!
+    Filter.Tendsto.congr' ?_
+      (tendsto_finsetSum Finset.univ (fun C _ ↦ tendsto_norm_le_and_mk_eq_div_atTop K C))
   · rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, classNumber]
     ring
   · filter_upwards [eventually_ge_atTop 0] with s hs

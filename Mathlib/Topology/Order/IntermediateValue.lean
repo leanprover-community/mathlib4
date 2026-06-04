@@ -44,7 +44,7 @@ on intervals.
 intermediate value theorem, connected space, connected set
 -/
 
-@[expose] public section
+public section
 
 
 open Filter OrderDual TopologicalSpace Function Set
@@ -199,7 +199,7 @@ In this section we prove the following results:
 /-- If a preconnected set contains endpoints of an interval, then it includes the whole interval. -/
 theorem IsPreconnected.Icc_subset {s : Set α} (hs : IsPreconnected s) {a b : α} (ha : a ∈ s)
     (hb : b ∈ s) : Icc a b ⊆ s := by
-  simpa only [image_id] using hs.intermediate_value ha hb continuousOn_id
+  simpa only [image_id] using! hs.intermediate_value ha hb continuousOn_id
 
 theorem IsPreconnected.ordConnected {s : Set α} (h : IsPreconnected s) : OrdConnected s :=
   ⟨fun _ hx _ hy => h.Icc_subset hx hy⟩
@@ -220,7 +220,16 @@ theorem IsPreconnected.eq_univ_of_unbounded {s : Set α} (hs : IsPreconnected s)
 
 end
 
-variable {α : Type u} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
+variable {α : Type u} [TopologicalSpace α]
+
+theorem denselyOrdered_of_preconnectedSpace [LinearOrder α] [OrderTopology α]
+    [PreconnectedSpace α] : DenselyOrdered α where
+  dense x y hxy := by
+    suffices (Iio y ∩ Ioi x).Nonempty by grind [Set.inter_nonempty_iff_exists_left]
+    exact nonempty_inter (isOpen_Iio' y) (isOpen_Ioi' x) (Set.Iio_union_Ioi_of_lt hxy)
+      ⟨x, Set.mem_Iio.mpr hxy⟩ ⟨y, Set.mem_Ioi.mpr hxy⟩
+
+variable [ConditionallyCompleteLinearOrder α] [OrderTopology α]
 
 /-- A bounded connected subset of a conditionally complete linear order includes the open interval
 `(Inf s, Sup s)`. -/
@@ -333,7 +342,7 @@ theorem IsClosed.mem_of_ge_of_forall_exists_lt {a b : α} {s : Set α} (hs : IsC
   suffices OrderDual.toDual a ∈ ofDual ⁻¹' s by aesop
   have : IsClosed (OrderDual.ofDual ⁻¹' (s ∩ Icc a b)) := hs
   rw [preimage_inter, ← Icc_toDual] at this
-  apply this.mem_of_ge_of_forall_exists_gt (by aesop) (by aesop) (fun x hx ↦ ?_)
+  apply this.mem_of_ge_of_forall_exists_gt (by simp_all) (by simp_all) (fun x hx ↦ ?_)
   rw [Ico_toDual, ← preimage_inter, ← Equiv.image_symm_eq_preimage, mem_image] at hx
   aesop
 
@@ -540,6 +549,7 @@ variable {δ : Type*} [LinearOrder δ] [TopologicalSpace δ] [OrderClosedTopolog
 
 /-- **Intermediate Value Theorem** for continuous functions on closed intervals, case
 `f a ≤ t ≤ f b`. -/
+@[wikidata Q245098]
 theorem intermediate_value_Icc {a b : α} (hab : a ≤ b) {f : α → δ} (hf : ContinuousOn f (Icc a b)) :
     Icc (f a) (f b) ⊆ f '' Icc a b :=
   isPreconnected_Icc.intermediate_value (left_mem_Icc.2 hab) (right_mem_Icc.2 hab) hf

@@ -59,9 +59,13 @@ instance Rat.instPosMulMono : PosMulMono ℚ where
     simpa [mul_sub, sub_nonneg] using Rat.mul_nonneg hr (sub_nonneg.2 hpq)
 
 deriving instance CommSemiring for NNRat
+
 deriving instance AddCancelCommMonoid for NNRat
+
 deriving instance LinearOrder for NNRat
+
 deriving instance Sub for NNRat
+
 deriving instance Inhabited for NNRat
 
 namespace NNRat
@@ -76,7 +80,7 @@ instance instOrderBot : OrderBot ℚ≥0 where
 @[simp] lemma val_eq_cast (q : ℚ≥0) : q.1 = q := rfl
 
 instance instCharZero : CharZero ℚ≥0 where
-  cast_injective a b hab := by simpa using congr_arg num hab
+  cast_injective a b hab := by simpa using! congr_arg num hab
 
 instance canLift : CanLift ℚ ℚ≥0 (↑) fun q ↦ 0 ≤ q where
   prf q hq := ⟨⟨q, hq⟩, rfl⟩
@@ -365,6 +369,7 @@ lemma mk_divInt (n d : ℕ) :
 lemma divNat_inj (h₁ : d₁ ≠ 0) (h₂ : d₂ ≠ 0) : divNat n₁ d₁ = divNat n₂ d₂ ↔ n₁ * d₂ = n₂ * d₁ := by
   rw [← coe_inj]; simp [Rat.mkRat_eq_iff, h₁, h₂]; norm_cast
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma divNat_zero (n : ℕ) : divNat n 0 = 0 := by simp [divNat]
 
 @[simp] lemma num_divNat_den (q : ℚ≥0) : divNat q.num q.den = q :=

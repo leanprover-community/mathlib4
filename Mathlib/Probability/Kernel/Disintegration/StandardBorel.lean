@@ -159,6 +159,7 @@ instance instIsMarkovKernelCondKernelUnitReal (κ : Kernel Unit (α × ℝ)) [Is
   rw [condKernelUnitReal]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance condKernelUnitReal.instIsCondKernel (κ : Kernel Unit (α × ℝ)) [IsFiniteKernel κ] :
     κ.IsCondKernel κ.condKernelUnitReal where
   disintegrate := by rw [condKernelUnitReal, compProd_toKernel]; ext; simp

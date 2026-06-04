@@ -71,7 +71,7 @@ instance HasOrthogonalProjection.map_linearIsometryEquiv [K.HasOrthogonalProject
   exists_orthogonal v := by
     rcases HasOrthogonalProjection.exists_orthogonal (K := K) (f.symm v) with ⟨w, hwK, hw⟩
     refine ⟨f w, Submodule.mem_map_of_mem hwK, Set.forall_mem_image.2 fun u hu ↦ ?_⟩
-    erw [← f.symm.inner_map_map, f.symm_apply_apply, map_sub, f.symm_apply_apply, hw u hu]
+    simp [← f.symm.inner_map_map, hw u hu]
 
 instance HasOrthogonalProjection.map_linearIsometryEquiv' [K.HasOrthogonalProjection]
     {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') :
@@ -137,7 +137,7 @@ theorem orthogonalProjectionFn_norm_sq (v : E) :
   set p := K.orthogonalProjectionFn v
   have h' : ⟪v - p, p⟫ = 0 :=
     orthogonalProjectionFn_inner_eq_zero _ _ (orthogonalProjectionFn_mem v)
-  convert norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (v - p) p h' using 2 <;> simp
+  convert! norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (v - p) p h' using 2 <;> simp
 
 /-- The orthogonal projection onto a complete subspace. -/
 def orthogonalProjection : E →L[𝕜] K :=
@@ -251,13 +251,6 @@ theorem starProjection_minimal {U : Submodule 𝕜 E} [U.HasOrthogonalProjection
   rw [starProjection_apply, U.norm_eq_iInf_iff_inner_eq_zero (Submodule.coe_mem _)]
   exact starProjection_inner_eq_zero _
 
-/-- The orthogonal projections onto equal subspaces are coerced back to the same point in `E`. -/
-@[deprecated "As there are no subtypes causing dependent type issues, there is no need for this
-result as `simp` will suffice" (since := "2025-07-12")]
-theorem eq_starProjection_of_eq_submodule {K' : Submodule 𝕜 E} [K'.HasOrthogonalProjection]
-    (h : K = K') (u : E) : K.starProjection u = K'.starProjection u := by
-  simp [h]
-
 /-- The orthogonal projection sends elements of `K` to themselves. -/
 @[simp]
 theorem orthogonalProjection_mem_subspace_eq_self (v : K) : K.orthogonalProjection v = v := by
@@ -336,7 +329,7 @@ theorem starProjection_map_apply {E E' : Type*} [NormedAddCommGroup E]
     (p : Submodule 𝕜 E) [p.HasOrthogonalProjection] (x : E') :
     (p.map (f.toLinearEquiv : E →ₗ[𝕜] E')).starProjection x =
       f (p.starProjection (f.symm x)) := by
-  simpa only [f.coe_toLinearIsometry, f.apply_symm_apply] using
+  simpa only [f.coe_toLinearIsometry, f.apply_symm_apply] using!
     (f.toLinearIsometry.map_starProjection' p (f.symm x)).symm
 
 /-- The orthogonal projection onto the trivial submodule is the zero map. -/
@@ -418,7 +411,7 @@ theorem starProjection_singleton {v : E} (w : E) :
     (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • (𝕜 ∙ v).starProjection w =
       (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ⟪v, w⟫) • v := by
     simp [mul_smul, smul_starProjection_singleton 𝕜 w, -map_pow]
-  convert key using 1 <;> match_scalars <;> field_simp [hv']
+  convert! key using 1 <;> match_scalars <;> field_simp [hv']
 
 /-- Formula for orthogonal projection onto a single unit vector. -/
 theorem starProjection_unit_singleton {v : E} (hv : ‖v‖ = 1) (w : E) :
@@ -457,7 +450,7 @@ theorem IsOrtho.starProjection_comp_starProjection {U V : Submodule 𝕜 E}
 theorem orthogonalProjection_comp_subtypeL_eq_zero_iff {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] : U.orthogonalProjection ∘L V.subtypeL = 0 ↔ U ⟂ V :=
   ⟨fun h u hu v hv => by
-    convert starProjection_inner_eq_zero v u hu using 2
+    convert! starProjection_inner_eq_zero v u hu using 2
     have : U.orthogonalProjection v = 0 := DFunLike.congr_fun h (⟨_, hv⟩ : V)
     rw [starProjection_apply, this, Submodule.coe_zero, sub_zero],
     Submodule.IsOrtho.orthogonalProjection_comp_subtypeL⟩
@@ -477,10 +470,6 @@ theorem starProjection_comp_starProjection_eq_zero_iff {U V : Submodule 𝕜 E}
 theorem orthogonalProjection_orthogonal_apply_eq_zero
     [Kᗮ.HasOrthogonalProjection] {v : E} (hv : v ∈ K) : Kᗮ.orthogonalProjection v = 0 :=
   orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero (K.le_orthogonal_orthogonal hv)
-
-@[deprecated (since := "2025-07-22")] alias
-  orthogonalProjection_mem_subspace_orthogonal_precomplement_eq_zero :=
-  orthogonalProjection_orthogonal_apply_eq_zero
 
 theorem starProjection_orthogonal_apply_eq_zero
     [Kᗮ.HasOrthogonalProjection] {v : E} (hv : v ∈ K) :

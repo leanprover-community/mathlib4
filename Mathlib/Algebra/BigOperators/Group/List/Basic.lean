@@ -216,6 +216,11 @@ theorem mul_prod_eraseIdx {i} (hlen : i < l.length) (hcomm : ∀ a' ∈ l.take i
       hcomm a' (by rwa [take_eraseIdx_eq_take_of_le l i i (Nat.le_refl i)] at a'_mem)),
     insertIdx_eraseIdx_getElem hlen]
 
+@[to_additive (attr := simp)]
+theorem prod_filter_bne_one [BEq M] [LawfulBEq M] (l : List M) :
+    (l.filter (· != 1)).prod = l.prod := by
+  classical induction l <;> grind
+
 end Monoid
 
 section CommMonoid
@@ -244,8 +249,8 @@ lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
 
 @[to_additive] lemma Perm.prod_eq (h : Perm l₁ l₂) : prod l₁ = prod l₂ := h.foldr_op_eq
 
-@[to_additive (attr := simp)]
-lemma prod_reverse (l : List M) : prod l.reverse = prod l := (reverse_perm l).prod_eq
+set_option linter.existingAttributeWarning false in
+attribute [to_additive existing] prod_reverse
 
 @[to_additive]
 lemma prod_mul_prod_eq_prod_zipWith_mul_prod_drop :
@@ -255,7 +260,7 @@ lemma prod_mul_prod_eq_prod_zipWith_mul_prod_drop :
   | [], ys => by simp
   | xs, [] => by simp
   | x :: xs, y :: ys => by
-    simp only [drop, length, zipWith_cons_cons, prod_cons]
+    simp only [zipWith_cons_cons, prod_cons]
     conv =>
       lhs; rw [mul_assoc]; right; rw [mul_comm, mul_assoc]; right
       rw [mul_comm, prod_mul_prod_eq_prod_zipWith_mul_prod_drop xs ys]
@@ -298,7 +303,7 @@ lemma eq_of_prod_take_eq [LeftCancelMonoid M] {L L' : List M} (h : L.length = L'
   refine ext_get h fun i h₁ h₂ => ?_
   have : (L.take (i + 1)).prod = (L'.take (i + 1)).prod := h' _ (Nat.succ_le_of_lt h₁)
   rw [prod_take_succ L i h₁, prod_take_succ L' i h₂, h' i (Nat.le_of_lt h₁)] at this
-  convert mul_left_cancel this
+  convert! mul_left_cancel this
 
 section Group
 

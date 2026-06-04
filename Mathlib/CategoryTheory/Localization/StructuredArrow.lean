@@ -39,6 +39,7 @@ section
 variable (W : MorphismProperty C) (L : C ⥤ D) (L' : C ⥤ D')
   [L.IsLocalization W] [L'.IsLocalization W] {X : C}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `StructuredArrow (L.obj X) L ≃ StructuredArrow (L'.obj X) L'`
 when `L` and `L'` are two localization functors for the same class of morphisms. -/
 @[simps]
@@ -82,7 +83,7 @@ private lemma induction_structuredArrow'
   | cons f g hf =>
       obtain (g | ⟨w, hw⟩) := g
       · exact hP₁ g _ hf
-      · simpa only [← Construction.wInv_eq_isoOfHom_inv w hw] using hP₂ w hw _ hf
+      · simpa only [← Construction.wInv_eq_isoOfHom_inv w hw] using! hP₂ w hw _ hf
 
 end
 
@@ -92,6 +93,7 @@ variable (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] {X : C}
   (P : StructuredArrow (L.obj X) L → Prop)
 
 
+set_option backward.isDefEq.respectTransparency false in
 @[elab_as_elim]
 lemma induction_structuredArrow
     (hP₀ : P (StructuredArrow.mk (𝟙 (L.obj X))))
@@ -104,13 +106,13 @@ lemma induction_structuredArrow
     fun g ↦ P (structuredArrowEquiv W W.Q L g)
   rw [← (structuredArrowEquiv W W.Q L).apply_symm_apply g]
   apply induction_structuredArrow' W P'
-  · convert hP₀
+  · convert! hP₀
     simp
   · intro Y₁ Y₂ f φ hφ
-    convert hP₁ f (homEquiv W W.Q L φ) hφ
+    convert! hP₁ f (homEquiv W W.Q L φ) hφ
     simp [homEquiv_comp]
   · intro Y₁ Y₂ w hw φ hφ
-    convert hP₂ w hw (homEquiv W W.Q L φ) hφ
+    convert! hP₂ w hw (homEquiv W W.Q L φ) hφ
     simp [homEquiv_comp, homEquiv_isoOfHom_inv]
 
 end
@@ -133,7 +135,7 @@ lemma induction_costructuredArrow
   induction g' using induction_structuredArrow L.op W.op with
   | hP₀ => exact hP₀
   | hP₁ f φ hφ => exact hP₁ f.unop φ.unop hφ
-  | hP₂ w hw φ hφ => simpa [isoOfHom_op_inv L W w hw] using hP₂ w.unop hw φ.unop hφ
+  | hP₂ w hw φ hφ => simpa [isoOfHom_op_inv L W w hw] using! hP₂ w.unop hw φ.unop hφ
 
 end
 
