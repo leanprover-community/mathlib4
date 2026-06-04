@@ -110,8 +110,8 @@ lemma multipliableLocallyUniformlyOn_eta :
 
 lemma eta_tprod_ne_zero {z : ℂ} (hz : z ∈ ℍₒ) : ∏' n, (1 - eta_q n z) ≠ 0 := by
   refine tprod_one_add_ne_zero_of_summable (f := fun n ↦ -eta_q n z) ?_ ?_
-  · exact fun i ↦ by simpa using one_sub_eta_q_ne_zero i hz
-  · simpa [eta_q, ← summable_norm_iff] using summable_eta_q ⟨z, hz⟩
+  · exact fun i ↦ by simpa using! one_sub_eta_q_ne_zero i hz
+  · simpa [eta_q, ← summable_norm_iff] using! summable_eta_q ⟨z, hz⟩
 
 /-- Eta is non-vanishing on the upper half plane. -/
 lemma eta_ne_zero {z : ℂ} (hz : z ∈ ℍₒ) : η z ≠ 0 :=
