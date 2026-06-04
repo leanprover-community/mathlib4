@@ -773,6 +773,16 @@ jobs:
           ## back to the commit's associated PRs.
           printf '%s' "${{ github.event.pull_request.number }}" > pr_number.txt
 
+      - name: ensure dump outputs are regular files
+        run: |
+          for f in decls.txt imports.json import_graph.dot pr_number.txt; do
+            if [ -L "$f" ] || [ ! -f "$f" ]; then
+              echo "Refusing to upload: $f is not a regular file." >&2
+              ls -la -- "$f" >&2 || true
+              exit 1
+            fi
+          done
+
       - name: upload the import graph
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
