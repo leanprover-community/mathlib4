@@ -7,43 +7,31 @@ module
 
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.RingTheory.Ideal.Finsupp
 public import Mathlib.RingTheory.Nakayama
 public import Mathlib.RingTheory.QuotSMulTop
 
 /-!
 
-# Freeness of QuotSMulTop by regular element
+# Freeness of `QuotSMulTop` by a regular element
 
-For finitely presented module `M` over commutative ring `R`, if `x` in the jacobson radical of `R`
-is `M`-regular, then `M/xM` is free over `R/(x)` iff `M` is free over `R`.
-
-## Main Results
-
-* `free_iff_quotSMulTop_free` : If `x ∈ m` is `M`-regular,
-  `M/xM` is free over `R/(x)` iff `M` is free over `R`.
+Let `M` be a finitely presented module over a commutative ring `R`. If `x` is in the
+Jacobson radical of `R` and `x` is `M`-regular, then `M/xM` is free over `R/(x)` if and only if
+`M` is free over `R`.
 
 -/
 
 public section
 
-universe u v
+variable (R : Type*) [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
 
-variable (R : Type u) [CommRing R]
-
-lemma Finsupp.submodule_smul {M : Type*} [AddCommGroup M] [Module R M]
-    (ι : Type*) (p : ι → Submodule R M) (I : Ideal R) :
-    Finsupp.submodule (fun i ↦ I • p i) = I • Finsupp.submodule p := by
-  simp only [Finsupp.submodule_eq_iSup, Submodule.map_smul'', ← Submodule.smul_iSup]
-
-instance (M : Type*) [AddCommGroup M] [Module R M] [Module.Free R M] (x : R) :
-    Module.Free (R ⧸ Ideal.span {x}) (QuotSMulTop x M) :=
+instance [Module.Free R M] (x : R) : Module.Free (R ⧸ Ideal.span {x}) (QuotSMulTop x M) :=
   Module.Free.of_equiv ((QuotSMulTop.equivQuotTensor x M).extendScalarsOfSurjective
-      Ideal.Quotient.mk_surjective).symm
+    Ideal.Quotient.mk_surjective).symm
 
 open Pointwise in
-lemma free_iff_quotSMulTop_free (M : Type*) [AddCommGroup M] [Module R M]
-    [Module.FinitePresentation R M] {x : R} (mem : x ∈ (⊥ : Ideal R).jacobson)
-    (reg : IsSMulRegular M x) :
+lemma Module.free_quotSMulTop_iff_free [Module.FinitePresentation R M] {x : R}
+    (mem : x ∈ (⊥ : Ideal R).jacobson) (reg : IsSMulRegular M x) :
     Module.Free (R ⧸ Ideal.span {x}) (QuotSMulTop x M) ↔ Module.Free R M := by
   refine ⟨fun free ↦ ?_, fun free ↦ inferInstance⟩
   have := Module.Finite.of_restrictScalars_finite R (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
