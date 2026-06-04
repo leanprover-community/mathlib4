@@ -32,65 +32,6 @@ open IsLocalRing IsRegularLocalRing
 variable (R : Type*) [CommRing R]
 
 variable {R} in
-lemma IsLocalRing.ResidueField.map_bijective_of_surjective [IsLocalRing R] {S : Type*} [CommRing S]
-    [IsLocalRing S] (f : R →+* S) (surj : Function.Surjective f) [IsLocalHom f] :
-    Function.Bijective (ResidueField.map f) :=
-  ⟨RingHom.injective _, Ideal.Quotient.lift_surjective_of_surjective _ _
-    (Ideal.Quotient.mk_surjective.comp surj)⟩
-
-/-- `Ideal.toCotangent` for maximal ideal of local ring,
- as `IsLocalRing.residue R` semi-linear map. -/
-def IsLocalRing.toCotangentSpace [IsLocalRing R] :
-    maximalIdeal R →ₛₗ[residue R] CotangentSpace R where
-  __ := (maximalIdeal R).toCotangent
-  map_smul' r x := by
-    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, map_smul]
-    rfl
-
-instance [IsLocalRing R] : RingHomSurjective (residue R) := ⟨residue_surjective⟩
-
-variable {R} in
-lemma IsLocalRing.spanFinrank_maximalIdeal_add_finrank_eq_of_surjective [IsLocalRing R]
-    [IsNoetherianRing R] {S : Type*} [CommRing S] [IsLocalRing S] [Algebra R S]
-    (surj : Function.Surjective (algebraMap R S)) [IsLocalHom (algebraMap R S)] :
-    (maximalIdeal S).spanFinrank + Module.finrank (ResidueField R)
-      ((Submodule.comap (maximalIdeal R).subtype (RingHom.ker (algebraMap R S))).map
-        (toCotangentSpace R)) = (maximalIdeal R).spanFinrank := by
-  have : IsNoetherianRing S := isNoetherianRing_of_surjective R S (algebraMap R S) surj
-  let f := (maximalIdeal R).mapCotangent (maximalIdeal S) (Algebra.ofId R S) (fun x hx ↦ by simpa)
-  have eqsup : (maximalIdeal S).comap (algebraMap R S) =
-    RingHom.ker (algebraMap R S) ⊔ (maximalIdeal R) := by
-    simpa [maximalIdeal_comap] using le_maximalIdeal (RingHom.ker_ne_top _)
-  let toCot := (Submodule.comap (maximalIdeal R).subtype (RingHom.ker (algebraMap R S))).map
-    (toCotangentSpace R)
-  let Q := (CotangentSpace R) ⧸ toCot
-  have ker : (LinearMap.ker f : Set (maximalIdeal R).Cotangent) = toCot := by
-    rw [Ideal.mapCotangent_ker_of_surjective surj eqsup]
-    simp [toCot, toCotangentSpace]
-  let f' : Q →+ CotangentSpace S :=
-    QuotientAddGroup.lift _ f (fun x hx ↦ (Set.ext_iff.mp ker x).mpr hx)
-  have bij : Function.Bijective f' := by
-    constructor
-    · rw [← AddMonoidHom.ker_eq_bot_iff, eq_bot_iff]
-      intro x hx
-      obtain ⟨x, rfl⟩ := QuotientAddGroup.mk_surjective x
-      exact (QuotientAddGroup.eq_zero_iff _).mpr ((Set.ext_iff.mp ker x).mp hx)
-    · apply QuotientAddGroup.lift_surjective_of_surjective
-      exact Ideal.mapCotangent_surjective_of_comap_eq surj eqsup
-  let e : Q ≃+ CotangentSpace S := AddEquiv.ofBijective f' bij
-  have (r : ResidueField R) (m : Q) : e (r • m) = (ResidueField.map (algebraMap R S)) r • e m := by
-    obtain ⟨m, rfl⟩ := Submodule.Quotient.mk_surjective _ m
-    obtain ⟨r, rfl⟩ := residue_surjective r
-    exact (map_smul f r m).trans (algebraMap_smul S r _).symm
-  have rk := lift_rank_eq_of_equiv_equiv (ResidueField.map (algebraMap R S))
-    e (ResidueField.map_bijective_of_surjective _ surj) this
-  have frk : Module.finrank (ResidueField R) Q =
-    Module.finrank (ResidueField S) (CotangentSpace S) := by
-    simpa [Module.finrank] using! congrArg Cardinal.toNat rk
-  simp only [spanFinrank_maximalIdeal_eq_finrank_cotangentSpace]
-  rw [← frk, Submodule.finrank_quotient_add_finrank]
-
-variable {R} in
 lemma IsLocalRing.spanFinrank_maximalIdeal_quotient [IsLocalRing R] [IsNoetherianRing R]
     (S : Finset R) (sub : (S : Set R) ⊆ maximalIdeal R)
     (li : LinearIndependent (ResidueField R) ((maximalIdeal R).toCotangent ∘ (Set.inclusion sub))) :
