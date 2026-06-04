@@ -280,8 +280,7 @@ theorem MemLp.condExp {f : α → E} {p : ℝ≥0∞} (hp : 1 ≤ p) (hf : MemLp
     have := Integrable.norm_condExp_rpow_le (m := m) hp <|
       (integrable_norm_rpow_iff hf.1 hp'.ne.symm hpt).2 hf
     refine Integrable.mono_nonneg integrable_condExp ?_ ?_ this
-    · exact (Real.continuous_rpow_const (zero_le_one.trans hp)).comp_aestronglyMeasurable
-        integrable_condExp.norm.1
+    · fun_prop (discharger := simp)
     · filter_upwards with a; positivity
   · simp_all only
     exact memLp_top_of_bound integrable_condExp.1 (essSup (‖f ·‖) μ) hf.ae_norm_condExp_le_essSup
