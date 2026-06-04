@@ -133,7 +133,7 @@ theorem sInter_of_countable {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα :
   · apply IsClub.sInter hα.ne' (hα.trans_le' _) hs
     rwa [le_aleph0_iff_set_countable]
 
-theorem iInter_of_countable {ι : Type*} {f : ι → Set α} [Countable ι] (hα : cof α ≠ ℵ₀)
+theorem iInter_of_countable {ι : Sort*} {f : ι → Set α} [Countable ι] (hα : cof α ≠ ℵ₀)
     (hf : ∀ i, IsClub (f i)) : IsClub (⋂ i, f i) := by
   rw [← sInter_range]
   apply IsClub.sInter_of_countable hα (countable_range f)
