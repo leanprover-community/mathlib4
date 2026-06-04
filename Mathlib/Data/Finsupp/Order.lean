@@ -304,7 +304,7 @@ lemma support_add_eq' {f1 f2 : ι →₀ α} [DecidableEq ι] :
     (f1 + f2).support = (f1.support ∪ f2.support : Finset ι) := by
   refine le_antisymm support_add (Finset.le_iff_subset.2 (Finset.union_subset ?_ ?_))
   · exact support_mono le_self_add
-  · exact support_mono <| CanonicallyOrderedAdd.le_add_self ..
+  · exact support_mono <| le_add_self ..
 
 end PartialOrder
 
