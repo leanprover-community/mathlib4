@@ -69,22 +69,25 @@ protected theorem div {p a n : ℕ} [ExpChar K p] (h : Introspective (X - C (a :
   have _ : map (frobenius K p) (X - C (a : K)) = X - C (a : K) := by simp
   grind [of_frobenius_map, Nat.mul_div_cancel' hd]
 
-variable [NeZero r]
-
-protected theorem eval_pow {μ : K} {f : K[X]} {n : ℕ} (h : IsPrimitiveRoot μ r)
+protected theorem eval_pow {μ : K} {f : K[X]} {n : ℕ} (h : IsPrimitiveRoot μ r) (hz : r ≠ 0)
     (hi : Introspective f n r) : f.eval (μ ^ n) = f.eval μ ^ n :=
-  hi μ ((mem_primitiveRoots (Nat.ne_zero_iff_zero_lt.mp NeZero.out)).mpr h)
+  hi μ ((mem_primitiveRoots (Nat.ne_zero_iff_zero_lt.mp hz)).mpr h)
+
+theorem test {d : ℕ} {f : K[X]} : Introspective f d 0 := by
+  simp [Introspective]
 
 /-- The product of coprime exponents is Introspective. -/
 theorem mul_of_coprime {d e : ℕ} {f : K[X]} (hf : Introspective f e r)
     (hg : Introspective f d r) (h : e.Coprime r) : Introspective f (e * d) r := by
-  intro μ hm
-  have mu : μ ^ e ∈ primitiveRoots r K := by
-    have hl : 0 < r := pos_of_neZero r
-    simp only [mem_primitiveRoots hl] at ⊢ hm
-    exact IsPrimitiveRoot.pow_of_coprime hm e h
-  rw [pow_mul, hg (μ ^ e) mu, hf μ hm]
-  ring
+  by_cases hr : r = 0
+  · grind
+  · intro μ hm
+    have mu : μ ^ e ∈ primitiveRoots r K := by
+      have hl : 0 < r := by lia
+      simp only [mem_primitiveRoots hl] at ⊢ hm
+      exact IsPrimitiveRoot.pow_of_coprime hm e h
+    rw [pow_mul, hg (μ ^ e) mu, hf μ hm]
+    ring
 
 /-- Necessary condition for the auxilliary proof. -/
 theorem of_multiset {p n b : ℕ} [ExpChar K p] (d e : ℕ) (s : Multiset (Fin b)) (hcprm : n.Coprime r)
