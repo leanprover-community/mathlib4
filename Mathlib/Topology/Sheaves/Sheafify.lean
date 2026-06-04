@@ -73,7 +73,7 @@ sending each section to its germs.
 (This forms the unit of the adjunction.)
 -/
 def toSheafify : F ⟶ F.sheafify.1 where
-  app U := TypeCat.ofHom fun f ↦ ⟨fun x => F.germ _ x x.2 f, PrelocalPredicate.sheafifyOf
+  app U := ↾fun f ↦ ⟨fun x => F.germ _ x x.2 f, PrelocalPredicate.sheafifyOf
     ⟨f, fun x => rfl⟩⟩
   naturality U U' f := by
     ext x
@@ -90,7 +90,7 @@ def stalkToFiber (x : X) : F.sheafify.presheaf.stalk x ⟶ F.stalk x :=
 theorem stalkToFiber_surjective (x : X) : Function.Surjective (F.stalkToFiber x) := by
   apply TopCat.stalkToFiber_surjective
   intro t
-  obtain ⟨U, m, s, rfl⟩ := F.germ_exist _ t
+  obtain ⟨U, m, s, rfl⟩ := F.exists_germ_eq t
   use ⟨U, m⟩
   fconstructor
   · exact fun y => F.germ _ _ y.2 s

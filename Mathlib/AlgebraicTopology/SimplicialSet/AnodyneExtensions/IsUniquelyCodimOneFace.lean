@@ -61,8 +61,7 @@ section
 
 variable {d : ℕ} (hd : x.dim = d)
 
-set_option backward.proofsInPublic true in
-lemma cast : IsUniquelyCodimOneFace (x.cast hd) (y.cast (by rw [hxy.dim_eq, hd])) := by
+lemma cast : IsUniquelyCodimOneFace (x.cast hd) (y.cast (d := d + 1) (by rw [hxy.dim_eq, hd])) := by
   simpa only [cast_eq_self]
 
 lemma existsUnique_δ_cast_simplex :
@@ -95,6 +94,7 @@ lemma le : x ≤ y := by
     ← this]
   exact ⟨(SimplexCategory.δ _).op, rfl⟩
 
+set_option backward.defeqAttrib.useBackward true in
 include hxy in
 lemma unique (f : ⦋d⦌ ⟶ ⦋d + 1⦌) [Mono f]
     (hf : X.map f.op (y.cast (by rw [hxy.dim_eq, hd])).simplex = (x.cast hd).simplex) :
@@ -114,6 +114,7 @@ lemma op : (S.opEquiv.symm x).IsUniquelyCodimOneFace (S.opEquiv.symm y) := by
   obtain ⟨i, rfl⟩ := i.rev_surjective
   simpa [← hxy.δ_eq_iff rfl] using hi
 
+set_option backward.defeqAttrib.useBackward true in
 include hxy in
 lemma of_iso {Y : SSet.{u}} (e : X ≅ Y) :
     (S.mk (e.hom.app _ x.simplex)).IsUniquelyCodimOneFace (S.mk (e.hom.app _ y.simplex)) := by

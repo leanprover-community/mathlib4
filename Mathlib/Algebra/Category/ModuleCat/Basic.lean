@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Semi
 public import Mathlib.Algebra.Category.Grp.Preadditive
 public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # The category of `R`-modules
@@ -60,6 +61,7 @@ structure ModuleCat where
   [isAddCommGroup : AddCommGroup carrier]
   [isModule : Module R carrier]
 
+initialize_simps_projections ModuleCat (-isModule, -isAddCommGroup)
 attribute [instance] ModuleCat.isAddCommGroup
 attribute [instance 1100] ModuleCat.isModule
 
@@ -150,7 +152,7 @@ lemma hom_ext {M N : ModuleCat.{v} R} {f g : M ⟶ N} (hf : f.hom = g.hom) : f =
 
 lemma hom_bijective {M N : ModuleCat.{v} R} :
     Function.Bijective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) where
-  left f g h := by cases f; cases g; simpa using h
+  left f g h := by cases f; cases g; simpa using! h
   right f := ⟨⟨f⟩, rfl⟩
 
 /-- Convenience shortcut for `ModuleCat.hom_bijective.injective`. -/
@@ -299,8 +301,8 @@ in `ModuleCat` -/
 @[simps]
 def linearEquivIsoModuleIso {X Y : Type u} [AddCommGroup X] [AddCommGroup Y] [Module R X]
     [Module R Y] : (X ≃ₗ[R] Y) ≅ (ModuleCat.of R X ≅ ModuleCat.of R Y) where
-  hom := TypeCat.ofHom (fun e ↦ e.toModuleIso)
-  inv := TypeCat.ofHom (fun i ↦ i.toLinearEquiv)
+  hom := ↾fun e ↦ e.toModuleIso
+  inv := ↾fun i ↦ i.toLinearEquiv
 
 end
 
@@ -385,6 +387,15 @@ lemma isZero_iff_subsingleton : IsZero M ↔ Subsingleton M where
 lemma isZero_of_iff_subsingleton {M : Type*} [AddCommGroup M] [Module R M] :
     IsZero (of R M) ↔ Subsingleton M := isZero_iff_subsingleton
 
+@[simp]
+lemma ofHom_zero {M N : Type v} [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] : ModuleCat.ofHom (0 : M →ₗ[R] N) = 0 := rfl
+
+@[simp]
+lemma ofHom_add {M N : Type v} [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] (f g : M →ₗ[R] N) :
+    ModuleCat.ofHom (f + g) = ModuleCat.ofHom f + ModuleCat.ofHom g := rfl
+
 end AddCommGroup
 
 section SMul
@@ -455,6 +466,9 @@ variable {S : Type u} [CommRing S]
 
 instance : Linear S (ModuleCat.{v} S) := ModuleCat.Algebra.instLinear
 
+lemma lsmul_eq_smul_id (M : ModuleCat.{v} S) (s : S) :
+    ModuleCat.ofHom (LinearMap.lsmul S M s) = s • 𝟙 M := rfl
+
 variable {X Y X' Y' : ModuleCat.{v} S}
 
 set_option backward.privateInPublic true in
@@ -509,26 +523,10 @@ def smulNatTrans : R →+* End (forget₂ (ModuleCat R) AddCommGrpCat) where
   toFun r :=
     { app := fun M => M.smul r
       naturality := fun _ _ _ => smul_naturality _ r }
-  map_one' := NatTrans.ext (by
-    #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
-    this was just `cat_disch`. -/
-    simp +instances only [forget₂_obj, map_one, End.one_def]
-    cat_disch)
-  map_zero' := NatTrans.ext (by
-    #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
-    this was just `cat_disch`. -/
-    simp +instances only [forget₂_obj, map_zero]
-    cat_disch)
-  map_mul' _ _ := NatTrans.ext (by
-    #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
-    this was just `cat_disch`. -/
-    simp +instances only [forget₂_obj, map_mul, End.mul_def]
-    cat_disch)
-  map_add' _ _ := NatTrans.ext (by
-    #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
-    this was just `cat_disch`. -/
-    simp +instances only [forget₂_obj, map_add]
-    cat_disch)
+  map_one' := by cat_disch
+  map_zero' := by cat_disch
+  map_mul' _ _ := by cat_disch
+  map_add' _ _ := by cat_disch
 
 /-- Given `A : AddCommGrpCat` and a ring morphism `R →+* End A`, this is a type synonym
 for `A`, on which we shall define a structure of `R`-module. -/

@@ -141,6 +141,7 @@ theorem of_one_le_get?_partDen {b : K}
   rw [← ifp_n_b_eq_gp_n_b]
   exact mod_cast IntFractPair.one_le_succ_nth_stream_b succ_nth_stream_eq
 
+omit [IsStrictOrderedRing K] in
 /--
 Shows that the partial numerators `aᵢ` of the continued fraction are equal to one and the partial
 denominators `bᵢ` correspond to integers.
@@ -156,6 +157,7 @@ theorem of_partNum_eq_one_and_exists_int_partDen_eq {gp : GenContFract.Pair K}
     injection this
   simp [this]
 
+omit [IsStrictOrderedRing K] in
 /-- Shows that the partial numerators `aᵢ` are equal to one. -/
 theorem of_partNum_eq_one {a : K} (nth_partNum_eq : (of v).partNums.get? n = some a) :
     a = 1 := by
@@ -164,6 +166,7 @@ theorem of_partNum_eq_one {a : K} (nth_partNum_eq : (of v).partNums.get? n = som
   have : gp.a = 1 := (of_partNum_eq_one_and_exists_int_partDen_eq nth_s_eq).left
   rwa [gp_a_eq_a_n] at this
 
+omit [IsStrictOrderedRing K] in
 /-- Shows that the partial denominators `bᵢ` correspond to an integer. -/
 theorem exists_int_eq_of_partDen {b : K}
     (nth_partDen_eq : (of v).partDens.get? n = some b) : ∃ z : ℤ, b = (z : K) := by
@@ -176,6 +179,7 @@ end GenContFract
 
 variable (v)
 
+omit [IsStrictOrderedRing K] in
 theorem GenContFract.of_isSimpContFract :
     (of v).IsSimpContFract := fun _ _ nth_partNum_eq =>
   of_partNum_eq_one nth_partNum_eq
@@ -341,7 +345,7 @@ theorem sub_convs_eq {ifp : IntFractPair K}
   obtain (ifp_fr_eq_zero | ifp_fr_ne_zero) := eq_or_ne ifp.fr 0
   · suffices v - g.convs n = 0 by simpa [ifp_fr_eq_zero]
     replace g_finite_correctness : v = g.convs n := by
-      simpa [GenContFract.compExactValue, ifp_fr_eq_zero] using g_finite_correctness
+      simpa [GenContFract.compExactValue, ifp_fr_eq_zero] using! g_finite_correctness
     exact sub_eq_zero.2 g_finite_correctness
   · -- more shorthand notation
     let A := conts.a
@@ -353,7 +357,7 @@ theorem sub_convs_eq {ifp : IntFractPair K}
     -- now we can unfold `g.compExactValue` to derive the following equality for `v`
     replace g_finite_correctness : v = (pA + ifp.fr⁻¹ * A) / (pB + ifp.fr⁻¹ * B) := by
       simpa [GenContFract.compExactValue, ifp_fr_ne_zero, nextConts, nextNum, nextDen, add_comm]
-        using g_finite_correctness
+        using! g_finite_correctness
     -- let's rewrite this equality for `v` in our goal
     suffices
       (pA + ifp.fr⁻¹ * A) / (pB + ifp.fr⁻¹ * B) - A / B = (-1) ^ n / (B * (ifp.fr⁻¹ * B + pB)) by
@@ -366,8 +370,14 @@ theorem sub_convs_eq {ifp : IntFractPair K}
         have : ¬g.TerminatedAt n' :=
           (not_congr of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none).2 this
         exact Or.inr this
-    have determinant_eq : pA * B - pB * A = (-1) ^ n :=
-      (SimpContFract.of v).determinant_aux n_eq_zero_or_not_terminatedAt_pred_n
+    have determinant_eq : pA * B - pB * A = (-1) ^ n := by
+      match hn : n with
+      | 0 => subst n; simp [pA, pB, A, B, pred_conts, conts]
+      | n' + 1 =>
+        subst n
+        simp only [succ_ne_zero, false_or] at n_eq_zero_or_not_terminatedAt_pred_n
+        rw [add_tsub_cancel_right] at n_eq_zero_or_not_terminatedAt_pred_n
+        exact (SimpContFract.of v).determinant n_eq_zero_or_not_terminatedAt_pred_n
     -- now all we got to do is to rewrite this equality in our goal and re-arrange terms;
     -- however, for this, we first have to derive quite a few tedious inequalities.
     have pB_ineq : (fib n : K) ≤ pB :=
