@@ -7959,6 +7959,7 @@ public import Mathlib.Topology.MetricSpace.Defs
 public import Mathlib.Topology.MetricSpace.Dilation
 public import Mathlib.Topology.MetricSpace.DilationEquiv
 public import Mathlib.Topology.MetricSpace.Equicontinuity
+public import Mathlib.Topology.MetricSpace.Finsupp
 public import Mathlib.Topology.MetricSpace.Gluing
 public import Mathlib.Topology.MetricSpace.GromovHausdorff
 public import Mathlib.Topology.MetricSpace.GromovHausdorffRealized
