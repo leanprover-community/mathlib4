@@ -944,7 +944,7 @@ theorem CPolynomialAt.comp {g : F → G} {f : E → F} {x : E}
   exact hm.comp (hn.of_le (Nat.le_succ n)) (Nat.zero_lt_succ n)
 
 /-- Version of `CPolynomialAt.comp` where point equality is a separate hypothesis. -/
-@[to_fun fun_comp_of_eq]
+@[to_fun]
 theorem CPolynomialAt.comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} (hg : CPolynomialAt 𝕜 g y)
     (hf : CPolynomialAt 𝕜 f x) (hy : f x = y) : CPolynomialAt 𝕜 (g ∘ f) x := by
   rw [← hy] at hg
