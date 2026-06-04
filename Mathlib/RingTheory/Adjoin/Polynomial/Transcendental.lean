@@ -10,16 +10,16 @@ public import Mathlib.RingTheory.Algebraic.Basic
 /-!
 # Polynomials and adjoining transcendental elements
 
-This file establishes some basic properties about `A[y]` when `y` is transcendental over `A`.
-These are mostly just carried over from the polynomial ring `A[X]`.
+This file establishes some basic properties about `R[s]` when `s` is transcendental over `R`.
+These are mostly just carried over from the polynomial ring `R[X]`.
 
-## Main Definitions:
-* `Algebra.algEquivOfTranscendental`: Given a transcendental element `s : S` over `R`, the
+## Main definitions:
+* `Polynomial.algEquivOfTranscendental`: Given a transcendental element `s : S` over `R`, the
   `R`-algebra equivalence between `R[X]` and `R[s]` given by sending `X` to `s`.
 * `Algebra.adjoin.evalOfTranscendental`: If `s : S` is transcendental over `R`,
   we get an `R`-algebra homomorphism given by evaluation at some element `c`.
 
-## Main Results
+## Main results
 * `Transcendental.euclideanDomainAdjoin`: Given a transcendental element `s : S` over `F`, `F[s]`
   is a euclidean domain.
 * `Transcendental.uniqueFactorizationMonoid_adjoin`: Given a transcendental element `s : S` over
@@ -37,8 +37,6 @@ variable [CommRing R] [Ring S] [Algebra R S]
 variable (s : S)
 
 namespace Polynomial
-
-variable {p q : R[X]}
 
 variable (R) in
 /-- Given a transcendental element `s : S` over `R`, the `R`-algebra equivalence
@@ -93,7 +91,7 @@ def adjoin.evalOfTranscendental (ht : Transcendental R s) (c : T) : R[s] →ₐ[
 
 @[simp]
 theorem adjoin.evalOfTranscendental_aeval (ht : Transcendental R s) (c : T) :
-    (evalOfTranscendental s ht c) (p.aeval (s : R[s])) = p.aeval c := by
+    evalOfTranscendental s ht c (p.aeval (s : R[s])) = p.aeval c := by
   simp_all [evalOfTranscendental]
 
 theorem adjoin.evalOfTranscendental_eq_zero_iff (ht : Transcendental R s) (x : R[s]) (c : R) :
