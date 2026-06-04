@@ -105,3 +105,6 @@ theorem perfectlyNormalSpace_iff_forall_isClosed_preimage_zero :
               exact ge_of_tendsto' tendsto_one_div_add_atTop_nhds_zero_nat (fun n => (h n).2.le)
             · rcases (mem_iInter.1 h 0).1 with ⟨x, rfl⟩
               exact (hfr x).1 }
+
+@[deprecated (since := "2026-06-03")]
+alias Topology.IsEmbedding.perfectlyNormalSpace := Topology.IsInducing.perfectlyNormalSpace
