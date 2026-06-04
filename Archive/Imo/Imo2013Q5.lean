@@ -6,10 +6,10 @@ Authors: David Renshaw
 
 module
 
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Algebra.Ring.Regular
-public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Tactic.Positivity
 public import Mathlib.Tactic.LinearCombination
 

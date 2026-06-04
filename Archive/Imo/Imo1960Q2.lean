@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 
 module
 
-public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Analysis.Real.Sqrt
 
 /-!
 # IMO 1960 Q2

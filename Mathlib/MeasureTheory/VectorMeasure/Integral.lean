@@ -106,7 +106,7 @@ theorem dominatedFinMeasAdditive_cbmApplyMeasure (μ : VectorMeasure X F) (B : E
     DominatedFinMeasAdditive (μ.transpose B).variation
     (cbmApplyMeasure μ B : Set X → E →L[ℝ] G) 1 := by
   refine ⟨fun s t hs ht _ _ hdisj ↦ cbmApplyMeasure_union μ B hs ht hdisj, fun s hs hsf ↦ ?_⟩
-  simpa using norm_measure_le_variation hsf.ne
+  simpa using! norm_measure_le_variation hsf.ne
 
 theorem norm_cbmApplyMeasure_le (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) (s : Set X) :
     ‖cbmApplyMeasure μ B s‖ ≤ ‖B‖ * ‖μ s‖ := by

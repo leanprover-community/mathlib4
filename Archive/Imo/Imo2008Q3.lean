@@ -6,8 +6,8 @@ Authors: Manuel Candales
 
 module
 
+public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Data.Real.Basic
-public import Mathlib.Data.Real.Sqrt
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.NumberTheory.PrimesCongruentOne
 public import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
