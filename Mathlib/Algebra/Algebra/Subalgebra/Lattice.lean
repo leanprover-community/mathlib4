@@ -369,20 +369,19 @@ section Equalizer
 namespace AlgHom
 
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-variable {F : Type*}
-
-variable [FunLike F A B] [AlgHomClass F R A B]
 
 @[simp]
-theorem equalizer_eq_top {φ ψ : F} : equalizer φ ψ = ⊤ ↔ φ = ψ := by
+theorem equalizer_eq_top {φ ψ : A →ₐ[R] B} : equalizer φ ψ = ⊤ ↔ φ = ψ := by
   simp [SetLike.ext_iff, DFunLike.ext_iff]
 
 @[simp]
-theorem equalizer_same (φ : F) : equalizer φ φ = ⊤ := equalizer_eq_top.2 rfl
+theorem equalizer_same (φ : A →ₐ[R] B) : equalizer φ φ = ⊤ := equalizer_eq_top.2 rfl
+
+variable {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
 
 theorem eqOn_sup {φ ψ : F} {S T : Subalgebra R A} (hS : Set.EqOn φ ψ S) (hT : Set.EqOn φ ψ T) :
     Set.EqOn φ ψ ↑(S ⊔ T) := by
-  rw [← le_equalizer] at hS hT ⊢
+  rw [← AlgHom.coe_coe φ, ← AlgHom.coe_coe ψ, ← le_equalizer] at hS hT ⊢
   exact sup_le hS hT
 
 theorem ext_on_codisjoint {φ ψ : F} {S T : Subalgebra R A} (hST : Codisjoint S T)
