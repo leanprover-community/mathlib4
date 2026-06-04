@@ -331,6 +331,26 @@ protected theorem Nonempty.image (h : s.Nonempty) (f : α → β) : (s.image f).
 
 alias ⟨Nonempty.of_image, _⟩ := image_nonempty
 
+/-- If the image of a finset is nontrivial, the finset is nontrivial.
+For the converse direction under an injectivity hypothesis see `Finset.Nontrivial.image_of_injOn`,
+and for the combined iff see `Finset.image_nontrivial_iff_of_injOn`. -/
+theorem nontrivial_of_image (h : (s.image f).Nontrivial) : s.Nontrivial := by
+  simp only [Finset.Nontrivial, coe_image] at h ⊢
+  exact Set.nontrivial_of_image _ _ h
+
+/-- The image of a nontrivial finset under a function injective on the finset is nontrivial.
+For the version assuming `Function.Injective` see `Finset.map_nontrivial`, and for the combined
+iff see `Finset.image_nontrivial_iff_of_injOn`. -/
+protected theorem Nontrivial.image_of_injOn (hs : s.Nontrivial) (hf : Set.InjOn f s) :
+    (s.image f).Nontrivial := by
+  obtain ⟨x, hx, y, hy, hxy⟩ := hs
+  exact ⟨f x, mem_image_of_mem _ hx, f y, mem_image_of_mem _ hy, (hxy <| hf hx hy ·)⟩
+
+/-- A finset is nontrivial iff its image under a function injective on the finset is. -/
+theorem image_nontrivial_iff_of_injOn (hf : Set.InjOn f s) :
+    (s.image f).Nontrivial ↔ s.Nontrivial :=
+  ⟨nontrivial_of_image, (·.image_of_injOn hf)⟩
+
 theorem image_toFinset [DecidableEq α] {s : Multiset α} :
     s.toFinset.image f = (s.map f).toFinset :=
   ext fun _ => by simp only [mem_image, Multiset.mem_toFinset, Multiset.mem_map]
