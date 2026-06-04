@@ -743,7 +743,7 @@ theorem surjective_unitGroupToResidueFieldUnits :
 the units of the residue field of `A`. -/
 def unitsModPrincipalUnitsEquivResidueFieldUnits :
     A.unitGroup ⧸ A.principalUnitGroup.comap A.unitGroup.subtype ≃* (IsLocalRing.ResidueField A)ˣ :=
-  QuotientGroup.liftEquiv _ A.surjective_unitGroupToResidueFieldUnits
+  QuotientGroup.quotientEquivOfSurjective _ A.surjective_unitGroupToResidueFieldUnits
     A.ker_unitGroupToResidueFieldUnits.symm
 
 set_option backward.isDefEq.respectTransparency false in
