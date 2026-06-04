@@ -64,7 +64,6 @@ end isEmptyEquiv
 
 section optionEquivLeft
 
-open Finset in
 private theorem image_optionElim_product_antidiagonal [DecidableEq σ]
     {x : σ →₀ ℕ} {n : ℕ} : image (fun ((x, y), z, w) ↦
       (z.optionElim x, w.optionElim y)) (antidiagonal n ×ˢ antidiagonal x) =
@@ -100,7 +99,6 @@ private theorem optionFunLeft_monomial (x : Option σ →₀ ℕ) (r : R) :
   · ext y; rw [coeff_coeff_optionFunLeft, map_zero]
     exact coeff_monomial_ne (by simpa [Finsupp.ext_iff] using ⟨none, by simpa⟩) r
 
-open Finset in
 private lemma optionFunLeft_mul (p q : MvPowerSeries (Option σ) R) :
     optionFunLeft σ R (p * q) = optionFunLeft σ R p * optionFunLeft σ R q := by
   classical
