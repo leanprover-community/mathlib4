@@ -286,15 +286,18 @@ theorem MemLp.condExp {f : α → E} {p : ℝ≥0∞} (hp : 1 ≤ p) (hf : MemLp
   · simp_all only
     exact memLp_top_of_bound integrable_condExp.1 (essSup (‖f ·‖) μ) hf.ae_norm_condExp_le_essSup
 
-theorem MemLp.eLpNorm_condExp_le_eLpNorm {f : α → E} {p : ℝ≥0∞} (hp : 1 ≤ p) (hf : MemLp f p μ) :
+theorem eLpNorm_condExp_le_eLpNorm (f : α → E) {p : ℝ≥0∞} (hp : 1 ≤ p) :
     eLpNorm (μ[f | m]) p μ ≤ eLpNorm f p μ := by
-  rw [← ofReal_lpNorm hf, ← ofReal_lpNorm (hf.condExp hp)]
-  exact ENNReal.ofReal_le_ofReal (hf.lpNorm_condExp_le_lpNorm hp)
+  by_cases! hf : MemLp f p μ
+  · rw [← ofReal_lpNorm hf, ← ofReal_lpNorm (hf.condExp hp)]
+    exact ENNReal.ofReal_le_ofReal (hf.lpNorm_condExp_le_lpNorm hp)
+  · simp only [MemLp, not_and, not_lt, top_le_iff] at hf
+    by_cases! ha : AEStronglyMeasurable f μ
+    · simp [hf ha]
+    · simp [condExp_of_not_integrable (fun h => ha h.aestronglyMeasurable)]
 
-theorem eLpNorm_one_condExp_le_eLpNorm (f : α → E) : eLpNorm (μ[f | m]) 1 μ ≤ eLpNorm f 1 μ := by
-  by_cases! hfint : ¬ Integrable f μ
-  · simp [condExp_of_not_integrable hfint]
-  exact (memLp_one_iff_integrable.2 hfint).eLpNorm_condExp_le_eLpNorm (refl 1)
+theorem eLpNorm_one_condExp_le_eLpNorm (f : α → E) : eLpNorm (μ[f | m]) 1 μ ≤ eLpNorm f 1 μ :=
+    eLpNorm_condExp_le_eLpNorm f (refl 1)
 
 end NormedSpace
 
