@@ -439,7 +439,7 @@ then the fixing subgroup of the image of `E` in `L` is a Galois group on `L/E`. 
 theorem of_isScalarTower [Finite G] [IsGaloisGroup G K L] (E : Type*) [Field E] [Algebra K E]
     [Algebra E L] [IsScalarTower K E L] :
     IsGaloisGroup (fixingSubgroup G (Set.range (algebraMap E L))) E L := by
-  rw [show Set.range (algebraMap E L) = (IsScalarTower.toAlgHom K E L).fieldRange by ext; simp ]
+  rw [← IsScalarTower.toAlgHom_fieldRange K E L]
   refine IsGaloisGroup.of_ringEquiv _ _ _ L
     (AlgHom.equivFieldRange (IsScalarTower.toAlgHom K E L)).toRingEquiv.symm fun ⟨_, ⟨x, rfl⟩⟩ ↦ ?_
   simp [AlgEquiv.symm_apply_eq, Subtype.ext_iff]

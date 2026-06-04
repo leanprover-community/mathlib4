@@ -552,6 +552,11 @@ noncomputable def equivFieldRange : L ≃ₐ[K] f.fieldRange :=
 
 end AlgHom
 
+@[simp]
+theorem IsScalarTower.toAlgHom_fieldRange [Algebra L L'] [IsScalarTower K L L'] :
+    (IsScalarTower.toAlgHom K L L').fieldRange = Set.range (algebraMap L L') := by
+  ext; simp
+
 namespace IntermediateField
 
 /-- The embedding from an intermediate field of `L / K` to `L`. -/
