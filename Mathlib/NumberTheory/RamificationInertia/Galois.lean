@@ -286,12 +286,23 @@ theorem card_stabilizer_eq_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
   let := Localization.AtPrime.algebraOfLiesOver p P
   let : Algebra (R ⧸ p) p.ResidueField := inferInstance
   let : Algebra (S ⧸ P) P.ResidueField := inferInstance
+  let : (algebraMap (S ⧸ P) P.ResidueField).comp (algebraMap (R ⧸ p) (S ⧸ P)) =
+      (algebraMap p.ResidueField P.ResidueField).comp (algebraMap (R ⧸ p) p.ResidueField) := by
+    ext x
+    simp only [RingHom.coe_comp, Function.comp_apply, Quotient.algebraMap_mk_of_liesOver,
+      Quotient.mk_algebraMap, algebraMap_quotient_residueField_mk]
+    rw [IsScalarTower.algebraMap_apply R (R ⧸ p) (S ⧸ P)]
+    rw [IsScalarTower.algebraMap_apply R (R ⧸ p) p.ResidueField]
+    set y := algebraMap R (R ⧸ p) x
+    sorry
   let : Algebra (R ⧸ p) P.ResidueField := sorry
   have : IsScalarTower (R ⧸ p) (S ⧸ P) P.ResidueField := sorry
   have : IsScalarTower (R ⧸ p) p.ResidueField P.ResidueField := sorry
   let f := IsFractionRing.stabilizerHom G p P p.ResidueField P.ResidueField
-  have : IsGalois p.ResidueField P.ResidueField := sorry
-  have : Module.Finite p.ResidueField P.ResidueField := sorry
+  have : IsGalois p.ResidueField P.ResidueField :=
+    { __ := Ideal.foobar.normal G p P p.ResidueField P.ResidueField }
+  have : Module.Finite p.ResidueField P.ResidueField :=
+    Ideal.foobar.finite_of_isInvariant G p P p.ResidueField P.ResidueField
   have h1 := IsGalois.card_aut_eq_finrank p.ResidueField P.ResidueField
   have : Subgroup.index _ = _ := Nat.card_congr
     (IsFractionRing.stabilizerQuotientInertiaEquiv G p P p.ResidueField P.ResidueField).toEquiv
