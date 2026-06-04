@@ -278,7 +278,6 @@ open scoped Pointwise
 
 open Algebra
 
--- todo: switch over to galois group of residue fields
 attribute [local instance] Ideal.Quotient.field in
 theorem card_stabilizer_eq_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
     (P : Ideal S) [P.LiesOver p] [P.IsPrime] [PerfectField p.ResidueField] :
@@ -286,18 +285,13 @@ theorem card_stabilizer_eq_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
   let := Localization.AtPrime.algebraOfLiesOver p P
   let : Algebra (R ⧸ p) p.ResidueField := inferInstance
   let : Algebra (S ⧸ P) P.ResidueField := inferInstance
-  let : (algebraMap (S ⧸ P) P.ResidueField).comp (algebraMap (R ⧸ p) (S ⧸ P)) =
+  let heq : (algebraMap (S ⧸ P) P.ResidueField).comp (algebraMap (R ⧸ p) (S ⧸ P)) =
       (algebraMap p.ResidueField P.ResidueField).comp (algebraMap (R ⧸ p) p.ResidueField) := by
-    ext x
-    simp only [RingHom.coe_comp, Function.comp_apply, Quotient.algebraMap_mk_of_liesOver,
-      Quotient.mk_algebraMap, algebraMap_quotient_residueField_mk]
-    rw [IsScalarTower.algebraMap_apply R (R ⧸ p) (S ⧸ P)]
-    rw [IsScalarTower.algebraMap_apply R (R ⧸ p) p.ResidueField]
-    set y := algebraMap R (R ⧸ p) x
-    sorry
-  let : Algebra (R ⧸ p) P.ResidueField := sorry
-  have : IsScalarTower (R ⧸ p) (S ⧸ P) P.ResidueField := sorry
-  have : IsScalarTower (R ⧸ p) p.ResidueField P.ResidueField := sorry
+    ext
+    simp [← IsScalarTower.algebraMap_apply]
+  let := ((algebraMap (S ⧸ P) P.ResidueField).comp (algebraMap (R ⧸ p) (S ⧸ P))).toAlgebra
+  have : IsScalarTower (R ⧸ p) (S ⧸ P) P.ResidueField := .of_algebraMap_eq' rfl
+  have : IsScalarTower (R ⧸ p) p.ResidueField P.ResidueField := .of_algebraMap_eq' heq
   let f := IsFractionRing.stabilizerHom G p P p.ResidueField P.ResidueField
   have : IsGalois p.ResidueField P.ResidueField :=
     { __ := Ideal.foobar.normal G p P p.ResidueField P.ResidueField }
@@ -309,15 +303,6 @@ theorem card_stabilizer_eq_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
   rw [inertiaDeg'_eq p P, ← h1, ← this,
     ← ((inertia G P).subgroupOf (MulAction.stabilizer G P)).card_mul_index,
     Nat.card_congr (Subgroup.subgroupOfEquivOfLe (inertia_le_stabilizer (M := G) P)).toEquiv]
-
-
-  -- have : IsGalois (R ⧸ p) (S ⧸ P) := { __ := Ideal.Quotient.normal (A := R) G p P }
-  -- have := Ideal.Quotient.finite_of_isInvariant G p P
-  -- have : Subgroup.index _ = _ := Nat.card_congr
-  --   (Quotient.stabilizerQuotientInertiaEquiv G p P).toEquiv
-  -- rw [← IsGalois.card_aut_eq_finrank, ← this,
-  --   ← ((inertia G P).subgroupOf (MulAction.stabilizer G P)).card_mul_index,
-  --   Nat.card_congr (Subgroup.subgroupOfEquivOfLe (inertia_le_stabilizer (M := G) P)).toEquiv]
 
 lemma ncard_primesOver_mul_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
     (P : Ideal S) [P.LiesOver p] [P.IsPrime] [PerfectField p.ResidueField] :
