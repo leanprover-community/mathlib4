@@ -337,28 +337,26 @@ theorem Matrix.toBilin_comp (M : Matrix n n R₁) (P Q : Matrix n o R₁) :
     toMatrix₂_symm, toMatrix₂_symm, ← Matrix.toLinearMap₂_compl₁₂ b b c c]
   simp
 
-lemma LinearMap.BilinForm.isSymm_iff_toMatrix_isSymm (Q : LinearMap.BilinForm R₁ M₁) :
-    Q.IsSymm ↔ (LinearMap.BilinForm.toMatrix b Q).IsSymm := by
-  simp only [LinearMap.BilinForm.isSymm_iff, LinearMap.isSymm_def, Matrix.IsSymm.ext_iff,
-    RingHom.id_apply, LinearMap.BilinForm.toMatrix_apply]
-  constructor
-  · grind
-  intro h f g
-  rw [← b.sum_repr f, ← b.sum_repr g, map_sum, map_sum, map_sum, map_sum]
-  simp only [coe_sum, Finset.sum_apply]
-  rw [Finset.sum_comm]
-  simp only [map_smul, LinearMap.smul_apply, smul_eq_mul, h]
-  grind
+@[simp]
+lemma LinearMap.BilinForm.toMatrix_isSymm_iff_isSymm (B : BilinForm R₁ M₁) :
+    (LinearMap.BilinForm.toMatrix b B).IsSymm ↔ B.IsSymm := by
+  simp only [isSymm_iff, IsSymm.ext_iff, toMatrix_apply]
+  refine ⟨fun h ↦ ?_, by simp_all [LinearMap.isSymm_def]⟩
+  rw [isSymm_iff_eq_flip]
+  exact ext_basis b <| by simp [h]
 
-lemma Matrix.isSymm_iff_toBilin_isSym (M : Matrix n n R₁) : M.IsSymm ↔ (M.toBilin b).IsSymm := by
-  simp [(M.toBilin b).isSymm_iff_toMatrix_isSymm b]
+@[simp]
+lemma Matrix.toBilin_isSymm_iff_isSym (M : Matrix n n R₁) : (M.toBilin b).IsSymm ↔ M.IsSymm := by
+  simp [← (M.toBilin b).toMatrix_isSymm_iff_isSymm b]
 
-lemma LinearMap.BilinForm.isSymm_iff_toMatrix'_isSymm (Q : LinearMap.BilinForm R₁ (n → R₁)) :
-    Q.IsSymm ↔ (BilinForm.toMatrix' Q).IsSymm :=
-  LinearMap.BilinForm.isSymm_iff_toMatrix_isSymm Q (b := Pi.basisFun (η := n) (R := R₁))
+@[simp]
+lemma LinearMap.BilinForm.toMatrix'_isSymm_isSymm (B : BilinForm R₁ (n → R₁)) :
+    (BilinForm.toMatrix' B).IsSymm ↔ B.IsSymm :=
+  LinearMap.BilinForm.toMatrix_isSymm_iff_isSymm B (b := Pi.basisFun (η := n) (R := R₁))
 
-lemma Matrix.isSymm_iff_toBilin'_isSym (M : Matrix n n R₁) : M.IsSymm ↔ (M.toBilin').IsSymm := by
-  simp [(M.toBilin').isSymm_iff_toMatrix'_isSymm]
+@[simp]
+lemma Matrix.isSymm_iff_toBilin'_isSym (M : Matrix n n R₁) : (M.toBilin').IsSymm ↔ M.IsSymm := by
+  simp [← (M.toBilin').toMatrix'_isSymm_isSymm]
 
 end ToMatrix
 
