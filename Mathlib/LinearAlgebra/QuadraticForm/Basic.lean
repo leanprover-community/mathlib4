@@ -1027,9 +1027,10 @@ theorem associated_linMulLin [Invertible (2 : R)] (f g : M →ₗ[R] R) :
 
 open LinearMap in
 @[simp]
-lemma associated_sq [Invertible (2 : R)] : associated (R := R) sq = mul R R :=
-  (associated_linMulLin (id) (id)).trans <|
-    by simp only [smul_add, invOf_two_smul_add_invOf_two_smul]; rfl
+lemma associated_sq [Invertible (2 : R)] : associated (R := R) sq = mul R R := by
+  rw [sq, associated_linMulLin]
+  simp only [smul_add, invOf_two_smul_add_invOf_two_smul]
+  rfl
 
 end Associated
 
