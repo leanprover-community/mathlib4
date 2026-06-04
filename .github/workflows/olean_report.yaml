@@ -48,7 +48,7 @@ jobs:
 
       - name: Checkout local actions
         if: steps.check_trigger.outputs.triggered == 'true'
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
@@ -69,11 +69,12 @@ jobs:
         run: |
           pr_json=$(gh pr view "${{ github.event.issue.number }}" \
             --repo "${{ github.repository }}" \
-            --json headRefOid,baseRefOid,baseRefName)
+            --json headRefOid,baseRefOid,baseRefName,headRepository)
           {
             echo "head_sha=$(echo "$pr_json" | jq -r '.headRefOid')"
             echo "base_sha=$(echo "$pr_json" | jq -r '.baseRefOid')"
             echo "base_ref=$(echo "$pr_json" | jq -r '.baseRefName')"
+            echo "head_repo=$(echo "$pr_json" | jq -r '.headRepository.nameWithOwner')"
           } >> "$GITHUB_OUTPUT"
 
       # Using refs/pull/N/head works for both same-repo and fork PRs, since
@@ -81,18 +82,20 @@ jobs:
       # We fetch full depth so that we can compute the merge base.
       - name: Checkout PR head
         if: steps.check_trigger.outputs.triggered == 'true'
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           repository: ${{ github.repository }}
           ref: refs/pull/${{ github.event.issue.number }}/head
           fetch-depth: 0
           path: pr-branch
+          # Untrusted (potentially fork) checkout: don't persist the GITHUB_TOKEN into its .git/config.
+          persist-credentials: false
 
       # Check out master into tools-branch.  We build the `cache` binary from
       # here so that a single binary can fetch oleans for both checkouts.
       - name: Checkout tools branch (master)
         if: steps.check_trigger.outputs.triggered == 'true'
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           repository: ${{ github.repository }}
           ref: master
@@ -114,7 +117,7 @@ jobs:
 
       - name: Checkout merge base
         if: steps.check_trigger.outputs.triggered == 'true'
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           repository: ${{ github.repository }}
           ref: ${{ steps.merge_base.outputs.sha }}
@@ -175,6 +178,9 @@ jobs:
         run: |
           cd pr-branch
           lake env "$CACHE_BIN" get
+          # Run again with --repo in case this is a fork PR: fork PRs upload
+          # their oleans to the fork's Azure container, not the upstream one.
+          lake env "$CACHE_BIN" --repo="${{ steps.pr_info.outputs.head_repo }}" get
 
       - name: Check PR head oleans
         id: pr_oleans_check
@@ -264,7 +270,7 @@ jobs:
 
       - name: Upload full olean diff
         if: steps.check_trigger.outputs.triggered == 'true'
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: olean-diff-full
           path: olean_diff_full.txt

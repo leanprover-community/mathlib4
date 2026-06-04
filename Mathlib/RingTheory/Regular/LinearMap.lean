@@ -81,7 +81,7 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
       __ := g
       map_smul' r x := by
         simp only [AddHom.toFun_eq_coe, coe_toAddHom, RingHom.id_apply]
-        convert g.map_smul (Ideal.Quotient.mk _ r) x }
+        convert! g.map_smul (Ideal.Quotient.mk _ r) x }
     let to_res : Nₚ →ₗ[Rₚ] p.ResidueField :=
       to_res'.comp ((maximalIdeal (Localization.AtPrime p)) • (⊤ : Submodule Rₚ Nₚ)).mkQ
     replace hx : maximalIdeal (Localization.AtPrime p) = (toSpanSingleton _ _ x).ker :=

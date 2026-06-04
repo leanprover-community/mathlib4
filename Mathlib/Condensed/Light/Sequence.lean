@@ -32,7 +32,7 @@ def LightProfinite.fibre : LightProfinite :=
     isCompact_iff_compactSpace.mp (IsClosed.preimage (by fun_prop) isClosed_singleton).isCompact
   of (f ⁻¹' {y})
 
-def LightProfinite.fibreIncl : fibre y f ⟶ X := ⟨⟨{ toFun := Subtype.val }⟩⟩
+def LightProfinite.fibreIncl : fibre y f ⟶ X := ⟨TopCat.ofHom { toFun := Subtype.val }⟩
 
 end
 
@@ -190,9 +190,9 @@ are equal. This can be checked by precomposing with an epimorphism,
 which is given by this morphism. -/
 def cover {S T : LightProfinite} (π : T ⟶ S ⊗ ℕ∪{∞}) :
     (of _ (T ⊕ (pullback (LightProfinite.fibreIncl ∞ (π ≫ snd S ℕ∪{∞}) ≫ π)
-      (LightProfinite.fibreIncl ∞ (π ≫ snd S ℕ∪{∞}) ≫ π)))) ⟶ pullback π π := ⟨⟨{
+      (LightProfinite.fibreIncl ∞ (π ≫ snd S ℕ∪{∞}) ≫ π)))) ⟶ pullback π π := ⟨TopCat.ofHom {
   toFun := coverToFun _ _
-  continuous_toFun := by dsimp [coverToFun]; fun_prop }⟩⟩
+  continuous_toFun := by dsimp [coverToFun]; fun_prop }⟩
 
 open Limits in
 set_option backward.isDefEq.respectTransparency false in
@@ -224,7 +224,7 @@ noncomputable def cocone {X : LightCondMod R} {S T : LightProfinite} (π : T ⟶
   · simp [← map_comp_assoc, -Functor.map_comp]
     rfl
   · -- simp? [← map_comp_assoc, -Functor.map_comp] says:
-    simp only [comp_obj, pair_obj_right, mapCocone_pt, const_obj_obj, mapCocone_ι_app,
+    simp only [pair_obj_right, mapCocone_ι_app,
       Functor.comp_map, parallelPair_obj_zero, parallelPair_obj_one, parallelPair_map_left,
       Preadditive.comp_add, Preadditive.comp_sub, ← map_comp_assoc, parallelPair_map_right]
     have : cover π = (BinaryCofan.IsColimit.desc' (coproductIsColimit _ _)
@@ -234,8 +234,8 @@ noncomputable def cocone {X : LightCondMod R} {S T : LightProfinite} (π : T ⟶
           ((pullback.snd _ _) ≫ LightProfinite.fibreIncl _ _)
           (by simp [pullback.condition]))).val := rfl
     -- simp? [this, ← Functor.map_comp] says:
-    simp only [this, pair_obj_left, const_obj_obj, pair_obj_right, BinaryCofan.IsColimit.desc'_coe,
-      IsColimit.fac, BinaryCofan.mk_pt, BinaryCofan.mk_inr, ← Functor.map_comp,
+    simp only [this, pair_obj_left, pair_obj_right, BinaryCofan.IsColimit.desc'_coe,
+      IsColimit.fac, BinaryCofan.mk_inr, ← Functor.map_comp,
       pullback.lift_fst, IsColimit.fac_assoc, assoc,
       pullback.lift_snd]
     -- simp? [-Functor.map_comp, ← assoc, hr] says:
@@ -262,7 +262,9 @@ lemma aux {S T : LightProfinite} (π : T ⟶ S ⊗ ℕ∪{∞}) [Epi π] :
   -- `fibres`.
   have := S'_compactSpace π (by fun_prop)
   let S'π (n : ℕ∪{∞}) : LightProfinite.of (S' π) ⟶ LightProfinite.fibre n (π ≫ snd _ _) :=
-    ⟨⟨{ toFun x := x.val n, continuous_toFun := by refine (continuous_apply _).comp ?_; fun_prop }⟩⟩
+    ⟨TopCat.ofHom {
+      toFun x := x.val n,
+      continuous_toFun := by refine (continuous_apply _).comp ?_; fun_prop }⟩
   let y' : LightProfinite.of (S' π) ⟶ S := ConcreteCategory.ofHom ⟨y π, y_continuous π⟩
   let π' := pullback.snd π (y' ▷ ℕ∪{∞})
   let σ' : ℕ∪{∞} → LightProfinite.of (S' π) → pullback π (y' ▷ ℕ∪{∞}) := fun n ↦
@@ -276,8 +278,8 @@ lemma aux {S T : LightProfinite} (π : T ⟶ S ⊗ ℕ∪{∞}) [Epi π] :
   have : CompactSpace (fibres π' σ') := isCompact_iff_compactSpace.mp
     (fibres_closed π' (by fun_prop) σ' (by fun_prop) hσ').isCompact
   refine ⟨LightProfinite.of (S' π), LightProfinite.of (fibres π' σ'), y',
-    ⟨⟨Subtype.val, by fun_prop⟩⟩ ≫ π',
-    ⟨⟨Subtype.val, by fun_prop⟩⟩ ≫ pullback.fst _ _, ?_, ?_, ?_, ?_, ?_⟩
+    ⟨TopCat.ofHom ⟨Subtype.val, by fun_prop⟩⟩ ≫ π',
+    ⟨TopCat.ofHom ⟨Subtype.val, by fun_prop⟩⟩ ≫ pullback.fst _ _, ?_, ?_, ?_, ?_, ?_⟩
   · rw [LightProfinite.epi_iff_surjective]
     refine fibres_surjective _ ?_ _ hσ hσ'
     rw [← LightProfinite.epi_iff_surjective]
@@ -343,8 +345,8 @@ public theorem LightCondensed.internallyProjective_free_natUnionInfty :
     -- commutes, which is true by the universal property of the colimit.
     rw [hc.fac]
     -- simp? [← comm] says:
-    simp only [comp_obj, Limits.parallelPair_obj_one, Functor.comp_map, Functor.map_comp,
-      assoc, cocone_pt, cocone_ι_app, eqToHom_refl, Preadditive.comp_add, Preadditive.comp_sub,
+    simp only [Limits.parallelPair_obj_one, Functor.comp_map, Functor.map_comp,
+      assoc, cocone_ι_app, eqToHom_refl, Preadditive.comp_add, Preadditive.comp_sub,
       id_comp, Preadditive.add_comp, Preadditive.sub_comp, ← comm]
     simp only [← Functor.map_comp, ← Functor.comp_map, ← assoc, ← comp]
     symm

@@ -277,7 +277,7 @@ lemma one_le_finprod {M : Type*} [CommMonoidWithZero M] [Preorder M] [ZeroLEOneC
 theorem MonoidHom.map_finprod_plift (f : M →* N) (g : α → M)
     (h : HasFiniteMulSupport <| g ∘ PLift.down) : f (∏ᶠ x, g x) = ∏ᶠ x, f (g x) := by
   rw [finprod_eq_prod_plift_of_mulSupport_subset h.coe_toFinset.ge,
-    finprod_eq_prod_plift_of_mulSupport_subset, map_prod]
+    finprod_eq_prod_plift_of_mulSupport_subset, _root_.map_prod]
   rw [h.coe_toFinset]
   exact mulSupport_comp_subset f.map_one (g ∘ PLift.down)
 
@@ -336,7 +336,7 @@ variable {α β ι G M N : Type*} [CommMonoid M] [CommMonoid N]
 @[to_additive]
 theorem finprod_eq_mulIndicator_apply (s : Set α) (f : α → M) (a : α) :
     ∏ᶠ _ : a ∈ s, f a = mulIndicator s f a := by
-  classical convert finprod_eq_if (M := M) (p := a ∈ s) (x := f a)
+  classical convert! finprod_eq_if (M := M) (p := a ∈ s) (x := f a)
 
 @[to_additive (attr := simp)]
 theorem finprod_apply_ne_one (f : α → M) (a : α) : ∏ᶠ _ : f a ≠ 1, f a = f a := by
@@ -437,6 +437,13 @@ theorem finprod_eq_prod (f : α → M) (hf : HasFiniteMulSupport f) :
 @[to_additive]
 theorem finprod_eq_prod_of_fintype [Fintype α] (f : α → M) : ∏ᶠ i : α, f i = ∏ i, f i :=
   finprod_eq_prod_of_mulSupport_toFinset_subset _ (Set.toFinite _) <| Finset.subset_univ _
+
+theorem finprod_ne_zero {M₀ : Type*} [CommMonoidWithZero M₀] [Nontrivial M₀] [NoZeroDivisors M₀]
+    {f : α → M₀} (h : ∀ i, f i ≠ 0) :
+    ∏ᶠ i, f i ≠ 0 := by
+  by_cases h₂ : Set.Finite f.mulSupport
+  · grind [finprod_eq_prod f h₂, Finset.prod_ne_zero_iff]
+  · simp [finprod_of_infinite_mulSupport h₂]
 
 @[to_additive]
 theorem map_finsetProd {α F : Type*} [Fintype α] [EquivLike F M N] [MulEquivClass F M N] (f : F)
@@ -1058,8 +1065,8 @@ theorem finprod_mem_sUnion {t : Set (Set α)} (h : t.PairwiseDisjoint id) (ht₀
 lemma finprod_option {f : Option α → M} (hf : HasFiniteMulSupport (f ∘ some)) :
     ∏ᶠ o, f o = f none * ∏ᶠ a, f (some a) := by
   replace hf : (mulSupport f).Finite := by simpa [finite_option]
-  convert finprod_mem_insert' f (show none ∉ Set.range Option.some by simp)
-    (hf.subset inter_subset_right)
+  convert!
+    finprod_mem_insert' f (show none ∉ Set.range Option.some by simp) (hf.subset inter_subset_right)
   · simp
   · rw [finprod_mem_range]
     exact Option.some_injective _
