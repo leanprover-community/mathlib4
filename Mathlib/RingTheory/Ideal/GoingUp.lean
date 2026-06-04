@@ -78,7 +78,7 @@ theorem injective_quotient_le_comap_map (P : Ideal R[X]) :
   refine le_antisymm (sup_le le_rfl ?_) (le_sup_of_le_left le_rfl)
   refine fun p hp =>
     polynomial_mem_ideal_of_coeff_mem_ideal P p fun n => Ideal.Quotient.eq_zero_iff_mem.mp ?_
-  simpa only [coeff_map, coe_mapRingHom] using ext_iff.mp (Ideal.mem_bot.mp (mem_comap.mp hp)) n
+  simpa only [coeff_map, coe_mapRingHom] using! ext_iff.mp (Ideal.mem_bot.mp (mem_comap.mp hp)) n
 
 /-- The identity in this lemma asserts that the "obvious" square
 ```

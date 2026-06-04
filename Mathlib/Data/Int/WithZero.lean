@@ -81,7 +81,7 @@ theorem toNNReal_strictMono {e : ℝ≥0} (he : 1 < e) :
   cases y
   · simp
   cases x
-  · simpa using zpow_pos he.pos _
+  · simpa using! zpow_pos he.pos _
   · simp [toNNReal, he]
 
 theorem toNNReal_eq_one_iff {e : ℝ≥0} (m : ℤᵐ⁰) (he0 : e ≠ 0) (he1 : e ≠ 1) :
