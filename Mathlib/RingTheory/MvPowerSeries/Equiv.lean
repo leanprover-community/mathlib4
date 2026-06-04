@@ -176,8 +176,8 @@ def finSuccEquiv : MvPowerSeries (Fin (n + 1)) R ≃ₐ[R] PowerSeries (MvPowerS
 
 theorem coeff_coeff_finSuccEquiv (p : MvPowerSeries (Fin (n + 1)) R) {k x} :
     coeff x (PowerSeries.coeff k (finSuccEquiv R n p)) = coeff (x.cons k) p := by
-  suffices (coeff x) ((PowerSeries.coeff k) ((optionEquivLeft (Fin n) R)
-    ((rename (_root_.finSuccEquiv n)) p))) = (coeff (Finsupp.cons k x)) p by simpa [finSuccEquiv]
+  suffices coeff x (PowerSeries.coeff k (optionEquivLeft (Fin n) R
+    (rename (_root_.finSuccEquiv n) p))) = coeff (Finsupp.cons k x) p by simpa [finSuccEquiv]
   simp_rw [← Equiv.coe_toEmbedding, coeff_coeff_optionEquivLeft, ← embDomain_finSuccEquiv_cons,
     coeff_embDomain_rename]
 
