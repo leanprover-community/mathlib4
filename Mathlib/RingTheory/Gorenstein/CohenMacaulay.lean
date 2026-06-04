@@ -1400,7 +1400,7 @@ theorem isGroensteinLocalRing_tfae [IsNoetherianRing R] (n : ℕ) (h : ringKrull
         simpa [← ENat.coe_inj, hS] using hteq
       · rw [← ENat.coe_le_coe, ← hteq]
         apply le_of_le_of_eq (Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes _ _ min)
-        simpa [Submodule.fg_iff_spanRank_eq_spanFinrank] using
+        simpa [Submodule.fg_iff_spanRank_eq_spanFinrank] using!
           (isNoetherianRing_iff_ideal_fg R).mp ‹_› _
     use Ideal.span (S : Set R)
     exact ⟨min, this, irr min this⟩
