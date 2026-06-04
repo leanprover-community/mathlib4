@@ -523,6 +523,35 @@ theorem LinearIndependent.of_pairwise_dual_eq_zero_one (v : ι → M) (f : ι �
 
 end Module
 
+open Finsupp in
+/-- If `f` is linearly independent over a commutative ring `R` and `g` is such that `σ • g` is a
+linear combination of `f` with `σ` a non-zero-divisor, then replacing the `i`-th vector of `f`
+by `g` keeps the family linearly independent, provided the `i`-th coefficient `l i` is a
+non-zero-divisor. -/
+lemma LinearIndependent.update {ι : Type*} [DecidableEq ι] {R G : Type*} [CommRing R]
+    [AddCommGroup G] [Module R G]
+    (f : ι → G) (l : ι →₀ R) (i : ι) (g : G) (σ : R)
+    (hσ : σ ∈ nonZeroDivisors R) (hg : σ • g = linearCombination R f l)
+    (hl : l i ∈ nonZeroDivisors R) (hf : LinearIndependent R f) :
+    LinearIndependent R (Function.update f i g) := by
+  classical
+  rw [linearIndependent_iff] at hf ⊢
+  intros l' hl'
+  apply_fun (σ • ·) at hl'
+  rw [Pi.update_eq_sub_add_single, ← bilinearCombination_apply _ (S := R), map_add, map_sub] at hl'
+  simp only [bilinearCombination_apply, LinearMap.add_apply, LinearMap.sub_apply,
+    linearCombination_single_index, smul_add, smul_sub, smul_zero] at hl'
+  rw [smul_comm σ (l' i) g, hg, ← LinearMap.map_smul, ← LinearMap.map_smul, smul_smul,
+    ← linearCombination_single, ← (linearCombination R f).map_sub, ← map_add] at hl'
+  replace hl' : ∀ j, (σ * l' j - (single i (σ * l' i)) j) + l' i * l j = 0 :=
+    fun j ↦ DFunLike.congr_fun (hf _ hl') j
+  simp only [Finsupp.single_apply] at hl'
+  simp only [mem_nonZeroDivisors_iff] at hl hσ
+  have : l' i = 0 := hl.2 _ (by simpa using hl' i)
+  simp only [this, zero_mul, add_zero, mul_zero, ite_self, sub_zero] at hl'
+  ext j
+  exact hσ.2 _ ((mul_comm _ _).trans (hl' j))
+
 /-!
 ### Properties which require `DivisionRing K`
 
