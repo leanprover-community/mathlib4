@@ -104,11 +104,12 @@ public def validateTitle (title : String) : Array String := Id.run do
         errors := errors.push s!"error: a PR's scope must not contain spaces"
       if scope.contains "\\" then
         errors := errors.push
-          s!"error: a PR's scope must not contain backslashes --- use forward slashes instead"
+          s!"error: a PR's scope must not contain backslashes; use forward slashes instead"
       if scope.endsWith ".lean" then
         errors := errors.push s!"error: a PR's scope must not end with '.lean'"
       else if scope.contains '.' then
-        errors := errors.push s!"error: a PR's scope should be a directory, not a module"
+        errors := errors.push s!"error: a PR's scope should be a directory or file name, \
+          not a module name\nhint: the scope contains a dot, use forward slashes instead"
       -- Future: we could check if `scope` describes a directory that actually exist.
       -- Should we allow special syntax such as `Data/*/Basic` or `{Set,Group}Theory`?
 
