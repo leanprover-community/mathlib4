@@ -136,7 +136,7 @@ lemma transpose_restrict (s : Set X) :
   by_cases hs : MeasurableSet s
   · ext t ht : 1
     simp [VectorMeasure.restrict_apply, hs, ht, transpose]
-  · simp [restrict_not_measurable _ hs, transpose]
+  · simp [restrict_not_measurable _ hs]
 
 lemma transpose_map : (μ.map φ).transpose B = (μ.transpose B).map φ := by
   by_cases hφ : Measurable φ; swap
@@ -196,8 +196,8 @@ lemma variation_transpose_eq_smul [Nontrivial E] {C : ℝ≥0}
       obtain ⟨x, hx⟩ : ∃ (x : E), x ≠ 0 := exists_ne 0
       have : ‖B.flip (μ s) x‖₊ ≤ ‖B.flip (μ s)‖₊ * ‖x‖₊ := le_opNNNorm _ _
       simp only [flip_apply, hB] at this
-      rw [mul_comm C, mul_assoc, mul_comm _ (‖x‖₊), mul_le_mul_iff_right₀ (by simp [hx]),
-        ← le_div_iff₀' (by positivity), div_eq_inv_mul] at this
+      rw [mul_right_comm, mul_le_mul_iff_left₀ (by simpa), ← le_div_iff₀' (by positivity),
+        div_eq_inv_mul] at this
       exact ENNReal.coe_le_coe_of_le this
     grw [this]
     simp only [Measure.smul_apply, ge_iff_le]
@@ -424,8 +424,8 @@ lemma integrable_finsetSum_vectorMeasure {ι : Type*} {μ : ι → VectorMeasure
 lemma Integrable.restrict (hf : μ.Integrable f B) {s : Set X} :
     (μ.restrict s).Integrable f B := by
   by_cases hs : MeasurableSet s
-  · simp only [VectorMeasure.Integrable, transpose_restrict, variation_restrict hs]
-    exact MeasureTheory.Integrable.restrict hf
+  · simpa [VectorMeasure.Integrable, transpose_restrict, variation_restrict hs] using
+      MeasureTheory.Integrable.restrict hf
   · simp [restrict_not_measurable _ hs]
 
 @[simp]
