@@ -285,19 +285,6 @@ section Hom
 
 variable {G' : Type*} [Group G']
 
-/-- For `K ≤ H`, restricting the image `K.map f` to `H.map f` is the same as taking the relative
-subgroup `K.subgroupOf H` and pushing it through the restricted map `f.subgroupMap H`. -/
-private theorem map_subgroupOf_map (f : G →* G') {K : Subgroup G} (hK : K ≤ H) :
-    (K.map f).subgroupOf (H.map f) = (K.subgroupOf H).map (f.subgroupMap H) := by
-  ext ⟨y, hy⟩
-  rw [mem_subgroupOf]
-  simp only [mem_map, mem_subgroupOf]
-  constructor
-  · rintro ⟨x, hxK, rfl⟩
-    exact ⟨⟨x, hK hxK⟩, hxK, by ext; rfl⟩
-  · rintro ⟨⟨x, hxH⟩, hxK, hxy⟩
-    exact ⟨x, hxK, by simpa using congrArg Subtype.val hxy⟩
-
 /-- A group homomorphism sends the `p`-core of `H` into the `p`-core of `H.map f`. -/
 theorem map_pCore_le_pCore (f : G →* G') : (pCore p H).map f ≤ pCore p (H.map f) := by
   rw [pCore, Subgroup.map_iSup]
@@ -334,7 +321,7 @@ theorem map_pCore_eq_pCore (f : G →* G') (hker : IsPGroup p (f.subgroupMap H).
   refine le_antisymm (map_pCore_le_pCore f) ?_
   rw [← map_subgroupOf_eq_of_le (pCore_le : pCore p (H.map f) ≤ H.map f),
     ← map_subgroupOf_eq_of_le (map_mono pCore_le : (pCore p H).map f ≤ H.map f),
-    map_subgroupOf_map f pCore_le]
+    ← subgroupOf_map_subgroupMap f pCore_le]
   refine map_mono ?_
   conv_lhs => rw [← Subgroup.map_comap_eq_self_of_surjective (f.subgroupMap_surjective H)
     ((pCore p (H.map f)).subgroupOf (H.map f))]
@@ -348,20 +335,12 @@ theorem map_pCore_eq_pCore_of_ker_isPGroup (f : G →* G') (hker : IsPGroup p f.
   map_pCore_eq_pCore f <| by
     rw [ker_subgroupMap]; exact hker.comap_of_injective H.subtype H.subtype_injective
 
-/-- Restricting the preimage `K.comap f` to `H'.comap f` is the same as taking the relative
-subgroup `K.subgroupOf H'` and pulling it back through the restricted map `f.subgroupComap H'`. -/
-private theorem comap_subgroupOf_comap (f : G →* G') (K H' : Subgroup G') :
-    (K.comap f).subgroupOf (H'.comap f) = (K.subgroupOf H').comap (f.subgroupComap H') := by
-  ext ⟨x, hx⟩
-  rw [mem_subgroupOf, mem_comap, mem_comap, mem_subgroupOf]
-  rfl
-
 /-- If `f` has `p`-group kernel, the preimage of the `p`-core of `H'` is contained in the
 `p`-core of `H'.comap f`. -/
 theorem comap_pCore_le_pCore (f : G →* G') (H' : Subgroup G') (hker : IsPGroup p f.ker) :
     (pCore p H').comap f ≤ pCore p (H'.comap f) := by
   refine le_pCore_of_le (comap_mono pCore_le) ?_ (isPGroup_pCore.comap_of_ker_isPGroup f hker)
-  rw [comap_subgroupOf_comap]
+  rw [← subgroupOf_comap_subgroupComap]
   exact pCore_subgroupOf_normal.comap _
 
 /-- If `H' ≤ f.range` and `f` has `p`-group kernel, the preimage of the `p`-core of `H'` is exactly

@@ -589,4 +589,29 @@ theorem equivMapOfInjective_coe_mulEquiv (H : Subgroup G) (e : G ≃* G') :
   ext
   rfl
 
+/-- The image of the relative subgroup `K.subgroupOf H` under the restricted map `f.subgroupMap H`
+is the restriction of the image `K.map f` to `H.map f`. -/
+@[to_additive /-- The image of the relative additive subgroup `K.addSubgroupOf H` under the
+restricted map `f.addSubgroupMap H` is the restriction of `K.map f` to `H.map f`. -/]
+theorem subgroupOf_map_subgroupMap (f : G →* N) {K H : Subgroup G} (hK : K ≤ H) :
+    (K.subgroupOf H).map (f.subgroupMap H) = (K.map f).subgroupOf (H.map f) := by
+  ext ⟨y, hy⟩
+  rw [mem_subgroupOf]
+  simp only [mem_map, mem_subgroupOf]
+  constructor
+  · rintro ⟨⟨x, hxH⟩, hxK, hxy⟩
+    exact ⟨x, hxK, by simpa using congrArg Subtype.val hxy⟩
+  · rintro ⟨x, hxK, rfl⟩
+    exact ⟨⟨x, hK hxK⟩, hxK, by ext; rfl⟩
+
+/-- The preimage of the relative subgroup `K.subgroupOf H'` under the restricted map
+`f.subgroupComap H'` is the restriction of the preimage `K.comap f` to `H'.comap f`. -/
+@[to_additive /-- The preimage of the relative additive subgroup `K.addSubgroupOf H'` under the
+restricted map `f.addSubgroupComap H'` is the restriction of `K.comap f` to `H'.comap f`. -/]
+theorem subgroupOf_comap_subgroupComap (f : G →* N) (K H' : Subgroup N) :
+    (K.subgroupOf H').comap (f.subgroupComap H') = (K.comap f).subgroupOf (H'.comap f) := by
+  ext ⟨x, hx⟩
+  rw [mem_subgroupOf, mem_comap, mem_comap, mem_subgroupOf]
+  rfl
+
 end Subgroup
