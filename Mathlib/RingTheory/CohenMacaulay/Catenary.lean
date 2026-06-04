@@ -133,7 +133,7 @@ lemma maximalIdeal_mem_ofList_append_minimalPrimes_of_ofList_height_eq_length [I
         rcases (Ideal.subset_union_prime_finite
           (Ideal.finite_minimalPrimes_of_isNoetherianRing R (Ideal.ofList rs)) ⊤ ⊤
           (fun p mem _ _ ↦ mem.1.1)).mp subset with ⟨p, hp, le⟩
-        let _ := hp.1.1
+        have := hp.isPrime
         have eq := Ideal.IsMaximal.eq_of_le inferInstance IsPrime.ne_top' le
         rw [← eq] at hp
         rw [IsLocalRing.height_eq_height_maximalIdeal_of_maximalIdeal_mem_minimalPrimes _ hp,
@@ -207,14 +207,14 @@ lemma isRegular_of_maximalIdeal_mem_ofList_minimalPrimes
         Ideal.Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
       have : IsLocalHom (Ideal.Quotient.mk (x • (⊤ : Ideal R))) :=
         IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-      let _ : IsLocalRing R' := IsLocalRing.of_surjective _ Ideal.Quotient.mk_surjective
+      have : IsLocalRing R' := IsLocalRing.of_surjective _ Ideal.Quotient.mk_surjective
       have xreg : IsSMulRegular R x := by
         by_contra nreg
         have mem_ass : x ∈ {r : R | IsSMulRegular R r}ᶜ := nreg
         simp only [← biUnion_associatedPrimes_eq_compl_regular, Set.mem_iUnion, SetLike.mem_coe,
           exists_prop] at mem_ass
         rcases mem_ass with ⟨p, ass, xmem⟩
-        let _ := (isCohenMacaulayLocalRing_iff R).mp ‹_›
+        have := (isCohenMacaulayLocalRing_iff R).mp ‹_›
         have eq := ModuleCat.depth_eq_supportDim_of_cohenMacaulay (ModuleCat.of R R)
         rw [depth_eq_dim_quotient_associated_prime_of_isCohenMacaulay p (ModuleCat.of R R) ass,
           Module.supportDim_self_eq_ringKrullDim, WithBot.coe_unbot] at eq
@@ -325,8 +325,6 @@ lemma Ideal.depth_eq_height [IsCohenMacaulayLocalRing R] (I : Ideal R) (netop : 
   rcases Ideal.exist_regular_sequence_length_eq_height I netop with ⟨rs, reg, mem, len⟩
   use rs
 
---IsLocalization.AtPrime.ringKrullDim_eq_height
-
 lemma Ideal.height_add_ringKrullDim_quotient_eq_ringKrullDim_of_isPrime [IsCohenMacaulayLocalRing R]
     (p : Ideal R) [p.IsPrime] : p.height + ringKrullDim (R ⧸ p) = ringKrullDim R := by
   rcases Ideal.exist_regular_sequence_length_eq_height p IsPrime.ne_top' with ⟨rs, reg, mem, len⟩
@@ -342,7 +340,7 @@ lemma Ideal.height_add_ringKrullDim_quotient_eq_ringKrullDim_of_isPrime [IsCohen
     apply Ideal.mem_minimalPrimes_of_height_eq
     · exact (span_le.mpr mem)
     · simp [← len, ← ht_eq]
-  let _ : Nontrivial (R ⧸ ofList rs • (⊤ : Ideal R)) := IsRegular.quot_ofList_smul_nontrivial reg ⊤
+  have : Nontrivial (R ⧸ ofList rs • (⊤ : Ideal R)) := IsRegular.quot_ofList_smul_nontrivial reg ⊤
   rw [depth_eq_dim_quotient_associated_prime_of_isCohenMacaulay p _ ass]
   simp [add_comm]
 
@@ -352,7 +350,7 @@ lemma ringKrullDim_quotient_eq_iSup_quotient_minimalPrimes (I : Ideal R) :
   apply le_antisymm
   · simp only [ringKrullDim_quotient, Order.krullDim, iSup_le_iff]
     intro sp
-    let _ := sp.head.1.2
+    have := sp.head.1.isPrime
     rcases Ideal.exists_minimalPrimes_le ((PrimeSpectrum.mem_zeroLocus _ _).mp sp.head.2) with
       ⟨p, min, le⟩
     apply le_trans _ (le_biSup _ min)
