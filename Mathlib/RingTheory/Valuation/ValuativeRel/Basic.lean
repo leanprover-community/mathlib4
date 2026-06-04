@@ -1188,6 +1188,7 @@ def embed [v.Compatible] : ValueGroupWithZero R →*₀ ValueGroup₀ (.ofClass 
       split_ifs with h1 h2 h3 <;>
       simp_all [← WithZero.coe_mul, ← Units.val_inj] <;> simpa
     all_goals simp [ValueGroup₀.restrict₀]
+  map_zero' := by simp [lift_zero, ValueGroup₀.restrict₀]
   map_one' := by simp [ValueGroup₀.restrict₀]
   map_mul' _ _ := by
     apply lift_mul

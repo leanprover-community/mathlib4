@@ -256,7 +256,7 @@ theorem isClopen_ball (r : ValueGroup₀ (.ofClass _i.v)) :
 
 /-- A closed ball centred at the origin in a valued ring is open. -/
 theorem isOpen_closedBall {r : ValueGroup₀ (.ofClass _i.v)} (hr : r ≠ 0) :
-  IsOpen (X := R) {x | v.restrict x ≤ r} := by
+  IsOpen {x | v.restrict x ≤ r} := by
   rw [isOpen_iff_mem_nhds]
   intro x hx
   rw [mem_nhds]
@@ -266,7 +266,7 @@ theorem isOpen_closedBall {r : ValueGroup₀ (.ofClass _i.v)} (hr : r ≠ 0) :
 
 /-- A closed ball centred at the origin in a valued ring is closed. -/
 theorem isClosed_closedBall (r : ValueGroup₀ (.ofClass _i.v)) :
-    IsClosed (X := R) {x | v.restrict x ≤ r} := by
+    IsClosed {x | v.restrict x ≤ r} := by
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro x hx
   simp only [mem_compl_iff, mem_setOf_eq, not_le] at hx
@@ -277,12 +277,12 @@ theorem isClosed_closedBall (r : ValueGroup₀ (.ofClass _i.v)) :
 
 /-- A closed ball centred at the origin in a valued ring is clopen. -/
 theorem isClopen_closedBall {r : ValueGroup₀ (.ofClass _i.v)} (hr : r ≠ 0) :
-    IsClopen (X := R) {x | v.restrict x ≤ r} :=
+    IsClopen {x | v.restrict x ≤ r} :=
   ⟨isClosed_closedBall _ _, isOpen_closedBall _ hr⟩
 
 /-- A sphere centred at the origin in a valued ring is clopen. -/
 theorem isClopen_sphere {r : ValueGroup₀ (.ofClass _i.v)} (hr : r ≠ 0) :
-    IsClopen (X := R) {x | v.restrict x = r} := by
+    IsClopen {x | v.restrict x = r} := by
   have h : {x : R | v.restrict x = r} = {x | v.restrict x ≤ r} \ {x | v.restrict x < r} := by
     ext x
     simp [← le_antisymm_iff]
@@ -291,12 +291,12 @@ theorem isClopen_sphere {r : ValueGroup₀ (.ofClass _i.v)} (hr : r ≠ 0) :
 
 /-- A sphere centred at the origin in a valued ring is open. -/
 theorem isOpen_sphere {r : ValueGroup₀ (.ofClass _i.v)} (hr : r ≠ 0) :
-    IsOpen (X := R) {x | v.restrict x = r} :=
+    IsOpen {x | v.restrict x = r} :=
   isClopen_sphere _ hr |>.isOpen
 
 /-- A sphere centred at the origin in a valued ring is closed. -/
 theorem isClosed_sphere (r : ValueGroup₀ (.ofClass _i.v)) :
-    IsClosed (X := R) {x | v.restrict x = r} := by
+    IsClosed {x | v.restrict x = r} := by
   rcases eq_or_ne r 0 with rfl | hr
   · simpa using isClosed_closedBall R 0
   exact isClopen_sphere _ hr |>.isClosed

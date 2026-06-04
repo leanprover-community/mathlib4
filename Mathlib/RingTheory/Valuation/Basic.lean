@@ -482,9 +482,7 @@ lemma restrict_eq_mk {x : R} (hx : v x ≠ 0) : v.restrict x =
 @[simp]
 lemma restrict_pos_iff (x : R) : 0 < v.restrict x ↔ 0 < v x := by
   simp only [restrict_def, restrict₀_apply]
-  split_ifs with h
-  · simpa
-  · simpa using zero_lt_iff.mpr h
+  split_ifs with h <;> simpa [zero_lt_iff]
 
 @[simp]
 lemma restrict_lt_iff {x y : R} : v.restrict x < v.restrict y ↔ v x < v y := by
@@ -810,7 +808,7 @@ noncomputable def valueGroup₀Fun (h : v.IsEquiv w) (x : ValueGroup₀ (.ofClas
 
 theorem valueGroup₀Fun_spec (h : v.IsEquiv w) {r s : R} (hr : v r ≠ 0) (hs : v s ≠ 0) :
     valueGroup₀Fun h (valueGroup.mk (.ofClass v) r s hr hs) =
-      valueGroup.mk (.ofClass w) r s ((h.eq_zero).ne.mp hr) ((h.eq_zero).ne.mp hs)  := by
+      valueGroup.mk (.ofClass w) r s (h.eq_zero.ne.mp hr) (h.eq_zero.ne.mp hs) := by
   rw [valueGroup₀Fun, dif_neg (by simp)]
   generalize_proofs _ _ _ _ H _
   have c_spec := H.choose_spec
@@ -859,12 +857,10 @@ noncomputable def orderMonoidIso (h : v.IsEquiv w) :
         repeat rw [Units.val_mk0]
         simp only [MonoidWithZeroHom.coe_ofClass, ← map_mul w, ← h.le_iff_le]
         simp
-      · simp only [MonoidWithZeroHom.coe_ofClass]
-        rw [← map_mul v, ne_eq, h.eq_zero, map_mul w]
-        exact mul_ne_zero hx10 hy20
-      · simp only [MonoidWithZeroHom.coe_ofClass]
-        rw [← map_mul v, ne_eq, h.eq_zero, map_mul w]
-        exact mul_ne_zero hx20 hy10
+      · simpa only [MonoidWithZeroHom.coe_ofClass, ← map_mul v, ne_eq, h.eq_zero, map_mul w]
+          using mul_ne_zero hx10 hy20
+      · simpa only [MonoidWithZeroHom.coe_ofClass, ← map_mul v, ne_eq, h.eq_zero, map_mul w]
+          using mul_ne_zero hx20 hy10
 
 @[simp]
 theorem orderMonoidIso_spec (h : v.IsEquiv w) (a : R) :
@@ -1395,7 +1391,8 @@ instance (v : Valuation R Γ₀) : CommMonoidWithZero (MonoidHom.mrange (.ofClas
   inferInstanceAs (CommMonoidWithZero (MonoidHom.mrange (MonoidWithZeroHom.ofClass v)))
 
 @[simp]
-lemma val_mrange_zero (v : Valuation R Γ₀) : ((0 : MonoidHom.mrange v) : Γ₀) = 0 := by
+lemma val_mrange_zero (v : Valuation R Γ₀) :
+    ((0 : MonoidHom.mrange (.ofClass v : R →*₀ _)) : Γ₀) = 0 :=
   rfl
 
 instance {Γ₀} [LinearOrderedCommGroupWithZero Γ₀] [DivisionRing K] (v : Valuation K Γ₀) :

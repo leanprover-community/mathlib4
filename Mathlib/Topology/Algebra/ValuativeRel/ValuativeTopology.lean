@@ -266,7 +266,7 @@ variable {v}
 
 /-- For any valuation `v` compatible with the valuative relation on `R`, the open `r`-ball
 around zero `{x | v.restrict x < r}` is open in the valuative topology. -/
-theorem isOpen_ball (r : ValueGroup₀ (.ofClass v)) : IsOpen (X := R) {x | v.restrict x < r} := by
+theorem isOpen_ball (r : ValueGroup₀ (.ofClass v)) : IsOpen {x | v.restrict x < r} := by
   rw [isOpen_iff_mem_nhds]
   rcases eq_or_ne r 0 with rfl | hr
   · simp
@@ -288,7 +288,7 @@ theorem isClosed_ball (r : ValueGroup₀ (.ofClass v)) :
 /-- For any valuation `v` compatible with the valuative relation on `R`, the open `r`-ball
 around zero `{x | v.restrict x < r}` is clopen in the valuative topology. -/
 theorem isClopen_ball (r : ValueGroup₀ (.ofClass v)) :
-    IsClopen (X := R) {x | v.restrict x < r} :=
+    IsClopen {x | v.restrict x < r} :=
   ⟨isClosed_ball _, isOpen_ball _⟩
 
 /-- For any valuation `v` compatible with the valuative relation on `R`, the closed `r`-ball
@@ -322,7 +322,7 @@ theorem isClopen_closedBall {r : ValueGroup₀ (.ofClass v)} (hr : r ≠ 0) :
 /-- For any valuation `v` compatible with the valuative relation on `R`, the sphere of radius `r`
 around zero `{x | v.restrict x = r}` is clopen in the valuative topology. -/
 theorem isClopen_sphere {r : ValueGroup₀ (.ofClass v)} (hr : r ≠ 0) :
-    IsClopen (X := R) {x | v.restrict x = r} := by
+    IsClopen {x | v.restrict x = r} := by
   have h : {x : R | v.restrict x = r} = {x | v.restrict x ≤ r} \ {x | v.restrict x < r} := by
     ext x
     simp [← le_antisymm_iff]
