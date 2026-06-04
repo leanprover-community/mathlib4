@@ -85,7 +85,6 @@ abbrev FiniteEtale.ofHom {S T : Type v} [CommRing S] [CommRing T]
   hom := CommAlgCat.ofHom f
 
 /-- Construct an isomorphism in `FiniteEtale R` from an algebra equivalence. -/
-@[simps!]
 abbrev FiniteEtale.isoMk {S T : FiniteEtale R} (e : S.obj ≃ₐ[R] T.obj) :
     S ≅ T :=
   ObjectProperty.isoMk _ (CommAlgCat.isoMk e)
