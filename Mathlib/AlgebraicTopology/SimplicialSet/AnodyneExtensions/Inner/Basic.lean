@@ -154,5 +154,4 @@ lemma strongInnerAnodyneExtensions_le_innerAnodyneExtensions :
   rw [← Subfunctor.toRange_ι f]
   exact comp_mem _ _ _ (.of_isIso _) P.innerAnodyneExtensions
 
-
 end SSet
