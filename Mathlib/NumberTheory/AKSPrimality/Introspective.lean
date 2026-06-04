@@ -57,31 +57,23 @@ protected theorem mul {n : ℕ} {f g : K[X]} (hf : Introspective f n r)
   simp only [eval_mul, hf μ hm, hg μ hm]
   ring
 
+theorem of_frobenius_map {p n : ℕ} [ExpChar K p] {f : K[X]} (hm : f.map (frobenius K p) = f)
+    (hf : Introspective (f.map (frobenius K p)) (p * n) r) : Introspective f n r := by
+  intro μ hμ
+  specialize hf μ hμ
+  simp_rw [pow_mul', ← frobenius_def, eval_map_apply, hm] at hf
+  exact frobenius_inj K p hf
+
+protected theorem div {p a n : ℕ} [ExpChar K p] (h : Introspective (X - C (a : K)) n r)
+    (hd : p ∣ n) : Introspective (X - C (a : K)) (n / p) r := by
+  have _ : map (frobenius K p) (X - C (a : K)) = X - C (a : K) := by simp
+  grind [of_frobenius_map, Nat.mul_div_cancel' hd]
+
 variable [NeZero r]
 
 protected theorem eval_pow {μ : K} {f : K[X]} {n : ℕ} (h : IsPrimitiveRoot μ r)
     (hi : Introspective f n r) : f.eval (μ ^ n) = f.eval μ ^ n :=
   hi μ ((mem_primitiveRoots (Nat.ne_zero_iff_zero_lt.mp NeZero.out)).mpr h)
-
-protected theorem div {p a n : ℕ} [ExpChar K p] (h : Introspective (X - C (a : K)) n r) (hd : p ∣ n)
-    (hc : p.Coprime r) : Introspective (X - C (a : K)) (n / p) r := by
-  simp only [map_natCast, Introspective] at ⊢ h
-  intro μ hμ
-  have h2 : p * (n / p) = n := Nat.mul_div_cancel' hd
-  simp only [eval_sub, eval_X, eval_natCast] at h ⊢
-  let π := IsPrimitiveRoot.primitiveRootsPowEquivOfCoprime (R := K) hc
-  replace h := h (π.symm ⟨μ, hμ⟩) (by grind)
-  have _ : π (π.symm ⟨μ, hμ⟩) = μ := by simp
-  revert h
-  refine (Eq.congr ?_ ?_).mp
-  · nth_rw 1 [sub_left_inj, ← h2, pow_mul]
-    congr
-  · nth_rw 1 [← h2, pow_mul]
-    congr
-    change (frobenius K p) _ = _
-    simp only [map_sub]
-    congr
-    simp
 
 /-- The product of coprime exponents is Introspective. -/
 theorem mul_of_coprime {d e : ℕ} {f : K[X]} (hf : Introspective f e r)
@@ -119,7 +111,7 @@ theorem of_multiset {p n b : ℕ} [ExpChar K p] (d e : ℕ) (s : Multiset (Fin b
         refine mul_of_coprime ?_ hi ?_
         · have hsx := hs x
           simp only [ofMultiset_apply, Multiset.map_singleton, Multiset.prod_singleton] at hsx
-          exact Introspective.div hsx hdiv hcprm2
+          exact Introspective.div hsx hdiv
         · exact Coprime.coprime_div_left hcprm hdiv
     · exact Coprime.pow_left d hcprm2
 
