@@ -309,6 +309,7 @@ noncomputable def ModuleCat.isoExtendScalars'OfIsBaseChange' {M : ModuleCat.{v} 
 
 namespace CategoryTheory.Abelian
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The isomprohism on `Ext` induced by `ModuleCat.isoExtendScalars'OfIsBaseChange'`. -/
 noncomputable def Ext.isBaseChangeMapAux {M N : ModuleCat.{v} R}
@@ -320,12 +321,7 @@ noncomputable def Ext.isBaseChangeMapAux {M N : ModuleCat.{v} R}
   __ := (((extFunctorObj ((ModuleCat.extendScalars'.{v, v'} R S).obj M) n).mapIso
   (isoExtendScalars'OfIsBaseChange' S g isb2).symm).trans (((extFunctor n).mapIso
   (isoExtendScalars'OfIsBaseChange' S f isb1).op).app NS)).addCommGroupIsoToAddEquiv
-  map_smul' s x := by
-    let a := Ext.mk₀ (isoExtendScalars'OfIsBaseChange' S f isb1).hom
-    let b := Ext.mk₀ (isoExtendScalars'OfIsBaseChange' S g isb2).inv
-    change a.comp ((s • x).comp b (add_zero n)) (zero_add n) =
-      s • a.comp (x.comp b (add_zero n)) (zero_add n)
-    simp }
+  map_smul' s x := by simp [Iso.addCommGroupIsoToAddEquiv] }
 
 /-- Compostion of `Ext.isBaseChangeMapAux` and `ModuleCat.extendScalars'.mapExtLinearMap`. -/
 noncomputable def Ext.isBaseChangeMap [Module.Flat R S] {M N : ModuleCat.{v} R}
