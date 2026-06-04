@@ -482,7 +482,6 @@ noncomputable def lTensor (g : G →L[𝕜] H) :
     (commIsometry 𝕜 E G).toContinuousLinearEquiv.toContinuousLinearMap
 
 variable (E) in
-@[simp]
 lemma lTensor_def (g : G →L[𝕜] H) :
     g.lTensor E = (commIsometry 𝕜 H E) ∘L (g.rTensor E) ∘L
     (commIsometry 𝕜 E G).toContinuousLinearEquiv.toContinuousLinearMap := rfl
@@ -500,17 +499,17 @@ theorem comm_comp_lTensor_comp_comm_eq (g : G →L[𝕜] H) :
 variable (G) in
 theorem comm_comp_rTensor_comp_comm_eq (f : E →L[𝕜] F) :
     commIsometry 𝕜 G F ∘L f.lTensor G ∘L commIsometry 𝕜 E G = f.rTensor G :=
-  by ext; simp
+  by ext; simp [lTensor_def]
 
 variable (G) in
 theorem lTensor_comp_comm (f : E →L[𝕜] F) :
     f.lTensor G ∘L commIsometry 𝕜 E G = commIsometry 𝕜 F G ∘L f.rTensor G :=
-  by ext; simp
+  by ext; simp [lTensor_def]
 
 variable (E) in
 theorem rTensor_comp_comm (g : G →L[𝕜] H) :
     g.rTensor E ∘L commIsometry 𝕜 E G = commIsometry 𝕜 E H ∘L g.lTensor E :=
-  by ext; simp
+  by ext; simp [lTensor_def]
 
 lemma lTensor_apply (g : G →L[𝕜] H) (x : E ⊗ G) :
     g.lTensor E x = (map LinearMap.id g.toLinearMap) x := by
@@ -521,6 +520,7 @@ lemma lTensor_apply (g : G →L[𝕜] H) (x : E ⊗ G) :
   exact LinearMap.congr_fun (LinearMap.comm_comp_rTensor_comp_comm_eq g.toLinearMap (Q:=E)) x
 
 variable (E) in
+@[simp]
 lemma toLinearMap_lTensor (g : G →L[𝕜] H) :
     (g.lTensor E).toLinearMap = g.toLinearMap.lTensor E := by
   ext; simp
@@ -566,6 +566,7 @@ lemma mapL_tmul (f : E →L[𝕜] F) (g : G →L[𝕜] H) (m : E) (n : G) :
 lemma toLinearMap_mapL (f : E →L[𝕜] F) (g : G →L[𝕜] H) : (mapL f g).toLinearMap = map f g := by
     ext; simp
 
+@[simp]
 theorem adjoint_mapL [CompleteSpace E] [CompleteSpace G] [CompleteSpace (E ⊗[𝕜] G)]
     [CompleteSpace F] [CompleteSpace H] [CompleteSpace (F ⊗[𝕜] H)]
     (f : E →L[𝕜] F) (g : G →L[𝕜] H) : (mapL f g).adjoint = mapL f.adjoint g.adjoint := by
