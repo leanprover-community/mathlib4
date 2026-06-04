@@ -287,43 +287,39 @@ instance (M : SheafOfModules.{u} R) [M.IsFinitePresentation] :
 
 section map
 
-set_option backward.isDefEq.respectTransparency false
+variable {D : Type u₂} [Category.{v₂, u₂} D] {K : GrothendieckTopology D}
+  {S : Sheaf K RingCat.{u}} [∀ (X : D), (K.over X).WEqualsLocallyBijective AddCommGrpCat]
+  [∀ (X : D), (K.over X).HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
 
-variable {J : GrothendieckTopology C}
-  {R : Sheaf J RingCat} [HasSheafify J AddCommGrpCat] [J.WEqualsLocallyBijective AddCommGrpCat]
-  [J.HasSheafCompose (forget₂ RingCat AddCommGrpCat)] {C' : Type u₂} [Category.{v₂, u₂} C']
-  {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat.{u}} [HasSheafify J' AddCommGrpCat.{u}]
-  [J'.WEqualsLocallyBijective AddCommGrpCat.{u}]
-  [J'.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-  {M : SheafOfModules.{u} R}
-  (P : M.Presentation) (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S)
-  [PreservesColimitsOfSize.{u, u} F]
-  (η : F.obj (unit R) ≅ unit S)
-  [∀ (X : C), (J.over X).HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
-  [∀ (X : C), HasSheafify (J.over X) AddCommGrpCat]
-  [∀ (X : C), (J.over X).WEqualsLocallyBijective AddCommGrpCat]
-  [∀ (X : C'), (J'.over X).HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
-  [∀ (X : C'), HasSheafify (J'.over X) AddCommGrpCat]
-  [∀ (X : C'), (J'.over X).WEqualsLocallyBijective AddCommGrpCat]
+variable [J.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
+  [K.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [∀ (X : C), HasSheafify (J.over X) AddCommGrpCat.{u}]
+  [∀ (X : D), HasSheafify (K.over X) AddCommGrpCat.{u}]
 
-noncomputable
-def QuasicoherentData.pushforward
-    (G : C' ⥤ C) [G.IsContinuous J' J] [G.IsCocontinuous J' J]
-    (φ : S ⟶ (G.sheafPushforwardContinuous RingCat.{u} J' J).obj R)
-    [∀ (X : C') (Y : C) (f : G.obj X ⟶ Y),
-      (Over.post G ⋙ Over.map f).IsContinuous (J'.over X) (J.over Y)]
-    (h : ∀ (X : C') (Y : C) (f : G.obj X ⟶ Y),
+instance {G : C ⥤ D} (X : C) (Y : D) (f : G.obj X ⟶ Y)
+    [(Over.post G).IsContinuous (J.over X) (K.over _)] :
+    (Over.post G ⋙ Over.map f).IsContinuous (J.over X) (K.over Y) :=
+  Functor.isContinuous_comp _ _ _ (K.over _) _
+
+variable (G : D ⥤ C) [G.IsContinuous K J] [G.IsCocontinuous K J]
+  (φ : S ⟶ (G.sheafPushforwardContinuous RingCat.{u} K J).obj R)
+
+/-- The pushforward of `SheafOfModules.QuasicoherentData` along a continuous
+and cocontinuous functor. -/
+-- TODO: Remove the continuous assumption on `Over.post` here and below.
+@[simps I X]
+noncomputable def QuasicoherentData.pushforward (η : (pushforward φ).obj (unit R) ≅ unit S)
+    [∀ (X : D), (Over.post G).IsContinuous (K.over X) (J.over _)]
+    (h : ∀ (X : D) (Y : C) (f : G.obj X ⟶ Y),
       PreservesColimitsOfSize.{u, u} <|
       pushforward.{u} (R := (R.over Y)) (F := Over.post (X := X) G ⋙ Over.map f)
-        (((Over.forget X).sheafPushforwardContinuous RingCat.{u} (J'.over X) J').map φ))
-    (η : (pushforward φ).obj (unit R) ≅ unit S)
+        (((Over.forget X).sheafPushforwardContinuous RingCat.{u} (K.over X) K).map φ))
     {M : SheafOfModules.{u} R} (P : M.QuasicoherentData) :
     QuasicoherentData ((pushforward φ).obj M) where
-  I := Σ (X : C') (i : P.I), G.obj X ⟶ P.X i
+  I := Σ (X : D) (i : P.I), G.obj X ⟶ P.X i
   X i := i.1
-  coversTop := by
-    intro Y
-    refine J'.superset_covering ?_ <| G.cover_lift J' _ (P.coversTop (G.obj Y))
+  coversTop Y := by
+    refine K.superset_covering ?_ <| G.cover_lift K _ (P.coversTop (G.obj Y))
     intro Z g ⟨i, ⟨v⟩⟩
     exact ⟨⟨Z, i, v⟩, ⟨𝟙 _⟩⟩
   presentation i := by
@@ -331,124 +327,41 @@ def QuasicoherentData.pushforward
       SheafOfModules.pushforward (𝟙 _)
     letI G' := Over.post (X := i.1) G ⋙ Over.map i.2.2
     letI ψ : S.over i.1 ⟶
-        (G'.sheafPushforwardContinuous RingCat.{u} (J'.over i.1) (J.over (P.X i.2.1))).obj
+        (G'.sheafPushforwardContinuous RingCat.{u} (K.over i.1) (J.over (P.X i.2.1))).obj
           (R.over (P.X i.2.1)) :=
-      ((Over.forget i.1).sheafPushforwardContinuous RingCat.{u} (J'.over i.1) J').map φ
+      ((Over.forget i.1).sheafPushforwardContinuous RingCat.{u} (K.over i.1) K).map φ
     letI e : (SheafOfModules.pushforward ψ).obj (unit (R.over (P.X i.snd.fst))) ≅
       unit (S.over i.fst) := overS.mapIso η
     haveI : PreservesColimitsOfSize.{u, u, _} (SheafOfModules.pushforward ψ) := h _ _ _
     exact (P.presentation i.2.1).map (SheafOfModules.pushforward ψ) e.symm
 
-omit [HasSheafify J AddCommGrpCat] [J.WEqualsLocallyBijective
-AddCommGrpCat] [HasSheafify J' AddCommGrpCat] [J'.WEqualsLocallyBijective AddCommGrpCat] in
-lemma isQuasicoherent_pushforward
-    (G : C' ⥤ C) [G.IsContinuous J' J] [G.IsCocontinuous J' J]
-    (φ : S ⟶ (G.sheafPushforwardContinuous RingCat.{u} J' J).obj R)
-    [∀ (X : C') (Y : C) (f : G.obj X ⟶ Y),
-      (Over.post G ⋙ Over.map f).IsContinuous (J'.over X) (J.over Y)]
-    (h : ∀ (X : C') (Y : C) (f : G.obj X ⟶ Y),
+lemma isQuasicoherent_pushforward (η : (pushforward φ).obj (unit R) ≅ unit S)
+    [∀ (X : D), (Over.post G).IsContinuous (K.over X) (J.over _)]
+    (h : ∀ (X : D) (Y : C) (f : G.obj X ⟶ Y),
       PreservesColimitsOfSize.{u, u} <|
       pushforward.{u} (R := (R.over Y)) (F := Over.post (X := X) G ⋙ Over.map f)
-        (((Over.forget X).sheafPushforwardContinuous RingCat.{u} (J'.over X) J').map φ))
-    (η : (pushforward φ).obj (unit R) ≅ unit S)
+        (((Over.forget X).sheafPushforwardContinuous RingCat.{u} (K.over X) K).map φ))
     {M : SheafOfModules.{u} R} [IsQuasicoherent M] :
     IsQuasicoherent ((pushforward φ).obj M) :=
-  IsQuasicoherent.nonempty_quasicoherentData.some.pushforward G φ h η |>.isQuasicoherent
-
-lemma _root_.CategoryTheory.PreOneHypercover.sieve₀_map
-    {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) {S : C}
-    (E : PreOneHypercover.{w} S) :
-    (E.map F).sieve₀ = Sieve.functorPushforward _ E.sieve₀ := by
-  rw [PreZeroHypercover.sieve₀, Sieve.ofArrows, ← PreZeroHypercover.presieve₀,
-    PreOneHypercover.map_toPreZeroHypercover, PreZeroHypercover.presieve₀_map,
-    Sieve.generate_map_eq_functorPushforward]
-
-lemma coverPreserving_of_coverPreserving_comp {C D E : Type*} [Category* C] [Category* D]
-    [Category* E] (F : C ⥤ D) (G : D ⥤ E) (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-    (T : GrothendieckTopology E) (h : CoverPreserving J T (F ⋙ G)) [G.IsCocontinuous K T]
-    [G.Full] [G.Faithful] :
-    CoverPreserving J K F where
-  cover_preserve {U} S hS := by
-    refine K.superset_covering ?_ (G.cover_lift K _ (h.cover_preserve hS))
-    rw [Sieve.functorPushforward_comp, Sieve.functorPullback_functorPushforward_eq G]
-
-lemma _root_.CategoryTheory.coverPreserving_of_preservesOneHypercovers {C : Type u₁} {D : Type*}
-    [Category.{v₁} C] [Category* D] (F : C ⥤ D) (J : GrothendieckTopology C)
-    (K : GrothendieckTopology D) [Functor.PreservesOneHypercovers.{max u₁ v₁} F J K] :
-    CoverPreserving J K F where
-  cover_preserve {U} S hS := by
-    let E := GrothendieckTopology.Cover.oneHypercover ⟨_, hS⟩
-    simpa [CategoryTheory.PreZeroHypercover.sieve₀_map, E] using (E.map F K).mem₀
-
-instance {C : Type*} [Category* C] {A : Type*} [Category* A]
-    (J : GrothendieckTopology C) {F G : Sheaf J A} (f : F ⟶ G) [IsIso f] :
-    IsIso f.hom := by
-  refine ⟨(inv f).hom, ?_, ?_⟩
-  · simp [IsIso.hom_inv_id]
-  · simp [IsIso.inv_hom_id]
-
-set_option backward.defeqAttrib.useBackward true in
-omit
-  [HasSheafify J AddCommGrpCat]
-  [J.WEqualsLocallyBijective AddCommGrpCat]
-  [J.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
-  [HasSheafify J' AddCommGrpCat]
-  [J'.WEqualsLocallyBijective AddCommGrpCat]
-  [J'.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
-  [∀ (X : C), (J.over X).HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
-  [∀ (X : C), HasSheafify (J.over X) AddCommGrpCat]
-  [∀ (X : C), (J.over X).WEqualsLocallyBijective AddCommGrpCat]
-  [∀ (X : C'), (J'.over X).HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
-  [∀ (X : C'), HasSheafify (J'.over X) AddCommGrpCat]
-  [∀ (X : C'), (J'.over X).WEqualsLocallyBijective AddCommGrpCat] in
-lemma isLeftAdjoint_pushforward_of_isIso (G : C' ⥤ C) [G.IsContinuous J' J] [G.IsCocontinuous J' J]
-    (φ : S ⟶ (G.sheafPushforwardContinuous RingCat.{u} J' J).obj R) [IsIso φ]
-    [G.IsLeftAdjoint] :
-    (pushforward.{u} φ).IsLeftAdjoint := by
-  let adj := Adjunction.ofIsLeftAdjoint G
-  let shAdj := adj.sheafPushforwardContinuous (E := RingCat.{u}) J' J
-  let ψ : R ⟶ (G.rightAdjoint.sheafPushforwardContinuous RingCat.{u} J J').obj S :=
-     shAdj.unit.app R ≫ (G.rightAdjoint.sheafPushforwardContinuous _ _ _).map (inv φ)
-  let adj := by
-    refine SheafOfModules.pushforwardPushforwardAdj adj φ ψ ?_ ?_
-    · ext U : 2
-      simp [ψ, shAdj]
-    · ext U : 2
-      have := (inv φ).hom.naturality
-      simp only [Functor.sheafPushforwardContinuous_obj_obj_obj,
-        Functor.sheafPushforwardContinuous_obj_obj_map, ObjectProperty.hom_inv,
-        NatIso.isIso_inv_app, IsIso.eq_inv_comp] at this
-      simp [ψ, shAdj, ← this, ← Functor.map_comp_assoc, ← op_comp]
-  exact adj.isLeftAdjoint
-
-instance {C : Type*} [Category* C] [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
-    (Over.map f).IsLeftAdjoint :=
-  (Over.mapPullbackAdj f).isLeftAdjoint
+  IsQuasicoherent.nonempty_quasicoherentData.some.pushforward G φ η h |>.isQuasicoherent
 
 set_option backward.isDefEq.respectTransparency false in
-omit [HasSheafify J AddCommGrpCat] [J.WEqualsLocallyBijective AddCommGrpCat]
-  [HasSheafify J' AddCommGrpCat] [J'.WEqualsLocallyBijective AddCommGrpCat] in
-lemma isQuasicoherent_pushforward_of_isLeftAdjoint (G : C' ⥤ C) [G.IsLeftAdjoint]
-    [G.IsContinuous J' J] [G.IsCocontinuous J' J]
-    (φ : S ⟶ (G.sheafPushforwardContinuous RingCat.{u} J' J).obj R) [IsIso φ]
-    [∀ X, Functor.IsContinuous (Over.post (X := X) G) (J'.over _) (J.over _)]
-    [HasPullbacks C] [HasPullbacks C']
-    (η : (pushforward φ).obj (unit R) ≅ unit S)
+lemma isQuasicoherent_pushforward_of_isLeftAdjoint (η : (pushforward φ).obj (unit R) ≅ unit S)
+    [G.IsLeftAdjoint] [IsIso φ]
+    [∀ X, Functor.IsContinuous (Over.post (X := X) G) (K.over _) (J.over _)]
+    [HasPullbacks C] [HasPullbacks D]
     {M : SheafOfModules.{u} R} [IsQuasicoherent M] :
     IsQuasicoherent ((pushforward φ).obj M) := by
-  convert isQuasicoherent_pushforward G φ _ η
-  · intro X Y f
-    apply Functor.isContinuous_comp _ _ _ (J.over _) _
-  · intro X Y f
-    let G' := Over.post (X := X) G ⋙ Over.map f
-    have : G'.IsContinuous (J'.over X) (J.over Y) := Functor.isContinuous_comp _ _ _ (J.over _) _
-    have : G'.IsCocontinuous (J'.over X) (J.over Y) := isCocontinuous_comp _ _ _ (J.over _)
-    let a : S.over X ⟶
-        (G'.sheafPushforwardContinuous RingCat.{u} (J'.over X) (J.over Y)).obj (R.over Y) :=
-      ((Over.forget X).sheafPushforwardContinuous RingCat.{u} (J'.over X) J').map φ
-    have : (pushforward.{u} a).IsLeftAdjoint := isLeftAdjoint_pushforward_of_isIso _ _
-    infer_instance
-  · infer_instance
+  apply +allowSynthFailures isQuasicoherent_pushforward G φ η _
+  intro X Y f
+  let G' := Over.post (X := X) G ⋙ Over.map f
+  have : G'.IsContinuous (K.over X) (J.over Y) := Functor.isContinuous_comp _ _ _ (J.over _) _
+  have : G'.IsCocontinuous (K.over X) (J.over Y) := isCocontinuous_comp _ _ _ (J.over _)
+  let a : S.over X ⟶
+      (G'.sheafPushforwardContinuous RingCat.{u} (K.over X) (J.over Y)).obj (R.over Y) :=
+    ((Over.forget X).sheafPushforwardContinuous RingCat.{u} (K.over X) K).map φ
+  have : (pushforward.{u} a).IsLeftAdjoint := isLeftAdjoint_pushforward_of_isIso a
+  infer_instance
 
 end map
 
@@ -544,8 +457,6 @@ lemma IsQuasicoherent.of_coversTop {R : Sheaf J RingCat.{u}}
     IsQuasicoherent M :=
   (QuasicoherentData.bind M X hX fun _ ↦
     IsQuasicoherent.nonempty_quasicoherentData.some).isQuasicoherent
-
-set_option backward.isDefEq.respectTransparency false
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isQuasicoherent_over [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]

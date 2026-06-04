@@ -661,11 +661,7 @@ lemma Scheme.Modules.isQuasicoherent_restrictFunctor {X Y : Scheme.{u}} (f : X �
   have hα : IsIso α := NatIso.isIso_of_isIso_app _
   dsimp [restrictFunctor]
   convert SheafOfModules.isQuasicoherent_pushforward_of_isLeftAdjoint.{u}
-    (J := Opens.grothendieckTopology _) (J' := Opens.grothendieckTopology _) f.opensFunctor _ _
-  · convert isIso_of_reflects_iso _ (ObjectProperty.ι _)
-    · dsimp
-      infer_instance
-    · infer_instance
+    (J := Opens.grothendieckTopology _) (K := Opens.grothendieckTopology _) f.opensFunctor _ _
   · refine (SheafOfModules.fullyFaithfulForget _).preimageIso ?_
     refine PresheafOfModules.isoMk ?_ ?_
     · intro U
@@ -674,6 +670,10 @@ lemma Scheme.Modules.isQuasicoherent_restrictFunctor {X Y : Scheme.{u}} (f : X �
     · intro U V g
       ext x
       exact congr($(f.appIso_hom_naturality _).hom x)
+  · convert isIso_of_reflects_iso _ (ObjectProperty.ι _)
+    · dsimp
+      infer_instance
+    · infer_instance
   · infer_instance
 
 end AlgebraicGeometry
