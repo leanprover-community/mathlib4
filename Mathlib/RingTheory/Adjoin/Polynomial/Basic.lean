@@ -42,15 +42,14 @@ variable [Algebra R A] [Algebra R B]
 variable {p q : R[X]} (x : A)
 
 @[simp]
-theorem _root_.Polynomial.adjoin_X : R[(X : R[X])]= ⊤ := by
+theorem _root_.Polynomial.adjoin_X : R[(X : R[X])] = ⊤ := by
   refine top_unique fun p _hp => ?_
   set S := R[(X : R[X])]
   rw [← sum_monomial_eq p]; simp only [← smul_X_eq_monomial]
   exact S.sum_mem fun n _hn => S.smul_mem (S.pow_mem (subset_adjoin rfl) _) _
 
 variable (R)
-theorem adjoin_singleton_eq_range_aeval (x : A) :
-    R[x] = (aeval x).range := by
+theorem adjoin_singleton_eq_range_aeval (x : A) : R[x] = (aeval x).range := by
   rw [← Algebra.map_top, ← adjoin_X, AlgHom.map_adjoin, Set.image_singleton, aeval_X]
 
 @[simp]
@@ -81,7 +80,7 @@ theorem adjoin_eq_exists_aeval (a : R[x]) :
 Proving a fact about `a : R[x]` is the same as proving it for
 `aeval x p` where `p`is an arbitrary polynomial. -/
 @[elab_as_elim]
-theorem adjoin_singleton_induction {M : (R[x]) → Prop}
+theorem adjoin_singleton_induction {M : R[x] → Prop}
     (a : R[x]) (f : ∀ (p : Polynomial R), M (aeval x p : R[x])) : M a := by
   obtain ⟨p, hp⟩ := Algebra.adjoin_eq_exists_aeval _ x a
   grind

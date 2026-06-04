@@ -103,7 +103,7 @@ theorem adjoin.evalOfTranscendental_eq_zero_iff (ht : Transcendental R s) (x : R
 
 end Algebra
 
-/-!
+/-! ### Instances
 We can not directly get the instances on `R[s]` from `(h : Transcendental R s)` because
 it is an explicit argument.
 
