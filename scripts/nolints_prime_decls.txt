@@ -56,7 +56,7 @@ ADEInequality.admissible_A'
 ADEInequality.admissible_D'
 ADEInequality.admissible_of_one_lt_sumInv_aux'
 AdjoinRoot.algebraMap_eq'
-AdjoinRoot.coe_injective'
+AdjoinRoot.coe_injective
 AdjoinRoot.isIntegral_root'
 AEMeasurable.comp_aemeasurable'
 aemeasurable_const'
