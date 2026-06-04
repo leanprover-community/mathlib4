@@ -177,7 +177,7 @@ theorem TFAE_mem_nhdsLT {a b : α} (h : a < b) (s : Set α) :
         s ∈ 𝓝[Ioo a b] b, -- 2 : `s` is a neighborhood of `b` within `(a, b)`
         ∃ l ∈ Ico a b, Ioo l b ⊆ s, -- 3 : `s` includes `(l, b)` for some `l ∈ [a, b)`
         ∃ l ∈ Iio b, Ioo l b ⊆ s] := by -- 4 : `s` includes `(l, b)` for some `l < b`
-  simpa using TFAE_mem_nhdsGT h.dual (ofDual ⁻¹' s)
+  simpa using! TFAE_mem_nhdsGT h.dual (ofDual ⁻¹' s)
 
 theorem mem_nhdsLT_iff_exists_mem_Ico_Ioo_subset {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[<] a ↔ ∃ l ∈ Ico l' a, Ioo l a ⊆ s :=
@@ -201,7 +201,7 @@ with `l < a`. -/
 theorem mem_nhdsLT_iff_exists_Ico_subset [NoMinOrder α] [DenselyOrdered α] {a : α} {s : Set α} :
     s ∈ 𝓝[<] a ↔ ∃ l ∈ Iio a, Ico l a ⊆ s := by
   have : ofDual ⁻¹' s ∈ 𝓝[>] toDual a ↔ _ := mem_nhdsGT_iff_exists_Ioc_subset
-  simpa using this
+  simpa using! this
 
 theorem nhdsLT_basis_of_exists_lt {a : α} (h : ∃ b, b < a) : (𝓝[<] a).HasBasis (· < a) (Ioo · a) :=
   let ⟨_, h⟩ := h
@@ -288,7 +288,7 @@ theorem TFAE_mem_nhdsLE {a b : α} (h : a < b) (s : Set α) :
       s ∈ 𝓝[Ioc a b] b, -- 2 : `s` is a neighborhood of `b` within `(a, b]`
       ∃ l ∈ Ico a b, Ioc l b ⊆ s, -- 3 : `s` includes `(l, b]` for some `l ∈ [a, b)`
       ∃ l ∈ Iio b, Ioc l b ⊆ s] := by -- 4 : `s` includes `(l, b]` for some `l < b`
-  simpa using TFAE_mem_nhdsGE h.dual (ofDual ⁻¹' s)
+  simpa using! TFAE_mem_nhdsGE h.dual (ofDual ⁻¹' s)
 
 theorem mem_nhdsLE_iff_exists_mem_Ico_Ioc_subset {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[≤] a ↔ ∃ l ∈ Ico l' a, Ioc l a ⊆ s :=
