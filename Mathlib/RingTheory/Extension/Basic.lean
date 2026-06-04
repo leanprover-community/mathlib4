@@ -502,15 +502,15 @@ lemma Cotangent.finite (hP : P.ker.FG) :
     ← Submodule.map_top]
   exact ((Submodule.fg_top P.ker).mpr hP).map _
 
-lemma Cotangent.map_surjective_of_comap_eq (f : P.Hom P') (h : Function.Surjective f.toRingHom)
-    (eq : P'.ker.comap f.toRingHom = RingHom.ker f.toRingHom ⊔ P.ker) :
-    Function.Surjective (Cotangent.map f) := fun x ↦ by
+lemma Cotangent.map_surjective_of_comap_eq {P P' : Extension R S} {f : P.Hom P'}
+    (h : Surjective f) (eq : P'.ker.comap f.toRingHom = RingHom.ker f.toRingHom ⊔ P.ker) :
+    Surjective (Cotangent.map f) := fun x ↦ by
   obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
   obtain ⟨y, y_in, hy⟩ := Ideal.exists_of_comap_eq_ker_sup _ h eq x.prop
   exact ⟨Cotangent.mk ⟨y, y_in⟩, by simp [hy]⟩
 
-lemma Cotangent.map_ker_of_surjective (f : P.Hom P') (h : Function.Surjective f.toRingHom)
-    (eq : P'.ker.comap f.toRingHom = RingHom.ker f.toRingHom ⊔ P.ker) :
+lemma Cotangent.map_ker_of_surjective {P P' : Extension R S} {f : P.Hom P'}
+    (h : Surjective f) (eq : P'.ker.comap f.toRingHom = RingHom.ker f.toRingHom ⊔ P.ker) :
     (Cotangent.map f).ker.restrictScalars P.Ring =
       (Submodule.comap P.ker.subtype (RingHom.ker f.toRingHom ⊓ P.ker)).map Cotangent.mk := by
   have eq_map := Ideal.eq_map_of_comap_eq_ker_sup _ h eq
@@ -518,8 +518,8 @@ lemma Cotangent.map_ker_of_surjective (f : P.Hom P') (h : Function.Surjective f.
   · obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
     simp only [Submodule.restrictScalars_mem, LinearMap.mem_ker, map_mk, Hom.toAlgHom_apply,
       mk_eq_zero_iff] at hx
-    rw [eq_map, ← Ideal.map_pow, ← Ideal.mem_comap, Ideal.comap_map_of_surjective' _ h,
-      Submodule.mem_sup] at hx
+    rw [eq_map, ← Ideal.map_pow, ← Ideal.mem_comap,
+      Ideal.comap_map_of_surjective' f.toRingHom h, Submodule.mem_sup] at hx
     rcases hx with ⟨y, y_in, z, z_in, hyz⟩
     suffices ∃ a, a ∈ RingHom.ker f.toRingHom ∧ a ∈ P.ker ∧ a - x ∈ P.ker ^ 2 by
       simpa [mk_eq_mk_iff_sub_mem]
@@ -530,8 +530,8 @@ lemma Cotangent.map_ker_of_surjective (f : P.Hom P') (h : Function.Surjective f.
     obtain ⟨y, y_in, y_in', hy⟩ : ∃ a ∈ RingHom.ker f.toRingHom, a ∈ P.ker ∧
       a - x ∈ P.ker ^ 2 := by simpa [mk_eq_mk_iff_sub_mem] using hx
     suffices f.toRingHom x ∈ P'.ker ^ 2 by simpa [mk_eq_zero_iff]
-    rw [eq_map, ← Ideal.map_pow, ← Ideal.mem_comap, Ideal.comap_map_of_surjective' _ h,
-      Submodule.mem_sup]
+    rw [eq_map, ← Ideal.map_pow, ← Ideal.mem_comap,
+      Ideal.comap_map_of_surjective' f.toRingHom h, Submodule.mem_sup]
     exact ⟨x - y, by rwa [← Submodule.neg_mem_iff, neg_sub], y, y_in, by ring⟩
 
 variable (P) in
