@@ -166,27 +166,23 @@ namespace AffineMap
 attribute [local instance] AddTorsor.toConvexSpace
 
 open Finset AddTorsor in
-lemma isAffineMap {V2 P2 : Type*} [AddCommGroup V2] [Module R V2] [AffineSpace V2 P2]
-    (f : P →ᵃ[R] P2) : IsAffineMap R f where
-  map_sConvexComb s:= by
-    classical
-    simp_rw [sConvexComb_eq_affineCombination, StdSimplex.weights_map, Finsupp.mapDomain,
-      map_affineCombination _ _ _ s.total, Finsupp.sum, Finsupp.coe_finsetSum]
-    simp only [affineCombination_apply, weightedVSubOfPoint_apply, map_sum]
-    congr
-    ext i
-    rw [sum_eq_single (f i) fun _ _ hx ↦ by simp [hx.symm]]
-    · simp
-    · intro h
-      simp only [Finsupp.mem_support_iff, Finsupp.coe_finsetSum, sum_apply,
-        Decidable.not_not, Finsupp.single_apply] at h
-      have hwi : s.weights i = 0 := by
-        by_contra hi
-        have := sum_eq_zero_iff_of_nonneg (fun _ _ ↦ ?_) |>.mp h i (Finsupp.mem_support_iff.mpr hi)
-        · simp at this
-          contradiction
-        · split_ifs <;> simp
-      simp [hwi]
+lemma isAffineMap_of_preserves_convex_combinations
+    {k : Type u_1} {V P V₂ P₂ : Type*} [PartialOrder k] [Ring k] [IsStrictOrderedRing k]
+    [AddCommGroup V] [Module k V] [S : AffineSpace V P]
+  [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂] (f : P → P₂)
+  (H : ∀ {ι : Type u_6} (s : Finset ι) (p : ι → P) (w : ι → k),
+      ∑ i ∈ s, w i = 1 →
+      f ((affineCombination k s p) w) = (affineCombination k s (f ∘ p)) w) :
+  IsAffineMap k f where
+  map_sConvexComb s := by
+    rw [sConvexComb_eq_affineCombination, H s.weights.support _root_.id s.weights s.total,
+      ←iConvexComb_eq_affineCombination, Function.comp_id, iConvexComb]
+
+open Finset AddTorsor in
+lemma AffineMap.isAffineMap {V2 P2 : Type*} [AddCommGroup V2] [Module R V2] [AffineSpace V2 P2]
+    (f : P →ᵃ[R] P2) : IsAffineMap R f := by
+    apply isAffineMap_of_preserves_convex_combinations
+    grind [map_affineCombination]
 
 end AffineMap
 
