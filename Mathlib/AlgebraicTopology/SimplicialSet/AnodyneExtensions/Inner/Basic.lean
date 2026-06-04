@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jack McKoen
+Authors: Jack McKoen, Joël Riou
 -/
 module
 
@@ -120,17 +120,16 @@ lemma Subcomplex.Pairing.strongInnerAnodyneExtensions {X : SSet.{u}} {A : X.Subc
     (by simp only [Iso.refl_hom, preimage_id, Subfunctor.range_ι]), inferInstance, {
       ne_zero := by
         intro ⟨b, hb⟩ d hd
-        have hA : A.preimage (Iso.refl X).hom = range A.ι := by simp
-        obtain ⟨a, rfl⟩ := (N.orderIsoOfIso (Iso.refl _) hA).symm.surjective b
+        obtain ⟨a, rfl⟩ := (N.orderIsoOfIso (Iso.refl _)
+          (show A.preimage (Iso.refl X).hom = range A.ι by simp)).symm.surjective b
         simp only [ofIso_II, Set.mem_preimage, OrderIso.apply_symm_apply] at hb
         exact h₂.ne_zero ⟨a, hb⟩ hd
       ne_last := by
         intro ⟨b, hb⟩ d hd
-        have hA : A.preimage (Iso.refl X).hom = range A.ι := by simp
-        obtain ⟨a, rfl⟩ := (N.orderIsoOfIso (Iso.refl _) hA).symm.surjective b
+        obtain ⟨a, rfl⟩ := (N.orderIsoOfIso (Iso.refl _)
+          (show A.preimage (Iso.refl X).hom = range A.ι by simp)).symm.surjective b
         simp only [ofIso_II, Set.mem_preimage, OrderIso.apply_symm_apply] at hb
-        exact h₂.ne_last ⟨a, hb⟩ hd
-    }⟩
+        exact h₂.ne_last ⟨a, hb⟩ hd}⟩
 
 lemma strongInnerAnodyneExtensions_ι_iff {X : SSet.{u}} (A : X.Subcomplex) :
     strongInnerAnodyneExtensions A.ι ↔ ∃ (P : A.Pairing) (_ : P.IsRegular), P.IsInner :=
