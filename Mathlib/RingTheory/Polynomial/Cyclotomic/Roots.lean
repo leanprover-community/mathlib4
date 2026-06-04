@@ -45,8 +45,8 @@ theorem isRoot_of_unity_of_root_cyclotomic {ζ : R} {i : ℕ} (hi : i ∈ n.divi
   · exact pow_zero _
   have := congr_arg (eval ζ) (prod_cyclotomic_eq_X_pow_sub_one hn R).symm
   rw [eval_sub, eval_X_pow, eval_one] at this
-  convert eq_add_of_sub_eq' this
-  convert (add_zero (M := R) _).symm
+  convert! eq_add_of_sub_eq' this
+  convert! (add_zero (M := R) _).symm
   apply eval_eq_zero_of_dvd_of_eval_eq_zero _ h
   exact Finset.dvd_prod_of_mem _ hi
 
