@@ -549,7 +549,8 @@ lemma totalDegree_coeff_optionEquivLeft_add_le
   classical
   by_cases hpi : (optionEquivLeft R S₁ p).coeff i = 0
   · rw [hpi]; simpa
-  rw [totalDegree, add_comm, Finset.add_sup (by simpa only [support_nonempty]), Finset.sup_le_iff]
+  rw [totalDegree, supDegree_def, totalDegree, supDegree_def,
+    add_comm, Finset.add_sup (by simpa only [support_nonempty]), Finset.sup_le_iff]
   intro σ hσ
   refine le_trans ?_ (Finset.le_sup (b := σ.embDomain .some + .single .none i) ?_)
   · simp [Finsupp.sum_add_index, Finsupp.sum_embDomain, add_comm i]
@@ -561,11 +562,11 @@ lemma totalDegree_coeff_optionEquivLeft_le
   classical
   by_cases hpi : (optionEquivLeft R S₁ p).coeff i = 0
   · rw [hpi]; simp
-  rw [totalDegree, Finset.sup_le_iff]
+  simp_rw [totalDegree, supDegree_def, Finset.sup_le_iff]
   intro σ hσ
   refine le_trans ?_ (Finset.le_sup (b := σ.embDomain .some + .single .none i) ?_)
   · simp [Finsupp.sum_add_index, Finsupp.sum_embDomain]
-  · simpa [mem_support_iff, ← optionEquivLeft_coeff_some_coeff_none R S₁] using hσ
+  · simpa [mem_support_iff,  ← optionEquivLeft_coeff_some_coeff_none R S₁] using hσ
 
 theorem optionEquivLeft_coeff_coeff
     (p : MvPolynomial (Option σ) R) (m : ℕ) (d : σ →₀ ℕ) :
@@ -720,7 +721,7 @@ lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (
   -- Then cons i σ is a monomial index of p with total degree equal to the desired bound
   let σ' : Fin (n + 1) →₀ ℕ := cons i σ
   convert! le_totalDegree (s := σ') _
-  · rw [totalDegree, supDegree, hσ2, sum_cons, add_comm]
+  · rw [totalDegree, supDegree_def, hσ2, sum_cons, add_comm]
   · rw [← mem_support_coeff_finSuccEquiv]
     exact hσ1
 

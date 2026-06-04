@@ -78,8 +78,8 @@ def weightedTotalDegree' (w : σ → M) (p : MvPolynomial σ R) : WithBot M :=
 /-- The `weightedTotalDegree'` of a polynomial `p` is `⊥` if and only if `p = 0`. -/
 theorem weightedTotalDegree'_eq_bot_iff (w : σ → M) (p : MvPolynomial σ R) :
     weightedTotalDegree' w p = ⊥ ↔ p = 0 := by
-  simp only [weightedTotalDegree', Finset.sup_eq_bot_iff, mem_support_iff, WithBot.coe_ne_bot,
-    MvPolynomial.eq_zero_iff]
+  simp only [weightedTotalDegree', supDegree_def, Finset.sup_eq_bot_iff, mem_support_iff,
+    WithBot.coe_ne_bot, MvPolynomial.eq_zero_iff]
   exact forall_congr' fun _ => Classical.not_not
 
 /-- The `weightedTotalDegree'` of the zero polynomial is `⊥`. -/
@@ -288,7 +288,7 @@ theorem weighted_total_degree [SemilatticeSup M] {w : σ → M} (hφ : IsWeighte
     (h : φ ≠ 0) : weightedTotalDegree' w φ = n := by
   simp only [weightedTotalDegree']
   apply le_antisymm
-  · simp only [Finset.sup_le_iff, mem_support_iff, WithBot.coe_le_coe]
+  · simp only [Finset.sup_le_iff, supDegree_def, mem_support_iff, WithBot.coe_le_coe]
     exact fun d hd => le_of_eq (hφ hd)
   · obtain ⟨d, hd⟩ : ∃ d, coeff d φ ≠ 0 := exists_coeff_ne_zero h
     simp only [← hφ hd]
@@ -577,7 +577,8 @@ variable [AddCommMonoid M] [LinearOrder M] [OrderBot M] [CanonicallyOrderedAdd M
   its weighted total degree is equal to zero. -/
 theorem isWeightedHomogeneous_zero_iff_weightedTotalDegree_eq_zero {p : MvPolynomial σ R} :
     IsWeightedHomogeneous w p 0 ↔ p.weightedTotalDegree w = 0 := by
-  rw [weightedTotalDegree, ← bot_eq_zero, Finset.sup_eq_bot_iff, bot_eq_zero, IsWeightedHomogeneous]
+  rw [weightedTotalDegree, supDegree_def,
+    ← bot_eq_zero, Finset.sup_eq_bot_iff, bot_eq_zero, IsWeightedHomogeneous]
   apply forall_congr'
   intro m
   rw [mem_support_iff]

@@ -47,11 +47,14 @@ addition). We make use of this monomial order by using `MonomialOrder.lex.degree
 `supDegree` with `D := toLex`, and different monomial orders could be accessed via different
 `MonomialOrder`. For an abstract monomial order, `m : MonomialOrder σ` can be used as a hypothesis.
 -/
-abbrev supDegree [SemilatticeSup B] [OrderBot B] (p : MvPolynomial σ R) : B := p.support.sup D
+abbrev supDegree [SemilatticeSup B] [OrderBot B] (p : MvPolynomial σ R) : B :=
+  AddMonoidAlgebra.supDegree D p
 
 section SupDegree
 
 variable [SemilatticeSup B] [OrderBot B] {D : (σ →₀ ℕ) → B}
+
+theorem supDegree_def (p : MvPolynomial σ R) : p.supDegree D = p.support.sup D := rfl
 
 theorem supDegree_add_le {f g : MvPolynomial σ R} :
     (f + g).supDegree D ≤ (f.supDegree D) ⊔ (g.supDegree D) :=
@@ -142,7 +145,7 @@ variable [LinearOrder B] [OrderBot B] {p q : MvPolynomial σ R} (D : (σ →₀ 
   `f = 0`. In general, it is defined to be the coefficient at an inverse image of `supDegree f`
   (if such exists). -/
 @[expose]
-noncomputable def leadingCoeff (f : MvPolynomial σ R) : R := f (D.invFun <| f.supDegree D)
+noncomputable def leadingCoeff (f : MvPolynomial σ R) : R := f.coeff (D.invFun <| f.supDegree D)
 
 /-- An element `f : MvPolynomial σ R` is monic if its leading coefficient is one. -/
 @[expose, reducible] def Monic (f : MvPolynomial σ R) : Prop := f.leadingCoeff D = 1

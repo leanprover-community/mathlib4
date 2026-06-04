@@ -139,7 +139,8 @@ theorem degrees_pow_le {p : MvPolynomial σ R} {n : ℕ} : (p ^ n).degrees ≤ n
 theorem mem_degrees {p : MvPolynomial σ R} {i : σ} :
     i ∈ p.degrees ↔ ∃ d, p.coeff d ≠ 0 ∧ i ∈ d.support := by
   classical
-  simp only [degrees_def, Multiset.mem_sup, ← mem_support_iff, Finsupp.mem_toMultiset]
+  simp only [degrees_def, supDegree_def,
+    Multiset.mem_sup, ← mem_support_iff, Finsupp.mem_toMultiset]
 
 theorem degrees_eq_zero_iff_support_subset_zero : p.degrees = 0 ↔ p.support ⊆ {0} := by
   rw [Finset.subset_singleton_iff', Multiset.eq_zero_iff_forall_notMem]
@@ -153,6 +154,7 @@ theorem degrees_eq_zero_iff_support_subset_zero : p.degrees = 0 ↔ p.support �
 
 theorem le_degrees_add_left (h : Disjoint p.degrees q.degrees) : p.degrees ≤ (p + q).degrees := by
   classical
+  simp_rw [degrees, supDegree_def]
   apply Finset.sup_le
   intro d hd
   rw [Multiset.disjoint_iff_ne] at h
@@ -196,12 +198,12 @@ theorem degrees_rename (f : σ → τ) (φ : MvPolynomial σ R) :
 
 theorem degrees_map_of_injective [CommSemiring S] (p : MvPolynomial σ R) {f : R →+* S}
     (hf : Injective f) : (map f p).degrees = p.degrees := by
-  simp only [degrees, supDegree, MvPolynomial.support_map_of_injective _ hf]
+  simp only [degrees, supDegree_def, MvPolynomial.support_map_of_injective _ hf]
 
 theorem degrees_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} (h : Function.Injective f) :
     degrees (rename f p) = (degrees p).map f := by
   classical
-  simp only [degrees, supDegree, Multiset.map_finset_sup p.support Finsupp.toMultiset f h,
+  simp only [degrees, supDegree_def, Multiset.map_finset_sup p.support Finsupp.toMultiset f h,
     support_rename_of_injective h, Finset.sup_image]
   refine Finset.sup_congr rfl fun x _ => ?_
   exact (Finsupp.toMultiset_map _ _).symm
@@ -231,11 +233,11 @@ theorem degreeOf_eq_sup (n : σ) (f : MvPolynomial σ R) :
 
 theorem degreeOf_lt_iff {n : σ} {f : MvPolynomial σ R} {d : ℕ} (h : 0 < d) :
     degreeOf n f < d ↔ ∀ m : σ →₀ ℕ, m ∈ f.support → m n < d := by
-  rwa [degreeOf_eq_supDegree, Finset.sup_lt_iff]
+  rwa [degreeOf_eq_supDegree, supDegree_def, Finset.sup_lt_iff]
 
 lemma degreeOf_le_iff {n : σ} {f : MvPolynomial σ R} {d : ℕ} :
     degreeOf n f ≤ d ↔ ∀ m ∈ support f, m n ≤ d := by
-  rw [degreeOf_eq_supDegree, Finset.sup_le_iff]
+  rw [degreeOf_eq_supDegree, supDegree_def, Finset.sup_le_iff]
 
 @[simp]
 theorem degreeOf_zero (n : σ) : degreeOf n (0 : MvPolynomial σ R) = 0 := by
@@ -284,7 +286,7 @@ lemma le_degreeOf_of_mem_support (i : σ) {s : σ →₀ ℕ} :
     s ∈ p.support → s i ≤ p.degreeOf i := fun h ↦ by
   obtain si | si := eq_or_lt_of_le <| Nat.zero_le (s i)
   · simp [← si]
-  rw [degreeOf_eq_supDegree, Finset.le_sup_iff si]
+  rw [degreeOf_eq_supDegree, supDegree_def, Finset.le_sup_iff si]
   use s
 
 lemma notMem_support_of_degreeOf_lt (i : σ) {s : σ →₀ ℕ} :
@@ -323,7 +325,7 @@ theorem degreeOf_pow_le (i : σ) (p : MvPolynomial σ R) (n : ℕ) :
 theorem degreeOf_mul_X_of_ne {i j : σ} (f : MvPolynomial σ R) (h : i ≠ j) :
     degreeOf i (f * X j) = degreeOf i f := by
   classical
-  simp only [degreeOf_eq_supDegree i, supDegree, support_mul_X, Finset.sup_map]
+  simp only [degreeOf_eq_supDegree i, supDegree_def, support_mul_X, Finset.sup_map]
   congr
   ext
   simp only [Finsupp.single, addRightEmbedding_apply, coe_mk,
@@ -353,7 +355,7 @@ theorem degreeOf_mul_X_eq_degreeOf_add_one_iff (j : σ) (f : MvPolynomial σ R) 
   apply Nat.le_antisymm (degreeOf_mul_X_self j f)
   have : (f.support.sup fun m ↦ m j) + 1 = (f.support.sup fun m ↦ (m j + 1)) :=
     Finset.apply_sup_eq_sup_comp_of_nonempty @Nat.succ_le_succ (support_nonempty.mpr h)
-  simp only [degreeOf_eq_supDegree, supDegree, support_mul_X, this]
+  simp only [degreeOf_eq_supDegree, supDegree_def, support_mul_X, this]
   apply Finset.sup_le
   intro x hx
   simp only [Finset.sup_map, bot_eq_zero', add_pos_iff, zero_lt_one, or_true, Finset.le_sup_iff]
@@ -548,7 +550,7 @@ theorem exists_degree_lt [Fintype σ] (f : MvPolynomial σ R) (n : ℕ)
 theorem coeff_eq_zero_of_totalDegree_lt {f : MvPolynomial σ R} {d : σ →₀ ℕ}
     (h : f.totalDegree < ∑ i ∈ d.support, d i) : coeff d f = 0 := by
   classical
-    rw [totalDegree, Finset.sup_lt_iff] at h
+    rw [totalDegree, supDegree_def, Finset.sup_lt_iff] at h
     · specialize h d
       rw [mem_support_iff] at h
       refine not_not.mp (mt h ?_)

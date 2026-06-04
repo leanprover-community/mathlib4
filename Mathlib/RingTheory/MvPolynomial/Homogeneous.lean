@@ -80,7 +80,7 @@ theorem weightedTotalDegree_rename_of_injective {σ τ : Type*} {e : σ → τ}
     {w : τ → ℕ} {P : MvPolynomial σ R} (he : Function.Injective e) :
     weightedTotalDegree w (rename e P) = weightedTotalDegree (w ∘ e) P := by
   classical
-  rw [weightedTotalDegree, supDegree, support_rename_of_injective he, Finset.sup_image]
+  rw [weightedTotalDegree, supDegree_def, support_rename_of_injective he, Finset.sup_image]
   congr; ext; unfold weight; simp
 
 variable (σ R)
@@ -313,6 +313,7 @@ end CommRing
 
 See also `MvPolynomial.IsHomogeneous.totalDegree` when `φ` is non-zero. -/
 lemma totalDegree_le (hφ : IsHomogeneous φ n) : φ.totalDegree ≤ n := by
+  rw [totalDegree, supDegree_def]
   apply Finset.sup_le
   intro d hd
   rw [mem_support_iff] at hd

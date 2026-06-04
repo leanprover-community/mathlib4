@@ -234,8 +234,7 @@ lemma monic_one : m.Monic (1 : MvPolynomial σ R) := monic_monomial_one
 
 theorem degree_le_iff {f : MvPolynomial σ R} {d : σ →₀ ℕ} :
     m.degree f ≼[m] d ↔ ∀ c ∈ f.support, c ≼[m] d := by
-  unfold degree
-  simp only [AddEquiv.apply_symm_apply, Finset.sup_le_iff, mem_support_iff, ne_eq]
+  simp only [degree, supDegree_def, AddEquiv.apply_symm_apply, Finset.sup_le_iff, mem_support_iff]
 
 theorem degree_lt_iff {f : MvPolynomial σ R} {d : σ →₀ ℕ} (hd : 0 ≺[m] d) :
     m.degree f ≺[m] d ↔ ∀ c ∈ f.support, c ≺[m] d := by
@@ -246,8 +245,7 @@ theorem degree_lt_iff {f : MvPolynomial σ R} {d : σ →₀ ℕ} (hd : 0 ≺[m]
 
 theorem le_degree {f : MvPolynomial σ R} {d : σ →₀ ℕ} (hd : d ∈ f.support) :
     d ≼[m] m.degree f := by
-  unfold degree
-  simp only [AddEquiv.apply_symm_apply, Finset.le_sup hd]
+  simp only [degree, supDegree_def, AddEquiv.apply_symm_apply, Finset.le_sup hd]
 
 theorem coeff_eq_zero_of_lt {f : MvPolynomial σ R} {d : σ →₀ ℕ} (hd : m.degree f ≺[m] d) :
     f.coeff d = 0 := by
@@ -750,7 +748,7 @@ lemma support_leadingTerm' {p : MvPolynomial σ R} (hp : p ≠ 0) :
 
 lemma le_degree_of_mem_support {p : MvPolynomial σ R} {a : σ →₀ ℕ}
     (ha : a ∈ p.support) : a ≼[m] m.degree p := by
-  simp [degree, Finset.le_sup ha]
+  simp [degree, supDegree_def, Finset.le_sup ha]
 
 lemma leadingTerm_eq_leadingTerm_iff {p q : MvPolynomial σ R} :
     m.leadingTerm p = m.leadingTerm q ↔
