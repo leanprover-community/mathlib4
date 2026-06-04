@@ -97,4 +97,62 @@ lemma innerAnodyneExtensions_eq_retracts_transfiniteCompositionsOfShape :
   rw [innerAnodyneExtensions_eq_llp_rlp,
     SmallObject.llp_rlp_of_isCardinalForSmallObjectArgument_aleph0]
 
+def strongInnerAnodyneExtensions : MorphismProperty SSet.{u} :=
+  fun _ _ f ↦ Mono f ∧ ∃ (P : (Subcomplex.range f).Pairing) (_ : P.IsRegular), P.IsInner
+
+lemma strongInnerAnodyneExtensions.mono {X Y : SSet.{u}} {f : X ⟶ Y}
+    (hf : strongInnerAnodyneExtensions f) : Mono f := hf.1
+
+lemma strongInnerAnodyneExtensions_le_strongAnodyneExtensions :
+    strongInnerAnodyneExtensions.{u} ≤ strongAnodyneExtensions :=
+  fun _ _ _ ⟨_, P, _, _⟩ ↦ ⟨inferInstance, P, inferInstance⟩
+
+set_option backward.isDefEq.respectTransparency false in
+lemma Subcomplex.Pairing.strongInnerAnodyneExtensions {X : SSet.{u}} {A : X.Subcomplex}
+    (P : A.Pairing) [P.IsRegular] [P.IsInner] :
+    strongInnerAnodyneExtensions A.ι := by
+  sorry
+
+lemma strongInnerAnodyneExtensions_ι_iff {X : SSet.{u}} (A : X.Subcomplex) :
+    strongInnerAnodyneExtensions A.ι ↔ ∃ (P : A.Pairing) (_ : P.IsRegular), P.IsInner :=
+  ⟨fun hA ↦ by
+    obtain ⟨_, P, _, ⟨_, rfl⟩⟩ :
+        ∃ (B : X.Subcomplex) (P : B.Pairing) (h : P.IsRegular), P.IsInner ∧ B = A := by
+      obtain ⟨_, P₁, _, P₂⟩ := hA
+      exact ⟨_, P₁, inferInstance, ⟨P₂, by simp⟩⟩
+    refine ⟨P, ⟨inferInstance, inferInstance⟩⟩,
+  fun ⟨P, ⟨_, _⟩⟩ ↦ P.strongInnerAnodyneExtensions⟩
+
+lemma Subcomplex.Pairing.innerAnodyneExtensions {X : SSet.{u}} {A : X.Subcomplex}
+    (P : A.Pairing) [P.IsRegular] [P.IsInner] :
+    innerAnodyneExtensions A.ι :=
+  transfiniteCompositionsOfShape_le _ _ _
+    ⟨P.rankFunction.relativeCellComplex.toTransfiniteCompositionOfShape, fun j hj ↦ by
+      refine (?_ : (_ : MorphismProperty _) ≤ _ ) _
+        (P.rankFunction.relativeCellComplex.attachCells j hj).pushouts_coproducts
+      simp only [pushouts_le_iff, coproducts_le_iff]
+      rintro _ _ _ ⟨c⟩
+      have h0 := Fin.pos_iff_ne_zero.mpr (IsInner.ne_zero c.s rfl)
+      have hn := Fin.lt_last_iff_ne_last.mpr (IsInner.ne_last c.s rfl)
+      have : NeZero c.dim := ⟨by grind⟩
+      exact .horn_ι h0 hn⟩
+
+instance : strongInnerAnodyneExtensions.{u}.RespectsIso where
+  precomp e _ f hf := by
+    obtain ⟨_, P, hP, hP'⟩ := hf
+    refine ⟨inferInstance, P.ofIso (Iso.refl _) ?_, inferInstance, inferInstance⟩
+    simp [Subcomplex.range_comp, Subcomplex.range_eq_top e,
+      Subcomplex.image_top]
+  postcomp e _ f hf := by
+    obtain ⟨_, P, hP, _⟩ := hf
+    refine ⟨inferInstance, P.ofIso (asIso e).symm ?_, inferInstance, inferInstance⟩
+    simp [Subcomplex.preimage_inv, Subcomplex.range_comp]
+
+lemma strongInnerAnodyneExtensions_le_innerAnodyneExtensions :
+    strongInnerAnodyneExtensions.{u} ≤ innerAnodyneExtensions := by
+  rintro X Y f ⟨_, P, _, _⟩
+  rw [← Subfunctor.toRange_ι f]
+  exact comp_mem _ _ _ (.of_isIso _) P.innerAnodyneExtensions
+
+
 end SSet

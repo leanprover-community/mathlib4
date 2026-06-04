@@ -191,6 +191,12 @@ instance [P.IsRegular] : (P.ofIso e hA).IsRegular where
     refine hP.false ⟨fun n ↦ ⟨_, (f n).2⟩, fun n ↦ ?_⟩
     simpa [← P.ofIso_ancestralRel_iff e hA] using hf n
 
+instance [P.IsRegular] [hP : P.IsInner] : (P.ofIso e hA).IsInner where
+  ne_zero :=
+    sorry
+  ne_last :=
+    sorry
+
 end Pairing
 
 end SSet.Subcomplex
