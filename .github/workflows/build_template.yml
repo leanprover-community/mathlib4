@@ -767,6 +767,11 @@ jobs:
         run: |
           lake env lean --run "${CI_SCRIPTS_DIR}/pr_summary/dumpReasonableDecls.lean" \
             --out decls.txt --imports-out imports.json Mathlib
+          ## Record the PR number so the post-build `decls-diff` workflow can find
+          ## the comment to patch without the (laggy) commit-SHA search API. Empty
+          ## for non-PR builds (push to master / bors); the consumer then falls
+          ## back to the commit's associated PRs.
+          printf '%s' "${{ github.event.pull_request.number }}" > pr_number.txt
 
       - name: upload the import graph
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -776,12 +781,13 @@ jobs:
             import_graph.dot
             decls.txt
             imports.json
+            pr_number.txt
           ## Master pushes: 90 days, so later PRs forked from these commits
           ## can consume the dumps from the artifact. Other branches: 7 days.
           retention-days: ${{ github.ref == 'refs/heads/master' && '90' || '7' }}
 
       - name: clean up the import graph file
-        run: rm -f import_graph.dot decls.txt imports.json
+        run: rm -f import_graph.dot decls.txt imports.json pr_number.txt
 
       - name: check all scripts build successfully
         run: |
