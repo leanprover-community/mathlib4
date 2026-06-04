@@ -739,7 +739,7 @@ theorem IsPath.disjoint_edges_of_disjoint_support {p : G.Walk u v} {q : G.Walk v
   have := q.mem_support_iff.mp <| q.snd_mem_support_of_mem_edges heq
   grind [p.adj_of_mem_edges hep |>.ne, length_eq_one_of_mem_edges]
 
-lemma IsPath.isCycle_append {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath) (hq : q.IsPath)
+lemma IsPath.isCycle_append {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath) (hq : q.IsPath)
     (h : p.support.tail.Disjoint q.support.tail) (hn : 1 < p.length ∨ 1 < q.length) :
     (p.append q).IsCycle := by
   rw [isCycle_def, isTrail_append]
@@ -753,7 +753,7 @@ lemma IsPath.isCycle_append {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPa
 Given two distinct paths with the same endpoints, we can extract a subwalk from each such that their
 concatenation, with one reversed, forms a cycle.
 -/
-theorem IsPath.exists_isCycle_of_ne {u v : V} {p q : G.Walk u v} (hp : p.IsPath) (hq : q.IsPath)
+theorem IsPath.exists_isCycle_of_ne {p q : G.Walk u v} (hp : p.IsPath) (hq : q.IsPath)
     (h : p ≠ q) :
     ∃ (u' v' : V) (p' q' : G.Walk u' v'),
       p'.IsSubwalk p ∧ q'.IsSubwalk q ∧ (p'.append q'.reverse).IsCycle := by
@@ -777,7 +777,7 @@ open List in
 Given two distinct paths, `p` and `q`, with same endpoints, we can extract a cycle whose support
 is a sublist of `p.support ++ q.support.reverse.tail`.
 -/
-theorem IsPath.exists_isCycle_sublist_of_ne {u v : V} {p q : G.Walk u v} (hp : p.IsPath)
+theorem IsPath.exists_isCycle_sublist_of_ne {p q : G.Walk u v} (hp : p.IsPath)
     (hq : q.IsPath) (h : p ≠ q) :
     ∃ w, w ∈ p.support ∧ w ∈ q.support ∧
       ∃ c : G.Walk w w, c.IsCycle ∧ c.support <+ (p.support ++ q.support.reverse.tail) := by
@@ -793,7 +793,7 @@ theorem IsPath.exists_isCycle_sublist_of_ne {u v : V} {p q : G.Walk u v} (hp : p
 Given two distinct paths with same endpoints, we can extract a cycle whose length is less than or
 equal to the sum of their lengths.
 -/
-theorem IsPath.exists_isCycle_length_le_add_of_ne {u v : V} {p q : G.Walk u v} (hp : p.IsPath)
+theorem IsPath.exists_isCycle_length_le_add_of_ne {p q : G.Walk u v} (hp : p.IsPath)
     (hq : q.IsPath) (h : p ≠ q) :
     ∃ w, w ∈ p.support ∧ w ∈ q.support ∧
       ∃ c : G.Walk w w, c.IsCycle ∧ c.length ≤ p.length + q.length := by
