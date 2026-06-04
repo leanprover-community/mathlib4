@@ -137,32 +137,32 @@ end SupDegree
 
 section LinearOrder
 
-variable [LinearOrder B] [OrderBot B] {p q : MvPolynomial σ R} {D : (σ →₀ ℕ) → B} (hD : D.Injective)
+variable [LinearOrder B] [OrderBot B] {p q : MvPolynomial σ R} (D : (σ →₀ ℕ) → B)
 
-set_option linter.unusedVariables false in
 /-- If `D` is an injection into a linear order `B`, the leading coefficient of
   `f : MvPolynomial σ R` is the nonzero coefficient of highest degree according to `D`, or 0 if
   `f = 0`. In general, it is defined to be the coefficient at an inverse image of `supDegree f`
   (if such exists). -/
-@[nolint unusedArguments, expose]
-noncomputable def leadingCoeff (hD : D.Injective) (f : MvPolynomial σ R) : R :=
-    f (D.invFun <| f.supDegree D)
+@[expose]
+noncomputable def leadingCoeff (f : MvPolynomial σ R) : R := f (D.invFun <| f.supDegree D)
 
 /-- An element `f : MvPolynomial σ R` is monic if its leading coefficient is one. -/
-@[expose, reducible] def Monic (f : MvPolynomial σ R) : Prop := f.leadingCoeff hD = 1
+@[expose, reducible] def Monic (f : MvPolynomial σ R) : Prop := f.leadingCoeff D = 1
+
+variable {D}
 
 @[simp]
 theorem leadingCoeff_monomial (hD : D.Injective) (a : σ →₀ ℕ) (r : R) :
-    (monomial a r).leadingCoeff hD = r := AddMonoidAlgebra.leadingCoeff_single hD a r
+    (monomial a r).leadingCoeff D = r := AddMonoidAlgebra.leadingCoeff_single hD a r
 
 @[simp]
-theorem leadingCoeff_zero : (0 : MvPolynomial σ R).leadingCoeff hD = 0 :=
+theorem leadingCoeff_zero : (0 : MvPolynomial σ R).leadingCoeff D = 0 :=
   AddMonoidAlgebra.leadingCoeff_zero
 
-lemma Monic.ne_zero [Nontrivial R] (hp : p.Monic hD) : p ≠ 0 := AddMonoidAlgebra.Monic.ne_zero hp
+lemma Monic.ne_zero [Nontrivial R] (hp : p.Monic D) : p ≠ 0 := AddMonoidAlgebra.Monic.ne_zero hp
 
 @[simp]
-theorem monic_one (hD : D.Injective) : (1 : MvPolynomial σ R).Monic hD :=
+theorem monic_one (hD : D.Injective) : (1 : MvPolynomial σ R).Monic D :=
   AddMonoidAlgebra.monic_one hD
 
 -- todo: port to `AddMonoidAlgebra`
@@ -200,30 +200,30 @@ lemma supDegree_add_eq_of_ne (h : p.supDegree D ≠ q.supDegree D) :
   · simp [max_eq_left h.le, supDegree_add_eq_left h]
 
 lemma leadingCoeff_add_eq_left (h : q.supDegree D < p.supDegree D) :
-    (p + q).leadingCoeff hD = p.leadingCoeff hD := AddMonoidAlgebra.leadingCoeff_add_eq_left h
+    (p + q).leadingCoeff D = p.leadingCoeff D := AddMonoidAlgebra.leadingCoeff_add_eq_left h
 
 lemma leadingCoeff_add_eq_right (h : p.supDegree D < q.supDegree D) :
-    (p + q).leadingCoeff hD = q.leadingCoeff hD := AddMonoidAlgebra.leadingCoeff_add_eq_right h
+    (p + q).leadingCoeff D = q.leadingCoeff D := AddMonoidAlgebra.leadingCoeff_add_eq_right h
 
 lemma supDegree_mem_support (hD : D.Injective) (hp : p ≠ 0) :
     D.invFun (p.supDegree D) ∈ p.support := AddMonoidAlgebra.supDegree_mem_support hD hp
 
 @[simp]
-lemma leadingCoeff_eq_zero (hD : D.Injective) : p.leadingCoeff hD = 0 ↔ p = 0 :=
+lemma leadingCoeff_eq_zero (hD : D.Injective) : p.leadingCoeff D = 0 ↔ p = 0 :=
   AddMonoidAlgebra.leadingCoeff_eq_zero hD
 
-lemma leadingCoeff_ne_zero (hD : D.Injective) : p.leadingCoeff hD ≠ 0 ↔ p ≠ 0 :=
+lemma leadingCoeff_ne_zero (hD : D.Injective) : p.leadingCoeff D ≠ 0 ↔ p ≠ 0 :=
   AddMonoidAlgebra.leadingCoeff_ne_zero hD
 
 lemma supDegree_sub_lt_of_leadingCoeff_eq (hD : D.Injective) {p q : MvPolynomial σ R'}
-    (hd : p.supDegree D = q.supDegree D) (hc : p.leadingCoeff hD = q.leadingCoeff hD) :
+    (hd : p.supDegree D = q.supDegree D) (hc : p.leadingCoeff D = q.leadingCoeff D) :
     (p - q).supDegree D < p.supDegree D ∨ p = q :=
   AddMonoidAlgebra.supDegree_sub_lt_of_leadingCoeff_eq hD hd hc
 
 lemma supDegree_leadingCoeff_sum_eq
     (hi : i ∈ s) (hmax : ∀ j ∈ s, j ≠ i → (f j).supDegree D < (f i).supDegree D) :
     (∑ j ∈ s, f j).supDegree D = (f i).supDegree D ∧
-    (∑ j ∈ s, f j).leadingCoeff hD = (f i).leadingCoeff hD :=
+    (∑ j ∈ s, f j).leadingCoeff D = (f i).leadingCoeff D :=
   AddMonoidAlgebra.supDegree_leadingCoeff_sum_eq hi hmax
 
 lemma sum_ne_zero_of_injOn_supDegree' (hs : ∃ i ∈ s, f i ≠ 0)
@@ -238,52 +238,52 @@ variable [Add B]
 variable [AddLeftStrictMono B] [AddRightStrictMono B]
 
 lemma apply_supDegree_add_supDegree (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) :
-    (p * q) (D.invFun (p.supDegree D + q.supDegree D)) = p.leadingCoeff hD * q.leadingCoeff hD :=
+    (p * q) (D.invFun (p.supDegree D + q.supDegree D)) = p.leadingCoeff D * q.leadingCoeff D :=
   AddMonoidAlgebra.apply_supDegree_add_supDegree hD hadd
 
 lemma supDegree_mul
     (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
-    (hpq : leadingCoeff hD p * leadingCoeff hD q ≠ 0)
+    (hpq : leadingCoeff D p * leadingCoeff D q ≠ 0)
     (hp : p ≠ 0) (hq : q ≠ 0) :
     (p * q).supDegree D = p.supDegree D + q.supDegree D :=
   AddMonoidAlgebra.supDegree_mul hD hadd hpq hp hq
 
 lemma Monic.supDegree_mul_of_ne_zero_left
     (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
-    (hq : q.Monic hD) (hp : p ≠ 0) :
+    (hq : q.Monic D) (hp : p ≠ 0) :
     (p * q).supDegree D = p.supDegree D + q.supDegree D :=
   AddMonoidAlgebra.Monic.supDegree_mul_of_ne_zero_left hD hadd hq hp
 
 lemma Monic.supDegree_mul_of_ne_zero_right
     (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
-    (hp : p.Monic hD) (hq : q ≠ 0) :
+    (hp : p.Monic D) (hq : q ≠ 0) :
     (p * q).supDegree D = p.supDegree D + q.supDegree D :=
   AddMonoidAlgebra.Monic.supDegree_mul_of_ne_zero_right hD hadd hp hq
 
 lemma Monic.supDegree_mul
     (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
-    (hbot : (⊥ : B) + ⊥ = ⊥) (hp : p.Monic hD) (hq : q.Monic hD) :
+    (hbot : (⊥ : B) + ⊥ = ⊥) (hp : p.Monic D) (hq : q.Monic D) :
     (p * q).supDegree D = p.supDegree D + q.supDegree D :=
   AddMonoidAlgebra.Monic.supDegree_mul hD hadd hbot hp hq
 
 lemma leadingCoeff_mul [NoZeroDivisors R]
     (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) :
-    (p * q).leadingCoeff hD = p.leadingCoeff hD * q.leadingCoeff hD :=
+    (p * q).leadingCoeff D = p.leadingCoeff D * q.leadingCoeff D :=
   AddMonoidAlgebra.leadingCoeff_mul hD hadd
 
 lemma Monic.leadingCoeff_mul_eq_left
-    (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) (hq : q.Monic hD) :
-    (p * q).leadingCoeff hD = p.leadingCoeff hD :=
+    (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) (hq : q.Monic D) :
+    (p * q).leadingCoeff D = p.leadingCoeff D :=
   AddMonoidAlgebra.Monic.leadingCoeff_mul_eq_left hD hadd hq
 
 lemma Monic.leadingCoeff_mul_eq_right
-    (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) (hp : p.Monic hD) :
-    (p * q).leadingCoeff hD = q.leadingCoeff hD :=
+    (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) (hp : p.Monic D) :
+    (p * q).leadingCoeff D = q.leadingCoeff D :=
   AddMonoidAlgebra.Monic.leadingCoeff_mul_eq_right hD hadd hp
 
 lemma Monic.mul
     (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
-    (hp : p.Monic hD) (hq : q.Monic hD) : (p * q).Monic hD :=
+    (hp : p.Monic D) (hq : q.Monic D) : (p * q).Monic D :=
   AddMonoidAlgebra.Monic.mul hD hadd hp hq
 
 section AddMonoid
@@ -294,12 +294,12 @@ variable {B : Type*} [AddMonoid B] [LinearOrder B] [OrderBot B]
 
 lemma Monic.pow
     (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) (hD : D.Injective)
-    (hp : p.Monic hD) : (p ^ n).Monic hD :=
+    (hp : p.Monic D) : (p ^ n).Monic D :=
   AddMonoidAlgebra.Monic.pow hadd hD hp
 
 lemma Monic.supDegree_pow
     (hzero : D 0 = 0) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) (hD : D.Injective)
-    [Nontrivial R] (hp : p.Monic hD) :
+    [Nontrivial R] (hp : p.Monic D) :
     (p ^ n).supDegree D = n • p.supDegree D :=
   AddMonoidAlgebra.Monic.supDegree_pow hzero hadd hD hp
 
