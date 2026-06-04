@@ -3,9 +3,9 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
-module  -- shake: keep-all, shake: keep-downstream
+module  -- shake: keep-downstream
 
-public meta import Lean
+public meta import Lean.Elab.BuiltinCommand
 public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Tactic.ExtendDoc
 public import Mathlib.Tactic.Linter.OldObtain

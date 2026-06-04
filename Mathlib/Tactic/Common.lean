@@ -9,7 +9,7 @@ module  -- shake: keep-all, shake: keep-downstream
 
 public import Aesop
 public import Qq
-public import Plausible
+-- public import Plausible
 
 -- Import common Batteries tactics and commands
 public import Batteries.Tactic.Basic
@@ -163,8 +163,8 @@ end Hint
 
 section Try
 
-register_try?_tactic (priority := 500) tauto
-register_try?_tactic (priority := 80) aesop
-register_try?_tactic (priority := 200) fun_prop
+-- register_try?_tactic (priority := 500) tauto
+-- register_try?_tactic (priority := 80) aesop
+-- register_try?_tactic (priority := 200) fun_prop
 
 end Try
