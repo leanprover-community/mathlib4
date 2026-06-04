@@ -81,7 +81,7 @@ lemma zariskisMainProperty_iff {p : Ideal S} :
   simp only [ZariskisMainProperty, Subtype.exists, ← exists_prop, @exists_comm (_ ∉ p)]
   refine exists₃_congr fun r hr hrp ↦ ?_
   rw [Function.Bijective, and_iff_right
-    (IsLocalization.map_injective_of_injective _ _ _ Subtype.val_injective),
+    (by exact IsLocalization.map_injective_of_injective _ _ _ Subtype.val_injective),
     Localization.awayMap_surjective_iff]
   simp [mem_integralClosure_iff]
 
@@ -588,7 +588,7 @@ private lemma ZariskisMainProperty.of_algHom_mvPolynomial
           refine Localization.localRingHom_bijective_of_saturated_inf_eq_top _ ?_ _
           rw [← top_le_iff, ← hs, Algebra.adjoin_le_iff]
           intro x hx
-          refine ⟨r ^ (s.sup m), pow_mem (⟨hrp, hrR'⟩) _, Algebra.subset_adjoin ?_⟩
+          refine ⟨r ^ (s.sup m), pow_mem (by exact ⟨hrp, hrR'⟩) _, Algebra.subset_adjoin ?_⟩
           simp [Set.smul_mem_smul_set hx, ← smul_eq_mul]
       exact .of_algHom_localization _ _ e.symm.toAlgHom e.symm.surjective
     let φ : MvPolynomial (Fin n) R →ₐ[R] R' :=

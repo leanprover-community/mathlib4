@@ -789,13 +789,13 @@ theorem MDifferentiable.add (hf : MDiff f) (hg : MDiff g) : MDiff (f + g) :=
 -- Porting note: forcing types using `by exact`
 theorem mfderiv_add (hf : MDiffAt f z) (hg : MDiffAt g z) :
     (mfderiv% (f + g) z : TangentSpace I z →L[𝕜] E') =
-      (mfderiv% f z) + (mfderiv% g z) :=
+      (by exact mfderiv% f z) + (by exact mfderiv% g z) :=
   (hf.hasMFDerivAt.add hg.hasMFDerivAt).mfderiv
 
 theorem mfderivWithin_add (hf : MDiffAt[s] f z) (hg : MDiffAt[s] g z)
     (hs : UniqueMDiffWithinAt I s z) :
     (mfderiv[s] (f + g) z : TangentSpace I z →L[𝕜] E') =
-      (mfderiv[s] f z) + (mfderiv[s] g z) :=
+      (by exact mfderiv[s] f z) + (by exact mfderiv[s] g z) :=
   (hf.hasMFDerivWithinAt.add hg.hasMFDerivWithinAt).mfderivWithin hs
 
 section sum
@@ -915,12 +915,12 @@ theorem MDifferentiable.sub (hf : MDiff f) (hg : MDiff g) : MDiff (f - g) :=
 theorem mfderivWithin_sub (hf : MDiffAt[s] f z) (hg : MDiffAt[s] g z)
     (hs : UniqueMDiffWithinAt I s z) :
     (mfderiv[s] (f - g) z : TangentSpace I z →L[𝕜] E') =
-      (mfderiv[s] f z) - (mfderiv[s] g z) :=
+      (by exact mfderiv[s] f z) - (by exact mfderiv[s] g z) :=
   (hf.hasMFDerivWithinAt.sub hg.hasMFDerivWithinAt).mfderivWithin hs
 
 theorem mfderiv_sub (hf : MDiffAt f z) (hg : MDiffAt g z) :
     (mfderiv% (f - g) z : TangentSpace I z →L[𝕜] E') =
-      (mfderiv% f z) - (mfderiv% g z) :=
+      (by exact mfderiv% f z) - (by exact mfderiv% g z) :=
   (hf.hasMFDerivAt.sub hg.hasMFDerivAt).mfderiv
 
 end Group

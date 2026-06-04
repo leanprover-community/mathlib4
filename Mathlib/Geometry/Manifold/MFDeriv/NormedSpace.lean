@@ -526,8 +526,8 @@ lemma mvfderivWithin_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt[s] f x) (hg : 
 lemma mvfderivWithin_zero {s : Set M} (hs : UniqueMDiffWithinAt I s x) :
     d[s] (0 : M → F) x = 0 := by
   have : d[s] (0 : M → F) x + d[s] (0 : M → F) x = d[s] (0 : M → F) x := by
-    rw [← mvfderivWithin_add (mdifferentiableWithinAt_const)
-      (mdifferentiableWithinAt_const) hs]
+    rw [← mvfderivWithin_add (by exact mdifferentiableWithinAt_const)
+      (by exact mdifferentiableWithinAt_const) hs]
     simp
   simpa using this
 
@@ -569,7 +569,7 @@ lemma mvfderiv_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt f x) (hg : MDiffAt g
 @[simp]
 lemma mvfderiv_zero {x : M} : d% (0 : M → F) x = 0 := by
   have : d% (0 : M → F) x + d% (0 : M → F) x = d% (0 : M → F) x := by
-    rw [← mvfderiv_add (mdifferentiable_const ..) (mdifferentiable_const ..)]
+    rw [← mvfderiv_add (by exact mdifferentiable_const ..) (by exact mdifferentiable_const ..)]
     simp
   simpa using this
 @[deprecated (since := "2026-05-17")] alias extDerivFun_zero := mvfderiv_zero

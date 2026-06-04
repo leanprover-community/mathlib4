@@ -348,7 +348,7 @@ theorem matroid_isFlat_iff [IsDomain A] {s : Set A} :
   · rw [← eq]; exact h.restrictScalars (adjoin R s)
   rintro ⟨s, rfl, hs⟩
   refine Set.ext fun a ↦ ⟨(hs _ <| adjoin_eq s ▸ ·), fun h ↦ ?_⟩
-  exact isAlgebraic_algebraMap (A := A) ((⟨a, subset_adjoin h⟩ : adjoin R s))
+  exact isAlgebraic_algebraMap (A := A) (by exact (⟨a, subset_adjoin h⟩ : adjoin R s))
 
 theorem matroid_spanning_iff [IsDomain A] {s : Set A} :
     (matroid R A).Spanning s ↔ Algebra.IsAlgebraic (adjoin R s) A := by
@@ -588,7 +588,7 @@ lemma of_isAlgebraic_adjoin_insert_diff (hj : j ∈ insert i s)
     · exact ⟨his, ne⟩
     · exact ⟨⟨k, hks, rfl⟩, inj.ne hks hj hkj⟩
   have : (insert i s).InjOn v := (injOn_insert hi).mpr ⟨inj, hi'⟩
-  rw [← isTranscendenceBasis_subtype_range (injOn_iff_injective.1 (this.mono diff_subset)),
+  rw [← isTranscendenceBasis_subtype_range (by exact injOn_iff_injective.1 (this.mono diff_subset)),
     ← matroid_isBase_iff, ← image_eq_range]
   rw [this.image_diff_subset (singleton_subset_iff.mpr (.inr hj)), image_singleton,
     image_insert_eq] at H₂ ⊢

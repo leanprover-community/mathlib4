@@ -317,7 +317,7 @@ protected lemma _root_.MDifferentiableWithinAt.mpullbackWithin_vectorField_inter
     exact FiberBundle.mem_baseSet_trivializationAt' _
   filter_upwards [A, B] with x hx h'x
   simp only [Function.comp_apply]
-  rw [inCoordinates_eq hx h'x, inCoordinates_eq h'x (hx)]
+  rw [inCoordinates_eq hx h'x, inCoordinates_eq h'x (by exact hx)]
   simp only [inverse_equiv_comp, inverse_comp_equiv, ContinuousLinearEquiv.symm_symm, ϕ]
   rfl
 
@@ -448,7 +448,7 @@ protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_inter
     exact FiberBundle.mem_baseSet_trivializationAt' _
   filter_upwards [A, B] with x hx h'x
   simp only [Function.comp_apply]
-  rw [inCoordinates_eq hx h'x, inCoordinates_eq h'x (hx)]
+  rw [inCoordinates_eq hx h'x, inCoordinates_eq h'x (by exact hx)]
   simp only [inverse_equiv_comp, inverse_comp_equiv, ContinuousLinearEquiv.symm_symm, ϕ]
   rfl
 

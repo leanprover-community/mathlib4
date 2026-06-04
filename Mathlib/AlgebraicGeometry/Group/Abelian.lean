@@ -94,7 +94,7 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
     rw [Set.image_preimage_eq_inter_range, Scheme.IdealSheafData.range_subschemeι,
       Scheme.Hom.support_ker, ← Set.inter_assoc, ← Set.preimage_inter,
       Set.singleton_inter_of_mem x.2, IsClosed.closure_eq
-      (γ.left.isClosedMap.isClosed_range)]
+      (by exact γ.left.isClosedMap.isClosed_range)]
   -- It suffices to check set-theoretic equality on closed points of `U ×[k] G`.
   refine ext_of_apply_eq G.hom _
     ((fst G G).left ⁻¹ᵁ U).isOpen.isLocallyClosed

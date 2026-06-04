@@ -303,7 +303,7 @@ theorem iff_split_injection
       0 1) using 2
   · rw [← (LinearMap.extendScalarsOfSurjectiveEquiv hf).exists_congr_right]
     simp [LinearMap.ext_iff]
-  · rw [and_iff_right (mapBaseChange_surjective R P A hf)]
+  · rw [and_iff_right (by exact mapBaseChange_surjective R P A hf)]
 
 /--
 Given a formally smooth `R`-algebra `P` and a surjective algebra homomorphism `f : P →ₐ[R] S`
@@ -442,7 +442,7 @@ lemma iff_of_surjective (h : Function.Surjective (algebraMap R A)) :
     let e : A ≃ₐ[R] R ⧸ RingHom.ker (algebraMap R A) ^ 2 :=
       .ofAlgHom _ _ (Ideal.Quotient.algHom_ext _ (by ext)) hg
     rw [IsIdempotentElem, ← pow_two, ← Ideal.mk_ker (I := _ ^ 2), ← Ideal.Quotient.algebraMap_eq,
-      ← e.toAlgHom.comp_algebraMap, RingHom.ker_comp_of_injective _ (e.injective)]
+      ← e.toAlgHom.comp_algebraMap, RingHom.ker_comp_of_injective _ (by exact e.injective)]
   · intro H
     let e := (Ideal.quotientEquivAlgOfEq _ ((pow_two _).trans H)).trans
       (Ideal.quotientKerAlgEquivOfSurjective (f := Algebra.ofId R A) h)

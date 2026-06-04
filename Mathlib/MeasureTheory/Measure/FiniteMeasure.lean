@@ -1016,7 +1016,7 @@ lemma Topology.IsClosedEmbedding.isEmbedding_map_finiteMeasure {Ω : Type*}
       simp only [toMeasure_comap]
       rw [Measure.comap_apply _ hf.injective, image_preimage_eq_inter_range]
       · rw [← Measure.restrict_apply hs, Measure.restrict_eq_self_of_ae_mem]
-        exact (null_iff_toMeasure_null (↑μ) (range f)ᶜ).mp (μ.2)
+        exact (null_iff_toMeasure_null (↑μ) (range f)ᶜ).mp (by exact μ.2)
       · exact fun t ht ↦ hf.measurableEmbedding.measurableSet_image' ht
       · exact hf.continuous.measurable hs }
   exact A.comp B.isEmbedding

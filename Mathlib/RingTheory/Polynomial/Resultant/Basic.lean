@@ -298,7 +298,7 @@ lemma resultant_succ_left_deg (hf : f.natDegree ≤ m) :
   obtain _ | n := n
   · simp [pow_succ']
   rw [resultant, Matrix.det_succ_row (i := .last _),
-      Finset.sum_eq_single (((Fin.last m).castAdd (n + 1))) _ (by simp)]
+      Finset.sum_eq_single (by exact ((Fin.last m).castAdd (n + 1))) _ (by simp)]
   · rw [resultant, ← Matrix.det_reindex_self (finCongr (show (m + 1).add n = m + (n + 1) by grind))]
     simp only [Nat.add_eq, Nat.succ_eq_add_one, Fin.val_last, Fin.val_castAdd, Fin.succAbove_last,
       Matrix.reindex_apply, finCongr_symm, Matrix.submatrix_submatrix]

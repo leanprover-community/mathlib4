@@ -48,7 +48,7 @@ def skeleton : ℕ →o X.Subcomplex where
   monotone' i j h := by
     simp only [iSup_le_iff]
     intro k x
-    exact le_trans (le_trans (by rfl) (le_iSup _ x))
+    exact le_trans (by exact le_trans (by rfl) (le_iSup _ x))
       (le_iSup _ ⟨k, by lia⟩)
 
 lemma mem_skeleton {i : ℕ} (x : X _⦋i⦌) {n : ℕ} (hi : i < n := by lia) :
@@ -56,7 +56,7 @@ lemma mem_skeleton {i : ℕ} (x : X _⦋i⦌) {n : ℕ} (hi : i < n := by lia) :
   obtain ⟨j, f, _, y, rfl⟩ := X.exists_nonDegenerate x
   suffices Subcomplex.ofSimplex y.1 ≤ X.skeleton n from
     (X.skeleton n).map _ (this _ (Subcomplex.mem_ofSimplex_obj _))
-  exact le_trans (le_trans (by rfl) (le_iSup _ y))
+  exact le_trans (by exact le_trans (by rfl) (le_iSup _ y))
     (le_iSup _ ⟨j, lt_of_le_of_lt
       (SimplexCategory.len_le_of_epi f) hi⟩)
 
@@ -166,7 +166,7 @@ lemma skeletonOfMono_succ (n : ℕ) :
       le_sup_right.trans le_sup_left, fun x ↦ ?_⟩
     by_cases hx : x.1 ∈ (Subcomplex.range i).obj _
     · exact le_trans (le_trans (by simpa) le_sup_left) le_sup_left
-    · exact (le_trans (le_trans (by rfl) (le_iSup _ hx))
+    · exact (le_trans (by exact le_trans (by rfl) (le_iSup _ hx))
         (le_iSup _ x)).trans le_sup_right
   · simp only [sup_le_iff, iSup_le_iff]
     exact ⟨⟨le_sup_left, (Y.skeleton.monotone (by simp)).trans le_sup_right⟩,
