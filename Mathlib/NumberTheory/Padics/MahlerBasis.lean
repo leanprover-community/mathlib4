@@ -261,7 +261,7 @@ lemma norm_mahlerTerm : ‖(mahlerTerm a n : C(ℤ_[p], E))‖ = ‖a‖ := by
   apply le_antisymm
   · -- Show all values have norm ≤ 1
     rw [ContinuousMap.norm_le_of_nonempty]
-    refine fun _ ↦ (norm_smul_le _ _).trans <| mul_le_of_le_one_left (norm_nonneg _) (norm_le_one _)
+    exact fun _ ↦ (norm_smul_le _ _).trans <| mul_le_of_le_one_left (norm_nonneg _) (norm_le_one _)
   · -- Show norm 1 is attained at `x = k`
     refine le_trans ?_ <| (mahlerTerm a n).norm_coe_le_norm n
     simp [mahlerTerm_apply, mahler_natCast_eq]

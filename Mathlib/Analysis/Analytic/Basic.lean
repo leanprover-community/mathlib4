@@ -342,7 +342,7 @@ theorem HasFPowerSeriesAt.eventually_eq_zero
     HasFPowerSeriesWithinOnBall f p univ x r ↔ HasFPowerSeriesOnBall f p x r := by
   constructor
   · intro h
-    refine ⟨h.r_le, h.r_pos, fun {y} m ↦ h.hasSum (by simp) m⟩
+    exact ⟨h.r_le, h.r_pos, fun {y} m ↦ h.hasSum (by simp) m⟩
   · intro h
     exact ⟨h.r_le, h.r_pos, fun {y} _ m => h.hasSum m⟩
 

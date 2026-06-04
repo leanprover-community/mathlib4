@@ -214,7 +214,7 @@ lemma localRingHom_surjective_of_primesOver_eq_singleton
     IsScalarTower.algebraMap_apply _ (Localization.AtPrime q), ResidueField.algebraMap_eq,
     ← sub_eq_zero, ← map_sub, residue_eq_zero_iff] at ha
   rw [← sub_sub_self (algebraMap _ _ a) x]
-  refine sub_mem (Submodule.mem_sup_left ⟨_, rfl⟩) (Submodule.mem_sup_right ha)
+  exact sub_mem (Submodule.mem_sup_left ⟨_, rfl⟩) (Submodule.mem_sup_right ha)
 
 omit hq in
 lemma exists_awayMap_injective_of_localRingHom_injective

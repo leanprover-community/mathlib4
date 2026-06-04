@@ -594,7 +594,7 @@ lemma binaryBiproductTriangle_distinguished (X₁ X₂ : C) :
   obtain ⟨e, ⟨he₁, he₂⟩⟩ := exists_iso_binaryBiproduct_of_distTriang _ mem rfl
   dsimp at he₁ he₂
   refine isomorphic_distinguished _ mem _ (Iso.symm ?_)
-  refine Triangle.isoMk _ _ (Iso.refl _) e (Iso.refl _)
+  exact Triangle.isoMk _ _ (Iso.refl _) e (Iso.refl _)
     (by cat_disch) (by cat_disch) (by simp)
 
 lemma binaryProductTriangle_distinguished (X₁ X₂ : C) :

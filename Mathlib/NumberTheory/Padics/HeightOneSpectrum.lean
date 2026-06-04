@@ -194,7 +194,7 @@ theorem adicCompletion.padicEquiv_bijOn (v : HeightOneSpectrum R) :
   · rw [← adicCompletionIntegers.coe_padicIntEquiv_apply v ⟨x, hx⟩]
     exact norm_le_one ((adicCompletionIntegers.padicIntEquiv v) ⟨x, hx⟩)
   · obtain ⟨x, hx⟩ := (adicCompletionIntegers.padicIntEquiv v).surjective ⟨y, hy⟩
-    refine ⟨x, x.2, by rw [← adicCompletionIntegers.coe_padicIntEquiv_apply, hx]⟩
+    exact ⟨x, x.2, by rw [← adicCompletionIntegers.coe_padicIntEquiv_apply, hx]⟩
 
 end Rat.HeightOneSpectrum
 

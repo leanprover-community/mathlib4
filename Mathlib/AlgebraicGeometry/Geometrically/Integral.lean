@@ -96,7 +96,7 @@ lemma GeometricallyIntegral.isIntegral_of_isLocallyNoetherian
 lemma GeometricallyIntegral.isIntegral_of_subsingleton
     [GeometricallyIntegral f] [Subsingleton S] [IsIntegral S] : IsIntegral X := by
   rw [isIntegral_iff_irreducibleSpace_and_isReduced]
-  refine ⟨GeometricallyIrreducible.irreducibleSpace_of_subsingleton f,
+  exact ⟨GeometricallyIrreducible.irreducibleSpace_of_subsingleton f,
     GeometricallyReduced.isReduced_of_flat_of_isLocallyNoetherian f⟩
 
 /-- If `X` is geometrically integral and flat and universally open over `S` and `Y` is integral

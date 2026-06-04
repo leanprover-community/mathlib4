@@ -149,7 +149,7 @@ theorem span_smul_span [(Ideal.span S).IsTwoSided] :
     Ideal.span S • span R T = span R (S • T) :=
   le_antisymm (smul_le.mpr fun r hr m hm ↦ by
     revert r
-    refine span_induction (fun m hm r hr ↦ span_induction
+    exact span_induction (fun m hm r hr ↦ span_induction
       (fun r hr ↦ subset_span ⟨r, hr, m, hm, rfl⟩)
       (by rw [zero_smul]; exact zero_mem _)
       (fun _ _ _ _ h₁ h₂ ↦ by rw [add_smul]; exact add_mem h₁ h₂)
@@ -958,7 +958,7 @@ theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J
                 ⟨n + k, by
                   rw [pow_add, ← hpqrn, ← hcxq, ← hfgrk, ← hdyg, add_mul, mul_add (c * x),
                       mul_assoc c x (d * y), mul_left_comm x, ← mul_assoc]
-                  refine
+                  exact
                     m.add_mem (m.mul_mem_right _ hpm)
                     (m.add_mem (m.mul_mem_left _ hfm) (m.mul_mem_left _ hxym))⟩⟩
     hrm <|

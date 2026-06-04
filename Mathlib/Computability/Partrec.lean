@@ -188,7 +188,7 @@ theorem of_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) : Nat.Partrec f := by
     refine (pf.pair pg).of_eq_tot fun n => ?_
     simp [Seq.seq]
   | comp _ _ pf pg =>
-    refine (pf.comp pg).of_eq_tot fun n => (by simp)
+    exact (pf.comp pg).of_eq_tot fun n => (by simp)
   | prec _ _ pf pg =>
     refine (pf.prec pg).of_eq_tot fun n => ?_
     simp only [unpaired, PFun.coe_val, bind_eq_bind]

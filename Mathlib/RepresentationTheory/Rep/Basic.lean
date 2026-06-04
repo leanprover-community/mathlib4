@@ -658,7 +658,7 @@ lemma of_tensor {X Y : Type u} [AddCommGroup X] [AddCommGroup Y] [Module k X] [M
 lemma hom_hom_associator {X Y Z : Rep k G} : (α_ X Y Z).hom.hom =
     (Representation.TensorProduct.assoc X.ρ Y.ρ Z.ρ).toIntertwiningMap := by
   ext1
-  refine TensorProduct.ext_threefold fun x y z ↦ by rfl
+  exact TensorProduct.ext_threefold fun x y z ↦ by rfl
 
 @[simp]
 lemma hom_inv_associator {X Y Z : Rep k G} : (α_ X Y Z).inv.hom =

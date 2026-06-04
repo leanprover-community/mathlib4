@@ -96,7 +96,7 @@ lemma iff_isIntegralHom_and_locallyOfFiniteType :
   rw [HasAffineProperty.iff_of_isAffine (P := @IsFinite),
     HasAffineProperty.iff_of_isAffine (P := @IsIntegralHom),
     RingHom.finite_iff_isIntegral_and_finiteType, ← and_assoc]
-  refine and_congr_right fun ⟨_, _⟩ ↦
+  exact and_congr_right fun ⟨_, _⟩ ↦
     (HasRingHomProperty.iff_of_isAffine (P := @LocallyOfFiniteType)).symm
 
 lemma eq_inf :
@@ -150,7 +150,7 @@ instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsFinite f] [IsFinite
     ?_ _ _ ‹_› ‹_›
   intros R S T _ _ _ f g _ _
   algebraize [f, g]
-  refine RingHom.finite_algebraMap.mpr inferInstance
+  exact RingHom.finite_algebraMap.mpr inferInstance
 
 end IsFinite
 
@@ -177,7 +177,7 @@ lemma isFinite_iff_locallyOfFiniteType_of_jacobsonSpace
   · rw [← MorphismProperty.cancel_left_of_respectsIso (P := @IsFinite) X.isoSpec.inv,
       ← MorphismProperty.cancel_left_of_respectsIso (P := @LocallyOfFiniteType) X.isoSpec.inv]
     have inst := X.isoSpec.inv.isOpenEmbedding.injective.subsingleton
-    refine this ⟨_, rfl⟩
+    exact this ⟨_, rfl⟩
   cases isEmpty_or_nonempty X
   · exact ⟨inferInstance, inferInstance⟩
   have : IrreducibleSpace X := ⟨‹_›⟩

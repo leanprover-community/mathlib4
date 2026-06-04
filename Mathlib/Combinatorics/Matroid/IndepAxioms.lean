@@ -469,7 +469,7 @@ namespace Matroid
     (hM : ∃ (M : Matroid α), E = M.E ∧ ∀ I, M.Indep I ↔ Indep I) : Matroid α :=
   IndepMatroid.matroid <|
   have hex : ∃ (M : Matroid α), E = M.E ∧ M.Indep = Indep := by
-    obtain ⟨M, rfl, h⟩ := hM; refine ⟨_, rfl, funext (by simp [h])⟩
+    obtain ⟨M, rfl, h⟩ := hM; exact ⟨_, rfl, funext (by simp [h])⟩
   IndepMatroid.mk (E := E) (Indep := Indep)
   (indep_empty := by obtain ⟨M, -, rfl⟩ := hex; exact M.empty_indep)
   (indep_subset := by obtain ⟨M, -, rfl⟩ := hex; exact fun I J hJ hIJ ↦ hJ.subset hIJ)

@@ -637,7 +637,7 @@ theorem dense_iUnion_range_toInductiveLimit
     Dense (⋃ i, range (toInductiveLimit I i)) := by
   refine dense_univ.mono ?_
   rintro ⟨n, x⟩ _
-  refine mem_iUnion.2 ⟨n, mem_range.2 ⟨x, rfl⟩⟩
+  exact mem_iUnion.2 ⟨n, mem_range.2 ⟨x, rfl⟩⟩
 
 theorem separableSpaceInductiveLimit_of_separableSpace
     {X : ℕ → Type u} [(n : ℕ) → MetricSpace (X n)]

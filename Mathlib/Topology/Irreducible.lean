@@ -243,8 +243,7 @@ lemma IsPreirreducible.of_subtype [PreirreducibleSpace s] : IsPreirreducible s :
   refine PreirreducibleSpace.isPreirreducible_univ.image Subtype.val ?_
   exact continuous_subtype_val.continuousOn
 
-lemma IsIrreducible.of_subtype [IrreducibleSpace s] : IsIrreducible s := by
-  exact ⟨.of_subtype, .of_subtype⟩
+lemma IsIrreducible.of_subtype [IrreducibleSpace s] : IsIrreducible s := ⟨.of_subtype, .of_subtype⟩
 
 theorem isPreirreducible_iff_preirreducibleSpace :
     IsPreirreducible s ↔ PreirreducibleSpace s :=
@@ -420,7 +419,7 @@ lemma IsPreirreducible.preimage_of_dense_isPreirreducible_fiber
   obtain ⟨z, ⟨⟨z₁, hz₁, e₁⟩, ⟨z₂, hz₂, e₂⟩⟩, hzV, hz⟩ :=
     mem_closure_iff.mp (hf'' hzV) _ ((hf' _ hU₁).inter (hf' _ hU₂)) ⟨hz₁, hz₂⟩
   obtain ⟨z₃, hz₃, hz₃'⟩ := hz _ _ hU₁ hU₂ ⟨z₁, e₁, hz₁⟩ ⟨z₂, e₂, hz₂⟩
-  refine ⟨z₃, show f z₃ ∈ _ from (show f z₃ = z from hz₃) ▸ hzV, hz₃'⟩
+  exact ⟨z₃, show f z₃ ∈ _ from (show f z₃ = z from hz₃) ▸ hzV, hz₃'⟩
 
 lemma IsPreirreducible.preimage_of_isPreirreducible_fiber
     {V : Set Y} (hV : IsPreirreducible V)
@@ -444,7 +443,7 @@ lemma IsIrreducible.preimage_of_isPreirreducible_fiber (ht : IsIrreducible t)
 
 lemma IsIrreducible.preimage (ht : IsIrreducible t) {f : Y → X}
     (hf : IsOpenEmbedding f) (h : (t ∩ Set.range f).Nonempty) : IsIrreducible (f ⁻¹' t) := by
-  refine ht.preimage_of_isPreirreducible_fiber f hf.isOpenMap
+  exact ht.preimage_of_isPreirreducible_fiber f hf.isOpenMap
     (fun _ ↦ (subsingleton_singleton.preimage hf.injective).isPreirreducible) h
 
 lemma Topology.IsOpenEmbedding.preirreducibleSpace {f : Y → X} (hf : Topology.IsOpenEmbedding f)
@@ -473,7 +472,7 @@ lemma preimage_mem_irreducibleComponents_of_isPreirreducible_fiber
 lemma preimage_mem_irreducibleComponents (ht : t ∈ irreducibleComponents X) {f : Y → X}
     (hf : IsOpenEmbedding f) (h : (t ∩ Set.range f).Nonempty) :
     f ⁻¹' t ∈ irreducibleComponents Y := by
-  refine preimage_mem_irreducibleComponents_of_isPreirreducible_fiber ht hf.continuous hf.isOpenMap
+  exact preimage_mem_irreducibleComponents_of_isPreirreducible_fiber ht hf.continuous hf.isOpenMap
     (fun _ ↦ (subsingleton_singleton.preimage hf.injective).isPreirreducible) h
 
 lemma closure_image_preimage_of_isPreirreducible (f : Y → X) (h : IsOpenMap f) (s : Set X)

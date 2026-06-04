@@ -283,7 +283,7 @@ lemma existsUnique_toNπ {x : X.S} {y : X.N} (hy : x.toN = y) :
     rw [toN_eq_iff] at hy
     rw [← N.subcomplex_injective_iff, hy]
     exact subcomplex_eq_of_epi _ _ f rfl
-  refine existsUnique_of_exists_of_unique ⟨f, inferInstance, rfl⟩
+  exact existsUnique_of_exists_of_unique ⟨f, inferInstance, rfl⟩
     (fun f₁ f₂ ⟨_, hf₁⟩ ⟨_, hf₂⟩ ↦ unique_nonDegenerate_map _ _ _ _ hf₁.symm _ _ hf₂.symm)
 
 /-- Given a simplex `x : X.S` of a simplicial set `X`, this is the unique

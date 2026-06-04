@@ -148,9 +148,9 @@ theorem coeff_isUnit (hp : p.IsUnitTrinomial) {k : ℕ} (hk : k ∈ p.support) :
   have := support_trinomial' k m n (u : ℤ) v w hk
   rw [mem_insert, mem_insert, mem_singleton] at this
   rcases this with (rfl | rfl | rfl)
-  · refine ⟨u, by rw [trinomial_trailing_coeff' hkm hmn]⟩
-  · refine ⟨v, by rw [trinomial_middle_coeff hkm hmn]⟩
-  · refine ⟨w, by rw [trinomial_leading_coeff' hkm hmn]⟩
+  · exact ⟨u, by rw [trinomial_trailing_coeff' hkm hmn]⟩
+  · exact ⟨v, by rw [trinomial_middle_coeff hkm hmn]⟩
+  · exact ⟨w, by rw [trinomial_leading_coeff' hkm hmn]⟩
 
 theorem leadingCoeff_isUnit (hp : p.IsUnitTrinomial) : IsUnit p.leadingCoeff :=
   hp.coeff_isUnit (natDegree_mem_support_of_nonzero hp.ne_zero)

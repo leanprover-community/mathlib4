@@ -897,7 +897,7 @@ lemma ext_spanning {M M' : Matroid α} (h : M.E = M'.E)
     (hsp : ∀ S, S ⊆ M.E → (M.Spanning S ↔ M'.Spanning S)) : M = M' := by
   have hsp' : M.Spanning = M'.Spanning := by
     ext S
-    refine (em (S ⊆ M.E)).elim (fun hSE ↦ by rw [hsp _ hSE])
+    exact (em (S ⊆ M.E)).elim (fun hSE ↦ by rw [hsp _ hSE])
       (fun hSE ↦ iff_of_false (fun h ↦ hSE h.subset_ground)
       (fun h' ↦ hSE (h'.subset_ground.trans h.symm.subset)))
   rw [← dual_inj, ext_iff_indep, dual_ground, dual_ground, and_iff_right h]

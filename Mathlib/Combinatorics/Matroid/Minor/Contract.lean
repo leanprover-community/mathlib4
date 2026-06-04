@@ -216,7 +216,7 @@ lemma IsBasis.contract_diff_isBasis_diff (hIX : M.IsBasis I X) (hJY : M.IsBasis 
       hIX.eq_of_subset_indep (hJY.indep.inter_right X) (subset_inter hIJ hIX.subset)
       inter_subset_right, diff_self_inter]
     exact disjoint_sdiff_left
-  refine diff_subset_diff_right hIX.subset
+  exact diff_subset_diff_right hIX.subset
 
 lemma IsBasis'.contract_isBasis_union_union (h : M.IsBasis' (J ∪ I) (X ∪ I))
     (hJI : Disjoint J I) (hXI : Disjoint X I) : (M ／ I).IsBasis' J X := by
@@ -402,7 +402,7 @@ lemma contract_closure_eq (M : Matroid α) (C X : Set α) :
     union_comm X, ← contract_contract, contract_loops_eq, subset_antisymm_iff, union_subset_iff,
     and_iff_right diff_subset, ← diff_subset_iff]
   simp only [sdiff_sdiff_right_self, inf_eq_inter, subset_inter_iff, inter_subset_right, and_true]
-  refine ⟨fun e ⟨he, he'⟩ ↦ ⟨mem_closure_of_mem' _ (.inr he') (mem_ground_of_mem_closure he).1,
+  exact ⟨fun e ⟨he, he'⟩ ↦ ⟨mem_closure_of_mem' _ (.inr he') (mem_ground_of_mem_closure he).1,
     (closure_subset_ground _ _ he).2⟩, fun e ⟨⟨he, heC⟩, he'⟩ ↦
     mem_closure_of_mem' _ he' ⟨M.closure_subset_ground _ he, heC⟩⟩
 

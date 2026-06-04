@@ -379,7 +379,7 @@ lemma IsFinite.of_isProper_of_locallyQuasiFinite
 @[stacks 02LS "(1) <=> (3)"]
 lemma IsFinite.iff_isProper_and_locallyQuasiFinite :
     IsFinite f ↔ IsProper f ∧ LocallyQuasiFinite f := by
-  refine ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩,
+  exact ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩,
     fun ⟨_, _⟩ ↦ .of_isProper_of_locallyQuasiFinite f⟩
 
 lemma IsFinite.eq_proper_inf_locallyQuasiFinite :

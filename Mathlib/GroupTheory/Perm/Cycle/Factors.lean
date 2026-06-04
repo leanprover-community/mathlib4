@@ -250,7 +250,7 @@ instance instDecidableRelSameCycle [DecidableEq α] [Fintype α] (f : Perm α) :
         -- without sacrificing computability.
         let _inst (f : Perm α) : DecidableRel (SameCycle f) := Classical.decRel _
         rcases hxy.exists_pow_eq_of_mem_support_aux hx with ⟨i, hixy, hi⟩
-        refine ⟨i, lt_of_lt_of_le hixy (card_le_univ _), hi⟩
+        exact ⟨i, lt_of_lt_of_le hixy (card_le_univ _), hi⟩
       case neg =>
         haveI : Nonempty α := ⟨x⟩
         rw [notMem_support] at hx

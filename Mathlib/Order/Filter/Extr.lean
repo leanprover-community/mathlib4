@@ -557,7 +557,7 @@ lemma isMaxOn_Ioo_of_mono_anti (h₀ : MonotoneOn f (Ioc a b)) (h₁ : AntitoneO
   intro x hx
   by_cases! g₀ : x ≤ b
   · exact h₀ ⟨hx.1, g₀⟩ (right_mem_Ioc.2 (g₀.trans_lt' hx.1)) g₀
-  · refine h₁ (left_mem_Ico.2 (g₀.trans hx.2)) ⟨g₀.le, hx.2⟩ g₀.le
+  · exact h₁ (left_mem_Ico.2 (g₀.trans hx.2)) ⟨g₀.le, hx.2⟩ g₀.le
 
 /-- If `f` is antitone on `Ioc a b` and monotone on `Ico b c`, then the minimum of `f` on
 `Ioo a c` is attained at `b`. -/

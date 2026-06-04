@@ -495,7 +495,7 @@ lemma LevyProkhorov.continuous_toMeasure_probabilityMeasure :
     · exact Eventually.of_forall f_nn
   · simp only [IsCoboundedUnder, IsCobounded, eventually_map, eventually_atTop,
                forall_exists_index]
-    refine ⟨0, fun a i hia ↦ le_trans (integral_nonneg f_nn) (hia i le_rfl)⟩
+    exact ⟨0, fun a i hia ↦ le_trans (integral_nonneg f_nn) (hia i le_rfl)⟩
 
 /-- The topology of the Lévy-Prokhorov metric is at least as fine as the topology of convergence in
 distribution. -/

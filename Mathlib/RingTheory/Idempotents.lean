@@ -255,7 +255,7 @@ lemma OrthogonalIdempotents.lift_of_isNilpotent_ker_aux
     {n} {e : Fin n → S} (he : OrthogonalIdempotents e) (he' : ∀ i, e i ∈ f.range) :
     ∃ e' : Fin n → R, OrthogonalIdempotents e' ∧ f ∘ e' = e := by
   induction n with
-  | zero => refine ⟨0, ⟨finZeroElim, finZeroElim⟩, funext finZeroElim⟩
+  | zero => exact ⟨0, ⟨finZeroElim, finZeroElim⟩, funext finZeroElim⟩
   | succ n IH =>
     obtain ⟨e', h₁, h₂⟩ := IH (he.embedding (Fin.succEmb n)) (fun i ↦ he' _)
     have h₂' (i) : f (e' i) = e i.succ := congr_fun h₂ i
@@ -277,7 +277,7 @@ lemma OrthogonalIdempotents.lift_of_isNilpotent_ker [Finite I]
   cases nonempty_fintype I
   obtain ⟨e', h₁, h₂⟩ := lift_of_isNilpotent_ker_aux f h
     (he.embedding (Fintype.equivFin I).symm.toEmbedding) (fun _ ↦ he' _)
-  refine ⟨_, h₁.embedding (Fintype.equivFin I).toEmbedding,
+  exact ⟨_, h₁.embedding (Fintype.equivFin I).toEmbedding,
     by ext x; simpa using congr_fun h₂ (Fintype.equivFin I x)⟩
 
 lemma CompleteOrthogonalIdempotents.pair_iff {x y : R} :
@@ -327,7 +327,7 @@ lemma CompleteOrthogonalIdempotents.lift_of_isNilpotent_ker
     ∃ e' : I → R, CompleteOrthogonalIdempotents e' ∧ f ∘ e' = e := by
   obtain ⟨e', h₁, h₂⟩ := lift_of_isNilpotent_ker_aux f h
     ((equiv (Fintype.equivFin I).symm).mpr he) (fun _ ↦ he' _)
-  refine ⟨_, ((equiv (Fintype.equivFin I)).mpr h₁),
+  exact ⟨_, ((equiv (Fintype.equivFin I)).mpr h₁),
     by ext x; simpa using congr_fun h₂ (Fintype.equivFin I x)⟩
 
 theorem eq_of_isNilpotent_sub_of_isIdempotentElem_of_commute {e₁ e₂ : R}

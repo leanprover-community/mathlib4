@@ -271,7 +271,7 @@ lemma isClosedEmbedding_nonUnitalStarAlgHom {a : A} {φ : C(σₙ S a, S)₀ →
     (halg : IsUniformEmbedding (algebraMap R S)) :
     IsClosedEmbedding (h.nonUnitalStarAlgHom φ) := by
   have : h.homeomorph.symm 0 = 0 := Subtype.ext (map_zero <| algebraMap _ _)
-  refine hφ.comp <| IsUniformEmbedding.isClosedEmbedding <| .comp
+  exact hφ.comp <| IsUniformEmbedding.isClosedEmbedding <| .comp
     (ContinuousMapZero.isUniformEmbedding_comp _ halg)
     (UniformEquiv.arrowCongrLeft₀ h.homeomorph.symm this |>.isUniformEmbedding)
 

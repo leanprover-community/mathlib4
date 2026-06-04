@@ -843,7 +843,7 @@ lemma RelCWComplex.closedCell_subset_skeletonLT [RelCWComplex C D] (n : ℕ) (j 
   rw [coe_skeletonLT]
   right
   simp_rw [mem_iUnion, exists_prop]
-  refine ⟨n, (by norm_cast; exact lt_add_one n), ⟨j,xmem⟩⟩
+  exact ⟨n, (by norm_cast; exact lt_add_one n), ⟨j,xmem⟩⟩
 
 lemma RelCWComplex.closedCell_subset_skeleton [RelCWComplex C D] (n : ℕ) (j : cell C n) :
     closedCell n j ⊆ skeleton C n :=

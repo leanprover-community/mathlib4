@@ -242,7 +242,7 @@ lemma equiv_of_eqOn_of_isNoetherian {u v : V →ₗ[K] V₂} (A : Submodule K V)
     [quot_A_noeth : IsNoetherian K (V ⧸ A)] (eqOn_A : Set.EqOn u v A) : u ≈ v := by
   have A_le : A ≤ eqLocus u v := le_eqLocus.mpr eqOn_A
   rw [equiv_iff_isNoetherian_quotient_eqLocus]
-  refine isNoetherian_of_surjective (A.mapQ (eqLocus u v) id A_le) (by simp [range_mapQ])
+  exact isNoetherian_of_surjective (A.mapQ (eqLocus u v) id A_le) (by simp [range_mapQ])
 
 lemma equiv_of_eqOn_coFG [IsNoetherianRing K] {u v : V →ₗ[K] V₂} {A : Submodule K V}
     (A_coFG : A.CoFG) (eqOn_A : Set.EqOn u v A) : u ≈ v :=

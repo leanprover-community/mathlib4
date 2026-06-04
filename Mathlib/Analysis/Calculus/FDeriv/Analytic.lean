@@ -357,7 +357,7 @@ protected theorem AnalyticOn.fderivWithin (h : AnalyticOn 𝕜 f s) (hu : Unique
     AnalyticOn 𝕜 (fderivWithin 𝕜 f s) s := by
   intro x hx
   rcases h x hx with ⟨p, r, hr⟩
-  refine ⟨p.derivSeries, r, hr.fderivWithin_of_mem_of_analyticOn h hu hx⟩
+  exact ⟨p.derivSeries, r, hr.fderivWithin_of_mem_of_analyticOn h hu hx⟩
 
 /-- If a function is analytic on a set `s`, so are its successive Fréchet derivative within this
 set. Note that this theorem does not require completeness of the space. -/

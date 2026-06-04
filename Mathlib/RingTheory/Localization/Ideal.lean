@@ -265,7 +265,7 @@ lemma map_radical (I : Ideal R) :
   obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq M x
   simp only [← IsLocalization.mk'_pow, IsLocalization.mk'_mem_map_algebraMap_iff M] at hn ⊢
   obtain ⟨s, hs, h⟩ := hn
-  refine ⟨s, hs, n + 1, by convert! I.mul_mem_left (s ^ n * x) h; ring⟩
+  exact ⟨s, hs, n + 1, by convert! I.mul_mem_left (s ^ n * x) h; ring⟩
 
 theorem ideal_eq_iInf_under_map_away {S : Finset R} (hS : Ideal.span (α := R) S = ⊤) (I : Ideal R) :
     I = ⨅ f ∈ S, (I.map (algebraMap R (Localization.Away f))).under R := by

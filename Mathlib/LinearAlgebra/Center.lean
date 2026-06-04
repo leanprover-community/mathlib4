@@ -222,6 +222,6 @@ theorem exists_eq_smul_id_of_forall_notLinearIndependent
     nth_rewrite 1 [← b.linearCombination_repr (f (b i))]
     simp [linearCombination_unique]
   obtain ⟨a, rfl⟩ := exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent hV1 h
-  refine ⟨a, by simp [Subring.smul_def]⟩
+  exact ⟨a, by simp [Subring.smul_def]⟩
 
 end LinearMap

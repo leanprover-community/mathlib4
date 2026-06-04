@@ -117,7 +117,7 @@ lemma of_isCompact_of_forall_exists_isCompactOpenCovered [TopologicalSpace S] {U
 
 lemma image {i : ι} (V : Opens (X i)) (hV : IsCompact (X := X i) V) :
     IsCompactOpenCovered f (f i '' V) := by
-  refine ⟨{i}, Set.finite_singleton i, fun j hj ↦ hj ▸ V, by rintro i rfl; simpa, by simp⟩
+  exact ⟨{i}, Set.finite_singleton i, fun j hj ↦ hj ▸ V, by rintro i rfl; simpa, by simp⟩
 
 lemma of_finite {U : Set S} {κ : Type*} [Finite κ] (a : κ → ι) (V : ∀ k, Opens (X (a k)))
     (hV : ∀ k, IsCompact (V k).1) (hU : ⋃ k, f (a k) '' V k = U) :

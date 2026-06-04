@@ -115,7 +115,7 @@ theorem four_pow_le_two_mul_self_mul_centralBinom :
       4 ^ (n + 4) ≤ (n + 4) * centralBinom (n + 4) :=
         (four_pow_lt_mul_centralBinom _ le_add_self).le
       _ ≤ 2 * (n + 4) * centralBinom (n + 4) := by
-        rw [mul_assoc]; refine Nat.le_mul_of_pos_left _ zero_lt_two
+        rw [mul_assoc]; exact Nat.le_mul_of_pos_left _ zero_lt_two
 
 theorem two_dvd_centralBinom_succ (n : ℕ) : 2 ∣ centralBinom (n + 1) := by
   use (n + 1 + n).choose n

@@ -97,10 +97,9 @@ theorem map_eq_of_mem_fixingSubgroup (W : Submodule R V)
     map e.toLinearMap W = W := by
   ext v
   simp only [mem_fixingSubgroup_iff, carrier_eq_coe, SetLike.mem_coe, LinearEquiv.smul_def] at he
-  refine ⟨fun ⟨w, hv, hv'⟩ ↦ ?_, fun hv ↦ ?_⟩
-  · simp only [SetLike.mem_coe, coe_coe] at hv hv'
-    rwa [← hv', he w hv]
-  · refine ⟨v, hv, he v hv⟩
+  refine ⟨fun ⟨w, hv, hv'⟩ ↦ ?_, fun hv ↦ ⟨v, hv, he v hv⟩⟩
+  simp only [SetLike.mem_coe, coe_coe] at hv hv'
+  rwa [← hv', he w hv]
 
 variable {R V : Type*} [Ring R] [AddCommGroup V] [Module R V]
 

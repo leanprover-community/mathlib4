@@ -318,7 +318,7 @@ theorem exists_unitSMul_mem_integerSet {x : mixedSpace K} (hx : x ≠ 0)
 theorem torsion_unitSMul_mem_integerSet {x : mixedSpace K} {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K)
     (hx : x ∈ integerSet K) : ζ • x ∈ integerSet K := by
   obtain ⟨a, ⟨_, rfl⟩, rfl⟩ := (mem_integerSet.mp hx).2
-  refine mem_integerSet.mpr ⟨torsion_smul_mem_of_mem hx.1 hζ, ⟨ζ * a, by simp⟩⟩
+  exact mem_integerSet.mpr ⟨torsion_smul_mem_of_mem hx.1 hζ, ⟨ζ * a, by simp⟩⟩
 
 /-- The action of `torsion K` on `integerSet K`. -/
 @[simps]

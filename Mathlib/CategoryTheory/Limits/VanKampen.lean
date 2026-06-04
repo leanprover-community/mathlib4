@@ -83,7 +83,7 @@ theorem IsInitial.isVanKampenColimit [HasStrictInitialObjects C] {X : C} (h : Is
   have : F' = Functor.empty C := by apply Functor.hext <;> rintro ⟨⟨⟩⟩
   subst this
   haveI := h.isIso_to f
-  refine ⟨by rintro _ ⟨⟨⟩⟩,
+  exact ⟨by rintro _ ⟨⟨⟩⟩,
     fun _ => ⟨IsColimit.ofIsoColimit h (Cocone.ext (asIso f).symm <| by rintro ⟨⟨⟩⟩)⟩⟩
 
 section Functor

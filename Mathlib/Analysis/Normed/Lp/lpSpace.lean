@@ -162,7 +162,7 @@ theorem mono {f : (i : α) → E i} {g : α → ℝ}
   replace hfg (i) : ‖f i‖ ≤ ‖g i‖ := (hfg i).trans (Real.le_norm_self _)
   obtain (rfl | rfl | hp) := p.trichotomy
   · simp_rw [memℓp_zero_iff, ← norm_pos_iff] at hg ⊢
-    refine hg.subset fun i hi ↦ hi.trans_le <| hfg i
+    exact hg.subset fun i hi ↦ hi.trans_le <| hfg i
   · rw [memℓp_infty_iff] at hg ⊢
     exact hg.range_mono _ hfg
   · rw [memℓp_gen_iff hp] at hg ⊢

@@ -66,7 +66,7 @@ theorem qParam_left_inv_mod_period (hh : h ≠ 0) (z : ℂ) :
     ∃ m : ℤ, invQParam h (𝕢 h z) = z + m * h := by
   dsimp only [qParam, invQParam]
   obtain ⟨m, hm⟩ := log_exp_exists (2 * ↑π * I * z / ↑h)
-  refine ⟨m, by rw [hm, mul_div_assoc, mul_comm (m : ℂ), ← mul_add, ← mul_assoc,
+  exact ⟨m, by rw [hm, mul_div_assoc, mul_comm (m : ℂ), ← mul_add, ← mul_assoc,
     div_mul_cancel₀ _ two_pi_I_ne_zero, mul_add, mul_div_cancel₀ _ (mod_cast hh), mul_comm]⟩
 
 theorem norm_qParam_lt_iff (hh : 0 < h) (A : ℝ) (z : ℂ) :

@@ -90,7 +90,7 @@ theorem exists_linearMap_injective_of_linearIndependent_of_lift_rank_le
   replace cnd := (Cardinal.lift_le.2 B.linearIndependent.cardinal_le_rank).trans cnd
   rw [Cardinal.lift_mk_le'] at cnd
   rcases cnd with ⟨i, hi⟩
-  refine ⟨B.constr ℕ (v ∘ i), B.injective_constr_of_linearIndependent (hv.comp _ hi)⟩
+  exact ⟨B.constr ℕ (v ∘ i), B.injective_constr_of_linearIndependent (hv.comp _ hi)⟩
 
 theorem exists_linearMap_injective_of_linearIndependent_of_rank_le
     {ι : Type v} {v : ι → N} (hv : LinearIndependent R v) (cnd : Module.rank R M ≤ #ι) :

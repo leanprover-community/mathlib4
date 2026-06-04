@@ -893,7 +893,7 @@ theorem T_iterate_derivative_mem_span_T (n k : ℕ) :
       simp [Set.image]
     refine Submodule.span_le.mpr (fun x hx => ?_)
     obtain ⟨m, hm, rfl⟩ := hx
-    refine (Submodule.span_mono (by grind)) (T_derivative_mem_span_T (R := R) m)
+    exact (Submodule.span_mono (by grind)) (T_derivative_mem_span_T (R := R) m)
 
 theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℤ) :
     (1 - X ^ 2) * derivative (T R (n + 1)) = (n + 1 : R[X]) * (T R n - X * T R (n + 1)) := by

@@ -253,7 +253,7 @@ lemma mem_toGrothendieck_smallPretopology (X : Q.Over ⊤ S) (R : Sieve X) :
         f := fun i ↦ (f i).left
         mem₀ := by
           rw [presieve₀_mem_precoverage_iff]
-          refine ⟨fun x ↦ ⟨x, y x, hy x⟩, hP⟩ }
+          exact ⟨fun x ↦ ⟨x, y x, hy x⟩, hP⟩ }
     letI : 𝒰.Over S :=
       { over := fun i ↦ inferInstance
         isOver_map := fun i ↦ inferInstance }

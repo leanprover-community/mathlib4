@@ -360,13 +360,13 @@ theorem upcrossingStrat_le_one : upcrossingStrat a b f N n ω ≤ 1 := by
       upperCrossingTime a b f N _ ω ≤ upperCrossingTime a b f N _ ω),
       max_eq_right (lowerCrossingTime_mono hij'.le :
         lowerCrossingTime a b f N _ _ ≤ lowerCrossingTime _ _ _ _ _ _)]
-    refine le_trans upperCrossingTime_le_lowerCrossingTime
+    exact le_trans upperCrossingTime_le_lowerCrossingTime
       (lowerCrossingTime_mono (Nat.succ_le_of_lt hij'))
   · rw [min_eq_right (upperCrossingTime_mono (Nat.succ_le_succ hij'.le) :
       upperCrossingTime a b f N _ ω ≤ upperCrossingTime a b f N _ ω),
       max_eq_left (lowerCrossingTime_mono hij'.le :
         lowerCrossingTime a b f N _ _ ≤ lowerCrossingTime _ _ _ _ _ _)]
-    refine le_trans upperCrossingTime_le_lowerCrossingTime
+    exact le_trans upperCrossingTime_le_lowerCrossingTime
       (lowerCrossingTime_mono (Nat.succ_le_of_lt hij'))
 
 theorem StronglyAdapted.upcrossingStrat (hf : StronglyAdapted ℱ f) :

@@ -49,7 +49,7 @@ theorem contDiff_charFun {n : ℕ} (hint : MemLp id n μ) :
   simp_rw [funext charFun_eq_fourierIntegral']
   refine (contDiff_fourierIntegral (L := innerSL ℝ) fun k hk ↦ ?_).comp (by fun_prop)
   simp only [Pi.one_apply, one_mem, CStarRing.norm_of_mem_unitary, mul_one]
-  refine MemLp.integrable_norm_pow' (hint.mono_exponent (by simp_all))
+  exact MemLp.integrable_norm_pow' (hint.mono_exponent (by simp_all))
 
 /-- The characteristic function of a measure with all moments is `C^∞`. See `contDiff_charFun`
 for the version proving only `C^n` by only assuming that the moment of order `n` exists. -/
@@ -59,7 +59,7 @@ theorem contDiff_charFun' {n : ℕ∞} (hint : ∀ (k : ℕ), MemLp id k μ) :
   simp_rw [funext charFun_eq_fourierIntegral']
   refine (contDiff_fourierIntegral (L := innerSL ℝ) fun k hk ↦ ?_).comp (by fun_prop)
   simp only [Pi.one_apply, one_mem, CStarRing.norm_of_mem_unitary, mul_one]
-  refine MemLp.integrable_norm_pow' ((hint k).mono_exponent (by simp_all))
+  exact MemLp.integrable_norm_pow' ((hint k).mono_exponent (by simp_all))
 
 @[fun_prop]
 lemma continuous_charFun : Continuous (charFun μ) := by

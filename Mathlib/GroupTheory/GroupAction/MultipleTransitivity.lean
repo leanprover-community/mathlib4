@@ -625,7 +625,7 @@ theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
     Subgroup.card_mul_index, ← (fixingSubgroup G s).index_mul_card,
     mul_assoc, mul_comm _ 2, ← mul_assoc]
   rw [this, Nat.card_perm]
-  refine Nat.le_mul_of_pos_right (Nat.card α)! card_pos
+  exact Nat.le_mul_of_pos_right (Nat.card α)! card_pos
 
 /-- The alternating group on 3 letters or more acts transitively. -/
 theorem isPretransitive_of_three_le_card (h : 3 ≤ Nat.card α) :

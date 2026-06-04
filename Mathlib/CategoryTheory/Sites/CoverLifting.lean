@@ -113,7 +113,7 @@ lemma Adjunction.isCocontinuous_iff_coverPreserving (adj : F ⊣ G) :
   · intro U S hS
     refine J.superset_covering ?_ <| h.cover_lift (K.pullback_stable (adj.counit.app _) hS)
     intro X f hf
-    refine ⟨F.obj X, F.map f ≫ adj.counit.app _, adj.unit.app _, hf, by simp⟩
+    exact ⟨F.obj X, F.map f ≫ adj.counit.app _, adj.unit.app _, hf, by simp⟩
   · intro U S hS
     refine J.superset_covering ?_ (J.pullback_stable (adj.unit.app U) <| h.cover_preserve hS)
     intro X f ⟨Y, g, u, hg, heq⟩

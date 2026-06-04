@@ -270,7 +270,7 @@ lemma essentiallySmall_iff_objectPropertyEssentiallySmall :
       ObjectProperty.EssentiallySmall.{w} (C := C) ⊤ := by
   wlog hC : LocallySmall.{w} C; · simp [essentiallySmall_iff, hC]
   simp only [hC, ← exists_equivalence_iff_of_locallySmall, true_and]
-  refine ⟨fun H ↦ H.1, fun H ↦ ⟨H⟩⟩
+  exact ⟨fun H ↦ H.1, fun H ↦ ⟨H⟩⟩
 
 lemma EssentiallySmall.of_functor (F : C ⥤ D)
     [LocallySmall.{w} C] (H₁ : ObjectProperty.EssentiallySmall.{w} F.essImage)

@@ -161,8 +161,7 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
     (hnonempty : c.Nonempty) : ExtensionOf i f :=
   { LinearPMap.sSup _
       (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain) with
-    le := by
-      refine le_trans hnonempty.some.le <|
+    le := le_trans hnonempty.some.le <|
         (LinearPMap.le_sSup _ <|
             (Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩).1
     is_extension := fun m => by

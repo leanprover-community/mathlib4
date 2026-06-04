@@ -433,7 +433,7 @@ def Exact.splitInjectiveEquiv
       rw [← sub_eq_zero, ← hz, ← h₁ z, hz, map_sub, e.1, sub_self, map_zero]
     · rintro ⟨x, y⟩
       obtain ⟨y, rfl⟩ := hg y
-      refine ⟨f x + y - f (l.1 y), by ext <;> simp [h₁, h₂]⟩
+      exact ⟨f x + y - f (l.1 y), by ext <;> simp [h₁, h₂]⟩
   · have h₁ : ∀ x, l.1 (f x) = x := LinearMap.congr_fun l.2
     have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
     constructor

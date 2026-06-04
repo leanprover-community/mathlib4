@@ -1150,7 +1150,7 @@ theorem limsup_max [ConditionallyCompleteLinearOrder β] {f : Filter α} {u v : 
   · refine (limsup_le_iff cobddmax bddmax).2 (fun b hb ↦ ?_)
     have hu := eventually_lt_of_limsup_lt (lt_of_le_of_lt (le_max_left _ _) hb) h₃
     have hv := eventually_lt_of_limsup_lt (lt_of_le_of_lt (le_max_right _ _) hb) h₄
-    refine mem_of_superset (inter_mem hu hv) (fun _ ↦ by simp)
+    exact mem_of_superset (inter_mem hu hv) (fun _ ↦ by simp)
   · exact max_le (c := limsup (fun a ↦ max (u a) (v a)) f)
       (limsup_le_limsup (Eventually.of_forall (fun a : α ↦ le_max_left (u a) (v a))) h₁ bddmax)
       (limsup_le_limsup (Eventually.of_forall (fun a : α ↦ le_max_right (u a) (v a))) h₂ bddmax)

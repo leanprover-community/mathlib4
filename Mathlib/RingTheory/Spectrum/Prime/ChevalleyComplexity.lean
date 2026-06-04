@@ -229,7 +229,7 @@ private lemma induction_structure (n : ℕ)
             comp_apply]
           use j
           simp only [update_self]
-          refine ((degree_modByMonic_lt _ hi).trans_le i_min).ne
+          exact ((degree_modByMonic_lt _ hi).trans_le i_min).ne
     -- Case II : The `e i ≠ 0` with minimal degree has non-invertible leading coefficient
     obtain ⟨i, hi, i_min⟩ : ∃ i, e.1 i ≠ 0 ∧ ∀ j, e.1 j ≠ 0 → (e.1 i).degree ≤ (e.1 j).degree := by
       have : ∃ n : ℕ, ∃ i, (e.1 i).degree = n ∧ (e.1 i) ≠ 0 := by
@@ -849,7 +849,7 @@ lemma chevalley_mvPolynomial_mvPolynomial
       | add p q hp hq =>
         obtain ⟨q₁, q₂, hq₁, rfl⟩ := hp
         obtain ⟨q₃, q₄, hq₃, rfl⟩ := hq
-        refine ⟨q₁ + q₃, q₂ + q₄, add_mem hq₁ hq₃, by simp only [map_add, add_add_add_comm]⟩
+        exact ⟨q₁ + q₃, q₂ + q₄, add_mem hq₁ hq₃, by simp only [map_add, add_add_add_comm]⟩
       | mul_X p i hp =>
         obtain ⟨q₁, q₂, hq₁, rfl⟩ := hp
         simp only [← (commAlgEquiv R (Fin n) (Fin m)).injective.eq_iff,

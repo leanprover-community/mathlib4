@@ -478,7 +478,7 @@ lemma hom_ext_of_forall {X Y : Scheme} (f g : X ⟶ Y)
     I₀ := X, X i := (U i), f i := (U i).ι,
     mem₀ := by
       rw [presieve₀_mem_precoverage_iff]
-      refine ⟨fun x ↦ ⟨x, by simpa using hxU x⟩, inferInstance⟩ }
+      exact ⟨fun x ↦ ⟨x, by simpa using hxU x⟩, inferInstance⟩ }
   exact 𝒰.hom_ext _ _ hU
 
 set_option backward.defeqAttrib.useBackward true in

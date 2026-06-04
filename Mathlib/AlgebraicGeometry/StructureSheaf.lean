@@ -741,7 +741,7 @@ def stalkIsoₗ (x : PrimeSpectrum.Top R) :
       exists_const _ s x hxU
     rw [germ_stalkToLocalizationₗ_assoc, Category.comp_id, ← germ_res_apply _ igU.hom _ hxg]
     refine congr(localizationtoStalkₗ R M x (openToLocalizationₗ R M _ x hxg $hs)).symm.trans ?_
-    refine (localizationtoStalkₗ_mk ..).trans
+    exact (localizationtoStalkₗ_mk ..).trans
       congr((structurePresheafInModuleCat R M).germ _ x hxg $hs)
   inv_hom_id := by
     ext1

@@ -424,7 +424,7 @@ theorem exists_last_eq_snoc_equivalent (s : CompositionSeries X) (x : X) (hm : I
           (by simpa using isMaximal_eraseLast_last h0s)) := by
         conv_lhs => rw [eq_snoc_eraseLast h0s]
         exact Equivalent.snoc hteqv (by simpa using (isMaximal_eraseLast_last h0s).iso_refl)
-      refine this.trans <| Equivalent.snoc_snoc_swap
+      exact this.trans <| Equivalent.snoc_snoc_swap
         (iso_symm
             (second_iso_of_eq hm
               (sup_eq_of_isMaximal hm (isMaximal_eraseLast_last h0s) (Ne.symm hetx)) htt.symm))

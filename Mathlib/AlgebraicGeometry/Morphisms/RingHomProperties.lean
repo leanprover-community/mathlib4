@@ -442,12 +442,12 @@ lemma of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget [IsZariskiLocalAtTarge
     wlog hY : ∃ R, Y = Spec R generalizing X Y
     · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := P) Y.affineCover,
         IsZariskiLocalAtTarget.iff_of_openCover (P := Q) Y.affineCover]
-      refine forall_congr' fun _ ↦ this _ ⟨_, rfl⟩
+      exact forall_congr' fun _ ↦ this _ ⟨_, rfl⟩
     obtain ⟨S, rfl⟩ := hY
     wlog hX : ∃ R, X = Spec R generalizing X
     · rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) X.affineCover,
         IsZariskiLocalAtSource.iff_of_openCover (P := Q) X.affineCover]
-      refine forall_congr' fun _ ↦ this _ ⟨_, rfl⟩
+      exact forall_congr' fun _ ↦ this _ ⟨_, rfl⟩
     obtain ⟨R, rfl⟩ := hX
     obtain ⟨φ, rfl⟩ : ∃ φ, Spec.map φ = f := ⟨_, Spec.map_preimage _⟩
     rw [HasRingHomProperty.Spec_iff (P := Q)]

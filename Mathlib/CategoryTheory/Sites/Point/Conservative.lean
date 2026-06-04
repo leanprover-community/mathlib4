@@ -230,7 +230,7 @@ private lemma mk'.isLocallySurjective
     · rw [← Φ.obj.presheafFiber_map_shrinkYoneda_map_shrinkYonedaCompPresheafFiberIso_inv_app]
       exact Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.naturality_apply t v
     · rw [← hx₁]
-      refine Eq.trans (congr_arg _ ht)
+      exact Eq.trans (congr_arg _ ht)
         (Φ.obj.toPresheafFiber_naturality_apply f _ v y).symm
 
 /- Let `P` be family of points of a site `(C, J)`, we show that `P` is a conservative

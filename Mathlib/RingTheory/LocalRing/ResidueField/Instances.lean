@@ -75,7 +75,7 @@ instance [Algebra.IsIntegral A B] :
     refine .of_algebraMap_eq fun x ↦ ?_
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
     simp [RingHom.algebraMap_toAlgebra, ← IsScalarTower.algebraMap_apply]
-  refine .extendScalars (Ideal.injective_algebraMap_quotient_residueField p)
+  exact .extendScalars (Ideal.injective_algebraMap_quotient_residueField p)
 
 end prime
 

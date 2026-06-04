@@ -100,7 +100,7 @@ lemma QuasiFinite.ofLocalizationSpanTarget : OfLocalizationSpanTarget QuasiFinit
         -Algebra.TensorProduct.algebraMap_apply,
         ← IsScalarTower.algebraMap_apply R _ (Localization.AtPrime J)]⟩ (fun _ _ ↦ .all _ _)
   have hψ : ψ.comp (φ ⟨r, hrs⟩) = IsScalarTower.toAlgHom _ _ _ := by ext; simp [φ, ψ]
-  refine congr($hψ a).symm.trans
+  exact congr($hψ a).symm.trans
     (show ψ (f a ⟨r, hrs⟩) = 0 by simp only [ha, Pi.zero_apply, map_zero])
 
 lemma QuasiFinite.propertyIsLocal : PropertyIsLocal QuasiFinite where

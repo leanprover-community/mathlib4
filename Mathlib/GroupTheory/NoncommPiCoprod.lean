@@ -63,11 +63,8 @@ theorem eq_one_of_noncommProd_eq_one_of_iSupIndep {ι : Type*} (s : Finset ι) (
     | insert i s hnotMem ih =>
       have hcomm := comm.mono (Finset.coe_subset.2 <| Finset.subset_insert _ _)
       simp only [Finset.forall_mem_insert] at hmem
-      have hmem_bsupr : s.noncommProd f hcomm ∈ ⨆ i ∈ (s : Set ι), K i := by
-        refine Subgroup.noncommProd_mem _ _ ?_
-        intro x hx
-        have : K x ≤ ⨆ i ∈ (s : Set ι), K i := le_iSup₂ (f := fun i _ => K i) x hx
-        exact this (hmem.2 x hx)
+      have hmem_bsupr : s.noncommProd f hcomm ∈ ⨆ i ∈ (s : Set ι), K i :=
+        Subgroup.noncommProd_mem _ _ fun x hx ↦ le_iSup₂ (f := fun i _ => K i) x hx <| (hmem.2 x hx)
       intro heq1
       rw [Finset.noncommProd_insert_of_notMem _ _ _ _ hnotMem] at heq1
       have hnotMem' : i ∉ (s : Set ι) := by simpa
@@ -77,7 +74,7 @@ theorem eq_one_of_noncommProd_eq_one_of_iSupIndep {ι : Type*} (s : Finset ι) (
       simp only [Finset.mem_insert] at h
       rcases h with (rfl | h)
       · exact heq1i
-      · refine ih hcomm hmem.2 heq1S _ h
+      · exact ih hcomm hmem.2 heq1S _ h
 
 end Subgroup
 

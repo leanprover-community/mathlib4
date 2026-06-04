@@ -404,7 +404,7 @@ def symmL (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : F →L[R] E b
       · rw [(FiberBundle.totalSpaceMk_isInducing F E b).continuous_iff]
         exact e.continuousOn_symm.comp_continuous (.prodMk_right _) fun x ↦
           mk_mem_prod hb (mem_univ x)
-      · refine continuous_zero.congr fun x => (e.symm_apply_of_notMem hb x).symm }
+      · exact continuous_zero.congr fun x => (e.symm_apply_of_notMem hb x).symm }
 
 variable {R}
 

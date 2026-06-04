@@ -187,7 +187,7 @@ lemma generate_presieveOfSections_mem_grothendieckTopology
     rintro ⟨⟨V, hV⟩, ⟨f, hfs, g, rfl⟩, -, hxV⟩
     exact ⟨f, hfs, hxV.1⟩
   · rintro ⟨f, hfs, hxf⟩
-    refine ⟨U.basicOpen _, ⟨f, hfs, 1, rfl⟩, ⟨_, rfl⟩, by simpa using hxf⟩
+    exact ⟨U.basicOpen _, ⟨f, hfs, 1, rfl⟩, ⟨_, rfl⟩, by simpa using hxf⟩
 
 lemma mem_grothendieckTopology_iff_sectionsOfPresieve
     {U : X.AffineZariskiSite} {S : Sieve U} :
@@ -322,7 +322,7 @@ lemma opensRange_relativeGluingData_map (F : X.AffineZariskiSiteᵒᵖ ⥤ CommR
   have := coequifibered_iff_forall_isLocalizationAway.mp H U r
   let := (F.map (homOfLE (U.basicOpen_le r)).op).hom.toAlgebra
   apply TopologicalSpace.Opens.coe_inj.mp ?_
-  refine PrimeSpectrum.localization_away_comap_range (F.obj (.op <| U.basicOpen r))
+  exact PrimeSpectrum.localization_away_comap_range (F.obj (.op <| U.basicOpen r))
     (α.app (.op U) r)
 
 @[deprecated (since := "2026-02-01")]

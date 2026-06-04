@@ -371,7 +371,7 @@ private theorem TensorProduct.toIntegralClosure_bijective_of_isStandardEtale
   simp only [toIntegralClosure, Subtype.ext_iff, AlgHom.coe_codRestrict, ← AlgHom.mem_range]
   refine Algebra.adjoin_le ?_ (mem_adjoin_map_integralClosure_of_isStandardEtale x hx)
   rintro _ ⟨y, hy : IsIntegral _ _, rfl⟩
-  refine ⟨1 ⊗ₜ ⟨y, hy⟩, by simp⟩
+  exact ⟨1 ⊗ₜ ⟨y, hy⟩, by simp⟩
 
 end IsStandardEtale
 

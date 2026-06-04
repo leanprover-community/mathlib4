@@ -106,7 +106,7 @@ lemma IsLocallyClosed.inter (hs : IsLocallyClosed s) (ht : IsLocallyClosed t) :
     IsLocallyClosed (s ∩ t) := by
   obtain ⟨U₁, Z₁, hU₁, hZ₁, rfl⟩ := hs
   obtain ⟨U₂, Z₂, hU₂, hZ₂, rfl⟩ := ht
-  refine ⟨_, _, hU₁.inter hU₂, hZ₁.inter hZ₂, inter_inter_inter_comm U₁ Z₁ U₂ Z₂⟩
+  exact ⟨_, _, hU₁.inter hU₂, hZ₁.inter hZ₂, inter_inter_inter_comm U₁ Z₁ U₂ Z₂⟩
 
 lemma IsLocallyClosed.preimage {s : Set Y} (hs : IsLocallyClosed s)
     {f : X → Y} (hf : Continuous f) :

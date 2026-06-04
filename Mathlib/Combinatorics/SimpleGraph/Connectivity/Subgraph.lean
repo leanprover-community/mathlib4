@@ -640,7 +640,7 @@ lemma induce_sUnion_connected_of_pairwise_not_disjoint {S : Set (Set V)} (Sn : S
   rintro w hw
   simp only [Set.mem_sUnion] at hw
   obtain ⟨t, tS, wt⟩ := hw
-  refine ⟨s ∪ t, Set.union_subset (Set.subset_sUnion_of_mem sS) (Set.subset_sUnion_of_mem tS),
+  exact ⟨s ∪ t, Set.union_subset (Set.subset_sUnion_of_mem sS) (Set.subset_sUnion_of_mem tS),
           Or.inl vs, Or.inr wt,
           induce_union_connected (Sc sS).preconnected (Sc tS).preconnected (Snd sS tS) _ _⟩
 
@@ -662,7 +662,7 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
     · simp only [Finset.coe_biUnion, Finset.mem_coe, List.coe_toFinset]
       exact fun x xw => Set.mem_iUnion₂.mpr ⟨w, wt, xw⟩
     · simp only [Set.mem_setOf_eq, Walk.start_mem_support, exists_true_left]
-      refine ⟨hw, Walk.connected_induce_support _ _ _⟩
+      exact ⟨hw, Walk.connected_induce_support _ _ _⟩
 
 end induced_subgraphs
 

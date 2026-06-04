@@ -295,12 +295,12 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
       f ⁻¹' Set.range Sum.inl := by
     apply le_antisymm
     · rintro _ ⟨x, rfl⟩; exact ⟨PUnit.unit, x.2.symm⟩
-    · rintro x ⟨⟨⟩, hx⟩; refine ⟨⟨⟨x, PUnit.unit⟩, hx.symm⟩, rfl⟩
+    · rintro x ⟨⟨⟩, hx⟩; exact ⟨⟨⟨x, PUnit.unit⟩, hx.symm⟩, rfl⟩
   have h₂ : Set.range (TopCat.pullbackFst f (TopCat.binaryCofan (.of PUnit) (.of PUnit)).inr) =
       f ⁻¹' Set.range Sum.inr := by
     apply le_antisymm
     · rintro _ ⟨x, rfl⟩; exact ⟨PUnit.unit, x.2.symm⟩
-    · rintro x ⟨⟨⟩, hx⟩; refine ⟨⟨⟨x, PUnit.unit⟩, hx.symm⟩, rfl⟩
+    · rintro x ⟨⟨⟩, hx⟩; exact ⟨⟨⟨x, PUnit.unit⟩, hx.symm⟩, rfl⟩
   refine ((TopCat.binaryCofan_isColimit_iff _).mpr ⟨?_, ?_, ?_⟩).some
   · refine ⟨(Homeomorph.prodPUnit Z).isEmbedding.comp .subtypeVal, ?_⟩
     convert! f.hom.2.1 _ isOpen_range_inl
@@ -413,7 +413,7 @@ theorem finitaryExtensive_of_preserves_and_reflects (F : C ⥤ D) [FinitaryExten
   have (i : Discrete WalkingPair) (Z : C) (f : Z ⟶ X ⨿ Y) :
     PreservesLimit (cospan f ((BinaryCofan.mk coprod.inl coprod.inr).ι.app i)) F := by
     rcases i with ⟨_ | _⟩ <;> dsimp <;> infer_instance
-  refine (FinitaryExtensive.vanKampen _
+  exact (FinitaryExtensive.vanKampen _
     (isColimitOfPreserves F (coprodIsCoprod X Y))).of_mapCocone F
 
 theorem finitaryExtensive_of_preserves_and_reflects_isomorphism (F : C ⥤ D) [FinitaryExtensive D]

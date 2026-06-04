@@ -827,7 +827,7 @@ lemma horizontalSegment_eq (a₁ a₂ b : ℝ) :
     simp [← hx₁', mem_preimage, mem_prod, hx₁]
   · intro hx
     obtain ⟨x₁, hx₁, hx₁', hx₁''⟩ := hx
-    refine ⟨x.re, x₁, by simp⟩
+    exact ⟨x.re, x₁, by simp⟩
 
 /-- A vertical segment `[b₁, b₂]` translated by `a` is the complex line segment. -/
 lemma verticalSegment_eq (a b₁ b₂ : ℝ) :
@@ -842,7 +842,7 @@ lemma verticalSegment_eq (a b₁ b₂ : ℝ) :
     simp only [equivRealProd_apply, singleton_prod, mem_image, Prod.mk.injEq,
       exists_eq_right_right, mem_preimage] at hx
     obtain ⟨x₁, hx₁, hx₁', hx₁''⟩ := hx
-    refine ⟨x.im, x₁, by simp⟩
+    exact ⟨x.im, x₁, by simp⟩
 
 end Segments
 

@@ -412,7 +412,7 @@ lemma exists_eRk_insert_eq_add_one_of_lt (h : M.eRk X < M.eRk Y) :
     contrapose! h
     simpa using M.eRk_mono h
   obtain ⟨e, ⟨heZ, heE⟩, heX⟩ := not_subset.1 hz
-  refine ⟨e, ⟨heZ, fun heX' ↦ heX (mem_closure_of_mem' _ heX')⟩, eRk_insert_eq_add_one ⟨heE, heX⟩⟩
+  exact ⟨e, ⟨heZ, fun heX' ↦ heX (mem_closure_of_mem' _ heX')⟩, eRk_insert_eq_add_one ⟨heE, heX⟩⟩
 
 lemma IsRkFinite.closure_eq_closure_of_subset_of_forall_insert (hX : M.IsRkFinite X) (hXY : X ⊆ Y)
     (hY : ∀ e ∈ Y \ X, M.eRk (Insert.insert e X) ≤ M.eRk X) : M.closure X = M.closure Y := by

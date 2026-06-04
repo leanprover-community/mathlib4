@@ -327,9 +327,8 @@ theorem Set.Countable.isLindelof_biUnion {s : Set ι} {f : ι → Set X} (hs : s
   choose! r hr using iSets
   use ⋃ i ∈ s, r i
   constructor
-  · refine (Countable.biUnion_iff hs).mpr ?h.left.a
-    exact fun s hs ↦ (hr s hs).1
-  · refine iUnion₂_subset ?h.right.h
+  · exact (Countable.biUnion_iff hs).mpr fun s hs ↦ (hr s hs).1
+  · refine iUnion₂_subset ?_
     intro i is
     simp only [mem_iUnion, exists_prop, iUnion_exists, biUnion_and']
     intro x hx

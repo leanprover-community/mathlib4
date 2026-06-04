@@ -737,7 +737,7 @@ theorem isUniformEmbedding_toFun_finite :
     IsUniformEmbedding (toFun _ : (α →ᵤ[{s | s.Finite}] β) → (α → β)) := by
   refine ⟨⟨?_⟩, Function.injective_id⟩
   simp_rw [Pi.uniformity, comap_iInf, comap_comap]
-  refine HasBasis.ext (HasBasis.iInf' fun i ↦ (basis_sets _).comap _)
+  exact HasBasis.ext (HasBasis.iInf' fun i ↦ (basis_sets _).comap _)
     (UniformOnFun.hasBasis_uniformity α β _ ⟨∅, finite_empty⟩
       (directedOn_of_sup_mem fun _ _ ↦ .union))
     (fun ⟨S, U⟩ ⟨hS, hU⟩ ↦ ⟨⟨S, ⋂ x ∈ S, U x⟩, ⟨⟨hS, biInter_mem hS |>.mpr hU⟩,
