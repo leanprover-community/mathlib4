@@ -496,7 +496,7 @@ noncomputable def SpecialLinearGroup.transvection (i j : ι) (hij : i ≠ j) (b 
 namespace SpecialLinearGroup
 
 lemma transvection_coe (i j : ι) (hij : i ≠ j) (b : F) :
-    (transvection i j hij b).1 = (1 : Matrix ι ι F) + single i j b := rfl
+    (transvection i j hij b) = (1 : Matrix ι ι F) + single i j b := rfl
 
 /-- The transvection `transvection i j hij b` acts on `e_i = Pi.single i 1` as the identity. -/
 lemma transvection_mulVec_single_self (i j : ι) (hij : i ≠ j) (b : F) :
@@ -513,7 +513,7 @@ lemma transvection_mulVec_single_other (i j : ι) (hij : i ≠ j) (b : F) :
 /-- Inverse of a transvection: `transvection i j hij b * transvection i j hij (-b) = 1`. -/
 lemma transvection_mul_neg (i j : ι) (hij : i ≠ j) (b : F) :
     transvection i j hij b * transvection i j hij (-b) = 1 := by
-  apply Subtype.ext
+  ext : 1
   simp [transvection_coe, mul_add, add_mul,
     single_mul_single_of_ne _ _ _ _ hij.symm, ← single_neg]
 
@@ -558,12 +558,10 @@ lemma diag2_mulVec_single_i₂
       a⁻¹ • Pi.single 1 (1 : F) := by
   ext k; fin_cases k <;> simp [diag2_coe]
 
-/-- `diag2 a * diag2 a⁻¹ = 1`. -/
 lemma diag2_mul_inv (a : F) (ha : a ≠ 0) :
     diag2 a ha * diag2 a⁻¹ (inv_ne_zero ha) = 1 := Subtype.ext <| by
   simp [diag2_coe, funext_iff, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha]
 
-/-- Therefore `(diag2 a)⁻¹ = diag2 a⁻¹`. -/
 lemma diag2_inv (a : F) (ha : a ≠ 0) :
     (diag2 a ha)⁻¹ = diag2 a⁻¹ (inv_ne_zero ha) := by
   apply inv_eq_of_mul_eq_one_right

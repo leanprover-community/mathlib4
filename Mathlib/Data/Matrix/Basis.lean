@@ -143,7 +143,7 @@ theorem single_mulVec [NonUnitalNonAssocSemiring α] [Fintype m]
 lemma single_mulVec_eq [Fintype n] [NonAssocSemiring α] (i j : n) (b : α) (w : n → α) :
     single i j b *ᵥ w = (b * w j) • Pi.single i (1 : α) := by
   ext
-  simp [Matrix.single_mulVec, Pi.smul_apply, smul_eq_mul, Function.update_apply, Pi.single_apply]
+  simp [Matrix.single_mulVec, Function.update_apply, Pi.single_apply]
 
 lemma sum_single_eq_diagonal [AddCommMonoid α] [Fintype m] (f : m → α) :
     ∑ i : m, single i i (f i) = Matrix.diagonal f := by
