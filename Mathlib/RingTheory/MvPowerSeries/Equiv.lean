@@ -64,7 +64,7 @@ namespace MvPowerSeries
 
 variable {σ τ R S : Type*}
 
-open Finsupp Function
+open Finsupp Function Finset
 
 section CommSemiring
 
@@ -174,7 +174,6 @@ private lemma sumToIterFun_monomial (x : σ ⊕ τ →₀ ℕ) (r : R) :
   · rw [coeff_monomial, if_neg (by simp [Finsupp.ext_iff]; grind)]
   · rw [coeff_zero]
 
-open Finset in
 private lemma sumToIterFun_mul (p q) : sumToIterFun σ τ R (p * q) =
     sumToIterFun σ τ R p * sumToIterFun σ τ R q := by
   classical
@@ -325,7 +324,6 @@ private lemma embDomain_finSuccEquiv_cons {M : Type*} [AddCommMonoid M] {n : ℕ
     (x : Fin n →₀ M) : embDomain (finSuccEquiv n).toEmbedding (cons i x) = optionElim i x := by
   ext a; cases a <;> simp [embDomain_eq_mapDomain]
 
-open Finset in
 private theorem image_optionElim_product_antidiagonal [DecidableEq σ]
     {x : σ →₀ ℕ} {n : ℕ} : image (fun ((x, y), z, w) ↦
       (z.optionElim x, w.optionElim y)) (antidiagonal n ×ˢ antidiagonal x) =
