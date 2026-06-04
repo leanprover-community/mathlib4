@@ -46,7 +46,7 @@ instance (p : ℕ) [ExpChar k p] : ExpChar (AdjoinPthRoots k) p := inferInstance
 the `p`-th root map `k → AdjoinPthRoots k`, as a `RingEquiv`. -/
 noncomputable def AdjoinPthRoots.root : k ≃+* AdjoinPthRoots k := RingEquiv.refl k
 
-variable (p : ℕ) [ExpChar k p]
+variable {k} (p : ℕ) [ExpChar k p]
 
 @[simp]
 lemma AdjoinPthRoots.root_pow (x : k) :
@@ -64,4 +64,4 @@ instance : IsPurelyInseparable k (AdjoinPthRoots k) := by
   rw [isPurelyInseparable_iff_pow_mem k p]
   intro x
   use 1, (AdjoinPthRoots.root k).symm x
-  simp [AdjoinPthRoots.algebraMap_root_symm k p]
+  simp [AdjoinPthRoots.algebraMap_root_symm p]
