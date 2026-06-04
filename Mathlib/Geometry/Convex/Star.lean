@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Geometry.Convex.ConvexSpace.Prod
+public import Mathlib.Geometry.Convex.Set
 
 /-!
 # Star-convex sets
@@ -74,6 +74,9 @@ protected lemma IsStarConvexSet.sUnion {S : Set (Set X)} (hS : ∀ s ∈ S, IsSt
 
 protected lemma IsStarConvexSet.iUnion {ι : Sort*} {s : ι → Set X}
     (hs : ∀ i, IsStarConvexSet R x (s i)) : IsStarConvexSet R x (⋃ i, s i) := .sUnion <| by simpa
+
+lemma IsConvexSet.isStarConvexSet (hs : IsConvexSet R s) (hx : x ∈ s) : IsStarConvexSet R x s :=
+  fun _a _b _ha _hb _hab _y hy ↦ hs.convexCombPair_mem hx hy ..
 
 protected lemma IsStarConvexSet.preimage {s : Set Y} (hf : IsAffineMap R f)
     (hs : IsStarConvexSet R (f x) s) : IsStarConvexSet R x (f ⁻¹' s) :=
