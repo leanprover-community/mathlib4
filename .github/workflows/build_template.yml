@@ -751,7 +751,7 @@ jobs:
 
       - name: ensure dump outputs are regular files
         run: |
-          for f in decls.txt imports.json import_graph.dot; do
+          for f in decls.txt imports.json import_graph.dot pr_number.txt; do
             if [ -L "$f" ] || [ ! -f "$f" ]; then
               echo "Refusing to upload: $f is not a regular file." >&2
               ls -la -- "$f" >&2 || true
