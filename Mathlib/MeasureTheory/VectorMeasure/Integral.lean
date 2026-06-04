@@ -110,8 +110,7 @@ theorem cbmApplyMeasure_union (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[�
   simp [of_union hdisj hs ht]
 
 theorem dominatedFinMeasAdditive_cbmApplyMeasure (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) :
-    DominatedFinMeasAdditive (μ.transpose B).variation
-    (μ.transpose B) 1 := by
+    DominatedFinMeasAdditive (μ.transpose B).variation (μ.transpose B) 1 := by
   refine ⟨fun s t hs ht _ _ hdisj ↦ cbmApplyMeasure_union μ B hs ht hdisj, fun s hs hsf ↦ ?_⟩
   simpa using! norm_measure_le_variation hsf.ne
 
@@ -178,14 +177,9 @@ lemma variation_transpose_eq_smul [Nontrivial E] {C : ℝ≥0}
     (hB : ∀ x y, ‖B x y‖₊ = C * ‖x‖₊ * ‖y‖₊) :
     (μ.transpose B).variation = C • μ.variation := by
   apply le_antisymm
-  · apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
-    apply opENorm_le_bound _ (fun x ↦ ?_)
-    simp only [transpose, mapRange_apply, LinearMap.toAddMonoidHom_coe, coe_coe, flip_apply,
-      enorm_eq_nnnorm, hB, ENNReal.coe_mul, Measure.smul_apply, Measure.nnreal_smul_coe_apply]
-    rw [mul_assoc, mul_comm (‖x‖₊ : ℝ≥0∞), ← mul_assoc]
+  · apply (variation_transpose_le _ _).trans
     gcongr
-    rw [← enorm_eq_nnnorm]
-    apply enorm_measure_le_variation
+    apply opNNNorm_le_bound _ _ (fun x ↦ opNNNorm_le_bound _ _ (fun y ↦ by simp [hB]))
   · rcases eq_or_ne C 0 with rfl | hC
     · simp [Measure.zero_le]
     suffices μ.variation ≤ C⁻¹ • (μ.transpose B).variation by
@@ -399,18 +393,32 @@ end Function
 
 section VectorMeasure
 
-/- `simpNF` complains mistakenly that this lemma can be proved by `simp`, because it sees through
-the abbrev `VectorMeasure.Integrable`. TODO: fix `simpNF`. -/
+/- `simpNF` complains that this lemma can be proved by `simp`, because the `simp`-generated lemma
+unfolds the abbrev `VectorMeasure.Integrable`. TODO: fix `simp`. -/
 @[nolint simpNF, simp]
-lemma integrable_zero_vectorMeasure : (0 : VectorMeasure X F).Integrable f B := by
+lemma Integrable.zero_vectorMeasure : (0 : VectorMeasure X F).Integrable f B := by
   simp [VectorMeasure.Integrable]
 
-lemma integrable_add_vectorMeasure (hμ : μ.Integrable f B) (hν : ν.Integrable f B) :
+lemma Integrable.add_vectorMeasure (hμ : μ.Integrable f B) (hν : ν.Integrable f B) :
     (μ + ν).Integrable f B := by
   apply Integrable.mono_measure (integrable_add_measure.2 ⟨hμ, hν⟩)
   grw [transpose_add, variation_add_le]
 
-lemma integrable_finsetSum_vectorMeasure {ι : Type*} {μ : ι → VectorMeasure X F} {s : Finset ι}
+lemma Integrable.neg_vectorMeasure (hμ : μ.Integrable f B) :
+    (-μ).Integrable f B :=
+  Integrable.mono_measure hμ (by simp)
+
+lemma Integrable.sub_vectorMeasure (hμ : μ.Integrable f B) (hν : ν.Integrable f B) :
+    (μ - ν).Integrable f B := by
+  convert hμ.add_vectorMeasure hν.neg_vectorMeasure using 1
+  exact sub_eq_add_neg μ ν
+
+lemma Integrable.smul_vectorMeasure (hμ : μ.Integrable f B) (c : ℝ) :
+    (c • μ).Integrable f B := by
+  apply Integrable.mono_measure (Integrable.smul_measure_nnreal hμ (c := ‖c‖₊))
+  simp [transpose_smul, variation_smul]
+
+lemma Integrable.finsetSum_vectorMeasure {ι : Type*} {μ : ι → VectorMeasure X F} {s : Finset ι}
     (h : ∀ i ∈ s, (μ i).Integrable f B) :
     (∑ i ∈ s, μ i).Integrable f B := by
   classical
@@ -419,7 +427,7 @@ lemma integrable_finsetSum_vectorMeasure {ι : Type*} {μ : ι → VectorMeasure
   | insert a s ha ih =>
       simp only [Finset.mem_insert, forall_eq_or_imp, ha, not_false_eq_true,
         Finset.sum_insert] at h ⊢
-      exact integrable_add_vectorMeasure h.1 (ih h.2)
+      exact h.1.add_vectorMeasure (ih h.2)
 
 lemma Integrable.restrict (hf : μ.Integrable f B) {s : Set X} :
     (μ.restrict s).Integrable f B := by
@@ -463,7 +471,7 @@ theorem integral_finsetSum_vectorMeasure {μ : ι → VectorMeasure X F}
   | insert a s ha ih =>
     simp only [Finset.mem_insert, forall_eq_or_imp, ha, not_false_eq_true,
       Finset.sum_insert] at hf ⊢
-    rw [integral_add_vectorMeasure hf.1 (integrable_finsetSum_vectorMeasure hf.2), ih hf.2]
+    rw [integral_add_vectorMeasure hf.1 (Integrable.finsetSum_vectorMeasure hf.2), ih hf.2]
 
 @[integral_simps]
 theorem integral_neg_vectorMeasure :
@@ -472,25 +480,35 @@ theorem integral_neg_vectorMeasure :
 
 theorem integral_sub_vectorMeasure (hμ : μ.Integrable f B) (hν : ν.Integrable f B) :
     ∫ᵛ x, f x ∂[B; μ - ν] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x, f x ∂[B; ν] := by
-  rw [sub_eq_add_neg, integral_add_vectorMeasure hμ, integral_neg_vectorMeasure, ← sub_eq_add_neg]
-  simpa [VectorMeasure.Integrable] using hν
+  rw [sub_eq_add_neg, integral_add_vectorMeasure hμ hν.neg_vectorMeasure,
+    integral_neg_vectorMeasure, ← sub_eq_add_neg]
 
 end VectorMeasure
 
 section cbm
 
-/- `simpNF` complains mistakenly that this lemma can be proved by `simp`, because it sees through
-the abbrev `VectorMeasure.Integrable`. TODO: fix `simpNF`. -/
+/- `simpNF` complains that this lemma can be proved by `simp`, because the `simp`-generated lemma
+unfolds the abbrev `VectorMeasure.Integrable`. TODO: fix `simp`. -/
 @[nolint simpNF, simp]
-lemma integrable_zero_cbm : μ.Integrable f (0 : E →L[ℝ] F →L[ℝ] G) := by
+lemma Integrable.zero_cbm : μ.Integrable f (0 : E →L[ℝ] F →L[ℝ] G) := by
   simp [VectorMeasure.Integrable]
 
-lemma integrable_add_cbm (hB : μ.Integrable f B) (hC : μ.Integrable f C) :
+lemma Integrable.add_cbm (hB : μ.Integrable f B) (hC : μ.Integrable f C) :
     μ.Integrable f (B + C) := by
   apply Integrable.mono_measure (integrable_add_measure.2 ⟨hB, hC⟩)
   grw [transpose_add_cbm, variation_add_le]
 
-lemma integrable_finsetSum_cbm {ι : Type*} {B : ι → E →L[ℝ] F →L[ℝ] G} {s : Finset ι}
+lemma Integrable.neg_cbm (hB : μ.Integrable f B) :
+    μ.Integrable f (-B) := by
+  apply Integrable.mono_measure hB
+  simp
+
+lemma Integrable.sub_cbm (hB : μ.Integrable f B) (hC : μ.Integrable f C) :
+    μ.Integrable f (B - C) := by
+  convert hB.add_cbm hC.neg_cbm using 1
+  exact sub_eq_add_neg B C
+
+lemma Integrable.finsetSum_cbm {ι : Type*} {B : ι → E →L[ℝ] F →L[ℝ] G} {s : Finset ι}
     (h : ∀ i ∈ s, μ.Integrable f (B i)) : μ.Integrable f (∑ i ∈ s, B i) := by
   classical
   induction s using Finset.induction_on with
@@ -498,7 +516,7 @@ lemma integrable_finsetSum_cbm {ι : Type*} {B : ι → E →L[ℝ] F →L[ℝ] 
   | insert a s ha ih =>
       simp only [Finset.mem_insert, forall_eq_or_imp, ha, not_false_eq_true,
         Finset.sum_insert] at h ⊢
-      exact integrable_add_cbm h.1 (ih h.2)
+      exact h.1.add_cbm (ih h.2)
 
 variable (f μ) in
 @[simp]
@@ -520,7 +538,7 @@ theorem integral_finsetSum_cbm {B : ι → E →L[ℝ] F →L[ℝ] G}
   | insert a s ha ih =>
     simp only [Finset.mem_insert, forall_eq_or_imp, ha, not_false_eq_true,
       Finset.sum_insert] at hf ⊢
-    rw [integral_add_cbm hf.1 (integrable_finsetSum_cbm hf.2), ih hf.2]
+    rw [integral_add_cbm hf.1 (Integrable.finsetSum_cbm hf.2), ih hf.2]
 
 @[integral_simps]
 theorem integral_neg_cbm :
