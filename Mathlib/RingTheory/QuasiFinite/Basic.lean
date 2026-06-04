@@ -125,7 +125,7 @@ private lemma finite_of_isArtinianRing_of_isLocalRing
     (Algebra.TensorProduct.congr (.symm <| .ofBijective _
       (Ideal.bijective_algebraMap_quotient_residueField (maximalIdeal R))) .refl).trans <|
     (Algebra.TensorProduct.comm _ _ _).trans
-    ((Algebra.TensorProduct.quotIdealMapEquivTensorQuot _ _).symm.restrictScalars _)
+    ((Algebra.TensorProduct.quotIdealMapEquivTensorQuot S (maximalIdeal R)).symm.restrictScalars _)
   have : Module.Finite R (S ⧸ (maximalIdeal R).map (algebraMap R S)) :=
     have : Module.Finite R ((maximalIdeal R).Fiber S) :=
       .trans (maximalIdeal R).ResidueField _
@@ -436,6 +436,7 @@ instance (p : Ideal R) [p.IsPrime] (P : Ideal S) [P.IsPrime] [P.LiesOver p] [Qua
         P.primeCompl _).residueFieldMap_bijective P m (m.over_def P))
   exact .of_surjective e.symm.toLinearMap e.symm.surjective
 
+set_option backward.defeqAttrib.useBackward true in
 lemma QuasiFiniteAt.exists_basicOpen_eq_singleton
     (p : Ideal S) [p.IsPrime] [IsArtinianRing R] [Algebra.EssFiniteType R S]
     [Algebra.QuasiFiniteAt R p] :
