@@ -309,7 +309,6 @@ instance isLeftAdjoint_pushforward_of_isIso [F.IsCocontinuous J K] [IsIso φ] [F
       IsIso.eq_inv_comp] at this
     simp [ψ, shAdj, ← this, ← Functor.map_comp_assoc, ← op_comp]
 
-
 noncomputable section
 
 open CategoryTheory Limits
