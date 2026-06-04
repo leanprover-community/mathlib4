@@ -264,7 +264,7 @@ theorem isStationary_sUnion_iff_of_countable {s : Set (Set α)} (hα : cof α �
   · apply isStationary_sUnion_iff hα.ne' (hα.trans_le' _)
     rwa [le_aleph0_iff_set_countable]
 
-theorem isStationary_iUnion_iff_of_countable {ι : Type*} {f : ι → Set α} [Countable ι]
+theorem isStationary_iUnion_iff_of_countable {ι : Sort*} {f : ι → Set α} [Countable ι]
     (hα : cof α ≠ ℵ₀) : IsStationary (⋃ i, f i) ↔ ∃ i, IsStationary (f i) := by
   rw [← sUnion_range, isStationary_sUnion_iff_of_countable hα (countable_range f)]
   simp
