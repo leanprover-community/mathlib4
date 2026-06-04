@@ -142,7 +142,7 @@ theorem ext {v₁ v₂ : Valuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ 
 
 variable (v : Valuation R Γ₀)
 
-@[simp, norm_cast]
+@[simp]
 theorem coe_ofClass : ⇑(MonoidWithZeroHom.ofClass v) = v := rfl
 
 protected theorem map_zero : v 0 = 0 :=
