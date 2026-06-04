@@ -5,6 +5,7 @@ Authors: Xavier Roblot
 -/
 module
 
+public import Mathlib.LinearAlgebra.Dimension.Torsion.Basic
 public import Mathlib.LinearAlgebra.Matrix.Gershgorin
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 public import Mathlib.NumberTheory.NumberField.Units.Basic
@@ -452,6 +453,13 @@ instance : Monoid.FG (𝓞 K)ˣ := by
 theorem rank_modTorsion :
     Module.finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
   rw [← LinearEquiv.finrank_eq (logEmbeddingEquiv K).symm, unitLattice_rank]
+
+theorem finrank_eq :
+    finrank ℤ (Additive (𝓞 K)ˣ) = rank K := by
+  rw [← rank_modTorsion]
+  change _ = finrank ℤ (Additive (𝓞 K)ˣ ⧸ (AddCommGroup.torsion <| Additive (𝓞 K)ˣ))
+  rw [← Submodule.torsion_int]
+  exact (congr_arg Cardinal.toNat (rank_quotient_eq_of_le_torsion le_rfl)).symm
 
 /-- A basis of the quotient `(𝓞 K)ˣ ⧸ (torsion K)` seen as an additive ℤ-module. -/
 def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
