@@ -10,25 +10,23 @@ namespace Mathlib.Tactic.Linter
 
 public section
 
+deriving instance Nonempty for CommandContextInfo
+deriving instance Nonempty for ContextInfo
+
 structure BodyWithContext where
   body : Body
   ctx  : ContextInfo
   info : Info
+deriving Nonempty
 
 structure DeclarationData where
   name : Name
-  bodyCtx : Option BodyWithContext := none
+  body : Task (Option BodyWithContext)
   isAuto : Bool
 
 abbrev Declarations := NameMap DeclarationData
 
 abbrev DeclarationM := ReaderT Declarations CommandElabM
-
-def Declarations.setBodyWithContext (body : Body) (ctx : ContextInfo) (info : Info) (name : Name)
-    (decls : Declarations) : Declarations :=
-  decls.alter name fun
-    | none => none
-    | some data => some { data with bodyCtx := some { body, ctx, info } }
 
 -- Could instead pass one declaration in at a time, but why restrict ourselves?
 structure DeclarationLinter where
