@@ -244,7 +244,7 @@ instance : MulAction (Matrix.ProjectiveSpecialLinearGroup ι K) (ℙ K (ι → K
 lemma _root_.Matrix.ProjectiveSpecialLinearGroup.smul_proj_mk (g : Matrix.SpecialLinearGroup ι K)
     (p : ℙ K (ι → K)) : (g : Matrix.ProjectiveSpecialLinearGroup ι K) • p = g • p := rfl
 
-theorem Matrix.ProjectiveSpecialLinearGroup.toPermHom_injective :
+theorem _root_.Matrix.ProjectiveSpecialLinearGroup.toPermHom_injective :
     Function.Injective (PSLAction.toPermHom (K := K) (ι := ι)) := by
   rw [injective_iff_map_eq_one]
   intro g hg
