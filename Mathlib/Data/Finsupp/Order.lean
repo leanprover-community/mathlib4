@@ -300,7 +300,12 @@ lemma embDomain_tsub (f : ι ↪ κ) (f1 f2 : ι →₀ α) :
     (f1 - f2).embDomain f = f1.embDomain f - f2.embDomain f := by
   simp_rw [embDomain_eq_mapDomain, mapDomain_tsub f.injective]
 
-lemma support_add_eq' {f1 f2 : ι →₀ α} [DecidableEq ι] :
+/-- The support of a sum is the union of the supports, when the coefficients lie in
+`CanonicallyOrderedAdd`.
+
+In the case where the supports are disjoint, there is also `Finsupp.support_add_eq`, which holds
+in any `AddZeroClass`. -/
+lemma support_add_eq_union {f1 f2 : ι →₀ α} [DecidableEq ι] :
     (f1 + f2).support = f1.support ∪ f2.support :=
   le_antisymm support_add <| Finset.union_subset
     (support_mono le_self_add) (support_mono le_add_self)
