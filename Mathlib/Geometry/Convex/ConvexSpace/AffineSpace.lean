@@ -163,10 +163,11 @@ section
 
 namespace AffineMap
 
+open Finset AddTorsor
+
 attribute [local instance] AddTorsor.toConvexSpace
 
-open Finset AddTorsor in
-lemma isAffineMap_of_preserves_convex_combinations
+lemma of_apply_affineCombination
     {k : Type u_1} {V P V₂ P₂ : Type*} [PartialOrder k] [Ring k] [IsStrictOrderedRing k]
     [AddCommGroup V] [Module k V] [S : AffineSpace V P]
   [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂] (f : P → P₂)
@@ -178,10 +179,9 @@ lemma isAffineMap_of_preserves_convex_combinations
     rw [sConvexComb_eq_affineCombination, H s.weights.support _root_.id s.weights s.total,
       ←iConvexComb_eq_affineCombination, Function.comp_id, iConvexComb]
 
-open Finset AddTorsor in
-lemma AffineMap.isAffineMap {V2 P2 : Type*} [AddCommGroup V2] [Module R V2] [AffineSpace V2 P2]
+lemma isAffineMap {V2 P2 : Type*} [AddCommGroup V2] [Module R V2] [AffineSpace V2 P2]
     (f : P →ᵃ[R] P2) : IsAffineMap R f := by
-    apply isAffineMap_of_preserves_convex_combinations
+    apply of_apply_affineCombination
     grind [map_affineCombination]
 
 end AffineMap
