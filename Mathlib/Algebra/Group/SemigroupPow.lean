@@ -20,8 +20,8 @@ so we restrict exponents to positive naturals.
 
 ## Main statements
 
-- `Semigroup.pow_add` — `x ^ m * x ^ n = x ^ (m + n)`.
-- `Semigroup.pow_mul` — `(x ^ n) ^ m = x ^ (m * n)`.
+- `Semigroup.pow_add` — `x ^ (m + n) = x ^ m * x ^ n`.
+- `Semigroup.pow_mul` — `x ^ (m * n) = (x ^ n) ^ m`.
 - `Semigroup.mul_pow_mul` — `(x * y) ^ n * x = x * (y * x) ^ n`.
 - `Monoid.pow_pNat_to_nat` — `x ^ n = x ^ (n : ℕ)` in monoids.
 - `WithOne.pow_eq` — `(↑x : WithOne S) ^ n = ↑(x ^ n)`.
