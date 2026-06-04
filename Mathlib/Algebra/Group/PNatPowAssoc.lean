@@ -19,9 +19,10 @@ powers are considered.
 
 - `ppow_add` a defining property: `x ^ (k + n) = x ^ k * x ^ n`
 - `ppow_one` a defining property: `x ^ 1 = x`
-- `ppow_assoc` strictly positive powers of an element have associative multiplication.
-- `ppow_comm` `x ^ m * x ^ n = x ^ n * x ^ m` for strictly positive `m` and `n`.
+- `ppow_mul_assoc` strictly positive powers of an element have associative multiplication.
+- `ppow_mul_comm` `x ^ m * x ^ n = x ^ n * x ^ m` for strictly positive `m` and `n`.
 - `ppow_mul` `x ^ (m * n) = (x ^ m) ^ n` for strictly positive `m` and `n`.
+- `ppow_succ``x ^ (n + 1) = x ^ n * x` for strictly positive `n`.
 - `ppow_eq_pow` monoid exponentiation coincides with semigroup exponentiation.
 
 ## Instances
@@ -76,6 +77,14 @@ theorem ppow_mul (x : M) (m n : ℕ+) : x ^ (m * n) = (x ^ m) ^ n := by
 theorem ppow_mul' (x : M) (m n : ℕ+) : x ^ (m * n) = (x ^ n) ^ m := by
   rw [mul_comm]
   exact ppow_mul x n m
+
+theorem ppow_succ (x : M) (n : ℕ+) : x ^ (n + 1) = x ^ n * x := by
+  nth_rw 3 [← ppow_one x]
+  rw [ppow_add]
+
+theorem ppow_succ' (x : M) (n : ℕ+) : x ^ (n + 1) = x * x ^ n := by
+  nth_rw 2 [← ppow_one x]
+  rw [← ppow_add, add_comm]
 
 end Mul
 
