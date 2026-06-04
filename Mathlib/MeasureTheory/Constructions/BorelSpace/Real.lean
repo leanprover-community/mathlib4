@@ -87,27 +87,27 @@ theorem borel_eq_generateFrom_Ici_rat : borel ℝ = .generateFrom (⋃ a : ℚ, 
 
 theorem isPiSystem_Ioo_rat :
     IsPiSystem (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) (b : ℝ)}) := by
-  convert isPiSystem_Ioo ((↑) : ℚ → ℝ) ((↑) : ℚ → ℝ)
+  convert! isPiSystem_Ioo ((↑) : ℚ → ℝ) ((↑) : ℚ → ℝ)
   ext x
   simp [eq_comm]
 
 theorem isPiSystem_Iio_rat : IsPiSystem (⋃ a : ℚ, {Iio (a : ℝ)}) := by
-  convert isPiSystem_image_Iio (((↑) : ℚ → ℝ) '' univ)
+  convert! isPiSystem_image_Iio (((↑) : ℚ → ℝ) '' univ)
   ext x
   simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
 
 theorem isPiSystem_Ioi_rat : IsPiSystem (⋃ a : ℚ, {Ioi (a : ℝ)}) := by
-  convert isPiSystem_image_Ioi (((↑) : ℚ → ℝ) '' univ)
+  convert! isPiSystem_image_Ioi (((↑) : ℚ → ℝ) '' univ)
   ext x
   simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
 
 theorem isPiSystem_Iic_rat : IsPiSystem (⋃ a : ℚ, {Iic (a : ℝ)}) := by
-  convert isPiSystem_image_Iic (((↑) : ℚ → ℝ) '' univ)
+  convert! isPiSystem_image_Iic (((↑) : ℚ → ℝ) '' univ)
   ext x
   simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
 
 theorem isPiSystem_Ici_rat : IsPiSystem (⋃ a : ℚ, {Ici (a : ℝ)}) := by
-  convert isPiSystem_image_Ici (((↑) : ℚ → ℝ) '' univ)
+  convert! isPiSystem_image_Ici (((↑) : ℚ → ℝ) '' univ)
   ext x
   simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
 
@@ -356,16 +356,14 @@ theorem Measurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0�
   simp_rw [ENNReal.tsum_eq_iSup_sum]
   exact .iSup fun s ↦ s.measurable_fun_sum fun i _ => h i
 
-set_option linter.deprecated false in
 @[fun_prop, deprecated
   "Use `Measurable.tsum'` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
   (since := "2026-04-30")]
 theorem Measurable.ennreal_tsum' {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     Measurable (∑' i, f i) := by
-  convert Measurable.ennreal_tsum h with x
+  convert! Measurable.ennreal_tsum h with x
   exact tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
 
-set_option linter.deprecated false in
 @[fun_prop, deprecated
   "Use `Measurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
   (since := "2026-04-30")]
@@ -382,7 +380,6 @@ theorem AEMeasurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0
   simp_rw [ENNReal.tsum_eq_iSup_sum]
   exact .iSup fun s ↦ Finset.aemeasurable_fun_sum s fun i _ => h i
 
-set_option linter.deprecated false in
 @[fun_prop, deprecated
   "Use `AEMeasurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
   (since := "2026-04-30")]
@@ -415,7 +412,7 @@ theorem EReal.measurable_of_measurable_real {f : EReal → α} (h : Measurable f
     (MeasurableEquiv.erealEquivReal.symm.measurable_comp_iff.1 h)
 
 theorem measurable_ereal_toReal : Measurable EReal.toReal :=
-  EReal.measurable_of_measurable_real (by simpa using measurable_id)
+  EReal.measurable_of_measurable_real (by simpa using! measurable_id)
 
 @[fun_prop]
 theorem Measurable.ereal_toReal {f : α → EReal} (hf : Measurable f) :

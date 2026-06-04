@@ -73,6 +73,40 @@ lemma AnalyticOnNhd.divisor_apply {f : 𝕜 → E} (hf : AnalyticOnNhd 𝕜 f U)
   rw [hf.meromorphicOn.divisor_apply hz, (hf z hz).meromorphicOrderAt_eq]
 
 /-!
+## Support Properties
+-/
+
+/--
+Special case of `Function.locallyFinsuppWithin.finiteSupport` that frequently shows in complex
+analysis: Divisors on spheres have finite support.
+-/
+lemma _root_.divisor_sphere_support_finite [ProperSpace 𝕜] {f : 𝕜 → E} {R : ℝ} {c : 𝕜} :
+    (divisor f (Metric.sphere c R)).support.Finite :=
+    (divisor f (Metric.sphere c R)).finiteSupport (isCompact_sphere c R)
+
+/--
+If `f` is meromorphic on a compact set `U` and `V ⊆ U`, then the divisor of `f` on `V` has finite
+support.
+-/
+lemma divisor_support_finite_of_subset {f : 𝕜 → E} {V : Set 𝕜} (hf : MeromorphicOn f U)
+    (hU : IsCompact U) (hV : V ⊆ U) :
+    (divisor f V).support.Finite := by
+  apply ((divisor f U).finiteSupport hU).subset
+  intro b hb
+  rw [Function.mem_support, ne_eq, divisor_apply hf (hV ((divisor f V).supportWithinDomain hb))]
+  rwa [Function.mem_support, ne_eq, divisor_apply (fun x hx ↦ hf x (hV hx))
+    ((divisor f V).supportWithinDomain hb)] at hb
+
+/--
+Special case of `MeromorphicOn.divisor_subset_finiteSupport` that frequently shows in complex
+analysis, where  `U` is a closed ball and `V` is its interior.
+-/
+lemma divisor_ball_support_finite [ProperSpace 𝕜] {f : 𝕜 → E} {R : ℝ} {c : 𝕜}
+    (hf : MeromorphicOn f (Metric.closedBall c R)) :
+    (divisor f (Metric.ball c R)).support.Finite :=
+  hf.divisor_support_finite_of_subset (isCompact_closedBall c R) Metric.ball_subset_closedBall
+
+/-!
 ## Congruence Lemmas
 -/
 
@@ -180,7 +214,7 @@ The divisor of a constant function is `0`.
 -/
 @[simp] theorem divisor_ofNat (n : ℕ) :
     divisor (ofNat(n) : 𝕜 → 𝕜) U = 0 := by
-  convert divisor_const (n : 𝕜)
+  convert! divisor_const (n : 𝕜)
   simp [Semiring.toGrindSemiring_ofNat 𝕜 n]
 
 /-!
@@ -318,7 +352,7 @@ theorem divisor_fun_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
     (h₁f : ∀ i ∈ s, MeromorphicOn (f i) U)
     (h₂f : ∀ i ∈ s, ∀ z ∈ U, meromorphicOrderAt (f i) z ≠ ⊤) :
     divisor (fun x ↦ ∏ i ∈ s, f i x) U = ∑ i ∈ s, divisor (f i) U := by
-  convert divisor_prod h₁f h₂f
+  convert! divisor_prod h₁f h₂f
   exact (Finset.prod_apply _ s f).symm
 
 /-- The divisor of the inverse is the negative of the divisor. -/

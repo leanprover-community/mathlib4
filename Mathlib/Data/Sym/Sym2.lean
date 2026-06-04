@@ -380,7 +380,7 @@ theorem other_spec {a : α} {z : Sym2 α} (h : a ∈ z) : s(a, Mem.other h) = z 
   (Classical.choose_spec h).symm
 
 theorem other_mem {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.other h ∈ z := by
-  convert mem_mk_right a <| Mem.other h
+  convert! mem_mk_right a <| Mem.other h
   rw [other_spec h]
 
 theorem mem_and_mem_iff {x y : α} {z : Sym2 α} (hne : x ≠ y) : x ∈ z ∧ y ∈ z ↔ z = s(x, y) := by
@@ -526,6 +526,28 @@ theorem diag_isDiag (a : α) : IsDiag (diag a) :=
 @[simp, nontriviality]
 lemma isDiag_of_subsingleton [Subsingleton α] (z : Sym2 α) : z.IsDiag := z.ind Subsingleton.elim
 
+variable (z) in
+/-- Computably extract the element when known to be diagonal. -/
+def diagElem : z.IsDiag → α :=
+  z.rec (fun a b _ => a) fun a b a' b' h => funext fun hx : a' = b' => by
+    cases hx
+    cases h <;> rfl
+
+@[simp]
+theorem diagElem_mk {a b : α} (h : IsDiag s(a, b)) : s(a, b).diagElem h = a := rfl
+
+@[simp]
+theorem diag_diagElem (h : z.IsDiag) : diag (z.diagElem h) = z := by
+  cases z; cases h; rfl
+
+/-- `Sym2.diagElem` and `Sym2.diag` as an equivalence. -/
+@[simps]
+def diagElemEquiv : { a : Sym2 α // a.IsDiag } ≃ α where
+  toFun x := x.1.diagElem x.2
+  invFun a := ⟨diag a, rfl⟩
+  left_inv x := by ext; simp
+  right_inv a := by simp [diag]
+
 /-- The set of all `Sym2 α` elements on the diagonal. -/
 def diagSet : Set (Sym2 α) := {z | z.IsDiag}
 
@@ -539,7 +561,6 @@ theorem mem_diagSet_iff_isDiag (z : Sym2 α) : z ∈ diagSet ↔ z.IsDiag := .rf
 
 theorem diagSet_eq_setOf_isDiag : diagSet = {z : Sym2 α | z.IsDiag} := rfl
 
-set_option linter.deprecated false in
 @[deprecated Set.compl_setOf (since := "2025-12-10")]
 theorem diagSet_compl_eq_setOf_not_isDiag : diagSetᶜ = {z : Sym2 α | ¬z.IsDiag} :=
   congrArg _ diagSet_eq_setOf_isDiag
@@ -687,7 +708,7 @@ def fromRelOrderIso : { r : α → α → Prop // Symmetric r } ≃o Set (Sym2 �
   invFun s := ⟨ToRel s, toRel_symmetric s⟩
   left_inv r := by simp [toRel_fromRel]
   right_inv s := by simp [fromRel_toRel]
-  map_rel_iff' {r₁ r₂} := by simpa using fromRel_mono_iff ..
+  map_rel_iff' {r₁ r₂} := by simpa using! fromRel_mono_iff ..
 
 /-- `fromRel` induces an order embedding from symmetric relations to `Sym2` sets. -/
 @[deprecated fromRelOrderIso (since := "2026-03-11")]
@@ -900,7 +921,7 @@ theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈
     Mem.other hb = a := by
   classical
     rw [other_eq_other'] at hb ⊢
-    convert other_invol' ha hb using 2
+    convert! other_invol' ha hb using 2
     apply other_eq_other'
 
 theorem filter_image_mk_isDiag [DecidableEq α] (s : Finset α) :
