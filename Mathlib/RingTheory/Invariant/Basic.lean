@@ -40,13 +40,6 @@ If `Q` is a prime ideal of `B` lying over a prime ideal `P` of `A`, then
 
 @[expose] public section
 
-theorem MonoidHom.ker_comp_of_injective
-    {G N P : Type*} [Group G] [Group N] [MulOneClass P] (f : G →* N) (g : N →* P)
-    (hg : Function.Injective g) :
-    (g.comp f).ker = f.ker := by
-  ext
-  simp [map_eq_one_iff g hg]
-
 open scoped Pointwise
 
 section Galois
