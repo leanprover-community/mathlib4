@@ -34,7 +34,7 @@ open Finsupp Set
 public section
 
 namespace Convexity
-variable {ι R X Y : Type*}
+variable {R X Y : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 section Semiring
 variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace R X] [ConvexSpace R Y]
@@ -68,13 +68,11 @@ protected lemma IsStarConvexSet.sInter {S : Set (Set X)} (hS : ∀ s ∈ S, IsSt
     IsStarConvexSet R x (⋂₀ S) := by simp +contextual [IsStarConvexSet, hS _ _ _]
 
 @[grind ←]
-protected lemma IsStarConvexSet.iInter {ι : Sort*} {s : ι → Set X}
-    (hs : ∀ i, IsStarConvexSet R x (s i)) : IsStarConvexSet R x (⋂ i, s i) := by
-  simp +contextual [IsStarConvexSet, hs _ _]
+protected lemma IsStarConvexSet.iInter {s : ι → Set X} (hs : ∀ i, IsStarConvexSet R x (s i)) :
+    IsStarConvexSet R x (⋂ i, s i) := by simp +contextual [IsStarConvexSet, hs _ _]
 
-lemma IsStarConvexSet.iInter₂ {ι : Sort*} {κ : ι → Sort*} {s : ∀ i, κ i → Set X}
-    (h : ∀ i j, IsStarConvexSet R x (s i j)) : IsStarConvexSet R x (⋂ i, ⋂ j, s i j) :=
-  .iInter fun i ↦ .iInter <| h i
+lemma IsStarConvexSet.iInter₂ {s : ∀ i, κ i → Set X} (h : ∀ i j, IsStarConvexSet R x (s i j)) :
+    IsStarConvexSet R x (⋂ i, ⋂ j, s i j) := .iInter fun i ↦ .iInter <| h i
 
 @[grind ←]
 protected lemma IsStarConvexSet.sUnion {S : Set (Set X)} (hS : ∀ s ∈ S, IsStarConvexSet R x s) :
@@ -82,10 +80,10 @@ protected lemma IsStarConvexSet.sUnion {S : Set (Set X)} (hS : ∀ s ∈ S, IsSt
   rintro y ⟨s, hs, hy⟩ a ha b hb hab; exact ⟨s, hs, hS _ hs hy _ ..⟩
 
 @[grind ←]
-protected lemma IsStarConvexSet.iUnion {ι : Sort*} {s : ι → Set X}
-    (hs : ∀ i, IsStarConvexSet R x (s i)) : IsStarConvexSet R x (⋃ i, s i) := .sUnion <| by simpa
+protected lemma IsStarConvexSet.iUnion {s : ι → Set X} (hs : ∀ i, IsStarConvexSet R x (s i)) :
+    IsStarConvexSet R x (⋃ i, s i) := .sUnion <| by simpa
 
-protected lemma IsStarConvexSet.iUnion₂ {ι : Sort*} {κ : ι → Sort*} {s : ∀ i, κ i → Set X}
+protected lemma IsStarConvexSet.iUnion₂ {s : ∀ i, κ i → Set X}
     (h : ∀ i j, IsStarConvexSet R x (s i j)) : IsStarConvexSet R x (⋃ i, ⋃ j, s i j) :=
   .iUnion fun i ↦ .iUnion <| h i
 
@@ -111,8 +109,8 @@ protected lemma IsStarConvexSet.prod {t : Set Y} {y : Y} (hs : IsStarConvexSet R
   rintro ⟨w, z⟩ ⟨hw, hz⟩ a b ha hb hab; exact ⟨by simpa using hs hw _ .., by simpa using ht hz _ ..⟩
 
 @[grind ←]
-protected lemma IsStarConvexSet.pi {X : ι → Type*} [∀ i, ConvexSpace R (X i)] {s : Set ι}
-    {x : ∀ i, X i} {t : ∀ i, Set (X i)} (ht : ∀ i ∈ s, IsStarConvexSet R (x i) (t i)) :
+protected lemma IsStarConvexSet.pi {ι : Type*} {X : ι → Type*} [∀ i, ConvexSpace R (X i)]
+    {s : Set ι} {x : ∀ i, X i} {t : ∀ i, Set (X i)} (ht : ∀ i ∈ s, IsStarConvexSet R (x i) (t i)) :
     IsStarConvexSet R x (s.pi t) :=
   fun y hy a b ha hb hab i hi ↦ by simpa using ht _ hi (hy _ hi) _ ..
 
