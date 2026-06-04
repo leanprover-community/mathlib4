@@ -147,14 +147,18 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
   · calc _ < ε / max a b * b := by
           grw [gBound1 snd]
           gcongr
-          exact fBound2 fst (by omega)
+          apply fBound2 fst
+          simp [max_def] at *
+          lia
          _ ≤ ε := by
           rw [div_mul_comm, mul_le_iff_le_one_left ‹_›]
           bound
   · calc _ < a * (ε / max a b) := by
           grw [fBound1 fst]
           gcongr
-          exact gBound2 snd (by omega)
+          apply gBound2 snd
+          simp [max_def] at *
+          lia
          _ ≤ ε := by
           rw [mul_div_left_comm, mul_le_iff_le_one_right ‹_›]
           bound

@@ -304,9 +304,9 @@ theorem tendsto_proj (x : X) : Tendsto (fun n ↦ b.proj n x) atTop (𝓝 x) := 
 theorem proj_comp (n m : ℕ) (x : X) : b.proj n (b.proj m x) = b.proj (min n m) x := by
   simp only [proj, GeneralSchauderBasis.proj_comp]
   congr 2
-  ext _
-  simp only [Finset.mem_inter, Finset.mem_range]
-  omega
+  ext
+  simp [min_def]
+  lia
 
 /-- The projections are uniformly bounded. -/
 theorem exists_norm_proj_le [CompleteSpace X] : ∃ C : ℝ, ∀ n : ℕ, ‖b.proj n‖ ≤ C := by
