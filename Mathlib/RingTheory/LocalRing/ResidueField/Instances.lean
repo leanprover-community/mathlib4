@@ -35,7 +35,7 @@ instance [Algebra.IsSeparable (A ⧸ p) (B ⧸ q)] :
   ext x
   simp [RingHom.algebraMap_toAlgebra, ← IsScalarTower.algebraMap_apply]
 
-instance [p.IsMaximal] [q.IsMaximal] [Algebra.IsSeparable p.ResidueField q.ResidueField] :
+instance [Algebra.IsSeparable p.ResidueField q.ResidueField] :
     Algebra.IsSeparable (A ⧸ p) (B ⧸ q) := by
   refine Algebra.IsSeparable.of_equiv_equiv
     (.symm <| .ofBijective _ p.bijective_algebraMap_quotient_residueField)

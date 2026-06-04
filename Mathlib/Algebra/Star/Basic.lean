@@ -548,10 +548,18 @@ protected abbrev starAddMonoid [Star R] [AddMonoid R] [AddMonoid S] [StarAddMono
 /-- A non-unital non-associative ring endowed with `star` is a star ring if it admits an injective
 map that preserves `star`, `*` and `+` to a star ring. See note [reducible non-instances]. -/
 protected abbrev starRing [Star R] [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
-    [StarRing S] (star : ∀ x, f (star x) = star (f x)) (add : ∀ x y, f (x + y) = f x + f y)
-    (mul : ∀ x y, f (x * y) = f x * f y) (hf : Injective f) :
+    [StarRing S] (hf : Injective f) (star : ∀ x, f (star x) = star (f x))
+    (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y) :
     StarRing R :=
   { hf.starMul f star mul, hf.starAddMonoid f star add with }
+
+/-- A type endowed with `star` is a star module over some other type with `star` if it admits an
+injective map that preserves `star` and `•` to a star module. See note [reducible non-instances]. -/
+protected lemma starModule (𝕜 : Type*) [Star 𝕜] [SMul 𝕜 R]
+    [Star R] [SMul 𝕜 S] [Star S] [StarModule 𝕜 S] (hf : Injective f)
+    (star : ∀ x, f (star x) = star (f x)) (smul : ∀ (r : 𝕜) x, f (r • x) = r • f x) :
+    StarModule 𝕜 R where
+  star_smul r x := hf <| by rw [star, smul, star_smul, smul, star]
 
 end Function.Injective
 

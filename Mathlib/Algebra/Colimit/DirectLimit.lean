@@ -538,6 +538,24 @@ instance [Semiring R] [∀ i, AddCommMonoid (G i)] [∀ i, Module R (G i)]
   { add_smul _ _ := DirectLimit.induction _ fun i _ ↦ by simp_rw [smul_def, add_smul, add_def],
     zero_smul := DirectLimit.induction _ fun i _ ↦ by simp_rw [smul_def, zero_smul, zero_def i] }
 
+instance [∀ i, Mul (G i)] [∀ i, SMul R (G i)] [∀ i, IsScalarTower R (G i) (G i)]
+    [∀ i j h, MulHomClass (T h) (G i) (G j)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
+    IsScalarTower R (DirectLimit G f) (DirectLimit G f) where
+  smul_assoc r := DirectLimit.induction₂ _ fun i _ _ ↦ by
+    simp_rw [smul_eq_mul, smul_def, mul_def, smul_def, smul_mul_assoc]
+
+instance [∀ i, Mul (G i)] [∀ i, SMul R (G i)] [∀ i, SMulCommClass R (G i) (G i)]
+    [∀ i j h, MulHomClass (T h) (G i) (G j)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
+    SMulCommClass R (DirectLimit G f) (DirectLimit G f) where
+  smul_comm r := DirectLimit.induction₂ _ fun i _ _ ↦ by
+    simp_rw [smul_eq_mul, smul_def, mul_def, smul_def, mul_smul_comm]
+
+instance [∀ i, Mul (G i)] [∀ i, SMul R (G i)] [∀ i, SMulCommClass (G i) R (G i)]
+    [∀ i j h, MulHomClass (T h) (G i) (G j)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
+    SMulCommClass (DirectLimit G f) R (DirectLimit G f) :=
+  have _ (i) : SMulCommClass R (G i) (G i) := SMulCommClass.symm _ _ _
+  SMulCommClass.symm _ _ _
+
 end Action
 
 section DivisionSemiring
@@ -613,14 +631,14 @@ lemma map₀_algebraMap (i : ι) (r : R) :
 instance : Algebra R (DirectLimit G f) where
   algebraMap := map₀RingHom (f := f).comp (algebraMap R (∀ i, G i))
   commutes' r := DirectLimit.induction f fun i _ ↦ by
-    dsimp [Pi.algebraMap_def]
+    dsimp [Pi.algebraMap_def, map₀RingHom]
     rw [map₀_algebraMap i, mul_def, mul_def, Algebra.commutes]
   smul_def' r := DirectLimit.induction _ fun i _ => by
-    dsimp [Pi.algebraMap_def]
+    dsimp [Pi.algebraMap_def, map₀RingHom]
     rw [smul_def, map₀_algebraMap i, mul_def, Algebra.smul_def']
 
 lemma algebraMap_def (i : ι) (r : R) :
-    algebraMap R (DirectLimit G f) r = ⟦⟨i, algebraMap R (G i) r⟩⟧:=
+    algebraMap R (DirectLimit G f) r = ⟦⟨i, algebraMap R (G i) r⟩⟧ :=
   map₀_algebraMap i r
 
 end Algebra
@@ -815,8 +833,8 @@ end NonUnitalStarRing
 namespace Algebra
 
 variable [CommSemiring R]
-variable [∀ i, Semiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)]
-variable [∀ i, Algebra R (G i)] [∀ i j h, AlgHomClass (T h) R (G i) (G j)]
+variable [∀ i, Semiring (G i)] [∀ i, Algebra R (G i)]
+variable [∀ i j h, AlgHomClass (T h) R (G i) (G j)]
 variable [Nonempty ι]
 
 variable (G f) in
@@ -840,7 +858,7 @@ to a unique map out of the direct limit.
 def lift (g : ∀ i, G i →ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →ₐ[R] P where
   toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
-  __ := DirectLimit.Ring.lift G f P (g:= fun i => (g i).toRingHom) (Hg:=Hg)
+  __ := DirectLimit.Ring.lift G f P (g := fun i => (g i).toRingHom) (Hg := Hg)
   commutes' r := by
     let i := Classical.arbitrary ι
     rw [algebraMap_def i r, lift_def, AlgHom.commutes]
@@ -871,7 +889,6 @@ variable [Nonempty ι]
 
 variable (G f) in
 /-- The canonical map from a component to the direct limit. -/
-@[simps]
 def of (i) : G i →ₙₐ[R] DirectLimit G f where
   toFun x := ⟦⟨i, x⟩⟧
   __ := (DirectLimit.NonUnitalRing.of G f i)
@@ -886,11 +903,11 @@ variable (G f) in
 that respect the directed system structure (i.e. make some diagram commute) give rise
 to a unique map out of the direct limit.
 -/
-@[simps]
+@[simps toFun]
 def lift (g : ∀ i, G i →ₙₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →ₙₐ[R] P where
   toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
-  __ := DirectLimit.NonUnitalRing.lift G f P (g:= fun i => (g i)) (Hg:=Hg)
+  __ := DirectLimit.NonUnitalRing.lift G f P (g := fun i => (g i)) (Hg := Hg)
   map_smul' m := by apply lift_smul
 
 variable (g : ∀ i, G i →ₙₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
