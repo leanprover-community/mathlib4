@@ -191,9 +191,19 @@ instance [P.IsRegular] : (P.ofIso e hA).IsRegular where
     refine hP.false ⟨fun n ↦ ⟨_, (f n).2⟩, fun n ↦ ?_⟩
     simpa [← P.ofIso_ancestralRel_iff e hA] using hf n
 
-instance [P.IsRegular] [hP : P.IsInner] : (P.ofIso e hA).IsInner where
-  ne_zero :=
+set_option pp.deepTerms true
+set_option pp.proofs true
+set_option pp.maxSteps 500000
+instance [P.IsProper] [hP : P.IsInner] : (P.ofIso e hA).IsInner where
+  ne_zero := by
+    intro ⟨b, hb⟩ d hd
+    obtain ⟨a, rfl⟩ := (N.orderIsoOfIso e hA).symm.surjective b
+    simp only [ofIso_II, Set.mem_preimage, OrderIso.apply_symm_apply] at hb
+    have := hP.ne_zero ⟨a, hb⟩ hd
+
+
     sorry
+
   ne_last :=
     sorry
 
