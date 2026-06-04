@@ -221,10 +221,10 @@ theorem intrinsicInterior_prod_eq [AddCommGroup W] [Module 𝕜 W] [TopologicalS
   have himage : e '' ((↑) ⁻¹' (s ×ˢ t)) = ((↑) ⁻¹' s) ×ˢ ((↑) ⁻¹' t) := by
     ext ⟨a, b⟩; constructor
     · rintro ⟨z, hz, heq⟩; exact heq ▸ hz
-    · intro h; exact ⟨e.symm (a, b), by simpa [e] using h, e.apply_symm_apply _⟩
+    · intro h; exact ⟨e.symm (a, b), mem_preimage.mpr h, e.apply_symm_apply _⟩
   have hfst : ∀ x : affineSpan 𝕜 (s ×ˢ t), ((e x).1 : P) = (x : P × Q).1 := fun _ => rfl
   have hsnd : ∀ x : affineSpan 𝕜 (s ×ˢ t), ((e x).2 : Q) = (x : P × Q).2 := fun _ => rfl
-  simp only [intrinsicInterior]; ext ⟨p1, p2⟩; simp only [mem_image, mem_prod]
+  simp only [intrinsicInterior]; ext ⟨p1, p2⟩; simp only [mem_image, Set.mem_prod]
   constructor
   · rintro ⟨x, hx, hx_eq⟩
     have hmem : e x ∈ interior (((↑) ⁻¹' s) ×ˢ ((↑) ⁻¹' t)) := by
