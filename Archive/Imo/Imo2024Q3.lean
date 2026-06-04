@@ -174,7 +174,7 @@ lemma exists_infinite_setOf_apply_eq : ∃ m, {i | a i = m}.Infinite := by
     simp only [Set.mem_Ico, zero_le, true_and, not_lt] at hi hj
     simp only [add_left_inj] at h
     convert! congr(a $h) using 1 <;> simp [apply_nth_zero]
-  refine (Set.infinite_of_injOn_mapsTo hinj (fun i hi ↦ ?_) (hr.diff (Set.finite_Ico _ _))) (hi 1)
+  refine (Set.infinite_of_injOn_mapsTo hinj (fun i hi ↦ ?_) (hr.sdiff (Set.finite_Ico _ _))) (hi 1)
   simp only [Set.mem_sdiff, Set.mem_range, Set.mem_Ico, zero_le, true_and, not_lt] at hi
   rcases hi with ⟨⟨_, rfl⟩, hi⟩
   exact hc.apply_nth_add_one_eq toFinset_card_pos
@@ -256,7 +256,7 @@ lemma infinite_setOf_apply_eq_anti {j k : ℕ} (hj : 0 < j) (hk : {i | a i = k}.
   have hk' : {i | a (i + 1) = k}.Infinite := by
     have hinj : Set.InjOn (· + 1) {i | a (i + 1) = k} := (add_left_injective _).injOn
     rw [← Set.infinite_image_iff hinj]
-    have hk0 : ({i | a i = k} \ {0}).Infinite := hk.diff (Set.finite_singleton _)
+    have hk0 : ({i | a i = k} \ {0}).Infinite := hk.sdiff (Set.finite_singleton _)
     convert! hk0 using 1
     ext i
     simp only [Set.mem_image, Set.mem_setOf_eq, Set.mem_sdiff, Set.mem_singleton_iff]
@@ -282,7 +282,7 @@ lemma infinite_setOf_apply_eq_anti {j k : ℕ} (hj : 0 < j) (hk : {i | a i = k}.
     by_contra hxy
     exact hc.apply_add_one_ne_of_apply_eq hNx hNy hxy hyj (hyk ▸ hxk)
   have hk'' : (_ \ Set.Ico 0 (N + 2)).Infinite :=
-    ((Set.infinite_image_iff hinj).mpr (hk'.diff (Set.finite_Ico _ _))).diff (Set.finite_Ico _ _)
+    ((Set.infinite_image_iff hinj).mpr (hk'.sdiff (Set.finite_Ico _ _))).sdiff (Set.finite_Ico _ _)
   refine hk''.mono fun _ hi ↦ ?_
   simp only [Set.mem_image, Set.mem_sdiff, Set.mem_setOf_eq, Set.mem_Ico, zero_le, true_and,
     not_lt] at hi
