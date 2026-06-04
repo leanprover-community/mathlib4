@@ -464,15 +464,6 @@ theorem rTensor_norm_le (f : E →L[𝕜] F) :
     ‖f.rTensor G‖ ≤ ‖f‖ := by
   apply LinearMap.mkContinuous_norm_le _ (norm_nonneg _) _
 
-variable (G) in
-omit [InnerProductSpace 𝕜 H] in
-theorem adjoint_rTensor [CompleteSpace E] [CompleteSpace G]
-    [CompleteSpace (E ⊗[𝕜] G)] [CompleteSpace (F ⊗[𝕜] G)] [CompleteSpace F] [CompleteSpace H]
-    (f : E →L[𝕜] F) :
-    (f.rTensor G).adjoint = f.adjoint.rTensor G := by
-  apply coe_inj.mp <| ext' ?_
-  simp [TensorProduct.ext_iff_inner_right, adjoint_inner_left]
-
 variable (E) in
 /-- `LinearMap.lTensor` as a continuous linear map, i.e. the continuous linear map `g` extended to
 the map `x ⊗ₜ[𝕜] y ↦ x ⊗ₜ[𝕜] g(y)`. -/
@@ -535,15 +526,6 @@ theorem lTensor_norm_le (g : G →L[𝕜] H) :
     (commIsometry 𝕜 H E).toLinearIsometry.norm_toContinuousLinearMap_le]
   simp
 
-variable (E) in
-omit [InnerProductSpace 𝕜 F] in
-theorem adjoint_lTensor [CompleteSpace E] [CompleteSpace G]
-    [CompleteSpace (H ⊗[𝕜] E)] [CompleteSpace (G ⊗[𝕜] E)] [CompleteSpace F] [CompleteSpace H]
-    (g : G →L[𝕜] H) :
-    (g.rTensor E).adjoint = g.adjoint.rTensor E := by
-  apply coe_inj.mp <| ext' ?_
-  simp [TensorProduct.ext_iff_inner_right, adjoint_inner_left]
-
 end ContinuousLinearMap
 
 namespace TensorProduct
@@ -558,13 +540,24 @@ theorem norm_mapL_le (f : E →L[𝕜] F) (g : G →L[𝕜] H) : ‖mapL f g‖ 
   grw [ContinuousLinearMap.opNorm_comp_le, ContinuousLinearMap.rTensor_norm_le,
     ContinuousLinearMap.lTensor_norm_le]
 
+lemma mapL_def (f : E →L[𝕜] F) (g : G →L[𝕜] H) : mapL f g = f.rTensor H ∘L g.lTensor E := rfl
+
 @[simp]
 lemma mapL_tmul (f : E →L[𝕜] F) (g : G →L[𝕜] H) (m : E) (n : G) :
     mapL f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
   rfl
 
+@[simp]
 lemma toLinearMap_mapL (f : E →L[𝕜] F) (g : G →L[𝕜] H) : (mapL f g).toLinearMap = map f g := by
     ext; simp
+
+variable (G) in
+theorem rTensor_eq_mapL (f : E →L[𝕜] F) : f.rTensor G = mapL f (ContinuousLinearMap.id 𝕜 G) := by
+    ext; simp [mapL_def, ContinuousLinearMap.lTensor_def]
+
+variable (E) in
+theorem lTensor_eq_mapL (g : G →L[𝕜] H) : g.lTensor E = mapL (ContinuousLinearMap.id 𝕜 E) g := by
+    ext; simp [mapL_def, ContinuousLinearMap.lTensor_def]
 
 @[simp]
 theorem adjoint_mapL [CompleteSpace E] [CompleteSpace G] [CompleteSpace (E ⊗[𝕜] G)]
@@ -572,6 +565,22 @@ theorem adjoint_mapL [CompleteSpace E] [CompleteSpace G] [CompleteSpace (E ⊗[�
     (f : E →L[𝕜] F) (g : G →L[𝕜] H) : (mapL f g).adjoint = mapL f.adjoint g.adjoint := by
   apply ContinuousLinearMap.coe_inj.mp <| ext' ?_
   simp [TensorProduct.ext_iff_inner_right, ContinuousLinearMap.adjoint_inner_left]
+
+variable (G) in
+omit [InnerProductSpace 𝕜 H] in
+theorem adjoint_rTensor [CompleteSpace E] [CompleteSpace G]
+    [CompleteSpace (E ⊗[𝕜] G)] [CompleteSpace (F ⊗[𝕜] G)] [CompleteSpace F] [CompleteSpace H]
+    (f : E →L[𝕜] F) :
+    (f.rTensor G).adjoint = f.adjoint.rTensor G := by
+  simp [rTensor_eq_mapL]
+
+variable (E) in
+omit [InnerProductSpace 𝕜 F] in
+theorem adjoint_lTensor [CompleteSpace E] [CompleteSpace G]
+    [CompleteSpace (E ⊗[𝕜] H)] [CompleteSpace (E ⊗[𝕜] G)] [CompleteSpace F] [CompleteSpace H]
+    (g : G →L[𝕜] H) :
+    (g.lTensor E).adjoint = g.adjoint.lTensor E := by
+  simp [lTensor_eq_mapL]
 
 open LinearMap
 
