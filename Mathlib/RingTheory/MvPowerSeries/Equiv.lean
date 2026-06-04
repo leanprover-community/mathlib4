@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.PowerSeries.Substitution
 /-!
 # Equivalences related to power series rings
 
-This file establishes a number of equivalences related to power series rings and
+This file introduces a number of equivalences related to power series rings and
 is patterned after `Mathlib/Algebra/MvPolynomial/Equiv.lean`.
 
 * `MvPowerSeries.isEmptyEquiv` : The isomorphism between multivariable power series
@@ -78,9 +78,7 @@ variable (σ R) in
 def isEmptyEquiv [IsEmpty σ] : MvPowerSeries σ R ≃ₐ[R] R where
   __ := constantCoeff
   invFun := C
-  left_inv _ := by
-    ext x; rw [Subsingleton.eq_zero x]
-    simp
+  left_inv _ := by ext x; simp [Subsingleton.eq_zero x]
   commutes' _ := rfl
 
 end isEmptyEquiv
@@ -172,9 +170,9 @@ private lemma sumToIterFun_monomial (x : σ ⊕ τ →₀ ℕ) (r : R) :
     Sum.elim_inl, Sum.elim_inr, comapDomain_apply]
   split_ifs
   · rw [coeff_monomial, if_pos (by ext; grind [comapDomain_apply])]
-  · grind
+  · tauto
   · rw [coeff_monomial, if_neg (by simp [Finsupp.ext_iff]; grind)]
-  · simp
+  · rw [coeff_zero]
 
 open Finset in
 private lemma sumToIterFun_mul (p q) : sumToIterFun σ τ R (p * q) =
@@ -266,8 +264,8 @@ theorem sumAlgEquiv_comp_rename_inr : (sumAlgEquiv σ τ R).toAlgHom.comp
       (MvPowerSeries σ (MvPowerSeries τ R)) := by
   classical
   ext p x y
-  suffices (coeff (x.sumElim y)) ((rename Embedding.inr) p) =
-    (coeff y) (if x = 0 then p else 0) by simpa [coeff_sumToIter, algebraMap_apply, coeff_C]
+  suffices coeff (x.sumElim y) ((rename Embedding.inr) p) = coeff y (if x = 0 then p else 0) by
+    simpa [coeff_sumToIter, algebraMap_apply, coeff_C]
   split_ifs with h
   · simp [h, ← embDomain_inr]
   · replace h : x.sumElim y ∉ Set.range (mapDomain Embedding.inr) := by
@@ -279,7 +277,7 @@ theorem sumAlgEquiv_comp_rename_inl : (sumAlgEquiv σ τ R).toAlgHom.comp
     (rename Embedding.inl) = mapAlgHom (Algebra.ofId ..) := by
   classical
   ext p x y
-  suffices (coeff (x.sumElim y)) ((rename Embedding.inl) p) = (coeff y) (C ((coeff x) p)) by
+  suffices coeff (x.sumElim y) ((rename Embedding.inl) p) = coeff y (C ((coeff x) p)) by
     simpa [sumAlgEquiv_apply, coeff_sumToIter]
   by_cases h : y = 0
   · simp [h, ← embDomain_inl]
@@ -300,17 +298,15 @@ def commAlgEquiv :
 lemma commAlgEquiv_C (p : MvPowerSeries τ R) : commAlgEquiv σ τ R (C p) = map C p := by
   classical
   ext y x
-  simp only [commAlgEquiv, AlgEquiv.trans_apply, renameEquiv_apply,
-    AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, AlgHom.toRingHom_toMonoidHom,
-    OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe, sumAlgEquiv_apply,
-    coeff_sumToIter, coeff_map, coeff_C]
+  suffices coeff (y.sumElim x) (rename (Equiv.sumComm σ τ) ((sumAlgEquiv σ τ R).symm (C p))) =
+    if x = 0 then (coeff y) p else 0 by simpa [commAlgEquiv, coeff_sumToIter, coeff_C]
   by_cases h : y.sumElim x ∈ Set.range (mapDomain (Equiv.sumComm σ τ).toEmbedding)
   · rw [← funext_iff.mpr (embDomain_eq_mapDomain _)] at h
     rcases h with ⟨z, hz⟩
     simp_rw [← hz, ← Equiv.coe_toEmbedding, coeff_embDomain_rename, coeff_sumAlgEquiv_symm_apply]
     rw [embDomain_eq_mapDomain, Equiv.coe_toEmbedding, Equiv.sumComm_apply,
-      ← mapDomain_swap_sumElim (M := ℕ), (mapDomain_injective
-        Sum.swap_leftInverse.injective).eq_iff] at hz
+      ← mapDomain_swap_sumElim (M := ℕ),
+      (mapDomain_injective Sum.swap_leftInverse.injective).eq_iff] at hz
     rw [hz, comapDomain_inr_sumElim, comapDomain_inl_sumElim, coeff_C]
     split <;> simp
   · simp_rw [← Equiv.coe_toEmbedding, coeff_rename_eq_zero _ _ h]
@@ -349,30 +345,33 @@ def optionFunLeft (p : MvPowerSeries (Option σ) R) : PowerSeries (MvPowerSeries
 
 private lemma coeff_coeff_optionFunLeft (p : MvPowerSeries (Option σ) R) (n : ℕ) (x : σ →₀ ℕ) :
     coeff x (PowerSeries.coeff n (optionFunLeft σ R p)) = coeff (x.optionElim n) p := by
-  rw [optionFunLeft, PowerSeries.coeff_mk]
-  rfl
+  rw [optionFunLeft, PowerSeries.coeff_mk, coeff]
+  exact LinearMap.proj_apply ..
 
 private theorem optionFunLeft_monomial (x : Option σ →₀ ℕ) (r : R) :
     optionFunLeft σ R (monomial x r) = PowerSeries.monomial (x none) (monomial x.some r) := by
   classical
-  ext1 n; rw [PowerSeries.coeff_monomial]
-  split_ifs with h
-  · ext y; rw [h, coeff_coeff_optionFunLeft, coeff_monomial]
-    split_ifs with h'
-    · rw [← h']; simp
-    refine (coeff_monomial_ne ?_ _).symm
-    intro h''; simp [h''] at h'
-  · ext y; rw [coeff_coeff_optionFunLeft, map_zero]
-    exact coeff_monomial_ne (by simpa [Finsupp.ext_iff] using ⟨none, by simpa⟩) r
+  ext n y
+  rw [PowerSeries.coeff_monomial, coeff_coeff_optionFunLeft, coeff_monomial]
+  split_ifs with h1 h2 h3
+  · rw [← h1]; simp
+  · absurd h2
+    rw [← optionElim_apply_none n, h1]
+  · replace h1 : ¬ y = x.some := fun h ↦ by
+      absurd h1; ext u; cases u
+      · simpa
+      · simpa using DFunLike.congr_fun h _
+    rw [coeff_monomial, if_neg h1]
+  · rw [coeff_zero]
 
-open Finset in
 private lemma optionFunLeft_mul (p q : MvPowerSeries (Option σ) R) :
     optionFunLeft σ R (p * q) = optionFunLeft σ R p * optionFunLeft σ R q := by
   classical
   ext
-  simpa [coeff_coeff_optionFunLeft, coeff_mul, PowerSeries.coeff_mul, map_sum, ← sum_product',
-    ← image_optionElim_product_antidiagonal] using sum_image (LeftInverse.injective
-      (g := fun (x, y) ↦ ((x none, y none), x.some, y.some)) (fun _ ↦ by simp)).injOn
+  simpa [coeff_coeff_optionFunLeft, coeff_mul, PowerSeries.coeff_mul, ← sum_product',
+    ← image_optionElim_product_antidiagonal] using sum_image
+      (LeftInverse.injective (g := fun (x, y) ↦ ((x none, y none), x.some, y.some))
+      (fun _ ↦ by simp)).injOn
 
 variable (R σ) in
 /-- An inverse function of `optionFunLeft`. -/
@@ -446,21 +445,20 @@ private theorem optionFunRight_monomial (x : Option σ →₀ ℕ) (r : R) :
   · rw [PowerSeries.coeff_monomial, eq_comm, ite_eq_left_iff]
     suffices h : n = x none by simp [h]
     simpa using DFunLike.congr_fun h none
-  · exfalso; revert h'; rw [imp_false, not_not]
-    ext i; rw [← optionElim_apply_some n, h, some_apply]
+  · absurd h'; ext i
+    rw [← optionElim_apply_some n, h, some_apply]
   · rw [PowerSeries.coeff_monomial, eq_comm, ite_eq_right_iff]
-    intro h'; exfalso; revert h
-    simp [h', h'']
+    intro h'; absurd h; simp [h', h'']
   · simp
 
-open Finset in
 private lemma optionFunRight_mul (p q : MvPowerSeries (Option σ) R) :
     optionFunRight σ R (p * q) = optionFunRight σ R p * optionFunRight σ R q := by
   classical
   ext
   simpa [coeff_coeff_optionFunRight, coeff_mul, ← image_optionElim_product_antidiagonal,
-    map_sum, PowerSeries.coeff_mul, ← sum_product_right'] using sum_image (LeftInverse.injective
-      (g := fun (x, y) ↦ ((x none, y none), x.some, y.some)) (fun _ ↦ by simp)).injOn
+    PowerSeries.coeff_mul, ← sum_product_right'] using sum_image
+      (LeftInverse.injective (g := fun (x, y) ↦ ((x none, y none), x.some, y.some))
+      (fun _ ↦ by simp)).injOn
 
 variable (R σ) in
 /-- An inverse function of `optionFunRight`. -/
@@ -520,37 +518,40 @@ theorem coeff_coeff_finSuccEquiv (p : MvPowerSeries (Fin (n + 1)) R) {k x} :
   simp_rw [← Equiv.coe_toEmbedding, coeff_coeff_optionEquivLeft,
     ← embDomain_finSuccEquiv_cons, coeff_embDomain_rename]
 
+@[simp]
 theorem finSuccEquiv_X_zero : finSuccEquiv R n (X 0) = .X := by
   ext k x
-  rw [coeff_coeff_finSuccEquiv, PowerSeries.coeff_X, coeff_X]
+  simp_rw [coeff_coeff_finSuccEquiv, PowerSeries.coeff_X, coeff_X, cons_eq_single_zero_iff]
   split_ifs with h1 h2 h3
-  · rw [cons_eq_single_zero_iff] at h1
-    simp [h1.left]
-  · grind [cons_eq_single_zero_iff]
-  · rw [cons_eq_single_zero_iff, not_and'] at h1
-    rw [coeff_one, if_neg (h1 h3)]
+  · simp [h1.left]
+  · tauto
+  · rw [coeff_one, if_neg (by tauto)]
   · rw [coeff_zero]
 
-theorem finSuccEquiv_X_succ {j : Fin n} : finSuccEquiv R n (X j.succ) = .C (X j) := by
+@[simp]
+theorem finSuccEquiv_X_succ (j : Fin n) : finSuccEquiv R n (X j.succ) = .C (X j) := by
   ext k x
-  rw [coeff_coeff_finSuccEquiv, PowerSeries.coeff_C, coeff_X]
+  simp_rw [coeff_coeff_finSuccEquiv, PowerSeries.coeff_C, coeff_X, cons_eq_single_succ_iff]
   split_ifs with h1 h2 h3
-  · rw [cons_eq_single_succ_iff] at h1
-    simp [h1.left]
-  · grind [cons_eq_single_succ_iff]
-  · rw [cons_eq_single_succ_iff, not_and'] at h1
-    rw [coeff_X, if_neg (h1 h3)]
+  · simp [h1.left]
+  · tauto
+  · rw [coeff_X, if_neg (by tauto)]
+  · rw [coeff_zero]
+
+@[simp]
+theorem finSuccEquiv_C (r : R) : (finSuccEquiv R n) (C r) = PowerSeries.C (C r) := by
+  ext k x
+  simp_rw [coeff_coeff_finSuccEquiv, PowerSeries.coeff_C, coeff_C, ← cons_zero_zero,
+    cons_injective2.eq_iff]
+  split_ifs with h1 h2 h3
+  · simp [h1.right]
+  · tauto
+  · rw [coeff_C, if_neg (by tauto)]
   · rw [coeff_zero]
 
 theorem finSuccEquiv_comp_C : (MvPowerSeries.finSuccEquiv R n).symm.toRingHom.comp
-    (PowerSeries.C.comp MvPowerSeries.C) = MvPowerSeries.C := RingHom.ext fun r ↦ by
-  classical
-  rw [AlgEquiv.symm_toRingEquiv, RingEquiv.toRingHom_eq_coe, RingHom.coe_comp,
-    RingHom.coe_coe, comp_apply, RingEquiv.symm_apply_eq]
-  ext; simp only [RingHom.coe_comp, comp_apply, PowerSeries.coeff_C,
-    AlgEquiv.coe_ringEquiv, coeff_coeff_finSuccEquiv, coeff_C]
-  rw [← single_zero 0]
-  grind [coeff_C, cons_eq_single_zero_iff]
+    (PowerSeries.C.comp MvPowerSeries.C) = MvPowerSeries.C := by
+  ext1; simp [AlgEquiv.symm_apply_eq]
 
 /-- Consider a multivariate power series `p` whose variables are indexed by `Option σ`,
 and suppose that `σ ≃ Fin n`.
@@ -567,9 +568,9 @@ lemma finSuccEquiv_renameEquiv_finSuccEquiv (e : σ ≃ Fin n) (p) :
       (finSuccEquiv R n) p = PowerSeries.map (rename e).toRingHom
         (optionEquivLeft σ R p) := by
   ext k x
-  simp only [AlgEquiv.trans_apply, renameEquiv_apply, Equiv.coe_trans, AlgHom.toRingHom_eq_coe,
-    RingHom.toMonoidHom_eq_coe, AlgHom.toRingHom_toMonoidHom, OneHom.toFun_eq_coe,
-    MonoidHom.toOneHom_coe, MonoidHom.coe_coe, PowerSeries.coeff_map, RingHom.coe_coe]
+  suffices coeff x (PowerSeries.coeff k ((finSuccEquiv R n) (rename
+    ((_root_.finSuccEquiv n).symm ∘ e.optionCongr) p))) =
+      coeff x (rename e (PowerSeries.coeff k (optionEquivLeft σ R p))) by simpa
   have aux : x.cons k = embDomain (e.optionCongr.toEmbedding.trans
     (_root_.finSuccEquiv n).symm.toEmbedding) ((x.mapDomain e.symm).optionElim k) := by
     rw [embDomain_eq_mapDomain, ← Equiv.trans_toEmbedding, Equiv.coe_toEmbedding,
