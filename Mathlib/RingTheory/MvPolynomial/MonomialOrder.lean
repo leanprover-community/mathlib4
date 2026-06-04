@@ -114,7 +114,7 @@ noncomputable def leadingCoeff (f : MvPolynomial σ R) : R :=
   f.coeff (m.degree f)
 
 lemma leadingCoeff_def (f : MvPolynomial σ R) : m.leadingCoeff f = f.leadingCoeff m.toSyn := by
-  rw [MonomialOrder.leadingCoeff, MvPolynomial.leadingCoeff,
+  rw [MonomialOrder.leadingCoeff, MvPolynomial.leadingCoeff_def,
     Function.invFun_eq_of_injective_of_rightInverse m.toSyn.injective m.toSyn.rightInverse_symm]
   rfl
 

@@ -34,7 +34,6 @@ variable {R' : Type*} [CommRing R']
 variable {σ : Type*} (D : (σ →₀ ℕ) → B)
 variable {p : MvPolynomial σ R}
 
-set_option linter.unusedVariables false in
 /-- Let `R` be a commutative semi-ring, let `B` be a `SemilatticeSup` with `OrderBot`, and let
 `D : (σ →₀ ℕ) → B` be a "degree" function.
 For an element `f : MvPolynomial σ R`, the element `supDegree f : B` is the supremum of all the
@@ -54,7 +53,7 @@ section SupDegree
 
 variable [SemilatticeSup B] [OrderBot B] {D : (σ →₀ ℕ) → B}
 
-theorem supDegree_def (p : MvPolynomial σ R) : p.supDegree D = p.support.sup D := rfl
+theorem supDegree_def : p.supDegree D = p.support.sup D := rfl
 
 theorem supDegree_add_le {f g : MvPolynomial σ R} :
     (f + g).supDegree D ≤ (f.supDegree D) ⊔ (g.supDegree D) :=
@@ -144,13 +143,16 @@ variable [LinearOrder B] [OrderBot B] {p q : MvPolynomial σ R} (D : (σ →₀ 
   `f : MvPolynomial σ R` is the nonzero coefficient of highest degree according to `D`, or 0 if
   `f = 0`. In general, it is defined to be the coefficient at an inverse image of `supDegree f`
   (if such exists). -/
-@[expose]
-noncomputable def leadingCoeff (f : MvPolynomial σ R) : R := f.coeff (D.invFun <| f.supDegree D)
+noncomputable abbrev leadingCoeff (f : MvPolynomial σ R) : R := AddMonoidAlgebra.leadingCoeff D f
 
 /-- An element `f : MvPolynomial σ R` is monic if its leading coefficient is one. -/
-@[expose, reducible] def Monic (f : MvPolynomial σ R) : Prop := f.leadingCoeff D = 1
+abbrev Monic (f : MvPolynomial σ R) : Prop := AddMonoidAlgebra.Monic D f
 
 variable {D}
+
+theorem leadingCoeff_def : p.leadingCoeff D = p.coeff (D.invFun <| p.supDegree D) := rfl
+
+theorem monic_def : p.Monic D ↔ p.leadingCoeff D = 1 := by rfl
 
 @[simp]
 theorem leadingCoeff_monomial (hD : D.Injective) (a : σ →₀ ℕ) (r : R) :
