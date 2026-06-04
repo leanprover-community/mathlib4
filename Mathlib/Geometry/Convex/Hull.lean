@@ -25,8 +25,8 @@ variable {R X Y : Type*} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [
 
 variable (R) in
 /-- The convex hull of a set `s` is the minimal convex set that includes `s`. -/
-def convexHull (s : Set X) : Set X :=
-  ClosureOperator.ofCompletePred (IsConvexSet R) (fun _ ↦ .sInter) s
+def convexHull : ClosureOperator (Set X) :=
+  .ofCompletePred (IsConvexSet R) (fun _ ↦ .sInter)
 
 lemma subset_convexHull_iff : t ⊆ convexHull R s ↔ ∀ C, s ⊆ C → IsConvexSet R C → t ⊆ C := by
   simp [convexHull, iInter_subtype, iInter_and]
@@ -89,12 +89,14 @@ variable (R x) in
   mpr hs := by simp [hs]
 
 variable (R s t) in
+@[simp]
 lemma convexHull_convexHull_union :
     convexHull R (convexHull R s ∪ t) = convexHull R (s ∪ t) :=
   ClosureOperator.closure_sup_closure_left ..
 
 variable (R s t) in
-lemma convexHull_union_convexHull_right :
+@[simp]
+lemma convexHull_union_convexHull :
     convexHull R (s ∪ convexHull R t) = convexHull R (s ∪ t) :=
   ClosureOperator.closure_sup_closure_right ..
 
