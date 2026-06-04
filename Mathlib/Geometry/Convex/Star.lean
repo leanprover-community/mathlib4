@@ -45,7 +45,7 @@ variable (R x s) in
 contained in `s`. -/
 @[expose]
 def IsStarConvexSet : Prop :=
-  ∀ ⦃a b ha hb hab y⦄, y ∈ s → convexCombPair (R := R) a b ha hb hab x y ∈ s
+  ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : R⦄ ha hb hab, convexCombPair a b ha hb hab x y ∈ s
 
 @[simp] protected lemma IsStarConvexSet.empty : IsStarConvexSet R x ∅ := by simp [IsStarConvexSet]
 
@@ -73,7 +73,8 @@ lemma IsStarConvexSet.iInter₂ {ι : Sort*} {κ : ι → Sort*} {s : ∀ i, κ 
   .iInter fun i ↦ .iInter <| h i
 
 protected lemma IsStarConvexSet.sUnion {S : Set (Set X)} (hS : ∀ s ∈ S, IsStarConvexSet R x s) :
-    IsStarConvexSet R x (⋃₀ S) := by rintro a ha b hb hab y ⟨s, hs, hy⟩; exact ⟨s, hs, hS _ hs hy⟩
+    IsStarConvexSet R x (⋃₀ S) := by
+  rintro y ⟨s, hs, hy⟩ a ha b hb hab; exact ⟨s, hs, hS _ hs hy _ ..⟩
 
 protected lemma IsStarConvexSet.iUnion {ι : Sort*} {s : ι → Set X}
     (hs : ∀ i, IsStarConvexSet R x (s i)) : IsStarConvexSet R x (⋃ i, s i) := .sUnion <| by simpa
@@ -83,23 +84,27 @@ protected lemma IsStarConvexSet.iUnion₂ {ι : Sort*} {κ : ι → Sort*} {s : 
   .iUnion fun i ↦ .iUnion <| h i
 
 lemma IsConvexSet.isStarConvexSet (hs : IsConvexSet R s) (hx : x ∈ s) : IsStarConvexSet R x s :=
-  fun _a _b _ha _hb _hab _y hy ↦ hs.convexCombPair_mem hx hy ..
+  fun _y hy _a _b _ha _hb _hab ↦ hs.convexCombPair_mem hx hy ..
+
+lemma IsStarConvexSet.mem (hs : IsStarConvexSet R x s) (hs₀ : s.Nonempty) : x ∈ s := by
+  obtain ⟨y, hy⟩ := hs₀; simpa using hs hy zero_le_one le_rfl (add_zero _)
 
 protected lemma IsStarConvexSet.preimage {s : Set Y} (hf : IsAffineMap R f)
     (hs : IsStarConvexSet R (f x) s) : IsStarConvexSet R x (f ⁻¹' s) :=
-  fun a b ha hb hab y hy ↦ by simpa [mem_preimage, hf.map_convexCombPair] using hs hy
+  fun y hy a b ha hb hab ↦ by simpa [mem_preimage, hf.map_convexCombPair] using hs hy _ ..
 
 protected lemma IsStarConvexSet.image (hf : IsAffineMap R f) (hs : IsStarConvexSet R x s) :
     IsStarConvexSet R (f x) (f '' s) := by
-  rintro _ a b ha hb hab ⟨y, hy, rfl⟩; exact ⟨_, hs hy, hf.map_convexCombPair ..⟩
+  rintro _ ⟨y, hy, rfl⟩ a b ha hb hab; exact ⟨_, hs hy _ .., hf.map_convexCombPair ..⟩
 
 protected lemma IsStarConvexSet.prod {t : Set Y} {y : Y} (hs : IsStarConvexSet R x s)
     (ht : IsStarConvexSet R y t) : IsStarConvexSet R (x, y) (s ×ˢ t) := by
-  rintro a b ha hb hab ⟨w, z⟩ ⟨hw, hz⟩; exact ⟨by simpa using hs hw, by simpa using ht hz⟩
+  rintro ⟨w, z⟩ ⟨hw, hz⟩ a b ha hb hab; exact ⟨by simpa using hs hw _ .., by simpa using ht hz _ ..⟩
 
 protected lemma IsStarConvexSet.pi {X : ι → Type*} [∀ i, ConvexSpace R (X i)] {s : Set ι}
     {x : ∀ i, X i} {t : ∀ i, Set (X i)} (ht : ∀ i ∈ s, IsStarConvexSet R (x i) (t i)) :
-    IsStarConvexSet R x (s.pi t) := fun a b ha hb hab y hy i hi ↦ by simpa using ht _ hi <| hy _ hi
+    IsStarConvexSet R x (s.pi t) :=
+  fun y hy a b ha hb hab i hi ↦ by simpa using ht _ hi (hy _ hi) _ ..
 
 end Semiring
 end Convexity
