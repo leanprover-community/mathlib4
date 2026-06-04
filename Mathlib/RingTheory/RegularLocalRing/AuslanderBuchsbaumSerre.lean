@@ -114,8 +114,6 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
       have Sx_exact := ModuleCat.shortComplex_shortExact Sx Sx_exact' inj
         (quotSMulTopMap_surjective x surjf)
       have := Module.finitePresentation_of_finite R N
-      have := (free_iff_quotSMulTop_free R N (maximalIdeal_le_jacobson _ mem) reg2'').mpr
-        inferInstance
       exact ((S_exact.hasProjectiveDimensionLT_X₃_iff n proj).trans (ih S.X₁ reg2')).trans
         (Sx_exact.hasProjectiveDimensionLT_X₃_iff n inferInstance).symm
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
