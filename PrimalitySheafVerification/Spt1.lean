@@ -30,6 +30,8 @@
                                                   obstructionFree_iff_coprime PROVED
     Prop 4.4/Thm 4.20/Prop 7.7  primewise CRT  ↦ primewise_exponent,
                                                   crt_iso, gcd_eq_prod       PROVED
+    Def 7.6/Prop 7.7   |Tor₁| = gcd = exp(IC)  ↦ IC, gcd_eq_prod_primeFactors,
+                                                  card_Tor_eq_exp_IC          PROVED
     (Stability box)    refinement invariance   ↦ thickness_stable_coprime    PROVED
     Ex 4.5             worked example          ↦ Examples (decide/norm_num)  PROVED
 
@@ -49,7 +51,10 @@ import Mathlib.Data.ZMod.QuotientGroup
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.GroupTheory.Index
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Tactic.NormNum.GCD
+
+open scoped BigOperators
 
 namespace Spt1
 
@@ -198,6 +203,40 @@ theorem thickness_stable_coprime {M N c : ℕ} (hM : M ≠ 0) (hN : N ≠ 0) (hc
     (Nat.factorization_eq_zero_iff c q).mpr (Or.inr (Or.inl hq))
   simp [Finsupp.add_apply, hcq]
 
+/-! ## §7 (Indicator complexity) — Def 7.6 / Prop 7.7.
+    `IC(M;N) := ∑_{q∣N} min(v_q M, v_q N)·log q`, and `|Tor₁| = gcd = exp(IC)`. -/
+
+/-- Definition 7.6 — indicator complexity. -/
+noncomputable def IC (M N : ℕ) : ℝ :=
+  ∑ q ∈ N.primeFactors, (min (M.factorization q) (N.factorization q) : ℝ) * Real.log q
+
+/-- The obstruction `gcd(M,N)` factors over `N`'s primes with exponents the
+    primewise minima (the integer form of the CRT/primewise decomposition). -/
+theorem gcd_eq_prod_primeFactors {M N : ℕ} (hM : M ≠ 0) (hN : N ≠ 0) :
+    Nat.gcd M N
+      = ∏ q ∈ N.primeFactors, q ^ min (M.factorization q) (N.factorization q) := by
+  have hg : Nat.gcd M N ≠ 0 := Nat.gcd_ne_zero_left hM
+  have hsub : (Nat.gcd M N).primeFactors ⊆ N.primeFactors :=
+    Nat.primeFactors_mono (Nat.gcd_dvd_right M N) hN
+  conv_lhs => rw [← Nat.prod_factorization_pow_eq_self hg]
+  rw [Finsupp.prod, Nat.support_factorization]
+  rw [Finset.prod_congr rfl (fun q _ => by rw [factorization_gcd_apply hM hN])]
+  refine Finset.prod_subset hsub ?_
+  intro q hqN hqg
+  have h0 : min (M.factorization q) (N.factorization q) = 0 := by
+    rw [← factorization_gcd_apply hM hN, Nat.factorization_eq_zero_iff]
+    exact Or.inr (Or.inl (fun hdvd =>
+      hqg (Nat.mem_primeFactors.mpr ⟨(Nat.mem_primeFactors.mp hqN).1, hdvd, hg⟩)))
+  rw [h0, pow_zero]
+
+/-- **Proposition 7.7.** `|Tor₁^ℤ(ℤ/M, ℤ/N)| = gcd(M,N) = exp(IC(M;N))`. -/
+theorem card_Tor_eq_exp_IC {M N : ℕ} (hM : M ≠ 0) (hN : N ≠ 0) :
+    (Nat.gcd M N : ℝ) = Real.exp (IC M N) := by
+  rw [IC, Real.exp_sum, gcd_eq_prod_primeFactors hM hN, Nat.cast_prod]
+  refine Finset.prod_congr rfl (fun q hq => ?_)
+  have hqpos : (0 : ℝ) < (q : ℝ) := by exact_mod_cast (Nat.mem_primeFactors.mp hq).1.pos
+  rw [Nat.cast_pow, ← Nat.cast_min, ← Real.log_pow, Real.exp_log (by positivity)]
+
 /-! ## Worked examples (Example 4.5 and the discrepancy). -/
 
 section Examples
@@ -240,6 +279,8 @@ section AxiomAudit
 #print axioms primewise_exponent
 #print axioms gcd_eq_prod
 #print axioms thickness_stable_coprime
+#print axioms gcd_eq_prod_primeFactors
+#print axioms card_Tor_eq_exp_IC
 end AxiomAudit
 
 end Spt1
