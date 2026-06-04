@@ -150,7 +150,7 @@ protected abbrev id : X.PartialMap X := (𝟙 X : X ⟶ X).toPartialMap
 @[simp]
 lemma id_compHom (f : X ⟶ Y) : (PartialMap.id X).compHom f = f.toPartialMap := by
   apply PartialMap.ext _ _ rfl
-  simp [Scheme.isoOfEq_rfl]
+  simp
 
 set_option backward.defeqAttrib.useBackward true in
 instance [X.Over S] [Y.Over S] (f : X ⟶ Y) [f.IsOver S] : f.toPartialMap.IsOver S where
