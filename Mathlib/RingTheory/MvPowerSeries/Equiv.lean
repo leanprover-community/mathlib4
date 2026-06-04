@@ -89,15 +89,18 @@ private lemma coeff_coeff_optionFunLeft (p : MvPowerSeries (Option σ) R) (n : �
 private theorem optionFunLeft_monomial (x : Option σ →₀ ℕ) (r : R) :
     optionFunLeft σ R (monomial x r) = PowerSeries.monomial (x none) (monomial x.some r) := by
   classical
-  ext1 n; rw [PowerSeries.coeff_monomial]
-  split_ifs with h
-  · ext y; rw [h, coeff_coeff_optionFunLeft, coeff_monomial]
-    split_ifs with h'
-    · rw [← h']; simp
-    refine (coeff_monomial_ne ?_ _).symm
-    intro h''; simp [h''] at h'
-  · ext y; rw [coeff_coeff_optionFunLeft, map_zero]
-    exact coeff_monomial_ne (by simpa [Finsupp.ext_iff] using ⟨none, by simpa⟩) r
+  ext n y
+  rw [PowerSeries.coeff_monomial, coeff_coeff_optionFunLeft, coeff_monomial]
+  split_ifs with h1 h2 h3
+  · rw [← h1]; simp
+  · absurd h2
+    rw [← optionElim_apply_none n, h1]
+  · replace h1 : ¬ y = x.some := fun h ↦ by
+      absurd h1; ext u; cases u
+      · simpa
+      · simpa using DFunLike.congr_fun h _
+    rw [coeff_monomial, if_neg h1]
+  · rw [coeff_zero]
 
 private lemma optionFunLeft_mul (p q : MvPowerSeries (Option σ) R) :
     optionFunLeft σ R (p * q) = optionFunLeft σ R p * optionFunLeft σ R q := by
