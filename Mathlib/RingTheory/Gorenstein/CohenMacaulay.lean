@@ -117,6 +117,7 @@ noncomputable def quotSMulTopExtEquivExtQuotSMulTop (M : ModuleCat.{v} R) (n : �
     simp [Submodule.mem_smul_pointwise_iff_exists]
   exact (Submodule.quotEquivOfEq _ _ ker.symm).trans (f.quotKerEquivOfSurjective surj)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The linear equivalence `Ext (R⧸(r1, ... rk)) M k ≃ M⧸(r1, ... rk)M` for `R`-regular sequence
 `(r1, ... rk)`, this is a special case of a more general result for Koszul complex. -/
@@ -145,7 +146,7 @@ noncomputable def extQuotientLengthEquivOfIsRegular [IsLocalRing R] [IsNoetheria
           List.getElem_take, rs'] at hi ⊢
         rw [List.take_take, min_eq_left_of_lt hi]
         exact reg.1.1 i (lt_of_lt_of_eq (Nat.lt_add_right 1 hi) len.symm)
-      · simpa using (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (Ideal.span_le.mpr mem_max')).symm
+      · simpa using! (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (Ideal.span_le.mpr mem_max')).symm
     have eqapp : rs = rs' ++ [a] := by simp [rs', a, len]
     have reg' : IsSMulRegular (R ⧸ Ideal.ofList rs' • (⊤ : Submodule R R)) a :=
       reg.1.1 n (lt_of_lt_of_eq (lt_add_one n) len.symm)
@@ -228,7 +229,7 @@ lemma isLocalizedModule_map_of_disjoint (S : Submonoid R) (A : Type*) [CommRing 
     have mem : (algebraMap R A) r ∈ p.primeCompl := by
       simpa [← Ideal.mem_comap] using Ideal.mem_primeCompl_iff.mp r.2
     use ⟨f m, ⟨(algebraMap R A) r, mem⟩⟩
-    simpa [isLocalizedModuleMapOfDisjointMap] using hmr
+    simpa [isLocalizedModuleMapOfDisjointMap] using! hmr
   exists_of_eq {z1 z2} eq := by
     rcases IsLocalizedModule.surj S f z1 with ⟨⟨m1, r1⟩, hmr1⟩
     rcases IsLocalizedModule.surj S f z2 with ⟨⟨m2, r2⟩, hmr2⟩
@@ -264,7 +265,7 @@ instance (S : Submonoid R) : Small.{v} (Localization S) :=
 instance (p : Ideal R) [p.IsPrime] : Small.{v} p.ResidueField :=
   small_of_surjective Ideal.Quotient.mk_surjective
 
-private instance [Small.{v} R] (M : Type v) [AddCommGroup M] [Module R M] (S : Submonoid R) :
+private instance (M : Type v) [AddCommGroup M] [Module R M] (S : Submonoid R) :
     Small.{v} (LocalizedModule S M) :=
   small_of_surjective (IsLocalizedModule.mk'_surjective S (LocalizedModule.mkLinearMap S M))
 
@@ -439,7 +440,7 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
     have : IsScalarTower R (Localization qq.1.1.primeCompl) (Shrink.{v} qq.1.1.ResidueField) :=
       Equiv.isScalarTower R (Localization qq.1.1.primeCompl) (equivShrink qq.1.1.ResidueField).symm
     have : IsLocalization qq.1.1.primeCompl R :=
-      IsLocalization.of_le_isUnit (fun x hx ↦ by simpa [qqeq] using hx)
+      IsLocalization.of_le_isUnit (fun x hx ↦ by simpa [qqeq] using! hx)
     have surj : Function.Surjective (algebraMap R (Localization qq.1.1.primeCompl)) :=
       (IsLocalization.bijective qq.1.1.primeCompl
         (algebraMap R (Localization qq.1.1.primeCompl)) rfl).2
@@ -598,7 +599,7 @@ end injdim
 
 section
 
-variable (R) [IsLocalRing R] [IsNoetherianRing R]
+variable (R) [IsNoetherianRing R]
 
 theorem isCohenMacaulayLocalRing_of_isGorensteinLocalRing [IsGorensteinLocalRing R] :
     IsCohenMacaulayLocalRing R := by
@@ -627,6 +628,8 @@ lemma add_one_eq_top_iff (a : WithBot ℕ∞) : a + 1 = ⊤ ↔ a = ⊤ := by
     | top => rfl
     | coe n =>
       simpa [- ENat.WithBot.coe_eq_natCast] using WithBot.coe_inj.not.mpr (ENat.coe_ne_top (n + 1))
+
+variable [IsLocalRing R]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma injectiveDimension_quotient_span_regular

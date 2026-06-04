@@ -226,7 +226,7 @@ lemma hasSumLocallyUniformly_weierstrassPExcept (l₀ : ℂ) :
     Filter.eventually_atTop.mpr ⟨2 * r, ?_⟩
   rintro _ h s hs l rfl
   split_ifs
-  · simpa using show 0 ≤ 10 * r * (‖↑l‖ ^ 3)⁻¹ by positivity
+  · simpa using! show 0 ≤ 10 * r * (‖↑l‖ ^ 3)⁻¹ by positivity
   · exact weierstrassP_bound r hr s hs l h
 
 lemma hasSum_weierstrassPExcept (l₀ : ℂ) (z : ℂ) :
@@ -314,7 +314,7 @@ lemma not_continuousAt_weierstrassP (x : ℂ) (hx : x ∈ L.lattice) : ¬ Contin
   simp_rw [← L.weierstrassPExcept_add ⟨x, hx⟩]
   intro H
   apply (NormedField.continuousAt_zpow (n := -2) (x := (0 : ℂ))).not.mpr (by simp)
-  simpa [Function.comp_def] using
+  simpa [Function.comp_def] using!
     (((H.sub ((L.differentiableOn_weierstrassPExcept x).differentiableAt
       (L.compl_lattice_diff_singleton_mem_nhds x)).continuousAt).add
       (continuous_const (y := 1 / x ^ 2)).continuousAt).comp_of_eq
@@ -341,7 +341,7 @@ lemma hasSumLocallyUniformly_derivWeierstrassPExcept (l₀ : ℂ) :
     Filter.eventually_atTop.mpr ⟨2 * r, ?_⟩
   rintro _ h s hs l rfl
   split_ifs
-  · simpa using show 0 ≤ ‖↑l‖ ^ 3 by positivity
+  · simpa using! show 0 ≤ ‖↑l‖ ^ 3 by positivity
   have : s ≠ ↑l := by rintro rfl; exfalso; linarith
   have : l ≠ 0 := by rintro rfl; simp_all; linarith
   simp only [Complex.norm_div, norm_neg, Complex.norm_ofNat, norm_pow]
@@ -675,7 +675,7 @@ lemma summable_weierstrassPExceptSummand (l₀ z x : ℂ)
   apply Summable.sum
   · -- for the degree zero term, this is the usual summability of the definition of `℘`.
     simpa [weierstrassPExceptSummand, e, Function.comp_def, Function.uncurry, sub_sq_comm x,
-      Denumerable.eqv] using (L.hasSum_weierstrassPExcept l₀ x).summable
+      Denumerable.eqv] using! (L.hasSum_weierstrassPExcept l₀ x).summable
   · -- for the remaining terms, we bound it by `(i + 2) κ⁻ⁱ * ‖l - x‖⁻³ * ‖z - x‖`.
     dsimp [e, Function.comp_def, Function.uncurry_def, Denumerable.eqv, weierstrassPExceptSummand]
     have H₁ : Summable fun i : ℕ ↦ ((i + 2) * κ ^ (-i : ℤ)) := by
@@ -833,7 +833,7 @@ lemma iteratedDeriv_derivWeierstrassPExcept_self (l : ℂ) {n : ℕ} :
 @[simp]
 lemma deriv_derivWeierstrassPExcept_self (l : ℂ) :
     deriv ℘'[L - l] l = 6 * L.sumInvPow l 4 := by
-  simpa using L.iteratedDeriv_derivWeierstrassPExcept_self l (n := 1)
+  simpa using! L.iteratedDeriv_derivWeierstrassPExcept_self l (n := 1)
 
 lemma analyticOnNhd_derivWeierstrassP : AnalyticOnNhd ℂ ℘'[L] L.latticeᶜ :=
   L.differentiableOn_derivWeierstrassP.analyticOnNhd L.isClosed_lattice.isOpen_compl
@@ -1010,12 +1010,12 @@ private lemma analyticAt_relation_zero : AnalyticAt ℂ L.relation 0 := by
     rw [meromorphicOrderAt_mul (by fun_prop) (by fun_prop),
       meromorphicOrderAt_pow (by fun_prop)] at this
     rw [← WithTop.add_le_add_iff_right (z := 6) (by simp)]
-    simpa [-add_le_add_iff_left_of_ne_top] using this
+    simpa [-add_le_add_iff_left_of_ne_top] using! this
   rw [AnalyticAt.meromorphicOrderAt_eq (by fun_prop)]
   refine ENat.monotone_map_iff.mpr Nat.mono_cast
     ((natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero (by fun_prop)).mpr fun i hi₁ ↦ ?_)
   by_cases hi₂ : Odd i
-  · simpa [← CharZero.eq_neg_self_iff, hi₂, (show Even 6 by decide).neg_pow] using
+  · simpa [← CharZero.eq_neg_self_iff, hi₂, (show Even 6 by decide).neg_pow] using!
       (iteratedDeriv_comp_neg i (L.relation * id ^ 6) 0 :)
   by_cases hi₃ : i = 0
   · simp [hi₃]
