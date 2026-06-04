@@ -75,6 +75,7 @@ theorem contractLeftAux_contractLeftAux (v : M) (x : CliffordAlgebra Q) (fx : Cl
 
 variable {Q}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Contract an element of the Clifford algebra with an element `d : Module.Dual R M` from the left.
 
 Note that $v ⌋ x$ is spelt `contractLeft (Q.associated v) x`.
@@ -345,13 +346,19 @@ theorem changeFormEquiv_symm :
 
 variable (Q)
 
+#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
+Assistance investigating this would be appreciated. -/
 /-- The module isomorphism to the exterior algebra.
 
 Note that this holds more generally when `Q` is divisible by two, rather than only when `1` is
 divisible by two; but that would be more awkward to use. -/
-@[simp]
+@[simp, nolint simpNF]
 def equivExterior [Invertible (2 : R)] : CliffordAlgebra Q ≃ₗ[R] ExteriorAlgebra R M :=
   changeFormEquiv changeForm.associated_neg_proof
+
+#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
+Assistance investigating this would be appreciated. -/
+attribute [nolint simpNF] equivExterior.eq_1
 
 /-- A `CliffordAlgebra` over a nontrivial ring is nontrivial, in characteristic not two. -/
 instance [Nontrivial R] [Invertible (2 : R)] :

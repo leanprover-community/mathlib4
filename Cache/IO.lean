@@ -503,8 +503,6 @@ def lookup (hashMap : ModuleHashMap) (modules : List Name) : IO Unit := do
       println! "  comment: {line}"
   if err then IO.Process.exit 1
 
-open private Lake.Glob.ofString? from Lake.Load.Toml in
-
 /--
 Parse a string as either a path or a Lean module name.
 If the argument describes a folder, use `walkDir` to find all `.lean` files within.
