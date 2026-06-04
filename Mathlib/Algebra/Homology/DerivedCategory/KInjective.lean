@@ -56,8 +56,8 @@ lemma quasiIso_iff {K L : CochainComplex C ℤ} [K.IsKInjective] [L.IsKInjective
   obtain ⟨g, hg⟩ := (Qh_map_bijective _ _).surjective
     ((quotientCompQhIso C).hom.app L ≫ inv (Q.map f) ≫ (quotientCompQhIso C).inv.app K)
   refine ⟨g, (Qh_map_bijective _ _).injective ?_, (Qh_map_bijective _ _).injective ?_⟩
-  · simp [hg]
-  · simp [hg, ← quotientCompQhIso_inv_naturality, -NatTrans.naturality]
+  · simp [hg]; rfl
+  · simp [hg, ← quotientCompQhIso_inv_naturality, -NatTrans.naturality]; rfl
 
 end IsKInjective
 
@@ -74,7 +74,7 @@ lemma bijective_toSmallShiftedHom_of_isKInjective [L.IsKInjective] :
       (SmallShiftedHom.equiv _ DerivedCategory.Q).bijective,
     ← Function.Bijective.of_comp_iff' (Iso.homCongr ((quotientCompQhIso C).symm.app K)
       ((Q.commShiftIso n).symm.app L ≪≫ (quotientCompQhIso C).symm.app (L⟦n⟧))).bijective]
-  convert (CochainComplex.IsKInjective.Qh_map_bijective _ _).comp (toHom_bijective K L n)
+  convert! (CochainComplex.IsKInjective.Qh_map_bijective _ _).comp (toHom_bijective K L n)
   ext x
   obtain ⟨x, rfl⟩ := x.mk_surjective
   simp [toHom_mk, ShiftedHom.map]

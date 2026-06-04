@@ -168,7 +168,7 @@ theorem sInf_add {n : ℕ} {p : ℕ → Prop} (hn : n ≤ sInf { m | p m }) :
 theorem sInf_add' {n : ℕ} {p : ℕ → Prop} (h : 0 < sInf { m | p m }) :
     sInf { m | p m } + n = sInf { m | p (m - n) } := by
   suffices h₁ : n ≤ sInf {m | p (m - n)} by
-    convert sInf_add h₁
+    convert! sInf_add h₁
     simp_rw [Nat.add_sub_cancel_right]
   obtain ⟨m, hm⟩ := nonempty_of_pos_sInf h
   refine

@@ -65,6 +65,7 @@ instance :
 
 variable (A)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The right derived functor commutes with the shift. -/
 @[implicit_reducible]
@@ -113,15 +114,17 @@ noncomputable def commShift : RF.CommShift A where
       ← NatTrans.naturality]
     dsimp
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma comp_map_commShiftIso_hom_app (a : A) (X : C) :
     letI := commShift RF α W A
     dsimp% α.app (X⟦a⟧) ≫ RF.map ((L.commShiftIso a).hom.app X) ≫
       (RF.commShiftIso a).hom.app (L.obj X) =
     (F.commShiftIso a).hom.app X ≫ (α.app X)⟦a⟧' := by
-  simpa using (rightDerivedNatTrans_app _ _ (precomposeShiftNatTrans RF α a)
+  simpa using! (rightDerivedNatTrans_app _ _ (precomposeShiftNatTrans RF α a)
       (postcomposeShiftNatTrans RF α _) W (F.commShiftIso _).hom X)
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] commShiftIso_comp_hom_app in
 instance natTrans_commShift :
     letI := commShift RF α W A
