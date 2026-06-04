@@ -141,7 +141,6 @@ theorem Ico_succ_right_eq_insert_Ico (h : a ≤ b) : Ico a b.succ = insert b (Ic
   simp_rw [mem_insert, mem_Ico]
   lia
 
-set_option linter.deprecated false in
 theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) := by
   induction n with
   | zero =>
