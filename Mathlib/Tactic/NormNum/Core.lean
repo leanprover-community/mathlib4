@@ -9,6 +9,7 @@ public meta import Mathlib.Lean.Expr.Rat
 public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.NormNum.Result
 public meta import Mathlib.Util.Qq
+public import Lean.Elab.Tactic.Try
 
 /-!
 ## `norm_num` core functionality
@@ -366,4 +367,4 @@ We register `norm_num` with the `hint` tactic.
 -/
 
 register_hint 1000 norm_num
--- register_try?_tactic (priority := 1000) norm_num
+register_try?_tactic (priority := 1000) norm_num

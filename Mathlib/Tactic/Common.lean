@@ -121,6 +121,8 @@ public import Mathlib.Util.PrintSorries
 public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
 
+public import Lean.Elab.Tactic.Try
+
 /-!
 # Common tactics, linters, and utilities
 
@@ -163,8 +165,8 @@ end Hint
 
 section Try
 
--- register_try?_tactic (priority := 500) tauto
--- register_try?_tactic (priority := 80) aesop
--- register_try?_tactic (priority := 200) fun_prop
+register_try?_tactic (priority := 500) tauto
+register_try?_tactic (priority := 80) aesop
+register_try?_tactic (priority := 200) fun_prop
 
 end Try
