@@ -31,7 +31,7 @@ open Function Set Filter Topology TopologicalSpace
 
 universe u
 
-variable {X : Type*} [TopologicalSpace X]
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 section Separation
 
@@ -121,12 +121,29 @@ instance (priority := 100) [PerfectlyNormalSpace X] : R0Space X where
     intros
     solve_by_elim [hxy.mem_open]
 
+theorem Topology.IsInducing.perfectlyNormalSpace [PerfectlyNormalSpace Y] {e : X → Y}
+    (he : IsInducing e) : PerfectlyNormalSpace X where
+  toNormalSpace := he.completelyNormalSpace.toNormalSpace
+  closed_gdelta _ hs := (he.isClosed_iff.1 hs).elim fun _ ht =>
+    ht.2 ▸ ht.1.isGδ.preimage he.continuous
+
+instance {s : Set X} [PerfectlyNormalSpace X] : PerfectlyNormalSpace s :=
+  IsEmbedding.subtypeVal.perfectlyNormalSpace
+
 /-- A T₆ space is a perfectly normal T₀ space. -/
 class T6Space (X : Type u) [TopologicalSpace X] : Prop extends T0Space X, PerfectlyNormalSpace X
 
 -- see Note [lower instance priority]
 /-- A `T₆` space is a `T₅` space. -/
 instance (priority := 100) T6Space.toT5Space [T6Space X] : T5Space X where
+
+theorem Topology.IsEmbedding.t6Space [T6Space Y] {e : X → Y}
+    (he : IsEmbedding e) : T6Space X where
+  toPerfectlyNormalSpace := he.perfectlyNormalSpace
+  toT0Space := he.t0Space
+
+instance {s : Set X} [T6Space X] : T6Space s :=
+  IsEmbedding.subtypeVal.t6Space
 
 end PerfectlyNormal
 
