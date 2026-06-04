@@ -18,10 +18,8 @@ multiplication of bounded sets remain bounded.
 
 public section
 
-
 open Metric Set
-
-open Pointwise Topology
+open scoped Pointwise Topology
 
 variable {𝕜 E : Type*}
 

@@ -16,7 +16,7 @@ This file proves that `Fin n` is a `LocallyFiniteOrder` and calculates the cardi
 intervals as Finsets and Fintypes.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

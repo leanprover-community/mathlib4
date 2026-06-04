@@ -109,6 +109,15 @@ instance : StarModule ℝ ℂ :=
 theorem coe_algebraMap : (algebraMap ℝ ℂ : ℝ → ℂ) = ((↑) : ℝ → ℂ) :=
   rfl
 
+example : (Semiring.toNatAlgebra : Algebra ℕ ℂ) = Complex.instAlgebraOfReal := by
+  with_reducible_and_instances rfl
+
+example : (Ring.toIntAlgebra ℂ : Algebra ℤ ℂ) = Complex.instAlgebraOfReal := by
+  with_reducible_and_instances rfl
+
+example : Module.restrictScalars ℝ ℂ ℂ = Complex.instModule := by
+  with_reducible_and_instances rfl
+
 section
 
 variable {A : Type*} [Semiring A] [Algebra ℝ A]
@@ -154,13 +163,13 @@ theorem coe_basisOneI : ⇑basisOneI = ![1, I] :=
 
 end Complex
 
-/- Register as an instance (with low priority) the fact that a complex vector space is also a real
+/-- Register as an instance (with low priority) the fact that a complex vector space is also a real
 vector space. -/
 instance (priority := 900) Module.complexToReal (E : Type*) [AddCommGroup E] [Module ℂ E] :
     Module ℝ E :=
   .restrictScalars ℝ ℂ E
 
-/- Register as an instance (with low priority) the fact that a complex algebra is also a real
+/-- Register as an instance (with low priority) the fact that a complex algebra is also a real
 algebra. -/
 instance (priority := 900) Algebra.complexToReal {A : Type*} [Semiring A] [Algebra ℂ A] :
     Algebra ℝ A :=
@@ -200,7 +209,6 @@ instance IsScalarTower.complexToReal {M E : Type*} [AddCommGroup M] [Module ℂ 
 -- check that the following instance is implied by the one above.
 example (E : Type*) [AddCommGroup E] [Module ℂ E] : IsScalarTower ℝ ℂ E := inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := 900) StarModule.complexToReal {E : Type*} [AddCommGroup E] [Star E]
     [Module ℂ E] [StarModule ℂ E] : StarModule ℝ E :=
   ⟨fun r a => by rw [← smul_one_smul ℂ r a, star_smul, star_smul, star_one, smul_one_smul]⟩
@@ -209,7 +217,6 @@ namespace Complex
 
 open ComplexConjugate
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Linear map version of the real part function, from `ℂ` to `ℝ`. -/
 def reLm : ℂ →ₗ[ℝ] ℝ where
   toFun x := x.re
@@ -220,7 +227,6 @@ def reLm : ℂ →ₗ[ℝ] ℝ where
 theorem reLm_coe : ⇑reLm = re :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Linear map version of the imaginary part function, from `ℂ` to `ℝ`. -/
 def imLm : ℂ →ₗ[ℝ] ℝ where
   toFun x := x.im
@@ -251,11 +257,10 @@ def conjAe : ℂ ≃ₐ[ℝ] ℂ :=
 theorem conjAe_coe : ⇑conjAe = conj :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The matrix representation of `conjAe`. -/
 @[simp]
 theorem toMatrix_conjAe :
-    LinearMap.toMatrix basisOneI basisOneI conjAe.toLinearMap = !![1, 0; 0, -1] := by
+    conjAe.toLinearEquiv.toLinearMap.toMatrix basisOneI basisOneI = !![1, 0; 0, -1] := by
   ext i j
   fin_cases i <;> fin_cases j <;> simp [LinearMap.toMatrix_apply]
 
@@ -266,7 +271,6 @@ theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ 
     refine fun h => algHom_ext ?_
   exacts [h, conj_I.symm ▸ h]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural `LinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
 @[simps! +simpRhs apply symm_apply_re symm_apply_im]
 def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
@@ -499,7 +503,7 @@ theorem ker_imaginaryPart : imaginaryPart.ker = selfAdjoint.submodule ℝ A := b
 
 @[simp]
 lemma imaginaryPart_eq_zero_iff {x : A} : ℑ x = 0 ↔ IsSelfAdjoint x := by
-  simpa [-ker_imaginaryPart] using SetLike.ext_iff.mp ker_imaginaryPart x
+  simpa [-ker_imaginaryPart] using! SetLike.ext_iff.mp ker_imaginaryPart x
 
 open Submodule
 
@@ -513,7 +517,6 @@ end AddCommGroup
 
 open scoped ComplexStarModule
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural `ℝ`-linear equivalence between `selfAdjoint ℂ` and `ℝ`. -/
 @[simps apply symm_apply]
 def Complex.selfAdjointEquiv : selfAdjoint ℂ ≃ₗ[ℝ] ℝ where

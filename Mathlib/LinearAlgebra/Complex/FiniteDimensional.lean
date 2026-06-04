@@ -18,7 +18,7 @@ This file contains the `FiniteDimensional ℝ ℂ` instance, as well as some res
 (`finrank` and `Module.rank`).
 -/
 
-@[expose] public section
+public section
 
 open Module
 
@@ -26,7 +26,6 @@ namespace Complex
 
 instance : FiniteDimensional ℝ ℂ := basisOneI.finiteDimensional_of_finite
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `ℂ` is a finite extension of `ℝ` of degree 2, i.e `[ℂ : ℝ] = 2` -/
 @[simp, stacks 09G4]
 theorem finrank_real_complex : finrank ℝ ℂ = 2 := by
@@ -45,7 +44,7 @@ theorem finrank_real_complex_fact : Fact (finrank ℝ ℂ = 2) :=
 
 end Complex
 
-instance (priority := 100) FiniteDimensional.complexToReal (E : Type*) [AddCommGroup E]
+instance (priority := 500) FiniteDimensional.complexToReal (E : Type*) [AddCommGroup E]
     [Module ℂ E] [FiniteDimensional ℂ E] : FiniteDimensional ℝ E :=
   FiniteDimensional.trans ℝ ℂ E
 
