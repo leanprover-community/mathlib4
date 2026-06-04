@@ -473,9 +473,8 @@ theorem exact_liftBaseChange_map_map_of_flat [Module.Flat S T] :
   rw [exact_iff]
   refine le_antisymm ?_ (range_liftBaseChange_map_le Q P)
   rintro ⟨x, x_in⟩ hx
-  simp only [mem_ker, ← Extension.h1Cotangentι_injective.eq_iff,
-    Extension.h1Cotangentι_apply, Extension.H1Cotangent.map_apply_coe,
-    Extension.H1Cotangent.val_zero] at hx
+  replace hx : Extension.Cotangent.map (Q.ofComp P).toExtensionHom x = 0 := by
+    simpa [← Extension.h1Cotangentι_injective.eq_iff] using hx
   rw [← mem_ker, (Cotangent.exact Q P).linearMap_ker_eq] at hx
   rcases hx with ⟨x, rfl⟩
   rw [mem_ker, ← comp_apply, ← map_comp_cotangentComplex_baseChange, comp_apply,
