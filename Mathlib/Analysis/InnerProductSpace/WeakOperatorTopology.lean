@@ -20,25 +20,6 @@ applications of elements of the dual and inner products with vectors in the spac
 
 public section
 
-/-- A type endowed with `star` is a star module over some other type with `star` if it admits an
-injective map that preserves `star` and `•` to a star module. See note [reducible non-instances]. -/
-protected lemma Function.Injective.starModule {R S : Type*} (𝕜 : Type*) [Star 𝕜] [SMul 𝕜 R]
-    [Star R] [SMul 𝕜 S] [Star S] [StarModule 𝕜 S] {f : R → S}
-    (star : ∀ x, f (star x) = star (f x)) (smul : ∀ (r : 𝕜) x, f (r • x) = r • f x)
-    (hf : Injective f) :
-    StarModule 𝕜 R where
-  star_smul r x := hf <| by rw [star, smul, star_smul, smul, star]
-
-/-- Transfer `StarModule` across an `Equiv` -/
-protected lemma Equiv.starModule {R S : Type*} (e : R ≃ S) (𝕜 : Type*)
-    [Star 𝕜] [Star S] [SMul 𝕜 S] [StarModule 𝕜 S] :
-    letI := e.star
-    letI := e.smul 𝕜
-    StarModule 𝕜 R := by
-  let := e.star
-  let := e.smul 𝕜
-  apply e.injective.starModule 𝕜 <;> (intros; exact e.apply_symm_apply _)
-
 open scoped Topology InnerProductSpace
 
 namespace ContinuousLinearMapWOT
