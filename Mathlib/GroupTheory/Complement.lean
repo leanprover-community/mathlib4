@@ -670,7 +670,7 @@ theorem isComplement'_iff_card_mul_and_disjoint [Finite G] :
 theorem isComplement'_of_coprime [Finite G]
     (h1 : Nat.card H * Nat.card K = Nat.card G)
     (h2 : Nat.Coprime (Nat.card H) (Nat.card K)) : IsComplement' H K :=
-  isComplement'_of_card_mul_and_disjoint h1 (disjoint_iff.mpr (inf_eq_bot_of_coprime h2))
+  isComplement'_of_card_mul_and_disjoint h1 <| disjoint_of_coprime_natCard h2
 
 theorem isComplement'_stabilizer {α : Type*} [MulAction G α] (a : α)
     (h1 : ∀ h : H, h • a = a → h = 1) (h2 : ∀ g : G, ∃ h : H, h • g • a = a) :
