@@ -145,6 +145,7 @@ abbrev isHomotopyInvariant : ObjectProperty (HomologyPretheory.{u} C c) :=
 
 @[simp]
 lemma isHomotopyInvariant_iff : isHomotopyInvariant C c HP ↔ IsHomotopyInvariant HP := .rfl
+
 instance : IsClosedUnderIsomorphisms (isHomotopyInvariant.{u} C c) where
   of_iso e _ := ⟨fun F _ ↦ by
     simp only [← cancel_epi ((e.hom.homₚ _).app _), ← NatTrans.naturality,
