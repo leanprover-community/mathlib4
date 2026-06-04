@@ -32,7 +32,6 @@ public import Mathlib.RingTheory.TensorProduct.Maps
 
 @[expose] public section
 
-
 universe u v₁ v₂ v₃ v₄
 
 open TensorProduct
@@ -175,6 +174,7 @@ variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
  [Module R M₁₂] [Module S M₁₂] [IsScalarTower R S M₁₂]
  [Module R M₂₃] [Module S M₂₃] [IsScalarTower R S M₂₃]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- (Implementation): Use the more linear `IsTensorProduct.assoc`. -/
 private noncomputable def assocAux
     (f : M₁ →ₗ[R] M₂ →ₗ[S] M₁₂) (hf : IsTensorProduct (f.restrictScalars₁₂ R R))
@@ -214,6 +214,7 @@ private lemma assocAux_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
   have : hf.equiv.symm (f x₁ x₂) = x₁ ⊗ₜ x₂ := hf.equiv_symm_apply _ _
   simp [IsTensorProduct.assocAux, this]
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 This is the canonical isomorphism `(M₁ ⊗[R] M₂) ⊗[S] M₃ ≃ₗ[T] M₁ ⊗[R] (M₂ ⊗[S] M₃)`.
 We state this for a general `M₁₂ = M₁ ⊗[R] M₂` and `M₂₃ = M₂ ⊗[R] M₃`.
@@ -292,7 +293,7 @@ lemma compr₂_linearEquiv (ist : IsTensorProduct f) (e : M ≃ₗ[R] M') :
   exact e.bijective.comp ist
 
 lemma compl₂_comp_linearEquiv (ist : IsTensorProduct f) (e₁ : N₁ ≃ₗ[R] M₁) (e₂ : N₂ ≃ₗ[R] M₂) :
-    IsTensorProduct ((f.comp e₁.toLinearMap).compl₂ e₂.toLinearMap):= by
+    IsTensorProduct ((f.comp e₁.toLinearMap).compl₂ e₂.toLinearMap) := by
   simp only [IsTensorProduct] at ist ⊢
   rw [← TensorProduct.lift_comp_map, ← LinearMap.rTensor_comp_lTensor]
   exact ist.comp ((e₁.rTensor M₂).bijective.comp (e₂.lTensor N₁).bijective)

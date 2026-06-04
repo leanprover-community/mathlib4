@@ -492,7 +492,6 @@ theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → �
           EReal.coe_ennreal_le_coe_ennreal_iff.2 hxy
     · apply continuous_neg.comp_upperSemicontinuous_antitone _ fun x y hxy =>
           EReal.neg_le_neg_iff.2 hxy
-      dsimp
       apply continuous_coe_ennreal_ereal.comp_upperSemicontinuous _ fun x y hxy =>
           EReal.coe_ennreal_le_coe_ennreal_iff.2 hxy
       exact ENNReal.continuous_coe.comp_upperSemicontinuous gmcont fun x y hxy =>
