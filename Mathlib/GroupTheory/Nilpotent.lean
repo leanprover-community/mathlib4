@@ -235,7 +235,7 @@ variable (G) in
 -- `IsNilpotent` is already defined in the root namespace (for elements of rings).
 -- TODO: Rename it to `IsNilpotentElement`?
 /-- A group `G` is nilpotent if its upper central series is eventually `G`. -/
-@[mk_iff]
+@[mk_iff, wikidata Q1755242]
 class IsNilpotent (G : Type*) [Group G] : Prop where
   nilpotent' : ∃ n : ℕ, upperCentralSeries G n = ⊤
 
@@ -619,6 +619,18 @@ theorem lowerCentralSeries_eq_bot_iff_nilpotencyClass_le {n : ℕ} :
     rw [eq_bot_iff, ← lowerCentralSeries_nilpotencyClass]
     exact lowerCentralSeries_antitone _ h
 
+omit [IsNilpotent G] in
+@[to_additive]
+theorem lowerCentralSeries_eq_bot_iff_upperCentralSeries_eq_top {n : ℕ} :
+    lowerCentralSeries (G := G) ⊤ n = ⊥ ↔ upperCentralSeries G n = ⊤ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · have : IsNilpotent G := nilpotent_iff_lowerCentralSeries.mpr ⟨n, h⟩
+    rwa [upperCentralSeries_eq_top_iff_nilpotencyClass_le,
+      ← lowerCentralSeries_eq_bot_iff_nilpotencyClass_le]
+  · have : IsNilpotent G := ⟨n, h⟩
+    rwa [lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,
+      ← upperCentralSeries_eq_top_iff_nilpotencyClass_le]
+
 end Subgroup
 
 end Classical
@@ -908,6 +920,24 @@ theorem Subgroup.derived_le_lower_central (n : ℕ) :
   | zero => simp
   | succ i ih => apply commutator_mono ih; simp
 
+@[to_additive]
+theorem Subgroup.upperCentralSeries_one_eq_top_iff :
+    upperCentralSeries G 1 = ⊤ ↔ IsMulCommutative G := by
+  rw [upperCentralSeries_one]
+  exact Subgroup.center_eq_top_iff
+
+@[to_additive]
+theorem Subgroup.lowerCentralSeries_one_eq_bot_iff :
+    lowerCentralSeries (G := G) ⊤ 1 = ⊥ ↔ IsMulCommutative G := by
+  rw [lowerCentralSeries_eq_bot_iff_upperCentralSeries_eq_top]
+  exact upperCentralSeries_one_eq_top_iff
+
+@[to_additive]
+theorem Group.IsNilpotent.nilpotencyClass_le_one_iff [IsNilpotent G] :
+    Group.nilpotencyClass G ≤ 1 ↔ IsMulCommutative G := by
+  rw [← upperCentralSeries_eq_top_iff_nilpotencyClass_le]
+  exact upperCentralSeries_one_eq_top_iff
+
 /-- Abelian groups are nilpotent. -/
 @[to_additive /-- Abelian groups are nilpotent. -/]
 instance (priority := 100) CommGroup.isNilpotent {G : Type*} [CommGroup G] : IsNilpotent G := by
@@ -943,16 +973,18 @@ lemma upperCentralSeries.eq_ge_of_eq_succ {a b : ℕ} (ab : a ≤ b)
 they are all equal, starting from the smaller index. -/
 @[to_additive /-- If two different elements of the `upperCentralSeries` of an additive group `G`
 are equal, then they are all equal, starting from the smaller index. -/]
-lemma upperCentralSeries.eq_ge_of_eq_gt {a b c : ℕ} (ab : a < b) (ac : a ≤ c)
+lemma upperCentralSeries.eq_ge_of_eq_gt {a b c : ℕ} (ab : a ≠ b) (ac : a ≤ c)
     (hn : upperCentralSeries G a = upperCentralSeries G b) :
     upperCentralSeries G a = upperCentralSeries G c := by
+  wlog ab : a < b
+  · grind
   refine eq_ge_of_eq_succ ac (le_antisymm ?_ ?_)
   · exact upperCentralSeries_mono _ <| Nat.le_succ ..
   · rw [hn]
     exact upperCentralSeries_mono _ (by grind)
 
 @[to_additive]
-lemma upperCentralSeries.eq_top [IsNilpotent G] {a b : ℕ} (ab : a < b)
+lemma upperCentralSeries.eq_top [IsNilpotent G] {a b : ℕ} (ab : a ≠ b)
     (hn : upperCentralSeries G a = upperCentralSeries G b) :
     upperCentralSeries G a = ⊤ := by
   grind only [IsNilpotent.nilpotent', IsNilpotent.nilpotent,
@@ -993,6 +1025,11 @@ lemma upperCentralSeries.card_image_eq_of_le_nilpotencyClass {a : ℕ}
     refine (upperCentralSeries.StrictMonoOn G).injOn ?_ ?_ <;> grind
 
 end Subgroup
+
+variable (G) in
+@[to_additive]
+theorem Group.IsNilpotent.center_ne_bot [Nontrivial G] [IsNilpotent G] : center G ≠ ⊥ :=
+  .symm <| by simpa using mt (upperCentralSeries.eq_top zero_ne_one) <| by simp
 
 section Prod
 
