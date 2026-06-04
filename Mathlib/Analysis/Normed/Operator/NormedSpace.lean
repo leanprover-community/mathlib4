@@ -223,8 +223,6 @@ lemma opNorm_comp_linearIsometryEquiv [RingHomIsometric σ₂₃] (f : F →SL[�
 lemma opNorm_linearIsometryEquiv_comp [RingHomIsometric σ₁₂] (e : F ≃ₛₗᵢ[σ₂₃] G)
     (f : E →SL[σ₁₂] F) : ‖(e : F →SL[σ₂₃] G).comp f‖ = ‖f‖ := by simp [← coe_nnnorm]
 
-variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 /-- Precomposition with a linear isometry preserves the operator norm. -/
 @[simp]
 lemma opNNNorm_mul_linearIsometryEquiv (f : E →L[𝕜] E) (e : E ≃ₗᵢ[𝕜] E) : ‖f * e‖₊ = ‖f‖₊ :=
