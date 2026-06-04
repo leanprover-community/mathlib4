@@ -227,7 +227,7 @@ theorem isStationary_sUnion_iff_of_orderTop [OrderTop α] {s : Set (Set α)} :
     IsStationary (⋃₀ s) ↔ ∃ x ∈ s, IsStationary x :=
   isStationary_sUnion_iff_of_cof_le_one (by simp)
 
-theorem isStationary_iUnion_iff_of_orderTop [OrderTop α] {ι : Type u} {f : ι → Set α} :
+theorem isStationary_iUnion_iff_of_orderTop [OrderTop α] {ι : Sort*} {f : ι → Set α} :
     IsStationary (⋃ i, f i) ↔ ∃ i, IsStationary (f i) :=
   isStationary_iUnion_iff_of_cof_le_one (by simp)
 
