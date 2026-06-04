@@ -86,7 +86,10 @@ section scope
 #guard_msgs in
 #check_title "feat(Algebra.lean): title"
 
-/-- info: Message: 'error: a PR's scope should be a directory, not a module' -/
+/--
+info: Message: 'error: a PR's scope should be a directory or file name, not a module name
+hint: the scope contains a dot, use forward slashes instead'
+-/
 #guard_msgs in
 #check_title "feat(Algebra.Topology): title"
 
@@ -95,7 +98,7 @@ section scope
 #check_title "feat(Algebra Topology): title"
 
 /--
-info: Message: 'error: a PR's scope must not contain backslashes --- use forward slashes instead'
+info: Message: 'error: a PR's scope must not contain backslashes; use forward slashes instead'
 -/
 #guard_msgs in
 #check_title "feat(Algebra\\Too): title"
