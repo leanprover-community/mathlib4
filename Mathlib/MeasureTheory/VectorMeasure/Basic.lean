@@ -564,7 +564,7 @@ end
 
 section
 
-variable [MeasurableSpace α] [MeasurableSpace β]
+variable {mα : MeasurableSpace α} [MeasurableSpace β]
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 variable (v : VectorMeasure α M)
 
@@ -640,7 +640,8 @@ theorem mapRange_add {v w : VectorMeasure α M} {f : M →+ N} (hf : Continuous 
 
 /-- Given a continuous `AddMonoidHom` `f : M → N`, `mapRangeHom` is the `AddMonoidHom` mapping the
 vector measure `v` on `M` to the vector measure `f ∘ v` on `N`. -/
-def mapRangeHom (f : M →+ N) (hf : Continuous f) : VectorMeasure α M →+ VectorMeasure α N where
+def mapRangeHom {α : Type*} [MeasurableSpace α] (f : M →+ N) (hf : Continuous f) :
+    VectorMeasure α M →+ VectorMeasure α N where
   toFun v := v.mapRange f hf
   map_zero' := mapRange_zero hf
   map_add' _ _ := mapRange_add hf
@@ -662,7 +663,8 @@ variable [ContinuousAdd M] [ContinuousAdd N]
 
 /-- Given a continuous linear map `f : M → N`, `mapRangeₗ` is the linear map mapping the
 vector measure `v` on `M` to the vector measure `f ∘ v` on `N`. -/
-def mapRangeₗ (f : M →ₗ[R] N) (hf : Continuous f) : VectorMeasure α M →ₗ[R] VectorMeasure α N where
+def mapRangeₗ {α : Type*} [MeasurableSpace α] (f : M →ₗ[R] N) (hf : Continuous f) :
+    VectorMeasure α M →ₗ[R] VectorMeasure α N where
   toFun v := v.mapRange f.toAddMonoidHom hf
   map_add' _ _ := mapRange_add hf
   map_smul' _ _ := mapRange_smul hf
@@ -748,6 +750,18 @@ theorem restrict_restrict {s t : Set α} (hs : MeasurableSet s) (ht : Measurable
   ext u hu
   simp [restrict_apply, hs, hu, ht, Set.inter_assoc]
 
+theorem restrict_map {f : α → β} (hf : Measurable f) {s : Set β} (hs : MeasurableSet s) :
+    (v.map f).restrict s = (v.restrict (f ⁻¹' s)).map f := by
+  ext t ht
+  simp [map_apply, hs, hf hs, restrict_apply, ht, hf, hf ht]
+
+theorem restrict_toSignedMeasure {μ : Measure α} [IsFiniteMeasure μ]
+    {s : Set α} (hs : MeasurableSet s) :
+    μ.toSignedMeasure.restrict s = (μ.restrict s).toSignedMeasure := by
+  ext t ht
+  rw [restrict_apply _ hs ht, Measure.toSignedMeasure_apply_measurable (ht.inter hs),
+    Measure.toSignedMeasure_apply_measurable ht, measureReal_restrict_apply ht]
+
 section ContinuousAdd
 
 variable [ContinuousAdd M]
@@ -760,7 +774,7 @@ theorem map_add (v w : VectorMeasure α M) (f : α → β) : (v + w).map f = v.m
 
 /-- `VectorMeasure.map` as an additive monoid homomorphism. -/
 @[simps]
-def mapGm (f : α → β) : VectorMeasure α M →+ VectorMeasure β M where
+def mapGm {α : Type*} [MeasurableSpace α] (f : α → β) : VectorMeasure α M →+ VectorMeasure β M where
   toFun v := v.map f
   map_zero' := map_zero f
   map_add' _ _ := map_add _ _ f
@@ -775,7 +789,8 @@ theorem restrict_add (v w : VectorMeasure α M) (i : Set α) :
 
 /-- `VectorMeasure.restrict` as an additive monoid homomorphism. -/
 @[simps]
-def restrictGm (i : Set α) : VectorMeasure α M →+ VectorMeasure α M where
+def restrictGm {α : Type*} [MeasurableSpace α] (i : Set α) :
+    VectorMeasure α M →+ VectorMeasure α M where
   toFun v := v.restrict i
   map_zero' := restrict_zero
   map_add' _ _ := restrict_add _ _ i
