@@ -73,9 +73,6 @@ protected theorem eval_pow {μ : K} {f : K[X]} {n : ℕ} (h : IsPrimitiveRoot μ
     (hi : Introspective f n r) : f.eval (μ ^ n) = f.eval μ ^ n :=
   hi μ ((mem_primitiveRoots (Nat.ne_zero_iff_zero_lt.mp hz)).mpr h)
 
-theorem test {d : ℕ} {f : K[X]} : Introspective f d 0 := by
-  simp [Introspective]
-
 /-- The product of coprime exponents is Introspective. -/
 theorem mul_of_coprime {d e : ℕ} {f : K[X]} (hf : Introspective f e r)
     (hg : Introspective f d r) (h : e.Coprime r) : Introspective f (e * d) r := by
