@@ -119,7 +119,7 @@ lemma d₁₂_apply_apply_ofTrivial [LieModule.IsTrivial L M] (f : oneCochain R 
 
 /-- The coboundary operator taking degree 2 cochains to a space containing degree 3 cochains. -/
 def d₂₃ : twoCochain R L M →ₗ[R] L →ₗ[R] L →ₗ[R] L →ₗ[R] M :=
-  let toFun (a : twoCochain R L M) : L →ₗ[R] L →ₗ[R] L →ₗ[R] M := {
+  letI toFun (a : twoCochain R L M) : L →ₗ[R] L →ₗ[R] L →ₗ[R] M := {
     toFun x := {
       toFun y := {
         toFun z := ⁅x, a y z⁆ - ⁅y, a x z⁆ + ⁅z, a x y⁆ - a ⁅x, y⁆ z + a ⁅x, z⁆ y - a ⁅y, z⁆ x
