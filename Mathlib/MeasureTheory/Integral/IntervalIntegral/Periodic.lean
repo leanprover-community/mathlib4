@@ -153,7 +153,7 @@ lemma measurePreserving_equivIoc {a : ℝ} :
   refine ⟨h, ?_⟩
   ext s hs
   rw [comap_apply _ Subtype.val_injective (fun _ ↦ measurableSet_Ioc.subtype_image) _ hs,
-    map_apply (by measurability) hs, add_projection_respects_measure T a (by exact h hs)]
+    map_apply (by measurability) hs, add_projection_respects_measure T a (h hs)]
   congr!
   ext x
   simp only [mem_inter_iff, mem_preimage, mem_image, Subtype.exists, exists_and_right,

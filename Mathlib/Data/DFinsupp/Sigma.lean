@@ -140,7 +140,7 @@ theorem sigmaUncurry_smul [Monoid γ] [∀ i j, AddMonoid (δ i j)]
 @[simp]
 theorem sigmaUncurry_single [∀ i j, Zero (δ i j)] [∀ i, DecidableEq (α i)]
     (i) (j : α i) (x : δ i j) :
-    sigmaUncurry (single i (single j x : Π₀ j : α i, δ i j)) = single ⟨i, j⟩ (by exact x) := by
+    sigmaUncurry (single i (single j x : Π₀ j : α i, δ i j)) = single ⟨i, j⟩ (x) := by
   ext ⟨i', j'⟩
   dsimp only
   rw [sigmaUncurry_apply]

@@ -374,7 +374,7 @@ theorem num_lt_succ_floor_mul_den (q : ℚ) : q.num < (⌊q⌋ + 1) * q.den := b
     have : fract q < 1 := fract_lt_one q
     have : 0 + fract q < 1 := by simp [this]
     rwa [lt_sub_iff_add_lt]
-  exact mul_pos this (by exact mod_cast q.pos)
+  exact mul_pos this (mod_cast q.pos)
 
 theorem fract_inv_num_lt_num_of_pos {q : ℚ} (q_pos : 0 < q) : (fract q⁻¹).num < q.num := by
   -- we know that the numerator must be positive

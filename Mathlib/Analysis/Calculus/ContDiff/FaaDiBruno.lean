@@ -382,7 +382,7 @@ def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpart
           simp only [cases_succ, comp_apply, succ_lt_succ_iff]
           exact c.emb_strictMono m (by simpa using h')
     · simp only [hm, ↓reduceDIte]
-      exact strictMono_succ.comp ((c.emb_strictMono m).comp (by exact fun ⦃a b⦄ h ↦ h))
+      exact strictMono_succ.comp ((c.emb_strictMono m).comp (fun ⦃a b⦄ h ↦ h))
   parts_strictMono := by
     convert! strictMono_succ.comp c.parts_strictMono with m
     rcases eq_or_ne m k with rfl | hm

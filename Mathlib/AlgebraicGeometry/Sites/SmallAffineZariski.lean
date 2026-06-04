@@ -228,7 +228,7 @@ noncomputable instance : (Scheme.AffineZariskiSite.directedCover X).LocallyDirec
     have haU : a ∈ U.1 := (pullback.fst U.1.ι V.1.ι x).2
     have haV : a ∈ V.1 := by unfold a; rw [pullback.condition]; exact (pullback.snd U.1.ι V.1.ι x).2
     obtain ⟨f, g, e, hxf⟩ := exists_basicOpen_le_affine_inter U.2 V.2 _ ⟨haU, haV⟩
-    refine ⟨U.basicOpen f, homOfLE (U.basicOpen_le f), eqToHom (Subtype.ext (by exact e)) ≫
+    refine ⟨U.basicOpen f, homOfLE (U.basicOpen_le f), eqToHom (Subtype.ext (e)) ≫
       homOfLE (V.basicOpen_le g), ⟨a, hxf⟩, ?_⟩
     apply (pullback.fst _ _ ≫ U.1.ι).isOpenEmbedding.injective
     dsimp

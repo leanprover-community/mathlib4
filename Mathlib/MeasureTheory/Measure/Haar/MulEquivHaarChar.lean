@@ -95,7 +95,7 @@ lemma integral_comap_eq_mulEquivHaarChar_smul (μ : Measure G)
   have : (map (e.symm) μ).IsHaarMeasure := φ.symm.isHaarMeasure_map μ
   have : (map (e.symm) μ).Regular := Regular.map φ.symm.toHomeomorph
   rw [← e.map_symm, ← mulEquivHaarChar_smul_integral_map (map e.symm μ) φ,
-    map_map (by exact φ.toHomeomorph.toMeasurableEquiv.measurable) e.symm.measurable]
+    map_map (φ.toHomeomorph.toMeasurableEquiv.measurable) e.symm.measurable]
   -- congr -- breaks to_additive
   rw [show ⇑φ ∘ ⇑e.symm = id by ext; simp [e]]
   simp

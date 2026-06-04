@@ -855,7 +855,7 @@ lemma MeromorphicAt.meromorphicOrderAt_comp (hf : MeromorphicAt f (g x)) (hg : A
   have aux1 : f ∘ g =ᶠ[𝓝[≠] x] (g · - g x) ^ r • (F ∘ g) := hFev.comp_tendsto (hg.map_nhdsNE hg_nc)
   have aux2 : meromorphicOrderAt (F ∘ g) x = 0 := by
     rw [AnalyticAt.meromorphicOrderAt_eq (by fun_prop),
-      analyticOrderAt_eq_zero.mpr (by exact .inr hFne), ENat.map_zero, CharP.cast_eq_zero,
+      analyticOrderAt_eq_zero.mpr (.inr hFne), ENat.map_zero, CharP.cast_eq_zero,
       WithTop.coe_zero]
   rw [meromorphicOrderAt_congr aux1, meromorphicOrderAt_smul ?_ (AnalyticAt.meromorphicAt ?_),
     aux2, add_zero, meromorphicOrderAt_zpow, AnalyticAt.meromorphicOrderAt_eq] <;>

@@ -306,7 +306,7 @@ def append (p q : RelSeries r) (connect : p.last ~[r] q.head) : RelSeries r wher
           i.2.trans <| by lia⟩ := by
         ext; dsimp [x, y]; rw [Nat.add_sub_cancel']; exact hi
       have hy : y = Fin.natAdd _ ⟨i - p.length, Nat.sub_lt_left_of_lt_add (le_of_lt hi)
-          (by exact i.2)⟩ := by
+          (i.2)⟩ := by
         ext
         dsimp
         conv_rhs => rw [Nat.add_comm p.length 1, add_assoc,

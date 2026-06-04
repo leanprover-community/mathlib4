@@ -366,7 +366,7 @@ noncomputable def QuasicoherentData.bind {R : Sheaf J RingCat.{u}}
       (by ext : 2; exact R.1.map_id _) (by ext : 2; exact R.1.map_id _)
     (((D i.1).presentation i.2).map e.inverse (.refl _)).ofIsIso
       (e.fullyFaithfulFunctor.preimageIso
-      (by exact e.counitIso.app ((M.over (X i.1)).over ((D i.1).X i.2)))).hom
+      (e.counitIso.app ((M.over (X i.1)).over ((D i.1).X i.2)))).hom
 
 lemma IsQuasicoherent.of_coversTop {R : Sheaf J RingCat.{u}}
     (M : SheafOfModules.{u} R) {I : Type u}

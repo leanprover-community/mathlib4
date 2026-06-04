@@ -578,7 +578,7 @@ private lemma bijective_image_objEquiv_toOrderHom_univ (m : ℕ) :
       (⟨Finset.image (objEquiv x).toOrderHom .univ, by
         dsimp
         rw [mem_nonDegenerate_iff_mono, SimplexCategory.mono_iff_injective] at hx
-        rw [Finset.card_image_of_injective _ (by exact hx), Finset.card_univ,
+        rw [Finset.card_image_of_injective _ (hx), Finset.card_univ,
           Fintype.card_fin]⟩ : { S : Finset (Fin (n + 1)) | S.card = m + 1 })) := by
   constructor
   · rintro ⟨x₁, h₁⟩ ⟨x₂, h₂⟩ h₃

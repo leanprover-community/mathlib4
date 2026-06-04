@@ -326,7 +326,7 @@ private lemma exists_hasStandardEtaleSurjectionOn_of_finite
   exact ⟨_, (inferInstance : Q'.IsPrime).mul_notMem hfQ' hrQ', .mk
     (f := IsScalarTower.toAlgHom R S' S (f * r))
     ((Localization.awayMapₐ (IsScalarTower.toAlgHom _ _ S) (f * r)).comp φ)
-    (by exact (H _ (by simp)).surjective.comp hP)⟩
+    ((H _ (by simp)).surjective.comp hP)⟩
 
 attribute [local instance high] Module.Free.of_divisionRing in
 instance (priority := low)

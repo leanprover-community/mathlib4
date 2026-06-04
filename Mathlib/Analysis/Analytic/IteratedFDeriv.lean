@@ -164,7 +164,7 @@ private lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
     have : f = g + (f - g) := by abel
     nth_rewrite 1 [this]
     rw [iteratedFDerivWithin_add_apply (gcont.of_le le_top).contDiffWithinAt
-      (by exact (fcont _ hx).sub (gcont.of_le le_top).contDiffWithinAt) hs hx]
+      ((fcont _ hx).sub (gcont.of_le le_top).contDiffWithinAt) hs hx]
   have J2 : iteratedFDerivWithin 𝕜 n (f - g) s x = 0 := by
     apply (h.sub B).iteratedFDerivWithin_eq_zero (h'.sub ?_) hs hx
     · simp [q]

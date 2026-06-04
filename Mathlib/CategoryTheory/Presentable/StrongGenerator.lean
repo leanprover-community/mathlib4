@@ -131,7 +131,7 @@ lemma ObjectProperty.IsStrongGenerator.isDense_colimitsCardinalClosure_ι
       apply coequalizer.condition_assoc
     have : IsIso (colimit.desc _ (E.coconeAt X)) := hS₁.isIso_of_mono _ (fun Y hY g ↦ by
       let γ : CostructuredArrow (P.colimitsCardinalClosure κ).ι X :=
-        CostructuredArrow.mk (Y := ⟨Y, P.le_colimitsCardinalClosure  _ _ hY⟩) (by exact g)
+        CostructuredArrow.mk (Y := ⟨Y, P.le_colimitsCardinalClosure  _ _ hY⟩) (g)
       exact ⟨colimit.ι (CostructuredArrow.proj _ _ ⋙ (P.colimitsCardinalClosure κ).ι) γ,
         by simp [γ, E]⟩)
     exact ⟨IsColimit.ofIsoColimit (colimit.isColimit _) (Cocone.ext

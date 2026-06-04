@@ -606,7 +606,7 @@ lemma cfc_comp (g f : R → R) (a : A) (ha : p a := by cfc_tac)
   have := hg.comp hf <| (spectrum R a).mapsTo_image f
   have sp_eq : spectrum R (cfcHom (show p a from ha) (ContinuousMap.mk _ hf.restrict)) =
       f '' (spectrum R a) := by
-    rw [cfcHom_map_spectrum (by exact ha) _]
+    rw [cfcHom_map_spectrum (ha) _]
     ext
     simp
   rw [cfc_apply .., cfc_apply f a,

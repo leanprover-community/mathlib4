@@ -223,11 +223,11 @@ theorem isPiSystem_Ico (f : ι → α) (g : ι' → α) :
 
 theorem isPiSystem_Icc_mem (s t : Set α) :
     IsPiSystem { S | ∃ᵉ (l ∈ s) (u ∈ t), l ≤ u ∧ Icc l u = S } :=
-  isPiSystem_Ixx_mem (Ixx := Icc) nonempty_Icc.1 (by exact Icc_inter_Icc) s t
+  isPiSystem_Ixx_mem (Ixx := Icc) nonempty_Icc.1 (Icc_inter_Icc) s t
 
 theorem isPiSystem_Icc (f : ι → α) (g : ι' → α) :
     @IsPiSystem α { S | ∃ i j, f i ≤ g j ∧ Icc (f i) (g j) = S } :=
-  isPiSystem_Ixx (Ixx := Icc) nonempty_Icc.1 (by exact Icc_inter_Icc) f g
+  isPiSystem_Ixx (Ixx := Icc) nonempty_Icc.1 (Icc_inter_Icc) f g
 
 end Order
 

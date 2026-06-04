@@ -80,7 +80,7 @@ theorem exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)) :
   obtain ⟨J, hJ⟩ := ClassGroup.mk0_surjective C⁻¹
   obtain ⟨_, ⟨a, ha, rfl⟩, h_nz, h_nm⟩ :=
     exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr K (FractionalIdeal.mk0 K J)
-  obtain ⟨I₀, hI⟩ := dvd_iff_le.mpr ((span_singleton_le_iff_mem J).mpr (by exact ha))
+  obtain ⟨I₀, hI⟩ := dvd_iff_le.mpr ((span_singleton_le_iff_mem J).mpr (ha))
   have : I₀ ≠ 0 := by
     contrapose h_nz
     rw [h_nz, mul_zero, zero_eq_bot, span_singleton_eq_bot] at hI

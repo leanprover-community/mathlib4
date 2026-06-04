@@ -280,7 +280,7 @@ theorem signAux_swap : ∀ {n : ℕ} {x y : Fin n} (_hxy : x ≠ y), signAux (sw
     have h2n : 2 ≤ n + 2 := by exact le_add_self
     rw [← isConj_iff_eq, ← signAux_swap_zero_one h2n]
     exact (MonoidHom.mk' signAux signAux_mul).map_isConj
-      (isConj_swap hxy (by exact of_decide_eq_true rfl))
+      (isConj_swap hxy (of_decide_eq_true rfl))
 
 /-- When the list `l : List α` contains all nonfixed points of the permutation `f : Perm α`,
   `signAux2 l f` recursively calculates the sign of `f`. -/

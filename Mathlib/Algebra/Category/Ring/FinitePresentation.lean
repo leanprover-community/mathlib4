@@ -65,7 +65,7 @@ lemma RingHom.EssFiniteType.exists_comp_map_eq_of_isColimit (hf : f.hom.EssFinit
   · rw [← CommRingCat.hom_comp, ← CommRingCat.hom_comp, reassoc_of% ha, reassoc_of% hb]
     simp [← α.naturality]
   · intro x hx
-    rw [← c'.w (.fst (by exact ⟨x, hx⟩)), ← c'.w (.snd (by exact ⟨x, hx⟩))]
+    rw [← c'.w (.fst (⟨x, hx⟩)), ← c'.w (.snd (⟨x, hx⟩))]
     have (x : _) : F.map (f₁ x) (a x) = F.map (f₂ x) (b x) := h x
     simp [D, this]
 

@@ -163,12 +163,12 @@ theorem convexBodyLT'_mem {x : K} :
     · specialize h₂ w (not_isReal_iff_isComplex.mp hw)
       rw [apply_ite (w.embedding x ∈ ·), Set.mem_setOf_eq,
         mem_ball_zero_iff, norm_embedding_eq] at h₂
-      rwa [if_neg (by exact Subtype.coe_ne_coe.1 h_ne)] at h₂
+      rwa [if_neg (Subtype.coe_ne_coe.1 h_ne)] at h₂
   · simpa [if_true] using h₂ w₀.val w₀.prop
   · exact h₁ w (ne_of_isReal_isComplex hw w₀.prop)
   · by_cases h_ne : w = w₀
     · simpa [h_ne]
-    · rw [if_neg (by exact Subtype.coe_ne_coe.1 h_ne)]
+    · rw [if_neg (Subtype.coe_ne_coe.1 h_ne)]
       rw [mem_ball_zero_iff, norm_embedding_eq]
       exact h₁ w h_ne
 

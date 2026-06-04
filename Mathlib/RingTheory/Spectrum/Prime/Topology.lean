@@ -1185,7 +1185,7 @@ lemma closure_image_comap_zeroLocus (I : Ideal S) :
     obtain ⟨p', hp', hp'', rfl⟩ := Ideal.exists_comap_eq_of_mem_minimalPrimes f _ hq₁
     let p'' : PrimeSpectrum S := ⟨p', hp'⟩
     apply isClosed_closure.stableUnderSpecialization ((le_iff_specializes
-      (comap f ⟨p', hp'⟩) x).mp hq₂) (subset_closure (by exact ⟨_, hp'', rfl⟩))
+      (comap f ⟨p', hp'⟩) x).mp hq₂) (subset_closure (⟨_, hp'', rfl⟩))
 
 lemma isIntegral_of_isClosedMap_comap_mapRingHom (h : IsClosedMap (comap (mapRingHom f))) :
     f.IsIntegral := by

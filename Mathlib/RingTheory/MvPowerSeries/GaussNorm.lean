@@ -75,7 +75,7 @@ lemma gaussNorm_eq_zero_iff (vZero : v 0 = 0) (vNonneg : ∀ a, v a ≥ 0)
   obtain ⟨n, hn⟩ := (MvPowerSeries.ne_zero_iff_exists_coeff_ne_zero f).mp hf
   calc
   0 < v (f.coeff n) * ∏ i ∈ n.support, (c i) ^ (n i) := by
-    apply mul_pos _ (by exact Finset.prod_pos fun i a ↦ (fun i ↦ pow_pos (hc i) (n i)) i)
+    apply mul_pos _ (Finset.prod_pos fun i a ↦ (fun i ↦ pow_pos (hc i) (n i)) i)
     specialize h_eq_zero (f.coeff n)
     grind
   _ ≤ _ := le_gaussNorm v c f hbd n

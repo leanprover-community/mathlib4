@@ -594,7 +594,7 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
     simp_rw [Fintype.sum_empty, changeOriginSeries_support _ (this _), zero_apply _, tsum_zero]; rfl
   rw [tsum_eq_single (Fintype.card ι - 1), changeOriginSeries]; swap
   · intro m hm
-    rw [Ne, eq_tsub_iff_add_eq_of_le (by exact Fintype.card_pos), add_comm] at hm
+    rw [Ne, eq_tsub_iff_add_eq_of_le (Fintype.card_pos), add_comm] at hm
     rw [f.changeOriginSeries_support hm, zero_apply]
   rw [sum_apply, ContinuousMultilinearMap.sum_apply, Fin.snoc_zero]
   simp_rw [changeOriginSeriesTerm_apply]

@@ -536,7 +536,7 @@ lemma from_truncGE_obj_ext {n : ℤ} {X : C} {Y : C}
   obtain ⟨g, hg⟩ := Triangle.yoneda_exact₃ _
     (t.triangleLTGE_distinguished n X) f hf
   have hg' := t.zero_of_isLE_of_isGE g (n-2) n (by lia)
-    (by exact t.isLE_shift _ (n-1) 1 (n-2) (by lia)) inferInstance
+    (t.isLE_shift _ (n-1) 1 (n-2) (by lia)) inferInstance
   rw [hg, hg', comp_zero]
 
 set_option backward.defeqAttrib.useBackward true in

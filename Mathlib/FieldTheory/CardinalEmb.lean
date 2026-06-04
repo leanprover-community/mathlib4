@@ -296,7 +296,7 @@ def equivLim : (E⟮<i⟯ →ₐ[F] Ē) ≃ limit (embFunctor F E) i where
     · ext ⟨x, hx⟩
       rw [← iSup_filtration hi, mem_toSubalgebra, ← SetLike.mem_coe,
           coe_iSup_of_directed directed_filtration, mem_iUnion] at hx
-      rw [Subalgebra.iSupLift_of_mem _ _ (by exact hx.choose_spec)]; rfl
+      rw [Subalgebra.iSupLift_of_mem _ _ (hx.choose_spec)]; rfl
     · apply AlgHom.ext
       rw [((equivOfEq (eq_bot_of_not_nonempty hi h)).trans <| botEquiv F E).forall_congr_left]
       simp

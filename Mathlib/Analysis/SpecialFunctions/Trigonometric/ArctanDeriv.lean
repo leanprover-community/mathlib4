@@ -26,10 +26,10 @@ open Set Filter
 open scoped Topology Real
 
 theorem hasStrictDerivAt_tan {x : ℝ} (h : cos x ≠ 0) : HasStrictDerivAt tan (1 / cos x ^ 2) x :=
-  mod_cast (Complex.hasStrictDerivAt_tan (by exact mod_cast h)).real_of_complex
+  mod_cast (Complex.hasStrictDerivAt_tan (mod_cast h)).real_of_complex
 
 theorem hasDerivAt_tan {x : ℝ} (h : cos x ≠ 0) : HasDerivAt tan (1 / cos x ^ 2) x :=
-  mod_cast (Complex.hasDerivAt_tan (by exact mod_cast h)).real_of_complex
+  mod_cast (Complex.hasDerivAt_tan (mod_cast h)).real_of_complex
 
 theorem tendsto_abs_tan_of_cos_eq_zero {x : ℝ} (hx : cos x = 0) :
     Tendsto (fun x => abs (tan x)) (𝓝[≠] x) atTop := by

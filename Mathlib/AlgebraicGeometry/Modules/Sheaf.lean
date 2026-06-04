@@ -392,7 +392,7 @@ def restrictFunctorAdjCounitIso : pushforward f ⋙ restrictFunctor f ≅ 𝟭 _
 
 /-- Restriction is right adjoint to pushforward. -/
 def restrictAdjunction : restrictFunctor f ⊣ pushforward f := by
-  refine pushforwardPushforwardAdj (by exact f.isOpenEmbedding.isOpenMap.adjunction) _ _ ?_ ?_
+  refine pushforwardPushforwardAdj (f.isOpenEmbedding.isOpenMap.adjunction) _ _ ?_ ?_
   · ext U x; exact congr($((f.app_appIso_inv _).symm).hom x)
   · ext U x
     have : (f.appIso U.unop).inv ≫ f.app _ ≫

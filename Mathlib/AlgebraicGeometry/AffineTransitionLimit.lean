@@ -231,7 +231,7 @@ noncomputable
 def isLimitOpensCone [IsCofiltered I] (i : I) (U : (D.obj i).Opens) :
     IsLimit (opensCone D c i U) :=
   isLimitOfIsPullbackOfIsConnected (opensDiagramι D i U) _ _
-    (by exact { hom := (c.π.app i ⁻¹ᵁ U).ι })
+    ({ hom := (c.π.app i ⁻¹ᵁ U).ι })
     (fun j ↦ IsOpenImmersion.isPullback _ _ _ _ (by simp) (by simp [← Scheme.Hom.comp_preimage]))
     ((Functor.Initial.isLimitWhiskerEquiv (Over.forget i) c).symm hc)
 
@@ -890,7 +890,7 @@ lemma exists_appTop_π_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.ma
       Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_comp_appLE] using hk
   choose j fjx fjy hj using this
   obtain ⟨σ, hσ⟩ := CompactSpace.elim_nhds_subcover (fun x ↦ ((c.π.app (i x)) ⁻¹ᵁ U x).1)
-    (fun x ↦ ((c.π.app (i x)) ⁻¹ᵁ U x).2.mem_nhds (by exact hxU x))
+    (fun x ↦ ((c.π.app (i x)) ⁻¹ᵁ U x).2.mem_nhds (hxU x))
   choose σi hσiσ hσi using fun x ↦ Set.mem_iUnion₂.mp (hσ.ge (Set.mem_univ x))
   let S : Finset _ := σ.image i ∪ Finset.image₂ j σ σ
   have hiS {x} (hx : x ∈ σ) : i x ∈ S := Finset.subset_union_left (Finset.mem_image_of_mem i hx)
@@ -1011,7 +1011,7 @@ lemma Scheme.exists_isQuasiAffine_of_isLimit [IsCofiltered I]
   choose i f hf hi using this
   obtain ⟨σ, hσ⟩ := CompactSpace.elim_nhds_subcover
     (fun x ↦ (((c.π.app (i x)) ⁻¹ᵁ (D.obj (i x)).basicOpen (f x)).1))
-    (fun x ↦ ((c.π.app (i x)) ⁻¹ᵁ (D.obj (i x)).basicOpen (f x)).2.mem_nhds (by exact hi x))
+    (fun x ↦ ((c.π.app (i x)) ⁻¹ᵁ (D.obj (i x)).basicOpen (f x)).2.mem_nhds (hi x))
   choose σi hσiσ hσi using fun x ↦ Set.mem_iUnion₂.mp (hσ.ge (Set.mem_univ x))
   obtain ⟨j, fj⟩ := IsCofiltered.inf_objs_exists (σ.image i)
   replace fj := fun i h ↦ (@fj i h).some

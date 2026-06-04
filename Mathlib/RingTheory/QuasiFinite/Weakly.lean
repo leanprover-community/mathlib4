@@ -193,7 +193,7 @@ lemma baseChange (p : Ideal S) [p.IsPrime] [WeaklyQuasiFiniteAt R p]
     apply Ideal.comap_injective_of_surjective _ Ideal.Quotient.mk_surjective
     rwa [Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective, Ideal.comap_comap,
       ← RingHom.ker_eq_comap_bot, Ideal.mk_ker, sup_eq_left.mpr Ideal.map_comap_le,
-      ← hφ₃, ← Ideal.comap_comap, Ideal.comap_map_of_surjective _ (by exact hφ₁),
+      ← hφ₃, ← Ideal.comap_comap, Ideal.comap_map_of_surjective _ (hφ₁),
       ← RingHom.ker_eq_comap_bot, hφ₂, sup_eq_left.mpr Ideal.map_comap_le])
   have : QuasiFiniteAt A (q.map φ.toRingHom) := .trans _ (A ⧸ q.under A) _
   let e := (Ideal.quotientEquivAlg ((q.under A).map (algebraMap _ _)) _ (.refl) (by simpa)).trans
@@ -217,7 +217,7 @@ lemma of_restrictScalars [Algebra S T] [IsScalarTower R S T]
       ← Ideal.comap_comap, -Ideal.under_under] using Ideal.map_mono Ideal.map_comap_le
   delta WeaklyQuasiFiniteAt
   refine .of_surjectiveOnStalks (q.map (Ideal.Quotient.mk ((q.under R).map (algebraMap R T))))
-    (Ideal.quotientMapₐ _ (.id _ _) (by exact H)) (RingHom.surjectiveOnStalks_of_surjective
+    (Ideal.quotientMapₐ _ (.id _ _) (H)) (RingHom.surjectiveOnStalks_of_surjective
       (Ideal.quotientMap_surjective (H := by exact H) Function.surjective_id)) _ ?_
   apply Ideal.comap_injective_of_surjective _ Ideal.Quotient.mk_surjective
   rw [Ideal.comap_comap, Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective]
