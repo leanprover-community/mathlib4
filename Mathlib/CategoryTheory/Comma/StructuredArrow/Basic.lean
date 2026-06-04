@@ -371,6 +371,7 @@ def map₂CompMap₂Iso {C' : Type u₆} [Category.{v₆} C'] {D' : Type u₅} [
         Functor.whiskerLeft _ β ≫ (Functor.associator ..).inv) :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `map₂` is invariant under isomorphisms. -/
 @[simps!]
 def map₂Congr {F' : C ⥤ A} {G' : D ⥤ B} (e₁ : F ≅ F') (e₂ : G ≅ G')
@@ -384,6 +385,7 @@ where finally
     simp [dsimp% congr($(hβ).app X.right)]
   · simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `map₂` of the identity is the identity. -/
 @[simps!]
 def map₂IdIso (T : D) (α : T ⟶ (𝟭 _).obj T) (β : R ⋙ 𝟭 _ ⟶ 𝟭 _ ⋙ R)
@@ -392,6 +394,7 @@ def map₂IdIso (T : D) (α : T ⟶ (𝟭 _).obj T) (β : R ⋙ 𝟭 _ ⟶ 𝟭 
     map₂ α β ≅ 𝟭 _ :=
   NatIso.ofComponents (fun X ↦ isoMk (.refl _))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `map₂` along equivalences of categories is an equivalence of categories. -/
 @[simps]
 def map₂Iso {F : C ≌ A} {G : D ≌ B}
@@ -816,6 +819,7 @@ noncomputable instance isEquivalenceMap₂
   rw [NatTrans.isIso_iff_isIso_app]
   intro; dsimp; infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The composition of two applications of `map₂` is naturally isomorphic to a single such one. -/
 @[simps!]
 def map₂CompMap₂Iso {C' : Type u₆} [Category.{v₆} C'] {D' : Type u₅} [Category.{v₅} D']
@@ -827,6 +831,7 @@ def map₂CompMap₂Iso {C' : Type u₆} [Category.{v₆} C'] {D' : Type u₅} [
       (G.map β' ≫ β) :=
   NatIso.ofComponents fun X ↦ isoMk (.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `map₂` is invariant under isomorphisms. -/
 @[simps!]
 def map₂Congr {F' : C ⥤ A} {G' : D ⥤ B} (e₁ : F ≅ F') (e₂ : G ≅ G')
@@ -840,6 +845,7 @@ where finally
     simp [← reassoc_of% dsimp% congr($(hα).app X.left)]
   · simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `map₂` of the identity is the identity. -/
 @[simps!]
 def map₂IdIso (α : 𝟭 _ ⋙ S ⟶ S ⋙ 𝟭 _) (T : D) (β : (𝟭 _).obj T ⟶ T)
@@ -848,6 +854,7 @@ def map₂IdIso (α : 𝟭 _ ⋙ S ⟶ S ⋙ 𝟭 _) (T : D) (β : (𝟭 _).obj 
     map₂ α β ≅ 𝟭 _ :=
   NatIso.ofComponents (fun X ↦ isoMk (.refl _))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `map₂` along equivalences of categories is an equivalence of categories. -/
 @[simps]
 def map₂Iso {F : C ≌ A} {G : D ≌ B} (α : F.functor ⋙ U ⟶ S ⋙ G.functor)
