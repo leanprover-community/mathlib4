@@ -123,6 +123,8 @@ theorem _root_.MeasureTheory.ext_iff_measureReal_singleton [Countable α]
   rw [measureReal_def, measureReal_def, ENNReal.toReal_eq_toReal_iff]
   simp [measure_singleton_lt_top, ne_of_lt]
 
+alias ⟨_, ext_of_measureReal_singleton⟩ := MeasureTheory.ext_iff_measureReal_singleton
+
 /-- If `f` is a map with countable codomain, then `μ.map f` is a sum of Dirac measures. -/
 theorem map_eq_sum [Countable β] [MeasurableSingletonClass β] (μ : Measure α) (f : α → β)
     (hf : Measurable f) : μ.map f = sum fun b : β => μ (f ⁻¹' {b}) • dirac b := by
