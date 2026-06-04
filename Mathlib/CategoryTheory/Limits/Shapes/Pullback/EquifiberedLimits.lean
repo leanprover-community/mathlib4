@@ -16,7 +16,7 @@ import Mathlib.CategoryTheory.WithTerminal.Cone
 
 /-! # Functors equifibered over a fixed functor is closed under limits -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.NatTrans
 
@@ -24,6 +24,7 @@ open Limits Functor ObjectProperty
 
 variable {J K C D ι : Type*} [Category* J] [Category* C] [Category* K] [Category* D]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance (F : C ⥤ D) [∀ a b : C, HasCoproductsOfShape (a ⟶ b) D] :
     IsClosedUnderLimitsOfShape (fun f : Over F ↦ f.hom.Equifibered) J := by
@@ -57,7 +58,7 @@ instance (F : C ⥤ D) [∀ a b : C, HasCoproductsOfShape (a ⟶ b) D] :
     simp [← NatTrans.naturality, reassoc_of% hm₁]
   · simpa [← NatTrans.comp_app]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 open Over in
 instance (F : C ⥤ D) [∀ a b : C, HasProductsOfShape (a ⟶ b) D] :
     IsClosedUnderColimitsOfShape (fun f : Under F ↦ f.hom.Coequifibered) J := by
@@ -67,8 +68,8 @@ instance (F : C ⥤ D) [∀ a b : C, HasProductsOfShape (a ⟶ b) D] :
     hasColimitsOfShape_of_equivalence (Discrete.equivalence Quiver.Hom.opEquiv)
   let e : Over F.op ≌ (Under F)ᵒᵖ := (postEquiv _ (opUnopEquiv _ _)).symm.trans (opEquivOpUnder F)
   rw [isClosedUnderColimitsOfShape_iff_op, ← isClosedUnderLimitsOfShape_inverseImage_iff _ _ e]
-  convert (inferInstance : IsClosedUnderLimitsOfShape
-    (fun f : Over F.op ↦ f.hom.Equifibered) Jᵒᵖ) with f
+  convert!
+    (inferInstance : IsClosedUnderLimitsOfShape (fun f : Over F.op ↦ f.hom.Equifibered) Jᵒᵖ) with f
   simp [e, MorphismProperty.cancel_left_of_respectsIso, ← coequifibered_unop_iff]
   rfl
 

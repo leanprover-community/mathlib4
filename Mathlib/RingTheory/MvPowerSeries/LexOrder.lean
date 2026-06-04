@@ -8,7 +8,7 @@ module
 public import Mathlib.RingTheory.MvPowerSeries.Basic
 public import Mathlib.Data.Finsupp.WellFounded
 
-/-! LexOrder of multivariate power series
+/-! # LexOrder of multivariate power series
 
 Given an ordering of `σ` such that `WellFoundedGT σ`,
 the lexicographic order on `σ →₀ ℕ` is a well ordering,

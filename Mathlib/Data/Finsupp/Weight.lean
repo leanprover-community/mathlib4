@@ -165,9 +165,8 @@ section CanonicallyOrderedAddCommMonoid
 variable {M : Type*} [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
   [CanonicallyOrderedAdd M] (w : σ → M)
 
-theorem le_weight_of_ne_zero' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
-    w s ≤ weight w f :=
-  le_weight_of_ne_zero (fun _ ↦ zero_le _) hs
+theorem le_weight_of_ne_zero' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) : w s ≤ weight w f :=
+  le_weight_of_ne_zero (fun _ ↦ zero_le) hs
 
 /-- If `M` is a `CanonicallyOrderedAddCommMonoid`, then `weight f` is zero iff `f = 0`. -/
 theorem weight_eq_zero_iff_eq_zero
@@ -266,13 +265,14 @@ lemma range_single_one :
     obtain ⟨a, rfl⟩ := (Finsupp.sum_eq_one_iff _).mp hp
     use a
 
-theorem degree_mapDomain_eq_of_subsingletonAddUnits {τ : Type*} (f : σ → τ) [AddCommMonoid M]
-    [Subsingleton (AddUnits M)] (x : σ →₀ M) : degree (x.mapDomain f) = degree x := by
-  classical
-  trans (x.mapDomain f).sum (fun _ ↦ id)
-  · simp [degree, sum]
-  · simpa [sum, mapDomain_support_of_subsingletonAddUnits, degree] using Finset.sum_image' _
-      (fun _ _ ↦ mapDomain_apply_eq_sum ..)
+@[simp]
+theorem degree_mapDomain {τ : Type*} (f : σ → τ) [AddCommMonoid M] (x : σ →₀ M) :
+    degree (x.mapDomain f) = degree x := by
+  simp [mapDomain, sum]
+  dsimp [degree_apply]
+
+@[deprecated (since := "2026-04-27")]
+alias degree_mapDomain_eq_of_subsingletonAddUnits := degree_mapDomain
 
 theorem degree_comapDomain_le_of_canonicallyOrderedAdd {τ : Type*} {f : σ → τ} [AddCommMonoid M]
     [PartialOrder M] [CanonicallyOrderedAdd M] {x : τ →₀ M} (hf : Set.InjOn f (f ⁻¹' x.support)) :
