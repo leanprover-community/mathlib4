@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Sites.RegularEpi
 public import Mathlib.Condensed.Epi
 public import Mathlib.Condensed.Functors
-public import Mathlib.Condensed.Limits
+public import Mathlib.Condensed.Limits  -- shake: keep (compHausToCondensed.PreservesEffectiveEpis), cf. lean#13417
 
 /-!
 

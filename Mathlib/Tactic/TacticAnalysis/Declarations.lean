@@ -550,8 +550,32 @@ register_option linter.tacticAnalysis.tryAtEachStepFromEnv : Bool := {
    inherit_doc linter.tacticAnalysis.tryAtEachStepFromEnv]
 def tryAtEachStepFromEnv := tryAtEachStepFromEnvImpl
 
--- TODO: add compatibility with `rintro` and `intros`
-/-- Suggest merging two adjacent `intro` tactics which don't pattern match. -/
+/-- Convert an `rcases` pattern to an equivalent `intro` argument, if possible. -/
+private def introMergeArgOfRCasesPat? (pat : TSyntax `rcasesPat) : Option Term :=
+  match pat with
+  | `(rcasesPat| _%$x) => some ⟨mkHole x⟩
+  | `(rcasesPat| $h:ident) =>
+      if h.getId == `rfl then none else some ⟨h.raw⟩
+  | _ => none
+
+/-- Convert an `rintro` pattern to an equivalent `intro` argument, if possible. -/
+private def introMergeArgOfRIntroPat? (pat : TSyntax `rintroPat) : Option Term :=
+  match pat with
+  | `(rintroPat| $pat:rcasesPat) => introMergeArgOfRCasesPat? pat
+  | _ => none
+
+/-- Normalize a compatible `intro`-like tactic to the arguments of an equivalent `intro`. -/
+private def introMergeArgs? (stx : TSyntax `tactic) : Option (Array Term) :=
+  match stx with
+  | `(tactic| intro%$x $args*) =>
+      some <| if args.size = 0 then #[⟨mkHole x⟩] else args
+  | `(tactic| intros $ids*) =>
+      if ids.size = 0 then none else some <| ids.map fun stx => ⟨stx.raw⟩
+  | `(tactic| rintro $pats*) =>
+      pats.mapM introMergeArgOfRIntroPat?
+  | _ => none
+
+/-- Suggest merging adjacent `intro`-like tactics whose effect is equivalent to a single `intro`. -/
 register_option linter.tacticAnalysis.introMerge : Bool := {
   defValue := true
 }
@@ -561,11 +585,9 @@ def Mathlib.TacticAnalysis.introMerge : TacticAnalysis.Config := .ofComplex {
   out := Option (TSyntax `tactic)
   ctx := Array (Array Term)
   trigger ctx stx :=
-    match stx with
-    | `(tactic| intro%$x $args*) => .continue ((ctx.getD #[]).push
-      -- if `intro` is used without arguments, treat it as `intro _`
-      <| if args.size = 0 then #[⟨mkHole x⟩] else args)
-    | _ => if let some args := ctx then if args.size > 1 then .accept args else .skip else .skip
+    match introMergeArgs? ⟨stx⟩ with
+    | some args => .continue ((ctx.getD #[]).push args)
+    | none => if let some args := ctx then if args.size > 1 then .accept args else .skip else .skip
   test ctxI i ctx goal := do
     let ctxT := ctx.flatten
     let tac ← `(tactic| intro $ctxT*)
@@ -643,21 +665,15 @@ def Mathlib.TacticAnalysis.verifyTryThisSuggestions
                 if suggestedTac.raw[4]![1]![0]![1]!.getNumArgs == 0 then
                   continue
 
-            -- Get suggestion as string for analysis
-            let suggPP ← try
-              liftCoreM <| PrettyPrinter.ppTactic suggestedTac
-            catch _ => pure s!"{suggestedTac}"
-            let suggStr := suggPP.pretty
-
             -- Skip suggestions containing hexcode anchors (e.g., #962a, #8ef1)
             -- These are proof-context-specific references that aren't valid in a fresh goal
-            let containsHexcode := suggStr.splitOn "#" |>.drop 1 |>.any fun part =>
-              part.length >= 4 && (part.take 4).all fun c => c.isDigit || c ∈ ['a', 'b', 'c', 'd', 'e', 'f']
-            if containsHexcode then
+            if suggestedTac.raw.find? (·.isOfKind ``Lean.Parser.Tactic.anchor) |>.isSome then
               continue
 
             -- Skip suggestions containing `approx` - these are incomplete approximations
-            if suggStr.contains "approx" then
+            if suggestedTac.raw.find? (fun stx => stx.isOfKind ``Lean.Parser.Tactic.Grind.instantiate &&
+              (stx.find? (·.getAtomVal == "approx")).isSome) |>.isSome
+            then
               continue
 
             -- Verify suggestion works (suppress any messages from verification)
@@ -670,7 +686,7 @@ def Mathlib.TacticAnalysis.verifyTryThisSuggestions
 
             if !verifyGoals.isEmpty then
               logWarningAt i.tacI.stx
-                m!"`{label}` suggestion failed: `{suggPP}` did not close the goal"
+                m!"`{label}` suggestion failed: `{suggestedTac}` did not close the goal"
 
 /-- Verify that `grind?` suggestions actually work. -/
 register_option linter.tacticAnalysis.verifyGrind : Bool := {
