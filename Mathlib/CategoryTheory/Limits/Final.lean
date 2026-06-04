@@ -952,11 +952,7 @@ instance [HasTerminal C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
   have : (fromPUnit.{0} (F.obj (⊤_ C))).Final := final_fromPUnit_of_isTerminal
     (terminalIsTerminal.isTerminalObj F (⊤_ C))
   have : ((fromPUnit.{0} (⊤_ C)) ⋙ F).Final := final_of_natIso (F := fromPUnit.{0} (F.obj (⊤_ C)))
-    (NatIso.ofComponents (fun _ => Iso.refl _) (fun {X Y} f => by
-      cases X
-      cases Y
-      cases f
-      simp))
+    (Discrete.natIso (fun _ => Iso.refl _))
   final_of_final_comp (fromPUnit.{0} (⊤_ C)) F
 
 instance [HasInitial C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
@@ -965,12 +961,7 @@ instance [HasInitial C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
   have : (fromPUnit.{0} (F.obj (⊥_ C))).Initial := initial_fromPUnit_of_isInitial
     (initialIsInitial.isInitialObj F (⊥_ C))
   have : ((fromPUnit.{0} (⊥_ C)) ⋙ F).Initial := initial_of_natIso
-    (F := fromPUnit.{0} (F.obj (⊥_ C)))
-    (NatIso.ofComponents (fun _ => Iso.refl _) (fun {X Y} f => by
-      cases X
-      cases Y
-      cases f
-      simp))
+    (F := fromPUnit.{0} (F.obj (⊥_ C))) (Discrete.natIso (fun _ => Iso.refl _))
   initial_of_initial_comp (fromPUnit.{0} (⊥_ C)) F
 
 end
