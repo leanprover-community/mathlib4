@@ -516,6 +516,8 @@ theorem measurable_id {_ : MeasurableSpace α} : Measurable (@id α) := fun _ =>
 @[fun_prop]
 theorem measurable_id' {_ : MeasurableSpace α} : Measurable fun a : α => a := measurable_id
 
+-- Allow `to_fun` to eta-expand `g ∘ f`. Ideally, `Function.comp_def` would be a global pull lemma
+-- instead, which is not supported yet: see https://github.com/leanprover-community/mathlib4/issues/40183.
 attribute [local push ←] Function.comp_def
 @[to_fun]
 protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace β}
