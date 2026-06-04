@@ -84,7 +84,7 @@ lemma exists_variation_le_add' (μ : VectorMeasure X V) {s : Set X} (hs : Measur
     at hμ ⊢
   obtain ⟨P, hP⟩ : ∃ P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet),
       preVariationFun (fun x ↦ ‖μ x‖ₑ) s ≤ ∑ p ∈ P.parts, (fun x ↦ ‖μ x‖ₑ) ↑p + ε :=
-    preVariation.exists_Finpartition_sum_ge'  (‖μ ·‖ₑ) hs hε hμ
+    preVariation.exists_Finpartition_sum_ge' (‖μ ·‖ₑ) hs hε hμ
   refine ⟨P.parts.map (Function.Embedding.subtype _), ?_, ?_, ?_, ?_⟩
   · simp only [mem_map, Function.Embedding.subtype_apply, Subtype.exists, exists_and_right,
       exists_eq_right, forall_exists_index]
@@ -98,8 +98,7 @@ lemma exists_variation_le_add' (μ : VectorMeasure X V) {s : Set X} (hs : Measur
     exact (disjoint_subtype_iff (fun _ _ hs ht ↦ hs.inter ht) _).1
       (P.disjoint i_mem j_mem (by simpa using hij))
   · simp +contextual
-  · rw [Finset.sum_map]
-    exact hP.trans_eq rfl
+  · rwa [Finset.sum_map]
 
 /-- Measure version of `preVariation.exists_Finpartition_sum_ge`. -/
 lemma exists_variation_le_add (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s)
@@ -308,7 +307,7 @@ instance {x : X} {v : V} : IsFiniteMeasure (VectorMeasure.dirac x v).variation :
   infer_instance
 
 @[simp] lemma variation_toSignedMeasure {μ : Measure X} [IsFiniteMeasure μ] :
-    variation μ.toSignedMeasure = μ := by
+    μ.toSignedMeasure.variation = μ := by
   apply le_antisymm
   · apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
     simp [Measure.toSignedMeasure_apply, hs, Measure.real, Real.enorm_eq_ofReal]
