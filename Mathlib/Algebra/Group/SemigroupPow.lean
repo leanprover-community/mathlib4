@@ -46,11 +46,8 @@ namespace Semigroup
 variable {S : Type*} [Semigroup S]
 
 /-- Exponentiation for semigroups over positive naturals. -/
-def pNatPow (x : S) (n : ℕ+) : S :=
-  @PNat.recOn n (fun _ => S) x (fun _ ih => ih * x)
-
 instance : Pow S ℕ+ where
-  pow := pNatPow
+  pow x n := PNat.recOn n x (fun _ ih => ih * x)
 
 variable (x y : S) (n m : ℕ+)
 
