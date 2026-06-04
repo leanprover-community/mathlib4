@@ -218,7 +218,7 @@ theorem isStationary_sUnion_iff_of_cof_le_one {s : Set (Set α)} (hα : cof α �
       exact fun x hx ↦ (hxf _ hx).mono_right (iInter_subset _ ⟨x, hx⟩)
   mpr := fun ⟨x, hxs, hx⟩ ↦ hx.mono (subset_sUnion_of_mem hxs)
 
-theorem isStationary_iUnion_iff_of_cof_le_one {ι : Type u} {f : ι → Set α} (hα : cof α ≤ 1) :
+theorem isStationary_iUnion_iff_of_cof_le_one {ι : Sort*} {f : ι → Set α} (hα : cof α ≤ 1) :
     IsStationary (⋃ i, f i) ↔ ∃ i, IsStationary (f i) := by
   rw [← sUnion_range, isStationary_sUnion_iff_of_cof_le_one hα]
   simp
