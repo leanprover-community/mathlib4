@@ -59,6 +59,7 @@ def _root_.AlgHom.pi {B : Type*} [Semiring B] [Algebra R B] (g : Π i, B →ₐ[
   __ := RingHom.pi fun i ↦ (g i).toRingHom
   commutes' r := by ext; simp
 
+variable {A} in
 /-- `AlgHom.pi` commutes with composition. -/
 theorem _root_.AlgHom.pi_comp {B C : Type*} [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
     (g : ∀ i, C →ₐ[R] A i) (h : B →ₐ[R] C) :
@@ -77,10 +78,10 @@ theorem algHom_apply {B : Type*} [Semiring B] [Algebra R B]
     (g : Π i, B →ₐ[R] A i) (x : B) (i : ι) : Pi.algHom R A g x i = g i x :=
   AlgHom.pi_apply g x i
 
-@[deprecated AlgHom.pi_apply (since := "2026-05-30")]
+@[deprecated AlgHom.pi_comp (since := "2026-05-30")]
 theorem algHom_comp {B C : Type*} [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
     (g : ∀ i, C →ₐ[R] A i) (h : B →ₐ[R] C) :
-    (AlgHom.pi g).comp h = AlgHom.pi (fun i ↦ (g i).comp h) := rfl
+    (algHom R A g).comp h = algHom R A (fun i ↦ (g i).comp h) := rfl
 
 /-- `Function.eval` as an `AlgHom`. The name matches `Pi.evalRingHom`, `Pi.evalMonoidHom`,
 etc. -/
