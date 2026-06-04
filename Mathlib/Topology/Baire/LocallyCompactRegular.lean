@@ -59,7 +59,7 @@ instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace : BaireSpac
   exact hK_nonempty.mono hK_subset
 
 /-- A Gδ subset of a locally compact R₁ space is Baire. -/
-theorem IsGδ.of_t2Space_locallyCompactSpace (hG : IsGδ s) : BaireSpace s := by
+theorem IsGδ.baireSpace_of_t2Space_locallyCompactSpace (hG : IsGδ s) : BaireSpace s := by
   have : LocallyCompactSpace (closure s) := isClosed_closure.locallyCompactSpace
   have : BaireSpace (closure s) := .of_t2Space_locallyCompactSpace
   have : BaireSpace ((↑) ⁻¹' s : Set (closure s)) :=
@@ -68,3 +68,6 @@ theorem IsGδ.of_t2Space_locallyCompactSpace (hG : IsGδ s) : BaireSpace s := by
   have h_homeo : Homeomorph ((↑) ⁻¹' s : Set (closure s)) s := ⟨⟨fun x => ⟨x, x.2⟩,
     fun x => ⟨⟨x, subset_closure x.2⟩, x.2⟩, by grind, by grind⟩, by fun_prop, by fun_prop⟩
   exact h_homeo.baireSpace
+
+@[deprecated (since := "2026-06-04")]
+alias IsGδ.of_t2Space_locallyCompactSpace := IsGδ.baireSpace_of_t2Space_locallyCompactSpace
