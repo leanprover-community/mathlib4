@@ -278,14 +278,14 @@ theorem nhds_hasBasis_absConvex :
 variable [IsTopologicalAddGroup E] [ZeroLEOneClass 𝕜]
 
 theorem nhds_hasBasis_absConvex_open :
-    (𝓝 (0 : E)).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s) id := by
+    (𝓝 (0 : E)).HasBasis (fun s ↦ (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s) id := by
   refine (nhds_hasBasis_absConvex 𝕜 E).to_hasBasis ?_ ?_
-  · rintro s ⟨hs_nhds, hs_balanced, hs_convex⟩
+  · intro s ⟨hs_nhds, hs_balanced, hs_convex⟩
     refine ⟨interior s, ?_, interior_subset⟩
     exact
       ⟨mem_interior_iff_mem_nhds.mpr hs_nhds, isOpen_interior,
         hs_balanced.interior (mem_interior_iff_mem_nhds.mpr hs_nhds), hs_convex.interior⟩
-  rintro s ⟨hs_zero, hs_open, hs_balanced, hs_convex⟩
+  intro s ⟨hs_zero, hs_open, hs_balanced, hs_convex⟩
   exact ⟨s, ⟨hs_open.mem_nhds hs_zero, hs_balanced, hs_convex⟩, rfl.subset⟩
 
 theorem exists_nhds_hasAntitoneBasis_absConvex_open_add_closure_subset [FirstCountableTopology E] :
@@ -319,6 +319,18 @@ theorem exists_nhds_hasAntitoneBasis_absConvex_open_add_closure_subset [FirstCou
   exact ⟨v ∘ φ, hφ_basis, fun n ↦ ⟨hv_open (φ n), absConvex_absConvexHull, hφ_add (by simp),
     (closure_subset_add_self_of_mem_nhds_zero (hv_nhds (φ (n + 1)))).trans
         (hφ_add n.lt_succ_self)⟩⟩
+
+theorem nhds_hasBasis_absConvex_closed [FirstCountableTopology E] :
+    (𝓝 (0 : E)).HasBasis (fun s ↦ s ∈ 𝓝 (0 : E) ∧ IsClosed s ∧ AbsConvex 𝕜 s) id := by
+  refine (nhds_hasBasis_absConvex_open 𝕜 E).to_hasBasis ?_
+    fun s ⟨hs_nhds, _, _⟩ ↦ (nhds_hasBasis_absConvex_open 𝕜 E).mem_iff.mp hs_nhds
+  intro s ⟨hs_zero, hs_open, hs_abs⟩
+  obtain ⟨x, hx_basis, hx_props⟩ :=
+    exists_nhds_hasAntitoneBasis_absConvex_open_add_closure_subset 𝕜 E
+  obtain ⟨n, hxn_sub⟩ := hx_basis.mem_iff.mp (hs_open.mem_nhds hs_zero)
+  refine ⟨closure (x (n + 1)), ?_, by grind⟩
+  exact ⟨Filter.mem_of_superset (hx_basis.mem (n + 1)) subset_closure, isClosed_closure,
+    (hx_props (n + 1)).2.1.closure⟩
 
 end NontriviallyNormedField
 
