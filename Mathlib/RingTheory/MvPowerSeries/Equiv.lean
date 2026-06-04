@@ -175,44 +175,47 @@ power series over multivariable power series in `Fin n`. -/
 def finSuccEquiv : MvPowerSeries (Fin (n + 1)) R ≃ₐ[R] PowerSeries (MvPowerSeries (Fin n) R) :=
   (renameEquiv R (_root_.finSuccEquiv n)).trans (optionEquivLeft (Fin n) R)
 
-theorem coeff_coeff_finSuccEquiv (p : MvPowerSeries (Fin (n + 1)) R) {k x} :
+theorem coeff_coeff_finSuccEquiv (p : MvPowerSeries (Fin (n + 1)) R) {k : ℕ} {x : Fin n →₀ ℕ} :
     coeff x (PowerSeries.coeff k (finSuccEquiv R n p)) = coeff (x.cons k) p := by
   suffices coeff x (PowerSeries.coeff k (optionEquivLeft (Fin n) R
     (rename (_root_.finSuccEquiv n) p))) = coeff (Finsupp.cons k x) p by simpa [finSuccEquiv]
   simp_rw [← Equiv.coe_toEmbedding, coeff_coeff_optionEquivLeft, ← embDomain_finSuccEquiv_cons,
     coeff_embDomain_rename]
 
+@[simp]
 theorem finSuccEquiv_X_zero : finSuccEquiv R n (X 0) = .X := by
   ext k x
-  rw [coeff_coeff_finSuccEquiv, PowerSeries.coeff_X, coeff_X]
+  simp_rw [coeff_coeff_finSuccEquiv, PowerSeries.coeff_X, coeff_X, cons_eq_single_zero_iff]
   split_ifs with h1 h2 h3
-  · rw [cons_eq_single_zero_iff] at h1
-    simp [h1.left]
-  · grind [cons_eq_single_zero_iff]
-  · rw [cons_eq_single_zero_iff, not_and'] at h1
-    rw [coeff_one, if_neg (h1 h3)]
+  · simp [h1.left]
+  · tauto
+  · rw [coeff_one, if_neg (by tauto)]
   · rw [coeff_zero]
 
-theorem finSuccEquiv_X_succ {j : Fin n} : finSuccEquiv R n (X j.succ) = .C (X j) := by
+@[simp]
+theorem finSuccEquiv_X_succ (j : Fin n) : finSuccEquiv R n (X j.succ) = .C (X j) := by
   ext k x
-  rw [coeff_coeff_finSuccEquiv, PowerSeries.coeff_C, coeff_X]
+  simp_rw [coeff_coeff_finSuccEquiv, PowerSeries.coeff_C, coeff_X, cons_eq_single_succ_iff]
   split_ifs with h1 h2 h3
-  · rw [cons_eq_single_succ_iff] at h1
-    simp [h1.left]
-  · grind [cons_eq_single_succ_iff]
-  · rw [cons_eq_single_succ_iff, not_and'] at h1
-    rw [coeff_X, if_neg (h1 h3)]
+  · simp [h1.left]
+  · tauto
+  · rw [coeff_X, if_neg (by tauto)]
+  · rw [coeff_zero]
+
+@[simp]
+theorem finSuccEquiv_C (r : R) : (finSuccEquiv R n) (C r) = PowerSeries.C (C r) := by
+  ext k x
+  simp_rw [coeff_coeff_finSuccEquiv, PowerSeries.coeff_C, coeff_C, ← cons_zero_zero,
+    cons_injective2.eq_iff]
+  split_ifs with h1 h2 h3
+  · simp [h1.right]
+  · tauto
+  · rw [coeff_C, if_neg (by tauto)]
   · rw [coeff_zero]
 
 theorem finSuccEquiv_comp_C : (MvPowerSeries.finSuccEquiv R n).symm.toRingHom.comp
-    (PowerSeries.C.comp MvPowerSeries.C) = MvPowerSeries.C := RingHom.ext fun r ↦ by
-  classical
-  rw [AlgEquiv.symm_toRingEquiv, RingEquiv.toRingHom_eq_coe, RingHom.coe_comp,
-    RingHom.coe_coe, comp_apply, RingEquiv.symm_apply_eq]
-  ext; simp only [RingHom.coe_comp, comp_apply, PowerSeries.coeff_C,
-    AlgEquiv.coe_ringEquiv, coeff_coeff_finSuccEquiv, coeff_C]
-  rw [← single_zero 0]
-  grind [coeff_C, cons_eq_single_zero_iff]
+    (PowerSeries.C.comp MvPowerSeries.C) = MvPowerSeries.C := by
+  ext1; simp [AlgEquiv.symm_apply_eq]
 
 variable (S : Type*) [CommRing S] [IsNoetherianRing S]
 
