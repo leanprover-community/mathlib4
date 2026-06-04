@@ -52,6 +52,7 @@ namespace FirstOrder
 
 
 -- intended to be used with explicit universe parameters
+set_option linter.checkUnivs false in
 /-- A first-order language consists of a type of functions of every natural-number arity and a
   type of relations of every natural-number arity. -/
 @[nolint checkUnivs]
