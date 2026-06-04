@@ -6,8 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
-public import Mathlib.CategoryTheory.Comma.Over.Pullback
-public import Mathlib.CategoryTheory.Adjunction.Whiskering
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
 public import Mathlib.CategoryTheory.Sites.CoversTop.Over
 
@@ -296,11 +294,6 @@ variable [J.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
   [∀ (X : C), HasSheafify (J.over X) AddCommGrpCat.{u}]
   [∀ (X : D), HasSheafify (K.over X) AddCommGrpCat.{u}]
 
-instance {G : C ⥤ D} (X : C) (Y : D) (f : G.obj X ⟶ Y)
-    [(Over.post G).IsContinuous (J.over X) (K.over _)] :
-    (Over.post G ⋙ Over.map f).IsContinuous (J.over X) (K.over Y) :=
-  Functor.isContinuous_comp _ _ _ (K.over _) _
-
 variable (G : D ⥤ C) [G.IsContinuous K J] [G.IsCocontinuous K J]
   (φ : S ⟶ (G.sheafPushforwardContinuous RingCat.{u} K J).obj R)
 
@@ -461,14 +454,8 @@ lemma IsQuasicoherent.of_coversTop {R : Sheaf J RingCat.{u}}
 set_option backward.isDefEq.respectTransparency false in
 lemma isQuasicoherent_over [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
     [HasPullbacks C] [HasBinaryProducts C] (M : SheafOfModules.{u} R) (X : C) [IsQuasicoherent M] :
-    IsQuasicoherent (M.over X) := by
-  have (Z : Over X) : (Over.post (Over.forget X)).IsContinuous ((J.over X).over Z)
-      (J.over ((Over.forget X).obj Z)) := by
-    convert Functor.isContinuous_of_iso (Z.iteratedSliceForwardIsoPost _).symm _ _
-    dsimp
-    infer_instance
-  apply isQuasicoherent_pushforward_of_isLeftAdjoint
-  exact Iso.refl _
+    IsQuasicoherent (M.over X) :=
+  isQuasicoherent_pushforward_of_isLeftAdjoint _ _ (Iso.refl _)
 
 end bind
 
