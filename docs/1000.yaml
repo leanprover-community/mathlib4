@@ -71,7 +71,7 @@ Q172298:
 
 Q174955:
   title: Mihăilescu's theorem
-  comment: "Previously known as the Catalan conjecture. This is formalised in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/Catalan.lean#L34
+  comment: "Previously known as the Catalan conjecture. The statement of this theorem is formalised without proof in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/Catalan.lean#L34
 
 Q179208:
   title: Cayley's theorem
@@ -666,7 +666,7 @@ Q646523:
 
 Q649469:
   title: Modularity theorem
-  comment: "Variously known as the Taniyama–Shimura conjecture, Taniyama–Shimura–Weil conjecture, or Modularity theorem now that it has been proved. https://imperialcollegelondon.github.io/FLT is proving a special case. A formal statement of this theorem also exists at https://github.com/google-deepmind/formal-conjectures/blob/448f15c51a9e89aced922f36259dd8ddc0c1bd20/FormalConjectures/Wikipedia/ModularityConjecture.lean#L85-L87"
+  comment: "Variously known as the Taniyama–Shimura conjecture, Taniyama–Shimura–Weil conjecture, or modularity conjecture for elliptic curves prior to its proof. https://imperialcollegelondon.github.io/FLT is proving a special case. The statement of this theorem is also formalised without proof in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/448f15c51a9e89aced922f36259dd8ddc0c1bd20/FormalConjectures/Wikipedia/ModularityConjecture.lean#L85-L87"
 
 
 Q649977:
@@ -2276,7 +2276,7 @@ Q2734084:
 
 Q2793600:
   title: Stark–Heegner theorem
-  comment: "The statement of this theorem is formalised in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/ClassNumberProblem.lean#L46"
+  comment: "The statement of this theorem is formalised without proof in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/ClassNumberProblem.lean#L46"
 
 Q2799491:
   title: Ringel–Youngs theorem
@@ -2451,7 +2451,7 @@ Q3527088:
 
 Q3527091:
   title: Gromov's theorem on groups of polynomial growth
-  comment: "The statement of this theorem is formalised in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/GromovPolynomialGrowth.lean#L58"
+  comment: "The statement of this theorem is formalised without proof in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/GromovPolynomialGrowth.lean#L58"
 
 Q3527093:
   title: Hilbert–Speiser theorem
@@ -3921,7 +3921,7 @@ Q7849521:
 
 Q7853325:
   title: Tunnell's theorem
-  comment: "Statement of this theorem appears in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/CongruentNumber.lean#L89-L109"
+  comment: "The statement of this theorem is formalised without proof in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/CongruentNumber.lean#L89-L109"
 
 Q7856599:
   title: Turán–Kubilius theorem
