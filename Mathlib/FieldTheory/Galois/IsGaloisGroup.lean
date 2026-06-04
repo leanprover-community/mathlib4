@@ -818,10 +818,11 @@ theorem algebraMap_quotientMulEquiv_smul [Finite G] [Finite G'] (N : Subgroup G)
 
 /-- The restriction homomorphism from the Galois group of `C/A` to the Galois group of `B/A` where
 `C/B/A` is a tower of domains with `C/A` and `B/A` Galois. -/
-noncomputable def restrictHom [Finite G] [Finite G'] [MulSemiringAction G C]
-    [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] [Algebra.IsIntegral B C]
-    [IsIntegrallyClosed B] :
+noncomputable def restrictHom [Finite G] [Finite G'] [MulSemiringAction G C] [IsGaloisGroup G A C]
+    [MulSemiringAction G' B] [IsGaloisGroup G' A B] [IsIntegrallyClosed B] :
     G →* G' :=
+  haveI : Algebra.IsIntegral A C := Algebra.IsInvariant.isIntegral A C G
+  haveI : Algebra.IsIntegral B C := Algebra.IsIntegral.tower_top A
   letI N := fixingSubgroup G (Set.range (algebraMap B C))
   haveI : IsGaloisGroup N B C := isGaloisGroup_fixingSubgroup_range_algebraMap G A B C
   haveI : N.Normal := normal_of_isGaloisGroup G G' N A B C
@@ -829,13 +830,13 @@ noncomputable def restrictHom [Finite G] [Finite G'] [MulSemiringAction G C]
 
 @[simp]
 theorem algebraMap_restrictHom_smul [Finite G] [Finite G'] [MulSemiringAction G C]
-    [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] [Algebra.IsIntegral B C]
+    [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B]
     [IsIntegrallyClosed B] (g : G) (x : B) :
     algebraMap B C (restrictHom G G' A B C g • x) = g • algebraMap B C x := by
   simp [restrictHom, algebraMap_quotientMulEquiv_smul]
 
 theorem restrictHom_surjective [Finite G] [Finite G'] [MulSemiringAction G C]
-    [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] [Algebra.IsIntegral B C]
+    [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B]
     [IsIntegrallyClosed B] :
     Function.Surjective (restrictHom G G' A B C) := by
   rw [restrictHom]
