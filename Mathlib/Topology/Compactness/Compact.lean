@@ -572,6 +572,13 @@ theorem isCompact_generateFrom' [T : TopologicalSpace X]
     have ⟨J, hJ, cover⟩ := h P (fun a ↦ ⟨a.1, hP a.2⟩) (sUnion_eq_iUnion ▸ hs)
     ⟨(·.1) '' J, ⟨by simp, hJ.image _, by aesop⟩⟩
 
+omit [TopologicalSpace X] in
+lemma isCompact_of_le_of_isCompact {S T : TopologicalSpace X}
+    (hST : S ≤ T) {s : Set X} (hs : @IsCompact _ S s) : @IsCompact _ T s := by
+  refine isCompact_iff_finite_subcover.2 ?_
+  intro ι U hιU hsU
+  exact (@isCompact_iff_finite_subcover X S s).1 hs U (fun i => hST (U i) (hιU i)) hsU
+
 namespace Filter
 
 theorem hasBasis_cocompact : (cocompact X).HasBasis IsCompact compl :=

@@ -41,6 +41,13 @@ the open and compact sets of `X` and their complements. -/
 def constructibleTopology (X : Type*) [TopologicalSpace X] : TopologicalSpace X :=
   .generateFrom (constructibleTopologySubbasis X)
 
+lemma constructibleTopology_le (X : Type*) [T : TopologicalSpace X]
+    [CompactSpace X] [QuasiSeparatedSpace X] [PrespectralSpace X] :
+    constructibleTopology X ≤ T :=
+  PrespectralSpace.isTopologicalBasis (X := X).eq_generateFrom ▸
+    le_generateFrom fun _ hs => TopologicalSpace.isOpen_generateFrom_of_mem <|
+      PrespectralSpace.isTopologicalBasis (X := X).eq_generateFrom ▸ Or.intro_left _ hs
+
 /-- A type synonym for `X` that is equipped with the constructible topology of `X`. -/
 @[nolint unusedArguments]
 def WithConstructibleTopology (X : Type*) [TopologicalSpace X] : Type _ :=
