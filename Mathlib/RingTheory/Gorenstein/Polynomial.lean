@@ -175,7 +175,7 @@ theorem Polynomial.isGorensteinRing_of_isGorensteinRing [IsNoetherianRing R] [Is
   have : IsLocalization pc S := Polynomial.isLocalization _ _
   let pS := p.map (algebraMap R[X] S)
   have disj : Disjoint (pc : Set R[X]) (p : Set R[X]) := by
-    simpa [pc, q] using Set.disjoint_image_left.mpr
+    simpa [pc, q] using! Set.disjoint_image_left.mpr
       (Set.disjoint_compl_left_iff_subset.mpr (fun _ a ↦ a))
   have : pS.IsPrime :=  IsLocalization.isPrime_of_isPrime_disjoint pc _ _ ‹_› disj
   have : IsLocalization.AtPrime (Localization.AtPrime pS) p := by
