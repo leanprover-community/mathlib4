@@ -64,7 +64,7 @@ variable [FunLike F α β]
 /-- Turn an element of a type `F`
 satisfying `OrderHomClass F α β` and `MonoidWithZeroHomClass F α β`
 into an actual `OrderMonoidWithZeroHom`.
-This is declared as the default coercion from `F` to `α →+*₀o β`. 
+This is declared as the default coercion from `F` to `α →+*₀o β`.
 TODO: Following [#mathlib4 > Mathlib's morphism hierarchy]
 (https://leanprover.zulipchat.com/#narrow/channel/287929-
 mathlib4/topic/Mathlib.27s.20morphism.20hierarchy/with/554383157),
