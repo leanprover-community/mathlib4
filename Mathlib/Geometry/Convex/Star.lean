@@ -42,7 +42,9 @@ variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace R X]
 
 variable (R x s) in
 /-- A set `s` is star-convex at a point `x` if every segment from `x` to a point in `s` is
-contained in `s`. -/
+contained in `s`.
+
+TODO: Replace `StarConvex` with this predicate. -/
 @[expose]
 def IsStarConvexSet : Prop :=
   ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : R⦄ ha hb hab, convexCombPair a b ha hb hab x y ∈ s
