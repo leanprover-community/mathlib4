@@ -33,10 +33,10 @@ relative subgroup `(pCore p H).subgroupOf H`, not for `pCore p H` itself.
 ## Main results
 
 * `Subgroup.pCore_le`: `pCore p H ≤ H`.
-* `Subgroup.pCore_subgroupOf_normal` (instance),
-  `Subgroup.pCore_subgroupOf_characteristic` (instance),
-  `Subgroup.isPGroup_pCore`: `pCore p H` is a `p`-subgroup of `H`, normal and
-  characteristic in `H`, with no finiteness hypothesis.
+* `Subgroup.isPGroup_pCore`: the ambient subgroup `pCore p H` is a `p`-group, with no
+  finiteness hypothesis.
+* `Subgroup.pCore_subgroupOf_normal` (instance), `Subgroup.pCore_subgroupOf_characteristic`
+  (instance): inside `H`, the `p`-core is normal and characteristic.
 * `Subgroup.le_pCore`, `Subgroup.le_pCore_of_le`: a normal `p`-subgroup of `H` (embedded into
   `G`) is contained in the `p`-core — the universal property.
 * `Subgroup.pCore_eq_iInf_sylow`: `pCore p H = (⨅ P : Sylow p H, (P : Subgroup H)).map H.subtype`.
@@ -67,6 +67,12 @@ We define it via an `iSup` over the subtype of normal `p`-subgroups, which makes
 def pCore (p : ℕ) (H : Subgroup G) : Subgroup G :=
   ⨆ N : {N : Subgroup H // N.Normal ∧ IsPGroup p N}, (N : Subgroup H).map H.subtype
 
+/-- The `p`-core as a supremum of the normal `p`-subgroups of `H`, embedded into `G`. -/
+theorem pCore_eq_iSup :
+    pCore p H =
+      ⨆ N : {N : Subgroup H // N.Normal ∧ IsPGroup p N}, (N : Subgroup H).map H.subtype := by
+  rw [pCore]
+
 /-- The subtype of normal `p`-subgroups of `H` is nonempty (it contains `⊥`). -/
 private instance : Nonempty {N : Subgroup H // N.Normal ∧ IsPGroup p N} :=
   ⟨⟨⊥, inferInstance, IsPGroup.of_bot⟩⟩
@@ -74,6 +80,11 @@ private instance : Nonempty {N : Subgroup H // N.Normal ∧ IsPGroup p N} :=
 /-- The `p`-core of `H` is contained in `H`. -/
 theorem pCore_le : pCore p H ≤ H :=
   iSup_le fun _ => map_subtype_le _
+
+/-- The `p`-core of the trivial subgroup is trivial. -/
+@[simp]
+theorem pCore_bot : pCore p (⊥ : Subgroup G) = ⊥ :=
+  le_bot_iff.mp pCore_le
 
 /-- Computed inside `H`, the `p`-core is the supremum of all normal
 `p`-subgroups of `H`. -/
@@ -140,18 +151,32 @@ instance pCore_subgroupOf_characteristic : ((pCore p H).subgroupOf H).Characteri
     le_pCore_subgroupOf (pCore_subgroupOf_normal.comap ϕ.toMonoidHom)
       (isPGroup_pCore_subgroupOf.comap_of_injective ϕ.toMonoidHom ϕ.injective)
 
+/-- The universal property, inside `H`: a normal subgroup `N` of `H` is contained in the
+`p`-core iff it is a `p`-group. -/
+theorem le_pCore_subgroupOf_iff {N : Subgroup H} [hN : N.Normal] :
+    N ≤ (pCore p H).subgroupOf H ↔ IsPGroup p N :=
+  ⟨fun h => isPGroup_pCore_subgroupOf.to_le h, le_pCore_subgroupOf hN⟩
+
 /-- For a normal subgroup `N` of `H`, containment of its image in the `p`-core
 is characterised by being a `p`-group. -/
-theorem map_le_pCore_iff {N : Subgroup H} [hN : N.Normal] :
+theorem map_subtype_le_pCore_iff {N : Subgroup H} [N.Normal] :
     N.map H.subtype ≤ pCore p H ↔ IsPGroup p N := by
-  rw [map_le_iff_le_comap]
-  exact ⟨fun h => isPGroup_pCore_subgroupOf.to_le h, le_pCore_subgroupOf hN⟩
+  rw [map_le_iff_le_comap]; exact le_pCore_subgroupOf_iff
 
 /-- Characterisation of membership in the `p`-core: an element of `H` lies in
 `pCore p H` iff it lies in some normal `p`-subgroup of `H`. -/
 theorem mem_pCore_subgroupOf_iff {x : H} :
     x ∈ (pCore p H).subgroupOf H ↔ ∃ N : Subgroup H, N.Normal ∧ IsPGroup p N ∧ x ∈ N := by
   rw [pCore_subgroupOf, mem_iSup_of_directed directed_pCore]
+  exact ⟨fun ⟨N, hxN⟩ => ⟨N, N.2.1, N.2.2, hxN⟩,
+    fun ⟨N, hN, hP, hxN⟩ => ⟨⟨N, hN, hP⟩, hxN⟩⟩
+
+/-- Characterisation of membership in the `p`-core as an ambient subgroup: `x : G` lies in
+`pCore p H` iff it lies in (the image of) some normal `p`-subgroup of `H`. -/
+theorem mem_pCore_iff {x : G} :
+    x ∈ pCore p H ↔ ∃ N : Subgroup H, N.Normal ∧ IsPGroup p N ∧ x ∈ N.map H.subtype := by
+  rw [pCore_eq_iSup, mem_iSup_of_directed fun a b =>
+    (directed_pCore a b).imp fun _ h => ⟨map_mono h.1, map_mono h.2⟩]
   exact ⟨fun ⟨N, hxN⟩ => ⟨N, N.2.1, N.2.2, hxN⟩,
     fun ⟨N, hN, hP, hxN⟩ => ⟨⟨N, hN, hP⟩, hxN⟩⟩
 
@@ -315,6 +340,13 @@ theorem map_pCore_eq_pCore (f : G →* G') (hker : IsPGroup p (f.subgroupMap H).
     ((pCore p (H.map f)).subgroupOf (H.map f))]
   exact map_mono <| le_pCore_subgroupOf (pCore_subgroupOf_normal.comap _)
     (isPGroup_pCore_subgroupOf.comap_of_ker_isPGroup _ hker)
+
+/-- If `f` has `p`-group kernel, then `f` maps the `p`-core of `H` exactly onto the `p`-core of
+`H.map f`. This is the convenient form of `map_pCore_eq_pCore`. -/
+theorem map_pCore_eq_pCore_of_ker_isPGroup (f : G →* G') (hker : IsPGroup p f.ker) :
+    (pCore p H).map f = pCore p (H.map f) :=
+  map_pCore_eq_pCore f <| by
+    rw [ker_subgroupMap]; exact hker.comap_of_injective H.subtype H.subtype_injective
 
 /-- Restricting the preimage `K.comap f` to `H'.comap f` is the same as taking the relative
 subgroup `K.subgroupOf H'` and pulling it back through the restricted map `f.subgroupComap H'`. -/
