@@ -290,9 +290,10 @@ theorem nhds_hasBasis_absConvex_open :
 
 theorem nhds_hasBasis_absConvex_closed :
     (𝓝 (0 : E)).HasBasis (fun s ↦ s ∈ 𝓝 (0 : E) ∧ IsClosed s ∧ AbsConvex 𝕜 s) id := by
-  refine (nhds_hasBasis_absConvex_open 𝕜 E).to_hasBasis ?_
-    fun s ⟨hs_nhds, _, _⟩ ↦ (nhds_hasBasis_absConvex_open 𝕜 E).mem_iff.mp hs_nhds
-  intro s ⟨hs_zero, hs_open, hs_abs⟩
+  refine (nhds_basis_opens 0).to_hasBasis ?_
+    fun s ⟨hs_nhds, _, _⟩ ↦ ⟨interior s,
+      by simp [interior_subset, mem_interior_iff_mem_nhds.mpr hs_nhds]⟩
+  intro s ⟨hs_zero, hs_open⟩
   obtain ⟨W, hW_open, hW_zero, hW_add⟩ :=
     exists_open_nhds_zero_add_subset (hs_open.mem_nhds hs_zero)
   obtain ⟨V, ⟨hV_zero, hV_open, hV_abs⟩, hVW⟩ :=
