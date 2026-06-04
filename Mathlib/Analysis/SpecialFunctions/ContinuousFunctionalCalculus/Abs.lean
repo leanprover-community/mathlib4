@@ -243,7 +243,7 @@ lemma abs_natCast (n : ℕ) : abs (n : A) = n := by
 
 @[simp]
 lemma abs_ofNat (n : ℕ) [n.AtLeastTwo] : abs (ofNat(n) : A) = ofNat(n) := by
-  simpa using abs_natCast n
+  simpa using! abs_natCast n
 
 @[simp]
 lemma abs_intCast (n : ℤ) : abs (n : A) = |n| := by

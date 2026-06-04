@@ -803,7 +803,6 @@ and I guess we can use Subring.comap + some lemma about Subring.comap of a subri
 contained in the range composed with the ressidue map to give us our result.
 -/
 
-
 lemma range_linearMap_eq_range_mulLeft_stalkToFunctionFieldLinearMap {X : Scheme} [IsIntegral X]
     [IsLocallyNoetherian X] [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ)
     (hD : D.support ⊆ {x | coheight x = 1})
@@ -829,30 +828,39 @@ lemma range_linearMap_eq_range_mulLeft_stalkToFunctionFieldLinearMap {X : Scheme
         (IsDiscreteValuationRing.maximalIdeal ↑(X.presheaf.stalk x))).integer := sorry
   simp at this
   rw [LinearMap.coe_range]
-  suffices ↑(IsDedekindDomain.HeightOneSpectrum.valuation (↑X.functionField)
+  suffices (IsDedekindDomain.HeightOneSpectrum.valuation (↑X.functionField)
         (IsDiscreteValuationRing.maximalIdeal ↑(X.presheaf.stalk x))).integer =
          ⇑(LinearMap.mulLeft (↑(X.presheaf.stalk x)) ((algebraMap ↑(X.presheaf.stalk x) ↑X.functionField) ϖ ^ D x)) ''
     {f | f ≠ 0 → -D x ≤ ordZ x hx f} by sorry
+  ext z
+  erw [Valuation.mem_integer_iff ((IsDedekindDomain.HeightOneSpectrum.valuation (↑X.functionField) (IsDiscreteValuationRing.maximalIdeal ↑(X.presheaf.stalk x)))) z]
+
   /-
-  From here it's just a matter of adding API for ordZ,
-  precisely we need something which says that n ≤ ord ↔ ↑n ≤ ordHom or something
+  TODO: Merge in new ord API and prove using that
 
+  We need 2 things: one is relating statements of the form n ≤ ord x to
+  ↑n ≤ ordHom x or something, and the other is relating the outputs of ordHom
+  to the valuation in a DVR (which will just be a one liner from the ordFrac API)
   -/
-
-  /-suffices Set.range (Algebra.linearMap (X.presheaf.stalk x) X.functionField) =
-      Set.range ((LinearMap.mulLeft (X.presheaf.stalk x)
-      ((algebraMap (X.presheaf.stalk x) X.functionField ϖ)^(D x))) ∘ₗ
-      D.stalkToFunctionFieldLinearMap x) by exact this-/
-
-
   sorry
 
-
+/-
+We will need to show this is an equiv for our calculation of the kernel in the end, but that
+can wait a minute
+-/
 def zingo {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
     [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (hD : D.support ⊆ {x | coheight x = 1})
     (x : X) (hx : coheight x = 1)
     (ϖ : X.presheaf.stalk x) (hϖ : Irreducible ϖ) :
-    ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf x) ≃ₗ[X.presheaf.stalk x] X.presheaf.stalk x := sorry
+    ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf x) →ₗ[X.presheaf.stalk x] X.presheaf.stalk x := by
+  #check Submodule.comap_equiv_self_of_inj_of_le
+  /-
+  High level, here is what we do:
+
+  D.stalk x →(stalkToFunctionField) K →(times ϖ^(D x)) K
+  ->(Submodule.comap_equiv_self_of_inj_of_le) X.stalk x
+  -/
+  sorry
 
 
 
