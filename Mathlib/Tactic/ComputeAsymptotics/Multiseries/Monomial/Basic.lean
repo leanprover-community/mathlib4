@@ -151,7 +151,9 @@ theorem majorized_tail_toFun_head {m : UnitMonomial} {basis_hd : ℝ → ℝ} {b
     (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
     Majorized (m.toFun basis_tl) basis_hd 0 := by
   induction m generalizing basis_hd basis_tl with
-  | nil => simpa using Majorized.const (h_basis.tendsto_atTop (by simp))
+  | nil =>
+    simp only [toFun_nil]
+    exact Majorized.const (h_basis.tendsto_atTop (by simp))
   | cons hd tl ih =>
     cases basis_tl with
     | nil => simp at h_length
@@ -187,9 +189,7 @@ theorem zeros_append_toFun {m : UnitMonomial} {left right : Basis} :
     (List.replicate left.length 0 ++ m : UnitMonomial).toFun (left ++ right) = m.toFun right := by
   induction left with
   | nil => rfl
-  | cons left_hd left_tl ih =>
-    simp at ih
-    simp [List.replicate_succ, ih]
+  | cons left_hd left_tl ih => simp [List.replicate_succ, ih]
 
 theorem log_toFun_eq_toLogFun {m : UnitMonomial} {basis : Basis} (h_basis : WellFormedBasis basis) :
     Real.log ∘ m.toFun basis =ᶠ[atTop] m.toLogFun basis := by
@@ -222,10 +222,14 @@ theorem toLogFun_isEquivalent_of_nonzero_head {exps_hd : ℝ} {exps_tl : UnitMon
     fun b hb => h_basis.tail_isLittleO_head hb
   clear h_basis
   induction exps_tl generalizing basis_tl with
-  | nil => simpa using Asymptotics.isLittleO_zero _ _
+  | nil =>
+    simp only [toLogFun_nil]
+    exact Asymptotics.isLittleO_zero _ _
   | cons e es ih =>
     cases basis_tl with
-    | nil => simpa using Asymptotics.isLittleO_zero _ _
+    | nil =>
+      simp only [toLogFun_nil_basis]
+      exact Asymptotics.isLittleO_zero _ _
     | cons b bs =>
       exact (IsLittleO.const_mul_left (hlo b (by simp)) e).add (ih (by grind))
 
