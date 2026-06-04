@@ -362,8 +362,8 @@ def map₂CompMap₂Iso {C' : Type u₆} [Category.{v₆} C'] {D' : Type u₅} [
 @[simps!]
 def map₂Congr {F' : C ⥤ A} {G' : D ⥤ B} (e₁ : F ≅ F') (e₂ : G ≅ G')
     (α' : L' ⟶ G'.obj L) (β' : R ⋙ G' ⟶ F' ⋙ R')
-    (hα : α = α' ≫ e₂.inv.app _)
-    (hβ : β ≫ Functor.whiskerRight e₁.hom _ = Functor.whiskerLeft _ e₂.hom ≫ β') :
+    (hα : α = α' ≫ e₂.inv.app _ := by cat_disch)
+    (hβ : β ≫ Functor.whiskerRight e₁.hom _ = Functor.whiskerLeft _ e₂.hom ≫ β' := by cat_disch) :
     map₂ α β ≅ map₂ α' β' :=
   NatIso.ofComponents (fun X ↦ isoMk (e₁.app X.right) ?_) ?_
 where finally
