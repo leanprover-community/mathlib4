@@ -1018,7 +1018,7 @@ Q869647:
 
 Q872088:
   title: Boolean prime ideal theorem
-  decl: prime_ideal_of_disjoint_filter_ideal
+  decl: DistribLattice.prime_ideal_of_disjoint_filter_ideal
   comment: "This is the prime ideal separation theorem for (bounded) distributive lattices, of which the Boolean prime ideal theorem is a special case."
 
 Q877489:
