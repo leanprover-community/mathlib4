@@ -438,8 +438,7 @@ lemma linearIndepOn_pow_of_isReduced_tensorProduct (hp : Nat.Prime p)
     | prime hq => assumption
   have rooty_supp : rooty.support = y.support :=
     Finsupp.support_mapRange_of_injective (map_zero _) y (AdjoinPthRoots.root k).injective
-  have rooty_app (x : s) : (rooty x) ^ p = algebraMap k _ (y x) :=
-    AdjoinPthRoots.root_pow k p _
+  have rooty_app (x : s) : (rooty x) ^ p = algebraMap k _ (y x) := AdjoinPthRoots.root_pow p _
   have h0 : frobenius _ p (rooty.sum fun (i : s) (c : AdjoinPthRoots k) ↦ c ⊗ₜ[k] i.1) = 0 := by
     simp only [Finsupp.sum, map_sum, frobenius_def, Algebra.TensorProduct.tmul_pow, rooty_app]
     simp only [Finsupp.linearCombination, Finsupp.coe_lsum, Finsupp.sum, LinearMap.coe_smulRight,
