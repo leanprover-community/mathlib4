@@ -135,10 +135,9 @@ lemma exists_Finpartition_sum_ge' {s : Set X} (hs : MeasurableSet s) {ε : ℝ�
     ∃ P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet),
     preVariationFun f s ≤ ∑ p ∈ P.parts, f p + ε := by
   rcases eq_top_or_lt_top ε with rfl | h'ε
-  · obtain ⟨P⟩ : Nonempty (Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)) := inferInstance
-    exact ⟨P, by simp⟩
-  · lift ε to NNReal using h'ε.ne
-    exact exists_Finpartition_sum_ge _ hs (by simpa using hε) h
+  · simp
+  lift ε to NNReal using h'ε.ne
+  exact exists_Finpartition_sum_ge _ hs (by simpa using hε) h
 
 lemma sum_le_preVariationFun_iUnion' {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s))
