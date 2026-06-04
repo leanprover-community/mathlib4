@@ -71,7 +71,7 @@ Q172298:
 
 Q174955:
   title: Mihăilescu's theorem
-  comment: "Previously known as the Catalan conjecture. The statement of this theorem is formalised without proof in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/Catalan.lean#L34
+  comment: "Previously known as the Catalan conjecture. The statement of this theorem is formalised without proof in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/Catalan.lean#L34"
 
 Q179208:
   title: Cayley's theorem
