@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Module.Torsion.Field
+public import Mathlib.Algebra.Order.AddTorsor
 public import Mathlib.Data.ENNReal.Operations
 
 /-!
@@ -35,6 +36,9 @@ noncomputable instance {M : Type*} [MulAction ℝ≥0∞ M] : MulAction ℝ≥0 
 
 theorem smul_def {M : Type*} [MulAction ℝ≥0∞ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ≥0∞) • x :=
   rfl
+
+@[simp]
+theorem smul_one (c : ℝ≥0) : c • (1 : ℝ≥0∞) = (c : ℝ≥0∞) := by simp [smul_def]
 
 instance {M N : Type*} [MulAction ℝ≥0∞ M] [MulAction ℝ≥0∞ N] [SMul M N] [IsScalarTower ℝ≥0∞ M N] :
     IsScalarTower ℝ≥0 M N where smul_assoc r := smul_assoc (r : ℝ≥0∞)
@@ -100,6 +104,16 @@ instance : PosSMulStrictMono ℝ≥0 ℝ≥0∞ where
 
 instance : SMulPosMono ℝ≥0 ℝ≥0∞ where
   smul_le_smul_of_nonneg_right _r _ _a _b hab := _root_.mul_le_mul_left (coe_le_coe.2 hab) _
+
+instance : IsOrderedModule ℝ≥0 ℝ≥0∞ where
+
+example : CovariantClass ℝ≥0∞ ℝ≥0∞ (· • ·) (· ≤ ·) := inferInstance
+
+instance : IsOrderedSMul ℝ≥0 ℝ≥0∞ where
+  smul_le_smul_left a b hab c := by gcongr
+  smul_le_smul_right a b hab c := by gcongr
+
+example : CovariantClass ℝ≥0 ℝ≥0∞ (· • ·) (· ≤ ·) := inferInstance
 
 end Actions
 
