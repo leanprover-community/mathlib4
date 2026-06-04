@@ -91,6 +91,8 @@ instance (I : Type u) : IsIso (free.generatingSections (R := R) I).π := by
   rw [free.generatingSections_π]
   infer_instance
 
+instance (I : Type u) : IsFree (free (R := R) I) := ⟨free.generatingSections I, inferInstance⟩
+
 variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
   [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] [HasBinaryProducts C]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}] [HasSheafify J AddCommGrpCat]
