@@ -170,12 +170,14 @@ theorem closure_subset_mul_right_of_mem_nhds_one_of_inv (s : Set G) {s' : Set G}
 @[to_additive]
 theorem closure_subset_of_mem_nhds_one_of_inv_mul_left_subset {s s' t : Set G}
     (hs₀ : s ∈ 𝓝 1) (h_symm : ∀ x ∈ s, x⁻¹ ∈ s) (hs : s * s' ⊆ t) :
-    closure s' ⊆ t := closure_subset_mul_left_of_mem_nhds_one_of_inv s' hs₀ h_symm |>.trans hs
+    closure s' ⊆ t :=
+  closure_subset_mul_left_of_mem_nhds_one_of_inv s' hs₀ h_symm |>.trans hs
 
 @[to_additive]
 theorem closure_subset_of_mem_nhds_one_of_inv_mul_right_subset {s s' t : Set G}
     (hs'₀ : s' ∈ 𝓝 1) (h_symm : ∀ x ∈ s', x⁻¹ ∈ s') (hs : s * s' ⊆ t) :
-    closure s ⊆ t := closure_subset_mul_right_of_mem_nhds_one_of_inv s hs'₀ h_symm |>.trans hs
+    closure s ⊆ t :=
+  closure_subset_mul_right_of_mem_nhds_one_of_inv s hs'₀ h_symm |>.trans hs
 
 end SeparatelyContinuousMul
 
