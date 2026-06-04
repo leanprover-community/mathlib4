@@ -69,7 +69,7 @@ protected lemma IsStarConvexSet.iInter {ι : Sort*} {s : ι → Set X}
   simp +contextual [IsStarConvexSet, hs _ _]
 
 lemma IsStarConvexSet.iInter₂ {ι : Sort*} {κ : ι → Sort*} {s : ∀ i, κ i → Set X}
-    (h : ∀ i j, IsStarConvexSet R x (s i j)) : IsStarConvexSet R x (⋂ (i) (j), s i j) :=
+    (h : ∀ i j, IsStarConvexSet R x (s i j)) : IsStarConvexSet R x (⋂ i, ⋂ j, s i j) :=
   .iInter fun i ↦ .iInter <| h i
 
 protected lemma IsStarConvexSet.sUnion {S : Set (Set X)} (hS : ∀ s ∈ S, IsStarConvexSet R x s) :
@@ -77,6 +77,10 @@ protected lemma IsStarConvexSet.sUnion {S : Set (Set X)} (hS : ∀ s ∈ S, IsSt
 
 protected lemma IsStarConvexSet.iUnion {ι : Sort*} {s : ι → Set X}
     (hs : ∀ i, IsStarConvexSet R x (s i)) : IsStarConvexSet R x (⋃ i, s i) := .sUnion <| by simpa
+
+protected lemma IsStarConvexSet.iUnion₂ {ι : Sort*} {κ : ι → Sort*} {s : ∀ i, κ i → Set X}
+    (h : ∀ i j, IsStarConvexSet R x (s i j)) : IsStarConvexSet R x (⋃ i, ⋃ j, s i j) :=
+  .iUnion fun i ↦ .iUnion <| h i
 
 lemma IsConvexSet.isStarConvexSet (hs : IsConvexSet R s) (hx : x ∈ s) : IsStarConvexSet R x s :=
   fun _a _b _ha _hb _hab _y hy ↦ hs.convexCombPair_mem hx hy ..
