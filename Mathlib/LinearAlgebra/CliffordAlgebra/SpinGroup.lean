@@ -322,7 +322,7 @@ theorem conjAct_smul_ι_mem_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ 
     [Invertible (2 : R)] (y : M) : ConjAct.toConjAct x • ι Q y ∈ LinearMap.range (ι Q) :=
   lipschitzGroup.conjAct_smul_ι_mem_range_ι (units_mem_lipschitzGroup hx) y
 
-/- This is another version of `conjAct_smul_ι_mem_range_ι` which uses `involute`. -/
+/-- This is another version of `conjAct_smul_ι_mem_range_ι` which uses `involute`. -/
 theorem involute_act_ι_mem_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGroup Q)
     [Invertible (2 : R)] (y : M) : involute (Q := Q) ↑x * ι Q y * ↑x⁻¹ ∈ LinearMap.range (ι Q) :=
   lipschitzGroup.involute_act_ι_mem_range_ι (units_mem_lipschitzGroup hx) y

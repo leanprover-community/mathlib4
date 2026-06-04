@@ -31,6 +31,7 @@ We define rank one valuations.
 
 valuation, rank one
 -/
+
 @[expose] public section
 
 noncomputable section
@@ -107,7 +108,7 @@ lemma nontrivial : ∃ r : R, v r ≠ 0 ∧ v r ≠ 1 := IsNontrivial.exists_val
 /-- If `v` is a rank one valuation and `x : Γ₀` has image `0` under `RankOne.hom v`, then
   `x = 0`. -/
 theorem zero_of_hom_zero {x : ValueGroup₀ v} (hx : hom v x = 0) : x = 0 := by
-  refine (eq_of_le_of_not_lt (zero_le' (a := x)) fun h_lt ↦ ?_).symm
+  refine (eq_of_le_of_not_lt (zero_le (a := x)) fun h_lt ↦ ?_).symm
   have hs := strictMono v h_lt
   rw [map_zero, hx] at hs
   exact hs.false
@@ -136,7 +137,7 @@ instance isNontrivial_restrict : (v.restrict).IsNontrivial where
     obtain ⟨x, ⟨hx0, hx1⟩⟩ := IsNontrivial.exists_val_nontrivial (v := v)
     exact ⟨x, by simp [hx0], by grind [restrict_eq_one_iff]⟩
 
-variable (K : Type*) [Field K] (v : Valuation K Γ₀) [RankOne v]
+variable (K : Type*) [DivisionRing K] (v : Valuation K Γ₀) [RankOne v]
 
 instance restrict_RankOne : RankOne (v.restrict) where
   hom' := (RankOne.hom v).comp embedding
@@ -146,6 +147,7 @@ instance restrict_RankOne : RankOne (v.restrict) where
 lemma restrict_RankOne_hom_eq :
   RankOne.hom v.restrict = (RankOne.hom v).comp embedding := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 variable {K} in
 set_option backward.isDefEq.respectTransparency false in
 theorem exists_val_lt {γ : ℝ≥0} (hγ : γ ≠ 0) : ∃ x ≠ 0, RankOne.hom v (v.restrict x) < γ := by
@@ -197,7 +199,7 @@ def rankOne_of_nontrivial (H : Nontrivial (ValueGroup₀ v)ˣ) : RankOne v where
       simp [hx]
     exact h1 (H' k h0)
 
-theorem exists_val_lt {K : Type*} [Field K] (v : Valuation K Γ₀) [RankLeOne v] :
+theorem exists_val_lt {K : Type*} [DivisionRing K] (v : Valuation K Γ₀) [RankLeOne v] :
     Subsingleton ((ValueGroup₀ v)ˣ) ∨
       ∀ {γ : ℝ≥0} (_ : γ ≠ 0), ∃ (x : K), x ≠ 0 ∧ (RankLeOne.hom' v) (v.restrict x) < γ := by
   simp only [ne_eq, or_iff_not_imp_left, not_subsingleton_iff_nontrivial]
@@ -211,7 +213,7 @@ section ValuativeRel
 
 open ValuativeRel
 
-variable {R : Type*} [CommRing R] [ValuativeRel R]
+variable {R : Type*} [Ring R] [ValuativeRel R]
 
 /-- A valuative relation has a rank one valuation when it is both nontrivial
 and the rank is at most one. -/

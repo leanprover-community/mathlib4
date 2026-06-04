@@ -136,7 +136,7 @@ theorem deriv_Gamma_add_one (s : ℂ) (hs : s ≠ 0) :
       rw [← deriv_comp_add_const]
       exact (this.hasDerivAt (compl_singleton_mem_nhds hs)).deriv
     refine HasDerivWithinAt.congr ?_ Gamma_add_one (Gamma_add_one s hs)
-    simpa using HasDerivWithinAt.mul (hasDerivWithinAt_id s {0}ᶜ)
+    simpa using! HasDerivWithinAt.mul (hasDerivWithinAt_id s {0}ᶜ)
       (differentiableAt_Gamma s h).hasDerivAt.hasDerivWithinAt
 
 end GammaHasDeriv
