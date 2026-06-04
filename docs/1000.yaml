@@ -71,9 +71,9 @@ Q172298:
 
 Q174955:
   title: Mihăilescu's theorem
-  statement: Catalan.catalans_conjecture
-  url: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/Catalan.lean#L34
-  comment: "Formerly known as Catalan's conjecture, this was proved by Preda Mihăilescu in 2002."
+  # Formerly known as Catalan's conjecture, this was proved by Preda Mihăilescu in 2002.
+  # The statement `Catalan.catalans_conjecture` is formalised in the formal-conjectures repo:
+  # https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/Catalan.lean#L34
 
 Q179208:
   title: Cayley's theorem
@@ -668,9 +668,8 @@ Q646523:
 
 Q649469:
   title: Modularity theorem
-  statement: ModularityConjecture.modularity_conjecture
-  url: https://github.com/google-deepmind/formal-conjectures/blob/448f15c51a9e89aced922f36259dd8ddc0c1bd20/FormalConjectures/Wikipedia/ModularityConjecture.lean#L85-L87
-  comment: "Variously known as the Taniyama–Shimura conjecture, Taniyama–Shimura–Weil conjecture, or Modularity theorem now that it has been proved. https://imperialcollegelondon.github.io/FLT is proving a special case"
+  comment: "Variously known as the Taniyama–Shimura conjecture, Taniyama–Shimura–Weil conjecture, or Modularity theorem now that it has been proved. https://imperialcollegelondon.github.io/FLT is proving a special case. A formal statement of this theorem also exists at https://github.com/google-deepmind/formal-conjectures/blob/448f15c51a9e89aced922f36259dd8ddc0c1bd20/FormalConjectures/Wikipedia/ModularityConjecture.lean#L85-L87"
+
 
 Q649977:
   title: Shirshov–Cohn theorem
@@ -750,7 +749,6 @@ Q679800:
 
 Q681406:
   title: Euler's rotation theorem
-  decl: GroupTheory.SO3.exists_stationary_vec
   url: https://github.com/leanprover-community/physlib/blob/e5a3161e42a2a93aff3de88987bb2adc9efc95cb/Physlib/Mathematics/SO3/Basic.lean#L161
 
 Q685437:
@@ -803,7 +801,6 @@ Q733081:
 
 Q737851:
   title: Banach–Tarski theorem
-  decl: banach_tarski_paradox_B3
   url: https://github.com/aetilley/banach-tarski/blob/a920deea0a3f3207049f8201fc1e7a0bb8cf4c93/BanachTarski/Basic.lean#L2577
 
 Q737892:
@@ -964,7 +961,6 @@ Q848810:
 
 Q850495:
   title: Wick's theorem
-  decl: FieldSpecification.wicks_theorem
   url: https://github.com/leanprover-community/physlib/blob/e5a3161e42a2a93aff3de88987bb2adc9efc95cb/Physlib/QFT/PerturbationTheory/WickAlgebra/WicksTheorem.lean#L82
 
 Q851166:
@@ -1415,7 +1411,7 @@ Q1139524:
 
 Q1140119:
   title: Morera's theorem
-  comment:"Special cases are proved in `IsConservativeOn.isExactOn_ball`, `DifferentiableOn.isExactOn_ball`, `IsConservativeOn.isExactOn_univ`, and `Differentiable.isExactOn_univ`"
+  comment: "Special cases are proved in mathlib as `IsConservativeOn.isExactOn_ball`, `DifferentiableOn.isExactOn_ball`, `IsConservativeOn.isExactOn_univ`, and `Differentiable.isExactOn_univ`"
 
 Q1140200:
   title: PCP theorem
@@ -1526,7 +1522,6 @@ Q1196538:
 Q1196729:
   title: Mertens's theorems
   url: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/58e860034029b94547abe9bd2065f5b3e3f82ebb/PrimeNumberTheoremAnd/RosserSchoenfeldPrime.lean#L788
-  comment: "The PNT+ project currently contains a proof of Mertens' second theorem."
 
 Q1202608:
   title: De Gua's theorem
@@ -2283,8 +2278,7 @@ Q2734084:
 
 Q2793600:
   title: Stark–Heegner theorem
-  statement: class_number_problem.variants.imaginary
-  url: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/ClassNumberProblem.lean#L46
+  comment: "The statement of this theorem is formalised in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/ClassNumberProblem.lean#L46"
 
 Q2799491:
   title: Ringel–Youngs theorem
@@ -2459,8 +2453,7 @@ Q3527088:
 
 Q3527091:
   title: Gromov's theorem on groups of polynomial growth
-  statement: GromovPolynomialGrowthTheorem
-  url: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/GromovPolynomialGrowth.lean#L58
+  comment: "The statement of this theorem is formalised in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/GromovPolynomialGrowth.lean#L58"
 
 Q3527093:
   title: Hilbert–Speiser theorem
@@ -3930,12 +3923,7 @@ Q7849521:
 
 Q7853325:
   title: Tunnell's theorem
-  statements:
-    - CongruentNumber.Tunnell_even
-    - CongruentNumber.Tunnell_odd
-    - CongruentNumber.Tunnell_odd_converse
-    - CongruentNumber.Tunnell_even_converse
-  url: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/CongruentNumber.lean#L89-L109
+  comment: "Statement of this theorem appears in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/CongruentNumber.lean#L89-L109"
 
 Q7856599:
   title: Turán–Kubilius theorem
