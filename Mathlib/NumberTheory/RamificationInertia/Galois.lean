@@ -305,7 +305,7 @@ theorem card_stabilizer_eq_card_inertia_mul_finrank (p : Ideal R) [p.IsMaximal]
   have := Ideal.Quotient.finite_of_isInvariant G p P
   have : Subgroup.index _ = _ := Nat.card_congr
     (Quotient.stabilizerQuotientInertiaEquiv G p P).toEquiv
-  rw [← IsGalois.card_aut_eq_finrank, ← this,
+  simp_rw [← IsGalois.card_aut_eq_finrank, ← this, ← AddSubgroup.subgroupOf_inertia,
     ← ((inertia G P).subgroupOf (MulAction.stabilizer G P)).card_mul_index,
     Nat.card_congr (Subgroup.subgroupOfEquivOfLe (inertia_le_stabilizer (M := G) P)).toEquiv]
 
