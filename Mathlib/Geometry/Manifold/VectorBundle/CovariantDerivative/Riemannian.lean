@@ -18,11 +18,6 @@ determined by the metric and Lie brackets via
 
 This is the **Koszul formula** — the explicit identity that *forces*
 uniqueness of the Levi-Civita connection.
-
-mathlib has the covariant-derivative / Riemannian-bundle / Lie-bracket
-machinery but no metric-compatibility predicate and no Koszul formula
-(`grep -ri Koszul`: no relevant hits). One helper definition
-(`IsMetricCompatible`, ~½ page) is added here.
 -/
 
 @[expose] public section
