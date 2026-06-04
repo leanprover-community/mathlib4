@@ -35,7 +35,7 @@ namespace WeierstrassCurve
 
 open Height
 
-variable {K : Type*} [Field K] [AdmissibleAbsValues K] {W : WeierstrassCurve K} [W.IsElliptic]
+variable {K : Type*} [Field K] [AdmissibleAbsValues K] (W : WeierstrassCurve K) [W.IsElliptic]
 
 open MvPolynomial
 
