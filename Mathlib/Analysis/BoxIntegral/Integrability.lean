@@ -34,6 +34,7 @@ open MeasureTheory Metric Set Finset Filter BoxIntegral
 
 namespace BoxIntegral
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The indicator function of a measurable set is McShane integrable with respect to any
 locally-finite measure. -/
 theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = false)
@@ -173,7 +174,7 @@ theorem hasBoxIntegral (f : SimpleFunc (ι → ℝ) E) (μ : Measure (ι → ℝ
     HasIntegral.{u, v, v} I l f μ.toBoxAdditive.toSMul (f.integral (μ.restrict I)) := by
   induction f using MeasureTheory.SimpleFunc.induction with
   | @const y s hs =>
-    simpa [hs] using BoxIntegral.hasIntegralIndicatorConst l hl hs I y μ
+    simpa [hs] using! BoxIntegral.hasIntegralIndicatorConst l hl hs I y μ
   | @add f g _ hfi hgi =>
     borelize E; haveI := Fact.mk (I.measure_coe_lt_top μ)
     rw [integral_add]
@@ -191,6 +192,7 @@ end SimpleFunc
 
 open TopologicalSpace
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `f : ℝⁿ → E` is Bochner integrable w.r.t. a locally finite measure `μ` on a rectangular box
 `I`, then it is McShane integrable on `I` with the same integral. -/
 theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {μ : Measure (ι → ℝ)}
