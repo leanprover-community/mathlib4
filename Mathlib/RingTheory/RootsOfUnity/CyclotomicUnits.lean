@@ -134,4 +134,14 @@ lemma ntRootsFinset_pairwise_associated_sub_one_sub_of_prime (hζ : IsPrimitiveR
   simp only [hij, add_tsub_cancel_of_le] at h
   rw [← h, associated_mul_unit_right_iff]
 
+/-- If `p` is prime and `ζ` is a `p`-th primitive root of unity, then `ζ - 1` divides `η₁ - η₂`
+for all `p`-th roots of unity `η₁` and `η₂`. -/
+lemma sub_one_dvd_sub (hζ : IsPrimitiveRoot ζ p) (hp : p.Prime)
+    {η₁ : A} (hη₁ : η₁ ∈ nthRootsFinset p (1 : A))
+    {η₂ : A} (hη₂ : η₂ ∈ nthRootsFinset p (1 : A)) :
+    ζ - 1 ∣ η₁ - η₂ := by
+  rcases eq_or_ne η₁ η₂ with rfl | h
+  · simp
+  · exact (hζ.ntRootsFinset_pairwise_associated_sub_one_sub_of_prime hp hη₁ hη₂ h).dvd
+
 end IsPrimitiveRoot
