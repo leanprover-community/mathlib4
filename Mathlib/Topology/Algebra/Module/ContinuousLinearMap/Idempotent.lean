@@ -82,7 +82,7 @@ both `range f` and `ker f` are invariant under `T`. -/
 lemma commute_iff {f T : M →L[R] M}
     (hf : IsIdempotentElem f) :
     Commute f T ↔ (f.range ∈ Module.End.invtSubmodule T ∧ f.ker ∈ Module.End.invtSubmodule T) := by
-  simpa [Commute, SemiconjBy, Module.End.mul_eq_comp, ← coe_comp] using
+  simpa [Commute, SemiconjBy, Module.End.mul_eq_comp, ← coe_comp] using!
     LinearMap.IsIdempotentElem.commute_iff (T := T) hf.toLinearMap
 
 variable [IsTopologicalAddGroup M]
@@ -94,7 +94,7 @@ theorem commute_iff_of_isUnit {f T : M →L[R] M} (hT : IsUnit T)
     Commute f T ↔ f.range.map (T : M →ₗ[R] M) = f.range ∧ f.ker.map (T : M →ₗ[R] M) = f.ker := by
   have := hT.map ContinuousLinearMap.toLinearMapRingHom
   lift T to (M →L[R] M)ˣ using hT
-  simpa [Commute, SemiconjBy, Module.End.mul_eq_comp, ← ContinuousLinearMap.coe_comp] using
+  simpa [Commute, SemiconjBy, Module.End.mul_eq_comp, ← ContinuousLinearMap.coe_comp] using!
     LinearMap.IsIdempotentElem.commute_iff_of_isUnit this hf.toLinearMap
 
 @[deprecated (since := "2025-12-27")] alias range_eq_ker :=
