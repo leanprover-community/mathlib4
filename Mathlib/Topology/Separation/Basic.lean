@@ -125,7 +125,7 @@ theorem TopologicalSpace.IsTopologicalBasis.inseparable_iff {b : Set (Set X)}
     (hb : IsTopologicalBasis b) {x y : X} : Inseparable x y ↔ ∀ s ∈ b, (x ∈ s ↔ y ∈ s) :=
   ⟨fun h _ hs ↦ inseparable_iff_forall_isOpen.1 h _ (hb.isOpen hs),
     fun h ↦ hb.nhds_hasBasis.eq_of_same_basis <| by
-      convert hb.nhds_hasBasis using 2
+      convert! hb.nhds_hasBasis using 2
       exact and_congr_right (h _)⟩
 
 theorem TopologicalSpace.IsTopologicalBasis.eq_iff [T0Space X] {b : Set (Set X)}
@@ -670,7 +670,7 @@ theorem Dense.diff_finset [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set 
 obtains a dense set. -/
 theorem Dense.diff_finite [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set X} (hs : Dense s)
     {t : Set X} (ht : t.Finite) : Dense (s \ t) := by
-  convert hs.diff_finset ht.toFinset
+  convert! hs.diff_finset ht.toFinset
   exact (Finite.coe_toFinset _).symm
 
 /-- If a function to a `T1Space` tends to some limit `y` at some point `x`, then necessarily
@@ -943,7 +943,7 @@ theorem IsCompact.mem_closure_iff_exists_inseparable {K : Set X} (hK : IsCompact
   have : Disjoint (𝓝 y) (𝓝ˢ K) := hK.disjoint_nhdsSet_right.2 fun x hx ↦
     (disjoint_nhds_nhds_iff_not_inseparable.2 (hy x hx)).symm
   simpa only [disjoint_iff, notMem_closure_iff_nhdsWithin_eq_bot]
-    using this.mono_right principal_le_nhdsSet
+    using! this.mono_right principal_le_nhdsSet
 
 theorem IsCompact.closure_eq_biUnion_inseparable {K : Set X} (hK : IsCompact K) :
     closure K = ⋃ x ∈ K, {y | Inseparable x y} := by

@@ -110,7 +110,7 @@ theorem liftPath_apply_one_eq_ofBasedPath_append
             (by simp))
           α.toPath := by
       rw [Path.initialSegmentFamily_zero]
-      simpa using Path.Homotopic.trans_refl_cast α.toPath rfl
+      simpa using! Path.Homotopic.trans_refl_cast α.toPath rfl
         (by simp)
     have h0_end : BasedPath.endpoint (BasedPath.append α (Path.initialSegmentFamily γ 0)) =
         BasedPath.endpoint α := by
@@ -124,7 +124,7 @@ theorem liftPath_apply_one_eq_ofBasedPath_append
       (γ_0 := by simp) (Γ := Γ)).2
       ⟨hΓ_lifts, hΓ_zero⟩
   rw [← hΓ_eq_lift]
-  simpa [Γ] using
+  simpa [Γ] using!
     congrArg (fun δ ↦ ofBasedPath x₀ (BasedPath.append α δ)) (Path.initialSegmentFamily_one γ)
 
 /-- The universal cover is simply connected. -/
@@ -183,7 +183,7 @@ public theorem simplyConnectedSpace [LocPathConnectedSpace X] [PathConnectedSpac
   have hcast :=
     congrArg (Path.Homotopic.Quotient.cast · (proj_ofBasedPath x₀ α) (proj_ofBasedPath x₀ α))
       hγ_null
-  simpa [γ, ← Path.Homotopic.Quotient.mk_map] using hcast
+  simpa [γ, ← Path.Homotopic.Quotient.mk_map] using! hcast
 
 /-- Universal property of the universal cover: any continuous map `f : A → X` from a simply
 connected, locally path-connected space `A` lifts uniquely to the universal cover, after

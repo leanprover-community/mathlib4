@@ -32,7 +32,7 @@ def MonovaryOrder (i j : ι) : Prop :=
 
 instance : IsStrictTotalOrder ι (MonovaryOrder f g) where
   toTrichotomous := Std.trichotomous_of_rel_or_eq_or_rel_swap fun {a b} ↦ by
-    convert trichotomous_of (Prod.Lex (· < ·) <| Prod.Lex (· < ·) WellOrderingRel) _ _
+    convert! trichotomous_of (Prod.Lex (· < ·) <| Prod.Lex (· < ·) WellOrderingRel) _ _
     · simp only [Prod.ext_iff, ← and_assoc, imp_and, iff_and_self]
       exact ⟨congr_arg _, congr_arg _⟩
     · infer_instance

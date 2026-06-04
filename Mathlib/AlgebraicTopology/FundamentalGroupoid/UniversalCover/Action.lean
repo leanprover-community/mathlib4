@@ -102,7 +102,7 @@ instance : ContinuousConstSMul (FundamentalGroup X x₀) (UniversalCover x₀) w
     refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
     have h_eval : Continuous fun p : BasedPath x₀ × I ↦ p.1.1 p.2 :=
       continuous_eval.comp (continuous_subtype_val.prodMap continuous_id)
-    simpa using
+    simpa using!
       Path.trans_continuous_family (a := fun _ : BasedPath x₀ ↦ x₀)
         (b := fun _ : BasedPath x₀ ↦ x₀)
         (c := fun β : BasedPath x₀ ↦ BasedPath.endpoint β)

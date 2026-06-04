@@ -767,7 +767,7 @@ private theorem Path.first_rung_nullhomotopic_of_range_subset_slsc
   · have : (α 0) 0 = x := by simp [(α 0).source, part.t_zero, γ.source]
     rw [← this]
     exact h_α₀_in_U₀ ⟨0, rfl⟩
-  · simpa only [α₀, Path.cast, Set.range] using h_α₀_in_U₀
+  · simpa only [α₀, Path.cast, Set.range] using! h_α₀_in_U₀
 
 private theorem Path.last_rung_nullhomotopic_of_range_subset_slsc
     {x y : X} {n : ℕ}
@@ -784,7 +784,7 @@ private theorem Path.last_rung_nullhomotopic_of_range_subset_slsc
   · have : (α (Fin.last n)) 0 = y := by simp [(α (Fin.last n)).source, part.t_last]
     rw [← this]
     exact h_αₙ_in_Uₙ ⟨0, rfl⟩
-  · simpa only [αₙ, Path.cast, Set.range] using h_αₙ_in_Uₙ
+  · simpa only [αₙ, Path.cast, Set.range] using! h_αₙ_in_Uₙ
 
 /-- One-sided specialization of `paste_segment_homotopies` that kills the source loop.
 

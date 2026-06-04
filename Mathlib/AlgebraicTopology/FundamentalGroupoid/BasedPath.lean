@@ -173,7 +173,7 @@ original path and then a new endpoint path. -/
   refine ⟨ContinuousMap.mk
     (fun t : I ↦ f t)
     (hf_cont.comp continuous_subtype_val), ?_⟩
-  simpa [f, ha, endpoint_def] using γ.toPath.source
+  simpa [f, ha, endpoint_def] using! γ.toPath.source
 
 public theorem deformTerminal_apply_of_le {u v : X} (γ : BasedPath x₀) (hu : endpoint γ = u)
     (δ : Path u v) {a b : ℝ} (ha : 0 ≤ a) (hab : a < b) (hb : b < 1)
@@ -236,8 +236,8 @@ public theorem continuous_initialSegmentFamily_uncurry {a b : X} (γ : Path a b)
   have htrunc : Continuous (fun ts : I × I ↦ γ.truncate 0 ts.1 ts.2 : I × I → X) := by
     let key : I × I → ℝ × ℝ × I := fun ts ↦ (0, ts.1, ts.2)
     have hkey : Continuous key := by fun_prop
-    simpa [key] using γ.truncate_continuous_family.comp hkey
-  simpa [initialSegmentFamily] using htrunc
+    simpa [key] using! γ.truncate_continuous_family.comp hkey
+  simpa [initialSegmentFamily] using! htrunc
 
 @[simp] public theorem initialSegmentFamily_apply {a b : X} (γ : Path a b) (t s : I) :
     initialSegmentFamily γ t s = γ.extend (min (s : ℝ) t) := by
@@ -276,7 +276,7 @@ public theorem continuous_initialSegmentFamily {x₀ : X} (γ : BasedPath x₀) 
     Continuous γ.initialSegmentFamily := by
   refine Continuous.subtype_mk ?_ _
   refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
-  simpa only using γ.toPath.continuous_initialSegmentFamily_uncurry
+  simpa only using! γ.toPath.continuous_initialSegmentFamily_uncurry
 
 /-- Appending a fixed terminal path's initial-segment family to a fixed based path is jointly
 continuous in the family parameter. This packages the boilerplate for using
@@ -287,7 +287,7 @@ public theorem continuous_append_initialSegmentFamily {x₀ z : X}
     Continuous fun t : I ↦ γ.append (Path.initialSegmentFamily δ t) := by
   apply Continuous.subtype_mk
   refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
-  simpa using
+  simpa using!
     Path.trans_continuous_family (fun _ : I ↦ γ.toPath)
       (Path.continuous_uncurry_iff.mpr continuous_const) (Path.initialSegmentFamily δ)
       (Path.continuous_initialSegmentFamily_uncurry δ)
@@ -490,7 +490,7 @@ public theorem joinedIn_preimage_of_append {U : Set X} {z : X} (γ : BasedPath x
   let γrefl : Path (endpoint γ) (endpoint γ) := Path.refl (endpoint γ)
   have h_start :
       JoinedIn (endpoint (x₀ := x₀) ⁻¹' U) γ (append γ γrefl) := by
-    simpa [γrefl] using
+    simpa [γrefl] using!
       (joinedIn_preimage_singleton_of_homotopic (x₀ := x₀) (U := U) hγU
         (p := γ.toPath.trans (Path.refl (endpoint γ))) (q := γ.toPath)
         (Path.Homotopic.trans_refl γ.toPath)).symm
@@ -500,10 +500,10 @@ public theorem joinedIn_preimage_of_append {U : Set X} {z : X} (γ : BasedPath x
       toFun := fun t ↦ append γ (Path.initialSegmentFamily δ t)
       continuous_toFun := continuous_append_initialSegmentFamily γ δ
       source' := by
-        simpa [γrefl] using
+        simpa [γrefl] using!
           congrArg (append γ) (Path.initialSegmentFamily_zero δ)
       target' := by
-        simpa using
+        simpa using!
           congrArg (append γ) (Path.initialSegmentFamily_one δ) }
     refine ⟨η, fun t ↦ ?_⟩
     -- Unfold `η t = append γ (Path.initialSegmentFamily δ t)` and apply `endpoint_append`.
@@ -636,7 +636,7 @@ public theorem exists_open_nhd_pathComponent_preimage
     intro β hβ
     have h1 : β.1 (part.t (Fin.last (n' + 1))) ∈ V' (Fin.last (n' + 1)) := hβ.2 _
     rw [hV'_last_eq] at h1
-    exact hV'_sub_U (by simpa [part.t_last] using h1)
+    exact hV'_sub_U (by simpa [part.t_last] using! h1)
   · -- Every `β ∈ N` is `JoinedIn (endpoint ⁻¹' U)` to `α`.
     intro β hβ
     obtain ⟨hβ_stays, hβ_passes⟩ := hβ
@@ -644,7 +644,7 @@ public theorem exists_open_nhd_pathComponent_preimage
     have hβ_end_U : endpoint β ∈ U := by
       have h1 : β.1 (part.t (Fin.last (n' + 1))) ∈ V' (Fin.last (n' + 1)) := hβ_passes _
       rw [hV'_last_eq] at h1
-      exact hV'_sub_U (by simpa [part.t_last] using h1)
+      exact hV'_sub_U (by simpa [part.t_last] using! h1)
     -- Rung paths in `V' j`.
     choose ρ hρ_range using fun j : Fin (n' + 2) ↦
       (hV'_pathConn_all j).exists_path (hα_passes_V' j) (hβ_passes j)
@@ -831,7 +831,7 @@ public theorem toPath_homotopic_of_joinedIn_slsc
   let L : Path v v :=
     { toFun := fun t ↦ (F t).1 1
       continuous_toFun := by
-        simpa using hFv_cont.comp (continuous_id.prodMk (continuous_const (y := (1 : I))))
+        simpa using! hFv_cont.comp (continuous_id.prodMk (continuous_const (y := (1 : I))))
       source' := by rw [hF0_eq]; exact heq
       target' := by rw [hF1_eq]; rfl }
   have hL_refl : L.Homotopic (Path.refl v) :=

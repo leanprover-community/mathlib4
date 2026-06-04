@@ -365,7 +365,7 @@ monoid, as an additive submonoid. -/]
 def Submonoid.pathComponentOne (M : Type*) [Monoid M] [TopologicalSpace M] [ContinuousMul M] :
     Submonoid M where
   carrier := pathComponent (1 : M)
-  mul_mem' {m₁ m₂} hm₁ hm₂ := by simpa using hm₁.mul hm₂
+  mul_mem' {m₁ m₂} hm₁ hm₂ := by simpa using! hm₁.mul hm₂
   one_mem' := mem_pathComponent_self 1
 
 /-- The path component of the identity in a topological group, as a subgroup. -/
@@ -374,7 +374,7 @@ group, as an additive subgroup. -/]
 def Subgroup.pathComponentOne (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G] :
     Subgroup G where
   toSubmonoid := .pathComponentOne G
-  inv_mem' {g} hg := by simpa using hg.inv
+  inv_mem' {g} hg := by simpa using! hg.inv
 
 /-- The path component of the identity in a topological group is normal. -/
 @[to_additive]
@@ -498,7 +498,8 @@ theorem IsPathConnected.preimage_coe {U W : Set X} (hW : IsPathConnected W) (hWU
     IsPathConnected (((↑) : U → X) ⁻¹' W) := by
   rwa [IsInducing.subtypeVal.isPathConnected_iff, Subtype.image_preimage_val, inter_eq_right.2 hWU]
 
-/-- In a path-connected set `U`, any two points `a, b ∈ U` are joined by a path with range in `U`. -/
+/-- In a path-connected set `U`, any two points `a, b ∈ U` are joined by a path with range in `U`.
+-/
 theorem IsPathConnected.exists_path {a b : X} {U : Set X} (hU : IsPathConnected U)
     (ha : a ∈ U) (hb : b ∈ U) : ∃ p : Path a b, Set.range p ⊆ U :=
   let hab : JoinedIn U a b := hU.joinedIn _ ha _ hb
@@ -571,7 +572,7 @@ variable [PathConnectedSpace X]
 def somePath (x y : X) : Path x y :=
   Nonempty.some (joined x y)
 
-instance [PathConnectedSpace X] : Subsingleton (ZerothHomotopy X) :=
+instance : Subsingleton (ZerothHomotopy X) :=
   (pathConnectedSpace_iff_zerothHomotopy.1 inferInstance).2
 
 end PathConnectedSpace
