@@ -66,6 +66,7 @@ noncomputable def extRestrictScalarsSemiLinearEquiv [Small.{v} R] [Small.{v} R']
     (Functor.mapExt_bijective_of_preservesProjectiveObjects
     (ModuleCat.restrictScalars.{v} (RingHomClass.toRingHom e)) M N n)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given semi linear equivalence `M ≃ M'` and `N ≃ N'` with respect to `R ≃+* R'`
 within same universe, the semi linear equivalence `Ext M N n ≃ Ext M' N' n`. -/
