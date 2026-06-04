@@ -338,24 +338,24 @@ theorem Matrix.toBilin_comp (M : Matrix n n R₁) (P Q : Matrix n o R₁) :
   simp
 
 @[simp]
-lemma LinearMap.BilinForm.toMatrix_isSymm_iff_isSymm (B : BilinForm R₁ M₁) :
-    (LinearMap.BilinForm.toMatrix b B).IsSymm ↔ B.IsSymm := by
+lemma LinearMap.BilinForm.isSymm_toMatrix_iff_isSymm (B : BilinForm R₁ M₁) :
+    (B.toMatrix b).IsSymm ↔ B.IsSymm := by
   simp only [isSymm_iff, IsSymm.ext_iff, toMatrix_apply]
   refine ⟨fun h ↦ ?_, by simp_all [LinearMap.isSymm_def]⟩
   rw [isSymm_iff_eq_flip]
   exact ext_basis b <| by simp [h]
 
 @[simp]
-lemma Matrix.toBilin_isSymm_iff_isSym (M : Matrix n n R₁) : (M.toBilin b).IsSymm ↔ M.IsSymm := by
+lemma Matrix.isSymm_toBilin_iff_isSymm (M : Matrix n n R₁) : (M.toBilin b).IsSymm ↔ M.IsSymm := by
   simp [← (M.toBilin b).toMatrix_isSymm_iff_isSymm b]
 
 @[simp]
-lemma LinearMap.BilinForm.toMatrix'_isSymm_isSymm (B : BilinForm R₁ (n → R₁)) :
-    (BilinForm.toMatrix' B).IsSymm ↔ B.IsSymm :=
+lemma LinearMap.BilinForm.isSymm_toMatrix'_iff_isSymm (B : BilinForm R₁ (n → R₁)) :
+    B.toMatrix'.IsSymm ↔ B.IsSymm :=
   LinearMap.BilinForm.toMatrix_isSymm_iff_isSymm B (b := Pi.basisFun (η := n) (R := R₁))
 
 @[simp]
-lemma Matrix.isSymm_iff_toBilin'_isSym (M : Matrix n n R₁) : (M.toBilin').IsSymm ↔ M.IsSymm := by
+lemma Matrix.isSymm_toBilin'_iff_isSymm (M : Matrix n n R₁) : M.toBilin'.IsSymm ↔ M.IsSymm := by
   simp [← (M.toBilin').toMatrix'_isSymm_isSymm]
 
 end ToMatrix
