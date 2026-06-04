@@ -104,6 +104,12 @@ theorem isReduced_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersi
 instance {X : Scheme} {U : X.Opens} [IsReduced X] : IsReduced U :=
     isReduced_of_isOpenImmersion U.ι
 
+instance {𝒰 : X.OpenCover} [IsReduced X] (i : 𝒰.I₀) : IsReduced (𝒰.X i) :=
+  isReduced_of_isOpenImmersion (𝒰.f i)
+
+instance : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) (IsReduced ·) :=
+  ⟨fun e _ ↦ isReduced_of_isOpenImmersion e.inv⟩
+
 instance {R : CommRingCat.{u}} [H : _root_.IsReduced R] : IsReduced (Spec R) := by
   apply +allowSynthFailures isReduced_of_isReduced_stalk
   intro x
@@ -129,6 +135,9 @@ theorem IsReduced.of_openCover (𝒰 : X.OpenCover) [∀ i, IsReduced (𝒰.X i)
     exact isReduced_of_injective _
       (asIso <| (𝒰.f i).stalkMap x).commRingCatIsoToRingEquiv.injective
   exact isReduced_of_isReduced_stalk _
+
+theorem IsReduced.iff_of_openCover (𝒰 : X.OpenCover) : IsReduced X ↔ ∀ i, IsReduced (𝒰.X i) :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ of_openCover X 𝒰⟩
 
 /-- To show that a statement `P` holds for all open subsets of all schemes, it suffices to show that
 1. In any scheme `X`, if `P` holds for an open cover of `U`, then `P` holds for `U`.
