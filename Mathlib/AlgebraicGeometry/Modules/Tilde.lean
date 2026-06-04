@@ -8,10 +8,9 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Localization
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
+public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
 public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.Modules.Sheaf
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
-public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.WithAlgebraicStructures
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Over
 public import Mathlib.CategoryTheory.Limits.Preorder
@@ -561,6 +560,7 @@ open CategoryTheory TopologicalSpace
 variable {X : Scheme.{u}} (M : X.Modules) [M.IsQuasicoherent]
 
 open Limits
+set_option backward.defeqAttrib.useBackward true in
 lemma _root_.CategoryTheory.Limits.preservesLimit_walkingParallelPair_of_eq
     {C D : Type*} [Category* C] [Category* D] {K : WalkingParallelPair ⥤ C}
     (heq : K.map .left = K.map .right) (F : C ⥤ D) :
@@ -570,7 +570,7 @@ lemma _root_.CategoryTheory.Limits.preservesLimit_walkingParallelPair_of_eq
     exact preservesLimit_of_iso_diagram _ (diagramIsoParallelPair _).symm
   rintro X Y f g rfl
   refine preservesLimit_of_preserves_limit_cone (isLimitIdFork rfl) ?_
-  exact (isLimitMapConeForkEquiv F _).symm (by simpa using isLimitIdFork rfl)
+  exact (isLimitMapConeForkEquiv F _).symm (by simpa using! isLimitIdFork rfl)
 
 instance {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) :
     PreservesLimit (parallelPair f f) F :=
@@ -585,7 +585,7 @@ instance (priority := low) {C D : Type*} [Category* C] [Category* D] [Quiver.IsT
 def _root_.CategoryTheory.Limits.isLimitEquivFanOfIsThin {C : Type*} [Category* C]
     [Quiver.IsThin C] {J : Type*} [Category* J] {K : J ⥤ C} (c : Cone K) :
     IsLimit c ≃ IsLimit (Fan.mk c.pt c.π.app) where
-  toFun hc := Limits.mkFanLimit _ (fun s ↦ hc.lift { pt := s.pt, π.app j := s.proj j })
+  toFun hc := Fan.IsLimit.mk _ (fun s ↦ hc.lift { pt := s.pt, π.app j := s.proj j })
     (by subsingleton) (by subsingleton)
   invFun h := { lift s := Fan.IsLimit.lift h s.π.app }
 

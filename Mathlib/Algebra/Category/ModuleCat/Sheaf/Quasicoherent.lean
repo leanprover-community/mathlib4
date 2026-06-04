@@ -363,27 +363,6 @@ lemma _root_.CategoryTheory.PreOneHypercover.sieve₀_map
     PreOneHypercover.map_toPreZeroHypercover, PreZeroHypercover.presieve₀_map,
     Sieve.generate_map_eq_functorPushforward]
 
-instance {C : Type*} [Category* C] (X : C) (J : GrothendieckTopology C) :
-    Functor.PreservesOneHypercovers.{w} (Over.forget X) (J.over X) J := by
-  intro U E
-  refine ⟨?_, ?_⟩
-  · simpa [CategoryTheory.PreZeroHypercover.sieve₀_map] using E.mem₀
-  · intro i₁ i₂ W p₁ p₂ h
-    let W' : Over X := Over.mk (p₁ ≫ (E.X i₁).hom)
-    let p₁' : W' ⟶ E.X i₁ := Over.homMk p₁ rfl
-    let p₂' : W' ⟶ E.X i₂ := Over.homMk p₂ <| by
-      dsimp at h
-      simp only [Over.forget_obj, Over.mk_left, Over.mk_hom, W']
-      rw [← Over.w (E.f i₂), ← reassoc_of% h]
-      simp
-    have := E.mem₁ _ _ p₁' p₂' (by ext; exact h)
-    rw [J.mem_over_iff] at this
-    refine J.superset_covering ?_ this
-    intro U g hg
-    rw [Sieve.overEquiv_iff] at hg
-    obtain ⟨j, u, h₁, h₂⟩ := hg
-    exact ⟨j, u.left, congr($(h₁).left), congr($(h₂).left)⟩
-
 lemma coverPreserving_of_coverPreserving_comp {C D E : Type*} [Category* C] [Category* D]
     [Category* E] (F : C ⥤ D) (G : D ⥤ E) (J : GrothendieckTopology C) (K : GrothendieckTopology D)
     (T : GrothendieckTopology E) (h : CoverPreserving J T (F ⋙ G)) [G.IsCocontinuous K T]
@@ -408,6 +387,7 @@ instance {C : Type*} [Category* C] {A : Type*} [Category* A]
   · simp [IsIso.hom_inv_id]
   · simp [IsIso.inv_hom_id]
 
+set_option backward.defeqAttrib.useBackward true in
 omit
   [HasSheafify J AddCommGrpCat]
   [J.WEqualsLocallyBijective AddCommGrpCat]
