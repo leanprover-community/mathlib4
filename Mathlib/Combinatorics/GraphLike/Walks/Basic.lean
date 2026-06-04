@@ -493,7 +493,7 @@ end HyperGraphLike
 
 variable {p : Walk G u v}
 
-theorem mem_darts_iff_infix_support [GraphLike V I E Gr] [undirected V I E Gr] [loopless V I E Gr]
+theorem mem_darts_iff_infix_support [GraphLike V I E Gr] [Undirected V I E Gr] [Loopless V I E Gr]
     [NoMultiEdge V I E Gr] (d : Dart G) :
     d ∈ p.darts ↔ [d.source, d.target] <:+: p.support := by
   refine .trans ⟨fun h ↦ ?_, fun ⟨i, hi, h⟩ ↦ ?_⟩ List.infix_iff_getElem?.symm
@@ -506,8 +506,8 @@ theorem mem_darts_iff_infix_support [GraphLike V I E Gr] [undirected V I E Gr] [
       <;> grind [source_darts_getElem, target_darts_getElem]
     exact hd ▸ p.darts.getElem_mem (n := i) (by grind)
 
-theorem mem_darts_iff_fst_snd_infix_support [GraphLike V I E Gr] [undirected V I E Gr]
-    [loopless V I E Gr] [NoMultiEdge V I E Gr] (d : Dart G) :
+theorem mem_darts_iff_fst_snd_infix_support [GraphLike V I E Gr] [Undirected V I E Gr]
+    [Loopless V I E Gr] [NoMultiEdge V I E Gr] (d : Dart G) :
     d ∈ p.darts ↔ [d.source, d.target] <:+: p.support :=
   mem_darts_iff_infix_support d
 

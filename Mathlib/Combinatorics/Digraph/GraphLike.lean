@@ -27,9 +27,9 @@ namespace Digraph
 instance : HyperGraphLike V (Bool × V × V) (V × V) (Digraph V) where
   verts _ := Set.univ
   edges G := { (u, v) | G.Adj u v }
-  isIncident G i e v := G.Adj e.1 e.2 ∧ i.2 = e ∧ if i.1 then e.1 = v else e.2 = v
-  isSource G i := i.1 ∧ G.Adj i.2.1 i.2.2
-  isTarget G i := ¬ i.1 ∧ G.Adj i.2.1 i.2.2
+  IsIncident G i e v := G.Adj e.1 e.2 ∧ i.2 = e ∧ if i.1 then e.1 = v else e.2 = v
+  IsSource G i := i.1 ∧ G.Adj i.2.1 i.2.2
+  IsTarget G i := ¬ i.1 ∧ G.Adj i.2.1 i.2.2
   vert_mem_of_isIncident _ _ _ _ _ := Set.mem_univ _
   edge_mem_of_isIncident G i e v := by grind
   eq_and_eq_of_isIncident_of_isIncident _ _ _ _ _ _ := by grind
@@ -46,10 +46,10 @@ instance : GraphLike V (Bool × V × V) (V × V) (Digraph V) where
   order_eq_two G := by
     simp only [edges_def, Set.mem_setOf_eq, order, Prod.forall]
     intro u v hab
-    have h : edgeIncidents G (u, v) = {(true, u, v), (false, u, v)} := by
+    have h : (edgeFun G).preimage {(u, v)} = {(true, u, v), (false, u, v)} := by
       ext i
-      simp only [mem_edgeIncidents_iff, isIncident_def, hab, true_and, exists_and_left,
-        Set.mem_insert_iff, Set.mem_singleton_iff]
+      simp only [PFun.mem_preimage, Set.mem_singleton_iff, mem_edgeFun_iff_exists_isIncident,
+        isIncident_def, exists_and_left, exists_eq_left, hab, true_and, Set.mem_insert_iff]
       refine ⟨by grind, ?_⟩
       rintro (rfl | rfl) <;> simp
     rw [h]
@@ -61,7 +61,7 @@ instance : GraphLike V (Bool × V × V) (V × V) (Digraph V) where
     rintro ⟨u, v⟩ he
     simpa
 
-instance : directed V (Bool × V × V) (V × V) (Digraph V) where
+instance : Directed V (Bool × V × V) (V × V) (Digraph V) where
   not_isTarget_of_isSource G i hi := by simp_all
   not_isSource_of_isTarget G i hi := by simp_all
 

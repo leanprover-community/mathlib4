@@ -132,9 +132,11 @@ def some (a : α) : Part α :=
 theorem some_dom (a : α) : (some a).Dom :=
   trivial
 
+@[grind <=]
 theorem mem_unique : ∀ {a b : α} {o : Part α}, a ∈ o → b ∈ o → a = b
   | _, _, ⟨_, _⟩, ⟨_, rfl⟩, ⟨_, rfl⟩ => rfl
 
+@[grind <=]
 theorem mem_right_unique : ∀ {a : α} {o p : Part α}, a ∈ o → a ∈ p → o = p
   | _, _, _, ⟨ho, _⟩, ⟨hp, _⟩ => ext' (iff_of_true ho hp) (by simp [*])
 

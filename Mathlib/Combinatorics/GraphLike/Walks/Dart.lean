@@ -58,13 +58,13 @@ lemma target_isIncident : IsIncident G d.snd d.edge d.target :=
 
 @[grind .] lemma fst_mem : d.fst ∈ I(G) := d.fst_isSource.mem
 
-lemma fst_mem_edgeIncidents : d.fst ∈ edgeIncidents G d.edge :=
-  d.source_isIncident.mem_edgeIncidents
+lemma edge_mem_edgeFun_fst : d.edge ∈ edgeFun G d.fst :=
+  d.source_isIncident.mem_edgeFun
 
 @[grind .] lemma snd_mem : d.snd ∈ I(G) := d.snd_isTarget.mem
 
-lemma snd_mem_edgeIncidents : d.snd ∈ edgeIncidents G d.edge :=
-  d.target_isIncident.mem_edgeIncidents
+lemma edge_mem_edgeFun_snd : d.edge ∈ edgeFun G d.snd :=
+  d.target_isIncident.mem_edgeFun
 
 @[grind .] lemma edge_mem : d.edge ∈ E(G) := d.source_isIncident.edge_mem
 
@@ -159,13 +159,13 @@ section GraphLike
 
 variable [GraphLike V I E Gr]
 
-lemma edgeIncidents_eq (d : Dart G) : edgeIncidents G d.edge = {d.fst, d.snd} := by
-  obtain ⟨i, j, hne, h⟩ := edgeIncidents_eq_pair d.edge_mem
-  grind [d.fst_mem_edgeIncidents, d.snd_mem_edgeIncidents]
+lemma edge_mem_edgeFun_iff_fst_or_snd (d : Dart G) :
+    ∀ (x : I), d.edge ∈ edgeFun G x ↔ x = d.fst ∨ x = d.snd := by
+  obtain ⟨i, j, hne, h⟩ := exists_pair_mem_edgeFun_iff d.edge_mem
+  grind [d.edge_mem_edgeFun_fst, d.edge_mem_edgeFun_snd]
 
 lemma fst_or_snd_of_isIncident (d : Dart G) (h : IsIncident G i d.edge v) :
-    i = d.fst ∨ i = d.snd := by
-  grind [d.edgeIncidents_eq ▸ h.mem_edgeIncidents]
+    i = d.fst ∨ i = d.snd := (d.edge_mem_edgeFun_iff_fst_or_snd i).mp h.mem_edgeFun
 
 lemma incMatrix_col_eq [DecidableEq V] {n : ℕ∞} (d : Dart G) :
     (incMatrix G n n n).col d.edge = Pi.single d.source n + Pi.single d.target n :=
@@ -173,9 +173,9 @@ lemma incMatrix_col_eq [DecidableEq V] {n : ℕ∞} (d : Dart G) :
 
 end GraphLike
 
-section undirected
+section Undirected
 
-variable [undirected V I E Gr]
+variable [Undirected V I E Gr]
 
 lemma Adj' (d : Dart G) : HyperGraphLike.Adj G d.target d.source := d.Adj.symm
 
@@ -213,25 +213,25 @@ lemma edge_eq_iff_of_undirected [GraphLike V I E Gr] (d₁ d₂ : Dart G) :
   simp_rw [Dart.ext_iff, symm_fst, symm_snd]
   grind [fst_or_snd_of_isIncident, source_isIncident, target_isIncident]
 
-end undirected
+end Undirected
 
-section directed
+section Directed
 
-variable [directed V I E Gr]
+variable [Directed V I E Gr]
 
 lemma edge_eq_iff_of_directed [GraphLike V I E Gr] (d₁ d₂ : Dart G) :
     d₁.edge = d₂.edge ↔ d₁ = d₂ := by
   simp_rw [Dart.ext_iff]
   grind [fst_or_snd_of_isIncident, source_isIncident, target_isIncident]
 
-end directed
+end Directed
 
-section noMultiEdge
+section NoMultiEdge
 
 variable [GraphLike V I E Gr] [NoMultiEdge V I E Gr]
 
 @[simp]
-theorem sym2_eq_iff [undirected V I E Gr] (d₁ d₂ : Dart G) :
+theorem sym2_eq_iff [Undirected V I E Gr] (d₁ d₂ : Dart G) :
     d₁.sym2 = d₂.sym2 ↔ d₁ = d₂ ∨ d₁ = d₂.symm := by
   simp only [sym2, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
   refine ⟨?_, by rintro (rfl | rfl) <;> simp⟩
@@ -242,29 +242,29 @@ theorem sym2_eq_iff [undirected V I E Gr] (d₁ d₂ : Dart G) :
     (by simpa [h1, h2] using d₂.symm.IsLink)
   grind
 
-lemma eq_of_source_target_eq_of_directed [directed V I E Gr] (hds : d₁.source = d₂.source)
+lemma eq_of_source_target_eq_of_directed [Directed V I E Gr] (hds : d₁.source = d₂.source)
     (hdt : d₁.target = d₂.target) : d₁ = d₂ :=
   (d₁.edge_eq_iff_of_directed d₂).mp <|
     d₁.IsLink.edge_inj_of_isLink_of_directed (hds ▸ hdt ▸ d₂.IsLink)
 
-lemma source_target_inj_of_directed [directed V I E Gr] :
+lemma source_target_inj_of_directed [Directed V I E Gr] :
     Function.Injective fun d : Dart G ↦ (d.source, d.target) := by
   rintro d₁ d₂ h
   rw [Prod.mk.injEq] at h
   exact eq_of_source_target_eq_of_directed h.1 h.2
 
-lemma eq_of_source_target_eq_of_undirected [undirected V I E Gr] [loopless V I E Gr]
+lemma eq_of_source_target_eq_of_undirected [Undirected V I E Gr] [Loopless V I E Gr]
     (hds : d₁.source = d₂.source) (hdt : d₁.target = d₂.target) : d₁ = d₂ :=
   have := d₁.IsLink.edge_inj_of_isLink_of_undirected (hds ▸ hdt ▸ d₂.IsLink)
   ext (d₁.source_isIncident.inc_inj (hds ▸ this ▸ d₂.source_isIncident))
     (d₁.target_isIncident.inc_inj (hdt ▸ this ▸ d₂.target_isIncident))
 
-lemma source_target_inj_of_undirected [undirected V I E Gr] [loopless V I E Gr] :
+lemma source_target_inj_of_undirected [Undirected V I E Gr] [Loopless V I E Gr] :
     Function.Injective fun d : Dart G ↦ (d.source, d.target) := by
   rintro d₁ d₂ h
   rw [Prod.mk.injEq] at h
   exact eq_of_source_target_eq_of_undirected h.1 h.2
 
-end noMultiEdge
+end NoMultiEdge
 
 end HyperGraphLike.Dart

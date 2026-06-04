@@ -19,20 +19,21 @@ of graph structures including `SimpleGraph`, `Graph`, and `Digraph`.
 
 ## Main definitions
 
-* `GraphLike`: is the main typeclass for capturing the common notion of graphs.
+* `HyperGraphLike`: is the main typeclass for capturing the common notion of hypergraphs.
   The field `verts` gives the set of vertices of a graph-like structure,
   the field `darts` gives the set of darts, which is an oriented edge, of a graph-like structure,
   the field `edges` gives the set of edges of a graph-like structure,
   and the field `Adj` gives the adjacency relation between vertices.
-* `NoMultiEdgeGraphLike`: is the typeclass for graph-like structures with no multi-edge.
-* `SymmGraphLike`: extends `GraphLike` for graph-like structures with symmetric darts.
-* `noMultiEdgeSymmGraphLike`: extends `SymmGraphLike` and `NoMultiEdgeGraphLike` for graph-like
-  structures with no multi-edge and symmetric darts.
-
-## Notes
-
-* `GraphLike V D E Gr` generalizes `SimpleGraph`, `Digraph`, and `Graph`. When multi-digraph and
-  hypergraphs are formalized, they can also use this typeclass.
+* `GraphLike`: is the typeclass for graph-like structures where each edge has order 2 and among the
+  two incidences, at least one is a source and the other is a target.
+* `Undirected`: is the typeclass for undirected graph-like structures, that is every incidence is
+  both a source and a target.
+* `Directed`: is the typeclass for directed graph-like structures, that is no incidence is both a
+  source and a target.
+* `NoMultiEdge`: is the typeclass for graph-like structures where no two edges have same sort of
+  incidence to the same set of vertices.
+* `Loopless`: is the typeclass for graph-like structures where no edge has more than one incidence
+  to a vertex.
 
 -/
 
@@ -81,6 +82,11 @@ class HyperGraphLike (V I E : outParam Type*) (Gr : Type*) where
   /-- Two vertices are adjacent if and only if there is a dart between them. -/
   adj_def ⦃G u v⦄ : Adj G u v ↔ ∃ e i j, i ≠ j ∧ IsSource G i ∧ IsTarget G j ∧
     IsIncident G i e u ∧ IsIncident G j e v := by grind
+
+initialize_simps_projections HyperGraphLike (as_prefix verts, as_prefix edges, as_prefix incs,
+  IsIncident → isIncident, as_prefix isIncident, IsSource → isSource, as_prefix isSource,
+  IsTarget → isTarget, as_prefix isTarget, IsLink → isLink, as_prefix isLink, Adj → adj,
+  as_prefix adj)
 
 namespace HyperGraphLike
 
@@ -225,79 +231,44 @@ lemma IsIncident.mem_edgeFun (h : IsIncident G i e v) : e ∈ edgeFun G i := by
 lemma IsIncident.mem_endPoint (h : IsIncident G i e v) : v ∈ endPoint G i := by
   simp [← ((isIncident_edgeFun_endPoint h.inc_mem).inj h).2]
 
+@[simp, grind =]
+lemma mem_edgeFun_iff_exists_isIncident (G : Gr) (e : E) (i : I) :
+    e ∈ edgeFun G i ↔ ∃ v, IsIncident G i e v := by
+  refine ⟨fun hei ↦ ?_, fun ⟨v, hei⟩ ↦ hei.mem_edgeFun⟩
+  have := isIncident_edgeFun_endPoint (mem_incs_of_mem_edgeFun hei)
+  rw [PFun.fn_apply, Part.get_eq_of_mem hei] at this
+  use (endPoint G).fn i ?_, this
+
+@[simp, grind =]
+lemma mem_endPoint_iff_exists_isIncident (G : Gr) (i : I) (v : V) :
+    v ∈ endPoint G i ↔ ∃ e, IsIncident G i e v := by
+  refine ⟨fun hvi ↦ ?_, fun ⟨e, hei⟩ ↦ hei.mem_endPoint⟩
+  have := isIncident_edgeFun_endPoint (mem_incs_of_mem_endPoint hvi)
+  rw [(endPoint G).fn_apply, Part.get_eq_of_mem hvi] at this
+  use (edgeFun G).fn i ?_, this
+
+@[grind =]
 lemma mem_edgeFun_mem_endPoint_iff_isIncident (G : Gr) (i : I) (e : E) (v : V) :
     e ∈ edgeFun G i ∧ v ∈ endPoint G i ↔ IsIncident G i e v := by
   refine ⟨fun ⟨hei, hvi⟩ ↦ ?_, fun h ↦ ⟨h.mem_edgeFun, h.mem_endPoint⟩⟩
   have := isIncident_edgeFun_endPoint (mem_incs_of_mem_edgeFun hei)
   rwa [PFun.fn_apply, PFun.fn_apply, Part.get_eq_of_mem hei, Part.get_eq_of_mem hvi] at this
 
-@[expose] def edgeIncidents (G : Gr) (e : E) : Set I := {i | ∃ v, IsIncident G i e v}
-
-@[simp]
-lemma mem_edgeIncidents_iff (G : Gr) (e : E) (i : I) :
-    i ∈ edgeIncidents G e ↔ ∃ v, IsIncident G i e v := by
-  rfl
-
-@[grind →]
-lemma IsIncident.mem_edgeIncidents (h : IsIncident G i e v) : i ∈ edgeIncidents G e := by
-  rw [mem_edgeIncidents_iff]
-  use v
-
-lemma mem_edgeFun_mem_edgeIncidents_comm (G : Gr) (e : E) (i : I) :
-    e ∈ edgeFun G i ↔ i ∈ edgeIncidents G e := by
-  refine ⟨fun hei ↦ ?_, fun ⟨v, hei⟩ ↦ hei.mem_edgeFun⟩
-  have := isIncident_edgeFun_endPoint (mem_incs_of_mem_edgeFun hei)
-  rw [PFun.fn_apply, Part.get_eq_of_mem hei] at this
-  use (endPoint G).fn i ?_, this
-
-@[grind →]
-lemma edgeIncidents_eq_empty_of_notMem_edgeSet (he : e ∉ E(G)) : edgeIncidents G e = ∅ := by
-  simp only [edgeIncidents, eq_empty_iff_forall_notMem, mem_setOf_eq, not_exists]
-  intro i v hi
-  exact he hi.edge_mem
-
-lemma edgeIncidents_pairwiseDisjoint (G : Gr) : Pairwise (Disjoint on edgeIncidents G) := by
-  refine fun e f hne ↦ by_contra fun h ↦ ?_
-  rw [not_disjoint_iff] at h
-  obtain ⟨i, ⟨u, he⟩, v, hf⟩ := h
-  obtain ⟨rfl, rfl⟩ := he.inj hf
-  exact hne rfl
+@[expose]
+noncomputable def order (G : Gr) (e : E) : ℕ∞ := (edgeFun G |>.preimage {e}).encard
 
 @[expose]
-def vertexIncidents (G : Gr) (v : V) : Set I := {i | ∃ e, IsIncident G i e v}
+noncomputable def degree (G : Gr) (v : V) : ℕ∞ := (endPoint G |>.preimage {v}).encard
 
-lemma vertexIncidents_def (G : Gr) (v : V) :
-    vertexIncidents G v = {i | ∃ e, IsIncident G i e v} := by rfl
-
-@[simp]
-lemma vertexIncidents_mem (G : Gr) (v : V) (i : I) :
-    i ∈ vertexIncidents G v ↔ ∃ e, IsIncident G i e v := by
-  rfl
-
-@[grind →]
-lemma IsIncident.mem_vertexIncidents (h : IsIncident G i e v) : i ∈ vertexIncidents G v := by
-  rw [vertexIncidents_def]
-  use e
-
-lemma mem_endPoint_mem_vertexIncidents_comm (G : Gr) (v : V) (i : I) :
-    v ∈ endPoint G i ↔ i ∈ vertexIncidents G v := by
-  refine ⟨fun hvi ↦ ?_, fun ⟨e, hvi⟩ ↦ hvi.mem_endPoint⟩
-  have := isIncident_edgeFun_endPoint (mem_incs_of_mem_endPoint hvi)
-  rw [(endPoint G).fn_apply, Part.get_eq_of_mem hvi] at this
-  use (edgeFun G).fn i ?_, this
-
-@[expose]
-noncomputable def order (G : Gr) (e : E) : ℕ∞ := (edgeIncidents G e).encard
-
-@[expose]
-noncomputable def degree (G : Gr) (v : V) : ℕ∞ := (vertexIncidents G v).encard
-
-lemma edgeIncidents_injOn (h : ∀ e ∈ E(G), order G e ≠ 0) :
-    InjOn (edgeIncidents (G := G)) E(G) := by
+lemma edgeFun_preimage_singleton_injOn (h : ∀ e ∈ E(G), order G e ≠ 0) :
+    InjOn (edgeFun G |>.preimage {·}) E(G) := by
   rintro e he f hf heq
+  contrapose! heq
   simp only [order, ne_eq, encard_eq_zero, ← nonempty_iff_ne_empty] at h
   obtain ⟨i, hi⟩ := h e he
-  exact edgeIncidents_pairwiseDisjoint G |>.eq <| by grind
+  have hef : Disjoint (edgeFun G |>.preimage {e}) (edgeFun G |>.preimage {f}) :=
+    PFun.disjoint_preimage_of_disjoint _ <| by simpa
+  exact hef.ne (by simp [← nonempty_iff_ne_empty, h e he])
 
 /-- The ENat-valued incidence matrix of a graph-like structure. -/
 noncomputable def incMatrix (G : Gr) (l m n : ℕ∞) : Matrix V E ℕ∞ := .of fun v e ↦
@@ -333,45 +304,42 @@ section GraphLike
 
 class GraphLike (V I E : outParam Type*) (Gr : Type*) [HyperGraphLike V I E Gr] where
   order_eq_two ⦃G : Gr⦄ ⦃e : E⦄ : e ∈ E(G) → order G e = 2
-  exists_isSource_of_mem_edgeSet ⦃G : Gr⦄ ⦃e : E⦄ : e ∈ E(G) → ∃ i ∈ edgeIncidents G e, IsSource G i
-  exists_isTarget_of_mem_edgeSet ⦃G : Gr⦄ ⦃e : E⦄ : e ∈ E(G) → ∃ i ∈ edgeIncidents G e, IsTarget G i
+  exists_isSource_of_mem_edgeSet ⦃G : Gr⦄ ⦃e : E⦄ : e ∈ E(G) → ∃ i, e ∈ edgeFun G i ∧ IsSource G i
+  exists_isTarget_of_mem_edgeSet ⦃G : Gr⦄ ⦃e : E⦄ : e ∈ E(G) → ∃ i, e ∈ edgeFun G i ∧ IsTarget G i
 
 variable [GraphLike V I E Gr]
 
 lemma order_eq_two (he : e ∈ E(G)) : order G e = 2 := GraphLike.order_eq_two he
 
-lemma exists_isSource_of_mem_edgeSet (he : e ∈ E(G)) : ∃ i ∈ edgeIncidents G e, IsSource G i :=
+lemma exists_isSource_of_mem_edgeSet (he : e ∈ E(G)) : ∃ i, e ∈ edgeFun G i ∧ IsSource G i :=
   GraphLike.exists_isSource_of_mem_edgeSet he
 
-lemma exists_isTarget_of_mem_edgeSet (he : e ∈ E(G)) : ∃ i ∈ edgeIncidents G e, IsTarget G i :=
+lemma exists_isTarget_of_mem_edgeSet (he : e ∈ E(G)) : ∃ i, e ∈ edgeFun G i ∧ IsTarget G i :=
   GraphLike.exists_isTarget_of_mem_edgeSet he
 
-lemma edgeIncidents_eq_pair (he : e ∈ E(G)) : ∃ i j, i ≠ j ∧ edgeIncidents G e = {i, j} := by
-  simpa [order, encard_eq_two] using order_eq_two he
+lemma exists_pair_mem_edgeFun_iff (he : e ∈ E(G)) :
+    ∃ i j, i ≠ j ∧ ∀ (x : I), e ∈ edgeFun G x ↔ x = i ∨ x = j := by
+  simpa [order, encard_eq_two, Set.ext_iff] using order_eq_two he
 
 lemma exists_isLink_of_mem_edgeSet (he : e ∈ E(G)) : ∃ u v, IsLink G e u v := by
   simp_rw [isLink_def]
-  obtain ⟨i, j, hne, hei⟩ := edgeIncidents_eq_pair he
-  obtain ⟨u, hiu⟩ := hei ▸ (show i ∈ {i, j} from by simp)
-  obtain ⟨v, hjv⟩ := hei ▸ (show j ∈ {i, j} from by simp)
-  have hS := hei ▸ exists_isSource_of_mem_edgeSet he
-  have hT := hei ▸ exists_isTarget_of_mem_edgeSet he
-  grind
+  obtain ⟨i, j, hne, hei⟩ := exists_pair_mem_edgeFun_iff he
+  have hS := exists_isSource_of_mem_edgeSet he
+  have hT := exists_isTarget_of_mem_edgeSet he
+  grind [hei i, hei j]
 
 @[grind <=]
 lemma IsLink.eq_or_eq_of_isLink (h : IsLink G e u v) (h' : IsLink G e u' v') :
     u = u' ∧ v = v' ∨ u = v' ∧ v = u' := by
   obtain ⟨i, j, hij, hi, hj, hi', hj'⟩ := isLink_def.mp h
   obtain ⟨i', j', hij', hi', hj', hi'', hj''⟩ := isLink_def.mp h'
-  obtain ⟨k, l, hkl, h⟩ := edgeIncidents_eq_pair hi''.edge_mem
+  obtain ⟨k, l, hkl, h⟩ := exists_pair_mem_edgeFun_iff hi''.edge_mem
   grind
 
 lemma IsLink.incMatrix_col_eq [DecidableEq V] {n : ℕ∞} (h : IsLink G e u v) :
     (incMatrix G n n n).col e = Pi.single u n + Pi.single v n := by
   obtain ⟨i, j, hij, hi, hj, hi', hj'⟩ := isLink_def.mp h
-  have heq : edgeIncidents G e = {i, j} := by
-    obtain ⟨i', j', hne, hpair⟩ := edgeIncidents_eq_pair hi'.edge_mem
-    grind [hi'.mem_edgeIncidents, hj'.mem_edgeIncidents]
+  obtain ⟨i', j', hne, hpair⟩ := exists_pair_mem_edgeFun_iff hi'.edge_mem
   ext w
   simp only [Matrix.col_apply, incMatrix_same_apply, Pi.add_apply, Pi.single_apply]
   split_ifs with hw₁ hw₂ hw₂
@@ -396,22 +364,21 @@ lemma IsLink.incMatrix_col_eq [DecidableEq V] {n : ℕ∞} (h : IsLink G e u v) 
       grind
     simp [hs, encard_empty]
 
--- This should be generalized to any hypergraph-like with every edge nonzero order.
-lemma edgeIncidents_injOn_of_GraphLike : InjOn (edgeIncidents (G := G)) E(G) :=
-  edgeIncidents_injOn (G := G) fun e he ↦ by simp [order_eq_two he]
+lemma edgeFun_preimage_singleton_injOn_of_GraphLike : InjOn ((edgeFun G) |>.preimage {·}) E(G) :=
+  edgeFun_preimage_singleton_injOn (G := G) fun e he ↦ by simp [order_eq_two he]
 
 end GraphLike
 
-section undirected
+section Undirected
 
-class undirected (V I E : outParam Type*) (Gr : Type*) [HyperGraphLike V I E Gr] where
+class Undirected (V I E : outParam Type*) (Gr : Type*) [HyperGraphLike V I E Gr] where
   isSource_iff ⦃G : Gr⦄ ⦃i : I⦄ : IsSource G i ↔ IsTarget G i
 
-variable [undirected V I E Gr]
+variable [Undirected V I E Gr]
 
 @[simp, grind =]
 lemma isSource_iff (G : Gr) (i : I) : IsSource G i ↔ IsTarget G i :=
-  undirected.isSource_iff (G := G) (i := i)
+  Undirected.isSource_iff (G := G) (i := i)
 
 lemma IsIncident.isSource (h : IsIncident G i e v) : IsSource G i := by grind
 lemma IsIncident.isTarget (h : IsIncident G i e v) : IsTarget G i := by grind
@@ -453,9 +420,7 @@ lemma adj_comm : Adj G v w ↔ Adj G w v := ⟨symm_of (Adj G), symm_of (Adj G)�
 lemma IsLink.incMatrixWith_col_eq_of_undirected [GraphLike V I E Gr] [DecidableEq V]
     (h : IsLink G e u v) : (incMatrixWith G l m n).col e = Pi.single u n + Pi.single v n := by
   obtain ⟨i, j, hij, hi, hj, hi', hj'⟩ := isLink_def.mp h
-  have heq : edgeIncidents G e = {i, j} := by
-    obtain ⟨i', j', hne, hpair⟩ := edgeIncidents_eq_pair hi'.edge_mem
-    grind [hi'.mem_edgeIncidents, hj'.mem_edgeIncidents]
+  obtain ⟨i', j', hne, hpair⟩ := exists_pair_mem_edgeFun_iff hi'.edge_mem
   ext w
   simp only [Matrix.col_apply, incMatrixWith_apply_of_undirected, Pi.add_apply, Pi.single_apply]
   split_ifs with hw₁ hw₂ hw₂
@@ -481,23 +446,23 @@ lemma IsLink.incMatrixWith_col_eq_of_undirected [GraphLike V I E Gr] [DecidableE
       grind
     simp [hs]
 
-end undirected
+end Undirected
 
-section directed
+section Directed
 
-class directed (V I E : outParam Type*) (Gr : Type*) [HyperGraphLike V I E Gr] where
+class Directed (V I E : outParam Type*) (Gr : Type*) [HyperGraphLike V I E Gr] where
   not_isTarget_of_isSource ⦃G : Gr⦄ ⦃i : I⦄ : IsSource G i → ¬ IsTarget G i
   not_isSource_of_isTarget ⦃G : Gr⦄ ⦃i : I⦄ : IsTarget G i → ¬ IsSource G i
 
-variable [directed V I E Gr]
+variable [Directed V I E Gr]
 
 @[grind →]
 lemma IsSource.not_isTarget (h : IsSource G i) : ¬ IsTarget G i :=
-  directed.not_isTarget_of_isSource h
+  Directed.not_isTarget_of_isSource h
 
 @[grind →]
 lemma IsTarget.not_isSource (h : IsTarget G i) : ¬ IsSource G i :=
-  directed.not_isSource_of_isTarget h
+  Directed.not_isSource_of_isTarget h
 
 lemma incMatrixWith_apply_of_directed (G : Gr) (l m n : R) (v : V) (e : E) :
     incMatrixWith G l m n v e = ({i | IsIncident G i e v ∧ IsSource G i}).ncard • l +
@@ -515,9 +480,7 @@ lemma incMatrixWith_apply_of_directed (G : Gr) (l m n : R) (v : V) (e : E) :
 lemma IsLink.incMatrixWith_col_eq_of_directed [GraphLike V I E Gr] [DecidableEq V]
     (h : IsLink G e u v) : (incMatrixWith G l m n).col e = Pi.single u l + Pi.single v m := by
   obtain ⟨i, j, hij, hi, hj, hi', hj'⟩ := isLink_def.mp h
-  have heq : edgeIncidents G e = {i, j} := by
-    obtain ⟨i', j', hne, hpair⟩ := edgeIncidents_eq_pair hi'.edge_mem
-    grind [hi'.mem_edgeIncidents, hj'.mem_edgeIncidents]
+  obtain ⟨i', j', hne, hpair⟩ := exists_pair_mem_edgeFun_iff hi'.edge_mem
   ext w
   simp only [Matrix.col_apply, incMatrixWith_apply_of_directed, Pi.add_apply, Pi.single_apply]
   split_ifs with hw₁ hw₂ hw₂
@@ -534,9 +497,9 @@ lemma IsLink.incMatrixWith_col_eq_of_directed [GraphLike V I E Gr] [DecidableEq 
     have ht : {k | IsIncident G k e w ∧ IsTarget G k} = ∅ := by grind
     simp [hs, ht]
 
-end directed
+end Directed
 
-section noMultiEdge
+section NoMultiEdge
 
 /-
 ### GraphLike with no multi-edge
@@ -555,37 +518,37 @@ class NoMultiEdge (V I E : outParam Type*) (Gr : Type*) [HyperGraphLike V I E Gr
 
 variable [NoMultiEdge V I E Gr]
 
-lemma IsLink.edge_inj_of_isLink_of_undirected [GraphLike V I E Gr] [undirected V I E Gr]
+lemma IsLink.edge_inj_of_isLink_of_undirected [GraphLike V I E Gr] [Undirected V I E Gr]
     (h : IsLink G e u v) (h' : IsLink G f u v) : e = f :=
   letI := Classical.decEq V
   (NoMultiEdge.col_inj G).eq_iff h.edge_mem h'.edge_mem |>.mp <|
     by rw [h.incMatrixWith_col_eq_of_undirected, h'.incMatrixWith_col_eq_of_undirected]
 
-lemma IsLink.edge_inj_of_isLink_of_directed [GraphLike V I E Gr] [directed V I E Gr]
+lemma IsLink.edge_inj_of_isLink_of_directed [GraphLike V I E Gr] [Directed V I E Gr]
     (h : IsLink G e u v) (h' : IsLink G f u v) : e = f :=
   letI := Classical.decEq V
   (NoMultiEdge.col_inj G).eq_iff h.edge_mem h'.edge_mem |>.mp <|
     by rw [h.incMatrixWith_col_eq_of_directed, h'.incMatrixWith_col_eq_of_directed]
 
-end noMultiEdge
+end NoMultiEdge
 
-section loopless
+section Loopless
 
-class loopless (V I E : outParam Type*) (Gr : Type*) [HyperGraphLike V I E Gr] where
+class Loopless (V I E : outParam Type*) (Gr : Type*) [HyperGraphLike V I E Gr] where
   no_loops_of_mem_mem ⦃G : Gr⦄ ⦃i j : I⦄ : i ∈ I(G) → j ∈ I(G) → edgeFun G i = edgeFun G j → i ≠ j →
     endPoint G i ≠ endPoint G j
 
-variable [loopless V I E Gr]
+variable [Loopless V I E Gr]
 
 lemma no_loops (hi : i ∈ I(G)) (hij : edgeFun G i = edgeFun G j) (hne : i ≠ j) :
     endPoint G i ≠ endPoint G j := by
   obtain ⟨e, he⟩ := Part.dom_iff_mem.mp (dom_edgeFun G ▸ hi)
-  exact loopless.no_loops_of_mem_mem hi (mem_incs_of_mem_edgeFun (hij ▸ he)) hij hne
+  exact Loopless.no_loops_of_mem_mem hi (mem_incs_of_mem_edgeFun (hij ▸ he)) hij hne
 
 lemma no_loops' (hj : j ∈ I(G)) (hij : edgeFun G i = edgeFun G j) (hne : i ≠ j) :
     endPoint G i ≠ endPoint G j := by
   obtain ⟨e, he⟩ := Part.dom_iff_mem.mp (dom_edgeFun G ▸ hj)
-  exact loopless.no_loops_of_mem_mem (mem_incs_of_mem_edgeFun (hij ▸ he)) hj hij hne
+  exact Loopless.no_loops_of_mem_mem (mem_incs_of_mem_edgeFun (hij ▸ he)) hj hij hne
 
 lemma IsIncident.inc_inj (hi : IsIncident G i e v) (hj : IsIncident G j e v) : i = j := by
   obtain ⟨hei, hvi⟩ := (mem_edgeFun_mem_endPoint_iff_isIncident ..).mpr hi
@@ -593,6 +556,6 @@ lemma IsIncident.inc_inj (hi : IsIncident G i e v) (hj : IsIncident G j e v) : i
   exact not_imp_not.mp (no_loops hi.inc_mem (Part.mem_right_unique hei hej))
     (Part.mem_right_unique hvi hvj)
 
-end loopless
+end Loopless
 
 end HyperGraphLike
