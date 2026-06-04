@@ -77,14 +77,14 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
       have := Module.finitePresentation_of_finite R M
       have := Module.Finite.of_restrictScalars_finite R (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
       refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-      · have := (free_iff_quotSMulTop_free R M (maximalIdeal_le_jacobson _ mem) reg2).mpr
+      · have := (Module.free_quotSMulTop_iff_free R M (maximalIdeal_le_jacobson _ mem) reg2).mpr
           Module.free_of_flat_of_isLocalRing
         exact Module.Projective.of_free
       · have : IsLocalRing (R ⧸ Ideal.span {x}) :=
           have : Nontrivial (R ⧸ Ideal.span {x}) :=
             Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
           IsLocalRing.of_surjective' _ Ideal.Quotient.mk_surjective
-        have := (free_iff_quotSMulTop_free R M (maximalIdeal_le_jacobson _ mem) reg2).mp
+        have := (Module.free_quotSMulTop_iff_free R M (maximalIdeal_le_jacobson _ mem) reg2).mp
           Module.free_of_flat_of_isLocalRing
         exact Module.Projective.of_free
     | succ n ih =>
