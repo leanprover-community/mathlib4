@@ -198,28 +198,27 @@ lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE [IsLocalRing R] [IsN
 
 lemma spanFinrank_maximalIdeal_quotient [IsLocalRing R] [IsNoetherianRing R] (x : R)
     (mem : x ∈ maximalIdeal R) (nmem : x ∉ (maximalIdeal R) ^ 2) :
-    letI : IsLocalRing (R ⧸ Ideal.span {x}) :=
-      have : Nontrivial (R ⧸ Ideal.span {x}) :=
+    haveI : IsLocalRing (R ⧸ Ideal.span {x}) :=
+      haveI : Nontrivial (R ⧸ Ideal.span {x}) :=
         Ideal.Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
       IsLocalRing.of_surjective' (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
     (maximalIdeal (R ⧸ Ideal.span {x})).spanFinrank = (maximalIdeal R).spanFinrank - 1 := by
   have : Nontrivial (R ⧸ Ideal.span {x}) := Ideal.Quotient.nontrivial_iff.mpr
     (by simpa [← Submodule.ideal_span_singleton_smul] using mem)
+  have : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
+    IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
   have : IsLocalRing (R ⧸ Ideal.span {x}) :=
-    IsLocalRing.of_surjective' _ Ideal.Quotient.mk_surjective
-  have sub := Finset.singleton_subset_set_iff.mpr mem
-  have li : LinearIndependent (ResidueField R)
-    ((maximalIdeal R).toCotangent ∘ Set.inclusion sub) := by
-    simp only [SetLike.coe_sort_coe, linearIndependent_subsingleton_index_iff, Function.comp_apply,
-      ne_eq, Subtype.forall, Finset.mem_singleton, Set.inclusion_mk]
-    intro r hr
-    simpa [Ideal.toCotangent_eq_zero, hr]
-  rw [← IsLocalRing.spanFinrank_maximalIdeal_quotient {x} sub li]
-  simp only [Finset.card_singleton, add_tsub_cancel_right]
-  let e : R ⧸ Ideal.span {x} ≃+* R ⧸ Ideal.span (({x} : Finset R) : Set R) :=
-    Ideal.quotEquivOfEq (by rw [Finset.coe_singleton x])
-  have := e.isLocalRing
-  rw [← map_ringEquiv_maximalIdeal e, Ideal.spanFinrank_map_eq_of_ringEquiv]
+    IsLocalRing.of_surjective _ Ideal.Quotient.mk_surjective
+  have addeq : _ + Module.finrank (ResidueField R) ((Submodule.comap (maximalIdeal R).subtype
+    (RingHom.ker (Ideal.Quotient.mk (Ideal.span {x})))).map (toCotangentSpace R)) = _ :=
+    IsLocalRing.spanFinrank_maximalIdeal_add_finrank_eq_of_surjective Ideal.Quotient.mk_surjective
+  have eq' : Ideal.span {x} = (Submodule.span R {⟨x, mem⟩}).map (maximalIdeal R).subtype := by simp
+  have eq : Submodule.comap (maximalIdeal R).subtype (Ideal.span {x}) =
+    Submodule.span R {⟨x, mem⟩} := by
+    rw [eq', Submodule.comap_map_eq_of_injective (maximalIdeal R).subtype_injective]
+  have : (toCotangentSpace R) ⟨x, mem⟩ ≠ 0 := by simpa [toCotangentSpace, Ideal.toCotangent_eq_zero]
+  rw [← addeq, Ideal.mk_ker, eq, Submodule.map_span, Set.image_singleton,
+    finrank_span_singleton this, Nat.add_sub_cancel_right]
 
 open Pointwise in
 theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} R]
