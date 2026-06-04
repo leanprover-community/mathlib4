@@ -72,8 +72,10 @@ theorem le_pCore {N : Subgroup H} (hN_normal : N.Normal) (hN_pGroup : IsPGroup p
     ⟨N, hN_normal, hN_pGroup⟩
 
 /-- The `p`-core is normal in `H`. -/
-instance pCore_normal : (pCore p H).Normal :=
-  normal_iSup_normal fun N => N.2.1
+instance pCore_normal : (pCore p H).Normal := by
+  have : ∀ N : {N : Subgroup H // N.Normal ∧ IsPGroup p N}, ((N : Subgroup H)).Normal :=
+    fun N => N.2.1
+  exact Subgroup.iSup_normal _
 
 /-- The indexing family of normal `p`-subgroups is directed under `≤`:
 for any two normal `p`-subgroups, their join is again a normal

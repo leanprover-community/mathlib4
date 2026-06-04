@@ -375,17 +375,6 @@ instance sup_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊔ 
     simp only [mul_assoc, inv_mul_cancel_left]
 
 @[to_additive]
-theorem normal_iSup_normal {ι : Sort*} {a : ι → Subgroup G}
-    (norm : ∀ i : ι, (a i).Normal) : (iSup a).Normal where
-  conj_mem x hx g := by
-    refine iSup_induction (C := fun x => g * x * g⁻¹ ∈ iSup a) a hx ?_ ?_ ?_
-    · intro i y hy
-      exact mem_iSup_of_mem i ((norm i).conj_mem y hy g)
-    · simp
-    · intro y z hy hz
-      simpa only [mul_assoc, inv_mul_cancel_left] using mul_mem hy hz
-
-@[to_additive]
 instance iSup_normal {ι : Sort*} (H : ι → Subgroup G) [∀ i, (H i).Normal] :
     ⨆ i, H i |>.Normal := by
   grw [← normalizer_eq_top_iff, eq_top_iff, ← iInf_normalizer_le_normalizer_iSup]
