@@ -97,6 +97,12 @@ lemma innerAnodyneExtensions_eq_retracts_transfiniteCompositionsOfShape :
   rw [innerAnodyneExtensions_eq_llp_rlp,
     SmallObject.llp_rlp_of_isCardinalForSmallObjectArgument_aleph0]
 
+/-- In the category of simplicial sets, a strong *inner* anodyne extension is a morphism
+which belongs to the closure of *inner* horn inclusions by pushouts, coproducts,
+transfinite compositions (but not by retracts). We define this class here
+by saying that `f : X ⟶ Y` is a strong anodyne extension if `f` is a monomorphism
+and there exists a regular, *inner* pairing (in the sense of Moss) for the subcomplex
+`Subcomplex.range f` of `Y`. -/
 def strongInnerAnodyneExtensions : MorphismProperty SSet.{u} :=
   fun _ _ f ↦ Mono f ∧ ∃ (P : (Subcomplex.range f).Pairing) (_ : P.IsRegular), P.IsInner
 
