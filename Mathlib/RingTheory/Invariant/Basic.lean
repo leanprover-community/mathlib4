@@ -585,5 +585,3 @@ theorem isInvariant [Finite G] : Algebra.IsInvariant K L G :=
   isInvariant_of_isIntegral G A B K L
 
 end IsFractionRing
-
-#lint
