@@ -65,20 +65,6 @@ theorem IsGaloisGroup.of_mulEquiv [hG : IsGaloisGroup G A B] {H : Type*} [Group 
     have he' : ∀ (g : G) (x : B), e.symm g • x = g • x := fun g x ↦ by simp [← he]
     hG.isInvariant.isInvariant b (fun g ↦ by simpa [he'] using h (e.symm g))⟩
 
-theorem IsGaloisGroup.of_ringEquiv [hG : IsGaloisGroup G A B] [CommSemiring A'] [Algebra A' B]
-    (e : A ≃+* A') (he : ∀ a, algebraMap A' B (e a) = algebraMap A B a) :
-    IsGaloisGroup G A' B where
-  faithful := hG.faithful
-  commutes := ⟨by
-    intro g a' b
-    obtain ⟨a, rfl⟩ : ∃ a, e a = a' := e.surjective a'
-    rw [Algebra.smul_def, Algebra.smul_def, he, ← Algebra.smul_def, ← Algebra.smul_def]
-    exact hG.commutes.smul_comm g a b⟩
-  isInvariant := ⟨by
-    intro b h
-    obtain ⟨a, ha⟩ := hG.isInvariant.isInvariant b h
-    exact ⟨e a, by rw [he, ha]⟩⟩
-
 variable {G A B} in
 theorem IsGaloisGroup.iff_of_mulEquiv {H : Type*} [Group H] [MulSemiringAction H B]
     (e : H ≃* G) (he : ∀ h (x : B), e h • x = h • x) :
@@ -110,6 +96,20 @@ theorem IsGaloisGroup.of_algEquiv [hG : IsGaloisGroup G A B] (B' : Type*) [Semir
       apply e.injective
       simp [he, hx'])
     exact ⟨a, by rw [← e.commutes, ha, AlgEquiv.apply_symm_apply]⟩⟩
+
+theorem IsGaloisGroup.of_ringEquiv [hG : IsGaloisGroup G A B] [CommSemiring A'] [Algebra A' B]
+    (e : A ≃+* A') (he : ∀ a, algebraMap A' B (e a) = algebraMap A B a) :
+    IsGaloisGroup G A' B where
+  faithful := hG.faithful
+  commutes := ⟨by
+    intro g a' b
+    obtain ⟨a, rfl⟩ : ∃ a, e a = a' := e.surjective a'
+    rw [Algebra.smul_def, Algebra.smul_def, he, ← Algebra.smul_def, ← Algebra.smul_def]
+    exact hG.commutes.smul_comm g a b⟩
+  isInvariant := ⟨by
+    intro b h
+    obtain ⟨a, ha⟩ := hG.isInvariant.isInvariant b h
+    exact ⟨e a, by rw [he, ha]⟩⟩
 
 attribute [instance low] IsGaloisGroup.commutes IsGaloisGroup.isInvariant
 
