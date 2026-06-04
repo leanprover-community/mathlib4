@@ -129,7 +129,7 @@ theorem single_add [AddZeroClass α] (i : m) (j : n) (a b : α) :
 
 lemma single_neg [NegZeroClass α] (i j : n) (b : α) :
     - single i j b = single i j (-b) :=
-  neg_of _|>.trans congr(of $(by simp_rw [Pi.neg_def, neg_ite, neg_zero]))
+  neg_of _|>.trans <| ext fun x y ↦ by simp [single, neg_ite]
 
 theorem single_mulVec [NonUnitalNonAssocSemiring α] [Fintype m]
     (i : n) (j : m) (c : α) (x : m → α) :
