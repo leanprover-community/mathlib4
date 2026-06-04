@@ -111,7 +111,20 @@ lemma Subcomplex.Pairing.strongInnerAnodyneExtensions {X : SSet.{u}} {A : X.Subc
     (P : A.Pairing) [h₁ : P.IsRegular] [h₂ : P.IsInner] :
     strongInnerAnodyneExtensions A.ι :=
   ⟨inferInstance, Pairing.ofIso P (Iso.refl _)
-    (by simp only [Iso.refl_hom, preimage_id, Subfunctor.range_ι]), inferInstance, inferInstance⟩
+    (by simp only [Iso.refl_hom, preimage_id, Subfunctor.range_ι]), inferInstance, {
+      ne_zero := by
+        intro ⟨b, hb⟩ d hd
+        have hA : A.preimage (Iso.refl X).hom = range A.ι := by simp
+        obtain ⟨a, rfl⟩ := (N.orderIsoOfIso (Iso.refl _) hA).symm.surjective b
+        simp only [ofIso_II, Set.mem_preimage, OrderIso.apply_symm_apply] at hb
+        exact h₂.ne_zero ⟨a, hb⟩ hd
+      ne_last := by
+        intro ⟨b, hb⟩ d hd
+        have hA : A.preimage (Iso.refl X).hom = range A.ι := by simp
+        obtain ⟨a, rfl⟩ := (N.orderIsoOfIso (Iso.refl _) hA).symm.surjective b
+        simp only [ofIso_II, Set.mem_preimage, OrderIso.apply_symm_apply] at hb
+        exact h₂.ne_last ⟨a, hb⟩ hd
+    }⟩
 
 lemma strongInnerAnodyneExtensions_ι_iff {X : SSet.{u}} (A : X.Subcomplex) :
     strongInnerAnodyneExtensions A.ι ↔ ∃ (P : A.Pairing) (_ : P.IsRegular), P.IsInner :=
@@ -136,17 +149,6 @@ lemma Subcomplex.Pairing.innerAnodyneExtensions {X : SSet.{u}} {A : X.Subcomplex
       have hn := Fin.lt_last_iff_ne_last.mpr (IsInner.ne_last c.s rfl)
       have : NeZero c.dim := ⟨by grind⟩
       exact .horn_ι h0 hn⟩
-
-instance : strongInnerAnodyneExtensions.{u}.RespectsIso where
-  precomp e _ f hf := by
-    obtain ⟨_, P, hP, hP'⟩ := hf
-    refine ⟨inferInstance, P.ofIso (Iso.refl _) ?_, inferInstance, inferInstance⟩
-    simp [Subcomplex.range_comp, Subcomplex.range_eq_top e,
-      Subcomplex.image_top]
-  postcomp e _ f hf := by
-    obtain ⟨_, P, hP, _⟩ := hf
-    refine ⟨inferInstance, P.ofIso (asIso e).symm ?_, inferInstance, inferInstance⟩
-    simp [Subcomplex.preimage_inv, Subcomplex.range_comp]
 
 lemma strongInnerAnodyneExtensions_le_innerAnodyneExtensions :
     strongInnerAnodyneExtensions.{u} ≤ innerAnodyneExtensions := by
