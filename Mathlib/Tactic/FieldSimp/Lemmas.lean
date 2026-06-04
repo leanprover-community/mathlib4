@@ -398,7 +398,7 @@ def Sign.expr : Sign M → Q($M) → Q($M)
 the product with `c` of (± `y`) (here taking the specified sign) is ± `c * y`. -/
 def Sign.mulRight (iM : Q(CommGroupWithZero $M)) (c y : Q($M)) (g : Sign M) :
     MetaM Q($(g.expr q($c * $y)) = $c * $(g.expr y)) := do
-  match g with
+  match (dependent := true) g with
   | .plus => pure q(rfl)
   | .minus _ =>
     assumeInstancesCommute
@@ -409,7 +409,7 @@ the product of (± `y₁`) and (± `y₂`) (here taking the specified signs) is 
 proof and the computed sign. -/
 def Sign.mul (iM : Q(CommGroupWithZero $M)) (y₁ y₂ : Q($M)) (g₁ g₂ : Sign M) :
     MetaM (Σ (G : Sign M), Q($(g₁.expr y₁) * $(g₂.expr y₂) = $(G.expr q($y₁ * $y₂)))) := do
-  match g₁, g₂ with
+  match (dependent := true) g₁, g₂ with
   | .plus, .plus => pure ⟨.plus, q(rfl)⟩
   | .plus, .minus i =>
     assumeInstancesCommute
@@ -425,7 +425,7 @@ def Sign.mul (iM : Q(CommGroupWithZero $M)) (y₁ y₂ : Q($M)) (g₁ g₂ : Sig
 the inverse of (± `y`) (here taking the specified sign) is ± `y⁻¹`. -/
 def Sign.inv (iM : Q(CommGroupWithZero $M)) (y : Q($M)) (g : Sign M) :
     MetaM (Q($(g.expr y)⁻¹ = $(g.expr q($y⁻¹)))) := do
-  match g with
+  match (dependent := true) g with
   | .plus => pure q(rfl)
   | .minus _ =>
     assumeInstancesCommute
@@ -436,7 +436,7 @@ the quotient of (± `y₁`) and (± `y₂`) (here taking the specified signs) is
 proof and the computed sign. -/
 def Sign.div (iM : Q(CommGroupWithZero $M)) (y₁ y₂ : Q($M)) (g₁ g₂ : Sign M) :
     MetaM (Σ (G : Sign M), Q($(g₁.expr y₁) / $(g₂.expr y₂) = $(G.expr q($y₁ / $y₂)))) := do
-  match g₁, g₂ with
+  match (dependent := true) g₁, g₂ with
   | .plus, .plus => pure ⟨.plus, q(rfl)⟩
   | .plus, .minus i =>
     assumeInstancesCommute
@@ -452,7 +452,7 @@ def Sign.div (iM : Q(CommGroupWithZero $M)) (y₁ y₂ : Q($M)) (g₁ g₂ : Sig
 the negation of (± `y`) (here taking the specified sign) is ∓ `y`. -/
 def Sign.neg (iM : Q(Field $M)) (y : Q($M)) (g : Sign M) :
     MetaM (Σ (G : Sign M), Q(-$(g.expr y) = $(G.expr y))) := do
-  match g with
+  match (dependent := true) g with
   | .plus => pure ⟨.minus iM, q(rfl)⟩
   | .minus _ =>
     assumeInstancesCommute
@@ -463,7 +463,7 @@ the exponentiation to power `s : ℕ` of (± `y`) (here taking the specified sig
 return this proof and the computed sign. -/
 def Sign.pow (iM : Q(CommGroupWithZero $M)) (y : Q($M)) (g : Sign M) (s : ℕ) :
     MetaM (Σ (G : Sign M), Q($(g.expr y) ^ $s = $(G.expr q($y ^ $s)))) := do
-  match g with
+  match (dependent := true) g with
   | .plus => pure ⟨.plus, q(rfl)⟩
   | .minus i =>
     assumeInstancesCommute
@@ -479,7 +479,7 @@ the exponentiation to power `s : ℤ` of (± `y`) (here taking the specified sig
 return this proof and the computed sign. -/
 def Sign.zpow (iM : Q(CommGroupWithZero $M)) (y : Q($M)) (g : Sign M) (s : ℤ) :
     MetaM (Σ (G : Sign M), Q($(g.expr y) ^ $s = $(G.expr q($y ^ $s)))) := do
-  match g with
+  match (dependent := true) g with
   | .plus => pure ⟨.plus, q(rfl)⟩
   | .minus i =>
     assumeInstancesCommute
