@@ -156,7 +156,6 @@ instance (A : SSet.{u}) : KanComplex ((ihom A).obj (⊤_ _)) := by
   have : IsIso (terminal.from ((ihom A).obj (⊤_ _))) :=
     isIso_of_isTerminal (IsTerminal.isTerminalObj _ _ terminalIsTerminal)
       terminalIsTerminal _
-  simp only [isFibrant_iff]
   infer_instance
 
 instance {A X : SSet.{u}} [KanComplex X] : KanComplex ((ihom A).obj X) :=
