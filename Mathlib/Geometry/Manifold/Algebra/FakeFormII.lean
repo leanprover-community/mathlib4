@@ -1022,19 +1022,33 @@ lemma isUnit_conj_iff (Φ : E ≃L[𝕜] E) (f : E →L[𝕜] E) :
       rw [this]
       exact ContinuousLinearEquiv.apply_symm_apply Φ v
 
+instance : ∀ (p : TotalSpace (E →L[𝕜] E) fun x ↦ Trivial M E x →L[𝕜] TangentSpace I x),
+  Monoid (Trivial M E p.proj →L[𝕜] TangentSpace I p.proj) := by
+    intro p
+    change Monoid (E →L[𝕜] E)
+    haveI : Monoid (E →L[𝕜] E) := inferInstance
+    exact ContinuousLinearMap.monoidWithZero.toMonoid
+
+instance : ∀ (p : TotalSpace (E →L[𝕜] E) fun (x : M) ↦ TangentSpace I x →L[𝕜] E),
+  Monoid (TangentSpace I p.proj →L[𝕜] E) := by
+  intro p
+  change Monoid (E →L[𝕜] E)
+  haveI : Monoid (E →L[𝕜] E) := inferInstance
+  exact ContinuousLinearMap.monoidWithZero.toMonoid
+
 /-- The frame bundle of a smooth manifold `M` is the open subset of the
     Hom bundle `Hom(TM, TM)` consisting of invertible elements.
     Requires `M` to be a `C^∞` manifold to give the frame bundle a `C^∞` structure.
     (A `C^(n+1)` base gives a `C^n` frame bundle.) -/
 def FrameBundle (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     [IsManifold I ∞ M] [CompleteSpace E] : TopologicalSpace.Opens
-    (TotalSpace (E →L[𝕜] E) (fun x : M => TangentSpace I x →L[𝕜] TangentSpace I x)) where
+    (TotalSpace (E →L[𝕜] E) (fun x : M => Bundle.Trivial M E x →L[𝕜] TangentSpace I x)) where
   carrier := {p | IsUnit p.2}
   is_open' := by
     apply isOpen_iff_forall_mem_open.mpr
     intro p hp
     set e := trivializationAt (E →L[𝕜] E)
-      (fun x : M => TangentSpace I x →L[𝕜] TangentSpace I x) p.proj
+      (fun x : M => Bundle.Trivial M E x →L[𝕜] TangentSpace I x) p.proj
     have hpe : p ∈ e.source := mem_trivializationAt_proj_source
     refine ⟨e.source ∩ e ⁻¹' (e.baseSet ×ˢ {f : E →L[𝕜] E | IsUnit f}),
             fun q ⟨hqs, hq⟩ => ?_,
@@ -1043,30 +1057,88 @@ def FrameBundle (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M]
     · simp only [Set.mem_preimage, Set.mem_prod, Set.mem_setOf_eq] at hq
       have hb := e.mem_source.mp hqs
       rw [hom_trivializationAt_apply (σ := RingHom.id 𝕜)] at hq
+      have hb_triv : q.proj ∈ (trivializationAt E (Bundle.Trivial M E) p.proj).baseSet := by
+        simp
       have hb_tan : q.proj ∈ (trivializationAt E (TangentSpace I) p.proj).baseSet := by
-        have := hom_trivializationAt_baseSet (F₁ := E) (F₂ := E) (σ := RingHom.id 𝕜)
-          (E₁ := TangentSpace I) (E₂ := TangentSpace I) p.proj
-        rw [this] at hb; exact hb.1
-      rw [ContinuousLinearMap.inCoordinates_eq hb_tan hb_tan] at hq
+        have hbs := hom_trivializationAt_baseSet (F₁ := E) (F₂ := E) (σ := RingHom.id 𝕜)
+          (E₁ := Bundle.Trivial M E) (E₂ := TangentSpace I) p.proj
+        rw [hbs] at hb; exact hb.2
+      rw [ContinuousLinearMap.inCoordinates_eq hb_triv hb_tan] at hq
+      have htriv_symm : (Trivialization.continuousLinearEquivAt 𝕜
+          (trivializationAt E (Bundle.Trivial M E) p.proj) q.proj hb_triv).symm =
+          ContinuousLinearEquiv.refl 𝕜 E := by
+        simp [Bundle.Trivial.continuousLinearEquivAt_trivialization,
+              ContinuousLinearEquiv.refl_symm]
+      simp only [htriv_symm, ContinuousLinearEquiv.coe_refl,
+                 ContinuousLinearMap.comp_id] at hq
+      have htan_unit : IsUnit
+          ((Trivialization.continuousLinearEquivAt 𝕜
+            (trivializationAt E (TangentSpace I) p.proj) q.proj hb_tan).toContinuousLinearMap) :=
+        ⟨⟨(Trivialization.continuousLinearEquivAt 𝕜
+              (trivializationAt E (TangentSpace I) p.proj) q.proj hb_tan).toContinuousLinearMap,
+          (Trivialization.continuousLinearEquivAt 𝕜
+            (trivializationAt E (TangentSpace I) p.proj) q.proj hb_tan).symm.toContinuousLinearMap,
+           by ext x
+              change (Trivialization.continuousLinearEquivAt 𝕜
+                (trivializationAt E (TangentSpace I) p.proj) q.proj hb_tan)
+                ((Trivialization.continuousLinearEquivAt 𝕜
+                  (trivializationAt E (TangentSpace I) p.proj) q.proj hb_tan).symm x) = x
+              exact (Trivialization.continuousLinearEquivAt 𝕜
+                (trivializationAt E (TangentSpace I) p.proj) q.proj hb_tan).apply_symm_apply x,
+           by ext x
+              change (Trivialization.continuousLinearEquivAt 𝕜
+                (trivializationAt E (TangentSpace I) p.proj) q.proj hb_tan).symm
+                ((Trivialization.continuousLinearEquivAt 𝕜
+                  (trivializationAt E (TangentSpace I) p.proj) q.proj hb_tan) x) = x
+              exact (Trivialization.continuousLinearEquivAt 𝕜
+                (trivializationAt E (TangentSpace I) p.proj) q.proj hb_tan).symm_apply_apply x⟩,
+          rfl⟩
       haveI : NormedAddCommGroup (TangentSpace I q.proj) := by
-        change NormedAddCommGroup E
-        infer_instance
-      exact (isUnit_conj_iff _ _).mp hq.2
+        change NormedAddCommGroup E; infer_instance
+      exact (isUnit_comp_iff_of_isUnit htan_unit q.2).mp hq.2
     · simp only [Set.mem_preimage, Set.mem_prod, Set.mem_setOf_eq]
-      have hb_tan : p.proj ∈ (trivializationAt E (TangentSpace I) p.proj).baseSet :=
-        mem_baseSet_trivializationAt E (TangentSpace I) p.proj
-      have hb : p.proj ∈ e.baseSet := by
-        have := hom_trivializationAt_baseSet (F₁ := E) (F₂ := E) (σ := RingHom.id 𝕜)
-          (E₁ := TangentSpace I) (E₂ := TangentSpace I) p.proj
-        simp [e, this]
+      have hb := e.mem_source.mp hpe
+      rw [hom_trivializationAt_apply (σ := RingHom.id 𝕜)]
+      have hb_triv : p.proj ∈ (trivializationAt E (Bundle.Trivial M E) p.proj).baseSet := by
+        simp
+      have hb_tan : p.proj ∈ (trivializationAt E (TangentSpace I) p.proj).baseSet := by
+        have hbs := hom_trivializationAt_baseSet (F₁ := E) (F₂ := E) (σ := RingHom.id 𝕜)
+          (E₁ := Bundle.Trivial M E) (E₂ := TangentSpace I) p.proj
+        rw [hbs] at hb; exact hb.2
       refine ⟨hb, ?_⟩
-      have heq : (e p).2 = ContinuousLinearMap.inCoordinates E (TangentSpace I) E (TangentSpace I)
-          p.proj p.proj p.proj p.proj p.snd := by
-        simp [e, hom_trivializationAt_apply (σ := RingHom.id 𝕜)]
-      rw [heq, ContinuousLinearMap.inCoordinates_eq hb_tan hb_tan]
+      rw [ContinuousLinearMap.inCoordinates_eq hb_triv hb_tan]
+      have htriv_symm : (Trivialization.continuousLinearEquivAt 𝕜
+          (trivializationAt E (Bundle.Trivial M E) p.proj) p.proj hb_triv).symm =
+          ContinuousLinearEquiv.refl 𝕜 E := by
+        simp [Bundle.Trivial.continuousLinearEquivAt_trivialization,
+              ContinuousLinearEquiv.refl_symm]
+      simp only [htriv_symm, ContinuousLinearEquiv.coe_refl,
+                 ContinuousLinearMap.comp_id]
+      have htan_unit : IsUnit
+          ((Trivialization.continuousLinearEquivAt 𝕜
+            (trivializationAt E (TangentSpace I) p.proj) p.proj hb_tan).toContinuousLinearMap) :=
+        ⟨⟨(Trivialization.continuousLinearEquivAt 𝕜
+              (trivializationAt E (TangentSpace I) p.proj) p.proj hb_tan).toContinuousLinearMap,
+          (Trivialization.continuousLinearEquivAt 𝕜
+            (trivializationAt E (TangentSpace I) p.proj) p.proj hb_tan).symm.toContinuousLinearMap,
+           by ext x
+              change (Trivialization.continuousLinearEquivAt 𝕜
+                (trivializationAt E (TangentSpace I) p.proj) p.proj hb_tan)
+                ((Trivialization.continuousLinearEquivAt 𝕜
+                  (trivializationAt E (TangentSpace I) p.proj) p.proj hb_tan).symm x) = x
+              exact (Trivialization.continuousLinearEquivAt 𝕜
+                (trivializationAt E (TangentSpace I) p.proj) p.proj hb_tan).apply_symm_apply x,
+           by ext x
+              change (Trivialization.continuousLinearEquivAt 𝕜
+                (trivializationAt E (TangentSpace I) p.proj) p.proj hb_tan).symm
+                ((Trivialization.continuousLinearEquivAt 𝕜
+                  (trivializationAt E (TangentSpace I) p.proj) p.proj hb_tan) x) = x
+              exact (Trivialization.continuousLinearEquivAt 𝕜
+                (trivializationAt E (TangentSpace I) p.proj) p.proj hb_tan).symm_apply_apply x⟩,
+          rfl⟩
       haveI : NormedAddCommGroup (TangentSpace I p.proj) := by
         change NormedAddCommGroup E; infer_instance
-      exact (isUnit_conj_iff _ _).mpr hp
+      exact (isUnit_comp_iff_of_isUnit htan_unit p.2).mpr hp
 
 example [IsManifold I ∞ M] : ContMDiffVectorBundle ∞ E (TangentSpace I) (B := M) I := inferInstance
 
