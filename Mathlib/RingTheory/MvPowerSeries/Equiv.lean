@@ -105,9 +105,10 @@ private lemma optionFunLeft_mul (p q : MvPowerSeries (Option σ) R) :
     optionFunLeft σ R (p * q) = optionFunLeft σ R p * optionFunLeft σ R q := by
   classical
   ext
-  simpa [coeff_coeff_optionFunLeft, coeff_mul, PowerSeries.coeff_mul, map_sum, ← sum_product',
-    ← image_optionElim_product_antidiagonal] using sum_image (LeftInverse.injective
-      (g := fun (x, y) ↦ ((x none, y none), x.some, y.some)) (fun _ ↦ by simp)).injOn
+  simpa [coeff_coeff_optionFunLeft, coeff_mul, PowerSeries.coeff_mul, ← sum_product',
+    ← image_optionElim_product_antidiagonal] using sum_image
+      (LeftInverse.injective (g := fun (x, y) ↦ ((x none, y none), x.some, y.some))
+      (fun _ ↦ by simp)).injOn
 
 variable (R σ) in
 /-- An inverse function of `optionFunLeft`. -/
