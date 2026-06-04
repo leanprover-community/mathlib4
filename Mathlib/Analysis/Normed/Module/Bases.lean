@@ -166,7 +166,7 @@ theorem proj_apply_basis_mem (A : Finset β) (i : β) :
 
 /-- The projections `b.proj A x` converge to `x` along the summation filter. -/
 theorem tendsto_proj (x : X) : Tendsto (fun A ↦ b.proj A x) L.filter (𝓝 x) := by
-  simpa using b.expansion x
+  simpa using! b.expansion x
 
 /-- The range of the projection is the span of the basis elements in `A`. -/
 theorem range_proj_eq_span (A : Finset β) :
