@@ -552,6 +552,7 @@ noncomputable def equivFieldRange : L ≃ₐ[K] f.fieldRange :=
 
 end AlgHom
 
+variable (K L L') in
 @[simp]
 theorem IsScalarTower.toAlgHom_fieldRange [Algebra L L'] [IsScalarTower K L L'] :
     (IsScalarTower.toAlgHom K L L').fieldRange = Set.range (algebraMap L L') := by
