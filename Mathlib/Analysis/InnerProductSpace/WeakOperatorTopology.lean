@@ -66,10 +66,10 @@ lemma continuous_iff {α : Type*} [TopologicalSpace α] {f : α → E →WOT[�
   simp_rw [continuous_iff_continuousAt, forall_comm (α := E) , forall_comm (α := F),
     continuousAt_iff]
 
-alias ⟨continuousWithinAt_of, continuousWithinAt⟩ := continuousWithinAt_iff
-alias ⟨continuousOn_of, continuousOn⟩ := continuousOn_iff
-alias ⟨continuousAt_of, continuousAt⟩ := continuousAt_iff
-alias ⟨continuous_of, continuous⟩ := continuous_iff
+@[fun_prop] alias ⟨continuousWithinAt_inner_apply, continuousWithinAt⟩ := continuousWithinAt_iff
+@[fun_prop] alias ⟨continuousOn_inner_apply, continuousOn⟩ := continuousOn_iff
+@[fun_prop] alias ⟨continuousAt_inner_apply, continuousAt⟩ := continuousAt_iff
+@[fun_prop] alias ⟨continuous_inner_apply, continuous⟩ := continuous_iff
 
 noncomputable instance : StarRing (F →WOT[𝕜] F) := equiv.starRing
 
@@ -82,7 +82,7 @@ instance : ContinuousStar (F →WOT[𝕜] F) where
     simp_rw [continuous_iff, star_apply, ContinuousLinearMap.star_eq_adjoint,
       ContinuousLinearMap.adjoint_inner_right, coe_toCLM]
     rw [forall_comm]
-    simp +singlePass only [← inner_conj_symm]
-    exact (continuous_star.comp <| continuous_of continuous_id · ·)
+    conv in ⟪_, _⟫_𝕜 => rw [← inner_conj_symm, ← RCLike.star_def]
+    fun_prop
 
 end ContinuousLinearMapWOT
