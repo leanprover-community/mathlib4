@@ -301,7 +301,7 @@ lemma embDomain_tsub (f : ι ↪ κ) (f1 f2 : ι →₀ α) :
   simp_rw [embDomain_eq_mapDomain, mapDomain_tsub f.injective]
 
 lemma support_add_eq' {f1 f2 : ι →₀ α} [DecidableEq ι] :
-    (f1 + f2).support = (f1.support ∪ f2.support : Finset ι) :=
+    (f1 + f2).support = f1.support ∪ f2.support :=
   le_antisymm support_add <| Finset.union_subset
     (support_mono le_self_add) (support_mono le_add_self)
 
