@@ -19,8 +19,10 @@ structure BodyWithContext where
   info : Info
 deriving Nonempty
 
+-- What about let recs, and conversely, parent declarations? Don't need them yet, but...
+
 structure DeclarationData where
-  name : Name
+  name : Name -- hmmm, Option Name?
   body : Task (Option BodyWithContext)
   isAuto : Bool
 
