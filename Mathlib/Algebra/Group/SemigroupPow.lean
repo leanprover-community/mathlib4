@@ -78,9 +78,7 @@ lemma pow_mul_comm' : x ^ n * x = x * x ^ n := by
   induction m using PNat.recOn with
   | one    => rw [one_mul, pow_one]
   | succ k ih =>
-    simp_rw [← pow_succ, ih, pow_add]
-    congr
-    ring
+    rw [← pow_succ, ih, pow_add, add_one_mul]
 
 lemma pow_right_comm : (x ^ m) ^ n = (x ^ n) ^ m := by
   simp only [pow_mul, mul_comm]
