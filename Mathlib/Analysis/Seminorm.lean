@@ -93,7 +93,7 @@ def Seminorm.ofSMulLE [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E
     rw [inv_mul_cancel_left₀ (norm_ne_zero_iff.mpr h)]
     specialize smul_le r⁻¹ (r • x)
     rw [norm_inv] at smul_le
-    convert smul_le
+    convert! smul_le
     simp [h]
 
 end Of
@@ -1015,7 +1015,7 @@ variable [Module ℝ E] [IsScalarTower ℝ 𝕜 E] (p : Seminorm 𝕜 E) (x : E)
 
 /-- Seminorm-balls are convex. -/
 theorem convex_ball : Convex ℝ (ball p x r) := by
-  convert (p.convexOn.translate_left (-x)).convex_lt r
+  convert! (p.convexOn.translate_left (-x)).convex_lt r
   ext y
   rw [preimage_univ, sep_univ, p.mem_ball, sub_eq_add_neg]
   rfl
@@ -1177,7 +1177,7 @@ theorem continuous_of_le [TopologicalSpace E] [IsTopologicalAddGroup E]
 lemma ball_mem_nhds [TopologicalSpace E] {p : Seminorm 𝕝 E} (hp : Continuous p) {r : ℝ}
     (hr : 0 < r) : p.ball 0 r ∈ (𝓝 0 : Filter E) := by
   have this : Tendsto p (𝓝 0) (𝓝 0) := map_zero p ▸ hp.tendsto 0
-  simpa only [p.ball_zero_eq] using this (Iio_mem_nhds hr)
+  simpa only [p.ball_zero_eq] using! this (Iio_mem_nhds hr)
 
 lemma uniformSpace_eq_of_hasBasis
     {ι} [UniformSpace E] [IsUniformAddGroup E] [ContinuousConstSMul 𝕜 E]
@@ -1193,7 +1193,7 @@ lemma uniformSpace_eq_of_hasBasis
     exact p.continuous' hr
   · rw [(@NormedAddGroup.nhds_zero_basis_norm_lt E
       p.toAddGroupSeminorm.toSeminormedAddGroup).le_basis_iff hb]
-    simpa only [subset_def, mem_ball_zero] using h₂
+    simpa only [subset_def, mem_ball_zero] using! h₂
 
 lemma uniformity_eq_of_hasBasis
     {ι} [UniformSpace E] [IsUniformAddGroup E] [ContinuousConstSMul 𝕜 E]
@@ -1236,7 +1236,7 @@ lemma rescale_to_shell_zpow (p : Seminorm 𝕜 E) {c : 𝕜} (hc : 1 < ‖c‖) 
     have : ε⁻¹ * ‖c‖ * p x = ε⁻¹ * p x * ‖c‖ := by ring
     rw [zpow_neg, norm_inv, inv_inv, norm_zpow, zpow_add₀ (ne_of_gt cpos), zpow_one, this,
         ← div_eq_inv_mul]
-    exact mul_le_mul_of_nonneg_right hn.1 (norm_nonneg _)
+    gcongr; exact hn.1
 
 /-- Let `p` be a seminorm on a vector space over a `NormedField`.
 If there is a scalar `c` with `‖c‖>1`, then any `x` such that `p x ≠ 0` can be

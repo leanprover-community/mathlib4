@@ -25,17 +25,31 @@ continuity and uniform continuity.
 * `Dist α`: Endows a space `α` with a function `dist a b`.
 * `PseudoMetricSpace α`: A space endowed with a distance function, which can
   be zero even if the two elements are non-equal.
+* `PseudoMetricSpace.ofDistTopology`: Construct a pseudometric space from a compatible topology
+  and distance.
 * `Metric.ball x ε`: The set of all points `y` with `dist y x < ε`.
-* `Metric.Bounded s`: Whether a subset of a `PseudoMetricSpace` is bounded.
-* `MetricSpace α`: A `PseudoMetricSpace` with the guarantee `dist x y = 0 → x = y`.
-
-Additional useful definitions:
-
-* `nndist a b`: `dist` as a function to the non-negative reals.
 * `Metric.closedBall x ε`: The set of all points `y` with `dist y x ≤ ε`.
 * `Metric.sphere x ε`: The set of all points `y` with `dist y x = ε`.
+* `nndist a b`: `dist` as a function to the non-negative reals.
+* `Metric.Bounded s`: Whether a subset of a `PseudoMetricSpace` is bounded.
+* `PseudoMetricSpace.replaceUniformity`, `PseudoMetricSpace.replaceTopology`,
+  `PseudoMetricSpace.replaceBornology`: Tools to construct a pseudometric space on a type with a
+  pre-existing uniformity, topology, or bornology in such a way that the definitional equalities
+  for these structures are preserved; these are essential to avoid type class synthesis issues.
+* `Real.pseudoMetricSpace`: The pseudometric space structure on `ℝ` with
+  `dist x y = |x - y|`.
+* `MetricSpace α`: A `PseudoMetricSpace` with the guarantee `dist x y = 0 → x = y`.
 
-TODO (anyone): Add "Main results" section.
+## Main results
+
+* `PseudoMetricSpace.ext`: extensionality for pseudometric space structures.
+* `dist_triangle`, `dist_nonneg`, `nndist_triangle`: core distance inequalities.
+* `Metric.mk_uniformity_basis`, `Metric.mk_uniformity_basis_le`: tools for constructing bases for
+  the uniformity, with `Metric.nhds_basis_ball` and `Metric.nhds_basis_closedBall` as basic
+  neighborhood-basis corollaries.
+* `Metric.tendsto_nhds_nhds`, `Metric.continuous_iff`: epsilon-delta characterizations of
+  convergence and continuity.
+* `Metric.mem_closure_iff`, `Metric.dense_iff`: characterizations of closure and dense sets.
 
 ## Tags
 
@@ -300,7 +314,7 @@ theorem edist_lt_top {α : Type*} [PseudoMetricSpace α] (x y : α) : edist x y 
   (edist_dist x y).symm ▸ ENNReal.ofReal_lt_top
 
 /-- In a pseudometric space, the extended distance is always finite -/
-@[aesop (rule_sets := [finiteness]) safe apply]
+@[aesop (rule_sets := [finiteness]) safe apply, simp]
 theorem edist_ne_top (x y : α) : edist x y ≠ ⊤ :=
   (edist_lt_top x y).ne
 
@@ -407,6 +421,9 @@ def closedBall (x : α) (ε : ℝ) :=
 @[simp] theorem mem_closedBall : y ∈ closedBall x ε ↔ dist y x ≤ ε := Iff.rfl
 
 theorem mem_closedBall' : y ∈ closedBall x ε ↔ dist x y ≤ ε := by rw [dist_comm, mem_closedBall]
+
+theorem nonneg_of_mem_closedBall (hy : y ∈ closedBall x ε) : 0 ≤ ε :=
+  dist_nonneg.trans hy
 
 /-- `sphere x ε` is the set of all points `y` with `dist y x = ε` -/
 def sphere (x : α) (ε : ℝ) := { y | dist y x = ε }
@@ -927,7 +944,7 @@ lemma DiscreteTopology.of_forall_le_dist {α} [PseudoMetricSpace α] {r : ℝ} (
     (hr : Pairwise (r ≤ dist · · : α → α → Prop)) : DiscreteTopology α :=
   ⟨by rw [Metric.uniformSpace_eq_bot.2 ⟨r, hpos, hr⟩, UniformSpace.toTopologicalSpace_bot]⟩
 
-/- Instantiate a pseudometric space as a pseudoemetric space. Before we can state the instance,
+/-! Instantiate a pseudometric space as a pseudoemetric space. Before we can state the instance,
 we need to show that the uniform structure coming from the edistance and the
 distance coincide. -/
 

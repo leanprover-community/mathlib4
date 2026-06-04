@@ -132,7 +132,6 @@ symmetrizes the relation and makes it irreflexive. -/
 def SimpleGraph.fromRel {V : Type u} (r : V → V → Prop) : SimpleGraph V where
   Adj a b := a ≠ b ∧ (r a b ∨ r b a)
   symm := fun _ _ ⟨hn, hr⟩ => ⟨hn.symm, hr.symm⟩
-  loopless := ⟨fun _ ⟨hn, _⟩ => hn rfl⟩
 
 @[simp]
 theorem SimpleGraph.fromRel_adj {V : Type u} (r : V → V → Prop) (v w : V) :
@@ -241,8 +240,7 @@ are adjacent in the complement, and every nonadjacent pair of vertices is adjace
 instance : Compl (SimpleGraph V) where
   compl G :=
     { Adj := fun v w => v ≠ w ∧ ¬G.Adj v w
-      symm := fun v w ⟨hne, _⟩ => ⟨hne.symm, by rwa [adj_comm]⟩
-      loopless := ⟨fun _ ⟨hne, _⟩ => (hne rfl).elim⟩ }
+      symm := fun v w ⟨hne, _⟩ => ⟨hne.symm, by rwa [adj_comm]⟩ }
 
 @[simp]
 theorem compl_adj (G : SimpleGraph V) (v w : V) : Gᶜ.Adj v w ↔ v ≠ w ∧ ¬G.Adj v w :=
@@ -261,14 +259,12 @@ theorem sdiff_adj (x y : SimpleGraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v 
 instance supSet : SupSet (SimpleGraph V) where
   sSup s :=
     { Adj := fun a b => ∃ G ∈ s, Adj G a b
-      symm := fun _ _ => Exists.imp fun _ => And.imp_right Adj.symm
-      loopless := ⟨fun _ ⟨_, _, ha⟩ ↦ ha.ne rfl⟩ }
+      symm := fun _ _ => Exists.imp fun _ => And.imp_right Adj.symm }
 
 instance infSet : InfSet (SimpleGraph V) where
   sInf s :=
     { Adj := fun a b => (∀ ⦃G⦄, G ∈ s → Adj G a b) ∧ a ≠ b
-      symm := fun _ _ => And.imp (forall₂_imp fun _ _ => Adj.symm) Ne.symm
-      loopless := ⟨fun _ h => h.2 rfl⟩ }
+      symm := fun _ _ => And.imp (forall₂_imp fun _ _ => Adj.symm) Ne.symm }
 
 @[simp]
 theorem sSup_adj {s : Set (SimpleGraph V)} {a b : V} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b :=
@@ -406,6 +402,14 @@ def support : Set V :=
 theorem mem_support {v : V} : v ∈ G.support ↔ ∃ w, G.Adj v w :=
   Iff.rfl
 
+variable {G} in
+theorem Adj.mem_support_left (hadj : G.Adj u v) : u ∈ G.support :=
+  G.mem_support.mpr ⟨v, hadj⟩
+
+variable {G} in
+theorem Adj.mem_support_right (hadj : G.Adj u v) : v ∈ G.support :=
+  hadj.symm.mem_support_left
+
 @[gcongr]
 theorem support_mono {G G' : SimpleGraph V} (h : G ≤ G') : G.support ⊆ G'.support :=
   SetRel.dom_mono fun _uv huv ↦ h huv
@@ -417,7 +421,6 @@ theorem Adj.right_mem_support (hadj : G.Adj u v) : v ∈ G.support :=
   hadj.symm.left_mem_support
 
 /-- All vertices are in the support of the complete graph if there is more than one vertex. -/
-@[simp]
 theorem support_top_of_nontrivial [Nontrivial V] : (⊤ : SimpleGraph V).support = Set.univ :=
   Set.eq_univ_of_forall fun v₁ => exists_ne v₁ |>.imp fun _v₂ h => h.symm
 
@@ -563,6 +566,15 @@ theorem adj_iff_exists_edge {v w : V} : G.Adj v w ↔ v ≠ w ∧ ∃ e ∈ G.ed
 
 theorem adj_iff_exists_edge_coe : G.Adj a b ↔ ∃ e : G.edgeSet, e.val = s(a, b) := by
   simp only [mem_edgeSet, exists_prop, SetCoe.exists, exists_eq_right]
+
+@[simp]
+theorem edgeSet_subset_sym2_iff {s : Set V} :
+    G.edgeSet ⊆ s.sym2 ↔ G.support ⊆ s := by
+  refine ⟨fun h u hu ↦ ?_, fun h e hadj ↦ ?_⟩
+  · have ⟨v, huv⟩ := hu
+    exact (Set.mk_mem_sym2_iff.mp <| h huv).left
+  · cases e
+    exact ⟨h hadj.mem_support_left, h hadj.mem_support_right⟩
 
 variable (G G₁ G₂)
 
@@ -889,5 +901,22 @@ protected theorem nontrivial_iff : Nontrivial (SimpleGraph V) ↔ Nontrivial V :
   exact Unique.instSubsingleton
 
 end Subsingleton
+
+/-- A vertex in a graph is isolated if it's adjacent to no other vertex. -/
+def IsIsolated (G : SimpleGraph V) (v : V) : Prop := ∀ w, ¬ G.Adj v w
+
+@[simp] lemma neighborSet_eq_empty : G.neighborSet v = ∅ ↔ G.IsIsolated v := by
+  simp [neighborSet, IsIsolated, Set.ext_iff]
+
+@[simp] lemma neighborSet_nonempty : (G.neighborSet v).Nonempty ↔ ¬ G.IsIsolated v := by
+  simp [Set.nonempty_iff_ne_empty]
+
+protected alias ⟨IsIsolated.of_neighborSet_eq_empty, IsIsolated.neighborSet_eq_empty⟩ :=
+  neighborSet_eq_empty
+
+attribute [simp] IsIsolated.neighborSet_eq_empty
+
+lemma mem_support_iff_not_isIsolated : v ∈ G.support ↔ ¬ G.IsIsolated v := by
+  simp [mem_support, IsIsolated]
 
 end SimpleGraph

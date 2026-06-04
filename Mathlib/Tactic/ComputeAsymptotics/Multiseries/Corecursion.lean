@@ -73,11 +73,12 @@ variable {α β γ γ' : Type*}
 
 /-- Metric space structure on `Stream' α` considering `α` as a discrete metric space. -/
 noncomputable local instance : MetricSpace (Stream' α) :=
-  @PiNat.metricSpace (fun _ ↦ α) (fun _ ↦ ⊥) (fun _ ↦ discreteTopology_bot _)
+  letI := @PiNat.metricSpace (fun _ ↦ α) (fun _ ↦ ⊥) (fun _ ↦ discreteTopology_bot _)
+  inferInstanceAs <| MetricSpace (ℕ → α)
 
 /-- Metric space structure on `Seq α` considering `α` as a discrete metric space. -/
 noncomputable local instance : MetricSpace (Seq α) :=
-  Subtype.metricSpace
+  inferInstanceAs <| MetricSpace (Subtype _)
 
 local instance : CompleteSpace (Stream' α) :=
   @PiNat.completeSpace _ (fun _ ↦ ⊥) (fun _ ↦ discreteTopology_bot _)
@@ -118,6 +119,7 @@ theorem dist_eq_two_inv_pow {s t : Seq α} (h : s ≠ t) : ∃ n, dist s t = 2�
   simp
 
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward false in
 @[simp]
 theorem dist_cons_cons (x : α) (s t : Seq α) : dist (cons x s) (cons x t) = 2⁻¹ * dist s t := by
   by_cases! h : s = t
@@ -134,7 +136,7 @@ theorem dist_cons_cons (x : α) (s t : Seq α) : dist (cons x s) (cons x t) = 2�
   · contrapose! h'
     apply_fun Subtype.val using Subtype.val_injective
     simpa
-  · convert Nat.find_comp_succ _ _ _
+  · convert! Nat.find_comp_succ _ _ _
     simp [Stream'.cons]
 
 theorem dist_eq_half_of_head {s t : Seq α} (h : s.head = t.head) :
@@ -144,13 +146,13 @@ theorem dist_eq_half_of_head {s t : Seq α} (h : s.head = t.head) :
 set_option backward.isDefEq.respectTransparency false in
 theorem dist_eq_one_of_head {s t : Seq α} (h : s.head ≠ t.head) : dist s t = 1 := by
   rw [Subtype.dist_eq, PiNat.dist_eq_of_ne]
-  · convert pow_zero _
+  · convert! pow_zero _
     simp only [PiNat.firstDiff, ne_eq, Classical.dite_not, dite_eq_left_iff,
       Nat.find_eq_zero]
     intro h'
     simpa [Stream'.cons]
   · rw [Subtype.coe_ne_coe]
-    contrapose! h
+    contrapose h
     simp [h]
 
 theorem dist_cons_cons_eq_one {x y : α} {s t : Seq α} (h : x ≠ y) :
@@ -196,7 +198,7 @@ theorem FriendlyOperation.comp {op op' : Seq α → Seq α}
     (h : FriendlyOperation op) (h' : FriendlyOperation op') :
     FriendlyOperation (op ∘ op') := by
   rw [FriendlyOperation] at h h' ⊢
-  convert h.comp h'
+  convert! h.comp h'
   simp
 
 theorem FriendlyOperation.const {s : Seq α} : FriendlyOperation (fun _ ↦ s) := by
@@ -298,7 +300,7 @@ theorem gcorec_nil {F : β → Option (α × γ × β)} {op : γ → Seq α → 
     (h : F b = none) :
     gcorec F op b = nil := by
   have := (FriendlyOperation.exists_fixed_point F op).choose_spec b
-  simpa [h] using this
+  simpa [h] using! this
 
 theorem gcorec_some {F : β → Option (α × γ × β)} {op : γ → Seq α → Seq α}
     [FriendlyOperationClass op] {b : β}
@@ -306,7 +308,7 @@ theorem gcorec_some {F : β → Option (α × γ × β)} {op : γ → Seq α →
     (h : F b = some (a, c, b')) :
     gcorec F op b = Seq.cons a (op c (gcorec F op b')) := by
   have := (FriendlyOperation.exists_fixed_point F op).choose_spec b
-  simpa [h] using this
+  simpa [h] using! this
 
 /-- The operation `cons hd ·` is friendly. -/
 theorem FriendlyOperation.cons (hd : α) : FriendlyOperation (cons hd) := by

@@ -15,7 +15,7 @@ public import Mathlib.Order.Lex
 Transfer algebraic instances from `α` to `αᵒᵈ`, `Lex α`, and `Colex α`.
 -/
 
-@[expose] public section
+public section
 
 
 open OrderDual

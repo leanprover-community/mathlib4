@@ -38,8 +38,8 @@ inductive RingMode where
 
 /-- Configuration for `ring_nf`. -/
 structure Config extends AtomM.Recurse.Config where
-  /-- if true, then fail if no progress is made -/
-  failIfUnchanged := true
+  /-- How to behave if no progress is made: warn, error or keep silent. Default to error -/
+  ifUnchanged := BehaviorIfUnchanged.error
   /-- The normalization style. -/
   mode := RingMode.SOP
   deriving Inhabited, BEq, Repr
@@ -138,7 +138,7 @@ elab (name := ringNF) "ring_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   let m := AtomM.recurse s cfg.toConfig (wellBehavedDischarge := true) evalExpr (cleanup cfg)
-  transformAtLocation (m ·) "`ring_nf`" loc cfg.failIfUnchanged false
+  transformAtLocation (m ·) "ring_nf" loc cfg.ifUnchanged false
 
 @[tactic_alt ringNF] macro "ring_nf!" cfg:optConfig loc:(location)? : tactic =>
   `(tactic| ring_nf ! $cfg:optConfig $(loc)?)
