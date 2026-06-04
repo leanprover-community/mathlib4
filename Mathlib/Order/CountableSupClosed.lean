@@ -34,7 +34,7 @@ We should keep these files in sync.
 
 -/
 
-@[expose] public section
+public section
 
 variable {ι : Sort*} {α β : Type*} {S : Set (Set α)} {s t : Set α} {a b : α}
 
