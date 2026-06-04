@@ -53,11 +53,9 @@ variable (d : Dart G)
 
 @[grind .] lemma snd_isTarget : IsTarget G d.snd := d.prop.2.2.1
 
-@[grind .]
 lemma source_isIncident : IsIncident G d.fst d.edge d.source :=
   d.prop.2.2.2.choose_spec.choose_spec.choose_spec.1
 
-@[grind .]
 lemma target_isIncident : IsIncident G d.snd d.edge d.target :=
   d.prop.2.2.2.choose_spec.choose_spec.choose_spec.2
 
@@ -79,35 +77,31 @@ lemma edge_mem_edgeFun_snd : d.edge ∈ edgeFun G d.snd :=
 
 variable {d d₁ d₂ : Dart G}
 
-@[grind →]
 lemma edge_eq_of_isIncident_fst (h : IsIncident G d.fst e v) : d.edge = e :=
   d.source_isIncident.inj h |>.1
 
 lemma edge_eq_iff_source (d : Dart G) : d.edge = e ↔ IsIncident G d.fst e d.source :=
   ⟨(· ▸ d.source_isIncident), edge_eq_of_isIncident_fst⟩
 
-@[grind →]
 lemma edge_eq_of_isIncident_snd (h : IsIncident G d.snd e v) : d.edge = e :=
   d.target_isIncident.inj h |>.1
 
 lemma edge_eq_iff_target (d : Dart G) : d.edge = e ↔ IsIncident G d.snd e d.target :=
   ⟨(· ▸ d.target_isIncident), edge_eq_of_isIncident_snd⟩
 
-@[grind →]
 lemma source_eq_of_isIncident_fst (h : IsIncident G d.fst e v) : d.source = v :=
   d.source_isIncident.inj h |>.2
 
 lemma source_eq_iff (d : Dart G) : d.source = v ↔ IsIncident G d.fst d.edge v :=
   ⟨(· ▸ d.source_isIncident), source_eq_of_isIncident_fst⟩
 
-@[grind →]
 lemma target_eq_of_isIncident_snd (h : IsIncident G d.snd e v) : d.target = v :=
   d.target_isIncident.inj h |>.2
 
 lemma target_eq_iff (d : Dart G) : d.target = v ↔ IsIncident G d.snd d.edge v :=
   ⟨(· ▸ d.target_isIncident), target_eq_of_isIncident_snd⟩
 
-@[simp, grind =] lemma val_eq_iff : d.val = (i, j) ↔ d.fst = i ∧ d.snd = j := by grind [fst, snd]
+@[simp] lemma val_eq_iff : d.val = (i, j) ↔ d.fst = i ∧ d.snd = j := by grind [fst, snd]
 
 @[ext]
 lemma ext (hf : d₁.fst = d₂.fst) (hs : d₁.snd = d₂.snd) : d₁ = d₂ :=

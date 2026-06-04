@@ -23,7 +23,7 @@ open HyperGraphLike
 
 namespace SimpleGraph
 
-@[simps (attr := grind =)]
+@[simps]
 instance : HyperGraphLike V (V × V) (Sym2 V) (SimpleGraph V) where
   verts _ := Set.univ
   edges G := G.edgeSet
@@ -39,6 +39,8 @@ instance : HyperGraphLike V (V × V) (Sym2 V) (SimpleGraph V) where
   Adj G := G.Adj
   adj_def G u v := ⟨fun huv ↦ ⟨s(u, v), (u, v), (v, u), by simp [huv.ne], by simp [huv],
     by simp [huv.symm], by simp [huv, huv.symm]⟩, by grind⟩
+
+attribute [grind =] verts_def edges_def isSource_def isTarget_def isLink_def adj_def
 
 instance : GraphLike V (V × V) (Sym2 V) (SimpleGraph V) where
   order_eq_two G e := Sym2.inductionOn e fun u v he => by
@@ -85,7 +87,7 @@ instance : NoMultiEdge V (V × V) (Sym2 V) (SimpleGraph V) where
     · obtain rfl : v = v' := by
         by_contra! hc
         simpa [hc, hne] using congr_fun (congr_fun h v) 2
-      grind
+      grind [isIncident_def]
     grind
 
 lemma edgeFun_eq {i : V × V} (hi : G.Adj i.1 i.2) : edgeFun G i = Part.some (s(i.1, i.2)) := by

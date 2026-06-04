@@ -22,7 +22,7 @@ open HyperGraphLike
 
 namespace Digraph
 
-@[simps (attr := grind =)]
+@[simps]
 instance : HyperGraphLike V (Bool × V × V) (V × V) (Digraph V) where
   verts _ := Set.univ
   edges G := { (u, v) | G.Adj u v }
@@ -40,6 +40,8 @@ instance : HyperGraphLike V (Bool × V × V) (V × V) (Digraph V) where
     · use hi2, i.2.2, by grind
   Adj G := G.Adj
   adj_def G u v := by simp
+
+attribute [grind =] verts_def edges_def isSource_def isTarget_def isLink_def adj_def
 
 instance : GraphLike V (Bool × V × V) (V × V) (Digraph V) where
   order_eq_two G := by

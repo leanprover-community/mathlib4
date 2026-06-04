@@ -122,7 +122,7 @@ lemma isLink_iff_exists_incidenceType : G.IsLink e u v ↔ ∃ i j : IncidenceTy
 
 end inc12
 
-@[simps (attr := grind =) -isSimp]
+@[simps]
 instance : HyperGraphLike V (IncidenceType V E) E (Graph V E) where
   verts G := V(G)
   edges G := E(G)
@@ -137,6 +137,8 @@ instance : HyperGraphLike V (IncidenceType V E) E (Graph V E) where
   isLink_def G e u v := isLink_iff_exists_incidenceType e u v
   Adj G u v := G.Adj u v
   adj_def G u v := exists_congr fun e ↦ isLink_iff_exists_incidenceType e u v
+
+attribute [grind =] verts_def edges_def isSource_def isTarget_def isLink_def adj_def
 
 @[simp↓, grind .]
 lemma mem_edgeFun_inc1_iff [DecidableEq V] :
