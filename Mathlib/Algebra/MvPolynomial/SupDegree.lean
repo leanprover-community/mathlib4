@@ -16,16 +16,14 @@ This file is directly refactored from `Mathlib.Algebra.MonoidAlgebra.Degree`, sp
 
 ## Definitions
 
-Let `R` be a comsemiring and let `B` be a `SemilatticeSup` with `OrderBot`.
+Let `R` be a commutative semi-ring and let `B` be a `SemilatticeSup` with `OrderBot`.
 For `f : MvPolynomial σ R` and `D : (σ →₀ ℕ) → B`, this file defines
 
 * `MvPolynomial.supDegree D f`: the sup-degree of `f` w.r.t. `D`, taking values in `B`,
   `⊥` if `f = 0`.
-
-Given `hD : D.Injective`
-
-* `MvPolynomial.leadingCoeff hD f`: the leading coefficient of `f` w.r.t. `D`, `0` if `f = 0`;
-* `MvPolynomial.Monic hD f`: `f` is monic w.r.t. `D`.
+* `MvPolynomial.leadingCoeff D f`: leading coefficient if `D` is injective, or the coefficient at an
+  inverse image of `supDegree f` (if such exists) in general.
+* `MvPolynomial.Monic D f`: the leading coefficient of `f` is `1`.
 -/
 public section
 
@@ -37,8 +35,8 @@ variable {σ : Type*} (D : (σ →₀ ℕ) → B)
 variable {p : MvPolynomial σ R}
 
 set_option linter.unusedVariables false in
-/-- Let `R` be a commsemiring, let `B` be an `OrderBot`, and let `D : (σ →₀ ℕ) → B` be a "degree"
-function.
+/-- Let `R` be a commutative semi-ring, let `B` be a `SemilatticeSup` with `OrderBot`, and let
+`D : (σ →₀ ℕ) → B` be a "degree" function.
 For an element `f : MvPolynomial σ R`, the element `supDegree f : B` is the supremum of all the
 elements in the support of `f`, or `⊥` if `f` is zero.
 
