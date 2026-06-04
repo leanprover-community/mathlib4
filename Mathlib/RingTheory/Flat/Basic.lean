@@ -225,7 +225,7 @@ instance finsupp (ι : Type v) : Flat R (ι →₀ R) := by
   classical exact of_linearEquiv (finsuppLEquivDirectSum R R ι)
 
 instance of_projective [Projective R M] : Flat R M :=
-  have ⟨e, he⟩:= Module.projective_def'.mp ‹_›
+  have ⟨e, he⟩ := Module.projective_def'.mp ‹_›
   of_retract _ _ he
 
 instance of_free [Free R M] : Flat R M := inferInstance
