@@ -9,13 +9,13 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "lean-pr-testing-13852"
 require "leanprover-community" / "Qq" @ git "nightly-testing"
 require "leanprover-community" / "aesop" @ git "nightly-testing"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.98"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.100"
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets failed to reuse pre-built JS code. \
     Please report this issue on the Lean Zulip."
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
-require "leanprover-community" / "plausible" @ git "main"
+require "leanprover-community" / "plausible" @ git "nightly-testing"
 
 
 /-!
@@ -48,6 +48,8 @@ abbrev mathlibLeanOptions := #[
 
 package mathlib where
   testDriver := "MathlibTest"
+  lintDriver := "batteries/runLinter"
+  lintDriverArgs := #["Mathlib"]
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,

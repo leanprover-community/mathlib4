@@ -42,7 +42,6 @@ variable {L : C ⥤ D} {R : D ⥤ C}
 namespace Adjunction
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- For a pair of functors `L : C ⥤ D`, `R : D ⥤ C`, an adjunction `h : L ⊣ R` induces a monad on
 the category `C`.
 -/
@@ -61,7 +60,6 @@ def toMonad (h : L ⊣ R) : Monad C where
     simp
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- For a pair of functors `L : C ⥤ D`, `R : D ⥤ C`, an adjunction `h : L ⊣ R` induces a comonad on
 the category `D`.
 -/
@@ -151,7 +149,6 @@ noncomputable def fullyFaithfulROfCompIsoId (adj : L ⊣ R) (j : R ⋙ L ≅ �
 end Adjunction
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Monad.comparison R`
 sending objects `Y : D` to Eilenberg-Moore algebras for `L ⋙ R` with underlying object `R.obj X`.
 
@@ -187,7 +184,7 @@ instance [R.Faithful] (h : L ⊣ R) : (Monad.comparison h).Faithful where
   map_injective {_ _} _ _ w := R.map_injective (congr_arg Monad.Algebra.Hom.f w :)
 
 instance (T : Monad C) : (Monad.comparison T.adj).Full where
-  map_surjective {_ _} f := ⟨⟨f.f, by simpa using f.h⟩, rfl⟩
+  map_surjective {_ _} f := ⟨⟨f.f, by simpa using! f.h⟩, rfl⟩
 
 set_option backward.defeqAttrib.useBackward true in
 instance (T : Monad C) : (Monad.comparison T.adj).EssSurj where
@@ -199,7 +196,6 @@ instance (T : Monad C) : (Monad.comparison T.adj).EssSurj where
     ⟨Monad.Algebra.isoMk (Iso.refl _)⟩⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Comonad.comparison L`
 sending objects `X : C` to Eilenberg-Moore coalgebras for `L ⋙ R` with underlying object
@@ -237,7 +233,7 @@ instance Comonad.comparison_faithful_of_faithful [L.Faithful] (h : L ⊣ R) :
   map_injective {_ _} _ _ w := L.map_injective (congr_arg Comonad.Coalgebra.Hom.f w :)
 
 instance (G : Comonad C) : (Comonad.comparison G.adj).Full where
-  map_surjective f := ⟨⟨f.f, by simpa using f.h⟩, rfl⟩
+  map_surjective f := ⟨⟨f.f, by simpa using! f.h⟩, rfl⟩
 
 set_option backward.defeqAttrib.useBackward true in
 instance (G : Comonad C) : (Comonad.comparison G.adj).EssSurj where

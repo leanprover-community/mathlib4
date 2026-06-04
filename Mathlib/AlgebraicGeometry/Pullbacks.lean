@@ -250,7 +250,7 @@ def gluedLiftPullbackMap (i j : 𝒰.I₀) :
   refine pullback.map _ _ _ _ ?_ (𝟙 _) (𝟙 _) ?_ ?_
   · exact (pullbackSymmetry _ _).hom ≫
       pullback.map _ _ _ _ (𝟙 _) s.snd f (Category.id_comp _).symm s.condition
-  · simpa using pullback.condition
+  · simpa using! pullback.condition
   · simp only [Category.comp_id, Category.id_comp]
 
 set_option backward.defeqAttrib.useBackward true in

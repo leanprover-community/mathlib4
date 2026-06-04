@@ -64,12 +64,12 @@ public lemma faithful_pullFunctor :
     refine F.presheafHomObjHomEquiv.injective ?_i
     have : (Sieve.overEquiv (Over.mk (𝟙 (X i)))).symm
       (Sieve.pullback (f i) (Sieve.ofArrows X' f')) ∈ J.over (X i) _ := by
-      simpa only [J.mem_over_iff, Equiv.apply_symm_apply] using J.pullback_stable (f i) hf'
+      simpa only [J.mem_over_iff, Equiv.apply_symm_apply] using! J.pullback_stable (f i) hf'
     refine (((isSheaf_iff_isSheaf_of_type _ _).1
       (IsPrestack.isSheaf _ _ _)).isSeparated _ this).ext ?_
     rintro Z g ⟨Y, p, c, ⟨j⟩, hp⟩
     dsimp at p hp
-    have : g.left = Z.hom := by simpa using Over.w g
+    have : g.left = Z.hom := by simpa using! Over.w g
     have (ψ : D₁ ⟶ D₂) :
       (F.presheafHom _ _).map g.op (F.presheafHomObjHomEquiv (ψ.hom i)) =
         D₁.hom (Z.hom ≫ f i) Z.hom (p ≫ p' j) ≫
@@ -104,7 +104,7 @@ abbrev sieve (i : ι) : Sieve (Over.mk (𝟙 (X i))) :=
 include hf' in
 variable (f) in
 lemma sieve_mem (i : ι) : sieve f f' i ∈ J.over _ _ := by
-  simpa only [J.mem_over_iff, Equiv.apply_symm_apply] using J.pullback_stable (f i) hf'
+  simpa only [J.mem_over_iff, Equiv.apply_symm_apply] using! J.pullback_stable (f i) hf'
 
 set_option backward.defeqAttrib.useBackward true in
 lemma mem_sieve {i : ι} {Z : C} (q : Z ⟶ X i) ⦃j : ι'⦄ (a : Z ⟶ X' j)

@@ -256,7 +256,7 @@ lemma comp_assoc {n₁ n₂ n₃ n₁₂ n₂₃ n₁₂₃ : ℤ}
     (h₁₂ : n₁ + n₂ = n₁₂) (h₂₃ : n₂ + n₃ = n₂₃) (h₁₂₃ : n₁ + n₂ + n₃ = n₁₂₃) :
     (z₁.comp z₂ h₁₂).comp z₃ (show n₁₂ + n₃ = n₁₂₃ by rw [← h₁₂, h₁₂₃]) =
       z₁.comp (z₂.comp z₃ h₂₃) (by rw [← h₂₃, ← h₁₂₃, add_assoc]) := by
-  substs h₁₂ h₂₃ h₁₂₃
+  subst h₁₂ h₂₃ h₁₂₃
   ext p q hpq
   rw [comp_v _ _ rfl p (p + n₁ + n₂) q (add_assoc _ _ _).symm (by lia),
     comp_v z₁ z₂ rfl p (p + n₁) (p + n₁ + n₂) (by lia) (by lia),
@@ -678,7 +678,7 @@ lemma ofHom_homOf_eq_self (z : Cocycle F G 0) : ofHom (homOf z) = z := by cat_di
 @[simp]
 lemma cochain_ofHom_homOf_eq_coe (z : Cocycle F G 0) :
     Cochain.ofHom (homOf z) = (z : Cochain F G 0) := by
-  simpa only [Cocycle.ext_iff] using ofHom_homOf_eq_self z
+  simpa only [Cocycle.ext_iff] using! ofHom_homOf_eq_self z
 
 variable (F G)
 

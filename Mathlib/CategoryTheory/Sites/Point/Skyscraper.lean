@@ -155,7 +155,7 @@ private lemma isSheaf_skyscraperPresheaf_aux
       ∀ ⦃Y : C⦄ (g : Y ⟶ X) (hg : R g) (y : Φ.fiber.obj Y) (hy : Φ.fiber.map g y = x),
         s.π.app (op (Presieve.categoryMk _ _ hg)) ≫ Pi.π _ y = l by
     choose l hl using this
-    exact ⟨Pi.lift l, fun j y ↦ by simpa using (hl _ j.obj.hom  j.property y rfl).symm⟩
+    exact ⟨Pi.lift l, fun j y ↦ by simpa using! (hl _ j.obj.hom  j.property y rfl).symm⟩
   intro x
   obtain ⟨Y₁, f₁, hf₁, y₁, hy₁⟩ := Φ.jointly_surjective _ hR x
   refine ⟨s.π.app (op (Presieve.categoryMk _ _ hf₁)) ≫ Pi.π _ y₁,
@@ -175,7 +175,7 @@ private lemma isSheaf_skyscraperPresheaf_aux
   let φ₂ : Presieve.categoryMk _ _ (R.downward_closed hf₁ p₁) ⟶
       Presieve.categoryMk _ _ hf₂ :=
     ObjectProperty.homMk (Over.homMk p₂)
-  simpa [hz₁, hz₂, φ₁, φ₂] using
+  simpa [hz₁, hz₂, φ₁, φ₂] using!
     (Cone.w s φ₂.op =≫ Pi.π _ z).trans (Cone.w s φ₁.op =≫ Pi.π _ z).symm
 
 set_option backward.defeqAttrib.useBackward true in
@@ -188,12 +188,12 @@ lemma isSheaf_skyscraperPresheaf (M : A) :
     fac s j := by
       dsimp
       ext y
-      simpa using (isSheaf_skyscraperPresheaf_aux R hR s).choose_spec _ y
+      simpa using! (isSheaf_skyscraperPresheaf_aux R hR s).choose_spec _ y
     uniq s m hm := by
       dsimp at hm ⊢
       ext x
       obtain ⟨Y, g, hg, y, rfl⟩ := Φ.jointly_surjective _ hR x
-      simpa [← hm (op (Presieve.categoryMk _ _ hg))] using
+      simpa [← hm (op (Presieve.categoryMk _ _ hg))] using!
         ((isSheaf_skyscraperPresheaf_aux R hR s).choose_spec (Presieve.categoryMk _ _ hg) y).symm }⟩
 
 /-- Given a point `Φ` of a site `(C, J)`, this is the skyscraper sheaf functor

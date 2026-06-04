@@ -87,7 +87,7 @@ variable (A) in
 instance hasSeparator [HasSeparator A] [HasZeroMorphisms A] [HasCoproducts.{u} A] :
     HasSeparator (Cᵒᵖ ⥤ A) where
   hasSeparator := ⟨_, isSeparator C (S := fun (_ : Unit) ↦ separator A)
-      (by simpa using isSeparator_separator A)⟩
+      (by simpa using! isSeparator_separator A)⟩
 
 end Presheaf
 

@@ -77,7 +77,7 @@ def generatorsOfIsCokernelFree {M : SheafOfModules.{u} R}
     (H' : IsColimit (CokernelCofork.ofπ g H)) : M.GeneratingSections where
   I := σ
   s := M.freeHomEquiv g
-  epi := by simpa using epi_of_isColimit_cofork H'
+  epi := by simpa using! epi_of_isColimit_cofork H'
 
 @[simp]
 theorem generatorsOfIsCokernelFree_π {M : SheafOfModules.{u} R}

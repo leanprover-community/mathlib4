@@ -238,8 +238,10 @@ def parallelPairHom (f g : X ⟶ Y) {x y : WalkingParallelPair} (h : x ⟶ y) :
 
 @[simp] theorem parallelPairHom_id {f g : X ⟶ Y} {x : WalkingParallelPair} :
   parallelPairHom f g (𝟙 x) = 𝟙 (parallelPairObj X Y x) := (rfl)
+
 @[simp] theorem parallelPairHom_left {f g : X ⟶ Y} :
   parallelPairHom f g .left = f := (rfl)
+
 @[simp] theorem parallelPairHom_right {f g : X ⟶ Y} :
   parallelPairHom f g .right = g := (rfl)
 
@@ -1007,7 +1009,6 @@ def precompFork (s : Fork f g) (c : PullbackCone s.ι h) : Fork (h ≫ f) (h ≫
   Fork.ofι c.snd <| by
     rw [← c.condition_assoc, ← c.condition_assoc, s.condition]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Any fork on `h ≫ f` and `h ≫ g` lifts to a pullback along `h` of an equalizer of `f` and `g`.
 -/
@@ -1031,7 +1032,7 @@ def isLimitPrecompFork {s : Fork f g} (hs : IsLimit s) {c : PullbackCone s.ι h}
         apply Fork.equalizer_ext
         simp only [Fork.ι_ofι, precompFork] at h
         simp [c.condition, reassoc_of% h]
-      · simpa [liftPrecomp] using h)
+      · simpa [liftPrecomp] using! h)
 
 lemma hasEqualizer_precomp_of_equalizer {s : Fork f g} (hs : IsLimit s)
     {c : PullbackCone s.ι h} (hc : IsLimit c) :

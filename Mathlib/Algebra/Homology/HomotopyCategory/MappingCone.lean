@@ -172,7 +172,7 @@ lemma ext_to (i j : ℤ) (hij : i + 1 = j) {A : C} {f g : A ⟶ (mappingCone φ)
     (h₁ : f ≫ (fst φ).1.v i j hij = g ≫ (fst φ).1.v i j hij)
     (h₂ : f ≫ (snd φ).v i i (add_zero i) = g ≫ (snd φ).v i i (add_zero i)) :
     f = g :=
-  homotopyCofiber.ext_to_X φ i j hij h₁ (by simpa [snd] using h₂)
+  homotopyCofiber.ext_to_X φ i j hij h₁ (by simpa [snd] using! h₂)
 
 lemma ext_to_iff (i j : ℤ) (hij : i + 1 = j) {A : C} (f g : A ⟶ (mappingCone φ).X i) :
     f = g ↔ f ≫ (fst φ).1.v i j hij = g ≫ (fst φ).1.v i j hij ∧

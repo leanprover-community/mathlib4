@@ -370,13 +370,13 @@ noncomputable def eTruncGEIsoGEGE :
 lemma eTruncGEIsoGEGE_hom_inv_id_app (X : C) :
     (t.eTruncGE.obj b).map ((t.eTruncGEπ a).app X) ≫ (t.eTruncGEIsoGEGE a b hab).inv.app X =
       𝟙 _ := by
-  simpa using (t.eTruncGEIsoGEGE a b hab).hom_inv_id_app X
+  simpa using! (t.eTruncGEIsoGEGE a b hab).hom_inv_id_app X
 
 @[reassoc (attr := simp)]
 lemma eTruncGEIsoGEGE_inv_hom_id_app (X : C) :
     (t.eTruncGEIsoGEGE a b hab).inv.app X ≫ (t.eTruncGE.obj b).map ((t.eTruncGEπ a).app X) =
       𝟙 _ := by
-  simpa using (t.eTruncGEIsoGEGE a b hab).inv_hom_id_app X
+  simpa using! (t.eTruncGEIsoGEGE a b hab).inv_hom_id_app X
 
 end
 

@@ -187,7 +187,7 @@ lemma IsStronglySheafFor.isSheafFor_sieve_of_pullback (h₁ : E.IsStronglySheafF
     have : t (g ≫ f) (by simp [hf]) = t (w ≫ E.f i) (by simp [heq, hf]) := by
       congr 1
       rw [heq]
-    simpa [← heq, ht' i, ← t.comp_of_compatible _ ht, this] using hs i w _
+    simpa [← heq, ht' i, ← t.comp_of_compatible _ ht, this] using! hs i w _
   · refine hunique _ fun i ↦ huniq _ _ fun Z g hg ↦ ?_
     simp [Presieve.FamilyOfElements.pullback, ← hy _ hg]
 

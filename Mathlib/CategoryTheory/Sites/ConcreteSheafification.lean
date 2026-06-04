@@ -196,7 +196,7 @@ theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (
   rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply,
     Multiequalizer.lift_ι, Multiequalizer.lift_ι, Multiequalizer.lift_ι]
   rw [dsimp% Meq.equiv_symm_eq_apply x i.base]
-  simpa using (x.condition (Cover.Relation.mk' (I.precompRelation i.f))).symm
+  simpa using! (x.condition (Cover.Relation.mk' (I.precompRelation i.f))).symm
 
 theorem toPlus_eq_mk {X : C} {P : Cᵒᵖ ⥤ D} (x : ToType (P.obj (op X))) :
     (J.toPlus P).app _ x = mk (Meq.mk ⊤ x) := toPlus_mk ⊤ x
@@ -403,7 +403,7 @@ theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
     apply_fun Meq.equiv (J.plusObj P) S at h
     apply_fun fun e => e I at h
     dsimp only [ConcreteCategory.forget_map_eq_ofHom] at h
-    simpa [Meq.equiv_apply, ← comp_apply] using h
+    simpa [Meq.equiv_apply, ← comp_apply] using! h
   · rintro (x : ToType (multiequalizer (S.index _)))
     obtain ⟨t, ht⟩ := exists_of_sep P hsep X S (Meq.equiv _ _ x)
     use t

@@ -677,9 +677,9 @@ def ofValuation
   vle_add hab hbc := (map_add_le_max v _ _).trans (sup_le hab hbc)
   mul_vle_mul_left _ h := by simp only [map_mul]; gcongr
   vle_mul_cancel h0 h := by
-    rw [map_zero, le_zero_iff] at h0
     simp only [map_mul] at h
-    exact le_of_mul_le_mul_right h (lt_of_le_of_ne' zero_le' h0)
+    apply le_of_mul_le_mul_right h
+    simpa [pos_iff_ne_zero] using h0
   not_vle_one_zero := by simp
 
 lemma _root_.Valuation.Compatible.ofValuation

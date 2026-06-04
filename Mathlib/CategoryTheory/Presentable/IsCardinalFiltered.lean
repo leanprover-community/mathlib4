@@ -243,7 +243,7 @@ instance isCardinalFiltered_pi {ι : Type u'} (J : ι → Type u) [∀ i, Catego
         ι.app X i := (c i).ι.app X
         ι.naturality {X Y} f := by
           ext i
-          simpa using (c i).ι.naturality f }⟩
+          simpa using! (c i).ι.naturality f }⟩
 
 section
 

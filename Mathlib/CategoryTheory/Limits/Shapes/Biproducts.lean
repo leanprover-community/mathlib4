@@ -98,8 +98,8 @@ instance Bicone.category : Category (Bicone F) where
   comp f g := { hom := f.hom ≫ g.hom }
   id B := { hom := 𝟙 B.pt }
 
-/- We do not want `simps` automatically generate the lemma for simplifying the `Hom` field of
--- a category. So we need to write the `ext` lemma in terms of the categorical morphism, rather than
+/-! We do not want `simps` automatically generate the lemma for simplifying the `Hom` field of
+a category. So we need to write the `ext` lemma in terms of the categorical morphism, rather than
 the underlying structure. -/
 @[ext]
 theorem BiconeMorphism.ext {c c' : Bicone F} (f g : c ⟶ c') (w : f.hom = g.hom) : f = g := by
@@ -145,8 +145,8 @@ instance functoriality_full [G.PreservesZeroMorphisms] [G.Full] [G.Faithful] :
     (functoriality F G).Full where
   map_surjective t :=
    ⟨{ hom := G.preimage t.hom
-      wι := fun j => G.map_injective (by simpa using t.wι j)
-      wπ := fun j => G.map_injective (by simpa using t.wπ j) }, by cat_disch⟩
+      wι := fun j => G.map_injective (by simpa using! t.wι j)
+      wπ := fun j => G.map_injective (by simpa using! t.wπ j) }, by cat_disch⟩
 
 instance functoriality_faithful [G.PreservesZeroMorphisms] [G.Faithful] :
     (functoriality F G).Faithful where

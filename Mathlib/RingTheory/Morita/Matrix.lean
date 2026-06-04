@@ -180,7 +180,6 @@ def MatrixModCat.counitIso (i : ι) :
     simp [toModuleCatFromModuleCatLinearEquiv]
 
 set_option backward.isDefEq.respectTransparency false in
-set_option maxHeartbeats 400000 in
 -- This declaration has been on the tipping point of timeout ever since nightly-2026-02-23.
 /-- `ModuleCat.toMatrixModCat R ι` and `MatrixModCat.toModuleCat R i` together form
   an equivalence of categories. -/
@@ -194,7 +193,7 @@ def ModuleCat.matrixEquivalence (i : ι) : ModuleCat R ≌ ModuleCat (Matrix ι 
     ext1
     suffices (toModuleCatFromModuleCatLinearEquiv R ((ModuleCat.toMatrixModCat R ι).obj X)
       i).symm.toLinearMap ∘ₗ LinearMap.mapMatrixModule ι (ModuleCat.Hom.hom
-      ((unitIso R i).inv.app X)) = LinearMap.id by simpa using this
+      ((unitIso R i).inv.app X)) = LinearMap.id by simpa using! this
     ext x
     simp [unitIso, toModuleCatFromModuleCatLinearEquiv, fromModuleCatToModuleCatLinearEquiv,
       fromModuleCatToModuleCatLinearEquivtoModuleCatObj, Finset.univ_sum_single]

@@ -220,7 +220,6 @@ def toCostructuredArrow (F : Cᵒᵖ ⥤ Type v) : F.Elementsᵒᵖ ⥤ Costruct
       simp [yonedaEquiv])
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The reverse direction of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)`,
 given by `CategoryTheory.yonedaEquiv`.
 -/
@@ -249,7 +248,7 @@ def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
         exact Quiver.Hom.unop_inj (by ext; simp))
   counitIso := NatIso.ofComponents (fun X ↦ CostructuredArrow.isoMk (Iso.refl _) (by
     dsimp
-    simpa only [Functor.map_id, Category.id_comp] using
+    simpa only [Functor.map_id, Category.id_comp] using!
       (yonedaEquiv.symm_apply_apply X.hom).symm))
 
 set_option backward.defeqAttrib.useBackward true in

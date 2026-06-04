@@ -86,13 +86,13 @@ def IsLimit.pullbackConeEquivBinaryFanFunctor {c : PullbackCone f g} (hc : IsLim
     -- TODO: Drop `BinaryFan.IsLimit.lift'`. Instead provide the lemmas it bundles separately.
     -- TODO: Define `abbrev BinaryFan.IsLimit (c : BinaryFan X Y) := IsLimit c` for dot notation?
     (fun s ↦ Over.homMk (hc.lift <| pullbackConeEquivBinaryFan.inverse.obj s) <| by
-      simpa using s.fst.w)
+      simpa using! s.fst.w)
     (fun s ↦ Over.OverMorphism.ext (hc.fac _ _)) (fun s ↦ Over.OverMorphism.ext (hc.fac _ _))
     fun s m e₁ e₂ ↦ by
       ext1
       apply PullbackCone.IsLimit.hom_ext hc
-      · simpa using congr(($e₁).left)
-      · simpa using congr(($e₂).left)
+      · simpa using! congr(($e₁).left)
+      · simpa using! congr(($e₂).left)
 
 set_option backward.defeqAttrib.useBackward true in
 /-- A pullback cone to `X` is a limit if its corresponding binary fan in `Over X` is a limit. -/
@@ -103,8 +103,8 @@ def IsLimit.pullbackConeEquivBinaryFanInverse {c : BinaryFan (Over.mk f) (.mk g)
   PullbackCone.IsLimit.mk
     (c.fst.w.trans c.snd.w.symm)
     (fun s ↦ (hc.lift <| pullbackConeEquivBinaryFan.functor.obj s).left)
-    (fun s ↦ by simpa only using congr($(hc.fac _ _).left))
-    (fun s ↦ by simpa only using congr($(hc.fac _ _).left))
+    (fun s ↦ by simpa only using! congr($(hc.fac _ _).left))
+    (fun s ↦ by simpa only using! congr($(hc.fac _ _).left))
     <| fun s m hm₁ hm₂ ↦ by
       change PullbackCone f g at s
       have := hc.uniq (pullbackConeEquivBinaryFan.functor.obj s) (Over.homMk m <| by
@@ -147,13 +147,13 @@ def IsColimit.pushoutCoconeEquivBinaryCofanFunctor {c : PushoutCocone f g} (hc :
   BinaryCofan.isColimitMk
     (fun s ↦ Under.homMk
       (hc.desc (PushoutCocone.mk s.inl.right s.inr.right (s.inl.w.trans s.inr.w.symm))) <| by
-        simpa using s.inl.w)
+        simpa using! s.inl.w)
     (fun s ↦ Under.UnderMorphism.ext (hc.fac _ _)) (fun s ↦ Under.UnderMorphism.ext (hc.fac _ _))
       fun s m e₁ e₂ ↦ by
     ext1
     refine PushoutCocone.IsColimit.hom_ext hc ?_ ?_
-    · simpa using congr(($e₁).right)
-    · simpa using congr(($e₂).right)
+    · simpa using! congr(($e₁).right)
+    · simpa using! congr(($e₂).right)
 
 set_option backward.defeqAttrib.useBackward true in
 /-- A pushout cocone from `X` is a colimit if its corresponding binary cofan in `Under X` is a
@@ -165,8 +165,8 @@ def IsColimit.pushoutCoconeEquivBinaryCofanInverse {c : BinaryCofan (Under.mk f)
   PushoutCocone.IsColimit.mk
     (c.inl.w.trans c.inr.w.symm)
     (fun s ↦ (hc.desc <| pushoutCoconeEquivBinaryCofan.functor.obj s).right)
-    (fun s ↦ by simpa only using congr($(hc.fac _ _).right))
-    (fun s ↦ by simpa only using congr($(hc.fac _ _).right))
+    (fun s ↦ by simpa only using! congr($(hc.fac _ _).right))
+    (fun s ↦ by simpa only using! congr($(hc.fac _ _).right))
     <| fun s m hm₁ hm₂ ↦ by
       change PushoutCocone f g at s
       have := hc.uniq (pushoutCoconeEquivBinaryCofan.functor.obj s) (Under.homMk m <| by
@@ -184,7 +184,6 @@ variable {X : C} {Y Z : Over X}
 open Limits
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma isPullback_of_binaryFan_isLimit (c : BinaryFan Y Z) (hc : IsLimit c) :
     IsPullback c.fst.left c.snd.left Y.hom Z.hom :=
   ⟨by simp, ⟨hc.pullbackConeEquivBinaryFanInverse⟩⟩
@@ -242,7 +241,6 @@ abbrev widePullbackDiagramOfDiagramOver (B : C) {J : Type w} (F : Discrete J ⥤
   WidePullbackShape.wideCospan B (fun j => (F.obj ⟨j⟩).left) fun j => (F.obj ⟨j⟩).hom
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
 def conesEquivInverseObj (B : C) {J : Type w} (F : Discrete J ⥤ Over B) (c : Cone F) :
@@ -258,7 +256,6 @@ def conesEquivInverseObj (B : C) {J : Type w} (F : Discrete J ⥤ Over B) (c : C
         · rw [Category.id_comp, Category.comp_id] }
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
 def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :

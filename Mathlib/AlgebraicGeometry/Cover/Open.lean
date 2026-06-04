@@ -62,19 +62,19 @@ def affineCover (X : Scheme.{u}) : OpenCover X := by
 instance : Inhabited X.OpenCover :=
   ⟨X.affineCover⟩
 
-theorem OpenCover.iSup_opensRange {X : Scheme.{u}} (𝒰 : X.OpenCover) :
+theorem OpenCover.iSup_opensRange {X : Scheme.{u}} (𝒰 : Scheme.OpenCover.{v} X) :
     ⨆ i, (𝒰.f i).opensRange = ⊤ :=
   Opens.ext <| by rw [Opens.coe_iSup]; exact 𝒰.iUnion_range
 
 /-- The ranges of the maps in a scheme-theoretic open cover are a topological open cover. -/
-lemma OpenCover.isOpenCover_opensRange {X : Scheme.{u}} (𝒰 : X.OpenCover) :
+lemma OpenCover.isOpenCover_opensRange {X : Scheme.{u}} (𝒰 : OpenCover.{v} X) :
     IsOpenCover fun i ↦ (𝒰.f i).opensRange :=
   .mk 𝒰.iSup_opensRange
 
 /-- Every open cover of a quasi-compact scheme can be refined into a finite subcover.
 -/
 @[simps! X f]
-def OpenCover.finiteSubcover {X : Scheme.{u}} (𝒰 : OpenCover X) [H : CompactSpace X] :
+def OpenCover.finiteSubcover {X : Scheme.{u}} (𝒰 : OpenCover.{v} X) [H : CompactSpace X] :
     OpenCover X := by
   have :=
     @CompactSpace.elim_nhds_subcover _ _ H (fun x : X => Set.range (𝒰.f (𝒰.idx x)))

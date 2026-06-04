@@ -67,7 +67,6 @@ which implies that `y ≫ Y.map φ = 0` (see the lemma `injectivity₀`).
 -/
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation `X ⟶ Y.obj t.right` for `t : Under j₀`
 that is induced by `y : X ⟶ Y.obj j₀`. -/
 @[simps]
@@ -96,8 +95,8 @@ lemma epi_f [IsFiltered J] : Epi (f y) := by
       (kernelIsKernel (g y)))
     (colimit.isColimit _) (isColimitConstCocone _ _)
     ((Functor.Final.isColimitWhiskerEquiv (Under.forget j₀) c).symm hc) (f y) 0
-    (fun j ↦ by simpa using hf y j)
-    (fun _ ↦ by simpa using hy.symm)).epi_f rfl
+    (fun j ↦ by simpa using! hf y j)
+    (fun _ ↦ by simpa using! hy.symm)).epi_f rfl
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -124,12 +123,12 @@ lemma injectivity₀ {j₀ : J} (y : X ⟶ Y.obj j₀) (hy : y ≫ c.ι.app j₀
     ∃ (j : J) (φ : j₀ ⟶ j), y ≫ Y.map φ = 0 := by
   have := isFiltered_of_isCardinalFiltered J κ
   obtain ⟨j, h⟩ := exists_isIso_of_functor_from_monoOver (F y) hXκ _
-      (colimit.isColimit (kernel (g y))) (f y) (fun j ↦ by simpa using hf y j)
+      (colimit.isColimit (kernel (g y))) (f y) (fun j ↦ by simpa using! hf y j)
       (epi_f hc hy)
   dsimp at h
   refine ⟨j.right, j.hom, ?_⟩
   simpa only [← cancel_epi ((kernel.ι (g y)).app j), comp_zero]
-    using NatTrans.congr_app (kernel.condition (g y)) j
+    using! NatTrans.congr_app (kernel.condition (g y)) j
 
 lemma injectivity (j₀ : J) (y₁ y₂ : X ⟶ Y.obj j₀)
     (hy : y₁ ≫ c.ι.app j₀ = y₂ ≫ c.ι.app j₀) :
@@ -170,7 +169,6 @@ noncomputable def F [Mono c.ι] : J ⥤ MonoOver X where
   obj j := MonoOver.mk ((pullback.snd c.ι ((Functor.const _).map z)).app j)
   map {j j'} f := MonoOver.homMk ((pullback c.ι ((Functor.const _).map z)).map f)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map `colimit (pullback c.ι ((Functor.const J).map z)) ⟶ X`,
 which is an isomorphism when `J` is filtered, see `isIso_f`. -/
 noncomputable def f : colimit (pullback c.ι ((Functor.const J).map z)) ⟶ X :=

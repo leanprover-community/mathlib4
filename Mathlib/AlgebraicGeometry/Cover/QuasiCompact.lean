@@ -101,13 +101,13 @@ instance [QuasiCompactCover 𝒰] {T : Scheme.{u}} (f : T ⟶ S) :
     obtain ⟨W', hW', hx', hle⟩ := isBasis_iff_nbhd.mp T.isBasis_affineOpens
       (show x ∈ f ⁻¹ᵁ W ⊓ U' from ⟨hx, hxU⟩)
     exact ⟨W', le_trans hle inf_le_right, by simpa [hx], W'.2,
-      this hW' ⟨W, hW, by simpa using le_trans hle inf_le_left⟩⟩
+      this hW' ⟨W, hW, by simpa using! le_trans hle inf_le_left⟩⟩
   obtain ⟨U, hU, hsub⟩ := h
   obtain ⟨s, hf, V, hc, (heq : _ = (U : Set S))⟩ := hU.isCompactOpenCovered 𝒰
   refine ⟨s, hf, fun i hi ↦ pullback.fst f (𝒰.f i) ⁻¹ᵁ U' ⊓ pullback.snd f (𝒰.f i) ⁻¹ᵁ (V i hi),
       fun i hi ↦ ?_, ?_⟩
-  · exact hU'.isCompact_pullback_inf (hc _ _) hU (by simpa using hsub) <| by
-      simpa [← SetLike.coe_subset_coe, ← heq, Set.range_comp] using Set.subset_iUnion_of_subset i
+  · exact hU'.isCompact_pullback_inf (hc _ _) hU (by simpa using! hsub) <| by
+      simpa [← SetLike.coe_subset_coe, ← heq, Set.range_comp] using! Set.subset_iUnion_of_subset i
         (Set.subset_iUnion_of_subset hi (Set.subset_preimage_image _ _))
   · refine subset_antisymm (by simp) (fun x hx ↦ ?_)
     have : f x ∈ (U : Set S) := hsub ⟨x, hx, rfl⟩
@@ -135,7 +135,7 @@ instance {X : Scheme.{u}} (𝒰 : PreZeroHypercover.{w} X) [QuasiCompactCover �
     have (i) (hi) : Finite (t i hi) := ht i hi
     refine .of_finite (κ := Σ (i : s), t i.1 i.2) (fun p ↦ ⟨p.1, p.2⟩) (fun p ↦ W _ p.1.2 _ p.2.2)
       (fun p ↦ hcW ..) ?_
-    simpa [← hV, Set.iUnion_sigma, Set.iUnion_subtype, Set.image_iUnion, Set.image_image] using hU
+    simpa [← hV, Set.iUnion_sigma, Set.iUnion_subtype, Set.image_iUnion, Set.image_image] using! hU
 
 instance of_finite {𝒰 : S.Cover K} [Scheme.JointlySurjective K]
     [∀ i, AlgebraicGeometry.QuasiCompact (𝒰.f i)] [Finite 𝒰.I₀] :

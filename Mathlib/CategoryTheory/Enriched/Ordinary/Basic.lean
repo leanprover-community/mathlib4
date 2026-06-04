@@ -239,7 +239,7 @@ def TransportEnrichment.enrichedOrdinaryCategory
     (h : ∀ v : V, ∀ f : 𝟙_ V ⟶ v, e v f = Functor.LaxMonoidal.ε F ≫ F.map f) :
     EnrichedOrdinaryCategory W (TransportEnrichment F C) where
   homEquiv {X Y} := (eHomEquiv V (C := C)).trans (e (Hom (C := C) X Y))
-  homEquiv_id {X} := by simpa using h _ (eId V _)
+  homEquiv_id {X} := by simpa using! h _ (eId V _)
   homEquiv_comp f g := by
     dsimp +instances [instEnrichedCategoryTransportEnrichment]
     rw [h, h, h, ← tensorHom_comp_tensorHom_assoc, eComp_eq, tensorHom_def_assoc,

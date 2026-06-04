@@ -97,7 +97,7 @@ lemma shape (n m : ℤ) (hnm : n + 1 ≠ m) : h.d n m = 0 :=
   match n, m with
   | .ofNat n, .ofNat m => L.shape _ _ (by simp at hnm ⊢; lia)
   | .negSucc n, .negSucc m => by
-    simpa only [d_negSucc] using K.shape n m (by simp at hnm ⊢; lia)
+    simpa only [d_negSucc] using! K.shape n m (by simp at hnm ⊢; lia)
   | .negSucc 0, .ofNat 0 => by simp at hnm
   | .ofNat _, .negSucc m => rfl
   | .negSucc n, .ofNat m => by

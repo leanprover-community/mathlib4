@@ -108,7 +108,7 @@ def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type max w v₁ v₂) (E : �
               rw [uliftYonedaEquiv_symm_map])
         dsimp
         congr 1
-        simpa using (f.naturality φ).symm }
+        simpa using! (f.naturality φ).symm }
   invFun g :=
     { app y := (uliftYonedaEquiv.{max w v₂} (y.hom ≫ g)).down
       naturality y y' f := by
@@ -122,7 +122,7 @@ def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type max w v₁ v₂) (E : �
           ext Y x
           dsimp
           simp [← NatTrans.naturality_apply])
-    simpa [e] using f.naturality e.inv
+    simpa [e] using! f.naturality e.inv
   right_inv g := by
     ext X x
     apply ULift.down_injective
@@ -545,7 +545,7 @@ lemma uliftYonedaEquiv_ι_presheafHom (P : Cᵒᵖ ⥤ Type max w v₁ v₂) {X 
 lemma uliftYonedaEquiv_presheafHom_uliftYoneda_obj (X : C) :
     uliftYonedaEquiv.{max w v₂} (presheafHom.{w} φ (uliftYoneda.{max w v₂}.obj X)) =
       ((φ.app X).app (F.op.obj (Opposite.op X)) (ULift.up (𝟙 _))) := by
-  simpa using uliftYonedaEquiv_ι_presheafHom.{w} φ (uliftYoneda.obj X) (𝟙 _)
+  simpa using! uliftYonedaEquiv_ι_presheafHom.{w} φ (uliftYoneda.obj X) (𝟙 _)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

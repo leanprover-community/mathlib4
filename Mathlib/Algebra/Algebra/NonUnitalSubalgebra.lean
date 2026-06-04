@@ -153,7 +153,7 @@ Useful to fix definitional equalities. -/
 protected def copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
     NonUnitalSubalgebra R A :=
   { S.toNonUnitalSubsemiring.copy s hs with
-    smul_mem' r a := by simpa [hs] using S.smul_mem r }
+    smul_mem' r a := by simpa [hs] using! S.smul_mem r }
 
 @[simp, norm_cast]
 theorem coe_copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
@@ -1110,6 +1110,11 @@ theorem center_toNonUnitalSubsemiring :
     (center R A).toNonUnitalSubring = NonUnitalSubring.center A :=
   rfl
 
+protected theorem center_prod {B : Type*} [NonUnitalNonAssocSemiring B] [Module R B]
+    [IsScalarTower R B B] [SMulCommClass R B B] :
+    center R (A × B) = prod (center R A) (center R B) :=
+  SetLike.coe_injective Set.center_prod
+
 end NonUnitalNonAssocSemiring
 
 variable (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
@@ -1182,7 +1187,7 @@ lemma adjoin_le_centralizer_centralizer (s : Set A) :
 lemma commute_of_mem_adjoin_of_forall_mem_commute {a b : A} {s : Set A}
     (hb : b ∈ adjoin R s) (h : ∀ b ∈ s, Commute a b) :
     Commute a b := by
-  have : a ∈ centralizer R s := by simpa only [Commute.symm_iff (a := a)] using h
+  have : a ∈ centralizer R s := by simpa only [Commute.symm_iff (a := a)] using! h
   exact adjoin_le_centralizer_centralizer R s hb a this
 
 lemma commute_of_mem_adjoin_singleton_of_commute {a b c : A}

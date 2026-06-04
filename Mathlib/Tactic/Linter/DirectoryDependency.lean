@@ -90,7 +90,6 @@ namespace NamePrefixRel
 -- The new behaviour of `inferInstanceAs` from leanprover/lean4#12897 needs to be updated,
 -- to ensure that if we are in a `meta` section then the auxiliary definitions are also `meta`.
 -- Fixed in https://github.com/leanprover/lean4/pull/13043
-set_option backward.inferInstanceAs.wrap false in
 instance : EmptyCollection NamePrefixRel := inferInstanceAs (EmptyCollection (NameMap _))
 
 /-- Make all names with prefix `n₁` related to names with prefix `n₂`. -/
@@ -229,6 +228,8 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   -- For more fine-grained exceptions of the next two imports, one needs to rename that file.
   (`Mathlib.Tactic.Linter, `ImportGraph),
   (`Mathlib.Tactic.Linter, `Mathlib.Tactic.MinImports),
+  (`Mathlib.Tactic.Linter.OverlappingInstances, `Mathlib.Lean.ContextInfo),
+  (`Mathlib.Tactic.Linter.OverlappingInstances, `Mathlib.Lean.Elab.Tactic.Meta),
   (`Mathlib.Tactic.Linter.TextBased, `Mathlib.Data.Nat.Notation),
   (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Expr.Basic),
   (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Environment),
@@ -615,7 +616,14 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Analysis.Convex.SimplicialComplex.Basic, `Mathlib.AlgebraicTopology),
   (`Mathlib.Analysis.Convex.SimplicialComplex.AffineIndependentUnion, `Mathlib.AlgebraicTopology),
   (`Mathlib.Probability.Kernel.Category, `Mathlib.CategoryTheory), -- For the category of s-finite/Markov kernels
-  (`Mathlib.RepresentationTheory.Continuous, `Mathlib.Topology) -- For continuous representations
+  (`Mathlib.RepresentationTheory.Continuous, `Mathlib.Topology), -- For continuous representations
+  -- TODO: think about the role of Analysis and Algebra, and perhaps further separation
+  (`Mathlib.Algebra.Order.Archimedean.Real, `Mathlib.Analysis),
+  (`Mathlib.Algebra.Star.CHSH, `Mathlib.Analysis),
+  (`Mathlib.Algebra.Order.Star.Real, `Mathlib.Analysis),
+  (`Mathlib.Topology.ContinuousMap.ContinuousSqrt, `Mathlib.Algebra.Order),
+  (`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus, `Mathlib.Algebra.Order),
+  (`Mathlib.Algebra.Order.Ring.StandardPart, `Mathlib.Analysis),
 ]
 
 end DirectoryDependency

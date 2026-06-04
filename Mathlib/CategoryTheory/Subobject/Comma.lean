@@ -137,7 +137,7 @@ def projectQuotient [HasFiniteColimits C] [PreservesFiniteColimits S] {A : Costr
   intro P Q f g hf hg i hi
   refine Subobject.mk_eq_mk_of_comm _ _ ((proj S T).mapIso i.unop).op (Quiver.Hom.unop_inj ?_)
   have := congr_arg Quiver.Hom.unop hi
-  simpa using congr_arg CommaMorphism.left this
+  simpa using! congr_arg CommaMorphism.left this
 
 @[simp]
 theorem projectQuotient_mk [HasFiniteColimits C] [PreservesFiniteColimits S]
@@ -147,7 +147,6 @@ theorem projectQuotient_mk [HasFiniteColimits C] [PreservesFiniteColimits S]
   rfl
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem projectQuotient_factors [HasFiniteColimits C] [PreservesFiniteColimits S]
     {A : CostructuredArrow S T} :
     ∀ P : Subobject (op A), ∃ q, S.map (projectQuotient P).arrow.unop ≫ q = A.hom :=

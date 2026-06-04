@@ -127,6 +127,9 @@ jobs:
           ref: ${{ inputs.pr_branch_ref }}
           fetch-depth: 2 # we may fetch cache from the commit before this one (or earlier)
           path: pr-branch
+          # This is an untrusted (potentially fork) checkout whose code we build.
+          # Don't leave the GITHUB_TOKEN in pr-branch/.git/config, where that code could read it.
+          persist-credentials: false
 
       - name: Prepare DownstreamTest directory
         shell: bash
@@ -513,19 +516,19 @@ jobs:
         run: |
           cd pr-branch
           set -o pipefail
-          # Try running with --trace; if it fails due to argument parsing, the PR needs to merge master
+          # If lint fails because the PR predates lake-lint configuration or the
+          # old --trace argument-parsing behavior, ask the author to merge master.
           # We use .lake/ for the output file because landrun restricts /tmp access
           for attempt in 1 2; do
-            if timeout 10m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake exe runLinter --trace Mathlib 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
+            if timeout 10m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake lint -- --trace 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
               break
             fi
             status=${PIPESTATUS[0]}
-            if grep -q "cannot parse arguments" ".lake/lint_output_attempt_${attempt}.txt"; then
+            if grep -qE "cannot parse arguments|no lint driver configured" ".lake/lint_output_attempt_${attempt}.txt"; then
               echo ""
               echo "=============================================================================="
-              echo "ERROR: Your branch uses an older version of runLinter that doesn't support"
-              echo "the --trace flag. Please merge 'master' into your PR branch to get the"
-              echo "updated linter, then push again."
+              echo "ERROR: Your branch predates the current 'lake lint' configuration."
+              echo "Please merge 'master' into your PR branch and push again."
               echo ""
               echo "You can do this with:"
               echo "  git fetch upstream"
@@ -689,6 +692,8 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ inputs.pr_branch_ref }}
+          # Untrusted (potentially fork) checkout: don't persist the GITHUB_TOKEN into its .git/config.
+          persist-credentials: false
 
       - name: Configure Lean
         uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
@@ -733,17 +738,36 @@ jobs:
         run: |
           lake exe graph
 
+      - name: Checkout local actions
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+
+      - name: Get mathlib-ci
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+
+      - name: dump declarations and transitive-import counts
+        run: |
+          lake env lean --run "${CI_SCRIPTS_DIR}/pr_summary/dumpReasonableDecls.lean" \
+            --out decls.txt --imports-out imports.json Mathlib
+
       - name: upload the import graph
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: import-graph
-          path: import_graph.dot
-          ## the default is 90, but we build often, so unless there's a reason
-          ## to care about old copies in the future, just say 7 days for now
-          retention-days: 7
+          path: |
+            import_graph.dot
+            decls.txt
+            imports.json
+          ## Master pushes: 90 days, so later PRs forked from these commits
+          ## can consume the dumps from the artifact. Other branches: 7 days.
+          retention-days: ${{ github.ref == 'refs/heads/master' && '90' || '7' }}
 
       - name: clean up the import graph file
-        run: rm import_graph.dot
+        run: rm -f import_graph.dot decls.txt imports.json
 
       - name: check all scripts build successfully
         run: |

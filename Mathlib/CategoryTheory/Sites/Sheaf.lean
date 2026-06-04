@@ -104,7 +104,7 @@ def conesEquivSieveCompatibleFamily :
     ⟨fun _ f h => π.app (op ⟨Over.mk f, h⟩), fun X Y f g hf => by
       let φ : S.arrows.categoryMk (g ≫ f) (S.downward_closed hf g) ⟶
         S.arrows.categoryMk f hf := ObjectProperty.homMk (Over.homMk _ (by rfl))
-      simpa using π.naturality φ.op⟩
+      simpa using! π.naturality φ.op⟩
   invFun x :=
     { app := fun f => x.1 f.unop.1.hom f.unop.2
       naturality := fun f f' g => by
@@ -476,7 +476,7 @@ variable (J) in
 /-- The constant sheaf of a terminal object is indeed terminal -/
 def Sheaf.isTerminalTerminal {X : A} (hX : IsTerminal X) : IsTerminal (Sheaf.terminal J hX) :=
   .ofUniqueHom (⟨(Functor.isTerminalConst _ hX).from ·.obj⟩)
-    (by intros; ext; simpa using hX.hom_ext _ _)
+    (by intros; ext; simpa using! hX.hom_ext _ _)
 
 @[simp]
 lemma Sheaf.isTerminalTerminal_from_hom {X : A} (hX : IsTerminal X) (G : Sheaf J A) :

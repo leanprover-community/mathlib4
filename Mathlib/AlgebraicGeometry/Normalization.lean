@@ -181,7 +181,7 @@ lemma ι_fromNormalization (U : Y.affineOpens) :
 
 lemma fromNormalization_preimage (U : Y.affineOpens) :
     f.fromNormalization ⁻¹ᵁ U = (f.normalizationOpenCover.f U).opensRange := by
-  simpa using f.normalizationGlueData.toBase_preimage_eq_opensRange_ι U
+  simpa using! f.normalizationGlueData.toBase_preimage_eq_opensRange_ι U
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
@@ -219,7 +219,7 @@ def normalizationObjIso {U : Y.Opens} (hU : IsAffineOpen U) :
     Γ(f.normalization, f.fromNormalization ⁻¹ᵁ U) ≅
       .of (integralClosure Γ(Y, U) Γ(X, f ⁻¹ᵁ U)) :=
   f.normalization.presheaf.mapIso (eqToIso
-    (by simpa using (f.fromNormalization_preimage ⟨U, hU⟩).symm)).op ≪≫
+    (by simpa using! (f.fromNormalization_preimage ⟨U, hU⟩).symm)).op ≪≫
   (f.normalizationOpenCover.f ⟨U, hU⟩).appIso ⊤ ≪≫ Scheme.ΓSpecIso _
 
 set_option backward.isDefEq.respectTransparency false in

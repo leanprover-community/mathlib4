@@ -223,7 +223,6 @@ theorem app_invApp (U : Opens Y) :
   rw [invApp, ← Category.assoc, IsIso.comp_inv_eq, f.c.naturality]
   congr
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `app_inv_app` that gives an `eqToHom` instead of `homOfLe`. -/
 @[reassoc]
 theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.base) :
@@ -348,7 +347,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem pullback_cone_of_left_condition : pullbackConeOfLeftFst f g ≫ f = Y.ofRestrict _ ≫ g := by
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `NatTrans.ext`
   refine PresheafedSpace.Hom.ext _ _ ?_ <| NatTrans.ext <| funext fun U => ?_
-  · simpa using pullback.condition
+  · simpa using! pullback.condition
   · induction U
     simp only [(NatTrans.comp_app), comp_c_app, unop_op, Functor.whiskerRight_app,
       pullbackConeOfLeftFst, app_invApp_assoc, eqToHom_app, Category.assoc,
@@ -969,7 +968,7 @@ instance sigma_ι_isOpenImmersion {ι : Type w} [Small.{v} ι]
   have : colimit.ι F i = (colimit.ι F i ≫ (HasColimit.isoOfEquivalence f (Iso.refl _)).inv) ≫
       (HasColimit.isoOfEquivalence f (Iso.refl _)).hom := by
     simp
-  rw [this, HasColimit.isoOfEquivalence_inv_π]
+  rw [this, HasColimit.ι_isoOfEquivalence_inv]
   infer_instance
 
 end Prod

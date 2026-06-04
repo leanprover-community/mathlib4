@@ -543,10 +543,10 @@ theorem comap_map_of_bijective : (I.map f).comap f = I :=
   le_antisymm ((comap_le_iff_le_map f hf).mpr fun _ ↦ id) le_comap_map
 
 theorem isMaximal_map_iff_of_bijective : IsMaximal (map f I) ↔ IsMaximal I := by
-  simpa only [isMaximal_def] using (relIsoOfBijective _ hf).symm.isCoatom_iff _
+  simpa only [isMaximal_def] using! (relIsoOfBijective _ hf).symm.isCoatom_iff _
 
 theorem isMaximal_comap_iff_of_bijective : IsMaximal (comap f K) ↔ IsMaximal K := by
-  simpa only [isMaximal_def] using (relIsoOfBijective _ hf).isCoatom_iff _
+  simpa only [isMaximal_def] using! (relIsoOfBijective _ hf).isCoatom_iff _
 
 alias ⟨_, IsMaximal.map_bijective⟩ := isMaximal_map_iff_of_bijective
 alias ⟨_, IsMaximal.comap_bijective⟩ := isMaximal_comap_iff_of_bijective
@@ -754,7 +754,7 @@ lemma ker_eq_top_of_subsingleton [Subsingleton S] (f : F) : ker f = ⊤ :=
   eq_top_iff.mpr fun _ _ ↦ Subsingleton.elim _ _
 
 lemma _root_.Pi.ker_ringHom {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R i)]
-    (φ : ∀ i, S →+* R i) : ker (Pi.ringHom φ) = ⨅ i, ker (φ i) := by
+    (φ : ∀ i, S →+* R i) : ker (RingHom.pi φ) = ⨅ i, ker (φ i) := by
   ext x
   simp [mem_ker, funext_iff]
 
@@ -842,6 +842,10 @@ def Module.annihilator : Ideal R := RingHom.ker (Module.toAddMonoidEnd R M)
 
 theorem Module.mem_annihilator {r} : r ∈ Module.annihilator R M ↔ ∀ m : M, r • m = 0 :=
   ⟨fun h ↦ (congr($h ·)), (AddMonoidHom.ext ·)⟩
+
+lemma Module.mem_annihilator_iff_lsmul_eq_zero {R : Type*} [CommSemiring R]
+    [Module R M] {r : R} : r ∈ Module.annihilator R M ↔ LinearMap.lsmul R M r = 0 := by
+  simp [Module.mem_annihilator, LinearMap.ext_iff]
 
 instance (priority := low) : (Module.annihilator R M).IsTwoSided :=
   inferInstanceAs (RingHom.ker _).IsTwoSided

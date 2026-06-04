@@ -248,7 +248,7 @@ instance hasCoeToGeneralLinearGroup : Coe (SpecialLinearGroup n R) (GL n R) :=
 
 lemma toGL_injective :
     Function.Injective (toGL : SpecialLinearGroup n R → GL n R) := fun g g' ↦ by
-  simpa [toGL] using fun h _ ↦ Subtype.ext h
+  simpa [toGL] using! fun h _ ↦ Subtype.ext h
 
 @[simp]
 lemma toGL_inj (g g' : SpecialLinearGroup n R) :

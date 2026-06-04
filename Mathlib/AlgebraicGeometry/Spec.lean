@@ -161,7 +161,6 @@ theorem Spec.toPresheafedSpace_map_op (R S : CommRingCat.{u}) (f : R ⟶ S) :
     Spec.toPresheafedSpace.map f.op = (Spec.sheafedSpaceMap f).hom :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
     {α β : X ⟶ Spec.sheafedSpaceObj R} (w : α.hom.base = β.hom.base)
     (h : ∀ r : R,
@@ -176,7 +175,7 @@ theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
       PrimeSpectrum.isBasis_basic_opens
     intro r
     apply (StructureSheaf.to_basicOpen_epi R r).1
-    simpa using h r
+    simpa using! h r
 
 -- `simps!` generates some garbage lemmas, so choose manually,
 -- if more is needed, add them here

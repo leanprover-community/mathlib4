@@ -62,6 +62,9 @@ def shrinkCompUliftFunctorIso (F : C ⥤ Type w') [FunctorToTypes.Small.{w} F]
   NatIso.ofComponents
     (fun X ↦ Equiv.toIso ((Equiv.ulift.trans (equivShrink _).symm).trans (equivShrink _)))
 
+unif_hint (F : C ⥤ Type w') [FunctorToTypes.Small.{w} F] (X : C) where ⊢
+  Shrink (F.obj X) ≟ (FunctorToTypes.shrink F).obj X
+
 end FunctorToTypes
 
 variable [LocallySmall.{w} C]
@@ -204,7 +207,6 @@ def shrinkYonedaIsoYoneda : shrinkYoneda.{v} ≅ yoneda (C := C) :=
     (by intros; ext; simp [shrinkYonedaObjObjEquiv_map_app])
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `shrinkYoneda` is compatible with `uliftFunctor`. -/
 noncomputable
 def shrinkYonedaUliftFunctorIso [LocallySmall.{max w w'} C] :

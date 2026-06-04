@@ -91,7 +91,7 @@ theorem Module.injective_of_localization_maximal [Small.{v} R] [IsNoetherianRing
   rw [eq] at surj
   rw [← LinearMap.coe_restrictScalars (R := R),
     LocalizedModule.restrictScalars_map_eq m.primeCompl hM gM]
-  simpa using surj
+  simpa using! surj
 
 section
 

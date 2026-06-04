@@ -1349,7 +1349,6 @@ noncomputable def Over.coprodObj [HasBinaryCoproducts C] {A : C} :
     map := fun k => Over.homMk (coprod.map (𝟙 _) k.left) }
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A category with binary coproducts has a functorial `sup` operation on over categories. -/
 @[simps]
 noncomputable def Over.coprod [HasBinaryCoproducts C] {A : C} : Over A ⥤ Over A ⥤ Over A where
@@ -1548,10 +1547,10 @@ protected def IsLimit.assoc (P : IsLimit sXY) (Q : IsLimit sYZ) {s : BinaryFan s
       rintro ⟨⟨⟩⟩
       · simpa using w ⟨.left⟩
       · replace w : m ≫ BinaryFan.IsLimit.lift Q (s.fst ≫ sXY.snd) s.snd = t.π.app ⟨.right⟩ := by
-          simpa using w ⟨.right⟩
+          simpa using! w ⟨.right⟩
         simp [← w]
     · replace w : m ≫ BinaryFan.IsLimit.lift Q (s.fst ≫ sXY.snd) s.snd = t.π.app ⟨.right⟩ := by
-        simpa using w ⟨.right⟩
+        simpa using! w ⟨.right⟩
       simp [← w]
 
 /-- Given two pairs of limit cones corresponding to the parenthesisations of `X × Y × Z`,

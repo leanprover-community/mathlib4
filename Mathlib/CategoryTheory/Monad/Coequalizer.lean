@@ -99,7 +99,7 @@ def beckAlgebraCoequalizer : IsColimit (beckAlgebraCofork X) :=
       rw [Functor.map_comp, Category.assoc, h₂, Monad.right_unit_assoc,
         show X.a ≫ _ ≫ _ = _ from T.η.naturality_assoc _ _, h₁, Monad.left_unit_assoc]
     · ext
-      simpa [← T.η.naturality_assoc, T.left_unit_assoc] using T.η.app ((T : C ⥤ C).obj X.A) ≫= h₁
+      simpa [← T.η.naturality_assoc, T.left_unit_assoc] using! T.η.app ((T : C ⥤ C).obj X.A) ≫= h₁
     · intro m hm
       ext
       dsimp only

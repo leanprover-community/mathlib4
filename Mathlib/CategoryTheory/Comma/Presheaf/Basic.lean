@@ -301,7 +301,7 @@ lemma ext {p q : YonedaCollection F X} (h : p.fst = q.fst)
   rcases p with ⟨p, p'⟩
   rcases q with ⟨q, q'⟩
   obtain rfl : p = q := yonedaEquiv.symm.injective h
-  exact Sigma.ext rfl (by simpa [snd] using h'.symm)
+  exact Sigma.ext rfl (by simpa [snd] using! h'.symm)
 
 /-- Functoriality of `YonedaCollection F X` in `F`. -/
 def map₁ {G : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v} (η : F ⟶ G) :
@@ -449,7 +449,7 @@ lemma unitForward_naturality₂ {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X Y : C
 lemma app_unitForward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : Cᵒᵖ)
     (p : YonedaCollection (restrictedYonedaObj η) X.unop) :
     η.app X (unitForward η X.unop p) = p.yonedaEquivFst := by
-  simpa [unitForward] using p.snd.app_val
+  simpa [unitForward] using! p.snd.app_val
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Backward direction of the unit. -/
@@ -504,13 +504,11 @@ section counit
 
 variable {F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v} {X : C}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma OverArrows.yonedaCollectionPresheafToA_val_fst (s : yoneda.obj X ⟶ A)
     (p : OverArrows (yonedaCollectionPresheafToA F) s) : p.val.fst = s := by
   simpa [YonedaCollection.yonedaEquivFst_eq] using p.app_val
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Forward direction of the counit. -/
 def counitForward (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v)
     (s : CostructuredArrow yoneda A) :

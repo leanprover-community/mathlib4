@@ -88,7 +88,7 @@ def overPretopology : Pretopology (Over S) where
   pullbacks := by
     rintro Y X f _ ⟨𝒰, h, rfl⟩
     refine ⟨𝒰.pullbackCoverOver' S f.left, inferInstance, ?_⟩
-    simpa [Cover.toPresieveOver] using
+    simpa [Cover.toPresieveOver] using!
       (Presieve.ofArrows_pullback f (fun i ↦ (𝒰.X i).asOver S) (fun i ↦ (𝒰.f i).asOver S)).symm
   transitive := by
     rintro X _ T ⟨𝒰, h, rfl⟩ H

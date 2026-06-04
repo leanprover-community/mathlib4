@@ -16,6 +16,7 @@ public import Mathlib.Algebra.Order.Group.Units
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.OrderDual
 public import Mathlib.Algebra.Order.Monoid.TypeTags
+public import Mathlib.Data.Int.Basic
 public import Mathlib.Data.Set.Function
 
 /-!
@@ -190,7 +191,7 @@ instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
   isBot_zero _ := (le_top : _ ≤ ⊤)
   mul_lt_mul_of_pos_left := by
     simpa [← ofAdd_add, ← toDual_add]
-      using fun a ha b c hbc ↦ add_right_strictMono_of_ne_top (by simpa using ha.ne') hbc
+      using! fun a ha b c hbc ↦ add_right_strictMono_of_ne_top (by simpa using! ha.ne') hbc
 
 @[deprecated "Use simp" (since := "2025-11-17")]
 theorem ofAdd_toDual_eq_zero_iff [LinearOrderedAddCommMonoidWithTop α]
@@ -576,6 +577,20 @@ lemma lt_mul_exp_iff_le {x y : ℤᵐ⁰} (hy : y ≠ 0) : x < y * exp 1 ↔ x �
   · simp
   lift x to Multiplicative ℤ using hx
   rw [← log_le_log, ← log_lt_log] <;> simp [log_mul, Int.lt_add_one_iff]
+
+lemma exists_exp_neg_natCast_lt {x : ℤᵐ⁰} (hx : x ≠ 0) :
+    ∃ (k : ℕ), exp (-(k : ℤ)) < x := by
+  obtain ⟨y, hnz, hyx⟩ := WithZero.exists_ne_zero_and_lt hx
+  use (-y.log).toNat
+  apply lt_of_le_of_lt _ hyx
+  rw [← WithZero.le_log_iff_exp_le hnz, Int.neg_le_iff]
+  exact Int.self_le_toNat _
+
+lemma exists_exp_neg_natCast_lt_and_lt {x y : ℤᵐ⁰} (hx : x ≠ 0) (hy : y ≠ 0) :
+    ∃ (k : ℕ), exp (-(k : ℤ)) < x ∧ exp (-(k : ℤ)) < y  := by
+  obtain ⟨z, hz, hzx, hzy⟩ := WithZero.exists_ne_zero_and_le_and_le hx hy
+  obtain ⟨k, hk⟩ := exists_exp_neg_natCast_lt hz
+  grind
 
 lemma le_exp_log {x : Gᵐ⁰} :
     x ≤ exp (log x) := by

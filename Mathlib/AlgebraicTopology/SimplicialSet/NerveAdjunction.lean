@@ -200,7 +200,7 @@ a morphism `X ⟶ (truncation 2).obj (nerve C)`. -/
 def descOfTruncation (φ : X ⟶ (truncation 2).obj (nerve C)) :
     X.HomotopyCategory ⥤ C :=
   lift (fun x ↦ nerveEquiv (φ.app _ x)) (fun e ↦ nerve.homEquiv (e.map φ))
-    (fun x ↦ by simpa using nerve.homEquiv_id (φ.app _ x))
+    (fun x ↦ by simpa using! nerve.homEquiv_id (φ.app _ x))
       (fun h ↦ nerve.homEquiv_comp (h.map φ))
 
 @[simp]

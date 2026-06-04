@@ -147,7 +147,7 @@ def HoCat.homEquivRight :
     RightHomotopyClass X Y ≃ (toHoCat.obj (mk X) ⟶ toHoCat.obj (mk Y)) where
   toFun := Quot.lift (fun f ↦ toHoCat.map (homMk f)) (fun _ _ h ↦ by rwa [toHoCat_map_eq_iff])
   invFun := Quot.lift (fun f ↦ .mk f.hom) (fun _ _ h ↦ by
-    simpa [RightHomotopyClass.mk_eq_mk_iff] using h)
+    simpa [RightHomotopyClass.mk_eq_mk_iff] using! h)
   left_inv := by rintro ⟨f⟩; rfl
   right_inv := by rintro ⟨f⟩; rfl
 
@@ -329,7 +329,7 @@ lemma bifibrantResolutionObj_hom_ext
     ← RightHomotopyClass.mk_eq_mk_iff]
   apply (RightHomotopyClass.precomp_bijective_of_cofibration_of_weakEquivalence
     _ (iBifibrantResolutionObj X).hom).1
-  simpa using h
+  simpa using! h
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The bifibrant resolution functor from the category of cofibrant objects
@@ -350,7 +350,7 @@ noncomputable def HoCat.bifibrantResolution :
   CategoryTheory.Quotient.lift _ CofibrantObject.HoCat.bifibrantResolution' (by
     intro X Y f g h
     apply bifibrantResolutionObj_hom_ext
-    simpa [← Functor.map_comp, toHoCat_map_eq_iff] using h.postcomp _)
+    simpa [← Functor.map_comp, toHoCat_map_eq_iff] using! h.postcomp _)
 
 @[simp]
 lemma HoCat.bifibrantResolution_obj (X : CofibrantObject C) :

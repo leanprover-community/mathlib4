@@ -98,7 +98,6 @@ def map {D : Type*} [Category* D] {X : SimplicialObject.Augmented C} (ed : Extra
   s n := F.map (ed.s n)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If `X` and `Y` are isomorphic augmented simplicial objects, then an extra
 degeneracy for `X` gives also an extra degeneracy for `Y` -/
 def ofIso {X Y : SimplicialObject.Augmented C} (e : X ≅ Y) (ed : ExtraDegeneracy X) :
@@ -266,7 +265,7 @@ def shift {n : ℕ} {Δ : SimplexCategory} (f : ⦋n⦌ ⟶ Δ) : ⦋n + 1⦌ �
             exact h₁ (le_antisymm hi (Fin.zero_le _))
           obtain ⟨j₁, hj₁⟩ := Fin.eq_succ_of_ne_zero h₁
           obtain ⟨j₂, hj₂⟩ := Fin.eq_succ_of_ne_zero h₂
-          substs hj₁ hj₂
+          subst hj₁ hj₂
           simpa only [shiftFun_succ] using f.toOrderHom.monotone (Fin.succ_le_succ_iff.mp hi) }
 
 set_option backward.isDefEq.respectTransparency false in

@@ -141,7 +141,7 @@ theorem prod_assoc_image {α β γ} {s : Set α} {t : Set β} {u : Set γ} :
 
 theorem prod_assoc_symm_image {α β γ} {s : Set α} {t : Set β} {u : Set γ} :
     (Equiv.prodAssoc α β γ).symm '' s ×ˢ t ×ˢ u = (s ×ˢ t) ×ˢ u := by
-  simpa only [Equiv.image_eq_preimage_symm] using prod_assoc_preimage
+  simpa only [Equiv.image_eq_preimage_symm] using! prod_assoc_preimage
 
 /-- A set `s` in `α × β` is equivalent to the sigma-type `Σ x, {y | (x, y) ∈ s}`. -/
 def setProdEquivSigma {α β : Type*} (s : Set (α × β)) :
@@ -246,8 +246,10 @@ protected def singleton {α} (a : α) : ({a} : Set α) ≃ PUnit.{u} :=
     subst x
     rfl, fun ⟨⟩ => rfl⟩
 
-lemma Equiv.strictMono_setCongr {α : Type*} [Preorder α] {S T : Set α} (h : S = T) :
+lemma _root_.Equiv.strictMono_setCongr {α : Type*} [Preorder α] {S T : Set α} (h : S = T) :
     StrictMono (setCongr h) := fun _ _ ↦ id
+
+@[deprecated (since := "2026-05-24")] alias Equiv.strictMono_setCongr := Equiv.strictMono_setCongr
 
 /-- If `a ∉ s`, then `insert a s` is equivalent to `s ⊕ PUnit`. -/
 protected def insert {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a : α} (H : a ∉ s) :

@@ -396,7 +396,7 @@ lemma mfderiv_extChartAt_self :
   rw [← TangentBundle.continuousLinearMapAt_trivializationAt (by simp),
     TangentBundle.continuousLinearMapAt_trivializationAt_eq_core (by simp)]
   ext v
-  simpa using (tangentBundleCore I M).coordChange_self (achart H x) x (mem_chart_source H x) v
+  simpa using! (tangentBundleCore I M).coordChange_self (achart H x) x (mem_chart_source H x) v
 
 set_option backward.isDefEq.respectTransparency false in
 -- TODO: should there be a version for `extChartAt`?
@@ -408,7 +408,7 @@ lemma mfderivWithin_range_extChartAt_symm :
   have hcomp := mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt' (I := I)
     (mem_extChartAt_source x)
   rw [mfderiv_extChartAt_self, ContinuousLinearMap.comp_id] at hcomp
-  simpa using hcomp
+  simpa using! hcomp
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The inverse of the derivative of `(extChartAt I x).symm` at the chart point,
