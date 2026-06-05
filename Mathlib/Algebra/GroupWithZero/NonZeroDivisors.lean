@@ -55,7 +55,7 @@ lemma mem_nonZeroDivisorsLeft_iff : x ∈ nonZeroDivisorsLeft M₀ ↔ ∀ y, x 
 
 lemma notMem_nonZeroDivisorsLeft_iff :
     x ∉ nonZeroDivisorsLeft M₀ ↔ {y | x * y = 0 ∧ y ≠ 0}.Nonempty := by
-  simpa [mem_nonZeroDivisorsLeft_iff] using Set.nonempty_def.symm
+  simpa [mem_nonZeroDivisorsLeft_iff] using! Set.nonempty_def.symm
 
 /-- The collection of elements of a `MonoidWithZero` that are not right zero divisors form a
 `Submonoid`. -/
@@ -69,7 +69,7 @@ lemma mem_nonZeroDivisorsRight_iff : x ∈ nonZeroDivisorsRight M₀ ↔ ∀ y, 
 
 lemma notMem_nonZeroDivisorsRight_iff :
     x ∉ nonZeroDivisorsRight M₀ ↔ {y | y * x = 0 ∧ y ≠ 0}.Nonempty := by
-  simpa [mem_nonZeroDivisorsRight_iff] using Set.nonempty_def.symm
+  simpa [mem_nonZeroDivisorsRight_iff] using! Set.nonempty_def.symm
 
 lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
     nonZeroDivisorsLeft M₀ = nonZeroDivisorsRight M₀ := by
@@ -121,9 +121,6 @@ variable {F M₀ M₀' : Type*} [MonoidWithZero M₀] [MonoidWithZero M₀'] {r 
 
 lemma nonZeroDivisorsLeft_eq_nonZeroSMulDivisors :
     nonZeroDivisorsLeft M₀ = nonZeroSMulDivisors M₀ M₀ := rfl
-
-@[deprecated (since := "2025-07-16")]
-alias nonZeroDivisorsRight_eq_nonZeroSMulDivisors := nonZeroDivisorsLeft_eq_nonZeroSMulDivisors
 
 theorem mem_nonZeroDivisors_iff :
     r ∈ M₀⁰ ↔ (∀ x, r * x = 0 → x = 0) ∧ ∀ x, x * r = 0 → x = 0 := Iff.rfl
@@ -309,8 +306,17 @@ lemma nonZeroDivisorsLeft_eq_nonZeroDivisors : nonZeroDivisorsLeft M₀ = nonZer
 lemma nonZeroDivisorsRight_eq_nonZeroDivisors : nonZeroDivisorsRight M₀ = nonZeroDivisors M₀ := by
   rw [← nonZeroDivisorsLeft_eq_right, nonZeroDivisorsLeft_eq_nonZeroDivisors]
 
+lemma nonZeroDivisorsRight_eq_left : nonZeroDivisorsRight M₀ = nonZeroDivisorsLeft M₀ := by
+  rw [nonZeroDivisorsLeft_eq_right]
+
+theorem mem_nonZeroDivisors_iff_left : r ∈ M₀⁰ ↔ ∀ x, r * x = 0 → x = 0 := by
+  rw [← nonZeroDivisorsLeft_eq_nonZeroDivisors]; rfl
+
 theorem mem_nonZeroDivisors_iff_right : r ∈ M₀⁰ ↔ ∀ x, x * r = 0 → x = 0 := by
   rw [← nonZeroDivisorsRight_eq_nonZeroDivisors]; rfl
+
+lemma notMem_nonZeroDivisors_iff_left : r ∉ M₀⁰ ↔ {s | r * s = 0 ∧ s ≠ 0}.Nonempty := by
+  simp [mem_nonZeroDivisors_iff_left, Set.nonempty_def]
 
 lemma notMem_nonZeroDivisors_iff_right : r ∉ M₀⁰ ↔ {s | s * r = 0 ∧ s ≠ 0}.Nonempty := by
   simp [mem_nonZeroDivisors_iff_right, Set.nonempty_def]
@@ -367,14 +373,6 @@ variable {M₀ M : Type*} [MonoidWithZero M₀] [Zero M] [MulAction M₀ M] {x :
 
 lemma mem_nonZeroSMulDivisors_iff : x ∈ M₀⁰[M] ↔ ∀ (m : M), x • m = 0 → m = 0 := Iff.rfl
 
-@[deprecated (since := "2025-07-16")]
-alias unop_nonZeroSMulDivisors_mulOpposite_eq_nonZeroDivisors :=
-  nonZeroDivisorsLeft_eq_nonZeroSMulDivisors
-
-@[deprecated (since := "2025-07-16")]
-alias nonZeroSMulDivisors_mulOpposite_eq_op_nonZeroDivisors :=
-  nonZeroDivisorsLeft_eq_nonZeroSMulDivisors
-
 end nonZeroSMulDivisors
 
 open scoped nonZeroDivisors
@@ -416,7 +414,7 @@ def associatesNonZeroDivisorsEquiv : (Associates M₀)⁰ ≃* Associates M₀�
   toEquiv := .subtypeQuotientEquivQuotientSubtype _ (s₂ := Associated.setoid _)
     (· ∈ nonZeroDivisors _)
     (by simp [mem_nonZeroDivisors_iff, Quotient.forall, Associates.mk_mul_mk])
-    (by simp [Associated.setoid])
+    (by simp +instances [Associated.setoid])
   map_mul' := by simp [Quotient.forall, Associates.mk_mul_mk]
 
 @[simp]

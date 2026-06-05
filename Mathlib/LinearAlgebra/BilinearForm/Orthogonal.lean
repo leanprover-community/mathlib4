@@ -130,13 +130,7 @@ Note that for general (neither symmetric nor antisymmetric) bilinear forms this 
 chirality; in addition to this "right" orthogonal complement one could define a "left" orthogonal
 complement for which, for all `y` in `N`, `B x y = 0`.  This variant definition is not currently
 provided in mathlib. -/
-def orthogonal (B : BilinForm R M) (N : Submodule R M) : Submodule R M where
-  carrier := { m | ∀ n ∈ N, IsOrtho B n m }
-  zero_mem' x _ := isOrtho_zero_right x
-  add_mem' {x y} hx hy n hn := by
-    rw [IsOrtho, add_right, show B n x = 0 from hx n hn, show B n y = 0 from hy n hn, zero_add]
-  smul_mem' c x hx n hn := by
-    rw [IsOrtho, smul_right, show B n x = 0 from hx n hn, mul_zero]
+def orthogonal (B : BilinForm R M) (N : Submodule R M) : Submodule R M := N.orthogonalBilin B
 
 variable {N L : Submodule R M}
 
@@ -156,9 +150,9 @@ lemma orthogonal_top_eq_ker (hB : B.IsRefl) :
     B.orthogonal ⊤ = LinearMap.ker B := by
   ext; simp [LinearMap.BilinForm.IsOrtho, LinearMap.ext_iff, hB.eq_iff]
 
-lemma orthogonal_top_eq_bot (hB : B.Nondegenerate) (hB₀ : B.IsRefl) :
+lemma orthogonal_top_eq_bot (hB : B.Nondegenerate) :
     B.orthogonal ⊤ = ⊥ :=
-  (Submodule.eq_bot_iff _).mpr fun _ hx ↦ hB.1 _ fun y ↦ hB₀ _ _ <| hx y Submodule.mem_top
+  (Submodule.eq_bot_iff _).mpr fun x hx ↦ hB.2 x (by simpa using! hx)
 
 -- ↓ This lemma only applies in fields as we require `a * b = 0 → a = 0 ∨ b = 0`
 theorem span_singleton_inf_orthogonal_eq_bot {B : BilinForm K V} {x : V} (hx : ¬B.IsOrtho x x) :
@@ -200,30 +194,27 @@ theorem iIsOrtho.not_isOrtho_basis_self_of_nondegenerate {n : Type w} [Nontrivia
 
 /-- Given an orthogonal basis with respect to a bilinear form, the bilinear form is nondegenerate
 iff the basis has no elements which are self-orthogonal. -/
-theorem iIsOrtho.nondegenerate_iff_not_isOrtho_basis_self {n : Type w} [Nontrivial R]
-    [IsDomain R] (B : BilinForm R M) (v : Basis n R M) (hO : B.iIsOrtho v) :
+theorem iIsOrtho.nondegenerate_iff_not_isOrtho_basis_self {n : Type w} [IsDomain R]
+    (B : BilinForm R M) (v : Basis n R M) (hO : B.iIsOrtho v) :
     B.Nondegenerate ↔ ∀ i, ¬B.IsOrtho (v i) (v i) :=
   ⟨hO.not_isOrtho_basis_self_of_nondegenerate, hO.nondegenerate_of_not_isOrtho_basis_self _⟩
 
 section
 
-theorem toLin_restrict_ker_eq_inf_orthogonal (B : BilinForm K V) (W : Subspace K V) (b : B.IsRefl) :
-    (LinearMap.ker <| B.domRestrict W).map W.subtype = (W ⊓ B.orthogonal ⊤ : Subspace K V) := by
+theorem toLin_restrict_ker_eq_inf_ker (B : BilinForm K V) (W : Subspace K V) :
+    (LinearMap.ker <| B.domRestrict W).map W.subtype = W ⊓ B.ker := by
   ext x; constructor <;> intro hx
   · rcases hx with ⟨⟨x, hx⟩, hker, rfl⟩
     constructor
     · simp [hx]
-    · intro y _
-      rw [IsOrtho, b]
-      change (B.domRestrict W) ⟨x, hx⟩ y = 0
-      rw [hker]
-      rfl
+    · simpa
   · simp_rw [Submodule.mem_map, LinearMap.mem_ker]
-    refine ⟨⟨x, hx.1⟩, ?_, rfl⟩
-    ext y
-    change B x y = 0
-    rw [b]
-    exact hx.2 _ Submodule.mem_top
+    exact ⟨⟨x, hx.1⟩, hx.right, rfl⟩
+
+theorem toLin_restrict_ker_eq_inf_orthogonal (B : BilinForm K V) (W : Subspace K V) (b : B.IsRefl) :
+    (LinearMap.ker <| B.domRestrict W).map W.subtype = W ⊓ B.orthogonal ⊤ := by
+  rw [orthogonal_top_eq_ker b]
+  exact toLin_restrict_ker_eq_inf_ker ..
 
 theorem toLin_restrict_range_dualCoannihilator_eq_orthogonal (B : BilinForm K V)
     (W : Subspace K V) :
@@ -263,10 +254,10 @@ open Module Submodule
 
 variable {B : BilinForm K V}
 
-theorem finrank_add_finrank_orthogonal (b₁ : B.IsRefl) (W : Submodule K V) :
+theorem finrank_add_finrank_orthogonal' (W : Submodule K V) :
     finrank K W + finrank K (B.orthogonal W) =
-      finrank K V + finrank K (W ⊓ B.orthogonal ⊤ : Subspace K V) := by
-  rw [← toLin_restrict_ker_eq_inf_orthogonal _ _ b₁, ←
+      finrank K V + finrank K (W ⊓ B.ker : Subspace K V) := by
+  rw [← toLin_restrict_ker_eq_inf_ker _ _, ←
     toLin_restrict_range_dualCoannihilator_eq_orthogonal _ _, finrank_map_subtype_eq]
   conv_rhs =>
     rw [← @Subspace.finrank_add_finrank_dualCoannihilator_eq K V _ _ _ _
@@ -274,16 +265,22 @@ theorem finrank_add_finrank_orthogonal (b₁ : B.IsRefl) (W : Submodule K V) :
       add_comm, ← add_assoc, add_comm (finrank K (LinearMap.ker (B.domRestrict W))),
       LinearMap.finrank_range_add_finrank_ker]
 
-lemma finrank_orthogonal (hB : B.Nondegenerate) (hB₀ : B.IsRefl) (W : Submodule K V) :
+theorem finrank_add_finrank_orthogonal (b₁ : B.IsRefl) (W : Submodule K V) :
+    finrank K W + finrank K (B.orthogonal W) =
+      finrank K V + finrank K (W ⊓ B.orthogonal ⊤ : Subspace K V) := by
+  rw [orthogonal_top_eq_ker b₁]
+  exact finrank_add_finrank_orthogonal' _
+
+lemma finrank_orthogonal (hB : B.Nondegenerate) (W : Submodule K V) :
     finrank K (B.orthogonal W) = finrank K V - finrank K W := by
-  have := finrank_add_finrank_orthogonal hB₀ (W := W)
-  rw [B.orthogonal_top_eq_bot hB hB₀, inf_bot_eq, finrank_bot, add_zero] at this
+  have := finrank_add_finrank_orthogonal' (B := B) W
+  rw [hB.ker_eq_bot, inf_bot_eq, finrank_bot, add_zero] at this
   lia
 
 lemma orthogonal_orthogonal (hB : B.Nondegenerate) (hB₀ : B.IsRefl) (W : Submodule K V) :
     B.orthogonal (B.orthogonal W) = W := by
   apply (eq_of_le_of_finrank_le (LinearMap.BilinForm.le_orthogonal_orthogonal hB₀) _).symm
-  simp only [finrank_orthogonal hB hB₀]
+  simp only [finrank_orthogonal hB]
   lia
 
 variable {W : Submodule K V}
@@ -341,7 +338,7 @@ lemma orthogonal_eq_bot_iff
     B.orthogonal W = ⊥ ↔ W = ⊤ := by
   refine ⟨eq_top_of_restrict_nondegenerate_of_orthogonal_eq_bot b₁ b₂, fun h ↦ ?_⟩
   rw [h, eq_bot_iff]
-  exact fun x hx ↦ b₃.1 x fun y ↦ b₁ y x <| by simpa using hx y
+  exact fun x hx ↦ b₃.1 x fun y ↦ b₁ y x <| by simpa using! hx y
 
 end
 
@@ -357,7 +354,7 @@ theorem restrict_nondegenerate_orthogonal_spanSingleton (B : BilinForm K V) (b�
     (b₂ : B.IsRefl) {x : V} (hx : ¬B.IsOrtho x x) :
     Nondegenerate <| B.restrict <| B.orthogonal (K ∙ x) := by
   have (n : V) : n ∈ K ∙ x ⊔ B.orthogonal (K ∙ x) :=
-      (span_singleton_sup_orthogonal_eq_top hx).symm ▸ Submodule.mem_top
+    (span_singleton_sup_orthogonal_eq_top hx).symm ▸ Submodule.mem_top
   refine ⟨fun m hm => Submodule.coe_eq_zero.1 (b₁.1 m fun n ↦ ?_),
     fun m hm => Submodule.coe_eq_zero.1 (b₁.2 m fun n ↦ ?_)⟩ <;>
   obtain ⟨y, hy, z, hz, rfl⟩ := Submodule.mem_sup.1 <| this n

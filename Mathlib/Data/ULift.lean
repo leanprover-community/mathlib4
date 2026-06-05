@@ -16,7 +16,7 @@ In this file we provide `Subsingleton`, `Unique`, `DecidableEq`, and `isEmpty` i
 `PLift.exists`.
 -/
 
-@[expose] public section
+public section
 
 universe u v u' v'
 

@@ -34,6 +34,7 @@ namespace CategoryTheory.Limits
 
 variable {J : Type w} [Category.{w'} J] [IsConnected J] {C : Type u} [Category.{v} C]
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 If `c` is a cocone over a functor `J ⥤ C` and `f : X ⟶ c.pt`, then for every `j : J` we can take
 the pullback of `c.ι.app j` and `f`. This gives a new cocone with cone point `X`, and this cocone
@@ -59,7 +60,7 @@ theorem IsColimit.pullback_hom_ext [HasPullbacks C] [HasColimitsOfShape J C]
     f ≫ g = f ≫ h := by
   refine (hc.pullbackOfHasExactColimitsOfShape f).hom_ext (fun j => ?_)
   rw [← cancel_epi (pullbackObjIso _ _ _).inv]
-  simpa using hf j
+  simpa using! hf j
 
 /-- Detecting vanishing of a morphism factoring through a connected colimit by pulling back along
 the inclusions of the colimit. -/
@@ -70,6 +71,7 @@ theorem IsColimit.pullback_zero_ext [HasZeroMorphisms C] [HasPullbacks C] [HasCo
   suffices f ≫ g = f ≫ 0 by simpa
   exact hc.pullback_hom_ext (by simpa using hf)
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 If `c` is a cone over a functor `J ⥤ C` and `f : c.pt ⟶ X`, then for every `j : J` we can take
 the pushout of `c.π.app j` and `f`. This gives a new cone with cone point `X`, and this cone is
@@ -86,6 +88,7 @@ noncomputable def IsLimit.pushoutOfHasExactLimitsOfShape [HasPushouts C]
   have := hc.isIso_limMap_π
   apply hpush.isIso_inr_of_isIso
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Detecting equality of morphisms factoring through a connected limit by pushing out along
 the projections of the limit. -/
 theorem IsLimit.pushout_hom_ext [HasPushouts C] [HasLimitsOfShape J C]
@@ -95,7 +98,7 @@ theorem IsLimit.pushout_hom_ext [HasPushouts C] [HasLimitsOfShape J C]
     g ≫ f = h ≫ f := by
   refine (hc.pushoutOfHasExactLimitsOfShape f).hom_ext (fun j => ?_)
   rw [← cancel_mono (pushoutObjIso _ _ _).hom]
-  simpa using hf j
+  simpa using! hf j
 
 /-- Detecting vanishing of a morphism factoring through a connected limit by pushing out along the
 projections of the limit. -/

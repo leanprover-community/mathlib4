@@ -5,13 +5,16 @@ Authors: Johan Commelin
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.BigOperators.Expect
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Order.Field.Canonical
 public import Mathlib.Algebra.Order.Nonneg.Floor
 public import Mathlib.Data.Real.Pointwise
 public import Mathlib.Data.NNReal.Defs
 public import Mathlib.Order.ConditionallyCompleteLattice.Group
+public import Mathlib.Data.Nat.Lattice
 
 /-!
 # Basic results on nonnegative real numbers
@@ -32,8 +35,9 @@ open Function Set
 open scoped BigOperators
 
 namespace NNReal
+variable {M : Type*} [Zero M]
 
-noncomputable instance : FloorSemiring ℝ≥0 := Nonneg.floorSemiring
+noncomputable instance : FloorSemiring ℝ≥0 := inferInstanceAs <| FloorSemiring (Subtype _)
 
 @[simp, norm_cast]
 theorem coe_mulIndicator {α} (s : Set α) (f : α → ℝ≥0) (a : α) :
@@ -78,6 +82,14 @@ theorem coe_sum (s : Finset ι) (f : ι → ℝ≥0) : ∑ i ∈ s, f i = ∑ i 
   map_sum toRealHom _ _
 
 @[simp, norm_cast]
+lemma toReal_finsuppSum (f : ι →₀ M) (g : ι → M → ℝ≥0) :
+    f.sum g = f.sum (fun i m ↦ toReal (g i m)) := map_finsuppSum toRealHom ..
+
+@[simp, norm_cast]
+lemma toReal_finsuppProd (f : ι →₀ M) (g : ι → M → ℝ≥0) :
+    f.prod g = f.prod (fun i m ↦ toReal (g i m)) := map_finsuppProd toRealHom ..
+
+@[simp, norm_cast]
 lemma coe_expect (s : Finset ι) (f : ι → ℝ≥0) : 𝔼 i ∈ s, f i = 𝔼 i ∈ s, (f i : ℝ) :=
   map_expect toRealHom ..
 
@@ -102,14 +114,26 @@ theorem le_iInf_add_iInf {ι ι' : Sort*} [Nonempty ι] [Nonempty ι'] {f : ι �
 
 theorem mul_finset_sup {α} (r : ℝ≥0) (s : Finset α) (f : α → ℝ≥0) :
     r * s.sup f = s.sup fun a => r * f a :=
-  Finset.comp_sup_eq_sup_comp _ (NNReal.mul_sup r) (mul_zero r)
+  Finset.apply_sup_eq_sup_comp _ (NNReal.mul_sup r) (mul_zero r)
 
 theorem finset_sup_mul {α} (s : Finset α) (f : α → ℝ≥0) (r : ℝ≥0) :
     s.sup f * r = s.sup fun a => f a * r :=
-  Finset.comp_sup_eq_sup_comp (· * r) (fun x y => NNReal.sup_mul x y r) (zero_mul r)
+  Finset.apply_sup_eq_sup_comp (· * r) (fun x y => NNReal.sup_mul x y r) (zero_mul r)
 
 theorem finset_sup_div {α} {f : α → ℝ≥0} {s : Finset α} (r : ℝ≥0) :
     s.sup f / r = s.sup fun a => f a / r := by simp only [div_eq_inv_mul, mul_finset_sup]
+
+section Set
+
+@[simp] lemma bddAbove_natCast_image_iff {s : Set ℕ} : BddAbove ((↑) '' s : Set ℝ≥0) ↔ BddAbove s :=
+  ⟨.imp' Nat.floor (by simp [upperBounds, Nat.le_floor_iff]), .imp' (↑) (by simp [upperBounds])⟩
+
+@[simp, norm_cast] lemma bddAbove_range_natCast_iff {ι : Sort*} (f : ι → ℕ) :
+    BddAbove (Set.range (f ·) : Set NNReal) ↔ BddAbove (Set.range f) := by
+  rw [← bddAbove_natCast_image_iff, ← Set.range_comp]
+  rfl
+
+end Set
 
 open Real
 
@@ -125,6 +149,12 @@ typeclass. For lemmas about subtraction and addition see lemmas about `OrderedSu
 
 theorem sub_div (a b c : ℝ≥0) : (a - b) / c = a / c - b / c :=
   tsub_div _ _ _
+
+/-- This lemma is needed for the `norm_cast` simp set. Outside of this use case `Nat.coe_sub`
+should be used. -/
+@[norm_cast]
+protected theorem coe_sub_of_lt {a b : ℝ≥0} (h : a < b) :
+    ((b - a : ℝ≥0) : ℝ) = b - a := NNReal.coe_sub h.le
 
 end Sub
 
@@ -178,7 +208,33 @@ theorem le_iInf_mul_iInf {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, a �
     a ≤ iInf g * iInf h :=
   le_iInf_mul fun i => le_mul_iInf <| H i
 
+@[simp, norm_cast] lemma natCast_iSup {ι : Sort*} (f : ι → ℕ) :
+    ⨆ i, f i = (⨆ i, f i : NNReal) := by
+  by_cases h : BddAbove (Set.range f)
+  · apply eq_of_forall_ge_iff
+    simp [ciSup_le_iff', ← Nat.le_floor_iff, *]
+  · simp [*]
+
+@[simp, norm_cast] lemma natCast_iInf {ι : Sort*} (f : ι → ℕ) :
+    ⨅ i, f i = (⨅ i, f i : NNReal) := by
+  obtain hι | hι := isEmpty_or_nonempty ι
+  · simp [iInf_empty]
+  apply eq_of_forall_le_iff
+  simp [le_ciInf_iff, ← Nat.ceil_le]
+
 end Csupr
+
+section rify
+
+@[rify_simps] lemma toReal_eq (a b : ℝ≥0) : a = b ↔ (a : ℝ) = (b : ℝ) := by simp
+
+@[rify_simps] lemma toReal_le (a b : ℝ≥0) : a ≤ b ↔ (a : ℝ) ≤ (b : ℝ) := by simp
+
+@[rify_simps] lemma toReal_lt (a b : ℝ≥0) : a < b ↔ (a : ℝ) < (b : ℝ) := by simp
+
+@[rify_simps] lemma toReal_ne (a b : ℝ≥0) : a ≠ b ↔ (a : ℝ) ≠ (b : ℝ) := by simp
+
+end rify
 
 @[simp]
 theorem range_coe : range toReal = Ici 0 := Subtype.range_coe

@@ -28,8 +28,10 @@ namespace DerivedCategory
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical t-structure on `DerivedCategory C`. -/
-def TStructure.t : TStructure (DerivedCategory C) where
+noncomputable def TStructure.t : TStructure (DerivedCategory C) where
   le n X := ∃ (K : CochainComplex C ℤ) (_ : X ≅ DerivedCategory.Q.obj K), K.IsStrictlyLE n
   ge n X := ∃ (K : CochainComplex C ℤ) (_ : X ≅ DerivedCategory.Q.obj K), K.IsStrictlyGE n
   le_isClosedUnderIsomorphisms n :=
@@ -153,11 +155,13 @@ instance (K : CochainComplex C ℤ) (n : ℤ) [K.IsLE n] :
   rw [isLE_Q_obj_iff]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (n : ℤ) : ((singleFunctor C n).obj X).IsGE n := by
   let e := (singleFunctorIsoCompQ C n).app X
   dsimp only [Functor.comp_obj] at e
   exact TStructure.t.isGE_of_iso e.symm n
 
+set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (n : ℤ) : ((singleFunctor C n).obj X).IsLE n := by
   let e := (singleFunctorIsoCompQ C n).app X
   dsimp only [Functor.comp_obj] at e
