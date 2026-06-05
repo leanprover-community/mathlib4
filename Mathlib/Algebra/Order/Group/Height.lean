@@ -6,10 +6,10 @@ Authors: Judith Ludwig, Junyan Xu
 module
 
 public import Mathlib.Algebra.Order.Group.Convex
-public import Mathlib.Data.Finite.Card
 public import Mathlib.Data.Real.Embedding
 public import Mathlib.Data.Set.Card
 public import Mathlib.Order.Birkhoff
+public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-! # Height of a totally ordered abelian group -/
 
@@ -95,7 +95,7 @@ theorem MulArchimedean.tfae_of_nontrivial [Nontrivial α] : List.TFAE
     ∃ f : α →*o Multiplicative ℝ, Function.Injective f] := by
   convert MulArchimedean.tfae (α := α) using 3
   rw [le_iff_eq_or_lt, or_iff_left]
-  rw [ENat.lt_one_iff_eq_zero, height_eq_zero_iff]
+  rw [Order.lt_one_iff, height_eq_zero_iff]
   exact not_subsingleton α
 
 end
@@ -123,7 +123,7 @@ theorem Archimedean.tfae_of_nontrivial [Nontrivial α] : List.TFAE
     ∃ f : α →+o ℝ, Function.Injective f] := by
   convert Archimedean.tfae (α := α) using 3
   rw [le_iff_eq_or_lt, or_iff_left]
-  rw [ENat.lt_one_iff_eq_zero, LinearOrderedAddCommGroup.height_eq_zero_iff]
+  rw [Order.lt_one_iff, LinearOrderedAddCommGroup.height_eq_zero_iff]
   exact not_subsingleton α
 
 end Archimedean
