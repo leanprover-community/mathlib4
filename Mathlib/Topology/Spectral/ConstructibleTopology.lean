@@ -81,7 +81,7 @@ lemma compl_image_constructibleTopologySubbasis :
     compl '' constructibleTopologySubbasis X = constructibleTopologySubbasis X := by
   grind [constructibleTopologySubbasis, isClosed_compl_iff, compl_compl]
 
-lemma latticeClosure_ConstructibleTopologySubbasis [CompactSpace X] [QuasiSeparatedSpace X] :
+lemma latticeClosure_constructibleTopologySubbasis [CompactSpace X] [QuasiSeparatedSpace X] :
     latticeClosure (constructibleTopologySubbasis X) = { s | IsConstructible s } := by
   rw [← BooleanSubalgebra.closure_eq_latticeClosure (empty_mem_constructibleTopologySubbasis X)
       compl_image_constructibleTopologySubbasis]
@@ -97,13 +97,19 @@ lemma latticeClosure_ConstructibleTopologySubbasis [CompactSpace X] [QuasiSepara
           (QuasiSeparatedSpace.isRetrocompact_iff_isCompact ht1.isOpen_compl).2 ht2⟩
   · exact Or.intro_left _ ⟨hs1, (QuasiSeparatedSpace.isRetrocompact_iff_isCompact hs1).1 hs2⟩
 
+lemma constructibleTopologySubbasis_subset_isConstructible
+    [CompactSpace X] [QuasiSeparatedSpace X] :
+    constructibleTopologySubbasis X ⊆ { s | IsConstructible s } := by
+  rw [← latticeClosure_constructibleTopologySubbasis]
+  exact subset_latticeClosure
+
 variable (X) in
 lemma constructibleTopology_eq_generateFrom_isConstructible
     [CompactSpace X] [QuasiSeparatedSpace X] :
-    constructibleTopology X = generateFrom { s : Set X | IsConstructible s } := by
+    constructibleTopology X = generateFrom { s | IsConstructible s } := by
   rw [constructibleTopology, ← generateFrom_latticeClosure (constructibleTopologySubbasis X)]
   congr
-  exact latticeClosure_ConstructibleTopologySubbasis
+  exact latticeClosure_constructibleTopologySubbasis
 
 lemma isCompact_of_mem_constructibleTopologySubbasis [CompactSpace X] {s : Set X}
     (hs : s ∈ constructibleTopologySubbasis X) : IsCompact s := by
