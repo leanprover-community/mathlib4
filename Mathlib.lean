@@ -5277,6 +5277,7 @@ public import Mathlib.LinearAlgebra.TensorProduct.Quotient
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
 public import Mathlib.LinearAlgebra.TensorProduct.Submodule
+public import Mathlib.LinearAlgebra.TensorProduct.SymmetricMap
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.LinearAlgebra.TensorProduct.Vanishing
 public import Mathlib.LinearAlgebra.Trace

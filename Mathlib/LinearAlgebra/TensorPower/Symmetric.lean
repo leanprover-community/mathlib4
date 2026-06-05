@@ -5,7 +5,8 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.SymmetricMap
+public import Mathlib.LinearAlgebra.PiTensorProduct
 public import Mathlib.Tactic.SuppressCompilation
 
 /-!
@@ -138,4 +139,36 @@ theorem span_tprod_eq_top : Submodule.span R (Set.range (tprod R (ι := ι) (M :
   rw [tprod, LinearMap.coe_compMultilinearMap, Set.range_comp, Submodule.span_image,
     PiTensorProduct.span_tprod_eq_top, Submodule.map_top, range_mk]
 
+-- UMP
+
+def lift {N : Type*} [AddCommMonoid N] [Module R N] :
+    (M [Σ^ι]→ₗ[R] N) ≃ₗ[R] ((Sym[R] ι M) →ₗ[R] N) := 
+  { toFun := fun f => by
+      sorry
+    map_add' := fun f g => sorry
+    map_smul' := fun r f => sorry
+    invFun := fun g => sorry
+    left_inv := fun f => sorry
+    right_inv := fun g => sorry 
+  }
+
+    
+example (N : Type) [AddCommGroup N] [Module R N] (φ : Sym[R] ι M →ₗ[R] N)
+    : (⨂[R] (_ : ι), M) →ₗ[R] N := by
+  let π : (⨂[R] (_ : ι), M) →ₗ[R] (Sym[R] ι M) := mk R ι M
+  exact φ ∘ₗ π
+    
+
+    
+
+    
 end SymmetricPower
+
+#check SymmetricMap
+
+#check AddCon
+
+#check AddCon.lift
+
+#check addConGen
+
