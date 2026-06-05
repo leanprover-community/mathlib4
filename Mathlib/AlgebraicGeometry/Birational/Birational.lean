@@ -93,7 +93,7 @@ def symm (f : X.PartialIso Y) : Y.PartialIso X where
   iso := f.iso.symm
 
 set_option backward.defeqAttrib.useBackward true in
-lemma symm_over (f : X.PartialIso Y) (hf : f.IsOver sX sY) : f.symm.IsOver sY sX := by
+lemma IsOver.symm {f : X.PartialIso Y} (hf : f.IsOver sX sY) : f.symm.IsOver sY sX := by
   simpa [IsOver, ← cancel_epi f.iso.hom] using hf.symm
 
 /-- Compose two partial isomorphisms along a proof that the target of `f` equals the source
@@ -108,7 +108,7 @@ noncomputable def trans' (f : X.PartialIso Y) (g : Y.PartialIso Z) (e : f.target
   iso := f.iso ≪≫ Y.isoOfEq e ≪≫ g.iso
 
 set_option backward.defeqAttrib.useBackward true in
-lemma trans'_over (f : X.PartialIso Y) (g : Y.PartialIso Z) (e : f.target = g.source)
+lemma IsOver.trans' {f : X.PartialIso Y} {g : Y.PartialIso Z} {e : f.target = g.source}
     (hf : f.IsOver sX sY) (hg : g.IsOver sY sZ) : (trans' f g e).IsOver sX sZ := by
   simp [IsOver, ← hf, hg]
 
@@ -129,7 +129,7 @@ noncomputable def restrictSource (f : X.PartialIso Y) (U : Opens X) (hU : Dense 
     (f.target.ι.isoImage (f.iso.hom ''ᵁ f.source.ι ⁻¹ᵁ U))
 
 set_option backward.defeqAttrib.useBackward true in
-lemma restrictSource_over (f : X.PartialIso Y) (hf : f.IsOver sX sY) (U : Opens X)
+lemma IsOver.restrictSource {f : X.PartialIso Y} (hf : f.IsOver sX sY) (U : Opens X)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.source) :
     (f.restrictSource U hU hU').IsOver sX sY := by
   simp [IsOver, hf]
@@ -140,7 +140,7 @@ noncomputable def restrictTarget (f : X.PartialIso Y) (U : Opens Y) (hU : Dense 
     (hU' : U ≤ f.target) : X.PartialIso Y :=
   (f.symm.restrictSource U hU hU').symm
 
-lemma restrictTarget_over (f : X.PartialIso Y) (hf : f.IsOver sX sY) (U : Opens Y)
+lemma IsOver.restrictTarget {f : X.PartialIso Y} (hf : f.IsOver sX sY) (U : Opens Y)
     (hU : Dense (U : Set Y)) (hU' : U ≤ f.target) :
     (f.restrictTarget U hU hU').IsOver sX sY :=
   symm_over _ (restrictSource_over _ (symm_over f hf) U hU hU')
@@ -151,7 +151,7 @@ noncomputable def trans (f : X.PartialIso Y) (g : Y.PartialIso Z) : X.PartialIso
   have := f.dense_target.inter_of_isOpen_right g.dense_source g.source.2
   (f.restrictTarget _ this inf_le_left).trans' (g.restrictSource _ this inf_le_right) rfl
 
-lemma trans_over (f : X.PartialIso Y) (g : Y.PartialIso Z) (hf : f.IsOver sX sY)
+lemma IsOver.trans {f : X.PartialIso Y} {g : Y.PartialIso Z} (hf : f.IsOver sX sY)
     (hg : g.IsOver sY sZ) : (f.trans g).IsOver sX sZ :=
   trans'_over _ _ rfl (restrictTarget_over _ hf _ _ _) (restrictSource_over _ hg _ _ _)
 
