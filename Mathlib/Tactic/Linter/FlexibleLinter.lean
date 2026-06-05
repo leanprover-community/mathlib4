@@ -312,6 +312,7 @@ def flexible : Std.HashSet Name :=
   { ``Lean.Parser.Tactic.simp,
     ``Lean.Parser.Tactic.simpAll,
     ``Lean.Parser.Tactic.simpa,
+    ``Lean.Parser.Tactic.simpaUsingBang,
     ``Lean.Parser.Tactic.dsimp,
     ``Lean.Parser.Tactic.constructor,
     ``Lean.Parser.Tactic.congr,

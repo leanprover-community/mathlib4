@@ -6,7 +6,7 @@ Authors: Bjørn Kjos-Hanssen, Oliver Nash
 module
 
 public import Mathlib.Algebra.QuadraticDiscriminant
-public import Mathlib.Data.Matrix.Action
+public import Mathlib.LinearAlgebra.Matrix.Action
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
 public import Mathlib.LinearAlgebra.Projectivization.Action
 public import Mathlib.Topology.Compactification.OnePoint.Basic
@@ -65,7 +65,6 @@ lemma Matrix.fin_two_smul_prod (g : Matrix (Fin 2) (Fin 2) R) (v : R × R) :
     g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by
   simp [Equiv.smul_def, smul_eq_mulVec, Matrix.mulVec_eq_sum]
 
-set_option linter.deprecated false in
 @[deprecated Matrix.GeneralLinearGroup.fin_two_smul (since := "2026-04-19")]
 lemma Matrix.GeneralLinearGroup.fin_two_smul_prod {R : Type*} [CommRing R]
     (g : GL (Fin 2) R) (v : R × R) :

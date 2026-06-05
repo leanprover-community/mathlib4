@@ -559,7 +559,7 @@ lemma exists_ne_map_eq_of_encard_lt_of_maps_to (hc : t.encard < s.encard) (hf : 
   suffices Function.Injective (hf.restrict f) by
     let f' : s ↪ t := ⟨hf.restrict, this⟩
     exact f'.encard_le
-  simpa only [hf.restrict_inj, not_imp_not] using hc
+  simpa only [hf.restrict_inj, not_imp_not] using! hc
 
 end Function
 
@@ -954,6 +954,20 @@ theorem ncard_coe {α : Type*} (s : Set α) :
 @[simp] lemma ncard_graphOn (s : Set α) (f : α → β) : (s.graphOn f).ncard = s.ncard := by
   rw [← fst_injOn_graph.ncard_image, image_fst_graphOn]
 
+/-- Given a finite set `s`, the number of subsets of `s` with cardinality `n` is
+`s.ncard.choose n`. See also `Finset.card_powersetCard`. -/
+lemma ncard_powerset_ncard (hs : s.Finite) (n : ℕ) :
+    {t ⊆ s | t.ncard = n}.ncard = s.ncard.choose n := by
+  lift s to Finset α using hs
+  have h₁ : {t ⊆ (s : Set α) | t.ncard = n} ⊆ range ((↑) : Finset α → Set α) := by
+    intro t ht
+    rw [Finset.mem_range_coe_iff]
+    exact s.finite_toSet.subset ht.1
+  have h₂ : (↑) ⁻¹' {t ⊆ (s : Set α) | t.ncard = n} = (s.powersetCard n : Set (Finset α)) := by
+    ext t
+    simp
+  grind [ncard_coe_finset, ncard_preimage_of_injective_subset_range, Finset.card_powersetCard]
+
 section Lattice
 
 theorem ncard_union_add_ncard_inter (s t : Set α) (hs : s.Finite := by toFinite_tac)
@@ -995,10 +1009,16 @@ theorem ncard_diff_add_ncard_of_subset (h : s ⊆ t) (ht : t.Finite := by toFini
   rw [ht.cast_ncard_eq, (ht.subset h).cast_ncard_eq, ht.diff.cast_ncard_eq,
     encard_diff_add_encard_of_subset h]
 
+/-- This is the same as `ncard_diff` but we require `t` to be finite instead. -/
+theorem ncard_diff' (hst : s ⊆ t) (ht : t.Finite := by toFinite_tac) :
+    (t \ s).ncard = t.ncard - s.ncard := by
+  rw [← ncard_diff_add_ncard_of_subset hst ht, add_tsub_cancel_right]
+
+/-- This is the same as `ncard_diff'` but we require `s` to be finite instead. -/
 theorem ncard_diff (hst : s ⊆ t) (hs : s.Finite := by toFinite_tac) :
     (t \ s).ncard = t.ncard - s.ncard := by
   obtain ht | ht := t.finite_or_infinite
-  · rw [← ncard_diff_add_ncard_of_subset hst ht, add_tsub_cancel_right]
+  · exact ncard_diff' hst ht
   · rw [ht.ncard, Nat.zero_sub, (ht.diff hs).ncard]
 
 lemma cast_ncard_sdiff {R : Type*} [AddGroupWithOne R] (hst : s ⊆ t) (ht : t.Finite) :
