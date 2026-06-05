@@ -59,7 +59,7 @@ lemma support_add [DecidableEq ι] : (g₁ + g₂).support ⊆ g₁.support ∪ 
 
 /-- The support of a sum is the union of the supports when the supports are disjoint.
 
-In the case where the coefficients lie in `CanonicallyOrderedAdd`, there is also
+In the case where the coefficients satisfy `CanonicallyOrderedAdd`, there is also
 `Finsupp.support_add_eq_union`, which holds without any disjointness assumption. -/
 lemma support_add_eq [DecidableEq ι] (h : Disjoint g₁.support g₂.support) :
     (g₁ + g₂).support = g₁.support ∪ g₂.support :=
