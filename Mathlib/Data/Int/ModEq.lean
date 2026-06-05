@@ -26,6 +26,7 @@ modeq, congruence, mod, MOD, modulo, integers
 
 
 /-- `a ≡ b [ZMOD n]` when `a % n = b % n`. -/
+@[wikidata Q3773677]
 def Int.ModEq (n a b : ℤ) :=
   a % n = b % n
 
@@ -250,6 +251,10 @@ theorem dvd_iff (h : a ≡ b [ZMOD n]) : n ∣ a ↔ n ∣ b := by
   exact ⟨fun ha ↦ h.symm.trans ha, h.trans⟩
 
 end ModEq
+
+@[simp]
+theorem abs_modEq_two : |a| ≡ a [ZMOD 2] := by
+  grind [Int.ModEq]
 
 @[simp]
 theorem modulus_modEq_zero : n ≡ 0 [ZMOD n] := by simp [ModEq]

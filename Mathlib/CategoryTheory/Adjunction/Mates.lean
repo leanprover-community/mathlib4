@@ -120,7 +120,6 @@ def mateEquiv : TwoSquare G L₁ L₂ H ≃ TwoSquare R₁ H G R₂ where
       ← G.map_comp, right_triangle_components, map_id, id_comp]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A component of a transposed version of the mates correspondence. -/
 theorem mateEquiv_counit (α : TwoSquare G L₁ L₂ H) (d : D) :
     L₂.map ((mateEquiv adj₁ adj₂ α).app _) ≫ adj₂.counit.app _ =
@@ -286,7 +285,6 @@ def conjugateEquiv : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
     _ ≃ (R₁ ⟶ R₂) := R₁.rightUnitor.homCongr R₂.leftUnitor
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A component of a transposed form of the conjugation definition. -/
 theorem conjugateEquiv_counit (α : L₂ ⟶ L₁) (d : D) :
     L₂.map ((conjugateEquiv adj₁ adj₂ α).app _) ≫ adj₂.counit.app d =
@@ -525,7 +523,7 @@ lemma conjugateEquiv_associator_hom
     conjugateEquiv (adj₀₁.comp (adj₁₂.comp adj₂₃)) ((adj₀₁.comp adj₁₂).comp adj₂₃)
       (associator _ _ _).hom = (associator _ _ _).hom := by
   ext X
-  simp only [comp_obj, conjugateEquiv_apply_app, Adjunction.comp_unit_app, id_obj,
+  simp only [comp_obj, conjugateEquiv_apply_app, Adjunction.comp_unit_app,
     Functor.comp_map, Category.assoc, ← map_comp, associator_hom_app, map_id,
     Adjunction.comp_counit_app, Category.id_comp]
   simp
@@ -559,7 +557,7 @@ lemma conjugateEquiv_whiskerRight
     conjugateEquiv (adj₁.comp adj) (adj₂.comp adj) (whiskerRight τ L) =
       whiskerLeft R (conjugateEquiv adj₁ adj₂ τ) := by
   ext X
-  simp only [comp_obj, conjugateEquiv_apply_app, comp_unit_app, id_obj, Functor.whiskerRight_app,
+  simp only [comp_obj, conjugateEquiv_apply_app, comp_unit_app, Functor.whiskerRight_app,
     Functor.comp_map, comp_counit_app, ← map_comp, assoc, Functor.whiskerLeft_app]
   simp
 

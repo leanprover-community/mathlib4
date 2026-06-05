@@ -137,7 +137,7 @@ instance [e.IsTruncGE] : e.op.IsTruncLE where
 instance [e.IsTruncLE] : e.op.IsTruncGE where
   mem_next h := e.mem_prev h
 
-open Classical in
+open scoped Classical in
 /-- The map `ι' → Option ι` which sends `e.f i` to `some i` and the other elements to `none`. -/
 noncomputable def r (i' : ι') : Option ι :=
   if h : ∃ (i : ι), e.f i = i'

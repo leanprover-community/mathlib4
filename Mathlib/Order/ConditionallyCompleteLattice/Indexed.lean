@@ -117,6 +117,7 @@ theorem IsLUB.ciSup_set_eq {s : Set β} {f : β → α} (H : IsLUB (f '' s) a) (
   IsLUB.csSup_eq (image_eq_range f s ▸ H) (image_eq_range f s ▸ Hne.image f)
 
 /-- The indexed supremum of a function is bounded above by a uniform bound -/
+@[to_dual le_ciInf /-- The indexed infimum of a function is bounded below by a uniform bound -/]
 theorem ciSup_le [Nonempty ι] {f : ι → α} {c : α} (H : ∀ x, f x ≤ c) : iSup f ≤ c :=
   csSup_le (range_nonempty f) (by rwa [forall_mem_range])
 
@@ -332,17 +333,10 @@ theorem ciSup_sup_le {f g : ι → α} : ⨆ x, f x ⊔ g x ≤ (⨆ x, f x) ⊔
 When `b < iSup f`, there is an element `i` such that `b < f i`.
 -/
 @[to_dual exists_lt_of_ciInf_lt /-- Indexed version of `exists_lt_of_csInf_lt`.
-When `iInf f < a`, there is an element `i` such that `f i < a`.
--/]
+When `iInf f < a`, there is an element `i` such that `f i < a`. -/]
 theorem exists_lt_of_lt_ciSup [Nonempty ι] {f : ι → α} (h : b < iSup f) : ∃ i, b < f i :=
   let ⟨_, ⟨i, rfl⟩, h⟩ := exists_lt_of_lt_csSup (range_nonempty f) h
   ⟨i, h⟩
-
-@[to_dual exists_lt_of_ciInf₂_lt]
-theorem exists_lt_of_lt_ciSup₂ [Nonempty ι] [∀ i, Nonempty (κ i)]
-    {f : ∀ i, κ i → α} (h : a < ⨆ (i) (j), f i j) : ∃ i j, a < f i j := by
-  contrapose! h
-  exact ciSup₂_le h
 
 @[to_dual ciInf_lt_iff]
 theorem lt_ciSup_iff [Nonempty ι] {f : ι → α} (hb : BddAbove (range f)) :

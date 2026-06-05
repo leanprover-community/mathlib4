@@ -156,13 +156,7 @@ def smulAux (g : GL (Fin 2) ℝ) (z : ℍ) : ℍ :=
 
 lemma denom_cocycle' (g h : GL (Fin 2) ℝ) (z : ℍ) :
     denom (g * h) z = σ h (denom g (smulAux h z)) * denom h z := by
-  simp only [smulAux, smulAux', coe_mk, map_div₀, σ_num, σ_denom, σ_sq]
-  change _ = (_ * (_ / _) + _) * _
-  field_simp [denom_ne_zero h z]
-  simp only [denom, Units.val_mul, mul_apply, Fin.sum_univ_succ, Finset.univ_unique,
-    Fin.default_eq_zero, Finset.sum_singleton, Fin.succ_zero_eq_one, Complex.ofReal_add,
-    Complex.ofReal_mul, num]
-  ring
+  simpa [smulAux, smulAux', denom, σ_sq] using denom_cocycle g h z.im_ne_zero
 
 theorem mul_smul' (g h : GL (Fin 2) ℝ) (z : ℍ) :
     smulAux (g * h) z = smulAux g (smulAux h z) := by
@@ -303,8 +297,9 @@ theorem specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : S
       (coe_specialLinearGroup_apply g z ▸ (g • z).im_pos) := by
   ext; simp [coe_specialLinearGroup_apply]
 
-/- these next few lemmas are *not* flagged `@simp` because of the constructors on the RHS;
+/-! these next few lemmas are *not* flagged `@simp` because of the constructors on the RHS;
 instead we use the versions with coercions to `ℂ` as simp lemmas instead. -/
+
 theorem modular_S_smul (z : ℍ) :
     ModularGroup.S • z = mk (-z : ℂ)⁻¹ z.im_inv_neg_coe_pos := by
   rw [specialLinearGroup_apply]
