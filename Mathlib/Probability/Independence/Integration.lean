@@ -504,11 +504,11 @@ lemma Indep.setIntegral_eq_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace 
     · exact hA1.indicator_indepFun 1 hA2
     · exact (aemeasurable_indicator_const_iff 1).2 (hm A hA2).nullMeasurableSet
 
-lemma Indep.setIntegral_eq_mul (hm : m ≤ mΩ) {f : 𝓧 → ℝ} {A : Set Ω} (hA1 : Indep m (m𝓧.comap X) P)
-    (hX : AEMeasurable X P) (hA2 : MeasurableSet[m] A)
+lemma Indep.setIntegral_eq_mul (hm : m ≤ mΩ) {f : 𝓧 → ℝ} (hA1 : Indep m (m𝓧.comap X) P)
+    (hX : AEMeasurable X P) (hA : MeasurableSet[m] A)
     (hf : AEStronglyMeasurable f (P.map X)) :
     ∫ ω in A, f (X ω) ∂P = P.real A * ∫ ω, f (X ω) ∂P :=
-  hA1.setIntegral_eq_smul hm hX hA2 hf
+  hA1.setIntegral_eq_smul hm hX hA hf
 
 end SetIntegral
 
