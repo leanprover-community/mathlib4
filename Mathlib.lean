@@ -4099,6 +4099,7 @@ public import Mathlib.Data.Matrix.ColumnRowPartitioned
 public import Mathlib.Data.Matrix.Composition
 public import Mathlib.Data.Matrix.DMatrix
 public import Mathlib.Data.Matrix.Diagonal
+public import Mathlib.Data.Matrix.DualNumber
 public import Mathlib.Data.Matrix.Mul
 public import Mathlib.Data.Matrix.PEquiv
 public import Mathlib.Data.Matrix.Reflection
