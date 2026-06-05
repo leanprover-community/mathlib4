@@ -4092,6 +4092,7 @@ public import Mathlib.Data.List.TakeWhile
 public import Mathlib.Data.List.ToFinsupp
 public import Mathlib.Data.List.Triplewise
 public import Mathlib.Data.List.Zip
+public import Mathlib.Data.Matrix.Action
 public import Mathlib.Data.Matrix.Auto
 public import Mathlib.Data.Matrix.Basic
 public import Mathlib.Data.Matrix.Basis
@@ -4103,6 +4104,7 @@ public import Mathlib.Data.Matrix.Composition
 public import Mathlib.Data.Matrix.DMatrix
 public import Mathlib.Data.Matrix.Diagonal
 public import Mathlib.Data.Matrix.DualNumber
+public import Mathlib.Data.Matrix.Invertible
 public import Mathlib.Data.Matrix.Mul
 public import Mathlib.Data.Matrix.PEquiv
 public import Mathlib.Data.Matrix.Reflection
