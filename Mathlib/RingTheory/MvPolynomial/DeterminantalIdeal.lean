@@ -107,7 +107,7 @@ theorem eval_mvPolynomialMinor (R : Type*) [CommRing R]
         submatrix A I.row I.col := by
     ext i j
     simp [M]
-  exact Eq.mpr (congrFun (congrArg Eq (id (Eq.symm hdet))) (I.detSubmatrix A)) (congrArg det hM)
+  simpa [mvPolynomialMinor, detSubmatrix, M, hM] using hdet
 
 /-- Mapping coefficients sends a generic minor to the corresponding generic minor. -/
 theorem map_mvPolynomialMinor {R S : Type*} [CommRing R] [CommRing S]
