@@ -56,7 +56,7 @@ def getHeader (fname fileContent : String) (keepTrailing : Bool) : IO String := 
   -- parser now attaches to the first token (see leanprover/lean4#12662).
   let some substring := imports.getSubstring? (withLeading := false) |
     throw <| .userError "No substring: we have a problem!"
-  return substring.toString
+  return (if substring.toString.contains "public" then "module\n\n" else "") ++ substring.toString
 
 /--
 `getHeaderFromFileName fname keepTrailing` is similar to `getHeader`, except that it assumes that
@@ -236,7 +236,7 @@ def deprecateFilePath (fname : String) (rename comment : Option String) :
   let fileHeader := ← match rename with
     | some rename => do
       let modName := mkModName rename
-      pure s!"import {modName}"
+      pure s!"module\n\npublic import {modName}"
     | none => getHeader fname file false
   let deprecatedFile := s!"{fileHeader.trimAsciiEnd}\n\n{deprecation.pretty.trimAsciiEnd}\n"
   msgs := msgs.push <| .trace {cls := `Deprecation} m!"{fname}" #[m!"\n{deprecatedFile}"]
