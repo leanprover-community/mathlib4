@@ -135,7 +135,7 @@ lemma residueFieldMap_id (x : X) :
     Hom.residueFieldMap (𝟙 X) x = 𝟙 (X.residueField x) :=
   LocallyRingedSpace.residueFieldMap_id _
 
-@[reassoc (attr := simp)]
+@[simp]
 lemma residueFieldMap_comp {Z : Scheme.{u}} (g : Y ⟶ Z) (x : X) :
     (f ≫ g).residueFieldMap x = g.residueFieldMap (f x) ≫ f.residueFieldMap x :=
   LocallyRingedSpace.residueFieldMap_comp _ _ _
