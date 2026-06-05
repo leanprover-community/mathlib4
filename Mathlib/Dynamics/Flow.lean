@@ -81,7 +81,7 @@ end Invariant
 variable (τ α) in
 /-- A flow on a topological space `α` by an additive topological
 monoid `τ` is a continuous monoid action of `τ` on `α`. -/
-structure Flow [TopologicalSpace τ] [AddMonoid τ] [TopologicalSpace α] where
+structure Flow [TopologicalSpace τ] [TopologicalSpace α] [AddZero τ] where
   /-- The map `τ → α → α` underlying a flow of `τ` on `α`. -/
   toFun : τ → α → α
   cont' : Continuous (uncurry toFun)
@@ -92,9 +92,9 @@ namespace Flow
 
 variable [TopologicalSpace τ] [TopologicalSpace α]
 
-section AddMonoid
+section AddZero
 
-variable [AddMonoid τ] (ϕ : Flow τ α)
+variable [AddZero τ] (ϕ : Flow τ α)
 
 instance : CoeFun (Flow τ α) fun _ => τ → α → α := ⟨Flow.toFun⟩
 
@@ -159,6 +159,12 @@ def restrict {s : Set α} (h : IsInvariant ϕ s) : Flow τ s where
 @[simp]
 theorem coe_restrict_apply {s : Set α} (h : IsInvariant ϕ s) (t : τ) (x : s) :
     restrict ϕ h t x = ϕ t x := rfl
+
+end AddZero
+
+section AddMonoid
+
+variable [AddMonoid τ] (ϕ : Flow τ α)
 
 /-- Convert a flow to an additive monoid action. -/
 @[implicit_reducible]
