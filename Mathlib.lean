@@ -4778,8 +4778,8 @@ public import Mathlib.GroupTheory.IsSubnormal
 public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.GroupTheory.MonoidLocalization.Basic
 public import Mathlib.GroupTheory.MonoidLocalization.Cardinality
-public import Mathlib.GroupTheory.MonoidLocalization.Divisibility
 public import Mathlib.GroupTheory.MonoidLocalization.DivPairs
+public import Mathlib.GroupTheory.MonoidLocalization.Divisibility
 public import Mathlib.GroupTheory.MonoidLocalization.Finite
 public import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
 public import Mathlib.GroupTheory.MonoidLocalization.Lemmas
