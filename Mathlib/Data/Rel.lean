@@ -25,8 +25,8 @@ relations.
 * `SetRel.dom`: Domain of a relation. `a ∈ R.dom` iff there exists `b` such that `a ~[R] b`.
 * `SetRel.cod`: Codomain of a relation. `b ∈ R.cod` iff there exists `a` such that `a ~[R] b`.
 * `SetRel.id`: The identity relation `SetRel α α`.
-* `SetRel.comp`: SetRelation composition. Note that the arguments order follows the category theory
-  convention, namely `(R ○ S) a c ↔ ∃ b, a ~[R] b ∧ b ~[S] z`.
+* `SetRel.comp`: SetRel composition. Note that the arguments order follows the category theory
+  convention, namely `(R ○ S) a c ↔ ∃ b, a ~[R] b ∧ b ~[S] c`.
 * `SetRel.image`: Image of a set under a relation. `b ∈ image R s` iff there exists `a ∈ s`
   such that `a ~[R] b`.
   If `R` is the graph of `f` (`a ~[R] b ↔ f a = b`), then `R.image = Set.image f`.
@@ -47,22 +47,22 @@ The former approach is used almost everywhere as it is very lightweight and has 
 support from core Lean features, but it cracks at the seams whenever one starts talking about
 operations on relations. For example:
 * composition of relations `R : α → β → Prop`, `S : β → γ → Prop` is
-  `SetRelation.Comp R S := fun a c ↦ ∃ b, R a b ∧ S b c`
+  `Relation.Comp R S := fun a c ↦ ∃ b, R a b ∧ S b c`
 * map of a relation `R : α → β → Prop` under `f : α → γ`, `g : β → δ` is
-  `SetRelation.map R f g := fun c d ↦ ∃ a b, r a b ∧ f a = c ∧ g b = d`.
+  `Relation.Map R f g := fun c d ↦ ∃ a b, r a b ∧ f a = c ∧ g b = d`.
 
-The latter approach is embodied by `SetRel α β`, with dedicated notation like `○` for composition.
+The latter approach is embodied by `SetRel α β`, with the dedicated notation `○` for composition.
+(Note that `○` is _not_ the same as function composition `∘`.)
 
 Previously, `SetRel` suffered from the leakage of its definition as
 ```
 def SetRel (α β : Type*) := α → β → Prop
 ```
 The fact that `SetRel` wasn't an `abbrev` confuses automation.
-But simply making it an `abbrev` would
-have killed the point of having a separate less see-through type to perform relation operations on,
-so we instead redefined
+But simply making it an `abbrev` would have killed the point of having a separate less see-through
+type to perform relation operations on. So we instead redefined it as
 ```
-def SetRel (α β : Type*) := Set (α × β) → Prop
+abbrev SetRel (α β : Type*) := Set (α × β)
 ```
 This extra level of indirection guides automation correctly and prevents (some kinds of) leakage.
 
@@ -291,7 +291,7 @@ variable (t) in
 @[simp] lemma preimage_univ_left (ht : t.Nonempty) : preimage (.univ : SetRel α β) t = .univ := by
   aesop
 
-lemma image_eq_cod_of_dom_subset (h : R.cod ⊆ t) : R.preimage t = R.dom := by aesop
+lemma image_eq_cod_of_dom_subset (h : R.dom ⊆ s) : R.image s = R.cod := by aesop
 lemma preimage_eq_dom_of_cod_subset (h : R.cod ⊆ t) : R.preimage t = R.dom := by aesop
 
 variable (R s) in
@@ -465,6 +465,9 @@ instance isSymm_comp_self [R.IsSymm] : (R ○ R).IsSymm := by simpa using R.isSy
 lemma prod_subset_comm [R.IsSymm] : s₁ ×ˢ s₂ ⊆ R ↔ s₂ ×ˢ s₁ ⊆ R := by
   rw [← R.inv_eq_self, SetRel.inv, ← Set.image_subset_iff, Set.image_swap_prod, ← SetRel.inv,
     R.inv_eq_self]
+
+lemma preimage_eq_image [R.IsSymm] : R.preimage s = R.image s := by
+  rw [← preimage_inv, inv_eq_self]
 
 variable (R) in
 /-- The maximal symmetric relation contained in a given relation. -/

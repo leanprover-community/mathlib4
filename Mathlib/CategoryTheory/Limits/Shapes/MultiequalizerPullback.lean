@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Multicoequalizers that are pushouts
@@ -42,7 +42,7 @@ noncomputable def multicofork : Multicofork I :=
         eqToHom (by
           obtain rfl : k = J.snd default := by
             have := h.symm.le (Set.mem_univ k)
-            simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at this
+            push _ ∈ _ at this
             tauto
           rfl) ≫ s.inr)
     (by
@@ -70,15 +70,15 @@ lemma isPushout (hc : IsColimit c) :
   w := c.condition _
   isColimit' := ⟨PushoutCocone.IsColimit.mk _
     (fun s ↦ hc.desc (isPushout.multicofork h h' s))
-    (fun s ↦ by simpa using hc.fac (isPushout.multicofork h h' s) (.right (J.fst default)))
-    (fun s ↦ by simpa using hc.fac (isPushout.multicofork h h' s) (.right (J.snd default)))
+    (fun s ↦ by simpa using! hc.fac (isPushout.multicofork h h' s) (.right (J.fst default)))
+    (fun s ↦ by simpa using! hc.fac (isPushout.multicofork h h' s) (.right (J.snd default)))
     (fun s m h₁ h₂ ↦ by
       apply Multicofork.IsColimit.hom_ext hc
       intro k
       have := h.symm.le (Set.mem_univ k)
-      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at this
+      push _ ∈ _ at this
       obtain rfl | rfl := this
-      · simpa [h₁] using (hc.fac (isPushout.multicofork h h' s) (.right (J.fst default))).symm
-      · simpa [h₂] using (hc.fac (isPushout.multicofork h h' s) (.right (J.snd default))).symm)⟩
+      · simpa [h₁] using! (hc.fac (isPushout.multicofork h h' s) (.right (J.fst default))).symm
+      · simpa [h₂] using! (hc.fac (isPushout.multicofork h h' s) (.right (J.snd default))).symm)⟩
 
 end CategoryTheory.Limits.Multicofork.IsColimit

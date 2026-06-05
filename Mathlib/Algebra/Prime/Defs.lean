@@ -232,7 +232,7 @@ end CommMonoidWithZero
 
 section CancelCommMonoidWithZero
 
-variable [CancelCommMonoidWithZero M] {p : M}
+variable [CommMonoidWithZero M] [IsCancelMulZero M] {p : M}
 
 protected theorem Prime.irreducible (hp : Prime p) : Irreducible p :=
   (isCancelMulZero_iff_forall_isRegular.mp inferInstance hp.1).irreducible_of_Prime₀ hp.2

@@ -178,7 +178,7 @@ theorem _root_.sum_mul_eq_sub_sub_integral_mul' {n m : ℕ} (h : n ≤ m)
     ∑ k ∈ Ioc n m, f k * c k =
       f m * (∑ k ∈ Icc 0 m, c k) - f n * (∑ k ∈ Icc 0 n, c k) -
         ∫ t in Set.Ioc (n : ℝ) m, deriv f t * ∑ k ∈ Icc 0 ⌊t⌋₊, c k := by
-  convert sum_mul_eq_sub_sub_integral_mul c n.cast_nonneg (Nat.cast_le.mpr h) hf_diff hf_int
+  convert! sum_mul_eq_sub_sub_integral_mul c n.cast_nonneg (Nat.cast_le.mpr h) hf_diff hf_int
   all_goals rw [Nat.floor_natCast]
 
 end abelSummationProof
@@ -203,7 +203,7 @@ theorem sum_mul_eq_sub_integral_mul' (m : ℕ)
     ∑ k ∈ Icc 0 m, f k * c k =
       f m * (∑ k ∈ Icc 0 m, c k) -
         ∫ t in Set.Ioc (0 : ℝ) m, deriv f t * ∑ k ∈ Icc 0 ⌊t⌋₊, c k := by
-  convert sum_mul_eq_sub_integral_mul c m.cast_nonneg hf_diff hf_int
+  convert! sum_mul_eq_sub_integral_mul c m.cast_nonneg hf_diff hf_int
   all_goals rw [Nat.floor_natCast]
 
 /-- Specialized version of `sum_mul_eq_sub_integral_mul` when the first coefficient of the sequence
@@ -232,7 +232,7 @@ theorem sum_mul_eq_sub_integral_mul₀' (hc : c 0 = 0) (m : ℕ)
     ∑ k ∈ Icc 0 m, f k * c k =
       f m * (∑ k ∈ Icc 0 m, c k) -
         ∫ t in Set.Ioc (1 : ℝ) m, deriv f t * ∑ k ∈ Icc 0 ⌊t⌋₊, c k := by
-  convert sum_mul_eq_sub_integral_mul₀ c hc m hf_diff hf_int
+  convert! sum_mul_eq_sub_integral_mul₀ c hc m hf_diff hf_int
   all_goals rw [Nat.floor_natCast]
 
 /-- Specialized version of `sum_mul_eq_sub_integral_mul` when `c 0 = c 1 = 0`. -/
@@ -341,9 +341,6 @@ private theorem summable_mul_of_bigO_atTop_aux (m : ℕ)
   cases n with
   | zero => simp only [range_zero, norm_mul, sum_empty, le_sup_iff, zero_le_one, or_true]
   | succ n =>
-      have h_mes : Measurable fun t ↦ deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖ :=
-        (measurable_deriv _).mul <| Measurable.comp' (g := fun n : ℕ ↦ ∑ k ∈ Icc 0 n, ‖c k‖)
-          (fun _ _ ↦ trivial) Nat.measurable_floor
       rw [Nat.range_eq_Icc_zero_sub_one _ n.add_one_ne_zero, add_tsub_cancel_right]
       calc
         _ = ∑ k ∈ Icc 0 n, ‖f k‖ * ‖c k‖ := by simp_rw [norm_mul]
@@ -362,7 +359,7 @@ private theorem summable_mul_of_bigO_atTop_aux (m : ℕ)
         grw [setIntegral_mono_set ?_ (.of_forall fun _ ↦ norm_nonneg _)
           Set.Ioc_subset_Ioi_self.eventuallyLE]
         rw [← integrableOn_Ici_iff_integrableOn_Ioi, IntegrableOn,
-          integrable_norm_iff h_mes.aestronglyMeasurable]
+          integrable_norm_iff (by fun_prop)]
         exact (locallyIntegrableOn_mul_sum_Icc _ m.cast_nonneg hf_int).integrableOn_of_isBigO_atTop
           hg₁ hg₂
 

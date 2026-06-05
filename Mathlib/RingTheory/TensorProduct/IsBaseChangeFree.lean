@@ -88,7 +88,7 @@ variable {ι : Type*} (b : Module.Basis ι R V)
 
 theorem of_basis : IsBaseChange R (Finsupp.linearCombination A b) := by
   classical
-  let j := TensorProduct.finsuppScalarRight' A R ι R
+  let j := TensorProduct.finsuppScalarRight A R R ι
   refine of_equiv ?_ ?_
   · apply LinearEquiv.ofBijective (Finsupp.linearCombination R b ∘ₗ j)
     rw [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, j.bijective.of_comp_iff]
@@ -100,7 +100,7 @@ theorem of_basis : IsBaseChange R (Finsupp.linearCombination A b) := by
     suffices (j (1 ⊗ₜ[A] x)) = x.mapRange (algebraMap A R) (by simp) by
       simp [this, Finsupp.linearCombination_apply, Finsupp.sum_mapRange_index]
     ext i
-    simp [j, TensorProduct.finsuppScalarRight', Algebra.algebraMap_eq_smul_one]
+    simp [j, Algebra.algebraMap_eq_smul_one]
 
 include A in
 /-- Any finite basis of a module can express it as the base change

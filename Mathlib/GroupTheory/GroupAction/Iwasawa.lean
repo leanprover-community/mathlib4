@@ -11,9 +11,9 @@ public import Mathlib.GroupTheory.Subgroup.Simple
 
 /-! # Iwasawa criterion for simplicity
 
-- `IwasawaStructure` : the structure underlying the Iwasawa criterion
-For a group `G`, this consists of an action of `G` on a type `α` and,
-for every `a : α`, of a subgroup `T a`, such that the following properties hold:
+- `IwasawaStructure` : the structure underlying the Iwasawa criterion.
+  For a group `G`, this consists of an action of `G` on a type `α` and,
+  for every `a : α`, of a subgroup `T a`, such that the following properties hold:
   - for all `a`, `T a` is commutative
   - for all `g : G` and `a : α`, `T (g • a) = MulAut.conj g • T a`
   - the subgroups `T a` generate `G`
@@ -22,12 +22,12 @@ We then prove two versions of the Iwasawa criterion when
 there is an Iwasawa structure.
 
 - `IwasawaStructure.commutator_le` asserts that if the action of `G` on `α`
-is quasiprimitive, then every normal subgroup that acts nontrivially
-contains `commutator G`
+  is quasiprimitive, then every normal subgroup that acts nontrivially
+  contains `commutator G`.
 
-- `IwasawaStructure.isSimpleGroup` : the Iwasawa criterion for simplicity
-If the action of `G` on `α` is quasiprimitive and faithful,
-and `G` is nontrivial and perfect, then `G` is simple.
+- `IwasawaStructure.isSimpleGroup` : the Iwasawa criterion for simplicity.
+  If the action of `G` on `α` is quasiprimitive and faithful,
+  and `G` is nontrivial and perfect, then `G` is simple.
 
 ## TODO
 
@@ -35,11 +35,11 @@ Additivize. The issue is that it requires to additivize `commutator`
 (which, moreover, lives in the root namespace)
 -/
 
-@[expose] public section
+public section
 
 namespace MulAction
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 variable (M : Type*) [Group M] (α : Type*) [MulAction M α]
 

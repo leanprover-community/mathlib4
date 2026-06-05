@@ -46,9 +46,9 @@ Let `f` be a map between manifolds. The following definitions follow the `fderiv
 Various related results are proven in separate files: see
 - `Basic.lean` for basic properties of the `mfderiv`, mimicking the API of the Fréchet derivative,
 - `FDeriv.lean` for the equivalence of the manifold notions with the usual Fréchet derivative
-for functions between vector spaces,
+  for functions between vector spaces,
 - `SpecificFunctions.lean` for results on the differential of the identity, constant functions,
-products and arithmetic operators (like addition or scalar multiplication),
+  products and arithmetic operators (like addition or scalar multiplication),
 - `Atlas.lean` for differentiability of charts, models with corners and extended charts,
 - `UniqueDifferential.lean` for various properties of unique differentiability sets in manifolds.
 
@@ -171,7 +171,7 @@ theorem differentiableWithinAt_localInvariantProp :
       rw [this] at h
       have : I (e x) ∈ I.symm ⁻¹' e.target ∩ Set.range I := by simp only [hx, mfld_simps]
       have := (mem_groupoid_of_pregroupoid.2 he).2.contDiffWithinAt this
-      convert (h.comp' _ (this.differentiableWithinAt one_ne_zero)).mono_of_mem_nhdsWithin _
+      convert! (h.comp' _ (this.differentiableWithinAt one_ne_zero)).mono_of_mem_nhdsWithin _
         using 1
       · ext y; simp only [mfld_simps]
       refine
@@ -192,7 +192,7 @@ theorem differentiableWithinAt_localInvariantProp :
       have A : (I' ∘ f ∘ I.symm) (I x) ∈ I'.symm ⁻¹' e'.source ∩ Set.range I' := by
         simp only [hx, mfld_simps]
       have := (mem_groupoid_of_pregroupoid.2 he').1.contDiffWithinAt A
-      convert (this.differentiableWithinAt one_ne_zero).comp _ h _
+      convert! (this.differentiableWithinAt one_ne_zero).comp _ h _
       · ext y; simp only [mfld_simps]
       · intro y hy; simp only [mfld_simps] at hy; simpa only [hy, mfld_simps] using hs hy.1 }
 

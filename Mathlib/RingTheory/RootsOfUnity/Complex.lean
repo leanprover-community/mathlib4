@@ -54,26 +54,26 @@ theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.Coprim
   isPrimitiveRoot_exp_of_isCoprime _ _ h0 hi.isCoprime
 
 theorem isPrimitiveRoot_exp_rat (q : ℚ) : IsPrimitiveRoot (exp (2 * π * I * q)) q.den := by
-  convert isPrimitiveRoot_exp_of_isCoprime _ _ q.den_nz <|
-    Int.isCoprime_iff_nat_coprime.mpr q.reduced
+  convert!
+    isPrimitiveRoot_exp_of_isCoprime _ _ q.den_nz <| Int.isCoprime_iff_nat_coprime.mpr q.reduced
   nth_rw 1 [← Rat.num_div_den q]
   simp
 
 theorem isPrimitiveRoot_exp_rat_of_even_num (q : ℚ) (h : Even q.num) :
     IsPrimitiveRoot (exp (π * I * q)) q.den := by
   have ⟨n, hn⟩ := even_iff_exists_two_nsmul _ |>.mp h
-  convert isPrimitiveRoot_exp_rat (n / q.den) using 1
+  convert! isPrimitiveRoot_exp_rat (n / q.den) using 1
   · nth_rw 1 [← q.num_div_den, hn, Int.nsmul_eq_mul]
     push_cast
     ring_nf
   · rw [← Int.cast_natCast, ← Rat.divInt_eq_div, ← Rat.mk_eq_divInt (nz := by simp)]
     apply Nat.Coprime.coprime_mul_left (k := 2)
-    convert q.reduced
+    convert! q.reduced
     grind
 
 theorem isPrimitiveRoot_exp_rat_of_odd_num (q : ℚ) (h : Odd q.num) :
     IsPrimitiveRoot (exp (π * I * q)) (2 * q.den) := by
-  convert isPrimitiveRoot_exp_rat (q / 2) using 1
+  convert! isPrimitiveRoot_exp_rat (q / 2) using 1
   · push_cast
     ring_nf
   · nth_rw 2 [← q.num_div_den]
@@ -83,7 +83,7 @@ theorem isPrimitiveRoot_exp_rat_of_odd_num (q : ℚ) (h : Odd q.num) :
         (c := Nat.Coprime.mul_right q.reduced h.natAbs.coprime_two_right)]
 
 theorem isPrimitiveRoot_exp (n : ℕ) (h0 : n ≠ 0) : IsPrimitiveRoot (exp (2 * π * I / n)) n := by
-  simpa only [Nat.cast_one, one_div] using
+  simpa only [Nat.cast_one, one_div] using!
     isPrimitiveRoot_exp_of_coprime 1 n h0 n.coprime_one_left
 
 theorem isPrimitiveRoot_iff (ζ : ℂ) (n : ℕ) (hn : n ≠ 0) :
@@ -163,10 +163,10 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
     replace hin := Nat.isCoprime_iff_coprime.mpr hin
     split_ifs
     · exact hin
-    · convert hin.add_mul_left_left (-1) using 1
+    · convert! hin.add_mul_left_left (-1) using 1
       rw [mul_neg_one, sub_eq_add_neg]
   split_ifs with h₂
-  · convert Complex.arg_cos_add_sin_mul_I _
+  · convert! Complex.arg_cos_add_sin_mul_I _
     · push_cast; rfl
     · push_cast; rfl
     simp only [Int.cast_natCast, Set.mem_Ioc]
@@ -178,7 +178,7 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
     exact mul_le_of_le_one_right Real.pi_pos.le
       ((div_le_iff₀' <| mod_cast pos_of_gt h).mpr <| mod_cast h₂)
   rw [← Complex.cos_sub_two_pi, ← Complex.sin_sub_two_pi]
-  convert Complex.arg_cos_add_sin_mul_I _
+  convert! Complex.arg_cos_add_sin_mul_I _
   · push_cast
     rw [← sub_one_mul, sub_div, div_self]
     exact mod_cast hn
@@ -188,7 +188,7 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
   simp only [Int.cast_sub, Int.cast_natCast, Set.mem_Ioc]
   field_simp
   constructor
-  · push_neg at h₂
+  · push Not at h₂
     rify at h₂
     linear_combination h₂
   · rify at h

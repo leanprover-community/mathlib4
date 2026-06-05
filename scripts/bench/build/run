@@ -4,15 +4,12 @@ set -euxo pipefail
 BENCH="scripts/bench"
 
 # Prepare build
-# Use build cache for proofwidgets, but not for anything else.
 lake clean
-LEAN_PATH=$(lean --print-libdir) lake build proofwidgets
 rm -f .lake/packages/batteries/.lake/build/bin/runLinter
 
 # Run build
 LAKE_OVERRIDE_LEAN=true LEAN=$(realpath "$BENCH/build/fake-root/bin/lean") \
-  "$BENCH/measure.py" -t build \
-  -m instructions -m maxrss -m task-clock -m wall-clock -- \
+  "$BENCH/measure.py" --append -t build -d -- \
   lakeprof record lake build --no-cache
 
 # Analyze lakeprof data

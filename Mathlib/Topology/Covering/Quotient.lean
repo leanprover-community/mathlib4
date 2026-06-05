@@ -64,7 +64,7 @@ variable {f G}
 
 @[to_additive (attr := simp)] theorem homeomorph_comp_iff {Y} [TopologicalSpace Y]
     (φ : X ≃ₜ Y) : IsQuotientCoveringMap (φ ∘ f) G ↔ IsQuotientCoveringMap f G where
-  mp h := by convert h.homeomorph_comp φ.symm; ext; simp
+  mp h := by convert! h.homeomorph_comp φ.symm; ext; simp
   mpr h := h.homeomorph_comp φ
 
 end IsQuotientCoveringMap
@@ -76,22 +76,24 @@ include hf
 
 section MulAction
 
+open Bundle
+
 variable [ContinuousConstSMul G E]
 variable (hfG : ∀ {e₁ e₂}, f e₁ = f e₂ ↔ e₁ ∈ MulAction.orbit G e₂)
 include hfG
 
 /-- If a group `G` acts on a space `E` and `U` is an open subset disjoint from all other
 `G`-translates of itself, and `p` is a quotient map by this action, then `p` admits a
-`Trivialization` over the base set `p(U)`. -/
+`Bundle.Trivialization` over the base set `p(U)`. -/
 @[to_additive (attr := simps! source target baseSet)
 /-- If a group `G` acts on a space `E` and `U` is an open subset disjoint from all
 other `G`-translates of itself, and `p` is a quotient map by this action, then `p` admits a
-`Trivialization` over the base set `p(U)`. -/]
+`Bundle.Trivialization` over the base set `p(U)`. -/]
 noncomputable def trivializationOfSMulDisjoint [TopologicalSpace G] [DiscreteTopology G]
     (U : Set E) (open_U : IsOpen U) (disjoint : ∀ g : G, ((g • ·) '' U ∩ U).Nonempty → g = 1) :
     Trivialization G f := by
   have pGE (g : G) e : f (g • e) = f e := hfG.mpr ⟨g, rfl⟩
-  have preim_im : f ⁻¹' (f '' U) = ⋃ g : G, (g • ·) ⁻¹' U := by
+  have preim_im : f ⁻¹' f '' U = ⋃ g : G, (g • ·) ⁻¹' U := by
     ext e; refine ⟨fun ⟨e', heU, he⟩ ↦ ?_, ?_⟩
     · obtain ⟨g, rfl⟩ := hfG.mp he; exact ⟨_, ⟨g, rfl⟩, heU⟩
     · intro ⟨_, ⟨g, rfl⟩, hg⟩; exact ⟨_, hg, pGE g e⟩
@@ -103,7 +105,7 @@ noncomputable def trivializationOfSMulDisjoint [TopologicalSpace G] [DiscreteTop
       mul_inv_eq_one.mp (disjoint _ ⟨_, ⟨_, h₂, ?_⟩, h₁⟩)) preim_im.subset
   · rw [← hf.isOpen_preimage, preim_im]
     exact isOpen_iUnion fun g ↦ open_U.preimage (continuous_const_smul g)
-  · convert isOpen_iUnion fun g : G ↦ isOpen.preimage (continuous_const_smul g)
+  · convert! isOpen_iUnion fun g : G ↦ isOpen.preimage (continuous_const_smul g)
     ext e; refine ⟨fun hW ↦ ?_, ?_⟩
     · have ⟨e', he', hfe⟩ := hWU hW
       obtain ⟨g', rfl⟩ := hfG.mp hfe
@@ -212,7 +214,7 @@ namespace IsQuotientCoveringMap
     IsCoveringMap f :=
   isCoveringMap_iff_isCoveringMapOn_univ.mpr <| by
     have := h.toContinuousConstSMul
-    convert ← h.isCoveringMapOn_of_smul_disjoint h.apply_eq_iff_mem_orbit fun e ↦ ?_
+    convert! ← h.isCoveringMapOn_of_smul_disjoint h.apply_eq_iff_mem_orbit fun e ↦ ?_
     · refine Set.eq_univ_of_forall fun x ↦ ?_
       obtain ⟨e, rfl⟩ := h.surjective x
       have ⟨U, hU, hGU⟩ := h.disjoint e
@@ -236,7 +238,7 @@ end IsQuotientCoveringMap
     ⟨h.isCoveringMap, h.surjective, this, h.isCancelSMul, h.apply_eq_iff_mem_orbit⟩
   mpr h := (isQuotientCoveringMap_iff ..).mpr ⟨h.1.isQuotientMap h.2.1, h.2.2.1, h.2.2.2.2, fun e ↦
     have ⟨_, U, heU, hU, hfU, H, hH⟩ := h.1 (f e)
-    ⟨Subtype.val '' (Prod.snd ∘ H ⁻¹' {(H ⟨e, heU⟩).2}), (hfU.isOpenMap_subtype_val _ <|
+    ⟨Subtype.val '' Prod.snd ∘ H ⁻¹' {(H ⟨e, heU⟩).2}, (hfU.isOpenMap_subtype_val _ <|
         (isOpen_discrete _).preimage <| by fun_prop).mem_nhds ⟨⟨e, heU⟩, rfl, rfl⟩, fun g ↦ by
       rintro ⟨_, ⟨_, ⟨x, hx, rfl⟩, rfl⟩, y, hy, eq⟩
       have := h.2.2.2.1

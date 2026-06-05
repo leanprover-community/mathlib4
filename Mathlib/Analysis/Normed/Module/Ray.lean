@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.Ray
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
-public import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Rays in a real normed vector space
@@ -23,7 +22,7 @@ public section
 open Real
 
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*}
-[NormedAddCommGroup F] [NormedSpace ℝ F]
+  [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 namespace SameRay
 

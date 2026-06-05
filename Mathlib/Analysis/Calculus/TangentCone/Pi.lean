@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.TangentCone.Basic
+import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Indexed product of sets with unique differentiability property
@@ -20,29 +21,30 @@ public section
 open Filter Set
 open scoped Topology
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {ι : Type*} {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+section Semiring
+
+variable {𝕜 : Type*} [Semiring 𝕜]
+  {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
+  [∀ i, TopologicalSpace (E i)] [∀ i, ContinuousAdd (E i)] [∀ i, ContinuousConstSMul 𝕜 (E i)]
   {s : ∀ i, Set (E i)} {x : ∀ i, E i}
 
 /-- The tangent cone of a product contains the tangent cone of each factor. -/
 theorem mapsTo_tangentConeAt_pi [DecidableEq ι] {i : ι} (hi : ∀ j ≠ i, x j ∈ closure (s j)) :
-    MapsTo (LinearMap.single 𝕜 E i) (tangentConeAt 𝕜 (s i) (x i))
-      (tangentConeAt 𝕜 (Set.pi univ s) x) := by
-  rintro w ⟨c, d, hd, hc, hy⟩
-  have : ∀ n, ∀ j ≠ i, ∃ d', x j + d' ∈ s j ∧ ‖c n • d'‖ < (1 / 2 : ℝ) ^ n := fun n j hj ↦ by
-    rcases mem_closure_iff_nhds.1 (hi j hj) _
-        (eventually_nhds_norm_smul_sub_lt (c n) (x j) (pow_pos one_half_pos n)) with
-      ⟨z, hz, hzs⟩
-    exact ⟨z - x j, by simpa using hzs, by simpa using hz⟩
-  choose! d' hd's hcd' using this
-  refine ⟨c, fun n => Function.update (d' n) i (d n), hd.mono fun n hn j _ => ?_, hc,
-      tendsto_pi_nhds.2 fun j => ?_⟩
-  · rcases em (j = i) with (rfl | hj) <;> simp [*]
-  · rcases em (j = i) with (rfl | hj)
-    · simp [hy]
-    · suffices Tendsto (fun n => c n • d' n j) atTop (𝓝 0) by simpa [hj]
-      refine squeeze_zero_norm (fun n => (hcd' n j hj).le) ?_
-      exact tendsto_pow_atTop_nhds_zero_of_lt_one one_half_pos.le one_half_lt_one
+    MapsTo (Pi.single i) (tangentConeAt 𝕜 (s i) (x i)) (tangentConeAt 𝕜 (Set.pi univ s) x) := by
+  rw [← tangentConeAt_closure (s := .pi _ _)]
+  intro y hy
+  rcases exists_fun_of_mem_tangentConeAt hy with ⟨ι, l, hl, c, d, hd₀, hds, hcd⟩
+  apply mem_tangentConeAt_of_seq l c (fun n ↦ Pi.single i (d n))
+  · rw [tendsto_pi_nhds]
+    intro j
+    rcases eq_or_ne j i with rfl | hj <;> simp [*, tendsto_const_nhds]
+  · refine hds.mono fun n hn ↦ ?_
+    rw [closure_pi_set, mem_univ_pi]
+    intro j
+    rcases eq_or_ne j i with rfl | hj <;> simp [*, subset_closure hn]
+  · rw [tendsto_pi_nhds]
+    intro j
+    rcases eq_or_ne j i with rfl | hj <;> simp [*, tendsto_const_nhds]
 
 theorem UniqueDiffWithinAt.univ_pi {s : ∀ i, Set (E i)} {x : ∀ i, E i}
     (h : ∀ i, UniqueDiffWithinAt 𝕜 (s i) (x i)) : UniqueDiffWithinAt 𝕜 (Set.pi univ s) x := by
@@ -61,7 +63,13 @@ theorem UniqueDiffOn.univ_pi {s : ∀ i, Set (E i)} (h : ∀ i, UniqueDiffOn �
     UniqueDiffOn 𝕜 (Set.pi univ s) :=
   fun _x hx ↦ .univ_pi fun i ↦ h i _ <| hx i (mem_univ i)
 
-variable {I : Set ι}
+end Semiring
+
+variable {𝕜 : Type*} [DivisionSemiring 𝕜]
+  {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
+  [TopologicalSpace 𝕜] [(𝓝[≠] (0 : 𝕜)).NeBot]
+  [∀ i, TopologicalSpace (E i)] [∀ i, ContinuousAdd (E i)] [∀ i, ContinuousSMul 𝕜 (E i)]
+  {s : ∀ i, Set (E i)} {x : ∀ i, E i} {I : Set ι}
 
 theorem UniqueDiffWithinAt.pi (h : ∀ i ∈ I, UniqueDiffWithinAt 𝕜 (s i) (x i)) :
     UniqueDiffWithinAt 𝕜 (Set.pi I s) x := by

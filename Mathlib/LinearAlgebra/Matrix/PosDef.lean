@@ -168,6 +168,12 @@ theorem isHermitian {M : Matrix n n R} (hM : M.PosDef) : M.IsHermitian :=
 theorem posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef :=
   ⟨hM.1, fun x ↦ by obtain rfl | hx := eq_or_ne x 0 <;> simp [le_of_lt, hM.2, *]⟩
 
+theorem submatrix {M : Matrix n n R} (hM : M.PosDef) {e : m → n}
+    (he : Function.Injective e) : (M.submatrix e e).PosDef := by
+  refine ⟨hM.1.submatrix _, fun x hx ↦ ?_⟩
+  simpa [Finsupp.sum_mapDomain_index, add_mul, mul_add] using
+    hM.2 <| Finsupp.mapDomain_injective he |>.ne_iff' Finsupp.mapDomain_zero |>.2 hx
+
 theorem transpose {M : Matrix n n R'} (hM : M.PosDef) : Mᵀ.PosDef := by
   have (a b c : R') : a * b * c = c * b * a := by ring
   refine ⟨hM.1.transpose, fun x => ?_⟩
@@ -189,7 +195,7 @@ protected theorem diagonal [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R
     obtain ⟨i, hxi⟩ := by simpa [Finsupp.ext_iff] using hx
     refine ⟨i, ?_, Finsupp.sum_pos' ?_ ⟨i, ?_, ?_⟩⟩ <;> simp +contextual [diagonal,
       apply_ite, star_left_conjugate_nonneg (h _).le,
-      star_left_conjugate_pos (h i), isRegular_of_ne_zero hxi, Finsupp.mem_support_iff.mpr hxi]
+      star_left_conjugate_pos (h i), IsRegular.of_ne_zero hxi, Finsupp.mem_support_iff.mpr hxi]
 
 @[simp]
 theorem _root_.Matrix.posDef_diagonal_iff
@@ -462,16 +468,16 @@ theorem mul_conjTranspose_self [StarOrderedRing R] [NoZeroDivisors R] (A : Matri
   simpa using mul_mul_conjTranspose_same .one hA
 
 theorem of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
-    (hMq : M.toQuadraticMap'.PosDef) : M.PosDef := by
+    (hMq : M.toQuadraticForm'.PosDef) : M.PosDef := by
   refine of_dotProduct_mulVec_pos hM fun x hx ↦ ?_
-  simp only [toQuadraticMap', QuadraticMap.PosDef, LinearMap.BilinMap.toQuadraticMap_apply,
+  simp only [toQuadraticForm', QuadraticMap.PosDef, LinearMap.BilinMap.toQuadraticMap_apply,
     toLinearMap₂'_apply'] at hMq
   apply hMq x hx
 
 theorem toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) :
-    M.toQuadraticMap'.PosDef := by
+    M.toQuadraticForm'.PosDef := by
   intro x hx
-  simp only [Matrix.toQuadraticMap', LinearMap.BilinMap.toQuadraticMap_apply,
+  simp only [Matrix.toQuadraticForm', LinearMap.BilinMap.toQuadraticMap_apply,
     toLinearMap₂'_apply']
   apply hM.dotProduct_mulVec_pos hx
 
@@ -562,7 +568,7 @@ theorem fromBlocks₂₂ [DecidableEq n] (A : Matrix m m R')
     (fromBlocks A B Bᴴ D).PosSemidef ↔ (A - B * D⁻¹ * Bᴴ).PosSemidef := by
   rw [← posSemidef_submatrix_equiv (Equiv.sumComm n m), Equiv.sumComm_apply,
     fromBlocks_submatrix_sum_swap_sum_swap]
-  convert fromBlocks₁₁ Bᴴ A hD <;> simp
+  convert! fromBlocks₁₁ Bᴴ A hD <;> simp
 
 end SchurComplement
 
@@ -578,14 +584,14 @@ variable {n : Type*} [Fintype n]
 
 theorem posDef_of_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)}
     (hQ : Q.toMatrix'.PosDef) : Q.PosDef := by
-  rw [← toQuadraticMap_associated ℝ Q,
-    ← (LinearMap.toMatrix₂' ℝ).left_inv ((associatedHom (R := ℝ) ℝ) Q)]
+  rw [← Q.toQuadraticMap_associated ℝ,
+    ← (LinearMap.toMatrix₂' ℝ).left_inv (Q.associatedHom ℝ)]
   exact hQ.toQuadraticForm'
 
 theorem posDef_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)} (hQ : Q.PosDef) :
     Q.toMatrix'.PosDef := by
-  rw [← toQuadraticMap_associated ℝ Q, ←
-    (LinearMap.toMatrix₂' ℝ).left_inv ((associatedHom (R := ℝ) ℝ) Q)] at hQ
+  rw [← Q.toQuadraticMap_associated ℝ,
+    ← (LinearMap.toMatrix₂' ℝ).left_inv (Q.associatedHom ℝ)] at hQ
   exact .of_toQuadraticForm' (isSymm_toMatrix' Q) hQ
 
 end QuadraticForm

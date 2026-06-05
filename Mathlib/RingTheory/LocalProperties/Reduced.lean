@@ -22,7 +22,7 @@ Let `R` be a commutative ring, `M` be a submonoid of `R`.
 
 -/
 
-@[expose] public section
+public section
 
 /-- `M⁻¹R` is reduced if `R` is reduced. -/
 theorem isReduced_localizationPreserves : LocalizationPreserves fun R _ => IsReduced R := by

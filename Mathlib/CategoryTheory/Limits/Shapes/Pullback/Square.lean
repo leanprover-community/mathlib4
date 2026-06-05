@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.Square
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
 
 /-!
 # Commutative squares that are pushout or pullback squares
@@ -123,6 +122,7 @@ lemma flip : sq.flip.IsPullback := CategoryTheory.IsPullback.flip h
 lemma mono_f₁₃ [Mono sq.f₂₄] : Mono sq.f₁₃ :=
   (MorphismProperty.monomorphisms C).of_isPullback h (by assumption)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mono_f₁₂ [Mono sq.f₃₄] : Mono sq.f₁₂ := by
   have : Mono sq.flip.f₂₄ := by dsimp; infer_instance
   exact h.flip.mono_f₁₃
@@ -140,6 +140,7 @@ lemma flip : sq.flip.IsPushout := CategoryTheory.IsPushout.flip h
 lemma epi_f₂₄ [Epi sq.f₁₃] : Epi sq.f₂₄ :=
   (MorphismProperty.epimorphisms C).of_isPushout h (by assumption)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma epi_f₃₄ [Epi sq.f₁₂] : Epi sq.f₃₄ := by
   have : Epi sq.flip.f₁₃ := by dsimp; infer_instance
   exact h.flip.epi_f₂₄

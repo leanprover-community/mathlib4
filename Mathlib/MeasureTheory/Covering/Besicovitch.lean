@@ -335,7 +335,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
     (there is such a ball, otherwise one would have used the color `k` and not `N`).
     Then this family of `N+1` balls forms a satellite configuration, which is forbidden by
     the assumption `hN`. -/
-  induction i using Ordinal.induction with | _ i IH
+  induction i using WellFoundedLT.induction with | ind i IH
   let A : Set ℕ :=
     ⋃ (j : { j // j < i })
       (_ : (closedBall (p.c (p.index j)) (p.r (p.index j)) ∩
@@ -362,7 +362,6 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
     have : k ∈ A := by
       simpa only [true_and, mem_univ, Classical.not_not, mem_diff] using
         Nat.notMem_of_lt_sInf hk
-    simp only [] at this
     simpa only [A, exists_prop, mem_iUnion, mem_singleton_iff, mem_closedBall, Subtype.exists,
       Subtype.coe_mk]
   choose! g hg using this
@@ -441,7 +440,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
         have I : (a : ℕ) < N := ha
         have J : G (Fin.last N) = i := by dsimp; simp only [G, if_true]
         have K : G a = g a := by simp [G, I.ne]
-        convert dist_le_add_of_nonempty_closedBall_inter_closedBall (hg _ I).2.1 }
+        convert! dist_le_add_of_nonempty_closedBall_inter_closedBall (hg _ I).2.1 }
   -- this is a contradiction
   exact hN.false sc
 
@@ -659,9 +658,10 @@ one is given a set of admissible closed balls centered at `x`, with arbitrarily 
 Then there exists a disjoint covering of almost all `s` by admissible closed balls centered at some
 points of `s`.
 This version requires that the underlying measure is finite, and that the space has the Besicovitch
-covering property (which is satisfied for instance by normed real vector spaces). It expresses the
-conclusion in a slightly awkward form (with a subset of `α × ℝ`) coming from the proof technique.
-For a version assuming that the measure is sigma-finite,
+covering property (which is satisfied for instance by finite-dimensional normed real vector spaces).
+It expresses the conclusion in a slightly awkward form (with a subset of `α × ℝ`) coming from the
+proof technique.
+For a version assuming that the measure is s-finite,
 see `exists_disjoint_closedBall_covering_ae_aux`.
 For a version giving the conclusion in a nicer form, see `exists_disjoint_closedBall_covering_ae`.
 -/
@@ -736,7 +736,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
       · exact ht.2.2 p h'p
       · rcases Finset.mem_image.1 h'p with ⟨p', p'v, rfl⟩
         exact (hr p' (vs' p'v)).1.1
-    · convert hμv using 2
+    · convert! hμv using 2
       rw [Finset.set_biUnion_union, ← diff_diff, Finset.set_biUnion_finset_image]
   /- Define `F` associating to a finite good covering the above enlarged good covering, covering
     a proportion `1/(N+1)` of leftover points. Iterating `F`, one will get larger and larger good
@@ -787,7 +787,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
       rw [ENNReal.div_lt_iff, one_mul]
       · conv_lhs => rw [← add_zero (N : ℝ≥0∞)]
         exact ENNReal.add_lt_add_left (ENNReal.natCast_ne_top N) zero_lt_one
-      · simp only [true_or, add_eq_zero, Ne, not_false_iff, one_ne_zero, and_false]
+      · simp
       · left; finiteness
     rw [zero_mul] at C
     apply le_bot_iff.1
@@ -803,8 +803,9 @@ Assume that, for any `x` in a set `s`, one is given a set of admissible closed b
 `x`, with arbitrarily small radii. Then there exists a disjoint covering of almost all `s` by
 admissible closed balls centered at some points of `s`.
 
-This version requires the underlying measure to be sigma-finite, and the space to have the
-Besicovitch covering property (which is satisfied for instance by normed real vector spaces).
+This version requires the underlying measure to be s-finite, and the space to have the
+Besicovitch covering property (which is satisfied for instance by finite-dimensional
+normed real vector spaces).
 It expresses the conclusion in a slightly awkward form (with a subset of `α × ℝ`) coming from the
 proof technique.
 
@@ -1041,8 +1042,7 @@ protected def vitaliFamily (μ : Measure α) [SFinite μ] : VitaliFamily μ wher
       obtain ⟨r, rpos, rfl⟩ : ∃ r : ℝ, 0 < r ∧ closedBall x r = t := by simpa using fsubset x xs tf
       rcases le_total r (δ / 2) with (H | H)
       · exact ⟨r, ⟨rpos, tf⟩, ⟨rpos, H.trans_lt (half_lt_self δpos)⟩⟩
-      · have : closedBall x r = closedBall x (δ / 2) :=
-          Subset.antisymm ht (closedBall_subset_closedBall H)
+      · have : closedBall x r = closedBall x (δ / 2) := Subset.antisymm ht (by gcongr)
         rw [this] at tf
         exact ⟨δ / 2, ⟨half_pos δpos, tf⟩, ⟨half_pos δpos, half_lt_self δpos⟩⟩
     obtain ⟨t, r, _, ts, tg, μt, tdisj⟩ :

@@ -5,9 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.CategoryTheory.Monoidal.Functor
-public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 /-!
 # Monoidal natural transformations
@@ -58,6 +56,7 @@ instance id : IsMonoidal (𝟙 F₁) where
 instance comp (τ' : F₂ ⟶ F₃) [IsMonoidal τ] [IsMonoidal τ'] :
     IsMonoidal (τ ≫ τ') where
 
+set_option backward.defeqAttrib.useBackward true in
 instance hcomp {G₁ G₂ : D ⥤ E} [G₁.LaxMonoidal] [G₂.LaxMonoidal] (τ' : G₁ ⟶ G₂)
     [IsMonoidal τ] [IsMonoidal τ'] : IsMonoidal (τ ◫ τ') where
   unit := by
@@ -78,10 +77,13 @@ instance whiskerLeft {G₁ G₂ : D ⥤ E} [G₁.LaxMonoidal] [G₂.LaxMonoidal]
   rw [← Functor.id_hcomp]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance (F : C ⥤ D) [F.LaxMonoidal] : NatTrans.IsMonoidal F.leftUnitor.hom where
 
+set_option backward.defeqAttrib.useBackward true in
 instance (F : C ⥤ D) [F.LaxMonoidal] : NatTrans.IsMonoidal F.rightUnitor.hom where
 
+set_option backward.defeqAttrib.useBackward true in
 instance (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') [F.LaxMonoidal] [G.LaxMonoidal] [H.LaxMonoidal] :
     NatTrans.IsMonoidal (Functor.associator F G H).hom where
   unit := by
@@ -93,6 +95,7 @@ instance (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') [F.LaxMonoidal] [G.LaxMonoid
 
 end IsMonoidal
 
+set_option backward.isDefEq.respectTransparency false in
 instance {F G : C ⥤ D} {H K : C ⥤ E} (α : F ⟶ G) (β : H ⟶ K)
     [F.LaxMonoidal] [G.LaxMonoidal] [IsMonoidal α]
     [H.LaxMonoidal] [K.LaxMonoidal] [IsMonoidal β] :
@@ -133,6 +136,8 @@ namespace IsMonoidal
 
 variable [F.Monoidal] [G.LaxMonoidal] [adj.IsMonoidal]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 instance : NatTrans.IsMonoidal adj.unit where
   unit := by
     dsimp
@@ -143,6 +148,7 @@ instance : NatTrans.IsMonoidal adj.unit where
     dsimp
     rw [← unit_app_tensor_comp_map_δ_assoc, id_comp, Monoidal.map_δ_μ, comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : NatTrans.IsMonoidal adj.counit where
   unit := by
     dsimp

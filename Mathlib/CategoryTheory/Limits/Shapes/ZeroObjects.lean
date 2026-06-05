@@ -96,6 +96,9 @@ def iso (hX : IsZero X) (hY : IsZero Y) : X ≅ Y where
   hom_inv_id := hX.eq_of_src _ _
   inv_hom_id := hY.eq_of_src _ _
 
+lemma isIso (hX : IsZero X) (hY : IsZero Y) (f : X ⟶ Y) : IsIso f :=
+  ⟨hY.to_ _, hX.eq_of_src _ _, hY.eq_of_src _ _⟩
+
 /-- A zero object is in particular initial. -/
 protected def isInitial (hX : IsZero X) : IsInitial X :=
   @IsInitial.ofUnique _ _ X fun Y => (hX.unique_to Y).some
@@ -127,6 +130,13 @@ theorem op (h : IsZero X) : IsZero (Opposite.op X) :=
 theorem unop {X : Cᵒᵖ} (h : IsZero X) : IsZero (Opposite.unop X) :=
   ⟨fun Y => ⟨⟨⟨(h.from_ (Opposite.op Y)).unop⟩, fun _ => Quiver.Hom.op_inj (h.eq_of_tgt _ _)⟩⟩,
     fun Y => ⟨⟨⟨(h.to_ (Opposite.op Y)).unop⟩, fun _ => Quiver.Hom.op_inj (h.eq_of_src _ _)⟩⟩⟩
+
+variable (Y) in
+/-- A zero object is a retract of every object. -/
+def retract (h : IsZero X) : Retract X Y where
+  i := h.to_ Y
+  r := h.from_ Y
+  retract := h.isInitial.hom_ext _ _
 
 end IsZero
 
@@ -181,6 +191,7 @@ variable [HasZeroObject C]
 /-- Construct a `Zero C` for a category with a zero object.
 This cannot be a global instance as it will trigger for every `Zero C` typeclass search.
 -/
+@[instance_reducible]
 protected def HasZeroObject.zero' : Zero C where zero := HasZeroObject.zero.choose
 
 scoped[ZeroObject] attribute [instance] CategoryTheory.Limits.HasZeroObject.zero'
@@ -228,10 +239,12 @@ namespace HasZeroObject
 variable [HasZeroObject C]
 
 /-- There is a unique morphism from the zero object to any object `X`. -/
+@[instance_reducible]
 protected def uniqueTo (X : C) : Unique (0 ⟶ X) :=
   ((isZero_zero C).unique_to X).some
 
 /-- There is a unique morphism from any object `X` to the zero object. -/
+@[instance_reducible]
 protected def uniqueFrom (X : C) : Unique (X ⟶ 0) :=
   ((isZero_zero C).unique_from X).some
 
@@ -254,7 +267,7 @@ instance {X : C} (f : 0 ⟶ X) : Mono f where right_cancellation g h _ := by ext
 instance {X : C} (f : X ⟶ 0) : Epi f where left_cancellation g h _ := by ext
 
 instance zero_to_zero_isIso (f : (0 : C) ⟶ 0) : IsIso f := by
-  convert show IsIso (𝟙 (0 : C)) by infer_instance
+  convert! show IsIso (𝟙 (0 : C)) by infer_instance
   subsingleton
 
 /-- A zero object is in particular initial. -/
@@ -302,5 +315,8 @@ open ZeroObject
 
 theorem Functor.isZero_iff [HasZeroObject D] (F : C ⥤ D) : IsZero F ↔ ∀ X, IsZero (F.obj X) :=
   ⟨fun hF X => hF.obj X, Functor.isZero _⟩
+
+instance {C : Type*} [Category* C] (A : C) [HasZeroObject C] : Epi (terminalIsTerminal.from A) :=
+  (((isZero_zero C).of_iso HasZeroObject.zeroIsoTerminal.symm).epi _)
 
 end CategoryTheory
