@@ -50,13 +50,15 @@ It returns just the imports of `fileContent`, including trailing comments if `ke
 -/
 def getHeader (fname fileContent : String) (keepTrailing : Bool) : IO String := do
   let (stx, _) ← Parser.parseHeader (Parser.mkInputContext fileContent fname)
+  -- The first argument is a module token (if any).
+  let isModule := !(stx.raw.getArg 0).getArgs.isEmpty
   let imports := stx.raw.getArg 2  -- extract just the imports list
   let imports := if keepTrailing then imports else imports.unsetTrailing
   -- Use `withLeading := false` to exclude leading comments (e.g. copyright header) that the
   -- parser now attaches to the first token (see leanprover/lean4#12662).
   let some substring := imports.getSubstring? (withLeading := false) |
     throw <| .userError "No substring: we have a problem!"
-  return (if substring.toString.contains "public" then "module\n\n" else "") ++ substring.toString
+  return (if isModule then "module\n\n" else "") ++ substring.toString
 
 /--
 `getHeaderFromFileName fname keepTrailing` is similar to `getHeader`, except that it assumes that
