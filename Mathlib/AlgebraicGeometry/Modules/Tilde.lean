@@ -139,6 +139,10 @@ set_option linter.dupNamespace false in
 @[deprecated (since := "2026-06-04")]
 alias Scheme.Modules.restrictAppIso_smul_Spec := restrictAppIso_smul_Spec
 
+set_option linter.dupNamespace false in
+@[deprecated (since := "2026-06-04")]
+alias Scheme.Modules.restrictAppIso_smul_Spec := restrictAppIso_smul_Spec
+
 end Scheme.Modules
 
 /--
