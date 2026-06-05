@@ -656,7 +656,7 @@ lemma generateFrom_latticeClosure {α : Type*} (s : Set (Set α)) :
   | inf _ _ _ _ ha hb => exact IsOpen.inter ha hb
 
 lemma generateFrom_booleanSubalgebra_closure_eq_of_isSublattice {α : Type*}
-    {s : Set (Set α)} (hs1 : ⊥ ∈ s) (hs2 : compl '' s = s) (hs3 : IsSublattice s) :
+    {s : Set (Set α)} (hs1 : ∅ ∈ s) (hs2 : compl '' s = s) (hs3 : IsSublattice s) :
     generateFrom (BooleanSubalgebra.closure s) = generateFrom s := by
   refine eq_of_le_of_ge ?_ ?_
   · exact le_generateFrom fun _ h => isOpen_generateFrom_of_mem <|
