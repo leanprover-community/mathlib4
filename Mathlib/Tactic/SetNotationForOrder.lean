@@ -222,4 +222,29 @@ binder_predicate (priority := high) x " ⊇ " y:term => `($x ⊇ $y)
 `∃ x, x ⊃ y ∧ ...` -/
 binder_predicate (priority := high) x " ⊃ " y:term => `($x ⊃ $y)
 
+/-! Dot-notation namespace linter -/
+
+/-- A temporary linter to help adapt to `@[set_notation_for_order]`.
+It gives a warning when a lemma is in the wrong namespace for dot-notation. -/
+@[env_linter]
+public def subsetDotNotationLinter : Batteries.Tactic.Lint.Linter where
+  noErrorsFound := "all names are correct"
+  errorsFound := "SOME DECLARATIONS USE THE WRONG NAMESPACE"
+  test declName := do
+    if Linter.isDeprecated (← getEnv) declName then return none
+    let n := declName.getNumParts
+    if n ≤ 2 then return none
+    let (nameStart, rest) := declName.splitAt (n - 2)
+    let otherStart ← match nameStart with
+      | ``Subset => pure ``LE.le
+      | ``SSubset => pure ``LT.lt
+      | _ => return none
+    let mut type := (← getConstInfo declName).type
+    while let .forallE _ d t _ := type do
+      type := t
+      if let .const c _ := d.getAppFn then
+        if c == otherStart then
+          return some m!"`{n}` should be named `{otherStart ++ rest}` in order to use dot-notation."
+    return none
+
 end Mathlib.Meta.SetNotationForOrder
