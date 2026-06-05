@@ -48,7 +48,7 @@ abbrev FunPropDeclsExt := SimpleScopedEnvExtension FunPropDecl FunPropDecls
 including, for example, `Continuous`, `Measurable`, `Differentiable`, etc. -/
 initialize funPropDeclsExt : FunPropDeclsExt ←
   registerSimpleScopedEnvExtension {
-    name := decl_name%
+    name := by exact decl_name%
     initial := {}
     addEntry := fun d e =>
       {d with decls := d.decls.insertKeyValue e.path e}
