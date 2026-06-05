@@ -55,7 +55,7 @@ variable {F α β γ : Type*}
 
 namespace Finset
 
-open Pointwise
+open scoped Pointwise
 
 /-! ### Scalar addition/multiplication of finsets -/
 
@@ -172,7 +172,9 @@ lemma coe_smul_finset (a : α) (s : Finset β) : ↑(a • s) = a • (↑s : Se
 
 @[to_additive] lemma smul_mem_smul_finset : b ∈ s → a • b ∈ a • s := mem_image_of_mem _
 
-@[to_additive] lemma smul_finset_card_le : #(a • s) ≤ #s := card_image_le
+@[to_additive] lemma card_smul_finset_le : #(a • s) ≤ #s := card_image_le
+@[deprecated (since := "2026-04-16")] alias smul_finset_card_le := card_smul_finset_le
+@[deprecated (since := "2026-04-16")] alias vadd_finset_card_le := card_vadd_finset_le
 
 @[to_additive (attr := simp)]
 lemma smul_finset_empty (a : α) : a • (∅ : Finset β) = ∅ := rfl
@@ -219,7 +221,7 @@ open scoped Pointwise
 
 /-! ### Instances -/
 
-open Pointwise
+open scoped Pointwise
 
 /-! ### Scalar subtraction of finsets -/
 
@@ -349,7 +351,7 @@ theorem image_smul_comm [DecidableEq β] [DecidableEq γ] [SMul α β] [SMul α 
 
 end Finset
 
-open Pointwise
+open scoped Pointwise
 
 namespace Set
 

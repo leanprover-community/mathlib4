@@ -15,7 +15,7 @@ In this file, we define the typeclass of abelian extensions and provide some bas
 
 -/
 
-@[expose] public section
+public section
 
 variable (K L M : Type*) [Field K] [Field L] [Algebra K L]
 variable [Field M] [Algebra K M] [Algebra L M] [IsScalarTower K L M]
@@ -53,11 +53,9 @@ lemma IsAbelianGalois.of_algHom (f : L →ₐ[K] M) [IsAbelianGalois K M] :
   haveI := IsScalarTower.of_algebraMap_eq' f.comp_algebraMap.symm
   .tower_bot K L M
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsAbelianGalois K L] (K' : IntermediateField K L) : IsAbelianGalois K K' :=
   .tower_bot K K' L
 
-set_option backward.isDefEq.respectTransparency false in
 instance (K L : Type*) [Field K] [Field L] [Algebra K L] [IsAbelianGalois K L]
     (K' : IntermediateField K L) : IsAbelianGalois K' L :=
   .tower_top K _ L
@@ -68,6 +66,4 @@ instance : IsAbelianGalois K K where
 instance : IsAbelianGalois K (⊥ : IntermediateField K L) :=
   .of_algHom (IntermediateField.botEquiv K L).toAlgHom
 
-lemma IsAbelianGalois.of_isCyclic [IsGalois K L] [IsCyclic Gal(L/K)] :
-    IsAbelianGalois K L where
-  is_comm := letI := IsCyclic.commGroup (α := L ≃ₐ[K] L); inferInstance
+lemma IsAbelianGalois.of_isCyclic [IsGalois K L] [IsCyclic Gal(L/K)] : IsAbelianGalois K L where

@@ -302,7 +302,7 @@ structure AddSubgroup (G : Type*) [AddGroup G] extends AddSubmonoid G where
   /-- `G` is closed under negation -/
   neg_mem' {x} : x ∈ carrier → -x ∈ carrier
 
-attribute [to_additive] Subgroup
+attribute [to_additive (attr := wikidata Q466109)] Subgroup
 
 /-- Reinterpret a `Subgroup` as a `Submonoid`. -/
 add_decl_doc Subgroup.toSubmonoid
@@ -396,13 +396,16 @@ theorem toSubmonoid_mono : Monotone (toSubmonoid : Subgroup G → Submonoid G) :
 theorem toSubmonoid_le {p q : Subgroup G} : p.toSubmonoid ≤ q.toSubmonoid ↔ p ≤ q :=
   Iff.rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma coe_nonempty (s : Subgroup G) : (s : Set G).Nonempty := ⟨1, one_mem _⟩
 
 @[to_additive]
 instance isMulCommutative_toSubmonoid (s : Subgroup G) [IsMulCommutative s] :
     IsMulCommutative s.toSubmonoid :=
   ‹IsMulCommutative s›
+
+attribute [deprecated OneMemClass.coe_nonempty (since := "2026-04-20")] Subgroup.coe_nonempty
+attribute [deprecated ZeroMemClass.coe_nonempty (since := "2026-04-20")] AddSubgroup.coe_nonempty
 
 end Subgroup
 
@@ -551,15 +554,13 @@ theorem mk_eq_one {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 := Submonoid.mk_e
 
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits an `AddGroup` structure. -/]
-instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H := fast_instance%
-  Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H :=
+  SubgroupClass.toGroup H
 
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
 @[to_additive /-- An `AddSubgroup` of an `AddCommGroup` is an `AddCommGroup`. -/]
-instance toCommGroup {G : Type*} [CommGroup G] (H : Subgroup G) : CommGroup H := fast_instance%
-  Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+instance toCommGroup {G : Type*} [CommGroup G] (H : Subgroup G) : CommGroup H :=
+  SubgroupClass.toCommGroup H
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive /-- The natural group hom from an `AddSubgroup` of `AddGroup` `G` to `G`. -/]
@@ -621,7 +622,7 @@ structure Normal (H : AddSubgroup A) : Prop where
   /-- `H` is closed under additive conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : A, g + n + -g ∈ H
 
-attribute [to_additive] Subgroup.Normal
+attribute [to_additive (attr := wikidata Q743179)] Subgroup.Normal
 
 attribute [class] Normal
 
@@ -632,15 +633,17 @@ namespace Subgroup
 variable {H : Subgroup G}
 
 @[to_additive]
-instance (priority := 100) normal_of_comm {G : Type*} [CommGroup G] (H : Subgroup G) : H.Normal :=
-  ⟨by simp [mul_comm]⟩
+instance (priority := 100) normal_of_isMulCommutative [IsMulCommutative G] (H : Subgroup G) :
+    H.Normal := ⟨by simp [mul_comm']⟩
+
+@[deprecated (since := "2026-04-10")] alias normal_of_comm := normal_of_isMulCommutative
 
 namespace Normal
 
 @[to_additive]
 theorem conj_mem' (nH : H.Normal) (n : G) (hn : n ∈ H) (g : G) :
     g⁻¹ * n * g ∈ H := by
-  convert nH.conj_mem n hn g⁻¹
+  convert! nH.conj_mem n hn g⁻¹
   rw [inv_inv]
 
 @[to_additive]
@@ -662,26 +665,12 @@ variable (H : Subgroup G)
 
 section Normalizer
 
-/-- The `normalizer` of `H` is the largest subgroup of `G` inside which `H` is normal. -/
+/-- The `normalizer` of `S` is the subgroup of `G` whose elements satisfy `g * S * g⁻¹ = S`.
+When `S` is a subgroup, this is the largest subgroup of `G` inside which `S` is normal. -/
 @[to_additive
-/-- The `normalizer` of `H` is the largest subgroup of `G` inside which `H` is normal. -/]
-def normalizer : Subgroup G where
-  carrier := { g : G | ∀ n, n ∈ H ↔ g * n * g⁻¹ ∈ H }
-  one_mem' := by simp
-  mul_mem' {a b} (ha : ∀ n, n ∈ H ↔ a * n * a⁻¹ ∈ H) (hb : ∀ n, n ∈ H ↔ b * n * b⁻¹ ∈ H) n := by
-    rw [hb, ha]
-    simp only [mul_assoc, mul_inv_rev]
-  inv_mem' {a} (ha : ∀ n, n ∈ H ↔ a * n * a⁻¹ ∈ H) n := by
-    rw [ha (a⁻¹ * n * a⁻¹⁻¹)]
-    simp only [inv_inv, mul_assoc, mul_inv_cancel_left, mul_inv_cancel, mul_one]
-
--- variant for sets.
--- TODO should this replace `normalizer`?
-/-- The `setNormalizer` of `S` is the subgroup of `G` whose elements satisfy `g*S*g⁻¹=S` -/
-@[to_additive
-      /-- The `setNormalizer` of `S` is the subgroup of `G` whose elements satisfy
-      `g+S-g=S`. -/]
-def setNormalizer (S : Set G) : Subgroup G where
+/-- The `normalizer` of `S` is the subgroup of `G` whose elements satisfy `g + S - g = S`.
+When `S` is a subgroup, this is the largest subgroup of `G` inside which `S` is normal. -/]
+def normalizer (S : Set G) : Subgroup G where
   carrier := { g : G | ∀ n, n ∈ S ↔ g * n * g⁻¹ ∈ S }
   one_mem' := by simp
   mul_mem' {a b} (ha : ∀ n, n ∈ S ↔ a * n * a⁻¹ ∈ S) (hb : ∀ n, n ∈ S ↔ b * n * b⁻¹ ∈ S) n := by
@@ -691,32 +680,48 @@ def setNormalizer (S : Set G) : Subgroup G where
     rw [ha (a⁻¹ * n * a⁻¹⁻¹)]
     simp only [inv_inv, mul_assoc, mul_inv_cancel_left, mul_inv_cancel, mul_one]
 
-variable {H}
+@[deprecated (since := "2026-03-19")]
+alias setNormalizer := normalizer
+@[deprecated (since := "2026-03-19")]
+alias _root_.AddSubgroup.setNormalizer := AddSubgroup.normalizer
+
+variable {H} {S : Set G} {g : G}
 
 @[to_additive]
-theorem mem_normalizer_iff {g : G} : g ∈ H.normalizer ↔ ∀ h, h ∈ H ↔ g * h * g⁻¹ ∈ H :=
-  Iff.rfl
+theorem mem_set_normalizer_iff : g ∈ normalizer S ↔ ∀ h, h ∈ S ↔ g * h * g⁻¹ ∈ S :=
+  .rfl
 
 @[to_additive]
-theorem mem_normalizer_iff'' {g : G} : g ∈ H.normalizer ↔ ∀ h : G, h ∈ H ↔ g⁻¹ * h * g ∈ H := by
-  rw [← inv_mem_iff (x := g), mem_normalizer_iff, inv_inv]
+theorem mem_set_normalizer_iff'' : g ∈ normalizer S ↔ ∀ h, h ∈ S ↔ g⁻¹ * h * g ∈ S := by
+  rw [← inv_mem_iff, mem_set_normalizer_iff, inv_inv]
 
 @[to_additive]
-theorem mem_normalizer_iff' {g : G} : g ∈ H.normalizer ↔ ∀ n, n * g ∈ H ↔ g * n ∈ H :=
-  ⟨fun h n => by rw [h, mul_assoc, mul_inv_cancel_right], fun h n => by
-    rw [mul_assoc, ← h, inv_mul_cancel_right]⟩
+theorem mem_set_normalizer_iff' : g ∈ normalizer S ↔ ∀ h, h * g ∈ S ↔ g * h ∈ S :=
+  ⟨fun h n ↦ by rw [h, mul_assoc, mul_inv_cancel_right],
+    fun h n ↦ by rw [mul_assoc, ← h, inv_mul_cancel_right]⟩
+
+@[to_additive]
+theorem mem_normalizer_iff : g ∈ normalizer H ↔ ∀ h, h ∈ H ↔ g * h * g⁻¹ ∈ H :=
+  mem_set_normalizer_iff
+
+@[to_additive]
+theorem mem_normalizer_iff'' : g ∈ normalizer H ↔ ∀ h : G, h ∈ H ↔ g⁻¹ * h * g ∈ H :=
+  mem_set_normalizer_iff''
+
+@[to_additive]
+theorem mem_normalizer_iff' : g ∈ normalizer H ↔ ∀ n, n * g ∈ H ↔ g * n ∈ H :=
+  mem_set_normalizer_iff'
 
 @[to_additive]
 theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
-  rw [H.mul_mem_cancel_right (H.inv_mem xH), H.mul_mem_cancel_left xH]
+  rw [SetLike.mem_coe, SetLike.mem_coe, H.mul_mem_cancel_right <| H.inv_mem xH,
+    H.mul_mem_cancel_left xH]
 
 end Normalizer
 
-/-- A subgroup of a commutative group is commutative. -/
-@[to_additive /-- A subgroup of a commutative group is commutative. -/]
-instance commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
-    IsMulCommutative H :=
-  ⟨CommMagma.to_isCommutative⟩
+@[to_additive (attr := deprecated inferInstance (since := "2026-04-09"))]
+theorem commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
+    IsMulCommutative H := inferInstance
 
 @[to_additive (attr := deprecated setLike_mul_comm (since := "2026-03-09"))]
 lemma mul_comm_of_mem_isMulCommutative [IsMulCommutative H] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :

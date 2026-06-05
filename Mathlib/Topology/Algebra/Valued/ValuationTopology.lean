@@ -82,7 +82,7 @@ theorem subgroups_basis :
       rw [← restrict_lt_iff_lt_embedding] at *
       calc
         v.restrict (r * s) = v.restrict r * v.restrict s := Valuation.map_mul _ _ _
-        _ < γ₀.1 * γ₀.1 := by gcongr <;> exact zero_le'
+        _ < γ₀.1 * γ₀.1 := by gcongr <;> exact zero_le
         _ ≤ γ := mod_cast h
     leftMul := by
       rintro x γ
@@ -136,7 +136,6 @@ class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
 
 namespace Valued
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Alternative `Valued` constructor for use when there is no preferred `UniformSpace` structure. -/
 @[implicit_reducible]
 def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
@@ -165,11 +164,10 @@ theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ ↦ True)
   rw [uniformity_eq_comap_nhds_zero]
   exact (hasBasis_nhds_zero R Γ₀).comap _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toUniformSpace_eq : toUniformSpace =
     @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _ := by
   refine UniformSpace.ext ((hasBasis_uniformity R Γ₀).eq_of_same_basis ?_)
-  convert v.subgroups_basis.hasBasis_nhds_zero.comap _
+  convert! v.subgroups_basis.hasBasis_nhds_zero.comap _
   simp_rw [restrict_lt_iff_lt_embedding, sub_eq_add_neg]
   simp
 
@@ -184,7 +182,11 @@ theorem mem_nhds_zero {s : Set R} : s ∈ 𝓝 (0 : R) ↔
     ∃ γ : (MonoidWithZeroHom.ValueGroup₀ _i.v)ˣ, { x | v.restrict x < γ.1 } ⊆ s := by
   simp only [mem_nhds, sub_zero]
 
-theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
+/-- The set `{ y : R | v y = v x }` is a neighbourhood of `x`.
+This does not imply that `v` is locally constant everywhere (since `v ⁻¹' {0}` is not open),
+but it is equivalent to the restriction of `v` to the complement of its support being
+locally constant. -/
+theorem locally_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
   rw [mem_nhds]
   have h' : v.restrict x ≠ 0 := by simp [h]
   use Units.mk0 _ h'
@@ -214,7 +216,6 @@ lemma discreteTopology_of_forall_lt [MulArchimedean Γ₀] [Valued K Γ₀] {r :
 
 end Discrete
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cauchy_iff {F : Filter R} : Cauchy F ↔
     F.NeBot ∧ ∀ γ : (MonoidWithZeroHom.ValueGroup₀ _i.v)ˣ,
       ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), _i.v.restrict (y - x) < γ.1 := by
@@ -265,16 +266,13 @@ theorem isOpen_closedBall {r : ValueGroup₀ _i.v} (hr : r ≠ 0) :
   exact ⟨Units.mk0 _ hr, fun y hy ↦
     (sub_add_cancel y x).symm ▸ le_trans (v.restrict.map_add _ _) (max_le (le_of_lt hy) hx)⟩
 
-@[deprecated (since := "2025-10-09")]
-alias isOpen_closedball := isOpen_closedBall
-
 /-- A closed ball centred at the origin in a valued ring is closed. -/
 theorem isClosed_closedBall (r : ValueGroup₀ _i.v) : IsClosed (X := R) {x | v.restrict x ≤ r} := by
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro x hx
   simp only [mem_compl_iff, mem_setOf_eq, not_le] at hx
   rw [mem_nhds]
-  have hx' : v.restrict x ≠ 0 := ne_of_gt <| lt_of_le_of_lt zero_le' <| hx
+  have hx' : v.restrict x ≠ 0 := hx.ne_zero
   exact ⟨Units.mk0 _ hx', fun y hy hy' ↦ ne_of_lt hy <| map_sub_swap v.restrict x y ▸
       (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' hx)⟩
 

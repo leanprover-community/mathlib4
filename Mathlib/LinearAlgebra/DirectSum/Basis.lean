@@ -19,7 +19,7 @@ Currently, to get a basis on `⨁ i, M i` from a basis on each `M i`, use `DFins
 (using that the types are defeq).
 -/
 
-@[expose] public section
+public section
 
 open DirectSum
 

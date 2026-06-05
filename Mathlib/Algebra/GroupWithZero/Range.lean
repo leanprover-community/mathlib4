@@ -102,13 +102,9 @@ lemma valueGroup_def : valueGroup f = Subgroup.closure (valueMonoid f) := rfl
 codomain containing the range of `f`. -/
 abbrev ValueMonoid₀ := WithZero (valueMonoid f)
 
-@[deprecated (since := "2025-09-03")] alias valueMonoid₀ := ValueMonoid₀
-
 /-- For a morphism of monoids with zero `f`, this is a smallest subgroup with zero of the
 codomain containing the range of `f`. -/
 abbrev ValueGroup₀ := WithZero (valueGroup f)
-
-@[deprecated (since := "2025-09-03")] alias valueGroup₀ := ValueGroup₀
 
 lemma mem_valueMonoid {b : Bˣ} (hb : b.val ∈ range f) : b ∈ valueMonoid f := by
   tauto
@@ -141,8 +137,8 @@ def ValueGroup₀.restrict₀ : A →*₀ ValueGroup₀ f where
   toFun a :=
     letI : DecidablePred fun b : B ↦ b = 0 := Classical.decPred fun b ↦ b = 0
     if h : f a = 0 then 0 else (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f)
-  map_one'  := by simp [← WithZero.coe_one]
-  map_mul'  := by aesop
+  map_one' := by simp [← WithZero.coe_one]
+  map_mul' := by aesop
   map_zero' := by simp
 
 namespace ValueGroup₀
@@ -217,14 +213,12 @@ open Function
 lemma ValueGroup₀.restrict₀_surjective : Surjective (ValueGroup₀.restrict₀ f) :=
   fun _ ↦ mem_range.mp (by simp [ValueGroup₀.restrict₀_range_eq_top])
 
-open Function
-
 end GroupWithZero
 section CommGroupWithZero
---
+
 variable [MonoidWithZero A] [CommGroupWithZero B] [MonoidWithZeroHomClass F A B]
 
-/- See also `mem_valueGroup_iff_of_comm'` for a version proving that `f x ≠ 0`. -/
+/-- See also `mem_valueGroup_iff_of_comm'` for a version proving that `f x ≠ 0`. -/
 theorem mem_valueGroup_iff_of_comm {y : Bˣ} :
     y ∈ valueGroup f ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f a * y = f x := by
   refine ⟨fun hy ↦ ?_, fun ⟨a, ha, x, hy⟩ ↦ ?_⟩

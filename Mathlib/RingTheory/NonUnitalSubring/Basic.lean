@@ -356,9 +356,10 @@ theorem center_toNonUnitalSubsemiring :
   rfl
 
 /-- The center is commutative and associative. -/
-instance center.instNonUnitalCommRing : NonUnitalCommRing (center R) :=
-  { NonUnitalSubsemiring.center.instNonUnitalCommSemiring R,
-    inferInstanceAs <| NonUnitalNonAssocRing (center R) with }
+instance center.instNonUnitalCommRing : NonUnitalCommRing (center R) where
+  __ : NonUnitalCommSemiring (center R) :=
+    inferInstanceAs <| NonUnitalCommSemiring (NonUnitalSubsemiring.center R)
+  __ := (inferInstance : NonUnitalNonAssocRing (center R))
 
 variable {R}
 
@@ -376,7 +377,6 @@ end NonUnitalNonAssocRing
 section NonUnitalRing
 variable [NonUnitalRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 -- no instance diamond, unlike the unital version
 example : (center.instNonUnitalCommRing _).toNonUnitalRing =
       NonUnitalSubringClass.toNonUnitalRing (center R) := by
@@ -395,41 +395,41 @@ end NonUnitalRing
 
 section Centralizer
 
+variable {R : Type*} [NonUnitalRing R]
+
 /-- The centralizer of a set as non-unital subring. -/
-def centralizer {R} [NonUnitalRing R] (s : Set R) : NonUnitalSubring R :=
-  { Subsemigroup.centralizer s with
+def centralizer (s : Set R) : NonUnitalSubring R :=
+  { NonUnitalSubsemiring.centralizer s with
     carrier := s.centralizer
-    zero_mem' := Set.zero_mem_centralizer
-    add_mem' := Set.add_mem_centralizer
     neg_mem' := Set.neg_mem_centralizer }
 
 @[simp, norm_cast]
-theorem coe_centralizer {R} [NonUnitalRing R] (s : Set R) :
+theorem coe_centralizer (s : Set R) :
     (centralizer s : Set R) = s.centralizer :=
   rfl
 
-theorem centralizer_toSubsemigroup {R} [NonUnitalRing R] (s : Set R) :
-    (centralizer s).toSubsemigroup = Subsemigroup.centralizer s :=
+theorem centralizer_toNonUnitalSubsemiring (s : Set R) :
+    (centralizer s).toNonUnitalSubsemiring = NonUnitalSubsemiring.centralizer s :=
   rfl
 
-theorem mem_centralizer_iff {R} [NonUnitalRing R] {s : Set R} {z : R} :
+theorem mem_centralizer_iff {s : Set R} {z : R} :
     z ∈ centralizer s ↔ ∀ g ∈ s, g * z = z * g :=
   Iff.rfl
 
-theorem center_le_centralizer {R} [NonUnitalRing R] (s) : center R ≤ centralizer s :=
+theorem center_le_centralizer (s) : center R ≤ centralizer s :=
   s.center_subset_centralizer
 
-theorem centralizer_le {R} [NonUnitalRing R] (s t : Set R) (h : s ⊆ t) :
+theorem centralizer_le (s t : Set R) (h : s ⊆ t) :
     centralizer t ≤ centralizer s :=
   Set.centralizer_subset h
 
 @[simp]
-theorem centralizer_eq_top_iff_subset {R} [NonUnitalRing R] {s : Set R} :
+theorem centralizer_eq_top_iff_subset {s : Set R} :
     centralizer s = ⊤ ↔ s ⊆ center R :=
   SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
 
 @[simp]
-theorem centralizer_univ {R} [NonUnitalRing R] : centralizer Set.univ = center R :=
+theorem centralizer_univ : centralizer Set.univ = center R :=
   SetLike.ext' (Set.centralizer_univ R)
 
 end Centralizer
@@ -645,7 +645,7 @@ theorem mem_prod {s : NonUnitalSubring R} {t : NonUnitalSubring S} {p : R × S} 
     p ∈ s.prod t ↔ p.1 ∈ s ∧ p.2 ∈ t :=
   Iff.rfl
 
-@[mono]
+@[gcongr, mono]
 theorem prod_mono ⦃s₁ s₂ : NonUnitalSubring R⦄ (hs : s₁ ≤ s₂) ⦃t₁ t₂ : NonUnitalSubring S⦄
     (ht : t₁ ≤ t₂) : s₁.prod t₁ ≤ s₂.prod t₂ :=
   Set.prod_mono hs ht
@@ -668,6 +668,9 @@ theorem top_prod (s : NonUnitalSubring S) :
 @[simp]
 theorem top_prod_top : (⊤ : NonUnitalSubring R).prod (⊤ : NonUnitalSubring S) = ⊤ :=
   (top_prod _).trans <| comap_top _
+
+protected theorem center_prod : center (R × S) = prod (center R) (center S) :=
+  SetLike.coe_injective Set.center_prod
 
 /-- Product of `NonUnitalSubring`s is isomorphic to their product as rings. -/
 def prodEquiv (s : NonUnitalSubring R) (t : NonUnitalSubring S) : s.prod t ≃+* s × t :=

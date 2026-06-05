@@ -53,16 +53,20 @@ positions, or labels `Λ`, each of which executes a finite sequence of basic sta
 
 For this program we will need four stacks, each on an alphabet `Γ'` like so:
 
+```
     inductive Γ'  | consₗ | cons | bit0 | bit1
+```
 
 We represent a number as a bit sequence, lists of numbers by putting `cons` after each element, and
 lists of lists of natural numbers by putting `consₗ` after each list. For example:
 
+```
     0 ~> []
     1 ~> [bit1]
     6 ~> [bit0, bit1, bit1]
     [1, 2] ~> [bit1, cons, bit0, bit1, cons]
     [[], [1, 2]] ~> [consₗ, bit1, cons, bit0, bit1, cons, consₗ]
+```
 
 The four stacks are `main`, `rev`, `aux`, `stack`. In normal mode, `main` contains the input to the
 current program (a `List ℕ`) and `stack` contains data (a `List (List ℕ)`) associated to the
@@ -211,11 +215,18 @@ compile_inductive% Λ'
 instance Λ'.instInhabited : Inhabited Λ' :=
   ⟨Λ'.ret Cont'.halt⟩
 
-set_option backward.proofsInPublic true in
 instance Λ'.instDecidableEq : DecidableEq Λ' := fun a b => by
-  induction a generalizing b <;> cases b <;> first
-    | apply Decidable.isFalse; rintro ⟨⟨⟩⟩; done
-    | exact decidable_of_iff' _ (by simp [funext_iff]; rfl)
+  induction a generalizing b <;> cases b
+  case move.move p k₁ k₂ q _ p' k₁' k₂' q' =>
+    exact decidable_of_iff' (p = p' ∧ k₁ = k₁' ∧ k₂ = k₂' ∧ q = q') (by simp)
+  case clear.clear p k q _ p' k' q' => exact decidable_of_iff' (p = p' ∧ k = k' ∧ q = q') (by simp)
+  case copy.copy q _ q' => exact decidable_of_iff' (q = q') (by simp)
+  case push.push k s q _ k' s' q' => exact decidable_of_iff' (k = k' ∧ s = s' ∧ q = q') (by simp)
+  case read.read f _ f' => exact decidable_of_iff' (∀ a, f a = f' a) (by simp [funext_iff])
+  case succ.succ q _ q' => exact decidable_of_iff' (q = q') (by simp)
+  case pred.pred q₁ q₂ _ _ q₁' q₂' => exact decidable_of_iff' (q₁ = q₁' ∧ q₂ = q₂') (by simp)
+  case ret.ret k k' => exact decidable_of_iff' (k = k') (by simp)
+  all_goals exact .isFalse (by rintro ⟨⟨⟩⟩)
 
 /-- The type of TM2 statements used by this machine. -/
 def Stmt' :=
@@ -398,10 +409,12 @@ def trCont : Cont → Cont'
 /-- We use `PosNum` to define the translation of binary natural numbers. A natural number is
 represented as a little-endian list of `bit0` and `bit1` elements:
 
+```
     1 = [bit1]
     2 = [bit0, bit1]
     3 = [bit1, bit1]
     4 = [bit0, bit0, bit1]
+```
 
 In particular, this representation guarantees no trailing `bit0`'s at the end of the list. -/
 def trPosNum : PosNum → List Γ'
@@ -413,11 +426,13 @@ def trPosNum : PosNum → List Γ'
 translated using `trPosNum`, and `trNum 0 = []`. So there are never any trailing `bit0`'s in
 a translated `Num`.
 
+```
     0 = []
     1 = [bit1]
     2 = [bit0, bit1]
     3 = [bit1, bit1]
     4 = [bit0, bit0, bit1]
+```
 -/
 def trNum : Num → List Γ'
   | Num.zero => []
@@ -438,10 +453,12 @@ theorem trNat_default : trNat default = [] :=
 /-- Lists are translated with a `cons` after each encoded number.
 For example:
 
+```
     [] = []
     [0] = [cons]
     [1] = [bit1, cons]
     [6, 0] = [bit0, bit1, bit1, cons, cons]
+```
 -/
 @[simp]
 def trList : List ℕ → List Γ'
@@ -451,11 +468,13 @@ def trList : List ℕ → List Γ'
 /-- Lists of lists are translated with a `consₗ` after each encoded list.
 For example:
 
+```
     [] = []
     [[]] = [consₗ]
     [[], []] = [consₗ, consₗ]
     [[0]] = [cons, consₗ]
     [[1, 2], [0]] = [bit1, cons, bit0, bit1, cons, consₗ, cons, consₗ]
+```
 -/
 @[simp]
 def trLList : List (List ℕ) → List Γ'
@@ -585,7 +604,7 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
     rw [e₃] at e
     cases e
     simp only [List.head?_cons, e₂, List.tail_cons, cond_false]
-    convert @IH _ (update (update S k₁ Sk) k₂ (a :: S k₂)) _ using 2 <;>
+    convert! @IH _ (update (update S k₁ Sk) k₂ (a :: S k₂)) _ using 2 <;>
       simp [Function.update_of_ne, h₁, h₁.symm, e₃, List.reverseAux]
     simp [Function.update_comm h₁.symm]
 
@@ -602,14 +621,14 @@ theorem move₂_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k
   simp only [TM2.step, Option.mem_def, Option.elim]
   cases o <;> simp only <;> rw [tr]
     <;> simp only [id, TM2.stepAux, Option.isSome, cond_true, cond_false]
-  · convert move_ok h₁.2.1.symm (splitAtPred_false _) using 2
+  · convert! move_ok h₁.2.1.symm (splitAtPred_false _) using 2
     simp only [Function.update_comm h₁.1, Function.update_idem]
     rw [show update S rev [] = S by rw [← h₂, Function.update_eq_self]]
     simp only [Function.update_of_ne h₁.2.2.symm, Function.update_of_ne h₁.2.1,
       Function.update_of_ne h₁.1.symm, List.reverseAux_eq, h₂, Function.update_self,
       List.append_nil, List.reverse_reverse]
   · simp only [Option.getD_some]
-    convert move_ok h₁.2.1.symm (splitAtPred_false _) using 2
+    convert! move_ok h₁.2.1.symm (splitAtPred_false _) using 2
     simp only [h₂, Function.update_comm h₁.1, List.reverseAux_eq, Function.update_self,
       List.append_nil, Function.update_idem]
     rw [show update S rev [] = S by rw [← h₂, Function.update_eq_self]]
@@ -642,7 +661,7 @@ theorem clear_ok {p k q s L₁ o L₂} {S : K' → List Γ'} (e : splitAtPred p 
     rw [e₃] at e
     cases e
     simp only [List.head?_cons, e₂, List.tail_cons, cond_false]
-    convert @IH _ (update S k Sk) _ using 2 <;> simp [e₃]
+    convert! @IH _ (update S k Sk) _ using 2 <;> simp [e₃]
 
 theorem copy_ok (q s a b c d) :
     Reaches₁ (TM2.step tr) ⟨some (Λ'.copy q), s, K'.elim a b c d⟩
@@ -696,7 +715,7 @@ theorem head_main_ok {q s L} {c d : List Γ'} :
   rw [if_neg (show o ≠ some Γ'.consₗ by cases L <;> simp [o])]
   refine (clear_ok (splitAtPred_eq _ _ _ none [] ?_ ⟨rfl, rfl⟩)).trans ?_
   · exact fun x h => Bool.decide_false (trList_ne_consₗ _ _ h)
-  convert unrev_ok using 2; simp [List.reverseAux_eq]
+  convert! unrev_ok using 2; simp [List.reverseAux_eq]
 
 theorem head_stack_ok {q s L₁ L₂ L₃} :
     Reaches₁ (TM2.step tr)
@@ -712,7 +731,7 @@ theorem head_stack_ok {q s L₁ L₂ L₃} :
     simp only [TM2.step, Option.mem_def, TM2.stepAux, ite_true, id_eq, trList, List.nil_append,
       elim_update_stack, elim_rev, List.reverseAux_nil, elim_update_rev, Function.update_self,
       List.headI_nil, trNat_default]
-    convert unrev_ok using 2
+    convert! unrev_ok using 2
     simp
   · refine
       TransGen.trans
@@ -729,7 +748,7 @@ theorem head_stack_ok {q s L₁ L₂ L₃} :
           (splitAtPred_eq _ _ (trList L₂) (some Γ'.consₗ) L₃
             (fun x h => Bool.decide_false (trList_ne_consₗ _ _ h)) ⟨rfl, by simp⟩))
         ?_
-    convert unrev_ok using 2
+    convert! unrev_ok using 2
     simp [List.reverseAux_eq]
 
 theorem succ_ok {q s n} {c d : List Γ'} :
@@ -739,7 +758,7 @@ theorem succ_ok {q s n} {c d : List Γ'} :
   rcases (n : Num) with - | a
   · refine TransGen.head rfl ?_
     simp only [Option.mem_def]
-    convert unrev_ok using 1
+    convert! unrev_ok using 1
     simp only [elim_update_rev, elim_rev, elim_main, List.reverseAux_nil, elim_update_main]
     rfl
   simp only [trNum, Num.succ, Num.succ']
@@ -750,7 +769,7 @@ theorem succ_ok {q s n} {c d : List Γ'} :
     obtain ⟨l₁', l₂', s', e, h⟩ := this []
     simp only [List.reverseAux] at e
     refine h.trans ?_
-    convert unrev_ok using 2
+    convert! unrev_ok using 2
     simp [e, List.reverseAux_eq]
   induction a generalizing s with intro l₁
   | one =>
@@ -784,7 +803,7 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
   · simp only [trPosNum, Num.succ', List.singleton_append, List.nil_append]
     refine TransGen.head rfl ?_
     rw [tr]; simp only [pop', TM2.stepAux]
-    convert unrev_ok using 2
+    convert! unrev_ok using 2
     simp
   simp only [Num.succ']
   suffices ∀ l₁, ∃ l₁' l₂' s',
@@ -795,7 +814,7 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
     obtain ⟨l₁', l₂', s', e, h⟩ := this []
     simp only [List.reverseAux] at e
     refine h.trans ?_
-    convert unrev_ok using 2
+    convert! unrev_ok using 2
     simp [e, List.reverseAux_eq]
   induction a generalizing s with intro l₁
   | one =>
@@ -824,7 +843,7 @@ theorem trNormal_respects (c k v s) :
   | succ => refine ⟨_, ⟨none, rfl⟩, head_main_ok.trans succ_ok⟩
   | tail =>
     let o : Option Γ' := List.casesOn v none fun _ _ => some Γ'.cons
-    refine ⟨_, ⟨o, rfl⟩, ?_⟩; convert clear_ok _ using 2
+    refine ⟨_, ⟨o, rfl⟩, ?_⟩; convert! clear_ok _ using 2
     · simp; rfl
     swap
     refine splitAtPred_eq _ _ (trNat v.headI) _ _ (trNat_natEnd _) ?_
@@ -835,7 +854,7 @@ theorem trNormal_respects (c k v s) :
     simp only [TM2.step, Option.mem_def, elim_stack, elim_update_stack, elim_update_main,
       elim_main, elim_rev, elim_update_rev]
     refine (copy_ok _ none [] (trList v).reverse _ _).trans ?_
-    convert h₂ using 2
+    convert! h₂ using 2
     simp [List.reverseAux_eq, trContStack]
   | comp f _ _ IHg => exact IHg (Cont.comp f k) v s
   | case f g IHf IHg =>
@@ -899,9 +918,9 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
     · obtain ⟨s', h₁, h₂⟩ := trNormal_respects f (Cont.fix f k) v.tail (some Γ'.cons)
       refine ⟨_, h₁, TransGen.head rfl <| TransGen.trans ?_ h₂⟩
       rw [trCont, tr]; simp only [pop', TM2.stepAux, elim_main, this.1]
-      convert clear_ok (splitAtPred_eq _ _ (trNat v.headI).tail (some Γ'.cons) _ _ _) using 2
+      convert! clear_ok (splitAtPred_eq _ _ (trNat v.headI).tail (some Γ'.cons) _ _ _) using 2
       · simp
-        convert rfl
+        convert! rfl
       · exact fun x h => trNat_natEnd _ _ (List.tail_subset _ h)
       · exact ⟨rfl, this.2⟩
 
@@ -1122,7 +1141,7 @@ theorem supports_union {K₁ K₂ S} : Supports (K₁ ∪ K₂) S ↔ Supports K
 
 theorem supports_biUnion {K : Option Γ' → Finset Λ'} {S} :
     Supports (Finset.univ.biUnion K) S ↔ ∀ a, Supports (K a) S := by
-  simpa [Supports] using forall_swap
+  simpa [Supports] using forall_comm
 
 theorem head_supports {S k q} (H : (q : Λ').Supports S) : (head k q).Supports S := fun _ => by
   dsimp only; split_ifs <;> exact H

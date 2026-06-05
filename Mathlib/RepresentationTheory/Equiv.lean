@@ -34,8 +34,7 @@ variable (k G) in
 /-- If there exists `G`-action on a trivial monoid `H` then the induced representation
   on `k[H]` is equivalent to the trivial representation. -/
 def ofMulActionSubsingletonEquivTrivial : (ofMulAction k G H).Equiv (trivial k G k) :=
-  letI : Unique H := uniqueOfSubsingleton 1
-  .mk (Finsupp.LinearEquiv.finsuppUnique _ _ _) fun g ↦ by
+  .mk (Finsupp.uniqueLinearEquiv _ _ 1) fun g ↦ by
     ext a; simp [Subsingleton.elim (g • a) a]
 
 @[simp]
@@ -45,9 +44,7 @@ lemma ofMulActionSubsingletonEquivTrivial_apply (f : H →₀ k) :
 @[simp]
 lemma ofMulActionSubsingletonEquivTrivial_symm_apply (r : k) :
     (ofMulActionSubsingletonEquivTrivial k G H).symm.toIntertwiningMap.toLinearMap r =
-      Finsupp.single 1 r := by
-  letI : Unique H := uniqueOfSubsingleton 1
-  simp [ofMulActionSubsingletonEquivTrivial, Subsingleton.elim (1 : H) (default : H)]
+      Finsupp.single 1 r := rfl
 
 variable (k G) in
 /-- The equivalence of representations between `(Fin 1 → G) →₀ k` and `G →₀ k`. -/
@@ -89,17 +86,14 @@ lemma freeLift_single_single {α : Type w'} (i : α) (g : G) (r : k) (f : α →
 
 open IntertwiningMap
 
-/-- Equiv between the intertwing map module `(α →₀ G →₀ k) → V` and `V`. -/
+/-- Equiv between the intertwining map module `(α →₀ G →₀ k) → V` and the function space `α → V`. -/
 @[simps]
 def freeLiftLEquiv (α : Type w') : ((free k G α).IntertwiningMap σ) ≃ₗ[k] (α → V) where
   toFun f i := f (single i (single 1 1))
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun := freeLift σ
-  left_inv f := by
-    have := f.2
-    simp only [LinearMap.ext_iff, LinearMap.coe_comp, Function.comp_apply] at this
-    ext; simp [← toLinearMap_apply, ← this]
+  left_inv f := by ext; simp [← f.isIntertwining]
   right_inv f := by simp [← toLinearMap_apply]
 
 /-- Equiv between representations induced by linear equiv between `(α →₀ V) ⊗[k] W` and

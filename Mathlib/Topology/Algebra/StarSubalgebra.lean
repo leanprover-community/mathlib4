@@ -37,6 +37,9 @@ variable [TopologicalSpace A] [Semiring A] [Algebra R A] [StarRing A] [StarModul
 instance [IsTopologicalSemiring A] (s : StarSubalgebra R A) : IsTopologicalSemiring s :=
   s.toSubalgebra.topologicalSemiring
 
+instance [IsSemitopologicalSemiring A] (s : StarSubalgebra R A) : IsSemitopologicalSemiring s :=
+  s.toSubalgebra.semitopologicalSemiring
+
 /-- The `StarSubalgebra.inclusion` of a star subalgebra is an embedding. -/
 lemma isEmbedding_inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂) :
     IsEmbedding (inclusion h) where
@@ -49,12 +52,12 @@ theorem isClosedEmbedding_inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ �
   { IsEmbedding.inclusion h with
     isClosed_range := isClosed_induced_iff.2
       ⟨S₁, hS₁, by
-          convert (Set.range_subtype_map id _).symm
+          convert! (Set.range_subtype_map id _).symm
           · rw [Set.image_id]; rfl
           · intro _ h'
             apply h h' ⟩ }
 
-variable [IsTopologicalSemiring A] [ContinuousStar A]
+variable [IsSemitopologicalSemiring A] [ContinuousStar A]
 variable [TopologicalSpace B] [Semiring B] [Algebra R B] [StarRing B]
 
 /-- The closure of a star subalgebra in a topological star algebra as a star subalgebra. -/
@@ -82,7 +85,7 @@ theorem isClosed_topologicalClosure (s : StarSubalgebra R A) :
   isClosed_closure
 
 instance {A : Type*} [UniformSpace A] [CompleteSpace A] [Semiring A] [StarRing A]
-    [IsTopologicalSemiring A] [ContinuousStar A] [Algebra R A] [StarModule R A]
+    [IsSemitopologicalSemiring A] [ContinuousStar A] [Algebra R A] [StarModule R A]
     {S : StarSubalgebra R A} : CompleteSpace S.topologicalClosure :=
   isClosed_closure.completeSpace_coe
 
@@ -95,17 +98,17 @@ theorem topologicalClosure_mono : Monotone (topologicalClosure : _ → StarSubal
   fun _ S₂ h =>
   topologicalClosure_minimal (h.trans <| le_topologicalClosure S₂) (isClosed_topologicalClosure S₂)
 
-theorem topologicalClosure_map_le [StarModule R B] [IsTopologicalSemiring B] [ContinuousStar B]
+theorem topologicalClosure_map_le [StarModule R B] [IsSemitopologicalSemiring B] [ContinuousStar B]
     (s : StarSubalgebra R A) (φ : A →⋆ₐ[R] B) (hφ : IsClosedMap φ) :
     (map φ s).topologicalClosure ≤ map φ s.topologicalClosure :=
   hφ.closure_image_subset _
 
-theorem map_topologicalClosure_le [StarModule R B] [IsTopologicalSemiring B] [ContinuousStar B]
+theorem map_topologicalClosure_le [StarModule R B] [IsSemitopologicalSemiring B] [ContinuousStar B]
     (s : StarSubalgebra R A) (φ : A →⋆ₐ[R] B) (hφ : Continuous φ) :
     map φ s.topologicalClosure ≤ (map φ s).topologicalClosure :=
   image_closure_subset_closure_image hφ
 
-theorem topologicalClosure_map [StarModule R B] [IsTopologicalSemiring B] [ContinuousStar B]
+theorem topologicalClosure_map [StarModule R B] [IsSemitopologicalSemiring B] [ContinuousStar B]
     (s : StarSubalgebra R A) (φ : A →⋆ₐ[R] B) (hφ : IsClosedMap φ) (hφ' : Continuous φ) :
     (map φ s).topologicalClosure = map φ s.topologicalClosure :=
   SetLike.coe_injective <| hφ.closure_image_eq_of_continuous hφ' _
@@ -133,6 +136,7 @@ closure. See note [reducible non-instances]. -/
 @[deprecated isMulCommutative_topologicalClosure (since := "2026-03-12")]
 abbrev commSemiringTopologicalClosure [T2Space A] (s : StarSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommSemiring s.topologicalClosure :=
+  fast_instance%
   have : IsMulCommutative s := ⟨⟨hs⟩⟩
   inferInstance
 
@@ -141,8 +145,10 @@ open scoped IsMulCommutative in
 closure. See note [reducible non-instances]. -/
 @[deprecated isMulCommutative_topologicalClosure (since := "2026-03-12")]
 abbrev commRingTopologicalClosure {R A} [CommRing R] [StarRing R] [TopologicalSpace A] [Ring A]
-    [Algebra R A] [StarRing A] [StarModule R A] [IsTopologicalRing A] [ContinuousStar A] [T2Space A]
-    (s : StarSubalgebra R A) (hs : ∀ x y : s, x * y = y * x) : CommRing s.topologicalClosure :=
+    [Algebra R A] [StarRing A] [StarModule R A] [IsSemitopologicalRing A] [ContinuousStar A]
+    [T2Space A] (s : StarSubalgebra R A) (hs : ∀ x y : s, x * y = y * x) :
+    CommRing s.topologicalClosure :=
+  fast_instance%
   have : IsMulCommutative s := ⟨⟨hs⟩⟩
   inferInstance
 
@@ -158,7 +164,7 @@ theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra
   have : DenseRange (Set.inclusion (le_topologicalClosure S)) := by simp [-SetLike.coe_sort_coe]
   refine Continuous.ext_on this hφ hψ ?_
   rintro _ ⟨x, rfl⟩
-  simpa only using DFunLike.congr_fun h x
+  simpa only using! DFunLike.congr_fun h x
 
 theorem _root_.StarAlgHomClass.ext_topologicalClosure [T2Space B] {F : Type*}
     {S : StarSubalgebra R A} [FunLike F S.topologicalClosure B]
@@ -168,7 +174,7 @@ theorem _root_.StarAlgHomClass.ext_topologicalClosure [T2Space B] {F : Type*}
     φ = ψ := by
   have : (φ : S.topologicalClosure →⋆ₐ[R] B) = (ψ : S.topologicalClosure →⋆ₐ[R] B) := by
     refine StarAlgHom.ext_topologicalClosure (R := R) (A := A) (B := B) hφ hψ (StarAlgHom.ext ?_)
-    simpa only [StarAlgHom.coe_comp, StarAlgHom.coe_coe] using h
+    simpa only [StarAlgHom.coe_comp, StarAlgHom.coe_coe] using! h
   rw [DFunLike.ext'_iff, ← StarAlgHom.coe_coe]
   apply congrArg _ this
 
@@ -183,7 +189,7 @@ namespace StarAlgebra
 open StarSubalgebra
 
 variable (R : Type*) {A B : Type*} [CommSemiring R] [StarRing R]
-variable [TopologicalSpace A] [Semiring A] [StarRing A] [IsTopologicalSemiring A]
+variable [TopologicalSpace A] [Semiring A] [StarRing A] [IsSemitopologicalSemiring A]
 variable [ContinuousStar A] [Algebra R A] [StarModule R A]
 variable [TopologicalSpace B] [Semiring B] [StarRing B] [Algebra R B]
 
@@ -209,22 +215,21 @@ open scoped IsMulCommutative in
 /-- The `elemental` star subalgebra generated by a normal element is commutative. -/
 @[deprecated isMulCommutative (since := "2026-03-12")]
 instance [T2Space A] {x : A} [IsStarNormal x] : CommSemiring (elemental R x) :=
-  inferInstance
+  fast_instance% inferInstance
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 open scoped IsMulCommutative in
 /-- The `elemental` generated by a normal element is commutative. -/
 @[deprecated isMulCommutative (since := "2026-03-12")]
 instance {R A} [CommRing R] [StarRing R] [TopologicalSpace A] [Ring A] [Algebra R A] [StarRing A]
-    [StarModule R A] [IsTopologicalRing A] [ContinuousStar A] [T2Space A] {x : A} [IsStarNormal x] :
-    CommRing (elemental R x) :=
-  inferInstance
+    [StarModule R A] [IsSemitopologicalRing A] [ContinuousStar A] [T2Space A] {x : A}
+    [IsStarNormal x] : CommRing (elemental R x) :=
+  fast_instance% inferInstance
 
 theorem isClosed (x : A) : IsClosed (elemental R x : Set A) :=
   isClosed_closure
 
 instance {A : Type*} [UniformSpace A] [CompleteSpace A] [Semiring A] [StarRing A]
-    [IsTopologicalSemiring A] [ContinuousStar A] [Algebra R A] [StarModule R A] (x : A) :
+    [IsSemitopologicalSemiring A] [ContinuousStar A] [Algebra R A] [StarModule R A] (x : A) :
     CompleteSpace (elemental R x) :=
   isClosed_closure.completeSpace_coe
 
@@ -252,7 +257,7 @@ lemma le_centralizer_centralizer [T2Space A] (x : A) :
 theorem induction_on {x y : A}
     (hy : y ∈ elemental R x) {P : (u : A) → u ∈ elemental R x → Prop}
     (self : P x (self_mem R x)) (star_self : P (star x) (star_self_mem R x))
-    (algebraMap : ∀ r, P (algebraMap R A r) (_root_.algebraMap_mem _ r))
+    (algebraMap : ∀ r, P (algebraMap R A r) (algebraMap_mem _ r))
     (add : ∀ u hu v hv, P u hu → P v hv → P (u + v) (add_mem hu hv))
     (mul : ∀ u hu v hv, P u hu → P v hv → P (u * v) (mul_mem hu hv))
     (closure : ∀ s : Set A, (hs : s ⊆ elemental R x) → (∀ u, (hu : u ∈ s) →
@@ -278,7 +283,7 @@ theorem starAlgHomClass_ext [T2Space B] {F : Type*} {a : A}
     (hψ : Continuous ψ) (h : φ ⟨a, self_mem R a⟩ = ψ ⟨a, self_mem R a⟩) : φ = ψ := by
   refine StarAlgHomClass.ext_topologicalClosure hφ hψ fun x => ?_
   refine adjoin_induction_subtype x ?_ ?_ ?_ ?_ ?_
-  exacts [fun y hy => by simpa only [Set.mem_singleton_iff.mp hy] using h, fun r => by
+  exacts [fun y hy => by simpa only [Set.mem_singleton_iff.mp hy] using! h, fun r => by
     simp only [AlgHomClass.commutes], fun x y hx hy => by simp only [map_add, hx, hy],
     fun x y hx hy => by simp only [map_mul, hx, hy], fun x hx => by simp only [map_star, hx]]
 

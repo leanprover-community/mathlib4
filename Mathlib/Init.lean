@@ -3,6 +3,9 @@ module  -- shake: keep-all, shake: keep-downstream
 public import Lean.Linter.Sets -- for the definition of linter sets
 public import Lean.LibrarySuggestions.Default -- for `+suggestions` modes in tactics
 public import Mathlib.Lean.Linter -- linter utilities; will be transitively imported in #31134
+public import Mathlib.Tactic.AdaptationNote -- make #adaptation_note available everywhere
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.Linter.AuxLemma
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
 public import Mathlib.Tactic.Linter.DocPrime
@@ -14,6 +17,7 @@ public import Mathlib.Tactic.Linter.Header
 public import Mathlib.Tactic.Linter.FlexibleLinter
 public import Mathlib.Tactic.Linter.Multigoal
 public import Mathlib.Tactic.Linter.OldObtain
+public import Mathlib.Tactic.Linter.OverlappingInstances
 public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.TacticDocumentation
 -- The following import contains the environment extension for the unused tactic linter.
@@ -23,6 +27,7 @@ public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.Whitespace
 public import Mathlib.Tactic.TacticAnalysis.Declarations
+public import Mathlib.Tactic.TypeStar
 -- This is a redundant import, but it is needed so that
 -- the linter doesn't complain about `ParseCommand` not importing `Header`.
 -- This can be removed after https://github.com/leanprover-community/mathlib4/pull/32419
@@ -80,6 +85,7 @@ all these linters, or add the `weak.linter.mathlibStandardSet` option to their l
 register_linter_set linter.mathlibStandardSet :=
   -- linter.allScriptsDocumented -- disabled, let's not impose this requirement downstream.
   -- linter.checkInitImports -- disabled, not relevant downstream.
+  linter.auxLemma
   linter.flexible
   linter.hashCommand
   linter.oldObtain
@@ -120,9 +126,11 @@ register_linter_set linter.nightlyRegressionSet :=
 -/
 register_linter_set linter.weeklyLintSet :=
   linter.tacticAnalysis.mergeWithGrind
+  linter.style.docStringVerso
+  linter.tacticAnalysis.verifyGrindOnly
 
 -- Check that all linter options mentioned in the mathlib standard linter set exist.
-open Lean Elab.Command Linter Mathlib.Linter Style UnusedInstancesInType
+open Lean Elab.Command Linter Mathlib.Linter Style UnusedInstancesInType AuxLemma
 
 run_cmd liftTermElabM do
   let DefinedInScripts : Array Name :=
