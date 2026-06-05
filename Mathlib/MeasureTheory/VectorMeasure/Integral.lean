@@ -41,13 +41,13 @@ The integral against vector measures is defined through the extension process de
   vector measure `μ` paired through `B`.
 * `∫ᵛ x, f x ∂•μ`: the special case where `f` is a real-valued function and `μ` is an `F`-valued
   vector measure, with the pairing being the scalar multiplication by `ℝ`.
-* `∫ᵛ x, f x ∂<• μ`: the special case where `f` is an `E`-valued function and `μ` is a signed
+* `∫ᵛ x, f x ∂<•μ`: the special case where `f` is an `E`-valued function and `μ` is a signed
   measure, with the pairing being the flip of scalar multiplication.
 * `∫ᵛ x in s, f x ∂[B; μ]`: the `G`-valued integral of an `E`-valued function `f` against
   the `F`-valued vector measure `μ` paired through `B`, on the set `s`.
 * `∫ᵛ x in s, f x ∂•μ`: the special case where `f` is a real-valued function and `μ` is
   an `F`-valued vector measure, with the pairing being the scalar multiplication by `ℝ`.
-* `∫ᵛ x in s, f x ∂<• μ`: the special case where `f` is an `E`-valued function and `μ` is a signed
+* `∫ᵛ x in s, f x ∂<•μ`: the special case where `f` is an `E`-valued function and `μ` is a signed
   measure, with the pairing being the flip of scalar multiplication.
 
 ## Note
