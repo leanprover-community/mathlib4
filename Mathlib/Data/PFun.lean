@@ -9,6 +9,7 @@ public import Batteries.Tactic.GeneralizeProofs
 public import Mathlib.Data.FunLike.Basic
 public import Mathlib.Data.Part
 public import Mathlib.Data.Rel
+
 /-!
 # Partial functions
 
@@ -50,7 +51,6 @@ Monad operations:
 * `PFun.pure`: The monad `pure` function, the constant `x` function.
 * `PFun.bind`: The monad `bind` function, pointwise `Part.bind`
 * `PFun.map`: The monad `map` function, pointwise `Part.map`.
-
 -/
 
 @[expose] public section
