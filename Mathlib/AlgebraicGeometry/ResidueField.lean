@@ -135,7 +135,7 @@ lemma residueFieldMap_id (x : X) :
     Hom.residueFieldMap (𝟙 X) x = 𝟙 (X.residueField x) :=
   LocallyRingedSpace.residueFieldMap_id _
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma residueFieldMap_comp {Z : Scheme.{u}} (g : Y ⟶ Z) (x : X) :
     (f ≫ g).residueFieldMap x = g.residueFieldMap (f x) ≫ f.residueFieldMap x :=
   LocallyRingedSpace.residueFieldMap_comp _ _ _
@@ -340,14 +340,10 @@ def SpecToEquivOfField (K : Type u) [Field K] (X : Scheme.{u}) :
       Scheme.fromSpecResidueField_apply,
       Scheme.residueFieldCongr_fromSpecResidueField]
 
-lemma SpecToEquivOfField_comp_fst {K : Type u} [Field K] (g : Spec (.of K) ⟶ X) :
-    (SpecToEquivOfField K Y (g ≫ f)).fst = f (SpecToEquivOfField K X g).fst :=
-  rfl
-
-set_option backward.defeqAttrib.useBackward true in
-lemma SpecToEquivOfField_comp_snd {K : Type u} [Field K] (g : Spec (.of K) ⟶ X) :
-    (SpecToEquivOfField K Y (g ≫ f)).snd =
-      f.residueFieldMap (SpecToEquivOfField K X g).fst ≫ (SpecToEquivOfField K X g).snd := by
+@[simp]
+lemma descResidueField_stalkClosedPointTo_comp {K : Type u} [Field K] (g : Spec (.of K) ⟶ X) :
+    dsimp% descResidueField (stalkClosedPointTo (g ≫ f)) =
+      Hom.residueFieldMap f (g (closedPoint K)) ≫ descResidueField (stalkClosedPointTo g) := by
   simp [← cancel_epi (Y.residue _), stalkClosedPointTo_comp, residue_residueFieldMap_assoc]
 
 end Scheme

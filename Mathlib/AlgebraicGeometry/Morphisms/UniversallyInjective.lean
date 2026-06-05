@@ -110,14 +110,14 @@ theorem tfae_universallyInjective :
     intro ⟨h_inj, hf⟩ K _ g₁ g₂ hg
     obtain ⟨e, h⟩ := Scheme.SpecToEquivOfField_eq_iff.mp congr((Y.SpecToEquivOfField K) $(hg))
     apply (X.SpecToEquivOfField K).injective
-    simp only [Scheme.SpecToEquivOfField_comp_fst, Scheme.SpecToEquivOfField_comp_snd] at e h
-    replace e := h_inj e
-    rw [← f.residueFieldMap_congr'_assoc e, CommRingCat.hom_ext_iff] at h
+    dsimp at e h
+    simp only [Scheme.descResidueField_stalkClosedPointTo_comp] at e h
+    rw [← f.residueFieldMap_congr'_assoc (h_inj e), CommRingCat.hom_ext_iff] at h
     rw [Scheme.SpecToEquivOfField_eq_iff]
     let x := g₁ (IsLocalRing.closedPoint K)
     have hfx := hf x
     algebraize [(f.residueFieldMap (g₁ (IsLocalRing.closedPoint K))).hom]
-    refine ⟨e, CommRingCat.hom_ext ?_⟩
+    refine ⟨h_inj e, CommRingCat.hom_ext ?_⟩
     exact IsPurelyInseparable.injective_comp_algebraMap
       (Y.residueField (f x)) (X.residueField x) _ h
   tfae_have 2 → 4 := fun h ↦ by
@@ -157,11 +157,10 @@ theorem tfae_universallyInjective :
     have hux : u = x := by
       have := congr(pullback.fst f f $(hu))
       rw [← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply] at this
-      simpa [q_fst, g₁] using this
+      simpa [Scheme.SpecToEquivOfField_symm_apply, q_fst, g₁] using this
     refine ⟨by simp [g₁, g₂, q_fst, q_snd], ?_⟩
-    simp_rw [Scheme.SpecToEquivOfField_comp_snd, Scheme.SpecToEquivOfField_apply_fst,
-      Scheme.SpecToEquivOfField_apply_snd, Scheme.Hom.comp_base, TopCat.hom_comp,
-      ContinuousMap.comp_apply, ← Category.assoc]
+    dsimp
+    simp only [Scheme.descResidueField_stalkClosedPointTo_comp, ← Category.assoc]
     congr 1
     rw [← cancel_mono (Scheme.residueFieldCongr (hux ▸ hu).symm).hom]
     have : Mono (Scheme.Hom.residueFieldMap (pullback.diagonal f) x) :=
