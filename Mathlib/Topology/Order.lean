@@ -655,26 +655,6 @@ lemma generateFrom_latticeClosure {α : Type*} (s : Set (Set α)) :
   | sup _ _ _ _ ha hb => exact IsOpen.union ha hb
   | inf _ _ _ _ ha hb => exact IsOpen.inter ha hb
 
-lemma generateFrom_booleanSubalgebraClosure_eq_of_isSublattice {α : Type*}
-    {s : Set (Set α)} (hs1 : ∅ ∈ s) (hs2 : compl '' s = s) (hs3 : IsSublattice s) :
-    generateFrom (BooleanSubalgebra.closure s) = generateFrom s := by
-  refine eq_of_le_of_ge ?_ ?_
-  · exact le_generateFrom fun _ h => isOpen_generateFrom_of_mem <|
-      BooleanSubalgebra.subset_closure h
-  · refine le_generateFrom fun o hos =>
-      BooleanSubalgebra.closure_sdiff_sup_induction hs3 hs1 (hs2 ▸ ⟨⊥, hs1, compl_bot⟩) ?_
-        (fun _ _ _ _ h1 h2 => @IsOpen.union _ _ _ (generateFrom s) h1 h2) o hos
-    · exact fun o hos u hus => Set.diff_eq_compl_inter ▸ (isOpen_generateFrom_of_mem <|
-        IsSublattice.infClosed hs3 (hs2 ▸ Set.mem_image_of_mem compl hus) hos)
-
-lemma generateFrom_booleanSubalgebra_closure
-    {α : Type*} {s : Set (Set α)} (hs1 : ⊥ ∈ s) (hs2 : compl '' s = s) :
-    generateFrom (BooleanSubalgebra.closure s) = generateFrom s :=
-  BooleanSubalgebra.closure_latticeClosure s ▸
-    generateFrom_booleanSubalgebra_closure_eq_of_isSublattice (subset_latticeClosure hs1)
-      (compl_image_latticeClosure_eq_of_compl_image_eq_self hs2) isSublattice_latticeClosure ▸
-        generateFrom_latticeClosure s
-
 /-- This construction is left adjoint to the operation sending a topology on `α`
   to its neighborhood filter at a fixed point `a : α`. -/
 @[implicit_reducible]
