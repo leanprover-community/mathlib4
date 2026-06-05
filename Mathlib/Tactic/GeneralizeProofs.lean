@@ -1,5 +1,3 @@
-module
-
-public import Mathlib.Tactic.Linter.DeprecatedModule
+module -- shake: keep-all
 
 deprecated_module (since := "2025-11-09")

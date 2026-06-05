@@ -85,8 +85,8 @@ instance : CommSemiring (SymmetricAlgebra R M) where
     | add b c hb hc => exact hb.add_right hc
 
 instance (R M) [CommRing R] [AddCommMonoid M] [Module R M] : CommRing (SymmetricAlgebra R M) where
-  __ := inferInstanceAs (CommSemiring (SymmetricAlgebra R M))
-  __ := inferInstanceAs (Ring (RingQuot (SymRel R M)))
+  __ := (inferInstance : CommSemiring (SymmetricAlgebra R M))
+  __ := (inferInstance : Ring (RingQuot (SymRel R M)))
 
 variable {R M} {A : Type*} [CommSemiring A] [Algebra R A]
 
@@ -124,6 +124,8 @@ lemma lift_ι : lift (ι R M) = .id R (SymmetricAlgebra R M) := by
 /-- The left-inverse of `algebraMap`. -/
 def algebraMapInv : SymmetricAlgebra R M →ₐ[R] R :=
   lift (0 : M →ₗ[R] R)
+
+theorem algebraMapInv_ι (x : M) : algebraMapInv (ι R M x) = 0 := lift_ι_apply 0 x
 
 variable (M)
 
@@ -184,7 +186,7 @@ lemma equiv_symm_apply (a : M) : h.equiv.symm (f a) = SymmetricAlgebra.ι R M a 
   h.equiv.injective (by simp)
 
 @[simp]
-lemma equiv_symm_comp : h.equiv.symm ∘ₗ f = SymmetricAlgebra.ι R M :=
+lemma equiv_symm_comp : h.equiv.toLinearEquiv.symm ∘ₗ f = SymmetricAlgebra.ι R M :=
   LinearMap.ext fun x ↦ equiv_symm_apply h x
 
 lemma of_equiv (e : SymmetricAlgebra R M ≃ₐ[R] A)

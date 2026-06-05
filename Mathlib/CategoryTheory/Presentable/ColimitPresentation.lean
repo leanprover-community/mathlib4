@@ -48,17 +48,20 @@ structure Total.Hom (k l : Total P) where
   hom : (P k.1).diag.obj k.2 ⟶ (P l.1).diag.obj l.2
   w : (P k.1).ι.app k.2 ≫ D.map base = hom ≫ (P l.1).ι.app l.2 := by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in -- This is needed below
 attribute [reassoc] Total.Hom.w
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composition of morphisms in the `Total` category. -/
 @[simps]
 def Total.Hom.comp {k l m : Total P} (f : k.Hom l) (g : l.Hom m) : k.Hom m where
   base := f.base ≫ g.base
   hom := f.hom ≫ g.hom
   w := by
-    simp only [Functor.const_obj_obj, Functor.map_comp, Category.assoc]
+    simp only [Functor.map_comp, Category.assoc]
     rw [f.w_assoc, g.w]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps! id_base id_hom comp_base comp_hom]
 instance : Category (Total P) where
   Hom := Total.Hom
@@ -88,6 +91,8 @@ instance [IsFiltered J] [∀ j, IsFiltered (I j)] : Nonempty (Total P) := by
   obtain ⟨i⟩ : Nonempty (I j) := IsFiltered.nonempty
   exact ⟨⟨j, i⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 instance [IsFiltered J] [∀ j, IsFiltered (I j)]
     [∀ j i, IsFinitelyPresentable.{w} ((P j).diag.obj i)] :
     IsFiltered (Total P) where
@@ -115,6 +120,8 @@ instance [IsFiltered J] [∀ j, IsFiltered (I j)]
       simp only [Functor.map_comp, comp_hom, reassoc_of% hpq]
       simp [← Functor.map_comp, ← IsFiltered.coeq_condition]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- If `P` is a colimit presentation over `J` of `X` and for every `j` we are given a colimit
 presentation `Qⱼ` over `I j` of the `P.diag.obj j`, this is the refined colimit presentation of `X`
 over `Total Q`. -/

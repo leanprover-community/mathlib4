@@ -19,6 +19,8 @@ We show:
 
 * When `V` has (co)limits so does `Action V G`.
 * When `V` is preadditive, linear, or abelian so is `Action V G`.
+* The forgetful functor `Action V G ⥤ V` preserves any (co)limit whose image in `V` exists,
+  and reflects all (co)limits.
 -/
 
 @[expose] public section
@@ -290,7 +292,8 @@ instance : HasZeroMorphisms (Action V G) where
 
 instance forget_preservesZeroMorphisms : Functor.PreservesZeroMorphisms (forget V G) where
 
-instance forget₂_preservesZeroMorphisms [HasForget V] :
+instance forget₂_preservesZeroMorphisms {FV : V → V → Type*} {CV : V → Type*}
+    [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)] [ConcreteCategory V FV] :
     Functor.PreservesZeroMorphisms (forget₂ (Action V G) V) where
 
 instance functorCategoryEquivalence_preservesZeroMorphisms :
@@ -332,7 +335,9 @@ instance : Preadditive (Action V G) where
 
 instance forget_additive : Functor.Additive (forget V G) where
 
-instance forget₂_additive [HasForget V] : Functor.Additive (forget₂ (Action V G) V) where
+instance forget₂_additive {FV : V → V → Type*} {CV : V → Type*}
+    [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)] [ConcreteCategory V FV] :
+    Functor.Additive (forget₂ (Action V G) V) where
 
 instance functorCategoryEquivalence_additive :
     Functor.Additive (functorCategoryEquivalence V G).functor where
@@ -362,7 +367,9 @@ instance : Linear R (Action V G) where
 
 instance forget_linear : Functor.Linear R (forget V G) where
 
-instance forget₂_linear [HasForget V] : Functor.Linear R (forget₂ (Action V G) V) where
+instance forget₂_linear {FV : V → V → Type*} {CV : V → Type*}
+    [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)] [ConcreteCategory V FV] :
+    Functor.Linear R (forget₂ (Action V G) V) where
 
 instance functorCategoryEquivalence_linear :
     Functor.Linear R (functorCategoryEquivalence V G).functor where

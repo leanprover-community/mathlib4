@@ -63,6 +63,7 @@ instance : (fiberInclusion : Fiber p S ⥤ _).Faithful where
 lemma fiberInclusion_obj_inj : (fiberInclusion : Fiber p S ⥤ _).obj.Injective :=
   fun _ _ f ↦ Subtype.val_inj.1 f
 
+set_option backward.defeqAttrib.useBackward true in
 /-- For fixed `S : 𝒮` this is the natural isomorphism between `fiberInclusion ⋙ p` and the constant
 function valued at `S`. -/
 @[simps!]
@@ -81,6 +82,7 @@ lemma fiberInclusion_mk {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {a : 𝒳} (ha : p.obj a 
     fiberInclusion.obj (mk ha) = a :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism in the fiber over `S` corresponding to a morphism in `𝒳` lifting `𝟙 S`. -/
 def homMk (p : 𝒳 ⥤ 𝒮) (S : 𝒮) {a b : 𝒳} (φ : a ⟶ b) [IsHomLift p (𝟙 S) φ] :
     mk (domain_eq p (𝟙 S) φ) ⟶ mk (codomain_eq p (𝟙 S) φ) :=
@@ -106,6 +108,7 @@ section
 variable {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {C : Type u₃} [Category.{v₃} C] {F : C ⥤ 𝒳}
   (hF : F ⋙ p = (const C).obj S)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a functor `F : C ⥤ 𝒳` such that `F ⋙ p` is constant at some `S : 𝒮`, then
 we get an induced functor `C ⥤ Fiber p S` that `F` factors through. -/
 def inducedFunctor : C ⥤ Fiber p S where

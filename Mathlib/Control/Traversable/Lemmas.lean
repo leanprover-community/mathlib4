@@ -8,6 +8,8 @@ module
 public import Mathlib.Control.Applicative
 public import Mathlib.Control.Traversable.Basic
 
+import Mathlib.Tactic.Attr.Register
+
 /-!
 # Traversing collections
 

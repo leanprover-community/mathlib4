@@ -19,23 +19,23 @@ This file defines *Lie derivations* and establishes some basic properties.
 ## Main definitions
 
 - `LieDerivation`: A Lie derivation `D` from the Lie `R`-algebra `L` to the `L`-module `M` is an
-`R`-linear map that satisfies the Leibniz rule `D [a, b] = [a, D b] - [b, D a]`.
+  `R`-linear map that satisfies the Leibniz rule `D [a, b] = [a, D b] - [b, D a]`.
 - `LieDerivation.inner`: The natural map from a Lie module to the derivations taking values in it.
 
 ## Main statements
 
 - `LieDerivation.eqOn_lieSpan`: two Lie derivations equal on a set are equal on its Lie span.
 - `LieDerivation.instLieAlgebra`: the set of Lie derivations from a Lie algebra to itself is a Lie
-algebra.
+  algebra.
 
 ## Implementation notes
 
 - Mathematically, a Lie derivation is just a derivation on a Lie algebra. However, the current
-implementation of `RingTheory.Derivation` requires a commutative associative algebra, so is
-incompatible with the setting of Lie algebras. Initially, this file is a copy-pasted adaptation of
-the `RingTheory.Derivation.Basic.lean` file.
+  implementation of `RingTheory.Derivation` requires a commutative associative algebra, so is
+  incompatible with the setting of Lie algebras. Initially, this file is a copy-pasted adaptation of
+  the `RingTheory.Derivation.Basic.lean` file.
 - Since we don't have right actions of Lie algebras, the second term in the Leibniz rule is written
-as `- [b, D a]`. Within Lie algebras, skew symmetry restores the expected definition `[D a, b]`.
+  as `- [b, D a]`. Within Lie algebras, skew symmetry restores the expected definition `[D a, b]`.
 -/
 
 @[expose] public section
@@ -331,14 +331,14 @@ section
 
 variable (R L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 
-/-- The Lie algebra morphism from Lie derivations into linear endormophisms. -/
+/-- The Lie algebra morphism from Lie derivations into linear endomorphisms. -/
 def toLinearMapLieHom : LieDerivation R L L →ₗ⁅R⁆ L →ₗ[R] L where
   toFun := toLinearMap
   map_add' := by intro D1 D2; dsimp
   map_smul' := by intro D1 D2; dsimp
   map_lie' := by intro D1 D2; dsimp
 
-/-- The map from Lie derivations to linear endormophisms is injective. -/
+/-- The map from Lie derivations to linear endomorphisms is injective. -/
 lemma toLinearMapLieHom_injective : Function.Injective (toLinearMapLieHom R L) :=
   fun _ _ h ↦ ext fun a ↦ congrFun (congrArg DFunLike.coe h) a
 

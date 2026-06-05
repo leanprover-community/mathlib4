@@ -7,12 +7,15 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Functor
 public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
+public import Mathlib.Tactic.CategoryTheory.CancelIso
 
 /-!
 # Monoidal opposites
 
 We write `Cᵐᵒᵖ` for the monoidal opposite of a monoidal category `C`.
 -/
+
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -156,6 +159,7 @@ variable [MonoidalCategory.{v₁} C]
 
 open Opposite MonoidalCategory Functor LaxMonoidal OplaxMonoidal
 
+set_option backward.defeqAttrib.useBackward true in
 instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
   tensorObj X Y := op (unop X ⊗ unop Y)
   whiskerLeft X _ _ f := (X.unop ◁ f.unop).op
@@ -236,6 +240,7 @@ theorem op_tensor_op {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f.op ⊗ₘ g.o
 theorem unop_tensor_unop {W X Y Z : Cᵒᵖ} (f : W ⟶ X) (g : Y ⟶ Z) :
     f.unop ⊗ₘ g.unop = (f ⊗ₘ g).unop := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
   tensorObj X Y := mop (unmop Y ⊗ unmop X)
   whiskerLeft X _ _ f := (f.unmop ▷ X.unmop).mop
@@ -314,6 +319,7 @@ end MonoidalOppositeLemmas
 
 variable (C)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The (identity) equivalence between `C` and its monoidal opposite. -/
 @[simps] def MonoidalOpposite.mopEquiv : C ≌ Cᴹᵒᵖ where
@@ -341,6 +347,7 @@ instance MonoidalOpposite.mopMopEquivalenceFunctorMonoidal :
   μ_δ X Y := Category.comp_id _
   δ_μ X Y := Category.comp_id _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps!]
 instance MonoidalOpposite.mopMopEquivalenceInverseMonoidal :
     (MonoidalOpposite.mopMopEquivalence C).inverse.Monoidal where

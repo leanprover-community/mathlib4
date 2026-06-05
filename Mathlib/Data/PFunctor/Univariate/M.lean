@@ -152,12 +152,12 @@ theorem M.default_consistent [Inhabited F.A] : ∀ n, Agree (default : CofixA F 
   | 0 => Agree.continu _ _
   | succ n => Agree.intro _ _ fun _ => M.default_consistent n
 
-instance M.inhabited [Inhabited F.A] : Inhabited (M F) :=
+instance MIntl.inhabited [Inhabited F.A] : Inhabited (MIntl F) :=
   ⟨{  approx := default
       consistent := M.default_consistent _ }⟩
 
-instance MIntl.inhabited [Inhabited F.A] : Inhabited (MIntl F) :=
-  show Inhabited (M F) by infer_instance
+instance M.inhabited [Inhabited F.A] : Inhabited (M F) :=
+  inferInstanceAs <| Inhabited (MIntl F)
 
 namespace M
 
@@ -247,6 +247,7 @@ inductive Agree' : ℕ → M F → M F → Prop
 @[simp]
 theorem dest_mk (x : F (M F)) : dest (M.mk x) = x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   apply ext'

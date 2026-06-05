@@ -15,7 +15,7 @@ public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 In this file, the `orthogonal` complement of a submodule `K` is defined, and basic API established.
 We make duplicates for `Submodule` and `ClosedSubmodule`.
 Some of the more subtle results about the orthogonal complement are delayed to
-`Analysis.InnerProductSpace.Projection`.
+`Mathlib/Analysis/InnerProductSpace/Projection/`.
 
 See also `BilinForm.orthogonal` for orthogonality with respect to a general bilinear form.
 
@@ -113,7 +113,7 @@ theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, (innerSL 𝕜 (v : E)).ker := by
 /-- The orthogonal complement of any submodule `K` is closed. -/
 theorem isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
   rw [orthogonal_eq_inter K]
-  convert isClosed_iInter <| fun v : K => ContinuousLinearMap.isClosed_ker (innerSL 𝕜 (v : E))
+  convert! isClosed_iInter <| fun v : K => ContinuousLinearMap.isClosed_ker (innerSL 𝕜 (v : E))
   simp
 
 /-- In a complete space, the orthogonal complement of any submodule `K` is complete. -/
@@ -125,11 +125,7 @@ lemma map_orthogonal (f : E →ₗᵢ[𝕜] F) :
   simp only [Submodule.ext_iff, mem_map, mem_orthogonal, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂, mem_inf, mem_map, LinearMap.mem_range,
     LinearIsometry.coe_toLinearMap]
-  refine fun x ↦ ⟨?_, ?_⟩
-  · rintro ⟨x, hx, rfl⟩
-    refine ⟨by simpa using hx, x, rfl⟩
-  · rintro ⟨hx, x, rfl⟩
-    refine ⟨x, by simpa using hx, rfl⟩
+  grind [LinearIsometry.inner_map_map]
 
 lemma map_orthogonal_equiv (f : E ≃ₗᵢ[𝕜] F) :
     Kᗮ.map (f.toLinearEquiv : E →ₗ[𝕜] F) = (K.map (f.toLinearEquiv : E →ₗ[𝕜] F))ᗮ := by
@@ -266,7 +262,7 @@ theorem IsOrtho.inner_eq {U V : Submodule 𝕜 E} (h : U ⟂ V) {u v : E} (hu : 
 theorem isOrtho_iff_inner_eq {U V : Submodule 𝕜 E} : U ⟂ V ↔ ∀ u ∈ U, ∀ v ∈ V, ⟪u, v⟫ = 0 :=
   forall₄_congr fun _u _hu _v _hv => inner_eq_zero_symm
 
-/- TODO: generalize `Submodule.map₂` to semilinear maps, so that we can state
+/-- TODO: generalize `Submodule.map₂` to semilinear maps, so that we can state
 `U ⟂ V ↔ Submodule.map₂ (innerₛₗ 𝕜) U V ≤ ⊥`. -/
 @[simp]
 theorem isOrtho_bot_left {V : Submodule 𝕜 E} : ⊥ ⟂ V :=
@@ -376,7 +372,7 @@ theorem IsOrtho.map_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} :
 @[simp]
 theorem IsOrtho.comap_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} :
     U.comap (f : E →ₗ[𝕜] F) ⟂ V.comap (f : E →ₗ[𝕜] F) ↔ U ⟂ V := by
-  convert IsOrtho.map_iff f.symm using 2 <;>
+  convert! IsOrtho.map_iff f.symm using 2 <;>
     exact Submodule.comap_equiv_eq_map_symm (f : E ≃ₗ[𝕜] F) _
 
 end Submodule
@@ -416,9 +412,14 @@ def orthogonal : ClosedSubmodule 𝕜 E where
 notation:1200 K "ᗮ" => orthogonal K
 
 @[simp]
-lemma orthogonal_toSubmodule_eq : K.orthogonal.toSubmodule = K.toSubmodule.orthogonal := rfl
+lemma toSubmodule_orthogonal_eq : K.orthogonal.toSubmodule = K.toSubmodule.orthogonal := rfl
 
-lemma mem_orthogonal_iff (v : E) : v ∈ (K.toSubmodule)ᗮ ↔ v ∈ Kᗮ := Iff.rfl
+@[deprecated (since := "2026-01-18")] alias orthogonal_toSubmodule_eq := toSubmodule_orthogonal_eq
+
+@[simp]
+lemma mem_orthogonal_toSubmodule_iff (v : E) : v ∈ (K.toSubmodule)ᗮ ↔ v ∈ Kᗮ := Iff.rfl
+
+@[deprecated (since := "2026-01-18")] alias mem_orthogonal_iff := mem_orthogonal_toSubmodule_iff
 
 /-- When a vector is in `Kᗮ`. -/
 @[simp]
@@ -443,9 +444,7 @@ variable (K)
 theorem inf_orthogonal_eq_bot : K ⊓ Kᗮ = ⊥ := by
   rw [eq_bot_iff]
   intro x
-  simp only [toSubmodule_inf, orthogonal_toSubmodule_eq, Submodule.mem_inf, toSubmodule_bot,
-    Submodule.mem_bot, and_imp]
-  exact fun hx ho => inner_self_eq_zero.1 (ho x hx)
+  simpa using fun hx ho => inner_self_eq_zero.1 (ho x hx)
 
 /-- `K` and `Kᗮ` have trivial intersection. -/
 theorem orthogonal_disjoint : Disjoint K Kᗮ := by simp [disjoint_iff, K.inf_orthogonal_eq_bot]
@@ -454,7 +453,7 @@ theorem orthogonal_disjoint : Disjoint K Kᗮ := by simp [disjoint_iff, K.inf_or
 inner product with each of the elements of `K`. -/
 theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v : E)).toLinearMap := by
   ext
-  simpa using mem_orthogonal_iff _ _
+  simp
 
 variable (𝕜 E)
 

@@ -275,6 +275,7 @@ theorem val_replicate : (replicate n a).val = Multiset.replicate n a := by
 theorem mem_replicate : b ∈ replicate n a ↔ n ≠ 0 ∧ b = a :=
   Multiset.mem_replicate
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_replicate_iff : s = replicate n a ↔ ∀ b ∈ s, b = a := by
   rw [Subtype.ext_iff, val_replicate, Multiset.eq_replicate]
   exact and_iff_right s.2
@@ -606,7 +607,7 @@ theorem decode_encode [DecidableEq α] (s : Sym (Option α) n.succ) : decode (en
   · simp [h]
   · simp only [decode, h, not_false_iff, encode_of_none_notMem, Embedding.some_apply, map_map,
       comp_apply, Option.some_get]
-    convert s.attach_map_coe
+    convert! s.attach_map_coe
 
 @[simp]
 theorem encode_decode [DecidableEq α] (s : Sym (Option α) n ⊕ Sym α n.succ) :
