@@ -300,8 +300,7 @@ lemma embDomain_tsub (f : ι ↪ κ) (f1 f2 : ι →₀ α) :
     (f1 - f2).embDomain f = f1.embDomain f - f2.embDomain f := by
   simp_rw [embDomain_eq_mapDomain, mapDomain_tsub f.injective]
 
-/-- The support of a sum is the union of the supports, when the coefficients lie in
-`CanonicallyOrderedAdd`.
+/-- The support of a sum is the union of the supports, when the coefficients satisfy `CanonicallyOrderedAdd`.
 
 In the case where the supports are disjoint, there is also `Finsupp.support_add_eq`, which holds
 in any `AddZeroClass`. -/
