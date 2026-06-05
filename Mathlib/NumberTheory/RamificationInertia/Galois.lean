@@ -302,7 +302,8 @@ theorem card_stabilizer_eq_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
     (IsFractionRing.stabilizerQuotientInertiaEquiv G p P p.ResidueField P.ResidueField).toEquiv
   rw [inertiaDeg'_eq p P, ← h1, ← this,
     ← ((inertia G P).subgroupOf (MulAction.stabilizer G P)).card_mul_index,
-    Nat.card_congr (Subgroup.subgroupOfEquivOfLe (inertia_le_stabilizer (M := G) P)).toEquiv]
+    Nat.card_congr (Subgroup.subgroupOfEquivOfLe (inertia_le_stabilizer (M := G) P)).toEquiv,
+    AddSubgroup.subgroupOf_inertia]
 
 lemma ncard_primesOver_mul_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
     (P : Ideal S) [P.LiesOver p] [P.IsPrime] [PerfectField p.ResidueField] :

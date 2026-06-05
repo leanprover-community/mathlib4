@@ -62,7 +62,7 @@ theorem ramificationIdx'_def [q.IsPrime] :
 theorem ramificationIdx'_of_not_isPrime (hq : ¬ q.IsPrime) : q.ramificationIdx' R = 0 :=
   dif_neg hq
 
-theorem ramificationIdx'_pos [hq : q.IsPrime] [Module.Finite R S] : 0 < q.ramificationIdx' R := by
+theorem ramificationIdx'_pos [q.IsPrime] [Module.Finite R S] : 0 < q.ramificationIdx' R := by
   let p := q.under R
   let Sq := Localization.AtPrime q
   rw [ramificationIdx'_def]
