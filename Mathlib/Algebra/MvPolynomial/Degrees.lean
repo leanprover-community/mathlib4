@@ -233,11 +233,11 @@ theorem degreeOf_eq_sup (n : σ) (f : MvPolynomial σ R) :
 
 theorem degreeOf_lt_iff {n : σ} {f : MvPolynomial σ R} {d : ℕ} (h : 0 < d) :
     degreeOf n f < d ↔ ∀ m : σ →₀ ℕ, m ∈ f.support → m n < d := by
-  rwa [degreeOf_eq_supDegree, supDegree_def, Finset.sup_lt_iff]
+  rwa [degreeOf_eq_sup, Finset.sup_lt_iff]
 
 lemma degreeOf_le_iff {n : σ} {f : MvPolynomial σ R} {d : ℕ} :
     degreeOf n f ≤ d ↔ ∀ m ∈ support f, m n ≤ d := by
-  rw [degreeOf_eq_supDegree, supDegree_def, Finset.sup_le_iff]
+  rw [degreeOf_eq_sup, Finset.sup_le_iff]
 
 @[simp]
 theorem degreeOf_zero (n : σ) : degreeOf n (0 : MvPolynomial σ R) = 0 := by
@@ -267,11 +267,11 @@ lemma ne_zero_of_degreeOf_ne_zero {i : σ} : p.degreeOf i ≠ 0 → p ≠ 0 := b
 
 theorem degreeOf_add_le (n : σ) (f g : MvPolynomial σ R) :
     degreeOf n (f + g) ≤ max (degreeOf n f) (degreeOf n g) := by
-  simp_rw [degreeOf_eq_supDegree]; exact supDegree_add_le
+  simp_rw [degreeOf_eq_sup]; exact supDegree_add_le
 
 theorem monomial_le_degreeOf (i : σ) {f : MvPolynomial σ R} {m : σ →₀ ℕ} (h_m : m ∈ f.support) :
     m i ≤ degreeOf i f := by
-  rw [degreeOf_eq_supDegree i]
+  rw [degreeOf_eq_sup i]
   apply Finset.le_sup h_m
 
 lemma degreeOf_monomial_eq (s : σ →₀ ℕ) (i : σ) {a : R} (ha : a ≠ 0) :
@@ -286,7 +286,7 @@ lemma le_degreeOf_of_mem_support (i : σ) {s : σ →₀ ℕ} :
     s ∈ p.support → s i ≤ p.degreeOf i := fun h ↦ by
   obtain si | si := eq_or_lt_of_le <| Nat.zero_le (s i)
   · simp [← si]
-  rw [degreeOf_eq_supDegree, supDegree_def, Finset.le_sup_iff si]
+  rw [degreeOf_eq_sup, Finset.le_sup_iff si]
   use s
 
 lemma notMem_support_of_degreeOf_lt (i : σ) {s : σ →₀ ℕ} :
@@ -304,7 +304,7 @@ theorem degreeOf_mul_le (i : σ) (f g : MvPolynomial σ R) :
 
 theorem degreeOf_sum_le {ι : Type*} (i : σ) (s : Finset ι) (f : ι → MvPolynomial σ R) :
     degreeOf i (∑ j ∈ s, f j) ≤ s.sup fun j => degreeOf i (f j) := by
-  simp_rw [degreeOf_eq_supDegree]
+  simp_rw [degreeOf_eq_sup]
   exact supDegree_sum_le
 
 /--
@@ -312,7 +312,7 @@ Note that `degreeOf_mul_eq` proves equality with `NoZeroDivisors R` and nonzero 
 -/
 theorem degreeOf_prod_le {ι : Type*} (i : σ) (s : Finset ι) (f : ι → MvPolynomial σ R) :
     degreeOf i (∏ j ∈ s, f j) ≤ ∑ j ∈ s, (f j).degreeOf i := by
-  simp_rw [degreeOf_eq_supDegree]
+  simp_rw [degreeOf_eq_sup]
   exact supDegree_prod_le (by simp only [coe_zero, Pi.zero_apply]) (by simp)
 
 /--
@@ -325,7 +325,7 @@ theorem degreeOf_pow_le (i : σ) (p : MvPolynomial σ R) (n : ℕ) :
 theorem degreeOf_mul_X_of_ne {i j : σ} (f : MvPolynomial σ R) (h : i ≠ j) :
     degreeOf i (f * X j) = degreeOf i f := by
   classical
-  simp only [degreeOf_eq_supDegree i, supDegree_def, support_mul_X, Finset.sup_map]
+  simp only [degreeOf_eq_sup i, support_mul_X, Finset.sup_map]
   congr
   ext
   simp only [Finsupp.single, addRightEmbedding_apply, coe_mk,
@@ -355,7 +355,7 @@ theorem degreeOf_mul_X_eq_degreeOf_add_one_iff (j : σ) (f : MvPolynomial σ R) 
   apply Nat.le_antisymm (degreeOf_mul_X_self j f)
   have : (f.support.sup fun m ↦ m j) + 1 = (f.support.sup fun m ↦ (m j + 1)) :=
     Finset.apply_sup_eq_sup_comp_of_nonempty @Nat.succ_le_succ (support_nonempty.mpr h)
-  simp only [degreeOf_eq_supDegree, supDegree_def, support_mul_X, this]
+  simp only [degreeOf_eq_sup, support_mul_X, this]
   apply Finset.sup_le
   intro x hx
   simp only [Finset.sup_map, bot_eq_zero', add_pos_iff, zero_lt_one, or_true, Finset.le_sup_iff]
