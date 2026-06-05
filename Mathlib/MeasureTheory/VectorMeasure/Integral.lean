@@ -5,8 +5,6 @@ Authors: Yoh Tanimoto, Yongxi Lin, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.MeasureTheory.Integral.IntegrableOn
 public import Mathlib.MeasureTheory.Integral.SetToL1
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 
@@ -43,10 +41,14 @@ The integral against vector measures is defined through the extension process de
   vector measure `μ` paired through `B`.
 * `∫ᵛ x, f x ∂•μ`: the special case where `f` is a real-valued function and `μ` is an `F`-valued
   vector measure, with the pairing being the scalar multiplication by `ℝ`.
+* `∫ᵛ x, f x ∂<• μ`: the special case where `f` is an `E`-valued function and `μ` is a signed
+  measure, with the pairing being the flip of scalar multiplication.
 * `∫ᵛ x in s, f x ∂[B; μ]`: the `G`-valued integral of an `E`-valued function `f` against
   the `F`-valued vector measure `μ` paired through `B`, on the set `s`.
 * `∫ᵛ x in s, f x ∂•μ`: the special case where `f` is a real-valued function and `μ` is
   an `F`-valued vector measure, with the pairing being the scalar multiplication by `ℝ`.
+* `∫ᵛ x in s, f x ∂<• μ`: the special case where `f` is an `E`-valued function and `μ` is a signed
+  measure, with the pairing being the flip of scalar multiplication.
 
 ## Note
 
@@ -234,12 +236,12 @@ protected abbrev IntegrableOn
 open Classical in
 /-- The `G`-valued integral of `E`-valued function and the `F`-valued vector measure `μ` with linear
 paring `B : E →L[ℝ] F →L[ℝ] G` . This is set to be `0` if `G` is not complete or if `f` is not
-integrable with respect to `(μ.transpose B).variation`.
+integrable with respect to `(μ.transpose B).variation`. Notation `∫ᵛ x, f x ∂[B; μ]`.
 
-When `μ` is a signed measure, to get the integral in `G` of a `G`-valued function, take
-`B = (ContinousLinearMap.lsmul ℝ ℝ).flip`.
 When `μ` is `G`-valued, to get the integral in `G` of a real-valued function, take
-`B = ContinousLinearMap.lsmul ℝ ℝ`.
+`B = ContinousLinearMap.lsmul ℝ ℝ`. Notation `∫ᵛ x, f x ∂•μ`.
+When `μ` is a signed measure, to get the integral in `G` of a `G`-valued function, take
+`B = (ContinousLinearMap.lsmul ℝ ℝ).flip`. Notation `∫ᵛ x, f x ∂<•μ`.
 -/
 noncomputable def integral (μ : VectorMeasure X F) (f : X → E) (B : E →L[ℝ] F →L[ℝ] G) : G :=
   setToFun (μ.transpose B).variation (μ.transpose B)
@@ -252,6 +254,11 @@ notation3 "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂["B:65"; "μ:65"]" => integ
 `ℝ` on `F` and `f` is real-valued. The resulting integral is `F`-valued.-/
 notation3 "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂•"μ:70 => integral μ r (lsmul ℝ ℝ)
 
+/-- The special case of the pairing integral where the pairing is just the flip of scalar
+multiplication by `ℝ` on `F` and `f` is `F`-valued and `μ` is a signed measure.
+The resulting integral is `F`-valued.-/
+notation3 "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂<•"μ:70 => integral μ r (lsmul ℝ ℝ).flip
+
 @[inherit_doc integral]
 notation3 "∫ᵛ "(...)" in "s", "r:60:(scoped f => f)" ∂["B:70"; "μ:70"]" =>
   integral (VectorMeasure.restrict μ s) r B
@@ -260,6 +267,12 @@ notation3 "∫ᵛ "(...)" in "s", "r:60:(scoped f => f)" ∂["B:70"; "μ:70"]" =
 multiplication by `ℝ` on `F` and `f` is real-valued. The resulting integral is `F`-valued.-/
 notation3 "∫ᵛ "(...)" in "s", "r:60:(scoped f => f)" ∂•"μ:70 =>
   integral (VectorMeasure.restrict μ s) r (lsmul ℝ ℝ)
+
+/-- The special case of the pairing integral in a set where the pairing is just the flip of the
+scalar multiplication by `ℝ` on `F` and `f` is `F`-valued and `μ` is a signed measure.
+The resulting integral is `F`-valued.-/
+notation3 "∫ᵛ "(...)" in "s", "r:60:(scoped f => f)" ∂<•"μ:70 =>
+  integral (VectorMeasure.restrict μ s) r (lsmul ℝ ℝ).flip
 
 variable {μ ν B}
 
@@ -394,7 +407,7 @@ end Function
 section VectorMeasure
 
 /- `simpNF` complains that this lemma can be proved by `simp`, because the `simp`-generated lemma
-unfolds the abbrev `VectorMeasure.Integrable`. TODO: fix `simp`. -/
+unfolds the abbrev `VectorMeasure.Integrable`. TODO: fix `simp`. See lean4#13958. -/
 @[nolint simpNF, simp]
 lemma Integrable.zero_vectorMeasure : (0 : VectorMeasure X F).Integrable f B := by
   simp [VectorMeasure.Integrable]
@@ -488,7 +501,7 @@ end VectorMeasure
 section cbm
 
 /- `simpNF` complains that this lemma can be proved by `simp`, because the `simp`-generated lemma
-unfolds the abbrev `VectorMeasure.Integrable`. TODO: fix `simp`. -/
+unfolds the abbrev `VectorMeasure.Integrable`. TODO: fix `simp`. See lean4#13958. -/
 @[nolint simpNF, simp]
 lemma Integrable.zero_cbm : μ.Integrable f (0 : E →L[ℝ] F →L[ℝ] G) := by
   simp [VectorMeasure.Integrable]
