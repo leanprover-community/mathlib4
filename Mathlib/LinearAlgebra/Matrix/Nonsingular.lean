@@ -70,7 +70,7 @@ public theorem Nonsingular.of_linearIndependent_col (ind : LinearIndependent R A
   let v (a b : R) : n →₀ R := ∑ j : m, .single (g j) (a * (Aj j).detp (-1) + b * (Aj j).detp 1) +
     .single j₀ (a * D.detp 1 + b * D.detp (-1))
   have veq := congr($(ind (a₁ := v a b) (a₂ := v b a) ?_) j₀)
-  · exact (nbal <| by simpa [v, h₀] using veq).elim
+  · exact (nbal <| by simpa [DetpBalanced, v, h₀] using veq).elim
   ext i
   let Ai := A.submatrix (Option.rec i f) (Option.rec j₀ g)
   have (s : ℤˣ) : Ai.detp s = ∑ j, detp (-s) (Aj j) * A.col (g j) i + detp s D * A.col j₀ i := by
