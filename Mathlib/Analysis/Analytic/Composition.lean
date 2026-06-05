@@ -850,31 +850,26 @@ lemma AnalyticOn.comp {f : F → G} {g : E → F} {s : Set F}
     AnalyticOn 𝕜 (f ∘ g) t :=
   fun x m ↦ (hf _ (h m)).comp (hg x m) h
 
+-- Allow `to_fun` to eta-expand `g ∘ f`. Ideally, `Function.comp_def` would be a global pull lemma
+-- instead, which is not supported yet: see https://github.com/leanprover-community/mathlib4/issues/40183.
+attribute [local push ←] Function.comp_def
 /-- If two functions `g` and `f` are analytic respectively at `f x` and `x`, then `g ∘ f` is
 analytic at `x`. -/
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem AnalyticAt.comp {g : F → G} {f : E → F} {x : E} (hg : AnalyticAt 𝕜 g (f x))
     (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (g ∘ f) x := by
   rw [← analyticWithinAt_univ] at hg hf ⊢
   apply hg.comp hf (by simp)
 
-/-- If two functions `g` and `f` are analytic respectively at `f x` and `x`, then `g ∘ f` is
-analytic at `x`. -/
-@[fun_prop]
-theorem AnalyticAt.comp' {g : F → G} {f : E → F} {x : E} (hg : AnalyticAt 𝕜 g (f x))
-    (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (fun z ↦ g (f z)) x :=
-  hg.comp hf
+@[deprecated (since := "2026-01-24")] alias AnalyticAt.comp' := AnalyticAt.fun_comp
 
 /-- Version of `AnalyticAt.comp` where point equality is a separate hypothesis. -/
+@[to_fun]
 theorem AnalyticAt.comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} (hg : AnalyticAt 𝕜 g y)
     (hf : AnalyticAt 𝕜 f x) (hy : f x = y) : AnalyticAt 𝕜 (g ∘ f) x := by
   rw [← hy] at hg
   exact hg.comp hf
-
-/-- Version of `AnalyticAt.comp` where point equality is a separate hypothesis. -/
-theorem AnalyticAt.comp_of_eq' {g : F → G} {f : E → F} {y : F} {x : E} (hg : AnalyticAt 𝕜 g y)
-    (hf : AnalyticAt 𝕜 f x) (hy : f x = y) : AnalyticAt 𝕜 (fun z ↦ g (f z)) x := by
-  apply hg.comp_of_eq hf hy
+@[deprecated (since := "2026-05-18")] alias AnalyticAt.comp_of_eq' := AnalyticAt.fun_comp_of_eq
 
 theorem AnalyticAt.comp_analyticWithinAt {g : F → G} {f : E → F} {x : E} {s : Set E}
     (hg : AnalyticAt 𝕜 g (f x)) (hf : AnalyticWithinAt 𝕜 f s x) :
@@ -939,6 +934,7 @@ theorem HasFiniteFPowerSeriesAt.comp {m n : ℕ} {g : F → G} {f : E → F}
 
 /-- If two functions `g` and `f` are continuously polynomial respectively at `f x` and `x`,
 then `g ∘ f` is continuously polynomial at `x`. -/
+@[to_fun]
 theorem CPolynomialAt.comp {g : F → G} {f : E → F} {x : E}
     (hg : CPolynomialAt 𝕜 g (f x)) (hf : CPolynomialAt 𝕜 f x) :
     CPolynomialAt 𝕜 (g ∘ f) x := by
@@ -947,24 +943,12 @@ theorem CPolynomialAt.comp {g : F → G} {f : E → F} {x : E}
   refine ⟨q.comp p, m * (n + 1), ?_⟩
   exact hm.comp (hn.of_le (Nat.le_succ n)) (Nat.zero_lt_succ n)
 
-/-- If two functions `g` and `f` are continuously polynomial respectively at `f x` and `x`,
-then `g ∘ f` is continuously polynomial at `x`. -/
-theorem CPolynomialAt.fun_comp {g : F → G} {f : E → F} {x : E}
-    (hg : CPolynomialAt 𝕜 g (f x)) (hf : CPolynomialAt 𝕜 f x) :
-    CPolynomialAt 𝕜 (fun z ↦ g (f z)) x :=
-  hg.comp hf
-
 /-- Version of `CPolynomialAt.comp` where point equality is a separate hypothesis. -/
+@[to_fun]
 theorem CPolynomialAt.comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} (hg : CPolynomialAt 𝕜 g y)
     (hf : CPolynomialAt 𝕜 f x) (hy : f x = y) : CPolynomialAt 𝕜 (g ∘ f) x := by
   rw [← hy] at hg
   exact hg.comp hf
-
-/-- Version of `CPolynomialAt.comp` where point equality is a separate hypothesis. -/
-theorem CPolynomialAt.fun_comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E}
-    (hg : CPolynomialAt 𝕜 g y) (hf : CPolynomialAt 𝕜 f x) (hy : f x = y) :
-    CPolynomialAt 𝕜 (fun z ↦ g (f z)) x :=
-  hg.comp_of_eq hf hy
 
 /-- If two functions `g` and `f` are continuously polynomial respectively on `s.image f` and `s`,
 then `g ∘ f` is continuously polynomial on `s`. -/

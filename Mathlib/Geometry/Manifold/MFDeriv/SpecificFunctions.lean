@@ -482,10 +482,10 @@ theorem MDifferentiable.prodMap (hf : MDiff f) (hg : MDiff g) : MDiff (Prod.map 
 set_option backward.isDefEq.respectTransparency false in
 lemma HasMFDerivWithinAt.prodMap {s : Set <| M × M'} {p : M × M'} {f : M → N} {g : M' → N'}
     {df : TangentSpace% p.1 →L[𝕜] TangentSpace% (f p.1)}
-    (hf : HasMFDerivWithinAt I J f (Prod.fst '' s) p.1 df)
+    (hf : HasMFDerivAt[Prod.fst '' s] f p.1 df)
     {dg : TangentSpace% p.2 →L[𝕜] TangentSpace% (g p.2)}
-    (hg : HasMFDerivWithinAt I' J' g (Prod.snd '' s) p.2 dg) :
-    HasMFDerivWithinAt (I.prod I') (J.prod J') (Prod.map f g) s p (df.prodMap dg) := by
+    (hg : HasMFDerivAt[Prod.snd '' s] g p.2 dg) :
+    HasMFDerivAt[s] (Prod.map f g) p (df.prodMap dg) := by
   refine ⟨hf.1.prodMap hg.1 |>.mono (by grind), ?_⟩
   have better : ((extChartAt (I.prod I') p).symm ⁻¹' s ∩ range ↑(I.prod I')) ⊆
       ((extChartAt I p.1).symm ⁻¹' (Prod.fst '' s) ∩ range I) ×ˢ
