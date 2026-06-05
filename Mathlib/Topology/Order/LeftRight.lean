@@ -26,7 +26,7 @@ In this file we prove a few lemmas about left and right continuous functions:
 left continuous, right continuous
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter Topology

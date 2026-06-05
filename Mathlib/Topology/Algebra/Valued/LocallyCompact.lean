@@ -51,15 +51,14 @@ lemma norm_le_one (x : 𝒪[K]) : ‖x‖ ≤ 1 := mem_iff.mp x.prop
 
 @[simp]
 lemma norm_coe_unit (u : 𝒪[K]ˣ) : ‖((u : 𝒪[K]) : K)‖ = 1 := by
-  simpa [← NNReal.coe_inj] using
+  simpa [← NNReal.coe_inj] using!
     (Valuation.integer.integers (NormedField.valuation (K := K))).valuation_unit u
 
-set_option backward.isDefEq.respectTransparency false in
 lemma norm_unit (u : 𝒪[K]ˣ) : ‖(u : 𝒪[K])‖ = 1 := by
   simp
 
 lemma isUnit_iff_norm_eq_one {u : 𝒪[K]} : IsUnit u ↔ ‖u‖ = 1 := by
-  simpa [← NNReal.coe_inj] using
+  simpa [← NNReal.coe_inj] using!
     (Valuation.integer.integers (NormedField.valuation (K := K))).isUnit_iff_valuation_eq_one
 
 lemma norm_irreducible_lt_one {ϖ : 𝒪[K]} (h : Irreducible ϖ) : ‖ϖ‖ < 1 :=
@@ -68,18 +67,15 @@ lemma norm_irreducible_lt_one {ϖ : 𝒪[K]} (h : Irreducible ϖ) : ‖ϖ‖ < 1
 lemma norm_irreducible_pos {ϖ : 𝒪[K]} (h : Irreducible ϖ) : 0 < ‖ϖ‖ :=
   Valuation.integer.v_irreducible_pos h
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coe_span_singleton_eq_closedBall (x : 𝒪[K]) :
     (Ideal.span {x} : Set 𝒪[K]) = Metric.closedBall 0 ‖x‖ := by
   simp [Valuation.integer.coe_span_singleton_eq_setOf_le_v_coe, Set.ext_iff, ← NNReal.coe_le_coe]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma _root_.Irreducible.maximalIdeal_eq_closedBall [IsDiscreteValuationRing 𝒪[K]]
     {ϖ : 𝒪[K]} (h : Irreducible ϖ) :
     (𝓂[K] : Set 𝒪[K]) = Metric.closedBall 0 ‖ϖ‖ := by
   simp [h.maximalIdeal_eq_setOf_le_v_coe, Set.ext_iff, ← NNReal.coe_le_coe]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma _root_.Irreducible.maximalIdeal_pow_eq_closedBall_pow [IsDiscreteValuationRing 𝒪[K]]
     {ϖ : 𝒪[K]} (h : Irreducible ϖ) (n : ℕ) :
     ((𝓂[K] ^ n : Ideal 𝒪[K]) : Set 𝒪[K]) = Metric.closedBall 0 (‖ϖ‖ ^ n) := by
@@ -130,7 +126,6 @@ lemma finite_quotient_maximalIdeal_pow_of_finite_residueField [IsDiscreteValuati
 
 open scoped Valued
 
-set_option backward.isDefEq.respectTransparency false in
 lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).RankOne]
     [IsDiscreteValuationRing 𝒪[K]] :
     TotallyBounded (Set.univ (α := 𝒪[K])) ↔ Finite 𝓀[K] := by
@@ -149,12 +144,16 @@ lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).Ran
     simp only [Submodule.Quotient.quot_mk_eq_mk, Ideal.Quotient.mk_eq_mk, Set.mem_univ,
       IsLocalRing.residue, Set.mem_image, true_implies]
     refine ⟨y, hy, ?_⟩
-    convert (Ideal.Quotient.mk_eq_mk_iff_sub_mem (I := 𝓂[K]) y x).mpr _
+    convert!
+      (Ideal.Quotient.mk_eq_mk_iff_sub_mem (I := 𝓂[K]) y x).mpr
+        _
+          -- TODO: make Valued.maximalIdeal abbreviations instead of def
+
     -- TODO: make Valued.maximalIdeal abbreviations instead of def
     rw [Valued.maximalIdeal, hp.maximalIdeal_eq, ← SetLike.mem_coe,
       (Valuation.integer.integers _).coe_span_singleton_eq_setOf_le_v_algebraMap]
     rw [dist_comm] at hy'
-    simpa [dist_eq_norm] using hy'.le
+    simpa [dist_eq_norm] using! hy'.le
   · intro H
     rw [Metric.totallyBounded_iff]
     intro ε εpos

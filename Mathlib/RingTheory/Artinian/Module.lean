@@ -161,7 +161,7 @@ open Function
 
 /-- Any injective endomorphism of an Artinian module is surjective. -/
 theorem surjective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective f) : Surjective f := by
-  have h := ‹IsArtinian R M›; contrapose! h
+  have h := ‹IsArtinian R M›; contrapose h
   rw [IsArtinian, WellFoundedLT, isWellFounded_iff]
   refine (RelEmbedding.natGT (LinearMap.range <| f ^ ·) ?_).not_wellFounded
   intro n
@@ -188,7 +188,7 @@ theorem disjoint_partial_infs_eventually_top (f : ℕ → Submodule R M)
       exact Nat.succ_le_succ_iff.mp p
   obtain ⟨n, w⟩ := monotone_stabilizes (partialSups (OrderDual.toDual ∘ f))
   refine ⟨n, fun m p ↦ (h m).eq_bot_of_ge <| sup_eq_left.mp ?_⟩
-  simpa only [partialSups_add_one] using (w (m + 1) <| le_add_right p).symm.trans <| w m p
+  simpa only [partialSups_add_one] using! (w (m + 1) <| le_add_right p).symm.trans <| w m p
 
 end IsArtinian
 
@@ -536,7 +536,7 @@ lemma isField_of_isDomain [IsDomain R] : IsField R := by
   obtain ⟨n, y, hy⟩ := IsArtinian.exists_pow_succ_smul_dvd x (1 : R)
   replace hy : x ^ n * (x * y - 1) = 0 := by
     rw [mul_sub, sub_eq_zero]
-    convert hy using 1
+    convert! hy using 1
     simp [Nat.succ_eq_add_one, pow_add, mul_assoc]
   rw [mul_eq_zero, sub_eq_zero] at hy
   exact ⟨_, hy.resolve_left <| pow_ne_zero _ hx⟩
@@ -576,6 +576,18 @@ lemma primeSpectrum_asIdeal_range_eq :
 
 variable (R)
 
+theorem nilradical_pow_eq_iInf (n : ℕ) :
+    nilradical R ^ n = iInf fun I : MaximalSpectrum R ↦ I.1 ^ n := by
+  have : Fintype (MaximalSpectrum R) := Fintype.ofFinite (MaximalSpectrum R)
+  rw [← iInf_univ, ← Finset.coe_univ, PrimeSpectrum.nilradical_eq_iInf]
+  simp only [Finset.mem_coe]
+  rw [← Ideal.prod_eq_iInf_of_pairwise_isCoprime fun I _ _ _ ↦ .pow ∘ I.isCoprime_of_ne,
+    Finset.prod_pow, Ideal.prod_eq_iInf_of_pairwise_isCoprime fun I _ _ _ ↦ I.isCoprime_of_ne]
+  simp [Finset.mem_univ, iInf, IsArtinianRing.primeSpectrum_asIdeal_range_eq]
+
+theorem nilradical_eq_iInf : nilradical R = iInf MaximalSpectrum.asIdeal := by
+  simpa using nilradical_pow_eq_iInf R 1
+
 lemma setOf_isPrime_finite : {I : Ideal R | I.IsPrime}.Finite := by
   simpa only [isPrime_iff_isMaximal] using setOf_isMaximal_finite R
 
@@ -590,24 +602,32 @@ instance : Finite (PrimeSpectrum R) :=
 
 /-- The quotient of a commutative Artinian ring by its nilradical is isomorphic to
 a finite product of fields, namely the quotients by the maximal ideals. -/
+@[simps!]
 noncomputable def quotNilradicalEquivPi :
-    R ⧸ nilradical R ≃+* ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal :=
-  let f := MaximalSpectrum.asIdeal (R := R)
-  .trans
-    (Ideal.quotEquivOfEq <| ext fun x ↦ by
-      rw [PrimeSpectrum.nilradical_eq_iInf, iInf, primeSpectrum_asIdeal_range_eq]; rfl)
-    (Ideal.quotientInfRingEquivPiQuotient f <| fun I J h ↦
-      Ideal.isCoprime_iff_sup_eq.mpr <| I.2.coprime_of_ne J.2 <|
-      fun hIJ ↦ h <| MaximalSpectrum.ext hIJ)
+    (R ⧸ nilradical R) ≃ₐ[R] ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal :=
+  (Ideal.quotientEquivAlgOfEq R (nilradical_eq_iInf R)).trans
+    { __ := Ideal.quotientInfRingEquivPiQuotient _ fun I _ ↦ I.isCoprime_of_ne
+      commutes' _ := rfl}
+
+/-- The quotient of a commutative Artinian ring by a power of its nilradical is isomorphic to
+a finite product of local rings, namely the quotients by the powers of the maximal ideals. -/
+@[simps!]
+noncomputable def quotNilradicalPowEquivPi (n : ℕ) :
+    (R ⧸ nilradical R ^ n) ≃ₐ[R] ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal ^ n :=
+  (Ideal.quotientEquivAlgOfEq R (nilradical_pow_eq_iInf R n)).trans
+    { __ := Ideal.quotientInfRingEquivPiQuotient _ fun I _ ↦ .pow ∘ I.isCoprime_of_ne
+      commutes' _ := rfl}
 
 /-- A reduced commutative Artinian ring is isomorphic to a finite product of fields,
 namely the quotients by the maximal ideals. -/
-noncomputable def equivPi [IsReduced R] : R ≃ₐ[R] ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal where
-  __ := RingEquiv.trans (.symm <| .quotientBot R) <| .trans
-    (Ideal.quotEquivOfEq (nilradical_eq_zero R).symm) (quotNilradicalEquivPi R)
-  commutes' _ := rfl
+noncomputable def equivPi [IsReduced R] : R ≃ₐ[R] ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal :=
+  .trans (.symm <| .quotientBot R R) <| .trans
+    (Ideal.quotientEquivAlgOfEq R (nilradical_eq_zero R).symm) (quotNilradicalEquivPi R)
 
-set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma equivPi_apply [IsReduced R] (x : R) (m : MaximalSpectrum R) : equivPi R x m = x :=
+  rfl
+
 theorem isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=
   (equivPi R).symm.isSemisimpleRing
 

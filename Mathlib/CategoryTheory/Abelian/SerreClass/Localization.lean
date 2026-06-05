@@ -57,7 +57,7 @@ lemma exists_isoModSerre_comp_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
     rw [← exists_epiModSerre_comp_eq_zero_iff P]
     exact ⟨Y', s, hs.2, eq⟩
   · refine ⟨_, kernel.ι f, ?_, by simp⟩
-    simpa only [isoModSerre_iff_of_mono] using
+    simpa only [isoModSerre_iff_of_mono] using!
       P.prop_of_iso (Abelian.coimageIsoImage f).symm hf
 
 lemma exists_comp_monoModSerre_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
@@ -163,19 +163,18 @@ lemma mono_map_tfae {X Y : C} (f : X ⟶ Y) :
     have hf : L.map (kernel.ι f) = 0 := by
       rw [← cancel_mono (L.map f), zero_comp, ← L.map_comp,
         kernel.condition, L.map_zero]
-    simpa [hf] using map_comp_eq_zero_iff_of_epi_mono L P (𝟙 _) (kernel.ι f)
+    simpa [hf] using! map_comp_eq_zero_iff_of_epi_mono L P (𝟙 _) (kernel.ι f)
   tfae_have 2 → 3 := fun hf ↦ by
     intro Z z hz
     rw [← L.map_comp] at hz
     rw [map_eq_zero_iff L P, ← exists_comp_monoModSerre_eq_zero_iff P] at hz ⊢
     obtain ⟨W, s, hs, eq⟩ := hz
-    exact ⟨W, f ≫ s, MorphismProperty.comp_mem _ _ _ hf hs, by simpa using eq⟩
+    exact ⟨W, f ≫ s, MorphismProperty.comp_mem _ _ _ hf hs, by simpa using! eq⟩
   tfae_have 3 → 1 := fun hf ↦ by
     rw [Preadditive.mono_iff_cancel_zero]
     intro W z hz
     obtain ⟨φ, hφ⟩ := Localization.exists_rightFraction L P.isoModSerre
       ((L.objObjPreimageIso W).hom ≫ z)
-    have hs := Localization.inverts L P.isoModSerre φ.s φ.hs
     rw [← cancel_epi (L.objObjPreimageIso W).hom, comp_zero, hφ,
       ← cancel_epi (L.map φ.s), comp_zero,
       MorphismProperty.RightFraction.map_s_comp_map]
@@ -197,7 +196,7 @@ lemma epi_map_tfae {X Y : C} (f : X ⟶ Y) :
     have hf : L.map (cokernel.π f) = 0 := by
       rw [← cancel_epi (L.map f), comp_zero, ← L.map_comp,
         cokernel.condition, L.map_zero]
-    simpa [hf] using map_comp_eq_zero_iff_of_epi_mono L P (cokernel.π f) (𝟙 _)
+    simpa [hf] using! map_comp_eq_zero_iff_of_epi_mono L P (cokernel.π f) (𝟙 _)
   tfae_have 2 → 3 := fun hf ↦ by
     intro Z z hz
     rw [← L.map_comp] at hz
@@ -209,7 +208,6 @@ lemma epi_map_tfae {X Y : C} (f : X ⟶ Y) :
     intro W z hz
     obtain ⟨φ, hφ⟩ := Localization.exists_leftFraction L P.isoModSerre
       (z ≫ (L.objObjPreimageIso W).inv)
-    have hs := Localization.inverts L P.isoModSerre φ.s φ.hs
     rw [← cancel_mono (L.objObjPreimageIso W).inv, zero_comp, hφ,
       ← cancel_mono (L.map φ.s), zero_comp,
       MorphismProperty.LeftFraction.map_comp_map_s]
@@ -304,7 +302,6 @@ lemma preservesKernel {X Y : C} (f : X ⟶ Y) :
       generalizing W
   · obtain ⟨φ, hφ⟩ := Localization.exists_rightFraction L P.isoModSerre
       ((L.objObjPreimageIso W).hom ≫ w)
-    have _ := Localization.inverts L P.isoModSerre φ.s φ.hs
     rw [← cancel_epi (L.map φ.s),
       MorphismProperty.RightFraction.map_s_comp_map] at hφ
     obtain ⟨l, hl⟩ := this _ (L.map φ.f) (by
@@ -324,7 +321,7 @@ lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
   have := preservesEpimorphisms L P
   have := Localization.essSurj L P.isoModSerre
   suffices ∀ (W : D) (z : L.obj Y ⟶ W) (hz : L.map f ≫ z = 0),
-      ∃ (l : L.obj (cokernel f) ⟶ W), L.map (cokernel.π  f) ≫ l = z from
+      ∃ (l : L.obj (cokernel f) ⟶ W), L.map (cokernel.π f) ≫ l = z from
     preservesColimit_of_preserves_colimit_cocone (cokernelIsCokernel f)
       ((CokernelCofork.isColimitMapCoconeEquiv _ L).2
         (Cofork.IsColimit.ofExistsUnique
@@ -336,7 +333,6 @@ lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
       generalizing W
   · obtain ⟨φ, hφ⟩ := Localization.exists_leftFraction L P.isoModSerre
       (w ≫ (L.objObjPreimageIso W).inv)
-    have _ := Localization.inverts L P.isoModSerre φ.s φ.hs
     rw [← cancel_mono (L.map φ.s), Category.assoc,
       MorphismProperty.LeftFraction.map_comp_map_s] at hφ
     obtain ⟨l, hl⟩ := this _ (L.map φ.f) (by rw [← hφ, reassoc_of% hw, zero_comp]) ⟨_, rfl, by simp⟩
@@ -444,13 +440,13 @@ def abelian : Abelian D := by
 
 lemma preservesFiniteLimits : PreservesFiniteLimits L := by
   letI := abelian L P
-  rw [((Functor.preservesFiniteLimits_tfae L).out 3 2:)]
+  rw [((Functor.preservesFiniteLimits_tfae L).out 3 2 :)]
   intro _ _ f
   exact preservesKernel L P f
 
 lemma preservesFiniteColimits : PreservesFiniteColimits L := by
   letI := abelian L P
-  rw [((Functor.preservesFiniteColimits_tfae L).out 3 2:)]
+  rw [((Functor.preservesFiniteColimits_tfae L).out 3 2 :)]
   intro _ _ f
   exact preservesCokernel L P f
 
@@ -517,6 +513,7 @@ lemma exactFunctor_comp_iff :
 
 variable (E)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- When `L : C ⥤ D` is a localization functor with respect to a Serre class
 in the abelian category `C`, this is the functor `(D ⥤ₑ E) ⥤ C ⥤ₑ E`
 obtained by precomposition with `L`. -/
@@ -557,7 +554,7 @@ lemma essImage_whiskeringLeft :
   refine ⟨?_, fun hF ↦ ?_⟩
   · rintro ⟨G, ⟨e⟩⟩
     rw [← MorphismProperty.IsInvertedBy.iff_of_iso _
-      (show  L ⋙ G.obj ≅ F.obj from (ObjectProperty.ι _).mapIso e)]
+      (show L ⋙ G.obj ≅ F.obj from (ObjectProperty.ι _).mapIso e)]
     exact MorphismProperty.IsInvertedBy.of_comp _ _ (Localization.inverts L _) _
   · refine ⟨⟨Localization.lift F.obj hF L, ?_⟩,
       ⟨ObjectProperty.isoMk _ (Localization.fac F.obj hF L)⟩⟩

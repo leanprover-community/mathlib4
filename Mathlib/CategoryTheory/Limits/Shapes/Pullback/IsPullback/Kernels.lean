@@ -30,7 +30,7 @@ by applying these results to the flipped square.)
 
 -/
 
-@[expose] public section
+public section
 
 universe v v' u u'
 
