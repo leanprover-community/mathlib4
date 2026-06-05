@@ -552,6 +552,7 @@ public import Mathlib.Algebra.GroupWithZero.TransferInstance
 public import Mathlib.Algebra.GroupWithZero.ULift
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Algebra.GroupWithZero.Units.Equiv
+public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Algebra.GroupWithZero.WithZero
 public import Mathlib.Algebra.HierarchyDesign
@@ -1554,6 +1555,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.IsUnique
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.PairingCore
+public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.PushoutProduct
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RankNat
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RelativeCellComplex
@@ -1586,6 +1588,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 public import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
 public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
+public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesColimit
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesSubcomplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nonempty
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nonsingular
@@ -3069,6 +3072,7 @@ public import Mathlib.CategoryTheory.Monoidal.Bimon_
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.Braided.Multifunctor
 public import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
+public import Mathlib.CategoryTheory.Monoidal.Braided.PushoutObjObj
 public import Mathlib.CategoryTheory.Monoidal.Braided.Reflection
 public import Mathlib.CategoryTheory.Monoidal.Braided.Transport
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
@@ -4289,16 +4293,21 @@ public import Mathlib.Data.Rat.Floor
 public import Mathlib.Data.Rat.Init
 public import Mathlib.Data.Rat.Lemmas
 public import Mathlib.Data.Rat.NatSqrt.Defs
+public import Mathlib.Data.Rat.NatSqrt.Real
 public import Mathlib.Data.Rat.Sqrt
 public import Mathlib.Data.Rat.Star
+public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Data.Real.CompleteField
 public import Mathlib.Data.Real.ConjExponents
 public import Mathlib.Data.Real.ENatENNReal
 public import Mathlib.Data.Real.Embedding
+public import Mathlib.Data.Real.Hom
 public import Mathlib.Data.Real.Pointwise
 public import Mathlib.Data.Real.Sign
+public import Mathlib.Data.Real.Sqrt
 public import Mathlib.Data.Real.Star
+public import Mathlib.Data.Real.StarOrdered
 public import Mathlib.Data.Rel
 public import Mathlib.Data.Rel.Cover
 public import Mathlib.Data.Rel.Separated
@@ -5043,11 +5052,14 @@ public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import Mathlib.LinearAlgebra.LinearPMap
 public import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
+public import Mathlib.LinearAlgebra.Matrix.Action
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
 public import Mathlib.LinearAlgebra.Matrix.BaseChange
 public import Mathlib.LinearAlgebra.Matrix.Basis
+public import Mathlib.LinearAlgebra.Matrix.Bilinear
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Cartan
 public import Mathlib.LinearAlgebra.Matrix.CharP
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
@@ -5066,6 +5078,7 @@ public import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Dual
+public import Mathlib.LinearAlgebra.Matrix.DualNumber
 public import Mathlib.LinearAlgebra.Matrix.FiniteDimensional
 public import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
@@ -5081,6 +5094,7 @@ public import Mathlib.LinearAlgebra.Matrix.HermitianFunctionalCalculus
 public import Mathlib.LinearAlgebra.Matrix.Ideal
 public import Mathlib.LinearAlgebra.Matrix.Integer
 public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
+public import Mathlib.LinearAlgebra.Matrix.Invertible
 public import Mathlib.LinearAlgebra.Matrix.Irreducible.Defs
 public import Mathlib.LinearAlgebra.Matrix.IsDiag
 public import Mathlib.LinearAlgebra.Matrix.Kronecker
@@ -6190,6 +6204,7 @@ public import Mathlib.Probability.CondVar
 public import Mathlib.Probability.ConditionalExpectation
 public import Mathlib.Probability.ConditionalProbability
 public import Mathlib.Probability.Decision.Risk.Basic
+public import Mathlib.Probability.Decision.Risk.Countable
 public import Mathlib.Probability.Decision.Risk.Defs
 public import Mathlib.Probability.Density
 public import Mathlib.Probability.Distributions.Bernoulli
@@ -7064,10 +7079,12 @@ public import Mathlib.SetTheory.Cardinal.Finite
 public import Mathlib.SetTheory.Cardinal.Finsupp
 public import Mathlib.SetTheory.Cardinal.Free
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
+public import Mathlib.SetTheory.Cardinal.NatCard
 public import Mathlib.SetTheory.Cardinal.NatCount
 public import Mathlib.SetTheory.Cardinal.Order
 public import Mathlib.SetTheory.Cardinal.Ordinal
 public import Mathlib.SetTheory.Cardinal.Pigeonhole
+public import Mathlib.SetTheory.Cardinal.Rat
 public import Mathlib.SetTheory.Cardinal.Regular
 public import Mathlib.SetTheory.Cardinal.SchroederBernstein
 public import Mathlib.SetTheory.Cardinal.Subfield
@@ -7860,6 +7877,7 @@ public import Mathlib.Topology.LocallyConstant.Algebra
 public import Mathlib.Topology.LocallyConstant.Basic
 public import Mathlib.Topology.LocallyFinite
 public import Mathlib.Topology.LocallyFinsupp
+public import Mathlib.Topology.LocallyFinsupp.Pushforward
 public import Mathlib.Topology.Maps.Basic
 public import Mathlib.Topology.Maps.OpenQuotient
 public import Mathlib.Topology.Maps.Proper.Basic
