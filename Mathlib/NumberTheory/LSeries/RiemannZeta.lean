@@ -154,8 +154,8 @@ lemma riemannZeta_def_of_ne_zero {s : ℂ} (hs : s ≠ 0) :
   rw [riemannZeta, hurwitzZetaEven, Function.update_of_ne hs, completedHurwitzZetaEven_zero]
 
 /-- Definition of the zeta function in terms of `completedRiemannZeta₀`. -/
-lemma riemannZeta_eq_completedRiemannZeta₀ {s : ℂ} (hs : s ≠ 0) :
-    riemannZeta s = (completedRiemannZeta₀ s - 1 / s - 1 / (1 - s)) / (π ^ (-s / 2) * Gamma (s / 2)) := by
+lemma riemannZeta_eq_completedRiemannZeta₀ {s : ℂ} (hs : s ≠ 0) : riemannZeta s =
+    (completedRiemannZeta₀ s - 1 / s - 1 / (1 - s)) / (π ^ (-s / 2) * Gamma (s / 2)) := by
   rw [riemannZeta_def_of_ne_zero hs, completedRiemannZeta_eq, Gammaℝ]
 
 /-- Version of `completedRiemannZeta₀` that avoids `s ≠ 0` -/
