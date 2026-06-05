@@ -2215,6 +2215,7 @@ public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
 public import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.Analysis.Normed.Operator.Bilinear
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+public import Mathlib.Analysis.Normed.Operator.Compact
 public import Mathlib.Analysis.Normed.Operator.Compact.Basic
 public import Mathlib.Analysis.Normed.Operator.Compact.FiniteDimension
 public import Mathlib.Analysis.Normed.Operator.Compact.FredholmAlternative
@@ -2259,6 +2260,7 @@ public import Mathlib.Analysis.NormedSpace.Alternating.Uncurry.Fin
 public import Mathlib.Analysis.NormedSpace.Connected
 public import Mathlib.Analysis.NormedSpace.ENormedSpace
 public import Mathlib.Analysis.NormedSpace.Extr
+public import Mathlib.Analysis.NormedSpace.FunctionSeries
 public import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 public import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 public import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
@@ -2267,8 +2269,13 @@ public import Mathlib.Analysis.NormedSpace.Multilinear.Basic
 public import Mathlib.Analysis.NormedSpace.Multilinear.Curry
 public import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn
 public import Mathlib.Analysis.NormedSpace.Normalize
+public import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
+public import Mathlib.Analysis.NormedSpace.OperatorNorm.NNNorm
+public import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
 public import Mathlib.Analysis.NormedSpace.PiTensorProduct.InjectiveSeminorm
 public import Mathlib.Analysis.NormedSpace.PiTensorProduct.ProjectiveSeminorm
+public import Mathlib.Analysis.NormedSpace.RCLike
+public import Mathlib.Analysis.NormedSpace.Real
 public import Mathlib.Analysis.NormedSpace.RieszLemma
 public import Mathlib.Analysis.ODE.Basic
 public import Mathlib.Analysis.ODE.DiscreteGronwall
@@ -7263,6 +7270,7 @@ public import Mathlib.Tactic.Linarith.Parsing
 public import Mathlib.Tactic.Linarith.Preprocessing
 public import Mathlib.Tactic.Linarith.Verification
 public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.LinearCombination'
 public import Mathlib.Tactic.LinearCombination.Lemmas
 public import Mathlib.Tactic.LinearCombinationPrime
 public import Mathlib.Tactic.Linter
@@ -7556,6 +7564,7 @@ public import Mathlib.Topology.Algebra.Module.StrongTopology
 public import Mathlib.Topology.Algebra.Module.TopDualPairing
 public import Mathlib.Topology.Algebra.Module.TransferInstance
 public import Mathlib.Topology.Algebra.Module.UniformConvergence
+public import Mathlib.Topology.Algebra.Module.WeakDual
 public import Mathlib.Topology.Algebra.Monoid
 public import Mathlib.Topology.Algebra.Monoid.AddChar
 public import Mathlib.Topology.Algebra.Monoid.Defs
