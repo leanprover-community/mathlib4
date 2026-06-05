@@ -86,8 +86,8 @@ lemma constructibleTopology_eq_generateFrom_isConstructible
     [CompactSpace X] [QuasiSeparatedSpace X] :
     constructibleTopology X = generateFrom { s : Set X | IsConstructible s } := by
   rw [constructibleTopology]
-  refine generateFrom_booleanSubalgebra_closure (bot_mem_constructibleTopologySubbasis X)
-    compl_image_constructibleTopologySubbasis ▸ ?_
+  rw [← generateFrom_booleanSubalgebra_closure (empty_mem_constructibleTopologySubbasis X)
+    compl_image_constructibleTopologySubbasis]
   · congr
     refine Set.eq_of_subset_of_subset (fun s hs => ?_)
       (BooleanSubalgebra.closure_mono fun s ⟨hs1, hs2⟩ => ?_)
