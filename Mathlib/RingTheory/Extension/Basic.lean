@@ -296,20 +296,16 @@ noncomputable def toBaseChange (T : Type*) [CommRing T] [Algebra R T] :
   toRingHom_algebraMap x := by simp [baseChange]
   algebraMap_toRingHom x := rfl
 
+end
+
 instance : FunLike (P.Hom P') P.Ring P'.Ring where
   coe f := f.toRingHom
-  coe_injective' _ _ h := Hom.ext (DFunLike.coe_fn_eq.mp h)
+  coe_injective' _ _ h := Extension.Hom.ext (DFunLike.coe_fn_eq.mp h)
 
 instance : Unique (P.Hom (self R S)) where
   default := ⟨algebraMap P.Ring S, fun r ↦ (IsScalarTower.algebraMap_apply R P.Ring S r).symm,
     fun _ ↦ rfl⟩
   uniq f := by ext x; exact f.algebraMap_toRingHom x
-
-end
-
-instance {P P' : Extension R S} : FunLike (P.Hom P') P.Ring P'.Ring where
-  coe f := f.toRingHom
-  coe_injective' _ _ h := Extension.Hom.ext (DFunLike.coe_fn_eq.mp h)
 
 end Hom
 
