@@ -79,9 +79,7 @@ lemma compl_mem_constructibleTopologySubbasis_iff {s : Set X} :
 
 lemma compl_image_constructibleTopologySubbasis :
     compl '' (constructibleTopologySubbasis X) = constructibleTopologySubbasis X := by
-  ext s
-  exact ⟨fun ⟨t, ht, hts⟩ => hts ▸ compl_mem_constructibleTopologySubbasis_iff.2 ht,
-    fun hs => ⟨sᶜ, compl_mem_constructibleTopologySubbasis_iff.2 hs, compl_compl s⟩⟩
+  grind [constructibleTopologySubbasis, isClosed_compl_iff, compl_compl]
 
 variable (X) in
 lemma constructibleTopology_eq_generateFrom_isConstructible
