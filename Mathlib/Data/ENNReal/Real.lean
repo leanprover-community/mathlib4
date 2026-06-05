@@ -354,8 +354,6 @@ theorem toReal_top_mul (a : ℝ≥0∞) : ENNReal.toReal (∞ * a) = 0 := by
   rw [mul_comm]
   exact toReal_mul_top _
 
-@[deprecated (since := "2025-11-07")] alias toReal_eq_toReal := toReal_eq_toReal_iff'
-
 protected theorem trichotomy (p : ℝ≥0∞) : p = 0 ∨ p = ∞ ∨ 0 < p.toReal := by
   simpa only [or_iff_not_imp_left] using toReal_pos
 
@@ -385,10 +383,6 @@ theorem toReal_pos_iff_ne_top (p : ℝ≥0∞) [Fact (1 ≤ p)] : 0 < p.toReal �
     fun h => zero_lt_one.trans_le (p.dichotomy.resolve_left h)⟩
 
 end Real
-
-@[deprecated max_eq_zero (since := "2025-10-25")]
-theorem sup_eq_zero {a b : ℝ≥0∞} : a ⊔ b = 0 ↔ a = 0 ∧ b = 0 :=
-  sup_eq_bot_iff
 
 end ENNReal
 
