@@ -1011,7 +1011,7 @@ private lemma faaDiBruno_aux1 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
   simp only [Nat.succ_eq_add_one, OrderedFinpartition.extend, extendLeft,
     ContinuousMultilinearMap.curryLeft_apply,
     FormalMultilinearSeries.compAlongOrderedFinpartition_apply, applyOrderedFinpartition_apply,
-    ContinuousLinearMap.coe_comp', comp_apply, continuousMultilinearCurryFin1_apply,
+    ContinuousLinearMap.comp_apply, continuousMultilinearCurryFin1_apply,
     Matrix.zero_empty, ContinuousLinearMap.flipMultilinear_apply_apply,
     compAlongOrderedFinpartitionL_apply, compAlongOrderFinpartition_apply]
   congr
@@ -1032,7 +1032,7 @@ private lemma faaDiBruno_aux2 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
   simp? [OrderedFinpartition.extend, extendMiddle, applyOrderedFinpartition_apply] says
     simp only [OrderedFinpartition.extend, extendMiddle, ContinuousMultilinearMap.curryLeft_apply,
       Nat.succ_eq_add_one, FormalMultilinearSeries.compAlongOrderedFinpartition_apply,
-      applyOrderedFinpartition_apply, ContinuousLinearMap.coe_comp', comp_apply,
+      applyOrderedFinpartition_apply, ContinuousLinearMap.comp_apply,
       ContinuousMultilinearMap.toContinuousLinearMap_apply, compAlongOrderedFinpartitionL_apply,
       compAlongOrderFinpartition_apply]
   congr

@@ -330,7 +330,7 @@ theorem HasFPowerSeriesWithinOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
   rw [this] at Z
   convert! Z with n
   ext v
-  simp only [FormalMultilinearSeries.derivSeries, ContinuousLinearMap.coe_sum', Finset.sum_apply,
+  simp only [FormalMultilinearSeries.derivSeries, sum_apply,
     ContinuousLinearMap.compFormalMultilinearSeries_apply,
     FormalMultilinearSeries.changeOriginSeries,
     ContinuousLinearMap.compContinuousMultilinearMap_coe, ContinuousLinearEquiv.coe_coe,
@@ -741,8 +741,8 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
     ext v m
     simp only [ContinuousMultilinearMap.iteratedFDeriv, curryLeft_apply, sum_apply,
       iteratedFDerivComponent_apply, Finset.univ_sigma_univ,
-      Pi.compRightL_apply, ContinuousLinearMap.coe_sum', ContinuousLinearMap.coe_comp',
-      Finset.sum_apply, Function.comp_apply, linearDeriv_apply, Finset.sum_sigma']
+      Pi.compRightL_apply, _root_.sum_apply, ContinuousLinearMap.comp_apply, linearDeriv_apply,
+      Finset.sum_sigma']
     rw [← (Equiv.embeddingFinSucc n ι).sum_comp]
     congr with e
     congr with k
@@ -795,7 +795,7 @@ theorem derivSeries_apply_diag (n : ℕ) (x : E) :
     derivSeries p n (fun _ ↦ x) x = (n + 1) • p (n + 1) fun _ ↦ x := by
   simp only [derivSeries, compFormalMultilinearSeries_apply, changeOriginSeries,
     compContinuousMultilinearMap_coe, ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_coe,
-    Function.comp_apply, ContinuousMultilinearMap.sum_apply, map_sum, coe_sum', Finset.sum_apply,
+    Function.comp_apply, ContinuousMultilinearMap.sum_apply, map_sum, _root_.sum_apply,
     continuousMultilinearCurryFin1_apply, Matrix.zero_empty]
   convert! Finset.sum_const _
   · rw [Fin.snoc_zero, changeOriginSeriesTerm_apply, Finset.piecewise_same, add_comm]

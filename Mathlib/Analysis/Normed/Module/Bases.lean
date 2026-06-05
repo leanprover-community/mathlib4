@@ -156,7 +156,7 @@ theorem proj_empty : b.proj ∅ = 0 := by simp [proj]
 /-- The action of the projection on a vector `x`. -/
 @[simp]
 theorem proj_apply (A : Finset β) (x : X) : b.proj A x = ∑ i ∈ A, b.coord i x • b i := by
-  simp [proj, ContinuousLinearMap.sum_apply, ContinuousLinearMap.smulRight_apply]
+  simp [proj, _root_.sum_apply, ContinuousLinearMap.smulRight_apply]
 
 open scoped Classical in
 /-- The action of the projection on a basis element `e i`. -/
@@ -504,14 +504,14 @@ def basis : SchauderBasis 𝕜 X :=
       exact (D.proj_tendsto x).congr fun n ↦ by
         simp only [Function.comp, LinearMap.coe_mk, AddHom.coe_mk,
                    LinearMap.mkContinuous_apply, ← hcoeff]
-        rw [← ContinuousLinearMap.sum_apply, sum_succSub D.P D.proj_zero] }
+        rw [← _root_.sum_apply, sum_succSub D.P D.proj_zero] }
 
 /-- The projections of the constructed basis correspond to the input data `D.P`. -/
 @[simp]
 theorem basis_proj : (basis D).proj = D.P := by
   ext n _
   rw [SchauderBasis.proj_apply, ← sum_succSub D.P D.proj_zero n]
-  simp only [ContinuousLinearMap.coe_sum', Finset.sum_apply]
+  simp only [_root_.sum_apply]
   refine Finset.sum_congr rfl fun i _ ↦ ?_
   dsimp [basis, mkContinuous_apply, IsLinearMap.mk'_apply]
   rw [basisCoeff_spec]

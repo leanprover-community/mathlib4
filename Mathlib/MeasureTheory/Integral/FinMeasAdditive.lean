@@ -348,7 +348,7 @@ theorem map_setToSimpleFunc (T : Set α → F →L[ℝ] F') (h_add : FinMeasAddi
     rw [← Finset.set_biUnion_preimage_singleton]
   rw [h_left_eq']
   rw [h_add.map_iUnion_fin_meas_set_eq_sum T T_empty]
-  · simp only [sum_apply, ContinuousLinearMap.coe_sum']
+  · simp only [_root_.sum_apply]
     refine Finset.sum_congr rfl fun x hx => ?_
     rw [mem_filter] at hx
     rw [hx.2]

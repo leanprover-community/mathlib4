@@ -113,7 +113,7 @@ instance : CategoryWithHomology (TopModuleCat R) := by
       (Submodule.isOpenQuotientMap_mkQ _).isQuotientMap
       (Submodule.isOpenQuotientMap_mkQ _)
       (Subtype.val_injective.comp hF.1) ?_
-    · rw [← ContinuousLinearMap.coe_comp', ← ContinuousLinearMap.coe_comp',
+    · rw [← ContinuousLinearMap.coe_comp, ← ContinuousLinearMap.coe_comp,
         ← hom_comp, ← hom_comp, ShortComplex.π_leftRightHomologyComparison'_ι]
     · suffices ∀ x y, S.g y = 0 → D₂.p y = D₂.p x → S.g x = 0 by
         simpa [Set.subset_def, D₁, kerι_apply S.g] using this
