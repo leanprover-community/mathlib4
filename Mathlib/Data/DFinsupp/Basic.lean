@@ -129,7 +129,7 @@ theorem mapDomain_sum {f : α → β} {s : Π₀ _, N} {v : α → N → Π₀ a
     mapDomain f (s.sum v) = s.sum fun a b => mapDomain f (v a b) :=
   map_dfinsuppSum (mapDomain.addMonoidHom f : (Π₀ a, M (f a)) →+ Π₀ b, M b) _ _
 
-theorem mapDomain_support [(i : β) → (x : M i) → Decidable (x ≠ 0)]
+theorem mapDomain_support [∀ i (x : M i), Decidable (x ≠ 0)]
     {f : α → β} {s : Π₀ a, M (f a)} :
     (s.mapDomain f).support ⊆ s.support.image f := by
   rw [mapDomain_eq_sum]
@@ -137,25 +137,29 @@ theorem mapDomain_support [(i : β) → (x : M i) → Decidable (x ≠ 0)]
   Finset.Subset.trans support_sum <|
     Finset.Subset.trans (Finset.biUnion_mono fun _ _ => support_single_subset) <| by
       rw [Finset.biUnion_singleton]
-/-
-TODO: everything else
+-- /-
+-- TODO: everything else
 
 
-theorem mapDomain_apply' (S : Set α) {f : α → β} (x : Π₀ b, M b) (hS : (x.support : Set α) ⊆ S)
+theorem mapDomain_apply' [∀ i (x : M i), Decidable (x ≠ 0)]
+    (S : Set α) {f : α → β} (x : Π₀ a, M (f a)) (hS : (x.support : Set α) ⊆ S)
     (hf : Set.InjOn f S) {a : α} (ha : a ∈ S) : mapDomain f x (f a) = x a := by
   classical
-    rw [mapDomain, sum_apply, sum]
+    rw [mapDomain_eq_sum, sum_apply, sum]
     simp_rw [single_apply]
     by_cases hax : a ∈ x.support
-    · rw [← Finset.add_sum_erase _ _ hax, if_pos rfl]
+    · rw [← Finset.add_sum_erase _ _ hax, dif_pos rfl]
       convert add_zero (x a)
-      refine Finset.sum_eq_zero fun i hi => if_neg ?_
+      refine Finset.sum_eq_zero fun i hi => dif_neg ?_
       exact (hf.mono hS).ne (Finset.mem_of_mem_erase hi) hax (Finset.ne_of_mem_erase hi)
     · rw [notMem_support_iff.1 hax]
-      refine Finset.sum_eq_zero fun i hi => if_neg ?_
+      refine Finset.sum_eq_zero fun i hi => dif_neg ?_
       exact hf.ne (hS hi) ha (ne_of_mem_of_not_mem hi hax)
 
-theorem mapDomain_support_of_injOn [DecidableEq β] {f : α → β} (s : Π₀ b, M b)
+open Finset
+
+theorem mapDomain_support_of_injOn
+    [∀ i (x : M i), Decidable (x ≠ 0)] {f : α → β} (s : Π₀ a, M (f a))
     (hf : Set.InjOn f s.support) : (mapDomain f s).support = Finset.image f s.support :=
   Finset.Subset.antisymm mapDomain_support <| by
     intro x hx
@@ -168,15 +172,18 @@ theorem mapDomain_support_of_injOn [DecidableEq β] {f : α → β} (s : Π₀ b
       exact hx_h_left
     · exact Subset.refl _
 
-theorem mapDomain_support_of_injective [DecidableEq β] {f : α → β} (hf : Function.Injective f)
-    (s : Π₀ b, M b) : (mapDomain f s).support = Finset.image f s.support :=
+theorem mapDomain_support_of_injective
+    [∀ i (x : M i), Decidable (x ≠ 0)] {f : α → β} (hf : Function.Injective f)
+    (s : Π₀ a, M (f a)) : (mapDomain f s).support = Finset.image f s.support :=
   mapDomain_support_of_injOn s hf.injOn
 
 @[to_additive]
-theorem prod_mapDomain_index [CommMonoid N] {f : α → β} {s : Π₀ b, M b} {h : β → M → N}
+theorem prod_mapDomain_index {N} [∀ i (x : M i), Decidable (x ≠ 0)] [CommMonoid N]
+    {f : α → β} {s : Π₀ a, M (f a)} {h : (b : β) → M b → N}
     (h_zero : ∀ b, h b 0 = 1) (h_add : ∀ b m₁ m₂, h b (m₁ + m₂) = h b m₁ * h b m₂) :
-    (mapDomain f s).prod h = s.prod fun a m => h (f a) m :=
-  (prod_sum_index h_zero h_add).trans <| prod_congr fun _ _ => prod_single_index (h_zero _)
+    (mapDomain f s).prod h = s.prod fun a m => h (f a) m := by
+  rw [mapDomain_eq_sum, prod_sum_index h_zero h_add]
+  exact prod_congr _ _ fun _ _ => prod_single_index (h_zero _)
 
 -- Note that in `prod_mapDomain_index`, `M` is still an additive monoid,
 -- so there is no analogous version in terms of `MonoidHom`.
@@ -184,68 +191,85 @@ theorem prod_mapDomain_index [CommMonoid N] {f : α → β} {s : Π₀ b, M b} {
 rather than separate linearity hypotheses.
 -/
 @[simp]
-theorem sum_mapDomain_index_addMonoidHom [AddCommMonoid N] {f : α → β} {s : Π₀ b, M b}
-    (h : β → M →+ N) : ((mapDomain f s).sum fun b m => h b m) = s.sum fun a m => h (f a) m :=
+theorem sum_mapDomain_index_addMonoidHom
+    [∀ i (x : M i), Decidable (x ≠ 0)] {f : α → β} {s : Π₀ a, M (f a)}
+    (h : (b : β) → M b →+ N) :
+    ((mapDomain f s).sum fun b m => h b m) = s.sum fun a m => h (f a) m :=
   sum_mapDomain_index (fun b => (h b).map_zero) (fun b _ _ => (h b).map_add _ _)
 
-theorem embDomain_eq_mapDomain (f : α ↪ β) (v : Π₀ b, M b) : embDomain f v = mapDomain f v := by
-  ext a
-  by_cases h : a ∈ Set.range f
-  · rcases h with ⟨a, rfl⟩
-    rw [mapDomain_apply f.injective, embDomain_apply_self]
-  · rw [mapDomain_notin_range, embDomain_notin_range] <;> assumption
+-- theorem embDomain_eq_mapDomain (f : α ↪ β) (v : Π₀ b, M b) : embDomain f v = mapDomain f v := by
+--   ext a
+--   by_cases h : a ∈ Set.range f
+--   · rcases h with ⟨a, rfl⟩
+--     rw [mapDomain_apply f.injective, embDomain_apply_self]
+--   · rw [mapDomain_notin_range, embDomain_notin_range] <;> assumption
 
 @[to_additive]
-theorem prod_mapDomain_index_inj [CommMonoid N] {f : α → β} {s : Π₀ b, M b} {h : β → M → N}
-    (hf : Function.Injective f) : (s.mapDomain f).prod h = s.prod fun a b => h (f a) b := by
-  rw [← Function.Embedding.coeFn_mk f hf, ← embDomain_eq_mapDomain, prod_embDomain]
+theorem prod_mapDomain_index_inj
+    [∀ i (x : M i), Decidable (x ≠ 0)] [CommMonoid N]
+    {f : α → β} {s : Π₀ a, M (f a)} {h : (b : β) → M b → N} (hf : Function.Injective f) :
+    (s.mapDomain f).prod h = s.prod fun a b => h (f a) b := by
+  -- rw [← Function.Embedding.coeFn_mk f hf, ← embDomain_eq_mapDomain, prod_embDomain]
+  sorry
 
 theorem mapDomain_injective {f : α → β} (hf : Function.Injective f) :
-    Function.Injective (mapDomain f : (α →₀ M) → β →₀ M) := by
+    Function.Injective (mapDomain f : (Π₀ a, M (f a)) → (Π₀ b, M b)) := by
   intro v₁ v₂ eq
   ext a
   have : mapDomain f v₁ (f a) = mapDomain f v₂ (f a) := by rw [eq]
   rwa [mapDomain_apply hf, mapDomain_apply hf] at this
 
+open Function
+
 theorem mapDomain_surjective {f : α → β} (hf : f.Surjective) :
     (mapDomain (M := M) f).Surjective := by
   intro x
-  use mapDomain (surjInv hf) x
-  rw [← mapDomain_comp, (rightInverse_surjInv hf).id, mapDomain_id]
+  let x' :  Π₀ (a : β), M (f (surjInv hf a)) :=
+    x.mapRange (fun b x => rightInverse_surjInv hf b |>.symm ▸ x) (fun b => by grind)
+  use mapDomain (surjInv hf) x'
+  rw [← mapDomain_comp]
+  rw! (castMode := .all) [(rightInverse_surjInv hf).id, mapDomain_id]
+  simp only [x']
+  generalize_proofs
+  sorry
 
 /-- When `f` is an embedding we have an embedding `(α →₀ ℕ) ↪ (β →₀ ℕ)` given by `mapDomain`. -/
 @[simps]
-def mapDomainEmbedding {α β : Type*} (f : α ↪ β) : (α →₀ ℕ) ↪ β →₀ ℕ :=
-  ⟨Finsupp.mapDomain f, Finsupp.mapDomain_injective f.injective⟩
+def mapDomainEmbedding (f : α ↪ β) : (Π₀ a, M (f a)) ↪ (Π₀ b, M b) :=
+  ⟨DFinsupp.mapDomain f, DFinsupp.mapDomain_injective f.injective⟩
 
-theorem mapDomain.addMonoidHom_comp_mapRange [AddCommMonoid N] (f : α → β) (g : M →+ N) :
-    (mapDomain.addMonoidHom f).comp (mapRange.addMonoidHom g) =
+variable {Nb : β → Type*} [∀ b, AddCommMonoid (Nb b)]
+
+theorem mapDomain.addMonoidHom_comp_mapRange (f : α → β) (g : ∀ b, M b →+ Nb b) :
+    (mapDomain.addMonoidHom f).comp (mapRange.addMonoidHom (fun _ => g _)) =
       (mapRange.addMonoidHom g).comp (mapDomain.addMonoidHom f) := by
   ext
   simp
 
 /-- When `g` preserves addition, `mapRange` and `mapDomain` commute. -/
-theorem mapDomain_mapRange [AddCommMonoid N] (f : α → β) (v : Π₀ b, M b) (g : M → N) (h0 : g 0 = 0)
-    (hadd : ∀ x y, g (x + y) = g x + g y) :
-    mapDomain f (mapRange g h0 v) = mapRange g h0 (mapDomain f v) :=
-  let g' : M →+ N :=
-    { toFun := g
-      map_zero' := h0
-      map_add' := hadd }
+theorem mapDomain_mapRange
+    (f : α → β) (v : Π₀ a, M (f a)) (g : ∀ b, M b → Nb b) (h0 : ∀ b, g b 0 = 0)
+    (hadd : ∀ b x y, g b (x + y) = g b x + g b y) :
+    mapDomain f (mapRange (fun _ => g _) (fun _ => h0 _) v) = mapRange g h0 (mapDomain f v) :=
+  let g' (b) : M b →+ Nb b :=
+    { toFun := g b
+      map_zero' := h0 b
+      map_add' := hadd b }
   DFunLike.congr_fun (mapDomain.addMonoidHom_comp_mapRange f g') v
 
-theorem sum_update_add [AddZeroClass α] [AddCommMonoid β] (f : ι →₀ α) (i : ι) (a : α)
-    (g : ι → α → β) (hg : ∀ i, g i 0 = 0)
-    (hgg : ∀ (j : ι) (a₁ a₂ : α), g j (a₁ + a₂) = g j a₁ + g j a₂) :
-    (f.update i a).sum g + g i (f i) = f.sum g + g i a := by
-  rw [update_eq_erase_add_single, sum_add_index' hg hgg]
-  conv_rhs => rw [← Finsupp.update_self f i]
-  rw [update_eq_erase_add_single, sum_add_index' hg hgg, add_assoc, add_assoc]
-  congr 1
-  rw [add_comm, sum_single_index (hg _), sum_single_index (hg _)]
+-- theorem sum_update_add [AddZeroClass α] [AddCommMonoid β] (f : ι →₀ α) (i : ι) (a : α)
+--     (g : ι → α → β) (hg : ∀ i, g i 0 = 0)
+--     (hgg : ∀ (j : ι) (a₁ a₂ : α), g j (a₁ + a₂) = g j a₁ + g j a₂) :
+--     (f.update i a).sum g + g i (f i) = f.sum g + g i a := by
+--   rw [update_eq_erase_add_single, sum_add_index' hg hgg]
+--   conv_rhs => rw [← DFinsupp.update_self f i]
+--   rw [update_eq_erase_add_single, sum_add_index' hg hgg, add_assoc, add_assoc]
+--   congr 1
+--   rw [add_comm, sum_single_index (hg _), sum_single_index (hg _)]
 
-theorem mapDomain_injOn (S : Set α) {f : α → β} (hf : Set.InjOn f S) :
-    Set.InjOn (mapDomain f : (α →₀ M) → β →₀ M) { w | (w.support : Set α) ⊆ S } := by
+theorem mapDomain_injOn [∀ i (x : M i), Decidable (x ≠ 0)]
+    (S : Set α) {f : α → β} (hf : Set.InjOn f S) :
+    Set.InjOn (mapDomain f : (Π₀ a, M (f a)) → (Π₀ b, M b)) { w | (w.support : Set α) ⊆ S } := by
   intro v₁ hv₁ v₂ hv₂ eq
   ext a
   classical
@@ -255,9 +279,9 @@ theorem mapDomain_injOn (S : Set α) {f : α → β} (hf : Set.InjOn f S) :
           exact mod_cast h
     · simp_all
 
-theorem equivMapDomain_eq_mapDomain {M} [AddCommMonoid M] (f : α ≃ β) (l : Π₀ b, M b) :
-    equivMapDomain f l = mapDomain f l := by ext x; simp
--/
+-- theorem equivMapDomain_eq_mapDomain {M} [AddCommMonoid M] (f : α ≃ β) (l : Π₀ b, M b) :
+--     equivMapDomain f l = mapDomain f l := by ext x; simp
+
 end MapDomain
 
 end DFinsupp
