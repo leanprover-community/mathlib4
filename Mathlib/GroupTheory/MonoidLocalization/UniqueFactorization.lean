@@ -47,7 +47,7 @@ theorem irreducible_of_map_wfDvdMonoid [WfDvdMonoid M] (f : S.LocalizationMap N)
       exact ⟨u * i, m', by simpa using hu.mul hai.2, hm', by ac_rfl⟩
 
 open UniqueFactorizationMonoid in
-theorem uniquFactorizationMonoid (f : S.LocalizationMap N)
+theorem uniqueFactorizationMonoid (f : S.LocalizationMap N)
     [UniqueFactorizationMonoid M] : UniqueFactorizationMonoid N :=
   have := f.isCancelMulZero
   .of_exists_prime_factors fun n hn ↦ by
@@ -72,3 +72,6 @@ theorem IsLocalization.uniqueFactorizationMonoid [CommSemiring M] [CommSemiring 
     (S : Submonoid M) [IsLocalization S N] [UniqueFactorizationMonoid M] :
     UniqueFactorizationMonoid N :=
   (toLocalizationMap S N).uniquFactorizationMonoid
+
+instance : [UniqueFactorizationMonoid M] : UniqueFactorizationMonoid (Localization S) :=
+  (Localization.monoidOf S).uniqueFactorizationMonoid

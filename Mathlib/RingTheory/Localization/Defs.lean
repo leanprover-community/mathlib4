@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Ring.NonZeroDivisors
 public import Mathlib.Data.Fintype.Prod
 public import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 public import Mathlib.RingTheory.OreLocalization.Ring
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 public import Mathlib.Tactic.ApplyFun
 public import Mathlib.Tactic.Ring
 
