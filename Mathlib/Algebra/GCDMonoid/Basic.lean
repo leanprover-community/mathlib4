@@ -86,7 +86,7 @@ noncomputable abbrev NormalizationMonoid.ofRightInverse {α : Type*} [MonoidWith
   { normUnit a := if a = 0 then 1 else (assoc a).choose
     normUnit_zero := if_pos rfl
     normUnit_one := by
-      nontriviality α; rw [← Units.val_inj]; convert ← (assoc 1).choose_spec; simp
+      nontriviality α; rw [← Units.val_inj]; convert ← (assoc 1).choose_spec <;> simp [out_one]
     normUnit_mul_units {a} u ha := by
       simp_rw [Units.mul_left_eq_zero, if_neg ha, eq_inv_mul_iff_mul_eq, ← Units.val_inj]
       rw [Units.val_mul, ← (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero ha).eq_iff,
@@ -98,7 +98,7 @@ instance (α) [MonoidWithZero α] [IsLeftCancelMulZero α] :
   classical
   exact .ofRightInverse
     (fun a ↦ by classical exact if a = 1 then 1 else a.out)
-    (fun _ ↦ by dsimp; split_ifs with h <;> simp [h]) (by simp)
+    (fun _ ↦ by split_ifs with h <;> simp [h]) (by simp)
 
 /-- Strong normalization monoid: multiplying with `normUnit` gives a normal form for associated
 elements. It is stronger in that it ensures the normalization map is a monoid homomorphism. -/
@@ -1059,7 +1059,7 @@ variable [IsCancelMulZero α]
 
 /-- Define `NormalizationMonoid` on a structure from a `MonoidHom` inverse to `Associates.mk`. -/
 @[implicit_reducible]
-def normalizationMonoidOfMonoidHomRightInverse [DecidableEq α] (f : Associates α →* α)
+def strongNormalizationMonoidOfMonoidHomRightInverse [DecidableEq α] (f : Associates α →* α)
     (hinv : Function.RightInverse f Associates.mk) :
     StrongNormalizationMonoid α where
   normUnit a :=
@@ -1344,7 +1344,7 @@ theorem isGCDMonoid_iff_exists_gcd {α} [CommMonoidWithZero α] :
   mpr := fun ⟨_, h⟩ ↦ by classical exact ⟨gcdMonoidOfExistsGCD h⟩
 
 theorem isGCDMonoid_iff_exists_lcm {α} [CommMonoidWithZero α] :
-    IsGCDMonoid α ↔ IsCancelMulZero α ∧  ∀ a b : α, ∃ c : α, ∀ d : α, a ∣ d ∧ b ∣ d ↔ c ∣ d where
+    IsGCDMonoid α ↔ IsCancelMulZero α ∧ ∀ a b : α, ∃ c : α, ∀ d : α, a ∣ d ∧ b ∣ d ↔ c ∣ d where
   mp := fun ⟨_⟩ ↦ ⟨inferInstance, fun _ _ ↦ ⟨_, fun _ ↦ (lcm_dvd_iff ..).symm⟩⟩
   mpr := fun ⟨_, h⟩ ↦ by classical exact ⟨gcdMonoidOfExistsLCM h⟩
 
