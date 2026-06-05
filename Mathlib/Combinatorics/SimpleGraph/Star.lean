@@ -60,10 +60,10 @@ lemma connected_starGraph (r : V) : (starGraph r).Connected := by
   exact connected_iff _ |>.mpr ⟨fun u v ↦ (this u).symm.trans (this v), ⟨r⟩⟩
 
 lemma isAcyclic_starGraph (r : V) : (starGraph r).IsAcyclic := by
-  refine isAcyclic_iff_forall_adj_isBridge.mpr fun v w hadj ↦ isBridge_iff.mpr ⟨hadj, ?_⟩
+  refine isAcyclic_iff_forall_adj_isBridge.mpr fun v w hadj ↦ ?_
   rw [starGraph_adj] at hadj
   wlog! h : v = r
-  · rw [reachable_comm, Sym2.eq_swap]
+  · rw [Sym2.eq_swap]
     exact this r w v ⟨hadj.1.symm, hadj.2.symm⟩ (hadj.2.resolve_left h)
   · subst h
     apply not_reachable_of_neighborSet_right_eq_empty hadj.1
