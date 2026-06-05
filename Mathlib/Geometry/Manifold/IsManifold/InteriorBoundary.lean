@@ -6,6 +6,7 @@ Authors: Michael Rothgang, Ben Eltschig
 module
 
 public import Mathlib.Geometry.Manifold.LocalDiffeomorph
+public import Mathlib.Geometry.Manifold.Notation
 
 import Mathlib.Analysis.Calculus.LocalExtr.Basic
 import Mathlib.Analysis.LocallyConvex.Separation
@@ -351,7 +352,7 @@ variable
 /-- If a function `f` is differentiable at `x` with surjective `mfderiv I I' f x` and `x` is an
 interior point with respect to `I`, `f x` must be an interior point with respect to `I'`. -/
 lemma MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv {f : M → N} {x : M}
-    (hf : MDifferentiableAt I I' f x) (hf' : Surjective (mfderiv I I' f x))
+    (hf : MDiffAt f x) (hf' : Surjective (mfderiv% f x))
     (hx : I.IsInteriorPoint x) : I'.IsInteriorPoint (f x) := by
   -- Since p-adic manifolds don't have boundary, WLOG `𝕜` is `ℝ` or `ℂ` and `E` is normed over `ℝ`.
   wlog _ : IsRCLikeNormedField 𝕜
