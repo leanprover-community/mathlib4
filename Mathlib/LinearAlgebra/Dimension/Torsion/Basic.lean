@@ -15,6 +15,7 @@ public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 ## Main statements
 
 - `rank_quotient_eq_of_le_torsion` : `rank M/N = rank M` if `N ≤ torsion M`.
+- `finrank_quotient_eq_of_le_torsion` : `finrank M/N = finrank M` if `N ≤ torsion M`.
 -/
 
 public section
@@ -33,3 +34,8 @@ theorem rank_quotient_eq_of_le_torsion {R M : Type*} [CommRing R] [AddCommGroup 
     obtain ⟨r, hg⟩ := hN hg
     simp_rw [Finset.smul_sum, Submonoid.smul_def, smul_smul] at hg
     exact r.prop.2 _ (mul_comm (g i) r ▸ hs t _ hg i hi)
+
+theorem finrank_quotient_eq_of_le_torsion {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+    {M' : Submodule R M} (hN : M' ≤ torsion R M) :
+    Module.finrank R (M ⧸ M') = Module.finrank R M :=
+  congr_arg Cardinal.toNat (rank_quotient_eq_of_le_torsion hN)
