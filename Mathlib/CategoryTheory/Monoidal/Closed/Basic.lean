@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Adjunction.Mates
 public import Mathlib.CategoryTheory.Adjunction.Parametrized
+public import Mathlib.Tactic.BDSimp
 
 /-!
 # Closed monoidal categories
@@ -290,6 +291,10 @@ end Pre
 def internalHom [MonoidalClosed C] : Cᵒᵖ ⥤ C ⥤ C where
   obj X := ihom X.unop
   map f := pre f.unop
+
+instance [MonoidalClosed C] (X : Cᵒᵖ) : (internalHom.obj X).IsRightAdjoint := by
+  bdsimp
+  infer_instance
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
