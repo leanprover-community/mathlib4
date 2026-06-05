@@ -163,6 +163,8 @@ def mkRenamesDict (percent : Nat := 100) : IO (Std.HashMap String String) := do
           and a similarity percentage.\nFull git line: '{git}'"
       continue
     let some pctNat := (pct.drop 1).toNat? | continue
+    -- We skip renames of files in `MathlibTest`.
+    if oldName.startsWith "MathlibTest/" then continue
     -- This looks like a rename with a similarity index at least as big as our threshold:
     -- we add the rename to our dictionary.
     if percent ≤ pctNat then
