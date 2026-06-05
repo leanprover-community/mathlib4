@@ -86,29 +86,29 @@ lemma ae_le_of_hasLaw_binomial {X : Ω → ℕ} (hX : HasLaw X Bin(n, p) P) : �
   simpa using ncard_le_ncard hs
 
 lemma binomial_apply (s : Set ℕ) :
-    Bin(n, p) s = setBer(Iio n, p) {t | t.ncard ∈ s ∧ t ⊆ Iio n} := by
+    Bin(n, p) s = setBer(Iio n, p) {t ⊆ Iio n | t.ncard ∈ s} := by
   rw [binomial, map_apply (by fun_prop) (by measurability), setBernoulli_apply_eq_apply_subsets]
-  simp
+  simp [And.comm]
 
 lemma binomial_real_apply (s : Set ℕ) :
-    Bin(n, p).real s = setBer(Iio n, p).real {t | t.ncard ∈ s ∧ t ⊆ Iio n} := by
+    Bin(n, p).real s = setBer(Iio n, p).real {t ⊆ Iio n | t.ncard ∈ s} := by
   rw [measureReal_def, binomial_apply, measureReal_def]
 
 lemma map_cast_binomial_apply [MeasurableSingletonClass R] [CharZero R] (s : Set ℕ) :
-    Bin(R, n, p) (Nat.cast '' s) = setBer(Iio n, p) {t | t.ncard ∈ s ∧ t ⊆ Iio n} := by
+    Bin(R, n, p) (Nat.cast '' s) = setBer(Iio n, p) {t ⊆ Iio n | t.ncard ∈ s} := by
   rw [map_apply (by fun_prop) ((Countable.to_set inferInstance).image _).measurableSet,
     binomial_apply]
   simp
 
 lemma map_cast_binomial_real_apply [MeasurableSingletonClass R] [CharZero R] (s : Set ℕ) :
     Bin(R, n, p).real (Nat.cast '' s) =
-      setBer(Iio n, p).real {t | t.ncard ∈ s ∧ t ⊆ Iio n} := by
+      setBer(Iio n, p).real {t ⊆ Iio n | t.ncard ∈ s} := by
   rw [measureReal_def, map_cast_binomial_apply, measureReal_def]
 
 lemma binomial_real_singleton (n k : ℕ) (p : I) :
     Bin(n, p).real {k} = (n.choose k) * p ^ k * (1 - p) ^ (n - k) := by
   classical
-  have : {s | s.ncard ∈ ({k} : Set ℕ) ∧ s ⊆ Iio n}.Finite :=
+  have : {s ⊆ Iio n | s.ncard ∈ ({k} : Set ℕ)}.Finite :=
     (finite_Iio n).finite_subsets.subset (by grind)
   rw [binomial_real_apply, ← biUnion_of_singleton (setOf _)]
   simp_rw [← this.mem_toFinset]
@@ -116,8 +116,8 @@ lemma binomial_real_singleton (n k : ℕ) (p : I) :
   have h1 s (hs : s ∈ this.toFinset) :
       setBer(Iio n, p).real {s} = p ^ k * (1 - p) ^ (n - k) := by
     simp only [mem_singleton_iff, Finite.mem_toFinset, mem_setOf_eq] at hs
-    rw [setBernoulli_real_singleton _ hs.2 (finite_Iio n),
-      ncard_diff' hs.2 (finite_Iio n), ncard_Iio_nat, hs.1]
+    rw [setBernoulli_real_singleton _ hs.1 (finite_Iio n),
+      ncard_diff' hs.1 (finite_Iio n), ncard_Iio_nat, hs.2]
   rw [Finset.sum_congr rfl h1, Finset.sum_const, nsmul_eq_mul, mul_assoc,
     ← ncard_eq_toFinset_card _ _]
   simp [ncard_powerset_ncard]
