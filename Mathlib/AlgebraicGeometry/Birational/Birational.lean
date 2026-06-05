@@ -94,7 +94,7 @@ def symm (f : X.PartialIso Y) : Y.PartialIso X where
 
 set_option backward.defeqAttrib.useBackward true in
 lemma IsOver.symm {f : X.PartialIso Y} (hf : f.IsOver sX sY) : f.symm.IsOver sY sX := by
-  simpa [IsOver, ← cancel_epi f.iso.hom] using hf.symm
+  simpa [IsOver, ← cancel_epi f.iso.hom] using Eq.symm hf
 
 /-- Compose two partial isomorphisms along a proof that the target of `f` equals the source
 of `g`. See `trans` for the version that does not require this. -/
@@ -143,7 +143,7 @@ noncomputable def restrictTarget (f : X.PartialIso Y) (U : Opens Y) (hU : Dense 
 lemma IsOver.restrictTarget {f : X.PartialIso Y} (hf : f.IsOver sX sY) (U : Opens Y)
     (hU : Dense (U : Set Y)) (hU' : U ≤ f.target) :
     (f.restrictTarget U hU hU').IsOver sX sY :=
-  symm_over _ (restrictSource_over _ (symm_over f hf) U hU hU')
+  (hf.symm.restrictSource U hU hU').symm
 
 /-- Compose two partial isomorphisms, restricting to the intersection of the intermediate opens. -/
 @[trans, simps! source target iso]
@@ -153,7 +153,7 @@ noncomputable def trans (f : X.PartialIso Y) (g : Y.PartialIso Z) : X.PartialIso
 
 lemma IsOver.trans {f : X.PartialIso Y} {g : Y.PartialIso Z} (hf : f.IsOver sX sY)
     (hg : g.IsOver sY sZ) : (f.trans g).IsOver sX sZ :=
-  trans'_over _ _ rfl (restrictTarget_over _ hf _ _ _) (restrictSource_over _ hg _ _ _)
+  (hf.restrictTarget _ _ _).trans' (hg.restrictSource _ _ _)
 
 /-- The underlying partial map of a partial isomorphism. -/
 @[simps]
@@ -218,13 +218,12 @@ lemma BirationalOver.refl {S X : Scheme.{u}} (sX : X ⟶ S) : BirationalOver sX 
 
 lemma BirationalOver.symm {S X Y : Scheme.{u}} {sX : X ⟶ S} {sY : Y ⟶ S}
     (h : BirationalOver sX sY) : BirationalOver sY sX :=
-  ⟨h.partialIso.symm, PartialIso.symm_over _ h.partialIso_isOver⟩
+  ⟨h.partialIso.symm, h.partialIso_isOver.symm⟩
 
 lemma BirationalOver.trans {S X Y Z : Scheme.{u}} {sX : X ⟶ S} {sY : Y ⟶ S} {sZ : Z ⟶ S}
     (h₁ : BirationalOver sX sY) (h₂ : BirationalOver sY sZ) :
     BirationalOver sX sZ :=
-  ⟨h₁.partialIso.trans h₂.partialIso,
-    PartialIso.trans_over _ _ h₁.partialIso_isOver h₂.partialIso_isOver⟩
+  ⟨h₁.partialIso.trans h₂.partialIso, h₁.partialIso_isOver.trans h₂.partialIso_isOver⟩
 
 /-- `X` is rational over `S` (or `S`-rational) if it is birational over `S` to some
 affine space `𝔸(n; S)`. -/
