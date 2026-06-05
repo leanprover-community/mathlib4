@@ -210,7 +210,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) : CompletableTopField K where
   __ := (inferInstance : T0Space K)
   nice F hF h0 := by
-    have : ∃ γ₀ : (ValueGroup₀ (valuation K))ˣ, ∃ M ∈ F,
+    have : ∃ γ₀ : (ValueGroup₀ (.ofClass (valuation K)))ˣ, ∃ M ∈ F,
         ∀ x ∈ M, (γ₀.1) ≤ (valuation K).restrict x := by
       rcases inf_eq_bot_iff.mp h0 with ⟨U, U_in, M, M_in, H⟩
       rcases ((valuation K).mem_nhds_zero_iff _).mp U_in with ⟨γ₀, hU⟩
@@ -308,7 +308,7 @@ lemma valuation_isClosedMap : IsClosedMap (v.restrict : K → (ValueGroup₀ (.o
 
 /-- The extension of the valuation of a valued field to the completion of the field. -/
 noncomputable def extension : hat K → ValueGroup₀ (.ofClass hv.v) :=
-  Completion.isDenseInducing_coe.extend (v.restrict : K → (ValueGroup₀ (.ofClass hv.v)))
+  Completion.isDenseInducing_coe.extend v.restrict
 
 theorem continuous_extension : Continuous (Valued.extension : hat K → _) := by
   refine Completion.isDenseInducing_coe.continuous_extend ?_
