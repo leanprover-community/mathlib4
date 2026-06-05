@@ -459,7 +459,7 @@ alias NumberField.Units.rank_modTorsion := finrank_modTorsion
 theorem finrank_eq :
     finrank ℤ (Additive (𝓞 K)ˣ) = rank K := by
   rw [← finrank_modTorsion]
-  refine (congr_arg Cardinal.toNat (rank_quotient_eq_of_le_torsion le_rfl)).symm.trans
+  refine (finrank_quotient_eq_of_le_torsion le_rfl).symm.trans
     (Submodule.quotEquivOfEq _ (AddCommGroup.torsion _).toIntSubmodule ?_).finrank_eq
   rw [← Submodule.torsion_int, Submodule.toAddSubgroup_toIntSubmodule]
 
