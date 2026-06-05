@@ -16,7 +16,7 @@ The subgroup "multiples of `a`" (`zmultiples a`) is a discrete subgroup of `ℝ`
 intersection with compact sets is finite.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

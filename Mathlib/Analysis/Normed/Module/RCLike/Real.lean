@@ -22,7 +22,7 @@ In this file we prove some theorems about (semi)normed spaces over real numbers.
   similar lemmas assuming that the ambient space is separated and nontrivial instead of `r ≠ 0`.
 -/
 
-@[expose] public section
+public section
 
 open Metric Set Function Filter
 open scoped NNReal Topology
@@ -59,7 +59,7 @@ theorem dist_smul_add_one_sub_smul_le {r : ℝ} {x y : E} (h : r ∈ Icc 0 1) :
 theorem closure_ball (x : E) {r : ℝ} (hr : r ≠ 0) : closure (ball x r) = closedBall x r := by
   refine Subset.antisymm closure_ball_subset_closedBall fun y hy => ?_
   have : ContinuousWithinAt (fun c : ℝ => c • (y - x) + x) (Ico 0 1) 1 := by fun_prop
-  convert this.mem_closure _ _
+  convert! this.mem_closure _ _
   · rw [one_smul, sub_add_cancel]
   · simp [closure_Ico zero_ne_one, zero_le_one]
   · rintro c ⟨hc0, hc1⟩

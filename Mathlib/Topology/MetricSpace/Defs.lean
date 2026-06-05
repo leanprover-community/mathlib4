@@ -16,11 +16,23 @@ Many definitions and theorems expected on metric spaces are already introduced o
 topological spaces. This includes open and closed sets, compactness, completeness, continuity
 and uniform continuity.
 
-TODO (anyone): Add "Main results" section.
+## Main definitions
+
+* `MetricSpace α`: A pseudometric space with the guarantee `dist x y = 0 → x = y`.
+* `MetricSpace.ofDistTopology`: Construct a metric space from a compatible topology and distance.
+* `MetricSpace.replaceUniformity`, `MetricSpace.replaceTopology`,
+  `MetricSpace.replaceBornology`: Tools to construct a metric space on a type with a pre-existing
+  uniformity, topology, or bornology in such a way that the definitional equalities for these
+  structures are preserved; these are essential to avoid type class synthesis issues.
+
+## Main results
+
+* `dist_eq_zero`, `dist_pos`, `eq_of_forall_dist_le`, `eq_of_nndist_eq_zero`: core
+  characterizations of equality via distance.
 
 ## Implementation notes
 A lot of elementary properties don't require `eq_of_dist_eq_zero`, hence are stated and proven
-for `PseudoMetricSpace`s in `PseudoMetric.lean`.
+for `PseudoMetricSpace`s in `Mathlib/Topology/MetricSpace/Pseudo/Defs.lean`.
 
 ## Tags
 

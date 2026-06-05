@@ -58,11 +58,12 @@ non-trivial subobjects which have strictly smaller fiber and conclude by the ind
 
 -/
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The trivial case if `X` is connected. -/
 private lemma has_decomp_connected_components_aux_conn (X : C) [IsConnected X] :
     ∃ (ι : Type) (f : ι → C) (g : (i : ι) → (f i) ⟶ X) (_ : IsColimit (Cofan.mk X g)),
     (∀ i, IsConnected (f i)) ∧ Finite ι := by
-  refine ⟨Unit, fun _ ↦ X, fun _ ↦ 𝟙 X, mkCofanColimit _ (fun s ↦ s.inj ()), ?_⟩
+  refine ⟨Unit, fun _ ↦ X, fun _ ↦ 𝟙 X, Cofan.IsColimit.mk _ (fun s ↦ s.inj ()), ?_⟩
   exact ⟨fun _ ↦ inferInstance, inferInstance⟩
 
 /-- The trivial case if `X` is initial. -/
@@ -70,7 +71,7 @@ private lemma has_decomp_connected_components_aux_initial (X : C) (h : IsInitial
     ∃ (ι : Type) (f : ι → C) (g : (i : ι) → (f i) ⟶ X) (_ : IsColimit (Cofan.mk X g)),
     (∀ i, IsConnected (f i)) ∧ Finite ι := by
   refine ⟨Empty, fun _ ↦ X, fun _ ↦ 𝟙 X, ?_⟩
-  use mkCofanColimit _ (fun s ↦ IsInitial.to h s.pt) (fun s ↦ by simp)
+  use Cofan.IsColimit.mk _ (fun s ↦ IsInitial.to h s.pt) (fun s ↦ by simp)
     (fun s m _ ↦ IsInitial.hom_ext h m _)
   exact ⟨by simp only [IsEmpty.forall_iff], inferInstance⟩
 
@@ -321,7 +322,7 @@ lemma natTrans_ext_of_isGalois {G : C ⥤ FintypeCat.{w}} {t s : F ⟶ G}
     t = s := by
   ext X x
   obtain ⟨A, f, a, _, rfl⟩ := exists_hom_from_galois_of_fiber F X x
-  rw [FunctorToFintypeCat.naturality, FunctorToFintypeCat.naturality, h A]
+  rw [NatTrans.naturality_apply, NatTrans.naturality_apply, h A]
 
 end GaloisRep
 

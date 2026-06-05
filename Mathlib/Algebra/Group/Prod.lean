@@ -65,12 +65,20 @@ instance [InvolutiveInv M] [InvolutiveInv N] : InvolutiveInv (M × N) :=
   { inv_inv := fun _ => Prod.ext (inv_inv _) (inv_inv _) }
 
 @[to_additive]
+instance isMulCommutative [Mul M] [Mul N] [IsMulCommutative M] [IsMulCommutative N] :
+    IsMulCommutative (M × N) where
+  is_comm.comm _ _ := by ext <;> apply mul_comm'
+
+@[to_additive]
+instance commMagma [CommMagma M] [CommMagma N] : CommMagma (M × N) where
+  mul_comm _ _ := by ext <;> apply mul_comm
+
+@[to_additive]
 instance instSemigroup [Semigroup M] [Semigroup N] : Semigroup (M × N) where
   mul_assoc _ _ _ := by ext <;> exact mul_assoc ..
 
 @[to_additive]
 instance instCommSemigroup [CommSemigroup G] [CommSemigroup H] : CommSemigroup (G × H) where
-  mul_comm _ _ := by ext <;> exact mul_comm ..
 
 @[to_additive]
 instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) where
@@ -221,11 +229,11 @@ theorem coe_snd : ⇑(snd M N) = Prod.snd :=
       `f.prod g : AddHom M (N × P)` given by `(f.prod g) x = (f x, g x)` -/]
 protected def prod (f : M →ₙ* N) (g : M →ₙ* P) :
     M →ₙ* N × P where
-  toFun := Pi.prod f g
+  toFun := Function.prod f g
   map_mul' x y := Prod.ext (f.map_mul x y) (g.map_mul x y)
 
 @[to_additive coe_prod]
-theorem coe_prod (f : M →ₙ* N) (g : M →ₙ* P) : ⇑(f.prod g) = Pi.prod f g :=
+theorem coe_prod (f : M →ₙ* N) (g : M →ₙ* P) : ⇑(f.prod g) = Function.prod f g :=
   rfl
 
 @[to_additive (attr := simp) prod_apply]
@@ -387,12 +395,12 @@ given by `(f.prod g) x = (f x, g x)`. -/
       `f.prod g : M →+ N × P` given by `(f.prod g) x = (f x, g x)` -/]
 protected def prod (f : M →* N) (g : M →* P) :
     M →* N × P where
-  toFun := Pi.prod f g
+  toFun := Function.prod f g
   map_one' := Prod.ext f.map_one g.map_one
   map_mul' x y := Prod.ext (f.map_mul x y) (g.map_mul x y)
 
 @[to_additive coe_prod]
-theorem coe_prod (f : M →* N) (g : M →* P) : ⇑(f.prod g) = Pi.prod f g :=
+theorem coe_prod (f : M →* N) (g : M →* P) : ⇑(f.prod g) = Function.prod f g :=
   rfl
 
 @[to_additive (attr := simp) prod_apply]
