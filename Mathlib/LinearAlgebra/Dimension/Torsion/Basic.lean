@@ -16,6 +16,8 @@ public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 
 - `rank_quotient_eq_of_le_torsion` : `rank M/N = rank M` if `N ≤ torsion M`.
 - `finrank_quotient_eq_of_le_torsion` : `finrank M/N = finrank M` if `N ≤ torsion M`.
+- `finrank_quotient_torsion_eq` : `finrank ℤ (M / torsion M) = finrank ℤ M` for an additive
+  commutative group `M`.
 -/
 
 public section
@@ -39,3 +41,10 @@ theorem finrank_quotient_eq_of_le_torsion {R M : Type*} [CommRing R] [AddCommGro
     {M' : Submodule R M} (hN : M' ≤ torsion R M) :
     Module.finrank R (M ⧸ M') = Module.finrank R M :=
   congr_arg Cardinal.toNat (rank_quotient_eq_of_le_torsion hN)
+
+/-- Quotienting an additive commutative group by its torsion subgroup does not change its
+`ℤ`-`finrank`. -/
+theorem finrank_quotient_torsion_eq {M : Type*} [AddCommGroup M] :
+    Module.finrank ℤ (M ⧸ (AddCommGroup.torsion M).toIntSubmodule) = Module.finrank ℤ M :=
+  finrank_quotient_eq_of_le_torsion <| le_of_eq <| by
+    rw [← Submodule.torsion_int, Submodule.toAddSubgroup_toIntSubmodule]
