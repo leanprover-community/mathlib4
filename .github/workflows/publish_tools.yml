@@ -6,18 +6,34 @@
 # build on every run. They build the tools from source only when no artifact is
 # available or a non-`master` tools branch is requested (bors, ci_dev, nightly-testing).
 #
-# Trust model: this workflow is triggered *only* by pushes to `master` on the
-# canonical repository, so every artifact it emits is built from trusted `master`
-# code, and the consumer pins its download to this workflow's `master` `push` runs.
-# The tools a CI run executes are therefore always built from trusted `master` code.
+# Trust model: the `cache` binary this workflow ships is executed verbatim by every
+# consuming CI run, so a poisoned `tools-bin` artifact is arbitrary code execution
+# across CI. To keep the artifact trustworthy it must only ever be built from `master`:
+#
+#   • The only trigger is `push` to `master`, and `master` is only writable through
+#     the reviewed bors merge queue — so the artifact's provenance is reviewed code.
+#   • There is deliberately no `workflow_dispatch` and no other branch trigger: those
+#     run the workflow file *as it exists on the dispatched/pushed ref*, which would
+#     let anyone with push access run a modified copy of this file from a branch and
+#     publish a poisoned artifact under this workflow's name.
+#   • The job below is additionally gated on `event_name == push` and `ref == master`
+#     as defence in depth.
+#
+# Note this only constrains *this* (the `master`) copy of the file: GitHub will still
+# run a branch's own modified copy if that copy adds a branch trigger. The real
+# boundary is therefore on the CONSUMER side, which MUST pin its download to runs of
+# this workflow with `event == push` and `head_branch == master` (a branch-triggered
+# run has a non-`master` head branch and is rejected). Keep that pin in lockstep.
+#
+# To force a rebuild (e.g. after fixing a broken tools build) without `workflow_dispatch`,
+# re-run the latest `master` push run from the Actions UI (it re-runs at `ref: master`)
+# or push a fresh commit to `master`.
 name: publish CI tools
 
 on:
   push:
     branches:
       - master
-  # Allow manual rebuilds (e.g. after fixing a broken tools build).
-  workflow_dispatch:
 
 concurrency:
   # Only keep the latest publish run; superseded master pushes are cancelled.
@@ -30,9 +46,15 @@ permissions:
 jobs:
   publish:
     name: Build and publish tools
-    # Only publish from the canonical repository. nightly-testing has no `master`
-    # branch and builds its tools from `nightly-testing-green` on demand instead.
-    if: github.repository == 'leanprover-community/mathlib4'
+    # Only publish from the canonical repository (nightly-testing has no `master`
+    # branch and builds its tools from `nightly-testing-green` on demand instead),
+    # and only for a genuine push to `master` — never a branch ref. See the trust
+    # model at the top of this file; this guard is defence in depth on top of the
+    # `push: branches: [master]` trigger.
+    if: >-
+      github.repository == 'leanprover-community/mathlib4' &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/master'
     # Must run on the same kind of runner as the consumers (build_template's `pr`
     # runners), so the binary we build here will run on the machines that use it.
     runs-on: pr
