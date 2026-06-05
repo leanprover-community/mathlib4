@@ -95,7 +95,6 @@ theorem map_pullbackSnd_ker_pullbackFst_eq (f : R →+* T) (g : S →+* T) :
     rintro ⟨⟨_, _⟩, h⟩
     simp at h ⊢; grind
   · intro s hs
-    rw [RingHom.mem_ker] at hs
     exact Ideal.mem_map_of_mem (f.pullbackSnd g) (x := ⟨(0, s), by simpa using hs.symm⟩)
       (I := RingHom.ker (f.pullbackFst g)) (by simp)
 
@@ -108,12 +107,10 @@ theorem isLocalRing_pullback [IsLocalRing R] (f : R →+* T) (g : S →+* T) (hg
     replace huv : f u = g v := by simpa using huv
     replace hst : f s = g t := by simpa using hst
     rcases IsLocalRing.isUnit_or_isUnit_of_add_one h.left with hu | hs
-    · have : IsUnit (g v) := huv ▸ IsUnit.map f hu
-      apply IsLocalHom.map_nonunit at this
-      left; simpa [isUnit_pullback_mk_iff] using ⟨hu, this⟩
-    have : IsUnit (g t) := hst ▸ IsUnit.map f hs
-    apply IsLocalHom.map_nonunit at this
-    right; simpa [isUnit_pullback_mk_iff] using ⟨hs, this⟩
+    · left; rw [isUnit_pullback_mk_iff]
+      exact ⟨hu, IsLocalHom.map_nonunit (f := g) _ <| huv ▸ IsUnit.map f hu⟩
+    right; rw [isUnit_pullback_mk_iff]
+    exact ⟨hs, IsLocalHom.map_nonunit (f := g) _ <| hst ▸ IsUnit.map f hs⟩
 
 end RingHom
 
