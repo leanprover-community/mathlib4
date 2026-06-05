@@ -56,12 +56,12 @@ lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {
     (hP₁ : ∀ t ∈ P, t ⊆ s) (hP₂ : (P : Set (Set X)).PairwiseDisjoint id) :
     ∑ p ∈ P, ‖μ p‖ₑ ≤ μ.variation s := by
   classical
-  set Q := Finpartition.ofPairwiseDisjoint P hP₂ with defQ
+  set Q := Finpartition.ofErase P hP₂.supIndep rfl with defQ
   set Q' := Q.ofSubset (filter_subset MeasurableSet Q.parts) rfl with defQ'
   have hQ' : ∀ t ∈ Q'.parts, t ⊆ s := by simp [Q', Q]; grind
   calc
     ∑ p ∈ P, ‖μ p‖ₑ = ∑ p ∈ Q.parts, ‖μ p‖ₑ :=
-      (Finpartition.sum_ofPairwiseDisjoint_eq_sum hP₂ (by simp)).symm
+      (P.sum_erase (by simp)).symm
     _ = ∑ p ∈ Q'.parts, ‖μ p‖ₑ := (Q.sum_ofSubset_eq_sum _ _ _ (by simp_all)).symm
     _ ≤ ∑ p ∈ (Q'.extendOfLE (Finset.sup_le hQ')).parts, ‖μ p‖ₑ :=
       sum_le_sum_of_subset (Q'.parts_subset_extendOfLE (Finset.sup_le hQ'))
