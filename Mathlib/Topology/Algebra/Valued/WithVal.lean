@@ -212,14 +212,6 @@ theorem val_apply_equiv (r : WithVal v) : v (equiv v r) = Valued.v r := rfl
 instance [CharZero R] : CharZero (WithVal v) :=
   .of_addMonoidHom (equiv v).symm.toAddMonoidHom (by simp) (equiv v).symm.injective
 
-end Ring
-
-section CommRing
-
-variable [CommRing R] (v : Valuation R Γ₀)
-
-instance : CommRing (WithVal v) := fast_instance% (equiv v).commRing
-
 instance : ValuativeRel (WithVal v) := fast_instance% .ofValuation (valuation v)
 
 instance : (valuation v).Compatible := .ofValuation (valuation v)
@@ -232,6 +224,14 @@ instance : IsValuativeTopology (WithVal v) where
     simp [-OrderMonoidIso.val_unitsCongr_symm_apply, OrderMonoidIso.unitsCongr_symm_apply,
       e.lt_symm_apply, e, ← Valuation.restrict_def, sub_eq_neg_add]
     rfl
+
+end Ring
+
+section CommRing
+
+variable [CommRing R] (v : Valuation R Γ₀)
+
+instance : CommRing (WithVal v) := fast_instance% (equiv v).commRing
 
 end CommRing
 
@@ -345,6 +345,9 @@ instance {S : Type*} [CommRing S] [Algebra R S] (M : Submonoid R) [IsLocalizatio
 end Algebra
 
 section Field
+
+instance [DivisionRing R] (v : Valuation R Γ₀) : DivisionRing (WithVal v) := fast_instance%
+  (equiv v).divisionRing
 
 variable [Field R] (v : Valuation R Γ₀)
 
@@ -517,8 +520,6 @@ theorem IsEquiv.orderRingIso_symm_apply (h : v.IsEquiv w) (x : WithVal w) :
 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
--- TODO: Can remove the `attribute [-instance] ValuativeRel.isUniformAddGroup` after #36769
-attribute [-instance] ValuativeRel.isUniformAddGroup in
 set_option backward.isDefEq.respectTransparency false in
 theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v = w)
     (h : v.IsEquiv w) : UniformContinuous (WithVal.equiv v) := by
@@ -540,10 +541,8 @@ theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v 
   rw [← hr, equiv_apply, Set.mem_setOf_eq, lt_div_iff₀ ((restrict_pos_iff Valued.v s).mpr hs₀), hv,
     ← map_mul, ← lt_def, ← ofVal_mul,
     ← hy, ← toVal_mul, ← h'.orderRingIso_apply, ← h'.orderRingIso.lt_symm_apply, lt_def]
-  simpa [lt_div_iff₀ hs0', ← map_mul] using hx
+  simpa [lt_div_iff₀ hs0', ← map_mul] using! hx
 
--- TODO: Can remove the `attribute [-instance] ValuativeRel.isUniformAddGroup` after #36769
-attribute [-instance] ValuativeRel.isUniformAddGroup in
 set_option backward.isDefEq.respectTransparency false in
 theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valued.v = w)
     (h : w.IsEquiv v) : UniformContinuous (WithVal.equiv v).symm := by
@@ -623,13 +622,13 @@ def _root_.WithVal.uniformEquiv [Valued R Γ₀'] (hV : Valued.v = w) (h : v.IsE
   uniformContinuous_toFun := h.uniformContinuous_equiv hV
   uniformContinuous_invFun := h.symm.uniformContinuous_equiv_symm hV
 
-theorem exists_div_eq_of_surjective {K : Type*} [Field K] {Γ₀ : Type*}
+theorem exists_div_eq_of_surjective {K : Type*} [DivisionRing K] {Γ₀ : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation K Γ₀} (hv : Function.Surjective v)
     (γ : Γ₀ˣ) : ∃ r s, 0 < v r ∧ 0 < v s ∧ v r / v s = γ := by
   obtain ⟨r, hr⟩ := hv γ
   exact ⟨r, 1, by simp [hr]⟩
 
-theorem restrict_exists_div_eq {K : Type*} [Field K] {Γ₀ : Type*}
+theorem restrict_exists_div_eq {K : Type*} [DivisionRing K] {Γ₀ : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀)
     (γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ) :
     ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
@@ -641,7 +640,6 @@ theorem restrict_exists_div_eq {K : Type*} [Field K] {Γ₀ : Type*}
       embedding_strictMono.lt_iff_lt, map_zero]
     refine WithZero.pos_iff_ne_zero.mpr (Units.ne_zero γ)⟩
 
-attribute [-instance] ValuativeRel.isUniformAddGroup in
 set_option backward.isDefEq.respectTransparency false in
 open UniformSpace.Completion in
 theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation K Γ₀}
@@ -658,7 +656,7 @@ theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation
     rw [restrict_le_one_iff]
     rfl
   | ih a =>
-    simpa [Valued.valuedCompletion_apply] using h.le_one_iff_le_one
+    simpa [Valued.valuedCompletion_apply] using! h.le_one_iff_le_one
 
 end Equivalence
 
