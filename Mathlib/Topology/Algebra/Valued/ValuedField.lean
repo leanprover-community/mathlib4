@@ -419,7 +419,7 @@ theorem closure_coe_completion_v_mul_v_lt {r s : K} (hr : r ≠ 0) (hs : s ≠ 0
   all_goals simp [← lt_div_iff₀, zero_lt_iff, hr]
 
 /-- The zero-preserving monoid homomorphism from the `ValueGroup₀` of the valuation on `K` to
-that of the extension to its completion. TODO: Split out the definiton of `(restrict₀_surjective 
+that of the extension to its completion. TODO: Split out the definiton of `(restrict₀_surjective
 (.ofClass hv.v) x).choose` and prove a spec lemma of it. Remove tactic `set` in the proof. -/
 noncomputable def valueGroup₀_hom_extensionValuation :
     ValueGroup₀ (.ofClass hv.v) →*₀ ValueGroup₀ (.ofClass hv.extensionValuation) where
