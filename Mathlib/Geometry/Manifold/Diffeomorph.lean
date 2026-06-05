@@ -675,6 +675,7 @@ section IsManifold
 
 variable [ChartedSpace H M'] [IsManifold I n M]
 
+#where
 /-- Given a diffeomorphism `f : M' ≃ₘ^n⟮I, I'⟯ M` and given that the `atlas` on `M'` is induced by
 `f` (the corresponding `ChartedSpace` instance is defined at `Homeomorph.chartedSpace`), prove that
 `M'` is a Manifold with respect to `I`.
