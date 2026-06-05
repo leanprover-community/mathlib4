@@ -4094,6 +4094,7 @@ public import Mathlib.Data.Matrix.Auto
 public import Mathlib.Data.Matrix.Basic
 public import Mathlib.Data.Matrix.Basis
 public import Mathlib.Data.Matrix.Block
+public import Mathlib.Data.Matrix.Cartan
 public import Mathlib.Data.Matrix.ColumnRowPartitioned
 public import Mathlib.Data.Matrix.Composition
 public import Mathlib.Data.Matrix.DMatrix
@@ -4294,6 +4295,7 @@ public import Mathlib.Data.Real.ENatENNReal
 public import Mathlib.Data.Real.Embedding
 public import Mathlib.Data.Real.Pointwise
 public import Mathlib.Data.Real.Sign
+public import Mathlib.Data.Real.Sqrt
 public import Mathlib.Data.Real.Star
 public import Mathlib.Data.Rel
 public import Mathlib.Data.Rel.Cover
