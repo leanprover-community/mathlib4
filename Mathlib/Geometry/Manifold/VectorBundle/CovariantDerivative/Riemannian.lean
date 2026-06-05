@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2026 Seed Prover, Kim Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Seed Prover, Kim Morrison
+-/
 module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
@@ -6,23 +11,21 @@ public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
 /-!
 # Koszul formula
 
-§38 of Oliver Knill's *Some Fundamental Theorems in Mathematics* (an
-additional statement of the section on Riemannian geometry; the boxed
-main theorem is the Levi-Civita fundamental theorem). For any smooth
-torsion-free metric-compatible covariant derivative `cov` on the tangent
-bundle of a Riemannian manifold, the inner product `⟨∇_X Y, Z⟩` is
-determined by the metric and Lie brackets via
+This file proves the Koszul formula for a smooth torsion-free metric-compatible
+covariant derivative on the tangent bundle of a Riemannian manifold.
+
+For such a covariant derivative `cov`, the inner product `⟨∇_X Y, Z⟩` is determined
+by the metric and Lie brackets via
 
 `2 ⟨∇_X Y, Z⟩ = X·⟨Y, Z⟩ + Y·⟨X, Z⟩ − Z·⟨X, Y⟩`
 `               − ⟨X, [Y, Z]⟩ − ⟨Y, [X, Z]⟩ + ⟨Z, [X, Y]⟩`.
 
-This is the **Koszul formula** — the explicit identity that *forces*
-uniqueness of the Levi-Civita connection.
+This formula implies the uniqueness of the Levi-Civita connection.
 -/
 
 @[expose] public section
 
-namespace Geometry.KoszulFormula
+namespace CovariantDerivative
 
 open scoped Manifold Topology
 open Bundle ContDiff VectorField CovariantDerivative
@@ -44,9 +47,10 @@ def IsMetricCompatible : Prop :=
     ∀ (x : M) (v : TangentSpace I x),
       mvfderiv I (fun y ↦ ⟪Y y, Z y⟫) x v = ⟪cov Y x v, Z x⟫ + ⟪Y x, cov Z x v⟫
 
+/-- The Koszul formula for a smooth torsion-free metric-compatible covariant derivative. -/
 theorem koszul_formula
-    [ContMDiffCovariantDerivative cov ∞]
-    (_htor : cov.torsion = 0) (_hmet : IsMetricCompatible cov)
+    [cov.ContMDiffCovariantDerivative ∞]
+    (_htor : cov.torsion = 0) (_hmet : cov.IsMetricCompatible)
     (X Y Z : Π x : M, TangentSpace I x)
     (_hX : CMDiff ∞ (T% X)) (_hY : CMDiff ∞ (T% Y)) (_hZ : CMDiff ∞ (T% Z))
     (x : M) :
@@ -68,6 +72,6 @@ theorem koszul_formula
     inner_sub_right, real_inner_comm (Z x), real_inner_comm (Z x), real_inner_comm (Y x)]
   ring
 
-end Geometry.KoszulFormula
+end CovariantDerivative
 
 end
