@@ -141,7 +141,7 @@ theorem map_zero_apply (x : α) : ϕ 0 x = x := ϕ.map_zero' x
 to itself defines a semiflow by `ℕ` on `α`. -/
 def fromIter {g : α → α} (h : Continuous g) : Flow ℕ α where
   toFun n := g^[n]
-  cont' := continuous_prod_of_discrete_left.mpr (Continuous.iterate h)
+  cont' := continuous_prod_of_discrete_left.mpr h.iterate
   map_add' := iterate_add_apply _
   map_zero' _x := rfl
 
@@ -170,7 +170,7 @@ def toAddAction : AddAction τ α where
 /-- Restrict a flow by `τ` to a flow by an additive submonoid of `τ`. -/
 def restrictAddSubmonoid (S : AddSubmonoid τ) : Flow S α where
   toFun t x := ϕ t x
-  cont' := ϕ.continuous (continuous_subtype_val.comp continuous_fst) continuous_snd
+  cont' := by fun_prop
   map_add' t₁ t₂ x := ϕ.map_add' t₁ t₂ x
   map_zero' := ϕ.map_zero'
 
@@ -298,7 +298,7 @@ variable [SubtractionCommMonoid τ] [ContinuousNeg τ] (ϕ : Flow τ α)
 is defined `ϕ.reverse t x = ϕ (-t) x`. -/
 def reverse : Flow τ α where
   toFun t := ϕ (-t)
-  cont' := ϕ.continuous continuous_fst.neg continuous_snd
+  cont' := by fun_prop
   map_add' _ _ _ := by rw [neg_add, map_add]
   map_zero' _ := by rw [neg_zero, map_zero_apply]
 
