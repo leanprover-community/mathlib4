@@ -258,13 +258,13 @@ theorem card_erase_eq_ite {a : α} {s : Multiset α} :
 @[simp]
 theorem count_erase_self (a : α) (s : Multiset α) : count a (erase s a) = count a s - 1 :=
   Quotient.inductionOn s fun l => by
-    convert List.count_erase_self (a := a) (l := l) <;> rw [← coe_count] <;> simp
+    convert! List.count_erase_self (a := a) (l := l) <;> rw [← coe_count] <;> simp
 
 @[simp]
 theorem count_erase_of_ne {a b : α} (ab : a ≠ b) (s : Multiset α) :
     count a (erase s b) = count a s :=
   Quotient.inductionOn s fun l => by
-    convert List.count_erase_of_ne ab (l := l) <;> rw [← coe_count] <;> simp
+    convert! List.count_erase_of_ne ab (l := l) <;> rw [← coe_count] <;> simp
 
 end Erase
 

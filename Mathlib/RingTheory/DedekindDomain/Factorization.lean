@@ -266,8 +266,7 @@ theorem finprod_heightOneSpectrum_factorization {I : FractionalIdeal R⁰ K} (hI
   rw [haJ, ← div_spanSingleton, div_eq_mul_inv, ← coeIdeal_span_singleton, ← hJ, ← ha,
     ← finprod_inv_distrib]
   simp_rw [← zpow_neg]
-  rw [← finprod_mul_distrib (by fun_prop (disch := assumption))
-    (by fun_prop (disch := assumption))]
+  rw [← finprod_mul_distrib (by fun_prop) (by fun_prop)]
   apply finprod_congr
   intro v
   rw [← zpow_add₀ ((@coeIdeal_ne_zero R _ K _ _ _ _).mpr v.ne_bot), sub_eq_add_neg]
@@ -534,7 +533,7 @@ theorem count_finprod (exps : HeightOneSpectrum R → ℤ)
     (h_exps : ∀ᶠ v : HeightOneSpectrum R in Filter.cofinite, exps v = 0) :
     count K v (∏ᶠ v : HeightOneSpectrum R,
       (v.asIdeal : FractionalIdeal R⁰ K) ^ exps v) = exps v := by
-  convert count_finsuppProd K v (Finsupp.mk h_exps.toFinset exps (fun _ ↦ h_exps.mem_toFinset))
+  convert! count_finsuppProd K v (Finsupp.mk h_exps.toFinset exps (fun _ ↦ h_exps.mem_toFinset))
   rw [finprod_eq_finsetProd_of_mulSupport_subset (s := h_exps.toFinset), Finsupp.prod]
   · rfl
   · rw [Finite.coe_toFinset]
@@ -611,7 +610,7 @@ theorem finite_factors (I : FractionalIdeal R⁰ K) :
   by_cases hI : I = 0
   · simp only [hI, count_zero, Filter.eventually_cofinite, not_true_eq_false, setOf_false,
       finite_empty]
-  · convert finite_factors' hI (choose_spec (choose_spec (exists_eq_spanSingleton_mul I))).2
+  · convert! finite_factors' hI (choose_spec (choose_spec (exists_eq_spanSingleton_mul I))).2
     rw [count_ne_zero K _ hI]
 
 end FractionalIdeal
@@ -666,7 +665,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
   rintro ⟨q, hq⟩
   by_cases hqp : q = p'
   · subst hqp
-    convert sub_mem H₁ H₂
+    convert! sub_mem H₁ H₂
     rw [Finset.sum_eq_add_sum_diff_singleton_of_mem hp's, add_sub_cancel_right]
   · refine Ideal.mul_mono_right ?_ (ha p' hp's)
     exact Ideal.prod_le_inf.trans (Finset.inf_le (b := q) (by simpa [hq] using hqp))
@@ -743,8 +742,6 @@ lemma divMod_zero_of_not_le {a b c : FractionalIdeal R⁰ K} (hac : ¬ a ≤ c) 
     c.divMod b a = 0 := by
   simp [divMod, hac]
 
-set_option maxHeartbeats 212000 in
--- changed for new compiler
 /-- Let `I J I' J'` be nonzero fractional ideals in a Dedekind domain with `J ≤ I` and `J' ≤ I'`.
 If `I/J = I'/J'` in the group of fractional ideals (i.e. `I * J' = I' * J`),
 then `I/J ≃ I'/J'` as quotient `R`-modules. -/
@@ -787,7 +784,7 @@ def quotientEquiv (I J I' J' : FractionalIdeal R⁰ K)
     refine inf_le_inf ?_ le_rfl
     intro x hx
     rw [spanSingleton_inv]
-    convert mul_mem_mul (mem_spanSingleton_self _ _) hx
+    convert! mul_mem_mul (mem_spanSingleton_self _ _) hx
     simp [H']
   · have H : Submodule.map (Algebra.lsmul R R K (I'.divMod I J')) ↑I =
         (spanSingleton R⁰ (I'.divMod I J') * I) := by

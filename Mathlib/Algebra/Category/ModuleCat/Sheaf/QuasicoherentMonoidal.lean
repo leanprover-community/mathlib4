@@ -67,6 +67,7 @@ noncomputable abbrev cokernelCoforkTensor :
     · rw [coprod.inr_desc_assoc, tensorHom_def', ← MonoidalCategory.whiskerLeft_comp_assoc]
       simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `Presentation.tensor`. -/
 noncomputable def isColimitCokernelCoforkTensor :
     IsColimit (cokernelCoforkTensor P₁ P₂) :=
@@ -89,9 +90,8 @@ end Presentation
 variable [∀ (X : C), (J.over X).HasSheafCompose (forget₂ RingCat.{w} AddCommGrpCat)]
   [∀ (X : C), HasSheafify (J.over X) AddCommGrpCat.{w}]
   [∀ (X : C), (J.over X).WEqualsLocallyBijective AddCommGrpCat.{w}]
-  [∀ (X : C), (J.over X).HasSheafCompose (forget₂ RingCat.{w} AddCommGrpCat.{w})]
   [∀ (X : C), (J.over X).HasSheafCompose (forget₂ CommRingCat.{w} RingCat)]
-  [(W R).IsMonoidal] [∀ (X : C), (W ((R.over X))).IsMonoidal]
+  [∀ (X : C), (W ((R.over X))).IsMonoidal]
 
 namespace QuasicoherentData
 

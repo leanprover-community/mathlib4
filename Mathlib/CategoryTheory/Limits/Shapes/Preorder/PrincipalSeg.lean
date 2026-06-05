@@ -22,6 +22,7 @@ the point of which is `F.obj f.top`.
 
 open CategoryTheory Category Limits
 
+set_option backward.defeqAttrib.useBackward true in
 /-- When `f : α <i β` and a functor `F : β ⥤ C`, this is the cocone
 for `f.monotone.functor ⋙ F : α ⥤ C` whose point is `F.obj f.top`. -/
 @[simps]

@@ -158,6 +158,7 @@ lemma ιColimitFunctorOfCommRing_jointly_surjective₂
 noncomputable instance : (colimitFunctorOfCommRing hcR).OplaxMonoidal :=
   (colimitAdjunctionOfCommRing hcR).leftAdjointOplaxMonoidal
 
+set_option backward.defeqAttrib.useBackward true in
 lemma colimitFunctorOfCommRing_η_apply
     {U : Cᵒᵖ} (x : R.obj U) :
     η (colimitFunctorOfCommRing hcR) (ιColimitFunctorOfCommRing hcR (𝟙_ _) U x) =
@@ -280,6 +281,7 @@ lemma descOfBilinearMapAux_apply {X : Cᵒᵖ} (m₁ : M₁.obj X) (m₂ : M₂.
   ConcreteCategory.congr_hom ((((isColimitOfPreserves (forget _) hcM₁).tensor
     (isColimitOfPreserves (forget _) hcM₂)).fac (coconeDescOfBilinearMapAux b cN)) X) ⟨m₁, m₂⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def descOfBilinearMap :
     TensorProduct cR.pt
@@ -291,7 +293,7 @@ noncomputable def descOfBilinearMap :
         { toFun m₂ := descOfBilinearMapAux hcR b hcM₁ hcM₂ hcN m₁ m₂
           map_add' m₂ m₂' := by
             obtain ⟨U, m₁, m₂, m₂', rfl, rfl, rfl⟩ := ιM_jointly_surjective₃ m₁ m₂ m₂'
-            simp [← map_add]
+            simp [← map_add, dsimp% b.map_add]
           map_smul' r m₂ := by
             let H := (isColimitOfPreserves (forget₂ _ RingCat) hcR)
             obtain ⟨U, r, m₁, m₂, rfl, rfl, rfl⟩ := jointly_surjective₃' r m₁ m₂
@@ -301,7 +303,7 @@ noncomputable def descOfBilinearMap :
       map_add' m₁ m₁' := by
         ext m₂
         obtain ⟨U, m₁, m₁', m₂, rfl, rfl, rfl⟩ := ιM_jointly_surjective₃ m₁ m₁' m₂
-        simp [← map_add]
+        simp [← map_add, dsimp% b.add_map]
       map_smul' r m₁ := by
         let H := (isColimitOfPreserves (forget₂ _ RingCat) hcR)
         ext m₂

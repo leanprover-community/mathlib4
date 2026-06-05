@@ -129,7 +129,7 @@ protected theorem nhds_iInf (f : ι → Filter α) : 𝓝 (⨅ i, f i) = ⨅ i, 
 
 @[simp]
 protected theorem nhds_inf (l₁ l₂ : Filter α) : 𝓝 (l₁ ⊓ l₂) = 𝓝 l₁ ⊓ 𝓝 l₂ := by
-  simpa only [iInf_bool_eq] using Filter.nhds_iInf fun b => cond b l₁ l₂
+  simpa only [iInf_bool_eq] using! Filter.nhds_iInf fun b => cond b l₁ l₂
 
 theorem monotone_nhds : Monotone (𝓝 : Filter α → Filter (Filter α)) :=
   Monotone.of_map_inf Filter.nhds_inf
