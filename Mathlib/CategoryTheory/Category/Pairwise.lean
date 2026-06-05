@@ -10,6 +10,8 @@ public import Mathlib.CategoryTheory.Limits.IsLimit
 public import Mathlib.CategoryTheory.FinCategory.Basic
 public import Mathlib.Order.CompleteLattice.Basic
 public import Mathlib.Tactic.DeriveFintype
+public import Mathlib.Data.Fintype.Sigma
+public import Mathlib.Data.Fintype.Sum
 
 /-!
 # The category of "pairwise intersections".
@@ -94,7 +96,7 @@ section
 
 open Lean Elab Tactic in
 /-- A helper tactic for `cat_disch` and `Pairwise`. -/
-def pairwiseCases : TacticM Unit := do
+meta def pairwiseCases : TacticM Unit := do
   evalTactic (← `(tactic| casesm* (_ : Pairwise _) ⟶ (_ : Pairwise _)))
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] pairwiseCases in
@@ -172,7 +174,7 @@ def cocone : Cocone (diagram U) where
 def coconeIsColimit : IsColimit (cocone U) where
   desc s := homOfLE
     (by
-      apply CompleteSemilatticeSup.sSup_le
+      apply sSup_le
       rintro _ ⟨j, rfl⟩
       exact (s.ι.app (single j)).le)
 

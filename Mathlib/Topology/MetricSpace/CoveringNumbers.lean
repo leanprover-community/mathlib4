@@ -22,7 +22,7 @@ We prove inequalities between these covering and packing numbers.
 
 ## Main definitions
 
-* `externalCoveringNumber`: the extenal covering number of a set `A` for radius `ε` is the minimal
+* `externalCoveringNumber`: the external covering number of a set `A` for radius `ε` is the minimal
   cardinality (in `ℕ∞`) of an `ε`-cover.
 * `coveringNumber`: the covering number (or internal covering number) of a set `A` for radius `ε` is
   the minimal cardinality (in `ℕ∞`) of an `ε`-cover contained in `A`.
@@ -60,7 +60,8 @@ open scoped ENNReal NNReal
 
 namespace Metric
 
-variable {X : Type*} [PseudoEMetricSpace X] {A B C : Set X} {ε δ : ℝ≥0} {x : X}
+variable {X Y : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
+  {A B C : Set X} {ε δ : ℝ≥0} {x : X}
 
 section Definitions
 
@@ -184,7 +185,7 @@ lemma packingNumber_zero {E : Type*} [EMetricSpace E] (A : Set E) :
     packingNumber 0 A = A.encard :=
   le_antisymm (packingNumber_le_encard_self A) (le_iSup_of_le A (by simp))
 
-lemma coveringNumber_eq_one_of_ediam_le (h_nonempty : A.Nonempty) (hA : EMetric.diam A ≤ ε) :
+lemma coveringNumber_eq_one_of_ediam_le (h_nonempty : A.Nonempty) (hA : ediam A ≤ ε) :
     coveringNumber ε A = 1 := by
   refine le_antisymm ?_ ?_
   · have ⟨a, ha⟩ := h_nonempty
@@ -195,21 +196,21 @@ lemma coveringNumber_eq_one_of_ediam_le (h_nonempty : A.Nonempty) (hA : EMetric.
   · simpa [Order.one_le_iff_pos]
 
 lemma externalCoveringNumber_eq_one_of_ediam_le (h_nonempty : A.Nonempty)
-    (hA : EMetric.diam A ≤ ε) :
+    (hA : ediam A ≤ ε) :
     externalCoveringNumber ε A = 1 := by
   refine le_antisymm ?_ ?_
   · exact (externalCoveringNumber_le_coveringNumber ε A).trans_eq
       (coveringNumber_eq_one_of_ediam_le h_nonempty hA)
   · simpa [Order.one_le_iff_pos]
 
-lemma externalCoveringNumber_le_one_of_ediam_le (hA : EMetric.diam A ≤ ε) :
+lemma externalCoveringNumber_le_one_of_ediam_le (hA : ediam A ≤ ε) :
     externalCoveringNumber ε A ≤ 1 := by
   rcases eq_empty_or_nonempty A with h_eq_empty | h_nonempty
   · rw [← externalCoveringNumber_eq_zero (ε := ε)] at h_eq_empty
     simp [h_eq_empty]
   · exact (externalCoveringNumber_eq_one_of_ediam_le h_nonempty hA).le
 
-lemma coveringNumber_le_one_of_ediam_le (hA : EMetric.diam A ≤ ε) : coveringNumber ε A ≤ 1 := by
+lemma coveringNumber_le_one_of_ediam_le (hA : ediam A ≤ ε) : coveringNumber ε A ≤ 1 := by
   rcases eq_empty_or_nonempty A with h_eq_empty | h_nonempty
   · rw [← coveringNumber_eq_zero (ε := ε)] at h_eq_empty
     simp [h_eq_empty]
@@ -377,5 +378,47 @@ lemma coveringNumber_subset_le (h : A ⊆ B) :
     externalCoveringNumber_le_coveringNumber (ε / 2) B
 
 end Comparisons
+
+/-- The covering number of the image of a set under an injective isometry is equal to
+the covering number of the set.
+See `Isometry.coveringNumber_image` for the version in an `EMetricSpace`, in which injectivity is
+a consequence of being an isometry. -/
+lemma _root_.Isometry.coveringNumber_image' {f : X → Y} (hf : Isometry f) (hf_inj : Set.InjOn f A) :
+    coveringNumber ε (f '' A) = coveringNumber ε A := by
+  classical
+  refine le_antisymm ?_ ?_
+  · simp only [coveringNumber, le_iInf_iff]
+    intro C hC_subset hC_cover
+    refine (iInf_le _ (C.image f)).trans ?_
+    simp only [Set.image_subset_iff]
+    have : ↑C ⊆ f ⁻¹' f '' A := hC_subset.trans (Set.subset_preimage_image f A)
+    refine (iInf_le _ this).trans ?_
+    rw [hf.isCover_image_iff]
+    refine (iInf_le _ hC_cover).trans ?_
+    exact encard_image_le f C
+  · simp only [coveringNumber, le_iInf_iff]
+    intro C hC_subset hC_cover
+    obtain ⟨C', hC'_subset, rfl⟩ : ∃ C', C' ⊆ A ∧ C = C'.image f := by
+      have (x : C) : ∃ y ∈ A, f y = x := by simpa using hC_subset x.2
+      choose g hg_mem hg using this
+      refine ⟨Set.range g, ?_, ?_⟩
+      · rwa [Set.range_subset_iff]
+      · ext
+        simp
+        grind
+    refine (iInf_le _ C').trans <| (iInf_le _ hC'_subset).trans ?_
+    simp only [hf.isCover_image_iff] at hC_cover
+    refine (iInf_le _ hC_cover).trans ?_
+    rw [InjOn.encard_image]
+    exact hf_inj.mono hC'_subset
+
+/-- The covering number of the image of a set under an injective isometry is equal to
+the covering number of the set.
+See `Isometry.coveringNumber_image'` for the version in a `PseudoEMetricSpace` and not
+an `EMetricSpace`, for which an additional injectivity assumption is needed. -/
+lemma _root_.Isometry.coveringNumber_image {X : Type*} [EMetricSpace X]
+    {f : X → Y} (hf : Isometry f) {A : Set X} :
+    coveringNumber ε (f '' A) = coveringNumber ε A :=
+  hf.coveringNumber_image' hf.injective.injOn
 
 end Metric

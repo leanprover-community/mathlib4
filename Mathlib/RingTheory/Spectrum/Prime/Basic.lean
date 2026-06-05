@@ -264,7 +264,7 @@ theorem zeroLocus_empty : zeroLocus (∅ : Set R) = Set.univ :=
 
 @[simp]
 theorem vanishingIdeal_empty : vanishingIdeal (∅ : Set (PrimeSpectrum R)) = ⊤ := by
-  simpa using (gc R).u_top
+  simpa using! (gc R).u_top
 
 theorem zeroLocus_empty_of_one_mem {s : Set R} (h : (1 : R) ∈ s) : zeroLocus s = ∅ := by
   rw [Set.eq_empty_iff_forall_notMem]
@@ -386,7 +386,7 @@ lemma zeroLocus_smul_of_isUnit {r : R} (hr : IsUnit r) (s : Set R) :
 section Order
 
 instance [IsDomain R] : OrderBot (PrimeSpectrum R) where
-  bot := ⟨⊥, Ideal.bot_prime⟩
+  bot := ⟨⊥, Ideal.isPrime_bot⟩
   bot_le I := @bot_le _ _ _ I.asIdeal
 
 @[simp]

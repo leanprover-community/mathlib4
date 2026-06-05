@@ -11,7 +11,7 @@ public import Mathlib.Data.Set.Basic
 # Theorems about the `Disjoint` relation on `Set`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists HeytingAlgebra RelIso
 
@@ -119,7 +119,7 @@ end Disjoint
 
 namespace Set
 
-theorem mem_union_of_disjoint (h : Disjoint s t) {x : α} : x ∈ s ∪ t ↔ Xor' (x ∈ s) (x ∈ t) := by
-  grind [Xor']
+theorem mem_union_of_disjoint (h : Disjoint s t) {x : α} : x ∈ s ∪ t ↔ Xor (x ∈ s) (x ∈ t) := by
+  grind [Xor]
 
 end Set

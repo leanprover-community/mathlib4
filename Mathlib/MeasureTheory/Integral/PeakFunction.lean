@@ -35,7 +35,7 @@ Note that there are related results about convolution with respect to peak funct
 `Mathlib/Analysis/Convolution.lean`, such as `MeasureTheory.convolution_tendsto_right` there.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
 
@@ -84,7 +84,7 @@ theorem integrableOn_peak_smul_of_integrableOn_of_tendsto
       filter_upwards [self_mem_ae_restrict (hs.inter u_open.measurableSet)] with x hx
       rw [inter_comm] at hx
       exact (norm_lt_of_mem_ball (hu x hx)).le
-  convert A.union B
+  convert! A.union B
   simp only [diff_union_inter]
 
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its
@@ -196,8 +196,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto
     apply tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux hs ht hts h'ts
         hnφ hlφ hiφ h'iφ
     · apply hmg.sub
-      simp only [integrable_indicator_iff ht, integrableOn_const_iff (C := a), ht,
-        Measure.restrict_apply]
+      simp only [integrableOn_indicator_iff ht, integrableOn_const_iff (C := a)]
       right
       exact lt_of_le_of_lt (measure_mono inter_subset_left) (h't.lt_top)
     · rw [← sub_self a]
@@ -336,7 +335,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
     exact tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto hs.measurableSet
       hs.measurableSet (Subset.rfl) (self_mem_nhdsWithin)
       hs.measure_lt_top.ne (Eventually.of_forall hnφ) A B C hmg hcg
-  convert this
+  convert! this
   simp_rw [φ, ← smul_smul, integral_smul]
 
 /-- If a continuous function `c` realizes its maximum at a unique point `x₀` in a compact set `s`,
@@ -464,7 +463,7 @@ theorem tendsto_integral_comp_smul_smul_of_integrable'
     have A : ContinuousAt g (x₀ - 0) := by simpa using h'g
     exact A.comp <| by fun_prop
   simp only [f, sub_zero] at this
-  convert this using 2 with c
+  convert! this using 2 with c
   conv_rhs => rw [← integral_add_left_eq_self x₀ (μ := μ)
     (f := fun x ↦ (c ^ finrank ℝ F * φ (c • x)) • g (x₀ - x)), ← integral_neg_eq_self]
   simp [sub_eq_add_neg]

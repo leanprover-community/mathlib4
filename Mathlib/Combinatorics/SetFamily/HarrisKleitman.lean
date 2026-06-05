@@ -28,7 +28,7 @@ correlate in the uniform measure.
 * [D. J. Kleitman, *Families of non-disjoint subsets*][kleitman1966]
 -/
 
-@[expose] public section
+public section
 
 
 open Finset
@@ -61,7 +61,7 @@ theorem IsLowerSet.le_card_inter_finset' (h𝒜 : IsLowerSet (𝒜 : Set (Finset
     obtain rfl | rfl := h𝒜s
     · simp only [card_empty, zero_mul, empty_inter, mul_zero, le_refl]
     obtain rfl | rfl := hℬs
-    · simp only [card_empty, inter_empty, mul_zero, le_refl]
+    · simp
     · simp only [card_empty, pow_zero, inter_singleton_of_mem, mem_singleton, card_singleton,
         le_refl]
   | insert a s hs ih =>

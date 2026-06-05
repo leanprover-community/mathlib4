@@ -43,8 +43,8 @@ lemma iSup_set_eq_univ (hu : IsOpenCover u) : ⋃ i, (u i : Set X) = univ := by
 
 /-- Pullback of a covering of `Y` by a continuous map `X → Y`, giving a covering of `X` with the
 same index type. -/
-lemma comap (hv : IsOpenCover v) (f : C(X, Y)) : IsOpenCover fun k ↦ (v k).comap f :=
-  by simp [IsOpenCover, ← preimage_iUnion, hv.iSup_set_eq_univ]
+lemma comap (hv : IsOpenCover v) (f : C(X, Y)) : IsOpenCover fun k ↦ (v k).comap f := by
+  simp [IsOpenCover, ← preimage_iUnion, hv.iSup_set_eq_univ]
 
 lemma exists_mem (hu : IsOpenCover u) (a : X) : ∃ i, a ∈ u i := by
   simpa [← hu.iSup_set_eq_univ] using mem_univ a
@@ -62,6 +62,21 @@ lemma isTopologicalBasis (hu : IsOpenCover u)
   isTopologicalBasis_of_cover (fun i ↦ (u i).2) hu.iSup_set_eq_univ hB
 
 end IsOpenCover
+
+lemma Opens.IsBasis.isOpenCover {S : Set (Opens X)} (hS : Opens.IsBasis S) :
+    IsOpenCover (fun U : S ↦ (U : Opens X)) :=
+  top_le_iff.mp (subset_trans hS.2.superset (by simp))
+
+/-- Given an open cover and a basis,
+the set of basis elements contained in any of the covers is still a cover. -/
+lemma Opens.IsBasis.isOpenCover_mem_and_le {S : Set (Opens X)} (hS : Opens.IsBasis S)
+    {U : ι → Opens X} (hU : IsOpenCover U) :
+    IsOpenCover (fun V : { x : Opens X × ι // x.1 ∈ S ∧ x.1 ≤ U x.2 } ↦ V.1.1) := by
+  refine top_le_iff.mp fun x _ ↦ ?_
+  obtain ⟨i, hxi⟩ := hU.exists_mem x
+  obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := hS.exists_subset_of_mem_open hxi (U i).2
+  simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.mem_mk, Set.mem_iUnion, SetLike.mem_coe]
+  exact ⟨⟨(V, i), hV, hVU⟩, hxV⟩
 
 end TopologicalSpace
 

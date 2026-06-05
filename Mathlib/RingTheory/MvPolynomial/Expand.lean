@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Expand
 public import Mathlib.RingTheory.MvPolynomial.Basic
+public import Mathlib.Algebra.CharP.Frobenius
 
 /-!
 # Results on `MvPolynomial.expand`
@@ -15,7 +16,7 @@ In this file we prove results about `MvPolynomial.expand` that require more than
 available in `Mathlib.Algebra.*`.
 -/
 
-@[expose] public section
+public section
 
 namespace MvPolynomial
 

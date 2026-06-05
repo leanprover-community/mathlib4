@@ -9,8 +9,7 @@ public import Mathlib.Data.ENNReal.Real
 public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Topology.EMetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
-
-import Mathlib.Topology.Metrizable.Basic
+public import Mathlib.Topology.Metrizable.Basic
 
 /-!
 ## Pseudo-metric spaces
@@ -19,7 +18,7 @@ Further results about pseudo-metric spaces.
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter TopologicalSpace Bornology
 open scoped ENNReal NNReal Uniformity Topology
@@ -45,7 +44,7 @@ theorem dist_le_Ico_sum_dist (f : ℕ → α) {m n} (h : m ≤ n) :
 /-- The triangle (polygon) inequality for sequences of points; `Finset.range` version. -/
 theorem dist_le_range_sum_dist (f : ℕ → α) (n : ℕ) :
     dist (f 0) (f n) ≤ ∑ i ∈ Finset.range n, dist (f i) (f (i + 1)) :=
-  Nat.Ico_zero_eq_range ▸ dist_le_Ico_sum_dist f (Nat.zero_le n)
+  Nat.Ico_zero_eq_range n ▸ dist_le_Ico_sum_dist f (Nat.zero_le n)
 
 /-- A version of `dist_le_Ico_sum_dist` with each intermediate distance replaced
 with an upper estimate. -/
@@ -60,7 +59,7 @@ with an upper estimate. -/
 theorem dist_le_range_sum_of_dist_le {f : ℕ → α} (n : ℕ) {d : ℕ → ℝ}
     (hd : ∀ {k}, k < n → dist (f k) (f (k + 1)) ≤ d k) :
     dist (f 0) (f n) ≤ ∑ i ∈ Finset.range n, d i :=
-  Nat.Ico_zero_eq_range ▸ dist_le_Ico_sum_of_dist_le (zero_le n) fun _ => hd
+  Nat.Ico_zero_eq_range n ▸ dist_le_Ico_sum_of_dist_le zero_le fun _ => hd
 
 namespace Metric
 
@@ -78,13 +77,20 @@ nonrec theorem isUniformEmbedding_iff [PseudoMetricSpace β] {f : α → β} :
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ := by
   rw [isUniformEmbedding_iff, and_comm, isUniformInducing_iff]
 
-/-- If a map between pseudometric spaces is a uniform embedding then the distance between `f x`
+/-- If a map between pseudometric spaces is a uniform inducing map then the distance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y`. -/
+theorem controlled_of_isUniformInducing [PseudoMetricSpace β] {f : α → β}
+    (h : IsUniformInducing f) :
+    (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, dist a b < δ → dist (f a) (f b) < ε) ∧
+      ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ :=
+  ⟨uniformContinuous_iff.1 h.uniformContinuous, (isUniformInducing_iff.1 h).2⟩
+
+@[deprecated controlled_of_isUniformInducing (since := "2026-04-01")]
 theorem controlled_of_isUniformEmbedding [PseudoMetricSpace β] {f : α → β}
     (h : IsUniformEmbedding f) :
     (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, dist a b < δ → dist (f a) (f b) < ε) ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ :=
-  ⟨uniformContinuous_iff.1 h.uniformContinuous, (isUniformEmbedding_iff.1 h).2.2⟩
+  controlled_of_isUniformInducing h.toIsUniformInducing
 
 theorem totallyBounded_iff {s : Set α} :
     TotallyBounded s ↔ ∀ ε > 0, ∃ t : Set α, t.Finite ∧ s ⊆ ⋃ y ∈ t, ball y ε :=
@@ -205,8 +211,11 @@ end Real
 namespace Topology
 
 /-- The preimage of a separable set by an inducing map is separable. -/
-protected lemma IsInducing.isSeparable_preimage {f : β → α} [TopologicalSpace β]
+protected lemma IsInducing.isSeparable_preimage {α : Type*} [TopologicalSpace α]
+    [PseudoMetrizableSpace α] {f : β → α} [TopologicalSpace β]
     (hf : IsInducing f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) := by
+  letI : UniformSpace α := TopologicalSpace.pseudoMetrizableSpaceUniformity α
+  have := pseudoMetrizableSpaceUniformity_countably_generated
   have : SeparableSpace s := hs.separableSpace
   have : SecondCountableTopology s := UniformSpace.secondCountable_of_separable _
   have : IsInducing ((mapsTo_preimage f s).restrict _ _ _) :=
@@ -214,14 +223,16 @@ protected lemma IsInducing.isSeparable_preimage {f : β → α} [TopologicalSpac
   have := this.secondCountableTopology
   exact .of_subtype _
 
-protected theorem IsEmbedding.isSeparable_preimage {f : β → α} [TopologicalSpace β]
+protected theorem IsEmbedding.isSeparable_preimage {α : Type*} [TopologicalSpace α]
+    [PseudoMetrizableSpace α] {f : β → α} [TopologicalSpace β]
     (hf : IsEmbedding f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) :=
   hf.isInducing.isSeparable_preimage hs
 
 end Topology
 
 /-- A compact set is separable. -/
-theorem IsCompact.isSeparable {s : Set α} (hs : IsCompact s) : IsSeparable s :=
+theorem IsCompact.isSeparable {α : Type*} [TopologicalSpace α] [PseudoMetrizableSpace α]
+    {s : Set α} (hs : IsCompact s) : IsSeparable s :=
   haveI : CompactSpace s := isCompact_iff_compactSpace.mp hs
   .of_subtype s
 
@@ -270,7 +281,8 @@ lemma exists_finite_cover_balls_of_isCompact_closure (hs : IsCompact (closure s)
 end Compact
 
 /-- If a map is continuous on a separable set `s`, then the image of `s` is also separable. -/
-theorem ContinuousOn.isSeparable_image [TopologicalSpace β] {f : α → β} {s : Set α}
+theorem ContinuousOn.isSeparable_image {α : Type*} [TopologicalSpace α] [PseudoMetrizableSpace α]
+    [TopologicalSpace β] {f : α → β} {s : Set α}
     (hf : ContinuousOn f s) (hs : IsSeparable s) : IsSeparable (f '' s) := by
   rw [image_eq_range, ← image_univ]
   exact (isSeparable_univ_iff.2 hs.separableSpace).image hf.restrict

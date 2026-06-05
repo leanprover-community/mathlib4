@@ -30,7 +30,7 @@ The theorem that all nonzero fractional ideals are invertible in a Dedekind doma
 fractional ideal, invertible ideal
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsDedekindDomain
 
@@ -56,19 +56,14 @@ theorem coe_inv_of_ne_zero {J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
     (↑J⁻¹ : Submodule R₁ K) = IsLocalization.coeSubmodule K ⊤ / (J : Submodule R₁ K) := by
   simp_rw [inv_of_ne_zero _ h, coe_one, coe_mk, IsLocalization.coeSubmodule_top]
 
-@[deprecated (since := "2025-09-14")] alias inv_nonzero := inv_of_ne_zero
-@[deprecated (since := "2025-09-14")] alias coe_inv_of_nonzero := coe_inv_of_ne_zero
-
 variable {K}
 
 theorem mem_inv_iff (hI : I ≠ 0) {x : K} : x ∈ I⁻¹ ↔ ∀ y ∈ I, x * y ∈ (1 : FractionalIdeal R₁⁰ K) :=
   mem_div_iff_of_ne_zero hI
 
 theorem inv_anti_mono (hI : I ≠ 0) (hJ : J ≠ 0) (hIJ : I ≤ J) : J⁻¹ ≤ I⁻¹ := by
-  -- Porting note: in Lean3, introducing `x` would just give `x ∈ J⁻¹ → x ∈ I⁻¹`, but
-  --  in Lean4, it goes all the way down to the subtypes
   intro x
-  simp only [val_eq_coe, mem_coe, mem_inv_iff hJ, mem_inv_iff hI]
+  simp only [mem_inv_iff hJ, mem_inv_iff hI]
   exact fun h y hy => h y (hIJ hy)
 
 theorem le_self_mul_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≤ (1 : FractionalIdeal R₁⁰ K)) :

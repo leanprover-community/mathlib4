@@ -15,7 +15,7 @@ public import Mathlib.GroupTheory.Perm.Cycle.Concrete
 
 -/
 
-@[expose] public section
+public section
 
 variable (α : Type*) [DecidableEq α] [Fintype α]
 

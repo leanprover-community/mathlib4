@@ -9,6 +9,7 @@ public import Mathlib.Topology.Defs.Basic
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Order.Filter.Defs
 public import Mathlib.Tactic.IrreducibleDef
+public import Mathlib.Tactic.ToAdditive
 
 /-!
 # Definitions about filters in topological spaces
@@ -172,8 +173,6 @@ def nhdsSetWithin (s t : Set X) : Filter X := 𝓝ˢ s ⊓ 𝓟 t
 Alexandrov-discrete space, this is the smallest neighborhood of the set. -/
 def nhdsKer (s : Set X) : Set X := (𝓝ˢ s).ker
 
-@[deprecated (since := "2025-07-09")] alias exterior := nhdsKer
-
 /-- A function between topological spaces is continuous at a point `x₀`
 if `f x` tends to `f x₀` when `x` tends to `x₀`. -/
 @[fun_prop]
@@ -225,12 +224,14 @@ def Inseparable (x y : X) : Prop :=
 variable (X)
 
 /-- Specialization forms a preorder on the topological space. -/
+@[instance_reducible]
 def specializationPreorder : Preorder X :=
   { Preorder.lift (OrderDual.toDual ∘ 𝓝) with
     le := fun x y => y ⤳ x
     lt := fun x y => y ⤳ x ∧ ¬x ⤳ y }
 
 /-- A `setoid` version of `Inseparable`, used to define the `SeparationQuotient`. -/
+@[implicit_reducible]
 def inseparableSetoid : Setoid X := { Setoid.comap 𝓝 ⊥ with r := Inseparable }
 
 /-- The quotient of a topological space by its `inseparableSetoid`. Also called the Kolmogorov
@@ -243,12 +244,12 @@ section Lim
 
 
 /-- If `f` is a filter, then `Filter.lim f` is a limit of the filter, if it exists. -/
-noncomputable def lim [Nonempty X] (f : Filter X) : X :=
+noncomputable def Filter.lim [Nonempty X] (f : Filter X) : X :=
   Classical.epsilon fun x => f ≤ 𝓝 x
 
-/-- If `f` is a filter in `α` and `g : α → X` is a function, then `limUnder f g` is a limit of `g`
-at `f`, if it exists. -/
-noncomputable def limUnder {α : Type*} [Nonempty X] (f : Filter α) (g : α → X) : X :=
+/-- If `f` is a filter in `α` and `g : α → X` is a function, then `Filter.limUnder f g` is a limit
+of `g` at `f`, if it exists. -/
+noncomputable def Filter.limUnder {α : Type*} [Nonempty X] (f : Filter α) (g : α → X) : X :=
   lim (f.map g)
 
 end Lim

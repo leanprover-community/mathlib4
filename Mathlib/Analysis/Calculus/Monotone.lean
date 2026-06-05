@@ -31,7 +31,7 @@ limit of `(f y - f x) / (y - x)` by a lower and upper approximation argument fro
 behavior of `μ [x, y]`.
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter Function Metric MeasureTheory MeasureTheory.Measure IsUnifLocDoublingMeasure
@@ -56,8 +56,7 @@ theorem tendsto_apply_add_mul_sq_div_sub {f : ℝ → ℝ} {x a c d : ℝ} {l : 
     simp only [_root_.sub_self, add_zero, mul_zero] at this
     apply Tendsto.congr' (Eventually.filter_mono hl _) this
     filter_upwards [self_mem_nhdsWithin] with y hy
-    field_simp [sub_ne_zero.2 hy]
-    ring
+    field [sub_ne_zero.2 hy]
   have Z := (hf.comp h').mul L
   rw [mul_one] at Z
   apply Tendsto.congr' _ Z

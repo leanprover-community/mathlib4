@@ -98,6 +98,8 @@ namespace Subsemigroup
 instance : SetLike (Subsemigroup M) M :=
   ⟨Subsemigroup.carrier, fun p q h => by cases p; cases q; congr⟩
 
+@[to_additive] instance : PartialOrder (Subsemigroup M) := .ofSetLike (Subsemigroup M) M
+
 initialize_simps_projections Subsemigroup (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubsemigroup (carrier → coe, as_prefix coe)
 
@@ -329,3 +331,18 @@ theorem coe_subtype : (MulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
 
 end MulMemClass
+
+@[to_additive]
+lemma isMulCommutative_iff_of_setLike {S M : Type*} [SetLike S M] [Mul M] [MulMemClass S M]
+    {s : S} : IsMulCommutative s ↔ ∀ a ∈ s, ∀ b ∈ s, a * b = b * a := by
+  simp [isMulCommutative_iff]
+
+@[to_additive]
+alias ⟨_, IsMulCommutative.of_setLike_mul_comm⟩ := isMulCommutative_iff_of_setLike
+
+/-- Commutativity of multiplication in commutative subobjects. -/
+@[to_additive /-- Commutativity of addition in commutative subobjects. -/ ]
+lemma setLike_mul_comm {S M : Type*} [SetLike S M] [Mul M] [MulMemClass S M]
+    {s : S} [IsMulCommutative s] ⦃a b : M⦄ (ha : a ∈ s) (hb : b ∈ s) :
+    a * b = b * a :=
+  isMulCommutative_iff_of_setLike.mp ‹_› a ha b hb

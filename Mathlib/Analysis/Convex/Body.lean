@@ -31,7 +31,7 @@ If `V` is a normed space, `ConvexBody V` is a metric space.
 convex, convex body
 -/
 
-@[expose] public section
+public section
 
 
 open scoped Pointwise Topology NNReal
@@ -63,6 +63,8 @@ instance : SetLike (ConvexBody V) V where
     cases K
     cases L
     congr
+
+instance : PartialOrder (ConvexBody V) := .ofSetLike (ConvexBody V) V
 
 protected theorem convex (K : ConvexBody V) : Convex ℝ (K : Set V) :=
   K.convex'
@@ -139,20 +141,9 @@ instance : SMul ℝ (ConvexBody V) where
 theorem coe_smul (c : ℝ) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (K : Set V) :=
   rfl
 
-variable [ContinuousAdd V]
-
-noncomputable instance : DistribMulAction ℝ (ConvexBody V) :=
-  SetLike.coe_injective.distribMulAction ⟨⟨_, coe_zero⟩, coe_add⟩ coe_smul
-
 @[simp, norm_cast]
 theorem coe_smul' (c : ℝ≥0) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (K : Set V) :=
   rfl
-
-/-- The convex bodies in a fixed space $V$ form a module over the nonnegative reals.
--/
-noncomputable instance : Module ℝ≥0 (ConvexBody V) where
-  add_smul c d K := SetLike.ext' <| Convex.add_smul K.convex c.coe_nonneg d.coe_nonneg
-  zero_smul K := SetLike.ext' <| Set.zero_smul_set K.nonempty
 
 theorem smul_le_of_le (K : ConvexBody V) (h_zero : 0 ∈ K) {a b : ℝ≥0} (h : a ≤ b) :
     a • K ≤ b • K := by
@@ -166,6 +157,16 @@ theorem smul_le_of_le (K : ConvexBody V) (h_zero : 0 ∈ K) {a b : ℝ≥0} (h :
     refine Convex.mem_smul_of_zero_mem K.convex h_zero hy (?_ : 1 ≤ a⁻¹ * b)
     rwa [le_inv_mul_iff₀ ha, mul_one]
 
+variable [ContinuousAdd V]
+
+noncomputable instance : DistribMulAction ℝ (ConvexBody V) :=
+  SetLike.coe_injective.distribMulAction ⟨⟨_, coe_zero⟩, coe_add⟩ coe_smul
+
+/-- The convex bodies in a fixed space $V$ form a module over the nonnegative reals. -/
+noncomputable instance : Module ℝ≥0 (ConvexBody V) where
+  add_smul c d K := SetLike.ext' <| Convex.add_smul K.convex c.coe_nonneg d.coe_nonneg
+  zero_smul K := SetLike.ext' <| Set.zero_smul_set K.nonempty
+
 end TVS
 
 section SeminormedAddCommGroup
@@ -175,9 +176,12 @@ variable [SeminormedAddCommGroup V] [NormedSpace ℝ V] (K L : ConvexBody V)
 protected theorem isBounded : Bornology.IsBounded (K : Set V) :=
   K.isCompact.isBounded
 
-theorem hausdorffEdist_ne_top {K L : ConvexBody V} : EMetric.hausdorffEdist (K : Set V) L ≠ ⊤ := by
-  apply_rules [Metric.hausdorffEdist_ne_top_of_nonempty_of_bounded, ConvexBody.nonempty,
+theorem hausdorffEDist_ne_top {K L : ConvexBody V} : Metric.hausdorffEDist (K : Set V) L ≠ ⊤ := by
+  apply_rules [Metric.hausdorffEDist_ne_top_of_nonempty_of_bounded, ConvexBody.nonempty,
     ConvexBody.isBounded]
+
+@[deprecated (since := "2026-01-08")]
+alias hausdorffEdist_ne_top := hausdorffEDist_ne_top
 
 /-- Convex bodies in a fixed seminormed space $V$ form a pseudo-metric space under the Hausdorff
 metric. -/
@@ -185,16 +189,19 @@ noncomputable instance : PseudoMetricSpace (ConvexBody V) where
   dist K L := Metric.hausdorffDist (K : Set V) L
   dist_self _ := Metric.hausdorffDist_self_zero
   dist_comm _ _ := Metric.hausdorffDist_comm
-  dist_triangle _ _ _ := Metric.hausdorffDist_triangle hausdorffEdist_ne_top
+  dist_triangle _ _ _ := Metric.hausdorffDist_triangle hausdorffEDist_ne_top
 
 @[simp, norm_cast]
 theorem hausdorffDist_coe : Metric.hausdorffDist (K : Set V) L = dist K L :=
   rfl
 
 @[simp, norm_cast]
-theorem hausdorffEdist_coe : EMetric.hausdorffEdist (K : Set V) L = edist K L := by
+theorem hausdorffEDist_coe : Metric.hausdorffEDist (K : Set V) L = edist K L := by
   rw [edist_dist]
-  exact (ENNReal.ofReal_toReal hausdorffEdist_ne_top).symm
+  exact (ENNReal.ofReal_toReal hausdorffEDist_ne_top).symm
+
+@[deprecated (since := "2026-01-08")]
+alias hausdorffEdist_coe := hausdorffEDist_coe
 
 open Filter
 
@@ -218,7 +225,7 @@ theorem iInter_smul_eq_self [T2Space V] {u : ℕ → ℝ≥0} (K : ConvexBody V)
     specialize hn n le_rfl
     rw [lt_div_iff₀' hC_pos, mul_comm, NNReal.coe_zero, sub_zero, Real.norm_eq_abs] at hn
     refine lt_of_le_of_lt ?_ hn
-    exact mul_le_mul_of_nonneg_left (hC_bdd _ hyK) (abs_nonneg _)
+    gcongr; exact hC_bdd _ hyK
   · refine Set.mem_iInter.mpr (fun n => Convex.mem_smul_of_zero_mem K.convex h_zero h ?_)
     exact le_add_of_nonneg_right (by positivity)
 
@@ -231,7 +238,7 @@ variable [NormedAddCommGroup V] [NormedSpace ℝ V]
 /-- Convex bodies in a fixed normed space `V` form a metric space under the Hausdorff metric. -/
 noncomputable instance : MetricSpace (ConvexBody V) where
   eq_of_dist_eq_zero {K L} hd := ConvexBody.ext <|
-    (K.isClosed.hausdorffDist_zero_iff_eq L.isClosed hausdorffEdist_ne_top).1 hd
+    (K.isClosed.hausdorffDist_zero_iff_eq L.isClosed hausdorffEDist_ne_top).1 hd
 
 end NormedAddCommGroup
 

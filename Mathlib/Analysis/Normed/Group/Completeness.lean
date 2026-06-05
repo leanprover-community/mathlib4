@@ -30,7 +30,7 @@ series.
 CompleteSpace, CauchySeq
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 open Filter Finset
@@ -73,7 +73,7 @@ lemma NormedAddCommGroup.completeSpace_of_summable_imp_tendsto
   rw [hv_sum] at ha
   have h₁ : Tendsto (fun n => u (f n) - u (f 0) + u (f 0)) atTop (𝓝 (a + u (f 0))) :=
     Tendsto.add_const _ ha
-  simpa only [sub_add_cancel] using h₁
+  simpa only [sub_add_cancel] using! h₁
 
 /-- In a complete normed additive group, every absolutely convergent series converges in the
 space. -/

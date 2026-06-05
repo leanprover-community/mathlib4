@@ -21,7 +21,7 @@ This is a separate file, to avoid unnecessary imports in basic files.
 Previously some of these results were in the `MeasureTheory` folder.
 -/
 
-@[expose] public section
+public section
 
 open Set
 
@@ -45,7 +45,7 @@ theorem iUnion_decode₂_cases {f : β → Set α} {C : Set α → Prop} (H0 : C
     simp only [Option.mem_def, iUnion_of_empty, iUnion_empty, reduceCtorEq]
     apply H0
   | some b => by
-    convert H1 b
+    convert! H1 b
     simp
 
 open scoped Function in -- required for scoped `on` notation

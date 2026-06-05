@@ -26,7 +26,7 @@ smooth algebras (TODO @chrisflav).
   `I/I² → S ⊗[R] (Ω[R[Xᵢ]⁄R]) = ⊕ᵢ S → ⊕ⱼ S` is bijective, `P` is submersive.
 -/
 
-@[expose] public section
+public section
 
 universe t₂ t₁ u v
 

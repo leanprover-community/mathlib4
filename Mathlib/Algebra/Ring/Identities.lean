@@ -13,7 +13,7 @@ public import Mathlib.Tactic.Ring
 This file contains some "named" commutative ring identities.
 -/
 
-@[expose] public section
+public section
 
 
 variable {R : Type*} [CommRing R] {a b x₁ x₂ x₃ x₄ x₅ x₆ x₇ x₈ y₁ y₂ y₃ y₄ y₅ y₆ y₇ y₈ n : R}

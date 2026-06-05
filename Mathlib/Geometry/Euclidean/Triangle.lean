@@ -37,7 +37,7 @@ unnecessarily.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -177,7 +177,7 @@ theorem angle_eq_angle_add_add_angle_add (x : V) {y : V} (hy : y ≠ 0) :
     obtain ⟨-, r₂, r₂_pos, hr₂⟩ := h
     have : (r₁ + r₂ - 1) • (x + y) = 0 := by
       rw [sub_smul, add_smul, one_smul, ← hr₁, ← hr₂, sub_eq_zero]
-    cases eq_zero_or_eq_zero_of_smul_eq_zero this
+    cases smul_eq_zero.1 this
     · linarith
     · contradiction
   obtain rfl : n = 0 := by lia
@@ -244,8 +244,9 @@ theorem dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle (
       2 * dist p₁ p₂ * dist p₃ p₂ * Real.cos (∠ p₁ p₂ p₃) := by
   rw [dist_eq_norm_vsub V p₁ p₃, dist_eq_norm_vsub V p₁ p₂, dist_eq_norm_vsub V p₃ p₂]
   unfold angle
-  convert norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_angle
-    (p₁ -ᵥ p₂ : V) (p₃ -ᵥ p₂ : V)
+  convert!
+    norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_angle (p₁ -ᵥ p₂ : V)
+      (p₃ -ᵥ p₂ : V)
   · exact (vsub_sub_vsub_cancel_right p₁ p₃ p₂).symm
   · exact (vsub_sub_vsub_cancel_right p₁ p₃ p₂).symm
 
@@ -285,7 +286,7 @@ theorem angle_eq_angle_of_dist_eq {p₁ p₂ p₃ : P} (h : dist p₁ p₂ = dis
     ∠ p₁ p₂ p₃ = ∠ p₁ p₃ p₂ := by
   rw [dist_eq_norm_vsub V p₁ p₂, dist_eq_norm_vsub V p₁ p₃] at h
   unfold angle
-  convert angle_sub_eq_angle_sub_rev_of_norm_eq h
+  convert! angle_sub_eq_angle_sub_rev_of_norm_eq h
   · exact (vsub_sub_vsub_cancel_left p₃ p₂ p₁).symm
   · exact (vsub_sub_vsub_cancel_left p₂ p₃ p₁).symm
 
@@ -302,15 +303,16 @@ theorem dist_eq_of_angle_eq_angle_of_angle_ne_pi {p₁ p₂ p₃ : P} (h : ∠ p
 theorem dist_eq_of_two_zsmul_oangle_eq [Module.Oriented ℝ V (Fin 2)]
     [Fact (Module.finrank ℝ V = 2)] {p₁ p₂ p₃ : P} (h : (2 : ℤ) • ∡ p₁ p₂ p₃ = (2 : ℤ) • ∡ p₂ p₃ p₁)
     (h0 : ∡ p₃ p₁ p₂ ≠ 0) (hpi : ∡ p₃ p₁ p₂ ≠ π) : dist p₁ p₂ = dist p₁ p₃ := by
-  convert (Orientation.norm_eq_of_two_zsmul_oangle_sub_eq (x := p₃ -ᵥ p₁) (y := p₂ -ᵥ p₁) ?_ ?_
-    h0 hpi).symm
+  convert!
+    (Orientation.norm_eq_of_two_zsmul_oangle_sub_eq (x := p₃ -ᵥ p₁) (y := p₂ -ᵥ p₁) ?_ ?_ h0
+        hpi).symm
   · rw [dist_eq_norm_vsub']
   · rw [dist_eq_norm_vsub']
   · rw [eq_comm, o.oangle_rev, ← o.oangle_neg_neg]
     nth_rw 2 [o.oangle_rev, ← o.oangle_neg_neg]
     simp_rw [smul_neg, neg_inj]
     simp_rw [oangle] at h
-    convert h <;> simp
+    convert! h <;> simp
 
 /-- The **sum of the angles of a triangle** (possibly degenerate, where two
 given vertices are distinct), angle-at-point. -/
@@ -335,7 +337,7 @@ oriented angles at point. -/
 theorem oangle_add_oangle_add_oangle_eq_pi [Module.Oriented ℝ V (Fin 2)]
     [Fact (Module.finrank ℝ V = 2)] {p₁ p₂ p₃ : P} (h21 : p₂ ≠ p₁) (h32 : p₃ ≠ p₂)
     (h13 : p₁ ≠ p₃) : ∡ p₁ p₂ p₃ + ∡ p₂ p₃ p₁ + ∡ p₃ p₁ p₂ = π := by
-  simpa only [neg_vsub_eq_vsub_rev] using
+  simpa only [neg_vsub_eq_vsub_rev] using!
     positiveOrientation.oangle_add_cyc3_neg_left (vsub_ne_zero.mpr h21) (vsub_ne_zero.mpr h32)
       (vsub_ne_zero.mpr h13)
 

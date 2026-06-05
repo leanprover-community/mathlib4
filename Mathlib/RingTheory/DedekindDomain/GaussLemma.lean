@@ -17,13 +17,13 @@ polynomial is the whole ring if and only if the `v`-adic Gauss norms of the poly
 1 for all `v`.
 -/
 
-@[expose] public section
+public section
 namespace Polynomial
 
 open IsDedekindDomain HeightOneSpectrum
 
 variable {R : Type*} [CommRing R] [IsDedekindDomain R] (v : HeightOneSpectrum R) {b : NNReal}
-(hb : 1 < b) (p : R[X])
+  (hb : 1 < b) (p : R[X])
 
 theorem gaussNorm_intAdicAbv_le_one : p.gaussNorm (v.intAdicAbv hb) 1 ≤ 1 := by
   by_cases hp0 : p = 0
@@ -60,7 +60,7 @@ theorem contentIdeal_eq_top_iff_forall_gaussNorm_eq_one (hR : ¬IsField R) :
   simp [← not_iff_not, gaussNorm_lt_one_iff_contentIdeal_le, ideal_ne_top_iff_exists hR]
 
 variable {R : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] (hR : ¬IsField R)
-{b : NNReal} (hb : 1 < b) (p : R[X])
+  {b : NNReal} (hb : 1 < b) (p : R[X])
 
 include hR in
 /-- In case `R` is PID, given a polynomial `p` in `R[X]`, `p` is primitive if and only if the

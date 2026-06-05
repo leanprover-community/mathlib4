@@ -15,7 +15,7 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 This file characterises the stabilizer of a set/finset under the pointwise action of a group.
 -/
 
-@[expose] public section
+public section
 
 open Function MulOpposite Set
 open scoped Pointwise
@@ -159,7 +159,7 @@ lemma stabilizer_subgroup_op (s : Subgroup Gᵐᵒᵖ) : stabilizer G (s : Set G
   simp_rw [SetLike.ext_iff, mem_stabilizer_set]
   refine fun a ↦ ⟨fun h ↦ ?_, fun ha b ↦ s.mul_mem_cancel_right ha⟩
   have : 1 * MulOpposite.op a ∈ s := (h 1).2 s.one_mem
-  simpa only [op_smul_eq_mul, SetLike.mem_coe, one_mul] using this
+  simpa only [op_smul_eq_mul, SetLike.mem_coe, one_mul] using! this
 
 end Subgroup
 

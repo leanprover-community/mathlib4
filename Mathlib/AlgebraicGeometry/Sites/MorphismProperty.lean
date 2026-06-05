@@ -81,9 +81,22 @@ def precoverage : Precoverage Scheme.{u} :=
 lemma ofArrows_mem_precoverage_iff {S : Scheme.{u}} {ι : Type*} {X : ι → Scheme.{u}}
     {f : ∀ i, X i ⟶ S} :
     .ofArrows X f ∈ precoverage P S ↔ (∀ x, ∃ i, x ∈ Set.range (f i)) ∧ ∀ i, P (f i) := by
-  simp_rw [← Scheme.forget_map, ← Scheme.forget_obj,
+  simp_rw [← Scheme.forget_map', ← Scheme.forget_obj,
     ← Presieve.ofArrows_mem_comap_jointlySurjectivePrecoverage_iff]
   exact ⟨fun hmem ↦ ⟨hmem.1, fun i ↦ hmem.2 ⟨i⟩⟩, fun h ↦ ⟨h.1, fun {Y} g ⟨i⟩ ↦ h.2 i⟩⟩
+
+@[simp]
+lemma singleton_mem_precoverage_iff {X S : Scheme.{u}} (f : X ⟶ S) :
+    Presieve.singleton f ∈ precoverage P S ↔ Function.Surjective f.base ∧ P f := by
+  rw [← Presieve.ofArrows_pUnit.{_, _, 0}, ofArrows_mem_precoverage_iff]
+  aesop
+
+lemma bot_mem_precoverage (X : Scheme.{u}) [IsEmpty X] : ⊥ ∈ Scheme.precoverage P X :=
+  ⟨fun x ↦ ‹IsEmpty X›.elim x, P.bot_mem_precoverage _⟩
+
+lemma precoverage_mono {P Q : MorphismProperty Scheme.{u}} (h : P ≤ Q) :
+    precoverage P ≤ precoverage Q := by
+  grw [precoverage, precoverage, MorphismProperty.precoverage_monotone h]
 
 instance [P.IsStableUnderComposition] : (precoverage P).IsStableUnderComposition := by
   dsimp only [precoverage]; infer_instance

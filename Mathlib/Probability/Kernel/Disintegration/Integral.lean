@@ -25,7 +25,7 @@ Corresponding statements for the Lebesgue integral and/or without the sets `s` a
 provided.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory ProbabilityTheory MeasurableSpace
 

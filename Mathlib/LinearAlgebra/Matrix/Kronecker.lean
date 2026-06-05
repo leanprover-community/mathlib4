@@ -5,12 +5,8 @@ Authors: Filippo A. E. Nuccio, Eric Wieser
 -/
 module
 
-public import Mathlib.Data.Matrix.Basic
-public import Mathlib.Data.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Trace
-public import Mathlib.LinearAlgebra.TensorProduct.Basic
-public import Mathlib.LinearAlgebra.TensorProduct.Associator
 public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
@@ -81,6 +77,25 @@ theorem kroneckerMap_map (f : α → β → γ) (g : γ → γ') (A : Matrix l m
     (kroneckerMap f A B).map g = kroneckerMap (fun a b => g (f a b)) A B :=
   ext fun _ _ => rfl
 
+theorem kroneckerMap_submatrix_left
+    (f : α → β → γ) (A : Matrix l m α) (B : Matrix n p β) (r : l' → l) (c : m' → m) :
+    kroneckerMap f (A.submatrix r c) B =
+      (kroneckerMap f A B).submatrix (.map r id) (.map c id) :=
+  rfl
+
+theorem kroneckerMap_submatrix_right
+    (f : α → β → γ) (A : Matrix l m α) (B : Matrix n p β) (r : n' → n) (c : p' → p) :
+    kroneckerMap f A (B.submatrix r c) =
+      (kroneckerMap f A B).submatrix (.map id r) (.map id c) :=
+  rfl
+
+theorem kroneckerMap_submatrix_submatrix
+    (f : α → β → γ) (A : Matrix l m α) (B : Matrix n p β)
+    (r : l' → l) (c : m' → m) (r' : n' → n) (c' : p' → p) :
+    kroneckerMap f (A.submatrix r c) (B.submatrix r' c') =
+      (kroneckerMap f A B).submatrix (.map r r') (.map c c') :=
+  rfl
+
 @[simp]
 theorem kroneckerMap_zero_left [Zero α] [Zero γ] (f : α → β → γ) (hf : ∀ b, f 0 b = 0)
     (B : Matrix n p β) : kroneckerMap f (0 : Matrix l m α) B = 0 :=
@@ -118,7 +133,7 @@ theorem kroneckerMap_single_single
     kroneckerMap f (single i₁ j₁ a) (single i₂ j₂ b) = single (i₁, i₂) (j₁, j₂) (f a b) := by
   ext ⟨i₁', i₂'⟩ ⟨j₁', j₂'⟩
   dsimp [single]
-  aesop
+  grind
 
 theorem kroneckerMap_diagonal_diagonal [Zero α] [Zero β] [Zero γ] [DecidableEq m] [DecidableEq n]
     (f : α → β → γ) (hf₁ : ∀ b, f 0 b = 0) (hf₂ : ∀ a, f a 0 = 0) (a : m → α) (b : n → β) :
@@ -388,11 +403,7 @@ theorem det_kronecker [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [C
     (A : Matrix m m R) (B : Matrix n n R) :
     det (A ⊗ₖ B) = det A ^ Fintype.card n * det B ^ Fintype.card m := by
   refine (det_kroneckerMapBilinear (Algebra.lmul ℕ R).toLinearMap mul_mul_mul_comm _ _).trans ?_
-  congr 3
-  · ext i j
-    exact mul_one _
-  · ext i j
-    exact one_mul _
+  simp
 
 theorem conjTranspose_kronecker [CommMagma R] [StarMul R] (x : Matrix l m R) (y : Matrix n p R) :
     (x ⊗ₖ y)ᴴ = xᴴ ⊗ₖ yᴴ := by

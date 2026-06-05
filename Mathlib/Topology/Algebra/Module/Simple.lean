@@ -16,7 +16,7 @@ In this file we prove (`LinearMap.isClosed_or_dense_ker`) that the kernel of a l
 applies, e.g., to the case when `R = N` is a division ring.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w

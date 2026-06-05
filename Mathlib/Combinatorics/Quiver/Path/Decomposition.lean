@@ -15,7 +15,7 @@ This section provides lemmas for decomposing non-empty paths and for reasoning a
 cross the boundary of a given set of vertices `S`.
 -/
 
-@[expose] public section
+public section
 namespace Quiver.Path
 
 section BoundaryEdges

@@ -90,7 +90,7 @@ lemma coe_comp {X Y Z : HeytAlg} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → 
 
 @[simp]
 lemma forget_map {X Y : HeytAlg} (f : X ⟶ Y) :
-    (forget HeytAlg).map f = f := rfl
+    (forget HeytAlg).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : HeytAlg} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=

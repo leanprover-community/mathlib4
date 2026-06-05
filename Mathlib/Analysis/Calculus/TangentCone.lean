@@ -1,4 +1,4 @@
-module
+module -- shake: keep-all
 
 public import Mathlib.Analysis.Calculus.TangentCone.Basic
 public import Mathlib.Analysis.Calculus.TangentCone.Defs

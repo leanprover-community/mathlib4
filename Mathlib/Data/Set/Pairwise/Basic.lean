@@ -65,9 +65,9 @@ theorem Pairwise.disjoint_extend_bot [PartialOrder γ] [OrderBot γ]
   intro b₁ b₂ hne
   rcases em (∃ a₁, e a₁ = b₁) with ⟨a₁, rfl⟩ | hb₁
   · rcases em (∃ a₂, e a₂ = b₂) with ⟨a₂, rfl⟩ | hb₂
-    · simpa only [onFun, he.extend_apply] using hf (ne_of_apply_ne e hne)
-    · simpa only [onFun, extend_apply' _ _ _ hb₂] using disjoint_bot_right
-  · simpa only [onFun, extend_apply' _ _ _ hb₁] using disjoint_bot_left
+    · simpa only [onFun, he.extend_apply] using! hf (ne_of_apply_ne e hne)
+    · simpa only [onFun, extend_apply' _ _ _ hb₂] using! disjoint_bot_right
+  · simpa only [onFun, extend_apply' _ _ _ hb₁] using! disjoint_bot_left
 
 namespace Set
 
@@ -76,6 +76,12 @@ theorem Pairwise.mono (h : t ⊆ s) (hs : s.Pairwise r) : t.Pairwise r :=
 
 theorem Pairwise.mono' (H : r ≤ p) (hr : s.Pairwise r) : s.Pairwise p :=
   hr.imp H
+
+theorem Pairwise.inter_left (hs : s.Pairwise r) (t : Set α) : (s ∩ t).Pairwise r :=
+  hs.mono Set.inter_subset_left
+
+theorem Pairwise.inter_right (hs : s.Pairwise r) (t : Set α) : (t ∩ s).Pairwise r :=
+  hs.mono Set.inter_subset_right
 
 theorem pairwise_top (s : Set α) : s.Pairwise ⊤ :=
   pairwise_of_forall s _ fun _ _ => trivial
@@ -91,7 +97,7 @@ theorem pairwise_empty (r : α → α → Prop) : (∅ : Set α).Pairwise r :=
 theorem pairwise_singleton (a : α) (r : α → α → Prop) : Set.Pairwise {a} r :=
   subsingleton_singleton.pairwise r
 
-theorem pairwise_iff_of_refl [IsRefl α r] : s.Pairwise r ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b :=
+theorem pairwise_iff_of_refl [Std.Refl r] : s.Pairwise r ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b :=
   forall₄_congr fun _ _ _ _ => or_iff_not_imp_left.symm.trans <| or_iff_right_of_imp of_eq
 
 alias ⟨Pairwise.of_refl, _⟩ := pairwise_iff_of_refl
@@ -102,7 +108,7 @@ theorem Nonempty.pairwise_iff_exists_forall [IsEquiv α r] {s : Set ι} (hs : s.
   · rcases hs with ⟨y, hy⟩
     refine fun H => ⟨f y, fun x hx => ?_⟩
     rcases eq_or_ne x y with (rfl | hne)
-    · apply IsRefl.refl
+    · apply Std.Refl.refl
     · exact H hx hy hne
   · rintro ⟨z, hz⟩ x hx y hy _
     exact @IsTrans.trans α r _ (f x) z (f y) (hz _ hx) (symm <| hz _ hy)
@@ -132,8 +138,7 @@ theorem pairwise_eq_iff_exists_eq [Nonempty ι] (s : Set α) (f : α → ι) :
 theorem pairwise_union :
     (s ∪ t).Pairwise r ↔
     s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∧ r b a := by
-  simp only [Set.Pairwise, mem_union, or_imp, forall_and]
-  aesop
+  grind [Set.Pairwise]
 
 theorem pairwise_union_of_symmetric (hr : Symmetric r) :
     (s ∪ t).Pairwise r ↔ s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b :=
@@ -240,6 +245,10 @@ theorem pairwiseDisjoint_empty : (∅ : Set ι).PairwiseDisjoint f :=
 @[simp]
 theorem pairwiseDisjoint_singleton (i : ι) (f : ι → α) : PairwiseDisjoint {i} f :=
   pairwise_singleton i _
+
+@[simp]
+lemma pairwiseDisjoint_singleton' (s : Set ι) :
+    s.PairwiseDisjoint (singleton : ι → Set ι) := by intro; grind
 
 theorem pairwiseDisjoint_insert {i : ι} :
     (insert i s).PairwiseDisjoint f ↔
@@ -397,6 +406,10 @@ lemma exists_lt_mem_inter_of_not_pairwiseDisjoint [LinearOrder ι]
   · exact ⟨i, hi, j, hj, h_lt, x, hx₁, hx₂⟩
   · exact ⟨j, hj, i, hi, h_lt, x, hx₂, hx₁⟩
 
+@[simp] lemma pairwiseDisjoint_singleton_iff_injOn {f : ι → α} :
+    s.PairwiseDisjoint (fun i ↦ ({f i} : Set α)) ↔ s.InjOn f := by
+  simp [PairwiseDisjoint, InjOn, Set.Pairwise, not_imp_not]
+
 end Set
 
 lemma exists_ne_mem_inter_of_not_pairwise_disjoint
@@ -420,3 +433,11 @@ lemma subsingleton_setOf_mem_iff_pairwise_disjoint {f : ι → Set α} :
     (∀ a, {i | a ∈ f i}.Subsingleton) ↔ Pairwise (Disjoint on f) :=
   ⟨fun h _ _ hij ↦ disjoint_left.2 fun a hi hj ↦ hij (h a hi hj),
    fun h _ _ hx _ hy ↦ by_contra fun hne ↦ disjoint_left.1 (h hne) hx hy⟩
+
+/-- Simp normal form of `pairwise_ne_iff_injective`. -/
+@[simp] lemma pairwise_not_eq_iff_injective {f : ι → α} :
+    Pairwise (fun i j ↦ ¬ f i = f j) ↔ f.Injective := by
+  simp [Pairwise, Function.Injective, not_imp_not]
+
+lemma pairwise_ne_iff_injective {f : ι → α} : Pairwise (fun i j ↦ f i ≠ f j) ↔ f.Injective := by
+  simp

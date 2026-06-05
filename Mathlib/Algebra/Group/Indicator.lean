@@ -41,9 +41,10 @@ assert_not_exists MonoidWithZero
 
 open Function
 
-variable {α β M N : Type*}
+variable {α β γ M N : Type*}
 
 namespace Set
+
 section Monoid
 
 variable [MulOneClass M] {s t : Set α} {a : α}
@@ -195,6 +196,32 @@ theorem apply_mulIndicator_symmDiff {g : G → β} (hg : ∀ x, g x⁻¹ = g x)
   by_cases hs : x ∈ s <;> by_cases ht : x ∈ t <;> simp [mem_symmDiff, *]
 
 end Group
+
+section One
+
+@[to_additive]
+lemma mulSupport_subset_subsingleton_of_disjoint_on_mulSupport [One β] {s : γ → Set α} (f : α → β)
+  (hs : Pairwise (Disjoint on (fun j ↦ s j ∩ f.mulSupport))) (i : α) (j : γ) (hj : i ∈ s j) :
+    (fun d ↦ (s d).mulIndicator f i).mulSupport ⊆ {j} := by
+  suffices ∀ j', j' ≠ j → {i} ⊆ s j → {i} ⊆ s j' → {i} ⊆ mulSupport f → False by by_contra; aesop
+  intro j' h hj hj' hi
+  simp only [Pairwise, Disjoint, Set.le_eq_subset, Set.subset_inter_iff] at hs
+  simpa using hs h ⟨hj', hi⟩ ⟨hj, hi⟩
+
+end One
+
+/-! ### Relationship with `Pi.mulSingle`/`Pi.single` -/
+
+variable {ι : Type*} [DecidableEq ι] {M : Type*} [One M]
+
+/-- On non-dependent functions, `Set.mulIndicator` on a singleton set equals `Pi.mulSingle`. -/
+@[to_additive (attr := simp)
+  /-- On non-dependent functions, `Set.indicator` on a singleton set equals `Pi.single`. -/]
+theorem mulIndicator_singleton (i : ι) (f : ι → M) :
+    Set.mulIndicator {i} f = Pi.mulSingle i (f i) := by
+  ext j
+  simp only [Set.mulIndicator_apply, Pi.mulSingle_apply, Set.mem_singleton_iff]
+  split_ifs with h <;> simp [h]
 
 end Set
 

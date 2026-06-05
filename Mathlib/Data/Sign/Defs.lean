@@ -8,10 +8,11 @@ module
 public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Order.Ring.Defs
-public import Mathlib.Tactic.DeriveFintype
+public import Mathlib.Tactic.DeriveFintype  -- shake: keep (deriving handlers not tracked yet)
 public import Mathlib.Data.Multiset.Defs
 public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # Sign type
@@ -79,7 +80,7 @@ instance : LE SignType :=
 instance : DecidableLE SignType := fun a b => by
   cases a <;> cases b <;> first | exact isTrue (by constructor) | exact isFalse (by rintro ⟨_⟩)
 
-/- We can define a `Field` instance on `SignType`, but it's not mathematically sensible,
+/-- We can define a `Field` instance on `SignType`, but it's not mathematically sensible,
 so we only define the `CommGroupWithZero`. -/
 instance : CommGroupWithZero SignType where
   inv := id

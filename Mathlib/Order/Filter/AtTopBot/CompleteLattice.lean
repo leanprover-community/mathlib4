@@ -12,7 +12,7 @@ public import Mathlib.Order.Filter.AtTopBot.Tendsto
 # `Filter.atTop` and `Filter.atBot` in (conditionally) complete lattices
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 

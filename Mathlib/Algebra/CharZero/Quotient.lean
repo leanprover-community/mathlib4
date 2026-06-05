@@ -15,7 +15,7 @@ public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 # Lemmas about quotients in characteristic zero
 -/
 
-@[expose] public section
+public section
 
 
 variable {R : Type*} [DivisionRing R] [CharZero R] {p : R}

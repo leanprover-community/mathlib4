@@ -8,7 +8,7 @@ module
 public import Mathlib.Topology.Semicontinuity.Defs
 public import Mathlib.Algebra.GroupWithZero.Indicator
 public import Mathlib.Topology.Piecewise
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!
 # Lower and Upper Semicontinuity
@@ -58,7 +58,7 @@ ones for lower semicontinuous functions using `OrderDual`.
   and `r := (fun x s ↦ s ∈ 𝓝ˢ (f x))`, respectively.
 -/
 
-@[expose] public section
+public section
 
 open Topology ENNReal
 
@@ -87,7 +87,7 @@ theorem LowerSemicontinuousOn.exists_isMinOn {s : Set α} (ne_s : s.Nonempty)
     · change Directed GE.ge (fun x ↦ (φ ∘ (fun (a : s) ↦ f ↑a)) x)
       exact Directed.mono_comp GE.ge (fun x y hxy ↦
         principal_mono.mpr (inter_subset_inter_right _ (preimage_mono <| Iic_subset_Iic.mpr hxy)))
-        (IsTotal.directed _)
+        (Std.Total.directed _)
     · intro x
       have : (pure x : Filter α) ≤ φ (f x) := le_principal_iff.mpr ⟨x.2, le_refl (f x)⟩
       exact neBot_of_le this
@@ -186,6 +186,42 @@ theorem lowerSemicontinuousOn_iff_preimage_Ioi :
   simp only [← lowerSemicontinuous_restrict_iff, restrict_eq,
     lowerSemicontinuous_iff_isOpen_preimage, preimage_comp, isOpen_induced_iff,
     Subtype.preimage_coe_eq_preimage_coe_iff, eq_comm]
+
+end
+
+section
+
+variable {ι : Type*} {f : ι → α → β} [Preorder β] {I : Set ι}
+
+/-- Given a family of lower semicontinuous functions `f : ι → α → β` such that
+for each `x : α`, there is a choice `M x : ι` such that the maximum value of
+evaluation at `x` is achieved by the function `f (M x)`, then the pointwise
+maximum of the family `f` is lower semicontinuous.
+In the statement we restrict to subsets `I : Set ι` and `s : Set α` for more generality. -/
+theorem lowerSemicontinuousOn_of_forall_isMaxOn_and_mem
+    (hfy : ∀ i ∈ I, LowerSemicontinuousOn (f i) s)
+    {M : α → ι}
+    (M_mem : ∀ x ∈ s, M x ∈ I)
+    (M_max : ∀ x ∈ s, IsMaxOn (fun y ↦ f y x) I (M x)) :
+    LowerSemicontinuousOn (fun x ↦ f (M x) x) s := by
+  intro x hx b hb
+  apply Filter.Eventually.mp <| hfy (M x) (M_mem x hx) x hx b hb
+  apply eventually_nhdsWithin_of_forall
+  intro z hz h
+  exact lt_of_lt_of_le h (M_max z hz (M_mem x hx))
+
+/-- Given a family of upper semicontinuous functions `f : ι → α → β` such that
+for each `x : α`, there is a choice `m x : ι` such that the minimum value of
+evaluation at `x` is achieved by the function `f (m x)`, then the pointwise
+maximum of the family `f` is upper semicontinuous.
+In the statement we restrict to subsets `I : Set ι` and `s : Set α` for more generality. -/
+theorem upperSemicontinuousOn_of_forall_isMinOn_and_mem
+    (hfy : ∀ i ∈ I, UpperSemicontinuousOn (f i) s)
+    {m : α → ι}
+    (m_mem : ∀ x ∈ s, m x ∈ I)
+    (m_min : ∀ x ∈ s, IsMinOn (fun i ↦ f i x) I (m x)) :
+    UpperSemicontinuousOn (fun x ↦ f (m x) x) s :=
+  lowerSemicontinuousOn_of_forall_isMaxOn_and_mem (β := βᵒᵈ) hfy m_mem m_min
 
 end
 
@@ -596,8 +632,6 @@ theorem LowerSemicontinuous.inf (hf : LowerSemicontinuous f)
     LowerSemicontinuous fun x ↦ f x ⊓ g x := fun a ↦
   LowerSemicontinuousAt.inf (hf a) (hg a)
 
-variable {ι : Type*} {f : ι → α → β} {a : α} {I : Set ι}
-
 end
 
 section
@@ -876,17 +910,84 @@ end
 section
 
 variable {α : Type*} [TopologicalSpace α]
-variable {β : Type*} [LinearOrder β]
+variable {β : Type*}
 variable {γ : Type*} [TopologicalSpace γ]
 variable {f : α → β} {g : γ → α} {s : Set α} {a : α} {c : γ} {t : Set γ}
 
-theorem upperSemicontinuousOn_iff_preimage_Iio :
+theorem upperSemicontinuousOn_iff_preimage_Iio [Preorder β] :
     UpperSemicontinuousOn f s ↔ ∀ b, ∃ u : Set α, IsOpen u ∧ s ∩ f ⁻¹' Set.Iio b = s ∩ u :=
   lowerSemicontinuousOn_iff_preimage_Ioi (β := βᵒᵈ)
 
-theorem upperSemicontinuousOn_iff_preimage_Ici :
+theorem upperSemicontinuousOn_iff_preimage_Ici [LinearOrder β] :
     UpperSemicontinuousOn f s ↔ ∀ b, ∃ v : Set α, IsClosed v ∧ s ∩ f ⁻¹' Set.Ici b = s ∩ v :=
   lowerSemicontinuousOn_iff_preimage_Iic (γ := βᵒᵈ)
+
+variable [PartialOrder β] [CommGroup β] [IsOrderedMonoid β]
+
+@[to_additive (attr := simp)]
+theorem lowerSemicontinuousWithinAt_inv_iff :
+    LowerSemicontinuousWithinAt f⁻¹ s a ↔ UpperSemicontinuousWithinAt f s a := by
+  rw [lowerSemicontinuousWithinAt_iff, inv_surjective.forall, upperSemicontinuousWithinAt_iff]
+  simp
+
+@[to_additive]
+alias ⟨_, UpperSemicontinuousWithinAt.inv⟩ := lowerSemicontinuousWithinAt_inv_iff
+
+@[to_additive (attr := simp)]
+theorem upperSemicontinuousWithinAt_inv_iff :
+    UpperSemicontinuousWithinAt f⁻¹ s a ↔ LowerSemicontinuousWithinAt f s a := by
+  simp [← lowerSemicontinuousWithinAt_inv_iff]
+
+@[to_additive]
+alias ⟨_, LowerSemicontinuousWithinAt.inv⟩ := upperSemicontinuousWithinAt_inv_iff
+
+@[to_additive (attr := simp)]
+theorem lowerSemicontinuouAt_inv_iff :
+    LowerSemicontinuousAt f⁻¹ a ↔ UpperSemicontinuousAt f a := by
+  simp [← lowerSemicontinuousWithinAt_univ_iff, ← upperSemicontinuousWithinAt_univ_iff]
+
+@[to_additive]
+alias ⟨_, UpperSemicontinuousAt.inv⟩ := lowerSemicontinuouAt_inv_iff
+
+@[to_additive (attr := simp)]
+theorem upperSemicontinuousAt_inv_iff :
+    UpperSemicontinuousAt f⁻¹ a ↔ LowerSemicontinuousAt f a := by
+  simp [← lowerSemicontinuousWithinAt_univ_iff, ← upperSemicontinuousWithinAt_univ_iff]
+
+@[to_additive]
+alias ⟨_, LowerSemicontinuousAt.inv⟩ := upperSemicontinuousAt_inv_iff
+
+@[to_additive (attr := simp)]
+theorem lowerSemicontinuousOn_inv_iff :
+    LowerSemicontinuousOn f⁻¹ s ↔ UpperSemicontinuousOn f s := by
+  simp [lowerSemicontinuousOn_iff, upperSemicontinuousOn_iff]
+
+@[to_additive]
+alias ⟨_, UpperSemicontinuousOn.inv⟩ := lowerSemicontinuousOn_inv_iff
+
+@[to_additive (attr := simp)]
+theorem upperSemicontinuousOn_inv_iff :
+    UpperSemicontinuousOn f⁻¹ s ↔ LowerSemicontinuousOn f s := by
+  simp [← lowerSemicontinuousOn_inv_iff]
+
+@[to_additive]
+alias ⟨_, LowerSemicontinuousOn.inv⟩ := upperSemicontinuousOn_inv_iff
+
+@[to_additive (attr := simp)]
+theorem lowerSemiContinuous_inv_iff :
+    LowerSemicontinuous f⁻¹ ↔ UpperSemicontinuous f := by
+  simp [← upperSemicontinuousOn_univ_iff, ← lowerSemicontinuousOn_univ_iff]
+
+@[to_additive]
+alias ⟨_, UpperSemicontinuous.inv⟩ := lowerSemiContinuous_inv_iff
+
+@[to_additive (attr := simp)]
+theorem upperSemiContinuous_inv_iff :
+    UpperSemicontinuous f⁻¹ ↔ LowerSemicontinuous f := by
+  simp [← upperSemicontinuousOn_univ_iff, ← lowerSemicontinuousOn_univ_iff]
+
+@[to_additive]
+alias ⟨_, LowerSemicontinuous.inv⟩ := upperSemiContinuous_inv_iff
 
 end
 

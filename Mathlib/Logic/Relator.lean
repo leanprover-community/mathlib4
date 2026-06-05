@@ -41,7 +41,7 @@ end
 
 section
 
-variable {α : Type u₁} {β : Type u₂} (R : α → β → Prop)
+variable {α : Sort u₁} {β : Sort u₂} (R : α → β → Prop)
 
 /-- A relation is "right total" if every element appears on the right. -/
 def RightTotal : Prop := ∀ b, ∃ a, R a b

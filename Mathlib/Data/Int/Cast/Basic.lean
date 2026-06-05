@@ -23,7 +23,7 @@ By contrast, this file's only import beyond `Mathlib.Data.Int.Cast.Defs` is
 `Mathlib.Algebra.Group.Basic`.
 -/
 
-@[expose] public section
+public section
 
 
 universe u
@@ -74,7 +74,7 @@ theorem cast_natCast (n : ℕ) : ((n : ℤ) : R) = n :=
 @[simp, norm_cast]
 theorem cast_ofNat (n : ℕ) [n.AtLeastTwo] :
     ((ofNat(n) : ℤ) : R) = ofNat(n) := by
-  simpa only [OfNat.ofNat] using AddGroupWithOne.intCast_ofNat (R := R) n
+  simpa only [OfNat.ofNat] using! AddGroupWithOne.intCast_ofNat (R := R) n
 
 @[simp, norm_cast]
 theorem cast_one : ((1 : ℤ) : R) = 1 := by

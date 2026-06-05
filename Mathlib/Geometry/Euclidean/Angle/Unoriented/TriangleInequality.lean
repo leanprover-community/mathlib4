@@ -38,6 +38,8 @@ lemma inner_ortho_nonneg {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) : 0 ≤
     inner_self_eq_one_of_norm_eq_one hx, real_inner_smul_right, real_inner_comm, sub_nonneg]
   grw [← sq, sq_le_one_iff_abs_le_one, abs_real_inner_le_norm, hx, hy, one_mul]
 
+@[deprecated (since := "2025-12-20")] alias inner_ortho_nonneg_of_norm_eq_one := inner_ortho_nonneg
+
 lemma inner_normalize_ortho (x y : V) : ⟪y, normalize (ortho y x)⟫ = 0 := by
   simp only [NormedSpace.normalize, real_inner_smul_right, mul_eq_zero, inv_eq_zero, norm_eq_zero]
   right; rw [ortho, real_inner_comm, Submodule.starProjection_inner_eq_zero]
@@ -53,7 +55,7 @@ lemma inner_normalized_ortho_sq_add_inner_sq_eq_one :
     real_inner_smul_right]
   by_cases h₁ : x = y
   · simp [*]
-  by_cases h₂ : x = - y
+  by_cases h₂ : x = -y
   · simp [*]
   rw [real_inner_self_eq_norm_sq, hx]
   have H1 : ‖x - ⟪y, x⟫ • y‖ ≠ 0 := by
@@ -89,10 +91,10 @@ lemma angle_le_angle_add_angle_aux :
   · simp [hxy, real_inner_comm, ← sub_eq_zero]
   rw [NormedSpace.normalize, real_inner_smul_right, inner_sub_right, real_inner_smul_right,
     real_inner_self_eq_norm_sq, hx, real_inner_comm y, ← sq, mul_smul, ← smul_assoc]
-  norm_num
+  simp only [one_pow, smul_eq_mul]
   have H : 1 - ⟪x, y⟫ ^ 2 ≠ 0 := by
     rw [sub_ne_zero, ne_comm, sq_ne_one_iff]
-    constructor <;> contrapose! hxy
+    constructor <;> contrapose hxy
     · rw [inner_eq_one_iff_of_norm_eq_one hx hy] at hxy
       simp [hy, hxy]
     · rw [inner_eq_neg_one_iff_of_norm_eq_one hx hy] at hxy
@@ -121,7 +123,7 @@ lemma angle_le_angle_add_angle_of_norm_eq_one : angle x z ≤ angle x y + angle 
   simp only [inner_add_left, inner_add_right, real_inner_smul_left, real_inner_smul_right,
     real_inner_comm y (normalize _), real_inner_self_eq_norm_sq, hy, angle_comm z y,
     inner_normalize_ortho] at H1
-  norm_num at H1
+  simp only [one_pow, mul_one, mul_zero, add_zero, zero_add] at H1
   rw [mul_comm (Real.cos (angle y z))] at H1
   rw [Real.cos_add, ← inner_eq_cos_angle_of_norm_eq_one hx hz, H1]
   have H2 : -1 ≤ ⟪normalize (ortho y x), normalize (ortho y z)⟫ := by
@@ -167,12 +169,12 @@ lemma angle_expression_of_angle_eq_angle_sum :
   simp only [inner_add_left, inner_add_right, real_inner_smul_left, real_inner_smul_right,
              real_inner_comm y (normalize _), real_inner_self_eq_norm_sq, hy, angle_comm z y,
              inner_normalize_ortho] at H6
-  norm_num at H6
+  simp only [one_pow, mul_one, mul_zero, add_zero, zero_add] at H6
   rw [inner_eq_cos_angle_of_norm_eq_one hx hz, H0, Real.cos_add] at H6
   ring_nf at H6
   have Hw : Real.sin (angle x y) * Real.sin (angle y z) ≠ 0 := by
     grind [sin_eq_zero_iff_angle_eq_zero_or_angle_eq_pi]
-  have H8 : ⟪normalize (ortho y x), normalize (ortho y z)⟫ = - 1 := by
+  have H8 : ⟪normalize (ortho y x), normalize (ortho y z)⟫ = -1 := by
     grind
   have H9 : ortho y x ≠ 0 := by
     grind [ortho_ne_zero_of_not_collinear, angle_comm]
@@ -206,7 +208,7 @@ public theorem angle_eq_angle_add_add_angle_add_of_mem_span {x y z : V} (hy : y 
     (h_mem : y ∈ Submodule.span ℝ≥0 {x, z}) : angle x z = angle x y + angle y z := by
   rw [Submodule.mem_span_pair] at h_mem
   obtain ⟨kx, kz, rfl⟩ := h_mem
-  rcases (zero_le kx).eq_or_lt with rfl | hkx <;> rcases (zero_le kz).eq_or_lt with rfl | hkz
+  rcases eq_zero_or_pos kx with rfl | hkx <;> rcases eq_zero_or_pos kz with rfl | hkz
   · simp at hy
   · simp_all [NNReal.smul_def]
   · simp_all [NNReal.smul_def]

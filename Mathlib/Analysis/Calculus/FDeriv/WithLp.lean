@@ -13,7 +13,7 @@ public import Mathlib.Analysis.Normed.Lp.PiLp
 # Derivatives on `WithLp`
 -/
 
-@[expose] public section
+public section
 
 open ContinuousLinearMap PiLp WithLp
 

@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Antoine Chambert-Loir, Anatole Dedecker, Jireh Lor
 module
 
 public import Mathlib.Topology.Defs.Induced
+public import Mathlib.Topology.Constructions.SumProd
 import Mathlib.Topology.ContinuousOn
 
 /-!
@@ -42,6 +43,14 @@ We build a basic API using dot notation around these notions, and we prove that
 
 We also define lower and upper semicontinuity as abbreviations of these generic definitions
 and transfer the generic results to these notions.
+
+We also define two useful notions for set-valued functions: `HasOpenLowerSections` (which says that
+for `f : α → β` and for all `y ∈ β`, the set `{x | y ∈ f x}` is open. Similarly, we define
+`HasOpenCGraph` which says that the set of all pairs `(x, y) : α × β` with `y ∈ f x` is open.
+We show that `HasOpenCGraph` implies `HasOpenLowerSections` (`HasOpenCGraph.hasOpenLowerSections`)
+which implies `LowerHemicontinuous` (`HasOpenLowerSections.lowerHemicontinuous`).
+
+We also define variants of these two notions for `On`/`At`/`WithinAt`.
 
 ## References
 
@@ -89,6 +98,22 @@ def Semicontinuous (r : α → β → Prop) : Prop :=
   ∀ x, SemicontinuousAt r x
 
 variable {r r' : α → β → Prop} {x : α} {s t : Set α}
+
+lemma semicontinuousWithinAt_iff_frequently :
+    SemicontinuousWithinAt r s x ↔ ∀ y, (∃ᶠ x' in 𝓝[s] x, ¬ r x' y) → ¬ r x y := by
+  simp only [← not_eventually, not_imp_not, SemicontinuousWithinAt]
+
+lemma semicontinuousOn_iff_frequently :
+    SemicontinuousOn r s ↔ ∀ x ∈ s, ∀ y, (∃ᶠ x' in 𝓝[s] x, ¬ r x' y) → ¬ r x y := by
+  simp only [← not_eventually, not_imp_not, SemicontinuousWithinAt, SemicontinuousOn]
+
+lemma semicontinuousAt_iff_frequently :
+    SemicontinuousAt r x ↔ ∀ y, (∃ᶠ x' in 𝓝 x, ¬ r x' y) → ¬ r x y := by
+  simp only [← not_eventually, not_imp_not, SemicontinuousAt]
+
+lemma semicontinuous_iff_frequently :
+    Semicontinuous r ↔ ∀ x y, (∃ᶠ x' in 𝓝 x, ¬ r x' y) → ¬ r x y := by
+  simp only [← not_eventually, not_imp_not, Semicontinuous, SemicontinuousAt]
 
 theorem SemicontinuousWithinAt.mono (h : SemicontinuousWithinAt r s x) (hst : t ⊆ s) :
     SemicontinuousWithinAt r t x := fun y hy =>
@@ -138,6 +163,53 @@ theorem Semicontinuous.semicontinuousWithinAt (h : Semicontinuous r) (s : Set α
 
 theorem Semicontinuous.semicontinuousOn (h : Semicontinuous r) (s : Set α) :
     SemicontinuousOn r s := fun x _hx => h.semicontinuousWithinAt s x
+
+theorem semicontinuous_iff_isOpen : Semicontinuous r ↔ ∀ b, IsOpen {x | r x b} := by
+  exact ⟨fun h b ↦ by simpa [isOpen_iff_mem_nhds, Filter.Eventually] using fun x hx ↦ h x b hx,
+    fun h x b hbx ↦ (h b).mem_nhds hbx⟩
+
+theorem Semicontinuous.isOpen (h : Semicontinuous r) (b : β) : IsOpen {x | r x b} :=
+  semicontinuous_iff_isOpen.mp h b
+
+theorem SemicontinuousWithinAt.inf {r' : α → β → Prop}
+    (h : SemicontinuousWithinAt r s x) (h' : SemicontinuousWithinAt r' s x) :
+    SemicontinuousWithinAt (r ⊓ r') s x := fun b ⟨hb, hb'⟩ ↦
+  (h b hb).and (h' b hb')
+
+theorem SemicontinuousWithinAt.sup {r' : α → β → Prop}
+    (h : SemicontinuousWithinAt r s x) (h' : SemicontinuousWithinAt r' s x) :
+    SemicontinuousWithinAt (r ⊔ r') s x := by
+  intro b hab
+  obtain hb | hb' := hab
+  · exact (h b hb).mono fun _ hx ↦ Or.inl hx
+  · exact (h' b hb').mono fun _ hx ↦ Or.inr hx
+
+theorem SemicontinuousAt.inf {r' : α → β → Prop}
+    (h : SemicontinuousAt r x) (h' : SemicontinuousAt r' x) :
+    SemicontinuousAt (r ⊓ r') x := fun b ⟨hb, hb'⟩ ↦
+  (h b hb).and (h' b hb')
+
+theorem SemicontinuousAt.sup {r' : α → β → Prop}
+    (h : SemicontinuousAt r x) (h' : SemicontinuousAt r' x) :
+    SemicontinuousAt (r ⊔ r') x := by
+  intro b hab
+  obtain hb | hb' := hab
+  · exact (h b hb).mono fun _ hx ↦ Or.inl hx
+  · exact (h' b hb').mono fun _ hx ↦ Or.inr hx
+
+theorem SemicontinuousOn.inf {r' : α → β → Prop}
+    (h : SemicontinuousOn r s) (h' : SemicontinuousOn r' s) :
+    SemicontinuousOn (r ⊓ r') s := fun x hx ↦ (h x hx).inf (h' x hx)
+
+theorem SemicontinuousOn.sup {r' : α → β → Prop}
+    (h : SemicontinuousOn r s) (h' : SemicontinuousOn r' s) :
+    SemicontinuousOn (r ⊔ r') s := fun x hx ↦ (h x hx).sup (h' x hx)
+
+theorem Semicontinuous.inf {r' : α → β → Prop} (h : Semicontinuous r) (h' : Semicontinuous r') :
+    Semicontinuous (r ⊓ r') := fun a ↦ (h a).inf (h' a)
+
+theorem Semicontinuous.sup {r' : α → β → Prop} (h : Semicontinuous r) (h' : Semicontinuous r') :
+    Semicontinuous (r ⊔ r') := fun a ↦ (h a).sup (h' a)
 
 /-! #### Constants -/
 
@@ -193,6 +265,7 @@ section Definitions
 it was suggested to redefine `LowerSemicontinuous` in a way that works better for partial orders.
 The following example shows that this redefinition can still take place even in light of the
 refactor in terms of `Semicontinuous`. -/
+
 example : Semicontinuous (¬ f · ≤ ·) ↔ ∀ x y, (∃ᶠ x' in 𝓝 x, f x' ≤ y) → f x ≤ y := by
   simp_rw [Semicontinuous, SemicontinuousAt, ← not_frequently, not_imp_not]
 
@@ -469,9 +542,71 @@ end
 
 end Preorder
 
+section LinearOrder
+
+variable [LinearOrder β] {f g : α → β} {x : α} {s : Set α}
+
+lemma lowerSemicontinuousWithinAt_iff_frequently :
+    LowerSemicontinuousWithinAt f s x ↔ ∀ y, (∃ᶠ x' in 𝓝[s] x, f x' ≤ y) → f x ≤ y := by
+  simp [semicontinuousWithinAt_iff_frequently]
+
+alias ⟨LowerSemicontinuousWithinAt.frequently, LowerSemicontinuousWithinAt.of_frequently⟩ :=
+  lowerSemicontinuousWithinAt_iff_frequently
+
+lemma lowerSemicontinuousOn_iff_frequently :
+    LowerSemicontinuousOn f s ↔ ∀ x ∈ s, ∀ y, (∃ᶠ x' in 𝓝[s] x, f x' ≤ y) → f x ≤ y := by
+  simp [semicontinuousOn_iff_frequently]
+
+alias ⟨LowerSemicontinuousOn.frequently, LowerSemicontinuousOn.of_frequently⟩ :=
+  lowerSemicontinuousOn_iff_frequently
+
+lemma lowerSemicontinuousAt_iff_frequently :
+    LowerSemicontinuousAt f x ↔ ∀ y, (∃ᶠ x' in 𝓝 x, f x' ≤ y) → f x ≤ y := by
+  simp [semicontinuousAt_iff_frequently]
+
+alias ⟨LowerSemicontinuousAt.frequently, LowerSemicontinuousAt.of_frequently⟩ :=
+  lowerSemicontinuousAt_iff_frequently
+
+lemma lowerSemicontinuous_iff_frequently :
+    LowerSemicontinuous f ↔ ∀ x y, (∃ᶠ x' in 𝓝 x, f x' ≤ y) → f x ≤ y := by
+  simp [semicontinuous_iff_frequently]
+
+alias ⟨LowerSemicontinuous.frequently, LowerSemicontinuous.of_frequently⟩ :=
+  lowerSemicontinuous_iff_frequently
+
+lemma upperSemicontinuousWithinAt_iff_frequently :
+    UpperSemicontinuousWithinAt f s x ↔ ∀ y, (∃ᶠ x' in 𝓝[s] x, f x' ≥ y) → f x ≥ y := by
+  simp [semicontinuousWithinAt_iff_frequently]
+
+alias ⟨UpperSemicontinuousWithinAt.frequently, UpperSemicontinuousWithinAt.of_frequently⟩ :=
+  upperSemicontinuousWithinAt_iff_frequently
+
+lemma upperSemicontinuousOn_iff_frequently :
+    UpperSemicontinuousOn f s ↔ ∀ x ∈ s, ∀ y, (∃ᶠ x' in 𝓝[s] x, f x' ≥ y) → f x ≥ y := by
+  simp [semicontinuousOn_iff_frequently]
+
+alias ⟨UpperSemicontinuousOn.frequently, UpperSemicontinuousOn.of_frequently⟩ :=
+  upperSemicontinuousOn_iff_frequently
+
+lemma upperSemicontinuousAt_iff_frequently :
+    UpperSemicontinuousAt f x ↔ ∀ y, (∃ᶠ x' in 𝓝 x, f x' ≥ y) → f x ≥ y := by
+  simp [semicontinuousAt_iff_frequently]
+
+alias ⟨UpperSemicontinuousAt.frequently, UpperSemicontinuousAt.of_frequently⟩ :=
+  upperSemicontinuousAt_iff_frequently
+
+lemma upperSemicontinuous_iff_frequently :
+    UpperSemicontinuous f ↔ ∀ x y, (∃ᶠ x' in 𝓝 x, f x' ≥ y) → f x ≥ y := by
+  simp [semicontinuous_iff_frequently]
+
+alias ⟨UpperSemicontinuous.frequently, UpperSemicontinuous.of_frequently⟩ :=
+  upperSemicontinuous_iff_frequently
+
+end LinearOrder
+
 section Hemi
 
-/-! ## Lower and Upper Semicontinuity -/
+/-! ## Lower and Upper Hemicontinuity -/
 
 variable [TopologicalSpace β]
 
@@ -561,10 +696,10 @@ lemma upperHemicontinuous_iff {f : α → Set β} :
 end Definitions
 
 /-!
-### Lower semicontinuous functions
+### Lower hemicontinuous functions
 -/
 
-/-! #### Basic dot notation interface for lower semicontinuity -/
+/-! #### Basic dot notation interface for lower hemicontinuity -/
 
 variable {f g : α → Set β} {x : α} {s t : Set α} {y z : Set β}
 
@@ -615,6 +750,41 @@ theorem LowerHemicontinuous.lowerHemicontinuousOn (h : LowerHemicontinuous f) (s
     LowerHemicontinuousOn f s :=
   h.semicontinuousOn s
 
+lemma lowerHemicontinuousWithinAt_iff_frequently :
+    LowerHemicontinuousWithinAt f s x ↔
+      ∀ t, IsClosed t → (∃ᶠ x' in 𝓝[s] x, f x' ⊆ t) → f x ⊆ t := by
+  rw [lowerHemicontinuousWithinAt_iff, compl_surjective.forall]
+  simp only [isOpen_compl_iff]
+  refine forall₂_congr fun t ht ↦ ?_
+  rw [← not_imp_not]
+  simp [not_nonempty_iff_eq_empty, ← disjoint_iff_inter_eq_empty, disjoint_compl_right_iff_subset]
+
+alias ⟨LowerHemicontinuousWithinAt.frequently, LowerHemicontinuousWithinAt.of_frequently⟩ :=
+  lowerHemicontinuousWithinAt_iff_frequently
+
+lemma lowerHemicontinuousOn_iff_frequently :
+    LowerHemicontinuousOn f s ↔
+      ∀ x ∈ s, ∀ t, IsClosed t → (∃ᶠ x' in 𝓝[s] x, f x' ⊆ t) → f x ⊆ t := by
+  simp_rw [lowerHemicontinuousOn_iff, lowerHemicontinuousWithinAt_iff_frequently]
+
+alias ⟨LowerHemicontinuousOn.frequently, LowerHemicontinuousOn.of_frequently⟩ :=
+  lowerHemicontinuousOn_iff_frequently
+
+lemma lowerHemicontinuousAt_iff_frequently :
+    LowerHemicontinuousAt f x ↔ ∀ t, IsClosed t → (∃ᶠ x' in 𝓝 x, f x' ⊆ t) → f x ⊆ t := by
+  rw [← lowerHemicontinuousWithinAt_univ_iff, lowerHemicontinuousWithinAt_iff_frequently]
+  simp
+
+alias ⟨LowerHemicontinuousAt.frequently, LowerHemicontinuousAt.of_frequently⟩ :=
+  lowerHemicontinuousAt_iff_frequently
+
+lemma lowerHemicontinuous_iff_frequently :
+    LowerHemicontinuous f ↔ ∀ x t, IsClosed t → (∃ᶠ x' in 𝓝 x, f x' ⊆ t) → f x ⊆ t := by
+  simp_rw [lowerHemicontinuous_iff, lowerHemicontinuousAt_iff_frequently]
+
+alias ⟨LowerHemicontinuous.frequently, LowerHemicontinuous.of_frequently⟩ :=
+  lowerHemicontinuous_iff_frequently
+
 /-! #### Constants -/
 
 theorem LowerHemicontinuousWithinAt.const : LowerHemicontinuousWithinAt (fun _x => z) s x :=
@@ -657,12 +827,10 @@ theorem LowerHemicontinuous.comp
 end
 
 /-!
-### Upper semicontinuous functions
+### Upper hemicontinuous functions
 -/
 
-
-/-! #### Basic dot notation interface for upper semicontinuity -/
-
+/-! #### Basic dot notation interface for upper hemicontinuity -/
 
 theorem UpperHemicontinuousWithinAt.mono (h : UpperHemicontinuousWithinAt f s x) (hst : t ⊆ s) :
     UpperHemicontinuousWithinAt f t x :=
@@ -711,6 +879,40 @@ theorem UpperHemicontinuous.upperHemicontinuousOn (h : UpperHemicontinuous f) (s
     UpperHemicontinuousOn f s :=
   h.semicontinuousOn s
 
+lemma upperHemicontinuousWithinAt_iff_frequently :
+    UpperHemicontinuousWithinAt f s x ↔
+      ∀ t, IsClosed t → (∃ᶠ x' in 𝓝[s] x, ((f x') ∩ t).Nonempty) → ((f x) ∩ t).Nonempty := by
+  rw [UpperHemicontinuousWithinAt, semicontinuousWithinAt_iff_frequently, compl_surjective.forall]
+  simp [← subset_interior_iff_mem_nhdsSet, not_subset, forall_isClosed_iff, inter_nonempty]
+
+alias ⟨UpperHemicontinuousWithinAt.frequently, UpperHemicontinuousWithinAt.of_frequently⟩ :=
+  upperHemicontinuousWithinAt_iff_frequently
+
+lemma upperHemicontinuousOn_iff_frequently :
+    UpperHemicontinuousOn f s ↔ ∀ x ∈ s, ∀ t, IsClosed t →
+      (∃ᶠ x' in 𝓝[s] x, ((f x') ∩ t).Nonempty) → ((f x) ∩ t).Nonempty := by
+  simp_rw [upperHemicontinuousOn_iff, upperHemicontinuousWithinAt_iff_frequently]
+
+alias ⟨UpperHemicontinuousOn.frequently, UpperHemicontinuousOn.of_frequently⟩ :=
+  upperHemicontinuousOn_iff_frequently
+
+lemma upperHemicontinuousAt_iff_frequently :
+    UpperHemicontinuousAt f x ↔
+      ∀ t, IsClosed t → (∃ᶠ x' in 𝓝 x, ((f x') ∩ t).Nonempty) → ((f x) ∩ t).Nonempty := by
+  rw [← upperHemicontinuousWithinAt_univ_iff, upperHemicontinuousWithinAt_iff_frequently]
+  simp
+
+alias ⟨UpperHemicontinuousAt.frequently, UpperHemicontinuousAt.of_frequently⟩ :=
+  upperHemicontinuousAt_iff_frequently
+
+lemma upperHemicontinuous_iff_frequently :
+    UpperHemicontinuous f ↔
+      ∀ x t, IsClosed t → (∃ᶠ x' in 𝓝 x, ((f x') ∩ t).Nonempty) → ((f x) ∩ t).Nonempty := by
+  simp_rw [upperHemicontinuous_iff, upperHemicontinuousAt_iff_frequently]
+
+alias ⟨UpperHemicontinuous.frequently, UpperHemicontinuous.of_frequently⟩ :=
+  upperHemicontinuous_iff_frequently
+
 /-! #### Constants -/
 
 theorem UpperHemicontinuousWithinAt.const : UpperHemicontinuousWithinAt (fun _x => z) s x :=
@@ -755,3 +957,139 @@ theorem UpperHemicontinuous.comp
 end
 
 end Hemi
+
+section Sections
+
+/-! ## Open lower sections -/
+
+/-! ### Definitions -/
+
+/-- A function `f : α → Set β` has open lower sections on `s` if it has open lower sections within
+`s` at every `x ∈ s`. -/
+abbrev HasOpenLowerSectionsOn (f : α → Set β) (s : Set α) :=
+  SemicontinuousOn (fun x b ↦ b ∈ f x) s
+
+/-- A function `f : α → Set β` has open lower sections if, for every `b`, the set `{x | b ∈ f x}`
+is open. Equivalently, whenever `b ∈ f x`, then `b ∈ f x'` for all `x'` sufficiently close to
+`x`. -/
+abbrev HasOpenLowerSections (f : α → Set β) :=
+  Semicontinuous (fun x b ↦ b ∈ f x)
+
+variable {f g : α → Set β} {x : α} {s t : Set α} {z : Set β}
+
+theorem hasOpenLowerSections_iff_isOpen : HasOpenLowerSections f ↔ ∀ b, IsOpen {x | b ∈ f x} := by
+  simp [semicontinuous_iff_isOpen]
+
+/-! ### Basic dot notation interface -/
+
+theorem HasOpenLowerSectionsOn.mono (h : HasOpenLowerSectionsOn f s) (hst : t ⊆ s) :
+    HasOpenLowerSectionsOn f t :=
+  SemicontinuousOn.mono h hst
+
+theorem hasOpenLowerSectionsOn_univ_iff :
+    HasOpenLowerSectionsOn f univ ↔ HasOpenLowerSections f :=
+  semicontinuousOn_univ_iff
+
+@[simp] theorem hasOpenLowerSections_restrict_iff :
+    HasOpenLowerSections (s.restrict f) ↔ HasOpenLowerSectionsOn f s :=
+  semicontinuous_restrict_iff (r := (fun x b ↦ b ∈ f x))
+
+theorem HasOpenLowerSections.hasOpenLowerSectionsOn (h : HasOpenLowerSections f) (s : Set α) :
+    HasOpenLowerSectionsOn f s :=
+  h.semicontinuousOn s
+
+/-! ### Constants -/
+
+theorem HasOpenLowerSectionsOn.const : HasOpenLowerSectionsOn (fun _x => z) s :=
+  SemicontinuousOn.const
+
+theorem HasOpenLowerSections.const : HasOpenLowerSections fun _x : α => z :=
+  Semicontinuous.const
+
+/-! ### Intersection and Union -/
+
+theorem HasOpenLowerSectionsOn.inter {f g : α → Set β} {s : Set α} (hf : HasOpenLowerSectionsOn f s)
+  (hg : HasOpenLowerSectionsOn g s) : HasOpenLowerSectionsOn (fun x ↦ f x ∩ g x) s := hf.inf hg
+
+theorem HasOpenLowerSectionsOn.union {f g : α → Set β} {s : Set α} (hf : HasOpenLowerSectionsOn f s)
+  (hg : HasOpenLowerSectionsOn g s) : HasOpenLowerSectionsOn (fun x ↦ f x ∪ g x) s := hf.sup hg
+
+theorem HasOpenLowerSections.inter {f g : α → Set β} (hf : HasOpenLowerSections f)
+  (hg : HasOpenLowerSections g) : HasOpenLowerSections (fun x ↦ f x ∩ g x) := hf.inf hg
+
+theorem HasOpenLowerSections.union {f g : α → Set β} (hf : HasOpenLowerSections f)
+  (hg : HasOpenLowerSections g) : HasOpenLowerSections (fun x ↦ f x ∪ g x) := hf.sup hg
+
+/-! ### Composition -/
+
+section
+
+variable {γ : Type*} [TopologicalSpace γ] {g : γ → α} {c : γ} {t : Set γ}
+
+theorem HasOpenLowerSectionsOn.comp
+    (hf : HasOpenLowerSectionsOn f s) (hg : ContinuousOn g t) (hg' : MapsTo g t s) :
+    HasOpenLowerSectionsOn (f ∘ g) t :=
+  SemicontinuousOn.comp (r := (fun x b ↦ b ∈ f x)) hf hg hg'
+
+theorem HasOpenLowerSections.comp
+    (hf : HasOpenLowerSections f) (hg : Continuous g) : HasOpenLowerSections (f ∘ g) :=
+  Semicontinuous.comp (r := (fun x b ↦ b ∈ f x)) hf hg
+
+end
+
+end Sections
+
+section Graph
+
+/-! ## Correspondence Graphs (CGraph)
+
+We define the graph of a correspondence `f : α → Set β` to be the set of all pairs
+`(x, y) : α × β` such that `y ∈ f x`. We use the term `CGraph` to refer to this construct.
+-/
+
+variable [TopologicalSpace β]
+
+/-- A function `f : α → Set β` has an open cgraph if the set of all `x` such that `x.2 ∈ f x.1`
+is open in `α × β`. -/
+abbrev HasOpenCGraph (f : α → Set β) := IsOpen {x : α × β | x.2 ∈ f x.1}
+
+theorem HasOpenCGraph.const {z : Set β} (hz : IsOpen z) : HasOpenCGraph (fun _x : α => z) :=
+  hz.preimage continuous_snd
+
+theorem HasOpenCGraph.inter {f g : α → Set β} (hf : HasOpenCGraph f)
+    (hg : HasOpenCGraph g) : HasOpenCGraph (fun x ↦ f x ∩ g x) := by
+  have : {x : α × β | x.2 ∈ f x.1 ∩ g x.1} =
+      {x | x.2 ∈ f x.1} ∩ {x | x.2 ∈ g x.1} := by ext; simp
+  rw [HasOpenCGraph, this]
+  exact IsOpen.inter hf hg
+
+section
+
+variable {γ : Type*} [TopologicalSpace γ] {g' : γ → α} {c : γ × β}
+    {u : Set (γ × β)} {v : Set (α × β)}
+
+theorem HasOpenCGraph.comp {f : α → Set β} (hf : HasOpenCGraph f) (hg : Continuous g') :
+    HasOpenCGraph (f ∘ g') :=
+  hf.preimage (hg.prodMap continuous_id)
+
+end
+
+/-! ### Implications
+
+A correspondence with an open graph has open lower sections. And a correspondence
+with open lower sections is lower hemicontinuous.
+-/
+
+theorem HasOpenLowerSections.lowerHemicontinuous {f : α → Set β} (hf : HasOpenLowerSections f) :
+    LowerHemicontinuous f := fun x _ ⟨hopen, y, hyfx, hyt⟩ ↦
+      (hf x y hyfx).mono fun _ hy' ↦ ⟨hopen, y, hy', hyt⟩
+
+theorem HasOpenCGraph.hasOpenLowerSections
+    {f : α → Set β} (h : HasOpenCGraph f) :
+    HasOpenLowerSections f := by
+  intro x b hb
+  have hopen : IsOpen {x' : α | b ∈ f x'} := by
+    simpa using h.preimage (continuous_id.prodMk continuous_const)
+  simpa [Filter.Eventually] using hopen.mem_nhds hb
+
+end Graph

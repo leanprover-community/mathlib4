@@ -16,7 +16,7 @@ in terms of the integral of continuous functions equal to 1 on the compact set, 
 of the open set respectively.
 -/
 
-@[expose] public section
+public section
 
 open Filter Set MeasureTheory Measure
 

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Ring.List
 public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Nat.GCD.BigOperators
+public import Mathlib.Algebra.Ring.Nat
 
 /-!
 # Chinese Remainder Theorem
@@ -58,6 +59,7 @@ lemma modEq_list_map_prod_iff {a b} {s : ι → ℕ} {l : List ι} (co : l.Pairw
 
 variable (a s : ι → ℕ)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The natural number less than `(l.map s).prod` congruent to
 `a i` mod `s i` for all  `i ∈ l`. -/
 def chineseRemainderOfList : (l : List ι) → l.Pairwise (Coprime on s) →
@@ -155,8 +157,8 @@ theorem chineseRemainderOfMultiset_lt_prod {m : Multiset ι}
     chineseRemainderOfMultiset a s nod hs pp < (m.map s).prod := by
   induction m using Quot.ind with | _ l
   unfold chineseRemainderOfMultiset
-  simpa using chineseRemainderOfList_lt_prod a s l
-    (List.Nodup.pairwise_of_forall_ne nod pp) (by simpa using hs)
+  simpa using! chineseRemainderOfList_lt_prod a s l
+    (List.Nodup.pairwise_of_forall_ne nod pp) (by simpa using! hs)
 
 /-- The natural number less than `∏ i ∈ t, s i` congruent to
 `a i` mod `s i` for all  `i ∈ t`. -/

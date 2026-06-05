@@ -18,10 +18,10 @@ public import Mathlib.RingTheory.Adjoin.FG
   C is algebra-finite over A, and C is module-finite over B, then B is algebra-finite over A.
 -/
 
-@[expose] public section
+public section
 
 
-open Pointwise
+open scoped Pointwise
 
 universe u v w u₁
 
@@ -40,12 +40,7 @@ theorem adjoin_restrictScalars (C D E : Type*) [CommSemiring C] [CommSemiring D]
     ext x
     change x ∈ Subsemiring.closure (_ ∪ S) ↔ x ∈ Subsemiring.closure (_ ∪ S)
     rw [this]
-  ext x
-  constructor
-  · rintro ⟨y, hy⟩
-    exact ⟨⟨algebraMap D E y, ⟨y, ⟨Algebra.mem_top, rfl⟩⟩⟩, hy⟩
-  · rintro ⟨⟨y, ⟨z, ⟨h0, h1⟩⟩⟩, h2⟩
-    exact ⟨z, Eq.trans h1 h2⟩
+  simp
 
 theorem adjoin_res_eq_adjoin_res (C D E F : Type*) [CommSemiring C] [CommSemiring D]
     [CommSemiring E] [CommSemiring F] [Algebra C D] [Algebra C E] [Algebra C F] [Algebra D F]
@@ -127,7 +122,7 @@ theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : 
                   mem_image₂_of_mem (mem_union_right _ <| mul_mem_mul hyi hyj) hyk⟩
               (subset_span <| Set.mem_insert_of_mem _ hyk : yk ∈ _))
   refine ⟨Algebra.adjoin A (↑s : Set B), Subalgebra.fg_adjoin_finset _, insert 1 y, ?_⟩
-  convert restrictScalars_injective A (Algebra.adjoin A (s : Set B)) C _
+  convert! restrictScalars_injective A (Algebra.adjoin A (s : Set B)) C _
   rw [restrictScalars_top, eq_top_iff, ← Algebra.top_toSubmodule, ← hx, Algebra.adjoin_eq_span,
     span_le]
   refine fun r hr =>

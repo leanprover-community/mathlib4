@@ -20,7 +20,7 @@ finite sets, finset
 
 -/
 
-@[expose] public section
+public section
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
@@ -72,7 +72,10 @@ theorem insert_eq (a : α) (s : Finset α) : insert a s = {a} ∪ s :=
 lemma singleton_union (x : α) (s : Finset α) : {x} ∪ s = insert x s :=
   rfl
 
-@[simp, grind =]
+/- We lower the simp-priority of `union_singleton` to ensure that `{x} ∪ {y}`
+simplifies to `{x, y}` and not `{y, x}`. -/
+
+@[simp 900, grind =]
 lemma union_singleton (x : α) (s : Finset α) : s ∪ {x} = insert x s := by
   rw [Finset.union_comm, singleton_union]
 

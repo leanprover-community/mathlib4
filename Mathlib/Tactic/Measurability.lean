@@ -5,8 +5,8 @@ Authors: Miyahara Kō
 -/
 module
 
-public meta import Mathlib.Tactic.Measurability.Init
-public meta import Mathlib.Tactic.FunProp.Decl
+public import Mathlib.Tactic.FunProp.Decl
+public import Mathlib.Tactic.Measurability.Init
 
 /-!
 # Measurability
@@ -39,6 +39,7 @@ initialize registerBuiltinAttribute {
     if ← isFunPropGoal (← getConstInfo decl).type then
       try
         Attribute.add decl `fun_prop (← `(attr|fun_prop)) kind
+        logWarningAt stx "Use `@[fun_prop]` instead"
       catch e =>
         logWarningAt stx m!"This theorem will not be used by `measurability`: {e.toMessageData}"
     else
