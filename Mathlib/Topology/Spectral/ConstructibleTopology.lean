@@ -78,7 +78,7 @@ lemma compl_mem_constructibleTopologySubbasis_iff {s : Set X} :
   grind [constructibleTopologySubbasis, isClosed_compl_iff, compl_compl]
 
 lemma compl_image_constructibleTopologySubbasis :
-    compl '' (constructibleTopologySubbasis X) = constructibleTopologySubbasis X := by
+    compl '' constructibleTopologySubbasis X = constructibleTopologySubbasis X := by
   grind [constructibleTopologySubbasis, isClosed_compl_iff, compl_compl]
 
 variable (X) in
