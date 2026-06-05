@@ -23,12 +23,12 @@ open scoped Topology ENNReal
 
 namespace MeasureTheory
 
-variable {α E : Type*} {_ : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup E]
+variable {X E : Type*} {_ : MeasurableSpace X} {μ : Measure X} [NormedAddCommGroup E]
 
 /-- If a series of functions has summable `L^p` norms for some `1 ≤ p`, then the norms are ae
 pointwise summable. -/
 theorem summable_norm_of_tsum_eLpNorm_ne_top {ι : Type*} [Countable ι]
-    {p : ℝ≥0∞} (hp : 1 ≤ p) {f : ι → α → E} (hf : ∀ n, AEStronglyMeasurable (f n) μ)
+    {p : ℝ≥0∞} (hp : 1 ≤ p) {f : ι → X → E} (hf : ∀ n, AEStronglyMeasurable (f n) μ)
     (h'f : ∑' n, eLpNorm (f n) p μ ≠ ∞) :
     ∀ᵐ a ∂μ, Summable (fun n ↦ ‖f n a‖) := by
   suffices H : ∀ᵐ a ∂μ, ∑' n, ‖f n a‖ₑ < ∞ by
@@ -43,7 +43,7 @@ theorem summable_norm_of_tsum_eLpNorm_ne_top {ι : Type*} [Countable ι]
   /- Let us now consider `p < ∞`. In a measurable set `s` of finite measure, the `L^1` norm is
   controlled by a multiple of the `L^p` norm, so the `L^1` norms are summable, i.e.,
   `∫ x ∈ s, ∑ ‖f n x‖ₑ ∂μ < ∞`. This forces the sum to be finite ae. -/
-  have A (s : Set α) (hs : MeasurableSet s) (h's : μ s ≠ ∞) :
+  have A (s : Set X) (hs : MeasurableSet s) (h's : μ s ≠ ∞) :
       ∀ᵐ x ∂μ, x ∈ s → ∑' n, ‖f n x‖ₑ < ∞ := by
     rw [← ae_restrict_iff' hs]
     apply ae_lt_top' (AEMeasurable.tsum (fun i ↦ (hf i).restrict.enorm))

@@ -465,7 +465,7 @@ theorem condExp_tsum [CompleteSpace E]
   by_cases hμm : SigmaFinite (μ.trim hm); swap
   · simp only [condExp_of_not_sigmaFinite hm hμm, Pi.zero_apply, tsum_zero]
     exact ae_eq_rfl
-  grw [condExp_ae_eq_condExpL1 hm, condExpL1]
+  grw [condExp_ae_eq_condExpL1 hm]
   have A : ∀ᵐ a ∂μ, ∀ i, μ[f i | m] a = condExpL1 hm μ (f i) a :=
     ae_all_iff.2 (fun i ↦ condExp_ae_eq_condExpL1 hm _)
   have B : ∑' (n : ι), ‖setToFun μ (condExpInd E hm μ)
