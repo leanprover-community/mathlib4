@@ -29,11 +29,14 @@ open Multiplicative WithZero Scheme
 
 /--
 A principal divisor on a locally noetherian integral scheme is locally finite (and hence a divisor).
+
+TODO: Swap the arguments on the ord function
 -/
-lemma div_locally_finite [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionField) (hf : f ≠ 0)
-    (z : X) : ∃ t ∈ 𝓝 z, (t ∩ Function.support fun Z : X ↦ if h : coheight Z = 1
-    then X.ordZ Z h f else 0).Finite := by
-  obtain ⟨U, f', (hUne : Nonempty U), hgf, hu⟩ := Scheme.exists_isUnit_germ_eq f hf
+lemma div_locally_finite [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionField)
+    (z : X) : ∃ t ∈ 𝓝 z, (t ∩ Function.support (ord f)).Finite := by
+  by_cases hf : f = 0
+  · sorry
+  obtain ⟨U, hU, g, (hUne : Nonempty U), hgf, hg⟩ := exists_isUnit_germ_eq f hf
   obtain ⟨W, hWa, hzW, -⟩ := exists_isAffineOpen_mem_and_subset (x := z) (U := ⊤) (by simp)
   have : IsNoetherianRing Γ(X, W) := IsLocallyNoetherian.component_noetherian ⟨W, hWa⟩
   have : NoetherianSpace W.1 := noetherianSpace_of_isAffineOpen W hWa
@@ -51,37 +54,50 @@ lemma div_locally_finite [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionF
   refine ⟨W, W.2.mem_nhds hzW,
     (NoetherianSpace.finite_coheight_one_of_closure_ne_univ hne).subset ?_⟩
   intro x ⟨hxW, hxsup⟩
-  simp only [Function.mem_support, ne_eq, dite_eq_right_iff, not_forall] at hxsup
-  obtain ⟨hx1, hxne⟩ := hxsup
-  exact ⟨⟨hxW, not_mem_of_ordZ_neq_zero f hu hgf hxne⟩, hx1⟩
+  simp at hxsup
+  refine ⟨⟨hxW, ?_⟩, ?_⟩
+  · --simp [ord] at hxsup
+    --obtain ⟨hx1, hxne⟩ := hxsup
+    have : ord f x = 0 := by
+      #check ord_of_isUnit hg sorry hxW
+      sorry
+    contradiction
+  · sorry
+  --obtain ⟨hx1, hxne⟩ := hxsup
+  --exact ⟨⟨hxW, not_mem_of_ordZ_neq_zero f hu hgf hxne⟩, hx1⟩
 
 /--
 On an locally Noetherian integral scheme, given `f : X.functionField` and `hf : x ≠ 0`,
 we define the principal Weil divisor `div f hf` as an algebraic cycle with coefficients in `ℤ`.
 -/
 noncomputable
-def div [IsIntegral X] [nt : IsLocallyNoetherian X] (f : X.functionField) (hf : f ≠ 0) :
+def div [IsIntegral X] [nt : IsLocallyNoetherian X] (f : X.functionField) :
     AlgebraicCycle X ℤ where
-  toFun Z := if h : Order.coheight Z = 1 then X.ordZ Z h f else 0
+  toFun z := ord z f
   supportWithinDomain' := by simp
   supportLocallyFiniteWithinDomain' z _ := div_locally_finite f hf z
 
 @[simp]
+lemma div_eq_ord [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionField)
+    (z : X) : div f z = ord z f := rfl
+
+/-
+@[simp]
 lemma div_eq_zero_of_coheight_ne_one [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionField)
-    (hf : f ≠ 0) (Z : X) (hZ : coheight Z ≠ 1) : div f hf Z = 0 := dif_neg hZ
+    (hf : f ≠ 0) (z : X) (hz : coheight Z ≠ 1) : div f z = 0 := dif_neg hZ
 
 @[simp]
 lemma div_eq_ord_of_coheight_eq_one [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionField)
-    (hf : f ≠ 0) (Z : X) (hZ : coheight Z = 1) :
-    div f hf Z = ordZ Z hZ f := dif_pos hZ
+    (z : X) (hz : coheight z = 1) :
+    div f z = ord z f := dif_pos hZ-/
 
 @[simp]
 theorem div_mul [IsIntegral X] [IsLocallyNoetherian X]
     (f : X.functionField) (hf : f ≠ 0) (g : X.functionField) (hg : g ≠ 0) :
-    div (f * g) ((mul_ne_zero_iff_right hg).mpr hf) = div f hf + div g hg := by
+    div (f * g) = div f + div g := by
   ext a
-  suffices (div (f*g) (by simp_all)).toFun a = (div f hf).toFun a + (div g hg).toFun a from this
-  simp only [div]
+  --suffices (div (f*g)).toFun a = (div f).toFun a + (div g).toFun a from this
+  simp --only [div]
   split_ifs <;> simp_all
 
 /--
@@ -95,8 +111,7 @@ theorem div_support [IsIntegral X] [IsLocallyNoetherian X] {f : X.functionField}
   exact div_eq_zero_of_coheight_ne_one f hf z hz
 
 theorem div_eq_zero_of_isUnit [IsIntegral X] [IsLocallyNoetherian X] {U : X.Opens} [Nonempty U]
-    {g : Γ(X, U)} (hg : IsUnit g) : (div (X.germToFunctionField U g)
-    ((map_ne_zero_iff _ (germToFunctionField_injective X U)).mpr hg.ne_zero)).restrict U = 0 := by
+    {g : Γ(X, U)} (hg : IsUnit g) : div (X.germToFunctionField U g) = 0 := by
   apply AlgebraicCycle.homgeneous_ext (AlgebraicCycle.restrict_support_subset_inter div_support)
     (by simp)
   intro z hz
@@ -106,16 +121,14 @@ theorem div_eq_zero_of_isUnit [IsIntegral X] [IsLocallyNoetherian X] {U : X.Open
 
 lemma div_eq_zero_of_isUnit_top
     [IsIntegral X] [IsLocallyNoetherian X] {g : Γ(X, ⊤)} (hg : IsUnit g) :
-    haveI : Nonempty (⊤ : X.Opens) := (Opens.nonempty_iff ⊤).mpr univ_nonempty
-    div (X.germToFunctionField ⊤ g)
-    ((map_ne_zero_iff _ (germToFunctionField_injective X ⊤)).mpr hg.ne_zero) = 0 := by
+    div (X.germToFunctionField ⊤ g) = 0 := by
   classical
   have : Nonempty (⊤ : X.Opens) := (Opens.nonempty_iff ⊤).mpr univ_nonempty
   simp [← div_eq_zero_of_isUnit hg]
 
 @[simp]
-theorem div_neg [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionField) (hf : f ≠ 0) :
-    div (- f) (neg_ne_zero.mpr hf) = div f hf := by
+theorem div_neg [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionField) :
+    div (- f) = div f := by
   classical
   simp_rw [neg_eq_neg_one_mul f]
   rw [div_mul _ (by simp) _ hf, add_eq_right]

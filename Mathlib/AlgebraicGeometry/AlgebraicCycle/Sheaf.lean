@@ -73,7 +73,7 @@ The underlying set of `Γ(𝒪ₓ(D), U)`, defined to be:
 `Γ(𝒪ₓ(D), U) := {s : k(X) | s ≠ 0 → Nonempty U ∧ s|_U + D|_U ≥ 0}`.
 -/
 def carrier (D : AlgebraicCycle X ℤ) (U : X.Opens) : Set X.functionField :=
-    {s : (X.functionField) | (h : s ≠ 0) → Nonempty U ∧ (div s h).restrict U + D.restrict U ≥ 0}
+    {s : (X.functionField) | (h : s ≠ 0) → Nonempty U ∧ (div s).restrict U + D.restrict U ≥ 0}
 
 /--
 The sum of two sections in `Γ(𝒪ₓ(D), U)` is another section of `Γ(𝒪ₓ(D), U)` on a scheme which is
@@ -488,6 +488,8 @@ open TopologicalSpace
 /--
 If a family of sets has a connected supremum, then between any two sets of the cover there is a
 sequence of sets in the cover which intersect nontrivially pairwise.
+
+TODO: Remove and replace with lemma that's now in mathlib
 -/
 lemma connectedByCover_of_connected {I : Type*} {𝒰 : I → X.Opens}
     (h𝒰 : _root_.IsConnected (iSup 𝒰).1) (i j : I) (hi : (𝒰 i).1.Nonempty)
@@ -587,7 +589,6 @@ def sheaf {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
 
 variable (D : AlgebraicCycle X ℤ) (x : X) [IsIntegral X] [IsLocallyNoetherian X]
   [IsRegularInCodimensionOne X]
-
 
 noncomputable
 instance : Module (X.presheaf.stalk x) ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf x) :=
