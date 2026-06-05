@@ -671,7 +671,7 @@ theorem card_eq_one : #s = 1 ↔ ∃ a, s = {a} := by
   cases s
   simp only [Multiset.card_eq_one, Finset.card, ← val_inj, singleton_val]
 
-theorem card_eq_one_iff_exists_unique : #s = 1 ↔ ∃! a, a ∈ s := by
+theorem card_eq_one_iff_existsUnique : #s = 1 ↔ ∃! a, a ∈ s := by
   simp [card_eq_one, Finset.singleton_iff_unique_mem]
 
 theorem exists_eq_insert_iff [DecidableEq α] :
