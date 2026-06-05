@@ -753,6 +753,42 @@ theorem mem_neighborSet (v w : V) : w ∈ G.neighborSet v ↔ G.Adj v w :=
 lemma notMem_neighborSet_self : a ∉ G.neighborSet a := by simp
 
 @[simp]
+theorem neighborSet_bot (v : V) : (⊥ : SimpleGraph V).neighborSet v = ∅ := by
+  ext; simp
+
+@[simp]
+theorem neighborSet_top (v : V) : (⊤ : SimpleGraph V).neighborSet v = {v}ᶜ := by
+  ext; simp [eq_comm]
+
+@[simp]
+theorem neighborSet_sup {G₁ G₂ : SimpleGraph V} (v : V) :
+    (G₁ ⊔ G₂).neighborSet v = G₁.neighborSet v ∪ G₂.neighborSet v := by
+  ext; simp
+
+@[simp]
+theorem neighborSet_inf {G₁ G₂ : SimpleGraph V} (v : V) :
+    (G₁ ⊓ G₂).neighborSet v = G₁.neighborSet v ∩ G₂.neighborSet v := by
+  ext; simp
+
+@[simp]
+theorem neighborSet_iSup {s : ι → SimpleGraph V} (v : V) :
+    (⨆ i, s i).neighborSet v = ⋃ i, (s i).neighborSet v := by
+  ext; simp
+
+@[simp]
+theorem neighborSet_iInf [Nonempty ι] {s : ι → SimpleGraph V} (v : V) :
+    (⨅ i, s i).neighborSet v = ⋂ i, (s i).neighborSet v := by
+  inhabit ι
+  ext y
+  simp only [mem_neighborSet, iInf_adj, Set.mem_iInter, and_iff_left_iff_imp]
+  intro h
+  exact (h default).ne
+
+theorem neighborSet_disjoint {G₁ G₂ : SimpleGraph V} {v : V} (h : Disjoint G₁ G₂) :
+    Disjoint (G₁.neighborSet v) (G₂.neighborSet v) := by
+  rw [Set.disjoint_iff_inter_eq_empty, ← neighborSet_inf, h.eq_bot, neighborSet_bot]
+
+@[simp]
 theorem mem_incidenceSet (v w : V) : s(v, w) ∈ G.incidenceSet v ↔ G.Adj v w := by
   simp [incidenceSet]
 
