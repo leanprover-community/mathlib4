@@ -158,6 +158,7 @@ theorem normalize_content {p : R[X]} : normalize p.content = p.content :=
 theorem content_monomial {r : R} {k : ℕ} : content (monomial k r) = normalize r := by
   rw [← C_mul_X_pow_eq_monomial, ← normalize_content, normalize_eq_normalize_iff_associated]
   grw [associated_content_C_mul, content_X_pow, mul_one]
+  exact Associated.rfl
 
 theorem content_eq_zero_iff {p : R[X]} : content p = 0 ↔ p = 0 := by
   rw [content, Finset.gcd_eq_zero_iff]
@@ -492,10 +493,9 @@ theorem degree_gcd_le_right (p) {q : R[X]} (hq : q ≠ 0) : (gcd p q).degree ≤
 
 end NormalizedGCDMonoid
 
-noncomputable instance [StrongNormalizedGCDMonoid R] :
-    StrongNormalizedGCDMonoid R[X] where
-  __ := inferInstanceAs (NormalizedGCDMonoid R[X])
-  __ := inferInstanceAs (StrongNormalizationMonoid R[X])
+noncomputable instance [StrongNormalizedGCDMonoid R] : StrongNormalizedGCDMonoid R[X] where
+  __ : NormalizedGCDMonoid R[X] := inferInstance
+  __ : StrongNormalizationMonoid R[X] := inferInstance
 
 -- We do not add a `GCDMonoid R[X]` instance due to diamond
 instance [IsGCDMonoid R] : IsGCDMonoid R[X] := by

@@ -102,19 +102,19 @@ instance (α) [MonoidWithZero α] [IsLeftCancelMulZero α] :
 
 /-- Strong normalization monoid: multiplying with `normUnit` gives a normal form for associated
 elements. It is stronger in that it ensures the normalization map is a monoid homomorphism. -/
-class StrongNormalizationMonoid (α : Type*) [CommMonoidWithZero α] where
-  /-- `normUnit` assigns to each element of the monoid a unit of the monoid. -/
-  normUnit : α → αˣ
-  /-- The proposition that `normUnit` maps `0` to the identity. -/
-  normUnit_zero : normUnit 0 = 1
+class StrongNormalizationMonoid (α) [CommMonoidWithZero α] extends NormalizationMonoid α where
   /-- The proposition that `normUnit` respects multiplication of non-zero elements. -/
   normUnit_mul : ∀ {a b}, a ≠ 0 → b ≠ 0 → normUnit (a * b) = normUnit a * normUnit b
   /-- The proposition that `normUnit` maps units to their inverses. -/
   normUnit_coe_units : ∀ u : αˣ, normUnit u = u⁻¹
+  normUnit_one := normUnit_coe_units 1
+  normUnit_mul_units {a} u ha :=
+    (by nontriviality α; simp [normUnit_mul, ha, normUnit_coe_units, mul_comm])
 
 export NormalizationMonoid (normUnit normUnit_zero normUnit_one normUnit_mul_units)
+export StrongNormalizationMonoid (normUnit_mul)
 
-attribute [simp] normUnit_zero normUnit_one
+attribute [simp] normUnit_zero normUnit_mul normUnit_one
 
 section NormalizationMonoid
 
@@ -268,19 +268,6 @@ end Associates
 section StrongNormalizationMonoid
 
 variable [CommMonoidWithZero α] [StrongNormalizationMonoid α]
-
-instance : NormalizationMonoid α where
-  normUnit := StrongNormalizationMonoid.normUnit
-  normUnit_zero := StrongNormalizationMonoid.normUnit_zero
-  normUnit_one := StrongNormalizationMonoid.normUnit_coe_units 1
-  normUnit_mul_units u h := by
-    nontriviality α
-    exact (StrongNormalizationMonoid.normUnit_mul h u.ne_zero).trans <| by
-      rw [StrongNormalizationMonoid.normUnit_coe_units, mul_comm]
-
-@[simp] theorem normUnit_mul {a b : α} :
-    a ≠ 0 → b ≠ 0 → normUnit (a * b) = normUnit a * normUnit b :=
-  StrongNormalizationMonoid.normUnit_mul
 
 @[simp] theorem normalize_mul (x y : α) : normalize (x * y) = normalize x * normalize y := by
   obtain rfl | hx := eq_or_ne x 0; · simp
@@ -964,13 +951,13 @@ instance (priority := 100) : StrongNormalizationMonoid α where
   normUnit_mul _ _ := (mul_one 1).symm
   normUnit_coe_units _ := Subsingleton.elim _ _
 
-instance : Unique (StrongNormalizationMonoid α) where
-  default := inferInstance
-  uniq := fun ⟨u, _, _, _⟩ => by congr; simp [eq_iff_true_of_subsingleton]
-
 instance : Unique (NormalizationMonoid α) where
   default := inferInstance
-  uniq := fun ⟨u, _, _, _⟩ => by congr; simp [eq_iff_true_of_subsingleton]
+  uniq := by rintro ⟨⟩; congr; apply Subsingleton.elim
+
+instance : Unique (StrongNormalizationMonoid α) where
+  default := inferInstance
+  uniq := by rintro ⟨⟩; congr; apply Subsingleton.elim
 
 instance subsingleton_gcdMonoid_of_unique_units : Subsingleton (GCDMonoid α) :=
   ⟨fun g₁ g₂ => by
@@ -1375,7 +1362,7 @@ instance (priority := 100) : StrongNormalizedGCDMonoid G₀ where
 
 @[simp]
 theorem coe_normUnit {a : G₀} (h0 : a ≠ 0) : (↑(normUnit a) : G₀) = a⁻¹ := by
-  simp [normUnit, StrongNormalizationMonoid.normUnit, h0]
+  simp [normUnit, h0]
 
 theorem normalize_eq_one {a : G₀} (h0 : a ≠ 0) : normalize a = 1 := by simp [normalize_apply, h0]
 
