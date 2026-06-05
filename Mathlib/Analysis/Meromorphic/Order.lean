@@ -726,7 +726,7 @@ theorem exists_meromorphicOrderAt_ne_top_iff_forall (hf : MeromorphicOn f U) (hU
     have := isPreconnected_iff_preconnectedSpace.1 hU.isPreconnected
     rcases isClopen_iff.1 hf.isClopen_setOf_meromorphicOrderAt_eq_top with h | h
     · intro u
-      have : u ∉ (∅ : Set U) := by exact fun a => a
+      have : u ∉ (∅ : Set U) := fun a => a
       rw [← h] at this
       tauto
     · obtain ⟨u, hU⟩ := h₂f

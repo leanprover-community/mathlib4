@@ -94,7 +94,7 @@ example {x y : ℕ} : True := by
   · trivial
 
 -- metadata doesn't cause a problem
-example (α : Type := ℕ) (x : Option α := none) (y : Option α := by exact 0) : True := by
+example (α : Type := ℕ) (x : Option α := none) (y : Option α := 0) : True := by
   wlog h : x = y with H
   · guard_hyp h :ₛ ¬ x = y
     guard_hyp H :ₛ ∀ (α : Type), ∀ {x y : Option α}, x = y → True
@@ -104,7 +104,7 @@ example (α : Type := ℕ) (x : Option α := none) (y : Option α := by exact 0)
     trivial
 
 -- metadata doesn't cause a problem
-example (α : Type := ℕ) (x : Option α := none) (y : Option α := by exact 0) : True := by
+example (α : Type := ℕ) (x : Option α := none) (y : Option α := 0) : True := by
   wlog! h : x = y with H
   · guard_hyp h :ₛ x ≠ y
     guard_hyp H :ₛ ∀ (α : Type), ∀ {x y : Option α}, x = y → True

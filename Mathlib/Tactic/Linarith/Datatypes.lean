@@ -181,7 +181,7 @@ instance Comp.ToFormat : ToFormat Comp :=
 /-- Metadata about preprocessors, for trace output. -/
 structure PreprocessorBase : Type where
   /-- The name of the preprocessor, populated automatically, to create linkable trace messages. -/
-  name : Name := by exact decl_name%
+  name : Name := decl_name%
   /-- The description of the preprocessor. -/
   description : String
 

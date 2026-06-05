@@ -16,7 +16,7 @@ lemma foo : ∃ x, x ∈ ([0,3] : List (Fin 5)) ∧ x = 3 := by
 example : choose _ _ foo = 3 := by rfl
 example : choose _ _ foo = 3 := rfl
 example : choose _ _ foo = 3 := by eq_refl
-example : choose _ _ foo = 3 := by exact rfl
+example : choose _ _ foo = 3 := rfl
 example : choose _ _ foo = 3 := by decide
 
 end List
@@ -30,7 +30,7 @@ lemma foo : ∃! x, x ∈ ({0,3} : Multiset (Fin 5)) ∧ x = 3 := by
 example : choose _ _ foo = 3 := by rfl
 example : choose _ _ foo = 3 := rfl
 example : choose _ _ foo = 3 := by eq_refl
-example : choose _ _ foo = 3 := by exact rfl
+example : choose _ _ foo = 3 := rfl
 example : choose _ _ foo = 3 := by decide
 
 end Multiset
@@ -44,7 +44,7 @@ lemma foo : ∃! x, x ∈ ({0,3} : Finset (Fin 5)) ∧ x = 3 := by
 example : choose _ _ foo = 3 := by rfl
 example : choose _ _ foo = 3 := rfl
 example : choose _ _ foo = 3 := by eq_refl
-example : choose _ _ foo = 3 := by exact rfl
+example : choose _ _ foo = 3 := rfl
 example : choose _ _ foo = 3 := by decide
 
 end Finset

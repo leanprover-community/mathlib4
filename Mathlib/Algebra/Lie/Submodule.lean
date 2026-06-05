@@ -136,8 +136,8 @@ protected def copy (s : Set M) (hs : s = ↑N) : LieSubmodule R L M where
   carrier := s
   zero_mem' := by simp [hs]
   add_mem' x y := by rw [hs] at x y ⊢; exact N.add_mem' x y
-  smul_mem' := by exact hs.symm ▸ N.smul_mem'
-  lie_mem := by exact hs.symm ▸ N.lie_mem
+  smul_mem' := hs.symm ▸ N.smul_mem'
+  lie_mem := hs.symm ▸ N.lie_mem
 
 @[simp, norm_cast]
 theorem coe_copy (S : LieSubmodule R L M) (s : Set M) (hs : s = ↑S) : (S.copy s hs : Set M) = s :=
@@ -842,7 +842,7 @@ noncomputable def equivMapOfInjective (hf : Function.Injective f) :
     N ≃ₗ⁅R,L⁆ N.map f :=
   { Submodule.equivMapOfInjective (f : M →ₗ[R] M') hf N with
     -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify `invFun` explicitly this way, otherwise we'd get a type mismatch
-    invFun := by exact DFunLike.coe (Submodule.equivMapOfInjective (f : M →ₗ[R] M') hf N).symm
+    invFun := DFunLike.coe (Submodule.equivMapOfInjective (f : M →ₗ[R] M') hf N).symm
     map_lie' := by rintro x ⟨m, hm : m ∈ N⟩; ext; exact f.map_lie x m }
 
 /-- An equivalence of Lie modules yields an order-preserving equivalence of their lattices of Lie

@@ -414,8 +414,7 @@ theorem comp_mul_left (hf : IntervalIntegrable f volume a b) {c : ℝ}
 theorem comp_mul_left_iff {f : ℝ → E} {c : ℝ} (hc : c ≠ 0) (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness)
     (h' : ‖f (c * min (a / c) (b / c))‖ₑ ≠ ∞ := by finiteness) :
     IntervalIntegrable (fun x ↦ f (c * x)) volume (a / c) (b / c) ↔
-      IntervalIntegrable f volume a b := by
-  exact ⟨fun h ↦ by simpa [hc] using h.comp_mul_left (c := c⁻¹) h' (by simp),
+      IntervalIntegrable f volume a b := ⟨fun h ↦ by simpa [hc] using h.comp_mul_left (c := c⁻¹) h' (by simp),
     (comp_mul_left · h h')⟩
 
 theorem comp_mul_right (hf : IntervalIntegrable f volume a b) {c : ℝ}

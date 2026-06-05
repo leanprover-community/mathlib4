@@ -794,7 +794,7 @@ theorem extendFun_strictMono [IsOrderedAddMonoid R] [Archimedean R] {x : M}
   obtain ⟨a, ha, b, hb, hab⟩ := Submodule.mem_sup.mp hyzmem
   have : z - y = ⟨a + b, hab.symm ▸ (z - y).prop⟩ := by simp_rw [hab]
   rw [this] at ⊢ hyz
-  have habpos : 0 < a + b := by exact hyz
+  have habpos : 0 < a + b := hyz
   obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.mp hb
   rw [← hc] at habpos
   simp_rw [← hc, extendFun]

@@ -182,8 +182,7 @@ def orderEmbedding : Ideal S ↪o Ideal R where
 
 include M in
 theorem under_le_under_iff {I J : Ideal S} :
-    I.under R ≤ J.under R ↔ I ≤ J := by
-  exact (IsLocalization.orderEmbedding M S).le_iff_le
+    I.under R ≤ J.under R ↔ I ≤ J := (IsLocalization.orderEmbedding M S).le_iff_le
 
 @[deprecated (since := "2026-04-09")] alias comap_le_comap_iff := under_le_under_iff
 

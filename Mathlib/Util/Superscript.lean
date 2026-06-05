@@ -186,7 +186,7 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
   generally this is a name of the parser declaration itself.
 -/
 def scriptParser (m : Mapping) (antiquotName errorMsg : String) (p : Parser)
-    (many := true) (kind : SyntaxNodeKind := by exact decl_name%) : Parser :=
+    (many := true) (kind : SyntaxNodeKind := decl_name%) : Parser :=
   let tokens := "$" :: (m.toNormal.toArray.map (·.1.toString) |>.qsort (·<·)).toList
   let antiquotP := mkAntiquot antiquotName `term (isPseudoKind := true)
   let p := Superscript.scriptFnNoAntiquot m errorMsg p.fn many

@@ -126,8 +126,7 @@ instance instCoeFun : CoeFun (StieltjesFunction R) fun _ => R → ℝ :=
 
 initialize_simps_projections StieltjesFunction (toFun → apply)
 
-@[ext] lemma ext {f g : StieltjesFunction R} (h : ∀ x, f x = g x) : f = g := by
-  exact (StieltjesFunction.mk.injEq ..).mpr (funext h)
+@[ext] lemma ext {f g : StieltjesFunction R} (h : ∀ x, f x = g x) : f = g := (StieltjesFunction.mk.injEq ..).mpr (funext h)
 
 variable (f : StieltjesFunction R)
 

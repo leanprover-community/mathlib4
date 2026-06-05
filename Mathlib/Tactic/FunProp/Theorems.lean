@@ -119,7 +119,7 @@ abbrev LambdaTheoremsExt := SimpleScopedEnvExtension LambdaTheorem LambdaTheorem
 /-- Environment extension storing all lambda theorems. -/
 initialize lambdaTheoremsExt : LambdaTheoremsExt ←
   registerSimpleScopedEnvExtension {
-    name := by exact decl_name%
+    name := decl_name%
     initial := {}
     addEntry := fun d e =>
       {d with theorems :=
@@ -204,7 +204,7 @@ abbrev FunctionTheoremsExt := SimpleScopedEnvExtension FunctionTheorem FunctionT
 /-- Extension storing all function theorems. -/
 initialize functionTheoremsExt : FunctionTheoremsExt ←
   registerSimpleScopedEnvExtension {
-    name     := by exact decl_name%
+    name     := decl_name%
     initial  := {}
     addEntry := fun d e =>
       {d with
@@ -236,7 +236,7 @@ abbrev GeneralTheoremsExt := SimpleScopedEnvExtension GeneralTheorem GeneralTheo
 /-- Environment extension for transition theorems. -/
 initialize transitionTheoremsExt : GeneralTheoremsExt ←
   registerSimpleScopedEnvExtension {
-    name     := by exact decl_name%
+    name     := decl_name%
     initial  := {}
     addEntry := fun d e =>
       {d with theorems := e.keys.foldl (fun thms (key, entry) =>
@@ -257,7 +257,7 @@ def getTransitionTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
 /-- Environment extension for morphism theorems. -/
 initialize morTheoremsExt : GeneralTheoremsExt ←
   registerSimpleScopedEnvExtension {
-    name     := by exact decl_name%
+    name     := decl_name%
     initial  := {}
     addEntry := fun d e =>
       {d with theorems := e.keys.foldl (fun thms (key, entry) =>

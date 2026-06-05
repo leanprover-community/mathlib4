@@ -66,8 +66,7 @@ variable [Finite σ]
 
 variable {R S ι σ} in
 lemma SubmersivePresentation.isStandardSmooth [Finite ι] (P : SubmersivePresentation R S ι σ) :
-    IsStandardSmooth R S := by
-  exact ⟨_, _, _, inferInstance, ⟨P.reindex (Fintype.equivFin _).symm (Fintype.equivFin _).symm⟩⟩
+    IsStandardSmooth R S := ⟨_, _, _, inferInstance, ⟨P.reindex (Fintype.equivFin _).symm (Fintype.equivFin _).symm⟩⟩
 
 /--
 The relative dimension of a standard smooth `R`-algebra `S` is

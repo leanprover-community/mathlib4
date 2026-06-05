@@ -303,8 +303,7 @@ theorem algHom_commutes (e : K₁ →ₐ[A] K₂) (f : L₁ →ₐ[B] L₂) (x :
     IsScalarTower.algebraMap_apply A B L₁, AlgHom.commutes, ← IsScalarTower.algebraMap_apply]
 
 theorem algEquiv_commutes (e : K₁ ≃ₐ[A] K₂) (f : L₁ ≃ₐ[B] L₂) (x : K₁) :
-    algebraMap K₂ L₂ (e x) = f (algebraMap K₁ L₁ x) := by
-  exact algHom_commutes e.toAlgHom f.toAlgHom _
+    algebraMap K₂ L₂ (e x) = f (algebraMap K₁ L₁ x) := algHom_commutes e.toAlgHom f.toAlgHom _
 
 end commutes
 

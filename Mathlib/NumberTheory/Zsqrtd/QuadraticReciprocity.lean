@@ -40,8 +40,7 @@ theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
     fun hp1 =>
     by_contradiction fun hp3 : p % 4 ≠ 3 => by
       let ⟨k, hk⟩ := (ZMod.exists_sq_eq_neg_one_iff (p := p)).2 hp3
-      obtain ⟨k, k_lt_p, rfl⟩ : ∃ (k' : ℕ) (_ : k' < p), (k' : ZMod p) = k := by
-        exact ⟨k.val, k.val_lt, ZMod.natCast_zmod_val k⟩
+      obtain ⟨k, k_lt_p, rfl⟩ : ∃ (k' : ℕ) (_ : k' < p), (k' : ZMod p) = k := ⟨k.val, k.val_lt, ZMod.natCast_zmod_val k⟩
       have hpk : p ∣ k ^ 2 + 1 := by
         rw [pow_two, ← CharP.cast_eq_zero_iff (ZMod p) p, Nat.cast_add, Nat.cast_mul, Nat.cast_one,
           ← hk, neg_add_cancel]

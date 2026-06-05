@@ -110,8 +110,7 @@ def minSqFacAux : ℕ → ℕ → Option ℕ
   | n, k =>
     if h : n < k * k then none
     else
-      have : Nat.sqrt n - k < Nat.sqrt n + 2 - k := by
-        exact Nat.minFac_lemma n k h
+      have : Nat.sqrt n - k < Nat.sqrt n + 2 - k := Nat.minFac_lemma n k h
       if k ∣ n then
         let n' := n / k
         have : Nat.sqrt n' - k < Nat.sqrt n + 2 - k :=

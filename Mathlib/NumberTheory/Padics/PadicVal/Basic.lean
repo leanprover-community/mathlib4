@@ -630,7 +630,7 @@ digits of `k` plus the sum of the digits of `n` minus the sum of digits of `n + 
 theorem sub_one_mul_padicValNat_choose_eq_sub_sum_digits' {k n : ℕ} [hp : Fact p.Prime] :
     (p - 1) * padicValNat p (choose (n + k) k) =
     (p.digits k).sum + (p.digits n).sum - (p.digits (n + k)).sum := by
-  have h : k ≤ n + k := by exact Nat.le_add_left k n
+  have h : k ≤ n + k := Nat.le_add_left k n
   simp only [Nat.choose_eq_factorial_div_factorial h]
   rw [padicValNat.div_of_dvd <| factorial_mul_factorial_dvd_factorial h, Nat.mul_sub_left_distrib,
       padicValNat.mul (factorial_ne_zero _) (factorial_ne_zero _), Nat.mul_add]

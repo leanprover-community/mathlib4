@@ -768,7 +768,7 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Ioi
   have A : Tendsto (F ∘ f) atTop (𝓝 (limUnder atTop (F ∘ f))) := by
     apply tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi Fderiv F'int
   have B : limUnder atTop (F ∘ f) = F 0 := by
-    have : IntegrableAtFilter (F ∘ f) atTop := by exact ⟨Ioi a, Ioi_mem_atTop _, Fint⟩
+    have : IntegrableAtFilter (F ∘ f) atTop := ⟨Ioi a, Ioi_mem_atTop _, Fint⟩
     apply IntegrableAtFilter.eq_zero_of_tendsto this ?_ A
     intro s hs
     rcases mem_atTop_sets.1 hs with ⟨b, hb⟩
@@ -964,7 +964,7 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Iic
   have A : Tendsto (F ∘ f) atBot (𝓝 (limUnder atBot (F ∘ f))) := by
     apply tendsto_limUnder_of_hasDerivAt_of_integrableOn_Iic Fderiv F'int
   have B : limUnder atBot (F ∘ f) = F 0 := by
-    have : IntegrableAtFilter (F ∘ f) atBot := by exact ⟨Iic a, Iic_mem_atBot _, Fint⟩
+    have : IntegrableAtFilter (F ∘ f) atBot := ⟨Iic a, Iic_mem_atBot _, Fint⟩
     apply IntegrableAtFilter.eq_zero_of_tendsto this ?_ A
     intro s hs
     rcases mem_atBot_sets.1 hs with ⟨b, hb⟩

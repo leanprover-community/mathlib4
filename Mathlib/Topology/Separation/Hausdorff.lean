@@ -660,7 +660,7 @@ theorem ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE [T2Space Y] {x : 
     obtain ⟨a, ha⟩ : {x | f x ≠ g x ∧ f x = g x}.Nonempty := by
       have h₁ := (eventually_nhdsWithin_of_eventually_nhds
         ((hf.ne_iff_eventually_ne hg).1 hCon)).and hfg
-      have h₂ : ∅ ∉ 𝓝[≠] x := by exact empty_notMem (𝓝[≠] x)
+      have h₂ : ∅ ∉ 𝓝[≠] x := empty_notMem (𝓝[≠] x)
       simp_all
     simp at ha
   · exact hfg.filter_mono nhdsWithin_le_nhds

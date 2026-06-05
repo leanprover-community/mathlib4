@@ -517,11 +517,9 @@ def arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [MeasurableSpace β₁] [Measu
     (hα : α₁ ≃ α₂) (hβ : β₁ ≃ᵐ β₂) :
     (α₁ → β₁) ≃ᵐ (α₂ → β₂) where
   __ := Equiv.arrowCongr' hα hβ
-  measurable_toFun _ h := by
-    exact MeasurableSet.preimage h <|
+  measurable_toFun _ h := MeasurableSet.preimage h <|
       measurable_pi_iff.mpr fun _ ↦ hβ.measurable.comp (measurable_pi_apply _)
-  measurable_invFun _ h := by
-    exact MeasurableSet.preimage h <|
+  measurable_invFun _ h := MeasurableSet.preimage h <|
       measurable_pi_iff.mpr fun _ ↦ hβ.symm.measurable.comp (measurable_pi_apply _)
 
 /-- Pi-types are measurably equivalent to iterated products. -/

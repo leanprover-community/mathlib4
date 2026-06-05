@@ -92,8 +92,7 @@ protected lemma Connected.mono {H H' : G.Subgraph} (hle : H ≤ H') (hv : H.vert
 
 protected lemma Connected.mono' {H H' : G.Subgraph}
     (hle : ∀ v w, H.Adj v w → H'.Adj v w) (hv : H.verts = H'.verts)
-    (h : H.Connected) : H'.Connected := by
-  exact h.mono ⟨hv.le, hle⟩ hv
+    (h : H.Connected) : H'.Connected := h.mono ⟨hv.le, hle⟩ hv
 
 lemma connected_sup {H K : G.Subgraph}
     (hH : H.Preconnected) (hK : K.Preconnected) (hn : (H ⊓ K).verts.Nonempty) :

@@ -76,7 +76,7 @@ set_option backward.privateInPublic.warn false in
 instance {S : Type*} [SMulZeroClass S k] :
     SMulZeroClass S (SkewMonoidAlgebra k G) where
   smul s f := smul s f
-  smul_zero a := by exact congr_arg ofFinsupp (smul_zero a)
+  smul_zero a := congr_arg ofFinsupp (smul_zero a)
 
 @[simp]
 theorem ofFinsupp_zero : (⟨0⟩ : SkewMonoidAlgebra k G) = 0 := rfl

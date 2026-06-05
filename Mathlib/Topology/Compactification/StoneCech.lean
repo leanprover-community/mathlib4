@@ -347,8 +347,7 @@ theorem continuous_stoneCechUnit : Continuous (stoneCechUnit : α → StoneCech 
   not be an embedding, for example if the original space is not Hausdorff.) -/
 theorem denseRange_stoneCechUnit : DenseRange (stoneCechUnit : α → StoneCech α) := by
   unfold stoneCechUnit T2Quotient.mk
-  have : Function.Surjective (T2Quotient.mk : PreStoneCech α → StoneCech α) := by
-    exact Quot.mk_surjective
+  have : Function.Surjective (T2Quotient.mk : PreStoneCech α → StoneCech α) := Quot.mk_surjective
   exact this.denseRange.comp denseRange_preStoneCechUnit continuous_coinduced_rng
 
 section Extension

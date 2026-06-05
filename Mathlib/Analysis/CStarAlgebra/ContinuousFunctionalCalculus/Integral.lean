@@ -87,8 +87,7 @@ lemma integrableOn_cfc' {s : Set X} (f : X → 𝕜 → 𝕜) (a : A)
     (hf : IntegrableOn
       (fun x : X => mkD ((spectrum 𝕜 a).restrict (f x)) 0) s μ)
     (ha : p a := by cfc_tac) :
-    IntegrableOn (fun x => cfc (f x) a) s μ := by
-  exact integrable_cfc' _ _ hf ha
+    IntegrableOn (fun x => cfc (f x) a) s μ := integrable_cfc' _ _ hf ha
 
 open Set Function in
 /-- An integrability criterion for the continuous functional calculus.
@@ -241,8 +240,7 @@ lemma integrableOn_cfcₙ' {s : Set X} (f : X → 𝕜 → 𝕜) (a : A)
     (hf : IntegrableOn
       (fun x : X => mkD ((quasispectrum 𝕜 a).restrict (f x)) 0) s μ)
     (ha : p a := by cfc_tac) :
-    IntegrableOn (fun x => cfcₙ (f x) a) s μ := by
-  exact integrable_cfcₙ' _ _ hf ha
+    IntegrableOn (fun x => cfcₙ (f x) a) s μ := integrable_cfcₙ' _ _ hf ha
 
 open Set Function in
 /-- An integrability criterion for the continuous functional calculus.

@@ -243,8 +243,7 @@ lemma IsPreirreducible.of_subtype [PreirreducibleSpace s] : IsPreirreducible s :
   refine PreirreducibleSpace.isPreirreducible_univ.image Subtype.val ?_
   exact continuous_subtype_val.continuousOn
 
-lemma IsIrreducible.of_subtype [IrreducibleSpace s] : IsIrreducible s := by
-  exact ⟨.of_subtype, .of_subtype⟩
+lemma IsIrreducible.of_subtype [IrreducibleSpace s] : IsIrreducible s := ⟨.of_subtype, .of_subtype⟩
 
 theorem isPreirreducible_iff_preirreducibleSpace :
     IsPreirreducible s ↔ PreirreducibleSpace s :=

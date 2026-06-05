@@ -59,7 +59,7 @@ theorem binomialFamily_orderTop_pos {x : A⟦Γ⟧} (hx : 0 < (x - 1).orderTop) 
     0 < (binomialFamily x r n).orderTop := by
   simp only [binomialFamily, smulFamily_toFun, PowerSeries.binomialSeries_coeff, powers_toFun, hx,
     ↓reduceIte, smul_assoc, one_smul]
-  have : n ≠ 0 := by exact Nat.ne_zero_of_lt hn
+  have : n ≠ 0 := Nat.ne_zero_of_lt hn
   calc
     0 < n • (x - 1).orderTop := (nsmul_pos_iff (Nat.ne_zero_of_lt hn)).mpr hx
     _ ≤ ((x - 1) ^ n).orderTop := orderTop_nsmul_le_orderTop_pow

@@ -845,8 +845,7 @@ instance : IsOrderedAddMonoid (ℤ√d) :=
   { add_le_add_left := fun a b ab c => show Nonneg _ by rwa [add_sub_add_right_eq_sub] }
 
 @[deprecated _root_.le_of_add_le_add_left (since := "2026-02-19")]
-protected theorem le_of_add_le_add_left (a b c : ℤ√d) (h : c + a ≤ c + b) : a ≤ b := by
-  exact _root_.le_of_add_le_add_left h
+protected theorem le_of_add_le_add_left (a b c : ℤ√d) (h : c + a ≤ c + b) : a ≤ b := _root_.le_of_add_le_add_left h
 
 @[deprecated _root_.add_lt_add_left (since := "2026-02-19")]
 protected theorem add_lt_add_left (a b : ℤ√d) (h : a < b) (c) : c + a < c + b := fun h' =>

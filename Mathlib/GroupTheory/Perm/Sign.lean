@@ -277,7 +277,7 @@ theorem signAux_swap : ∀ {n : ℕ} {x y : Fin n} (_hxy : x ≠ y), signAux (sw
     simp only [eq_iff_true_of_subsingleton, not_true, ite_true, le_refl, prod_const,
                IsEmpty.forall_iff]
   | n + 2, x, y => fun hxy => by
-    have h2n : 2 ≤ n + 2 := by exact le_add_self
+    have h2n : 2 ≤ n + 2 := le_add_self
     rw [← isConj_iff_eq, ← signAux_swap_zero_one h2n]
     exact (MonoidHom.mk' signAux signAux_mul).map_isConj
       (isConj_swap hxy (of_decide_eq_true rfl))

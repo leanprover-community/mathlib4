@@ -412,17 +412,14 @@ theorem dist_lt_of_angle_lt {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P)
     simp [angle_nonneg, angle_le_pi]
   intro h1
   by_cases! h2 : ∠ a b c ≤ π / 2
-  · have h3 : Real.sin (∠ a c b) < Real.sin (∠ a b c) := by
-      exact Real.sin_lt_sin_of_lt_of_le_pi_div_two (by linarith [angle_nonneg a c b]) h2 h1
+  · have h3 : Real.sin (∠ a c b) < Real.sin (∠ a b c) := Real.sin_lt_sin_of_lt_of_le_pi_div_two (by linarith [angle_nonneg a c b]) h2 h1
     by_contra! w
-    have h4 : Real.sin (∠ a c b) * dist a c < Real.sin (∠ a b c) * dist a b := by
-      exact mul_lt_mul h3 w hac hsinabc
+    have h4 : Real.sin (∠ a c b) * dist a c < Real.sin (∠ a b c) * dist a b := mul_lt_mul h3 w hac hsinabc
     linarith
   · by_contra! w
     have h3 : Real.sin (∠ a b c) ≤ Real.sin (∠ a c b) := by
       by_contra! w1
-      have h4 : Real.sin (∠ a c b) * dist a c < Real.sin (∠ a b c) * dist a b := by
-        exact mul_lt_mul w1 w hac hsinabc
+      have h4 : Real.sin (∠ a c b) * dist a c < Real.sin (∠ a b c) * dist a b := mul_lt_mul w1 w hac hsinabc
       linarith
     rw [← Real.sin_pi_sub (∠ a b c)] at h3
     have h5 : π - ∠ a b c < π / 2 := by linarith

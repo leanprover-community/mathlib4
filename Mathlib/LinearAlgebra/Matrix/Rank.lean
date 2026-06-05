@@ -159,8 +159,7 @@ theorem eRank_zero {m n : Type*} [Nontrivial R] : eRank (0 : Matrix m n R) = 0 :
   simp [eRank]
 
 theorem rank_le_card_width [Nontrivial R] (A : Matrix m n R) :
-    A.rank ≤ Fintype.card n := by
-  exact A.mulVecLin.finrank_range_le.trans_eq (finrank_pi _)
+    A.rank ≤ Fintype.card n := A.mulVecLin.finrank_range_le.trans_eq (finrank_pi _)
 
 theorem rank_le_width [Nontrivial R] {m n : ℕ} (A : Matrix (Fin m) (Fin n) R) :
     A.rank ≤ n :=
@@ -302,8 +301,7 @@ theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type
     aux₁, aux₂, LinearMap.coe_single, toLin_self, map_sum, map_smul, Basis.equiv_apply]
 
 theorem rank_le_card_height [Fintype m] [Nontrivial R] (A : Matrix m n R) :
-    A.rank ≤ Fintype.card m := by
-  exact (Submodule.finrank_le _).trans (finrank_pi R).le
+    A.rank ≤ Fintype.card m := (Submodule.finrank_le _).trans (finrank_pi R).le
 
 theorem rank_le_height [Nontrivial R] {m n : ℕ} (A : Matrix (Fin m) (Fin n) R) :
     A.rank ≤ m :=

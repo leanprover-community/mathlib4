@@ -58,7 +58,7 @@ structure NormNumExt where
   /-- Attempts to prove an expression is equal to some explicit number of the relevant type. -/
   eval {u : Level} {α : Q(Type u)} (e : Q($α)) : MetaM (Result e)
   /-- The name of the `norm_num` extension. -/
-  name : Name := by exact decl_name%
+  name : Name := decl_name%
 
 variable {u : Level}
 

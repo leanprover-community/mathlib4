@@ -218,7 +218,7 @@ lemma of_restrictScalars [Algebra S T] [IsScalarTower R S T]
   delta WeaklyQuasiFiniteAt
   refine .of_surjectiveOnStalks (q.map (Ideal.Quotient.mk ((q.under R).map (algebraMap R T))))
     (Ideal.quotientMapₐ _ (.id _ _) (by exact H)) (RingHom.surjectiveOnStalks_of_surjective
-      (Ideal.quotientMap_surjective (H := by exact H) Function.surjective_id)) _ ?_
+      (Ideal.quotientMap_surjective (H := H) Function.surjective_id)) _ ?_
   apply Ideal.comap_injective_of_surjective _ Ideal.Quotient.mk_surjective
   rw [Ideal.comap_comap, Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective]
   refine .trans ?_ (Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective _).symm

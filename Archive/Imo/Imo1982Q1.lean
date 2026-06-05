@@ -87,8 +87,7 @@ lemma le_mul_three_apply (n : ℕ+) : n ≤ f (3 * n) := by
   rw [← mul_one (n : ℕ), ← hf.f₃, mul_comm 3]
   exact hf.superhomogeneous
 
-lemma part_1 : 660 ≤ f (1980) := by
-  exact hf.le_mul_three_apply 660
+lemma part_1 : 660 ≤ f (1980) := hf.le_mul_three_apply 660
 
 lemma part_2 : f 1980 ≤ 660 := by
   have h : 5 * f 1980 + 33 * f 3 ≤ 5 * 660 + 33 := by

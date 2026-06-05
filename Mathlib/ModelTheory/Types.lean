@@ -210,8 +210,7 @@ lemma typesWith_eq_univ_of_mem_onTheory_lhomWithConstants {φ}
 lemma typesWith_top : T.typesWith (α := α) ⊤ = Set.univ :=
   univ_subset_iff.mp fun p _ ↦ p.isMaximal.mem_of_models (φ := ⊤) (fun _ _ _ a ↦ a)
 
-lemma typesWith_not (φ : L[[α]].Sentence) : T.typesWith ∼φ = (T.typesWith φ)ᶜ := by
-  exact Eq.symm compl_setOf_mem
+lemma typesWith_not (φ : L[[α]].Sentence) : T.typesWith ∼φ = (T.typesWith φ)ᶜ := Eq.symm compl_setOf_mem
 
 end CompleteType
 

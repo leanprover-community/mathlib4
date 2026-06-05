@@ -140,8 +140,7 @@ theorem localized'_inf :
   SetLike.ext' (by apply SetLike.ext'_iff.mp <| Submodule.localized₀_inf p f M' M'')
 
 theorem localized'_iSup {ι : Type*} (g : ι → Submodule R M) :
-    (⨆ i, g i).localized' S p f = ⨆ i, (g i).localized' S p f := by
-  exact GaloisConnection.l_iSup (localized'gi S p f).gc
+    (⨆ i, g i).localized' S p f = ⨆ i, (g i).localized' S p f := GaloisConnection.l_iSup (localized'gi S p f).gc
 
 theorem localized₀_iSup {ι : Type*} (g : ι → Submodule R M) :
     (⨆ i, g i).localized₀ p f = ⨆ i, (g i).localized₀ p f := by

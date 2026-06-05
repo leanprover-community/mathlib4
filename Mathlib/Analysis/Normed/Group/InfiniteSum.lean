@@ -114,12 +114,10 @@ theorem Summable.of_norm_bounded [CompleteSpace E] {f : ι → E} {g : ι → �
   exact cauchySeq_finset_of_norm_bounded hg h
 
 theorem HasSum.enorm_le_of_bounded {f : ι → ε} {g : ι → ℝ≥0∞} {a : ε} {b : ℝ≥0∞} (hf : HasSum f a)
-    (hg : HasSum g b) (h : ∀ i, ‖f i‖ₑ ≤ g i) : ‖a‖ₑ ≤ b := by
-  exact le_of_tendsto_of_tendsto' hf.enorm hg fun _s ↦ enorm_sum_le_of_le _ fun i _hi ↦ h i
+    (hg : HasSum g b) (h : ∀ i, ‖f i‖ₑ ≤ g i) : ‖a‖ₑ ≤ b := le_of_tendsto_of_tendsto' hf.enorm hg fun _s ↦ enorm_sum_le_of_le _ fun i _hi ↦ h i
 
 theorem HasSum.norm_le_of_bounded {f : ι → E} {g : ι → ℝ} {a : E} {b : ℝ} (hf : HasSum f a)
-    (hg : HasSum g b) (h : ∀ i, ‖f i‖ ≤ g i) : ‖a‖ ≤ b := by
-  exact le_of_tendsto_of_tendsto' hf.norm hg fun _s ↦ norm_sum_le_of_le _ fun i _hi ↦ h i
+    (hg : HasSum g b) (h : ∀ i, ‖f i‖ ≤ g i) : ‖a‖ ≤ b := le_of_tendsto_of_tendsto' hf.norm hg fun _s ↦ norm_sum_le_of_le _ fun i _hi ↦ h i
 
 /-- Quantitative result associated to the direct comparison test for series:  If, for all `i`,
 `‖f i‖ₑ ≤ g i`, then `‖∑' i, f i‖ₑ ≤ ∑' i, g i`. Note that we do not assume that `∑' i, f i` is

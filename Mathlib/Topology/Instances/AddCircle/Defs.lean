@@ -450,8 +450,7 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
   open_source := isOpen_Ioo
   open_target := isOpen_compl_singleton
   continuousOn_toFun := (AddCircle.continuous_mk' p).continuousOn
-  continuousOn_invFun := by
-    exact continuousOn_of_forall_continuousAt
+  continuousOn_invFun := continuousOn_of_forall_continuousAt
       (fun _ ↦ continuousAt_subtype_val.comp ∘ continuousAt_equivIco p a)
 
 end Continuity

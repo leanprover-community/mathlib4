@@ -42,8 +42,7 @@ theorem differentiable_descPochhammer_eval : Differentiable 𝕜 (descPochhammer
   simp [descPochhammer_eval_eq_prod_range, Differentiable.fun_finsetProd]
 
 /-- `descPochhammer 𝕜 n` is continuous. -/
-theorem continuous_descPochhammer_eval : Continuous (descPochhammer 𝕜 n).eval := by
-  exact differentiable_descPochhammer_eval.continuous
+theorem continuous_descPochhammer_eval : Continuous (descPochhammer 𝕜 n).eval := differentiable_descPochhammer_eval.continuous
 
 lemma deriv_descPochhammer_eval_eq_sum_prod_range_erase (n : ℕ) (k : 𝕜) :
     deriv (descPochhammer 𝕜 n).eval k

@@ -44,7 +44,7 @@ The `convert` tactic applies congruence lemmas eagerly before reducing,
 therefore it can fail in cases where `exact` succeeds:
 ```lean
 def p (n : ℕ) := True
-example (h : p 0) : p 1 := by exact h -- succeeds
+example (h : p 0) : p 1 := h -- succeeds
 example (h : p 0) : p 1 := by convert h -- fails, with leftover goal `1 = 0`
 ```
 Limiting the depth of recursion can help with this. For example, `convert h using 1` will work

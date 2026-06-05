@@ -83,7 +83,7 @@ noncomputable def equiv_GL_linearindependent :
     rw [← Basis.coePiBasisFun.toMatrix_eq_transpose,
       ← coe_basisOfPiSpaceOfLinearIndependent M.2]
     exact isUnit_det_of_invertible _
-  right_inv := by exact congrFun rfl
+  right_inv := congrFun rfl
 
 /-- The cardinal of the general linear group over a finite field. -/
 theorem card_GL_field :

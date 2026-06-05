@@ -365,8 +365,7 @@ lemma mapEquiv_sup_eq (f : M ≃L[R] N) {s t : ClosedSubmodule R M} :
   simp only [mapEquiv_apply, toSubmodule_sup, Submodule.carrier_eq_coe, Submodule.map_coe,
     LinearEquiv.coe_coe, ContinuousLinearEquiv.coe_toLinearEquiv, coe_toSubmodule,
     Submodule.coe_closure, Set.mem_image]
-  have : f = f.toLinearEquiv.toLinearMap := by
-    exact LinearMap.ext (congrFun rfl)
+  have : f = f.toLinearEquiv.toLinearMap := LinearMap.ext (congrFun rfl)
   rw [← this, ← Submodule.coe_closure, ← Submodule.map_sup, Submodule.map_coe]
   simp [← ContinuousLinearEquiv.image_closure]
 

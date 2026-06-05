@@ -138,8 +138,7 @@ example (z : ℤ) (h1 : z ≥ -3) (h2 : z < 2) : z < 20 := by
 
 example (n : ℕ) : n % 2 = 0 ∨ n % 2 = 1 := by
   set r := n % 2 with hr
-  have h2 : r < 2 := by
-    exact Nat.mod_lt _ (by decide)
+  have h2 : r < 2 := Nat.mod_lt _ (by decide)
   interval_cases hrv : r
   · left; exact hrv.symm.trans hrv
                --^ hover says `hrv : r = 0` and jumps to `hrv :` above

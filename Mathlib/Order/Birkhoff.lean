@@ -217,8 +217,7 @@ noncomputable def birkhoffSet : α ↪o Set {a : α // SupIrred a} := by
 
 /-- **Birkhoff's Representation Theorem**. Any finite distributive lattice can be embedded in a
 powerset lattice. -/
-noncomputable def birkhoffFinset : α ↪o Finset {a : α // SupIrred a} := by
-  exact birkhoffSet.trans Fintype.finsetOrderIsoSet.symm.toOrderEmbedding
+noncomputable def birkhoffFinset : α ↪o Finset {a : α // SupIrred a} := birkhoffSet.trans Fintype.finsetOrderIsoSet.symm.toOrderEmbedding
 
 @[simp] lemma coe_birkhoffFinset (a : α) : birkhoffFinset a = birkhoffSet a := by
   classical

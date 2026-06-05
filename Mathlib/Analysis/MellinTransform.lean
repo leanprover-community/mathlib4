@@ -336,8 +336,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
     refine ContinuousOn.aestronglyMeasurable ?_ measurableSet_Ioi
     refine continuousOn_of_forall_continuousAt fun t ht => ?_
     exact continuousAt_ofReal_cpow_const _ _ (Or.inr <| ne_of_gt ht)
-  have h2 : IntegrableOn (F s) (Ioi (0 : ℝ)) := by
-    exact mellinConvergent_of_isBigO_rpow hfc hf_top hs_top hf_bot hs_bot
+  have h2 : IntegrableOn (F s) (Ioi (0 : ℝ)) := mellinConvergent_of_isBigO_rpow hfc hf_top hs_top hf_bot hs_bot
   have h3 : AEStronglyMeasurable (F' s) (volume.restrict <| Ioi 0) := by
     apply LocallyIntegrableOn.aestronglyMeasurable
     refine hfc.continuousOn_smul isOpen_Ioi.isLocallyClosed

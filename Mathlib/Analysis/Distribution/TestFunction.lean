@@ -641,8 +641,7 @@ variable {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃ : Type
 
 @[fun_prop]
 protected theorem stronglyMeasurable (f : 𝓓^{n}(Ω, F)) :
-    StronglyMeasurable f := by
-  exact f.continuous.stronglyMeasurable_of_hasCompactSupport f.hasCompactSupport
+    StronglyMeasurable f := f.continuous.stronglyMeasurable_of_hasCompactSupport f.hasCompactSupport
 
 @[fun_prop]
 protected theorem aestronglyMeasurable {μ : Measure E} (f : 𝓓^{n}(Ω, F)) :

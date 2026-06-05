@@ -308,8 +308,7 @@ def equivCongrLeft (h : ι ≃ κ) : (⨁ i, β i) ≃+ ⨁ k, β (h.symm k) :=
 
 @[simp]
 theorem equivCongrLeft_apply (h : ι ≃ κ) (f : ⨁ i, β i) (k : κ) :
-    equivCongrLeft h f k = f (h.symm k) := by
-  exact DFinsupp.comapDomain'_apply _ h.right_inv _ _
+    equivCongrLeft h f k = f (h.symm k) := DFinsupp.comapDomain'_apply _ h.right_inv _ _
 
 end CongrLeft
 

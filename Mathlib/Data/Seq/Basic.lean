@@ -735,8 +735,7 @@ theorem all_cons {p : α → Prop} {hd : α} {tl : Seq α} (h_hd : p hd) (h_tl :
 
 theorem all_get {p : α → Prop} {s : Seq α} (h : ∀ x ∈ s, p x) {n : ℕ} {x : α}
     (hx : s.get? n = .some x) :
-    p x := by
-  exact h _ (get?_mem hx)
+    p x := h _ (get?_mem hx)
 
 theorem all_of_get {p : α → Prop} {s : Seq α} (h : ∀ n x, s.get? n = .some x → p x) :
     ∀ x ∈ s, p x := by
