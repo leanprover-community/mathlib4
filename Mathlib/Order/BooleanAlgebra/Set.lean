@@ -383,9 +383,12 @@ lemma disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) : Disjoint s t ↔ s = 
 lemma diff_ssubset_left_iff : s \ t ⊂ s ↔ (s ∩ t).Nonempty :=
   sdiff_lt_left.trans <| by rw [not_disjoint_iff_nonempty_inter, inter_comm]
 
-lemma _root_.HasSubset.Subset.diff_ssubset_of_nonempty (hst : s ⊆ t) (hs : s.Nonempty) :
+lemma _root_.LE.le.diff_ssubset_of_nonempty (hst : s ⊆ t) (hs : s.Nonempty) :
     t \ s ⊂ t := by
   simpa [inter_eq_self_of_subset_right hst]
+
+@[deprecated (since := "2026-06-05")]
+alias _root_.HasSubset.Subset.diff_ssubset_of_nonempty := LE.le.diff_ssubset_of_nonempty
 
 lemma ssubset_iff_sdiff_singleton : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t \ {a} := by
   grind
