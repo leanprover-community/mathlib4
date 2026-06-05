@@ -294,7 +294,7 @@ theorem CompactlyGeneratedSpace.isOpen' [CompactlyGeneratedSpace X] {s : Set X}
   UCompactlyGeneratedSpace.isOpen fun S ⟨f, hf⟩ ↦ hs S f hf
 
 /-- In a compactly generated space `X`, a set `s` is open when `s ∩ K` is
-closed for every open set `K`. -/
+open for every open set `K`. -/
 theorem CompactlyGeneratedSpace.isOpen [CompactlyGeneratedSpace X] {s : Set X}
     (hs : ∀ ⦃K⦄, IsCompact K → IsOpen (s ∩ K)) : IsOpen s := by
   refine isOpen' fun K _ _ _ f hf ↦ ?_

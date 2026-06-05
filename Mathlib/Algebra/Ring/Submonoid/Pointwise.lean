@@ -92,7 +92,7 @@ lemma smul_le : M • N ≤ P ↔ ∀ m ∈ M, ∀ n ∈ N, m • n ∈ P :=
 protected lemma smul_induction_on {C : A → Prop} {a : A} (ha : a ∈ M • N)
     (hm : ∀ m ∈ M, ∀ n ∈ N, C (m • n)) (hadd : ∀ x y, C x → C y → C (x + y)) : C a :=
   (@smul_le _ _ _ _ _ _ _ ⟨⟨setOf C, hadd _ _⟩, by
-    simpa only [smul_zero] using hm _ (zero_mem _) _ (zero_mem _)⟩).2 hm ha
+    simpa only [smul_zero] using! hm _ (zero_mem _) _ (zero_mem _)⟩).2 hm ha
 
 @[simp]
 lemma addSubmonoid_smul_bot (S : AddSubmonoid R) : S • (⊥ : AddSubmonoid A) = ⊥ :=
