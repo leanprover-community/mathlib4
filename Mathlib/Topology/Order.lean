@@ -647,13 +647,13 @@ lemma generateFrom_insert_empty {α : Type*} {s : Set (Set α)} :
 
 lemma generateFrom_latticeClosure {α : Type*} (s : Set (Set α)) :
     generateFrom (latticeClosure s) = generateFrom s := by
-  refine eq_of_le_of_ge ?_ ?_
-  · exact le_generateFrom fun o hos => isOpen_generateFrom_of_mem <| subset_latticeClosure hos
-  · refine le_generateFrom fun o hos => ?_
-    refine latticeClosure_sup_inf_induction (fun o _ => IsOpen[generateFrom s] o) ?_ ?_ ?_ hos
-    · exact fun _ h => isOpen_generateFrom_of_mem h
-    · exact fun _ _ _ _ h1 h2 => @IsOpen.union α _ _ (generateFrom s) h1 h2
-    · exact fun _ _ _ _ h1 h2 => @IsOpen.inter α (generateFrom s) _ _ h1 h2
+  let : TopologicalSpace α := generateFrom s
+  refine le_antisymm (generateFrom_anti subset_latticeClosure) ?_
+  refine le_generateFrom fun o hos => ?_
+  induction hos using latticeClosure_sup_inf_induction with
+  | mem _ has => exact isOpen_generateFrom_of_mem has
+  | sup _ _ _ _ ha hb => exact IsOpen.union ha hb
+  | inf _ _ _ _ ha hb => exact IsOpen.inter ha hb
 
 lemma generateFrom_booleanSubalgebra_closure_eq_of_isSublattice {α : Type*}
     {s : Set (Set α)} (hs1 : ⊥ ∈ s) (hs2 : compl '' s = s) (hs3 : IsSublattice s) :
