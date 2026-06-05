@@ -578,6 +578,17 @@ protected theorem inf [Min β] [ContinuousInf β] (hf : StronglyMeasurable f)
   ⟨fun n => hf.approx n ⊓ hg.approx n, fun x =>
     (hf.tendsto_approx x).inf_nhds (hg.tendsto_approx x)⟩
 
+@[to_additive (attr := fun_prop)]
+protected theorem oneLePart [Group β] [Lattice β] [ContinuousSup β] (hf : StronglyMeasurable f) :
+    StronglyMeasurable fun x ↦ oneLePart (f x) :=
+  hf.sup stronglyMeasurable_const
+
+@[to_additive (attr := fun_prop)]
+protected theorem leOnePart [Group β] [Lattice β] [ContinuousSup β] [ContinuousInv β]
+    (hf : StronglyMeasurable f) :
+    StronglyMeasurable fun x ↦ leOnePart (f x) :=
+  hf.inv.sup stronglyMeasurable_const
+
 end Order
 
 /-!
