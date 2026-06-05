@@ -565,6 +565,12 @@ theorem ext_iff {basis_hd basis_tl}
     simp [h]
 
 @[simp]
+theorem ofReal_toReal (x : ℝ) : (ofReal x).toReal = x := rfl
+
+@[simp]
+theorem toReal_ofReal (ms : MultiseriesExpansion []) : ofReal ms.toReal = ms := rfl
+
+@[simp]
 theorem const_toFun (ms : MultiseriesExpansion []) : ms.toFun = fun _ ↦ ms.toReal := rfl
 
 @[simp]

@@ -330,7 +330,7 @@ def Multiseries.extendBasisEnd {basis_hd : ℝ → ℝ} {basis_tl : Basis} (f : 
 def extendBasisEnd {basis : Basis} (f : ℝ → ℝ) (ms : MultiseriesExpansion basis) :
     MultiseriesExpansion (basis ++ [f]) :=
   match basis with
-  | [] => const [f] ms
+  | [] => const [f] ms.toReal
   | List.cons _ _ => mk (ms.seq.extendBasisEnd f) ms.toFun
 
 end
@@ -543,11 +543,13 @@ theorem Multiseries.extendBasisEnd_Sorted {basis_hd : ℝ → ℝ} {basis_tl : B
 theorem extendBasisEnd_Sorted {basis : Basis} {b : ℝ → ℝ} {ms : MultiseriesExpansion basis}
     (h_sorted : ms.Sorted) : (ms.extendBasisEnd b).Sorted := by
   cases basis with
-  | nil => simpa only [extendBasisEnd] using const_Sorted
+  | nil =>
+    simp only [extendBasisEnd]
+    exact const_Sorted
   | cons basis_hd basis_tl =>
-  simp only [sorted_iff_seq_sorted, List.cons_append, List.append_eq,
-    extendBasisEnd_seq] at *
-  exact Multiseries.extendBasisEnd_Sorted h_sorted
+    simp only [sorted_iff_seq_sorted, List.cons_append, List.append_eq,
+      extendBasisEnd_seq] at *
+    exact Multiseries.extendBasisEnd_Sorted h_sorted
 
 end
 

@@ -88,7 +88,8 @@ theorem invSeries_toFun_eq {t : ℝ} (ht : |t| < 1) : invSeries.toFun t = (1 + t
   simp only [LazySeries.toFun, invSeries_eq_geom]
   have := hasFPowerSeriesOnBall_inv_one_add ℝ ℝ
   have := HasFPowerSeriesOnBall.sum this (y := t)
-    (by simpa [edist, PseudoMetricSpace.edist] using ht)
+    (by simp only [Metric.mem_eball, edist, PseudoMetricSpace.edist, sub_zero,
+      ENNReal.coe_lt_one_iff]; exact ht)
   simp only [zero_add] at this
   exact this.symm
 

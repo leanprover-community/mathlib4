@@ -246,7 +246,7 @@ mutual
           have := IsEquivalent.inv coef_ih
           apply IsEquivalent.trans_isLittleO this
           apply EventuallyEq.trans_isLittleO (Monomial.inv_toFun h_basis.tail).symm
-          apply Monomial.tail_toFun_isLittleO_head
+          apply Monomial.majorized_tail_toFun_head
           · rw [Monomial.inv_length, leadingMonomial_length]
           · exact h_basis
           · simp only [exp']
@@ -550,7 +550,7 @@ theorem extendBasisEnd_leadingMonomial_eq {basis : Basis} {b : ℝ → ℝ}
     (ms.extendBasisEnd b).leadingMonomial =
     ⟨ms.leadingMonomial.coef, ms.leadingMonomial.unit ++ [0]⟩ := by
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
-  · simp [extendBasisEnd, leadingMonomial, const, Multiseries.const, ofReal]
+  · simp [extendBasisEnd, leadingMonomial, const, Multiseries.const]
   cases ms with
   | nil f =>
     simp [extendBasisEnd, leadingMonomial, List.replicate_succ', Multiseries.extendBasisEnd]
