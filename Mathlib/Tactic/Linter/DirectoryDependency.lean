@@ -90,7 +90,6 @@ namespace NamePrefixRel
 -- The new behaviour of `inferInstanceAs` from leanprover/lean4#12897 needs to be updated,
 -- to ensure that if we are in a `meta` section then the auxiliary definitions are also `meta`.
 -- Fixed in https://github.com/leanprover/lean4/pull/13043
-set_option backward.inferInstanceAs.wrap false in
 instance : EmptyCollection NamePrefixRel := inferInstanceAs (EmptyCollection (NameMap _))
 
 /-- Make all names with prefix `n₁` related to names with prefix `n₂`. -/
@@ -636,9 +635,6 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Analysis.Convex.SimplicialComplex.AffineIndependentUnion, `Mathlib.AlgebraicTopology),
   (`Mathlib.Probability.Kernel.Category, `Mathlib.CategoryTheory), -- For the category of s-finite/Markov kernels
   (`Mathlib.RepresentationTheory.Continuous, `Mathlib.Topology), -- For continuous representations
-
-  -- TODO: reduce these with further moving files out of `Data`
-  (`Mathlib.Data.Rat.NatSqrt.Real, `Mathlib.Analysis),
   -- TODO: think about the role of Analysis and Algebra, and perhaps further separation
   (`Mathlib.Algebra.Order.Archimedean.Real, `Mathlib.Analysis),
   (`Mathlib.Algebra.Star.CHSH, `Mathlib.Analysis),

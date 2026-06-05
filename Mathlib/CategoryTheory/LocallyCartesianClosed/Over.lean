@@ -68,7 +68,6 @@ abbrev binaryFan [ChosenPullbacksAlong Z.hom] : BinaryFan Y Z :=
     (fst' Y.hom Z.hom) (snd' Y.hom Z.hom)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The binary fan provided by `fst'` and `snd'` is a binary product in `Over X`. -/
 def binaryFanIsBinaryProduct [ChosenPullbacksAlong Z.hom] :
     IsLimit (binaryFan Y Z) :=
@@ -296,7 +295,6 @@ def toOverUnitPullback (X : C) :
   NatIso.ofComponents fun X => Iso.refl _
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `toOver X` is the right adjoint to the functor `Over.forget X`. -/
 @[simps! unit_app counit_app]
 def forgetAdjToOver (X : C) : Over.forget X ⊣ toOver X where
