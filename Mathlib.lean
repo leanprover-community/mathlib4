@@ -6733,6 +6733,7 @@ public import Mathlib.RingTheory.Morita.Matrix
 public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.RingTheory.MvPolynomial
 public import Mathlib.RingTheory.MvPolynomial.Basic
+public import Mathlib.RingTheory.MvPolynomial.DeterminantalIdeal
 public import Mathlib.RingTheory.MvPolynomial.EulerIdentity
 public import Mathlib.RingTheory.MvPolynomial.Expand
 public import Mathlib.RingTheory.MvPolynomial.FreeCommRing
