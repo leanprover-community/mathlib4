@@ -197,10 +197,10 @@ abbrev rTensor (f : B →ₐc[R] C) : B ⊗[R] A →ₐc[R] C ⊗[R] A :=
 end BialgHom
 
 namespace Bialgebra
-variable {R A : Type*} [CommSemiring R]
+variable {R A B ι κ : Type*} [CommSemiring R]
 
 section Semiring
-variable [Semiring A] [Bialgebra R A]
+variable [Semiring A] [Bialgebra R A] [Semiring B] [Bialgebra R B] {a : A} {b : B}
 
 variable (R A) in
 /-- Comultiplication as a bialgebra hom. -/
@@ -228,6 +228,25 @@ def mulCoalgHom : A ⊗[R] A →ₗc[R] A where
 lemma toLinearMap_mulCoalgHom : mulCoalgHom R A = LinearMap.mul' R A := rfl
 
 @[simp] lemma coe_mulCoalgHom : ⇑(mulCoalgHom R A) = LinearMap.mul' R A := rfl
+
+/-- Representations of `a` and `b` yield a representation of `a ⊗ b`. -/
+@[expose, simps]
+protected def _root_.Coalgebra.Repr.tmul (ℛa : Coalgebra.Repr R a ι) (ℛb : Coalgebra.Repr R b κ) :
+    Coalgebra.Repr R (a ⊗ₜ[R] b) (ι × κ) where
+  index := ℛa.index ×ˢ ℛb.index
+  left i := ℛa.left i.1 ⊗ₜ ℛb.left i.2
+  right i := ℛa.right i.1 ⊗ₜ ℛb.right i.2
+  eq := by
+    simp only [TensorProduct.comul_def, LinearMap.coe_comp, LinearEquiv.coe_coe,
+      Function.comp_apply, TensorProduct.AlgebraTensorModule.map_tmul]
+    rw [← ℛa.eq, ← ℛb.eq]
+    simp_rw [TensorProduct.sum_tmul, TensorProduct.tmul_sum, ← Finset.sum_product', map_sum]
+    simp
+
+/-- Representations of `a` and `b` yield a representation of `a * b`. -/
+@[expose, simps!, simps! index] protected noncomputable
+def _root_.Coalgebra.Repr.mul {b : A} (ℛ₁ : Coalgebra.Repr R a ι) (ℛ₂ : Coalgebra.Repr R b κ) :
+    Coalgebra.Repr R (a * b) (ι × κ) := (ℛ₁.tmul ℛ₂).induced (R := R) (mulCoalgHom R A)
 
 end Semiring
 
