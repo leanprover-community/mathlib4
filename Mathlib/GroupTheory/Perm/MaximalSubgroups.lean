@@ -35,7 +35,7 @@ The argument is taken from [M. Liebeck, C. Praeger, J. Saxl,
 alternating and symmetric groups*, 1987][LiebeckPraegerSaxl-1987].
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 
@@ -178,7 +178,7 @@ theorem has_swap_mem_of_lt_stabilizer [DecidableEq α]
   have hα : Set.encard (_root_.Set.univ : Set α) = 2 := by
     rw [← Set.encard_add_encard_compl s]
     have : (1 + 1 : ENat) = 2 := by norm_num
-    convert this <;>
+    convert! this <;>
     · apply le_antisymm
       · assumption
       rw [one_le_encard_iff_nonempty, Set.nonempty_iff_ne_empty]

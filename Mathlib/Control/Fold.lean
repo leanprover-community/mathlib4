@@ -111,14 +111,14 @@ abbrev Foldl (α : Type u) : Type u :=
   (End α)ᵐᵒᵖ
 
 def Foldl.mk (f : α → α) : Foldl α :=
-  op (TypeCat.ofHom f)
+  op (↾f)
 
 def Foldl.get (x : Foldl α) : α → α :=
   ConcreteCategory.hom (unop x)
 
 @[simps]
 def Foldl.ofFreeMonoid (f : β → α → β) : FreeMonoid α →* Monoid.Foldl β where
-  toFun xs := op <| TypeCat.ofHom (flip (List.foldl f) (FreeMonoid.toList xs))
+  toFun xs := op <| ↾(flip (List.foldl f) (FreeMonoid.toList xs))
   map_one' := rfl
   map_mul' := by
     intros
@@ -129,14 +129,14 @@ abbrev Foldr (α : Type u) : Type u :=
   End α
 
 def Foldr.mk (f : α → α) : Foldr α :=
-  TypeCat.ofHom f
+  ↾f
 
 def Foldr.get (x : Foldr α) : α → α :=
   ConcreteCategory.hom x
 
 @[simps]
 def Foldr.ofFreeMonoid (f : α → β → β) : FreeMonoid α →* Monoid.Foldr β where
-  toFun xs := TypeCat.ofHom (flip (List.foldr f) (FreeMonoid.toList xs))
+  toFun xs := ↾(flip (List.foldr f) (FreeMonoid.toList xs))
   map_one' := rfl
   map_mul' _ _ := by
     apply ConcreteCategory.ext
@@ -321,7 +321,6 @@ theorem foldMap_map [Monoid γ] (f : α → β) (g : β → γ) (xs : t α) :
     foldMap g (f <$> xs) = foldMap (g ∘ f) xs := by
   simp only [foldMap, traverse_map, Function.comp_def]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem foldl_toList (f : α → β → α) (xs : t β) (x : α) :
     foldl f x xs = List.foldl f x (toList xs) := by
   rw [← FreeMonoid.toList_ofList (toList xs), ← foldl.unop_ofFreeMonoid]
