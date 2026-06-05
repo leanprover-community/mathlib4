@@ -253,7 +253,7 @@ theorem smoothingFun_nonneg (hμ1 : μ 1 ≤ 1) (x : R) : 0 ≤ smoothingFun μ 
 /-- If `μ 1 ≤ 1`, then `smoothingFun μ 1 ≤ 1`. -/
 theorem smoothingFun_one_le (hμ1 : μ 1 ≤ 1) : smoothingFun μ 1 ≤ 1 := by
   apply le_of_tendsto (tendsto_smoothingFun_of_map_one_le_one μ hμ1 (1 : R))
-  simp only [eventually_atTop, ge_iff_le]
+  simp only [eventually_atTop]
   use 1
   rintro n hn
   simp only [smoothingSeminormSeq]
@@ -303,7 +303,7 @@ private theorem μ_bddBelow (s : ℕ → ℕ) {x : R} (ψ : ℕ → ℕ) :
     BddBelow {a : ℝ |
       ∀ᶠ n : ℝ in map (fun n : ℕ => μ x ^ (↑(s (ψ n)) * (1 / (ψ n : ℝ)))) atTop, n ≤ a} := by
   use 0
-  simp only [mem_lowerBounds, eventually_map, eventually_atTop, ge_iff_le, Set.mem_setOf_eq,
+  simp only [mem_lowerBounds, eventually_map, eventually_atTop, Set.mem_setOf_eq,
     forall_exists_index]
   intro r m hm
   exact le_trans (rpow_nonneg (apply_nonneg μ _) _) (hm m (le_refl _))
