@@ -10,8 +10,6 @@ public import Mathlib.Analysis.Analytic.Constructions
 public import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 
-public import Mathlib.Tactic.MoveAdd
-
 /-!
 # Various complex special functions are analytic
 
