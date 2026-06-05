@@ -337,12 +337,20 @@ elab tk:"#find_deleted_files" nc:(ppSpace num)? pct:(ppSpace num)? bang:&"%"? : 
     let fnameStx := Syntax.mkStrLit fname
     let stx ← if let some newName := dict[fname]? then
       let newNameStx := Syntax.mkStrLit newName
-      `(command|#create_deprecated_module $fnameStx rename_to $newNameStx)
+      `(command|#create_deprecated_module $fnameStx rename_to $newNameStx write)
     else
       `(command|#create_deprecated_module $fnameStx)
     suggestions := suggestions.push {
       suggestion := (⟨stx.raw.updateTrailing "hello".toRawSubstring⟩ : TSyntax `command)
     }
+  for fname in dict.keys do
+    if !onlyPastFiles.contains fname then
+      let fnameStx := Syntax.mkStrLit fname
+      let newNameStx := Syntax.mkStrLit dict[fname]!
+      let stx ← `(command|#create_deprecated_module $fnameStx rename_to $newNameStx write)
+      suggestions := suggestions.push {
+        suggestion := (⟨stx.raw.updateTrailing "hello".toRawSubstring⟩ : TSyntax `command)
+      }
   let suggestionsText :=
     if suggestions.size == 1 then ("the suggestion", "")
     else (s!"any of the {suggestions.size} suggestions", ", so you can click several of them")
@@ -378,7 +386,7 @@ replaced by the suggestion, which means that you can click on multiple suggestio
 the deprecations later on.
 -/
 
-#find_deleted_files 500 10%
+#find_deleted_files 1500
 
 /--
 info: import Std.Time.Format
