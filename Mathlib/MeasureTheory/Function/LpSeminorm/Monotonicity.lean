@@ -185,21 +185,45 @@ theorem MemLp.of_nnnorm_le_mul {f : α → E} {g : α → F} {c : ℝ≥0} (hg :
   exact ⟨hf, (eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul hfg hp).trans_lt <|
     ENNReal.mul_lt_top ENNReal.coe_lt_top (by finiteness)⟩
 
+lemma eLpNorm_zero_le_of_ae_le
+    {f : α → ε} {g : α → ε'} {c : ℝ≥0} (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) :
+    eLpNorm f 0 μ ≤ eLpNorm g 0 μ := by
+  simp only [eLpNorm_exponent_zero]
+  calc
+    _ ≤ μ (Function.support fun x ↦ c * ‖g x‖ₑ) := measure_support_mono hfg
+    _ ≤ μ (Function.support fun x ↦ ‖g x‖ₑ) := by
+      apply measure_mono
+      simp
 
 theorem MemLp.of_enorm_le_mul
     {f : α → ε} {g : α → ε'} {c : ℝ≥0} (hg : MemLp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) : MemLp f p μ := by
   rcases eq_or_ne p 0 with rfl | hp
-  · simp only [memLp_zero_iff_aestronglyMeasurable_and_volume_support_lt_top] at hg ⊢
-    refine ⟨hf, ?_⟩
+  · refine ⟨hf, ?_⟩
     calc
-      _ ≤ μ (Function.support fun x ↦ c * ‖g x‖ₑ) := measure_support_mono hfg
-      _ ≤ μ (Function.support fun x ↦ ‖g x‖ₑ) := by
-        apply measure_mono
-        simp
+      _ ≤ eLpNorm g 0 μ := eLpNorm_zero_le_of_ae_le hfg
       _ < ∞ := hg.2
   exact ⟨hf, (eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' hfg hp).trans_lt <|
     ENNReal.mul_lt_top ENNReal.coe_lt_top (by finiteness)⟩
+
+lemma volume_support_le_of_ae_le {f : α → E} {g : α → F} {c : ℝ}
+    (hfg : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) :
+    μ (Function.support fun x ↦ ‖f x‖ₑ) ≤ μ (Function.support fun x ↦ ‖g x‖ₑ) := by
+  calc
+    _ = μ (Function.support fun x ↦ ‖f x‖) := by
+      congr 1
+      ext
+      simp
+    _ ≤ μ (Function.support fun x ↦ c * ‖g x‖) := by
+      apply measure_support_mono' ?_ hfg
+      simp
+    _ ≤ μ (Function.support fun x ↦ ‖g x‖) := by
+      apply measure_mono
+      simp
+    _ = _ := by
+      congr 1
+      ext
+      simp
 
 theorem MemLp.of_le_mul {f : α → E} {g : α → F} {c : ℝ} (hg : MemLp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) : MemLp f p μ := by
@@ -207,21 +231,8 @@ theorem MemLp.of_le_mul {f : α → E} {g : α → F} {c : ℝ} (hg : MemLp g p 
   · simp only [memLp_zero_iff_aestronglyMeasurable_and_volume_support_lt_top] at hg ⊢
     refine ⟨hf, ?_⟩
     calc
-      _ = μ (Function.support fun x ↦ ‖f x‖) := by
-        congr 1
-        ext
-        simp
-      _ ≤ μ (Function.support fun x ↦ c * ‖g x‖) := by
-        apply measure_support_mono' ?_ hfg
-        simp
-      _ ≤ μ (Function.support fun x ↦ ‖g x‖) := by
-        apply measure_mono
-        simp
-      _ < ∞ := by
-        apply lt_of_eq_of_lt ?_ hg.2
-        congr 1
-        ext
-        simp
+      _ ≤ μ (Function.support fun x ↦ ‖g x‖ₑ) := volume_support_le_of_ae_le hfg
+      _ < ∞ := hg.2
   exact ⟨hf, (eLpNorm_le_mul_eLpNorm_of_ae_le_mul hfg hp).trans_lt <|
     ENNReal.mul_lt_top ENNReal.ofReal_lt_top (by finiteness)⟩
 

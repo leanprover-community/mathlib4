@@ -158,27 +158,40 @@ lemma eLpNorm_top_piecewise (f g : α → ε) [DecidablePred (· ∈ s)] (hs : M
       = max (eLpNorm f ∞ (μ.restrict s)) (eLpNorm g ∞ (μ.restrict sᶜ)) :=
   eLpNormEssSup_piecewise f g hs
 
+lemma eLpNorm_zero_piecewise (f g : α → ε) [DecidablePred (· ∈ s)] :
+    eLpNorm (Set.piecewise s f g) 0 μ = μ (Function.support fun x ↦ ‖s.piecewise f g x‖ₑ) := by
+  simp
+
+lemma eLpNorm_zero_piecewise_le (f g : α → ε) [DecidablePred (· ∈ s)] :
+    eLpNorm (Set.piecewise s f g) 0 μ ≤ μ (Function.support (fun x ↦ ‖f x‖ₑ) ∩ s) +
+      μ (Function.support (fun x ↦ ‖g x‖ₑ) ∩ sᶜ) := by
+  simp only [eLpNorm_exponent_zero]
+  calc
+    _ ≤ μ ((Function.support (fun x ↦ ‖f x‖ₑ) ∩ s) ∪
+          (Function.support (fun x ↦ ‖g x‖ₑ) ∩ sᶜ)) := by
+        apply measure_mono
+        intro x hx
+        simp only [Function.mem_support, ne_eq, Set.mem_union, Set.mem_inter_iff,
+          Set.mem_compl_iff] at *
+        by_cases hxs : x ∈ s
+        · exact Or.inl ⟨by rwa [Set.piecewise_eq_of_mem s f g hxs] at hx, hxs⟩
+        · exact Or.inr ⟨by rwa [Set.piecewise_eq_of_notMem s f g hxs] at hx, hxs⟩
+    _ ≤ μ (Function.support (fun x ↦ ‖f x‖ₑ) ∩ s) +
+        μ (Function.support (fun x ↦ ‖g x‖ₑ) ∩ sᶜ) := measure_union_le _ _
+
 protected lemma MemLp.piecewise {f : α → ε} [DecidablePred (· ∈ s)] {g} (hs : MeasurableSet s)
     (hf : MemLp f p (μ.restrict s)) (hg : MemLp g p (μ.restrict sᶜ)) :
     MemLp (s.piecewise f g) p μ := by
   rcases eq_or_ne p 0 with rfl | hp_zero
-  · simp only [MemLp, eLpNorm, ↓reduceIte] at *
+  · simp only [MemLp, eLpNorm, ↓reduceIte] at hf hg
     refine ⟨AEStronglyMeasurable.piecewise hs hf.1 hg.1, ?_⟩
     · calc
-        _ ≤ μ ((Function.support (fun x ↦ ‖f x‖ₑ) ∩ s) ∪
-              (Function.support (fun x ↦ ‖g x‖ₑ) ∩ sᶜ)) := by
-            apply measure_mono
-            intro x hx
-            simp only [Function.mem_support, ne_eq, Set.mem_union, Set.mem_inter_iff,
-              Set.mem_compl_iff] at *
-            by_cases hxs : x ∈ s
-            · exact Or.inl ⟨by rwa [Set.piecewise_eq_of_mem s f g hxs] at hx, hxs⟩
-            · exact Or.inr ⟨by rwa [Set.piecewise_eq_of_notMem s f g hxs] at hx, hxs⟩
         _ ≤ μ (Function.support (fun x ↦ ‖f x‖ₑ) ∩ s) +
-            μ (Function.support (fun x ↦ ‖g x‖ₑ) ∩ sᶜ) := measure_union_le _ _
+            μ (Function.support (fun x ↦ ‖g x‖ₑ) ∩ sᶜ) := by
+          exact eLpNorm_zero_piecewise_le f g
         _ < ∞ := by
-            rw [← Measure.restrict_apply' hs, ← Measure.restrict_apply' hs.compl]
-            exact ENNReal.add_lt_top.mpr ⟨hf.2, hg.2⟩
+          rw [← Measure.restrict_apply' hs, ← Measure.restrict_apply' hs.compl]
+          exact ENNReal.add_lt_top.mpr ⟨hf.2, hg.2⟩
   refine ⟨AEStronglyMeasurable.piecewise hs hf.1 hg.1, ?_⟩
   obtain rfl | hp_top := eq_or_ne p ∞
   · rw [eLpNorm_top_piecewise f g hs]

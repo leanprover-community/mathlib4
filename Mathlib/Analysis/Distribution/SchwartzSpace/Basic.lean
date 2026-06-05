@@ -1317,7 +1317,8 @@ theorem memLp (f : 𝓢(E, F)) {p : ℝ≥0∞} (hp : p ≠ 0) (μ : Measure E :
     [hμ : μ.HasTemperateGrowth] : MemLp f p μ :=
   ⟨f.continuous.aestronglyMeasurable, f.eLpNorm_lt_top hp μ⟩
 
-/-- Map a Schwartz function to an `Lp` function for any `p`. -/
+/-- Map a Schwartz function to an `Lp` function for any `p`.
+For `p = 0` we use the junk value `0`. -/
 def toLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] : Lp F p μ :=
   if hp : p = 0 then 0 else (f.memLp hp μ).toLp
@@ -1356,7 +1357,7 @@ theorem injective_toLp {p : ℝ≥0∞} (hp : p ≠ 0) (μ : Measure E := by vol
   fun f g ↦ by simpa [toLp, hp] using (Continuous.ae_eq_iff_eq μ f.continuous g.continuous).mp
 
 variable (𝕜 F) in
-theorem norm_toLp_le_seminorm {p : ℝ≥0∞} (hp : p ≠ 0) (μ : Measure E := by volume_tac)
+theorem norm_toLp_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] :
     ∃ k C, 0 ≤ C ∧ ∀ (f : 𝓢(E, F)), ‖f.toLp p μ‖ ≤
       C * (Finset.Iic (k, 0)).sup (schwartzSeminormFamily 𝕜 E F) f := by
@@ -1377,7 +1378,7 @@ def toLpCLM (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (μ : Measure E := by volume_
   mkCLMtoNormedSpace (fun f ↦ f.toLp p μ)
       (fun _ _ ↦ by simp [toLp, ENNReal.ne_zero_of_ge_one hp.out]; rfl)
       (fun _ _ ↦ by simp [toLp, ENNReal.ne_zero_of_ge_one hp.out]; rfl) <| by
-    rcases norm_toLp_le_seminorm 𝕜 F (ENNReal.ne_zero_of_ge_one hp.out) μ with ⟨k, C, hC_pos, hC⟩
+    rcases norm_toLp_le_seminorm 𝕜 F p μ with ⟨k, C, hC_pos, hC⟩
     exact ⟨Finset.Iic (k, 0), C, hC_pos, hC⟩
 
 @[simp] theorem toLpCLM_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] {μ : Measure E}
