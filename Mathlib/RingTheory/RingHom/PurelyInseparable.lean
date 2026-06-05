@@ -15,7 +15,7 @@ In this file we define purely inseparable ring homomorphisms and show their meta
 
 Since purely inseparable is mainly used for fields, we cannot prove many
 general ring hom properties. E.g. we can't prove `StableUnderComposition IsPurelyInseparable`,
-since `_root_.IsPurelyInseparable.trans` requires the involved rings to be fields.
+since `IsPurelyInseparable.trans` requires the involved rings to be fields.
 
 -/
 
@@ -51,7 +51,7 @@ lemma containsIdentities : ContainsIdentities RingHom.IsPurelyInseparable := id
 lemma comp [Field F] [Field E] [Field K] {f : F →+* E} {g : E →+* K}
     (hf : f.IsPurelyInseparable) (hg : g.IsPurelyInseparable) :
     (g.comp f).IsPurelyInseparable := by
-  algebraize [f, g, (g.comp f)]
-  exact _root_.IsPurelyInseparable.trans F E K
+  algebraize [f, g, g.comp f]
+  exact IsPurelyInseparable.trans F E K
 
 end RingHom.IsPurelyInseparable
