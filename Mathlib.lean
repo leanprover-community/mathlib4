@@ -3860,6 +3860,7 @@ public import Mathlib.Data.Fin.Tuple.Take
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.FinEnum
 public import Mathlib.Data.FinEnum.Option
+public import Mathlib.Data.Finite.Card
 public import Mathlib.Data.Finite.Defs
 public import Mathlib.Data.Finite.Perm
 public import Mathlib.Data.Finite.Prod
@@ -3978,6 +3979,7 @@ public import Mathlib.Data.Fintype.Shrink
 public import Mathlib.Data.Fintype.Sigma
 public import Mathlib.Data.Fintype.Sort
 public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Fintype.Units
 public import Mathlib.Data.Fintype.Vector
 public import Mathlib.Data.Fintype.WithTopBot
 public import Mathlib.Data.FunLike.Basic
@@ -4093,6 +4095,7 @@ public import Mathlib.Data.List.Zip
 public import Mathlib.Data.Matrix.Auto
 public import Mathlib.Data.Matrix.Basic
 public import Mathlib.Data.Matrix.Basis
+public import Mathlib.Data.Matrix.Bilinear
 public import Mathlib.Data.Matrix.Block
 public import Mathlib.Data.Matrix.Cartan
 public import Mathlib.Data.Matrix.ColumnRowPartitioned
@@ -4275,6 +4278,7 @@ public import Mathlib.Data.QPF.Multivariate.Constructions.Sigma
 public import Mathlib.Data.QPF.Univariate.Basic
 public import Mathlib.Data.Quot
 public import Mathlib.Data.Rat.BigOperators
+public import Mathlib.Data.Rat.Cardinal
 public import Mathlib.Data.Rat.Cast.CharZero
 public import Mathlib.Data.Rat.Cast.Defs
 public import Mathlib.Data.Rat.Cast.Lemmas
