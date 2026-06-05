@@ -10,7 +10,16 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Nonsingular
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesColimit
 
 /-!
-# ...
+# A nonsingular simplicial set is the colimit of standard simplices indexed by nondegenete simplices
+
+
+In the file `Mathlib/AlgebraicTopology/SimplicialSet/NonDegenerateSimplicesColimit.lean`,
+it was shown that any simplicial set `X` is the colimit (indexed by the type `X.N`
+of nondegenerate simplices) of its monogenous subcomplexes.
+
+In this file, we assume that `X` is nonsingular, in which case its monogenous subcomplexes
+identify to standard simplices. This allows to show that `X` is the colimit
+of `Δ[x.dim]` for `x : X.N`.
 
 -/
 
