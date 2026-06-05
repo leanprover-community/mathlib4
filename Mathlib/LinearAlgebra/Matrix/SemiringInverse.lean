@@ -10,9 +10,7 @@ public import Mathlib.Data.Matrix.Mul
 public import Mathlib.GroupTheory.Perm.Sign
 
 import Mathlib.Algebra.Module.End
-import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.Perm.Option
-import Mathlib.Tactic.FinCases
 
 /-!
 # Nonsingular inverses over semirings
@@ -27,12 +25,12 @@ open Equiv Equiv.Perm Finset
 
 variable {n m R : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [CommSemiring R]
 
-variable (s t : ℤˣ) (A B : Matrix n n R) (i j : n)
+variable (s : ℤˣ) (A B : Matrix n n R) (i j : n)
 
 namespace Matrix
 
-/-- The determinant, but only the terms of a given sign. `A.detp 1` is written `|A|⁺` in the
-literature and `A.detp (-1)` is written `|A|⁻`. -/
+/-- The determinant, but only the terms of a given sign.
+`A.detp 1` is written `|A|⁺` in the literature and `A.detp (-1)` is written `|A|⁻`. -/
 def detp : R := ∑ σ ∈ ofSign s, ∏ k, A k (σ k)
 
 @[simp] lemma detp_transpose : A.transpose.detp s = A.detp s :=
@@ -129,8 +127,7 @@ lemma DetpBalanced.submatrix_of_card_le {a b : R} (h : A.DetpBalanced a b)
   let g' := Equiv.ofBijective g <| (Fintype.bijective_iff_injective_and_card _).mpr
     ⟨hg, (Fintype.card_le_of_injective g hg).antisymm le⟩
   simp_rw [show f = f' by rfl, show g = g' by rfl, DetpBalanced, detp_submatrix_equiv_equiv]
-  set s := sign (f'.symm.trans g') with hs
-  clear_value s; fin_cases s
+  obtain eq | eq := Int.units_eq_one_or (sign (f'.symm.trans g')) <;> rw [eq]
   on_goal 2 => rw [add_comm, eq_comm, add_comm]
   exacts [h, h]
 
