@@ -162,7 +162,7 @@ theorem incMatrix_mul_transpose_apply_of_adj (h : G.Adj a b) :
   rw [← coe_eq_singleton, coe_filter_univ]
   exact G.incidenceSet_inter_incidenceSet_of_adj h
 
-theorem incMatrix_mul_transpose [∀ a, Fintype (neighborSet G a)] :
+theorem incMatrix_mul_transpose [G.LocallyFinite] :
     G.incMatrix R * (G.incMatrix R)ᵀ =
       of fun a b => if a = b then (G.degree a : R) else if G.Adj a b then 1 else 0 := by
   ext a b
