@@ -204,7 +204,8 @@ theorem mono (f : α → E) {s t : Set α} (hst : t ⊆ s) :
   by_cases hr' : r = ⊤
   · simp only [hr', rEVariationOn_top, iSup_le_iff, Prod.forall, Subtype.forall]
     intro a ha b hb
-    simpa [hr'] using edist_le hr f (hst ha) (hst hb)
+    rw [← rEVariationOn_top, ← hr']
+    exact edist_le hr f (hst ha) (hst hb)
   rw [rEVariationOn_ne_zero_ne_top hr hr']
   simp only [iSup_le_iff, Prod.forall, Subtype.forall, and_imp]
   intro n u hu ut
