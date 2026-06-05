@@ -438,7 +438,7 @@ lemma mem_lineOrOrthRadius_inter_sphere_iff {A B C : P}
   constructor
   · intro h
     by_contra hne
-    push_neg at hne
+    push Not at hne
     exact not_mem_lineOrOrthRadius_of_mem_sphere hA hB hC hne.1 hne.2 h
   · rintro (rfl | rfl)
     · exact left_mem_lineOrOrthRadius
