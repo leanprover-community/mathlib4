@@ -400,7 +400,7 @@ theorem append_castAdd_natAdd {f : Fin (m + n) → α} :
 
 /-- Splitting a dependent finite sequence v into an initial part and a final part,
 and then concatenating these components, produces an identical sequence. -/
-theorem addCases_castAdd_natAdd {γ : Fin (m + n) → Sort*} (v : ∀ i, γ i) (i) :
+theorem addCases_castAdd_natAdd {γ : Fin (m + n) → Sort*} (v : ∀ i, γ i) (i : Fin (m + n)) :
     addCases (fun i ↦ v (castAdd n i)) (fun j ↦ v (natAdd m j)) i = v i := by
   cases i using addCases <;> simp
 
