@@ -319,7 +319,7 @@ theorem degree_eq_zero_iff {f : MvPolynomial σ R} :
 
 theorem degree_add_le {f g : MvPolynomial σ R} :
     m.toSyn (m.degree (f + g)) ≤ m.toSyn (m.degree f) ⊔ m.toSyn (m.degree g) := by
-  simp_rw [degree, m.toSyn.apply_symm_apply, supDegree_add_le]
+  simp_rw [degree, m.toSyn.apply_symm_apply, f.supDegree_add_le]
 
 theorem degree_sum_le {α : Type*} {s : Finset α} {f : α → MvPolynomial σ R} :
     (m.toSyn <| m.degree <| ∑ x ∈ s, f x) ≤ s.sup fun x ↦ (m.toSyn <| m.degree <| f x) := by
@@ -332,7 +332,7 @@ theorem degree_sum_le {α : Type*} {s : Finset α} {f : α → MvPolynomial σ R
 theorem degree_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degree f) :
     m.degree (f + g) = m.degree f := by
   simp_rw [degree, m.toSyn.apply_symm_apply] at h
-  simp [degree, supDegree_add_eq_left h]
+  simp [degree, f.supDegree_add_eq_left h]
 
 theorem degree_add_eq_right_of_lt {f g : MvPolynomial σ R} (h : m.degree f ≺[m] m.degree g) :
     m.degree (f + g) = m.degree g := by
@@ -354,7 +354,7 @@ theorem Monic.add_of_lt {f g : MvPolynomial σ R} (hf : m.Monic f) (h : m.degree
 
 theorem degree_mul_le {f g : MvPolynomial σ R} :
     m.degree (f * g) ≼[m] m.degree f + m.degree g := by
-  simpa only [degree, map_add, m.toSyn.apply_symm_apply] using supDegree_mul_le (by simp)
+  simpa only [degree, map_add, m.toSyn.apply_symm_apply] using f.supDegree_mul_le (by simp)
 
 /-- Multiplicativity of leading coefficients -/
 theorem coeff_mul_of_add_of_degree_le {f g : MvPolynomial σ R} {a b : σ →₀ ℕ}
@@ -392,7 +392,7 @@ theorem degree_mul_of_mul_leadingCoeff_ne_zero {f g : MvPolynomial σ R}
     (hfg : m.leadingCoeff f * m.leadingCoeff g ≠ 0) :
     m.degree (f * g) = m.degree f + m.degree g := by
   rw [degree, degree, degree, ← map_add, m.toSyn.symm.apply_eq_iff_eq]
-  apply supDegree_mul m.toSyn.injective (by simp) (by simpa [← m.leadingCoeff_def] using hfg)
+  apply f.supDegree_mul m.toSyn.injective (by simp) (by simpa [← m.leadingCoeff_def] using hfg)
   all_goals contrapose hfg; simp [hfg]
 
 /-- Multiplicativity of leading coefficients -/
@@ -567,7 +567,7 @@ theorem degree_smul_of_isRegular {r : R} (hr : IsRegular r) {f : MvPolynomial σ
 theorem degree_prod_le {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset ι} :
     m.degree (∏ i ∈ s, P i) ≼[m] ∑ i ∈ s, m.degree (P i) := by
   simp_rw [degree, ← map_sum, m.toSyn.apply_symm_apply]
-  exact supDegree_prod_le (map_zero _) (map_add _)
+  exact AddMonoidAlgebra.supDegree_prod_le (map_zero _) (map_add _)
 
 theorem coeff_prod_sum_degree {ι : Type*} (P : ι → MvPolynomial σ R) (s : Finset ι) :
     coeff (∑ i ∈ s, m.degree (P i)) (∏ i ∈ s, P i) = ∏ i ∈ s, m.leadingCoeff (P i) := by
@@ -837,7 +837,7 @@ lemma degree_ne_zero_of_sub_leadingTerm_ne_zero {f : MvPolynomial σ R}
 @[simp]
 theorem degree_neg {f : MvPolynomial σ R} :
     m.degree (-f) = m.degree f :=
-  congrArg m.toSyn.symm supDegree_neg
+  congrArg m.toSyn.symm AddMonoidAlgebra.supDegree_neg
 
 @[simp]
 theorem leadingCoeff_neg {f : MvPolynomial σ R} :

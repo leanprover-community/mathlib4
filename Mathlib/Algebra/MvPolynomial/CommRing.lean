@@ -86,11 +86,11 @@ section Degrees
 
 @[simp]
 theorem degrees_neg (p : MvPolynomial σ R) : (-p).degrees = p.degrees :=
-  letI := Classical.decEq σ; supDegree_neg
+  letI := Classical.decEq σ; p.supDegree_neg
 
 theorem degrees_sub_le [DecidableEq σ] {p q : MvPolynomial σ R} :
     (p - q).degrees ≤ p.degrees ∪ q.degrees := by
-  simpa [degrees_def] using! supDegree_sub_le
+  simpa [degrees_def] using! p.supDegree_sub_le
 
 end Degrees
 
@@ -184,7 +184,7 @@ end DegreeOf
 section TotalDegree
 
 @[simp]
-theorem totalDegree_neg (a : MvPolynomial σ R) : (-a).totalDegree = a.totalDegree := supDegree_neg
+theorem totalDegree_neg (a : MvPolynomial σ R) : (-a).totalDegree = a.totalDegree := a.supDegree_neg
 
 theorem totalDegree_sub (a b : MvPolynomial σ R) :
     (a - b).totalDegree ≤ max a.totalDegree b.totalDegree :=
