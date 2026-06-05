@@ -450,21 +450,23 @@ instance : Monoid.FG (𝓞 K)ˣ := by
   rw [Monoid.fg_iff_add_fg, ← AddGroup.fg_iff_addMonoid_fg, ← Module.Finite.iff_addGroup_fg]
   infer_instance
 
-theorem rank_modTorsion :
-    Module.finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
+theorem finrank_modTorsion : Module.finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
   rw [← LinearEquiv.finrank_eq (logEmbeddingEquiv K).symm, unitLattice_rank]
+
+@[deprecated (since := "2026-06-05")]
+alias NumberField.Units.rank_modTorsion := finrank_modTorsion
 
 theorem finrank_eq :
     finrank ℤ (Additive (𝓞 K)ˣ) = rank K := by
-  rw [← rank_modTorsion]
-  change _ = finrank ℤ (Additive (𝓞 K)ˣ ⧸ (AddCommGroup.torsion <| Additive (𝓞 K)ˣ))
-  rw [← Submodule.torsion_int]
-  exact (congr_arg Cardinal.toNat (rank_quotient_eq_of_le_torsion le_rfl)).symm
+  rw [← finrank_modTorsion]
+  refine (congr_arg Cardinal.toNat (rank_quotient_eq_of_le_torsion le_rfl)).symm.trans
+    (Submodule.quotEquivOfEq _ (AddCommGroup.torsion _).toIntSubmodule ?_).finrank_eq
+  rw [← Submodule.torsion_int, Submodule.toAddSubgroup_toIntSubmodule]
 
 /-- A basis of the quotient `(𝓞 K)ˣ ⧸ (torsion K)` seen as an additive ℤ-module. -/
 def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
   Basis.reindex (Module.Free.chooseBasis ℤ _) (Fintype.equivOfCardEq <| by
-    rw [← Module.finrank_eq_card_chooseBasisIndex, rank_modTorsion, Fintype.card_fin])
+    rw [← Module.finrank_eq_card_chooseBasisIndex, finrank_modTorsion, Fintype.card_fin])
 
 /-- The basis of the `unitLattice` obtained by mapping `basisModTorsion` via `logEmbedding`. -/
 def basisUnitLattice : Basis (Fin (rank K)) ℤ (unitLattice K) :=

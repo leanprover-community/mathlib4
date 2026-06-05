@@ -140,10 +140,6 @@ section torsion
 /-- The torsion subgroup of the group of units. -/
 def torsion : Subgroup (𝓞 K)ˣ := CommGroup.torsion (𝓞 K)ˣ
 
-theorem torsion_toAddSubgroup :
-    (torsion K).toAddSubgroup = AddCommGroup.torsion (Additive (𝓞 K)ˣ) :=
-  rfl
-
 instance : Nonempty (torsion K) := One.instNonempty
 
 variable [NumberField K]
