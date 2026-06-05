@@ -85,7 +85,7 @@ variable (X) in
 lemma constructibleTopology_eq_generateFrom_isConstructible
     [CompactSpace X] [QuasiSeparatedSpace X] :
     constructibleTopology X = generateFrom { s : Set X | IsConstructible s } := by
-  change generateFrom (_ ∪ _) = generateFrom { s | IsConstructible s }
+  rw [constructibleTopology]
   refine generateFrom_booleanSubalgebra_closure (bot_mem_constructibleTopologySubbasis X)
     compl_image_constructibleTopologySubbasis ▸ ?_
   · congr
