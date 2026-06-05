@@ -116,6 +116,7 @@ theorem toPartialEquiv_comp_toPartialHomeomorph_injective :
 
 /- Register a few simp lemmas to make sure that `simp` puts the application of a local
 homeomorphism in its normal form, i.e., in terms of its coercion to a function. -/
+
 @[simp, mfld_simps]
 theorem toFun_eq_coe (e : OpenPartialHomeomorph X Y) : e.toFun = e :=
   rfl
@@ -173,7 +174,7 @@ protected theorem mapsTo : MapsTo e e.source e.target := fun _ => e.map_source
 protected theorem mapsTo_symm : MapsTo e.symm e.target e.source :=
   e.symm.mapsTo
 
-@[deprecated (since := "2026-05-18")] alias symm_mapsTo := OpenPartialHomeomorph.mapsTo_symm
+@[deprecated (since := "2026-05-28")] alias symm_mapsTo := OpenPartialHomeomorph.mapsTo_symm
 
 protected theorem leftInvOn : LeftInvOn e.symm e e.source := fun _ => e.left_inv
 
