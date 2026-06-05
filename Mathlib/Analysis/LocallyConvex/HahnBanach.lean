@@ -95,7 +95,7 @@ variable [Module 𝕜 E] [PolynormableSpace 𝕜 E]
 
 /-- **Hahn-Banach theorem** for linear functionals dominated by a continuous seminorm on
 polynormable spaces over fields satisfying `IsRCLikeNormedField`. -/
-theorem Module.Dual.exists_continuous_extension (S : Submodule 𝕜 E) (f : Dual 𝕜 S)
+theorem Module.Dual.exists_continuous_extension_of_le_seminorm (S : Submodule 𝕜 E) (f : Dual 𝕜 S)
     {p : Seminorm 𝕜 E} (hp_cont : Continuous p) (hp : ∀ x, ‖f x‖ ≤ p x) :
     ∃ g : StrongDual 𝕜 E, (∀ x : S, g x = f x) ∧ ∀ x, ‖g x‖ ≤ p x := by
   obtain ⟨g, hg, hle⟩ := Module.Dual.exists_extension S f hp
