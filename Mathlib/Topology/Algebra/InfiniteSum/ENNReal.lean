@@ -44,7 +44,7 @@ variable {f g : α → ℝ≥0∞}
 @[norm_cast]
 protected theorem hasSum_coe {f : α → ℝ≥0} {r : ℝ≥0} :
     HasSum (fun a => (f a : ℝ≥0∞)) ↑r ↔ HasSum f r := by
-  simp only [HasSum, ← coe_finsetSum, tendsto_coe]
+  simp only [HasSum, ← ofNNReal_finsetSum, tendsto_coe]
 
 protected theorem tsum_coe_eq {f : α → ℝ≥0} (h : HasSum f r) : (∑' a, (f a : ℝ≥0∞)) = r :=
   (ENNReal.hasSum_coe.2 h).tsum_eq
@@ -384,8 +384,7 @@ the sequence of partial sum converges to `r`. -/
 theorem hasSum_iff_tendsto_nat {f : ℕ → ℝ≥0} {r : ℝ≥0} :
     HasSum f r ↔ Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop (𝓝 r) := by
   rw [← ENNReal.hasSum_coe, ENNReal.hasSum_iff_tendsto_nat]
-  simp only [← ENNReal.coe_finsetSum]
-  exact ENNReal.tendsto_coe
+  norm_cast
 
 theorem not_summable_iff_tendsto_nat_atTop {f : ℕ → ℝ≥0} :
     ¬Summable f ↔ Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop atTop := by
@@ -525,7 +524,7 @@ theorem tsum_comp_le_tsum_of_inj {β : Type*} {f : α → ℝ} (hf : Summable f)
     {i : β → α} (hi : Function.Injective i) : tsum (f ∘ i) ≤ tsum f := by
   lift f to α → ℝ≥0 using hn
   rw [NNReal.summable_coe] at hf
-  simpa only [Function.comp_def, ← NNReal.coe_tsum] using NNReal.tsum_comp_le_tsum_of_inj hf hi
+  simpa only [Function.comp_def, ← NNReal.coe_tsum] using! NNReal.tsum_comp_le_tsum_of_inj hf hi
 
 /-- Comparison test of convergence of series of non-negative real numbers. -/
 theorem Summable.of_nonneg_of_le {f g : β → ℝ} (hg : ∀ b, 0 ≤ g b) (hgf : ∀ b, g b ≤ f b)
