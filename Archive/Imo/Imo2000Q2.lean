@@ -27,11 +27,9 @@ When at least one is negative or zero, the inequality is verified by sign analys
 
 namespace Imo2000Q2
 
-open Real
-
 variable {A B C : ℝ}
 
-lemma idkwhattocallit1 {p q r : ℝ} (p_pos : 0 < p)
+lemma eight_mul_le_prod_add_of_pos {p q r : ℝ} (p_pos : 0 < p)
     (q_pos : 0 < q) (r_pos : 0 < r) :
     r * q * p * 8 ≤ (p + q) * (r + p) * (q + r) := by
   refine le_of_sq_le_sq ?_ (by positivity)
@@ -39,42 +37,45 @@ lemma idkwhattocallit1 {p q r : ℝ} (p_pos : 0 < p)
   calc
     0
     _ ≤ (p * (q - r) ^ 2 + q * (r - p) ^ 2 + r * (p - q) ^ 2)
-      * ((p + q) * (r + p) * (q + r) + 8 * r * q * p) := by positivity
+      * ((p + q) * (r + p) * (q + r) + r * q * p * 8) := by positivity
     _ = ((p + q) * (r + p) * (q + r)) ^ 2 - (r * q * p * 8) ^ 2 := by ring
 
-lemma idkwhattocallit2 {p q r : ℝ} (p_nonpos : p ≤ 0) (r_pos : 0 < r) (q_pos : 0 < q)
+lemma eight_mul_le_prod_add_of_nonpos {p q r : ℝ} (p_nonpos : p ≤ 0) (r_pos : 0 < r) (q_pos : 0 < q)
     (p_add_q_pos : 0 < p + q) (r_add_p_pos : 0 < r + p) :
     r * q * p * 8 ≤ (p + q) * (r + p) * (q + r) := by
-  trans 0
-  · refine mul_nonpos_of_nonpos_of_nonneg ?_ (Nat.ofNat_nonneg' 8)
-    refine mul_nonpos_of_nonneg_of_nonpos ?_ p_nonpos
-    positivity
-  · positivity
+  calc
+    r * q * p * 8
+    _ ≤ 0 := by
+      refine mul_nonpos_of_nonpos_of_nonneg ?_ (by norm_num)
+      refine mul_nonpos_of_nonneg_of_nonpos ?_ p_nonpos
+      positivity
+    _ ≤ (p + q) * (r + p) * (q + r) := by positivity
 
-lemma idkwhattocallit3 {p q r : ℝ} (p_add_q_pos : 0 < p + q) (r_add_p_pos : 0 < r + p)
-    (q_add_r_pos : 0 < q + r) : r * q * p * 8 ≤ (p + q) * (r + p) * (q + r) := by
+lemma eight_mul_le_prod_add_of_add_pos {p q r : ℝ} (p_add_q_pos : 0 < p + q)
+    (r_add_p_pos : 0 < r + p) (q_add_r_pos : 0 < q + r) :
+    r * q * p * 8 ≤ (p + q) * (r + p) * (q + r) := by
   rcases (lt_or_ge 0 p) with p_pos | p_nonpos <;>
   rcases (lt_or_ge 0 q) with q_pos | q_nonpos <;>
   rcases (lt_or_ge 0 r) with r_pos | r_nonpos
   -- only one of p, q, r can be negative
   all_goals try linarith
-  · exact idkwhattocallit1 p_pos q_pos r_pos
-  · convert idkwhattocallit2 r_nonpos q_pos p_pos r_add_p_pos q_add_r_pos using 1
+  · exact eight_mul_le_prod_add_of_pos p_pos q_pos r_pos
+  · convert eight_mul_le_prod_add_of_nonpos r_nonpos q_pos p_pos r_add_p_pos q_add_r_pos using 1
     all_goals ring
-  · convert idkwhattocallit2 q_nonpos p_pos r_pos q_add_r_pos p_add_q_pos using 1
+  · convert eight_mul_le_prod_add_of_nonpos q_nonpos p_pos r_pos q_add_r_pos p_add_q_pos using 1
     all_goals ring
-  · exact idkwhattocallit2 p_nonpos r_pos q_pos p_add_q_pos r_add_p_pos
+  · exact eight_mul_le_prod_add_of_nonpos p_nonpos r_pos q_pos p_add_q_pos r_add_p_pos
 
 theorem imo2000_q2 (A_pos : 0 < A) (B_pos : 0 < B) (C_pos : 0 < C) (h_prod : A * B * C = 1) :
     (A - 1 + 1/B) * (B - 1 + 1/C) * (C - 1 + 1/A) ≤ 1 := by
   obtain ⟨x, y, z, x_pos, y_pos, z_pos, rfl, rfl, rfl⟩ : ∃ (x y z : ℝ), 0 < x ∧ 0 < y ∧ 0 < z ∧
     A = x / y ∧ B = y / z ∧ C = z / x := by
     use A, 1, 1/B
-    grind only [!inv_pos, #8f6f, #2ef6]
+    grind only [!inv_pos]
   field_simp
-  have x_pos2 : 0 < (z + x - y) / 2 + (x + y - z) / 2 := by linarith only [x_pos]
-  have y_pos2 : 0 < (x + y - z) / 2 + (y + z - x) / 2 := by linarith only [y_pos]
-  have z_pos2 : 0 < (y + z - x) / 2 + (z + x - y) / 2 := by linarith only [z_pos]
-  grind only [idkwhattocallit3 z_pos2 y_pos2 x_pos2]
+  rw [show x = (z + x - y) / 2 + (x + y - z) / 2 by ring] at x_pos
+  rw [show y = (x + y - z) / 2 + (y + z - x) / 2 by ring] at y_pos
+  rw [show z = (y + z - x) / 2 + (z + x - y) / 2 by ring] at z_pos
+  grind only [eight_mul_le_prod_add_of_add_pos  z_pos y_pos x_pos]
 
 end Imo2000Q2
