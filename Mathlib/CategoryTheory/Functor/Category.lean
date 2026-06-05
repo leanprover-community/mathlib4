@@ -120,16 +120,19 @@ def hcomp {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) : F ⋙ H ⟶ G ⋙ I wh
 
 -- Horizontal composition has two possible definitions that are dual to each other,
 -- and we need to prove to `to_dual` that these are equivalent.
+set_option linter.auxLemma false in
 attribute [to_dual none] hcomp._proof_2 hcomp._proof_3
 to_dual_insert_cast hcomp := by ext x; exact β.naturality' (α.app x)
 
 /-- Notation for horizontal composition of natural transformations. -/
 infixl:80 " ◫ " => hcomp
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_dual self]
 theorem hcomp_id_app {H : D ⥤ E} (α : F ⟶ G) (X : C) : (α ◫ 𝟙 H).app X = H.map (α.app X) := by
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_dual self]
 theorem id_hcomp_app {H : E ⥤ C} (α : F ⟶ G) (X : E) : (𝟙 H ◫ α).app X = α.app _ := by simp
 
@@ -216,7 +219,6 @@ end Iso
 
 /-- The natural transformation `G.flip.obj Y ⟶ G'.flip.obj Y` induced by
 a natural transformation `τ : G ⟶ G'` between bifunctors. -/
-@[simps!]
 abbrev NatTrans.flipApp {G G' : C ⥤ D ⥤ E} (τ : G ⟶ G') (Y : D) :
     G.flip.obj Y ⟶ G'.flip.obj Y :=
   ((flipFunctor _ _ _).map τ).app Y

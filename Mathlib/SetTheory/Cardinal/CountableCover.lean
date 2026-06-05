@@ -51,7 +51,7 @@ lemma mk_subtype_le_of_countable_eventually_mem_aux {α ι : Type u} {a : Cardin
       have : s ⊆ u := fun x hx ↦ by simpa only [u, Set.mem_toFinset] using hi x hx
       exact Finset.card_le_card this
     have I2 : (u.card : Cardinal) ≤ n := by
-      convert h'f i; simp only [u, Set.toFinset_card, mk_fintype]
+      convert! h'f i; simp only [u, Set.toFinset_card, mk_fintype]
     exact I1.trans (Nat.cast_le.1 I2)
   -- case `a` infinite:
   · have : t ⊆ ⋃ i, f i := by
@@ -76,9 +76,9 @@ lemma mk_subtype_le_of_countable_eventually_mem {α : Type u} {ι : Type v} {a :
   let l' : Filter (ULift.{u} ι) := Filter.map ULift.up l
   apply mk_subtype_le_of_countable_eventually_mem_aux (ι := ULift.{u} ι) (l := l') (f := g)
   · intro x hx
-    simpa only [Function.comp_apply, mem_preimage, eventually_map] using ht _ hx
+    simpa only [Function.comp_apply, mem_preimage, eventually_map] using! ht _ hx
   · intro i
-    simpa [g] using h'f i.down
+    simpa [g] using! h'f i.down
 
 /-- If a space is eventually covered by a countable family of sets, all with cardinality at
 most `a`, then the cardinality of the space is also bounded by `a`. -/

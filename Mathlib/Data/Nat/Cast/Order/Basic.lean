@@ -52,7 +52,7 @@ variable [NeZero (1 : α)]
 
 theorem cast_add_one_pos (n : ℕ) : 0 < (n : α) + 1 := by
   apply zero_lt_one.trans_le
-  convert (@mono_cast α _).imp (?_ : 1 ≤ n + 1)
+  convert! (@mono_cast α _).imp (?_ : 1 ≤ n + 1)
   <;> simp
 
 /-- See also `Nat.cast_pos`, specialised for an `OrderedSemiring`. -/

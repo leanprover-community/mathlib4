@@ -130,7 +130,7 @@ theorem isMultiplyPretransitive_iff {n : ℕ} :
 variable {H β : Type*} [Group H] [MulAction H β] {σ : G → H}
   {f : α →ₑ[σ] β} (hf : Function.Injective f)
 
-/- If there exists a surjective equivariant map `α →ₑ[σ] β`
+/-- If there exists a surjective equivariant map `α →ₑ[σ] β`
 then pretransitivity descends from `n ↪ α` to `n ↪ β`.
 
 The subtlety is that if it is not injective, this map does not induce
@@ -358,7 +358,7 @@ theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
   · obtain ⟨g, hgxy⟩ := exists_smul_eq G (ofStabilizer.snoc x) (ofStabilizer.snoc y)
     have hg : g ∈ stabilizer G a := by
       rw [DFunLike.ext_iff] at hgxy
-      convert hgxy (last n)
+      convert! hgxy (last n)
       simp [ofStabilizer.snoc_last]
     use ⟨g, hg⟩
     ext i
@@ -470,13 +470,13 @@ theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
     have hfs := SubMulAction.fixingSubgroup_of_insert a t
     rw [← hat'] at hfs
     rw [hfs, Subgroup.index_map,
-      (MonoidHom.ker_eq_bot_iff (stabilizer G a).subtype).mpr
+      MonoidHom.ker_eq_bot (stabilizer G a).subtype
         (by simp only [Subgroup.coe_subtype, Subtype.coe_injective])]
     simp only [sup_bot_eq, Subgroup.range_subtype]
     have htcard : t.ncard = k := by
       rw [← Nat.succ_inj, Nat.succ_eq_add_one, Nat.succ_eq_add_one, ← hs, hat', eq_comm]
       suffices ¬ a ∈ (Subtype.val '' t) by
-        convert Set.ncard_insert_of_notMem this ?_
+        convert! Set.ncard_insert_of_notMem this ?_
         · rw [Set.ncard_image_of_injective _ Subtype.coe_injective]
         apply Set.toFinite
       intro h
@@ -489,7 +489,7 @@ theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
       rw [add_comm k, Nat.mul_right_comm, ← Nat.sub_sub, this, mul_comm,
         index_stabilizer_of_transitive G a]
       exact Nat.mul_factorial_pred (card_ne_zero.mpr ⟨⟨a⟩, inferInstance⟩)
-    convert hrec (ofStabilizer.isMultiplyPretransitive.mp Hk) htcard
+    convert! hrec (ofStabilizer.isMultiplyPretransitive.mp Hk) htcard
     all_goals { rw [nat_card_ofStabilizer_eq G a] }
 
 /-- For a multiply pretransitive action,
