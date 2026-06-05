@@ -539,11 +539,11 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
     if let some suggStx := suggestion? then
       liftCoreM <| Lean.Meta.Tactic.TryThis.addSuggestion stainStx
         { suggestion := .tsyntax (kind := `tactic) ⟨suggStx⟩ } (origSpan? := stainStx)
-    match d with
-    | .name _ => logInfoAt s m!"`{s}` uses `{d}`, which was modified by a flexible tactic!"
+    logInfoAt s <| match d with
+    | .name _ => m!"`{.group s}`\nuses `{d}`, which was modified by a flexible tactic!"
     | .goal =>
-      logInfoAt s m!"`{s}` modifies the current goal, which was modified by a flexible tactic!"
-    | _ => logInfoAt s m!"`{s}` uses a rigid tactic. Previously, a flexible tactic, which \
+      m!"`{.group s}`\nmodifies the current goal, which was modified by a flexible tactic!"
+    | .wildcard => m!"`{.group s}`\nuses a rigid tactic. Previously, a flexible tactic, which \
       potentially modified all hypotheses and the goal, was used."
 
 initialize addLinter flexibleLinter
