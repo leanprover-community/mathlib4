@@ -165,88 +165,88 @@ open OrderDual
     CountableSupClosed (ofDual ⁻¹' s) ↔ CountableInfClosed s :=
   ⟨fun h ↦ ⟨h.isLUB_mem⟩, fun h ↦ ⟨h.isGLB_mem⟩⟩
 
-alias ⟨_, CountableInfClosed.dual⟩ := countableSupClosed_preimage_ofDual
-alias ⟨_, CountableSupClosed.dual⟩ := countableInfClosed_preimage_ofDual
+@[to_dual] alias ⟨_, CountableSupClosed.dual⟩ := countableInfClosed_preimage_ofDual
 
 /-! ### Closure -/
 
 /-- Every set generates a set closed under countable supremum. -/
 @[to_dual /-- Every set generates a set closed under countable infimum. -/]
-def countableSupClosure [LE α] (s : Set α) : Set α := ⋂₀ {t | s ⊆ t ∧ CountableSupClosed t}
+def countableSupClosure [Preorder α] : ClosureOperator (Set α) := .ofPred
+  (fun s a ↦ ∃ (A : Set α) (_ : A ⊆ s) (_ : A.Nonempty) (_ : A.Countable), IsLUB A a)
+  CountableSupClosed
+  (fun s x hxs ↦ ⟨{x}, by simp; grind, by simp, by simp, by simp⟩)
+  (fun s ↦ by
+    constructor
+    intro A hA hA_ne hAc x hx
+    choose B hB hB_ne hBc hB_lub using hA
+    refine ⟨⋃ a : A, B a.2, by simp; grind, ?_, ?_, ?_⟩
+    · obtain ⟨a, ha⟩ := hA_ne
+      simp
+      grind
+    · have : Countable A := Set.countable_coe_iff.mpr hAc
+      exact Set.countable_iUnion fun a ↦ hBc a.2
+    · have : Nonempty A := Set.nonempty_coe_sort.mpr hA_ne
+      rw [← isLUB_iUnion_iff_of_isLUB (u := fun a : A ↦ a.1) (fun a ↦ hB_lub a.2)]
+      simpa)
+  (fun s t (hst : s ⊆ t) ht a ⟨A, hAs, hA_ne, hA_c, hA_lub⟩ ↦
+    ht.isLUB_mem A (hAs.trans hst) hA_ne hA_c _ hA_lub)
+
+@[to_dual (attr := simp)] lemma subset_countableSupClosure [Preorder α] {s : Set α} :
+    s ⊆ countableSupClosure s := countableSupClosure.le_closure _
+
+@[to_dual countableInfClosure_min]
+lemma countableSupClosure_min [Preorder α] (hst : s ⊆ t) (ht : CountableSupClosed t) :
+    countableSupClosure s ⊆ t := countableSupClosure.closure_min hst ht
+
+@[to_dual (attr := simp)] lemma countableSupClosed_countableSupClosure [Preorder α] :
+    CountableSupClosed (countableSupClosure s) := countableSupClosure.isClosed_closure _
+
+@[to_dual]
+lemma countableSupClosure_mono [Preorder α] : Monotone (countableSupClosure : Set α → Set α) :=
+  countableSupClosure.mono
+
+@[to_dual (attr := simp)] lemma countableSupClosure_eq_self [Preorder α] :
+    countableSupClosure s = s ↔ CountableSupClosed s := countableSupClosure.isClosed_iff.symm
+
+@[to_dual]
+lemma countableSupClosure_eq_sInter [Preorder α] (s : Set α) :
+    countableSupClosure s = ⋂₀ {t | s ⊆ t ∧ CountableSupClosed t} := by
+  have : CountableSupClosed (⋂₀ {t | s ⊆ t ∧ CountableSupClosed t}) := by
+    constructor
+    simp only [Set.subset_sInter_iff, Set.mem_setOf_eq, and_imp, Set.mem_sInter]
+    intro t ht ht_ne ht_c x hx t' hst' ht'
+    exact ht'.isLUB_mem t (ht t' hst' ht') ht_ne ht_c x hx
+  refine le_antisymm (countableSupClosure_min (by grind) (by grind)) (Set.sInter_subset_of_mem ?_)
+  exact ⟨subset_countableSupClosure, countableSupClosed_countableSupClosure⟩
 
 @[to_dual]
 lemma mem_countableSupClosure_iff [Preorder α] :
     a ∈ countableSupClosure s ↔
-      ∃ (A : Set α) (_ : A ⊆ s) (_ : A.Nonempty) (_ : A.Countable), IsLUB A a := by
-  simp only [countableSupClosure, Set.mem_sInter, Set.mem_setOf_eq, and_imp]
-  refine ⟨fun h ↦ ?_, fun h t hts ht ↦ ?_⟩
-  · have h_csc : CountableSupClosed
-        {a | ∃ (A : Set α) (_ : A ⊆ s) (_ : A.Nonempty) (_ : A.Countable), IsLUB A a} := by
-      constructor
-      intro A hA hA_ne hAc x hx
-      choose B hB hB_ne hBc hB_lub using hA
-      refine ⟨⋃ a : A, B a.2, by simp; grind, ?_, ?_, ?_⟩
-      · obtain ⟨a, ha⟩ := hA_ne
-        simp
-        grind
-      · have : Countable A := Set.countable_coe_iff.mpr hAc
-        exact Set.countable_iUnion fun a ↦ hBc a.2
-      · have : Nonempty A := Set.nonempty_coe_sort.mpr hA_ne
-        rw [← isLUB_iUnion_iff_of_isLUB (u := fun a : A ↦ a.1) (fun a ↦ hB_lub a.2)]
-        simpa
-    refine h {a | ∃ (A : Set α) (_ : A ⊆ s) (_ : A.Nonempty) (_ : A.Countable), IsLUB A a} ?_ h_csc
-    exact fun a _ ↦ ⟨{a}, by simp; grind, by simp, by simp, by simp⟩
-  · obtain ⟨u, hus, hu_ne, hu_c, h_lub⟩ := h
-    exact ht.isLUB_mem u (hus.trans hts) hu_ne hu_c _ h_lub
+      ∃ (A : Set α) (_ : A ⊆ s) (_ : A.Nonempty) (_ : A.Countable), IsLUB A a := by rfl
 
 @[to_dual]
 lemma mem_countableSupClosure_iff_iSup [CompleteLattice α] :
     a ∈ countableSupClosure s ↔ ∃ (t : ℕ → α), (∀ n, t n ∈ s) ∧ ⨆ n, t n = a := by
-  simp only [countableSupClosure, Set.mem_sInter, Set.mem_setOf_eq, and_imp]
-  refine ⟨fun h ↦ ?_, fun h t hts ht ↦ ?_⟩
-  · have h_csc : CountableSupClosed {a | ∃ (t : ℕ → α), (∀ n, t n ∈ s) ∧ ⨆ n, t n = a} := by
-      refine .of_iSup_mem fun A hA ↦ ?_
-      choose B hB hB_eq using hA
-      refine ⟨fun n ↦ B (Nat.unpair n).1 (Nat.unpair n).2, fun _ ↦ hB _ _, ?_⟩
-      simp [iSup_unpair, ← hB_eq]
-    refine h {a | ∃ (t : ℕ → α), (∀ n, t n ∈ s) ∧ ⨆ n, t n = a} ?_ h_csc
-    exact fun a ha ↦ ⟨fun _ ↦ a, by simp [ha]⟩
-  · obtain ⟨u, hus, rfl⟩ := h
-    exact ht.iSup_mem fun n ↦ hts (hus n)
-
-@[to_dual (attr := simp)] lemma subset_countableSupClosure [LE α] {s : Set α} :
-    s ⊆ countableSupClosure s := by simp [countableSupClosure]; grind
-
-@[to_dual]
-lemma countableSupClosure_mono [LE α] : Monotone (countableSupClosure : Set α → Set α) := by
-  intro s t hst
-  simp [countableSupClosure] at hst ⊢
-  grind
-
-@[to_dual countableInfClosure_min]
-lemma countableSupClosure_min [LE α] (hst : s ⊆ t) (ht : CountableSupClosed t) :
-    countableSupClosure s ⊆ t := Set.sInter_subset_of_mem ⟨hst, ht⟩
-
-@[to_dual (attr := simp)] lemma countableSupClosed_countableSupClosure [LE α] :
-    CountableSupClosed (countableSupClosure s) := CountableSupClosed.sInter fun _ ht ↦ ht.2
+  suffices countableSupClosure s = {a | ∃ (t : ℕ → α), (∀ n, t n ∈ s) ∧ ⨆ n, t n = a} by simp [this]
+  have h_csc : CountableSupClosed {a | ∃ (t : ℕ → α), (∀ n, t n ∈ s) ∧ ⨆ n, t n = a} := by
+    refine .of_iSup_mem fun A hA ↦ ?_
+    choose B hB hB_eq using hA
+    refine ⟨fun n ↦ B (Nat.unpair n).1 (Nat.unpair n).2, fun _ ↦ hB _ _, ?_⟩
+    simp [iSup_unpair, ← hB_eq]
+  refine le_antisymm (countableSupClosure_min ?_ h_csc) ?_
+  · exact fun a ha ↦ ⟨fun _ ↦ a, by simp [ha]⟩
+  · rintro _ ⟨u, hus, rfl⟩
+    exact countableSupClosed_countableSupClosure.iSup_mem fun n ↦ subset_countableSupClosure (hus n)
 
 @[to_dual (attr := simp)] lemma supClosed_countableSupClosure [SemilatticeSup α] :
     SupClosed (countableSupClosure s) :=
   countableSupClosed_countableSupClosure.supClosed
 
-@[to_dual (attr := simp)] lemma countableSupClosure_eq_self [LE α] :
-    countableSupClosure s = s ↔ CountableSupClosed s := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [← h]
-    exact countableSupClosed_countableSupClosure
-  · refine subset_antisymm ?_ subset_countableSupClosure
-    exact countableSupClosure_min subset_rfl h
-
 @[to_dual]
 alias ⟨_, CountableSupClosed.countableSupClosure_eq⟩ := countableSupClosure_eq_self
 
 @[to_dual]
-lemma countableSupClosure_idem [LE α] (s : Set α) :
+lemma countableSupClosure_idem [Preorder α] (s : Set α) :
     countableSupClosure (countableSupClosure s) = countableSupClosure s := by
   rw [countableSupClosure_eq_self]
   exact countableSupClosed_countableSupClosure
@@ -254,10 +254,10 @@ lemma countableSupClosure_idem [LE α] (s : Set α) :
 @[to_dual (attr := simp)] lemma countableSupClosure_singleton [PartialOrder α] {x : α} :
     countableSupClosure {x} = {x} := by simp
 
-@[to_dual (attr := simp)] lemma countableSupClosure_univ [LE α] :
+@[to_dual (attr := simp)] lemma countableSupClosure_univ [Preorder α] :
     countableSupClosure (Set.univ : Set α) = Set.univ := by simp
 
-@[to_dual (attr := simp)] lemma countableSupClosure_empty [LE α] :
+@[to_dual (attr := simp)] lemma countableSupClosure_empty [Preorder α] :
     countableSupClosure (∅ : Set α) = ∅ := by simp
 
 @[to_dual (attr := simp)] lemma upperBounds_countableSupClosure [Preorder α] (s : Set α) :
