@@ -199,6 +199,14 @@ theorem mk_mul_mk' {A : Type*} [Semiring A] [Algebra R A] {a₁ a₂ : A} {s₁ 
 theorem mk_mul_mk {A : Type*} [Semiring A] [Algebra R A] {a₁ a₂ : A} {s₁ s₂ : S} :
     mk a₁ s₁ * mk a₂ s₂ = mk (a₁ * a₂) (s₁ * s₂) := by rw [mk_mul_mk', mul_comm s₁ s₂]
 
+theorem mk_pow {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} (n : ℕ) (a : A) (s : S) :
+    mk a s ^ n = mk (a ^ n) (s ^ n) := by
+  induction n with
+  | zero =>
+    rw [pow_zero, pow_zero, pow_zero, OreLocalization.one_def]
+  | succ n ih =>
+    simp only [pow_succ', ih, LocalizedModule.mk_mul_mk]
+
 -- For the instance on `Localization S`, we prefer `OreLocalization.instSemiring`.
 -- They are defeq but Lean needs to unfold a bunch to verify it.
 instance (priority := 900) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
@@ -266,6 +274,11 @@ theorem smul'_mk
     r • LocalizedModule.mk m s = LocalizedModule.mk (r • m) s := by
   rw [OreLocalization.smul_oreDiv]
   simp
+
+theorem prod_mk {ι A : Type*} [CommSemiring A] [Algebra R A] {S : Submonoid R}
+    (t : Finset ι) (a : ι → A) (s : ι → S) :
+    ∏ i ∈ t, mk (a i) (s i) = mk (∏ i ∈ t, a i) (∏ i ∈ t, s i) := by
+  induction t using Finset.cons_induction <;> simp [OreLocalization.one_def, *, mk_mul_mk]
 
 /-- If `IsLocalization S T`, then `M[S⁻¹]` has a `T`-action.
 This should eventually be replaced with `IsLocalizedModule f N` and `SMul T N`. -/
