@@ -180,6 +180,7 @@ def _root_.Ideal.stableFiltration (I : Ideal R) (N : Submodule R M) : I.Filtrati
   mono i := by rw [add_comm, pow_add, mul_smul]; exact Submodule.smul_le_right
   smul_le i := by rw [add_comm, pow_add, mul_smul, pow_one]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem _root_.Ideal.stableFiltration_stable (I : Ideal R) (N : Submodule R M) :
     (I.stableFiltration N).Stable := by
   use 0
@@ -299,7 +300,6 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     intro x hx
     obtain ⟨l, hl⟩ := (Finsupp.mem_span_iff_linearCombination _ _ _).mp (H _ ⟨x, hx, rfl⟩)
     replace hl := congr_arg (fun f : ℕ →₀ M => f (n + 1)) hl
-    dsimp only at hl
     rw [PolynomialModule.single_apply, if_pos rfl] at hl
     rw [← hl, Finsupp.linearCombination_apply, Finsupp.sum_apply]
     apply Submodule.sum_mem _ _
