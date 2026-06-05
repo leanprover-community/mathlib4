@@ -560,7 +560,7 @@ protected theorem IntegrableAtFilter.neg {f : α → E} (hf : IntegrableAtFilter
 protected theorem integrableAtFilter_neg_iff {f : α → E} :
     IntegrableAtFilter (-f) l μ ↔ IntegrableAtFilter f l μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.neg⟩
-  convert h.neg; simp
+  convert! h.neg; simp
 
 protected theorem IntegrableAtFilter.sub {f g : α → E}
     (hf : IntegrableAtFilter f l μ) (hg : IntegrableAtFilter g l μ) :
@@ -579,7 +579,7 @@ private theorem integrableAtFilter_smul_iff' {𝕜 : Type*} [NormedField 𝕜] [
     {f : α → E} {c : 𝕜} (hc : c ≠ 0) :
     IntegrableAtFilter (c • f) l μ ↔ IntegrableAtFilter f l μ := by
   refine ⟨fun hf ↦ ?_, fun h ↦ h.smul c⟩
-  convert hf.smul c⁻¹
+  convert! hf.smul c⁻¹
   simp [← smul_assoc, inv_mul_cancel₀ hc]
 
 theorem integrableAtFilter_smul_iff {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
