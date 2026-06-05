@@ -67,7 +67,7 @@ unconditionally convergent.
 
 public section
 
-open Set MeasureTheory VectorMeasure ContinuousLinearMap Filter Topology
+open Set MeasureTheory VectorMeasure ContinuousLinearMap
 open scoped ENNReal NNReal
 
 variable {ι X Y E F G : Type*} {mX : MeasurableSpace X} [MeasurableSpace Y]
