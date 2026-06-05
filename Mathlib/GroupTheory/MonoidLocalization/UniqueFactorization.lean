@@ -67,11 +67,15 @@ theorem uniqueFactorizationMonoid (f : S.LocalizationMap N)
 
 end Submonoid.LocalizationMap
 
-variable (N) in
-theorem IsLocalization.uniqueFactorizationMonoid [CommSemiring M] [CommSemiring N] [Algebra M N]
-    (S : Submonoid M) [IsLocalization S N] [UniqueFactorizationMonoid M] :
-    UniqueFactorizationMonoid N :=
-  (toLocalizationMap S N).uniquFactorizationMonoid
+namespace IsLocalization
 
-instance : [UniqueFactorizationMonoid M] : UniqueFactorizationMonoid (Localization S) :=
+variable (N) [CommSemiring M] (S : Submonoid M)
+
+theorem uniqueFactorizationMonoid [CommSemiring N] [Algebra M N] [IsLocalization S N]
+    [UniqueFactorizationMonoid M] : UniqueFactorizationMonoid N :=
+  (toLocalizationMap S N).uniqueFactorizationMonoid
+
+instance [UniqueFactorizationMonoid M] : UniqueFactorizationMonoid (Localization S) :=
   (Localization.monoidOf S).uniqueFactorizationMonoid
+
+end IsLocalization
