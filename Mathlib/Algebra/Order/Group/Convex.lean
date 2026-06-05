@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Junyan Xu
 -/
 module
+
 public import Mathlib.Algebra.Group.Subgroup.Order
 public import Mathlib.Algebra.Order.Archimedean.Class
 public import Mathlib.GroupTheory.QuotientGroup.Defs
@@ -131,16 +132,16 @@ variable [IsOrderedMonoid α] (G H : ConvexSubgroup α)
     max_def G H := SetLike.ext' (union_eq G H)
     min G H := .mk (G.toSubgroup ⊓ H.toSubgroup) <| G.convex.inter H.convex
     min_def G H := toSubgroup_injective <| (em (G ≤ H)).elim
-      (by simpa [·]) fun h ↦ by simpa [h] using (total G H).resolve_left h }
+      (by simpa [·]) fun h ↦ have := (total G H).resolve_left h; by simpa [h] }
 
 theorem coe_max : max G H = (G : Set α) ∪ H := rfl
 theorem coe_min : min G H = (G : Set α) ∩ H := rfl
 
 @[to_additive] instance : SupSet (ConvexSubgroup α) where
   sSup s :=
-  { carrier := {1} ∪ ⋃ G : s, G
+  { carrier := insert 1 (⋃ G : s, G)
     mul_mem' ha hb := by
-      rw [Set.mem_union, Set.mem_iUnion] at ha hb ⊢
+      rw [Set.mem_insert_iff, Set.mem_iUnion] at ha hb ⊢
       obtain rfl | ⟨G, haG⟩ := ha; · simpa using hb
       obtain rfl | ⟨H, hbH⟩ := hb; · simpa using .inr ⟨G, G.2, haG⟩
       right
@@ -240,7 +241,7 @@ noncomputable def ConvexSubgroup.equivUpperSet :
     have ⟨b, hb1, hbG, eq⟩ := h (mk_eq_top_iff.not.mpr ha1)
     exact G.mem_of_finiteMulArchimedeanClass_mk_le (hb1 := ha1) eq.ge hbG
   right_inv s := UpperSet.ext <| Set.ext <| FiniteMulArchimedeanClass.ind fun a ha1 ↦
-    ⟨fun ⟨b, hb1, hbs, eq⟩ ↦ by simpa only [eq] using hbs (mk_eq_top_iff.not.mpr hb1),
+    ⟨fun ⟨b, hb1, hbs, eq⟩ ↦ have := hbs (mk_eq_top_iff.not.mpr hb1); by simpa only [eq],
       fun h ↦ ⟨a, ha1, fun _ ↦ h, rfl⟩⟩
 
 /-- The convex subgroups of a linearly ordered group are in order-reversing bijection
