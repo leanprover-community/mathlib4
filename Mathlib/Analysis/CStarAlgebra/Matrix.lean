@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.Matrix.Normed
+public import Mathlib.Analysis.Matrix.Order
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.Topology.UniformSpace.Matrix
@@ -289,6 +290,44 @@ lemma instCStarRing : CStarRing (Matrix n n 𝕜) where
   norm_mul_self_le M := le_of_eq <| Eq.symm <| l2_opNorm_conjTranspose_mul_self M
 
 scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instCStarRing
+
+@[simp]
+lemma l2_opNorm_unitary_conj (U : unitary (Matrix n n 𝕜)) (A : Matrix n n 𝕜) :
+    ‖U * A * (star (U : Matrix n n 𝕜))‖ = ‖A‖ := by
+  simpa [mul_assoc, CStarRing.norm_coe_unitary_mul] using
+    CStarRing.norm_mul_coe_unitary A (star U)
+
+lemma l2_opNorm_eq_pi_norm {A : Matrix n n 𝕜} (hA : A.IsHermitian) (f : C((spectrum ℝ A), ℝ)) :
+    ‖RCLike.ofReal (K := 𝕜) ∘ f ∘ fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalues_mem_spectrum_real i⟩‖
+      = ‖f‖ := by
+  refine le_antisymm ?_ ?_
+  · rw [pi_norm_le_iff_of_nonneg (by positivity)]
+    intro i
+    simp only [Function.comp_apply, norm_algebraMap']
+    exact f.norm_coe_le_norm _
+  · rw [ContinuousMap.norm_le _ (by positivity)]
+    intro x
+    apply Real.toNNReal_le_iff_le_coe.mp
+    obtain ⟨i, hi⟩ : ∃ i, x = ⟨hA.eigenvalues i, hA.eigenvalues_mem_spectrum_real i⟩ := by
+      have := hA.spectrum_real_eq_range_eigenvalues
+      grind
+    rw [hi]
+    convert Finset.le_sup (b := i) (Finset.mem_univ _)
+    simp only [Real.norm_eq_abs, Real.toNNReal_abs, Function.comp_apply, nnnorm_algebraMap']
+    rfl
+
+set_option backward.isDefEq.respectTransparency false in
+instance : IsometricContinuousFunctionalCalculus ℝ (Matrix n n 𝕜) IsSelfAdjoint where
+  predicate_zero := by simp
+  spectrum_nonempty := ContinuousFunctionalCalculus.spectrum_nonempty
+  exists_cfc_of_predicate := ContinuousFunctionalCalculus.exists_cfc_of_predicate
+  isometric A hA := by
+    rw [← isHermitian_iff_isSelfAdjoint] at hA
+    rw [IsHermitian.cfcHom_eq_cfcAux hA, AddMonoidHomClass.isometry_iff_norm]
+    intro f
+    simp only [IsHermitian.cfcAux_apply, Unitary.conjStarAlgAut_apply, l2_opNorm_unitary_conj,
+      l2_opNorm_diagonal]
+    exact l2_opNorm_eq_pi_norm hA f
 
 end Matrix
 
