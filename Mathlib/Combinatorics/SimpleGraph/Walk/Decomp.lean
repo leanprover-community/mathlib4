@@ -321,7 +321,8 @@ lemma notMem_support_takeUntil_support_takeUntil_subset {p : G.Walk u v} {x : V}
   intro hw'
   have h1 : (((p.takeUntil w hw).takeUntil x hx).takeUntil w hw').length
       < ((p.takeUntil w hw).takeUntil x hx).length := length_takeUntil_lt_length _ h.symm
-  have h2 : ((p.takeUntil w hw).takeUntil x hx).length < (p.takeUntil w hw).length := length_takeUntil_lt_length _ h
+  have h2 : ((p.takeUntil w hw).takeUntil x hx).length < (p.takeUntil w hw).length :=
+    length_takeUntil_lt_length _ h
   simp only [takeUntil_takeUntil] at h1 h2
   lia
 
