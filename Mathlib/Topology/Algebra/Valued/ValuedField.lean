@@ -461,7 +461,7 @@ noncomputable def valueGroup₀_hom_extensionValuation :
 /-- The zero-preserving monoid homomorphism from the `ValueGroup₀` of the valuation on `K` to
   that of the extension to its completion. -/
 noncomputable def valueGroup₀_equiv_extensionValuation :
-    (ValueGroup₀ (.ofClass hv.v)) ≃* (ValueGroup₀ (.ofClass hv.extensionValuation))  := by
+    ValueGroup₀ (.ofClass hv.v) ≃* ValueGroup₀ (.ofClass hv.extensionValuation) := by
   refine MulEquiv.ofBijective (valueGroup₀_hom_extensionValuation (hv := hv)) ⟨?_, ?_⟩
   · intro a b hab
     set x := (restrict₀_surjective (.ofClass hv.v) a).choose with hx_def
