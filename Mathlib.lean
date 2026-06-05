@@ -5681,6 +5681,7 @@ public import Mathlib.NumberTheory.FLT.MasonStothers
 public import Mathlib.NumberTheory.FLT.Polynomial
 public import Mathlib.NumberTheory.FLT.Three
 public import Mathlib.NumberTheory.FactorisationProperties
+public import Mathlib.NumberTheory.Farey.Basic
 public import Mathlib.NumberTheory.Fermat
 public import Mathlib.NumberTheory.FermatPsp
 public import Mathlib.NumberTheory.FrobeniusNumber
