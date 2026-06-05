@@ -63,7 +63,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
       ∃ (ι : Type u), Nonempty ι ∧ ∃ f : ι → Ordinal, (∀ i, f i ∈ s) ∧ ⨆ i, f i = a] := by
   tfae_have 1 → 2 := by
     simpa only [mem_closure_iff_nhdsWithin_neBot, inter_comm s, nhdsWithin_inter',
-      SuccOrder.nhdsLE_eq_nhds] using id
+      SuccOrder.nhdsLE_eq_nhds] using! id
   tfae_have 2 → 3
   | h => by
     rcases (s ∩ Iic a).eq_empty_or_nonempty with he | hne
@@ -97,7 +97,6 @@ theorem mem_iff_iSup_of_isClosed (hs : IsClosed s) :
       (∀ i, f i ∈ s) ∧ ⨆ i, f i = a := by
   rw [← mem_closure_iff_iSup, hs.closure_eq]
 
-set_option linter.deprecated false in
 @[deprecated mem_closure_iff_iSup (since := "2026-04-05")]
 theorem mem_closure_iff_bsup :
     a ∈ closure s ↔
@@ -110,7 +109,6 @@ theorem mem_closure_iff_bsup :
   · rintro ⟨o, ho, f, hf, rfl⟩
     exact ⟨_, by simpa, familyOfBFamily _ f, fun i ↦ hf .., iSup_eq_bsup f⟩
 
-set_option linter.deprecated false in
 @[deprecated mem_closure_iff_iSup (since := "2026-04-05")]
 theorem mem_closed_iff_bsup (hs : IsClosed s) :
     a ∈ s ↔
@@ -127,7 +125,6 @@ theorem isClosed_iff_iSup :
   rcases mem_closure_iff_iSup.1 hx with ⟨ι, hι, f, hf, rfl⟩
   exact h hι f hf
 
-set_option linter.deprecated false in
 @[deprecated isClosed_iff_iSup (since := "2026-04-05")]
 theorem isClosed_iff_bsup :
     IsClosed s ↔
@@ -173,55 +170,45 @@ open Set Filter Set.Notation
 
 /-- An ordinal is an accumulation point of a set of ordinals if it is positive and there
 are elements in the set arbitrarily close to the ordinal from below. -/
+@[deprecated AccPt (since := "2026-05-24")]
 def IsAcc (o : Ordinal) (S : Set Ordinal) : Prop :=
   AccPt o (𝓟 S)
 
 /-- A set of ordinals is closed below an ordinal if it contains all of
 its accumulation points below the ordinal. -/
+@[deprecated IsClosed (since := "2026-05-24")]
 def IsClosedBelow (S : Set Ordinal) (o : Ordinal) : Prop :=
   IsClosed (Iio o ↓∩ S)
 
+set_option linter.deprecated false in
+@[deprecated SuccOrder.accPt_principal (since := "2026-05-24")]
 theorem isAcc_iff (o : Ordinal) (S : Set Ordinal) : o.IsAcc S ↔
     o ≠ 0 ∧ ∀ p < o, (S ∩ Ioo p o).Nonempty := by
-  dsimp [IsAcc]
-  constructor
-  · rw [accPt_iff_nhds]
-    intro h
-    constructor
-    · rintro rfl
-      obtain ⟨x, hx⟩ := h (Iio 1) (Iio_mem_nhds zero_lt_one)
-      exact hx.2 <| lt_one_iff.mp hx.1.1
-    · intro p plt
-      obtain ⟨x, hx⟩ := h (Ioo p (o + 1)) <| Ioo_mem_nhds plt (lt_succ o)
-      use x
-      refine ⟨hx.1.2, ⟨hx.1.1.1, lt_of_le_of_ne ?_ hx.2⟩⟩
-      have := hx.1.1.2
-      rwa [← succ_eq_add_one, lt_succ_iff] at this
-  · rw [accPt_iff_nhds]
-    intro h u umem
-    obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds umem ⟨0, pos_iff_ne_zero.mpr h.1⟩
-    obtain ⟨x, hx⟩ := h.2 l hl.1
-    use x
-    exact ⟨⟨hl.2 ⟨hx.2.1, hx.2.2.le⟩, hx.1⟩, hx.2.2.ne⟩
+  apply SuccOrder.accPt_principal.trans
+  simp
 
+set_option linter.deprecated false in
+@[deprecated SuccOrder.accPt_principal (since := "2026-05-24")]
 theorem IsAcc.forall_lt {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) :
     ∀ p < o, (S ∩ Ioo p o).Nonempty := ((isAcc_iff _ _).mp h).2
 
+set_option linter.deprecated false in
+@[deprecated AccPt.not_isMin (since := "2026-05-24")]
 theorem IsAcc.pos {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) :
     0 < o := pos_iff_ne_zero.mpr ((isAcc_iff _ _).mp h).1
 
-theorem IsAcc.isSuccLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsSuccLimit o := by
-  rw [isAcc_iff] at h
-  rw [isSuccLimit_iff]
-  refine ⟨h.1, isSuccPrelimit_of_succ_ne fun x hx ↦ ?_⟩
-  rcases h.2 x (lt_of_lt_of_le (lt_succ x) hx.le) with ⟨p, hp⟩
-  exact (hx.symm ▸ (succ_le_iff.mpr hp.2.1)).not_gt hp.2.2
+set_option linter.deprecated false in
+@[deprecated AccPt.isSuccLimit (since := "2026-05-24")]
+theorem IsAcc.isSuccLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsSuccLimit o :=
+  AccPt.isSuccLimit h
 
-theorem IsAcc.mono {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc S) :
-    o.IsAcc T := by
-  rw [isAcc_iff] at *
-  exact ⟨ho.1, fun p plto ↦ (ho.2 p plto).casesOn fun s hs ↦ ⟨s, h hs.1, hs.2⟩⟩
+set_option linter.deprecated false in
+@[deprecated AccPt.mono (since := "2026-05-24")]
+theorem IsAcc.mono {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc S) : o.IsAcc T :=
+  AccPt.mono ho (monotone_principal h)
 
+set_option linter.deprecated false in
+@[deprecated SuccOrder.accPt_principal (since := "2026-05-24")]
 theorem IsAcc.inter_Ioo_nonempty {o : Ordinal} {S : Set Ordinal} (hS : o.IsAcc S)
     {p : Ordinal} (hp : p < o) : (S ∩ Ioo p o).Nonempty := hS.forall_lt p hp
 
@@ -230,19 +217,27 @@ theorem accPt_subtype {p o : Ordinal} (S : Set Ordinal) (hpo : p < o) :
     AccPt p (𝓟 S) ↔ AccPt ⟨p, hpo⟩ (𝓟 (Iio o ↓∩ S)) := by
   rw [← comap_principal, isOpen_Iio.isOpenEmbedding_subtypeVal.accPt_comap_iff]
 
+set_option linter.deprecated false in
+@[deprecated isClosed_iff_accPt (since := "2026-05-24")]
 theorem isClosedBelow_iff {S : Set Ordinal} {o : Ordinal} : IsClosedBelow S o ↔
     ∀ p < o, IsAcc p S → p ∈ S := by
   simp [IsClosedBelow, IsAcc, isClosed_iff_accPt, ← comap_principal,
     isOpen_Iio.isOpenEmbedding_subtypeVal.accPt_comap_iff]
 
+set_option linter.deprecated false in
+@[deprecated isClosed_iff_accPt (since := "2026-05-24")]
 alias ⟨IsClosedBelow.forall_lt, _⟩ := isClosedBelow_iff
 
+set_option linter.deprecated false in
+@[deprecated isClosed_sInter (since := "2026-05-24")]
 theorem IsClosedBelow.sInter {o : Ordinal} {S : Set (Set Ordinal)}
     (h : ∀ C ∈ S, IsClosedBelow C o) : IsClosedBelow (⋂₀ S) o := by
   rw [isClosedBelow_iff]
-  intro p plto pAcc C CmemS
-  exact (h C CmemS).forall_lt p plto (pAcc.mono (sInter_subset_of_mem CmemS))
+  exact fun p plto pAcc C CmemS ↦ (h C CmemS).forall_lt p plto <|
+    AccPt.mono pAcc (monotone_principal (sInter_subset_of_mem CmemS))
 
+set_option linter.deprecated false in
+@[deprecated isClosed_iInter (since := "2026-05-24")]
 theorem IsClosedBelow.iInter {ι : Type u} {f : ι → Set Ordinal} {o : Ordinal}
     (h : ∀ i, IsClosedBelow (f i) o) : IsClosedBelow (⋂ i, f i) o :=
   IsClosedBelow.sInter fun _ ⟨i, hi⟩ ↦ hi ▸ (h i)

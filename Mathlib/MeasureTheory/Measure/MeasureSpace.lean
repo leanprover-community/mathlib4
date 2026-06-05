@@ -1079,6 +1079,19 @@ protected theorem le_add_left (h : μ ≤ ν) : μ ≤ ν' + ν := fun s => le_a
 
 protected theorem le_add_right (h : μ ≤ ν) : μ ≤ ν + ν' := fun s => le_add_right (h s)
 
+instance [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] [CovariantClass R ℝ≥0∞ (· • ·) (· ≤ ·)] :
+    CovariantClass R (Measure α) (· • ·) (· ≤ ·) where
+  elim c μ ν hμν s := by
+    simp only [smul_apply]
+    gcongr
+
+instance [SMul R ℝ≥0∞] [LE R] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] [IsOrderedSMul R ℝ≥0∞] :
+    IsOrderedSMul R (Measure α) where
+  smul_le_smul_left μ ν hμν a s := by gcongr
+  smul_le_smul_right a b hab μ s := by
+    simp only [smul_apply]
+    gcongr
+
 section sInf
 
 variable {m : Set (Measure α)}
@@ -1494,3 +1507,5 @@ end
 end MeasureTheory
 
 end
+
+set_option linter.style.longFile 1700
