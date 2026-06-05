@@ -73,7 +73,7 @@ noncomputable abbrev desc (s : Cocone X.functorN) : X ⟶ s.pt :=
         refine le_antisymm (Subfunctor.equalizer_le _ _) ?_
         rw [Subcomplex.le_iff_contains_nonDegenerate]
         intro n z hz
-        exact (Subfunctor.mem_equalizer_iff (x := ⟨_, hz⟩) ..).2
+        exact (Subfunctor.mem_equalizer_iff (x := ⟨_, hz⟩) ..).mpr
           ((H x (N.mk _ z.prop) hz.1).trans (H y (N.mk _ z.prop) hz.2).symm))
 
 @[reassoc]
