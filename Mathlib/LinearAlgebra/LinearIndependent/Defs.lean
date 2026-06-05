@@ -202,7 +202,7 @@ theorem linearIndependent_comp_subtype_iff :
 linearly independent family. -/
 theorem LinearIndependent.comp (h : LinearIndependent R v) (f : ι' → ι) (hf : Injective f) :
     LinearIndependent R (v ∘ f) := by
-  simpa [comp_def] using Injective.comp h (Finsupp.mapDomain_injective hf)
+  simpa [comp_def] using! Injective.comp h (Finsupp.mapDomain_injective hf)
 
 lemma LinearIndepOn.mono {t s : Set ι} (hs : LinearIndepOn R v s) (h : t ⊆ s) :
     LinearIndepOn R v t := hs.comp _ <| Set.inclusion_injective h
@@ -296,7 +296,7 @@ theorem linearIndependent_iff_finset_linearIndependent :
     LinearIndependent R v ↔ ∀ (s : Finset ι), LinearIndependent R (v ∘ (Subtype.val : s → ι)) :=
   ⟨fun H _ ↦ H.comp _ Subtype.val_injective, fun H ↦ linearIndependent_iff'ₛ.2 fun s f g eq i hi ↦
     Fintype.linearIndependent_iffₛ.1 (H s) (f ∘ Subtype.val) (g ∘ Subtype.val)
-      (by simpa only [← s.sum_coe_sort] using eq) ⟨i, hi⟩⟩
+      (by simpa only [← s.sum_coe_sort] using! eq) ⟨i, hi⟩⟩
 
 lemma linearIndepOn_iff_linearIndepOn_finset :
     LinearIndepOn R v s ↔ ∀ t : Finset ι, ↑t ⊆ s → LinearIndepOn R v t where
@@ -390,7 +390,7 @@ alias ⟨LinearIndependent.of_linearIndepOn_id_range, _⟩ := linearIndepOn_id_r
 
 theorem LinearIndependent.linearIndepOn_id (i : LinearIndependent R v) :
     LinearIndepOn R id (range v) := by
-  simpa using i.comp _ (rangeSplitting_injective v)
+  simpa using! i.comp _ (rangeSplitting_injective v)
 
 /-- A version of `LinearIndependent.linearIndepOn_id` with the set range equality as a hypothesis.
 -/
@@ -572,7 +572,6 @@ theorem LinearIndependent.maximal_iff {ι : Type w} {R : Type u} [Semiring R] [N
           ext
           simp)
     have q := congr_arg (fun s => ((↑) : w → M) '' s) p.range_eq
-    dsimp at q
     rw [← image_univ, image_image] at q
     simpa using q
 
@@ -881,7 +880,7 @@ lemma LinearIndependent.of_subsingleton' [Subsingleton ι] (i : ι)
     (hi : ∀ r : R, r • v i = 0 → r = 0) : LinearIndependent R v := by
   let := uniqueOfSubsingleton i
   simpa [linearIndependent_iff, Finsupp.linearCombination_unique, Finsupp.ext_iff,
-    Unique.forall_iff] using fun _ ↦ hi _
+    Unique.forall_iff] using! fun _ ↦ hi _
 
 /-- Version of `LinearIndepOn.singleton` that works for the zero ring. -/
 @[simp]
