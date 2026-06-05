@@ -69,16 +69,16 @@ lemma map_rotation_eq_self_of_forall_strongDual_eq_zero
   have h1 : (L.comp (.rotation θ)).comp (.inl ℝ E E)
       = Real.cos θ • L.comp (.inl ℝ E E) - Real.sin θ • L.comp (.inr ℝ E E) := by
     ext x
-    simp only [ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.inl_apply,
+    simp only [ContinuousLinearMap.comp_apply, ContinuousLinearMap.inl_apply,
       ContinuousLinearMap.rotation_apply, smul_zero, add_zero]
     rw [← L.comp_inl_add_comp_inr]
     simp [-neg_smul, sub_eq_add_neg]
   have h2 : (L.comp (.rotation θ)).comp (.inr ℝ E E)
       = Real.sin θ • L.comp (.inl ℝ E E) + Real.cos θ • L.comp (.inr ℝ E E) := by
     ext x
-    simp only [ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.inr_apply,
-      ContinuousLinearMap.rotation_apply, smul_zero, zero_add, add_apply,
-      smul_apply, ContinuousLinearMap.inl_apply, smul_eq_mul]
+    simp only [ContinuousLinearMap.comp_apply, ContinuousLinearMap.inr_apply,
+      ContinuousLinearMap.rotation_apply, smul_zero, zero_add, add_apply, smul_apply,
+      ContinuousLinearMap.inl_apply, smul_eq_mul]
     rw [← L.comp_inl_add_comp_inr]
     simp
   rw [h1, h2]
