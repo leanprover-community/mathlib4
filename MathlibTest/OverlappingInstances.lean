@@ -53,7 +53,8 @@ Note: This linter can be disabled with `set_option linter.overlappingInstances f
 #guard_msgs (positions := true) in
 set_option linter.overlappingInstances true in
 /-- A docstring! -/
-@[expose] public def foo₁ [FooBarBaz Nat] [FooBarBaq Nat] : Bool := true
+@[expose] public def foo₁ [FooBarBaz Nat] [FooBarBaq Nat] : Bool := by
+  exact true
 
 /--
 warning: Overlapping instance parameters in `foo₂`:
