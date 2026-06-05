@@ -26,7 +26,6 @@ The order structure on `ValuationSubring K`.
 
 @[expose] public section
 
-
 universe u
 
 noncomputable section
@@ -378,6 +377,7 @@ def primeSpectrumEquiv : PrimeSpectrum A ≃ {S // A ≤ S} where
   left_inv P := by ext1; simp
   right_inv S := by ext1; simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An ordered variant of `primeSpectrumEquiv`. -/
 @[simps!]
 def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
@@ -554,7 +554,7 @@ section nonunits
 def nonunits : NonUnitalSubring K where
   carrier := {x | A.valuation x < 1}
   mul_mem' ha hb := (mul_lt_mul'' (Set.mem_setOf.mp ha) (Set.mem_setOf.mp hb)
-    zero_le' zero_le').trans_eq <| mul_one _
+    zero_le zero_le).trans_eq <| mul_one _
   add_mem' ha hb := (A.valuation.map_add ..).trans_lt (max_lt ha hb)
   zero_mem' := by simp
   neg_mem' h := (A.valuation.map_neg _).trans_lt h
@@ -651,7 +651,7 @@ def principalUnitGroup : Subgroup Kˣ where
       Valuation.map_neg]
 
 theorem principal_units_le_units : A.principalUnitGroup ≤ A.unitGroup := fun a h => by
-  simpa only [add_sub_cancel] using A.valuation.map_one_add_of_lt h
+  simpa only [add_sub_cancel] using! A.valuation.map_one_add_of_lt h
 
 theorem mem_principalUnitGroup_iff (x : Kˣ) :
     x ∈ A.principalUnitGroup ↔ A.valuation ((x : K) - 1) < 1 :=
