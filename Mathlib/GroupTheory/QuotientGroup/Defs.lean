@@ -34,6 +34,22 @@ quotient groups
 open Function
 open scoped Pointwise
 
+namespace Subgroup
+
+theorem quotient_toAddSubgroup {G : Type*} [Group G] (N : Subgroup G) :
+    Additive (G ⧸ N) = (Additive G ⧸ N.toAddSubgroup) :=
+  rfl
+
+end Subgroup
+
+namespace AddSubgroup
+
+theorem quotient_toSubgroup {A : Type*} [AddGroup A] (N : AddSubgroup A) :
+    Multiplicative (A ⧸ N) = (Multiplicative A ⧸ N.toSubgroup) :=
+  rfl
+
+end AddSubgroup
+
 namespace QuotientGroup
 
 variable {G H I M : Type*} [Group G] [Group H] [Monoid M] {N : Subgroup G}
