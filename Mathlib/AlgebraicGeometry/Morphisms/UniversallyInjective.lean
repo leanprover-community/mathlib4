@@ -25,7 +25,7 @@ compositions and base changes.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

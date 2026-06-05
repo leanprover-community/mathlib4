@@ -151,7 +151,7 @@ theorem Isometry.map_euclideanHausdorffMeasure {f : X → Y} {d : ℕ} (hf : Iso
 ### Applying scalers to `μHE[d]`
 -/
 
-open Pointwise in
+open scoped Pointwise in
 theorem MeasureTheory.Measure.euclideanHausdorffMeasure_smul₀ {𝕜 : Type*} {E : Type*}
     [NormedAddCommGroup E] [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
     [MeasurableSpace E] [BorelSpace E] (d : ℕ) {r : 𝕜} (hr : r ≠ 0) (s : Set E) :
@@ -202,7 +202,7 @@ theorem InnerProductSpace.euclideanHausdorffMeasure_eq_volume :
 /-!
 ### `μHE[d]` on an affine space matches the volume measure on the associated inner product space.
 -/
-/- We may want to endow an affine space with a `MeasureSpace` that transfers `volume` from its
+/-- We may want to endow an affine space with a `MeasureSpace` that transfers `volume` from its
 associated inner product space. If it is implemented, we can unify this lemma with the previous one.
 -/
 theorem EuclideanGeometry.euclideanHausdorffMeasure_eq (p : P) :
