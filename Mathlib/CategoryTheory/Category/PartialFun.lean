@@ -121,11 +121,8 @@ noncomputable def partialFunToPointed : PartialFun ⥤ Pointed where
   map_comp {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z) := Pointed.Hom.ext <| funext fun o =>
     Option.recOn o rfl fun a => by
       dsimp [CategoryStruct.comp, Pointed.Hom.comp]
-      change (((f : PFun X Y).toFun a).bind fun y : Y => ((g : PFun Y Z).toFun y)).toOption =
-        Option.elim' (none : Option Z) (fun y : Y => ((g : PFun Y Z).toFun y).toOption)
-          (((f : PFun X Y).toFun a).toOption)
-      simpa [Option.elim'_eq_elim] using
-        Part.bind_toOption (g : PFun Y Z).toFun ((f : PFun X Y).toFun a)
+      rw [Option.elim'_eq_elim]
+      convert! Part.bind_toOption (g : PFun Y Z).toFun ((f : PFun X Y).toFun a)
 
 /-- The equivalence induced by `PartialFunToPointed` and `PointedToPartialFun`.
 `Part.equivOption` made functorial. -/

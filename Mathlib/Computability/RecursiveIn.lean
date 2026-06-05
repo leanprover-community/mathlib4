@@ -155,7 +155,7 @@ lemma Partrec.recursiveIn [Primcodable α] [Primcodable σ] {f : α →. σ} {O}
   Nat.Partrec.recursiveIn hf
 
 theorem Nat.Primrec.recursiveIn {O} {f : ℕ → ℕ} (hf : Nat.Primrec f) :
-    Nat.RecursiveIn O (PFun.lift f) :=
+    Nat.RecursiveIn O (f : ℕ →. ℕ) :=
   Nat.Partrec.recursiveIn (Nat.Partrec.of_primrec hf)
 
 theorem Computable.computableIn [Primcodable α] [Primcodable β] {f : α → β} {O}
@@ -172,11 +172,11 @@ nonrec theorem Primrec₂.computableIn₂ [Primcodable α] [Primcodable β] [Pri
 
 protected theorem ComputableIn.recursiveIn [Primcodable α] [Primcodable σ]
     {f : α → σ} {O} (hf : ComputableIn O f) :
-    RecursiveIn O (PFun.lift f) := hf
+    RecursiveIn O (f : α →. σ) := hf
 
 protected theorem ComputableIn₂.recursiveIn₂ [Primcodable α] [Primcodable β] [Primcodable σ]
     {f : α → β → σ} {O} (hf : ComputableIn₂ O f) :
-    RecursiveIn₂ O (fun a => PFun.lift (f a)) := hf
+    RecursiveIn₂ O (fun a => (f a : β →. σ)) := hf
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 variable {f : α →. σ} {O : Set (ℕ →. ℕ)}
@@ -188,7 +188,7 @@ lemma of_eq {f g : α →. σ} (hf : RecursiveIn O f)
   (DFunLike.ext _ _ H : f = g) ▸ hf
 
 lemma of_eq_tot {f : α →. σ} {g : α → σ}
-    (hf : RecursiveIn O f) (H : ∀ n, g n ∈ f n) : RecursiveIn O (PFun.lift g) :=
+    (hf : RecursiveIn O f) (H : ∀ n, g n ∈ f n) : RecursiveIn O (g : α →. σ) :=
   of_eq hf fun n => eq_some_iff.2 (H n)
 
 lemma oracle : ∀ g ∈ O, RecursiveIn O g :=

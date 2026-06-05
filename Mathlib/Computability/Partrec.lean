@@ -258,11 +258,11 @@ nonrec theorem Primrec₂.to_comp {α β σ} [Primcodable α] [Primcodable β] [
   hf.to_comp
 
 protected theorem Computable.partrec {α σ} [Primcodable α] [Primcodable σ] {f : α → σ}
-    (hf : Computable f) : Partrec (PFun.lift f) :=
+    (hf : Computable f) : Partrec (f : α →. σ) :=
   hf
 
 protected theorem Computable₂.partrec₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ]
-    {f : α → β → σ} (hf : Computable₂ f) : Partrec₂ (fun a => PFun.lift (f a)) :=
+    {f : α → β → σ} (hf : Computable₂ f) : Partrec₂ (fun a => (f a : β →. σ)) :=
   hf
 
 namespace Computable
