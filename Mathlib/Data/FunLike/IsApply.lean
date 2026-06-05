@@ -190,7 +190,7 @@ end Def
 
 namespace FunLike
 
-variable {M M' F F' α β : Type*} [FunLike F α β] [FunLike F' α α]
+variable {M M' F F' F₁ F₂ α β : Type*} [FunLike F α β] [FunLike F' α α]
 
 section Coercion
 
@@ -244,5 +244,43 @@ theorem coe_intCast [IntCast F'] [One F'] [SMul Int α] [SMul Int F'] [IsSMulApp
   simp
 
 end Coercion
+
+section IsCoeApply
+
+variable [FunLike F₁ α β] [FunLike F₂ α β]
+
+class IsCoeApply (F₁ : semiOutParam Type*) (F₂ : Type*) (α β : outParam Type*)
+    [FunLike F₁ α β] [FunLike F₂ α β] [Coe F₁ F₂] where
+  coe_apply (x : α) (f : F₁) : (f : F₂) x = f x
+
+@[simp] alias _root_.coe_apply := IsCoeApply.coe_apply
+
+variable [Coe F₁ F₂] [IsCoeApply F₁ F₂ α β]
+
+@[simp]
+theorem coe_coe (f : F₁) : ((f : F₂) : α → β) = f := by
+  ext; simp
+
+@[to_additive (attr := simp)]
+theorem coe_one_eq_one [One F₁] [One F₂] [One β] [IsOneApply F₁ α β] [IsOneApply F₂ α β] :
+    (1 : F₁) = (1 : F₂) := by
+  apply DFunLike.ext; intro; simp
+
+@[to_additive (attr := simp)]
+theorem coe_mul_eq_mul [Mul F₁] [Mul F₂] [Mul β] [IsMulApply F₁ α β] [IsMulApply F₂ α β]
+    (f g : F₁) : (↑(f * g) : F₂) = f * g := by
+  apply DFunLike.ext; intro; simp
+
+@[to_additive (attr := simp)]
+theorem coe_div_eq_div [Div F₁] [Div F₂] [Div β] [IsDivApply F₁ α β] [IsDivApply F₂ α β]
+    (f g : F₁) : (↑(f / g) : F₂) = f / g := by
+  apply DFunLike.ext; intro; simp
+
+@[to_additive (attr := simp)]
+theorem coe_inv_eq_inv [Inv F₁] [Inv F₂] [Inv β] [IsInvApply F₁ α β] [IsInvApply F₂ α β]
+    (f : F₁) : (↑(f⁻¹) : F₂) = (f : F₂)⁻¹ := by
+  apply DFunLike.ext; intro; simp
+
+end IsCoeApply
 
 end FunLike
