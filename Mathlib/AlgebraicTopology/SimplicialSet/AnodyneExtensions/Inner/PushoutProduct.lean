@@ -5,40 +5,29 @@ Authors: Joël Riou, Jack McKoen
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Basic
+public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Inner.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.UnionProd
-public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.PushoutProduct
 public import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
 public import Mathlib.CategoryTheory.Monoidal.Braided.PushoutObjObj
 public import Mathlib.CategoryTheory.Monoidal.Closed.Braided
-public import Mathlib.AlgebraicTopology.Quasicategory.InnerFibration
-public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Inner.Basic
 
 /-!
-# Anodyne extensions and pushout-products, fibrations and pullbacks
+# Inner anodyne extensions and pushout-products, inner fibrations and pullbacks
+
+This file is mirrored from `SSet/AnodyneExtensions/PushoutProduct`.
 
 The main result in this file is that if `i : X₁ ⟶ Y₁` is a monomorphism in `SSet`
-and `j : X₂ ⟶ Y₂` is an anodyne extension, then the map from the pushout-product
-of `i` and `j` into `Y₁ ⊗ Y₂` is an anodyne extension
-(`SSet.anodyneExtensions_pushoutObjObjι`). This is closely related to the lemma
-`SSet.fibration_pullbackObjObjπ` which says that if `i : X₁ ⟶ Y₁` is a monomorphism
-and `p : E ⟶ B` is a fibration, then the canonical morphism
+and `j : X₂ ⟶ Y₂` is an inner anodyne extension, then the pushout-product
+of `i` and `j` is an inner anodyne extension
+(`SSet.innerAnodyneExtensions_pushoutObjObjι`). This is closely related to the lemma
+`SSet.innerFibration_pullbackObjObjπ` which says that if `i : X₁ ⟶ Y₁` is a monomorphism
+and `p : E ⟶ B` is an inner fibration, then the canonical morphism
 from `Y₁ ⟶[SSet] E` to the pullback of `X₁ ⟶[SSet] E` and `Y₁ ⟶[SSet] B`
-over `X₁ ⟶[SSet] B` is also a fibration. In particular, if `A : SSet`
-and `X` is a Kan complex, then the internal hom `A ⟶[SSet] X` is also a Kan complex.
+over `X₁ ⟶[SSet] B` is also an inner fibration. In particular, if `A : SSet`
+and `X` is a quasi-category, then the internal hom `A ⟶[SSet] X` is also a quasi-category.
 
-Besides abstract arguments involving parametrized adjunctions and lifting properties,
-the proof relies on two facts:
-* the case `i : ∂Δ[n] ⟶ Δ[n]` and `j : Λ[m, k] ⟶ Δ[m]` which was obtained
-in the file `Mathlib/AlgebraicTopology/SimplicialSet/AnodyneExtensions/UnionProd.lean`
-* the fact that a morphism has the right lifting property with respect to
-all monomorphisms iff it has the right lifting property with respect
-to morphisms of the form `∂Δ[n] ⟶ Δ[n]` (see `SSet.rlp_monomorphisms`
-in the file `Mathlib/AlgebraicTopology/SimplicialSet/CategoryWithInnerFibrations.lean`),
-which follows from the fact that any monomorphism is a relative cell complex with
-basic cells of the form `∂Δ[n] ⟶ Δ[n]`, see
-the file `Mathlib/AlgebraicTopology/SimplicialSet/Skeleton.lean`).
+For implementation details, see `SSet/AnodyneExtensions/PushoutProduct`.
 
 -/
 
@@ -65,14 +54,10 @@ lemma innerAnodyneExtensions_unionProd_ι {m : ℕ} (k : Fin m) (n : ℕ) :
 lemma innerAnodyneExtensions_unionProd_ι' {m : ℕ} (k : Fin (m + 2)) (h0 : 0 < k)
     (hn : k < Fin.last (m + 1)) (n : ℕ) :
     innerAnodyneExtensions (Subcomplex.unionProd.{u} Λ[m + 1, k] ∂Δ[n]).ι := by
-  have : ∃ (l : Fin m), l.castSucc.succ = k := by
-    obtain ⟨k, rfl⟩ := Fin.eq_castSucc_of_ne_last (Fin.ne_last_of_lt hn)
-    have : 0 < k := Fin.val_pos_iff.mp h0
-    obtain ⟨k, rfl⟩ := Fin.eq_succ_of_ne_zero (Fin.ne_zero_of_lt this)
-    use k
-    rfl
-  obtain ⟨l, rfl⟩ := this
-  exact innerAnodyneExtensions_unionProd_ι l n
+  obtain ⟨k, rfl⟩ := Fin.eq_castSucc_of_ne_last (Fin.ne_last_of_lt hn)
+  obtain ⟨k, rfl⟩ := Fin.eq_succ_of_ne_zero
+    (Fin.ne_zero_of_lt (show 0 < k from Fin.val_pos_iff.mp h0))
+  exact innerAnodyneExtensions_unionProd_ι k n
 
 end prodStdSimplex
 
