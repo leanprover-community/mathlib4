@@ -5,16 +5,18 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
+public import Mathlib.MeasureTheory.Function.LpSpace.Basic
+
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 
 /-!
-# Pointwise convergence of infinite sums in `Lᵖ`.
+# Pointwise convergence of infinite sums in `Lᵖ`
 
 If a series in `Lᵖ` is converging in norm, then the series also converges pointwise
 almost everywhere.
 -/
 
-@[expose] public section
+public section
 
 open Finset Filter
 open scoped Topology ENNReal
@@ -60,7 +62,7 @@ theorem summable_norm_of_tsum_eLpNorm_ne_top {ι : Type*} [Countable ι]
         simp only [sub_nonneg]
         apply inv_le_one_of_one_le₀
         rw [← ENNReal.ofReal_le_iff_le_toReal h'p.ne]
-        simpa using hp
+        simpa
     apply lt_of_le_of_lt ?_ this
     gcongr with i
     rw [← eLpNorm_one_eq_lintegral_enorm]
@@ -103,8 +105,7 @@ private theorem hasSum_coeFn_tsum_nat {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
     ∀ᵐ a ∂μ, HasSum (fun n ↦ f n a) (⇑(∑' n, f n) a) := by
   have A : ∀ᵐ a ∂μ, Summable (fun n ↦ ‖f n a‖) := by
     apply summable_norm_of_tsum_eLpNorm_ne_top hp.out (fun n ↦ Lp.aestronglyMeasurable (f n))
-    convert hf with n
-    exact (enorm_def (f n)).symm
+    simpa [enorm_def] using hf
   have B : ∀ᵐ x ∂μ, ∀ n, ⇑(∑ i ∈ range n, f i) x = ∑ i ∈ range n, f i x := by
     rw [ae_all_iff]
     exact fun i ↦ coeFn_fun_finsetSum _ _
@@ -124,9 +125,8 @@ theorem hasSum_coeFn_tsum {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] {ι : Type*} [C
   classical
   rcases finite_or_infinite ι with hι | hι
   · let : Fintype ι := Fintype.ofFinite ι
-    simp only [tsum_fintype]
     filter_upwards [coeFn_fun_finsetSum univ f] with x hx
-    rw [hx]
+    rw [tsum_fintype, hx]
     exact hasSum_fintype _
   · obtain ⟨e⟩ := nonempty_equiv_of_countable (α := ℕ) (β := ι)
     have : ∀ᵐ a ∂μ, HasSum (fun n ↦ f (e n) a) (⇑(∑' n, f (e n)) a) := by

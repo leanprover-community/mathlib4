@@ -6,7 +6,8 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
-public import Mathlib.MeasureTheory.Function.LpSpace.InfiniteSum
+
+import Mathlib.MeasureTheory.Function.LpSpace.InfiniteSum
 
 /-! # Conditional expectation
 
@@ -475,8 +476,7 @@ theorem condExp_tsum [CompleteSpace E]
   have C := coeFn_tsum (f := fun i ↦ setToFun μ (condExpInd E hm μ)
     (dominatedFinMeasAdditive_condExpInd E hm μ) (f i)) B
   filter_upwards [A, C] with a ha h'a
-  simp only [ha, condExpL1]
-  rw [setToFun_tsum _ hf hf', h'a]
+  simp_all [condExpL1, setToFun_tsum]
 
 variable [CompleteSpace E]
 
