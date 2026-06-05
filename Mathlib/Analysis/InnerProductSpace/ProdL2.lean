@@ -149,7 +149,7 @@ def quotientEquivOrthogonal : (E ⧸ K) ≃ₗᵢ[𝕜] ↥Kᗮ where
       coe_norm, starProjection_minimal, eq_comm]
     have h : ‖Quotient.mk (f y).val‖ = sInf ((fun (x : E) ↦ ‖(f y).val + x‖) '' K.toAddSubgroup) :=
       quotient_norm_mk_eq K.toAddSubgroup (f y).1
-    convert h using 2
+    convert! h using 2
     · simp [f]
     · rw [sInf_image', ← Equiv.iInf_comp (Equiv.neg K)]
       simp
