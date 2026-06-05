@@ -433,7 +433,7 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
     let ⟨y₂, ⟨g₂, pf₂_sgn⟩, l₂, pf₂⟩ ← normalize disch iM x₂
     -- build the new list and proof
     have pf := qNF.mkMulProof iM l₁ l₂
-    let ⟨G, pf_y⟩ := ← Sign.mul iM y₁ y₂ g₁ g₂
+    let ⟨G, pf_y⟩ ← Sign.mul iM y₁ y₂ g₁ g₂
     pure ⟨q($y₁ * $y₂), ⟨G, q(Eq.trans (congr_arg₂ HMul.hMul $pf₁_sgn $pf₂_sgn) $pf_y)⟩,
       qNF.mul l₁ l₂, q(NF.mul_eq_eval $pf₁ $pf₂ $pf)⟩
   /- normalize a division: `x₁ / x₂` -/
@@ -442,7 +442,7 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
     let ⟨y₂, ⟨g₂, pf₂_sgn⟩, l₂, pf₂⟩ ← normalize disch iM x₂
     -- build the new list and proof
     let pf := qNF.mkDivProof iM l₁ l₂
-    let ⟨G, pf_y⟩ := ← Sign.div iM y₁ y₂ g₁ g₂
+    let ⟨G, pf_y⟩ ← Sign.div iM y₁ y₂ g₁ g₂
     pure ⟨q($y₁ / $y₂), ⟨G, q(Eq.trans (congr_arg₂ HDiv.hDiv $pf₁_sgn $pf₂_sgn) $pf_y)⟩,
       qNF.div l₁ l₂, q(NF.div_eq_eval $pf₁ $pf₂ $pf)⟩
   /- normalize an inversion: `y⁻¹` -/
