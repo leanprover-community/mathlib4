@@ -113,7 +113,8 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
   let y : Fin N → ℝ := fun n ↦ a + ε * (n + 1)
   -- By definition `y n` and `y m` are separated by at least `ε`.
   have hy {n m : Fin N} (h : n < m) : y n + ε ≤ y m := calc
-    _ ≤ a + ε * m + ε := add_le_add_three (by rfl) ((mul_le_mul_iff_of_pos_left hε).mpr (by norm_cast)) (by rfl)
+    _ ≤ a + ε * m + ε :=
+      add_le_add_three (by rfl) ((mul_le_mul_iff_of_pos_left hε).mpr (by norm_cast)) (by rfl)
     _ = _ := by dsimp [y]; rw [mul_add, mul_one, add_assoc]
   -- Define `E n` as the inverse image of the interval `(y n - ε, y n]`.
   let E (n : Fin N) := (f ⁻¹' Ioc (y n - ε) (y n)) ∩ (tsupport f)

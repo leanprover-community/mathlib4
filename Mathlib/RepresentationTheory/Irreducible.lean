@@ -88,7 +88,8 @@ open scoped IsMulCommutative in
 set_option backward.isDefEq.respectTransparency false in
 include ρ in
 variable (ρ) in
-theorem finrank_eq_one_of_isMulCommutative [IsMulCommutative G] : Module.finrank k V = 1 := IsSimpleModule.finrank_eq_one_of_isMulCommutative k[G] ρ.asModule k
+theorem finrank_eq_one_of_isMulCommutative [IsMulCommutative G] : Module.finrank k V = 1 :=
+  IsSimpleModule.finrank_eq_one_of_isMulCommutative k[G] ρ.asModule k
 
 end IsIrreducible
 

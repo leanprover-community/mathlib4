@@ -101,7 +101,8 @@ theorem tmul_subset_minTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCon
 
 /-- The minimal tensor product is less than or equal to the maximal tensor product. -/
 theorem minTensorProduct_le_maxTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCone R H) :
-    minTensorProduct C₁ C₂ ≤ maxTensorProduct C₁ C₂ := Submodule.span_le.mpr (tmul_subset_maxTensorProduct C₁ C₂)
+    minTensorProduct C₁ C₂ ≤ maxTensorProduct C₁ C₂ :=
+  Submodule.span_le.mpr (tmul_subset_maxTensorProduct C₁ C₂)
 
 variable {C₁ C₁' : PointedCone R G} {C₂ C₂' : PointedCone R H} {z : G ⊗[R] H}
 

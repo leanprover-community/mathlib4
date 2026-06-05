@@ -953,7 +953,8 @@ theorem IntermediateField.isCyclotomicExtension_eq (F₁ F₂ : IntermediateFiel
 variable (F₁ F₂ : IntermediateField K L) [h₁ : IsCyclotomicExtension {n₁} K F₁]
   [h₂ : IsCyclotomicExtension {n₂} K F₂]
 
-theorem IntermediateField.isCyclotomicExtension_le_of_dvd [NeZero n₂] (h : n₁ ∣ n₂) : F₁ ≤ F₂ := toSubalgebra_le_toSubalgebra.mp <|
+theorem IntermediateField.isCyclotomicExtension_le_of_dvd [NeZero n₂] (h : n₁ ∣ n₂) : F₁ ≤ F₂ :=
+  toSubalgebra_le_toSubalgebra.mp <|
     IsCyclotomicExtension.le_of_dvd n₁ n₂ F₁.toSubalgebra F₂.toSubalgebra h
 
 theorem IntermediateField.isCyclotomicExtension_lcm_sup [NeZero n₁] [NeZero n₂] :

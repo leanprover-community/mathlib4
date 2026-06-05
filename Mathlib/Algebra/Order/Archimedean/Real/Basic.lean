@@ -379,7 +379,8 @@ theorem not_bddBelow_coe : ¬ (BddBelow <| range (fun (x : ℚ) ↦ (x : ℝ))) 
   ext
   simpa using exists_rat_lt _
 
-theorem iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := iUnion_Iic_of_not_bddAbove_range not_bddAbove_coe
+theorem iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ :=
+  iUnion_Iic_of_not_bddAbove_range not_bddAbove_coe
 
 theorem iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := iInter_Iic_eq_empty_iff.mpr not_bddBelow_coe
 

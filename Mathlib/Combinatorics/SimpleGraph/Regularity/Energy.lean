@@ -39,7 +39,8 @@ lemma. -/
 def energy : ℚ :=
   ((∑ uv ∈ P.parts.offDiag, G.edgeDensity uv.1 uv.2 ^ 2) : ℚ) / (#P.parts : ℚ) ^ 2
 
-theorem energy_nonneg : 0 ≤ P.energy G := div_nonneg (Finset.sum_nonneg fun _ _ => sq_nonneg _) <| sq_nonneg _
+theorem energy_nonneg : 0 ≤ P.energy G :=
+  div_nonneg (Finset.sum_nonneg fun _ _ => sq_nonneg _) <| sq_nonneg _
 
 theorem energy_le_one : P.energy G ≤ 1 :=
   div_le_of_le_mul₀ (sq_nonneg _) zero_le_one <|

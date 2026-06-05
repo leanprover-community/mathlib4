@@ -350,7 +350,8 @@ lemma cfcHom_real_eq_restrict {a : A} (ha : IsSelfAdjoint a) :
   ha.spectrumRestricts.cfcHom_eq_restrict _ ha ha.isStarNormal
 
 lemma cfc_real_eq_complex {a : A} (f : ℝ → ℝ) (ha : IsSelfAdjoint a := by cfc_tac) :
-    cfc f a = cfc (fun x ↦ f x.re : ℂ → ℂ) a := ha.spectrumRestricts.cfc_eq_restrict (f := Complex.reCLM)
+    cfc f a = cfc (fun x ↦ f x.re : ℂ → ℂ) a :=
+  ha.spectrumRestricts.cfc_eq_restrict (f := Complex.reCLM)
     Complex.isometry_ofReal.isClosedEmbedding ha ha.isStarNormal f
 
 lemma cfc_complex_eq_real {f : ℂ → ℂ} (a : A) (hf_real : ∀ x ∈ spectrum ℂ a, star (f x) = f x)
@@ -376,7 +377,8 @@ lemma cfcₙHom_real_eq_restrict {a : A} (ha : IsSelfAdjoint a) :
   ha.quasispectrumRestricts.cfcₙHom_eq_restrict _ ha ha.isStarNormal
 
 lemma cfcₙ_real_eq_complex {a : A} (f : ℝ → ℝ) (ha : IsSelfAdjoint a := by cfc_tac) :
-    cfcₙ f a = cfcₙ (fun x ↦ f x.re : ℂ → ℂ) a := ha.quasispectrumRestricts.cfcₙ_eq_restrict (f := Complex.reCLM)
+    cfcₙ f a = cfcₙ (fun x ↦ f x.re : ℂ → ℂ) a :=
+  ha.quasispectrumRestricts.cfcₙ_eq_restrict (f := Complex.reCLM)
     Complex.isometry_ofReal.isClosedEmbedding ha ha.isStarNormal f
 
 lemma cfcₙ_complex_eq_real {f : ℂ → ℂ} (a : A) (hf_real : ∀ x ∈ σₙ ℂ a, star (f x) = f x)

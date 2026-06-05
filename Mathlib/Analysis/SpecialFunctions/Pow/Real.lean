@@ -1114,19 +1114,19 @@ meta def evalRPow : NormNumExt where eval {u αR} e := do
   match u, αR, e with
   | 0, ~q(ℝ), ~q(($a : ℝ)^($b : ℝ)) =>
     match ← derive b with
-    | .isNat sβ nb pb =>
+    | .isNat _ nb pb =>
       assumeInstancesCommute
       return .eqTrans q(IsNat.rpow_eq_pow $pb _) (← derive q($a ^ $nb))
-    | .isNegNat sβ nb pb =>
+    | .isNegNat _ nb pb =>
       assumeInstancesCommute
       return .eqTrans q(IsInt.rpow_eq_inv_pow $pb _) (← derive q(($a ^ $nb)⁻¹))
-    | .isNNRat _ qb nb db pb => do
+    | .isNNRat _ _ nb db pb => do
       assumeInstancesCommute
       match ← derive a with
       | .isNat sa na pa => do
         let ⟨_, r, pr⟩ ← proveIsNatRPowIsNNRat a na pa b nb db pb
         return .isNat sa r pr
-      | .isNNRat _ qα na da pa => do
+      | .isNNRat _ _ na da pa => do
         assumeInstancesCommute
         let ⟨rnum, ernum, pnum⟩ ←
           proveIsNatRPowIsNNRat q(Nat.rawCast $na) na q(IsNat.of_raw _ _) b nb db pb
@@ -1135,7 +1135,7 @@ meta def evalRPow : NormNumExt where eval {u αR} e := do
         return .isNNRat q(inferInstance) (rnum / rden) ernum erden
           q(IsNNRat.rpow_isNNRat $a $b $na $da $pa $ernum $erden $pnum $pden)
       | _ => failure
-    | .isNegNNRat _ qb nb db pb => do
+    | .isNegNNRat _ _ nb db pb => do
       let r ← derive q(($a⁻¹) ^ ($nb / $db : ℝ))
       assumeInstancesCommute
       return .eqTrans q(rpow_isRat_eq_inv_rpow $a $b $nb $db $pb) r

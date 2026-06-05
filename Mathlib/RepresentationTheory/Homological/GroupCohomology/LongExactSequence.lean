@@ -123,7 +123,8 @@ theorem δ_apply {i j : ℕ} (hij : i + 1 = j)
     (x : (Fin j → G) → X.X₁) (hx : X.f.hom ∘ x = (inhomogeneousCochains X.X₂).d i j y) :
     -- Then `x` is an `i + 1`-cocycle and `δ z = x` in `Hⁱ⁺¹(X₁)`.
     δ hX i j hij (π X.X₃ i <| cocyclesMk z (by subst hij; simpa [CochainComplex.of.d] using! hz)) =
-      π X.X₁ j (cocyclesMkOfCompEqD hX hx) := (map_cochainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x
+      π X.X₁ j (cocyclesMkOfCompEqD hX hx) :=
+  (map_cochainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x
     (by simpa using! hx) (j + 1) (by simp)
 
 set_option backward.isDefEq.respectTransparency false in

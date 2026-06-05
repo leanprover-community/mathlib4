@@ -148,7 +148,8 @@ open Filter Bornology Set in
 lemma exists_isMinOn_norm_sub_smul (𝕜 : Type*) {F : Type*} [NormedField 𝕜] [ProperSpace 𝕜]
     [SeminormedRing F] [NormedAlgebra 𝕜 F] [NormOneClass F] (x : F) :
     ∃ z : 𝕜, IsMinOn (‖x - algebraMap 𝕜 F ·‖) univ z := by
-  have : Tendsto (‖x - algebraMap 𝕜 F ·‖) (cobounded 𝕜) atTop := tendsto_norm_cobounded_atTop |>.comp <| tendsto_const_sub_cobounded x |>.comp <| by simp
+  have : Tendsto (‖x - algebraMap 𝕜 F ·‖) (cobounded 𝕜) atTop :=
+    tendsto_norm_cobounded_atTop |>.comp <| tendsto_const_sub_cobounded x |>.comp <| by simp
   simp only [isMinOn_univ_iff]
   refine (show Continuous fun z : 𝕜 ↦ ‖x - algebraMap 𝕜 F z‖ by fun_prop)
     |>.exists_forall_le_of_isBounded 0 ?_

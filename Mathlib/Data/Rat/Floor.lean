@@ -314,11 +314,11 @@ meta def evalRound : NormNumExt where eval {u αZ} e := do
   | 0, ~q(ℤ), ~q(@round $α $instRing $instLinearOrder $instFloorRing $x) =>
     match ← derive x with
     | .isBool .. => failure
-    | .isNat sα nb pb => do
+    | .isNat _ nb pb => do
       let instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       return .isNat q(inferInstance) nb q(isNat_round $x _ $pb)
-    | .isNegNat sα nb pb => do
+    | .isNegNat _ nb pb => do
       let _instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       return .isNegNat q(inferInstance) nb q(isInt_round _ _ $pb)

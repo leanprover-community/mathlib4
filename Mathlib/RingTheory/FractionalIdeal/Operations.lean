@@ -1021,7 +1021,8 @@ lemma ringEquivOfRingEquiv_spanSingleton (x : K) :
 
 lemma ringEquivOfRingEquiv_symm_eq :
     (FractionalIdeal.ringEquivOfRingEquiv K L f).symm =
-      FractionalIdeal.ringEquivOfRingEquiv L K f.symm := (RingEquiv.coe_nonUnitalRingHom_inj_iff (ringEquivOfRingEquiv K L f).symm
+      FractionalIdeal.ringEquivOfRingEquiv L K f.symm :=
+  (RingEquiv.coe_nonUnitalRingHom_inj_iff (ringEquivOfRingEquiv K L f).symm
           (ringEquivOfRingEquiv L K f.symm)).mpr rfl
 
 end RingEquiv

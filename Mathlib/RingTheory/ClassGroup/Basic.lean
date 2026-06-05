@@ -336,7 +336,8 @@ theorem ClassGroup.mk0_integralRep [IsDedekindDomain R]
     ClassGroup.mk0 ⟨ClassGroup.integralRep I, ClassGroup.integralRep_mem_nonZeroDivisors I.ne_zero⟩
       = ClassGroup.mk (FractionRing R) I := by
   rw [← ClassGroup.mk_mk0 (FractionRing R), eq_comm, ClassGroup.mk_eq_mk]
-  have fd_ne_zero : (algebraMap R (FractionRing R)) I.1.den ≠ 0 := IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors (SetLike.coe_mem _)
+  have fd_ne_zero : (algebraMap R (FractionRing R)) I.1.den ≠ 0 :=
+    IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors (SetLike.coe_mem _)
   refine ⟨Units.mk0 (algebraMap R _ I.1.den) fd_ne_zero, ?_⟩
   apply Units.ext
   rw [mul_comm, val_mul, coe_toPrincipalIdeal, val_mk0]

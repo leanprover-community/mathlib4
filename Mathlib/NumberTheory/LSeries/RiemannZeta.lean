@@ -222,7 +222,8 @@ lemma two_mul_riemannZeta_eq_tsum_int_inv_pow_of_even {k : ℕ} (hk : 2 ≤ k) (
   · exact (Summable.of_nat_of_neg (by simp [hkk]) (by simp [hkk])).of_norm
 
 /-- The residue of `ζ(s)` at `s = 1` is equal to 1. -/
-lemma riemannZeta_residue_one : Tendsto (fun s ↦ (s - 1) * riemannZeta s) (𝓝[≠] 1) (𝓝 1) := hurwitzZetaEven_residue_one 0
+lemma riemannZeta_residue_one : Tendsto (fun s ↦ (s - 1) * riemannZeta s) (𝓝[≠] 1) (𝓝 1) :=
+  hurwitzZetaEven_residue_one 0
 
 /-- The residue of `ζ(s)` at `s = 1` is equal to 1, expressed using `tsum`. -/
 theorem tendsto_sub_mul_tsum_nat_cpow :

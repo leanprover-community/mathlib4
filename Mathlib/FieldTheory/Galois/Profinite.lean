@@ -283,7 +283,8 @@ noncomputable def mulEquivToLimit [IsGalois k K] :
     ext L
     change (limitToAlgEquiv g).restrictNormal _ = _
     ext x
-    have : ((limitToAlgEquiv g).restrictNormal L.unop) x = (limitToAlgEquiv g) x.1 := AlgEquiv.restrictNormal_commutes (limitToAlgEquiv g) L.unop x
+    have : ((limitToAlgEquiv g).restrictNormal L.unop) x = (limitToAlgEquiv g) x.1 :=
+      AlgEquiv.restrictNormal_commutes (limitToAlgEquiv g) L.unop x
     simp_rw [this]
     exact proj_adjoin_singleton_val _ _ _ _ x.2
 

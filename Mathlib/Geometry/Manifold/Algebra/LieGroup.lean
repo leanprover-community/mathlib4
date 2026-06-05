@@ -230,7 +230,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
   {f : M → G}
 
 protected theorem ContMDiffInv₀.of_le {m n : ℕ∞ω} (hmn : m ≤ n)
-    [h : ContMDiffInv₀ I n G] : ContMDiffInv₀ I m G := ⟨fun x hx ↦ (h.contMDiffAt_inv₀ hx).of_le hmn⟩
+    [h : ContMDiffInv₀ I n G] : ContMDiffInv₀ I m G :=
+  ⟨fun _ hx ↦ (h.contMDiffAt_inv₀ hx).of_le hmn⟩
 
 instance {a : ℕ∞ω} [ContMDiffInv₀ I ∞ G] [h : ENat.LEInfty a] : ContMDiffInv₀ I a G :=
   ContMDiffInv₀.of_le h.out

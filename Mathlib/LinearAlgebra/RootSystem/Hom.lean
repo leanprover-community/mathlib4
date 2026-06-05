@@ -234,7 +234,8 @@ lemma coweightHom_injective (P : RootPairing ι R M N) : Injective (coweightHom 
   · dsimp [coweightHom] at hfg
     rw [MulOpposite.op_inj] at hfg
     set y := f.indexEquiv x with hy
-    have : f.coweightMap (P.coroot y) = g.coweightMap (P.coroot y) := congrFun (congrArg DFunLike.coe hfg) (P.coroot y)
+    have : f.coweightMap (P.coroot y) = g.coweightMap (P.coroot y) :=
+      congrFun (congrArg DFunLike.coe hfg) (P.coroot y)
     rw [coroot_coweightMap_apply, coroot_coweightMap_apply, Embedding.apply_eq_iff_eq, hy] at this
     rw [Equiv.symm_apply_apply] at this
     rw [this, Equiv.apply_symm_apply]

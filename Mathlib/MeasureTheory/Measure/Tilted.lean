@@ -158,7 +158,8 @@ lemma setLIntegral_tilted' (f : α → ℝ) (g : α → ℝ≥0∞) {s : Set α}
     · exact hs
     · filter_upwards
       simp only [ENNReal.ofReal_lt_top, implies_true]
-  · have hf' : ¬ Integrable (fun x ↦ exp (f x)) μ := fun h ↦ hf (aemeasurable_of_aemeasurable_exp h.1.aemeasurable)
+  · have hf' : ¬ Integrable (fun x ↦ exp (f x)) μ :=
+      fun h ↦ hf (aemeasurable_of_aemeasurable_exp h.1.aemeasurable)
     simp only [hf, not_false_eq_true, tilted_of_not_aemeasurable, Measure.restrict_zero,
       lintegral_zero_measure]
     rw [integral_undef hf']
@@ -174,7 +175,8 @@ lemma setLIntegral_tilted [SFinite μ] (f : α → ℝ) (g : α → ℝ≥0∞) 
       exact ((measurable_exp.comp_aemeasurable hf).div_const _).ennreal_ofReal
     · filter_upwards
       simp only [ENNReal.ofReal_lt_top, implies_true]
-  · have hf' : ¬ Integrable (fun x ↦ exp (f x)) μ := fun h ↦ hf (aemeasurable_of_aemeasurable_exp h.1.aemeasurable)
+  · have hf' : ¬ Integrable (fun x ↦ exp (f x)) μ :=
+      fun h ↦ hf (aemeasurable_of_aemeasurable_exp h.1.aemeasurable)
     simp only [hf, not_false_eq_true, tilted_of_not_aemeasurable, Measure.restrict_zero,
       lintegral_zero_measure]
     rw [integral_undef hf']
@@ -201,7 +203,8 @@ lemma setIntegral_tilted' (f : α → ℝ) (g : α → E) {s : Set α} (hs : Mea
         refine AEMeasurable.restrict ?_
         simpa only [NNReal.coe_mk]
       exact (measurable_exp.comp_aemeasurable hf).div_const _
-  · have hf' : ¬ Integrable (fun x ↦ exp (f x)) μ := fun h ↦ hf (aemeasurable_of_aemeasurable_exp h.1.aemeasurable)
+  · have hf' : ¬ Integrable (fun x ↦ exp (f x)) μ :=
+      fun h ↦ hf (aemeasurable_of_aemeasurable_exp h.1.aemeasurable)
     simp only [hf, not_false_eq_true, tilted_of_not_aemeasurable, Measure.restrict_zero,
       integral_zero_measure]
     rw [integral_undef hf']
@@ -217,7 +220,8 @@ lemma setIntegral_tilted [SFinite μ] (f : α → ℝ) (g : α → E) (s : Set �
         refine AEMeasurable.restrict ?_
         simpa only [NNReal.coe_mk]
       exact (measurable_exp.comp_aemeasurable hf).div_const _
-  · have hf' : ¬ Integrable (fun x ↦ exp (f x)) μ := fun h ↦ hf (aemeasurable_of_aemeasurable_exp h.1.aemeasurable)
+  · have hf' : ¬ Integrable (fun x ↦ exp (f x)) μ :=
+      fun h ↦ hf (aemeasurable_of_aemeasurable_exp h.1.aemeasurable)
     simp only [hf, not_false_eq_true, tilted_of_not_aemeasurable, Measure.restrict_zero,
       integral_zero_measure]
     rw [integral_undef hf']

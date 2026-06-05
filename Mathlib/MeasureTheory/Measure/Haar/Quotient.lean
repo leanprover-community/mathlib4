@@ -404,7 +404,8 @@ lemma QuotientGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [Norme
       = ∫ x : G ⧸ Γ, g x * (QuotientGroup.automorphize f x) ∂μ_𝓕 := by
   let π : G → G ⧸ Γ := QuotientGroup.mk
   have meas_π : Measurable π := continuous_quotient_mk'.measurable
-  have H₀ : QuotientGroup.automorphize ((g ∘ π) * f) = g * (QuotientGroup.automorphize f) := QuotientGroup.automorphize_smul_left f g
+  have H₀ : QuotientGroup.automorphize ((g ∘ π) * f) = g * (QuotientGroup.automorphize f) :=
+    QuotientGroup.automorphize_smul_left f g
   calc ∫ (x : G), g (π x) * (f x) ∂μ =
         ∫ (x : G ⧸ Γ), QuotientGroup.automorphize ((g ∘ π) * f) x ∂μ_𝓕 := ?_
     _ = ∫ (x : G ⧸ Γ), g x * (QuotientGroup.automorphize f x) ∂μ_𝓕 := by simp [H₀]
