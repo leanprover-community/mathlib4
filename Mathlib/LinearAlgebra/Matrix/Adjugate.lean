@@ -114,13 +114,13 @@ theorem cramer_transpose_row_self (i : n) : Aᵀ.cramer (A i) = Pi.single i A.de
 
 theorem cramer_row_self (i : n) (h : ∀ j, b j = A j i) : A.cramer b = Pi.single i A.det := by
   rw [← transpose_transpose A, det_transpose]
-  convert cramer_transpose_row_self Aᵀ i
+  convert! cramer_transpose_row_self Aᵀ i
   exact funext h
 
 @[simp]
 theorem cramer_one : cramer (1 : Matrix n n α) = 1 := by
   ext i j
-  convert congr_fun (cramer_row_self (1 : Matrix n n α) (Pi.single i 1) i _) j
+  convert! congr_fun (cramer_row_self (1 : Matrix n n α) (Pi.single i 1) i _) j
   · simp
   · intro j
     rw [Matrix.one_eq_pi_single, Pi.single_comm]
@@ -419,7 +419,7 @@ theorem det_eq_sum_mul_adjugate_row (A : Matrix n n α) (i : n) :
 
 theorem det_eq_sum_mul_adjugate_col (A : Matrix n n α) (j : n) :
     det A = ∑ i : n, A i j * adjugate A j i := by
-  simpa only [det_transpose, ← adjugate_transpose] using det_eq_sum_mul_adjugate_row Aᵀ j
+  simpa only [det_transpose, ← adjugate_transpose] using! det_eq_sum_mul_adjugate_row Aᵀ j
 
 theorem adjugate_conjTranspose [StarRing α] (A : Matrix n n α) : A.adjugateᴴ = adjugate Aᴴ := by
   dsimp only [conjTranspose]

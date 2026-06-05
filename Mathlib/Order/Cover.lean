@@ -234,6 +234,8 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {a b c : α}
 
+@[simp] lemma covBy_irrefl : ¬ a ⋖ a := by simp [CovBy]
+
 @[to_dual self]
 theorem not_covBy_iff_nonempty_Ioo (h : a < b) : ¬a ⋖ b ↔ (Ioo a b).Nonempty :=
   not_covBy_iff h
@@ -466,7 +468,7 @@ variable {s t : Set α} {a : α}
 
 @[simp] lemma sdiff_singleton_wcovBy (s : Set α) (a : α) : s \ {a} ⩿ s := by
   by_cases ha : a ∈ s
-  · convert wcovBy_insert a _
+  · convert! wcovBy_insert a _
     ext
     simp [ha]
   · simp [ha]
