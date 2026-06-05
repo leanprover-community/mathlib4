@@ -130,7 +130,7 @@ theorem isMultiplyPretransitive_iff {n : ℕ} :
 variable {H β : Type*} [Group H] [MulAction H β] {σ : G → H}
   {f : α →ₑ[σ] β} (hf : Function.Injective f)
 
-/- If there exists a surjective equivariant map `α →ₑ[σ] β`
+/-- If there exists a surjective equivariant map `α →ₑ[σ] β`
 then pretransitivity descends from `n ↪ α` to `n ↪ β`.
 
 The subtlety is that if it is not injective, this map does not induce
@@ -470,7 +470,7 @@ theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
     have hfs := SubMulAction.fixingSubgroup_of_insert a t
     rw [← hat'] at hfs
     rw [hfs, Subgroup.index_map,
-      (MonoidHom.ker_eq_bot_iff (stabilizer G a).subtype).mpr
+      MonoidHom.ker_eq_bot (stabilizer G a).subtype
         (by simp only [Subgroup.coe_subtype, Subtype.coe_injective])]
     simp only [sup_bot_eq, Subgroup.range_subtype]
     have htcard : t.ncard = k := by

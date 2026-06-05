@@ -263,7 +263,8 @@ noncomputable def sigmaFixedByEquivOrbitsProdGroup : (Σ a : α, fixedBy β a) �
 
 /-- **Burnside's lemma** : given a finite group `G` acting on a set `X`, the average number of
 elements fixed by each `g ∈ G` is the number of orbits. -/
-@[to_additive AddAction.sum_card_fixedBy_eq_card_orbits_mul_card_addGroup
+@[to_additive (attr := wikidata Q1330377)
+      AddAction.sum_card_fixedBy_eq_card_orbits_mul_card_addGroup
       /-- **Burnside's lemma** : given a finite additive group `G` acting on a set `X`,
       the average number of elements fixed by each `g ∈ G` is the number of orbits. -/]
 theorem sum_card_fixedBy_eq_card_orbits_mul_card_group [Fintype α] [∀ a : α, Fintype <| fixedBy β a]
