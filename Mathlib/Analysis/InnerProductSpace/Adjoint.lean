@@ -83,8 +83,7 @@ theorem adjointAux_apply (A : E →L[𝕜] F) (x : F) :
   rfl
 
 theorem adjointAux_inner_left (A : E →L[𝕜] F) (x : E) (y : F) : ⟪adjointAux A y, x⟫ = ⟪y, A x⟫ := by
-  rw [adjointAux_apply, toDual_symm_apply, toSesqForm_apply_coe, coe_comp', coe_innerSL_apply,
-    Function.comp_apply]
+  simp
 
 theorem adjointAux_inner_right (A : E →L[𝕜] F) (x : E) (y : F) :
     ⟪x, adjointAux A y⟫ = ⟪A x, y⟫ := by
@@ -139,7 +138,7 @@ in reverse order. -/
 theorem adjoint_comp (A : F →L[𝕜] G) (B : E →L[𝕜] F) : (A ∘L B)† = B† ∘L A† := by
   ext v
   refine ext_inner_left 𝕜 fun w => ?_
-  simp only [adjoint_inner_right, ContinuousLinearMap.coe_comp', Function.comp_apply]
+  simp [adjoint_inner_right]
 
 theorem apply_norm_sq_eq_inner_adjoint_left (A : E →L[𝕜] F) (x : E) :
     ‖A x‖ ^ 2 = re ⟪(A† ∘L A) x, x⟫ := by
@@ -221,7 +220,7 @@ You may need to rewrite with `ContinuousLinearMap.coe_comp'` before applying thi
 -/
 lemma adjoint_comp_self_injective_iff (T : E →L[𝕜] F) :
     Function.Injective (T† ∘ T) ↔ Function.Injective T := by
-  rw [← coe_comp', ← coe_coe, ← LinearMap.ker_eq_bot, ← coe_coe, ← LinearMap.ker_eq_bot,
+  rw [← coe_comp, ← coe_coe, ← LinearMap.ker_eq_bot, ← coe_coe, ← LinearMap.ker_eq_bot,
     ker_adjoint_comp_self]
 
 /--
@@ -443,7 +442,7 @@ theorem isStarProjection_iff_isIdempotentElem_and_isStarNormal :
 theorem isStarProjection_iff_isSymmetricProjection :
     IsStarProjection T ↔ T.IsSymmetricProjection := by
   simp [isStarProjection_iff, LinearMap.isSymmetricProjection_iff,
-    isSelfAdjoint_iff_isSymmetric, IsIdempotentElem, End.mul_eq_comp, ← coe_comp, mul_def]
+    isSelfAdjoint_iff_isSymmetric, IsIdempotentElem, End.mul_eq_comp, ← toLinearMap_comp, mul_def]
 
 alias ⟨IsStarProjection.isSymmetricProjection, LinearMap.IsSymmetricProjection.isStarProjection⟩ :=
   isStarProjection_iff_isSymmetricProjection
