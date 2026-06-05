@@ -152,7 +152,8 @@ mutual
 
 theorem Multiseries.const_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} :
     (Multiseries.const basis_hd basis_tl c).Sorted := by
-  simpa only [Multiseries.const] using const_Sorted.cons_nil
+  simp only [Multiseries.const]
+  exact const_Sorted.cons_nil
 
 /-- Constants are well-ordered. -/
 theorem const_Sorted {basis : Basis} {c : ℝ} :
@@ -219,8 +220,12 @@ mutual
 theorem Multiseries.monomialRpow_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ} {r : ℝ} :
     (@Multiseries.monomialRpow basis_hd basis_tl n r).Sorted := by
   cases n with
-  | zero => simpa only [Multiseries.monomialRpow] using Sorted.cons_nil const_Sorted
-  | succ m => simpa only [Multiseries.monomialRpow] using Sorted.cons_nil monomialRpow_Sorted
+  | zero =>
+    simp only [Multiseries.monomialRpow]
+    exact Sorted.cons_nil const_Sorted
+  | succ m =>
+    simp only [Multiseries.monomialRpow]
+    exact Sorted.cons_nil monomialRpow_Sorted
 
 /-- `monomial` is well-ordered. -/
 theorem monomialRpow_Sorted {basis : Basis} {n : ℕ} {r : ℝ} :
