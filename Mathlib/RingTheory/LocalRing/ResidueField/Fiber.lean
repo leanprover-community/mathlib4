@@ -34,7 +34,7 @@ instance [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)] :
     IsLocalRing (ResidueField R ⊗[R] S) :=
   let eSp : ResidueField R ⊗[R] S ≃ₐ[R] S ⧸ (maximalIdeal R).map (algebraMap R S) :=
     (Algebra.TensorProduct.comm _ _ _).trans
-      ((TensorProduct.quotIdealMapEquivTensorQuot _ _).symm.restrictScalars _)
+      ((TensorProduct.quotIdealMapEquivTensorQuot S (maximalIdeal R)).symm.restrictScalars _)
   have : Nontrivial (IsLocalRing.ResidueField R ⊗[R] S) := by
     rw [eSp.nontrivial_congr, Ideal.Quotient.nontrivial_iff]
     exact ((((local_hom_TFAE (algebraMap R S)).out 0 2 rfl rfl).mp inferInstance).trans_lt

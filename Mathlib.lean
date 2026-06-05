@@ -1485,6 +1485,7 @@ public import Mathlib.AlgebraicTopology.DoldKan.Notations
 public import Mathlib.AlgebraicTopology.DoldKan.PInfty
 public import Mathlib.AlgebraicTopology.DoldKan.Projections
 public import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
+public import Mathlib.AlgebraicTopology.EilenbergSteenrod
 public import Mathlib.AlgebraicTopology.ExtraDegeneracy
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
@@ -2166,6 +2167,7 @@ public import Mathlib.Analysis.Normed.Lp.PiLp
 public import Mathlib.Analysis.Normed.Lp.ProdLp
 public import Mathlib.Analysis.Normed.Lp.SmoothApprox
 public import Mathlib.Analysis.Normed.Lp.WithLp
+public import Mathlib.Analysis.Normed.Lp.lpHolder
 public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Mathlib.Analysis.Normed.Module.Alternating.Basic
 public import Mathlib.Analysis.Normed.Module.Alternating.Curry
@@ -3661,6 +3663,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Regularity.Equitabilise
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Increment
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Lemma
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
+public import Mathlib.Combinatorics.SimpleGraph.Star
 public import Mathlib.Combinatorics.SimpleGraph.StronglyRegular
 public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Sum
@@ -4547,7 +4550,9 @@ public import Mathlib.Geometry.Convex.ConvexSpace.AffineSpace
 public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 public import Mathlib.Geometry.Convex.ConvexSpace.Module
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
+public import Mathlib.Geometry.Convex.Hull
 public import Mathlib.Geometry.Convex.Set
+public import Mathlib.Geometry.Convex.Star
 public import Mathlib.Geometry.Diffeology.Basic
 public import Mathlib.Geometry.Euclidean.Altitude
 public import Mathlib.Geometry.Euclidean.Angle.Bisector
