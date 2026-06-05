@@ -192,7 +192,7 @@ section Add
 theorem HasFDerivAtFilter.add (hf : HasFDerivAtFilter f f' L)
     (hg : HasFDerivAtFilter g g' L) : HasFDerivAtFilter (f + g) (f' + g') L :=
   .of_isLittleO <| (hf.isLittleO.add hg.isLittleO).congr_left fun _ => by
-    grind [Pi.add_apply, add_apply]
+    grind [Pi.add_apply, ContinuousLinearMap.add_apply]
 
 @[to_fun (attr := fun_prop)]
 theorem HasStrictFDerivAt.add (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x) :
