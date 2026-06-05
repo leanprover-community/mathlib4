@@ -577,15 +577,11 @@ def MonoidHom.toMulEquiv [MulOneClass M] [MulOneClass N] (f : M →* N) (g : N �
   map_mul' := f.map_mul
 
 /-- The identity equivalence between the monoid of endomorphisms `Monoid.End M` and the type
-`M →* M` of monoid homomorphisms from `M` to itself.
-
-`Monoid.End M` is by definition equal to `M →* M`; this equivalence is the identity and is
-occasionally useful for transporting statements between the two reducibly-equal types. -/
+`M →* M` of monoid homomorphisms from `M` to itself. `Monoid.End M` is definitionally (but not
+reducibly) equal to `M →* M`. -/
 @[to_additive /-- The identity equivalence between the additive monoid of endomorphisms
 `AddMonoid.End M` and the type `M →+ M` of additive monoid homomorphisms from `M` to itself.
-
-`AddMonoid.End M` is by definition equal to `M →+ M`; this equivalence is the identity and is
-occasionally useful for transporting statements between the two reducibly-equal types. -/]
+`AddMonoid.End M` is definitionally (but not reducibly) equal to `M →+ M`. -/]
 def Monoid.End.equiv (M : Type*) [MulOne M] : Monoid.End M ≃ (M →* M) where
   toFun := id
   invFun := id
