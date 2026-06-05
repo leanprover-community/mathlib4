@@ -164,6 +164,7 @@ instance : (topology S).Subcanonical :=
 noncomputable def equivOfIsEmpty [IsEmpty S] : S.ProEt ≌ Discrete PUnit :=
   MorphismProperty.overEquivOfIsInitial _ _ _ isInitialOfIsEmpty
 
+set_option backward.defeqAttrib.useBackward true in
 variable {S} in
 set_option backward.isDefEq.respectTransparency false in
 lemma bot_mem_topology (X : S.ProEt) [IsEmpty X.left] : ⊥ ∈ topology S X := by

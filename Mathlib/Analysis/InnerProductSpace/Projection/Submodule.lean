@@ -127,7 +127,7 @@ theorem starProjection_tendsto_closure_iSup {ι : Type*} [Preorder ι]
     (orthogonalProjection_starProjection_of_le
         ((le_iSup U i).trans (iSup U).le_topologicalClosure) _).symm
   suffices ∀ ε > 0, ∃ I, ∀ i ≥ I, ‖(U i).starProjection y - y‖ < ε by
-    simpa only [starProjection_apply, proj_x, NormedAddCommGroup.tendsto_atTop] using this
+    simpa only [starProjection_apply, proj_x, NormedAddCommGroup.tendsto_atTop] using! this
   intro ε hε
   obtain ⟨a, ha, hay⟩ : ∃ a ∈ ⨆ i, U i, dist y a < ε := by
     have y_mem : y ∈ (⨆ i, U i).topologicalClosure := Submodule.coe_mem _

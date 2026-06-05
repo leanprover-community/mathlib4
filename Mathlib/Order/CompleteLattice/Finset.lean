@@ -137,17 +137,17 @@ variable [DecidableEq α]
 @[to_dual]
 theorem iSup_union {f : α → β} {s t : Finset α} :
     ⨆ x ∈ s ∪ t, f x = (⨆ x ∈ s, f x) ⊔ ⨆ x ∈ t, f x := by
-  simpa using _root_.iSup_union
+  simpa using! _root_.iSup_union
 
 @[to_dual]
 theorem iSup_insert (a : α) (s : Finset α) (t : α → β) :
     ⨆ x ∈ insert a s, t x = t a ⊔ ⨆ x ∈ s, t x := by
-  simpa using _root_.iSup_insert
+  simpa using! _root_.iSup_insert
 
 @[to_dual]
 theorem iSup_finset_image {f : γ → α} {g : α → β} {s : Finset γ} :
     ⨆ x ∈ s.image f, g x = ⨆ y ∈ s, g (f y) := by
-  simpa using iSup_image
+  simpa using! iSup_image
 
 @[to_dual]
 theorem iSup_insert_update {x : α} {t : Finset α} (f : α → β) {s : β} (hx : x ∉ t) :
