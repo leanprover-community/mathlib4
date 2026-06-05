@@ -75,13 +75,15 @@ lemma isLeftDerivabilityStructure_of_isLocalizedEquivalence
   letI : CatCommSq T.functor (L.functor ⋙ W₁'.Q) (R.functor ⋙ W₂'.Q) F :=
     CatCommSq.vComp (H₂ := B.functor) _ _ _ _ _ _
   have : (TwoSquare.hComp iso.inv e'.inv).GuitartExact := by
-    convert T.guitartExact_of_isLeftDerivabilityStructure' (L.functor ⋙ W₁'.Q)
-      (R.functor ⋙ W₂'.Q) F (CatCommSq.iso _ _ _ _)
+    convert!
+      T.guitartExact_of_isLeftDerivabilityStructure' (L.functor ⋙ W₁'.Q) (R.functor ⋙ W₂'.Q) F
+        (CatCommSq.iso _ _ _ _)
     ext
     simp [e', CatCommSq.iso, iso']
   rw [B.isLeftDerivabilityStructure_iff W₁'.Q W₂'.Q F e']
   apply TwoSquare.GuitartExact.of_hComp iso.inv
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isLeftDerivabilityStructure_iff_of_isLocalizedEquivalence
     [L.functor.EssSurj] [R.functor.Full] [R.IsInduced]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor)
