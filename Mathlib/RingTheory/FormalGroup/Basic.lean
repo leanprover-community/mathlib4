@@ -142,6 +142,6 @@ def map (f : R →+* S) : FormalGroup S where
       fun i => (![g₁, g₂] i).map f := by ext1 i; fin_cases i <;> simp
     simp_rw [(map_X f _).symm, this, ← map_subst .X_X, this, ← map_subst
       (HasSubst.cons_subst_zero_left (0 : Fin 3) 1 2 F.zero_constantCoeff), F.assoc,
-      ← map_subst (HasSubst.cons_subst_zero_right (0 : Fin 3) 1 2  F.zero_constantCoeff)]
+      ← map_subst (HasSubst.cons_subst_zero_right (0 : Fin 3) 1 2 F.zero_constantCoeff)]
 
 end FormalGroup

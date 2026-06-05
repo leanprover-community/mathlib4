@@ -32,6 +32,7 @@ directed graph, where
 * two hypotheses/goals are connected by an arrow if there is a tactic that modifies the source
   of the arrow into the target (this does not apply well to all tactics, but it does apply to
   a large number of them).
+
 With this in mind, a tactic like `rw [lemma]` takes a *very specific* input and return a
 *very predictable* output.
 Such a tactic is "rigid". Any tactic is rigid, unless it is in `flexible` or `stoppers`.
@@ -311,6 +312,7 @@ def flexible : Std.HashSet Name :=
   { ``Lean.Parser.Tactic.simp,
     ``Lean.Parser.Tactic.simpAll,
     ``Lean.Parser.Tactic.simpa,
+    ``Lean.Parser.Tactic.simpaUsingBang,
     ``Lean.Parser.Tactic.dsimp,
     ``Lean.Parser.Tactic.constructor,
     ``Lean.Parser.Tactic.congr,
@@ -519,23 +521,23 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
     -- Emit warning and suggestion
     let msg := match stainStx.getKind with
       | ``Lean.Parser.Tactic.simp =>
-        m!"'{stainStr}' is a flexible tactic modifying '{d}'. \
-          Try 'simp?' and use the suggested 'simp only [...]'. \
+        m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
+          Try `simp?` and use the suggested `simp only [...]`. \
           Alternatively, use `suffices` to explicitly state the simplified form."
       | ``Lean.Parser.Tactic.simpAll =>
-        m!"'{stainStr}' is a flexible tactic modifying '{d}'. \
-          Try 'simp_all?' and use the suggested 'simp_all only [...]'. \
+        m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
+          Try `simp_all?` and use the suggested `simp_all only [...]`. \
           Alternatively, use `suffices` to explicitly state the simplified form."
       | `Aesop.Frontend.Parser.aesopTactic =>
-        m!"'{stainStr}' is a flexible tactic modifying '{d}'. \
-          Try 'aesop?' and use the suggested proof."
+        m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
+          Try `aesop?` and use the suggested proof."
       | _ =>
-        m!"'{stainStr}' is a flexible tactic modifying '{d}'."
+        m!"`{stainStr}` is a flexible tactic modifying `{d}`."
     Linter.logLint linter.flexible stainStx msg
     if let some suggStx := suggestion? then
       liftCoreM <| Lean.Meta.Tactic.TryThis.addSuggestion stainStx
         { suggestion := .tsyntax (kind := `tactic) ⟨suggStx⟩ } (origSpan? := stainStx)
-    logInfoAt s m!"'{s}' uses '{d}'!"
+    logInfoAt s m!"`{s}` uses `{d}`!"
 
 initialize addLinter flexibleLinter
 

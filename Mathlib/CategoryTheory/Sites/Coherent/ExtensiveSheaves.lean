@@ -21,7 +21,7 @@ This file characterises sheaves for the extensive topology.
   extensive topology are precisely those preserving finite products.
 -/
 
-@[expose] public section
+public section
 
 universe w
 

@@ -16,7 +16,7 @@ In this file we prove that a linear order with order topology is a completely no
 topological space.
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Set Function OrderDual Topology Interval
@@ -67,7 +67,7 @@ theorem compl_ordConnectedSection_ordSeparatingSet_mem_nhdsLE (hd : Disjoint s (
     (ha : a ∈ s) : (ordConnectedSection <| ordSeparatingSet s t)ᶜ ∈ 𝓝[≤] a := by
   have hd' : Disjoint (ofDual ⁻¹' s) (closure <| ofDual ⁻¹' t) := hd
   have ha' : toDual a ∈ ofDual ⁻¹' s := ha
-  simpa only [dual_ordSeparatingSet, dual_ordConnectedSection] using
+  simpa only [dual_ordSeparatingSet, dual_ordConnectedSection] using!
     compl_ordConnectedSection_ordSeparatingSet_mem_nhdsGE hd' ha'
 
 theorem compl_ordConnectedSection_ordSeparatingSet_mem_nhds (hd : Disjoint s (closure t))

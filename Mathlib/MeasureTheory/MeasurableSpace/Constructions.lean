@@ -54,7 +54,6 @@ theorem ENat.measurable_iff {α : Type*} [MeasurableSpace α] {f : α → ℕ∞
     exact .compl <| .iUnion h
   | coe n => exact h n
 
-@[measurability]
 theorem measurable_unit [MeasurableSpace α] (f : Unit → α) : Measurable f :=
   measurable_from_top
 
@@ -78,7 +77,6 @@ section Nat
 
 variable {mα : MeasurableSpace α}
 
-@[measurability]
 theorem measurable_from_nat {f : ℕ → α} : Measurable f :=
   measurable_from_top
 
@@ -88,7 +86,7 @@ theorem measurable_to_nat {f : α → ℕ} : (∀ y, MeasurableSet (f ⁻¹' {f 
 theorem measurable_to_bool {f : α → Bool} (h : MeasurableSet (f ⁻¹' {true})) : Measurable f := by
   apply measurable_to_countable'
   rintro (- | -)
-  · convert h.compl
+  · convert! h.compl
     rw [← preimage_compl, Bool.compl_singleton, Bool.not_true]
   exact h
 
@@ -247,7 +245,7 @@ theorem MeasurableSet.image_inclusion' {s t : Set α} (h : s ⊆ t) {u : Set s}
     (hs : MeasurableSet (Subtype.val ⁻¹' s : Set t)) (hu : MeasurableSet u) :
     MeasurableSet (inclusion h '' u) := by
   rcases hu with ⟨u, hu, rfl⟩
-  convert (measurable_subtype_coe hu).inter hs
+  convert! (measurable_subtype_coe hu).inter hs
   ext ⟨x, hx⟩
   simpa [@and_comm _ (_ = x)] using and_comm
 
@@ -259,7 +257,7 @@ theorem MeasurableSet.image_inclusion {s t : Set α} (h : s ⊆ t) {u : Set s}
 theorem MeasurableSet.of_union_cover {s t u : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     (h : univ ⊆ s ∪ t) (hsu : MeasurableSet (((↑) : s → α) ⁻¹' u))
     (htu : MeasurableSet (((↑) : t → α) ⁻¹' u)) : MeasurableSet u := by
-  convert (hs.subtype_image hsu).union (ht.subtype_image htu)
+  convert! (hs.subtype_image hsu).union (ht.subtype_image htu)
   simp [image_preimage_eq_inter_range, ← inter_union_distrib_left, univ_subset_iff.1 h]
 
 theorem measurable_of_measurable_union_cover {f : α → β} (s t : Set α) (hs : MeasurableSet s)
@@ -588,6 +586,12 @@ theorem measurable_pi_lambda (f : α → ∀ a, X a) (hf : ∀ a, Measurable fun
     Measurable f :=
   measurable_pi_iff.mpr hf
 
+lemma MeasurableSpace.comap_process_pi (X : (a : δ) → β → X a) :
+    MeasurableSpace.comap (fun b a ↦ X a b) inferInstance =
+      ⨆ a, MeasurableSpace.comap (X a) inferInstance := by
+  simp_rw [MeasurableSpace.pi, MeasurableSpace.comap_iSup, MeasurableSpace.comap_comp]
+  rfl
+
 /-- The function `(f, x) ↦ update f a x : (Π a, X a) × X a → Π a, X a` is measurable. -/
 @[fun_prop]
 theorem measurable_update' {a : δ} [DecidableEq δ] :
@@ -689,7 +693,7 @@ theorem measurable_piCongrLeft (f : δ' ≃ δ) : Measurable (Equiv.piCongrLeft 
   exact Measurable.eq_mp X (f.apply_symm_apply i) <| measurable_pi_apply <| f.symm i
 
 /- Even though we cannot use projection notation, we still keep a dot to be consistent with similar
-  lemmas, like `MeasurableSet.prod`. -/
+lemmas, like `MeasurableSet.prod`. -/
 @[measurability]
 protected theorem MeasurableSet.pi {s : Set δ} {t : ∀ i : δ, Set (X i)} (hs : s.Countable)
     (ht : ∀ i ∈ s, MeasurableSet (t i)) : MeasurableSet (s.pi t) := by
@@ -709,7 +713,7 @@ theorem measurableSet_pi_of_nonempty {s : Set δ} {t : ∀ i, Set (X i)} (hs : s
   classical
     rcases h with ⟨f, hf⟩
     refine ⟨fun hst i hi => ?_, MeasurableSet.pi hs⟩
-    convert measurable_update f (a := i) hst
+    convert! measurable_update f (a := i) hst
     rw [update_preimage_pi hi]
     exact fun j hj _ => hf j hj
 

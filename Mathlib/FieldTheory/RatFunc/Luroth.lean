@@ -93,7 +93,7 @@ public lemma generator_mem : generator E ∈ E := by
   by_cases h : E = ⊥
   · rw [generator_eq_zero h]
     exact E.zero_mem
-  · rw [generator_eq_coeff h,]
+  · rw [generator_eq_coeff h]
     exact SetLike.coe_mem _
 
 public lemma generator_spec (h : E ≠ ⊥) : generator E ∉ (algebraMap K K⟮X⟯).range := by
@@ -174,7 +174,7 @@ lemma C_c_mul_φ (h : E ≠ ⊥) :
   conv =>
     enter [1, 2]
     rw [← Polynomial.smul_eq_C_mul, algebraMap_smul, ← Φ'_map, eq_C_content_mul_primPart (Φ' E)]
-  rw [Polynomial.map_mul, map_C, ← mul_assoc, ← C_mul, inv_mul_cancel₀,  map_one, one_mul]
+  rw [Polynomial.map_mul, map_C, ← mul_assoc, ← C_mul, inv_mul_cancel₀, map_one, one_mul]
   · rw [ne_eq, FaithfulSMul.algebraMap_eq_zero_iff, content_eq_zero_iff]
     exact Φ'_ne_zero h
 
@@ -329,7 +329,7 @@ lemma swap_θ : Bivariate.swap (θ E) = -(θ E) := by
   ring
 
 lemma θ_natDegree_le (h : E ≠ ⊥) : (θ E).natDegree ≤ m E := by
-  convert natDegree_sub_le _ _ using 3
+  convert! natDegree_sub_le _ _ using 3
   · rw [natDegree_mul (C_ne_zero.mpr (generator E).denom_ne_zero)
       (Polynomial.map_ne_zero (num_ne_zero (generator_ne_zero h))), natDegree_C, zero_add,
       natDegree_map]
