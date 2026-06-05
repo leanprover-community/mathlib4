@@ -158,46 +158,50 @@ lemma AnalyticOn.log (fs : AnalyticOn ℝ f s) (m : ∀ x ∈ s, 0 < f x) :
     AnalyticOn ℝ (fun z ↦ Real.log (f z)) s :=
   fun z n ↦ (analyticAt_log (m z n)).analyticWithinAt.comp (fs z n) m
 
--- TODO: refactor
-theorem hasFPowerSeriesAt_log : HasFPowerSeriesAt (fun t ↦ Real.log (1 + t))
-    (.ofScalars ℝ (fun n ↦ -(-1 : ℝ)^n / n)) 0 := by
-  suffices HasFPowerSeriesAt Real.log (.ofScalars ℝ (fun n ↦ -(-1 : ℝ)^n / n)) 1 by
-    rw [show (0 : ℝ) = 1 + (-1) by simp]
-    conv => arg 1; ext t; rw [show 1 + t = t - (-1) by ring]
-    exact HasFPowerSeriesAt.comp_sub this _
-  suffices ((FormalMultilinearSeries.ofScalars ℝ (fun n ↦ -(-1 : ℝ)^n / n)) =
-      FormalMultilinearSeries.ofScalars ℝ
-        (fun n ↦ iteratedDeriv n Real.log 1 / (n.factorial : ℝ))) by
+theorem iteratedDeriv_succ_log {n : ℕ} {x : ℂ} (hx : x ∈ slitPlane) :
+    iteratedDeriv (n + 1) log x = (-1 : ℂ) ^ n * n.factorial * x ^ (-(n : ℤ) - 1) := by
+  have h_eq : deriv log =ᶠ[𝓝 x] Inv.inv := by
+    filter_upwards [isOpen_slitPlane.mem_nhds hx] with y hy
+    simp [Complex.deriv_log hy]
+  rw [iteratedDeriv_succ', h_eq.iteratedDeriv_eq, iteratedDeriv_eq_iterate, iter_deriv_inv]
+  grind
+
+theorem hasFPowerSeriesAt_clog_one :
+    HasFPowerSeriesAt log (.ofScalars ℂ (fun n ↦ -(-1 : ℂ) ^ n / n)) 1 := by
+  suffices ((FormalMultilinearSeries.ofScalars ℂ (fun n ↦ -(-1 : ℂ) ^ n / n)) =
+      FormalMultilinearSeries.ofScalars ℂ (fun n ↦ iteratedDeriv n log 1 / (n.factorial : ℂ))) by
     convert AnalyticAt.hasFPowerSeriesAt _ using 1 <;> try infer_instance
-    exact analyticAt_log (by simp)
+    exact analyticAt_clog (by simp)
   ext n
-  simp only [FormalMultilinearSeries.apply_eq_prod_smul_coeff,
-    FormalMultilinearSeries.coeff_ofScalars, smul_eq_mul, mul_eq_mul_left_iff]
-  left
+  simp only [FormalMultilinearSeries.apply_eq_prod_smul_coeff, Finset.prod_const_one,
+    FormalMultilinearSeries.coeff_ofScalars, smul_eq_mul, one_mul]
   obtain _ | n := n
   · simp
-  rw [Nat.factorial_succ, pow_succ]
-  field_simp
-  push_cast
-  move_mul [((n : ℝ) + 1)]
-  simp only [mul_eq_mul_right_iff]
-  left
-  suffices iteratedDeriv (n + 1) Real.log =
-      fun (x : ℝ) ↦ (-1 : ℝ) ^ n * n.factorial * x ^ (-(n : ℤ) - 1) by
-    rw [this]
-    simp
-  induction n with
-  | zero =>
-    simp only [zero_add, iteratedDeriv_one, Real.deriv_log', pow_zero, Nat.factorial_zero,
-      Nat.cast_one, mul_one, CharP.cast_eq_zero, neg_zero, zero_sub, Int.reduceNeg, zpow_neg,
-      zpow_one, one_mul]
-  | succ n ih =>
-    simp only [Nat.cast_add, Nat.cast_one, neg_add_rev, Int.reduceNeg]
-    rw [iteratedDeriv_succ, ih]
-    ext x
-    simp only [deriv_const_mul_field', deriv_zpow', Int.cast_sub,
-      Int.cast_neg, Int.cast_natCast, Int.cast_one, pow_succ, mul_neg, mul_one, Nat.factorial_succ,
-      Nat.cast_mul, Nat.cast_add, Nat.cast_one, neg_mul, Int.reduceNeg]
-    ring_nf
+  simp [iteratedDeriv_succ_log one_mem_slitPlane, Nat.factorial_succ, pow_succ]
+  field_simp [show n.factorial ≠ 0 by positivity]
+
+theorem hasFPowerSeriesAt_clog_one_add :
+    HasFPowerSeriesAt (fun x ↦ log (1 + x)) (.ofScalars ℂ (fun n ↦ -(-1 : ℂ) ^ n / n)) 0 := by
+  convert HasFPowerSeriesAt.comp_sub hasFPowerSeriesAt_clog_one (-1) using 3 <;> ring
+
+theorem hasFPowerSeriesAt_log_one :
+    HasFPowerSeriesAt Real.log (.ofScalars ℝ (fun n ↦ -(-1 : ℝ) ^ n / n)) 1 := by
+  obtain ⟨r, hp⟩ := hasFPowerSeriesAt_clog_one
+  have : HasFPowerSeriesOnBall log
+      ((FormalMultilinearSeries.ofScalars ℂ (fun n ↦ -(-1 : ℂ) ^ n / n)).restrictScalars ℝ)
+      (ofRealCLM 1) r := by
+    simpa using hp.restrictScalars
+  convert ((reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap).congr
+    (fun x _ ↦ log_ofReal_re x)).hasFPowerSeriesAt
+  ext n
+  simp only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
+    ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply,
+    FormalMultilinearSeries.compContinuousLinearMap_apply]
+  simp
+  norm_cast
+
+theorem hasFPowerSeriesAt_log_one_add :
+    HasFPowerSeriesAt (fun x ↦ Real.log (1 + x)) (.ofScalars ℝ (fun n ↦ -(-1 : ℝ) ^ n / n)) 0 := by
+  convert HasFPowerSeriesAt.comp_sub hasFPowerSeriesAt_log_one (-1) using 3 <;> ring
 
 end Real
