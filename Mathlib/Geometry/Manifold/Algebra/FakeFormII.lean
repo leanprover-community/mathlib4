@@ -1140,33 +1140,99 @@ def FrameBundle (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M]
         change NormedAddCommGroup E; infer_instance
       exact (isUnit_comp_iff_of_isUnit htan_unit p.2).mpr hp
 
-example [IsManifold I ∞ M] : ContMDiffVectorBundle ∞ E (TangentSpace I) (B := M) I := inferInstance
-
-example [IsManifold I ∞ M] [CompleteSpace E] :
-    ContMDiffVectorBundle ∞ (E →L[𝕜] E)
-      (fun x : M => TangentSpace I x →L[𝕜] TangentSpace I x) I := inferInstance
-
-example [IsManifold I ∞ M] [CompleteSpace E] :
-    IsManifold (I.prod 𝓘(𝕜, E →L[𝕜] E)) ∞
-      (TotalSpace (E →L[𝕜] E) (fun x : M => TangentSpace I x →L[𝕜] TangentSpace I x)) :=
-  inferInstance
-
-example [IsManifold I ∞ M] [CompleteSpace E] :
+instance [IsManifold I ∞ M] [CompleteSpace E] :
     IsManifold (I.prod 𝓘(𝕜, E →L[𝕜] E)) ∞ ↥(FrameBundle I M) := inferInstance
 
-example [IsManifold I 1 M] [CompleteSpace E] :
-    ContMDiffVectorBundle 0 (E →L[𝕜] E)
-      (fun x : M => TangentSpace I x →L[𝕜] TangentSpace I x) I := inferInstance
-
-example [IsManifold I ∞ M] [CompleteSpace E] :
-    IsManifold (I.prod 𝓘(𝕜, E →L[𝕜] E)) ∞ ↥(FrameBundle I M) := inferInstance
-
-example [IsManifold I 2 M] [CompleteSpace E] :
-    ContMDiffVectorBundle 1 (E →L[𝕜] E)
-      (fun x : M => TangentSpace I x →L[𝕜] TangentSpace I x) I := inferInstance
-
-example [IsManifold I 2 M] [CompleteSpace E] :
-    ContMDiffVectorBundle 1 (E →L[𝕜] E)
-      (fun x : M => TangentSpace I x →L[𝕜] TangentSpace I x) I := inferInstance
+instance [CompleteSpace E] : LieGroup (modelWithCornersSelf 𝕜 (E →L[𝕜] E)) ∞
+    (Units (E →L[𝕜] E)) := inferInstance
 
 end FrameBundle
+
+#check hom_trivializationAt_apply
+
+noncomputable section FrameBundlePrincipal
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
+  {H : Type*} [TopologicalSpace H]
+  {I : ModelWithCorners 𝕜 E H}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  [IsManifold I 1 M]
+
+open scoped Manifold Topology Bundle ContDiff
+open Bundle Set IsManifold OpenPartialHomeomorph ContinuousLinearMap
+
+/-
+The tangent bundle coordinate change is invertible as a ContinuousLinearMap.
+-/
+omit [CompleteSpace E] in
+lemma tangentBundleCore_coordChange_isUnit (i j : atlas H M)
+    (x : M) (hx : x ∈ i.1.source ∩ j.1.source) :
+    IsUnit ((tangentBundleCore I M).coordChange i j x) := by
+  have h_inv : (tangentBundleCore I M).coordChange j i x ∘L
+    (tangentBundleCore I M).coordChange i j x = ContinuousLinearMap.id 𝕜 E := by
+    have := ( tangentBundleCore I M ).coordChange_comp i j i x;
+    ext v; exact (by
+    convert this ⟨ ⟨ hx.1, hx.2 ⟩, hx.1 ⟩ v using 1;
+    exact Eq.symm ( ( tangentBundleCore I M ).coordChange_self i x hx.1 v ));
+  have h_inv : (tangentBundleCore I M).coordChange i j x ∘L
+  (tangentBundleCore I M).coordChange j i x = ContinuousLinearMap.id 𝕜 E := by
+    have := ( tangentBundleCore I M ).coordChange_comp j i j x ⟨ ⟨ hx.2, hx.1 ⟩, hx.2 ⟩;
+    exact ContinuousLinearMap.ext fun v => by
+     simpa using this v |> Eq.trans <| ( tangentBundleCore I M ).coordChange_self j x hx.2 v;
+  exact ⟨ ⟨ _, _, h_inv, by assumption ⟩, rfl ⟩
+
+@[reducible, nolint unusedArguments]
+def FrameSpace (_I : ModelWithCorners 𝕜 E H) (_M : Type*) [TopologicalSpace _M] [ChartedSpace H _M]
+    [IsManifold _I 1 _M] (_ : _M) : Type _ := (E →L[𝕜] E)ˣ
+
+def frameBundleFiberBundleCore [CompleteSpace 𝕜] :
+    FiberBundleCore (atlas H M) M (E →L[𝕜] E)ˣ where
+  baseSet i := i.1.source
+  isOpen_baseSet i := i.1.open_source
+  indexAt := achart H
+  mem_baseSet_at := mem_chart_source H
+  coordChange i j x g := by
+    by_cases hx : x ∈ i.1.source ∩ j.1.source
+    · have hunit : IsUnit ((tangentBundleCore I M).coordChange i j x) :=
+        tangentBundleCore_coordChange_isUnit i j x hx
+      exact (hunit.unit * g)
+    · exact g
+  coordChange_self i x hx g := by
+    simp only [show x ∈ i.1.source ∩ i.1.source from ⟨hx, hx⟩, dif_pos]
+    have key := (tangentBundleCore I M).coordChange_self i x hx
+    simp only at key
+    ext v
+    have bar : ((tangentBundleCore I M).coordChange i i x) (g.val v) = g.val v := key (g.val v)
+    simp only [tangentBundleCore_coordChange, OpenPartialHomeomorph.extend, PartialEquiv.coe_trans,
+      ModelWithCorners.toPartialEquiv_coe, toFun_eq_coe, PartialEquiv.coe_trans_symm, coe_coe_symm,
+      ModelWithCorners.toPartialEquiv_coe_symm, Function.comp_apply] at bar
+    exact bar
+  continuousOn_coordChange i j := by
+    rw [(Units.isOpenEmbedding_val (R := E →L[𝕜] E)).isEmbedding.continuousOn_iff]
+    apply ContinuousOn.congr
+    · change ContinuousOn
+        (fun p : M × (E →L[𝕜] E)ˣ => (tangentBundleCore I M).coordChange i j p.1 ∘L p.2.val)
+        ((i.1.source ∩ j.1.source) ×ˢ univ)
+      apply ContinuousOn.clm_comp
+      · apply ((tangentBundleCore I M).continuousOn_coordChange i j).comp
+          continuousOn_fst
+        intro p hp
+        exact hp.1
+      · exact Units.continuous_val.comp_continuousOn continuousOn_snd
+    · intro p hp
+      simp only [Set.mem_prod, Set.mem_univ, and_true] at hp
+      simp only [Function.comp, dif_pos hp]
+      simp only [Units.val_mul, IsUnit.unit_spec]
+      exact mul_def ((tangentBundleCore I M).coordChange i j p.1) ↑p.2
+  coordChange_comp i j k x hx g := by
+    ext v
+    have hjk : x ∈ (j.1).source ∩ (k.1).source := ⟨hx.1.2, hx.2⟩
+    have hik : x ∈ (i.1).source ∩ (k.1).source := ⟨hx.1.1, hx.2⟩
+    have hij : x ∈ (i.1).source ∩ (j.1).source := ⟨hx.1.1, hx.1.2⟩
+    simp only [hij, hjk, hik, dif_pos, IsUnit.unit_spec, Units.val_mul]
+    have key := (tangentBundleCore I M).coordChange_comp i j k x
+      ⟨⟨hx.1.1, hx.1.2⟩, hx.2⟩ (g.val v)
+    exact LinearMap.mem_eqLocus.mp key
+
+end FrameBundlePrincipal
