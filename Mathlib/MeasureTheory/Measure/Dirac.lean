@@ -123,6 +123,8 @@ theorem _root_.MeasureTheory.ext_iff_measureReal_singleton [Countable α]
   rw [measureReal_def, measureReal_def, ENNReal.toReal_eq_toReal_iff]
   simp [measure_singleton_lt_top, ne_of_lt]
 
+alias ⟨_, ext_of_measureReal_singleton⟩ := MeasureTheory.ext_iff_measureReal_singleton
+
 /-- If `f` is a map with countable codomain, then `μ.map f` is a sum of Dirac measures. -/
 theorem map_eq_sum [Countable β] [MeasurableSingletonClass β] (μ : Measure α) (f : α → β)
     (hf : Measurable f) : μ.map f = sum fun b : β => μ (f ⁻¹' {b}) • dirac b := by
@@ -313,7 +315,7 @@ lemma dirac_ne_dirac_iff_exists_measurableSet {x y : α} :
   refine ⟨fun h A A_mble ↦ by simp only [h A A_mble, imp_self], fun h A A_mble ↦ ?_⟩
   by_cases x_in_A : x ∈ A
   · simp only [x_in_A, h A A_mble x_in_A]
-  · simpa only [x_in_A, false_iff] using h Aᶜ (MeasurableSet.compl_iff.mpr A_mble) x_in_A
+  · simpa only [x_in_A, false_iff] using! h Aᶜ (MeasurableSet.compl_iff.mpr A_mble) x_in_A
 
 open MeasurableSpace
 /-- Dirac delta measures at two different points are different, assuming the measurable space

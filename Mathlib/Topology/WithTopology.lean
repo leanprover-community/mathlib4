@@ -63,6 +63,24 @@ lemma toTopology_inj {x y : X} : toTopology t x = toTopology t y ↔ x = y :=
 @[simp] lemma ofTopology_inj {x y : WithTopology X t} : ofTopology x = ofTopology y ↔ x = y :=
   (ofTopology_injective t).eq_iff
 
+open Topology
+
+lemma isOpen_iff {s : Set (WithTopology X t)} :
+    IsOpen s ↔ IsOpen[t] (toTopology t ⁻¹' s) :=
+  .rfl
+
+lemma isClosed_iff {s : Set (WithTopology X t)} :
+    IsClosed s ↔ IsClosed[t] (toTopology t ⁻¹' s) := by
+  simp [← isOpen_compl_iff, isOpen_iff]
+
+/-- If `X` is equipped with topology `t`, the map `X → WithTopology X t` is continuous. -/
+lemma continuous_toTopology : Continuous[t, _] (toTopology t) :=
+  ⟨fun _ ↦ (·)⟩
+
+/-- If `X` is equipped with topology `t`, the map `WithTopology X t → X` is continuous. -/
+lemma continuous_ofTopology : Continuous[_, t] (ofTopology (t := t)) :=
+  ⟨fun _ ↦ (·)⟩
+
 /-! ### Set-theoretic lemmas -/
 
 open Set

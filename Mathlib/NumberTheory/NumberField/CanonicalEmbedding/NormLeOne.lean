@@ -231,7 +231,7 @@ abbrev deriv_expMap_single (w : InfinitePlace K) (x : ℝ) : ℝ :=
 
 theorem hasDerivAt_expMap_single (w : InfinitePlace K) (x : ℝ) :
     HasDerivAt (expMap_single w) (deriv_expMap_single w x) x := by
-  simpa [expMap_single, mul_comm] using
+  simpa [expMap_single, mul_comm] using!
     (HasDerivAt.comp x (Real.hasDerivAt_exp _) (hasDerivAt_mul_const (w.mult : ℝ)⁻¹))
 
 
@@ -313,7 +313,7 @@ abbrev fderiv_expMap (x : realSpace K) : realSpace K →L[ℝ] realSpace K :=
 
 theorem hasFDerivAt_expMap (x : realSpace K) : HasFDerivAt expMap (fderiv_expMap x) x := by
   simpa [expMap, fderiv_expMap, hasFDerivAt_pi', OpenPartialHomeomorph.pi_apply,
-    ContinuousLinearMap.proj_pi] using
+    ContinuousLinearMap.proj_pi] using!
     fun w ↦ (hasDerivAt_expMap_single w _).hasFDerivAt.comp x (hasFDerivAt_apply w x)
 
 end expMap
