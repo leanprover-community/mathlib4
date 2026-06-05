@@ -182,7 +182,7 @@ theorem add_apply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Se
 theorem sum_apply {ι : Type*} [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
     (t : Finset ι) (f : ι → E →SLᵤ[σ, 𝔖] F) (x : E) :
     (∑ d ∈ t, f d) x = ∑ d ∈ t, (f d) x :=
-  ContinuousLinearMap.sum_apply t f x
+  _root_.sum_apply (F := E →SL[σ] F) t f x
 
 @[simp]
 theorem sub_apply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
