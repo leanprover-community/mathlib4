@@ -393,14 +393,10 @@ theorem IsUnit.of_mul_eq_one [Monoid M] [IsDedekindFiniteMonoid M] {a : M} (b : 
     IsUnit a :=
   ⟨.mkOfMulEqOne a b h, rfl⟩
 
-@[deprecated (since := "2025-11-05")] alias isUnit_of_mul_eq_one := IsUnit.of_mul_eq_one
-
 @[to_additive]
 theorem IsUnit.of_mul_eq_one_right [Monoid M] [IsDedekindFiniteMonoid M] {b : M} (a : M)
     (h : a * b = 1) : IsUnit b :=
   .of_mul_eq_one a <| mul_eq_one_symm h
-
-@[deprecated (since := "2025-11-05")] alias isUnit_of_mul_eq_one_right := IsUnit.of_mul_eq_one_right
 
 section Monoid
 variable [Monoid M] {a b : M}
