@@ -11,10 +11,12 @@ public import Mathlib.Algebra.MonoidAlgebra.Degree
 /-!
 # lemmas about sup-degree of an `MvPolynomial`
 
-This file contains some lemmas of `AddMonoidAlgebra.{supDegree,leadingCoeff,Monic}`, restated in
-notations of `MvPolynomial` which are not `abbrev`s of counterparts of `AddMonoidAlgebra`, such as
-`MvPolynomial.{support,coeff}`. Meanwhile, `AddMonoidAlgebra.supDegree` serves directly as the
-notation of `supDegree` in `MvPolynomial`.
+This file contains some lemmas of `AddMonoidAlgebra.{supDegree,leadingCoeff,Monic}` that are stated
+with notations whose counterparts in `MvPolynomial` are not `abbrev`s of them, while restating them
+in notations of `MvPolynomial`. These notations include
+
+- `DFunLike.coe` or `AddMonoidAlgebra.coeff`: `MvPolynomial.coeff`,
+- `AddMonoidAlgebra.support`: `MvPolynomial.support`.
 -/
 public section
 
