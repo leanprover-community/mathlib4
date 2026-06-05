@@ -306,7 +306,7 @@ end omegaLimit
 -/
 namespace Flow
 
-variable {τ : Type*} [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd τ] {α : Type*}
+variable {τ : Type*} [TopologicalSpace τ] [AddMonoid τ] {α : Type*}
   [TopologicalSpace α] (f : Filter τ) (ϕ : Flow τ α) (s : Set α)
 
 open omegaLimit
