@@ -52,7 +52,7 @@ theorem Module.Dual.norm_extendRCLike_le_seminorm [RCLike 𝕜] [Module 𝕜 E] 
     _ = ‖(fr.extendRCLike x)‖ * p x := by rw [norm_conj]
   exact (mul_le_mul_iff_left₀ (norm_pos_iff.2 hx)).1 <| by simpa [pow_two, mul_comm] using hsq
 
-theorem Module.Dual.exists_extension_of_le_seminorm_real [Module ℝ E] 
+theorem Module.Dual.exists_extension_of_le_seminorm_real [Module ℝ E]
     (S : Subspace ℝ E) (f : Dual ℝ S)
     {p : Seminorm ℝ E} (hp : ∀ x, f x ≤ p x) :
     ∃ g : Dual ℝ E, (∀ x : S, g x = f x) ∧ ∀ x, |g x| ≤ p x := by
