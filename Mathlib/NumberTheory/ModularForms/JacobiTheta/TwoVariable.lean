@@ -301,7 +301,7 @@ lemma hasFDerivAt_jacobiTheta₂ (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
   have hVmem : (z, τ) ∈ V := ⟨hz, hτ'⟩
   have hVp : IsPreconnected V := by
     refine (Convex.isPreconnected ?_).prod (convex_halfSpace_im_gt T).isPreconnected
-    simpa only [abs_lt] using (convex_halfSpace_im_gt _).inter (convex_halfSpace_im_lt _)
+    simpa only [abs_lt] using! (convex_halfSpace_im_gt _).inter (convex_halfSpace_im_lt _)
   let f : ℤ → ℂ × ℂ → ℂ := fun n p ↦ jacobiTheta₂_term n p.1 p.2
   let f' : ℤ → ℂ × ℂ → ℂ × ℂ →L[ℂ] ℂ := fun n p ↦ jacobiTheta₂_term_fderiv n p.1 p.2
   have hf (n : ℤ) : ∀ p ∈ V, HasFDerivAt (f n) (f' n p) p :=
@@ -316,8 +316,8 @@ lemma hasFDerivAt_jacobiTheta₂ (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
     exact (summable_pow_mul_jacobiTheta₂_term_bound S hT 2).mul_left _
   have hf_sum : Summable fun n : ℤ ↦ f n (z, τ) := by
     refine (summable_pow_mul_jacobiTheta₂_term_bound S hT 0).of_norm_bounded ?_
-    simpa only [pow_zero, one_mul] using norm_jacobiTheta₂_term_le hT hz.le hτ'.le
-  simpa only [jacobiTheta₂, jacobiTheta₂_fderiv, f, f'] using
+    simpa only [pow_zero, one_mul] using! norm_jacobiTheta₂_term_le hT hz.le hτ'.le
+  simpa only [jacobiTheta₂, jacobiTheta₂_fderiv, f, f'] using!
     hasFDerivAt_tsum_of_isPreconnected hu_sum hVo hVp hf hu hVmem hf_sum hVmem
 
 lemma continuousAt_jacobiTheta₂ (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
@@ -510,7 +510,7 @@ theorem jacobiTheta₂'_functional_equation (z τ : ℂ) :
   have hj : HasDerivAt (fun w ↦ jacobiTheta₂ (w / τ) (-1 / τ))
       ((1 / τ) * jacobiTheta₂' (z / τ) (-1 / τ)) z := by
     have := hasDerivAt_jacobiTheta₂_fst (z / τ) hτ'
-    simpa only [mul_comm, one_div] using this.comp z (hasDerivAt_mul_const τ⁻¹)
+    simpa only [mul_comm, one_div] using! this.comp z (hasDerivAt_mul_const τ⁻¹)
   calc
   _ = deriv (jacobiTheta₂ · τ) z := (hasDerivAt_jacobiTheta₂_fst z hτ).deriv.symm
   _ = deriv (fun z ↦ 1 / (-I * τ) ^ (1 / 2 : ℂ) *
