@@ -99,15 +99,35 @@ smallest cardinality among all vertex covers. -/
 def IsMinimumCover (G : SimpleGraph V) (c : Set V) : Prop :=
   MinimalFor G.IsVertexCover (·.encard) c
 
+/-- A minimum cover is a vertex cover. -/
+theorem IsMinimumCover.isVertexCover {c : Set V} (h : IsMinimumCover G c) :
+    G.IsVertexCover c :=
+  h.1
+
+/-- A minimal cover is a vertex cover. -/
+theorem IsMinimalCover.isVertexCover {c : Set V} (h : IsMinimalCover G c) :
+    G.IsVertexCover c :=
+  h.1
+
+/-- Every minimum vertex cover is also a minimal vertex cover.
+Finiteness is required since an infinite proper subset can have the same cardinality
+as its parent set. -/
 theorem IsMinimumCover.isMinimalCover [Finite V] {c : Set V} (h : IsMinimumCover G c) :
     IsMinimalCover G c := by
+  -- We prove both parts of `Minimal`: c is a cover, and any subcover has c.
   refine ⟨h.1, fun d hd hdc => ?_⟩
+  -- Since d ⊆ c, d has as many vertices as c.
   have h1 : d.encard ≤ c.encard := Set.encard_mono hdc
+  -- Since c is a minimum cover and d is also a cover, c has at most as many vertices as d.
   have h2 : c.encard ≤ d.encard := h.2 hd h1
+   -- Combining both inequalities, d and c have the same cardinality.
   have hcard : d.encard = c.encard := le_antisymm h1 h2
+  -- Suppose for contradiction, c ⊄ d, in other words, d is a strict subset of c.
   by_contra hcd
   have hsub : d ⊂ c := ⟨hdc, hcd⟩
+  -- Since V is finite, c is finite, so its encard is not ⊤.
   exact absurd hcard (ne_of_lt ((Set.toFinite d).encard_lt_encard hsub))
+  -- A proper subset of a finite set has strictly smaller cardinality — contradiction.
 
 end IsMinimalCover
 
