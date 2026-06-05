@@ -347,12 +347,12 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
       · use 1, zero_ne_one.symm
         rw [one_smul]
         exact subset_span (mem_range_self (⟨i, hi⟩ : I))
-      · simpa [image_eq_range s I] using hI i hi
+      · simpa [image_eq_range s I] using! hI i hi
     choose a ha ha' using exists_a
     let A := ∏ i, a i
     have hA : A ≠ 0 := by
       rw [Finset.prod_ne_zero_iff]
-      simpa using ha
+      simpa using! ha
     -- `M ≃ A • M` because `M` is torsion free and `A ≠ 0`
     let φ : M →ₗ[R] M := LinearMap.lsmul R M A
     have : LinearMap.ker φ = ⊥ := LinearMap.ker_lsmul hA

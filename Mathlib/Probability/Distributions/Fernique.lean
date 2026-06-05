@@ -105,7 +105,6 @@ def _root_.ContinuousLinearMap.rotation (θ : ℝ) : E × E →L[ℝ] E × E whe
     simp only [Prod.fst_add, smul_add, Prod.snd_add, neg_smul, Prod.mk_add_mk]
     abel_nf
   map_smul' c x := by simp [smul_comm c]
-  cont := by fun_prop
 
 lemma _root_.ContinuousLinearMap.rotation_apply (θ : ℝ) (x : E × E) :
     ContinuousLinearMap.rotation θ x
@@ -181,7 +180,7 @@ lemma measure_le_mul_measure_gt_normThreshold_le_of_map_rotation_eq_self [SFinit
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ) (a : ℝ) (n : ℕ) :
     μ {x | ‖x‖ ≤ a} * μ {x | normThreshold a (n + 1) < ‖x‖}
       ≤ μ {x | normThreshold a n < ‖x‖} ^ 2 := by
-  convert measure_le_mul_measure_gt_le_of_map_rotation_eq_self h_rot _ _
+  convert! measure_le_mul_measure_gt_le_of_map_rotation_eq_self h_rot _ _
   simp [normThreshold_add_one]
 
 lemma lt_normThreshold_zero (ha_pos : 0 < a) : a / (1 - √2) < normThreshold a 0 := by
@@ -365,7 +364,7 @@ lemma lintegral_closedBall_diff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ]
   _ ≤ .ofReal (rexp (2⁻¹ * Real.log (c.toReal / (1 - c).toReal) * 2 ^ n))
       * c * .ofReal (rexp (-Real.log (c / (1 - c)).toReal * 2 ^ n)) := by
     gcongr ENNReal.ofReal (rexp ?_) * _ * _
-    convert logRatio_mul_normThreshold_add_one_le ha_gt ha_lt n (a := a) using 1
+    convert! logRatio_mul_normThreshold_add_one_le ha_gt ha_lt n (a := a) using 1
     ring
   _ = c * .ofReal (rexp (-2⁻¹ * Real.log (c / (1 - c)).toReal * 2 ^ n)) := by
     rw [mul_comm _ c, mul_assoc, ← ENNReal.ofReal_mul (by positivity), ← Real.exp_add]
@@ -528,7 +527,7 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self' [IsProbabilityMeasure μ
     rwa [inv_eq_one_div, ENNReal.div_lt_iff (by simp) (by simp), mul_comm] at ha_gt
   have h_pos : 0 < logRatio c * a⁻¹ ^ 2 := mul_pos (logRatio_pos ha_gt hc_lt) (by positivity)
   refine ⟨logRatio c * a⁻¹ ^ 2, h_pos, ⟨by fun_prop, ?_⟩⟩
-  simp only [HasFiniteIntegral, ← ofReal_norm_eq_enorm, Real.norm_eq_abs, Real.abs_exp]
+  simp only [HasFiniteIntegral, ← ofReal_norm, Real.norm_eq_abs, Real.abs_exp]
   -- `⊢ ∫⁻ x, ENNReal.ofReal (rexp (logRatio c * a⁻¹ ^ 2 * ‖x‖ ^ 2)) ∂μ < ∞`
   refine (lintegral_exp_mul_sq_norm_le_of_map_rotation_eq_self h_rot le_rfl ha_gt).trans_lt ?_
   refine ENNReal.add_lt_top.mpr ⟨ENNReal.ofReal_lt_top, ?_⟩
