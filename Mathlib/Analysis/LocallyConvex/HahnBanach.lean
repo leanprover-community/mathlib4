@@ -63,7 +63,7 @@ theorem Module.Dual.exists_real_extension [Module ℝ E] (S : Subspace ℝ E) (f
 
 variable [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
 
-theorem Module.Dual.exists_extension [Module 𝕜 E] (S : Submodule 𝕜 E) (f : Dual 𝕜 S)
+theorem Module.Dual.exists_extension_of_le_seminorm [Module 𝕜 E] (S : Submodule 𝕜 E) (f : Dual 𝕜 S)
     {p : Seminorm 𝕜 E} (hp : ∀ x, ‖f x‖ ≤ p x) :
     ∃ g : Dual 𝕜 E, (∀ x : S, g x = f x) ∧ ∀ x, ‖g x‖ ≤ p x := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
