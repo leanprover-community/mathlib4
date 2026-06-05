@@ -66,8 +66,8 @@ def counitAlgHom : R[X] →ₐ[R] R :=
 
 /-- The `𝔾ₐ` coalgebra structure on `R[X]`. -/
 instance instCoalgebraStruct : CoalgebraStruct R R[X] where
-  comul := (comulAlgHom R).toLinearMap
-  counit := (counitAlgHom R).toLinearMap
+  comul := (Polynomial.aeval ((X : R[X]) ⊗ₜ 1 + 1 ⊗ₜ (X : R[X]))).toLinearMap
+  counit := (Polynomial.aeval (0 : R)).toLinearMap
 
 theorem comul_def :
     (Coalgebra.comul : R[X] →ₗ[R] R[X] ⊗[R] R[X]) = (comulAlgHom R).toLinearMap := rfl
