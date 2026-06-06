@@ -64,9 +64,8 @@ theorem coe_mul (f g : Module.End R M) : ⇑(f * g) = f ∘ g := rfl
 
 instance : Pow (Module.End R M) Nat where
   pow f n :=
-    { toFun := f^[n]
-      map_add' := by simp
-      map_smul' m := Nat.rec (fun x => rfl)
+    { __ := AddMonoid.End.equiv M (((AddMonoid.End.equiv M).symm f.toAddMonoidHom) ^ n)
+      map_smul' m := Nat.rec (fun _ => rfl)
         (fun n ih x => (congrArg f^[n] (map_smul f m x)).trans (ih (f x))) n }
 
 instance instNontrivial [Nontrivial M] : Nontrivial (Module.End R M) := by

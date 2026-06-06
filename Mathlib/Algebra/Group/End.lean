@@ -648,6 +648,11 @@ instance : Pow (MulAut M) Nat where
     { toEquiv := f.toEquiv ^ n,
       map_mul' := Nat.rec (fun _ _ => rfl)
         (fun n ih x y => (congrArg f^[n] (map_mul f x y)).trans (ih (f x) (f y))) n }
+@[to_additive]
+instance : Pow (MulAut M) Int where
+  pow f n :=
+    { toEquiv := f.toEquiv ^ n,
+      map_mul' := n.casesOn (fun n => map_mul (f ^ n)) (fun n => map_mul (f ^ (n + 1))⁻¹) }
 
 /-- If `M` is a type with multiplicative, then multiplicative automorphisms of `M` have the
 structure of a group. -/
@@ -665,7 +670,7 @@ instance : Group (MulAut M) where
   mul_one _ := rfl
   inv_mul_cancel := MulEquiv.self_trans_symm
   npow n f := f ^ n
-  zpow := zpowRec fun n f => f ^ n
+  zpow n f := f ^ n
 
 @[to_additive]
 instance : Inhabited (MulAut M) :=

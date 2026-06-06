@@ -38,11 +38,12 @@ instance : Mul (RingAut R) where mul g h := RingEquiv.trans h g
 instance : Inv (RingAut R) where inv := RingEquiv.symm
 instance : Pow (RingAut R) Nat where
   pow f n :=
-    { toEquiv := f.toEquiv ^ n
-      map_mul' := Nat.rec (fun _ _ => rfl) (fun n ih x y =>
-        (congrArg f^[n] (map_mul f x y)).trans (ih (f x) (f y))) n
-      map_add' := Nat.rec (fun _ _ => rfl) (fun n ih x y =>
-        (congrArg f^[n] (map_add f x y)).trans (ih (f x) (f y))) n }
+    { __ := n • f.toAddEquiv
+      __ := f.toMulEquiv ^ n }
+instance : Pow (RingAut R) Int where
+  pow f n :=
+    { __ := n • f.toAddEquiv
+      __ := f.toMulEquiv ^ n }
 
 /-- The group operation on automorphisms of a ring is defined by
 `fun g h => RingEquiv.trans h g`.
@@ -53,7 +54,7 @@ instance : Group (RingAut R) where
   mul_one _ := rfl
   inv_mul_cancel := RingEquiv.self_trans_symm
   npow n f := f ^ n
-  zpow := zpowRec fun n f => f ^ n
+  zpow n f := f ^ n
 
 instance : Inhabited (RingAut R) :=
   ⟨1⟩

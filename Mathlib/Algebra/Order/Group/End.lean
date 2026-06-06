@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.End
 public import Mathlib.Order.RelIso.Basic
 
 /-!
@@ -80,14 +80,14 @@ instance : Mul (r ≃r r) where mul f₁ f₂ := f₂.trans f₁
 instance : Inv (r ≃r r) where inv := .symm
 instance : Pow (r ≃r r) ℕ where
   pow f n :=
-    { toFun := f^[n]
-      invFun := Nat.repeat f.symm n
-      left_inv := Nat.rec Eq.refl
-        (fun _ ih x => (congrArg f.symm (ih (f x))).trans (f.left_inv x)) n
-      right_inv := Nat.rec Eq.refl
-        (fun n ih x => (congrArg f^[n] (f.right_inv (Nat.repeat f.symm n x))).trans (ih x)) n
+    { __ := f.toEquiv ^ n
       map_rel_iff' {a b} := Nat.rec (fun _ _ => Iff.rfl)
         (fun _ ih a b => (ih (f a) (f b)).trans f.map_rel_iff) n a b }
+instance : Pow (r ≃r r) ℤ where
+  pow f n :=
+    { __ := f.toEquiv ^ n
+      map_rel_iff' := n.casesOn (fun n => (f ^ n).map_rel_iff)
+        (fun n => ((f ^ (n + 1))⁻¹).map_rel_iff) }
 
 instance : Group (r ≃r r) where
   mul_assoc _ _ _ := rfl
@@ -95,7 +95,7 @@ instance : Group (r ≃r r) where
   mul_one _ := rfl
   inv_mul_cancel f := ext f.symm_apply_apply
   npow n f := f ^ n
-  zpow := zpowRec fun n f => f ^ n
+  zpow n f := f ^ n
 
 lemma one_def : (1 : r ≃r r) = .refl r := rfl
 lemma mul_def (f g : r ≃r r) : (f * g) = g.trans f := rfl

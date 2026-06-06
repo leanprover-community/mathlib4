@@ -208,10 +208,7 @@ instance : One (A →⋆ₙₐ[R] A) where one := .id R A
 instance : Mul (A →⋆ₙₐ[R] A) where mul := comp
 instance : Pow (A →⋆ₙₐ[R] A) Nat where
   pow f n :=
-    { toFun := f^[n]
-      map_mul' := by simp
-      map_zero' := by simp
-      map_add' := by simp
+    { __ := (f : A →ₙ+* A) ^ n
       map_star' := Nat.rec (fun _ => rfl)
         (fun n ih a => (congrArg f^[n] (map_star f a)).trans (ih (f a))) n
       map_smul' m := Nat.rec (fun _ => rfl)
@@ -942,6 +939,11 @@ instance : Pow (R ≃⋆ₐ[S] R) Nat where
         (fun n ih a => (congrArg f^[n] (map_star f a)).trans (ih (f a))) n
       map_smul' m := Nat.rec (fun _ => rfl)
         (fun n ih x => (congrArg f^[n] (map_smul f m x)).trans (ih (f x))) n }
+instance : Pow (R ≃⋆ₐ[S] R) Int where
+  pow f n :=
+    { toRingEquiv := f.toRingEquiv ^ n
+      map_star' := n.casesOn (fun n => map_star (f ^ n)) (fun n => map_star (f ^ (n + 1))⁻¹)
+      map_smul' :=  n.casesOn (fun n => map_smul (f ^ n)) (fun n => map_smul (f ^ (n + 1))⁻¹) }
 
 @[simps! -isSimp one mul]
 instance aut : Group (R ≃⋆ₐ[S] R) where
@@ -950,7 +952,7 @@ instance aut : Group (R ≃⋆ₐ[S] R) where
   mul_assoc _ _ _ := rfl
   inv_mul_cancel f := ext <| symm_apply_apply f
   npow n f := f ^ n
-  zpow := zpowRec fun n f => f ^ n
+  zpow n f := f ^ n
 
 @[simp] theorem mul_apply (f g : R ≃⋆ₐ[S] R) (x : R) : (f * g) x = f (g x) := rfl
 

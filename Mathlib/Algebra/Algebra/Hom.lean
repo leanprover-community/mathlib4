@@ -333,11 +333,7 @@ instance : One (A →ₐ[R] A) where one := .id R A
 instance : Mul (A →ₐ[R] A) where mul := comp
 instance : Pow (A →ₐ[R] A) Nat where
   pow f n :=
-    { toFun := f^[n]
-      map_one' := by simp
-      map_mul' := by simp
-      map_zero' := by simp
-      map_add' := by simp
+    { __ := f.toRingHom ^ n
       commutes' r := Nat.rec rfl (fun n ih => (congrArg f^[n] (f.commutes r)).trans ih) n }
 
 @[simps! -isSimp toSemigroup_toMul_mul toOne_one]

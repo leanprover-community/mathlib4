@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Hom
 public import Mathlib.Algebra.Ring.Action.Group
+public import Mathlib.Algebra.Ring.Aut
 
 /-!
 # Isomorphisms of `R`-algebras
@@ -633,12 +634,12 @@ instance : Mul (A₁ ≃ₐ[R] A₁) where mul ϕ ψ := ψ.trans ϕ
 instance : Inv (A₁ ≃ₐ[R] A₁) where inv := symm
 instance : Pow (A₁ ≃ₐ[R] A₁) Nat where
   pow f n :=
-    { toEquiv := f.toEquiv ^ n
-      map_mul' := Nat.rec (fun _ _ => rfl) (fun n ih x y =>
-        (congrArg f^[n] (map_mul f x y)).trans (ih (f x) (f y))) n
-      map_add' := Nat.rec (fun _ _ => rfl) (fun n ih x y =>
-        (congrArg f^[n] (map_add f x y)).trans (ih (f x) (f y))) n
+    { __ := f.toRingEquiv ^ n
       commutes' r := Nat.rec rfl (fun n ih => (congrArg f^[n] (f.commutes r)).trans ih) n }
+instance : Pow (A₁ ≃ₐ[R] A₁) Int where
+  pow f n :=
+    { __ := f.toRingEquiv ^ n
+      commutes' := n.casesOn (fun n => (f ^ n).commutes) (fun n => ((f ^ (n + 1))⁻¹).commutes) }
 
 @[simps! -isSimp one mul, stacks 09HR]
 instance aut : Group (A₁ ≃ₐ[R] A₁) where
@@ -647,7 +648,7 @@ instance aut : Group (A₁ ≃ₐ[R] A₁) where
   mul_one _ := rfl
   inv_mul_cancel ϕ := ext <| symm_apply_apply ϕ
   npow n f := f ^ n
-  zpow := zpowRec fun n f => f ^ n
+  zpow n f := f ^ n
 
 @[simp]
 theorem one_apply (x : A₁) : (1 : A₁ ≃ₐ[R] A₁) x = x :=
