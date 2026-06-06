@@ -53,7 +53,7 @@ structure CountableInfClosed [LE α] (s : Set α) : Prop where
   isGLB_mem : ∀ t ⊆ s, t.Nonempty → t.Countable → ∀ x, IsGLB t x → x ∈ s
 
 @[to_dual]
-lemma CountableSupClosed.iSup_mem [CompleteLattice α] [hι : Countable ι] [Nonempty ι]
+lemma CountableSupClosed.iSup_mem [CompleteLattice α] [Countable ι] [Nonempty ι]
     (hs : CountableSupClosed s) {A : ι → α} (hA : ∀ n, A n ∈ s) :
     ⨆ n, A n ∈ s := by
   let i₀ := Nonempty.some (α := ι) inferInstance
@@ -80,7 +80,8 @@ lemma CountableSupClosed.sSup_mem [CompleteLattice α] (hs : CountableSupClosed 
 lemma CountableSupClosed.supClosed [SemilatticeSup α] (hs : CountableSupClosed s) :
     SupClosed s := fun a ha b hb ↦ hs.isLUB_mem {a, b} (by grind) (by simp) (by simp) _ isLUB_pair
 
-@[to_dual (attr := simp)] lemma countableSupClosed_singleton [PartialOrder α] {x : α} :
+@[to_dual (attr := simp)]
+protected lemma CountableSupClosed.singleton [PartialOrder α] {x : α} :
     CountableSupClosed ({x} : Set α) where
   isLUB_mem s hs_subset hs_ne _ y hy := by
     have h_eq : s = {x} := by
@@ -201,7 +202,7 @@ lemma countableSupClosure_min [Preorder α] (hst : s ⊆ t) (ht : CountableSupCl
 @[to_dual (attr := simp)] lemma countableSupClosed_countableSupClosure [Preorder α] :
     CountableSupClosed (countableSupClosure s) := countableSupClosure.isClosed_closure _
 
-@[to_dual]
+@[to_dual (attr := gcongr)]
 lemma countableSupClosure_mono [Preorder α] : Monotone (countableSupClosure : Set α → Set α) :=
   countableSupClosure.mono
 
@@ -247,9 +248,8 @@ alias ⟨_, CountableSupClosed.countableSupClosure_eq⟩ := countableSupClosure_
 
 @[to_dual]
 lemma countableSupClosure_idem [Preorder α] (s : Set α) :
-    countableSupClosure (countableSupClosure s) = countableSupClosure s := by
-  rw [countableSupClosure_eq_self]
-  exact countableSupClosed_countableSupClosure
+    countableSupClosure (countableSupClosure s) = countableSupClosure s :=
+  countableSupClosure.idempotent _
 
 @[to_dual (attr := simp)] lemma countableSupClosure_singleton [PartialOrder α] {x : α} :
     countableSupClosure {x} = {x} := by simp
