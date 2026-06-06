@@ -40,7 +40,6 @@ variable [Preorder α]
 /-- The Hasse diagram of an order as a simple graph. The graph of the covering relation. -/
 def hasse : SimpleGraph α where
   Adj a b := a ⋖ b ∨ b ⋖ a
-  loopless.irrefl v hadj := hadj.elim (irrefl v) (irrefl v)
 
 variable {α β} {a b : α}
 
