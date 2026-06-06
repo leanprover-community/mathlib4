@@ -236,8 +236,8 @@ theorem reindexAlgEquiv_apply (e : m ≃ n) (M : Matrix m m A) :
   simp
 
 @[simp]
-theorem symm_reindexAlgEquiv (e : m ≃ n) : (reindexAlgEquiv R A e).symm =
-    reindexAlgEquiv R A e.symm :=
+theorem symm_reindexAlgEquiv (e : m ≃ n) :
+    (reindexAlgEquiv R A e).symm = reindexAlgEquiv R A e.symm :=
   rfl
 
 @[deprecated (since := "2026-06-06")] alias reindexAlgEquiv_symm := symm_reindexAlgEquiv
