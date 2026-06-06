@@ -98,7 +98,7 @@ private lemma exists_vectorMeasure_le_measureAux (hf : BoundedVariationOn f univ
     borelize α
     convert! borel_eq_generateFrom_Ioc_le α using 2
     grind only
-  rcases VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure
+  rcases VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
     IsSetSemiring.Ioc A B with ⟨m', hm', h'm'⟩
   refine ⟨m', fun u v huv ↦ ?_, ?_, h'm'⟩
   · rw [hm']
