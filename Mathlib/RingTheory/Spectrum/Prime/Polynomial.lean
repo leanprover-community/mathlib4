@@ -51,8 +51,8 @@ lemma isNilpotent_tensor_residueField_iff
   simp only [Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply,
     Algebra.coe_lmul_eq_mul, Algebra.TensorProduct.comm_tmul]
   rw [← IsNilpotent.map_iff (Algebra.lmul_injective (R := I.ResidueField)),
-    LinearMap.isNilpotent_iff_charpoly, ← Algebra.baseChange_lmul, LinearMap.charpoly_baseChange]
-  rw [this]
+    LinearMap.isNilpotent_iff_charpoly, ← Algebra.baseChange_lmul, LinearMap.charpoly_baseChange,
+    this]
   simp_rw [← ((LinearMap.mul R A) f).charpoly_natDegree]
   constructor
   · intro e i hi
