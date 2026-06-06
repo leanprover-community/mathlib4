@@ -16,7 +16,7 @@ In this file we use Rolle's Theorem
 to relate the number of real roots of a real polynomial and its derivative.
 Namely, we prove the following facts.
 
-* `Polynomial.card_roots_toFinset_le_card_roots_derivative_diff_roots_succ`:
+* `Polynomial.card_roots_toFinset_le_card_roots_derivative_sdiff_roots_succ`:
   the number of roots of a real polynomial `p` is at most the number of roots of its derivative
   that are not roots of `p` plus one.
 * `Polynomial.card_roots_toFinset_le_derivative`, `Polynomial.card_rootSet_le_derivative`:

@@ -28,7 +28,7 @@ We introduce the following definitions.
 
 ## Main results
 
-The main result `BoxIntegral.Prepartition.exists_iUnion_eq_diff` says that any prepartition `π` of
+The main result `BoxIntegral.Prepartition.exists_iUnion_eq_sdiff` says that any prepartition `π` of
 `I` admits a prepartition `π'` of `I` that covers exactly `I \ π.iUnion`. One of these prepartitions
 is available as `BoxIntegral.Prepartition.compl`.
 

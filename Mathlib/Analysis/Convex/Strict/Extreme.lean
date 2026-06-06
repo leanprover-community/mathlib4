@@ -19,7 +19,7 @@ This file collects some results of extreme points of (strictly convex) sets.
   nontrivial topological vector space are disjoint.
 * `StrictConvex.sdiff_interior_subset_extremePoints`:
   when `C` is a strictly convex set then `C \ interior C ⊆ extremePoints 𝕜 C`.
-* `StrictConvex.extremePoints_eq_diff_interior`: the extreme points of a strictly convex set `S`
+* `StrictConvex.extremePoints_eq_sdiff_interior`: the extreme points of a strictly convex set `S`
   in nontrivial normed space is exactly `S \ interior S`.
 
 Corollaries of the above is that, in a nontrivial normed space, the extreme points of the

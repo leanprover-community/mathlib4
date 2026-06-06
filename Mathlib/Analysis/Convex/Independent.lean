@@ -145,7 +145,7 @@ theorem convexIndependent_set_iff_inter_convexHull_subset {s : Set E} :
     exact hc (t.image ((↑) : s → E)) (Subtype.coe_image_subset s t) ⟨x.prop, h⟩
 
 /-- If a set is convex independent, a point in the set is not in the convex hull of the other
-points. See `convexIndependent_iff_notMem_convexHull_diff` for the indexed family version. -/
+points. See `convexIndependent_iff_notMem_convexHull_sdiff` for the indexed family version. -/
 theorem convexIndependent_set_iff_notMem_convexHull_sdiff {s : Set E} :
     ConvexIndependent 𝕜 ((↑) : s → E) ↔ ∀ x ∈ s, x ∉ convexHull 𝕜 (s \ {x}) := by
   rw [convexIndependent_set_iff_inter_convexHull_subset]

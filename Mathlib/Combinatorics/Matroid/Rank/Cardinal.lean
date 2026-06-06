@@ -37,7 +37,7 @@ both for itself and all its minors.
 It is not (provably) the case that all matroids are `InvariantCardinalRank`,
 since the equicardinality of bases in general matroids is independent of ZFC
 (see the module docstring of `Mathlib/Combinatorics/Matroid/Basic.lean`).
-Lemmas like `Matroid.Base.cardinalMk_diff_comm` become true for all matroids
+Lemmas like `Matroid.Base.cardinalMk_sdiff_comm` become true for all matroids
 only if they are weakened by replacing `Cardinal.mk` with the cruder `ℕ∞`-valued `Set.encard`.
 The `ℕ∞`-valued rank and rank functions `Matroid.eRank` and `Matroid.eRk`,
 which have a more unconditionally strong API,

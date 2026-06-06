@@ -47,7 +47,7 @@ we have the properties
 If `C` is a set ring (`MeasureTheory.IsSetRing C`), we have
 
 * `MeasureTheory.addContent_union_le`: for `s, t ∈ C`, `m (s ∪ t) ≤ m s + m t`
-* `MeasureTheory.addContent_le_diff`: for `s, t ∈ C`, `m s - m t ≤ m (s \ t)`
+* `MeasureTheory.addContent_le_sdiff`: for `s, t ∈ C`, `m s - m t ≤ m (s \ t)`
 * `IsSetRing.addContent_of_union`: a function on a ring of sets which is additive on pairs of
   disjoint sets defines an additive content
 * `addContent_iUnion_eq_sum_of_tendsto_zero`: if an additive content is continuous at `∅`, then
