@@ -377,23 +377,36 @@ theorem mapDomain_injective {f : α → β} (hf : Function.Injective f) :
 
 open Function
 
+theorem mapDomain_rightInverse {f : α → β} {g : β → α} (hf : RightInverse g f) :
+    RightInverse
+      (mapDomain g ∘ mapRange (fun b x => hf b |>.symm ▸ x) (by grind))
+      (mapDomain (M := M) f) := by
+  intro x
+  have mapDomain_congr {F : β → β} (hF : F = id) (v : Π₀ b, M (F b)) :
+      mapDomain F v =
+        mapDomain id
+          (mapRange (fun b x => (show F b = b from congrFun hF b) ▸ x) (by grind) v) := by
+    cases hF
+    congr
+    erw [mapRange_id]
+  rw [Function.comp_apply, ← mapDomain_comp]
+  rw [mapDomain_congr hf.id, mapDomain_id]
+  convert mapRange_comp _ _ _ _ _ x |>.symm
+  · simp only [Function.comp_def]
+    convert mapRange_id _ _ |>.symm <;> grind
+  · grind
+
 theorem mapDomain_surjective {f : α → β} (hf : f.Surjective) :
     (mapDomain (M := M) f).Surjective := by
-  intro x
-  let x' :  Π₀ (a : β), M (f (surjInv hf a)) :=
-    x.mapRange (fun b x => rightInverse_surjInv hf b |>.symm ▸ x) (fun b => by grind)
-  use mapDomain (surjInv hf) x'
-  rw [← mapDomain_comp]
-  rw! (castMode := .all) [(rightInverse_surjInv hf).id, mapDomain_id]
-  simp only [x']
-  generalize_proofs
-  sorry
+  obtain ⟨g, hf⟩ := hf.hasRightInverse
+  exact mapDomain_rightInverse hf |>.surjective
 
 /-- When `f` is an embedding we have an embedding `(α →₀ ℕ) ↪ (β →₀ ℕ)` given by `mapDomain`. -/
 @[simps]
 def mapDomainEmbedding (f : α ↪ β) : (Π₀ a, M (f a)) ↪ (Π₀ b, M b) :=
   ⟨DFinsupp.mapDomain f, DFinsupp.mapDomain_injective f.injective⟩
 
+section
 variable {Nb : β → Type*} [∀ b, AddCommMonoid (Nb b)]
 
 theorem mapDomain.addMonoidHom_comp_mapRange (f : α → β) (g : ∀ b, M b →+ Nb b) :
@@ -413,15 +426,7 @@ theorem mapDomain_mapRange
       map_add' := hadd b }
   DFunLike.congr_fun (mapDomain.addMonoidHom_comp_mapRange f g') v
 
--- theorem sum_update_add [AddZeroClass α] [AddCommMonoid β] (f : ι →₀ α) (i : ι) (a : α)
---     (g : ι → α → β) (hg : ∀ i, g i 0 = 0)
---     (hgg : ∀ (j : ι) (a₁ a₂ : α), g j (a₁ + a₂) = g j a₁ + g j a₂) :
---     (f.update i a).sum g + g i (f i) = f.sum g + g i a := by
---   rw [update_eq_erase_add_single, sum_add_index' hg hgg]
---   conv_rhs => rw [← DFinsupp.update_self f i]
---   rw [update_eq_erase_add_single, sum_add_index' hg hgg, add_assoc, add_assoc]
---   congr 1
---   rw [add_comm, sum_single_index (hg _), sum_single_index (hg _)]
+end
 
 theorem mapDomain_injOn [∀ i (x : M i), Decidable (x ≠ 0)]
     (S : Set α) {f : α → β} (hf : Set.InjOn f S) :
@@ -435,8 +440,12 @@ theorem mapDomain_injOn [∀ i (x : M i), Decidable (x ≠ 0)]
           exact mod_cast h
     · simp_all
 
--- theorem equivMapDomain_eq_mapDomain {M} [AddCommMonoid M] (f : α ≃ β) (l : Π₀ b, M b) :
---     equivMapDomain f l = mapDomain f l := by ext x; simp
+theorem equivCongrLeft_symm_eq_mapDomain (f : β ≃ α) (l : Π₀ a, M (f.symm a)) :
+    (DFinsupp.equivCongrLeft f).symm l = mapDomain f.symm l := by
+  ext x
+  simp [equivCongrLeft]
+  grind
+
 
 end MapDomain
 
