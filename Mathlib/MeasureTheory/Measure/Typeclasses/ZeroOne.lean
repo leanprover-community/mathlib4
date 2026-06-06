@@ -103,10 +103,6 @@ lemma exists_eq_dirac_of_measurableAtom_eq_iInter [NeZero μ] [∀ (A : Set α),
     {A : ℕ → Set α} (hA : ∀ n, MeasurableSet (A n))
     (hA_atom : ∀ x, measurableAtom x = ⋂ n, if x ∈ A n then A n else (A n)ᶜ) :
     ∃ x₀, μ = Measure.dirac x₀ := by
-  have : IsProbabilityMeasure μ := by
-    rcases IsZeroOrProbabilityMeasure.measure_univ (μ := μ) with (h | h)
-    · simp_all
-    · exact ⟨h⟩
   let B := fun n => if h : μ (A n) = 1 then A n else (A n)ᶜ
   have mBn : MeasurableSet (⋂ n, B n) := by
     refine MeasurableSet.iInter fun n ↦ ?_
