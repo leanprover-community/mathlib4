@@ -148,6 +148,7 @@ noncomputable def iso (a : A) :
         F.commShiftIso a ≪≫
         isoWhiskerRight (Lifting.iso L W F F').symm _ ≪≫ Functor.associator _ _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma iso_hom_app (a : A) (X : C) :
     (commShiftOfLocalization.iso L W F F' a).hom.app (L.obj X) =
@@ -157,6 +158,7 @@ lemma iso_hom_app (a : A) (X : C) :
           (shiftFunctor E a).map ((Lifting.iso L W F F').inv.app X) := by
   simp [commShiftOfLocalization.iso]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma iso_inv_app (a : A) (X : C) :
     (commShiftOfLocalization.iso L W F F' a).inv.app (L.obj X) =
@@ -168,6 +170,7 @@ lemma iso_inv_app (a : A) (X : C) :
 
 end commShiftOfLocalization
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- In the context of localization of categories, if a functor
 is induced by a functor which commutes with the shift, then
@@ -233,6 +236,7 @@ lemma commShiftOfLocalization_iso_inv_app (a : A) (X : C) :
 
 end Functor
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance NatTrans.commShift_iso_hom_of_localization :
     letI := Functor.commShiftOfLocalization L W A F F'
@@ -276,6 +280,7 @@ noncomputable def commShift : G.CommShift M := by
   letI : Localization.Lifting L₁ W₁ (Φ.functor ⋙ L₂) G := ⟨e.symm⟩
   exact Functor.commShiftOfLocalization L₁ W₁ M (Φ.functor ⋙ L₂) G
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma commShift_iso_hom_app (m : M) (X : C₁) :
     letI := Φ.commShift M L₁ L₂ G e
@@ -286,6 +291,7 @@ lemma commShift_iso_hom_app (m : M) (X : C₁) :
   simp [Functor.commShiftOfLocalization_iso_hom_app,
     Functor.commShiftIso_comp_hom_app]
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma commShift_iso_inv_app (m : M) (X : C₁) :
     letI := Φ.commShift M L₁ L₂ G e
@@ -296,6 +302,7 @@ lemma commShift_iso_inv_app (m : M) (X : C₁) :
   simp [Functor.commShiftOfLocalization_iso_inv_app,
     Functor.commShiftIso_comp_inv_app]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma natTransCommShift_hom :
     letI := Φ.commShift M L₁ L₂ G e

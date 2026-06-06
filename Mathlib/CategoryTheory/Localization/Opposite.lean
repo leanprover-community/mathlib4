@@ -59,6 +59,7 @@ instance IsLocalization.op : L.op.IsLocalization W.op :=
   IsLocalization.of_equivalence_target W.Q.op W.op L.op (Localization.equivalenceFromModel L W).op
     (NatIso.op (Localization.qCompEquivalenceFromModelFunctorIso L W).symm)
 
+set_option backward.defeqAttrib.useBackward true in
 instance IsLocalization.unop (L : Cᵒᵖ ⥤ Dᵒᵖ) (W : MorphismProperty Cᵒᵖ)
     [L.IsLocalization W] : L.unop.IsLocalization W.unop :=
   have : CatCommSq (opOpEquivalence C).functor L.op L.unop

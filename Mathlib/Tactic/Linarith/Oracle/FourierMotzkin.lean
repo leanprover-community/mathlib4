@@ -171,6 +171,7 @@ additional fields of `PComp`.
   with `elim_var` inserted.
 * The implicitly eliminated variables of `c1 + c2` are those that appear in
   `vars` but not `c.vars` or `effective`.
+
 (Note that the description of the implicitly eliminated variables of `c1 + c2` in the algorithm
 described in Section 6 of https://doi.org/10.1016/B978-0-444-88771-9.50019-2 seems to be wrong:
 that says it should be `(c1.implicit.union' c2.implicit).sdiff explicit`.
