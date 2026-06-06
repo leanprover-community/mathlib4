@@ -450,7 +450,7 @@ instance : Monoid.FG (𝓞 K)ˣ := by
   rw [Monoid.fg_iff_add_fg, ← AddGroup.fg_iff_addMonoid_fg, ← Module.Finite.iff_addGroup_fg]
   infer_instance
 
-    finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
+theorem finrank_modTorsion : Module.finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
   rw [← LinearEquiv.finrank_eq (logEmbeddingEquiv K).symm, unitLattice_rank]
 
 @[deprecated (since := "2026-06-05")]
