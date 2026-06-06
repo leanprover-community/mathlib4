@@ -716,7 +716,6 @@ lemma AnalyticOnNhd.zpow_nonneg {f : E → 𝕝} {s : Set E} {n : ℤ} (hf : Ana
   simp_rw [(Eq.symm (Int.toNat_of_nonneg hn) : n = OfNat.ofNat n.toNat), zpow_ofNat]
   apply pow hf
 
-
 /-!
 ### Composition with a linear map
 -/
@@ -739,7 +738,7 @@ theorem HasFPowerSeriesWithinOnBall.compContinuousLinearMap
     simp only [ENNReal.div_pos_iff, ne_eq, enorm_ne_top, not_false_eq_true, and_true]
     exact pos_iff_ne_zero.mp hf.r_pos
   hasSum hy1 hy2 := by
-    convert hf.hasSum _ _
+    convert! hf.hasSum _ _
     · simp
     · simp only [Set.mem_insert_iff, add_eq_left, Set.mem_preimage, map_add] at hy1 ⊢
       rcases hy1 with (hy1 | hy1) <;> simp [hy1]
@@ -889,18 +888,16 @@ lemma analyticAt_inverse_one_sub [HasSummableGeomSeries A] :
   ⟨_, ⟨_, hasFPowerSeriesOnBall_inverse_one_sub 𝕜 A⟩⟩
 
 /-- The alternating geometric series `1 - x + x ^ 2 - ...` as a `FormalMultilinearSeries`. -/
-def formalMultilinearSeries_geometric_alternating : FormalMultilinearSeries 𝕜 A A :=
+def geometricAlternatingSeries : FormalMultilinearSeries 𝕜 A A :=
   .ofScalars A fun n ↦ (-1 : 𝕜) ^ n
 
-lemma formalMultilinearSeries_geometric_alternating_eq_formalMultilinearSeries_geometric_comp_neg :
-    formalMultilinearSeries_geometric_alternating 𝕜 A =
+lemma geometricAlternatingSeries_eq_formalMultilinearSeries_geometric_comp_neg :
+    geometricAlternatingSeries 𝕜 A =
     (formalMultilinearSeries_geometric 𝕜 A).compContinuousLinearMap
       (-ContinuousLinearMap.id 𝕜 A) := by
   ext n v
-  have : ((-ContinuousLinearMap.id 𝕜 A : A →L[𝕜] A) : A → A) = Neg.neg (α := A) := by
-   ext
-   simp
-  simp only [formalMultilinearSeries_geometric_alternating, FormalMultilinearSeries.ofScalars,
+  have : ((-ContinuousLinearMap.id 𝕜 A : A →L[𝕜] A) : A → A) = Neg.neg := by ext; simp
+  simp only [geometricAlternatingSeries, FormalMultilinearSeries.ofScalars,
     ContinuousMultilinearMap.smul_apply, ContinuousMultilinearMap.mkPiAlgebraFin_apply,
     formalMultilinearSeries_geometric_eq_ofScalars,
     FormalMultilinearSeries.compContinuousLinearMap_apply, one_smul, this, ← List.map_ofFn,
@@ -909,35 +906,34 @@ lemma formalMultilinearSeries_geometric_alternating_eq_formalMultilinearSeries_g
   · simp [h.neg_one_pow]
   · simp [h.neg_one_pow]
 
-lemma formalMultilinearSeries_geometric_alternating_apply_norm_le (n : ℕ) :
-    ‖formalMultilinearSeries_geometric_alternating 𝕜 A n‖ ≤ max 1 ‖(1 : A)‖ := by
-  simpa [formalMultilinearSeries_geometric_alternating] using
+lemma geometricAlternatingSeries_apply_norm_le (n : ℕ) :
+    ‖geometricAlternatingSeries 𝕜 A n‖ ≤ max 1 ‖(1 : A)‖ := by
+  simpa [geometricAlternatingSeries] using
     ContinuousMultilinearMap.norm_mkPiAlgebraFin_le
 
-lemma formalMultilinearSeries_geometric_alternating_apply_norm [NormOneClass A] (n : ℕ) :
-    ‖formalMultilinearSeries_geometric_alternating 𝕜 A n‖ = 1 := by
-  simp [formalMultilinearSeries_geometric_alternating]
+lemma geometricAlternatingSeries_apply_norm [NormOneClass A] (n : ℕ) :
+    ‖geometricAlternatingSeries 𝕜 A n‖ = 1 := by
+  simp [geometricAlternatingSeries]
 
-lemma one_le_formalMultilinearSeries_geometric_alternating_radius [Nontrivial A] :
-    1 ≤ (formalMultilinearSeries_geometric_alternating 𝕜 A).radius := by
+lemma one_le_geometricAlternatingSeries_radius [Nontrivial A] :
+    1 ≤ (geometricAlternatingSeries 𝕜 A).radius := by
   simpa only [FormalMultilinearSeries.radius_compNeg,
-    formalMultilinearSeries_geometric_alternating_eq_formalMultilinearSeries_geometric_comp_neg]
+    geometricAlternatingSeries_eq_formalMultilinearSeries_geometric_comp_neg]
     using one_le_formalMultilinearSeries_geometric_radius 𝕜 A
 
-lemma formalMultilinearSeries_geometric_alternating_radius [NormOneClass A] :
-    (formalMultilinearSeries_geometric_alternating 𝕜 A).radius = 1 :=
+lemma geometricAlternatingSeries_radius [NormOneClass A] :
+    (geometricAlternatingSeries 𝕜 A).radius = 1 :=
   FormalMultilinearSeries.ofScalars_radius_eq_of_tendsto A _ one_ne_zero (by simp)
 
 lemma hasFPowerSeriesOnBall_inverse_one_add [HasSummableGeomSeries A] [Nontrivial A] :
     HasFPowerSeriesOnBall (fun x : A ↦ Ring.inverse (1 + x))
-      (formalMultilinearSeries_geometric_alternating 𝕜 A) 0 1 := by
-  rw [formalMultilinearSeries_geometric_alternating_eq_formalMultilinearSeries_geometric_comp_neg]
+      (geometricAlternatingSeries 𝕜 A) 0 1 := by
+  rw [geometricAlternatingSeries_eq_formalMultilinearSeries_geometric_comp_neg]
   convert_to HasFPowerSeriesOnBall ((fun x ↦ Ring.inverse (1 - x)) ∘ (-ContinuousLinearMap.id 𝕜 A))
     ((formalMultilinearSeries_geometric 𝕜 A).compContinuousLinearMap (-ContinuousLinearMap.id 𝕜 A))
     0 1
-  · ext
-    simp
-  convert HasFPowerSeriesOnBall.compContinuousLinearMap (𝕜 := 𝕜) _ (r := 1)
+  · ext; simp
+  convert HasFPowerSeriesOnBall.compContinuousLinearMap _ (r := 1)
   · simp [← ofReal_norm]
   · simpa using (hasFPowerSeriesOnBall_inverse_one_sub 𝕜 A)
 
@@ -997,8 +993,7 @@ lemma analyticAt_inv_one_sub : AnalyticAt 𝕜 (fun x : 𝕝 ↦ (1 - x)⁻¹) 0
 
 variable (𝕜 𝕝) in
 lemma hasFPowerSeriesOnBall_inv_one_add :
-    HasFPowerSeriesOnBall (fun x : 𝕝 ↦ (1 + x)⁻¹)
-    (formalMultilinearSeries_geometric_alternating 𝕜 𝕝) 0 1 := by
+    HasFPowerSeriesOnBall (fun x : 𝕝 ↦ (1 + x)⁻¹) (geometricAlternatingSeries 𝕜 𝕝) 0 1 := by
   convert hasFPowerSeriesOnBall_inverse_one_add 𝕜 𝕝
   exact Ring.inverse_eq_inv'.symm
 
