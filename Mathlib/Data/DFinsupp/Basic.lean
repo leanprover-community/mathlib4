@@ -14,9 +14,145 @@ This should be kept in sync with Finsupp where possible.
 
 @[expose] public section
 
+abbrev _root_.List.findX? {α : Type*} (p : α → Prop) [DecidablePred p] (l : List α) :
+    Option {x // p x} :=
+  l.findSome? (fun x => if h : p x then some ⟨x, h⟩ else none)
+
+namespace Multiset
+variable {α : Type*} (p : α → Prop) [DecidablePred p] (hp : {x | p x}.Subsingleton)
+
+
+/-- Find the subsingleton element of `s` satisfing the condition `p`.
+
+This is like `Multiset.chooseX`, but `Option`-valued. -/
+def findX? (s : Multiset α) : Option {a : α // p a} :=
+  Quotient.recOn s (List.findX? p) fun l₁ l₂ h => by
+    induction h with
+    | nil => rfl
+    | cons x _ ih =>
+      grind
+    | swap x y l =>
+      dsimp [Set.Subsingleton] at hp
+      by_cases p x <;> by_cases p y <;> grind
+    | trans _ _ ih1 ih2 =>
+      simp only [quot_mk_to_coe, eq_rec_constant] at *
+      exact ih1.trans ih2
+
+@[simp, grind =]
+theorem findX?_coe (l : List α) :
+    (l : Multiset α).findX? p hp = l.findX? (fun a => p a) := rfl
+
+@[simp]
+theorem find?_zero : (0 : Multiset α).findX? p hp = none := rfl
+
+@[simp]
+theorem findX?_cons (a : α) (s : Multiset α) :
+    (cons a s).findX? p hp = if h : p a then some ⟨a, h⟩ else s.findX? p hp := by
+  induction s using Quotient.inductionOn
+  simp only [quot_mk_to_coe, cons_coe]
+  grind
+
+@[simp]
+theorem findX?_singleton (a : α) :
+    ({a} : Multiset α).findX? p hp = if h : p a then some ⟨a, h⟩ else none :=
+  findX?_cons _ _ _ _
+
+@[simp]
+theorem findX?_add (s t : Multiset α) :
+    (s + t).findX? p hp = (s.findX? p hp <|> t.findX? p hp) := by
+  induction s using Multiset.induction_on with
+  | empty => simp
+  | cons x s ih =>
+    rw [cons_add, findX?_cons, ih, findX?_cons]
+    split_ifs <;> simp
+
+@[simp]
+theorem mem_findX?_iff {a : {a : α // p a}} {s : Multiset α} :
+    a ∈ s.findX? p hp ↔ a.1 ∈ s := by
+  induction s using Multiset.induction_on with
+  | empty => simp
+  | cons x s ih =>
+    rw [findX?_cons]
+    dsimp [Set.Subsingleton] at hp
+    grind
+
+end Multiset
+
 namespace DFinsupp
 
 variable {ι α β γ : Type*} {M : β → Type*} {N : Type*}
+
+
+section EmbDomain
+
+variable [∀ b, Zero (M b)] [DecidableEq β]
+
+/-- Given `f : α ↪ β` and `v : α →₀ M`, `Finsupp.embDomain f v : β →₀ M`
+is the finitely supported function whose value at `f a : β` is `v a`.
+For a `b : β` outside the range of `f`, it is zero. -/
+def embDomain (f : α ↪ β) (v : Π₀ a, M (f a)) : Π₀ b, M b where
+  toFun b :=
+    let eval (s : Multiset α) :=
+      match s.findX? (fun a => f a = b) (fun _ _ hx hy => by grind) with
+      | some a => a.2 ▸ v a.1
+      | none => 0
+    v.support'.lift
+      (eval ·.1)
+      (fun ⟨s₁, hs₁⟩ ⟨s₂, hs₂⟩ => by
+        let p := fun a => f a = b
+        have hp : {x | p x}.Subsingleton := fun _ _ hx hy => by grind
+        dsimp only
+        by_cases h : ∃ a, f a = b
+        · rcases h with ⟨a, rfl⟩
+          have h_eq (s) (hs : ∀ i, i ∈ s ∨ v i = 0) : eval s = v a := by
+            dsimp [eval]
+            by_cases ha : a ∈ s
+            · have h_find : s.findX? p hp = some ⟨a, rfl⟩ := (Multiset.mem_findX?_iff p hp).mpr ha
+              rw [h_find]
+            · grind
+          rw [h_eq s₁ hs₁, h_eq s₂ hs₂]
+        · push Not at h
+          have h_eq (s) : eval s = 0 := by grind
+          rw [h_eq s₁, h_eq s₂])
+  support' :=
+    v.support'.map <| Subtype.map (Multiset.map f) fun s_outer h i => by
+      induction v.support' using Trunc.induction_on with | _ s =>
+      cases s with | _ s hs =>
+      simp only [Multiset.mem_map, toFun_eq_coe, Trunc.lift_mk]
+      have hp : {x | f x = i}.Subsingleton := fun _ _ hx hy => by grind
+      by_cases hi : ∃ a, f a = i
+      · rcases hi with ⟨a, rfl⟩
+        by_cases ha : a ∈ s_outer
+        · exact Or.inl ⟨a, ha, rfl⟩
+        · right
+          have hva : v a = 0 := (h a).resolve_left ha
+          grind
+      · right
+        grind
+
+@[simp]
+lemma embDomain_apply_self (f : α ↪ β) (v : Π₀ a, M (f a)) (a : α) :
+    embDomain f v (f a) = v a := by
+  dsimp [embDomain]
+  induction v.support' using Trunc.induction_on with | _ s_inner
+  dsimp [Trunc.lift_mk]
+  cases s_inner with | _ s hs =>
+  have hp : {x | f x = f a}.Subsingleton := fun _ _ hx hy => by grind
+  by_cases ha : a ∈ s
+  · have h_find : s.findX? _ hp = some ⟨a, rfl⟩ := (Multiset.mem_findX?_iff _ hp).mpr ha
+    rw [h_find]
+  · match hf : s.findX? _ hp with
+    | some ⟨x, hx⟩ => grind
+    | none => exact (hs a).resolve_left ha |>.symm
+
+lemma embDomain_notin_range (f : α ↪ β) (v : Π₀ a, M (f a)) {b : β} (hb : b ∉ Set.range f) :
+    embDomain f v b = 0 := by
+  dsimp [embDomain]
+  induction v.support' using Trunc.induction_on with | _ s_inner
+  dsimp [Trunc.lift_mk]
+  grind
+
+end EmbDomain
 
 section MapDomain
 
@@ -197,19 +333,20 @@ theorem sum_mapDomain_index_addMonoidHom
     ((mapDomain f s).sum fun b m => h b m) = s.sum fun a m => h (f a) m :=
   sum_mapDomain_index (fun b => (h b).map_zero) (fun b _ _ => (h b).map_add _ _)
 
--- theorem embDomain_eq_mapDomain (f : α ↪ β) (v : Π₀ b, M b) : embDomain f v = mapDomain f v := by
---   ext a
---   by_cases h : a ∈ Set.range f
---   · rcases h with ⟨a, rfl⟩
---     rw [mapDomain_apply f.injective, embDomain_apply_self]
---   · rw [mapDomain_notin_range, embDomain_notin_range] <;> assumption
+theorem embDomain_eq_mapDomain (f : α ↪ β) (v : Π₀ a, M (f a)) : embDomain f v = mapDomain f v := by
+  ext a
+  by_cases h : a ∈ Set.range f
+  · rcases h with ⟨a, rfl⟩
+    rw [mapDomain_apply f.injective, embDomain_apply_self]
+  · rw [mapDomain_notin_range, embDomain_notin_range] <;> assumption
 
 @[to_additive]
 theorem prod_mapDomain_index_inj
     [∀ i (x : M i), Decidable (x ≠ 0)] [CommMonoid N]
     {f : α → β} {s : Π₀ a, M (f a)} {h : (b : β) → M b → N} (hf : Function.Injective f) :
     (s.mapDomain f).prod h = s.prod fun a b => h (f a) b := by
-  -- rw [← Function.Embedding.coeFn_mk f hf, ← embDomain_eq_mapDomain, prod_embDomain]
+  lift f to α ↪ β using hf
+  rw [← embDomain_eq_mapDomain]
   sorry
 
 theorem mapDomain_injective {f : α → β} (hf : Function.Injective f) :
