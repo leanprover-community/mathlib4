@@ -71,9 +71,11 @@ lemma CountableSupClosed.of_iSup_mem [CompleteLattice α]
 
 @[to_dual]
 lemma CountableSupClosed.sSup_mem [CompleteLattice α] (hs : CountableSupClosed s)
-    (A : Set α) [Countable A] [Nonempty A] (hA : ∀ a ∈ A, a ∈ s) :
+    (A : Set α) (hA_c : A.Countable) (hA_ne : A.Nonempty) (hA : ∀ a ∈ A, a ∈ s) :
     sSup A ∈ s := by
   rw [sSup_eq_iSup']
+  have : Countable A := hA_c
+  have : Nonempty A := nonempty_coe_sort.mpr hA_ne
   exact hs.iSup_mem fun a ↦ hA a a.2
 
 @[to_dual]
