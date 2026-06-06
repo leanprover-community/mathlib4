@@ -73,10 +73,10 @@ lemma isPrincipal_of_exists_mul_ne_zero_isPrincipal
   apply dvd_mul_of_dvd_left
   suffices x ∣ normalize b * g from this.trans ((associated_normalize b).mul_right g).dvd'
   -- Show `x ∣ b * g` by proving `x ∣ b * c` for all `b ∈ J` and `c ∈ T`.
-  rw [← Finset.gcd_mul_left, Finset.dvd_gcd_iff]
+  rw [← (Finset.gcd_mul_left' ..).dvd_iff_dvd_right, Finset.dvd_gcd_iff]
   intro c hc
-  rw [← mem_span_singleton, span, ← hJK]
-  exact mul_mem_mul hb (hTK hc)
+  rw [← mem_span_singleton, span, ← hJK, normalize]
+  exact mul_mem_mul (J.mul_mem_right _ hb) (hTK hc)
 
 /-- In a normalized GCD domain, an integral ideal that is invertible as a fractional ideal
 is principal.
@@ -126,6 +126,5 @@ instance subsingleton_classGroup : Subsingleton (ClassGroup R) := by
   intro I
   exact ClassGroup.mk_eq_one_iff.mpr
     (isPrincipal_fractionalIdeal_of_isUnit I)
-
 
 end NormalizedGCDMonoid
