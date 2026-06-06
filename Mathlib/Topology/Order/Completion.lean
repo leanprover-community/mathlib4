@@ -38,7 +38,7 @@ open Set
 variable {α : Type*} [LinearOrder α]
 
 theorem DedekindCut.continuous_principal [TopologicalSpace α] [OrderTopology α]
-  [TopologicalSpace (DedekindCut α)] [OrderTopology (DedekindCut α)] :
+    [TopologicalSpace (DedekindCut α)] [OrderTopology (DedekindCut α)] :
     Continuous (fun a : α ↦ principal a) := by
   rw [OrderTopology.continuous_iff]
   refine fun c ↦ ⟨?_, ?_⟩
