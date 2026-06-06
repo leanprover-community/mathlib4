@@ -46,9 +46,7 @@ lemma isNilpotent_tensor_residueField_iff
   · have := (algebraMap R (A ⊗[R] I.ResidueField)).codomain_trivial
     simp [Subsingleton.elim I ⊤, Subsingleton.elim (f ⊗ₜ[R] (1 : I.ResidueField)) 0]
   have : Module.finrank I.ResidueField (I.ResidueField ⊗[R] A) = Module.finrank R A := by
-    rw [Module.finrank_tensorProduct]
-    rw [Module.finrank_self]
-    rw [one_mul]
+    rw [Module.finrank_tensorProduct, Module.finrank_self, one_mul]
   rw [← IsNilpotent.map_iff (Algebra.TensorProduct.comm R A I.ResidueField).injective]
   simp only [Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply,
     Algebra.coe_lmul_eq_mul, Algebra.TensorProduct.comm_tmul]
