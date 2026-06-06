@@ -156,4 +156,5 @@ theorem sum_support_coeff_smul_of (a : FreeAbelianGroup X) :
   conv_lhs => rw [← Finsupp.toFreeAbelianGroup_toFinsupp a]
   simp [Finsupp.toFreeAbelianGroup, Finsupp.sum, FreeAbelianGroup.support,
     FreeAbelianGroup.coeff, AddMonoidHom.flip_apply, smulAddHom_apply]
+
 end FreeAbelianGroup
