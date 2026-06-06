@@ -520,15 +520,15 @@ lemma Cotangent.finite (hP : P.ker.FG) :
     ← Submodule.map_top]
   exact ((Submodule.fg_top P.ker).mpr hP).map _
 
-lemma Cotangent.map_surjective_of_comap_eq {P P' : Extension R S} {f : P.Hom P'}
-    (h : Function.Surjective f) (eq : P'.ker.comap f.toRingHom = RingHom.ker f.toRingHom ⊔ P.ker) :
+lemma Cotangent.map_surjective_of_comap_eq {f : P.Hom P'} (h : Function.Surjective f)
+    (eq : P'.ker.comap f.toRingHom = RingHom.ker f.toRingHom ⊔ P.ker) :
     Function.Surjective (Cotangent.map f) := fun x ↦ by
   obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
   obtain ⟨y, y_in, hy⟩ := Ideal.exists_of_comap_eq_ker_sup _ h eq x.prop
   exact ⟨Cotangent.mk ⟨y, y_in⟩, by simp [hy]⟩
 
-lemma Cotangent.map_ker_of_surjective {P P' : Extension R S} {f : P.Hom P'}
-    (h : Function.Surjective f) (eq : P'.ker.comap f.toRingHom = RingHom.ker f.toRingHom ⊔ P.ker) :
+lemma Cotangent.map_ker_of_surjective {f : P.Hom P'} (h : Function.Surjective f)
+    (eq : P'.ker.comap f.toRingHom = RingHom.ker f.toRingHom ⊔ P.ker) :
     (Cotangent.map f).ker.restrictScalars P.Ring =
       (Submodule.comap P.ker.subtype (RingHom.ker f.toRingHom ⊓ P.ker)).map Cotangent.mk := by
   have eq_map := Ideal.eq_map_of_comap_eq_ker_sup _ h eq

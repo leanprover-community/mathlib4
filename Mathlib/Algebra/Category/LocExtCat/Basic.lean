@@ -115,16 +115,12 @@ def toOfQuot (A : LocExtCat Λ k) (I : Ideal A) [Nontrivial (A ⧸ I)] : A ⟶ A
 lemma ker_toRingHom_toOfQuot [Nontrivial (A ⧸ I)] :
     RingHom.ker (A.toOfQuot I).hom.toRingHom = I := Ideal.mk_ker
 
-@[simp]
-lemma ker_toAlgHom_toOfQuot [Nontrivial (A ⧸ I)] : RingHom.ker (A.toOfQuot I).toAlgHom = I :=
-  Ideal.mk_ker
-
-lemma toalghom_toOfQuot_surjective (I) [Nontrivial (A ⧸ I)] :
+lemma toAlgHom_toOfQuot_surjective (I : Ideal A) [Nontrivial (A ⧸ I)] :
     Surjective (A.toOfQuot I).toAlgHom := Ideal.Quotient.mk_surjective
 
 theorem map_toAlgHom_toOfQuot_maximalIdeal_eq [Nontrivial (A ⧸ I)] :
     (maximalIdeal A).map (A.toOfQuot I).toAlgHom = maximalIdeal (A.ofQuot I) :=
-  map_maximalIdeal_of_surjective _ (A.toalghom_toOfQuot_surjective I)
+  map_maximalIdeal_of_surjective _ Ideal.Quotient.mk_surjective
 
 /-- The morphism between `A.ofQuot I` and `B.ofQuot J` induced by a morphism `f : A ⟶ B`. -/
 def mapOfQuot (f : A ⟶ B) {J : Ideal B} [Nontrivial (A ⧸ I)] [Nontrivial (B ⧸ J)]

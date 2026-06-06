@@ -69,7 +69,7 @@ lemma coe_of (X : Extension.{u} Λ k) [IsLocalRing X.Ring] [IsArtinianRing X.Rin
 
 /-- The object in `BaseCat` obtained from the quotient by a proper ideal. -/
 def ofQuot (A : BaseCat Λ k) (I : Ideal A) [Nontrivial (A ⧸ I)] : BaseCat Λ k :=
-  ⟨A.obj.ofQuot I, (A.obj.toalghom_toOfQuot_surjective I).isArtinianRing⟩
+  ⟨A.obj.ofQuot I, (A.obj.toAlgHom_toOfQuot_surjective I).isArtinianRing⟩
 
 /-- Upgrades the canonical quotient map `A → A ⧸ I` to a morphism in `BaseCat`. -/
 abbrev toOfQuot (A : BaseCat Λ k) (I : Ideal A) [Nontrivial (A ⧸ I)] :
@@ -103,7 +103,7 @@ abbrev mapInfinitesimal (m n : ℕ) [NeZero m] [NeZero n] (hmn : n ≤ m) (f : A
 the extended maximal ideal of `Λ`, viewed as an object in `BaseCat`. -/
 abbrev specialFiber [IsLocalRing Λ] [Algebra.IsIntegral Λ k] (A : BaseCat Λ k) :
     BaseCat Λ k :=
-  ⟨A.obj.specialFiber, (A.obj.toalghom_toOfQuot_surjective _).isArtinianRing⟩
+  ⟨A.obj.specialFiber, (A.obj.toAlgHom_toOfQuot_surjective _).isArtinianRing⟩
 
 /-- The canonical morphism from `A` to its special fiber in `BaseCat`. -/
 abbrev toSpecialFiber [IsLocalRing Λ] [Algebra.IsIntegral Λ k] (A : BaseCat Λ k) :
@@ -150,9 +150,9 @@ theorem IsSmallExtension.toOfQuot_span_singleton (A : BaseCat Λ k) (x : A)
     [Nontrivial (A ⧸ (Ideal.span {x}))] (h : ∀ y ∈ maximalIdeal A, x * y = 0) :
     IsSmallExtension (A.toOfQuot (Ideal.span {x})) := by
   rw [isSmallExtenstion_iff]
-  refine ⟨A.obj.toalghom_toOfQuot_surjective _, x, ?_, h⟩
-  change _ = RingHom.ker (A.obj.toOfQuot (Ideal.span {x})).toAlgHom
-  rw [LocExtCat.ker_toAlgHom_toOfQuot]
+  refine ⟨A.obj.toAlgHom_toOfQuot_surjective _, x, ?_, h⟩
+  change _ = RingHom.ker (A.obj.toOfQuot (Ideal.span {x})).hom.toRingHom
+  rw [LocExtCat.ker_toRingHom_toOfQuot]
 
 open Submodule in
 @[elab_as_elim, stacks 06GE]
@@ -233,7 +233,7 @@ instance IsMinimallySurjective.comp (f : A ⟶ B) (g : B ⟶ C) [IsMinimallySurj
 theorem isMinimallySurjective_toOfQuot_of_le {I : Ideal A} [Nontrivial (A ⧸ I)]
     (h : I ≤ maximalIdeal A ^ 2) : IsMinimallySurjective (A.toOfQuot I) := by
   rw [← LocExtCat.mapcotangent_toOfQuot_bijective_iff] at h
-  refine ⟨A.obj.toalghom_toOfQuot_surjective I, fun {C} g hg ↦ ?_⟩
+  refine ⟨A.obj.toAlgHom_toOfQuot_surjective I, fun {C} g hg ↦ ?_⟩
   apply LocExtCat.surjective_of_mapcotangent_surjective
   apply Surjective.of_comp_left (f := LocExtCat.mapCotangent (A.obj.toOfQuot I))
   · rw [← LinearMap.coe_comp, ← LocExtCat.mapCotangent_comp]
@@ -319,31 +319,31 @@ theorem isMinimallySurjective_iff_isMinimallySurjective_mapOfQuot (f : A ⟶ B) 
   · apply Surjective.of_comp (g := (A.toOfQuot I).hom.toAlgHom)
     rw [← AlgHom.coe_comp, ← LocExtCat.toAlgHom_comp, ← comp_hom, toOfQuot_comp_mapOfQuot,
       comp_hom, ObjectProperty.homMk_hom, LocExtCat.toAlgHom_comp, AlgHom.coe_comp]
-    exact Surjective.comp (B.obj.toalghom_toOfQuot_surjective J) h.surjective
-  · let C' := ofPullback g (A.toOfQuot I) (A.obj.toalghom_toOfQuot_surjective I)
-    let p : C' ⟶ C := pullbackFst g (A.toOfQuot I) (A.obj.toalghom_toOfQuot_surjective I)
+    exact Surjective.comp (B.obj.toAlgHom_toOfQuot_surjective J) h.surjective
+  · let C' := ofPullback g (A.toOfQuot I) (A.obj.toAlgHom_toOfQuot_surjective I)
+    let p : C' ⟶ C := pullbackFst g (A.toOfQuot I) (A.obj.toAlgHom_toOfQuot_surjective I)
     apply Surjective.of_comp (g := p.hom.toAlgHom)
     rw [← AlgHom.coe_comp, ← LocExtCat.toAlgHom_comp, ← comp_hom, pullback_comm_sq, comp_hom,
       LocExtCat.toAlgHom_comp, AlgHom.coe_comp]
-    refine Surjective.comp (A.obj.toalghom_toOfQuot_surjective I) ?_
+    refine Surjective.comp (A.obj.toAlgHom_toOfQuot_surjective I) ?_
     apply isMinimallySurjective_toOfQuot_of_le at hJ
     apply IsMinimallySurjective.surjective_of_comp_left (f ≫ B.toOfQuot J)
     rw [← toOfQuot_comp_mapOfQuot (I := I) f hf, Category.assoc', ← pullback_comm_sq,
       Category.assoc, comp_hom, LocExtCat.toAlgHom_comp, AlgHom.coe_comp]
-    exact hg.comp (LocExtCat.surjective_pullbackFst _ _ (A.obj.toalghom_toOfQuot_surjective I))
+    exact hg.comp (LocExtCat.surjective_pullbackFst _ _ (A.obj.toAlgHom_toOfQuot_surjective I))
   · apply LocExtCat.surjective_of_mapcotangent_surjective
     apply Surjective.of_comp_left (f := LocExtCat.mapCotangent (B.toOfQuot J).hom)
     · rw [← LinearMap.coe_comp, ← LocExtCat.mapCotangent_comp, ← comp_hom,
         ← toOfQuot_comp_mapOfQuot (I := I) f hf, comp_hom, LocExtCat.mapCotangent_comp,
         LinearMap.coe_comp]
       exact Surjective.comp (LocExtCat.mapcotangent_surjective_of_surjective h.surjective)
-        (LocExtCat.mapcotangent_surjective_of_surjective (A.obj.toalghom_toOfQuot_surjective I))
+        (LocExtCat.mapcotangent_surjective_of_surjective (A.obj.toAlgHom_toOfQuot_surjective I))
     · exact ((LocExtCat.mapcotangent_toOfQuot_bijective_iff J).mpr hJ).injective
   · apply isMinimallySurjective_toOfQuot_of_le at hI
     apply IsMinimallySurjective.surjective_of_comp_left (A.toOfQuot I ≫ mapOfQuot f hf)
     rw [toOfQuot_comp_mapOfQuot, Category.assoc', comp_hom, LocExtCat.toAlgHom_comp,
       AlgHom.coe_comp]
-    exact (B.obj.toalghom_toOfQuot_surjective J).comp hg
+    exact (B.obj.toAlgHom_toOfQuot_surjective J).comp hg
 
 end IsLocalRing
 
