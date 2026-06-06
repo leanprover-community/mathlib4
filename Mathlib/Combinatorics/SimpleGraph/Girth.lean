@@ -24,7 +24,7 @@ cycle, they give `0` or `∞` respectively if the graph is acyclic.
 @[expose] public section
 
 namespace SimpleGraph
-variable {α : Type*} {G : SimpleGraph α}
+variable {α β : Type*} {G : SimpleGraph α} {G' : SimpleGraph β}
 
 section egirth
 
@@ -80,6 +80,18 @@ theorem egirth_top (h : 3 ≤ ENat.card α) : egirth (⊤ : SimpleGraph α) = 3 
   grw [egirth_le_length this]
   simp [w]
 
+@[gcongr]
+lemma IsContained.egirth_le (h : G ⊑ G') : G'.egirth ≤ G.egirth := by
+  by_cases hacyc : G.IsAcyclic
+  · simp [hacyc.egirth_eq_top]
+  obtain ⟨a, w, hw, hwl⟩ := exists_egirth_eq_length.mpr hacyc
+  rw [hwl, ← w.length_map h.some.toHom]
+  exact egirth_le_length <| hw.map h.some.injective
+
+@[gcongr]
+lemma Iso.egirth_eq (f : G ≃g G') : G.egirth = G'.egirth :=
+  le_antisymm f.isContained'.egirth_le f.isContained.egirth_le
+
 end egirth
 
 section girth
@@ -118,6 +130,12 @@ lemma exists_girth_eq_length :
 
 theorem girth_top (h : 3 ≤ ENat.card α) : girth (⊤ : SimpleGraph α) = 3 := by
   simp [girth, egirth_top h]
+
+lemma IsContained.girth_le (h : G ⊑ G') (hG : ¬G.IsAcyclic) : G'.girth ≤ G.girth :=
+  ENat.toNat_le_toNat h.egirth_le <| egirth_eq_top.not.mpr hG
+
+lemma Iso.girth_eq (f : G ≃g G') : G.girth = G'.girth := by
+  simp [girth, f.egirth_eq]
 
 end girth
 

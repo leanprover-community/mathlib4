@@ -16,7 +16,7 @@ This file proves additional properties about the *canonical* homomorphism from
 the natural numbers into an additive monoid with a one (`Nat.cast`).
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

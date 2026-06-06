@@ -73,7 +73,7 @@ for a discussion about this notation, and whether to enable it globally (note th
 currently global but broken, hence actually only works locally).
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MulZeroClass
 
@@ -459,7 +459,7 @@ theorem MulPosMono.toMulPosReflectLT [MulPosMono α] : MulPosReflectLT α where
   elim := (covariant_le_iff_contravariant_lt _ _ _).1
     fun a _b _c hbc ↦ mul_le_mul_of_nonneg_right hbc a.2
 
-/- TODO: Currently, only one in four of the above are made instances; we could consider making
+/-! TODO: Currently, only one in four of the above are made instances; we could consider making
   both directions of `covariant_le_iff_contravariant_lt` and `covariant_lt_iff_contravariant_le`
   instances, then all of the above become redundant instances, but there are performance issues. -/
 

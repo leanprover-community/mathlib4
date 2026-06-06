@@ -12,7 +12,7 @@ public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 # Instances for the range submonoid of a monoid with zero hom
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ring
 
