@@ -137,7 +137,7 @@ theorem toAddEquiv_reindexLinearEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') :
     reindexLinearEquiv R A eₘ eₙ = reindexAddEquiv A eₘ eₙ :=
   rfl
 
-@[deprecated "Use `by simp` instead." (since := "2026-06-06")]
+@[deprecated coe_reindexLinearEquiv (since := "2026-06-06")]
 theorem reindexLinearEquiv_apply (eₘ : m ≃ m') (eₙ : n ≃ n') (M : Matrix m n A) :
     reindexLinearEquiv R A eₘ eₙ M = reindex eₘ eₙ M := by
   simp
@@ -230,7 +230,7 @@ theorem toLinearEquiv_reindexAlgEquiv (e : m ≃ n) :
     reindexAlgEquiv R A e = reindexLinearEquiv R A e e :=
   rfl
 
-@[deprecated "Use `by simp` instead." (since := "2026-06-06")]
+@[deprecated coe_reindexAlgEquiv (since := "2026-06-06")]
 theorem reindexAlgEquiv_apply (e : m ≃ n) (M : Matrix m m A) :
     reindexAlgEquiv R A e M = reindex e e M := by
   simp
