@@ -142,8 +142,7 @@ def hFunctor (i : ι) : HomologyPretheory.{u} C c ⥤ TopCat.{u} ⥤ C where
 instance (f : HP ⟶ HP') [IsIso f] (i : ι) : IsIso (f.hom i) :=
   inferInstanceAs (IsIso ((HomologyPretheory.hFunctor i).map f))
 
-variable {C : Type v} [Category C] [Limits.HasZeroMorphisms C] {ι : Type*} {c : ComplexShape ι}
-  (HP HP' : HomologyPretheory.{u} C c)
+variable (HP HP' : HomologyPretheory.{u} C c)
 
 /-- A `HomologyPretheory` is homotopy-invariant if its homology functor `Hₚ` takes homotopic maps to
 the same map in homology -/
