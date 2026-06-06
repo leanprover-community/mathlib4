@@ -212,7 +212,7 @@ theorem tendsto_pow_atTop_nhds_zero_of_lt_one {𝕜 : Type*}
         obtain ⟨n, hn⟩ := (pow_unbounded_of_one_lt b (lt_of_le_of_ne (le_of_not_gt hr_le) hr))
         exact ⟨n, le_of_lt hn⟩
       · simpa only [← abs_pow]
-  · simpa only [← abs_pow] using (tendsto_pow_atTop_nhds_zero_of_lt_one (abs_nonneg r)) h
+  · simpa only [← abs_pow] using! (tendsto_pow_atTop_nhds_zero_of_lt_one (abs_nonneg r)) h
 
 theorem tendsto_pow_atTop_nhdsWithin_zero_of_lt_one {𝕜 : Type*}
     [Semifield 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [ExistsAddOfLE 𝕜]
@@ -358,7 +358,7 @@ theorem tsum_geometric_inv_two_ge (n : ℕ) :
     (∑' i, ite (n ≤ i) ((2 : ℝ)⁻¹ ^ i) 0) = 2 * 2⁻¹ ^ n := by
   have A : Summable fun i : ℕ ↦ ite (n ≤ i) ((2⁻¹ : ℝ) ^ i) 0 := by
     simpa only [← piecewise_eq_indicator, one_div]
-      using summable_geometric_two.indicator {i | n ≤ i}
+      using! summable_geometric_two.indicator {i | n ≤ i}
   have B : ((Finset.range n).sum fun i : ℕ ↦ ite (n ≤ i) ((2⁻¹ : ℝ) ^ i) 0) = 0 :=
     Finset.sum_eq_zero fun i hi ↦
       ite_eq_right_iff.2 fun h ↦ (lt_irrefl _ ((Finset.mem_range.1 hi).trans_le h)).elim
