@@ -346,7 +346,7 @@ Let `D` be the decomposition field of `P` in `L/K`. Let `𝓟D` be a prime ideal
 then `𝓟D` is unramified over `K`.
 -/
 theorem ramificationIdx_eq (hp : p ≠ ⊥) :
-    ramificationIdx (algebraMap A 𝓞D) p 𝓟D = 1 := by
+    ramificationIdx p 𝓟D = 1 := by
   have : Module.Finite 𝓞D B := Module.Finite.right A 𝓞D B
   have : Module.IsTorsionFree 𝓞D B := by
     rw [Module.isTorsionFree_iff_faithfulSMul]
