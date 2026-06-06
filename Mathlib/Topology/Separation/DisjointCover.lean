@@ -144,10 +144,10 @@ lemma exists_finite_approximation_of_mem_nhds_diagonal (hS : S ∈ nhdsSet (diag
   have h_uniq (x) : ∃! i, x ∈ E i := by
     refine match mem_iUnion.mp (hEuniv <| mem_univ x) with
       | ⟨i, hi⟩ => ⟨i, hi, fun j hj ↦ hEdis.eq ?_⟩
-    simpa [← Clopens.coe_disjoint, not_disjoint_iff] using ⟨x, hj, hi⟩
+    simpa [← Clopens.coe_disjoint, not_disjoint_iff] using! ⟨x, hj, hi⟩
   choose g hg hg' using h_uniq -- for each `x`, `g x` is the unique `i` such that `x ∈ E i`
   have h_ex (i) : ∃ x, x ∈ E i := by
-    simpa [← SetLike.coe_set_eq, ← nonempty_iff_ne_empty] using hEne i
+    simpa [← SetLike.coe_set_eq, ← nonempty_iff_ne_empty] using! hEne i
   choose r hr using h_ex -- for each `i`, choose an `r i ∈ E i`
   refine ⟨n, g, f ∘ r, continuous_discrete_rng.mpr fun j ↦ ?_, fun x ↦ (hES _) _ (hg _) _ (hr _)⟩
   convert! (E j).isOpen
