@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.CharP.Basic
 public import Mathlib.Algebra.CharP.Lemmas
-public import Mathlib.Data.Fintype.Units
+public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 public import Mathlib.GroupTheory.OrderOfElement
 
 /-!
