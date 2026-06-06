@@ -92,7 +92,7 @@ This is a prefered way to apply residue maps in `LocExtCat`. -/
 def residue (A : LocExtCat Λ k) : A →ₐ[Λ] k :=
   IsScalarTower.toAlgHom Λ A k
 
-lemma residue_toRingHom : A.residue = algebraMap A k := rfl
+lemma coe_residue : A.residue = algebraMap A k := rfl
 
 lemma residue_apply {a : A} : A.residue a = algebraMap A k a := rfl
 
