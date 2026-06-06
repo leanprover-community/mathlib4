@@ -174,14 +174,12 @@ def modCases (h : TSyntax `Lean.binderIdent) (e : Q(ℕ)) (n : ℕ) : TacticM Un
 end NatMod
 
 /--
-* The tactic `mod_cases h : e % 3` will perform a case disjunction on `e`.
-  If `e : ℤ`, then it will yield subgoals containing the assumptions
-  `h : e ≡ 0 [ZMOD 3]`, `h : e ≡ 1 [ZMOD 3]`, `h : e ≡ 2 [ZMOD 3]`
-  respectively. If `e : ℕ` instead, then it works similarly, except with
-  `[MOD 3]` instead of `[ZMOD 3]`.
-* In general, `mod_cases h : e % n` works
-  when `n` is a positive numeral and `e` is an expression of type `ℕ` or `ℤ`.
-* If `h` is omitted as in `mod_cases e % n`, it will be default-named `H`.
+`mod_cases h : e % n`, where `n` is a positive numeral and `e` is an expression of type `ℕ` or `ℤ`,
+performs a case disjunction on the value of `e` modulo `n`. If `e : ℤ`, the goal is split into
+`n` subgoals containing the new hypotheses `h : e ≡ 0 [ZMOD n]`, ..., `h : e ≡ n-1 [ZMOD n]`
+respectively. If `e : ℕ` instead, then the hypotheses contain `[MOD n]` instead of `[ZMOD n]`.
+
+* `mod_cases e % n`, with `h` omitted, gives the default name `H` to the new hypotheses.
 -/
 syntax "mod_cases " (atomic(binderIdent ":"))? term:71 " % " num : tactic
 

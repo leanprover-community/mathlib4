@@ -29,10 +29,10 @@ variable {C : Type*} [Category.{v} C] [CartesianMonoidalCategory C]
 
 instance : PreservesLimitsOfShape J (shrinkYonedaMon.{max w v} (C := C)) :=
   have : PreservesLimitsOfShape J (shrinkYonedaMon ⋙ (whiskeringRight _ _ _).obj (forget MonCat)) :=
-    inferInstanceAs (PreservesLimitsOfShape J (Mon.forget C ⋙ shrinkYoneda.{max w v}))
+    (inferInstance : PreservesLimitsOfShape J (Mon.forget C ⋙ shrinkYoneda.{max w v}))
   preservesLimitsOfShape_of_reflects_of_preserves _ ((whiskeringRight _ _ _).obj (forget MonCat))
 
-/-- An auxillary construction in order to prove that `Grp.forget₂Mon` creates limits. -/
+/-- An auxiliary construction in order to prove that `Grp.forget₂Mon` creates limits. -/
 noncomputable def Grp.limitAux (F : J ⥤ Grp C) : Grp C where
   X := (limit (F ⋙ forget₂Mon C)).X
   grp := GrpObj.ofInvertible (limit (F ⋙ forget₂Mon C)).X fun X f ↦
@@ -47,7 +47,7 @@ noncomputable instance : CreatesLimitsOfShape J (forget₂Mon C) where
   CreatesLimit {F} := createsLimitOfFullyFaithfulOfIso (limitAux F) (.refl (limitAux F).toMon)
 
 noncomputable instance : CreatesLimitsOfShape J (Grp.forget C) :=
-  inferInstanceAs (CreatesLimitsOfShape J (forget₂Mon C ⋙ Mon.forget C))
+  inferInstanceAs <| CreatesLimitsOfShape J (forget₂Mon C ⋙ Mon.forget C)
 
 instance : HasLimitsOfShape J (Grp C) :=
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (Grp.forget C)

@@ -146,8 +146,6 @@ instance SpecMap_residue {X : Scheme.{u}} (x) : IsClosedImmersion (Spec.map (X.r
   IsClosedImmersion.spec_of_surjective (X.residue x)
     Ideal.Quotient.mk_surjective
 
-@[deprecated (since := "2025-10-07")] alias Spec_map_residue := SpecMap_residue
-
 instance (priority := low) {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : IsAffineHom f :=
   isAffineHom_of_isInducing _ f.isClosedEmbedding.isInducing f.isClosedEmbedding.isClosed_range
 
@@ -172,7 +170,7 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsClosedImmersion f] :
       (f := f.toImage.base) f.toImage.isEmbedding.isInducing X.presheaf x
     exact ((ConcreteCategory.isIso_iff_bijective _).mp this).1
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The category of closed subschemes is contravariantly equivalent
 to the lattice of ideal sheaves. -/
 noncomputable
@@ -216,6 +214,7 @@ lemma lift_fac {X Y Z : Scheme.{u}}
   nth_rw 2 [← f.toImage_imageι]
   simp [lift, -Scheme.Hom.toImage_imageι, g.toImage_imageι]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isIso_of_ker_eq {Z₁ Z₂ X : Scheme.{u}} (i₁ : Z₁ ⟶ X) (i₂ : Z₂ ⟶ X)
     [IsClosedImmersion i₁] [IsClosedImmersion i₂] (f : Z₁ ⟶ Z₂)
     (h : f ≫ i₂ = i₁) (h' : i₁.ker = i₂.ker) : IsIso f := by
@@ -247,7 +246,7 @@ lemma isDominant_of_of_appTop_injective [CompactSpace X]
   have : f.ker = ⊥ := Scheme.IdealSheafData.ext_of_isAffine
     (by simpa [f.ker_apply ⟨⊤, isAffineOpen_top Y⟩, ← RingHom.injective_iff_ker_eq_bot])
   exact ⟨by simpa only [Scheme.Hom.support_ker, Scheme.IdealSheafData.support_bot,
-    Closeds.coe_top, ← dense_iff_closure_eq] using (congr((↑($this).support : Set Y)) :)⟩
+    Closeds.coe_top, ← dense_iff_closure_eq] using! (congr((↑($this).support : Set Y)) :)⟩
 
 instance [CompactSpace X] : IsDominant X.toSpecΓ :=
   isDominant_of_of_appTop_injective (by
@@ -336,7 +335,7 @@ lemma Spec_iff {R : CommRingCat} {f : X ⟶ Spec R} :
       change f = X.isoSpec.hom ≫ Spec.map φ
       simp only [Scheme.isoSpec, asIso_hom, Spec.map_comp, ← Scheme.toSpecΓ_naturality_assoc,
         ← SpecMap_ΓSpecIso_hom, φ]
-      simp only [← Spec.map_comp, Iso.inv_hom_id, Spec.map_id, Category.comp_id]
+      simp
   · rintro ⟨I, e, rfl⟩
     infer_instance
 
@@ -354,7 +353,7 @@ instance IsClosedImmersion.isZariskiLocalAtTarget : IsZariskiLocalAtTarget @IsCl
 and being surjective on global sections. -/
 instance IsClosedImmersion.hasAffineProperty : HasAffineProperty @IsClosedImmersion
     (fun X _ f ↦ IsAffine X ∧ Function.Surjective (f.appTop)) := by
-  convert HasAffineProperty.of_isZariskiLocalAtTarget @IsClosedImmersion
+  convert! HasAffineProperty.of_isZariskiLocalAtTarget @IsClosedImmersion
   refine ⟨fun ⟨h₁, h₂⟩ ↦ of_surjective_of_isAffine _ h₂, by apply isAffine_surjective_of_isAffine⟩
 
 lemma isClosedImmersion_iff_isAffineHom {f : X ⟶ Y} :
@@ -393,7 +392,7 @@ instance (f : X ⟶ Y) (V : Y.Opens) [IsClosedImmersion f] :
 instance (priority := 900) {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsClosedImmersion f] :
     LocallyOfFiniteType f := by
   rw [HasRingHomProperty.eq_affineLocally @LocallyOfFiniteType,
-    ← and_iff_right (inferInstanceAs (IsAffineHom f)) (b := affineLocally _ _),
+    ← and_iff_right (inferInstance : IsAffineHom f) (b := affineLocally _ _),
     ← targetAffineLocally_affineAnd_iff_affineLocally RingHom.finiteType_isLocal]
   rw [HasAffineProperty.eq_targetAffineLocally @IsClosedImmersion] at h
   exact targetAffineLocally_affineAnd_le (RingHom.FiniteType.of_surjective _) _ h

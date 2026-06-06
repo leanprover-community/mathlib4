@@ -120,6 +120,6 @@ end LinearOrderedSemifield
 
 instance linearOrderedCommGroupWithZero [Field α] [LinearOrder α] [IsStrictOrderedRing α] :
     LinearOrderedCommGroupWithZero { x : α // 0 ≤ x } :=
-  CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero
+  fast_instance% CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero
 
 end Nonneg
