@@ -241,7 +241,7 @@ protected def _root_.Coalgebra.Repr.tmul (ℛa : Coalgebra.Repr R a ι) (ℛb : 
       ← Finset.sum_product']
 
 /-- Representations of `a` and `b` yield a representation of `a * b`. -/
-@[expose, simps! left right index] protected noncomputable
+@[expose, simps! left right index] protected
 def _root_.Coalgebra.Repr.mul {b : A} (ℛ₁ : Coalgebra.Repr R a ι) (ℛ₂ : Coalgebra.Repr R b κ) :
     Coalgebra.Repr R (a * b) (ι × κ) := (ℛ₁.tmul ℛ₂).induced (R := R) (mulCoalgHom R A)
 
