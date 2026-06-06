@@ -493,7 +493,7 @@ noncomputable instance [StrongNormalizedGCDMonoid R] : StrongNormalizedGCDMonoid
   __ : StrongNormalizationMonoid R[X] := inferInstance
 
 -- We do not add a `GCDMonoid R[X]` instance due to diamond
-instance (priority := 100) [IsGCDMonoid R] : IsGCDMonoid R[X] :=
+instance [IsGCDMonoid R] : IsGCDMonoid R[X] :=
   have := Classical.arbitrary (NormalizedGCDMonoid R); inferInstance
 
 end Polynomial
