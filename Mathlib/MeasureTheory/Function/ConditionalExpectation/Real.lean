@@ -186,7 +186,7 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
       (eLpNorm_eq_zero_iff ((stronglyMeasurable_condExp.mono (hℱ n)).aestronglyMeasurable.indicator
         (hmeas n 0)) one_ne_zero).2 ?_).trans zero_le⟩
     filter_upwards [condExp_congr_ae (m := ℱ n) hne] with x hx
-    simp only [zero_le', Set.setOf_true, Set.indicator_univ, Pi.zero_apply, hx, condExp_zero]
+    simp [hx]
   obtain ⟨δ, hδ, h⟩ := hg.eLpNorm_indicator_le le_rfl ENNReal.one_ne_top hε
   set C : ℝ≥0 := (.mk δ hδ.le)⁻¹ * (eLpNorm g 1 μ).toNNReal with hC
   have hCpos : 0 < C := mul_pos (inv_pos.2 hδ) (ENNReal.toNNReal_pos hne hg.eLpNorm_lt_top.ne)

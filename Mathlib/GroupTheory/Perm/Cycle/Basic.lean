@@ -396,14 +396,14 @@ theorem isCycle_swap_mul_aux₂ {α : Type*} [DecidableEq α] :
       rw [mul_apply, swap_apply_def]
       split_ifs <;> simp [symm_apply_eq, eq_symm_apply] at * <;> tauto
     obtain ⟨i, hi⟩ := isCycle_swap_mul_aux₁ n hb <| by
-      rw [← mul_apply, ← pow_succ]; simpa [pow_succ', eq_symm_apply] using h
+      rw [← mul_apply, ← pow_succ]; simpa [pow_succ', eq_symm_apply] using! h
     refine ⟨-i, (swap x (f⁻¹ x) * f⁻¹).injective ?_⟩
     convert! hi using 1
     · rw [zpow_neg, ← inv_zpow, ← mul_apply, mul_inv_rev, swap_inv, mul_swap_eq_swap_mul]
       simp [swap_comm _ x, ← mul_apply, -coe_mul, ← inv_def, -coe_inv, ← inv_def, mul_assoc _ f⁻¹,
         ← mul_zpow_mul, mul_assoc _ _ f]
       simp
-    · exact swap_apply_of_ne_of_ne (by simpa [eq_comm, eq_symm_apply, symm_apply_eq] using hfxb)
+    · exact swap_apply_of_ne_of_ne (by simpa [eq_comm, eq_symm_apply, symm_apply_eq] using! hfxb)
         (by simpa [eq_comm, eq_symm_apply, symm_apply_eq])
 
 theorem IsCycle.eq_swap_of_apply_apply_eq_self {α : Type*} [DecidableEq α] {f : Perm α}
@@ -745,7 +745,7 @@ theorem IsCycleOn.pow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ 
     (f ^ n) a = a ↔ #s ∣ n := by
   obtain rfl | hs := Finset.eq_singleton_or_nontrivial ha
   · rw [coe_singleton, isCycleOn_singleton] at hf
-    simpa using IsFixedPt.iterate hf n
+    simpa using! IsFixedPt.iterate hf n
   classical
     have h (x : s) : ¬f x = x := hf.apply_ne hs x.2
     have := (hf.isCycle_subtypePerm hs).orderOf
