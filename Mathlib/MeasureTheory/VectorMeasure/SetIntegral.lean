@@ -310,6 +310,33 @@ theorem exists_ne_zero_of_setIntegral_ne_zero (hU : ∫ᵛ x in t, f x ∂[B; μ
     ∃ x, x ∈ t ∧ f x ≠ 0 := by
   contrapose! hU; exact setIntegral_eq_zero_of_forall_eq_zero hU
 
+theorem setIntegral_vectorMeasure_zero (f : X → E) {s : Set X}
+    (hs : (μ.transpose B).variation s = 0) :
+    ∫ᵛ x in s, f x ∂[B; μ] = 0 := by
+  by_cases h's : MeasurableSet s; swap
+  · simp [restrict_not_measurable μ h's]
+  have : ((μ.restrict s).transpose B).variation = 0 := by
+    rw [transpose_restrict, variation_restrict h's]
+    apply Measure.restrict_eq_zero.2 hs
+  have : (μ.restrict s).transpose B = 0 := variation_eq_zero.1 this
+  simp [integral, this]
+
+theorem setIntegral_dirac' {mX : MeasurableSpace X} [CompleteSpace G]
+    (hf : StronglyMeasurable f) {s : Set X} (hs : MeasurableSet s) [Decidable (a ∈ s)] :
+    ∫ᵛ x in s, f x ∂[B; VectorMeasure.dirac a v] = if a ∈ s then B (f a) v else 0 := by
+  rw [restrict_dirac hs]
+  split_ifs
+  · exact integral_dirac' hf
+  · exact integral_zero_vectorMeasure
+
+theorem setIntegral_dirac [MeasurableSpace X] [MeasurableSingletonClass X] [CompleteSpace G]
+    {s : Set X} (hs : MeasurableSet s) [Decidable (a ∈ s)] :
+    ∫ᵛ x in s, f x ∂[B; VectorMeasure.dirac a v] = if a ∈ s then B (f a) v else 0 := by
+  rw [restrict_dirac hs]
+  split_ifs
+  · exact integral_dirac
+  · exact integral_zero_vectorMeasure
+
 theorem integral_union_eq_left_of_ae (hs : MeasurableSet s) (ht : MeasurableSet t)
     (ht_eq : ∀ᵐ x ∂(μ.transpose B).variation.restrict t, f x = 0) :
     ∫ᵛ x in s ∪ t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] := by
@@ -450,5 +477,53 @@ theorem norm_setIntegral_le_of_norm_le_const {C : ℝ}
     ∫ᵛ x in s, f x ∂[(ContinuousLinearMap.lsmul ℝ ℝ).flip; μ.toSignedMeasure]
       = ∫ x in s, f x ∂μ := by
   rw [← integral_toSignedMeasure, restrict_toSignedMeasure hs]
+
+
+/-- If `f` is integrable, then `∫ᵛ x in s, f x ∂[B; μ]` is absolutely continuous in `s`:
+it tends to zero as `(μ.transpose B).variation s` tends to zero. -/
+theorem Integrable.tendsto_setIntegral_nhds_zero {ι : Type*}
+    (hf : μ.Integrable f B) {l : Filter ι} {s : ι → Set X}
+    (hs : Tendsto ((μ.transpose B).variation ∘ s) l (𝓝 0)) :
+    Tendsto (fun i ↦ ∫ᵛ x in s i, f x ∂[B; μ]) l (𝓝 0) := by
+  rw [tendsto_zero_iff_norm_tendsto_zero]
+  simp_rw [← coe_nnnorm, ← NNReal.coe_zero, NNReal.tendsto_coe, ← ENNReal.tendsto_coe,
+    ENNReal.coe_zero]
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
+    (tendsto_setLIntegral_zero (ne_of_lt hf.2) hs) (fun i ↦ zero_le)
+  intro i
+  apply enorm_integral_le_lintegral_enorm.trans
+  apply lintegral_mono' _ le_rfl
+  rw [transpose_restrict]
+  apply variation_restrict_le
+
+
+/-- If `F i → f` in `L1`, then `∫ᵛ x in s, F i x ∂[B; μ] → ∫ᵛ x in s, f x ∂[B; μ]`. -/
+lemma tendsto_setIntegral_of_L1 {ι} (f : X → E)
+    (hfi : AEStronglyMeasurable f (μ.transpose B).variation) {F : ι → X → E}
+    {l : Filter ι} (hFi : ∀ᶠ i in l, μ.Integrable (F i) B)
+    (hF : Tendsto (fun i ↦ ∫⁻ x, ‖F i x - f x‖ₑ ∂(μ.transpose B).variation) l (𝓝 0))
+    (s : Set X) :
+    Tendsto (fun i ↦ ∫ᵛ x in s, F i x ∂[B; μ]) l (𝓝 (∫ᵛ x in s, f x ∂[B; μ])) := by
+  refine tendsto_integral_of_L1 f ?_ ?_ ?_
+  · apply hfi.mono_measure
+    grw [transpose_restrict, variation_restrict_le, Measure.restrict_le_self]
+  · filter_upwards [hFi] with i hi using hi.restrict
+  · simp_rw [← eLpNorm_one_eq_lintegral_enorm] at hF ⊢
+    apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hF (fun _ ↦ zero_le)
+      (fun i ↦ ?_)
+    apply eLpNorm_mono_measure
+    grw [transpose_restrict, variation_restrict_le]
+    apply Measure.restrict_le_self
+
+/-- If `F i → f` in `L1`, then `∫ᵛ x in s, F i x ∂[B; μ] → ∫ᵛ x in s, f x ∂[B; μ]`. -/
+lemma tendsto_setIntegral_of_L1' {ι} (f : X → E)
+    (hfi : AEStronglyMeasurable f (μ.transpose B).variation) {F : ι → X → E}
+    {l : Filter ι} (hFi : ∀ᶠ i in l, μ.Integrable (F i) B)
+    (hF : Tendsto (fun i ↦ eLpNorm (F i - f) 1 (μ.transpose B).variation) l (𝓝 0))
+    (s : Set X) :
+    Tendsto (fun i ↦ ∫ᵛ x in s, F i x ∂[B; μ]) l (𝓝 (∫ᵛ x in s, f x ∂[B; μ])) := by
+  refine tendsto_setIntegral_of_L1 f hfi hFi ?_ s
+  simp_rw [eLpNorm_one_eq_lintegral_enorm, Pi.sub_apply] at hF
+  exact hF
 
 end MeasureTheory.VectorMeasure

@@ -363,6 +363,31 @@ theorem integral_eq_zero_of_ae (hf : f =ᵐ[(μ.transpose B).variation] 0) :
     ∫ᵛ x, f x ∂[B; μ] = 0 := by
   simp [integral_congr_ae hf]
 
+@[to_fun] lemma Integrable.add (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
+    μ.Integrable (f + g) B :=
+  MeasureTheory.Integrable.add hf hg
+
+@[to_fun] lemma Integrable.neg (hf : μ.Integrable f B) :
+    μ.Integrable (-f) B :=
+  MeasureTheory.Integrable.neg hf
+
+@[to_fun] lemma Integrable.sub (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
+    μ.Integrable (f - g) B :=
+  MeasureTheory.Integrable.sub hf hg
+
+@[to_fun] lemma Integrable.smul {𝕜 : Type*} [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 E]
+    [IsBoundedSMul 𝕜 E] (c : 𝕜) (hf : μ.Integrable f B) :
+    μ.Integrable (c • f) B :=
+  MeasureTheory.Integrable.smul c hf
+
+theorem Integrable.finsetSum {ι : Type*} (s : Finset ι) {f : ι → X → E}
+    (hf : ∀ i ∈ s, μ.Integrable (f i) B) : μ.Integrable (∑ i ∈ s, f i) B :=
+  integrable_finsetSum' s hf
+
+theorem Integrable.fun_finsetSum {ι : Type*} (s : Finset ι) {f : ι → X → E}
+    (hf : ∀ i ∈ s, μ.Integrable (f i) B) : μ.Integrable (fun x ↦ ∑ i ∈ s, f i x) B :=
+  integrable_finsetSum s hf
+
 theorem integral_fun_add (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
     ∫ᵛ x, f x + g x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, g x ∂[B; μ] :=
   setToFun_add _ hf hg
@@ -403,6 +428,11 @@ variable (f μ B) in
 @[integral_simps]
 theorem integral_smul (c : ℝ) :
     ∫ᵛ x, (c • f) x ∂[B; μ] = c • ∫ᵛ x, f x ∂[B; μ] := integral_fun_smul μ B c f
+
+@[simp]
+theorem integral_const [CompleteSpace G] [IsFiniteMeasure (μ.transpose B).variation] (c : E) :
+    ∫ᵛ _ : X, c ∂[B; μ] = B c (μ univ) :=
+  setToFun_const _ _
 
 end Function
 
@@ -471,6 +501,11 @@ theorem integral_smul_vectorMeasure (f : X → E) (c : ℝ) :
     simpa using! (dominatedFinMeasAdditive_cbmApplyMeasure μ B).smul c
   rw! [← setToFun_congr_smul_measure' _ this, transpose_smul]
   rfl
+
+@[simp]
+theorem integral_smul_nnreal_vectorMeasure (f : X → E) (c : ℝ≥0) :
+    ∫ᵛ x, f x ∂[B; c • μ] = c • ∫ᵛ x, f x ∂[B; μ] :=
+  integral_smul_vectorMeasure f (c : ℝ)
 
 theorem integral_add_vectorMeasure (hμ : μ.Integrable f B) (hν : ν.Integrable f B) :
     ∫ᵛ x, f x ∂[B; μ + ν] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, f x ∂[B; ν] :=
@@ -608,7 +643,7 @@ theorem exists_ne_zero_of_integral_ne_zero
   (frequently_ae_ne_zero_of_integral_ne_zero h).exists
 
 @[simp] lemma integral_toSignedMeasure {μ : Measure X} [IsFiniteMeasure μ] {f : X → G} :
-    ∫ᵛ x, f x ∂[(ContinuousLinearMap.lsmul ℝ ℝ).flip; μ.toSignedMeasure] = ∫ x, f x ∂μ := by
+    ∫ᵛ x, f x ∂<•μ.toSignedMeasure = ∫ x, f x ∂μ := by
   rcases subsingleton_or_nontrivial G with h'G | h'G
   · apply Subsingleton.elim
   rw [integral_eq_setToFun, MeasureTheory.integral_eq_setToFun]
@@ -619,29 +654,12 @@ theorem exists_ne_zero_of_integral_ne_zero
     ContinuousLinearMap.coe_coe, weightedSMul]
   rfl
 
-/-- If `f` is integrable, then `∫ᵛ x in s, f x ∂[B; μ]` is absolutely continuous in `s`:
-it tends to zero as `(μ.transpose B).variation s` tends to zero. -/
-theorem Integrable.tendsto_setIntegral_nhds_zero {ι : Type*}
-    (hf : μ.Integrable f B) {l : Filter ι} {s : ι → Set X}
-    (hs : Tendsto ((μ.transpose B).variation ∘ s) l (𝓝 0)) :
-    Tendsto (fun i => ∫ᵛ x in s i, f x ∂[B; μ]) l (𝓝 0) := by
-  rw [tendsto_zero_iff_norm_tendsto_zero]
-  simp_rw [← coe_nnnorm, ← NNReal.coe_zero, NNReal.tendsto_coe, ← ENNReal.tendsto_coe,
-    ENNReal.coe_zero]
-  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-    (tendsto_setLIntegral_zero (ne_of_lt hf.2) hs) (fun i => zero_le)
-  intro i
-  apply enorm_integral_le_lintegral_enorm.trans
-  apply lintegral_mono' _ le_rfl
-  rw [transpose_restrict]
-  apply variation_restrict_le
-
 /-- If `F i → f` in `L1`, then `∫ᵛ x, F i x ∂[B; μ] → ∫ᵛ x, f x ∂[B; μ]`. -/
 theorem tendsto_integral_of_L1 {ι} (f : X → E)
     (hfi : AEStronglyMeasurable f (μ.transpose B).variation) {F : ι → X → E}
     {l : Filter ι} (hFi : ∀ᶠ i in l, μ.Integrable (F i) B)
-    (hF : Tendsto (fun i => ∫⁻ x, ‖F i x - f x‖ₑ ∂(μ.transpose B).variation) l (𝓝 0)) :
-    Tendsto (fun i => ∫ᵛ x, F i x ∂[B; μ]) l (𝓝 <| ∫ᵛ x, f x ∂[B; μ]) :=
+    (hF : Tendsto (fun i ↦ ∫⁻ x, ‖F i x - f x‖ₑ ∂(μ.transpose B).variation) l (𝓝 0)) :
+    Tendsto (fun i ↦ ∫ᵛ x, F i x ∂[B; μ]) l (𝓝 <| ∫ᵛ x, f x ∂[B; μ]) :=
   tendsto_setToFun_of_L1 _ f hfi hFi hF
 
 /-- If `F i → f` in `L1`, then `∫ᵛ x, F i x ∂[B; μ] → ∫ᵛ x, f x ∂[B; μ]`. -/
@@ -654,73 +672,39 @@ lemma tendsto_integral_of_L1' {ι} (f : X → E)
   simp_rw [eLpNorm_one_eq_lintegral_enorm, Pi.sub_apply] at hF
   exact hF
 
-/-- If `F i → f` in `L1`, then `∫ᵛ x in s, F i x ∂[B; μ] → ∫ᵛ x in s, f x ∂[B; μ]`. -/
-lemma tendsto_setIntegral_of_L1 {ι} (f : X → E)
-    (hfi : AEStronglyMeasurable f (μ.transpose B).variation) {F : ι → X → E}
-    {l : Filter ι} (hFi : ∀ᶠ i in l, μ.Integrable (F i) B)
-    (hF : Tendsto (fun i ↦ ∫⁻ x, ‖F i x - f x‖ₑ ∂(μ.transpose B).variation) l (𝓝 0))
-    (s : Set X) :
-    Tendsto (fun i ↦ ∫ᵛ x in s, F i x ∂[B; μ]) l (𝓝 (∫ᵛ x in s, f x ∂[B; μ])) := by
-  refine tendsto_integral_of_L1 f ?_ ?_ ?_
-  · apply hfi.mono_measure
-    grw [transpose_restrict, variation_restrict_le, Measure.restrict_le_self]
-  · filter_upwards [hFi] with i hi using hi.restrict
-  · simp_rw [← eLpNorm_one_eq_lintegral_enorm] at hF ⊢
-    apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hF (fun _ ↦ zero_le)
-      (fun i ↦ ?_)
-    apply eLpNorm_mono_measure
-    grw [transpose_restrict, variation_restrict_le]
-    apply Measure.restrict_le_self
-
-/-- If `F i → f` in `L1`, then `∫ᵛ x in s, F i x ∂[B; μ] → ∫ᵛ x in s, f x ∂[B; μ]`. -/
-lemma tendsto_setIntegral_of_L1' {ι} (f : X → E)
-    (hfi : AEStronglyMeasurable f (μ.transpose B).variation) {F : ι → X → E}
-    {l : Filter ι} (hFi : ∀ᶠ i in l, μ.Integrable (F i) B)
-    (hF : Tendsto (fun i ↦ eLpNorm (F i - f) 1 (μ.transpose B).variation) l (𝓝 0))
-    (s : Set X) :
-    Tendsto (fun i ↦ ∫ᵛ x in s, F i x ∂[B; μ]) l (𝓝 (∫ᵛ x in s, f x ∂[B; μ])) := by
-  refine tendsto_setIntegral_of_L1 f hfi hFi ?_ s
-  simp_rw [eLpNorm_one_eq_lintegral_enorm, Pi.sub_apply] at hF
-  exact hF
-
 variable {Y : Type*} [TopologicalSpace Y] [FirstCountableTopology Y]
 
 theorem continuousWithinAt_of_dominated {F : Y → X → E} {x₀ : Y} {bound : X → ℝ} {s : Set Y}
     (hF_meas : ∀ᶠ x in 𝓝[s] x₀, AEStronglyMeasurable (F x) (μ.transpose B).variation)
     (h_bound : ∀ᶠ x in 𝓝[s] x₀, ∀ᵐ a ∂(μ.transpose B).variation, ‖F x a‖ ≤ bound a)
     (bound_integrable : Integrable bound (μ.transpose B).variation)
-    (h_cont : ∀ᵐ a ∂(μ.transpose B).variation, ContinuousWithinAt (fun x => F x a) s x₀) :
-    ContinuousWithinAt (fun x => ∫ᵛ a, F x a ∂[B; μ]) s x₀ :=
+    (h_cont : ∀ᵐ a ∂(μ.transpose B).variation, ContinuousWithinAt (fun x ↦ F x a) s x₀) :
+    ContinuousWithinAt (fun x ↦ ∫ᵛ a, F x a ∂[B; μ]) s x₀ :=
   continuousWithinAt_setToFun_of_dominated _ hF_meas h_bound bound_integrable h_cont
 
 theorem continuousAt_of_dominated {F : Y → X → E} {x₀ : Y} {bound : X → ℝ}
     (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) (μ.transpose B).variation)
     (h_bound : ∀ᶠ x in 𝓝 x₀, ∀ᵐ a ∂(μ.transpose B).variation, ‖F x a‖ ≤ bound a)
     (bound_integrable : Integrable bound (μ.transpose B).variation)
-    (h_cont : ∀ᵐ a ∂(μ.transpose B).variation, ContinuousAt (fun x => F x a) x₀) :
-    ContinuousAt (fun x => ∫ᵛ a, F x a ∂[B; μ]) x₀ :=
+    (h_cont : ∀ᵐ a ∂(μ.transpose B).variation, ContinuousAt (fun x ↦ F x a) x₀) :
+    ContinuousAt (fun x ↦ ∫ᵛ a, F x a ∂[B; μ]) x₀ :=
   continuousAt_setToFun_of_dominated _ hF_meas h_bound bound_integrable h_cont
 
 theorem continuousOn_of_dominated {F : Y → X → E} {bound : X → ℝ} {s : Set Y}
     (hF_meas : ∀ x ∈ s, AEStronglyMeasurable (F x) (μ.transpose B).variation)
     (h_bound : ∀ x ∈ s, ∀ᵐ a ∂(μ.transpose B).variation, ‖F x a‖ ≤ bound a)
     (bound_integrable : Integrable bound (μ.transpose B).variation)
-    (h_cont : ∀ᵐ a ∂(μ.transpose B).variation, ContinuousOn (fun x => F x a) s) :
-    ContinuousOn (fun x => ∫ᵛ a, F x a ∂[B; μ]) s :=
+    (h_cont : ∀ᵐ a ∂(μ.transpose B).variation, ContinuousOn (fun x ↦ F x a) s) :
+    ContinuousOn (fun x ↦ ∫ᵛ a, F x a ∂[B; μ]) s :=
   continuousOn_setToFun_of_dominated _ hF_meas h_bound bound_integrable h_cont
 
 theorem continuous_of_dominated {F : Y → X → E} {bound : X → ℝ}
     (hF_meas : ∀ x, AEStronglyMeasurable (F x) (μ.transpose B).variation)
     (h_bound : ∀ x, ∀ᵐ a ∂(μ.transpose B).variation, ‖F x a‖ ≤ bound a)
     (bound_integrable : Integrable bound (μ.transpose B).variation)
-    (h_cont : ∀ᵐ a ∂(μ.transpose B).variation, Continuous fun x => F x a) :
-    Continuous fun x => ∫ᵛ a, F x a ∂[B; μ] :=
+    (h_cont : ∀ᵐ a ∂(μ.transpose B).variation, Continuous fun x ↦ F x a) :
+    Continuous fun x ↦ ∫ᵛ a, F x a ∂[B; μ] :=
   continuous_setToFun_of_dominated _ hF_meas h_bound bound_integrable h_cont
-
-@[simp]
-theorem integral_const [CompleteSpace G] [IsFiniteMeasure (μ.transpose B).variation] (c : E) :
-    ∫ᵛ _ : X, c ∂[B; μ] = B c (μ univ) :=
-  setToFun_const _ _
 
 theorem norm_integral_le_of_norm_le_const [IsFiniteMeasure (μ.transpose B).variation]
     {C : ℝ} (h : ∀ᵐ x ∂(μ.transpose B).variation, ‖f x‖ ≤ C) :
@@ -748,28 +732,12 @@ theorem enorm_integral_le_of_enorm_le_const
     ‖∫ᵛ x, f x ∂[B; μ]‖ₑ ≤ C * (μ.transpose B).variation univ :=
   enorm_integral_le_lintegral_enorm.trans ((lintegral_mono_ae h).trans (by simp))
 
-theorem setIntegral_vectorMeasure_zero (f : X → E) {s : Set X}
-    (hs : (μ.transpose B).variation s = 0) :
-    ∫ᵛ x in s, f x ∂[B; μ] = 0 := by
-  by_cases h's : MeasurableSet s; swap
-  · simp [restrict_not_measurable μ h's]
-  have : ((μ.restrict s).transpose B).variation = 0 := by
-    rw [transpose_restrict, variation_restrict h's]
-    apply Measure.restrict_eq_zero.2 hs
-  have : (μ.restrict s).transpose B = 0 := variation_eq_zero.1 this
-  simp [integral, this]
-
 theorem nndist_integral_add_vectorMeasure_le_lintegral
     (h₁ : μ.Integrable f B) (h₂ : ν.Integrable f B) :
     (nndist (∫ᵛ x, f x ∂[B; μ]) (∫ᵛ x, f x ∂[B; (μ + ν)]) : ℝ≥0∞) ≤
       ∫⁻ x, ‖f x‖ₑ ∂(ν.transpose B).variation := by
   rw [integral_add_vectorMeasure h₁ h₂, nndist_comm, nndist_eq_nnnorm, add_sub_cancel_left]
   exact enorm_integral_le_lintegral_enorm
-
-@[simp]
-theorem integral_smul_nnreal_vectorMeasure (f : X → E) (c : ℝ≥0) :
-    ∫ᵛ x, f x ∂[B; c • μ] = c • ∫ᵛ x, f x ∂[B; μ] :=
-  integral_smul_vectorMeasure f (c : ℝ)
 
 variable {β : Type*} [MeasurableSpace β] {φ : X → β} {a : X} {v : F}
 
@@ -857,22 +825,6 @@ theorem integral_dirac [MeasurableSpace X] [MeasurableSingletonClass X] [Complet
       exact Measure.ae_smul_measure (ae_eq_dirac f) _
     _ = B (f a) v := by simp
 
-theorem setIntegral_dirac' {mX : MeasurableSpace X} [CompleteSpace G]
-    (hf : StronglyMeasurable f) {s : Set X} (hs : MeasurableSet s) [Decidable (a ∈ s)] :
-    ∫ᵛ x in s, f x ∂[B; VectorMeasure.dirac a v] = if a ∈ s then B (f a) v else 0 := by
-  rw [restrict_dirac hs]
-  split_ifs
-  · exact integral_dirac' hf
-  · exact integral_zero_vectorMeasure
-
-theorem setIntegral_dirac [MeasurableSpace X] [MeasurableSingletonClass X] [CompleteSpace G]
-    {s : Set X} (hs : MeasurableSet s) [Decidable (a ∈ s)] :
-    ∫ᵛ x in s, f x ∂[B; VectorMeasure.dirac a v] = if a ∈ s then B (f a) v else 0 := by
-  rw [restrict_dirac hs]
-  split_ifs
-  · exact integral_dirac
-  · exact integral_zero_vectorMeasure
-
 theorem integral_singleton' [CompleteSpace G] (hf : StronglyMeasurable f) :
     ∫ᵛ a in {a}, f a ∂[B; μ] = B (f a) (μ {a}) := by
   simp only [restrict_singleton, integral_dirac' hf]
@@ -896,8 +848,8 @@ theorem tendsto_integral_of_dominated_convergence {F : ℕ → X → E} {f : X �
     (F_measurable : ∀ n, AEStronglyMeasurable (F n) (μ.transpose B).variation)
     (bound_integrable : Integrable bound (μ.transpose B).variation)
     (h_bound : ∀ n, ∀ᵐ a ∂(μ.transpose B).variation, ‖F n a‖ ≤ bound a)
-    (h_lim : ∀ᵐ a ∂(μ.transpose B).variation, Tendsto (fun n => F n a) atTop (𝓝 (f a))) :
-    Tendsto (fun n => ∫ᵛ a, F n a ∂[B; μ]) atTop (𝓝 <| ∫ᵛ a, f a ∂[B; μ]) :=
+    (h_lim : ∀ᵐ a ∂(μ.transpose B).variation, Tendsto (fun n ↦ F n a) atTop (𝓝 (f a))) :
+    Tendsto (fun n ↦ ∫ᵛ a, F n a ∂[B; μ]) atTop (𝓝 <| ∫ᵛ a, f a ∂[B; μ]) :=
   tendsto_setToFun_of_dominated_convergence _ bound F_measurable bound_integrable h_bound h_lim
 
 /-- Lebesgue dominated convergence theorem for filters with a countable basis -/
@@ -906,7 +858,7 @@ theorem tendsto_integral_filter_of_dominated_convergence {l : Filter ι} [l.IsCo
     (hF_meas : ∀ᶠ n in l, AEStronglyMeasurable (F n) (μ.transpose B).variation)
     (h_bound : ∀ᶠ n in l, ∀ᵐ a ∂(μ.transpose B).variation, ‖F n a‖ ≤ bound a)
     (bound_integrable : Integrable bound (μ.transpose B).variation)
-    (h_lim : ∀ᵐ a ∂(μ.transpose B).variation, Tendsto (fun n => F n a) l (𝓝 (f a))) :
+    (h_lim : ∀ᵐ a ∂(μ.transpose B).variation, Tendsto (fun n ↦ F n a) l (𝓝 (f a))) :
     Tendsto (fun n ↦ ∫ᵛ a, F n a ∂[B; μ]) l (𝓝 <| ∫ᵛ a, f a ∂[B; μ]) :=
   tendsto_setToFun_filter_of_dominated_convergence _ bound hF_meas h_bound bound_integrable h_lim
 
@@ -914,10 +866,10 @@ theorem tendsto_integral_filter_of_dominated_convergence {l : Filter ι} [l.IsCo
 theorem hasSum_integral_of_dominated_convergence [Countable ι] {F : ι → X → E} {f : X → E}
     (bound : ι → X → ℝ) (hF_meas : ∀ n, AEStronglyMeasurable (F n) (μ.transpose B).variation)
     (h_bound : ∀ n, ∀ᵐ a ∂(μ.transpose B).variation, ‖F n a‖ ≤ bound n a)
-    (bound_summable : ∀ᵐ a ∂(μ.transpose B).variation, Summable fun n => bound n a)
-    (bound_integrable : Integrable (fun a => ∑' n, bound n a) (μ.transpose B).variation)
-    (h_lim : ∀ᵐ a ∂(μ.transpose B).variation, HasSum (fun n => F n a) (f a)) :
-    HasSum (fun n => ∫ᵛ a, F n a ∂[B; μ]) (∫ᵛ a, f a ∂[B; μ]) :=
+    (bound_summable : ∀ᵐ a ∂(μ.transpose B).variation, Summable fun n ↦ bound n a)
+    (bound_integrable : Integrable (fun a ↦ ∑' n, bound n a) (μ.transpose B).variation)
+    (h_lim : ∀ᵐ a ∂(μ.transpose B).variation, HasSum (fun n ↦ F n a) (f a)) :
+    HasSum (fun n ↦ ∫ᵛ a, F n a ∂[B; μ]) (∫ᵛ a, f a ∂[B; μ]) :=
   hasSum_setToFun_of_dominated_convergence _ bound hF_meas h_bound bound_summable bound_integrable
     h_lim
 
@@ -934,9 +886,9 @@ to the integral of `f`. -/
 theorem tendsto_integral_filter_of_norm_le_const {l : Filter ι} [l.IsCountablyGenerated]
     {F : ι → X → E} [IsFiniteMeasure (μ.transpose B).variation] {f : X → E}
     (h_meas : ∀ᶠ n in l, AEStronglyMeasurable (F n) (μ.transpose B).variation)
-    (h_bound : ∃ C, ∀ᶠ n in l, ∀ᵐ ω ∂(μ.transpose B).variation, ‖F n ω‖ ≤ C)
-    (h_lim : ∀ᵐ ω ∂(μ.transpose B).variation, Tendsto (fun n => F n ω) l (𝓝 (f ω))) :
-    Tendsto (fun n => ∫ᵛ ω, F n ω ∂[B; μ]) l (𝓝 (∫ᵛ ω, f ω ∂[B; μ])) :=
+    (h_bound : ∃ C, ∀ᶠ n in l, ∀ᵐ a ∂(μ.transpose B).variation, ‖F n a‖ ≤ C)
+    (h_lim : ∀ᵐ a ∂(μ.transpose B).variation, Tendsto (fun n ↦ F n a) l (𝓝 (f a))) :
+    Tendsto (fun n ↦ ∫ᵛ a, F n a ∂[B; μ]) l (𝓝 (∫ᵛ a, f a ∂[B; μ])) :=
   tendsto_setToFun_filter_of_norm_le_const _ h_meas h_bound h_lim
 
 end VectorMeasure
