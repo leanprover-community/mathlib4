@@ -415,6 +415,7 @@ initialize registerBuiltinAttribute {
             let auxValue ← mkLambdaFVars xs <| mkApp3 (.const ``Iff.mpr []) lhs rhs <|
               mkAppN (.const declName (cinfo.levelParams.map .param)) xs
             let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
+              (forceExpose := true)
             gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
         catch _ =>
           -- Try using the `→` implication.
@@ -424,6 +425,7 @@ initialize registerBuiltinAttribute {
             let auxValue ← mkLambdaFVars xs <| mkApp3 (.const ``Iff.mp []) lhs rhs <|
               mkAppN (.const declName (cinfo.levelParams.map .param)) xs
             let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
+              (forceExpose := true)
             gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
       | _ =>
         -- Try to interpret the lemma as an implicational `gcongr` lemma,
@@ -459,6 +461,7 @@ initialize registerBuiltinAttribute {
             let auxValue ← mkLambdaFVars (xs'.push xs[i]) <|
               mkAppN (.const declName (cinfo.levelParams.map .param)) xs
             let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
+              (forceExpose := true)
             gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
     catch _ =>
       -- If none of the methods work, we throw the error thrown by the "normal" attempt.
