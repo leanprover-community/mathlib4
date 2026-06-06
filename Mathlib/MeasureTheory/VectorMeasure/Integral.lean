@@ -834,9 +834,9 @@ theorem integral_map_equiv {β} [MeasurableSpace β] (e : X ≃ᵐ β) (f : β �
 
 /-- **Lebesgue dominated convergence theorem** provides sufficient conditions under which almost
   everywhere convergence of a sequence of functions implies the convergence of their integrals.
-  We could weaken the condition `bound_integrable` to require `HasFiniteIntegral bound μ` instead
-  (i.e. not requiring that `bound` is measurable), but in all applications proving integrability
-  is easier. -/
+  We could weaken the condition `bound_integrable` to require
+  `HasFiniteIntegral bound (μ.transpose B).variation` instead (i.e. not requiring that `bound` is
+  measurable), but in all applications proving integrability is easier. -/
 theorem tendsto_integral_of_dominated_convergence {F : ℕ → X → E} {f : X → E} (bound : X → ℝ)
     (F_measurable : ∀ n, AEStronglyMeasurable (F n) (μ.transpose B).variation)
     (bound_integrable : Integrable bound (μ.transpose B).variation)
@@ -874,8 +874,8 @@ theorem integral_tsum [CompleteSpace E] [Countable ι]
 
 /-- Corollary of the Lebesgue dominated convergence theorem: If a sequence of functions `F n` is
 (eventually) uniformly bounded by a constant and converges (eventually) pointwise to a
-function `f`, then the integrals of `F n` with respect to a finite measure `μ` converge
-to the integral of `f`. -/
+function `f`, then the integrals of `F n` with respect to a vector measure `μ` with finite
+variation converge to the integral of `f`. -/
 theorem tendsto_integral_filter_of_norm_le_const {l : Filter ι} [l.IsCountablyGenerated]
     {F : ι → X → E} [IsFiniteMeasure (μ.transpose B).variation] {f : X → E}
     (h_meas : ∀ᶠ n in l, AEStronglyMeasurable (F n) (μ.transpose B).variation)
