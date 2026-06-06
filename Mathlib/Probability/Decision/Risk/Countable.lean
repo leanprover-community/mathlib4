@@ -8,6 +8,7 @@ module
 public import Mathlib.Probability.Decision.Risk.Defs
 
 import Mathlib.Probability.Decision.Risk.Basic
+import Mathlib.Probability.Decision.AuxLemmas
 
 /-!
 # Risk in countable spaces
@@ -83,9 +84,10 @@ lemma avgRisk_const_of_fintype [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
 lemma bayesRisk_const_of_finite [Nonempty 𝓨] [Finite 𝓨] [MeasurableSingletonClass 𝓨]
     (hℓ : Measurable (uncurry ℓ)) (μ : Measure 𝓧) (π : Measure Θ) :
     bayesRisk ℓ (Kernel.const Θ μ) π = ⨅ y, ∫⁻ θ, ℓ θ y * μ .univ ∂π := by
+  have hℓ' : Measurable ℓ := by fun_prop
   have := Fintype.ofFinite 𝓨
   refine le_antisymm ((bayesRisk_le_iInf' hℓ _ _).trans_eq (by simp)) ?_
-  simp only [bayesRisk, avgRisk_const_of_fintype hℓ, le_iInf_iff]
+  simp only [bayesRisk, avgRisk_const_of_fintype hℓ', le_iInf_iff]
   intro κ hκ
   calc ⨅ y, ∫⁻ θ, ℓ θ y * μ Set.univ ∂π
   _ = (⨅ y, ∫⁻ θ, ℓ θ y ∂π) * (κ ∘ₘ μ) Set.univ := by
