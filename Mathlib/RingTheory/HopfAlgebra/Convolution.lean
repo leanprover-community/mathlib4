@@ -85,13 +85,6 @@ end HopfAlgebra
 
 namespace LinearMap
 
-local notation "η" => Algebra.linearMap R A
-local notation "ε" => counit (R := R) (A := C)
-local notation "μ" => mul' R A
-local notation "δ" => comul
-local infix:70 " ⊗ₘ " => TensorProduct.map
--- local notation "α" => TensorProduct.assoc _ _ _
-
 variable [Semiring C] [HopfAlgebra R C]
 
 @[simp] lemma antipode_mul_id : toConv (antipode R (A := C)) * toConv id = 1 := by
@@ -105,36 +98,25 @@ end LinearMap
 namespace LinearMap
 variable [Semiring C] [HopfAlgebra R C]
 
-local notation "ε₁" => counit (R := R) (A := C)
-local notation "ε₂" => counit (R := R) (A := C ⊗[R] C)
-local notation "μ₁" => LinearMap.mul' R C
-local notation "μ₂" => LinearMap.mul' R (C ⊗[R] C)
-local notation "δ₁" => comul (R := R) (A := C)
-local notation "δ₂" => comul (R := R) (A := C ⊗[R] C)
-local notation "η₁" => Algebra.linearMap R C
-local notation "η₂" => Algebra.linearMap R (C ⊗[R] C)
-local infix:90 " ◁ " => LinearMap.lTensor
-local notation:90 f:90 " ▷ " X:90 => LinearMap.rTensor X f
-local notation "α" => TensorProduct.assoc R
-local notation "β" => TensorProduct.comm R
 local notation "𝑺" => antipode R (A := C)
-local notation "𝑭" => δ₁ ∘ₗ 𝑺
-local notation "𝑮" => (𝑺 ⊗ₘ 𝑺) ∘ₗ (β C C) ∘ₗ δ₁
+local notation "𝑭" => δ ∘ₗ 𝑺
+local notation "𝑮" => (𝑺 ⊗ₘ 𝑺) ∘ₗ TensorProduct.comm R C C ∘ₗ δ
 
-lemma comul_right_inv : toConv δ₁ * toConv 𝑭 = 1 := by
+lemma comul_right_inv : toConv δ * toConv 𝑭 = 1 := by
   apply WithConv.ext
   simp only [LinearMap.convMul_def, LinearMap.convOne_def, ofConv_toConv]
-  calc μ₂ ∘ₗ map δ₁ (δ₁ ∘ₗ 𝑺) ∘ₗ δ₁
-      = μ₂ ∘ₗ ((δ₁ ∘ₗ id) ⊗ₘ (δ₁ ∘ₗ 𝑺)) ∘ₗ δ₁ := rfl
-    _ = μ₂ ∘ₗ (δ₁ ⊗ₘ δ₁) ∘ₗ (id ⊗ₘ 𝑺) ∘ₗ δ₁ := by
+  calc μ ∘ₗ map δ (δ ∘ₗ 𝑺) ∘ₗ δ
+      = μ ∘ₗ ((δ ∘ₗ id) ⊗ₘ (δ ∘ₗ 𝑺)) ∘ₗ δ := rfl
+    _ = μ ∘ₗ (δ ⊗ₘ δ) ∘ₗ (id ⊗ₘ 𝑺) ∘ₗ δ := by
         simp only [_root_.TensorProduct.map_comp, comp_assoc]
-    _ = δ₁ ∘ₗ μ₁ ∘ₗ (id ⊗ₘ 𝑺) ∘ₗ δ₁ := by
-        have : μ₂ ∘ₗ (δ₁ ⊗ₘ δ₁) = δ₁ ∘ₗ μ₁ := by ext; simp
+    _ = δ ∘ₗ μ ∘ₗ (id ⊗ₘ 𝑺) ∘ₗ δ := by
+        have : (μ ∘ₗ (δ ⊗ₘ δ) : C ⊗[R] C →ₗ[R] C ⊗[R] C) = δ ∘ₗ μ := by ext; simp
         simp [this, ← comp_assoc]
-    _ = δ₁ ∘ₗ (toConv id * toConv 𝑺).ofConv := by simp [LinearMap.convMul_def]
-    _ = δ₁ ∘ₗ (1 : WithConv (C →ₗ[R] C)).ofConv := by rw [id_mul_antipode]
-    _ = Algebra.linearMap R (C ⊗[R] C) ∘ₗ ε₁ := by
-        simp [LinearMap.convOne_def, show δ₁ ∘ₗ η₁ = η₂ from by ext; simp; rfl, ← comp_assoc]
+    _ = δ ∘ₗ (toConv id * toConv 𝑺).ofConv := by simp [LinearMap.convMul_def]
+    _ = δ ∘ₗ (1 : WithConv (C →ₗ[R] C)).ofConv := by rw [id_mul_antipode]
+    _ = η ∘ₗ ε := by
+        simp [LinearMap.convOne_def, show (δ ∘ₗ η : R →ₗ[R] C ⊗[R] C) = η from by ext; simp; rfl,
+          ← comp_assoc]
 
 end LinearMap
 
@@ -173,18 +155,5 @@ lemma antipode_id_cancel :
 lemma counitAlgHom_comp_antipodeAlgHom :
     (counitAlgHom R A).comp (HopfAlgebra.antipodeAlgHom R A) = counitAlgHom R A :=
   AlgHom.toLinearMap_injective <| by simp
-
-private lemma inv_convMul_cancel (f : WithConv <| C →ₐc[R] A) :
-    (toConv (.comp (antipodeAlgHom R A) f.ofConv) * toConv f.ofConv.toAlgHom) = 1 := calc
-  _ = toConv (.comp (HopfAlgebra.antipodeAlgHom R A) f.ofConv : C →ₐ[R] A) *
-        toConv (.comp (.id R A) f.ofConv) := by simp
-  _ = toConv (.comp (lmul' R) (.comp (Algebra.TensorProduct.map (HopfAlgebra.antipodeAlgHom R A)
-       (.id R A)) <| .comp (Algebra.TensorProduct.map f.ofConv f.ofConv) (comulAlgHom R C))) := by
-    rw [convMul_def, Algebra.TensorProduct.map_comp]
-    simp only [comp_assoc]
-  _ = toConv ((toConv (antipodeAlgHom R A) * toConv (AlgHom.id R A)).ofConv.comp f.ofConv) := by
-    simp only [convMul_def, BialgHom.map_comp_comulAlgHom]
-    simp only [comp_assoc]
-  _ = _ := by simp [antipode_id_cancel, convOne_def, comp_assoc]
 
 end AlgHom
