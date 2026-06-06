@@ -593,6 +593,7 @@ theorem coe_zero : (↑(0 : ℚ) : ℚ_[p]) = 0 := rfl
 end Completion
 
 end Padic
+
 /-- The rational-valued `p`-adic norm on `ℚ_[p]` is lifted from the norm on Cauchy sequences. The
 canonical form of this function is the normed space instance, with notation `‖ ‖`. -/
 def padicNormE {p : ℕ} [hp : Fact p.Prime] : AbsoluteValue ℚ_[p] ℚ where
