@@ -92,7 +92,7 @@ lemma ae_le_of_hasLaw_binomial {X : Ω → ℕ} (hX : HasLaw X Bin(n, p) P) : �
   simpa using ncard_le_ncard hs
 
 lemma binomial_apply (s : Set ℕ) :
-    Bin(n, p) s = setBer(Iio n, p) {t | t.ncard ∈ s ∧ t ⊆ Iio n} := by
+    Bin(n, p) s = setBer(Iio n, p) {t ⊆ Iio n | t.ncard ∈ s} := by
   rw [binomial, map_ncard_setBernoulli_apply]
 
 lemma binomial_real_apply (s : Set ℕ) :
@@ -248,7 +248,7 @@ lemma iIndepFun.hasLaw_finsetSum_binomial {ι : Type*} {s : Finset ι} {X : ι �
   · rw [infinitePi_eq_pi]
     exact iIndepFun.hasLaw_pi (by simpa using lawX) hX
   have : HasLaw (fun ω ↦ (S ω).ncard) Bin(s.card, p) P' := by
-    convert (measurePreserving_ncard_setBernoulli_binomial_ncard (by simp)).comp_hasLaw hS
+    convert (measurePreserving_ncard_setBernoulli_binomial_ncard (by simp)).comp_hasLaw hS <;>
     simp
   convert this with ω
   rw [Set.ncard_eq_toFinset_card _ (toFinite (S ω)), Finset.card_eq_sum_ite (Finset.subset_univ _)]

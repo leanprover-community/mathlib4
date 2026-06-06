@@ -152,14 +152,14 @@ lemma setBernoulli_singleton_of_not_subset {s : Set ι} (p : I) (hs : ¬ s ⊆ u
 
 /-- `setBer(u, p)` only gives mass to families of sets contained in `u`. -/
 lemma setBernoulli_apply_eq_apply_subsets (u : Set ι) (p : I) (S : Set (Set ι)) :
-    setBer(u, p) S = setBer(u, p) {s | s ∈ S ∧ s ⊆ u} := by
+    setBer(u, p) S = setBer(u, p) {s ∈ S | s ⊆ u} := by
   apply (measure_eq_measure_of_null_diff (by grind) ?_).symm
   exact Measure.mono_null (by grind) setBernoulli_ae_subset
 
 lemma map_ncard_setBernoulli_apply (u : Set ι) (p : I) (s : Set ℕ) :
-    (setBer(u, p).map Set.ncard) s = setBer(u, p) {t | t.ncard ∈ s ∧ t ⊆ u} := by
+    (setBer(u, p).map Set.ncard) s = setBer(u, p) {t ⊆ u | t.ncard ∈ s} := by
   rw [map_apply (by fun_prop) .of_discrete, setBernoulli_apply_eq_apply_subsets]
-  simp
+  simp [And.comm]
 
 variable (p) in
 @[simp] lemma setBernoulli_singleton (hsu : s ⊆ u) (hu : u.Finite) :
@@ -187,8 +187,7 @@ lemma map_ncard_setBernoulli_real_singleton {u : Set ι} (hu : u.Finite) (p : I)
     (setBer(u, p).map Set.ncard).real {k} =
       (u.ncard.choose k) * p ^ k * (1 - p) ^ (u.ncard - k) := by
   classical
-  have : {s | s.ncard ∈ ({k} : Set ℕ) ∧ s ⊆ u}.Finite :=
-    hu.finite_subsets.subset (by grind)
+  have : {s ⊆ u | s.ncard ∈ ({k} : Set ℕ)}.Finite := hu.finite_subsets.subset (by grind)
   rw [measureReal_def, map_ncard_setBernoulli_apply, ← measureReal_def,
     ← Set.biUnion_of_singleton (setOf _)]
   simp_rw [← this.mem_toFinset]
@@ -196,7 +195,7 @@ lemma map_ncard_setBernoulli_real_singleton {u : Set ι} (hu : u.Finite) (p : I)
   have h1 s (hs : s ∈ this.toFinset) :
       setBer(u, p).real {s} = p ^ k * (1 - p) ^ (u.ncard - k) := by
     simp only [Set.mem_singleton_iff, Set.Finite.mem_toFinset, Set.mem_setOf_eq] at hs
-    rw [setBernoulli_real_singleton _ hs.2 hu, Set.ncard_diff' hs.2 hu, hs.1]
+    rw [setBernoulli_real_singleton _ hs.1 hu, Set.ncard_diff' hs.1 hu, hs.2]
   rw [Finset.sum_congr rfl h1, Finset.sum_const, nsmul_eq_mul, mul_assoc,
     ← Set.ncard_eq_toFinset_card _ _]
   simp [Set.ncard_powerset_ncard, hu]
