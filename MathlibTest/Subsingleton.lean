@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Subsingleton
 
 private axiom test_sorry : ∀ {α}, α
@@ -55,6 +56,7 @@ end AvoidSurprise
 /-!
 Handles `BEq` instances if there are `LawfulBEq` instances for each.
 -/
+set_option linter.overlappingInstances false in
 example (α : Type) (inst1 inst2 : BEq α) [@LawfulBEq α inst1] [@LawfulBEq α inst2] :
     inst1 = inst2 := by
   subsingleton

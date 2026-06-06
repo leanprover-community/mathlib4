@@ -11,7 +11,7 @@ public import Mathlib.Topology.Instances.RealVectorSpace
 
 /-! # Further lemmas about `RCLike` -/
 
-@[expose] public section
+public section
 
 open scoped Finset
 
@@ -72,7 +72,7 @@ This is not an instance because it would cause a search for `FiniteDimensional ?
 `RCLike ?x`. -/
 theorem proper_rclike [FiniteDimensional K E] : ProperSpace E := by
   -- Using `have` not `let` since it is only existence of `NormedSpace` structure that we need.
-  have : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ K E
+  have : NormedSpace ℝ E := .restrictScalars ℝ K E
   have : FiniteDimensional ℝ E := FiniteDimensional.trans ℝ K E
   infer_instance
 
@@ -89,7 +89,7 @@ namespace RCLike
 @[simp, rclike_simps]
 theorem reCLM_norm : ‖(reCLM : StrongDual ℝ K)‖ = 1 := by
   apply le_antisymm (LinearMap.mkContinuous_norm_le _ zero_le_one _)
-  convert ContinuousLinearMap.ratio_le_opNorm (reCLM : StrongDual ℝ K) (1 : K)
+  convert! ContinuousLinearMap.ratio_le_opNorm (reCLM : StrongDual ℝ K) (1 : K)
   simp
 
 @[simp, rclike_simps]

@@ -95,9 +95,9 @@ protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (laws
     simp_rw [diff_eq_compl_inter]
     aesop
   rw [lawsonBasis_image2]
-  convert IsTopologicalBasis.inf_induced IsLower.isTopologicalBasis
-    (isTopologicalBasis_opens (α := WithScott α))
-    WithLower.toLower WithScott.toScott
+  convert!
+    IsTopologicalBasis.inf_induced IsLower.isTopologicalBasis
+      (isTopologicalBasis_opens (α := WithScott α)) WithLower.toLower WithScott.toScott
   rw [@topology_eq_lawson α _ _ _, lawson]
   apply (congrArg₂ min _) _
   · letI _ := lower α
@@ -141,7 +141,12 @@ instance [Inhabited α] : Inhabited (WithLawson α) := ‹Inhabited α›
 variable [Preorder α]
 
 instance instPreorder : Preorder (WithLawson α) := ‹Preorder α›
-instance instTopologicalSpace : TopologicalSpace (WithLawson α) := lawson α
+
+instance instTopologicalSpace : TopologicalSpace (WithLawson α) :=
+  -- fast_instance% lawson α fails
+  letI : TopologicalSpace α := lawson α
+  inferInstanceAs <| TopologicalSpace α
+
 instance instIsLawson : IsLawson (WithLawson α) := ⟨rfl⟩
 
 /-- If `α` is equipped with the Lawson topology, then it is homeomorphic to `WithLawson α`.

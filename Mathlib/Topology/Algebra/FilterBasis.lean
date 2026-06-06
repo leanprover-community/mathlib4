@@ -203,7 +203,7 @@ instance (priority := 100) isTopologicalGroup (B : GroupFilterBasis G) :
     exact hV <| mul_mem_mul a_in b_in
   · rw [basis.tendsto_iff basis]
     intro U U_in
-    simpa using inv U_in
+    simpa using! inv U_in
   · intro x₀
     rw [nhds_eq, nhds_one_eq]
     rfl
@@ -224,7 +224,7 @@ lemma t2Space_iff_sInter_subset [t : TopologicalSpace G] (F : GroupFilterBasis G
     (hG : F.topology = t) : T2Space G ↔ ⋂₀ F.sets ⊆ {1} := by
   rw [F.t2Space_iff hG, subset_antisymm_iff, and_iff_left_iff_imp]
   rintro -
-  simpa using fun _ ↦ F.one
+  simpa using! fun _ ↦ F.one
 
 end GroupFilterBasis
 
@@ -259,7 +259,6 @@ It has the given basis as a basis of neighborhoods of zero. -/
 def topology : TopologicalSpace R :=
   B.toAddGroupFilterBasis.topology
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a ring is endowed with a topological structure coming from
 a ring filter basis then it's a topological ring. -/
 instance (priority := 100) isTopologicalRing {R : Type u} [Ring R] (B : RingFilterBasis R) :
@@ -280,11 +279,11 @@ instance (priority := 100) isTopologicalRing {R : Type u} [Ring R] (B : RingFilt
   · intro x₀
     rw [basis.tendsto_iff basis]
     intro U
-    simpa using B.mul_left x₀
+    simpa using! B.mul_left x₀
   · intro x₀
     rw [basis.tendsto_iff basis]
     intro U
-    simpa using B.mul_right x₀
+    simpa using! B.mul_right x₀
 
 end RingFilterBasis
 
@@ -381,7 +380,6 @@ theorem _root_.ContinuousSMul.of_basis_zero {ι : Type*} [IsTopologicalRing R] [
     rcases hsmul_left x₀ hi with ⟨j, hj, hji⟩
     exact mem_of_superset (h.mem_of_mem hj) hji
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a module is endowed with a topological structure coming from
 a module filter basis then it's a topological module. -/
 instance (priority := 100) continuousSMul [IsTopologicalRing R] :
@@ -390,8 +388,8 @@ instance (priority := 100) continuousSMul [IsTopologicalRing R] :
   let _ := B'.topology
   have _ := B'.isTopologicalAddGroup
   exact ContinuousSMul.of_basis_zero B'.nhds_zero_hasBasis
-      (fun {_} => by simpa using B.smul)
-      (by simpa using B.smul_left) B.smul_right
+      (fun {_} => by simpa using! B.smul)
+      (by simpa using! B.smul_left) B.smul_right
 
 /-- Build a module filter basis from compatible ring and additive group filter bases. -/
 def ofBases {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (BR : RingFilterBasis R)

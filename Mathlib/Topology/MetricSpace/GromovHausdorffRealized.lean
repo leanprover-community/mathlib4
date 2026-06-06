@@ -292,7 +292,7 @@ private theorem HD_bound_aux2 [Nonempty X] (f : Cb X Y) (C : ℝ) :
 section Nonempty
 variable [Nonempty X] [Nonempty Y]
 
-/- To check that `HD` is continuous, we check that it is Lipschitz. As `HD` is a max, we
+/-- To check that `HD` is continuous, we check that it is Lipschitz. As `HD` is a max, we
 prove separately inequalities controlling the two terms (relying too heavily on copy-paste...) -/
 private theorem HD_lipschitz_aux1 (f g : Cb X Y) :
     (⨆ x, ⨅ y, f (inl x, inr y)) ≤ (⨆ x, ⨅ y, g (inl x, inr y)) + dist f g := by
@@ -446,7 +446,7 @@ section Consequences
 variable (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Nonempty X] [MetricSpace Y]
   [CompactSpace Y] [Nonempty Y]
 
-/- Now that we have proved that the set of candidates is compact, and that `HD` is continuous,
+/-- Now that we have proved that the set of candidates is compact, and that `HD` is continuous,
 we can finally select a candidate minimizing `HD`. This will be the candidate realizing the
 optimal coupling. -/
 private theorem exists_minimizer : ∃ f ∈ candidatesB X Y, ∀ g ∈ candidatesB X Y, HD f ≤ HD g :=
@@ -483,10 +483,7 @@ attribute [local instance] premetricOptimalGHDist
 /-- A metric space which realizes the optimal coupling between `X` and `Y` -/
 def OptimalGHCoupling : Type _ :=
   @SeparationQuotient (X ⊕ Y) (premetricOptimalGHDist X Y).toUniformSpace.toTopologicalSpace
-
-instance : MetricSpace (OptimalGHCoupling X Y) := by
-  unfold OptimalGHCoupling
-  infer_instance
+deriving MetricSpace
 
 /-- Injection of `X` in the optimal coupling between `X` and `Y` -/
 def optimalGHInjl (x : X) : OptimalGHCoupling X Y :=

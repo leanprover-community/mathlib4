@@ -345,7 +345,6 @@ lemma entryLinearMap_eq_comp {i : m} {j : n} :
     LinearMap.proj i ∘ₗ diagLinearMap m R α = entryLinearMap R α i i := by
   simp [LinearMap.ext_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma entryLinearMap_toAddMonoidHom {i : m} {j : n} :
     (entryLinearMap R α i j : _ →+ _) = entryAddMonoidHom α i j := rfl
 
@@ -417,22 +416,18 @@ theorem mapMatrix_zero : (0 : α →+ β).mapMatrix = (0 : Matrix m n α →+ _)
 
 end AddZeroClass
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapMatrix_add [AddZeroClass α] [AddCommMonoid β] (f g : α →+ β) :
     (f + g).mapMatrix = (f.mapMatrix + g.mapMatrix : Matrix m n α →+ _) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapMatrix_sub [AddZeroClass α] [AddCommGroup β] (f g : α →+ β) :
     (f - g).mapMatrix = (f.mapMatrix - g.mapMatrix : Matrix m n α →+ _) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapMatrix_neg [AddZeroClass α] [AddCommGroup β] (f : α →+ β) :
     (-f).mapMatrix = (-f.mapMatrix : Matrix m n α →+ _) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapMatrix_smul [Monoid A] [AddZeroClass α] [AddMonoid β] [DistribMulAction A β]
     (a : A) (f : α →+ β) :
@@ -530,12 +525,10 @@ section
 variable [AddCommMonoid α] [AddCommGroup β]
 variable [Module R α] [Module S β]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapMatrix_sub (f g : α →ₛₗ[σᵣₛ] β) :
     (f - g).mapMatrix = (f.mapMatrix - g.mapMatrix : Matrix m n α →ₛₗ[σᵣₛ] _) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapMatrix_neg (f : α →ₛₗ[σᵣₛ] β) :
     (-f).mapMatrix = (-f.mapMatrix : Matrix m n α →ₛₗ[σᵣₛ] _) := rfl
@@ -784,7 +777,7 @@ end Subsemiring
 
 namespace Subring
 
-variable {R : Type*} [Ring R]
+variable {R : Type*} [NonAssocRing R]
 variable [Fintype n] [DecidableEq n]
 
 /-- A version of `Set.matrix` for `Subring`s.
@@ -889,8 +882,9 @@ variable (m n R α)
 /-- `Matrix.transpose` as a `LinearMap` -/
 @[simps apply]
 def transposeLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
-    Matrix m n α ≃ₗ[R] Matrix n m α :=
-  { transposeAddEquiv m n α with map_smul' := transpose_smul }
+    Matrix m n α ≃ₗ[R] Matrix n m α where
+  __ := transposeAddEquiv m n α
+  map_smul' := transpose_smul
 
 @[simp]
 theorem transposeLinearEquiv_symm [Semiring R] [AddCommMonoid α] [Module R α] :
@@ -901,16 +895,11 @@ variable {m n R α}
 variable (m α)
 
 /-- `Matrix.transpose` as a `RingEquiv` to the opposite ring -/
-@[simps]
-def transposeRingEquiv [AddCommMonoid α] [CommSemigroup α] [Fintype m] :
-    Matrix m m α ≃+* (Matrix m m α)ᵐᵒᵖ :=
-  { (transposeAddEquiv m m α).trans MulOpposite.opAddEquiv with
-    toFun := fun M => MulOpposite.op Mᵀ
-    invFun := fun M => M.unopᵀ
-    map_mul' := fun M N =>
-      (congr_arg MulOpposite.op (transpose_mul M N)).trans (MulOpposite.op_mul _ _)
-    left_inv := fun M => transpose_transpose M
-    right_inv := fun M => MulOpposite.unop_injective <| transpose_transpose M.unop }
+@[simps!]
+def transposeRingEquiv [AddCommMonoid α] [CommMagma α] [Fintype m] :
+    Matrix m m α ≃+* (Matrix m m α)ᵐᵒᵖ where
+  __ := transposeAddEquiv m m α |>.trans MulOpposite.opAddEquiv
+  map_mul' M N := (congrArg MulOpposite.op <| transpose_mul M N).trans <| MulOpposite.op_mul ..
 
 variable {m α}
 
@@ -926,14 +915,11 @@ theorem transpose_list_prod [CommSemiring α] [Fintype m] [DecidableEq m] (l : L
 variable (R m α)
 
 /-- `Matrix.transpose` as an `AlgEquiv` to the opposite ring -/
-@[simps]
+@[simps!]
 def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableEq m] [Algebra R α] :
-    Matrix m m α ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ :=
-  { (transposeAddEquiv m m α).trans MulOpposite.opAddEquiv,
-    transposeRingEquiv m α with
-    toFun := fun M => MulOpposite.op Mᵀ
-    commutes' := fun r => by
-      simp only [algebraMap_eq_diagonal, diagonal_transpose, MulOpposite.algebraMap_apply] }
+    Matrix m m α ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
+  __ := transposeRingEquiv m α
+  commutes' r := by simp [algebraMap_eq_diagonal]
 
 end Transpose
 

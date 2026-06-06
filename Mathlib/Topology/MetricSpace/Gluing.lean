@@ -22,7 +22,7 @@ Gluing two metric spaces along a common subset. Formally, we are given
   Y
 ```
 where `hΦ : Isometry Φ` and `hΨ : Isometry Ψ`.
-We want to complete the square by a space `GlueSpacescan hΦ hΨ` and two isometries
+We want to complete the square by a space `GlueSpace hΦ hΨ` and two isometries
 `toGlueL hΦ hΨ` and `toGlueR hΦ hΨ` that make the square commute.
 We start by defining a predistance on the disjoint union `X ⊕ Y`, for which
 points `Φ p` and `Ψ p` are at distance 0. The (quotient) metric space associated
@@ -438,7 +438,6 @@ open Topology
 
 open Filter
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The injection of a space in a disjoint union is an isometry -/
 theorem isometry_mk (i : ι) : Isometry (Sigma.mk i : E i → Σ k, E k) :=
   Isometry.of_dist_eq fun x y => by simp
@@ -453,7 +452,7 @@ protected theorem completeSpace [∀ i, CompleteSpace (E i)] : CompleteSpace (Σ
   have hd : ∀ (i j), ∀ x ∈ s i, ∀ y ∈ s j, (x, y) ∈ U → i = j := fun i j x hx y hy hxy =>
     (Eq.symm hx).trans ((fst_eq_of_dist_lt_one _ _ hxy).trans hy)
   refine completeSpace_of_isComplete_univ ?_
-  convert isComplete_iUnion_separated hc (dist_mem_uniformity zero_lt_one) hd
+  convert! isComplete_iUnion_separated hc (dist_mem_uniformity zero_lt_one) hd
   simp only [s, ← preimage_iUnion, iUnion_of_singleton, preimage_univ]
 
 end Sigma
@@ -592,8 +591,6 @@ def inductivePremetric (I : ∀ n, Isometry (f n)) : PseudoMetricSpace (Σ n, X 
         (dist_triangle _ _ _)
       _ = inductiveLimitDist f x y + inductiveLimitDist f y z := by
         rw [inductiveLimitDist_eq_dist I x y m hx hy, inductiveLimitDist_eq_dist I y z m hy hz]
-
-attribute [local instance] inductivePremetric
 
 /-- The type giving the inductive limit in a metric space context. -/
 def InductiveLimit (I : ∀ n, Isometry (f n)) : Type _ :=

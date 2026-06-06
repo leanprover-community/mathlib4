@@ -83,7 +83,6 @@ lemma compLocalizationAwayAlgHom_X_inl : compLocalizationAwayAlgHom T g P (X (Su
       IsLocalization.Away.invSelf ((Ideal.Quotient.mk (P.ker ^ 2)) (P.σ g)) := by
   simp [compLocalizationAwayAlgHom]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma compLocalizationAwayAlgHom_relation_eq_zero :
     compLocalizationAwayAlgHom T g P (rename Sum.inr (P.σ g) * X (Sum.inl ()) - 1) = 0 := by
   rw [map_sub, map_one, map_mul, ← toComp_toAlgHom (Generators.localizationAway T g) P]
@@ -93,7 +92,6 @@ lemma compLocalizationAwayAlgHom_relation_eq_zero :
     IsScalarTower.algebraMap_apply P.Ring (P.Ring ⧸ P.ker ^ 2) (Localization.Away _)]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sq_ker_comp_le_ker_compLocalizationAwayAlgHom :
     ((localizationAway T g).comp P).ker ^ 2 ≤
       RingHom.ker (compLocalizationAwayAlgHom T g P) := by
@@ -149,13 +147,13 @@ lemma liftBaseChange_injective_of_isLocalizationAway :
     simp only [Submonoid.smul_def]
     rw [show g = algebraMap P.Ring S (P.σ g) by simp, ← map_pow, algebraMap_smul, ← map_smul,
       Extension.Cotangent.mk_eq_zero_iff]
-    simpa using hm
+    simpa using! hm
   rw [← compLocalizationAwayAlgHom_toAlgHom_toComp (T := T)]
   apply sq_ker_comp_le_ker_compLocalizationAwayAlgHom
   simpa only [LinearEquiv.coe_coe, LinearMap.ringLmapEquivSelf_symm_apply,
     mk_apply, lift.tmul, LinearMap.coe_restrictScalars, LinearMap.coe_smulRight,
     Module.End.one_apply, LinearMap.smul_apply, one_smul, Algebra.Extension.Cotangent.map_mk,
-    Extension.Cotangent.mk_eq_zero_iff] using hx
+    Extension.Cotangent.mk_eq_zero_iff] using! hx
 
 /--
 In the notation of the module docstring: Since `T` is standard smooth

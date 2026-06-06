@@ -20,7 +20,7 @@ As a corollary, if `F` preserves finite limits, or limits of a certain size, so 
 Dually, if `F` preserves certain colimits, `Under.post F` will preserve certain colimits as well.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Limits
 
@@ -35,6 +35,7 @@ instance PreservesLimitsOfShape.ofWidePullbacks {J : Type*}
     PreservesLimitsOfShape (WithTerminal <| Discrete J) F :=
   preservesLimitsOfShape_of_equiv WithTerminal.widePullbackShapeEquiv F
 
+set_option backward.defeqAttrib.useBackward true in
 open WithTerminal in
 instance PreservesLimitsOfShape.overPost [PreservesLimitsOfShape (WithTerminal J) F] :
     PreservesLimitsOfShape J (Over.post F (X := X)) where
@@ -50,6 +51,7 @@ instance PreservesFiniteLimits.overPost [PreservesFiniteLimits F] :
 instance PreservesLimitsOfSize.overPost [PreservesLimitsOfSize.{w', w} F] :
     PreservesLimitsOfSize.{w', w} (Over.post F (X := X)) where
 
+set_option backward.defeqAttrib.useBackward true in
 open WithInitial in
 instance PreservesColimitsOfShape.underPost [PreservesColimitsOfShape (WithInitial J) F] :
     PreservesColimitsOfShape J (Under.post F (X := X)) where

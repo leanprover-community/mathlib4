@@ -84,3 +84,8 @@ theorem StrictConvexSpace.extremePoints_closedBall_eq_sphere [Nontrivial A] {x :
     closedBall_diff_ball]
 
 end Normed
+
+@[simp] lemma Set.extremePoints_Icc {a b : ℝ} (hab : a ≤ b) :
+    extremePoints ℝ (Icc a b) = {a, b} := by
+  rw [Real.Icc_eq_closedBall, StrictConvexSpace.extremePoints_closedBall_eq_sphere]
+  grind [Real.sphere_eq_pair]

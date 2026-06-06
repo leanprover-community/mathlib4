@@ -110,7 +110,7 @@ noncomputable def shortestPath (b : V) : Path r b :=
 
 /-- The length of a path is at least the length of the shortest path -/
 theorem shortest_path_spec {a : V} (p : Path r a) : (shortestPath r a).length ≤ p.length :=
-  not_lt.mp (WellFounded.not_lt_min (measure _).wf Set.univ _ trivial)
+  not_lt.mp (WellFounded.not_lt_min (measure _).wf Set.univ trivial)
 
 /-- A subquiver which by construction is an arborescence. -/
 def geodesicSubtree : WideSubquiver V := fun a b =>

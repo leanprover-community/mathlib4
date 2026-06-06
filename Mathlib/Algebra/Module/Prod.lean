@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Module.Defs
 This file defines instances for binary product of modules
 -/
 
-@[expose] public section
+public section
 
 
 variable {R : Type*} {M : Type*} {N : Type*}

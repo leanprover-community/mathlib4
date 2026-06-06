@@ -451,11 +451,11 @@ theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
 /-- The product of two affine maps is an affine map. -/
 @[simps linear]
 def prod (f : P1 →ᵃ[k] P2) (g : P1 →ᵃ[k] P3) : P1 →ᵃ[k] P2 × P3 where
-  toFun := Pi.prod f g
+  toFun := Function.prod f g
   linear := f.linear.prod g.linear
   map_vadd' := by simp
 
-theorem coe_prod (f : P1 →ᵃ[k] P2) (g : P1 →ᵃ[k] P3) : prod f g = Pi.prod f g :=
+theorem coe_prod (f : P1 →ᵃ[k] P2) (g : P1 →ᵃ[k] P3) : prod f g = Function.prod f g :=
   rfl
 
 @[simp]
@@ -804,7 +804,7 @@ note [partially-applied ext lemmas]. Analogous to `LinearMap.pi_ext'` -/
 theorem pi_ext_nonempty' [Nonempty ι] (h : ∀ i, f.comp (LinearMap.single _ _ i).toAffineMap =
     g.comp (LinearMap.single _ _ i).toAffineMap) : f = g := by
   refine pi_ext_nonempty fun i x => ?_
-  convert AffineMap.congr_fun (h i) x
+  convert! AffineMap.congr_fun (h i) x
 
 end Ext
 
@@ -872,6 +872,17 @@ theorem homothety_eq_iff_of_mul_eq_one {c p q : P1} {r₁ r₂ : k} (h : r₁ * 
   all_goals
     rw [← h1, ← homothety_mul_apply]
     simp [h, h']
+
+theorem homothety_injective [Module.IsTorsionFree k V1] [IsCancelMulZero k] (c : P1) {r : k}
+    (hr : r ≠ 0) :
+    Function.Injective (homothety c r) :=
+  fun _ _ h ↦ by simpa [homothety_def, hr] using h
+
+@[simp]
+theorem homothety_inj [Module.IsTorsionFree k V1] [IsCancelMulZero k] (c : P1) {r : k} (hr : r ≠ 0)
+    {p q : P1} :
+    homothety c r p = homothety c r q ↔ p = q :=
+  (homothety_injective c hr).eq_iff
 
 /-- `homothety` as a multiplicative monoid homomorphism. -/
 def homothetyHom (c : P1) : k →* P1 →ᵃ[k] P1 where

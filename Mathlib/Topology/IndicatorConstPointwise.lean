@@ -63,8 +63,7 @@ lemma tendsto_ite {β : Type*} {p : ι → Prop} [DecidablePred p] {q : Prop} [D
     by_cases hq : q
     · simp only [hq, ite_true]
       apply le_trans _ haF
-      simp only [principal_singleton, le_pure_iff, mem_map, Set.mem_singleton_iff,
-        Set.preimage_const_of_mem, univ_mem]
+      simp
     · simp only [hq, ite_false]
       apply le_trans _ hbG
       simp only [principal_singleton, le_pure_iff, mem_map, Set.mem_singleton_iff,
@@ -77,7 +76,7 @@ lemma tendsto_indicator_const_apply_iff_eventually' (b : β)
   classical
   have heart := @tendsto_ite ι L β (fun i ↦ x ∈ As i) _ (x ∈ A) _ b 0 (𝓝 b) (𝓝 (0 : β))
                 nhds_o nhds_b ?_ ?_
-  · convert heart
+  · convert! heart
     by_cases hxA : x ∈ A <;> simp [hxA]
   · simp only [principal_singleton, le_def, mem_pure]
     exact fun s s_nhds ↦ mem_of_mem_nhds s_nhds

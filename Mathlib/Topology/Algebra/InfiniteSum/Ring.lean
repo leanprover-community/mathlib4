@@ -37,10 +37,10 @@ variable [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [IsTopologicalSemi
   {a₁ : α}
 
 theorem HasSum.mul_left (a₂) (h : HasSum f a₁ L) : HasSum (fun i ↦ a₂ * f i) (a₂ * a₁) L := by
-  simpa only using h.map (AddMonoidHom.mulLeft a₂) (continuous_const.mul continuous_id)
+  simpa only using! h.map (AddMonoidHom.mulLeft a₂) (continuous_const.mul continuous_id)
 
 theorem HasSum.mul_right (a₂) (hf : HasSum f a₁ L) : HasSum (fun i ↦ f i * a₂) (a₁ * a₂) L := by
-  simpa only using hf.map (AddMonoidHom.mulRight a₂) (continuous_id.mul continuous_const)
+  simpa only using! hf.map (AddMonoidHom.mulRight a₂) (continuous_id.mul continuous_const)
 
 theorem Summable.mul_left (a) (hf : Summable f L) : Summable (fun i ↦ a * f i) L :=
   (hf.hasSum.mul_left _).summable
@@ -60,14 +60,23 @@ protected theorem Summable.tsum_mul_right (a) (hf : Summable f L) :
     ∑'[L] i, f i * a = (∑'[L] i, f i) * a :=
   (hf.hasSum.mul_right _).tsum_eq
 
-theorem Commute.tsum_right (a) (h : ∀ i, Commute a (f i)) : Commute a (∑'[L] i, f i) := by
-  classical
+theorem SemiconjBy.tsum_left {a b : α} (h : ∀ (i : ι), SemiconjBy (f i) a b) :
+    SemiconjBy (∑'[L] (i : ι), f i) a b := by
   by_cases hf : Summable f L
-  · exact (hf.tsum_mul_left a).symm.trans ((tsum_congr h).trans (hf.tsum_mul_right a))
-  · exact (tsum_eq_zero_of_not_summable hf).symm ▸ Commute.zero_right _
+  · rw [SemiconjBy, ← hf.tsum_mul_right a, ← hf.tsum_mul_left b, tsum_congr h]
+  · simp [tsum_eq_zero_of_not_summable hf]
+
+theorem SemiconjBy.tsum_right {f g : ι → α} (a : α) (hf : Summable f L) (hg : Summable g L)
+    (h : ∀ (i : ι), SemiconjBy a (f i) (g i)) :
+    SemiconjBy a (∑'[L] (i : ι), f i) (∑'[L] (i : ι), g i) := by
+  rw [SemiconjBy, ← hf.tsum_mul_left a, ← hg.tsum_mul_right a]
+  exact tsum_congr h
 
 theorem Commute.tsum_left (a) (h : ∀ i, Commute (f i) a) : Commute (∑'[L] i, f i) a :=
-  (Commute.tsum_right _ fun i ↦ (h i).symm).symm
+  SemiconjBy.tsum_left h
+
+theorem Commute.tsum_right (a) (h : ∀ i, Commute a (f i)) : Commute a (∑'[L] i, f i) :=
+  (Commute.tsum_left _ fun i ↦ (h i).symm).symm
 
 end tsum
 
@@ -130,11 +139,11 @@ theorem Summable.const_div (h : Summable (fun x ↦ 1 / f x) L) (b : α) :
 
 theorem hasSum_const_div_iff (h : a₂ ≠ 0) :
     HasSum (fun i ↦ a₂ / f i) (a₂ * a₁) L ↔ HasSum (1 / f) a₁ L := by
-  simpa only [div_eq_mul_inv, one_mul] using hasSum_mul_left_iff h
+  simpa only [div_eq_mul_inv, one_mul] using! hasSum_mul_left_iff h
 
 theorem summable_const_div_iff (h : a ≠ 0) :
     (Summable (fun i ↦ a / f i) L) ↔ Summable (1 / f) L := by
-  simpa only [div_eq_mul_inv, one_mul] using summable_mul_left_iff h
+  simpa only [div_eq_mul_inv, one_mul] using! summable_mul_left_iff h
 
 end DivisionSemiring
 
@@ -172,7 +181,7 @@ theorem HasSum.mul (hf : HasSum f s) (hg : HasSum g t)
   let ⟨_u, hu⟩ := hfg
   (hf.mul_eq hg hu).symm ▸ hu
 
-/-- Product of two infinites sums indexed by arbitrary types.
+/-- Product of two infinite sums indexed by arbitrary types.
 See also `tsum_mul_tsum_of_summable_norm` if `f` and `g` are absolutely summable. -/
 protected theorem Summable.tsum_mul_tsum (hf : Summable f) (hg : Summable g)
     (hfg : Summable fun x : ι × κ ↦ f x.1 * g x.2) :
@@ -241,7 +250,7 @@ theorem summable_sum_mul_range_of_summable_mul (h : Summable fun x : ℕ × ℕ 
   simp_rw [← Nat.sum_antidiagonal_eq_sum_range_succ fun k l ↦ f k * g l]
   exact summable_sum_mul_antidiagonal_of_summable_mul h
 
-/-- The **Cauchy product formula** for the product of two infinites sums indexed by `ℕ`, expressed
+/-- The **Cauchy product formula** for the product of two infinite sums indexed by `ℕ`, expressed
 by summing on `Finset.range`.
 
 See also `tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm` if `f` and `g` are absolutely summable.
@@ -308,10 +317,10 @@ theorem tprod_one_add [T2Space α] (h : Summable (∏ i ∈ ·, f i)) :
   HasProd.tprod_eq <| hasProd_one_add_of_hasSum_prod h.hasSum
 
 section Ordered
-variable [LinearOrder ι] [LocallyFiniteOrderBot ι] [T2Space α]
+variable [LinearOrder ι] [LocallyFiniteOrderBot ι]
 
 /-- The infinite version of `Finset.prod_one_add_ordered`. -/
-theorem tprod_one_add_ordered [ContinuousAdd α]
+theorem tprod_one_add_ordered [T2Space α] [ContinuousAdd α]
     (hsum : Summable fun i ↦ f i * ∏ j ∈ Iio i, (1 + f j))
     (hprod : Multipliable (1 + f ·)) :
     ∏' i, (1 + f i) = 1 + ∑' i, f i * ∏ j ∈ Iio i, (1 + f j) := by
@@ -319,20 +328,20 @@ theorem tprod_one_add_ordered [ContinuousAdd α]
   · simp
   obtain ⟨x, hx⟩ := hprod
   obtain ⟨a, ha⟩ := hsum
-  convert hx.tprod_eq
+  convert! hx.tprod_eq
   unfold HasProd at hx
   conv at hx in fun _ ↦ _ => ext _; rw [prod_one_add_ordered] -- simp_rw would cause loop
   rw [ha.tsum_eq]
   refine (tendsto_nhds_unique (hx.comp tendsto_finset_Iic_atTop_atTop) ?_).symm
   apply Tendsto.const_add
-  convert ha.comp tendsto_finset_Iic_atTop_atTop using 2 with s
+  convert! ha.comp tendsto_finset_Iic_atTop_atTop using 2 with s
   refine sum_congr rfl (fun i hi ↦ ?_)
   congr
   grind
 
-omit [CommSemiring α] in
 /-- The infinite version of `Finset.prod_one_sub_ordered`. -/
-theorem tprod_one_sub_ordered [CommRing α] [IsTopologicalAddGroup α]
+theorem tprod_one_sub_ordered {α : Type*} {f : ι → α}
+    [CommRing α] [TopologicalSpace α] [T2Space α] [IsTopologicalAddGroup α]
     (hsum : Summable fun i ↦ f i * ∏ j ∈ Iio i, (1 - f j))
     (hprod : Multipliable (1 - f ·)) :
     ∏' i, (1 - f i) = 1 - ∑' i, f i * ∏ j ∈ Iio i, (1 - f j) := by

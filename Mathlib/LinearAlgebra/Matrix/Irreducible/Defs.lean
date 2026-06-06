@@ -123,7 +123,7 @@ theorem pow_apply_pos_iff_nonempty_path
     refine ⟨fun h_pos ↦ ?_, fun ⟨p, hp⟩ ↦ ?_⟩
     · rcases eq_or_ne i j with rfl | h_eq
       · exact ⟨⟨Quiver.Path.nil, rfl⟩⟩
-      · simp_all only [pow_zero, ne_eq, not_false_eq_true, one_apply_ne, lt_self_iff_false]
+      · simp_all
     · simp [Quiver.Path.eq_of_length_zero p hp]
   | succ m ih =>
     rw [pow_succ, mul_apply]
