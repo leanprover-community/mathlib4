@@ -69,6 +69,11 @@ lemma ord_zero {z : X} : ord 0 z = 0 := by
   · simp [ord_eq_ordHom_of_coheight_eq_one h]
   · simp [h]
 
+@[simp]
+lemma support_ord_zero : ord (0 : X.functionField) = 0 := by
+  ext z
+  simp
+
 lemma ord_eq_unzero_ordHom {x : X} (hx : coheight x = 1) {f : X.functionField} (hf : f ≠ 0) :
     ord f x = Multiplicative.toAdd WithZero.unzero (ordHom_ne_zero hx hf) := by
   simp only [ord]

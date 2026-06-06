@@ -95,21 +95,18 @@ def add_mem' [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (U : X.Ope
       specialize ha ha0 Z
       specialize hb hb0 Z
       simp_all only [coe_zero, Pi.zero_apply, coe_add, Pi.add_apply]
-      suffices min ((div a ha0).restrict U Z) ((div b hb0).restrict U Z) ≤
-              (div (a + b) h).restrict U Z by omega
+      suffices min ((div a).restrict U Z) ((div b).restrict U Z) ≤
+              (div (a + b)).restrict U Z by omega
       by_cases hZ : coheight Z = 1
       · have := krullDimLE_of_coheight hZ
         by_cases o : Z ∈ U
-        · simp only [restrict_eq_of_mem _ _ _ o, div_eq_ord_of_coheight_eq_one _ _ _ hZ]
+        · simp only [restrict_eq_of_mem _ _ _ o]
           have : IsDiscreteValuationRing ↑(X.presheaf.stalk Z) :=
               IsRegularInCodimensionOne.stalk_dvr Z hZ
-          exact ordZ_add hZ ha0 hb0 h
+          exact X.ord_add hZ h
         · simp [restrict_eq_zero_of_not_mem _ _ _ o]
       · by_cases o : Z ∈ U
-        · simp only [restrict_eq_of_mem _ _ _ o, inf_le_iff]
-          rw[div_eq_zero_of_coheight_ne_one _ _ _ hZ, div_eq_zero_of_coheight_ne_one _ _ _ hZ,
-            div_eq_zero_of_coheight_ne_one _ _ _ hZ]
-          simp
+        · simp [restrict_eq_of_mem _ _ _ o, ord_eq_zero_of_coheight_neq_one hZ]
         · simp [restrict_eq_zero_of_not_mem _ _ _ o]
     · simp_all [carrier]
 
@@ -138,8 +135,8 @@ def smul_mem_nonempty (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] (a :
     specialize hf h z
     simp only [coe_zero, Pi.zero_apply, coe_add, Pi.add_apply] at hf
     have hU : U.1 ⊆ ⊤ := by simp_all
-    suffices (div f h).restrict U z ≤ (div (a • f) nez).restrict U z by
-      trans (div f h).restrict U z + D.restrict U z
+    suffices (div f).restrict U z ≤ (div (a • f)).restrict U z by
+      trans (div f).restrict U z + D.restrict U z
       · exact hf
       · exact
         (Int.add_le_add_iff_right
@@ -147,16 +144,16 @@ def smul_mem_nonempty (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] (a :
           this
     by_cases hz : coheight z = 1
     · by_cases o : z ∈ U
-      · simp only [restrict_eq_of_mem _ _ _ o, div_eq_ord_of_coheight_eq_one _ _ _ hz]
+      · simp only [restrict_eq_of_mem _ _ _ o]
         let i := TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨z, o⟩
         have : Ring.KrullDimLE 1 ↑(X.presheaf.stalk z) := krullDimLE_of_coheight hz
         let test : IsScalarTower ↑Γ(X, U) ↑(X.presheaf.stalk z) ↑X.functionField :=
             AlgebraicGeometry.functionField_isScalarTower X U ⟨z, o⟩
-        exact ordZ_le_smul _ o (left_ne_zero_of_smul nez) _
+        exact ord_le_smul hz o (left_ne_zero_of_smul nez) f
       · simp [restrict_eq_zero_of_not_mem _ _ _ o]
     · by_cases o : z ∈ U
       · simp [restrict_eq_of_mem _ _ _ o,
-              div_eq_zero_of_coheight_ne_one _ _ _ hz]
+              ord_eq_zero_of_coheight_neq_one hz]
       · simp [restrict_eq_zero_of_not_mem _ _ _ o]
 
 variable [IsRegularInCodimensionOne X]
@@ -242,15 +239,19 @@ noncomputable instance : SMul Γ(X, U) (carrier D U) where
   smul a f := ⟨smulVal a f.val, smulVal_mem_carrier a f⟩
 
 omit [IsRegularInCodimensionOne X] in
+lemma smul_eq_smulVal (a : Γ(X, U)) (f : carrier D U) :
+    HSMul.hSMul a f = smulVal a f.val := rfl
+
+omit [IsRegularInCodimensionOne X] in
 @[simp] lemma coe_smul [hU : Nonempty U] (a : Γ(X, U)) (f : carrier D U) :
     (↑(a • f) : X.functionField) = a • (f : X.functionField) := by
-  change smulVal a f.val = a • (f : X.functionField)
-  simp [smulVal, hU]
+  simp [smul_eq_smulVal, smulVal, hU]
 
-instance instSubsingleTonOfEmpty (h : ¬ Nonempty U) : Subsingleton (carrier D U) := by
+omit [IsRegularInCodimensionOne X] in
+lemma instSubsingleTonOfEmpty (h : ¬ Nonempty U) : Subsingleton (carrier D U) := by
   simp [carrier, h]
 
-noncomputable instance instModuleCarrier : Module Γ(X, U) (carrier D U) where
+instance instModuleCarrier : Module Γ(X, U) (carrier D U) where
   smul := (· • ·)
   one_smul a := by
     apply Subtype.ext
@@ -324,7 +325,7 @@ omit [IsRegularInCodimensionOne X] in
 lemma mapFunApplyNonempty (D : AlgebraicCycle X ℤ) {U V : X.Opens} (r : V ≤ U) [h : Nonempty V]
     (s : carrier D U) : (mapFun D r s).1 = s := by simp [mapFun, h]
 
-instance algebra_restrict {U V : X.Opens} (k : V ≤ U) :
+def algebra_restrict {U V : X.Opens} (k : V ≤ U) :
     Algebra Γ(X, U) Γ(X, V) := (X.presheaf.map (homOfLE k).op).hom.toAlgebra
 
 /--
@@ -351,6 +352,9 @@ instance [IrreducibleSpace X] {U V : X.Opens} (k : V ≤ U) [Nonempty V] :
   simp
 
 set_option backward.isDefEq.respectTransparency false in
+/-
+TODO: Remove the rampant defeq abuse
+-/
 noncomputable
 def map (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens ↥X)ᵒᵖ} (r : U ⟶ V) :
     obj D U ⟶ (ModuleCat.restrictScalars (X.ringCatSheaf.obj.map r).hom).obj (obj D V) :=
@@ -367,10 +371,13 @@ def map (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens ↥X)ᵒᵖ} (
     map_smul' m a := by
       dsimp [mapFun]
       split_ifs
-      · dsimp [smulVal]
+      · --dsimp [smul_eq_smulVal, smulVal]
+        apply Subtype.ext
+        rw [smul_eq_smulVal, smulVal]
+        --simp [smul_eq_smulVal, smulVal]
         split_ifs
         · let : Algebra Γ(X, U.unop) Γ(X, V.unop) := (X.sheaf.obj.map r).hom.toAlgebra
-          apply Subtype.ext
+          --apply Subtype.ext
           erw [coe_smul]
           exact algebra_compatible_smul Γ(X, V.unop) m a.1
         · have : ¬ Nonempty ↑(unop V) := by
@@ -398,7 +405,7 @@ def map_id (D : AlgebraicCycle X ℤ) (U : (TopologicalSpace.Opens ↥X)ᵒᵖ) 
     intro x
     apply Subtype.ext
     simp [map]
-    rfl
+    --rfl
   · apply ModuleCat.hom_ext
     rw [LinearMap.ext_iff]
     intro x
@@ -423,6 +430,9 @@ def map_comp (D : AlgebraicCycle X ℤ)
     apply Subtype.ext
     simp only [mapFunApplyNonempty, op_unop, sheafCompose_obj_obj, Functor.comp_obj,
       CommRingCat.forgetToRingCat_obj, Functor.comp_map, CommRingCat.forgetToRingCat_map_hom]
+    /-
+    TODO: Make into a (sane) simp lemma
+    -/
     change x.1 = (mapFun D (map._proof_1 g) (mapFun D (map._proof_1 f) x))
     simp
   · exact Subsingleton.elim (h := instSubsingleTonOfEmpty h) _ _
@@ -489,7 +499,8 @@ open TopologicalSpace
 If a family of sets has a connected supremum, then between any two sets of the cover there is a
 sequence of sets in the cover which intersect nontrivially pairwise.
 
-TODO: Remove and replace with lemma that's now in mathlib
+TODO: Remove and replace with lemma that's now in mathlib (and do the same with
+all the other connectedByCover nonsense)
 -/
 lemma connectedByCover_of_connected {I : Type*} {𝒰 : I → X.Opens}
     (h𝒰 : _root_.IsConnected (iSup 𝒰).1) (i j : I) (hi : (𝒰 i).1.Nonempty)
@@ -586,12 +597,10 @@ def sheaf {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
   val := D.presheaf
   isSheaf := AlgebraicCycle.Sheaf.isSheaf D
 
-
-variable (D : AlgebraicCycle X ℤ) (x : X) [IsIntegral X] [IsLocallyNoetherian X]
-  [IsRegularInCodimensionOne X]
-
 noncomputable
-instance : Module (X.presheaf.stalk x) ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf x) :=
+instance (D : AlgebraicCycle X ℤ) (x : X)
+  [IsRegularInCodimensionOne X] :
+  Module (X.presheaf.stalk x) ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf x) :=
   PresheafOfModules.instModuleCarrierStalkCommRingCatCarrierAbPresheafOpensCarrier D.sheaf.val x
 
 open CategoryTheory
@@ -625,19 +634,23 @@ def stalkToFunctionField {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
     forget₂ RingCat Ab).obj X.functionField) :=
   colimit.desc _ (D.stalkCocone x)
 
+/-
+TODO: Fix this awful proof
+-/
 @[simp]
 lemma stalkToFunctionField_germ {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
     [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (x : X) (U : X.Opens) (hxU : x ∈ U)
     (s : Sheaf.carrier D U) :
     D.stalkToFunctionField x (TopCat.Presheaf.germ D.sheaf.val.presheaf U x hxU s) = s.1 := by
-  simpa [stalkToFunctionField, TopCat.Presheaf.germ] using colimit.ι_desc_apply _ _ _
+  erw [colimit.ι_desc_apply _ _ _]
+  rfl
 
 lemma stalkToFunctionField_injective {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
     [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (x : X) :
     Function.Injective (D.stalkToFunctionField x) := by
   intro a b hab
-  obtain ⟨U, hxU, sa, rfl⟩ := TopCat.Presheaf.germ_exist D.sheaf.val.presheaf x a
-  obtain ⟨V, hxV, sb, rfl⟩ := TopCat.Presheaf.germ_exist D.sheaf.val.presheaf x b
+  obtain ⟨U, hxU, sa, rfl⟩ := TopCat.Presheaf.exists_germ_eq D.sheaf.val.presheaf a
+  obtain ⟨V, hxV, sb, rfl⟩ := TopCat.Presheaf.exists_germ_eq D.sheaf.val.presheaf b
   rw [stalkToFunctionField_germ, stalkToFunctionField_germ] at hab
   refine TopCat.Presheaf.germ_ext (F := D.sheaf.val.presheaf) (U ⊓ V) ⟨hxU, hxV⟩
     (homOfLE inf_le_left) (homOfLE inf_le_right) ?_
@@ -653,8 +666,8 @@ def stalkToFunctionFieldLinearMap {X : Scheme} [IsIntegral X] [IsLocallyNoetheri
   __ := (D.stalkToFunctionField x).hom
   map_smul' r a := by
     -- Get representatives for `a` (in the module stalk) and `r` (in the ring stalk).
-    obtain ⟨U, hxU, s, rfl⟩ := TopCat.Presheaf.germ_exist D.sheaf.val.presheaf x a
-    obtain ⟨V, hxV, r', rfl⟩ := TopCat.Presheaf.germ_exist X.presheaf x r
+    obtain ⟨U, hxU, s, rfl⟩ := TopCat.Presheaf.exists_germ_eq D.sheaf.val.presheaf a
+    obtain ⟨V, hxV, r', rfl⟩ := TopCat.Presheaf.exists_germ_eq X.presheaf r
     -- Move both germs to a common open `W = U ⊓ V` containing `x`.
     let W : X.Opens := U ⊓ V
     have hxW : x ∈ W := ⟨hxU, hxV⟩
@@ -708,7 +721,7 @@ lemma range_stalkToFunctionField {X : Scheme} [IsIntegral X] [IsLocallyNoetheria
     [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (hD : D.support ⊆ {x | coheight x = 1})
     (x : X) (hx : coheight x = 1) :
     Set.range (D.stalkToFunctionField x).hom =
-      {f : X.functionField | f ≠ 0 → - D x ≤ X.ordZ x hx f} := by
+      {f : X.functionField | f ≠ 0 → - D x ≤ X.ord f x} := by
   ext f
   by_cases o : f = 0
   · simp only [o]
@@ -720,7 +733,7 @@ lemma range_stalkToFunctionField {X : Scheme} [IsIntegral X] [IsLocallyNoetheria
       use 0
       exact AddMonoidHom.map_zero ((D.stalkToFunctionField x).hom)
   obtain ⟨U, hU1, hU2, hU3⟩ := Function.locallyFinsupp.exists_nhd_mem_support_implies_specializes
-      (div f o) x
+      (div f) x
   obtain ⟨V, hV1, hV2, hV3⟩ := Function.locallyFinsupp.exists_nhd_mem_support_implies_specializes
       D x
   -- Helper: a point of coheight 1 that specializes to `x` (also coheight 1) must equal `x`.
@@ -739,16 +752,15 @@ lemma range_stalkToFunctionField {X : Scheme} [IsIntegral X] [IsLocallyNoetheria
   · intro h hne
     rw [Set.mem_range] at h
     obtain ⟨g, hg⟩ := h
-    obtain ⟨W, hxW, s, rfl⟩ := TopCat.Presheaf.germ_exist D.sheaf.val.presheaf x g
+    obtain ⟨W, hxW, s, rfl⟩ := TopCat.Presheaf.exists_germ_eq D.sheaf.val.presheaf g
     -- The image of `germ ... s` under `stalkToFunctionField` is `s.1`, hence `s.1 = f`.
     rw [stalkToFunctionField_germ] at hg
     have hs_ne : (s.1 : X.functionField) ≠ 0 := hg ▸ hne
     obtain ⟨_, hcond⟩ := s.property hs_ne
     -- Specialize the section condition at `x`.
     have hatx := hcond x
-    simp only [locallyFinsuppWithin.coe_zero, Pi.zero_apply, locallyFinsuppWithin.coe_add,
-      Pi.add_apply, restrict_eq_of_mem _ _ _ hxW,
-      div_eq_ord_of_coheight_eq_one _ _ _ hx] at hatx
+    simp only [coe_zero, Pi.zero_apply, coe_add, Pi.add_apply, restrict_eq_of_mem _ _ _ hxW,
+      div_eq_ord] at hatx
     -- Replace `s.1` with `f`.
     rw [hg] at hatx
     linarith
@@ -765,21 +777,21 @@ lemma range_stalkToFunctionField {X : Scheme} [IsIntegral X] [IsLocallyNoetheria
           Pi.add_apply, restrict_eq_of_mem _ _ _ hzW]
         by_cases hzx : z = x
         · subst hzx
-          rw [div_eq_ord_of_coheight_eq_one _ _ _ hx]
+          simp
           linarith [h o]
         · -- z ≠ x. We show both `(div f o) z = 0` and `D z = 0`.
-          have hdiv_z : (div f o) z = 0 := by
+          have hdiv_z : (div f) z = 0 := by
             by_cases hzcoh : coheight z = 1
-            · rw [div_eq_ord_of_coheight_eq_one _ _ _ hzcoh]
+            ·
               by_contra hord
               -- z ∈ (div f o).support gives z ⤳ x via hU3
-              have hz_supp : z ∈ (div f o).support := by
-                simp only [Function.mem_support, ne_eq, div_eq_ord_of_coheight_eq_one _ _ _ hzcoh]
+              have hz_supp : z ∈ (div f).support := by
+                simp only [Function.mem_support, ne_eq]
                 exact hord
               have hspec : z ⤳ x := hU3 z ⟨hzW.1, hz_supp⟩
               -- z ⤳ x, with both codim 1 in an integral scheme, forces z = x.
               exact hzx (spec_eq z hzcoh hspec)
-            · exact div_eq_zero_of_coheight_ne_one _ _ _ hzcoh
+            · simp [ord_eq_zero_of_coheight_neq_one hzcoh]
           have hD_z : D z = 0 := by
             by_contra hD'
             have hz_supp : z ∈ D.support := hD'
@@ -820,7 +832,7 @@ lemma range_linearMap_eq_range_mulLeft_stalkToFunctionFieldLinearMap {X : Scheme
     Set.range (D.stalkToFunctionFieldLinearMap x) by sorry
 
   have : Set.range (D.stalkToFunctionFieldLinearMap x) =
-      {f : X.functionField | f ≠ 0 → - D x ≤ X.ordZ x hx f} := sorry
+      {f : X.functionField | f ≠ 0 → - D x ≤ X.ord f x} := sorry
   rw [this]
   have : IsDiscreteValuationRing (X.presheaf.stalk x) := sorry
   have := IsDiscreteValuationRing.map_algebraMap_eq_valuationSubring (A := X.presheaf.stalk x) (K := X.functionField)
@@ -832,24 +844,19 @@ lemma range_linearMap_eq_range_mulLeft_stalkToFunctionFieldLinearMap {X : Scheme
   suffices (IsDedekindDomain.HeightOneSpectrum.valuation (↑X.functionField)
         (IsDiscreteValuationRing.maximalIdeal ↑(X.presheaf.stalk x))).integer =
          ⇑(LinearMap.mulLeft (↑(X.presheaf.stalk x)) ((algebraMap ↑(X.presheaf.stalk x) ↑X.functionField) ϖ ^ D x)) ''
-    {f | f ≠ 0 → -D x ≤ ordZ x hx f} by sorry
+    {f | f ≠ 0 → -D x ≤ ord f x} by sorry
   ext z
   erw [Valuation.mem_integer_iff ((IsDedekindDomain.HeightOneSpectrum.valuation (↑X.functionField) (IsDiscreteValuationRing.maximalIdeal ↑(X.presheaf.stalk x)))) z]
-
-  /-
-  TODO: Merge in new ord API and prove using that
-
-  We need 2 things: one is relating statements of the form n ≤ ord x to
-  ↑n ≤ ordHom x or something, and the other is relating the outputs of ordHom
-  to the valuation in a DVR (which will just be a one liner from the ordFrac API)
-  -/
-  sorry
+  simp
+  constructor
+  · sorry
+  · sorry
 
 /-
 We will need to show this is an equiv for our calculation of the kernel in the end, but that
 can wait a minute
 -/
-def zingo {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
+def stalkMap {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
     [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (hD : D.support ⊆ {x | coheight x = 1})
     (x : X) (hx : coheight x = 1)
     (ϖ : X.presheaf.stalk x) (hϖ : Irreducible ϖ) :
@@ -863,104 +870,4 @@ def zingo {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
   -/
   sorry
 
-
-
-
-
-#check Submodule.map ((LinearMap.mulLeft (X.presheaf.stalk x) (1 : X.functionField)) ∘ₗ (Algebra.linearMap (X.presheaf.stalk x) X.functionField)) ⊤
-
-
-
-
-
-
-
-
-noncomputable
-def genericStalkToFunctionField {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
-    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) :
-    (TopCat.Presheaf.stalk D.sheaf.val.presheaf (genericPoint X)) ⟶ ((forget₂ CommRingCat RingCat ⋙
-    forget₂ RingCat Ab).obj X.functionField) := by
-  let c : Cocone <| ((inclusion (genericPoint ↥X)).op ⋙ D.sheaf.val.presheaf) := {
-    pt := (forget₂ RingCat Ab).obj ((forget₂ CommRingCat RingCat).obj X.functionField)
-    ι := {
-      app U :=
-        AddCommGrpCat.ofHom {
-          toFun f := f.1
-          map_zero' := rfl
-          map_add' := fun _ _ ↦ rfl
-        }
-      naturality U V f := by
-        apply AddCommGrpCat.hom_ext
-        simp
-        by_cases t : Nonempty (V.unop.1)
-        · sorry
-        · sorry
-    }
-  }
-  apply colimit.desc _ c
-
-noncomputable
-def genericStalkAddEquivFunctionField {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
-    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) :
-    ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf (genericPoint X)) ≃+ X.functionField := by
-  apply AddEquiv.ofBijective D.genericStalkToFunctionField.hom
-  constructor
-  . sorry
-  · sorry
-
-noncomputable
-def genericStalkToFunctionFieldModuleHom {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
-    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) :
-    ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf (genericPoint X))
-    ≃ₗ[X.functionField] X.functionField where
-      __ := D.genericStalkAddEquivFunctionField
-      map_add' a b := AddMonoidHom.map_add (AddCommGrpCat.Hom.hom D.genericStalkToFunctionField) a b
-      map_smul' := sorry
-
-/-
-Compose Topcat.Presheaf.stalkSpecializes with genericStalkToFunctionFieldModuleHom
-
-For this we will require that Topcat.Presheaf.stalkSpecializes can be lifted to a module
-homomorphism
--/
-noncomputable
-def genericStalkToFunctionFieldModuleHom' {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
-    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (x : X) :
-    ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf x)
-    →ₗ[X.presheaf.stalk x] X.functionField := sorry
-
-/-
-Here we need to show that the set of elements with valuation ≤ D p form a submodule (because of
-course they do)
-
-Then we should show that these are all isomorphic because we have a map which multiplies by some
-power of a uniformizer
-
-This shouldn't rely on anything here, so we can do this and maybe get it merged independently of
-this nonsense
-
-
-Now, what's the argument that we get an isomorphism here? Well, to give a map out of a coproduct
-is to give a map out of the components. So we take a neighbourhood around p which has no points in
-the support of D except p and in which our function has no zeros or poles.
-
-Maybe we should just be doing this isomorphism directly instead of going via these stalk maps and
-so on. It occurs to me that a colimit
--/
-
-lemma dskan {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
-    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (x : X) [IsDiscreteValuationRing (X.presheaf.stalk x)]:
-    Submodule.map (D.genericStalkToFunctionFieldModuleHom' x) ⊤ =
-    sorry := sorry
-
-/-
-Next: Show that this is an iso (the proof should be that (f) + D ≥ 0 on any set where
-(f) has no poles)
-
-This gives us a map 𝒪ₓ(D)ₐ → K(X) for any a : X.
-
-If a is codimension one, we want to argue that the range of this map is precisely the
-valuation subring of 𝒪ₓ,ₐ in the function field.
--/
 end AlgebraicCycle
