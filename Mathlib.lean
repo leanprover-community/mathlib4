@@ -560,6 +560,7 @@ public import Mathlib.Algebra.GroupWithZero.TransferInstance
 public import Mathlib.Algebra.GroupWithZero.ULift
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Algebra.GroupWithZero.Units.Equiv
+public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Algebra.GroupWithZero.WithZero
 public import Mathlib.Algebra.HierarchyDesign
@@ -3378,6 +3379,7 @@ public import Mathlib.CategoryTheory.Sites.Hypercover.SheafOfTypes
 public import Mathlib.CategoryTheory.Sites.Hypercover.Subcanonical
 public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 public import Mathlib.CategoryTheory.Sites.Hypercover.ZeroFamily
+public import Mathlib.CategoryTheory.Sites.InducedTopology
 public import Mathlib.CategoryTheory.Sites.IsSheafFor
 public import Mathlib.CategoryTheory.Sites.JointlySurjective
 public import Mathlib.CategoryTheory.Sites.LeftExact
@@ -4301,16 +4303,21 @@ public import Mathlib.Data.Rat.Floor
 public import Mathlib.Data.Rat.Init
 public import Mathlib.Data.Rat.Lemmas
 public import Mathlib.Data.Rat.NatSqrt.Defs
+public import Mathlib.Data.Rat.NatSqrt.Real
 public import Mathlib.Data.Rat.Sqrt
 public import Mathlib.Data.Rat.Star
+public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Data.Real.CompleteField
 public import Mathlib.Data.Real.ConjExponents
 public import Mathlib.Data.Real.ENatENNReal
 public import Mathlib.Data.Real.Embedding
+public import Mathlib.Data.Real.Hom
 public import Mathlib.Data.Real.Pointwise
 public import Mathlib.Data.Real.Sign
+public import Mathlib.Data.Real.Sqrt
 public import Mathlib.Data.Real.Star
+public import Mathlib.Data.Real.StarOrdered
 public import Mathlib.Data.Rel
 public import Mathlib.Data.Rel.Cover
 public import Mathlib.Data.Rel.Separated
@@ -4533,6 +4540,7 @@ public import Mathlib.FieldTheory.PerfectClosure
 public import Mathlib.FieldTheory.PolynomialGaloisGroup
 public import Mathlib.FieldTheory.PrimeField
 public import Mathlib.FieldTheory.PrimitiveElement
+public import Mathlib.FieldTheory.PurelyInseparable.AdjoinPthRoots
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
 public import Mathlib.FieldTheory.PurelyInseparable.Exponent
 public import Mathlib.FieldTheory.PurelyInseparable.PerfectClosure
@@ -5055,11 +5063,14 @@ public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import Mathlib.LinearAlgebra.LinearPMap
 public import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
+public import Mathlib.LinearAlgebra.Matrix.Action
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
 public import Mathlib.LinearAlgebra.Matrix.BaseChange
 public import Mathlib.LinearAlgebra.Matrix.Basis
+public import Mathlib.LinearAlgebra.Matrix.Bilinear
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Cartan
 public import Mathlib.LinearAlgebra.Matrix.CharP
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
@@ -5078,6 +5089,7 @@ public import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Dual
+public import Mathlib.LinearAlgebra.Matrix.DualNumber
 public import Mathlib.LinearAlgebra.Matrix.FiniteDimensional
 public import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
@@ -5093,6 +5105,7 @@ public import Mathlib.LinearAlgebra.Matrix.HermitianFunctionalCalculus
 public import Mathlib.LinearAlgebra.Matrix.Ideal
 public import Mathlib.LinearAlgebra.Matrix.Integer
 public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
+public import Mathlib.LinearAlgebra.Matrix.Invertible
 public import Mathlib.LinearAlgebra.Matrix.Irreducible.Defs
 public import Mathlib.LinearAlgebra.Matrix.IsDiag
 public import Mathlib.LinearAlgebra.Matrix.Kronecker
@@ -5394,6 +5407,7 @@ public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 public import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Basic
 public import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Continuous
 public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
+public import Mathlib.MeasureTheory.Function.LpSpace.InfiniteSum
 public import Mathlib.MeasureTheory.Function.Piecewise
 public import Mathlib.MeasureTheory.Function.SimpleFunc
 public import Mathlib.MeasureTheory.Function.SimpleFuncDense
@@ -6202,6 +6216,7 @@ public import Mathlib.Probability.CondVar
 public import Mathlib.Probability.ConditionalExpectation
 public import Mathlib.Probability.ConditionalProbability
 public import Mathlib.Probability.Decision.Risk.Basic
+public import Mathlib.Probability.Decision.Risk.Countable
 public import Mathlib.Probability.Decision.Risk.Defs
 public import Mathlib.Probability.Density
 public import Mathlib.Probability.Distributions.Bernoulli
@@ -7075,10 +7090,12 @@ public import Mathlib.SetTheory.Cardinal.Finite
 public import Mathlib.SetTheory.Cardinal.Finsupp
 public import Mathlib.SetTheory.Cardinal.Free
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
+public import Mathlib.SetTheory.Cardinal.NatCard
 public import Mathlib.SetTheory.Cardinal.NatCount
 public import Mathlib.SetTheory.Cardinal.Order
 public import Mathlib.SetTheory.Cardinal.Ordinal
 public import Mathlib.SetTheory.Cardinal.Pigeonhole
+public import Mathlib.SetTheory.Cardinal.Rat
 public import Mathlib.SetTheory.Cardinal.Regular
 public import Mathlib.SetTheory.Cardinal.SchroederBernstein
 public import Mathlib.SetTheory.Cardinal.Subfield
@@ -7871,6 +7888,7 @@ public import Mathlib.Topology.LocallyConstant.Algebra
 public import Mathlib.Topology.LocallyConstant.Basic
 public import Mathlib.Topology.LocallyFinite
 public import Mathlib.Topology.LocallyFinsupp
+public import Mathlib.Topology.LocallyFinsupp.Pushforward
 public import Mathlib.Topology.Maps.Basic
 public import Mathlib.Topology.Maps.OpenQuotient
 public import Mathlib.Topology.Maps.Proper.Basic
