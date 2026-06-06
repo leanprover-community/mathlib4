@@ -299,7 +299,7 @@ lemma Algebra.trace_eq_zero_of_not_isSeparable (H : ¬ Algebra.IsSeparable K L) 
         rw [one_pow, IntermediateField.finrank_eq_one_iff_eq_top, separableClosure.eq_top_iff] at hn
         cases H hn
       | prime hprime =>
-        rw [hn, pow_succ', SemigroupAction.mul_smul, LinearMap.map_smul_of_tower, nsmul_eq_mul,
+        rw [hn, pow_succ', mul_smul, LinearMap.map_smul_of_tower, nsmul_eq_mul,
           CharP.cast_eq_zero, zero_mul, LinearMap.zero_apply]
   · rw [trace_eq_finrank_mul_minpoly_nextCoeff]
     obtain ⟨g, hg₁, m, hg₂⟩ :=
@@ -535,9 +535,6 @@ namespace Algebra
 lemma isNilpotent_trace_of_isNilpotent {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {x : S}
     (hx : IsNilpotent x) : IsNilpotent (trace R S x) :=
   LinearMap.isNilpotent_trace_of_isNilpotent (hx.map (lmul R S))
-
-@[deprecated (since := "2025-10-21")] alias trace_isNilpotent_of_isNilpotent :=
-  isNilpotent_trace_of_isNilpotent
 
 end Algebra
 

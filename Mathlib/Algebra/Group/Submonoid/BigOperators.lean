@@ -50,7 +50,11 @@ theorem coe_finsetProd {ι M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] 
     (s : Finset ι) : ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : M) :=
   map_prod (SubmonoidClass.subtype S) f s
 
-@[deprecated (since := "2026-04-08")] alias coe_finset_prod := coe_finsetProd
+@[deprecated (since := "2026-04-08")]
+alias _root_.AddSubmonoidClass.coe_finset_sum := _root_.AddSubmonoidClass.coe_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias coe_finset_prod := coe_finsetProd
 
 end SubmonoidClass
 
@@ -104,7 +108,11 @@ theorem coe_finsetProd {ι M} [CommMonoid M] (S : Submonoid M) (f : ι → S) (s
     ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : M) :=
   map_prod S.subtype f s
 
-@[deprecated (since := "2026-04-08")] alias coe_finset_prod := coe_finsetProd
+@[deprecated (since := "2026-04-08")]
+alias _root_.AddSubmonoid.coe_finset_sum := _root_.AddSubmonoid.coe_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias coe_finset_prod := coe_finsetProd
 
 /-- Product of a list of elements in a submonoid is in the submonoid. -/
 @[to_additive /-- Sum of a list of elements in an `AddSubmonoid` is in the `AddSubmonoid`. -/]
@@ -158,7 +166,6 @@ lemma mem_closure_iff_exists_finset_subset {s : Set M} :
     induction hx using closure_induction with
     | one => exact ⟨0, ∅, by simp⟩
     | mem x hx =>
-      simp only at hx
       exact ⟨Pi.single x 1, {x}, by simp [hx, Pi.single_apply]⟩
     | mul x y _ _ hx hy =>
     obtain ⟨f, t, hts, hf, rfl⟩ := hx

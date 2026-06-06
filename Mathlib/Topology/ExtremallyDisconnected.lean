@@ -309,4 +309,23 @@ instance instExtremallyDisconnected {ι : Type*} {X : ι → Type*} [∀ i, Topo
       exact isOpen_empty
   · fun_prop
 
+variable {X}
+
+/-- A preirreducible space is extremally disconnected. -/
+instance (priority := 100) [h : PreirreducibleSpace X] : ExtremallyDisconnected X where
+  open_closure U hU := by
+    by_cases! Un : U = ∅
+    · simp_all
+    · exact ((preirreducibleSpace_iff_open_dense X).mp h hU Un).closure_eq ▸ isOpen_univ
+
+/-- A (pre-)connected, extremally disconnected space is preirreducible. -/
+theorem ExtremallyDisconnected.toPreirreducibleSpace [h : ExtremallyDisconnected X]
+    [h' : PreconnectedSpace X] :
+    PreirreducibleSpace X := by
+  apply (preirreducibleSpace_iff_open_dense X).mpr (fun s hs sn ↦ ?_)
+  apply dense_iff_closure_eq.mpr
+  cases preconnectedSpace_iff_clopen.mp h' (closure s) ⟨isClosed_closure, h.open_closure s hs⟩
+  · simp_all
+  · assumption
+
 end

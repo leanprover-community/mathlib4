@@ -256,7 +256,7 @@ instance : Semiring (FreeAlgebra R X) where
   __ := instDistrib R X
   natCast n := Quot.mk _ (n : R)
   natCast_zero := by simp; rfl
-  natCast_succ n := by simpa using Quot.sound Rel.add_scalar
+  natCast_succ n := by simpa using! Quot.sound Rel.add_scalar
 
 instance : Inhabited (FreeAlgebra R X) :=
   ⟨0⟩
@@ -481,7 +481,7 @@ def algebraMapInv : FreeAlgebra R X →ₐ[R] R :=
 
 theorem algebraMap_leftInverse :
     Function.LeftInverse algebraMapInv (algebraMap R <| FreeAlgebra R X) := fun x ↦ by
-  simp [algebraMapInv]
+  simp
 
 @[simp]
 theorem algebraMap_inj (x y : R) :
@@ -558,7 +558,7 @@ theorem induction {motive : FreeAlgebra R X → Prop}
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (FreeAlgebra R X) = s.val.comp (lift R of) := by
     ext
-    simp [of, Subtype.coind]
+    simp [of]
   -- finding a proof is finding an element of the subalgebra
   suffices a = lift R of a by
     rw [this]

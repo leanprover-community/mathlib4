@@ -71,11 +71,10 @@ lemma instStarOrderedRingRCLike
       induction hp using AddSubmonoid.closure_induction with
       | mem _ hf =>
         obtain ⟨f, rfl⟩ := hf
-        simpa using ContinuousLinearMap.IsPositive.adjoint_conj isPositive_one f
+        simpa using! ContinuousLinearMap.IsPositive.adjoint_conj isPositive_one f
       | zero => exact isPositive_zero
       | add f g _ _ hf hg => exact hf.add hg
 
-set_option backward.isDefEq.respectTransparency false in
 instance instStarOrderedRing {H : Type*} [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H] : StarOrderedRing (H →L[ℂ] H) :=
   instStarOrderedRingRCLike
