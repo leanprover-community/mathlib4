@@ -30,8 +30,8 @@ variable {S : Type*} [SetLike S α] [SubgroupClass S α] {H : S}
     exact (mul_mem_cancel_right hc).mpr <| convex ((mul_le_mul_iff_right c⁻¹).mpr binIcc.1)
       (mul_inv_le_one_iff_le.mpr binIcc.2) <| mul_mem ha (inv_mem hc)
 
-@[to_additive] lemma Set.OrdConnected.of_subgroup (h : ∀ ⦃a b : α⦄, a ≤ b → b ≤ 1 → a ∈ H → b ∈ H) :
-    (H : Set α).OrdConnected :=
+@[to_additive] lemma Set.OrdConnected.coe_subgroup
+    (h : ∀ ⦃a b : α⦄, a ≤ b → b ≤ 1 → a ∈ H → b ∈ H) : (H : Set α).OrdConnected :=
   Subgroup.ordConnected_iff_mem_of_le_one.mpr h
 
 @[to_additive] lemma Subgroup.ordConnected_iff_mem_and_mem_of_mul_mem :
@@ -150,14 +150,14 @@ theorem coe_min : min G H = (G : Set α) ∩ H := rfl
       exacts [⟨H, mul_mem (le haG) hbH⟩, ⟨G, mul_mem haG (le hbH)⟩]
     inv_mem' := by simp
     one_mem' := by simp
-    ordConnected' := .of_subgroup fun a b hab hb1 ↦ by
+    ordConnected' := .coe_subgroup fun a b hab hb1 ↦ by
       rintro (rfl | ex)
       · exact .inl (hb1.antisymm hab)
       obtain ⟨G, haG⟩ := Set.mem_iUnion.mp ex
       exact .inr <| Set.mem_iUnion.mpr ⟨G, G.1.ordConnected.1 haG G.1.one_mem ⟨hab, hb1⟩⟩ }
 
 @[to_additive] instance : InfSet (ConvexSubgroup α) where
-  sInf s := .mk (⨅ G : s, G.1.toSubgroup) <| .of_subgroup fun a b hab hb1 ha ↦ by
+  sInf s := .mk (⨅ G : s, G.1.toSubgroup) <| .coe_subgroup fun a b hab hb1 ha ↦ by
     rw [Subgroup.mem_iInf] at ha ⊢
     exact fun G ↦ G.1.ordConnected.1 (ha G) G.1.one_mem ⟨hab, hb1⟩
 
