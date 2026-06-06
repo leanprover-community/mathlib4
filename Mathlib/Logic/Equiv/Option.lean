@@ -89,6 +89,7 @@ theorem removeNoneAux_none {x : α} (h : e (some x) = none) :
     some (removeNoneAux e x) = e none := by
   simp [removeNoneAux, Option.not_isSome_iff_eq_none.mpr h]
 
+-- FIXME: This declaration is misnamed.
 theorem removeNoneAux_inv (x : α) : removeNoneAux e.symm (removeNoneAux e x) = x :=
   Option.some_injective _
     (by
