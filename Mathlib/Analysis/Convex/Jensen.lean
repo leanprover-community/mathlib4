@@ -180,11 +180,10 @@ theorem StrictConvexOn.map_sum_eq_iff_of_pos (hf : StrictConvexOn 𝕜 s f) (h�
     (h₁ : ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s) :
     f (∑ i ∈ t, w i • p i) = ∑ i ∈ t, w i • f (p i) ↔ ∀ ⦃j⦄, j ∈ t → ∀ ⦃k⦄, k ∈ t → p j = p k := by
   refine ⟨fun h j hj k hk ↦ hf.eq_of_le_map_sum h₀ h₁ hmem h.ge hj hk, fun h ↦ ?_⟩
-  rcases t.eq_empty_or_nonempty with (rfl | hne)
+  rcases t.eq_empty_or_nonempty with (rfl | ⟨i, hi⟩)
   · simp at h₁
-  have ⟨i, hi⟩ := hne
-  simp [sum_congr rfl fun j hj ↦ congrArg (w j • ·) <| h hj hi,
-    sum_congr rfl fun j hj ↦ congrArg (w j • f ·) <| h hj hi, ← sum_smul, h₁]
+  · suffices f (∑ k ∈ t, w k • p i) = ∑ k ∈ t, w k • f (p i) by convert this using 3 <;> grind
+    simp [← sum_smul, h₁]
 
 /-- A form of the **equality case of Jensen's equality** for the case of strict concave and positive
 weights. -/
