@@ -135,7 +135,7 @@ noncomputable def sheafificationAdjunction :
           AddCommGrpCat.{v}).homEquiv_naturality_left_symm
       homEquiv_naturality_right := fun {P₀ M N} f g ↦ by
         apply (toPresheaf _).map_injective
-        rw [toPresheaf_map_sheafificationHomEquiv] }
+        erw [toPresheaf_map_sheafificationHomEquiv] }
 
 lemma sheafificationAdjunction_homEquiv_apply {P : PresheafOfModules.{v} R₀}
     {F : SheafOfModules.{v} R} (f : (sheafification α).obj P ⟶ F) :
