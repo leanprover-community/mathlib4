@@ -47,6 +47,8 @@ open Set Module
 
 namespace LieModule
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-- A finite, free representation of a Lie algebra `L` induces a bilinear form on `L` called
 the trace form. See also `killingForm`. -/
 noncomputable def traceForm : LinearMap.BilinForm R L :=
