@@ -157,6 +157,10 @@ theorem nonempty_of_nonempty_preimage {s : Set β} {f : α → β} (hf : (f ⁻�
   let ⟨x, hx⟩ := hf
   ⟨f x, hx⟩
 
+theorem nonempty_preimage_iff {s : Set β} {f : α → β} :
+    (f ⁻¹' s).Nonempty ↔ (s ∩ range f).Nonempty := by
+  simp [Set.Nonempty]
+
 @[simp] theorem preimage_singleton_true (p : α → Prop) : p ⁻¹' {True} = {a | p a} := by ext; simp
 
 @[simp] theorem preimage_singleton_false (p : α → Prop) : p ⁻¹' {False} = {a | ¬p a} := by ext; simp
@@ -218,6 +222,8 @@ lemma monotone_image : Monotone (image f) := fun _ _ => image_mono
 theorem image_comp (f : β → γ) (g : α → β) (a : Set α) : f ∘ g '' a = f '' g '' a := by aesop
 
 theorem image_comp_eq {g : β → γ} : image (g ∘ f) = image g ∘ image f := by grind
+
+theorem image_comp_image {g : β → γ} : image g ∘ image f = image (g ∘ f) := by grind
 
 /-- A variant of `image_comp`, useful for rewriting -/
 @[grind =]

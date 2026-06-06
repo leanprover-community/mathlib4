@@ -8,12 +8,12 @@ module
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Algebra.GroupWithZero.Subgroup
-public import Mathlib.Data.Finite.Card
 public import Mathlib.Data.Finite.Prod
 public import Mathlib.Data.Set.Card
 public import Mathlib.GroupTheory.Coset.Card
 public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.GroupTheory.QuotientGroup.Basic
+public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
 # Index of a Subgroup
@@ -328,7 +328,7 @@ theorem index_map_eq (hf1 : Surjective f) (hf2 : f.ker ≤ H) : (H.map f).index 
 
 @[to_additive]
 lemma index_map_of_bijective (hf : Bijective f) (H : Subgroup G) : (H.map f).index = H.index :=
-  index_map_eq _ hf.2 (by rw [f.ker_eq_bot_iff.2 hf.1]; exact bot_le)
+  index_map_eq _ hf.2 (by rw [f.ker_eq_bot hf.1]; exact bot_le)
 
 @[to_additive (attr := simp)]
 theorem index_map_equiv (e : G ≃* G') : (map (e : G →* G') H).index = H.index :=
@@ -337,7 +337,7 @@ theorem index_map_equiv (e : G ≃* G') : (map (e : G →* G') H).index = H.inde
 @[to_additive]
 theorem index_map_of_injective {f : G →* G'} (hf : Function.Injective f) :
     (H.map f).index = H.index * f.range.index := by
-  rw [H.index_map, f.ker_eq_bot_iff.mpr hf, sup_bot_eq]
+  rw [H.index_map, f.ker_eq_bot hf, sup_bot_eq]
 
 @[to_additive]
 theorem index_map_subtype {H : Subgroup G} (K : Subgroup H) :
