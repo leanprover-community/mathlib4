@@ -772,6 +772,27 @@ end Semiring
 
 end AlgEquiv
 
+namespace RingEquiv
+
+variable {R S : Type*}
+
+/-- Reinterpret a `RingEquiv` as a `ℤ`-algebra isomorphism. -/
+def toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) : R ≃ₐ[ℤ] S :=
+  { f with commutes' := fun n ↦ by simp }
+
+@[simp]
+lemma toIntAlgEquiv_coe [Ring R] [Ring S] (f : R ≃+* S) :
+    ⇑f.toIntAlgEquiv = ⇑f := rfl
+
+lemma toIntAlgEquiv_apply [Ring R] [Ring S] (f : R ≃+* S) (x : R) :
+    f.toIntAlgEquiv x = f x := rfl
+
+lemma toIntAlgEquiv_injective [Ring R] [Ring S] :
+    Function.Injective (RingEquiv.toIntAlgEquiv : (R ≃+* S) → _) :=
+  fun _ _ e ↦ DFunLike.ext _ _ (fun x ↦ DFunLike.congr_fun e x)
+
+end RingEquiv
+
 namespace MulSemiringAction
 
 variable {M G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
