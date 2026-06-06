@@ -196,9 +196,11 @@ theorem ae_eq_set_union {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ] t'
     (s ∪ s' : Set α) =ᵐ[μ] (t ∪ t' : Set α) :=
   h.union h'
 
-theorem ae_eq_set_diff {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ] t') :
+theorem ae_eq_set_sdiff {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ] t') :
     s \ s' =ᵐ[μ] t \ t' :=
   h.diff h'
+
+@[deprecated (since := "2026-06-03")] alias ae_eq_set_diff := ae_eq_set_sdiff
 
 open scoped symmDiff in
 theorem ae_eq_set_symmDiff {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ] t') :
