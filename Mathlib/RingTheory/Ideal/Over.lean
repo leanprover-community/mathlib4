@@ -336,8 +336,7 @@ def stabilizerHom : MulAction.stabilizer G P →* ((B ⧸ P) ≃ₐ[A ⧸ p] (B 
     stabilizerHom P p G g b = ↑(g • b) :=
   rfl
 
-lemma ker_stabilizerHom :
-    (stabilizerHom P p G).ker = (P.inertia G).subgroupOf _ := by
+lemma ker_stabilizerHom : (stabilizerHom P p G).ker = P.inertia (MulAction.stabilizer G P) := by
   ext σ
   simp [DFunLike.ext_iff, mk_surjective.forall, Quotient.eq]
 
