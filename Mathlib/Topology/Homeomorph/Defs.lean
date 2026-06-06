@@ -92,13 +92,6 @@ def Simps.symm_apply (h : X ≃ₜ Y) : Y → X :=
 
 initialize_simps_projections Homeomorph (toFun → apply, invFun → symm_apply, as_prefix toEquiv)
 
-@[simp]
-theorem coe_toEquiv (h : X ≃ₜ Y) : ⇑h.toEquiv = h :=
-  rfl
-
-@[simp]
-theorem coe_symm_toEquiv (h : X ≃ₜ Y) : ⇑h.toEquiv.symm = h.symm :=
-  rfl
 
 @[ext]
 theorem ext {h h' : X ≃ₜ Y} (H : ∀ x, h x = h' x) : h = h' :=
