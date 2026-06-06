@@ -130,13 +130,14 @@ protected theorem mdifferentiableAt (hn : n ≠ 0) {x : M} (hx : x ∈ Φ.source
 such as
 * further continuity and differentiability lemmas
 * refl and trans instances; lemmas between them.
+
 As this declaration is meant for internal use only, we keep it simple. -/
 end PartialDiffeomorph
 end PartialDiffeomorph
 
 variable {M N}
 
-/-- `f : M → N` is called a **`C^n` local diffeomorphism at *x*** iff there exist
+/-- `f : M → N` is called a **`C^n` local diffeomorphism at `x`** iff there exist
 open sets `U ∋ x` and `V ∋ f x` and a diffeomorphism `Φ : U → V` such that `f = Φ` on `U`. -/
 def IsLocalDiffeomorphAt (f : M → N) (x : M) : Prop :=
   ∃ Φ : PartialDiffeomorph I J M N n, x ∈ Φ.source ∧ EqOn f Φ Φ.source
@@ -223,7 +224,7 @@ lemma localInverse_mdifferentiableAt (hf : IsLocalDiffeomorphAt I J n f x) (hn :
 
 end IsLocalDiffeomorphAt
 
-/-- `f : M → N` is called a **`C^n` local diffeomorphism on *s*** iff it is a local diffeomorphism
+/-- `f : M → N` is called a **`C^n` local diffeomorphism on `s`** iff it is a local diffeomorphism
 at each `x : s`. -/
 @[expose] def IsLocalDiffeomorphOn (f : M → N) (s : Set M) : Prop :=
   ∀ x : s, IsLocalDiffeomorphAt I J n f x
@@ -339,7 +340,7 @@ def IsLocalDiffeomorph.diffeomorphOfBijective
   have aux (x) : EqOn g (Φ x).symm (Φ x).target :=
     eqOn_of_leftInvOn_of_rightInvOn (fun x' _ ↦ hgInverse.1 x')
       (LeftInvOn.congr_left ((Φ x).toOpenPartialHomeomorph).rightInvOn
-        ((Φ x).toOpenPartialHomeomorph).symm_mapsTo (hyp x).2.symm)
+        ((Φ x).toOpenPartialHomeomorph).mapsTo_symm (hyp x).2.symm)
       (fun _y hy ↦ (Φ x).map_target hy)
   exact {
     toFun := f

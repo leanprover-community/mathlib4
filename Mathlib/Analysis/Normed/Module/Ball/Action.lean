@@ -18,7 +18,7 @@ multiplicative actions.
 - The unit sphere in `𝕜` acts on open balls, closed balls, and spheres centered at `0` in `E`.
 -/
 
-@[expose] public section
+public section
 
 
 open Metric Set

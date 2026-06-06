@@ -23,7 +23,7 @@ which were not available in the import dependencies of `Mathlib/Data/Int/Cast/Ba
 Move order lemmas about `Nat.cast`, `Rat.cast`, `NNRat.cast` here.
 -/
 
-@[expose] public section
+public section
 
 open Function Nat
 
@@ -103,8 +103,6 @@ lemma nneg_mul_add_sq_of_abs_le_one (n : ℤ) (hx : |x| ≤ 1) : (0 : R) ≤ n *
   · exact Or.inr ⟨mod_cast h.le, hnx' h⟩
   · simp [le_total 0 x]
   · exact Or.inl ⟨mod_cast h.le, hnx h⟩
-
-@[deprecated (since := "2025-11-07")] alias cast_natAbs := Nat.cast_natAbs
 
 end LinearOrderedRing
 end Int

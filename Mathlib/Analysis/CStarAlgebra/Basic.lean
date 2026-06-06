@@ -30,7 +30,7 @@ Note that the type classes corresponding to C⋆-algebras are defined in
 ## TODO
 
 - Show that `‖x⋆ * x‖ = ‖x‖^2` is equivalent to `‖x⋆ * x‖ = ‖x⋆‖ * ‖x‖`, which is used as the
-  definition of C*-algebras in some sources (e.g. Wikipedia).
+  definition of C⋆-algebras in some sources (e.g. Wikipedia).
 
 -/
 
@@ -83,7 +83,7 @@ instance RingHomIsometric.starRingEnd [NormedCommRing E] [StarRing E] [NormedSta
     RingHomIsometric (starRingEnd E) :=
   ⟨@norm_star _ _ _ _⟩
 
-/-- A C*-ring is a normed star ring that satisfies the stronger condition `‖x‖ ^ 2 ≤ ‖x⋆ * x‖`
+/-- A C⋆-ring is a normed star ring that satisfies the stronger condition `‖x‖ ^ 2 ≤ ‖x⋆ * x‖`
 for every `x`. Note that this condition actually implies equality, as is shown in
 `norm_star_mul_self` below. -/
 class CStarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
@@ -111,7 +111,7 @@ lemma of_le_norm_mul_star_self
 variable [NonUnitalNormedRing E] [StarRing E] [CStarRing E]
 
 -- see Note [lower instance priority]
-/-- In a C*-ring, star preserves the norm. -/
+/-- In a C⋆-ring, star preserves the norm. -/
 instance (priority := 100) to_normedStarGroup : NormedStarGroup E where
   norm_star_le x := by
     obtain (hx | hx) := eq_zero_or_norm_pos x⋆
@@ -186,7 +186,7 @@ instance _root_.Pi.cstarRing : CStarRing (∀ i, R i) where
     simp only [norm, Pi.mul_apply, Pi.star_apply, nnnorm_star_mul_self, ← sq]
     norm_cast
     exact
-      (Finset.comp_sup_eq_sup_comp_of_is_total (fun x : NNReal => x ^ 2)
+      (Finset.apply_sup_eq_sup_comp_of_linearOrder (fun x : NNReal => x ^ 2)
           (fun x y h => by simpa only [sq] using mul_le_mul' h h) (by simp)).symm
 
 instance _root_.Pi.cstarRing' : CStarRing (ι → R₁) :=
@@ -214,11 +214,11 @@ theorem norm_one [Nontrivial E] : ‖(1 : E)‖ = 1 := by
 instance (priority := 100) [Nontrivial E] : NormOneClass E :=
   ⟨norm_one⟩
 
+@[simp]
 theorem norm_coe_unitary [Nontrivial E] (U : unitary E) : ‖(U : E)‖ = 1 := by
   rw [← sq_eq_sq₀ (norm_nonneg _) zero_le_one, one_pow 2, sq, ← CStarRing.norm_star_mul_self,
     Unitary.coe_star_mul_self, CStarRing.norm_one]
 
-@[simp]
 theorem norm_of_mem_unitary [Nontrivial E] {U : E} (hU : U ∈ unitary E) : ‖U‖ = 1 :=
   norm_coe_unitary ⟨U, hU⟩
 
@@ -288,9 +288,17 @@ theorem starₗᵢ_apply {x : E} : starₗᵢ 𝕜 x = star x :=
   rfl
 
 @[simp]
+theorem symm_starₗᵢ : (starₗᵢ 𝕜 : E ≃ₗᵢ⋆[𝕜] E).symm = starₗᵢ 𝕜 :=
+  rfl
+
+@[simp]
 theorem starₗᵢ_toContinuousLinearEquiv :
     (starₗᵢ 𝕜 : E ≃ₗᵢ⋆[𝕜] E).toContinuousLinearEquiv = (starL 𝕜 : E ≃L⋆[𝕜] E) :=
   ContinuousLinearEquiv.ext rfl
+
+@[simp]
+theorem toLinearEquiv_starₗᵢ : (starₗᵢ 𝕜 : E ≃ₗᵢ⋆[𝕜] E).toLinearEquiv = starLinearEquiv 𝕜 :=
+  rfl
 
 end starₗᵢ
 

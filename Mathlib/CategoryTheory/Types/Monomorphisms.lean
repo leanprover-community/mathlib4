@@ -25,7 +25,7 @@ in the file `Mathlib/CategoryTheory/MorphismProperty/Retract.lean`.)
 
 -/
 
-@[expose] public section
+public section
 
 universe v' u' u
 
@@ -38,6 +38,7 @@ instance : (monomorphisms (Type u)).IsStableUnderCobaseChange where
     simp only [monomorphisms.iff] at ht ⊢
     exact Limits.Types.pushoutCocone_inr_mono_of_isColimit sq.flip.isColimit
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : MorphismProperty.IsStableUnderFilteredColimits.{v', u'}
     (monomorphisms (Type u)) where
