@@ -152,6 +152,26 @@ lemma embDomain_notin_range (f : α ↪ β) (v : Π₀ a, M (f a)) {b : β} (hb 
   dsimp [Trunc.lift_mk]
   grind
 
+@[simp]
+lemma support_embDomain [DecidableEq α] [∀ i (x : M i), Decidable (x ≠ 0)]
+    (f : α ↪ β) (v : Π₀ a, M (f a)) :
+    (embDomain f v).support = v.support.map f := by
+  ext b
+  simp only [DFinsupp.mem_support_toFun, Finset.mem_map]
+  by_cases hb : b ∈ Set.range f
+  · rcases hb with ⟨a, rfl⟩
+    rw [embDomain_apply_self]
+    grind
+  · rw [embDomain_notin_range f v hb]
+    grind
+
+@[to_additive]
+lemma prod_embDomain [DecidableEq α] [∀ i (x : M i), Decidable (x ≠ 0)] [CommMonoid N]
+    (f : α ↪ β) (v : Π₀ a, M (f a)) (g : ∀ b, M b → N) :
+    (embDomain f v).prod g = v.prod fun a m => g (f a) m := by
+  rw [prod, support_embDomain, Finset.prod_map]
+  exact Finset.prod_congr rfl fun a _ => congr_arg _ (embDomain_apply_self f v a)
+
 end EmbDomain
 
 section MapDomain
@@ -341,13 +361,12 @@ theorem embDomain_eq_mapDomain (f : α ↪ β) (v : Π₀ a, M (f a)) : embDomai
   · rw [mapDomain_notin_range, embDomain_notin_range] <;> assumption
 
 @[to_additive]
-theorem prod_mapDomain_index_inj
+theorem prod_mapDomain_index_inj {N}
     [∀ i (x : M i), Decidable (x ≠ 0)] [CommMonoid N]
     {f : α → β} {s : Π₀ a, M (f a)} {h : (b : β) → M b → N} (hf : Function.Injective f) :
     (s.mapDomain f).prod h = s.prod fun a b => h (f a) b := by
   lift f to α ↪ β using hf
-  rw [← embDomain_eq_mapDomain]
-  sorry
+  rw [← embDomain_eq_mapDomain, prod_embDomain]
 
 theorem mapDomain_injective {f : α → β} (hf : Function.Injective f) :
     Function.Injective (mapDomain f : (Π₀ a, M (f a)) → (Π₀ b, M b)) := by
