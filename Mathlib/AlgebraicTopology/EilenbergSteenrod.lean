@@ -126,7 +126,7 @@ lemma inv_hom_iso_homₚ_app (f : HP ⟶ HP') (i : ι) (X : TopCat.{u}) :
 /-- The forgetful functor that sends a `HomologyPretheory` to it's relative homology functor `Hₚ`.
 -/
 @[simps]
-protected def hₚFunctor (i : ι) : HomologyPretheory.{u} C c ⥤ TopPair.{u} ⥤ C where
+def hₚFunctor (i : ι) : HomologyPretheory.{u} C c ⥤ TopPair.{u} ⥤ C where
   obj HP := HP.Hₚ i
   map f := f.homₚ i
 
@@ -135,7 +135,7 @@ instance (f : HP ⟶ HP') [IsIso f] (i : ι) : IsIso (f.homₚ i) :=
 
 /-- The forgetful functor that sends a `HomologyPretheory` to it's homology functor `H`. -/
 @[simps]
-protected def hFunctor (i : ι) : HomologyPretheory.{u} C c ⥤ TopCat.{u} ⥤ C where
+def hFunctor (i : ι) : HomologyPretheory.{u} C c ⥤ TopCat.{u} ⥤ C where
   obj HP := HP.H i
   map f := f.hom i
 
@@ -177,7 +177,7 @@ class HasExcisionIso where
 
 instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) HasExcisionIso where
   of_iso e hHP := { excision _ _ _ _ _ hf hg hcompl hU _ := (NatIso.isIso_map_iff
-    ((HomologyPretheory.forgetₚ _).mapIso e) _).mp (hHP.excision _ _ hf hg hcompl hU _) }
+    ((hₚFunctor _).mapIso e) _).mp (hHP.excision _ _ hf hg hcompl hU _) }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Under the assumptions of excision, the map of the pair `U` is an isomorphism. -/
@@ -220,7 +220,7 @@ instance IsAdditive.additive_of_small [IsAdditive HP] (J : Type*) [Small.{u} J] 
 
 instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) IsAdditive where
   of_iso {HP HP'} e _ := { additive _ _ := Limits.preservesColimitsOfShape_of_natIso ((HP.iso _) ≪≫
-    Functor.isoWhiskerLeft incl ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫ (HP'.iso _).symm) }
+    Functor.isoWhiskerLeft incl ((hₚFunctor _).mapIso e) ≪≫ (HP'.iso _).symm) }
 
 /-- This imposes that a `HomologyPretheory` has the long exact sequence of topological pairs
 `⋯ ⟶ H (c.next i) X.fst ⟶ Hₚ (c.next i) X) ⟶ H i X.snd ⟶ H i X.fst ⟶ ⋯`. -/
@@ -244,10 +244,10 @@ instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) HasPairSequenc
       let pairSeq' := ComposableArrows.mk₂ ((HP'.Hₚ i).map X.j) ((HP'.δ i j).app X)
       have pairSeqIso : pairSeq ≅ pairSeq' :=
         ComposableArrows.isoMk₂
-          (((HomologyPretheory.forgetₚ _).mapIso e).app _)
-          (((HomologyPretheory.forgetₚ _).mapIso e).app _)
+          (((hₚFunctor _).mapIso e).app _)
+          (((hₚFunctor _).mapIso e).app _)
           ((proj₂.isoWhiskerLeft ((HP.iso _) ≪≫
-            incl.isoWhiskerLeft ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫
+            incl.isoWhiskerLeft ((hₚFunctor _).mapIso e) ≪≫
             (HP'.iso _).symm)).app _)
           (by cat_disch)
           (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map, Hom.w_congr_app])
@@ -257,11 +257,11 @@ instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) HasPairSequenc
       let pairSeq' := ComposableArrows.mk₂ ((HP'.δ i j).app X) ((HP'.H j).map X.map)
       have pairSeqIso : pairSeq ≅ pairSeq' :=
         ComposableArrows.isoMk₂
-          (((HomologyPretheory.forgetₚ _).mapIso e).app _)
+          (((hₚFunctor _).mapIso e).app _)
           ((proj₂.isoWhiskerLeft ((HP.iso _) ≪≫
-            incl.isoWhiskerLeft ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫
+            incl.isoWhiskerLeft ((hₚFunctor _).mapIso e) ≪≫
             (HP'.iso _).symm)).app _)
-          (((HP.iso _) ≪≫ incl.isoWhiskerLeft ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫
+          (((HP.iso _) ≪≫ incl.isoWhiskerLeft ((hₚFunctor _).mapIso e) ≪≫
             (HP'.iso _).symm).app _)
           (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map, Hom.w_congr_app])
           (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map])
@@ -274,11 +274,11 @@ instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) HasPairSequenc
       have pairSeqIso : pairSeq ≅ pairSeq' :=
         ComposableArrows.isoMk₂
           ((proj₂.isoWhiskerLeft ((HP.iso _) ≪≫
-            incl.isoWhiskerLeft ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫
+            incl.isoWhiskerLeft ((hₚFunctor _).mapIso e) ≪≫
             (HP'.iso _).symm)).app _)
-          (((HP.iso _) ≪≫ incl.isoWhiskerLeft ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫
+          (((HP.iso _) ≪≫ incl.isoWhiskerLeft ((hₚFunctor _).mapIso e) ≪≫
             (HP'.iso _).symm).app _)
-          (((HomologyPretheory.forgetₚ _).mapIso e).app _)
+          (((hₚFunctor _).mapIso e).app _)
           (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map])
           (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map]; simp only [← Category.assoc,
             Hom.iso_comm_congr_app])
@@ -302,10 +302,10 @@ instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) IsExtraordinar
     where
   of_iso e h := {
     homotopy :=
-      instIsClosedUnderIsomorphismsHomologyPretheoryIsHomotopyInvariant.of_iso e h.homotopy
-    excision := instIsClosedUnderIsomorphismsHomologyPretheoryHasExcisionIso.of_iso e h.excision
-    additive := instIsClosedUnderIsomorphismsHomologyPretheoryIsAdditive.of_iso e h.additive
-    exact := instIsClosedUnderIsomorphismsHomologyPretheoryHasPairSequence.of_iso e h.exact
+      instIsClosedUnderIsomorphismsIsHomotopyInvariant.of_iso e h.homotopy
+    excision := instIsClosedUnderIsomorphismsHasExcisionIso.of_iso e h.excision
+    additive := instIsClosedUnderIsomorphismsIsAdditive.of_iso e h.additive
+    exact := instIsClosedUnderIsomorphismsHasPairSequence.of_iso e h.exact
   }
 
 variable (HP HP' : HomologyPretheory.{u} C (ComplexShape.down ℕ))
@@ -318,7 +318,7 @@ class HasDimensionAxiom where
 instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C (ComplexShape.down ℕ))
     HasDimensionAxiom where
   of_iso {HP HP'} e h := ⟨fun n hn ↦ (Iso.isZero_iff (((HP.iso _) ≪≫ Functor.isoWhiskerLeft incl
-    ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫ (HP'.iso _).symm).app
+    ((hₚFunctor _).mapIso e) ≪≫ (HP'.iso _).symm).app
     (TopCat.of PUnit))).mp (h.dimension n hn)⟩
 
 /-- An Eilenberg-Steenrod homology theory is an extraordinary Eilenberg-Steenrod homology theory
@@ -330,9 +330,9 @@ class IsEilenbergSteenrod extends IsExtraordinaryEilenbergSteenrod.{u} HP where
 instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C (ComplexShape.down ℕ))
     IsEilenbergSteenrod where
   of_iso e h := {
-    1 := instIsClosedUnderIsomorphismsHomologyPretheoryIsExtraordinaryEilenbergSteenrod.of_iso e h.1
+    1 := instIsClosedUnderIsomorphismsIsExtraordinaryEilenbergSteenrod.of_iso e h.1
     dimension :=
-      instIsClosedUnderIsomorphismsHomologyPretheoryNatDownHasDimensionAxiom.of_iso e h.dimension
+      instIsClosedUnderIsomorphismsNatDownHasDimensionAxiom.of_iso e h.dimension
   }
 
 end HomologyPretheory
