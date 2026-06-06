@@ -458,7 +458,7 @@ theorem dvd_iff_content_dvd_content_and_primPart_dvd_primPart {p q : R[X]} (hq :
     rw [p.eq_C_content_mul_primPart, q.eq_C_content_mul_primPart]
     gcongr
 
-noncomputable instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMonoid R[X] :=
+noncomputable instance normalizedGcdMonoid : NormalizedGCDMonoid R[X] :=
   letI := Classical.decEq R
   normalizedGCDMonoidOfExistsLCM fun p q => by
     rcases exists_primitive_lcm_of_isPrimitive p.isPrimitive_primPart
@@ -488,8 +488,7 @@ theorem degree_gcd_le_right (p) {q : R[X]} (hq : q ≠ 0) : (gcd p q).degree ≤
 
 end NormalizedGCDMonoid
 
-noncomputable instance (priority := 100)
-    [StrongNormalizedGCDMonoid R] : StrongNormalizedGCDMonoid R[X] where
+noncomputable instance [StrongNormalizedGCDMonoid R] : StrongNormalizedGCDMonoid R[X] where
   __ : NormalizedGCDMonoid R[X] := inferInstance
   __ : StrongNormalizationMonoid R[X] := inferInstance
 
