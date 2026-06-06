@@ -91,25 +91,6 @@ lemma ae_le_of_hasLaw_binomial {X : Ω → ℕ} (hX : HasLaw X Bin(n, p) P) : �
   filter_upwards [setBernoulli_ae_subset] with s hs
   simpa using ncard_le_ncard hs
 
-lemma binomial_apply (s : Set ℕ) :
-    Bin(n, p) s = setBer(Iio n, p) {t ⊆ Iio n | t.ncard ∈ s} := by
-  rw [binomial, map_ncard_setBernoulli_apply]
-
-lemma binomial_real_apply (s : Set ℕ) :
-    Bin(n, p).real s = setBer(Iio n, p).real {t ⊆ Iio n | t.ncard ∈ s} := by
-  rw [measureReal_def, binomial_apply, measureReal_def]
-
-lemma map_cast_binomial_apply [MeasurableSingletonClass R] [CharZero R] (s : Set ℕ) :
-    Bin(R, n, p) (Nat.cast '' s) = setBer(Iio n, p) {t ⊆ Iio n | t.ncard ∈ s} := by
-  rw [map_apply (by fun_prop) ((Countable.to_set inferInstance).image _).measurableSet,
-    binomial_apply]
-  simp
-
-lemma map_cast_binomial_real_apply [MeasurableSingletonClass R] [CharZero R] (s : Set ℕ) :
-    Bin(R, n, p).real (Nat.cast '' s) =
-      setBer(Iio n, p).real {t ⊆ Iio n | t.ncard ∈ s} := by
-  rw [measureReal_def, map_cast_binomial_apply, measureReal_def]
-
 lemma binomial_real_singleton (n k : ℕ) (p : I) :
     Bin(n, p).real {k} = (n.choose k) * p ^ k * (1 - p) ^ (n - k) := by
   rw [binomial, map_ncard_setBernoulli_real_singleton (finite_Iio n), ncard_Iio_nat]
