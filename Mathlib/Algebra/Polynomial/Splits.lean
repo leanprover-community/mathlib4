@@ -85,21 +85,21 @@ protected theorem Splits.map {f : R[X]} (hf : Splits f) {S : Type*} [Semiring S]
     Splits (map i f) := by
   induction hf using Submonoid.closure_induction <;> aesop
 
-theorem splits_of_natDegree_eq_zero {f : R[X]} (hf : natDegree f = 0) :
+theorem Splits.of_natDegree_eq_zero {f : R[X]} (hf : natDegree f = 0) :
     Splits f := by
   rw [← (natDegree_eq_zero.mp hf).choose_spec]; aesop
 
-theorem splits_of_degree_le_zero {f : R[X]} (hf : degree f ≤ 0) :
+theorem Splits.of_degree_le_zero {f : R[X]} (hf : degree f ≤ 0) :
     Splits f :=
-  splits_of_natDegree_eq_zero (natDegree_eq_zero_iff_degree_le_zero.mpr hf)
+  .of_natDegree_eq_zero (natDegree_eq_zero_iff_degree_le_zero.mpr hf)
 
 theorem _root_.IsUnit.splits [NoZeroDivisors R] {f : R[X]} (hf : IsUnit f) : Splits f :=
-  splits_of_natDegree_eq_zero (natDegree_eq_zero_of_isUnit hf)
+  .of_natDegree_eq_zero (natDegree_eq_zero_of_isUnit hf)
 
 @[deprecated (since := "2025-11-27")]
 alias splits_of_isUnit := IsUnit.splits
 
-theorem splits_of_natDegree_le_one_of_invertible {f : R[X]}
+theorem Splits.of_natDegree_le_one_of_invertible {f : R[X]}
     (hf : f.natDegree ≤ 1) (h : Invertible f.leadingCoeff) : f.Splits := by
   obtain ⟨a, b, rfl⟩ := exists_eq_X_add_C_of_natDegree_le_one hf
   rcases eq_or_ne a 0 with rfl | ha
@@ -108,17 +108,17 @@ theorem splits_of_natDegree_le_one_of_invertible {f : R[X]}
     rw [← mul_invOf_cancel_left a b, C_mul, ← mul_add]
     exact (Splits.C a).mul (Splits.X_add_C _)
 
-theorem splits_of_degree_le_one_of_invertible {f : R[X]}
+theorem Splits.of_degree_le_one_of_invertible {f : R[X]}
     (hf : f.degree ≤ 1) (h : Invertible f.leadingCoeff) : f.Splits :=
-  splits_of_natDegree_le_one_of_invertible (natDegree_le_of_degree_le hf) h
+  .of_natDegree_le_one_of_invertible (natDegree_le_of_degree_le hf) h
 
-theorem splits_of_natDegree_le_one_of_monic {f : R[X]} (hf : f.natDegree ≤ 1) (h : Monic f) :
+theorem Splits.of_natDegree_le_one_of_monic {f : R[X]} (hf : f.natDegree ≤ 1) (h : Monic f) :
     f.Splits :=
-  splits_of_natDegree_le_one_of_invertible hf (h.leadingCoeff ▸ invertibleOne)
+  .of_natDegree_le_one_of_invertible hf (h.leadingCoeff ▸ invertibleOne)
 
-theorem splits_of_degree_le_one_of_monic {f : R[X]} (hf : f.degree ≤ 1) (h : Monic f) :
+theorem Splits.of_degree_le_one_of_monic {f : R[X]} (hf : f.degree ≤ 1) (h : Monic f) :
     f.Splits :=
-  splits_of_natDegree_le_one_of_monic (natDegree_le_of_degree_le hf) h
+  .of_natDegree_le_one_of_monic (natDegree_le_of_degree_le hf) h
 
 end Semiring
 
@@ -188,7 +188,7 @@ theorem Splits.comp_of_natDegree_le_one_of_invertible {f g : R[X]} (hf : f.Split
   refine (Splits.C _).mul (multisetProd ?_)
   simp only [Multiset.mem_map]
   rintro - ⟨-, ⟨a, -, rfl⟩, rfl⟩
-  apply splits_of_natDegree_le_one_of_invertible (by simpa)
+  apply of_natDegree_le_one_of_invertible (by simpa)
   rw [leadingCoeff, hg] at h
   simpa [leadingCoeff, hg]
 
@@ -427,7 +427,7 @@ theorem splits_mul_iff (hf₀ : f ≠ 0) (hg₀ : g ≠ 0) :
   induction n generalizing p f g with
   | zero =>
     rw [← hp, natDegree_mul hf₀ hg₀, Nat.add_eq_zero_iff] at hn
-    exact ⟨splits_of_natDegree_eq_zero hn.1, splits_of_natDegree_eq_zero hn.2⟩
+    exact ⟨.of_natDegree_eq_zero hn.1, .of_natDegree_eq_zero hn.2⟩
   | succ n ih =>
     obtain ⟨a, ha⟩ := Splits.exists_eval_eq_zero h (degree_ne_of_natDegree_ne <| hn ▸ by simp)
     have := dvd_iff_isRoot.mpr ha
