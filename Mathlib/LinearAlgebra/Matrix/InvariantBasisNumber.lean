@@ -14,7 +14,7 @@ public import Mathlib.LinearAlgebra.InvariantBasisNumber
 # Invertible matrices over a ring with invariant basis number are square.
 -/
 
-@[expose] public section
+public section
 
 section
 

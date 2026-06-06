@@ -63,6 +63,7 @@ This file provides a unified structure `GeneralSchauderBasis` that captures both
 * `SchauderBasis.exists_norm_proj_le`: In a Banach space, the projections are uniformly bounded.
 * `UnconditionalSchauderBasis.exists_norm_proj_le`: For unconditional bases, projections
   onto all finite sets are uniformly bounded.
+
 ## References
 
 * [Albiac, Fernando. and Kalton, Nigel J., Topics in Banach Space Theory][Albiac_Kalton_2016].
@@ -165,7 +166,7 @@ theorem proj_apply_basis_mem (A : Finset β) (i : β) :
 
 /-- The projections `b.proj A x` converge to `x` along the summation filter. -/
 theorem tendsto_proj (x : X) : Tendsto (fun A ↦ b.proj A x) L.filter (𝓝 x) := by
-  simpa using b.expansion x
+  simpa using! b.expansion x
 
 /-- The range of the projection is the span of the basis elements in `A`. -/
 theorem range_proj_eq_span (A : Finset β) :

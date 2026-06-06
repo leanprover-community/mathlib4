@@ -32,6 +32,8 @@ that are part of `J`.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 universe t t' v' v u' u
 
 namespace CategoryTheory
@@ -52,6 +54,7 @@ variable {J : GrothendieckTopology C} [F.IsPrestack J]
   {α : ι' → ι} {p' : ∀ j, X' j ⟶ X (α j)} (w : ∀ j, p' j ≫ f (α j) = f' j)
   (hf' : Sieve.ofArrows _ f' ∈ J S)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hf' in
 public lemma faithful_pullFunctor :
@@ -61,12 +64,12 @@ public lemma faithful_pullFunctor :
     refine F.presheafHomObjHomEquiv.injective ?_i
     have : (Sieve.overEquiv (Over.mk (𝟙 (X i)))).symm
       (Sieve.pullback (f i) (Sieve.ofArrows X' f')) ∈ J.over (X i) _ := by
-      simpa only [J.mem_over_iff, Equiv.apply_symm_apply] using J.pullback_stable (f i) hf'
+      simpa only [J.mem_over_iff, Equiv.apply_symm_apply] using! J.pullback_stable (f i) hf'
     refine (((isSheaf_iff_isSheaf_of_type _ _).1
       (IsPrestack.isSheaf _ _ _)).isSeparated _ this).ext ?_
     rintro Z g ⟨Y, p, c, ⟨j⟩, hp⟩
     dsimp at p hp
-    have : g.left = Z.hom := by simpa using Over.w g
+    have : g.left = Z.hom := by simpa using! Over.w g
     have (ψ : D₁ ⟶ D₂) :
       (F.presheafHom _ _).map g.op (F.presheafHomObjHomEquiv (ψ.hom i)) =
         D₁.hom (Z.hom ≫ f i) Z.hom (p ≫ p' j) ≫
@@ -101,8 +104,9 @@ abbrev sieve (i : ι) : Sieve (Over.mk (𝟙 (X i))) :=
 include hf' in
 variable (f) in
 lemma sieve_mem (i : ι) : sieve f f' i ∈ J.over _ _ := by
-  simpa only [J.mem_over_iff, Equiv.apply_symm_apply] using J.pullback_stable (f i) hf'
+  simpa only [J.mem_over_iff, Equiv.apply_symm_apply] using! J.pullback_stable (f i) hf'
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mem_sieve {i : ι} {Z : C} (q : Z ⟶ X i) ⦃j : ι'⦄ (a : Z ⟶ X' j)
     (fac : a ≫ f' j = q ≫ f i := by cat_disch) :
     sieve f f' i (Over.homMk q : Over.mk q ⟶ Over.mk (𝟙 (X i))) :=
@@ -113,6 +117,7 @@ namespace sieve
 variable {i : ι} {Z : C} {q : Z ⟶ X i}
   (hq : sieve f f' i (Over.homMk q : Over.mk q ⟶ Over.mk (𝟙 X i)))
 
+set_option backward.defeqAttrib.useBackward true in
 include hq in
 lemma exists_fac : ∃ (j : ι') (a : Z ⟶ X' j), a ≫ f' j = q ≫ f i := by
   obtain ⟨_, q, _, ⟨j⟩, fac⟩ := hq
@@ -203,7 +208,7 @@ noncomputable def familyOfElements (i : ι) :
     Presieve.FamilyOfElements (F.presheafHom (D₁.obj i) (D₂.obj i)) (sieve f f' i).arrows :=
   fun Z q hq ↦
     mor w φ _ _ (sieve.fac (f := f) (f' := f') (q := Z.hom) (by
-      convert hq
+      convert! hq
       ext
       simpa using (Over.w q).symm))
 
@@ -224,10 +229,10 @@ lemma compatible_familyOfElements (i : ι) :
   obtain ⟨g₂, hg₂, rfl⟩ := Over.homMk_surjective g₂
   obtain ⟨_, a₁, _, ⟨j₁⟩, fac₁⟩ := h₁
   obtain ⟨_, a₂, _, ⟨j₂⟩, fac₂⟩ := h₂
-  dsimp at a₁ a₂ fac₁ fac₂
+  dsimp at *
   rw [familyOfElements_eq _ _ _ _ fac₁, familyOfElements_eq _ _ _ _ fac₂,
-    ← mor_precomp w φ Y₁.hom a₁ fac₁ _ _ _ hg₁ rfl,
-    ← mor_precomp w φ Y₂.hom a₂ fac₂ _ _ _ hg₂ rfl]
+    ← dsimp% mor_precomp w φ Y₁.hom a₁ fac₁ _ _ _ hg₁ rfl,
+    ← dsimp% mor_precomp w φ Y₂.hom a₂ fac₂ _ _ _ hg₂ rfl]
   apply mor_unique
 
 include hf' in

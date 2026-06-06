@@ -108,12 +108,53 @@ def pathSetoid : Setoid X where
 def ZerothHomotopy :=
   Quotient (pathSetoid X)
 
+namespace ZerothHomotopy
+
+variable {X}
+
+/-- The map `X → ZerothHomotopy X`. -/
+def mk (x : X) : ZerothHomotopy X := Quotient.mk _ x
+
+lemma mk_surjective : Function.Surjective (mk (X := X)) := by
+  rintro ⟨x⟩
+  exact ⟨x, rfl⟩
+
+@[elab_as_elim, induction_eliminator, cases_eliminator]
+lemma rec {motive : ZerothHomotopy X → Prop}
+    (mk : ∀ (x : X), motive (.mk x)) (x : ZerothHomotopy X) :
+    motive x := by
+  obtain ⟨x, rfl⟩ := mk_surjective x
+  exact mk x
+
+lemma sound {x y : X} (p : Path x y) : mk x = mk y :=
+  Quotient.sound ⟨p⟩
+
 /-- The quotient topology on path components. -/
 instance : TopologicalSpace <| ZerothHomotopy X :=
   inferInstanceAs <| TopologicalSpace <| Quotient _
 
-instance ZerothHomotopy.inhabited : Inhabited (ZerothHomotopy ℝ) :=
+lemma isQuotientMap_mk : IsQuotientMap (ZerothHomotopy.mk (X := X)) :=
+  isQuotientMap_quotient_mk'
+
+instance inhabited : Inhabited (ZerothHomotopy ℝ) :=
   ⟨@Quotient.mk' ℝ (pathSetoid ℝ) 0⟩
+
+instance [Nonempty X] : Nonempty (ZerothHomotopy X) := ⟨.mk (Classical.arbitrary _)⟩
+
+section
+
+variable {T : Type*} (f : X → T) (hf : ∀ ⦃x y : X⦄ (_ : Path x y), f x = f y)
+
+/-- Constructor for maps from `ZerothHomotopy X`. -/
+def lift : ZerothHomotopy X → T :=
+  Quotient.lift f fun _ _ ⟨p⟩ ↦ hf p
+
+@[simp]
+lemma lift_mk (x : X) : lift f hf (.mk x) = f x := rfl
+
+end
+
+end ZerothHomotopy
 
 variable {X}
 
@@ -278,8 +319,8 @@ def ZerothHomotopy.toConnectedComponents : ZerothHomotopy X → ConnectedCompone
   Quotient.map id fun x _ h ↦ connectedComponent_eq <| pathComponent_subset_component x h
 
 @[simp]
-theorem ZerothHomotopy.toConnectedComponents_apply (x : X) : toConnectedComponents ⟦x⟧ = ⟦x⟧ :=
-  rfl
+theorem ZerothHomotopy.toConnectedComponents_apply (x : X) :
+    toConnectedComponents (.mk x) = ⟦x⟧ := rfl
 
 /-- There are at least as many path connected components as there are connected components -/
 theorem ZerothHomotopy.toConnectedComponents_surjective :
@@ -324,7 +365,7 @@ monoid, as an additive submonoid. -/]
 def Submonoid.pathComponentOne (M : Type*) [Monoid M] [TopologicalSpace M] [ContinuousMul M] :
     Submonoid M where
   carrier := pathComponent (1 : M)
-  mul_mem' {m₁ m₂} hm₁ hm₂ := by simpa using hm₁.mul hm₂
+  mul_mem' {m₁ m₂} hm₁ hm₂ := by simpa using! hm₁.mul hm₂
   one_mem' := mem_pathComponent_self 1
 
 /-- The path component of the identity in a topological group, as a subgroup. -/
@@ -333,7 +374,7 @@ group, as an additive subgroup. -/]
 def Subgroup.pathComponentOne (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G] :
     Subgroup G where
   toSubmonoid := .pathComponentOne G
-  inv_mem' {g} hg := by simpa using hg.inv
+  inv_mem' {g} hg := by simpa using! hg.inv
 
 /-- The path component of the identity in a topological group is normal. -/
 @[to_additive]
@@ -524,6 +565,9 @@ variable [PathConnectedSpace X]
 def somePath (x y : X) : Path x y :=
   Nonempty.some (joined x y)
 
+instance : Subsingleton (ZerothHomotopy X) :=
+  (pathConnectedSpace_iff_zerothHomotopy.1 inferInstance).2
+
 end PathConnectedSpace
 
 theorem pathConnectedSpace_iff_univ : PathConnectedSpace X ↔ IsPathConnected (univ : Set X) := by
@@ -598,7 +642,7 @@ end PathConnectedSpace
 /-- The preimage of a singleton in `ZerothHomotopy` is the path component of an element in the
 equivalence class. -/
 theorem ZerothHomotopy.preimage_singleton_eq_pathComponent (x : X) :
-    Quotient.mk' (s := pathSetoid X) ⁻¹' {⟦x⟧} = pathComponent x := by
+    ZerothHomotopy.mk ⁻¹' {.mk x} = pathComponent x := by
   ext y
   rw [mem_preimage, mem_singleton_iff, eq_comm, mem_pathComponent_iff]
   exact Quotient.eq
