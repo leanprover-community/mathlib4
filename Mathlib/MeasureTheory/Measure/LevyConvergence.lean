@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
+public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.MeasureTheory.Measure.Tight
 
 import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion

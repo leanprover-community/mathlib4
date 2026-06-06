@@ -574,6 +574,8 @@ export LucasLehmer (LucasLehmerTest lucasLehmerResidue)
 
 open LucasLehmer
 
+/-- **Lucas–Lehmer primality test**: sufficiency direction. -/
+@[wikidata Q1138992]
 theorem lucas_lehmer_sufficiency (p : ℕ) (w : 1 < p) : LucasLehmerTest p → (mersenne p).Prime := by
   set p' := p - 2 with hp'
   clear_value p'
