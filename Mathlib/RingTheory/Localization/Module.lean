@@ -366,4 +366,9 @@ lemma map_bijective_iff_localizedModuleMap_bijective :
       Function.Bijective (LocalizedModule.map S l) := by
   simp [LocalizedModule.coe_map_eq g₁ g₂]
 
+lemma map_eq_map_iff_localizedModule {f g : M →ₗ[R] N} :
+    map S g₁ g₂ f = map S g₁ g₂ g ↔ LocalizedModule.map S f = LocalizedModule.map S g := by
+  conv_rhs => rw [← LinearMap.restrictScalars_inj R]
+  simp [LocalizedModule.restrictScalars_map_eq _ g₁ g₂]
+
 end IsLocalizedModule

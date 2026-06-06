@@ -110,6 +110,13 @@ theorem of_surjective' [Ring S] [Nontrivial S] (f : R →+* S) (hf : Function.Su
     rw [← f.map_one, ← f.map_sub]
     apply f.isUnit_map)
 
+lemma isIdempotentElem_iff_eq_zero_or_eq_one {e : R} : IsIdempotentElem e ↔ e = 0 ∨ e = 1 := by
+  refine ⟨fun he ↦ ?_, ?_⟩
+  · obtain (h | h) := IsLocalRing.isUnit_or_isUnit_one_sub_self e
+    · exact Or.inr (he.eq_one_of_isUnit h)
+    · exact Or.inl (by simpa using he.one_sub.eq_one_of_isUnit h)
+  · grind [IsIdempotentElem.zero, IsIdempotentElem.one]
+
 end CommRing
 
 end IsLocalRing
