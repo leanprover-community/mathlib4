@@ -50,6 +50,42 @@ theorem FiniteMultiplicity.of_prime_left [CommMonoidWithZero α] [IsCancelMulZer
     {a b : α} (ha : Prime a) (hb : b ≠ 0) : FiniteMultiplicity a b :=
   .of_not_isUnit ha.not_unit hb
 
+theorem Prime.emultiplicity_self [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α]
+    {a : α} (ha : Prime a) : emultiplicity a a = 1 :=
+  (FiniteMultiplicity.of_prime_left ha ha.ne_zero).emultiplicity_self
+
+/-- The `emultiplicity` of a prime `p` at another prime `q` is `1` if `p` and `q` are
+associated, and `0` otherwise. -/
+theorem Prime.emultiplicity_prime [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α]
+    [DecidableRel ((· ∣ ·) : α → α → Prop)] {p q : α} (hp : Prime p) (hq : Prime q) :
+    emultiplicity p q = if Associated p q then 1 else 0 := by
+  split_ifs with h
+  · obtain ⟨u, rfl⟩ := h
+    rw [emultiplicity_mul hp, hp.emultiplicity_self,
+      emultiplicity_of_unit_right hp.not_unit, add_zero]
+  · rwa [emultiplicity_eq_zero, hp.dvd_prime_iff_associated hq]
+
+/-- An element of a `WfDvdMonoid` is zero iff every power of a fixed prime divides it. -/
+theorem WfDvdMonoid.eq_zero_iff_forall_prime_pow_dvd [CommMonoidWithZero α] [IsCancelMulZero α]
+    [WfDvdMonoid α] {a p : α} (hp : Prime p) : a = 0 ↔ ∀ n, p ^ n ∣ a := by
+  refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
+  by_contra!
+  have := FiniteMultiplicity.of_prime_left hp this
+  grind
+
+/-- A nonzero element of a `WfDvdMonoid` has finite multiplicity at every prime. -/
+theorem WfDvdMonoid.ne_zero_iff_finiteMultiplicity [CommMonoidWithZero α] [IsCancelMulZero α]
+    [WfDvdMonoid α] {a p : α} (hp : Prime p) : a ≠ 0 ↔ FiniteMultiplicity p a := by
+  convert (WfDvdMonoid.eq_zero_iff_forall_prime_pow_dvd hp).not
+  rw [FiniteMultiplicity, not_forall]
+  constructor
+  · grind
+  · intro ⟨n, hn⟩
+    have hn' : 1 ≤ n := by
+      contrapose! hn
+      simp [Nat.lt_one_iff.mp hn, pow_zero]
+    refine ⟨n - 1, by rwa [Nat.sub_add_cancel hn']⟩
+
 namespace UniqueFactorizationMonoid
 
 variable {R : Type*} [CommMonoidWithZero R] [UniqueFactorizationMonoid R]
@@ -167,6 +203,48 @@ lemma dvd_iff_emultiplicity_le {a b : R} (ha : a ≠ 0) :
     rw [normalize_normalized_factor q hq] at h1 h2
     simpa [h1, h2] using h q hqprime
   · simp [Multiset.count_eq_zero_of_notMem hq]
+
+/-- Two nonzero elements of a `UniqueFactorizationMonoid` are associated iff they have the
+same `emultiplicity` at every prime. -/
+lemma associated_iff_emultiplicity_eq {a b : R} (ha : a ≠ 0) (hb : b ≠ 0) :
+    Associated a b ↔ ∀ p : R, Prime p → emultiplicity p a = emultiplicity p b := by
+  rw [← dvd_dvd_iff_associated, dvd_iff_emultiplicity_le ha, dvd_iff_emultiplicity_le hb,
+    ← forall₂_and]
+  simp_rw [le_antisymm_iff]
+
+/-- Version of `associated_iff_emultiplicity_eq` without the nonzero hypotheses, at the cost of
+fixing a prime `p` (used to detect whether `a` or `b` vanishes). -/
+lemma associated_iff_emultiplicity_eq' (a b : R) {p : R} (hp : Prime p) :
+    Associated a b ↔ ∀ p : R, Prime p → emultiplicity p a = emultiplicity p b := by
+  by_cases ha : a = 0
+  · rw [ha, Associated.comm, associated_zero_iff_eq_zero]
+    refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
+    rw [WfDvdMonoid.eq_zero_iff_forall_prime_pow_dvd hp]
+    have h := h p hp
+    simp only [emultiplicity_zero] at h
+    exact fun n ↦ by rw [pow_dvd_iff_le_emultiplicity, ← h]; exact le_top
+  by_cases hb : b = 0
+  · rw [hb, associated_zero_iff_eq_zero]
+    refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
+    rw [WfDvdMonoid.eq_zero_iff_forall_prime_pow_dvd hp]
+    have h := h p hp
+    simp only [emultiplicity_zero] at h
+    exact fun n ↦ by rw [pow_dvd_iff_le_emultiplicity, h]; exact le_top
+  exact associated_iff_emultiplicity_eq ha hb
+
+/-- In a `UniqueFactorizationMonoid` with a unique unit and infinitely many elements (e.g. the
+ring of integers of a number field), two elements are equal iff they have the same
+`emultiplicity` at every prime. -/
+lemma eq_iff_emultiplicity_eq [Subsingleton Rˣ] [Infinite R] {a b : R} :
+    a = b ↔ ∀ p : R, Prime p → emultiplicity p a = emultiplicity p b := by
+  obtain ⟨p, hp⟩ : ∃ p : R, Prime p := by
+    rw [exists_prime_iff]
+    obtain ⟨p, h⟩ := Set.Finite.exists_notMem (Set.toFinite ({0, 1} : Set R))
+    refine ⟨p, by grind, ?_⟩
+    by_contra! hp
+    lift p to Rˣ using hp
+    simp [Subsingleton.elim p 1] at h
+  rw [← associated_iff_eq, associated_iff_emultiplicity_eq' _ _ hp]
 
 lemma pow_dvd_pow_iff_dvd {a b : R} {n : ℕ} (hn : n ≠ 0) : a ^ n ∣ b ^ n ↔ a ∣ b := by
   by_cases ha : a = 0
