@@ -74,7 +74,7 @@ theorem egirth_top (h : 3 ≤ ENat.card α) : egirth (⊤ : SimpleGraph α) = 3 
   let w : Walk ⊤ x x := .cons hxy <| .cons hyz <| .cons hxz.symm .nil
   have : w.IsCycle := {
     edges_nodup := by simp [w]; grind
-    ne_nil := by simp
+    ne_nil := by simp [w]
     support_nodup := by grind [Walk.support_nil]
   }
   grw [egirth_le_length this]
