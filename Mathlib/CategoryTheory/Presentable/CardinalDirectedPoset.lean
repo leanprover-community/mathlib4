@@ -76,7 +76,7 @@ instance (J : Type u) [SmallCategory J] [IsCardinalFiltered J κ] :
     simp only [(isCardinalFiltered κ).prop_iff_of_iso
       (p.isColimit.coconePointUniqueUpToIso
         (Limits.isColimitCocone (colimit.isColimit (p.diag ⋙ forget PartOrdEmb)))),
-      isCardinalFiltered_iff, Limits.cocone_pt_coe]
+      isCardinalFiltered_iff]
     exact Limits.CoconePt.isCardinalFiltered_pt _ p.prop_diag_obj
 
 end PartOrdEmb
@@ -138,6 +138,7 @@ variable {J : CardinalFilteredPoset κ} (P : Set J.obj → Prop)
   [IsDirectedOrder (Subtype P)] [Nonempty (Subtype P)]
   [∀ (S : Subtype P), IsCardinalFiltered S.val κ]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a predicate `P : Set J.obj → Prop` on the underlying type
 of `J : CardinalFilteredPoset κ` such that all the subsets satisfying `P`
 are `κ`-filtered, this is the functor `Subtype P ⥤ CardinalFilteredPoset κ`

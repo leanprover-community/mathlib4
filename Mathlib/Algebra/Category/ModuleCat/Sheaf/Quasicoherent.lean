@@ -77,7 +77,7 @@ def generatorsOfIsCokernelFree {M : SheafOfModules.{u} R}
     (H' : IsColimit (CokernelCofork.ofπ g H)) : M.GeneratingSections where
   I := σ
   s := M.freeHomEquiv g
-  epi := by simpa using epi_of_isColimit_cofork H'
+  epi := by simpa using! epi_of_isColimit_cofork H'
 
 @[simp]
 theorem generatorsOfIsCokernelFree_π {M : SheafOfModules.{u} R}
@@ -127,6 +127,7 @@ def Presentation.isColimit {M : SheafOfModules.{u} R} (P : Presentation M) :
   isCokernelEpiComp (c := CokernelCofork.ofπ _ (kernel.condition P.generators.π))
       (Abelian.epiIsCokernelOfKernel _ <| limit.isLimit _) _ rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Mapping a presentation under an isomorphism. -/
 @[simps]
 noncomputable def Presentation.ofIsIso {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
@@ -163,15 +164,15 @@ def Presentation.mapRelations : free P.relations.I (R := S) ⟶ free P.generator
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
 generators of `Presentation (F.obj M)`. -/
-def Presentation.mapGenerators : free P.generators.I ⟶ F.obj M :=
-  (mapFreeIso F P.generators.I η).hom ≫ F.map (P.generators.π)
+abbrev Presentation.mapGenerators : free P.generators.I ⟶ F.obj M := P.generators.mapFreeHom F η
 
 @[reassoc (attr := simp)]
 theorem Presentation.mapRelations_mapGenerators :
     P.mapRelations F η ≫ P.mapGenerators F η = 0 := by
-  simp only [mapRelations, mapGenerators, Category.assoc, Iso.inv_hom_id_assoc,
+  simp only [mapRelations, GeneratingSections.mapFreeHom, Category.assoc, Iso.inv_hom_id_assoc,
     ← Functor.map_comp, kernel.condition, Functor.map_zero, comp_zero]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will get a
 `Presentation (F.obj M)`. -/
@@ -183,7 +184,7 @@ def Presentation.map : Presentation (F.obj M) :=
       (parallelPairIsoMk (mapFreeIso F _ η).symm (mapFreeIso F _ η).symm
         (by simp [Presentation.mapRelations]) (by simp)) _ _ ?_ (isColimitOfPreserves F P.isColimit)
     exact (Cocone.ext (Iso.refl _) <| by rintro (_ | _)
-      <;> simp [Presentation.mapRelations, Presentation.mapGenerators, ← Functor.map_comp])
+      <;> simp [Presentation.mapRelations, GeneratingSections.mapFreeHom, ← Functor.map_comp])
 
 theorem Presentation.map_π_eq :
     (P.map F η).generators.π = (mapFreeIso F _ η).hom ≫ F.map (P.generators.π) :=
@@ -238,6 +239,7 @@ class IsFinitePresentation {M : SheafOfModules.{u} R} (q : M.QuasicoherentData) 
 
 attribute [instance] IsFinitePresentation.isFinite_presentation
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance {M : SheafOfModules.{u} R} (q : M.QuasicoherentData) [q.IsFinitePresentation] :
     q.localGeneratorsData.IsFiniteType where
@@ -304,7 +306,7 @@ def Presentation.quasicoherentData {M : SheafOfModules.{u} R} (P : Presentation 
   coversTop x := GrothendieckTopology.covering_of_eq_top J <| by
     rw [Sieve.ext_iff]
     intro _ f
-    simpa [Sieve.top_apply, iff_true] using ⟨x, Nonempty.intro f⟩
+    simp [Sieve.top_apply]
   presentation x := P.map (pushforward (𝟙 (R.over x))) (by rfl)
 
 /-- If a sheaf of `R`-modules `M` has a presentation, then `M` is quasi-coherent. -/
@@ -326,6 +328,7 @@ instance : (isQuasicoherent R).IsClosedUnderIsomorphisms where
     intro ⟨⟨q⟩⟩
     exact ⟨⟨q.ofIsIso e.hom⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
 instance {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f] (σ : M.QuasicoherentData)
     [σ.IsFinitePresentation] : (σ.ofIsIso f).IsFinitePresentation where
   isFinite_presentation i := by

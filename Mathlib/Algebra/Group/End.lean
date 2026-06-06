@@ -62,7 +62,7 @@ instance : Inhabited (Function.End α) := ⟨1⟩
 
 namespace Equiv.Perm
 
-attribute [to_additive_dont_translate] Perm
+attribute [to_additive_dont_translate] Perm Equiv
 
 instance instOne : One (Perm α) where one := Equiv.refl _
 instance instMul : Mul (Perm α) where mul f g := Equiv.trans g f
@@ -649,9 +649,6 @@ instance : Pow (MulAut M) Nat where
       map_mul' := Nat.rec (fun _ _ => rfl)
         (fun n ih x y => (congrArg f^[n] (map_mul f x y)).trans (ih (f x) (f y))) n }
 
-/-- The group operation on additive automorphisms is defined by `g h => AddEquiv.trans h g`.
-This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
--/
 /-- If `M` is a type with multiplicative, then multiplicative automorphisms of `M` have the
 structure of a group. -/
 @[to_additive /-- If `M` is a type with addition, then additive automorphisms of `M` have the
