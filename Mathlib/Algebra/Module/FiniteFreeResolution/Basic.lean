@@ -71,7 +71,7 @@ theorem of_semilinearEquiv {S : Type u'} [Ring S] [Small.{v'} S]
       have : Module.Finite S N := Module.Finite.of_surjective e.toLinearMap e.surjective
       have : Free S N := Free.of_equiv e
       exact HasFiniteFreeResolutionOfLength.zero N
-  | succ _ n F K f g hf hg he hk ih =>
+  | succ _ n F K f g hf hg he _ ih =>
       let : Module S F := compHom F σ'
       let : Module S K := compHom K σ'
       let eF : F ≃ₛₗ[σ] F := compHom.selfEquiv σ σ' F
