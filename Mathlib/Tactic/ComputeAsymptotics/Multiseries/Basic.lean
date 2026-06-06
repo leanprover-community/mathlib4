@@ -263,7 +263,7 @@ theorem monomial_toFun {basis : Basis} {n : ℕ} (h : n < basis.length) :
     (monomial basis n).toFun = basis[n] := by
   let n' : Fin basis.length := ⟨n, h⟩
   conv_lhs => rw [show n = n'.val by simp [n']]
-  convert monomialRpow_toFun
+  convert! monomialRpow_toFun
   ext t
   simp
   grind

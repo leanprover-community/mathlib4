@@ -150,7 +150,7 @@ lemma log_congr_IsEquivalent_right' (right_hd : ℝ → ℝ) (right_tl : Basis) 
     ∀ g ∈ (right_hd :: right_tl).head?, (Real.log ∘ g) =o[atTop] (Real.log ∘ Real.exp ∘ f') := by
   simp only [List.head?_cons, Option.mem_def, Option.some.injEq, forall_eq']
   apply Asymptotics.IsLittleO.trans_isEquivalent h
-  convert h_equiv
+  convert! h_equiv
   ext
   simp
 
@@ -197,14 +197,14 @@ lemma WellFormedBasis.insert_neg_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
   · simpa [neg_leadingMonomial]
   · simpa [neg_leadingMonomial]
   · exact h_basis
-  · convert h_equiv.neg using 1
+  · convert! h_equiv.neg using 1
     ext t
     simp
   · peel h_left
-    convert this.neg_left using 1
+    convert! this.neg_left using 1
     ext t
     simp
-  · convert h_right.neg_right using 1
+  · convert! h_right.neg_right using 1
     ext t
     simp
 

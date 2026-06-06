@@ -202,7 +202,7 @@ lemma IsEquivalent_cast_domain {α : Type} (f g : ℝ → ℝ) (l : Filter α) (
     (h_filter : l'.comap cast = l) :
     IsEquivalent l (f ∘ cast) (g ∘ cast) := by
   simp only [IsEquivalent] at h ⊢
-  convert_to ((f - g) ∘ cast) =o[l] (g ∘ cast)
+  convert_to! ((f - g) ∘ cast) =o[l] (g ∘ cast)
   apply IsLittleO_cast_domain _ _ _ _ _ h h_filter
 
 end convertDomain
@@ -354,7 +354,7 @@ lemma IsEquivalent_cast_codomain {α β : Type} (f g : α → β) (l : Filter α
     IsEquivalent l f g := by
   simp only [IsEquivalent] at h ⊢
   apply IsLittleO_cast_codomain _ _ _ _ _ h_cast h_cast
-  convert h
+  convert! h
   ext x
   simp [h_cast.right]
 

@@ -316,7 +316,7 @@ theorem pow_zero_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
           · apply mulMonomial_Approximates h_basis h_tl
             apply inv_Approximates h_basis.tail h_coef_sorted h_coef h_coef_trimmed
         · apply pow_zero_Approximates (h_basis.tail) h_coef_sorted h_coef h_coef_trimmed
-      convert h.replaceFun _
+      convert! h.replaceFun _
       simp [ms, powSeries_zero_toFun_eq]
 
 theorem pow_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℝ}
@@ -363,7 +363,7 @@ theorem pow_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a : 
           · apply mulMonomial_Approximates h_basis h_tl
             apply inv_Approximates h_basis.tail h_coef_sorted h_coef h_coef_trimmed
         · apply pow_Approximates (h_basis.tail) h_coef_sorted h_coef h_coef_trimmed h_pos
-      convert h.replaceFun _
+      convert! h.replaceFun _
       have h_tendsto_zero := tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero h_basis h_sorted
         h_approx h_trimmed
       simp only [mulMonomial_toFun, mk_toFun, inv_toFun, powser_toFun, pow_toFun,

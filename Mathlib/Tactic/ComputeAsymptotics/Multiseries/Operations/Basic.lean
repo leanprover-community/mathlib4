@@ -112,8 +112,8 @@ mutual
 theorem Multiseries.mulConst_one {basis_hd basis_tl} {ms : Multiseries basis_hd basis_tl} :
     ms.mulConst 1 = ms := by
   simp only [Multiseries.mulConst]
-  convert Multiseries.map_id _
-  apply mulConst_one
+  convert! Multiseries.map_id _
+  exact mulConst_one
 
 @[simp]
 theorem mulConst_one {basis} {ms : MultiseriesExpansion basis} :
@@ -296,7 +296,7 @@ theorem mulConst_leadingMonomial {basis : Basis} {ms : MultiseriesExpansion basi
 @[simp]
 theorem neg_toFun {basis : Basis} {ms : MultiseriesExpansion basis} :
     ms.neg.toFun = -ms.toFun := by
-  convert mulConst_toFun
+  convert! mulConst_toFun
   ext
   simp
 

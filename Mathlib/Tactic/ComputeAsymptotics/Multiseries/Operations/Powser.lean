@@ -74,8 +74,8 @@ theorem ofFnFrom_get {f : ℕ → ℝ} {n m : ℕ} : (ofFnFrom f n).get? m = som
 
 @[simp]
 theorem ofFn_get {f : ℕ → ℝ} {n : ℕ} : (ofFn f).get? n = some (f n) := by
-  convert ofFnFrom_get
-  omega
+  convert! ofFnFrom_get
+  grind
 
 -- theorems
 
@@ -186,7 +186,7 @@ theorem toFun_cons {s_hd : ℝ} {s_tl : LazySeries} {t : ℝ}
     rw [show Seq.get? s_tl i = Seq.get? (.cons s_hd s_tl) (i + 1) by simp]
   have := HasSum.zero_add (f := (fun n ↦ t ^ n * (Seq.get? (Seq.cons s_hd s_tl) n).getD 0))
     h_hsum_tl
-  convert this using 2
+  convert! this using 2
   simp
 
 theorem toFun_cons_eventually_eq {s_hd : ℝ} {s_tl : LazySeries}
@@ -253,8 +253,8 @@ theorem toFun_Majorized_zero {s : LazySeries} (h_convergent : s.Convergent) {f b
   apply IsBigO.trans_isLittleO (toFun_IsBigO_one h_convergent hf)
   eta_expand
   simp only [Pi.one_apply, isLittleO_one_left_iff, Real.norm_eq_abs]
-  apply Tendsto.comp Filter.tendsto_abs_atTop_atTop
-  convert Tendsto.comp (tendsto_rpow_atTop h_pos) h_basis
+  apply Filter.tendsto_abs_atTop_atTop.comp
+  convert! (tendsto_rpow_atTop h_pos).comp h_basis
 
 theorem convergent_of_all_le_one {s : LazySeries} (h : ∀ x ∈ s, |x| ≤ 1) : s.Convergent := by
   simp only [Convergent]

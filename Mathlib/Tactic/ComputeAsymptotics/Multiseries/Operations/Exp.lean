@@ -51,7 +51,7 @@ theorem expSeries_toFormalMultilinearSeries_eq :
 theorem expSeries_convergent : expSeries.Convergent := by
   apply convergent_of_HasFPowerSeriesAt (f := Real.exp)
   rw [expSeries_toFormalMultilinearSeries_eq]
-  convert NormedSpace.exp_hasFPowerSeriesAt_zero
+  convert! NormedSpace.exp_hasFPowerSeriesAt_zero
   · exact Real.exp_eq_exp_ℝ
   all_goals infer_instance
 

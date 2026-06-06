@@ -48,12 +48,12 @@ theorem logSeries_toFormalMultilinearSeries_eq :
 
 theorem logSeries_convergent : logSeries.Convergent := by
   apply convergent_of_HasFPowerSeriesAt
-  convert hasFPowerSeriesAt_log_one_add
+  convert! hasFPowerSeriesAt_log_one_add
   rw [logSeries_toFormalMultilinearSeries_eq]
 
 theorem logSeries_toFun : logSeries.toFun =ᶠ[𝓝 0] (fun t ↦ Real.log (1 + t)) := by
   apply toFun_of_HasFPowerSeriesAt
-  convert hasFPowerSeriesAt_log_one_add
+  convert! hasFPowerSeriesAt_log_one_add
   rw [logSeries_toFormalMultilinearSeries_eq]
 
 mutual

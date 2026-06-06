@@ -61,7 +61,7 @@ theorem approx_cons_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ �
     (h_zero : coef'.IsZero) :
     (MultiseriesExpansion.mk tl f).Approximates := by
   obtain ⟨h_coef, h_maj, h_tl⟩ := h_approx.elim_cons
-  convert h_tl.replaceFun _
+  convert! h_tl.replaceFun _
   replace h_zero := MultiseriesExpansion.IsZero_Approximates_zero h_zero h_coef'_approx
   rw [h_coef_fun] at h_zero
   simp only [MultiseriesExpansion.mk_toFun]

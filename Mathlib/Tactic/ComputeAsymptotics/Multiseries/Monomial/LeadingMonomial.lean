@@ -279,7 +279,7 @@ mutual
     | nil =>
       simp only [const_toFun, leadingMonomial, const_realCoef', const_exps', Monomial.toFun,
         UnitMonomial.toFun_nil]
-      convert Asymptotics.IsEquivalent.refl using 1
+      convert! Asymptotics.IsEquivalent.refl using 1
       ext x
       simp
     | cons basis_hd basis_tl =>
@@ -435,7 +435,7 @@ theorem IsEquivalent_of_leadingMonomial_zeros_append_mul_coef {left right : Basi
     have : (fun (_ : ℝ) ↦ ms1.leadingMonomial.coef / ms2.leadingMonomial.coef) ~[atTop]
         (fun _ ↦ ms1.leadingMonomial.coef / ms2.leadingMonomial.coef) := by
       rfl
-    convert Asymptotics.IsEquivalent.smul this h_eq using 1
+    convert! Asymptotics.IsEquivalent.smul this h_eq using 1
     ext t
     simp [h_leading1, h_leading2]
   convert Asymptotics.IsEquivalent.refl using 1
@@ -692,7 +692,7 @@ theorem tendsto_zero_of_FirstNonzeroIsNeg_aux {basis : Basis} {ms : MultiseriesE
     have h_tl : Tendsto (f - coef.toFun) atTop (𝓝 0) := by
       have h : Tendsto (fun t ↦ f t - basis_hd t ^ exp * coef.toFun t) atTop (𝓝 0) := by
         apply neg_leadingExp_tendsto_zero _ h_tl_approx
-        convert h_comp
+        convert! h_comp
         simp [h_zero.left]
       apply Tendsto.congr' _ h
       simp [h_zero.left]

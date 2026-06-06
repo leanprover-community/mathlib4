@@ -76,12 +76,12 @@ theorem invSeries_get_eq {n : ℕ} : invSeries.get? n = .some ((-1) ^ n) := by
   simp [invSeries, invSeriesFrom_get_eq]
 
 theorem invSeries_eq_geom :
-    invSeries.toFormalMultilinearSeries = formalMultilinearSeries_geometric_alternating ℝ ℝ := by
+    invSeries.toFormalMultilinearSeries = geometricAlternatingSeries ℝ ℝ := by
   ext n
-  simp [formalMultilinearSeries_geometric_alternating, invSeries_get_eq]
+  simp [geometricAlternatingSeries, invSeries_get_eq]
 
 theorem invSeries_convergent : Convergent invSeries := by
-  simp [Convergent, invSeries_eq_geom, formalMultilinearSeries_geometric_alternating_radius]
+  simp [Convergent, invSeries_eq_geom, geometricAlternatingSeries_radius]
 
 -- TODO: rewrite
 theorem invSeries_toFun_eq {t : ℝ} (ht : |t| < 1) : invSeries.toFun t = (1 + t)⁻¹ := by
@@ -219,7 +219,7 @@ theorem tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero
     simp only [Pi.sub_apply, Pi.one_apply, Pi.mul_apply, hf, Pi.pow_apply, Pi.inv_apply]
     rw [Real.rpow_neg h_basis_hd_pos.le]
     field_simp
-  convert hφ.sub (tendsto_const_nhds (x := 1)) using 1
+  convert! hφ.sub (tendsto_const_nhds (x := 1)) using 1
   simp
 
 -- TODO: do we need `ms.Sorted`?
@@ -266,7 +266,7 @@ theorem inv_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
           apply Multiseries.mulMonomial_Sorted h_tl_sorted (inv_Sorted h_coef_sorted)
         apply mulMonomial_Approximates h_basis h_tl
         apply inv_Approximates (h_basis.tail) h_coef_sorted h_coef h_coef_trimmed
-      convert h.replaceFun _
+      convert! h.replaceFun _
       have h_tendsto_zero : Tendsto ((f - basis_hd ^ exp * coef.toFun) * basis_hd ^ (-exp) *
           coef.toFun⁻¹) atTop (𝓝 0) := by
         convert (tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero h_basis h_sorted h_approx

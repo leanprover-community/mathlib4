@@ -203,7 +203,7 @@ lemma cons_add_cons_right {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (h_exp : X_exp < Y_exp) :
     X.add Y = .cons Y_exp Y_coef ((Multiseries.cons X_exp X_coef X_tl).add Y_tl) := by
   subst hX hY
-  convert Multiseries.add_cons_right _
+  convert! Multiseries.add_cons_right _
   simpa [Multiseries.leadingExp_cons]
 
 lemma cons_add_cons_left {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : Multiseries basis_hd basis_tl}
@@ -213,7 +213,7 @@ lemma cons_add_cons_left {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : Mult
     (h_exp : Y_exp < X_exp) :
     X.add Y = .cons X_exp X_coef ((X_tl.add (.cons Y_exp Y_coef Y_tl))) := by
   subst hX hY
-  convert Multiseries.add_cons_left _
+  convert! Multiseries.add_cons_left _
   simpa [Multiseries.leadingExp_cons]
 
 lemma cons_add_cons_both {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : Multiseries basis_hd basis_tl}
@@ -223,7 +223,7 @@ lemma cons_add_cons_both {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : Mult
     (h_exp : X_exp = Y_exp) :
     X.add Y = .cons X_exp (X_coef.add Y_coef) ((X_tl.add Y_tl)) := by
   subst hX hY
-  convert Multiseries.add_cons_cons using 1
+  convert! Multiseries.add_cons_cons using 1
   simp [h_exp, add_def]
   rfl
 
