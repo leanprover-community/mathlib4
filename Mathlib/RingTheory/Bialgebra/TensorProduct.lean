@@ -237,11 +237,8 @@ protected def _root_.Coalgebra.Repr.tmul (ℛa : Coalgebra.Repr R a ι) (ℛb : 
   left i := ℛa.left i.1 ⊗ₜ ℛb.left i.2
   right i := ℛa.right i.1 ⊗ₜ ℛb.right i.2
   eq := by
-    simp only [TensorProduct.comul_def, LinearMap.coe_comp, LinearEquiv.coe_coe,
-      Function.comp_apply, TensorProduct.AlgebraTensorModule.map_tmul]
-    rw [← ℛa.eq, ← ℛb.eq]
-    simp_rw [TensorProduct.sum_tmul, TensorProduct.tmul_sum, ← Finset.sum_product', map_sum]
-    simp
+    simp [← ℛa.eq, ← ℛb.eq, TensorProduct.sum_tmul ℛa.index, TensorProduct.tmul_sum,
+      ← Finset.sum_product']
 
 /-- Representations of `a` and `b` yield a representation of `a * b`. -/
 @[expose, simps! left right index] protected noncomputable
