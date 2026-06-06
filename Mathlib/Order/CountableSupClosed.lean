@@ -79,7 +79,7 @@ lemma CountableSupClosed.sSup_mem [CompleteLattice α] (hs : CountableSupClosed 
   exact hs.iSup_mem fun a ↦ hA a a.2
 
 @[to_dual]
-lemma CountableSupClosed.supClosed [SemilatticeSup α] (hs : CountableSupClosed s) :
+protected lemma CountableSupClosed.supClosed [SemilatticeSup α] (hs : CountableSupClosed s) :
     SupClosed s := fun a ha b hb ↦ hs.isLUB_mem {a, b} (by grind) (by simp) (by simp) _ isLUB_pair
 
 @[to_dual (attr := simp)]
@@ -96,16 +96,18 @@ protected lemma CountableSupClosed.singleton [PartialOrder α] {x : α} :
     simp_all only [subset_refl, singleton_nonempty, countable_singleton, mem_singleton_iff]
     exact IsLUB.unique hy isLUB_singleton
 
-@[to_dual (attr := simp)] lemma CountableSupClosed.univ [LE α] :
+@[to_dual (attr := simp)]
+protected lemma CountableSupClosed.univ [LE α] :
     CountableSupClosed (univ : Set α) where
   isLUB_mem _ _ _ _ _ _ := by simp
 
-@[to_dual (attr := simp)] lemma CountableSupClosed.empty [LE α] :
+@[to_dual (attr := simp)]
+protected lemma CountableSupClosed.empty [LE α] :
     CountableSupClosed (∅ : Set α) where
   isLUB_mem _ _ _ _ _ _ := by simp_all
 
 @[to_dual]
-lemma CountableSupClosed.inter [LE α]
+protected lemma CountableSupClosed.inter [LE α]
     (hs : CountableSupClosed s) (ht : CountableSupClosed t) :
     CountableSupClosed (s ∩ t) where
   isLUB_mem A hAst hA_ne hAc x hx :=
@@ -113,24 +115,24 @@ lemma CountableSupClosed.inter [LE α]
       ht.isLUB_mem A (hAst.trans Set.inter_subset_right) hA_ne hAc x hx⟩
 
 @[to_dual]
-lemma CountableSupClosed.sInter [LE α] (hS : ∀ s ∈ S, CountableSupClosed s) :
+protected lemma CountableSupClosed.sInter [LE α] (hS : ∀ s ∈ S, CountableSupClosed s) :
     CountableSupClosed (⋂₀ S) where
   isLUB_mem A hAS hA_ne hAc x hx := by
     simp only [subset_sInter_iff, mem_sInter] at hAS ⊢
     exact fun s hs ↦ (hS s hs).isLUB_mem A (hAS s hs) hA_ne hAc x hx
 
 @[to_dual]
-lemma CountableSupClosed.iInter [LE α]
+protected lemma CountableSupClosed.iInter [LE α]
     {f : ι → Set α} (hf : ∀ i, CountableSupClosed (f i)) :
     CountableSupClosed (⋂ i, f i) :=
   .sInter <| forall_mem_range.2 hf
 
 @[to_dual]
-lemma CountableSupClosed.directedOn [SemilatticeSup α] (hs : CountableSupClosed s) :
+protected lemma CountableSupClosed.directedOn [SemilatticeSup α] (hs : CountableSupClosed s) :
     DirectedOn (· ≤ ·) s := hs.supClosed.directedOn
 
 @[to_dual]
-lemma CountableSupClosed.prod [Preorder α] [Preorder β]
+protected lemma CountableSupClosed.prod [Preorder α] [Preorder β]
     {t : Set β} (hs : CountableSupClosed s) (ht : CountableSupClosed t) :
     CountableSupClosed (s ×ˢ t) where
   isLUB_mem A hAst hA_ne hAc := by
