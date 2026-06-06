@@ -606,8 +606,10 @@ theorem Indep.inter_right (hI : M.Indep I) (X : Set α) : M.Indep (I ∩ X) :=
 theorem Indep.inter_left (hI : M.Indep I) (X : Set α) : M.Indep (X ∩ I) :=
   hI.subset inter_subset_right
 
-theorem Indep.diff (hI : M.Indep I) (X : Set α) : M.Indep (I \ X) :=
+theorem Indep.sdiff (hI : M.Indep I) (X : Set α) : M.Indep (I \ X) :=
   hI.subset sdiff_subset
+
+@[deprecated (since := "2026-06-03")] alias Indep.diff := Indep.sdiff
 
 theorem IsBase.eq_of_subset_indep (hB : M.IsBase B) (hI : M.Indep I) (hBI : B ⊆ I) : B = I :=
   let ⟨B', hB', hB'I⟩ := hI.exists_isBase_superset

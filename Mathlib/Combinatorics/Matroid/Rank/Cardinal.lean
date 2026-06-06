@@ -350,8 +350,8 @@ instance invariantCardinalRank_map (M : Matroid α) [InvariantCardinalRank M] (h
     rwa [InjOn.image_eq_image_iff hf hIX.subset_ground hJX.subset_ground] at h'
   have hcard := hIX.cardinalMk_sdiff_comm hJX
   rwa [← lift_inj.{u, v},
-    ← mk_image_eq_of_injOn_lift _ _ (hf.mono ((hIX.indep.diff _).subset_ground)),
-    ← mk_image_eq_of_injOn_lift _ _ (hf.mono ((hJX.indep.diff _).subset_ground)),
+    ← mk_image_eq_of_injOn_lift _ _ (hf.mono ((hIX.indep.sdiff _).subset_ground)),
+    ← mk_image_eq_of_injOn_lift _ _ (hf.mono ((hJX.indep.sdiff _).subset_ground)),
     lift_inj, (hf.mono hIX.indep.subset_ground).image_sdiff,
     (hf.mono hJX.indep.subset_ground).image_sdiff, inter_comm,
     hf.image_inter hJX.indep.subset_ground hIX.indep.subset_ground,

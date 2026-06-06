@@ -57,7 +57,7 @@ section dual
     have hB' := (isBase_compl_iff_maximal_disjoint_isBase hXE).mpr hX_max
     set B' := M.E \ X with hX
     have hI := (not_iff_not.mpr (isBase_compl_iff_maximal_disjoint_isBase)).mpr hI_not_max
-    obtain ⟨B'', hB'', hB''₁, hB''₂⟩ := (hB'.indep.diff I).exists_isBase_subset_union_isBase hB
+    obtain ⟨B'', hB'', hB''₁, hB''₂⟩ := (hB'.indep.sdiff I).exists_isBase_subset_union_isBase hB
     rw [← compl_subset_compl, ← hIB.sdiff_eq_right, ← union_sdiff_distrib, sdiff_eq, compl_inter,
       compl_compl, union_subset_iff, compl_subset_compl] at hB''₂
     have hssu := (subset_inter (hB''₂.2) hIE).ssubset_of_ne
@@ -73,7 +73,7 @@ section dual
     rintro X - I' ⟨hI'E, B, hB, hI'B⟩ hI'X
     obtain ⟨I, hI⟩ := M.exists_isBasis (M.E \ X)
     obtain ⟨B', hB', hIB', hB'IB⟩ := hI.indep.exists_isBase_subset_union_isBase hB
-    obtain rfl : I = B' \ X := hI.eq_of_subset_indep (hB'.indep.diff _)
+    obtain rfl : I = B' \ X := hI.eq_of_subset_indep (hB'.indep.sdiff _)
       (subset_sdiff.2 ⟨hIB', (subset_sdiff.1 hI.subset).2⟩)
       (sdiff_subset_sdiff_left hB'.subset_ground)
     simp_rw [maximal_subset_iff']

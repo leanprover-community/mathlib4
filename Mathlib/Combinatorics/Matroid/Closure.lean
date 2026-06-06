@@ -448,7 +448,7 @@ lemma IsBase.exchange_base_of_notMem_closure (hB : M.IsBase B) (he : e ∈ B)
   obtain rfl | hne := eq_or_ne f e
   · simpa [he]
   have ⟨hi, hfB⟩ : M.Indep (insert f (B \ {e})) ∧ f ∉ B := by
-    simpa [(hB.indep.diff _).notMem_closure_iff, hne] using hf
+    simpa [(hB.indep.sdiff _).notMem_closure_iff, hne] using hf
   exact hB.exchange_isBase_of_indep hfB hi
 
 lemma Indep.isBase_iff_ground_subset_closure (hI : M.Indep I) : M.IsBase I ↔ M.E ⊆ M.closure I :=

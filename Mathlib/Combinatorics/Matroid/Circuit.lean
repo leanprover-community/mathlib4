@@ -148,7 +148,7 @@ lemma Indep.insert_isCircuit_of_forall (hI : M.Indep I) (heI : e ∉ I) (he : e 
   rintro f (rfl | hfI)
   · simpa [heI]
   rw [← insert_sdiff_singleton_comm (by rintro rfl; contradiction),
-    (hI.diff _).insert_indep_iff_of_notMem (by simp [heI])]
+    (hI.sdiff _).insert_indep_iff_of_notMem (by simp [heI])]
   exact ⟨mem_ground_of_mem_closure he, h f hfI⟩
 
 lemma Indep.insert_isCircuit_of_forall_of_nontrivial (hI : M.Indep I) (hInt : I.Nontrivial)
@@ -262,10 +262,10 @@ lemma Indep.fundCircuit_isCircuit (hI : M.Indep I) (hecl : e ∈ M.closure I) (h
 lemma Indep.mem_fundCircuit_iff (hI : M.Indep I) (hecl : e ∈ M.closure I) (heI : e ∉ I) :
     x ∈ M.fundCircuit e I ↔ M.Indep (insert e I \ {x}) := by
   obtain rfl | hne := eq_or_ne x e
-  · simp [hI.diff, mem_fundCircuit]
+  · simp [hI.sdiff, mem_fundCircuit]
   suffices (∀ t ⊆ I, e ∈ M.closure t → x ∈ t) ↔ e ∉ M.closure (I \ {x}) by
     simpa [fundCircuit_eq_sInter hecl, hne, ← insert_sdiff_singleton_comm hne.symm,
-      (hI.diff _).insert_indep_iff, mem_ground_of_mem_closure hecl, heI]
+      (hI.sdiff _).insert_indep_iff, mem_ground_of_mem_closure hecl, heI]
   refine ⟨fun h hecl ↦ (h _ sdiff_subset hecl).2 rfl, fun h J hJ heJ ↦ by_contra fun hxJ ↦ h ?_⟩
   exact M.closure_subset_closure (subset_sdiff_singleton hJ hxJ) heJ
 
