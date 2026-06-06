@@ -882,6 +882,38 @@ lemma xRep_eq_xRep_iff {P Q : W.Point} : P.xRep = Q.xRep ↔ P = Q ∨ P = -Q :=
   refine ⟨eq_or_eq_neg_of_xRep_eq_xRep, fun H ↦ ?_⟩
   rcases H with rfl | rfl <;> simp
 
+variable [DecidableEq F]
+
+/-- We given an explicit expression for `xRep` of `P + P` when `2*P ≠ 0`. -/
+lemma xRep_add_self_of_ne {x y : F} (h : W.Nonsingular x y) (hn : y ≠ W.negY x y) :
+    (some x y h + some x y h).xRep =
+      ![(x ^ 4 - W.b₄ * x ^ 2 - 2 * W.b₆ * x - W.b₈) /
+        (4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆), 1] := by
+  simp only [add_self_of_Y_ne hn, ← addX_x_x_slope_eq h.1 hn, xRep_some]
+
+/-- We given an explicit expression for `xRep` of `P + P` when `P ≠ 0` and `2*P = 0`. -/
+lemma xRep_add_self_of_eq {x y : F} (h : W.Nonsingular x y) (hn : y = W.negY x y) :
+    (some x y h + some x y h).xRep = ![1, 0] := by
+  simp only [add_self_of_Y_eq hn, xRep_zero]
+
+/-- We given an explicit expression for `xRep` of `P + Q` when `P ≠ ±Q`. -/
+lemma xRep_add_of_ne {xP yP xQ yQ : F} (hP : W.Nonsingular xP yP)
+    (hQ : W.Nonsingular xQ yQ) (hn : xP ≠ xQ) :
+    (some xP yP hP + some xQ yQ hQ).xRep =
+      ![((yP - yQ) ^ 2 + W.a₁ * (yP - yQ) * (xP - xQ) - (W.a₂ + xP + xQ) * (xP - xQ) ^2) /
+         (xP - xQ) ^ 2, 1] := by
+  simp only [add_of_X_ne (h₁ := hP) (h₂ := hQ) hn, xRep_some, addX_slope_of_x_ne_x hn]
+
+/-- We given an explicit expression for `xRep` of `P - Q` when `P ≠ ±Q`. -/
+lemma xRep_add_neg_of_ne {xP yP xQ yQ : F} (hP : W.Nonsingular xP yP)
+    (hQ : W.Nonsingular xQ yQ) (hn : xP ≠ xQ) :
+    (some xP yP hP - some xQ yQ hQ).xRep =
+      ![((yP + yQ + W.a₁ * xQ + W.a₃) ^ 2 + W.a₁ * (yP + yQ + W.a₁ * xQ + W.a₃) * (xP - xQ)
+           - (W.a₂ + xP + xQ) * (xP - xQ) ^2) / (xP - xQ) ^ 2, 1] := by
+  simp only [sub_eq_add_neg (some ..), neg_some hQ,
+    add_of_X_ne (h₁ := hP) (h₂ := (nonsingular_neg ..).mpr hQ) hn, xRep_some,
+    addX_slope_negY_of_x_ne_x hn]
+
 end Point
 
 end Affine

@@ -113,6 +113,9 @@ This depends on `W`, and has argument order: `x`, `y`. -/
 def negY (x y : R) : R :=
   -y - W'.a₁ * x - W'.a₃
 
+lemma sub_negY_eq (x y : R) : y - W'.negY x y = 2 * y + W'.a₁ * x + W'.a₃ :=
+  by rw [negY]; ring
+
 lemma negY_negY (x y : R) : W'.negY x (W'.negY x y) = y := by
   simp only [negY]
   ring1
@@ -385,6 +388,75 @@ lemma addY_sub_negY_addY {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :
       ((y₂ - W.negY x₂ y₂) * (x₁ - x₃) - (y₁ - W.negY x₁ y₁) * (x₂ - x₃)) / (x₂ - x₁) := by
   simp_rw [addY, negY, eq_div_iff (sub_ne_zero.mpr hx.symm)]
   linear_combination (norm := ring1) 2 * cyclic_sum_Y_mul_X_sub_X y₁ y₂ hx
+
+/-- The explicit formula for the `x`-coordinate of `P + Q` when `P ≠ ±Q`. -/
+lemma addX_slope_of_x_ne_x {xP yP xQ yQ : F} (hn : xP ≠ xQ) :
+     W.addX xP xQ (W.slope xP xQ yP yQ) =
+       ((yP - yQ) ^ 2 + W.a₁ * (yP - yQ) * (xP - xQ) - (W.a₂ + xP + xQ) * (xP - xQ) ^2) /
+         (xP - xQ) ^ 2 := by
+  have hxPQ' : xP - xQ ≠ 0 := by grind only
+  simp [addX, slope, hn, div_pow]
+  field
+
+/-- The explicit formula for the `x`-coordinate of `P - Q` when `P ≠ ±Q`. -/
+lemma addX_slope_negY_of_x_ne_x {xP yP xQ yQ : F} (hn : xP ≠ xQ) :
+     W.addX xP xQ (W.slope xP xQ yP <| W.negY xQ yQ) =
+       ((yP + yQ + W.a₁ * xQ + W.a₃) ^ 2 + W.a₁ * (yP + yQ + W.a₁ * xQ + W.a₃) * (xP - xQ)
+           - (W.a₂ + xP + xQ) * (xP - xQ) ^2) / (xP - xQ) ^ 2 := by
+  have hxPQ' : (xP - xQ) ≠ 0 := by grind only
+  simp [addX, slope, hn, div_pow]
+  field
+
+/-!
+### Some statements about the numerator and denominator of the x-coordinate of 2*P
+-/
+
+lemma den_duplication_eq {x y : R} (h : W'.Equation x y) :
+    4 * x ^ 3 + W'.b₂ * x ^ 2 + 2 * W'.b₄ * x + W'.b₆ = (2 * y + W'.a₁ * x + W'.a₃) ^ 2 := by
+  have Heq := (W'.equation_iff x y).mp h
+  simp only [b₂, b₄, b₆]
+  linear_combination -4 * Heq
+
+lemma den_duplication_eq_zero_iff [IsReduced R] {x y : R} (h : W'.Equation x y) :
+    4 * x ^ 3 + W'.b₂ * x ^ 2 + 2 * W'.b₄ * x + W'.b₆ = 0 ↔ y = W'.negY x y := by
+  rw [den_duplication_eq h, sq_eq_zero_iff, negY]
+  grind only
+
+omit [DecidableEq F] in
+lemma den_duplication_ne_zero_or_num_duplication_ne_zero {x y : F} (h : W.Nonsingular x y) :
+    4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆ ≠ 0 ∨
+      x ^ 4 - W.b₄ * x ^ 2 - 2 * W.b₆ * x - W.b₈ ≠ 0 := by
+  have ⟨h₁, h₂⟩ := (W.nonsingular_iff x y).mp h
+  rw [equation_iff x y] at h₁
+  by_cases H : 2 * y + W.a₁ * x + W.a₃ = 0
+  · right
+    replace h₂ : W.a₁ * y ≠ 3 * x ^ 2 + 2 * W.a₂ * x + W.a₄ := by grind
+    contrapose! h₂
+    rw [b₄, b₆, b₈] at h₂
+    grobner
+  · left
+    clear h₂
+    contrapose! H
+    rw [b₂, b₄, b₆] at H
+    grobner
+
+/-- The explicit duplication formula for the `x`-coordinate when `2*P ≠ 0`. -/
+lemma addX_x_x_slope_eq {x y : F} (h : W.Equation x y) (hn : y ≠ W.negY x y) :
+    W.addX x x (W.slope x x y y) =
+      (x ^ 4 - W.b₄ * x ^ 2 - 2 * W.b₆ * x - W.b₈) /
+        (4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆) := by
+  have aux {a b c : F} (h : a ≠ 0) : a ^ 2 * (b * (c / a)) = a * b * c := by field
+  have hn' := (den_duplication_eq_zero_iff h).not.mpr hn
+  refine mul_left_cancel₀ hn' ?_
+  have hn'' : 2 * y + W.a₁ * x + W.a₃ ≠ 0 := by
+    rw [den_duplication_eq h] at hn'
+    grind
+  rw [mul_div_cancel₀ _ hn', addX, sub_sub, sub_sub, mul_sub, mul_add]
+  simp only [slope, ↓reduceIte, hn]
+  rw [sub_negY_eq, div_pow]
+  nth_rewrite 1 2 [den_duplication_eq h]
+  rw [mul_div_cancel₀ _ <| pow_ne_zero 2 hn'', aux hn'', b₂, b₄, b₆, b₈]
+  linear_combination -W.a₁ ^ 2 * (W.equation_iff x y).mp h
 
 end slope
 
