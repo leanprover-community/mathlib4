@@ -79,7 +79,7 @@ attribute [local simp] Hom.w_apply
 
 /-- The functor from topological pairs to topological spaces that forgets the second space, i.e. the
 projection to the first space. -/
-abbrev proj₁ : TopPair.{u} ⥤ TopCat.{u} :=
+def proj₁ : TopPair.{u} ⥤ TopCat.{u} :=
   MorphismProperty.Arrow.forget _ _ _ ⋙ CategoryTheory.Arrow.rightFunc
 
 -- `simps` generates the wrong lemmas
@@ -91,7 +91,7 @@ lemma proj₁_map (f : X ⟶ Y) : proj₁.map f = Hom.fst f := rfl
 
 /-- The functor from topological pairs to topological spaces that forgets the first space, i.e. the
 projection to the second space. -/
-abbrev proj₂ : TopPair.{u} ⥤ TopCat.{u} :=
+def proj₂ : TopPair.{u} ⥤ TopCat.{u} :=
   MorphismProperty.Arrow.forget _ _ _ ⋙ CategoryTheory.Arrow.leftFunc
 
 -- `simps` generates the wrong lemmas
