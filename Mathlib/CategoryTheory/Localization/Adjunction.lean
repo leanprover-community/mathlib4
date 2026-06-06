@@ -95,8 +95,7 @@ noncomputable def localization : G' ⊣ F' :=
       left_triangle := by
         apply natTrans_ext L₁ W₁
         intro X₁
-        have eq := congr_app adj.left_triangle X₁
-        dsimp at eq
+        have eq := adj.left_triangle_components X₁
         rw [NatTrans.comp_app, NatTrans.comp_app, whiskerRight_app, Localization.ε_app,
           Functor.associator_hom_app, id_comp, whiskerLeft_app, G'.map_comp, G'.map_comp,
           assoc, assoc]
@@ -108,8 +107,7 @@ noncomputable def localization : G' ⊣ F' :=
       right_triangle := by
         apply natTrans_ext L₂ W₂
         intro X₂
-        have eq := congr_app adj.right_triangle X₂
-        dsimp at eq
+        have eq := adj.right_triangle_components X₂
         rw [NatTrans.comp_app, NatTrans.comp_app, whiskerLeft_app, whiskerRight_app,
           Localization.η_app, Functor.associator_inv_app, id_comp, F'.map_comp, F'.map_comp]
         erw [← (Localization.ε _ _ _ _ _ _).naturality_assoc, Localization.ε_app,
