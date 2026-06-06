@@ -27,7 +27,7 @@ theorem HasFiniteFreeResolutionOfLength.isStablyFree_of_projective {P : Type v} 
   | zero P =>
       intro
       infer_instance
-  | succ P n F K f g hf hg he hk ih =>
+  | succ P _ F K f g hf hg he _ ih =>
       intro
       obtain ⟨l, hl⟩ := Module.projective_lifting_property g LinearMap.id hg
       let e : F ≃ₗ[R] K × P := ((Function.Exact.splitSurjectiveEquiv he hf) ⟨l, hl⟩).1

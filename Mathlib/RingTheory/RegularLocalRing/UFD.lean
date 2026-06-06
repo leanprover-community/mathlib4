@@ -5,13 +5,12 @@ Authors: Yongle Hu
 -/
 module
 
+public import Mathlib.Algebra.Module.FiniteFreeResolution.BaseChange
 public import Mathlib.Algebra.Module.FiniteFreeResolution.HasProjectiveDimensionLE
-public import Mathlib.Algebra.Module.FiniteFreeResolution.Localization
 public import Mathlib.Algebra.Module.StablyFree.FreeOfInvertible
 public import Mathlib.Algebra.Module.StablyFree.HasFiniteFreeResolution
 public import Mathlib.RingTheory.Ideal.UFD
 public import Mathlib.RingTheory.LocalProperties.Invertible
-public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Square
 public import Mathlib.RingTheory.RegularLocalRing.Localization
 
 /-!
@@ -83,35 +82,27 @@ variable (R) in
 /-- Any regular local ring is a unique factorization domain. -/
 instance (priority := low) uniqueFactorizationMonoid [IsRegularLocalRing R] :
     UniqueFactorizationMonoid R := by
-  have hmain (n : ℕ) : ∀ {S : Type u} [CommRing S] [IsRegularLocalRing S],
-      ringKrullDim S = n → UniqueFactorizationMonoid S := by
-    induction n using Nat.strong_induction_on with
-    | _ n ih =>
-      intro S _ _ h
-      cases n with
-      | zero =>
-          have := (isField_of_isRegularLocalRing_of_dimension_zero h).isPrincipalIdealRing
-          infer_instance
-      | succ n =>
-          have hsd : ringKrullDim S ≠ 0 := by
-            rw [h]
-            norm_cast
-          obtain ⟨x, hxm, hxnm⟩ :=
-            Set.exists_of_ssubset (IsLocalRing.maximalIdeal_sq_lt_of_ringKrullDim_ne_zero hsd)
-          have hx_ne_zero : x ≠ 0 := fun hx0 ↦ hxnm (by simp [hx0])
-          have : IsRegularLocalRing (S ⧸ Ideal.span {x}) := (quotient_span_singleton S hxm hxnm).1
-          have hxp : Prime x := by
-            rw [← Ideal.span_singleton_prime hx_ne_zero, ← Ideal.Quotient.isDomain_iff_prime]
-            infer_instance
-          have hP (P : Ideal S) [P.IsPrime] (hP_lt_max : P < IsLocalRing.maximalIdeal S) :
-              UniqueFactorizationMonoid (Localization.AtPrime P) := by
-            have : IsRegularLocalRing _ := isRegularLocalRing_localization S P
-            obtain ⟨k, hk⟩ := FiniteRingKrullDim.ringKrullDim_eq_nat (Localization.AtPrime P)
-            exact ih k (ENat.coe_lt_coe.mp <| WithBot.coe_lt_coe.mp <| hk.symm.trans_lt <|
-              (IsLocalization.AtPrime.ringKrullDim_lt_of_lt_maximalIdeal hP_lt_max).trans_eq h) hk
-          have := ufd_localization_away_of_prime_of_nonmaximal_localizations_ufd hxm hxp hP
-          rwa [UniqueFactorizationMonoid.iff_localization_away_of_prime hxp]
   obtain ⟨n, hn⟩ := FiniteRingKrullDim.ringKrullDim_eq_nat R
-  exact hmain n hn
+  induction n using Nat.strong_induction_on generalizing R with
+  | _ n ih =>
+    by_cases h : IsField R
+    · let := h.toField
+      infer_instance
+    · obtain ⟨x, hxm, hxnm⟩ :=
+        Set.exists_of_ssubset ((IsLocalRing.maximalIdeal_sq_lt_maximalIdeal R).mpr h)
+      have hx_ne_zero : x ≠ 0 := fun hx0 ↦ hxnm (by simp [hx0])
+      have : IsRegularLocalRing (R ⧸ Ideal.span {x}) := (quotient_span_singleton R hxm hxnm).1
+      have hxp : Prime x := by
+        rw [← Ideal.span_singleton_prime hx_ne_zero, ← Ideal.Quotient.isDomain_iff_prime]
+        infer_instance
+      have : UniqueFactorizationMonoid (Localization.Away x) := by
+        refine ufd_localization_away_of_prime_of_nonmaximal_localizations_ufd hxm hxp ?_
+        intro P _ hPl
+        have : IsRegularLocalRing _ := isRegularLocalRing_localization R P
+        obtain ⟨k, hk⟩ := FiniteRingKrullDim.ringKrullDim_eq_nat (Localization.AtPrime P)
+        refine ih k ?_ _ hk
+        rw [← Nat.cast_lt (α := WithBot ℕ∞), ← hk, ← hn]
+        exact IsLocalization.AtPrime.ringKrullDim_lt_of_lt_maximalIdeal hPl
+      rwa [UniqueFactorizationMonoid.iff_localization_away_of_prime hxp]
 
 end IsRegularLocalRing

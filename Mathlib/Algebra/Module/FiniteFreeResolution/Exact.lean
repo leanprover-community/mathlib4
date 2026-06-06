@@ -115,7 +115,7 @@ theorem of_shortExact_of_left_of_right (hf : Function.Injective f) (hg : Functio
           let p : F₁ × F₃ →ₗ[R] F₃ := LinearMap.snd R F₁ F₃
           let ψ : K →ₗ[R] g₃.ker := LinearMap.codRestrict g₃.ker (p.comp K.subtype) <|
             fun x ↦ snd_mem_ker_of_mem_ker_coprod f g g₁ g₃ l h hl x.1 x.2
-          have hϕ : Function.Injective ϕ := fun _ _ hxy => hf₁ <|
+          have hϕ : Function.Injective ϕ := fun _ _ hxy ↦ hf₁ <|
             congrArg Prod.fst (congrArg Subtype.val hxy)
           have hψ : Function.Surjective ψ := by
             intro y
@@ -124,7 +124,7 @@ theorem of_shortExact_of_left_of_right (hf : Function.Injective f) (hg : Functio
             exact ⟨⟨(x, (y : F₃)), by simp [K, s, hx, hx₁]⟩, Subtype.ext (by simp [ψ, p])⟩
           have hKer : Function.Exact ϕ ψ := by
             refine LinearMap.exact_of_comp_of_mem_range ?_ ?_
-            · exact LinearMap.ext fun k => Subtype.ext <| by simp [ψ, p, ϕ, i₁]
+            · exact LinearMap.ext fun k ↦ Subtype.ext <| by simp [ψ, p, ϕ, i₁]
             · intro x hx
               have hx2 : x.1.2 = 0 := congrArg Subtype.val hx
               have hlx : l x.1.2 = 0 := by simp [hx2]
