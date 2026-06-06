@@ -441,6 +441,18 @@ theorem splits_mul_iff (hf₀ : f ≠ 0) (hg₀ : g ≠ 0) :
     have := ih (by aesop) hg₀ (f * g) rfl (splits_X_sub_C_mul_iff.mp h) hn
     aesop
 
+@[simp] lemma splits_mul : (f * g).Splits ↔ (f.Splits ∨ g = 0) ∧ (g.Splits ∨ f = 0) where
+  mp hpq := by
+    obtain rfl | hf₀ := eq_or_ne f 0
+    · simp
+    obtain rfl | hg₀ := eq_or_ne g 0
+    · simp
+    simp_all [or_false, splits_mul_iff]
+  mpr := by rintro ⟨hp | rfl, hq | rfl⟩ <;> simp [*]
+
+@[simp high] lemma splits_X_mul : (X * f).Splits ↔ f.Splits := by simp
+@[simp high] lemma splits_mul_X : (f * X).Splits ↔ f.Splits := by simp [mul_comm f]
+
 theorem Splits.of_dvd (hg : Splits g) (hg₀ : g ≠ 0) (hfg : f ∣ g) : Splits f := by
   obtain ⟨g, rfl⟩ := hfg
   exact ((splits_mul_iff (by simp_all) (by simp_all)).mp hg).1
@@ -688,9 +700,6 @@ alias splits_of_natDegree_le_one := Splits.of_natDegree_le_one
 
 @[deprecated (since := "2025-11-24")]
 alias splits_of_natDegree_eq_one := Splits.of_natDegree_eq_one
-
-@[deprecated (since := "2025-11-25")]
-alias splits_mul := Splits.mul
 
 @[deprecated (since := "2025-11-25")]
 alias splits_of_splits_mul' := splits_mul_iff
