@@ -19,23 +19,24 @@ variable {α β : Type*}
 section
 
 variable [Preorder α] [CommGroup α] [IsOrderedMonoid α] [PartialOrder β] [Monoid β]
+variable {S : Type*} [SetLike S α] [SubgroupClass S α] {H : S}
 
-@[to_additive] lemma Subgroup.ordConnected_iff_mem_of_le_one {H : Subgroup α} :
+@[to_additive] lemma Subgroup.ordConnected_iff_mem_of_le_one :
     (H : Set α).OrdConnected ↔ ∀ ⦃a b : α⦄, a ≤ b → b ≤ 1 → a ∈ H → b ∈ H where
-  mp h a b aleb ble1 ainH := h.out' ainH H.one_mem ⟨aleb, ble1⟩
+  mp h a b aleb ble1 ainH := h.out' ainH (one_mem H) ⟨aleb, ble1⟩
   mpr convex := by
     refine ⟨fun a ha c hc b binIcc ↦ ?_⟩
     rw [← inv_mul_cancel_right b c]
-    exact (H.mul_mem_cancel_right hc).mpr <| convex ((mul_le_mul_iff_right c⁻¹).mpr binIcc.1)
-      (mul_inv_le_one_iff_le.mpr binIcc.2) <| H.mul_mem ha (inv_mem hc)
+    exact (mul_mem_cancel_right hc).mpr <| convex ((mul_le_mul_iff_right c⁻¹).mpr binIcc.1)
+      (mul_inv_le_one_iff_le.mpr binIcc.2) <| mul_mem ha (inv_mem hc)
 
-@[to_additive] lemma Set.OrdConnected.of_subgroup {H : Subgroup α}
-    (h : ∀ ⦃a b : α⦄, a ≤ b → b ≤ 1 → a ∈ H → b ∈ H) : (H : Set α).OrdConnected :=
+@[to_additive] lemma Set.OrdConnected.of_subgroup (h : ∀ ⦃a b : α⦄, a ≤ b → b ≤ 1 → a ∈ H → b ∈ H) :
+    (H : Set α).OrdConnected :=
   Subgroup.ordConnected_iff_mem_of_le_one.mpr h
 
-@[to_additive] lemma Subgroup.ordConnected_iff_mem_and_mem_of_mul_mem {H : Subgroup α} :
+@[to_additive] lemma Subgroup.ordConnected_iff_mem_and_mem_of_mul_mem :
     (H : Set α).OrdConnected ↔ ∀ ⦃a b : α⦄, a ≤ 1 → b ≤ 1 → a * b ∈ H → a ∈ H ∧ b ∈ H :=
-  H.ordConnected_iff_mem_of_le_one.trans <|
+  ordConnected_iff_mem_of_le_one.trans <|
 { mp convex a _ ale0 ble1 h :=
     ⟨convex ((mul_le_iff_le_one_right' a).mpr ble1) ale0 h,
       convex ((mul_le_iff_le_one_left').mpr ale0) ble1 h⟩
