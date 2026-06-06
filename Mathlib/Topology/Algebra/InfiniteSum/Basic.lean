@@ -168,9 +168,15 @@ lemma hasProd_singleton (m : β) (f : β → α) : HasProd (({m} : Set β).restr
 
 @[to_additive]
 theorem hasProd_ite_eq (b : β) [DecidablePred (· = b)] (a : α) (L := unconditional β) [L.LeAtTop] :
-    HasProd (fun b' ↦ if b' = b then a else 1) a L := by
-  convert! hasProd_single b (hf := fun b' hb' ↦ if_neg hb') (L := L)
-  exact (if_pos rfl).symm
+    HasProd (fun b' ↦ if b' = b then a else 1) a L :=
+  suffices HasProd (fun b' ↦ if b' = b then a else 1) (if b = b then a else 1) L by simpa
+  hasProd_single b (hf := fun b' hb' ↦ if_neg hb') (L := L)
+
+@[to_additive]
+theorem hasProd_ite_eq' (b : β) [DecidablePred (b = ·)] (a : α) (L := unconditional β) [L.LeAtTop] :
+    HasProd (fun b' ↦ if b = b' then a else 1) a L :=
+  suffices HasProd (fun b' ↦ if b = b' then a else 1) (if b = b then a else 1) L by simpa
+  hasProd_single b (hf := fun b' hb' ↦ if_neg hb'.symm) (L := L)
 
 @[to_additive]
 theorem Equiv.hasProd_iff (e : γ ≃ β) : HasProd (f ∘ e) a ↔ HasProd f a :=
@@ -506,6 +512,14 @@ theorem tprod_ite_eq (b : β) [DecidablePred (· = b)] (a : β → α)
   rw [tprod_eq_mulSingle b]
   · simp
   · intro b' hb'; simp [hb']
+
+@[to_additive (attr := simp)]
+theorem tprod_ite_eq' (b : β) [DecidablePred (b = ·)] (a : β → α)
+    (L := unconditional β) [L.LeAtTop] :
+    ∏'[L] b', (if b = b' then a b' else 1) = a b := by
+  rw [tprod_eq_mulSingle b]
+  · simp
+  · intro b' hb'; simp [hb'.symm]
 
 @[to_additive]
 theorem Finset.tprod_subtype (s : Finset β) (f : β → α) :

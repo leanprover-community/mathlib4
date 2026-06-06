@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Asymptotics.ExpGrowth
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.Real.ENatENNReal
 public import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
 
 /-!
