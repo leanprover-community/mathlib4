@@ -1309,26 +1309,6 @@ end CommGroup
 
 namespace IsMulCommutative
 
-@[to_additive]
-lemma isMulCommutative_iff {M : Type*} [Mul M] :
-    IsMulCommutative M ↔ ∀ a b : M, a * b = b * a := by
-  grind [IsMulCommutative, Std.Commutative]
-
-@[to_additive]
-alias ⟨_, IsMulCommutative.of_comm⟩ := isMulCommutative_iff
-
-/-- An alternative to `mul_comm` which uses the mixin `IsMulCommutative` instead of bundled
-commutative algebraic structures. In general, you should prefer `mul_comm` unless you are working
-with commutative subobjects in a noncommutative algebraic structure. -/
-@[to_additive
-/-- An alternative to `add_comm` which uses the mixin `IsAddCommutative` instead of bundled
-commutative algebraic structures. In general, you should prefer `add_comm` unless you are working
-with commutative subobjects in a noncommutative algebraic structure. -/ ]
-lemma mul_comm' {M : Type*} [Mul M] [IsMulCommutative M] (a b : M) : a * b = b * a :=
-  IsMulCommutative.is_comm.comm ..
-
-namespace IsMulCommutative
-
 /-- A magma which `IsMulCommutative` is a `CommMagma`.
 
 This is primarily used to deduce the bundled version from the unbundled one for commutative
@@ -1346,9 +1326,8 @@ subobjects in a noncommutative ambient type. As such this is only available insi
 commutativity.
 
 See note [commutative subobjects]. -/ ]
-scoped instance (priority := 50) {M : Type*} [Mul M] [IsMulCommutative M] :
-    CommMagma M where
-  mul_comm := IsMulCommutative.is_comm.comm
+scoped instance (priority := 50) {M : Type*} [Mul M] [IsMulCommutative M] : CommMagma M where
+  mul_comm := mul_comm'
 
 /-- A `Semigroup` which `IsMulCommutative` is a `CommSemigroup`.
 
@@ -1431,8 +1410,6 @@ scoped instance (priority := 50) {G : Type*} [Group G] [IsMulCommutative G] :
     CommGroup G where
 
 end IsMulCommutative
-
-end IsCommutative
 
 /-! We initialize all projections for `@[simps]` here, so that we don't have to do it in later
 files.
