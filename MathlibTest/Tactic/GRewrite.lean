@@ -438,7 +438,7 @@ end cache
 
 section strict
 
-variable {α : Type u} [PartialOrder α] {a b c : α}
+variable {α : Type u} [PartialOrder α] {a b c d : α}
 
 example (h₁ : a < b) (h₂ : b ≤ c) : a < c := by
   grw [h₁, h₂]
@@ -468,11 +468,22 @@ example (h₁ : a ≤ b) (h₂ : b < c) : a < c := by
 example (h₁ : a < b) (h₂ : b < c) : a ≤ c := by
   grw [h₁, h₂]
 
-variable [CommRing α] [IsStrictOrderedRing α]
-
+variable [CommRing α] [IsStrictOrderedRing α] in
 example (h : a < b) (_ : 0 ≤ a) : 1 + 2 * a ^ 2 < 9 := by
   grw [h]
   guard_target = 1 + 2 * b ^ 2 ≤ 9
   exact test_sorry
+
+example (h₁ : a < b) (h₂ : c < d) : Set.Icc b c ⊆ Set.Ioo a d := by
+  grw [h₁, h₂]
+
+example (h₁ : a < b) (h₂ : c < d) : Set.Icc b c ⊆ Set.Ioo a d := by
+  grw [h₂, h₁]
+
+example (h₁ : a < b) : Set.Iic a ⊆ Set.Iio b := by
+  grw [h₁]
+
+example (h₁ : a < b) : Set.Ici b ⊆ Set.Ioi a := by
+  grw [h₁]
 
 end strict

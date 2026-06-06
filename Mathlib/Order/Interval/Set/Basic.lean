@@ -266,7 +266,7 @@ theorem Iic_ssubset_Iic : Iic a ⊂ Iic b ↔ a < b where
   mpr h := (ssubset_iff_of_subset (Iic_subset_Iic.mpr h.le)).mpr
     ⟨b, self_mem_Iic, fun h' => h.not_ge h'⟩
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp, gcongr strict)]
 theorem Iic_subset_Iio : Iic a ⊆ Iio b ↔ a < b :=
   ⟨fun h => h self_mem_Iic, fun h _ hx => lt_of_le_of_lt hx h⟩
 
@@ -320,7 +320,7 @@ theorem Icc_ssubset_Icc_left (h₂ : a₂ ≤ b₂) (ha : a₂ < a₁) (hb : b�
   (ssubset_iff_of_subset (Icc_subset_Icc (le_of_lt ha) hb)).mpr
     ⟨a₂, left_mem_Icc.mpr h₂, not_and.mpr fun f _ => lt_irrefl a₂ (ha.trans_le f)⟩
 
-@[to_dual (reorder := ha hb)]
+@[to_dual (reorder := ha hb) (attr := gcongr strict)]
 theorem Ico_subset_Ioo (ha : a₂ < a₁) (hb : b₁ ≤ b₂) : Ico a₁ b₁ ⊆ Ioo a₂ b₂ := fun _ hx ↦
   ⟨ha.trans_le hx.1, hx.2.trans_le hb⟩
 
@@ -328,7 +328,7 @@ theorem Ico_subset_Ioo (ha : a₂ < a₁) (hb : b₁ ≤ b₂) : Ico a₁ b₁ �
 theorem Ico_subset_Ioo_left (h : a₁ < a₂) : Ico a₂ b ⊆ Ioo a₁ b :=
   Ico_subset_Ioo h le_rfl
 
-@[to_dual (reorder := ha hb)]
+@[to_dual (reorder := ha hb) (attr := gcongr strict)]
 theorem Icc_subset_Ioc (ha : a₂ < a₁) (hb : b₁ ≤ b₂) : Icc a₁ b₁ ⊆ Ioc a₂ b₂ := fun _ hx ↦
   ⟨ha.trans_le hx.1, hx.2.trans hb⟩
 
