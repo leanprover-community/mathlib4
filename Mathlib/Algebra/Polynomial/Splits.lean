@@ -89,9 +89,14 @@ theorem Splits.of_natDegree_eq_zero {f : R[X]} (hf : natDegree f = 0) :
     Splits f := by
   rw [← (natDegree_eq_zero.mp hf).choose_spec]; aesop
 
+@[deprecated (since := "2026-06-06")]
+alias splits_of_natDegree_eq_zero := Splits.of_natDegree_eq_zero
+
 theorem Splits.of_degree_le_zero {f : R[X]} (hf : degree f ≤ 0) :
     Splits f :=
   .of_natDegree_eq_zero (natDegree_eq_zero_iff_degree_le_zero.mpr hf)
+
+@[deprecated (since := "2026-06-06")] alias splits_of_degree_le_zero := Splits.of_degree_le_zero
 
 theorem _root_.IsUnit.splits [NoZeroDivisors R] {f : R[X]} (hf : IsUnit f) : Splits f :=
   .of_natDegree_eq_zero (natDegree_eq_zero_of_isUnit hf)
@@ -108,17 +113,29 @@ theorem Splits.of_natDegree_le_one_of_invertible {f : R[X]}
     rw [← mul_invOf_cancel_left a b, C_mul, ← mul_add]
     exact (Splits.C a).mul (Splits.X_add_C _)
 
+@[deprecated (since := "2026-06-06")]
+alias splits_of_natDegree_le_one_of_invertible := Splits.of_natDegree_le_one_of_invertible
+
 theorem Splits.of_degree_le_one_of_invertible {f : R[X]}
     (hf : f.degree ≤ 1) (h : Invertible f.leadingCoeff) : f.Splits :=
   .of_natDegree_le_one_of_invertible (natDegree_le_of_degree_le hf) h
+
+@[deprecated (since := "2026-06-06")]
+alias splits_of_degree_le_one_of_invertible := Splits.of_degree_le_one_of_invertible
 
 theorem Splits.of_natDegree_le_one_of_monic {f : R[X]} (hf : f.natDegree ≤ 1) (h : Monic f) :
     f.Splits :=
   .of_natDegree_le_one_of_invertible hf (h.leadingCoeff ▸ invertibleOne)
 
+@[deprecated (since := "2026-06-06")]
+alias splits_of_natDegree_le_one_of_monic := Splits.of_natDegree_le_one_of_monic
+
 theorem Splits.of_degree_le_one_of_monic {f : R[X]} (hf : f.degree ≤ 1) (h : Monic f) :
     f.Splits :=
   .of_natDegree_le_one_of_monic (natDegree_le_of_degree_le hf) h
+
+@[deprecated (since := "2026-06-06")]
+alias splits_of_degree_le_one_of_monic := Splits.of_degree_le_one_of_monic
 
 end Semiring
 
