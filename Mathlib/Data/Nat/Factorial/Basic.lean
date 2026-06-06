@@ -298,9 +298,8 @@ theorem ascFactorial_le_factorial_mul_pow (n k : ℕ) : n.ascFactorial k ≤ k !
     rw [ascFactorial_succ, factorial_succ, pow_succ',
       Nat.mul_assoc (j + 1), Nat.mul_left_comm j !, ← Nat.mul_assoc (j + 1)]
     refine Nat.mul_le_mul ?_ (ascFactorial_le_factorial_mul_pow n j)
-    rw [add_one_mul, Nat.add_comm]
-    have : j ≤ j * n := Nat.le_mul_of_pos_right j hn
-    lia
+    rw [add_one_mul, Nat.add_comm, Nat.add_le_add_iff_right]
+    exact Nat.le_mul_of_pos_right j hn
 
 theorem ascFactorial_lt_pow_add (n : ℕ) : ∀ {k : ℕ}, 2 ≤ k → (n + 1).ascFactorial k < (n + k) ^ k
   | 0 => by rintro ⟨⟩
