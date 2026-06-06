@@ -140,8 +140,7 @@ theorem hasSum_coeFn_tsum {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] {ι : Type*} [C
 theorem coeFn_tsum {ι : Type*} [Countable ι] {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
     [CompleteSpace E] {f : ι → Lp E p μ} (hf : ∑' n, ‖f n‖ₑ ≠ ∞) :
     ⇑(∑' n, f n) =ᵐ[μ] fun x ↦ ∑' n, f n x := by
-  filter_upwards [Lp.hasSum_coeFn_tsum hf] with x hx
-  exact hx.tsum_eq.symm
+  filter_upwards [Lp.hasSum_coeFn_tsum hf] with x hx using hx.tsum_eq.symm
 
 end Lp
 
