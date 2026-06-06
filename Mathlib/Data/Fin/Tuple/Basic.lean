@@ -801,7 +801,7 @@ theorem forall_fin_add_pi {γ : Fin (m + n) → Sort*} {P : (∀ i, γ i) → Pr
       (∀ (vₘ : ∀ i, γ (castAdd n i)) (vₙ : ∀ j, γ (natAdd m j)), P (addCases vₘ vₙ)) where
   mp hv vm vn := hv (addCases vm vn)
   mpr h v := by
-    convert! h (fun i => v (castAdd n i)) (fun j => v (natAdd m j))
+    convert h (fun i => v (castAdd n i)) (fun j => v (natAdd m j))
     exact (addCases_castAdd_natAdd v _).symm
 
 lemma exists_iff_castSucc {P : Fin (n + 1) → Prop} :
