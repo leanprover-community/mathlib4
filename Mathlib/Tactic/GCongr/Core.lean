@@ -177,7 +177,7 @@ structure GCongrHyp where
 /-- Structure recording the data for a "generalized congruence" (`gcongr`) lemma. -/
 structure GCongrLemma where
   /-- The keys under which the lemma is stored. This is usually one key,
-  but for strict `gcongr` lemmas, this stores the LHS and RHS key respectively. -/
+  but for strict `gcongr` lemmas, this stores two keys, for the LHS and RHS key respectively. -/
   keys : List GCongrKey
   /-- The name of the lemma. -/
   declName : Name
@@ -205,9 +205,9 @@ def GCongrLemma.prioLE (a b : GCongrLemma) : Bool :=
 
 /-- Insert a `GCongrLemma` in a collection of lemmas, making sure that the lemmas are sorted. -/
 def addGCongrLemmaEntry (m : GCongrLemmas) (l : GCongrLemma) : GCongrLemmas :=
-  l.keys.foldl (init := m) (·.alter · fun
+  l.keys.foldl (init := m) fun m key ↦ m.alter key fun
     | none    => [l]
-    | some es => insert l es)
+    | some es => insert l es
 where
   /--- Insert a `GCongrLemma` in the correct place in a list of lemmas. -/
   insert (l : GCongrLemma) : List GCongrLemma → List GCongrLemma
@@ -221,16 +221,18 @@ initialize gcongrExt : SimpleScopedEnvExtension GCongrLemma GCongrLemmas ←
     initial := {}
   }
 
-/-- Get the `gcongr` lemmas whose conclusion has the shape `rel (lhs ..) (rhs ..)`.
-`arity` is the number of arguments in `..`. -/
+/-- Return the `gcongr` lemmas whose conclusion has the shape `rel (lhs ..) (rhs ..)`,
+where `arity` is the number of arguments in `..`. This is used by the `gcongr` tactic. -/
 def findGCongrLemmas? (relName lhs rhs : Name) (arity : Nat) : CoreM (List GCongrLemma) := do
   let lemmas := gcongrExt.getState (← getEnv)
   let some lemmas := lemmas.get? { relName, head := rhs, arity } | return []
-  return lemmas.filter (·.keys.head!.head == lhs)
+  let keys := if lhs == rhs then [{ relName, head := lhs, arity }] else
+    [{ relName, head := lhs, arity }, { relName, head := rhs, arity }]
+  return lemmas.filter (·.keys == keys)
 
-/-- Get the `gcongr` lemmas whose conclusion has the shape
-`rel (head ..) _` (if `forward := true`) or `rel _ (head ..)` (if `forward := false`).
-`arity` is the number of arguments in `..`. -/
+/-- Get the `gcongr` lemmas whose conclusion has the shape `rel (head ..) _`, if `forward := true`,
+or `rel _ (head ..)`, if `forward := false`. `arity` is the number of arguments in `..`.
+This is used by the `grw` tactic. -/
 def findGCongrLemmas?' (relName head : Name) (forward : Bool) (arity : Nat) :
     CoreM (List GCongrLemma) := do
   let lemmas := gcongrExt.getState (← getEnv)
@@ -301,7 +303,7 @@ def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio 
     let lhs := lhs.eta; let rhs := rhs.eta
     -- verify that the "varying argument" pairs are free variables (after eta-reduction)
     unless lhs.isFVar && rhs.isFVar do
-      if strict then continue
+      if strict then continue -- When comparing `a ≤ b` with `a < b`, the instances are different.
       fail "Not all varying arguments are free variables"
     -- Instance implicit arguments should be synthesized, rather than solved by congruence
     if (← lhs.fvarId!.getBinderInfo).isInstImplicit &&
@@ -424,14 +426,14 @@ initialize registerBuiltinAttribute {
             let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
             gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
       | _ =>
+        -- Try to interpret the lemma as an implicational `gcongr` lemma,
+        -- such as `Or.imp : (a → c) → (b → d) → a ∨ b → c ∨ d`.
         if strict then
           let some x := xs.back? | failure
           let type ← mkForallFVars #[x] type
           let gcongrLemma ← makeGCongrLemma xs.pop type declName prio strict forGrw
           gcongrExt.add gcongrLemma kind
         else
-          -- Try to interpret the lemma as an implicational `gcongr` lemma,
-          -- such as `Or.imp : (a → c) → (b → d) → a ∨ b → c ∨ d`.
           -- We want to support such lemmas even if the hypotheses are given in a different order.
           -- So, we find the last hypothesis whose head matches that of the conclusion,
           -- and move it to the end.
@@ -752,8 +754,7 @@ partial def _root_.Lean.MVarId.gcongr
   let mctx ← getMCtx
   -- Look up the `@[gcongr]` lemmas whose conclusion has the same relation and head function as
   -- the goal
-  let key := { relName, head := lhsHead, arity := lhsArgs.size }
-  let mut lemmas := (gcongrExt.getState (← getEnv)).getD key []
+  let mut lemmas ← findGCongrLemmas? relName lhsHead rhsHead lhsArgs.size
   if relName == `_Implies then
     lemmas := lemmas ++ relImpRelLemma lhsArgs.size
   for lem in lemmas do

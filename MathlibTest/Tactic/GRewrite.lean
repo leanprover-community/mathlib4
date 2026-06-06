@@ -48,8 +48,8 @@ example (h₁ : c ≤ b) (h₂ : a + 5 < c + 6) : a + 5 < b + 6 := by
 
 example (h₁ : a + e ≤ b + e) (h₂ : b < c) (h₃ : c ≤ d) : a + e ≤ d + e := by
   grw [h₂, h₃] at h₁
-  guard_hyp h₁ :ₛ a + e ≤ d + e
-  exact h₁
+  guard_hyp h₁ :ₛ a + e < d + e
+  exact le_of_lt h₁
 
 example (f g : α → α) (h : ∀ x : α, f x ≤ g x) (h₂ : g a + g b ≤ 5) : f a + f b ≤ 5 := by
   grw [h]
@@ -84,15 +84,9 @@ example (h₁ : a ≤ b) : a * c ≤ b * c := by
   guard_target =ₛ 0 ≤ c
   exact test_sorry
 
-/- This example has behaviour which might be weaker than some users would desire: it would be
-mathematically sound to transform the goal here to `2 * y ≤ z`, not `2 * y < z`.
-
-However, the current behavior is easier to implement, and preserves the form of the goal (`?_ < z`),
-which is a useful invariant. -/
 example {x y z : ℤ} (hx : x < y) : 2 * x < z := by
   grw [hx]
-  fail_if_success guard_target =ₛ 2 * y < z
-  guard_target = 2 * y < z
+  guard_target = 2 * y ≤ z
   exact test_sorry
 
 end inequalities
@@ -119,7 +113,7 @@ example (h₁ : W ⊂ Y) (h₂ : X ⊂ (W ∪ Z)) : X ⊂ (Y ∪ Z) := by
   exact h₂
 
 example {a b : Nat} (h : a < b) (f : Nat → Nat) (hf : ∀ i, 0 ≤ f i) :
-    ∑ i ∈ ({x | x ≤ a} : Set Nat), f i ≤ ∑ i ∈ ({x | x ≤ b} : Set Nat), f i := by
+    ∑ i ∈ ({x | x ≤ a} : Set Nat), f i ≤ ∑ i ∈ ({x | x < b} : Set Nat), f i := by
   grw [h]
 
 end subsets
@@ -129,7 +123,7 @@ section rationals
 example (x x' y z w : ℚ) (h0 : x' = x) (h₁ : x < z) (h₂ : w ≤ y + 4) (h₃ : z + 1 < 5 * w) :
     x' + 1 < 5 * (y + 4) := by
   grw [h0, h₁, ← h₂]
-  exact h₃
+  exact le_of_lt h₃
 
 example {x y z : ℚ} (f g : ℚ → ℚ) (h : ∀ t, f t = g t) : 2 * f x * f y * f x ≤ z := by
   grw [h]
@@ -188,7 +182,7 @@ example {a b : ℤ} (h1 : a ≡ 3 [ZMOD 5]) (h2 : b ≡ a ^ 2 + 1 [ZMOD 5]) :
 example {x y a b : ℚ} (h : x < y) (h1 : a ≤ 3 * x) : 2 * x ≤ b := by
   grw [h] at *
   guard_hyp h :ₛ x < y -- `grw [h] at *` does not rewrite at `h`
-  guard_hyp h1 : a ≤ 3 * y
+  guard_hyp h1 : a < 3 * y
   guard_target = 2 * y ≤ b
   exact test_sorry
 
@@ -331,7 +325,7 @@ example : ∃ n, n < 2 := by
   refine ⟨?_, ?_⟩
   on_goal 2 => grw [← one_lt_two]
   exact 0
-  refine zero_lt_one
+  refine zero_le_one
 
 section zmod
 
@@ -444,10 +438,41 @@ end cache
 
 section strict
 
-variable {α : Type u} [Preorder α] {a b c : α}
+variable {α : Type u} [PartialOrder α] {a b c : α}
 
-example (h : a < b) (h' : b ≤ c) : a < c := by
+example (h₁ : a < b) (h₂ : b ≤ c) : a < c := by
+  grw [h₁, h₂]
+
+example (h₁ : a < b) (h₂ : b ≤ c) : a < c := by
+  grw [← h₂, ← h₁]
+
+example (h₁ : a ≤ b) (h₂ : b < c) : a < c := by
+  grw [h₁, h₂]
+
+example (h₁ : a ≤ b) (h₂ : b < c) : a < c := by
+  grw [← h₂, ← h₁]
+
+example (h₁ : a < b) (h₂ : b ≤ c) : a < c := by
+  by_contra!; grw [h₁, h₂] at this; absurd this; rfl
+
+example (h₁ : a < b) (h₂ : b ≤ c) : a < c := by
+  by_contra!; grw [← h₂, ← h₁] at this; absurd this; rfl
+
+example (h₁ : a ≤ b) (h₂ : b < c) : a < c := by
+  by_contra!; grw [h₁, h₂] at this; absurd this; rfl
+
+example (h₁ : a ≤ b) (h₂ : b < c) : a < c := by
+  by_contra!; grw [← h₂, ← h₁] at this; absurd this; rfl
+
+-- Strict inequalities can also be used as non-strict ones:
+example (h₁ : a < b) (h₂ : b < c) : a ≤ c := by
+  grw [h₁, h₂]
+
+variable [CommRing α] [IsStrictOrderedRing α]
+
+example (h : a < b) (_ : 0 ≤ a) : 1 + 2 * a ^ 2 < 9 := by
   grw [h]
-  exact h'
+  guard_target = 1 + 2 * b ^ 2 ≤ 9
+  exact test_sorry
 
 end strict
