@@ -467,7 +467,7 @@ theorem isCoboundedUnder_le_max [LinearOrder β] {f : Filter α} {u v : α → �
 
 open Finset
 
--- TODO: use `to_dual` once `Finset.sup'` is tagged.
+@[to_dual isBoundedUnder_ge_finset_inf']
 theorem isBoundedUnder_le_finset_sup' [LinearOrder β] [Nonempty β] {f : Filter α} {F : ι → α → β}
     {s : Finset ι} (hs : s.Nonempty) (h : ∀ i ∈ s, f.IsBoundedUnder (· ≤ ·) (F i)) :
     f.IsBoundedUnder (· ≤ ·) (fun a ↦ sup' s hs (fun i ↦ F i a)) := by
@@ -479,6 +479,7 @@ theorem isBoundedUnder_le_finset_sup' [LinearOrder β] [Nonempty β] {f : Filter
   simp only [sup'_le_iff]
   exact fun i i_s ↦ le_trans (h i i_s) (le_sup' m i_s)
 
+@[to_dual isCoboundedUnder_ge_finset_inf']
 theorem isCoboundedUnder_le_finset_sup' [LinearOrder β] {f : Filter α} {F : ι → α → β}
     {s : Finset ι} (hs : s.Nonempty) (h : ∃ i ∈ s, f.IsCoboundedUnder (· ≤ ·) (F i)) :
     f.IsCoboundedUnder (· ≤ ·) (fun a ↦ sup' s hs (fun i ↦ F i a)) := by
@@ -490,6 +491,7 @@ theorem isCoboundedUnder_le_finset_sup' [LinearOrder β] {f : Filter α} {F : ι
   simp only [sup'_le_iff] at h ⊢
   exact h i i_s
 
+@[to_dual isBoundedUnder_ge_finset_inf]
 theorem isBoundedUnder_le_finset_sup [LinearOrder β] [OrderBot β] {f : Filter α} {F : ι → α → β}
     {s : Finset ι} (h : ∀ i ∈ s, f.IsBoundedUnder (· ≤ ·) (F i)) :
     f.IsBoundedUnder (· ≤ ·) (fun a ↦ sup s (fun i ↦ F i a)) := by
@@ -498,21 +500,6 @@ theorem isBoundedUnder_le_finset_sup [LinearOrder β] [OrderBot β] {f : Filter 
   simp only [eventually_map] at hm ⊢
   rw [← eventually_all_finset s] at hm
   exact hm.mono fun _ h ↦ sup_mono_fun h
-
-theorem isBoundedUnder_ge_finset_inf' [LinearOrder β] [Nonempty β] {f : Filter α} {F : ι → α → β}
-    {s : Finset ι} (hs : s.Nonempty) (h : ∀ i ∈ s, f.IsBoundedUnder (· ≥ ·) (F i)) :
-    f.IsBoundedUnder (· ≥ ·) (fun a ↦ inf' s hs (fun i ↦ F i a)) :=
-  isBoundedUnder_le_finset_sup' (β := βᵒᵈ) hs h
-
-theorem isCoboundedUnder_ge_finset_inf' [LinearOrder β] {f : Filter α} {F : ι → α → β}
-    {s : Finset ι} (hs : s.Nonempty) (h : ∃ i ∈ s, f.IsCoboundedUnder (· ≥ ·) (F i)) :
-    f.IsCoboundedUnder (· ≥ ·) (fun a ↦ inf' s hs (fun i ↦ F i a)) :=
-  isCoboundedUnder_le_finset_sup' (β := βᵒᵈ) hs h
-
-theorem isBoundedUnder_ge_finset_inf [LinearOrder β] [OrderTop β] {f : Filter α} {F : ι → α → β}
-    {s : Finset ι} (h : ∀ i ∈ s, f.IsBoundedUnder (· ≥ ·) (F i)) :
-    f.IsBoundedUnder (· ≥ ·) (fun a ↦ inf s (fun i ↦ F i a)) :=
-  isBoundedUnder_le_finset_sup (β := βᵒᵈ) h
 
 end MinMax
 

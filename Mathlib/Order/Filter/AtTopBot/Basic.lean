@@ -31,7 +31,7 @@ variable [Preorder α] [IsDirectedOrder α] {p : α → Prop}
 
 -- `Filter.HasMonotoneBasis` doesn't exist, so we cannot use `to_dual` here.
 theorem hasAntitoneBasis_atTop [Nonempty α] : (@atTop α _).HasAntitoneBasis Ici :=
-  .iInf_principal fun _ _ _ ↦ by rw [le_iff_subset]; gcongr
+  .iInf_principal fun _ _ ↦ Ici_subset_Ici.2
 
 theorem atTop_basis [Nonempty α] : (@atTop α _).HasBasis (fun _ => True) Ici :=
   hasAntitoneBasis_atTop.1
