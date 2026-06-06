@@ -456,49 +456,53 @@ def subgroupOfCoprimeConductor [NeZero n] (d : ℕ) :
 lemma mem_subgroupOfCoprimeConductor [NeZero n] {d : ℕ} {χ : DirichletCharacter R n} :
     χ ∈ subgroupOfCoprimeConductor d ↔ d.Coprime χ.conductor := Iff.rfl
 
-variable (R n) in
-/-- The subgroup of Dirichlet characters of level `n` that send a fixed integer `a`
-(coprime to `n`) to `1`. -/
-def subgroupOfMapToOne {a : ℤ} (ha : IsCoprime a n) :
+variable (R) in
+/-- The annihilator of a set `H` of units mod `n`: the subgroup of Dirichlet characters
+of level `n` that send every element of `H` to `1`. -/
+def annihilator (H : Set (ZMod n)ˣ) :
     Subgroup (DirichletCharacter R n) where
-  carrier := {χ | χ a = 1}
-  mul_mem' hχ hψ := by rw [Set.mem_setOf, MulChar.mul_apply, hχ, hψ, one_mul]
-  one_mem' := by simp [MulChar.one_apply, ZMod.coe_int_isUnit_iff_isCoprime, ha.symm]
-  inv_mem' hχ := by rw [Set.mem_setOf_eq, MulChar.inv_apply_eq_inv, hχ, Ring.inverse_one]
+  carrier := {χ | ∀ a ∈ H, χ a = 1}
+  mul_mem' hχ hψ a h := by rw [MulChar.mul_apply, hχ a h, hψ a h, one_mul]
+  one_mem' := by simp
+  inv_mem' hχ a h := by rw [MulChar.inv_apply_eq_inv, hχ a h, Ring.inverse_one]
 
 @[simp]
-theorem mem_subgroupOfMapToOne_iff {a : ℤ} (ha : IsCoprime a n)
-    {χ : DirichletCharacter R n} :
-    χ ∈ subgroupOfMapToOne R n ha ↔ χ a = 1 := Iff.rfl
+theorem mem_annihilator_iff {H : Set (ZMod n)ˣ} {χ : DirichletCharacter R n} :
+    χ ∈ annihilator R H ↔ ∀ a ∈ H, χ a = 1 := Iff.rfl
 
 variable (R n) in
 /-- The subgroup of Dirichlet characters of level `n` whose primitive character sends the prime `p`
 to `1`. See `mem_subgroupOfPrimitiveMapToOne_iff` for this characterization. -/
 noncomputable def subgroupOfPrimitiveMapToOne [NeZero n] (p : ℕ) [hp : Fact p.Prime] :
     Subgroup (DirichletCharacter R n) :=
-  (subgroupOfMapToOne R (n / p ^ n.factorization p) (a := p)
-    (Nat.isCoprime_iff_coprime.mpr <| Nat.coprime_ordCompl hp.out (NeZero.ne n))).map
+  (annihilator R (n := n / p ^ n.factorization p)
+    {ZMod.unitOfCoprime p (Nat.coprime_ordCompl hp.out (NeZero.ne n))}).map
       (changeLevel (Nat.ordCompl_dvd n p))
 
 @[simp]
 theorem mem_subgroupOfPrimitiveMapToOne_iff [NeZero n] [Nontrivial R] (p : ℕ) [hp : Fact p.Prime] :
     χ ∈ subgroupOfPrimitiveMapToOne R n p ↔ χ.primitiveCharacter p = 1 := by
   have : NeZero (n / p ^ n.factorization p) := ⟨(Nat.ordCompl_pos p (NeZero.ne n)).ne'⟩
+  have hcop := Nat.coprime_ordCompl hp.out (NeZero.ne n)
   rw [subgroupOfPrimitiveMapToOne]
-  refine ⟨?_, fun h ↦ ⟨?_, ?_, ?_⟩⟩
+  simp only [Subgroup.mem_map, mem_annihilator_iff, Set.mem_singleton_iff, forall_eq,
+    ZMod.coe_unitOfCoprime]
+  refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨ψ, hψ, rfl⟩
-    rw [← Int.cast_natCast, primitiveCharacter_changeLevel_apply,
-      primitiveCharacter_apply_of_isCoprime, hψ]
-    exact Nat.isCoprime_iff_coprime.mpr <| Nat.coprime_ordCompl hp.out (NeZero.ne n)
-  · have : χ.conductor ∣ n / p ^ n.factorization p := by
+    rw [← Int.cast_natCast] at hψ ⊢
+    rw [primitiveCharacter_changeLevel_apply, primitiveCharacter_apply_of_isCoprime, hψ]
+    exact Nat.isCoprime_iff_coprime.mpr hcop
+  · have hdvd : χ.conductor ∣ n / p ^ n.factorization p := by
       apply Nat.dvd_ordCompl_of_dvd_not_dvd χ.conductor_dvd_level
       simp [← hp.out.coprime_iff_not_dvd, ← Nat.isCoprime_iff_coprime,
         ← apply_ne_zero_iff (χ := χ.primitiveCharacter), h]
-    exact changeLevel this χ.primitiveCharacter
-  · rw [SetLike.mem_coe, mem_subgroupOfMapToOne_iff, changeLevel_eq_cast_of_dvd',
-      Int.cast_natCast, h]
-    exact Nat.isCoprime_iff_coprime.mpr <| Nat.coprime_ordCompl hp.out (NeZero.ne n)
-  · rw [← changeLevel_trans, changeLevel_primitiveCharacter]
+    refine ⟨changeLevel hdvd χ.primitiveCharacter, ?_, ?_⟩
+    · rw [show (p : ZMod (n / p ^ n.factorization p))
+          = ((p : ℤ) : ZMod (n / p ^ n.factorization p)) from (Int.cast_natCast p).symm,
+        changeLevel_eq_cast_of_dvd' χ.primitiveCharacter hdvd (Nat.isCoprime_iff_coprime.mpr hcop),
+        Int.cast_natCast]
+      exact h
+    · rw [← changeLevel_trans, changeLevel_primitiveCharacter]
 
 /-
 ### Even and odd characters
