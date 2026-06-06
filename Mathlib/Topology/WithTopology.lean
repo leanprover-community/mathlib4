@@ -5,6 +5,7 @@ Authors: Yury Kudryashov, Gemini CLI
 -/
 module
 
+public import Mathlib.Topology.Continuous
 public import Mathlib.Topology.Defs.Induced
 
 /-!
@@ -80,6 +81,19 @@ lemma continuous_toTopology : Continuous[t, _] (toTopology t) :=
 /-- If `X` is equipped with topology `t`, the map `WithTopology X t → X` is continuous. -/
 lemma continuous_ofTopology : Continuous[_, t] (ofTopology (t := t)) :=
   ⟨fun _ ↦ (·)⟩
+
+lemma ofTopology_comp_map_comp_toTopology
+    {Y : Type*} (s : TopologicalSpace Y) (f : X → Y) :
+    ofTopology ∘ map t s f ∘ toTopology t = f := by
+  ext
+  delta map
+  simp
+
+lemma map_continuous_iff {Y : Type*} (s : TopologicalSpace Y) (f : X → Y) :
+    (Continuous <| WithTopology.map t s f) ↔ @Continuous X Y t s f :=
+  ⟨fun hf => ofTopology_comp_map_comp_toTopology t s f ▸ (continuous_ofTopology s).comp
+    (hf.comp (continuous_toTopology t)), fun hf => (continuous_toTopology s).comp
+      (hf.comp (continuous_ofTopology t))⟩
 
 /-! ### Set-theoretic lemmas -/
 
