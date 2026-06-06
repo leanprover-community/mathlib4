@@ -87,15 +87,15 @@ private lemma comap_hom_toRingHom_ker_eq (I : Ideal A) [Nontrivial (A ⧸ I)] :
 
 theorem mapcotangent_toOfQuot_surjective (I : Ideal A) [Nontrivial (A ⧸ I)] :
     Surjective (mapCotangent (A.toOfQuot I)) :=
-  Cotangent.map_surjective_of_comap_eq (A.toOfQuot I).hom Ideal.Quotient.mk_surjective
-    (comap_hom_toRingHom_ker_eq I)
+  Cotangent.map_surjective_of_comap_eq
+    Ideal.Quotient.mk_surjective (comap_hom_toRingHom_ker_eq I)
 
 open Submodule in
 theorem mapcotangent_toOfQuot_bijective_iff (I : Ideal A) [Nontrivial (A ⧸ I)] :
     Bijective (mapCotangent (A.toOfQuot I)) ↔ I ≤ maximalIdeal A ^ 2 := by
   simp only [Bijective, mapcotangent_toOfQuot_surjective I, and_true, ← LinearMap.ker_eq_bot]
-  rw [← Submodule.restrictScalars_inj A.Ring, Cotangent.map_ker_of_surjective _
-    Ideal.Quotient.mk_surjective (comap_hom_toRingHom_ker_eq I)]
+  rw [← Submodule.restrictScalars_inj A.Ring,
+    Cotangent.map_ker_of_surjective Ideal.Quotient.mk_surjective (comap_hom_toRingHom_ker_eq I)]
   simp only [ker_toRingHom_toOfQuot, ker_extension, comap_inf, comap_subtype_le_iff, Std.le_refl,
     inf_of_le_left, inf_le_left, restrictScalars_bot]
   rw [eq_bot_iff, map_le_iff_le_comap, comap_bot, Cotangent.ker_mk,
@@ -198,7 +198,7 @@ theorem range_liftBaseChange_baseCotangentMap :
       obtain ⟨y, rfl⟩ := (maximalIdeal Λ).toCotangent_surjective y
       simp [(mk_eq_zero ..).mpr]
     | add x y hx hy => rw [map_add]; exact add_mem hx hy
-  · rw [← restrictScalars_mem A, Cotangent.map_ker_of_surjective _ Ideal.Quotient.mk_surjective <|
+  · rw [← restrictScalars_mem A, Cotangent.map_ker_of_surjective Ideal.Quotient.mk_surjective <|
         comap_hom_toRingHom_ker_eq ((maximalIdeal Λ).map (algebraMap Λ A)), ker_toRingHom_toOfQuot,
       comap_inf, comap_subtype_self, inf_top_eq, mem_map] at hx
     obtain ⟨⟨x, x_in⟩, rfl⟩ := Cotangent.mk_surjective x
