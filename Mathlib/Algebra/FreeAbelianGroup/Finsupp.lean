@@ -141,4 +141,14 @@ theorem support_add (a b : FreeAbelianGroup X) : support (a + b) ⊆ a.support �
   simp only [support, map_add]
   apply Finsupp.support_add
 
+@[simp] theorem support_eq_empty {a : FreeAbelianGroup X} : a.support = ∅ ↔ a = 0 :=
+  Finsupp.support_eq_empty.trans (equivFinsupp X).map_eq_zero_iff
+
+@[simp] theorem nonempty_support_iff {a : FreeAbelianGroup X} :
+    a.support.Nonempty ↔ a ≠ 0 := by
+  contrapose!; exact support_eq_empty
+
+theorem card_support_eq_zero {a : FreeAbelianGroup X} : a.support.card = 0 ↔ a = 0 := by
+  simp
+
 end FreeAbelianGroup

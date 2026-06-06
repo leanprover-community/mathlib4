@@ -360,7 +360,7 @@ lemma coeff_X_of_ne_one {n : ℕ} (hn : n ≠ 1) : coeff (X : SkewPolynomial R) 
   rw [coeff_X, if_neg hn.symm]
 
 lemma coeff_C : coeff (C a) n = ite (n = 0) a 0 := by
-  convert coeff_monomial using 2; simp [eq_comm]
+  convert! coeff_monomial using 2; simp [eq_comm]
 
 @[simp] lemma coeff_C_zero : coeff (C a) 0 = a := coeff_monomial
 
