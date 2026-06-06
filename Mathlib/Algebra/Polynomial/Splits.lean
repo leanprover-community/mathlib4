@@ -474,6 +474,11 @@ theorem Splits.of_dvd (hg : Splits g) (hg₀ : g ≠ 0) (hfg : f ∣ g) : Splits
   obtain ⟨g, rfl⟩ := hfg
   exact ((splits_mul_iff (by simp_all) (by simp_all)).mp hg).1
 
+lemma Splits.of_dvd' (hg : Splits g) (hgf : g = 0 → f = 0) (hfg : f ∣ g) : Splits f := by
+  obtain rfl | hg₀ := eq_or_ne g 0
+  · simp_all
+  · exact .of_dvd hg hg₀ hfg
+
 @[deprecated (since := "2025-11-27")]
 alias Splits.splits_of_dvd := Splits.of_dvd
 
