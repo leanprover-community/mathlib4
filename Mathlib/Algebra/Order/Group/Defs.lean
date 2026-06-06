@@ -58,13 +58,13 @@ instance (priority := 100) IsOrderedMonoid.toIsOrderedCancelMonoid
 /-- Assuming `α` equipped with `LinearOrder` is `CancelCommMonoid` and `IsOrderedMonoid`, it is
 also be `IsOrderedCancelMonoid`.
 
-TODO: make it an `instance`. To avoid slowdown, it is not an instance currently. See
+TODO: make it an `instance`. To avoid slowdown, it was not an instance when it was submitted. See
 https://github.com/leanprover-community/mathlib4/pull/32828. -/
 @[implicit_reducible, to_additive IsOrderedAddMonoid.toIsOrderedCancelAddMonoid'
   /-- Assuming `α` equipped with `LinearOrder` is `AddCancelCommMonoid` and `IsAddOrderedMonoid`, it
   is also `IsAddOrderedCancelMonoid`.
 
-  TODO: make it an `instance`. To avoid slowdown, it is not an instance currently. See
+  TODO: make it an `instance`. To avoid slowdown, it was not an instance when it was submitted. See
   https://github.com/leanprover-community/mathlib4/pull/32828. -/]
 def IsOrderedMonoid.toIsOrderedCancelMonoid'
     [CancelCommMonoid α] [LinearOrder α] [IsOrderedMonoid α] : IsOrderedCancelMonoid α where
