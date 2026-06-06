@@ -272,7 +272,7 @@ namespace Lex
 
 
 /-- The linear sum of two orders -/
-notation:30 α " ⊕ₗ " β:29 => _root_.Lex (α ⊕ β)
+notation3:30 α " ⊕ₗ " β:29 => _root_.Lex (α ⊕ β)
 
 --TODO: Can we make `inlₗ`, `inrₗ` `local notation`?
 /-- Lexicographical `Sum.inl`. Only used for pattern matching. -/
