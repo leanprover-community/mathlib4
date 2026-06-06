@@ -349,7 +349,6 @@ variable (G)
 def colimitIso [HasColimit G] : colimit (F ⋙ G) ≅ colimit G :=
   asIso (colimit.pre G F)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_colimitIso_hom [HasColimit G] (X : C) :
     colimit.ι (F ⋙ G) X ≫ (colimitIso F G).hom = colimit.ι G (F.obj X) := by
