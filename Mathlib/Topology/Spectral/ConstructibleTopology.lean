@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Jiedong Jiang, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Jiedong Jiang, Christian Merten
+Authors: Johan Commelin, Jiedong Jiang, Fangming Li, Christian Merten
 -/
 module
 
@@ -57,7 +57,7 @@ def WithConstructibleTopology (X : Type*) [TopologicalSpace X] : Type _ :=
 instance : TopologicalSpace (WithConstructibleTopology X) :=
   fast_instance% constructibleTopology X
 
-open Topology
+open TopologicalSpace Topology
 
 lemma IsCompact.isOpen_constructibleTopology_of_isOpen {s : Set X}
     (hs : IsCompact s) (ho : IsOpen s) : IsOpen[constructibleTopology X] s := by
@@ -238,6 +238,33 @@ lemma WithConstructibleTopology.map_continuous {f : X → Y} (hf : IsSpectralMap
   · exact
     (hf.isCompact_preimage_of_isOpen hscl.isOpen_compl hsc).isOpen_constructibleTopology_of_isClosed
       (hscl.preimage hf.continuous)
+
+lemma WithConstructibleTopology.isCompact_preimage_of_map_continuous
+    [CompactSpace X] [QuasiSober X] [QuasiSeparatedSpace X]
+    [PrespectralSpace X] [CompactSpace Y] [QuasiSeparatedSpace Y]
+    {f : X → Y} (hf : Continuous <| WithConstructibleTopology.map f)
+    {s : Set Y} (hs1 : IsOpen s) (hs2 : IsCompact s) :
+    @IsCompact X (constructibleTopology X) (f ⁻¹' s) :=
+  letI : @CompactSpace X (constructibleTopology X) := compactSpace_withConstructibleTopology
+  letI := constructibleTopology X
+  IsClosed.isCompact <| IsClosed.preimage hf <|
+    (@isOpen_compl_iff _ _ (generateFrom _)).1 <| isOpen_generateFrom_of_mem <|
+      Or.intro_right _ ⟨hs1.isClosed_compl, (compl_compl s).symm ▸ hs2⟩
+
+lemma WithConstructibleTopology.isSpectralMap_of_continuous_of_map_continuous
+    [CompactSpace X] [QuasiSober X] [QuasiSeparatedSpace X] [PrespectralSpace X]
+    [CompactSpace Y] [QuasiSeparatedSpace Y] {f : X → Y} (hf1 : Continuous f)
+    (hf2 : Continuous <| WithConstructibleTopology.map f) :
+    IsSpectralMap f :=
+  ⟨hf1, fun _ hs1 hs2 => isCompact_of_le_of_isCompact (constructibleTopology_le X) <|
+    isCompact_preimage_of_map_continuous hf2 hs1 hs2⟩
+
+lemma WithConstructibleTopology.isSpectralMap_iff_continuous_and_map_continuous
+    [CompactSpace X] [QuasiSober X] [QuasiSeparatedSpace X] [PrespectralSpace X]
+    [CompactSpace Y] [QuasiSeparatedSpace Y] (f : X → Y) :
+    IsSpectralMap f ↔ Continuous f ∧ (Continuous <| WithConstructibleTopology.map f) :=
+  ⟨fun hf => ⟨hf.toContinuous, map_continuous hf⟩,
+    fun ⟨hf1, hf2⟩ => isSpectralMap_of_continuous_of_map_continuous hf1 hf2⟩
 
 /--
 A spectral map between *quasi-separated* pre-spectral, sober spaces has compact fibers.
