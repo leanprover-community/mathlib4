@@ -8,8 +8,8 @@ module
 public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.List.Induction
 public import Mathlib.Data.List.Lex
+public import Mathlib.Data.List.Pairwise
 public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Logic.Relation
 
 /-!
 # Relation chain
@@ -476,6 +476,12 @@ termination_by l.head hne
 theorem WellFounded.asymmetricₙ (wf : WellFounded r) (hne : l ≠ []) (h : l.IsChain r) :
     ¬r (l.getLast hne) (l.head hne) :=
   @WellFoundedRelation.asymmetricₙ α ⟨r, wf⟩ l hne h
+
+theorem WellFounded.listPairwise_reverse_compl (wf : WellFounded r) (h : l.IsChain r) :
+    l.reverse.Pairwise rᶜ := by
+  refine List.pairwise_iff_forall_infix.mpr fun l' hne hsub ↦ ?_
+  have := wf.asymmetricₙ (by grind) <| h.infix <| l.reverse_reverse ▸ hsub.reverse
+  simpa
 
 /-! In this section, we consider the type of `r`-decreasing chains (`List.IsChain (flip r)`)
   equipped with lexicographic order `List.Lex r`. -/
