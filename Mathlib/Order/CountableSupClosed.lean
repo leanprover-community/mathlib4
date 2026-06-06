@@ -5,7 +5,6 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Data.Countable.Defs
 public import Mathlib.Data.Set.Countable
 public import Mathlib.Order.SupClosed
 
@@ -71,7 +70,7 @@ lemma CountableSupClosed.of_iSup_mem [CompleteLattice α]
 
 @[to_dual]
 lemma CountableSupClosed.sSup_mem [CompleteLattice α] (hs : CountableSupClosed s)
-    (A : Set α) (hA_c : A.Countable) (hA_ne : A.Nonempty) (hA : ∀ a ∈ A, a ∈ s) :
+    {A : Set α} (hA_c : A.Countable) (hA_ne : A.Nonempty) (hA : ∀ a ∈ A, a ∈ s) :
     sSup A ∈ s := by
   rw [sSup_eq_iSup']
   have : Countable A := hA_c
