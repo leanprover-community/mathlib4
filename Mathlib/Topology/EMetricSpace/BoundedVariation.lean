@@ -1090,7 +1090,7 @@ end variationOnFromTo
 /-- If a real-valued function has bounded variation on a set, then it is a difference of monotone
 functions there. Moreover, one can make sure that the two monotone functions add up to the
 variation of `f`. -/
-theorem LocallyBoundedVariationOn.exists_monotoneOn_sub_monotoneOn {f : α → ℝ} {s : Set α}
+theorem LocallyBoundedVariationOn.exists_monotoneOn_sub_monotoneOn' {f : α → ℝ} {s : Set α}
     (h : LocallyBoundedVariationOn f s) :
     ∃ p q : α → ℝ, MonotoneOn p s ∧ MonotoneOn q s ∧ f = p - q ∧
       ∀ x ∈ s, ∀ y ∈ s, (p y - p x) + (q y - q x) = variationOnFromTo f s x y := by
@@ -1113,6 +1113,14 @@ theorem LocallyBoundedVariationOn.exists_monotoneOn_sub_monotoneOn {f : α → �
   · intro x hx y hy
     rw [← variationOnFromTo.add h hx cs hy, variationOnFromTo.eq_neg_swap]
     ring
+
+/-- If a real-valued function has bounded variation on a set, then it is a difference of monotone
+functions there. -/
+theorem LocallyBoundedVariationOn.exists_monotoneOn_sub_monotoneOn {f : α → ℝ} {s : Set α}
+    (h : LocallyBoundedVariationOn f s) :
+    ∃ p q : α → ℝ, MonotoneOn p s ∧ MonotoneOn q s ∧ f = p - q := by
+  rcases h.exists_monotoneOn_sub_monotoneOn' with ⟨p, q, hp, hq, h'f, -⟩
+  exact ⟨p, q, hp, hq, h'f⟩
 
 /-! ### Lipschitz functions and bounded variation -/
 
