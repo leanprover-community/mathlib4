@@ -96,18 +96,18 @@ lemma binomial_apply (s : Set ℕ) :
   rw [binomial, map_ncard_setBernoulli_apply]
 
 lemma binomial_real_apply (s : Set ℕ) :
-    Bin(n, p).real s = setBer(Iio n, p).real {t | t.ncard ∈ s ∧ t ⊆ Iio n} := by
+    Bin(n, p).real s = setBer(Iio n, p).real {t ⊆ Iio n | t.ncard ∈ s} := by
   rw [measureReal_def, binomial_apply, measureReal_def]
 
 lemma map_cast_binomial_apply [MeasurableSingletonClass R] [CharZero R] (s : Set ℕ) :
-    Bin(R, n, p) (Nat.cast '' s) = setBer(Iio n, p) {t | t.ncard ∈ s ∧ t ⊆ Iio n} := by
+    Bin(R, n, p) (Nat.cast '' s) = setBer(Iio n, p) {t ⊆ Iio n | t.ncard ∈ s} := by
   rw [map_apply (by fun_prop) ((Countable.to_set inferInstance).image _).measurableSet,
     binomial_apply]
   simp
 
 lemma map_cast_binomial_real_apply [MeasurableSingletonClass R] [CharZero R] (s : Set ℕ) :
     Bin(R, n, p).real (Nat.cast '' s) =
-      setBer(Iio n, p).real {t | t.ncard ∈ s ∧ t ⊆ Iio n} := by
+      setBer(Iio n, p).real {t ⊆ Iio n | t.ncard ∈ s} := by
   rw [measureReal_def, map_cast_binomial_apply, measureReal_def]
 
 lemma binomial_real_singleton (n k : ℕ) (p : I) :
@@ -134,26 +134,30 @@ lemma map_cast_binomial_singleton [MeasurableSingletonClass R] [CharZero R] (n k
   rw [← ENNReal.ofReal_toReal (a := Bin(R, n, p) _) (by simp), ← measureReal_def,
     map_cast_binomial_real_singleton]
 
+@[simp]
 lemma binomial_real_zero (n : ℕ) (p : I) :
     Bin(n, p).real {0} = (1 - p) ^ n := by simp [binomial_real_singleton]
 
+@[simp]
 lemma map_cast_binomial_real_zero [MeasurableSingletonClass R] [CharZero R] (n : ℕ) (p : I) :
     Bin(R, n, p).real {0} = (1 - p) ^ n := by
   rw [← Nat.cast_zero, map_cast_binomial_real_singleton]
   simp
 
+@[simp]
 lemma binomial_real_self (n : ℕ) (p : I) :
     Bin(n, p).real {n} = p ^ n := by simp [binomial_real_singleton]
 
+@[simp]
 lemma map_cast_binomial_real_self [MeasurableSingletonClass R] [CharZero R] (n : ℕ) (p : I) :
     Bin(R, n, p).real {(n : R)} = p ^ n := by simp [map_cast_binomial_real_singleton]
 
+@[simp]
 lemma binomial_one_eq_bernoulliMeasure (p : I) :
     Bin(1, p) = Ber(1, 0, p) := by
   refine ext_of_measureReal_singleton fun k ↦ ?_
   match k with
-  | 0 => simp [binomial_real_zero]
-  | 1 => simp [binomial_real_self]
+  | 0 | 1 => simp
   | k + 2 => simp [binomial_real_singleton]
 
 lemma binomial_eq_sum_dirac (n : ℕ) (p : I) :
