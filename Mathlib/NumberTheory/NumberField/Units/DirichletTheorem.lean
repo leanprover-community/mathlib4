@@ -450,16 +450,14 @@ instance : Monoid.FG (𝓞 K)ˣ := by
   rw [Monoid.fg_iff_add_fg, ← AddGroup.fg_iff_addMonoid_fg, ← Module.Finite.iff_addGroup_fg]
   infer_instance
 
-theorem finrank_modTorsion : Module.finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
+theorem finrank_modTorsion : finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
   rw [← LinearEquiv.finrank_eq (logEmbeddingEquiv K).symm, unitLattice_rank]
 
 @[deprecated (since := "2026-06-05")]
 alias NumberField.Units.rank_modTorsion := finrank_modTorsion
 
-theorem finrank_eq :
-    finrank ℤ (Additive (𝓞 K)ˣ) = rank K := by
-  rw [← finrank_modTorsion]
-  exact (finrank_quotient_torsion_eq (M := Additive (𝓞 K)ˣ)).symm
+theorem finrank_eq : finrank ℤ (Additive (𝓞 K)ˣ) = rank K := by
+  simpa [← finrank_modTorsion] using! finrank_quotient_torsion_eq.symm
 
 /-- A basis of the quotient `(𝓞 K)ˣ ⧸ (torsion K)` seen as an additive ℤ-module. -/
 def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
