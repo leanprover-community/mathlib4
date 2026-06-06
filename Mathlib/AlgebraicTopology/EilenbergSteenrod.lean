@@ -249,7 +249,8 @@ instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) HasPairSequenc
             incl.isoWhiskerLeft ((hₚFunctor _).mapIso e) ≪≫
             (HP'.iso _).symm)).app _)
           (by cat_disch)
-          (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map, Hom.w_congr_app])
+          (by
+            simp [pairSeq, pairSeq', ComposableArrows.Precomp.map, -Functor.isoWhiskerLeft_trans, Hom.w_app])
       exact ComposableArrows.exact_of_iso pairSeqIso (hPS.exact_pair _ _ _ hij)
     exact_snd X i j hij := by
       let pairSeq := ComposableArrows.mk₂ ((HP.δ i j).app X) ((HP.H j).map X.map)
@@ -262,8 +263,12 @@ instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) HasPairSequenc
             (HP'.iso _).symm)).app _)
           (((HP.iso _) ≪≫ incl.isoWhiskerLeft ((hₚFunctor _).mapIso e) ≪≫
             (HP'.iso _).symm).app _)
-          (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map, Hom.w_congr_app])
-          (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map])
+          (by
+            simp [pairSeq, pairSeq', -Functor.isoWhiskerLeft_trans, Hom.w_app])
+          (by
+            simp only [NatIso.trans_app, Iso.trans_hom, Iso.app_hom, Functor.isoWhiskerLeft_hom]
+            erw [iso_homₚ_inv_hom_app]
+            simp [pairSeq, pairSeq', ComposableArrows.Precomp.map])
       exact ComposableArrows.exact_of_iso pairSeqIso (hPS.exact_snd _ _ _ hij)
     exact_fst X i := by
       let pairSeq := ComposableArrows.mk₂ ((HP.H i).map X.map)
@@ -278,9 +283,12 @@ instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) HasPairSequenc
           (((HP.iso _) ≪≫ incl.isoWhiskerLeft ((hₚFunctor _).mapIso e) ≪≫
             (HP'.iso _).symm).app _)
           (((hₚFunctor _).mapIso e).app _)
-          (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map])
-          (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map]; simp only [← Category.assoc,
-            Hom.iso_comm_congr_app])
+          (by
+            simp only [NatIso.trans_app, Iso.trans_hom, Iso.app_hom, Functor.isoWhiskerLeft_hom]
+            erw [iso_homₚ_inv_hom_app]
+            simp [pairSeq, pairSeq'])
+          (by
+            simp [pairSeq, pairSeq', ComposableArrows.Precomp.map, hₚFunctor])
       exact ComposableArrows.exact_of_iso pairSeqIso (hPS.exact_fst _ _)
   }
 

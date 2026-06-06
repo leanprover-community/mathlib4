@@ -82,10 +82,24 @@ projection to the first space. -/
 abbrev proj₁ : TopPair.{u} ⥤ TopCat.{u} :=
   MorphismProperty.Arrow.forget _ _ _ ⋙ CategoryTheory.Arrow.rightFunc
 
+-- `simps` generates the wrong lemmas
+@[simp]
+lemma proj₁_obj : proj₁.obj X = X.fst := rfl
+
+@[simp]
+lemma proj₁_map (f : X ⟶ Y) : proj₁.map f = Hom.fst f := rfl
+
 /-- The functor from topological pairs to topological spaces that forgets the first space, i.e. the
 projection to the second space. -/
 abbrev proj₂ : TopPair.{u} ⥤ TopCat.{u} :=
   MorphismProperty.Arrow.forget _ _ _ ⋙ CategoryTheory.Arrow.leftFunc
+
+-- `simps` generates the wrong lemmas
+@[simp]
+lemma proj₂_obj : proj₂.obj X = X.snd := rfl
+
+@[simp]
+lemma proj₂_map (f : X ⟶ Y) : proj₂.map f = Hom.snd f := rfl
 
 /-- The inclusion functor from topological spaces to topological pairs that sends a space X to
 (X, ∅). -/
