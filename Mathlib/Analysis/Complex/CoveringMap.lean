@@ -90,7 +90,7 @@ theorem isCoveringMapOn_zpow (n : ℤ) (hn : (n : 𝕜) ≠ 0) :
   refine .of_isCoveringMap_restrictPreimage _ (by simp) ?_ ?_
   · convert! isClosed_singleton (x := (0 : 𝕜)).isOpen_compl using 1
     ext; simp [this]
-  · convert (isCoveringMap_zpow n hn).comp_homeomorph (.setCongr _) using 1
+  · convert! (isCoveringMap_zpow n hn).comp_homeomorph (.setCongr _) using 1
     ext; simpa using! (this _).not
 
 attribute [-instance] Units.mulAction'
