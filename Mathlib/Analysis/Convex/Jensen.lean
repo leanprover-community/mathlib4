@@ -199,8 +199,12 @@ theorem StrictConvexOn.map_sum_eq_iff_of_nonneg (hf : StrictConvexOn 𝕜 s f) (
     (h₁ : ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s) :
     f (∑ i ∈ t, w i • p i) = ∑ i ∈ t, w i • f (p i) ↔
       ∀ ⦃j⦄, j ∈ t → w j ≠ 0 → ∀ ⦃k⦄, k ∈ t → w k ≠ 0 → p j = p k := by
-  grind [sum_filter_of_ne, left_ne_zero_of_smul,
-    hf.map_sum_eq_iff_of_pos _ (sum_filter_ne_zero _ |>.trans h₁) (hmem _ <| mem_of_mem_filter · ·)]
+  have :
+      f (∑ i ∈ t with w i ≠ 0, w i • p i) = ∑ i ∈ t with w i ≠ 0, w i • f (p i) ↔
+        ∀ ⦃j : ι⦄, j ∈ {x ∈ t | w x ≠ 0} → ∀ ⦃k : ι⦄, k ∈ {x ∈ t | w x ≠ 0} → p j = p k :=
+    hf.map_sum_eq_iff_of_pos (by grind)
+      (sum_filter_ne_zero _ |>.trans h₁) (hmem _ <| mem_of_mem_filter · ·)
+  grind [sum_filter_of_ne, left_ne_zero_of_smul]
 
 /-- A form of the **equality case of Jensen's equality** for the case of strict concave and
 non-negative weights. -/
@@ -310,8 +314,12 @@ theorem StrictConvexOn.map_sum_lt_iff_of_nonneg' (hf : StrictConvexOn 𝕜 s f) 
     (h₁ : ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s) :
     f (∑ i ∈ t, w i • p i) < ∑ i ∈ t, w i • f (p i) ↔
       ∃ j ∈ t, w j ≠ 0 ∧ p j ≠ ∑ i ∈ t, w i • p i := by
-  grind [hf.map_sum_lt_iff_of_pos' _ (sum_filter_ne_zero _ |>.trans h₁)
-    (hmem _ <| mem_of_mem_filter · ·), sum_filter_of_ne, left_ne_zero_of_smul]
+  have :
+      f (∑ i ∈ t with w i ≠ 0, w i • p i) < ∑ i ∈ t with w i ≠ 0, w i • f (p i) ↔
+        ∃ j ∈ {x ∈ t | w x ≠ 0}, p j ≠ ∑ i ∈ t with w i ≠ 0, w i • p i :=
+    hf.map_sum_lt_iff_of_pos' (by grind)
+      (sum_filter_ne_zero _ |>.trans h₁) (hmem _ <| mem_of_mem_filter · ·)
+  grind [sum_filter_of_ne, left_ne_zero_of_smul]
 
 /-- Canonical form of the **strict Jensen's inequality**. -/
 theorem StrictConcaveOn.lt_map_sum_iff_of_nonneg' (hf : StrictConcaveOn 𝕜 s f)
