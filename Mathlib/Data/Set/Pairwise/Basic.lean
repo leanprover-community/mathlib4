@@ -77,6 +77,12 @@ theorem Pairwise.mono (h : t ⊆ s) (hs : s.Pairwise r) : t.Pairwise r :=
 theorem Pairwise.mono' (H : r ≤ p) (hr : s.Pairwise r) : s.Pairwise p :=
   hr.imp H
 
+theorem Pairwise.inter_left (hs : s.Pairwise r) (t : Set α) : (s ∩ t).Pairwise r :=
+  hs.mono Set.inter_subset_left
+
+theorem Pairwise.inter_right (hs : s.Pairwise r) (t : Set α) : (t ∩ s).Pairwise r :=
+  hs.mono Set.inter_subset_right
+
 theorem pairwise_top (s : Set α) : s.Pairwise ⊤ :=
   pairwise_of_forall s _ fun _ _ => trivial
 
