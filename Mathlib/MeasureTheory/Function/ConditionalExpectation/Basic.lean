@@ -8,6 +8,8 @@ module
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
 public import Mathlib.MeasureTheory.Function.LpSpace.InfiniteSum
 
+import Mathlib.MeasureTheory.Function.LpSpace.InfiniteSum
+
 /-! # Conditional expectation
 
 We build the conditional expectation of an integrable function `f` with value in a Banach space
@@ -464,19 +466,16 @@ theorem condExp_tsum [CompleteSpace E]
   by_cases hμm : SigmaFinite (μ.trim hm); swap
   · simp only [condExp_of_not_sigmaFinite hm hμm, Pi.zero_apply, tsum_zero]
     exact ae_eq_rfl
-  grw [condExp_ae_eq_condExpL1 hm, condExpL1]
+  grw [condExp_ae_eq_condExpL1 hm]
   have A : ∀ᵐ a ∂μ, ∀ i, μ[f i | m] a = condExpL1 hm μ (f i) a :=
     ae_all_iff.2 (fun i ↦ condExp_ae_eq_condExpL1 hm _)
-  have B : ∑' (n : ι), ‖setToFun μ (condExpInd E hm μ)
-      (dominatedFinMeasAdditive_condExpInd E hm μ) (f n)‖ₑ ≠ ∞ := by
+  have B : ∑' (n : ι), ‖condExpL1 hm μ (f n)‖ₑ ≠ ∞ := by
     apply (lt_of_le_of_lt ?_ hf'.lt_top).ne
     gcongr with i
     exact (enorm_setToFun_le _ (by simp)).trans_eq (by simp)
-  have C := coeFn_tsum (f := fun i ↦ setToFun μ (condExpInd E hm μ)
-    (dominatedFinMeasAdditive_condExpInd E hm μ) (f i)) B
+  have C := coeFn_tsum (f := fun i ↦ condExpL1 hm μ (f i)) B
   filter_upwards [A, C] with a ha h'a
-  simp only [ha, condExpL1]
-  rw [setToFun_tsum _ hf hf', h'a]
+  simp_all [condExpL1, setToFun_tsum]
 
 variable [CompleteSpace E]
 
