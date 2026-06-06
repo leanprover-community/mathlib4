@@ -459,6 +459,10 @@ theorem comap_injective {f : G →* N} (h : Function.Surjective f) : Function.In
   fun K L => by simp only [le_antisymm_iff, comap_le_comap_of_surjective h, imp_self]
 
 @[to_additive (attr := simp)]
+theorem comap_eq_ker {f : G →* N} {H : Subgroup N} : H.comap f = f.ker ↔ Disjoint H f.range := by
+  rw [← H.ker_le_comap f |>.ge_iff_eq', ← map_eq_bot_iff, map_comap_eq, disjoint_iff, inf_comm]
+
+@[to_additive]
 theorem comap_eq_ker_of_surjective {f : G →* N} (hf : Surjective f) {H : Subgroup N} :
     H.comap f = f.ker ↔ H = ⊥ := by
   rw [← comap_bot]
