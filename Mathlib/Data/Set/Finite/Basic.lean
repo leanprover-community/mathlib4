@@ -374,6 +374,12 @@ lemma «exists» {p : Finset α → Prop} :
   mp := fun ⟨s, hs⟩ ↦ ⟨s, s.finite_toSet, by simpa⟩
   mpr := fun ⟨s, hs, hs'⟩ ↦ ⟨hs.toFinset, hs'⟩
 
+lemma mem_range_coe_iff {s : Set α} : s ∈ Set.range ((↑) : Finset α → Set α) ↔ s.Finite where
+  mp := by
+    rintro ⟨t, rfl⟩
+    simp
+  mpr hs := ⟨hs.toFinset, by simp⟩
+
 end Finset
 
 namespace Multiset
@@ -742,11 +748,11 @@ theorem seq_of_forall_finite_exists {γ : Type*} {P : γ → Set γ → Prop}
   haveI : Nonempty γ := (h ∅ finite_empty).nonempty
   choose! c hc using h
   set f : (n : ℕ) → (g : (m : ℕ) → m < n → γ) → γ := fun n g => c (range fun k : Iio n => g k.1 k.2)
-  set u : ℕ → γ := fun n => Nat.strongRecOn' n f
-  refine ⟨u, fun n => ?_⟩
+  set u : ℕ → γ := fun n ↦ Nat.strongRecOn n f
+  refine ⟨u, fun n ↦ ?_⟩
   convert! hc (u '' Iio n) ((finite_lt_nat _).image _)
   rw [image_eq_range]
-  exact Nat.strongRecOn'_beta
+  exact Nat.strongRecOn_eq f n
 
 end
 
