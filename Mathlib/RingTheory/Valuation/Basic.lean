@@ -1065,15 +1065,12 @@ variable {Γ₀ : Type*} {Γ'₀ : Type*}
 section Basic
 
 section Monoid
-
-/-- A valuation is coerced to the underlying function `R → Γ₀`. -/
-instance (R) (Γ₀) [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] :
-    FunLike (AddValuation R Γ₀) R Γ₀ where
-  coe v := v.toMonoidWithZeroHom
-  coe_injective f g := by obtain ⟨⟨_, _⟩, _⟩ := f; cases g; congr!
-
 variable [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
   (v : AddValuation R Γ₀)
+
+/-- A valuation is coerced to the underlying function `R → Γ₀`. -/
+instance : FunLike (AddValuation R Γ₀) R Γ₀ :=
+  inferInstanceAs <| FunLike (Valuation R <| Multiplicative Γ₀ᵒᵈ) R <| Multiplicative Γ₀ᵒᵈ
 
 section
 
