@@ -202,7 +202,7 @@ lemma reduce {m n : ℕ} (h : Reachable (single 3 n)) (hmn : m ≤ n) : Reachabl
 
 /-- The key power tower inequality in the solution. -/
 lemma tower_inequality {m n : ℕ} (hm : m = 2010) (hn : n = 11) :
-    2010 ^ 2010 ^ m ≤ 2 ^ 2 ^ 2 ^ 2 ^ 2 ^ n :=
+    2010 ^ 2010 ^ m ≤ 2 ^ 2 ^ 2 ^ 2 ^ 2 ^ n := by
   calc
     _ ≤ 2 ^ (11 * 2010 ^ m) := by rw [pow_mul]; gcongr <;> lia
     _ ≤ _ := Nat.pow_le_pow_right Nat.zero_lt_two ?_
