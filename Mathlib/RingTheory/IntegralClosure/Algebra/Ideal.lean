@@ -19,7 +19,7 @@ public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 
 ## Note
 We actually prove something stronger, namely that the `Xⁿ⁻ⁱ`-th coefficient lives in `Iⁿ`.
-This the definitition that `x` is integral over `I` in https://stacks.math.columbia.edu/tag/00H2.
+This is the definition that `x` is integral over `I` in https://stacks.math.columbia.edu/tag/00H2.
 
 -/
 
@@ -44,7 +44,6 @@ lemma coeff_mem_pow_of_mem_adjoin_C_mul_X {R : Type*} [CommRing R]
     obtain rfl : j₁ + j₂ = i := by simpa using hj
     exact pow_add I j₁ j₂ ▸ Ideal.mul_mem_mul (hx _) (hy _)
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Polynomial.algebra in
 lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_isIntegral
     {I : Ideal R} {x : S}
@@ -57,12 +56,12 @@ lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_isIntegral
     C ((p.coeff i).1.coeff (p.natDegree - i)) * X ^ i
   have hq : q.natDegree = p.natDegree := by
     refine natDegree_eq_of_le_of_coeff_ne_zero (natDegree_sum_le_of_forall_le _ _ ?_) ?_
-    · exact fun i hi ↦ (natDegree_C_mul_X_pow_le _ _).trans (by simpa [Nat.lt_succ_iff] using hi)
+    · exact fun i hi ↦ (natDegree_C_mul_X_pow_le _ _).trans (by simpa [Nat.lt_succ_iff] using! hi)
     · simp [q, hp]
   refine ⟨q, ?_, ?_, ?_⟩
-  · simpa [← hq] using show q.coeff p.natDegree = 1 by simp [q, hp]
+  · simpa [← hq] using! show q.coeff p.natDegree = 1 by simp [q, hp]
   · replace e := congr(($e).coeff p.natDegree)
-    simp only [eval₂_eq_sum_range, finset_sum_coeff, coeff_zero] at e
+    simp only [eval₂_eq_sum_range, finsetSum_coeff, coeff_zero] at e
     simp only [q, map_sum, map_mul, aeval_C, map_pow, aeval_X]
     refine (Finset.sum_congr rfl fun i hi ↦ ?_).trans e
     simp only [Finset.mem_range, Nat.lt_succ_iff] at hi
@@ -71,7 +70,6 @@ lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_isIntegral
   · rw [hq]
     simp [q, apply_ite, coeff_mem_pow_of_mem_adjoin_C_mul_X (p.coeff _).2]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_mem_map [Algebra.IsIntegral R S]
     {I : Ideal R} {x : S} (hx : x ∈ I.map (algebraMap R S)) :
     ∃ p : R[X], p.Monic ∧ aeval x p = 0 ∧ ∀ i, p.coeff i ∈ I ^ (p.natDegree - i) := by

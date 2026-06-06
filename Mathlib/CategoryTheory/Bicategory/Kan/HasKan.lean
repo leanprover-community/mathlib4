@@ -95,7 +95,7 @@ def lanUnit (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : g ⟶ f ≫ 
 theorem lanLeftExtension_unit (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] :
     (lanLeftExtension f g).unit = lanUnit f g := rfl
 
-/-- Evidence that the `Lan.extension f g` is a Kan extension. -/
+/-- Evidence that `lanLeftExtension f g` is a Kan extension. -/
 def lanIsKan (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : (lanLeftExtension f g).IsKan :=
   initialIsInitial
 
@@ -239,7 +239,7 @@ def lanLiftUnit (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : g ⟶ f₊ g 
 theorem lanLiftLeftLift_unit (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] :
     (lanLiftLeftLift f g).unit = lanLiftUnit f g := rfl
 
-/-- Evidence that the `LanLift.lift f g` is a Kan lift. -/
+/-- Evidence that `lanLiftLeftLift f g` is a Kan lift. -/
 def lanLiftIsKan (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : (lanLiftLeftLift f g).IsKan :=
   initialIsInitial
 

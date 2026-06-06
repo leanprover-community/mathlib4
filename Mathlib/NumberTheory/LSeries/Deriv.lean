@@ -51,7 +51,6 @@ lemma LSeries.hasDerivAt_term (f : ℕ → ℂ) (n : ℕ) (s : ℂ) :
   exact HasDerivAt.const_mul (f n) (by simpa only [mul_comm, ← mul_neg_one (log n), ← mul_assoc]
     using (hasDerivAt_neg' s).const_cpow (Or.inl <| Nat.cast_ne_zero.mpr hn))
 
-set_option backward.isDefEq.respectTransparency false in
 /- This lemma proves two things at once, since their proofs are intertwined; we give separate
 non-private lemmas below that extract the two statements. -/
 private lemma LSeries.LSeriesSummable_logMul_and_hasDerivAt {f : ℕ → ℂ} {s : ℂ}
@@ -68,11 +67,11 @@ private lemma LSeries.LSeriesSummable_logMul_and_hasDerivAt {f : ℕ → ℂ} {s
     fun z _ ↦ (hasDerivAt_term f n _).differentiableAt.differentiableWithinAt
   have h₂ : IsOpen S := isOpen_lt continuous_const continuous_re
   have h₃ (n z) (hz : z ∈ S) : ‖term f z n‖ ≤ ‖term f x n‖ :=
-    norm_term_le_of_re_le_re f (by simpa using (hxy.trans hz).le) n
+    norm_term_le_of_re_le_re f (by simpa using! (hxy.trans hz).le) n
   have H := hasSum_deriv_of_summable_norm h₀ h₁ h₂ h₃ hys
   simp_rw [(hasDerivAt_term f _ _).deriv] at H
   refine ⟨summable_neg_iff.mp H.summable, ?_⟩
-  simpa [← H.tsum_eq, tsum_neg] using ((differentiableOn_tsum_of_summable_norm
+  simpa [← H.tsum_eq, tsum_neg] using! ((differentiableOn_tsum_of_summable_norm
     h₀ h₁ h₂ h₃).differentiableAt <| h₂.mem_nhds hys).hasDerivAt
 
 /-- If `re s` is greater than the abscissa of absolute convergence of `f`, then the L-series
@@ -100,7 +99,6 @@ lemma LSeriesSummable_logMul_of_lt_re {f : ℕ → ℂ} {s : ℂ} (h : abscissaO
     LSeriesSummable (logMul f) s :=
   (LSeriesSummable_logMul_and_hasDerivAt h).1
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The abscissa of absolute convergence of the point-wise product of `log` and `f`
 is the same as that of `f`. -/
 @[simp]

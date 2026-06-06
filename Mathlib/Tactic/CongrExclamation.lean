@@ -5,7 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public meta import Lean.Elab.Tactic.Config
+public meta import Lean.Elab.ConfigEval
 public meta import Lean.Elab.Tactic.RCases
 public meta import Lean.Meta.Tactic.Assumption
 public meta import Lean.Meta.Tactic.Rfl
@@ -63,7 +63,8 @@ to right-hand sides of goals. Here is an exhaustive list of things it can try:
 
 - It can try to close goals using a few strategies, including checking
   definitional equality, trying to apply `Subsingleton.elim` or `proof_irrel_heq`, and using the
-  `assumption` tactic.
+  `assumption` tactic. Discharging is done at default transparency (unless specified otherwise),
+  but this will become reducible transparency in the future.
 
 The optional parameter is the depth of the recursive applications.
 This is useful when `congr!` is too aggressive in breaking down the goal.
@@ -106,7 +107,8 @@ structure Congr!.Config where
   closePre : Bool := true
   /-- If `closePost := true`, then try to close goals that remain after no more congruence
   lemmas can be applied, using the same tactics as `closePre`. These tactics are applied
-  with current tactic transparency level. -/
+  with the transparency level specified by `postTransparency`, which is currently default
+  transparency but in the future will become `.reducible` by default. -/
   closePost : Bool := true
   /-- The transparency level to use when applying a congruence theorem.
   By default this is `.reducible`, which prevents unfolding of most definitions. -/
@@ -115,6 +117,12 @@ structure Congr!.Config where
   This includes trying to prove the goal by `rfl` and using the `assumption` tactic.
   By default this is `.reducible`, which prevents unfolding of most definitions. -/
   preTransparency : TransparencyMode := TransparencyMode.reducible
+  /-- The transparency level to use when trying to close goals after no more congruence lemmas can
+  be applied. This includes trying to prove the goal by `rfl` and using the `assumption` tactic.
+  For backwards compatibility this is set to `.default`, which will be changed in the future to
+  `.reducible`.
+  -/
+  postTransparency : TransparencyMode := TransparencyMode.default
   /-- For passes that synthesize a congruence lemma using one side of the equality,
   we run the pass both for the left-hand side and the right-hand side. If `preferLHS` is `true`
   then we start with the left-hand side.
@@ -185,11 +193,12 @@ structure Congr!.Config where
 /-- A configuration option that makes `congr!` do the sorts of aggressive unfoldings that `congr`
 does while also similarly preventing `congr!` from considering partial applications or congruences
 between different functions being applied. -/
-def Congr!.Config.unfoldSameFun : Congr!.Config where
+@[expose] def Congr!.Config.unfoldSameFun : Congr!.Config where
   partialApp := false
   sameFun := true
   transparency := .default
   preTransparency := .default
+  postTransparency := .default
 
 /-- Whether the given number of arguments is allowed to be considered. -/
 def Congr!.Config.numArgsOk (config : Config) (numArgs : Nat) : Bool :=
@@ -552,12 +561,12 @@ structure CongrState where
   /-- Accumulated goals that `congr!` could not handle. -/
   goals : Array MVarId
   /-- Patterns to use when doing intro. -/
-  patterns : List (TSyntax `rcasesPat)
+  patterns : List (TSyntax `rintroPat)
 
 abbrev CongrMetaM := StateRefT CongrState MetaM
 
 /-- Pop the next pattern from the current state. -/
-def CongrMetaM.nextPattern : CongrMetaM (Option (TSyntax `rcasesPat)) := do
+def CongrMetaM.nextPattern : CongrMetaM (Option (TSyntax `rintroPat)) := do
   modifyGet fun s =>
     if let p :: ps := s.patterns then
       (p, {s with patterns := ps})
@@ -676,7 +685,8 @@ def Lean.MVarId.congrCore! (config : Congr!.Config) (mvarId : MVarId) :
   return none
 
 /-- A pass to clean up after `Lean.MVarId.preCongr!` and `Lean.MVarId.congrCore!`. -/
-def Lean.MVarId.postCongr! (config : Congr!.Config) (mvarId : MVarId) : MetaM (Option MVarId) := do
+def Lean.MVarId.postCongr! (config : Congr!.Config) (mvarId : MVarId) : MetaM (Option MVarId) :=
+  withTransparency config.postTransparency do
   let some mvarId ← mvarId.preCongr! config.closePost | return none
   -- Convert `p = q` to `p ↔ q`, which is likely the more useful form:
   let mvarId ← mvarId.propext
@@ -697,7 +707,7 @@ The `depth?` argument controls the depth of the recursion. If `none`, then it us
 large bound that is linear in the expression depth. -/
 def Lean.MVarId.congrN! (mvarId : MVarId)
     (depth? : Option Nat := none) (config : Congr!.Config := {})
-    (patterns : List (TSyntax `rcasesPat) := []) :
+    (patterns : List (TSyntax `rintroPat) := []) :
     MetaM (List MVarId) := do
   let ty ← withReducible <| mvarId.getType'
   -- A reasonably large yet practically bounded default recursion depth.
@@ -757,7 +767,7 @@ syntax (name := congr!) "congr!" Parser.Tactic.optConfig (ppSpace num)?
 elab_rules : tactic
 | `(tactic| congr! $cfg:optConfig $[$n]? $[with $ps?*]?) => do
   let config ← elabConfig cfg
-  let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
+  let patterns := (ps?.getD #[]).toList
   liftMetaTactic fun g ↦
     let depth := n.map (·.getNat)
     g.congrN! depth config patterns

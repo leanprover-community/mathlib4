@@ -146,7 +146,7 @@ def isoindexConeLift :
 /-- The isomorphism of cones induced by `isoindexConeLift`. -/
 noncomputable
 def asLimitindexConeIso : indexCone hC ≅ Profinite.limitCone.{u, u} _ :=
-  Limits.Cones.ext (isoindexConeLift hC) fun _ => rfl
+  Limits.Cone.ext (isoindexConeLift hC) fun _ => rfl
 
 /-- `indexCone` is a limit cone. -/
 noncomputable
