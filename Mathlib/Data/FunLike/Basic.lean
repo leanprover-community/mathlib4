@@ -168,7 +168,7 @@ variable {F α β} [i : DFunLike F α β]
 
 @[deprecated (since := "2026-06-04")] alias coe_injective' := coe_injective
 
-instance (priority := 100) : CoeFun F (fun _ ↦ ∀ a : α, β a) where
+instance (priority := 100) toCoeFun : CoeFun F (fun _ ↦ ∀ a : α, β a) where
   coe := @DFunLike.coe _ _ β _ -- need to make explicit to beta reduce for non-dependent functions
 
 run_cmd Lean.Elab.Command.liftTermElabM do
