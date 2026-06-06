@@ -298,8 +298,8 @@ theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type
     aux₁, aux₂, LinearMap.coe_single, toLin_self, map_sum, map_smul, Basis.equiv_apply]
 
 theorem rank_le_card_height [Fintype m] [CommSemiring R] [StrongRankCondition R]
-    (A : Matrix m n R) : A.rank ≤ Fintype.card m := by
-  exact (Submodule.finrank_le _).trans (finrank_pi R).le
+    (A : Matrix m n R) : A.rank ≤ Fintype.card m :=
+  (Submodule.finrank_le _).trans (finrank_pi R).le
 
 theorem rank_le_height [CommSemiring R] [StrongRankCondition R] {m n : ℕ}
     (A : Matrix (Fin m) (Fin n) R) : A.rank ≤ m :=
