@@ -21,7 +21,7 @@ This file defines the `Majorized` predicate, along with a few basic lemmas.
 
 @[expose] public section
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
 open Topology Filter Asymptotics
 
@@ -123,4 +123,4 @@ theorem mul_bounded {f g basis_hd : ℝ → ℝ} {exp : ℝ} (hf : Majorized f b
 
 end Majorized
 
-end Tactic.ComputeAsymptotics
+end Mathlib.Tactic.ComputeAsymptotics

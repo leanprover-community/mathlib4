@@ -21,7 +21,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Monomial.LeadingMono
 open Filter Asymptotics
 open scoped Topology
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
 namespace MultiseriesExpansion
 
@@ -298,4 +298,4 @@ theorem div_Approximates {basis : Basis} {X Y : MultiseriesExpansion basis}
   exact inv_Approximates h_basis hY_sorted hY_approx hY_trimmed
 
 end MultiseriesExpansion
-end Tactic.ComputeAsymptotics
+end Mathlib.Tactic.ComputeAsymptotics

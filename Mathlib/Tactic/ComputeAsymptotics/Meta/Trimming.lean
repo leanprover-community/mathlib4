@@ -19,7 +19,7 @@ TODO: write about what is trimming and why it is needed
 
 public meta section
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
 open Filter Asymptotics Stream' Seq Normalization
 
@@ -244,4 +244,4 @@ def trimPartialMS (ms : MS) :
 
 end Trimming
 
-end Tactic.ComputeAsymptotics
+end Mathlib.Tactic.ComputeAsymptotics

@@ -13,7 +13,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basic
 
 @[expose] public section
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
 namespace MultiseriesExpansion
 
@@ -256,4 +256,4 @@ theorem neg_leadingExp_tendsto_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
 end MultiseriesExpansion
 
-end Tactic.ComputeAsymptotics
+end Mathlib.Tactic.ComputeAsymptotics

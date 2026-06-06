@@ -42,7 +42,7 @@ in the basis `[b₂, ..., bₙ]` (`basis_tl`).
 
 @[expose] public section
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
 open Filter Asymptotics Topology Stream'
 
@@ -1065,4 +1065,4 @@ end Approximates
 
 end MultiseriesExpansion
 
-end Tactic.ComputeAsymptotics
+end Mathlib.Tactic.ComputeAsymptotics

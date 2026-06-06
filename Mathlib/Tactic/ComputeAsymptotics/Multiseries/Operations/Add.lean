@@ -16,7 +16,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Basic
 
 @[expose] public section
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
 namespace MultiseriesExpansion
 
@@ -852,4 +852,4 @@ theorem Approximates.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
 end MultiseriesExpansion
 
-end Tactic.ComputeAsymptotics
+end Mathlib.Tactic.ComputeAsymptotics

@@ -19,7 +19,7 @@ in the normal form (`nil` or `cons`). The function `normalizeLS` does the same f
 
 public meta section
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
 namespace Normalization
 
@@ -774,4 +774,4 @@ def normalizeMultiseriesExpansion {basis : Q(Basis)}
 
 end Normalization
 
-end Tactic.ComputeAsymptotics
+end Mathlib.Tactic.ComputeAsymptotics

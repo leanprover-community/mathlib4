@@ -16,7 +16,7 @@ public meta section
 
 open Lean Meta Elab Tactic Qq
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
 /-- Given a trimmed multiseries `ms`, computes its leading monomial. -/
 partial def getLeadingMonomial {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $basis)) :
@@ -121,4 +121,4 @@ def getFirstNonzeroIsPos (x : Q(UnitMonomial)) : TacticM (FirstNonzeroIsPosResul
   | .neg pf => return .wrong q(($pf).not_FirstNonzeroIsPos)
   | .zero pf => return .wrong q(($pf).not_FirstNonzeroIsPos)
 
-end Tactic.ComputeAsymptotics
+end Mathlib.Tactic.ComputeAsymptotics

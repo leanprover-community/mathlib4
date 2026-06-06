@@ -23,7 +23,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Majorized
 
 @[expose] public section
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
 open Asymptotics Filter
 
@@ -310,4 +310,4 @@ theorem insertLastLog_WellFormedBasis {basis_hd : ℝ → ℝ} {basis_tl : Basis
 
 end BasisExtension
 
-end Tactic.ComputeAsymptotics
+end Mathlib.Tactic.ComputeAsymptotics

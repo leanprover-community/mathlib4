@@ -16,7 +16,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Monomial.LeadingMono
 
 @[expose] public section
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
 namespace MultiseriesExpansion
 
@@ -355,4 +355,4 @@ theorem neg_leadingMonomial {basis : Basis} {ms : MultiseriesExpansion basis} :
 
 end MultiseriesExpansion
 
-end Tactic.ComputeAsymptotics
+end Mathlib.Tactic.ComputeAsymptotics

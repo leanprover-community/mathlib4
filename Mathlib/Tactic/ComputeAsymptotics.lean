@@ -22,7 +22,7 @@ open Filter Topology Asymptotics
 
 open Lean Elab Meta Tactic Qq
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
 theorem init_basis_wo : WellFormedBasis [fun (x : ℝ) ↦ x] :=
   WellFormedBasis.single _ (fun _ a ↦ a)
@@ -552,4 +552,4 @@ elab (name := computeLimit)
     let (_, goalNew) ← goalNew.intro1P
     replaceMainGoal [goalNew]
 
-end Tactic.ComputeAsymptotics
+end Mathlib.Tactic.ComputeAsymptotics

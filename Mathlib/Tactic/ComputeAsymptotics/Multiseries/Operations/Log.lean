@@ -18,7 +18,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LogBasis
 
 open Filter Asymptotics Topology
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
 namespace MultiseriesExpansion
 
@@ -328,4 +328,4 @@ theorem log_Approximates {basis : Basis}
 
 end MultiseriesExpansion
 
-end Tactic.ComputeAsymptotics
+end Mathlib.Tactic.ComputeAsymptotics

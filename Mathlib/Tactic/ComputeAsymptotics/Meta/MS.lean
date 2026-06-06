@@ -16,7 +16,7 @@ public meta section
 
 open Lean Elab Meta Qq
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
 /-- Multiseries on meta level. It contains
 * the basis with the proof of well-formedness
@@ -304,4 +304,4 @@ def replaceFun' (ms : MS) (f : Q(ℝ → ℝ)) (h : Q(($ms.val).toFun =ᶠ[Filte
 
 end MS
 
-end Tactic.ComputeAsymptotics
+end Mathlib.Tactic.ComputeAsymptotics

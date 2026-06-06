@@ -63,7 +63,7 @@ Then `f` is friendly iff it is `1`-Lipschitz.
 
 @[expose] public section
 
-namespace Tactic.ComputeAsymptotics.Seq
+namespace Mathlib.Tactic.ComputeAsymptotics.Seq
 
 open Stream' Seq
 
@@ -576,4 +576,4 @@ theorem FriendlyOperationClass.eq_of_bisim {s t : Seq α} {op : γ → Seq α �
       _ ≤ _ := by
         grw [ih, pow_succ']
 
-end Tactic.ComputeAsymptotics.Seq
+end Mathlib.Tactic.ComputeAsymptotics.Seq

@@ -18,7 +18,7 @@ and `ℚ → ℝ`.
 
 public meta section
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
 namespace ConvertDomain
 
@@ -362,4 +362,4 @@ end convertCodomain
 
 end ConvertDomain
 
-end Tactic.ComputeAsymptotics
+end Mathlib.Tactic.ComputeAsymptotics

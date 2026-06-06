@@ -17,7 +17,7 @@ monomial.
 
 open Filter Asymptotics Topology
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
 namespace MultiseriesExpansion
 
@@ -751,4 +751,4 @@ theorem tendsto_bot_of_FirstNonzeroIsPos {basis : Basis} {ms : MultiseriesExpans
 
 end MultiseriesExpansion
 
-end Tactic.ComputeAsymptotics
+end Mathlib.Tactic.ComputeAsymptotics

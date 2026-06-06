@@ -24,7 +24,7 @@ monomials as lists using lexigraphic order. In this file we implement this proce
 
 public meta section
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
 namespace MS
 
@@ -208,4 +208,4 @@ lemma WellFormedBasis.insert_neg_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
     ext t
     simp
 
-end Tactic.ComputeAsymptotics
+end Mathlib.Tactic.ComputeAsymptotics

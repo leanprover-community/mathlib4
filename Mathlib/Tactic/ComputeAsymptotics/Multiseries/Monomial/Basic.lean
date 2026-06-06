@@ -34,7 +34,7 @@ In this file we show how to find a limit of `Monomial` and how to asymptotically
 
 @[expose] public section
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
 open Asymptotics Filter Topology Real
 
@@ -574,4 +574,4 @@ theorem isLittleO_of_lt_exps_right {left right : Basis} {t1 t2 : Monomial}
 
 end Monomial
 
-end Tactic.ComputeAsymptotics
+end Mathlib.Tactic.ComputeAsymptotics
