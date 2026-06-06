@@ -41,7 +41,7 @@ section LinearOrderedCommGroupWithZero
 variable (v : Valuation R Γ) [hv : v.IsRankOneDiscrete]
 
 /-- An order-preserving isomorphism between the `ValueGroup₀` of a discrete valuation and `ℤᵐ⁰`.
-TODO: rename this into lowerCammelCase. -/
+TODO: rename this into lowerCamelCase. -/
 @[simps!]
 noncomputable def valueGroup₀_equiv_withZeroMulInt : ValueGroup₀ (.ofClass v) ≃*o ℤᵐ⁰ where
   __ := MulEquiv.withZero (intEquivOfZPowersEqTop _

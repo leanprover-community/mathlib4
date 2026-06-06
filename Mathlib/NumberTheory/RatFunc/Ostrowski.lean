@@ -200,9 +200,7 @@ lemma uniformizingPolynomial_isUniformizer [hv : IsRankOneDiscrete v] :
       rw [MonoidWithZeroHom.coe_ofClass, hka, hkb] at hab
       use kb - ka
       have : v ↑πᵥ ^ ka ≠ 0 := zpow_ne_zero _ h0
-      simp at hab
-      simp [zpow_sub, ← Units.val_inj, ← hab, field]
-      aesop
+      simp [zpow_sub, ← Units.val_inj, ← coePolynomial_eq_algebraMap, field, ← hab]
 
 lemma valuation_isEquiv_valuationIdeal_adic_of_valuation_X_le_one [IsRankOneDiscrete v] :
     v.IsEquiv ((Pᵥ).valuation (RatFunc K)) := by
