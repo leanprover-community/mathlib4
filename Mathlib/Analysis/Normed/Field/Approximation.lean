@@ -141,7 +141,7 @@ theorem exists_monic_and_natDegree_eq_and_norm_map_algebraMap_coeff_sub_lt
     · exact h
   choose c hc using fun i ↦ Metric.denseRange_iff.mp hd (f.coeff i) ε hε
   have hdeg : (C 1 * X ^ f.natDegree + ∑ i < f.natDegree, C (c i) * X ^ i).natDegree
-      = f.natDegree := by
+      = f.natDegree :=
     calc
       _ = (C (1 : K) * X ^ f.natDegree).natDegree := by
         apply Polynomial.natDegree_add_eq_left_of_natDegree_lt

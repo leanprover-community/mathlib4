@@ -170,7 +170,7 @@ lemma densityProcess_nonneg (κ : Kernel α (γ × β)) (ν : Kernel α γ) (n :
 
 lemma meas_countablePartitionSet_le_of_fst_le (hκν : fst κ ≤ ν) (n : ℕ) (a : α) (x : γ)
     (s : Set β) :
-    κ a (countablePartitionSet n x ×ˢ s) ≤ ν a (countablePartitionSet n x) := by
+    κ a (countablePartitionSet n x ×ˢ s) ≤ ν a (countablePartitionSet n x) :=
   calc κ a (countablePartitionSet n x ×ˢ s)
     ≤ fst κ a (countablePartitionSet n x) := by
         rw [fst_apply' _ _ (measurableSet_countablePartitionSet _ _)]

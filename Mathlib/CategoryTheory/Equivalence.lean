@@ -328,7 +328,7 @@ variable {F : C ⥤ D} {G : D ⥤ C} (η : 𝟭 C ≅ F ⋙ G) (ε : G ⋙ F ≅
 /-- If `η : 𝟭 C ≅ F ⋙ G` is part of a (not necessarily half-adjoint) equivalence, we can upgrade it
 to a refined natural isomorphism `adjointifyη η : 𝟭 C ≅ F ⋙ G` which exhibits the properties
 required for a half-adjoint equivalence. See `Equivalence.mk`. -/
-def adjointifyη : 𝟭 C ≅ F ⋙ G := by
+def adjointifyη : 𝟭 C ≅ F ⋙ G :=
   calc
     𝟭 C ≅ F ⋙ G := η
     _ ≅ F ⋙ 𝟭 D ⋙ G := isoWhiskerLeft F (leftUnitor G).symm

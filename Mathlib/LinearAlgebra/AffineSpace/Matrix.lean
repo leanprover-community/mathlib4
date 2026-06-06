@@ -82,7 +82,7 @@ theorem affineSpan_eq_top_of_toMatrix_left_inv [Finite ι] [Fintype ι'] [Decida
     rintro q ⟨i, rfl⟩
     exact this i
   intro i
-  have hAi : ∑ j, A i j = 1 := by
+  have hAi : ∑ j, A i j = 1 :=
     calc
       ∑ j, A i j = ∑ j, A i j * ∑ l, b.toMatrix p j l := by simp
       _ = ∑ j, ∑ l, A i j * b.toMatrix p j l := by simp_rw [Finset.mul_sum]

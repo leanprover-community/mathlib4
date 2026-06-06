@@ -324,7 +324,7 @@ theorem condExp_smul [NormedSpace 𝕜 E] (c : 𝕜) (f : α → E) (m : Measura
   refine (coeFn_smul c (condExpL1 hm μ f)).mono fun x hx1 hx2 => ?_
   simp only [hx1, hx2, Pi.smul_apply]
 
-theorem condExp_neg (f : α → E) (m : MeasurableSpace α) : μ[-f | m] =ᵐ[μ] -μ[f | m] := by
+theorem condExp_neg (f : α → E) (m : MeasurableSpace α) : μ[-f | m] =ᵐ[μ] -μ[f | m] :=
   calc
     μ[-f | m] = μ[(-1 : ℝ) • f | m] := by rw [neg_one_smul ℝ f]
     _ =ᵐ[μ] (-1 : ℝ) • μ[f | m] := condExp_smul ..

@@ -107,7 +107,7 @@ lemma max_bi_le {b : α → ℝ} (i : α) : b i ≤ b (max_bi b) :=
 end min_max
 
 lemma isLittleO_self_div_log_id :
-    (fun (n : ℕ) => n / log n ^ 2) =o[atTop] (fun (n : ℕ) => (n : ℝ)) := by
+    (fun (n : ℕ) => n / log n ^ 2) =o[atTop] (fun (n : ℕ) => (n : ℝ)) :=
   calc (fun (n : ℕ) => (n : ℝ) / log n ^ 2)
     _ = fun (n : ℕ) => (n : ℝ) * ((log n) ^ 2)⁻¹ := by simp_rw [div_eq_mul_inv]
     _ =o[atTop] fun (n : ℕ) => (n : ℝ) * 1⁻¹ := by
@@ -279,7 +279,7 @@ local notation "ε" => smoothingFn
 lemma one_add_smoothingFn_le_two {x : ℝ} (hx : exp 1 ≤ x) : 1 + ε x ≤ 2 := by
   simp only [smoothingFn, ← one_add_one_eq_two]
   gcongr
-  have : 1 < x := by
+  have : 1 < x :=
     calc 1 = exp 0 := by simp
          _ < exp 1 := by simp
          _ ≤ x := hx
@@ -445,7 +445,7 @@ section
 include R
 
 lemma isEquivalent_smoothingFn_sub_self (i : α) :
-    (fun (n : ℕ) => ε (b i * n) - ε n) ~[atTop] fun n => -log (b i) / (log n) ^ 2 := by
+    (fun (n : ℕ) => ε (b i * n) - ε n) ~[atTop] fun n => -log (b i) / (log n) ^ 2 :=
   calc (fun (n : ℕ) => 1 / log (b i * n) - 1 / log n)
     _ =ᶠ[atTop] fun (n : ℕ) => (log n - log (b i * n)) / (log (b i * n) * log n) := by
       filter_upwards [eventually_gt_atTop 1, R.eventually_log_b_mul_pos] with n hn hn'
@@ -468,7 +468,7 @@ lemma isEquivalent_smoothingFn_sub_self (i : α) :
     _ = (fun (n : ℕ) => -log (b i) / (log n) ^ 2) := by ext; congr 1; rw [← pow_two]
 
 lemma isTheta_smoothingFn_sub_self (i : α) :
-    (fun (n : ℕ) => ε (b i * n) - ε n) =Θ[atTop] fun n => 1 / (log n) ^ 2 := by
+    (fun (n : ℕ) => ε (b i * n) - ε n) =Θ[atTop] fun n => 1 / (log n) ^ 2 :=
   calc (fun (n : ℕ) => ε (b i * n) - ε n)
     _ =Θ[atTop] fun n => (-log (b i)) / (log n) ^ 2 :=
       (R.isEquivalent_smoothingFn_sub_self i).isTheta
@@ -576,7 +576,7 @@ lemma asympBound_def' {α} [Fintype α] (a b : α → ℝ) {n : ℕ} :
 section
 include R
 
-lemma asympBound_pos (n : ℕ) (hn : 0 < n) : 0 < asympBound g a b n := by
+lemma asympBound_pos (n : ℕ) (hn : 0 < n) : 0 < asympBound g a b n :=
   calc 0 < (n : ℝ) ^ p a b * (1 + 0) := by aesop (add safe Real.rpow_pos_of_pos)
        _ ≤ asympBound g a b n := by
         simp only [asympBound_def']

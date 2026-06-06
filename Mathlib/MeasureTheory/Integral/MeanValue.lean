@@ -50,7 +50,7 @@ theorem exists_eq_const_mul_setIntegral_of_ae_nonneg
     apply hg0.mono
     intro x hx
     simpa [ρ]
-  have heq : ∫ x in s, f x * g x ∂μ = ∫ x in s, f x ∂ν := by
+  have heq : ∫ x in s, f x * g x ∂μ = ∫ x in s, f x ∂ν :=
     calc
       _ = ∫ x in s, (ρ x).toReal * f x ∂μ := by
         apply MeasureTheory.integral_congr_ae

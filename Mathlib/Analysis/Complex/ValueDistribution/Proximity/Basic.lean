@@ -199,7 +199,7 @@ The proximity function `f * g` at `⊤` is less than or equal to the sum of the 
 `f` and `g`, respectively.
 -/
 theorem proximity_mul_top_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : Meromorphic f₁) (h₁f₂ : Meromorphic f₂) :
-    proximity (f₁ * f₂) ⊤ ≤ proximity f₁ ⊤ + proximity f₂ ⊤ := by
+    proximity (f₁ * f₂) ⊤ ≤ proximity f₁ ⊤ + proximity f₂ ⊤ :=
   calc proximity (f₁ * f₂) ⊤
     _ = circleAverage (fun x ↦ log⁺ (‖f₁ x‖ * ‖f₂ x‖)) 0 := by
       simp [proximity]
@@ -227,7 +227,7 @@ The proximity function `f * g` at `0` is less than or equal to the sum of the pr
 `f` and `g`, respectively.
 -/
 theorem proximity_mul_zero_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : Meromorphic f₁) (h₁f₂ : Meromorphic f₂) :
-    proximity (f₁ * f₂) 0 ≤ (proximity f₁ 0) + (proximity f₂ 0) := by
+    proximity (f₁ * f₂) 0 ≤ (proximity f₁ 0) + (proximity f₂ 0) :=
   calc proximity (f₁ * f₂) 0
     _ ≤ (proximity f₁⁻¹ ⊤) + (proximity f₂⁻¹ ⊤) := by
       rw [← proximity_inv, mul_inv]

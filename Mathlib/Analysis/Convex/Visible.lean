@@ -192,7 +192,7 @@ open Submodule in
 /-- If `s` is a closed set of dimension `d` and `x` is a point outside of its convex hull,
 then `x` sees at least `d` points of the convex hull of `s` that actually lie in `s`. -/
 lemma rank_le_card_isVisible (hs : IsClosed (convexHull ℝ s)) (hx : x ∉ convexHull ℝ s) :
-    Module.rank ℝ (span ℝ (-x +ᵥ s)) ≤ #{y ∈ s | IsVisible ℝ (convexHull ℝ s) x y} := by
+    Module.rank ℝ (span ℝ (-x +ᵥ s)) ≤ #{y ∈ s | IsVisible ℝ (convexHull ℝ s) x y} :=
   calc
     Module.rank ℝ (span ℝ (-x +ᵥ s)) ≤
       Module.rank ℝ (span ℝ

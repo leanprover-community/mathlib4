@@ -86,7 +86,7 @@ def isTerminalEquivUnique (X : Type u) : IsTerminal X ≃ Unique X :=
     (fun _ => IsTerminal.ofIso isTerminalPUnit (Equiv.toIso (Equiv.ofUnique _ _)))
 
 /-- A type is terminal if and only if it is isomorphic to `PUnit`. -/
-def isTerminalEquivIsoPUnit (X : Type u) : IsTerminal X ≃ (X ≅ PUnit) := by
+def isTerminalEquivIsoPUnit (X : Type u) : IsTerminal X ≃ (X ≅ PUnit) :=
   calc
     IsTerminal X ≃ Unique X := isTerminalEquivUnique _
     _ ≃ (X ≃ PUnit) := uniqueEquivEquivUnique _ _

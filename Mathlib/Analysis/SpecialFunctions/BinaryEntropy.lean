@@ -411,7 +411,7 @@ lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
         ring_nf
         have : (q : ℝ) - 1 < p * q := by
           have h1 := mul_lt_mul_of_pos_right hp.1 qpos
-          have h2 : (1 - (q : ℝ)⁻¹) * ↑q = q - 1 := by calc (1 - (q : ℝ)⁻¹) * ↑q
+          have h2 : (1 - (q : ℝ)⁻¹) * ↑q = q - 1 := calc (1 - (q : ℝ)⁻¹) * ↑q
             _ = q - (q : ℝ)⁻¹ * (q : ℝ) := by ring
             _ = q - 1 := by simp [qpos.ne']
           rwa [h2] at h1

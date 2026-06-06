@@ -359,7 +359,7 @@ theorem norm_starProjection_apply {v : E} (hv : v ∈ K) :
 
 /-- The orthogonal projection onto a closed subspace is norm non-increasing. -/
 theorem norm_orthogonalProjection_apply_le (v : E) :
-    ‖orthogonalProjection K v‖ ≤ ‖v‖ := by calc
+    ‖orthogonalProjection K v‖ ≤ ‖v‖ := calc
   ‖orthogonalProjection K v‖ ≤ ‖orthogonalProjection K‖ * ‖v‖ := K.orthogonalProjection.le_opNorm _
   _ ≤ 1 * ‖v‖ := by gcongr; exact orthogonalProjection_norm_le K
   _ = _ := by simp

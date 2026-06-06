@@ -85,7 +85,7 @@ lemma comp [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
   -- the induced equivalence of categories `E₃ : C₃ ≅ W₂'.Localization`, and
   -- the isomorphism `iso : (W₁.Q ⋙ W₂'.Q) ⋙ E₃.inverse ≅ L₁ ⋙ L₂`
   let E₃ := (Φ.localizedFunctor L₂ W₂'.Q).asEquivalence
-  let iso : (W₁.Q ⋙ W₂'.Q) ⋙ E₃.inverse ≅ L₁ ⋙ L₂ := by
+  let iso : (W₁.Q ⋙ W₂'.Q) ⋙ E₃.inverse ≅ L₁ ⋙ L₂ :=
     calc
       _ ≅ L₁ ⋙ E₂.functor ⋙ W₂'.Q ⋙ E₃.inverse :=
           Functor.associator _ _ _ ≪≫ isoWhiskerRight (compUniqFunctor L₁ W₁.Q W₁).symm _ ≪≫

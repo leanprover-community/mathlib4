@@ -89,7 +89,7 @@ lemma sum_le' {s : Set X} (hs : MeasurableSet s)
 `∑ p ∈ P.parts, f p ≤ preVariationFun f s₂`. -/
 lemma sum_le_preVariationFun_of_subset {s₁ s₂ : Set X} (hs₁ : MeasurableSet s₁)
     (hs₂ : MeasurableSet s₂) (h : s₁ ⊆ s₂) (P : Finpartition (⟨s₁, hs₁⟩ : Subtype MeasurableSet)) :
-    ∑ p ∈ P.parts, f p ≤ preVariationFun f s₂ := by
+    ∑ p ∈ P.parts, f p ≤ preVariationFun f s₂ :=
   calc
     ∑ p ∈ P.parts, f p ≤ ∑ p ∈ (P.extendOfLE h).parts, f p :=
       Finset.sum_le_sum_of_subset (P.parts_subset_extendOfLE h)
@@ -203,7 +203,7 @@ lemma iUnion (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) (s : ℕ → Se
   obtain ⟨Q, hQ⟩ := hb
   let s' (i : ℕ) : Subtype MeasurableSet := ⟨s i, hs i⟩
   let P (i : ℕ) := Q.restrict (b := s' i) (Set.subset_iUnion s i)
-  have splitting : ∑ q ∈ Q.parts, f q ≤ ∑' i, ∑ p ∈ (P i).parts, f p := by
+  have splitting : ∑ q ∈ Q.parts, f q ≤ ∑' i, ∑ p ∈ (P i).parts, f p :=
     calc ∑ q ∈ Q.parts, f q
       _ ≤ ∑ q ∈ Q.parts, ∑' i, f (q ⊓ s' i) := by
           apply Finset.sum_le_sum fun q hq => ?_

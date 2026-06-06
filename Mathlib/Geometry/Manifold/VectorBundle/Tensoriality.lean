@@ -101,7 +101,7 @@ variable [VectorBundle 𝕜 F V] [VectorBundle 𝕜 F' V']
 
 /-- A tensorial operation on sections of a vector bundle respects zero (since it respects scalar
 multiplication). -/
-theorem zero (hΦ : TensorialAt I F Φ x) : Φ 0 = 0 := by
+theorem zero (hΦ : TensorialAt I F Φ x) : Φ 0 = 0 :=
   calc
     Φ 0 = Φ ((0 : M → 𝕜) • (0 : Π x, V x)) := by simp
     _   = 0 • Φ 0 := hΦ.smul mdifferentiableAt_const (mdifferentiable_zeroSection ..)

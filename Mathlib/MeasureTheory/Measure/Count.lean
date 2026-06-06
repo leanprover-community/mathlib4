@@ -164,7 +164,7 @@ instance count.isFiniteMeasure [Finite α] :
 lemma count_univ : count (univ : Set α) = ENat.card α := by simp [count_apply .univ, encard_univ]
 
 lemma _root_.Subsingleton.count_eq_dirac [Subsingleton α] (i : α) :
-    count = dirac i := by
+    count = dirac i :=
   calc count
       = count.restrict univ := by simp
     _ = count.restrict {i} := by congr; ext j; simp [Subsingleton.elim j i]

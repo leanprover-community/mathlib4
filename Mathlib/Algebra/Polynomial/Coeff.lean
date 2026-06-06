@@ -57,7 +57,7 @@ theorem support_smul [SMulZeroClass S R] (r : S) (p : R[X]) :
   simp [hi]
 
 open scoped Pointwise in
-theorem card_support_mul_le : #(p * q).support ≤ #p.support * #q.support := by
+theorem card_support_mul_le : #(p * q).support ≤ #p.support * #q.support :=
   calc #(p * q).support
     _ = #(p.toFinsupp * q.toFinsupp).support := by rw [← support_toFinsupp, toFinsupp_mul]
     _ ≤ #(p.toFinsupp.support + q.toFinsupp.support) :=

@@ -497,7 +497,7 @@ def leftUnitorCorepresentingIso :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((Functor.fromPUnit.{0} (𝟙_ C)).prod (𝟭 C)) ⋙
       coyoneda.obj (.op <| Functor.fromPUnit.{0} (𝟙_ V) ⊠ F) ≅
-    coyoneda.obj (.op <| F) := by
+    coyoneda.obj (.op <| F) :=
   calc
     _ ≅ (whiskeringLeft _ _ _).obj (tensor C) ⋙
           (whiskeringLeft _ _ _).obj ((Functor.fromPUnit.{0} (𝟙_ C)).prod (𝟭 C)) ⋙
@@ -525,7 +525,7 @@ def rightUnitorCorepresentingIso :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((𝟭 C).prod (Functor.fromPUnit.{0} (𝟙_ C))) ⋙
       coyoneda.obj (.op <| F ⊠ Functor.fromPUnit.{0} (𝟙_ V)) ≅
-    coyoneda.obj (.op <| F) := by
+    coyoneda.obj (.op <| F) :=
   calc
     _ ≅ (whiskeringLeft _ _ _).obj (tensor C) ⋙
           (whiskeringLeft _ _ _).obj ((𝟭 C).prod (Functor.fromPUnit.{0} (𝟙_ C))) ⋙

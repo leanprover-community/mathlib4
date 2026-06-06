@@ -46,7 +46,7 @@ difference between the characteristic functions of `f` and of its inverse.
 -/
 lemma characteristic_sub_characteristic_inv (h : Meromorphic f) :
     characteristic f ⊤ - characteristic f⁻¹ ⊤ =
-      circleAverage (log ‖f ·‖) 0 - (divisor f Set.univ).logCounting := by
+      circleAverage (log ‖f ·‖) 0 - (divisor f Set.univ).logCounting :=
   calc characteristic f ⊤ - characteristic f⁻¹ ⊤
   _ = proximity f ⊤ - proximity f⁻¹ ⊤ - (logCounting f⁻¹ ⊤ - logCounting f ⊤) := by
     unfold characteristic
@@ -64,7 +64,7 @@ the characteristic functions of `f` and `f⁻¹` equals `log ‖meromorphicTrail
 -/
 lemma characteristic_sub_characteristic_inv_of_ne_zero
     (hf : Meromorphic f) (hR : R ≠ 0) :
-    characteristic f ⊤ R - characteristic f⁻¹ ⊤ R = log ‖meromorphicTrailingCoeffAt f 0‖ := by
+    characteristic f ⊤ R - characteristic f⁻¹ ⊤ R = log ‖meromorphicTrailingCoeffAt f 0‖ :=
   calc characteristic f ⊤ R - characteristic f⁻¹ ⊤ R
   _ = (characteristic f ⊤ - characteristic f⁻¹ ⊤) R := by simp
   _ = circleAverage (log ‖f ·‖) 0 R - (divisor f Set.univ).logCounting R := by
@@ -81,7 +81,7 @@ Helper lemma for the first part of the First Main Theorem: At 0, the difference 
 characteristic functions of `f` and `f⁻¹` equals `log ‖f 0‖`.
 -/
 lemma characteristic_sub_characteristic_inv_at_zero (h : Meromorphic f) :
-    characteristic f ⊤ 0 - characteristic f⁻¹ ⊤ 0 = log ‖f 0‖ := by
+    characteristic f ⊤ 0 - characteristic f⁻¹ ⊤ 0 = log ‖f 0‖ :=
   calc characteristic f ⊤ 0 - characteristic f⁻¹ ⊤ 0
   _ = (characteristic f ⊤ - characteristic f⁻¹ ⊤) 0 := by simp
   _ = circleAverage (log ‖f ·‖) 0 0 - (divisor f Set.univ).logCounting 0 := by

@@ -192,7 +192,7 @@ theorem sum_addContent_eq_of_sUnion_eq (hC : IsSetSemiring C) (J J' : Finset (Se
     (hJ : ↑J ⊆ C) (hJdisj : PairwiseDisjoint (J : Set (Set α)) id)
     (hJ' : ↑J' ⊆ C) (hJ'disj : PairwiseDisjoint (J' : Set (Set α)) id)
     (h : ⋃₀ (J : Set (Set α)) = ⋃₀ J') :
-    ∑ s ∈ J, m s = ∑ t ∈ J', m t := by
+    ∑ s ∈ J, m s = ∑ t ∈ J', m t :=
   calc ∑ s ∈ J, m s
   _ = ∑ s ∈ J, (∑ t ∈ J', m (s ∩ t)) := by
     apply Finset.sum_congr rfl (fun s hs ↦ ?_)

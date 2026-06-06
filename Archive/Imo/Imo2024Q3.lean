@@ -708,7 +708,7 @@ lemma exists_apply_sub_two_eq_of_apply_eq {i j : ℕ} (hi : N' a N + 2 < i) (hij
     have hjIf := hjI
     simp only [Finset.mem_filter, Finset.mem_range, hj2s, true_and, not_le, I,
       Nat.lt_iff_add_one_le] at hjIf
-    have hjI' : a (j - 1) ≤ a (i - 1) := by
+    have hjI' : a (j - 1) ≤ a (i - 1) :=
       calc a (j - 1) ≤ #{u ∈ Finset.range j | a u = a (j - 2)} :=
             (Finset.mem_filter.mp hjJ).2
         _ = #{u ∈ Finset.range i ∪ Finset.Ico i j | a u = a (j - 2)} := by rw [hiju]
@@ -726,7 +726,7 @@ lemma exists_apply_sub_two_eq_of_apply_eq {i j : ℕ} (hi : N' a N + 2 < i) (hij
       _ ≤ #{u ∈ Finset.range i | a u = x} := hxI.2
       _ ≤ #{u ∈ Finset.range j | a u = x} :=
         Finset.card_le_card (Finset.filter_subset_filter _ (by simp [hijlt.le]))
-  have hi1j1 : a (i - 1) + 1 ≤ a (j - 1) := by
+  have hi1j1 : a (i - 1) + 1 ≤ a (j - 1) :=
     calc a (i - 1) + 1 ≤ #{u ∈ Finset.range i | a u = a (j - 2)} + 1 := by grind
       _ ≤ #{u ∈ Finset.range i | a u = a (j - 2)} + #{u ∈ Finset.Ico i j | a u = a (j - 2)} := by
           gcongr

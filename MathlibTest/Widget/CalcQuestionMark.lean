@@ -29,7 +29,7 @@ info: Create calc tactic:
 warning: declaration uses `sorry`
 -/
 #guard_msgs in
-example (a : Nat) : a ≤ a := by
+example (a : Nat) : a ≤ a :=
   calc?
 
 -- an indented `calc?`
@@ -64,5 +64,5 @@ example :
     1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
-    1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 = 8 + 8 + 8 + 8 := by
+    1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 = 8 + 8 + 8 + 8 :=
   calc?

@@ -1172,7 +1172,7 @@ variable {u : E →L[𝕜] F} {f : F → G} {pf : FormalMultilinearSeries 𝕜 F
 theorem HasFPowerSeriesWithinOnBall.compContinuousLinearMap
     (hf : HasFPowerSeriesWithinOnBall f pf s (u x) r) :
     HasFPowerSeriesWithinOnBall (f ∘ u) (pf.compContinuousLinearMap u) (u ⁻¹' s) x (r / ‖u‖ₑ) where
-  r_le := by
+  r_le :=
     calc
       _ ≤ pf.radius / ‖u‖ₑ := by
         gcongr

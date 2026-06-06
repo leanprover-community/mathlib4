@@ -772,7 +772,7 @@ alias two_mul_le_add_pow_two := two_mul_le_add_sq
 (aka AM-GM inequality) for linearly ordered commutative semirings. -/
 lemma four_mul_le_sq_add [ExistsAddOfLE R] [MulPosStrictMono R]
     [AddLeftReflectLE R] [AddLeftMono R]
-    (a b : R) : 4 * a * b ≤ (a + b) ^ 2 := by
+    (a b : R) : 4 * a * b ≤ (a + b) ^ 2 :=
   calc 4 * a * b
     _ = 2 * a * b + 2 * a * b := by rw [mul_assoc, two_add_two_eq_four.symm, add_mul, mul_assoc]
     _ ≤ a ^ 2 + b ^ 2 + 2 * a * b := by gcongr; exact two_mul_le_add_sq _ _

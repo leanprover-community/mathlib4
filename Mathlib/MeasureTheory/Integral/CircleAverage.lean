@@ -95,7 +95,7 @@ Expression of the `circleAverage` in terms of a `circleIntegral`.
 -/
 theorem circleAverage_eq_circleIntegral {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
     {f : ℂ → F} (h : R ≠ 0) :
-    circleAverage f c R = (2 * π * I)⁻¹ • (∮ z in C(c, R), (z - c)⁻¹ • f z) := by
+    circleAverage f c R = (2 * π * I)⁻¹ • (∮ z in C(c, R), (z - c)⁻¹ • f z) :=
   calc circleAverage f c R
   _ = (↑(2 * π) : ℂ)⁻¹ • ∫ θ in 0..2 * π, f (circleMap c R θ) := by
     simp [circleAverage, ← coe_smul]

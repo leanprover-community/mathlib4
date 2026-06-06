@@ -65,7 +65,7 @@ namespace PositiveCategory
 variable [PositiveCategory C]
 
 instance {X Y : C} (f : X ⟶ Y) [IsIso f] : Deterministic f where
-  hom_comul := by
+  hom_comul :=
     calc
     _ = f ≫ Δ ≫ (inv f ⊗ₘ 𝟙 Y) ≫ (f ⊗ₘ 𝟙 Y) := by
       cat_disch

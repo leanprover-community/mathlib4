@@ -634,7 +634,7 @@ theorem ofZLatticeBasis_repr_apply (x : L) (i : ι) :
     LinearEquiv.coe_coe, coe_subtype, ← b.ofZLatticeBasis_apply K, repr_self,
     Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply, map_one]
 
-theorem ofZLatticeBasis_span : span ℤ (Set.range (b.ofZLatticeBasis K)) = L := by
+theorem ofZLatticeBasis_span : span ℤ (Set.range (b.ofZLatticeBasis K)) = L :=
   calc span ℤ (Set.range (b.ofZLatticeBasis K))
     _ = span ℤ (L.subtype '' Set.range b) := by congr; ext; simp
     _ = map L.subtype (span ℤ (Set.range b)) := by rw [Submodule.map_span]

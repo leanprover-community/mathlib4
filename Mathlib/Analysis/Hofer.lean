@@ -84,7 +84,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
   have lim_top : Tendsto (ϕ ∘ u) atTop atTop := by
     let v n := (ϕ ∘ u) (n + 1)
     suffices Tendsto v atTop atTop by rwa [tendsto_add_atTop_iff_nat] at this
-    have hv₀ : 0 < v 0 := by
+    have hv₀ : 0 < v 0 :=
       calc
         0 ≤ 2 * ϕ (u 0) := by specialize nonneg x; positivity
         _ < ϕ (u (0 + 1)) := key₂ 0

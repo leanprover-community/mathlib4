@@ -91,7 +91,7 @@ lemma part_1 : 660 ≤ f (1980) := by
   exact hf.le_mul_three_apply 660
 
 lemma part_2 : f 1980 ≤ 660 := by
-  have h : 5 * f 1980 + 33 * f 3 ≤ 5 * 660 + 33 := by
+  have h : 5 * f 1980 + 33 * f 3 ≤ 5 * 660 + 33 :=
     calc (5 : ℕ+) * f 1980 + (33 : ℕ+) * f 3 ≤ f (5 * 1980 + 33 * 3) := by apply hf.superlinear
     _ = f 9999 := by rfl
     _ = 5 * 660 + 33 := by rw [hf.f_9999]

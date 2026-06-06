@@ -261,7 +261,7 @@ The pole divisor of `f₁ + f₂` is smaller than or equal to the sum of the pol
 -/
 theorem negPart_divisor_add_le_add {f₁ f₂ : 𝕜 → E} {U : Set 𝕜} (hf₁ : MeromorphicOn f₁ U)
     (hf₂ : MeromorphicOn f₂ U) :
-    (divisor (f₁ + f₂) U)⁻ ≤ (divisor f₁ U)⁻ + (divisor f₂ U)⁻ := by
+    (divisor (f₁ + f₂) U)⁻ ≤ (divisor f₁ U)⁻ + (divisor f₂ U)⁻ :=
   calc (divisor (f₁ + f₂) U)⁻
     _ ≤ max (divisor f₁ U)⁻ (divisor f₂ U)⁻ :=
       negPart_divisor_add_le_max hf₁ hf₂

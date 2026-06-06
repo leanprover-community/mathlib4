@@ -434,7 +434,7 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
     -- By upper-bounding `r(z)` by `(K - 1)|A|` for the `z` with few representations,
     -- and by `|A|` for the `z` with many representations,
     -- we get `|A|² ≤ l|A| + (|S| - l)(K - 1)|A| = ((2 - K)l + (K - 1)|S|)|A|`.
-    have ineq : #A * #A ≤ ((2 - K) * l + (K - 1) * #S) * #A := by
+    have ineq : #A * #A ≤ ((2 - K) * l + (K - 1) * #S) * #A :=
       calc
             (#A : ℝ) * #A
         _ = #A * #A⁻¹ := by simp
@@ -737,7 +737,7 @@ theorem card_mul_finset_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) 
   -- We only use the existence of `A` given by assumption to get a good bound on `ex H` solely
   -- in terms of `#S` and `ε`.
   obtain ⟨A, hA₁, hA₂⟩ := hA
-  have calc₁ : ex (Set.toFinset H) ≤ (1 - ε / 2) * #S := by
+  have calc₁ : ex (Set.toFinset H) ≤ (1 - ε / 2) * #S :=
     calc
           ex (Set.toFinset H)
       _ = κ                               := hH.isFragment

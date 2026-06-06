@@ -107,7 +107,7 @@ private theorem a_soln_is_unique {p : ℕ} [Fact p.Prime] {R : Type*} [CommSemir
   let h := z' - a
   let ⟨q, hq⟩ := (F.map (algebraMap R ℤ_[p])).binomExpansion a h
   simp only [Polynomial.eval_map_algebraMap, Polynomial.derivative_map] at hq
-  have : (F.derivative.aeval a + q * h) * h = 0 := by calc
+  have : (F.derivative.aeval a + q * h) * h = 0 := calc
     _ = F.aeval (a + h) := by rw [hq, ha, zero_add, sq, right_distrib, mul_assoc]
     _ = _ := show F.aeval (a + (z' - a)) = 0 by simp [hz']
   have : h = 0 := by_contra fun hne ↦
@@ -217,7 +217,7 @@ private def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n 
   obtain ⟨q, hq⟩ := (F.map (algebraMap R ℤ_[p])).binomExpansion z (-z1)
   have : ‖(↑(F.derivative.aeval z) * (↑(F.aeval z) / ↑(F.derivative.aeval z)) : ℚ_[p])‖ ≤ 1 := by
     simpa using mul_le_one₀ (PadicInt.norm_le_one _) (norm_nonneg _) h1
-  have : F.derivative.aeval z * -z1 = -F.aeval z := by
+  have : F.derivative.aeval z * -z1 = -F.aeval z :=
     calc
       F.derivative.aeval z * -z1 =
           F.derivative.aeval z * -⟨↑(F.aeval z) / ↑(F.derivative.aeval z), h1⟩ := by rw [hzeq]
@@ -230,7 +230,7 @@ private def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n 
 private def calc_eval_z'_norm {z z' z1 : ℤ_[p]} {n} (hz : ih n z) {q}
     (heq : F.aeval z' = q * z1 ^ 2)
     (h1 : ‖(↑(F.aeval z) : ℚ_[p]) / ↑(F.derivative.aeval z)‖ ≤ 1) (hzeq : z1 = ⟨_, h1⟩) :
-    ‖F.aeval z'‖ ≤ ‖F.derivative.aeval a‖ ^ 2 * T ^ 2 ^ (n + 1) := by
+    ‖F.aeval z'‖ ≤ ‖F.derivative.aeval a‖ ^ 2 * T ^ 2 ^ (n + 1) :=
   calc
     ‖F.aeval z'‖ = ‖q‖ * ‖z1‖ ^ 2 := by simp [heq]
     _ ≤ 1 * ‖z1‖ ^ 2 := by gcongr; apply PadicInt.norm_le_one

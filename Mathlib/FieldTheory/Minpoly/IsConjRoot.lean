@@ -377,7 +377,7 @@ root of `x` over `K` in `L` which is not equal to `x` itself.
 -/
 theorem notMem_iff_exists_ne_and_isConjRoot {x : L} (h : IsSeparable K x)
     (sp : ((minpoly K x).map (algebraMap K L)).Splits) :
-    x ∉ (⊥ : Subalgebra K L) ↔ ∃ y : L, x ≠ y ∧ IsConjRoot K x y := by
+    x ∉ (⊥ : Subalgebra K L) ↔ ∃ y : L, x ≠ y ∧ IsConjRoot K x y :=
   calc
     _ ↔ 2 ≤ (minpoly K x).natDegree := (minpoly.two_le_natDegree_iff h.isIntegral).symm
     _ ↔ 2 ≤ Fintype.card ((minpoly K x).rootSet L) :=

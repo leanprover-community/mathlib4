@@ -621,7 +621,7 @@ lemma frobenius_norm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖ 
 end SeminormedAddCommGroup
 
 theorem frobenius_nnnorm_one [DecidableEq n] [SeminormedAddCommGroup α] [One α] :
-    ‖(1 : Matrix n n α)‖₊ = .sqrt (Fintype.card n) * ‖(1 : α)‖₊ := by
+    ‖(1 : Matrix n n α)‖₊ = .sqrt (Fintype.card n) * ‖(1 : α)‖₊ :=
   calc
     ‖(diagonal 1 : Matrix n n α)‖₊
     _ = ‖toLp 2 (Function.const _ 1)‖₊ := frobenius_nnnorm_diagonal _

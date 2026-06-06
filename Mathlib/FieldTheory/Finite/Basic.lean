@@ -218,7 +218,7 @@ section
 
 variable [GroupWithZero K] [Fintype K]
 
-theorem pow_card_sub_one_eq_one (a : K) (ha : a ≠ 0) : a ^ (q - 1) = 1 := by
+theorem pow_card_sub_one_eq_one (a : K) (ha : a ≠ 0) : a ^ (q - 1) = 1 :=
   calc
     a ^ (Fintype.card K - 1) = (Units.mk0 a ha ^ (Fintype.card K - 1) : Kˣ).1 := by
       rw [Units.val_pow_eq_pow_val, Units.val_mk0]

@@ -336,7 +336,7 @@ lemma integral_llr_add_mul_log_nonneg (hμν : μ ≪ ν) (h_int : Integrable (l
   simpa using! h
 
 lemma mul_klFun_le_toReal_klDiv (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
-    ν.real univ * klFun (μ.real univ / ν.real univ) ≤ (klDiv μ ν).toReal := by
+    ν.real univ * klFun (μ.real univ / ν.real univ) ≤ (klDiv μ ν).toReal :=
   calc ν.real univ * klFun (μ.real univ / ν.real univ)
   _ ≤ ∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν := by
     refine mul_le_integral_rnDeriv_of_ac convexOn_klFun continuous_klFun.continuousWithinAt ?_ hμν

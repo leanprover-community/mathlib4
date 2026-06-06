@@ -453,12 +453,12 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   have hq2 : q = n / m := (Rat.num_div_den q).symm
   have hm2n2 : 0 < m ^ 2 + n ^ 2 := by positivity
   have hm2n20 : (m ^ 2 + n ^ 2 : ℚ) ≠ 0 := by positivity
-  have hw2 : w = ((m : ℚ) ^ 2 - (n : ℚ) ^ 2) / ((m : ℚ) ^ 2 + (n : ℚ) ^ 2) := by
+  have hw2 : w = ((m : ℚ) ^ 2 - (n : ℚ) ^ 2) / ((m : ℚ) ^ 2 + (n : ℚ) ^ 2) :=
     calc
       w = (1 - q ^ 2) / (1 + q ^ 2) := by apply ht4.2
       _ = (1 - (↑n / ↑m) ^ 2) / (1 + (↑n / ↑m) ^ 2) := by rw [hq2]
       _ = _ := by field
-  have hv2 : v = 2 * m * n / ((m : ℚ) ^ 2 + (n : ℚ) ^ 2) := by
+  have hv2 : v = 2 * m * n / ((m : ℚ) ^ 2 + (n : ℚ) ^ 2) :=
     calc
       v = 2 * q / (1 + q ^ 2) := by apply ht4.1
       _ = 2 * (n / m) / (1 + (↑n / ↑m) ^ 2) := by rw [hq2]

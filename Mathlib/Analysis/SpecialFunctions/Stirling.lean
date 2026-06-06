@@ -283,7 +283,7 @@ See also `log_stirlingSeq_diff_le` for Robbins' sharp bound of `1/(12k(k+1))` on
 differences in the Stirling sequence, which provides finer control over the convergence rate.
 -/
 theorem le_log_factorial_stirling {n : ℕ} (hn : n ≠ 0) :
-    n * log n - n + log n / 2 + log (2 * π) / 2 ≤ log n ! := by
+    n * log n - n + log n / 2 + log (2 * π) / 2 ≤ log n ! :=
   calc
     _ = (log (2 * π) + log n) / 2 + n * (log n - 1) := by ring
     _ = log (√(2 * π * n) * (n / rexp 1) ^ n) := by

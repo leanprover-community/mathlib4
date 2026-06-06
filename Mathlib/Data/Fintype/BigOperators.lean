@@ -167,7 +167,7 @@ Note that this is just a composition of easier lemmas, but there's some glue mis
 smooth enough not to need this lemma. -/
 lemma card_filter_piFinset_eq_of_mem [∀ i, DecidableEq (α i)]
     (s : ∀ i, Finset (α i)) (i : ι) {a : α i} (ha : a ∈ s i) :
-    #{f ∈ piFinset s | f i = a} = ∏ j ∈ univ.erase i, #(s j) := by
+    #{f ∈ piFinset s | f i = a} = ∏ j ∈ univ.erase i, #(s j) :=
   calc
     _ = ∏ j, #(Function.update s i {a} j) := by
       rw [← piFinset_update_singleton_eq_filter_piFinset_eq _ _ ha, Fintype.card_piFinset]

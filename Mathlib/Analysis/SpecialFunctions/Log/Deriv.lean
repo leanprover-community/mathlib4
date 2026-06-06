@@ -336,7 +336,7 @@ lemma sum_range_le_log_div {x : ℝ} (h₀ : 0 ≤ x) (h : x < 1) (n : ℕ) :
     (fun y hy ↦ (A y (interior_subset hy)).hasDerivWithinAt) ?_
   intro y hy
   simp only [interior_Icc, Set.mem_Ioo] at hy
-  have : 0 ≤ 1 - y ^ 2 := by calc
+  have : 0 ≤ 1 - y ^ 2 := calc
     0 ≤ 1 - x ^ 2 := by simp [abs_of_nonneg h₀, h.le]
     _ ≤ 1 - y ^ 2 := sub_le_sub_left (pow_le_pow_left₀ hy.1.le hy.2.le 2) 1
   positivity
