@@ -84,6 +84,7 @@ namespace HasLimit
 
 variable {J : Type w} (f : J → ModuleCat.{max w v} R)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map from an arbitrary cone over an indexed family of abelian groups
 to the Cartesian product of those groups.
 -/
@@ -157,7 +158,7 @@ private noncomputable def lequivProdOfLeftSplitExact' {f : M →ₗ[R] A} (hg : 
   ((ShortComplex.Splitting.ofExactOfRetraction _
     (ShortComplex.Exact.moduleCat_of_range_eq_ker (ModuleCat.ofHom j)
     (ModuleCat.ofHom g) exac) (ModuleCat.ofHom f) (hom_ext h)
-    (by simpa only [ModuleCat.epi_iff_surjective] using hg)).isoBinaryBiproduct ≪≫
+    (by simpa only [ModuleCat.epi_iff_surjective] using! hg)).isoBinaryBiproduct ≪≫
     biprodIsoProd _ _).symm.toLinearEquiv
 
 end universe_monomorphic

@@ -106,6 +106,28 @@ end
 @[simp, reassoc]
 lemma symm_i [HasBinaryCoproducts C] : P.symm.i = (coprod.braiding A A).hom ≫ P.i := by cat_disch
 
+/-- The precylinder in a full subcategory of `C` induced by a precylinder
+in the category `C`. -/
+@[simps]
+def toFullSubcategory {P : ObjectProperty C} {X : P.FullSubcategory} (Q : Precylinder X.obj)
+    (hQ : P Q.I) :
+    Precylinder X where
+  I := ⟨Q.I, hQ⟩
+  i₀ := P.homMk Q.i₀
+  i₁ := P.homMk Q.i₁
+  π := P.homMk Q.π
+
+/-- The image of a precylinder by a functor. -/
+@[simps]
+def map {X : C} (P : Precylinder X) {D : Type*} [Category* D] (F : C ⥤ D) :
+    Precylinder (F.obj X) where
+  I := F.obj P.I
+  i₀ := F.map P.i₀
+  i₁ := F.map P.i₁
+  π := F.map P.π
+  i₀_π := by simp [← F.map_comp]
+  i₁_π := by simp [← F.map_comp]
+
 end Precylinder
 
 /-- In a category with weak equivalences, a cylinder is the
@@ -121,6 +143,7 @@ section
 
 variable {A : C} [CategoryWithWeakEquivalences C] (P : Cylinder A)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The cylinder object obtained by switching the two inclusions. -/
 @[simps!]
 def symm : Cylinder A where
@@ -177,6 +200,7 @@ instance : IsCofibrant P.I :=
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 instance [HasBinaryCoproducts C] [CategoryWithCofibrations C] [P.IsGood]
     [(cofibrations C).RespectsIso] : P.symm.IsGood where
   cofibration_i := by
@@ -193,6 +217,7 @@ variable [CategoryWithCofibrations C] [CategoryWithFibrations C]
 instance [HasBinaryCoproduct A A] [HasTerminal C] [IsFibrant A] [P.IsVeryGood] : IsFibrant P.I :=
   isFibrant_of_fibration P.π
 
+set_option backward.defeqAttrib.useBackward true in
 instance [(cofibrations C).RespectsIso] [HasBinaryCoproducts C] [P.IsVeryGood] :
     P.symm.IsVeryGood where
   fibration_π := by dsimp; infer_instance
@@ -218,10 +243,10 @@ noncomputable def ofFactorizationData : Cylinder A where
   i₁ := coprod.inr ≫ h.i
   π := h.p
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma ofFactorizationData_i : (ofFactorizationData h).i = h.i := by cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (ofFactorizationData h).IsVeryGood where
   cofibration_i := by simpa using inferInstanceAs (Cofibration h.i)
   fibration_π := by dsimp; infer_instance
@@ -240,6 +265,7 @@ lemma exists_very_good :
 
 instance : Nonempty (Cylinder A) := ⟨(exists_very_good A).choose⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The gluing of two good cylinders. -/
 @[simps!]
