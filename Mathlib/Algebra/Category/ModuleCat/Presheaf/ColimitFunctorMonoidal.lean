@@ -207,19 +207,22 @@ section
 
 variable {R' : Cᵒᵖ ⥤ RingCat.{w}} {M₁ M₂ N : PresheafOfModules R'}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (M₁ M₂ N) in
+/-- Given three presheaves of modules, this is the type of bilinear
+maps `M₁ × M₂ ⟶ N`. -/
 structure BilinearMap where
   map : M₁.presheaf ⋙ forget _ ⊗ M₂.presheaf ⋙ forget _ ⟶
     N.presheaf ⋙ forget _
   map_add {X : Cᵒᵖ} (m₁ : M₁.obj X) (m₂ m₂' : M₂.obj X) :
-      dsimp% map.app X (m₁, m₂ + m₂') = map.app X (m₁, m₂) + map.app X (m₁, m₂')
+    dsimp% map.app X (m₁, m₂ + m₂') = map.app X (m₁, m₂) + map.app X (m₁, m₂')
   add_map {X : Cᵒᵖ} (m₁ m₁' : M₁.obj X) (m₂ : M₂.obj X) :
-      dsimp% map.app X (m₁ + m₁', m₂) = map.app X (m₁, m₂) + map.app X (m₁', m₂)
+    dsimp% map.app X (m₁ + m₁', m₂) = map.app X (m₁, m₂) + map.app X (m₁', m₂)
   map_smul {X : Cᵒᵖ} (m₁ : M₁.obj X) (r : R'.obj X) (m₂ : M₂.obj X) :
-      dsimp% map.app X (m₁, r • m₂) = r • show N.obj X from map.app X (m₁, m₂)
+    dsimp% map.app X (m₁, r • m₂) = r • show N.obj X from map.app X (m₁, m₂)
   smul_map {X : Cᵒᵖ} (r : R'.obj X) (m₁ : M₁.obj X) (m₂ : M₂.obj X) :
-      dsimp% map.app X (r • m₁, m₂) = r • show N.obj X from map.app X (m₁, m₂)
+    dsimp% map.app X (r • m₁, m₂) = r • show N.obj X from map.app X (m₁, m₂)
 
 namespace BilinearMap
 
@@ -274,6 +277,7 @@ noncomputable def descOfBilinearMapAux :
   (((isColimitOfPreserves (forget _) hcM₁).tensor
     (isColimitOfPreserves (forget _) hcM₂)).desc (coconeDescOfBilinearMapAux b cN)).hom.toFun.curry
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma descOfBilinearMapAux_apply {X : Cᵒᵖ} (m₁ : M₁.obj X) (m₂ : M₂.obj X) :
     dsimp% descOfBilinearMapAux hcR b hcM₁ hcM₂ hcN (ιM m₁) (ιM m₂) =
@@ -303,7 +307,7 @@ noncomputable def descOfBilinearMap :
       map_add' m₁ m₁' := by
         ext m₂
         obtain ⟨U, m₁, m₁', m₂, rfl, rfl, rfl⟩ := ιM_jointly_surjective₃ m₁ m₁' m₂
-        simp [← map_add, dsimp% b.add_map]
+        simp [← map_add, b.add_map]
       map_smul' r m₁ := by
         let H := (isColimitOfPreserves (forget₂ _ RingCat) hcR)
         ext m₂
@@ -312,6 +316,7 @@ noncomputable def descOfBilinearMap :
         rw [dsimp% smul_eq H, descOfBilinearMapAux_apply,
           descOfBilinearMapAux_apply, dsimp% smul_eq H, b.smul_map] }
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma descOfBilinearMap_tmul {X : Cᵒᵖ} (m₁ : M₁.obj X) (m₂ : M₂.obj X) :
     dsimp% (descOfBilinearMap hcR b hcM₁ hcM₂ hcN) (ιM m₁ ⊗ₜ ιM m₂) =
@@ -324,14 +329,14 @@ namespace isIso_colimitFunctorOfCommRing_δ
 
 variable (F₁ F₂ : PresheafOfModules.{w} (R ⋙ forget₂ CommRingCat RingCat))
 
-noncomputable def μ :
+private noncomputable def μ :
     (colimitFunctorOfCommRing hcR).obj F₁ ⊗ (colimitFunctorOfCommRing hcR).obj F₂ ⟶
     (colimitFunctorOfCommRing hcR).obj (F₁ ⊗ F₂) :=
   ModuleCat.ofHom (ModuleColimit.descOfBilinearMap _ (.tmul _ _) _ _ _)
 
 variable {F₁ F₂} in
 @[simp]
-lemma μ_apply {X : Cᵒᵖ} (m₁ : F₁.obj X) (m₂ : F₂.obj X) :
+private lemma μ_apply {X : Cᵒᵖ} (m₁ : F₁.obj X) (m₂ : F₂.obj X) :
     dsimp% μ hcR F₁ F₂ (ιColimitFunctorOfCommRing hcR F₁ X m₁ ⊗ₜ
         ιColimitFunctorOfCommRing hcR F₂ X m₂) =
       ιColimitFunctorOfCommRing hcR (F₁ ⊗ F₂) X (m₁ ⊗ₜ m₂) :=
@@ -339,13 +344,13 @@ lemma μ_apply {X : Cᵒᵖ} (m₁ : F₁.obj X) (m₂ : F₂.obj X) :
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
-lemma μ_δ : μ hcR F₁ F₂ ≫ δ (colimitFunctorOfCommRing hcR) F₁ F₂ = 𝟙 _ :=
+private lemma μ_δ : μ hcR F₁ F₂ ≫ δ (colimitFunctorOfCommRing hcR) F₁ F₂ = 𝟙 _ :=
   ModuleCat.MonoidalCategory.tensor_ext (fun m₁ m₂ ↦ by
     obtain ⟨U, m₁, m₂, rfl, rfl⟩ := ιColimitFunctorOfCommRing_jointly_surjective₂ hcR m₁ m₂
     simp)
 
 set_option backward.isDefEq.respectTransparency false in
-instance : Epi (μ hcR F₁ F₂) := by
+private instance : Epi (μ hcR F₁ F₂) := by
   suffices ∀ (U : Cᵒᵖ) (m : (F₁ ⊗ F₂).obj U),
       ∃ z, μ hcR F₁ F₂ z = ιColimitFunctorOfCommRing hcR (F₁ ⊗ F₂) U m from
     ConcreteCategory.epi_of_surjective _ (fun m ↦ by
@@ -361,7 +366,7 @@ instance : Epi (μ hcR F₁ F₂) := by
   | tmul m₁ m₂ => exact ⟨_, μ_apply hcR m₁ m₂⟩
 
 @[reassoc (attr := simp)]
-lemma δ_μ : δ (colimitFunctorOfCommRing hcR) F₁ F₂ ≫ μ hcR F₁ F₂ = 𝟙 _ := by
+private lemma δ_μ : δ (colimitFunctorOfCommRing hcR) F₁ F₂ ≫ μ hcR F₁ F₂ = 𝟙 _ := by
   simp [← cancel_epi (μ hcR F₁ F₂)]
 
 end isIso_colimitFunctorOfCommRing_δ
