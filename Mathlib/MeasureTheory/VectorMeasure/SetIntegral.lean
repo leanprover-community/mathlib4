@@ -43,6 +43,8 @@ theorem IntegrableOn.union (hs : MeasurableSet s) (ht : MeasurableSet t)
   grw [transpose_restrict, variation_restrict_le, Measure.restrict_union_le]
   simp [transpose_restrict, variation_restrict, hs, ht]
 
+/- `simpNF` complains that this lemma can be proved by `simp`, because the `simp`-generated lemma
+unfolds the abbrev `VectorMeasure.Integrable`. TODO: fix `simp`. See lean4#13958. -/
 @[simp] theorem IntegrableOn.empty : μ.IntegrableOn f B ∅ := by
   simp [VectorMeasure.IntegrableOn]
 

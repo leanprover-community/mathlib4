@@ -77,7 +77,7 @@ private lemma exists_vectorMeasure_le_measureAux (hf : BoundedVariationOn f univ
     ∃ m : VectorMeasure α E, (∀ u v, u ≤ v → m (Set.Ioc u v) = f.rightLim v - f.rightLim u) ∧
       m botSet = 0 ∧ ∀ s, ‖m s‖ₑ ≤ hf.measureAux s := by
   /- We will apply the general extension theorem
-  `VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom`. For this, we
+  `VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure`. For this, we
   need to check that the additive content is bounded by the measure `measureAux`. -/
   rcases isEmpty_or_nonempty α with h'α | h'α
   · exact ⟨0, by simp⟩
@@ -98,7 +98,7 @@ private lemma exists_vectorMeasure_le_measureAux (hf : BoundedVariationOn f univ
     borelize α
     convert! borel_eq_generateFrom_Ioc_le α using 2
     grind only
-  rcases VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
+  rcases VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure
     IsSetSemiring.Ioc A B with ⟨m', hm', h'm'⟩
   refine ⟨m', fun u v huv ↦ ?_, ?_, h'm'⟩
   · rw [hm']
