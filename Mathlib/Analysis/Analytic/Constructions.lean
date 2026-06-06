@@ -993,8 +993,7 @@ lemma analyticAt_inv_one_sub : AnalyticAt 𝕜 (fun x : 𝕝 ↦ (1 - x)⁻¹) 0
 
 variable (𝕜 𝕝) in
 lemma hasFPowerSeriesOnBall_inv_one_add :
-    HasFPowerSeriesOnBall (fun x : 𝕝 ↦ (1 + x)⁻¹)
-    (geometricAlternatingSeries 𝕜 𝕝) 0 1 := by
+    HasFPowerSeriesOnBall (fun x : 𝕝 ↦ (1 + x)⁻¹) (geometricAlternatingSeries 𝕜 𝕝) 0 1 := by
   convert hasFPowerSeriesOnBall_inverse_one_add 𝕜 𝕝
   exact Ring.inverse_eq_inv'.symm
 
