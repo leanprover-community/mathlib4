@@ -458,30 +458,25 @@ theorem dvd_iff_content_dvd_content_and_primPart_dvd_primPart {p q : R[X]} (hq :
     rw [p.eq_C_content_mul_primPart, q.eq_C_content_mul_primPart]
     gcongr
 
--- TODO: make this private
-lemma exists_lcm {R} [CommRing R] [IsGCDMonoid R] (p q : R[X]) :
-    ∃ c, ∀ (d : R[X]), p ∣ d ∧ q ∣ d ↔ c ∣ d := by
-  have := Classical.arbitrary (NormalizedGCDMonoid R)
-  rcases exists_primitive_lcm_of_isPrimitive p.isPrimitive_primPart
-      q.isPrimitive_primPart with
-    ⟨r, rprim, hr⟩
-  refine ⟨C (lcm p.content q.content) * r, fun s => ?_⟩
-  by_cases hs : s = 0
-  · simp [hs]
-  by_cases hpq : C (lcm p.content q.content) = 0
-  · rw [C_eq_zero, lcm_eq_zero_iff, content_eq_zero_iff, content_eq_zero_iff] at hpq
-    rcases hpq with (hpq | hpq) <;> simp [hpq, hs]
-  iterate 3 rw [dvd_iff_content_dvd_content_and_primPart_dvd_primPart hs]
-  nontriviality R
-  rw [(associated_content_mul ..).dvd_iff_dvd_left, rprim.content_eq_one, mul_one, content_C,
-    (associated_primPart_mul (mul_ne_zero hpq rprim.ne_zero)).dvd_iff_dvd_left, rprim.primPart_eq,
-    normalize_lcm, lcm_dvd_iff,
-    (isUnit_primPart_C (lcm p.content q.content)).mul_left_dvd, ← hr s.primPart]
-  tauto
-
 noncomputable instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMonoid R[X] :=
   letI := Classical.decEq R
-  normalizedGCDMonoidOfExistsLCM exists_lcm
+  normalizedGCDMonoidOfExistsLCM fun p q => by
+    rcases exists_primitive_lcm_of_isPrimitive p.isPrimitive_primPart
+        q.isPrimitive_primPart with
+      ⟨r, rprim, hr⟩
+    refine ⟨C (lcm p.content q.content) * r, fun s => ?_⟩
+    by_cases hs : s = 0
+    · simp [hs]
+    by_cases hpq : C (lcm p.content q.content) = 0
+    · rw [C_eq_zero, lcm_eq_zero_iff, content_eq_zero_iff, content_eq_zero_iff] at hpq
+      rcases hpq with (hpq | hpq) <;> simp [hpq, hs]
+    iterate 3 rw [dvd_iff_content_dvd_content_and_primPart_dvd_primPart hs]
+    nontriviality R
+    rw [(associated_content_mul ..).dvd_iff_dvd_left, rprim.content_eq_one, mul_one, content_C,
+      (associated_primPart_mul (mul_ne_zero hpq rprim.ne_zero)).dvd_iff_dvd_left, rprim.primPart_eq,
+      normalize_lcm, lcm_dvd_iff,
+      (isUnit_primPart_C (lcm p.content q.content)).mul_left_dvd, ← hr s.primPart]
+    tauto
 
 theorem degree_gcd_le_left {p : R[X]} (hp : p ≠ 0) (q) : (gcd p q).degree ≤ p.degree := by
   have := natDegree_le_iff_degree_le.mp (natDegree_le_of_dvd (gcd_dvd_left p q) hp)
@@ -499,8 +494,7 @@ noncomputable instance (priority := 100)
   __ : StrongNormalizationMonoid R[X] := inferInstance
 
 -- We do not add a `GCDMonoid R[X]` instance due to diamond
-instance (priority := 100) [IsGCDMonoid R] : IsGCDMonoid R[X] := by
-  have := IsGCDMonoid.isCancelMulZero R
-  classical exact ⟨gcdMonoidOfExistsLCM exists_lcm⟩
+instance (priority := 100) [IsGCDMonoid R] : IsGCDMonoid R[X] :=
+  have := Classical.arbitrary (NormalizedGCDMonoid R); inferInstance
 
 end Polynomial
