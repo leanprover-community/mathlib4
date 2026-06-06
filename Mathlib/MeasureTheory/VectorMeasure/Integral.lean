@@ -825,14 +825,6 @@ theorem integral_dirac [MeasurableSpace X] [MeasurableSingletonClass X] [Complet
       exact Measure.ae_smul_measure (ae_eq_dirac f) _
     _ = B (f a) v := by simp
 
-theorem integral_singleton' [CompleteSpace G] (hf : StronglyMeasurable f) :
-    ∫ᵛ a in {a}, f a ∂[B; μ] = B (f a) (μ {a}) := by
-  simp only [restrict_singleton, integral_dirac' hf]
-
-theorem integral_singleton [MeasurableSingletonClass X] [CompleteSpace G] :
-    ∫ᵛ a in {a}, f a ∂[B; μ] = B (f a) (μ {a}) := by
-  simp only [restrict_singleton, integral_dirac]
-
 theorem integral_unique [Unique X] [CompleteSpace G] :
     ∫ᵛ x, f x ∂[B; μ] = B (f default) (μ univ) :=
   calc
