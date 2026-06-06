@@ -188,4 +188,3 @@ private lemma inv_convMul_cancel (f : WithConv <| C →ₐc[R] A) :
   _ = _ := by simp [antipode_id_cancel, convOne_def, comp_assoc]
 
 end AlgHom
-#lint
