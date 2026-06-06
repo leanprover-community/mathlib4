@@ -363,12 +363,10 @@ theorem conductor_changeLevel {m : ℕ} [NeZero m] (hm : n ∣ m) :
     (changeLevel hm χ).conductor = χ.conductor := by
   have : NeZero n := ⟨by aesop⟩
   have h : (changeLevel hm χ).conductor ∣ χ.conductor := by
-    refine conductor_dvd_of_mem_conductorSet (changeLevel hm χ)
+    refine conductor_dvd_of_mem_conductorSet _
       ⟨χ.conductor_dvd_level.trans hm, χ.primitiveCharacter, ?_⟩
-    rw [χ.primitiveCharacter.changeLevel_trans χ.conductor_dvd_level,
-      changeLevel_primitiveCharacter]
-  apply dvd_antisymm h
-  refine conductor_dvd_of_mem_conductorSet _
+    rw [changeLevel_trans _ χ.conductor_dvd_level, changeLevel_primitiveCharacter]
+  refine h.antisymm <| conductor_dvd_of_mem_conductorSet _
     ⟨h.trans χ.conductor_dvd_level, (changeLevel hm χ).primitiveCharacter, ?_⟩
   apply changeLevel_injective hm
   rw [← changeLevel_trans, changeLevel_primitiveCharacter]
@@ -380,18 +378,14 @@ theorem primitiveCharacter_changeLevel_apply [Nontrivial R] {m : ℕ} [NeZero m]
     (χ : DirichletCharacter R n) (a : ℤ) :
     (changeLevel hm χ).primitiveCharacter a = χ.primitiveCharacter a := by
   by_cases ha : IsCoprime a χ.conductor
-  · suffices changeLevel (Nat.dvd_lcm_left _ _) (changeLevel hm χ).primitiveCharacter =
-        changeLevel (Nat.dvd_lcm_right _ _) χ.primitiveCharacter by
+  · suffices changeLevel (dvd_of_eq <| conductor_changeLevel ..)
+        (changeLevel hm χ).primitiveCharacter = χ.primitiveCharacter by
       have := DFunLike.congr_fun this (a : ZMod _)
-      rwa [changeLevel_eq_cast_of_dvd', changeLevel_eq_cast_of_dvd'] at this
-      all_goals rwa [conductor_changeLevel, Nat.lcm_self]
-    apply changeLevel_injective (m := m)
-    rw [← changeLevel_trans, ← changeLevel_trans, changeLevel_primitiveCharacter,
+      rwa [changeLevel_eq_cast_of_dvd' _ _ ha] at this
+    apply changeLevel_injective (χ.conductor_dvd_level.trans hm)
+    rw [← changeLevel_trans, changeLevel_primitiveCharacter,
       χ.primitiveCharacter.changeLevel_trans χ.conductor_dvd_level, changeLevel_primitiveCharacter]
-    rw [conductor_changeLevel, Nat.lcm_self]
-    exact χ.conductor_dvd_level.trans hm
-  · rw [(apply_eq_zero_iff _ _).mpr ha, (apply_eq_zero_iff _ _).mpr
-      (by rwa [conductor_changeLevel])]
+  · rw [(apply_eq_zero_iff ..).mpr ha, (apply_eq_zero_iff ..).mpr (by rwa [conductor_changeLevel])]
 
 lemma conductor_zpow_dvd (χ : DirichletCharacter R n) (m : ℤ) :
     conductor (χ ^ m) ∣ conductor χ := by
