@@ -251,9 +251,6 @@ theorem reindexAlgEquiv_trans_reindexAlgEquiv (e : m ≃ n) (e' : n ≃ o) :
     .trans (reindexAlgEquiv R A e) (reindexAlgEquiv R A e') = reindexAlgEquiv R A (.trans e e') :=
   rfl
 
-@[deprecated (since := "2026-06-06")]
-alias reindexAlgEquiv_trans := reindexAlgEquiv_trans_reindexAlgEquiv
-
 @[deprecated map_mul (since := "2026-06-06")]
 theorem reindexAlgEquiv_mul (e : m ≃ n) (M : Matrix m m A) (N : Matrix m m A) :
     reindexAlgEquiv R A e (M * N) = reindexAlgEquiv R A e M * reindexAlgEquiv R A e N :=
