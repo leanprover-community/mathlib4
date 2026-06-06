@@ -226,6 +226,10 @@ theorem toAddEquiv_reindexAlgEquiv (e : m ≃ n) : reindexAlgEquiv R A e = reind
   rfl
 
 @[simp]
+theorem toRingEquiv_reindexAlgEquiv (e : m ≃ n) : reindexAlgEquiv R A e = reindexRingEquiv A e :=
+  rfl
+
+@[simp]
 theorem toLinearEquiv_reindexAlgEquiv (e : m ≃ n) :
     reindexAlgEquiv R A e = reindexLinearEquiv R A e e :=
   rfl
