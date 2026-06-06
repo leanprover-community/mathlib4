@@ -102,7 +102,7 @@ lemma Hom.w_app (f : HP ⟶ HP') (i j : ι) (X : TopPair.{u}) :
     (HP.δ i j).app X ≫ (f.hom j).app X.left = (f.homₚ i).app X ≫ (HP'.δ i j).app X :=
   congr($(f.w _ _).app _)
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma iso_homₚ_inv_hom (f : HP ⟶ HP') (i : ι) :
     (HP.iso i).hom ≫ incl.whiskerLeft (f.homₚ i) ≫ (HP'.iso i).inv = f.hom i := by simp
 
