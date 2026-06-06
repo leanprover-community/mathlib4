@@ -66,35 +66,35 @@ variable [LE α]
 -- Note: in this section, we use `@[gcongr high]` so that these lemmas have a higher priority than
 -- lemmas like `mul_le_mul_of_nonneg_left`, which have an extra side condition.
 
-@[to_additive (attr := gcongr high)]
+@[to_additive (attr := gcongr high, to_dual self)]
 theorem mul_le_mul_right [MulLeftMono α] {b c : α} (bc : b ≤ c) (a : α) : a * b ≤ a * c :=
   CovariantClass.elim _ bc
 
 @[deprecated (since := "2025-11-27")]
 alias mul_le_mul_left' := mul_le_mul_right
 
-@[to_additive le_of_add_le_add_left]
+@[to_additive (attr := to_dual self) le_of_add_le_add_left]
 theorem le_of_mul_le_mul_left' [MulLeftReflectLE α] {a b c : α} (bc : a * b ≤ a * c) : b ≤ c :=
   MulLeftReflectLE.le_of_mul_le_mul_left' bc
 
-@[to_additive (attr := gcongr high)]
+@[to_additive (attr := gcongr high, to_dual self)]
 theorem mul_le_mul_left [i : MulRightMono α] {b c : α} (bc : b ≤ c) (a : α) : b * a ≤ c * a :=
   i.elim a bc
 
 @[deprecated (since := "2025-11-27")]
 alias mul_le_mul_right' := mul_le_mul_left
 
-@[to_additive le_of_add_le_add_right]
+@[to_additive (attr := to_dual self) le_of_add_le_add_right]
 theorem le_of_mul_le_mul_right' [MulRightReflectLE α] {a b c : α} (bc : b * a ≤ c * a) :
     b ≤ c :=
   MulRightReflectLE.le_of_mul_le_mul_right' bc
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, to_dual self)]
 theorem mul_le_mul_iff_left [MulLeftMono α] [MulLeftReflectLE α] (a : α) {b c : α} :
     a * b ≤ a * c ↔ b ≤ c :=
   rel_iff_cov' ‹MulLeftMono α›.elim fun _ ↦ MulLeftReflectLE.le_of_mul_le_mul_left'
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, to_dual self)]
 theorem mul_le_mul_iff_right [MulRightMono α] [MulRightReflectLE α] (a : α) {b c : α} :
     b * a ≤ c * a ↔ b ≤ c :=
   rel_iff_cov' ‹MulRightMono α›.elim fun _ ↦ MulRightReflectLE.le_of_mul_le_mul_right'
@@ -105,13 +105,13 @@ section LT
 
 variable [LT α]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, to_dual self)]
 theorem mul_lt_mul_iff_left [MulLeftStrictMono α]
     [MulLeftReflectLT α] (a : α) {b c : α} :
     a * b < a * c ↔ b < c :=
   rel_iff_cov α α (· * ·) (· < ·) a
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, to_dual self)]
 theorem mul_lt_mul_iff_right [MulRightStrictMono α]
     [MulRightReflectLT α] (a : α) {b c : α} :
     b * a < c * a ↔ b < c :=
@@ -120,24 +120,24 @@ theorem mul_lt_mul_iff_right [MulRightStrictMono α]
 -- Note: in this section, we use `@[gcongr high]` so that these lemmas have a higher priority than
 -- lemmas like `mul_lt_mul_of_pos_left`, which have an extra side condition.
 
-@[to_additive (attr := gcongr high)]
+@[to_additive (attr := gcongr high, to_dual self)]
 theorem mul_lt_mul_right [MulLeftStrictMono α] {b c : α} (bc : b < c) (a : α) :
     a * b < a * c :=
   CovariantClass.elim _ bc
 
-@[to_additive lt_of_add_lt_add_left]
+@[to_additive (attr := to_dual self) lt_of_add_lt_add_left]
 theorem lt_of_mul_lt_mul_left' [MulLeftReflectLT α] {a b c : α}
     (bc : a * b < a * c) :
     b < c :=
   ContravariantClass.elim _ bc
 
-@[to_additive (attr := gcongr high)]
+@[to_additive (attr := gcongr high, to_dual self)]
 theorem mul_lt_mul_left [i : MulRightStrictMono α] {b c : α} (bc : b < c)
     (a : α) :
     b * a < c * a :=
   i.elim a bc
 
-@[to_additive lt_of_add_lt_add_right]
+@[to_additive (attr := to_dual self) lt_of_add_lt_add_right]
 theorem lt_of_mul_lt_mul_right' [i : MulRightReflectLT α] {a b c : α}
     (bc : b * a < c * a) :
     b < c :=
@@ -168,7 +168,7 @@ lemma mul_left_strictMono [MulRightStrictMono α] {a : α} : StrictMono (· * a)
 -- Note: in this section, we use `@[gcongr high]` so that these lemmas have a higher priority than
 -- lemmas like `mul_le_mul_of_nonneg`, which have an extra side condition.
 
-@[to_additive (attr := gcongr high)]
+@[to_additive (attr := gcongr high, to_dual self)]
 theorem mul_lt_mul_of_lt_of_lt [MulLeftStrictMono α]
     [MulRightStrictMono α]
     {a b c d : α} (h₁ : a < b) (h₂ : c < d) : a * c < b * d :=
@@ -176,29 +176,29 @@ theorem mul_lt_mul_of_lt_of_lt [MulLeftStrictMono α]
     a * c < a * d := mul_lt_mul_right h₂ a
     _ < b * d := mul_lt_mul_left h₁ d
 
-alias add_lt_add := add_lt_add_of_lt_of_lt
+@[to_dual self] alias add_lt_add := add_lt_add_of_lt_of_lt
 
-@[to_additive]
+@[to_additive (attr := to_dual self)]
 theorem mul_lt_mul_of_le_of_lt [MulLeftStrictMono α]
     [MulRightMono α] {a b c d : α} (h₁ : a ≤ b) (h₂ : c < d) :
     a * c < b * d :=
   (mul_le_mul_left h₁ _).trans_lt (mul_lt_mul_right h₂ b)
 
-@[to_additive]
+@[to_additive (attr := to_dual self)]
 theorem mul_lt_mul_of_lt_of_le [MulLeftMono α]
     [MulRightStrictMono α] {a b c d : α} (h₁ : a < b) (h₂ : c ≤ d) :
     a * c < b * d :=
   (mul_le_mul_right h₂ _).trans_lt (mul_lt_mul_left h₁ d)
 
 /-- Only assumes left strict covariance. -/
-@[to_additive /-- Only assumes left strict covariance -/]
+@[to_additive (attr := to_dual self) /-- Only assumes left strict covariance -/]
 theorem Left.mul_lt_mul [MulLeftStrictMono α]
     [MulRightMono α] {a b c d : α} (h₁ : a < b) (h₂ : c < d) :
     a * c < b * d :=
   mul_lt_mul_of_le_of_lt h₁.le h₂
 
 /-- Only assumes right strict covariance. -/
-@[to_additive /-- Only assumes right strict covariance -/]
+@[to_additive (attr := to_dual self) /-- Only assumes right strict covariance -/]
 theorem Right.mul_lt_mul [MulLeftMono α]
     [MulRightStrictMono α] {a b c d : α}
     (h₁ : a < b) (h₂ : c < d) :
@@ -210,7 +210,7 @@ theorem mul_le_mul' [MulLeftMono α] [MulRightMono α]
     {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ d) :
     a * c ≤ b * d := by grw [h₁, h₂]
 
-@[to_additive]
+@[to_additive (attr := to_dual self)]
 theorem mul_le_mul_three [MulLeftMono α]
     [MulRightMono α] {a b c d e f : α} (h₁ : a ≤ d) (h₂ : b ≤ e)
     (h₃ : c ≤ f) :
