@@ -347,8 +347,8 @@ lemma IsEquipartition.card_biUnion_offDiag_le (hε : 0 < ε) (hP : P.IsEquiparti
   refine (mul_le_mul_of_nonneg_left this <| by positivity).trans ?_
   suffices 1 ≤ ε / 4 * #P.parts by
     rw [mul_left_comm, ← sq]
-    convert mul_le_mul_of_nonneg_left this (mul_nonneg zero_le_two <| sq_nonneg (#A : 𝕜))
-      using 1 <;> ring
+    convert! mul_le_mul_of_nonneg_left this (mul_nonneg zero_le_two <| sq_nonneg (#A : 𝕜)) using 1
+      <;> ring
   rwa [← div_le_iff₀', one_div_div]
   positivity
 
@@ -396,7 +396,6 @@ that have edge density at least `δ`. -/
     rintro ⟨ab, U, UP, V, VP, xU, yV, UV, GUV, εUV⟩
     refine ⟨G.symm ab, V, VP, U, UP, yV, xU, UV.symm, GUV.symm, ?_⟩
     rwa [edgeDensity_comm]
-  loopless := ⟨fun a h ↦ G.loopless.irrefl a h.1⟩
 
 instance regularityReduced.instDecidableRel_adj : DecidableRel (G.regularityReduced P ε δ).Adj :=
   inferInstanceAs <| DecidableRel (mk _ _).Adj

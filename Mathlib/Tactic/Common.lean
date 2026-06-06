@@ -108,7 +108,6 @@ public import Mathlib.Tactic.TermCongr
 public import Mathlib.Tactic.ToExpr
 public import Mathlib.Tactic.ToLevel
 public import Mathlib.Tactic.Trace
-public import Mathlib.Tactic.TypeCheck
 public import Mathlib.Tactic.UnsetOption
 public import Mathlib.Tactic.Use
 public import Mathlib.Tactic.Variable

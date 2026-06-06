@@ -319,7 +319,7 @@ theorem mahlerMeasure_le_sqrt_sum_sq_norm_coeff (p : Polynomial ℂ) :
     refine Finite.of_finite_image (f := circleMap 0 1) (p.roots.finite_toSet.subset ?_) ?_
     · rintro z ⟨θ, ⟨_, heval⟩, rfl⟩
       exact (mem_roots hp).mpr heval
-    · apply InjOn.mono fun _ h ↦ h.1
+    · grw [setOf_and, inter_subset_left]
       exact injOn_circleMap_of_abs_sub_le one_ne_zero (by simp [abs_of_pos pi_pos])
   have hlogAe : ∀ᵐ (θ : ℝ) ∂volume.restrict (uIoc 0 (2 * π)),
       exp (log ‖p.eval (circleMap 0 1 θ)‖) = ‖p.eval (circleMap 0 1 θ)‖ := by
