@@ -163,7 +163,7 @@ instance monoidWithZeroHomClass : MonoidWithZeroHomClass (AbsoluteValue R S) R S
 
 /-- Absolute values from a nontrivial `R` to a linear ordered ring preserve `*`, `0` and `1`. -/
 def toMonoidWithZeroHom : R →*₀ S :=
-  abv
+  .ofClass abv
 
 @[simp]
 theorem coe_toMonoidWithZeroHom : ⇑abv.toMonoidWithZeroHom = abv :=

@@ -142,8 +142,8 @@ theorem ext {v₁ v₂ : Valuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ 
 
 variable (v : Valuation R Γ₀)
 
-@[simp, norm_cast]
-theorem coe_coe : ⇑(v : R →*₀ Γ₀) = v := rfl
+@[simp]
+theorem coe_ofClass : ⇑(MonoidWithZeroHom.ofClass v) = v := rfl
 
 protected theorem map_zero : v 0 = 0 :=
   v.map_zero'
@@ -352,10 +352,10 @@ theorem map_one_sub_of_lt (h : v x < 1) : v (1 - x) = 1 := by
 /-- An ordered monoid isomorphism `Γ₀ ≃ Γ'₀` induces an equivalence
 `Valuation R Γ₀ ≃ Valuation R Γ'₀`. -/
 def congr (f : Γ₀ ≃*o Γ'₀) : Valuation R Γ₀ ≃ Valuation R Γ'₀ where
-  toFun := map f f.toOrderIso.monotone
-  invFun := map f.symm f.toOrderIso.symm.monotone
-  left_inv ν := by ext; simp
-  right_inv ν := by ext; simp
+  toFun := map (.ofClass f) f.toOrderIso.monotone
+  invFun := map (.ofClass f.symm) f.toOrderIso.symm.monotone
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
 
 section One
 
@@ -454,98 +454,80 @@ lemma leAddSubgroup_monotone (v : Valuation R Γ₀) : Monotone v.leAddSubgroup 
 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The restriction of a valuation so that it takes values in its `valueGroup₀`. -/
-def restrict : Valuation R (MonoidWithZeroHom.ValueGroup₀ (v : R →*₀ Γ₀)) where
-  __ := restrict₀ v
+def restrict : Valuation R (ValueGroup₀ (.ofClass v)) where
+  __ := restrict₀ (.ofClass v)
   map_add_le_max' x y := by
     by_cases H : v x ≠ 0 ∨ v y ≠ 0
     · rcases H with h | h <;>
-      simp only [ZeroHom.toFun_eq_coe, toZeroHom_coe, restrict₀_apply, h, ↓reduceDIte] <;>
+      simp only [ZeroHom.toFun_eq_coe, toZeroHom_coe, restrict₀_apply, coe_ofClass, h,
+        reduceDIte, le_sup_iff] <;>
       · split_ifs with H _ hy
         all_goals simp [← Units.val_le_val]
         simpa using map_add_le _ (by simp_all) (by simp_all)
     · simp only [ne_eq, not_or, Decidable.not_not] at H
-      simp only [ZeroHom.toFun_eq_coe, toZeroHom_coe, restrict₀_apply, H, ↓reduceDIte, max_self,
-        le_zero_iff, dite_eq_left_iff, WithZero.coe_ne_zero, imp_false, Decidable.not_not]
-      simpa using map_add_le _ (le_of_eq H.1) (le_of_eq H.2)
+      simpa [restrict₀_apply, H] using map_add_le _ (le_of_eq H.1) (le_of_eq H.2)
 
-lemma restrict_def (x : R) : v.restrict x = restrict₀ v x := rfl
+lemma restrict_def (x : R) : v.restrict x = restrict₀ (.ofClass v) x := rfl
 
-lemma restrict_eq_mk {x : R} (hx : v x ≠ 0) :
-    v.restrict x = (valueGroup.mk v 1 x (by simp) hx : ValueGroup₀ v) := by
+@[simp]
+lemma embedding_restrict (x : R) : embedding (v.restrict x) = v x :=
+  embedding_restrict₀ x
+
+lemma restrict_eq_mk {x : R} (hx : v x ≠ 0) : v.restrict x =
+    (valueGroup.mk (.ofClass v) 1 x (by simp) hx : ValueGroup₀ (.ofClass v)) := by
   classical
   simp [restrict_def, restrict₀_apply, dif_neg hx, valueGroup.mk]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrict_pos_iff (x : R) : 0 < v.restrict x ↔ 0 < v x := by
   simp only [restrict_def, restrict₀_apply]
-  split_ifs with h
-  · simp [h]
-  · simp [zero_lt_iff.mpr h]
+  split_ifs with h <;> simpa [zero_lt_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrict_lt_iff {x y : R} : v.restrict x < v.restrict y ↔ v x < v y := by
-  simp only [restrict_def, restrict₀_apply]
+  simp [restrict_def, restrict₀_apply]
   split_ifs with hx hy <;> simp_all [zero_lt_iff.mpr, ← Units.val_lt_val]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isEquiv_restrict : v.IsEquiv v.restrict := by
   intro x y
   aesop (add norm [restrict_def, restrict₀_apply])
 
-set_option backward.isDefEq.respectTransparency false in
-lemma restrict_lt_iff_lt_embedding {x : R} {g : ValueGroup₀ v} :
-    v.restrict x < g ↔ v x < embedding g := by
-  conv_rhs => rw [← ValueGroup₀.embedding_restrict₀ x]
-  rw [embedding_strictMono.lt_iff_lt, restrict_def]
+lemma restrict_lt_iff_lt_embedding {x : R} {g : ValueGroup₀ (.ofClass v)} :
+    v.restrict x < g ↔ v x < embedding g :=
+  embedding_strictMono.lt_iff_lt.symm.trans (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
-lemma restrict_le_iff_le_embedding {x : R} {g : ValueGroup₀ v} :
-    v.restrict x ≤ g ↔ v x ≤ embedding g := by
-  conv_rhs => rw [← ValueGroup₀.embedding_restrict₀ x]
-  rw [embedding_strictMono.le_iff_le, restrict_def]
+lemma restrict_le_iff_le_embedding {x : R} {g : ValueGroup₀ (.ofClass v)} :
+    v.restrict x ≤ g ↔ v x ≤ embedding g :=
+  embedding_strictMono.le_iff_le.symm.trans (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrict_lt_one_iff {x : R} : v.restrict x < 1 ↔ v x < 1 := by
   rw [restrict_lt_iff_lt_embedding, map_one]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrict_le_one_iff {x : R} : v.restrict x ≤ 1 ↔ v x ≤ 1 := by
   rw [restrict_le_iff_le_embedding, map_one]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrict_eq_zero_iff {x : R} : v.restrict x = 0 ↔ v x = 0 := by
-  rw [restrict_def, restrict₀_eq_zero_iff]
+  simp [restrict_def, restrict₀_eq_zero_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrict_eq_one_iff {x : R} : v.restrict x = 1 ↔ v x = 1 := by
-  rw [restrict_def, restrict₀_eq_one_iff]
+  simp [restrict_def, restrict₀_eq_one_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrict_le_iff {x y : R} : v.restrict x ≤ v.restrict y ↔ v x ≤ v y := by
-  simp only [restrict_def, restrict₀_apply]
+  simp only [restrict_def, restrict₀_apply, MonoidWithZeroHom.coe_ofClass]
   split_ifs with hx hy <;> simp_all [← Units.val_le_val]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrict_inj {x y : R} : v.restrict x = v.restrict y ↔ v x = v y := by
-  simp only [restrict_def, restrict₀_apply]
+  simp only [restrict_def, restrict₀_apply, MonoidWithZeroHom.coe_ofClass]
   aesop
 
-@[simp]
-lemma embedding_restrict (x : R) : ValueGroup₀.embedding (v.restrict x) = v x :=
-  embedding_restrict₀ x
-
-set_option backward.isDefEq.respectTransparency false in
-lemma exists_div_eq_of_unit (γ : (ValueGroup₀ v)ˣ) :
+lemma exists_div_eq_of_unit (γ : (ValueGroup₀ (.ofClass v))ˣ) :
     ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
   set u := WithZero.unzero (Units.ne_zero γ) with hu_def
   obtain ⟨a, ⟨ha, x, hax⟩⟩ := (mem_valueGroup_iff_of_comm _).mp u.2
@@ -553,9 +535,10 @@ lemma exists_div_eq_of_unit (γ : (ValueGroup₀ v)ˣ) :
     rw [← restrict_pos_iff, restrict_def, WithZero.pos_iff_ne_zero, ne_eq, restrict₀_eq_zero_iff]
     aesop
   use x, a, hx, zero_lt_iff.mpr ha
-  have ha0 : v.restrict a ≠ 0 := by simp [ha]
+  have ha0 : v.restrict a ≠ 0 := by simpa using ha
   rw [div_eq_iff ha0, mul_comm, ← embedding_strictMono.injective.eq_iff, map_mul,
-    embedding_restrict, embedding_restrict, ← hax]
+    embedding_restrict, embedding_restrict]
+  rw [← MonoidWithZeroHom.coe_ofClass, ← hax]
   congr
   rw [← WithZero.coe_unzero (Units.ne_zero γ)]
   exact Eq.refl ..
@@ -613,18 +596,18 @@ lemma not_isNontrivial_one [IsDomain R] [DecidablePred fun x : R ↦ x = 0] :
   simp_all [one_apply_of_ne_zero]
 
 instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation R Γ₀}
-    [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueMonoid v) := by
+    [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueMonoid (.ofClass v)) := by
   obtain ⟨x, h0, h1⟩ := hv.exists_val_nontrivial
   rw [Submonoid.nontrivial_iff_exists_ne_one]
-  use (Units.mk0 (v x) h0), MonoidWithZeroHom.mem_valueMonoid v (Set.mem_range_self x)
-  simpa [Units.ext_iff] using h1
+  use (Units.mk0 (v x) h0), (MonoidWithZeroHom.ofClass v).mem_valueMonoid (Set.mem_range_self x)
+  simpa [Units.ext_iff]
 
 instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation R Γ₀}
-    [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueGroup v) := by
+    [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueGroup (.ofClass v)) := by
   obtain ⟨x, h0, h1⟩ := hv.exists_val_nontrivial
   rw [Subgroup.nontrivial_iff_exists_ne_one]
-  use (Units.mk0 (v x) h0), MonoidWithZeroHom.mem_valueGroup v (Set.mem_range_self x)
-  simpa [Units.ext_iff] using h1
+  use (Units.mk0 (v x) h0), (MonoidWithZeroHom.ofClass v).mem_valueGroup (Set.mem_range_self x)
+  simpa [Units.ext_iff]
 
 section Field
 
@@ -817,25 +800,26 @@ open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 /-- An equivalence of valuations `v.IsEquiv w` induces the following map from `ValueGroup₀ v` to
 `ValueGroup₀ w`: given `x : ValueGroup₀ v` and nonzero `a b : R` such that `(v a) * x = (v b)`,
 `valueGroup₀Fun x` is defined as `(w b) * (w a)⁻¹`. -/
-noncomputable def valueGroup₀Fun (h : v.IsEquiv w) (x : ValueGroup₀ v) : ValueGroup₀ w :=
+noncomputable def valueGroup₀Fun (h : v.IsEquiv w) (x : ValueGroup₀ (.ofClass v)) :
+    ValueGroup₀ (.ofClass w) :=
   if hx : x = 0 then 0 else
-    have c := (x.zero_or_exists_mk'.resolve_left hx).choose
-    valueGroup.mk w c.1.1 c.1.2 ((h.eq_zero).ne.mp c.2.1) (h.eq_zero.ne.mp c.2.2)
+    haveI c := (x.zero_or_exists_mk'.resolve_left hx).choose
+    valueGroup.mk (.ofClass w) c.1.1 c.1.2 (h.eq_zero.ne.mp c.2.1) (h.eq_zero.ne.mp c.2.2)
 
 theorem valueGroup₀Fun_spec (h : v.IsEquiv w) {r s : R} (hr : v r ≠ 0) (hs : v s ≠ 0) :
-    valueGroup₀Fun h (valueGroup.mk v r s hr hs) =
-      valueGroup.mk w r s ((h.eq_zero).ne.mp hr) ((h.eq_zero).ne.mp hs) := by
+    valueGroup₀Fun h (valueGroup.mk (.ofClass v) r s hr hs) =
+      valueGroup.mk (.ofClass w) r s (h.eq_zero.ne.mp hr) (h.eq_zero.ne.mp hs) := by
   rw [valueGroup₀Fun, dif_neg (by simp)]
   generalize_proofs _ _ _ _ H _
   have c_spec := H.choose_spec
-  simp only [ne_eq, WithZero.coe_inj, valueGroup.mk_inj] at c_spec ⊢
+  simp only [MonoidWithZeroHom.coe_ofClass, ne_eq, WithZero.coe_inj, valueGroup.mk_inj] at c_spec ⊢
   rwa [← h.eq_iff, eq_comm]
 
 theorem valueGroup₀Fun_zero (h : v.IsEquiv w) : valueGroup₀Fun h 0 = 0 := by simp [valueGroup₀Fun]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between the `ValueGroup₀`'s of two equivalent valuations. -/
-noncomputable def orderMonoidIso (h : v.IsEquiv w) : ValueGroup₀ v ≃*o ValueGroup₀ w where
+noncomputable def orderMonoidIso (h : v.IsEquiv w) :
+    ValueGroup₀ (.ofClass v) ≃*o ValueGroup₀ (.ofClass w) where
   toFun := valueGroup₀Fun h
   invFun := valueGroup₀Fun h.symm
   map_mul' x y := by
@@ -866,26 +850,25 @@ noncomputable def orderMonoidIso (h : v.IsEquiv w) : ValueGroup₀ v ≃*o Value
       nth_rw 4 [mul_comm]
       conv_rhs =>
         rw [le_mul_inv_iff_mul_le, mul_assoc, mul_comm, ← le_mul_inv_iff_mul_le, inv_inv]
-      generalize_proofs _ hx' hy' hx20 hy10 hx10 hy20
+      generalize_proofs _ hx' hx20 hy' hy10 hx10 hy20
       rw [← Units.mk0_mul _ _ (mul_ne_zero hx10 hy20), ← Units.mk0_mul _ _ (mul_ne_zero hx20 hy10),
         ← Units.mk0_mul, ← Units.mk0_mul]
       · simp only [← Units.val_le_val]
         repeat rw [Units.val_mk0]
-        simp only [← map_mul w, ← h.le_iff_le]
-        rw [map_mul v, map_mul v, mul_comm]
-      · rw [← map_mul w, ne_eq, ← h.eq_zero, map_mul v]
-        exact mul_ne_zero hx10 hy20
-      · rw [← map_mul w, ne_eq, ← h.eq_zero, map_mul v]
-        exact mul_ne_zero hx20 hy10
+        simp only [MonoidWithZeroHom.coe_ofClass, ← map_mul w, ← h.le_iff_le]
+        simp
+      · simpa only [MonoidWithZeroHom.coe_ofClass, ← map_mul v, ne_eq, h.eq_zero, map_mul w]
+          using mul_ne_zero hx10 hy20
+      · simpa only [MonoidWithZeroHom.coe_ofClass, ← map_mul v, ne_eq, h.eq_zero, map_mul w]
+          using mul_ne_zero hx20 hy10
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem orderMonoidIso_spec (h : v.IsEquiv w) (a : R) :
     h.orderMonoidIso (v.restrict a) = w.restrict a := by
   have h_res := h.restrict
   by_cases ha : v a = 0
-  · rw [← restrict₀_eq_zero_iff] at ha
-    rwa [restrict_def, ha, map_zero, Eq.comm, ← h_res.eq_zero]
+  · rw [← restrict_eq_zero_iff] at ha
+    rwa [ha, map_zero, Eq.comm, ← h_res.eq_zero]
   · rw [(v.restrict_eq_mk ha)]
     convert! valueGroup₀Fun_spec (h := h) (hs := ha) (r := 1) (by simp)
     exact w.restrict_eq_mk ((eq_zero h.symm).ne.mpr ha)
@@ -1081,12 +1064,14 @@ section Basic
 
 section Monoid
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A valuation is coerced to the underlying function `R → Γ₀`. -/
 instance (R) (Γ₀) [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] :
     FunLike (AddValuation R Γ₀) R Γ₀ where
   coe v := v.toMonoidWithZeroHom.toFun
-  coe_injective' f g := by cases f; cases g; simp +contextual
+  coe_injective' f _ h := by
+    cases f
+    congr
+    exact DFunLike.coe_injective h
 
 variable [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
   (v : AddValuation R Γ₀)
@@ -1402,15 +1387,16 @@ theorem ofAddValuation_apply (v : AddValuation R (Additive Γ₀)ᵒᵈ) (r : R)
     ofAddValuation v r = Additive.toMul (OrderDual.ofDual (v r)) :=
   rfl
 
-instance (v : Valuation R Γ₀) : CommMonoidWithZero (MonoidHom.mrange v) :=
-  inferInstanceAs (CommMonoidWithZero (MonoidHom.mrange (v : R →*₀ Γ₀)))
+instance (v : Valuation R Γ₀) : CommMonoidWithZero (MonoidHom.mrange (.ofClass v : R →*₀ _)) :=
+  inferInstanceAs (CommMonoidWithZero (MonoidHom.mrange (MonoidWithZeroHom.ofClass v)))
 
 @[simp]
-lemma val_mrange_zero (v : Valuation R Γ₀) : ((0 : MonoidHom.mrange v) : Γ₀) = 0 := by
+lemma val_mrange_zero (v : Valuation R Γ₀) :
+    ((0 : MonoidHom.mrange (.ofClass v : R →*₀ _)) : Γ₀) = 0 :=
   rfl
 
 instance {Γ₀} [LinearOrderedCommGroupWithZero Γ₀] [DivisionRing K] (v : Valuation K Γ₀) :
-    CommGroupWithZero (MonoidHom.mrange v) :=
-  inferInstanceAs (CommGroupWithZero (MonoidHom.mrange (v : K →*₀ Γ₀)))
+    CommGroupWithZero (MonoidHom.mrange (.ofClass v : K →*₀ _)) :=
+  inferInstanceAs (CommGroupWithZero (MonoidHom.mrange (MonoidWithZeroHom.ofClass v)))
 
 end Valuation
