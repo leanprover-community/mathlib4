@@ -43,7 +43,7 @@ suppress_compilation
 open Coalgebra TensorProduct WithConv
 open scoped RingTheory.LinearMap
 
-variable {R A B C : Type*} [CommSemiring R]
+variable {R A B C ι : Type*} [CommSemiring R]
 
 namespace LinearMap
 section NonUnitalNonAssocSemiring
@@ -62,7 +62,7 @@ lemma convMul_def (f g : WithConv (C →ₗ[R] A)) :
 lemma convMul_apply (f g : WithConv (C →ₗ[R] A)) (c : C) :
     (f * g) c = mul' R A (.map f.ofConv g.ofConv (comul c)) := rfl
 
-lemma _root_.Coalgebra.Repr.convMul_apply {a : C} (𝓡 : Coalgebra.Repr R a)
+lemma _root_.Coalgebra.Repr.convMul_apply {a : C} (𝓡 : Coalgebra.Repr R a ι)
     (f g : WithConv (C →ₗ[R] A)) : (f * g) a = ∑ i ∈ 𝓡.index, f (𝓡.left i) * g (𝓡.right i) := by
   simp [convMul_def, ← 𝓡.eq]
 
