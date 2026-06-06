@@ -220,8 +220,8 @@ variable {ΓR ΓA : Type*}
     (vR : Valuation R ΓR) (vA : Valuation A ΓA) [vR.HasExtension vA]
 
 theorem exists_monoidWithZeroHom_valueGroup₀_restrict_eq :
-    ∃ (f : (MonoidWithZeroHom.ValueGroup₀ (vR : R →*₀ ΓR)) →*₀
-      (MonoidWithZeroHom.ValueGroup₀ (vA : A →*₀ ΓA))) (hf : StrictMono f),
+    ∃ (f : (MonoidWithZeroHom.ValueGroup₀ (.ofClass vR : R →*₀ ΓR)) →*₀
+      (MonoidWithZeroHom.ValueGroup₀ (.ofClass vA : A →*₀ ΓA))) (hf : StrictMono f),
       vR.restrict.map f hf.monotone = vA.restrict.comap (algebraMap R A) := by
   have h : vR.IsEquiv (vA.comap (algebraMap R A)) := HasExtension.val_isEquiv_comap
   refine ⟨(WithZero.map' (Subgroup.inclusion ?_)).comp h.orderMonoidIso.toMonoidWithZeroHom, ?_, ?_⟩
@@ -235,7 +235,7 @@ theorem exists_monoidWithZeroHom_valueGroup₀_restrict_eq :
   · ext x
     simp only [OrderMonoidIso.toMulEquiv_eq_coe, map_apply,
       MonoidWithZeroHom.comp_apply, comap_apply]
-    erw [MulEquiv.toMonoidWithZeroHom_apply, OrderMonoidIso.coe_mulEquiv, h.orderMonoidIso_spec x]
+    rw [MulEquiv.toMonoidWithZeroHom_apply, OrderMonoidIso.coe_mulEquiv, h.orderMonoidIso_spec x]
     generalize hc : (vA.comap (algebraMap R A)).restrict x = c
     cases c using WithZero.cases_on with
     | zero =>
