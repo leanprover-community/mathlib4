@@ -366,7 +366,7 @@ lemma rankAtStalk_eq (p : PrimeSpectrum R) :
       k ⊗[R] M :=
     AlgebraTensorModule.cancelBaseChange _ _ _ _ _
   rw [← e.finrank_eq]
-  erw [finrank_baseChange]
+  rw [finrank_baseChange]
   rw [rankAtStalk_eq_finrank_tensorProduct]
 
 /-- Variant of `Module.rankAtStalk_eq` for better rewriting. -/

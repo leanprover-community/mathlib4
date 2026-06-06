@@ -120,8 +120,8 @@ instance isThin {X : C} : Quiver.IsThin (MonoOver X) := fun f g =>
     apply InducedCategory.hom_ext
     apply Over.OverMorphism.ext
     rw [← cancel_mono g.arrow]
-    erw [Over.w h₁.hom]
-    erw [Over.w h₂.hom]⟩
+    rw [Over.w h₁.hom]
+    rw [Over.w h₂.hom]⟩
 
 @[reassoc]
 theorem w {f g : MonoOver X} (k : f ⟶ g) : k.hom.left ≫ g.arrow = f.arrow :=
