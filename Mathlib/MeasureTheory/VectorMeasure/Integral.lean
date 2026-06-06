@@ -653,7 +653,6 @@ theorem exists_ne_zero_of_integral_ne_zero
     ContinuousLinearMap.coe_coe, weightedSMul]
   rfl
 
-
 @[simp]
 theorem integral_dirac' [MeasurableSpace X] [CompleteSpace G] {a : X} {v : F}
     (hfm : StronglyMeasurable f) :
