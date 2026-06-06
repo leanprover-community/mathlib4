@@ -89,7 +89,7 @@ instance BinaryBicone.category {P Q : C} : Category (BinaryBicone P Q) where
   comp f g := { hom := f.hom ≫ g.hom }
   id B := { hom := 𝟙 B.pt }
 
-/- We do not want `simps` automatically generate the lemma for simplifying the `Hom` field of
+/-- We do not want `simps` automatically generate the lemma for simplifying the `Hom` field of
 -- a category. So we need to write the `ext` lemma in terms of the categorical morphism, rather than
 the underlying structure. -/
 @[ext]
@@ -323,7 +323,6 @@ attribute [inherit_doc BinaryBicone.IsBilimit] BinaryBicone.IsBilimit.isLimit
   BinaryBicone.IsBilimit.isColimit
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If a binary bicone for `P` and `Q` is bilimit, then the binary bicone for `P'` and `Q'`
 obtained using isomorphisms `P ≅ P'` and `Q ≅ Q'` is also bilimit. -/
 def BinaryBicone.IsBilimit.ofIso {P Q P' Q' : C} {b : BinaryBicone P Q} (hb : b.IsBilimit)
