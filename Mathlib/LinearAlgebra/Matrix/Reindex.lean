@@ -137,7 +137,7 @@ theorem toAddEquiv_reindexLinearEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') :
     reindexLinearEquiv R A eₘ eₙ = reindexAddEquiv A eₘ eₙ :=
   rfl
 
-@[deprecated "Use `by simp` instead." (since := "2026-05-13")]
+@[deprecated "Use `by simp` instead." (since := "2026-06-06")]
 theorem reindexLinearEquiv_apply (eₘ : m ≃ m') (eₙ : n ≃ n') (M : Matrix m n A) :
     reindexLinearEquiv R A eₘ eₙ M = reindex eₘ eₙ M := by
   simp
@@ -147,7 +147,7 @@ theorem symm_reindexLinearEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') :
     (reindexLinearEquiv R A eₘ eₙ).symm = reindexLinearEquiv R A eₘ.symm eₙ.symm :=
   rfl
 
-@[deprecated (since := "2026-05-15")] alias reindexLinearEquiv_symm := symm_reindexLinearEquiv
+@[deprecated (since := "2026-06-06")] alias reindexLinearEquiv_symm := symm_reindexLinearEquiv
 
 @[simp]
 theorem reindexLinearEquiv_refl_refl :
@@ -161,7 +161,7 @@ theorem reindexLinearEquiv_trans_reindexLinearEquiv (e₁ : m ≃ m') (e₂ : n 
       (reindexLinearEquiv R A (e₁.trans e₁') (e₂.trans e₂') : _ ≃ₗ[R] _) :=
   rfl
 
-@[deprecated (since := "2026-05-15")]
+@[deprecated (since := "2026-06-06")]
 alias reindexLinearEquiv_trans := reindexLinearEquiv_trans_reindexLinearEquiv
 
 theorem reindexLinearEquiv_comp (e₁ : m ≃ m') (e₂ : n ≃ n') (e₁' : m' ≃ m'') (e₂' : n' ≃ n'') :
@@ -230,7 +230,7 @@ theorem toLinearEquiv_reindexAlgEquiv (e : m ≃ n) :
     reindexAlgEquiv R A e = reindexLinearEquiv R A e e :=
   rfl
 
-@[deprecated "Use `by simp` instead." (since := "2026-05-13")]
+@[deprecated "Use `by simp` instead." (since := "2026-06-06")]
 theorem reindexAlgEquiv_apply (e : m ≃ n) (M : Matrix m m A) :
     reindexAlgEquiv R A e M = reindex e e M := by
   simp
@@ -240,7 +240,7 @@ theorem symm_reindexAlgEquiv (e : m ≃ n) : (reindexAlgEquiv R A e).symm =
     reindexAlgEquiv R A e.symm :=
   rfl
 
-@[deprecated (since := "2026-05-15")] alias reindexAlgEquiv_symm := symm_reindexAlgEquiv
+@[deprecated (since := "2026-06-06")] alias reindexAlgEquiv_symm := symm_reindexAlgEquiv
 
 @[simp]
 theorem reindexAlgEquiv_refl : reindexAlgEquiv R A (Equiv.refl m) = AlgEquiv.refl :=
@@ -251,10 +251,10 @@ theorem reindexAlgEquiv_trans_reindexAlgEquiv (e : m ≃ n) (e' : n ≃ o) :
     .trans (reindexAlgEquiv R A e) (reindexAlgEquiv R A e') = reindexAlgEquiv R A (.trans e e') :=
   rfl
 
-@[deprecated (since := "2026-05-15")]
+@[deprecated (since := "2026-06-06")]
 alias reindexAlgEquiv_trans := reindexAlgEquiv_trans_reindexAlgEquiv
 
-@[deprecated map_mul (since := "2026-05-13")]
+@[deprecated map_mul (since := "2026-06-06")]
 theorem reindexAlgEquiv_mul (e : m ≃ n) (M : Matrix m m A) (N : Matrix m m A) :
     reindexAlgEquiv R A e (M * N) = reindexAlgEquiv R A e M * reindexAlgEquiv R A e N :=
   map_mul ..
