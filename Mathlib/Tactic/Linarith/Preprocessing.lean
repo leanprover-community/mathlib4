@@ -354,6 +354,8 @@ partial def removeNeAux : MVarId → List Expr → MetaM (List Branch) := fun g 
       return ls.map (fun b : Branch => (b.1, (.fvar f)::b.2))
   return ((← do_goal ng1) ++ (← do_goal ng2))
 
+@[deprecated (since := "2026-06-06")] alias removeNe_aux := removeNeAux
+
 /--
 `removeNe` case splits on any proof `h : a ≠ b` in the input, turning it into `a < b ∨ a > b`,
 by calling `linarith.removeNeAux`, provided the type has a `LinearOrder` instance.

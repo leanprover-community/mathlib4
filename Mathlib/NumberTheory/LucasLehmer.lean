@@ -659,6 +659,9 @@ theorem sModNatAux_eq (q k : ℕ) : sModNatAux (4 % q) q k = sModNat q k := by
   | zero => rfl
   | succ k ih => rw [sModNatAux, ih, sModNat, ← ih]
 
+@[deprecated (since := "2026-06-06")] alias sModNat_aux := sModNatAux
+@[deprecated (since := "2026-06-06")] alias sModNat_aux_eq := sModNatAux_eq
+
 theorem sModNatTR_eq_sModNat (q i : ℕ) : sModNatTR q i = sModNat q i := by
   rw [sModNatTR, helper, sModNatAux_eq]
 where

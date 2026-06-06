@@ -103,6 +103,11 @@ theorem removeNoneAux_inv (x : α) : removeNoneAux e.symm (removeNoneAux e x) = 
         rw [removeNoneAux_some _ ⟨_, h2⟩]
         simp)
 
+@[deprecated (since := "2026-06-06")] alias removeNone_aux := removeNoneAux
+@[deprecated (since := "2026-06-06")] alias removeNone_aux_none := removeNoneAux_none
+@[deprecated (since := "2026-06-06")] alias removeNone_aux_some := removeNoneAux_some
+@[deprecated (since := "2026-06-06")] alias removeNone_aux_inv := removeNoneAux_inv
+
 /-- Given an equivalence between two `Option` types, eliminate `none` from that equivalence by
 mapping `e.symm none` to `e none`. -/
 def removeNone : α ≃ β where

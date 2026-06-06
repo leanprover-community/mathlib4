@@ -310,6 +310,8 @@ def mapEquivAux (m : Multiset α) (f : α → β) :
             Equiv.coe_fn_symm_mk]
         split <;> simp_all⟩
 
+@[deprecated (since := "2026-06-06")] alias mapEquiv_aux := mapEquivAux
+
 /--
 One of the possible equivalences from `Multiset.mapEquivAux`, selected using choice.
 -/
