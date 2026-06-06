@@ -31,7 +31,6 @@ See also `CategoryTheory.Core` for the groupoid of isomorphisms in a category.
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 universe v v₂ u u₂
@@ -87,6 +86,7 @@ instance (priority := 100) groupoidHasInvolutiveReverse : Quiver.HasInvolutiveRe
 theorem Groupoid.reverse_eq_inv (f : X ⟶ Y) : Quiver.reverse f = Groupoid.inv f :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 instance functorMapReverse {D : Type*} [Groupoid D] (F : C ⥤ D) : F.toPrefunctor.MapReverse where
   map_reverse' f := by simp
 
@@ -106,6 +106,7 @@ def Groupoid.invFunctor : C ⥤ Cᵒᵖ where
   obj := Opposite.op
   map {_ _} f := (inv f).op
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence from a groupoid `C` to its opposite sending every morphism to its inverse. -/
 @[simps]
 def Groupoid.invEquivalence : C ≌ Cᵒᵖ where
