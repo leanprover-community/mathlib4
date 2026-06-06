@@ -18,7 +18,7 @@ We prove basic properties of local rings homomorphisms.
 
 -/
 
-@[expose] public section
+public section
 
 variable {R S T : Type*}
 section
@@ -95,6 +95,13 @@ theorem local_hom_TFAE (f : R →+* S) :
 
 lemma maximalIdeal_comap (f : R →+* S) [IsLocalHom f] : (maximalIdeal S).comap f = maximalIdeal R :=
   ((local_hom_TFAE _).out 0 4).mp ‹_›
+
+theorem map_maximalIdeal_le (f : R →+* S) [IsLocalHom f] :
+    (maximalIdeal R).map f ≤ maximalIdeal S := by
+  rw [Ideal.map_le_iff_le_comap, IsLocalRing.maximalIdeal_comap]
+
+theorem map_maximalIdeal_lt_top (f : R →+* S) [IsLocalHom f] : (maximalIdeal R).map f < ⊤ :=
+  (map_maximalIdeal_le f).trans_lt (maximalIdeal.isMaximal S).lt_top
 
 end
 

@@ -681,7 +681,7 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
     ⟨q' N, by
       classical
       dsimp [padicNormE]
-      convert_to PadicSeq.norm (q' - const _ (q' N)) < ε -- `change` times out here.
+      convert_to! PadicSeq.norm (q' - const _ (q' N)) < ε -- `change` times out here.
       rcases Decidable.em (q' - const (padicNorm p) (q' N) ≈ 0) with heq | hne'
       · simpa only [heq, PadicSeq.norm, dif_pos]
       · simp only [PadicSeq.norm, dif_neg hne']
@@ -1055,7 +1055,7 @@ theorem norm_eq_zpow_neg_valuation {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : �
   rw [PadicSeq.norm_eq_zpow_neg_valuation]
   · rw [Rat.cast_zpow, Rat.cast_natCast]
   · apply CauSeq.not_limZero_of_not_congr_zero
-    contrapose! hf
+    contrapose hf
     apply Quotient.sound
     simpa using hf
 

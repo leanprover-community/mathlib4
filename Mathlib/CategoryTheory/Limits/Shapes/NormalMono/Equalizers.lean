@@ -15,7 +15,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 This, and the dual result, are used in the development of abelian categories.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -50,10 +50,7 @@ lemma pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b]
         _ = 0 := zero_comp
   HasLimit.mk
     { cone :=
-        PullbackCone.mk a' b' <| by
-          simp? at ha' hb' says
-            simp only [parallelPair_obj_zero, Fork.ofι_pt, Fork.ι_ofι] at ha' hb'
-          rw [ha', hb']
+        PullbackCone.mk a' b' <| by rw [dsimp% ha', dsimp% hb']
       isLimit :=
         PullbackCone.IsLimit.mk _
           (fun s =>
@@ -126,8 +123,8 @@ lemma hasLimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasLimit (parallelPair f
               Limits.prod.hom_ext (by simp only [prod.lift_fst, Category.assoc])
                 (by simp only [prod.comp_lift, Fork.condition s]))
           (fun s => by simp) fun s m h =>
-          pullback.hom_ext (by simpa only [pullback.lift_fst] using h)
-            (by simpa only [huv.symm, pullback.lift_fst] using h) }
+          pullback.hom_ext (by simpa only [pullback.lift_fst] using! h)
+            (by simpa only [huv.symm, pullback.lift_fst] using! h) }
 
 end
 
@@ -288,8 +285,8 @@ lemma hasColimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasColimit (parallelPa
               coprod.hom_ext (by simp only [coprod.inl_desc_assoc])
                 (by simp only [coprod.desc_comp, Cofork.condition s]))
           (fun s => by simp only [pushout.inl_desc, Cofork.π_ofπ]) fun s m h =>
-          pushout.hom_ext (by simpa only [pushout.inl_desc] using h)
-            (by simpa only [huv.symm, pushout.inl_desc] using h) }
+          pushout.hom_ext (by simpa only [pushout.inl_desc] using! h)
+            (by simpa only [huv.symm, pushout.inl_desc] using! h) }
 
 end
 

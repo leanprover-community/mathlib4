@@ -25,19 +25,17 @@ noncomputable section
 open scoped Nat
 open Complex Polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hasDerivAt_cexp_mul_sumIDeriv (p : ℂ[X]) (s : ℂ) (x : ℝ) :
     HasDerivAt (fun x : ℝ ↦ -(cexp (-(x • s)) * p.sumIDeriv.eval (x • s)))
       (s * (cexp (-(x • s)) * p.eval (x • s))) x := by
   have h₀ := (hasDerivAt_id' x).smul_const s
   have h₁ := h₀.fun_neg.cexp
   have h₂ := ((sumIDeriv p).hasDerivAt (x • s)).comp x h₀
-  convert (h₁.mul h₂).fun_neg using 1
+  convert! (h₁.mul h₂).fun_neg using 1
   nth_rw 1 [sumIDeriv_eq_self_add p]
   simp only [one_smul, eval_add, Function.comp_apply]
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integral_exp_mul_eval (p : ℂ[X]) (s : ℂ) :
     s * ∫ x in 0..1, exp (-(x • s)) * p.eval (x • s) =
       -(exp (-s) * p.sumIDeriv.eval s) + p.sumIDeriv.eval 0 := by
@@ -60,7 +58,6 @@ private theorem P_eq_integral_exp_mul_eval (f : ℂ[X]) (s : ℂ) :
   rw [integral_exp_mul_eval, mul_add, mul_neg, exp_neg, mul_inv_cancel_left₀ (exp_ne_zero s),
     neg_add_eq_sub, P]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given a sequence of complex polynomials `fₚ`, a complex constant `s`, and a real constant `c` such
 that `|fₚ(xs)| ≤ c ^ p` for all `p ∈ ℕ` and `x ∈ Ioc 0 1`, then there is also a nonnegative
@@ -75,7 +72,7 @@ private theorem P_le_aux (f : ℕ → ℂ[X]) (s : ℂ) (c : ℝ)
   rw [P_eq_integral_exp_mul_eval (f p) s, mul_comm s, norm_mul, norm_mul, norm_exp]
   gcongr
   rw [intervalIntegral.integral_of_le zero_le_one, ← mul_one (_ * _)]
-  convert MeasureTheory.norm_setIntegral_le_of_norm_le_const _ _
+  convert! MeasureTheory.norm_setIntegral_le_of_norm_le_const _ _
   · rw [Real.volume_real_Ioc_of_le zero_le_one, sub_zero]
   · rw [Real.volume_Ioc, sub_zero]; exact ENNReal.ofReal_lt_top
   intro x hx
@@ -139,7 +136,7 @@ private theorem exp_polynomial_approx_aux (f : ℤ[X]) (s : ℂ) :
   split_ifs with hx1
   · rw [one_pow]
     exact pow_le_one₀ (mul_nonneg hx.1.le (norm_nonneg _)) hx1
-  · push_neg at hx1
+  · push Not at hx1
     exact pow_le_pow_right₀ hx1.le (Nat.sub_le _ _)
 
 /--

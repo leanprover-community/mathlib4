@@ -123,7 +123,7 @@ noncomputable def pushforward :
       · refine ENNReal.toReal_lt_of_lt_ofReal ((setLIntegral_mono measurable_const h).trans_lt ?_)
         rwa [lintegral_const, restrict_apply_univ]
       · intro y hy
-        contrapose! hy
+        contrapose hy
         rw [Function.notMem_support, hS htb hy, hS (mem_of_mem_nhds hb) hy, edist_self] }
   map_add' f g := by
     ext c
