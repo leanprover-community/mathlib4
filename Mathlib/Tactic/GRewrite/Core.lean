@@ -37,7 +37,9 @@ public structure GRewriteResult where
   impProof : Expr
   /-- The new side goals -/
   mvarIds : List MVarId -- new goals
-  /-- The local context of the rewrite took place, if this cannot be the outer local context. -/
+  /-- The outermost local context in which the rewrite makes sense. If the rewrite does not involve
+  bound variables, this is `none`. This is used for fixing the generated info tree, so that the
+  "Expected Type" is displayed correctly. -/
   lctx? : Option LocalContext
 
 /-- Configures the behavior of the `rewrite` and `rw` tactics. -/
