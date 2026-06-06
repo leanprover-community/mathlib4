@@ -27,7 +27,7 @@ the argmin in a measurable way.
 * `IsBayesEstimator`: an estimator is a Bayes estimator if it attains the Bayes risk for the prior.
 * `IsArgminEstimator`: a measurable function `f : 𝓧 → 𝓨` is an argmin estimator
   if for `(P ∘ₘ π)`-almost every `x` the value `f x` belongs to `argmin_y P†π(x)[θ ↦ ℓ θ y]`.
-* `HasArgminEstimator`: class that states that estimation problem admits an argmin estimator.
+* `HasArgminEstimator`: the estimation problem admits an argmin estimator.
   That is, we can choose the argmin of the posterior expected loss in a measurable way.
 
 ## Main statements
@@ -140,29 +140,31 @@ lemma IsArgminEstimator.isBayesEstimator (hf : IsArgminEstimator ℓ P π f)
 
 /-- The estimation problem admits an argmin estimator with respect to the prior `π`.
 That is, we can choose the argmin of the posterior expected loss in a measurable way. -/
-class HasArgminEstimator {𝓨 : Type*} [MeasurableSpace 𝓨]
+structure HasArgminEstimator {𝓨 : Type*} [MeasurableSpace 𝓨]
     (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (π : Measure Θ) [IsFiniteMeasure π] :
     Prop where
   exists_isArgminEstimator : ∃ f : 𝓧 → 𝓨, IsArgminEstimator ℓ P π f
 
+namespace HasArgminEstimator
+
 /-- An estimator for an estimation problem that for `(P ∘ₘ π)`-almost every `x` is of
 the form `x ↦ argmin_y P†π(x)[θ ↦ ℓ θ y]`. -/
 noncomputable
-def argminEstimator {𝓨 : Type*} [MeasurableSpace 𝓨]
-    (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (π : Measure Θ) [IsFiniteMeasure π]
-    [h : HasArgminEstimator ℓ P π] : 𝓧 → 𝓨 :=
+def argminEstimator (h : HasArgminEstimator ℓ P π) : 𝓧 → 𝓨 :=
   h.exists_isArgminEstimator.choose
 
-lemma isArgminEstimator_argminEstimator [h : HasArgminEstimator ℓ P π] :
-    IsArgminEstimator ℓ P π (argminEstimator ℓ P π) :=
+lemma isArgminEstimator_argminEstimator (h : HasArgminEstimator ℓ P π) :
+    IsArgminEstimator ℓ P π h.argminEstimator :=
   h.exists_isArgminEstimator.choose_spec
 
 /-- If the estimation problem admits an argmin estimator, then the Bayesian risk
 attains the risk lower bound `∫⁻ x, ⨅ y, ∫⁻ θ, ℓ θ y ∂((P†π) x) ∂(P ∘ₘ π)`. -/
 lemma bayesRisk_eq_of_hasArgminEstimator
-    (hl : Measurable (Function.uncurry ℓ)) [HasArgminEstimator ℓ P π] :
+    (hl : Measurable (Function.uncurry ℓ)) (h : HasArgminEstimator ℓ P π) :
     bayesRisk ℓ P π = ∫⁻ x, ⨅ y, ∫⁻ θ, ℓ θ y ∂((P†π) x) ∂(P ∘ₘ π) := by
-  rw [← isArgminEstimator_argminEstimator.isBayesEstimator hl,
-    isArgminEstimator_argminEstimator.avgRisk_eq_lintegral_iInf hl]
+  rw [← h.isArgminEstimator_argminEstimator.isBayesEstimator hl,
+    h.isArgminEstimator_argminEstimator.avgRisk_eq_lintegral_iInf hl]
+
+end HasArgminEstimator
 
 end ProbabilityTheory
