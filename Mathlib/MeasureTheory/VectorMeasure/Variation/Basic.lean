@@ -33,7 +33,7 @@ such vector-valued measures.
 public section
 
 open Finset Set
-open scoped ENNReal
+open scoped ENNReal NNReal
 
 namespace MeasureTheory.VectorMeasure
 
@@ -74,6 +74,38 @@ lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {
       · simp_all
       simp only [sup_set_eq_biUnion, id_eq]
       exact hs.diff <| .biUnion (Finset.countable_toSet _) (by simp)
+
+/-- Measure version of `preVariation.exists_Finpartition_sum_ge'`. -/
+lemma exists_variation_le_add' (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s)
+    {ε : ℝ≥0∞} (hε : 0 < ε) (hμ : μ.variation s ≠ ∞) :
+    ∃ (P : Finset (Set X)), (∀ t ∈ P, t ⊆ s) ∧ ((P : Set (Set X)).PairwiseDisjoint id) ∧
+      (∀ t ∈ P, MeasurableSet t) ∧ μ.variation s ≤ ∑ p ∈ P, ‖μ p‖ₑ + ε := by
+  simp only [variation_apply, preVariation, ennrealToMeasure_apply hs, ennrealPreVariation_apply]
+    at hμ ⊢
+  obtain ⟨P, hP⟩ : ∃ P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet),
+      preVariationFun (fun x ↦ ‖μ x‖ₑ) s ≤ ∑ p ∈ P.parts, (fun x ↦ ‖μ x‖ₑ) ↑p + ε :=
+    preVariation.exists_Finpartition_sum_ge' (‖μ ·‖ₑ) hs hε hμ
+  refine ⟨P.parts.map (Function.Embedding.subtype _), ?_, ?_, ?_, ?_⟩
+  · simp only [mem_map, Function.Embedding.subtype_apply, Subtype.exists, exists_and_right,
+      exists_eq_right, forall_exists_index]
+    intro t ht h't
+    exact P.le h't
+  · intro i hi  j hj hij
+    simp only [coe_map, Function.Embedding.subtype_apply, Set.mem_image, SetLike.mem_coe,
+      Subtype.exists, exists_and_right, exists_eq_right] at hi hj
+    rcases hi with ⟨h'i, i_mem⟩
+    rcases hj with ⟨h'j, j_mem⟩
+    exact (disjoint_subtype_iff (fun _ _ hs ht ↦ hs.inter ht) _).1
+      (P.disjoint i_mem j_mem (by simpa using hij))
+  · simp +contextual
+  · rwa [Finset.sum_map]
+
+/-- Measure version of `preVariation.exists_Finpartition_sum_ge`. -/
+lemma exists_variation_le_add (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s)
+    {ε : ℝ≥0} (hε : 0 < ε) (hμ : μ.variation s ≠ ∞) :
+    ∃ (P : Finset (Set X)), (∀ t ∈ P, t ⊆ s) ∧ ((P : Set (Set X)).PairwiseDisjoint id) ∧
+      (∀ t ∈ P, MeasurableSet t) ∧ μ.variation s ≤ ∑ p ∈ P, ‖μ p‖ₑ + ε :=
+  exists_variation_le_add' μ hs (mod_cast hε) hμ
 
 theorem enorm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
     ‖μ E‖ₑ ≤ variation μ E := by
@@ -273,6 +305,15 @@ instance [Finite X] : IsFiniteMeasure μ.variation where
 instance {x : X} {v : V} : IsFiniteMeasure (VectorMeasure.dirac x v).variation := by
   simp only [variation_dirac, enorm_eq_nnnorm, Measure.coe_nnreal_smul]
   infer_instance
+
+@[simp] lemma variation_toSignedMeasure {μ : Measure X} [IsFiniteMeasure μ] :
+    μ.toSignedMeasure.variation = μ := by
+  apply le_antisymm
+  · apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
+    simp [Measure.toSignedMeasure_apply, hs, Measure.real, Real.enorm_eq_ofReal]
+  · apply Measure.le_iff.2 (fun s hs ↦ ?_)
+    apply le_trans ?_ (enorm_measure_le_variation _ _)
+    simp [Measure.toSignedMeasure_apply, hs, Measure.real, Real.enorm_eq_ofReal]
 
 end NormedAddCommGroup
 
