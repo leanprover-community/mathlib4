@@ -163,14 +163,12 @@ variable [IsLocalRing Λ] [Algebra.IsIntegral Λ k]
 def baseCotangentMap (A : LocExtCat Λ k) : CotangentSpace Λ →ₗ[Λ] A.Cotangent :=
   (cotangentEquivCotangentKer.symm.toLinearMap.restrictScalars Λ).comp <|
     (maximalIdeal Λ).mapCotangent A.ker (Algebra.ofId Λ A) (by rw [← Ideal.comap_coe,
-      Algebra.toRingHom_ofId, ker_extension, comap_algebraMap_maximalIdeal])
+      Algebra.toRingHom_ofId, ker_extension, maximalIdeal_comap])
 
 @[simp]
 lemma baseCotangentMap_toCotangent (x : maximalIdeal Λ) :
     A.baseCotangentMap ((maximalIdeal Λ).toCotangent x) = Cotangent.mk ⟨algebraMap Λ A x, by
-      have := isLocalHom_algebraMap A
-      rw [← Ideal.mem_comap, ker_extension, maximalIdeal_comap]
-      exact x.prop⟩ := rfl
+      rw [← Ideal.mem_comap, ker_extension, maximalIdeal_comap]; exact x.prop⟩ := rfl
 
 theorem range_baseCotangentMap_le (A : LocExtCat Λ k) :
     A.baseCotangentMap.range ≤ A.cotangentComplex.ker.restrictScalars Λ := by
@@ -207,7 +205,6 @@ theorem range_liftBaseChange_baseCotangentMap :
     simp only [mem_comap, subtype_apply, Subtype.exists, ker_extension, exists_and_left] at hx
     rcases hx with ⟨y, y_in, y_in', hy⟩
     rw [← hy]; clear * - y_in
-    have : IsLocalHom (algebraMap Λ A) := isLocalHom_algebraMap A
     induction y_in using span_induction with
     | mem x h =>
       obtain ⟨r, r_in, rfl⟩ := h

@@ -10,6 +10,7 @@ public import Mathlib.Algebra.AddTorsor.Defs
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 import Mathlib.Algebra.Ring.Subring.Units
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 /-!
 # Local Ring Properties of Equalizers and Pullbacks
@@ -46,15 +47,15 @@ theorem isLocalRing_eqLocus [IsLocalRing R] (f g : R →+* T) : IsLocalRing (f.e
   Subring.isLocalRing_of_unit _ fun _ h ↦ (RingHom.isUnit_eqLocus_mk_iff f g h).mpr
 
 /-- The subring of pairs `(r, s) : R × S` such that `f r = g s`, i.e.,
-  the pullback of f and g as a subring of R × S. -/
+  the pullback of `f : R →+* T` and `g : S →+* T` as a subring of `R × S`. -/
 abbrev pullback (f : R →+* T) (g : S →+* T) : Subring (R × S) :=
   (f.comp (RingHom.fst R S)).eqLocus <| g.comp (RingHom.snd R S)
 
-/-- The first projection from the pullback of `f` and `g` to `A`. -/
+/-- The first projection from the pullback of `f : R →+* T` and `g : S →+* T` to `R`. -/
 abbrev pullbackFst (f : R →+* T) (g : S →+* T) : f.pullback g →+* R :=
   (RingHom.fst R S).comp (RingHom.pullback f g).subtype
 
-/-- The second projection from the pullback of `f` and `g` to `B`. -/
+/-- The second projection from the pullback of `f : R →+* T` and `g : S →+* T` to `S`. -/
 abbrev pullbackSnd (f : R →+* T) (g : S →+* T) : f.pullback g →+* S :=
   (RingHom.snd R S).comp (f.pullback g).subtype
 
@@ -70,13 +71,15 @@ theorem isLocalHom_pullbackFst (f : R →+* T) (g : S →+* T) [IsLocalHom g] :
     IsLocalHom (f.pullbackFst g) where
   map_nonunit a ha := by
     rcases a with ⟨⟨r, s⟩, hrs⟩
-    exact (isUnit_pullback_mk_iff f g _).mpr ⟨ha, isUnit_of_map_unit g _ (hrs ▸ ha.map f)⟩
+    rw [isUnit_pullback_mk_iff]
+    exact ⟨ha, isUnit_of_map_unit g _ (hrs ▸ ha.map f)⟩
 
 theorem isLocalHom_pullbackSnd (f : R →+* T) (g : S →+* T) [IsLocalHom f] :
     IsLocalHom (f.pullbackSnd g) where
   map_nonunit a ha := by
     rcases a with ⟨⟨r, s⟩, hrs⟩
-    exact (isUnit_pullback_mk_iff f g _).mpr ⟨isUnit_of_map_unit f _ (hrs.symm ▸ ha.map g), ha⟩
+    rw [isUnit_pullback_mk_iff]
+    exact ⟨isUnit_of_map_unit f _ (hrs.symm ▸ ha.map g), ha⟩
 
 theorem surjective_pullbackFst_of_surjective (f : R →+* T) (g : S →+* T)
     (h : Function.Surjective g) : Function.Surjective (f.pullbackFst g) :=
@@ -93,24 +96,22 @@ theorem map_pullbackSnd_ker_pullbackFst_eq (f : R →+* T) (g : S →+* T) :
     rintro ⟨⟨_, _⟩, h⟩
     simp at h ⊢; grind
   · intro s hs
-    rw [RingHom.mem_ker] at hs
     exact Ideal.mem_map_of_mem (f.pullbackSnd g) (x := ⟨(0, s), by simpa using hs.symm⟩)
       (I := RingHom.ker (f.pullbackFst g)) (by simp)
 
-theorem isLocalRing_pullback [IsLocalRing R] (f : R →+* T) (g : S →+* T) (hg : IsLocalHom g) :
+theorem isLocalRing_pullback [IsLocalRing R] (f : R →+* T) (g : S →+* T) [IsLocalHom g] :
     IsLocalRing (f.pullback g) where
   isUnit_or_isUnit_of_add_one {a b} h := by
-    rcases a with ⟨⟨u, v⟩, huv⟩; rcases b with ⟨⟨s, t⟩, hst⟩
+    rcases a with ⟨⟨u, v⟩, huv⟩
+    rcases b with ⟨⟨s, t⟩, hst⟩
     replace h : u + s = 1 ∧ v + t = 1 := by simpa [← Subtype.val_inj] using h
     replace huv : f u = g v := by simpa using huv
     replace hst : f s = g t := by simpa using hst
     rcases IsLocalRing.isUnit_or_isUnit_of_add_one h.left with hu | hs
-    · have : IsUnit (g v) := by rw [← huv]; exact IsUnit.map f hu
-      apply IsLocalHom.map_nonunit at this
-      left; simpa [isUnit_pullback_mk_iff] using ⟨hu, this⟩
-    have : IsUnit (g t) := by rw [← hst]; exact IsUnit.map f hs
-    apply IsLocalHom.map_nonunit at this
-    right; simpa [isUnit_pullback_mk_iff] using ⟨hs, this⟩
+    · left; rw [isUnit_pullback_mk_iff]
+      exact ⟨hu, IsLocalHom.map_nonunit (f := g) _ <| huv ▸ IsUnit.map f hu⟩
+    right; rw [isUnit_pullback_mk_iff]
+    exact ⟨hs, IsLocalHom.map_nonunit (f := g) _ <| hst ▸ IsUnit.map f hs⟩
 
 end RingHom
 
@@ -158,9 +159,9 @@ theorem surjective_pullbackSnd_of_surjective (f : A →ₐ[R] C) (g : B →ₐ[R
     (h : Function.Surjective f) : Function.Surjective (pullbackSnd f g) :=
   RingHom.surjective_pullbackSnd_of_surjective (f : A →+* C) (g : B →+* C) h
 
-theorem isLocalRing_pullback [IsLocalRing A] (f : A →ₐ[R] C) (g : B →ₐ[R] C) (hg : IsLocalHom g) :
+theorem isLocalRing_pullback [IsLocalRing A] (f : A →ₐ[R] C) (g : B →ₐ[R] C) [IsLocalHom g] :
     IsLocalRing (f.pullback g) :=
-  RingHom.isLocalRing_pullback f.toRingHom g.toRingHom ⟨hg.map_nonunit⟩
+  RingHom.isLocalRing_pullback (f : A →+* C) (g : B →+* C)
 
 end Ring
 

@@ -153,16 +153,13 @@ lemma Hom.comap_maximalIdeal_eq (f : A ⟶ B) :
     (maximalIdeal B).comap f.toAlgHom = maximalIdeal A := by
   rw [← ker_residue, RingHom.ker, Ideal.comap_comapₐ, residue_comp, ← RingHom.ker, ker_residue]
 
-lemma Hom.isLocalHom_toAlgHom (f : A ⟶ B) : IsLocalHom f.toAlgHom := by
-  have := (((local_hom_TFAE (f.toAlgHom : A →+* B)).out 0 4).mpr (by
-    rw [Ideal.comap_coe, f.comap_maximalIdeal_eq]))
+instance (f : A ⟶ B) : IsLocalHom f.toAlgHom := by
+  have := ((local_hom_TFAE (f.toAlgHom : A →+* B)).out 0 4).mpr (by
+    rw [Ideal.comap_coe, f.comap_maximalIdeal_eq])
   exact ⟨this.map_nonunit⟩
 
-lemma Hom.map_maximalIdeal_le (f : A ⟶ B) :
-    (maximalIdeal A).map f.toAlgHom ≤ maximalIdeal B := by
-  have := (local_hom_TFAE f.toAlgHom.toRingHom).out 4 2
-  rw [AlgHom.toRingHom_eq_coe, Ideal.comap_coe, Ideal.map_coe] at this
-  rw [← this, f.comap_maximalIdeal_eq]
+lemma Hom.map_maximalIdeal_le (f : A ⟶ B) : (maximalIdeal A).map f.toAlgHom ≤ maximalIdeal B :=
+  IsLocalRing.map_maximalIdeal_le (f.toAlgHom : A →+* B)
 
 /-- The relative algebra structure on `B` canonically induced by a morphism `f : A ⟶ B`. -/
 abbrev Hom.relativeAlgebra (f : A ⟶ B) : Algebra A B :=

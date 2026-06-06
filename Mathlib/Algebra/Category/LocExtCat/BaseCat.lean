@@ -267,8 +267,7 @@ lemma pullback_comm_sq (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.hom.toAlgH
 instance pullbackFst_isSmallExtension (f : A ⟶ C) (g : B ⟶ C) [IsSmallExtension g] :
     IsSmallExtension (pullbackFst f g (IsSmallExtension.surjective g)) := by
   have : IsLocalRing ↥(f.hom.toAlgHom.pullback g.hom.toAlgHom) :=
-    RingHom.isLocalRing_pullback f.hom.toAlgHom.toRingHom g.hom.toAlgHom.toRingHom
-      ⟨(IsSmallExtension.surjective g).isLocalHom.map_nonunit⟩
+    RingHom.isLocalRing_pullback (f.hom.toAlgHom : A →+* C) (g.hom.toAlgHom : B →+* C)
   obtain ⟨x, x_span, hx⟩ := ((isSmallExtenstion_iff g).mp ‹_›).right
   have g_apply : g.hom.toAlgHom x = 0 := by
     rw [← RingHom.mem_ker, ← x_span]
@@ -296,7 +295,7 @@ instance pullbackFst_isSmallExtension (f : A ⟶ C) (g : B ⟶ C) [IsSmallExtens
     simp only [AlgHom.mem_equalizer, AlgHom.coe_comp, Function.comp_apply, AlgHom.fst_apply,
       AlgHom.snd_apply] at hab
     apply hx; intro hb; revert h
-    simpa [hb] using f.hom.isLocalHom_toAlgHom.map_nonunit a (hab ▸ IsUnit.map g.hom.toAlgHom hb)
+    simpa [hb] using IsLocalHom.map_nonunit a (hab ▸ IsUnit.map g.hom.toAlgHom hb)
 
 /-- When `Λ` is a local ring and `k / ResidueField Λ` is a finite separable field extension,
 `ofPullbackOfIsSeparable` is the object in `BaseCat` obtained from the pullback of
@@ -307,7 +306,7 @@ def ofPullbackOfIsSeparable [Algebra.IsSeparable (ResidueField Λ) k] (f : A ⟶
     (A.obj.residue.comp (f.hom.toAlgHom.pullbackFst g.hom.toAlgHom))
     (LocExtCat.residue_comp_pullbackFst_surjective_of_isSeparable f.hom g.hom)
   haveI : IsLocalRing P.Ring := RingHom.isLocalRing_pullback
-    f.hom.toAlgHom.toRingHom g.hom.toAlgHom.toRingHom ⟨g.hom.isLocalHom_toAlgHom.map_nonunit⟩
+    (f.hom.toAlgHom : A →+* C) (g.hom.toAlgHom : B →+* C)
   ⟨.of Λ k P, inferInstanceAs <| IsArtinianRing (f.hom.toAlgHom.pullback g.hom.toAlgHom)⟩
 
 open ObjectProperty.FullSubcategory in

@@ -52,25 +52,15 @@ variable {Λ k : Type u} [CommRing Λ] [Field k] [Algebra Λ k] {A B C : LocExtC
 instance (f : A ⟶ B) : Nontrivial (A ⧸ RingHom.ker f.toAlgHom) :=
   Ideal.Quotient.nontrivial_iff.mpr <| RingHom.ker_ne_top f.toAlgHom
 
-variable (A) in
-lemma isLocalHom_algebraMap [IsLocalRing Λ] [Algebra.IsIntegral Λ k] :
-    IsLocalHom (algebraMap Λ A) := by
-  have : IsLocalHom (algebraMap Λ k) := isLocalHom_of_isIntegral Λ k
+instance [IsLocalRing Λ] [Algebra.IsIntegral Λ k] : IsLocalHom (algebraMap Λ A) := by
+  have : IsLocalHom (algebraMap Λ k) := inferInstance
   rw [IsScalarTower.algebraMap_eq Λ A] at this
   exact isLocalHom_of_comp (algebraMap Λ A) (algebraMap A k)
-
-variable (A) in
-lemma comap_algebraMap_maximalIdeal [IsLocalRing Λ] [Algebra.IsIntegral Λ k] :
-    (maximalIdeal A).comap (algebraMap Λ A) = maximalIdeal Λ := by
-  have : IsLocalHom (algebraMap Λ k) := isLocalHom_of_isIntegral Λ k
-  have := ((local_hom_TFAE (algebraMap Λ k)).out 0 4).mp ‹_›
-  rw [eq_comm, ← this, IsScalarTower.algebraMap_eq Λ A, ← Ideal.comap_comap,
-    eq_maximalIdeal (Ideal.comap_isMaximal_of_surjective _ A.algebraMap_surjective)]
 
 instance [IsLocalRing Λ] [Algebra.IsIntegral Λ k] :
     Nontrivial (A ⧸ ((maximalIdeal Λ).map (algebraMap Λ A))) :=
   Ideal.Quotient.nontrivial_iff.mpr <| ne_top_of_le_ne_top (maximalIdeal.isMaximal A).ne_top <|
-    ((local_hom_TFAE (algebraMap Λ A)).out 4 2).mp (comap_algebraMap_maximalIdeal A)
+    ((local_hom_TFAE (algebraMap Λ A)).out 4 2).mp (maximalIdeal_comap (algebraMap Λ A))
 
 instance (n : ℕ) [NeZero n] : Nontrivial (A ⧸ maximalIdeal A ^ n) := by
   rw [Ideal.Quotient.nontrivial_iff, Ideal.ne_top_iff_exists_maximal]
@@ -258,7 +248,7 @@ def ofPullback (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) : LocExt
     (by simpa using Surjective.comp A.residue_surjective <|
       AlgHom.surjective_pullbackFst_of_surjective _ _ hg)
   haveI : IsLocalRing P.Ring := RingHom.isLocalRing_pullback
-    f.toAlgHom.toRingHom g.toAlgHom.toRingHom ⟨hg.isLocalHom.map_nonunit⟩
+    (f.toAlgHom : A →+* C) (g.toAlgHom : B →+* C)
   of Λ k P
 
 /-- Upgrades the first projection map from the pullback algebra to a morphism in `LocExtCat`. -/
@@ -268,7 +258,7 @@ abbrev pullbackFst (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
     (by simpa using Surjective.comp A.residue_surjective <|
         AlgHom.surjective_pullbackFst_of_surjective _ _ hg)
   haveI : IsLocalRing P.Ring := RingHom.isLocalRing_pullback
-    f.toAlgHom.toRingHom g.toAlgHom.toRingHom ⟨hg.isLocalHom.map_nonunit⟩
+    (f.toAlgHom : A →+* C) (g.toAlgHom : B →+* C)
   ofHom (.ofAlgHom (f.toAlgHom.pullbackFst g.toAlgHom) rfl)
 
 lemma surjective_pullbackFst (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
@@ -291,7 +281,7 @@ abbrev pullbackSnd (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
     (by simpa using Surjective.comp A.residue_surjective <|
         AlgHom.surjective_pullbackFst_of_surjective _ _ hg)
   haveI : IsLocalRing P.Ring := RingHom.isLocalRing_pullback
-    f.toAlgHom.toRingHom g.toAlgHom.toRingHom ⟨hg.isLocalHom.map_nonunit⟩
+    (f.toAlgHom : A →+* C) (g.toAlgHom : B →+* C)
   ofHom (.ofAlgHom (f.toAlgHom.pullbackSnd g.toAlgHom) (residue_comp_pullbackFst ..).symm)
 
 lemma pullback_comm_sq (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
@@ -382,7 +372,6 @@ open Module in
 @[stacks 06GG]
 theorem length_restrictScalars {M : Type*} [AddCommGroup M] [Module A M] [Module Λ M]
     [IsScalarTower Λ A M] : length Λ M = finrank (ResidueField Λ) k * length A M := by
-  have : IsLocalHom (algebraMap Λ A) := isLocalHom_algebraMap A
   rw [IsLocalRing.length_restrictScalars Λ A M, mul_comm, ← length_eq_finrank,
     (A.residueEquiv.toLinearEquiv.extendScalarsOfSurjective <|
       IsLocalRing.residue_surjective (R := Λ)).length_eq]
