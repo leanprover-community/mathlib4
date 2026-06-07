@@ -55,7 +55,7 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
     rcases this with ⟨v, hv, hvs⟩
     have : sequence v ∈ traverse 𝓝 l :=
       mem_traverse _ _ <| hv.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha
-    refine mem_of_superset this fun u hu ↦ ?_
+    refine Eventually.mono this fun u hu ↦ ?_
     have hu := (List.mem_traverse _ _).1 hu
     have : List.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) u v := by
       refine List.Forall₂.flip ?_
