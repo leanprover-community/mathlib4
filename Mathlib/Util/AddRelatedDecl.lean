@@ -88,3 +88,21 @@ def addRelatedDecl (src tgt : Name) (ref : Syntax)
       Term.addTermInfo' ref (← mkConstWithLevelParams tgt) (isBinder := true)
 
 end Mathlib.Tactic
+
+/-- Modify a name `name` to have a given (optional) suffix:
+- if `suffix` is `some val` and `val` is in the root namespace, replace the whole name by `val`
+  (without the `_root_` prefix),
+- if `suffix` has some other value of depth `d`, replace the last `d` components of `name` by `val`,
+- otherwise, return `name`
+
+Return the pair `(adjusted_name, foo)`, where `foo` is true iff there was a provided name that is
+identical to the adjusted name.
+-/
+def Lean.Name.modifySuffix (name : Name) (suffix : Option Name) : Name × Bool :=
+  match suffix with
+  | none => (name, false)
+  | some suffix =>
+    let instead :=
+      if rootNamespace.isPrefixOf suffix then removeRoot suffix
+      else (name.splitAt suffix.getNumParts).1 ++ suffix
+    (instead, name == instead)
