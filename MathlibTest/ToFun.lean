@@ -22,10 +22,10 @@ lemma Foo.hoge (f g : ℝ → ℝ) : f * g = g * f := mul_comm f g
 @[to_fun _root_.hoge'_fun]
 lemma Foo.Bar.hoge' (f g : ℝ → ℝ) : f * g = g * f := mul_comm f g
 -- Previously, a bug meant such declarations were generated.
-/-- error: Unknown identifier `Foo._root_.fun_hoge'` -/
-#guard_msgs in #check Foo._root_.fun_hoge'
-/-- info: fun_hoge' (f g : ℝ → ℝ) : (fun i ↦ f i * g i) = fun i ↦ g i * f i -/
-#guard_msgs in #check fun_hoge'
+/-- error: Unknown identifier `Foo._root_.hoge'_fun` -/
+#guard_msgs in #check Foo._root_.hoge'_fun
+/-- info: hoge'_fun (f g : ℝ → ℝ) : (fun i ↦ f i * g i) = fun i ↦ g i * f i -/
+#guard_msgs in #check hoge'_fun
 
 -- This also works with losing one namespace level (although there is a neater solution in this case).
 @[to_fun _root_.Foo.fun_hoge']
