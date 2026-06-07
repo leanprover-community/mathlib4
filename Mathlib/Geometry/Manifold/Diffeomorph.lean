@@ -696,7 +696,7 @@ lemma Homeomorph.chartedSpace_trans_mem_maximalAtlas (φ : M ≃ₜ N) :
 
 @[implicit_reducible]
 def Diffeomorph.isManifold (φ : M ≃ₜ N) :
-  haveI a := φ.chartedSpace H;
+  haveI := φ.chartedSpace H;
   IsManifold I n N :=
   letI := φ.chartedSpace H
   {
