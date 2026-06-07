@@ -657,12 +657,14 @@ where
     match e with
     | .lam n _ b _ => lambdaBinderNames b (acc.push n)
     | _ => acc
-  /-- Remove any eta expansions that may be present in the arguments of either side of `e`. -/
+  /-- Remove any redundant eta expansions in the arguments on either side of `e`.
+  As a result, the corresponding binder names are removed, so they cannot end up in the expression
+  produced by `grw`. -/
   preprocess (e : Expr) : Expr :=
-    let eta (x : Expr) := x.withApp (mkAppN · <| ·.map Expr.eta)
+    let etaArgs (x : Expr) := x.withApp (mkAppN · <| ·.map Expr.eta)
     match e with
-    | .forallE _ lhs rhs _ => e.updateForallE! (eta lhs) (eta rhs)
-    | mkApp2 rel lhs rhs => mkApp2 rel (eta lhs) (eta rhs)
+    | .forallE _ lhs rhs _ => e.updateForallE! (etaArgs lhs) (etaArgs rhs)
+    | mkApp2 rel lhs rhs => mkApp2 rel (etaArgs lhs) (etaArgs rhs)
     | _ => e
 
 /-- The core of the `gcongr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
