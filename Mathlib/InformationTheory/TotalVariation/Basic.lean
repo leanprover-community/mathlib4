@@ -17,8 +17,8 @@ import Mathlib.MeasureTheory.Measure.Sub
 
 * `vecTVDist μ ν`: total variation distance between two vector measures, defined as the value on
   the universal set of the variation of `μ - ν`.
-* `tvDist μ ν`: total variation distance, defined as the value on the universal set of
-  the variation of `μ - ν`, in which both measures are seen as signed measures.
+* `tvDist μ ν`: total variation distance between two finite measures, defined as the value on
+  the universal set of the variation of `μ - ν`, in which both measures are seen as signed measures.
 
 ## Main statements
 
