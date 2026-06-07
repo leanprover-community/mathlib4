@@ -200,6 +200,13 @@ theorem ext_iff_inner_left_threefold {x y : E ⊗[𝕜] F ⊗[𝕜] G} :
   simpa only [← inner_conj_symm x, ← inner_conj_symm y, starRingEnd_apply, star_inj] using
     ext_iff_inner_right_threefold (x := x) (y := y)
 
+variable (𝕜 E F) in
+/-- The canonical continuous bilinear map `E → F → E ⊗ F`. This is the continuous version of
+`mk`. -/
+noncomputable def mkL : E →L[𝕜] F →L[𝕜] E ⊗[𝕜] F := (mk 𝕜 E F).mkContinuous₂ 1 fun _ _ ↦ by simp
+
+@[simp] lemma mkL_apply (x : E) (y : F) : mkL 𝕜 E F x y = x ⊗ₜ y := rfl
+
 section isometry
 
 /-- The tensor product map of two linear isometries is a linear isometry. In particular, this is
