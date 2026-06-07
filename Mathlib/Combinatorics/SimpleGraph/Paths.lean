@@ -918,7 +918,7 @@ lemma bypass_cons_nil (hadj : G.Adj u v) : (cons hadj nil).bypass = cons hadj ni
 
 @[simp]
 lemma bypass_eq_nil (p : G.Walk u u) : p.bypass = nil := by
-  grind [p.bypass_isPath, isPath_iff_eq_nil]
+  grind [p.bypass_isPath, isPath_iff_nil, Nil]
 
 theorem IsPath.bypass_eq_self {p : G.Walk u v} (hp : p.IsPath) : p.bypass = p := by
   induction p <;> grind [cons_isPath_iff, bypass]
