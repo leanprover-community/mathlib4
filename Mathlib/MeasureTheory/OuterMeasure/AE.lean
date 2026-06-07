@@ -64,13 +64,13 @@ notation3 "∃ᵐ "(...)" ∂"μ", "r:(scoped P => Filter.Frequently P <| Measur
 i.e. `f=g` away from a null set.
 
 This is notation for `Filter.EventuallyEq (MeasureTheory.ae μ) f g`. -/
-notation:50 f " =ᵐ[" μ:50 "] " g:50 => Filter.EventuallyEq (MeasureTheory.ae μ) f g
+notation3:50 f " =ᵐ[" μ:50 "] " g:50 => Filter.EventuallyEq (MeasureTheory.ae μ) f g
 
 /-- `f ≤ᵐ[μ] g` means `f` is eventually less than `g` along the a.e. filter,
 i.e. `f ≤ g` away from a null set.
 
 This is notation for `Filter.EventuallyLE (MeasureTheory.ae μ) f g`. -/
-notation:50 f " ≤ᵐ[" μ:50 "] " g:50 => Filter.EventuallyLE (MeasureTheory.ae μ) f g
+notation3:50 f " ≤ᵐ[" μ:50 "] " g:50 => Filter.EventuallyLE (MeasureTheory.ae μ) f g
 
 theorem mem_ae_iff {s : Set α} : s ∈ ae μ ↔ μ sᶜ = 0 :=
   Iff.rfl
@@ -205,33 +205,33 @@ theorem union_ae_eq_univ_of_ae_eq_univ_left (h : s =ᵐ[μ] univ) : (s ∪ t : S
   (ae_eq_set_union h (ae_eq_refl t)).trans <| by rw [univ_union]
 
 theorem union_ae_eq_univ_of_ae_eq_univ_right (h : t =ᵐ[μ] univ) : (s ∪ t : Set α) =ᵐ[μ] univ := by
-  convert ae_eq_set_union (ae_eq_refl s) h
+  convert! ae_eq_set_union (ae_eq_refl s) h
   rw [union_univ]
 
 theorem union_ae_eq_right_of_ae_eq_empty (h : s =ᵐ[μ] (∅ : Set α)) : (s ∪ t : Set α) =ᵐ[μ] t := by
-  convert ae_eq_set_union h (ae_eq_refl t)
+  convert! ae_eq_set_union h (ae_eq_refl t)
   rw [empty_union]
 
 theorem union_ae_eq_left_of_ae_eq_empty (h : t =ᵐ[μ] (∅ : Set α)) : (s ∪ t : Set α) =ᵐ[μ] s := by
-  convert ae_eq_set_union (ae_eq_refl s) h
+  convert! ae_eq_set_union (ae_eq_refl s) h
   rw [union_empty]
 
 theorem inter_ae_eq_right_of_ae_eq_univ (h : s =ᵐ[μ] univ) : (s ∩ t : Set α) =ᵐ[μ] t := by
-  convert ae_eq_set_inter h (ae_eq_refl t)
+  convert! ae_eq_set_inter h (ae_eq_refl t)
   rw [univ_inter]
 
 theorem inter_ae_eq_left_of_ae_eq_univ (h : t =ᵐ[μ] univ) : (s ∩ t : Set α) =ᵐ[μ] s := by
-  convert ae_eq_set_inter (ae_eq_refl s) h
+  convert! ae_eq_set_inter (ae_eq_refl s) h
   rw [inter_univ]
 
 theorem inter_ae_eq_empty_of_ae_eq_empty_left (h : s =ᵐ[μ] (∅ : Set α)) :
     (s ∩ t : Set α) =ᵐ[μ] (∅ : Set α) := by
-  convert ae_eq_set_inter h (ae_eq_refl t)
+  convert! ae_eq_set_inter h (ae_eq_refl t)
   rw [empty_inter]
 
 theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t =ᵐ[μ] (∅ : Set α)) :
     (s ∩ t : Set α) =ᵐ[μ] (∅ : Set α) := by
-  convert ae_eq_set_inter (ae_eq_refl s) h
+  convert! ae_eq_set_inter (ae_eq_refl s) h
   rw [inter_empty]
 
 theorem ae_eq_set_biInter {s : Set β} (hs : s.Countable) {t t' : β → Set α}
