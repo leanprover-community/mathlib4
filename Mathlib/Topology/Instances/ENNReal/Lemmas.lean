@@ -195,7 +195,7 @@ statement works for `x = 0`.
 -/
 theorem hasBasis_nhds_of_ne_top' (xt : x ≠ ∞) :
     (𝓝 x).HasBasis (· ≠ 0) (fun ε => Icc (x - ε) (x + ε)) := by
-  rcases (zero_le x).eq_or_lt with rfl | x0
+  rcases eq_zero_or_pos x with rfl | x0
   · simp_rw [zero_tsub, zero_add, ← bot_eq_zero, Icc_bot, ← bot_lt_iff_ne_bot]
     exact nhds_bot_basis_Iic
   · refine (nhds_basis_Ioo' ⟨_, x0⟩ ⟨_, xt.lt_top⟩).to_hasBasis ?_ fun ε ε0 => ?_
@@ -931,4 +931,4 @@ lemma Dense.lipschitzWith_extend {α β : Type*}
     have Ay : hs.extend f y = f ⟨y, hy⟩ := hs.extend_eq hf.continuous ⟨y, hy⟩
     simp only [Set.mem_setOf_eq, Ax, Ay]
     exact hf ⟨x, hx⟩ ⟨y, hy⟩
-  simpa only [Dense, IsClosed.closure_eq, Set.mem_setOf_eq, Prod.forall] using this
+  simpa only [Dense, IsClosed.closure_eq, Set.mem_setOf_eq, Prod.forall] using! this

@@ -56,7 +56,6 @@ lemma Algebra.IsInvariant.isIntegral_of_profinite
     ⟨x, fun g ↦ hN g.2⟩
   exact this.map (FixedPoints.subalgebra A B N.1.1).val
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `G` acts transitively on the prime ideals of `B` above a given prime ideal of `A`. -/
 lemma Algebra.IsInvariant.exists_smul_of_under_eq_of_profinite
     [Algebra.IsInvariant A B G] (P Q : Ideal B) [P.IsPrime] [Q.IsPrime]
@@ -65,12 +64,12 @@ lemma Algebra.IsInvariant.exists_smul_of_under_eq_of_profinite
   let B' := FixedPoints.subalgebra A B
   let F : OpenNormalSubgroup G ⥤ Type _ :=
   { obj N := { g : G ⧸ N.1.1 // Q.under (B' N.1.1) = g • P.under (B' N.1.1) }
-    map {N N'} f := TypeCat.ofHom fun x ↦ ⟨(QuotientGroup.map _ _ (.id _) (leOfHom f)) x.1, by
+    map {N N'} f := ↾fun x ↦ ⟨(QuotientGroup.map _ _ (.id _) (leOfHom f)) x.1, by
       have h : B' N'.1.1 ≤ B' N.1.1 := fun x hx n ↦ hx ⟨_, f.le n.2⟩
       obtain ⟨x, hx⟩ := x
       obtain ⟨x, rfl⟩ := QuotientGroup.mk_surjective x
       simpa only [Ideal.comap_comap, Ideal.pointwise_smul_eq_comap, ← Ideal.comap_coe
-        (F := RingEquiv _ _)] using congr(Ideal.comap (Subalgebra.inclusion h).toRingHom $hx)⟩
+        (F := RingEquiv _ _)] using! congr(Ideal.comap (Subalgebra.inclusion h).toRingHom $hx)⟩
     map_id N := by ext ⟨⟨x⟩, hx⟩; rfl
     map_comp f g := by ext ⟨⟨x⟩, hx⟩; rfl }
   have (N : _) : Nonempty (F.obj N) := by
@@ -121,7 +120,7 @@ lemma Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor_aux
   obtain ⟨x, rfl⟩ := QuotientGroup.mk_surjective x
   replace hx := congr(Ideal.comap (Subalgebra.inclusion h) $hx)
   simpa only [Ideal.pointwise_smul_eq_comap,
-    ← Ideal.comap_coe (F := RingEquiv _ _), Ideal.comap_comap] using hx
+    ← Ideal.comap_coe (F := RingEquiv _ _), Ideal.comap_comap] using! hx
 
 /-- (Implementation)
 The functor taking an open normal subgroup `N ≤ G` to the set of lifts of `σ` in `G ⧸ N`.
@@ -135,8 +134,8 @@ def Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor
     { toRingHom := Ideal.quotientMap _ B'.subtype le_rfl,
       commutes' := Quotient.ind fun _ ↦ rfl }
     { σ' // f.comp (Ideal.Quotient.stabilizerHom
-      (Q.under B') P (G ⧸ N.1.1) σ') = σ.toAlgHom.comp f }
-  map {N N'} i := TypeCat.ofHom fun x ↦ ⟨⟨(QuotientGroup.map _ _ (.id _) (leOfHom i)) x.1,
+      (Q.under B') P (G ⧸ N.1.1) σ').toAlgHom = σ.toAlgHom.comp f }
+  map {N N'} i := ↾fun x ↦ ⟨⟨(QuotientGroup.map _ _ (.id _) (leOfHom i)) x.1,
       Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor_aux Q i.le x.1.1 x.1.2⟩, by
     have h : FixedPoints.subalgebra A B N'.1.1 ≤ FixedPoints.subalgebra A B N.1.1 :=
       fun x hx n ↦ hx ⟨_, i.le n.2⟩
