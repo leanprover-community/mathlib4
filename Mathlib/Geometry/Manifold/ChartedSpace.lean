@@ -566,9 +566,9 @@ lemma ChartedSpace.mem_atlas_sum [h : Nonempty H]
 
 end sum
 
-variable [TopologicalSpace M] [TopologicalSpace M'] [TopologicalSpace H] [ChartedSpace H M]
-
 section IsLocalHomeomorph
+
+variable [TopologicalSpace M] [TopologicalSpace M'] [TopologicalSpace H] [ChartedSpace H M]
 
 /-- Given a right inverse for a local homeomorphism `f : M → M'`, endow `M'` with a `ChartedSpace`
 structure by pushing forward the `ChartedSpace` structure from `M`. -/
