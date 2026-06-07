@@ -25,7 +25,7 @@ flat extension of an integral domain.
   flat `R`-algebra, and let `p` be a prime ideal of `R`. Then the sum over all prime ideals `q` of
   `S` lying over `p` of the ramification index of `q` times the inertia degree of `q` equals the
   rank of `S` as an `R`-module.
-* `Ideal.sum_ramification_inertia_eq_card`: Let `S/R` be a finite flat extension of integral domains,
+* `Ideal.sum_ramification_inertia_eq_card`: Let `S/R` be a finite flat extension of domains,
   and let `p` be prime ideal of `R`. Assume that `R` is the invariant subring of a finite group `G`
   acting on `S`. Then the sum over all prime ideals `q` of `S` lying over `p` of the ramification
   index of `q` times the inertia degree of `q` equals the cardinality of `G`.
