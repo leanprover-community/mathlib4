@@ -411,7 +411,7 @@ theorem Dense.borel_eq_generateFrom_Ioc_mem_aux {α : Type*} [TopologicalSpace �
     constructor <;> rintro ⟨l, hl, u, hu, hlt, rfl⟩
     exacts [⟨u, hu, l, hl, hlt, Ico_toDual⟩, ⟨u, hu, l, hl, hlt, Ioc_toDual⟩]
   · calc
-      _ = OrderDual.ofDual '' (Ioo x y) := by --TODO: extract this as separate lemma
+      _ = OrderDual.ofDual '' (Ioo x y) := by
         ext
         simp only [mem_Ioo, mem_image_equiv, OrderDual.ofDual_symm_eq]
         tauto
@@ -506,7 +506,7 @@ theorem ext_of_Ioc' {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
   refine @ext_of_Ico' αᵒᵈ _ _ _ _ _ ‹_› _ μ ν ?_ ?_
   all_goals
     intro a b hab
-    rw [← ext_of_Ioc_finite' a, ← ext_of_Ioc_finite' b,
+    rw [← OrderDual.toDual_of_op a, ← OrderDual.toDual_of_op b,
       Ico_toDual (α := α)]
   exacts [hμ hab, h hab]
 
