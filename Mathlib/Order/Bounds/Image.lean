@@ -430,7 +430,12 @@ lemma BddAbove.range_mono [Preorder β] {f : α → β} (g : α → β) (h : ∀
   exact (h x).trans (hC <| mem_range_self x)
 
 @[to_dual]
-lemma BddAbove.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → β} {g : β → γ}
+lemma BddAbove.range_comp_of_monotone {γ : Type*} [Preorder β] [Preorder γ] {f : α → β} {g : β → γ}
     (hf : BddAbove (range f)) (hg : Monotone g) : BddAbove (range (fun x => g (f x))) := by
   change BddAbove (range (g ∘ f))
   simpa only [Set.range_comp] using hg.map_bddAbove hf
+
+@[deprecated BddAbove.range_comp_mono (since := "2026-06-07")]
+alias BddAbove.range_comp_of_monotone := BddAbove.range_comp_mono
+@[deprecated BddBelow.range_comp_mono (since := "2026-06-07")]
+alias BddBelow.range_comp_of_monotone := BddBelow.range_comp_mono
