@@ -56,9 +56,8 @@ open scoped TensorProduct
 
 namespace TensorProduct
 
-instance instInner : Inner 𝕜 (E ⊗[𝕜] F) where
-  inner x y :=
-    ((lift <| mapBilinear (.id 𝕜) E F 𝕜 𝕜).compr₂ (.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜)) x y
+instance instInner : Inner 𝕜 (E ⊗[𝕜] F) where inner x y :=
+  ((lift <| mapBilinear (.id 𝕜) E F 𝕜 𝕜).compr₂ (.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜)) x y
 
 lemma inner_def (x y : E ⊗[𝕜] F) :
     inner 𝕜 x y = ((lift <| mapBilinear (.id 𝕜) E F 𝕜 𝕜).compr₂
