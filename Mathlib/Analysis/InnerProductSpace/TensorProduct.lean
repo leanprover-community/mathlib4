@@ -538,15 +538,17 @@ lemma mapL_tmul (f : E →L[𝕜] F) (g : G →L[𝕜] H) (m : E) (n : G) :
     (mapL f g).toLinearMap = map f g := by ext; simp
 
 variable (G) in
-theorem rTensor_eq_mapL (f : E →L[𝕜] F) : f.rTensor G = mapL f (.id 𝕜 G) := by simp [mapL_def]
+theorem _root_.ContinuousLinearMap.rTensor_eq_mapL (f : E →L[𝕜] F) :
+    f.rTensor G = mapL f (.id 𝕜 G) := by simp [mapL_def]
 
 variable (E) in
-theorem lTensor_eq_mapL (g : G →L[𝕜] H) : g.lTensor E = mapL (.id 𝕜 E) g := by simp [mapL_def]
+theorem _root_.ContinuousLinearMap.lTensor_eq_mapL (g : G →L[𝕜] H) :
+    g.lTensor E = mapL (.id 𝕜 E) g := by simp [mapL_def]
 
-lemma lTensor_comp_rTensor (f : E →L[𝕜] F) (g : G →L[𝕜] H) :
+lemma _root_.ContinuousLinearMap.lTensor_comp_rTensor (f : E →L[𝕜] F) (g : G →L[𝕜] H) :
     f.lTensor H ∘L g.rTensor E = mapL g f := by ext; simp [← LinearMap.lTensor_comp_rTensor]
 
-lemma rTensor_comp_lTensor (f : E →L[𝕜] F) (g : G →L[𝕜] H) :
+lemma _root_.ContinuousLinearMap.rTensor_comp_lTensor (f : E →L[𝕜] F) (g : G →L[𝕜] H) :
     f.rTensor H ∘L g.lTensor E = mapL f g := mapL_def _ _ |>.symm
 
 @[simp] theorem adjoint_mapL [CompleteSpace E] [CompleteSpace G] [CompleteSpace (E ⊗[𝕜] G)]
@@ -556,14 +558,14 @@ lemma rTensor_comp_lTensor (f : E →L[𝕜] F) (g : G →L[𝕜] H) :
   simp [TensorProduct.ext_iff_inner_right, ContinuousLinearMap.adjoint_inner_left]
 
 variable (G) in
-@[simp] theorem adjoint_rTensor [CompleteSpace E] [CompleteSpace G] [CompleteSpace (E ⊗[𝕜] G)]
-    [CompleteSpace (F ⊗[𝕜] G)] [CompleteSpace F] (f : E →L[𝕜] F) :
-    (f.rTensor G).adjoint = f.adjoint.rTensor G := by simp [rTensor_eq_mapL]
+@[simp] theorem _root_.ContinuousLinearMap.adjoint_rTensor [CompleteSpace E] [CompleteSpace G]
+    [CompleteSpace (E ⊗[𝕜] G)] [CompleteSpace (F ⊗[𝕜] G)] [CompleteSpace F] (f : E →L[𝕜] F) :
+    (f.rTensor G).adjoint = f.adjoint.rTensor G := by simp [ContinuousLinearMap.rTensor_eq_mapL]
 
 variable (E) in
-@[simp] theorem adjoint_lTensor [CompleteSpace E] [CompleteSpace G] [CompleteSpace (E ⊗[𝕜] H)]
-    [CompleteSpace (E ⊗[𝕜] G)] [CompleteSpace H] (g : G →L[𝕜] H) :
-    (g.lTensor E).adjoint = g.adjoint.lTensor E := by simp [lTensor_eq_mapL]
+@[simp] theorem _root_.ContinuousLinearMap.adjoint_lTensor [CompleteSpace E] [CompleteSpace G]
+    [CompleteSpace (E ⊗[𝕜] H)] [CompleteSpace (E ⊗[𝕜] G)] [CompleteSpace H] (g : G →L[𝕜] H) :
+    (g.lTensor E).adjoint = g.adjoint.lTensor E := by simp [ContinuousLinearMap.lTensor_eq_mapL]
 
 open LinearMap
 
