@@ -7,7 +7,8 @@ Authors: Rémy Degenne, Paulo Rauber
 module
 
 public import Mathlib.Probability.HasLaw
-public import Mathlib.Probability.Kernel.CondDistrib
+
+import Mathlib.Probability.Kernel.Composition.Lemmas
 
 /-!
 # A predicate for having a specified conditional distribution
