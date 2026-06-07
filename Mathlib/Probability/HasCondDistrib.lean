@@ -31,12 +31,12 @@ namespace ProbabilityTheory
 
 variable {Ω 𝓧 𝓨 𝓩 : Type*} {mΩ : MeasurableSpace Ω}
   {m𝓧 : MeasurableSpace 𝓧} {m𝓨 : MeasurableSpace 𝓨} {m𝓩 : MeasurableSpace 𝓩}
-  {P : Measure Ω} [IsFiniteMeasure P] {X : Ω → 𝓧} {Y : Ω → 𝓨} {κ : Kernel 𝓧 𝓨}
+  {P : Measure Ω} {X : Ω → 𝓧} {Y : Ω → 𝓨} {κ : Kernel 𝓧 𝓨}
 
 /-- Predicate stating that the conditional distribution of `Y` given `X` under the measure `P`
 is equal to the kernel `κ`. -/
 def HasCondDistrib (Y : Ω → 𝓨) (X : Ω → 𝓧) (κ : Kernel 𝓧 𝓨)
-    (P : Measure Ω) [IsFiniteMeasure P] : Prop :=
+    (P : Measure Ω) : Prop :=
   HasLaw (fun ω ↦ (X ω, Y ω)) ((P.map X) ⊗ₘ κ) P
 
 lemma HasCondDistrib.aemeasurable_fst (h : HasCondDistrib Y X κ P) :
@@ -55,7 +55,7 @@ lemma HasCondDistrib.hasLaw_of_const {P : Measure Ω} [IsProbabilityMeasure P]
     simp [Measure.map_apply_of_aemeasurable h.aemeasurable_fst]
   rwa [Measure.snd_map_prodMk₀ h.aemeasurable_fst] at h_snd
 
-lemma HasCondDistrib.comp [IsSFiniteKernel κ]
+lemma HasCondDistrib.comp [SFinite P] [IsSFiniteKernel κ]
     (h : HasCondDistrib Y X κ P) {f : 𝓨 → 𝓩} (hf : Measurable f) :
     HasCondDistrib (fun ω ↦ f (Y ω)) X (κ.map f) P where
   aemeasurable := by have := h.aemeasurable_fst; have := h.aemeasurable_snd; fun_prop
@@ -69,13 +69,13 @@ lemma HasCondDistrib.comp [IsSFiniteKernel κ]
     _ = (P.map X ⊗ₘ κ).map (Prod.map id f) := by rw [h.map_eq]
     _ = P.map X ⊗ₘ κ.map f := by rw [Measure.compProd_map hf]
 
-lemma HasCondDistrib.fst {Y : Ω → 𝓨 × 𝓩} {κ : Kernel 𝓧 (𝓨 × 𝓩)} [IsSFiniteKernel κ]
+lemma HasCondDistrib.fst {Y : Ω → 𝓨 × 𝓩} {κ : Kernel 𝓧 (𝓨 × 𝓩)} [SFinite P] [IsSFiniteKernel κ]
     (h : HasCondDistrib Y X κ P) :
     HasCondDistrib (fun ω ↦ (Y ω).1) X κ.fst P := by
   rw [Kernel.fst_eq]
   exact HasCondDistrib.comp h measurable_fst
 
-lemma HasCondDistrib.snd {Y : Ω → 𝓨 × 𝓩} {κ : Kernel 𝓧 (𝓨 × 𝓩)} [IsSFiniteKernel κ]
+lemma HasCondDistrib.snd {Y : Ω → 𝓨 × 𝓩} {κ : Kernel 𝓧 (𝓨 × 𝓩)} [SFinite P] [IsSFiniteKernel κ]
     (h : HasCondDistrib Y X κ P) :
     HasCondDistrib (fun ω ↦ (Y ω).2) X κ.snd P := by
   rw [Kernel.snd_eq]
@@ -83,13 +83,9 @@ lemma HasCondDistrib.snd {Y : Ω → 𝓨 × 𝓩} {κ : Kernel 𝓧 (𝓨 × �
 
 lemma HasLaw.prod_of_hasCondDistrib {Q : Measure 𝓧} [IsSFiniteKernel κ]
     (h1 : HasLaw X Q P) (h2 : HasCondDistrib Y X κ P) :
-    HasLaw (fun ω ↦ (X ω, Y ω)) (Q ⊗ₘ κ) P := by
-  convert h2
-  unfold HasCondDistrib
-  congr!
-  exact h1.map_eq.symm
+    HasLaw (fun ω ↦ (X ω, Y ω)) (Q ⊗ₘ κ) P := by rwa [← h1.map_eq]
 
-lemma HasCondDistrib.comp_right [IsSFiniteKernel κ] {f : 𝓩 → 𝓧}
+lemma HasCondDistrib.comp_right [SFinite P] [IsSFiniteKernel κ] {f : 𝓩 → 𝓧}
     {hf : Measurable f} {Z : Ω → 𝓩} (h : HasCondDistrib Y Z (κ.comap f hf) P) :
     HasCondDistrib Y (f ∘ Z) κ P := by
   have hY : AEMeasurable Y P := h.aemeasurable_snd
@@ -108,13 +104,13 @@ lemma HasCondDistrib.comp_right [IsSFiniteKernel κ] {f : 𝓩 → 𝓧}
   _ = P.map (f ∘ Z) ⊗ₘ κ := by
       rw [AEMeasurable.map_map_of_aemeasurable hf.aemeasurable hZ]
 
-lemma HasCondDistrib.measurableEquiv_comp_right [IsFiniteKernel κ] (h : HasCondDistrib Y X κ P)
-    (f : 𝓧 ≃ᵐ 𝓩) :
+lemma HasCondDistrib.measurableEquiv_comp_right [SFinite P] [IsSFiniteKernel κ]
+    (h : HasCondDistrib Y X κ P) (f : 𝓧 ≃ᵐ 𝓩) :
     HasCondDistrib Y (f ∘ X) (κ.comap f.symm (by fun_prop) : Kernel 𝓩 𝓨) P := by
   apply HasCondDistrib.comp_right (hf := f.measurable)
   simpa [← Kernel.comap_comp_right]
 
-lemma HasCondDistrib.of_compProd [IsFiniteKernel κ] {Z : Ω → 𝓩}
+lemma HasCondDistrib.of_compProd [SFinite P] [IsSFiniteKernel κ] {Z : Ω → 𝓩}
     {η : Kernel (𝓧 × 𝓨) 𝓩} [IsMarkovKernel η]
     (h : HasCondDistrib (fun a ↦ (Y a, Z a)) X (κ ⊗ₖ η) P) :
     HasCondDistrib Z (fun a ↦ (X a, Y a)) η P := by
