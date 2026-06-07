@@ -1104,12 +1104,15 @@ Let `s` be a subset of `𝕜`-inner product space, and `K` a subspace. Then the 
 Hausdorff measure of the orthogonal projection of `s` onto `K` is less than or equal to the
 `d`-dimensional Hausdorff measure of `s`.
 -/
-theorem hausdorffMeasure_orthogonalProjection_le [RCLike 𝕜]
+theorem hausdorffMeasure_orthogonalProjectionOnto_le [RCLike 𝕜]
     [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
     (K : Submodule 𝕜 E) [K.HasOrthogonalProjection]
     (d : ℝ) (s : Set E) (hs : 0 ≤ d) :
-    μH[d] (K.orthogonalProjection '' s) ≤ μH[d] s := by
-  simpa using K.lipschitzWith_orthogonalProjection.hausdorffMeasure_image_le hs s
+    μH[d] (K.orthogonalProjectionOnto '' s) ≤ μH[d] s := by
+  simpa using K.lipschitzWith_orthogonalProjectionOnto.hausdorffMeasure_image_le hs s
+
+@[deprecated (since := "2026-05-05")] alias hausdorffMeasure_orthogonalProjection_le :=
+  hausdorffMeasure_orthogonalProjectionOnto_le
 
 end Geometric
 

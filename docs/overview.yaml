@@ -295,7 +295,7 @@ Analysis:
     Cauchy-Schwarz inequality: 'inner_mul_inner_self_le'
     adjoint operator: 'LinearPMap.adjoint'
     self-adjoint operator: 'IsSelfAdjoint'
-    orthogonal projection: 'Submodule.orthogonalProjection'
+    orthogonal projection: 'Submodule.orthogonalProjectionOnto'
     reflection: 'Submodule.reflection'
     orthogonal complement: 'Submodule.orthogonal'
     existence of Hilbert basis: 'exists_hilbertBasis'
