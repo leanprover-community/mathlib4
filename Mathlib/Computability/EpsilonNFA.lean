@@ -169,10 +169,7 @@ def Path.supp [DecidableEq σ] {s t : σ} {x : List (Option α)} : M.Path s t x 
   | cons _ _ _ _ _ _ p => {s} ∪ p.supp
 
 @[simp]
-def IsPath (s t : σ) (x : List (Option α)) : Prop := Nonempty (M.Path s t x)
-
-@[simp]
-theorem isPath_nil : M.IsPath s t [] ↔ s = t where
+theorem isPath_nil : Nonempty (M.Path s t []) ↔ s = t where
   mp := by
     rintro (_ | ⟨_, _, _, _, _, _, ⟨⟩⟩)
     rfl
@@ -181,7 +178,7 @@ theorem isPath_nil : M.IsPath s t [] ↔ s = t where
 alias ⟨IsPath.eq_of_nil, _⟩ := isPath_nil
 
 @[simp]
-theorem isPath_singleton {a : Option α} : M.IsPath s t [a] ↔ t ∈ M.step s a where
+theorem isPath_singleton {a : Option α} : Nonempty (M.Path s t [a]) ↔ t ∈ M.step s a where
   mp := by
     rintro (_ | ⟨_, _, _, _, _, _, ⟨⟩⟩)
     assumption
@@ -190,7 +187,7 @@ theorem isPath_singleton {a : Option α} : M.IsPath s t [a] ↔ t ∈ M.step s a
 alias ⟨_, IsPath.singleton⟩ := isPath_singleton
 
 theorem isPath_append {x y : List (Option α)} :
-    M.IsPath s u (x ++ y) ↔ ∃ t, M.IsPath s t x ∧ M.IsPath t u y where
+    Nonempty (M.Path s u (x ++ y)) ↔ ∃ t, Nonempty (M.Path s t x) ∧ Nonempty (M.Path t u y) where
   mp := by
     induction x generalizing s with
     | nil =>
@@ -198,12 +195,11 @@ theorem isPath_append {x y : List (Option α)} :
       tauto
     | cons x a ih =>
       rintro (_ | ⟨t, _, _, _, _, hs, h⟩)
-      have : M.IsPath t u (a ++ y) := by use h
+      have : Nonempty (M.Path t u (a ++ y)) := by use h
       apply ih at this
       obtain ⟨t', h_t_t', h_t'_u ⟩ := this
       use t'
       refine ⟨ ?_, h_t'_u ⟩
-      unfold IsPath
       obtain ⟨ h' ⟩ := h_t_t'
       use (Path.cons t s t' x a hs h')
 
@@ -213,21 +209,19 @@ theorem isPath_append {x y : List (Option α)} :
     | nil =>
       apply M.isPath_nil.mp at hx
       subst hx
-      unfold IsPath at hy ⊢
       simp only [List.nil_append, hy]
     | cons c tail ih =>
-      unfold IsPath at hx
       obtain ⟨ hx ⟩ := hx
       cases hx
       case cons t' hs hp =>
-        replace hp : M.IsPath t' t tail := by use hp
+        replace hp : Nonempty (M.Path t' t tail) := by use hp
         apply ih at hp
         obtain ⟨ hp ⟩ := hp
         use Path.cons t' s u c (tail ++ y) hs hp
 
 
 theorem mem_εClosure_iff_exists_path {s₁ s₂ : σ} :
-    s₂ ∈ M.εClosure {s₁} ↔ ∃ n, M.IsPath s₁ s₂ (.replicate n none) where
+    s₂ ∈ M.εClosure {s₁} ↔ ∃ n, Nonempty (M.Path s₁ s₂ (.replicate n none)) where
   mp h := by
     induction h with
     | base t =>
@@ -250,7 +244,7 @@ theorem mem_εClosure_iff_exists_path {s₁ s₂ : σ} :
       solve_by_elim [εClosure.step]
 
 theorem mem_evalFrom_iff_exists_path {s₁ s₂ : σ} {x : List α} :
-    s₂ ∈ M.evalFrom {s₁} x ↔ ∃ x', x'.reduceOption = x ∧ M.IsPath s₁ s₂ x' := by
+    s₂ ∈ M.evalFrom {s₁} x ↔ ∃ x', x'.reduceOption = x ∧ Nonempty (M.Path s₁ s₂ x') := by
   induction x using List.reverseRecOn generalizing s₂ with
   | nil =>
     rw [evalFrom_nil, mem_εClosure_iff_exists_path]
@@ -277,7 +271,6 @@ theorem mem_evalFrom_iff_exists_path {s₁ s₂ : σ} {x : List α} :
       use t
       simp only [hpx', true_and]
       obtain ⟨ hp₂ ⟩ := hp₂
-      unfold IsPath
       use Path.cons u t s₂ (some a) (List.replicate n none) hs hp₂
     · simp_rw [← List.concat_eq_append, List.reduceOption_eq_concat_iff,
         List.reduceOption_eq_nil_iff]
@@ -291,7 +284,8 @@ theorem mem_evalFrom_iff_exists_path {s₁ s₂ : σ} {x : List α} :
 
 theorem mem_accepts_iff_exists_path {x : List α} :
     x ∈ M.accepts ↔
-      ∃ s₁ s₂ x', s₁ ∈ M.start ∧ s₂ ∈ M.accept ∧ x'.reduceOption = x ∧ M.IsPath s₁ s₂ x' where
+      ∃ s₁ s₂ x', s₁ ∈ M.start ∧ s₂ ∈ M.accept ∧
+      x'.reduceOption = x ∧ Nonempty (M.Path s₁ s₂ x') where
   mp := by
     intro ⟨s₂, _, h⟩
     rw [eval, mem_evalFrom_iff_exists] at h
