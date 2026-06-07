@@ -119,7 +119,11 @@ theorem isLocalHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : Hom X Y) (x : 
 
 /-- The identity morphism on a locally ringed space. -/
 def id (X : LocallyRingedSpace.{u}) : Hom X X :=
-  ⟨𝟙 X.toPresheafedSpace, fun x => by dsimp; rw [PresheafedSpace.stalkMap.id]; infer_instance⟩
+  ⟨𝟙 X.toPresheafedSpace, fun x => by
+    simp only [PresheafedSpace.stalkMap.id]
+    constructor
+    intro a ha
+    assumption⟩
 
 instance (X : LocallyRingedSpace.{u}) : Inhabited (Hom X X) :=
   ⟨id X⟩

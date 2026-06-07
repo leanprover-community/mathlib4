@@ -149,6 +149,8 @@ lemma μIso_hom_freeMk_tmul_freeMk {X Y : Type u} (x : X) (y : Y) :
 @[simp]
 lemma μIso_inv_freeMk {X Y : Type u} (z : X ⊗ Y) :
     (μIso R X Y).inv (freeMk z) = freeMk z.1 ⊗ₜ freeMk z.2 := by
+  -- Can be proved by `finsuppTensorFinsupp'_symm_single_eq_single_one_tmul R X Y z 1`
+  -- The following `rw` rewrites this to match the goal exactly, avoiding defeq abuse.
   have : (finsuppTensorFinsupp' R X Y).symm (Finsupp.single z 1)
       = Finsupp.single z.1 1 ⊗ₜ[R] Finsupp.single z.2 1 :=
     finsuppTensorFinsupp'_symm_single_eq_single_one_tmul R X Y z 1
