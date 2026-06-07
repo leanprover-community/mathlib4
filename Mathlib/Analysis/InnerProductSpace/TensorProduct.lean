@@ -56,17 +56,11 @@ open scoped TensorProduct
 
 namespace TensorProduct
 
-set_option backward.privateInPublic true in
-/-- Bilinear map for the inner product on tensor products.
-On pure tensors: `inner_ (a ⊗ₜ b) (c ⊗ₜ d) = ⟪a, c⟫ * ⟪b, d⟫`. -/
-private abbrev inner_ : E ⊗[𝕜] F →ₗ⋆[𝕜] E ⊗[𝕜] F →ₗ[𝕜] 𝕜 :=
-  (lift <| mapBilinear (.id 𝕜) E F 𝕜 𝕜).compr₂ (LinearMap.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜)
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance instInner : Inner 𝕜 (E ⊗[𝕜] F) := ⟨fun x y => inner_ x y⟩
-
-private lemma inner_def (x y : E ⊗[𝕜] F) : inner 𝕜 x y = inner_ x y := rfl
+/-- The inner product on tensor products is given by a bilinear map, where
+on pure tensors: `⟪a ⊗ₜ b, c ⊗ₜ d⟫ = ⟪a, c⟫ * ⟪b, d⟫`. -/
+instance instInner : Inner 𝕜 (E ⊗[𝕜] F) where
+  inner x y :=
+    ((lift <| mapBilinear (.id 𝕜) E F 𝕜 𝕜).compr₂ (.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜)) x y
 
 variable (𝕜) in
 @[simp] theorem inner_tmul (x x' : E) (y y' : F) :
@@ -74,8 +68,8 @@ variable (𝕜) in
 
 @[simp] lemma inner_map_map (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) (x y : E ⊗[𝕜] F) :
     inner 𝕜 (map f.toLinearMap g.toLinearMap x) (map f.toLinearMap g.toLinearMap y) = inner 𝕜 x y :=
-  x.induction_on (by simp [inner_def]) (y.induction_on (by simp [inner_def]) (by simp)
-    (by simp_all [inner_def])) (by simp_all [inner_def])
+  x.induction_on (by simp [inner]) (y.induction_on (by simp [inner]) (by simp)
+    (by simp_all [inner])) (by simp_all [inner])
 
 lemma inner_mapIncl_mapIncl (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) (x y : E' ⊗[𝕜] F') :
     inner 𝕜 (mapIncl E' F' x) (mapIncl E' F' y) = inner 𝕜 x y :=
@@ -94,7 +88,7 @@ private theorem inner_self {ι ι' : Type*} [Fintype ι] [Fintype ι'] (x : E �
     conv_lhs => rw [← (e.toBasis.tensorProduct f.toBasis).sum_repr x]
     simp [← Finset.sum_product', Basis.tensorProduct_apply']
   conv_lhs => rw [this]
-  simp only [inner_def, map_sum, LinearMap.sum_apply]
+  simp only [inner, map_sum, LinearMap.sum_apply]
   simp [OrthonormalBasis.inner_eq_ite, ← Finset.sum_product', RCLike.mul_conj]
 
 set_option backward.privateInPublic true in
