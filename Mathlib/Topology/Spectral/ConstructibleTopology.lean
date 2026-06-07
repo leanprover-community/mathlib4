@@ -260,6 +260,11 @@ lemma WithConstructibleTopology.continuous_equiv [PrespectralSpace X] :
   rw [isOpen_ofConstructibleTopology_preimage_iff]
   exact hU.isOpen_constructibleTopology_of_isOpen U.2
 
+lemma WithConstructibleTopology.continuous_constructibleTopology_id [PrespectralSpace X] :
+    @Continuous X X (constructibleTopology X) _ id :=
+  @Continuous.comp X _ X (constructibleTopology X) _
+    _ _ _ continuous_equiv (WithTopology.continuous_toTopology (constructibleTopology X))
+
 lemma WithConstructibleTopology.map_continuous_iff (f : X → Y) :
     Continuous (WithConstructibleTopology.map f) ↔
     @Continuous X Y (constructibleTopology X) (constructibleTopology Y) f :=
@@ -267,7 +272,7 @@ lemma WithConstructibleTopology.map_continuous_iff (f : X → Y) :
 
 lemma WithConstructibleTopology.map_continuous {f : X → Y} (hf : IsSpectralMap f) :
     Continuous <| WithConstructibleTopology.map f := by
-  apply (WithTopology.map_continuous_iff ..).2
+  apply (map_continuous_iff f).2
   apply continuous_generateFrom_iff.mpr
   intro s hs
   obtain ⟨hso, hsc⟩ | ⟨hscl, hsc⟩ := hs
@@ -327,4 +332,10 @@ lemma IsSpectralMap.hasCompactFibers [PrespectralSpace X] [T0Space X] [QuasiSepa
   have hg : IsSpectralMap g := hf.comp hfUo.isOpenEmbedding_subtypeVal.isSpectralMap_of_compactSpace
   have heq : f ⁻¹' {y} = Subtype.val '' (g ⁻¹' {y}) := by grind [Subtype.exists]
   rw [heq]
-  sorry
+  have hg1 := (WithTopology.map_continuous_iff (constructibleTopology (f ⁻¹' U))
+    (constructibleTopology Y) g).1 <| WithConstructibleTopology.map_continuous hg
+  have h := @Continuous.comp (f ⁻¹' U) _ X (constructibleTopology (f ⁻¹' U)) _ _ id _
+    continuous_subtype_val WithConstructibleTopology.continuous_constructibleTopology_id
+  letI := constructibleTopology { x // x ∈ f ⁻¹' U }
+  letI := constructibleTopology Y
+  exact (isClosed_singleton.preimage hg1).isCompact.image h
