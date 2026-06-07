@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.Normed.Group.Ultra
 public import Mathlib.RingTheory.Valuation.RankOne
 public import Mathlib.Topology.Algebra.Valued.ValuationTopology
+public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 
 /-!
 # Correspondence between nontrivial nonarchimedean norms and rank one valuations
@@ -61,6 +62,14 @@ open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 instance : RankLeOne (valuation (K := K)) where
   hom' := embedding
   strictMono' := embedding_strictMono
+
+@[instance_reducible]
+def toValuativeRel : ValuativeRel K := sorry
+
+@[instance_reducible]
+def isValuativeTopology :
+    letI := toValuativeRel (K := K)
+    IsValuativeTopology K := sorry
 
 /-- The valued field structure on a nonarchimedean normed field `K`, determined by the norm. -/
 @[instance_reducible]
