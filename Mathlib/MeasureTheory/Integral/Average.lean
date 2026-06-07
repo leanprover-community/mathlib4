@@ -237,12 +237,12 @@ theorem setLIntegral_setLAverage (μ : Measure α) [IsFiniteMeasure μ] (f : α 
   lintegral_laverage _ _
 
 @[gcongr]
-theorem laverage_mono_ae (h : ∀ᵐ a ∂μ, f a ≤ g a) :
+theorem laverage_mono_ae (h : f ≤ᶠ[ae μ] g) :
     ⨍⁻ a, f a ∂μ ≤ ⨍⁻ a, g a ∂μ :=
   lintegral_mono_ae <| h.filter_mono <| Measure.ae_mono' Measure.smul_absolutelyContinuous
 
 @[gcongr]
-theorem setLAverage_mono_ae (s : Set α) (h : ∀ᵐ a ∂μ, f a ≤ g a) :
+theorem setLAverage_mono_ae (s : Set α) (h : f ≤ᶠ[ae μ] g) :
     ⨍⁻ a in s, f a ∂μ ≤ ⨍⁻ a in s, g a ∂μ :=
   laverage_mono_ae <| h.filter_mono <| ae_mono Measure.restrict_le_self
 
