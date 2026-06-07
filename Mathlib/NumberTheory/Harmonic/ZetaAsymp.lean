@@ -413,8 +413,7 @@ lemma riemannZeta_one : riemannZeta 1 = (γ - log (4 * π)) / 2 := by
 
 /-- Formula for `Λ 1`. Note that mathematically `Λ 1` is undefined, but our construction ascribes
 this particular value to it. -/
-lemma completedRiemannZeta_one :
-    completedRiemannZeta 1 = (γ - Complex.log (4 * π)) / 2 :=
+lemma completedRiemannZeta_one : completedRiemannZeta 1 = (γ - log (4 * π)) / 2 :=
   (riemannZeta_one ▸ div_one (_ : ℂ) ▸ Gammaℝ_one ▸ riemannZeta_def_of_ne_zero one_ne_zero).symm
 
 /-- Formula for `Λ₀ 1`, where `Λ₀` is the entire function satisfying
