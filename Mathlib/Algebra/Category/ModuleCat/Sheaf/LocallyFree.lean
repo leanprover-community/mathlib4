@@ -137,8 +137,8 @@ lemma quasiCoherentData_localGeneratorsData {M : SheafOfModules.{u} R}
 end LocalGeneratorsData
 
 instance (priority := 100) (M : SheafOfModules.{u} R) [h : M.IsLocallyFree] : M.IsQuasicoherent :=
-  have := h.exists_locallyFreeData.choose_spec
-  h.exists_locallyFreeData.choose.quasiCoherentData.isQuasicoherent
+  have := h.exists_isLocallyFreeData.choose_spec
+  h.exists_isLocallyFreeData.choose.quasiCoherentData.isQuasicoherent
 
 end
 
@@ -156,7 +156,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem LocalGenertorsData.IsLocallFreeData.of_coversTop (M : SheafOfModules.{u} R) {I : Type w}
     (X : I → C) (hX : J.CoversTop X) (D : Π i, LocalGeneratorsData (M.over (X i)))
     [h : ∀ i, (D i).IsLocallyFreeData] : (LocalGeneratorsData.bind M X hX D).IsLocallyFreeData where
-  iso i := by
+  isIso i := by
     rw [LocalGeneratorsData.bind_generators, GeneratingSections.ofEpi_π,
       GeneratingSections.map_π_eq]
     infer_instance
