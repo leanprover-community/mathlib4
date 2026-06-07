@@ -433,10 +433,10 @@ noncomputable def rTensor (f : E →L[𝕜] F) : (E ⊗[𝕜] G) →L[𝕜] (F �
     apply (sq_le_sq₀ (norm_nonneg _) (by positivity)).mp
     simp_rw [sub_eq_iff_eq_add', ← sub_eq_iff_eq_add, ← Matrix.ext_iff, Matrix.sub_apply,
       Matrix.smul_apply, Matrix.gram_apply, Function.comp_apply] at hA
-    simp_rw [mul_pow, hx, map_sum, LinearMap.rTensor_tmul, coe_coe, ← inner_self_eq_norm_sq (𝕜:=𝕜),
-      inner_sum, sum_inner, inner_tmul, ← hA, sub_mul, Finset.sum_sub_distrib, map_sub,
-      ← RCLike.smul_re, Finset.smul_sum, smul_mul_assoc, sub_le_self_iff, Matrix.sum_apply,
-      mul_comm, Finset.mul_sum]
+    simp_rw [mul_pow, hx, map_sum, LinearMap.rTensor_tmul, coe_coe,
+      ← inner_self_eq_norm_sq (𝕜 := 𝕜), inner_sum, sum_inner, inner_tmul, ← hA, sub_mul,
+      Finset.sum_sub_distrib, map_sub, ← RCLike.smul_re, Finset.smul_sum, smul_mul_assoc,
+      sub_le_self_iff, Matrix.sum_apply, mul_comm, Finset.mul_sum]
     simp_rw +singlePass [Finset.sum_comm_cycle, Matrix.vecMulVec, Matrix.of_apply, Pi.star_apply,
       ← mul_left_comm, ← mul_assoc, ← starRingEnd_self_apply (A _ _), ← inner_smul_left]
     simp [mul_comm, ← inner_smul_right, ← sum_inner, ← inner_sum, Finset.sum_nonneg]
@@ -519,8 +519,8 @@ noncomputable def mapL (f : E →L[𝕜] F) (g : G →L[𝕜] H) : (E ⊗[𝕜] 
 lemma mapL_def (f : E →L[𝕜] F) (g : G →L[𝕜] H) : mapL f g = f.rTensor H ∘L g.lTensor E := rfl
 
 theorem norm_mapL_le (f : E →L[𝕜] F) (g : G →L[𝕜] H) : ‖mapL f g‖ ≤ ‖f‖ * ‖g‖ := by
-  grw [mapL_def, ContinuousLinearMap.opNorm_comp_le, ContinuousLinearMap.rTensor_norm_le,
-    ContinuousLinearMap.lTensor_norm_le]
+  grw [mapL_def, ContinuousLinearMap.opNorm_comp_le, ContinuousLinearMap.norm_rTensor_le,
+    ContinuousLinearMap.norm_lTensor_le]
 
 @[simp] lemma mapL_apply (f : E →L[𝕜] F) (g : G →L[𝕜] H) (x) :
     mapL f g x = map f.toLinearMap g.toLinearMap x := by
