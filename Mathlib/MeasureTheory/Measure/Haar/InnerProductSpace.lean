@@ -104,9 +104,11 @@ noncomputable def OrthonormalBasis.measurableEquiv (b : OrthonormalBasis ι ℝ 
 theorem OrthonormalBasis.measurePreserving_measurableEquiv (b : OrthonormalBasis ι ℝ F) :
     MeasurePreserving b.measurableEquiv volume volume := by
   convert! (b.measurableEquiv.symm.measurable.measurePreserving _).symm
-  rw [← (EuclideanSpace.basisFun ι ℝ).addHaar_eq_volume]
-  erw [MeasurableEquiv.coe_toEquiv_symm, Basis.map_addHaar _ b.repr.symm.toContinuousLinearEquiv]
-  exact b.addHaar_eq_volume.symm
+  convert! b.addHaar_eq_volume.symm
+  have : (EuclideanSpace.basisFun ι ℝ).toBasis.map ↑↑b.repr.symm = b.toBasis := rfl
+  rw [← this, ← Basis.map_addHaar _ b.repr.symm.toContinuousLinearEquiv,
+    ← MeasurableEquiv.coe_toEquiv_symm, (EuclideanSpace.basisFun ι ℝ).addHaar_eq_volume]
+  rfl
 
 theorem OrthonormalBasis.measurePreserving_repr (b : OrthonormalBasis ι ℝ F) :
     MeasurePreserving b.repr volume volume := b.measurePreserving_measurableEquiv
