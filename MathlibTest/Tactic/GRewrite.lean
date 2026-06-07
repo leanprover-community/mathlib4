@@ -441,3 +441,45 @@ example {a b c d e f g h i j k : Rat} : a * b * c * d * e * f * g * h * i * j * 
   exact test_sorry
 
 end cache
+
+section universePolymorphic
+
+universe u v w w'
+
+axiom MyCard : Type u
+
+axiom liftEq : MyCard.{u} → MyCard.{v} → Prop
+axiom liftLE : MyCard.{u} → MyCard.{v} → Prop
+
+variable {a : MyCard.{u}} {b : MyCard.{v}} {c : MyCard.{w}} {d : MyCard.{w'}}
+
+@[gcongr]
+axiom liftLE_imp_liftLE_of_liftLE_of_liftLE (h₁ : liftLE a b) (h₂ : liftLE c d) :
+    liftLE b c → liftLE a d
+
+@[refl]
+axiom liftEq_rfl : liftEq a a
+
+@[symm]
+axiom liftEq.comm (h : liftEq a b) : liftEq b a
+
+axiom liftLE_of_liftEq (h : liftEq a b) : liftLE a b
+
+@[refl]
+theorem liftLE_rfl : liftLE a a := liftLE_of_liftEq liftEq_rfl
+namespace Mathlib.Tactic.GCongr
+
+/-- See if the term is `AntisymmRel r a b` and the goal is `r a b`. -/
+@[gcongr_forward]
+public meta def exactLiftLEOfLiftEq : ForwardExt where
+  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``liftLE_of_liftEq #[h])
+
+end Mathlib.Tactic.GCongr
+
+example (h : liftEq a b) (h' : liftLE b c) : liftLE a c := by
+  grw [h, h']
+
+example (h : liftEq b a) (h' : liftLE b c) : liftLE a c := by
+  grw [← h, ← h']
+
+end universePolymorphic
