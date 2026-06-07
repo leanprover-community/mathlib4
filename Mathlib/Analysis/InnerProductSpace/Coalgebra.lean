@@ -73,18 +73,20 @@ noncomputable abbrev coalgebraOfAlgebra (e : E ≃ₗ[𝕜] A) : Coalgebra 𝕜 
   comul := adjoint (e.symm.toLinearMap ∘ₗ mul' 𝕜 A ∘ₗ map e.toLinearMap e.toLinearMap)
   counit := innerₛₗ 𝕜 (e.symm 1)
   coassoc := by
-    rw [← adjoint_lTensor, ← adjoint_rTensor, ← toLinearEquiv_assocIsometry,
+    rw [← LinearMap.adjoint_lTensor, ← LinearMap.adjoint_rTensor, ← toLinearEquiv_assocIsometry,
       ← (assocIsometry 𝕜 _ _ _).symm_symm, ← adjoint_toLinearMap_eq_symm]
     simp_rw [← adjoint_comp]
     congr 1; ext; simp [mul_assoc]
   rTensor_counit_comp_comul := by
-    rw [← adjoint_toSpanSingleton, ← adjoint_rTensor, ← adjoint_comp, ← toLinearMap_symm_lid,
-      ← toLinearEquiv_lidIsometry, ← toLinearEquiv_symm, ← adjoint_toLinearMap_eq_symm]
+    rw [← adjoint_toSpanSingleton, ← LinearMap.adjoint_rTensor, ← adjoint_comp,
+      ← toLinearMap_symm_lid, ← toLinearEquiv_lidIsometry, ← toLinearEquiv_symm,
+      ← adjoint_toLinearMap_eq_symm]
     congr 1; ext; simp
   lTensor_counit_comp_comul := by
-    rw [← adjoint_toSpanSingleton, ← adjoint_lTensor, ← adjoint_comp, ← toLinearMap_symm_rid,
-      ← comm_trans_lid, ← toLinearEquiv_commIsometry, ← toLinearEquiv_lidIsometry,
-      ← toLinearEquiv_trans, ← toLinearEquiv_symm, ← adjoint_toLinearMap_eq_symm]
+    rw [← adjoint_toSpanSingleton, ← LinearMap.adjoint_lTensor, ← adjoint_comp,
+      ← toLinearMap_symm_rid, ← comm_trans_lid, ← toLinearEquiv_commIsometry,
+      ← toLinearEquiv_lidIsometry, ← toLinearEquiv_trans, ← toLinearEquiv_symm,
+      ← adjoint_toLinearMap_eq_symm]
     congr 1; ext; simp
 
 end coalgebraOfAlgebra
@@ -118,24 +120,24 @@ noncomputable abbrev ringOfCoalgebra :
   zero_mul x := by simp
   mul_zero x := by simp
   mul_assoc x y z := by
-    simp_rw [AlgebraOfCoalgebra.mul_def, ← rTensor_tmul, ← comp_apply, ← adjoint_rTensor,
-      ← adjoint_comp, ← coassoc_symm, adjoint_comp, adjoint_lTensor, comp_apply,
+    simp_rw [AlgebraOfCoalgebra.mul_def, ← rTensor_tmul, ← comp_apply, ← LinearMap.adjoint_rTensor,
+      ← adjoint_comp, ← coassoc_symm, adjoint_comp, LinearMap.adjoint_lTensor, comp_apply,
       ← toLinearEquiv_assocIsometry, ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
     simp only [symm_symm, toLinearEquiv_assocIsometry, LinearEquiv.coe_coe, assoc_tmul,
       lTensor_tmul]
   one := adjoint (counit (R := 𝕜) (A := E)) 1
   one_mul x := by
     dsimp [OfNat.ofNat]
-    rw [← rTensor_tmul, ← comp_apply, ← adjoint_rTensor, ← adjoint_comp, rTensor_counit_comp_comul,
-      ← toLinearMap_symm_lid, ← toLinearEquiv_lidIsometry, ← toLinearEquiv_symm,
-      adjoint_toLinearMap_eq_symm]
+    rw [← rTensor_tmul, ← comp_apply, ← LinearMap.adjoint_rTensor, ← adjoint_comp,
+      rTensor_counit_comp_comul, ← toLinearMap_symm_lid, ← toLinearEquiv_lidIsometry,
+      ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
     exact one_smul _ _
   mul_one x := by
     dsimp [OfNat.ofNat]
-    rw [← lTensor_tmul, ← comp_apply, ← adjoint_lTensor, ← adjoint_comp, lTensor_counit_comp_comul,
-      ← toLinearMap_symm_rid, ← comm_trans_lid, ← toLinearEquiv_commIsometry,
-      ← toLinearEquiv_lidIsometry, ← toLinearEquiv_trans, ← toLinearEquiv_symm,
-      adjoint_toLinearMap_eq_symm]
+    rw [← lTensor_tmul, ← comp_apply, ← LinearMap.adjoint_lTensor, ← adjoint_comp,
+      lTensor_counit_comp_comul, ← toLinearMap_symm_rid, ← comm_trans_lid,
+      ← toLinearEquiv_commIsometry, ← toLinearEquiv_lidIsometry, ← toLinearEquiv_trans,
+      ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
     exact one_smul _ _
 
 attribute [local instance] InnerProductSpace.ringOfCoalgebra in
@@ -153,22 +155,23 @@ noncomputable abbrev algebraOfCoalgebra : Algebra 𝕜 E where
           ← adjoint_comp, ← lTensor_comp_rTensor, comp_assoc, rTensor_counit_comp_comul,
           adjoint_comp, ← toLinearMap_symm_lid, ← toLinearEquiv_lidIsometry, ← toLinearEquiv_symm,
           adjoint_toLinearMap_eq_symm]
-        simp only [LinearIsometryEquiv.symm_symm, toLinearEquiv_lidIsometry, adjoint_lTensor,
-          coe_comp, LinearEquiv.coe_coe, Function.comp_apply, lTensor_tmul, lid_tmul]
+        simp only [LinearIsometryEquiv.symm_symm, toLinearEquiv_lidIsometry,
+          LinearMap.adjoint_lTensor, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+          lTensor_tmul, lid_tmul]
         rw [← smul_eq_mul, ← _root_.map_smul]
       map_zero' := map_zero _
       map_add' := map_add _ }
   commutes' r x := by
     dsimp
-    simp_rw [← rTensor_tmul, ← lTensor_tmul, ← adjoint_lTensor, ← adjoint_rTensor,
-      ← comp_apply, ← adjoint_comp, rTensor_counit_comp_comul, lTensor_counit_comp_comul,
-      ← toLinearMap_symm_rid, ← toLinearMap_symm_lid, ← comm_trans_lid,
+    simp_rw [← rTensor_tmul, ← lTensor_tmul, ← LinearMap.adjoint_lTensor,
+      ← LinearMap.adjoint_rTensor, ← comp_apply, ← adjoint_comp, rTensor_counit_comp_comul,
+      lTensor_counit_comp_comul, ← toLinearMap_symm_rid, ← toLinearMap_symm_lid, ← comm_trans_lid,
       ← toLinearEquiv_commIsometry, ← toLinearEquiv_lidIsometry, ← toLinearEquiv_trans,
       ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
     simp
   smul_def' r x := by
     dsimp
-    simp_rw [← rTensor_tmul, ← adjoint_rTensor, ← comp_apply, ← adjoint_comp,
+    simp_rw [← rTensor_tmul, ← LinearMap.adjoint_rTensor, ← comp_apply, ← adjoint_comp,
       rTensor_counit_comp_comul, ← toLinearMap_symm_lid, ← toLinearEquiv_lidIsometry,
       ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
     simp
