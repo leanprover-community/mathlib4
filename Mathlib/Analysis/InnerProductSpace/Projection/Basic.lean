@@ -314,9 +314,6 @@ theorem orthogonalProjectionOnto_norm_le : ‖K.orthogonalProjectionOnto‖ ≤ 
 @[deprecated (since := "2026-05-05")]
 alias orthogonalProjection_norm_le := orthogonalProjectionOnto_norm_le
 
-@[deprecated (since := "2026-05-05")]
-alias orthogonalProjection_norm_le := orthogonalProjectionOnto_norm_le
-
 theorem starProjection_norm_le : ‖K.starProjection‖ ≤ 1 :=
   K.orthogonalProjectionOnto_norm_le
 
