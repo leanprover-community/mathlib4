@@ -909,9 +909,6 @@ Q830513:
 
 Q834025:
   title: Cauchy integral theorem
-  decl: Complex.circleIntegral_div_sub_of_differentiable_on_off_countable
-  authors: Yury Kudryashov
-  date: 2021
 
 Q834211:
   title: Wallace–Bolyai–Gerwien theorem
