@@ -204,7 +204,7 @@ lemma codisjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
 
 @[simp] theorem supportedEquivFinsupp_symm_apply_coe (s : Set α) [DecidablePred (· ∈ s)]
     (f : s →₀ M) : (supportedEquivFinsupp (R := R) s).symm f = f.extendDomain := by
-  convert restrictSupportEquiv_symm_apply_coe ..
+  convert! restrictSupportEquiv_symm_apply_coe ..
 
 @[simp] theorem supportedEquivFinsupp_symm_single (s : Set α) (i : s) (a : M) :
     ((supportedEquivFinsupp (R := R) s).symm (single i a) : α →₀ M) = single ↑i a := by
