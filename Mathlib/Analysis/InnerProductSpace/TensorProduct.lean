@@ -485,12 +485,12 @@ theorem commIsometry_comp_rTensor_comp_commIsometry_eq (f : E →L[𝕜] F) :
   ext; simp [lTensor_def]
 
 variable (G) in
-theorem lTensor_comp_commIsometry  (f : E →L[𝕜] F) :
+theorem lTensor_comp_commIsometry (f : E →L[𝕜] F) :
     f.lTensor G ∘L commIsometry 𝕜 E G = commIsometry 𝕜 F G ∘L f.rTensor G := by
   ext; simp [lTensor_def]
 
 variable (E) in
-theorem rTensor_comp_commIsometry  (g : G →L[𝕜] H) :
+theorem rTensor_comp_commIsometry (g : G →L[𝕜] H) :
     g.rTensor E ∘L commIsometry 𝕜 E G = commIsometry 𝕜 E H ∘L g.lTensor E := by
   ext; simp [lTensor_def]
 
