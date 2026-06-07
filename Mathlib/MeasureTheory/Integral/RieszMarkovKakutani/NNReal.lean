@@ -77,8 +77,9 @@ theorem _root_.MeasureTheory.Measure.ext_of_integral_eq_on_compactlySupported_nn
   apply Measure.ext_of_integral_eq_on_compactlySupported
   intro f
   repeat rw [integral_eq_integral_pos_part_sub_integral_neg_part f.integrable]
-  erw [hμν f.nnrealPart, hμν (-f).nnrealPart]
-  rfl
+  have := hμν f.nnrealPart
+  have := hμν (-f).nnrealPart
+  simp_all
 
 /-- If two regular measures induce the same linear functional on `C_c(X, ℝ≥0)`, then they are
 equal. -/
