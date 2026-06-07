@@ -13,7 +13,17 @@ public import Mathlib.RingTheory.HopfAlgebra.Basic
 /-!
 # Graded connected bialgebras are Hopf algebras
 
-Every connected graded bialgebra admits a unique antipode, given by Takeuchi's formula.
+Every connected graded bialgebra admits an antipode, given by Takeuchi's formula.
+
+## Main declarations
+
+* `HopfAlgebra.takeuchiAntipode`: the antipode of a connected graded bialgebra, defined on `𝒜 n`
+  as the truncated Takeuchi series `∑_{k=0}^{n} (-(id - uε))^k` in the convolution algebra.
+* `HopfAlgebra.ofGradedConnected`: every connected graded bialgebra is a Hopf algebra.
+
+## TODO
+
+* Show that `takeuchiAntipode` is a graded map.
 
 ## References
 
@@ -31,24 +41,25 @@ variable {R A : Type*} [CommSemiring R] [Ring A] [Bialgebra R A]
 
 /-! ### The Takeuchi element and its partial geometric series in `WithConv` -/
 
-/-- `id_A - 1` in the convolution algebra `WithConv (A →ₗ[R] A)`. -/
+/-- The element `id - uε = toConv LinearMap.id - 1` of the convolution algebra
+`WithConv (A →ₗ[R] A)`, whose convolution powers enter Takeuchi's antipode formula. -/
 noncomputable def takeuchiF : WithConv (A →ₗ[R] A) := toConv LinearMap.id - 1
 
-/-- Truncated Takeuchi series `∑_{k=0}^{N} (-f)^k` in `WithConv (A →ₗ[R] A)`. -/
+/-- The truncated Takeuchi series `∑ k ∈ Finset.range (N + 1), (-takeuchiF) ^ k` in
+`WithConv (A →ₗ[R] A)`. -/
 noncomputable def takeuchiT (N : ℕ) : WithConv (A →ₗ[R] A) :=
   ∑ k ∈ Finset.range (N + 1), (-takeuchiF) ^ k
 
+private lemma toConv_id_eq : (toConv LinearMap.id : WithConv (A →ₗ[R] A)) = 1 - -takeuchiF := by
+  unfold takeuchiF; abel
+
 lemma takeuchiT_mul_id (N : ℕ) :
     (takeuchiT N : WithConv (A →ₗ[R] A)) * toConv LinearMap.id = 1 - (-takeuchiF) ^ (N + 1) := by
-  have : (toConv LinearMap.id : WithConv (A →ₗ[R] A)) = 1 - -takeuchiF := by
-    unfold takeuchiF; abel
-  rw [takeuchiT, this]; exact geom_sum_mul_neg _ _
+  rw [takeuchiT, toConv_id_eq]; exact geom_sum_mul_neg _ _
 
 lemma id_mul_takeuchiT (N : ℕ) :
     (toConv LinearMap.id : WithConv (A →ₗ[R] A)) * takeuchiT N = 1 - (-takeuchiF) ^ (N + 1) := by
-  have : (toConv LinearMap.id : WithConv (A →ₗ[R] A)) = 1 - -takeuchiF := by
-    unfold takeuchiF; abel
-  rw [takeuchiT, this]; exact mul_neg_geom_sum _ _
+  rw [takeuchiT, toConv_id_eq]; exact mul_neg_geom_sum _ _
 
 /-! ### Local nilpotence: `(g^k).ofConv` annihilates `𝒜 m` for `m < k` -/
 
@@ -57,8 +68,8 @@ section LocalNilpotence
 variable (𝒜 : ℕ → Submodule R A) [GradedCoalgebra 𝒜]
 
 /-- If `g.ofConv` annihilates `𝒜 0`, then `g^k` annihilates `𝒜 m` for `m < k`. -/
-lemma convPow_apply_eq_zero_of_lt (g : WithConv (A →ₗ[R] A))
-    (hg : ∀ {x : A}, x ∈ 𝒜 0 → g.ofConv x = 0)
+private lemma convPow_apply_eq_zero_of_lt (g : WithConv (A →ₗ[R] A))
+    (hg : ∀ x ∈ 𝒜 0, g.ofConv x = 0)
     {m k : ℕ} (hmk : m < k) {x : A} (hx : x ∈ 𝒜 m) :
     (g ^ k).ofConv x = 0 := by
   induction k generalizing m x with
@@ -70,12 +81,12 @@ lemma convPow_apply_eq_zero_of_lt (g : WithConv (A →ₗ[R] A))
     suffices h : (TensorProduct.map g.ofConv (g^k').ofConv) (comul x) = 0 by
       rw [h, map_zero]
     refine (Submodule.mem_bot R).mp <|
-      Bialgebra.apply_mem_of_mem_bigradedPart 𝒜 _ ⊥ (fun {p q} hpq a b => ?_)
+      apply_mem_of_mem_bigradedPart 𝒜 _ ⊥ (fun p q hpq a ha b hb => ?_)
         (GradedCoalgebra.comul_mem hx)
     rw [Submodule.mem_bot, TensorProduct.map_tmul]
     rcases Nat.eq_zero_or_pos p with hp | hp
-    · subst hp; rw [hg a.2, TensorProduct.zero_tmul]
-    · rw [ih (show q < k' by omega) b.2, TensorProduct.tmul_zero]
+    · subst hp; rw [hg a ha, TensorProduct.zero_tmul]
+    · rw [ih (show q < k' by omega) hb, TensorProduct.tmul_zero]
 
 end LocalNilpotence
 
@@ -88,51 +99,33 @@ variable (𝒜 : ℕ → Submodule R A)
 open Bialgebra
 
 section
-variable [Coalgebra.IsConnected 𝒜]
+variable [GradedAlgebra.IsConnected 𝒜] [GradedCoalgebra 𝒜]
 
-/-- `f := id_A - 1` vanishes on `𝒜 0`. -/
-lemma takeuchiF_apply_of_mem_zero {x : A} (hx : x ∈ 𝒜 0) :
-    (takeuchiF (R := R)).ofConv x = 0 := by
-  change x - algebraMap R A (counit x) = 0
-  rw [Algebra.algebraMap_eq_smul_one,
-    ← Coalgebra.IsConnected.coe_eq_counit_smul_one (𝒜 := 𝒜) hx, sub_self]
-
-variable [GradedCoalgebra 𝒜]
-
-/-- `f^k` annihilates `𝒜 m` for `m < k`. -/
-lemma takeuchiF_pow_apply_of_mem {m k : ℕ} (hmk : m < k) {x : A} (hx : x ∈ 𝒜 m) :
-    ((takeuchiF (R := R)) ^ k).ofConv x = 0 :=
-  convPow_apply_eq_zero_of_lt 𝒜 _ (takeuchiF_apply_of_mem_zero 𝒜) hmk hx
-
-/-- `(-f)^k` annihilates `𝒜 m` for `m < k`. -/
-lemma neg_takeuchiF_pow_apply_of_mem {m k : ℕ} (hmk : m < k) {x : A} (hx : x ∈ 𝒜 m) :
+/-- `(-takeuchiF) ^ k` annihilates `𝒜 m` for `m < k`. The case `k = 1` is connectedness: the
+Takeuchi element `id - uε` vanishes on `𝒜 0`. -/
+private lemma neg_takeuchiF_pow_apply_of_mem {m k : ℕ} (hmk : m < k) {x : A} (hx : x ∈ 𝒜 m) :
     ((-takeuchiF (R := R)) ^ k).ofConv x = 0 := by
-  refine convPow_apply_eq_zero_of_lt 𝒜 _ (fun {x} hx => ?_) hmk hx
+  refine convPow_apply_eq_zero_of_lt 𝒜 _ (fun x hx => ?_) hmk hx
+  have hF : (takeuchiF (R := R)).ofConv x = 0 := by
+    change x - algebraMap R A (counit x) = 0
+    rw [Algebra.algebraMap_eq_smul_one,
+      ← GradedAlgebra.IsConnected.eq_counit_smul_one (𝒜 := 𝒜) hx, sub_self]
   change -(takeuchiF (R := R)).ofConv x = 0
-  rw [takeuchiF_apply_of_mem_zero 𝒜 hx, neg_zero]
-
-/-- On `𝒜 m`, `T_N` agrees with `T_m` for any `N ≥ m`. -/
-private lemma takeuchiT_apply_eq_of_le {m N : ℕ} (hmN : m ≤ N) {a : A} (ha : a ∈ 𝒜 m) :
-    (takeuchiT (R := R) N).ofConv a = (takeuchiT (R := R) m).ofConv a := by
-  unfold takeuchiT
-  rw [WithConv.ofConv_sum, LinearMap.sum_apply, WithConv.ofConv_sum, LinearMap.sum_apply]
-  refine (Finset.sum_subset (Finset.range_mono (Nat.succ_le_succ hmN)) fun k _ hk => ?_).symm
-  rw [Finset.mem_range, not_lt] at hk
-  exact neg_takeuchiF_pow_apply_of_mem 𝒜 (Nat.lt_of_succ_le hk) ha
+  rw [hF, neg_zero]
 
 end
 
 section
-variable [GradedAlgebra 𝒜]
+variable [DirectSum.Decomposition 𝒜]
 
-/-- The Takeuchi antipode: on `𝒜 n` it equals `(T_n).ofConv`, extended to all of `A` via the
-direct-sum decomposition `A ≃ ⨁ n, 𝒜 n`. -/
+/-- The Takeuchi antipode: on `𝒜 n` it equals `(takeuchiT n).ofConv`, extended to all of `A` via
+the direct-sum decomposition `A ≃ ⨁ n, 𝒜 n`. -/
 noncomputable def takeuchiAntipode : A →ₗ[R] A :=
   (toModule R ℕ A
     (fun n => ((takeuchiT n).ofConv).comp (𝒜 n).subtype)).comp
     (decomposeLinearEquiv 𝒜).toLinearMap
 
-/-- On `𝒜 m`, the antipode equals `(T_m).ofConv`. -/
+/-- On `𝒜 m`, the antipode equals `(takeuchiT m).ofConv`. -/
 lemma takeuchiAntipode_apply_of_mem {m : ℕ} {a : A} (ha : a ∈ 𝒜 m) :
     takeuchiAntipode 𝒜 a = (takeuchiT (R := R) m).ofConv a := by
   classical
@@ -141,13 +134,18 @@ lemma takeuchiAntipode_apply_of_mem {m : ℕ} {a : A} (ha : a ∈ 𝒜 m) :
 end
 
 section
-variable [GradedAlgebra 𝒜] [GradedCoalgebra 𝒜] [Coalgebra.IsConnected 𝒜]
+variable [GradedAlgebra 𝒜] [GradedCoalgebra 𝒜] [GradedAlgebra.IsConnected 𝒜]
 
-/-- On `𝒜 m`, the antipode equals `(T_N).ofConv` for any `N ≥ m`. -/
+/-- On `𝒜 m`, the antipode equals `(takeuchiT N).ofConv` for any `N ≥ m`: the truncated series
+stabilizes once `N ≥ m`, since `(-takeuchiF) ^ k` kills `𝒜 m` for every `k > m`. -/
 private lemma takeuchiAntipode_apply_eq_takeuchiT_of_le {m N : ℕ} (hmN : m ≤ N)
     {a : A} (ha : a ∈ 𝒜 m) :
     takeuchiAntipode 𝒜 a = (takeuchiT (R := R) N).ofConv a := by
-  rw [takeuchiAntipode_apply_of_mem 𝒜 ha, ← takeuchiT_apply_eq_of_le 𝒜 hmN ha]
+  rw [takeuchiAntipode_apply_of_mem 𝒜 ha, takeuchiT, WithConv.ofConv_sum, LinearMap.sum_apply,
+    takeuchiT, WithConv.ofConv_sum, LinearMap.sum_apply]
+  refine Finset.sum_subset (Finset.range_mono (Nat.succ_le_succ hmN)) fun k _ hk => ?_
+  rw [Finset.mem_range, not_lt] at hk
+  exact neg_takeuchiF_pow_apply_of_mem 𝒜 (Nat.lt_of_succ_le hk) ha
 
 /-- Agreement of the piecewise antipode and the uniform truncation on the image of `comul x`
 via `rTensor` (controlling the left factor's degree). -/
@@ -155,20 +153,20 @@ private lemma takeuchiAntipode_rTensor_comul_eq {n : ℕ} {x : A} (hx : x ∈ �
     ((takeuchiAntipode 𝒜).rTensor A) (comul x) =
       (((takeuchiT n).ofConv).rTensor A) (comul x) := by
   refine sub_eq_zero.mp <| (Submodule.mem_bot R).mp <|
-    Bialgebra.apply_mem_of_mem_bigradedPart 𝒜
+    apply_mem_of_mem_bigradedPart 𝒜
       ((takeuchiAntipode 𝒜).rTensor A - ((takeuchiT n).ofConv).rTensor A) ⊥
-      (fun {p q} hpq a b => (Submodule.mem_bot R).mpr ?_) (GradedCoalgebra.comul_mem hx)
-  simp [takeuchiAntipode_apply_eq_takeuchiT_of_le 𝒜 (show p ≤ n by omega) a.2]
+      (fun p q hpq a ha b hb => (Submodule.mem_bot R).mpr ?_) (GradedCoalgebra.comul_mem hx)
+  simp [takeuchiAntipode_apply_eq_takeuchiT_of_le 𝒜 (show p ≤ n by omega) ha]
 
 /-- Agreement on the image of `comul x` via `lTensor` (controlling the right factor's degree). -/
 private lemma takeuchiAntipode_lTensor_comul_eq {n : ℕ} {x : A} (hx : x ∈ 𝒜 n) :
     ((takeuchiAntipode 𝒜).lTensor A) (comul x) =
       (((takeuchiT n).ofConv).lTensor A) (comul x) := by
   refine sub_eq_zero.mp <| (Submodule.mem_bot R).mp <|
-    Bialgebra.apply_mem_of_mem_bigradedPart 𝒜
+    apply_mem_of_mem_bigradedPart 𝒜
       ((takeuchiAntipode 𝒜).lTensor A - ((takeuchiT n).ofConv).lTensor A) ⊥
-      (fun {p q} hpq a b => (Submodule.mem_bot R).mpr ?_) (GradedCoalgebra.comul_mem hx)
-  simp [takeuchiAntipode_apply_eq_takeuchiT_of_le 𝒜 (show q ≤ n by omega) b.2]
+      (fun p q hpq a ha b hb => (Submodule.mem_bot R).mpr ?_) (GradedCoalgebra.comul_mem hx)
+  simp [takeuchiAntipode_apply_eq_takeuchiT_of_le 𝒜 (show q ≤ n by omega) hb]
 
 /-- Right antipode axiom for `takeuchiAntipode`. -/
 theorem takeuchiAntipode_mul_rTensor_comul :
