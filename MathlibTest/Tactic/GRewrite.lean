@@ -438,7 +438,7 @@ end cache
 
 section strict
 
-variable {α : Type u} [PartialOrder α] {a b c d : α}
+variable {α : Type u} [LinearOrder α] {a b c d : α}
 
 example (h₁ : a < b) (h₂ : b ≤ c) : a < c := by
   grw [h₁, h₂]
@@ -453,16 +453,16 @@ example (h₁ : a ≤ b) (h₂ : b < c) : a < c := by
   grw [← h₂, ← h₁]
 
 example (h₁ : a < b) (h₂ : b ≤ c) : a < c := by
-  by_contra!; grw [h₁, h₂] at this; absurd this; rfl
+  by_contra!; grw [h₁, h₂] at this; contrapose! this; rfl
 
 example (h₁ : a < b) (h₂ : b ≤ c) : a < c := by
-  by_contra!; grw [← h₂, ← h₁] at this; absurd this; rfl
+  by_contra!; grw [← h₂, ← h₁] at this; contrapose! this; rfl
 
 example (h₁ : a ≤ b) (h₂ : b < c) : a < c := by
-  by_contra!; grw [h₁, h₂] at this; absurd this; rfl
+  by_contra!; grw [h₁, h₂] at this; contrapose! this; rfl
 
 example (h₁ : a ≤ b) (h₂ : b < c) : a < c := by
-  by_contra!; grw [← h₂, ← h₁] at this; absurd this; rfl
+  by_contra!; grw [← h₂, ← h₁] at this; contrapose! this; rfl
 
 -- Strict inequalities can also be used as non-strict ones:
 example (h₁ : a < b) (h₂ : b < c) : a ≤ c := by
