@@ -27,6 +27,8 @@ In this file we define `HopfAlgebra`, and provide instances for:
 
 * `HopfAlgebra.antipode_one` : the antipode of the unit is the unit.
 * `HopfAlgebra.antipode_mul` : the antipode is an antihomomorphism: `S(ab) = S(b)S(a)`.
+* `HopfAlgebra.eq_antipode_of_convMul_id_eq_one` : a left convolution inverse of `id` is the
+  antipode.
 
 ## TODO
 
@@ -214,6 +216,11 @@ theorem antipode_mul (a b : A) :
         simp only [Algebra.smul_def, mul_one, ← map_mul, mul_comm (counit x)]
       _ = (counit (R := R) y • counit x) • (1 : A) := by
         simp only [smul_eq_mul, mul_comm (counit y)]
+
+/-- A left convolution inverse of the identity is the antipode. -/
+theorem eq_antipode_of_convMul_id_eq_one {S₀ : A →ₗ[R] A}
+    (h : toConv S₀ * toConv LinearMap.id = 1) : S₀ = antipode R :=
+  toConv_injective (left_inv_eq_right_inv h (WithConv.ext mul_antipode_lTensor_comul))
 
 end HopfAlgebra
 

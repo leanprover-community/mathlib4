@@ -19,8 +19,10 @@ pointwise convolution inverses of multiplicative maps.
 
 * `HopfAlgebra.ofGenerators` : construct a Hopf algebra from data on a generating set.
 * `HopfAlgebra.convMul_eq_one_of_adjoin_eq_top_left` and
-  `convMul_eq_one_of_adjoin_eq_top_right`: the extension principle promoting a pointwise
-  one-sided convolution inverse of a multiplicative map on generators to a global one.
+  `HopfAlgebra.convMul_eq_one_of_adjoin_eq_top_right`: a pointwise one-sided convolution inverse of
+  a multiplicative map on generators is a global one.
+* `HopfAlgebra.eq_antipode_of_adjoin_eq_top` : a left convolution inverse of `id` on a generating
+  set is the antipode.
 -/
 
 public section
@@ -98,6 +100,7 @@ theorem convMul_eq_one_of_adjoin_eq_top_right
 
 end ExtensionPrinciple
 
+section Construction
 variable [Semiring A] [Bialgebra R A] {S₀ : A →ₗ[R] A} {s : Set A}
 
 variable (S₀) in
@@ -116,5 +119,24 @@ noncomputable abbrev ofGenerators (S₀_one : S₀ 1 = 1) (S₀_mul : ∀ x y, S
       adjoin_eq_top S₀_convMul_id)
     (convMul_eq_one_of_adjoin_eq_top_right S₀_one S₀_mul rfl (fun _ _ => rfl)
       adjoin_eq_top id_convMul_S₀)
+
+end Construction
+
+section Uniqueness
+variable [Semiring A] [HopfAlgebra R A] {S₀ : A →ₗ[R] A} {s : Set A}
+
+variable (S₀) in
+/-- A unital antimultiplicative map that is a left convolution inverse of the identity on an
+algebra-generating set is the antipode. -/
+theorem eq_antipode_of_adjoin_eq_top (S₀_one : S₀ 1 = 1)
+    (S₀_mul : ∀ x y, S₀ (x * y) = S₀ y * S₀ x) (adjoin_eq_top : Algebra.adjoin R s = ⊤)
+    (S₀_convMul_id : ∀ p ∈ s,
+      (toConv S₀ * toConv (.id : A →ₗ[R] A)) p = (1 : WithConv (A →ₗ[R] A)) p) :
+    S₀ = antipode R :=
+  eq_antipode_of_convMul_id_eq_one
+    (convMul_eq_one_of_adjoin_eq_top_left S₀_one S₀_mul rfl (fun _ _ => rfl)
+      adjoin_eq_top S₀_convMul_id)
+
+end Uniqueness
 
 end HopfAlgebra
