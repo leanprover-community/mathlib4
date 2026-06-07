@@ -93,9 +93,7 @@ lemma charFun_tendsto_if_inner_tendsto (hX : Measurable X) (hXn : ∀ n, Measura
   convert h_weak using 1
   · ext n
     rw [← h_eq_Pn n]
-    rfl
   · rw [← h_eq_Q]
-    rfl
 
 -- 3. The final Cramèr-Wold theorem using Lévy Convergence
 theorem cramerWold (hX : Measurable X) (hXn : ∀ n, Measurable (Xn n)) :
