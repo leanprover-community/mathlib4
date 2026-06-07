@@ -168,7 +168,7 @@ def GRewriteLemma.apply (lem : GRewriteLemma) (goal : MVarId) (symm : Bool)
   let mctx ← getMCtx
   for (n, tac) in (forwardExt.getState (← getEnv)).2 do
     -- Explicitly exclude a few `gcongr_forward` extensions that are not relevant here.
-    if n matches ``GCongr.exact | ``GCongr.symmExact | ``GCongr.exactRefl then continue
+    if n matches ``GCongr.exact | ``GCongr.exactRefl then continue
     try tac.eval proof goal; return true
     catch _ => setMCtx mctx
   return false

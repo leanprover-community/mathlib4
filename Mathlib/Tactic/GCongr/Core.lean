@@ -467,30 +467,32 @@ open Elab Tactic
     goal.assignIfDefEq (← mkAppOptM ``Eq.subst #[h, m])
     goal.applyRfl
 
-/-- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
-@[gcongr_forward] def symmExact : ForwardExt where
-  eval h goal := do (← goal.applySymm).assignIfDefEq h
-
 @[gcongr_forward] def exact : ForwardExt where
   eval e m := m.assignIfDefEq e
 
 /-- Attempt to resolve an (implicitly) relational goal by one of a provided list of hypotheses,
 either with such a hypothesis directly or by a limited palette of relational forward-reasoning from
 these hypotheses. -/
-def _root_.Lean.MVarId.gcongrForward (hs : Array Expr) (g : MVarId) : MetaM Bool :=
-  withReducible do
-    withTraceNode `Meta.gcongr (fun _ => return m!"gcongr_forward: ⊢ {← g.getType}") do
-    -- Iterate over a list of terms
-    let tacs := (forwardExt.getState (← getEnv)).2
-    let mctx ← getMCtx
-    for h in hs do
-      try
-        tacs.firstM fun (n, tac) =>
-          withTraceNode `Meta.gcongr (return m!"{·.emoji} trying {n} on {h} : {← inferType h}") do
-            tac.eval h g
-        return true
-      catch _ => setMCtx mctx
-    return false
+def _root_.Lean.MVarId.gcongrForward (hs : Array Expr) (g : MVarId) : MetaM Bool := withReducible do
+  withTraceNode `Meta.gcongr (fun _ => return m!"gcongr_forward: ⊢ {← g.getType}") do
+  -- Iterate over a list of terms
+  let tacs := (forwardExt.getState (← getEnv)).2
+  let mctx ← getMCtx
+  for h in hs do
+    try
+      tacs.firstM fun (n, tac) =>
+        withTraceNode `Meta.gcongr (return m!"{·.emoji} trying {n} on {h} : {← inferType h}") do
+          tac.eval h g
+      return true
+    catch _ => setMCtx mctx
+    try
+      let h ← h.applySymm
+      tacs.firstM fun (n, tac) =>
+        withTraceNode `Meta.gcongr (return m!"{·.emoji} trying {n} on {h} : {← inferType h}") do
+          tac.eval h g
+      return true
+    catch _ => setMCtx mctx
+  return false
 
 /--
 This is used as the default main-goal discharger,
