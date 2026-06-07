@@ -454,6 +454,17 @@ theorem ext_of_Ico_finite {α : Type*} [TopologicalSpace α] {m : MeasurableSpac
   rintro - ⟨a, b, hlt, rfl⟩
   exact h hlt
 
+theorem ext_of_Ioc_finite' {α : Type*} [LinearOrder α] (a : αᵒᵈ) :
+    OrderDual.toDual (α := α) a = a := rfl
+
+theorem ext_of_Ioc_finite'' {α : Type*} [LinearOrder α] (a b : αᵒᵈ) :
+    ⇑OrderDual.ofDual ⁻¹' Ioc (α := α) (↑b : α) a = Ico a b := by
+  nth_rw 2 [← ext_of_Ioc_finite' a, ← ext_of_Ioc_finite' b]
+  rw [Ico_toDual (α := α)]
+
+theorem ext_of_Ioc_finite''' {α : Type*} [LinearOrder α] (a b : αᵒᵈ) :
+    ⇑OrderDual.ofDual ⁻¹' Ioc a b = Ioc a b := rfl
+
 set_option backward.isDefEq.respectTransparency false in
 /-- Two finite measures on a Borel space are equal if they agree on all open-closed intervals.  If
 `α` is a conditionally complete linear order with no top element,
@@ -464,8 +475,7 @@ theorem ext_of_Ioc_finite {α : Type*} [TopologicalSpace α] {m : MeasurableSpac
     [IsFiniteMeasure μ] (hμν : μ univ = ν univ) (h : ∀ ⦃a b⦄, a < b → μ (Ioc a b) = ν (Ioc a b)) :
     μ = ν := by
   refine @ext_of_Ico_finite αᵒᵈ _ _ _ _ _ ‹_› μ ν _ hμν fun a b hab => ?_
-  erw [Ico_toDual (α := α)]
-  exact h hab
+  convert! h hab using 1 <;> rw [← ext_of_Ioc_finite''] <;> rfl
 
 /-- Two measures which are finite on closed-open intervals are equal if they agree on all
 closed-open intervals. -/
