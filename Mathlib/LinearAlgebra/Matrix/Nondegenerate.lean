@@ -90,7 +90,7 @@ theorem SeparatingRight.eq_zero_of_mulVec_eq_zero [Finite m] (hM : M.SeparatingR
     (hv : M *ᵥ v = 0) : v = 0 :=
   separatingRight_iff_forall_mulVec_eq_zero.mp hM v hv
 
-theorem nondegenerate_iff_forall_eq_zero :
+theorem nondegenerate_iff_forall_mulVec_and_vecMul_eq_zero :
     M.Nondegenerate ↔ (∀ v, v ᵥ* M = 0 → v = 0) ∧ (∀ v, M *ᵥ v = 0 → v = 0) := by
   rw [nondegenerate_iff, separatingLeft_iff_forall_vecMul_eq_zero,
     separatingRight_iff_forall_mulVec_eq_zero]
