@@ -153,6 +153,20 @@ lemma riemannZeta_def_of_ne_zero {s : ℂ} (hs : s ≠ 0) :
     riemannZeta s = completedRiemannZeta s / Gammaℝ s := by
   rw [riemannZeta, hurwitzZetaEven, Function.update_of_ne hs, completedHurwitzZetaEven_zero]
 
+/-- Definition of the zeta function in terms of `completedRiemannZeta₀`. -/
+lemma riemannZeta_eq_completedRiemannZeta₀ {s : ℂ} (hs : s ≠ 0) : riemannZeta s =
+    (completedRiemannZeta₀ s - 1 / s - 1 / (1 - s)) / (π ^ (-s / 2) * Gamma (s / 2)) := by
+  rw [riemannZeta_def_of_ne_zero hs, completedRiemannZeta_eq, Gammaℝ]
+
+/-- Version of `completedRiemannZeta₀` that avoids `s ≠ 0` -/
+lemma riemannZeta_eq_mul_completedRiemannZeta₀ (s : ℂ) :
+    riemannZeta s = (s * completedRiemannZeta₀ s - 1 - s / (1 - s)) /
+      (2 * π ^ (-s / 2) * Gamma (s / 2 + 1)) := by
+  rcases eq_or_ne s 0 with rfl | hs
+  · simp [riemannZeta_zero]
+  · rw [riemannZeta_eq_completedRiemannZeta₀ hs, Gamma_add_one (s / 2) (by grind)]
+    field
+
 /-- The trivial zeroes of the zeta function. -/
 theorem riemannZeta_neg_two_mul_nat_add_one (n : ℕ) : riemannZeta (-2 * (n + 1)) = 0 :=
   hurwitzZetaEven_neg_two_mul_nat_add_one 0 n
