@@ -144,6 +144,7 @@ open Scheme Pullback
 
 variable (𝒰 : Y.OpenCover) (𝒱 : ∀ i, (pullback f (𝒰.f i)).OpenCover)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
     (hf : Function.Injective f) :
@@ -171,6 +172,7 @@ lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
   rw [range_map]
   simp [← H, ← hz₁, ← hy]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange :
     Set.range (pullback.diagonal f) ⊆ diagonalCoverDiagonalRange f 𝒰 𝒱 := by

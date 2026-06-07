@@ -141,7 +141,7 @@ theorem intValuation.map_add_le_max' (x y : R) :
     · rw [hy, add_zero]
       order
     · by_cases hxy : x + y = 0
-      · rw [intValuationDef, if_pos hxy]; exact zero_le'
+      · rw [intValuationDef, if_pos hxy]; exact zero_le
       · rw [v.intValuationDef_if_neg hxy, v.intValuationDef_if_neg hx, v.intValuationDef_if_neg hy,
           le_max_iff]
         simp only [exp_le_exp, neg_le_neg_iff, Nat.cast_le, ← min_le_iff]
@@ -247,7 +247,7 @@ theorem intValuation_le_pow_iff_dvd (r : R) (n : ℕ) :
     v.intValuation r ≤ exp (-(n : ℤ)) ↔ v.asIdeal ^ n ∣ Ideal.span {r} := by
   classical
   by_cases hr : r = 0
-  · simp_rw [hr, Valuation.map_zero, Ideal.dvd_span_singleton, zero_le', Submodule.zero_mem]
+  · simp_rw [hr, Valuation.map_zero, Ideal.dvd_span_singleton, zero_le, Submodule.zero_mem]
   · rw [v.intValuation_if_neg hr, exp_le_exp, neg_le_neg_iff, Int.ofNat_le,
       Ideal.dvd_span_singleton, ← Associates.le_singleton_iff,
       Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hr) v.associates_irreducible]
@@ -603,15 +603,15 @@ lemma valuedAdicCompletion_surjective :
     Function.Surjective (Valued.v : (v.adicCompletion K) → ℤᵐ⁰) :=
   Valued.valuedCompletion_surjective_iff.mpr <| .of_comp (v.valuation_surjective K)
 
-lemma adicCompletion_valueGroup_eq :
-    MonoidWithZeroHom.valueGroup (Valued.v (R := adicCompletion K v)) =
-      MonoidWithZeroHom.valueGroup (valuation K v) := by
+lemma adicCompletion_valueGroup_eq : MonoidWithZeroHom.valueGroup (.ofClass (Valued.v
+      (R := adicCompletion K v))) =
+    MonoidWithZeroHom.valueGroup (.ofClass (valuation K v)) := by
   ext n
   simp only [MonoidWithZeroHom.mem_valueGroup_iff_of_comm, ne_eq, map_eq_zero]
-  refine ⟨fun ⟨a, ha0, x, hx⟩ ↦ ?_, fun ⟨a, ha0, x, hx⟩  ↦ ⟨a, by simp [ha0], x, by simp [hx]⟩⟩
+  refine ⟨fun ⟨a, ha0, x, hx⟩ ↦ ?_, fun ⟨a, ha0, x, hx⟩  ↦ ⟨a, by simp [ha0], x, by simpa using hx⟩⟩
   obtain ⟨b, hb⟩ := valuation_surjective K v (Valued.v a)
   obtain ⟨y, hy⟩ := valuation_surjective K v (Valued.v x)
-  refine ⟨b, ?_, y, by simp [hb, hy, hx]⟩
+  refine ⟨b, ?_, y, by simpa [hb, hy] using hx⟩
   rwa [← ne_eq, ← (valuation K v).ne_zero_iff, hb, Valuation.ne_zero_iff]
 
 /-- The ring of integers of `adicCompletion`. -/

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Heather Macbeth
+Authors: Heather Macbeth, Jireh Loreaux
 -/
 module
 
@@ -132,6 +132,13 @@ theorem memℓp_gen_iff'' {f : (i : α) → E i} (hp : 0 < p.toReal) :
     Memℓp f p ↔ ∃ C, 0 ≤ C ∧ ∀ (s : Finset α), ∑ i ∈ s, ‖f i‖ ^ p.toReal ≤ C := by
   refine ⟨fun hf ↦ ?_, fun ⟨C, _, hC⟩ ↦ memℓp_gen' hC⟩
   exact ⟨_, tsum_nonneg fun i ↦ (by positivity), memℓp_gen_iff' hp |>.mp hf⟩
+
+/-- When `α` is `Finite`, every `f : PreLp E p` satisfies `Memℓp f p`. -/
+theorem Memℓp.all [Finite α] (f : ∀ i, E i) : Memℓp f p := by
+  rcases p.trichotomy with (rfl | rfl | _h)
+  · exact memℓp_zero_iff.mpr { i : α | f i ≠ 0 }.toFinite
+  · exact memℓp_infty_iff.mpr (Set.Finite.bddAbove (Set.range fun i : α ↦ ‖f i‖).toFinite)
+  · cases nonempty_fintype α; exact memℓp_gen ⟨Finset.univ.sum _, hasSum_fintype _⟩
 
 theorem zero_memℓp : Memℓp (0 : ∀ i, E i) p := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -265,10 +272,10 @@ theorem add {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (
   · refine (Real.rpow_le_rpow (norm_nonneg _) (norm_add_le _ _) hp.le).trans ?_
     dsimp only [C]
     split_ifs with h
-    · simpa using NNReal.coe_le_coe.2 (NNReal.rpow_add_le_add_rpow ‖f i‖₊ ‖g i‖₊ hp.le h.le)
+    · simpa using! NNReal.coe_le_coe.2 (NNReal.rpow_add_le_add_rpow ‖f i‖₊ ‖g i‖₊ hp.le h.le)
     · let F : Fin 2 → ℝ≥0 := ![‖f i‖₊, ‖g i‖₊]
       simp only [not_lt] at h
-      simpa [Fin.sum_univ_succ] using
+      simpa [Fin.sum_univ_succ] using!
         Real.rpow_sum_le_const_mul_sum_rpow_of_nonneg Finset.univ h fun i _ => (F i).coe_nonneg
 
 theorem sub {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (f - g) p := by
@@ -338,8 +345,19 @@ def PreLp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] : Type _ :=
   ∀ i, E i
 deriving AddCommGroup
 
-instance PreLp.unique [IsEmpty α] : Unique (PreLp E) :=
+namespace PreLp
+
+@[simp] lemma add_apply {x y : PreLp E} {i : α} : (x + y) i = x i + y i := rfl
+@[simp] lemma zero_apply {i : α} : (0 : PreLp E) i = 0 := rfl
+@[simp] lemma sub_apply {x y : PreLp E} {i : α} : (x - y) i = x i - y i := rfl
+@[simp] lemma neg_apply {x : PreLp E} {i : α} : (-x) i = -(x i) := rfl
+@[simp] lemma nsmul_apply {n : ℕ} {x : PreLp E} {i : α} : (n • x) i = n • (x i) := rfl
+@[simp] lemma zsmul_apply {n : ℤ} {x : PreLp E} {i : α} : (n • x) i = n • (x i) := rfl
+
+instance unique [IsEmpty α] : Unique (PreLp E) :=
   inferInstanceAs <| Unique (∀ _, _)
+
+end PreLp
 
 /-- **The (little) ℓᵖ space**: The additive subgroup of a type synonym of `Π i, E i`, which consists
 of those functions `f` such that `Memℓp f p` (i.e., `f` has finite `p`-norm).
@@ -490,15 +508,15 @@ theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
   refine ⟨fun h => ?_, by rintro rfl; exact norm_zero⟩
   rcases p.trichotomy with (rfl | rfl | hp)
   · ext i
-    have : { i : α | ¬f i = 0 } = ∅ := by simpa [lp.norm_eq_card_dsupport f] using h
+    have : { i : α | ¬f i = 0 } = ∅ := by simpa [lp.norm_eq_card_dsupport f] using! h
     have : (¬f i = 0) = False := congr_fun this i
     tauto
   · rcases isEmpty_or_nonempty α with _i | _i
     · simp [eq_iff_true_of_subsingleton]
-    have H : IsLUB (Set.range fun i => ‖f i‖) 0 := by simpa [h] using lp.isLUB_norm f
+    have H : IsLUB (Set.range fun i => ‖f i‖) 0 := by simpa [h] using! lp.isLUB_norm f
     ext i
     have : ‖f i‖ = 0 := le_antisymm (H.1 ⟨i, rfl⟩) (norm_nonneg _)
-    simpa using this
+    simpa using! this
   · have hf : HasSum (fun i : α => ‖f i‖ ^ p.toReal) 0 := by
       have := lp.hasSum_norm hp f
       rwa [h, Real.zero_rpow hp.ne'] at this
@@ -506,7 +524,7 @@ theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
     rw [hasSum_zero_iff_of_nonneg this] at hf
     ext i
     have : f i = 0 ∧ p.toReal ≠ 0 := by
-      simpa [Real.rpow_eq_zero_iff_of_nonneg (norm_nonneg (f i))] using congr_fun hf i
+      simpa [Real.rpow_eq_zero_iff_of_nonneg (norm_nonneg (f i))] using! congr_fun hf i
     exact this.1
 
 theorem eq_zero_iff_coeFn_eq_zero {f : lp E p} : f = 0 ↔ ⇑f = 0 := by
@@ -1052,7 +1070,7 @@ def lsingle (p) (i : α) : E i →ₗ[𝕜] lp E p where
   map_smul' := lp.single_smul p i
 
 /-- The basis for `ℓ⁰(α, 𝕜)` given by `lp.single`. -/
-@[simps]
+@[simps repr_apply]
 noncomputable def zeroBasis : Module.Basis α 𝕜 ℓ⁰(α, 𝕜) where
   repr :=
     { toFun x := .ofSupportFinite ⇑x <| memℓp_zero_iff.mp x.2
