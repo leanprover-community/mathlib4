@@ -102,11 +102,8 @@ holds of any point where `eval f a` evaluates to `b`. This formalizes the notion
 @[elab_as_elim]
 def evalInduction {σ} {f : σ → Option σ} {b : σ} {C : σ → Sort*} {a : σ}
     (h : b ∈ eval f a) (H : ∀ a, b ∈ eval f a → (∀ a', f a = some a' → C a') → C a) : C a :=
-  PFun.fixInduction
-    (f := PFun.lift fun s ↦ (f s).elim (Sum.inl s) Sum.inr)
-    (C := C) h fun a' ha' h' ↦
-    H a' ha' fun b' e ↦
-      h' b' <| by simp [e]
+  PFun.fixInduction h fun a' ha' h' ↦
+    H a' ha' fun b' e ↦ h' b' <| by simp [e]
 
 theorem mem_eval {σ} {f : σ → Option σ} {a b} : b ∈ eval f a ↔ Reaches f a b ∧ f b = none := by
   have eval_step {a b} :

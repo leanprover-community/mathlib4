@@ -64,13 +64,11 @@ theorem rfind' {f : ℕ →. ℕ} (hf : Nat.Partrec f) :
           (fun x => decide (x = 0)) <$>
           Nat.unpaired (fun x y => (G x) y) (Nat.pair a n))) :=
       Nat.Partrec.rfind <| (@Partrec₂.unpaired' G).mpr <|
-        (Partrec.nat_iff.mpr hf).comp <| _root_.Primrec.to_comp <|
-          Primrec₂.pair.comp
-            (_root_.Primrec.comp _root_.Primrec.fst
-              (_root_.Primrec.comp _root_.Primrec.unpair _root_.Primrec.fst))
-            (Primrec.nat_add.comp _root_.Primrec.snd
-              (_root_.Primrec.comp _root_.Primrec.snd
-                (_root_.Primrec.comp _root_.Primrec.unpair _root_.Primrec.fst)))
+        (Partrec.nat_iff.mpr hf).comp <|
+          (Primrec₂.pair.comp
+            (_root_.Primrec.fst.comp <| _root_.Primrec.unpair.comp _root_.Primrec.fst)
+            (Primrec.nat_add.comp _root_.Primrec.snd <|
+              _root_.Primrec.snd.comp <| _root_.Primrec.unpair.comp _root_.Primrec.fst)).to_comp
     let H : ℕ → ℕ →. ℕ := fun a => PFun.mk fun b =>
       Nat.rfind (PFun.mk fun n =>
         (fun x => decide (x = 0)) <$> f (Nat.pair a (n + b)))
@@ -78,8 +76,8 @@ theorem rfind' {f : ℕ →. ℕ} (hf : Nat.Partrec f) :
       (@Partrec₂.unpaired' H).mp <| h_inner.of_eq fun p => by
         simp [H, G, Nat.unpaired]
     exact (Partrec.map h1
-      (_root_.Primrec.to_comp (Primrec.nat_add.comp _root_.Primrec.snd
-        (_root_.Primrec.comp _root_.Primrec.snd _root_.Primrec.fst))).to₂).of_eq fun _ => rfl
+      (Primrec.nat_add.comp _root_.Primrec.snd <|
+        _root_.Primrec.snd.comp _root_.Primrec.fst).to_comp.to₂).of_eq fun _ => rfl
 
 /-- Code for partial recursive functions from ℕ to ℕ.
 See `Nat.Partrec.Code.eval` for the interpretation of these constructors.
@@ -559,8 +557,9 @@ theorem exists_code {f : ℕ →. ℕ} : Nat.Partrec f ↔ ∃ c : Code, eval c 
       exact ⟨prec cf cg, rfl⟩
     | rfind pf hf =>
       rcases hf with ⟨cf, rfl⟩
-      exact ⟨comp (rfind' cf) (pair Code.id zero),
-        DFunLike.ext _ _ fun n => by simp [eval, Seq.seq, add_zero, Part.map_id']⟩
+      refine ⟨comp (rfind' cf) (pair Code.id zero), ?_⟩
+      ext n
+      simp [eval, Seq.seq, add_zero, Part.map_id']
   · rintro ⟨c, rfl⟩
     induction c with
     | zero => exact Nat.Partrec.zero
@@ -1025,14 +1024,13 @@ theorem fixed_point {f : Code → Code} (hf : Computable f) : ∃ c : Code, eval
     hf.comp (primrec₂_curry.comp (_root_.Primrec.const cg) _root_.Primrec.id).to_comp
   let ⟨cF, eF⟩ := exists_code.1 this
   have eF' : eval cF (encode cF) = Part.some (encode (F (encode cF))) := by simp [eF]
-  ⟨curry cg (encode cF),
-    DFunLike.ext _ _ fun n => by simp [F, g, eg', eF', Part.map_id']⟩
+  ⟨curry cg (encode cF), by ext n; simp [F, g, eg', eF', Part.map_id']⟩
 
 /-- **Kleene's second recursion theorem** -/
 theorem fixed_point₂ {f : Code → ℕ →. ℕ} (hf : Partrec₂ f) : ∃ c : Code, eval c = f c :=
   let ⟨cf, ef⟩ := exists_code.1 hf
   (fixed_point (primrec₂_curry.comp (_root_.Primrec.const cf) Primrec.encode).to_comp).imp
-    fun c e => DFunLike.ext _ _ fun n => by simp [e.symm, ef, Part.map_id']
+    fun _ e => by ext n; simp [e.symm, ef, Part.map_id']
 
 end
 

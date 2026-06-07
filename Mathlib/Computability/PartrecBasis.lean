@@ -91,7 +91,7 @@ protected theorem nil {n} : @Vec n 0 fun _ => nil := fun i => i.elim0
 
 protected theorem cons {n m} {f : List.Vector ℕ n → ℕ} {g} (hf : @Partrec' n (PFun.lift f))
     (hg : @Vec n m g) : Vec fun v => f v ::ᵥ g v := fun i =>
-  Fin.cases (by simpa using! hf) (fun i => by simp only [hg i, get_cons_succ]) i
+  Fin.cases (by simpa using hf) (fun i => by simp only [hg i, get_cons_succ]) i
 
 theorem idv {n} : @Vec n n id :=
   Vec.prim Nat.Primrec'.idv
@@ -130,11 +130,10 @@ open Nat.Partrec.Code
 
 theorem of_part : ∀ {n f}, Partrec f → @Partrec' n f :=
   @(suffices ∀ f, Nat.Partrec f → @Partrec' 1 (PFun.mk fun v => f v.head) from fun {n f} hf => by
-      let g := fun n₁ =>
+      let g : ℕ →. ℕ := PFun.mk fun n₁ =>
         (Part.ofOption (decode (α := List.Vector ℕ n) n₁)).bind (fun a => Part.map encode (f a))
-      exact
-        (comp₁ (PFun.mk g) (this (PFun.mk g) hf) (prim Nat.Primrec'.encode)).of_eq fun i => by
-          simp [g, encodek, Part.map_id']
+      exact (comp₁ g (this g hf) (prim Nat.Primrec'.encode)).of_eq fun i => by
+        simp [g, encodek, Part.map_id']
     fun f hf => by
     obtain ⟨c, rfl⟩ := exists_code.1 hf
     simpa [eval_eq_rfindOpt, PFun.coe_mk] using
