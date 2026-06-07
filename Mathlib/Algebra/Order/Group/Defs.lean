@@ -60,7 +60,7 @@ https://github.com/leanprover-community/mathlib4/pull/32828. -/
 
   TODO: make it an `instance`. To avoid slowdown, it was not an instance when it was submitted. See
   https://github.com/leanprover-community/mathlib4/pull/32828. -/]
-def IsOrderedMonoid.toIsOrderedCancelMonoid'
+theorem IsOrderedMonoid.toIsOrderedCancelMonoid'
     [CancelCommMonoid α] [LinearOrder α] [IsOrderedMonoid α] : IsOrderedCancelMonoid α where
   le_of_mul_le_mul_left _ _ _ h := le_of_mul_le_mul_left' h
 
