@@ -8,6 +8,8 @@ module
 public import Mathlib.Probability.ProductMeasure
 public import Mathlib.Probability.HasLaw
 
+import Mathlib.MeasureTheory.MeasurableSpace.NCard
+
 /-!
 # Product of bernoulli distributions on a set
 
@@ -98,6 +100,11 @@ lemma setBernoulli_apply_eq_apply_subsets (u : Set ι) (p : I) (S : Set (Set ι)
   apply (measure_eq_measure_of_null_diff (by grind) ?_).symm
   exact Measure.mono_null (by grind) setBernoulli_ae_subset
 
+lemma map_ncard_setBernoulli_apply (u : Set ι) (p : I) (s : Set ℕ) :
+    (setBer(u, p).map Set.ncard) s = setBer(u, p) {t ⊆ u | t.ncard ∈ s} := by
+  rw [map_apply (by fun_prop) .of_discrete, setBernoulli_apply_eq_apply_subsets]
+  simp [And.comm]
+
 variable (p) in
 @[simp] lemma setBernoulli_singleton (hsu : s ⊆ u) (hu : u.Finite) :
     setBer(u, p) {s} = toNNReal p ^ s.ncard * toNNReal (σ p) ^ (u \ s).ncard := by
@@ -119,6 +126,29 @@ variable (p) in
 lemma setBernoulli_real_singleton (p : I) (hsu : s ⊆ u) (hu : u.Finite) :
     setBer(u, p).real {s} = p ^ s.ncard * (1 - p : ℝ) ^ (u \ s).ncard := by
   simp [measureReal_def, setBernoulli_singleton p hsu hu]
+
+lemma map_ncard_setBernoulli_real_singleton {u : Set ι} (hu : u.Finite) (p : I) (k : ℕ) :
+    (setBer(u, p).map Set.ncard).real {k} =
+      (u.ncard.choose k) * p ^ k * (1 - p) ^ (u.ncard - k) := by
+  classical
+  have : {s ⊆ u | s.ncard ∈ ({k} : Set ℕ)}.Finite := hu.finite_subsets.subset (by grind)
+  rw [measureReal_def, map_ncard_setBernoulli_apply, ← measureReal_def,
+    ← Set.biUnion_of_singleton (setOf _)]
+  simp_rw [← this.mem_toFinset]
+  rw [measureReal_biUnion_finset (by simp) (by simp)]
+  have h1 s (hs : s ∈ this.toFinset) :
+      setBer(u, p).real {s} = p ^ k * (1 - p) ^ (u.ncard - k) := by
+    simp only [Set.mem_singleton_iff, Set.Finite.mem_toFinset, Set.mem_setOf_eq] at hs
+    rw [setBernoulli_real_singleton _ hs.1 hu, Set.ncard_diff' hs.1 hu, hs.2]
+  rw [Finset.sum_congr rfl h1, Finset.sum_const, nsmul_eq_mul, mul_assoc,
+    ← Set.ncard_eq_toFinset_card _ _]
+  simp [Set.ncard_powerset_ncard, hu]
+
+lemma map_ncard_setBernoulli_singleton {u : Set ι} (hu : u.Finite) (p : I) (k : ℕ) :
+    (setBer(u, p).map Set.ncard) {k} =
+      ENNReal.ofReal ((u.ncard.choose k) * p ^ k * (1 - p) ^ (u.ncard - k)) := by
+  rw [← ENNReal.ofReal_toReal (a := (Measure.map _ _) _) (by simp), ← measureReal_def,
+    map_ncard_setBernoulli_real_singleton hu]
 
 @[simp]
 lemma setBernoulli_empty : setBer((∅ : Set ι), p) = dirac ∅ := by
