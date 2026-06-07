@@ -34,7 +34,7 @@ In a module, this is equivalent to `0` satisfying such properties.
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists NormedSpace
 

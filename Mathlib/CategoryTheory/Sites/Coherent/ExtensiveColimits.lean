@@ -21,7 +21,7 @@ This can also easily be applied to filtered `J` in the case when `A` is a catego
 eventually to sifted `J` once that API is developed.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -32,6 +32,7 @@ section
 variable {A C J : Type*} [Category* A] [Category* C] [Category* J]
   [FinitaryExtensive C] [HasColimitsOfShape J A]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isSheaf_pointwiseColimit [PreservesFiniteProducts (colim (J := J) (C := A))]
     (G : J ⥤ Sheaf (extensiveTopology C) A) :
     Presheaf.IsSheaf (extensiveTopology C) (pointwiseCocone (G ⋙ sheafToPresheaf _ A)).pt := by

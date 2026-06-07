@@ -73,6 +73,10 @@ theorem ofLinearEquiv_inv (f : M ≃ₗ[R] M) :
     ofLinearEquiv (f⁻¹) = (ofLinearEquiv f)⁻¹ := by
   rfl
 
+@[simp]
+lemma ofLinearEquiv_smul (f : M ≃ₗ[R] M) (x : M) :
+    ofLinearEquiv f • x = f x := rfl
+
 variable (R M) in
 /-- The general linear group on `R` and `M` is multiplicatively equivalent to the type of linear
 equivalences between `M` and itself. -/

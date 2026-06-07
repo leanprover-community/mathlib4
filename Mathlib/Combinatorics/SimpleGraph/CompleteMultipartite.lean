@@ -5,7 +5,7 @@ Authors: John Talbot, Lian Bremner Tattersall
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Turan
@@ -61,7 +61,7 @@ open Finset Fintype Function
 
 universe u
 namespace SimpleGraph
-variable {α : Type u}
+variable {α : Type u} {G : SimpleGraph α} {s : Set α}
 
 /-- `G` is `IsCompleteMultipartite` iff non-adjacency is transitive -/
 def IsCompleteMultipartite (G : SimpleGraph α) : Prop := IsTrans α (¬ G.Adj · ·)
@@ -69,7 +69,9 @@ def IsCompleteMultipartite (G : SimpleGraph α) : Prop := IsTrans α (¬ G.Adj �
 theorem bot_isCompleteMultipartite : (⊥ : SimpleGraph α).IsCompleteMultipartite :=
   ⟨by simp⟩
 
-variable {G : SimpleGraph α}
+protected lemma IsCompleteMultipartite.induce (hG : G.IsCompleteMultipartite) :
+    (G.induce s).IsCompleteMultipartite where trans _u _v _w := hG.trans _ _ _
+
 /-- The setoid given by non-adjacency -/
 @[implicit_reducible]
 def IsCompleteMultipartite.setoid (h : G.IsCompleteMultipartite) : Setoid α :=
@@ -104,7 +106,7 @@ lemma isCompleteMultipartite_iff : G.IsCompleteMultipartite ↔ ∃ (ι : Type u
 lemma IsCompleteMultipartite.colorable_of_cliqueFree {n : ℕ} (h : G.IsCompleteMultipartite)
     (hc : G.CliqueFree n) : G.Colorable (n - 1) :=
   (completeMultipartiteGraph.colorable_of_cliqueFree _ (fun _ ↦ ⟨_, h.setoid.refl _⟩) <|
-    hc.comap h.iso.symm.toEmbedding).of_hom h.iso
+    hc.comap h.iso.symm.isContained).of_hom h.iso
 
 variable (G) in
 /--
@@ -436,7 +438,7 @@ def ofCopy (f : Copy (completeEquipartiteGraph r t) G) : G.CompleteEquipartiteSu
       rw [← h₁', ← h₂']
       apply f.toHom.map_adj
       simp_rw [completeEquipartiteGraph_adj]
-      contrapose! hne with heq
+      contrapose hne with heq
       simp_rw [← h₁, ← h₂, heq]
 
 end CompleteEquipartiteSubgraph
