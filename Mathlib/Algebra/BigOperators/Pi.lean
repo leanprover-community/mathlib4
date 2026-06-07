@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Algebra.Ring.Pi
 public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.FunLike.IsApply
 
 /-!
 # Big operators for Pi Types
@@ -71,7 +72,7 @@ theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [N
 /-- Decomposing `x : ι → R` as a sum along the canonical basis `Pi.single i 1` for `i : ι`. -/
 theorem pi_eq_sum_univ' {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [NonAssocSemiring R]
     (x : ι → R) : x = ∑ i, (x i) • Pi.single (M := fun _ ↦ R) i 1 := by
-  convert pi_eq_sum_univ x
+  convert! pi_eq_sum_univ x
   aesop
 
 section CommSemiring
@@ -227,6 +228,24 @@ theorem eqOn_finsetProd {ι α β : Type*} [CommMonoid α]
 theorem eqOn_fun_finsetProd {ι α β : Type*} [CommMonoid α]
     {s : Set β} {f f' : ι → β → α} (h : ∀ (i : ι), Set.EqOn (f i) (f' i) s) (v : Finset ι) :
     Set.EqOn (fun b ↦ ∏ i ∈ v, f i b) (fun b ↦ ∏ i ∈ v, f' i b) s := by
-  convert eqOn_finsetProd h v <;> simp
+  convert! eqOn_finsetProd h v <;> simp
 
 end EqOn
+
+section FunLike
+
+variable {F α β ι : Type*} [FunLike F α β] [CommMonoid β] [CommMonoid F]
+  [IsOneApply F α β] [IsMulApply F α β]
+
+open Classical in
+@[to_additive (attr := simp, grind =)]
+theorem prod_apply (s : Finset ι) (f : ι → F) (x : α) : (∏ i ∈ s, f i) x = ∏ i ∈ s, f i x := by
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s his h => simp [his, h]
+
+@[to_additive (attr := norm_cast)]
+theorem FunLike.coe_prod (s : Finset ι) (f : ι → F) : ↑(∏ i ∈ s, f i) = ∏ i ∈ s, (f i : α → β) := by
+  ext; simp
+
+end FunLike

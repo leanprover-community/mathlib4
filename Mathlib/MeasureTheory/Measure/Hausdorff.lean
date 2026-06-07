@@ -347,7 +347,7 @@ theorem mkMetric_top : (mkMetric (fun _ => ∞ : ℝ≥0∞ → ℝ≥0∞) : Ou
 `mkMetric m₁ hm₁ ≤ mkMetric m₂ hm₂`. -/
 theorem mkMetric_mono {m₁ m₂ : ℝ≥0∞ → ℝ≥0∞} (hle : m₁ ≤ᶠ[𝓝[≥] 0] m₂) :
     (mkMetric m₁ : OuterMeasure X) ≤ mkMetric m₂ := by
-  convert @mkMetric_mono_smul X _ _ m₂ _ ENNReal.one_ne_top one_ne_zero _ <;> simp [*]
+  convert! @mkMetric_mono_smul X _ _ m₂ _ ENNReal.one_ne_top one_ne_zero _ <;> simp [*]
 
 theorem isometry_comap_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) {f : X → Y} (hf : Isometry f)
     (H : Monotone m ∨ Surjective f) : comap f (mkMetric m) = mkMetric m := by
@@ -459,7 +459,7 @@ theorem mkMetric_top : (mkMetric (fun _ => ∞ : ℝ≥0∞ → ℝ≥0∞) : Me
 `mkMetric m₁ hm₁ ≤ mkMetric m₂ hm₂`. -/
 theorem mkMetric_mono {m₁ m₂ : ℝ≥0∞ → ℝ≥0∞} (hle : m₁ ≤ᶠ[𝓝[≥] 0] m₂) :
     (mkMetric m₁ : Measure X) ≤ mkMetric m₂ := by
-  convert @mkMetric_mono_smul X _ _ _ _ m₂ _ ENNReal.one_ne_top one_ne_zero _ <;> simp [*]
+  convert! @mkMetric_mono_smul X _ _ _ _ m₂ _ ENNReal.one_ne_top one_ne_zero _ <;> simp [*]
 
 /-- A formula for `MeasureTheory.Measure.mkMetric`. -/
 theorem mkMetric_apply (m : ℝ≥0∞ → ℝ≥0∞) (s : Set X) :
@@ -624,7 +624,7 @@ theorem hausdorffMeasure_zero_singleton (x : X) : μH[0] ({x} : Set X) = 1 := by
         ⨅ (t : ℕ → Set X) (_ : {x} ⊆ ⋃ n, t n) (_ : ∀ n, ediam (t n) ≤ 1),
           ∑' n, ⨆ _ : (t n).Nonempty, ediam (t n) ^ (0 : ℝ) by
       apply le_trans this _
-      convert le_iSup₂ (α := ℝ≥0∞) (1 : ℝ≥0∞) zero_lt_one
+      convert! le_iSup₂ (α := ℝ≥0∞) (1 : ℝ≥0∞) zero_lt_one
       rfl
     simp only [ENNReal.rpow_zero, le_iInf_iff]
     intro t hst _

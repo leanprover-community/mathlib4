@@ -319,7 +319,7 @@ theorem starProjection_map_apply {E E' : Type*} [NormedAddCommGroup E]
     (p : Submodule 𝕜 E) [p.HasOrthogonalProjection] (x : E') :
     (p.map (f.toLinearEquiv : E →ₗ[𝕜] E')).starProjection x =
       f (p.starProjection (f.symm x)) := by
-  simpa only [f.coe_toLinearIsometry, f.apply_symm_apply] using
+  simpa only [f.coe_toLinearIsometry, f.apply_symm_apply] using!
     (f.toLinearIsometry.map_starProjection' p (f.symm x)).symm
 
 /-- The orthogonal projection onto the trivial submodule is the zero map. -/
@@ -338,6 +338,9 @@ variable (K)
 theorem orthogonalProjectionOnto_norm_le : ‖K.orthogonalProjectionOnto‖ ≤ 1 := by
   refine ContinuousLinearMap.opNorm_le_bound K.orthogonalProjectionOnto zero_le_one ?_
   simp [orthogonalProjectionOnto, projectionOntoL, norm_projection_orthogonal_le]
+
+@[deprecated (since := "2026-05-05")]
+alias orthogonalProjection_norm_le := orthogonalProjectionOnto_norm_le
 
 @[deprecated (since := "2026-05-05")]
 alias orthogonalProjection_norm_le := orthogonalProjectionOnto_norm_le
@@ -420,7 +423,7 @@ theorem starProjection_singleton {v : E} (w : E) :
     (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • (𝕜 ∙ v).starProjection w =
       (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ⟪v, w⟫) • v := by
     simp [mul_smul, smul_starProjection_singleton 𝕜 w, -map_pow]
-  convert key using 1 <;> match_scalars <;> field_simp [hv']
+  convert! key using 1 <;> match_scalars <;> field_simp [hv']
 
 /-- Formula for orthogonal projection onto a single unit vector. -/
 theorem starProjection_unit_singleton {v : E} (hv : ‖v‖ = 1) (w : E) :
@@ -465,7 +468,7 @@ theorem IsOrtho.starProjection_comp_starProjection {U V : Submodule 𝕜 E}
 theorem orthogonalProjectionOnto_comp_subtypeL_eq_zero_iff {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] : U.orthogonalProjectionOnto ∘L V.subtypeL = 0 ↔ U ⟂ V := by
   refine ⟨fun h u hu v hv ↦ ?_, Submodule.IsOrtho.orthogonalProjectionOnto_comp_subtypeL⟩
-  convert starProjection_inner_eq_zero v u hu using 2
+  convert! starProjection_inner_eq_zero v u hu using 2
   have : U.orthogonalProjectionOnto v = 0 := DFunLike.congr_fun h (⟨_, hv⟩ : V)
   rw [starProjection_apply, this, Submodule.coe_zero, sub_zero]
 

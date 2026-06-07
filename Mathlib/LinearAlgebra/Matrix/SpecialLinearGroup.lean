@@ -6,6 +6,7 @@ Authors: Anne Baanen, Wen Yang
 module
 
 public import Mathlib.Data.Fintype.Parity
+public import Mathlib.LinearAlgebra.Matrix.Action
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Matrix.Transvection
@@ -257,10 +258,10 @@ theorem mem_center_iff {A : SpecialLinearGroup n R} :
   rcases isEmpty_or_nonempty n with hn | ⟨⟨i⟩⟩; · exact ⟨by aesop, by simp [Subsingleton.elim A 1]⟩
   refine ⟨fun h ↦ ⟨A i i, ?_, ?_⟩, fun ⟨r, _, hr⟩ ↦ Subgroup.mem_center_iff.mpr fun B ↦ ?_⟩
   · have : det ((scalar n) (A i i)) = 1 := (scalar_eq_self_of_mem_center h i).symm ▸ A.property
-    simpa using this
+    simpa using! this
   · exact scalar_eq_self_of_mem_center h i
   · suffices ↑ₘ(B * A) = ↑ₘ(A * B) from Subtype.val_injective this
-    simpa only [coe_mul, ← hr] using (scalar_commute (n := n) r (Commute.all r) B).symm
+    simpa only [coe_mul, ← hr] using! (scalar_commute (n := n) r (Commute.all r) B).symm
 
 /-- An equivalence of groups, from the center of the special linear group to the roots of unity. -/
 @[simps]
@@ -277,7 +278,7 @@ def center_equiv_rootsOfUnity' (i : n) :
   left_inv A := by
     refine SetCoe.ext <| SetCoe.ext ?_
     obtain ⟨r, _, hr⟩ := mem_center_iff.mp A.property
-    simpa [← hr, Submonoid.smul_def, Units.smul_def] using smul_one_eq_diagonal r
+    simpa [← hr, Submonoid.smul_def, Units.smul_def] using! smul_one_eq_diagonal r
   right_inv a := by
     obtain ⟨⟨a, _⟩, ha⟩ := a
     exact SetCoe.ext <| Units.ext <| by simp
@@ -324,7 +325,6 @@ section cast
 instance : Coe (SpecialLinearGroup n ℤ) (SpecialLinearGroup n R) :=
   ⟨fun x => map (Int.castRingHom R) x⟩
 
-@[simp]
 theorem coe_matrix_coe (g : SpecialLinearGroup n ℤ) :
     ↑(g : SpecialLinearGroup n R) = (↑g : Matrix n n ℤ).map (Int.castRingHom R) :=
   map_apply_coe (Int.castRingHom R) g
@@ -385,7 +385,7 @@ theorem fin_two_induction (P : SL(2, R) → Prop)
     (h : ∀ (a b c d : R) (hdet : a * d - b * c = 1), P ⟨!![a, b; c, d], by rwa [det_fin_two_of]⟩)
     (g : SL(2, R)) : P g := by
   obtain ⟨m, hm⟩ := g
-  convert h (m 0 0) (m 0 1) (m 1 0) (m 1 1) (by rwa [det_fin_two] at hm)
+  convert! h (m 0 0) (m 0 1) (m 1 0) (m 1 1) (by rwa [det_fin_two] at hm)
   ext i j; fin_cases i <;> fin_cases j <;> rfl
 
 theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g : SL(2, R))
@@ -451,15 +451,39 @@ lemma vecMulSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
     IsCoprime ((v ᵥ* A.1) 0) ((v ᵥ* A.1) 1) := by
   obtain ⟨g, hg⟩ := hab.exists_SL2_row 0
   have : v = g 0 := funext fun t ↦ by { fin_cases t <;> tauto }
-  simpa only [this] using isCoprime_row (g * A) 0
+  simpa only [this] using! isCoprime_row (g * A) 0
 
 /-- A vector with coprime entries, left-multiplied by a matrix in `SL(2, R)`, has
 coprime entries. -/
 lemma mulVecSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
     IsCoprime ((A.1 *ᵥ v) 0) ((A.1 *ᵥ v) 1) := by
-  simpa only [← vecMul_transpose] using hab.vecMulSL A.transpose
+  simpa only [← vecMul_transpose] using! hab.vecMulSL A.transpose
 
 end IsCoprime
+
+namespace Matrix
+
+section Action
+
+variable {F : Type*} [CommRing F] {ι : Type*} [DecidableEq ι] [Fintype ι]
+
+instance : DistribMulAction (Matrix.SpecialLinearGroup ι F) (ι → F) where
+  smul m v := m.1 • v
+  smul_zero _ := smul_zero (M := Matrix ι ι F) _
+  smul_add _ := smul_add (M := Matrix ι ι F) _
+  one_smul _ := one_smul (M := Matrix ι ι F) _
+  mul_smul _ _ _ := SemigroupAction.mul_smul (α := Matrix ι ι F) _ _ _
+
+instance : SMulCommClass (Matrix.SpecialLinearGroup ι F) F (ι → F) where
+  smul_comm m k v := show m.1 • k • v = k • m.1 • v from smul_comm _ _ _
+
+protected lemma SpecialLinearGroup.smul_def
+    (m : Matrix.SpecialLinearGroup ι F) (v : ι → F) :
+    m • v = m.1 • v := rfl
+
+end Action
+
+end Matrix
 
 namespace ModularGroup
 

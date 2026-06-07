@@ -219,7 +219,7 @@ theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : ∑ i, b.coord i q = 1 := 
     rw [b.tot]
     exact AffineSubspace.mem_top k V q
   obtain ⟨w, hw, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype hq
-  convert hw
+  convert! hw
   exact b.coord_apply_combination_of_mem (Finset.mem_univ _) hw
 
 @[simp]

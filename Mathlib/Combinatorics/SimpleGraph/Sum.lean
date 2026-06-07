@@ -28,8 +28,8 @@ both in `G` and adjacent in `G`, or they are both in `H` and adjacent in `H`.
 @[expose] public section
 
 namespace SimpleGraph
-variable {V W U γ : Type*} {G : SimpleGraph V} {H : SimpleGraph W} {I : SimpleGraph U}
-  {v v' : V} {w w' : W}
+variable {U U' V V' W W' γ : Type*} {G : SimpleGraph V} {H : SimpleGraph W} {I : SimpleGraph U}
+  {G' : SimpleGraph V'} {H' : SimpleGraph W'} {I' : SimpleGraph U'} {v v' : V} {w w' : W}
 
 /-- Disjoint sum of `G` and `H`. -/
 @[simps!]
@@ -70,6 +70,62 @@ def Embedding.sumInr : H ↪g G ⊕g H where
   toFun u := _root_.Sum.inr u
   inj' u v := by simp
   map_rel_iff' := by simp
+
+/-- Given homomorphisms `f : G →g G'` and `g : H →g H'`, returns a homomorphism from `G ⊕g H` to
+`G' ⊕g H'` that applies `f` to the left component and `g` to the right component. -/
+@[simps]
+def Hom.sum (f : G →g G') (g : H →g H') : G ⊕g H →g G' ⊕g H' where
+  toFun := Sum.map f g
+  map_rel' {u v} := by cases u <;> cases v <;> simp_all [f.map_rel, g.map_rel]
+
+lemma Hom.sum_comp_sumComm (f : G →g G') (g : H →g H') :
+    comp (sum f g) Iso.sumComm.toHom = comp Iso.sumComm.toHom (sum g f) := by
+  ext (v | w) <;> simp
+
+lemma Hom.sum_sum_comp_sumAssoc (f : G →g G') (g : H →g H') (h : I →g I') :
+    comp (sum f (sum g h)) Iso.sumAssoc.toHom = comp Iso.sumAssoc.toHom (sum (sum f g) h) := by
+  ext ((v | w) | u) <;> simp
+
+/-- Given embeddings `f : G ↪g G'` and `g : H ↪g H'`, returns an embedding from `G ⊕g H` to
+`G' ⊕g H'` that applies `f` to the left component and `g` to the right component. -/
+@[simps]
+def Embedding.sum (f : G ↪g G') (g : H ↪g H') : G ⊕g H ↪g G' ⊕g H' where
+  toFun := Sum.map f g
+  inj' u v := by cases u <;> cases v <;> simp
+  map_rel_iff' {u v} := by cases u <;> cases v <;> simp
+
+lemma Embedding.toHom_sum (f : G ↪g G') (g : H ↪g H') :
+    (Embedding.sum f g).toHom = Hom.sum f.toHom g.toHom := rfl
+
+lemma Embedding.sum_comp_sumComm (f : G ↪g G') (g : H ↪g H') :
+    comp (sum g f) Iso.sumComm.toEmbedding = comp Iso.sumComm.toEmbedding (sum f g) := by
+  ext (v | w) <;> simp
+
+lemma Embedding.sum_sum_comp_sumAssoc (f : G ↪g G') (g : H ↪g H') (h : I ↪g I') :
+    comp (sum f (sum g h)) Iso.sumAssoc.toEmbedding =
+      comp Iso.sumAssoc.toEmbedding (sum (sum f g) h) := by
+  ext ((v | w) | u) <;> simp
+
+/-- Given isomorphisms `f : G ≃g G'` and `g : H ≃g H'`, returns an isomorphism from `G ⊕g H` to
+`G' ⊕g H'` that applies `f` to the left component and `g` to the right component. -/
+@[simps!, simps toEquiv]
+def Iso.sumCongr (f : G ≃g G') (g : H ≃g H') : G ⊕g H ≃g G' ⊕g H' where
+  toEquiv := f.toEquiv.sumCongr g.toEquiv
+  map_rel_iff' {u v} := by cases u <;> cases v <;> simp [f.map_rel_iff, g.map_rel_iff]
+
+lemma Iso.toHom_sumCongr (f : G ≃g G') (g : H ≃g H') :
+    (Iso.sumCongr f g).toHom = Hom.sum f.toHom g.toHom := rfl
+
+lemma Iso.toEmbedding_sumCongr (f : G ≃g G') (g : H ≃g H') :
+    (Iso.sumCongr f g).toEmbedding = Embedding.sum f.toEmbedding g.toEmbedding := rfl
+
+lemma Iso.sumComm_comp_sumCongr (f : G ≃g G') (g : H ≃g H') :
+    comp sumComm (sumCongr f g) = comp (sumCongr g f) sumComm := by
+  ext (v | w) <;> simp
+
+lemma Iso.sumAssoc_comp_sumCongr (f : G ≃g G') (g : H ≃g H') (h : I ≃g I') :
+    comp sumAssoc (sumCongr (sumCongr f g) h) = comp (sumCongr f (sumCongr g h)) sumAssoc := by
+  ext ((v | w) | u) <;> simp
 
 lemma Reachable.sum_sup_edge (hv : G.Reachable v v') (hw : H.Reachable w w') :
     (G.sum H ⊔ edge (.inl v) (.inr w)).Reachable (.inl v') (.inr w') :=
