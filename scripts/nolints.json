@@ -514,6 +514,7 @@
   "_private.Mathlib.Tactic.Linter.HashCommandLinter.0.Mathlib.Linter.HashCommandLinter.allowed_commands"],
  ["defsWithUnderscore",
   "_private.Mathlib.Tactic.Linter.HaveLetLinter.0.Mathlib.Linter.haveLet.toFormat_propTypes"],
+  "CategoryTheory.IsCardinalFiltered.exists_cardinal_directed.Diagram.P"],
  ["defsWithUnderscore",
   "_private.Mathlib.Tactic.Linter.TextBased.0.Mathlib.Linter.TextBased.parse?_errorContext"],
  ["defsWithUnderscore", "Mathlib.Meta.Finset.ProveEmptyOrConsResult.eq_trans"],

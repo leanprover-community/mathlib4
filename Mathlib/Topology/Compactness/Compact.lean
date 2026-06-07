@@ -961,6 +961,12 @@ theorem disjoint_map_cocompact {g : X → Y} {f : Filter X} (hg : Continuous g)
 theorem isCompact_range [CompactSpace X] {f : X → Y} (hf : Continuous f) : IsCompact (range f) := by
   rw [← image_univ]; exact isCompact_univ.image hf
 
+lemma Function.Surjective.compactSpace {f : X → Y} (hf : Continuous f) [CompactSpace X]
+    (hf' : f.Surjective) : CompactSpace Y where
+  isCompact_univ := by
+    rw [← hf'.range_eq]
+    exact isCompact_range hf
+
 theorem isCompact_diagonal [CompactSpace X] : IsCompact (diagonal X) :=
   @range_diag X ▸ isCompact_range (continuous_id.prodMk continuous_id)
 
