@@ -14,8 +14,10 @@ import Mathlib.Probability.Kernel.Composition.Lemmas
 # A predicate for having a specified conditional distribution
 
 We introduce a predicate `HasCondDistrib Y X κ P` stating that the conditional distribution of `Y`
-given `X` under the measure `P` is equal to the kernel `κ`. We also require that `Y` and `X` are
-a.e. measurable, which is necessary for the conditional distribution to be well-defined.
+given `X` under the measure `P` is equal to the kernel `κ`.
+The statement uses `HasLaw` to express that the law of the pair `(X, Y)` under `P` is equal to
+`(P.map X) ⊗ₘ κ`, the product of the law of `X` under `P` and the kernel `κ`.
+The use of `HasLaw` also implies that `Y` and `X` are a.e. measurable.
 
 ## Main definitions
 
