@@ -3625,7 +3625,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Circulant
 public import Mathlib.Combinatorics.SimpleGraph.Clique
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.Constructions
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.EdgeLabeling
-public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
@@ -6199,6 +6199,7 @@ public import Mathlib.Order.WithBotTop
 public import Mathlib.Order.Zorn
 public import Mathlib.Order.ZornAtoms
 public import Mathlib.Probability.BorelCantelli
+public import Mathlib.Probability.BrownianMotion.Basic
 public import Mathlib.Probability.BrownianMotion.GaussianProjectiveFamily
 public import Mathlib.Probability.CDF
 public import Mathlib.Probability.CentralLimitTheorem
