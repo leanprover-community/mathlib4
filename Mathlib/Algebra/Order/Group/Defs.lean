@@ -54,7 +54,7 @@ also `IsOrderedCancelMonoid`.
 
 TODO: make it an `instance`. To avoid slowdown, it was not an instance when it was submitted. See
 https://github.com/leanprover-community/mathlib4/pull/32828. -/
-@[implicit_reducible, to_additive IsOrderedAddMonoid.toIsOrderedCancelAddMonoid'
+@[to_additive IsOrderedAddMonoid.toIsOrderedCancelAddMonoid'
   /-- Assuming `α` equipped with `LinearOrder` is `AddCancelCommMonoid` and `IsAddOrderedMonoid`, it
   is also `IsAddOrderedCancelMonoid`.
 
