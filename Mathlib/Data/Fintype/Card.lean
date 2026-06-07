@@ -258,7 +258,7 @@ than `α`, there exists a unique element of `β` not in the image of `f`. -/
 theorem existsUnique_notMem_image_of_injective_of_card_eq_add_one [DecidableEq β]
     (f : α → β) (hf : f.Injective) (h : card β = card α + 1) : ∃! x, x ∉ univ.image f := by
     simpa using existsUnique_mem_codomain_notMem_image_of_injective_of_card_eq_add_one
-      (s := .univ) (t := .univ) f hf (by simp) (by simpa)
+      (s := .univ) (t := .univ) hf (by simp) (by simpa)
 
 theorem card_lt_of_injective_not_surjective (f : α → β) (h : Function.Injective f)
     (h' : ¬Function.Surjective f) : card α < card β :=
