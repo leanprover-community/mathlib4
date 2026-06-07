@@ -698,7 +698,7 @@ theorem continuous_real_rng [Module ℝ E] [TopologicalSpace E] {p : ι → Semi
     (hf : ∃ (s : Finset ι) (C : ℝ≥0), ∀ x, f x ≤ (C • s.sup p) x) :
     Continuous f := by
   obtain ⟨s, C, hC⟩ := hf
-  exact continuous_normedSpace_rng ℝ hp f ⟨s, C, abs_le_seminorm_of_le_seminorm hC⟩
+  exact continuous_normedSpace_rng ℝ hp f ⟨s, C, abs_le_of_le hC⟩
 
 @[deprecated (since := "2026-03-09")]
 alias _root_.Seminorm.cont_withSeminorms_normedSpace := continuous_normedSpace_rng

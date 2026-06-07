@@ -5,7 +5,7 @@ Authors: Yury Kudryashov, Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.RCLike.Extend
+public import Mathlib.Analysis.LocallyConvex.HahnBanach
 public import Mathlib.Analysis.RCLike.Lemmas
 
 /-!
@@ -13,11 +13,10 @@ public import Mathlib.Analysis.RCLike.Lemmas
 
 In this file we prove the analytic Hahn-Banach theorem for normed vector spaces. For any continuous
 linear function on a subspace, we can extend it to a function on the entire space without changing
-its norm.
+its norm. For Hahn-Banach theorems for locally convex spaces, see
+`Mathlib.Analysis.LocallyConvex.HahnBanach`.
 
 We prove
-* `Real.exists_extension_norm_eq`: Hahn-Banach theorem for continuous linear functions on normed
-  spaces over `ℝ`.
 * `exists_extension_norm_eq`: Hahn-Banach theorem for continuous linear functions on normed spaces
   over `ℝ` or `ℂ`.
 
@@ -34,25 +33,6 @@ public section
 
 universe u v
 
-namespace Real
-
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
-
-/-- **Hahn-Banach theorem** for continuous linear functions over `ℝ`.
-See also `exists_extension_norm_eq` in the root namespace for a more general version
-that works both for `ℝ` and `ℂ`. -/
-theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : StrongDual ℝ p) :
-    ∃ g : StrongDual ℝ E, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
-  obtain ⟨g, hg, hl⟩ := by
-    refine Module.Dual.exists_continuous_real_extension p f
-      (?_ : Continuous (‖f‖₊ • (normSeminorm ℝ E))) fun x => ?_
-    · exact continuous_norm.const_smul ‖f‖₊
-    · exact (le_abs_self (f x)).trans <| f.le_opNorm x
-  refine ⟨g, hg, le_antisymm (g.mkContinuous_norm_le (norm_nonneg f) hl) ?_⟩
-  exact f.opNorm_le_bound (norm_nonneg _) fun x => by simpa [hg x] using g.le_opNorm x
-
-end Real
-
 section RCLike
 
 open RCLike
@@ -66,7 +46,7 @@ satisfying `IsRCLikeNormedField 𝕜`. -/
 theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
     ∃ g : StrongDual 𝕜 E, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
   obtain ⟨g, hg, hl⟩ := by
-    refine Module.Dual.exists_continuous_extension p f
+    refine Module.Dual.exists_continuous_extension_of_le_seminorm  p f
       (?_ : Continuous (‖f‖₊ • (normSeminorm 𝕜 E))) fun x => f.le_opNorm x
     exact continuous_norm.const_smul ‖f‖₊
   refine ⟨g, hg, le_antisymm (g.mkContinuous_norm_le (norm_nonneg f) hl) ?_⟩
