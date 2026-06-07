@@ -36,11 +36,27 @@ open scoped ENNReal
 namespace InformationTheory
 
 variable {𝓧 : Type*} {m𝓧 : MeasurableSpace 𝓧}
-  {μ ν : Measure 𝓧} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+
+section VectorMeasure
+
+variable {M : Type*} [NormedAddCommGroup M] {μ ν : VectorMeasure 𝓧 M}
 
 /-- Total variation distance between two vector measures. -/
 noncomputable def vecTVDist {M : Type*} [NormedAddCommGroup M]
     (μ ν : VectorMeasure 𝓧 M) : ℝ≥0∞ := (μ - ν).variation Set.univ
+
+open Classical in
+lemma vecTVDist_eq_iSup_finPartition_enorm :
+    vecTVDist μ ν = ⨆ P : Finpartition (⟨.univ, .univ⟩ : Subtype (MeasurableSet (α := 𝓧))),
+      ∑ x ∈ P.parts, ‖μ x - ν x‖ₑ := by
+  simp [vecTVDist, VectorMeasure.variation, preVariation, ennrealPreVariation,
+    VectorMeasure.ennrealToMeasure_apply .univ, preVariationFun]
+
+end VectorMeasure
+
+section Measure
+
+variable {μ ν : Measure 𝓧} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 
 /-- Total variation distance between two finite measures. -/
 noncomputable def tvDist (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] : ℝ :=
@@ -49,13 +65,14 @@ noncomputable def tvDist (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMe
 lemma tvDist_eq_iSup_finPartition_abs :
     tvDist μ ν = ⨆ (P : Finpartition (⟨.univ, .univ⟩ : Subtype (MeasurableSet (α := 𝓧)))),
       ∑ p ∈ P.parts, |μ.real p - ν.real p| := by
-  simp only [tvDist, vecTVDist, VectorMeasure.variation, preVariation, ennrealPreVariation,
-    VectorMeasure.coe_sub, Pi.sub_apply, Measure.toSignedMeasure_apply,
-    VectorMeasure.ennrealToMeasure_apply .univ, preVariationFun, MeasurableSet.univ, ↓reduceDIte]
+  rw [tvDist, vecTVDist_eq_iSup_finPartition_enorm]
+  simp only [Measure.toSignedMeasure_apply]
   rw [ENNReal.toReal_iSup (fun _ ↦ by simp)]
   congr with P
   rw [ENNReal.toReal_sum (fun _ ↦ by simp)]
   congr with s
   simp [s.2]
+
+end Measure
 
 end InformationTheory
