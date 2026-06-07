@@ -370,13 +370,6 @@ theorem norm_id [NontrivialTopology V] : ‖id V‖ = 1 :=
     have := (id V).ratio_le_opNorm x
     rwa [id_apply, div_self hx] at this
 
-/-- If there is an element with norm different from `0`, then the norm of the identity equals `1`.
-(Since we are working with seminorms supposing that the space is non-trivial is not enough.) -/
-@[deprecated norm_id (since := "2025-09-03")]
-theorem norm_id_of_nontrivial_seminorm (h : ∃ x : V, ‖x‖ ≠ 0) : ‖id V‖ = 1 :=
-  have : NontrivialTopology V := .of_exists_norm_ne_zero h
-  norm_id V
-
 theorem coe_id : (NormedAddGroupHom.id V : V → V) = _root_.id :=
   rfl
 

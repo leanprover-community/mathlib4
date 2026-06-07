@@ -55,7 +55,7 @@ def Ultrafilter.mul {M} [Mul M] : Mul (Ultrafilter M) where mul U V := (· * ·)
 
 attribute [local instance] Ultrafilter.mul Ultrafilter.add
 
-/- We could have taken this as the definition of `U * V`, but then we would have to prove that it
+/-- We could have taken this as the definition of `U * V`, but then we would have to prove that it
 defines an ultrafilter. -/
 @[to_additive]
 theorem Ultrafilter.eventually_mul {M} [Mul M] (U V : Ultrafilter M) (p : M → Prop) :
@@ -146,7 +146,7 @@ theorem exists_idempotent_ultrafilter_le_FP {M} [Semigroup M] (a : Stream' M) :
   have h := exists_idempotent_in_compact_subsemigroup ?_ S ?_ ?_ ?_
   · rcases h with ⟨U, hU, U_idem⟩
     refine ⟨U, U_idem, ?_⟩
-    convert Set.mem_iInter.mp hU 0
+    convert! Set.mem_iInter.mp hU 0
   · exact Ultrafilter.continuous_mul_left
   · apply IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed
     · intro n U hU
@@ -203,7 +203,7 @@ theorem exists_FP_of_large {M} [Semigroup M] (U : Ultrafilter M) (U_idem : U * U
   | cons' b n h ih =>
     rintro p rfl
     have := Set.inter_subset_right (ih (succ p) ?_)
-    · simpa only using this
+    · simpa only using! this
     rw [Stream'.corec_eq, Stream'.tail_cons]
 
 /-- The strong form of **Hindman's theorem**: in any finite cover of an FP-set, one the parts
@@ -250,11 +250,11 @@ theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
   rcases Nat.exists_eq_add_of_le (Nat.succ_le_of_lt ij) with ⟨d, hd⟩
   have := FP.singleton (a.drop i).tail d
   rw [Stream'.tail_eq_drop, Stream'.get_drop, Stream'.get_drop] at this
-  convert this
+  convert! this
   lia
 
 @[to_additive]
-theorem FP.finset_prod {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs : s.Nonempty) :
+theorem FP.finsetProd {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs : s.Nonempty) :
     (s.prod fun i => a.get i) ∈ FP a := by
   refine FP_drop_subset_FP _ (s.min' hs) ?_
   induction s using Finset.eraseInduction with | H s ih => _
@@ -270,5 +270,10 @@ theorem FP.finset_prod {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs :
     obtain ⟨d, hd⟩ := Nat.exists_eq_add_of_le this
     rw [hd, ← Stream'.drop_drop, add_comm]
     apply FP_drop_subset_FP
+
+@[deprecated (since := "2026-04-08")] alias FS.finset_sum := FS.finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias FP.finset_prod := FP.finsetProd
 
 end Hindman

@@ -12,6 +12,7 @@ public meta import Lean.Server.InfoUtils
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Parser.Command
 public import Mathlib.Tactic.DeclarationNames
+public import Batteries.Tactic.Lint.Basic
 
 /-!
 ## Style linters
@@ -38,6 +39,10 @@ This file defines the following linters:
 - the `openClassical` linter checks for `open (scoped) Classical` statements which are not
   scoped to a single declaration
 - the `show` linter checks for `show`s that change the goal and should be replaced by `change`
+- the `nameCheck` linter checks for declarations whose names are in non-standard style, such as
+  by containing a double underscore. The `defsWithUnderscore` environment linter checks for
+  definitions whose name contains an underscore: that is also very likely to be a violation of
+  mathlib's naming convention.
 
 All of these linters are enabled in mathlib by default, but disabled globally
 since they enforce conventions which are inherently subjective.
@@ -76,7 +81,8 @@ public def isSetOption : Syntax → Bool :=
 /-- The `setOption` linter: this lints any `set_option` command, term or tactic
 which sets a `debug`, `pp`, `profiler` or `trace` option.
 This also warns if an option containing `maxHeartbeats` (typically, the `maxHeartbeats` or
-`synthInstance.maxHeartbeats` option) or the `linter.flexible` option is set.
+`synthInstance.maxHeartbeats` option) or the `linter.flexible`, `linter.style.commandStart` or
+`backward.inferInstanceAs.wrap.reuseSubInstances ` option is set.
 
 **Why is this bad?** The `debug`, `pp`, `profiler` and `trace` options are good for debugging,
 but should not be used in production code.
@@ -88,6 +94,8 @@ The `linter.flexible` option should be scoped as `set_option opt in ...`.
 **How to fix this?** The `maxHeartbeats` and `linter.flexible` option changes can be scoped to
 individual commands, if they are truly necessary. The `linter.style.commandStart` option is
 deprecated and should be replaced by `linter.style.whitespace`.
+New `backward.inferInstanceAs.wrap.reuseSubInstances` instances are technical debt,
+and should not be introduced.
 
 The `debug`, `pp`, `profiler` and `trace` are usually not necessary for production code,
 so you can simply remove them. (Some tests will intentionally use one of these options;
@@ -115,6 +123,9 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
         else if name == `linter.style.commandStart then
           logWarningAt stx "The `linter.style.commandStart` option is deprecated, \
             use `linter.style.whitespace` instead."
+        else if name == `backward.inferInstanceAs.wrap.reuseSubInstances then
+          logWarningAt stx "The `backward.inferInstanceAs.wrap.reuseSubInstances` option \
+            marks the introduction of technical debt, so please don't use it."
 
 initialize addLinter setOptionLinter
 
@@ -189,7 +200,7 @@ public register_option linter.style.cdot : Bool := {
 /-- `isCDot? stx` checks whether `stx` is a `Syntax` node corresponding to a `cdot` typed with
 the character `·`. -/
 public def isCDot? : Syntax → Bool
-  | .node _ ``cdotTk #[.node _ `patternIgnore #[.node _ _ #[.atom _ v]]] => v == "·"
+  | .node _ ``cdotTk #[.atom _ v] => v == "·"
   | .node _ ``Lean.Parser.Term.cdot #[.atom _ v, _] => v == "·"
   | _ => false
 
@@ -225,12 +236,14 @@ def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
         m!"Please, use '·' (typed as `\\.`) instead of '.' as 'cdot'."
     -- We also check for isolated cdot's, i.e. when the cdot is on its own line.
     for cdot in Mathlib.Linter.findCDot stx do
-      match cdot.find? (·.isOfKind `token.«· ») with
-      | some (.node _ _ #[.atom (.original _ _ afterCDot _) _]) =>
-        if (afterCDot.takeWhile (·.isWhitespace)).contains '\n' then
-          Linter.logLint linter.style.cdot cdot
-            m!"This central dot `·` is isolated; please merge it with the next line."
-      | _ => return
+      -- Apply this only to cdot tactics
+      if cdot.isOfKind ``cdotTk then
+        match cdot.getTrailing? with
+        |  some afterCDot =>
+          if (afterCDot.takeWhile (·.isWhitespace)).contains '\n' then
+            Linter.logLint linter.style.cdot cdot
+              m!"This central dot `·` is isolated; please merge it with the next line."
+        | _ => return
 
 initialize addLinter cdotLinter
 
@@ -410,14 +423,28 @@ end Style.longFile
 
 /-! ### The "longLine linter" -/
 
-/-- The "longLine" linter emits a warning on lines longer than 100 characters.
+/-- The "longLine" linter emits a warning on lines longer than
+`linter.style.longLine.maxLineLength` (which defaults to 100) characters.
 We allow lines containing URLs to be longer, though. -/
 public register_option linter.style.longLine : Bool := {
   defValue := false
   descr := "enable the longLine linter"
 }
 
+/-- Configuration option for the "longLine" linter. This option determines the
+maximum allowed length of a line before the linter emits a warning.
+This defaults to 100. -/
+public register_option linter.style.longLine.maxLineLength : Nat := {
+  defValue := 100
+  descr := "maximum line length before the longLine linter emits a warning"
+}
+
 namespace Style.longLine
+
+def isImport (s : String) : Bool :=
+  s.startsWith "import " || s.startsWith "public import " ||
+  s.startsWith "meta import " || s.startsWith "public meta import " ||
+  s.startsWith "import all " || s.startsWith "meta import all "
 
 @[inherit_doc Mathlib.Linter.linter.style.longLine]
 def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -429,6 +456,7 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- The linter still lints the message guarded by `#guard_msgs`.
     if stx.isOfKind ``Lean.guardMsgsCmd then
       return
+    if stx.isOfKind ``Lean.Parser.Module.header then return
     -- if the linter reached the end of the file, then we scan the `import` syntax instead
     let stx := ← do
       if stx.isOfKind ``Lean.Parser.Command.eoi then
@@ -440,17 +468,20 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
       else return stx
     let sstr := stx.getSubstring?
     let fm ← getFileMap
+    let maxLineLength := linter.style.longLine.maxLineLength.get (← getOptions)
     let longLines := ((sstr.getD default).splitOn "\n").filter fun line ↦
-      (100 < (fm.toPosition line.stopPos).column)
+      (maxLineLength < (fm.toPosition line.stopPos).column)
     for line in longLines do
-      if (line.splitOn "http").length ≤ 1 then
+      if (line.splitOn "http").length ≤ 1 && !(isImport line.toString) then
         let stringMsg := if line.contains '"' then
           "\nYou can use \"string gaps\" to format long strings: within a string quotation, \
           using a '\\' at the end of a line allows you to continue the string on the following \
           line, removing all intervening whitespace."
         else ""
-        Linter.logLint linter.style.longLine (.ofRange ⟨(line.drop 100).startPos, line.stopPos⟩)
-          m!"This line exceeds the 100 character limit, please shorten it!{stringMsg}"
+        Linter.logLint linter.style.longLine
+          (.ofRange ⟨(line.drop maxLineLength).startPos, line.stopPos⟩)
+          m!"This line exceeds the {maxLineLength} character limit, please shorten it!{stringMsg}"
+
 initialize addLinter longLineLinter
 
 end Style.longLine
@@ -491,6 +522,51 @@ def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
               conventions. Consider using single underscores instead."
 
 initialize addLinter doubleUnderscore
+
+/-- Check `name` is a `Name` containing an underscore that should be linted against
+by the `defsWithUnderscore` linter. Namely, we do not lint
+* names ending in an underscore, or in a namespace ending with an underscore,
+* names containing guillemets `«»` (these tend to be `term<something>` declarations,
+  i.e. internal names for notation, not user-facing commands),
+* names with a component starting with `term` (e.g. `Nat.term_!`)
+* names starting with `Mathlib.Tactic`, `Parser` or containing a `Simps` component
+  (these are probably custom simps projections, i.e. affect how `simps` names its auto-generated
+  lemmas: we usually prefer a generated name `coe_support` over `coeSupport`, which requires a
+  projection named `coe_support`)
+* names that end in `_<number>` or in `_mathlib` (these tend to be autogenerated instance names),
+* library notes.
+-/
+public def isBadNameWithUnderscore (name : Name) : Bool := Id.run do
+  let s := name.toString
+  let declName := name
+  let last := declName.components.getLast?.getD `Default |>.toString
+  if last.endsWith '_' ||
+      s.contains '«' || declName.components.any (·.toString.startsWith "term") ||
+      (`LibraryNote).isPrefixOf declName ||
+      (`Mathlib.Tactic).isPrefixOf declName || (`Parser).isPrefixOf declName ||
+      declName.components.any (· == `Simps) ||
+      last.endsWith "_1" || last.endsWith "_2" || last.endsWith "_mathlib" ||
+      declName.components.any (·.toString.endsWith '_') then
+    return false
+  if declName.toString.contains "_" then return true
+  else return false
+
+open Batteries.Tactic.Lint in
+/-- Linter that checks for definitions whose name contains an underscore:
+such names violate the naming convention. -/
+@[env_linter] public def defsWithUnderscore : Batteries.Tactic.Lint.Linter where
+  noErrorsFound := "no definitions with an underscore in their name found."
+  errorsFound := "FOUND definitions with an underscore in their name."
+  test declName := do
+    unless ((← getEnv).find? declName).get!.isDefinition && !(← isAutoDecl declName) do return none
+    -- We also exclude simprocs: these should be named like normal lemmas.
+    -- check if their type is `Lean.Meta.Simp.Simproc`.
+    if ((← getEnv).find? declName).get!.type.isConstOf `Lean.Meta.Simp.Simproc then return none
+    if isBadNameWithUnderscore declName then
+      return m!"The definition `{declName}` contains an underscore. \
+        This almost surely violates mathlib's naming convention; \
+        use lowerCamelCase or UpperCamelCase instead."
+    else return none
 
 end Style.nameCheck
 
@@ -572,7 +648,7 @@ def showLinter : Linter where run := withSetOptionIn fun stx => do
         let (goal :: goals) := tac.goalsBefore | return
         let (goal' :: goals') := tac.goalsAfter | return
         if goals != goals' then return -- `show` didn't act on first goal -> can't replace with `change`
-        if goal == goal' then return -- same goal, no need to check
+        -- Even if `goal == goal'`, the tactic may have assigned metavariables.
         let diff ← ci.runCoreM do
           let before ← (do instantiateMVars (← goal.getType)).run' {} { mctx := tac.mctxBefore }
           let after ← (do instantiateMVars (← goal'.getType)).run' {} { mctx := tac.mctxAfter }

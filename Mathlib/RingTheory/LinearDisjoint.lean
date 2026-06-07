@@ -122,7 +122,7 @@ The following results are related to the equivalent characterizations in
 - `Subalgebra.LinearDisjoint.inf_eq_bot_of_commute`, `Subalgebra.LinearDisjoint.inf_eq_bot`:
   if `A` and `B` are linearly disjoint, under suitable technical conditions, they are disjoint.
 
-The results with name containing "of_commute" also have corresponding specialized versions
+The results with name containing "`of_commute`" also have corresponding specialized versions
 assuming `S` is commutative.
 
 ## Tags
@@ -651,7 +651,7 @@ theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
     refine ⟨⟨a, by simp [fa]⟩, ⟨b, hf ?_⟩⟩
     simp_rw [fb, Algebra.TensorProduct.includeRight_apply, f,
       Algebra.TensorProduct.mapOfCompatibleSMul_tmul]
-    convert ← (TensorProduct.smul_tmul (R := R[X]) (R' := R[X]) (M := A) (N := B) X 1 1).symm <;>
+    convert! ← (TensorProduct.smul_tmul (R := R[X]) (R' := R[X]) (M := A) (N := B) X 1 1).symm <;>
       (simp_rw [Algebra.smul_def, mul_one]; exact aeval_X _)
   have key3 := (Subalgebra.inclusion key2).comp (AlgEquiv.ofInjective gab htab).toAlgHom
     |>.toLinearMap.lift_rank_le_of_injective
@@ -706,7 +706,7 @@ include H in
 free modules, then the rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`. -/
 theorem finrank_sup_of_free [Module.Free R A] [Module.Free R B] :
     Module.finrank R ↥(A ⊔ B) = Module.finrank R A * Module.finrank R B := by
-  simpa only [map_mul] using congr(Cardinal.toNat $(H.rank_sup_of_free))
+  simpa only [map_mul] using! congr(Cardinal.toNat $(H.rank_sup_of_free))
 
 /-- In a commutative ring, if `A` and `B` are subalgebras which are free modules of finite rank,
 such that rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`,

@@ -51,7 +51,6 @@ variable {p : ℕ} [hp : Fact p.Prime]
 
 namespace PadicInt
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Bound for norms of ascending Pochhammer symbols. -/
 lemma norm_ascPochhammer_le (k : ℕ) (x : ℤ_[p]) :
     ‖(ascPochhammer ℤ_[p] k).eval x‖ ≤ ‖(k.factorial : ℤ_[p])‖ := by
@@ -85,10 +84,9 @@ noncomputable instance instBinomialRing : BinomialRing ℤ_[p] where
     PadicInt.coe_natCast, mul_div_cancel₀ _ (mod_cast k.factorial_ne_zero), Subtype.coe_inj,
     Polynomial.eval_eq_smeval, Polynomial.ascPochhammer_smeval_cast]
 
-set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 lemma continuous_multichoose (k : ℕ) : Continuous (fun x : ℤ_[p] ↦ Ring.multichoose x k) := by
-  simp only [Ring.multichoose, BinomialRing.multichoose, continuous_induced_rng]
+  simp only [Ring.multichoose, BinomialRing.multichoose]
   fun_prop
 
 @[fun_prop]
@@ -178,12 +176,12 @@ private lemma bojanic_mahler_step2 {f : C(ℤ_[p], E)} {s t : ℕ}
     refine (nnnorm_smul_le _ _).trans <| mul_le_mul_of_nonneg_right ?_ (by simp only [zero_le])
     -- remains to show norm of binomial coeff is `≤ p⁻¹`
     rw [mem_range] at hi
-    have : 0 < (p ^ t).choose (i + 1) := Nat.choose_pos (by lia)
+    have : 0 < (p ^ t).choose (i + 1) := Nat.choose_pos (by omega)
     rw [← zpow_neg_one, ← coe_le_coe, coe_nnnorm, PadicInt.norm_eq_zpow_neg_valuation
       (mod_cast this.ne'), coe_zpow, NNReal.coe_natCast,
       zpow_le_zpow_iff_right₀ (mod_cast hp.out.one_lt), neg_le_neg_iff,
       ← PadicInt.valuation_coe, PadicInt.coe_natCast, Padic.valuation_natCast, Nat.one_le_cast]
-    exact one_le_padicValNat_of_dvd this.ne' <| hp.out.dvd_choose_pow (by lia) (by lia)
+    exact one_le_padicValNat_of_dvd this.ne' <| hp.out.dvd_choose_pow (by lia) (by omega)
   · -- Bounding the sum over `range (n + 1)`: every term is small by the choice of `t`
     refine norm_sum_le_of_forall_le_of_nonempty nonempty_range_add_one (fun i _ ↦ ?_)
     calc ‖((-1 : ℤ) ^ (n - i) * n.choose i) • (f (i + ↑(p ^ t)) - f i)‖
@@ -197,7 +195,6 @@ private lemma bojanic_mahler_step2 {f : C(ℤ_[p], E)} {s t : ℕ}
       apply hst
       rw [Nat.cast_pow, add_sub_cancel_left, norm_pow, norm_p, inv_pow, zpow_neg, zpow_natCast]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Explicit bound for the decay rate of the Mahler coefficients of a continuous function on `ℤ_[p]`.
 This will be used to prove Mahler's theorem.
@@ -269,7 +266,6 @@ lemma norm_mahlerTerm : ‖(mahlerTerm a n : C(ℤ_[p], E))‖ = ‖a‖ := by
     refine le_trans ?_ <| (mahlerTerm a n).norm_coe_le_norm n
     simp [mahlerTerm_apply, mahler_natCast_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mahlerTerm_one : (mahlerTerm 1 n : C(ℤ_[p], ℤ_[p])) = mahler n := by
   ext; simp [mahlerTerm_apply]
@@ -346,7 +342,7 @@ lemma hasSum_mahler (f : C(ℤ_[p], E)) : HasSum (fun n ↦ mahlerTerm (Δ_[1]^[
       (mahlerSeries (Δ_[1]^[·] f 0) : C(ℤ_[p], E)) :=
     hasSum_mahlerSeries (fwdDiff_tendsto_zero f)
   -- Now show that the sum of the Mahler terms must equal `f` on a dense set, so it is actually `f`.
-  convert this using 1
+  convert! this using 1
   refine ContinuousMap.coe_injective (denseRange_natCast.equalizer
     (map_continuous f) (map_continuous _) (funext fun n ↦ ?_))
   simpa [mahlerSeries_apply_nat (fwdDiff_tendsto_zero f) le_rfl]

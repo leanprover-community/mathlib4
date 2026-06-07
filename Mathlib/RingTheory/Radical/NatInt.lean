@@ -42,7 +42,7 @@ lemma UniqueFactorizationMonoid.primeFactors_eq_natPrimeFactors :
   ext n : 1
   rw [primeFactors, Nat.factors_eq, Nat.primeFactors]
   -- this convert is necessary because of the different DecidableEq instances
-  convert List.toFinset_coe _
+  convert! List.toFinset_coe _
 
 namespace Nat
 
@@ -140,5 +140,8 @@ lemma radical_pos (z : ℤ) : 0 < radical z := by
 @[simp] lemma radical_eq_one_iff : radical z = 1 ↔ z.natAbs ≤ 1 := by
   rw [← radical_le_one_iff]
   grind [radical_pos z]
+
+@[simp, norm_cast] lemma radical_natCast {n : ℕ} : radical (n : ℤ) = radical n := by
+  simp [Int.radical_eq_prod_primeFactors, Nat.radical_eq_prod_primeFactors]
 
 end Int
