@@ -69,7 +69,7 @@ theorem separatingLeft_iff_forall_vecMul_eq_zero [Finite n] :
   rw [separatingLeft_def]
   refine ⟨fun h v hv ↦ h v fun w ↦ ?_, fun h w hw ↦ h w <| funext fun i ↦ ?_⟩
   · simp [dotProduct_mulVec, hv]
-  · classical simpa using hw <| Pi.single i 1
+  · classical simpa using! hw <| Pi.single i 1
 
 omit [Fintype m] in
 theorem separatingRight_iff_forall_mulVec_eq_zero [Finite m] :
