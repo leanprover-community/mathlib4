@@ -97,6 +97,18 @@ lemma vecTVDist_toSignedMeasure_eq_iSup_finPartition_abs :
   congr with s
   simp [s.2]
 
+lemma vecTVDist_toSignedMeasure_lt_top (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    vecTVDist μ.toSignedMeasure ν.toSignedMeasure < ∞ := by
+  calc vecTVDist μ.toSignedMeasure ν.toSignedMeasure
+  _ ≤ vecTVDist μ.toSignedMeasure 0 + vecTVDist 0 ν.toSignedMeasure := vecTVDist_triangle _ _ _
+  _ = μ Set.univ + ν Set.univ := by simp [vecTVDist_zero_right, vecTVDist_zero_left]
+  _ < ∞ := by simp
+
+@[simp]
+lemma vecTVDist_toSignedMeasure_ne_top (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    vecTVDist μ.toSignedMeasure ν.toSignedMeasure ≠ ∞ :=
+  (vecTVDist_toSignedMeasure_lt_top μ ν).ne
+
 lemma tvDist_eq_iSup_finPartition_abs :
     tvDist μ ν = ⨆ (P : Finpartition (⟨.univ, .univ⟩ : Subtype (MeasurableSet (α := 𝓧)))),
       ∑ p ∈ P.parts, |μ.real p - ν.real p| := by
@@ -109,10 +121,23 @@ lemma tvDist_eq_iSup_finPartition_abs :
 @[simp]
 lemma tvDist_self (μ : Measure 𝓧) [IsFiniteMeasure μ] : tvDist μ μ = 0 := by simp [tvDist]
 
+@[simp]
+lemma tvDist_eq_zero_iff (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+  tvDist μ ν = 0 ↔ μ = ν := by simp [tvDist, ENNReal.toReal_eq_zero_iff]
+
 lemma tvDist_comm (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     tvDist μ ν = tvDist ν μ := by
   unfold tvDist
   rw [vecTVDist_comm]
+
+lemma tvDist_triangle (μ ν ξ : Measure 𝓧)
+    [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure ξ] :
+    tvDist μ ξ ≤ tvDist μ ν + tvDist ν ξ := by
+  unfold tvDist
+  rw [← ENNReal.toReal_add (by simp) (by simp)]
+  gcongr
+  · simp
+  exact vecTVDist_triangle _ _ _
 
 @[simp]
 lemma tvDist_zero_right (μ : Measure 𝓧) [IsFiniteMeasure μ] : tvDist μ 0 = μ.real Set.univ := by
@@ -141,28 +166,10 @@ lemma tvDist_of_ge (hμν : ν ≤ μ) : tvDist μ ν = μ.real Set.univ - ν.re
 lemma tvDist_of_le (hμν : μ ≤ ν) : tvDist μ ν = ν.real Set.univ - μ.real Set.univ := by
   rw [tvDist_comm, tvDist_of_ge hμν]
 
-lemma vecTVDist_toSignedMeasure_lt_top (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    vecTVDist μ.toSignedMeasure ν.toSignedMeasure < ∞ := by
-  rw [vecTVDist_toSignedMeasure_eq_iSup_finPartition_abs]
-  sorry
-
-@[simp]
-lemma vecTVDist_toSignedMeasure_ne_top (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    vecTVDist μ.toSignedMeasure ν.toSignedMeasure ≠ ∞ :=
-  (vecTVDist_toSignedMeasure_lt_top μ ν).ne
-
-@[simp]
-lemma tvDist_eq_zero_iff (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-  tvDist μ ν = 0 ↔ μ = ν := by simp [tvDist, ENNReal.toReal_eq_zero_iff]
-
-lemma tvDist_triangle (μ ν ξ : Measure 𝓧)
-    [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure ξ] :
-    tvDist μ ξ ≤ tvDist μ ν + tvDist ν ξ := by
-  unfold tvDist
-  rw [← ENNReal.toReal_add (by simp) (by simp)]
-  gcongr
-  · simp
-  exact vecTVDist_triangle _ _ _
+lemma tvDist_le_add : tvDist μ ν ≤ μ.real Set.univ + ν.real Set.univ := by
+  calc tvDist μ ν
+  _ ≤ tvDist μ 0 + tvDist 0 ν := tvDist_triangle _ _ _
+  _ = μ.real Set.univ + ν.real Set.univ := by simp [tvDist_zero_right, tvDist_zero_left]
 
 end Measure
 
