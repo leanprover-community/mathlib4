@@ -724,6 +724,7 @@ abbrev comp (f' : G' ≃g G'') (f : G ≃g G') : G ≃g G'' :=
 @[simp]
 theorem coe_comp (f' : G' ≃g G'') (f : G ≃g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
+
 section induce
 
 variable {s : Set V} {t : Set W} {r : Set X}
