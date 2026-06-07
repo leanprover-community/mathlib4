@@ -189,7 +189,7 @@ protected def linearIsometry (hV : OrthogonalFamily 𝕜 G V) : lp G 2 →ₗᵢ
     simp only [(hV.summable_of_lp f).tsum_add (hV.summable_of_lp g), lp.coeFn_add, Pi.add_apply,
       LinearIsometry.map_add]
   map_smul' c f := by
-    simpa only [LinearIsometry.map_smul, Pi.smul_apply, lp.coeFn_smul] using
+    simpa only [LinearIsometry.map_smul, Pi.smul_apply, lp.coeFn_smul] using!
       (hV.summable_of_lp f).tsum_const_smul c
   norm_map' f := by
     classical
@@ -485,11 +485,14 @@ theorem coe_toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) :
     (b.toOrthonormalBasis : ι → E) = b :=
   OrthonormalBasis.coe_mk _ _
 
-protected theorem hasSum_orthogonalProjection {U : Submodule 𝕜 E} [CompleteSpace U]
+protected theorem hasSum_orthogonalProjectionOnto {U : Submodule 𝕜 E} [CompleteSpace U]
     (b : HilbertBasis ι 𝕜 U) (x : E) :
-    HasSum (fun i => ⟪(b i : E), x⟫ • b i) (U.orthogonalProjection x) := by
-  simpa only [b.repr_apply_apply, inner_orthogonalProjection_eq_of_mem_left] using
-    b.hasSum_repr (U.orthogonalProjection x)
+    HasSum (fun i => ⟪(b i : E), x⟫ • b i) (U.orthogonalProjectionOnto x) := by
+  simpa only [b.repr_apply_apply, inner_orthogonalProjectionOnto_eq_of_mem_left] using
+    b.hasSum_repr (U.orthogonalProjectionOnto x)
+
+@[deprecated (since := "2026-05-05")] alias hasSum_orthogonalProjection :=
+  HilbertBasis.hasSum_orthogonalProjectionOnto
 
 theorem finite_spans_dense [DecidableEq E] (b : HilbertBasis ι 𝕜 E) :
     (⨆ J : Finset ι, span 𝕜 (J.image b : Set E)).topologicalClosure = ⊤ :=
@@ -537,7 +540,7 @@ protected theorem coe_mkOfOrthogonalEqBot (hsp : (span 𝕜 (Set.range v))ᗮ = 
 protected def _root_.OrthonormalBasis.toHilbertBasis [Fintype ι] (b : OrthonormalBasis ι 𝕜 E) :
     HilbertBasis ι 𝕜 E :=
   HilbertBasis.mk b.orthonormal <| by
-    simpa only [← OrthonormalBasis.coe_toBasis, b.toBasis.span_eq, eq_top_iff] using
+    simpa only [← OrthonormalBasis.coe_toBasis, b.toBasis.span_eq, eq_top_iff] using!
       @subset_closure E _ _
 
 end

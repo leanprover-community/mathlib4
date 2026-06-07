@@ -165,6 +165,10 @@ theorem toNat_top : toNat ⊤ = 0 :=
 
 @[simp] theorem toNat_eq_zero : toNat n = 0 ↔ n = 0 ∨ n = ⊤ := WithTop.untopD_eq_self_iff
 
+theorem toNat_pos (hn0 : n ≠ 0) (hxt : n ≠ ⊤) : 0 < n.toNat := by
+  rw [pos_iff_ne_zero, ne_eq, ENat.toNat_eq_zero, not_or]
+  exact ⟨hn0, hxt⟩
+
 theorem lift_eq_toNat_of_lt_top {x : ℕ∞} (hx : x < ⊤) : x.lift hx = x.toNat := by
   rcases x with ⟨⟩ | x
   · contradiction
@@ -470,7 +474,7 @@ lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n
   match n with
   | ⊤ => exact le_top
   | (⊤ : ℕ∞) => exact WithTop.coe_le_coe.2 (OrderTop.le_top _)
-  | (n : ℕ) => simpa only [Nat.cast_le, ge_iff_le, Nat.cast_lt] using h
+  | (n : ℕ) => simpa only [Nat.cast_le, ge_iff_le, Nat.cast_lt] using! h
 
 @[simp] lemma coe_top_add_one : ((⊤ : ℕ∞) : WithTop ℕ∞) + 1 = (⊤ : ℕ∞) := rfl
 
@@ -614,7 +618,7 @@ protected def _root_.RingHom.ENatMap {S : Type*} [CommSemiring S] [PartialOrder 
 @[simp]
 lemma map_natCast_mul {R : Type*} [NonAssocSemiring R] [DecidableEq R] [CharZero R] (a b : ℕ∞) :
     (map Nat.cast (a * b) : WithTop R) = map Nat.cast a * map Nat.cast b :=
-  map_mul ((Nat.castRingHom R : ℕ →*₀ R).ENatMap Nat.cast_injective) a b
+  map_mul ((.ofClass (Nat.castRingHom R) : ℕ →*₀ R).ENatMap Nat.cast_injective) a b
 
 end ENat
 

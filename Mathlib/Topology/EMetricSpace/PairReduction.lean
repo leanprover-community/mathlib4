@@ -113,7 +113,7 @@ lemma exists_radius_le (t : T) (V : Finset T) (ha : 1 < a) (c : ℝ≥0∞) :
     ∃ r : ℕ, 1 ≤ r ∧ #(V.filter fun x ↦ edist t x ≤ r * c) ≤ a ^ r := by
   have := ENNReal.tendsto_nhds_top_iff_nat.1
     ((ENNReal.tendsto_rpow_atTop_of_one_lt_base ha).comp tendsto_natCast_atTop_atTop) #V
-  simp only [Function.comp_apply, ENNReal.rpow_natCast, Filter.eventually_atTop, ge_iff_le] at this
+  simp only [Function.comp_apply, ENNReal.rpow_natCast, Filter.eventually_atTop] at this
   obtain ⟨r, hr⟩ := this
   exact ⟨max r 1, le_max_right r 1,
     le_trans (mod_cast Finset.card_filter_le V _) (hr (max r 1) (le_max_left r 1)).le⟩
@@ -336,11 +336,11 @@ lemma card_pairSetSeq_le_logSizeRadius_mul (hJ : J.Nonempty) (i : ℕ) (ha : 1 <
   induction i with
   | zero =>
     simpa [pairSetSeq, hJ, finset_logSizeBallSeq_zero, logSizeBallStruct.ball,
-      radius_logSizeBallSeq_zero] using card_le_logSizeRadius_le_pow_logSizeRadius ha
+      radius_logSizeBallSeq_zero] using! card_le_logSizeRadius_le_pow_logSizeRadius ha
   | succ i ih =>
     by_cases! h : (logSizeBallSeq J hJ a c (i + 1)).finset.Nonempty
     · simpa [pairSetSeq, logSizeBallStruct.ball, h, hJ]
-        using card_le_logSizeRadius_le_pow_logSizeRadius ha
+        using! card_le_logSizeRadius_le_pow_logSizeRadius ha
     simp [pairSetSeq, logSizeBallStruct.ball, h, hJ]
 
 lemma logSizeRadius_le_card_smallBall (hJ : J.Nonempty) (i : ℕ) (ha : 1 < a) :
@@ -349,11 +349,12 @@ lemma logSizeRadius_le_card_smallBall (hJ : J.Nonempty) (i : ℕ) (ha : 1 < a) :
   match i with
   | 0 =>
     simpa [finset_logSizeBallSeq_zero, hJ, logSizeBallStruct.smallBall, radius_logSizeBallSeq_zero]
-      using pow_logSizeRadius_le_card_le_logSizeRadius ha (Exists.choose_spec hJ)
+      using! pow_logSizeRadius_le_card_le_logSizeRadius ha (Exists.choose_spec hJ)
   | i + 1 =>
     by_cases! h : (logSizeBallSeq J hJ a c (i + 1)).finset.Nonempty
-    · simpa [h, logSizeBallStruct.smallBall, radius_logSizeBallSeq_add_one]
-        using pow_logSizeRadius_le_card_le_logSizeRadius ha (point_mem_finset_logSizeBallSeq hJ _ h)
+    · simpa [h, logSizeBallStruct.smallBall, radius_logSizeBallSeq_add_one] using!
+        pow_logSizeRadius_le_card_le_logSizeRadius ha
+          (point_mem_finset_logSizeBallSeq hJ _ h)
     simp [h]
 
 lemma card_pairSet_le (ha : 1 < a) : #(pairSet J a c) ≤ a * #J := by
