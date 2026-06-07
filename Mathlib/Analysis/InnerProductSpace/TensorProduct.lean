@@ -567,18 +567,14 @@ theorem adjoint_mapL [CompleteSpace E] [CompleteSpace G] [CompleteSpace (E ⊗[�
   simp [TensorProduct.ext_iff_inner_right, ContinuousLinearMap.adjoint_inner_left]
 
 variable (G) in
-omit [InnerProductSpace 𝕜 H] in
-theorem adjoint_rTensor [CompleteSpace E] [CompleteSpace G]
-    [CompleteSpace (E ⊗[𝕜] G)] [CompleteSpace (F ⊗[𝕜] G)] [CompleteSpace F] [CompleteSpace H]
-    (f : E →L[𝕜] F) :
+theorem adjoint_rTensor [CompleteSpace E] [CompleteSpace G] [CompleteSpace (E ⊗[𝕜] G)]
+    [CompleteSpace (F ⊗[𝕜] G)] [CompleteSpace F] (f : E →L[𝕜] F) :
     (f.rTensor G).adjoint = f.adjoint.rTensor G := by
   simp [rTensor_eq_mapL]
 
 variable (E) in
-omit [InnerProductSpace 𝕜 F] in
-theorem adjoint_lTensor [CompleteSpace E] [CompleteSpace G]
-    [CompleteSpace (E ⊗[𝕜] H)] [CompleteSpace (E ⊗[𝕜] G)] [CompleteSpace F] [CompleteSpace H]
-    (g : G →L[𝕜] H) :
+theorem adjoint_lTensor [CompleteSpace E] [CompleteSpace G] [CompleteSpace (E ⊗[𝕜] H)]
+    [CompleteSpace (E ⊗[𝕜] G)] [CompleteSpace H] (g : G →L[𝕜] H) :
     (g.lTensor E).adjoint = g.adjoint.lTensor E := by
   simp [lTensor_eq_mapL]
 
