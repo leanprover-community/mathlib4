@@ -5,6 +5,14 @@ open MeasureTheory ProbabilityTheory
 
 example {n : ℕ} {Ω : Type*} [MeasurableSpace Ω]
     [MeasurableEq Ω] [StandardBorelSpace (Fin n → Ω)] {μ : Fin n → Measure Ω}
+    [∀ i, IsProbabilityMeasure (μ i)] (k : Fin (n + 1)) :
+    condExpKernel (Measure.pi μ) (MeasurableSpace.piPrefix Ω k)
+      =ᵐ[(Measure.pi μ).trim (MeasurableSpace.piPrefix_le_pi Ω k)]
+        Kernel.piPrefixTail Ω μ k :=
+  ProbabilityTheory.condExpKernel_piPrefix_eq_dirac_prod_pi (μ := μ) k
+
+example {n : ℕ} {Ω : Type*} [MeasurableSpace Ω]
+    [MeasurableEq Ω] [StandardBorelSpace (Fin n → Ω)] {μ : Fin n → Measure Ω}
     [∀ i, IsFiniteMeasure (μ i)] (k : Fin (n + 1)) :
     ∀ᵐ S ∂((Measure.pi μ).trim (MeasurableSpace.piPrefix_le_pi Ω k)),
       ∀ᵐ T ∂(condExpKernel (Measure.pi μ) (MeasurableSpace.piPrefix Ω k) S),
