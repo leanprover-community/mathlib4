@@ -20,7 +20,7 @@ This file characterises the covering sieves of the coherent topology.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -87,7 +87,7 @@ A sieve belongs to the coherent topology if and only if it contains a finite
 theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
     (S ∈ (coherentTopology C) X) ↔
     (∃ (α : Type) (_ : Finite α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
-        EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)))  := by
+        EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a))) := by
   constructor
   · intro h
     induction h with

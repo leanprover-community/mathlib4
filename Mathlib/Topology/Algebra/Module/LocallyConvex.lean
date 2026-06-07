@@ -34,7 +34,7 @@ In a module, this is equivalent to `0` satisfying such properties.
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists NormedSpace
 
@@ -157,9 +157,6 @@ lemma exists_open_convex_of_notMem (hx : x ∉ s) (hsconv : Convex 𝕜 s) (hscl
       IsOpen U ∧ IsOpen V ∧ Convex 𝕜 U ∧ Convex 𝕜 V ∧ x ∈ U ∧ s ⊆ V ∧ Disjoint U V := by
   simpa [*] using Disjoint.exists_open_convexes (s := {x}) (t := s) (𝕜 := 𝕜)
 
-@[deprecated (since := "2025-05-23")]
-alias exists_open_convex_of_not_mem := exists_open_convex_of_notMem
-
 end LinearOrderedField
 
 section LatticeOps
@@ -179,16 +176,10 @@ protected theorem LocallyConvexSpace.sInf {ts : Set (TopologicalSpace E)}
   rw [nhds_sInf, ← iInf_subtype'']
   exact .iInf' fun i : ts => (@locallyConvexSpace_iff 𝕜 E _ _ _ _ ↑i).mp (h (↑i) i.2) x
 
-@[deprecated (since := "2025-05-05")]
-alias locallyConvexSpace_sInf := LocallyConvexSpace.sInf
-
 protected theorem LocallyConvexSpace.iInf {ts' : ι → TopologicalSpace E}
     (h' : ∀ i, @LocallyConvexSpace 𝕜 E _ _ _ _ (ts' i)) :
     @LocallyConvexSpace 𝕜 E _ _ _ _ (⨅ i, ts' i) :=
   .sInf <| by rwa [forall_mem_range]
-
-@[deprecated (since := "2025-05-05")]
-alias locallyConvexSpace_iInf := LocallyConvexSpace.iInf
 
 protected theorem LocallyConvexSpace.inf {t₁ t₂ : TopologicalSpace E}
     (h₁ : @LocallyConvexSpace 𝕜 E _ _ _ _ t₁)
@@ -196,9 +187,6 @@ protected theorem LocallyConvexSpace.inf {t₁ t₂ : TopologicalSpace E}
   rw [inf_eq_iInf]
   refine .iInf fun b => ?_
   cases b <;> assumption
-
-@[deprecated (since := "2025-05-05")]
-alias locallyConvexSpace_inf := LocallyConvexSpace.inf
 
 protected theorem LocallyConvexSpace.induced {t : TopologicalSpace F} [LocallyConvexSpace 𝕜 F]
     (f : E →ₗ[𝕜] F) : @LocallyConvexSpace 𝕜 E _ _ _ _ (t.induced f) := by
@@ -209,8 +197,15 @@ protected theorem LocallyConvexSpace.induced {t : TopologicalSpace F} [LocallyCo
   rw [nhds_induced]
   exact (LocallyConvexSpace.convex_basis <| f x).comap f
 
-@[deprecated (since := "2025-05-05")]
-alias locallyConvexSpace_induced := LocallyConvexSpace.induced
+theorem Topology.IsInducing.locallyConvexSpace [TopologicalSpace F] [LocallyConvexSpace 𝕜 F]
+    [TopologicalSpace E] {f : E →ₗ[𝕜] F} (hf : IsInducing f) :
+    LocallyConvexSpace 𝕜 E := by
+  rw [hf.eq_induced]
+  exact .induced f
+
+instance [TopologicalSpace E] [LocallyConvexSpace 𝕜 E] {S : Submodule 𝕜 E} :
+    LocallyConvexSpace 𝕜 S :=
+  IsInducing.locallyConvexSpace (f := S.subtype) .subtypeVal
 
 instance Pi.locallyConvexSpace {ι : Type*} {X : ι → Type*} [∀ i, AddCommMonoid (X i)]
     [∀ i, TopologicalSpace (X i)] [∀ i, Module 𝕜 (X i)] [∀ i, LocallyConvexSpace 𝕜 (X i)] :

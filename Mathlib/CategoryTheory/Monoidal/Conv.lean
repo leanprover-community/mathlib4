@@ -22,7 +22,7 @@ open MonObj ComonObj
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
 
 /--
-The morphisms in `C` between the underlying objects of a pair of bimonoids in `C` naturally has a
+The morphisms in `C` between the underlying objects of a pair of bimonoids in `C` naturally have a
 (set-theoretic) monoid structure. -/
 def Conv (M N : C) : Type v₁ := M ⟶ N
 

@@ -7,14 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.FinCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-public import Mathlib.Tactic.DeriveFintype
-import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Tactic.ProxyType
 
 /-!
 # Finiteness instances on multi-spans
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Limits
 

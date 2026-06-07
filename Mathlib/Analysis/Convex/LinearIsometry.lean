@@ -15,7 +15,7 @@ public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 In this file we prove some basic lemmas about (strict) convexity and linear isometries.
 -/
 
-@[expose] public section
+public section
 
 open Function Set Metric
 open scoped Convex
@@ -53,11 +53,11 @@ protected lemma LinearIsometryEquiv.strictConvexSpace_iff (e : E ≃ₗᵢ[𝕜]
   simp only [strictConvexSpace_iff, ← map_zero e, ← e.image_closedBall, e.strictConvex_image]
 
 lemma LinearIsometry.strictConvexSpace_range_iff (e : E →ₗᵢ[𝕜] F) :
-    StrictConvexSpace 𝕜 (LinearMap.range e) ↔ StrictConvexSpace 𝕜 E :=
+    StrictConvexSpace 𝕜 (e : E →ₗ[𝕜] F).range ↔ StrictConvexSpace 𝕜 E :=
   e.equivRange.strictConvexSpace_iff.symm
 
 instance LinearIsometry.strictConvexSpace_range [StrictConvexSpace 𝕜 E] (e : E →ₗᵢ[𝕜] F) :
-    StrictConvexSpace 𝕜 (LinearMap.range e) :=
+    StrictConvexSpace 𝕜 (e : E →ₗ[𝕜] F).range :=
   e.strictConvexSpace_range_iff.mpr ‹_›
 
 lemma LinearIsometry.strictConvexSpace [StrictConvexSpace 𝕜 F] (f : E →ₗᵢ[𝕜] F) :

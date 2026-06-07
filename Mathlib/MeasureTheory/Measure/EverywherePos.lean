@@ -64,7 +64,7 @@ lemma everywherePosSubset_subset (μ : Measure α) (s : Set α) : μ.everywhereP
 /-- The everywhere positive subset of a set is obtained by removing an open set. -/
 lemma exists_isOpen_everywherePosSubset_eq_diff (μ : Measure α) (s : Set α) :
     ∃ u, IsOpen u ∧ μ.everywherePosSubset s = s \ u := by
-  refine ⟨{x | ∃ n ∈ 𝓝[s] x, μ n = 0}, ?_, by ext x; simp [everywherePosSubset, zero_lt_iff]⟩
+  refine ⟨{x | ∃ n ∈ 𝓝[s] x, μ n = 0}, ?_, by ext x; simp [everywherePosSubset, pos_iff_ne_zero]⟩
   rw [isOpen_iff_mem_nhds]
   intro x ⟨n, ns, hx⟩
   rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 ns with ⟨v, vx, hv⟩
@@ -207,7 +207,7 @@ variable {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
   [LocallyCompactSpace G] [MeasurableSpace G] [BorelSpace G] {μ : Measure G}
   [IsMulLeftInvariant μ] [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ]
 
-open Pointwise
+open scoped Pointwise
 
 /-- If a compact closed set is everywhere positive with respect to a left-invariant measure on a
 topological group, then it is a Gδ set. This is nontrivial, as there is no second-countability or
@@ -264,8 +264,8 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
   have : k ∩ ((z * x⁻¹) • k)ᶜ ∈ 𝓝[k] z := by
     apply inter_mem_nhdsWithin k
     apply IsOpen.mem_nhds (by simpa using h'k.smul _)
-    simp only [mem_compl_iff]
-    contrapose! H
+    push _ ∈ _
+    contrapose H
     simpa [mem_smul_set_iff_inv_smul_mem] using H
   have : 0 < μ (k \ ((z * x⁻¹) • k)) := h z zk _ this
   exact lt_irrefl _ (C.le.trans_lt this)
@@ -295,7 +295,7 @@ theorem innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_group :
       exists_continuous_one_zero_of_isCompact_of_isGδ L_comp L_Gδ isClosed_empty
         (disjoint_empty L)
     exact ⟨f, f_cont, f_comp, Lf⟩
-  · convert hr using 1
+  · convert! hr using 1
     apply measure_congr
     exact everywherePosSubset_ae_eq_of_measure_ne_top K_closed.measurableSet
       K_comp.measure_lt_top.ne

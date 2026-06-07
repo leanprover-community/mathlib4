@@ -16,7 +16,7 @@ Lemmas on topological sums in rings with a strictly multiplicative norm, of whic
 the most familiar examples.
 -/
 
-@[expose] public section
+public section
 
 
 section NormMulClass

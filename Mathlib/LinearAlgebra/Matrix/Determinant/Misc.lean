@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Ring.NegOnePow
 In this file, we collect various formulas about determinant of matrices.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -47,7 +47,7 @@ theorem submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det {n : ℕ}
       · replace hv := congr_fun hv b
         rw [Fin.sum_univ_succAbove _ i.succ, Pi.add_apply, Finset.sum_apply] at hv
         rwa [h, Fin.succAbove_castSucc_self, neg_eq_iff_add_eq_zero, add_comm]
-      · obtain h|h := ne_iff_lt_or_gt.mp h
+      · obtain h | h := ne_iff_lt_or_gt.mp h
         · rw [Fin.succAbove_castSucc_of_lt _ _ h,
             Fin.succAbove_of_succ_le _ _ (Fin.succ_lt_succ_iff.mpr h).le]
         · rw [Fin.succAbove_succ_of_lt _ _ h, Fin.succAbove_castSucc_of_le _ _ h.le]

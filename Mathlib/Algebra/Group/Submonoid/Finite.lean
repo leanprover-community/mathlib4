@@ -14,7 +14,7 @@ public import Mathlib.Data.Fintype.Basic
 This file provides some results on multiplicative and additive submonoids in the finite context.
 -/
 
-@[expose] public section
+public section
 
 namespace Submonoid
 

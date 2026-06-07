@@ -23,6 +23,8 @@ Any functor `F` from a groupoid `G` into `C` factors through `CategoryTheory.Cor
 but this is not functorial with respect to `F`.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory
@@ -47,7 +49,7 @@ structure CoreHom (X Y : Core C) where
   /-- The isomorphism of objects of `C` underlying a morphism in `Core C`. -/
   iso : X.of ≅ Y.of
 
-@[simps!]
+@[simps! id_iso inv_iso]
 instance coreCategory : Groupoid.{v₁} (Core C) where
   Hom (X Y : Core C) := CoreHom X Y
   id (X : Core C) := .mk <| Iso.refl X.of
@@ -72,6 +74,11 @@ theorem hom_ext {X Y : Core C} {f g : X ⟶ Y} (h : f.iso.hom = g.iso.hom) :
     f = g := by
   apply CoreHom.ext
   exact Iso.ext h
+
+/-- Construct an isomorphism in `Core C` from an isomorphism in `C`. -/
+@[simps! hom_iso inv_iso]
+def isoMk {x y : Core C} (e : x.of ≅ y.of) : x ≅ y :=
+  Groupoid.isoEquivHom _ _ |>.symm (.mk e)
 
 variable (C)
 
@@ -189,7 +196,7 @@ namespace Core
 
 variable {G : Type u₂} [Groupoid.{v₂} G]
 
-/-- The functor `functorToCore (F ⋙ H)` factors through `functortoCore H`. -/
+/-- The functor `functorToCore (F ⋙ H)` factors through `functorToCore H`. -/
 def functorToCoreCompLeftIso {G' : Type u₃} [Groupoid.{v₃} G'] (H : G ⥤ C) (F : G' ⥤ G) :
     functorToCore (F ⋙ H) ≅ F ⋙ functorToCore H :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
@@ -251,12 +258,13 @@ end
 /-- `ofEquivFunctor m` lifts a type-level `EquivFunctor`
 to a categorical functor `Core (Type u₁) ⥤ Core (Type u₂)`.
 -/
-def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] : Core (Type u₁) ⥤ Core (Type u₂) where
+def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] :
+    Core (Type u₁) ⥤ Core (Type u₂) where
   obj x := .mk <| m x.of
   map f := .mk <| (EquivFunctor.mapEquiv m f.iso.toEquiv).toIso
   map_id α := by ext x; exact congr_fun (EquivFunctor.map_refl' _) x
   map_comp f g := by
     ext
-    simp [EquivFunctor.map_trans', Function.comp]
+    simp [Equiv.toIso, EquivFunctor.map_trans']
 
 end CategoryTheory

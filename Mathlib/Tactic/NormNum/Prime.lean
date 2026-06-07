@@ -5,8 +5,10 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public meta import Mathlib.Tactic.NormNum.Basic
-public meta import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Data.Nat.Prime.Basic
+public meta import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.Tactic.NormNum.Result
 
 /-!
 # `norm_num` extensions on natural numbers
@@ -78,9 +80,7 @@ theorem minFacHelper_1 {n k k' : ℕ} (e : k + 2 = k') (h : MinFacHelper n k)
   · refine ((h.1.trans_le h.2.2).ne ?_).elim
     have h3 : 2 ∣ minFac n := by
       rw [Nat.dvd_iff_mod_eq_zero, ← h2, succ_eq_add_one, add_mod, h.2.1]
-    rw [dvd_prime <| minFac_prime h.one_lt.ne'] at h3
-    norm_num at h3
-    exact h3
+    simpa [dvd_prime <| minFac_prime h.one_lt.ne'] using h3
   exact h2
 
 theorem minFacHelper_2 {n k k' : ℕ} (e : k + 2 = k') (nk : ¬ Nat.Prime k)
@@ -123,7 +123,7 @@ theorem isNat_minFac_4 : {n n' k : ℕ} →
 /-- The `norm_num` extension which identifies expressions of the form `minFac n`. -/
 @[norm_num Nat.minFac _] partial def evalMinFac : NormNumExt where eval {_ _} e := do
   let .app (.const ``Nat.minFac _) (n : Q(ℕ)) ← whnfR e | failure
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨nn, pn⟩ ← deriveNat n sℕ
   let n' := nn.natLit!
   let rec aux (ek : Q(ℕ)) (prf : Q(MinFacHelper $nn $ek)) :

@@ -91,7 +91,7 @@ lemma deleteElem_eq_self (he : e ∉ M.E) : M ＼ {e} = M := by
 lemma delete_delete (M : Matroid α) (D₁ D₂ : Set α) : M ＼ D₁ ＼ D₂ = M ＼ (D₁ ∪ D₂) := by
   rw [← restrict_compl, ← restrict_compl, ← restrict_compl, restrict_restrict_eq,
     restrict_ground_eq, diff_diff]
-  simp [diff_subset]
+  simp
 
 lemma delete_comm (M : Matroid α) (D₁ D₂ : Set α) : M ＼ D₁ ＼ D₂ = M ＼ D₂ ＼ D₁ := by
   rw [delete_delete, union_comm, delete_delete]
@@ -208,9 +208,6 @@ lemma IsNonloop.of_delete (h : (M ＼ D).IsNonloop e) : M.IsNonloop e :=
 
 lemma isNonloop_iff_delete_of_notMem (he : e ∉ D) : M.IsNonloop e ↔ (M ＼ D).IsNonloop e :=
   ⟨fun h ↦ delete_isNonloop_iff.2 ⟨h, he⟩, fun h ↦ h.of_delete⟩
-
-@[deprecated (since := "2025-05-23")]
-alias isNonloop_iff_delete_of_not_mem := isNonloop_iff_delete_of_notMem
 
 lemma delete_loops_eq_removeLoops (M : Matroid α) : M ＼ M.loops = M.removeLoops := by
   rw [removeLoops, delete_eq_restrict, compl_loops_eq]

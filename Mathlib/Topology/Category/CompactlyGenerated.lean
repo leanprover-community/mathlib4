@@ -46,11 +46,11 @@ instance : CoeSort CompactlyGenerated Type* :=
 
 attribute [instance] is_compactly_generated
 
-instance : Category.{w, w+1} CompactlyGenerated.{u, w} :=
-  inferInstanceAs (Category (InducedCategory _ toTop))
+instance : Category.{w, w + 1} CompactlyGenerated.{u, w} :=
+  inferInstanceAs <| Category (InducedCategory _ toTop)
 
 instance : ConcreteCategory.{w} CompactlyGenerated.{u, w} (C(·, ·)) :=
-  InducedCategory.concreteCategory toTop
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toTop) _
 
 variable (X : Type w) [TopologicalSpace X] [UCompactlyGeneratedSpace.{u} X]
 

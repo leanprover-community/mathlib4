@@ -5,8 +5,9 @@ Authors: George Peter Banyard, Yaël Dillies, Kyle Miller
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Combinatorics.SimpleGraph.Metric
+public import Mathlib.Combinatorics.SimpleGraph.Paths
+public import Mathlib.Combinatorics.SimpleGraph.Sum
 
 /-!
 # Graph products
@@ -31,7 +32,7 @@ Define all other graph products!
 
 @[expose] public section
 
-variable {α β γ : Type*}
+variable {α β γ V V₁ V₂ W W₁ W₂ : Type*}
 
 namespace SimpleGraph
 
@@ -42,7 +43,6 @@ and `(a, b₁)` and `(a, b₂)` if `H` relates `b₁` and `b₂`. -/
 def boxProd (G : SimpleGraph α) (H : SimpleGraph β) : SimpleGraph (α × β) where
   Adj x y := G.Adj x.1 y.1 ∧ x.2 = y.2 ∨ H.Adj x.2 y.2 ∧ x.1 = y.1
   symm x y := by simp [and_comm, eq_comm, adj_comm]
-  loopless x := by simp
 
 /-- Box product of simple graphs. It relates `(a₁, b)` and `(a₂, b)` if `G` relates `a₁` and `a₂`,
 and `(a, b₁)` and `(a, b₂)` if `H` relates `b₁` and `b₂`. -/
@@ -65,8 +65,6 @@ theorem neighborSet_boxProd (x : α × β) :
   ext ⟨a', b'⟩
   simp only [mem_neighborSet, Set.mem_union, boxProd_adj, Set.mem_prod, Set.mem_singleton_iff]
   simp only [eq_comm, and_comm]
-
-@[deprecated (since := "2025-05-08")] alias boxProd_neighborSet := neighborSet_boxProd
 
 variable (G H)
 
@@ -94,6 +92,24 @@ def boxProdRight (a : α) : H ↪g G □ H where
   toFun := Prod.mk a
   inj' _ _ := congr_arg Prod.snd
   map_rel_iff' {_ _} := boxProd_adj_right
+
+namespace Iso
+
+/-- The box product distributes over the disjoint sum of graphs. -/
+@[simps!, simps toEquiv]
+def boxProdSumDistrib (G : SimpleGraph V) (H₁ : SimpleGraph W₁) (H₂ : SimpleGraph W₂) :
+    G □ (H₁ ⊕g H₂) ≃g G □ H₁ ⊕g G □ H₂ where
+  toEquiv := .prodSumDistrib ..
+  map_rel_iff' := by simp
+
+/-- The box product distributes over the disjoint sum of graphs. -/
+@[simps!, simps toEquiv]
+def sumBoxProdDistrib (G₁ : SimpleGraph V₁) (G₂ : SimpleGraph V₂) (H : SimpleGraph W) :
+    (G₁ ⊕g G₂) □ H ≃g G₁ □ H ⊕g G₂ □ H where
+  toEquiv := .sumProdDistrib ..
+  map_rel_iff' := by simp
+
+end Iso
 
 namespace Walk
 
@@ -129,6 +145,7 @@ def ofBoxProdRight [DecidableEq α] [DecidableRel H.Adj] {x y : α × β} :
       (fun hH => w.ofBoxProdRight.cons hH.1)
       (fun hG => hG.2 ▸ w.ofBoxProdRight)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a₂ : α} {b : β} :
     ∀ (w : G.Walk a₁ a₂), (w.boxProdLeft H b).ofBoxProdLeft = w
@@ -138,6 +155,7 @@ theorem ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a�
     · simp [ofBoxProdLeft_boxProdLeft]
     · exact ⟨h, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofBoxProdRight_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {a b₁ b₂ : α} :
     ∀ (w : G.Walk b₁ b₂), (w.boxProdRight G a).ofBoxProdRight = w
@@ -208,8 +226,6 @@ protected theorem Connected.ofBoxProdRight (h : (G □ H).Connected) : H.Connect
 theorem connected_boxProd : (G □ H).Connected ↔ G.Connected ∧ H.Connected :=
   ⟨fun h => ⟨h.ofBoxProdLeft, h.ofBoxProdRight⟩, fun h => h.1.boxProd h.2⟩
 
-@[deprecated (since := "2025-05-08")] alias boxProd_connected := connected_boxProd
-
 instance boxProdFintypeNeighborSet (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] :
     Fintype ((G □ H).neighborSet x) :=
@@ -231,15 +247,11 @@ theorem neighborFinset_boxProd (x : α × β)
   convert_to (G □ H).neighborFinset x = _ using 2
   exact Eq.trans (Finset.map_map _ _ _) Finset.attach_map_val
 
-@[deprecated (since := "2025-05-08")] alias boxProd_neighborFinset := neighborFinset_boxProd
-
 theorem degree_boxProd (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] [Fintype ((G □ H).neighborSet x)] :
     (G □ H).degree x = G.degree x.1 + H.degree x.2 := by
   rw [degree, degree, degree, neighborFinset_boxProd, Finset.card_disjUnion]
   simp_rw [Finset.card_product, Finset.card_singleton, mul_one, one_mul]
-
-@[deprecated (since := "2025-05-08")] alias boxProd_degree := degree_boxProd
 
 lemma reachable_boxProd {x y : α × β} :
     (G □ H).Reachable x y ↔ G.Reachable x.1 y.1 ∧ H.Reachable x.2 y.2 := by
@@ -250,8 +262,7 @@ lemma reachable_boxProd {x y : α × β} :
   · intro ⟨⟨w₁⟩, ⟨w₂⟩⟩
     exact ⟨(w₁.boxProdLeft _ _).append (w₂.boxProdRight _ _)⟩
 
-@[deprecated (since := "2025-05-08")] alias boxProd_reachable := reachable_boxProd
-
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma edist_boxProd (x y : α × β) :
     (G □ H).edist x y = G.edist x.1 y.1 + H.edist x.2 y.2 := by
@@ -275,7 +286,5 @@ lemma edist_boxProd (x y : α × β) :
     · have ⟨w, hw⟩ := exists_walk_of_edist_ne_top h
       rw [← hw, Walk.length_boxProd]
       exact add_le_add (edist_le w.ofBoxProdLeft) (edist_le w.ofBoxProdRight)
-
-@[deprecated (since := "2025-05-08")] alias boxProd_edist := edist_boxProd
 
 end SimpleGraph

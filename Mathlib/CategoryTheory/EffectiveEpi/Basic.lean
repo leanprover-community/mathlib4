@@ -219,6 +219,7 @@ theorem effectiveEpi_iff_effectiveEpiFamily {B X : C} (f : X ⟶ B) :
     EffectiveEpi f ↔ EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 A family of morphisms with the same target inducing an isomorphism from the coproduct to the target
 is an `EffectiveEpiFamily`.
@@ -231,14 +232,14 @@ def effectiveEpiFamilyStructOfIsIsoDesc {B : C} {α : Type*} (X : α → C)
   fac e h := by
     intro a
     have : π a = Sigma.ι X a ≫ (asIso (Sigma.desc π)).hom := by simp only [asIso_hom,
-      colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+      colimit.ι_desc, Cofan.mk_ι_app]
     rw [this, assoc]
-    simp only [asIso_hom, asIso_inv, IsIso.hom_inv_id_assoc, colimit.ι_desc, Cofan.mk_pt,
+    simp only [asIso_hom, asIso_inv, IsIso.hom_inv_id_assoc, colimit.ι_desc,
       Cofan.mk_ι_app]
   uniq e h m hm := by
     simp only [asIso_inv, IsIso.eq_inv_comp]
     ext a
-    simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app,
+    simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_ι_app,
       colimit.ι_desc]
     exact hm a
 
@@ -269,7 +270,7 @@ def EffectiveEpiFamilyStruct.reindex
     EffectiveEpiFamilyStruct X π where
   desc := fun f h => P.desc (fun _ => f _) (fun _ _ => h _ _)
   fac _ _ a := by
-    obtain ⟨a,rfl⟩ := e.surjective a
+    obtain ⟨a, rfl⟩ := e.surjective a
     apply P.fac
   uniq _ _ _ hm := P.uniq _ _ _ fun _ => hm _
 

@@ -75,7 +75,7 @@ theorem binomialFamily_mem_support {x : A⟦Γ⟧}
 
 theorem orderTop_hsum_binomialFamily_pos {x : A⟦Γ⟧} (hx : 0 < (x - 1).orderTop)
     (r : R) : (0 : WithTop Γ) < (SummableFamily.hsum (binomialFamily x r) - 1).orderTop := by
-  obtain (_|_) := subsingleton_or_nontrivial A
+  obtain (_ | _) := subsingleton_or_nontrivial A
   · simp [Subsingleton.eq_zero ((binomialFamily x r).hsum - 1)]
   · refine (orderTop_self_sub_one_pos_iff (binomialFamily x r).hsum).mpr ?_
     constructor
@@ -117,7 +117,7 @@ theorem coeff_toOrderTopSubOnePos_pow {g : Γ} (hg : 0 < g) (r s : R) (k : ℕ) 
   intro n hn
   rw [binomialFamily_apply, add_sub_cancel_left, coeff_smul, single_pow, coeff_single_of_ne,
     smul_zero]
-  · contrapose! hn
+  · contrapose hn
     apply (StrictMono.injective (nsmul_left_strictMono hg)) hn.symm
   · by_cases hr : r = 0 <;> simp [hr, hg]
 

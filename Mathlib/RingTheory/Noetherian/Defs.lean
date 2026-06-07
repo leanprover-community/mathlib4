@@ -82,11 +82,8 @@ theorem isNoetherian_submodule {N : Submodule R M} :
     have : s ≤ LinearMap.range N.subtype := N.range_subtype.symm ▸ hs
     Submodule.map_comap_eq_self this ▸ (hn _).map _,
     fun h => ⟨fun s => ?_⟩⟩
-  have f := (Submodule.equivMapOfInjective N.subtype Subtype.val_injective s).symm
-  have h₁ := h (s.map N.subtype) (Submodule.map_subtype_le N s)
-  have h₂ : (⊤ : Submodule R (s.map N.subtype)).map f = ⊤ := by simp
-  have h₃ := ((Submodule.fg_top _).2 h₁).map (↑f : _ →ₗ[R] s)
-  exact (Submodule.fg_top _).1 (h₂ ▸ h₃)
+  specialize h (s.map N.subtype) (Submodule.map_subtype_le N s)
+  exact Submodule.fg_of_fg_map_injective N.subtype Subtype.val_injective h
 
 theorem isNoetherian_submodule_left {N : Submodule R M} :
     IsNoetherian R N ↔ ∀ s : Submodule R M, (N ⊓ s).FG :=
@@ -143,7 +140,7 @@ theorem isNoetherian_iff_fg_wellFounded :
     intro N
     obtain ⟨⟨N₀, h₁⟩, e : N₀ ≤ N, h₂⟩ :=
       WellFounded.has_min H.wf { N' : α | N'.1 ≤ N } ⟨⟨⊥, Submodule.fg_bot⟩, @bot_le _ _ _ N⟩
-    convert h₁
+    convert! h₁
     refine (e.antisymm ?_).symm
     by_contra h₃
     obtain ⟨x, hx₁ : x ∈ N, hx₂ : x ∉ N₀⟩ := Set.not_subset.mp h₃
@@ -195,6 +192,7 @@ end
 
 /-- A (semi)ring is Noetherian if it is Noetherian as a module over itself,
 i.e. all its ideals are finitely generated. -/
+@[wikidata Q582271]
 abbrev IsNoetherianRing (R) [Semiring R] :=
   IsNoetherian R R
 
@@ -205,3 +203,9 @@ theorem isNoetherianRing_iff {R} [Semiring R] : IsNoetherianRing R ↔ IsNoether
 theorem isNoetherianRing_iff_ideal_fg (R : Type*) [Semiring R] :
     IsNoetherianRing R ↔ ∀ I : Ideal R, I.FG :=
   isNoetherianRing_iff.trans isNoetherian_def
+
+lemma Ideal.fg_of_isNoetherianRing {R : Type*} [Semiring R] [IsNoetherianRing R] (I : Ideal R) :
+    I.FG :=
+  IsNoetherian.noetherian _
+
+alias Ideal.FG.of_isNoetherianRing := Ideal.fg_of_isNoetherianRing

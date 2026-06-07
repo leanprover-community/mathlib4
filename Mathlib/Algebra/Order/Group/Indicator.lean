@@ -17,7 +17,7 @@ public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 This file relates the support of a function to order constructions.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 
@@ -207,17 +207,17 @@ variable [Monoid M] [PartialOrder M] [CanonicallyOrderedMul M]
 
 @[to_additive]
 lemma mulIndicator_le_self (s : Set α) (f : α → M) : mulIndicator s f ≤ f :=
-  mulIndicator_le_self' fun _ _ ↦ one_le _
+  mulIndicator_le_self' fun _ _ ↦ one_le
 
 @[to_additive]
 lemma mulIndicator_apply_le {a : α} {s : Set α} {f g : α → M} (hfg : a ∈ s → f a ≤ g a) :
     mulIndicator s f a ≤ g a :=
-  mulIndicator_apply_le' hfg fun _ ↦ one_le _
+  mulIndicator_apply_le' hfg fun _ ↦ one_le
 
 @[to_additive]
 lemma mulIndicator_le {s : Set α} {f g : α → M} (hfg : ∀ a ∈ s, f a ≤ g a) :
     mulIndicator s f ≤ g :=
-  mulIndicator_le' hfg fun _ _ ↦ one_le _
+  mulIndicator_le' hfg fun _ _ ↦ one_le
 
 end CanonicallyOrderedMul
 

@@ -13,7 +13,7 @@ public import Mathlib.Order.Directed
 # Finsets of ordered types
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w

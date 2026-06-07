@@ -22,7 +22,7 @@ version.
 
 -/
 
-@[expose] public section
+public section
 
 open Set Metric TopologicalSpace Function Filter
 
@@ -110,4 +110,4 @@ theorem iteratedDerivWithin_tsum {f : ι → 𝕜 → F} (m : ℕ) (hs : IsOpen 
       · simp [hm2, hsum r hr]
       · exact ((h m (by lia) (by lia)).summable hr).congr (fun _ ↦ by simp)
     · exact SummableLocallyUniformlyOn_congr
-        (fun _ _ ht ↦ iteratedDerivWithin_succ) (h (m + 1) (by lia) (by lia))
+        (fun _ _ ht ↦ by rw [iteratedDerivWithin_succ]) (h (m + 1) (by lia) (by lia))

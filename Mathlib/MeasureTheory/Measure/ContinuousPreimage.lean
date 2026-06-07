@@ -22,7 +22,7 @@ a null measurable set `s`, and a null measurable set `t` of finite measure,
 the set of parameters `z` such that `f z ⁻¹' t` is a.e. equal to `s` is a closed set.
 -/
 
-@[expose] public section
+public section
 
 open Filter Set
 open scoped ENNReal symmDiff Topology

@@ -183,22 +183,14 @@ theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b :=
 theorem left_notMem_Ioc : a ∉ Ioc a b :=
   Finset.left_notMem_Ioc
 
-@[deprecated (since := "2025-05-23")] alias left_not_mem_Ioc := left_notMem_Ioc
-
 theorem left_notMem_Ioo : a ∉ Ioo a b :=
   Finset.left_notMem_Ioo
-
-@[deprecated (since := "2025-05-23")] alias left_not_mem_Ioo := left_notMem_Ioo
 
 theorem right_notMem_Ico : b ∉ Ico a b :=
   Finset.right_notMem_Ico
 
-@[deprecated (since := "2025-05-23")] alias right_not_mem_Ico := right_notMem_Ico
-
 theorem right_notMem_Ioo : b ∉ Ioo a b :=
   Finset.right_notMem_Ioo
-
-@[deprecated (since := "2025-05-23")] alias right_not_mem_Ioo := right_notMem_Ioo
 
 theorem Ico_filter_lt_of_le_left [DecidablePred (· < c)] (hca : c ≤ a) :
     ((Ico a b).filter fun x => x < c) = ∅ := by

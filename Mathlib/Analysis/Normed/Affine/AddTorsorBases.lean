@@ -22,7 +22,7 @@ This file contains results about bases in normed affine spaces.
 * `interior_convexHull_nonempty_iff_affineSpan_eq_top`
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists HasFDerivAt
 

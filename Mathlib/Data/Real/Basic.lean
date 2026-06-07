@@ -21,7 +21,7 @@ and a conditionally complete linear order,
 have been deferred to the file `Mathlib/Data/Real/Archimedean.lean`,
 in order to keep the imports here simple.
 
-The fact that the real numbers are a (trivial) *-ring has similarly been deferred to
+The fact that the real numbers are a (trivial) \*-ring has similarly been deferred to
 `Mathlib/Data/Real/Star.lean`.
 -/
 
@@ -32,6 +32,7 @@ assert_not_exists Finset Module Submonoid FloorRing
 
 /-- The type `ℝ` of real numbers constructed as equivalence classes of Cauchy sequences of rational
 numbers. -/
+@[wikidata Q12916, wikidata Q2584477]
 structure Real where ofCauchy ::
   /-- The underlying Cauchy completion -/
   cauchy : CauSeq.Completion.Cauchy (abs : ℚ → ℚ)
@@ -349,11 +350,7 @@ theorem ratCast_lt {x y : ℚ} : (x : ℝ) < (y : ℝ) ↔ x < y := by
   exact const_lt
 
 protected theorem zero_lt_one : (0 : ℝ) < 1 := by
-  convert ratCast_lt.2 zero_lt_one <;> simp [← ofCauchy_ratCast, ofCauchy_one, ofCauchy_zero]
-
-@[deprecated ZeroLEOneClass.factZeroLtOne (since := "2025-05-12")]
-protected theorem fact_zero_lt_one : Fact ((0 : ℝ) < 1) :=
-  ⟨Real.zero_lt_one⟩
+  convert! ratCast_lt.2 zero_lt_one <;> simp [← ofCauchy_ratCast, ofCauchy_one, ofCauchy_zero]
 
 instance instNontrivial : Nontrivial ℝ where
   exists_pair_ne := ⟨0, 1, Real.zero_lt_one.ne⟩
@@ -373,9 +370,6 @@ instance instIsOrderedAddMonoid : IsOrderedAddMonoid ℝ where
       simp only [mk_lt, ← mk_add] at *
       change Pos _ at *
       rwa [add_sub_add_right_eq_sub]
-
-@[deprecated (since := "2025-09-15")]
-protected alias add_lt_add_iff_left := _root_.add_lt_add_iff_left
 
 instance instIsStrictOrderedRing : IsStrictOrderedRing ℝ :=
   .of_mul_pos fun a b ↦ by
@@ -431,13 +425,13 @@ instance : DistribLattice ℝ where
     intro a b
     induction a using Real.ind_mk
     induction b using Real.ind_mk
-    dsimp only; rw [← mk_sup, mk_le]
+    rw [← mk_sup, mk_le]
     exact CauSeq.le_sup_left
   le_sup_right := by
     intro a b
     induction a using Real.ind_mk
     induction b using Real.ind_mk
-    dsimp only; rw [← mk_sup, mk_le]
+    rw [← mk_sup, mk_le]
     exact CauSeq.le_sup_right
   sup_le := by
     intro a b c
@@ -451,13 +445,13 @@ instance : DistribLattice ℝ where
     intro a b
     induction a using Real.ind_mk
     induction b using Real.ind_mk
-    dsimp only; rw [← mk_inf, mk_le]
+    rw [← mk_inf, mk_le]
     exact CauSeq.inf_le_left
   inf_le_right := by
     intro a b
     induction a using Real.ind_mk
     induction b using Real.ind_mk
-    dsimp only; rw [← mk_inf, mk_le]
+    rw [← mk_inf, mk_le]
     exact CauSeq.inf_le_right
   le_inf := by
     intro a b c
@@ -485,7 +479,7 @@ instance : SemilatticeInf ℝ :=
 instance : SemilatticeSup ℝ :=
   inferInstance
 
-instance leTotal_R : IsTotal ℝ (· ≤ ·) :=
+instance leTotal_R : @Std.Total ℝ (· ≤ ·) :=
   ⟨by
     intro a b
     induction a using Real.ind_mk
@@ -590,7 +584,7 @@ def IsPowMul {R : Type*} [Pow R ℕ] (f : R → ℝ) :=
 
 lemma IsPowMul.map_one_le_one {R : Type*} [Monoid R] {f : R → ℝ} (hf : IsPowMul f) :
     f 1 ≤ 1 := by
-  have hf1 : (f 1)^2 = f 1 := by conv_rhs => rw [← one_pow 2, hf _ one_le_two]
+  have hf1 : (f 1) ^ 2 = f 1 := by conv_rhs => rw [← one_pow 2, hf _ one_le_two]
   rcases eq_zero_or_one_of_sq_eq_self hf1 with h | h <;> rw [h]
   exact zero_le_one
 

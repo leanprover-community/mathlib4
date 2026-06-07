@@ -165,7 +165,7 @@ namespace IndepMatroid
   maximality := M.indep_maximal
   subset_ground B hB := M.subset_ground B hB.1
 
-@[simp] theorem matroid_indep_iff {M : IndepMatroid α} {I : Set α} :
+theorem matroid_indep_iff {M : IndepMatroid α} {I : Set α} :
     M.matroid.Indep I ↔ M.Indep I := Iff.rfl
 
 /-- If `Indep` has the 'compactness' property that each set `I` satisfies `Indep I` if and only if
@@ -300,7 +300,7 @@ theorem _root_.Matroid.existsMaximalSubsetProperty_of_bdd {P : Set α → Prop}
     rw [finite_iff_bddAbove, bddAbove_def]
     simp_rw [ENat.le_coe_iff] at hP
     use n
-    rintro x ⟨Y, ⟨hY,-,-⟩, rfl⟩
+    rintro x ⟨Y, ⟨hY, -, -⟩, rfl⟩
     obtain ⟨n₀, heq, hle⟩ := hP Y hY
     rwa [ncard_def, heq, ENat.toNat_coe]
   obtain ⟨Y, ⟨hY, hIY, hYX⟩, hY'⟩ :=

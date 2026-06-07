@@ -207,7 +207,7 @@ def filterAt (x : X) : Filter (Set X) := (𝓝 x).smallSets ⊓ 𝓟 (v.setsAt x
 
 theorem _root_.Filter.HasBasis.vitaliFamily {ι : Sort*} {p : ι → Prop} {s : ι → Set X} {x : X}
     (h : (𝓝 x).HasBasis p s) : (v.filterAt x).HasBasis p (fun i ↦ {t ∈ v.setsAt x | t ⊆ s i}) := by
-  simpa only [← Set.setOf_inter_eq_sep] using h.smallSets.inf_principal _
+  simpa only [← Set.setOf_inter_eq_sep] using! h.smallSets.inf_principal _
 
 theorem filterAt_basis_closedBall (x : X) :
     (v.filterAt x).HasBasis (0 < ·) ({t ∈ v.setsAt x | t ⊆ closedBall x ·}) :=
@@ -248,11 +248,24 @@ theorem eventually_filterAt_subset_of_nhds {x : X} {o : Set X} (hx : o ∈ 𝓝 
     ∀ᶠ t in v.filterAt x, t ⊆ o :=
   (eventually_smallSets_subset.2 hx).filter_mono inf_le_left
 
+@[simp]
+theorem filterAt_enlarge (v : VitaliFamily μ) {δ : ℝ} (δpos : 0 < δ) :
+    (v.enlarge δ δpos).filterAt = v.filterAt := by
+  ext1 x
+  suffices {t | MeasurableSet t → (interior t).Nonempty → ¬t ⊆ closedBall x δ →
+      t ∈ v.setsAt x} ∈ (𝓝 x).smallSets by
+    simpa [VitaliFamily.filterAt, VitaliFamily.enlarge, ← sup_principal, inf_sup_left,
+      mem_inf_principal]
+  filter_upwards [eventually_smallSets_subset.mpr (closedBall_mem_nhds _ δpos)]
+  simp +contextual
+
+theorem fineSubfamilyOn_iff_frequently (v : VitaliFamily μ) {f : X → Set (Set X)} {s : Set X} :
+    v.FineSubfamilyOn f s ↔ ∀ x ∈ s, ∃ᶠ t in v.filterAt x, t ∈ f x := by
+  refine forall₂_congr fun x hx ↦ ?_
+  simp [frequently_filterAt_iff, ← and_assoc, and_right_comm]
+
 theorem fineSubfamilyOn_of_frequently (v : VitaliFamily μ) (f : X → Set (Set X)) (s : Set X)
     (h : ∀ x ∈ s, ∃ᶠ t in v.filterAt x, t ∈ f x) : v.FineSubfamilyOn f s := by
-  intro x hx ε εpos
-  obtain ⟨t, tv, ht, tf⟩ : ∃ t ∈ v.setsAt x, t ⊆ closedBall x ε ∧ t ∈ f x :=
-    v.frequently_filterAt_iff.1 (h x hx) ε εpos
-  exact ⟨t, ⟨tv, tf⟩, ht⟩
+  rwa [fineSubfamilyOn_iff_frequently]
 
 end VitaliFamily

@@ -119,12 +119,6 @@ theorem mem_closure_of_mem {s : Set M} {x : M} (hx : x ∈ s) : x ∈ closure s 
 theorem notMem_of_notMem_closure {P : M} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.AddSubsemigroup.not_mem_of_not_mem_closure := AddSubsemigroup.notMem_of_notMem_closure
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
-
 variable {S}
 
 open Set
@@ -190,10 +184,11 @@ theorem dense_induction {p : M → Prop} (s : Set M) (closure : closure s = ⊤)
   | mem _ h => exact mem _ h
   | mul _ _ _ _ h₁ h₂ => exact mul _ _ h₁ h₂
 
-/- The argument `s : Set M` is explicit in `Subsemigroup.dense_induction` because the type of the
+/-! The argument `s : Set M` is explicit in `Subsemigroup.dense_induction` because the type of the
 induction variable, namely `x : M`, does not reference `x`. Making `s` explicit allows the user
 to apply the induction principle while deferring the proof of `closure s = ⊤` without creating
 metavariables, as in the following example. -/
+
 example {p : M → Prop} (s : Set M) (closure : closure s = ⊤)
     (mem : ∀ x ∈ s, p x) (mul : ∀ x y, p x → p y → p (x * y)) (x : M) :
     p x := by

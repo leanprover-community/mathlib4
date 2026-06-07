@@ -14,7 +14,7 @@ public import Mathlib.MeasureTheory.PiSystem
 This file talks about the measurability of operations on binary functions.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MeasureTheory.Measure
 
@@ -110,7 +110,7 @@ lemma MeasurableEmbedding.prodMk_left {β γ : Type*} [MeasurableSingletonClass 
   measurable := Measurable.prodMk measurable_const hf.measurable
   measurableSet_image' := by
     intro s hs
-    convert (MeasurableSet.singleton x).prod (hf.measurableSet_image.mpr hs)
+    convert! (MeasurableSet.singleton x).prod (hf.measurableSet_image.mpr hs)
     ext x
     simp [Prod.ext_iff, eq_comm, ← exists_and_left, and_left_comm]
 

@@ -13,7 +13,7 @@ public import Mathlib.Data.Set.Insert
 This file contains three trivial lemmas about `Bool`, `Set.univ`, and `Set.range`.
 -/
 
-@[expose] public section
+public section
 
 
 open Set

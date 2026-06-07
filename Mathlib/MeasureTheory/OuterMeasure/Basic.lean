@@ -9,7 +9,7 @@ public import Mathlib.Data.Countable.Basic
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Order.Disjointed
 public import Mathlib.MeasureTheory.OuterMeasure.Defs
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!
 # Outer Measures
@@ -32,7 +32,7 @@ Note that we do not need `α` to be measurable to define an outer measure.
 outer measure
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

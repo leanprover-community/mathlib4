@@ -199,9 +199,6 @@ lemma notMem_mutuallySingularSetSlice (κ η : Kernel α γ) (a : α) (x : γ) :
     x ∉ mutuallySingularSetSlice κ η a ↔ rnDerivAux κ (κ + η) a x < 1 := by
   simp [mutuallySingularSetSlice]
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_mutuallySingularSetSlice := notMem_mutuallySingularSetSlice
-
 lemma measurableSet_mutuallySingularSet (κ η : Kernel α γ) :
     MeasurableSet (mutuallySingularSet κ η) :=
   measurable_rnDerivAux κ (κ + η) measurableSet_Ici

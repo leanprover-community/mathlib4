@@ -18,7 +18,7 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
   over the base ring.
 -/
 
-@[expose] public section
+public section
 
 
 open Polynomial Submodule
