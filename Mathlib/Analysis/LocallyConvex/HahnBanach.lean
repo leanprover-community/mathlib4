@@ -122,5 +122,3 @@ lemma Submodule.ClosedComplemented.of_finiteDimensional [PolynormableSpace 𝕜 
     [FiniteDimensional 𝕜 S] : S.ClosedComplemented := by
   let ⟨g, hg⟩ := (ContinuousLinearMap.id 𝕜 S).exist_extension_of_finiteDimensional_range
   exact ⟨g, DFunLike.congr_fun hg.symm⟩
-
-#min_imports
