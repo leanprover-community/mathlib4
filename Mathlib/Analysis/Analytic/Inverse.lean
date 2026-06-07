@@ -629,7 +629,7 @@ lemma HasFPowerSeriesAt.eventually_hasSum_of_comp {f : E → F} {g : F → G}
   have L : Tendsto (fun n ↦ q.partialSum n (f (x + y) - f x)) atTop (𝓝 (g (f (x + y)))) := by
     apply (closed_nhds_basis (g (f (x + y)))).tendsto_right_iff.2
     rintro u ⟨hu, u_closed⟩
-    simp only [id_eq, eventually_atTop, ge_iff_le]
+    simp only [id_eq, eventually_atTop]
     rcases mem_nhds_iff.1 hu with ⟨v, vu, v_open, hv⟩
     obtain ⟨a₀, b₀, hab⟩ : ∃ a₀ b₀, ∀ (a b : ℕ), a₀ ≤ a → b₀ ≤ b →
         q.partialSum a (p.partialSum b y - (p 0) fun _ ↦ 0) ∈ v := by
