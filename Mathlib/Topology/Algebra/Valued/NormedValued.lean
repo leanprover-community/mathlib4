@@ -63,14 +63,6 @@ instance : RankLeOne (valuation (K := K)) where
   hom' := embedding
   strictMono' := embedding_strictMono
 
-@[instance_reducible]
-def toValuativeRel : ValuativeRel K := sorry
-
-@[instance_reducible]
-def isValuativeTopology :
-    letI := toValuativeRel (K := K)
-    IsValuativeTopology K := sorry
-
 /-- The valued field structure on a nonarchimedean normed field `K`, determined by the norm. -/
 @[instance_reducible]
 def toValued : Valued K ℝ≥0 :=
