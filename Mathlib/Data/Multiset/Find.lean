@@ -99,7 +99,7 @@ theorem find?_eq_none_iff {s : Multiset α} :
     dsimp [Set.Subsingleton] at hp
     grind
 
-/-- Note that we cannot derive `hp` from `hp'` or vice versa, as the former allos no such `x`,
+/-- Note that we cannot derive `hp` from `hp'` or vice versa, as the former allows no such `x`,
 while the latter only requires uniqueness within the set. -/
 theorem find?_eq_choose {s : Multiset α} (hp' : ∃! x, x ∈ s ∧ p x) :
     s.find? p hp = some (s.choose p hp') := by
