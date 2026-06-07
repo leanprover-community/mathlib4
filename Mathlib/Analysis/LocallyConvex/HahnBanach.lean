@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Convex.Cone.Extension
 public import Mathlib.Analysis.LocallyConvex.AbsConvexOpen
 public import Mathlib.Analysis.LocallyConvex.WeakDual
-public import Mathlib.Analysis.RCLike.Extend
+public import Mathlib.Analysis.Normed.Module.RCLike.Extend
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
@@ -36,21 +36,6 @@ open Module Topology RCLike
 open scoped ComplexConjugate
 
 variable {𝕜 E : Type*} [AddCommGroup E]
-
-/-- If a real-linear functional is bounded by a `𝕜`-seminorm, then its `𝕜`-linear extension
-is bounded by the same seminorm. -/
-theorem Module.Dual.norm_extendRCLike_le_seminorm [RCLike 𝕜] [Module 𝕜 E] [Module ℝ E]
-    [IsScalarTower ℝ 𝕜 E] (fr : Dual ℝ E) {p : Seminorm 𝕜 E} (hp : ∀ x, |fr x| ≤ p x) (x : E) :
-    ‖(fr.extendRCLike x : 𝕜)‖ ≤ p x := by
-  by_cases hx : fr.extendRCLike (𝕜 := 𝕜) x = 0
-  · simp [hx]
-  have hsq : ‖fr.extendRCLike (𝕜 := 𝕜) x‖ ^ 2 ≤ ‖fr.extendRCLike (𝕜 := 𝕜) x‖ * p x := calc
-    _ = fr (conj (fr.extendRCLike x) • x) := fr.norm_extendRCLike_apply_sq x
-    _ ≤ |fr (conj (fr.extendRCLike x) • x)| := le_abs_self _
-    _ ≤ p (conj (fr.extendRCLike x) • x) := hp _
-    _ = ‖conj (fr.extendRCLike x)‖ * p x := map_smul_eq_mul _ _ _
-    _ = ‖(fr.extendRCLike x)‖ * p x := by rw [norm_conj]
-  exact (mul_le_mul_iff_left₀ (norm_pos_iff.2 hx)).1 <| by simpa [pow_two, mul_comm] using hsq
 
 theorem Module.Dual.exists_extension_of_le_seminorm_real [Module ℝ E]
     (S : Subspace ℝ E) (f : Dual ℝ S)
@@ -137,3 +122,5 @@ lemma Submodule.ClosedComplemented.of_finiteDimensional [PolynormableSpace 𝕜 
     [FiniteDimensional 𝕜 S] : S.ClosedComplemented := by
   let ⟨g, hg⟩ := (ContinuousLinearMap.id 𝕜 S).exist_extension_of_finiteDimensional_range
   exact ⟨g, DFunLike.congr_fun hg.symm⟩
+
+#min_imports
