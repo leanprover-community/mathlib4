@@ -35,6 +35,7 @@ namespace CochainComplex
 
 open HomologicalComplex
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isSplitEpi_to_singleFunctor_obj_of_projective
     {P : C} [Projective P] {K : CochainComplex C ℤ} {i : ℤ}

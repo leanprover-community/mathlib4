@@ -221,7 +221,7 @@ instance [NormedAddCommGroup E] [CompleteSpace E] [InnerProductSpace ℝ E] :
   continuous_uncurry := continuous_inner
   bijective_left := (toDual ℝ E).bijective
   bijective_right := by
-    convert (toDual ℝ E).bijective
+    convert! (toDual ℝ E).bijective
     ext y
     simp
 
