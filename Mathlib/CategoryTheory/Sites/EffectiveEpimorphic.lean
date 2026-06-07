@@ -82,7 +82,6 @@ lemma Presieve.EffectiveEpimorphic.isSheafFor_of_isRepresentable {X : C} {R : Pr
   exact hR _
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.proofsInPublic true in
 /--
 Implementation: This is a construction which will be used in the proof that
@@ -198,7 +197,6 @@ lemma Sieve.generateFamily_eq {B : C} {α : Type*} (X : α → C) (π : (a : α)
     exact ⟨_, g, π a, ⟨a⟩, rfl⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.proofsInPublic true in
 /--
 Implementation: This is a construction which will be used in the proof that

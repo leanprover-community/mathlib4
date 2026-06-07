@@ -5,10 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Data.Finite.Card
 public import Mathlib.Analysis.Analytic.Within
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
+public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
 # Faa di Bruno formula
@@ -159,7 +159,7 @@ lemma injective_embSigma (n : ℕ) : Injective (embSigma n) := by
   ext i
   exact mk.inj_iff.mp (congr_fun hpq.1 i)
 
-/- The best proof would probably to establish the bijection with Finpartitions, but we opt
+/-- The best proof would probably to establish the bijection with Finpartitions, but we opt
 for a direct argument, embedding `OrderedPartition n` in a type which is obviously finite. -/
 noncomputable instance : Fintype (OrderedFinpartition n) :=
   Fintype.ofInjective _ (injective_embSigma n)
