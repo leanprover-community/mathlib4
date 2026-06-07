@@ -93,6 +93,25 @@ lemma isCompact_sInter_of_subset_constructibleTopologySubbasis [CompactSpace X]
   · apply (hs ht).imp <;> grind
   · exact isCompact_of_mem_constructibleTopologySubbasis (hs ht)
 
+lemma IsSpectralMap.constructibleTopology_eq_induced_of_isEmbedding
+    {Y : Type*} [TopologicalSpace Y] [CompactSpace X] [QuasiSeparatedSpace X]
+    [PrespectralSpace X] [CompactSpace Y] [QuasiSeparatedSpace Y] [PrespectralSpace Y]
+    {f : X → Y} (hf1 : IsSpectralMap f) (hf2 : IsEmbedding f) :
+    constructibleTopology X = induced f (constructibleTopology Y) := by
+  refine induced_generateFrom_eq ▸ eq_of_le_of_ge (le_generateFrom fun s ⟨t, ht, hts⟩ => ?_)
+    (le_generateFrom fun s hs => ?_)
+  · refine ht.elim (fun ⟨ht1, ht2⟩ => ?_) (fun ⟨ht1, ht2⟩ => ?_)
+    · exact hts ▸ (TopologicalSpace.le_def.1 <| constructibleTopology_le X) _
+        (ht1.preimage hf1.continuous)
+    · exact hts ▸ (isOpen_generateFrom_of_mem <|
+        Or.intro_right _ ⟨ht1.preimage hf1.1, t.preimage_compl ▸ hf1.2 ht1.isOpen_compl ht2⟩)
+  · refine isOpen_generateFrom_of_mem <| hs.elim (fun ⟨hs1, hs2⟩ => ?_) (fun ⟨hs1, hs2⟩ => ?_)
+    · obtain ⟨o, ho1, ho2, hsfo⟩ := hf2.exists_of_isOpen_isCompact hs1 hs2
+      exact ⟨o, Or.intro_left _ ⟨ho1, ho2⟩, hsfo.symm⟩
+    · obtain ⟨t, ht1, ht2, hoft⟩ := hf2.exists_of_isOpen_isCompact hs1.isOpen_compl hs2
+      exact ⟨tᶜ, Or.intro_right _ ⟨ht1.isClosed_compl, (compl_compl t).symm ▸ ht2⟩,
+        t.preimage_compl.symm ▸ hoft ▸ compl_compl s⟩
+
 /-- If `X` is quasi-separated, quasi-sober, prespectral and quasi-compact, then `X` is still
 quasi-compact in the constructible topology. This holds in particular for spectral spaces. -/
 @[stacks 0901 "quasi-compactness"]
