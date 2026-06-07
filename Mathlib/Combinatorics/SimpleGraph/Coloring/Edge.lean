@@ -95,7 +95,6 @@ variable (n) in
 theorem EdgeColorable.of_bot : (⊥ : SimpleGraph V).EdgeColorable n :=
   EdgeColorableWith.of_bot _
 
-variable (G) in
 @[simp]
 lemma edgeColorable_zero_iff : G.EdgeColorable 0 ↔ G = ⊥ :=
   edgeColorableWith_iff_of_isEmpty _
@@ -108,7 +107,7 @@ theorem chromaticIndex_bot : (⊥ : SimpleGraph V).chromaticIndex = 0 :=
 
 theorem chromaticIndex_eq_zero : G.chromaticIndex = 0 ↔ G = ⊥ := by
   refine ⟨fun h ↦ ?_, (· ▸ chromaticIndex_bot V)⟩
-  simpa using isEmpty_of_chromaticNumber_eq_zero h
+  simpa using chromaticNumber_eq_zero_iff.mp h
 
 /-- Lift an embedding of colors to an embedding of edge colorings. -/
 @[expose]
