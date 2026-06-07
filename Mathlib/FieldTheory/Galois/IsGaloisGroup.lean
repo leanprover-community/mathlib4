@@ -312,7 +312,7 @@ protected theorem finite (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [
 
 See `IsGaloisGroup.card_eq_finrank` a field-theoretic version that does not assume finiteness. -/
 theorem card_eq_finrank' (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Finite G]
-  [IsDomain B] [FaithfulSMul A B] [MulSemiringAction G B] [IsGaloisGroup G A B] :
+    [IsDomain B] [FaithfulSMul A B] [MulSemiringAction G B] [IsGaloisGroup G A B] :
     Nat.card G = Module.finrank A B := by
   have := IsDomain.of_faithfulSMul A B
   let := FractionRing.liftAlgebra A (FractionRing B)
