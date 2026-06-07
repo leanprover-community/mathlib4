@@ -18,8 +18,8 @@ lemma Foo.hoge (f g : ℝ → ℝ) : f * g = g * f := mul_comm f g
 --/-- info: Foo.fun_hoge (f g : ℝ → ℝ) : (fun i ↦ f i * g i) = fun i ↦ g i * f i -/
 --#guard_msgs in #check _root_.Foo.fun_hoge
 
--- The naming algorithm respects the `_root_` prefix: the generated declaratio is named`fun_hoge'`
-@[to_fun _root_.fun_hoge']
+-- The naming algorithm respects the `_root_` prefix: the generated declaration is named `fun_hoge'`
+@[to_fun _root_.hoge'_fun]
 lemma Foo.Bar.hoge' (f g : ℝ → ℝ) : f * g = g * f := mul_comm f g
 -- Previously, a bug meant such declarations were generated.
 /-- error: Unknown identifier `Foo._root_.fun_hoge'` -/
