@@ -242,7 +242,7 @@ theorem exists_ne_zero_of_setIntegral_ne_zero (hU : ∫ᵛ x in t, f x ∂[B; μ
     ∃ x, x ∈ t ∧ f x ≠ 0 := by
   contrapose! hU; exact setIntegral_eq_zero_of_forall_eq_zero hU
 
-theorem setIntegral_vectorMeasure_zero (f : X → E) {s : Set X}
+theorem setIntegral_of_variation_apply_eq_zero (f : X → E) {s : Set X}
     (hs : (μ.transpose B).variation s = 0) :
     ∫ᵛ x in s, f x ∂[B; μ] = 0 := by
   by_cases h's : MeasurableSet s; swap
