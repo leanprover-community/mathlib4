@@ -205,7 +205,8 @@ variable (𝕜 E F) in
 `mk`. -/
 noncomputable def mkL : E →L[𝕜] F →L[𝕜] E ⊗[𝕜] F := (mk 𝕜 E F).mkContinuous₂ 1 fun _ _ ↦ by simp
 
-@[simp] lemma mkL_apply (x : E) (y : F) : mkL 𝕜 E F x y = x ⊗ₜ y := rfl
+@[simp] lemma coe_mkL_apply (x : E) : ⇑(mkL 𝕜 E F x) = mk 𝕜 E F x := rfl
+lemma mkL_apply_apply (x : E) (y : F) : mkL 𝕜 E F x y = x ⊗ₜ y := rfl
 
 section isometry
 
