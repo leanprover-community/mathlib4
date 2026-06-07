@@ -18,8 +18,8 @@ variable {ι X Y E F G : Type*} {mX : MeasurableSpace X} {mY : MeasurableSpace Y
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
-  (μ : VectorMeasure X E) (ν : VectorMeasure Y F)
-  (B : E →L[ℝ] F →L[ℝ] G) {f g : X → E} {s t : Set X}
+  {μ : VectorMeasure X E} {ν : VectorMeasure Y F}
+  {B : E →L[ℝ] F →L[ℝ] G} {f g : X → E} {s t : Set X}
 
 namespace MeasureTheory.VectorMeasure
 
@@ -44,10 +44,10 @@ class HasProd (μ : VectorMeasure X E) (ν : VectorMeasure Y F) (B : E →L[ℝ]
   out : ∃ ρ : VectorMeasure (X × Y) G, ∀ (s : Set X) (t : Set Y),
     MeasurableSet s → MeasurableSet t → ρ (s ×ˢ t) = B (μ s) (ν t)
 
-
-/-- If `ν` is a finite measure, and `s ⊆ α × β` is measurable, then `x ↦ ν { y | (x, y) ∈ s }` is
-  a measurable function. `measurable_measure_prodMk_left` is strictly more general. -/
-theorem measurable_measure_prodMk_left_finite {s : Set (X × Y)}
+omit [NormedSpace ℝ F] in
+/-- If `ν` is a vector measure, and `s ⊆ X × Y` is measurable, then `x ↦ ν { y | (x, y) ∈ s }` is
+a strongly measurable function. -/
+theorem stronglyMeasurable_vectorMeasure_prodMk_left {s : Set (X × Y)}
     (hs : MeasurableSet s) : StronglyMeasurable fun x => ν (Prod.mk x ⁻¹' s) := by
   induction s, hs
     using MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod with
@@ -65,13 +65,12 @@ theorem measurable_measure_prodMk_left_finite {s : Set (X × Y)}
       rw [preimage_iUnion]
       apply hasSum_of_disjoint_iUnion
       exacts [fun i ↦ measurable_prodMk_left (hfm i), hfd.mono fun _ _ ↦ .preimage _]
-    simpa only [this] using StronglyMeasurable.hasSum ihf
+    apply StronglyMeasurable.hasSum ihf this
 
 open scoped Classical in
 /-- The naive product of two vector measures, obtained by integrating the measure of the fibers,
 as in the definition of the product of positive measures. -/
-noncomputable def naiveProd
-    (μ : VectorMeasure X E) (ν : VectorMeasure Y F) (B : E →L[ℝ] F →L[ℝ] G)
+noncomputable def naiveProd (μ : VectorMeasure X E) (ν : VectorMeasure Y F) (B : E →L[ℝ] F →L[ℝ] G)
     [IsFiniteMeasure (μ.transpose B.flip).variation] :
     VectorMeasure (X × Y) G where
   measureOf' s := if MeasurableSet s then ∫ᵛ x, ν (Prod.mk x ⁻¹' s) ∂[B.flip; μ] else 0
@@ -85,18 +84,46 @@ noncomputable def naiveProd
         = ∫ᵛ x, ∑ y ∈ a, ν (Prod.mk x ⁻¹' f y) ∂[B.flip; μ] := by
       rw [integral_finsetSum]
       intro i hi
-      apply Integrable.of_bound (μ := (μ.transpose B.flip).variation)
+      refine Integrable.of_bound (μ := (μ.transpose B.flip).variation) ?_ C ?_
+      · exact (stronglyMeasurable_vectorMeasure_prodMk_left (f_meas i)).aestronglyMeasurable
+      · exact Eventually.of_forall (fun x ↦ hC _)
     simp_rw [A]
     apply tendsto_integral_filter_of_dominated_convergence (bound := fun x ↦ C)
     · apply Eventually.of_forall (fun a ↦ ?_)
       apply StronglyMeasurable.aestronglyMeasurable
       apply Finset.stronglyMeasurable_fun_sum _ (fun i hi ↦ ?_)
+      apply stronglyMeasurable_vectorMeasure_prodMk_left (f_meas i)
+    · filter_upwards with a
+      filter_upwards with x
+      rw [← VectorMeasure.of_biUnion_finset]
+      · apply hC
+      · exact fun i hi j hj hij ↦ (f_disj hij).preimage _
+      · exact fun i hi ↦ measurable_prodMk_left (f_meas i)
+    · apply integrable_const
+    · filter_upwards with x
+      apply hasSum_of_disjoint_iUnion
+      · exact fun i ↦ measurable_prodMk_left (f_meas i)
+      · exact fun i j hij ↦ (f_disj hij).preimage _
+
+instance [IsFiniteMeasure (μ.transpose B.flip).variation] : HasProd μ ν B where
+  out := by
+    classical
+    refine ⟨naiveProd μ ν B, fun s t hs ht ↦ ?_⟩
+    simp only [naiveProd, hs.prod ht, ↓reduceIte]
+    simp_rw [mk_preimage_prod_right_eq_if, vectorMeasure_if, integral_indicator hs]
+    rw [setIntegral_const]
 
 
-    · sorry
-    · sorry
-    · sorry
-    · sorry
+
+
+
+#exit
+
+      simp_rw [S, mk_preimage_prod_right_eq_if, measure_if,
+        lintegral_indicator (measurableSet_toMeasurable _ _), lintegral_const,
+        restrict_apply_univ, mul_comm]
+    _ = μ s * ν t := by rw [measure_toMeasurable, measure_toMeasurable]
+
 
 
 lemma prod_apply {μ : VectorMeasure X E} {ν : VectorMeasure Y F} [h : HasProd μ ν B] {s : Set X} {t : Set Y} :

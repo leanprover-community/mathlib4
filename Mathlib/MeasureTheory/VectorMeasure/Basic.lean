@@ -141,6 +141,20 @@ theorem of_disjoint_iUnion (hm : ∀ i, MeasurableSet (f i)) (hd : Pairwise (Dis
     v (⋃ i, f i) = ∑' i, v (f i) :=
   (hasSum_of_disjoint_iUnion hm hd).tsum_eq.symm
 
+theorem of_biUnion {ι : Type*} {s : Set ι} {f : ι → Set α} (hs : s.Countable)
+    (hd : s.Pairwise (Disjoint on f)) (h : ∀ b ∈ s, MeasurableSet (f b)) :
+    v (⋃ b ∈ s, f b) = ∑' p : s, v (f p) := by
+  haveI := hs.toEncodable
+  rw [biUnion_eq_iUnion]
+  apply of_disjoint_iUnion
+  · exact fun x ↦ h x x.2
+  · exact hd.on_injective Subtype.coe_injective fun x => x.2
+
+theorem of_biUnion_finset {ι : Type*} {s : Finset ι} {f : ι → Set α} (hd : PairwiseDisjoint (↑s) f)
+    (hm : ∀ b ∈ s, MeasurableSet (f b)) : v (⋃ b ∈ s, f b) = ∑ p ∈ s, v (f p) := by
+  rw [← Finset.sum_attach, Finset.attach_eq_univ, ← tsum_fintype (L := .unconditional s)]
+  exact of_biUnion s.countable_toSet hd hm
+
 theorem of_union {A B : Set α} (h : Disjoint A B) (hA : MeasurableSet A) (hB : MeasurableSet B) :
     v (A ∪ B) = v A + v B := by
   rw [Set.union_eq_iUnion, of_disjoint_iUnion, tsum_fintype, Fintype.sum_bool, cond, cond]
@@ -201,22 +215,6 @@ theorem of_nonpos_disjoint_union_eq_zero {s : SignedMeasure α} {A B : Set α} (
     (hAB : s (A ∪ B) = 0) : s A = 0 := by
   rw [of_union h hA₁ hB₁] at hAB
   linarith
-
-lemma of_biUnion_finset {ι : Type*} {s : Finset ι} {f : ι → Set α} (hd : PairwiseDisjoint (↑s) f)
-    (hm : ∀ b ∈ s, MeasurableSet (f b)) : v (⋃ b ∈ s, f b) = ∑ p ∈ s, v (f p) := by
-  classical
-  induction s using Finset.induction with
-  | empty => simp
-  | insert a s has ih =>
-    simp only [Finset.mem_insert, iUnion_iUnion_eq_or_left, has, not_false_eq_true,
-      Finset.sum_insert]
-    rw [of_union, ih]
-    · exact hd.subset (by simp)
-    · grind
-    · simp only [disjoint_iUnion_right]
-      exact fun i hi ↦ hd (by simp) (by simp [hi]) (by grind)
-    · apply hm _ (by simp)
-    · apply Finset.measurableSet_biUnion _ (by grind)
 
 theorem tendsto_vectorMeasure_iUnion_atTop_nat
     {s : ℕ → Set α} (hm : Monotone s) (hs : ∀ i, MeasurableSet (s i)) :
