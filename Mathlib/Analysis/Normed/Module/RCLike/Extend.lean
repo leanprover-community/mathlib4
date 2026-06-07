@@ -36,6 +36,14 @@ theorem Module.Dual.norm_extendRCLike_le_seminorm [AddCommGroup E] [Module 𝕜 
     _ = ‖(fr.extendRCLike x)‖ * p x := by rw [norm_conj]
   exact (mul_le_mul_iff_left₀ (norm_pos_iff.2 hx)).1 <| by simpa [pow_two, mul_comm] using hsq
 
+/-- If a continuous real-linear functional is bounded by a `𝕜`-seminorm, then its `𝕜`-linear
+extension is bounded by the same seminorm. -/
+theorem StrongDual.norm_extendRCLike_le_seminorm [AddCommGroup E] [Module 𝕜 E] [Module ℝ E]
+    [IsScalarTower ℝ 𝕜 E] [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] (fr : StrongDual ℝ E)
+    {p : Seminorm 𝕜 E} (hp : ∀ x, |fr x| ≤ p x) (x : E) :
+    ‖(fr.extendRCLike x : 𝕜)‖ ≤ p x :=
+  Dual.norm_extendRCLike_le_seminorm fr hp x
+
 variable [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace ℝ F] [IsScalarTower ℝ 𝕜 F]
 
 namespace StrongDual
