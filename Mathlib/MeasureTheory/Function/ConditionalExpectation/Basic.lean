@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
-public import Mathlib.MeasureTheory.Function.LpSpace.InfiniteSum
 
 import Mathlib.MeasureTheory.Function.LpSpace.InfiniteSum
 
