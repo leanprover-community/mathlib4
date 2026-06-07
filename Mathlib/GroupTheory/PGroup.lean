@@ -42,20 +42,20 @@ alias ⟨exists_orderOf_dvd_pow, _⟩ := isPGroup_iff_orderOf_dvd_pow
 
 theorem iff_orderOf [Fact p.Prime] : IsPGroup p G ↔ ∀ g : G, ∃ k, orderOf g = p ^ k := by
   simp_rw [isPGroup_iff_orderOf_dvd_pow, Nat.dvd_prime_pow Fact.out]
-  exact ⟨fun h g ↦ by grind [h g], (· · |>.imp <| by grind)⟩
+  exact forall_congr' fun g ↦ ⟨by grind, .imp <| by grind⟩
 
 alias ⟨exists_orderOf_eq_pow, _⟩ := iff_orderOf
-
-theorem of_card {n : ℕ} (hG : Nat.card G = p ^ n) : IsPGroup p G := fun g =>
-  ⟨n, by rw [← hG, pow_card_eq_one']⟩
 
 theorem of_card_dvd_pow {n : ℕ} (hG : Nat.card G ∣ p ^ n) : IsPGroup p G := by
   refine fun g ↦ ⟨n, ?_⟩
   grw [← orderOf_dvd_iff_pow_eq_one, ← hG, orderOf_dvd_natCard]
 
+theorem of_card {n : ℕ} (hG : Nat.card G = p ^ n) : IsPGroup p G :=
+  of_card_dvd_pow hG.dvd
+
 variable (p G) in
 theorem of_subsingleton [Subsingleton G] : IsPGroup p G :=
-  fun g ↦ ⟨0, by simp [Subsingleton.eq_one g]⟩
+  of_card (n := 0) <| by simp
 
 theorem of_bot : IsPGroup p (⊥ : Subgroup G) :=
   .of_subsingleton p _
@@ -66,18 +66,15 @@ protected theorem zero : IsPGroup 0 G :=
 
 theorem _root_.isPGroup_one_iff_subsingleton : IsPGroup 1 G ↔ Subsingleton G := by
   refine ⟨?_, fun h ↦ .of_subsingleton 1 G⟩
-  refine fun h ↦ subsingleton_of_forall_eq 1 fun g ↦ ?_
-  have ⟨k, hk⟩ := h g
-  simpa using hk
+  simpa [isPGroup_iff_pow_pow_eq_one] using subsingleton_of_forall_eq 1
 
 protected theorem natCard : IsPGroup (Nat.card G) G :=
   fun g ↦ ⟨1, by simp⟩
 
 @[gcongr]
 protected theorem mono {q : ℕ} (hpq : p ∣ q) (hp : IsPGroup p G) : IsPGroup q G := by
-  refine fun g ↦ hp g |>.imp fun k hk ↦ ?_
-  rw [← orderOf_dvd_iff_pow_eq_one] at hk ⊢
-  exact hk.trans <| pow_dvd_pow_of_dvd hpq k
+  rw [isPGroup_iff_orderOf_dvd_pow] at hp ⊢
+  exact fun g ↦ hp g |>.imp fun k hk ↦ hk.trans <| pow_dvd_pow_of_dvd hpq k
 
 theorem of_pow {n : ℕ} (h : IsPGroup (p ^ n) G) : IsPGroup p G :=
   fun g ↦ h g |>.imp' (n * ·) <| by simp [pow_mul]
