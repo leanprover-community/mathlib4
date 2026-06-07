@@ -22,7 +22,10 @@ import Mathlib.MeasureTheory.Measure.Sub
 
 ## Main statements
 
-* `fooBar_unique`
+* `vecTVDist_self`, `vecTVDist_eq_zero_iff`, `vecTVDist_comm`, `vecTVDist_triangle`: the total
+  variation distance between vector measures is a distance.
+* `tvDist_self`, `tvDist_eq_zero_iff`, `tvDist_comm`, `tvDist_triangle`: the total variation
+  distance between finite measures is a distance.
 
 -/
 
