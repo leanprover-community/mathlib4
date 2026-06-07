@@ -9,6 +9,13 @@ name: PR check downstream
 #
 #   !downstream-check <name-or-slug>[@<rev>] [--merge-branch][, ...]
 #
+# The directive may sit on *any* line of the comment, not just the first, but
+# that line must contain nothing other than the directive itself (a line that
+# merely mentions `!downstream-check` mid-sentence is ignored). A comment may
+# carry several directive lines; their entry lists are concatenated into a
+# single request, exactly as if they had been written as one comma-separated
+# directive.
+#
 # Each comma-separated entry:
 #   • <name-or-slug>     — either the downstream's short inventory name
 #                          (e.g. `FLT`) or its GitHub `owner/repo` slug
@@ -62,11 +69,77 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  trigger:
+  # Cheap, permission-less gate that scans the comment body and decides whether
+  # there is a real directive to act on. Splitting this out from `trigger` means
+  # a comment that only *mentions* `!downstream-check` (e.g. mid-sentence prose)
+  # is dropped here, before any team-membership lookup or "not authorized"
+  # reply — those only ever fire for genuine directive comments.
+  detect:
     if: |
       github.event_name == 'workflow_dispatch' ||
       (github.event.issue.pull_request &&
-       startsWith(github.event.comment.body, '!downstream-check'))
+       contains(github.event.comment.body, '!downstream-check'))
+    runs-on: ubuntu-latest
+    permissions: {}
+    outputs:
+      # 'true' iff this run should proceed: a manual dispatch, or a comment with
+      # at least one standalone `!downstream-check` directive line.
+      proceed: ${{ steps.parse.outputs.proceed }}
+      # Concatenated entry list from every directive line (empty for dispatch,
+      # where `inputs.downstreams` is used instead).
+      downstreams: ${{ steps.parse.outputs.downstreams }}
+    steps:
+      - name: Parse directive lines
+        id: parse
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BODY: ${{ github.event.comment.body }}
+        run: |
+          # Manual dispatch carries its entries in `inputs.downstreams`; nothing
+          # to parse, just proceed.
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # issue_comment: scan every line. A directive line is one whose entire
+          # (whitespace-trimmed) content is the `!downstream-check` token,
+          # optionally followed by whitespace and an entry list. Lines that only
+          # mention the token mid-sentence are skipped. The entry lists from all
+          # directive lines are concatenated into one comma-separated request, so
+          # several directive lines behave exactly like a single directive.
+          # Empty / malformed grammar is not checked here — the validate action
+          # handles that path and posts a user-facing comment on failure.
+          args=""
+          found=false
+          while IFS= read -r raw || [ -n "$raw" ]; do
+            line="${raw%$'\r'}"
+            # trim leading/trailing whitespace (pure bash, no subshell per line)
+            line="${line#"${line%%[![:space:]]*}"}"
+            line="${line%"${line##*[![:space:]]}"}"
+            case "$line" in
+              '!downstream-check')              rest="" ;;
+              '!downstream-check'[[:space:]]*)  rest="${line#!downstream-check}" ;;
+              *)                                continue ;;
+            esac
+            found=true
+            # trim whitespace around this line's entry list
+            rest="${rest#"${rest%%[![:space:]]*}"}"
+            rest="${rest%"${rest##*[![:space:]]}"}"
+            [ -z "$rest" ] && continue
+            if [ -n "$args" ]; then args="$args, $rest"; else args="$rest"; fi
+          done <<< "$BODY"
+
+          echo "proceed=$found" >> "$GITHUB_OUTPUT"
+          {
+            echo "downstreams<<__EOF__"
+            printf '%s\n' "$args"
+            echo "__EOF__"
+          } >> "$GITHUB_OUTPUT"
+
+  trigger:
+    needs: detect
+    if: needs.detect.outputs.proceed == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Check team membership
@@ -93,25 +166,6 @@ jobs:
             exit 1
           fi
 
-      - name: Parse comment
-        id: parse
-        if: github.event_name == 'issue_comment'
-        env:
-          BODY: ${{ github.event.comment.body }}
-        run: |
-          # First line only; strip the `!downstream-check` prefix; the rest
-          # is the comma-separated entry list.  Empty / malformed grammar is
-          # not checked here — the validate action handles that path and
-          # posts a user-facing comment on failure.
-          line="$(printf '%s' "$BODY" | head -n1 | tr -d '\r')"
-          rest="${line#!downstream-check}"
-          rest="$(echo "$rest" | sed -E 's/^[[:space:]]+//;s/[[:space:]]+$//')"
-          {
-            echo "downstreams<<__EOF__"
-            echo "$rest"
-            echo "__EOF__"
-          } >> "$GITHUB_OUTPUT"
-
       # Pull mathlib4's own `.github/actions/` (just `get-mathlib-ci`)
       # via a sparse checkout so we can run it; we never need the
       # rest of the mathlib4 working tree on this runner.
@@ -134,7 +188,7 @@ jobs:
         id: validate
         uses: ./ci-tools/.github/actions/check-downstream-validate
         with:
-          names: ${{ steps.parse.outputs.downstreams || inputs.downstreams }}
+          names: ${{ needs.detect.outputs.downstreams || inputs.downstreams }}
           pr-number: ${{ github.event.issue.number || inputs.pr_number }}
           repo: ${{ github.repository }}
           commenter: ${{ github.event.comment.user.login || github.actor }}
