@@ -132,7 +132,7 @@ lemma not_adj_sum_inl_inr (v w) : ¬(G ⊕g H).Adj (.inl v) (.inr w) := by simp
 
 lemma not_reachable_sum_inl_inr (v w) : ¬(G ⊕g H).Reachable (.inl v) (.inr w) := by
   rintro ⟨p⟩
-  have hs : ∀ x : V ⊕ W, x ∉ (Set.range .inl) ↔ x ∈ (Set.range .inr) := by simp
+  have hs : ∀ x : V ⊕ W, x ∉ Set.range .inl ↔ x ∈ Set.range .inr := by simp
   obtain ⟨⟨d, hadj⟩, _, hd1, hd2⟩ := p.exists_boundary_dart (Set.range .inl) (by simp) (by simp)
   simp only [hs] at hadj hd1 hd2
   obtain ⟨v', hv'⟩ := hd1
