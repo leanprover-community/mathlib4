@@ -222,7 +222,7 @@ theorem BddAbove.mono ⦃s t : Set α⦄ (h : s ⊆ t) : BddAbove t → BddAbove
 `f`. -/
 @[to_dual /-- If the range of a function `g` is bounded below, then `g ∘ f` is bounded below for all
 functions `f`. -/]
-theorem BddAbove.range_comp (f : γ → β) {g : β → α}
+theorem BddAbove.range_comp_right (f : γ → β) {g : β → α}
     (hg : BddAbove (Set.range g)) : BddAbove (Set.range (g ∘ f)) :=
   hg.mono (range_comp_subset_range f g)
 
