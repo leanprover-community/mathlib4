@@ -90,6 +90,12 @@ lemma IsPreBrownianReal.hasLaw_eval (hB : IsPreBrownianReal B P) (t : ℝ≥0) :
     HasLaw (B t) (gaussianReal 0 t) P :=
   (measurePreserving_eval_projectiveFamily ⟨t, by simp⟩).hasLaw.comp (hB.hasLaw {t})
 
+lemma IsPreBrownianReal.eval_zero_ae_eq_zero (hB : IsPreBrownianReal B P) :
+    ∀ᵐ ω ∂P, B 0 ω = 0 := by
+  have := hB.hasLaw_eval 0
+  rw [gaussianReal_zero_var] at this
+  exact this.ae_eq_of_dirac
+
 lemma IsPreBrownianReal.hasLaw_sub (hB : IsPreBrownianReal B P) (s t : ℝ≥0) :
     HasLaw (B s - B t) (gaussianReal 0 (nndist s.1 t.1)) P :=
   (measurePreserving_eval_sub_eval_projectiveFamily
@@ -256,7 +262,7 @@ lemma IsBrownianReal.shift (hB : IsBrownianReal B P) (t₀ : ℝ≥0) :
 
 lemma IsBrownianReal.tendsto_nhds_zero (hB : IsBrownianReal B P) :
     ∀ᵐ ω ∂P, Filter.Tendsto (B · ω) (𝓝 0) (𝓝 0) := by
-  filter_upwards [hB.cont, (hB.hasLaw_eval 0).ae_eq_const_of_gaussianReal] with ω h1 h2
+  filter_upwards [hB.cont, hB.eval_zero_ae_eq_zero] with ω h1 h2
   convert h1.tendsto 0
   exact h2.symm
 
