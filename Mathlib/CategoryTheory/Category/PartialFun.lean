@@ -112,17 +112,16 @@ be computable because `= Option.none` is decidable while the domain of a general
 @[simps obj map]
 noncomputable def partialFunToPointed : PartialFun ⥤ Pointed where
   obj X := ⟨Option X, (none : Option X)⟩
-  map {X Y} f :=
-    { toFun := Option.elim' none fun a => ((f : PFun X Y).toFun a).toOption
+  map f :=
+    { toFun := Option.elim' none fun a => (f.toFun a).toOption
       map_point := rfl }
   map_id X := Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => by
     dsimp [CategoryStruct.id]
     convert! Part.some_toOption a
-  map_comp {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z) := Pointed.Hom.ext <| funext fun o =>
-    Option.recOn o rfl fun a => by
-      dsimp [CategoryStruct.comp, Pointed.Hom.comp]
-      rw [Option.elim'_eq_elim]
-      convert! Part.bind_toOption (g : PFun Y Z).toFun ((f : PFun X Y).toFun a)
+  map_comp f g := Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => by
+    dsimp [CategoryStruct.comp, Pointed.Hom.comp]
+    rw [Option.elim'_eq_elim]
+    convert! Part.bind_toOption g.toFun (f.toFun a)
 
 /-- The equivalence induced by `PartialFunToPointed` and `PointedToPartialFun`.
 `Part.equivOption` made functorial. -/
@@ -140,22 +139,18 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
         dsimp [PartialFun.Iso.mk, CategoryStruct.comp, pointedToPartialFun,
           partialFunToPointed, PFun.lift, PartialFun.of, PFun.comp]
         simp only [Part.bind_some]
-        change b ∈ (((f : PFun X Y).toFun a).bind fun c =>
+        change b ∈ ((f.toFun a).bind fun c =>
             Part.some (⟨some c, Option.some_ne_none c⟩ : {x : Option Y // x ≠ none})) ↔
-          b ∈
-            PFun.toSubtype (fun x : Option Y => x ≠ none)
-              (fun o : Option X => Option.elim' (none : Option Y)
-                (fun y : X => ((f : PFun X Y).toFun y).toOption) o)
-              (some a)
+          b ∈ PFun.toSubtype (fun x : Option Y => x ≠ none)
+            (fun o : Option X => Option.elim' (none : Option Y)
+              (fun y : X => (f.toFun y).toOption) o)
+            (some a)
         refine (Part.mem_bind_iff.trans ?_).trans PFun.mem_toSubtype_iff.symm
         obtain ⟨b | b, hb⟩ := b
         · exact (hb rfl).elim
-        · simp only [ne_eq]
-          refine ⟨fun ⟨w, hw, h⟩ ↦ ?_,
+        · refine ⟨fun ⟨w, hw, h⟩ ↦ ?_,
             fun h ↦ ⟨b, Part.mem_toOption.mp h.symm, Part.mem_some_iff.mpr rfl⟩⟩
-          have h_eq : b = w :=
-            Option.some_inj.mp (Subtype.ext_iff.mp (Part.mem_some_iff.mp h))
-          rw [h_eq]
+          cases Part.mem_some_iff.mp h
           exact (Part.mem_toOption.mpr hw).symm
   counitIso :=
     NatIso.ofComponents
