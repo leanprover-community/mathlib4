@@ -1037,6 +1037,13 @@ theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalStarSubalgebra R
     (Set.iUnion_subset fun _ ↦ le_iSup S _)
   this.symm ▸ rfl
 
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → NonUnitalStarSubalgebra R A) :
+    ((⨆ i, S i : NonUnitalStarSubalgebra R A) : Set A) =
+      ⋃ s : Finset ι, (⨆ i ∈ s, S i : NonUnitalStarSubalgebra R A) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le ?_]
+  simp_rw [← Finset.sup_eq_iSup]
+  exact fun _ _ ↦ Finset.sup_mono
+
 theorem isMulCommutative_iSup [Nonempty ι] {S : ι → NonUnitalStarSubalgebra R A}
     [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
     IsMulCommutative (⨆ i, S i : NonUnitalStarSubalgebra R A) := by
