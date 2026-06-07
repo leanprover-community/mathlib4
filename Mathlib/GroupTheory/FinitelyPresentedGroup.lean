@@ -9,6 +9,10 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.GroupTheory.FreeGroup.Basic
+public import Mathlib.GroupTheory.Coprod.Basic
+public import Mathlib.GroupTheory.PresentedGroup
+public import Mathlib.GroupTheory.QuotientGroup.Basic
+public import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
 # Finitely Presented Groups
@@ -99,4 +103,29 @@ instance : AddGroup.IsFinitelyPresented ℤ :=
   AddGroup.IsFinitelyPresented.equiv
     (FreeAddGroup.addEquivIntOfUnique : FreeAddGroup Unit ≃+ ℤ) inferInstance
 
+open QuotientGroup in
+/-- The coproduct of finitely presented groups is finitely presented -/
+instance [hg : IsFinitelyPresented G] [hh : IsFinitelyPresented H] :
+    IsFinitelyPresented (Monoid.Coprod G H) := by
+  obtain ⟨ng, φg, hφgsurj, setg, hsetgfin, setgker⟩ := hg
+  obtain ⟨nh, φh, hφhsurj, seth, hsethfin, sethker⟩ := hh
+  refine equiv (MulEquiv.coprodCongr
+    ((quotientKerEquivOfSurjective φg hφgsurj).symm.trans (quotientMulEquivOfEq setgker.symm))
+    ((quotientKerEquivOfSurjective φh hφhsurj).symm.trans (quotientMulEquivOfEq sethker.symm))).symm
+    <| equiv (PresentedGroup.coprodPresentations setg seth) ?_
+  use ng + nh
+  let s := (FreeGroup.map Sum.inl '' setg ∪ FreeGroup.map Sum.inr '' seth)
+  suffices
+  ∃ ψ : FreeGroup (Fin ng ⊕ Fin nh) →* PresentedGroup s,
+    Function.Surjective ψ ∧ ψ.ker.IsNormalClosureFG
+  by
+    rcases this with ⟨ψ, hsurj, hfg⟩
+    let toDisjoint : FreeGroup (Fin (ng + nh)) ≃* FreeGroup (Fin ng ⊕ Fin nh) :=
+      FreeGroup.freeGroupCongr (finSumFinEquiv).symm
+    refine ⟨ψ.comp toDisjoint, hsurj.comp toDisjoint.surjective, ?_⟩
+    simp only [MonoidHom.ker_comp_mulEquiv]
+    exact Subgroup.IsNormalClosureFG.map (hfg) (toDisjoint.symm.surjective)
+  exact ⟨PresentedGroup.mk s, PresentedGroup.mk_surjective s, s,
+  (hsetgfin.image (FreeGroup.map Sum.inl)).union (hsethfin.image (FreeGroup.map Sum.inr)),
+  (QuotientGroup.ker_mk' (Subgroup.normalClosure s)).symm⟩
 end Group.IsFinitelyPresented
