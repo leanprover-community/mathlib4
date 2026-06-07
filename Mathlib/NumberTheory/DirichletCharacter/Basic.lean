@@ -473,6 +473,9 @@ theorem mem_annihilator_iff {H : Set (ZMod n)ˣ} {χ : DirichletCharacter R n} :
 variable (R n) in
 /-- The subgroup of Dirichlet characters of level `n` whose primitive character sends the prime `p`
 to `1`. See `mem_subgroupOfPrimitiveMapToOne_iff` for this characterization. -/
+-- TODO: Generalize to an arbitrary nonzero integer `d`, replacing the hypothesis `p.Prime` with
+-- a coprimality condition and `n / p ^ n.factorization p` with the largest factor of `n` coprime
+-- to `d`. This would require additional Mathlib API for that construction.
 noncomputable def subgroupOfPrimitiveMapToOne [NeZero n] (p : ℕ) [hp : Fact p.Prime] :
     Subgroup (DirichletCharacter R n) :=
   (annihilator R (n := n / p ^ n.factorization p)
