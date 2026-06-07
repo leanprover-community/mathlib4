@@ -89,6 +89,16 @@ theorem find?_eq_some_iff {a : α} {s : Multiset α} :
     dsimp [Set.Subsingleton] at hp
     grind
 
+@[simp, grind =]
+theorem find?_eq_none_iff {s : Multiset α} :
+    s.find? p hp = none ↔ ∀ a ∈ s, ¬ p a := by
+  induction s using Multiset.induction_on with
+  | empty => simp
+  | cons x s ih =>
+    rw [find?_cons]
+    dsimp [Set.Subsingleton] at hp
+    grind
+
 /-- Note that we cannot derive `hp` from `hp'` or vice versa, as the former allos no such `x`,
 while the latter only requires uniqueness within the set. -/
 theorem find?_eq_choose {s : Multiset α} (hp' : ∃! x, x ∈ s ∧ p x) :
