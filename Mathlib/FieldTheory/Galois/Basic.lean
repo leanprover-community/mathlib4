@@ -506,24 +506,24 @@ variable {p : F[X]}
 open Polynomial in
 /-- If `p` is a separable polynomial with splitting field `E` over `F`, then `E / F` is a
 separable extension. -/
-theorem _root_.Algebra.IsSeparable.of_separable_splitting_field [sp : p.IsSplittingField F E]
+theorem _root_.Algebra.isSeparable_of_separable_splitting_field [sp : p.IsSplittingField F E]
     (hp : p.Separable) : Algebra.IsSeparable F E := by
   suffices h : Algebra.IsSeparable F (⊤ : IntermediateField F E) by
     exact h.of_equiv_equiv (RingEquiv.refl F) topEquiv.toRingEquiv (by ext; simp)
   rw [← (isSplittingField_iff_intermediateField.mp sp).2]
-  apply IntermediateField.induction_on_adjoin_finset _ (fun K => Algebra.IsSeparable F K)
+  apply IntermediateField.induction_on_adjoin_finset _ (fun K ↦ Algebra.IsSeparable F K)
   · exact inferInstance
   · intro K x _ hK
     have hxsep : IsSeparable F x :=
       hp.of_dvd (minpoly.dvd F x (aeval_eq_zero_of_mem_rootSet (Finset.mem_coe.mpr ‹_›)))
-    haveI : Algebra.IsSeparable (↥K) (↥K)⟮x⟯ := by
+    have : Algebra.IsSeparable K K⟮x⟯ := by
       rw [isSeparable_adjoin_simple_iff_isSeparable]
       exact hxsep.tower_top (↥K)
-    exact Algebra.IsSeparable.trans F K (↥K)⟮x⟯
+    exact Algebra.IsSeparable.trans F K K⟮x⟯
 
-theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separable) :
+theorem of_separable_splitting_field [p.IsSplittingField F E] (hp : p.Separable) :
     IsGalois F E :=
-  { to_isSeparable := Algebra.IsSeparable.of_separable_splitting_field hp,
+  { to_isSeparable := Algebra.isSeparable_of_separable_splitting_field hp,
     to_normal := Normal.of_isSplittingField p }
 
 /-- Equivalent characterizations of a Galois extension of finite degree. -/
