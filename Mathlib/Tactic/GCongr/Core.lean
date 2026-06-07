@@ -440,33 +440,34 @@ initialize registerBuiltinAttribute {
           let gcongrLemma ← makeGCongrLemma xs.pop type declName prio strict forGrw
           gcongrExt.add gcongrLemma kind
         else
-          -- We want to support such lemmas even if the hypotheses are given in a different order.
-          -- So, we find the last hypothesis whose head matches that of the conclusion,
-          -- and move it to the end.
-          let .const c _ := type.getAppFn | failure
-          let rec findIdx (i : Nat) (h : i ≤ xs.size) : MetaM (Fin xs.size) :=
-            match i with
-            | 0 => failure
-            | i + 1 => do
-              if (← inferType xs[i]).getAppFn.isConstOf c then
-                return ⟨i, by lia⟩
-              else
-                findIdx i (by lia)
-          let i ← findIdx xs.size xs.size.le_refl
-          let type ← mkForallFVars #[xs[i]] type
-          let xs' :=  xs.eraseIdx i i.isLt
-          let gcongrLemma ← makeGCongrLemma xs' type declName prio strict forGrw
-          if i == xs.size - 1 then
-            -- The argument order is already correct.
-            gcongrExt.add gcongrLemma kind
-          else
-            -- We need to make an auxiliary theorem with the correct argument order.
-            let auxType ← mkForallFVars xs' type
-            let auxValue ← mkLambdaFVars (xs'.push xs[i]) <|
-              mkAppN (.const declName (cinfo.levelParams.map .param)) xs
-            let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
-              (forceExpose := true)
-            gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
+        -- In the non-strict case, we want to support such lemmas
+        -- even if the hypotheses are given in a different order.
+        -- So, we find the last hypothesis whose head matches that of the conclusion,
+        -- and move it to the end.
+        let .const c _ := type.getAppFn | failure
+        let rec findIdx (i : Nat) (h : i ≤ xs.size) : MetaM (Fin xs.size) :=
+          match i with
+          | 0 => failure
+          | i + 1 => do
+            if (← inferType xs[i]).getAppFn.isConstOf c then
+              return ⟨i, by lia⟩
+            else
+              findIdx i (by lia)
+        let i ← findIdx xs.size xs.size.le_refl
+        let type ← mkForallFVars #[xs[i]] type
+        let xs' :=  xs.eraseIdx i i.isLt
+        let gcongrLemma ← makeGCongrLemma xs' type declName prio strict forGrw
+        if i == xs.size - 1 then
+          -- The argument order is already correct.
+          gcongrExt.add gcongrLemma kind
+        else
+          -- We need to make an auxiliary theorem with the correct argument order.
+          let auxType ← mkForallFVars xs' type
+          let auxValue ← mkLambdaFVars (xs'.push xs[i]) <|
+            mkAppN (.const declName (cinfo.levelParams.map .param)) xs
+          let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
+            (forceExpose := true)
+          gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
     catch _ =>
       -- If none of the methods work, we throw the error thrown by the "normal" attempt.
       throw e
