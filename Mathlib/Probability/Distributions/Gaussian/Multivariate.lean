@@ -131,7 +131,7 @@ lemma stdGaussian_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ 
   have := f.finiteDimensional
   apply Measure.ext_of_charFunDual
   ext L
-  simp_rw [show ⇑f = f.toLinearIsometry.toContinuousLinearMap from rfl, charFunDual_map,
+  simp_rw [show ⇑f = f.toContinuousLinearEquiv.toContinuousLinearMap from rfl, charFunDual_map,
     charFunDual_stdGaussian, L.opNorm_comp_linearIsometryEquiv]
 
 lemma map_pi_eq_stdGaussian :
