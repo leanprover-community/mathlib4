@@ -145,10 +145,16 @@ theorem Ico_ofDual {x y : αᵒᵈ} : Ico (ofDual y) (ofDual x) = toDual ⁻¹' 
 theorem Ioo_ofDual {x y : αᵒᵈ} : Ioo (ofDual y) (ofDual x) = toDual ⁻¹' Ioo x y :=
   Set.ext fun _ => and_comm
 
-theorem ext_of_Ioc_finite'' {α : Type*} [LinearOrder α] (a b : αᵒᵈ) :
-    ⇑OrderDual.ofDual ⁻¹' Ioc (α := α) (↑b : α) a = Ico a b := by
-  nth_rw 2 [← toDual_of_op a, ← toDual_of_op b]
+@[to_dual]
+theorem OrderDual.ofDual_Ioc_preimage_Ioc {α : Type*} [LinearOrder α] (a b : αᵒᵈ) :
+    Ico a b = ⇑OrderDual.ofDual ⁻¹' Ioc (α := α) (↑b : α) a := by
+  conv_lhs => rw [← OrderDual.toDual_of_op a, ← OrderDual.toDual_of_op b]
   rw [Ico_toDual (α := α)]
+
+theorem OrderDual.ofDual_Ioo_preimage_Ioo {α : Type*} [LinearOrder α] (a b : αᵒᵈ) :
+    Ioo a b = ⇑OrderDual.ofDual ⁻¹' Ioo (α := α) (↑b : α) a := by
+  conv_lhs => rw [← OrderDual.toDual_of_op a, ← OrderDual.toDual_of_op b]
+  rw [Ioo_toDual (α := α)]
 
 @[to_dual (attr := simp)]
 theorem nonempty_Iio [NoMinOrder α] : (Iio a).Nonempty :=

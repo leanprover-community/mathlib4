@@ -53,14 +53,6 @@ section OrderTopology
 variable (α)
 variable [TopologicalSpace α] [SecondCountableTopology α] [LinearOrder α] [OrderTopology α]
 
-theorem ext_of_Ioc_finite' {α : Type*} [LinearOrder α] (a : αᵒᵈ) :
-    OrderDual.toDual (α := α) a = a := rfl
-
-theorem ext_of_Ioc_finite'' {α : Type*} [LinearOrder α] (a b : αᵒᵈ) :
-    ⇑OrderDual.ofDual ⁻¹' Ioc (α := α) (↑b : α) a = Ico a b := by
-  nth_rw 2 [← ext_of_Ioc_finite' a, ← ext_of_Ioc_finite' b]
-  rw [Ico_toDual (α := α)]
-
 theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
   refine le_antisymm ?_ (generateFrom_le ?_)
   · rw [borel_eq_generateFrom_of_subbasis (@OrderTopology.topology_eq_generate_intervals α _ _ _)]
