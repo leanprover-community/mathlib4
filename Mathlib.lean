@@ -4105,6 +4105,7 @@ public import Mathlib.Data.Multiset.Dedup
 public import Mathlib.Data.Multiset.Defs
 public import Mathlib.Data.Multiset.DershowitzManna
 public import Mathlib.Data.Multiset.Filter
+public import Mathlib.Data.Multiset.Find
 public import Mathlib.Data.Multiset.FinsetOps
 public import Mathlib.Data.Multiset.Fintype
 public import Mathlib.Data.Multiset.Fold
