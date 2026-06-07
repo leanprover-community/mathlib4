@@ -93,8 +93,9 @@ theorem orthogonal_orthogonal_eq_closure [CompleteSpace E] :
 
 variable {K}
 
-@[deprecated (since := "2026-05-07")] alias isCompl_orthogonal_of_hasOrthogonalProjection :=
-  isCompl_orthogonal
+@[deprecated isCompl_orthogonal (since := "2026-05-07")]
+theorem isCompl_orthogonal_of_hasOrthogonalProjection [K.HasOrthogonalProjection] : IsCompl K Kᗮ :=
+  K.isCompl_orthogonal
 
 @[simp]
 theorem orthogonalComplement_eq_orthogonalComplement {L : Submodule 𝕜 E} [K.HasOrthogonalProjection]
