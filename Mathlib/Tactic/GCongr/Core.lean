@@ -366,14 +366,18 @@ The antecedents of such a lemma are classified as generating "main goals" if the
 or more generally of the form `∀ i h h' j h'', f₁ i j ≈ f₂ i j` (say) for some "varying argument"
 pair `f₁`/`f₂`, where the arguments of `f₁` and `f₂` are the same list of variables which have to
 be bound by the preceding `∀`. (Other antecedents are considered to generate "side goals".)
-Use `gcongr only` to relax these conditions. A `gcongr only` lemma is not used by `grw`.
 
 If a lemma such as `add_le_add : a ≤ b → c ≤ d → a + c ≤ b + d` has been tagged with `gcongr`,
 then a direct consequence like `a ≤ b → a + c ≤ b + c` does *not* need to be tagged.
 However, if a more specific lemma has fewer side conditions, it should also be tagged with `gcongr`.
 For example, `mul_le_mul_of_nonneg_right` and `mul_le_mul_of_nonneg_left` are both tagged.
 
-Lemmas involving `<` or `≤` can also be marked `@[bound]` for use in the related `bound` tactic. -/
+* `gcongr only` relaxes some checks that ensure that the lemma is suitable for use in `grw`.
+  Such lemmas ca be used by the `gcongr` tactic, but not by `grw`.
+* `gcongr strict` is for lemmas where the conclusion relates two different constants,
+  instead of a constant with itself. A notable use of `gcongr only` is on `lt_of_lt_of_le`,
+  which has the conclusion `b ≤ c → a < c` that relates `LE.le` with `LT.lt`.
+-/
 syntax (name := gcongrAttr) "gcongr" (&" strict")? (&" only")? (prio)? : attr
 
 @[inherit_doc gcongrAttr]
