@@ -176,12 +176,12 @@ noncomputable def Ideal.residueFieldRingEquiv (f : A ≃+* B) (h : J = K.comap f
   IsLocalRing.ResidueField.mapEquiv (localRingEquiv J K f h)
 
 /-- An isomorphism of rings induces an isomorphism of residue fields. -/
-noncomputable def Ideal.residueFieldAlgEquiv (f : A ≃ₐ[R] B) (h : J = K.comap f) :
+noncomputable abbrev Ideal.residueFieldAlgEquiv (f : A ≃ₐ[R] B) (h : J = K.comap f) :
     J.ResidueField ≃ₐ[R] K.ResidueField :=
   IsLocalRing.ResidueField.mapAlgEquiv (localAlgEquiv J K f h)
 
 /-- An isomorphism of rings induces an isomorphism of residue fields. -/
-noncomputable def Ideal.residueFieldAlgEquiv' (f : A ≃ₐ[R] B) (h : J = K.comap f) :
+noncomputable abbrev Ideal.residueFieldAlgEquiv' (f : A ≃ₐ[R] B) (h : J = K.comap f) :
     J.ResidueField ≃ₐ[I.ResidueField] K.ResidueField :=
   IsLocalRing.ResidueField.mapAlgEquiv' (localAlgEquiv' I J K f h)
 
