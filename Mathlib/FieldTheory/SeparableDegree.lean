@@ -887,6 +887,25 @@ theorem isSeparable_inv {x : E} (hx : IsSeparable F x) : IsSeparable F x⁻¹ :=
 
 end Field
 
+variable {F E K} in
+open Polynomial in
+/-- If `p` is a separable polynomial with splitting field `E` over `F`, then `E / F` is a
+separable extension. -/
+theorem Algebra.isSeparable_of_separable_splitting_field {p : F[X]}
+    [sp : p.IsSplittingField F E] (hp : p.Separable) : Algebra.IsSeparable F E := by
+  suffices h : Algebra.IsSeparable F (⊤ : IntermediateField F E) by
+    exact h.of_equiv_equiv (RingEquiv.refl F) topEquiv.toRingEquiv (by ext; simp)
+  rw [← (isSplittingField_iff_intermediateField.mp sp).2]
+  apply IntermediateField.induction_on_adjoin_finset _ (fun K ↦ Algebra.IsSeparable F K)
+  · exact AlgEquiv.Algebra.isSeparable (botEquiv F E).symm
+  · intro K x _ hK
+    have hxsep : IsSeparable F x :=
+      hp.of_dvd (minpoly.dvd F x (aeval_eq_zero_of_mem_rootSet (Finset.mem_coe.mpr ‹_›)))
+    have : Algebra.IsSeparable K K⟮x⟯ := by
+      rw [isSeparable_adjoin_simple_iff_isSeparable]
+      exact hxsep.tower_top (↥K)
+    exact Algebra.IsSeparable.trans F K K⟮x⟯
+
 /-- A field is a perfect field (which means that any irreducible polynomial is separable)
 if and only if every separable degree one polynomial splits. -/
 theorem perfectField_iff_splits_of_natSepDegree_eq_one (F : Type*) [Field F] :
