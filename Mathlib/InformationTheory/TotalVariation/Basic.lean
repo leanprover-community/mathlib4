@@ -76,6 +76,8 @@ variable {μ ν : Measure 𝓧} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 noncomputable def tvDist (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] : ℝ :=
   (vecTVDist μ.toSignedMeasure ν.toSignedMeasure).toReal
 
+@[simp] lemma tvDist_nonneg : 0 ≤ tvDist μ ν := ENNReal.toReal_nonneg
+
 lemma vecTVDist_toSignedMeasure_eq_iSup_finPartition_abs :
     vecTVDist μ.toSignedMeasure ν.toSignedMeasure =
       ⨆ (P : Finpartition (⟨.univ, .univ⟩ : Subtype (MeasurableSet (α := 𝓧)))),
@@ -95,6 +97,24 @@ lemma tvDist_eq_iSup_finPartition_abs :
   rw [ENNReal.toReal_sum (fun _ ↦ by simp)]
   simp
 
+@[simp]
+lemma tvDist_self (μ : Measure 𝓧) [IsFiniteMeasure μ] : tvDist μ μ = 0 := by simp [tvDist]
+
+lemma tvDist_comm (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    tvDist μ ν = tvDist ν μ := by
+  unfold tvDist
+  rw [vecTVDist_comm]
+
+@[simp]
+lemma tvDist_zero_right (μ : Measure 𝓧) [IsFiniteMeasure μ] : tvDist μ 0 = μ.real Set.univ := by
+  simp only [tvDist, vecTVDist, Measure.toSignedMeasure_zero, sub_zero,
+    VectorMeasure.variation_toSignedMeasure]
+  rfl
+
+@[simp]
+lemma tvDist_zero_left (ν : Measure 𝓧) [IsFiniteMeasure ν] : tvDist 0 ν = ν.real Set.univ := by
+  rw [tvDist_comm, tvDist_zero_right]
+
 lemma vecTVDist_toSignedMeasure_lt_top (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     vecTVDist μ.toSignedMeasure ν.toSignedMeasure < ∞ := by
   rw [vecTVDist_toSignedMeasure_eq_iSup_finPartition_abs]
@@ -106,16 +126,8 @@ lemma vecTVDist_toSignedMeasure_ne_top (μ ν : Measure 𝓧) [IsFiniteMeasure �
   (vecTVDist_toSignedMeasure_lt_top μ ν).ne
 
 @[simp]
-lemma tvDist_self (μ : Measure 𝓧) [IsFiniteMeasure μ] : tvDist μ μ = 0 := by simp [tvDist]
-
-@[simp]
 lemma tvDist_eq_zero_iff (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-  tvDist μ ν = 0 ↔ μ = ν := by simp [tvDist, ENNReal.toReal_eq_zero_iff]; sorry
-
-lemma tvDist_comm (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    tvDist μ ν = tvDist ν μ := by
-  unfold tvDist
-  rw [vecTVDist_comm]
+  tvDist μ ν = 0 ↔ μ = ν := by simp [tvDist, ENNReal.toReal_eq_zero_iff]
 
 lemma tvDist_triangle (μ ν ξ : Measure 𝓧)
     [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure ξ] :
