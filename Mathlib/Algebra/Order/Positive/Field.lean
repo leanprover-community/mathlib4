@@ -15,7 +15,7 @@ In this file we prove that the set of positive elements of a linear ordered fiel
 ordered commutative group.
 -/
 
-@[expose] public section
+public section
 
 
 variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]

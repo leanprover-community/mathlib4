@@ -118,7 +118,7 @@ theorem coe_two_sylow_of_card_eq_four
   · -- inclusion S ⊆ {1} ∪ {g |  cycleType g = { 2, 2 }}
     obtain ⟨n, hn⟩ := (IsPGroup.iff_orderOf.mp S.isPGroup') ⟨k, hk⟩
     replace hn : (orderOf (k : Perm α)) = 2 ^ n := by simpa using hn
-    convert mem_kleinFour_of_order_two_pow hα4 k.2 hn.dvd
+    convert! mem_kleinFour_of_order_two_pow hα4 k.2 hn.dvd
     simp
   · -- card (kleinFour α) ≤ card S
     simp_rw [← Nat.card_eq_fintype_card]
@@ -173,9 +173,9 @@ theorem exponent_kleinFour_of_card_eq_four (hα4 : Nat.card α = 4) :
     simp only [Subgroup.orderOf_mk, orderOf_dvd_iff_pow_eq_one]
     rw [← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hα4] at hg'
     rcases hg' with hg' | hg'
-    · convert one_pow _
+    · convert! one_pow _
       simpa only [Set.mem_singleton_iff, Subgroup.mk_eq_one] using hg'
-    · convert pow_orderOf_eq_one g
+    · convert! pow_orderOf_eq_one g
       rw [← Equiv.Perm.lcm_cycleType, hg']
       simp
   rw [Nat.dvd_prime Nat.prime_two] at this

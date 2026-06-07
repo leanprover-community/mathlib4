@@ -45,10 +45,8 @@ graded algebra, homogeneous
 
 @[expose] public section
 
-
 open SetLike DirectSum Set
-
-open Pointwise DirectSum
+open scoped Pointwise
 
 variable {ι σ A : Type*}
 
@@ -162,8 +160,8 @@ theorem Ideal.homogeneous_span (s : Set A) (h : ∀ x ∈ s, SetLike.IsHomogeneo
   rw [Ideal.span, Finsupp.span_eq_range_linearCombination] at hr
   rw [LinearMap.mem_range] at hr
   obtain ⟨s, rfl⟩ := hr
-  rw [Finsupp.linearCombination_apply, Finsupp.sum, decompose_sum, DFinsupp.finset_sum_apply,
-    AddSubmonoidClass.coe_finset_sum]
+  rw [Finsupp.linearCombination_apply, Finsupp.sum, decompose_sum, DFinsupp.finsetSum_apply,
+    AddSubmonoidClass.coe_finsetSum]
   refine Ideal.sum_mem _ ?_
   rintro z hz1
   rw [smul_eq_mul]
@@ -204,7 +202,7 @@ theorem Ideal.IsHomogeneous.toIdeal_homogeneousCore_eq_self (h : I.IsHomogeneous
 theorem HomogeneousIdeal.toIdeal_homogeneousCore_eq_self (I : HomogeneousIdeal 𝒜) :
     I.toIdeal.homogeneousCore 𝒜 = I := by
   ext1
-  convert Ideal.IsHomogeneous.toIdeal_homogeneousCore_eq_self I.isHomogeneous
+  convert! Ideal.IsHomogeneous.toIdeal_homogeneousCore_eq_self I.isHomogeneous
 
 variable (𝒜 I)
 
@@ -456,7 +454,7 @@ theorem Ideal.homogeneousCore'_eq_sSup :
   refine (IsLUB.sSup_eq ?_).symm
   apply IsGreatest.isLUB
   have coe_mono : Monotone (toIdeal : HomogeneousIdeal 𝒜 → Ideal A) := fun x y => id
-  convert coe_mono.map_isGreatest (Ideal.homogeneousCore.gc 𝒜).isGreatest_u using 1
+  convert! coe_mono.map_isGreatest (Ideal.homogeneousCore.gc 𝒜).isGreatest_u using 1
   ext x
   rw [mem_image, mem_setOf_eq]
   refine ⟨fun hI => ⟨⟨x, hI.1⟩, ⟨hI.2, rfl⟩⟩, ?_⟩
