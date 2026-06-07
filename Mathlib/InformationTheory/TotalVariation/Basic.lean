@@ -5,6 +5,7 @@ Authors: Rémy Degenne
 -/
 module
 
+public import Mathlib.MeasureTheory.Measure.MutuallySingular
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 
 import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
@@ -77,6 +78,15 @@ lemma vecTVDist_zero_left (ν : VectorMeasure 𝓧 M) : vecTVDist 0 ν = ν.vari
   rw [vecTVDist_comm, vecTVDist_zero_right]
 
 lemma vecTVDist_eq_sub_zero : vecTVDist μ ν = vecTVDist (μ - ν) 0 := by simp [vecTVDist]
+
+lemma vecTVDist_restrict_add_compl {s : Set 𝓧} (hs : MeasurableSet s) :
+    vecTVDist (μ.restrict s) (ν.restrict s) + vecTVDist (μ.restrict sᶜ) (ν.restrict sᶜ) =
+      vecTVDist μ ν := by
+  unfold vecTVDist
+  simp_rw [← VectorMeasure.restrict_sub, VectorMeasure.variation_restrict hs,
+    VectorMeasure.variation_restrict hs.compl]
+  simp only [MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter]
+  simp [← measure_union disjoint_compl_right hs.compl]
 
 end VectorMeasure
 
@@ -173,6 +183,27 @@ lemma tvDist_le_add : tvDist μ ν ≤ μ.real Set.univ + ν.real Set.univ := by
   calc tvDist μ ν
   _ ≤ tvDist μ 0 + tvDist 0 ν := tvDist_triangle _ _ _
   _ = μ.real Set.univ + ν.real Set.univ := by simp [tvDist_zero_right, tvDist_zero_left]
+
+lemma tvDist_restrict_add_compl {s : Set 𝓧} (hs : MeasurableSet s) :
+    tvDist (μ.restrict s) (ν.restrict s) + tvDist (μ.restrict sᶜ) (ν.restrict sᶜ) = tvDist μ ν := by
+  unfold tvDist
+  rw [← ENNReal.toReal_add (by simp) (by simp)]
+  rw [← VectorMeasure.restrict_toSignedMeasure hs,
+    ← VectorMeasure.restrict_toSignedMeasure hs.compl, ← VectorMeasure.restrict_toSignedMeasure hs,
+    ← VectorMeasure.restrict_toSignedMeasure hs.compl, vecTVDist_restrict_add_compl hs]
+
+lemma tvDist_of_mutuallySingular (hμν : μ ⟂ₘ ν) :
+    tvDist μ ν = μ.real Set.univ + ν.real Set.univ := by
+  rw [add_comm, ← tvDist_restrict_add_compl hμν.measurableSet_nullSet]
+  simp only [hμν.restrict_nullSet, tvDist_zero_left, MeasurableSet.univ, measureReal_restrict_apply,
+    Set.univ_inter, hμν.restrict_compl_nullSet, tvDist_zero_right]
+  congr 1
+  · conv_rhs => rw [Measure.real,
+      ← Measure.restrict_add_restrict_compl hμν.measurableSet_nullSet (μ := ν)]
+    simp [Measure.real]
+  · conv_rhs => rw [Measure.real,
+      ← Measure.restrict_add_restrict_compl hμν.measurableSet_nullSet (μ := μ)]
+    simp [Measure.real]
 
 end Measure
 
