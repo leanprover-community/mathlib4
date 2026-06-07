@@ -8057,7 +8057,6 @@ public import Mathlib.Topology.Specialization
 public import Mathlib.Topology.Spectral.Basic
 public import Mathlib.Topology.Spectral.ConstructibleTopology
 public import Mathlib.Topology.Spectral.Hom
-public import Mathlib.Topology.Spectral.Maps
 public import Mathlib.Topology.Spectral.Prespectral
 public import Mathlib.Topology.Subpath
 public import Mathlib.Topology.TietzeExtension

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Jiedong Jiang, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Jiedong Jiang, Christian Merten
+Authors: Johan Commelin, Jiedong Jiang, Fangming Li, Christian Merten
 -/
 module
 
@@ -42,19 +42,12 @@ the open and compact sets of `X` and their complements. -/
 def constructibleTopology (X : Type*) [TopologicalSpace X] : TopologicalSpace X :=
   .generateFrom (constructibleTopologySubbasis X)
 
-lemma constructibleTopology_le (X : Type*) [T : TopologicalSpace X]
-    [CompactSpace X] [QuasiSeparatedSpace X] [PrespectralSpace X] :
-    constructibleTopology X ≤ T :=
-  PrespectralSpace.isTopologicalBasis (X := X).eq_generateFrom ▸
-    le_generateFrom fun _ hs => TopologicalSpace.isOpen_generateFrom_of_mem <|
-      PrespectralSpace.isTopologicalBasis (X := X).eq_generateFrom ▸ Or.intro_left _ hs
-
 /-- A type synonym for `X` that is equipped with the constructible topology of `X`. -/
 @[nolint unusedArguments]
 abbrev WithConstructibleTopology (X : Type*) [TopologicalSpace X] : Type _ :=
   WithTopology X (constructibleTopology X)
 
-open Topology
+open TopologicalSpace Topology
 
 lemma WithConstructibleTopology.isOpen_iff {s : Set (WithConstructibleTopology X)} :
     IsOpen s ↔ IsOpen[constructibleTopology X] (WithTopology.toTopology _ ⁻¹' s) :=
@@ -170,3 +163,32 @@ instance compactSpace_withConstructibleTopology [CompactSpace X] [QuasiSober X]
     · rw [← Set.sInter_union]
       refine hB.prop.2.1 (_ ∪ F) ?_ <| (hA₁'.diff.union hA₂'.diff).union hF
       grind [Set.diff_singleton_subset_iff, Set.union_subset_iff]
+
+instance t2Space_constructibleTopology₁ [T0Space X]
+    [CompactSpace X] [QuasiSeparatedSpace X] [PrespectralSpace X] :
+    @T2Space X (constructibleTopology X) := by
+  simp only [t2Space_iff, exists_and_left]
+  intro x y hxy
+  obtain ⟨s, hs1, hs2⟩ := not_inseparable_iff_exists_open.1 <|
+    (not_imp_not.2 <| (t0Space_iff_inseparable X).1 inferInstance x y) hxy
+  refine hs2.elim (fun ⟨hxs, hys⟩ => ?_) (fun ⟨hys, hxs⟩ => ?_)
+  · obtain ⟨t, ⟨ht1, ht2⟩, ht3, ht4⟩ := ((prespectralSpace_iff X).1 inferInstance).mem_nhds_iff.1
+      (hs1.mem_nhds hxs)
+    refine ⟨t, isOpen_generateFrom_of_mem <| Set.mem_union_left _ ⟨ht1, ht2⟩, ⟨tᶜ, ?_, ?_⟩⟩
+    · exact isOpen_generateFrom_of_mem <| Set.mem_union_right _
+        ⟨ht1.isClosed_compl, (compl_compl t).symm ▸ ht2⟩
+    · exact ⟨ht3, fun h => hys (ht4 h), Set.disjoint_compl_right_iff_subset.mpr fun _ h => h⟩
+  · obtain ⟨t, ⟨ht1, ht2⟩, ht3, ht4⟩ := ((prespectralSpace_iff X).1 inferInstance).mem_nhds_iff.1
+      (hs1.mem_nhds hys)
+    refine ⟨tᶜ, isOpen_generateFrom_of_mem <| Set.mem_union_right _
+      ⟨ht1.isClosed_compl, (compl_compl t).symm ▸ ht2⟩, ⟨t, ?_, ?_⟩⟩
+    · exact isOpen_generateFrom_of_mem <| Set.mem_union_left _ ⟨ht1, ht2⟩
+    · exact ⟨fun h => hxs (ht4 h), ht3, Set.disjoint_compl_left_iff_subset.mpr fun _ h => h⟩
+
+instance t2Space_withConstructibleTopology₁ [T0Space X]
+    [CompactSpace X] [QuasiSeparatedSpace X] [PrespectralSpace X] :
+    T2Space <| WithConstructibleTopology X :=
+  @T2Space.of_injective_continuous (WithConstructibleTopology X) X _
+    (constructibleTopology X) t2Space_constructibleTopology₁ WithTopology.ofTopology
+    (WithTopology.ofTopology_injective (constructibleTopology X))
+    (WithTopology.continuous_ofTopology (constructibleTopology X))
