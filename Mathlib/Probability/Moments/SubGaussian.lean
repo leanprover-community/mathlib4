@@ -171,7 +171,6 @@ lemma ae_forall_integrable_exp_mul (h : HasSubgaussianMGF X c κ ν) :
   filter_upwards [h_int] with ω' h_int t
   exact integrable_exp_mul_of_le_of_le (h_int _) (h_int _) (Int.floor_le t) (Int.le_ceil t)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ae_forall_memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (p : ℝ≥0) :
     ∀ᵐ ω' ∂ν, ∀ t, MemLp (fun ω ↦ exp (t * X ω)) p (κ ω') := by
   filter_upwards [h.ae_forall_integrable_exp_mul] with ω' hi t
@@ -187,7 +186,6 @@ lemma ae_forall_memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (p : ℝ≥0) :
       ← exp_mul, mul_comm, ← mul_assoc]
     positivity
 
-set_option backward.isDefEq.respectTransparency false in
 lemma memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (t : ℝ) (p : ℝ≥0) :
     MemLp (fun ω ↦ exp (t * X ω)) p (κ ∘ₘ ν) := by
   by_cases hp0 : p = 0
@@ -406,7 +404,6 @@ end Zero
 
 section Add
 
-set_option backward.isDefEq.respectTransparency false in
 lemma add {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX κ ν)
     (hY : HasSubgaussianMGF Y cY κ ν) :
     HasSubgaussianMGF (fun ω ↦ X ω + Y ω) ((cX.sqrt + cY.sqrt) ^ 2) κ ν := by
@@ -751,7 +748,6 @@ lemma sub_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF
   simp_rw [sub_eq_add_neg]
   exact hX.add_of_indepFun hY.neg hindep.neg_right
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma sum_of_iIndepFun_of_forall_aemeasurable
     {ι : Type*} {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ι → ℝ≥0}
     (h_meas : ∀ i, AEMeasurable (X i) μ)
@@ -905,7 +901,6 @@ alias HasSubgaussianMGF_add_of_HasCondSubgaussianMGF :=
 
 variable {Y : ℕ → Ω → ℝ} {cY : ℕ → ℝ≥0} {ℱ : Filtration ℕ mΩ}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `Y` be a random process strongly adapted to a filtration `ℱ`, such that for all `i : ℕ`,
 `Y i` is conditionally sub-Gaussian with parameter `cY i` with respect to `ℱ (i - 1)`.
 In particular, `n ↦ ∑ i ∈ range n, Y i` is a martingale.
