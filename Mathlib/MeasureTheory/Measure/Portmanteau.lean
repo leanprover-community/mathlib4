@@ -454,7 +454,7 @@ lemma limsup_measure_closed_le_of_forall_tendsto_measure
   have nhds : Iio (μ F + ε) ∈ 𝓝 (μ F) :=
     Iio_mem_nhds <| ENNReal.lt_add_right μF_finite.ne (ENNReal.coe_pos.mpr ε_pos).ne'
   specialize rs_lim (keyB nhds)
-  simp only [mem_map, mem_atTop_sets, ge_iff_le, mem_preimage, mem_Iio] at rs_lim
+  simp only [mem_map, mem_atTop_sets, mem_preimage, mem_Iio] at rs_lim
   obtain ⟨m, hm⟩ := rs_lim
   have aux : (fun i ↦ (μs i F)) ≤ᶠ[L] (fun i ↦ μs i (Metric.thickening (rs m) F)) :=
     .of_forall <| fun i ↦ measure_mono (Metric.self_subset_thickening (rs_pos m) F)

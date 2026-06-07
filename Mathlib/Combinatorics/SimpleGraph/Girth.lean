@@ -80,7 +80,7 @@ theorem egirth_top (h : 3 ≤ ENat.card α) : egirth (⊤ : SimpleGraph α) = 3 
   grw [egirth_le_length this]
   simp [w]
 
-@[gcongr]
+@[gcongr only]
 lemma IsContained.egirth_le (h : G ⊑ G') : G'.egirth ≤ G.egirth := by
   by_cases hacyc : G.IsAcyclic
   · simp [hacyc.egirth_eq_top]
@@ -88,7 +88,7 @@ lemma IsContained.egirth_le (h : G ⊑ G') : G'.egirth ≤ G.egirth := by
   rw [hwl, ← w.length_map h.some.toHom]
   exact egirth_le_length <| hw.map h.some.injective
 
-@[gcongr]
+@[gcongr only]
 lemma Iso.egirth_eq (f : G ≃g G') : G.egirth = G'.egirth :=
   le_antisymm f.isContained'.egirth_le f.isContained.egirth_le
 
