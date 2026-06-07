@@ -652,6 +652,20 @@ theorem morphismRestrict_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V
   rw [Scheme.Hom.appLE, morphismRestrict_app', Scheme.Opens.toScheme_presheaf_map,
     Scheme.Hom.appLE_map]
 
+@[reassoc]
+theorem morphismRestrict_homOfLE_isoImage_ι_hom
+    {X : Scheme.{u}} {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
+    X.homOfLE e ∣_ W ≫ (V.ι.isoImage W).hom =
+      (U.ι.isoImage (X.homOfLE e ⁻¹ᵁ W)).hom ≫ X.homOfLE (X.ι_image_homOfLE_le_ι_image e W) := by
+  simp [← cancel_mono (V.ι ''ᵁ W).ι]
+
+@[reassoc]
+theorem isoImage_ι_inv_morphismRestrict_homOfLE {X : Scheme.{u}} {U V : X.Opens}
+    (e : U ≤ V) (W : Opens V) :
+    (U.ι.isoImage (X.homOfLE e ⁻¹ᵁ W)).inv ≫ X.homOfLE e ∣_ W =
+      X.homOfLE (X.ι_image_homOfLE_le_ι_image e W) ≫ (V.ι.isoImage W).inv := by
+  simp [← cancel_mono (V.ι.isoImage W).hom, morphismRestrict_homOfLE_isoImage_ι_hom]
+
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Restricting a morphism onto the image of an open immersion is isomorphic to the base change

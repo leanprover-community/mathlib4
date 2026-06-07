@@ -64,14 +64,12 @@ theorem integerNormalization_support (p : S[X]) :
 noncomputable def coeffIntegerNormalization (p : S[X]) (i : ℕ) : R :=
   (integerNormalization M p).coeff i
 
-set_option linter.deprecated false in
 @[deprecated integerNormalization_support (since := "2026-02-05")]
 theorem coeffIntegerNormalization_of_coeff_zero (p : S[X]) (i : ℕ) (h : coeff p i = 0) :
     coeffIntegerNormalization M p i = 0 :=
   notMem_support_iff.mp <| Finset.not_mem_subset (integerNormalization_support M p) <|
     notMem_support_iff.mpr h
 
-set_option linter.deprecated false in
 @[deprecated integerNormalization_support (since := "2026-02-05")]
 theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
     (h : coeffIntegerNormalization M p i ≠ 0) : i ∈ p.support := by
@@ -79,7 +77,6 @@ theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
   simp only [mem_support_iff, ne_eq, not_not] at h
   exact coeffIntegerNormalization_of_coeff_zero M p i h
 
-set_option linter.deprecated false in
 @[deprecated integerNormalization_spec (since := "2026-02-05")]
 theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
     (integerNormalization M p).coeff i = coeffIntegerNormalization M p i :=

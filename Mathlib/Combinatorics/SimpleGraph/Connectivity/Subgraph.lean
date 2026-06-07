@@ -509,7 +509,7 @@ lemma exists_mem_support_mem_erase_mem_support_takeUntil_eq_empty (s : Finset V)
   rwa [takeUntil_takeUntil, erase_right_comm, filter_erase, erase_eq_of_notMem] at h
   simp only [mem_filter, mem_erase, ne_eq, not_and, and_imp]
   rintro hxy -
-  exact notMem_support_takeUntil_support_takeUntil_subset_support (Ne.symm hxy) hx hyp
+  exact notMem_support_takeUntil_support_takeUntil_subset (Ne.symm hxy) hx hyp
 
 lemma exists_mem_support_forall_mem_support_imp_eq (s : Finset V)
     (h : {x ∈ s | x ∈ p.support}.Nonempty) :
