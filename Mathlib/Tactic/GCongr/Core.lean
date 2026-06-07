@@ -620,7 +620,7 @@ def applyGCongrLemma (g : MVarId) (lem : GCongr.GCongrLemma) :
   let type ← inferType const
   -- Use `withDefault` so that we can unfold `Monotone`.
   let (mvars, bis, type) ← withDefault <| forallMetaTelescopeReducing type lem.numHyps
-  guard <| ← approxDefEq <| isDefEq (← g.getType) type
+  guard <| ← approxDefEq <| isDefEq (← g.getType) (preprocess type)
   g.assign (mkAppN const mvars)
   let mut sideGoals := #[]
   for mvar in mvars, i in 0...* do
@@ -657,6 +657,13 @@ where
     match e with
     | .lam n _ b _ => lambdaBinderNames b (acc.push n)
     | _ => acc
+  /-- Remove any eta expansions that may be present in the arguments of either side of `e`. -/
+  preprocess (e : Expr) : Expr :=
+    let eta (x : Expr) := x.withApp (mkAppN · <| ·.map Expr.eta)
+    match e with
+    | .forallE _ lhs rhs _ => e.updateForallE! (eta lhs) (eta rhs)
+    | mkApp2 rel lhs rhs => mkApp2 rel (eta lhs) (eta rhs)
+    | _ => e
 
 /-- The core of the `gcongr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
 look up any relevant `@[gcongr]` lemmas, try to apply them, recursively run the tactic itself on
