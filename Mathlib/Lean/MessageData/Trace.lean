@@ -41,7 +41,6 @@ def traceResultOf (headerStr : String) : Option TraceResult :=
   else if headerStr.startsWith "💥️" then some .error
   else none
 
-set_option linter.deprecated false in
 /-- Strip the leading status emoji and space from a trace header string,
 leaving just the semantic content for comparison across trace runs.
 
